@@ -50,7 +50,7 @@ namespace XLSB
         //static const XLS::ElementType	type = XLS::typeDCon;
 
         XLS::BaseObjectPtr      m_BrtBeginDCon;
-        XLS::BaseObjectPtr	m_DREFS;
+        XLS::BaseObjectPtr	    m_DREFS;
         XLS::BaseObjectPtr      m_BrtEndDCon;
 
     };

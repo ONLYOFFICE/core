@@ -840,6 +840,12 @@ enum ElementType
     typePCDIString,
     typePCDIDatetime,
     typePCDIIndex,
+    typePCDIAMissing,
+    typePCDIANumber,
+    typePCDIABoolean,
+    typePCDIAError,
+    typePCDIAString,
+    typePCDIADatetime,
     typePIVOTFILTERS,
     typeBeginSXView,
     typeEndSXView,
@@ -893,7 +899,10 @@ enum ElementType
     typePRFILTER14,
     typePRFITEM,
     typePRFITEM14,
-
+    typeBeginPivotCacheDef,
+    typePCDIRUN,
+    typePCDI,
+    typePCDIA,
 };
 
 

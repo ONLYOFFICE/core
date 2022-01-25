@@ -52,7 +52,7 @@ namespace XLSB
 
     class PivotCacheRecordsStream: public XLS::CompositeObject
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(WorkBookStream)
+        BASE_OBJECT_DEFINE_CLASS_NAME(PivotCacheRecordsStream)
     public:
         PivotCacheRecordsStream();
         virtual ~PivotCacheRecordsStream();

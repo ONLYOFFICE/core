@@ -43,6 +43,8 @@ SOURCES += \
     ../Source/XlsbFormat/ChartSheetStream.cpp \
     ../Source/XlsbFormat/ExternalLinkStream.cpp \
     ../Source/XlsbFormat/PivotCacheRecordsStream.cpp \
+    ../Source/XlsbFormat/PivotTableStream.cpp \
+    ../Source/XlsbFormat/PivotCacheDefStream.cpp \
 ### Biff12_records
     ../Source/XlsbFormat/Biff12_records/BeginBook.cpp \
     ../Source/XlsbFormat/Biff12_records/FRTBegin.cpp \
@@ -554,6 +556,126 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_records/EndPivotTableUISettings.cpp \
     ../Source/XlsbFormat/Biff12_records/BeginSXView16.cpp \
     ../Source/XlsbFormat/Biff12_records/EndSXView16.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPivotCacheDef.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPivotCacheDef.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSource.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSource.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSRange.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSRange.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSConsol.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSConsol.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSCPages.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSCPages.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSCPage.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSCPage.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSCPItem.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSCPItem.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSCSets.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSCSets.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSCSet.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSCSet.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDFields.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDFields.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDField.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDField.cpp \
+    ../Source/XlsbFormat/Biff12_records/PCDField14.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginItemUniqueNames.cpp \
+    ../Source/XlsbFormat/Biff12_records/ItemUniqueName.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndItemUniqueNames.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPNames.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPNames.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPName.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPName.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPNPairs.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPNPairs.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPNPair.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPNPair.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDFAtbl.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDFAtbl.cpp \
+    ../Source/XlsbFormat/Biff12_records/PCDIAMissing.cpp \
+    ../Source/XlsbFormat/Biff12_records/PCDIANumber.cpp \
+    ../Source/XlsbFormat/Biff12_records/PCDIABoolean.cpp \
+    ../Source/XlsbFormat/Biff12_records/PCDIAError.cpp \
+    ../Source/XlsbFormat/Biff12_records/PCDIAString.cpp \
+    ../Source/XlsbFormat/Biff12_records/PCDIADatetime.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDIRun.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDIRun.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDFGroup.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDFGroup.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDFGRange.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDFGRange.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDFGDiscrete.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDFGDiscrete.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDFGItems.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDFGItems.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDCalcItems.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDCalcItems.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDCalcItem.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDCalcItem.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDHierarchies.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDHierarchies.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDHierarchy.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDHierarchy.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDHFieldsUsage.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDHFieldsUsage.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDHGLevels.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDHGLevels.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDHGLevel.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDHGLevel.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDHGLGroups.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDHGLGroups.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDHGLGroup.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDHGLGroup.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDHGLGMembers.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDHGLGMembers.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDHGLGMember.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDHGLGMember.cpp \
+    ../Source/XlsbFormat/Biff12_records/PCDH14.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDKPIs.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDKPIs.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDKPI.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDKPI.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDCalcMems.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDCalcMems.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDCalcMem.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDCalcMem.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSDTupleCache.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSDTupleCache.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSDTCEntries.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSDTCEntries.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSDTCEMembers.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSDTCEMembers.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSDTCEMember.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSDTCEMember.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSDTCSets.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSDTCSets.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSDTCSet.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSDTCSet.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSDTCEMembersSortBy.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSDTCQueries.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSDTCQueries.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSDTCQuery.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSDTCQuery.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSFCIEntries.cpp \
+    ../Source/XlsbFormat/Biff12_records/PCDSFCIEntry.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSFCIEntries.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginDims.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndDims.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginDim.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndDim.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginMGs.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndMGs.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginMG.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndMG.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginMGMaps.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndMGMaps.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginMap.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndMap.cpp \
+    ../Source/XlsbFormat/Biff12_records/BeginPCD14.cpp \
+    ../Source/XlsbFormat/Biff12_records/EndPCD14.cpp \
+    ../Source/XlsbFormat/Biff12_records/PivotCacheConnectionName.cpp \
+    ../Source/XlsbFormat/Biff12_records/PivotCacheIdVersion.cpp \
+    ../Source/XlsbFormat/Biff12_records/PCDH15.cpp \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp \
     ../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp \
@@ -621,6 +743,8 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_structures/PivotNumFmt.cpp \
     ../Source/XlsbFormat/Biff12_structures/SXMA.cpp \
     ../Source/XlsbFormat/Biff12_structures/SXET.cpp \
+    ../Source/XlsbFormat/Biff12_structures/PCDIAddlInfo.cpp \
+    ../Source/XlsbFormat/Biff12_structures/SdSetSortOrder.cpp \
 ### Biff12_unions
     ../Source/XlsbFormat/Biff12_unions/FRT.cpp \
     ../Source/XlsbFormat/Biff12_unions/ACUID.cpp \
@@ -870,6 +994,70 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/PIVOTVALUECELL15.cpp \
     ../Source/XlsbFormat/Biff12_unions/PIVOTTABLEUISETTINGS.cpp \
     ../Source/XlsbFormat/Biff12_unions/SXVIEW16.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDSOURCE.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDSRANGE.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDSCONSOL.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDSCPAGES.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDSCPAGE.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDSCPITEM.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDSCSETS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDSCSET.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDFIELDS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDFIELD.cpp \
+    ../Source/XlsbFormat/Biff12_unions/FRTPCDFIELD.cpp \
+    ../Source/XlsbFormat/Biff12_unions/FRTPCDFIELD14.cpp \
+    ../Source/XlsbFormat/Biff12_unions/FRTPCDFIELD15.cpp \
+    ../Source/XlsbFormat/Biff12_unions/ITEMUNIQUENAMES.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PNAMES.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PNAME.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PNPAIRS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PNPAIR.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDFATBL.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDIA.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDIRUN.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDFGROUP.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDFGRANGE.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDFGDISCRETE.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDFGITEMS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDCALCITEMS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDCALCITEM.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDHIERARCHIES.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDHIERARCHY.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDHFIELDSUSAGE.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDHGLEVELS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDHGLEVEL.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDHGLGROUPS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDHGLGROUP.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDHGLGMEMBERS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDHGLGMEMBER.cpp \
+    ../Source/XlsbFormat/Biff12_unions/FRTPCDHIERARCHY.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDKPIS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDKPI.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDCALCMEMS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDCALCMEM.cpp \
+    ../Source/XlsbFormat/Biff12_unions/FRTPCDCALCMEM.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDSDTUPLECACHE.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDSDTCENTRIES.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDSDTCENTRY.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDSDTCEMEMBERS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDSDTCEMEMBER.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDSDTCSETS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDSDTCSET.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDSDTCEMEMBERSSORTBY.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDSDTCQUERIES.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDSDTCQUERY.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDSFCIENTRIES.cpp \
+    ../Source/XlsbFormat/Biff12_unions/DIMS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/DIM.cpp \
+    ../Source/XlsbFormat/Biff12_unions/MGS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/MG.cpp \
+    ../Source/XlsbFormat/Biff12_unions/MGMAPS.cpp \
+    ../Source/XlsbFormat/Biff12_unions/MAP.cpp \
+    ../Source/XlsbFormat/Biff12_unions/FRTPIVOTCACHEDEF.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCD14.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDSOURCE14.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCD15.cpp \
+    ../Source/XlsbFormat/Biff12_unions/PCDH15_bu.cpp \
 }
 HEADERS += \
     ../Source/XlsbFormat/CommentsStream.h \
@@ -885,6 +1073,8 @@ HEADERS += \
     ../Source/XlsbFormat/ChartSheetStream.h \
     ../Source/XlsbFormat/ExternalLinkStream.h \
     ../Source/XlsbFormat/PivotCacheRecordsStream.h \
+    ../Source/XlsbFormat/PivotTableStream.h \
+    ../Source/XlsbFormat/PivotCacheDefStream.h \
     ../Source/XlsbFormat/Xlsb.h \
     ../Source/XlsbFormat/XlsbElementsType.h \
 ### Biff12_records
@@ -1404,6 +1594,126 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_records/EndPivotTableUISettings.h \
     ../Source/XlsbFormat/Biff12_records/BeginSXView16.h \
     ../Source/XlsbFormat/Biff12_records/EndSXView16.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPivotCacheDef.h \
+    ../Source/XlsbFormat/Biff12_records/EndPivotCacheDef.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSource.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSource.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSRange.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSRange.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSConsol.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSConsol.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSCPages.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSCPages.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSCPage.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSCPage.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSCPItem.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSCPItem.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSCSets.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSCSets.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSCSet.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSCSet.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDFields.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDFields.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDField.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDField.h \
+    ../Source/XlsbFormat/Biff12_records/PCDField14.h \
+    ../Source/XlsbFormat/Biff12_records/BeginItemUniqueNames.h \
+    ../Source/XlsbFormat/Biff12_records/ItemUniqueName.h \
+    ../Source/XlsbFormat/Biff12_records/EndItemUniqueNames.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPNames.h \
+    ../Source/XlsbFormat/Biff12_records/EndPNames.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPName.h \
+    ../Source/XlsbFormat/Biff12_records/EndPName.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPNPairs.h \
+    ../Source/XlsbFormat/Biff12_records/EndPNPairs.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPNPair.h \
+    ../Source/XlsbFormat/Biff12_records/EndPNPair.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDFAtbl.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDFAtbl.h \
+    ../Source/XlsbFormat/Biff12_records/PCDIAMissing.h \
+    ../Source/XlsbFormat/Biff12_records/PCDIANumber.h \
+    ../Source/XlsbFormat/Biff12_records/PCDIABoolean.h \
+    ../Source/XlsbFormat/Biff12_records/PCDIAError.h \
+    ../Source/XlsbFormat/Biff12_records/PCDIAString.h \
+    ../Source/XlsbFormat/Biff12_records/PCDIADatetime.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDIRun.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDIRun.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDFGroup.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDFGroup.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDFGRange.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDFGRange.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDFGDiscrete.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDFGDiscrete.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDFGItems.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDFGItems.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDCalcItems.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDCalcItems.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDCalcItem.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDCalcItem.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDHierarchies.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDHierarchies.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDHierarchy.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDHierarchy.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDHFieldsUsage.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDHFieldsUsage.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDHGLevels.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDHGLevels.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDHGLevel.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDHGLevel.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDHGLGroups.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDHGLGroups.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDHGLGroup.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDHGLGroup.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDHGLGMembers.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDHGLGMembers.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDHGLGMember.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDHGLGMember.h \
+    ../Source/XlsbFormat/Biff12_records/PCDH14.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDKPIs.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDKPIs.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDKPI.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDKPI.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDCalcMems.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDCalcMems.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDCalcMem.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDCalcMem.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSDTupleCache.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSDTupleCache.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSDTCEntries.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSDTCEntries.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSDTCEMembers.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSDTCEMembers.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSDTCEMember.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSDTCEMember.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSDTCSets.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSDTCSets.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSDTCSet.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSDTCSet.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSDTCEMembersSortBy.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSDTCQueries.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSDTCQueries.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSDTCQuery.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSDTCQuery.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCDSFCIEntries.h \
+    ../Source/XlsbFormat/Biff12_records/PCDSFCIEntry.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCDSFCIEntries.h \
+    ../Source/XlsbFormat/Biff12_records/BeginDims.h \
+    ../Source/XlsbFormat/Biff12_records/EndDims.h \
+    ../Source/XlsbFormat/Biff12_records/BeginDim.h \
+    ../Source/XlsbFormat/Biff12_records/EndDim.h \
+    ../Source/XlsbFormat/Biff12_records/BeginMGs.h \
+    ../Source/XlsbFormat/Biff12_records/EndMGs.h \
+    ../Source/XlsbFormat/Biff12_records/BeginMG.h \
+    ../Source/XlsbFormat/Biff12_records/EndMG.h \
+    ../Source/XlsbFormat/Biff12_records/BeginMGMaps.h \
+    ../Source/XlsbFormat/Biff12_records/EndMGMaps.h \
+    ../Source/XlsbFormat/Biff12_records/BeginMap.h \
+    ../Source/XlsbFormat/Biff12_records/EndMap.h \
+    ../Source/XlsbFormat/Biff12_records/BeginPCD14.h \
+    ../Source/XlsbFormat/Biff12_records/EndPCD14.h \
+    ../Source/XlsbFormat/Biff12_records/PivotCacheConnectionName.h \
+    ../Source/XlsbFormat/Biff12_records/PivotCacheIdVersion.h \
+    ../Source/XlsbFormat/Biff12_records/PCDH15.h \
 ### Biff12_structures
     ../Source/XlsbFormat/Biff12_structures/ACProductVersion.h \
     ../Source/XlsbFormat/Biff12_structures/Blxf.h \
@@ -1474,6 +1784,8 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_structures/PivotNumFmt.h \
     ../Source/XlsbFormat/Biff12_structures/SXMA.h \
     ../Source/XlsbFormat/Biff12_structures/SXET.h \
+    ../Source/XlsbFormat/Biff12_structures/PCDIAddlInfo.h \
+    ../Source/XlsbFormat/Biff12_structures/SdSetSortOrder.h \
 ### Biff12_unions
     ../Source/XlsbFormat/Biff12_unions/ACABSPATH.h \
     ../Source/XlsbFormat/Biff12_unions/ACCELLTABLE.h \
@@ -1723,3 +2035,67 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_unions/PIVOTVALUECELL15.h \
     ../Source/XlsbFormat/Biff12_unions/PIVOTTABLEUISETTINGS.h \
     ../Source/XlsbFormat/Biff12_unions/SXVIEW16.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDSOURCE.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDSRANGE.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDSCONSOL.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDSCPAGES.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDSCPAGE.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDSCPITEM.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDSCSETS.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDSCSET.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDFIELDS.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDFIELD.h \
+    ../Source/XlsbFormat/Biff12_unions/FRTPCDFIELD.h \
+    ../Source/XlsbFormat/Biff12_unions/FRTPCDFIELD14.h \
+    ../Source/XlsbFormat/Biff12_unions/FRTPCDFIELD15.h \
+    ../Source/XlsbFormat/Biff12_unions/ITEMUNIQUENAMES.h \
+    ../Source/XlsbFormat/Biff12_unions/PNAMES.h \
+    ../Source/XlsbFormat/Biff12_unions/PNAME.h \
+    ../Source/XlsbFormat/Biff12_unions/PNPAIRS.h \
+    ../Source/XlsbFormat/Biff12_unions/PNPAIR.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDFATBL.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDIA.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDIRUN.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDFGROUP.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDFGRANGE.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDFGDISCRETE.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDFGITEMS.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDCALCITEMS.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDCALCITEM.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDHIERARCHIES.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDHIERARCHY.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDHFIELDSUSAGE.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDHGLEVELS.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDHGLEVEL.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDHGLGROUPS.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDHGLGROUP.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDHGLGMEMBERS.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDHGLGMEMBER.h \
+    ../Source/XlsbFormat/Biff12_unions/FRTPCDHIERARCHY.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDKPIS.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDKPI.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDCALCMEMS.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDCALCMEM.h \
+    ../Source/XlsbFormat/Biff12_unions/FRTPCDCALCMEM.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDSDTUPLECACHE.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDSDTCENTRIES.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDSDTCENTRY.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDSDTCEMEMBERS.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDSDTCEMEMBER.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDSDTCSETS.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDSDTCSET.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDSDTCEMEMBERSSORTBY.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDSDTCQUERIES.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDSDTCQUERY.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDSFCIENTRIES.h \
+    ../Source/XlsbFormat/Biff12_unions/DIMS.h \
+    ../Source/XlsbFormat/Biff12_unions/DIM.h \
+    ../Source/XlsbFormat/Biff12_unions/MGS.h \
+    ../Source/XlsbFormat/Biff12_unions/MG.h \
+    ../Source/XlsbFormat/Biff12_unions/MGMAPS.h \
+    ../Source/XlsbFormat/Biff12_unions/MAP.h \
+    ../Source/XlsbFormat/Biff12_unions/FRTPIVOTCACHEDEF.h \
+    ../Source/XlsbFormat/Biff12_unions/PCD14.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDSOURCE14.h \
+    ../Source/XlsbFormat/Biff12_unions/PCD15.h \
+    ../Source/XlsbFormat/Biff12_unions/PCDH15.h \

@@ -35,6 +35,8 @@
 
 #include "../../XlsbFormat/Xlsb.h"
 #include "../../XlsbFormat/PivotCacheRecordsStream.h"
+#include "../../XlsbFormat/PivotTableStream.h"
+#include "../../XlsbFormat/PivotCacheDefStream.h"
 #include "../../XlsbFormat/Biff12_unions/PIVOTCACHERECORDS.h"
 #include "../../XlsbFormat/Biff12_unions/PIVOTCACHERECORD.h"
 #include "../../XlsbFormat/Biff12_unions/PIVOTCACHERECORDDT.h"
@@ -50,10 +52,34 @@ namespace OOX
 {
 namespace Spreadsheet
 {
+
+    void CPivotTableFile::readBin(const CPath& oPath)
+    {
+        CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+        if (xlsb)
+        {
+            XLSB::PivotTableStreamPtr pivotTableStream = std::make_shared<XLSB::PivotTableStream>();
+
+            xlsb->ReadBin(oPath, pivotTableStream.get());
+
+            if (pivotTableStream != nullptr)
+            {
+                //if (pivotTableStream->m_PIVOTCACHERECORDS != nullptr)
+                   // m_oPivotCacheRecords = pivotTableStream->m_PIVOTCACHERECORDS;
+            }
+        }
+    }
+
 	void CPivotTableFile::read(const CPath& oRootPath, const CPath& oPath)
 	{
 		m_oReadPath = oPath;
 		IFileContainer::Read( oRootPath, oPath );
+
+        if( m_oReadPath.GetExtention() == _T(".bin"))
+        {
+            readBin(m_oReadPath);
+            return;
+        }
 
 		XmlUtils::CXmlLiteReader oReader;
 
@@ -1181,10 +1207,33 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		WritingElement_ReadAttributes_End( oReader )
 	}
 //------------------------------------
+    void CPivotCacheDefinitionFile::readBin(const CPath& oPath)
+    {
+        CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+        if (xlsb)
+        {
+            XLSB::PivotCacheDefStreamPtr pivotCacheDefStream = std::make_shared<XLSB::PivotCacheDefStream>();
+
+            xlsb->ReadBin(oPath, pivotCacheDefStream.get());
+
+            if (pivotCacheDefStream != nullptr)
+            {
+                //if (pivotCacheDefStream->m_PIVOTCACHERECORDS != nullptr)
+                   // m_oPivotCacheRecords = pivotTableStream->m_PIVOTCACHERECORDS;
+            }
+        }
+    }
+
 	void CPivotCacheDefinitionFile::read(const CPath& oRootPath, const CPath& oPath)
 	{
 		m_oReadPath = oPath;
 		IFileContainer::Read( oRootPath, oPath );
+
+        if( m_oReadPath.GetExtention() == _T(".bin"))
+        {
+            readBin(m_oReadPath);
+            return;
+        }
 
 		XmlUtils::CXmlLiteReader oReader;
 

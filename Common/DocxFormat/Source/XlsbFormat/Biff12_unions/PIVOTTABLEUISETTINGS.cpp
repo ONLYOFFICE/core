@@ -91,7 +91,7 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        return m_BrtFRTBegin && m_BrtBeginPivotTableUISettings && m_BrtEndPivotTableUISettings && m_BrtFRTEnd;
+        return m_BrtBeginPivotTableUISettings && m_BrtEndPivotTableUISettings && m_BrtFRTEnd;
     }
 
 } // namespace XLSB

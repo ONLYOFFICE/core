@@ -91,7 +91,7 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        return m_BrtFRTBegin && m_BrtBeginSxvcells && m_BrtEndSxvcells && m_BrtFRTEnd;
+        return m_BrtBeginSxvcells && m_BrtEndSxvcells && m_BrtFRTEnd;
     }
 
 } // namespace XLSB

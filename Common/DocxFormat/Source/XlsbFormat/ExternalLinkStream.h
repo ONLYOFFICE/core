@@ -52,7 +52,7 @@ namespace XLSB
 
     class ExternalLinkStream: public XLS::CompositeObject
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(WorkBookStream)
+        BASE_OBJECT_DEFINE_CLASS_NAME(ExternalLinkStream)
     public:
         ExternalLinkStream();
         virtual ~ExternalLinkStream();

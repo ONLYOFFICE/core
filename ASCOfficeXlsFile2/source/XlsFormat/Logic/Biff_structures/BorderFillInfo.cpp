@@ -57,8 +57,11 @@ namespace XLS
 		boost::hash_combine(seed, val.backFillInfo_);
 		boost::hash_combine(seed, val.foreFillInfo_);
 
-		boost::hash_combine(seed, val.icvFore);
-		boost::hash_combine(seed, val.icvBack);
+		if (!val.foreFillInfo_.enabled)
+			boost::hash_combine(seed, val.icvFore);
+		if (!val.backFillInfo_.enabled)
+			boost::hash_combine(seed, val.icvBack);
+		
 		boost::hash_combine(seed, val.fls);
 		
 		return seed;
@@ -134,7 +137,7 @@ bool BorderInfo::operator < (const BorderInfo& right) const
 }
 bool FontInfo::operator == (const FontInfo & rVal) const
 {
-    const bool res =     
+	const bool res =
 		dyHeight== rVal.dyHeight &&
 		name	== rVal.name &&
 		scheme	== rVal.scheme &&
@@ -149,10 +152,8 @@ bool FontInfo::operator == (const FontInfo & rVal) const
 		uls	== rVal.uls &&
 		bFamily	== rVal.bFamily &&
 		bCharSet	== rVal.bCharSet &&
-
-		((icv == rVal.icv && rVal.color.enabled == false && color.enabled == false)  || 
-
-		(color == rVal.color))
+		icv == rVal.icv &&
+		color == rVal.color
 		;
 
     return res;

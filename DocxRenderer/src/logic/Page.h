@@ -564,9 +564,10 @@ namespace NSDocxRenderer
 							double dTopTextLine = m_arTextLine[j]->m_dBaselinePos - m_arTextLine[j]->m_dHeight;
 							double dBottomTextLine = m_arTextLine[j]->m_dBaselinePos;
 
-							if ((    dTopTextLine < pShape->m_dTop)
+							if (     (dTopTextLine < pShape->m_dTop)
 								  && (dBottomTextLine > pShape->m_dHeight + pShape->m_dTop)
-								  &&  m_arTextLine[j]->IsMatchColor(pShape->m_oBrush.Color1))
+								  && (m_arTextLine[j]->IsMatchColor(pShape->m_oBrush.Color1)
+								  ||  m_arTextLine[j]->IsMatchColor(pShape->m_oPen.Color)))
 							{
 								ParamModeFontOptions oMode{ModeFontOptions::STRIKEOUT, pShape->m_oBrush.Color1};
 
@@ -576,7 +577,8 @@ namespace NSDocxRenderer
 							}
 							if (    pShape->m_dHeight < 0.5
 								 && abs(pShape->m_dTop - dBottomTextLine) < 0.6
-								 && m_arTextLine[j]->IsMatchColor(pShape->m_oBrush.Color1))
+								 && (m_arTextLine[j]->IsMatchColor(pShape->m_oBrush.Color1)
+								 ||  m_arTextLine[j]->IsMatchColor(pShape->m_oPen.Color)))
 							{
 								ParamModeFontOptions oMode{ModeFontOptions::UNDERSTANDING, pShape->m_oBrush.Color1};
 

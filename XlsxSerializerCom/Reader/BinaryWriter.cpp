@@ -4460,7 +4460,7 @@ void BinaryWorksheetTableWriter::WriteCell(const OOX::Spreadsheet::CCell& oCell)
         double dValue = 0;
         try
         {
-            dValue = _wtof(oCell.m_oValue->ToString().c_str());
+            dValue = XmlUtils::GetDouble(oCell.m_oValue->ToString());
         }
         catch(...)
         {   //1.3912059045063478e-310

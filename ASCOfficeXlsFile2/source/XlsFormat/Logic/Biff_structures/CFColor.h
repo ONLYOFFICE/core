@@ -32,8 +32,8 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include <Logic/Biff_structures/LongRGB.h>
-#include <Logic/Biff_structures/BitMarkedStructs.h>
+#include "LongRGB.h"
+#include "BitMarkedStructs.h"
 
 namespace XLS
 {
@@ -51,7 +51,6 @@ public:
 	static const ElementType	type = typeCFColor;
 
 	virtual void load(CFRecord& record);
-
 
 	XColorType	xclrType;
 	ColorICV	icv;

@@ -6,12 +6,11 @@ namespace NSDocxRenderer
 {
     const double c_dMMToDx	 = 72 * 20 / 25.4;
 
-    std::map <long, std::wstring> colorHighlight = {
-        {0, L"black"}, {16711680, L"blue"}, {65280, L"green"},
-        {9109504, L"darkBlue"}, {139, L"darkRed"}, {32896, L"darkYellow"},
-        {13882323, L"lightGray"}, {11119017, L"darkGray"}, {25600, L"darkGreen"},
-        {16711935, L"magenta"}, {255, L"red"}, {16776960, L"cyan"},
-        {9145088, L"darkCyan"}, {8388736, L"darkMagenta"}, {65535, L"yellow"}
+    enum class ModeFontOptions {STRIKEOUT, UNDERSTANDING, BACKGROUND_COLOR};
+
+    struct ParamModeFontOptions{
+        ModeFontOptions m_lMode;
+        int m_lColor;
     };
 
     // у класса T должен быть метод IsBigger, IsBiggerOrEqual
@@ -209,12 +208,12 @@ namespace NSDocxRenderer
             return (m_dX >= oSrc->m_dX) ? true : false;
         }
 
-        std::vector<CContText*> BreakCont(double dLeftLineCoord, double dRightLineCoord, int lMode)
+        std::vector<CContText*> BreakCont(const double &dLeftLineCoord, const double &dRightLineCoord, const ParamModeFontOptions &oMode)
         {
             std::vector<CContText*> arReturnConts;
             size_t nCountChars = m_arWidthText.size();
-            bool bPrevMark = false;
-            size_t nLastIdx = 0;
+            bool bPrevMark{};
+            size_t nLastIdx{};
 
             for (size_t i = 0; i < nCountChars; ++i)
             {
@@ -224,6 +223,7 @@ namespace NSDocxRenderer
                 else
                     dCoordChar = m_dX + m_arWidthText[i-1] + (m_arWidthText[i] - m_arWidthText[i-1])/2;
 
+
                 if (dCoordChar >= dLeftLineCoord && dCoordChar <= dRightLineCoord)
                 {
                     if (0 == i)
@@ -231,7 +231,7 @@ namespace NSDocxRenderer
 
                     if (bPrevMark != true)
                     {
-                        arReturnConts.push_back(AddNewCont(nLastIdx, i, lMode, bPrevMark)) ;
+                        arReturnConts.push_back(AddNewCont(nLastIdx, i, oMode, bPrevMark)) ;
                         nLastIdx = i;
                     }
 
@@ -244,7 +244,7 @@ namespace NSDocxRenderer
 
                     if (bPrevMark != false)
                     {
-                        arReturnConts.push_back(AddNewCont(nLastIdx, i, lMode, bPrevMark)) ;
+                        arReturnConts.push_back(AddNewCont(nLastIdx, i, oMode, bPrevMark)) ;
                         nLastIdx = i;
                     }
 
@@ -252,15 +252,15 @@ namespace NSDocxRenderer
                 }
             }
 
-            arReturnConts.push_back(AddNewCont(nLastIdx, nCountChars, lMode, bPrevMark));
+            arReturnConts.push_back(AddNewCont(nLastIdx, nCountChars, oMode, bPrevMark));
             return arReturnConts;
         }
 
-        CContText* AddNewCont(size_t nLastIdx, size_t nCurrentIdx, int lMode, bool bMark)
+        CContText* AddNewCont(const size_t &nLastIdx, const size_t &nCurrentIdx, const ParamModeFontOptions &oMode, const bool &bMark)
         {
             CContText* pCont = new CContText(*this);
             if (true == bMark)
-                pCont->MarkFontProperties(lMode);
+                pCont->MarkFontProperties(oMode);
 
             if (0 == nLastIdx)
             {
@@ -280,7 +280,7 @@ namespace NSDocxRenderer
             return pCont;
         }
 
-        void ChangeParam(size_t nFrom, size_t nBefore )
+        void ChangeParam(const size_t &nFrom, const size_t &nBefore )
         {
             std::vector<uint32_t> arNewVec;
             for (size_t i = nFrom; i <= nBefore; ++i)
@@ -301,19 +301,36 @@ namespace NSDocxRenderer
 
         }
 
-        void MarkFontProperties(int i)
+        void MarkFontProperties(const ParamModeFontOptions &oMode)
         {
-            switch (i) {
-            case -2:
-                m_oFont.Strikeout = 1;
-                break;
-            case -1:
-                m_oFont.Underline = 1;
-                break;
-            default:
-                m_oFont.BackgroundColor = i;
-                break;
+            switch (oMode.m_lMode) {
+                case ModeFontOptions::STRIKEOUT:
+                    m_oFont.Strikeout = 1;
+                    break;
+                case ModeFontOptions::UNDERSTANDING:
+                    m_oFont.Underline = 1;
+                    break;
+                case ModeFontOptions::BACKGROUND_COLOR:
+                    m_oFont.BackgroundColor = oMode.m_lColor;
+                    break;
             }
+        }
+
+        std::wstring GetBackgroundColor(const int &key)
+        {
+            std::map <int, std::wstring> colorHighlight = {
+                {0, L"black"}, {16711680, L"blue"}, {65280, L"green"},
+                {9109504, L"darkBlue"}, {139, L"darkRed"}, {32896, L"darkYellow"},
+                {13882323, L"lightGray"}, {11119017, L"darkGray"}, {25600, L"darkGreen"},
+                {16711935, L"magenta"}, {255, L"red"}, {16776960, L"cyan"},
+                {9145088, L"darkCyan"}, {8388736, L"darkMagenta"}, {65535, L"yellow"}
+            };
+
+            auto it = colorHighlight.find(key);
+            if ( it == colorHighlight.end() )
+               return L"default";
+            else
+               return it->second;
         }
 
         inline void Write(NSStringUtils::CStringBuilder& oWriter, CFontManagerLight* pManagerLight, bool bIsAddSpace = false)
@@ -340,7 +357,7 @@ namespace NSDocxRenderer
                 if (m_oFont.BackgroundColor >= 0)
                 {
                     oWriter.WriteString(L"<w:highlight w:val=\"");
-                    oWriter.WriteString(colorHighlight[m_oFont.BackgroundColor]);
+                    oWriter.WriteString(GetBackgroundColor(m_oFont.BackgroundColor));
                     oWriter.WriteString(L"\"/>");
                 }
                 if (bIsAddSpace)
@@ -363,7 +380,7 @@ namespace NSDocxRenderer
                 if (m_oFont.BackgroundColor >= 0)
                 {
                     oWriter.WriteString(L"<w:highlight w:val=\"");
-                    oWriter.WriteString(colorHighlight[m_oFont.BackgroundColor]);
+                    oWriter.WriteString(GetBackgroundColor(m_oFont.BackgroundColor));
                     oWriter.WriteString(L"\"/>");
                 }
                 if (bIsAddSpace)
@@ -588,7 +605,18 @@ namespace NSDocxRenderer
             }
         }
 
-        void SearchInclusions(double dLeftLineCoord, double dRightLineCoord, int lMode)
+        bool IsMatchColor(const int &color)
+        {
+            size_t nCountConts = m_arConts.size();
+            for (size_t i = 0; i < nCountConts; ++i)
+            {
+                if (color == m_arConts[i]->m_oBrush.Color1)
+                    return true;
+            }
+            return false;
+        }
+
+        void SearchInclusions(const double &dLeftLineCoord, const double &dRightLineCoord, const ParamModeFontOptions &oMode)
         {
             std::vector<CContText*> arTempConts;
 
@@ -607,16 +635,12 @@ namespace NSDocxRenderer
                 {
                     if (dRightLineCoord > dLeftCont)
                     {
-                        //разбиваем
-                        std::vector<CContText*> arBreakCont = m_arConts[i]->BreakCont(dLeftLineCoord, dRightLineCoord, lMode);
+                        std::vector<CContText*> arBreakCont = m_arConts[i]->BreakCont(dLeftLineCoord, dRightLineCoord, oMode);
                         for (size_t j = 0; j < arBreakCont.size(); ++j)
-                        {
                             arTempConts.push_back(arBreakCont[j]);
-                        }
                     }
                     else
                     {
-                        //ничего не делаем
                         arTempConts.push_back(m_arConts[i]);
                     }
                 }
@@ -624,24 +648,18 @@ namespace NSDocxRenderer
                 {
                     if (dLeftLineCoord > dLeftCont)
                     {
-                        //разбиваем
-                        std::vector<CContText*> arBreakCont = m_arConts[i]->BreakCont(dLeftLineCoord, dRightLineCoord, lMode);
+                        std::vector<CContText*> arBreakCont = m_arConts[i]->BreakCont(dLeftLineCoord, dRightLineCoord, oMode);
                         for (size_t j = 0; j < arBreakCont.size(); ++j)
-                        {
                             arTempConts.push_back(arBreakCont[j]);
-                        }
-
                     }
                     else
                     {
-                        //помечаем
-                        m_arConts[i]->MarkFontProperties(lMode);
+                        m_arConts[i]->MarkFontProperties(oMode);
                         arTempConts.push_back(m_arConts[i]);
                     }
                 }
             }
-            this->m_arConts.clear();
-            this->m_arConts = arTempConts;
+            m_arConts = arTempConts;
         }
 
         void ToXml(NSStringUtils::CStringBuilder& oWriter, CFontManagerLight* pManagerLight)

@@ -429,7 +429,7 @@ namespace NSDocxRenderer
 				}
 
 				pCont->m_dSpaceWidthMM = m_oManager.m_dSpaceWidthMM;
-				
+
 				m_pCurrentLine->AddCont(pCont, m_oManager.m_oFont.m_dBaselineOffset);
 				return;
 			}
@@ -532,68 +532,92 @@ namespace NSDocxRenderer
 			m_pCurrentLine->AddCont(pCont, m_oManager.m_oFont.m_dBaselineOffset);
 		}
 
-		void Build()
+		bool IsRect(const std::wstring& str, const std::wstring& sub)
 		{
-			std::vector <size_t> arIdxGraphicItems;
+			if (sub.length() == 0) return false;
+			size_t count = 0;
+			for (size_t offset = str.find(sub); offset != std::string::npos;
+			 offset = str.find(sub, offset + sub.length()))
+			{
+				++count;
+			}
+			return (count <= 5 && str.find(L"m0") != std::string::npos) ? true : false;
+		}
+
+		void SetTextOptions()
+		{
+			std::vector <int> arIdxGraphicItems;
 			size_t nCount = m_arGraphicItems.size();
+			int counter = -1;
 			for (size_t i = 0; i < nCount; ++i)
 			{
+				++counter;
 				if (m_arGraphicItems[i]->m_eType == NSDocxRenderer::CBaseItem::etShape)
 				{
 					CShape* pShape = dynamic_cast <CShape *> (m_arGraphicItems[i]);
-					//TODO: заменить на поиск включения части
-					if (pShape->m_strPath.size() == 49 || pShape->m_strPath.size() == 46 || pShape->m_strPath.size() == 44 || pShape->m_strPath.size() == 47)
+
+					if (IsRect(pShape->m_strPath, L","))
 					{
 						size_t nCountTextLine = m_arTextLine.size();
 						for (size_t j = 0; j < nCountTextLine; ++j)
 						{
 							double dTopTextLine = m_arTextLine[j]->m_dBaselinePos - m_arTextLine[j]->m_dHeight;
 							double dBottomTextLine = m_arTextLine[j]->m_dBaselinePos;
-							if ((dTopTextLine < pShape->m_dTop) && (dBottomTextLine > pShape->m_dHeight + pShape->m_dTop))
+
+							if ((    dTopTextLine < pShape->m_dTop)
+								  && (dBottomTextLine > pShape->m_dHeight + pShape->m_dTop)
+								  &&  m_arTextLine[j]->IsMatchColor(pShape->m_oBrush.Color1))
 							{
-								//это вычеркивание
-								m_arTextLine[j]->SearchInclusions(pShape->m_dLeft, pShape->m_dLeft+pShape->m_dWidth, -2);
-								arIdxGraphicItems.push_back(i);
+								ParamModeFontOptions oMode{ModeFontOptions::STRIKEOUT, pShape->m_oBrush.Color1};
+
+								m_arTextLine[j]->SearchInclusions(pShape->m_dLeft, pShape->m_dLeft+pShape->m_dWidth, oMode);
+								arIdxGraphicItems.push_back(counter);
 								break;
 							}
-							if (pShape->m_dHeight < 0.5 && abs(pShape->m_dTop - dBottomTextLine) < 0.6 )
+							if (    pShape->m_dHeight < 0.5
+								 && abs(pShape->m_dTop - dBottomTextLine) < 0.6
+								 && m_arTextLine[j]->IsMatchColor(pShape->m_oBrush.Color1))
 							{
-								//это подчеркивание
-								m_arTextLine[j]->SearchInclusions(pShape->m_dLeft, pShape->m_dLeft+pShape->m_dWidth, -1);
-								arIdxGraphicItems.push_back(i);
+								ParamModeFontOptions oMode{ModeFontOptions::UNDERSTANDING, pShape->m_oBrush.Color1};
+
+								m_arTextLine[j]->SearchInclusions(pShape->m_dLeft, pShape->m_dLeft+pShape->m_dWidth, oMode);
+								arIdxGraphicItems.push_back(counter);
 								break;
 							}
 
 							double dWidthTextLine{};
 							for (size_t k = 0; k < m_arTextLine[j]->m_arConts.size(); ++k)
-							{
-								dWidthTextLine += m_arTextLine[j]->m_arConts[k]->m_dWidth;
-							}
+							dWidthTextLine += m_arTextLine[j]->m_arConts[k]->m_dWidth;
+
 							if (   pShape->m_dHeight > 0.5
-								&& dTopTextLine/pShape->m_dTop > 0.925
+								&& dTopTextLine/pShape->m_dTop > 0.92
 								&& pShape->m_dTop > dTopTextLine
-								&& dBottomTextLine/(pShape->m_dHeight + pShape->m_dTop) > 0.925
+								&& dBottomTextLine/(pShape->m_dHeight + pShape->m_dTop) > 0.92
 								&& (pShape->m_dHeight + pShape->m_dTop) > dBottomTextLine
 								&& (pShape->m_dTop) < dBottomTextLine
 								&& pShape->m_dLeft >= m_arTextLine[j]->m_dX
 								&& (pShape->m_dLeft + pShape->m_dWidth) <= (m_arTextLine[j]->m_dX + dWidthTextLine))
 
 							{
-								//это заливка текста
-								m_arTextLine[j]->SearchInclusions(pShape->m_dLeft, pShape->m_dLeft+pShape->m_dWidth, pShape->m_oBrush.Color1);
-								arIdxGraphicItems.push_back(i);
+								ParamModeFontOptions oMode{ModeFontOptions::BACKGROUND_COLOR, pShape->m_oBrush.Color1};
+
+								m_arTextLine[j]->SearchInclusions(pShape->m_dLeft, pShape->m_dLeft+pShape->m_dWidth, oMode);
+								arIdxGraphicItems.push_back(counter);
 								break;
 							}
 						}
 					}
 				}
 			}
-			//убрать предупреждение
+
 			auto iter = m_arGraphicItems.cbegin();
 			for (size_t i = arIdxGraphicItems.size(); i > 0; --i)
-			{
 				m_arGraphicItems.erase(iter + arIdxGraphicItems[i-1]);
-			}
+		}
+
+		void Build()
+		{
+			SetTextOptions();
 
 			if (m_bIsDeleteTextClipPage)
 			{

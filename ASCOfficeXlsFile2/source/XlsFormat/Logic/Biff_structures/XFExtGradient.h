@@ -48,6 +48,7 @@ public:
 
 	virtual void load(CFRecord& record);
 
+	int serialize(std::wostream & stream);
 
 	static const ElementType	type = typeXFExtGradient;
 

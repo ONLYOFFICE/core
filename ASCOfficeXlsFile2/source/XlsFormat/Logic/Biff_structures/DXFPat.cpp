@@ -111,18 +111,6 @@ int DXFPat::serialize(std::wostream & stream)
 					{
 						CP_XML_ATTR(L"patternType", GetPatternType(fls));
 					}
-					if (!parent->icvBNinch)
-					{
-						if (parent->xfext && pFindBack != parent->xfext->mapRgExt.end())
-							pFindBack->second.extPropData.color.serialize(CP_XML_STREAM(), L"bgColor");
-						else
-						{
-							CP_XML_NODE(L"bgColor")
-							{
-								CP_XML_ATTR(L"indexed", icvBackground);
-							}
-						}
-					}
 
 					if (!parent->icvFNinch)
 					{
@@ -133,6 +121,18 @@ int DXFPat::serialize(std::wostream & stream)
 							CP_XML_NODE(L"fgColor")
 							{
 								CP_XML_ATTR(L"indexed", icvForeground);
+							}
+						}
+					}
+					if (!parent->icvBNinch)
+					{
+						if (parent->xfext && pFindBack != parent->xfext->mapRgExt.end())
+							pFindBack->second.extPropData.color.serialize(CP_XML_STREAM(), L"bgColor");
+						else
+						{
+							CP_XML_NODE(L"bgColor")
+							{
+								CP_XML_ATTR(L"indexed", icvBackground);
 							}
 						}
 					}

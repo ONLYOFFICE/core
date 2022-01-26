@@ -52,7 +52,7 @@ void FullColorExt::load(CFRecord& record)
 
 int FullColorExt::serialize(std::wostream & stream, const std::wstring &node_name)
 {
-	if (xclrType > 3)return 0;//not set
+	if (xclrType > 3) return 0;//not set
 
 	CP_XML_WRITER(stream)
 	{

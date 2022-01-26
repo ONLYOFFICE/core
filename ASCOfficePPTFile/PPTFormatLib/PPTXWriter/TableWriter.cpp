@@ -578,13 +578,13 @@ void TCell::FillTcPr(PPTX::Logic::TableCellProperties &oTcPr)
 
     if (isInvisibleBorders())
         SetTcPrInvisibleBorders(oTcPr);
-
-    for (auto IterBorder : m_mapBorders)
-    {
-        auto pLn = new PPTX::Logic::Ln;
-        FillLn(*pLn, IterBorder.first, IterBorder.second);
-        ApplyLn(oTcPr,pLn, IterBorder.first);
-    }
+    else
+        for (auto IterBorder : m_mapBorders)
+        {
+            auto pLn = new PPTX::Logic::Ln;
+            FillLn(*pLn, IterBorder.first, IterBorder.second);
+            ApplyLn(oTcPr,pLn, IterBorder.first);
+        }
 }
 
 void TCell::SetTcPrInvisibleBorders(PPTX::Logic::TableCellProperties &oTcPr)
@@ -601,7 +601,8 @@ void TCell::SetTcPrInvisibleBorders(PPTX::Logic::TableCellProperties &oTcPr)
 
 bool TCell::isInvisibleBorder(const CShapeElement *pBorder)
 {
-    return pBorder && pBorder->m_oBrush.Type == c_BrushTypeNoFill;
+    const bool isInv = pBorder && pBorder->m_bLine == false;
+    return isInv;
 }
 
 bool TCell::isInvisibleBorders() const
@@ -611,7 +612,8 @@ bool TCell::isInvisibleBorders() const
 
     bool isInvisibele = true;
     for (auto IterBorder : m_mapBorders)
-        if (isInvisibleBorder(IterBorder.second))
+        if ((IterBorder.first != TCell::lnBlToTr && IterBorder.first != TCell::lnTlToBr)
+                && isInvisibleBorder(IterBorder.second) == false)
             isInvisibele = false;
 
     return isInvisibele;

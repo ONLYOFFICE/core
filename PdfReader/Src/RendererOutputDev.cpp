@@ -3855,6 +3855,7 @@ namespace PdfReader
         Aggplus::CImage oImage;
         oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
 
+
         int nComponentsCount = pColorMap->getNumPixelComps();
 
         // Пишем данные в pBufferPtr
@@ -3897,7 +3898,7 @@ namespace PdfReader
             }
         }
 
-        delete pImageStream;
+		delete pImageStream;
 
         double arrMatrix[6];
         double *pCTM = pGState->getCTM();
@@ -3916,7 +3917,7 @@ namespace PdfReader
         DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
         m_pRenderer->DrawImage(&oImage, 0 + dShiftX, 0 + dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
     }
-    void RendererOutputDev::drawMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GBool bMaskInvert, GBool interpolate)
+	void RendererOutputDev::drawMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, Object* pStreamRef, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GBool bMaskInvert, GBool interpolate)
     {
         if (m_bDrawOnlyText)
             return;
@@ -4372,10 +4373,14 @@ namespace PdfReader
     }
     void RendererOutputDev::updateClipAttack(GfxState *pGState)
     {
-        if (!m_bClipChanged) return;
-        m_pRenderer->BeginCommand(c_nResetClipType);
+		if (!m_bClipChanged)
+			return;
+
+		m_pRenderer->BeginCommand(c_nResetClipType);
         m_pRenderer->EndCommand(c_nResetClipType);
-        if (m_sClip.empty()) return;
+
+		if (m_sClip.empty())
+			return;
 
         for (GfxClip &curClip : m_sClip) {
             for (int nIndex = 0; nIndex < curClip.GetPathNum(); nIndex++)

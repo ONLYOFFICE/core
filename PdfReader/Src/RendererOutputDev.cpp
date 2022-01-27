@@ -4086,7 +4086,7 @@ namespace PdfReader
         }
         delete pImageStream;
 
-        if (nWidth != nMaskWidth || nHeight != nMaskHeight)
+		if (nWidth != nMaskWidth || nHeight != nMaskHeight)
         {
             // TO DO: Здесь сделан элементарный вариант масштабирования маски.
             //        Надо улучшить алгоритм.
@@ -4117,8 +4117,8 @@ namespace PdfReader
 
                     int nMaxW = (std::max)(nWidth, nMaskWidth);
                     int nMaxH = (std::max)(nHeight, nMaskHeight);
-                    if (nWidth != nMaxW || nHeight != nMaxH)
-                    {
+					if (nWidth != nMaxW || nHeight != nMaxH)
+					{
                         unsigned char* pImageBuffer = pBufferPtr;
                         int nNewBufferSize = 4 * nMaxW * nMaxH;
                         pBufferPtr = new unsigned char[nNewBufferSize];
@@ -4144,7 +4144,7 @@ namespace PdfReader
                                 int nIndex = 4 * (nY * nMaxW + nX);
 
                                 int nNearestAlphaMatch =  (((int)((nMaxH - 1 - nY) * dAlphaScaleHeight) * nMaskWidth) + ((int)(nX * dAlphaScaleWidth)));
-                                int nNearestImageMatch =  4 * (((int)((nMaxH - 1 - nY) * dImageScaleHeight) * nWidth) + ((int)(nX * dImageScaleWidth)));
+								int nNearestImageMatch =  4 * (((int)(nY * dImageScaleHeight) * nWidth) + ((int)(nX * dImageScaleWidth)));
 
                                 pBufferPtr[nIndex + 0] = pImageBuffer[nNearestImageMatch + 0];
                                 pBufferPtr[nIndex + 1] = pImageBuffer[nNearestImageMatch + 1];
@@ -4372,8 +4372,6 @@ namespace PdfReader
     }
     void RendererOutputDev::updateClipAttack(GfxState *pGState)
     {
-
-        //return;
         if (!m_bClipChanged) return;
         m_pRenderer->BeginCommand(c_nResetClipType);
         m_pRenderer->EndCommand(c_nResetClipType);

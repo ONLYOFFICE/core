@@ -1608,12 +1608,14 @@ GStringRep::setat(int n, char ch) const
   return retval;
 }
 
+#ifndef BUILDING_WASM_MODULE
 #if defined(AUTOCONF) && defined(HAVE_VSNPRINTF)
 # define USE_VSNPRINTF vsnprintf
 #elif defined(WIN32) && !defined(__CYGWIN32__)
 # define USE_VSNPRINTF _vsnprintf
 #elif defined(linux)
 # define USE_VSNPRINTF vsnprintf
+#endif
 #endif
  
 GUTF8String &

@@ -142,24 +142,27 @@ namespace OOX
 
                     xlsb->ReadBin(oPath, workSheetStream.get());
 
-                    if (workSheetStream != nullptr)
-                    {
-                        if (!workSheetStream->m_arCOLINFOS.empty())
-                            m_oCols = workSheetStream->m_arCOLINFOS;
-                        if (workSheetStream->m_BrtWsDim != nullptr)
-                            m_oDimension = workSheetStream->m_BrtWsDim;
-                        if (workSheetStream->m_BrtDrawing != nullptr)
-                            m_oDrawing = workSheetStream->m_BrtDrawing;
-                        if (workSheetStream->m_BrtLegacyDrawing != nullptr)
-                            m_oLegacyDrawing = workSheetStream->m_BrtLegacyDrawing;
-                        if (workSheetStream->m_BrtLegacyDrawingHF != nullptr)
-                            m_oLegacyDrawingHF = workSheetStream->m_BrtLegacyDrawingHF;
-                        if (workSheetStream->m_HLINKS != nullptr)
-                            m_oHyperlinks = static_cast<XLSB::HLINKS*>(workSheetStream->m_HLINKS.get())->m_arHlinks;
-                        if (workSheetStream->m_MERGECELLS != nullptr)
-                            m_oMergeCells = static_cast<XLSB::MERGECELLS*>(workSheetStream->m_MERGECELLS.get())->m_arBrtMergeCell;
-                        if (workSheetStream->m_CELLTABLE != nullptr)
-                            m_oSheetData = workSheetStream->m_CELLTABLE;
+					if (workSheetStream != nullptr)
+					{
+						if (!workSheetStream->m_arCOLINFOS.empty())
+							m_oCols = workSheetStream->m_arCOLINFOS;
+						if (workSheetStream->m_BrtWsDim != nullptr)
+							m_oDimension = workSheetStream->m_BrtWsDim;
+						if (workSheetStream->m_BrtDrawing != nullptr)
+							m_oDrawing = workSheetStream->m_BrtDrawing;
+						if (workSheetStream->m_BrtLegacyDrawing != nullptr)
+							m_oLegacyDrawing = workSheetStream->m_BrtLegacyDrawing;
+						if (workSheetStream->m_BrtLegacyDrawingHF != nullptr)
+							m_oLegacyDrawingHF = workSheetStream->m_BrtLegacyDrawingHF;
+						if (workSheetStream->m_HLINKS != nullptr)
+							m_oHyperlinks = static_cast<XLSB::HLINKS*>(workSheetStream->m_HLINKS.get())->m_arHlinks;
+						if (workSheetStream->m_MERGECELLS != nullptr)
+							m_oMergeCells = static_cast<XLSB::MERGECELLS*>(workSheetStream->m_MERGECELLS.get())->m_arBrtMergeCell;
+						if (workSheetStream->m_CELLTABLE != nullptr)
+						{
+							m_oSheetData = new CSheetData(File::m_pMainDocument);
+							m_oSheetData->fromBin(workSheetStream->m_CELLTABLE);
+						}
                         if (workSheetStream->m_BrtWsFmtInfo != nullptr)
                             m_oSheetFormatPr = workSheetStream->m_BrtWsFmtInfo;
                         if (workSheetStream->m_WSVIEWS2 != nullptr)
@@ -227,26 +230,24 @@ namespace OOX
             if( m_oReadPath.GetExtention() == _T(".bin"))
             {
                 readBin(m_oReadPath);
-                PrepareComments(m_pComments, m_pThreadedComments, m_oLegacyDrawing.GetPointer());
-                PrepareConditionalFormatting();
-                PrepareDataValidations();
-                return;
-            }
-
-			XmlUtils::CXmlLiteReader oReader;
-
-			if ( !oReader.FromFile( oPath.GetPath() ) )
-				return;
-
-			if ( !oReader.ReadNextNode() )
-				return;
-
-			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-			if ( L"worksheet" == sName || L"chartsheet" == sName)
-			{
-				fromXML(oReader);
 			}
+			else
+			{
+				XmlUtils::CXmlLiteReader oReader;
+				if (!oReader.FromFile(oPath.GetPath()))
+					return;
+				if (!oReader.ReadNextNode())
+					return;
 
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				if (L"worksheet" == sName || L"chartsheet" == sName)
+				{
+					fromXML(oReader);
+				}
+			}
+		}
+		void CWorksheet::PrepareAfterRead()
+		{
 			PrepareComments(m_pComments, m_pThreadedComments, m_oLegacyDrawing.GetPointer());
 			PrepareConditionalFormatting();
 			PrepareDataValidations();
@@ -575,7 +576,6 @@ namespace OOX
 							{
 								pCommentItem->m_sAuthor = arAuthors[nAuthorId];
 							}
-
 							OOX::Spreadsheet::CSi* pSi = pComment->m_oText.GetPointerEmptyNullable();
 							if(NULL != pSi)
 								pCommentItem->m_oText.reset(pSi);

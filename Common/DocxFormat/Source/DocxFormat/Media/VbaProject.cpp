@@ -84,6 +84,8 @@ namespace OOX
 	}
 	void VbaProject::write(const OOX::CPath& filename, const OOX::CPath& directory, CContentTypes& content) const
 	{
+		Media::write(filename, directory, content);
+
 		content.Registration( type().OverrideType(), directory, filename.GetFilename() );
 		IFileContainer::Write( filename, directory, content );
 	}

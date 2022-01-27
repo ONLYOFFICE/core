@@ -314,7 +314,8 @@ public:
 public:
 	void LoadFromArrayFiles (std::vector<std::wstring>& arrFiles, int nFlag = 0);
 	void LoadFromFolder (const std::wstring& strDirectory);
-	bool CheckLoadFromFolderBin	(const std::wstring& strDirectory);
+    bool CheckLoadFromFolderBin(const std::wstring& strDirectory);
+    void CheckLoadFromSelectionBin(const std::wstring& strDirectory, BYTE* pData, DWORD len);
     void Add (NSFonts::CFontInfo* pInfo);
     NSFonts::CFontInfo* GetByParams (NSFonts::CFontSelectFormat& oSelect, bool bIsDictionaryUse = true);
     std::vector<NSFonts::CFontInfo*> GetAllByName (const std::wstring& strFontName);
@@ -341,7 +342,8 @@ public:
 
     void InitializeFromFolder(std::wstring strFolder, bool bIsCheckSelection = true);
     void Initialize(bool bIsCheckSelection = true);
-    void InitializeRanges(unsigned char* data);
+    void InitializeFromBin(BYTE* pData, unsigned int nLen);
+    void InitializeRanges(unsigned char* data);    
       
 	std::vector<std::wstring> GetSetupFontFiles();
 	void InitializeFromArrayFiles(std::vector<std::wstring>& files, int nFlag = 0);

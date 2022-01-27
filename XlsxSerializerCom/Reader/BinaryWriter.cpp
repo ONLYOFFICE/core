@@ -4460,7 +4460,7 @@ void BinaryWorksheetTableWriter::WriteCell(const OOX::Spreadsheet::CCell& oCell)
         double dValue = 0;
         try
         {
-            dValue = _wtof(oCell.m_oValue->ToString().c_str());
+            dValue = XmlUtils::GetDouble(oCell.m_oValue->ToString());
         }
         catch(...)
         {   //1.3912059045063478e-310
@@ -7167,7 +7167,11 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 				oXlsbWriter.WriteStringUtf8(WriteFileHeader(0, g_nFormatVersionNoBase64));
 				oXlsbWriter.WriteReserved(GetMainTableSize());
 				int nDataStartPos = oXlsbWriter.GetPositionAbsolute();
-				pXlsx->m_pXlsbWriter = &oXlsbWriter;
+				
+				if (fileType == 1)
+				{
+					pXlsx->m_pXlsbWriter = &oXlsbWriter;
+				}
 				//parse
 				pXlsx->Read(OOX::CPath(sInputDir));
 

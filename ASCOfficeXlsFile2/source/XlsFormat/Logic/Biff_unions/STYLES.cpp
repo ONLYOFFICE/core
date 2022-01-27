@@ -103,6 +103,19 @@ const bool STYLES::loadContent(BinProcessor& proc)
 
 int STYLES::serialize(std::wostream & stream)
 {
+	const std::wstring istyBuiltInStyles[54] = {L"Normal", L"RowLevel_", L"ColLevel_", L"Comma", L"Currency", L"Percent", 
+		L"Comma [0]", L"Currency[0]", L"Hyperlink", L"Followed Hyperlink", L"Note", L"Warning Text", L"Title",
+		L"Heading 1", L"Heading 2", L"Heading 3", L"Heading 4", L"Input", L"Output", L"Calculation", L"Check Cell",
+		L"Linked Cell", L"Total", L"Good", L"Bad", L"Neutral",
+		L"Accent1", L"20 % -Accent1", L"40 % -Accent1", L"60 % -Accent1",
+		L"Accent2", L"20 % -Accent2", L"40 % -Accent2", L"60 % -Accent2",
+		L"Accent3", L"20 % -Accent3", L"40 % -Accent3", L"60 % -Accent3",
+		L"Accent4", L"20 % -Accent4", L"40 % -Accent4", L"60 % -Accent4",
+		L"Accent5", L"20 % -Accent5", L"40 % -Accent5", L"60 % -Accent5",
+		L"Accent6", L"20 % -Accent6", L"40 % -Accent6", L"60 % -Accent6",
+		L"Explanatory Text" };
+	int istyBuiltInStylesCount[54] = {};
+
     CP_XML_WRITER(stream)    
     {
 		CP_XML_NODE(L"cellStyles")
@@ -128,7 +141,16 @@ int STYLES::serialize(std::wostream & stream)
 							}
 							if (name.empty())
 							{
-								name = L"Style " + std::to_wstring( i + 1);
+								if (styleExt->fBuiltIn && styleExt->builtInData.istyBuiltIn < 54)
+								{
+									name = istyBuiltInStyles[styleExt->builtInData.istyBuiltIn];
+									if (istyBuiltInStylesCount[styleExt->builtInData.istyBuiltIn] > 0)
+										name += L" [" + std::to_wstring(istyBuiltInStylesCount[styleExt->builtInData.istyBuiltIn]) + L"]";
+
+									istyBuiltInStylesCount[styleExt->builtInData.istyBuiltIn]++;
+								}
+								else
+									name = L"Style " + std::to_wstring( i + 1);
 							}
 							CP_XML_ATTR(L"name", XmlUtils::EncodeXmlString(name, true));
 						
@@ -148,7 +170,16 @@ int STYLES::serialize(std::wostream & stream)
 							
 							if (name.empty())
 							{
-								name = L"Style " + std::to_wstring( i + 1);
+								if (style->fBuiltIn && style->builtInData.istyBuiltIn < 10)
+								{
+									name = istyBuiltInStyles[style->builtInData.istyBuiltIn];
+									if (istyBuiltInStylesCount[style->builtInData.istyBuiltIn] > 0)
+										name += L" [" + std::to_wstring(istyBuiltInStylesCount[style->builtInData.istyBuiltIn] + 1) + L"]";
+									
+									istyBuiltInStylesCount[style->builtInData.istyBuiltIn]++;
+								}
+								else
+									name = L"Style " + std::to_wstring( i + 1);
 							}
 							else
 							{

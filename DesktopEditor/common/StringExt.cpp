@@ -226,6 +226,63 @@ namespace NSStringExt
 
         return sRet;
     }
+    std::string CConverter::GetUtf8FromUTF32(const unsigned int* pUnicodes, long lCount)
+    {
+        unsigned char* pData = new unsigned char[6 * lCount + 3 + 1];
+        unsigned char* pCodesCur = pData;
+        long lOutputCount = 0;
+
+        for (int i = 0; i < lCount; i++)
+        {
+            unsigned int code = *pUnicodes++;
+
+            if (code < 0x80)
+            {
+                *pCodesCur++ = (unsigned char)code;
+            }
+            else if (code < 0x0800)
+            {
+                *pCodesCur++ = 0xC0 | (code >> 6);
+                *pCodesCur++ = 0x80 | (code & 0x3F);
+            }
+            else if (code < 0x10000)
+            {
+                *pCodesCur++ = 0xE0 | (code >> 12);
+                *pCodesCur++ = 0x80 | (code >> 6 & 0x3F);
+                *pCodesCur++ = 0x80 | (code & 0x3F);
+            }
+            else if (code < 0x1FFFFF)
+            {
+                *pCodesCur++ = 0xF0 | (code >> 18);
+                *pCodesCur++ = 0x80 | (code >> 12 & 0x3F);
+                *pCodesCur++ = 0x80 | (code >> 6 & 0x3F);
+                *pCodesCur++ = 0x80 | (code & 0x3F);
+            }
+            else if (code < 0x3FFFFFF)
+            {
+                *pCodesCur++ = 0xF8 | (code >> 24);
+                *pCodesCur++ = 0x80 | (code >> 18 & 0x3F);
+                *pCodesCur++ = 0x80 | (code >> 12 & 0x3F);
+                *pCodesCur++ = 0x80 | (code >> 6 & 0x3F);
+                *pCodesCur++ = 0x80 | (code & 0x3F);
+            }
+            else if (code < 0x7FFFFFFF)
+            {
+                *pCodesCur++ = 0xFC | (code >> 30);
+                *pCodesCur++ = 0x80 | (code >> 24 & 0x3F);
+                *pCodesCur++ = 0x80 | (code >> 18 & 0x3F);
+                *pCodesCur++ = 0x80 | (code >> 12 & 0x3F);
+                *pCodesCur++ = 0x80 | (code >> 6 & 0x3F);
+                *pCodesCur++ = 0x80 | (code & 0x3F);
+            }
+        }
+
+        lOutputCount = (long)(pCodesCur - pData);
+        *pCodesCur++ = 0;
+        std::string s((char*)pData, lOutputCount);
+        delete [] pData;
+        return s;
+    }
     unsigned int* CConverter::GetUtf32FromUnicode(const std::wstring& wsUnicodeText, unsigned int& unLen)
     {
         if (wsUnicodeText.size() <= 0)

@@ -51,10 +51,116 @@
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Array.h"
 #include "../../DesktopEditor/graphics/BaseThread.h"
+#include "../Resources/BaseFonts.h"
 
-#include "../../HtmlRenderer/include/HTMLRenderer3.h"
-
+#ifndef DISABLE_PDF_CONVERTATION
 #include "../../PdfWriter/PdfRenderer.h"
+#endif
+
+#ifndef BUILDING_WASM_MODULE
+#define FONTS_USE_AFM_SETTINGS
+#else
+#define FONTS_USE_ONLY_MEMORY_STREAMS
+#ifndef TEST_AS_EXECUTABLE
+#include "emscripten.h"
+EM_JS(char*, js_get_stream_id, (unsigned char* data, unsigned char* status), {
+    return self.AscViewer.CheckStreamId(data, status);
+});
+EM_JS(int, js_free_id, (unsigned char* data), {
+    self.AscViewer.Free(data);
+    return 1;
+});
+#endif
+#endif
+
+class CMemoryFontStream
+{
+public:
+    BYTE* m_pData;
+    int m_nSize;
+    int m_nPos;
+    bool m_bIsAttach;
+
+    CMemoryFontStream()
+    {
+        m_pData = NULL;
+        m_nSize = 0;
+        m_nPos = 0;
+        m_bIsAttach = false;
+    }
+    ~CMemoryFontStream()
+    {
+        if (NULL != m_pData && !m_bIsAttach)
+            RELEASEARRAYOBJECTS(m_pData);
+    }
+
+    void fromStream(std::wstring& sStreamName)
+    {
+        NSFonts::IFontStream* pStream = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Get(sStreamName);
+        if (pStream)
+        {
+            LONG lSize = 0;
+            pStream->GetMemory(m_pData, lSize);
+            m_nSize = (int)lSize;
+            m_nPos = 0;
+            m_bIsAttach = true;
+        }
+    }
+
+    void fromBuffer(BYTE* pData, int nSize)
+    {
+        if (pData)
+        {
+            m_pData = pData;
+            m_nSize = nSize;
+            m_nPos = 0;
+            m_bIsAttach = true;
+        }
+    }
+
+    void load(Object& oStreamObject)
+    {
+        int nCurrentSize = 0xFFFF;
+        int nCurrentPos = 0;
+        BYTE* pStream = new BYTE[nCurrentSize];
+
+        int nChar;
+        while ((nChar = oStreamObject.streamGetChar()) != EOF)
+        {
+            if (nCurrentPos >= nCurrentSize)
+            {
+                int nNewSize = 2 * nCurrentSize;
+                BYTE* pNewBuffer = new BYTE[nNewSize];
+                memcpy(pNewBuffer, pStream, nCurrentSize);
+                RELEASEARRAYOBJECTS(pStream);
+                pStream = pNewBuffer;
+                nCurrentSize = nNewSize;
+            }
+            pStream[nCurrentPos++] = nChar;
+        }
+
+        m_pData = pStream;
+        m_nSize = nCurrentPos;
+        m_nPos = 0;
+    }
+
+    int getChar()
+    {
+        if (m_nPos >= m_nSize)
+            return EOF;
+        return m_pData[m_nPos++];
+    }
+
+    void toStart()
+    {
+        m_nPos = 0;
+    }
+};
+
+static int readFromMemoryStream(void* data)
+{
+    return ((CMemoryFontStream*)data)->getChar();
+}
 
 // TODO: 1. Реализовать по-нормальному градиентные заливки (Axial и Radial)
 //       2. m_pRenderer->SetAdditionalParam(L"TilingHtmlPattern", oWriter.GetXmlString());
@@ -284,6 +390,21 @@ namespace PdfReader
 
         return pNewEntry;
     }
+    void CFontList::Remove(Ref oRef)
+    {
+        CRefFontMap::iterator oPos = m_oFontMap.find(oRef);
+        if (m_oFontMap.end() != oPos)
+        {
+            TFontEntry *pEntry = oPos->second;
+            if (NULL != pEntry)
+            {
+                MemUtilsFree(pEntry->pCodeToGID);
+                MemUtilsFree(pEntry->pCodeToUnicode);
+            }
+            delete pEntry;
+            m_oFontMap.erase(oPos);
+        }
+    }
     void        CFontList::Clear()
     {
         for (auto const &oIt : m_oFontMap)
@@ -457,7 +578,9 @@ namespace PdfReader
         m_pTransparentGroupSoftMask = NULL;
 
         if (c_nHtmlRendrerer2 == m_lRendererType)
-            m_bDrawOnlyText = ((NSHtmlRenderer::CASCHTMLRenderer3*)m_pRenderer)->GetOnlyTextMode();
+            m_bDrawOnlyText = (S_OK == m_pRenderer->CommandLong(c_nCommandLongTypeOnlyText, 0)) ? true : false;
+        else if (c_nHtmlRendrererText == m_lRendererType)
+            m_bDrawOnlyText = true;
         else
             m_bDrawOnlyText = false;
     }
@@ -634,6 +757,12 @@ namespace PdfReader
             std::wstring wsTempFileName = L"";
             Ref oEmbRef;
             bool bFontSubstitution = false;
+            std::wstring wsFontBaseName = NSStrings::GetString(pFont->getName());
+            const unsigned char* pData14 = NULL;
+            unsigned int nSize14 = 0;
+        #ifdef FONTS_USE_ONLY_MEMORY_STREAMS
+            CMemoryFontStream oMemoryFontStream;
+        #endif
             // 1. Если шрифт внедренный, тогда скидываем его в темповый файл.
             // 2. Если шрифт лежит вне пдф, а в самом пдф есть ссылка на него, тогда используем эту ссылку.
             // 3. В противном случае подбираем шрифт.
@@ -655,6 +784,12 @@ namespace PdfReader
                     case fontCIDType2OT:  wsExt = L".cid_2ot";   break;
                 }
 
+            #ifdef FONTS_USE_ONLY_MEMORY_STREAMS
+                if (NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage())
+                {
+                     wsTempFileName = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->GenerateId();
+                }
+            #else
                 FILE* pTempFile = NULL;
                 if (!NSFile::CFileBinary::OpenTempFile(&wsTempFileName, &pTempFile, L"wb", (wchar_t*)wsExt.c_str(),
                                                        (wchar_t*)((GlobalParamsAdaptor *)globalParams)->GetTempFolder().c_str(), NULL))
@@ -665,6 +800,7 @@ namespace PdfReader
                     pEntry->bAvailable = true;
                     return;
                 }
+            #endif
 
                 Object oReferenceObject, oStreamObject;
                 oReferenceObject.initRef(oEmbRef.num, oEmbRef.gen);
@@ -674,25 +810,36 @@ namespace PdfReader
                 {
                     // Внедренный шрифт неправильно записан
                     oStreamObject.free();
+
+                    #ifndef BUILDING_WASM_MODULE
                     fclose(pTempFile);
 
                     if (L"" != wsTempFileName)
                         NSFile::CFileBinary::Remove(wsTempFileName);
+                    #endif
 
                     pEntry->bAvailable = true;
                     return;
                 }
                 oStreamObject.streamReset();
+
+            #ifdef FONTS_USE_ONLY_MEMORY_STREAMS
+                oMemoryFontStream.load(oStreamObject);
+                NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsTempFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
+            #else
                 int nChar;
                 while ((nChar = oStreamObject.streamGetChar()) != EOF)
                 {
                     fputc(nChar, pTempFile);
                 }
+                fclose(pTempFile);
+            #endif
+
                 oStreamObject.streamClose();
                 oStreamObject.free();
-                fclose(pTempFile);
                 wsFileName = wsTempFileName;
 
+            #ifdef FONTS_USE_AFM_SETTINGS
                 // Для шрифтов типа Type1 нужно дописать Afm файл с метриками
                 if (fontType1 == pFont->getType() || fontType1C == pFont->getType() || fontType1COT == pFont->getType())
                 {
@@ -878,6 +1025,7 @@ namespace PdfReader
                     }
                     fclose(pFile);
                 }
+            #endif
 
                 // Загрузим сам файл со шрифтом, чтобы точно определить его тип
                 if (!m_pFontManager->LoadFontFromFile(wsFileName, 0, 10, 72, 72))
@@ -928,6 +1076,43 @@ namespace PdfReader
                     }
                 }
             }
+        #ifndef BUILDING_WASM_MODULE
+            else if (PdfReader::GetBaseFont(wsFontBaseName, pData14, nSize14))
+            {
+                FILE* pFile = NULL;
+                if (!NSFile::CFileBinary::OpenTempFile(&wsTempFileName, &pFile, L"wb", L".base",
+                                                      (wchar_t*)((GlobalParamsAdaptor*)globalParams)->GetTempFolder().c_str(), NULL))
+                {
+                    if (!wsTempFileName.empty())
+                        NSFile::CFileBinary::Remove(wsTempFileName);
+
+                    pEntry->bAvailable = true;
+                    return;
+                }
+                fclose(pFile);
+                NSFile::CFileBinary oFile;
+                oFile.CreateFileW(wsTempFileName);
+                oFile.WriteFile((BYTE*)pData14, nSize14);
+                oFile.CloseFile();
+                wsFileName = wsTempFileName;
+            }
+        #else
+            else if ([&oMemoryFontStream, wsFontBaseName]()
+            {
+                const unsigned char* pData14 = NULL;
+                unsigned int nSize14 = 0;
+                if (PdfReader::GetBaseFont(wsFontBaseName, pData14, nSize14))
+                {
+                     oMemoryFontStream.fromBuffer((BYTE*)pData14, nSize14);
+                     return true;
+                }
+                return false;
+            }())
+            {
+                wsFileName = wsFontBaseName;
+                NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
+            }
+        #endif
             else if (!pFont->locateFont(m_pXref, false) ||
                 (wsFileName = NSStrings::GetString(pFont->locateFont(m_pXref, false)->path)).length() == 0)
             //else if (0)
@@ -945,7 +1130,6 @@ namespace PdfReader
                     oRefObject.free();
 
                     NSFonts::CFontSelectFormat oFontSelect;
-                    std::wstring wsFontBaseName = NSStrings::GetString(pFont->getName());
                     if (oFontObject.isDict())
                     {
                         Dict *pFontDict = oFontObject.getDict();
@@ -1043,6 +1227,40 @@ namespace PdfReader
                 {
                     wsFileName = pFontInfo->m_wsFontPath;
                     eFontType  = pFont->isCIDFont() ? fontCIDType2 : fontTrueType;
+
+                #if defined(BUILDING_WASM_MODULE) && !defined(TEST_AS_EXECUTABLE)
+                    BYTE nStatus = 0;
+                    NSWasm::CData oRes;
+                    oRes.SkipLen();
+                    std::string sNameA = U_TO_UTF8(pFontInfo->m_wsFontName);
+                    oRes.WriteString((unsigned char*)sNameA.c_str(), (unsigned int)sNameA.length());
+                    oRes.AddInt(pFontInfo->m_bBold);
+                    oRes.AddInt(pFontInfo->m_bItalic);
+                    oRes.WriteLen();
+                    char* pFontId = js_get_stream_id(oRes.GetBuffer(), &nStatus);
+                    if (!nStatus)
+                    {
+                        // шрифт не загружен.
+                        m_pFontList->Remove(*pFont->getID());
+                        js_free_id((unsigned char*)pFontId);
+                        return;
+                    }
+                    else
+                    {
+                        std::string wsFileNameA(pFontId);
+                        wsFileName = UTF8_TO_U(wsFileNameA);
+                        oMemoryFontStream.fromStream(wsFileName);
+                    }
+                    js_free_id((unsigned char*)pFontId);
+                #else
+                #ifdef FONTS_USE_ONLY_MEMORY_STREAMS
+                    // пока заглушка - тут надо прочитать в стрим, чтобы дальше правильно сработать с кодировками
+                    DWORD dwSize = 0;
+                    NSFile::CFileBinary::ReadAllBytes(wsFileName, &oMemoryFontStream.m_pData, dwSize);
+                    oMemoryFontStream.m_nSize = (int)dwSize;
+                    NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
+                #endif
+                #endif
 
                     bFontSubstitution = true;
                 }
@@ -1206,7 +1424,13 @@ namespace PdfReader
             int nLen = 0;
             FoFiTrueType *pTTFontFile  = NULL;
             FoFiType1C   *pT1CFontFile = NULL;
-            FoFiIdentifierType fofiType =  FoFiIdentifier::identifyFile((char*)U_TO_UTF8(wsFileName).c_str());
+        #ifdef FONTS_USE_ONLY_MEMORY_STREAMS
+            FoFiIdentifierType fofiType = FoFiIdentifier::identifyStream(&readFromMemoryStream, &oMemoryFontStream);
+            oMemoryFontStream.toStart();
+        #else
+            FoFiIdentifierType fofiType = FoFiIdentifier::identifyFile((char*)U_TO_UTF8(wsFileName).c_str());
+        #endif
+
             switch (eFontType)
             {
                 case fontType1:
@@ -1215,7 +1439,13 @@ namespace PdfReader
                 {
                     if (fofiType == fofiIdTrueType)
                     {
-                        if ((pTTFontFile = FoFiTrueType::load((char*)U_TO_UTF8(wsFileName).c_str(), 0)))
+                    #ifdef FONTS_USE_ONLY_MEMORY_STREAMS
+                        pTTFontFile = FoFiTrueType::make((char*)oMemoryFontStream.m_pData, oMemoryFontStream.m_nSize, 0);
+                    #else
+                        pTTFontFile = FoFiTrueType::load((char*)U_TO_UTF8(wsFileName).c_str(), 0);
+                    #endif
+
+                        if (pTTFontFile)
                         {
                             pCodeToGID = ((Gfx8BitFont *)pFont)->getCodeToGIDMap(pTTFontFile);
                             nLen = 256;
@@ -1290,7 +1520,13 @@ namespace PdfReader
                         }
                         break;
                     }
-                    if ((pTTFontFile = FoFiTrueType::load((char*)U_TO_UTF8(wsFileName).c_str(), 0)))
+
+                #ifdef FONTS_USE_ONLY_MEMORY_STREAMS
+                    pTTFontFile = FoFiTrueType::make((char*)oMemoryFontStream.m_pData, oMemoryFontStream.m_nSize, 0);
+                #else
+                    pTTFontFile = FoFiTrueType::load((char*)U_TO_UTF8(wsFileName).c_str(), 0);
+                #endif
+                    if (pTTFontFile)
                     {
                         pCodeToGID = ((Gfx8BitFont *)pFont)->getCodeToGIDMap(pTTFontFile);
                         nLen = 256;
@@ -1323,7 +1559,13 @@ namespace PdfReader
                 }
                 case fontCIDType0COT:
                 {
-                    if ((pTTFontFile = FoFiTrueType::load((char*)U_TO_UTF8(wsFileName).c_str(), 0)))
+                #ifdef FONTS_USE_ONLY_MEMORY_STREAMS
+                    pTTFontFile = FoFiTrueType::make((char*)oMemoryFontStream.m_pData, oMemoryFontStream.m_nSize, 0);
+                #else
+                    pTTFontFile = FoFiTrueType::load((char*)U_TO_UTF8(wsFileName).c_str(), 0);
+                #endif
+
+                    if (pTTFontFile)
                     {
                         if (pTTFontFile->isOpenTypeCFF())
                         {
@@ -1357,7 +1599,12 @@ namespace PdfReader
                         CharCodeToUnicode *pCodeToUnicode = NULL;
                         if ((pCodeToUnicode = ((GfxCIDFont *)pFont)->getToUnicode()))
                         {
-                            if ((pTTFontFile = FoFiTrueType::load((char*)U_TO_UTF8(wsFileName).c_str(), 0)))
+                        #ifdef FONTS_USE_ONLY_MEMORY_STREAMS
+                            pTTFontFile = FoFiTrueType::make((char*)oMemoryFontStream.m_pData, oMemoryFontStream.m_nSize, 0);
+                        #else
+                            pTTFontFile = FoFiTrueType::load((char*)U_TO_UTF8(wsFileName).c_str(), 0);
+                        #endif
+                            if (pTTFontFile)
                             {
                                 // Ищем Unicode Cmap
                                 std::vector<int> arrCMapIndex;
@@ -1414,8 +1661,10 @@ namespace PdfReader
                 default:
                 {
                     // Такого не должно произойти
+                #ifndef FONTS_USE_ONLY_MEMORY_STREAMS
                     if (L"" != wsTempFileName)
                         NSFile::CFileBinary::Remove(wsTempFileName);
+                #endif
 
                     break;
                 }
@@ -3448,8 +3697,10 @@ namespace PdfReader
         {
             if (c_nPDFWriter == m_lRendererType)
             {
+                #ifndef DISABLE_PDF_CONVERTATION
                 CPdfRenderer* pPdfRenderer = (CPdfRenderer*)m_pRenderer;
                 //pPdfRenderer->CommandDrawTextPdf(wsUnicodeText, &unGid, unGidsCount, wsSrcCodeText, PDFCoordsToMM(0 + dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
+                #endif
             }
             else
             {
@@ -4245,5 +4496,4 @@ namespace PdfReader
         }
         return;
     }
-
 }

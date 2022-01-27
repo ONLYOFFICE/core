@@ -573,7 +573,7 @@ void TestDocument7()
 	pPage->SetWidth(1000);
 
 	//CFontCidTrueType* pFont = oPdf.CreateTrueTypeFont(L"D:/test/_pdf/Test.ttf", 0);
-	CFontCidTrueType* pFont = oPdf.CreateTrueTypeFont(L"D:/test/_pdf/cambria.ttc", 1);
+    CFontCidTrueType* pFont = oPdf.CreateCidTrueTypeFont(L"D:/test/_pdf/cambria.ttc", 1);
 
 	pPage->BeginText();
 
@@ -591,7 +591,7 @@ void TestDocument7()
 			pRange[unIndex - rangeStart] = unIndex;
 		}
 
-		pPage->SetFontAndSize(pFont, 10);
+        pPage->SetFontAndSize((CFontDict*)pFont, 10);
 
 		unsigned char* pString = pFont->EncodeString(pRange, rangeLen);
 		pPage->DrawText(nX, nY, (const BYTE*)pString, rangeLen * 2);

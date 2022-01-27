@@ -48,6 +48,9 @@
 #include "MemoryUtils.h"
 #include "GfxClip.h"
 #include <stack>
+#ifdef BUILDING_WASM_MODULE
+#include "../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
+#endif
 
 namespace PdfReader
 {
@@ -77,6 +80,7 @@ namespace PdfReader
 		void SaveToFile(std::wstring wsDirPath);
 		bool Find(Ref oRef, TFontEntry *pEntry);
 		bool Find2(Ref oRef, TFontEntry **ppEntry);
+		void Remove(Ref oRef);
 		TFontEntry *Add(Ref oRef, std::wstring wsFileName, int *pCodeToGID, int *pCodeToUnicode, unsigned int nLenGID, unsigned int nLenUnicode);
 		void Clear();
 		bool GetFont(Ref *pRef, TFontEntry *pEntry);
@@ -284,7 +288,6 @@ namespace PdfReader
 		{
 			m_pbBreak = pbBreak;
 		}
-
 
 	private:
 

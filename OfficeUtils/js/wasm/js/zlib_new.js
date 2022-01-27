@@ -1,6 +1,7 @@
 (function(window, undefined){
 
 	//desktop_fetch
+
 	//string_utf8
 
 	//module

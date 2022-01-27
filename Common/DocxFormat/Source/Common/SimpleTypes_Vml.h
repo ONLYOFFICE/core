@@ -2849,7 +2849,7 @@ namespace SimpleTypes
 								continue;
 
 							std::wstring sTemp = sValue.substr( nIndex, nLen );
-							double dVal = sTemp.empty() ? 0 : _wtof( sTemp.c_str());
+							double dVal = XmlUtils::GetDouble( sTemp);
 
 							if ( m_nCount >= 32 )
 								break;
@@ -2946,7 +2946,7 @@ namespace SimpleTypes
 				}
 				else
 				{
-                       double dValue = sValue.empty() ? 0 : _wtof( sValue.c_str() );
+                       double dValue = XmlUtils::GetDouble( sValue);
 					SetValue( dValue );
 				}
 
@@ -3267,8 +3267,8 @@ namespace SimpleTypes
 					strY = sValue.substr( nPos + 1, nLen - nPos - 1 ) ;
 				}
 
-                m_dX = strX.empty() ? 0 : _wtof(strX.c_str() );
-                m_dY = strY.empty() ? 0 : _wtof(strY.c_str() );
+                m_dX = XmlUtils::GetDouble(strX);
+                m_dY = XmlUtils::GetDouble(strY);
 
 				return 0;
 			}
@@ -4033,7 +4033,7 @@ namespace SimpleTypes
 					m_oValue.oValue.eType = cssunitstypePerc;
 
 					   std::wstring strValue = sValue.substr( 0, nPos );
-                       m_oValue.oValue.dValue = strValue.empty() ? 0 : _wtof(strValue.c_str() );
+                       m_oValue.oValue.dValue = XmlUtils::GetDouble(strValue);
 				}
                 else if ( -1 != ( nPos = (int)sValue.find( _T("px") ) ) )
 				{
@@ -4106,7 +4106,7 @@ namespace SimpleTypes
             void ReadValue_Rotation(std::wstring& sValue)
             {
 				m_oValue.oValue.eType = cssunitstypeAbsolute;
-				m_oValue.oValue.dValue = sValue.empty() ? 0 : _wtof(sValue.c_str() );
+				m_oValue.oValue.dValue = XmlUtils::GetDouble( sValue );
 
 				if (sValue.find(_T("fd")) != std::wstring::npos)
 				{
@@ -4827,7 +4827,7 @@ namespace SimpleTypes
 					case '.':
 
 						eValue = vmlvector2dposConstant;
-                    dValue = sValue.empty() ? 0 : _wtof(sValue.c_str() );
+						dValue = XmlUtils::GetDouble(sValue);
 						break;
 
 					case 'c':
@@ -4988,8 +4988,8 @@ namespace SimpleTypes
 						XmlUtils::replace_all(strX, L"@", L"");
 						XmlUtils::replace_all(strY, L"@", L"");
 
-                       int nX = strX.empty() ? 0 : _wtoi(strX.c_str() );
-                       int nY = strY.empty() ? 0 : _wtoi(strY.c_str() );
+                       int nX = XmlUtils::GetDouble(strX);
+                       int nY = XmlUtils::GetDouble(strY );
 
 					   m_arrPoints.push_back( TPoint( nX, nY ) );
 
@@ -5082,12 +5082,12 @@ namespace SimpleTypes
 				else if ( bPercentage )
 				{
 					   std::wstring strValue = sValue.substr( 0, nLen - 1 );
-                       double dValue = strValue.empty() ? 0 : _wtof(strValue.c_str() );
+                       double dValue = XmlUtils::GetDouble(strValue);
 					SetPercentage( dValue );
 				}
 				else
 				{
-                       double dValue = sValue.empty() ? 0 : _wtof(sValue.c_str() );
+                       double dValue = XmlUtils::GetDouble(sValue);
 					SetValue( dValue );
 				}
 
@@ -5210,7 +5210,7 @@ namespace SimpleTypes
 				if ( nEndPos - nStartPos > 0 )
 					{
 					   std::wstring strValue = sValue.substr( nStartPos, nEndPos - nStartPos );
-                       m_dSxx = strValue.empty() ? 0 : _wtof(strValue.c_str() );
+                       m_dSxx = XmlUtils::GetDouble(strValue);
 					}
 
 				// Sxy
@@ -5222,7 +5222,7 @@ namespace SimpleTypes
 				if ( nEndPos - nStartPos > 0 )
 					{
 					   std::wstring strValue = sValue.substr( nStartPos, nEndPos - nStartPos );
-                       m_dSxy = strValue.empty() ? 0 : _wtof(strValue.c_str() );
+                       m_dSxy = XmlUtils::GetDouble(strValue);
 					}
 
 				// Syx
@@ -5234,7 +5234,7 @@ namespace SimpleTypes
 				if ( nEndPos - nStartPos > 0 )
 					{
 					   std::wstring strValue = sValue.substr( nStartPos, nEndPos - nStartPos );
-                       m_dSyx = strValue.empty() ? 0 : _wtof(strValue.c_str() );
+                       m_dSyx = XmlUtils::GetDouble(strValue);
 					}
 
 				// Syy
@@ -5246,7 +5246,7 @@ namespace SimpleTypes
 				if ( nEndPos - nStartPos > 0 )
 					{
 					   std::wstring strValue = sValue.substr( nStartPos, nEndPos - nStartPos );
-                       m_dSyy = strValue.empty() ? 0 : _wtof(strValue.c_str() );
+                       m_dSyy = XmlUtils::GetDouble(strValue);
 					}
 
 				// Px
@@ -5258,7 +5258,7 @@ namespace SimpleTypes
 				if ( nEndPos - nStartPos > 0 )
 					{
 					   std::wstring strValue = sValue.substr( nStartPos, nEndPos - nStartPos );
-                       m_dPx = strValue.empty() ? 0 : _wtof(strValue.c_str() );
+                       m_dPx = XmlUtils::GetDouble(strValue);
 					}
 
 				// Py
@@ -5270,7 +5270,7 @@ namespace SimpleTypes
 				if ( nEndPos - nStartPos > 0 )
 				{
 					std::wstring strValue = sValue.substr( nStartPos, nEndPos - nStartPos );
-                    m_dPy = strValue.empty() ? 0 : _wtof(strValue.c_str() );
+                    m_dPy = XmlUtils::GetDouble(strValue);
 				}
 
 				nStartPos = nEndPos + 1;		

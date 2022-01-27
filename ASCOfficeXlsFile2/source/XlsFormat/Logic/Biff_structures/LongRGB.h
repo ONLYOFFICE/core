@@ -59,6 +59,7 @@ public:
 	std::wstring  strRGB;
 
 	_UINT32 ToRGBA();
+	_UINT32 ToRGB();
 
 	bool is_alpha;
 };

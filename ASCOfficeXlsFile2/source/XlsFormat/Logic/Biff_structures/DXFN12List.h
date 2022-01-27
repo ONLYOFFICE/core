@@ -33,7 +33,6 @@
 
 #include "BiffString.h"
 #include "DXFN.h"
-#include "XFExtNoFRT.h"
 
 #include "../Biff_records/BiffRecord.h"
 
@@ -54,7 +53,6 @@ public:
 	virtual void load(CFRecord& record);
 
 	DXFN			dxfn;
-	XFExtNoFRTPtr	xfext;
 //-----------------------------------------------------------------
 	bool		bExist;
 	_INT32		size;

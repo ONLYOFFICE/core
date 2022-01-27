@@ -39,6 +39,7 @@
 #include "DXFBdr.h"
 #include "DXFPat.h"
 #include "DXFProt.h"
+#include "XFExtNoFRT.h"
 
 #include <simple_xml_writer.h>
 
@@ -103,6 +104,8 @@ public:
 	DXFBdr	dxfbdr;
 	DXFPat	dxfpat;
 	DXFProt dxfprot;
+
+	XFExtNoFRTPtr	xfext;
 };
 
 typedef boost::shared_ptr<DXFN> DXFNPtr;

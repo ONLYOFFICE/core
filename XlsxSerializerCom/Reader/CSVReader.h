@@ -33,7 +33,7 @@
 
 #include <stack>
 
-#include "../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
+#include "../../Common/DocxFormat/Source/XlsbFormat/Xlsb.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Worksheet.h"
 #include "../../DesktopEditor/common/File.h"
 

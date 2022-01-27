@@ -35,6 +35,7 @@
 #include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/BiffStructure.h"
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "CellRangeRef.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/SxAxis.h"
 
 namespace XLSB
 {
@@ -61,7 +62,7 @@ namespace XLSB
         bool         fLineMode;
         bool         fPart;
         bool         fFuzzy;
-        BYTE         sxaxis;
+        XLS::SXAxis  sxaxis;
         BYTE         iDim;
         UncheckedRfX rfxLoc;
     };

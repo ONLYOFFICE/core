@@ -903,6 +903,12 @@ enum ElementType
     typePCDIRUN,
     typePCDI,
     typePCDIA,
+    typeISXVDRWS,
+    typeBeginISXVDRws,
+    typeISXVDCOLS,
+    typeBeginISXVDCols,
+    typeSXLIRWS,
+    typeSXLICOLS,
 };
 
 

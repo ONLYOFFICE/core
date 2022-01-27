@@ -49,7 +49,7 @@ namespace XLSB
 
             void readFields(XLS::CFRecord& record);
 
-            //static const XLS::ElementType	type = XLS::typeBeginISXVDCols;
+            static const XLS::ElementType	type = XLS::typeBeginISXVDCols;
 
             _UINT32             cisxvd;
             std::vector<_INT32> rgisxvdcols;

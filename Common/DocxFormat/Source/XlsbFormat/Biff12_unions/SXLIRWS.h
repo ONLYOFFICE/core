@@ -47,6 +47,8 @@ namespace XLSB
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
+        static const XLS::ElementType	type = XLS::typeSXLIRWS;
+
         XLS::BaseObjectPtr               m_BrtBeginSXLIRws;
         std::vector<XLS::BaseObjectPtr>	 m_arSXLI;
         XLS::BaseObjectPtr               m_BrtEndSXLIRws;

@@ -47,6 +47,8 @@ namespace XLSB
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
+        static const XLS::ElementType	type = XLS::typeISXVDCOLS;
+
         XLS::BaseObjectPtr               m_BrtBeginISXVDCols;
         XLS::BaseObjectPtr               m_BrtEndISXVDCols;
 

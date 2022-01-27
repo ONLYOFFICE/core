@@ -69,7 +69,10 @@ namespace XLSB
         fLineMode       = GETBIT(flags, 13);
         fPart           = GETBIT(flags, 14);
         fFuzzy          = GETBIT(flags, 15);
-        sxaxis          = GETBITS(flags, 16, 19);
+        sxaxis.bRw      = GETBIT(flags, 16);
+        sxaxis.bCol     = GETBIT(flags, 17);
+        sxaxis.bPage    = GETBIT(flags, 18);
+        sxaxis.bData    = GETBIT(flags, 19);
         iDim            = GETBITS(flags, 20, 27);
 
         if(fPart)

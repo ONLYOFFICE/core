@@ -47,6 +47,44 @@
 #include "../../XlsbFormat/Biff12_records/PCDIError.h"
 #include "../../XlsbFormat/Biff12_records/PCDIString.h"
 #include "../../XlsbFormat/Biff12_records/PCDIDatetime.h"
+#include "../../XlsbFormat/Biff12_records/PCDIIndex.h"
+#include "../../XlsbFormat/Biff12_records/BeginSXView.h"
+#include "../../XlsbFormat/Biff12_unions/SXLOCATION.h"
+#include "../../XlsbFormat/Biff12_records/BeginSXLocation.h"
+#include "../../XlsbFormat/Biff12_unions/SXVDS.h"
+#include "../../XlsbFormat/Biff12_unions/SXVD.h"
+#include "../../XlsbFormat/Biff12_records/BeginSXVD.h"
+#include "../../XlsbFormat/Biff12_unions/SXVIS.h"
+#include "../../XlsbFormat/Biff12_unions/SXVI.h"
+#include "../../XlsbFormat/Biff12_records/BeginSXVI.h"
+#include "../../XlsbFormat/Biff12_unions/AUTOSORTSCOPE.h"
+#include "../../XlsbFormat/Biff12_unions/PIVOTRULE.h"
+#include "../../XlsbFormat/Biff12_records/BeginPRule.h"
+#include "../../XlsbFormat/Biff12_unions/PRFILTERS.h"
+#include "../../XlsbFormat/Biff12_unions/PRFILTER.h"
+#include "../../XlsbFormat/Biff12_unions/PRFITEM.h"
+#include "../../XlsbFormat/Biff12_records/BeginPRFilter.h"
+#include "../../XlsbFormat/Biff12_records/BeginPRFItem.h"
+#include "../../XlsbFormat/Biff12_unions/ISXVDRWS.h"
+#include "../../XlsbFormat/Biff12_unions/ISXVDCOLS.h"
+#include "../../XlsbFormat/Biff12_records/BeginISXVDRws.h"
+#include "../../XlsbFormat/Biff12_records/BeginISXVDCols.h"
+#include "../../XlsbFormat/Biff12_unions/SXLIRWS.h"
+#include "../../XlsbFormat/Biff12_unions/SXLICOLS.h"
+#include "../../XlsbFormat/Biff12_unions/SXLI.h"
+#include "../../XlsbFormat/Biff12_unions/ISXVIS.h"
+#include "../../XlsbFormat/Biff12_records/BeginSXLI.h"
+#include "../../XlsbFormat/Biff12_records/BeginISXVIs.h"
+#include "../../XlsbFormat/Biff12_unions/SXDIS.h"
+#include "../../XlsbFormat/Biff12_unions/SXDI.h"
+#include "../../XlsbFormat/Biff12_records/BeginSXDI.h"
+#include "../../XlsbFormat/Biff12_unions/SXFORMATS.h"
+#include "../../XlsbFormat/Biff12_unions/SXFORMAT.h"
+#include "../../XlsbFormat/Biff12_records/BeginSXFormat.h"
+#include "../../XlsbFormat/Biff12_records/TableStyleClient.h"
+#include "../../XlsbFormat/Biff12_unions/SXPIS.h"
+#include "../../XlsbFormat/Biff12_unions/SXPI.h"
+#include "../../XlsbFormat/Biff12_records/BeginSXPI.h"
 
 namespace OOX
 {
@@ -63,9 +101,9 @@ namespace Spreadsheet
             xlsb->ReadBin(oPath, pivotTableStream.get());
 
             if (pivotTableStream != nullptr)
-            {
-                //if (pivotTableStream->m_PIVOTCACHERECORDS != nullptr)
-                   // m_oPivotCacheRecords = pivotTableStream->m_PIVOTCACHERECORDS;
+            {                 
+                XLS::BaseObjectPtr ptr = boost::shared_ptr<XLS::BaseObject>(static_cast<XLS::BaseObject*>(pivotTableStream.get()));
+                m_oPivotTableDefinition = ptr;
             }
         }
     }
@@ -167,7 +205,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		WritingStringNullableAttrEncodeXmlString2(L"missingCaption",m_oMissingCaption);
 		WritingStringNullableAttrBool2(L"multipleFieldFilters",		m_oMultipleFieldFilters);
 		WritingStringNullableAttrBool2(L"outline",					m_oOutline);
-		WritingStringNullableAttrBool2(L"outlineDatae",				m_oOutlineDatae);
+        WritingStringNullableAttrBool2(L"outlineDatae",				m_oOutlineData);
 		WritingStringNullableAttrBool2(L"pageOverThenDown",			m_oPageOverThenDown);
 		WritingStringNullableAttrEncodeXmlString2(L"pageStyle",		m_oPageStyle);
 		WritingStringNullableAttrInt(L"pageWrap",					m_oPageWrap, m_oPageWrap->GetValue());
@@ -274,6 +312,161 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			else if (L"extLst" == sName)				m_oExtLst = oReader;
 		}
 	}
+    void CPivotTableDefinition::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::PivotTableStream*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            ReadAttributes(ptr->m_BrtBeginSXView);
+
+            if(ptr->m_SXLOCATION != nullptr)
+                m_oLocation = ptr->m_SXLOCATION;
+
+            if(ptr->m_SXVDS != nullptr)
+                m_oPivotFields = ptr->m_SXVDS;
+
+            if(ptr->m_ISXVDRWS != nullptr)
+                m_oRowFields = ptr->m_ISXVDRWS;
+
+            if(ptr->m_ISXVDCOLS != nullptr)
+                m_oColFields = ptr->m_ISXVDCOLS;
+
+            if(ptr->m_SXLIRWS != nullptr)
+                m_oRowItems = ptr->m_SXLIRWS;
+
+            if(ptr->m_SXLICOLS != nullptr)
+                m_oColItems = ptr->m_SXLICOLS;
+
+            if(ptr->m_SXDIS != nullptr)
+                m_oDataFields = ptr->m_SXDIS;
+
+            if(ptr->m_SXFORMATS != nullptr)
+                m_oFormats = ptr->m_SXFORMATS;
+
+            if(ptr->m_BrtTableStyleClient != nullptr)
+                m_oPivotTableStyleInfo = ptr->m_BrtTableStyleClient;
+
+            if(ptr->m_SXPIS != nullptr)
+                m_oPageFields = ptr->m_SXPIS;
+        }
+    }
+    void CPivotTableDefinition::ReadAttributes(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::BeginSXView*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            m_oApplyAlignmentFormats        = ptr->ibitAtrAlc;
+            m_oApplyBorderFormats           = ptr->ibitAtrBdr;
+            m_oApplyFontFormats             = ptr->ibitAtrFnt;
+            m_oApplyNumberFormats           = ptr->ibitAtrNum;
+            m_oApplyPatternFormats          = ptr->ibitAtrPat;
+            m_oApplyWidthHeightFormats      = ptr->ibitAtrProt;
+            m_oApplyAlignmentFormats        = ptr->ibitAtrAlc;
+            m_oApplyAlignmentFormats        = ptr->ibitAtrAlc;
+
+            m_oAsteriskTotals               = ptr->fHideTotAnnotation;
+            m_oVisualTotals                 = ptr->fNotVisualTotals;
+            m_oAutoFormatId                 = ptr->itblAutoFmt;
+            m_oCacheId                      = ptr->idCache;
+            m_oChartFormat                  = ptr->dwCrtFmtId;
+
+            m_oColGrandTotals               = ptr->fColGrand;
+
+            if(!ptr->irstColHdrName.value().empty())
+                m_oColHeaderCaption         = ptr->irstColHdrName.value();
+
+            m_oCompact                      = ptr->fDefaultCompact;
+            m_oCompactData                  = ptr->fCompactData;
+            m_oCreatedVersion               = ptr->bVerSxMacro;
+
+            m_oCustomListSort               = !ptr->fDontUseCustomLists;
+
+            if(!ptr->irstData.value().empty())
+                m_oDataCaption              = ptr->irstData.value();
+
+           // m_oDataOnRows                   = ptr->fDefaultCompact;
+            m_oDataPosition                 = ptr->ipos4Data;
+            m_oDisableFieldList             = ptr->fDisableFList;
+            m_oEditData                     = ptr->fEnableDataEd;
+            m_oEnableDrill                  = ptr->fEnableDrilldown;
+            m_oEnableFieldProperties        = ptr->fEnableFieldDialog;
+            m_oEnableWizard                 = ptr->fEnableWizard;
+
+            if(!ptr->irstErrorString.value().empty())
+                    m_oErrorCaption         = ptr->irstErrorString.value();
+
+            m_oFieldListSortAscending       = ptr->fNonDefaultSortInFlist;
+            m_oFieldPrintTitles             = ptr->fPrintTitles;
+
+            if(!ptr->irstGrand.value().empty())
+                    m_oGrandTotalCaption    = ptr->irstGrand.value();
+
+            m_oGridDropZones                = ptr->fNewDropZones;
+            m_oImmersive                    = ptr->fTurnOffImmersive;
+            m_oIndent                       = ptr->cIndentInc;
+            m_oItemPrintTitles              = ptr->fRepeatItemsOnEachPrintedPage;
+            //m_oMdxSubqueries                      = ptr->fDefaultCompact;
+
+            m_oMergeItem                    = ptr->fMergeLabels;
+            m_oMinRefreshableVersion        = ptr->bVerSxUpdateableMin;
+
+            if(!ptr->irstNullString.value().empty())
+                    m_oMissingCaption    = ptr->irstNullString.value();
+
+            m_oMultipleFieldFilters         = !ptr->fSingleFilterPerField;
+
+            if(!ptr->irstName.value().empty())
+                    m_oName                 = ptr->irstName.value();
+
+            m_oOutline                      = ptr->fDefaultOutline;
+            m_oOutlineData                  = ptr->fOutlineData;
+            m_oPageOverThenDown             = ptr->fAcrossPageLay;
+
+
+            if(!ptr->irstPageFieldStyle.value().empty())
+                    m_oPageStyle            = ptr->irstPageFieldStyle.value();
+
+            m_oPageWrap                     = ptr->cWrapPage;
+
+            if(!ptr->irstTableStyle.value().empty())
+                    m_oPivotTableStyle      = ptr->irstTableStyle.value();
+
+            m_oPreserveFormatting           = ptr->fPreserveFormatting;
+            m_oPrintDrill                   = ptr->fPrintDrillIndicators;
+            m_oPublished                    = ptr->fPublished;
+            m_oRowGrandTotals               = ptr->fRwGrand;
+
+            if(!ptr->irstRwHdrName.value().empty())
+                    m_oRowHeaderCaption     = ptr->irstRwHdrName.value();
+
+            m_oShowCalcMbrs                 = !ptr->fNotViewCalculatedMembers;
+            m_oShowDataDropDown             = !ptr->fHideDDData;
+            m_oShowDataTips                 = !ptr->fNoPivotTips;
+            m_oShowDrill                    = !ptr->fHideDrillIndicators;
+            m_oShowDropZones                = ptr->fNewDropZones; //? fNoStencil
+            m_oShowEmptyCol                 = ptr->fIncludeEmptyCol;
+            m_oShowEmptyRow                 = ptr->fIncludeEmptyRw;
+            m_oShowError                    = ptr->fDisplayErrorString;
+            m_oShowHeaders                  = !ptr->fNoHeaders;
+            m_oShowItems                    = ptr->fDisplayImmediateItems;
+            m_oShowMemberPropertyTips       = ptr->fMemPropsInTips;
+            m_oShowMissing                  = ptr->fDisplayNullString;
+            m_oShowMultipleLabel            = ptr->fPageMultipleItemLabel;
+            m_oSubtotalHiddenItems          = ptr->fSubtotalHiddenPageItems;
+
+            if(!ptr->irstTag.value().empty())
+                    m_oTag                  = ptr->irstTag.value();
+
+            m_oUpdatedVersion               = ptr->bVerSxLastUpdated;
+            m_oUseAutoFormatting            = ptr->fAutoFormat;
+
+            if(!ptr->irstVacateStyle.value().empty())
+                    m_oVacatedStyle         = ptr->irstVacateStyle.value();
+
+        }
+    }
 	void CPivotTableDefinition::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -316,7 +509,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"multipleFieldFilters",	m_oMultipleFieldFilters )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"name",	m_oName )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"outline",	m_oOutline )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, L"outlineDatae",	m_oOutlineDatae )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"outlineDatae",	m_oOutlineData )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"pageOverThenDown",	m_oPageOverThenDown )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"pageStyle",	m_oPageStyle )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"pageWrap",	m_oPageWrap )
@@ -382,6 +575,49 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				m_arrItems.push_back(new CField(oReader));
 		}
 	}
+    void CColumnRowFields::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        if(obj->get_type() == XLS::typeISXVDRWS)
+        {
+            auto ptrISXVDRWS = static_cast<XLSB::ISXVDRWS*>(obj.get());
+
+            if(ptrISXVDRWS != nullptr)
+            {
+                auto ptrBeginISXVDRws = static_cast<XLSB::BeginISXVDRws*>(ptrISXVDRWS->m_BrtBeginISXVDRws.get());
+
+                if(ptrBeginISXVDRws != nullptr)
+                {
+                    m_oCount = ptrBeginISXVDRws->cisxvd;
+                    for(auto &item : ptrBeginISXVDRws->rgisxvdrws)
+                    {
+                        auto field = new CField();
+                        field->m_oX = item;
+                        m_arrItems.push_back(field);
+                    }
+                }
+            }
+        }
+        else if(obj->get_type() == XLS::typeISXVDCOLS)
+        {
+            auto ptrISXVDCOLS = static_cast<XLSB::ISXVDCOLS*>(obj.get());
+
+            if(ptrISXVDCOLS != nullptr)
+            {
+                auto ptrBeginISXVDCols = static_cast<XLSB::BeginISXVDCols*>(ptrISXVDCOLS->m_BrtBeginISXVDCols.get());
+
+                if(ptrBeginISXVDCols != nullptr)
+                {
+                    m_oCount = ptrBeginISXVDCols->cisxvd;
+                    for(auto &item : ptrBeginISXVDCols->rgisxvdcols)
+                    {
+                        auto field = new CField();
+                        field->m_oX = item;
+                        m_arrItems.push_back(field);
+                    }
+                }
+            }
+        }
+    }
 	void CColumnRowFields::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -423,6 +659,27 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				m_arrItems.push_back(new CColumnRowItem(oReader));
 		}
 	}
+    void CColumnRowItems::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        if(obj->get_type() == XLS::typeSXLIRWS)
+        {
+            auto ptrSXLIRWS = static_cast<XLSB::SXLIRWS*>(obj.get());
+
+            m_oCount = _UINT32(ptrSXLIRWS->m_arSXLI.size());
+
+            for(auto &item : ptrSXLIRWS->m_arSXLI)
+                m_arrItems.push_back(new CColumnRowItem(item));
+        }
+        else if(obj->get_type() == XLS::typeSXLICOLS)
+        {
+            auto ptrSXLICOLS = static_cast<XLSB::SXLICOLS*>(obj.get());
+
+            m_oCount = _UINT32(ptrSXLICOLS->m_arSXLI.size());
+
+            for(auto &item : ptrSXLICOLS->m_arSXLI)
+                m_arrItems.push_back(new CColumnRowItem(item));
+        }
+    }
 	void CColumnRowItems::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -463,6 +720,91 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				m_arrItems.push_back(new CSharedItemsIndex(oReader));
 		}
 	}
+    void CColumnRowItem::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::SXLI*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            ReadAttributes(ptr->m_BrtBeginSXLI);
+
+            auto ptrISXVIS = static_cast<XLSB::ISXVIS*>(ptr->m_ISXVIS.get());
+
+            if(ptrISXVIS != nullptr)
+            {
+                auto ptrBrtBeginISXVIs = static_cast<XLSB::BeginISXVIs*>(ptrISXVIS->m_BrtBeginISXVIs.get());
+
+                if(ptrBrtBeginISXVIs != nullptr)
+                {
+                    for(auto &item : ptrBrtBeginISXVIs->rgisxvis)
+                    {
+                        auto oSharedItemsIndex = new CSharedItemsIndex();
+                        oSharedItemsIndex->m_oV = item;
+                        m_arrItems.push_back(oSharedItemsIndex);
+                    }
+                }
+            }
+        }
+    }
+    void CColumnRowItem::ReadAttributes(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::BeginSXLI*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            m_oI = ptr->iData;
+            m_oR = ptr->cSic;
+
+            switch(ptr->itmtype.value().get())
+            {
+                case XLSB::PivotItemType::PITDATA:
+                    m_oT = SimpleTypes::Spreadsheet::EPivotItemType::typeData;
+                    break;
+                case XLSB::PivotItemType::PITDEFAULT:
+                    m_oT = SimpleTypes::Spreadsheet::EPivotItemType::typeDefault;
+                    break;
+                case XLSB::PivotItemType::PITSUM:
+                    m_oT = SimpleTypes::Spreadsheet::EPivotItemType::typeSum;
+                    break;
+                case XLSB::PivotItemType::PITCOUNTA:
+                    m_oT = SimpleTypes::Spreadsheet::EPivotItemType::typeCountA;
+                    break;
+                case XLSB::PivotItemType::PITAVG:
+                    m_oT = SimpleTypes::Spreadsheet::EPivotItemType::typeAverage;
+                    break;
+                case XLSB::PivotItemType::PITMAX:
+                    m_oT = SimpleTypes::Spreadsheet::EPivotItemType::typeMax;
+                    break;
+                case XLSB::PivotItemType::PITMIN:
+                    m_oT = SimpleTypes::Spreadsheet::EPivotItemType::typeMin;
+                    break;
+                case XLSB::PivotItemType::PITPRODUCT:
+                    m_oT = SimpleTypes::Spreadsheet::EPivotItemType::typeProduct;
+                    break;
+                case XLSB::PivotItemType::PITCOUNT:
+                    m_oT = SimpleTypes::Spreadsheet::EPivotItemType::typeCount;
+                    break;
+                case XLSB::PivotItemType::PITSTDDEV:
+                    m_oT = SimpleTypes::Spreadsheet::EPivotItemType::typeStdDev;
+                    break;
+                case XLSB::PivotItemType::PITSTDDEVP:
+                    m_oT = SimpleTypes::Spreadsheet::EPivotItemType::typeStdDevP;
+                    break;
+                case XLSB::PivotItemType::PITVAR:
+                    m_oT = SimpleTypes::Spreadsheet::EPivotItemType::typeVar;
+                    break;
+                case XLSB::PivotItemType::PITVARP:
+                    m_oT = SimpleTypes::Spreadsheet::EPivotItemType::typeVarP;
+                    break;
+                case XLSB::PivotItemType::PITGRAND:
+                    m_oT = SimpleTypes::Spreadsheet::EPivotItemType::typeGrandTotalt;
+                    break;
+                case XLSB::PivotItemType::PITBLANK:
+                    m_oT = SimpleTypes::Spreadsheet::EPivotItemType::typeBlank;
+                    break;
+            }
+        }
+    }
 	void CColumnRowItem::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -507,6 +849,20 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				m_arrItems.push_back(new CDataField(oReader));
 		}
 	}
+    void CDataFields::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::SXDIS*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            m_oCount = (_UINT32)ptr->m_arSXDI.size();
+
+            for(auto &item : ptr->m_arSXDI)
+            {
+                m_arrItems.push_back(new CDataField(item));
+            }
+        }
+    }
 	void CDataFields::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -542,6 +898,98 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				m_oExtLst = oReader;
 		}
 	}
+    void CDataField::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::SXDI*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            ReadAttributes(ptr->m_BrtBeginSXDI);
+        }
+    }
+    void CDataField::ReadAttributes(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::BeginSXDI*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            m_oBaseField    = ptr->isxvd;
+            m_oBaseItem     = ptr->isxvi;
+            m_oFld          = ptr->isxvdData;
+            m_oNumFmtId     = ptr->ifmt.ifmt;
+
+            if(!ptr->stDisplayName.value().empty())
+                m_oName     = ptr->stDisplayName.value();
+
+            switch(ptr->df.value().get())
+            {
+                case XLSB::ShowDataAs::NORMAL:
+                    m_oShowDataAs = SimpleTypes::Spreadsheet::EShowDataAs::dataAsNormal;
+                    break;
+                case XLSB::ShowDataAs::DIFFERENCE:
+                    m_oShowDataAs = SimpleTypes::Spreadsheet::EShowDataAs::dataAsDifference;
+                    break;
+                case XLSB::ShowDataAs::PERCENT:
+                    m_oShowDataAs = SimpleTypes::Spreadsheet::EShowDataAs::dataAsPercentOff;
+                    break;
+                case XLSB::ShowDataAs::PERCENTDIFF:
+                    m_oShowDataAs = SimpleTypes::Spreadsheet::EShowDataAs::dataAsPercentDiff;
+                    break;
+                case XLSB::ShowDataAs::INDEX:
+                    m_oShowDataAs = SimpleTypes::Spreadsheet::EShowDataAs::dataAsIndex;
+                    break;
+                case XLSB::ShowDataAs::PERCENTOFTOTAL:
+                    m_oShowDataAs = SimpleTypes::Spreadsheet::EShowDataAs::dataAsPercentOfTotal;
+                    break;
+                case XLSB::ShowDataAs::PERCENTOFCOL:
+                    m_oShowDataAs = SimpleTypes::Spreadsheet::EShowDataAs::dataAsPercentOfCol;
+                    break;
+                case XLSB::ShowDataAs::PERCENTOFROW:
+                    m_oShowDataAs = SimpleTypes::Spreadsheet::EShowDataAs::dataAsPercentOfRow;
+                    break;
+                case XLSB::ShowDataAs::PERCENTOFRUNTOTAL:
+                    m_oShowDataAs = SimpleTypes::Spreadsheet::EShowDataAs::dataAsRunTotal;
+                    break;
+            }
+
+            switch(ptr->iiftab.value().get())
+            {
+                case XLSB::DataConsolidationFunction::SUM:
+                    m_oSubtotal = SimpleTypes::Spreadsheet::EDataConsolidateFunction::functionSum;
+                    break;
+                case XLSB::DataConsolidationFunction::COUNT:
+                    m_oSubtotal = SimpleTypes::Spreadsheet::EDataConsolidateFunction::functionCount;
+                    break;
+                case XLSB::DataConsolidationFunction::AVERAGE:
+                    m_oSubtotal = SimpleTypes::Spreadsheet::EDataConsolidateFunction::functionAverage;
+                    break;
+                case XLSB::DataConsolidationFunction::MAX:
+                    m_oSubtotal = SimpleTypes::Spreadsheet::EDataConsolidateFunction::functionMaximum;
+                    break;
+                case XLSB::DataConsolidationFunction::MIN:
+                    m_oSubtotal = SimpleTypes::Spreadsheet::EDataConsolidateFunction::functionMinimum;
+                    break;
+                case XLSB::DataConsolidationFunction::PRODUCT:
+                    m_oSubtotal = SimpleTypes::Spreadsheet::EDataConsolidateFunction::functionProduct;
+                    break;
+                case XLSB::DataConsolidationFunction::COUNTNUM:
+                    m_oSubtotal = SimpleTypes::Spreadsheet::EDataConsolidateFunction::functionCountNums;
+                    break;
+                case XLSB::DataConsolidationFunction::STDDEV:
+                    m_oSubtotal = SimpleTypes::Spreadsheet::EDataConsolidateFunction::functionStdDev;
+                    break;
+                case XLSB::DataConsolidationFunction::STDDEVP:
+                    m_oSubtotal = SimpleTypes::Spreadsheet::EDataConsolidateFunction::functionStdDevP;
+                    break;
+                case XLSB::DataConsolidationFunction::STDVAR:
+                    m_oSubtotal = SimpleTypes::Spreadsheet::EDataConsolidateFunction::functionVariance;
+                    break;
+                case XLSB::DataConsolidationFunction::STDVARP:
+                    m_oSubtotal = SimpleTypes::Spreadsheet::EDataConsolidateFunction::functionVarP;
+                    break;
+            }
+        }
+    }
 	void CDataField::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -589,6 +1037,20 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				m_arrItems.push_back(new CPageField(oReader));
 		}
 	}
+    void CPageFields::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::SXPIS*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            m_oCount = (_UINT32)ptr->m_arSXPI.size();
+
+            for(auto &item : ptr->m_arSXPI)
+            {
+                m_arrItems.push_back(new CPageField(item));
+            }
+        }
+    }
 	void CPageFields::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -622,6 +1084,32 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				m_oExtLst = oReader;
 		}
 	}
+    void CPageField::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::SXPI*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            ReadAttributes(ptr->m_BrtBeginSXPI);
+        }
+    }
+    void CPageField::ReadAttributes(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::BeginSXPI*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            m_oFld  = ptr->isxvd;
+            m_oItem = ptr->isxvi;
+            m_oHier = ptr->isxth;
+
+            if(!ptr->irstUnique.value().empty())
+                m_oName     = ptr->irstUnique.value();
+
+            if(!ptr->irstDisplay.value().empty())
+                m_oCap      = ptr->irstDisplay.value();
+        }
+    }
 	void CPageField::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -667,6 +1155,20 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				m_arrItems.push_back(new CFieldItem(oReader));
 		}
 	}
+    void CFieldItems::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::SXVIS*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            m_oCount = (_UINT32)ptr->m_arSXVI.size();
+
+            for(auto &item : ptr->m_arSXVI)
+            {
+                m_arrItems.push_back(new CFieldItem(item));
+            }
+        }
+    }
 	void CFieldItems::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -697,6 +1199,84 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		if ( oReader.IsEmptyNode() )
 			return;
 	}
+    void CFieldItem::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::SXVI*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            ReadAttributes(ptr->m_BrtBeginSXVI);
+        }
+    }
+    void CFieldItem::ReadAttributes(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::BeginSXVI*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            m_oChild            = ptr->fHasChildrenEst;
+            m_oExpanded         = ptr->fDrilledMember;
+            m_oDrillAcross      = ptr->fCollapsedMember;
+            m_oCalculated       = ptr->fFormula;
+            m_oHidden           = ptr->fHidden;
+            m_oMissing          = ptr->fMissing;
+
+            if(!ptr->displayName.value().empty())
+                    m_oUserCaption = ptr->displayName.value();
+
+            m_oCharacter        = ptr->fOlapFilterSelected; //?
+            m_oHideDetails      = ptr->fHideDetail;
+
+            switch(ptr->itmtype.value().get())
+            {
+                case XLSB::PivotItemType::PITDATA:
+                    m_oItemType = SimpleTypes::Spreadsheet::EPivotItemType::typeData;
+                    break;
+                case XLSB::PivotItemType::PITDEFAULT:
+                    m_oItemType = SimpleTypes::Spreadsheet::EPivotItemType::typeDefault;
+                    break;
+                case XLSB::PivotItemType::PITSUM:
+                    m_oItemType = SimpleTypes::Spreadsheet::EPivotItemType::typeSum;
+                    break;
+                case XLSB::PivotItemType::PITCOUNTA:
+                    m_oItemType = SimpleTypes::Spreadsheet::EPivotItemType::typeCountA;
+                    break;
+                case XLSB::PivotItemType::PITAVG:
+                    m_oItemType = SimpleTypes::Spreadsheet::EPivotItemType::typeAverage;
+                    break;
+                case XLSB::PivotItemType::PITMAX:
+                    m_oItemType = SimpleTypes::Spreadsheet::EPivotItemType::typeMax;
+                    break;
+                case XLSB::PivotItemType::PITMIN:
+                    m_oItemType = SimpleTypes::Spreadsheet::EPivotItemType::typeMin;
+                    break;
+                case XLSB::PivotItemType::PITPRODUCT:
+                    m_oItemType = SimpleTypes::Spreadsheet::EPivotItemType::typeProduct;
+                    break;
+                case XLSB::PivotItemType::PITCOUNT:
+                    m_oItemType = SimpleTypes::Spreadsheet::EPivotItemType::typeCount;
+                    break;
+                case XLSB::PivotItemType::PITSTDDEV:
+                    m_oItemType = SimpleTypes::Spreadsheet::EPivotItemType::typeStdDev;
+                    break;
+                case XLSB::PivotItemType::PITSTDDEVP:
+                    m_oItemType = SimpleTypes::Spreadsheet::EPivotItemType::typeStdDevP;
+                    break;
+                case XLSB::PivotItemType::PITVAR:
+                    m_oItemType = SimpleTypes::Spreadsheet::EPivotItemType::typeVar;
+                    break;
+                case XLSB::PivotItemType::PITVARP:
+                    m_oItemType = SimpleTypes::Spreadsheet::EPivotItemType::typeVarP;
+                    break;
+                case XLSB::PivotItemType::PITGRAND:
+                    m_oItemType = SimpleTypes::Spreadsheet::EPivotItemType::typeGrandTotalt;
+                    break;
+                case XLSB::PivotItemType::PITBLANK:
+                    m_oItemType = SimpleTypes::Spreadsheet::EPivotItemType::typeBlank;
+                    break;
+            }
+        }
+    }
 	void CFieldItem::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -748,6 +1328,19 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				m_arrItems.push_back(new CPivotField(oReader));
 		}
 	}
+    void CPivotFields::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::SXVDS*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            m_oCount = (_UINT32)ptr->m_arSXVD.size();
+
+            for(auto &item : ptr->m_arSXVD)
+                m_arrItems.push_back(new CPivotField(item));
+        }
+    }
+
 	void CPivotFields::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -835,6 +1428,106 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				m_oExtLst = oReader;
 		}
 	}
+    void CPivotField::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::SXVD*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            ReadAttributes(ptr->m_BrtBeginSXVD);
+
+            if(ptr->m_SXVIS != nullptr)
+                m_oItems            = ptr->m_SXVIS;
+
+            if(ptr->m_AUTOSORTSCOPE != nullptr)
+                m_oAutoSortScope    = ptr->m_AUTOSORTSCOPE;
+
+            //if(ptr->m_FRTSXVD != nullptr)
+                //m_oExtLst           = ptr->m_FRTSXVD;
+        }
+    }
+    void CPivotField::ReadAttributes(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::BeginSXVD*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            m_oAllDrilled                   = ptr->fDrilledLevel;
+            m_oAutoShow                     = ptr->fAutoShow;
+            m_oAvgSubtotal                  = ptr->fAverage;
+
+            if(ptr->sxaxis.bCol)
+                m_oAxis = SimpleTypes::Spreadsheet::EPivotAxisType::axisCol;
+            else if(ptr->sxaxis.bPage)
+                m_oAxis = SimpleTypes::Spreadsheet::EPivotAxisType::axisPage;
+            else if(ptr->sxaxis.bRw)
+                m_oAxis = SimpleTypes::Spreadsheet::EPivotAxisType::axisRow;
+            else if(ptr->sxaxis.bData)
+                m_oAxis = SimpleTypes::Spreadsheet::EPivotAxisType::axisValues;
+
+            m_oCompact                      = ptr->fCompact;
+            m_oCountASubtotal               = ptr->fCounta;
+            m_oCountSubtotal                = ptr->fCount;
+            //m_oDataField                    = ptr->fDrilledLevel;
+            m_oDataSourceSort               = ptr->fTensorSort;
+            m_oDefaultAttributeDrillState   = ptr->fItemsDrilledByDefault;
+            m_oDefaultSubtotal              = ptr->fDefault;
+            m_oDragOff                      = ptr->fDragToHide;
+            m_oDragToCol                    = ptr->fDragToColumn;
+            m_oDragToData                   = ptr->fDragToData;
+            m_oDragToPage                   = ptr->fDragToPage;
+            m_oDragToRow                    = ptr->fDragToRow;
+            m_oHiddenLevel                  = ptr->fHiddenLvl;
+            m_oHideNewItems                 = ptr->fHideNewItems;
+            m_oIncludeNewItemsInFilter      = ptr->fFilterInclusive;
+            m_oInsertBlankRow               = ptr->fInsertBlankRow;
+            m_oInsertPageBreak              = ptr->fPageBreaksBetweenItems;
+            m_oItemPageCount                = ptr->citmAutoShow;
+            m_oMaxSubtotal                  = ptr->fMax;
+            m_oMeasureFilter                = ptr->fHasAdvFilter;
+            m_oMinSubtotal                  = ptr->fMin;
+            m_oMultipleItemSelectionAllowed = ptr->fEnableMultiplePageItems;
+
+            if(!ptr->irstName.value().empty())
+                    m_oName                 = ptr->irstName.value();
+
+            m_oNonAutoSortDefault           = ptr->fNotAutoSortDft;
+            m_oNumFmtId                     = ptr->ifmt;
+            m_oOutline                      = ptr->fOutline;
+            m_oProductSubtotal              = ptr->fProduct;
+            m_oRankBy                       = ptr->isxdiAutoShow;
+            m_oServerField                  = ptr->fServerBased;
+            m_oShowAll                      = ptr->fShowAllItems;
+            m_oShowDropDowns                = !ptr->fHideDD;
+            m_oShowPropAsCaption            = ptr->fMemPropDisplayInCaption;
+            m_oShowPropCell                 = ptr->fMemPropDisplayInReport;
+            m_oShowPropTip                  = ptr->fMemPropDisplayInTip;
+
+            if(!ptr->fAutoSort)
+                m_oSortType                 = SimpleTypes::Spreadsheet::EFieldSortType::sortManual;
+            else if(ptr->fAscendSort)
+                m_oSortType                 = SimpleTypes::Spreadsheet::EFieldSortType::sortDescending;
+            else
+                m_oSortType                 = SimpleTypes::Spreadsheet::EFieldSortType::sortAscending;
+
+
+            m_oStdDevPSubtotal              = ptr->fStdevp;
+            m_oStdDevSubtotal               = ptr->fStdev;
+
+            if(!ptr->irstSub.value().empty())
+                    m_oSubtotalCaption      = ptr->irstSub.value();
+
+            m_oSubtotalTop                  = ptr->fSubtotalAtTop;
+            m_oSumSubtotal                  = ptr->fSum;
+            m_oTopAutoShow                  = ptr->fTopAutoShow;
+
+            if(!ptr->irstMemberPropertyCaption.value().empty())
+                    m_oUniqueMemberProperty = ptr->irstMemberPropertyCaption.value();
+
+            m_oVarPSubtotal                 = ptr->fVarp;
+            m_oVarSubtotal                  = ptr->fVar;
+        }
+    }
 	void CPivotField::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -922,6 +1615,20 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				m_arrItems.push_back(new CReference(oReader));
 		}
 	}
+    void CReferences::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::PRFILTERS*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            m_oCount = (_UINT32)ptr->m_arPRFILTER.size();
+
+            for(auto &item : ptr->m_arPRFILTER)
+            {
+                m_arrItems.push_back(new CReference(item));
+            }
+        }
+    }
 	void CReferences::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -974,6 +1681,53 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				m_oExtLst = oReader;
 		}
 	}
+    void CReference::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::PRFILTER*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            ReadAttributes(ptr->m_BrtBeginPRFilter);
+
+            for(auto &item : ptr->m_arPRFITEM)
+            {
+                auto ptrPRFITEM = static_cast<XLSB::PRFITEM*>(item.get());
+
+                if(ptrPRFITEM != nullptr)
+                {
+                    m_oX = ptrPRFITEM->m_BrtBeginPRFItem;
+                }
+            }
+        }
+    }
+
+    void CReference::ReadAttributes(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::BeginPRFilter*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            m_oAvgSubtotal      = ptr->prFilter.itmtypeAVERAGE;
+            //m_oByPosition       = ptr->prFilter.itmtypeAVERAGE;?itmtypeData
+            m_oCountASubtotal   = ptr->prFilter.itmtypeCOUNTA;
+            m_oCountSubtotal    = ptr->prFilter.itmtypeCOUNT;
+            m_oDefaultSubtotal  = ptr->prFilter.itmtypeDEFAULT;
+            m_oMaxSubtotal      = ptr->prFilter.itmtypeMAX;
+            m_oMinSubtotal      = ptr->prFilter.itmtypeMIN;
+            m_oProductSubtotal  = ptr->prFilter.itmtypePRODUCT;
+            //m_oRelative         = ptr->prFilter.itmtypeAVERAGE;?itmtypeData
+            m_oSelected         = ptr->prFilter.fSelected;
+            m_oStdDevPSubtotal  = ptr->prFilter.itmtypeSTDEVP;
+            m_oStdDevSubtotal   = ptr->prFilter.itmtypeSTDEV;
+            m_oSumSubtotal      = ptr->prFilter.itmtypeSUM;
+            m_oVarPSubtotal     = ptr->prFilter.itmtypeVARP;
+            m_oVarSubtotal      = ptr->prFilter.itmtypeVAR;
+
+            m_oField            = ptr->prFilter.isxvd;
+            m_oCount            = ptr->prFilter.cItems;
+
+        }
+    }
 	void CReference::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -1029,6 +1783,20 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				m_arrItems.push_back(new CPivotTableFormat(oReader));
 		}
 	}
+    void CPivotTableFormats::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::SXFORMATS*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            m_oCount = (_UINT32)ptr->m_arSXFORMAT.size();
+
+            for(auto &item : ptr->m_arSXFORMAT)
+            {
+                m_arrItems.push_back(new CPivotTableFormat(item));
+            }
+        }
+    }
 	void CPivotTableFormats::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -1066,7 +1834,29 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			else if ( L"extLst" == sName )
 				m_oExtLst = oReader;
 		}
-	}			
+    }
+    void CPivotTableFormat::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::SXFORMAT*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            ReadAttributes(ptr->m_BrtBeginSXFormat);
+
+            if(ptr->m_PIVOTRULE != nullptr)
+                m_oPivotArea = ptr->m_PIVOTRULE;
+        }
+    }
+    void CPivotTableFormat::ReadAttributes(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::BeginSXFormat*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            //m_oAction = rlType ??
+            m_oDxfId  = ptr->dxfid;
+        }
+    }
 	void CPivotTableFormat::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -1101,6 +1891,16 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				m_oPivotArea = oReader;
 		}
 	}
+    void CAutoSortScope::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::AUTOSORTSCOPE*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            if(ptr->m_PIVOTRULE != nullptr)
+                m_oPivotArea = ptr->m_PIVOTRULE;
+        }
+    }
 //------------------------------------
 	void CPivotArea::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
@@ -1141,7 +1941,74 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			else if ( L"extLst" == sName )
 				m_oExtLst = oReader;
 		}
-	}			
+    }
+    void CPivotArea::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::PIVOTRULE*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            ReadAttributes(ptr->m_BrtBeginPRule);
+
+            if(ptr->m_PRFILTERS != nullptr)
+                m_oReferences = ptr->m_PRFILTERS;
+        }
+    }
+    void CPivotArea::ReadAttributes(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::BeginPRule*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            if(ptr->pruleheaderdata.sxaxis.bCol)
+                m_oAxis = SimpleTypes::Spreadsheet::EPivotAxisType::axisCol;
+            else if(ptr->pruleheaderdata.sxaxis.bPage)
+                m_oAxis = SimpleTypes::Spreadsheet::EPivotAxisType::axisPage;
+            else if(ptr->pruleheaderdata.sxaxis.bRw)
+                m_oAxis = SimpleTypes::Spreadsheet::EPivotAxisType::axisRow;
+            else if(ptr->pruleheaderdata.sxaxis.bData)
+                m_oAxis = SimpleTypes::Spreadsheet::EPivotAxisType::axisValues;
+
+            m_oCacheIndex                   = ptr->pruleheaderdata.fCacheBased;
+            m_oCollapsedLevelsAreSubtotals  = ptr->pruleheaderdata.fFuzzy; //fPart?
+            m_oDataOnly                     = ptr->pruleheaderdata.fDataOnly;
+            m_oField                        = ptr->pruleheaderdata.isxvd;
+            m_oFieldPosition                = ptr->pruleheaderdata.iDim;
+            m_oGrandCol                     = ptr->pruleheaderdata.fGrandCol;
+            m_oGrandRow                     = ptr->pruleheaderdata.fGrandRw;
+            m_oLabelOnly                    = ptr->pruleheaderdata.fLabelOnly;
+
+            if(!ptr->pruleheaderdata.rfxLoc.toString().empty())
+                    m_oOffsetRef            = ptr->pruleheaderdata.rfxLoc.toString();
+
+            m_oOutline                      = ptr->pruleheaderdata.fLineMode;
+
+            switch(ptr->pruleheaderdata.isxrtype)
+            {
+                case 0x00:
+                    m_oType = SimpleTypes::Spreadsheet::EPivotAreaType::areaNone;
+                    break;
+                case 0x01:
+                    m_oType = SimpleTypes::Spreadsheet::EPivotAreaType::areaNormal;
+                    break;
+                case 0x02:
+                    m_oType = SimpleTypes::Spreadsheet::EPivotAreaType::areaData;
+                    break;
+                case 0x03:
+                    m_oType = SimpleTypes::Spreadsheet::EPivotAreaType::areaAll;
+                    break;
+                case 0x04:
+                    m_oType = SimpleTypes::Spreadsheet::EPivotAreaType::areaOrigin;
+                    break;
+                case 0x05:
+                    m_oType = SimpleTypes::Spreadsheet::EPivotAreaType::areaFieldButton;
+                    break;
+                case 0x06:
+                    m_oType = SimpleTypes::Spreadsheet::EPivotAreaType::areaTopEnd;
+                    break;
+            }
+        }
+    }
 	void CPivotArea::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -1183,18 +2050,60 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"ref", m_oRef )
 		WritingElement_ReadAttributes_End( oReader )
 	}
+
+    void CPivotTableLocation::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::SXLOCATION*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            ReadAttributes(ptr->m_BrtBeginSXLocation);
+        }
+    }
+
+    void CPivotTableLocation::ReadAttributes(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::BeginSXLocation*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            m_oColPageCount     = ptr->ccolPage;
+            m_oFirstDataCol     = ptr->colFirstData;
+            m_oFirstDataRow     = ptr->rwFirstData;
+            m_oFirstHeaderRow   = ptr->rwFirstHead;
+            m_oRowPageCount     = ptr->crwPage;
+
+            if(!ptr->rfxGeom.toString().empty())
+                m_oRef          = ptr->rfxGeom.toString();
+        }
+    }
 //------------------------------------
 	void CPivotTableStyleInfo::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
 		writer.WriteString(L"<pivotArea");
-			WritingStringNullableAttrEncodeXmlString2(L"mame",	m_oName);
+            WritingStringNullableAttrEncodeXmlString2(L"name",	m_oName);
 			WritingStringNullableAttrBool2(L"showColHeaders",	m_oShowColHeaders);
 			WritingStringNullableAttrBool2(L"showColStripes",	m_oShowColStripes);
-			WritingStringNullableAttrBool2(L"showLastColumn",	m_oShowLastColumn);
+            WritingStringNullableAttrBool2(L"showLastColumn",	m_oShowLastColumn);
 			WritingStringNullableAttrBool2(L"showRowHeaders",	m_oShowRowHeaders);
 			WritingStringNullableAttrBool2(L"showRowStripes",	m_oShowRowStripes);
 	}
-	
+    void CPivotTableStyleInfo::ReadAttributes(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::TableStyleClient*>(obj.get());
+
+        if(ptr != nullptr)
+        {
+            m_oShowColHeaders = ptr->fColumnHeaders;
+            m_oShowRowHeaders = ptr->fRowHeaders;
+            m_oShowColStripes = ptr->fColumnStripes;
+            m_oShowRowStripes = ptr->fRowStripes;
+            m_oShowLastColumn = ptr->fLastColumn;
+
+            if(!ptr->stStyleName.value().empty())
+                m_oName     = ptr->stStyleName.value();
+        }
+    }
 	void CPivotTableStyleInfo::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -2678,6 +3587,27 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
                         }
                     }
                 }
+            }
+        }
+    }
+    void CSharedItemsIndex::ReadAttributes(XLS::BaseObjectPtr& obj)
+    {
+        if(obj->get_type() == XLS::typePCDIIndex)
+        {
+            auto ptr = static_cast<XLSB::PCDIIndex*>(obj.get());
+
+            if(ptr != nullptr)
+            {
+                m_oV = ptr->iitem;
+            }
+        }
+        else if(obj->get_type() == XLS::typeBeginPRFItem)
+        {
+            auto ptr = static_cast<XLSB::BeginPRFItem*>(obj.get());
+
+            if(ptr != nullptr)
+            {
+                m_oV = ptr->iitem;
             }
         }
     }

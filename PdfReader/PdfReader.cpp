@@ -443,7 +443,7 @@ return 0;
             return;
 
         GString* str = ((LinkGoTo*)pLinkAction)->getNamedDest();
-        LinkDest* pLinkDest = pdfDoc->findDest(str);
+        LinkDest* pLinkDest = str ? pdfDoc->findDest(str) : ((LinkGoTo*)pLinkAction)->getDest();
         if (!pLinkDest)
             return;
         int pg;
@@ -455,7 +455,8 @@ return 0;
         else
             pg = pLinkDest->getPageNum();
         double dy = pdfDoc->getPageCropHeight(pg) - pLinkDest->getTop();
-        RELEASEOBJECT(pLinkDest);
+        if (str)
+            RELEASEOBJECT(pLinkDest);
 
         out.AddInt(pg - 1);
         out.AddInt(level);

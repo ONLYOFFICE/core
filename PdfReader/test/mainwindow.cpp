@@ -161,9 +161,12 @@ void MainWindow::SetImage()
 
 void MainWindow::on_OpenFileButton_clicked()
 {
-	m_sFile = QFileDialog::getOpenFileName(this, tr("Open PDF"), ui->FileNameLineEdit->text(), tr("PDF Files (*.pdf)"));
-    ui->FileNameLineEdit->setText(m_sFile);
-    OpenFile();
+	m_sFile = QFileDialog::getOpenFileName(this, tr("Open PDF"), ui->FileNameLineEdit->text(), tr("PDF Files (*.pdf)"));	
+	if (!m_sFile.isEmpty())
+	{
+		ui->FileNameLineEdit->setText(m_sFile);
+		OpenFile();
+	}
 }
 
 void cleanUpPixels(void* pixels)
@@ -178,11 +181,11 @@ void MainWindow::on_RenderButton_clicked()
 
 void MainWindow::on_ScaleSlider_sliderMoved(int position)
 {
-    if (!m_pReader)
-        return;
+	if (!m_pReader)
+		return;
 
 	m_eZoomType = ZoomType::custom;
-    m_dScale = (double)position / 100;
+	m_dScale = (double)position / 100;
 	RenderPage();
 }
 
@@ -212,10 +215,11 @@ void MainWindow::on_RightButton_clicked()
 
 void MainWindow::on_verticalScrollBar_valueChanged(int value)
 {
-    if (!m_pReader)
-        return;
-    m_nPosY = value;
-    m_pLabel->move(m_pLabel->x(), -m_nPosY);
+	if (!IsFileOpened())
+		return;
+
+	m_nPosY = value;
+	m_pLabel->move(m_pLabel->x(), -m_nPosY);
 }
 
 void MainWindow::on_horizontalScrollBar_valueChanged(int value)

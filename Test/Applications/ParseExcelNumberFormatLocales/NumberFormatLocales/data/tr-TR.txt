@@ -1,3 +1,4 @@
-﻿[$]gg.aa.yyyy;@
-[$]s:dd:nn AM/PM
+﻿gg.aa.yy;@
+s:dd:nn;@
 Genel
+[$-411]ggge"年"a"月"g"日";@

@@ -1,3 +1,4 @@
-﻿[$]dd.mm.yyyy;@
-[$]h:mm:ss AM/PM
-General
+﻿nn.hh.éé;@
+ó:pp:mm;@
+Normál
+[$-411]ggge"年"h"月"n"日";@

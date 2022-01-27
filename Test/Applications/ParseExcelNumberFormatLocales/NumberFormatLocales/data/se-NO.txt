@@ -1,3 +1,4 @@
-﻿[$]dd-mm-åååå;@
-[$]t:mm:ss AM/PM
+﻿dd-mm-åå;@
+t:mm:ss;@
 Standard
+[$-411]ggge"年"m"月"d"日";@

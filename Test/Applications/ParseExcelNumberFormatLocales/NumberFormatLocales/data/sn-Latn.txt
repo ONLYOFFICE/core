@@ -1,3 +1,4 @@
-﻿[$]dd-mm-yyyy;@
-[$]h:mm:ss AM/PM
-General
+﻿pp.kk.vv;@
+t:mm:ss;@
+Yleinen
+[$-411]ggge"年"k"月"p"日";@

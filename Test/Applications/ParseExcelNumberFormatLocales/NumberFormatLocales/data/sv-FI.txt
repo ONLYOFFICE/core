@@ -1,3 +1,4 @@
-﻿[$]pp-kk-vvvv;@
-[$]t:mm:ss AM/PM
+﻿pp-kk-vv;@
+t:mm:ss;@
 Yleinen
+[$-411]ggge"年"k"月"p"日";@

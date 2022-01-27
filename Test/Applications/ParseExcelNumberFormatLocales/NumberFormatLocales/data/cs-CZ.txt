@@ -1,3 +1,4 @@
-﻿[$]dd.mm.rrrr;@
-[$]h:mm:ss AM/PM
+﻿dd.mm.rr;@
+h:mm:ss;@
 Vęeobecný
+[$-411]ggge"年"m"月"d"日";@

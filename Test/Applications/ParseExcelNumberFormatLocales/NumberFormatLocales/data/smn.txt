@@ -1,3 +1,4 @@
-﻿[$]pp.kk.vvvv;@
-[$]t:mm:ss AM/PM
-Yleinen
+﻿DD-MM-ÅÅ;@
+t:mm:ss;@
+Standard
+[$-411]ggge"年"M"月"D"日";@

@@ -1,3 +1,4 @@
-﻿[$]nn.hh.éééé;@
-[$]ó:pp:mm AM/PM
-Normál
+﻿TT.MM.JJ;@
+h:mm:ss;@
+Standard
+[$-411]ggge"年"M"月"T"日";@

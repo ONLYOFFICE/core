@@ -32,10 +32,21 @@ private slots:
     void on_verticalScrollBar_valueChanged(int value);
     void on_horizontalScrollBar_valueChanged(int value);
 
+protected:
+
+	void resizeEvent(QResizeEvent *event);
+	void closeEvent(QCloseEvent *event);
+
 private:
+
+	void RenderPage();
     bool RenderOnByteData(int nPage, BYTE*& pBgraData, int& w, int& h);
     void SetImage();
     void OpenFile();
+
+	bool IsFileOpened();
+
+private:
 
     QImage* m_pImage;
     QLabel* m_pLabel;
@@ -52,7 +63,6 @@ private:
     NSFonts::IFontManager* m_pFontManager;
     NSImages::IImageFilesCache* m_pImageCache;
 
-    // читалка PDF
     PdfReader::CPdfReader* m_pReader;
 
     Ui::MainWindow *ui;

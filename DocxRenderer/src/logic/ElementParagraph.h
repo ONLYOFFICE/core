@@ -704,6 +704,28 @@ namespace NSDocxRenderer
 
             pPrev->Write(oWriter, pManagerLight);
         }
+
+        void CalculatingLineWidth()
+        {
+            size_t countConts = m_arConts.size();
+            for (size_t i = 0; i < countConts; ++i)
+            {
+                m_dWidth += m_arConts[i]->m_dWidth;
+            }
+            m_dWidth += 1.2; //прибавила ширину последнего в строке пробела
+        }
+
+        double CalculatingLineHeight(double dBeforeSpacing)
+        {
+            double dTempHeight = 1;
+            if (abs(m_dHeight) > 0.001)
+            {
+                dTempHeight = m_dHeight;
+                if (dBeforeSpacing < 0)
+                    dTempHeight += dBeforeSpacing;
+            }
+            return dTempHeight;
+        }
     };
 
     class CParagraph : public CBaseItem
@@ -721,9 +743,12 @@ namespace NSDocxRenderer
         CFontManagerLight* m_pManagerLight;
 
         double		m_dSpaceBefore;
+        double      m_dSpaceRight;
         TextAssociationType m_eTextAssociationType;
 
         std::vector<CTextLine*> m_arLines;
+
+        std::wstring m_strAvailable;
 
     public:
         CParagraph(const TextAssociationType& eType) : m_arLines()
@@ -738,9 +763,12 @@ namespace NSDocxRenderer
             m_dHeight	= 0.0;
 
             m_dSpaceBefore = 0.0;
+            m_dSpaceRight  = 0.0;
 
             m_pManagerLight = NULL;
             m_eTextAssociationType = eType;
+
+            m_strAvailable = L"left";
         }
         CParagraph(const CParagraph& oSrc)
         {
@@ -827,6 +855,21 @@ namespace NSDocxRenderer
                     oWriter.WriteString(L"\"/></w:pPr>");
                     break;
                 }
+            case TextAssociationTypeParagraphNoFrames:
+                {
+                    oWriter.WriteString(L"<w:pPr><w:spacing w:before=\"");
+                    oWriter.AddInt((int)(m_dSpaceBefore * c_dMMToDx));
+                    oWriter.WriteString(L"\" w:line=\"");
+                    oWriter.AddInt((int)(m_dHeight * c_dMMToDx));
+                    oWriter.WriteString(L"\" w:lineRule=\"exact\"/><w:ind w:right=\"");
+                    oWriter.AddInt((int)(m_dSpaceRight * c_dMMToDx));
+                    oWriter.WriteString(L"\"  w:left=\"");
+                    oWriter.AddInt((int)(m_dLeft * c_dMMToDx));
+                    oWriter.WriteString(L"\"/> <w:jc w:val=\"");
+                    oWriter.WriteString(this->m_strAvailable);
+                    oWriter.WriteString(L"\"/></w:pPr>");
+                    break;
+                }
             default:
                 break;
             }
@@ -837,6 +880,7 @@ namespace NSDocxRenderer
                 CTextLine* pTextLine = m_arLines[i];
                 pTextLine->SortConts();
                 pTextLine->ToXml(oWriter, m_pManagerLight);
+                oWriter.WriteString(L"<w:r><w:t xml:space=\"preserve\"> </w:t></w:r>");
             }
 
             oWriter.WriteString(L"</w:p>");

@@ -45,8 +45,16 @@ private:
     void OpenFile();
 
 	bool IsFileOpened();
+	double GetPageScaleByZoomType(const double& dPageWidth, const double& dPageHeight);
 
 private:
+
+	enum ZoomType
+	{
+		pageWidth,
+		pageHeight,
+		custom
+	};
 
     QImage* m_pImage;
     QLabel* m_pLabel;
@@ -55,6 +63,7 @@ private:
     int m_nPosX;
     int m_nPosY;
     double m_dScale;
+	ZoomType m_eZoomType;
 
     // шрифты системы
     NSFonts::IApplicationFonts* m_pFonts;

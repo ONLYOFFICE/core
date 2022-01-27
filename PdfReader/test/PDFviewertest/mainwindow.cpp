@@ -10,9 +10,10 @@ MainWindow::MainWindow(QWidget *parent)
 
 	m_nPosX = 0;
     m_nPosY = 0;
-    m_dScale = 1.0;
+	m_dScale = 1.0;
     m_pReader = NULL;
     m_pImage = NULL;
+	m_eZoomType = ZoomType::pageHeight;
 
     m_pLabel = new QLabel(ui->mainView);
     m_pLabel->setScaledContents(true);
@@ -32,17 +33,17 @@ MainWindow::MainWindow(QWidget *parent)
     m_pFontManager->SetOwnerCache(pFontsCache);
     m_pImageCache = NSImages::NSFilesCache::Create(m_pFonts);
 
-#ifdef QT_DEBUG
-    ui->PageLineEdit->setText("2");
-    ui->FileNameLineEdit->setText("C:/Users/danil/Downloads/PDF32000_2008.pdf");
-    m_sFile = "C:/Users/danil/Downloads/PDF32000_2008.pdf";
-    OpenFile();
-#endif
-
 	QSettings settings("OnlyOffice (R)", "PDF Reader Test");
 	restoreGeometry(settings.value("mainWindowGeometry").toByteArray());
 	restoreState(settings.value("mainWindowState").toByteArray());
 	ui->FileNameLineEdit->setText(settings.value("mainWindowFilePath").toString());
+	m_sFile = ui->FileNameLineEdit->text();
+	ui->PageLineEdit->setText("1");
+
+#ifdef QT_DEBUG
+	OpenFile();
+#endif
+
 }
 
 MainWindow::~MainWindow()
@@ -80,8 +81,9 @@ bool MainWindow::RenderOnByteData(int nPage, BYTE*& pBgraData, int& w, int& h)
     int nWidth  = (int)dWidth;
     int nHeight = (int)dHeight;
 
-    nWidth = (int)(m_dScale * nWidth);
-    nHeight = (int)(m_dScale * nHeight);
+	double dScale = GetPageScaleByZoomType(dWidth * dDpiX / 72.0, dHeight * dDpiY / 72.0);
+	nWidth = (int)(dScale * nWidth);
+	nHeight = (int)(dScale * nHeight);
 
     w = nWidth;
     h = nHeight;
@@ -159,7 +161,7 @@ void MainWindow::SetImage()
 
 void MainWindow::on_OpenFileButton_clicked()
 {
-    m_sFile = QFileDialog::getOpenFileName(this, tr("Open PDF"), "./", tr("PDF Files (*.pdf)"));
+	m_sFile = QFileDialog::getOpenFileName(this, tr("Open PDF"), ui->FileNameLineEdit->text(), tr("PDF Files (*.pdf)"));
     ui->FileNameLineEdit->setText(m_sFile);
     OpenFile();
 }
@@ -179,6 +181,7 @@ void MainWindow::on_ScaleSlider_sliderMoved(int position)
     if (!m_pReader)
         return;
 
+	m_eZoomType = ZoomType::custom;
     m_dScale = (double)position / 100;
 	RenderPage();
 }
@@ -250,6 +253,7 @@ void MainWindow::resizeEvent(QResizeEvent* event)
    ui->horizontalScrollBar->setMaximumWidth(nW - 40);
    ui->horizontalScrollBar->setMinimumWidth(nW - 40);
 
+   ui->mainView->move(10, 40);
    ui->mainView->setMinimumWidth(nW - 40);
    ui->mainView->setMaximumWidth(nW - 40);
    ui->mainView->setMinimumHeight(nH - 176);
@@ -266,6 +270,23 @@ void MainWindow::closeEvent(QCloseEvent *event)
 bool MainWindow::IsFileOpened()
 {
 	return m_pReader && !m_pReader->GetError();
+}
+double MainWindow::GetPageScaleByZoomType(const double& dPageWidth, const double& dPageHeight)
+{
+	double dScale = m_dScale;
+
+	if (ZoomType::pageWidth == m_eZoomType)
+	{
+		int nViewWidth = ui->mainView->width();
+		dScale = nViewWidth / dPageWidth;
+	}
+	else if (ZoomType::pageHeight == m_eZoomType)
+	{
+		int nViewHeight = ui->mainView->height();
+		dScale = nViewHeight / dPageHeight;
+	}
+
+	return dScale;
 }
 void MainWindow::RenderPage()
 {

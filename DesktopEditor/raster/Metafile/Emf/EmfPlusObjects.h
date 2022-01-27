@@ -170,46 +170,19 @@ namespace MetaFile
         class CEmfPlusObject
         {
             public:
-                CEmfPlusObject(unsigned int unNewSize, bool bIsContineudObject)
-                        : unSize(unNewSize), bIsContineudObject(bIsContineudObject){};
+                CEmfPlusObject(){};
 
                 virtual EEmfPlusObjectType GetObjectType()
                 {
                         return ObjectTypeInvalid;
                 }
-
-                virtual unsigned int GetSize() const
-                {
-                        return unSize;
-                }
-
-                virtual void SetSize(unsigned int unSize)
-                {
-                        this->unSize = unSize;
-                }
-
-                virtual bool IsContineudObject() const
-                {
-                        return bIsContineudObject;
-                }
-
-            private:
-
-                friend class CEmfPlusImage;
-                friend class CEmfPlusBitmap;
-                friend class CEmfPlusBitmapData;
-                friend class CEmfPlusCompressedImage;
-                friend class CEmfPlusMetafile;
-
-                bool bIsContineudObject;
-                unsigned int unSize;
         };
 
         class CEmfPlusPath : public CEmfPlusObject, public CEmfPath
         {
             public:
-                CEmfPlusPath() : CEmfPlusObject(0, false), CEmfPath() {};
-                CEmfPlusPath(CEmfPlusPath* pPath) : CEmfPlusObject(0, false), CEmfPath(pPath) {};
+                CEmfPlusPath() : CEmfPlusObject(), CEmfPath() {};
+                CEmfPlusPath(CEmfPlusPath* pPath) : CEmfPlusObject(), CEmfPath(pPath) {};
 
                 virtual EEmfPlusObjectType GetObjectType() override
                 {
@@ -230,7 +203,7 @@ namespace MetaFile
         class CEmfPlusImageAttributes : public CEmfPlusObject
         {
             public:
-                CEmfPlusImageAttributes() : CEmfPlusObject(0, false) {};
+                CEmfPlusImageAttributes() : CEmfPlusObject() {};
 
                 virtual EEmfPlusObjectType GetObjectType() override
                 {
@@ -242,204 +215,74 @@ namespace MetaFile
                 int              nObjectClamp;
         };
 
-        class CBitmapDataBase : public CEmfPlusObject
-        {
-            public:
-                CBitmapDataBase(unsigned int unImageSize, bool bIsContineudObject)
-                        : CEmfPlusObject(unImageSize, bIsContineudObject){};
-
-                virtual EEmfPlusBitmapDataType GetType() const
-                {
-                        return BitmapDataTypeUnknow;
-                };
-        };
-
-        class CEmfPlusBitmapData : public CBitmapDataBase
-        {
-            public:
-                CEmfPlusBitmapData(bool bIsContineudObject)
-                        : CBitmapDataBase(0, bIsContineudObject){};
-
-                virtual EEmfPlusBitmapDataType GetType()
-                {
-                        return BitmapDataTypePixel;
-                };
-        };
-
-        class CEmfPlusCompressedImage : public CBitmapDataBase
-        {
-            public:
-                CEmfPlusCompressedImage(bool bIsContineudObject)
-                        : CBitmapDataBase(0, bIsContineudObject){};
-
-                virtual EEmfPlusBitmapDataType GetType()
-                {
-                        return BitmapDataTypeCompressed;
-                };
-        };
-
-        class CImageDataBase : public CEmfPlusObject
-        {
-            public:
-                CImageDataBase(unsigned int unImageSize, bool bIsContineudObject)
-                        : CEmfPlusObject(unImageSize, bIsContineudObject){};
-
-                virtual EEmfPlusImageDataType GetType() const
-                {
-                        return ImageDataTypeUnknown;
-                }
-        };
-
-        class CEmfPlusBitmap : public CImageDataBase
-        {
-            public:
-                CEmfPlusBitmap(bool bIsContineudObject)
-                        : pBitmapData(NULL), CImageDataBase(20, bIsContineudObject){};
-
-                virtual ~CEmfPlusBitmap(){ RELEASEOBJECT(pBitmapData); };
-
-                virtual EEmfPlusImageDataType GetType() const
-                {
-                        return ImageDataTypeBitmap;
-                }
-
-                virtual unsigned int GetSize() const
-                {
-                        if (NULL == pBitmapData)
-                                return unSize;
-
-                        return unSize + pBitmapData->GetSize();
-                }
-
-                bool InitData(unsigned int unType)
-                {
-                        RELEASEOBJECT(pBitmapData);
-
-                        if (unType == BitmapDataTypePixel)
-                        {
-                               pBitmapData = new CEmfPlusBitmapData(bIsContineudObject);
-                               return pBitmapData;
-                        }
-                        else if (unType == BitmapDataTypeCompressed)
-                        {
-                                pBitmapData = new CEmfPlusCompressedImage(bIsContineudObject);
-                                return pBitmapData;
-                        }
-
-                        return false;
-                }
-
-                int nWidth;
-                int nHeight;
-                int nStride;
-                int nPixelFormat;
-
-                CBitmapDataBase *pBitmapData;
-        };
-
-        class CEmfPlusMetafile : public CImageDataBase
-        {
-            public:
-                CEmfPlusMetafile(bool bIsContineudObject)
-                        : pMetafileData(NULL), unLastDataSize(0),
-                          CImageDataBase(8, bIsContineudObject){};
-
-                virtual ~CEmfPlusMetafile() { RELEASEOBJECT(pMetafileData); };
-
-                virtual EEmfPlusImageDataType GetType() const
-                {
-                        return ImageDataTypeMetafile;
-                }
-
-                BYTE * GetData() const
-                {
-                        return pMetafileData;
-                }
-
-                void SetData(BYTE* pData, unsigned int unSizeData)
-                {
-                        RELEASEOBJECT(pMetafileData);
-
-                        unSize -= unLastDataSize;
-                        unLastDataSize = unSizeData;
-                        unSize += unLastDataSize;
-
-                        pMetafileData = pData;
-                }
-
-                void SetMetafileSize(unsigned int unSize)
-                {
-                        unMetafileSize = unSize;
-                }
-
-                unsigned int GetMetafileSize() const
-                {
-                        return unMetafileSize;
-                }
-
-            private:
-
-                BYTE *pMetafileData;
-                unsigned int unLastDataSize;
-                unsigned int unMetafileSize;
-        };
-
         class CEmfPlusImage : public CEmfPlusObject
         {
             public:
-                CEmfPlusImage(bool bIsContineudObject)
-                        : pImageData(NULL), CEmfPlusObject(8, bIsContineudObject){};
-
-                virtual ~CEmfPlusImage() { RELEASEOBJECT(pImageData); };
-
-                bool InitData(unsigned int unType)
+                CEmfPlusImage() : CEmfPlusObject(), m_pImageBuffer(NULL), m_ulPosition(0),
+                                  m_ulFullSize(0), m_eImageDataType(ImageDataTypeUnknown){};
+                ~CEmfPlusImage()
                 {
-                        RELEASEOBJECT(pImageData)
-
-                        if (unType == ImageDataTypeBitmap)
-                        {
-                                pImageData = new CEmfPlusBitmap(bIsContineudObject);
-                                return pImageData;
-                        }
-                        else if (unType == ImageDataTypeMetafile)
-                        {
-                                pImageData = new CEmfPlusMetafile(bIsContineudObject);
-                                return pImageData;
-                        }
-
-                        return false;
-                }
+                        if (NULL != m_pImageBuffer)
+                                delete [] m_pImageBuffer;
+                };
 
                 virtual EEmfPlusObjectType GetObjectType() override
                 {
                         return ObjectTypeImage;
                 }
 
-                virtual unsigned int GetSize() const
+                void SetImageDataType(unsigned int unImageDataType)
                 {
-                        if (NULL == pImageData)
-                                return unSize;
-
-                        return unSize + pImageData->GetSize();
+                        if (ImageDataTypeBitmap == unImageDataType)
+                               m_eImageDataType = ImageDataTypeBitmap;
+                        else if (ImageDataTypeMetafile == unImageDataType)
+                                m_eImageDataType = ImageDataTypeMetafile;
                 }
 
-                BYTE *GetMetafileData() const
+                EEmfPlusImageDataType GetImageDataType() const
                 {
-                        if (NULL == pImageData || pImageData->GetType() != ImageDataTypeMetafile)
-                                return NULL;
-
-                        ((CEmfPlusMetafile*)pImageData)->GetData();
+                        return m_eImageDataType;
                 }
 
-                unsigned int GetMetafileSize() const
+                void SetSizeData(unsigned int unSize)
                 {
-                        if (NULL == pImageData || pImageData->GetType() != ImageDataTypeMetafile)
-                                return 0;
+                        if (NULL != m_pImageBuffer)
+                                delete [] m_pImageBuffer;
 
-                        ((CEmfPlusMetafile*)pImageData)->GetMetafileSize();
+                        m_pImageBuffer = new BYTE[unSize];
+                        m_ulFullSize = unSize;
                 }
 
-                CImageDataBase *pImageData;
+                unsigned int GetUnreadSize() const
+                {
+                        return (m_ulFullSize - m_ulPosition);
+                }
+
+                void AddData(BYTE *pData, unsigned int unSize)
+                {
+                        if (m_ulFullSize == 0)
+                                return;
+
+                        if (unSize + m_ulPosition > m_ulFullSize)
+                                unSize = m_ulFullSize - m_ulPosition;
+
+                        memcpy(m_pImageBuffer + m_ulPosition * sizeof (BYTE), pData, unSize);
+
+                        m_ulPosition += unSize;
+                }
+
+                void GetData(BYTE*& pBuffer, unsigned int& unSize) const
+                {
+                        pBuffer = m_pImageBuffer;
+                        unSize = m_ulPosition;
+                }
+
+            private:
+                BYTE* m_pImageBuffer;
+                ULONG m_ulPosition;
+                ULONG m_ulFullSize;
+
+                EEmfPlusImageDataType m_eImageDataType;
         };
 
         typedef  enum
@@ -481,7 +324,7 @@ namespace MetaFile
         class CEmfPlusRegion : public CEmfPlusObject
         {
             public:
-                CEmfPlusRegion() : CEmfPlusObject(0, false) {};
+                CEmfPlusRegion() : CEmfPlusObject() {};
                 virtual ~CEmfPlusRegion(){};
 
                 virtual EEmfPlusObjectType GetObjectType() override
@@ -490,96 +333,6 @@ namespace MetaFile
                 }
 
                 std::vector<CEmfPlusRegionNode> arNodes;
-        };
-
-        class CEmfPlusContineudObjectRecord
-        {
-            public:
-                CEmfPlusContineudObjectRecord() : pImage(NULL), unPosition(0) {};
-                virtual ~CEmfPlusContineudObjectRecord() {};
-
-                void SetDataSize(unsigned int unSize)
-                {
-                        arData.reserve(unSize);
-                        unDataSize = unSize;
-                }
-
-                void SetNeedReadSize(unsigned int unSize)
-                {
-                        unNeedRead = unSize;
-                }
-
-                void AddData(BYTE *pData, unsigned int unSize)
-                {
-                        std::vector<BYTE> arNewData(pData, pData + unSize);
-                        arData.insert(arData.begin() + unPosition, arNewData.begin(), arNewData.end());
-                        unPosition += arNewData.size();
-                }
-
-                BYTE* GetData() const
-                {
-                        return (BYTE*)arData.data();
-                }
-
-                unsigned int GetNeedReadSize() const
-                {
-                        return unNeedRead;
-                }
-
-                bool IsFirstReading() const
-                {
-                        return (unPosition == 0);
-                }
-
-                bool IsLastReading()
-                {
-                        return ((unPosition + unNeedRead) >= unDataSize);
-                }
-
-                void SetEmfPlusImage(CEmfPlusImage* pImage)
-                {
-                        this->pImage = pImage;
-
-                        if (NULL != pImage)
-                               SetDataSize(pImage->GetMetafileSize());
-                }
-
-                void UpdateImage()
-                {
-                        if (NULL == pImage)
-                                return;
-
-                        if (NULL != pImage && NULL != pImage->pImageData && pImage->pImageData->GetType() == ImageDataTypeMetafile)
-                        {
-                                unsigned int unSizeData = arData.size();
-                                BYTE* pBuffer = new BYTE[unSizeData];
-                                memcpy(pBuffer, arData.data(), unSizeData);
-                                ((CEmfPlusMetafile*)pImage->pImageData)->SetData(pBuffer, unSizeData);
-                        }
-                }
-
-                CEmfPlusImage* GetEmfPlusImage() const
-                {
-                        return pImage;
-                }
-
-                unsigned int GetSize() const
-                {
-                        return arData.size();
-                }
-
-                unsigned int GetMaxSize() const
-                {
-                        return unDataSize;
-                }
-
-            private:
-                std::vector<BYTE>       arData;
-                unsigned int            unPosition;
-                unsigned int            unNeedRead;
-                unsigned int            unDataSize;
-
-                CEmfPlusImage*          pImage;
         };
 }
 

@@ -204,7 +204,7 @@ namespace MetaFile
                                 //-----------------------------------------------------------
                                 // Неподдерживаемые записи
                                 //-----------------------------------------------------------
-                                case EMR_GDICOMMENT: Read_EMR_UNKNOWN(); break;
+                                case EMR_GDICOMMENT: Read_EMR_COMMENT(); break;
                                 //-----------------------------------------------------------
                                 // Неизвестные записи
                                 //-----------------------------------------------------------
@@ -1401,12 +1401,12 @@ namespace MetaFile
                         {
                                 m_pEmfPlusParser = new CEmfPlusParser(m_pInterpretator, m_oHeader);
                                 m_pEmfPlusParser->SetFontManager(GetFontManager());
-//                                m_pEmfPlusParser->CopyDC(m_pDC);
                         }
 
                         m_pEmfPlusParser->SetStream(m_oStream.GetCurPtr(), m_ulRecordSize - 8);
-//                        m_pEmfPlusParser->Scan();
                         m_pEmfPlusParser->PlayFile();
+
+                        m_oStream.Skip(m_ulRecordSize - 8);
                 }
         }
 }

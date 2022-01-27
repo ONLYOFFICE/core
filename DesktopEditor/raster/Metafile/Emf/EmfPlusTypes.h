@@ -162,7 +162,7 @@ namespace MetaFile
                         dHeight = (double)oRectangle.shHeight;
                 }
 
-                TRectD GetRectD()
+                TRectD GetRectD() const
                 {
                         TRectD oRectangle;
 
@@ -174,7 +174,7 @@ namespace MetaFile
                         return oRectangle;
                 }
 
-                TEmfRectL GetRectL()
+                TEmfRectL GetRectL() const
                 {
                         TEmfRectL oRectangle;
 

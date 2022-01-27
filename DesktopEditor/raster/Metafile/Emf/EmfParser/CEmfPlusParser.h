@@ -28,7 +28,12 @@ namespace MetaFile
             private:
                 bool ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight) override;
 
-                void ReadImage(unsigned short shObjectIndex, bool bIsContineudObject);
+                void ReadImage(unsigned short shObjectIndex, bool bIsContinuedObject);
+
+                void ReadImage(CEmfPlusImage& oImage, bool bReadData = true);
+                void ReadMetaFile(CEmfPlusImage& oImage, bool bReadData);
+                void ReadBitmap(CEmfPlusImage& oImage, bool bReadData);
+
                 CEmfPlusImage* GetImage(unsigned int unImageIndex);
 
                 CEmfPlusPath* ReadPath();
@@ -42,11 +47,14 @@ namespace MetaFile
                 std::vector<TEmfPlusPointF> ReadPointsF(unsigned int unPointCount);
                 std::vector<char> ReadPointTypes(unsigned int unPointCount);
 
-                void DrawRectangle(TEmfPlusRectF oRectangle, bool bStroke, bool bFill);
+                void DrawRectangle(const TEmfPlusRectF& oRectangle, bool bStroke, bool bFill);
 
                 void DrawLines(std::vector<TEmfPlusPointF> arPoints, bool bCloseFigure);
 
-                void DrawImagePoints(unsigned int unImageIndex, unsigned int unImageAttributeIndex, TEmfPlusRectF oSrcRect, std::vector<TEmfPlusPointF> arPoints);
+                void DrawImagePoints(unsigned int unImageIndex, unsigned int unImageAttributeIndex, const TEmfPlusRectF& oSrcRect, const std::vector<TEmfPlusPointF>& arPoints);
+                void DrawMetafile(BYTE* pBuffer, unsigned int unSize, const TEmfPlusRectF& oSrcRect, const std::vector<TEmfPlusPointF>& arPoints);
+                void DrawBitmap(BYTE* pBuffer, unsigned int unSize, const TEmfPlusRectF& oSrcRect, const std::vector<TEmfPlusPointF>& arPoints);
+
                 TEmfPlusARGB ApplyImageAttributes(TEmfPlusRectF& oRectangle, const CEmfPlusImageAttributes& oImageAttributes);
 
                 void CombineClip(TRectD oBox, int nMode);
@@ -133,17 +141,16 @@ namespace MetaFile
                 void Read_EMFPLUS_TRANSLATEWORLDTRANSFORM(unsigned short unShFlags);
 
                 template<typename T> short ExpressValue(T Flags, unsigned int unStartIndex, unsigned int unEndIndex) const;
-                bool InitContineudObject();
 
                 bool            m_bBanEmfProcessing;
                 unsigned int    m_unLogicalDpiX;
                 unsigned int    m_unLogicalDpiY;
 
+                double          m_dUnitKoef;
+
                 typedef std::map<unsigned int, CEmfPlusObject*> EmfPlusObjects;
 
                 EmfPlusObjects m_mObjects;
-
-                CEmfPlusContineudObjectRecord*  m_pContineudObject;
         };
 }
 

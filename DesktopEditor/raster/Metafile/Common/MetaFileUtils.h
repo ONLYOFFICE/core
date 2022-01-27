@@ -953,18 +953,6 @@ namespace MetaFile
 
 			return *this;
 		}
-		CDataStream& operator>>(CEmfPlusContineudObjectRecord & oContineudObjectRecord)
-		{
-			unsigned int unNeedRead = oContineudObjectRecord.GetNeedReadSize();
-
-			BYTE* pBytes = new BYTE[unNeedRead];
-			ReadBytes(pBytes, unNeedRead);
-
-			oContineudObjectRecord.AddData(pBytes, unNeedRead);
-			oContineudObjectRecord.SetNeedReadSize(0);
-
-			return *this;
-		}
 		CDataStream& operator>>(CEmfPlusImageAttributes& oAttributes)
 		{
 			Skip(8); //Version, Reserved 1 (4 bytes)
@@ -982,94 +970,6 @@ namespace MetaFile
 			*this >> oAttributes.nObjectClamp;
 
 			Skip(4); //Reserved 2 (4 bytes)
-		}
-		CDataStream& operator>>(CEmfPlusImage& oImage)
-		{
-			unsigned int unVersion, unType;
-
-			*this >> unVersion;
-			*this >> unType;
-
-			if (unType < EEmfPlusImageDataType::ImageDataTypeUnknown || unType > EEmfPlusImageDataType::ImageDataTypeMetafile)
-				return *this;
-
-			if (!oImage.InitData(EEmfPlusImageDataType(unType)))
-				return *this;
-
-			*this >> *oImage.pImageData;
-
-			return *this;
-		}
-		CDataStream& operator>>(CEmfPlusBitmap& oImageDataBitmap)
-		{
-			*this >> oImageDataBitmap.nWidth;
-			*this >> oImageDataBitmap.nHeight;
-			*this >> oImageDataBitmap.nStride;
-			*this >> oImageDataBitmap.nPixelFormat;
-
-			unsigned int unType;
-
-			*this >> unType;
-
-			if (unType > EEmfPlusBitmapDataType::BitmapDataTypeUnknow || unType < EEmfPlusBitmapDataType::BitmapDataTypePixel)
-				return *this;
-
-			if (!oImageDataBitmap.InitData(unType))
-				return *this;
-
-			*this >> *oImageDataBitmap.pBitmapData;
-
-			return *this;
-		}
-		CDataStream& operator>>(CBitmapDataBase& oEmfPlusBitmapDataBase)
-		{
-			if (oEmfPlusBitmapDataBase.GetType() == BitmapDataTypeUnknow)
-				return *this;
-			else if (oEmfPlusBitmapDataBase.GetType() == BitmapDataTypePixel)
-				*this >> static_cast<CEmfPlusBitmapData&>(oEmfPlusBitmapDataBase);
-			else if (oEmfPlusBitmapDataBase.GetType() == BitmapDataTypeCompressed)
-				*this >> static_cast<CEmfPlusCompressedImage&>(oEmfPlusBitmapDataBase);
-
-			return *this;
-		}
-		CDataStream& operator>>(CEmfPlusBitmapData& oEmfPlusBitmapData)
-		{
-			return *this;
-		}
-		CDataStream& operator>>(CEmfPlusCompressedImage& oEmfPlusCompressedImage)
-		{
-			return *this;
-		}
-		CDataStream& operator>>(CEmfPlusMetafile& oImageDataMetafile)
-		{
-			unsigned int unType, unMetafileDataSize;
-
-			*this >> unType;
-			*this >> unMetafileDataSize;
-
-			oImageDataMetafile.SetMetafileSize(unMetafileDataSize);
-
-			if (!oImageDataMetafile.IsContineudObject())
-			{
-				BYTE *pBuffer = new BYTE[unMetafileDataSize];
-
-				ReadBytes(pBuffer, unMetafileDataSize);
-
-				oImageDataMetafile.SetData(pBuffer, unMetafileDataSize);
-			}
-
-			return *this;
-		}
-		CDataStream& operator>>(CImageDataBase& oImageDataBase)
-		{
-			if (oImageDataBase.GetType() == ImageDataTypeUnknown)
-				return *this;
-			else if (oImageDataBase.GetType() == ImageDataTypeBitmap)
-				*this >> static_cast<CEmfPlusBitmap&>(oImageDataBase);
-			else if (oImageDataBase.GetType() == ImageDataTypeMetafile)
-				*this >> static_cast<CEmfPlusMetafile&>(oImageDataBase);
-
-			return *this;
 		}
 		CDataStream& operator>>(TWmfRect& oRect)
 		{

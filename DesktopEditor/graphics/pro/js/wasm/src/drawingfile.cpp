@@ -154,8 +154,8 @@ static DWORD GetLength(BYTE* x)
 int main()
 {
 #define XPS_TEST  0
-#define DJVU_TEST 1
-#define PDF_TEST  0
+#define DJVU_TEST 0
+#define PDF_TEST  1
 #if PDF_TEST
     BYTE* pPdfData = NULL;
     DWORD nPdfBytesCount;
@@ -192,7 +192,7 @@ int main()
 
     BYTE* res = NULL;
     if (pages_count > 0)
-        res = GetPixmap(test, test_page, width, height);
+        res = GetPixmap(test, test_page, width, height, 0xFFFFFF);
 
     CBgraFrame* resFrame = new CBgraFrame();
     resFrame->put_Data(res);
@@ -259,7 +259,6 @@ int main()
     Close(test);
     RELEASEARRAYOBJECTS(pPdfData);
     RELEASEARRAYOBJECTS(pLinks);
-    RELEASEARRAYOBJECTS(pGlyphs);
     RELEASEARRAYOBJECTS(pStructure);
     RELEASEARRAYOBJECTS(info);
     RELEASEARRAYOBJECTS(res);

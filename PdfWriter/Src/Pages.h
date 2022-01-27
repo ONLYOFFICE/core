@@ -169,7 +169,7 @@ namespace PdfWriter
 		CPoint       m_oCurPos;            // Текущая позиция пата
 		CPoint       m_oTextPos;           // Текущая позиция текста
 		CMatrix      m_oTextMatrix;
-		CDictObject* m_pContents;
+		CArrayObject* m_pContents;
 		CStream*     m_pStream;
 		unsigned int m_unCompressionMode;
 		CDictObject* m_pExtGStates;

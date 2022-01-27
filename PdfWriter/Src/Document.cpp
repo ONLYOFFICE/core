@@ -192,10 +192,10 @@ namespace PdfWriter
 			m_pFreeTypeLibrary = NULL;
 		}
 	}
-    bool CDocument::SaveToFile(const std::wstring& wsPath)
+    bool CDocument::SaveToFile(const std::wstring& wsPath, bool bAdd)
 	{
 		CFileStream* pStream = new CFileStream();
-		if (!pStream || !pStream->OpenFile(wsPath, true))
+		if (!pStream || !pStream->OpenFile(wsPath, bAdd))
 			return false;
 
 		if (m_pJbig2)

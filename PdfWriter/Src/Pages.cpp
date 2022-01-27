@@ -206,8 +206,9 @@ namespace PdfWriter
 
 		m_pXref     = pXref;
 		m_pDocument = pDocument;
-		m_pContents = new CDictObject(pXref);
-		m_pStream   = m_pContents->GetStream();
+		m_pContents = new CArrayObject();
+		m_pContents->Add(new CDictObject(pXref));
+		m_pStream   = ((CDictObject*)m_pContents->Get(0))->GetStream();
 		m_eGrMode   = grmode_PAGE;
 		m_pGrState  = new CGrState(NULL);
 
@@ -1284,7 +1285,13 @@ namespace PdfWriter
     void CPage::SetFilter(unsigned int unFiler)
 	{
 		if (m_pContents)
-			m_pContents->SetFilter(unFiler);
+		{
+			for (unsigned int unKidIndex = 0, unKidsCount = m_pContents->GetCount(); unKidIndex < unKidsCount; ++unKidIndex)
+			{
+				CDictObject* pKid = (CDictObject*)m_pContents->Get(unKidIndex);
+				pKid->SetFilter(unFiler);
+			}
+		}
 	}
 	CMatrix*      CPage::GetTransform()
 	{

@@ -33,12 +33,9 @@
 
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/TxBody.h"
 #include "ShapeWriter.h"
+
 namespace PPT_FORMAT
 {
-//class CShapeWriter;
-//class CShapeElement;
-//class CRelsGenerator;
-
 class TxBodyConverter
 {
 public:

@@ -3,10 +3,7 @@
 #include <iostream>
 
 TableWriter::TableWriter(CTableElement *pTableElement, CRelsGenerator* pRels) :
-    m_pTableElement(pTableElement), m_pRels(pRels)
-{
-
-}
+    m_pTableElement(pTableElement), m_pRels(pRels) {}
 
 void TableWriter::Convert(PPTX::Logic::GraphicFrame &oGraphicFrame)
 {
@@ -78,8 +75,7 @@ std::vector<int> ProtoTable::getWidth(const std::vector<CElementPtr>& arrCells, 
     std::map<double, double> mapLeftWidth;
     for (const auto ptrCell : arrCells)
     {
-        auto pCell = dynamic_cast<CShapeElement*>(ptrCell.get());
-        if (!pCell) continue;
+        auto pCell = static_cast<CShapeElement*>(ptrCell.get());
         double left = pCell->m_rcChildAnchor.left;
         double width = pCell->m_rcChildAnchor.right - left;
 
@@ -113,8 +109,7 @@ std::vector<int> ProtoTable::getHeight(const std::vector<CElementPtr>& arrCells,
     std::map<double, double> mapTopHeight;
     for (const auto ptrCell : arrCells)
     {
-        auto pCell = dynamic_cast<CShapeElement*>(ptrCell.get());
-        if (!pCell) continue;
+        auto pCell = static_cast<CShapeElement*>(ptrCell.get());
         double top = pCell->m_rcChildAnchor.top;
         double height = pCell->m_rcChildAnchor.bottom - top;
 
@@ -190,7 +185,7 @@ bool ProtoTable::fillCells(std::vector<CElementPtr> &arrCells)
 
     for (auto ptrCell : arrCells)
     {
-        auto pCell = dynamic_cast<CShapeElement*>(ptrCell.get());
+        auto pCell = static_cast<CShapeElement*>(ptrCell.get());
         int left = pCell->m_rcChildAnchor.left;
         int top = pCell->m_rcChildAnchor.top;
         int right = pCell->m_rcChildAnchor.right;
@@ -235,7 +230,7 @@ void ProtoTable::fillBorders(std::vector<CElementPtr> &arrSpliters)
 {
     for (const auto ptrBorder : arrSpliters)
     {
-        auto pBorder = dynamic_cast<CShapeElement*>(ptrBorder.get());
+        auto pBorder = static_cast<CShapeElement*>(ptrBorder.get());
         int left = pBorder->m_rcChildAnchor.left;
         int top = pBorder->m_rcChildAnchor.top;
         int right = pBorder->m_rcChildAnchor.right;
@@ -319,31 +314,33 @@ bool ProtoTable::isDefaultBoard(const CShapeElement *pBorder)
     return color.m_lSchemeIndex == 13;
 }
 
-std::vector<std::vector<CShapeElement*> > ProtoTable::getRows(std::vector<CShapeElement *> &arrCells)
-{
-    std::vector<std::vector<CShapeElement*> > arrRows;
-    int rowTop = -1;
-    for (auto* pCell : arrCells)
-    {
-        if (!pCell) continue;
+// It was not been used
+//std::vector<std::vector<CShapeElement*> > ProtoTable::getRows(std::vector<CShapeElement *> &arrCells)
+//{
+//    std::vector<std::vector<CShapeElement*> > arrRows;
+//    int rowTop = -1;
+//    for (auto* pCell : arrCells)
+//    {
+//        if (!pCell) continue;
 
-        int top = int(pCell->m_rcChildAnchor.top);
-        if (top != rowTop)
-        {
-            rowTop = top;
-            arrRows.push_back(std::vector<CShapeElement*>());
-        }
-        arrRows.back().push_back(pCell);
-    }
+//        int top = int(pCell->m_rcChildAnchor.top);
+//        if (top != rowTop)
+//        {
+//            rowTop = top;
+//            arrRows.push_back(std::vector<CShapeElement*>());
+//        }
+//        arrRows.back().push_back(pCell);
+//    }
 
-    return arrRows;
-}
+//    return arrRows;
+//}
 
 MProtoTable ProtoTable::getTable() const
 {
     return m_table;
 }
 
+// I dunno What to use TableStyleId for?
 void TableWriter::FillTblPr(PPTX::Logic::TableProperties &oTblPr)
 {
     //    oTblPr.TableStyleId = L"{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}";
@@ -367,6 +364,8 @@ void TableWriter::prepareShapes(std::vector<CElementPtr> &arrCells, std::vector<
     for (const auto& ptrShape : m_pTableElement->m_pChildElements)
     {
         auto pShapeEl = dynamic_cast<CShapeElement*>(ptrShape.get());
+        if (pShapeEl == nullptr) continue;
+
         switch (pShapeEl->m_lShapeType)
         {
         case 1:
@@ -427,7 +426,7 @@ void TableWriter::FillnvPr(PPTX::Logic::NvPr &oNvPr)
 }
 
 TCell::TCell(CElementPtr ptrShape, int row, int col, CRelsGenerator* pRels, TCell *pParent) :
-    m_pShape(ptrShape), m_row(row), m_col(col), m_rowSpan(1), m_gridSpan(1),
+    m_ptrSpElCell(ptrShape), m_row(row), m_col(col), m_rowSpan(1), m_gridSpan(1),
     m_pParent(pParent), m_parentDirection(none), m_pRels(pRels)
 {
     setParentDirection();
@@ -455,7 +454,7 @@ void TCell::FillTc(PPTX::Logic::TableCell &oTc)
 
 void TCell::setBorder(TCell::eBorderPossition borderPos, CElementPtr ptrBorder)
 {
-    if (m_pShape.get())
+    if (m_ptrSpElCell.get())
         m_mapBorders[borderPos] = ptrBorder;
     else if (m_pParent)
         m_pParent->setBorder(borderPos, ptrBorder);
@@ -468,7 +467,7 @@ TCell::eMergeDirection TCell::parentDirection() const
 
 int TCell::getHeight() const
 {
-    auto pShape = m_pParent ? m_pParent->m_pShape : m_pShape;
+    auto pShape = m_pParent ? m_pParent->m_ptrSpElCell : m_ptrSpElCell;
     double multip = pShape->m_bAnchorEnabled ? 1587.5 : 1;
     double height = pShape->m_rcChildAnchor.bottom - pShape->m_rcChildAnchor.top;
 
@@ -517,13 +516,13 @@ bool TCell::isRealCell() const
 
 void TCell::FillTxBody(PPTX::Logic::TxBody &oTxBody)
 {
-    TxBodyConverter txBodyConverter(m_pShape, m_pRels);
+    TxBodyConverter txBodyConverter(m_ptrSpElCell, m_pRels);
     txBodyConverter.FillTxBody(oTxBody);
 }
 
 void TCell::FillTcPr(PPTX::Logic::TableCellProperties &oTcPr)
 {
-    auto pShapeEl = static_cast<CShapeElement*>(m_pShape.get());
+    auto pShapeEl = static_cast<CShapeElement*>(m_ptrSpElCell.get());
     auto pShape = pShapeEl->m_pShape;
     //anchor
     auto& attr = pShape->m_oText.m_oAttributes;
@@ -552,7 +551,7 @@ void TCell::FillTcPr(PPTX::Logic::TableCellProperties &oTcPr)
         oTcPr.HorzOverflow->set(L"overflow");
     }
 
-    auto& brush = m_pShape->m_oBrush;
+    auto& brush = m_ptrSpElCell->m_oBrush;
     auto pSolidFill = new PPTX::Logic::SolidFill;
 
     auto& clr = brush.Color1;
@@ -721,7 +720,7 @@ void TCell::setRowSpan(int rowSpan)
 
 void TCell::setPShape(CElementPtr ptrShape)
 {
-    m_pShape = ptrShape;
+    m_ptrSpElCell = ptrShape;
     m_parentDirection = none;
 }
 

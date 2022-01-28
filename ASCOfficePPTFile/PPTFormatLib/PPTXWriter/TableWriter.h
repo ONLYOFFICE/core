@@ -88,7 +88,7 @@ private:
     void setParentDirection();
 
 private:
-    CElementPtr m_pShape;
+    CElementPtr m_ptrSpElCell;
 
     std::map<eBorderPossition, CElementPtr> m_mapBorders;
 
@@ -103,7 +103,7 @@ private:
     eMergeDirection m_parentDirection;
 
     // Common
-     CRelsGenerator* m_pRels;
+    CRelsGenerator* m_pRels;
 };
 
 
@@ -129,13 +129,13 @@ private:
     bool fillCells(std::vector<CElementPtr> &arrCells);
     void fillBorders(std::vector<CElementPtr> &arrSpliters);
     bool findCellPos(const int top, const int left, UINT& posRow, UINT& posCol);
-    std::list<TCell *> getParentCellFromTable(const UINT posFRow, const UINT posFCol, const UINT posLRow, const UINT posLCol);
+    std::list<TCell*> getParentCellFromTable(const UINT posFRow, const UINT posFCol, const UINT posLRow, const UINT posLCol);
     void setBorders(const UINT posFRow, const UINT posFCol, const UINT posLRow, const UINT posLCol, CElementPtr ptrBorder);
 
     bool isDefaultBoard(const CShapeElement *pBorder);
 
     std::vector<std::vector<CShapeElement *> >
-        getRows(std::vector<CShapeElement *> &arrCells);
+    getRows(std::vector<CShapeElement *> &arrCells);
 
 private:
     std::vector<int> m_arrLeft;

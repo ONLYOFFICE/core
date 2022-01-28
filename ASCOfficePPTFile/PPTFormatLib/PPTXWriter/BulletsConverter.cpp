@@ -1,15 +1,9 @@
 #include "BulletsConverter.h"
 #include "StylesWriter.h"
 
-
 using namespace PPT_FORMAT;
 
-
-BulletsConverter::BulletsConverter(CRelsGenerator* pRels) : m_pRels(pRels)
-{
-
-}
-
+BulletsConverter::BulletsConverter(CRelsGenerator* pRels) : m_pRels(pRels) {}
 
 void BulletsConverter::FillPPr(PPTX::Logic::TextParagraphPr &oPPr, CParagraph &paragraph)
 {

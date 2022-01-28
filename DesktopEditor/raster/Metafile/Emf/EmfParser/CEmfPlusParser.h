@@ -26,6 +26,8 @@ namespace MetaFile
                 bool GetBanEMFProcesses();
 
             private:
+                void RegisterObject(CEmfPlusObject* pObject, unsigned int unIndex);
+
                 bool ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight) override;
 
                 void ReadImage(unsigned short shObjectIndex, bool bIsContinuedObject);

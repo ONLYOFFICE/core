@@ -193,6 +193,22 @@ namespace MetaFile
                 return m_bBanEmfProcessing;
         }
 
+        void CEmfPlusParser::RegisterObject(CEmfPlusObject *pObject, unsigned int unIndex)
+        {
+                if (NULL == pObject) return;
+
+                EmfPlusObjects::const_iterator oFoundObject = m_mObjects.find(unIndex);
+
+                if (m_mObjects.end() != oFoundObject)
+                {
+                        CEmfPlusObject* pOldObject = oFoundObject->second;
+                        delete pOldObject;
+                        m_mObjects.erase(unIndex);
+                }
+
+                m_mObjects.insert(std::pair<unsigned int, CEmfPlusObject*>(unIndex, pObject));
+        }
+
         void CEmfPlusParser::PlayFile()
         {
                 unsigned short unShType, unShFlags;
@@ -331,7 +347,7 @@ namespace MetaFile
 
                         ReadImage(*pImage);
 
-                        m_mObjects[shObjectIndex] = pImage;
+                        RegisterObject(pImage, shObjectIndex);
 
                         return;
                 }
@@ -354,7 +370,7 @@ namespace MetaFile
 
                         ReadImage(*pImage, false);
 
-                        m_mObjects[shObjectIndex] = pImage;
+                        RegisterObject(pImage, shObjectIndex);
 
                         if (ImageDataTypeMetafile == pImage->GetImageDataType())
                                 unNeedRead -= 20;
@@ -432,11 +448,11 @@ namespace MetaFile
 
                 if (!bReadData) return;
 
-                BYTE* pBuffer = new BYTE[m_ulRecordSize - 32];
+                BYTE* pBuffer = new BYTE[m_ulRecordSize - 28];
 
-                m_oStream.ReadBytes(pBuffer, m_ulRecordSize - 32);
+                m_oStream.ReadBytes(pBuffer, m_ulRecordSize - 28);
 
-                oImage.AddData(pBuffer, m_ulRecordSize - 32);
+                oImage.AddData(pBuffer, m_ulRecordSize - 28);
         }
 
         CEmfPlusImage* CEmfPlusParser::GetImage(unsigned int unImageIndex)
@@ -767,7 +783,7 @@ namespace MetaFile
 
                 pImage->GetData(pBuffer, unSizeBuffer);
 
-                CEmfPlusImageAttributes *pImageAttributes = GetImageAttributes(unImageAttributeIndex);
+//                CEmfPlusImageAttributes *pImageAttributes = GetImageAttributes(unImageAttributeIndex);
 
                 if (NULL == pBuffer || unSizeBuffer == 0 || arPoints.size() != 3)
                         return;
@@ -838,8 +854,7 @@ namespace MetaFile
 
                         BYTE* pPixels = oRenderer.GetPixels(lWidth, lHeight);
 
-                        if (oEmfParser.GetTransform()->M22 < 0)
-                                FlipYImage(pPixels, lWidth, lHeight); //Проверить на примерах, где WrapMode != WrapModeTileFlipXY
+                        FlipYImage(pPixels, lWidth, lHeight); //Проверить на примерах, где WrapMode != WrapModeTileFlipXY
 
                         TEmfRectL oClipRect;
 
@@ -1216,7 +1231,7 @@ namespace MetaFile
 
                 CEmfPlusPath *pPath = GetPath(shOgjectIndex);
 
-                if (pPath)
+                if (NULL != pPath)
                 {
                         m_oPlayer.SelectObject(unPenId);
                         pPath->Draw(m_pInterpretator, true, false);
@@ -1502,6 +1517,7 @@ namespace MetaFile
                         {
                                 LOGGING(L"Object Pen with index: " << shObjectIndex)
                                 CEmfPlusPen *pEmfPlusPen = new CEmfPlusPen;
+
                                 m_oStream >> *pEmfPlusPen;
 
                                 m_oPlayer.RegisterObject(shObjectIndex, (CEmfObjectBase*)pEmfPlusPen);
@@ -1510,11 +1526,10 @@ namespace MetaFile
                         }
                         case ObjectTypePath:
                         {
-                                LOGGING(L"Object Path")
+                                LOGGING(L"Object Path with index: " << shObjectIndex)
                                 CEmfPlusPath* pPath = ReadPath();
 
-                                if (NULL != pPath)
-                                        m_mObjects[shObjectIndex] = pPath;
+                                RegisterObject(pPath, shObjectIndex);
 
                                 break;
                         }
@@ -1523,8 +1538,7 @@ namespace MetaFile
                                 LOGGING(L"Object Region")
                                 CEmfPlusRegion *pEmfPlusRegion = ReadRegion();
 
-                                if (NULL != pEmfPlusRegion)
-                                        m_mObjects[shObjectIndex] = pEmfPlusRegion;
+                                RegisterObject(pEmfPlusRegion, shObjectIndex);
 
                                 break;
                         }
@@ -1553,7 +1567,7 @@ namespace MetaFile
                                 if (NULL != pImageAttributes)
                                 {
                                         m_oStream >> *pImageAttributes;
-                                        m_mObjects[shObjectIndex] = pImageAttributes;
+                                        RegisterObject(pImageAttributes, shObjectIndex);
                                 }
 
                                 break;

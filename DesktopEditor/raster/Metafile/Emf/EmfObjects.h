@@ -207,9 +207,9 @@ namespace MetaFile
 		{
 			return PenStyle;
 		}
-		unsigned int GetWidth()
+		double GetWidth()
 		{
-			return Width;
+			return (double)Width;
 		}
 
 	public:

@@ -77,7 +77,7 @@ namespace MetaFile
 
 		virtual int          GetColor() = 0;
 		virtual unsigned int GetStyle() = 0;
-		virtual unsigned int GetWidth() = 0;
+		virtual double GetWidth() = 0;
 	};
 }
 

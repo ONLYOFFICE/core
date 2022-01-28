@@ -421,9 +421,9 @@ public:
 	{
 		return (unsigned int)PenStyle;
 	}
-	unsigned int GetWidth()
+	double GetWidth()
 	{
-		return (unsigned int)Width;
+		return (double)Width;
 	}
 
 public:

@@ -12,30 +12,6 @@ namespace MetaFile
                 m_pEmfPlusParser(NULL)
         {}
 
-        CEmfParser::CEmfParser(const CEmfInterpretatorBase *pEmfInterpretatorBase) :
-                m_pEmfPlusParser(NULL)
-        {
-                if (NULL != pEmfInterpretatorBase)
-                {
-                        if (pEmfInterpretatorBase->GetType() == Emf)
-                        {
-                                m_pInterpretator = new CEmfInterpretator(*(CEmfInterpretator*)pEmfInterpretatorBase);
-                        }
-                        else if (pEmfInterpretatorBase->GetType() == Render)
-                        {
-                                m_pInterpretator = new CEmfInterpretatorRender(*(CEmfInterpretatorRender*)pEmfInterpretatorBase, this);
-                        }
-                        else if (pEmfInterpretatorBase->GetType() == XML)
-                        {
-                                m_pInterpretator = new CEmfInterpretatorXml(*(CEmfInterpretatorXml*)pEmfInterpretatorBase);
-                        }
-                        else if (pEmfInterpretatorBase->GetType() == Array)
-                        {
-                                m_pInterpretator = new CEmfInterpretatorArray(*(CEmfInterpretatorArray*)pEmfInterpretatorBase);
-                        }
-                }
-        }
-
         CEmfParser::~CEmfParser()
         {
                 ClearFile();

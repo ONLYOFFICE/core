@@ -130,12 +130,12 @@ namespace MetaFile
 			return Style;
 		}
 
-		unsigned int GetWidth()
+		double GetWidth()
 		{
 			if (Width < 0)
 				return 1;
 
-			return (unsigned int)Width;
+			return Width;
 		}
 
 		unsigned int	Style;
@@ -171,6 +171,7 @@ namespace MetaFile
         {
             public:
                 CEmfPlusObject(){};
+                virtual ~CEmfPlusObject(){};
 
                 virtual EEmfPlusObjectType GetObjectType()
                 {
@@ -186,7 +187,7 @@ namespace MetaFile
 
                 virtual EEmfPlusObjectType GetObjectType() override
                 {
-                        return ObjectTypeInvalid;
+                        return ObjectTypePath;
                 }
         };
 
@@ -220,7 +221,7 @@ namespace MetaFile
             public:
                 CEmfPlusImage() : CEmfPlusObject(), m_pImageBuffer(NULL), m_ulPosition(0),
                                   m_ulFullSize(0), m_eImageDataType(ImageDataTypeUnknown){};
-                ~CEmfPlusImage()
+                virtual ~CEmfPlusImage()
                 {
                         if (NULL != m_pImageBuffer)
                                 delete [] m_pImageBuffer;
@@ -260,7 +261,11 @@ namespace MetaFile
 
                 void AddData(BYTE *pData, unsigned int unSize)
                 {
-                        if (m_ulFullSize == 0)
+                        if (NULL == m_pImageBuffer && 0 == m_ulFullSize && 0 < unSize)
+                        {
+                               SetSizeData(unSize);
+                        }
+                        else if (0 == m_ulFullSize)
                                 return;
 
                         if (unSize + m_ulPosition > m_ulFullSize)

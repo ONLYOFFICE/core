@@ -254,6 +254,7 @@ namespace MetaFile
                                                                         case 'L': Read_EMR_STROKEANDFILLPATH(); break;
                                                                         case 'P': Read_EMR_SELECTCLIPPATH();    break;
                                                                 }
+                                                                break;
                                                         }
                                                         case 'T': Read_EMR_SMALLTEXTOUT();  break;
                                                         case 'V': Read_EMR_SAVEDC();        break;

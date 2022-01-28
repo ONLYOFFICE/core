@@ -842,7 +842,7 @@ namespace MetaFile
 
 			// TODO: dWidth зависит еще от флага PS_GEOMETRIC в стиле карандаша
 			double dWidth = pPen->GetWidth() * m_dScaleX;
-			if (dWidth <= 0.01)
+			if (dWidth <= 0.0001)
 				dWidth = 0;
 
 			unsigned int unMetaPenStyle = pPen->GetStyle();

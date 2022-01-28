@@ -29,9 +29,10 @@ void TxBodyConverter::FillTxBody(PPTX::Logic::TxBody &oTxBody)
 void TxBodyConverter::ConvertTableTxBody(PPTX::Logic::TxBody &oTxBody)
 {
     m_oShapeWriter.WriteTextInfo();
-    XmlUtils::CXmlLiteReader xmlReader;
-    xmlReader.FromString(m_oShapeWriter.getOWriterStr());
+    XmlUtils::CXmlNode xmlReader;
+    xmlReader.FromXmlString(m_oShapeWriter.getOWriterStr());
     oTxBody.fromXML(xmlReader);
+    oTxBody.m_name = L"a:txBody";
 }
 
 void TxBodyConverter::FillMergedTxBody(PPTX::Logic::TxBody &oTxBody)

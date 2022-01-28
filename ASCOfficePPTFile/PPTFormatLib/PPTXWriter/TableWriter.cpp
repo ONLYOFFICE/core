@@ -56,7 +56,7 @@ void TableWriter::FillTable(PPTX::Logic::Table &oTable)
     oTable.tableProperties = new PPTX::Logic::TableProperties;
     FillTblPr(oTable.tableProperties.get2());
 
-    std::vector<CShapeElement*> arrCells, arrSpliters;
+    std::vector<CElementPtr> arrCells, arrSpliters;
     prepareShapes(arrCells, arrSpliters);
     m_nPTable = new ProtoTable(arrCells, arrSpliters, m_pRels);
     FillTblGrid(oTable.TableCols , arrCells);
@@ -73,11 +73,12 @@ void TableWriter::FillTable(PPTX::Logic::Table &oTable)
     }
 }
 
-std::vector<int> ProtoTable::getWidth(std::vector<CShapeElement*>& arrCells, bool isWidth)
+std::vector<int> ProtoTable::getWidth(const std::vector<CElementPtr>& arrCells, bool isWidth)
 {
     std::map<double, double> mapLeftWidth;
-    for (const auto* pCell : arrCells)
+    for (const auto ptrCell : arrCells)
     {
+        auto pCell = dynamic_cast<CShapeElement*>(ptrCell.get());
         if (!pCell) continue;
         double left = pCell->m_rcChildAnchor.left;
         double width = pCell->m_rcChildAnchor.right - left;
@@ -107,11 +108,12 @@ std::vector<int> ProtoTable::getWidth(std::vector<CShapeElement*>& arrCells, boo
     return gridWidth;
 }
 
-std::vector<int> ProtoTable::getHeight(std::vector<CShapeElement*>& arrCells, bool isHeight)
+std::vector<int> ProtoTable::getHeight(const std::vector<CElementPtr>& arrCells, bool isHeight)
 {
     std::map<double, double> mapTopHeight;
-    for (auto* pCell : arrCells)
+    for (const auto ptrCell : arrCells)
     {
+        auto pCell = dynamic_cast<CShapeElement*>(ptrCell.get());
         if (!pCell) continue;
         double top = pCell->m_rcChildAnchor.top;
         double height = pCell->m_rcChildAnchor.bottom - top;
@@ -169,8 +171,8 @@ void ProtoTable::initProtoTable()
     }
 }
 
-bool ProtoTable::fillProtoTable(std::vector<CShapeElement *> &arrCells,
-                                std::vector<CShapeElement*>& arrSpliters)
+bool ProtoTable::fillProtoTable(std::vector<CElementPtr> &arrCells,
+                                std::vector<CElementPtr>& arrSpliters)
 {
     if (m_table.empty() || m_arrTop.empty() || m_arrLeft.empty())
         return false;
@@ -181,13 +183,14 @@ bool ProtoTable::fillProtoTable(std::vector<CShapeElement *> &arrCells,
     return wasCellsFilled;
 }
 
-bool ProtoTable::fillCells(std::vector<CShapeElement *> &arrCells)
+bool ProtoTable::fillCells(std::vector<CElementPtr> &arrCells)
 {
     const UINT countRow = m_arrTop.size();
     const UINT countCol = m_arrLeft.size();
 
-    for (auto* pCell : arrCells)
+    for (auto ptrCell : arrCells)
     {
+        auto pCell = dynamic_cast<CShapeElement*>(ptrCell.get());
         int left = pCell->m_rcChildAnchor.left;
         int top = pCell->m_rcChildAnchor.top;
         int right = pCell->m_rcChildAnchor.right;
@@ -219,7 +222,7 @@ bool ProtoTable::fillCells(std::vector<CShapeElement *> &arrCells)
                     tCell.setRowSpan(posBottomRow - cRow);
             }
         pParent->setPParent(nullptr);
-        pParent->setPShape(pCell);
+        pParent->setPShape(ptrCell);
 
         //        pParent->setGridSpan(posRightCol - posCol);
         //        pParent->setRowSpan(posBottomRow - posRow);
@@ -228,10 +231,11 @@ bool ProtoTable::fillCells(std::vector<CShapeElement *> &arrCells)
     return true;
 }
 
-void ProtoTable::fillBorders(std::vector<CShapeElement *> &arrSpliters)
+void ProtoTable::fillBorders(std::vector<CElementPtr> &arrSpliters)
 {
-    for (auto* pBorder : arrSpliters)
+    for (const auto ptrBorder : arrSpliters)
     {
+        auto pBorder = dynamic_cast<CShapeElement*>(ptrBorder.get());
         int left = pBorder->m_rcChildAnchor.left;
         int top = pBorder->m_rcChildAnchor.top;
         int right = pBorder->m_rcChildAnchor.right;
@@ -244,7 +248,7 @@ void ProtoTable::fillBorders(std::vector<CShapeElement *> &arrSpliters)
         findCellPos(bottom, right, posLastTop, posLastLeft);
         if (!isDefaultBoard(pBorder))
         {
-            setBorders(posFirstTop, posFirstLeft, posLastTop, posLastLeft, pBorder);
+            setBorders(posFirstTop, posFirstLeft, posLastTop, posLastLeft, ptrBorder);
         }
     }
 }
@@ -262,7 +266,7 @@ bool ProtoTable::findCellPos(const int top, const int left, UINT &posRow, UINT &
     return !(posRow == countRow || posCol == countCol);
 }
 
-void ProtoTable::setBorders(const UINT posFRow, const UINT posFCol, const UINT posLRow, const UINT posLCol, CShapeElement* pBorder)
+void ProtoTable::setBorders(const UINT posFRow, const UINT posFCol, const UINT posLRow, const UINT posLCol, CElementPtr ptrBorder)
 {
 
     const UINT countRow = m_arrTop.size();
@@ -272,7 +276,7 @@ void ProtoTable::setBorders(const UINT posFRow, const UINT posFCol, const UINT p
     if ((posFRow != posLRow) && (posFCol != posLCol))
     {
         auto borPos = posFRow > posLRow ? TCell::lnBlToTr : TCell::lnTlToBr;
-        m_table[posFRow][posFCol].setBorder(borPos, pBorder);
+        m_table[posFRow][posFCol].setBorder(borPos, ptrBorder);
         return;
     }
 
@@ -282,9 +286,9 @@ void ProtoTable::setBorders(const UINT posFRow, const UINT posFCol, const UINT p
         for (UINT i = posFCol; i < posLCol; i++)
         {
             if (posFRow < countRow)
-                m_table[posFRow][i].setBorder(TCell::lnT, pBorder);
+                m_table[posFRow][i].setBorder(TCell::lnT, ptrBorder);
             if (posFRow > 0)
-                m_table[posFRow-1][i].setBorder(TCell::lnB, pBorder);
+                m_table[posFRow-1][i].setBorder(TCell::lnB, ptrBorder);
         }
 
         return;
@@ -296,9 +300,9 @@ void ProtoTable::setBorders(const UINT posFRow, const UINT posFCol, const UINT p
         for (UINT i = posFRow; i < posLRow; i++)
         {
             if (posFCol < countCol)
-                m_table[i][posFCol].setBorder(TCell::lnL, pBorder);
+                m_table[i][posFCol].setBorder(TCell::lnL, ptrBorder);
             if (posFCol > 0)
-                m_table[i][posFCol-1].setBorder(TCell::lnR, pBorder);
+                m_table[i][posFCol-1].setBorder(TCell::lnR, ptrBorder);
         }
 
         return;
@@ -347,7 +351,7 @@ void TableWriter::FillTblPr(PPTX::Logic::TableProperties &oTblPr)
     //    oTblPr.BandRow = true;
 }
 
-void TableWriter::FillTblGrid(std::vector<PPTX::Logic::TableCol> &tblGrid, std::vector<CShapeElement*>& arrCells)
+void TableWriter::FillTblGrid(std::vector<PPTX::Logic::TableCol> &tblGrid, std::vector<CElementPtr>& arrCells)
 {
     auto grid = ProtoTable::getWidth(arrCells);
     for (const auto& w : grid)
@@ -358,7 +362,7 @@ void TableWriter::FillTblGrid(std::vector<PPTX::Logic::TableCol> &tblGrid, std::
     }
 }
 
-void TableWriter::prepareShapes(std::vector<CShapeElement *> &arrCells, std::vector<CShapeElement *> &arrSpliters)
+void TableWriter::prepareShapes(std::vector<CElementPtr> &arrCells, std::vector<CElementPtr> &arrSpliters)
 {
     for (const auto& ptrShape : m_pTableElement->m_pChildElements)
     {
@@ -366,10 +370,10 @@ void TableWriter::prepareShapes(std::vector<CShapeElement *> &arrCells, std::vec
         switch (pShapeEl->m_lShapeType)
         {
         case 1:
-            arrCells.push_back(pShapeEl);
+            arrCells.push_back(ptrShape);
             break;
         case 20:
-            arrSpliters.push_back(pShapeEl);
+            arrSpliters.push_back(ptrShape);
             break;
         }
     }
@@ -422,8 +426,8 @@ void TableWriter::FillnvPr(PPTX::Logic::NvPr &oNvPr)
     oNvPr.extLst.push_back(ext);
 }
 
-TCell::TCell(CShapeElement *pShape, int row, int col, CRelsGenerator* pRels, TCell *pParent) :
-    m_pShape(pShape), m_row(row), m_col(col), m_rowSpan(1), m_gridSpan(1),
+TCell::TCell(CElementPtr ptrShape, int row, int col, CRelsGenerator* pRels, TCell *pParent) :
+    m_pShape(ptrShape), m_row(row), m_col(col), m_rowSpan(1), m_gridSpan(1),
     m_pParent(pParent), m_parentDirection(none), m_pRels(pRels)
 {
     setParentDirection();
@@ -449,12 +453,12 @@ void TCell::FillTc(PPTX::Logic::TableCell &oTc)
     FillTcPr(oTc.CellProperties.get2());
 }
 
-void TCell::setBorder(TCell::eBorderPossition borderPos, CShapeElement *pBorder)
+void TCell::setBorder(TCell::eBorderPossition borderPos, CElementPtr ptrBorder)
 {
-    if (m_pShape)
-        m_mapBorders[borderPos] = pBorder;
+    if (m_pShape.get())
+        m_mapBorders[borderPos] = ptrBorder;
     else if (m_pParent)
-        m_pParent->setBorder(borderPos, pBorder);
+        m_pParent->setBorder(borderPos, ptrBorder);
 }
 
 TCell::eMergeDirection TCell::parentDirection() const
@@ -513,15 +517,16 @@ bool TCell::isRealCell() const
 
 void TCell::FillTxBody(PPTX::Logic::TxBody &oTxBody)
 {
-    CElementPtr ptrSpEl = m_pShape->CreateDublicate();
-    TxBodyConverter txBodyConverter(ptrSpEl, m_pRels);
+    TxBodyConverter txBodyConverter(m_pShape, m_pRels);
     txBodyConverter.FillTxBody(oTxBody);
 }
 
 void TCell::FillTcPr(PPTX::Logic::TableCellProperties &oTcPr)
 {
+    auto pShapeEl = static_cast<CShapeElement*>(m_pShape.get());
+    auto pShape = pShapeEl->m_pShape;
     //anchor
-    auto& attr = m_pShape->m_pShape->m_oText.m_oAttributes;
+    auto& attr = pShape->m_oText.m_oAttributes;
     if (attr.m_nTextAlignVertical != -1)
     {
         auto pAnchor = new PPTX::Limit::TextAnchor;
@@ -536,10 +541,10 @@ void TCell::FillTcPr(PPTX::Logic::TableCellProperties &oTcPr)
         oTcPr.AnchorCtr = true;
     }
 
-    oTcPr.MarB = round(m_pShape->m_pShape->m_dTextMarginBottom); // 0
-    oTcPr.MarT = round(m_pShape->m_pShape->m_dTextMarginY); // 12512
-    oTcPr.MarL = round(m_pShape->m_pShape->m_dTextMarginX);
-    oTcPr.MarR = round(m_pShape->m_pShape->m_dTextMarginRight);
+    oTcPr.MarB = round(pShape->m_dTextMarginBottom); // 0
+    oTcPr.MarT = round(pShape->m_dTextMarginY); // 12512
+    oTcPr.MarL = round(pShape->m_dTextMarginX);
+    oTcPr.MarR = round(pShape->m_dTextMarginRight);
 
     if (true)
     {
@@ -602,9 +607,9 @@ void TCell::SetTcPrInvisibleBorder(PPTX::Logic::TableCellProperties &oTcPr, TCel
     ApplyLn(oTcPr, pLn, eBP);
 }
 
-bool TCell::isInvisibleBorder(const CShapeElement *pBorder)
+bool TCell::isInvisibleBorder(const CElementPtr ptrBorder)
 {
-    const bool isInv = pBorder && pBorder->m_bLine == false;
+    const bool isInv = ptrBorder && ptrBorder->m_bLine == false;
     return isInv;
 }
 
@@ -626,18 +631,18 @@ bool TCell::isInvisibleBorders() const
     return isInvisibele;
 }
 
-void TCell::FillLn(PPTX::Logic::Ln &Ln, TCell::eBorderPossition eBP, CShapeElement *pBorder)
+void TCell::FillLn(PPTX::Logic::Ln &Ln, TCell::eBorderPossition eBP, CElementPtr ptrBorder)
 {
-    if (pBorder == nullptr)
+    if (!ptrBorder)
         return;
     SetLnName(Ln, eBP);
 
-    auto& pen = pBorder->m_oPen;
-    auto& brush = pBorder->m_oBrush;
+    auto& pen = ptrBorder->m_oPen;
+    auto& brush = ptrBorder->m_oBrush;
 
     Ln.w = pen.Size;
 
-    if (isInvisibleBorder(pBorder))
+    if (isInvisibleBorder(ptrBorder))
         Ln.Fill.Fill.reset(new PPTX::Logic::NoFill);
     else
     {
@@ -714,16 +719,16 @@ void TCell::setRowSpan(int rowSpan)
     m_rowSpan = rowSpan;
 }
 
-void TCell::setPShape(CShapeElement *pShape)
+void TCell::setPShape(CElementPtr ptrShape)
 {
-    m_pShape = pShape;
+    m_pShape = ptrShape;
     m_parentDirection = none;
 }
 
 
 
-ProtoTable::ProtoTable(std::vector<CShapeElement *> &arrCells,
-                       std::vector<CShapeElement*>& arrSpliters,
+ProtoTable::ProtoTable(std::vector<CElementPtr> &arrCells,
+                       std::vector<CElementPtr> &arrSpliters,
                        CRelsGenerator *pRels) : m_pRels(pRels)
 {
     m_arrLeft = getWidth(arrCells, false);

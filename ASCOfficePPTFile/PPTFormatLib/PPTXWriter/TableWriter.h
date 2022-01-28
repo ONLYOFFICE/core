@@ -40,7 +40,7 @@ namespace PPT_FORMAT
 class TCell
 {
 public:
-    TCell(CShapeElement* pShape, int row, int col, CRelsGenerator* pRels, TCell* pParent = nullptr);
+    TCell(CElementPtr ptrShape, int row, int col, CRelsGenerator* pRels, TCell* pParent = nullptr);
 
     void FillTc(PPTX::Logic::TableCell &oTc);
 
@@ -60,13 +60,13 @@ public:
         lnTlToBr,
         lnBlToTr
     };
-    void setBorder(eBorderPossition borderPos, CShapeElement *pBorder);
+    void setBorder(eBorderPossition borderPos, CElementPtr ptrBorder);
 
     eMergeDirection parentDirection() const;
     int getHeight()const;
 
     void setPParent(TCell *pParent);
-    void setPShape(CShapeElement *pShape);
+    void setPShape(CElementPtr ptrShape);
 
     void setRowSpan(int rowSpan);
 
@@ -79,18 +79,18 @@ private:
     void FillTcPr(PPTX::Logic::TableCellProperties& oTcPr);
     void SetTcPrInvisibleBorders(PPTX::Logic::TableCellProperties& oTcPr)const;
     void SetTcPrInvisibleBorder(PPTX::Logic::TableCellProperties& oTcPr, eBorderPossition eBP)const;
-    static bool isInvisibleBorder(const CShapeElement *pBorder);
+    static bool isInvisibleBorder(const CElementPtr ptrBorder);
     bool isInvisibleBorders() const;
-    void FillLn(PPTX::Logic::Ln& Ln, eBorderPossition eBP, CShapeElement* pBorder);
+    void FillLn(PPTX::Logic::Ln& Ln, eBorderPossition eBP, CElementPtr ptrBorder);
     void SetLnName(PPTX::Logic::Ln& Ln, eBorderPossition eBP) const;
     void ApplyLn(PPTX::Logic::TableCellProperties& oTcPr, PPTX::Logic::Ln *pLn, eBorderPossition eBP) const;
     void FillMergeDirection(PPTX::Logic::TableCell& oTc);
     void setParentDirection();
 
 private:
-    CShapeElement* m_pShape;
+    CElementPtr m_pShape;
 
-    std::map<eBorderPossition, CShapeElement*> m_mapBorders;
+    std::map<eBorderPossition, CElementPtr> m_mapBorders;
 
     // Proto table's coord
     int m_row, m_col;
@@ -114,23 +114,23 @@ typedef std::vector<ProtoTableRow> MProtoTable;
 class ProtoTable
 {
 public:
-    ProtoTable(std::vector<CShapeElement *> &arrCells,
-               std::vector<CShapeElement*>& arrSpliters,
+    ProtoTable(std::vector<CElementPtr> &arrCells,
+               std::vector<CElementPtr>& arrSpliters,
                CRelsGenerator* pRels);
 
-    static std::vector<int> getWidth(std::vector<CShapeElement *> &arrCells, bool isWidth = true);
-    static std::vector<int> getHeight(std::vector<CShapeElement *> &arrCells, bool isHeight = true);
+    static std::vector<int> getWidth(const std::vector<CElementPtr> &arrCells, bool isWidth = true);
+    static std::vector<int> getHeight(const std::vector<CElementPtr> &arrCells, bool isHeight = true);
     static bool checkRowForZeroHeight(const ProtoTableRow& oRow);
     MProtoTable getTable() const;
 
 private:
     void initProtoTable();
-    bool fillProtoTable(std::vector<CShapeElement *> &arrCells, std::vector<CShapeElement *> &arrSpliters);
-    bool fillCells(std::vector<CShapeElement *> &arrCells);
-    void fillBorders(std::vector<CShapeElement *> &arrSpliters);
+    bool fillProtoTable(std::vector<CElementPtr> &arrCells, std::vector<CElementPtr> &arrSpliters);
+    bool fillCells(std::vector<CElementPtr> &arrCells);
+    void fillBorders(std::vector<CElementPtr> &arrSpliters);
     bool findCellPos(const int top, const int left, UINT& posRow, UINT& posCol);
     std::list<TCell *> getParentCellFromTable(const UINT posFRow, const UINT posFCol, const UINT posLRow, const UINT posLCol);
-    void setBorders(const UINT posFRow, const UINT posFCol, const UINT posLRow, const UINT posLCol, CShapeElement *pBorder);
+    void setBorders(const UINT posFRow, const UINT posFCol, const UINT posLRow, const UINT posLCol, CElementPtr ptrBorder);
 
     bool isDefaultBoard(const CShapeElement *pBorder);
 
@@ -158,9 +158,9 @@ private:
 
     void FillTblPr(PPTX::Logic::TableProperties& oTblPr);
     void FillTblGrid(std::vector<PPTX::Logic::TableCol>& tblGrid,
-                     std::vector<CShapeElement *> &arrCells);
-    void prepareShapes(std::vector<CShapeElement*> &arrCells,
-                       std::vector<CShapeElement*>& arrSpliters);
+                     std::vector<CElementPtr> &arrCells);
+    void prepareShapes(std::vector<CElementPtr> &arrCells,
+                       std::vector<CElementPtr> &arrSpliters);
 
     void FillRow(PPTX::Logic::TableRow& oRow, ProtoTableRow &arrCells);
 

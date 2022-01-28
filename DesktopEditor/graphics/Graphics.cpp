@@ -1622,17 +1622,39 @@ namespace Aggplus
                     render_scanlines_alpha(ri, Alpha);
                     break;
                 }
-                /*case 2:
+                case 2:
                 {
-                    typedef agg::span_image_filter<img_source_type, interpolator_type_linear> span_gen_type;
+                    typedef agg::span_image_filter_rgba_2x2<img_source_type, interpolator_type_linear> span_gen_type;
                     typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
                     agg::image_filter_lut filter;
                     filter.calculate(agg::image_filter_bicubic(), false);
-                    span_gen_type sg(img_src, interpolator, &filter);
+                    span_gen_type sg(img_src, interpolator, filter);
                     renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
                     render_scanlines_alpha(ri, Alpha);
                     break;
-                }*/
+                }
+                case 3:
+                {
+                    typedef agg::span_image_filter_rgba_2x2<img_source_type, interpolator_type_linear> span_gen_type;
+                    typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
+                    agg::image_filter_lut filter;
+                    filter.calculate(agg::image_filter_spline16(), false);
+                    span_gen_type sg(img_src, interpolator, filter);
+                    renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+                    render_scanlines_alpha(ri, Alpha);
+                    break;
+                }
+                case 4:
+                {
+                    typedef agg::span_image_filter_rgba_2x2<img_source_type, interpolator_type_linear> span_gen_type;
+                    typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
+                    agg::image_filter_lut filter;
+                    filter.calculate(agg::image_filter_blackman256(), false);
+                    span_gen_type sg(img_src, interpolator, filter);
+                    renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+                    render_scanlines_alpha(ri, Alpha);
+                    break;
+                }
             default:
                 break;
             }
@@ -1665,17 +1687,39 @@ namespace Aggplus
                     render_scanlines_alpha(ri, Alpha);
                     break;
                 }
-                /*case 2:
+                case 2:
                 {
-                    typedef agg::span_image_filter<img_source_type, interpolator_type_linear> span_gen_type;
+                    typedef agg::span_image_filter_rgba_2x2<img_source_type, interpolator_type_linear> span_gen_type;
                     typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
                     agg::image_filter_lut filter;
                     filter.calculate(agg::image_filter_bicubic(), false);
-                    span_gen_type sg(img_src, interpolator, &filter);
+                    span_gen_type sg(img_src, interpolator, filter);
                     renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
                     render_scanlines_alpha(ri, Alpha);
                     break;
-                }*/
+                }
+                case 3:
+                {
+                    typedef agg::span_image_filter_rgba_2x2<img_source_type, interpolator_type_linear> span_gen_type;
+                    typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
+                    agg::image_filter_lut filter;
+                    filter.calculate(agg::image_filter_spline16(), false);
+                    span_gen_type sg(img_src, interpolator, filter);
+                    renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+                    render_scanlines_alpha(ri, Alpha);
+                    break;
+                }
+                case 4:
+                {
+                    typedef agg::span_image_filter_rgba_2x2<img_source_type, interpolator_type_linear> span_gen_type;
+                    typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
+                    agg::image_filter_lut filter;
+                    filter.calculate(agg::image_filter_blackman256(), false);
+                    span_gen_type sg(img_src, interpolator, filter);
+                    renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+                    render_scanlines_alpha(ri, Alpha);
+                    break;
+                }
             default:
                 break;
             }

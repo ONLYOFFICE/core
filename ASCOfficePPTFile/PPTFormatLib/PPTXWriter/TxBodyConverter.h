@@ -65,7 +65,7 @@ private:
     static void FillBuChar(PPTX::Logic::Bullet& oBullet, WCHAR symbol);
     static void ConvertAllBullets(PPTX::Logic::TextParagraphPr &oPPr, CTextPFRun *pPF, CRelsGenerator *pRels);
     static void FillBuClr(PPTX::Logic::BulletColor& oBuClr, CColor& oColor);
-    void FillRun(PPTX::Logic::Run& oRun, CSpan &oSpan);
+    void FillRun(PPTX::Logic::Run& oRun, CSpan &oSpan, int textlvl);
     PPTX::Logic::RunProperties* getNewEndParaRPr(const int dirty = -1, const int sz = -1, const std::wstring& lang = L"");
     void FillRPr(PPTX::Logic::RunProperties& oRPr, CTextCFRun& oCFRun);
     void ConvertLine(PPTX::Logic::Ln& oLn);

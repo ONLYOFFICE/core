@@ -97,10 +97,15 @@ void TxBodyConverter::FillBodyPr(PPTX::Logic::BodyPr &oBodyPr)
     CDoubleRect oTextRect;
     m_pShapeElement->m_pShape->GetTextRect(oTextRect);
 
-    oBodyPr.lIns = oTextRect.left;
-    oBodyPr.rIns = oTextRect.right;
-    oBodyPr.tIns = oTextRect.top;
-    oBodyPr.bIns = oTextRect.bottom;
+    if (m_pShapeElement->m_pShape->m_oText.m_lWrapMode == 2)
+        oBodyPr.wrap = new PPTX::Limit::TextWrap(0);    // L"none"
+    else
+    {
+        oBodyPr.lIns = oTextRect.left;
+        oBodyPr.rIns = oTextRect.right;
+        oBodyPr.tIns = oTextRect.top;
+        oBodyPr.bIns = oTextRect.bottom;
+    }
 
 
     auto pAnchor = new PPTX::Limit::TextAnchor;
@@ -143,12 +148,10 @@ void TxBodyConverter::FillBodyPr(PPTX::Logic::BodyPr &oBodyPr)
     }
 
 
-    std::wstring prstGeom	= oox::Spt2ShapeType_mini((oox::MSOSPT)m_pShapeElement->m_lShapeType);
-    std::wstring prstTxWarp = oox::Spt2WordArtShapeType((oox::MSOSPT)m_pShapeElement->m_lShapeType);
-    if (prstGeom.size() && prstTxWarp.size())
+    if (m_bWordArt)
     {
-        m_bWordArt = true;
-
+        std::wstring prstGeom	= oox::Spt2ShapeType_mini((oox::MSOSPT)m_pShapeElement->m_lShapeType);
+        std::wstring prstTxWarp = oox::Spt2WordArtShapeType((oox::MSOSPT)m_pShapeElement->m_lShapeType);
 
         auto pPrstTxWarp = new PPTX::Logic::PrstTxWarp;
         pPrstTxWarp->prst.set(prstTxWarp);
@@ -221,7 +224,7 @@ void TxBodyConverter::FillParagraph(PPTX::Logic::Paragraph &p, CParagraph &parag
         } else
         {
             auto pRun = new PPTX::Logic::Run();
-            FillRun(*pRun, paragraph.m_arSpans[nSpan]);
+            FillRun(*pRun, paragraph.m_arSpans[nSpan], paragraph.m_lTextLevel);
             runElem.InitRun(pRun);
 
             auto pFld = new PPTX::Logic::Fld;
@@ -453,11 +456,14 @@ void TxBodyConverter::FillBuClr(PPTX::Logic::BulletColor &oBuClr, CColor &oColor
     oBuClr.m_Color.reset(pBuClr);
 }
 
-void TxBodyConverter::FillRun(PPTX::Logic::Run &oRun, CSpan &oSpan)
+void TxBodyConverter::FillRun(PPTX::Logic::Run &oRun, CSpan &oSpan, int textlvl)
 {
     oRun.SetText(oSpan.m_strText);
 
     oRun.rPr = new PPTX::Logic::RunProperties;
+    //    if (pText->m_oStyles.m_pLevels[textlvl].is_init())
+    //        FillRPr(oRun.rPr.get2(), pText->m_oStyles.m_pLevels[textlvl]->m_oCFRun);
+    //    else
     FillRPr(oRun.rPr.get2(), oSpan.m_oRun);
 }
 
@@ -524,8 +530,8 @@ void TxBodyConverter::FillRPr(PPTX::Logic::RunProperties &oRPr, CTextCFRun &oCFR
             ConvertLine(oRPr.ln.get2());
         }
         // I don't know todo or not
-//        m_oWriter.WriteString(ConvertBrush(pShapeElement->m_oBrush));
-//        m_oWriter.WriteString(ConvertShadow(pShapeElement->m_oShadow));
+        //        m_oWriter.WriteString(ConvertBrush(pShapeElement->m_oBrush));
+        //        m_oWriter.WriteString(ConvertShadow(pShapeElement->m_oShadow));
     }
     else
     {
@@ -582,10 +588,10 @@ void TxBodyConverter::ConvertLine(PPTX::Logic::Ln &oLn)
     oLn.cmpd = new PPTX::Limit::CompoundLine;
     switch(oPen.LineStyle)
     {
-        case 1: oLn.cmpd->set(L"dbl");		break;
-        case 2: oLn.cmpd->set(L"thickThin"); break;
-        case 3: oLn.cmpd->set(L"thinThick");	break;
-        case 4: oLn.cmpd->set(L"tri");		break;
+    case 1: oLn.cmpd->set(L"dbl");		break;
+    case 2: oLn.cmpd->set(L"thickThin"); break;
+    case 3: oLn.cmpd->set(L"thinThick");	break;
+    case 4: oLn.cmpd->set(L"tri");		break;
     }
 
 
@@ -639,27 +645,27 @@ void TxBodyConverter::ConvertLineEnd(PPTX::Logic::LineEnd &oLine, unsigned char 
     oLine.type = new PPTX::Limit::LineEndType;
     switch(cap)
     {
-        case 1: oLine.type->set(L"triangle");	break;
-        case 2: oLine.type->set(L"stealth");	break;
-        case 3: oLine.type->set(L"diamond");	break;
-        case 4: oLine.type->set(L"oval");		break;
-        case 5: oLine.type->set(L"arrow");		break;
+    case 1: oLine.type->set(L"triangle");	break;
+    case 2: oLine.type->set(L"stealth");	break;
+    case 3: oLine.type->set(L"diamond");	break;
+    case 4: oLine.type->set(L"oval");		break;
+    case 5: oLine.type->set(L"arrow");		break;
     }
 
     oLine.len = new PPTX::Limit::LineEndSize;
     switch(length)
     {
-        case 0: oLine.len->set(L"sm");	break;
-        case 1: oLine.len->set(L"med");	break;
-        case 2: oLine.len->set(L"lg");	break;
+    case 0: oLine.len->set(L"sm");	break;
+    case 1: oLine.len->set(L"med");	break;
+    case 2: oLine.len->set(L"lg");	break;
     }
 
     oLine.w = new PPTX::Limit::LineEndSize;
     switch(width)
     {
-        case 0: oLine.w->set(L"sm");	break;
-        case 1: oLine.w->set(L"med");	break;
-        case 2: oLine.w->set(L"lg");	break;
+    case 0: oLine.w->set(L"sm");	break;
+    case 1: oLine.w->set(L"med");	break;
+    case 2: oLine.w->set(L"lg");	break;
     }
 }
 

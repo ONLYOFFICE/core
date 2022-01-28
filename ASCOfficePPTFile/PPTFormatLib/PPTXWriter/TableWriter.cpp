@@ -513,16 +513,9 @@ bool TCell::isRealCell() const
 
 void TCell::FillTxBody(PPTX::Logic::TxBody &oTxBody)
 {
-    if (m_pShape == nullptr)
-    {
-        TxBodyConverter txBodyConverter(nullptr, m_pRels, TxBodyConverter::table);
-        txBodyConverter.FillTxBody(oTxBody);
-    } else
-    {
-        TxBodyConverter txBodyConverter(m_pShape, m_pRels, TxBodyConverter::table);
-        txBodyConverter.FillTxBody(oTxBody);
-    }
-
+    CElementPtr ptrSpEl = m_pShape->CreateDublicate();
+    TxBodyConverter txBodyConverter(ptrSpEl, m_pRels);
+    txBodyConverter.FillTxBody(oTxBody);
 }
 
 void TCell::FillTcPr(PPTX::Logic::TableCellProperties &oTcPr)

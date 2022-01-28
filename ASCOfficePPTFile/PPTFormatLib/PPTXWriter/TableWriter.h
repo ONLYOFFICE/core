@@ -40,7 +40,7 @@ namespace PPT_FORMAT
 class TCell
 {
 public:
-    TCell(CShapeElement *pShape, int row, int col, CRelsGenerator* pRels, TCell* pParent = nullptr);
+    TCell(CShapeElement* pShape, int row, int col, CRelsGenerator* pRels, TCell* pParent = nullptr);
 
     void FillTc(PPTX::Logic::TableCell &oTc);
 
@@ -91,7 +91,6 @@ private:
     CShapeElement* m_pShape;
 
     std::map<eBorderPossition, CShapeElement*> m_mapBorders;
-    std::list<CElementPtr> m_lstVirtBorders;
 
     // Proto table's coord
     int m_row, m_col;

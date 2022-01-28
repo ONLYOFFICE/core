@@ -157,8 +157,7 @@ namespace PPT_FORMAT
 		CShapeWriter();
 		~CShapeWriter()
 		{
-			RELEASEOBJECT(m_pSimpleGraphicsConverter);
-			RELEASEOBJECT(m_pSimpleGraphicsConverter);
+            RELEASEOBJECT(m_pSimpleGraphicsConverter);
 		}
 
 		friend class CPPTXWriter;
@@ -458,5 +457,6 @@ namespace PPT_FORMAT
         void WriteTextInfo();
         static std::wstring WriteBullets(CTextPFRun* pPF, CRelsGenerator *pRels);
 		void Write3dShape();
-	};
+        std::wstring getOWriterStr() const;
+    };
 }

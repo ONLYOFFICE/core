@@ -31,7 +31,7 @@
  */
 #include "ShapeWriter.h"
 #include "StylesWriter.h"
-#include "TxBodyConverter.h"
+#include "BulletsConverter.h"
 
 #include "../../../ASCOfficePPTXFile/Editor/Drawing/Theme.h"
 
@@ -65,7 +65,9 @@ void CStylesWriter::ConvertStyleLevel(PPT_FORMAT::CTextStyleLevel& oLevel, PPT_F
 
     // <a:pPr>
     auto pPPr = new PPTX::Logic::TextParagraphPr;
-    TxBodyConverter::ConvertPFRun(*pPPr, &oLevel.m_oPFRun, nullptr);
+    BulletsConverter buConverter;
+    buConverter.ConvertPFRun(*pPPr, &oLevel.m_oPFRun);
+
     std::wstring strPPr = pPPr->toXML().substr(6); // remove <a:pPr
     strPPr = strPPr.substr(0, strPPr.size() - 8);  // remove </a:pPr>
     delete pPPr;
@@ -158,6 +160,12 @@ void CStylesWriter::ConvertStyleLevel(PPT_FORMAT::CTextStyleLevel& oLevel, PPT_F
 
     oWriter.WriteString(str3);
 }
+
+std::wstring CShapeWriter::getOWriterStr() const
+{
+    return m_oWriter.GetData();
+}
+
 PPT_FORMAT::CShapeWriter::CShapeWriter()
 {
     m_pTheme		= NULL;
@@ -1158,7 +1166,8 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
 
         // <a:pPr>
         auto pPPr = new PPTX::Logic::TextParagraphPr;
-        TxBodyConverter::ConvertPFRun(*pPPr, &pParagraph->m_oPFRun, m_pRels);
+        BulletsConverter buConverter(m_pRels);
+        buConverter.ConvertPFRun(*pPPr, &pParagraph->m_oPFRun);
         m_oWriter.WriteString(pPPr->toXML());
         delete pPPr;
 

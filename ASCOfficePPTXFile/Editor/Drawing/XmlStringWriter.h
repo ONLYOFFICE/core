@@ -184,7 +184,7 @@ namespace PPT_FORMAT
 			m_lSizeCur	= 0;
 		}
 
-		std::wstring GetData()
+                std::wstring GetData() const
 		{
 			return std::wstring(m_pData, (int)m_lSizeCur);
 		}

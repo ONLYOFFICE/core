@@ -112,6 +112,10 @@ namespace PdfWriter
 			m_unObjId = unObjId;
 			m_unGenNo = unGenNo;
 		}
+		void UnSet()
+		{
+			m_unFlags = 0;
+		}
 		void WriteValue(CStream* pStream, CEncrypt* pEncrypt);
 		void Write     (CStream* pStream, CEncrypt* pEncrypt);
 
@@ -449,6 +453,14 @@ namespace PdfWriter
 		TXrefEntry* GetEntryByObjectId(unsigned int unObjectId) const;
 		void        Add(CObjectBase* pObject);		
 		void        WriteToStream(CStream* pStream, CEncrypt* pEncrypt);
+		void        SetPrev(CXref* pPrev)
+		{
+			m_pPrev = pPrev;
+		}
+		void        SetPrevAddr(unsigned int unAddr)
+		{
+			m_unAddr = unAddr;
+		}
 		int         GetCount() const
 		{
 			return m_arrEntries.size();

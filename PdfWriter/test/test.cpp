@@ -37,7 +37,8 @@ int main()
         }
     }
 
-    pdfWriter.SaveToFile(NSFile::GetProcessDirectory() + L"/res.pdf");
+    pdfWriter.AddToPage(0, NSFile::GetProcessDirectory() + L"/res.pdf");
+    //pdfWriter.SaveToFile(NSFile::GetProcessDirectory() + L"/res.pdf");
     RELEASEOBJECT(pReader);
     RELEASEOBJECT(pApplicationFonts);
     return 0;

@@ -2048,6 +2048,15 @@ HRESULT CPdfRenderer::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbi
 	m_pPage->GrRestore();
 	return S_OK;
 }
+HRESULT CPdfRenderer::AddToPage(int nPageIndex, std::wstring wsPath)
+{
+	if (!IsValid())
+		return S_FALSE;
+	m_oCommandManager.Flush();
+
+	m_pDocument->AddToPage(nPageIndex, wsPath);
+	return S_OK;
+}
 
 NSFonts::IApplicationFonts* CPdfRenderer::GetApplicationFonts()
 {

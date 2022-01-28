@@ -1052,4 +1052,46 @@ namespace PdfWriter
 
 		return (!!m_pAcroForm);
 	}
+	void CDocument::AddToPage(unsigned int unPage, const std::wstring& wsPath)
+	{
+		CFileStream* pStream = new CFileStream();
+		if (!pStream || !pStream->OpenFile(wsPath, false))
+			return;
+
+		// Шифруем документ, если это необходимо
+		CEncrypt* pEncrypt = NULL;
+		if (m_bEncrypt)
+		{
+			pEncrypt = m_pEncryptDict->GetEncrypt();
+			PrepareEncryption();
+		}
+
+		CXref* pXref = new CXref(this, 29 /* номер последнего объекта в читателе + 1 */);
+
+		// копируем страницу
+		// нельзя копировать страницу в записи - она содержит данные для записи, и полностью отличается от страницы в читателе
+		// нужно воссоздать объект страницы из читателя
+		CPage* pPage = GetPage(unPage);
+#ifndef FILTER_FLATE_DECODE_DISABLED
+		if (m_unCompressMode & COMP_TEXT)
+			pPage->SetFilter(STREAM_FILTER_FLATE_DECODE);
+#endif
+		pPage->AddCommands(pXref, L"");
+
+		CXref* pXrefNew = new CXref(this, 9 /* номер объекта страницы в читателе */);
+		pPage->UnSet(); // страница уже добавлялась и нужно снять флаг чтобы снова добавить
+		// для страницы воссозданной уже не понадобится и можно будет убрать эту функцию
+		pXrefNew->Add(pPage);
+		pXref->SetPrevAddr(28439 /* смещение xref таблицы из читателя */);
+		pXrefNew->SetPrev(pXref);
+
+		pXrefNew->WriteToStream(pStream, pEncrypt);
+
+		delete pStream;
+		// будет удаляться в деструкторе pXrefNew
+		RELEASEOBJECT(pXref);
+		// страница становится дважды принадлежащей из-за чего дважды удаляется
+		// для страницы воссозданной нужно будет очищать
+		//RELEASEOBJECT(pXrefNew);
+	}
 }

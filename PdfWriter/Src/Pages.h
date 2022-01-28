@@ -141,6 +141,8 @@ namespace PdfWriter
 		CMatrix*  GetTransform();
 		void      AddGroup(CDictObject* pDict);
 
+		void      AddCommands(CXref* pXref, const std::wstring& sCommands);
+
 	private:
 
 		void          EllipseArc(double dX, double dY, double dXRad, double dYRad, double dAngle1, double dAngle2, bool bClockDirection);

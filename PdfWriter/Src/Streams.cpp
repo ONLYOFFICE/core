@@ -844,8 +844,10 @@ namespace PdfWriter
 
 		if (!bWrite)
 		{
-			if (!m_oFile.OpenFile(wsFilePath))
+			if (!m_oFile.OpenFile(wsFilePath, true))
 				return false;	
+			m_oFile.SeekFile(m_oFile.SizeFile(), SEEK_SET);
+			m_oFile.WriteStringUTF8(L"\n");
 		}
 		else
 		{

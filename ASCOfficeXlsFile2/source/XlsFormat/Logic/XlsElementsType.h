@@ -909,6 +909,7 @@ enum ElementType
     typeBeginISXVDCols,
     typeSXLIRWS,
     typeSXLICOLS,
+    typePCDIDT,
 };
 
 

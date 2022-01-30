@@ -66,6 +66,8 @@ namespace XLSB
 
         record >> ifmt >> wTypeSql >> ihdb >> isxtl >> cIsxtmps;
 
+        record >> stFldName;
+
         if(fCaption)
             record >> stFldCaption;
 

@@ -66,6 +66,7 @@ namespace XLSB
             _UINT32                 ihdb;
             _UINT32                 isxtl;
             _UINT32                 cIsxtmps;
+            XLWideString            stFldName;
             XLWideString            stFldCaption;
             XLS::PivotParsedFormula fldFmla;
             _UINT32                 cbRgisxtmp;

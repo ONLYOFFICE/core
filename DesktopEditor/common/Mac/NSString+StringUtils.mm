@@ -110,4 +110,17 @@
     return queryItem.value;
 }
 
+- (NSDictionary *)toDictionary {
+    NSError * error = nil;
+    NSData * data = [self dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary * json = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
+    
+    if (error) {
+        NSLog(@"%@", error);
+        return nil;
+    }
+    
+    return json;
+}
+
 @end

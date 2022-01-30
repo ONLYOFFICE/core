@@ -33,6 +33,8 @@
 
 #include "ChartSerializeEx.h"
 #include "../../DocxFormat/FileTypes.h"
+#include "../../DocxFormat/Document.h"
+#include "../Xlsx.h"
 
 namespace OOX
 {
@@ -41,13 +43,15 @@ namespace OOX
 		class CChartFile: public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 		{
 		public:
-			CChartFile(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
+			CChartFile(OOX::Document* pMain, bool bDocument = true) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
-				m_bSpreadsheets = true;
+				m_bDocument = bDocument;
+				m_bSpreadsheets = (NULL != dynamic_cast<OOX::Spreadsheet::CXlsx*>(pMain));
 			}
 			CChartFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
-				m_bSpreadsheets = true;
+				m_bDocument = (NULL != dynamic_cast<OOX::CDocument*>(pMain));
+				m_bSpreadsheets = (NULL != dynamic_cast<OOX::Spreadsheet::CXlsx*>(pMain));
 				read( oRootPath, oPath );
 			}
 			virtual ~CChartFile()
@@ -98,7 +102,10 @@ namespace OOX
 			}
 			virtual const CPath DefaultDirectory() const
 			{
-				return type().DefaultDirectory();
+				if (m_bDocument)
+					return type().DefaultDirectory();
+				else
+					return L"../" + type().DefaultDirectory();
 			}
 			virtual const CPath DefaultFileName() const
 			{
@@ -115,17 +122,20 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
+			bool m_bDocument = true; //for upper/lower level rels (defaultDirectory)
 		};
 		class CChartExFile : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 		{
 		public:
-			CChartExFile(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
+			CChartExFile(OOX::Document* pMain, bool bDocument = true) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
-				m_bSpreadsheets = true;
+				m_bDocument = bDocument;
+				m_bSpreadsheets = (NULL != dynamic_cast<OOX::Spreadsheet::CXlsx*>(pMain));
 			}
 			CChartExFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
-				m_bSpreadsheets = true;
+				m_bDocument = (NULL != dynamic_cast<OOX::CDocument*>(pMain));
+				m_bSpreadsheets = (NULL != dynamic_cast<OOX::Spreadsheet::CXlsx*>(pMain));
 				read( oRootPath, oPath );
 			}
 			virtual ~CChartExFile()
@@ -176,7 +186,10 @@ namespace OOX
 			}
 			virtual const CPath DefaultDirectory() const
 			{
-				return type().DefaultDirectory();
+				if (m_bDocument)
+					return type().DefaultDirectory();
+				else
+					return L"../" + type().DefaultDirectory();
 			}
 			virtual const CPath DefaultFileName() const
 			{
@@ -193,6 +206,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
+			bool m_bDocument = true; //for upper/lower level rels (defaultDirectory)
 		};
 		class CChartStyleFile : public OOX::FileGlobalEnumerated/*, public OOX::IFileContainer*/
 		{

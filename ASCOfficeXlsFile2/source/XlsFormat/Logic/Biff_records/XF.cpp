@@ -253,7 +253,7 @@ void XF::Update(ExtProp* ext_prop)
 
 	{
 		color_out.enabled		= true;
-		color_out.icv			= ext_prop->extPropData.color.icv;
+		color_out.icv			= ext_prop->extPropData.color.xclrValue;
 		color_out.xclrType		= ext_prop->extPropData.color.xclrType;
 		color_out.nTintShade	= ext_prop->extPropData.color.nTintShade;
 		color_out.xclrValue		= ext_prop->extPropData.color.xclrValue;
@@ -452,9 +452,9 @@ int XF::serialize(std::wostream & stream)
 						if (alc  >=0	&& alc  <8)	CP_XML_ATTR(L"horizontal"	, HorAlign[alc]);
 						if (alcV >=0	&& alcV <5)	CP_XML_ATTR(L"vertical"		, VerAlign[alcV] );
 
-						CP_XML_ATTR(L"shrinkToFit"	, fShrinkToFit);
+						CP_XML_ATTR(L"shrinkToFit", fShrinkToFit);
 						if (cIndent > 0) CP_XML_ATTR(L"indent", cIndent);
-						CP_XML_ATTR(L"wrapText"		, fWrap);
+						CP_XML_ATTR(L"wrapText", fWrap);
 						
 						if (trot > 0 && trot < 0xff) CP_XML_ATTR(L"textRotation"	, trot);
 					}
@@ -480,9 +480,9 @@ int XF::serialize(std::wostream & stream)
 						if (alc  >= 0	&& alc  < 8)	CP_XML_ATTR(L"horizontal"	, HorAlign[alc]);
 						if (alcV >= 0	&& alcV < 5)	CP_XML_ATTR(L"vertical"		, VerAlign[alcV] );
 						
-						CP_XML_ATTR(L"shrinkToFit"	, fShrinkToFit);
+						CP_XML_ATTR(L"shrinkToFit", fShrinkToFit);
 						if (cIndent > 0) CP_XML_ATTR(L"indent", cIndent);
-						CP_XML_ATTR(L"wrapText"		, fWrap);
+						CP_XML_ATTR(L"wrapText", fWrap);
 					
 						if (trot > 0 && trot < 0xff) CP_XML_ATTR(L"textRotation", trot);
 					}

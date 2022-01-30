@@ -33,7 +33,7 @@
 #define _ASC_HTMLRENDERER3_H_
 
 #include "../../DesktopEditor/graphics/IRenderer.h"
-#include "../../DesktopEditor/common/officedrawingfile.h"
+#include "../../DesktopEditor/graphics/pro/officedrawingfile.h"
 
 #ifndef HTMLRENDERER_USE_DYNAMIC_LIBRARY
 #define HTMLRENDERER_DECL_EXPORT

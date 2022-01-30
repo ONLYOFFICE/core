@@ -2461,6 +2461,13 @@ void OoxConverter::convert(PPTX::Logic::Br *oox_br)
 void OoxConverter::convert(PPTX::Logic::MathParaWrapper *oox_math)
 {
 	if (!oox_math) return;
+
+	odf_context()->math_context()->in_text_box_ = true;
+	
+	convert(oox_math->m_oMathPara.GetPointer());
+	convert(oox_math->m_oMath.GetPointer());
+
+	odf_context()->math_context()->in_text_box_ = false;
 }
 void OoxConverter::convert(PPTX::Logic::LineTo *oox_geom_path)
 {

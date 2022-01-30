@@ -44,6 +44,23 @@
 #define PATH_MAX 1024
 #endif
 
+#ifdef _IOS
+#include <spawn.h>
+extern char **environ;
+int run_cmd(char* cmd)
+{
+    pid_t pid;
+    char* argv[] = {"sh", "-c", cmd, NULL};
+    int status = posix_spawn(&pid, "/bin/sh", NULL, NULL, argv, environ);
+    if (0 == status)
+    {
+        if (-1 == waitpid(pid, &status, 0))
+            perror("waitpid");
+    }
+    return status;
+}
+#endif
+
 //------------------------------------------------------------------------
 
 GString *getHomeDir() {
@@ -529,10 +546,15 @@ GBool createDir(char *path, int mode) {
 }
 
 GBool executeCommand(char *cmd) {
-#ifdef VMS
-  return system(cmd) ? gTrue : gFalse;
+#ifdef _IOS
+    #define _system_cmd run_cmd
 #else
-  return system(cmd) ? gFalse : gTrue;
+    #define _system_cmd system
+#endif
+#ifdef VMS
+  return _system_cmd(cmd) ? gTrue : gFalse;
+#else
+  return _system_cmd(cmd) ? gFalse : gTrue;
 #endif
 }
 

@@ -50,9 +50,6 @@ namespace OOX
 			m_bMsPackage = bMsPackage;
 			read(filename);
 		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, CContentTypes& content) const
-		{
-		}
 		virtual const FileType type() const
 		{
 			if (m_bMsPackage)	return OOX::FileTypes::MicrosoftOfficeUnknown;

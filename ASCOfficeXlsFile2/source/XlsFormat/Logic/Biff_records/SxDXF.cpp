@@ -51,7 +51,10 @@ BaseObjectPtr SxDXF::clone()
 
 void SxDXF::readFields(CFRecord& record)
 {
-	record >> dxfn >> xfext;
+	record >> dxfn;
+	
+	dxfn.xfext = XFExtNoFRTPtr(new XFExtNoFRT);
+	record >> *dxfn.xfext;
 }
 
 } // namespace XLS

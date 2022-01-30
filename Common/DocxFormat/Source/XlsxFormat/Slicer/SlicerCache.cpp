@@ -87,10 +87,10 @@ void COlapSlicerCacheItem::ReadAttributes(XLS::BaseObjectPtr& obj)
 void COlapSlicerCacheItem::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
 	WritingElement_ReadAttributes_StartChar_No_NS(oReader)
-			WritingElement_ReadAttributes_Read_ifChar( oReader, "n", m_oN)
-			WritingElement_ReadAttributes_Read_else_ifChar( oReader, "c", m_oC)
-			WritingElement_ReadAttributes_Read_else_ifChar( oReader, "nd", m_oNd)
-			WritingElement_ReadAttributes_EndChar_No_NS( oReader )
+		WritingElement_ReadAttributes_Read_ifChar( oReader, "n", m_oN)
+		WritingElement_ReadAttributes_Read_else_ifChar( oReader, "c", m_oC)
+		WritingElement_ReadAttributes_Read_else_ifChar( oReader, "nd", m_oNd)
+	WritingElement_ReadAttributes_EndChar_No_NS( oReader )
 }
 void COlapSlicerCacheItem::fromXML(XmlUtils::CXmlLiteReader& oReader)
 {

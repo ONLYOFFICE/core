@@ -4,7 +4,7 @@
 #include "../../../common/StringBuilder.h"
 #include "../../../common/File.h"
 #include "../../../common/Directory.h"
-#include "./ZipFolder.h"
+#include "../../../../OfficeUtils/src/ZipFolder.h"
 
 class COOXMLRelationship
 {

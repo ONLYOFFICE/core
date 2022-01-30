@@ -2728,22 +2728,18 @@
     <xsd:attribute name="display" type="s:ST_Xstring" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_CellFormula">
-    <xsd:simpleContent>
-      <xsd:extension base="ST_Formula">
-        <xsd:attribute name="t" type="ST_CellFormulaType" use="optional" default="normal"/>
-        <xsd:attribute name="aca" type="xsd:boolean" use="optional" default="false"/>
-        <xsd:attribute name="ref" type="ST_Ref" use="optional"/>
-        <xsd:attribute name="dt2D" type="xsd:boolean" use="optional" default="false"/>
-        <xsd:attribute name="dtr" type="xsd:boolean" use="optional" default="false"/>
-        <xsd:attribute name="del1" type="xsd:boolean" use="optional" default="false"/>
-        <xsd:attribute name="del2" type="xsd:boolean" use="optional" default="false"/>
-        <xsd:attribute name="r1" type="ST_CellRef" use="optional"/>
-        <xsd:attribute name="r2" type="ST_CellRef" use="optional"/>
-        <xsd:attribute name="ca" type="xsd:boolean" use="optional" default="false"/>
-        <xsd:attribute name="si" type="xsd:unsignedInt" use="optional"/>
-        <xsd:attribute name="bx" type="xsd:boolean" use="optional" default="false"/>
-      </xsd:extension>
-    </xsd:simpleContent>
+    <xsd:attribute name="t" type="ST_CellFormulaType" use="optional" default="normal"/>
+    <xsd:attribute name="aca" type="xsd:boolean" use="optional" default="false"/>
+    <xsd:attribute name="ref" type="ST_Ref" use="optional"/>
+    <xsd:attribute name="dt2D" type="xsd:boolean" use="optional" default="false"/>
+    <xsd:attribute name="dtr" type="xsd:boolean" use="optional" default="false"/>
+    <xsd:attribute name="del1" type="xsd:boolean" use="optional" default="false"/>
+    <xsd:attribute name="del2" type="xsd:boolean" use="optional" default="false"/>
+    <xsd:attribute name="r1" type="ST_CellRef" use="optional"/>
+    <xsd:attribute name="r2" type="ST_CellRef" use="optional"/>
+    <xsd:attribute name="ca" type="xsd:boolean" use="optional" default="false"/>
+    <xsd:attribute name="si" type="xsd:unsignedInt" use="optional"/>
+    <xsd:attribute name="bx" type="xsd:boolean" use="optional" default="false"/>
   </xsd:complexType>
   <xsd:complexType name="CT_ColorScale">
     <xsd:sequence>
@@ -3987,11 +3983,7 @@
     <xsd:attribute name="totalsRowCellStyle" type="s:ST_Xstring" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_TableFormula">
-    <xsd:simpleContent>
-      <xsd:extension base="ST_Formula">
-        <xsd:attribute name="array" type="xsd:boolean" default="false"/>
-      </xsd:extension>
-    </xsd:simpleContent>
+    <xsd:attribute name="array" type="xsd:boolean" default="false"/>
   </xsd:complexType>
   <xsd:simpleType name="ST_TotalsRowFunction">
     <xsd:restriction base="xsd:string">
@@ -4286,25 +4278,21 @@
     </xsd:sequence>
   </xsd:complexType>
   <xsd:complexType name="CT_DefinedName">
-    <xsd:simpleContent>
-      <xsd:extension base="ST_Formula">
-        <xsd:attribute name="name" type="s:ST_Xstring" use="required"/>
-        <xsd:attribute name="comment" type="s:ST_Xstring" use="optional"/>
-        <xsd:attribute name="customMenu" type="s:ST_Xstring" use="optional"/>
-        <xsd:attribute name="description" type="s:ST_Xstring" use="optional"/>
-        <xsd:attribute name="help" type="s:ST_Xstring" use="optional"/>
-        <xsd:attribute name="statusBar" type="s:ST_Xstring" use="optional"/>
-        <xsd:attribute name="localSheetId" type="xsd:unsignedInt" use="optional"/>
-        <xsd:attribute name="hidden" type="xsd:boolean" use="optional" default="false"/>
-        <xsd:attribute name="function" type="xsd:boolean" use="optional" default="false"/>
-        <xsd:attribute name="vbProcedure" type="xsd:boolean" use="optional" default="false"/>
-        <xsd:attribute name="xlm" type="xsd:boolean" use="optional" default="false"/>
-        <xsd:attribute name="functionGroupId" type="xsd:unsignedInt" use="optional"/>
-        <xsd:attribute name="shortcutKey" type="s:ST_Xstring" use="optional"/>
-        <xsd:attribute name="publishToServer" type="xsd:boolean" use="optional" default="false"/>
-        <xsd:attribute name="workbookParameter" type="xsd:boolean" use="optional" default="false"/>
-      </xsd:extension>
-    </xsd:simpleContent>
+    <xsd:attribute name="name" type="s:ST_Xstring" use="required"/>
+    <xsd:attribute name="comment" type="s:ST_Xstring" use="optional"/>
+    <xsd:attribute name="customMenu" type="s:ST_Xstring" use="optional"/>
+    <xsd:attribute name="description" type="s:ST_Xstring" use="optional"/>
+    <xsd:attribute name="help" type="s:ST_Xstring" use="optional"/>
+    <xsd:attribute name="statusBar" type="s:ST_Xstring" use="optional"/>
+    <xsd:attribute name="localSheetId" type="xsd:unsignedInt" use="optional"/>
+    <xsd:attribute name="hidden" type="xsd:boolean" use="optional" default="false"/>
+    <xsd:attribute name="function" type="xsd:boolean" use="optional" default="false"/>
+    <xsd:attribute name="vbProcedure" type="xsd:boolean" use="optional" default="false"/>
+    <xsd:attribute name="xlm" type="xsd:boolean" use="optional" default="false"/>
+    <xsd:attribute name="functionGroupId" type="xsd:unsignedInt" use="optional"/>
+    <xsd:attribute name="shortcutKey" type="s:ST_Xstring" use="optional"/>
+    <xsd:attribute name="publishToServer" type="xsd:boolean" use="optional" default="false"/>
+    <xsd:attribute name="workbookParameter" type="xsd:boolean" use="optional" default="false"/>
   </xsd:complexType>
   <xsd:complexType name="CT_ExternalReferences">
     <xsd:sequence>

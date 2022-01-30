@@ -22,8 +22,7 @@ DEFINES -= UNICODE
 HEADERS += \
     include/XmlCertificate.h \
     include/OOXMLSigner.h \
-    include/OOXMLVerifier.h \
-    src/ZipFolder.h
+    include/OOXMLVerifier.h
 
 HEADERS += \
     src/XmlCanonicalizator.h \

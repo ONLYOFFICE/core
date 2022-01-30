@@ -41,7 +41,7 @@ namespace FilesSort
         static void Main(string[] args)
         {
             string input = @"D:\logs\doc.onlyoffice.com\sync\files";
-            string output = @"D:\logs\doc.onlyoffice.com\6.0.0\errorsorted";
+            string output = @"D:\logs\doc.onlyoffice.com\6.4.1\errorsorted";
 
             DateTime start = DateTime.Now;
             Dictionary<long, long> hash = new Dictionary<long, long>();

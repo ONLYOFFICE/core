@@ -2558,6 +2558,10 @@ int BinaryWorkbookTableReader::ReadProtection(BYTE type, long length, void* poRe
 	{
 		m_oWorkbook.m_oWorkbookProtection->m_oWorkbookSaltValue = m_oBufferedStream.GetString4(length);
 	}
+	else if (c_oSerWorkbookProtection::Password == type)
+	{
+		m_oWorkbook.m_oWorkbookProtection->m_oPassword = m_oBufferedStream.GetString4(length);
+	}
 	else if (c_oSerWorkbookProtection::LockStructure == type)
 	{
 		m_oWorkbook.m_oWorkbookProtection->m_oLockStructure.Init();
@@ -3744,6 +3748,11 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 	READ2_DEF_SPREADSHEET(length, res, this->ReadProtection, &oProtection);
 	SEEK_TO_POS_END(oProtection);
 //-------------------------------------------------------------------------------------------------------------
+	SEEK_TO_POS_START(c_oSerWorksheetsTypes::ProtectedRanges);
+	OOX::Spreadsheet::CProtectedRanges oProtectedRanges;
+	READ1_DEF(length, res, this->ReadProtectedRanges, &oProtectedRanges);
+	SEEK_TO_POS_END(oProtectedRanges);
+//-------------------------------------------------------------------------------------------------------------
 	SEEK_TO_POS_START(c_oSerWorksheetsTypes::Autofilter);
 		OOX::Spreadsheet::CAutofilter oAutofilter;
 		BinaryTableReader oBinaryTableReader(m_oBufferedStream, m_pCurWorksheet.GetPointer());
@@ -3848,11 +3857,6 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 		OOX::Spreadsheet::CHyperlinks oHyperlinks;
 		READ1_DEF(length, res, this->ReadHyperlinks, &oHyperlinks);
 	SEEK_TO_POS_END(oHyperlinks);
-//-------------------------------------------------------------------------------------------------------------
-	SEEK_TO_POS_START(c_oSerWorksheetsTypes::ProtectedRanges);
-	OOX::Spreadsheet::CProtectedRanges oProtectedRanges;
-	READ1_DEF(length, res, this->ReadProtectedRanges, &oProtectedRanges);
-	SEEK_TO_POS_END(oProtectedRanges);
 //-------------------------------------------------------------------------------------------------------------
 	SEEK_TO_POS_START(c_oSerWorksheetsTypes::PrintOptions);
 		OOX::Spreadsheet::CPrintOptions oPrintOptions;

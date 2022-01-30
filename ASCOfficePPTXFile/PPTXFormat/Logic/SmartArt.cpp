@@ -580,13 +580,9 @@ namespace PPTX
 
 			oXlsxSerializer.setDrawingConverter(&oDrawingConverter);
 
-			std::wstring strDstChart = pReader->m_pRels->m_pManager->GetDstCharts();
+			std::wstring strDstChart = pReader->m_pRels->m_pManager->GetDstFolder() + FILE_SEPARATOR_STR + L"charts";
+			pReader->m_pRels->m_pManager->SetDstCharts(strDstChart);
 
-			if (strDstChart.empty())
-			{
-				strDstChart = pReader->m_pRels->m_pManager->GetDstFolder() + FILE_SEPARATOR_STR + L"charts";
-				pReader->m_pRels->m_pManager->SetDstCharts(strDstChart);
-			}
 			NSDirectory::CreateDirectory(strDstChart);
 
 			smart_ptr<OOX::File> file;

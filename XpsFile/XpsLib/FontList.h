@@ -32,13 +32,17 @@
 #ifndef _XPS_XPSLIB_FONTLIST_H
 #define _XPS_XPSLIB_FONTLIST_H
 
-#include <map>
+#include <vector>
 #include <string>
 #include <sstream>
+#include <algorithm>
+#include <iterator>
 
 #include "../../DesktopEditor/graphics/TemporaryCS.h"
 #include "../../DesktopEditor/common/File.h"
 #include "Utils.h"
+#include "../../OfficeUtils/src/ZipFolder.h"
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
 
 namespace XPS
 {
@@ -58,7 +62,7 @@ namespace XPS
 		{
 			m_mList.clear();
 		}
-		void Check(const std::wstring& wsName, const std::wstring& wsFontPath)
+        void Check(const std::wstring& wsName, const std::wstring& wsFontPath, IFolder* pFolder)
 		{
 			m_oCS.Enter();
 			if (!Find(wsName))
@@ -68,40 +72,65 @@ namespace XPS
 				unsigned char sKey[16];
 				GetFontKey(wsName, sKey);
 
-				NSFile::CFileBinary oFile;
-				oFile.OpenFile(wsFontPath, true);
+                // Нужно подменить первые 32 байта файла
+                if (IFolder::iftFolder == pFolder->getType())
+                {
+                    NSFile::CFileBinary oFile;
+                    oFile.OpenFile(wsFontPath, true);
 
-				unsigned char sFontData[32];
-				DWORD dwBytesRead;
-				oFile.ReadFile(sFontData, 32, dwBytesRead);
+                    unsigned char sFontData[32];
+                    DWORD dwBytesRead;
+                    oFile.ReadFile(sFontData, 32, dwBytesRead);
 
-				for (int nIndex = 0; nIndex < 32; nIndex++)
-					sFontData[nIndex] ^= sKey[nIndex % 16];
+                    for (int nIndex = 0; nIndex < 32; nIndex++)
+                        sFontData[nIndex] ^= sKey[nIndex % 16];
 
-				FILE* pFile = oFile.GetFileNative();
-				if (pFile)
-				{
-					fseek(pFile, 0, SEEK_SET);
-					fwrite(sFontData, 1, 32, pFile);
-				}
+                    FILE* pFile = oFile.GetFileNative();
+                    if (pFile)
+                    {
+                        fseek(pFile, 0, SEEK_SET);
+                        fwrite(sFontData, 1, 32, pFile);
+                    }
 
-				oFile.CloseFile();
+                    oFile.CloseFile();
+                }
+                else if (IFolder::iftZip == pFolder->getType())
+                {
+                    IFolder::CBuffer* buffer = NULL;
+                    pFolder->read(wsFontPath, buffer);
+
+                    if (buffer->Size >= 32)
+                    {
+                        unsigned char* sFontData = buffer->Buffer;
+                        for (int nIndex = 0; nIndex < 32; nIndex++)
+                            sFontData[nIndex] ^= sKey[nIndex % 16];
+                    }
+
+                    if (NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage())
+                        NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFontPath, buffer->Buffer, buffer->Size);
+
+                    RELEASEOBJECT(buffer);
+                }
 			}
 			m_oCS.Leave();
+		}
+		int  GetFontId(const std::wstring& wsName)
+		{
+			std::vector<std::wstring>::iterator oIter = std::find(m_mList.begin(), m_mList.end(), wsName);
+			if (oIter != m_mList.end())
+				return std::distance(m_mList.begin(), oIter);
+			return -1;
 		}
 	private:
 
 		bool Find(const std::wstring& wsName)
 		{
-			std::map<std::wstring, bool>::iterator oIter = m_mList.find(wsName);
-			if (oIter != m_mList.end())
-				return oIter->second;
-
-			return false;
+			std::vector<std::wstring>::iterator oIter = std::find(m_mList.begin(), m_mList.end(), wsName);
+			return oIter != m_mList.end();
 		}
 		void Add(const std::wstring& wsName)
 		{
-			m_mList.insert(std::pair<std::wstring, bool>(wsName, true));
+			m_mList.push_back(wsName);
 		}
 		void GetFontKey(const std::wstring& wsName, unsigned char* sKey)
 		{
@@ -131,7 +160,7 @@ namespace XPS
 	private:
 
 		NSCriticalSection::CRITICAL_SECTION m_oCS;
-		std::map<std::wstring, bool>        m_mList;
+		std::vector<std::wstring>         m_mList;
 	};
 }
 

@@ -121,10 +121,8 @@ namespace OOX
             const OOX::RId AddHyperlink (std::wstring& sHref);
 			smart_ptr<OOX::WritingElement> FindVmlObject(const std::wstring &spid);
 
-			void PrepareDataValidations();
-			void PrepareConditionalFormatting();
-			void PrepareComments(OOX::Spreadsheet::CComments* pComments, OOX::Spreadsheet::CThreadedComments* pThreadedComments, OOX::Spreadsheet::CLegacyDrawingWorksheet* pLegacyDrawing);
 			void PrepareToWrite();
+			void PrepareAfterRead();
 
 			void ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader);
 
@@ -173,6 +171,11 @@ namespace OOX
 			std::map<std::wstring, CConditionalFormattingRule*> m_mapConditionalFormattingEx;
 //--------------------------------------------------------------------------------------------
 			std::map<std::wstring, unsigned int> m_mapStyleMerges2003;
+		private:
+			void PrepareDataValidations();
+			void PrepareConditionalFormatting();
+			void PrepareComments(OOX::Spreadsheet::CComments* pComments, OOX::Spreadsheet::CThreadedComments* pThreadedComments, OOX::Spreadsheet::CLegacyDrawingWorksheet* pLegacyDrawing);
+
 		};
 	} //Spreadsheet
 } // namespace OOX

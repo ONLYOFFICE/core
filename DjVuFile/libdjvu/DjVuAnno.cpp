@@ -406,7 +406,11 @@ GLParser::skip_white_space(const char * & start)
 {
    while(*start && isspace(*start)) start++;
    if (!*start) 
+     #ifdef BUILDING_WASM_MODULE
+       return;
+     #else
        G_THROW( ByteStream::EndOfFile );
+     #endif
 }
 
 GLToken
@@ -501,7 +505,11 @@ GLParser::get_token(const char * & start)
 	 {
            char ch=*start++;
            if (!ch)
+           #ifdef BUILDING_WASM_MODULE
+             return GLToken(GLToken::CLOSE_PAR, 0);
+           #else
              G_THROW( ByteStream::EndOfFile );
+           #endif
            if (ch==')') { start--; break; }
            if (isspace(ch)) break;
            str+=ch;

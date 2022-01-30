@@ -437,7 +437,11 @@ namespace OOX
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
 				NSStringUtils::CStringBuilder sXml;
-				sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><comments xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:xr=\"http://schemas.microsoft.com/office/spreadsheetml/2014/revision\" mc:Ignorable=\"xr\">");
+				sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
+<comments xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" \
+xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+xmlns:xr=\"http://schemas.microsoft.com/office/spreadsheetml/2014/revision\" \
+mc:Ignorable=\"xr\">");
 				if(m_oAuthors.IsInit())
 					m_oAuthors->toXML(sXml);
 				if(m_oCommentList.IsInit())

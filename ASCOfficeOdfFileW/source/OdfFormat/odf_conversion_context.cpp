@@ -303,10 +303,13 @@ bool odf_conversion_context::start_math()
 {
 	if (false == math_context_.isEmpty()) return false;
 
-	drawing_context()->start_drawing();
-	drawing_context()->set_anchor(anchor_type::AsChar);
-
-	drawing_context()->start_object(get_next_name_object()); //имитация рисованного объекта - высота-ширина ????
+	if (false == math_context_.in_text_box_)
+	{
+		drawing_context()->start_drawing();
+		drawing_context()->set_anchor(anchor_type::AsChar);
+	}
+	drawing_context()->start_object(get_next_name_object(), !math_context_.in_text_box_); 
+			//имитация рисованного объекта - высота-ширина ????
 
 	create_object(false);
 	create_element(L"math", L"math", objects_.back().content, this, true);
@@ -331,10 +334,15 @@ void odf_conversion_context::end_math()
 	_CP_OPT(double)width = convert_symbol_width(count_symbol_width);
 	_CP_OPT(double)height = convert_symbol_width(count_symbol_height);
 
-	//drawing_context()->set_size(width, height);
+	//if (false == math_context_.in_text_box_)
+	//	drawing_context()->set_size(width, height); 
 	
-	drawing_context()->end_object();
-	drawing_context()->end_drawing();
+	drawing_context()->end_object(!math_context_.in_text_box_);
+
+	if (false == math_context_.in_text_box_)
+	{
+		drawing_context()->end_drawing();
+	}
 }
 void odf_conversion_context::end_text()
 {

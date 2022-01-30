@@ -2183,6 +2183,12 @@ void BinaryWorkbookTableWriter::WriteProtection(const OOX::Spreadsheet::CWorkboo
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 		m_oBcw.m_oStream.WriteBOOL(protection.m_oLockWindows->ToBool());
 	}
+	if (protection.m_oPassword.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookProtection::Password);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*protection.m_oPassword);
+	}
 }
 void BinaryWorkbookTableWriter::WriteWorkbookPr(const OOX::Spreadsheet::CWorkbookPr& workbookPr)
 {
@@ -4454,7 +4460,7 @@ void BinaryWorksheetTableWriter::WriteCell(const OOX::Spreadsheet::CCell& oCell)
         double dValue = 0;
         try
         {
-            dValue = _wtof(oCell.m_oValue->ToString().c_str());
+            dValue = XmlUtils::GetDouble(oCell.m_oValue->ToString());
         }
         catch(...)
         {   //1.3912059045063478e-310
@@ -4603,86 +4609,87 @@ void BinaryWorksheetTableWriter::WriteOleObjects(const OOX::Spreadsheet::CWorksh
 				pShapeElem	= pFind->second.pElement;
 			}			
 		}
+		SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
+		eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);		
 		bool bSetAnchor = false;
 		if (pOleObject->m_oObjectPr.IsInit() && pOleObject->m_oObjectPr->m_oAnchor.IsInit() && pOleObject->m_oObjectPr->m_oRid.IsInit())
-		{						
+		{
 			const OOX::Spreadsheet::CExtAnchor& oAnchor = pOleObject->m_oObjectPr->m_oAnchor.get();
 
-			SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
-			eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
-			
 			if (oAnchor.m_oFrom.IsInit() && oAnchor.m_oTo.IsInit())
 			{
-				if(oAnchor.m_oMoveWithCells.IsInit() && oAnchor.m_oMoveWithCells->ToBool())
+				if (oAnchor.m_oMoveWithCells.IsInit() && oAnchor.m_oMoveWithCells->ToBool())
 					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorOneCell);
-				else if(oAnchor.m_oSizeWithCells.IsInit() && oAnchor.m_oSizeWithCells->ToBool())
+				else if (oAnchor.m_oSizeWithCells.IsInit() && oAnchor.m_oSizeWithCells->ToBool())
 					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
 				else
 					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorAbsolute);
-				
+
 				oCellAnchor.reset(new OOX::Spreadsheet::CCellAnchor(eAnchorType));
-				
-				oCellAnchor->m_oFrom	= oAnchor.m_oFrom.get();
-				oCellAnchor->m_oTo		= oAnchor.m_oTo.get();
-				
+
+				oCellAnchor->m_oFrom = oAnchor.m_oFrom.get();
+				oCellAnchor->m_oTo = oAnchor.m_oTo.get();
+
 				bSetAnchor = true;
 			}
-			else
-				oCellAnchor.reset(new OOX::Spreadsheet::CCellAnchor(eAnchorType));
+		}
+		if (false == oCellAnchor.IsInit())
+		{
+			oCellAnchor.reset(new OOX::Spreadsheet::CCellAnchor(eAnchorType));
+		}
 
-			oCellAnchor->m_bShapeOle= true;
-			
-			PPTX::Logic::Pic *olePic = new PPTX::Logic::Pic;
-			
-			olePic->oleObject.Init();
-			olePic->blipFill.blip.Init();	
+		oCellAnchor->m_bShapeOle = true;
 
-			if (pOleObject->m_oProgId.IsInit())
-				olePic->oleObject->m_sProgId = pOleObject->m_oProgId.get();
-			
-			olePic->oleObject->m_oId = pRId;
-			olePic->oleObject->m_OleObjectFile = pFileOleObject;
+		PPTX::Logic::Pic *olePic = new PPTX::Logic::Pic;
 
-			if (olePic->oleObject->m_OleObjectFile.IsInit())
+		olePic->oleObject.Init();
+		olePic->blipFill.blip.Init();
+
+		if (pOleObject->m_oProgId.IsInit())
+			olePic->oleObject->m_sProgId = pOleObject->m_oProgId.get();
+
+		olePic->oleObject->m_oId = pRId;
+		olePic->oleObject->m_OleObjectFile = pFileOleObject;
+
+		if (olePic->oleObject->m_OleObjectFile.IsInit())
+		{
+			olePic->blipFill.blip->oleFilepathBin = olePic->oleObject->m_OleObjectFile->filename().GetPath();
+		}
+
+		OOX::Image*		pImageFileCache = NULL;
+		std::wstring	sIdImageFileCache;
+		if ((NULL != pShapeElem) && (OOX::et_v_shapetype != pShapeElem->getType()))
+		{
+			OOX::Vml::CShape* pShape = static_cast<OOX::Vml::CShape*>(pShapeElem);
+			for (size_t j = 0; (pShape) && (j < pShape->m_arrItems.size()); ++j)
 			{
-				olePic->blipFill.blip->oleFilepathBin = olePic->oleObject->m_OleObjectFile->filename().GetPath();
-			}
-
-			OOX::Image*		pImageFileCache = NULL;
-			std::wstring	sIdImageFileCache;
-			if ((NULL != pShapeElem) && (OOX::et_v_shapetype != pShapeElem->getType()))
-			{
-				OOX::Vml::CShape* pShape = static_cast<OOX::Vml::CShape*>(pShapeElem);
-				for(size_t j = 0; (pShape) && (j < pShape->m_arrItems.size()); ++j)
+				OOX::WritingElement* pChildElemShape = pShape->m_arrItems[j];
+				if (!bSetAnchor && OOX::et_v_ClientData == pChildElemShape->getType())
 				{
-					OOX::WritingElement* pChildElemShape = pShape->m_arrItems[j];
-					if(!bSetAnchor && OOX::et_v_ClientData == pChildElemShape->getType())
+					OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pChildElemShape);
+					pClientData->toCellAnchor(oCellAnchor.GetPointer());
+				}
+				if (OOX::et_v_imagedata == pChildElemShape->getType())
+				{
+					OOX::Vml::CImageData* pImageData = static_cast<OOX::Vml::CImageData*>(pChildElemShape);
+
+					if (pImageData->m_oRelId.IsInit())		sIdImageFileCache = pImageData->m_oRelId->GetValue();
+					else if (pImageData->m_rId.IsInit())	sIdImageFileCache = pImageData->m_rId->GetValue();
+					else if (pImageData->m_rPict.IsInit())	sIdImageFileCache = pImageData->m_rPict->GetValue();
+
+					if (!sIdImageFileCache.empty())
 					{
-						OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pChildElemShape);
-						pClientData->toCellAnchor(oCellAnchor.GetPointer());
-					}
-					if(OOX::et_v_imagedata == pChildElemShape->getType())
-					{
-						OOX::Vml::CImageData* pImageData = static_cast<OOX::Vml::CImageData*>(pChildElemShape);									
-											
-						if (pImageData->m_oRelId.IsInit())		sIdImageFileCache = pImageData->m_oRelId->GetValue();
-						else if (pImageData->m_rId.IsInit())	sIdImageFileCache = pImageData->m_rId->GetValue();
-						else if (pImageData->m_rPict.IsInit())	sIdImageFileCache = pImageData->m_rPict->GetValue();
-															
-						if (!sIdImageFileCache.empty())
+						//ищем физический файл ( rId относительно vml_drawing)									
+						smart_ptr<OOX::File> pFile = pVmlDrawing->Find(sIdImageFileCache);
+
+						if (pFile.IsInit() && (OOX::FileTypes::Image == pFile->type()))
 						{
-							//ищем физический файл ( rId относительно vml_drawing)									
-							smart_ptr<OOX::File> pFile = pVmlDrawing->Find(sIdImageFileCache);
-							
-							if (pFile.IsInit() && (	OOX::FileTypes::Image == pFile->type()))
-							{
-								pImageFileCache = static_cast<OOX::Image*>(pFile.GetPointer());
-							}
+							pImageFileCache = static_cast<OOX::Image*>(pFile.GetPointer());
 						}
 					}
-				}	
+				}
 			}
-			
+
 			if (pImageFileCache == NULL && pOleObject->m_oObjectPr.IsInit() && pOleObject->m_oObjectPr->m_oRid.IsInit())
 			{
 				sIdImageFileCache = pOleObject->m_oObjectPr->m_oRid->GetValue();
@@ -7161,7 +7168,11 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 				oXlsbWriter.WriteStringUtf8(WriteFileHeader(0, g_nFormatVersionNoBase64));
 				oXlsbWriter.WriteReserved(GetMainTableSize());
 				int nDataStartPos = oXlsbWriter.GetPositionAbsolute();
-				pXlsx->m_pXlsbWriter = &oXlsbWriter;
+				
+				if (fileType == 1)
+				{
+					pXlsx->m_pXlsbWriter = &oXlsbWriter;
+				}
 				//parse
 				pXlsx->Read(OOX::CPath(sInputDir));
 

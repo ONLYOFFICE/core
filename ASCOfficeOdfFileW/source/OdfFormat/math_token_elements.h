@@ -36,191 +36,185 @@
 #include "../datatypes/common_attlists.h"
 
 namespace cpdoccore { 
-namespace odf_writer {
+	using namespace odf_types;
+	namespace odf_writer {
 
-class math_mi : public office_math_element
-{
-public:
-    static const wchar_t * ns;
-    static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeMI;
+	class math_mi : public office_math_element
+	{
+	public:
+		static const wchar_t * ns;
+		static const wchar_t * name;
+		static const xml::NodeType xml_type = xml::typeElement;
+		static const ElementType type = typeMI;
+	private:
+		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+		virtual void add_child_element(const office_element_ptr & child_element);
 
-    CPDOCCORE_DEFINE_VISITABLE();
-    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
-private:
-	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
-	virtual void add_child_element(const office_element_ptr & child_element);
+		virtual void serialize(std::wostream & _Wostream);
 
-	virtual void serialize(std::wostream & _Wostream);
+		virtual void add_text(const std::wstring & Text);
 
-	virtual void add_text(const std::wstring & Text);
-
-	odf_types::common_math_style_attlist	common_attlist_;
+		odf_types::common_math_style_attlist	common_attlist_;
    
-	office_element_ptr_array    content_;
-	_CP_OPT(std::wstring)		text_;
-};
+		office_element_ptr_array    content_;
+		_CP_OPT(std::wstring)		text_;
+	};
 
-CP_REGISTER_OFFICE_ELEMENT2(math_mi);
-//--------------------------------------------------------------------
-class math_mo : public office_math_element
-{
-public:
-    static const wchar_t * ns;
-    static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeMO;
+	CP_REGISTER_OFFICE_ELEMENT2(math_mi);
+	//CP_REGISTER_OFFICE_ELEMENT3(math_mi);
+	//--------------------------------------------------------------------
+	class math_mo : public office_math_element
+	{
+	public:
+		static const wchar_t * ns;
+		static const wchar_t * name;
+		static const xml::NodeType xml_type = xml::typeElement;
+		static const ElementType type = typeMO;
 
-    CPDOCCORE_DEFINE_VISITABLE();
-    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+		_CP_OPT(Bool)				accent_;
+		_CP_OPT(Bool)				fence_;
+		_CP_OPT(std::wstring)		form_;
+		_CP_OPT(Bool)				stretchy_;
+	private:
+		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+		virtual void add_child_element(const office_element_ptr & child_element);
 
-    _CP_OPT(bool)				fence_;
-	_CP_OPT(bool)				stretchy_;
-private:
-	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
-	virtual void add_child_element(const office_element_ptr & child_element);
+		virtual void serialize(std::wostream & _Wostream);
 
-	virtual void serialize(std::wostream & _Wostream);
+		virtual void add_text(const std::wstring & Text);
 
-	virtual void add_text(const std::wstring & Text);
+		odf_types::common_math_style_attlist	common_attlist_;
 
-	odf_types::common_math_style_attlist	common_attlist_;
+		office_element_ptr_array    content_;
+		_CP_OPT(std::wstring)		text_;
+	};
 
-	office_element_ptr_array    content_;
-	_CP_OPT(std::wstring)		text_;
-};
+	CP_REGISTER_OFFICE_ELEMENT2(math_mo);
+	//CP_REGISTER_OFFICE_ELEMENT3(math_mo);
+	//--------------------------------------------------------------------
+	class math_mn : public office_math_element
+	{
+	public:
+		static const wchar_t * ns;
+		static const wchar_t * name;
+		static const xml::NodeType xml_type = xml::typeElement;
+		static const ElementType type = typeMN;
 
-CP_REGISTER_OFFICE_ELEMENT2(math_mo);
-//--------------------------------------------------------------------
-class math_mn : public office_math_element
-{
-public:
-    static const wchar_t * ns;
-    static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeMN;
+	
+	private:
+		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+		virtual void add_child_element(const office_element_ptr & child_element);
 
-    CPDOCCORE_DEFINE_VISITABLE();
-    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+		virtual void serialize(std::wostream & _Wostream);
 
-private:
-	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
-	virtual void add_child_element(const office_element_ptr & child_element);
+		virtual void add_text(const std::wstring & Text);
 
-	virtual void serialize(std::wostream & _Wostream);
+		odf_types::common_math_style_attlist	common_attlist_;
 
-	virtual void add_text(const std::wstring & Text);
+		office_element_ptr_array    content_;
+		_CP_OPT(std::wstring)		text_;
+	};
 
-	odf_types::common_math_style_attlist	common_attlist_;
+	CP_REGISTER_OFFICE_ELEMENT2(math_mn);
+	//CP_REGISTER_OFFICE_ELEMENT3(math_mn);
+	//--------------------------------------------------------------------
+	class math_mtext : public office_math_element
+	{
+	public:
+		static const wchar_t * ns;
+		static const wchar_t * name;
+		static const xml::NodeType xml_type = xml::typeElement;
+		static const ElementType type = typeMText;
 
-	office_element_ptr_array    content_;
-	_CP_OPT(std::wstring)		text_;
-};
 
-CP_REGISTER_OFFICE_ELEMENT2(math_mn);
-//--------------------------------------------------------------------
-class math_mtext : public office_math_element
-{
-public:
-    static const wchar_t * ns;
-    static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeMText;
+	private:
+		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+		virtual void add_child_element(const office_element_ptr & child_element);
 
-    CPDOCCORE_DEFINE_VISITABLE();
-    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+		virtual void serialize(std::wostream & _Wostream);
 
-private:
-	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
-	virtual void add_child_element(const office_element_ptr & child_element);
+		virtual void add_text(const std::wstring & Text);
 
-	virtual void serialize(std::wostream & _Wostream);
+		odf_types::common_math_style_attlist	common_attlist_;
 
-	virtual void add_text(const std::wstring & Text);
+		office_element_ptr_array    content_;
+		_CP_OPT(std::wstring)		text_;
+	};
 
-	odf_types::common_math_style_attlist	common_attlist_;
+	CP_REGISTER_OFFICE_ELEMENT2(math_mtext);
+	//CP_REGISTER_OFFICE_ELEMENT3(math_mtext);
+	//--------------------------------------------------------------------
+	class math_mspace : public office_math_element
+	{
+	public:
+		static const wchar_t * ns;
+		static const wchar_t * name;
+		static const xml::NodeType xml_type = xml::typeElement;
+		static const ElementType type = typeMSpace;
 
-	office_element_ptr_array    content_;
-	_CP_OPT(std::wstring)		text_;
-};
 
-CP_REGISTER_OFFICE_ELEMENT2(math_mtext);
-//--------------------------------------------------------------------
-class math_mspace : public office_math_element
-{
-public:
-    static const wchar_t * ns;
-    static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeMSpace;
+	private:
+		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+		virtual void add_child_element(const office_element_ptr & child_element);
 
-    CPDOCCORE_DEFINE_VISITABLE();
-    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+		virtual void serialize(std::wostream & _Wostream);
 
-private:
-	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
-	virtual void add_child_element(const office_element_ptr & child_element);
+		odf_types::common_math_style_attlist	common_attlist_;
 
-	virtual void serialize(std::wostream & _Wostream);
+		office_element_ptr_array    content_;
+		_CP_OPT(std::wstring)		text_;
+	};
 
-	odf_types::common_math_style_attlist	common_attlist_;
+	CP_REGISTER_OFFICE_ELEMENT2(math_mspace);
+	//CP_REGISTER_OFFICE_ELEMENT3(math_mspace);
+	//--------------------------------------------------------------------
+	class math_ms : public office_math_element
+	{
+	public:
+		static const wchar_t * ns;
+		static const wchar_t * name;
+		static const xml::NodeType xml_type = xml::typeElement;
+		static const ElementType type = typeMS;
 
-	office_element_ptr_array    content_;
-	_CP_OPT(std::wstring)		text_;
-};
 
-CP_REGISTER_OFFICE_ELEMENT2(math_mspace);
-//--------------------------------------------------------------------
-class math_ms : public office_math_element
-{
-public:
-    static const wchar_t * ns;
-    static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeMS;
+	private:
+		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+		virtual void add_child_element(const office_element_ptr & child_element);
 
-    CPDOCCORE_DEFINE_VISITABLE();
-    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+		virtual void serialize(std::wostream & _Wostream);
 
-private:
-	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
-	virtual void add_child_element(const office_element_ptr & child_element);
+ 		odf_types::common_math_style_attlist	common_attlist_;
 
-	virtual void serialize(std::wostream & _Wostream);
+		office_element_ptr_array    content_;
+		_CP_OPT(std::wstring)		text_;
+	};
 
- 	odf_types::common_math_style_attlist	common_attlist_;
+	CP_REGISTER_OFFICE_ELEMENT2(math_ms);
+	//CP_REGISTER_OFFICE_ELEMENT3(math_ms);
+	//--------------------------------------------------------------------
+	class math_mglyph : public office_math_element
+	{
+	public:
+		static const wchar_t * ns;
+		static const wchar_t * name;
+		static const xml::NodeType xml_type = xml::typeElement;
+		static const ElementType type = typeMGlyph;
 
-	office_element_ptr_array    content_;
-	_CP_OPT(std::wstring)		text_;
-};
 
-CP_REGISTER_OFFICE_ELEMENT2(math_ms);
-//--------------------------------------------------------------------
-class math_mglyph : public office_math_element
-{
-public:
-    static const wchar_t * ns;
-    static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeMGlyph;
+	private:
+		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+		virtual void add_child_element(const office_element_ptr & child_element);
 
-    CPDOCCORE_DEFINE_VISITABLE();
-    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+		virtual void serialize(std::wostream & _Wostream);
 
-private:
-	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
-	virtual void add_child_element(const office_element_ptr & child_element);
+		odf_types::common_math_style_attlist	common_attlist_;
 
-	virtual void serialize(std::wostream & _Wostream);
+		office_element_ptr_array    content_;
+		_CP_OPT(std::wstring)		text_;
+	};
 
-	odf_types::common_math_style_attlist	common_attlist_;
-
-	office_element_ptr_array    content_;
-	_CP_OPT(std::wstring)		text_;
-};
-
-CP_REGISTER_OFFICE_ELEMENT2(math_mglyph);
-//--------------------------------------------------------------------
-}
+	CP_REGISTER_OFFICE_ELEMENT2(math_mglyph);
+	//CP_REGISTER_OFFICE_ELEMENT3(math_mglyph);
+	//--------------------------------------------------------------------
+	}
 }

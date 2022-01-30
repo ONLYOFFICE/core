@@ -66,8 +66,11 @@ void math_mi::serialize(std::wostream & _Wostream)
 	{
 		CP_XML_NODE_SIMPLE_NONS()
 		{
-			CP_XML_CONTENT(text_);
-			common_attlist_.serialize(CP_GET_XML_NODE());
+			if (text_)
+			{
+				CP_XML_CONTENT(text_.get());
+				common_attlist_.serialize(CP_GET_XML_NODE());
+			}
 			for (size_t i = 0; i < content_.size(); i++)
 			{
 				if (!content_[i]) continue;
@@ -102,8 +105,15 @@ void math_mo::serialize(std::wostream & _Wostream)
 	{
 		CP_XML_NODE_SIMPLE_NONS()
 		{
-			CP_XML_CONTENT(text_);
-			common_attlist_.serialize(CP_GET_XML_NODE());
+			if (text_)
+			{
+				CP_XML_ATTR_OPT(L"accent", accent_);
+				CP_XML_ATTR_OPT(L"fence", fence_);
+				CP_XML_ATTR_OPT(L"form", form_);
+				CP_XML_ATTR_OPT(L"stretchy", stretchy_);
+				CP_XML_CONTENT(text_.get());
+				common_attlist_.serialize(CP_GET_XML_NODE());
+			}
 			for (size_t i = 0; i < content_.size(); i++)
 			{
 				if (!content_[i]) continue;
@@ -138,8 +148,11 @@ void math_mn::serialize(std::wostream & _Wostream)
 	{
 		CP_XML_NODE_SIMPLE_NONS()
 		{
-			CP_XML_CONTENT(text_);
-			common_attlist_.serialize(CP_GET_XML_NODE());
+			if (text_)
+			{
+				CP_XML_CONTENT(text_.get());
+				common_attlist_.serialize(CP_GET_XML_NODE());
+			}
 			for (size_t i = 0; i < content_.size(); i++)
 			{
 				if (!content_[i]) continue;
@@ -239,8 +252,11 @@ void math_mtext::serialize(std::wostream & _Wostream)
 	{
 		CP_XML_NODE_SIMPLE_NONS()
 		{
-			CP_XML_CONTENT(text_);
-			common_attlist_.serialize(CP_GET_XML_NODE());
+			if (text_)
+			{
+				CP_XML_CONTENT(text_.get());
+				common_attlist_.serialize(CP_GET_XML_NODE());
+			}
 			for (size_t i = 0; i < content_.size(); i++)
 			{
 				if (!content_[i]) continue;

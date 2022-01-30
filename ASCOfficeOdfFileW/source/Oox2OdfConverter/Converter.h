@@ -656,6 +656,7 @@ public:
 //math............................................................................................................................
 		std::vector<std::vector<std::wstring>>& brackets();
 		int& lvl_of_me();
+		bool& annotation_flag();
 		std::wstring& annotation();
 		std::vector<int>& end_counter();
 		void mrow();
@@ -700,7 +701,7 @@ public:
 		void convert(OOX::Logic::CMRun					*oox_run);
 		void convert(OOX::Logic::CMText					*oox_text);
 		void convert(OOX::Logic::CNary					*oox_nary);
-		std::pair<bool, bool> convert(OOX::Logic::CNaryPr *oox_nary_pr);
+		std::vector<bool> convert(OOX::Logic::CNaryPr *oox_nary_pr);
 		void convert(OOX::Logic::COMathPara				*oox_math_para);
 		void convert(OOX::Logic::COMathParaPr			*oox_math_para_pr);
 		void convert(OOX::Logic::CPhant					*oox_phant);
@@ -726,7 +727,7 @@ public:
 		void convert(OOX::Logic::CSub *oox_sub, OOX::Logic::CElement *oox_elm);
 		void convert(OOX::Logic::CFName					*oox_fname);
 		void convert(OOX::Logic::CLim					*oox_lim);
-		void convert(OOX::Logic::CChr					*oox_chr);
+		bool convert(OOX::Logic::CChr					*oox_chr);
 		void convert(OOX::Logic::CSup					*oox_csup);
 		void convert(OOX::Logic::CSub					*oox_csub);
 		bool convert(OOX::Logic::CSubHide				*oox_subHide);

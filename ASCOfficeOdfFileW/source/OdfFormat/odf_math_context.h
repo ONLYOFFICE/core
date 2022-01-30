@@ -83,11 +83,16 @@ namespace cpdoccore {
 			std::vector<std::vector<std::wstring>> brackets;
 			std::wstring annotation;
 			int lvl_of_me;
+			int matrix_row_counter;
 			std::vector<int> end_counter;
 			int counter; 
 			std::set<wchar_t> mo;
-			std::map<std::wstring, std::wstring> diakSymbols;
-
+			std::map<std::wstring, std::wstring> diak_symbols;
+			bool annotation_flag;
+			std::map<std::wstring, std::wstring> annotation_operators;
+			std::map<std::wstring, std::wstring> annotation_brackets_begin;
+			std::map<std::wstring, std::wstring> annotation_brackets_end;
+			std::map<std::wstring, std::wstring> annotation_diak_symbols;
 			void end_math();
 
 			std::wofstream debug_stream;

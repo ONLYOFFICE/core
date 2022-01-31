@@ -1521,6 +1521,9 @@ namespace Oox2Odf
 	{
 		if (!oox_elm) return;
 
+		if (oox_elm->m_arrItems.empty())
+			annotation() += L"\"\"";
+
 		resizeBrackets();
 
 		if (!brackets()[lvl_of_me()].empty())

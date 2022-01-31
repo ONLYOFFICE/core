@@ -2048,13 +2048,13 @@ HRESULT CPdfRenderer::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbi
 	m_pPage->GrRestore();
 	return S_OK;
 }
-HRESULT CPdfRenderer::AddToPage(int nPageIndex, std::wstring wsPath)
+HRESULT CPdfRenderer::AddToPage(int nPageIndex, std::wstring wsPath, int nPosLastXRef, int nSizeXRef, unsigned int unRootObjId, unsigned int unRootGenNo)
 {
 	if (!IsValid())
 		return S_FALSE;
 	m_oCommandManager.Flush();
 
-	m_pDocument->AddToPage(nPageIndex, wsPath);
+    m_pDocument->AddToPage(nPageIndex, wsPath, nPosLastXRef, nSizeXRef, unRootObjId, unRootGenNo);
 	return S_OK;
 }
 

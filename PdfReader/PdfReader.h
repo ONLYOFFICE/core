@@ -97,6 +97,7 @@ namespace PdfReader
         NSFonts::IFontManager* GetFontManager();
 
         std::wstring ToXml(const std::wstring& wsXmlPath);
+        void AddToPage(IRenderer* pRenderer, int nPageIndex, const std::wstring& sCommands);
 
     #ifdef BUILDING_WASM_MODULE
         virtual BYTE* GetStructure();

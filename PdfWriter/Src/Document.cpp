@@ -1052,12 +1052,13 @@ namespace PdfWriter
 
 		return (!!m_pAcroForm);
 	}
-	void CDocument::AddToPage(unsigned int unPage, const std::wstring& wsPath)
+    void CDocument::AddToPage(unsigned int unPage, const std::wstring& wsPath, int nPosLastXRef, int nSizeXRef, unsigned int unRootObjId, unsigned int unRootGenNo)
 	{
 		CFileStream* pStream = new CFileStream();
 		if (!pStream || !pStream->OpenFile(wsPath, false))
 			return;
 
+        // не шифрует
 		// Шифруем документ, если это необходимо
 		CEncrypt* pEncrypt = NULL;
 		if (m_bEncrypt)
@@ -1066,7 +1067,7 @@ namespace PdfWriter
 			PrepareEncryption();
 		}
 
-		CXref* pXref = new CXref(this, 29 /* номер последнего объекта в читателе + 1 */);
+        CXref* pXref = new CXref(this, nSizeXRef);
 
 		// копируем страницу
 		// нельзя копировать страницу в записи - она содержит данные для записи, и полностью отличается от страницы в читателе
@@ -1082,8 +1083,13 @@ namespace PdfWriter
 		pPage->UnSet(); // страница уже добавлялась и нужно снять флаг чтобы снова добавить
 		// для страницы воссозданной уже не понадобится и можно будет убрать эту функцию
 		pXrefNew->Add(pPage);
-		pXref->SetPrevAddr(28439 /* смещение xref таблицы из читателя */);
+        pXref->SetPrevAddr(nPosLastXRef);
 		pXrefNew->SetPrev(pXref);
+
+        // пофиксить объект и освободить, он не появляется в трейлере
+        CObjectBase* pRoot = new CObjectBase();
+        pRoot->SetRef(unRootObjId, unRootGenNo);
+        pXrefNew->GetTrailer()->Add("Root", pRoot);
 
 		pXrefNew->WriteToStream(pStream, pEncrypt);
 

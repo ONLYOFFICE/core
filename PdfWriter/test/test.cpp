@@ -9,7 +9,7 @@ int main()
     CPdfRenderer pdfWriter(pApplicationFonts, true);
     pdfWriter.SetTempFolder(NSFile::GetProcessDirectory() + L"/wtemp");
 
-    IOfficeDrawingFile* pReader = new PdfReader::CPdfReader(pApplicationFonts);
+    PdfReader::CPdfReader* pReader = new PdfReader::CPdfReader(pApplicationFonts);
     pReader->SetTempDirectory(NSFile::GetProcessDirectory() + L"/rtemp");
     std::wstring sPassword = L"";
 
@@ -37,7 +37,8 @@ int main()
         }
     }
 
-    pdfWriter.AddToPage(0, NSFile::GetProcessDirectory() + L"/res.pdf");
+    pReader->AddToPage(&pdfWriter, 0, L"");
+    //pdfWriter.AddToPage(0, NSFile::GetProcessDirectory() + L"/res.pdf");
     //pdfWriter.SaveToFile(NSFile::GetProcessDirectory() + L"/res.pdf");
     RELEASEOBJECT(pReader);
     RELEASEOBJECT(pApplicationFonts);

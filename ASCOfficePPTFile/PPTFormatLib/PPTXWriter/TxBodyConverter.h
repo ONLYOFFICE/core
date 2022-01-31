@@ -39,7 +39,7 @@ namespace PPT_FORMAT
 class TxBodyConverter
 {
 public:
-    TxBodyConverter(CElementPtr pShapeElement, CRelsGenerator* pRels);
+    TxBodyConverter(CElementPtr pShapeElement, CRelsGenerator* pRels, CTextCFRun* pLastCF);
 
     void FillTxBody(PPTX::Logic::TxBody& oTxBody);
 private:
@@ -50,5 +50,6 @@ private:
 private:
     CShapeWriter m_oShapeWriter;
     bool m_bError;
+    CTextCFRun* m_pLastCF;
 };
 }

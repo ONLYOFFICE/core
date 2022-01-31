@@ -1046,7 +1046,7 @@ void PPT_FORMAT::CShapeWriter::Write3dShape()
 
     m_oWriter.WriteString(std::wstring(L"</a:sp3d>"));
 }
-void PPT_FORMAT::CShapeWriter::WriteTextInfo()
+void PPT_FORMAT::CShapeWriter::WriteTextInfo(PPT_FORMAT::CTextCFRun* pLastCF)
 {
     CShapeElement* pShapeElement = dynamic_cast<CShapeElement*>(m_pElement.get());
     if (!pShapeElement) return;
@@ -1139,7 +1139,14 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
 
     if (0 == nCount)
     {
-        m_oWriter.WriteString(L"<a:lstStyle/><a:p><a:endParaRPr dirty=\"0\"/></a:p></p:txBody>");
+        if (pLastCF && pLastCF->Size.is_init())
+        {
+            int sz = pLastCF->Size.get() * 100;
+            m_oWriter.WriteString(L"<a:lstStyle/><a:p><a:endParaRPr dirty=\"0\" sz=\"" + std::to_wstring(sz) + L"\"/></a:p></p:txBody>");
+        } else
+        {
+            m_oWriter.WriteString(L"<a:lstStyle/><a:p><a:endParaRPr dirty=\"0\" sz=\"1400\"/></a:p></p:txBody>");
+        }
         return;
     }
     m_oWriter.WriteString(L"<a:lstStyle>");
@@ -1195,6 +1202,8 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
             }
 
             PPT_FORMAT::CTextCFRun* pCF = &pParagraph->m_arSpans[nSpan].m_oRun;
+            pLastCF = pCF;
+
             int span_sz = pParagraph->m_arSpans[nSpan].m_strText.length() ;
 
             if	((span_sz==1 && ( pParagraph->m_arSpans[nSpan].m_strText[0] == (wchar_t)13 )) ||

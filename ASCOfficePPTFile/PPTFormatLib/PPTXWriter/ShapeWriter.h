@@ -454,7 +454,7 @@ namespace PPT_FORMAT
         std::wstring ConvertTableCell();
 		void WriteShapeInfo();
 		void WriteImageInfo();
-        void WriteTextInfo();
+        void WriteTextInfo(CTextCFRun *pLastCF = nullptr);
         static std::wstring WriteBullets(CTextPFRun* pPF, CRelsGenerator *pRels);
 		void Write3dShape();
         std::wstring getOWriterStr() const;

@@ -382,10 +382,11 @@ void TableWriter::FillRow(PPTX::Logic::TableRow &oRow, ProtoTableRow& arrCells)
 {
     if (arrCells.empty()) return;
 
+    CTextCFRun* pLastCF = nullptr;
     for (auto& protoCell : arrCells)
     {
         PPTX::Logic::TableCell cell;
-        protoCell.FillTc(cell);
+        protoCell.FillTc(cell, pLastCF);
         oRow.Cells.push_back(cell);
     }
 }
@@ -432,7 +433,7 @@ TCell::TCell(CElementPtr ptrShape, int row, int col, CRelsGenerator* pRels, TCel
     setParentDirection();
 }
 
-void TCell::FillTc(PPTX::Logic::TableCell &oTc)
+void TCell::FillTc(PPTX::Logic::TableCell &oTc, CTextCFRun* pLastCF)
 {
     if (m_gridSpan > 1)
         oTc.GridSpan = m_gridSpan;
@@ -440,7 +441,7 @@ void TCell::FillTc(PPTX::Logic::TableCell &oTc)
         oTc.RowSpan = m_rowSpan;
 
     oTc.txBody = new PPTX::Logic::TxBody(L"a:txBody");
-    FillTxBody(oTc.txBody.get2());
+    FillTxBody(oTc.txBody.get2(), pLastCF);
 
     if (m_pParent)
     {
@@ -514,9 +515,9 @@ bool TCell::isRealCell() const
     return true;
 }
 
-void TCell::FillTxBody(PPTX::Logic::TxBody &oTxBody)
+void TCell::FillTxBody(PPTX::Logic::TxBody &oTxBody, CTextCFRun* pLastCF)
 {
-    TxBodyConverter txBodyConverter(m_ptrSpElCell, m_pRels);
+    TxBodyConverter txBodyConverter(m_ptrSpElCell, m_pRels, pLastCF);
     txBodyConverter.FillTxBody(oTxBody);
 }
 

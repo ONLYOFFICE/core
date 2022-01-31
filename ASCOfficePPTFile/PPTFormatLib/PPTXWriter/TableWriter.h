@@ -42,7 +42,7 @@ class TCell
 public:
     TCell(CElementPtr ptrShape, int row, int col, CRelsGenerator* pRels, TCell* pParent = nullptr);
 
-    void FillTc(PPTX::Logic::TableCell &oTc);
+    void FillTc(PPTX::Logic::TableCell &oTc, CTextCFRun *pLastCF);
 
     enum eMergeDirection {
         none = 0b00,
@@ -75,7 +75,7 @@ public:
     bool isRealCell()const;
 
 private:
-    void FillTxBody(PPTX::Logic::TxBody &oTxBody);
+    void FillTxBody(PPTX::Logic::TxBody &oTxBody, CTextCFRun *pLastCF);
     void FillTcPr(PPTX::Logic::TableCellProperties& oTcPr);
     void SetTcPrInvisibleBorders(PPTX::Logic::TableCellProperties& oTcPr)const;
     void SetTcPrInvisibleBorder(PPTX::Logic::TableCellProperties& oTcPr, eBorderPossition eBP)const;

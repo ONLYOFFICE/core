@@ -6,8 +6,8 @@
 
 using namespace PPT_FORMAT;
 
-TxBodyConverter::TxBodyConverter(CElementPtr pShapeElement, CRelsGenerator* pRels) :
-    m_bError(false)
+TxBodyConverter::TxBodyConverter(CElementPtr pShapeElement, CRelsGenerator* pRels, CTextCFRun *pLastCF) :
+    m_bError(false), m_pLastCF(pLastCF)
 {
     m_bError = !m_oShapeWriter.SetElement(pShapeElement);
 
@@ -28,7 +28,7 @@ void TxBodyConverter::FillTxBody(PPTX::Logic::TxBody &oTxBody)
 
 void TxBodyConverter::ConvertTableTxBody(PPTX::Logic::TxBody &oTxBody)
 {
-    m_oShapeWriter.WriteTextInfo();
+    m_oShapeWriter.WriteTextInfo(m_pLastCF);
     XmlUtils::CXmlNode xmlReader;
     xmlReader.FromXmlString(m_oShapeWriter.getOWriterStr());
     oTxBody.fromXML(xmlReader);

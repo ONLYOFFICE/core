@@ -737,7 +737,7 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_structures/ExternalReferenceType.cpp \
     ../Source/XlsbFormat/Biff12_structures/PCDIDateTime_bs.cpp \
     ../Source/XlsbFormat/Biff12_structures/PRuleHeaderData.cpp \
-    ../Source/XlsbFormat/Biff12_structures/PRFilter.cpp \
+    ../Source/XlsbFormat/Biff12_structures/PRFilter_bs.cpp \
     ../Source/XlsbFormat/Biff12_structures/PivotItemType.cpp \
     ../Source/XlsbFormat/Biff12_structures/DataConsolidationFunction.cpp \
     ../Source/XlsbFormat/Biff12_structures/ShowDataAs.cpp \

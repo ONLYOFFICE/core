@@ -2725,12 +2725,12 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             m_oLongText                 = ptr->fHasLongTextItem;
             m_oCount                    = ptr->citems;
 
-            if(ptr->fDateInField && !ptr->fMixedTypesIgnoringBlanks)
+            if(ptr->fDateInField && !ptr->fMixedTypesIgnoringBlanks && ptr->fNumMinMaxValid)
             {
                 m_oMinDate              = ptr->xnumMin.DateTimeValue();
                 m_oMaxDate              = ptr->xnumMax.DateTimeValue();
             }
-            else if(ptr->fNumField)
+            else if(ptr->fNumField && ptr->fNumMinMaxValid)
             {
                 m_oMinValue             = ptr->xnumMin.data.value;
                 m_oMaxValue             = ptr->xnumMax.data.value;

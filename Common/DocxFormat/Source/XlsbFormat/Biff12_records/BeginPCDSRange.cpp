@@ -71,7 +71,7 @@ namespace XLSB
         if(fName)
             record >> namedRange;
 
-        if(fName)
+        if(!fName)
             record >> range;
     }
 

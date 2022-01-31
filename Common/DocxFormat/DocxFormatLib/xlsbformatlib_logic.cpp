@@ -735,7 +735,7 @@
     #include "../Source/XlsbFormat/Biff12_structures/ExternalReferenceType.cpp"
     #include "../Source/XlsbFormat/Biff12_structures/PCDIDateTime_bs.cpp"
     #include "../Source/XlsbFormat/Biff12_structures/PRuleHeaderData.cpp"
-    #include "../Source/XlsbFormat/Biff12_structures/PRFilter.cpp"
+    #include "../Source/XlsbFormat/Biff12_structures/PRFilter_bs.cpp"
     #include "../Source/XlsbFormat/Biff12_structures/PivotItemType.cpp"
     #include "../Source/XlsbFormat/Biff12_structures/DataConsolidationFunction.cpp"
     #include "../Source/XlsbFormat/Biff12_structures/ShowDataAs.cpp"

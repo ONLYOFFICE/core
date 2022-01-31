@@ -57,8 +57,9 @@ namespace XLSB
 
     void PRFilter::load(XLS::CFRecord& record)
     {
-        _UINT32 flags;
-        record >> isxvd >> cItems >> flags;
+        _UINT16 flags;
+        BYTE    flags1;
+        record >> isxvd >> cItems >> flags >> flags1;
 
         itmtypeData     = GETBIT(flags, 0);
         itmtypeDEFAULT  = GETBIT(flags, 1);
@@ -73,7 +74,7 @@ namespace XLSB
         itmtypeSTDEVP   = GETBIT(flags, 10);
         itmtypeVAR      = GETBIT(flags, 11);
         itmtypeVARP     = GETBIT(flags, 12);
-        fSelected       = GETBIT(flags, 16);
+        fSelected       = GETBIT(flags1, 0);
 
     }
 

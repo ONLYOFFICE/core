@@ -262,10 +262,27 @@ const bool WorkBookStream::loadContent(BinProcessor& proc)
 
             case rt_FRTBegin:
             {
-                if (proc.optional<FRTWORKBOOK>())
+                FRTWORKBOOK oFRTWORKBOOK;
+                if (proc.optional(oFRTWORKBOOK))
                 {
-                    m_FRTWORKBOOK = elements_.back();
-                    elements_.pop_back();
+                    if(m_FRTWORKBOOK != nullptr)
+                    {
+                        if(oFRTWORKBOOK.m_SLICERCACHEIDS != nullptr)
+                            boost::dynamic_pointer_cast<FRTWORKBOOK>(m_FRTWORKBOOK)->m_SLICERCACHEIDS = oFRTWORKBOOK.m_SLICERCACHEIDS;
+
+                        if(oFRTWORKBOOK.m_SLICERCACHESPIVOTCACHEIDS != nullptr)
+                            boost::dynamic_pointer_cast<FRTWORKBOOK>(m_FRTWORKBOOK)->m_SLICERCACHESPIVOTCACHEIDS = oFRTWORKBOOK.m_SLICERCACHESPIVOTCACHEIDS;
+
+                        if(oFRTWORKBOOK.m_TABLESLICERCACHEIDS != nullptr)
+                            boost::dynamic_pointer_cast<FRTWORKBOOK>(m_FRTWORKBOOK)->m_TABLESLICERCACHEIDS = oFRTWORKBOOK.m_TABLESLICERCACHEIDS;
+
+                        elements_.pop_back();
+                    }
+                    else
+                    {
+                        m_FRTWORKBOOK = elements_.back();
+                        elements_.pop_back();
+                    }
                 }
             }break;
 

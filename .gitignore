@@ -26,3 +26,15 @@ Thumbs.db
 *.dat
 *.txt
 *.log
+*.db
+
+*.vcxproj
+*.vcxproj
+*.ipch
+*.sln
+*.vcxproj
+*.rc
+DesktopEditor/graphics/pro/graphics.pro.user.f169c0a
+*.db-shm
+*.opendb
+*.db-wal

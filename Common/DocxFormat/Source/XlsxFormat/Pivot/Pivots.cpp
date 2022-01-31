@@ -126,6 +126,7 @@ namespace OOX
 namespace Spreadsheet
 {
 
+    struct NullDeleter {template<typename T> void operator()(T*) {} };
     void CPivotTableFile::readBin(const CPath& oPath)
     {
         CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
@@ -137,7 +138,8 @@ namespace Spreadsheet
 
             if (pivotTableStream != nullptr)
             {                 
-                XLS::BaseObjectPtr ptr = boost::shared_ptr<XLS::BaseObject>(static_cast<XLS::BaseObject*>(pivotTableStream.get()));
+                XLS::BaseObjectPtr ptr(static_cast<XLS::BaseObject*>(pivotTableStream.get()), NullDeleter());
+                //XLS::BaseObjectPtr ptr = boost::make_shared<XLS::BaseObject>(static_cast<XLS::BaseObject*>(pivotTableStream.get()));
                 m_oPivotTableDefinition = ptr;
             }
         }
@@ -2162,7 +2164,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
             if (pivotCacheDefStream != nullptr)
             {
-                XLS::BaseObjectPtr ptr = boost::shared_ptr<XLS::BaseObject>(static_cast<XLS::BaseObject*>(pivotCacheDefStream.get()));
+                XLS::BaseObjectPtr ptr(static_cast<XLS::BaseObject*>(pivotCacheDefStream.get()), NullDeleter());
+                //XLS::BaseObjectPtr ptr = boost::shared_ptr<XLS::BaseObject>(static_cast<XLS::BaseObject*>(pivotCacheDefStream.get()));
                 m_oPivotCashDefinition = ptr;
             }
         }

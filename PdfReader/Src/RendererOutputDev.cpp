@@ -758,6 +758,8 @@ namespace PdfReader
             Ref oEmbRef;
             bool bFontSubstitution = false;
             std::wstring wsFontBaseName = NSStrings::GetString(pFont->getName());
+            if (wsFontBaseName.empty())
+                wsFontBaseName = L"Helvetica";
             const unsigned char* pData14 = NULL;
             unsigned int nSize14 = 0;
         #ifdef FONTS_USE_ONLY_MEMORY_STREAMS

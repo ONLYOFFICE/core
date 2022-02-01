@@ -99,14 +99,14 @@ void Font::readFields(CFRecord& record)
 
 	record >> reserved; 
 
-    if(global_info->Version < 0x0800)
+    if (global_info->Version < 0x0800)
     {
-        if ((bls >=100 && bls <= 1000) || bls == 0)
+        if ((bls >= 100 && bls <= 1000) || bls == 0 || bls == 0x8000)
             correct = true;
     }
     else
     {
-        if (bls >=400 && bls <= 1000)
+        if (bls >= 400 && bls <= 1000)
             correct = true;
     }
 

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>851</width>
-    <height>707</height>
+    <height>706</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -159,7 +159,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Scale</string>
+     <string>Zoom</string>
     </property>
    </widget>
    <widget class="QWidget" name="mainView" native="true">
@@ -179,7 +179,7 @@
      <x>0</x>
      <y>0</y>
      <width>851</width>
-     <height>23</height>
+     <height>17</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuPDF_viewer">
@@ -189,7 +189,6 @@
    </widget>
    <addaction name="menuPDF_viewer"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
  <connections/>

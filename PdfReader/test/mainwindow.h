@@ -32,10 +32,29 @@ private slots:
     void on_verticalScrollBar_valueChanged(int value);
     void on_horizontalScrollBar_valueChanged(int value);
 
+protected:
+
+	void resizeEvent(QResizeEvent *event);
+	void closeEvent(QCloseEvent *event);
+
 private:
+
+	void RenderPage();
     bool RenderOnByteData(int nPage, BYTE*& pBgraData, int& w, int& h);
     void SetImage();
     void OpenFile();
+
+	bool IsFileOpened();
+	double GetPageScaleByZoomType(const double& dPageWidth, const double& dPageHeight);
+
+private:
+
+	enum ZoomType
+	{
+		pageWidth,
+		pageHeight,
+		custom
+	};
 
     QImage* m_pImage;
     QLabel* m_pLabel;
@@ -44,6 +63,7 @@ private:
     int m_nPosX;
     int m_nPosY;
     double m_dScale;
+	ZoomType m_eZoomType;
 
     // шрифты системы
     NSFonts::IApplicationFonts* m_pFonts;
@@ -52,7 +72,6 @@ private:
     NSFonts::IFontManager* m_pFontManager;
     NSImages::IImageFilesCache* m_pImageCache;
 
-    // читалка PDF
     PdfReader::CPdfReader* m_pReader;
 
     Ui::MainWindow *ui;

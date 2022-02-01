@@ -692,14 +692,14 @@ namespace OOX
             {
 				writer.WriteString((L"<sheetFormatPr"));
 				WritingStringNullableAttrInt2(L"baseColWidth", m_oBaseColWidth);
-				WritingStringNullableAttrBool2(L"customHeight", m_oCustomHeight);
 				WritingStringNullableAttrDouble2(L"defaultColWidth", m_oDefaultColWidth);
 				WritingStringNullableAttrDouble2(L"defaultRowHeight", m_oDefaultRowHeight);
-				WritingStringNullableAttrInt2(L"outlineLevelCol", m_oOutlineLevelCol);
-				WritingStringNullableAttrInt2(L"outlineLevelRow", m_oOutlineLevelRow);
-				WritingStringNullableAttrBool2(L"thickBottom", m_oThickBottom);
-				WritingStringNullableAttrBool2(L"thickTop", m_oThickTop);
+				WritingStringNullableAttrBool2(L"customHeight", m_oCustomHeight);
 				WritingStringNullableAttrBool2(L"zeroHeight", m_oZeroHeight);
+				WritingStringNullableAttrBool2(L"thickTop", m_oThickTop);
+				WritingStringNullableAttrBool2(L"thickBottom", m_oThickBottom);
+				WritingStringNullableAttrInt2(L"outlineLevelRow", m_oOutlineLevelRow);
+				WritingStringNullableAttrInt2(L"outlineLevelCol", m_oOutlineLevelCol);
 				writer.WriteString((L"/>"));
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -743,19 +743,21 @@ namespace OOX
                 if(ptr != nullptr)
                 {
                     if(ptr->dxGCol != 0xFFFFFFFF)
-                        m_oBaseColWidth              = ptr->dxGCol;
+                        m_oBaseColWidth = ptr->dxGCol;
                     else
-                        m_oDefaultColWidth           = ptr->cchDefColWidth;
+                        m_oDefaultColWidth = ptr->cchDefColWidth;
 
-                    if(ptr->fUnsynced)
-                        m_oDefaultRowHeight          = ptr->miyDefRwHeight;
-
-                    m_oCustomHeight                  = ptr->fUnsynced;
-                    m_oOutlineLevelCol               = ptr->iOutLevelCol;
-                    m_oOutlineLevelRow               = ptr->iOutLevelRw;
-                    m_oThickBottom                   = ptr->fExDesc;
-                    m_oThickTop                      = ptr->fExAsc;
-                    m_oZeroHeight                    = ptr->fDyZero;
+					if (ptr->fUnsynced)
+						m_oDefaultRowHeight = ptr->miyDefRwHeight;
+					else
+						m_oDefaultRowHeight = 14.4;
+                    
+					if (ptr->iOutLevelCol > 0) m_oOutlineLevelCol = ptr->iOutLevelCol;
+					if (ptr->iOutLevelRw > 0) m_oOutlineLevelRow = ptr->iOutLevelRw;
+					
+					if (ptr->fExDesc) m_oThickBottom = ptr->fExDesc;
+					if (ptr->fExAsc) m_oThickTop = ptr->fExAsc;
+					if (ptr->fDyZero) m_oZeroHeight = ptr->fDyZero;
                 }
             }
 
@@ -791,11 +793,11 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString((L"<pane"));
-				WritingStringNullableAttrString(L"activePane", m_oActivePane, m_oActivePane->ToString());
-				WritingStringNullableAttrString(L"state", m_oState, m_oState->ToString());
-				WritingStringNullableAttrString(L"topLeftCell", m_oTopLeftCell, m_oTopLeftCell.get());
-				WritingStringNullableAttrDouble(L"xSplit", m_oXSplit, m_oXSplit->GetValue());
-				WritingStringNullableAttrDouble(L"ySplit", m_oYSplit, m_oYSplit->GetValue());
+					WritingStringNullableAttrDouble(L"xSplit", m_oXSplit, m_oXSplit->GetValue());
+					WritingStringNullableAttrDouble(L"ySplit", m_oYSplit, m_oYSplit->GetValue());
+					WritingStringNullableAttrString(L"topLeftCell", m_oTopLeftCell, m_oTopLeftCell.get());
+					WritingStringNullableAttrString(L"activePane", m_oActivePane, m_oActivePane->ToString());
+					WritingStringNullableAttrString(L"state", m_oState, m_oState->ToString());
 				writer.WriteString((L"/>"));
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -881,9 +883,9 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString((L"<selection"));
+				WritingStringNullableAttrString(L"pane", m_oPane, m_oPane->ToString());
 				WritingStringNullableAttrString(L"activeCell", m_oActiveCell, m_oActiveCell.get());
 				WritingStringNullableAttrInt(L"activeCellId", m_oActiveCellId, m_oActiveCellId->GetValue());
-				WritingStringNullableAttrString(L"pane", m_oPane, m_oPane->ToString());
 				WritingStringNullableAttrString(L"sqref", m_oSqref, m_oSqref.get());
 				writer.WriteString((L"/>"));
 			}
@@ -964,25 +966,25 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString((L"<sheetView"));
-				WritingStringNullableAttrInt(L"colorId", m_oColorId, m_oColorId->GetValue());
-				WritingStringNullableAttrBool(L"defaultGridColor", m_oDefaultGridColor);
-				WritingStringNullableAttrBool(L"rightToLeft", m_oRightToLeft);
-				WritingStringNullableAttrBool(L"showFormulas", m_oShowFormulas);
-				WritingStringNullableAttrBool(L"showGridLines", m_oShowGridLines);
-				WritingStringNullableAttrBool(L"showOutlineSymbols", m_oShowOutlineSymbols);
-				WritingStringNullableAttrBool(L"showRowColHeaders", m_oShowRowColHeaders);
-				WritingStringNullableAttrBool(L"showRuler", m_oShowRuler);
-				WritingStringNullableAttrBool(L"showWhiteSpace", m_oShowWhiteSpace);
-				WritingStringNullableAttrBool(L"showZeros", m_oShowZeros)
-				WritingStringNullableAttrBool(L"tabSelected", m_oTabSelected);
-				WritingStringNullableAttrString(L"topLeftCell", m_oTopLeftCell, m_oTopLeftCell.get());
-				WritingStringNullableAttrString(L"view", m_oView, m_oView->ToString());
-				WritingStringNullableAttrBool(L"windowProtection", m_oWindowProtection);
-				WritingStringNullableAttrInt(L"workbookViewId", m_oWorkbookViewId, m_oWorkbookViewId->GetValue());
-				WritingStringNullableAttrInt(L"zoomScale", m_oZoomScale, m_oZoomScale->GetValue());
-				WritingStringNullableAttrInt(L"zoomScaleNormal", m_oZoomScaleNormal, m_oZoomScaleNormal->GetValue());
-				WritingStringNullableAttrInt(L"zoomScalePageLayoutView", m_oZoomScalePageLayoutView, m_oZoomScalePageLayoutView->GetValue());
-				WritingStringNullableAttrInt(L"zoomScaleSheetLayoutView", m_oZoomScaleSheetLayoutView, m_oZoomScaleSheetLayoutView->GetValue());
+					WritingStringNullableAttrBool(L"windowProtection", m_oWindowProtection);
+					WritingStringNullableAttrBool(L"showFormulas", m_oShowFormulas);
+					WritingStringNullableAttrBool(L"showGridLines", m_oShowGridLines);
+					WritingStringNullableAttrBool(L"showRowColHeaders", m_oShowRowColHeaders);
+					WritingStringNullableAttrBool(L"showZeros", m_oShowZeros)
+					WritingStringNullableAttrBool(L"rightToLeft", m_oRightToLeft);
+					WritingStringNullableAttrBool(L"tabSelected", m_oTabSelected);
+					WritingStringNullableAttrBool(L"showRuler", m_oShowRuler);
+					WritingStringNullableAttrBool(L"showOutlineSymbols", m_oShowOutlineSymbols);
+					WritingStringNullableAttrBool(L"defaultGridColor", m_oDefaultGridColor);
+					WritingStringNullableAttrBool(L"showWhiteSpace", m_oShowWhiteSpace);
+					WritingStringNullableAttrString(L"view", m_oView, m_oView->ToString());
+					WritingStringNullableAttrString(L"topLeftCell", m_oTopLeftCell, m_oTopLeftCell.get());
+					WritingStringNullableAttrInt(L"colorId", m_oColorId, m_oColorId->GetValue());
+					WritingStringNullableAttrInt(L"zoomScale", m_oZoomScale, m_oZoomScale->GetValue());
+					WritingStringNullableAttrInt(L"zoomScaleNormal", m_oZoomScaleNormal, m_oZoomScaleNormal->GetValue());
+					WritingStringNullableAttrInt(L"zoomScaleSheetLayoutView", m_oZoomScaleSheetLayoutView, m_oZoomScaleSheetLayoutView->GetValue());
+					WritingStringNullableAttrInt(L"zoomScalePageLayoutView", m_oZoomScalePageLayoutView, m_oZoomScalePageLayoutView->GetValue());
+					WritingStringNullableAttrInt(L"workbookViewId", m_oWorkbookViewId, m_oWorkbookViewId->GetValue());
 				writer.WriteString((L">"));
 
 				if (m_oPane.IsInit())
@@ -1309,10 +1311,10 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString((L"<outlinePr"));
-				WritingStringNullableAttrBool(L"applyStyles", m_oApplyStyles);
-				WritingStringNullableAttrBool(L"showOutlineSymbols", m_oShowOutlineSymbols);
-				WritingStringNullableAttrBool(L"summaryBelow", m_oSummaryBelow);
-				WritingStringNullableAttrBool(L"summaryRight", m_oSummaryRight);
+					WritingStringNullableAttrBool(L"applyStyles", m_oApplyStyles);
+					WritingStringNullableAttrBool(L"summaryBelow", m_oSummaryBelow);
+					WritingStringNullableAttrBool(L"summaryRight", m_oSummaryRight);
+					WritingStringNullableAttrBool(L"showOutlineSymbols", m_oShowOutlineSymbols);
 				writer.WriteString((L"/>"));
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -1381,15 +1383,15 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString((L"<sheetPr"));
-				WritingStringNullableAttrEncodeXmlString(L"codeName", m_oCodeName, m_oCodeName.get());
-				WritingStringNullableAttrBool(L"enableFormatConditionsCalculation", m_oEnableFormatConditionsCalculation);
-				WritingStringNullableAttrBool(L"filterMode", m_oFilterMode);
-				WritingStringNullableAttrBool(L"published", m_oPublished);
 				WritingStringNullableAttrBool(L"syncHorizontal", m_oSyncHorizontal);
-				WritingStringNullableAttrEncodeXmlString(L"syncRef", m_oSyncRef, m_oSyncRef.get());
 				WritingStringNullableAttrBool(L"syncVertical", m_oSyncVertical);
-				WritingStringNullableAttrBool(L"transitionEntry", m_oTransitionEntry);
+				WritingStringNullableAttrEncodeXmlString(L"syncRef", m_oSyncRef, m_oSyncRef.get());
 				WritingStringNullableAttrBool(L"transitionEvaluation", m_oTransitionEvaluation);
+				WritingStringNullableAttrBool(L"transitionEntry", m_oTransitionEntry);
+				WritingStringNullableAttrBool(L"published", m_oPublished);
+				WritingStringNullableAttrEncodeXmlString(L"codeName", m_oCodeName, m_oCodeName.get());
+				WritingStringNullableAttrBool(L"filterMode", m_oFilterMode);
+				WritingStringNullableAttrBool(L"enableFormatConditionsCalculation", m_oEnableFormatConditionsCalculation);
 				writer.WriteString((L">"));
 				if (m_oTabColor.IsInit())
 				{

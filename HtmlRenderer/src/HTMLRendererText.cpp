@@ -147,7 +147,7 @@ namespace NSHtmlRenderer
         RELEASEOBJECT(m_pInternal);
     }
 
-    void CHTMLRendererText::Init(IOfficeDrawingFile* pFile)
+    void CHTMLRendererText::Init(IOfficeDrawingFile* pFile, int nCacheSize)
     {
         m_pInternal->m_oBrush.SetDefaultParams();
         m_pInternal->m_oLastBrush.SetDefaultParams();
@@ -207,7 +207,7 @@ namespace NSHtmlRenderer
             }
 
             m_pInternal->m_bIsFontsInit = true;
-            m_pInternal->m_oSmartText.Init(pFile->GetFonts());
+            m_pInternal->m_oSmartText.Init(pFile->GetFonts(), nCacheSize);
         }
 
         m_pInternal->m_oPage.ClearNoAttack();
@@ -216,6 +216,7 @@ namespace NSHtmlRenderer
 
     BYTE* CHTMLRendererText::GetBuffer()
     {
+        m_pInternal->m_oSmartText.ClosePage();
         LONG lPos = m_pInternal->m_oPage.GetPosition();
         m_pInternal->m_oPage.Seek(0);
         m_pInternal->m_oPage.WriteLONG(lPos);

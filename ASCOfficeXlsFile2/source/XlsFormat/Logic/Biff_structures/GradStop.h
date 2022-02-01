@@ -32,7 +32,7 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include "LongRGB.h"
+#include "Xnum.h"
 
 namespace XLS
 {
@@ -47,15 +47,13 @@ public:
 
 	virtual void load(CFRecord& record);
 
-
-	static const ElementType	type = typeGradStop;
+	static const ElementType type = typeGradStop;
 
 	_UINT16		xclrType;
 	_UINT32		xclrValue;
-	LongRGBA	xclrValue_rgb;
 	
-	double		numPosition;
-	double		numTint;
+	Xnum		numPosition;
+	Xnum		numTint;
 };
 
 } // namespace XLS

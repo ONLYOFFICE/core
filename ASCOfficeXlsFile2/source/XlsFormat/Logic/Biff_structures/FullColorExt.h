@@ -32,6 +32,8 @@
 #pragma once
 
 #include "BiffStructure.h"
+#include "LongRGB.h"
+#include "BitMarkedStructs.h"
 
 namespace XLS
 {
@@ -45,14 +47,13 @@ public:
 	BiffStructurePtr clone();
 
 	virtual void load(CFRecord& record);
-
+	int serialize(std::wostream & stream, const std::wstring &sNode);
 
 	static const ElementType	type = typeFullColorExt;
 
-	unsigned char	icv;
-	unsigned char	xclrType;
-	short			nTintShade;
-	_UINT32			xclrValue;
+	unsigned short xclrType;
+	short nTintShade;
+	_UINT32 xclrValue;
 };
 
 } // namespace XLS

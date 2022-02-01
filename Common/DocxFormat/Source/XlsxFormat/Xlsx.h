@@ -71,6 +71,9 @@ namespace OOX
 			bool Read(const CPath& oFilePath);
 			bool Write(const CPath& oDirPath, OOX::CContentTypes &oContentTypes);
 			bool WriteWorkbook(const CPath& oDirPath);
+
+			bool ReadNative(const CPath& oFilePath);
+			bool WriteNative(const CPath& oDirPath, OOX::CContentTypes &oContentTypes);
 			
 			void PrepareToWrite();
 			

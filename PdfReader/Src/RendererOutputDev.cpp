@@ -579,6 +579,8 @@ namespace PdfReader
 
         if (c_nHtmlRendrerer2 == m_lRendererType)
             m_bDrawOnlyText = (S_OK == m_pRenderer->CommandLong(c_nCommandLongTypeOnlyText, 0)) ? true : false;
+        else if (c_nHtmlRendrererText == m_lRendererType)
+            m_bDrawOnlyText = true;
         else
             m_bDrawOnlyText = false;
     }
@@ -3853,6 +3855,7 @@ namespace PdfReader
         Aggplus::CImage oImage;
         oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
 
+
         int nComponentsCount = pColorMap->getNumPixelComps();
 
         // Пишем данные в pBufferPtr
@@ -3895,7 +3898,7 @@ namespace PdfReader
             }
         }
 
-        delete pImageStream;
+		delete pImageStream;
 
         double arrMatrix[6];
         double *pCTM = pGState->getCTM();
@@ -3914,7 +3917,7 @@ namespace PdfReader
         DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
         m_pRenderer->DrawImage(&oImage, 0 + dShiftX, 0 + dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
     }
-    void RendererOutputDev::drawMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GBool bMaskInvert, GBool interpolate)
+	void RendererOutputDev::drawMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, Object* pStreamRef, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GBool bMaskInvert, GBool interpolate)
     {
         if (m_bDrawOnlyText)
             return;
@@ -4084,7 +4087,7 @@ namespace PdfReader
         }
         delete pImageStream;
 
-        if (nWidth != nMaskWidth || nHeight != nMaskHeight)
+		if (nWidth != nMaskWidth || nHeight != nMaskHeight)
         {
             // TO DO: Здесь сделан элементарный вариант масштабирования маски.
             //        Надо улучшить алгоритм.
@@ -4115,8 +4118,8 @@ namespace PdfReader
 
                     int nMaxW = (std::max)(nWidth, nMaskWidth);
                     int nMaxH = (std::max)(nHeight, nMaskHeight);
-                    if (nWidth != nMaxW || nHeight != nMaxH)
-                    {
+					if (nWidth != nMaxW || nHeight != nMaxH)
+					{
                         unsigned char* pImageBuffer = pBufferPtr;
                         int nNewBufferSize = 4 * nMaxW * nMaxH;
                         pBufferPtr = new unsigned char[nNewBufferSize];
@@ -4142,7 +4145,7 @@ namespace PdfReader
                                 int nIndex = 4 * (nY * nMaxW + nX);
 
                                 int nNearestAlphaMatch =  (((int)((nMaxH - 1 - nY) * dAlphaScaleHeight) * nMaskWidth) + ((int)(nX * dAlphaScaleWidth)));
-                                int nNearestImageMatch =  4 * (((int)((nMaxH - 1 - nY) * dImageScaleHeight) * nWidth) + ((int)(nX * dImageScaleWidth)));
+								int nNearestImageMatch =  4 * (((int)(nY * dImageScaleHeight) * nWidth) + ((int)(nX * dImageScaleWidth)));
 
                                 pBufferPtr[nIndex + 0] = pImageBuffer[nNearestImageMatch + 0];
                                 pBufferPtr[nIndex + 1] = pImageBuffer[nNearestImageMatch + 1];
@@ -4370,12 +4373,14 @@ namespace PdfReader
     }
     void RendererOutputDev::updateClipAttack(GfxState *pGState)
     {
+		if (!m_bClipChanged)
+			return;
 
-        //return;
-        if (!m_bClipChanged) return;
-        m_pRenderer->BeginCommand(c_nResetClipType);
+		m_pRenderer->BeginCommand(c_nResetClipType);
         m_pRenderer->EndCommand(c_nResetClipType);
-        if (m_sClip.empty()) return;
+
+		if (m_sClip.empty())
+			return;
 
         for (GfxClip &curClip : m_sClip) {
             for (int nIndex = 0; nIndex < curClip.GetPathNum(); nIndex++)

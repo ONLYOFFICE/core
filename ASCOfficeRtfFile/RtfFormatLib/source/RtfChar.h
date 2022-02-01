@@ -210,8 +210,8 @@ public:
 	}
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
     
-    static std::wstring renderRtfText( std::wstring& sText, void* poDocument, RtfCharProperty* oCharProperty = NULL );
-    static std::wstring renderRtfText( std::wstring& sText, void* poDocument, int nCodePage  );
+    static std::wstring renderRtfText( std::wstring& sText, void* poDocument, RtfCharProperty* oCharProperty = NULL, bool bMarker = false);
+    static std::wstring renderRtfText( std::wstring& sText, void* poDocument, int nCodePage, bool bMarker = false );
 
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
 private: 

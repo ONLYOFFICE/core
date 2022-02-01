@@ -1779,8 +1779,8 @@ namespace OOX
                             case XLSB::rt_CellRk:
                                 {
                                     auto pCellRk = static_cast<XLSB::CellRk*>(pSource);
-                                    m_oType.Init();
-                                    m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
+                                    //m_oType.Init();
+                                    //m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
                                     m_oValue.Init();
                                     m_oValue->m_sText         = pCellRk->value.value();
                                 }
@@ -1824,8 +1824,8 @@ namespace OOX
                                     {
                                         str = reinterpret_cast<XLSB::FmlaNum*>(pSource)->formula.getAssembledFormula();
                                     }
-                                    m_oType.Init();
-                                    m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeDate);
+                                    //m_oType.Init();
+                                    //m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
                                     m_oValue.Init();
                                     m_oValue->m_sText = OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(pRealNum);
                                 }

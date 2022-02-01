@@ -1577,14 +1577,14 @@ namespace OOX
 				m_oValue.Init();
 				switch(nError)
 				{
-				case 0x00: m_oValue->m_sText = L"#NULL!"; break;
-				case 0x07: m_oValue->m_sText = L"#DIV/0!"; break;
-				case 0x0F: m_oValue->m_sText = L"#VALUE!"; break;
-				case 0x17: m_oValue->m_sText = L"#REF!"; break;
-				case 0x1D: m_oValue->m_sText = L"#NAME?"; break;
-				case 0x24: m_oValue->m_sText = L"#NUM!"; break;
-				case 0x2A: m_oValue->m_sText = L"#N/A"; break;
-				case 0x2B: m_oValue->m_sText = L"#GETTING_DATA"; break;
+                    case 0x00: m_oValue->m_sText = L"#NULL!"; break;
+                    case 0x07: m_oValue->m_sText = L"#DIV/0!"; break;
+                    case 0x0F: m_oValue->m_sText = L"#VALUE!"; break;
+                    case 0x17: m_oValue->m_sText = L"#REF!"; break;
+                    case 0x1D: m_oValue->m_sText = L"#NAME?"; break;
+                    case 0x24: m_oValue->m_sText = L"#NUM!"; break;
+                    case 0x2A: m_oValue->m_sText = L"#N/A"; break;
+                    case 0x2B: m_oValue->m_sText = L"#GETTING_DATA"; break;
 				}
 			}
             else if (XLSB::rt_CellBool == nType || XLSB::rt_FmlaBool == nType)

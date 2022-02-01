@@ -41,8 +41,17 @@ BiffStructurePtr SXAxis::clone()
 }
 void SXAxis::load(CFRecord& record)
 {
-	unsigned short flags;
-	record >> flags;
+    unsigned short flags;
+    if(record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        record >> flags;
+    }
+    else
+    {
+        BYTE   flags_1b;
+        record >> flags_1b;
+        flags = flags_1b;
+    }
 
 	bRw		= GETBIT(flags, 0);
 	bCol	= GETBIT(flags, 1);

@@ -49,6 +49,8 @@ namespace XLSB
 
             XLS::BaseObjectPtr clone();
 
+            static const XLS::ElementType	type = XLS::typePCDIString;
+
             void readFields(XLS::CFRecord& record);
 
             XLWideString st;

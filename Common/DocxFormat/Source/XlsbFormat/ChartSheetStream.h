@@ -52,7 +52,7 @@ namespace XLSB
 
     class ChartSheetStream: public XLS::CompositeObject
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(WorkBookStream)
+        BASE_OBJECT_DEFINE_CLASS_NAME(ChartSheetStream)
     public:
         ChartSheetStream();
         virtual ~ChartSheetStream();

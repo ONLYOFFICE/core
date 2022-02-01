@@ -48,6 +48,8 @@ namespace XLSB
 
             XLS::BaseObjectPtr clone();
 
+            static const XLS::ElementType	type = XLS::typePCDIMissing;
+
             void readFields(XLS::CFRecord& record);
 
             PCDISrvFmt sxvcellextra;

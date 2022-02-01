@@ -53,6 +53,8 @@ namespace XLSB
         BYTE    ciRed;
         BYTE    ciGreen;
         BYTE    ciBlue;
+
+        _UINT32 toHex();
     };
 
 }   // namespace XLSB

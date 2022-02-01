@@ -49,7 +49,7 @@ namespace XLSB
 
             void readFields(XLS::CFRecord& record);
 
-            XLS::Boolean<unsigned int>    fBlank;
+            XLS::Boolean<_UINT32>    fBlank;
     };
 
 } // namespace XLSB

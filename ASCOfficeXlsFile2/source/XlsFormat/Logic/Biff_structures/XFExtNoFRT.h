@@ -51,9 +51,7 @@ public:
 
 	virtual void load(CFRecord& record);
 
-	int serialize(std::wostream & stream);
-
-	std::vector<ExtProp> rgExt;
+	std::map<ExtProp::_type, ExtProp> mapRgExt;
 };
 
 typedef boost::shared_ptr<XFExtNoFRT> XFExtNoFRTPtr;

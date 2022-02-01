@@ -253,7 +253,7 @@ void XF::Update(ExtProp* ext_prop)
 
 	{
 		color_out.enabled		= true;
-		color_out.icv			= ext_prop->extPropData.color.icv;
+		color_out.icv			= ext_prop->extPropData.color.xclrValue;
 		color_out.xclrType		= ext_prop->extPropData.color.xclrType;
 		color_out.nTintShade	= ext_prop->extPropData.color.nTintShade;
 		color_out.xclrValue		= ext_prop->extPropData.color.xclrValue;

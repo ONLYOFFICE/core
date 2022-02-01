@@ -576,38 +576,59 @@ void TCell::FillTcPr(PPTX::Logic::TableCellProperties &oTcPr)
 
     oTcPr.Fill.Fill.reset(pSolidFill);
 
-    if (isInvisibleBorder())
-        SetTcPrInvisibleBorders(oTcPr);
+    std::set<eBorderPossition> setOfUnusedBorderPos =
+    {TCell::lnB, TCell::lnT, TCell::lnR, TCell::lnL};
 
     for (auto IterBorder : m_mapBorders)
     {
         auto pLn = new PPTX::Logic::Ln;
         FillLn(*pLn, IterBorder.first, IterBorder.second);
         ApplyLn(oTcPr,pLn, IterBorder.first);
+        setOfUnusedBorderPos.erase(IterBorder.first);
     }
+
+    // set invisible other borders
+    for (auto unusedBP : setOfUnusedBorderPos)
+        SetTcPrInvisibleBorder(oTcPr, unusedBP);
 }
 
-void TCell::SetTcPrInvisibleBorders(PPTX::Logic::TableCellProperties &oTcPr)
+void TCell::SetTcPrInvisibleBorders(PPTX::Logic::TableCellProperties &oTcPr) const
 {
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 4; i++)
     {
         auto eBP = (eBorderPossition)i;
-        auto pLn = new PPTX::Logic::Ln;
-        pLn->Fill.Fill = new PPTX::Logic::NoFill;
-        SetLnName(*pLn, eBP);
-        ApplyLn(oTcPr, pLn, eBP);
+        SetTcPrInvisibleBorder(oTcPr, eBP);
     }
 }
 
-bool TCell::isInvisibleBorder() const
+void TCell::SetTcPrInvisibleBorder(PPTX::Logic::TableCellProperties &oTcPr, TCell::eBorderPossition eBP) const
+{
+    auto pLn = new PPTX::Logic::Ln;
+    pLn->Fill.Fill = new PPTX::Logic::NoFill;
+    SetLnName(*pLn, eBP);
+    ApplyLn(oTcPr, pLn, eBP);
+}
+
+bool TCell::isInvisibleBorder(const CShapeElement *pBorder)
+{
+    const bool isInv = pBorder && pBorder->m_bLine == false;
+    return isInv;
+}
+
+bool TCell::isInvisibleBorders() const
 {
     if (m_mapBorders.empty())
         return true;
 
     bool isInvisibele = true;
     for (auto IterBorder : m_mapBorders)
-        if (IterBorder.second->m_oBrush.Type != c_BrushTypeNoFill)
+    {
+        if ((IterBorder.first != TCell::lnBlToTr && IterBorder.first != TCell::lnTlToBr)
+                && isInvisibleBorder(IterBorder.second) == false)
+        {
             isInvisibele = false;
+        }
+    }
 
     return isInvisibele;
 }
@@ -623,7 +644,7 @@ void TCell::FillLn(PPTX::Logic::Ln &Ln, TCell::eBorderPossition eBP, CShapeEleme
 
     Ln.w = pen.Size;
 
-    if (brush.Type == c_BrushTypeNoFill)
+    if (isInvisibleBorder(pBorder))
         Ln.Fill.Fill.reset(new PPTX::Logic::NoFill);
     else
     {
@@ -669,7 +690,7 @@ void TCell::FillLn(PPTX::Logic::Ln &Ln, TCell::eBorderPossition eBP, CShapeEleme
     Ln.Join.type = PPTX::Logic::eJoin::JoinRound;
 }
 
-void TCell::SetLnName(PPTX::Logic::Ln &Ln, eBorderPossition eBP)
+void TCell::SetLnName(PPTX::Logic::Ln &Ln, eBorderPossition eBP) const
 {
     switch (eBP)
     {
@@ -682,7 +703,7 @@ void TCell::SetLnName(PPTX::Logic::Ln &Ln, eBorderPossition eBP)
     }
 }
 
-void TCell::ApplyLn(PPTX::Logic::TableCellProperties &oTcPr, PPTX::Logic::Ln *pLn, eBorderPossition eBP)
+void TCell::ApplyLn(PPTX::Logic::TableCellProperties &oTcPr, PPTX::Logic::Ln *pLn, eBorderPossition eBP) const
 {
     switch (eBP)
     {

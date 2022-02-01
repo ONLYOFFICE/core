@@ -138,9 +138,10 @@ namespace codegen
         #region JS
         string getClassMemberName(string sName)
         {
-            //for word
-            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
-            return textInfo.ToTitleCase(sName);
+            ////for word
+            //TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+            //return textInfo.ToTitleCase(sName);
+            return sName.Substring(0, 1).ToUpper() + sName.Substring(1);
         }
         string GetEnumClassName(string sEnumName)
         {
@@ -385,24 +386,33 @@ namespace codegen
                     sRes = "WriteXmlNullableAttributeBool";
                     break;
                 case TypeCode.Byte:
+                    sRes = "WriteXmlNullableAttributeByte";
+                    break;
                 case TypeCode.SByte:
+                    sRes = "WriteXmlNullableAttributeSByte";
+                    break;
                 case TypeCode.Int16:
                 case TypeCode.Int32:
+                    sRes = "WriteXmlNullableAttributeInt";
+                    break;
                 case TypeCode.UInt16:
                 case TypeCode.UInt32:
-                    sRes = "WriteXmlNullableAttributeNumber";
+                    sRes = "WriteXmlNullableAttributeUInt";
                     break;
                 case TypeCode.Int64:
+                    bTodo = true;
+                    sRes = "WriteXmlNullableAttributeInt64";
+                    break;
                 case TypeCode.UInt64:
                     bTodo = true;
-                    sRes = "WriteXmlNullableAttributeNumber";
+                    sRes = "WriteXmlNullableAttributeUInt64";
                     break;
                 case TypeCode.Single:
                 case TypeCode.Double:
-                    sRes = "WriteXmlNullableAttributeNumber";
+                    sRes = "WriteXmlNullableAttributeDouble";
                     break;
                 default:
-                    sRes = bEncode ? "WriteXmlNullableAttributeString" : "WriteXmlNullableAttributeStringEncode";
+                    sRes = bEncode ? "WriteXmlNullableAttributeStringEncode" : "WriteXmlNullableAttributeString";
                     break;
             }
             return sRes;
@@ -432,7 +442,7 @@ namespace codegen
             }
             if (aMembers.Count > 0)
             {
-                sb.AppendFormat("var depth = reader.GetDepth();\n");
+                sb.AppendFormat("var elem, depth = reader.GetDepth();\n");
                 sb.AppendFormat("while (reader.ReadNextSiblingNode(depth)) {{\n");
                 sb.AppendFormat("switch (reader.GetNameNoNS()) {{\n");
                 for (int i = 0; i < aMembers.Count; ++i)
@@ -450,7 +460,7 @@ namespace codegen
                             string sRead;
                             if (true == aMembers[i].bIsArrayTypesHidden)
                             {
-                                sb.AppendFormat("var elem = new {0}();\n", oGenMemberTmp.sType);
+                                sb.AppendFormat("elem = new {0}();\n", oGenMemberTmp.sType);
                                 sb.AppendFormat("elem.fromXml(reader);\n");
                                 sb.AppendFormat("this.{0}.push(elem);\n", getClassMemberName(aMembers[i].sName));
                             }
@@ -460,7 +470,7 @@ namespace codegen
                                 sb.AppendFormat("while (reader.ReadNextSiblingNode(subDepth)) {{\n");
                                 sb.AppendFormat("if (\"{0}\" === reader.GetNameNoNS()) {{\n", oGenMemberTmp.sName);
 
-                                sb.AppendFormat("var elem = new {0}();\n", oGenMemberTmp.sType);
+                                sb.AppendFormat("elem = new {0}();\n", oGenMemberTmp.sType);
                                 sb.AppendFormat("elem.fromXml(reader);\n");
                                 sb.AppendFormat("this.{0}.push(elem);\n", getClassMemberName(aMembers[i].sName));
 
@@ -525,20 +535,27 @@ namespace codegen
                 case TypeCode.Boolean:
                     sRes = "GetValueBool";
                     break;
+                case TypeCode.Byte:
+                    sRes = "GetValueByte";
+                    break;
                 case TypeCode.SByte:
+                    sRes = "GetValueSByte";
+                    break;
                 case TypeCode.Int16:
                 case TypeCode.Int32:
                     sRes = "GetValueInt";
                     break;
-                case TypeCode.Byte:
                 case TypeCode.UInt16:
                 case TypeCode.UInt32:
                     sRes = "GetValueUInt";
                     break;
                 case TypeCode.Int64:
+                    bTodo = true;
+                    sRes = "GetValueInt64";
+                    break;
                 case TypeCode.UInt64:
                     bTodo = true;
-                    sRes = "GetValueInt";
+                    sRes = "GetValueUInt64";
                     break;
                 case TypeCode.Single:
                 case TypeCode.Double:

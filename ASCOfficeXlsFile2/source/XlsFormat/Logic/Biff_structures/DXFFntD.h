@@ -41,6 +41,9 @@ namespace XLS
 class CFRecord;
 class DXFN;
 
+class GlobalWorkbookInfo;
+typedef boost::shared_ptr<GlobalWorkbookInfo> GlobalWorkbookInfoPtr;
+
 class DXFFntD : public BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(DXFFntD)
@@ -50,7 +53,6 @@ public:
 	static const ElementType	type = typeDXFFntD;
 	
 	virtual void load(CFRecord& record);
-
 
 	int serialize(std::wostream & stream);
 
@@ -70,7 +72,8 @@ public:
 	_UINT16 iFnt;
 
 //------------------------------------------------
-	DXFN *parent;
+	GlobalWorkbookInfoPtr global_info;
+	DXFN *parent = NULL;
 };
 
 } // namespace XLS

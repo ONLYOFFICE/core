@@ -52,7 +52,7 @@ namespace NSHtmlRenderer
         virtual ~CHTMLRendererText();
 
     public:
-        void Init(IOfficeDrawingFile* pFile);
+        void Init(IOfficeDrawingFile* pFile, int nCacheSize = 0);
         BYTE* GetBuffer();
 
     public:

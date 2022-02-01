@@ -186,15 +186,15 @@ int AUTOFILTER::serialize(std::wostream & stream)
 		{	
 			CP_XML_ATTR(L"ref", ref);
 
-			if (m_arFilters.empty() && m_arSORTDATA12.empty())
-			{
-				CP_XML_NODE(L"filterColumn")
-				{
-					CP_XML_ATTR(L"colId", 0);
-					CP_XML_ATTR(L"showButton", 0);
-				}
-			}
-			else
+			//if (m_arFilters.empty() && m_arSORTDATA12.empty())
+			//{
+			//	CP_XML_NODE(L"filterColumn")
+			//	{
+			//		CP_XML_ATTR(L"colId", 0);
+			//		CP_XML_ATTR(L"showButton", 0);
+			//	}
+			//}
+			//else
 			{				
 				for (size_t i = 0 ; i < m_arFilters.size(); i++)//todooo сделать на оставшиеся - count_columns (hidden)
 				{

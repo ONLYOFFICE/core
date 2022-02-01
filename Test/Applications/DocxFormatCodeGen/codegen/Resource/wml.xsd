@@ -21,7 +21,7 @@
   <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
   <xsd:complexType name="CT_Empty"/>
   <xsd:complexType name="CT_OnOff">
-    <xsd:attribute name="val" type="s:ST_OnOff"/>
+    <xsd:attribute name="val" type="xsd:boolean"/>
   </xsd:complexType>
   <xsd:simpleType name="ST_LongHexNumber">
     <xsd:restriction base="xsd:hexBinary">
@@ -406,8 +406,8 @@
     <xsd:attribute name="themeShade" type="ST_UcharHexNumber" use="optional"/>
     <xsd:attribute name="sz" type="ST_EighthPointMeasure" use="optional"/>
     <xsd:attribute name="space" type="ST_PointMeasure" use="optional" default="0"/>
-    <xsd:attribute name="shadow" type="s:ST_OnOff" use="optional"/>
-    <xsd:attribute name="frame" type="s:ST_OnOff" use="optional"/>
+    <xsd:attribute name="shadow" type="xsd:boolean" use="optional"/>
+    <xsd:attribute name="frame" type="xsd:boolean" use="optional"/>
   </xsd:complexType>
   <xsd:simpleType name="ST_Shd">
     <xsd:restriction base="xsd:string">
@@ -497,10 +497,10 @@
   </xsd:simpleType>
   <xsd:complexType name="CT_EastAsianLayout">
     <xsd:attribute name="id" type="xsd:int" use="optional"/>
-    <xsd:attribute name="combine" type="s:ST_OnOff" use="optional"/>
+    <xsd:attribute name="combine" type="xsd:boolean" use="optional"/>
     <xsd:attribute name="combineBrackets" type="ST_CombineBrackets" use="optional"/>
-    <xsd:attribute name="vert" type="s:ST_OnOff" use="optional"/>
-    <xsd:attribute name="vertCompress" type="s:ST_OnOff" use="optional"/>
+    <xsd:attribute name="vert" type="xsd:boolean" use="optional"/>
+    <xsd:attribute name="vertCompress" type="xsd:boolean" use="optional"/>
   </xsd:complexType>
   <xsd:simpleType name="ST_HeightRule">
     <xsd:restriction base="xsd:string">
@@ -555,7 +555,7 @@
     <xsd:attribute name="y" type="ST_SignedTwipsMeasure" use="optional"/>
     <xsd:attribute name="yAlign" type="s:ST_YAlign" use="optional"/>
     <xsd:attribute name="hRule" type="ST_HeightRule" use="optional"/>
-    <xsd:attribute name="anchorLock" type="s:ST_OnOff" use="optional"/>
+    <xsd:attribute name="anchorLock" type="xsd:boolean" use="optional"/>
   </xsd:complexType>
   <xsd:simpleType name="ST_TabJc">
     <xsd:restriction base="xsd:string">
@@ -593,10 +593,10 @@
   <xsd:complexType name="CT_Spacing">
     <xsd:attribute name="before" type="s:ST_TwipsMeasure" use="optional" default="0"/>
     <xsd:attribute name="beforeLines" type="xsd:int" use="optional" default="0"/>
-    <xsd:attribute name="beforeAutospacing" type="s:ST_OnOff" use="optional" default="off"/>
+    <xsd:attribute name="beforeAutospacing" type="xsd:boolean" use="optional" default="false"/>
     <xsd:attribute name="after" type="s:ST_TwipsMeasure" use="optional" default="0"/>
     <xsd:attribute name="afterLines" type="xsd:int" use="optional" default="0"/>
-    <xsd:attribute name="afterAutospacing" type="s:ST_OnOff" use="optional" default="off"/>
+    <xsd:attribute name="afterAutospacing" type="xsd:boolean" use="optional" default="false"/>
     <xsd:attribute name="line" type="ST_SignedTwipsMeasure" use="optional" default="0"/>
     <xsd:attribute name="lineRule" type="ST_LineSpacingRule" use="optional" default="auto"/>
   </xsd:complexType>
@@ -666,8 +666,8 @@
     <xsd:attribute name="lang" type="s:ST_Lang" use="required"/>
     <xsd:attribute name="vendorID" type="s:ST_String" use="required"/>
     <xsd:attribute name="dllVersion" type="s:ST_String" use="required"/>
-    <xsd:attribute name="nlCheck" type="s:ST_OnOff" use="optional" default="off"/>
-    <xsd:attribute name="checkStyle" type="s:ST_OnOff" use="required"/>
+    <xsd:attribute name="nlCheck" type="xsd:boolean" use="optional" default="false"/>
+    <xsd:attribute name="checkStyle" type="xsd:boolean" use="required"/>
     <xsd:attribute name="appName" type="s:ST_String" use="required"/>
   </xsd:complexType>
   <xsd:simpleType name="ST_Proof">
@@ -703,8 +703,8 @@
   </xsd:attributeGroup>
   <xsd:complexType name="CT_DocProtect">
     <xsd:attribute name="edit" type="ST_DocProtect" use="optional"/>
-    <xsd:attribute name="formatting" type="s:ST_OnOff" use="optional"/>
-    <xsd:attribute name="enforcement" type="s:ST_OnOff"/>
+    <xsd:attribute name="formatting" type="xsd:boolean" use="optional"/>
+    <xsd:attribute name="enforcement" type="xsd:boolean"/>
     <xsd:attributeGroup ref="AG_Password"/>
   </xsd:complexType>
   <xsd:simpleType name="ST_MailMergeDocType">
@@ -747,11 +747,11 @@
     <xsd:attribute name="val" type="ST_MailMergeOdsoFMDFieldType" use="required"/>
   </xsd:complexType>
   <xsd:complexType name="CT_TrackChangesView">
-    <xsd:attribute name="markup" type="s:ST_OnOff" use="optional"/>
-    <xsd:attribute name="comments" type="s:ST_OnOff" use="optional"/>
-    <xsd:attribute name="insDel" type="s:ST_OnOff" use="optional"/>
-    <xsd:attribute name="formatting" type="s:ST_OnOff" use="optional"/>
-    <xsd:attribute name="inkAnnotations" type="s:ST_OnOff" use="optional"/>
+    <xsd:attribute name="markup" type="xsd:boolean" use="optional"/>
+    <xsd:attribute name="comments" type="xsd:boolean" use="optional"/>
+    <xsd:attribute name="insDel" type="xsd:boolean" use="optional"/>
+    <xsd:attribute name="formatting" type="xsd:boolean" use="optional"/>
+    <xsd:attribute name="inkAnnotations" type="xsd:boolean" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_Kinsoku">
     <xsd:attribute name="lang" type="s:ST_Lang" use="required"/>
@@ -1171,7 +1171,7 @@
     <xsd:attribute name="shapeId" type="s:ST_String" use="optional"/>
     <xsd:attribute name="fieldCodes" type="s:ST_String" use="optional"/>
     <xsd:attribute name="updateMode" type="ST_ObjectUpdateMode" use="required"/>
-    <xsd:attribute name="lockedField" type="s:ST_OnOff" use="optional"/>
+    <xsd:attribute name="lockedField" type="xsd:boolean" use="optional"/>
   </xsd:complexType>
   <xsd:simpleType name="ST_ObjectUpdateMode">
     <xsd:restriction base="xsd:string">
@@ -1190,8 +1190,8 @@
       <xsd:element name="todo_EG_PContent" type="CT_String" minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="instr" type="s:ST_String" use="required"/>
-    <xsd:attribute name="fldLock" type="s:ST_OnOff"/>
-    <xsd:attribute name="dirty" type="s:ST_OnOff"/>
+    <xsd:attribute name="fldLock" type="xsd:boolean"/>
+    <xsd:attribute name="dirty" type="xsd:boolean"/>
   </xsd:complexType>
   <xsd:simpleType name="ST_FldCharType">
     <xsd:restriction base="xsd:string">
@@ -1242,8 +1242,8 @@
       <xsd:element name="ffData" type="CT_FFData" minOccurs="0" maxOccurs="1"/>
     </xsd:choice>
     <xsd:attribute name="fldCharType" type="ST_FldCharType" use="required"/>
-    <xsd:attribute name="fldLock" type="s:ST_OnOff"/>
-    <xsd:attribute name="dirty" type="s:ST_OnOff"/>
+    <xsd:attribute name="fldLock" type="xsd:boolean"/>
+    <xsd:attribute name="dirty" type="xsd:boolean"/>
   </xsd:complexType>
   <xsd:complexType name="CT_Hyperlink">
     <xsd:sequence>
@@ -1252,7 +1252,7 @@
     <xsd:attribute name="tgtFrame" type="s:ST_String" use="optional"/>
     <xsd:attribute name="tooltip" type="s:ST_String" use="optional"/>
     <xsd:attribute name="docLocation" type="s:ST_String" use="optional"/>
-    <xsd:attribute name="history" type="s:ST_OnOff" use="optional"/>
+    <xsd:attribute name="history" type="xsd:boolean" use="optional"/>
     <xsd:attribute name="anchor" type="s:ST_String" use="optional"/>
     <xsd:attribute ref="r:id"/>
   </xsd:complexType>
@@ -1449,8 +1449,8 @@
     <xsd:attribute name="themeShade" type="ST_UcharHexNumber" use="optional"/>
     <xsd:attribute name="sz" type="ST_EighthPointMeasure" use="optional"/>
     <xsd:attribute name="space" type="ST_PointMeasure" use="optional" default="0"/>
-    <xsd:attribute name="shadow" type="s:ST_OnOff" use="optional"/>
-    <xsd:attribute name="frame" type="s:ST_OnOff" use="optional"/>
+    <xsd:attribute name="shadow" type="xsd:boolean" use="optional"/>
+    <xsd:attribute name="frame" type="xsd:boolean" use="optional"/>
     <xsd:attribute ref="r:id" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_BottomPageBorder">
@@ -1461,8 +1461,8 @@
     <xsd:attribute name="themeShade" type="ST_UcharHexNumber" use="optional"/>
     <xsd:attribute name="sz" type="ST_EighthPointMeasure" use="optional"/>
     <xsd:attribute name="space" type="ST_PointMeasure" use="optional" default="0"/>
-    <xsd:attribute name="shadow" type="s:ST_OnOff" use="optional"/>
-    <xsd:attribute name="frame" type="s:ST_OnOff" use="optional"/>
+    <xsd:attribute name="shadow" type="xsd:boolean" use="optional"/>
+    <xsd:attribute name="frame" type="xsd:boolean" use="optional"/>
     <xsd:attribute ref="r:bottomLeft" use="optional"/>
     <xsd:attribute ref="r:bottomRight" use="optional"/>
   </xsd:complexType>
@@ -1474,8 +1474,8 @@
     <xsd:attribute name="themeShade" type="ST_UcharHexNumber" use="optional"/>
     <xsd:attribute name="sz" type="ST_EighthPointMeasure" use="optional"/>
     <xsd:attribute name="space" type="ST_PointMeasure" use="optional" default="0"/>
-    <xsd:attribute name="shadow" type="s:ST_OnOff" use="optional"/>
-    <xsd:attribute name="frame" type="s:ST_OnOff" use="optional"/>
+    <xsd:attribute name="shadow" type="xsd:boolean" use="optional"/>
+    <xsd:attribute name="frame" type="xsd:boolean" use="optional"/>
     <xsd:attribute ref="r:id" use="optional"/>
     <xsd:attribute ref="r:topLeft" use="optional"/>
     <xsd:attribute ref="r:topRight" use="optional"/>
@@ -1516,10 +1516,10 @@
     <xsd:sequence minOccurs="0">
       <xsd:element name="col" type="CT_Column" maxOccurs="45"/>
     </xsd:sequence>
-    <xsd:attribute name="equalWidth" type="s:ST_OnOff" use="optional"/>
+    <xsd:attribute name="equalWidth" type="xsd:boolean" use="optional"/>
     <xsd:attribute name="space" type="s:ST_TwipsMeasure" use="optional" default="720"/>
     <xsd:attribute name="num" type="xsd:int" use="optional" default="1"/>
-    <xsd:attribute name="sep" type="s:ST_OnOff" use="optional"/>
+    <xsd:attribute name="sep" type="xsd:boolean" use="optional"/>
   </xsd:complexType>
   <xsd:simpleType name="ST_VerticalJc">
     <xsd:restriction base="xsd:string">
@@ -2000,7 +2000,7 @@
     </xsd:sequence>
   </xsd:complexType>
   <xsd:complexType name="CT_SdtText">
-    <xsd:attribute name="multiLine" type="s:ST_OnOff"/>
+    <xsd:attribute name="multiLine" type="xsd:boolean"/>
   </xsd:complexType>
   <xsd:complexType name="CT_DataBinding">
     <xsd:attribute name="prefixMappings" type="s:ST_String"/>
@@ -2344,18 +2344,18 @@
     <xsd:attribute name="id" type="s:ST_String" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_Cnf">
-    <xsd:attribute name="firstRow" type="s:ST_OnOff"/>
-    <xsd:attribute name="lastRow" type="s:ST_OnOff"/>
-    <xsd:attribute name="firstColumn" type="s:ST_OnOff"/>
-    <xsd:attribute name="lastColumn" type="s:ST_OnOff"/>
-    <xsd:attribute name="oddVBand" type="s:ST_OnOff"/>
-    <xsd:attribute name="evenVBand" type="s:ST_OnOff"/>
-    <xsd:attribute name="oddHBand" type="s:ST_OnOff"/>
-    <xsd:attribute name="evenHBand" type="s:ST_OnOff"/>
-    <xsd:attribute name="firstRowFirstColumn" type="s:ST_OnOff"/>
-    <xsd:attribute name="firstRowLastColumn" type="s:ST_OnOff"/>
-    <xsd:attribute name="lastRowFirstColumn" type="s:ST_OnOff"/>
-    <xsd:attribute name="lastRowLastColumn" type="s:ST_OnOff"/>
+    <xsd:attribute name="firstRow" type="xsd:boolean"/>
+    <xsd:attribute name="lastRow" type="xsd:boolean"/>
+    <xsd:attribute name="firstColumn" type="xsd:boolean"/>
+    <xsd:attribute name="lastColumn" type="xsd:boolean"/>
+    <xsd:attribute name="oddVBand" type="xsd:boolean"/>
+    <xsd:attribute name="evenVBand" type="xsd:boolean"/>
+    <xsd:attribute name="oddHBand" type="xsd:boolean"/>
+    <xsd:attribute name="evenHBand" type="xsd:boolean"/>
+    <xsd:attribute name="firstRowFirstColumn" type="xsd:boolean"/>
+    <xsd:attribute name="firstRowLastColumn" type="xsd:boolean"/>
+    <xsd:attribute name="lastRowFirstColumn" type="xsd:boolean"/>
+    <xsd:attribute name="lastRowLastColumn" type="xsd:boolean"/>
   </xsd:complexType>
   <xsd:complexType name="CT_Headers">
     <xsd:sequence minOccurs="0" maxOccurs="unbounded">
@@ -2535,12 +2535,12 @@
     </xsd:sequence>
   </xsd:complexType>
   <xsd:complexType name="CT_TblLook">
-    <xsd:attribute name="firstRow" type="s:ST_OnOff"/>
-    <xsd:attribute name="lastRow" type="s:ST_OnOff"/>
-    <xsd:attribute name="firstColumn" type="s:ST_OnOff"/>
-    <xsd:attribute name="lastColumn" type="s:ST_OnOff"/>
-    <xsd:attribute name="noHBand" type="s:ST_OnOff"/>
-    <xsd:attribute name="noVBand" type="s:ST_OnOff"/>
+    <xsd:attribute name="firstRow" type="xsd:boolean"/>
+    <xsd:attribute name="lastRow" type="xsd:boolean"/>
+    <xsd:attribute name="firstColumn" type="xsd:boolean"/>
+    <xsd:attribute name="lastColumn" type="xsd:boolean"/>
+    <xsd:attribute name="noHBand" type="xsd:boolean"/>
+    <xsd:attribute name="noVBand" type="xsd:boolean"/>
   </xsd:complexType>
   <xsd:simpleType name="ST_FtnPos">
     <xsd:restriction base="xsd:string">
@@ -2577,7 +2577,7 @@
     <xsd:attribute name="val" type="ST_RestartNumber" use="required"/>
   </xsd:complexType>
   <xsd:complexType name="CT_FtnEdnRef">
-    <xsd:attribute name="customMarkFollows" type="s:ST_OnOff" use="optional"/>
+    <xsd:attribute name="customMarkFollows" type="xsd:boolean" use="optional"/>
     <xsd:attribute name="id" use="required" type="xsd:int"/>
   </xsd:complexType>
   <xsd:complexType name="CT_FtnEdnSepRef">
@@ -2814,13 +2814,13 @@
     <xsd:attribute name="followedHyperlink" type="ST_WmlColorSchemeIndex"/>
   </xsd:complexType>
   <xsd:complexType name="CT_ReadingModeInkLockDown">
-    <xsd:attribute name="actualPg" type="s:ST_OnOff" use="required"/>
+    <xsd:attribute name="actualPg" type="xsd:boolean" use="required"/>
     <xsd:attribute name="w" type="ST_PixelsMeasure" use="required"/>
     <xsd:attribute name="h" type="ST_PixelsMeasure" use="required"/>
     <xsd:attribute name="fontSz" type="ST_DecimalNumberOrPercent" use="required"/>
   </xsd:complexType>
   <xsd:complexType name="CT_WriteProtection">
-    <xsd:attribute name="recommended" type="s:ST_OnOff" use="optional"/>
+    <xsd:attribute name="recommended" type="xsd:boolean" use="optional"/>
     <xsd:attributeGroup ref="AG_Password"/>
   </xsd:complexType>
   <xsd:complexType name="CT_Settings">
@@ -2928,21 +2928,21 @@
     <xsd:attribute name="val" type="ST_StyleSort" use="required"/>
   </xsd:complexType>
   <xsd:complexType name="CT_StylePaneFilter">
-    <xsd:attribute name="allStyles" type="s:ST_OnOff"/>
-    <xsd:attribute name="customStyles" type="s:ST_OnOff"/>
-    <xsd:attribute name="latentStyles" type="s:ST_OnOff"/>
-    <xsd:attribute name="stylesInUse" type="s:ST_OnOff"/>
-    <xsd:attribute name="headingStyles" type="s:ST_OnOff"/>
-    <xsd:attribute name="numberingStyles" type="s:ST_OnOff"/>
-    <xsd:attribute name="tableStyles" type="s:ST_OnOff"/>
-    <xsd:attribute name="directFormattingOnRuns" type="s:ST_OnOff"/>
-    <xsd:attribute name="directFormattingOnParagraphs" type="s:ST_OnOff"/>
-    <xsd:attribute name="directFormattingOnNumbering" type="s:ST_OnOff"/>
-    <xsd:attribute name="directFormattingOnTables" type="s:ST_OnOff"/>
-    <xsd:attribute name="clearFormatting" type="s:ST_OnOff"/>
-    <xsd:attribute name="top3HeadingStyles" type="s:ST_OnOff"/>
-    <xsd:attribute name="visibleStyles" type="s:ST_OnOff"/>
-    <xsd:attribute name="alternateStyleNames" type="s:ST_OnOff"/>
+    <xsd:attribute name="allStyles" type="xsd:boolean"/>
+    <xsd:attribute name="customStyles" type="xsd:boolean"/>
+    <xsd:attribute name="latentStyles" type="xsd:boolean"/>
+    <xsd:attribute name="stylesInUse" type="xsd:boolean"/>
+    <xsd:attribute name="headingStyles" type="xsd:boolean"/>
+    <xsd:attribute name="numberingStyles" type="xsd:boolean"/>
+    <xsd:attribute name="tableStyles" type="xsd:boolean"/>
+    <xsd:attribute name="directFormattingOnRuns" type="xsd:boolean"/>
+    <xsd:attribute name="directFormattingOnParagraphs" type="xsd:boolean"/>
+    <xsd:attribute name="directFormattingOnNumbering" type="xsd:boolean"/>
+    <xsd:attribute name="directFormattingOnTables" type="xsd:boolean"/>
+    <xsd:attribute name="clearFormatting" type="xsd:boolean"/>
+    <xsd:attribute name="top3HeadingStyles" type="xsd:boolean"/>
+    <xsd:attribute name="visibleStyles" type="xsd:boolean"/>
+    <xsd:attribute name="alternateStyleNames" type="xsd:boolean"/>
   </xsd:complexType>
   <xsd:simpleType name="ST_StyleSort">
     <xsd:restriction base="xsd:string">
@@ -2981,7 +2981,7 @@
     <xsd:attribute name="val" type="ST_FrameScrollbar" use="required"/>
   </xsd:complexType>
   <xsd:complexType name="CT_OptimizeForBrowser">
-    <xsd:attribute name="val" type="s:ST_OnOff"/>
+    <xsd:attribute name="val" type="xsd:boolean"/>
     <xsd:attribute name="target" type="s:ST_String" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_Frame">
@@ -3046,7 +3046,7 @@
   </xsd:complexType>
   <xsd:complexType name="CT_LevelText">
     <xsd:attribute name="val" type="s:ST_String" use="optional"/>
-    <xsd:attribute name="null" type="s:ST_OnOff" use="optional"/>
+    <xsd:attribute name="null" type="xsd:boolean" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_Lvl">
     <xsd:sequence>
@@ -3064,7 +3064,7 @@
     </xsd:sequence>
     <xsd:attribute name="ilvl" type="xsd:int" use="required"/>
     <xsd:attribute name="tplc" type="ST_LongHexNumber" use="optional"/>
-    <xsd:attribute name="tentative" type="s:ST_OnOff" use="optional"/>
+    <xsd:attribute name="tentative" type="xsd:boolean" use="optional"/>
   </xsd:complexType>
   <xsd:simpleType name="ST_MultiLevelType">
     <xsd:restriction base="xsd:string">
@@ -3172,26 +3172,26 @@
     </xsd:sequence>
     <xsd:attribute name="type" type="ST_StyleType" use="optional"/>
     <xsd:attribute name="styleId" type="s:ST_String" use="optional"/>
-    <xsd:attribute name="default" type="s:ST_OnOff" use="optional"/>
-    <xsd:attribute name="customStyle" type="s:ST_OnOff" use="optional"/>
+    <xsd:attribute name="default" type="xsd:boolean" use="optional"/>
+    <xsd:attribute name="customStyle" type="xsd:boolean" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_LsdException">
     <xsd:attribute name="name" type="s:ST_String" use="required"/>
-    <xsd:attribute name="locked" type="s:ST_OnOff"/>
+    <xsd:attribute name="locked" type="xsd:boolean"/>
     <xsd:attribute name="uiPriority" type="xsd:int"/>
-    <xsd:attribute name="semiHidden" type="s:ST_OnOff"/>
-    <xsd:attribute name="unhideWhenUsed" type="s:ST_OnOff"/>
-    <xsd:attribute name="qFormat" type="s:ST_OnOff"/>
+    <xsd:attribute name="semiHidden" type="xsd:boolean"/>
+    <xsd:attribute name="unhideWhenUsed" type="xsd:boolean"/>
+    <xsd:attribute name="qFormat" type="xsd:boolean"/>
   </xsd:complexType>
   <xsd:complexType name="CT_LatentStyles">
     <xsd:sequence>
       <xsd:element name="lsdException" type="CT_LsdException" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
-    <xsd:attribute name="defLockedState" type="s:ST_OnOff"/>
+    <xsd:attribute name="defLockedState" type="xsd:boolean"/>
     <xsd:attribute name="defUIPriority" type="xsd:int"/>
-    <xsd:attribute name="defSemiHidden" type="s:ST_OnOff"/>
-    <xsd:attribute name="defUnhideWhenUsed" type="s:ST_OnOff"/>
-    <xsd:attribute name="defQFormat" type="s:ST_OnOff"/>
+    <xsd:attribute name="defSemiHidden" type="xsd:boolean"/>
+    <xsd:attribute name="defUnhideWhenUsed" type="xsd:boolean"/>
+    <xsd:attribute name="defQFormat" type="xsd:boolean"/>
     <xsd:attribute name="count" type="xsd:int"/>
   </xsd:complexType>
   <xsd:complexType name="CT_Styles">
@@ -3238,7 +3238,7 @@
   <xsd:complexType name="CT_FontRel">
     <xsd:attribute ref="r:id" use="required"/>
     <xsd:attribute name="fontKey" type="s:ST_Guid"/>
-    <xsd:attribute name="subsetted" type="s:ST_OnOff"/>
+    <xsd:attribute name="subsetted" type="xsd:boolean"/>
   </xsd:complexType>
   <xsd:complexType name="CT_Font">
     <xsd:sequence>
@@ -3402,7 +3402,7 @@
     <xsd:choice>
       <xsd:element name="type" type="CT_DocPartType" maxOccurs="unbounded"/>
     </xsd:choice>
-    <xsd:attribute name="all" type="s:ST_OnOff" use="optional"/>
+    <xsd:attribute name="all" type="xsd:boolean" use="optional"/>
   </xsd:complexType>
   <xsd:simpleType name="ST_DocPartGallery">
     <xsd:restriction base="xsd:string">
@@ -3457,7 +3457,7 @@
   </xsd:complexType>
   <xsd:complexType name="CT_DocPartName">
     <xsd:attribute name="val" type="s:ST_String" use="required"/>
-    <xsd:attribute name="decorated" type="s:ST_OnOff" use="optional"/>
+    <xsd:attribute name="decorated" type="xsd:boolean" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_DocPartPr">
     <xsd:all>
@@ -3497,9 +3497,9 @@
   <xsd:complexType name="CT_Caption">
     <xsd:attribute name="name" type="s:ST_String" use="required"/>
     <xsd:attribute name="pos" type="ST_CaptionPos" use="optional"/>
-    <xsd:attribute name="chapNum" type="s:ST_OnOff" use="optional"/>
+    <xsd:attribute name="chapNum" type="xsd:boolean" use="optional"/>
     <xsd:attribute name="heading" type="xsd:int" use="optional"/>
-    <xsd:attribute name="noLabel" type="s:ST_OnOff" use="optional"/>
+    <xsd:attribute name="noLabel" type="xsd:boolean" use="optional"/>
     <xsd:attribute name="numFmt" type="ST_NumberFormat" use="optional"/>
     <xsd:attribute name="sep" type="ST_ChapterSep" use="optional"/>
   </xsd:complexType>

@@ -456,6 +456,7 @@ namespace PPT_FORMAT
 		void WriteShapeInfo();
 		void WriteImageInfo();
         void WriteTextInfo();
+        static std::wstring WriteBullets(CTextPFRun* pPF, CRelsGenerator *pRels);
 		void Write3dShape();
 	};
 }

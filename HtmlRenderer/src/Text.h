@@ -320,10 +320,18 @@ namespace NSHtmlRenderer
         {
             m_pManager = NULL;
         }
-        void Init(NSFonts::IApplicationFonts* pApplicationFonts)
+        void Init(NSFonts::IApplicationFonts* pApplicationFonts, int nCacheSize = 0)
         {
             RELEASEOBJECT(m_pManager);
             m_pManager = pApplicationFonts->GenerateFontManager();
+
+            if (0 != nCacheSize)
+            {
+                NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
+                pFontCache->SetStreams(pApplicationFonts->GetStreams());
+                pFontCache->SetCacheSize(nCacheSize);
+                m_pManager->SetOwnerCache(pFontCache);
+            }
         }
 
         virtual ~CFontManagerWrapper()
@@ -491,9 +499,9 @@ namespace NSHtmlRenderer
             m_lCountSymbols = 0;
             m_lCountSpaces = 0;
         }
-        void Init(NSFonts::IApplicationFonts* pApplicationFonts)
+        void Init(NSFonts::IApplicationFonts* pApplicationFonts, int nCacheSize = 0)
         {
-            m_oFontManager.Init(pApplicationFonts);
+            m_oFontManager.Init(pApplicationFonts, nCacheSize);
         }
 
         template<typename T>
@@ -735,7 +743,7 @@ namespace NSHtmlRenderer
             LONG lTextLen = nCount;
             bool bIsLoadFontAttack = true;
 
-            // говенные значения приходят из пдф
+            // плохие значения приходят из пдф
             /*
             if (1 == lTextLen && 0 <= width)
                 bIsLoadFontAttack = false;

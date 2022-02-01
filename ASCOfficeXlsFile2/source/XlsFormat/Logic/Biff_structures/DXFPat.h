@@ -49,15 +49,14 @@ public:
 
 	virtual void load(CFRecord& record);
 
-
 	int serialize(std::wostream & stream);
 
 	FillPattern fls;
 	
 	unsigned char icvForeground;
-	unsigned char icvBackground;
+	unsigned char icvBackground; 
 //------------------------------------------------
-	DXFN *parent;
+	DXFN *parent = NULL;
 };
 
 } // namespace XLS

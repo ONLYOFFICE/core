@@ -280,15 +280,19 @@ namespace Oox2Odf
 	void OoxConverter::convert(OOX::Logic::CBox *oox_box)
 	{
 		if (!oox_box) return;
-		convert(oox_box->m_oBoxPr.GetPointer());
-		annotation() += L"\"";
-		convert(oox_box->m_oElement.GetPointer());
-		annotation() += L"\"";
+		if (convert(oox_box->m_oBoxPr.GetPointer()))
+		{
+			annotation() += L"\"";
+			convert(oox_box->m_oElement.GetPointer());
+			annotation() += L"\"";
+		}
+		else
+			convert(oox_box->m_oElement.GetPointer());
 	}
 
-	void OoxConverter::convert(OOX::Logic::CBoxPr *oox_box_pr)
+	bool OoxConverter::convert(OOX::Logic::CBoxPr *oox_box_pr)
 	{
-		if (!oox_box_pr) return;
+		if (!oox_box_pr) return false;
 
 
 		convert(oox_box_pr->m_oAln.GetPointer());
@@ -296,7 +300,7 @@ namespace Oox2Odf
 		convert(oox_box_pr->m_oCtrlPr.GetPointer());
 		convert(oox_box_pr->m_oDiff.GetPointer());
 		convert(oox_box_pr->m_oNoBreak.GetPointer());
-		convert(oox_box_pr->m_oOpEmu.GetPointer());
+		return convert(oox_box_pr->m_oOpEmu.GetPointer());
 	}
 
 	void OoxConverter::convert(OOX::Logic::CNoBreak *oox_no_break)
@@ -304,9 +308,14 @@ namespace Oox2Odf
 		if (!oox_no_break) return;
 	}
 
-	void OoxConverter::convert(OOX::Logic::COpEmu *oox_op_emu)
+	bool OoxConverter::convert(OOX::Logic::COpEmu *oox_op_emu)
 	{
-		if (!oox_op_emu) return;
+		if (!oox_op_emu) return false;
+
+		if (oox_op_emu->m_val->ToBool())// == L"true") ||(oox_op_emu->m_val == L"1"))
+			return true;
+		else
+			return false;
 	}
 
 	void OoxConverter::convert(OOX::Logic::CDiff *oox_diff)

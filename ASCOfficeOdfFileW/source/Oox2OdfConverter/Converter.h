@@ -673,7 +673,7 @@ public:
 		void convert(OOX::Logic::CBorderBox				*oox_border_box);
 		void convert(OOX::Logic::CBorderBoxPr			*oox_border_box_pr);
 		void convert(OOX::Logic::CBox					*oox_box);
-		void convert(OOX::Logic::CBoxPr					*oox_box_pr);
+		bool convert(OOX::Logic::CBoxPr					*oox_box_pr);
 		void convert(OOX::Logic::CBrk					*oox_brk);
 		void convert(OOX::Logic::CDelimiter				*oox_del);
 		std::pair<std::wstring, std::wstring> convert(OOX::Logic::CDelimiterPr			*oox_del_pr);
@@ -735,7 +735,7 @@ public:
 		std::wstring convert(OOX::Logic::CType			*oox_type);
 		void convert(OOX::Logic::CDiff					*oox_diff);
 		void convert(OOX::Logic::CArgSz					*oox_arg_sz);
-		void convert(OOX::Logic::COpEmu					*oox_op_emu);
+		bool convert(OOX::Logic::COpEmu					*oox_op_emu);
 		bool convert(OOX::Logic::CPos					*oox_pos);
 		void convert(OOX::Logic::CVertJc				*oox_vert_jc);
 		void convert(OOX::Logic::CNoBreak				*oox_no_break);

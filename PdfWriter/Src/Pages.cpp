@@ -1303,8 +1303,6 @@ namespace PdfWriter
 	}
 	void CPage::AddCommands(CXref* pXref, const std::wstring& sCommands)
 	{
-		pXref->Add(this);
-
 		m_pXref = pXref;
 		m_pContents->Add(new CDictObject(pXref));
 		m_pStream = ((CDictObject*)m_pContents->Get(m_pContents->GetCount() - 1))->GetStream();

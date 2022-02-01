@@ -1068,6 +1068,13 @@ namespace PdfWriter
 		}
 
         CXref* pXref = new CXref(this, nSizeXRef);
+        CXref* pXrefNew = new CXref(this, 9 /* номер объекта страницы в читателе */);
+
+        CObjectBase* pBase1 = new CObjectBase();
+        pBase1->SetRef(2, 0); /* номер объекта и поколение родителя страницы в читателе */
+        CObjectBase* pPageTree = new CProxyObject(pBase1);
+        // создаём новую страницу и заполняем из читателя
+        CPage* pNewPage = new CPage(pXref, (CPageTree*)pPageTree, this);
 
 		// копируем страницу
 		// нельзя копировать страницу в записи - она содержит данные для записи, и полностью отличается от страницы в читателе
@@ -1079,16 +1086,17 @@ namespace PdfWriter
 #endif
 		pPage->AddCommands(pXref, L"");
 
-		CXref* pXrefNew = new CXref(this, 9 /* номер объекта страницы в читателе */);
+
 		pPage->UnSet(); // страница уже добавлялась и нужно снять флаг чтобы снова добавить
 		// для страницы воссозданной уже не понадобится и можно будет убрать эту функцию
 		pXrefNew->Add(pPage);
         pXref->SetPrevAddr(nPosLastXRef);
 		pXrefNew->SetPrev(pXref);
 
-        // пофиксить объект и освободить, он не появляется в трейлере
-        CObjectBase* pRoot = new CObjectBase();
-        pRoot->SetRef(unRootObjId, unRootGenNo);
+        // Root в трейлер
+        CObjectBase* pBase = new CObjectBase();
+        pBase->SetRef(unRootObjId, unRootGenNo);
+        CObjectBase* pRoot = new CProxyObject(pBase);
         pXrefNew->GetTrailer()->Add("Root", pRoot);
 
 		pXrefNew->WriteToStream(pStream, pEncrypt);
@@ -1099,5 +1107,9 @@ namespace PdfWriter
 		// страница становится дважды принадлежащей из-за чего дважды удаляется
 		// для страницы воссозданной нужно будет очищать
 		//RELEASEOBJECT(pXrefNew);
+        RELEASEOBJECT(pBase);
+        RELEASEOBJECT(pBase1);
+        RELEASEOBJECT(pPageTree);
+        RELEASEOBJECT(pNewPage);
 	}
 }

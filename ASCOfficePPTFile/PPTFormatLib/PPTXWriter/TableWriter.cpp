@@ -1,6 +1,12 @@
 ﻿#include "TableWriter.h"
 #include "TxBodyConverter.h"
 #include <iostream>
+#include <numeric>
+#include <algorithm>
+
+#define VECSUM(cont) \
+    std::accumulate(cont.begin(), cont.end(), decltype(cont)::value_type(0))
+
 
 TableWriter::TableWriter(CTableElement *pTableElement, CRelsGenerator* pRels) :
     m_pTableElement(pTableElement), m_pRels(pRels) {}
@@ -60,7 +66,7 @@ void TableWriter::FillTable(PPTX::Logic::Table &oTable)
 
 
     auto protoTable = m_nPTable->getTable();
-    auto arrHeight = ProtoTable::getHeight(arrCells);
+    auto arrHeight = ProtoTable::getHeight(arrCells, m_pTableElement->GetHeight());
     for (UINT cRow = 0; cRow < protoTable.size(); cRow++)
     {
         PPTX::Logic::TableRow tr;
@@ -70,10 +76,10 @@ void TableWriter::FillTable(PPTX::Logic::Table &oTable)
     }
 }
 
-std::vector<int> ProtoTable::getWidth(const std::vector<CElementPtr>& arrCells, bool isWidth)
+std::vector<int> ProtoTable::getWidth(const std::vector<CElementPtr>& arrCells, long tableWidth, bool isWidth)
 {
     std::map<double, double> mapLeftWidth;
-    for (const auto ptrCell : arrCells)
+    for (const auto &ptrCell : arrCells)
     {
         auto pCell = static_cast<CShapeElement*>(ptrCell.get());
         double left = pCell->m_rcChildAnchor.left;
@@ -100,14 +106,19 @@ std::vector<int> ProtoTable::getWidth(const std::vector<CElementPtr>& arrCells, 
         double value = isWidth ? w.second : w.first;
         gridWidth.push_back(round(value * multip));
     }
+    if (tableWidth != -1)
+    {
+        double resize = (double)tableWidth/VECSUM(gridWidth);
+        std::transform(gridWidth.begin(), gridWidth.end(), gridWidth.begin(), [resize](int &n){ return n * resize; });
+    }
 
     return gridWidth;
 }
 
-std::vector<int> ProtoTable::getHeight(const std::vector<CElementPtr>& arrCells, bool isHeight)
+std::vector<int> ProtoTable::getHeight(const std::vector<CElementPtr>& arrCells, long tableHeight, bool isHeight)
 {
     std::map<double, double> mapTopHeight;
-    for (const auto ptrCell : arrCells)
+    for (const auto &ptrCell : arrCells)
     {
         auto pCell = static_cast<CShapeElement*>(ptrCell.get());
         double top = pCell->m_rcChildAnchor.top;
@@ -134,6 +145,11 @@ std::vector<int> ProtoTable::getHeight(const std::vector<CElementPtr>& arrCells,
     {
         double value = isHeight ? h.second : h.first;
         gridHeight.push_back(round(value * multip));
+    }
+    if (tableHeight != -1)
+    {
+        double resize = (double)tableHeight/VECSUM(gridHeight);
+        std::transform(gridHeight.begin(), gridHeight.end(), gridHeight.begin(), [resize](int &n){ return n * resize; });
     }
 
     return gridHeight;
@@ -183,7 +199,7 @@ bool ProtoTable::fillCells(std::vector<CElementPtr> &arrCells)
     const UINT countRow = m_arrTop.size();
     const UINT countCol = m_arrLeft.size();
 
-    for (auto ptrCell : arrCells)
+    for (auto &ptrCell : arrCells)
     {
         auto pCell = static_cast<CShapeElement*>(ptrCell.get());
         int left = pCell->m_rcChildAnchor.left;
@@ -228,7 +244,7 @@ bool ProtoTable::fillCells(std::vector<CElementPtr> &arrCells)
 
 void ProtoTable::fillBorders(std::vector<CElementPtr> &arrSpliters)
 {
-    for (const auto ptrBorder : arrSpliters)
+    for (const auto &ptrBorder : arrSpliters)
     {
         auto pBorder = static_cast<CShapeElement*>(ptrBorder.get());
         int left = pBorder->m_rcChildAnchor.left;
@@ -350,7 +366,7 @@ void TableWriter::FillTblPr(PPTX::Logic::TableProperties &oTblPr)
 
 void TableWriter::FillTblGrid(std::vector<PPTX::Logic::TableCol> &tblGrid, std::vector<CElementPtr>& arrCells)
 {
-    auto grid = ProtoTable::getWidth(arrCells);
+    auto grid = ProtoTable::getWidth(arrCells, m_pTableElement->GetWidth());
     for (const auto& w : grid)
     {
         PPTX::Logic::TableCol tc;
@@ -510,7 +526,7 @@ void TCell::setGridSpan(int gridSpan)
 
 bool TCell::isRealCell() const
 {
-    if (m_rowSpan == 2 || m_gridSpan == 2 || m_parentDirection != TCell::none)
+    if ((m_rowSpan == 2 || m_gridSpan == 2) && m_parentDirection != TCell::none)
         return false;
     return true;
 }
@@ -731,8 +747,8 @@ ProtoTable::ProtoTable(std::vector<CElementPtr> &arrCells,
                        std::vector<CElementPtr> &arrSpliters,
                        CRelsGenerator *pRels) : m_pRels(pRels)
 {
-    m_arrLeft = getWidth(arrCells, false);
-    m_arrTop = getHeight(arrCells, false);
+    m_arrLeft = getWidth(arrCells, -1, false);
+    m_arrTop = getHeight(arrCells, -1, false);
     initProtoTable();
     fillProtoTable(arrCells, arrSpliters);
 }

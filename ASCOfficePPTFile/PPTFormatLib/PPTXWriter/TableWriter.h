@@ -118,8 +118,8 @@ public:
                std::vector<CElementPtr>& arrSpliters,
                CRelsGenerator* pRels);
 
-    static std::vector<int> getWidth(const std::vector<CElementPtr> &arrCells, bool isWidth = true);
-    static std::vector<int> getHeight(const std::vector<CElementPtr> &arrCells, bool isHeight = true);
+    static std::vector<int> getWidth(const std::vector<CElementPtr> &arrCells, long tableWidth = -1, bool isWidth = true);
+    static std::vector<int> getHeight(const std::vector<CElementPtr> &arrCells, long tableHeight = -1, bool isHeight = true);
     static bool checkRowForZeroHeight(const ProtoTableRow& oRow);
     MProtoTable getTable() const;
 

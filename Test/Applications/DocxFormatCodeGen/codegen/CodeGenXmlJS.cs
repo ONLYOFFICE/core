@@ -80,7 +80,7 @@ namespace codegen
         //string gc_sTargetNamespace = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
 
         string gc_sXsd = "wml.xsd";
-        string[] gc_aTargetTypes = new string[] { "CT_Document" };
+        string[] gc_aTargetTypes = new string[] { "CT_Document", "CT_GlossaryDocument", "CT_Styles", "CT_Numbering", "CT_Settings", "CT_HdrFtr", "CT_Footnotes", "CT_Endnotes", "CT_Comments" };
         string gc_sTargetNamespace = "http://purl.oclc.org/ooxml/wordprocessingml/main";
 
 

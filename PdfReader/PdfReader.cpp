@@ -229,6 +229,9 @@ namespace PdfReader
         if (!m_pInternal->m_pPDFDocument)
             return m_eError;
 
+        if (m_pInternal->m_pPDFDocument->isOk())
+            return 0;
+
         return m_pInternal->m_pPDFDocument->getErrorCode();
 	}
     int CPdfReader::GetPagesCount()

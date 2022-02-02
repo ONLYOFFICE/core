@@ -64,11 +64,124 @@ namespace OOX
 		//<fileVersion>
 		//<functionGroups>
 		//<oleSize>
-		//<pivotCaches>
 		//<smartTagPr>
 		//<smartTagTypes>
 		//<webPublishing>
 		//<webPublishObjects>
+		class CWorkbookPivotCache : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CWorkbookPivotCache)
+			WritingElement_XlsbConstructors(CWorkbookPivotCache)
+			CWorkbookPivotCache()
+			{
+			}
+			virtual ~CWorkbookPivotCache()
+			{
+			}
+
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+			virtual std::wstring toXML() const
+			{
+				return L"";
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<pivotCache");
+					WritingStringNullableAttrInt(L"cacheId", m_oCacheId, m_oCacheId->GetValue());
+					WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString());
+				writer.WriteString(L"/>");
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
+			}
+			void fromBin(XLS::BaseObjectPtr& obj) {}
+			virtual EElementType getType() const
+			{
+				return et_x_WorkbookPivotCache;
+			}
+			void ReadAttributes(XLS::BaseObjectPtr& obj) {}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start(oReader)
+					WritingElement_ReadAttributes_Read_if(oReader, _T("cacheId"), m_oCacheId)
+					WritingElement_ReadAttributes_Read_else_if(oReader, _T("r:id"), m_oRid)
+				WritingElement_ReadAttributes_End(oReader)
+
+			}
+	//----------
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCacheId;
+			nullable<SimpleTypes::CRelationshipId>			m_oRid;
+		};
+
+		class CWorkbookPivotCaches : public WritingElementWithChilds<CWorkbookPivotCache>
+		{
+		public:
+			WritingElement_AdditionConstructors(CWorkbookPivotCaches)
+			WritingElement_XlsbVectorConstructors(CWorkbookPivotCaches)
+			CWorkbookPivotCaches(OOX::Document *pMain = NULL) : WritingElementWithChilds<CWorkbookPivotCache>(pMain)
+			{
+			}
+			virtual ~CWorkbookPivotCaches()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+			virtual std::wstring toXML() const
+			{
+				return L"";
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				if (m_arrItems.empty()) return;
+
+				writer.WriteString(L"<pivotCaches>");
+
+				for (size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					if (m_arrItems[i])
+					{
+						m_arrItems[i]->toXML(writer);
+					}
+				}
+
+				writer.WriteString(L"</pivotCaches>");
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if (oReader.IsEmptyNode())
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while (oReader.ReadNextSiblingNode(nCurDepth))
+				{
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+					if (L"pivotCaches" == sName)
+					{
+						CWorkbookPivotCache *pPivotCache = new CWorkbookPivotCache();
+						m_arrItems.push_back(pPivotCache);
+
+						pPivotCache->fromXML(oReader);
+					}
+				}
+			}
+
+			void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
+			{
+
+			}
+
+			virtual EElementType getType() const
+			{
+				return et_x_WorkbookPivotCaches;
+			}
+		};
+//-----------------------------------------------------------------------------------------------------------
 		class CWorkbook : public OOX::File, public OOX::IFileContainer, public WritingElement
 		{
 		public:
@@ -150,34 +263,33 @@ namespace OOX
 			virtual void read(const CPath& oRootPath, const CPath& oPath)
 			{
 				m_oReadPath = oPath;
+				IFileContainer::Read( oRootPath, oPath );
 
                 if( m_oReadPath.GetExtention() == _T(".bin"))
                 {
                     readBin(m_oReadPath);
-                    IFileContainer::Read( oRootPath, oPath );
-                    return;
                 }
+				else
+				{ 
+					XmlUtils::CXmlLiteReader oReader;
 
-				IFileContainer::Read( oRootPath, oPath );
+					if (!oReader.FromFile(oPath.GetPath()))
+						return;
+
+					if (!oReader.ReadNextNode())
+						return;
+
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+					if (L"workbook" == sName)
+					{
+						fromXML(oReader);
+					}
+				}
 
   				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
 				if ( (xlsx ) && (xlsx->m_pVbaProject) )
 				{
 					m_bMacroEnabled = true;
-				}
-
-				XmlUtils::CXmlLiteReader oReader;
-
-				if ( !oReader.FromFile( oPath.GetPath() ) )
-					return;
-
-				if ( !oReader.ReadNextNode() )
-					return;
-
-				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-				if ( L"workbook" == sName )
-				{
-					fromXML(oReader);
 				}
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
@@ -206,8 +318,12 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 					m_oDefinedNames->toXML(writer);
 				if(m_oCalcPr.IsInit())
 					m_oCalcPr->toXML(writer);
+				
 				if(m_oPivotCachesXml.IsInit())
 					writer.WriteString(m_oPivotCachesXml.get());
+				else if (m_oPivotCaches.IsInit())
+					m_oPivotCaches->toXML(writer);
+				
 				if(m_oExtLst.IsInit())
 					writer.WriteString(m_oExtLst->toXMLWithNS(L""));
 				writer.WriteString(L"</workbook>");
@@ -235,6 +351,8 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 							m_oWorkbookProtection = oReader;
 						else if ( L"externalReferences" == sName )
 							m_oExternalReferences = oReader;
+						else if (L"pivotCaches" == sName)
+							m_oPivotCaches = oReader;
 						else if ( L"extLst" == sName )
 							m_oExtLst = oReader;
 						else if ( L"fileVersion" == sName )
@@ -346,10 +464,12 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 			nullable<OOX::Spreadsheet::CSheets>				m_oSheets;
 			nullable<OOX::Spreadsheet::CWorkbookPr>			m_oWorkbookPr;
 			nullable<OOX::Spreadsheet::CExternalReferences>	m_oExternalReferences;
-			nullable<std::wstring>							m_oPivotCachesXml;
             nullable<OOX::Spreadsheet::CCalcPr>				m_oCalcPr;
 			nullable_string									m_oAppName;
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
+
+			nullable<OOX::Spreadsheet::CWorkbookPivotCaches>m_oPivotCaches;
+			nullable<std::wstring>							m_oPivotCachesXml;
 			
 			CPersonList*									m_pPersonList;
 			bool											m_bMacroEnabled;

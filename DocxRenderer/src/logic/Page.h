@@ -757,10 +757,154 @@ namespace NSDocxRenderer
                         m_arParagraphs.push_back(pParagraph);
 					}
 
-                    m_arTextLine.clear();
+					m_arTextLine.clear();
+					break;
+				}
+			case TextAssociationTypeParagraphNoFrames:
+				{
+					SortElements(m_arTextLine);
+					Merge(STANDART_STRING_HEIGHT_MM / 3);
+
+					AddingFirstLine();
+					
+					double previousStringOffset = m_arTextLine[0]->m_dBaselinePos + m_arTextLine[0]->m_dBaselineOffset;
+					double dPrevDiffBaselinePos = 0;
+					
+					CTextLine* pPrevTextLine = m_arTextLine[0];
+					size_t nCount = m_arTextLine.size();
+					for (size_t i = 1; i < nCount; ++i)
+					{
+						CTextLine* pTextLine = m_arTextLine[i];
+
+						pTextLine->CalculatingLineWidth();
+						double dSpacingRight = this->m_dWidth - pTextLine->m_dX - pTextLine->m_dWidth;
+
+						if ( IsNewParagraph(pTextLine, pPrevTextLine, dPrevDiffBaselinePos) )
+						{
+							CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
+							pParagraph->m_pManagerLight = &m_oManagerLight;
+							pParagraph->m_bIsTextFrameProperties = false;
+
+							pParagraph->m_dLeft	= pTextLine->m_dX;
+
+							double dBeforeSpacing = pTextLine->m_dBaselinePos - previousStringOffset - pTextLine->m_dHeight + pTextLine->m_dBaselineOffset;
+							dBeforeSpacing = std::max(dBeforeSpacing, 0.0);
+							pParagraph->m_dHeight = m_arTextLine[i]->CalculatingLineHeight(dBeforeSpacing);
+
+							dPrevDiffBaselinePos = pTextLine->m_dBaselinePos - pPrevTextLine->m_dBaselinePos;
+							pParagraph->m_dSpaceBefore = dPrevDiffBaselinePos;
+
+							pParagraph->m_arLines.push_back(pTextLine);
+							pParagraph->m_dSpaceRight = dSpacingRight;
+							m_arParagraphs.push_back(pParagraph);
+						}
+						else
+						{
+ 							if (m_arParagraphs.back()->m_dSpaceRight > dSpacingRight)
+								m_arParagraphs.back()->m_dSpaceRight = dSpacingRight;
+
+							dPrevDiffBaselinePos = pTextLine->m_dBaselinePos - pPrevTextLine->m_dBaselinePos;
+							m_arParagraphs.back()->m_dHeight = dPrevDiffBaselinePos;
+
+							m_arParagraphs.back()->m_arLines.push_back(pTextLine);
+						}
+						previousStringOffset = pTextLine->m_dBaselinePos + pTextLine->m_dBaselineOffset;
+						pPrevTextLine = pTextLine;
+					}
+
+					if (m_arParagraphs[0]->m_arLines.size() == 1)
+						m_arParagraphs[0]->m_dSpaceRight = 0;
+
+					for (size_t i = 1; i < this->m_arParagraphs.size(); ++i)
+					{
+						if (m_arParagraphs[i]->m_dSpaceBefore > m_arParagraphs[i]->m_dHeight)
+							m_arParagraphs[i]->m_dSpaceBefore -= m_arParagraphs[i]->m_dHeight;
+						else
+							m_arParagraphs[i]->m_dSpaceBefore = 0;
+						
+						if (m_arParagraphs[i]->m_arLines.size() == 1)
+							m_arParagraphs[i]->m_dSpaceRight = 0;
+						else
+							AlignmentParagraph(i);
+						
+					}
+					m_arTextLine.clear();
 					break;
 				}
 			}
+		}
+
+		void AlignmentParagraph(size_t nNumParagraph)
+		{
+			size_t i = nNumParagraph;
+			size_t nAlignmentLeft = 1;
+			size_t nAlignmentRight = 1;
+
+			CTextLine* pPrevTextLine = m_arParagraphs[i]->m_arLines[0];
+			size_t nCountLine = m_arParagraphs[i]->m_arLines.size();
+			for (size_t k = 1; k < nCountLine; ++k)
+			{
+				CTextLine* pCurTextLine = m_arParagraphs[i]->m_arLines[k];
+
+				if ( abs(pPrevTextLine->m_dX - pCurTextLine->m_dX) < 0.5 )
+					++nAlignmentLeft;
+
+				if ( abs(pPrevTextLine->m_dWidth + pPrevTextLine->m_dX - pCurTextLine->m_dWidth - pCurTextLine->m_dX) < 1.5 )
+					++nAlignmentRight;
+
+				pPrevTextLine = pCurTextLine;
+			}
+
+			if ((nCountLine > 0) && (nAlignmentLeft >= nCountLine-1))
+			{
+				m_arParagraphs[i]->m_strAvailable = L"left";
+				if (nAlignmentRight >= nCountLine/2)
+					m_arParagraphs[i]->m_strAvailable = L"both";
+			}
+			else
+			{
+				m_arParagraphs[i]->m_strAvailable = L"center";
+				if ((nCountLine > 0) && (nAlignmentRight >= nCountLine-1)) 
+					m_arParagraphs[i]->m_strAvailable = L"right";
+			}
+		}
+
+		void AddingFirstLine()
+		{
+			m_arTextLine[0]->CalculatingLineWidth();
+			CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
+			pParagraph->m_pManagerLight = &m_oManagerLight;
+			pParagraph->m_bIsTextFrameProperties = false;
+			pParagraph->m_dLeft	= m_arTextLine[0]->m_dX;
+
+			double dBeforeSpacing = m_arTextLine[0]->m_dBaselinePos - m_arTextLine[0]->m_dHeight + m_arTextLine[0]->m_dBaselineOffset;
+			pParagraph->m_dSpaceBefore = std::max(dBeforeSpacing, 0.0);
+
+			double dHeight = m_arTextLine[0]->CalculatingLineHeight(dBeforeSpacing);
+			pParagraph->m_dHeight = dHeight;
+
+			pParagraph->m_arLines.push_back(m_arTextLine[0]);
+			pParagraph->m_dSpaceRight = this->m_dWidth - m_arTextLine[0]->m_dX - m_arTextLine[0]->m_dWidth;
+			m_arParagraphs.push_back(pParagraph);
+		}
+
+		bool IsNewParagraph(CTextLine* pTextLine, CTextLine* pPrevTextLine, double dPrevDiffBaselinePos)
+		{
+			const double dWidthNewlineChar = 1.2;
+			double dCurDiffBaselinePos = pTextLine->m_dBaselinePos - pPrevTextLine->m_dBaselinePos;
+			double dMinWidthLine = 0.70 * (this->m_dWidth - pPrevTextLine->m_dX);
+			double dDivLines = pPrevTextLine->m_dWidth / pTextLine->m_dWidth;
+
+			bool bIsCurLineSpacingEqualPrev = abs(dCurDiffBaselinePos - dPrevDiffBaselinePos) > 0.5 ;
+			bool bIsCurLineNewlineCharacter = pTextLine->m_dWidth < dWidthNewlineChar;
+			bool bIsPrevLineNewlineCharacter = pPrevTextLine->m_dWidth < dWidthNewlineChar;
+			bool bIsShortPrevLine = pPrevTextLine->m_dWidth <  dMinWidthLine;
+			bool bIsPrevWidthLineLessCur = dDivLines <= 0.9;
+			bool bIsNotPrevWidthLinesLessCur = dDivLines > 0.9 && dDivLines < 1.1;
+
+			return ( 	   bIsCurLineNewlineCharacter	 || bIsPrevLineNewlineCharacter  
+						|| bIsShortPrevLine				 || bIsPrevWidthLineLessCur
+						|| (!bIsNotPrevWidthLinesLessCur && bIsCurLineSpacingEqualPrev));
 		}
 
 		void Merge(double dAffinity)

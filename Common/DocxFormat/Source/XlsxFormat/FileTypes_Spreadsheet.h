@@ -123,7 +123,7 @@ namespace OOX
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheDefinition",
 												L"pivotCache/pivotCacheDefinition", true);
 
-			const FileType PivotCacheRecords(L"pivotCache", L"pivotCacheRecords.xml",
+			const FileType PivotCacheRecords(L"", L"pivotCacheRecords.xml",
 												L"application/vnd.openxmlformats-officedocument.spreadsheetml.pivotCacheRecords+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheRecords",
 												L"pivotCache/pivotCacheRecords", true, true);

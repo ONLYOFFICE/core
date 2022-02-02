@@ -204,6 +204,19 @@ mc:Ignorable=\"xr16\" \
 xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"");
 
 		WritingStringNullableAttrEncodeXmlString2(L"name",			m_oName);
+		WritingStringNullableAttrInt(L"cacheId",					m_oCacheId, m_oCacheId->GetValue());
+		WritingStringNullableAttrBool2(L"dataOnRows",				m_oDataOnRows);
+		WritingStringNullableAttrInt(L"dataPosition",				m_oDataPosition, m_oDataPosition->GetValue());
+		WritingStringNullableAttrEncodeXmlString2(L"dataCaption",	m_oDataCaption);
+		WritingStringNullableAttrEncodeXmlString2(L"grandTotalCaption",m_oGrandTotalCaption);
+		WritingStringNullableAttrEncodeXmlString2(L"errorCaption",	m_oErrorCaption);
+		WritingStringNullableAttrBool2(L"showError",				m_oShowError);
+		WritingStringNullableAttrEncodeXmlString2(L"missingCaption",m_oMissingCaption);
+		WritingStringNullableAttrBool2(L"showMissing", m_oShowMissing);
+		WritingStringNullableAttrEncodeXmlString2(L"pageStyle", m_oPageStyle);
+		WritingStringNullableAttrEncodeXmlString2(L"pivotTableStyle", m_oPivotTableStyle);
+		WritingStringNullableAttrEncodeXmlString2(L"vacatedStyle", m_oVacatedStyle);
+		WritingStringNullableAttrEncodeXmlString2(L"tag", m_oTag);
 		WritingStringNullableAttrBool2(L"applyAlignmentFormats",	m_oApplyAlignmentFormats);
 		WritingStringNullableAttrBool2(L"applyBorderFormats",		m_oApplyBorderFormats);
 		WritingStringNullableAttrBool2(L"applyFontFormats",			m_oApplyFontFormats);
@@ -212,7 +225,6 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		WritingStringNullableAttrBool2(L"applyWidthHeightFormats",	m_oApplyWidthHeightFormats);
 		WritingStringNullableAttrBool2(L"asteriskTotals",			m_oAsteriskTotals);
 		WritingStringNullableAttrInt(L"autoFormatId",				m_oAutoFormatId, m_oAutoFormatId->GetValue());
-		WritingStringNullableAttrInt(L"cacheId",					m_oCacheId, m_oCacheId->GetValue());
 		WritingStringNullableAttrInt(L"chartFormat",				m_oChartFormat, m_oChartFormat->GetValue());
 		WritingStringNullableAttrBool2(L"colGrandTotals",			m_oColGrandTotals);
 		WritingStringNullableAttrEncodeXmlString2(L"colHeaderCaption",m_oColHeaderCaption);
@@ -220,18 +232,13 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		WritingStringNullableAttrBool2(L"compactData",				m_oCompactData);
 		WritingStringNullableAttrInt(L"createdVersion",				m_oCreatedVersion, m_oCreatedVersion->GetValue());
 		WritingStringNullableAttrBool2(L"customListSort",			m_oCustomListSort);
-		WritingStringNullableAttrEncodeXmlString2(L"dataCaption",	m_oDataCaption);
-		WritingStringNullableAttrBool2(L"dataOnRows",				m_oDataOnRows);
-		WritingStringNullableAttrInt(L"dataPosition",				m_oDataPosition, m_oDataPosition->GetValue());
 		WritingStringNullableAttrBool2(L"disableFieldList",			m_oDisableFieldList);
 		WritingStringNullableAttrBool2(L"editData",					m_oEditData);
 		WritingStringNullableAttrBool2(L"enableDrill",				m_oEnableDrill);
 		WritingStringNullableAttrBool2(L"enableFieldProperties",	m_oEnableFieldProperties);
 		WritingStringNullableAttrBool2(L"enableWizard",				m_oEnableWizard);
-		WritingStringNullableAttrEncodeXmlString2(L"errorCaption",	m_oErrorCaption);
 		WritingStringNullableAttrBool2(L"disableEdit",				m_oFieldListSortAscending);
 		WritingStringNullableAttrBool2(L"fieldPrintTitles",			m_oFieldPrintTitles);
-		WritingStringNullableAttrEncodeXmlString2(L"grandTotalCaption",m_oGrandTotalCaption);
 		WritingStringNullableAttrBool2(L"gridDropZones",			m_oGridDropZones);
 		WritingStringNullableAttrBool2(L"immersive",				m_oImmersive);
 		WritingStringNullableAttrInt(L"indent",						m_oIndent, m_oIndent->GetValue());
@@ -239,14 +246,11 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		WritingStringNullableAttrBool2(L"mdxSubqueries",			m_oMdxSubqueries);
 		WritingStringNullableAttrBool2(L"mergeItem",				m_oMergeItem);
 		WritingStringNullableAttrInt(L"minRefreshableVersion",		m_oMinRefreshableVersion, m_oMinRefreshableVersion->GetValue());
-		WritingStringNullableAttrEncodeXmlString2(L"missingCaption",m_oMissingCaption);
 		WritingStringNullableAttrBool2(L"multipleFieldFilters",		m_oMultipleFieldFilters);
 		WritingStringNullableAttrBool2(L"outline",					m_oOutline);
         WritingStringNullableAttrBool2(L"outlineDatae",				m_oOutlineData);
 		WritingStringNullableAttrBool2(L"pageOverThenDown",			m_oPageOverThenDown);
-		WritingStringNullableAttrEncodeXmlString2(L"pageStyle",		m_oPageStyle);
 		WritingStringNullableAttrInt(L"pageWrap",					m_oPageWrap, m_oPageWrap->GetValue());
-		WritingStringNullableAttrEncodeXmlString2(L"pivotTableStyle",m_oPivotTableStyle);
 		WritingStringNullableAttrBool2(L"preserveFormatting",		m_oPreserveFormatting);
 		WritingStringNullableAttrBool2(L"printDrill",				m_oPrintDrill);
 		WritingStringNullableAttrBool2(L"published",				m_oPublished);
@@ -259,17 +263,13 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		WritingStringNullableAttrBool2(L"showDropZones",			m_oShowDropZones);
 		WritingStringNullableAttrBool2(L"showEmptyCol",				m_oShowEmptyCol);
 		WritingStringNullableAttrBool2(L"showEmptyRow",				m_oShowEmptyRow);
-		WritingStringNullableAttrBool2(L"showError",				m_oShowError);
 		WritingStringNullableAttrBool2(L"showHeaders",				m_oShowHeaders);
 		WritingStringNullableAttrBool2(L"showItems",				m_oShowItems);
 		WritingStringNullableAttrBool2(L"showMemberPropertyTips",	m_oShowMemberPropertyTips);
-		WritingStringNullableAttrBool2(L"showMissing",				m_oShowMissing);
 		WritingStringNullableAttrBool2(L"showMultipleLabel",		m_oShowMultipleLabel);
 		WritingStringNullableAttrBool2(L"subtotalHiddenItems",		m_oSubtotalHiddenItems);
-		WritingStringNullableAttrEncodeXmlString2(L"tag",			m_oTag);
 		WritingStringNullableAttrInt(L"updatedVersion",				m_oUpdatedVersion, m_oUpdatedVersion->GetValue());
 		WritingStringNullableAttrBool2(L"useAutoFormatting",		m_oUseAutoFormatting);
-		WritingStringNullableAttrEncodeXmlString2(L"vacatedStyle",	m_oVacatedStyle);
 		WritingStringNullableAttrBool2(L"visualTotals",				m_oVisualTotals);
 		
 		writer.WriteString(L">");
@@ -294,22 +294,21 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		
 		if(m_oFormats.IsInit())
 			m_oFormats->toXML(writer);
-		if(m_oPivotTableStyleInfo.IsInit())
-			m_oPivotTableStyleInfo->toXML(writer);
-
 		//if(m_oConditionalFormats.IsInit())
 		//	m_oConditionalFormats->toXML(writer);
 		//if(m_oChartFormats.IsInit())
 		//	m_oChartFormats->toXML(writer);
-		//if(m_oFilters.IsInit())
-		//	m_oFilters->toXML(writer);
-
-		//if(m_oColHierarchiesUsage.IsInit())
-		//	m_oColHierarchiesUsage->toXML(writer);
 		//if(m_oPivotHierarchies.IsInit())
 		//	m_oPivotHierarchies->toXML(writer);
+		if(m_oPivotTableStyleInfo.IsInit())
+			m_oPivotTableStyleInfo->toXML(writer);
+
+		//if(m_oFilters.IsInit())
+		//	m_oFilters->toXML(writer);
 		//if(m_oRowHierarchiesUsage.IsInit())
 		//	m_oRowHierarchiesUsage->toXML(writer);
+		//if(m_oColHierarchiesUsage.IsInit())
+		//	m_oColHierarchiesUsage->toXML(writer);
 			
 		if(m_oExtLst.IsInit())
 		{
@@ -1222,7 +1221,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingStringNullableAttrBool2(L"f",	m_oCalculated);
 			WritingStringNullableAttrBool2(L"h",	m_oHidden);
 			WritingStringNullableAttrBool2(L"m",	m_oMissing);
-			WritingStringNullableAttrBool2(L"c",	m_oCharacter);
+			WritingStringNullableAttrBool2(L"s",	m_oCharacter);
 			WritingStringNullableAttrBool2(L"sd",	m_oHideDetails);
 			WritingStringNullableAttrEncodeXmlString2(L"n",	m_oUserCaption);
 			WritingStringNullableAttrString(L"x",	m_oItemIndex, m_oItemIndex->ToString());
@@ -1324,7 +1323,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"h", m_oHidden )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"m", m_oMissing )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"n", m_oUserCaption )
-			WritingElement_ReadAttributes_Read_else_if	( oReader, L"c", m_oCharacter )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"s", m_oCharacter )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"sd", m_oHideDetails )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"t", m_oItemType )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"x", m_oItemIndex )
@@ -2066,7 +2065,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 //------------------------------------
 	void CPivotTableLocation::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
-		writer.WriteString(L"<pivotArea");
+		writer.WriteString(L"<location");
 			WritingStringNullableAttrString(L"colPageCount", m_oColPageCount, m_oColPageCount->ToString());
 			WritingStringNullableAttrString(L"firstDataCol", m_oFirstDataCol, m_oFirstDataCol->ToString());
 			WritingStringNullableAttrString(L"firstDataRow", m_oFirstDataRow, m_oFirstDataRow->ToString());
@@ -2111,19 +2110,20 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             m_oRowPageCount     = ptr->crwPage;
 
             if(!ptr->rfxGeom.toString().empty())
-                m_oRef          = ptr->rfxGeom.toString();
+                m_oRef = ptr->rfxGeom.toString();
         }
     }
 //------------------------------------
 	void CPivotTableStyleInfo::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
-		writer.WriteString(L"<pivotArea");
+		writer.WriteString(L"<pivotTableStyleInfo");
             WritingStringNullableAttrEncodeXmlString2(L"name",	m_oName);
 			WritingStringNullableAttrBool2(L"showColHeaders",	m_oShowColHeaders);
 			WritingStringNullableAttrBool2(L"showColStripes",	m_oShowColStripes);
             WritingStringNullableAttrBool2(L"showLastColumn",	m_oShowLastColumn);
 			WritingStringNullableAttrBool2(L"showRowHeaders",	m_oShowRowHeaders);
 			WritingStringNullableAttrBool2(L"showRowStripes",	m_oShowRowStripes);
+		writer.WriteString(L"/>");
 	}
     void CPivotTableStyleInfo::ReadAttributes(XLS::BaseObjectPtr& obj)
     {
@@ -2179,21 +2179,25 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
         if( m_oReadPath.GetExtention() == _T(".bin"))
         {
             readBin(m_oReadPath);
-            return;
         }
+		else
+		{
+			XmlUtils::CXmlLiteReader oReader;
 
-		XmlUtils::CXmlLiteReader oReader;
+			if (!oReader.FromFile(oPath.GetPath()))
+				return;
 
-		if ( !oReader.FromFile( oPath.GetPath() ) )
-			return;
+			if (!oReader.ReadNextNode())
+				return;
 
-		if ( !oReader.ReadNextNode() )
-			return;
-
-		m_oPivotCashDefinition = oReader;
+			m_oPivotCashDefinition = oReader;
+		}
 	}
 	void CPivotCacheDefinitionFile::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 	{
+		if (bIsWritten) return;
+
+		bIsWritten = true;
 		if(m_oPivotCashDefinition.IsInit())
 		{
 			NSStringUtils::CStringBuilder sXml;

@@ -136,7 +136,7 @@ void BulletsConverter::ConvertAllBullets(PPTX::Logic::TextParagraphPr &oPPr, CTe
             }
             if (pPF->bulletSize.is_init())
             {
-                PPTX::WrapperWritingElement* pBuSize;
+                PPTX::WrapperWritingElement* pBuSize(nullptr);
                 if (pPF->bulletSize.get() > 24 && pPF->bulletSize.get() < 401)
                 {
                     pBuSize = new PPTX::Logic::BuSzPct;
@@ -147,7 +147,8 @@ void BulletsConverter::ConvertAllBullets(PPTX::Logic::TextParagraphPr &oPPr, CTe
                     pBuSize = new PPTX::Logic::BuSzPts;
                     static_cast<PPTX::Logic::BuSzPts*>(pBuSize)->val = - (pPF->bulletSize.get());
                 }
-                oPPr.buSize.m_Size = pBuSize;
+                if (pBuSize != nullptr)
+                    oPPr.buSize.m_Size = pBuSize;
             }
             if (pPF->bulletFontProperties.is_init())
             {

@@ -28,6 +28,9 @@ void BulletsConverter::ConvertPFRun(PPTX::Logic::TextParagraphPr &oPPr, CTextPFR
             oPPr.indent = pPF->indent.get();
         else
             oPPr.indent = pPF->indent.get() - leftMargin;
+    } else if (pPF->hasBullet.get_value_or(false))
+    {
+        oPPr.indent = -leftMargin;
     }
     if (pPF->textAlignment.is_init())
     {

@@ -67,6 +67,24 @@ namespace Aggplus
 class CRendererCommandBase;
 class CRendererTextCommand;
 
+struct CPageForWriter
+{
+    std::wstring sType;
+    std::wstring sResources;
+    std::pair<int, int> pParent;
+    std::pair<int, int> pContents;
+    std::pair<int, int> pRoot;
+    struct MediaBox
+    {
+        double dL;
+        double dB;
+        double dR;
+        double dT;
+    } pMediaBox;
+    int nPosLastXRef;
+    int nSizeXRef;
+};
+
 class PDFWRITER_DECL_EXPORT CPdfRenderer : public IRenderer
 {
 public:
@@ -225,7 +243,7 @@ public:
     HRESULT OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker = false);
     HRESULT OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker = false);
 	HRESULT DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2* pMaskBuffer, const unsigned int& unMaskWidth, const unsigned int& unMaskHeight, const double& dX, const double& dY, const double& dW, const double& dH);
-    HRESULT AddToPage(int nPageIndex, std::wstring wsPath, int nPosLastXRef, int nSizeXRef, unsigned int unRootObjId, unsigned int unRootGenNo);
+    HRESULT AddToPage(CPageForWriter* pCPFW, std::wstring wsPath);
 
     NSFonts::IApplicationFonts* GetApplicationFonts();
 

@@ -430,19 +430,25 @@ return 0;
 //		return wsXml;
         return L"";
 	}
-    void CPdfReader::AddToPage(IRenderer* pRenderer, int nPageIndex, const std::wstring& sCommands)
+    void CPdfReader::AddToPage(int nPageIndex, IRenderer* pPdfWriter, IRenderer* pNewRenderer)
     {
         long lRendererType;
-        pRenderer->get_Type(&lRendererType);
+        pPdfWriter->get_Type(&lRendererType);
         if (c_nPDFWriter != lRendererType)
             return;
 
-        CPdfRenderer* pdfWriter = (CPdfRenderer*)pRenderer;
+        CPdfRenderer* pdfWriter = (CPdfRenderer*)pPdfWriter;
         std::string sFileName = std::string(m_pInternal->m_pPDFDocument->getFileName()->getCString());
         XRef* xref = m_pInternal->m_pPDFDocument->getXRef();
 
-        pdfWriter->AddToPage(nPageIndex, NSFile::GetDirectoryName(UTF8_TO_U(sFileName)) + L"/res.pdf",
-                             xref->getLastXRefPos(), xref->getNumObjects(), xref->getRootNum(), xref->getRootGen());
+        CPageForWriter* pCPFW = new CPageForWriter();
+        pCPFW->nPosLastXRef = xref->getLastXRefPos();
+        pCPFW->nSizeXRef = xref->getNumObjects();
+        pCPFW->pRoot = std::make_pair(xref->getRootNum(), xref->getRootGen());
+
+        pdfWriter->AddToPage(pCPFW, NSFile::GetDirectoryName(UTF8_TO_U(sFileName)) + L"/res.pdf");
+
+        RELEASEOBJECT(pCPFW);
     }
 #ifdef BUILDING_WASM_MODULE    
     void getBookmars(PDFDoc* pdfDoc, OutlineItem* pOutlineItem, NSWasm::CData& out, int level)

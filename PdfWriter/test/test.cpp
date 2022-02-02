@@ -37,8 +37,8 @@ int main()
         }
     }
 
-    pReader->AddToPage(&pdfWriter, 0, L"");
-    //pdfWriter.AddToPage(0, NSFile::GetProcessDirectory() + L"/res.pdf");
+    // на какую страницу, писатель PdfWriter, IRenderer с командами дозаписи
+    pReader->AddToPage(0, &pdfWriter, NULL);
     //pdfWriter.SaveToFile(NSFile::GetProcessDirectory() + L"/res.pdf");
     RELEASEOBJECT(pReader);
     RELEASEOBJECT(pApplicationFonts);

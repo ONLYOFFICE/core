@@ -1052,7 +1052,7 @@ namespace PdfWriter
 
 		return (!!m_pAcroForm);
 	}
-    void CDocument::AddToPage(unsigned int unPage, const std::wstring& wsPath, int nPosLastXRef, int nSizeXRef, unsigned int unRootObjId, unsigned int unRootGenNo)
+    void CDocument::AddToPage(const std::wstring& wsPath, int nPosLastXRef, int nSizeXRef, unsigned int unRootObjId, unsigned int unRootGenNo)
 	{
 		CFileStream* pStream = new CFileStream();
 		if (!pStream || !pStream->OpenFile(wsPath, false))
@@ -1079,7 +1079,7 @@ namespace PdfWriter
 		// копируем страницу
 		// нельзя копировать страницу в записи - она содержит данные для записи, и полностью отличается от страницы в читателе
 		// нужно воссоздать объект страницы из читателя
-		CPage* pPage = GetPage(unPage);
+        CPage* pPage = GetPage(5);
 #ifndef FILTER_FLATE_DECODE_DISABLED
 		if (m_unCompressMode & COMP_TEXT)
 			pPage->SetFilter(STREAM_FILTER_FLATE_DECODE);

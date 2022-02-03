@@ -16,6 +16,7 @@ int main()
     bool bResult = pReader->LoadFromFile(NSFile::GetProcessDirectory() + L"/test.pdf", L"", sPassword, sPassword);
     if (bResult)
     {
+        /*
         for (int i = 0, nPagesCount = pReader->GetPagesCount(); i < nPagesCount; ++i)
         {
             pdfWriter.NewPage();
@@ -35,6 +36,7 @@ int main()
 
             pdfWriter.EndCommand(c_nPageType);
         }
+        */
     }
 
     // на какую страницу, писатель PdfWriter, IRenderer с командами дозаписи

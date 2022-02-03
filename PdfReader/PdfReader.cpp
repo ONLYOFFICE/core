@@ -434,21 +434,45 @@ return 0;
     {
         long lRendererType;
         pPdfWriter->get_Type(&lRendererType);
-        if (c_nPDFWriter != lRendererType)
+        if (c_nPDFWriter != lRendererType || !m_pInternal->m_pPDFDocument)
             return;
 
         CPdfRenderer* pdfWriter = (CPdfRenderer*)pPdfWriter;
         std::string sFileName = std::string(m_pInternal->m_pPDFDocument->getFileName()->getCString());
         XRef* xref = m_pInternal->m_pPDFDocument->getXRef();
 
+        nPageIndex++;
+        Page* pPage = m_pInternal->m_pPDFDocument->getCatalog()->getPage(nPageIndex);
+        PageAttrs* pPageAttrs = pPage->getAttrs();
+        Ref* pPageRef = m_pInternal->m_pPDFDocument->getCatalog()->getPageRef(nPageIndex);
+
+        // Получение объекта страницы
+        Object pageRefObj, pageObj, pageRefParent, pageContents;
+        pageRefObj.initRef(pPageRef->num, pPageRef->gen);
+        if (!pageRefObj.fetch(xref, &pageObj)->isDict())
+        {
+            pageObj.free();
+            pageRefObj.free();
+            return;
+        }
+        pageObj.dictLookup("Parent", &pageRefParent);
+        pageObj.dictLookup("Contents", &pageContents);
+
         CPageForWriter* pCPFW = new CPageForWriter();
         pCPFW->nPosLastXRef = xref->getLastXRefPos();
         pCPFW->nSizeXRef = xref->getNumObjects();
         pCPFW->pRoot = std::make_pair(xref->getRootNum(), xref->getRootGen());
+        pCPFW->pPage = std::make_pair(pPageRef->num, pPageRef->gen);
+        pCPFW->pParent = std::make_pair(pageRefParent.getRefNum(), pageRefParent.getRefGen());
+        pCPFW->pContents = std::make_pair(pageContents.getRefNum(), pageContents.getRefGen());
 
         pdfWriter->AddToPage(pCPFW, NSFile::GetDirectoryName(UTF8_TO_U(sFileName)) + L"/res.pdf");
 
         RELEASEOBJECT(pCPFW);
+        pageContents.free();
+        pageRefParent.free();
+        pageObj.free();
+        pageRefObj.free();
     }
 #ifdef BUILDING_WASM_MODULE    
     void getBookmars(PDFDoc* pdfDoc, OutlineItem* pOutlineItem, NSWasm::CData& out, int level)

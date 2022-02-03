@@ -2054,7 +2054,19 @@ HRESULT CPdfRenderer::AddToPage(CPageForWriter* pCPFW, std::wstring wsPath)
 		return S_FALSE;
 	m_oCommandManager.Flush();
 
-    m_pDocument->AddToPage(wsPath, pCPFW->nPosLastXRef, pCPFW->nSizeXRef, pCPFW->pRoot.first, pCPFW->pRoot.second);
+    CXref* pXref = new CXref(m_pDocument, pCPFW->nSizeXRef);
+    CObjectBase* pBase1 = new CObjectBase();
+    pBase1->SetRef(pCPFW->pParent.first, pCPFW->pParent.second); // номер объекта и поколение родителя страницы в читателе
+    CObjectBase* pPageTree = new CProxyObject(pBase1);
+    CPage* pPage = new CPage(pXref, (CPageTree*)pPageTree, m_pDocument);
+    pPage->SetRef(pCPFW->pPage.first, pCPFW->pPage.second); // номер объекта и поколение страницы в читателе
+
+    m_pDocument->AddToPage(wsPath, pPage, pXref, pCPFW->nPosLastXRef, pCPFW->pRoot.first, pCPFW->pRoot.second);
+
+    RELEASEOBJECT(pPage);
+    RELEASEOBJECT(pPageTree);
+    RELEASEOBJECT(pBase1);
+    RELEASEOBJECT(pXref);
 	return S_OK;
 }
 

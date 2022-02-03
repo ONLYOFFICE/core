@@ -69,11 +69,11 @@ class CRendererTextCommand;
 
 struct CPageForWriter
 {
-    std::wstring sType;
     std::wstring sResources;
     std::pair<int, int> pParent;
     std::pair<int, int> pContents;
     std::pair<int, int> pRoot;
+    std::pair<int, int> pPage;
     struct MediaBox
     {
         double dL;

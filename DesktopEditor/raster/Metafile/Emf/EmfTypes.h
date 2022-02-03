@@ -332,6 +332,23 @@ namespace MetaFile
 			lBottom = oRect.nBottom;
 		}
 
+		void Update()
+		{
+			if (lTop > lBottom)
+			{
+				int nTemp = lBottom;
+				lBottom = lTop;
+				lTop = nTemp;
+			}
+
+			if (lLeft > lRight)
+			{
+				int nTemp = lRight;
+				lRight = lLeft;
+				lLeft = nTemp;
+			}
+		}
+
 		int lLeft;
 		int lTop;
 		int lRight;

@@ -38,8 +38,14 @@ namespace MetaFile
 
                 CEmfPlusImage* GetImage(unsigned int unImageIndex);
 
-                CEmfPlusPath* ReadPath();
-                CEmfPlusPath* GetPath(unsigned int unPathIndex);
+                CEmfPlusBrush*  ReadBrush();
+                CEmfPlusBrush*  GetBrush(unsigned int unBrushIndex);
+
+                CEmfPlusPen*    ReadPen();
+                CEmfPlusPen*    GetPen(unsigned int unPenIndex);
+
+                CEmfPlusPath*   ReadPath();
+                CEmfPlusPath*   GetPath(unsigned int unPathIndex);
 
                 CEmfPlusRegion* ReadRegion();
                 CEmfPlusRegion* GetRegion(unsigned int unRegionIndex);

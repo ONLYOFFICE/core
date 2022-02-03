@@ -120,7 +120,7 @@ namespace MetaFile
                         }
                         else if (0x00f00021 == oTEmfBitBlt.BitBltRasterOperation) // PATCOPY
                         {
-                                CEmfLogBrushEx* pBrush = m_pDC->GetBrush();
+                                CEmfLogBrushEx* pBrush = (CEmfLogBrushEx*)m_pDC->GetBrush();
                                 if (pBrush)
                                 {
                                         // Делаем цветом кисти
@@ -136,7 +136,7 @@ namespace MetaFile
                         }
                         else if (0x005a0049 == oTEmfBitBlt.BitBltRasterOperation) // PATINVERT
                         {
-                                CEmfLogBrushEx* pBrush = m_pDC->GetBrush();
+                                CEmfLogBrushEx* pBrush = (CEmfLogBrushEx*)m_pDC->GetBrush();
                                 if (pBrush)
                                 {
                                         // Делаем цветом кисти
@@ -152,7 +152,7 @@ namespace MetaFile
                         }
                         else if (0x00A000C9 == oTEmfBitBlt.BitBltRasterOperation) // PATINVERT
                         {
-                                CEmfLogBrushEx* pBrush = m_pDC->GetBrush();
+                                CEmfLogBrushEx* pBrush = (CEmfLogBrushEx*)m_pDC->GetBrush();
                                 if (pBrush)
                                 {
                                         // Делаем цветом кисти
@@ -658,29 +658,30 @@ namespace MetaFile
 
         IFont *CEmfParserBase::GetFont()
         {
-                CEmfLogFont* pFont = m_pDC->GetFont();
+                IFont* pFont = m_pDC->GetFont();
+
                 if (!pFont)
                         return NULL;
 
-                return (IFont*)pFont;
+                return pFont;
         }
 
         IBrush *CEmfParserBase::GetBrush()
         {
-                CEmfLogBrushEx* pBrush = m_pDC->GetBrush();
+                IBrush* pBrush = m_pDC->GetBrush();
                 if (!pBrush)
                         return NULL;
 
-                return (IBrush*)pBrush;
+                return pBrush;
         }
 
         IPen *CEmfParserBase::GetPen()
         {
-                CEmfLogPen* pPen = m_pDC->GetPen();
+                IPen* pPen = m_pDC->GetPen();
                 if (!pPen)
                         return NULL;
 
-                return (IPen*)pPen;
+                return pPen;
         }
 
         unsigned int CEmfParserBase::GetTextAlign()
@@ -798,7 +799,24 @@ namespace MetaFile
 
         TEmfRectL* CEmfParserBase::GetBounds()
         {
-            return &m_oHeader.oFramePx;
+                return &m_oHeader.oFramePx;
+        }
+
+        TEmfPointL CEmfParserBase::GetStartPointForArc(const TEmfRectL &oBox, double dStartAngle)
+        {
+                TEmfPointL oStartPoint;
+
+                dStartAngle *= -M_PI / 180;
+
+		double dWidth  = oBox.lRight  - oBox.lLeft;
+		double dHeight = oBox.lBottom - oBox.lTop;
+
+		double dTan = atan2( sin( dStartAngle ) / dHeight / 2,  cos( dStartAngle ) / dWidth / 2 );
+
+		oStartPoint.x = oBox.lLeft + dWidth / 2.0 + dWidth / 2 * cos(dTan);
+		oStartPoint.y = oBox.lTop + dHeight / 2.0 - dHeight / 2 * sin(dTan);
+
+                return oStartPoint;
         }
 
         void CEmfParserBase::HANDLE_EMR_HEADER(TEmfHeader &oTEmfHeader)
@@ -1349,8 +1367,8 @@ namespace MetaFile
                 double dSweepAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oEnd.x, oEnd.y) - dStartAngle;
 
                 // TODO: Проверить здесь
-                if (dSweepAngle < 0.001)
-                        dSweepAngle += 360;
+//                if (dSweepAngle < 0.001)
+//                        dSweepAngle += 360;
 
                 // TODO: Проверить здесь
                 if (AD_COUNTERCLOCKWISE != m_pDC->GetArcDirection())
@@ -1358,7 +1376,11 @@ namespace MetaFile
                         dSweepAngle = dSweepAngle - 360;
                 }
 
-                MoveTo(oStart);
+                oBox.Update(); // Если ширина отрицательная, то не нарисуется
+
+                TEmfPointL oStartDraw = GetStartPointForArc(oBox, dStartAngle);
+
+                MoveTo(oStartDraw);
                 ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, dStartAngle, dSweepAngle);
                 DrawPath(true, false);
         }
@@ -1371,7 +1393,10 @@ namespace MetaFile
                 double dStartAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oStart.x, oStart.y);
                 double dSweepAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oEnd.x, oEnd.y) - dStartAngle;
 
+                oBox.Update(); // Если ширина отрицательная, то не нарисуется
+
                 ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, dStartAngle, dSweepAngle);
+                DrawPath(true, false);
         }
 
         void CEmfParserBase::HANDLE_EMR_CHORD(TEmfRectL &oBox, TEmfPointL &oStart, TEmfPointL &oEnd)
@@ -1382,7 +1407,9 @@ namespace MetaFile
                 double dStartAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oStart.x, oStart.y);
                 double dSweepAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oEnd.x, oEnd.y) - dStartAngle;
 
-                MoveTo(oStart);
+                TEmfPointL oStartDraw = GetStartPointForArc(oBox, dStartAngle);
+
+                MoveTo(oStartDraw);
                 ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, dStartAngle, dSweepAngle);
                 LineTo(oStart);
                 DrawPath(true, true);
@@ -1393,11 +1420,12 @@ namespace MetaFile
                 if (NULL != m_pInterpretator)
                         m_pInterpretator->HANDLE_EMR_ELLIPSE(oBox);
 
+                oBox.Update(); // Если ширина отрицательная, то не нарисуется
+
                 if (m_pDC->GetArcDirection() == AD_COUNTERCLOCKWISE)
                         ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, 0, 360);
                 else
                         ArcTo(oBox.lLeft, oBox.lBottom, oBox.lRight, oBox.lTop, 0, 360);
-
 
                 DrawPath(true, true);
         }
@@ -1846,7 +1874,14 @@ namespace MetaFile
                 if (NULL != m_pInterpretator)
                         m_pInterpretator->HANDLE_EMFPLUS_DRAWARC(chPenId, dStartAngle, dSweepAngle, oRect);
 
-                //TODO: реализовать
+                if (AD_COUNTERCLOCKWISE != m_pDC->GetArcDirection())
+                {
+                        dSweepAngle = dSweepAngle - 360;
+                }
+
+                MoveTo(oRect.shX, oRect.shY);
+                ArcTo(oRect.shX, oRect.shY, oRect.shX + oRect.shWidth, oRect.shY + oRect.shHeight, dStartAngle, dSweepAngle);
+                DrawPath(true, false);
         }
 
         void CEmfParserBase::HANDLE_EMFPLUS_DRAWARC(char chPenId, double dStartAngle, double dSweepAngle, TEmfPlusRectF oRect)
@@ -1854,7 +1889,15 @@ namespace MetaFile
                 if (NULL != m_pInterpretator)
                         m_pInterpretator->HANDLE_EMFPLUS_DRAWARC(chPenId, dStartAngle, dSweepAngle, oRect);
 
-                //TODO: реализовать
+
+                if (AD_COUNTERCLOCKWISE != m_pDC->GetArcDirection())
+                {
+                        dSweepAngle = dSweepAngle - 360;
+                }
+
+                MoveTo(oRect.dX, oRect.dY);
+                ArcTo(oRect.dX, oRect.dY, oRect.dX + oRect.dWidth, oRect.dY + oRect.dHeight, dStartAngle, dSweepAngle);
+                DrawPath(true, false);
         }
 
         void CEmfParserBase::HANDLE_EMFPLUS_DRAWBEZIERS(char chPenId, std::vector<TEmfPlusPointR> arPoints)
@@ -1870,7 +1913,14 @@ namespace MetaFile
                 if (NULL != m_pInterpretator)
                         m_pInterpretator->HANDLE_EMFPLUS_DRAWBEZIERS(chPenId, arPoints);
 
-                //TODO: реализовать
+                MoveTo(arPoints[0].X, arPoints[0].Y);
+
+                for (unsigned int unIndex = 1; unIndex < arPoints.size(); unIndex += 3)
+                        CurveTo(arPoints[unIndex].X,     arPoints[unIndex].Y,
+                                arPoints[unIndex + 1].X, arPoints[unIndex + 1].Y,
+                                arPoints[unIndex + 2].X, arPoints[unIndex + 2].Y);
+
+                DrawPath(true, false);
         }
 
         void CEmfParserBase::HANDLE_EMFPLUS_DRAWBEZIERS(char chPenId, std::vector<TEmfPointS> arPoints)
@@ -1878,7 +1928,12 @@ namespace MetaFile
                 if (NULL != m_pInterpretator)
                         m_pInterpretator->HANDLE_EMFPLUS_DRAWBEZIERS(chPenId, arPoints);
 
-                //TODO: реализовать
+                MoveTo(arPoints[0]);
+
+                for (unsigned int unIndex = 1; unIndex < arPoints.size(); unIndex += 3)
+                        CurveTo(arPoints[unIndex], arPoints[unIndex + 1], arPoints[unIndex + 2]);
+
+                DrawPath(true, false);
         }
 
         void CEmfParserBase::HANDLE_EMFPLUS_DRAWCLOSEDCURVE(char chPenId, double dTension, std::vector<TEmfPlusPointR> arPoints)

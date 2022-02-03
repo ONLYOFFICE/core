@@ -36,6 +36,7 @@
 
 #include "EmfTypes.h"
 #include "EmfObjects.h"
+#include "EmfPlusObjects.h"
 #include "EmfClip.h"
 
 #include <vector>
@@ -95,9 +96,9 @@ namespace MetaFile
 		void            MultiplyTransform(TEmfXForm& oForm, unsigned int ulMode);
 		void            SetTextColor(TEmfColor& oColor);
 		TEmfColor&      GetTextColor();
-		void            SetBrush(CEmfLogBrushEx* pBrush);
-		void            RemoveBrush(CEmfLogBrushEx* pBrush);
-		CEmfLogBrushEx* GetBrush();
+		void            SetBrush(IBrush* pBrush);
+		void            RemoveBrush(IBrush* pBrush);
+		IBrush*		GetBrush();
 		void            SetFont(CEmfLogFont* pFont);
 		void            RemoveFont(CEmfLogFont* pFont);
 		CEmfLogFont*    GetFont();
@@ -111,9 +112,9 @@ namespace MetaFile
 		unsigned int    GetMiterLimit();
 		void            SetFillMode(unsigned int ulFillMode);
 		unsigned int    GetFillMode();
-		void            SetPen(CEmfLogPen* pPen);
-		void            RemovePen(CEmfLogPen* pPen);
-		CEmfLogPen*     GetPen();
+		void            SetPen(IPen* pPen);
+		void            RemovePen(IPen* pPen);
+		IPen*		GetPen();
 		void            SetStretchMode(unsigned int& oMode);
 		unsigned int    GetStretchMode();
 		double          GetPixelWidth();
@@ -148,9 +149,10 @@ namespace MetaFile
 
 		CEmfPlayer*     m_pPlayer;
 		unsigned int    m_ulMapMode;
-		CEmfLogBrushEx* m_pBrush;
-		CEmfLogPen*     m_pPen;
+		IBrush*		m_pBrush;
+		IPen*		m_pPen;
 		CEmfLogFont*    m_pFont;
+		CEmfLogFont	m_oDefaultFont;
 		CEmfLogPalette* m_pPalette;
 		TEmfXForm       m_oTransform;
 		TEmfXForm       m_oInverseTransform;

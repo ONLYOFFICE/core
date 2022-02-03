@@ -35,15 +35,69 @@ namespace MetaFile
 		BrushTypeLinearGradient = 0x04
 	} EEmfPlusBrushType;
 
-	class CEmfPlusBrush : public CEmfPlusObjectBase, public IBrush
+	#define PEN_DATA_TRANSFORM	    0x00000001
+	#define PEN_DATA_STARTCAP	    0x00000002
+	#define PEN_DATA_ENDCAP		    0x00000004
+	#define PEN_DATA_JOIN		    0x00000008
+	#define PEN_DATA_MITERLIMIT	    0x00000010
+	#define PEN_DATA_LINESTYLE	    0x00000020
+	#define PEN_DATA_DASHEDLINECAP	    0x00000040
+	#define PEN_DATA_DASHEDLINEOFFSET   0x00000080
+	#define PEN_DATA_DASHEDLINE	    0x00000100
+	#define PEN_DATA_NONCENTER	    0x00000200
+	#define PEN_DATA_COMPOUNDLINE	    0x00000400
+	#define PEN_DATA_CUSTOMSTARTCAP	    0x00000800
+	#define PEN_DATA_CUSTOMENDCAP	    0x00001000
+
+	typedef  enum
+	{
+		ImageDataTypeUnknown	= 0x00,
+		ImageDataTypeBitmap	= 0x01,
+		ImageDataTypeMetafile	= 0x02
+	} EEmfPlusImageDataType;
+
+        typedef  enum
+        {
+                BitmapDataTypePixel       = 0x00,
+                BitmapDataTypeCompressed  = 0x01,
+                BitmapDataTypeUnknow      = 0x02
+        } EEmfPlusBitmapDataType;
+
+        typedef  enum
+        {
+                MetafileDataTypeWmf             = 0x01,
+                MetafileDataTypeWmfPlaceable    = 0x02,
+                MetafileDataTypeEmf             = 0x03,
+                MetafileDataTypeEmfPlusOnly     = 0x04,
+                MetafileDataTypeEmfPlusDual     = 0x05
+        } EEmfPlusMetafileDataType;
+
+        class CEmfPlusObject : public CEmfPlusObjectBase
+        {
+            public:
+                CEmfPlusObject(){};
+                virtual ~CEmfPlusObject(){};
+
+                virtual EEmfPlusObjectType GetObjectType()
+                {
+                        return ObjectTypeInvalid;
+                }
+        };
+
+	class CEmfPlusBrush : public CEmfPlusObject, public IBrush
 	{
 	    public:
-		CEmfPlusBrush() : Style(BS_SOLID) {};
+		CEmfPlusBrush() : CEmfPlusObject(), Style(BS_SOLID), Hatch(0), Angle(0) {};
 		virtual ~CEmfPlusBrush() {};
-		virtual EEmfObjectType GetType()
+		virtual EEmfObjectType GetType() override
 		{
 			return EMF_OBJECT_BRUSH;
 		}
+
+                virtual EEmfPlusObjectType GetObjectType() override
+                {
+                        return ObjectTypeBrush;
+                }
 
 		int GetColor()
 		{
@@ -62,7 +116,7 @@ namespace MetaFile
 
 		unsigned int GetStyleEx()
 		{
-			return 0;
+			return Angle;
 		}
 
 		unsigned int GetHatch()
@@ -72,12 +126,12 @@ namespace MetaFile
 
 		unsigned int GetAlpha()
 		{
-			return 0;
+			return Color.chAlpha;
 		}
 
 		unsigned int GetAlpha2()
 		{
-			return 0xff;
+			return ColorBack.chAlpha;
 		}
 
 		std::wstring GetDibPatterPath()
@@ -85,37 +139,36 @@ namespace MetaFile
 			return std::wstring();
 		}
 
-		void GetBounds(double& left, double& top, double& width, double& height) {};
+		void GetBounds(double& left, double& top, double& width, double& height)
+		{
+			left	= RectF.dX;
+			top	= RectF.dY;
+			width	= RectF.dWidth;
+			height	= RectF.dHeight;
+		};
 
 		TEmfPlusARGB		Color;
 		TEmfPlusARGB		ColorBack;
 		unsigned int		Style;
 		unsigned int		Hatch;
+		TEmfPlusRectF		RectF;
+		unsigned int		Angle;
 	};
 
-	#define PEN_DATA_TRANSFORM	    0x00000001
-	#define PEN_DATA_STARTCAP	    0x00000002
-	#define PEN_DATA_ENDCAP		    0x00000004
-	#define PEN_DATA_JOIN		    0x00000008
-	#define PEN_DATA_MITERLIMIT	    0x00000010
-	#define PEN_DATA_LINESTYLE	    0x00000020
-	#define PEN_DATA_DASHEDLINECAP	    0x00000040
-	#define PEN_DATA_DASHEDLINEOFFSET   0x00000080
-	#define PEN_DATA_DASHEDLINE	    0x00000100
-	#define PEN_DATA_NONCENTER	    0x00000200
-	#define PEN_DATA_COMPOUNDLINE	    0x00000400
-	#define PEN_DATA_CUSTOMSTARTCAP	    0x00000800
-	#define PEN_DATA_CUSTOMENDCAP	    0x00001000
-
-	class CEmfPlusPen: public CEmfPlusObjectBase, public IPen
+	class CEmfPlusPen: public CEmfPlusObject, public IPen
 	{
 	    public:
 		CEmfPlusPen() : Style(PS_SOLID), Width(1), Color(0, 0, 0), Brush(NULL) {}
-		virtual ~CEmfPlusPen() { if (NULL != Brush) delete Brush; }
+		virtual ~CEmfPlusPen() { RELEASEOBJECT(Brush) }
 		virtual EEmfObjectType GetType()
 		{
 			return EMF_OBJECT_PEN;
 		}
+
+                virtual EEmfPlusObjectType GetObjectType() override
+                {
+                        return ObjectTypePen;
+                }
 
 		int GetColor()
 		{
@@ -144,41 +197,6 @@ namespace MetaFile
 		CEmfPlusBrush	*Brush;
 	};
 
-	typedef  enum
-	{
-		ImageDataTypeUnknown	= 0x00,
-		ImageDataTypeBitmap	= 0x01,
-		ImageDataTypeMetafile	= 0x02
-	} EEmfPlusImageDataType;
-
-        typedef  enum
-        {
-                BitmapDataTypePixel       = 0x00,
-                BitmapDataTypeCompressed  = 0x01,
-                BitmapDataTypeUnknow      = 0x02
-        } EEmfPlusBitmapDataType;
-
-        typedef  enum
-        {
-                MetafileDataTypeWmf             = 0x01,
-                MetafileDataTypeWmfPlaceable    = 0x02,
-                MetafileDataTypeEmf             = 0x03,
-                MetafileDataTypeEmfPlusOnly     = 0x04,
-                MetafileDataTypeEmfPlusDual     = 0x05
-        } EEmfPlusMetafileDataType;
-
-        class CEmfPlusObject
-        {
-            public:
-                CEmfPlusObject(){};
-                virtual ~CEmfPlusObject(){};
-
-                virtual EEmfPlusObjectType GetObjectType()
-                {
-                        return ObjectTypeInvalid;
-                }
-        };
-
         class CEmfPlusPath : public CEmfPlusObject, public CEmfPath
         {
             public:
@@ -189,6 +207,46 @@ namespace MetaFile
                 {
                         return ObjectTypePath;
                 }
+
+                TRectD ConvertToRect() const
+                {
+                        TRectD oRect;
+
+                        oRect.dRight = oRect.dBottom = 0;
+
+			for (unsigned int ulIndex = 0; ulIndex < m_pCommands.size(); ulIndex++)
+			{
+				CEmfPathCommandBase* pCommand = m_pCommands.at(ulIndex);
+				switch (pCommand->GetType())
+				{
+					case EMF_PATHCOMMAND_MOVETO:
+					{
+						CEmfPathMoveTo* pMoveTo = (CEmfPathMoveTo*)pCommand;
+
+						oRect.dLeft   = std::min(oRect.dLeft,	pMoveTo->x);
+						oRect.dTop    = std::min(oRect.dTop,    pMoveTo->y);
+						oRect.dRight  = std::max(oRect.dRight,  pMoveTo->x);
+						oRect.dBottom = std::max(oRect.dBottom, pMoveTo->y);
+
+						break;
+					}
+					case EMF_PATHCOMMAND_LINETO:
+					{
+						CEmfPathLineTo* pLineTo = (CEmfPathLineTo*)pCommand;
+
+						oRect.dLeft   = std::min(oRect.dLeft,	pLineTo->x);
+						oRect.dTop    = std::min(oRect.dTop,    pLineTo->y);
+						oRect.dRight  = std::max(oRect.dRight,  pLineTo->x);
+						oRect.dBottom = std::max(oRect.dBottom, pLineTo->y);
+
+						break;
+					}
+					case EMF_PATHCOMMAND_CLOSE: return oRect;
+				}
+			}
+
+			return oRect;
+		}
         };
 
 

@@ -136,6 +136,8 @@ namespace MetaFile
         private:
                 virtual bool ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight) = 0;
 
+                TEmfPointL GetStartPointForArc(const TEmfRectL &oBox, double dStartAngle);
+
                 void HANDLE_EMR_HEADER(TEmfHeader& oTEmfHeader);
                 void HANDLE_EMR_ALPHABLEND(TEmfAlphaBlend& oTEmfAlphaBlend);
                 void HANDLE_EMR_STRETCHDIBITS(TEmfStretchDIBITS& oTEmfStretchDIBITS);

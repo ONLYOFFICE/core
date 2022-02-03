@@ -214,7 +214,7 @@ namespace MetaFile
 			if (!pFont)
 				return;
 
-			UpdateTransform(iGraphicsMode);
+			UpdateTransform();
 			UpdateClip();
 
 			int lLogicalFontHeight = pFont->GetHeight();
@@ -384,15 +384,15 @@ namespace MetaFile
 
 				if (dXScale < -0.00001)
 				{
-					dX += fabs(fW);
+					dX -= fabs(fW);
 
 					if (m_pFile->IsWindowFlippedX())
 					{
-						dShiftX = (2 * dX + fabs(fW)) * dM11;
+						dShiftX = (2 * dX - fabs(fW)) * dM11;
 					}
 					else
 					{
-						dShiftX = (2 * dX - fabs(fW)) * dM11;
+						dShiftX = (2 * dX + fabs(fW)) * dM11;
 					}
 
 					dM11 = fabs(dM11);
@@ -400,13 +400,15 @@ namespace MetaFile
 
 				if (dYScale < -0.00001)
 				{
+					dY -= fabs(fH);
+
 					if (m_pFile->IsWindowFlippedY())
 					{
-						dShiftY = (2 * dY) * dM22;
+						dShiftY = (2 * dY - fabs(fH)) * dM22;
 					}
 					else
 					{
-						dShiftY = (2 * dY) * dM22;
+						dShiftY = (2 * dY + fabs(fH)) * dM22;
 					}
 
 					dM22 = fabs(dM22);
@@ -785,11 +787,17 @@ namespace MetaFile
 				m_pRenderer->put_BrushAlpha1(pBrush->GetAlpha());
 				m_pRenderer->put_BrushAlpha2(pBrush->GetAlpha2());
 
+				double dX, dY, dWidth, dHeight;
+
+				pBrush->GetBounds(dX, dY, dWidth, dHeight);
+
+				m_pRenderer->BrushBounds(dX, dY, dWidth, dHeight);
+
 				m_pRenderer->put_BrushLinearAngle(pBrush->GetStyleEx());
 
 				long Colors[2];
-				Colors[0] = (pBrush->GetColor()<<8) + pBrush->GetAlpha();
-				Colors[1] = (pBrush->GetColor2()<<8) + pBrush->GetAlpha2();
+				Colors[0] = pBrush->GetColor()  + (pBrush->GetAlpha()  << 24);
+				Colors[1] = pBrush->GetColor2() + (pBrush->GetAlpha2() << 24);
 				double Position[2] = {0, 1};
 
 				m_pRenderer->put_BrushGradientColors(Colors,Position,2);
@@ -840,16 +848,15 @@ namespace MetaFile
 
 			int nColor = pPen->GetColor();
 
-			// TODO: dWidth зависит еще от флага PS_GEOMETRIC в стиле карандаша
-			double dWidth = pPen->GetWidth() * m_dScaleX;
-			if (dWidth <= 0.0001)
-				dWidth = 0;
-
 			unsigned int unMetaPenStyle = pPen->GetStyle();
 			unsigned int ulPenType   = unMetaPenStyle & PS_TYPE_MASK;
 			unsigned int ulPenEndCap = unMetaPenStyle & PS_ENDCAP_MASK;
 			unsigned int ulPenJoin   = unMetaPenStyle & PS_JOIN_MASK;
 			unsigned int ulPenStyle  = unMetaPenStyle & PS_STYLE_MASK;
+
+			// TODO: dWidth зависит еще от флага PS_GEOMETRIC в стиле карандаша
+
+			double dWidth = pPen->GetWidth() * m_dScaleX;
 
 			BYTE nCapStyle = 0;
 			if (PS_ENDCAP_ROUND == ulPenEndCap)
@@ -870,10 +877,10 @@ namespace MetaFile
 			double dMiterLimit = m_pFile->GetMiterLimit() * m_dScaleX;
 
 			// TODO: Реализовать PS_USERSTYLE
-			BYTE nDashStyle = Aggplus::DashStyleSolid;;
+			BYTE nDashStyle = Aggplus::DashStyleSolid;
 
 			// В WinGDI все карандаши толщиной больше 1px рисуются в стиле PS_SOLID
-			if (1 >= pPen->GetWidth() && PS_SOLID != ulPenStyle)
+			if (1 >= pPen->GetWidth() && PS_SOLID != ulPenStyle && false)
 			{
 				// TODO: Ранее здесь специально ставилась толщина 0, что любой рендерер должен
 				//       воспринимать как толщину в 1px. Но сейчас это не работает в графическом ренедерере,
@@ -957,9 +964,9 @@ namespace MetaFile
 				}
 			}
 
-			m_pRenderer->put_PenDashStyle(nDashStyle);
+			m_pRenderer->put_PenDashStyle(ulPenStyle);
 			m_pRenderer->put_PenLineJoin(nJoinStyle);
-			m_pRenderer->put_PenLineStartCap(nCapStyle);
+			m_pRenderer->put_PenLineStartCap(0);
 			m_pRenderer->put_PenLineEndCap(nCapStyle);
 			m_pRenderer->put_PenColor(nColor);
 			m_pRenderer->put_PenSize(dWidth);

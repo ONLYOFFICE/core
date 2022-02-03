@@ -272,6 +272,30 @@ namespace MetaFile
 		m_oCurPos.x = 0;
 		m_oCurPos.y = 0;
 		m_unArcDirection = AD_COUNTERCLOCKWISE;
+
+		m_oDefaultFont.LogFontEx.LogFont.FaceName[0] = 'A';
+		m_oDefaultFont.LogFontEx.LogFont.FaceName[1] = 'r';
+		m_oDefaultFont.LogFontEx.LogFont.FaceName[2] = 'i';
+		m_oDefaultFont.LogFontEx.LogFont.FaceName[3] = 'a';
+		m_oDefaultFont.LogFontEx.LogFont.FaceName[4] = 'l';
+		m_oDefaultFont.LogFontEx.LogFont.FaceName[5] = '\0';
+
+		m_oDefaultFont.LogFontEx.LogFont.CharSet = 1;
+		m_oDefaultFont.LogFontEx.LogFont.ClipPrecision = 0;
+		m_oDefaultFont.LogFontEx.LogFont.Escapement = 0;
+		m_oDefaultFont.LogFontEx.LogFont.Height = -18;
+		m_oDefaultFont.LogFontEx.LogFont.Italic = 0;
+		m_oDefaultFont.LogFontEx.LogFont.Orientation = 0;
+		m_oDefaultFont.LogFontEx.LogFont.OutPrecision = 4;
+		m_oDefaultFont.LogFontEx.LogFont.PitchAndFamily = 2;
+		m_oDefaultFont.LogFontEx.LogFont.Quality = 0;
+		m_oDefaultFont.LogFontEx.LogFont.StrikeOut = 0;
+		m_oDefaultFont.LogFontEx.LogFont.Underline = 0;
+		m_oDefaultFont.LogFontEx.LogFont.Weight = 400;
+		m_oDefaultFont.LogFontEx.LogFont.Width = 0;
+
+		m_oDefaultFont.DesignVector.Values = NULL;
+		m_oDefaultFont.DesignVector.NumAxes = 0;
 	}
 	CEmfDC::~CEmfDC()
 	{
@@ -422,16 +446,16 @@ namespace MetaFile
 	{
 		return m_oTextColor;
 	}
-	void            CEmfDC::SetBrush(CEmfLogBrushEx* pBrush)
+	void CEmfDC::SetBrush(IBrush *pBrush)
 	{
 		m_pBrush = pBrush;
 	}
-	void            CEmfDC::RemoveBrush(CEmfLogBrushEx* pBrush)
+	void            CEmfDC::RemoveBrush(IBrush* pBrush)
 	{
 		if (pBrush == m_pBrush)
 			m_pBrush = NULL;
 	}
-	CEmfLogBrushEx* CEmfDC::GetBrush()
+	IBrush* CEmfDC::GetBrush()
 	{
 		return m_pBrush;
 	}
@@ -446,7 +470,7 @@ namespace MetaFile
 	}
 	CEmfLogFont*    CEmfDC::GetFont()
 	{
-		return m_pFont;
+		return (NULL != m_pFont) ? m_pFont : &m_oDefaultFont;
 	}
 	void            CEmfDC::SetTextAlign(unsigned int ulAlign)
 	{
@@ -488,16 +512,16 @@ namespace MetaFile
 	{
 		return m_ulFillMode;
 	}
-	void            CEmfDC::SetPen(CEmfLogPen* pPen)
+	void            CEmfDC::SetPen(IPen* pPen)
 	{
 		m_pPen = pPen;
 	}
-	void            CEmfDC::RemovePen(CEmfLogPen* pPen)
+	void            CEmfDC::RemovePen(IPen* pPen)
 	{
 		if (pPen == m_pPen)
 			m_pPen = NULL;
 	}
-	CEmfLogPen*     CEmfDC::GetPen()
+	IPen*     CEmfDC::GetPen()
 	{
 		return m_pPen;
 	}
@@ -603,7 +627,7 @@ namespace MetaFile
 
 		m_oFinalTransform2.Init();
 		m_oFinalTransform2.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);
-		m_oFinalTransform2.Multiply(m_oTransform, MWT_RIGHTMULTIPLY);
+//		m_oFinalTransform2.Multiply(m_oTransform, MWT_RIGHTMULTIPLY);
 		m_oFinalTransform2.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);
 	}
 	void            CEmfDC::SetRop2Mode(unsigned int& nMode)

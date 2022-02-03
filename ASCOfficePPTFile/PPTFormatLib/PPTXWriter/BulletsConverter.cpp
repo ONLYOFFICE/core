@@ -24,10 +24,14 @@ void BulletsConverter::ConvertPFRun(PPTX::Logic::TextParagraphPr &oPPr, CTextPFR
     }
     if (pPF->indent.is_init())
     {
-        if (pPF->hasBullet.get_value_or(false))
-            oPPr.indent = pPF->indent.get();
-        else
+        if (pPF->hasBullet.get_value_or(false) && pPF->indent.get() != -leftMargin)
+        {
             oPPr.indent = pPF->indent.get() - leftMargin;
+        }
+        else
+        {
+            oPPr.indent = pPF->indent.get();
+        }
     } else if (pPF->hasBullet.get_value_or(false))
     {
         oPPr.indent = -leftMargin;

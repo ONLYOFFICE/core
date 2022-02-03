@@ -1174,7 +1174,7 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo(PPT_FORMAT::CTextCFRun* pLastCF)
         // <a:pPr>
         auto pPPr = new PPTX::Logic::TextParagraphPr;
         BulletsConverter buConverter(m_pRels);
-        buConverter.ConvertPFRun(*pPPr, &pParagraph->m_oPFRun);
+        buConverter.FillPPr(*pPPr, *pParagraph);
         m_oWriter.WriteString(pPPr->toXML());
         delete pPPr;
 

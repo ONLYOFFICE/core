@@ -801,7 +801,13 @@ unsigned int CFontManager::GetNameIndex(const std::wstring& wsName)
 
 	return m_pFont->GetNameIndex(wsName);
 }
+unsigned int CFontManager::GetGIDByUnicode(const unsigned int& unCode)
+{
+	if (!m_pFont)
+		return 0;
 
+	return m_pFont->GetGIDByUnicode(unCode);
+}
 void CFontManager::SetSubpixelRendering(const bool& hmul, const bool& vmul)
 {
     if (hmul)

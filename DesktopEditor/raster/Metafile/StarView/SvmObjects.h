@@ -425,7 +425,14 @@ public:
 	{
 		return (double)Width;
 	}
-
+	unsigned int GetAlpha()
+	{
+		return 255;
+	}
+	double GetDashOffset()
+	{
+		return 0;
+	}
 public:
 	unsigned short	PenStyle;
 	int				Width;

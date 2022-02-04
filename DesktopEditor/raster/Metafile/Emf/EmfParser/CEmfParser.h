@@ -64,6 +64,7 @@ namespace MetaFile
                 void Read_EMR_SETSTRETCHBLTMODE();
                 void Read_EMR_SETICMMODE();
                 void Read_EMR_CREATEDIBPATTERNBRUSHPT();
+                void Read_EMR_CREATEMONOBRUSH();
                 void Read_EMR_SELECTCLIPPATH();
                 void Read_EMR_SETBKCOLOR();
                 void Read_EMR_EXCLUDECLIPRECT();

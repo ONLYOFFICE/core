@@ -211,6 +211,14 @@ namespace MetaFile
 		{
 			return (double)Width;
 		}
+		unsigned int GetAlpha()
+		{
+			return 255;
+		}
+		double GetDashOffset()
+		{
+			return 0;
+		}
 
 	public:
 

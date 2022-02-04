@@ -75,9 +75,11 @@ namespace MetaFile
 		IPen(){}
 		virtual ~IPen(){}
 
-		virtual int          GetColor() = 0;
-		virtual unsigned int GetStyle() = 0;
-		virtual double GetWidth() = 0;
+		virtual int		GetColor()	= 0;
+		virtual unsigned int	GetStyle()	= 0;
+		virtual double		GetWidth()	= 0;
+		virtual unsigned int	GetAlpha()	= 0;
+		virtual double		GetDashOffset() = 0;
 	};
 }
 

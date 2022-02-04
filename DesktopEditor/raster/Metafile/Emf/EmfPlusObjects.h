@@ -49,6 +49,11 @@ namespace MetaFile
 	#define PEN_DATA_CUSTOMSTARTCAP	    0x00000800
 	#define PEN_DATA_CUSTOMENDCAP	    0x00001000
 
+	#define PS_STARTCAP_ROUND     0x00000040
+	#define PS_STARTCAP_SQUARE    0x00000050
+	#define PS_STARTCAP_FLAT      0x00000060
+	#define PS_STARTCAP_MASK      0x000000F0
+
 	typedef  enum
 	{
 		ImageDataTypeUnknown	= 0x00,
@@ -158,7 +163,7 @@ namespace MetaFile
 	class CEmfPlusPen: public CEmfPlusObject, public IPen
 	{
 	    public:
-		CEmfPlusPen() : Style(PS_SOLID), Width(1), Color(0, 0, 0), Brush(NULL) {}
+		CEmfPlusPen() : Style(PS_SOLID), Width(1), Color(0, 0, 0), Brush(NULL), DashOffset(0) {}
 		virtual ~CEmfPlusPen() { RELEASEOBJECT(Brush) }
 		virtual EEmfObjectType GetType()
 		{
@@ -191,10 +196,21 @@ namespace MetaFile
 			return Width;
 		}
 
+		unsigned int GetAlpha()
+		{
+			return (unsigned int)Color.chAlpha;
+		}
+
+		double GetDashOffset()
+		{
+			return DashOffset;
+		}
+
 		unsigned int	Style;
 		double		Width;
 		TEmfPlusARGB	Color;
 		CEmfPlusBrush	*Brush;
+		double		DashOffset;
 	};
 
         class CEmfPlusPath : public CEmfPlusObject, public CEmfPath

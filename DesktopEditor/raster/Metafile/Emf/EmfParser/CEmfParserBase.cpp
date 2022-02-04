@@ -1206,6 +1206,14 @@ namespace MetaFile
                 ImageProcessing(oDibBrush, unBrushIndex);
         }
 
+        void CEmfParserBase::HANDLE_EMR_CREATEMONOBRUSH(unsigned int &unBrushIndex, TEmfDibPatternBrush &oDibBrush)
+        {
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->HANDLE_EMR_CREATEMONOBRUSH(unBrushIndex, oDibBrush, m_oStream);
+
+                ImageProcessing(oDibBrush, unBrushIndex);
+        }
+
         void CEmfParserBase::HANDLE_EMR_SELECTCLIPPATH(unsigned int &unRegionMode)
         {
                 if (NULL != m_pInterpretator)

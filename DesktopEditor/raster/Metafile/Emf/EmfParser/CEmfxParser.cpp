@@ -62,7 +62,14 @@ namespace MetaFile
                                                 case L'O': Read_EMR_CHORD();                  break;
                                                 case L'P': Read_EMR_CREATEPEN();              break;
                                                 case L'T': Read_EMR_CREATEPALETTE();          break;
-                                                case L'U': Read_EMR_CLOSEFIGURE();            break;
+                                                case L'U':
+                                                {
+                                                        if ((*(wsRecordName.end() - 1)) == 'E')
+                                                                Read_EMR_CLOSEFIGURE();
+                                                        else
+                                                                Read_EMR_CREATEMONOBRUSH();
+                                                        break;
+                                                }
                                         }
                                         break;
                                 }
@@ -723,6 +730,20 @@ namespace MetaFile
                 *m_pOutput >> ulICMMode;
 
                 HANDLE_EMR_SETICMMODE(ulICMMode);
+        }
+
+        void CEmfxParser::Read_EMR_CREATEMONOBRUSH()
+        {
+                unsigned int ulBrushIndex;
+                TEmfDibPatternBrush oDibBrush;
+
+                *m_pOutput >> ulBrushIndex;
+                *m_pOutput >> oDibBrush;
+
+                if (oDibBrush.cbBits > 0)
+                        *m_pOutput >> m_oStream;
+
+                HANDLE_EMR_CREATEMONOBRUSH(ulBrushIndex, oDibBrush);
         }
 
         void CEmfxParser::Read_EMR_CREATEDIBPATTERNBRUSHPT()

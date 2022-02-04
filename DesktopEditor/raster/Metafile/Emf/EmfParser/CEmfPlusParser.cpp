@@ -557,7 +557,8 @@ namespace MetaFile
 
 				m_oStream.Skip(8); // BrushDataFlags, WrapMode
 
-				m_oStream >> pEmfPlusBrush->RectF;
+//				m_oStream >> pEmfPlusBrush->RectF;
+				m_oStream.Skip(16);
 				m_oStream >> pEmfPlusBrush->Color;
 				m_oStream >> pEmfPlusBrush->ColorBack;
 
@@ -605,7 +606,18 @@ namespace MetaFile
 		if (unFlags & PEN_DATA_TRANSFORM)
 			m_oStream.Skip(24); // TransformMatrix (24 bytes) - EmfPlusTransformMatrix object
 		if (unFlags & PEN_DATA_STARTCAP)
-			m_oStream.Skip(4); // StartCap (4 bytes) - signed integer
+		{
+			int nStartCap;
+
+			m_oStream >> nStartCap;
+
+			switch (nStartCap)
+			{
+				case 0:	pEmfPlusPen->Style |= PS_STARTCAP_MASK & PS_STARTCAP_FLAT;	 break;
+				case 1: pEmfPlusPen->Style |= PS_STARTCAP_MASK & PS_STARTCAP_SQUARE; break;
+				case 2: pEmfPlusPen->Style |= PS_STARTCAP_MASK & PS_STARTCAP_ROUND;  break;
+			}
+		}
 		if (unFlags & PEN_DATA_ENDCAP)
 		{
 			int nEndCap;
@@ -639,7 +651,9 @@ namespace MetaFile
 		if (unFlags & PEN_DATA_DASHEDLINECAP)
 			m_oStream.Skip(4); // DashedLineCapType (4 bytes) - signed integer
 		if (unFlags & PEN_DATA_DASHEDLINEOFFSET)
-			m_oStream.Skip(4); // DashOffset  (4 bytes) - floating-point value
+		{
+			m_oStream >> pEmfPlusPen->DashOffset;
+		}
 		if (unFlags & PEN_DATA_DASHEDLINE)
 		{
 			unsigned int unDashedLineDataSize;

@@ -157,7 +157,14 @@ namespace MetaFile
 			TRgbQuad oColor1, oColor2;
 
 			if (oHeaderStream.CanRead() >= 8)
+			{
 				oHeaderStream >> oColor1 >> oColor2;
+			}
+			else
+			{
+				oColor1.r = oColor1.g = oColor1.b = 0;
+				oColor2.r = oColor2.g = oColor2.b = 255;
+			}
 
 			// Считываем саму картинку
 			int lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);

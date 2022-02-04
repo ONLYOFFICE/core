@@ -812,6 +812,33 @@ namespace MetaFile
                     m_pOutStream->write((char *)oDataStream.GetCurPtr() + oDibBrush.cbBmi, sizeof (BYTE) * oDibBrush.cbBits);
         }
 
+        void CEmfInterpretator::HANDLE_EMR_CREATEMONOBRUSH(const unsigned int &unBrushIndex, const TEmfDibPatternBrush &oDibBrush, CDataStream &oDataStream)
+        {
+                int unExplicitRecordSize    = 32 + oDibBrush.cbBmi + oDibBrush.cbBits;
+                int unType                  = EMR_CREATEMONOBRUSH;
+
+                unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
+                ++ushNuberDescriptors;
+
+                m_pOutStream->write((char *)&unType,                sizeof (int));
+                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+
+                m_pOutStream->write((char *)&unBrushIndex,          sizeof (unsigned int));
+                m_pOutStream->write((char *)&oDibBrush.Usage,       sizeof (unsigned int));
+
+                m_pOutStream->write((char *)&oDibBrush.offBmi,      sizeof (unsigned int));
+                m_pOutStream->write((char *)&oDibBrush.cbBmi,       sizeof (unsigned int));
+                m_pOutStream->write((char *)&oDibBrush.offBits,     sizeof (unsigned int));
+                m_pOutStream->write((char *)&oDibBrush.cbBits,      sizeof (unsigned int));
+
+                if (oDibBrush.cbBmi > 0)
+                        m_pOutStream->write((char *)oDataStream.GetCurPtr(), sizeof (BYTE) * oDibBrush.cbBmi);
+
+                if (oDibBrush.cbBits > 0)
+                        m_pOutStream->write((char *)oDataStream.GetCurPtr() + oDibBrush.cbBmi, sizeof (BYTE) * oDibBrush.cbBits);
+        }
+
         void CEmfInterpretator::HANDLE_EMR_SELECTCLIPPATH(const unsigned int &unRegionMode)
         {
                 int unExplicitRecordSize    = 12;

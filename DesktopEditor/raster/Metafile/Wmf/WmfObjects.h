@@ -224,6 +224,14 @@ namespace MetaFile
 		{
 			return (double)Width.x;
 		}
+		unsigned int GetAlpha()
+		{
+			return 255;
+		}
+		double GetDashOffset()
+		{
+			return 0;
+		}
 
 	public:
 		unsigned short PenStyle;

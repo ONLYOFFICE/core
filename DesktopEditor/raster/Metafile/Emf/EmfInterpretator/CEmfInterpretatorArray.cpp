@@ -394,6 +394,12 @@ namespace MetaFile
                         pInterpretator->HANDLE_EMR_SETICMMODE(unICMMode);
         }
 
+        void CEmfInterpretatorArray::HANDLE_EMR_CREATEMONOBRUSH(const unsigned int &unBrushIndex, const TEmfDibPatternBrush &oDibBrush, CDataStream &oDataStream)
+        {
+                for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+                        pInterpretator->HANDLE_EMR_CREATEMONOBRUSH(unBrushIndex, oDibBrush, oDataStream);
+        }
+
         void CEmfInterpretatorArray::HANDLE_EMR_CREATEDIBPATTERNBRUSHPT(const unsigned int &unBrushIndex, const TEmfDibPatternBrush &oDibBrush, CDataStream &oDataStream)
         {
                 for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)

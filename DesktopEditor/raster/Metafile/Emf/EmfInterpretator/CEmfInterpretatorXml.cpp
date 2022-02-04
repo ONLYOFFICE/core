@@ -352,6 +352,25 @@ namespace MetaFile
                         m_pOutputXml->WriteNodeEnd(L"EMR_SETICMMODE");
         }
 
+        void CEmfInterpretatorXml::HANDLE_EMR_CREATEMONOBRUSH(const unsigned int &unBrushIndex, const TEmfDibPatternBrush &oDibBrush, CDataStream &oDataStream)
+        {
+                m_pOutputXml->WriteNodeBegin(L"EMR_CREATEMONOBRUSH");
+                        m_pOutputXml->WriteNode(L"ihBrush", unBrushIndex);
+                        m_pOutputXml->WriteNode(L"", oDibBrush);
+
+                        unsigned int unSize = oDibBrush.cbBmi + oDibBrush.cbBits;
+                        unsigned int unSkip = oDibBrush.offBmi - 32;
+
+                        oDataStream.Skip(unSkip);
+
+                        if (unSize > 0)
+                                m_pOutputXml->WriteNode(L"Buffer", oDataStream, unSize);
+
+                        oDataStream.SeekBack(unSkip);
+
+                        m_pOutputXml->WriteNodeEnd(L"EMR_CREATEMONOBRUSH");
+        }
+
         void CEmfInterpretatorXml::HANDLE_EMR_CREATEDIBPATTERNBRUSHPT(const unsigned int &unBrushIndex, const TEmfDibPatternBrush &oDibBrush,
                                                                       CDataStream &oDataStream)
         {

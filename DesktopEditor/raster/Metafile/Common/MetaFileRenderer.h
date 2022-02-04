@@ -575,8 +575,7 @@ namespace MetaFile
 		{
 			if (lType <= 0)
 			{
-				if (-1 != m_lDrawPathType)
-					m_pRenderer->DrawPath(m_lDrawPathType);
+				m_pRenderer->DrawPath(1);
 			}
 			else if (-1 != m_lDrawPathType)
 			{
@@ -849,22 +848,34 @@ namespace MetaFile
 			int nColor = pPen->GetColor();
 
 			unsigned int unMetaPenStyle = pPen->GetStyle();
-			unsigned int ulPenType   = unMetaPenStyle & PS_TYPE_MASK;
-			unsigned int ulPenEndCap = unMetaPenStyle & PS_ENDCAP_MASK;
-			unsigned int ulPenJoin   = unMetaPenStyle & PS_JOIN_MASK;
-			unsigned int ulPenStyle  = unMetaPenStyle & PS_STYLE_MASK;
+			unsigned int ulPenType      = unMetaPenStyle & PS_TYPE_MASK;
+			unsigned int ulPenStartCap  = unMetaPenStyle & PS_STARTCAP_MASK;
+			unsigned int ulPenEndCap    = unMetaPenStyle & PS_ENDCAP_MASK;
+			unsigned int ulPenJoin      = unMetaPenStyle & PS_JOIN_MASK;
+			unsigned int ulPenStyle     = unMetaPenStyle & PS_STYLE_MASK;
 
 			// TODO: dWidth зависит еще от флага PS_GEOMETRIC в стиле карандаша
 
 			double dWidth = pPen->GetWidth() * m_dScaleX;
 
-			BYTE nCapStyle = 0;
+			BYTE nStartCapStyle = 0;
+			if (PS_STARTCAP_ROUND == ulPenStartCap)
+				nStartCapStyle = Aggplus::LineCapRound;
+			else if (PS_STARTCAP_SQUARE == ulPenStartCap)
+				nStartCapStyle = Aggplus::LineCapSquare;
+			else if (PS_STARTCAP_FLAT == ulPenStartCap)
+				nStartCapStyle = Aggplus::LineCapFlat;
+
+			BYTE nEndCapStyle = 0;
 			if (PS_ENDCAP_ROUND == ulPenEndCap)
-				nCapStyle = Aggplus::LineCapRound;
+				nEndCapStyle = Aggplus::LineCapRound;
 			else if (PS_ENDCAP_SQUARE == ulPenEndCap)
-				nCapStyle = Aggplus::LineCapSquare;
+				nEndCapStyle = Aggplus::LineCapSquare;
 			else if (PS_ENDCAP_FLAT == ulPenEndCap)
-				nCapStyle = Aggplus::LineCapFlat;
+				nEndCapStyle = Aggplus::LineCapFlat;
+
+			if (0 == nStartCapStyle)
+				nStartCapStyle = nEndCapStyle;
 
 			BYTE nJoinStyle = 0;
 			if (PS_JOIN_ROUND == ulPenJoin)
@@ -878,6 +889,8 @@ namespace MetaFile
 
 			// TODO: Реализовать PS_USERSTYLE
 			BYTE nDashStyle = Aggplus::DashStyleSolid;
+
+			m_pRenderer->put_PenDashOffset(pPen->GetDashOffset());
 
 			// В WinGDI все карандаши толщиной больше 1px рисуются в стиле PS_SOLID
 			if (1 >= pPen->GetWidth() && PS_SOLID != ulPenStyle && false)
@@ -964,13 +977,18 @@ namespace MetaFile
 				}
 			}
 
+			if (1 <= pPen->GetWidth() && PS_SOLID != ulPenStyle)
+			{
+				nStartCapStyle = Aggplus::LineCapFlat;
+			}
+
 			m_pRenderer->put_PenDashStyle(ulPenStyle);
 			m_pRenderer->put_PenLineJoin(nJoinStyle);
-			m_pRenderer->put_PenLineStartCap(0);
-			m_pRenderer->put_PenLineEndCap(nCapStyle);
+			m_pRenderer->put_PenLineStartCap(nStartCapStyle);
+			m_pRenderer->put_PenLineEndCap(nEndCapStyle);
 			m_pRenderer->put_PenColor(nColor);
 			m_pRenderer->put_PenSize(dWidth);
-			m_pRenderer->put_PenAlpha(255);
+			m_pRenderer->put_PenAlpha(pPen->GetAlpha());
 			m_pRenderer->put_PenMiterLimit(dMiterLimit);
 
 			// TO DO: С текущим интерфейсом AVSRenderer, остальные случаи ushROPMode

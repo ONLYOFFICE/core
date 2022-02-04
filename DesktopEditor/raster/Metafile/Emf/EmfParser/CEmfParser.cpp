@@ -129,6 +129,7 @@ namespace MetaFile
                                 //-----------------------------------------------------------
                                 case EMR_CREATEBRUSHINDIRECT:       Read_EMR_CREATEBRUSHINDIRECT(); break;
                                 case EMR_CREATEDIBPATTERNBRUSHPT:   Read_EMR_CREATEDIBPATTERNBRUSHPT(); break;
+                                case EMR_CREATEMONOBRUSH:           Read_EMR_CREATEMONOBRUSH(); break;
                                 case EMR_CREATEPALETTE:             Read_EMR_CREATEPALETTE(); break;
                                 case EMR_CREATEPEN:                 Read_EMR_CREATEPEN(); break;
                                 case EMR_EXTCREATEFONTINDIRECTW:    Read_EMR_EXTCREATEFONTINDIRECTW(); break;
@@ -707,6 +708,18 @@ namespace MetaFile
 
                 if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
                         HANDLE_EMR_CREATEDIBPATTERNBRUSHPT(ulBrushIndex, oDibBrush);
+        }
+
+        void CEmfParser::Read_EMR_CREATEMONOBRUSH()
+        {
+                unsigned int ulBrushIndex;
+                TEmfDibPatternBrush oDibBrush;
+
+                m_oStream >> ulBrushIndex;
+                m_oStream >> oDibBrush;
+
+                if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+                        HANDLE_EMR_CREATEMONOBRUSH(ulBrushIndex, oDibBrush);
         }
 
         void CEmfParser::Read_EMR_SELECTCLIPPATH()

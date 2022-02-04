@@ -177,6 +177,7 @@ namespace MetaFile
                 void HANDLE_EMR_SETSTRETCHBLTMODE(unsigned int& unStretchMode);
                 void HANDLE_EMR_SETICMMODE(unsigned int& unICMMode);
                 void HANDLE_EMR_CREATEDIBPATTERNBRUSHPT(unsigned int& unBrushIndex, TEmfDibPatternBrush& oDibBrush);
+                void HANDLE_EMR_CREATEMONOBRUSH(unsigned int& unBrushIndex, TEmfDibPatternBrush& oDibBrush);
                 void HANDLE_EMR_SELECTCLIPPATH(unsigned int& unRegionMode);
                 void HANDLE_EMR_SETBKCOLOR(TEmfColor& oColor);
                 void HANDLE_EMR_EXCLUDECLIPRECT(TEmfRectL& oClip);

@@ -59,6 +59,7 @@ namespace MetaFile
                 virtual void HANDLE_EMR_SETVIEWPORTEXTEX(const TEmfSizeL&) = 0;
                 virtual void HANDLE_EMR_SETSTRETCHBLTMODE(const unsigned int&) = 0;
                 virtual void HANDLE_EMR_SETICMMODE(const unsigned int&) = 0;
+                virtual void HANDLE_EMR_CREATEMONOBRUSH(const unsigned int&, const TEmfDibPatternBrush&, CDataStream&) = 0;
                 virtual void HANDLE_EMR_CREATEDIBPATTERNBRUSHPT(const unsigned int&, const TEmfDibPatternBrush&, CDataStream&) = 0;
                 virtual void HANDLE_EMR_SELECTCLIPPATH(const unsigned int&) = 0;
                 virtual void HANDLE_EMR_SETBKCOLOR(const TEmfColor&) = 0;

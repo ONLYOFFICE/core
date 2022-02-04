@@ -419,7 +419,7 @@ namespace Oox2Odf
 		if (!oox_max_dist) return;
 	}
 	
-	void convert(OOX::Logic::CObjDist *oox_obj_dist)
+	void OoxConverter::convert(OOX::Logic::CObjDist *oox_obj_dist) // !!! )
 	{
 		if (!oox_obj_dist) return;
 	}

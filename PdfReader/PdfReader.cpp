@@ -430,7 +430,7 @@ return 0;
 //		return wsXml;
         return L"";
 	}
-    void CPdfReader::AddToPage(int nPageIndex, IRenderer* pPdfWriter, IRenderer* pNewRenderer)
+    void CPdfReader::AddToPage(int nPageIndex, IRenderer* pPdfWriter, IRenderer* pNewRenderer, const std::wstring& sFile)
     {
         long lRendererType;
         pPdfWriter->get_Type(&lRendererType);
@@ -438,16 +438,15 @@ return 0;
             return;
 
         CPdfRenderer* pdfWriter = (CPdfRenderer*)pPdfWriter;
-        std::string sFileName = std::string(m_pInternal->m_pPDFDocument->getFileName()->getCString());
         XRef* xref = m_pInternal->m_pPDFDocument->getXRef();
 
         nPageIndex++;
         Page* pPage = m_pInternal->m_pPDFDocument->getCatalog()->getPage(nPageIndex);
-        PageAttrs* pPageAttrs = pPage->getAttrs();
+        PDFRectangle* pPageMediaBox = pPage->getMediaBox();
         Ref* pPageRef = m_pInternal->m_pPDFDocument->getCatalog()->getPageRef(nPageIndex);
 
         // Получение объекта страницы
-        Object pageRefObj, pageObj, pageRefParent, pageContents;
+        Object pageRefObj, pageObj, pageRefParent, pageRefContents, pageMediaBox;
         pageRefObj.initRef(pPageRef->num, pPageRef->gen);
         if (!pageRefObj.fetch(xref, &pageObj)->isDict())
         {
@@ -455,8 +454,9 @@ return 0;
             pageRefObj.free();
             return;
         }
-        pageObj.dictLookup("Parent", &pageRefParent);
-        pageObj.dictLookup("Contents", &pageContents);
+        pageObj.dictLookupNF("Parent", &pageRefParent);
+        pageObj.dictLookupNF("Contents", &pageRefContents);
+        pageObj.dictLookup("MediaBox", &pageMediaBox);
 
         CPageForWriter* pCPFW = new CPageForWriter();
         pCPFW->nPosLastXRef = xref->getLastXRefPos();
@@ -464,12 +464,14 @@ return 0;
         pCPFW->pRoot = std::make_pair(xref->getRootNum(), xref->getRootGen());
         pCPFW->pPage = std::make_pair(pPageRef->num, pPageRef->gen);
         pCPFW->pParent = std::make_pair(pageRefParent.getRefNum(), pageRefParent.getRefGen());
-        pCPFW->pContents = std::make_pair(pageContents.getRefNum(), pageContents.getRefGen());
+        pCPFW->pContents = std::make_pair(pageRefContents.getRefNum(), pageRefContents.getRefGen());
+        pCPFW->pMediaBox = { pPageMediaBox->x1, pPageMediaBox->y1, pPageMediaBox->x2, pPageMediaBox->y2 };
+        pCPFW->sResources = L""; // Нужно воссоздать ресурсы страницы - это словарь произвольных элементов
 
-        pdfWriter->AddToPage(pCPFW, NSFile::GetDirectoryName(UTF8_TO_U(sFileName)) + L"/res.pdf");
+        pdfWriter->AddToPage(pCPFW, sFile);
 
         RELEASEOBJECT(pCPFW);
-        pageContents.free();
+        pageRefContents.free();
         pageRefParent.free();
         pageObj.free();
         pageRefObj.free();

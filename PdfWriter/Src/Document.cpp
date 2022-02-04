@@ -1052,7 +1052,7 @@ namespace PdfWriter
 
 		return (!!m_pAcroForm);
 	}
-    void CDocument::AddToPage(const std::wstring& wsPath, CPage* pPage, CXref* pXref, int nPosLastXRef, unsigned int unRootObjId, unsigned int unRootGenNo)
+    void CDocument::AddToPage(const std::wstring& wsPath, CPage* pPage, CXref* pXref, int nPosLastXRef, int nSizeXRef, unsigned int unRootObjId, unsigned int unRootGenNo)
 	{
 		CFileStream* pStream = new CFileStream();
 		if (!pStream || !pStream->OpenFile(wsPath, false))
@@ -1067,32 +1067,28 @@ namespace PdfWriter
 			PrepareEncryption();
 		}
 
-        CXref* pXrefNew = new CXref(this, 9 /* номер объекта страницы в читателе */);
+        // Освобождается в деструкторе pXref как m_pPrev
+        CXref* pXrefNew = new CXref(this, nSizeXRef);
 
 #ifndef FILTER_FLATE_DECODE_DISABLED
 		if (m_unCompressMode & COMP_TEXT)
 			pPage->SetFilter(STREAM_FILTER_FLATE_DECODE);
 #endif
-		pPage->AddCommands(pXref, L"");
+        pPage->AddCommands(pXrefNew, L"");
 
-		pXrefNew->Add(pPage);
-        pXref->SetPrevAddr(nPosLastXRef);
-		pXrefNew->SetPrev(pXref);
+        pXref->Add(pPage);
+        pXrefNew->SetPrevAddr(nPosLastXRef);
+        pXref->SetPrev(pXrefNew);
 
         // Root в трейлер
         CObjectBase* pBase = new CObjectBase();
         pBase->SetRef(unRootObjId, unRootGenNo);
         CObjectBase* pRoot = new CProxyObject(pBase);
-        pXrefNew->GetTrailer()->Add("Root", pRoot);
+        pXref->GetTrailer()->Add("Root", pRoot);
 
-		pXrefNew->WriteToStream(pStream, pEncrypt);
+        pXref->WriteToStream(pStream, pEncrypt);
 
 		delete pStream;
-		// будет удаляться в деструкторе pXrefNew
-        // RELEASEOBJECT(pXref);
-		// страница становится дважды принадлежащей из-за чего дважды удаляется
-		// для страницы воссозданной нужно будет очищать
-		//RELEASEOBJECT(pXrefNew);
         RELEASEOBJECT(pBase);
 	}
 }

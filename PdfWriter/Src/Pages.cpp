@@ -200,35 +200,23 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CPage
 	//----------------------------------------------------------------------------------------
-	CPage::CPage(CXref* pXref, CPageTree* pParent, CDocument* pDocument)
-	{
-		pXref->Add(this);
+    CPage::CPage(CXref* pXref, CObjectBase* pParent, CDocument* pDocument, CObjectBase* pContents, CArrayObject* pMediaBox)
+    {
+        Init(pXref, pParent, pDocument);
 
-		m_pXref     = pXref;
-		m_pDocument = pDocument;
-		m_pContents = new CArrayObject();
+        m_pContents->Add(pContents);
+        m_pStream   = NULL;
+
+        Add("MediaBox", pMediaBox);
+    }
+    CPage::CPage(CXref* pXref, CPageTree* pParent, CDocument* pDocument)
+	{
+        Init(pXref, pParent, pDocument);
+
 		m_pContents->Add(new CDictObject(pXref));
 		m_pStream   = ((CDictObject*)m_pContents->Get(0))->GetStream();
-		m_eGrMode   = grmode_PAGE;
-		m_pGrState  = new CGrState(NULL);
 
-		m_pExtGStates       = NULL;
-		m_unExtGStatesCount = 0;
-		m_pFonts            = NULL;
-		m_pFont             = NULL;
-		m_unFontsCount      = 0;
-		m_pXObjects         = NULL;
-		m_unXObjectsCount   = 0;
-		m_pShadings         = NULL;
-		m_unShadingsCount   = 0;
-		m_pPatterns         = NULL;
-		m_unPatternsCount   = 0;
-
-		Add("Type", "Page");
-		Add("Parent", pParent);
-		Add("MediaBox", CArrayObject::CreateBox(0, 0, DEF_PAGE_WIDTH, DEF_PAGE_HEIGHT));
-		Add("Contents", m_pContents);		
-		AddResource();
+        Add("MediaBox", CArrayObject::CreateBox(0, 0, DEF_PAGE_WIDTH, DEF_PAGE_HEIGHT));
 	}
 	CPage::~CPage()
 	{
@@ -240,6 +228,34 @@ namespace PdfWriter
 			pGrState = pPrev;
 		}
 	}
+    void CPage::Init(CXref* pXref, CObjectBase* pParent, CDocument* pDocument)
+    {
+        pXref->Add(this);
+
+        m_pXref     = pXref;
+        m_pDocument = pDocument;
+        m_pContents = new CArrayObject();
+        m_eGrMode   = grmode_PAGE;
+        m_pGrState  = new CGrState(NULL);
+
+        m_pExtGStates       = NULL;
+        m_unExtGStatesCount = 0;
+        m_pFonts            = NULL;
+        m_pFont             = NULL;
+        m_unFontsCount      = 0;
+        m_pXObjects         = NULL;
+        m_unXObjectsCount   = 0;
+        m_pShadings         = NULL;
+        m_unShadingsCount   = 0;
+        m_pPatterns         = NULL;
+        m_unPatternsCount   = 0;
+
+        Add("Type", "Page");
+        Add("Parent", pParent);
+        Add("MediaBox", CArrayObject::CreateBox(0, 0, DEF_PAGE_WIDTH, DEF_PAGE_HEIGHT));
+        Add("Contents", m_pContents);
+        AddResource();
+    }
     void CPage::SetWidth(double dValue)
 	{
         dValue = std::min(std::max(dValue, 1.0), 14400.0);

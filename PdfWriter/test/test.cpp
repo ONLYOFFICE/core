@@ -13,7 +13,20 @@ int main()
     pReader->SetTempDirectory(NSFile::GetProcessDirectory() + L"/rtemp");
     std::wstring sPassword = L"";
 
-    bool bResult = pReader->LoadFromFile(NSFile::GetProcessDirectory() + L"/test.pdf", L"", sPassword, sPassword);
+    // PDFDoc монополизирует файл для чтения и не отпускает пока не деструкнится. Для дозаписи файл
+    // нужно прочитать в память для ридера, а доступ к файлу отдать вритеру.
+    BYTE* pData;
+    DWORD nBytes;
+    NSFile::CFileBinary::ReadAllBytes(NSFile::GetProcessDirectory() + L"/test.pdf", &pData, nBytes);
+    if (!pData)
+    {
+        RELEASEOBJECT(pReader);
+        RELEASEOBJECT(pApplicationFonts);
+        return 1;
+    }
+
+    bool bResult = pReader->LoadFromMemory(pData, nBytes, L"", sPassword, sPassword);
+    // bool bResult = pReader->LoadFromFile(NSFile::GetProcessDirectory() + L"/test.pdf", L"", sPassword, sPassword);
     if (bResult)
     {
         /*
@@ -40,9 +53,10 @@ int main()
     }
 
     // на какую страницу, писатель PdfWriter, IRenderer с командами дозаписи
-    pReader->AddToPage(0, &pdfWriter, NULL);
+    pReader->AddToPage(0, &pdfWriter, NULL, NSFile::GetProcessDirectory() + L"/test.pdf");
     //pdfWriter.SaveToFile(NSFile::GetProcessDirectory() + L"/res.pdf");
     RELEASEOBJECT(pReader);
     RELEASEOBJECT(pApplicationFonts);
+    RELEASEARRAYOBJECTS(pData);
     return 0;
 }

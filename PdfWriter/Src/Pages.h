@@ -76,6 +76,7 @@ namespace PdfWriter
 	class CPage : public CDictObject
 	{
 	public:
+        CPage(CXref* pXref, CObjectBase* pParent, CDocument* pDocument, CObjectBase* pContents, CArrayObject* pMediaBox);
 		CPage(CXref* pXref, CPageTree* pParent, CDocument* pDocument);
 		~CPage();
 
@@ -145,6 +146,7 @@ namespace PdfWriter
 
 	private:
 
+        void          Init(CXref* pXref, CObjectBase* pParent, CDocument* pDocument);
 		void          EllipseArc(double dX, double dY, double dXRad, double dYRad, double dAngle1, double dAngle2, bool bClockDirection);
 		CArrayObject* GetMediaBoxItem();
 		CDictObject*  GetResourcesItem();

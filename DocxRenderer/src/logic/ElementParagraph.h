@@ -6,12 +6,7 @@ namespace NSDocxRenderer
 {
     const double c_dMMToDx	 = 72 * 20 / 25.4;
 
-    enum class ModeFontOptions {STRIKEOUT, UNDERSTANDING, BACKGROUND_COLOR};
-
-    struct ParamModeFontOptions{
-        ModeFontOptions m_lMode;
-        int m_lColor;
-    };
+    enum class ModeFontOptions {STRIKEOUT, UNDERLINE, HIGHLIGHT};
 
     // у класса T должен быть метод IsBigger, IsBiggerOrEqual
     template<typename T>
@@ -208,7 +203,7 @@ namespace NSDocxRenderer
             return (m_dX >= oSrc->m_dX) ? true : false;
         }
 
-        std::vector<CContText*> BreakCont(const double &dLeftLineCoord, const double &dRightLineCoord, const ParamModeFontOptions &oMode)
+        std::vector<CContText*> BreakCont(const double &dLeftLineCoord, const double &dRightLineCoord, const std::pair<ModeFontOptions, int> &oMode)
         {
             std::vector<CContText*> arReturnConts;
             size_t nCountChars = m_arWidthText.size();
@@ -256,7 +251,7 @@ namespace NSDocxRenderer
             return arReturnConts;
         }
 
-        CContText* AddNewCont(const size_t &nLastIdx, const size_t &nCurrentIdx, const ParamModeFontOptions &oMode, const bool &bMark)
+        CContText* AddNewCont(const size_t &nLastIdx, const size_t &nCurrentIdx, const std::pair<ModeFontOptions, int> &oMode, const bool &bMark)
         {
             CContText* pCont = new CContText(*this);
             if (true == bMark)
@@ -301,22 +296,23 @@ namespace NSDocxRenderer
 
         }
 
-        void MarkFontProperties(const ParamModeFontOptions &oMode)
+        void MarkFontProperties(const std::pair<ModeFontOptions, int> &oMode)
         {
-            switch (oMode.m_lMode) {
+            switch (oMode.first) {
                 case ModeFontOptions::STRIKEOUT:
                     m_oFont.Strikeout = 1;
                     break;
-                case ModeFontOptions::UNDERSTANDING:
+                case ModeFontOptions::UNDERLINE:
                     m_oFont.Underline = 1;
+                    m_oFont.UnderlineType = oMode.second;
                     break;
-                case ModeFontOptions::BACKGROUND_COLOR:
-                    m_oFont.BackgroundColor = oMode.m_lColor;
+                case ModeFontOptions::HIGHLIGHT:
+                    m_oFont.HighlightColor = oMode.second;
                     break;
             }
         }
 
-        std::wstring GetBackgroundColor(const int &key)
+        std::wstring GetHighlightColor(const int &key)
         {
             std::map <int, std::wstring> colorHighlight = {
                 {0, L"black"}, {16711680, L"blue"}, {65280, L"green"},
@@ -331,6 +327,15 @@ namespace NSDocxRenderer
                return L"default";
             else
                return it->second;
+        }
+
+        std::wstring GetTypeUnderline(int type)
+        {
+            std::vector <std::wstring> typesUnderline = {L"none", L"single", L"double", L"thick", L"dotted", L"dottedHeavy", L"dash", L"dashedHeavy", L"dashLong", L"dashLongHeavy", L"dotDash", L"dashDotHeavy", L"dotDotDash", L"dashDotDotHeavy", L"wave", L"wavyHeavy", L"wavyDouble"};
+            if (type >= 0 && type < typesUnderline.size())
+                return typesUnderline[type];
+            else
+                return typesUnderline[0];
         }
 
         inline void Write(NSStringUtils::CStringBuilder& oWriter, CFontManagerLight* pManagerLight, bool bIsAddSpace = false)
@@ -351,13 +356,17 @@ namespace NSDocxRenderer
                     oWriter.WriteString(L"<w:i w:val=\"true\"/>");
 
                 if (m_oFont.Underline)
-                    oWriter.WriteString(L"<w:u w:val=\"single\"/>");
+                {
+                    oWriter.WriteString(L"<w:u w:val=\"");
+                    oWriter.WriteString(GetTypeUnderline(m_oFont.UnderlineType));
+                    oWriter.WriteString(L"\"/>");
+                }
                 if (m_oFont.Strikeout)
                     oWriter.WriteString(L"<w:strike/>");
-                if (m_oFont.BackgroundColor >= 0)
+                if (m_oFont.HighlightColor >= 0)
                 {
                     oWriter.WriteString(L"<w:highlight w:val=\"");
-                    oWriter.WriteString(GetBackgroundColor(m_oFont.BackgroundColor));
+                    oWriter.WriteString(GetHighlightColor(m_oFont.HighlightColor));
                     oWriter.WriteString(L"\"/>");
                 }
                 if (bIsAddSpace)
@@ -374,13 +383,17 @@ namespace NSDocxRenderer
                     oWriter.WriteString(L"<w:i w:val=\"true\"/>");
 
                 if (m_oFont.Underline)
-                    oWriter.WriteString(L"<w:u w:val=\"single\"/>");
+                {
+                    oWriter.WriteString(L"<w:u w:val=\"");
+                    oWriter.WriteString(GetTypeUnderline(m_oFont.UnderlineType));
+                    oWriter.WriteString(L"\"/>");
+                }
                 if (m_oFont.Strikeout)
                     oWriter.WriteString(L"<w:strike/>");
-                if (m_oFont.BackgroundColor >= 0)
+                if (m_oFont.HighlightColor >= 0)
                 {
                     oWriter.WriteString(L"<w:highlight w:val=\"");
-                    oWriter.WriteString(GetBackgroundColor(m_oFont.BackgroundColor));
+                    oWriter.WriteString(GetHighlightColor(m_oFont.HighlightColor));
                     oWriter.WriteString(L"\"/>");
                 }
                 if (bIsAddSpace)
@@ -616,7 +629,7 @@ namespace NSDocxRenderer
             return false;
         }
 
-        void SearchInclusions(const double &dLeftLineCoord, const double &dRightLineCoord, const ParamModeFontOptions &oMode)
+        void SearchInclusions(const double &dLeftLineCoord, const double &dRightLineCoord, const std::pair<ModeFontOptions, int> &oMode)
         {
             std::vector<CContText*> arTempConts;
 

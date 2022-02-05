@@ -63,6 +63,7 @@ namespace NSDocxRenderer
 
 		bool m_bIsDeleteTextClipPage;
 
+        std::vector <int> m_arMarkTypeShape;
 	public:
         CPage(NSFonts::IApplicationFonts* pFonts) : m_oManager(pFonts), m_oManagerLight(pFonts)
 		{
@@ -544,8 +545,67 @@ namespace NSDocxRenderer
 			return (count <= 5 && str.find(L"m0") != std::string::npos) ? true : false;
 		}
 
+        bool SearchSecondLine(int cur, const CShape* pCurShape)
+        {
+            size_t nCount = m_arGraphicItems.size();
+            for (size_t i = cur++; i < nCount; ++i)
+            {
+                if (m_arGraphicItems[i]->m_eType == NSDocxRenderer::CBaseItem::etShape)
+                {
+                    CShape* pShape = dynamic_cast <CShape *> (m_arGraphicItems[i]);
+                    if (pShape->m_dHeight < 0.15 && abs(pCurShape->m_dLeft - pShape->m_dLeft) < 0.01 &&
+                        abs(pCurShape->m_dWidth - pShape->m_dWidth) < 0.01 &&
+                        abs(pShape->m_dTop - pCurShape->m_dTop - pCurShape->m_dHeight) < 0.4)
+                    {
+                        m_arGraphicItems.erase(m_arGraphicItems.cbegin() + ++i);
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        void ProcessingLineShape()
+        {
+            enum {NONE, SINGLE, DOUBLE, THICK, DOTTED, DOTTEDHEAVY,
+                  DASH, DASHEDHEAVY, DASHLONG, DASHLONGHEAVY, DOTDASH, DASHDOTHEAVY,
+                  DOTDOTDASH, DASHDOTDOTHEAVY, WAVE, WAVYHEAVY, WAVYDOUBLE};
+
+            size_t nCount = m_arGraphicItems.size();
+            for (size_t i = 0; i < nCount; ++i)
+            {
+                if (m_arGraphicItems[i]->m_eType == NSDocxRenderer::CBaseItem::etShape)
+                {
+                    CShape* pShape = dynamic_cast <CShape *> (m_arGraphicItems[i]);
+                    if (pShape->m_dHeight < 0.15  )
+                    {
+                        if (SearchSecondLine(i, pShape))
+                        {
+                            m_arMarkTypeShape.push_back(DOUBLE);
+                            --nCount;
+                            continue;
+                        }
+                    }
+                    if (pShape->m_dHeight > 0.15 && pShape->m_dHeight < 0.3)
+                    {
+                        m_arMarkTypeShape.push_back(SINGLE);
+                        continue;
+                    }
+                    if (pShape->m_dHeight > 0.3 && pShape->m_dHeight < 0.5)
+                    {
+                        m_arMarkTypeShape.push_back(THICK);
+                        continue;
+                    }
+
+                }
+                m_arMarkTypeShape.push_back(-1);
+            }
+
+        }
+
 		void SetTextOptions()
 		{
+			ProcessingLineShape();
 			std::vector <int> arIdxGraphicItems;
 			size_t nCount = m_arGraphicItems.size();
 			int counter = -1;
@@ -569,7 +629,7 @@ namespace NSDocxRenderer
 								  && (m_arTextLine[j]->IsMatchColor(pShape->m_oBrush.Color1)
 								  ||  m_arTextLine[j]->IsMatchColor(pShape->m_oPen.Color)))
 							{
-								ParamModeFontOptions oMode{ModeFontOptions::STRIKEOUT, pShape->m_oBrush.Color1};
+								std::pair<ModeFontOptions, int> oMode(ModeFontOptions::STRIKEOUT, pShape->m_oBrush.Color1);
 
 								m_arTextLine[j]->SearchInclusions(pShape->m_dLeft, pShape->m_dLeft+pShape->m_dWidth, oMode);
 								arIdxGraphicItems.push_back(counter);
@@ -580,7 +640,7 @@ namespace NSDocxRenderer
 								 && (m_arTextLine[j]->IsMatchColor(pShape->m_oBrush.Color1)
 								 ||  m_arTextLine[j]->IsMatchColor(pShape->m_oPen.Color)))
 							{
-								ParamModeFontOptions oMode{ModeFontOptions::UNDERSTANDING, pShape->m_oBrush.Color1};
+								std::pair<ModeFontOptions, int> oMode(ModeFontOptions::UNDERLINE, m_arMarkTypeShape[i]);
 
 								m_arTextLine[j]->SearchInclusions(pShape->m_dLeft, pShape->m_dLeft+pShape->m_dWidth, oMode);
 								arIdxGraphicItems.push_back(counter);
@@ -601,7 +661,7 @@ namespace NSDocxRenderer
 								&& (pShape->m_dLeft + pShape->m_dWidth) <= (m_arTextLine[j]->m_dX + dWidthTextLine))
 
 							{
-								ParamModeFontOptions oMode{ModeFontOptions::BACKGROUND_COLOR, pShape->m_oBrush.Color1};
+								std::pair<ModeFontOptions, int> oMode(ModeFontOptions::HIGHLIGHT, pShape->m_oBrush.Color1);
 
 								m_arTextLine[j]->SearchInclusions(pShape->m_dLeft, pShape->m_dLeft+pShape->m_dWidth, oMode);
 								arIdxGraphicItems.push_back(counter);

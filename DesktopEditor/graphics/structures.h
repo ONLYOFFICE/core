@@ -494,6 +494,7 @@ namespace NSStructures
 		int Bold;
 		int Italic;
 		unsigned char Underline;
+        int UnderlineType;
 		unsigned char Strikeout;
 
 		int StringGID;
@@ -501,7 +502,7 @@ namespace NSStructures
 
 		int FaceIndex;
 
-		int BackgroundColor;
+        int HighlightColor;
 
 		int IsEqual(CFont *pFont)
 		{
@@ -510,7 +511,8 @@ namespace NSStructures
 
 			return ((Name == pFont->Name) && (Path == pFont->Path) && (FaceIndex == pFont->FaceIndex) && (StringGID == pFont->StringGID) && (Size == pFont->Size) &&
 					(Bold == pFont->Bold) && (Italic == pFont->Italic) &&
-					(Underline == pFont->Underline) && (Strikeout == pFont->Strikeout) && (BackgroundColor == pFont->BackgroundColor));
+                    (Underline == pFont->Underline) && (UnderlineType = pFont->UnderlineType) &&
+                    (Strikeout == pFont->Strikeout) && (HighlightColor == pFont->HighlightColor));
 		}
 
 		long GetStyle() const
@@ -591,7 +593,7 @@ namespace NSStructures
 
 			FaceIndex = other.FaceIndex;
 
-			BackgroundColor = other.BackgroundColor;
+            HighlightColor = other.HighlightColor;
 
 			return *this;
 		}

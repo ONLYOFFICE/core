@@ -9058,11 +9058,8 @@ void BinaryCustomsTableWriter::Write(OOX::CDocument* pDocument)
 				}
 			}
 			
-			int nCurPos2 = m_oBcw.WriteItemStart(c_oSerCustoms::Content);
-			
-			std::wstring sXml = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pCustomXml->m_sXmlA.c_str(), pCustomXml->m_sXmlA.length());
-			m_oBcw.m_oStream.WriteStringW3(sXml);
-			
+			int nCurPos2 = m_oBcw.WriteItemStart(c_oSerCustoms::ContentA);
+			m_oBcw.m_oStream.WriteStringA(pCustomXml->m_sXmlA);
 			m_oBcw.WriteItemEnd(nCurPos2);
 			
 			m_oBcw.WriteItemEnd(nCurPos);

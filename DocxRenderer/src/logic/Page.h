@@ -565,6 +565,21 @@ namespace NSDocxRenderer
             return false;
         }
 
+        double SearchDotted(int cur, const CShape* pCurShape)
+        {
+            double Width = pCurShape->m_dWidth;
+            size_t nCount = m_arGraphicItems.size();
+            for (size_t i = cur++; i < nCount; ++i)
+            {
+                if (m_arGraphicItems[i]->m_eType == NSDocxRenderer::CBaseItem::etShape)
+                {
+                    CShape* pShape = dynamic_cast <CShape *> (m_arGraphicItems[i]);
+
+                }
+            }
+            return Width;
+        }
+
         void ProcessingLineShape()
         {
             enum {NONE, SINGLE, DOUBLE, THICK, DOTTED, DOTTEDHEAVY,
@@ -586,26 +601,29 @@ namespace NSDocxRenderer
                             continue;
                         }
                     }
-                    if (pShape->m_dHeight > 0.15 && pShape->m_dHeight < 0.3)
+                    if (pShape->m_dWidth < 0.509)
                     {
-                        m_arMarkTypeShape.push_back(SINGLE);
-                        continue;
+                        if (SearchDotted(i, pShape))
+                        {
+
+                        }
                     }
-                    if (pShape->m_dHeight > 0.3 && pShape->m_dHeight < 0.5)
-                    {
-                        m_arMarkTypeShape.push_back(THICK);
-                        continue;
-                    }
+//                    TODO: определять размер линии при следующем обходе
+//                    if (pShape->m_dHeight > 0.3 && pShape->m_dHeight < 0.5)
+//                    {
+//                        m_arMarkTypeShape.push_back(THICK);
+//                        continue;
+//                    }
 
                 }
-                m_arMarkTypeShape.push_back(-1);
+                m_arMarkTypeShape.push_back(SINGLE);
             }
 
         }
 
 		void SetTextOptions()
 		{
-			ProcessingLineShape();
+			//ProcessingLineShape();
 			std::vector <int> arIdxGraphicItems;
 			size_t nCount = m_arGraphicItems.size();
 			int counter = -1;
@@ -635,12 +653,13 @@ namespace NSDocxRenderer
 								arIdxGraphicItems.push_back(counter);
 								break;
 							}
-							if (    pShape->m_dHeight < 0.5
-								 && abs(pShape->m_dTop - dBottomTextLine) < 0.6
-								 && (m_arTextLine[j]->IsMatchColor(pShape->m_oBrush.Color1)
-								 ||  m_arTextLine[j]->IsMatchColor(pShape->m_oPen.Color)))
+							if (   pShape->m_dTop > dBottomTextLine 
+								&& pShape->m_dHeight < 1.5 
+								&& abs(pShape->m_dTop - dBottomTextLine) < 2 
+								&& (m_arTextLine[j]->IsMatchColor(pShape->m_oBrush.Color1) 
+								|| m_arTextLine[j]->IsMatchColor(pShape->m_oPen.Color)))
 							{
-								std::pair<ModeFontOptions, int> oMode(ModeFontOptions::UNDERLINE, m_arMarkTypeShape[i]);
+								std::pair<ModeFontOptions, int> oMode(ModeFontOptions::UNDERLINE, 1);
 
 								m_arTextLine[j]->SearchInclusions(pShape->m_dLeft, pShape->m_dLeft+pShape->m_dWidth, oMode);
 								arIdxGraphicItems.push_back(counter);
@@ -661,24 +680,33 @@ namespace NSDocxRenderer
 								&& (pShape->m_dLeft + pShape->m_dWidth) <= (m_arTextLine[j]->m_dX + dWidthTextLine))
 
 							{
-								std::pair<ModeFontOptions, int> oMode(ModeFontOptions::HIGHLIGHT, pShape->m_oBrush.Color1);
+//                                std::cout<<"^^^^^^^^^^^^^^^^^^^^^^^^^^ - highlight"<<"\n";
+//                                std::cout<<"line Top = "<<dTopTextLine<<"\n";
+//                                std::cout<<"line Bottom = "<<dBottomTextLine<<"\n";
+//                                std::cout<<"line Height = "<<m_arTextLine[j]->m_dHeight<<"\n";
+
+                                std::pair<ModeFontOptions, int> oMode(ModeFontOptions::HIGHLIGHT, pShape->m_oBrush.Color1);
 
 								m_arTextLine[j]->SearchInclusions(pShape->m_dLeft, pShape->m_dLeft+pShape->m_dWidth, oMode);
-								arIdxGraphicItems.push_back(counter);
+                                arIdxGraphicItems.push_back(counter);
 								break;
 							}
+//                            std::cout<<"line Top = "<<dTopTextLine<<"\n";
+//                            std::cout<<"line Bottom = "<<dBottomTextLine<<"\n";
+//                            std::cout<<"line Height = "<<m_arTextLine[j]->m_dHeight<<"\n";
 						}
 					}
+//                    std::cout<<"----------------------------------------^"<<"\n";
 				}
 			}
 
-			auto iter = m_arGraphicItems.cbegin();
-			for (size_t i = arIdxGraphicItems.size(); i > 0; --i)
-				m_arGraphicItems.erase(iter + arIdxGraphicItems[i-1]);
+            auto iter = m_arGraphicItems.cbegin();
+            for (size_t i = arIdxGraphicItems.size(); i > 0; --i)
+                m_arGraphicItems.erase(iter + arIdxGraphicItems[i-1]);
 		}
 
 		void Build()
-		{
+        {
 			SetTextOptions();
 
 			if (m_bIsDeleteTextClipPage)

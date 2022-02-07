@@ -423,16 +423,16 @@ namespace Oox2Odf
 	{
 		if (!oox_obj_dist) return;
 	}
-	/*
-	void convert(OOX::Logic::CRSp *oox_r_sp)
+	
+	void OoxConverter::convert(OOX::Logic::CRSp *oox_r_sp)
 	{
 		if (!oox_r_sp) return;
 	}
 
-	void convert(OOX::Logic::CRSpRule *oox_r_sp_rule)
+	void OoxConverter::convert(OOX::Logic::CRSpRule *oox_r_sp_rule)
 	{
 		if (!oox_r_sp_rule) return;
-	}*/
+	}
 
 	void OoxConverter::convert(OOX::Logic::CFraction *oox_fraction)
 	{
@@ -866,7 +866,9 @@ namespace Oox2Odf
 		convert(oox_mrun->m_oYearLong.GetPointer());
 		convert(oox_mrun->m_oYearShort.GetPointer());
 		if (clrFlag)
+		{
 			CLOSE_MATH_TAG;
+		}
 	}
 
 	bool OoxConverter::convert(OOX::Logic::CRunProperty *oox_r_pr)
@@ -1357,6 +1359,11 @@ namespace Oox2Odf
 		convert(oox_ssub_sup_pr->m_oAlnScr.GetPointer());
 		convert(oox_ssub_sup_pr->m_oCtrlPr.GetPointer());
 
+	}
+
+	void OoxConverter::convert(OOX::Logic::CAlnScr* oox_aln_scr)
+	{
+		if (!oox_aln_scr) return;
 	}
 
 	void OoxConverter::convert(OOX::Logic::CSSup *oox_ssup)

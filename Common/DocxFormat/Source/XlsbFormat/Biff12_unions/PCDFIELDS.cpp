@@ -63,6 +63,8 @@ namespace XLSB
         }
 
         auto count = proc.repeated<PCDFIELD>(0, 0);
+        if(count > 0)
+            proc.getGlobalWorkbookInfo()->currentPivotCacheRecord++;
         while(count > 0)
         {
             m_arPCDFIELD.insert(m_arPCDFIELD.begin(), elements_.back());

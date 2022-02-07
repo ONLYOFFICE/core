@@ -38,6 +38,7 @@
 #include <unordered_map>
 
 #include "Biff_structures/BorderFillInfo.h"
+#include "XlsElementsType.h"
 
 #include "../Crypt/Decryptor.h"
 
@@ -205,14 +206,7 @@ public:
     std::unordered_map<int, std::vector<std::wstring>>	mapTableColumnNames;
     std::unordered_map<std::wstring, int>		mapTableGuidsIndex;
 
-    enum EPivotCacheRecordType
-    {
-        index   = 0,
-        xnum     = 1,
-        PCDIDateTime = 2,
-        XLWideString  = 3,
-    };
-    std::unordered_map<int, std::vector<EPivotCacheRecordType>>		pivotCacheRecordType;
+    std::unordered_map<int, std::vector<XLS::ElementType>>		pivotCacheRecordType;
     int                     		currentPivotCacheRecord;
 
 	XlsConverter					*xls_converter;

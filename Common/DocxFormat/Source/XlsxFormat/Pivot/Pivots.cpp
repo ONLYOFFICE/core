@@ -4462,7 +4462,38 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
                     if(ptr1 != nullptr)
                     {
-
+                        for(const auto& item : ptr1->data)
+                        switch(item.first)
+                        {
+                            case XLS::typePCDIIndex:
+                            {
+                                auto oSharedItemsIndex = new CSharedItemsIndex();
+                                oSharedItemsIndex->m_oV = *boost::any_cast<_UINT32>(&item.second);
+                                m_arrItems.push_back(oSharedItemsIndex);
+                                break;
+                            }
+                            case XLS::typePCDINumber:
+                            {
+                                auto oCPivotNumericValue = new CPivotNumericValue();
+                                oCPivotNumericValue->m_oValue = *boost::any_cast<double>(&item.second);
+                                m_arrItems.push_back(oCPivotNumericValue);
+                                break;
+                            }
+                            case XLS::typePCDIDatetime:
+                            {
+                                auto oCPivotDateTimeValue = new CPivotDateTimeValue();
+                                oCPivotDateTimeValue->m_oValue = *boost::any_cast<std::wstring>(&item.second);
+                                m_arrItems.push_back(oCPivotDateTimeValue);
+                                break;
+                            }
+                            case XLS::typePCDIString:
+                            {
+                                auto oCPivotCharacterValue = new CPivotCharacterValue();
+                                oCPivotCharacterValue->m_oValue = *boost::any_cast<std::wstring>(&item.second);
+                                m_arrItems.push_back(oCPivotCharacterValue);
+                                break;
+                            }
+                        }
                     }
                 }
             }

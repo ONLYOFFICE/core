@@ -33,6 +33,7 @@
 
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
+#include <boost/any.hpp>
 
 namespace XLSB
 {
@@ -51,7 +52,7 @@ namespace XLSB
 
             void readFields(XLS::CFRecord& record);
 
-            std::vector<BYTE>   rawdata;
+            std::vector<std::pair<XLS::ElementType, boost::any>>   data;
 
     };
 

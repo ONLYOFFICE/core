@@ -449,6 +449,7 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertShadow(CShadow	& shadow)
     PPT_FORMAT::CStringWriter shadow_writer;
 
     shadow_writer.WriteString(L"<a:effectLst>");
+    bool needHiddenEffect = false;
 
     if (!Preset.empty())
     {
@@ -481,22 +482,32 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertShadow(CShadow	& shadow)
     }
     else
     {
+        needHiddenEffect = shadow.Visible;
         shadow_writer.WriteString(L"<a:outerShdw");
-        shadow_writer.WriteString(L" rotWithShape=\"0\"");
+        shadow_writer.WriteString(strDist);
+        shadow_writer.WriteString(strDir);
         if (strSX.empty() && strSY.empty())
         {
             shadow_writer.WriteString(L" algn=\"ctr\"");
         }
         shadow_writer.WriteString(strSX);
         shadow_writer.WriteString(strSY);
-        shadow_writer.WriteString(strDir);
-        shadow_writer.WriteString(strDist);
+        shadow_writer.WriteString(L" rotWithShape=\"0\"");
         shadow_writer.WriteString(L">");
 
         shadow_writer.WriteString(ConvertColor(shadow.Color,shadow.Alpha));
         shadow_writer.WriteString(L"</a:outerShdw>");
     }
     shadow_writer.WriteString(L"</a:effectLst>");
+    if (needHiddenEffect)
+    {
+        std::wstring STRshadow;
+        STRshadow = L"<a:extLst><a:ext uri=\"{AF507438-7753-43E0-B8FC-AC1667EBCBE1}\"><a14:hiddenEffects xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\">";
+        STRshadow += shadow_writer.GetData();
+        STRshadow += L"</a14:hiddenEffects></a:ext><a:ext uri=\"{53640926-AAD7-44D8-BBD7-CCE9431645EC}\"><a14:shadowObscured xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"1\"/></a:ext></a:extLst>";
+        return STRshadow;
+    }
+
     return shadow_writer.GetData();
 }
 

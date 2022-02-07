@@ -84,7 +84,7 @@ namespace OOX
 				if (pFind != m_pMainDocument->m_mapContent.end())
 				{
 					Add(oRels.m_arRelations[i]->rId(), pFind->second);
-					return;
+                    continue;
 				}
 			}
 			

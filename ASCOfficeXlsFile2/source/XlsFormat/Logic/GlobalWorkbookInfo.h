@@ -201,9 +201,19 @@ public:
 	int								connectionId;
 	std::map<std::wstring, int>		connectionNames;
 
-        std::unordered_map<int, std::wstring>		mapTableNames;
-        std::unordered_map<int, std::vector<std::wstring>>	mapTableColumnNames;
-        std::unordered_map<std::wstring, int>		mapTableGuidsIndex;
+    std::unordered_map<int, std::wstring>		mapTableNames;
+    std::unordered_map<int, std::vector<std::wstring>>	mapTableColumnNames;
+    std::unordered_map<std::wstring, int>		mapTableGuidsIndex;
+
+    enum EPivotCacheRecordType
+    {
+        index   = 0,
+        xnum     = 1,
+        PCDIDateTime = 2,
+        XLWideString  = 3,
+    };
+    std::unordered_map<int, std::vector<EPivotCacheRecordType>>		pivotCacheRecordType;
+    int                     		currentPivotCacheRecord;
 
 	XlsConverter					*xls_converter;
 

@@ -30,33 +30,29 @@
  *
  */
 
-#include "PCRRecord.h"
+#include "BeginPivotCacheID.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
 
-    PCRRecord::PCRRecord()
+    BeginPivotCacheID::BeginPivotCacheID()
     {
     }
 
-    PCRRecord::~PCRRecord()
+    BeginPivotCacheID::~BeginPivotCacheID()
     {
     }
 
-    BaseObjectPtr PCRRecord::clone()
+    BaseObjectPtr BeginPivotCacheID::clone()
     {
-        return BaseObjectPtr(new PCRRecord(*this));
+        return BaseObjectPtr(new BeginPivotCacheID(*this));
     }
 
-    void PCRRecord::readFields(XLS::CFRecord& record)
+    void BeginPivotCacheID::readFields(XLS::CFRecord& record)
     {
-        size_t size = record.getDataSize();
-        const char* ptrData = record.getData();
-
-        for(size_t i = 0; i < size; ++i)
-            rawdata.push_back(ptrData[i]);
+        record >> idSx >> irstcacheRelID;
     }
 
 } // namespace XLSB

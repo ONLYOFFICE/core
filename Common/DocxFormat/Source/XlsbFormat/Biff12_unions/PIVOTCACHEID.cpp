@@ -30,33 +30,44 @@
  *
  */
 
-#include "PCRRecord.h"
+#include "PIVOTCACHEID.h"
+#include "../Biff12_records/BeginPivotCacheID.h"
+#include "../Biff12_records/EndPivotCacheID.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
 
-    PCRRecord::PCRRecord()
+    PIVOTCACHEID::PIVOTCACHEID()
     {
     }
 
-    PCRRecord::~PCRRecord()
+    PIVOTCACHEID::~PIVOTCACHEID()
     {
     }
 
-    BaseObjectPtr PCRRecord::clone()
+    BaseObjectPtr PIVOTCACHEID::clone()
     {
-        return BaseObjectPtr(new PCRRecord(*this));
+        return BaseObjectPtr(new PIVOTCACHEID(*this));
     }
 
-    void PCRRecord::readFields(XLS::CFRecord& record)
+    //PIVOTCACHEID = BrtBeginPivotCacheID BrtEndPivotCacheID
+    const bool PIVOTCACHEID::loadContent(BinProcessor& proc)
     {
-        size_t size = record.getDataSize();
-        const char* ptrData = record.getData();
+        if (proc.optional<BeginPivotCacheID>())
+        {
+            m_BrtBeginPivotCacheID = elements_.back();
+            elements_.pop_back();
+        }
 
-        for(size_t i = 0; i < size; ++i)
-            rawdata.push_back(ptrData[i]);
+        if (proc.optional<EndPivotCacheID>())
+        {
+            m_BrtEndPivotCacheID = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginPivotCacheID && m_BrtEndPivotCacheID;
     }
 
 } // namespace XLSB

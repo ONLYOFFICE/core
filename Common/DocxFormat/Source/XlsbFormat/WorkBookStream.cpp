@@ -43,6 +43,7 @@
 #include "Biff12_unions/FNGROUP.h"
 #include "Biff12_unions/EXTERNALS.h"
 #include "Biff12_records/CalcProp.h"
+#include "Biff12_unions/PIVOTCACHEIDS.h"
 #include "Biff12_records/OleSize.h"
 #include "Biff12_records/EndBook.h"
 #include "Biff12_records/BookProtection.h"
@@ -217,6 +218,15 @@ const bool WorkBookStream::loadContent(BinProcessor& proc)
                 if (proc.optional<OleSize>())
                 {
                     m_BrtOleSize = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
+            case rt_BeginPivotCacheIDs:
+            {
+                if (proc.optional<PIVOTCACHEIDS>())
+                {
+                    m_PIVOTCACHEIDS = elements_.back();
                     elements_.pop_back();
                 }
             }break;

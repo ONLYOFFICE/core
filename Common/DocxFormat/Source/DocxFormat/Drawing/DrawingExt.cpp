@@ -1038,8 +1038,20 @@ namespace OOX
                     if(ptr->m_SLICERCACHEIDS != nullptr)
                     {
                         OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
-                        oExt->m_sUri == L"{BBE1A952-AA13-448E-AADC-164F8A28A991}";
-                        oExt->m_oSlicerCaches = ptr->m_SLICERCACHEIDS;
+                        oExt->m_sUri.Init();
+                        oExt->m_sUri->append(_T("{46BE6895-7355-4a93-B00E-2C351335B9C9}"));
+                        oExt->m_oSlicerCachesExt = ptr->m_SLICERCACHEIDS;
+
+                        if (oExt)
+                            m_arrExt.push_back( oExt );
+                    }
+
+                    if(ptr->m_TABLESLICERCACHEIDS != nullptr)
+                    {
+                        OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
+                        oExt->m_sUri.Init();
+                        oExt->m_sUri->append(_T("{BBE1A952-AA13-448e-AADC-164F8A28A991}"));
+                        oExt->m_oSlicerCaches = ptr->m_TABLESLICERCACHEIDS;
 
                         if (oExt)
                             m_arrExt.push_back( oExt );
@@ -1056,7 +1068,8 @@ namespace OOX
                     if(ptr->m_CONDITIONALFORMATTINGS != nullptr)
                     {
                         OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
-                        oExt->m_sUri == L"{78C0D931-6437-407d-A8EE-F0AAD7539E65}";
+                        oExt->m_sUri.Init();
+                        oExt->m_sUri->append(_T("{78C0D931-6437-407d-A8EE-F0AAD7539E65}"));
 
                         auto arCF14 = static_cast<XLSB::CONDITIONALFORMATTINGS*>(ptr->m_CONDITIONALFORMATTINGS.get())->m_arCONDITIONALFORMATTING14;
                         for(auto &item : arCF14)
@@ -1069,7 +1082,8 @@ namespace OOX
                     if(ptr->m_DVALS14 != nullptr)
                     {
                         OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
-                        oExt->m_sUri == L"{CCE6A557-97BC-4B89-ADB6-D9C93CAAB3DF}";
+                        oExt->m_sUri.Init();
+                        oExt->m_sUri->append(_T("{CCE6A557-97BC-4B89-ADB6-D9C93CAAB3DF}"));
                         oExt->m_oDataValidations = ptr->m_DVALS14;
 
                         if (oExt)
@@ -1079,18 +1093,9 @@ namespace OOX
                     if(ptr->m_SPARKLINEGROUPS != nullptr)
                     {
                         OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
-                        oExt->m_sUri == L"{05C60535-1F16-4fd2-B633-F4F36F0B64E0}";
+                        oExt->m_sUri.Init();
+                        oExt->m_sUri->append(_T("{05C60535-1F16-4fd2-B633-F4F36F0B64E0}"));
                         oExt->m_oSparklineGroups = ptr->m_SPARKLINEGROUPS;
-
-                        if (oExt)
-                            m_arrExt.push_back( oExt );
-                    }
-
-                    if(ptr->m_SLICERSEX != nullptr)
-                    {
-                        OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
-                        oExt->m_sUri == L"{A8765BA9-456A-4dab-B4F3-ACF838C121DE}";
-                        oExt->m_oSlicerList = ptr->m_SLICERSEX;
 
                         if (oExt)
                             m_arrExt.push_back( oExt );
@@ -1099,8 +1104,20 @@ namespace OOX
                     if(ptr->m_TABLESLICERSEX != nullptr)
                     {
                         OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
-                        oExt->m_sUri == L"{A8765BA9-456A-4dab-B4F3-ACF838C121DE}";
+                        oExt->m_sUri.Init();
+                        oExt->m_sUri->append(_T("{A8765BA9-456A-4dab-B4F3-ACF838C121DE}"));
                         oExt->m_oSlicerList = ptr->m_TABLESLICERSEX;
+
+                        if (oExt)
+                            m_arrExt.push_back( oExt );
+                    }
+
+                    if(ptr->m_SLICERSEX != nullptr)
+                    {
+                        OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
+                        oExt->m_sUri.Init();
+                        oExt->m_sUri->append(_T("{A8765BA9-456A-4dab-B4F3-ACF838C121DE}"));
+                        oExt->m_oSlicerList = ptr->m_SLICERSEX;
 
                         if (oExt)
                             m_arrExt.push_back( oExt );
@@ -1118,7 +1135,8 @@ namespace OOX
                     if(ptr->m_STYLESHEET14 != nullptr)
                     {
                         OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
-                        oExt->m_sUri == L"{EB79DEF2-80B8-43E5-95BD-54CBDDF9020C}";
+                        oExt->m_sUri.Init();
+                        oExt->m_sUri->append(_T("{EB79DEF2-80B8-43E5-95BD-54CBDDF9020C}"));
                         oExt->m_oSlicerStyles = ptr->m_STYLESHEET14;
 
                         if (oExt)
@@ -1128,7 +1146,8 @@ namespace OOX
                     if(ptr->m_DXF14S != nullptr)
                     {
                         OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
-                        oExt->m_sUri == L"{46F421CA-312F-682F-3DD2-61675219B42D}";
+                        oExt->m_sUri.Init();
+                        oExt->m_sUri->append(_T("{46F421CA-312F-682F-3DD2-61675219B42D}"));
                         oExt->m_oDxfs = static_cast<XLSB::DXF14S*>(ptr->m_DXF14S.get())->m_arDXF14;
 
                         if (oExt)
@@ -1147,7 +1166,8 @@ namespace OOX
                     if(ptr->m_BrtList14 != nullptr)
                     {
                         OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
-                        oExt->m_sUri == L"{504A1905-F514-4f6f-8877-14C23A59335A}";
+                        oExt->m_sUri.Init();
+                        oExt->m_sUri->append(_T("{504A1905-F514-4f6f-8877-14C23A59335A}"));
                         oExt->m_oAltTextTable = ptr->m_BrtList14;
 
                         if (oExt)
@@ -1185,7 +1205,8 @@ namespace OOX
                     if(ptr->m_EXTCONN15 != nullptr)
                     {
                         OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
-                        oExt->m_sUri == L"{DE250136-89BD-433C-8126-D09CA5730AF9}";
+                        oExt->m_sUri.Init();
+                        oExt->m_sUri->append(_T("{DE250136-89BD-433C-8126-D09CA5730AF9}"));
                         oExt->m_oConnection = ptr->m_EXTCONN15;
 
                         if (oExt)
@@ -1207,7 +1228,8 @@ namespace OOX
                         if(ptr1->m_BrtSlicerCacheBookPivotTables != nullptr)
                         {
                             OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
-                            oExt->m_sUri == L"{03082B11-2C62-411c-B77F-237D8FCFBE4C}";
+                            oExt->m_sUri.Init();
+                            oExt->m_sUri->append(_T("{03082B11-2C62-411c-B77F-237D8FCFBE4C}"));
 
                             auto ptrSCPT = static_cast<XLSB::SlicerCacheBookPivotTables*>(ptr1->m_BrtSlicerCacheBookPivotTables.get());
                             for(auto &item : ptrSCPT->pivotTables)
@@ -1227,7 +1249,8 @@ namespace OOX
                     {
                         auto ptr1 = static_cast<XLSB::TABLESLICERCACHE*>(ptr->m_TABLESLICERCACHE.get());
                         OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
-                        oExt->m_sUri == L"{2F2917AC-EB37-4324-AD4E-5DD8C200BD13}";
+                        oExt->m_sUri.Init();
+                        oExt->m_sUri->append(_T("{2F2917AC-EB37-4324-AD4E-5DD8C200BD13}"));
                         oExt->m_oTableSlicerCache = ptr1->m_BrtBeginTableSlicerCache;
 
                         if (oExt)
@@ -1238,7 +1261,8 @@ namespace OOX
                     {
                         auto ptr1 = static_cast<XLSB::SLICERCACHECROSSFILTEREXT*>(ptr->m_SLICERCACHECROSSFILTEREXT.get());
                         OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
-                        oExt->m_sUri == L"{470722E0-AACD-4C17-9CDC-17EF765DBC7E}";
+                        oExt->m_sUri.Init();
+                        oExt->m_sUri->append(_T("{470722E0-AACD-4C17-9CDC-17EF765DBC7E}"));
                         oExt->m_oSlicerCacheHideItemsWithNoData = ptr1->m_BrtSlicerCacheHideItemsWithNoData;
 
                         if (oExt)

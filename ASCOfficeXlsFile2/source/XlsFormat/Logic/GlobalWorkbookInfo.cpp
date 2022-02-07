@@ -122,6 +122,7 @@ GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConver
 	bWorkbookProtectExist	= false;
 
 	idPivotCache			= 0;	
+    currentPivotCacheRecord = 0;
 }
 
 GlobalWorkbookInfo::~GlobalWorkbookInfo()

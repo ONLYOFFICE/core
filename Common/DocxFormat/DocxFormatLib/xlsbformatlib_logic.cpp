@@ -675,6 +675,10 @@
     #include "../Source/XlsbFormat/Biff12_records/PivotCacheConnectionName.cpp"
     #include "../Source/XlsbFormat/Biff12_records/PivotCacheIdVersion.cpp"
     #include "../Source/XlsbFormat/Biff12_records/PCDH15.cpp"
+    #include "../Source/XlsbFormat/Biff12_records/BeginPivotCacheIDs.cpp"
+    #include "../Source/XlsbFormat/Biff12_records/EndPivotCacheIDs.cpp"
+    #include "../Source/XlsbFormat/Biff12_records/BeginPivotCacheID.cpp"
+    #include "../Source/XlsbFormat/Biff12_records/EndPivotCacheID.cpp"
 // Biff12_structures
     #include "../Source/XlsbFormat/Biff12_structures/LPByteBuf.cpp"
     #include "../Source/XlsbFormat/Biff12_structures/IsoPasswordData.cpp"
@@ -1057,3 +1061,5 @@
     #include "../Source/XlsbFormat/Biff12_unions/PCDSOURCE14.cpp"
     #include "../Source/XlsbFormat/Biff12_unions/PCD15.cpp"
     #include "../Source/XlsbFormat/Biff12_unions/PCDH15_bu.cpp"
+    #include "../Source/XlsbFormat/Biff12_unions/PIVOTCACHEIDS.cpp"
+    #include "../Source/XlsbFormat/Biff12_unions/PIVOTCACHEID.cpp"

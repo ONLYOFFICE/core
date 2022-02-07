@@ -51,6 +51,8 @@ namespace XLSB
 
             void readFields(XLS::CFRecord& record);
 
+            std::vector<BYTE>   rawdata;
+
     };
 
 } // namespace XLSB

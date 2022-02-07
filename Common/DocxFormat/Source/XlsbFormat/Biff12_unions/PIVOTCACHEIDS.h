@@ -29,35 +29,31 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "PCRRecord.h"
-
-using namespace XLS;
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
 namespace XLSB
 {
 
-    PCRRecord::PCRRecord()
+    class PIVOTCACHEIDS: public XLS::CompositeObject
     {
-    }
+        BASE_OBJECT_DEFINE_CLASS_NAME(PIVOTCACHEIDS)
+    public:
+        PIVOTCACHEIDS();
+        virtual ~PIVOTCACHEIDS();
 
-    PCRRecord::~PCRRecord()
-    {
-    }
+        XLS::BaseObjectPtr clone();
 
-    BaseObjectPtr PCRRecord::clone()
-    {
-        return BaseObjectPtr(new PCRRecord(*this));
-    }
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-    void PCRRecord::readFields(XLS::CFRecord& record)
-    {
-        size_t size = record.getDataSize();
-        const char* ptrData = record.getData();
+        //static const XLS::ElementType	type = XLS::typePIVOTCACHEIDS;
 
-        for(size_t i = 0; i < size; ++i)
-            rawdata.push_back(ptrData[i]);
-    }
+        XLS::BaseObjectPtr               m_BrtBeginPivotCacheIDs;
+        std::vector<XLS::BaseObjectPtr>	 m_arPIVOTCACHEID;
+        XLS::BaseObjectPtr               m_BrtEndPivotCacheIDs;
+
+    };
 
 } // namespace XLSB
 

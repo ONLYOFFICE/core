@@ -30,33 +30,53 @@
  *
  */
 
-#include "PCRRecord.h"
+#include "PIVOTCACHEIDS.h"
+#include "../Biff12_records/BeginPivotCacheIDs.h"
+#include "../Biff12_unions/PIVOTCACHEID.h"
+#include "../Biff12_records/EndPivotCacheIDs.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
 
-    PCRRecord::PCRRecord()
+    PIVOTCACHEIDS::PIVOTCACHEIDS()
     {
     }
 
-    PCRRecord::~PCRRecord()
+    PIVOTCACHEIDS::~PIVOTCACHEIDS()
     {
     }
 
-    BaseObjectPtr PCRRecord::clone()
+    BaseObjectPtr PIVOTCACHEIDS::clone()
     {
-        return BaseObjectPtr(new PCRRecord(*this));
+        return BaseObjectPtr(new PIVOTCACHEIDS(*this));
     }
 
-    void PCRRecord::readFields(XLS::CFRecord& record)
+    //PIVOTCACHEIDS = BrtBeginPivotCacheIDs 1*PIVOTCACHEID BrtEndPivotCacheIDs
+    const bool PIVOTCACHEIDS::loadContent(BinProcessor& proc)
     {
-        size_t size = record.getDataSize();
-        const char* ptrData = record.getData();
+        if (proc.optional<BeginPivotCacheIDs>())
+        {
+            m_BrtBeginPivotCacheIDs = elements_.back();
+            elements_.pop_back();
+        }
 
-        for(size_t i = 0; i < size; ++i)
-            rawdata.push_back(ptrData[i]);
+        auto count = proc.repeated<PIVOTCACHEID>(0, 0);
+        while(count > 0)
+        {
+            m_arPIVOTCACHEID.insert(m_arPIVOTCACHEID.begin(), elements_.back());
+            elements_.pop_back();
+            count--;
+        }
+
+        if (proc.optional<EndPivotCacheIDs>())
+        {
+            m_BrtEndPivotCacheIDs = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginPivotCacheIDs && m_BrtEndPivotCacheIDs;
     }
 
 } // namespace XLSB

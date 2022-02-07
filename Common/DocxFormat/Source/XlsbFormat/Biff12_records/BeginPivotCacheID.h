@@ -29,35 +29,33 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "PCRRecord.h"
-
-using namespace XLS;
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
+#include "../Biff12_structures/RelID.h"
+#include "../../XlsxFormat/WritingElement.h"
 
 namespace XLSB
 {
-
-    PCRRecord::PCRRecord()
+    // Logical representation of BrtBeginPivotCacheID record in BIFF12
+    class BeginPivotCacheID: public XLS::BiffRecord
     {
-    }
+            BIFF_RECORD_DEFINE_TYPE_INFO(BeginPivotCacheID)
+            BASE_OBJECT_DEFINE_CLASS_NAME(BeginPivotCacheID)
+        public:
+            BeginPivotCacheID();
+            virtual ~BeginPivotCacheID();
 
-    PCRRecord::~PCRRecord()
-    {
-    }
+            XLS::BaseObjectPtr clone();
 
-    BaseObjectPtr PCRRecord::clone()
-    {
-        return BaseObjectPtr(new PCRRecord(*this));
-    }
+            void readFields(XLS::CFRecord& record);
 
-    void PCRRecord::readFields(XLS::CFRecord& record)
-    {
-        size_t size = record.getDataSize();
-        const char* ptrData = record.getData();
+            //static const XLS::ElementType	type = XLS::typeBeginPivotCacheID;
 
-        for(size_t i = 0; i < size; ++i)
-            rawdata.push_back(ptrData[i]);
-    }
+            _UINT32         idSx;
+            RelID           irstcacheRelID;
+
+    };
 
 } // namespace XLSB
 

@@ -74,6 +74,8 @@ namespace XLSB
         if(fNumMinMaxValid)
             record >> xnumMax;
 
+        //if(citems > 0)
+
     }
 
 } // namespace XLSB

@@ -120,6 +120,7 @@
 #include "../../XlsbFormat/Biff12_unions/PCDSCSETS.h"
 #include "../../XlsbFormat/Biff12_unions/PCDSCSET.h"
 #include "../../XlsbFormat/Biff12_records/BeginPCDSCSet.h"
+#include "../../XlsbFormat/Biff12_records/PCRRecord.h"
 
 namespace OOX
 {
@@ -148,7 +149,7 @@ namespace Spreadsheet
 	void CPivotTableFile::read(const CPath& oRootPath, const CPath& oPath)
 	{
 		m_oReadPath = oPath;
-		IFileContainer::Read( oRootPath, oPath );
+        IFileContainer::Read( oRootPath, oPath );
 
         if( m_oReadPath.GetExtention() == _T(".bin"))
         {
@@ -2174,7 +2175,6 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 	void CPivotCacheDefinitionFile::read(const CPath& oRootPath, const CPath& oPath)
 	{
 		m_oReadPath = oPath;
-		IFileContainer::Read( oRootPath, oPath );
 
         if( m_oReadPath.GetExtention() == _T(".bin"))
         {
@@ -2192,6 +2192,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
 			m_oPivotCashDefinition = oReader;
 		}
+
+        IFileContainer::Read( oRootPath, oPath ); //в данном случае порядок считывания важен для xlsb
 	}
 	void CPivotCacheDefinitionFile::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 	{
@@ -2313,7 +2315,9 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             m_oMinRefreshableVersion        = ptr->bVerCacheRefreshableMin;
             m_oMissingItemsLimit            = ptr->citmGhostMax;
             m_oOptimizeMemory               = ptr->fOptimizeCache;
-            m_oRecordCount                  = ptr->cRecords;
+
+            if(ptr->fSaveData)
+                m_oRecordCount              = ptr->cRecords;
 
             if(!ptr->stRefreshedWho.value().empty())
                 m_oRefreshedBy              = ptr->stRefreshedWho.value();
@@ -4450,6 +4454,15 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
                                 }
                             }
                         }
+                    }
+                }
+                else if(ptr->m_source->get_type() == XLS::typePCRRecord)
+                {
+                    auto ptr1 = static_cast<XLSB::PCRRecord*>(ptr->m_source.get());
+
+                    if(ptr1 != nullptr)
+                    {
+
                     }
                 }
             }

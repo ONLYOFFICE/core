@@ -49,7 +49,10 @@
 #include "../../XlsbFormat/Biff12_unions/BOOKVIEWS.h"
 #include "../../XlsbFormat/Biff12_unions/BUNDLESHS.h"
 #include "../../XlsbFormat/Biff12_unions/EXTERNALS.h"
+#include "../../XlsbFormat/Biff12_unions/PIVOTCACHEIDS.h"
+#include "../../XlsbFormat/Biff12_unions/PIVOTCACHEID.h"
 #include "../../XlsbFormat/Biff12_records/FileVersion.h"
+#include "../../XlsbFormat/Biff12_records/BeginPivotCacheID.h"
 
 namespace OOX
 {
@@ -98,12 +101,29 @@ namespace OOX
 			{
 				ReadAttributes(oReader);
 			}
-			void fromBin(XLS::BaseObjectPtr& obj) {}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::PIVOTCACHEID*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    ReadAttributes(ptr->m_BrtBeginPivotCacheID);
+                }
+            }
 			virtual EElementType getType() const
 			{
 				return et_x_WorkbookPivotCache;
 			}
-			void ReadAttributes(XLS::BaseObjectPtr& obj) {}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::BeginPivotCacheID*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    m_oCacheId = ptr->idSx;
+
+                    if(!ptr->irstcacheRelID.value.value().empty())
+                        m_oRid = ptr->irstcacheRelID.value.value();
+                }
+            }
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start(oReader)
@@ -121,7 +141,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CWorkbookPivotCaches)
-			WritingElement_XlsbVectorConstructors(CWorkbookPivotCaches)
+            WritingElement_XlsbConstructors(CWorkbookPivotCaches)
 			CWorkbookPivotCaches(OOX::Document *pMain = NULL) : WritingElementWithChilds<CWorkbookPivotCache>(pMain)
 			{
 			}
@@ -171,8 +191,14 @@ namespace OOX
 				}
 			}
 
-			void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
+            void fromBin(XLS::BaseObjectPtr& obj)
 			{
+                auto ptr = static_cast<XLSB::PIVOTCACHEIDS*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    for(auto &item : ptr->m_arPIVOTCACHEID)
+                        m_arrItems.push_back(new CWorkbookPivotCache(item));
+                }
 
 			}
 
@@ -237,6 +263,8 @@ namespace OOX
                             m_oSheets = static_cast<XLSB::BUNDLESHS*>(workBookStream->m_BUNDLESHS.get())->m_arBrtBundleSh;
                         if (workBookStream->m_BrtWbProp != nullptr)
                             m_oWorkbookPr = workBookStream->m_BrtWbProp;
+                        if (workBookStream->m_PIVOTCACHEIDS != nullptr)
+                            m_oPivotCaches = workBookStream->m_PIVOTCACHEIDS;
 
                         if (workBookStream->m_BrtBookProtectionIso != nullptr)
                             m_oWorkbookProtection = workBookStream->m_BrtBookProtectionIso;
@@ -263,7 +291,6 @@ namespace OOX
 			virtual void read(const CPath& oRootPath, const CPath& oPath)
 			{
 				m_oReadPath = oPath;
-				IFileContainer::Read( oRootPath, oPath );
 
                 if( m_oReadPath.GetExtention() == _T(".bin"))
                 {
@@ -285,6 +312,8 @@ namespace OOX
 						fromXML(oReader);
 					}
 				}
+
+                IFileContainer::Read( oRootPath, oPath ); //в данном случае порядок считывания важен для xlsb
 
   				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
 				if ( (xlsx ) && (xlsx->m_pVbaProject) )

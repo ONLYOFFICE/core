@@ -454,6 +454,9 @@ return 0;
             pageRefObj.free();
             return;
         }
+        std::wstring sPage = L"<Page";
+        XMLConverter::PageToXml(&pageObj, sPage);
+        sPage += L"</Page>";
         pageObj.dictLookupNF("Parent", &pageRefParent);
         pageObj.dictLookupNF("Contents", &pageRefContents);
         pageObj.dictLookup("MediaBox", &pageMediaBox);
@@ -463,12 +466,8 @@ return 0;
         pCPFW->nSizeXRef = xref->getNumObjects();
         pCPFW->pRoot = std::make_pair(xref->getRootNum(), xref->getRootGen());
         pCPFW->pPage = std::make_pair(pPageRef->num, pPageRef->gen);
-        pCPFW->pParent = std::make_pair(pageRefParent.getRefNum(), pageRefParent.getRefGen());
-        pCPFW->pContents = std::make_pair(pageRefContents.getRefNum(), pageRefContents.getRefGen());
-        pCPFW->pMediaBox = { pPageMediaBox->x1, pPageMediaBox->y1, pPageMediaBox->x2, pPageMediaBox->y2 };
-        pCPFW->sResources = L""; // Нужно воссоздать ресурсы страницы - это словарь произвольных элементов
 
-        pdfWriter->AddToPage(pCPFW, sFile);
+        pdfWriter->AddToPage(pCPFW, sFile, sPage);
 
         RELEASEOBJECT(pCPFW);
         pageRefContents.free();

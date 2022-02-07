@@ -69,18 +69,8 @@ class CRendererTextCommand;
 
 struct CPageForWriter
 {
-    std::wstring sResources;
-    std::pair<int, int> pParent;
-    std::pair<int, int> pContents;
     std::pair<int, int> pRoot;
     std::pair<int, int> pPage;
-    struct MediaBox
-    {
-        double dL;
-        double dB;
-        double dR;
-        double dT;
-    } pMediaBox;
     int nPosLastXRef;
     int nSizeXRef;
 };
@@ -243,7 +233,7 @@ public:
     HRESULT OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker = false);
     HRESULT OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker = false);
 	HRESULT DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2* pMaskBuffer, const unsigned int& unMaskWidth, const unsigned int& unMaskHeight, const double& dX, const double& dY, const double& dW, const double& dH);
-    HRESULT AddToPage(CPageForWriter* pCPFW, const std::wstring& wsPath);
+    HRESULT AddToPage(CPageForWriter* pCPFW, const std::wstring& wsPath, std::wstring sPage);
 
     NSFonts::IApplicationFonts* GetApplicationFonts();
 

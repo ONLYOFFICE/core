@@ -132,6 +132,7 @@ public:
     static void XRefToXml(XRef &xref, std::wstring &wsXml, bool parse_streams);
     static void StreamDictToXml(Dict *dict, std::wstring &wsXml);
     static void ObjectToXml(Object *obj, std::wstring &wsXml);
+    static void PageToXml(Object *obj, std::wstring &wsXml);
 
     static void AppendStringToXml(std::wstring& wsXml, const std::string& sString)
     {

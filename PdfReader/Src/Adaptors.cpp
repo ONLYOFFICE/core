@@ -194,7 +194,7 @@ void XMLConverter::ObjectToXml(Object *obj, std::wstring &wsXml)
                 wsXml += L"<";
                 AppendStringToXml(wsXml, sKey);
                 wsXml += L">";
-                obj->dictGetVal(nIndex, &oTemp);
+                obj->dictGetValNF(nIndex, &oTemp);
                 ObjectToXml(&oTemp, wsXml);
                 oTemp.free();
                 wsXml += L"</";
@@ -224,6 +224,97 @@ void XMLConverter::ObjectToXml(Object *obj, std::wstring &wsXml)
         case objNone:
             wsXml += L"none";
             break;
+    }
+}
+
+void XMLConverter::PageToXml(Object *obj, std::wstring &wsXml)
+{
+    Object oTemp;
+
+    wsXml += L" type=\"";
+    switch (obj->getType())
+    {
+    case objBool:
+        wsXml += L"Bool\" num=\"";
+        wsXml += obj->getBool() ? L"true" : L"false";
+        wsXml += L"\">";
+        break;
+    case objInt:
+        wsXml += L"Int\" num=\"";
+        wsXml += std::to_wstring(obj->getInt());
+        wsXml += L"\">";
+        break;
+    case objReal:
+        wsXml += L"Real\" num=\"";
+        wsXml += std::to_wstring(obj->getReal());
+        wsXml += L"\">";
+        break;
+    case objString:
+        wsXml += L"String\" num=\"";
+        AppendStringToXml(wsXml, obj->getString()->getCString());
+        wsXml += L"\">";
+        break;
+    case objName:
+        wsXml += L"Name\" num=\"";
+        AppendStringToXml(wsXml, obj->getName());
+        wsXml += L"\">";
+        break;
+    case objNull:
+        wsXml += L"Null\">";
+        break;
+    case objArray:
+        wsXml += L"Array\" num=\"";
+        wsXml += std::to_wstring(obj->arrayGetLength());
+        wsXml += L"\">";
+        for (int nIndex = 0; nIndex < obj->arrayGetLength(); ++nIndex)
+        {
+            wsXml += L"<item";
+            obj->arrayGet(nIndex, &oTemp);
+            PageToXml(&oTemp, wsXml);
+            oTemp.free();
+            wsXml += L"</item>";
+        }
+        break;
+    case objDict:
+        wsXml += L"Dict\">";
+        for (int nIndex = 0; nIndex < obj->dictGetLength(); ++nIndex)
+        {
+            char *sKey = obj->dictGetKey(nIndex);
+            wsXml += L"<";
+            AppendStringToXml(wsXml, sKey);
+            //wsXml += L">";
+            obj->dictGetValNF(nIndex, &oTemp);
+            PageToXml(&oTemp, wsXml);
+            oTemp.free();
+            wsXml += L"</";
+            AppendStringToXml(wsXml, sKey);
+            wsXml += L">";
+        }
+        break;
+    case objStream:
+        wsXml += L"Stream\">";
+        break;
+    case objRef:
+        wsXml += L"Ref\" gen=\"";
+        wsXml += std::to_wstring(obj->getRefGen());
+        wsXml += L"\" num=\"";
+        wsXml += std::to_wstring(obj->getRefNum());
+        wsXml += L"\">";
+        break;
+    case objCmd:
+        wsXml += L"Cmd\" num=\"";
+        AppendStringToXml(wsXml, obj->getCmd());
+        wsXml += L"\">";
+        break;
+    case objError:
+        wsXml += L"Error\">";
+        break;
+    case objEOF:
+        wsXml += L"EOF\">";
+        break;
+    case objNone:
+        wsXml += L"None\">";
+        break;
     }
 }
 

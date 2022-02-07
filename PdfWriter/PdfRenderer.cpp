@@ -2048,27 +2048,18 @@ HRESULT CPdfRenderer::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbi
 	m_pPage->GrRestore();
 	return S_OK;
 }
-HRESULT CPdfRenderer::AddToPage(CPageForWriter* pCPFW, const std::wstring& wsPath)
+HRESULT CPdfRenderer::AddToPage(CPageForWriter* pCPFW, const std::wstring& wsPath, std::wstring sPage)
 {
 	if (!IsValid())
 		return S_FALSE;
 	m_oCommandManager.Flush();
 
     CXref* pXref = new CXref(m_pDocument, pCPFW->pPage.first);
-    CObjectBase* pBase1 = new CObjectBase();
-    pBase1->SetRef(pCPFW->pParent.first, pCPFW->pParent.second); // номер объекта и поколение родителя страницы в читателе
-    CObjectBase* pBase2 = new CObjectBase();
-    pBase2->SetRef(pCPFW->pContents.first, pCPFW->pContents.second); // номер объекта и поколение контента страницы в читателе
-    // Освобождается в m_mList у pPage
-    // Освобождается в деструкторе pXref
-    CPage* pPage = new CPage(pXref, new CProxyObject(pBase1), m_pDocument, new CProxyObject(pBase2),
-                             CArrayObject::CreateBox(pCPFW->pMediaBox.dL, pCPFW->pMediaBox.dB, pCPFW->pMediaBox.dR, pCPFW->pMediaBox.dT));
+    CPage* pPage = new CPage(pXref, m_pDocument, sPage);
     pPage->SetRef(pCPFW->pPage.first, pCPFW->pPage.second); // номер объекта и поколение страницы в читателе
 
     m_pDocument->AddToPage(wsPath, pPage, pXref, pCPFW->nPosLastXRef, pCPFW->nSizeXRef, pCPFW->pRoot.first, pCPFW->pRoot.second);
 
-    RELEASEOBJECT(pBase1);
-    RELEASEOBJECT(pBase2);
     RELEASEOBJECT(pXref);
 	return S_OK;
 }

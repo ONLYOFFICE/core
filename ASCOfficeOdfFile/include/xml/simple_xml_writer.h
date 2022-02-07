@@ -320,8 +320,8 @@ typedef xml::writer::element<wchar_t> xml_element;
 
 
 
-#define CP_XML_ATTR_OPT(NAME, VAL) if (VAL)CP_XML_ATTR(NAME, (*VAL)) // было (*VAl))
-
+#define CP_XML_ATTR_OPT(NAME, VAL) if (VAL)CP_XML_ATTR(NAME, (*VAL))
+#define CP_XML_ATTR_OPT_ENCODE_STRING(STR, VAL) if (VAL)CP_XML_ATTR(STR, XmlUtils::EncodeXmlString(XmlUtils::EncodeXmlString(*VAL)))
 #define CP_XML_NODE_SIMPLE() std::wstring NS_NAME = std::wstring(ns) + std::wstring(L":") + std::wstring(name); CP_XML_NODE(NS_NAME)
 
 #define CP_XML_NODE_SIMPLE_NONS() CP_XML_NODE(std::wstring(name))

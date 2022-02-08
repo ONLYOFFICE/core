@@ -32,7 +32,7 @@
 #pragma once
 
 #include "../CPOptional.h"
-#include "logging.h"
+#include "../logging.h"
 
 namespace cpdoccore { 
 namespace common {

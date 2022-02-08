@@ -32,8 +32,7 @@
 
 #include "office_document.h"
 
-#include <xml/xmlchar.h>
-#include <xml/attributes.h>
+#include "../../include/xml/xmlchar.h"
 
 #include "serialize_elements.h"
 #include "../docx/docx_conversion_context.h"

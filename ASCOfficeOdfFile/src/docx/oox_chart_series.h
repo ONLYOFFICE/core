@@ -32,7 +32,7 @@
 #pragma once 
 
 #include <iosfwd>
-#include <CPOptional.h>
+
 #include "../odf/chart_objects.h"
 
 #include "oox_chart_values.h"

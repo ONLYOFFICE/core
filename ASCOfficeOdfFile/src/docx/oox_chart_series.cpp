@@ -34,13 +34,13 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/ref.hpp>
 
-#include <xml/simple_xml_writer.h>
+#include "../../include/xml/simple_xml_writer.h"
 #include "../odf/style_text_properties.h"
 
 #include "xlsx_utils.h"
 
 #include "oox_chart_series.h"
-#include "../formulasconvert/formulasconvert.h"
+#include "../../formulasconvert/formulasconvert.h"
 
 #include "oox_chart_shape.h"
 

@@ -32,12 +32,12 @@
 
 #include "number_style.h"
 
-#include <odf/odf_document.h>
+#include "../../include/odf/odf_document.h"
 
-#include <xml/xmlchar.h>
-#include <xml/utils.h>
-#include <xml/attributes.h>
-#include <CPColorUtils.h>
+#include "../../include/xml/xmlchar.h"
+#include "../../include/xml/utils.h"
+
+#include "../../include/CPColorUtils.h"
 
 #include "serialize_elements.h"
 #include "paragraph_elements.h"

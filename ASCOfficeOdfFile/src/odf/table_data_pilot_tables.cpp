@@ -31,11 +31,9 @@
  */
 
 #include "table_data_pilot_tables.h"
-#include "../formulasconvert/formulasconvert.h"
+#include "../../formulasconvert/formulasconvert.h"
 
-#include <xml/xmlchar.h>
-#include <xml/attributes.h>
-
+#include "../../include/xml/xmlchar.h"
 #include "serialize_elements.h"
 
 namespace cpdoccore { 

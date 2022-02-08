@@ -33,10 +33,10 @@
 #include "../docx/xlsx_num_format_context.h"
 
 #include "serialize_elements.h"
-#include <odf/odf_document.h>
-#include <xml/utils.h>
+#include "../../include/odf/odf_document.h"
+#include "../../include/xml/utils.h"
 
-#include "../formulasconvert/formulasconvert.h"
+#include "../../formulasconvert/formulasconvert.h"
 
 #include "style_graphic_properties.h"
 #include "style_chart_properties.h"

@@ -32,10 +32,10 @@
 #pragma once
 #include "oox_package.h"
 
-#include <CPNoncopyable.h>
+#include "../../include/CPNoncopyable.h"
 
-#include <CPScopedPtr.h>
-#include <CPSharedPtr.h>
+#include "../../include/CPScopedPtr.h"
+#include "../../include/CPSharedPtr.h"
 
 #include "oox_title.h"
 #include "oox_plot_area.h"

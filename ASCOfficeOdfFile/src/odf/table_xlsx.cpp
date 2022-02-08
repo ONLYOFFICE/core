@@ -32,11 +32,9 @@
 
 #include "table.h"
 
-#include <xml/xmlchar.h>
-#include <xml/attributes.h>
-#include <xml/utils.h>
-#include <odf/odf_document.h>
-#include <xml/simple_xml_writer.h>
+#include "../../include/xml/utils.h"
+#include "../../include/odf/odf_document.h"
+#include "../../include/xml/simple_xml_writer.h"
 
 #include <boost/lexical_cast.hpp>
 
@@ -48,7 +46,7 @@
 
 #include "../docx/xlsx_utils.h"
 #include "../docx/xlsx_cell_format.h"
-#include "../formulasconvert/formulasconvert.h"
+#include "../../formulasconvert/formulasconvert.h"
 
 namespace cpdoccore { 
 

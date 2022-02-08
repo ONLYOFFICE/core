@@ -32,9 +32,9 @@
 
 #include <iostream>
 
-#include <xml/utils.h>
-#include <odf/odf_document.h>
-#include <xml/simple_xml_writer.h>
+#include "../../include/xml/utils.h"
+#include "../../include/odf/odf_document.h"
+#include "../../include/xml/simple_xml_writer.h"
 
 #include "docx_conversion_context.h"
 
@@ -49,7 +49,7 @@
 #include "docx_package.h"
 #include "xlsx_package.h"
 #include "oox_rels.h"
-#include "logging.h"
+#include "../../include/logging.h"
 
 #include "../../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../../Common/DocxFormat/Source/XML/Utils.h"

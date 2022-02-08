@@ -33,9 +33,6 @@
 
 #include <iosfwd>
 
-#include <xml/attributes.h>
-#include <CPOptional.h>
-
 #include "office_elements.h"
 #include "office_elements_create.h"
 

@@ -32,7 +32,7 @@
 #pragma once
 
 #include <string>
-#include <CPOptional.h>
+#include "../../../include/CPOptional.h"
 #include "odfattributes.h"
 
 namespace cpdoccore { namespace odf_types { 

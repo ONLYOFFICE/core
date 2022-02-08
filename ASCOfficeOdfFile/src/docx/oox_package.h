@@ -29,12 +29,13 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _CPDOCCORE_OOX_PACKAGE_H_75f74d15
-#define _CPDOCCORE_OOX_PACKAGE_H_75f74d15
+#pragma once
 
 #include <vector>
-#include <CPSharedPtr.h>
-#include <CPNoncopyable.h>
+
+#include "../../include/CPSharedPtr.h"
+#include "../../include/CPNoncopyable.h"
+#include "../../include/CPOptional.h"
 
 #include "docx_content_type.h"
 #include "oox_rels.h"
@@ -269,4 +270,3 @@ private:
 } // namespace oox
 } // namespace cpdoccore
 
-#endif

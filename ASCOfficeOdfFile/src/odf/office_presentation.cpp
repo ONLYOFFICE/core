@@ -34,11 +34,8 @@
 #include "office_presentation.h"
 #include "draw_page.h"
 
-#include <xml/xmlchar.h>
-
-#include <xml/attributes.h>
-
-#include <odf/odf_document.h>
+#include "../../include/xml/xmlchar.h"
+#include "../../include/odf/odf_document.h"
 #include "odfcontext.h"
 
 #include "serialize_elements.h"

@@ -34,13 +34,12 @@
 #include "draw_frame.h"
 #include "text_content.h"
 
-#include <xml/xmlchar.h>
-#include <xml/attributes.h>
-#include <xml/utils.h>
+#include "../../include/xml/xmlchar.h"
+#include "../../include/xml/utils.h"
 
 #include "serialize_elements.h"
 
-#include "../formulasconvert/formulasconvert.h"
+#include "../../formulasconvert/formulasconvert.h"
 
 #define OBJ_Group			0x0000
 #define OBJ_Line			0x0001 

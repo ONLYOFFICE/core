@@ -32,7 +32,7 @@
 #include <boost/algorithm/string.hpp>
 
 #include <iostream>
-#include <xml/utils.h>
+#include "../../include/xml/utils.h"
 
 #include "xlsx_drawing.h"
 #include "xlsx_drawings.h"
@@ -41,7 +41,7 @@
 #include "xlsx_table_metrics.h"
 
 #include "../odf/draw_common.h"
-#include "../formulasconvert/formulasconvert.h"
+#include "../../formulasconvert/formulasconvert.h"
 
 #include "drawing_object_description.h"
 

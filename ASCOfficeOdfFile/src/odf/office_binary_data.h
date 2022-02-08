@@ -29,13 +29,10 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _CPDOCCORE_ODF_OFFICEBINARYDATA_H_
-#define _CPDOCCORE_ODF_OFFICEBINARYDATA_H_
+#pragma once
 
 #include <iosfwd>
-#include <CPOptional.h>
-#include <xml/xmlelement.h>
-#include <xml/nodetype.h>
+
 #include "office_elements.h"
 #include "office_elements_create.h"
 
@@ -68,5 +65,3 @@ CP_REGISTER_OFFICE_ELEMENT2(office_binary_data);
 
 }
 }
-
-#endif

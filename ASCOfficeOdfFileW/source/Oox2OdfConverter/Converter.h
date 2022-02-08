@@ -345,7 +345,7 @@ namespace OOX
 		class CSSubSup;
 		class CSSubSupPr;
 		class CSSup;
-		class CSSupPr;
+		class CSSupPr;		
 		//class CType;
 		//class CSupHide;
 		//class CSubHide;
@@ -656,8 +656,6 @@ public:
 //math............................................................................................................................
 		std::vector<std::vector<std::wstring>>& brackets();
 		int& lvl_of_me();
-		bool& annotation_flag();
-		std::wstring& annotation();
 		std::vector<int>& end_counter();
 		void mrow();
 		void endOfMrow();
@@ -673,12 +671,17 @@ public:
 		void convert(OOX::Logic::CBorderBox				*oox_border_box);
 		void convert(OOX::Logic::CBorderBoxPr			*oox_border_box_pr);
 		void convert(OOX::Logic::CBox					*oox_box);
-		bool convert(OOX::Logic::CBoxPr					*oox_box_pr);
+		void convert(OOX::Logic::CBoxPr					*oox_box_pr);
 		void convert(OOX::Logic::CBrk					*oox_brk);
 		void convert(OOX::Logic::CDelimiter				*oox_del);
 		std::pair<std::wstring, std::wstring> convert(OOX::Logic::CDelimiterPr			*oox_del_pr);
 		void convert(OOX::Logic::CEqArr					*oox_eq_arr);
 		void convert(OOX::Logic::CEqArrPr				*oox_eq_arr_pr);
+		void convert(OOX::Logic::CBaseJc				*oox_base_jc);
+		void convert(OOX::Logic::CMaxDist				*oox_max_dist);
+		void convert(OOX::Logic::CObjDist				*oox_obj_dist);
+		void convert(OOX::Logic::CRSp					*oox_r_sp);
+		void convert(OOX::Logic::CRSpRule				*oox_r_sp_rule);
 		std::wstring convert(OOX::Logic::CFPr			*oox_f_pr);
 		void convert(OOX::Logic::CFraction				*oox_fraction);
 		void convert(OOX::Logic::CFunc					*oox_func);
@@ -701,7 +704,8 @@ public:
 		void convert(OOX::Logic::CMRun					*oox_run);
 		void convert(OOX::Logic::CMText					*oox_text);
 		void convert(OOX::Logic::CNary					*oox_nary);
-		std::vector<bool> convert(OOX::Logic::CNaryPr *oox_nary_pr);
+		std::pair<bool, bool> convert(OOX::Logic::CNaryPr *oox_nary_pr);
+		void convert(OOX::Logic::CGrow					*oox_grow);
 		void convert(OOX::Logic::COMathPara				*oox_math_para);
 		void convert(OOX::Logic::COMathParaPr			*oox_math_para_pr);
 		void convert(OOX::Logic::CPhant					*oox_phant);
@@ -714,6 +718,7 @@ public:
 		void convert(OOX::Logic::CSSubPr				*oox_ssub_pr);
 		void convert(OOX::Logic::CSSubSup				*oox_ssub_sup);
 		void convert(OOX::Logic::CSSubSupPr				*oox_ssub_sup_pr);
+		void convert(OOX::Logic::CAlnScr				*oox_aln_scr);
 		void convert(OOX::Logic::CSSup					*oox_ssup);
 		void convert(OOX::Logic::CSSupPr				*oox_ssup_pr);
 		void convert(OOX::Logic::CNum					*oox_num);
@@ -727,7 +732,7 @@ public:
 		void convert(OOX::Logic::CSub *oox_sub, OOX::Logic::CElement *oox_elm);
 		void convert(OOX::Logic::CFName					*oox_fname);
 		void convert(OOX::Logic::CLim					*oox_lim);
-		bool convert(OOX::Logic::CChr					*oox_chr);
+		void convert(OOX::Logic::CChr					*oox_chr);
 		void convert(OOX::Logic::CSup					*oox_csup);
 		void convert(OOX::Logic::CSub					*oox_csub);
 		bool convert(OOX::Logic::CSubHide				*oox_subHide);
@@ -735,7 +740,7 @@ public:
 		std::wstring convert(OOX::Logic::CType			*oox_type);
 		void convert(OOX::Logic::CDiff					*oox_diff);
 		void convert(OOX::Logic::CArgSz					*oox_arg_sz);
-		bool convert(OOX::Logic::COpEmu					*oox_op_emu);
+		void convert(OOX::Logic::COpEmu					*oox_op_emu);
 		bool convert(OOX::Logic::CPos					*oox_pos);
 		void convert(OOX::Logic::CVertJc				*oox_vert_jc);
 		void convert(OOX::Logic::CNoBreak				*oox_no_break);

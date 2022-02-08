@@ -241,7 +241,8 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 			{
 				if (proc.optional<SORTANDFILTER>())// Let it be optional
 				{
-					m_SORTANDFILTER = elements_.back();
+					if (!m_SORTANDFILTER)
+						m_SORTANDFILTER = elements_.back();
 					elements_.pop_back();
 				}	
 			}break;

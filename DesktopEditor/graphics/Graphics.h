@@ -134,6 +134,7 @@ typedef agg::renderer_base<pixfmt_type> base_renderer_type;
 typedef agg::scanline_u8 scanline_type;
 
 typedef agg::span_interpolator_linear<> interpolator_type_linear;
+
 typedef agg::span_allocator<agg::rgba8> span_alloc_type;
 
 #define def_flag_G_ExtBuffer 0x0001
@@ -402,6 +403,8 @@ protected:
 	void render_scanlines(Renderer& ren);
 	template<class Rasterizer, class Renderer>
 	void render_scanlines(Rasterizer& ras, Renderer& ren);
+    template<class Renderer>
+    void render_scanlines_alpha(Renderer& ren, BYTE Alpha);
 
 	void DoFillPathSolid(CColor dwColor);
 	void DoFillPathGradient(CBrushLinearGradient *pBrush);

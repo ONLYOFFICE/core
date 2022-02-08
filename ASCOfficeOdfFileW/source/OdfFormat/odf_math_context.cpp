@@ -186,9 +186,11 @@ namespace odf_writer
 		impl_->current_math_state_.elements_.push_back(state);
 	}
 
-	void odf_math_context::start_element(office_element_ptr & elm)
+	bool odf_math_context::start_element(office_element_ptr & elm)
 	{		
 
+		if (!elm)
+			return false;
 		impl_->current_level_.back().elm->add_child_element(elm);
 
 		size_t level = impl_->current_level_.size();
@@ -198,6 +200,7 @@ namespace odf_writer
 		
 		impl_->current_level_.push_back(level_state);
 		impl_->current_math_state_.elements_.push_back(state);
+		return true;
 	}
 
 	void odf_math_context::end_element()

@@ -36,6 +36,7 @@
 #include "FileTypes.h"
 #include "WritingElement.h"
 #include "../Common/SimpleTypes_Shared.h"
+#include "Document.h"
 
 namespace OOX
 {
@@ -220,7 +221,7 @@ namespace OOX
 		}
 		CCustomXML(OOX::Document *pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 		{
-			m_bDocument = false;
+			m_bDocument = (NULL != dynamic_cast<OOX::CDocument*>(pMain));
 			read( oRootPath, oPath );
 		}
 		virtual ~CCustomXML()

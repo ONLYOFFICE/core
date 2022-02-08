@@ -61,5 +61,10 @@ namespace XLSB
         record.skipNunBytes(1); // unused
     }
 
+    _UINT32 SrvFmtCV::toHex()
+    {
+        return ((ciRed & 0xff) << 16) + ((ciGreen & 0xff) << 8) + (ciBlue & 0xff);
+    }
+
 } // namespace XLSB
 

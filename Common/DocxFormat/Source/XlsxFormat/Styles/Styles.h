@@ -342,8 +342,10 @@ namespace OOX
 <styleSheet \
 xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" \
 xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
-mc:Ignorable=\"x14ac\" \
-xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\">");
+xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\" \
+mc:Ignorable=\"x14ac x16r2\" \
+xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\" \
+xmlns:x16r2=\"http://schemas.microsoft.com/office/spreadsheetml/2015/02/main\">");
 
 				toXML(sXml);
 

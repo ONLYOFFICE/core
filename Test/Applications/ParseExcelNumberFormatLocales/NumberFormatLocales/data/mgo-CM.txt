@@ -1,0 +1,3 @@
+﻿[$]dd-mm-yyyy;@
+[$]h:mm:ss AM/PM
+General

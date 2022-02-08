@@ -114,10 +114,10 @@ public:
 	std::vector<BaseObjectPtr>				m_arFonts;
 	PPTX::ThemePtr							m_pTheme;
 	
-	unsigned int							current_sheet;
+	_UINT32									current_sheet;
 
-	unsigned int							last_Axes_id;
-	unsigned int							last_Extern_id;
+	_UINT32									last_Axes_id;
+	_UINT32									last_Extern_id;
 
 	std::map<std::wstring, BaseObjectPtr>	mapStrConnection;
 	std::map<int, BaseObjectPtr>			mapIdConnection;
@@ -155,7 +155,7 @@ public:
 	std::vector<_xti>				arXti;
 	std::vector<_xti>				arXti_External;
 	
-	unsigned int					startAddedSharedStrings;
+	_UINT32							startAddedSharedStrings;
 	std::vector<std::wstring>		arAddedSharedStrings;
 	
 	struct _row_info

@@ -187,7 +187,7 @@ void TxBodyConverter::FillLstStyles(PPTX::Logic::TextListStyle &oTLS, CTextStyle
 void TxBodyConverter::FillParagraph(PPTX::Logic::Paragraph &p, CParagraph &paragraph)
 {
     p.pPr = new PPTX::Logic::TextParagraphPr;
-    FillPPr(p.pPr.get2(), paragraph);
+    FillPPr(p.pPr.get2(), paragraph, m_pRels);
 
     size_t nCountSpans = paragraph.m_arSpans.size();
     for (size_t nSpan = 0; nSpan < nCountSpans; ++nSpan)
@@ -248,19 +248,41 @@ void TxBodyConverter::FillParagraph(PPTX::Logic::Paragraph &p, CParagraph &parag
     }
 }
 
-void TxBodyConverter::FillPPr(PPTX::Logic::TextParagraphPr &oPPr, CParagraph &paragraph)
+void TxBodyConverter::FillPPr(PPTX::Logic::TextParagraphPr &oPPr, CParagraph &paragraph, CRelsGenerator *pRels)
 {
     oPPr.lvl = paragraph.m_lTextLevel;
 
 
     auto* pPF = &(paragraph.m_oPFRun);
     if (pPF)
-        ConvertPFRun(oPPr, pPF);
+        ConvertPFRun(oPPr, pPF, pRels);
 
 }
 
-void TxBodyConverter::ConvertPFRun(PPTX::Logic::TextParagraphPr &oPPr, CTextPFRun *pPF)
+void TxBodyConverter::ConvertPFRun(PPTX::Logic::TextParagraphPr &oPPr, CTextPFRun *pPF, CRelsGenerator* pRels)
 {
+    int leftMargin = 0;
+    if (pPF->leftMargin.is_init())
+    {
+        leftMargin = pPF->leftMargin.get();
+        oPPr.marL = leftMargin;
+    }
+    if (pPF->indent.is_init())
+    {
+        if (pPF->hasBullet.get_value_or(false))
+            oPPr.indent = pPF->indent.get();
+        else
+            oPPr.indent = pPF->indent.get() - leftMargin;
+    }
+    if (pPF->textAlignment.is_init())
+    {
+        oPPr.algn = new PPTX::Limit::TextAlign;
+        oPPr.algn->set(CStylesWriter::GetTextAlign(pPF->textAlignment.get()));
+    }
+    if (pPF->defaultTabSize.is_init())
+    {
+        oPPr.defTabSz = pPF->defaultTabSize.get();
+    }
     if (pPF->textDirection.is_init())
     {
         if (pPF->textDirection.get() == 1)	oPPr.rtl = true;
@@ -272,27 +294,9 @@ void TxBodyConverter::ConvertPFRun(PPTX::Logic::TextParagraphPr &oPPr, CTextPFRu
         oPPr.fontAlgn->set(CStylesWriter::GetFontAlign(pPF->fontAlign.get()));
     }
 
-    int leftMargin = 0;
-    if (pPF->leftMargin.is_init())
-    {
-        leftMargin = pPF->leftMargin.get();
-        oPPr.marL = leftMargin;
-    }
-    if (pPF->indent.is_init())
-    {
-        oPPr.indent = pPF->indent.get() - leftMargin;
-    }
-    if (pPF->textAlignment.is_init())
-    {
-        oPPr.algn = new PPTX::Limit::TextAlign;
-        oPPr.algn->set(CStylesWriter::GetTextAlign(pPF->textAlignment.get()));
-    }
-    if (pPF->defaultTabSize.is_init())
-    {
-        oPPr.defTabSz = pPF->defaultTabSize.get();
-    }
 
     ConvertTabStops(oPPr.tabLst, pPF->tabStops);
+
 
     if (pPF->lineSpacing.is_init())
     {
@@ -333,7 +337,7 @@ void TxBodyConverter::ConvertPFRun(PPTX::Logic::TextParagraphPr &oPPr, CTextPFRu
         oPPr.spcBef = pSpcBef;
     }
 
-    ConvertAllBullets(oPPr, pPF);
+    ConvertAllBullets(oPPr, pPF, pRels);
 }
 
 void TxBodyConverter::ConvertTabStops(std::vector<PPTX::Logic::Tab> &arrTabs, std::vector<std::pair<int, int> > &arrTabStops)
@@ -365,9 +369,8 @@ void TxBodyConverter::FillBuChar(PPTX::Logic::Bullet &oBullet, WCHAR symbol)
     oBullet.m_Bullet.reset(pBuChar);
 }
 
-void TxBodyConverter::ConvertAllBullets(PPTX::Logic::TextParagraphPr &oPPr, CTextPFRun *pPF)
+void TxBodyConverter::ConvertAllBullets(PPTX::Logic::TextParagraphPr &oPPr, CTextPFRun *pPF, CRelsGenerator* pRels)
 {
-
     if (pPF->hasBullet.is_init())
     {
         if (pPF->hasBullet.get())
@@ -404,8 +407,25 @@ void TxBodyConverter::ConvertAllBullets(PPTX::Logic::TextParagraphPr &oPPr, CTex
 
                 oPPr.buTypeface.m_Typeface.reset(pBuFont);
             }
-            bool set = true;
-            if (pPF->bulletAutoNum.is_init())
+
+            // Bullets (numbering, else picture, else char, else default)
+            if (pPF->bulletBlip.is_init() && pPF->bulletBlip->tmpImagePath.size() && pRels != nullptr)
+            {
+                auto strRID = pRels->WriteImage(pPF->bulletBlip->tmpImagePath);
+                if (strRID.empty())
+                    FillBuChar(oPPr.ParagraphBullet, L'\x2022');    // error rId
+                else
+                {
+                    auto pBuBlip = new PPTX::Logic::BuBlip;
+                    pBuBlip->blip.embed = new OOX::RId(strRID);
+                    oPPr.ParagraphBullet.m_Bullet.reset(pBuBlip);
+                }
+            }
+            else if (pPF->bulletChar.is_init() && (pPF->bulletAutoNum.is_init() ? pPF->bulletAutoNum->isDefault() : true))
+            {
+                FillBuChar(oPPr.ParagraphBullet, pPF->bulletChar.get());
+            }
+            else if (pPF->bulletAutoNum.is_init())
             {
                 auto pBuAutoNum = new PPTX::Logic::BuAutoNum;
                 oPPr.ParagraphBullet.m_Bullet.reset(pBuAutoNum);
@@ -413,27 +433,10 @@ void TxBodyConverter::ConvertAllBullets(PPTX::Logic::TextParagraphPr &oPPr, CTex
                     pBuAutoNum->startAt = pPF->bulletAutoNum->startAt.get();
                 if (pPF->bulletAutoNum->type.is_init())
                     pBuAutoNum->type = pPF->bulletAutoNum->type.get();
-                set = false;
             }
-
-            if (pPF->bulletFontProperties.is_init() == false && pPF->bulletSize.is_init() == false)
+            else
             {
-                auto pBuFont = new PPTX::Logic::BuFontTx;
-                oPPr.buTypeface.m_Typeface.reset(pBuFont);
-                if (pPF->bulletColor.is_init() == false)
-                    set = false;
-            }
-
-            if (pPF->bulletChar.is_init())
-            {
-                FillBuChar(oPPr.ParagraphBullet, pPF->bulletChar.get());
-            } else if (set)
-            {
-                FillBuChar(oPPr.ParagraphBullet, L'•');
-            }
-            if (pPF->bulletColor.is_init())
-            {
-                FillBuClr(oPPr.buColor, pPF->bulletColor.get());
+                FillBuChar(oPPr.ParagraphBullet, L'\x2022');
             }
         }
         else
@@ -441,7 +444,6 @@ void TxBodyConverter::ConvertAllBullets(PPTX::Logic::TextParagraphPr &oPPr, CTex
             oPPr.buTypeface.m_Typeface.reset(new PPTX::Logic::BuNone);
         }
     }
-
 }
 
 void TxBodyConverter::FillBuClr(PPTX::Logic::BulletColor &oBuClr, CColor &oColor)

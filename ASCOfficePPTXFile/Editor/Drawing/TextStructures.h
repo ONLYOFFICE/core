@@ -123,7 +123,11 @@ namespace PPT_FORMAT
     {
     public:
         NSCommon::nullable<USHORT>  startAt;
-        NSCommon::nullable_string	type;
+        NSCommon::nullable_string   type;
+
+        inline bool isDefault()const
+        {return type.get_value_or(L"arabicPeriod") == L"arabicPeriod" &&
+                    (startAt.is_init() ? *startAt == 1 : true);}
 
     };
 

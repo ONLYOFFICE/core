@@ -1061,6 +1061,23 @@ namespace NExtractTools
        }
 	   return AVS_FILEUTILS_ERROR_CONVERT;
 	}
+	_UINT32 xlsb2xlsx_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	{
+		std::wstring sTempUnpackedXLSB = sTemp + FILE_SEPARATOR_STR + _T("xlsb_unpacked");
+		NSDirectory::CreateDirectory(sTempUnpackedXLSB);
+		
+		COfficeUtils oCOfficeUtils(NULL);
+		_UINT32 nRes = oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedXLSB, NULL, 0);
+		if (SUCCEEDED_X2T(nRes))
+		{
+			OOX::Spreadsheet::CXlsb oXlsb;
+			oXlsb.ReadNative(OOX::CPath(sTempUnpackedXLSB));
+
+			OOX::CContentTypes oContentTypes;
+			nRes = oXlsb.WriteNative(sTo, oContentTypes) ? S_OK : AVS_FILEUTILS_ERROR_CONVERT;
+		}
+		return nRes;
+	}
 	_UINT32 xltm2xlsx_dir (const std::wstring &sFrom, const std::wstring &sTo, InputParams& params)
 	{
        COfficeUtils oCOfficeUtils(NULL);
@@ -3940,8 +3957,7 @@ namespace NExtractTools
        if(0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & nFormatTo) && AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV != nFormatTo)
        {
 			if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX == nFormatTo || AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM == nFormatTo ||
-				AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX == nFormatTo || AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM == nFormatTo || 
-				AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB == nFormatTo)
+				AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX == nFormatTo || AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM == nFormatTo)
 			{
 				if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM == nFormatTo || AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX == nFormatTo || AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM == nFormatTo)
 				{
@@ -4055,15 +4071,18 @@ namespace NExtractTools
 	   {
 		   nRes = csv2xlst_bin(sFrom, sTo, params);
 	   }
-		else if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB == nFormatFrom)
-		{
-			nRes = fromXlsbXlsxDir(sFrom, sTo, nFormatTo, sTemp, sThemeDir, bFromChanges, bPaid, params, sXlsxFile);
-		}
-       else
+       else 
        {
            std::wstring sXlsxDir = sTemp + FILE_SEPARATOR_STR + _T("xlsx_unpacked");
            NSDirectory::CreateDirectory(sXlsxDir);
-		   if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX == nFormatFrom)
+		   
+		   if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB == nFormatFrom &&
+			   !(AVS_OFFICESTUDIO_FILE_CANVAS & nFormatTo))
+		   {
+			   nRes = xlsb2xlsx_dir(sFrom, sXlsxDir, sTemp, params);
+		   }
+		   else if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX == nFormatFrom ||
+			   AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB == nFormatFrom)
            {
 				nRes = zip2dir(sFrom, sXlsxDir);
 				if(SUCCEEDED_X2T(nRes))
@@ -4481,7 +4500,7 @@ namespace NExtractTools
 
                CDocxRenderer oDocxRenderer(pApplicationFonts);
 
-               NSDocxRenderer::TextAssociationType taType = NSDocxRenderer::TextAssociationTypeNoFrames;
+               NSDocxRenderer::TextAssociationType taType = NSDocxRenderer::TextAssociationTypePlainLine;
                if (params.m_oTextParams)
                {
                    InputParamsText* oTextParams = params.m_oTextParams;
@@ -4491,16 +4510,16 @@ namespace NExtractTools
                        switch (*oTextParams->m_nTextAssociationType)
                        {
                        case 0:
-                           taType = NSDocxRenderer::TextAssociationTypeDefault;
+                           taType = NSDocxRenderer::TextAssociationTypeBlockChar;
                            break;
                        case 1:
-                           taType = NSDocxRenderer::TextAssociationTypeLine;
+                           taType = NSDocxRenderer::TextAssociationTypeBlockLine;
                            break;
                        case 2:
-                           taType = NSDocxRenderer::TextAssociationTypeNoFrames;
+                           taType = NSDocxRenderer::TextAssociationTypePlainLine;
                            break;
                        case 3:
-                           taType = NSDocxRenderer::TextAssociationTypeBlock;
+                           taType = NSDocxRenderer::TextAssociationTypePlainParagraph;
                            break;
                        default:
                            break;

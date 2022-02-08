@@ -645,9 +645,12 @@ void PPT_FORMAT::CPPTXWriter::WriteThemes()
 bool CPPTXWriter::HasRoundTrips() const
 {
     std::vector<RoundTripTheme12Atom*> arrRTTheme;
-    m_pUserInfo->m_mapMasters.begin()->second->GetRecordsByType(&arrRTTheme, false, true);
+    std::vector<RoundTripContentMasterInfo12Atom*> arrRTLayouts;
+    auto pSlide = m_pUserInfo->m_mapMasters.begin()->second;
+    pSlide->GetRecordsByType(&arrRTLayouts, false, false);
+    pSlide->GetRecordsByType(&arrRTTheme, false, true);
 
-    return !arrRTTheme.empty();
+    return arrRTTheme.size() && arrRTLayouts.size();
 }
 
 bool CPPTXWriter::WriteRoundTripTheme(const CRecordSlide *pSlide, std::unordered_set<std::string>& writedFilesHash, int & nIndexTheme, int & nStartLayout)

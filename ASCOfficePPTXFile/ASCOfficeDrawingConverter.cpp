@@ -2476,7 +2476,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 									std::wstring strPos = arSplit[i].substr(0, p);
 									std::wstring strColor = arSplit[i].substr(p + 1);
 
-									double pos = strPos.empty() ? 0 : _wtof(strPos.c_str());
+									double pos = XmlUtils::GetDouble(strPos);
 
 									ODRAW::CColor color = NS_DWC_Common::getColorFromString(strColor);
 									PPTX::Logic::UniColor *oColor = new PPTX::Logic::UniColor();
@@ -2690,7 +2690,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 						if (p >= 0)
 							strW.erase(p);
 
-						m_dValue = _wtof(strW.c_str());
+						m_dValue = XmlUtils::GetDouble(strW);
 					}
 
 					std::wstring strStrokeW = std::to_wstring((int)Pt_To_Emu(m_dValue));

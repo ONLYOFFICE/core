@@ -49,7 +49,6 @@ public:
 	
 	virtual void load(CFRecord& record);
 
-
 	static const ElementType	type = typeXFPropGradient;
 
 	void serialize_attr(CP_ATTR_NODE);

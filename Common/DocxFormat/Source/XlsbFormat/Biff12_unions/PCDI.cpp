@@ -32,8 +32,13 @@
 
 #include "PCDI.h"
 #include "../Biff12_records/PCDIMissing.h"
-#include "../Biff12_records/PCDIIndex.h"
+#include "../Biff12_records/PCDINumber.h"
+#include "../Biff12_records/PCDIBoolean.h"
+#include "../Biff12_records/PCDIError.h"
 #include "../Biff12_records/PCDIString.h"
+#include "../Biff12_records/PCDIDatetime.h"
+#include "../Biff12_records/PCDIIndex.h"
+#include "../Biff12_unions/PCDIRUN.h"
 
 using namespace XLS;
 
@@ -53,13 +58,19 @@ namespace XLSB
         return BaseObjectPtr(new PCDI(*this));
     }
 
-    // PCDI = BrtPCDIMissing / BrtPCDIIndex / BrtPCDIString
+    //пришлось совместить из-за одинаковых PCDI в EXTERNALCONNECTION и PIVOTCACHEDEF
+    // PCDI = BrtPCDIMissing / BrtPCDINumber / BrtPCDIBoolean / BrtPCDIError / BrtPCDIString / BrtPCDIDatetime / BrtPCDIIndex / PCDIRUN
     const bool PCDI::loadContent(BinProcessor& proc)
     {
         if (!proc.optional<PCDIMissing>())
-            if (!proc.optional<PCDIIndex>())
-                if (!proc.optional<PCDIString>())
-                    return false;
+            if (!proc.optional<PCDINumber>())
+                if (!proc.optional<PCDIBoolean>())
+                    if (!proc.optional<PCDIError>())
+                        if (!proc.optional<PCDIString>())
+                            if (!proc.optional<PCDIDatetime>())
+                                if (!proc.optional<PCDIIndex>())
+                                    if (!proc.optional<PCDIRUN>())
+                                        return false;
 
         m_source = elements_.back();
         elements_.pop_back();

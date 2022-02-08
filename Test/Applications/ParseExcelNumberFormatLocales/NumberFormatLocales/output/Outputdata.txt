@@ -1,0 +1,213 @@
+﻿[$]dd-mm-yyyy;@
+[$]h.mm.ss AM/PM
+General
+ bn-IN.txt
+,﻿[$]dd-mm-yyyy;@
+[$]h.mm.ss AM/PM
+General
+ bn.txt
+,﻿[$]ДД-ММ-ГГГГ;@
+[$]ч:мм:сс AM/PM
+Основной
+ ce-RU.txt
+,﻿[$]ДД-ММ-ГГГГ;@
+[$]ч:мм:сс AM/PM
+Основной
+ ce.txt
+,﻿[$]dd.mm.rrrr;@
+[$]h:mm:ss AM/PM
+Vęeobecný
+ cs-CZ.txt
+,﻿[$]dd.mm.rrrr;@
+[$]h:mm:ss AM/PM
+Vęeobecný
+ cs.txt
+,﻿[$]dd-mm-åååå;@
+[$]t:mm:ss AM/PM
+Standard
+ da-DK.txt
+,﻿[$]gg.mm.aaaa;@
+[$]h:mm:ss AM/PM
+Standard
+ de-IT.txt
+,﻿[$]ηη/μμ/εεεε;@
+[$]ω:λλ:δδ AM/PM
+Γενικός τύπος
+ el-GR.txt
+,﻿[$]ηη/μμ/εεεε;@
+[$]ω:λλ:δδ AM/PM
+Γενικός τύπος
+ el.txt
+,﻿[$]pp/kk/vvvv;@
+[$]t.mm.ss AM/PM
+Yleinen
+ en-FI.txt
+,﻿[$]DD-MM-ÅÅÅÅ;@
+[$]t:mm:ss AM/PM
+Standard
+ en-SE.txt
+,﻿[$]dd/mm/aaaa;@
+[$]h:mm:ss AM/PM
+Geral
+ es-BR.txt
+,﻿[$]jj.mm.aaaa;@
+[$]h:mm:ss AM/PM
+Standard
+ fr-CH.txt
+,﻿[$]dd-mm-jjjj;@
+[$]u:mm:ss AM/PM
+Standaard
+ fy-NL.txt
+,﻿[$]dd-mm-jjjj;@
+[$]u:mm:ss AM/PM
+Standaard
+ fy.txt
+,﻿[$]nn.hh.éééé;@
+[$]ó:pp:mm AM/PM
+Normál
+ hu-HU.txt
+,﻿[$]nn.hh.éééé;@
+[$]ó:pp:mm AM/PM
+Normál
+ hu.txt
+,﻿[$]gg.mm.aaaa;@
+[$]h:mm:ss AM/PM
+Standard
+ it-CH.txt
+,﻿[$]dd/mm/yyyy;@
+[$]h:mm:ss AM/PM
+G/標準
+ ja-JP.txt
+,﻿[$]dd/mm/yyyy;@
+[$]h:mm:ss AM/PM
+G/標準
+ ja.txt
+,﻿[$]dd-mm-yyyy;@
+[$]h:mm:ss AM/PM
+G/표준
+ ko-KR.txt
+,﻿[$]dd-mm-yyyy;@
+[$]h:mm:ss AM/PM
+G/표준
+ ko.txt
+,﻿[$]dd.mm.jjjj;@
+[$]u:mm:ss AM/PM
+Standaard
+ nds-NL.txt
+,﻿[$]dd.mm.jjjj;@
+[$]u:mm:ss AM/PM
+Standaard
+ nds.txt
+,﻿[$]dd-mm-jjjj;@
+[$]u:mm:ss AM/PM
+Standaard
+ nl-NL.txt
+,﻿[$]jj/mm/aaaa;@
+[$]h.mm.ss AM/PM
+Standard
+ oc-FR.txt
+,﻿[$]jj/mm/aaaa;@
+[$]h.mm.ss AM/PM
+Standard
+ oc.txt
+,﻿[$]dd-mm-yyyy;@
+[$]h.mm.ss AM/PM
+General
+ pa-Arab-PK.txt
+,﻿[$]dd-mm-yyyy;@
+[$]h.mm.ss AM/PM
+General
+ pa-Arab.txt
+,﻿[$]dd-mm-yyyy;@
+[$]h.mm.ss AM/PM
+General
+ pa-Guru.txt
+,﻿[$]dd.mm.rrrr;@
+[$]g:mm:ss AM/PM
+Standardowy
+ pl-PL.txt
+,﻿[$]dd.mm.rrrr;@
+[$]g:mm:ss AM/PM
+Standardowy
+ pl.txt
+,﻿[$]dd/mm/aaaa;@
+[$]h:mm:ss AM/PM
+Geral
+ pt-BR.txt
+,﻿[$]dd/mm/aaaa;@
+[$]h:mm:ss AM/PM
+Estandar
+ pt-PT.txt
+,﻿[$]dd/mm/yyyy;@
+[$]h:mm:ss AM/PM
+General
+
+ quc-Latn.txt
+,﻿[$]dd-mm-åååå;@
+[$]t:mm:ss AM/PM
+Standard
+ se-NO.txt
+,﻿[$]DD-MM-ÅÅÅÅ;@
+[$]t:mm:ss AM/PM
+Standard
+ se-SE.txt
+,﻿[$]DD-MM-ÅÅÅÅ;@
+[$]t:mm:ss AM/PM
+Standard
+ se.txt
+,﻿[$]dd-mm-yyyy;@
+[$]h.mm.ss AM/PM
+General
+ si-LK.txt
+,﻿[$]dd-mm-yyyy;@
+[$]h.mm.ss AM/PM
+General
+ si.txt
+,﻿[$]DD-MM-ÅÅÅÅ;@
+[$]t:mm:ss AM/PM
+Standard
+ sma-SE.txt
+,﻿[$]DD-MM-ÅÅÅÅ;@
+[$]t:mm:ss AM/PM
+Standard
+ sma.txt
+,﻿[$]DD-MM-ÅÅÅÅ;@
+[$]t:mm:ss AM/PM
+Standard
+ smj-SE.txt
+,﻿[$]DD-MM-ÅÅÅÅ;@
+[$]t:mm:ss AM/PM
+Standard
+ smj.txt
+,﻿[$]pp-kk-vvvv;@
+[$]t:mm:ss AM/PM
+Yleinen
+ sv-AX.txt
+,﻿[$]pp-kk-vvvv;@
+[$]t:mm:ss AM/PM
+Yleinen
+ sv-FI.txt
+,﻿[$]DD-MM-ÅÅÅÅ;@
+[$]t:mm:ss AM/PM
+Standard
+ sv-SE.txt
+,﻿[$]DD-MM-ÅÅÅÅ;@
+[$]t:mm:ss AM/PM
+Standard
+ sv.txt
+,﻿[$]gg.aa.yyyy;@
+[$]s:dd:nn AM/PM
+Genel
+ tr-TR.txt
+,﻿[$]gg.aa.yyyy;@
+[$]s:dd:nn AM/PM
+Genel
+ tr.txt
+,﻿[$]dd-mm-yyyy;@
+[$]h:mm:ss AM/PM
+G/通用格式
+ ug-CN.txt
+,﻿[$]dd-mm-yyyy;@
+[$]h:mm:ss AM/PM
+G/通用格式
+ ug.txt

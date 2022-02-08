@@ -47,6 +47,8 @@ namespace XLSB
 
             XLS::BaseObjectPtr clone();
 
+            static const XLS::ElementType	type = XLS::typePCDIIndex;
+
             void readFields(XLS::CFRecord& record);
 
             _UINT32 iitem;

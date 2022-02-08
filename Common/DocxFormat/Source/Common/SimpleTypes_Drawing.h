@@ -1074,7 +1074,7 @@ namespace SimpleTypes
 					m_dValue = 0;
 			}
 			else
-                m_dValue = (std::min)( 100.0, (std::max)( -100.0, _wtof( sValue.substr( 0, nLen - 1 ).c_str() ) ) );
+                m_dValue = (std::min)( 100.0, (std::max)( -100.0, XmlUtils::GetDouble( sValue.substr( 0, nLen - 1 ) ) ) );
 
             return m_dValue;
         }
@@ -1960,7 +1960,7 @@ namespace SimpleTypes
 				if ( -1 == nPos )
 				{
 					//test
-                    double dValue = sValue.empty() ? 0 : _wtof(sValue.c_str());
+                    double dValue = XmlUtils::GetDouble(sValue);
                     if (fabs(dValue) >= 0 && fabs(dValue) <=1 )
 					{
 						m_dValue = dValue;
@@ -1977,7 +1977,7 @@ namespace SimpleTypes
 			else
             {
                 std::wstring strValue = sValue.substr( 0, nLen - 1 );
-                m_dValue = strValue.empty() ? 0 : _wtof( strValue.c_str() );
+                m_dValue = XmlUtils::GetDouble( strValue );
             }
 
             return m_dValue;
@@ -2131,7 +2131,7 @@ namespace SimpleTypes
 					m_dValue = 0;
 			}
 			else
-                m_dValue = (std::min)( 100.0, (std::max)( 0.0, _wtof( sValue.substr( 0, nLen - 1 ).c_str() ) ) );
+                m_dValue = (std::min)( 100.0, (std::max)( 0.0, XmlUtils::GetDouble( sValue.substr( 0, nLen - 1 )) ) );
 
             return m_dValue;
         }
@@ -2182,7 +2182,7 @@ namespace SimpleTypes
 					m_dValue;
 			}
 			else
-                m_dValue = (std::max)( 0.0, _wtof( sValue.substr( 0, nLen - 1 ).c_str() ) );
+                m_dValue = (std::max)( 0.0, XmlUtils::GetDouble( sValue.substr( 0, nLen - 1 ) ) );
 
             return m_dValue;
         }
@@ -5258,7 +5258,7 @@ namespace SimpleTypes
 					m_dValue = 0;
 			}
 			else
-                m_dValue = _wtof( sValue.substr( 0, nLen - 1).c_str() );
+                m_dValue = XmlUtils::GetDouble( sValue.substr( 0, nLen - 1) );
 
             return m_dValue;
         }
@@ -5704,7 +5704,7 @@ namespace SimpleTypes
 				return m_dValue;
 			}
 			else
-                m_dValue = _wtof( sValue.substr( 0, nLen - 1 ).c_str() );
+                m_dValue = XmlUtils::GetDouble( sValue.substr( 0, nLen - 1 ));
 
             return m_dValue;
         }

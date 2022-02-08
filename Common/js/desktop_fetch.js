@@ -22,7 +22,7 @@ if (internal_isLocal())
 	fetch = undefined; // fetch not support file:/// scheme
 	getBinaryPromise = function()
 	{
-		var wasmPath = "ascdesktop://zlib/" + wasmBinaryFile.substr(8);
+		var wasmPath = "ascdesktop://fonts/" + wasmBinaryFile.substr(8);
 		return new Promise(function (resolve, reject)
 		{
 			var xhr = new XMLHttpRequest();

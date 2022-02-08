@@ -1262,7 +1262,10 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
                     m_oUserCaption = ptr->displayName.value();
 
             m_oCharacter        = ptr->fOlapFilterSelected; //?
-            m_oHideDetails      = ptr->fHideDetail;
+            m_oHideDetails      = !ptr->fHideDetail;
+
+            if(ptr->iCache != -1)
+                m_oItemIndex    = ptr->iCache;
 
             switch(ptr->itmtype.value().get())
             {
@@ -1532,7 +1535,10 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             m_oNumFmtId                     = ptr->ifmt;
             m_oOutline                      = ptr->fOutline;
             m_oProductSubtotal              = ptr->fProduct;
-            m_oRankBy                       = ptr->isxdiAutoShow;
+
+            if(ptr->fAutoShow)
+                m_oRankBy                   = ptr->isxdiAutoShow;
+
             m_oServerField                  = ptr->fServerBased;
             m_oShowAll                      = ptr->fShowAllItems;
             m_oShowDropDowns                = !ptr->fHideDD;
@@ -2321,7 +2327,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             if(!ptr->stRefreshedWho.value().empty())
                 m_oRefreshedBy              = ptr->stRefreshedWho.value();
 
-            m_oRefreshedDateIso             = ptr->xnumRefreshedDate.DateTimeValue();
+            m_oRefreshedDateIso             = std::to_wstring(ptr->xnumRefreshedDate.data.value);
 
             m_oRefreshedVersion             = ptr->bVerCacheLastRefresh;
             m_oRefreshOnLoad                = ptr->fRefreshOnLoad;
@@ -2734,8 +2740,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
             if(ptr->fDateInField && !ptr->fMixedTypesIgnoringBlanks && ptr->fNumMinMaxValid)
             {
-                m_oMinDate              = ptr->xnumMin.DateTimeValue();
-                m_oMaxDate              = ptr->xnumMax.DateTimeValue();
+                m_oMinDate              = std::to_wstring(ptr->xnumMin.data.value);
+                m_oMaxDate              = std::to_wstring(ptr->xnumMax.data.value);
             }
             else if(ptr->fNumField && ptr->fNumMinMaxValid)
             {
@@ -3005,8 +3011,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
             if(ptr->fDates)
             {
-                m_oStartDate = ptr->xnumStart.DateTimeValue();
-                m_oEndDate   = ptr->xnumEnd.DateTimeValue();
+                m_oStartDate = std::to_wstring(ptr->xnumStart.data.value);
+                m_oEndDate   = std::to_wstring(ptr->xnumEnd.data.value);
             }
             else
             {

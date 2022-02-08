@@ -61,7 +61,6 @@ public:
 		double value;
 	} data;
 
-        std::wstring DateTimeValue();
 };
 
 typedef Xnum DateAsNum;

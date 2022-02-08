@@ -1074,9 +1074,9 @@ namespace PdfWriter
 		if (m_unCompressMode & COMP_TEXT)
 			pPage->SetFilter(STREAM_FILTER_FLATE_DECODE);
 #endif
-        pPage->AddCommands(pXrefNew, L"");
 
-        pXref->Add(pPage);
+        pPage->AddCommands(pXrefNew, L""); // Выполнение команд на странице
+
         pXrefNew->SetPrevAddr(nPosLastXRef);
         pXref->SetPrev(pXrefNew);
 
@@ -1088,7 +1088,7 @@ namespace PdfWriter
 
         pXref->WriteToStream(pStream, pEncrypt);
 
-		delete pStream;
         RELEASEOBJECT(pBase);
+        RELEASEOBJECT(pStream);
 	}
 }

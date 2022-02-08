@@ -67,14 +67,6 @@ namespace Aggplus
 class CRendererCommandBase;
 class CRendererTextCommand;
 
-struct CPageForWriter
-{
-    std::pair<int, int> pRoot;
-    std::pair<int, int> pPage;
-    int nPosLastXRef;
-    int nSizeXRef;
-};
-
 class PDFWRITER_DECL_EXPORT CPdfRenderer : public IRenderer
 {
 public:
@@ -233,7 +225,7 @@ public:
     HRESULT OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker = false);
     HRESULT OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker = false);
 	HRESULT DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2* pMaskBuffer, const unsigned int& unMaskWidth, const unsigned int& unMaskHeight, const double& dX, const double& dY, const double& dW, const double& dH);
-    HRESULT AddToPage(CPageForWriter* pCPFW, const std::wstring& wsPath, std::wstring sPage);
+    HRESULT AddToPage(const std::wstring& wsPath, std::wstring sPage, int nPosLastXRef, int nSizeXRef, const std::pair<int, int>& pRoot, const std::pair<int, int>& pPage);
 
     NSFonts::IApplicationFonts* GetApplicationFonts();
 

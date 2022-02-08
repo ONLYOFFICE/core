@@ -439,14 +439,10 @@ return 0;
 
         CPdfRenderer* pdfWriter = (CPdfRenderer*)pPdfWriter;
         XRef* xref = m_pInternal->m_pPDFDocument->getXRef();
-
-        nPageIndex++;
-        Page* pPage = m_pInternal->m_pPDFDocument->getCatalog()->getPage(nPageIndex);
-        PDFRectangle* pPageMediaBox = pPage->getMediaBox();
-        Ref* pPageRef = m_pInternal->m_pPDFDocument->getCatalog()->getPageRef(nPageIndex);
+        Ref* pPageRef = m_pInternal->m_pPDFDocument->getCatalog()->getPageRef(++nPageIndex);
 
         // Получение объекта страницы
-        Object pageRefObj, pageObj, pageRefParent, pageRefContents, pageMediaBox;
+        Object pageRefObj, pageObj;
         pageRefObj.initRef(pPageRef->num, pPageRef->gen);
         if (!pageRefObj.fetch(xref, &pageObj)->isDict())
         {
@@ -457,23 +453,10 @@ return 0;
         std::wstring sPage = L"<Page";
         XMLConverter::PageToXml(&pageObj, sPage);
         sPage += L"</Page>";
-        pageObj.dictLookupNF("Parent", &pageRefParent);
-        pageObj.dictLookupNF("Contents", &pageRefContents);
-        pageObj.dictLookup("MediaBox", &pageMediaBox);
-
-        CPageForWriter* pCPFW = new CPageForWriter();
-        pCPFW->nPosLastXRef = xref->getLastXRefPos();
-        pCPFW->nSizeXRef = xref->getNumObjects();
-        pCPFW->pRoot = std::make_pair(xref->getRootNum(), xref->getRootGen());
-        pCPFW->pPage = std::make_pair(pPageRef->num, pPageRef->gen);
-
-        pdfWriter->AddToPage(pCPFW, sFile, sPage);
-
-        RELEASEOBJECT(pCPFW);
-        pageRefContents.free();
-        pageRefParent.free();
         pageObj.free();
         pageRefObj.free();
+
+        pdfWriter->AddToPage(sFile, sPage, xref->getLastXRefPos(), xref->getNumObjects(), std::make_pair(xref->getRootNum(), xref->getRootGen()), std::make_pair(pPageRef->num, pPageRef->gen));
     }
 #ifdef BUILDING_WASM_MODULE    
     void getBookmars(PDFDoc* pdfDoc, OutlineItem* pOutlineItem, NSWasm::CData& out, int level)

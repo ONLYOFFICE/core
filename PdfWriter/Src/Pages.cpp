@@ -203,7 +203,15 @@ namespace PdfWriter
 	// CPage
 	//----------------------------------------------------------------------------------------
 
-    void ReadDict(XmlUtils::CXmlLiteReader& oCoreReader, CXref* pNewXref, CObjectBase* pObject)
+#define AddToObject(pObject, sName, oVal)\
+{\
+    if (pObject->GetType() == object_type_DICT)\
+        ((CDictObject*)pObject)->Add(sName, oVal);\
+    else if (pObject->GetType() == object_type_ARRAY)\
+        ((CArrayObject*)pObject)->Add(oVal);\
+}
+
+    void ReadDict(XmlUtils::CXmlLiteReader& oCoreReader, CObjectBase* pObject)
     {
         int gen;
         std::string sType;
@@ -220,67 +228,29 @@ namespace PdfWriter
             else if (sAName == L"num")
             {
                 if (sType == "Bool")
-                {
-                    if (pObject->GetType() == object_type_DICT)
-                        ((CDictObject*)pObject)->Add(sName, sAText == "true");
-                    else if (pObject->GetType() == object_type_ARRAY)
-                        ((CArrayObject*)pObject)->Add(sAText == "true");
-                }
+                    AddToObject(pObject, sName, sAText == "true")
                 else if (sType == "Int")
-                {
-                    if (pObject->GetType() == object_type_DICT)
-                        ((CDictObject*)pObject)->Add(sName, std::stoi(sAText));
-                    else if (pObject->GetType() == object_type_ARRAY)
-                        ((CArrayObject*)pObject)->Add(std::stoi(sAText));
-                }
+                    AddToObject(pObject, sName, std::stoi(sAText))
                 else if (sType == "Real")
-                {
-                    if (pObject->GetType() == object_type_DICT)
-                        ((CDictObject*)pObject)->Add(sName, std::stod(sAText));
-                    else if (pObject->GetType() == object_type_ARRAY)
-                        ((CArrayObject*)pObject)->Add(std::stod(sAText));
-                }
+                    AddToObject(pObject, sName, std::stod(sAText))
                 else if (sType == "String")
-                {
-                    if (pObject->GetType() == object_type_DICT)
-                        ((CDictObject*)pObject)->Add(sName, new CStringObject(sAText.c_str()));
-                    else if (pObject->GetType() == object_type_ARRAY)
-                        ((CArrayObject*)pObject)->Add(new CStringObject(sAText.c_str()));
-                }
+                    AddToObject(pObject, sName, new CStringObject(sAText.c_str()))
                 else if (sType == "Name")
-                {
-                    if (pObject->GetType() == object_type_DICT)
-                        ((CDictObject*)pObject)->Add(sName, sAText.c_str());
-                    else if (pObject->GetType() == object_type_ARRAY)
-                        ((CArrayObject*)pObject)->Add(sAText.c_str());
-                }
+                    AddToObject(pObject, sName, sAText.c_str())
                 // Null объект - пустой объект, игнорируется
                 // Array ниже
-                else if (sType == "Array")
-                    gen = std::stoi(sAText); // размер массива
                 // Dict ниже
                 // Stream у страницы быть не может
                 else if (sType == "Ref")
                 {
-                    // TODO: Неверный номер объета F1, возможно при добавлении в pNewXref указанное значение затирается. Исправить!
-                    // Освобождение pBase происходит в деструкторе pNewXref
+                    // Почему ProxyObject не имеет деструктора своего объекта, везде утечки!
                     CObjectBase* pBase = new CObjectBase();
                     pBase->SetRef(std::stoi(sAText), gen);
-                    pNewXref->Add(pBase);
-
-                    if (pObject->GetType() == object_type_DICT)
-                        ((CDictObject*)pObject)->Add(sName, new CProxyObject(pBase));
-                    else if (pObject->GetType() == object_type_ARRAY)
-                        ((CArrayObject*)pObject)->Add(new CProxyObject(pBase));
+                    AddToObject(pObject, sName, new CProxyObject(pBase));
                 }
                 // Речь об OCMD optional content membership dictionary?
                 else if (sType == "Cmd")
-                {
-                    if (pObject->GetType() == object_type_DICT)
-                        ((CDictObject*)pObject)->Add(sName, sAText.c_str());
-                    else if (pObject->GetType() == object_type_ARRAY)
-                        ((CArrayObject*)pObject)->Add(sAText.c_str());
-                }
+                    AddToObject(pObject, sName, sAText.c_str())
                 // Error объект игнорируется
                 // EOF - признак конца файла. Он не может придти как объект страницы
                 // None ниже
@@ -292,65 +262,57 @@ namespace PdfWriter
         {
             // Освобождение pArray происходит в деструкторе pNewXref
             CArrayObject* pArray = new CArrayObject();
-            if (pObject->GetType() == object_type_DICT)
-                ((CDictObject*)pObject)->Add(sName, pArray);
-            else if (pObject->GetType() == object_type_ARRAY)
-                ((CArrayObject*)pObject)->Add(pArray);
-            pNewXref->Add(pArray);
+            AddToObject(pObject, sName, pArray);
 
             int n2Death = oCoreReader.GetDepth();
             while (oCoreReader.ReadNextSiblingNode(n2Death))
-                ReadDict(oCoreReader, pNewXref, pArray);
+                ReadDict(oCoreReader, pArray);
         }
         else if (sType == "Dict")
         {
             // Освобождение pDict происходит в деструкторе pNewXref
             CDictObject* pDict = new CDictObject();
-            if (pObject->GetType() == object_type_DICT)
-                ((CDictObject*)pObject)->Add(sName, pDict);
-            else if (pObject->GetType() == object_type_ARRAY)
-                ((CArrayObject*)pObject)->Add(pDict);
-            pNewXref->Add(pDict);
+            AddToObject(pObject, sName, pDict);
 
             int n2Death = oCoreReader.GetDepth();
             while (oCoreReader.ReadNextSiblingNode(n2Death))
-                ReadDict(oCoreReader, pNewXref, pDict);
+                ReadDict(oCoreReader, pDict);
         }
         // None - именной объект?
         else if (sType == "None")
-        {
-            if (pObject->GetType() == object_type_DICT)
-                ((CDictObject*)pObject)->Add(sName, "None");
-            else if (pObject->GetType() == object_type_ARRAY)
-                ((CArrayObject*)pObject)->Add("None");
-        }
+            AddToObject(pObject, sName, "None")
     }
 
     CPage::CPage(CXref* pXref, CDocument* pDocument, const std::wstring& sXml)
     {
         Init(pXref, pDocument);
 
+        /*
+        NSFile::CFileBinary oFile;
+        oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/test.txt");
+        oFile.WriteStringUTF8(sXml);
+        oFile.CloseFile();
+        */
+
         XmlUtils::CXmlLiteReader oCoreReader;
         oCoreReader.FromString(sXml);
         oCoreReader.ReadNextNode();
         int nDeath = oCoreReader.GetDepth();
-        CXref* pNewXref = new CXref(pDocument, 0);
         while (oCoreReader.ReadNextSiblingNode(nDeath))
-            ReadDict(oCoreReader, pNewXref, this);
+            ReadDict(oCoreReader, this);
 
-        // TODO предыдущий Contents пропадает. Исправить!
         CObjectBase* pContents = Get("Contents");
-        // Нужно последовательно добавить элементы Contents в m_pContents
-        if (pContents->GetType() == object_type_ARRAY)
+        if (pContents)
         {
-            CArrayObject* pArray = (CArrayObject*)pContents;
-            for (int i = 0, count = pArray->GetCount(); i < count; ++i)
-                m_pContents->Add(pArray->Get(i)->Copy());
+            if (pContents->GetType() == object_type_ARRAY)
+            {
+                CArrayObject* pArray = (CArrayObject*)pContents;
+                for (int i = 0, count = pArray->GetCount(); i < count; ++i)
+                    m_pContents->Add(new CProxyObject(pArray->Get(i)));
+            }
+            else if (pContents->GetType() == object_type_UNKNOWN)
+                m_pContents->Add(new CProxyObject(pContents));
         }
-        else if (pContents->GetType() == object_type_PROXY)
-            m_pContents->Add(pContents->Copy());
-        // При повторном добавлении Contents предыдущее значение деструкнится,
-        // нужно добавлять в m_pContents копию оригинального Contents
         Add("Contents", m_pContents);
 
         m_pStream = NULL;

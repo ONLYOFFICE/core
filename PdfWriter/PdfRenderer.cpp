@@ -2048,17 +2048,18 @@ HRESULT CPdfRenderer::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbi
 	m_pPage->GrRestore();
 	return S_OK;
 }
-HRESULT CPdfRenderer::AddToPage(CPageForWriter* pCPFW, const std::wstring& wsPath, std::wstring sPage)
+HRESULT CPdfRenderer::AddToPage(const std::wstring& wsPath, std::wstring sPage, int nPosLastXRef, int nSizeXRef, const std::pair<int, int>& pRoot, const std::pair<int, int>& pPage)
 {
 	if (!IsValid())
 		return S_FALSE;
 	m_oCommandManager.Flush();
 
-    CXref* pXref = new CXref(m_pDocument, pCPFW->pPage.first);
-    CPage* pPage = new CPage(pXref, m_pDocument, sPage);
-    pPage->SetRef(pCPFW->pPage.first, pCPFW->pPage.second); // номер объекта и поколение страницы в читателе
+    CXref* pXref = new CXref(m_pDocument, pPage.first);
+    // pNewPage Освобождается в деструкторе pXref
+    CPage* pNewPage = new CPage(pXref, m_pDocument, sPage);
+    pNewPage->SetRef(pPage.first, pPage.second);
 
-    m_pDocument->AddToPage(wsPath, pPage, pXref, pCPFW->nPosLastXRef, pCPFW->nSizeXRef, pCPFW->pRoot.first, pCPFW->pRoot.second);
+    m_pDocument->AddToPage(wsPath, pNewPage, pXref, nPosLastXRef, nSizeXRef, pRoot.first, pRoot.second);
 
     RELEASEOBJECT(pXref);
 	return S_OK;

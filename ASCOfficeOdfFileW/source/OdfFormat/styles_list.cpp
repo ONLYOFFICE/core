@@ -44,7 +44,7 @@ namespace odf_writer {
 void text_list_style_attr::serialize(CP_ATTR_NODE)
 {
     CP_XML_ATTR_OPT(L"style:name",					style_name_);
-    CP_XML_ATTR_OPT(L"style:display-name",			style_display_name_);
+	CP_XML_ATTR_OPT_ENCODE_STRING(L"style:display-name", style_display_name_);
     CP_XML_ATTR_OPT(L"text:consecutive-numbering",	text_consecutive_numbering_);
  }
 

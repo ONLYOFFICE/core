@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
+#include "CompositeObject.h"
 
 namespace XLS
 {;

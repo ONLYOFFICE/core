@@ -38,7 +38,7 @@
 #include "../Biff_structures/XFPropBorder.h"
 #include "../Biff_structures/FontIndex.h"
 #include "Font.h"
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
+#include "../../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
 
 namespace XLS
 {

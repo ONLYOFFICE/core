@@ -36,7 +36,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
 
-#include <simple_xml_writer.h>
+#include "../Common/simple_xml_writer.h"
 
 namespace oox {
 

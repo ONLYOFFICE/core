@@ -37,7 +37,7 @@
     #include <inttypes.h>
 #endif
 
-#include "../../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../../../../Common/DocxFormat/Source/Base/Types_32.h"
 
 class CipherARCFOUR
 {

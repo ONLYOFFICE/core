@@ -34,7 +34,7 @@
 #include <string>
 #include <boost/noncopyable.hpp>
 
-#include <common.h>
+#include "../Common/common.h"
 
 #include "xlsx_comments.h"
 

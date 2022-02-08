@@ -29,17 +29,13 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-
-
 #include "HyperlinkMoniker.h"
-#include <Binary/CFRecord.h>
 
-#include <Logic/Biff_structures/URLMoniker.h>
-#include <Logic/Biff_structures/FileMoniker.h>
-#include <Logic/Biff_structures/CompositeMoniker.h>
-#include <Logic/Biff_structures/AntiMoniker.h>
-#include <Logic/Biff_structures/ItemMoniker.h>
-//#include <Exception/WrongBiffRecord.h>
+#include "URLMoniker.h"
+#include "FileMoniker.h"
+#include "CompositeMoniker.h"
+#include "AntiMoniker.h"
+#include "ItemMoniker.h"
 
 bool operator ==(const _GUID_ & rguid1,const _GUID_ &rguid2)
 {

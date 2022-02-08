@@ -34,7 +34,7 @@
 #include "Decryptor.h"
 #include "RC4Crypt.h"
 #include "XORCrypt.h"
-#include <Logic/Biff_structures/RC4EncryptionHeader.h>
+#include "../Logic/Biff_structures/RC4EncryptionHeader.h"
 
 namespace CRYPT
 {

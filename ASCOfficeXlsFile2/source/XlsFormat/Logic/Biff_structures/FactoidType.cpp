@@ -31,7 +31,6 @@
  */
 
 #include "FactoidType.h"
-#include <Binary/CFRecord.h>
 
 namespace OSHARED
 {

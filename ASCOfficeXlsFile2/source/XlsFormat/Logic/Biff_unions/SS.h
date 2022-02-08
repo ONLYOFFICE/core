@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
+#include "../CompositeObject.h"
 
 #define CHART_TYPE_Bar			1
 #define CHART_TYPE_Line			2

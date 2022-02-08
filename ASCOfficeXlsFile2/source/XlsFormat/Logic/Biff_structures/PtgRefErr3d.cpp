@@ -32,7 +32,6 @@
 
 #include "PtgRefErr3d.h"
 #include "RevExtern.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

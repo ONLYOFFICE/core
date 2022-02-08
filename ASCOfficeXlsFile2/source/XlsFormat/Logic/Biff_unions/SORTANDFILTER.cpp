@@ -31,11 +31,11 @@
  */
 
 #include "SORTANDFILTER.h"
-#include <Logic/Biff_records/Sort.h>
-#include <Logic/Biff_unions/SORTDATA12.h>
-#include <Logic/Biff_records/FilterMode.h>
-#include <Logic/Biff_records/DropDownObjIds.h>
-#include <Logic/Biff_unions/AUTOFILTER.h>
+#include "AUTOFILTER.h"
+#include "SORTDATA12.h"
+#include "../Biff_records/Sort.h"
+#include "../Biff_records/FilterMode.h"
+#include "../Biff_records/DropDownObjIds.h"
 
 namespace XLS
 {

@@ -31,16 +31,15 @@
  */
 
 #include "WorkbookStreamObject.h"
-#include <Binary/CFStream.h>
-#include <Binary/CFRecord.h>
+#include "../Binary/CFStream.h"
 #include "AnyObject.h"
 
 #include "GlobalsSubstream.h"
 #include "WorksheetSubstream.h"
 #include "MacroSheetSubstream.h"
 #include "ChartSheetSubstream.h"
-#include <Logic/Biff_records/BOF.h>
-#include <Logic/Biff_records/EOF.h>
+#include "Biff_records/BOF.h"
+#include "Biff_records/EOF.h"
 
 
 namespace XLS

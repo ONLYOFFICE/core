@@ -32,9 +32,9 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include <Logic/Biff_structures/Phs.h>
-#include <Logic/Biff_structures/RPHSSub.h>
-#include <Logic/Biff_structures/PhRuns.h>
+#include "Phs.h"
+#include "RPHSSub.h"
+#include "PhRuns.h"
 
 namespace XLS
 {

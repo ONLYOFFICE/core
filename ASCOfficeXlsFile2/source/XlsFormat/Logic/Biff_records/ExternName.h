@@ -32,11 +32,10 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/AddinUdf.h>
-#include <Logic/Biff_structures/ExternDdeLinkNoOper.h>
-#include <Logic/Biff_structures/ExternOleDdeLink.h>
-#include <Logic/Biff_structures/ExternDocName.h>
-//#include <Exception/NotImplemented.h>
+#include "../Biff_structures/AddinUdf.h"
+#include "../Biff_structures/ExternDdeLinkNoOper.h"
+#include "../Biff_structures/ExternOleDdeLink.h"
+#include "../Biff_structures/ExternDocName.h"
 
 namespace XLS
 {

@@ -31,10 +31,10 @@
  */
 
 #include "SHAPEPROPS.h"
-#include <Logic/Biff_records/ShapePropsStream.h>
-#include <Logic/Biff_records/ContinueFrt12.h>
+#include "../Biff_records/ShapePropsStream.h"
+#include "../Biff_records/ContinueFrt12.h"
 
-#include <utils.h>
+#include "../../../Common/utils.h"
 
 namespace XLS
 {

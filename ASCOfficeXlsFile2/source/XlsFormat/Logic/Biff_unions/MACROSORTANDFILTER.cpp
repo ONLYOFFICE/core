@@ -31,10 +31,10 @@
  */
 
 #include "MACROSORTANDFILTER.h"
-#include <Logic/Biff_records/Sort.h>
-#include <Logic/Biff_records/DropDownObjIds.h>
-#include <Logic/Biff_unions/SORTDATA12.h>
-#include <Logic/Biff_unions/AUTOFILTER.h>
+#include "SORTDATA12.h"
+#include "AUTOFILTER.h"
+#include "../Biff_records/Sort.h"
+#include "../Biff_records/DropDownObjIds.h"
 
 namespace XLS
 {

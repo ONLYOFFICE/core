@@ -32,8 +32,8 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include <Logic/Biff_structures/SDContainer.h>
-#include <Logic/Biff_structures/BiffString.h>
+#include "SDContainer.h"
+#include "BiffString.h"
 
 namespace XLS
 {

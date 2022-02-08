@@ -32,7 +32,6 @@
 
 #include "PtgNameX.h"
 #include "RevName.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

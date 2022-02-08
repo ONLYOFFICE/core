@@ -38,6 +38,12 @@ namespace MetaFile
                         m_pMetaFileRenderer->DrawString(wsText, unCharsCount, dX, dY, pDx, iGraphicsMode, dXScale, dYScale);
         }
 
+        void CEmfInterpretatorRender::DrawDriverString(const std::wstring& wsString, const std::vector<TPointD>& arPoints)
+        {
+                if (NULL != m_pMetaFileRenderer)
+                        m_pMetaFileRenderer->DrawDriverString(wsString, arPoints);
+        }
+
         void CEmfInterpretatorRender::StartPath()
         {
                 if (NULL != m_pMetaFileRenderer)

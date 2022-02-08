@@ -198,7 +198,8 @@ namespace MetaFile
 
 		unsigned int GetAlpha()
 		{
-			return (unsigned int)Color.chAlpha;
+			return 255;
+//			return (unsigned int)Color.chAlpha;
 		}
 
 		double GetDashOffset()
@@ -211,6 +212,82 @@ namespace MetaFile
 		TEmfPlusARGB	Color;
 		CEmfPlusBrush	*Brush;
 		double		DashOffset;
+	};
+
+        typedef  enum
+        {
+                FontStyleBold           = 0x00000001,
+                FontStyleItalic         = 0x00000002,
+                FontStyleUnderline      = 0x00000004,
+                FontStyleStrikeout      = 0x00000008
+        } EEmfPlusFontStyle;
+
+	class CEmfPlusFont : public CEmfPlusObject, public IFont
+	{
+	    public:
+		CEmfPlusFont() : m_dEmSize(18), m_unSizeUnit(0), m_bBold(false),
+				 m_bItalic(false), m_bUnderline(false), m_bStrikeout(false),
+				 m_wsFamilyName(L""){}
+		virtual ~CEmfPlusFont() {}
+
+		virtual EEmfObjectType GetType() override
+		{
+			return EMF_OBJECT_FONT;
+		}
+
+                virtual EEmfPlusObjectType GetObjectType() override
+                {
+                        return ObjectTypeFont;
+                }
+
+		double	GetHeight()
+		{
+			return m_dEmSize;
+		}
+
+		std::wstring GetFaceName()
+		{
+			return m_wsFamilyName;
+		}
+
+		int          GetWeight()
+		{
+			return (m_bBold) ? 700 : 400;
+		}
+
+		bool         IsItalic()
+		{
+			return m_bItalic;
+		}
+
+		bool         IsStrikeOut()
+		{
+			return m_bStrikeout;
+		}
+		bool         IsUnderline()
+		{
+			return m_bUnderline;
+		}
+		int          GetEscapement()
+		{
+			return 0;
+		}
+		int          GetCharSet()
+		{
+			return 0;
+		}
+		int          GetOrientation()
+		{
+			return 0;
+		}
+
+		double		m_dEmSize;
+		unsigned int	m_unSizeUnit;
+		bool		m_bBold;
+		bool		m_bItalic;
+		bool		m_bUnderline;
+		bool		m_bStrikeout;
+		std::wstring	m_wsFamilyName;
 	};
 
         class CEmfPlusPath : public CEmfPlusObject, public CEmfPath

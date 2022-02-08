@@ -396,6 +396,7 @@ namespace MetaFile
 	void CEmfDC::ResetTransform()
 	{
 		m_oTransform.Init();
+		UpdateFinalTransform();
 	}
 	TEmfXForm*      CEmfDC::GetTransform()
 	{
@@ -459,16 +460,16 @@ namespace MetaFile
 	{
 		return m_pBrush;
 	}
-	void            CEmfDC::SetFont(CEmfLogFont* pFont)
+	void            CEmfDC::SetFont(IFont* pFont)
 	{
 		m_pFont = pFont;
 	}
-	void            CEmfDC::RemoveFont(CEmfLogFont* pFont)
+	void            CEmfDC::RemoveFont(IFont* pFont)
 	{
 		if (pFont == m_pFont)
 			m_pFont = NULL;
 	}
-	CEmfLogFont*    CEmfDC::GetFont()
+	IFont*    CEmfDC::GetFont()
 	{
 		return (NULL != m_pFont) ? m_pFont : &m_oDefaultFont;
 	}

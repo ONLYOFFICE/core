@@ -207,6 +207,44 @@ namespace MetaFile
 
 			m_pRenderer->DrawImage(&oImage, dImageX, dImageY, dImageW, dImageH);
 		}
+		void DrawDriverString(const std::wstring& wsString, const std::vector<TPointD>& arPoints)
+		{
+			IFont *pFont = m_pFile->GetFont();
+
+			if (NULL == pFont)
+				return;
+
+			UpdateTransform();
+			UpdateClip();
+
+			m_pRenderer->put_FontName(pFont->GetFaceName());
+			m_pRenderer->put_FontSize(fabs(pFont->GetHeight() * m_dScaleX * 25.4 / 96));
+
+			int lStyle = 0;
+			if (pFont->GetWeight() > 550)
+				lStyle |= 0x01;
+			if (pFont->IsItalic())
+				lStyle |= 0x02;
+			if (pFont->IsUnderline())
+				lStyle |= (1 << 2);
+			if (pFont->IsStrikeOut())
+				lStyle |= (1 << 7);
+
+			m_pRenderer->put_FontStyle(lStyle);
+
+			m_pRenderer->put_BrushType(c_BrushTypeSolid);
+			m_pRenderer->put_BrushColor1(m_pFile->GetBrush()->GetColor());
+			m_pRenderer->put_BrushAlpha1(m_pFile->GetBrush()->GetAlpha());
+
+			TPointD oGlyphPoint;
+
+			for (unsigned int unIndex = 0; unIndex < std::min(arPoints.size(), wsString.length()); ++unIndex)
+			{
+				oGlyphPoint = TranslatePoint(arPoints[unIndex].x, arPoints[unIndex].y);
+				m_pRenderer->CommandDrawText(std::wstring(1, wsString[unIndex]), oGlyphPoint.x, oGlyphPoint.y, 0, 0);
+			}
+		}
+
 		void DrawString(std::wstring& wsText, unsigned int unCharsCount, double _dX, double _dY, double* pDx, int iGraphicsMode, double dXScale, double dYScale)
 		{
 			CheckEndPath();

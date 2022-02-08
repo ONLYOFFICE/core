@@ -53,6 +53,8 @@ namespace MetaFile
 		virtual void DrawString(std::wstring& wsText, unsigned int unCharsCount, double dX, double dY, double* pDx,
 					int iGraphicsMode = 1, double dXScale = 1, double dYScale = 1) = 0;
 
+		virtual void DrawDriverString(const std::wstring& wsString, const std::vector<TPointD>& arPoints) = 0;
+
 		virtual void StartPath() = 0;
 		virtual void MoveTo(double dX, double dY) = 0;
 		virtual void LineTo(double dX, double dY) = 0;

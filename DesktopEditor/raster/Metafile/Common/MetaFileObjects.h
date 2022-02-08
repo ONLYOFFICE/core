@@ -42,7 +42,7 @@ namespace MetaFile
 		IFont(){}
 		virtual ~IFont(){}
 
-		virtual int          GetHeight() = 0;
+		virtual double	     GetHeight() = 0;
 		virtual std::wstring GetFaceName() = 0;
 		virtual int          GetWeight() = 0;
 		virtual bool         IsItalic() = 0;

@@ -22,6 +22,8 @@ namespace MetaFile
                 void DrawString(std::wstring& wsText, unsigned int unCharsCount, double dX, double dY, double* pDx,
                                 int iGraphicsMode = 1, double dXScale = 1, double dYScale = 1) override;
 
+                void DrawDriverString(const std::wstring& wsString, const std::vector<TPointD>& arPoints) override;
+
                 void StartPath() override;
                 void MoveTo(double dX, double dY) override;
                 void LineTo(double dX, double dY) override;

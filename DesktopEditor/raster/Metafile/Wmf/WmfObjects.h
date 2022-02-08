@@ -122,9 +122,9 @@ namespace MetaFile
 		}
 
 		// IFont
-		int          GetHeight()
+		double          GetHeight()
 		{
-			return (int)Height;
+			return (double)Height;
 		}
 		std::wstring GetFaceName()
 		{

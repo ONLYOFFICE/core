@@ -76,6 +76,12 @@ namespace MetaFile
                         pInterpretator->DrawString(wsText, unCharsCount, dX, dY, pDx, iGraphicsMode, dXScale, dYScale);
         }
 
+        void CEmfInterpretatorArray::DrawDriverString(const std::wstring& wsString, const std::vector<TPointD>& arPoints)
+        {
+                for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+                     pInterpretator->DrawDriverString(wsString, arPoints);
+        }
+
         void CEmfInterpretatorArray::StartPath()
         {
                 for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)

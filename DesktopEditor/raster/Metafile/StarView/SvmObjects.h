@@ -335,9 +335,9 @@ public:
 	}
 
 	// IFont
-	int          GetHeight()
+	double          GetHeight()
 	{
-		return (int)SizeHeight;
+		return (double)SizeHeight;
 	}
 	std::wstring GetFaceName()
 	{

@@ -99,9 +99,9 @@ namespace MetaFile
 		void            SetBrush(IBrush* pBrush);
 		void            RemoveBrush(IBrush* pBrush);
 		IBrush*		GetBrush();
-		void            SetFont(CEmfLogFont* pFont);
-		void            RemoveFont(CEmfLogFont* pFont);
-		CEmfLogFont*    GetFont();
+		void            SetFont(IFont* pFont);
+		void            RemoveFont(IFont* pFont);
+		IFont*		GetFont();
 		void            SetTextAlign(unsigned int ulAlign);
 		unsigned int    GetTextAlign();
 		void            SetBgMode(unsigned int ulBgMode);
@@ -151,7 +151,7 @@ namespace MetaFile
 		unsigned int    m_ulMapMode;
 		IBrush*		m_pBrush;
 		IPen*		m_pPen;
-		CEmfLogFont*    m_pFont;
+		IFont*		m_pFont;
 		CEmfLogFont	m_oDefaultFont;
 		CEmfLogPalette* m_pPalette;
 		TEmfXForm       m_oTransform;

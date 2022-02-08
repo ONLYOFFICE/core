@@ -133,7 +133,7 @@ namespace MetaFile
 		}
 
 		// IFont
-		int GetHeight()
+		double GetHeight()
 		{
 			return LogFontEx.LogFont.Height;
 		}

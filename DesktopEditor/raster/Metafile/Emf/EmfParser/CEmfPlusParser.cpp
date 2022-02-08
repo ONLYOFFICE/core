@@ -704,6 +704,58 @@ namespace MetaFile
                 return NULL;
         }
 
+        CEmfPlusFont *CEmfPlusParser::ReadFont()
+        {
+                m_oStream.Skip(4); //Version
+
+                CEmfPlusFont* pFont = new CEmfPlusFont();
+
+                m_oStream >> pFont->m_dEmSize;
+                m_oStream >> pFont->m_unSizeUnit;
+
+                int nFontStyleFlags;
+
+                m_oStream >> nFontStyleFlags;
+
+                if (nFontStyleFlags & EEmfPlusFontStyle::FontStyleBold)
+                        pFont->m_bBold          = true;
+                if (nFontStyleFlags & EEmfPlusFontStyle::FontStyleItalic)
+                        pFont->m_bItalic        = true;
+                if (nFontStyleFlags & EEmfPlusFontStyle::FontStyleStrikeout)
+                        pFont->m_bStrikeout     = true;
+                if (nFontStyleFlags & EEmfPlusFontStyle::FontStyleUnderline)
+                        pFont->m_bUnderline     = true;
+
+                m_oStream.Skip(4); //Reserved
+
+                unsigned int unLength;
+
+                m_oStream >> unLength;
+
+		unsigned short* pString = new unsigned short[unLength + 1];
+		if (pString)
+		{
+			pString[unLength] = 0x00;
+			m_oStream.ReadBytes(pString, unLength);
+		}
+
+		pFont->m_wsFamilyName = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)pString, unLength);
+
+		RELEASEARRAYOBJECTS(pString)
+
+                return pFont;
+        }
+
+        CEmfPlusFont *CEmfPlusParser::GetFont(unsigned int unPenIndex)
+        {
+                EmfPlusObjects::const_iterator oFoundElement = m_mObjects.find(unPenIndex);
+
+                if (m_mObjects.end() != oFoundElement && oFoundElement->second->GetObjectType() == ObjectTypeFont)
+                        return (CEmfPlusFont*)oFoundElement->second;
+
+                return NULL;
+        }
+
         CEmfPlusPath* CEmfPlusParser::ReadPath()
         {
                 unsigned int unVersion, unPathPointCount, unPathPointFlags;
@@ -1327,10 +1379,69 @@ namespace MetaFile
                 if (unGlyphCount == 0)
                         return;
 
-                std::wstring wsString;
-                std::vector<TEmfPlusPointF> arGlyphPos(unGlyphCount);
+		unsigned short* pString = new unsigned short[unGlyphCount + 1];
+		if (pString)
+		{
+			pString[unGlyphCount] = 0x00;
+			m_oStream.ReadBytes(pString, unGlyphCount);
+		}
 
-                HANDLE_EMFPLUS_DRAWDRIVERSTRING(shOgjectIndex, unBrushId, unDriverStringOptionsFlags, unMatrixPresent, wsString, arGlyphPos);
+                std::wstring wsString;
+
+                wsString = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)pString, unGlyphCount);
+
+                RELEASEARRAYOBJECTS(pString)
+
+                std::vector<TEmfPlusPointF> arGlyphPos = ReadPointsF(unGlyphCount);
+
+                //----------
+                if (NULL == m_pInterpretator || wsString.length() != arGlyphPos.size())
+                        return;
+
+                std::vector<TPointD> arDPoints(arGlyphPos.size());
+                for (unsigned int unIndex = 0; unIndex < arGlyphPos.size(); ++unIndex)
+                {
+                        arDPoints[unIndex].x = arGlyphPos[unIndex].X;
+                        arDPoints[unIndex].y = arGlyphPos[unIndex].Y;
+                }
+
+                CEmfPlusFont *pFont = GetFont(shOgjectIndex);
+
+                if (NULL == pFont)
+                        return;
+
+                m_pDC->SetFont(pFont);
+
+                if ((unShFlags >>(15)) & 1 )//BrushId = Color
+                {
+                        CEmfLogBrushEx oBrush;
+                        oBrush.Color.b = (unBrushId >> 0)  & 0xFF;
+                        oBrush.Color.g = (unBrushId >> 8)  & 0xFF;
+                        oBrush.Color.r = (unBrushId >> 16) & 0xFF;
+                        oBrush.Color.a = (unBrushId >> 24) & 0xFF;
+
+                        m_pDC->SetBrush(&oBrush);
+
+                        m_pInterpretator->DrawDriverString(wsString, arDPoints);
+
+                        m_pDC->RemoveBrush(&oBrush);
+                }
+                else //BrushId = Brush id
+                {
+                        CEmfPlusBrush *pBrush = GetBrush(unBrushId);
+
+                        if (NULL == pBrush) return;
+
+                        m_pDC->SetBrush(pBrush);
+
+                        m_pInterpretator->DrawDriverString(wsString, arDPoints);
+
+                        m_pDC->RemoveBrush(pBrush);
+                }
+
+                m_pDC->RemoveFont(pFont);
+
+//                HANDLE_EMFPLUS_DRAWDRIVERSTRING(shOgjectIndex, unBrushId, unDriverStringOptionsFlags, unMatrixPresent, wsString, arGlyphPos);
         }
 
         void CEmfPlusParser::Read_EMFPLUS_DRAWELLIPSE(unsigned short unShFlags)
@@ -1838,7 +1949,11 @@ namespace MetaFile
                         }
                         case ObjectTypeFont:
                         {
-                                LOGGING(L"Object Font")
+                                LOGGING(L"Object Font with index: " << shObjectIndex)
+                                CEmfPlusFont *pFont = ReadFont();
+
+                                RegisterObject(pFont, shObjectIndex);
+
                                 break;
                         }
                         case ObjectTypeStringFormat:
@@ -2091,11 +2206,12 @@ namespace MetaFile
 
                 m_oStream >> dPageScale;
 
-                return;
+                if (UnitTypePixel != shPageUnit)
+                        return;
 
                 TXForm oMatrix(dPageScale, 0, 0, dPageScale, 0, 0);
 
-                m_pDC->MultiplyTransform(oMatrix, 4);
+                m_pDC->MultiplyTransform(oMatrix, MWT_RIGHTMULTIPLY);
                 UpdateOutputDC();
         }
 
@@ -2105,7 +2221,9 @@ namespace MetaFile
 
                 m_oStream >> oMatrix;
 
-                m_pDC->MultiplyTransform(oMatrix, 4);
+                LOGGING(oMatrix.M11 << L" _ " << oMatrix.M12 << L" _ " << oMatrix.M21 << L" _ " << oMatrix.M22 << L" | " << oMatrix.Dx << L" _ " << oMatrix.Dy)
+
+                m_pDC->MultiplyTransform(oMatrix, MWT_SET);
                 UpdateOutputDC();
         }
 

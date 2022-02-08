@@ -44,6 +44,9 @@ namespace MetaFile
                 CEmfPlusPen*    ReadPen();
                 CEmfPlusPen*    GetPen(unsigned int unPenIndex);
 
+                CEmfPlusFont*   ReadFont();
+                CEmfPlusFont*   GetFont(unsigned int unPenIndex);
+
                 CEmfPlusPath*   ReadPath();
                 CEmfPlusPath*   GetPath(unsigned int unPathIndex);
 

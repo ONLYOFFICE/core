@@ -37,6 +37,7 @@
 
 #include "PhoneticPr.h"
 #include "Run.h"
+#include "../../XlsbFormat/Biff12_records/SSTItem.h"
 
 namespace NSBinPptxRW
 {
@@ -146,6 +147,63 @@ namespace OOX
 						m_arrItems.push_back( pItem );
 				}
 			}
+
+            void fromBin(XLS::BiffStructure& obj, bool flagIsComment = false)
+            {
+                auto ptr = static_cast<XLSB::RichStr*>(&obj);
+                CText* text             = nullptr;
+                CPhonetic* phoneticPr   = nullptr;
+                CRPh* rPh               = nullptr;
+                CRun* r                 = nullptr;
+                if(ptr != nullptr)
+                {
+                    if(ptr->rgsStrRun.empty() || flagIsComment)
+                    {
+                        text = new CText();
+                        text->fromBin(ptr->str.value());
+                        m_arrItems.push_back(text);
+                    }
+                    else
+                    {
+                        int index = 0;
+                        std::wstring str;
+                        for(auto &strRun : ptr->rgsStrRun)
+                        {
+                            ++index;
+                            //если сначала пробелы (может, не только для пробелов так)
+                            if(index == 1 && strRun.ich != 0)
+                            {
+                                auto r0 = new CRun();
+                                str = ptr->str.value().substr(0, strRun.ich);
+
+                                auto text = new CText();
+                                text->fromBin(str);
+                                r0->m_arrItems.push_back(text);
+
+                                m_arrItems.push_back(r0);
+                            }
+                            r = new CRun();
+                            if(strRun.ich < ptr->str.value().size())
+                            {
+                                str = ptr->str.value().substr(strRun.ich, index == ptr->rgsStrRun.size()?ptr->str.value().size() - strRun.ich:ptr->rgsStrRun[index].ich - strRun.ich);
+                            }
+                            r->fromBin(str, strRun.ifnt);
+                            m_arrItems.push_back(r);
+                        }
+                    }
+
+                    for(auto &phRun : ptr->rgsPhRun)
+                    {
+                        phoneticPr = new CPhonetic();
+                        phoneticPr->fromBin(phRun);
+                        m_arrItems.push_back(phoneticPr);
+
+                        rPh = new CRPh();
+                        rPh->fromBin(phRun, ptr->phoneticStr.value());
+                        m_arrItems.push_back(rPh);
+                    }
+                }
+            }
 
 			void fromXLSBExt (NSBinPptxRW::CBinaryFileReader& oStream);
 			void toXLSBExt (NSBinPptxRW::CXlsbBinaryWriter& oStream);

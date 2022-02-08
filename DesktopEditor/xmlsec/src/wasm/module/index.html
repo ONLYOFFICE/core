@@ -1,0 +1,42 @@
+<!doctype html>
+<html style="width:100%;height:100%;margin:0;padding:0;">
+<head>
+    <title>ONLYOFFICE Documents</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=IE8">
+    <script src="./code.js"></script>
+    <script src="./openssl.js"></script>
+    <style>
+        div {
+            margin: 10px;
+        }
+    </style>
+</head>
+<body style="width:100%;height:100%;margin:50;padding:0;overflow:hidden;">
+
+    <div id="certificate">
+        <label for="button_certificate">Select Certificate</label>
+        <input type="file" id="button_certificate">
+    </div>
+
+    <div id="key" style="display:none;">
+        <label for="button_key">Select Private Key</label>
+        <input type="file" id="button_key" value="load key">
+    </div>
+
+    <div id="password" style="display:none;">
+        <textarea id="area_password" placeholder="password..."></textarea>
+        <input type="button" id="button_password" value="setup password">
+    </div>
+
+    <div id="file">
+        <label for="file_select">Select OOXML File</label>
+        <input type="file" id="file_select" value="load file">
+    </div>
+
+    <div id="sign">
+        <input type="button" id="button_sign" value="Sign">
+    </div>
+
+</body>
+</html>

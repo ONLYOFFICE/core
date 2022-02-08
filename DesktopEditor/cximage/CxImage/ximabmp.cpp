@@ -155,6 +155,13 @@ bool CxImageBMP::Decode(CxFile * hFile)
 			if (dwCompression == BI_BITFIELDS)
 			{
 				hFile->Read(bfmask, 12, 1);
+
+                if (0xFFFFFFFF == bfmask[0] && 0xFFFFFFFF == bfmask[1] && 0xFFFFFFFF == bfmask[2]) {
+                    bfmask[0]=0x00FF0000;
+                    bfmask[1]=0x0000FF00;
+                    bfmask[2]=0x000000FF;
+                }
+
 			} else {
 				bfmask[0]=0x00FF0000;
 				bfmask[1]=0x0000FF00;
@@ -165,7 +172,7 @@ bool CxImageBMP::Decode(CxFile * hFile)
 				int32_t imagesize=4*head.biHeight*head.biWidth;
 				uint8_t* buff32=(uint8_t*)malloc(imagesize);
 				if (buff32){
-                    hFile->Read(buff32, imagesize,1,GetDIB(),GetDIBLimit()); // read in the pixels
+					hFile->Read(buff32, imagesize,1); // read in the pixels
 
 #if CXIMAGE_SUPPORT_ALPHA
 					if (dwCompression == BI_RGB){

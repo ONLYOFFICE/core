@@ -152,7 +152,7 @@ void oox_chart_series::parse_properties()
 	if (false == formatCode.empty())
 	{
 		if (!data_labels_)	data_labels_ = oox_data_labels();
-		data_labels_->set_formatCode(formatCode, bLinkData.get_value_or(true));
+		data_labels_->set_formatCode(formatCode, bLinkData.get_value_or(false));
 	}
 	odf_reader::GetProperty(content_.properties_, L"label-position", intVal);
 	if (intVal && labelPosEnabled_)
@@ -244,8 +244,6 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 			CP_XML_ATTR(L"val", id_);
 
 		}
-		shape.set(content_.graphic_properties_, content_.fill_);
-		shape.oox_serialize(_Wostream);
 
 		if (label_.present)
 		{
@@ -257,7 +255,7 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 					{
 						CP_XML_NODE(L"c:f")
 						{
-							CP_XML_STREAM() << label_.formula;
+							CP_XML_STREAM() << XmlUtils::EncodeXmlString(label_.formula);
 						}
 						if (false == label_.str_cache.empty())
 						{
@@ -292,6 +290,8 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 
 			}
 		}
+		shape.set(content_.graphic_properties_, content_.fill_);
+		shape.oox_serialize(_Wostream);
 
 		for (int i = 0; i < 5; i++)
 		{
@@ -401,22 +401,25 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 							{
 								CP_XML_CONTENT(values_[i].strRef_.formula);
 							}
-							CP_XML_NODE(L"c:strCache")
+							if (false == values_[i].strRef_.str_cache.empty())
 							{
-								CP_XML_NODE(L"c:ptCount")
+								CP_XML_NODE(L"c:strCache")
 								{
-									CP_XML_ATTR(L"val", values_[i].strRef_.str_cache_count);
-								}
-								for (size_t j = 0; j < values_[i].strRef_.str_cache.size(); j++)
-								{								
-									std::wstring & v = values_[i].strRef_.str_cache[j];
-
-									CP_XML_NODE(L"c:pt")
+									CP_XML_NODE(L"c:ptCount")
 									{
-										CP_XML_ATTR(L"idx", j);
-										CP_XML_NODE(L"c:v")
+										CP_XML_ATTR(L"val", values_[i].strRef_.str_cache_count);
+									}
+									for (size_t j = 0; j < values_[i].strRef_.str_cache.size(); j++)
+									{
+										std::wstring & v = values_[i].strRef_.str_cache[j];
+
+										CP_XML_NODE(L"c:pt")
 										{
-											CP_XML_CONTENT(v);
+											CP_XML_ATTR(L"idx", j);
+											CP_XML_NODE(L"c:v")
+											{
+												CP_XML_CONTENT(v);
+											}
 										}
 									}
 								}

@@ -43,5 +43,5 @@
 - (std::wstring)stdwstring;
 - (std::string)stdstring;
 + (NSString *)queryParameter:(NSURL *)url key:(NSString *)key;
-
+- (NSDictionary *)toDictionary;
 @end

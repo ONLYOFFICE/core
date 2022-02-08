@@ -32,7 +32,6 @@
 #pragma once
 #include "Theme.h"
 #include "Shapes/Shape.h"
-
 #include "Shapes/BaseShape/PPTShape/Ppt2PptxShapeConverter.h"
 
 namespace PPTX2EditorAdvanced
@@ -294,6 +293,9 @@ namespace PPT_FORMAT
 		_INT32			m_lcropFromTop;
 		_INT32			m_lcropFromBottom;
 
+        _INT32			m_lpictureContrast;
+        _INT32			m_lpictureBrightness;
+
 		bool			m_bStretch;
 		bool			m_bTile;
 
@@ -314,6 +316,9 @@ namespace PPT_FORMAT
 			m_lcropFromLeft			= 0;
 			m_lcropFromTop			= 0;
 			m_lcropFromBottom		= 0;
+
+            m_lpictureContrast = 0x10000;
+            m_lpictureBrightness = 0;
 
 			m_bStretch				= true;
 			m_bTile					= false;
@@ -623,9 +628,16 @@ namespace PPT_FORMAT
 
 				//string rect
 				int nRectCount = (int)pPPTShape->m_arStringTextRects.size();
-				if (0 != nRectCount)
+				if (0 != nRectCount && !pPPTShape->m_arStringTextRects[0].empty())
 				{
-					pFormulaConverter.ConvertTextRect(pPPTShape->m_arStringTextRects[0]);
+					if (pPPTShape->m_eType == PPTShapes::sptCNotchedCircularArrow)
+					{
+						pFormulaConverter.SetTextRectDefault();
+					}
+					else
+					{
+						pFormulaConverter.ConvertTextRect(pPPTShape->m_arStringTextRects[0]);
+					}
 				}
 
 				int nHandlesCount	= (int)pPPTShape->m_arHandles.size();
@@ -731,7 +743,8 @@ namespace PPT_FORMAT
 			return pElement;
 		}
 	};
-	class CVideoElement : public CImageElement
+
+        class CVideoElement : public CImageElement
 	{
 	public:
 		std::wstring	m_strVideoFileName;
@@ -780,33 +793,62 @@ namespace PPT_FORMAT
 		}
 	};
 
-	class CGroupElement : public CElement
-	{
-	public:
-		CGroupElement() : CElement()
-		{
-			m_etType = etGroup;
-		}
-		virtual ~CGroupElement()
-		{
-		}
-		virtual CElementPtr CreateDublicate()
-		{
-			CGroupElement* pGroupElement = new CGroupElement();
+        class CGroupElement : public CElement
+        {
+        public:
 
-			CElementPtr	pElement = CElementPtr(	pGroupElement );
-			
-			SetProperiesToDublicate(pElement);
+        public:
+            CGroupElement() : CElement()
+            {
+                m_etType = etGroup;
+            }
+            virtual ~CGroupElement()
+            {
+            }
+            virtual CElementPtr CreateDublicate()
+            {
+                CGroupElement* pGroupElement = new CGroupElement();
 
-			return pElement;
-		}
-        AVSINLINE std::wstring ConvertPPTShapeToPPTX(bool bIsNamespace = false)
-		{
+                CElementPtr	pElement = CElementPtr(	pGroupElement );
 
-			return L"";		
-		}
-	};
+                SetProperiesToDublicate(pElement);
 
+                return pElement;
+            }
+            AVSINLINE std::wstring ConvertPPTShapeToPPTX(bool bIsNamespace = false)
+            {
 
+                return L"";
+            }
+        };
+
+        class CTableElement : public CElement
+        {
+        public:
+            std::wstring m_xmlRawData;
+        public:
+            CTableElement() : CElement()
+            {
+                m_etType = etTable;
+            }
+            virtual ~CTableElement()
+            {
+            }
+            virtual CElementPtr CreateDublicate()
+            {
+                CTableElement* pTableElement = new CTableElement();
+
+                CElementPtr	pElement = CElementPtr(	pTableElement );
+
+                SetProperiesToDublicate(pElement);
+
+                return pElement;
+            }
+            AVSINLINE std::wstring ConvertPPTShapeToPPTX(bool bIsNamespace = false)
+            {
+
+                return L"";
+            }
+        };
 }
 

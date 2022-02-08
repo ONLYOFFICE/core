@@ -556,7 +556,9 @@ void odf_drawing_context::end_drawing()
 				if (impl_->current_drawing_state_.presentation_class_)
 				{
 					draw_layer = L"layout";
-					draw->common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_.presentation_placeholder_ = true;
+					
+					if (impl_->current_drawing_state_.oox_shape_preset_ != 3000)
+						draw->common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_.presentation_placeholder_ = true;
 				}
 			}
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_.presentation_class_ = impl_->current_drawing_state_.presentation_class_;
@@ -1252,8 +1254,16 @@ void odf_drawing_context::start_element(office_element_ptr elm, office_element_p
 {
     size_t level = (int)impl_->current_level_.size();
 	
-	if (false == impl_->current_level_.empty() && elm)
-		impl_->current_level_.back()->add_child_element(elm);
+	//если  фейковый предыдущий уровень (для сохранения порядка выше) - привязывааем к уровню выше
+
+	for (int i = impl_->current_level_.size() - 1; elm && i >= 0; i--)
+	{
+		if (impl_->current_level_[i])
+		{
+			impl_->current_level_[i]->add_child_element(elm);
+			break;
+		}
+	}
 
 	std::wstring style_name;
 	style* style_ = dynamic_cast<style*>(style_elm.get());
@@ -1328,11 +1338,16 @@ void odf_drawing_context::set_opacity(double percent_)
 	switch(impl_->current_drawing_part_)
 	{
 	case Area:
-		impl_->current_graphic_properties->common_draw_fill_attlist_.draw_opacity_ = percent(percent_);
-		break;
+	{
+		if (impl_->current_drawing_state_.oox_shape_preset_  == 3000)
+			impl_->current_graphic_properties->common_draw_fill_attlist_.draw_image_opacity_ = percent(percent_);
+		else
+			impl_->current_graphic_properties->common_draw_fill_attlist_.draw_opacity_ = percent(percent_);
+	}break;
 	case Line:
+	{
 		impl_->current_graphic_properties->svg_stroke_opacity_ = percent(percent_);
-		break;
+	}break;
 	}
 }
 void odf_drawing_context::set_grayscale()
@@ -2179,7 +2194,8 @@ void odf_drawing_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) 
 }
 void odf_drawing_context::set_line_width(double pt)
 {
-	if (!impl_->current_graphic_properties)return;
+	if (!impl_->current_graphic_properties) return;
+
 	impl_->current_graphic_properties->svg_stroke_width_ = length(length(pt,length::pt).get_value_unit(length::cm), length::cm);
 }
 
@@ -2263,7 +2279,7 @@ std::wstring odf_drawing_context::add_marker_style(int type)
 	odf_writer::office_element_ptr marker_element;
 
 	odf_writer::create_element(L"draw",L"marker", marker_element, impl_->odf_context_);
-	impl_->styles_context_->add_style(marker_element,false,true, style_family::Marker);
+	impl_->styles_context_->add_style(marker_element, false, true, style_family::Marker);
 	impl_->styles_context_->last_state()->set_name(str_types[type]);
 
 	draw_marker * marker = dynamic_cast<draw_marker *>(marker_element.get());
@@ -2455,9 +2471,9 @@ void odf_drawing_context::set_textarea_font(std::wstring & latin, std::wstring &
 
 	if (!impl_->current_text_properties) return;
 
-	if (!ea.empty())	impl_->current_text_properties->content_.fo_font_family_			= ea;
+	if (!ea.empty())	impl_->current_text_properties->content_.fo_font_family_			= latin;
 	if (!cs.empty())	impl_->current_text_properties->content_.style_font_family_complex_	= cs;
-	if (!latin.empty())	impl_->current_text_properties->content_.style_font_family_asian_	= latin;
+	if (!latin.empty())	impl_->current_text_properties->content_.style_font_family_asian_	= ea;
 
 }
 void odf_drawing_context::set_textarea_fontcolor(std::wstring hexColor)
@@ -2633,9 +2649,26 @@ void odf_drawing_context::start_image(std::wstring odf_path)
 			
 	set_image_style_repeat(1);//default
 }
-void odf_drawing_context::start_object(std::wstring name)
+void odf_drawing_context::start_object(std::wstring name, bool in_frame)
 {
-	start_frame();
+	if (in_frame)
+		start_frame();
+	else
+	{
+		//remove text_box - он лишний (оставляя фейковый, который не запишется)
+		impl_->current_level_.back() = office_element_ptr(); // чтоб внутрении элементы добавлялись к тому что выше
+		
+		if (impl_->current_level_.size() > 1)
+		{
+			draw_base* draw = dynamic_cast<draw_base*>(impl_->current_level_[impl_->current_level_.size() - 2].get());
+			if (draw)
+			{
+				if (false == draw->content_.empty())
+					draw->content_.pop_back();
+			}
+
+		}
+	}
 	
 	office_element_ptr object_elm;
 	create_element(L"draw", L"object", object_elm, impl_->odf_context_);
@@ -3025,11 +3058,12 @@ void odf_drawing_context::end_text_box()
 
 	end_frame();
 }
-void odf_drawing_context::end_object()
+void odf_drawing_context::end_object(bool in_frame)
 {
 	end_element();
 
-	end_frame();
+	if (in_frame)
+		end_frame();
 }
 void odf_drawing_context::start_object_ole(std::wstring ref)
 {
@@ -3097,11 +3131,13 @@ void odf_drawing_context::set_text(odf_text_context* text_context)
 {
 	if (text_context == NULL || impl_->current_level_.empty() ) return;
 	
+	if (!impl_->current_level_.back()) return; // фейковый текстбокс к примеру
+
 	//if (impl_->is_presentation_ && *impl_->is_presentation_) return; 
 
 	for (size_t i = 0; i < text_context->text_elements_list_.size(); i++)
 	{
-		if (text_context->text_elements_list_[i].level ==0)
+		if (text_context->text_elements_list_[i].level == 0)
 		{
 			impl_->current_level_.back()->add_child_element(text_context->text_elements_list_[i].elm);
 		}
@@ -3161,7 +3197,6 @@ void odf_drawing_context::start_gradient_style()
 	odf_writer::office_element_ptr gradient_element;
 
 	odf_writer::create_element(L"draw",L"gradient", gradient_element, impl_->odf_context_);
-	impl_->styles_context_->add_style(gradient_element,false,true, style_family::Gradient);
 
 	draw_gradient * gradient = dynamic_cast<draw_gradient *>(gradient_element.get());
 	if (!gradient) return;
@@ -3187,6 +3222,7 @@ void odf_drawing_context::start_gradient_style()
 				impl_->current_graphic_properties->svg_stroke_width_ = length(length(1, length::pt).get_value_unit(length::cm), length::cm);//default
 			break;
 	}
+	impl_->styles_context_->add_style(gradient_element, false, true, style_family::Gradient);
 }
 void odf_drawing_context::set_gradient_type(gradient_style::type style)
 {
@@ -3227,7 +3263,7 @@ void odf_drawing_context::set_gradient_angle(double angle)
 	draw_gradient * gradient = dynamic_cast<draw_gradient *>(impl_->styles_context_->last_state(style_family::Gradient)->get_office_element().get());
 	if (!gradient) return;
 
-	gradient->draw_angle_ = (int)((270 - angle) * 10);//(int)((360 - angle)/180. * 3.14159265358979323846);
+	gradient->draw_angle_ = 270 - angle;//(360 - angle)/180. * 3.14159265358979323846;
 }
 void odf_drawing_context::set_gradient_rect(double l, double t, double r, double b)
 {
@@ -3262,7 +3298,6 @@ void odf_drawing_context::start_opacity_style()
 
 	odf_writer::office_element_ptr opacity_element;
 	odf_writer::create_element(L"draw",L"opacity", opacity_element, impl_->odf_context_);
-	impl_->styles_context_->add_style(opacity_element,false,true, style_family::Opacity);
 
 	draw_opacity * opacity = dynamic_cast<draw_opacity *>(opacity_element.get());
 	if (!opacity) return;
@@ -3271,6 +3306,8 @@ void odf_drawing_context::start_opacity_style()
 	opacity->draw_display_name_ = std::wstring(L"User") + opacity->draw_name_.get() ;
 	
 	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_opacity_name_ = opacity->draw_name_;
+	
+	impl_->styles_context_->add_style(opacity_element, false, true, style_family::Opacity);
 }
 void odf_drawing_context::set_opacity_start(double val)
 {
@@ -3284,7 +3321,7 @@ void odf_drawing_context::set_opacity_angle(double angle)
 	draw_opacity * opacity = dynamic_cast<draw_opacity *>(impl_->styles_context_->last_state(style_family::Opacity)->get_office_element().get());
 	if (!opacity) return;
 
-	opacity->draw_angle_ = (int)((270-angle)*10);//(int)((360 - angle)/180. * 3.14159265358979323846);
+	opacity->draw_angle_ = 270 - angle;//(360 - angle)/180. * 3.14159265358979323846;
 }
 void odf_drawing_context::set_opacity_type(gradient_style style)
 {
@@ -3319,7 +3356,6 @@ void odf_drawing_context::start_hatch_style()
 	odf_writer::office_element_ptr hatch_element;
 
 	odf_writer::create_element(L"draw",L"hatch", hatch_element, impl_->odf_context_);
-	impl_->styles_context_->add_style(hatch_element,false,true, style_family::Hatch);
 
 	draw_hatch * hatch = dynamic_cast<draw_hatch *>(hatch_element.get());
 	if (!hatch) return;
@@ -3329,6 +3365,8 @@ void odf_drawing_context::start_hatch_style()
 	
 	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_hatch_name_ = hatch->draw_name_;
 	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_ = draw_fill(draw_fill::hatch);
+	
+	impl_->styles_context_->add_style(hatch_element, false, true, style_family::Hatch);
 }
 void odf_drawing_context::set_hatch_line_color(std::wstring hexColor)
 {
@@ -3647,7 +3685,6 @@ void odf_drawing_context::start_bitmap_style()
 	odf_writer::office_element_ptr fill_image_element;
 
 	odf_writer::create_element(L"draw", L"fill-image", fill_image_element, impl_->odf_context_);
-	impl_->styles_context_->add_style(fill_image_element, false, true, style_family::FillImage);
 
 	draw_fill_image * fill_image = dynamic_cast<draw_fill_image *>(fill_image_element.get());
 	if (!fill_image) return;
@@ -3660,6 +3697,8 @@ void odf_drawing_context::start_bitmap_style()
 	
 	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_image_name_ = fill_image->draw_name_;
 	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_fill_ = draw_fill(draw_fill::bitmap);
+	
+	impl_->styles_context_->add_style(fill_image_element, false, true, style_family::FillImage);
 	
 	set_image_style_repeat(0);
 

@@ -87,7 +87,7 @@ std::wstring RtfFont::RenderToRtf(RenderParameter oRenderParameter)
 		RENDER_RTF_INT( m_nCodePage, sResult, L"cpg" )
 
 		RtfCharProperty oFontNameCharProp;
-        sResult += L" " + RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument, &oFontNameCharProp );
+        sResult += L" " + RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument, &oFontNameCharProp, true );
 		
 //ALL FONTS NEW.docx
 //		if(!m_sAltName.empty() )
@@ -810,7 +810,7 @@ std::wstring RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 		RtfStylePtr oStyle;
 		if( true == poRtfDocument->m_oStyleTable.GetStyle( m_nCharStyle, oStyle ) )
 		{
-			sResult += L"<w:pStyle w:val=\"";
+			sResult += L"<w:rStyle w:val=\"";
 			sResult += L"Style_" + std::to_wstring(m_nCharStyle); //oStyle->m_sName;
 			sResult += L"\"/>";
 		}
@@ -1399,7 +1399,8 @@ std::wstring RtfStyle::RenderToRtfEnd( RenderParameter oRenderParameter )
 	RENDER_RTF_INT	( m_nPriority,	sResult, L"spriority" )
 	RENDER_RTF_BOOL	( m_bUnhiddenWhenUse, sResult, L"sunhideused" )
 
-    sResult += L" " + RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument ) + L";}";
+	RtfCharProperty* props = NULL;
+	sResult += L" " + RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument, props, true) + L";}";
 	return sResult;
 }
 std::wstring RtfCharStyle::RenderToRtf(RenderParameter oRenderParameter)

@@ -1190,6 +1190,10 @@ namespace NSHtmlRenderer
     // additiaonal params ----------------------------------------------------------------------
     HRESULT CASCHTMLRenderer3::CommandLong(const LONG& lType, const LONG& lCommand)
     {
+        if (c_nCommandLongTypeOnlyText == lType)
+        {
+            return GetOnlyTextMode() ? S_OK : S_FALSE;
+        }
         return S_OK;
     }
     HRESULT CASCHTMLRenderer3::CommandDouble(const LONG& lType, const double& dCommand)

@@ -116,22 +116,24 @@ namespace PPTX
 						spcBef = oReader;
 					else if ( _T("a:tabLst") == sName )
 					{
-						int nParentDepth1 = oReader.GetDepth();
-						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
+						if (false == oReader.IsEmptyNode())
 						{
-							std::wstring sName1 = oReader.GetName();
-							if ( _T("a:tab") == sName1 )
+							int nParentDepth1 = oReader.GetDepth();
+							while (oReader.ReadNextSiblingNode(nParentDepth1))
 							{
-								Tab tab(oReader);
-								tabLst.push_back(tab);
+								std::wstring sName1 = oReader.GetName();
+								if (_T("a:tab") == sName1)
+								{
+									Tab tab(oReader);
+									tabLst.push_back(tab);
+								}
 							}
 						}
-
 					}
 					//else if ( _T("a:extLst") == sName )
 					//	extLst = oReader;
 
-					else if ( _T("a:buBlip") == sName || _T("a:buChar") == sName || _T("a:buAutoNum") == sName || sName == _T("buNone"))
+					else if ( _T("a:buBlip") == sName || _T("a:buChar") == sName || _T("a:buAutoNum") == sName || sName == _T("a:buNone"))
 						ParagraphBullet.fromXML(oReader);
 					else if ( _T("a:buClr") == sName || sName == _T("a:buClrTx"))
 						buColor.fromXML(oReader);
@@ -334,8 +336,7 @@ namespace PPTX
 					{
 						case 0:
 						{
-							algn = new Limit::TextAlign();
-							algn->SetBYTECode(pReader->GetUChar());							
+							algn = pReader->GetUChar();							
 							break;
 						}
 						case 1:
@@ -350,8 +351,7 @@ namespace PPTX
 						}
 						case 3:
 						{
-							fontAlgn = new Limit::FontAlign();
-							fontAlgn->SetBYTECode(pReader->GetUChar());
+							fontAlgn = pReader->GetUChar();
 							break;
 						}
 						case 4:
@@ -464,8 +464,7 @@ namespace PPTX
 										{
 											case 0:
 											{
-												tabLst[nIndex].algn = new PPTX::Limit::TextTabAlignType();
-												tabLst[nIndex].algn->SetBYTECode(pReader->GetUChar());
+												tabLst[nIndex].algn = pReader->GetUChar();
 												break;
 											}
 											case 1:

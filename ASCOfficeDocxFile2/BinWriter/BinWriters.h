@@ -88,8 +88,12 @@ namespace BinDocxRW
 		OOX::IFileContainer*	m_pCurRels;
 		std::map<int, bool>		m_mapIgnoreComments;
 
-		ParamsWriter(NSBinPptxRW::CBinaryFileWriter* pCBufferedStream, DocWrapper::FontProcessor* pFontProcessor, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager):
-				m_pCBufferedStream(pCBufferedStream), m_pFontProcessor(pFontProcessor), m_pOfficeDrawingConverter(pOfficeDrawingConverter), m_pEmbeddedFontsManager(pEmbeddedFontsManager)
+		ParamsWriter(NSBinPptxRW::CBinaryFileWriter* pCBufferedStream, DocWrapper::FontProcessor* pFontProcessor, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager)
+			:
+			m_pCBufferedStream(pCBufferedStream), 
+			m_pFontProcessor(pFontProcessor), 
+			m_pOfficeDrawingConverter(pOfficeDrawingConverter), 
+			m_pEmbeddedFontsManager(pEmbeddedFontsManager)
 		{
 			m_pMain		= NULL;
 			m_pSettings = NULL;
@@ -103,6 +107,7 @@ namespace BinDocxRW
 
 			m_bLocalStyles = m_bLocalNumbering = false;
 		}
+		std::wstring AddEmbeddedStyle(const std::wstring & styleId);
 	};
 	class ParamsDocumentWriter
 	{
@@ -135,7 +140,7 @@ namespace BinDocxRW
 		void WriteShd(const ComplexTypes::Word::CShading& Shd);
 		void WritePaddings(const nullable<SimpleTypes::CTwipsMeasure>& left, const nullable<SimpleTypes::CTwipsMeasure>& top,
 			const nullable<SimpleTypes::CTwipsMeasure>& right, const nullable<SimpleTypes::CTwipsMeasure>& bottom);
-		void WriteFont(std::wstring& sFontName, BYTE bType, DocWrapper::FontProcessor& m_oFontProcessor);
+		void WriteFont(std::wstring sFontName, BYTE bType, DocWrapper::FontProcessor& m_oFontProcessor);
 		void WriteBytesArray(BYTE* pData, long nDataSize);
 		template<typename T> void WriteTrackRevision(const T& elem);
 	};
@@ -173,9 +178,7 @@ namespace BinDocxRW
 	{
 		BinaryCommonWriter m_oBcw;
 	public:
-		PPTX::Theme*					m_pTheme;
-		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
-		DocWrapper::FontProcessor&		m_oFontProcessor;
+		ParamsWriter& m_oParamsWriter;
 
 		Binary_rPrWriter(ParamsWriter& oParamsWriter);
 		void Write_rPr(OOX::Logic::CRunProperty* rPr);
@@ -215,9 +218,6 @@ namespace BinDocxRW
 							 const nullable<ComplexTypes::Word::CDecimalNumber>& numStart, nullable<ComplexTypes::Word::CFtnPos>* ftnPos,
 							 nullable<ComplexTypes::Word::CEdnPos>* endPos, std::vector<OOX::CFtnEdnSepRef*>* refs);
 		void WriteNumFmt(const ComplexTypes::Word::CNumFmt& oNumFmt);
-
-	private:
-		std::wstring AddEmbeddedStyle(const std::wstring & styleId);
 	};
 	class Binary_tblPrWriter
 	{
@@ -333,8 +333,8 @@ namespace BinDocxRW
 		void Write(OOX::Logic::CDocPartTypes* pDocPartTypes);
 		void Write(OOX::Logic::CDocPartBehaviors* pDocPartBehaviors);
 
-		void WriteAltChunk(OOX::Media& oAltChunk);
-		void WriteVbaProject(OOX::VbaProject& oVbaProject);
+		void WriteAltChunk(OOX::Media& oAltChunk, OOX::CStyles* styles);
+
 		void Write(std::vector<OOX::WritingElement*> & aElems);
 		void WriteDocumentContent(const std::vector<OOX::WritingElement*> & aElems);
 		void WriteBackground (OOX::WritingElement* pBackground);
@@ -498,9 +498,19 @@ namespace BinDocxRW
 		void WriteSdtPrDate(const OOX::Logic::CDate& oDate);
 		void WriteDocPartList(const OOX::Logic::CSdtDocPart& oSdtDocPart);
 		void WriteDropDownList(const OOX::Logic::CSdtDropDownList& oDropDownList);
-		void WriteSdtFormPr(const ComplexTypes::Word::CFormPr& oFormPr);
+		void WriteSdtFormPr(const OOX::Logic::CFormPr& oFormPr);
 		void WriteSdtTextFormPr(const OOX::Logic::CTextFormPr& oTextFormPr);
 		void WriteSdtTextFormPrComb(const ComplexTypes::Word::CComb& oComb);
+		void WriteSdtPicture(const OOX::Logic::CSdtPicture& oSdtPicture);
+	};
+	class BinaryCustomsTableWriter
+	{
+	private:
+		ParamsWriter&			m_oParamsWriter;
+		BinaryCommonWriter		m_oBcw;
+	public:
+		BinaryCustomsTableWriter(ParamsWriter& oParamsWriter);
+		void Write(OOX::CDocument* poDocument);
 	};
 	class BinaryCommentsTableWriter
 	{
@@ -538,6 +548,8 @@ namespace BinDocxRW
 		void WriteColorSchemeMapping(const PPTX::Logic::ClrMap& oColorSchemeMapping);
 		void WriteCompat(const OOX::Settings::CCompat& oCompat);
 		void WriteCompatSetting(const OOX::Settings::CCompatSetting& oCompatSetting);
+		void WriteDocumentProtection(const OOX::Settings::CDocProtect& oDocProtect);
+		void WriteWriteProtection(const OOX::Settings::CWriteProtection& oWriteProtection);
 	};
 	class BinaryNotesTableWriter
 	{

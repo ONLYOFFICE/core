@@ -50,7 +50,7 @@ namespace OOX
 					if(oStream.GetBool())
 					{
 						pRun->m_oRPr.Init();
-						pRun->m_oRPr->fromXLSB(oStream, XLSB::rt_FONT);
+                        pRun->m_oRPr->fromXLSB(oStream, XLSB::rt_Font);
 					}
 					_UINT32 nTextCount = oStream.GetULong();
 					while(nTextCount-- > 0)

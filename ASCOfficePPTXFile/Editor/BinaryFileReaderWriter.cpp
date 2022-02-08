@@ -57,7 +57,7 @@
 #include <iostream>
 
 #ifndef DISABLE_FILE_DOWNLOADER
-#include "../../Common/FileDownloader/FileDownloader.h"
+#include "../../Common/Network/FileTransporter/include/FileTransporter.h"
 #endif 
 
 #define BYTE_SIZEOF		sizeof(BYTE)
@@ -155,6 +155,14 @@ namespace NSBinPptxRW
 	{
 		return m_strDstMedia;
 	}
+	void CImageManager2::SetDstCharts(const std::wstring& strDst)
+	{
+		m_strDstCharts = strDst;
+	}
+	std::wstring CImageManager2::GetDstCharts()
+	{
+		return m_strDstCharts;
+	}
 	void CImageManager2::SetDstEmbed(const std::wstring& strDst)
 	{
 		m_strDstEmbed = strDst;
@@ -163,6 +171,14 @@ namespace NSBinPptxRW
 	{
 		return m_strDstEmbed;
 	}
+	std::wstring CImageManager2::GetDstDiagram()
+	{
+		return m_strDstDiagram;
+	}
+	void CImageManager2::SetDstDiagram(const std::wstring& strDst)
+	{
+		m_strDstDiagram = strDst;
+	}	
 	int CImageManager2::IsDisplayedImage(const std::wstring& strInput)
 	{
 		int nRes = 0;
@@ -228,9 +244,13 @@ namespace NSBinPptxRW
 		std::wstring strExts = _T(".jpg");
 		//use GetFileName to avoid defining '.' in the directory as extension
 		std::wstring strFileName = NSFile::GetFileName(strInput);
-		int nIndexExt = (int)strFileName.rfind(wchar_t('.'));
-		if (-1 != nIndexExt)
-			strExts = strFileName.substr(nIndexExt);
+		int sizeExt = (int)strFileName.rfind(wchar_t('.'));
+		if (-1 != sizeExt)
+		{
+			strExts = strFileName.substr(sizeExt);
+			sizeExt = (int)strFileName.length() - sizeExt;
+		}
+		else sizeExt = 0;
 
 		int	typeAdditional = 0;
 		std::wstring strAdditional;
@@ -238,14 +258,14 @@ namespace NSBinPptxRW
 
 		int nDisplayType = IsDisplayedImage(strInput);
 		size_t nFileNameLength = strFileName.length();
-		if (0 != nDisplayType && nFileNameLength > 4)
+		if (0 != nDisplayType && nFileNameLength > sizeExt)
 		{
 			OOX::CPath oPath = strInput;
 			
 			std::wstring strFolder		= oPath.GetDirectory();
 			std::wstring strFileName	= oPath.GetFilename();
 
-			strFileName.erase(strFileName.length() - 4, 4);
+			strFileName.erase(strFileName.length() - sizeExt, sizeExt);
 
 			if(0 != (nDisplayType & 1))
 			{
@@ -571,7 +591,7 @@ namespace NSBinPptxRW
 	std::wstring CImageManager2::DownloadImageExec(const std::wstring& strFile)
 	{
 #ifndef DISABLE_FILE_DOWNLOADER
-        CFileDownloader oDownloader(strFile, false);
+        NSNetwork::NSFileTransport::CFileDownloader oDownloader(strFile, false);
 
 		if ( oDownloader.DownloadSync() )
 		{
@@ -682,7 +702,13 @@ namespace NSBinPptxRW
 			{
 				while (nNewSize >= m_lSize)
 				{
-					m_lSize *= 2;
+					unsigned int lSize = m_lSize * 2;
+					if (lSize < m_lSize)
+					{
+						m_lSize = nNewSize;
+						break;
+					}
+					m_lSize = lSize;
 				}
 
 				BYTE* pNew = new BYTE[m_lSize];
@@ -696,8 +722,8 @@ namespace NSBinPptxRW
 		}
 		else
 		{
-			m_lSize		= 1024 * 1024; // 1Mb
-			m_pStreamData	= new BYTE[m_lSize];
+			m_lSize = 1024 * 1024; // 1Mb
+			m_pStreamData = new BYTE[m_lSize];
 
 			m_lPosition = 0;
 			m_pStreamCur = m_pStreamData;
@@ -795,11 +821,6 @@ namespace NSBinPptxRW
 		m_lPosition += INT32_SIZEOF;
 		m_pStreamCur += INT32_SIZEOF;
 	}
-	void CBinaryFileWriter::WriteDouble64(const double& dValue)
-	{
-		_INT64 _val = (_INT64)(dValue * 100000);
-		WriteLONG64(_val);
-	}
 	void CBinaryFileWriter::WriteDouble(const double& dValue)
 	{
 		_INT64 _val = (_INT64)(dValue * 100000);
@@ -814,7 +835,7 @@ namespace NSBinPptxRW
 		}		
 		else
 		{
-			WriteLONG((long)_val);
+			WriteLONG((int)_val);
 		}
 	}
 	void CBinaryFileWriter::WriteDoubleReal(const double& dValue)
@@ -910,7 +931,19 @@ namespace NSBinPptxRW
 		RELEASEOBJECT		(m_pTheme);
 		RELEASEOBJECT		(m_pClrMap);
 	}
-
+	void CBinaryFileWriter::SetRels(NSCommon::smart_ptr<OOX::IFileContainer> container)
+	{
+		*m_pCurrentContainer = container;
+	}
+	void CBinaryFileWriter::SetRels(OOX::IFileContainer *container)
+	{
+		*m_pCurrentContainer = NSCommon::smart_ptr<OOX::IFileContainer>(container);
+		m_pCurrentContainer->AddRef();
+	}
+	NSCommon::smart_ptr<OOX::IFileContainer> CBinaryFileWriter::GetRels()
+	{
+		return *m_pCurrentContainer;
+	}
 	void CBinaryFileWriter::StartRecord(_INT32 lType)
 	{
 		m_arStack[m_lStackPosition] = m_lPosition + 5; // sizeof(BYTE) + sizeof(_UINT32)
@@ -934,7 +967,15 @@ namespace NSBinPptxRW
 		m_arMainTables.push_back(oEntry);
 		//StartRecord(lType);
 	}
-
+	void CBinaryFileWriter::WriteRecord2(int type, OOX::WritingElement* pVal)
+	{
+		if (pVal)
+		{
+			StartRecord(type);
+			pVal->toPPTY(this);
+			EndRecord();
+		}
+	}
 	void CBinaryFileWriter::WriteReserved(size_t lCount)
 	{
 		CheckBufferSize((_UINT32)lCount);
@@ -1034,8 +1075,20 @@ namespace NSBinPptxRW
 	}
 	void CBinaryFileWriter::WriteDouble1(int type, const double& val)
 	{
-		int _val = (int)(val * 10000);
-		WriteInt1(type, _val);
+		_INT64 _val = (_INT64)(val * 100000);
+
+		if (_val > 0x7fffffff)
+		{
+			WriteInt1(type, 0x7fffffff);
+		}
+		else if (_val < -0x7fffffff)
+		{
+			WriteInt1(type, -0x7fffffff);
+		}
+		else
+		{
+			WriteInt1(type, (int)_val);
+		}
 	}
 	void CBinaryFileWriter::WriteDouble2(int type, const NSCommon::nullable_double& val)
 	{
@@ -1627,24 +1680,6 @@ namespace NSBinPptxRW
 		m_mapImages.insert(std::pair<std::wstring, _relsGeneratorInfo>(strImageRelsPath, oRelsGeneratorInfo));
 		return oRelsGeneratorInfo;
 	}
-	unsigned int CRelsGenerator::WriteChart(int nChartNumber, _INT32 lDocType = XMLWRITER_DOC_TYPE_PPTX)
-	{
-		std::wstring strChart = L"charts/chart" + std::to_wstring(nChartNumber) + L".xml";
-
-		if (lDocType != XMLWRITER_DOC_TYPE_DOCX)
-		{
-			strChart = L"../" + strChart;
-		}
-
-		std::wstring strRid = L"rId" + std::to_wstring(m_lNextRelsID++);
-
-        std::wstring strRels = L"<Relationship Id=\"" + strRid +
-                L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart\" Target=\"" +
-                strChart + L"\"/>";
-		m_pWriter->WriteString(strRels);
-
-		return m_lNextRelsID - 1;
-	}	
 
 	unsigned int CRelsGenerator::WriteRels(const std::wstring& bsType, const std::wstring& bsTarget, const std::wstring& bsTargetMode)
 	{
@@ -1701,7 +1736,6 @@ namespace NSBinPptxRW
 	{
 		m_pMainDocument		= NULL;
 		m_lNextId			= 0;
-		m_lChartNumber		= 1;
 		m_nDocumentType		= XMLWRITER_DOC_TYPE_PPTX;
 
 		m_pRels				= new CRelsGenerator();
@@ -1907,12 +1941,9 @@ namespace NSBinPptxRW
 	}
 	double CBinaryFileReader::GetDouble()
 	{
-		return 1.0 * GetLong() / 100000;
+		return 1.0 * GetLong() / 100000.;
 	}
-	double CBinaryFileReader::GetDouble64()
-	{
-		return 1.0 * GetLong64() / 100000;
-	}	// 8 byte
+// 8 byte
 	double CBinaryFileReader::GetDoubleReal()
 	{
         if (m_lPos + (int)DOUBLE_SIZEOF > m_lSize)
@@ -2018,14 +2049,14 @@ namespace NSBinPptxRW
         return res;
 	}
 
-    bool CBinaryFileReader::GetArray(BYTE **pBuffer, _INT32 len)
+    bool CBinaryFileReader::GetArray(BYTE *pBuffer, _INT32 len)
 	{
 		if (0 == len)
             return false;
 		if (m_lPos + len > m_lSize)
             return false;
 
-        *pBuffer = new BYTE [len];
+        //*pBuffer = new BYTE [len];
 
         memcpy(pBuffer, m_pDataCur, len);
 
@@ -2061,7 +2092,7 @@ namespace NSBinPptxRW
 
 	void CBinaryFileReader::SkipRecord()
 	{
-		_INT32 _len = GetULong();
+		_INT32 _len = GetRecordSize();
 		Skip(_len);
 	}
 
@@ -2097,9 +2128,9 @@ namespace NSBinPptxRW
 	{
 		_UINT16 nValue = GetUChar();
 		if(0 != (nValue & 0x80))
-		{
+                {
 			BYTE nPart = GetUChar();
-			nValue = (nValue & 0x7F) | ((nPart & 0x7F) << 7);
+                        nValue = (nValue & 0x7F) | ((nPart & 0x7F) << 7);
 		}
 		return nValue;
 	}
@@ -2109,7 +2140,7 @@ namespace NSBinPptxRW
 	}
 	_UINT32 CBinaryFileReader::XlsbReadRecordLength()
 	{
-		_UINT16 nValue = 0;
+                _UINT32 nValue = 0;
 		for (int i = 0; i < 4; ++i)
 		{
 			BYTE nPart = GetUChar();
@@ -2120,5 +2151,48 @@ namespace NSBinPptxRW
 			}
 		}
 		return nValue;
+	}
+
+	void CBinaryFileReader::SetDstContentRels()
+	{
+		++m_nCurrentRelsStack;
+
+		//чистить текущий m_pRels хорошо при последовательной записи автофигур в word.
+		//плохо в случае записи перезентаций, с момента перехода на единственный обьект m_pReader.
+		//пример: презетации записали несколько Rels, записываем chart, вызывается SetDstContentRels и трутся Rels презентаций
+		//if (0 == m_pReader->m_nCurrentRelsStack)
+		//{
+		//	m_pReader->m_pRels->Clear();
+		//	m_pReader->m_pRels->StartRels();
+		//}
+		//else
+		{
+			m_stackRels.push_back(m_pRels);
+
+			m_pRels = new NSBinPptxRW::CRelsGenerator(m_pRels->m_pManager);
+			m_pRels->StartRels();
+		}
+	}
+	void CBinaryFileReader::SaveDstContentRels(const std::wstring& bsRelsPath)
+	{
+		m_pRels->CloseRels();
+		m_pRels->SaveRels(bsRelsPath);
+
+		--m_nCurrentRelsStack;
+		if (-1 > m_nCurrentRelsStack)
+			m_nCurrentRelsStack = -1;
+
+		//if (-1 != m_pReader->m_nCurrentRelsStack)
+		{
+			int nIndex = (int)m_stackRels.size() - 1;
+
+			if (0 <= nIndex)
+			{
+				NSBinPptxRW::CRelsGenerator* pCur = m_pRels;
+				m_pRels = m_stackRels[nIndex];
+				m_stackRels.erase(m_stackRels.begin() + nIndex);
+				RELEASEOBJECT(pCur);
+			}
+		}
 	}
 }

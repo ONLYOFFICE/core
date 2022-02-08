@@ -33,7 +33,6 @@
 
 #include "BaseLimit.h"
 
-
 namespace PPTX
 {
 	namespace Limit

@@ -56,9 +56,13 @@ public:
 	void fromString(const std::wstring& str);
 
 private:
-	DColunByteU cols;
-	DRw rows;
+    //DColunByteU cols;
+    //DRw rows;
 	std::vector<SerArPtr> array_;
+
+    //biff12
+    _INT32 rows;
+    _INT32 cols;
 };
 
 typedef boost::shared_ptr<PtgExtraArray> PtgExtraArrayPtr;

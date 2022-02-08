@@ -32,8 +32,15 @@
 #pragma once
 
 #include "../../../../DesktopEditor/xml/include/xmlutils.h"
+#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/BaseObject.h"
+#include "../Base/SmartPtr.h"
 
-
+namespace NSBinPptxRW
+{
+	class CBinaryFileWriter;
+	class CBinaryFileReader;
+	class CXmlWriter;
+}
 namespace OOX
 {
 #define WritingElement_AdditionConstructors(Class) \
@@ -70,6 +77,32 @@ namespace OOX
 		fromXML(node);												\
 		return *this;												\
 	}																\
+
+#define WritingElement_XlsbConstructors(Class) \
+    explicit Class(XLS::BaseObjectPtr& obj)\
+    {\
+        m_pMainDocument = NULL;\
+        fromBin(obj);\
+    }\
+    const Class& operator =(XLS::BaseObjectPtr& obj)\
+    {\
+        m_pMainDocument = NULL;\
+        fromBin(obj);\
+        return *this;\
+    }\
+
+#define WritingElement_XlsbVectorConstructors(Class) \
+    explicit Class(std::vector<XLS::BaseObjectPtr>& obj)\
+    {\
+        m_pMainDocument = NULL;\
+        fromBin(obj);\
+    }\
+    const Class& operator =(std::vector<XLS::BaseObjectPtr>& obj)\
+    {\
+        m_pMainDocument = NULL;\
+        fromBin(obj);\
+        return *this;\
+    }\
 
 #define WritingElement_ReadNode( oRootNode, oChildNode, sNodeName, oValue ) \
 	if ( oRootNode.GetNode( sNodeName, oChildNode ) )\
@@ -372,6 +405,7 @@ namespace OOX
 		et_a_scene3d, // <a:scene3d>
 		et_a_schemeClr, // <a:schemeClr>
 		et_a_scrgbClr, // <a:scrgbClr>
+		et_a_styleClr,
 		et_a_shade, // <a:shade>
 		et_a_snd, // <a:snd>
 		et_a_softEdge, // <a:softEdge>
@@ -414,6 +448,45 @@ namespace OOX
 		et_dgm_prSet,			// <dgm:prSet> 
 		et_dgm_spPr,			// <dgm:spPr> 
 		et_dgm_t,				// <dgm:t> 
+		et_dgm_cxnLst,
+		et_dgm_cxn,
+		et_dgm_VariableList,
+		et_dgm_Shape,
+		et_dgm_AdjLst,
+		et_dgm_ShapeAdjust,
+		et_dgm_PresOf,
+		et_dgm_Choose,
+		et_dgm_Else,
+		et_dgm_If,
+		et_dgm_Alg,
+		et_dgm_Param,
+		et_dgm_ConstrLst,
+		et_dgm_Constraint,
+		et_dgm_RuleLst,
+		et_dgm_Rule,
+		et_dgm_ForEach,
+		et_dgm_LayoutNode,
+		et_dgm_DiferentData,
+		et_dgm_styleLbl,
+		et_dgm_ClrLst,
+		et_dgm_Whole,
+		et_dgm_Bg,
+		et_dgm_DataModel,
+		et_dgm_Cat,
+		et_dgm_CatLst,
+		et_dgm_ResizeHandles,
+		et_dgm_OrgChart,
+		et_dgm_HierBranch,
+		et_dgm_Direction,
+		et_dgm_chPref,
+		et_dgm_chMax,
+		et_dgm_BulletEnabled,
+		et_dgm_AnimOne,
+		et_dgm_AnimLvl,
+		et_dgm_ComplexType,
+		et_dgm_text,
+		et_dgm_ColorStyleLbl,
+
 		et_dsp_Shape,			// <dsp:sp>
 		et_dsp_ShapeTree,		// <dsp:spTree>
 		et_dsp_spPr,			// <dsp:spPr>
@@ -421,6 +494,7 @@ namespace OOX
 		et_dsp_groupSpPr,		// <dsp:grpSpPr>
 		et_dsp_cNvPr,
 		et_dsp_txXfrm,
+
 
 		et_lc_LockedCanvas,	// <lc:lockedCanvas> 
 
@@ -453,6 +527,25 @@ namespace OOX
 		et_p_SplitTransition,
 		et_p_ZoomTransition,
 
+		et_p_par,
+		et_p_seq,
+		et_p_audio,
+		et_p_video,
+		et_p_excl,
+		et_p_anim,
+		et_p_animClr,
+		et_p_animEffect,
+		et_p_animMotion,
+		et_p_animRot,
+		et_p_animScale,
+		et_p_cmd,
+		et_p_set,
+
+		et_p_bldP,
+		et_p_bldDgm,
+		et_p_bldGraphic,
+		et_p_bldOleChart,
+
         et_a_textFit,
         et_a_hyperlink,
         et_a_fld,
@@ -481,6 +574,7 @@ namespace OOX
         et_a_buSzPts,
         et_a_buSzTx,
 
+		et_ds_customXmlProps,
 		et_ds_schemaRefs, // <ds:shemeRefs>
         et_ds_schemaRef, // <ds:shemeRef>	
 		
@@ -708,6 +802,7 @@ namespace OOX
 		et_w_cols, // <w:cols>
 		et_w_comboBox, // <w:comboBox>
 		et_w_textFormPr, // <w:textFormPr> custom!
+		et_w_formPr,// <w:formPr> custom!
 		et_w_comment, // <w:comment>
 		et_w_commentRangeEnd, // <w:commentRangeEnd>
 		et_w_commentRangeStart, // <w:commentRangeStart>
@@ -811,6 +906,7 @@ namespace OOX
 		et_w_sdtEndPr, // <w:sdtEndPr>
 		et_w_sdtPr, // <w:sdtPr>
 		et_w_sdtCheckbox, // <w:checkbox>
+		et_w_sdtPicture, // <w:picture>
 		et_w_sdtCheckboxSymbol, // <w:checkedState>
 		et_w_sectPr, // <w:sectPr>
 		et_w_sectPrChange, // <w:sectPrChange>
@@ -1103,7 +1199,14 @@ namespace OOX
 		et_ct_StrDimension,
 		et_ct_NumDimension,
 		et_ct_ChartData,
+		et_ct_ExternalData,
 
+		et_cs_ChartStyle,
+		et_cs_StyleEntry,
+		et_cs_MarkerLayout,
+		et_cs_ColorStyle,
+		et_cs_SchemeClr,
+		et_cs_Variation,
 
 		et_cdr_FromTo,
 		et_cdr_Ext,
@@ -1115,6 +1218,7 @@ namespace OOX
 		et_x_BookViews, // <bookViews>
 		et_x_Workbook,
 		et_x_WorkbookPr,
+		et_x_WorkbookProtection,
 		et_x_WorkbookView, // <workbookView>
 		et_x_DefinedNames, // <definedNames>
 		et_x_DefinedName, // <definedName>
@@ -1183,9 +1287,12 @@ namespace OOX
 		et_x_FromTo,
 		et_x_Pos,
 		et_x_Ext,
+		et_x_ClientData,
 		et_x_CalcCell,
 		et_x_SheetViews,
 		et_x_SheetView,
+		et_x_ProtectedRanges,
+		et_x_ProtectedRange,
 		et_x_GraphicFrame,
 		et_x_Graphic,
 		et_x_GraphicData,
@@ -1287,6 +1394,9 @@ namespace OOX
 		et_x_ListItems,
 		et_x_ListItem,
 
+		et_x_WorkbookPivotCache,
+		et_x_WorkbookPivotCaches,
+
 		et_x_PivotTableDefinition,
 		et_x_PivotCacheDefinition,
 		et_x_PivotCacheRecords,
@@ -1378,11 +1488,17 @@ namespace OOX
 		et_x_Style2003
 	};
 
+	class File;
+
 	class Document
 	{
 	public:
 		Document() {}
 		virtual ~Document() {}
+
+		std::wstring m_sDocumentPath;
+
+		std::map<std::wstring, NSCommon::smart_ptr<OOX::File>> m_mapContent;
 	};
 
 	class WritingElement
@@ -1400,6 +1516,10 @@ namespace OOX
 		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) {}
 
 		OOX::Document *m_pMainDocument;
+		
+		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+		virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 	};
 	
 	template<typename ElemType = WritingElement>
@@ -1409,15 +1529,17 @@ namespace OOX
         std::vector<ElemType *>  m_arrItems;
 
 		WritingElementWithChilds(OOX::Document *pMain = NULL) :  WritingElement(pMain){}
-		virtual ~WritingElementWithChilds() 
+		
+		virtual ~WritingElementWithChilds()
 		{
 			ClearItems();
 		}
+
 		virtual void ClearItems()
 		{
-            for ( size_t i = 0; i < m_arrItems.size(); ++i)
+			for (size_t i = 0; i < m_arrItems.size(); ++i)
 			{
-                if ( m_arrItems[i] ) delete m_arrItems[i];
+				if (m_arrItems[i]) delete m_arrItems[i];
 			}
 			m_arrItems.clear();
 		}

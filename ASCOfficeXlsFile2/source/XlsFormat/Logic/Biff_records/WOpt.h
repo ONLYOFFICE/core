@@ -32,12 +32,14 @@
 #pragma once
 
 #include "BiffRecord.h"
+#include "../Biff_structures/FrtHeaderOld.h"
+#include "../Biff_structures/BiffString.h"
 
 namespace XLS
 {
 
 
-// Logical representation of WOpt record in BIFF8
+// Logical representation of WOpt record in BIFF8 and BrtWebOpt record in BIFF12
 class WOpt: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(WOpt)
@@ -51,6 +53,21 @@ public:
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeWOpt;
+
+    FrtHeaderOld    frtHeaderOld;
+
+    bool            fRelyOnCSS;
+    bool            fOrganizeInFolder;
+    bool            fUseLongFileNames;
+    bool            fDownloadComponents;
+    bool            fRelyOnVML;
+    bool            fAllowPNG;
+    unsigned char   screenSize;
+    unsigned int    dwPixelsPerInch;
+    unsigned int    uiCodePage;
+    LPWideString    rgbLocationOfComponents;
+    //rgbFuture The size of this field in bytes is calculated according to the following formula:
+    // (size of this record) – 16 – (size of rgbLocationOfComponents)
 
 };
 

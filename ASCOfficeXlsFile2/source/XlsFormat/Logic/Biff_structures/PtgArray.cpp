@@ -37,29 +37,27 @@
 namespace XLS
 {
 
-
-PtgArray::PtgArray()
+PtgArray::PtgArray(const unsigned short full_ptg_id) : OperandPtg(full_ptg_id)
 {
 }
-
 
 PtgArray::PtgArray(const PtgDataType data_type)
 :	OperandPtg(fixed_id | (static_cast<unsigned char>(data_type) << 5))
 {
 }
 
-
 BiffStructurePtr PtgArray::clone()
 {
 	return BiffStructurePtr(new PtgArray(*this));
 }
 
-
 void PtgArray::loadFields(CFRecord& record)
 {
-	record.skipNunBytes(7); // unused
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+        record.skipNunBytes(7); // unused
+    else
+        record.skipNunBytes(16); // unused
 }
-
 
 void PtgArray::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
@@ -75,7 +73,6 @@ void PtgArray::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool fu
 
 	ptg_stack.push(array_string);
 }
-
 
 } // namespace XLS
 

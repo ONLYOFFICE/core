@@ -192,6 +192,17 @@ void IMetafileToRenderter::InitPicker(NSFonts::IApplicationFonts* pFonts)
 
 namespace NSOnlineOfficeBinToPdf
 {
+	inline BYTE ReadByte(BYTE*& pData, int& nOffset)
+	{
+		BYTE ret = *(pData);
+		pData++;
+		nOffset++;
+		return ret;
+	}
+	inline bool ReadBool(BYTE*& pData, int& nOffset)
+	{
+		return ReadByte(pData, nOffset);
+	}
     inline INT32 ReadInt(BYTE*& pData, int& nOffset)
 	{
 	#ifdef _ARM_ALIGN_
@@ -863,6 +874,132 @@ namespace NSOnlineOfficeBinToPdf
 				pRenderer->AddLink(dX, dY, dW, dH, dDestX, dDestY, nPage);
 				break;
 			}
+			case ctFormField:
+			{
+				BYTE* nStartPos   = current;
+				int   nStartIndex = curindex;
+
+				int nLen = ReadInt(current, curindex);
+
+				double dX = ReadDouble(current, curindex);
+				double dY = ReadDouble(current, curindex);
+				double dW = ReadDouble(current, curindex);
+				double dH = ReadDouble(current, curindex);
+
+				CFormFieldInfo oInfo;
+				oInfo.SetBounds(dX, dY, dW, dH);
+				oInfo.SetBaseLineOffset(ReadDouble(current, curindex));
+
+				int nFlags = ReadInt(current, curindex);
+
+				if (nFlags & 1)
+					oInfo.SetKey(ReadString(current, curindex));
+
+				if (nFlags & 2)
+					oInfo.SetHelpText(ReadString(current, curindex));
+
+				oInfo.SetRequired(nFlags & 4);
+				oInfo.SetPlaceHolder(nFlags & 8);
+
+				if (nFlags & (1 << 6))
+				{
+					int nBorderType = ReadInt(current, curindex);
+					double dBorderSize = ReadDouble(current, curindex);
+					unsigned char unR = ReadByte(current, curindex);
+					unsigned char unG = ReadByte(current, curindex);
+					unsigned char unB = ReadByte(current, curindex);
+					unsigned char unA = ReadByte(current, curindex);
+
+					oInfo.SetBorder(nBorderType, dBorderSize, unR, unG, unB, unA);
+				}
+
+				if (nFlags & (1 << 9))
+				{
+					unsigned char unR = ReadByte(current, curindex);
+					unsigned char unG = ReadByte(current, curindex);
+					unsigned char unB = ReadByte(current, curindex);
+					unsigned char unA = ReadByte(current, curindex);
+					oInfo.SetShd(unR, unG, unB, unA);
+				}
+
+				if (nFlags & (1 << 10))
+				{
+					oInfo.SetJc(ReadByte(current, curindex));
+				}
+
+				oInfo.SetType(ReadInt(current, curindex));
+
+				if (oInfo.IsTextField())
+				{
+					CFormFieldInfo::CTextFormPr* pPr = oInfo.GetTextFormPr();
+					pPr->SetComb(nFlags & (1 << 20));
+
+					if (nFlags & (1 << 21))
+						pPr->SetMaxCharacters(ReadInt(current, curindex));
+
+					if (nFlags & (1 << 22))
+						pPr->SetTextValue(ReadString(current, curindex));
+
+					pPr->SetMultiLine(nFlags & (1 << 23));
+					pPr->SetAutoFit(nFlags & (1 << 24));
+
+					if (nFlags & (1 << 25))
+						pPr->SetPlaceHolder(ReadString(current, curindex));
+				}
+				else if (oInfo.IsDropDownList())
+				{
+					CFormFieldInfo::CDropDownFormPr* pPr = oInfo.GetDropDownFormPr();
+					pPr->SetEditComboBox(nFlags & (1 << 20));
+
+					int nItemsCount = ReadInt(current, curindex);
+					for (int nIndex = 0; nIndex < nItemsCount; ++nIndex)
+					{
+						pPr->AddComboBoxItem(ReadString(current, curindex));
+					}
+
+					int nSelectedIndex = ReadInt(current, curindex);
+
+					if (nFlags & (1 << 22))
+						pPr->SetTextValue(ReadString(current, curindex));
+
+					if (nFlags & (1 << 23))
+						pPr->SetPlaceHolder(ReadString(current, curindex));
+				}
+				else if (oInfo.IsCheckBox())
+				{
+					CFormFieldInfo::CCheckBoxFormPr* pPr = oInfo.GetCheckBoxFormPr();
+					pPr->SetChecked(nFlags & (1 << 20));
+					pPr->SetType(ReadInt(current, curindex));
+					pPr->SetCheckedSymbol(ReadInt(current, curindex));
+					pPr->SetCheckedFont(ReadString(current, curindex));
+					pPr->SetUncheckedSymbol(ReadInt(current, curindex));
+					pPr->SetUncheckedFont(ReadString(current, curindex));
+
+					if (nFlags & (1 << 21))
+						pPr->SetGroupKey(ReadString(current, curindex));
+				}
+				else if (oInfo.IsPicture())
+				{
+					CFormFieldInfo::CPictureFormPr* pPr = oInfo.GetPictureFormPr();
+					pPr->SetConstantProportions(nFlags & (1 << 20));
+					pPr->SetRespectBorders(nFlags & (1 << 21));
+					pPr->SetScaleType(CFormFieldInfo::EScaleType((nFlags >> 24) & 0xF));
+					LONG lShiftX = ReadInt(current, curindex);
+					LONG lShiftY = ReadInt(current, curindex);
+					pPr->SetShift(lShiftX, lShiftY);
+
+					if (nFlags & (1 << 22))
+						pPr->SetPicturePath(pCorrector->GetImagePath(ReadString(current, curindex)));
+				}
+
+				if (oInfo.IsValid())
+					pRenderer->AddFormField(oInfo);
+
+				current  = nStartPos + nLen;
+				curindex = nStartIndex + nLen;
+
+				break;
+			}
 			default:
 			{
 				break;
@@ -1153,6 +1290,17 @@ namespace NSOnlineOfficeBinToPdf
 			{
 				SkipDouble(current, curindex, 6);
 				SkipInt(current, curindex);
+				break;
+			}
+			case ctFormField:
+			{
+				BYTE* nStartPos   = current;
+				int   nStartIndex = curindex;
+
+				int nLen = ReadInt(current, curindex);
+
+				current  = nStartPos + nLen;
+				curindex = nStartIndex + nLen;
 				break;
 			}
             default:

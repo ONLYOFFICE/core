@@ -120,11 +120,11 @@ std::wstring convert_time(const std::wstring & oox_time)
 
 
 	sec		= millisec /1000.;
-	hours	= sec/60./60.;
-	minutes = (sec - (hours * 60 * 60))/60.;
+	hours	= (int)(sec/60./60.);
+	minutes = (int)((sec - (hours * 60 * 60))/60.);
 	sec		= sec - (hours *60 + minutes) * 60.;
 
-	int sec1 = sec;
+	int sec1 = (int)sec;
 
 	std::wstring time_str = std::wstring(L"PT") +
 							(hours < 10 ? L"0" : L"") + boost::lexical_cast<std::wstring>(hours)
@@ -363,7 +363,7 @@ std::wstring ods_table_state::get_column_default_cell_style(int column)
 
     for (size_t i=0; i < columns_.size(); i++)
 	{
-		if (curr + columns_[i].repeated < column + 1)continue;
+		if (curr + (int)columns_[i].repeated < column + 1)continue;
 		else
 		{
 			return columns_[i].cell_style_name;
@@ -508,7 +508,7 @@ bool ods_table_state::is_cell_comment()
 }
 bool ods_table_state::is_cell_data_validation()
 {
-	if ( cells_size_ < 1 )return false;
+	if ( cells_size_ < 1 ) return false;
 	return cells_.back().data_validation_name.empty() ? true : false;
 }
 int ods_table_state::is_cell_hyperlink(int col, int row)
@@ -522,22 +522,37 @@ int ods_table_state::is_cell_hyperlink(int col, int row)
 	}
 	return -1;
 }
-std::wstring ods_table_state::is_cell_data_validation(int col, int row)
+std::wstring ods_table_state::is_cell_data_validation(int col, int row, unsigned int repeate_col, data_validation_state::_ref & ref)
 {
-    for (size_t i = 0; i < data_validations_.size(); i++)
+	for (size_t i = 0; i < data_validations_.size(); i++)
 	{
-		if (data_validations_[i].in_ref(col, row))
+		if (data_validations_[i].in_ref(col, row, repeate_col, ref))
 		{
             return data_validations_[i].name;
 		}
 	}
 	return L"";
 }
+int ods_table_state::is_row_validation(int row, int & repeate_row)
+{
+	for (size_t i = 0; i < data_validations_.size(); i++)
+	{
+		data_validation_state::_ref ref;
+		if (data_validations_[i].in_row(row, repeate_row, ref))
+		{
+			repeate_row = (std::min)(ref.row_end, row + repeate_row - 1) - (std::max)(row, ref.row_start) + 1;
+			
+			if (ref.row_start > row) row = ref.row_start;
+			return  row;
+		}
+	}
+	return -1;
+}
 int ods_table_state::is_cell_comment(int col, int row, unsigned int repeate_col)
 {
 	for (size_t i = 0; i < comments_.size(); i++)
 	{
-		if ((comments_[i].col < col + repeate_col && comments_[i].col >= col) && comments_[i].row == row && comments_[i].used == false)
+		if ((comments_[i].col < col + (int)repeate_col && comments_[i].col >= col) && comments_[i].row == row && comments_[i].used == false)
 		{
             return  (int)i;
 		}
@@ -550,7 +565,7 @@ int ods_table_state::is_row_comment(int row, int repeate_row)
 	{
 		if (comments_[i].row < row + repeate_row && comments_[i].row >= row && comments_[i].used == false)
 		{
-			return  (int)i;
+			return comments_[i].row;
 		}
 	}
 	return -1;
@@ -633,9 +648,12 @@ void ods_table_state::start_cell(office_element_ptr & elm, office_element_ptr & 
 	state.elm = elm;  state.repeated = 1;  state.style_name = style_name; state.style_elm = style_elm;
     state.row = current_table_row_;  state.col = current_table_column_ + 1;
 
+	data_validation_state::_ref ref;
+	std::wstring validation_name = is_cell_data_validation(state.col, state.row, 1, ref);
+
 	state.hyperlink_idx			= is_cell_hyperlink(state.col, state.row);
 	state.comment_idx			= is_cell_comment(state.col, state.row);
-	state.data_validation_name	= is_cell_data_validation(state.col, state.row);
+	state.data_validation_name	= validation_name;
 
 	current_table_column_ +=  state.repeated;  
     cells_.push_back(state);
@@ -701,18 +719,21 @@ void ods_table_state::add_definded_expression(office_element_ptr & elm)
 	if (!table_defined_expressions_)return;
 	table_defined_expressions_->add_child_element(elm);
 }
-void ods_table_state::add_hyperlink(const std::wstring & ref,int col, int row, const std::wstring & link, bool bLocation)
+void ods_table_state::add_hyperlink(const std::wstring & ref,int col, int row, const std::wstring & link, const std::wstring & location)
 {
 	ods_hyperlink_state state;
-	state.row = row;  state.col = col; state.ref = ref; state.bLocation = bLocation;
+	state.row = row;  state.col = col; state.ref = ref; 
 
-	if (state.bLocation)
+	state.link = link;		
+	
+	if (link.empty())
 	{
-		state.link = L"#" + formulas_converter_table.convert_named_ref(link);
+		state.link += L"#" + formulas_converter_table.convert_named_ref(location);
+		state.bLocation = true;
 	}
 	else
 	{
-		state.link = link;		
+		state.link = link + (location.empty() ? L"" : (L"#" + location));
 	}
 
 	hyperlinks_.push_back(state);
@@ -940,9 +961,9 @@ void ods_table_state::set_cell_formula(std::wstring & formula)
 		std::wstring refExternal = result[1].str();
 		int idExternal = XmlUtils::GetInteger(refExternal.substr(1, refExternal.length() - 1)) - 1;
 
-		bExternal = idExternal >= 0 && idExternal < ods_context->externals_.size();
+		bExternal = (idExternal >= 0 && idExternal < (int)ods_context->externals_.size());
 
-		while(idExternal >= 0 && idExternal < ods_context->externals_.size())
+		while(idExternal >= 0 && idExternal < (int)ods_context->externals_.size())
 		{
 			size_t pos = formula.find(refExternal);
 			if (pos == std::wstring::npos)
@@ -1159,7 +1180,7 @@ void ods_table_state::convert_position(oox_table_position & oox_pos, double & x,
 	
 	for (i = 0; i < columns_.size(); i++)
 	{
-		if (oox_pos.col > columns_[i].repeated +  curr_col)
+		if (oox_pos.col >(int)(columns_[i].repeated +  curr_col))
 		{
 			sz_col += (columns_[i].repeated ) * columns_[i].size;
 		}
@@ -1172,7 +1193,7 @@ void ods_table_state::convert_position(oox_table_position & oox_pos, double & x,
 		curr_col += columns_[i].repeated;
 	}
 	
-	if (curr_col  < oox_pos.col && columns_.size() > 0)
+	if ((int)curr_col  < oox_pos.col && false == columns_.empty())
 	{
 		sz_col += (oox_pos.col - curr_col) * columns_[columns_.size() - 1].size;
 	}
@@ -1184,7 +1205,7 @@ void ods_table_state::convert_position(oox_table_position & oox_pos, double & x,
 	size_t curr_row =0 ;
 	for (i = 0; i < rows_.size(); i++)
 	{
-		if (oox_pos.row > rows_[i].repeated + curr_row)
+		if (oox_pos.row >(int)(rows_[i].repeated + curr_row))
 		{
 			sz_row += (rows_[i].repeated ) * rows_[i].size;
 		}
@@ -1198,7 +1219,7 @@ void ods_table_state::convert_position(oox_table_position & oox_pos, double & x,
 		curr_row += rows_[i].repeated;
 	}
 
-	if (curr_row < oox_pos.row && rows_.size() > 0)
+	if ((int)curr_row < oox_pos.row && false == rows_.empty())
 	{
 		sz_row += (oox_pos.row - curr_row ) * rows_[rows_.size() - 1].size;
 	}
@@ -1413,7 +1434,7 @@ void ods_table_state::end_cell()
 	}
 }
 
-void ods_table_state::add_default_cell( unsigned int repeated)
+void ods_table_state::add_default_cell( int repeated)
 {
 	if (repeated < 1) return;
 
@@ -1425,12 +1446,11 @@ void ods_table_state::add_default_cell( unsigned int repeated)
 
 		add_default_cell(comments_[comment_idx].col - c - 1);
 		add_default_cell(1);
-		add_default_cell(repeated + c + 1 - comments_[comment_idx].col);
+		add_default_cell(repeated + c - comments_[comment_idx].col);
 
 		return;
 	}
-
-//////////////////////////////////////////////////
+//-----------------------------------------------------------------------------------------
 	std::map<int, std::map<int, _spanned_info>>::iterator pFindRow = map_merged_cells.find(current_table_row_);
 
 	bool bSpanned = false;
@@ -1447,7 +1467,7 @@ void ods_table_state::add_default_cell( unsigned int repeated)
 
 					add_default_cell(it->first - c - 1);
 					add_default_cell(1);
-					add_default_cell(repeated + c + 1 - it->first);
+					add_default_cell(repeated + c - current_table_column_);
 
 					return;
 				}
@@ -1459,7 +1479,24 @@ void ods_table_state::add_default_cell( unsigned int repeated)
 			}
 		}
 	}
+//-----------------------------------------------------------------------------------------
+	data_validation_state::_ref ref;
+	std::wstring validation_name = is_cell_data_validation(current_table_column_ + 1, current_table_row_, repeated, ref);
 
+	int repeated_validation = (std::min)(ref.col_end, current_table_column_ + (int)repeated) - (std::max)(ref.col_start, current_table_column_ + 1) + 1;
+
+	if (false == validation_name.empty() && repeated > 1 && repeated_validation != repeated)
+	{
+		//делим на 3 - до, с validation, после;
+		int c = current_table_column_;
+
+		add_default_cell(ref.col_start - c - 1);
+		add_default_cell(repeated_validation);
+		add_default_cell(repeated + c - current_table_column_);
+
+		return;
+	}
+//-----------------------------------------------------------------------------------------
 	bool bCovered = false;
 	if (!bSpanned)
 	{
@@ -1487,7 +1524,7 @@ void ods_table_state::add_default_cell( unsigned int repeated)
 			}
 		}		
 	}
-
+//-----------------------------------------------------------------------------------------
 	office_element_ptr default_cell_elm;
 	if (bCovered)
 	{
@@ -1522,7 +1559,7 @@ void ods_table_state::add_default_cell( unsigned int repeated)
 	state.col = current_table_column_ + 1;
 
 	state.hyperlink_idx			= is_cell_hyperlink(state.col, current_table_row_);
-	state.data_validation_name	= is_cell_data_validation(state.col, current_table_row_);
+	state.data_validation_name	= validation_name;
 	state.comment_idx			= comment_idx;
 	
 	cells_.push_back(state);
@@ -1593,14 +1630,14 @@ void ods_table_state::end_conditional_format()
 {
 	current_level_.pop_back();
 }
-void ods_table_state::start_conditional_rule(int rule_type)
+void ods_table_state::start_conditional_rule(int rule_type, _CP_OPT(unsigned int) rank, _CP_OPT(bool) bottom, _CP_OPT(bool) percent)
 {
-	office_element_ptr		elm;
+	office_element_ptr elm;
 
-	if (rule_type == 3)		create_element(L"calcext", L"color-scale",  elm, context_); 
-	else if (rule_type == 7)create_element(L"calcext", L"data-bar", elm ,context_);
-	else if (rule_type ==10)create_element(L"calcext", L"icon-set", elm, context_);
-	else if (rule_type ==14)create_element(L"calcext", L"date-is", elm, context_);
+		 if (rule_type == 3) create_element(L"calcext", L"color-scale", elm, context_); 
+	else if (rule_type == 7) create_element(L"calcext", L"data-bar", elm ,context_);
+	else if (rule_type == 10)create_element(L"calcext", L"icon-set", elm, context_);
+	else if (rule_type == 14)create_element(L"calcext", L"date-is", elm, context_);
 	else
 	{
 		create_element(L"calcext", L"condition", elm, context_);
@@ -1623,7 +1660,13 @@ void ods_table_state::start_conditional_rule(int rule_type)
 				boost::algorithm::split(splitted, test, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
 				cell = splitted[0];
 
-				condition->attr_.calcext_base_cell_address_ = table + cell;
+				std::wstring col, row;
+
+				utils::splitCellAddress(cell, col, row);
+				if (col.empty()) col = L".A";
+				if (row.empty()) row = L"1";
+
+				condition->attr_.calcext_base_cell_address_ = table + col + row;
 			}
 			switch(rule_type)
 			{
@@ -1637,10 +1680,20 @@ void ods_table_state::start_conditional_rule(int rule_type)
 				case 11: condition->attr_.calcext_value_	= L"not-contains-text()"; break;
 				case 12: condition->attr_.calcext_value_	= L"is-no-error";		break;
 				case 13: condition->attr_.calcext_value_	= L"not-contains-text()"; break;
-				case 15: condition->attr_.calcext_value_	= L"top-elements()";	break;//bottom-elements ???
-				case 16: condition->attr_.calcext_value_	= L"unique";			break;
+				case 15:
+				{
+					if ((bottom) && (*bottom)) 	condition->attr_.calcext_value_ = L"bottom";
+					else 						condition->attr_.calcext_value_ = L"top";
+					
+					if (percent && (*percent))	*condition->attr_.calcext_value_ += L"-percent(";
+					else						*condition->attr_.calcext_value_ += L"-elements(";
+
+					*condition->attr_.calcext_value_ += std::to_wstring(rank.get_value_or(10)) + L")";
+				}break;
+				case 16: condition->attr_.calcext_value_ = L"unique"; break;
+				case 17:	condition->attr_.calcext_value_ = L"ends-with()";break;
 				case 2: /*cellIs*/
-				default:	break;							
+				default: break;
 			}
 		}
 	}
@@ -1676,9 +1729,15 @@ void ods_table_state::set_conditional_formula(std::wstring formula)
 		s = true; 
 		operator_ = operator_.substr(0, f_end);
 	}
-	operator_ += (split ? L"," : L"") + odfFormula + (s ? L")" : L"");
+	if (operator_.empty())
+		operator_ = odfFormula;
+	else
+		operator_ += (split ? L"," : L" ") + odfFormula + (s ? L")" : L"");
 
-	if (std::wstring::npos == operator_.find(L"contains-text") || !split)
+	if ((std::wstring::npos == operator_.find(L"contains-text") &&
+		std::wstring::npos == operator_.find(L"begins-with") && 
+		std::wstring::npos == operator_.find(L"ends-with"))
+		|| !split )
 		condition->attr_.calcext_value_= operator_;
 }
 void ods_table_state::set_conditional_style_name(const std::wstring &style_name)
@@ -1686,14 +1745,39 @@ void ods_table_state::set_conditional_style_name(const std::wstring &style_name)
 	calcext_condition*	condition	 = dynamic_cast<calcext_condition*>	 (current_level_.back().get());
 	calcext_date_is*	date_is		 = dynamic_cast<calcext_date_is*>	 (current_level_.back().get());
 
-	if (condition)	condition->attr_.calcext_apply_style_name_	= style_name;
-	if (date_is)	date_is->attr_.calcext_style_				= style_name;
+	if (condition)	condition->attr_.calcext_apply_style_name_ = style_name;
+	if (date_is)	date_is->attr_.calcext_style_ = style_name;
+}
+void ods_table_state::set_conditional_time(int period)
+{
+	calcext_date_is* date_is = dynamic_cast<calcext_date_is*>(current_level_.back().get());
+	if (date_is)
+	{
+		switch (period)
+		{
+		case 1: date_is->attr_.calcext_date_ = odf_types::time_period::yesterday; break;
+		case 2: date_is->attr_.calcext_date_ = odf_types::time_period::tomorrow; break;
+		case 3: date_is->attr_.calcext_date_ = odf_types::time_period::last7Days; break;
+		case 4: date_is->attr_.calcext_date_ = odf_types::time_period::thisMonth; break;
+		case 5: date_is->attr_.calcext_date_ = odf_types::time_period::lastMonth; break;
+		case 6: date_is->attr_.calcext_date_ = odf_types::time_period::nextMonth; break;
+		case 7: date_is->attr_.calcext_date_ = odf_types::time_period::thisWeek; break;
+		case 8: date_is->attr_.calcext_date_ = odf_types::time_period::lastWeek; break;
+		case 9: date_is->attr_.calcext_date_ = odf_types::time_period::nextWeek; break;
+		case 0:
+		default:
+			date_is->attr_.calcext_date_ = odf_types::time_period::today;
+		}
+	}
 }
 void ods_table_state::set_conditional_text(const std::wstring &text)
 {
-	calcext_condition*	condition	 = dynamic_cast<calcext_condition*>	 (current_level_.back().get());
+	calcext_condition* condition = dynamic_cast<calcext_condition*>(current_level_.back().get());
 
-	if ((condition->attr_.calcext_value_) && (std::wstring::npos != condition->attr_.calcext_value_->find(L"contains-text")))
+	if ((condition->attr_.calcext_value_) && 
+		(std::wstring::npos != condition->attr_.calcext_value_->find(L"contains-text") || 
+		 std::wstring::npos != condition->attr_.calcext_value_->find(L"ends-with") ||
+		 std::wstring::npos != condition->attr_.calcext_value_->find(L"begins-with")))
 	{
 		std::wstring operator_;
 		bool s = false;
@@ -1752,11 +1836,13 @@ void ods_table_state::set_conditional_value(int type, std::wstring value )
 		{
 			switch(type)
 			{
-				case 0: //Formula	
-				case 1: entry->calcext_type_ = calcext_type(calcext_type::AutoMaximum); break;
-				case 2: entry->calcext_type_ = calcext_type(calcext_type::AutoMinimum); break;
+				case 1: entry->calcext_type_ = calcext_type(calcext_type::Maximum); break;
+				case 2: entry->calcext_type_ = calcext_type(calcext_type::Minimum); break;
 				case 4: entry->calcext_type_ = calcext_type(calcext_type::Percent); break;
-				case 5: //Percentile		
+				case 5: entry->calcext_type_ = calcext_type(calcext_type::Percentile); break;
+				case 6: entry->calcext_type_ = calcext_type(calcext_type::AutoMinimum); break;
+				case 7: entry->calcext_type_ = calcext_type(calcext_type::AutoMaximum); break;
+				case 0: //Formula	
 				case 3: //Number
 				default: entry->calcext_type_ = calcext_type(calcext_type::Number);
 			}
@@ -1804,7 +1890,7 @@ void ods_table_state::add_conditional_colorscale(int index, _CP_OPT(color) color
 	calcext_color_scale *scale = dynamic_cast<calcext_color_scale*>(current_level_.back().get());
 
 	if (!scale) return;
-	if (index >= scale->content_.size() || index < 0) return;
+	if (index >= (int)scale->content_.size() || index < 0) return;
 
 	calcext_color_scale_entry* color_scale_entry = dynamic_cast<calcext_color_scale_entry*>(scale->content_[index].get());
 

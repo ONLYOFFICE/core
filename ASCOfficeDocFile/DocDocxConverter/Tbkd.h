@@ -39,16 +39,16 @@ namespace DocFileFormat
 	class Tbkd : public ByteStructure
 	{
 	public:
+		friend class TextboxMapping;
+
 		static const int STRUCTURE_SIZE = 6;
 
 		Tbkd() : ipgd(0), itxbxs(0), dcpDepend(0), icol(0), fTableBreak(false), fColumnBreak(false), fMarked(false), fUnk(false), fTextOverflow(false)
 		{
-
 		}
 
 		virtual ~Tbkd()
 		{
-
 		}
 
 		virtual ByteStructure* ConstructObject (VirtualStreamReader* reader, int length)
@@ -72,7 +72,7 @@ namespace DocFileFormat
 		}
 
 	private:
-
+		bool bUsed = false;
 		/// Except in textbox BKD, index to PGD in plfpgd that describes the page this break is on
 		short ipgd;
 		/// In textbox BKD

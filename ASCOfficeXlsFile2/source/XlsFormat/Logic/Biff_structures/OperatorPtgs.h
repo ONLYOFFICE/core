@@ -62,6 +62,9 @@ public:
 
 		std::wstring operand2(ptg_stack.top());
 		ptg_stack.pop();
+		
+		if (ptg_stack.empty())
+			return;
 		ptg_stack.top() += getOperatorSymbols() + operand2;
 	};
 	virtual const unsigned short getPtgId() const {return fixedPtgId;};

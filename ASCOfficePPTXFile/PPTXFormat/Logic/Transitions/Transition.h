@@ -84,9 +84,9 @@ namespace PPTX
 			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
+                oAttr.WriteLimitNullable(_T("spd"), spd);
 				oAttr.Write(_T("advClick"), advClick);
 				oAttr.Write(_T("advTm"), advTm);
-				oAttr.WriteLimitNullable(_T("spd"), spd);
 				oAttr.Write(_T("dur"), dur);
 
 				XmlUtils::CNodeValue oValue;
@@ -131,10 +131,7 @@ namespace PPTX
 					else if (2 == _at)
 						dur = pReader->GetLong();
 					else if (3 == _at)
-					{
-						spd = new Limit::TransitionSpeed();
-						spd->SetBYTECode(pReader->GetUChar());
-					}
+						spd = pReader->GetUChar();
 				}
 
 				while (pReader->GetPos() < end)

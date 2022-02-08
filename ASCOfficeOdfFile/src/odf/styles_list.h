@@ -162,12 +162,8 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
-    const _CP_OPT(odf_types::length) & get_fo_text_indent() const { return fo_text_indent_; }
-    const _CP_OPT(odf_types::length) & get_fo_margin_left() const { return fo_margin_left_; }
-    const _CP_OPT(odf_types::length) & get_text_list_tab_stop_position() const { return text_list_tab_stop_position_; }
+    _CP_OPT(std::wstring) text_label_followed_by_;
 
-    _CP_OPT(std::wstring)		text_label_followed_by_;
-private:
     _CP_OPT(odf_types::length) text_list_tab_stop_position_;
     _CP_OPT(odf_types::length) fo_text_indent_;
     _CP_OPT(odf_types::length) fo_margin_left_;
@@ -210,7 +206,7 @@ public:
 
 private:
     _CP_OPT(std::wstring)								text_style_name_;
-    _CP_OPT(wchar_t)									text_bullet_char_;
+    _CP_OPT(std::wstring)								text_bullet_char_;
     odf_types::common_num_format_prefix_suffix_attlist	common_num_format_prefix_suffix_attlist_;
     _CP_OPT(odf_types::percent)							text_bullet_relative_size_;
 
@@ -303,7 +299,6 @@ public:
     office_element_ptr_array		content_;
     friend class odf_document;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_outline_style);
 
 // text:outline-level-style
@@ -335,7 +330,6 @@ public:
 
    friend class odf_document;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_outline_level_style);
 
 } 

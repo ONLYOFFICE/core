@@ -67,6 +67,7 @@ static std::wstring get_mime_type(const std::wstring & extension)
 	else if (L"doc" == extension)	return  L"application/vnd.ms-word";
 	else if (L"vsd" == extension)	return  L"application/vnd.visio";
 	else if (L"vsdx" == extension)	return  L"application/vnd.ms-visio.drawing";
+	else if (L"pict" == extension)	return  L"image/pict";
 
 	return L"";
 }

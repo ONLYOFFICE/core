@@ -47,6 +47,7 @@
 #include "datatypes/tablemode.h"
 #include "datatypes/common_attlists.h"
 #include "datatypes/tablevisibility.h"
+#include "datatypes/messagetype.h"
 
 namespace cpdoccore { 
 namespace odf_reader {
@@ -101,7 +102,6 @@ public:
     odf_types::common_value_and_type_attlist	common_value_and_type_attlist_;
 
     bool table_protect_; // default false
-        
 };
 
 class table_table_cell_attlist_extra
@@ -180,8 +180,8 @@ public:
     CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_;
     const wchar_t * ns;
     const wchar_t * name;
-    xml::NodeType xml_type;
-    ElementType type;
+	static const xml::NodeType xml_type = xml::typeElement;
+	static const ElementType type = typeTableTableColumnNoGroup;
 
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ) {}
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name) {}
@@ -338,7 +338,7 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
-    table_table_column_group_attlist	table_table_column_group_attlist_;
+    table_table_column_group_attlist	attlist_;
     table_columns_and_groups			table_columns_and_groups_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_table_column_group);
@@ -569,7 +569,7 @@ public:
 class table_rows_and_groups
 {
 public:
-    table_rows_and_groups();
+	table_rows_and_groups() {}
     std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
     
 	void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
@@ -579,10 +579,6 @@ public:
     void pptx_convert(oox::pptx_conversion_context & Context);
 
     office_element_ptr_array	content_;
-    //int type_;
-    //office_element_ptr		table_table_row_group_;
-    //table_rows_no_group		table_rows_no_group_;
-
 };
 
 class table_table_row_group_attlist
@@ -593,7 +589,7 @@ public:
     bool table_display_; // default true
     
 };
-
+//--------------------------------------------------------------------------------------------
 class table_table_row_group : public office_element_impl<table_table_row_group>
 {
 public:
@@ -604,7 +600,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
     
-    table_table_row_group() 
+    table_table_row_group()
 	{
     }
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context) ;
@@ -615,12 +611,12 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
-    table_table_row_group_attlist	table_table_row_group_attlist_;
+    table_table_row_group_attlist	attlist_;
     table_rows_and_groups			table_rows_and_groups_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_table_row_group);
-
+//--------------------------------------------------------------------------------------------
 class table_table_protection : public office_element_impl<table_table_protection>
 {
 public:
@@ -652,7 +648,7 @@ public:
 	//_CP_OPT(bool)	format_cells;
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_table_protection);
-
+//--------------------------------------------------------------------------------------------
 class table_table : public office_element_impl<table_table>
 {
 public:
@@ -690,7 +686,17 @@ public:
     //table-scenario
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_table);
-
+//--------------------------------------------------------------------------------------------
+class table_sub_table : public table_table
+{
+public:
+	static const wchar_t * ns;
+	static const wchar_t * name;
+	static const xml::NodeType xml_type = xml::typeElement;
+	static const ElementType type = typeTableSubTable;
+};
+CP_REGISTER_OFFICE_ELEMENT2(table_sub_table);
+//--------------------------------------------------------------------------------------------
 //table:content-shapes
 class table_shapes : public office_element_impl<table_shapes>
 {
@@ -736,7 +742,7 @@ private:
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_content_validations);
-
+//--------------------------------------------------------------------------------------------
 //table:content-validation
 class table_content_validation : public office_element_impl<table_content_validation>
 {
@@ -780,14 +786,14 @@ public:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
-    _CP_OPT(std::wstring)		table_title_;
-	_CP_OPT(odf_types::Bool)	table_display_;
-    _CP_OPT(std::wstring)		table_message_type_;
+    _CP_OPT(std::wstring) table_title_;
+	_CP_OPT(odf_types::Bool) table_display_;
+    _CP_OPT(odf_types::message_type) table_message_type_;
 
-    office_element_ptr_array	content_;
+    office_element_ptr_array content_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_error_message);
-
+//--------------------------------------------------------------------------------------------
 //table:help-message
 class table_help_message : public office_element_impl<table_help_message>
 {
@@ -804,11 +810,10 @@ public:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
-    _CP_OPT(std::wstring)		table_title_;
-	_CP_OPT(odf_types::Bool)	table_display_;
-    _CP_OPT(std::wstring)		table_message_type_;
-
-    office_element_ptr_array	content_;
+	_CP_OPT(std::wstring) table_title_;
+	_CP_OPT(odf_types::Bool) table_display_;
+	
+	office_element_ptr_array content_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_help_message);
 

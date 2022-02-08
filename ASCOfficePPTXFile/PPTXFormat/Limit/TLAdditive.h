@@ -61,6 +61,26 @@ namespace PPTX
 					m_strValue = strValue;
 				}
 			}
+			virtual BYTE GetBYTECode() const
+			{
+				if (L"base" == m_strValue)	return 0;
+				if (L"mult" == m_strValue)	return 1;
+				if (L"none" == m_strValue)	return 2;
+				if (L"repl" == m_strValue)	return 3;
+				if (L"sum" == m_strValue)	return 4;
+				return 0;
+			}
+			virtual void SetBYTECode(const BYTE& src)
+			{
+				switch (src)
+				{
+				case 0: m_strValue = L"base"; break;
+				case 1: m_strValue = L"mult"; break;
+				case 2: m_strValue = L"none"; break;
+				case 3: m_strValue = L"repl"; break;
+				case 4: m_strValue = L"sum"; break;
+				}
+			}
 		};
 	} // namespace Limit
 } // namespace PPTX

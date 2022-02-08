@@ -37,6 +37,7 @@
 #include "ConvertationManager.h"
 
 #include <boost/algorithm/string.hpp>
+#include "../../../OfficeUtils/src/OfficeUtils.h"
 
 void ConvertOle1ToOle2(BYTE *pData, int nSize, std::wstring sOle2Name)
 {
@@ -385,7 +386,16 @@ bool RtfDocumentCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRead
 
 bool RtfNormalReader::ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter )
  {
-    if ( "colortbl" == sCommand )
+	if ("rtf" == sCommand) //open-rtf-document-image-error.rtf
+	{
+		if (oDocument.m_bStartRead)
+		{
+			RtfNormalReader oRtfReader(oDocument, oReader);
+			return StartSubReader(oRtfReader, oDocument, oReader);
+		}
+		oDocument.m_bStartRead = true;
+	}
+	else if ( "colortbl" == sCommand )
 	{
 		RtfColorTableReader oColorTableReader;
 		return StartSubReader( oColorTableReader, oDocument, oReader );
@@ -440,28 +450,33 @@ bool RtfNormalReader::ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader
 		RtfBackgroundReader oBackgroundReader( *oDocument.m_pBackground );
 		return StartSubReader( oBackgroundReader, oDocument, oReader );
 	}
-    //else if ( "colorschememapping" == sCommand )
-	//{
-	//	RtfColorSchemeReader oSchemeReader;
-	//	return StartSubReader( oSchemeReader, oDocument, oReader );		
-	//}
-    //else if ( "themedata" == sCommand )
-	//{
-	//	RtfThemeDataReader oThemeDataReader;
-	//	return StartSubReader( oThemeDataReader, oDocument, oReader );	
-	//}
-    //else if ( "defchp" == sCommand )
-	//{
-	//	RtfDefCharPropReader oDefCharPropReader( oDocument.m_oDefaultCharProp );
-	//	return StartSubReader( oDefCharPropReader, oDocument, oReader );				}
-    //else if ( "defpap" == sCommand )
-	//{
-	//	RtfDefParPropReader oDefParPropReader;
-	//	return StartSubReader( oDefParPropReader, oDocument, oReader );
-	//}
+    else if ( "colorschememapping" == sCommand )
+	{
+		RtfColorSchemeReader oSchemeReader;
+		return StartSubReader( oSchemeReader, oDocument, oReader );		
+	}
+    else if ( "themedata" == sCommand )
+	{
+		RtfThemeDataReader oThemeDataReader;
+		bool res = StartSubReader( oThemeDataReader, oDocument, oReader );	
+		if (res)
+		{
+
+		}
+	}
+	else if ("datastore" == sCommand)
+	{
+		RtfDataStoreReader oDataStoreReader;
+		bool res = StartSubReader(oDataStoreReader, oDocument, oReader);
+		if (res)
+		{
+
+		}
+	}
     else if ( "mmathPr" == sCommand )
 	{
-		RtfMathReader oMathPropReader(oDocument.m_oMathProp);
+		oDocument.m_pMathProp = RtfMathPtr(new RtfMath());
+		RtfMathReader oMathPropReader(oDocument.m_pMathProp);
 		return StartSubReader( oMathPropReader, oDocument, oReader );
 	}
     else if ( "ftnsep" == sCommand || "ftnsepc" == sCommand ||
@@ -525,7 +540,7 @@ bool RtfNormalReader::ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader
 	{
 		bool bResult = false;
 		bResult = oParagraphReaderDestination.ExecuteCommand( oDocument, oReader, (*this), sCommand, hasParameter, parameter );
-		if ( bResult )
+		if (bResult)
 			return true;
 		bResult = RtfDocumentCommand::ExecuteCommand( oDocument, oReader,sCommand, hasParameter, parameter );
 		if ( bResult )
@@ -1632,6 +1647,7 @@ bool RtfPictureReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader
     else if ( "pngblip" == sCommand )	m_oShape.m_oPicture->eDataType = RtfPicture::dt_png;
     else if ( "jpegblip" == sCommand )	m_oShape.m_oPicture->eDataType = RtfPicture::dt_jpg;
     else if ( "macpict" == sCommand )	m_oShape.m_oPicture->eDataType = RtfPicture::dt_macpict;
+	else if ( "svgpict" == sCommand)	m_oShape.m_oPicture->eDataType = RtfPicture::dt_svg;
 
     else if ( "wmetafile" == sCommand )
 	{
@@ -2341,6 +2357,97 @@ bool RtfOldListReader::ExecuteCommand( RtfDocument& oDocument, RtfReader& oReade
 		return false;
 	return true;
 }
+//----------------------------------------------------------------------------------------------------------
+void RtfThemeDataReader::ExitReader(RtfDocument& oDocument, RtfReader& oReader)
+{
+	RtfHEXStringReader::ExitReader(oDocument, oReader);
+
+	if (pDataArray.second < 1) return;
+
+	HRESULT res = S_OK;
+	COfficeUtils* pOfficeUtils = new COfficeUtils(NULL);
+
+	if (pOfficeUtils)
+	{
+		std::wstring tempFileName = oReader.m_sTempFolder + FILE_SEPARATOR_STR + L"themeManager.zip";
+		NSFile::CFileBinary file_test;
+		file_test.CreateFileW(tempFileName);
+		file_test.WriteFile(pDataArray.first.get(), pDataArray.second);
+		file_test.CloseFile();
+
+		BYTE *utf8Data = NULL;
+		ULONG utf8DataSize = 0;
+		pOfficeUtils->LoadFileFromArchive(tempFileName, L"theme/theme/theme1.xml", &utf8Data, utf8DataSize);
+
+		if (utf8Data && utf8DataSize > 0)
+		{
+			oDocument.m_sThemeXml = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(utf8Data, utf8DataSize);
+
+			delete[]utf8Data;
+		}
+		delete pOfficeUtils;
+		pOfficeUtils = NULL;
+	}
+}
+//----------------------------------------------------------------------------------------------------------
+void RtfColorSchemeReader::ExitReader(RtfDocument& oDocument, RtfReader& oReader)
+{
+	RtfHEXStringReader::ExitReader(oDocument, oReader);
+
+	if (pDataArray.second < 1) return;
+
+	XmlUtils::CXmlLiteReader oXmlReader;
+
+	std::string sXml = std::string((char*)pDataArray.first.get(), pDataArray.second);
+	if (false == oXmlReader.FromStringA(sXml)) return;
+	
+	if (!oXmlReader.ReadNextNode()) return; // 
+
+	std::string sName = oXmlReader.GetNameA();
+	if ("a:clrMap" == sName)
+	{
+		if ((oXmlReader.GetAttributesCount()) && (oXmlReader.MoveToFirstAttribute()))
+		{
+			std::string sNameAttr = oXmlReader.GetNameA();
+			while (!sNameAttr.empty())
+			{
+				//if ("bg1" == sNameAttr)
+				//{
+				//	oDocument. = oXmlReader.GetText();
+				//}
+				//else if ("tx1" == sNameAttr)
+				//{
+				//	oDocument. = oXmlReader.GetText();
+				//}
+				//else if ("bg2" == sNameAttr)
+				//{
+				//	oDocument. = oXmlReader.GetText();
+				//}
+				//else if ("tx2" == sNameAttr)
+				//{
+				//	oDocument. = oXmlReader.GetText();
+				//}
+				//else if ("accent1" == sNameAttr)
+				//{
+				//	oDocument. = oXmlReader.GetText();
+				//}
+				//else if ("hyperlink" == sNameAttr)
+				//{
+				//	oDocument. = oXmlReader.GetText();
+				//}
+				//else if ("followedHyperlink" == sNameAttr)
+				//{
+				//	oDocument. = sNameAttr.GetText();
+				//}
+				if (!oXmlReader.MoveToNextAttribute())
+					break;
+				sNameAttr = oXmlReader.GetNameA();
+			}
+			oXmlReader.MoveToElement();
+		}
+	}
+}
+//----------------------------------------------------------------------------------------------------------
 void RtfParagraphPropDestination::EndRows(RtfReader& oReader)
 {
 	RtfTableRowPtr oNewTableRow ( new RtfTableRow() );
@@ -2481,7 +2588,7 @@ void RtfParagraphPropDestination::AddItem( RtfParagraphPtr oItem, RtfReader& oRe
 
 void RtfParagraphPropDestination::Finalize( RtfReader& oReader/*, RtfSectionPtr pSection*/) 
 {
-	if ( false == m_bPar )// потому что это не reader и нужно как-то загонять последний параграф
+	if ( false == m_bPar && m_oCurParagraph->IsValid())// потому что это не reader и нужно как-то загонять последний параграф
 	{
 		m_oCurParagraph->m_oProperty	= oReader.m_oState->m_oParagraphProp;
 		//m_oCurParagraph->m_oProperty.m_pSection = pSection;
@@ -2495,7 +2602,7 @@ void RtfParagraphPropDestination::Finalize( RtfReader& oReader/*, RtfSectionPtr 
 		AddItem( m_oCurParagraph, oReader, false, false );
 		m_oCurParagraph = RtfParagraphPtr(new RtfParagraph());
 	}
-	else
+	else// if (true == m_bPar) // bug 50434
 	{
 		if (false == aRows.empty() || false == aCells.empty()) // bug 39172
 		{
@@ -2513,8 +2620,14 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 	m_bPar			= false;
 	bool bContinue	= false;
 
-         if ( "pard"			== sCommand )	oReader.m_oState->m_oCurOldList.SetDefault();
-    else if ( "tcelld"			== sCommand )	oReader.m_oState->m_oCellProperty.SetDefaultRtf();
+	if ("pard" == sCommand)
+	{
+		oReader.m_oState->m_oCurOldList.SetDefault();
+	}
+    else if ( "tcelld" == sCommand)
+	{
+		oReader.m_oState->m_oCellProperty.SetDefaultRtf();
+	}
 	
 //----------------------------------------------------------------------------------
     if ( "par" == sCommand )
@@ -2527,6 +2640,8 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 
 		AddItem( m_oCurParagraph, oReader, false, false );
 		m_oCurParagraph = RtfParagraphPtr(new RtfParagraph());
+
+		return true;
 	}
     else if ( "cell" == sCommand  || "nestcell" == sCommand )
 	{
@@ -2547,6 +2662,8 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 		m_oCurParagraph->m_oProperty.m_oCharProperty = oReader.m_oState->m_oCharProp;
 		AddItem( m_oCurParagraph, oReader, true, false );
 		m_oCurParagraph = RtfParagraphPtr(new RtfParagraph());
+
+		return true;
 	}
     else if ( "row" == sCommand || "nestrow" == sCommand)
 	{
@@ -2557,6 +2674,8 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 		m_oCurParagraph->m_oProperty.m_oCharProperty = oReader.m_oState->m_oCharProp;
 		AddItem( m_oCurParagraph, oReader, false, true );
 		m_oCurParagraph = RtfParagraphPtr(new RtfParagraph());
+
+		return true;
 	}
     else if ( "cellx" == sCommand )
 	{
@@ -2672,8 +2791,11 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 	else 
 		bContinue = true;
 
-	if ( false == bContinue ) // compiler limit : blocks nested too deeply
+	if (false == bContinue) // compiler limit : blocks nested too deeply
+	{
+		m_oCurParagraph->SetValid(true);
 		return true;
+	}
 	bContinue = false;
 //tableStyleProp
     if ( "*" == sCommand )
@@ -2730,11 +2852,11 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 //Math
     else if ( "mmath" == sCommand )
 	{
-		RtfMathPtr		oNewMath	( new RtfMath() );
-		RtfMathReader	oMathReader	( *oNewMath );
+		RtfMathPtr		pNewMath	( new RtfMath() );
+		RtfMathReader	oMathReader	( pNewMath );
 		
 		oAbstrReader.StartSubReader( oMathReader, oDocument, oReader );
-		m_oCurParagraph->AddItem( oNewMath );
+		m_oCurParagraph->AddItem(pNewMath);
 	}
 //Drawing
     else if ( "shp" == sCommand )
@@ -2783,7 +2905,11 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 		oNewShape->m_oPicture			= RtfPicturePtr( new RtfPicture() );
 
 		RtfPictureReader oPictureReader( oReader, *oNewShape);
-		oAbstrReader.StartSubReader( oPictureReader, oDocument, oReader );
+		if (false == oAbstrReader.StartSubReader(oPictureReader, oDocument, oReader))
+		{
+			//open-rtf-document-image-error.rtf
+			oPictureReader.Parse(oDocument, oReader);
+		}
 
 		if ( oNewShape->IsValid() )
 			m_oCurParagraph->AddItem( oNewShape );
@@ -3200,6 +3326,7 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 
 		return false;
 	}
+	m_oCurParagraph->SetValid(true);
 	return true;
 }
 

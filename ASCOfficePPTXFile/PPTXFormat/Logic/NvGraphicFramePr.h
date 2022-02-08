@@ -133,6 +133,8 @@ namespace PPTX
 				
 				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)				namespace_ = L"a";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	namespace_ = L"cdr";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM)			namespace_ = L"dgm";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DSP_DRAWING)		namespace_ = L"dsp";
 
 				pWriter->StartNode(namespace_ + L":nvGraphicFramePr");
 				pWriter->EndAttributes();

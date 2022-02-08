@@ -45,6 +45,49 @@
 
 namespace PdfWriter
 {
+	static unsigned int GetGID(FT_Face pFace, unsigned int unUnicode)
+	{
+		int nCharIndex = 0;
+
+		if (!pFace)
+			return nCharIndex;
+
+		for (int nIndex = 0; nIndex < pFace->num_charmaps; nIndex++)
+		{
+			FT_CharMap pCharMap = pFace->charmaps[nIndex];
+
+			if (FT_Set_Charmap(pFace, pCharMap))
+				continue;
+			FT_Encoding pEncoding = pCharMap->encoding;
+
+			if (FT_ENCODING_UNICODE == pEncoding)
+			{
+				if (nCharIndex = FT_Get_Char_Index(pFace, unUnicode))
+					return nCharIndex;
+			}
+
+			if (FT_ENCODING_NONE == pEncoding || FT_ENCODING_MS_SYMBOL == pEncoding || FT_ENCODING_APPLE_ROMAN == pEncoding)
+			{
+				nCharIndex = FT_Get_Char_Index(pFace, unUnicode);
+			}
+			/*else if ( FT_ENCODING_ADOBE_STANDARD == pEncoding )
+			{
+			nCharIndex = FT_Get_Char_Index( pFace, unUnicode );
+			}
+			else if ( FT_ENCODING_ADOBE_CUSTOM == pEncoding )
+			{
+			nCharIndex = FT_Get_Char_Index( pFace, unUnicode );
+			}
+			else if ( FT_ENCODING_ADOBE_EXPERT == pEncoding )
+			{
+			nCharIndex = FT_Get_Char_Index( pFace, unUnicode );
+			}*/
+		}
+
+		return nCharIndex;
+	}
+
+
 	class CXref;
 	class CStream;
 	class CFontFileTrueType;
@@ -59,7 +102,12 @@ namespace PdfWriter
 		CFontCidTrueType(CXref* pXref, CDocument* pDocument, const std::wstring& wsFontPath, unsigned int unIndex);
 		~CFontCidTrueType();
 		unsigned char* EncodeString(unsigned int* pUnicodes, unsigned int unLen, const unsigned int* pGids = NULL);
+		unsigned short EncodeChar(const unsigned int& unUnicode);
+		bool           HaveChar(const unsigned int& unUnicode);
 		unsigned int   GetWidth(unsigned short ushCode);
+		unsigned int   GetGlyphWidth(unsigned short ushCode);
+		bool           IsItalic();
+		bool           IsBold();
 		EFontType      GetFontType()
 		{
 			return fontCIDType2;
@@ -73,6 +121,7 @@ namespace PdfWriter
 		void WriteToUnicode();
 		bool OpenFontFace();
 		void CloseFontFace();
+		unsigned short EncodeUnicodeSymbol(const unsigned int& unUnicode, const unsigned int& unGid = 0x0000, const bool& isGid = false);
 
 	private:
 
@@ -91,8 +140,9 @@ namespace PdfWriter
 		std::vector<unsigned int>                m_vUnicodes;       // Обратный мап код символа -> юникод
 
 		std::vector<unsigned int>                m_vCodeToGid;
-		std::vector<unsigned int>                m_vWidths;
+		std::vector<unsigned int>                m_vWidths;     // glyph.advance
 		std::map<unsigned short, bool>           m_mGlyphs;
+		std::vector<unsigned int>                m_vGlypWidths; // glyph.width
 
 		FT_Face                                  m_pFace;
 		FT_Byte*                                 m_pFaceMemory;

@@ -42,15 +42,13 @@
 
 namespace PPTX
 {
-	class LegacyDiagramText;
+	//class LegacyDiagramText;
 
 	class FileContainer : public OOX::IFileContainer
 	{
 	public:
 		FileContainer(OOX::Document *pMain) : OOX::IFileContainer(pMain)
 		{
-			m_lPercent = 0;
-			m_bCancelled = false;
 		}
 		virtual ~FileContainer()
 		{
@@ -67,17 +65,14 @@ namespace PPTX
 		void read(const OOX::CPath& filename);
 		void read(const OOX::CRels& rels, const OOX::CPath& path);
 
-		void read(const OOX::CPath& filename, FileMap& map, IPPTXEvent* Event);
-		void read(const OOX::CRels& rels, const OOX::CPath& path, FileMap& map, IPPTXEvent* Event);
+		void read(const OOX::CPath& filename, FileMap& map);
+		void read(const OOX::CRels& rels, const OOX::CPath& path, FileMap& map);
 		
 		void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content) const;
 		void write(OOX::CRels& rels, const OOX::CPath& current, const OOX::CPath& directory, OOX::CContentTypes& content) const;
 
 		void WrittenSetFalse();
 		OOX::CPath CorrectPathRels(const OOX::CPath& path, OOX::Rels::CRelationShip* relation );
-
-		long m_lPercent;
-		bool m_bCancelled;
 	};
 
 } // namespace PPTX

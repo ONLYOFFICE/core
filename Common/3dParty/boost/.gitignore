@@ -1,0 +1,6 @@
+# Ignore everything in this directory
+boost_1_72_0
+build
+boost.data
+# Except this file
+!.gitignore

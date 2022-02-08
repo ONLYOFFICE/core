@@ -34,7 +34,7 @@
 #define OOX_DRAWING_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
-
+#include "../../XlsbFormat/Biff12_records/Drawing.h"
 #include "CellAnchor.h"
 
 namespace OOX
@@ -47,6 +47,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDrawingWorksheet)
+                        WritingElement_XlsbConstructors(CDrawingWorksheet)
 			CDrawingWorksheet()
 			{
 			}
@@ -57,7 +58,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-            virtual std::wstring toXML() const
+                        virtual std::wstring toXML() const
 			{
 				return (L"");
 			}
@@ -78,6 +79,10 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 
 			virtual EElementType getType () const
 			{
@@ -91,8 +96,17 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if ( oReader, L"id", m_oId )
 				WritingElement_ReadAttributes_End_No_NS ( oReader )
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::Drawing*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    if(!ptr->stRelId.value.value().empty())
+                        m_oId = ptr->stRelId.value.value();
+                }
+            }
 		public:
-			nullable<SimpleTypes::CRelationshipId > m_oId;
+            nullable<SimpleTypes::CRelationshipId > m_oId;
 		};
 
 		class CDrawing : public OOX::FileGlobalEnumerated, public OOX::IFileContainer

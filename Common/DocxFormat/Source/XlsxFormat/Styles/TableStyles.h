@@ -35,6 +35,10 @@
 
 #include "rPr.h"
 
+#include "../../XlsbFormat/Biff12_records/CommonRecords.h"
+#include "../../XlsbFormat/Biff12_unions/TABLESTYLES.h"
+#include "../../XlsbFormat/Biff12_unions/TABLESTYLE.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -43,6 +47,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CTableStyleElement)
+            WritingElement_XlsbConstructors(CTableStyleElement)
 			CTableStyleElement()
 			{
 			}
@@ -75,10 +80,15 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
+
 			virtual EElementType getType () const
 			{
 				return et_x_TableStyleElement;
-			}
+            }
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -92,6 +102,81 @@ namespace OOX
 
 					WritingElement_ReadAttributes_End( oReader )
 			}
+
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::TableStyleElement*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    m_oDxfId                = ptr->index;
+                    m_oSize                 = ptr->size;
+
+                    switch(ptr->tseType)
+                    {
+                        case 0:
+                            m_oType = SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeWholeTable; break;
+                        case 1:
+                            m_oType = SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeHeaderRow; break;
+                        case 2:
+                            m_oType = SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeTotalRow; break;
+                        case 3:
+                            m_oType = SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeFirstColumn; break;
+                        case 4:
+                            m_oType = SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeLastColumn; break;
+                        case 5:
+                            m_oType = SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeFirstRowStripe; break;
+                        case 6:
+                            m_oType = SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeSecondRowStripe; break;
+                        case 7:
+                            m_oType = SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeFirstColumnStripe; break;
+                        case 8:
+                            m_oType = SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeSecondColumnStripe; break;
+                        case 9:
+                            m_oType = SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeFirstHeaderCell; break;
+                        case 10:
+                            m_oType = SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeLastHeaderCell; break;
+                        case 11:
+                            m_oType = SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeFirstTotalCell; break;
+                        case 12:
+                            m_oType = SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeLastTotalCell; break;
+                        case 13:
+                            m_oType = SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeFirstSubtotalColumn; break;
+                        case 14:
+                            m_oType = SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeSecondSubtotalColumn; break;
+                        case 15:
+                            m_oType = SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeThirdSubtotalColumn; break;
+                        case 16:
+                            m_oType = SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeFirstSubtotalRow; break;
+                        case 17:
+                            m_oType = SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeSecondSubtotalRow; break;
+                        case 18:
+                            m_oType = SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeThirdSubtotalRow; break;
+                        case 19:
+                            m_oType = SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeBlankRow; break;
+                        case 20:
+                            m_oType = SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeFirstColumnSubheading; break;
+                        case 21:
+                            m_oType = SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeSecondColumnSubheading; break;
+                        case 22:
+                            m_oType = SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeThirdColumnSubheading; break;
+                        case 23:
+                            m_oType = SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeFirstRowSubheading; break;
+                        case 24:
+                            m_oType = SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeSecondRowSubheading; break;
+                        case 25:
+                            m_oType = SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeThirdRowSubheading; break;
+                        case 26:
+                            m_oType = SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypePageFieldLabels; break;
+                        case 27:
+                            m_oType = SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypePageFieldValues; break;
+                        default:
+                            m_oType = SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeBlankRow; break;
+
+                    }
+
+                }
+            }
+
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oDxfId;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oSize;
@@ -101,6 +186,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CTableStyle)
+            WritingElement_XlsbConstructors(CTableStyle)
 			CTableStyle()
 			{
 			}
@@ -154,6 +240,18 @@ namespace OOX
 				}
 			}
 
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::TABLESTYLE*>(obj.get());
+                ReadAttributes(ptr->m_BrtBeginTableStyle);
+
+                for(auto &tableStyleElement : ptr->m_arBrtTableStyleElement)
+                {
+                    m_arrItems.push_back(new CTableStyleElement(tableStyleElement));
+                }
+
+            }
+
 			virtual EElementType getType () const
 			{
 				return et_x_TableStyle;
@@ -172,6 +270,20 @@ namespace OOX
 
 				WritingElement_ReadAttributes_End( oReader )
 			}
+
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::BeginTableStyle*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    m_oCount                = ptr->ctse;
+                    m_oPivot                = ptr->fIsPivot;
+                    m_oTable                = ptr->fIsTable;
+                    m_oName                 = ptr->rgchName;
+                    m_oDisplayName          = ptr->rgchName;
+                }
+            }
+
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
 			nullable<std::wstring>							m_oName;
@@ -183,6 +295,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CTableStyles)
+            WritingElement_XlsbConstructors(CTableStyles)
 			CTableStyles()
 			{
 			}
@@ -237,6 +350,18 @@ namespace OOX
 				}
 			}
 
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::TABLESTYLES*>(obj.get());
+                ReadAttributes(ptr->m_BrtBeginTableStyles);
+
+                for(auto &tableStyle : ptr->m_arTABLESTYLE)
+                {
+                    m_arrItems.push_back(new CTableStyle(tableStyle));
+                }
+
+            }
+
 			virtual EElementType getType () const
 			{
 				return et_x_TableStyles;
@@ -254,8 +379,20 @@ namespace OOX
 
 					WritingElement_ReadAttributes_End( oReader )
 			}
+
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::BeginTableStyles*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    m_oCount                = ptr->cts;
+                    m_oDefaultPivotStyle    = ptr->rgchDefPivotStyle;
+                    m_oDefaultTableStyle    = ptr->rgchDefTableStyle;
+                }
+            }
+
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;
+            nullable<SimpleTypes::CUnsignedDecimalNumber<>>         m_oCount;
 			nullable<std::wstring>									m_oDefaultPivotStyle;
 			nullable<std::wstring>									m_oDefaultTableStyle;
 		};

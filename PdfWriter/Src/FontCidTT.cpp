@@ -48,47 +48,6 @@ namespace PdfWriter
 	static const char* c_sToUnicodeInfo = "/CIDSystemInfo\n<< /Registry (Adobe)\n /Ordering (UCS)\n /Supplement 0\n >> def\n/CMapName /Adobe-Identity-UCS def\n/CMapType 2 def\n1 begincodespacerange\n<0000> <FFFF>\nendcodespacerange\n";
 	static const char* c_sToUnicodeFooter = "endcmap\nCMapName currentdict /CMap defineresource pop\nend\nend\n";
 
-	static unsigned int GetGID(FT_Face pFace, unsigned int unUnicode)
-	{
-		int nCharIndex = 0;
-
-		if (!pFace)
-			return nCharIndex;
-
-		for (int nIndex = 0; nIndex < pFace->num_charmaps; nIndex++)
-		{
-			FT_CharMap pCharMap = pFace->charmaps[nIndex];
-
-			if (FT_Set_Charmap(pFace, pCharMap))
-				continue;
-			FT_Encoding pEncoding = pCharMap->encoding;
-
-			if (FT_ENCODING_UNICODE == pEncoding)
-			{
-				if (nCharIndex = FT_Get_Char_Index(pFace, unUnicode))
-					return nCharIndex;
-			}
-
-			if (FT_ENCODING_NONE == pEncoding || FT_ENCODING_MS_SYMBOL == pEncoding || FT_ENCODING_APPLE_ROMAN == pEncoding)
-			{
-				nCharIndex = FT_Get_Char_Index(pFace, unUnicode);
-			}
-			/*else if ( FT_ENCODING_ADOBE_STANDARD == pEncoding )
-			{
-			nCharIndex = FT_Get_Char_Index( pFace, unUnicode );
-			}
-			else if ( FT_ENCODING_ADOBE_CUSTOM == pEncoding )
-			{
-			nCharIndex = FT_Get_Char_Index( pFace, unUnicode );
-			}
-			else if ( FT_ENCODING_ADOBE_EXPERT == pEncoding )
-			{
-			nCharIndex = FT_Get_Char_Index( pFace, unUnicode );
-			}*/
-		}
-
-		return nCharIndex;
-	}
 	static int GetSymbolicCmapIndex(FT_Face pFace)
 	{
 		TT_OS2 *pOs2 = (TT_OS2 *)FT_Get_Sfnt_Table(pFace, ft_sfnt_os2);
@@ -253,56 +212,30 @@ namespace PdfWriter
 			}
 
 			if (!bFind)
-			{
-				unsigned int unUnicode = pUnicodes[unIndex];
-				ushCode = m_ushCodesCount;
-				m_ushCodesCount++;
+				ushCode = EncodeUnicodeSymbol(pUnicodes[unIndex], pGids ? pGids[unIndex] : 0x0000, pGids ? true : false);
 
-				m_mUnicodeToCode.insert(std::pair<unsigned int, unsigned short>(unUnicode, ushCode));				
-				m_vUnicodes.push_back(unUnicode);
-
-				unsigned int unGID;
-				if (!pGids)
-				{
-					unGID = GetGID(m_pFace, unUnicode);
-					if (0 == unGID && -1 != m_nSymbolicCmap)
-						unGID = GetGID(m_pFace, unUnicode + 0xF000);
-				}
-				else
-				{
-					unGID = pGids[unIndex];
-				}
-
-				m_vCodeToGid.push_back(unGID);
-
-				// Данный символ используется
-				m_mGlyphs.insert(std::pair<unsigned int, bool>(unGID, true));
-
-				// Если данный символ составной (CompositeGlyf), тогда мы должны учесть все его дочерные символы (subglyfs)
-				if (0 == FT_Load_Glyph(m_pFace, unGID, FT_LOAD_NO_SCALE | FT_LOAD_NO_RECURSE))
-				{
-					for (int nSubIndex = 0; nSubIndex < m_pFace->glyph->num_subglyphs; nSubIndex++)
-					{
-						FT_Int       nSubGID;
-						FT_UInt      unFlags;
-						FT_Int       nArg1;
-						FT_Int       nArg2;
-						FT_Matrix    oMatrix;
-						FT_Get_SubGlyph_Info(m_pFace->glyph, nSubIndex, &nSubGID, &unFlags, &nArg1, &nArg2, &oMatrix);
-
-						m_mGlyphs.insert(std::pair<unsigned short, bool>(nSubGID, true));
-					}
-
-					if (0 != m_pFace->units_per_EM)
-						m_vWidths.push_back((unsigned int)m_pFace->glyph->metrics.horiAdvance * 1000 / m_pFace->units_per_EM);
-					else
-						m_vWidths.push_back((unsigned int)m_pFace->glyph->metrics.horiAdvance);
-				}
-			}
 			pEncodedString[2 * unIndex + 0] = (ushCode >> 8) & 0xFF;
 			pEncodedString[2 * unIndex + 1] = ushCode & 0xFF;
 		}
 		return pEncodedString;
+	}
+	unsigned short CFontCidTrueType::EncodeChar(const unsigned int &unUnicode)
+	{
+		if (!OpenFontFace())
+			return NULL;
+
+		std::map<unsigned int, unsigned short>::const_iterator oIter = m_mUnicodeToCode.find(unUnicode);
+		if (oIter != m_mUnicodeToCode.end())
+			return oIter->second;
+
+		return EncodeUnicodeSymbol(unUnicode);
+	}
+	bool CFontCidTrueType::HaveChar(const unsigned int &unUnicode)
+	{
+		if (!OpenFontFace())
+			return false;
+
+		return (!!GetGID(m_pFace, unUnicode));
 	}
 	unsigned int   CFontCidTrueType::GetWidth(unsigned short ushCode)
 	{
@@ -310,6 +243,31 @@ namespace PdfWriter
 			return 0;
 
 		return m_vWidths.at(ushCode);
+	}
+	unsigned int   CFontCidTrueType::GetGlyphWidth(unsigned short ushCode)
+	{
+		if (ushCode >= m_vGlypWidths.size())
+			return 0;
+
+		return m_vGlypWidths.at(ushCode);
+	}
+	bool CFontCidTrueType::IsItalic()
+	{
+		if (!OpenFontFace() || !m_pFace)
+			return false;
+
+		return ((m_pFace->style_flags & FT_STYLE_FLAG_ITALIC) != 0);
+	}
+	bool CFontCidTrueType::IsBold()
+	{
+		if (!OpenFontFace() || !m_pFace)
+			return false;
+
+		TT_OS2* pOS2 = (TT_OS2*)FT_Get_Sfnt_Table(m_pFace, ft_sfnt_os2);
+		if (pOS2 && pOS2->version != 0xFFFF && pOS2->usWeightClass >= 800)
+			return true;
+
+		return ((m_pFace->style_flags & FT_STYLE_FLAG_BOLD) != 0);
 	}
 	void CFontCidTrueType::BeforeWrite()
 	{
@@ -520,7 +478,6 @@ namespace PdfWriter
 		m_nGlyphsCount  = m_pFace->num_glyphs;
 		m_nSymbolicCmap = GetSymbolicCmapIndex(m_pFace);
 
-
 		if (m_bNeedAddFontName)
 		{
 			// Дописываем имя шрифта во все необходимые словари, а также заполняем дескриптор
@@ -539,5 +496,59 @@ namespace PdfWriter
 		}
 
 		return true;
+	}
+	unsigned short CFontCidTrueType::EncodeUnicodeSymbol(const unsigned int &unUnicode, const unsigned int& unGid, const bool& isGid)
+	{
+		unsigned short ushCode = m_ushCodesCount;
+		m_ushCodesCount++;
+
+		m_mUnicodeToCode.insert(std::pair<unsigned int, unsigned short>(unUnicode, ushCode));
+		m_vUnicodes.push_back(unUnicode);
+
+		unsigned int unGID;
+		if (!isGid)
+		{
+			unGID = GetGID(m_pFace, unUnicode);
+			if (0 == unGID && -1 != m_nSymbolicCmap)
+				unGID = GetGID(m_pFace, unUnicode + 0xF000);
+		}
+		else
+		{
+			unGID = unGid;
+		}
+
+		m_vCodeToGid.push_back(unGID);
+
+		// Данный символ используется
+		m_mGlyphs.insert(std::pair<unsigned int, bool>(unGID, true));
+
+		// Если данный символ составной (CompositeGlyf), тогда мы должны учесть все его дочерные символы (subglyfs)
+		if (0 == FT_Load_Glyph(m_pFace, unGID, FT_LOAD_NO_SCALE | FT_LOAD_NO_RECURSE))
+		{
+			for (int nSubIndex = 0; nSubIndex < m_pFace->glyph->num_subglyphs; nSubIndex++)
+			{
+				FT_Int       nSubGID;
+				FT_UInt      unFlags;
+				FT_Int       nArg1;
+				FT_Int       nArg2;
+				FT_Matrix    oMatrix;
+				FT_Get_SubGlyph_Info(m_pFace->glyph, nSubIndex, &nSubGID, &unFlags, &nArg1, &nArg2, &oMatrix);
+
+				m_mGlyphs.insert(std::pair<unsigned short, bool>(nSubGID, true));
+			}
+
+			if (0 != m_pFace->units_per_EM)
+			{
+				m_vWidths.push_back((unsigned int)m_pFace->glyph->metrics.horiAdvance * 1000 / m_pFace->units_per_EM);
+				m_vGlypWidths.push_back((unsigned int)(m_pFace->glyph->metrics.width) * 1000 / m_pFace->units_per_EM);
+			}
+			else
+			{
+				m_vWidths.push_back((unsigned int)m_pFace->glyph->metrics.horiAdvance);
+				m_vGlypWidths.push_back((unsigned int)(m_pFace->glyph->metrics.width) * 1000 / m_pFace->units_per_EM);
+			}
+		}
+
+		return ushCode;
 	}
 }

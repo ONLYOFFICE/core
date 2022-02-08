@@ -49,9 +49,10 @@ namespace DocFileFormat
 
 	WordprocessingDocument::~WordprocessingDocument()
 	{
+		_isSectionPageBreak = 0;
 	}
 
-	void WordprocessingDocument::SaveDocument(bool &bMacros)
+	_UINT32 WordprocessingDocument::SaveDocument(bool &bMacros)
 	{
 		std::wstring pathWord = m_strOutputPath + FILE_SEPARATOR_STR + L"word" ;
 		NSDirectory::CreateDirectory( pathWord );
@@ -179,5 +180,6 @@ namespace DocFileFormat
 		{
             SaveToFile(pathWord, ( std::wstring( L"footer" ) + FormatUtils::IntToWideString(++footersCount) + std::wstring( L".xml" ) ), *iter);
 		}
+		return 0;
 	}
 }

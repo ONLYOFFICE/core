@@ -65,6 +65,7 @@ namespace cpdoccore {
 		class office_element;
 		class style_columns;
 		class form_element;
+		class text_linenumbering_configuration;
 
 		namespace text
 		{
@@ -226,7 +227,7 @@ public:
 
 	std::wstring & get_text_stream_frame()
 	{
-		if (frames_.size()>0)
+		if (false == frames_.empty())
 			return frames_.back().text_content;
 		else
 			return zero_string_;
@@ -234,7 +235,7 @@ public:
 	bool & get_use_image_replace()
 	{
 		bool res = false;
-		if (!frames_.empty())	return frames_.back().use_image_replace;
+		if (false == frames_.empty())	return frames_.back().use_image_replace;
 		else
 			throw;
 	}
@@ -244,11 +245,11 @@ public:
 	}
 	void clear_stream_shape()
 	{
-		shape_text_content_=L"";
+		shape_text_content_ = L"";
 	}
  	void clear_stream_frame()
 	{
-		if (!frames_.empty())
+		if (false == frames_.empty())
 			frames_.back().text_content.clear();
 	}
 	void stop_shape()
@@ -275,7 +276,7 @@ public:
 	
 	int get_current_frame_id() const 
 	{
-		if (!frames_.empty())	return frames_.back().id; 
+		if (false == frames_.empty())	return frames_.back().id;
 		else					return 0;
 	}
 	bool	in_group()						{ return !groups_.empty(); }
@@ -286,7 +287,7 @@ public:
    
 	odf_reader::draw_frame * get_current_frame() const 
 	{
-		if (!frames_.empty()) return frames_.back().ptr; 
+		if (false == frames_.empty()) return frames_.back().ptr; 
 		else return NULL;
 	}
 	odf_reader::draw_shape * get_current_shape() const { return current_shape_; }
@@ -718,6 +719,8 @@ public:
 	bool							bSeparators;
 	std::vector<_state>				current_template;
 
+	std::map<std::wstring, std::wstring> mapReferences;
+
 private:
 	std::vector<int>				current_content_template_;
 	int								current_content_template_index_;
@@ -830,7 +833,7 @@ public:
     bool process_page_properties(std::wostream & strm);
 	void process_section		(std::wostream & strm, odf_reader::style_columns * columns = NULL);
 	
-	int process_paragraph_style (const std::wstring & style_name);
+	int process_paragraph_style (_CP_OPT(std::wstring) style_name_ptr);
 	int process_paragraph_attr	(odf_reader::text::paragraph_attrs *attr);
 	int process_text_attr		(odf_reader::text::paragraph_attrs *Attr);
 	void process_page_break_after(const odf_reader::style_instance *styleInst);
@@ -850,11 +853,11 @@ public:
    
 	odf_reader::style_text_properties_ptr current_text_properties();
 
-    void set_page_break_after(bool val);
-    bool get_page_break_after();
+    void set_page_break_after(int val);
+    int get_page_break_after();
 
-    void set_page_break_before(bool val);
-    bool get_page_break_before();
+    void set_page_break_before(int val);
+    int get_page_break_before();
 
 	void set_page_break		(bool val);
     bool get_page_break		();
@@ -928,7 +931,16 @@ public:
 
 	void start_paragraph_style(const std::wstring& style_name) {paragraph_style_stack_.push_back(style_name);}
 	void end_paragraph_style() { if (!paragraph_style_stack_.empty()) paragraph_style_stack_.pop_back();}
-	std::wstring get_current_paragraph_style()	{return paragraph_style_stack_.empty() ? L"" : paragraph_style_stack_.back();}
+	
+	_CP_OPT(std::wstring) get_current_paragraph_style()	
+	{
+		_CP_OPT(std::wstring) result;
+		if (false == paragraph_style_stack_.empty())
+
+			result = paragraph_style_stack_.back();
+		
+		return result;
+	}
 	
 	oox_chart_context & current_chart();
     void start_chart(std::wstring name);
@@ -1032,8 +1044,8 @@ private:
     
 	bool first_element_list_item_;
     
-	bool page_break_after_;
-    bool page_break_before_;
+	int page_break_after_; // 0 = false, 1 - column, 2 -page
+    int page_break_before_;
 	bool page_break_;
 
 	bool in_automatic_style_; 
@@ -1062,7 +1074,6 @@ private:
 	std::map<std::wstring, std::vector<odf_reader::office_element_ptr>> mapAlphabeticals;
 
 	std::vector<std::wstring>											arBibliography;
-
 };
 
 }

@@ -73,7 +73,122 @@ public:
 
 	ARGB GetValue() const { return Argb; }
 	void SetValue(ARGB argb) { Argb = argb; }
-		 
+
+    void ToHLS(BYTE& H, BYTE& L, BYTE& S, bool isSwapped)
+    {
+        BYTE R = GetR();
+        BYTE G = GetG();
+        BYTE B = GetB();
+        if (!isSwapped)
+        {
+            BYTE tmp = R;
+            R = B;
+            B = tmp;
+        }
+
+        BYTE iMin = (R < G ? R : G); iMin = iMin < B ? iMin : B;
+        BYTE iMax = (R > G ? R : G); iMax = iMax > B ? iMax : B;
+        BYTE iDelta = iMax - iMin;
+        double dMax = (iMax + iMin)/255.0;
+        double dDelta = iDelta/255.0;
+
+        double dH = 0;
+        double dS = 0;
+        double dL = dMax / 2.0;
+
+        if (iDelta != 0)
+        {
+            if ( dL < 0.5 )
+                dS = dDelta / dMax;
+            else
+                dS = dDelta / ( 2.0 - dMax );
+
+            dDelta = dDelta * 1530.0;
+            double dR = ( iMax - R ) / dDelta;
+            double dG = ( iMax - G ) / dDelta;
+            double dB = ( iMax - B ) / dDelta;
+
+            if      ( R == iMax ) dH = dB - dG;
+            else if ( G == iMax ) dH = 1/3.0 + dR - dB;
+            else if ( B == iMax ) dH = 2/3.0 + dG - dR;
+
+            if ( dH < 0.0 ) dH += 1.0;
+            if ( dH > 1.0 ) dH -= 1.0;
+        }
+
+        dH *= 255;
+        dS *= 255;
+        dL *= 255;
+
+        H = (dH < 0) ? 0 : (BYTE)dH;
+        S = (dS < 0) ? 0 : (BYTE)dS;
+        L = (dL < 0) ? 0 : (BYTE)dL;
+    }
+    void FromHLS(BYTE H, BYTE L, BYTE S, BYTE A, bool isSwapped)
+    {
+        BYTE R = 0;
+        BYTE G = 0;
+        BYTE B = 0;
+        if (S == 0)
+        {
+            R = L;
+            G = L;
+            B = L;
+        }
+        else
+        {
+            double dH = H / 255.0;
+            double dS = S / 255.0;
+            double dL = L / 255.0;
+
+            double v2 = 0;
+            if (dL < 0.5)
+                v2 = dL * (1.0 + dS);
+            else
+                v2 = dL + dS - dS*dL;
+
+            double v1 = 2.0 * dL - v2;
+
+            double dR = 255 * Hue_2_RGB(v1, v2, dH + 1/3.0);
+            double dG = 255 * Hue_2_RGB(v1, v2, dH);
+            double dB = 255 * Hue_2_RGB(v1, v2, dH - 2/3.0);
+
+            R = (dR < 0) ? 0 : (BYTE)dR;
+            G = (dG < 0) ? 0 : (BYTE)dG;
+            B = (dB < 0) ? 0 : (BYTE)dB;
+        }
+
+        if (!isSwapped)
+            Argb = MakeARGB(A, B, G, R);
+        else
+        {
+            Argb = MakeARGB(A, R, G, B);
+        }
+    }
+
+    void ConvertToDarkMode(bool bSwappedRGB = false)
+    {
+        BYTE H = 0, L = 0, S = 0;
+        ToHLS(H, L, S, bSwappedRGB);
+        L = (BYTE)(255 - (197 * L / 255));
+        FromHLS(H, L, S, GetAlpha(), bSwappedRGB);
+    }
+
+private:
+    double Hue_2_RGB(double v1, double v2, double vH)
+    {
+        if (vH < 0.0)
+            vH += 1.0;
+        if (vH > 1.0)
+            vH -= 1.0;
+        if (vH < 1/6)
+            return v1 + (v2 - v1) * 6.0 * vH;
+        if (vH < 0.5)
+            return v2;
+        if (vH < 2/3)
+            return v1 + (v2 - v1) * (2/3 - vH) * 6.0;
+        return v1;
+    };
 
 public:
 // Shift count and bit mask for A, R, G, B components

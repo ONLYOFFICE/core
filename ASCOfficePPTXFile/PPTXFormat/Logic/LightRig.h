@@ -91,8 +91,8 @@ namespace PPTX
 			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("dir"), dir.get());
 				oAttr.Write(_T("rig"), rig.get());
+				oAttr.Write(_T("dir"), dir.get());
 
 				XmlUtils::CNodeValue oValue;
 				oValue.WriteNullable(rot);
@@ -104,8 +104,8 @@ namespace PPTX
 				pWriter->StartNode(_T("a:lightRig"));
 
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("dir"), dir.get());
 				pWriter->WriteAttribute(_T("rig"), rig.get());
+				pWriter->WriteAttribute(_T("dir"), dir.get());
 				pWriter->EndAttributes();
 
 				pWriter->Write(rot);

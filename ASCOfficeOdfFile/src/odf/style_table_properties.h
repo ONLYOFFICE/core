@@ -54,6 +54,7 @@
 #include "datatypes/direction.h"
 #include "datatypes/wrapoption.h"
 #include "datatypes/rotationalign.h"
+#include "datatypes/stylecellprotect.h"
 
 namespace cpdoccore { 
 namespace odf_reader {
@@ -117,7 +118,9 @@ class style_table_column_properties_attlist
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
     
-    _CP_OPT(odf_types::length)		style_column_width_;
+	void apply_from(const style_table_column_properties_attlist & Other);
+	
+	_CP_OPT(odf_types::length)		style_column_width_;
     _CP_OPT(odf_types::length)		style_rel_column_width_;
     _CP_OPT(bool)					style_use_optimal_column_width_;
     odf_types::common_break_attlist common_break_attlist_;
@@ -154,6 +157,8 @@ class style_table_row_properties_attlist
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
    
+	void apply_from(const style_table_row_properties_attlist & Other);
+
 	void docx_convert(oox::docx_conversion_context & Context);
     void pptx_convert(oox::pptx_conversion_context & Context);
 
@@ -216,7 +221,7 @@ public:
     _CP_OPT(std::wstring)					style_diagonal_bl_tr_;
     _CP_OPT(odf_types::border_widths)		style_diagonal_bl_tr_widths_;
     _CP_OPT(odf_types::rotation_align)		style_rotation_align_;    
-    _CP_OPT(std::wstring)					style_cell_protect_;
+    _CP_OPT(odf_types::style_cell_protect)	style_cell_protect_;
     _CP_OPT(bool)							style_print_content_;
     _CP_OPT(unsigned int)					style_decimal_places_;
     _CP_OPT(bool)							style_repeat_content_;
@@ -224,15 +229,6 @@ public:
 
     _CP_OPT(odf_types::wrap_option)			fo_wrap_option_;
 };
-
-class style_table_cell_properties_elements
-{
-public:
-    void add_attributes( const xml::attributes_wc_ptr & Attributes );
-
-    office_element_ptr style_background_image_;
-};
-
 
 class style_table_cell_properties : public office_element_impl<style_table_cell_properties>
 {

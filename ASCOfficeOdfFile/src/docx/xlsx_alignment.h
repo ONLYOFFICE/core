@@ -36,6 +36,7 @@
 #include <string>
 
 namespace cpdoccore { 
+
 namespace odf_reader {
 
 	class text_format_properties_content;
@@ -44,9 +45,7 @@ namespace odf_reader {
 	class paragraph_format_properties;
 	class style_table_cell_properties_attlist;
 }
-}
 
-namespace cpdoccore {
 namespace oox {
 
 	class xlsx_conversion_context;
@@ -70,7 +69,6 @@ struct xlsx_alignment
     friend bool is_default(const xlsx_alignment & rVal);
     friend std::size_t hash_value(xlsx_alignment const & val);
 };
-
 xlsx_alignment OdfProperties2XlsxAlignment( xlsx_conversion_context									* context,
 											const odf_reader::text_format_properties_content_ptr	textProp, 
 											const odf_reader::paragraph_format_properties			* parProp,

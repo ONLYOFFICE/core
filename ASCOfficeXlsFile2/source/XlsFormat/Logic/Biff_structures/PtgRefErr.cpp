@@ -37,7 +37,7 @@ namespace XLS
 {
 
 
-PtgRefErr::PtgRefErr()
+PtgRefErr::PtgRefErr(const unsigned short full_ptg_id) : OperandPtg(full_ptg_id)
 {
 }
 
@@ -56,7 +56,10 @@ BiffStructurePtr PtgRefErr::clone()
 
 void PtgRefErr::loadFields(CFRecord& record)
 {
-	record.skipNunBytes(4); // unused
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+        record.skipNunBytes(4); // unused
+    else
+        record.skipNunBytes(6); // unused
 }
 
 

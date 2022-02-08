@@ -84,7 +84,7 @@ std::wostream & operator << (std::wostream & _Wostream, const style_numformat & 
         _Wostream << L"일, 이, 삼, ...";
         break;
     case style_numformat::russianLo:
-        _Wostream << L"А, Б, .., Аа, Аб, ... (ru)";
+        _Wostream << L"а, б, .., аа, аб, ... (ru)";
         break;
     case style_numformat::russianUp:
         _Wostream << L"А, Б, .., Аа, Аб, ... (ru)";
@@ -101,7 +101,6 @@ style_numformat style_numformat::parse(const std::wstring & Str)
 		return style_numformat( none );
 
     std::wstring tmp = Str;
-    boost::algorithm::to_lower(tmp);
 
     if (tmp == L"1")
         return style_numformat( arabic );
@@ -113,8 +112,12 @@ style_numformat style_numformat::parse(const std::wstring & Str)
         return style_numformat( alphaUc );
     else if (tmp == L"a")
         return style_numformat( alphaLc );
-	else if (tmp == L"А, Б, .., Аа, Аб, ... (ru)")
+	else if (std::wstring::npos != std::wstring(L"А, Б, .., Аа, Аб, ... (ru)").find(tmp) ||
+			 std::wstring::npos != std::wstring(L"А, Б, .., АА, ББ, ... (ru)").find(tmp))
         return style_numformat( russianUp );
+	else if (std::wstring::npos != std::wstring(L"а, б, .., аа, аб, ... (ru)").find(tmp) ||
+			 std::wstring::npos != std::wstring(L"а, б, .., аа, бб, ... (ru)").find(tmp))
+		return style_numformat(russianLo);
 	else if (tmp == L"일, 이, 삼, ...")
         return style_numformat( koreanDigital );
     else if (tmp == L"ｲ, ﾛ, ﾊ, ...")

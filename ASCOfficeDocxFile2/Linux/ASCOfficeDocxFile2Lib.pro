@@ -14,6 +14,10 @@ include(../../Common/base.pri)
 #BOOST
 include($$PWD/../../Common/3dParty/boost/boost.pri)
 
+INCLUDEPATH += ../../ASCOfficeXlsFile2/source/XlsFormat
+INCLUDEPATH += ../../ASCOfficeXlsFile2/source/Common
+INCLUDEPATH += ../../Common/DocxFormat/Source/XlsbFormat
+
 DEFINES += UNICODE \
 	_UNICODE \
 	SOLUTION_ASCOFFICEDOCXFILE2 \
@@ -38,7 +42,7 @@ SOURCES += \
     ../../OfficeCryptReader/source/ECMACryptFile.cpp \
     ../../OfficeCryptReader/source/CryptTransform.cpp \
     ../BinReader/Readers.cpp \
-    ../BinReader/CustormXmlWriter.cpp \
+    ../BinReader/CustomXmlWriter.cpp \
     ../BinReader/FileWriter.cpp
 
 HEADERS += ../DocWrapper/DocxSerializer.h \
@@ -75,4 +79,4 @@ HEADERS += ../DocWrapper/DocxSerializer.h \
     ../DocWrapper/ChartWriter.h \
     ../../OfficeCryptReader/source/ECMACryptFile.h \
     ../../OfficeCryptReader/source/CryptTransform.h \
-    ../BinReader/CustormXmlWriter.h
+    ../BinReader/CustomXmlWriter.h

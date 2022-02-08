@@ -49,8 +49,8 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual EElementType getType() const
 			{
 				return et_x_OlapSlicerCacheItemParent;
@@ -69,9 +69,11 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const{}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
+            void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual EElementType getType() const
 			{
 				return et_x_OlapSlicerCacheItem;
@@ -94,9 +96,11 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const{}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
+            void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual EElementType getType() const
 			{
 				return et_x_OlapSlicerCacheRange;
@@ -117,9 +121,11 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const{}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BiffStructure& obj);
+            void ReadAttributes(XLS::BiffStructure& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual EElementType getType() const
 			{
 				return et_x_TabularSlicerCacheItem;
@@ -140,9 +146,11 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const{}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
+            void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual EElementType getType() const
 			{
 				return et_x_OlapSlicerCacheSelection;
@@ -163,9 +171,11 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const{}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
+            void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual EElementType getType() const
 			{
 				return et_x_OlapSlicerCacheLevelData;
@@ -183,6 +193,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CTabularSlicerCacheItems)
+            WritingElement_XlsbConstructors(CTabularSlicerCacheItems)
 			CTabularSlicerCacheItems(){}
 			virtual ~CTabularSlicerCacheItems(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -190,9 +201,10 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const{}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual EElementType getType() const
 			{
 				return et_x_TabularSlicerCacheItems;
@@ -206,6 +218,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(COlapSlicerCacheSelections)
+            WritingElement_XlsbConstructors(COlapSlicerCacheSelections)
 			COlapSlicerCacheSelections(){}
 			virtual ~COlapSlicerCacheSelections(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -213,9 +226,10 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const{}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual EElementType getType() const
 			{
 				return et_x_OlapSlicerCacheSelections;
@@ -229,16 +243,18 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(COlapSlicerCacheLevelsData)
+            WritingElement_XlsbConstructors(COlapSlicerCacheLevelsData)
 			COlapSlicerCacheLevelsData(){}
 			virtual ~COlapSlicerCacheLevelsData(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
 			virtual std::wstring toXML() const{return L"";}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const{}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const;
+            void fromBin(XLS::BaseObjectPtr& obj);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual EElementType getType() const
 			{
 				return et_x_OlapSlicerCacheLevelsData;
@@ -252,6 +268,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CTabularSlicerCache)
+            WritingElement_XlsbConstructors(CTabularSlicerCache)
 			CTabularSlicerCache(){}
 			virtual ~CTabularSlicerCache(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -259,9 +276,11 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const{}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
+            void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual EElementType getType() const
 			{
 				return et_x_TabularSlicerCache;
@@ -280,6 +299,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(COlapSlicerCache)
+            WritingElement_XlsbConstructors(COlapSlicerCache)
 			COlapSlicerCache(){}
 			virtual ~COlapSlicerCache(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -287,9 +307,11 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const{}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
+            void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual EElementType getType() const
 			{
 				return et_x_OlapSlicerCache;
@@ -305,6 +327,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSlicerCacheData)
+            WritingElement_XlsbConstructors(CSlicerCacheData)
 			CSlicerCacheData(){}
 			virtual ~CSlicerCacheData(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -312,9 +335,10 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const{}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual EElementType getType() const
 			{
 				return et_x_SlicerCacheData;
@@ -326,17 +350,19 @@ namespace OOX
 		class CSlicerCachePivotTable : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSlicerCachePivotTable)
+            WritingElement_AdditionConstructors(CSlicerCachePivotTable)
 			CSlicerCachePivotTable(){}
 			virtual ~CSlicerCachePivotTable(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
 			virtual std::wstring toXML() const{return L"";}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const{}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const;
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BiffStructure& obj);
+            void ReadAttributes(XLS::BiffStructure& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual EElementType getType() const
 			{
 				return et_x_SlicerCachePivotTable;
@@ -349,6 +375,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSlicerCacheDefinition)
+            WritingElement_XlsbConstructors(CSlicerCacheDefinition)
 			CSlicerCacheDefinition(){}
 			virtual ~CSlicerCacheDefinition(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -356,9 +383,11 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const{}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+            void fromBin(XLS::BaseObjectPtr& obj);
+            void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual EElementType getType() const
 			{
 				return et_x_SlicerCacheDefinition;
@@ -386,6 +415,7 @@ IFileContainer(pMain)
 				m_bSpreadsheets = true;
 				read( oRootPath, oPath );
 			}
+            void readBin(const CPath& oPath);
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)

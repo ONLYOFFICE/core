@@ -38,6 +38,10 @@
 #include <cassert>
 #include <boost/optional/optional_io.hpp>
 
+namespace xlscore
+{
+
+
 namespace xml 
 {
 
@@ -309,8 +313,9 @@ namespace writer
 
 }
 
-typedef xml::writer::writer<wchar_t> xml_writer;
-typedef xml::writer::element<wchar_t> xml_element;
+}
+typedef xlscore::xml::writer::writer<wchar_t> xml_writer;
+typedef xlscore::xml::writer::element<wchar_t> xml_element;
 
 #define CP_XML_WRITER(STRM) if (bool _b_ = false) {} else for (xml_writer _xml_wr_((STRM));!_b_;_b_=true)
 #define CP_XML_NODE(NAME) if (bool _b_ = false) {} else for (xml_element _xml_node_(_xml_wr_, (NAME));!_b_;_b_=true)
@@ -320,8 +325,8 @@ typedef xml::writer::element<wchar_t> xml_element;
 
 #define CP_GET_XML_NODE() _xml_node_
 
-#define CP_ATTR_NODE xml_element & _xml_node_
-
+//#define CP_ATTR_NODE xml_element & _xml_node_
+#define CP_ATTR_NODE xlscore::xml::writer::element<wchar_t> & _xml_node_
 
 
 #define CP_XML_ATTR_OPT(NAME, VAL) if (VAL)CP_XML_ATTR(NAME, (*VAL))

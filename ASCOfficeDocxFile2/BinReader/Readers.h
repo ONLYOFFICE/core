@@ -38,8 +38,8 @@
 
 namespace OOX
 {
-	class CComments;
 	class CSettingsCustom;
+	class CSettings;
 }
 namespace BinDocxRW {
 
@@ -56,34 +56,24 @@ class Binary_CommonReader2 : public Binary_CommonReader
 public:
 	Binary_CommonReader2(NSBinPptxRW::CBinaryFileReader& poBufferedStream);
 	docRGB ReadColor();
+	void ReadHexColor(SimpleTypes::CHexColor<> *pColor);
 	void ReadThemeColor(int length, CThemeColor& oCThemeColor);
-	int _ReadThemeColor(BYTE type, long length, void* poResult);
+	int ReadThemeColorContent(BYTE type, long length, void* poResult);
 	template<typename T> int ReadTrackRevision(long length, T* poResult);
-	int ReadShd(BYTE type, long length, void* poResult);
+	int ReadShdComplexType(BYTE type, long length, void* poResult);
 private:
 	template<typename T> int ReadTrackRevisionInner(BYTE type, long length, T* poResult);
 };
-class Binary_VbaProjectTableReader : public Binary_CommonReader
-{
-	Writers::FileWriter&	m_oFileWriter;
-
-public:
-
-	Binary_VbaProjectTableReader (NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter);
-    int Read ();
-};
-
 class Binary_HdrFtrTableReader : public Binary_CommonReader
 {
 	Writers::FileWriter&	m_oFileWriter;
-	CComments*				m_pComments;
 
 	int						nCurType;
 	int						nCurHeaderType;
 public:
 	Writers::HeaderFooterWriter& m_oHeaderFooterWriter;
 	
-	Binary_HdrFtrTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, CComments* pComments);
+	Binary_HdrFtrTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter);
     int Read();
     int ReadHdrFtrContent	(BYTE type, long length, void* poResult);
     int ReadHdrFtrFEO		(BYTE type, long length, void* poResult);
@@ -126,6 +116,7 @@ public:
 	int ReadNumPr(BYTE type, long length, void* poResult);
 	int ReadBorders(BYTE type, long length, void* poResult);
 	int ReadBorder(BYTE type, long length, void* poResult);
+	int ReadBorder2(BYTE type, long length, void* poResult);
 	int ReadFramePr(BYTE type, long length, void* poResult);
     int Read_SecPr(BYTE type, long length, void* poResult);
 	int ReadFootnotePr(BYTE type, long length, void* poResult);
@@ -219,7 +210,16 @@ public:
     Binary_OtherTableReader(std::wstring sFileInDir, NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter);
 	int Read();
 	int ReadOtherContent(BYTE type, long length, void* poResult);
-	int ReadImageMapContent(BYTE type, long length, void* poResult);
+//	int ReadImageMapContent(BYTE type, long length, void* poResult); not using now
+};
+class Binary_CustomsTableReader : public Binary_CommonReader
+{
+	Writers::FileWriter& m_oFileWriter;
+public:
+	Binary_CustomsTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter);
+	int Read();
+	int ReadCustom(BYTE type, long length, void* poResult);
+	int ReadCustomContent(BYTE type, long length, void* poResult);
 };
 class Binary_CommentsTableReader : public Binary_CommonReader
 {
@@ -240,10 +240,13 @@ class Binary_SettingsTableReader : public Binary_CommonReader
 	Binary_rPrReader m_oBinary_rPrReader;
 	Writers::SettingWriter& m_oSettingWriter;
 	Writers::FileWriter& m_oFileWriter;
-	OOX::CSettingsCustom& m_oSettingsCustom;
+	
+	OOX::CSettingsCustom* m_pSettingsCustom;
 public:
-	Binary_SettingsTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, OOX::CSettingsCustom& oSettingsCustom);
+	Binary_SettingsTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, OOX::CSettingsCustom* pSettingsCustom);
 	int Read();
+	int ReadDocProtect(BYTE type, long length, void* poResult);
+	int ReadWriteProtect(BYTE type, long length, void* poResult);
 	int ReadSettings(BYTE type, long length, void* poResult);
 	int ReadCompat(BYTE type, long length, void* poResult);
 	int ReadCompatSetting(BYTE type, long length, void* poResult);
@@ -285,13 +288,12 @@ private:
 	NSStringUtils::CStringBuilder	m_oCur_pPr;
     BYTE                            m_byteLastElemType;
 public:
-    CComments*                      m_pComments;
     Writers::ContentWriter&         m_oDocumentWriter;
     Writers::MediaWriter&           m_oMediaWriter;
 
 	bool							m_bUsedParaIdCounter;
 
-    Binary_DocumentTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, Writers::ContentWriter& oDocumentWriter, CComments* pComments);
+    Binary_DocumentTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, Writers::ContentWriter& oDocumentWriter);
 	~Binary_DocumentTableReader();
 	
 	int Read();
@@ -474,16 +476,16 @@ public:
 	int ReadSdtFormPr(BYTE type, long length, void* poResult);
 	int ReadSdtTextFormPr(BYTE type, long length, void* poResult);
 	int ReadSdtTextFormPrComb(BYTE type, long length, void* poResult);
+	int ReadSdtPicture(BYTE type, long length, void* poResult);
 };
 class Binary_NotesTableReader : public Binary_CommonReader
 {
 	Writers::FileWriter&					m_oFileWriter;
-	CComments*								m_pComments;
 	bool									m_bIsFootnote;
 	nullable<SimpleTypes::CDecimalNumber<>>	m_oId;
 	nullable<SimpleTypes::CFtnEdn<>>		m_oType;
 public:
-	Binary_NotesTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, CComments* pComments, bool bIsFootnote);
+	Binary_NotesTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, bool bIsFootnote);
 	int Read();
 	int ReadNotes(BYTE type, long length, void* poResult);
 	int ReadNote(BYTE type, long length, void* poResult);
@@ -495,8 +497,9 @@ private:
 	NSBinPptxRW::CBinaryFileReader& m_oBufferedStream;
 	Writers::FileWriter&			m_oFileWriter;
     std::wstring					m_sFileInDir;
+	bool							m_bMacro;
 public: 
-		BinaryFileReader(std::wstring& sFileInDir, NSBinPptxRW::CBinaryFileReader& oBufferedStream, Writers::FileWriter& oFileWriter);
+		BinaryFileReader(std::wstring& sFileInDir, NSBinPptxRW::CBinaryFileReader& oBufferedStream, Writers::FileWriter& oFileWriter, bool bMacro = false);
 		int ReadFile();
 		int ReadMainTable();
 };

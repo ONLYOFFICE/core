@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_PAR_INCLUDE_H_
-#define PPTX_LOGIC_PAR_INCLUDE_H_
 
 #include "./../../WrapperWritingElement.h"
 #include "CTn.h"
@@ -45,20 +43,67 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(Par)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				cTn = node.ReadNode(_T("p:cTn"));
+				cTn = node.ReadNode(L"p:cTn");
 				FillParentPointersForChilds();
 			}
-
 			virtual std::wstring toXML() const
 			{
-				return XmlUtils::CreateNode(_T("p:par"), cTn.toXML());
+				return XmlUtils::CreateNode(L"p:par", cTn.toXML());
 			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->StartNode(L"p:par");
+				pWriter->EndAttributes();
 
-		public:
-			CTn		cTn;
+				cTn.toXmlWriter(pWriter);
+
+				pWriter->EndNode(L"p:par");
+			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_p_par;
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+				pReader->Skip(1); // attribute start
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+				}
+				while (pReader->GetPos() < end)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+					case 0:
+					{
+						cTn.fromPPTY(pReader);
+					}break;
+					default:
+					{
+						pReader->SkipRecord();
+
+					}break;
+					}
+				}
+				pReader->Seek(end);
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+				pWriter->WriteRecord1(0, cTn);
+			}
+			
+			CTn cTn;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
@@ -67,5 +112,3 @@ namespace PPTX
 		};
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_PAR_INCLUDE_H

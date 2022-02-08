@@ -64,6 +64,7 @@ void CxImageToMediaFrame( CxImage& img, CBgraFrame* bgra )
     RGBQUAD* pPalette = img.GetPalette();
     bool bIsAlphaPalettePresent = img.AlphaPaletteIsEnabled();
     bool bIsAlphaApplied = false;
+    bool bIsRGBA = !bgra->get_IsRGBA();
 
     if( 1 == nBitsPerPixel )
     {
@@ -89,9 +90,9 @@ void CxImageToMediaFrame( CxImage& img, CBgraFrame* bgra )
             for( int nPos = 0; nPos < nWidth; ++nPos, dst += 4 )
             {
                 int index = (src[nPos >> 3] >> (7 - (nPos & 7)) * 1) & 1;
-                dst[0] = pPalette[index].rgbBlue;
+                dst[0] = bIsRGBA ? pPalette[index].rgbBlue : pPalette[index].rgbRed;
                 dst[1] = pPalette[index].rgbGreen;
-                dst[2] = pPalette[index].rgbRed;
+                dst[2] = bIsRGBA ? pPalette[index].rgbRed : pPalette[index].rgbBlue;
             }
         }
     }
@@ -120,9 +121,9 @@ void CxImageToMediaFrame( CxImage& img, CBgraFrame* bgra )
             for( int nPos = 0; nPos < nWidth; ++nPos, dst += 4 )
             {
                 int index = (src[nPos >> 2] >> (3 - (nPos & 3)) * 2) & 3;
-                dst[0] = pPalette[index].rgbBlue;
+                dst[0] = bIsRGBA ? pPalette[index].rgbBlue : pPalette[index].rgbRed;
                 dst[1] = pPalette[index].rgbGreen;
-                dst[2] = pPalette[index].rgbRed;
+                dst[2] = bIsRGBA ? pPalette[index].rgbRed : pPalette[index].rgbBlue;
             }
         }
     }
@@ -155,9 +156,9 @@ void CxImageToMediaFrame( CxImage& img, CBgraFrame* bgra )
             for( int nPos = 0; nPos < nWidth; ++nPos, dst += 4 )
             {
                 int index = (src[nPos >> 1] >> (1 - (nPos & 1)) * 4) & 15;
-                dst[0] = pPalette[index].rgbBlue;
+                dst[0] = bIsRGBA ? pPalette[index].rgbBlue : pPalette[index].rgbRed;
                 dst[1] = pPalette[index].rgbGreen;
-                dst[2] = pPalette[index].rgbRed;
+                dst[2] = bIsRGBA ? pPalette[index].rgbRed : pPalette[index].rgbBlue;
 
                 if (bIsAlphaPalettePresent)
                     dst[3] = pPalette[index].rgbReserved;
@@ -193,9 +194,9 @@ void CxImageToMediaFrame( CxImage& img, CBgraFrame* bgra )
                 for( int nPos = 0; nPos < nWidth; ++nPos, src += 1, dst += 4 )
                 {
                     int index = src[0];
-                    dst[0] = pPalette[index].rgbBlue;
+                    dst[0] = bIsRGBA ? pPalette[index].rgbBlue : pPalette[index].rgbRed;
                     dst[1] = pPalette[index].rgbGreen;
-                    dst[2] = pPalette[index].rgbRed;
+                    dst[2] = bIsRGBA ? pPalette[index].rgbRed : pPalette[index].rgbBlue;
 
                     if (bIsAlphaPalettePresent)
                         dst[3] = pPalette[index].rgbReserved;
@@ -237,9 +238,9 @@ void CxImageToMediaFrame( CxImage& img, CBgraFrame* bgra )
         {
             for( int nPos = 0; nPos < nWidth; ++nPos, src += 3, dst += 4 )
             {
-                dst[0] = src[0];
+                dst[0] = bIsRGBA ? src[0] : src[2];
                 dst[1] = src[1];
-                dst[2] = src[2];
+                dst[2] = bIsRGBA ? src[2] : src[0];
             }
         }
     }
@@ -254,9 +255,9 @@ void CxImageToMediaFrame( CxImage& img, CBgraFrame* bgra )
         {
             for( int nPos = 0; nPos < nWidth; ++nPos, src += 4, dst += 4 )
             {
-                dst[0] = src[0];
+                dst[0] = bIsRGBA ? src[0] : src[2];
                 dst[1] = src[1];
-                dst[2] = src[2];
+                dst[2] = bIsRGBA ? src[2] : src[0];
             }
         }
     }
@@ -343,6 +344,7 @@ void CBgraFrame::Clear()
     m_lPaletteColors = 0;
     m_bIsGrayScale  = false;
     m_dJpegSaveQuality = -1;
+    m_bIsRGBA = false;
 }
 
 void CBgraFrame::ClearNoAttack()
@@ -392,6 +394,15 @@ void CBgraFrame::SetJpegQuality(const double& value)
     m_dJpegSaveQuality = value;
 }
 
+void CBgraFrame::put_IsRGBA(const bool& bIsRGBA)
+{
+    m_bIsRGBA = bIsRGBA;
+}
+bool CBgraFrame::get_IsRGBA()
+{
+    return m_bIsRGBA;
+}
+
 void CBgraFrame::put_Palette(BYTE* pDataColors, const int& colors)
 {
     if (!pDataColors || colors < 1) return;
@@ -407,33 +418,61 @@ void CBgraFrame::put_Palette(BYTE* pDataColors, const int& colors)
 
 bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileType)
 {
-	m_nFileType = nFileType;
+    m_nFileType = nFileType;
 
-    if (CXIMAGE_FORMAT_JP2 == nFileType)
+    if (nFileType == 0)
+    {
+        CImageFileFormatChecker checker(strFileName);
+        m_nFileType = checker.eFileType;
+    }
+
+#if CXIMAGE_SUPPORT_JP2
+    if (CXIMAGE_FORMAT_JP2 == m_nFileType)
     {
         Jpeg2000::CJ2kFile oJ2;
-        return oJ2.Open(this, strFileName, std::wstring(L""));
+        return oJ2.Open(this, strFileName, std::wstring(L""), !m_bIsRGBA);
     }
-	else
-	{
-		if (nFileType == 0)
-		{
-			CImageFileFormatChecker checker(strFileName);
-			m_nFileType = checker.eFileType;
-		}
-		NSFile::CFileBinary oFile;
-		if (!oFile.OpenFile(strFileName))
-			return false;
+#endif
 
-		CxImage img;
+    NSFile::CFileBinary oFile;
+    if (!oFile.OpenFile(strFileName))
+        return false;
 
-		if (!img.Decode(oFile.GetFileNative(), m_nFileType))
-			return false;
+    CxImage img;
 
-        CxImageToMediaFrame(img, this);
-		m_bIsGrayScale = img.IsGrayScale();
-		return true;
-	}
+    if (!img.Decode(oFile.GetFileNative(), m_nFileType))
+        return false;
+
+    CxImageToMediaFrame(img, this);
+    m_bIsGrayScale = img.IsGrayScale();
+    return true;
+}
+bool CBgraFrame::Decode(BYTE* pBuffer, int nSize, unsigned int nFileType)
+{
+    m_nFileType = nFileType;
+
+    if (nFileType == 0)
+    {
+        CImageFileFormatChecker checker(pBuffer, nSize);
+        m_nFileType = checker.eFileType;
+    }
+
+#if CXIMAGE_SUPPORT_JP2
+    if (CXIMAGE_FORMAT_JP2 == m_nFileType)
+    {
+        Jpeg2000::CJ2kFile oJ2;
+        return oJ2.Open(this, pBuffer, nSize, std::wstring(L""), !m_bIsRGBA);
+    }
+#endif
+
+    CxImage img;
+
+    if (!img.Decode(pBuffer, nSize, m_nFileType))
+        return false;
+
+    CxImageToMediaFrame(img, this);
+    m_bIsGrayScale = img.IsGrayScale();
+    return true;
 }
 
 bool CBgraFrame::SaveFile(const std::wstring& strFileName, unsigned int nFileType)
@@ -449,7 +488,7 @@ bool CBgraFrame::SaveFile(const std::wstring& strFileName, unsigned int nFileTyp
 	if (21/*CXIMAGE_FORMAT_JBIG2*/ == nFileType)
 	{
 		CJBig2File jBig2File;
-		bool res = jBig2File.MemoryToJBig2(m_pData, m_lWidth * m_lHeight * 24, m_lWidth, m_lHeight, strFileName);
+        bool res = jBig2File.MemoryToJBig2(m_pData, m_lWidth * m_lHeight * 24, m_lWidth, m_lHeight, strFileName, !m_bIsRGBA);
 
 		return res;		
 	}
@@ -461,7 +500,7 @@ bool CBgraFrame::SaveFile(const std::wstring& strFileName, unsigned int nFileTyp
 		
 		CxImage img;
 
-        if (!img.CreateFromArray(m_pData, m_lWidth, m_lHeight, lBitsPerPixel * 8, lStride, (m_lStride >= 0) ? true : false))
+        if (!img.CreateFromArray(m_pData, m_lWidth, m_lHeight, lBitsPerPixel * 8, lStride, (m_lStride >= 0) ? true : false, !m_bIsRGBA))
             return false;
 
         if (m_pPalette)

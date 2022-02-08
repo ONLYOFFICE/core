@@ -100,7 +100,7 @@ SOURCES += DjVu.cpp \
     libdjvu/XMLTags.cpp \
     libdjvu/ZPCodec.cpp
 
-HEADERS +=     DjVu.h \
+HEADERS += DjVu.h \
     DjVuFileImplementation.h \
     libdjvu/Arrays.h \
     libdjvu/atomic.h \
@@ -152,3 +152,5 @@ HEADERS +=     DjVu.h \
     libdjvu/XMLParser.h \
     libdjvu/XMLTags.h \
     libdjvu/ZPCodec.h
+
+#DEFINES += BUILDING_WASM_MODULE

@@ -75,6 +75,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDataValidation)
+            WritingElement_XlsbConstructors(CDataValidation)
 			CDataValidation(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
@@ -93,12 +94,13 @@ namespace OOX
 			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
 
 			bool IsExtended();
-
+            void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_DataValidation;
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+            void ReadAttributes(XLS::BaseObjectPtr& obj);
 
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oSpinCount;
 
@@ -125,6 +127,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDataValidations)
+            WritingElement_XlsbConstructors(CDataValidations)
 			CDataValidations(OOX::Document *pMain = NULL) : WritingElementWithChilds<CDataValidation>(pMain)
 			{
 			}
@@ -141,6 +144,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 					void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
+            void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_DataValidations;
@@ -148,6 +152,7 @@ namespace OOX
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+            void ReadAttributes(XLS::BaseObjectPtr& obj);
 		public:
 			mutable nullable_int							m_oCount;
 			nullable<SimpleTypes::COnOff<>>					m_oDisablePrompts;

@@ -32,6 +32,8 @@
 // PdfReaderTest.cpp : Defines the entry point for the console application.
 //
 
+#include "stdafx.h"
+
 #include <vector>
 #include <string>
 #include <iostream>
@@ -65,7 +67,7 @@
 #define TEST_PDFWRITER_LIB
 
 #if defined(_WIN64)
-	#pragma comment(lib, "../../build/bin/icu/win_64/icuuc.lib")
+	#pragma comment(lib, "../../Common/3dParty/icu/win_64/build/icuuc.lib")	
 #elif defined (_WIN32)
 
 	#if defined(_DEBUG)
@@ -317,8 +319,8 @@ void TestDocument4()
 
 	CDestination* pDest = oPdf.CreateDestination(1);
 	pDest->SetXYZ(0, 792, 0);
-	CAnnotation* pAnnot = oPdf.CreateLinkAnnot(0, TRect(0, 100, 100, 0), pDest);
-	pAnnot = oPdf.CreateUriLinkAnnot(0, TRect(0, 200, 100, 100), "www.rbc.ru");
+	//CAnnotation* pAnnot = oPdf.CreateLinkAnnot(0, TRect(0, 100, 100, 0), pDest);
+	//pAnnot = oPdf.CreateUriLinkAnnot(0, TRect(0, 200, 100, 100), "www.rbc.ru");
 
 	oPdf.SaveToFile(L"D:/test/_pdf/Test4.pdf");
 	oPdf.Close();
@@ -571,7 +573,7 @@ void TestDocument7()
 	pPage->SetWidth(1000);
 
 	//CFontCidTrueType* pFont = oPdf.CreateTrueTypeFont(L"D:/test/_pdf/Test.ttf", 0);
-	CFontCidTrueType* pFont = oPdf.CreateTrueTypeFont(L"D:/test/_pdf/cambria.ttc", 1);
+    CFontCidTrueType* pFont = oPdf.CreateCidTrueTypeFont(L"D:/test/_pdf/cambria.ttc", 1);
 
 	pPage->BeginText();
 
@@ -589,7 +591,7 @@ void TestDocument7()
 			pRange[unIndex - rangeStart] = unIndex;
 		}
 
-		pPage->SetFontAndSize(pFont, 10);
+        pPage->SetFontAndSize((CFontDict*)pFont, 10);
 
 		unsigned char* pString = pFont->EncodeString(pRange, rangeLen);
 		pPage->DrawText(nX, nY, (const BYTE*)pString, rangeLen * 2);

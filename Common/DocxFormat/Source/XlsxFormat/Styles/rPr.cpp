@@ -32,6 +32,7 @@
 #include "rPr.h"
 
 #include "../../../../../ASCOfficePPTXFile/Editor/BinaryFileReaderWriter.h"
+#include "Fonts.h"
 
 namespace OOX
 {
@@ -338,7 +339,9 @@ namespace OOX
 					BYTE ucR;
 					BYTE ucG;
 					BYTE ucB;
-					if(OOX::Spreadsheet::CIndexedColors::GetDefaultRGBAByIndex(m_oColor->m_oIndexed->GetValue(), ucR, ucG, ucB, ucA))
+					int index = m_oColor->m_oIndexed->GetValue();
+					//64 is auto color
+					if(64 != index && OOX::Spreadsheet::CIndexedColors::GetDefaultRGBAByIndex(index, ucR, ucG, ucB, ucA))
 					{
 						xColorType |= 0x1;
 						xColorType |= 0x4;
@@ -424,6 +427,26 @@ namespace OOX
 			nLen += 4 + 2 * (m_oRFont.IsInit() && m_oRFont->m_sVal.IsInit() ? m_oRFont->m_sVal->length() : 0);
 			return nLen;
 		}
+
+        void CRPr::fromFont(CFont* font)
+        {
+            m_oBold           = font->m_oBold;
+            m_oCharset        = font->m_oCharset;
+            m_oColor          = font->m_oColor;
+            m_oCondense       = font->m_oCondense;
+            m_oExtend         = font->m_oExtend;
+            m_oFamily         = font->m_oFamily;
+            m_oItalic         = font->m_oItalic;
+            m_oOutline        = font->m_oOutline;
+            m_oRFont          = font->m_oRFont;
+            m_oScheme         = font->m_oScheme;
+            m_oShadow         = font->m_oShadow;
+            m_oStrike         = font->m_oStrike;
+            m_oSz             = font->m_oSz;
+            m_oUnderline      = font->m_oUnderline;
+            m_oVertAlign      = font->m_oVertAlign;
+
+        }
 
 	} //Spreadsheet
 } // OOX

@@ -51,8 +51,12 @@ public:
 public:
     virtual int ShowSelectDialog(void* parent = NULL);
     virtual int ShowCertificate(void* parent = NULL);
+    virtual std::string Print();
 
     virtual bool FromFiles(const std::wstring& keyPath, const std::string& keyPassword, const std::wstring& certPath, const std::string& certPassword);
+    virtual bool FromFilesRaw(unsigned char* key, unsigned int keyLen, const std::string& keyPassword,
+                              unsigned char* cert, unsigned int certLen, const std::string& certPassword);
+
     bool FromId(const std::string& id);
 };
 

@@ -53,6 +53,7 @@ namespace PdfWriter
 	class CDocument;
 	class CTextLine;
 	class CTextWord;
+	class CFieldBase;
 	//----------------------------------------------------------------------------------------
 	// CPageTree
 	//----------------------------------------------------------------------------------------
@@ -116,7 +117,7 @@ namespace PdfWriter
 		void      Concat(double dM11, double dM12, double dM21, double dM22, double dX, double dY);
 		void      SetTransform(double dM11, double dM12, double dM21, double dM22, double dX, double dY);
 		void      SetExtGrState(CExtGrState* pExtGrState);
-		void      AddAnnotation(CAnnotation* pAnnot);
+		void      AddAnnotation(CDictObject* pAnnot);
 		void      DrawShading(CShading* pShading);
 		void      SetStrokeAlpha(unsigned char unAlpha);
 		void      SetFillAlpha(unsigned char unAlpha);

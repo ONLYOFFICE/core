@@ -31,18 +31,66 @@
  */
 #include "SlicerCache.h"
 #include "SlicerCacheExt.h"
+#include "../../XlsbFormat/Xlsb.h"
+#include "../../XlsbFormat/SlicerCachesStream.h"
+#include "../../XlsbFormat/Biff12_unions/SLICERCACHE.h"
+#include "../../XlsbFormat/Biff12_unions/SLICERCACHEOLAPIMPL.h"
+#include "../../XlsbFormat/Biff12_unions/SLICERCACHENATIVEITEMS.h"
+#include "../../XlsbFormat/Biff12_unions/FRTSLICERCACHE.h"
+#include "../../XlsbFormat/Biff12_records/BeginSlicerCacheDef.h"
+#include "../../XlsbFormat/Biff12_records/SlicerCachePivotTables.h"
+#include "../../XlsbFormat/Biff12_records/BeginSlicerCacheNative.h"
+#include "../../XlsbFormat/Biff12_records/SlicerCacheNativeItem.h"
+#include "../../XlsbFormat/Biff12_records/BeginSlicerCacheOlapImpl.h"
+#include "../../XlsbFormat/Biff12_unions/SLICERCACHESELECTIONS.h"
+#include "../../XlsbFormat/Biff12_records/SlicerCacheSelection.h"
+#include "../../XlsbFormat/Biff12_unions/SLICERCACHELEVELSDATA.h"
+#include "../../XlsbFormat/Biff12_unions/SLICERCACHELEVELDATA.h"
+#include "../../XlsbFormat/Biff12_records/BeginSlicerCacheLevelData.h"
+#include "../../XlsbFormat/Biff12_unions/SLICERCACHESIRANGES.h"
+#include "../../XlsbFormat/Biff12_unions/SLICERCACHESIRANGE.h"
+#include "../../XlsbFormat/Biff12_records/BeginSlicerCacheSiRange.h"
+#include "../../XlsbFormat/Biff12_records/SlicerCacheOlapItem.h"
 
 namespace OOX
 {
 namespace Spreadsheet
 {
+void COlapSlicerCacheItem::fromBin(XLS::BaseObjectPtr& obj)
+{
+    ReadAttributes(obj);
+    auto ptr = static_cast<XLSB::SlicerCacheOlapItem*>(obj.get());
+    if(ptr != nullptr)
+    {
+        COlapSlicerCacheItemParent oCOlapSlicerCacheItemParent;
+        for(auto &item : ptr->parents)
+        {
+            oCOlapSlicerCacheItemParent.m_oN = item.value();
+            m_oP.push_back(oCOlapSlicerCacheItemParent);
+        }
+    }
+}
+void COlapSlicerCacheItem::ReadAttributes(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::SlicerCacheOlapItem*>(obj.get());
+    if(ptr != nullptr)
+    {
+        m_oNd    = ptr->fNoData;
+
+        if(!ptr->stName.value().empty())
+            m_oN = ptr->stName.value();
+
+        if(!ptr->stTitle.value().empty())
+            m_oC = ptr->stTitle.value();
+    }
+}
 void COlapSlicerCacheItem::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
 	WritingElement_ReadAttributes_StartChar_No_NS(oReader)
-			WritingElement_ReadAttributes_Read_ifChar( oReader, "n", m_oN)
-			WritingElement_ReadAttributes_Read_else_ifChar( oReader, "c", m_oC)
-			WritingElement_ReadAttributes_Read_else_ifChar( oReader, "nd", m_oNd)
-			WritingElement_ReadAttributes_EndChar_No_NS( oReader )
+		WritingElement_ReadAttributes_Read_ifChar( oReader, "n", m_oN)
+		WritingElement_ReadAttributes_Read_else_ifChar( oReader, "c", m_oC)
+		WritingElement_ReadAttributes_Read_else_ifChar( oReader, "nd", m_oNd)
+	WritingElement_ReadAttributes_EndChar_No_NS( oReader )
 }
 void COlapSlicerCacheItem::fromXML(XmlUtils::CXmlLiteReader& oReader)
 {
@@ -201,6 +249,29 @@ void COlapSlicerCacheItemParent::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReade
 	}
 	pReader->Seek(_end_rec);
 }
+void COlapSlicerCacheRange::fromBin(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::SLICERCACHESIRANGE*>(obj.get());
+    if(ptr != nullptr)
+    {
+        ReadAttributes(ptr->m_BrtBeginSlicerCacheSiRange);
+
+        COlapSlicerCacheItem oCOlapSlicerCacheItem;
+        for(auto &item : ptr->m_arBrtSlicerCacheOlapItem)
+        {
+            oCOlapSlicerCacheItem.fromBin(item);
+            m_oI.push_back(oCOlapSlicerCacheItem);
+        }
+    }
+}
+void COlapSlicerCacheRange::ReadAttributes(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::BeginSlicerCacheSiRange*>(obj.get());
+    if(ptr != nullptr)
+    {
+        m_oStartItem = ptr->iitemstart;
+    }
+}
 void COlapSlicerCacheRange::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
 	WritingElement_ReadAttributes_StartChar_No_NS(oReader)
@@ -290,6 +361,20 @@ void COlapSlicerCacheRange::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	}
 	pReader->Seek(_end_rec);
 }
+void CTabularSlicerCacheItem::fromBin(XLS::BiffStructure& obj)
+{
+    ReadAttributes(obj);
+}
+void CTabularSlicerCacheItem::ReadAttributes(XLS::BiffStructure& obj)
+{
+    auto ptr = static_cast<XLSB::SlicerCacheNativeItemStruct*>(&obj);
+    if(ptr != nullptr)
+    {
+        m_oX    = ptr->iCache;
+        m_oS    = ptr->fSelected;
+        m_oNd   = ptr->fNoData;
+    }
+}
 void CTabularSlicerCacheItem::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
 	WritingElement_ReadAttributes_StartChar_No_NS(oReader)
@@ -365,6 +450,30 @@ void CTabularSlicerCacheItem::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		}
 	}
 	pReader->Seek(_end_rec);
+}
+void COlapSlicerCacheSelection::fromBin(XLS::BaseObjectPtr& obj)
+{
+    ReadAttributes(obj);
+
+    auto ptr = static_cast<XLSB::SlicerCacheSelection*>(obj.get());
+    if(ptr != nullptr)
+    {
+        COlapSlicerCacheItemParent oCOlapSlicerCacheItemParent;
+        for(auto &item : ptr->parents)
+        {
+            oCOlapSlicerCacheItemParent.m_oN = item.value();
+            m_oP.push_back(oCOlapSlicerCacheItemParent);
+        }
+    }
+}
+void COlapSlicerCacheSelection::ReadAttributes(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::SlicerCacheSelection*>(obj.get());
+    if(ptr != nullptr)
+    {
+        if(!ptr->stUniqueName.value().empty())
+            m_oN = ptr->stUniqueName.value();
+    }
 }
 void COlapSlicerCacheSelection::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
@@ -454,6 +563,42 @@ void COlapSlicerCacheSelection::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader
 		}
 	}
 	pReader->Seek(_end_rec);
+}
+void COlapSlicerCacheLevelData::fromBin(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::SLICERCACHELEVELDATA*>(obj.get());
+    if(ptr != nullptr)
+    {
+        ReadAttributes(ptr->m_BrtBeginSlicerCacheLevelData);
+
+        auto ptr1 = static_cast<XLSB::SLICERCACHESIRANGES*>(ptr->m_SLICERCACHESIRANGES.get());
+        if(ptr1 != nullptr)
+        {
+            COlapSlicerCacheRange oCOlapSlicerCacheRange;
+            for(auto &item : ptr1->m_arSLICERCACHESIRANGE)
+            {
+                oCOlapSlicerCacheRange.fromBin(item);
+                m_oRanges.push_back(oCOlapSlicerCacheRange);
+            }
+        }
+    }
+}
+void COlapSlicerCacheLevelData::ReadAttributes(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::BeginSlicerCacheLevelData*>(obj.get());
+    if(ptr != nullptr)
+    {
+        m_oCount             = ptr->citem;
+        m_oSortOrder         = (SimpleTypes::Spreadsheet::EOlapSlicerCacheSortOrder)ptr->fSortOrder;
+
+        if(!ptr->stUniqueName.value().empty())
+            m_oUniqueName    = ptr->stUniqueName.value();
+
+        if(!ptr->stSourceCaption.value().empty())
+            m_oSourceCaption = ptr->stSourceCaption.value();
+
+        m_oCrossFilter      = (SimpleTypes::Spreadsheet::ESlicerCacheCrossFilter)ptr->fCrossFilter;
+    }
 }
 void COlapSlicerCacheLevelData::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
@@ -596,6 +741,22 @@ void COlapSlicerCacheLevelData::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader
 	}
 	pReader->Seek(_end_rec);
 }
+
+void CTabularSlicerCacheItems::fromBin(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::SlicerCacheNativeItem*>(obj.get());
+    if(ptr != nullptr)
+    {
+        m_oCount = ptr->cItems;
+        CTabularSlicerCacheItem oCTabularSlicerCacheItem;
+        for(auto &item : ptr->rgItems)
+        {
+            oCTabularSlicerCacheItem.fromBin(item);
+            m_oI.push_back(oCTabularSlicerCacheItem);
+        }
+    }
+}
+
 void CTabularSlicerCacheItems::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
 	WritingElement_ReadAttributes_StartChar_No_NS(oReader)
@@ -684,6 +845,23 @@ void CTabularSlicerCacheItems::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		}
 	}
 	pReader->Seek(_end_rec);
+}
+
+void COlapSlicerCacheSelections::fromBin(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::SLICERCACHESELECTIONS*>(obj.get());
+    if(ptr != nullptr)
+    {
+        m_oCount = ptr->m_arBrtSlicerCacheSelection.size();
+
+        COlapSlicerCacheSelection oCOlapSlicerCacheSelection;
+        for(auto &item : ptr->m_arBrtSlicerCacheSelection)
+        {
+            oCOlapSlicerCacheSelection.fromBin(item);
+            m_oSelection.push_back(oCOlapSlicerCacheSelection);
+        }
+
+    }
 }
 void COlapSlicerCacheSelections::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
@@ -774,6 +952,22 @@ void COlapSlicerCacheSelections::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReade
 	}
 	pReader->Seek(_end_rec);
 }
+void COlapSlicerCacheLevelsData::fromBin(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::SLICERCACHELEVELSDATA*>(obj.get());
+    if(ptr != nullptr)
+    {
+        m_oCount = ptr->m_arSLICERCACHELEVELDATA.size();
+
+        COlapSlicerCacheLevelData oCOlapSlicerCacheLevelData;
+        for(auto &item : ptr->m_arSLICERCACHELEVELDATA)
+        {
+            oCOlapSlicerCacheLevelData.fromBin(item);
+            m_oLevel.push_back(oCOlapSlicerCacheLevelData);
+        }
+
+    }
+}
 void COlapSlicerCacheLevelsData::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
 	WritingElement_ReadAttributes_StartChar_No_NS(oReader)
@@ -862,6 +1056,30 @@ void COlapSlicerCacheLevelsData::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReade
 		}
 	}
 	pReader->Seek(_end_rec);
+}
+void CTabularSlicerCache::fromBin(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::SLICERCACHENATIVEITEMS*>(obj.get());
+    if(ptr != nullptr)
+    {
+        ReadAttributes(ptr->m_BrtBeginSlicerCacheNative);
+
+        if(ptr->m_BrtSlicerCacheNativeItem != nullptr)
+            m_oItems = ptr->m_BrtSlicerCacheNativeItem;
+    }
+}
+void CTabularSlicerCache::ReadAttributes(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::BeginSlicerCacheNative*>(obj.get());
+    if(ptr != nullptr)
+    {
+        m_oPivotCacheId     = ptr->dwcacheId;
+        m_oSortOrder        = (SimpleTypes::Spreadsheet::ETabularSlicerCacheSortOrder)(ptr->fSortOrder - 1);
+        m_oCustomListSort   = ptr->fSortUsingCustomLists;
+        m_oShowMissing      = ptr->fShowAllItems;
+
+        m_oCrossFilter      = (SimpleTypes::Spreadsheet::ESlicerCacheCrossFilter)ptr->fCrossFilter;
+    }
 }
 void CTabularSlicerCache::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
@@ -987,6 +1205,30 @@ void CTabularSlicerCache::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	}
 	pReader->Seek(_end_rec);
 }
+
+void COlapSlicerCache::fromBin(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::SLICERCACHEOLAPIMPL*>(obj.get());
+    if(ptr != nullptr)
+    {
+        ReadAttributes(ptr->m_BrtBeginSlicerCacheOlapImpl);
+
+        if(ptr->m_SLICERCACHELEVELSDATA != nullptr)
+            m_oLevels = ptr->m_SLICERCACHELEVELSDATA;
+
+        if(ptr->m_SLICERCACHESELECTIONS != nullptr)
+            m_oSelections = ptr->m_SLICERCACHESELECTIONS;
+    }
+}
+void COlapSlicerCache::ReadAttributes(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::BeginSlicerCacheOlapImpl*>(obj.get());
+    if(ptr != nullptr)
+    {
+        m_oPivotCacheId = ptr->ipivotcacheid;
+    }
+}
+
 void COlapSlicerCache::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
 	WritingElement_ReadAttributes_StartChar_No_NS(oReader)
@@ -1081,6 +1323,19 @@ void COlapSlicerCache::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	}
 	pReader->Seek(_end_rec);
 }
+
+void CSlicerCacheData::fromBin(XLS::BaseObjectPtr& obj)
+{
+    if(obj->get_type() == XLS::typeSLICERCACHEOLAPIMPL)
+    {
+        m_oOlap = obj;
+    }
+
+    if(obj->get_type() == XLS::typeSLICERCACHENATIVEITEMS)
+    {
+        m_oTabular = obj;
+    }
+}
 void CSlicerCacheData::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
 	WritingElement_ReadAttributes_StartChar_No_NS(oReader)
@@ -1157,6 +1412,23 @@ void CSlicerCacheData::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	}
 	pReader->Seek(_end_rec);
 }
+
+void CSlicerCachePivotTable::fromBin(XLS::BiffStructure& obj)
+{
+    ReadAttributes(obj);
+}
+void CSlicerCachePivotTable::ReadAttributes(XLS::BiffStructure& obj)
+{
+    auto ptr = static_cast<XLSB::SlicerCachePivotTable*>(&obj);
+    if(ptr != nullptr)
+    {
+        m_oTabId    = ptr->iTabId;
+
+        if(!ptr->stPivotTable.value().empty())
+            m_oName = ptr->stPivotTable.value();
+    }
+}
+
 void CSlicerCachePivotTable::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
 	WritingElement_ReadAttributes_StartChar_No_NS(oReader)
@@ -1224,6 +1496,44 @@ void CSlicerCachePivotTable::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		}
 	}
 	pReader->Seek(_end_rec);
+}
+void CSlicerCacheDefinition::fromBin(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::SLICERCACHE*>(obj.get());
+    if(ptr != nullptr)
+    {
+        ReadAttributes(ptr->m_BrtBeginSlicerCacheDef);
+
+        if(ptr->m_BrtSlicerCachePivotTables != nullptr)
+        {
+            auto ptrSCPT = static_cast<XLSB::SlicerCachePivotTables*>(ptr->m_BrtSlicerCachePivotTables.get());
+            CSlicerCachePivotTable oCSlicerCachePivotTable;
+            for(auto &item : ptrSCPT->pivotTables)
+            {
+                oCSlicerCachePivotTable.fromBin(item);
+                m_oPivotTables.push_back(oCSlicerCachePivotTable);
+            }
+        }
+
+        if(ptr->m_slicerCacheData != nullptr)
+            m_oData = ptr->m_slicerCacheData;
+
+        if(ptr->m_FRTSLICERCACHE != nullptr)
+            m_oExtLst = ptr->m_FRTSLICERCACHE;
+    }
+}
+void CSlicerCacheDefinition::ReadAttributes(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::BeginSlicerCacheDef*>(obj.get());
+    if(ptr != nullptr)
+    {
+        if(!ptr->stName.value().empty())
+            m_oName         = ptr->stName.value();
+
+        if(!ptr->stHierarchy.value().empty())
+            m_oSourceName        = ptr->stHierarchy.value();
+
+    }
 }
 void CSlicerCacheDefinition::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
@@ -1437,12 +1747,35 @@ void CSlicerCacheDefinition::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	pReader->Seek(_end_rec);
 }
 
+void CSlicerCacheFile::readBin(const CPath& oPath)
+{
+    CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+    if (xlsb)
+    {
+        XLSB::SlicerCachesStreamPtr slicerCachesStream = std::make_shared<XLSB::SlicerCachesStream>();
+
+        xlsb->ReadBin(oPath, slicerCachesStream.get());
+
+        if (slicerCachesStream != nullptr)
+        {
+            if (slicerCachesStream->m_SLICERCACHE != nullptr)
+                m_oSlicerCacheDefinition = slicerCachesStream->m_SLICERCACHE;
+        }
+    }
+}
+
 void CSlicerCacheFile::read(const CPath& oRootPath, const CPath& oPath)
 {
 	m_oReadPath = oPath;
 	IFileContainer::Read( oRootPath, oPath );
 
-	XmlUtils::CXmlLiteReader oReader;
+    if( m_oReadPath.GetExtention() == _T(".bin"))
+    {
+        readBin(m_oReadPath);
+        return;
+    }
+
+    XmlUtils::CXmlLiteReader oReader;
 
 	if ( !oReader.FromFile( oPath.GetPath() ) )
 		return;
@@ -1452,6 +1785,7 @@ void CSlicerCacheFile::read(const CPath& oRootPath, const CPath& oPath)
 
 	m_oSlicerCacheDefinition = oReader;
 }
+
 void CSlicerCacheFile::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 {
 	if(!m_oSlicerCacheDefinition.IsInit())

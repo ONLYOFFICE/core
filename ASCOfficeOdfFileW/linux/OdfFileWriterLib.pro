@@ -106,19 +106,34 @@ SOURCES += \
     ../source/OdfFormat/odp_page_state.cpp \
     ../source/OdfFormat/odp_slide_context.cpp \
     ../source/OdfFormat/office_presentation.cpp \
-    ../source/OdfFormat/style_presentation.cpp
-}
+    ../source/OdfFormat/style_presentation.cpp \
+    ../source/OdfFormat/odf_math_context.cpp \
+    ../source/OdfFormat/math_elementaries.cpp \
+    ../source/OdfFormat/math_elements.cpp \
+    ../source/OdfFormat/math_layout_elements.cpp \
+    ../source/OdfFormat/math_limit_elements.cpp \
+    ../source/OdfFormat/math_table_elements.cpp \
+    ../source/OdfFormat/math_token_elements.cpp
+   }
 
 SOURCES += \
     ../source/Oox2OdfConverter/Converter.cpp \
     ../source/Oox2OdfConverter/ConverterChart.cpp \
     ../source/Oox2OdfConverter/ConvertVml.cpp \
     ../source/Oox2OdfConverter/DocxConverter.cpp \
+    ../source/Oox2OdfConverter/MathConverter.cpp \
     ../source/Oox2OdfConverter/XlsxConverter.cpp \
     ../source/Oox2OdfConverter/ConvertDrawing.cpp \
     ../source/Oox2OdfConverter/PptxConverter.cpp
 
 HEADERS += \
+    ../source/OdfFormat/math_elementaries.h \
+    ../source/OdfFormat/math_elements.h \
+    ../source/OdfFormat/math_layout_elements.h \
+    ../source/OdfFormat/math_limit_elements.h \
+    ../source/OdfFormat/math_table_elements.h \
+    ../source/OdfFormat/math_token_elements.h \
+    ../source/OdfFormat/odf_math_context.h \
     ../source/OdfFormat/office_document.h \
     ../source/OdfFormat/abstract_xml.h \
     ../source/OdfFormat/calcext_elements.h \

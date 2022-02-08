@@ -117,7 +117,7 @@ namespace BinXlsxRW {
 	protected:
 		NSBinPptxRW::CBinaryFileReader& m_oBufferedStream;
 	public:
-		Binary_CommonReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream):m_oBufferedStream(poBufferedStream)
+		Binary_CommonReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream) : m_oBufferedStream(poBufferedStream)
 		{
 		}
 	};

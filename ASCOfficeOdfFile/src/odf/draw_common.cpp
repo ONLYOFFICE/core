@@ -292,7 +292,7 @@ void Compute_GradientFill(draw_gradient * image_style,oox::oox_gradient_fill_ptr
 	int style =0;
 	if (image_style->draw_style_)style = image_style->draw_style_->get_type();
 
-	if (image_style->draw_angle_)fill->angle = 90 - *image_style->draw_angle_/10.;
+	if (image_style->draw_angle_) fill->angle = 90 - image_style->draw_angle_->get_value();
 	if (fill->angle < 0) fill->angle +=360;
 
 	oox::oox_gradient_fill::_color_position point={};
@@ -615,7 +615,7 @@ void draw_a::pptx_convert(oox::pptx_conversion_context & Context)
 }
 void draw_a::docx_convert(oox::docx_conversion_context & Context) 
 {
-	std::wstring rId = Context.add_hyperlink(xlink_attlist_.href_.get_value_or(L""), true);//гиперлинк с объекта, а не с текста .. 
+	std::wstring rId = Context.add_hyperlink(xlink_attlist_.href_.get_value_or(L""), L"");//гиперлинк с объекта, а не с текста .. 
 	
 	for (size_t i = 0; i < content_.size(); i++)
 	{

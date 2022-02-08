@@ -32,7 +32,6 @@
 #pragma once
 #include "../CommonInclude.h"
 
-
 namespace OOX
 {
 	namespace Spreadsheet
@@ -46,7 +45,7 @@ namespace OOX
 			CDefinedName(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
 			}
-			virtual ~CDefinedName()
+            virtual ~CDefinedName()
 			{
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& node)
@@ -77,6 +76,11 @@ namespace OOX
 				m_oRef = oReader.GetText3();
 			}
 
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
+
 			virtual EElementType getType () const
 			{
 				return et_x_DefinedName;
@@ -85,6 +89,31 @@ namespace OOX
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader); // -> SheetData.cpp
+
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::Name*>(obj.get());
+                m_oComment                  = ptr->comment.value();
+               // m_oCustomMenu               = ptr->.value();
+                m_oDescription              = ptr->description.value();
+                m_oFunction                 = ptr->fFunc;
+                m_oFunctionGroupId          = ptr->fGrp;
+                m_oHelp                     = ptr->helpTopic.value();
+                m_oHidden                   = ptr->fHidden;
+
+                if(ptr->itab != 0xFFFFFFFF)
+                    m_oLocalSheetId         = ptr->itab;
+
+                m_oName                     = ptr->name.value();
+                m_oPublishToServer          = ptr->fPublished;
+                m_oShortcutKey              = std::to_wstring(ptr->chKey);
+                //m_oStatusBar                = ;
+                m_oVbProcedure              = ptr->fOB;
+                m_oWorkbookParameter        = ptr->fWorkbookParam;
+                m_oXlm                      = ptr->fFutureFunction;
+                m_oRef                      = ptr->rgce.getAssembledFormula();
+
+            }
 
 		public:
 				nullable_string									m_oComment;
@@ -110,9 +139,10 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDefinedNames)
+            WritingElement_XlsbVectorConstructors(CDefinedNames)
 			CDefinedNames(OOX::Document *pMain = NULL) : WritingElementWithChilds<CDefinedName>(pMain)
 			{
-			}
+			}            
 			virtual ~CDefinedNames()
 			{
 			}
@@ -160,6 +190,22 @@ namespace OOX
 					}
 				}
 			}
+
+            void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
+            {
+                //ReadAttributes(obj);
+
+                if (obj.empty())
+                    return;
+
+                for(auto &definedName : obj)
+                {
+                    CDefinedName *pDefinedName = new CDefinedName(m_pMainDocument);
+                    m_arrItems.push_back( pDefinedName);
+
+                    pDefinedName->fromBin(definedName);
+                }
+            }
 
 			virtual EElementType getType () const
 			{

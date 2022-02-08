@@ -76,6 +76,9 @@ mc:Ignorable=\"w14 w15 w16se wp14\">";
 
 	if (m_oDocument.m_pBackground)
 	{
+		if (PROP_DEF == m_oDocument.m_pBackground->m_nFillColor)
+			m_oDocument.m_pBackground->m_nFillColor = 0xFFFFFF;
+		
 		RtfColor color(m_oDocument.m_pBackground->m_nFillColor);
 
 		sResult += L"<w:background w:color=\"" + color.ToHexColor() + L"\">";
@@ -141,7 +144,8 @@ std::wstring OOXDocumentWriter::CreateXmlEnd( )
 	oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
 	poSettingsWriter->AddContent( m_oDocument.m_oProperty.RenderToOOX(oNewParam) );
 	//poSettingsWriter->AddContent( m_oDocument.m_oColorSchemeMapping.RenderToOOX(oNewParam) );
-	poSettingsWriter->AddContent( m_oDocument.m_oMathProp.RenderToOOX(oNewParam) );
+	if (m_oDocument.m_pMathProp)
+		poSettingsWriter->AddContent( m_oDocument.m_pMathProp->RenderToOOX(oNewParam) );
 
 	//numbering.xml
 	OOXNumberingWriter* poNumberingWriter = static_cast<OOXNumberingWriter*>( m_oWriter.m_poNumberingWriter );

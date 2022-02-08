@@ -183,22 +183,18 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
                 {
                     CP_XML_ATTR(L"r", Context.current_table_row() + 1);
 
-					if (Context.get_table_context().state()->group_row_.enabled)
+					if (false == Context.get_table_context().state()->group_rows_.empty())
 					{
 						//std::wstring str_spans = std::to_wstring(Context.get_table_context().state()->group_row_.count);
 						//str_spans = str_spans + L":";
 						std::wstring str_spans = L"1:" + std::to_wstring(Context.get_table_context().columns_count());
 						ht = L"";
 
-						CP_XML_ATTR(L"collapsed",	Context.get_table_context().state()->group_row_.collapsed);
-						CP_XML_ATTR(L"outlineLevel", Context.get_table_context().state()->group_row_.level); 
+						CP_XML_ATTR(L"collapsed", Context.get_table_context().state()->group_rows_.back());
+						CP_XML_ATTR(L"outlineLevel", Context.get_table_context().state()->group_rows_.size());
 						CP_XML_ATTR(L"spans", str_spans);						
 						
-						if (Context.get_table_context().state()->group_row_.collapsed)hidden = false;
-						Context.get_table_context().state()->group_row_.count--;
-
-						if (Context.get_table_context().state()->group_row_.count<1)
-							Context.get_table_context().state()->group_row_.enabled = false;
+						if (Context.get_table_context().state()->group_rows_.back()) hidden = false;
 					}					
 
                     if (hidden)
@@ -240,7 +236,7 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
         }
         Context.get_table_context().state()->end_row();        
 
-		if (Context.get_table_context().state()->is_empty_row())
+		if (Context.get_table_context().state()->is_empty_row() && Context.get_table_context().state()->group_rows_.empty())
 		{
             skip_next_row = true;  
 			if (attlist_.table_number_rows_repeated_ > 0xf000)
@@ -324,12 +320,9 @@ void table_rows_and_groups::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 void table_table_row_group::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	size_t count = table_rows_and_groups_.content_.size();
-
-	int level = 1;
-	
-	Context.get_table_context().state()->set_table_row_group( (int)count, table_table_row_group_attlist_.table_display_, level);
-	table_rows_and_groups_.xlsx_convert(Context);
+	Context.get_table_context().state()->start_table_row_group(attlist_.table_display_);
+		table_rows_and_groups_.xlsx_convert(Context);
+	Context.get_table_context().state()->end_table_row_group();
 }
 
 void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
@@ -362,6 +355,19 @@ void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
 		table_table_protection* prot = dynamic_cast<table_table_protection*>( table_protection_.get() );
 		if (prot)
 		{
+			if (prot->select_protected_cells)
+				Context.get_table_context().state()->set_protection_select_protected_cells(*prot->select_protected_cells);
+			if (prot->select_unprotected_cells)
+				Context.get_table_context().state()->set_protection_select_unprotected_cells(*prot->select_unprotected_cells);
+
+			if (prot->insert_columns)
+				Context.get_table_context().state()->set_protection_insert_columns(*prot->insert_columns);
+			if (prot->insert_rows)
+				Context.get_table_context().state()->set_protection_insert_rows(*prot->insert_rows);
+			if (prot->delete_columns)
+				Context.get_table_context().state()->set_protection_delete_columns(*prot->delete_columns);
+			if (prot->delete_rows)
+				Context.get_table_context().state()->set_protection_delete_rows(*prot->delete_rows);
 		}
 	}
 
@@ -426,13 +432,6 @@ void table_columns_no_group::xlsx_convert(oox::xlsx_conversion_context & Context
 
 void table_columns_and_groups::xlsx_convert(oox::xlsx_conversion_context & Context) 
 {
-    /*
-    if (table_table_column_group_)
-        table_table_column_group_->xlsx_convert(Context);
-    else
-        table_columns_no_group_.xlsx_convert(Context);
-    */
-
   	for (size_t i = 0; i < content_.size(); i++)
     {
 		office_element_ptr & elm = content_[i];
@@ -450,7 +449,9 @@ void table_table_header_columns::xlsx_convert(oox::xlsx_conversion_context & Con
 
 void table_table_column_group::xlsx_convert(oox::xlsx_conversion_context & Context) 
 {
-    table_columns_and_groups_.xlsx_convert(Context);
+	Context.get_table_context().state()->start_table_column_group(attlist_.table_display_);
+	table_columns_and_groups_.xlsx_convert(Context);
+	Context.get_table_context().state()->end_table_column_group();
 }
 
 namespace {
@@ -492,19 +493,20 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
     {
         CP_XML_NODE(L"col")
         {
+            bool hidden = table_table_column_attlist_.table_visibility_.get_type() == table_visibility::Collapse;
 
-            const bool collapsed = table_table_column_attlist_.table_visibility_.get_type() == table_visibility::Collapse;
+			if (false == Context.get_table_context().state()->group_columns_.empty())
+			{
+				CP_XML_ATTR(L"outlineLevel", Context.get_table_context().state()->group_columns_.size());
+				CP_XML_ATTR(L"collapsed", Context.get_table_context().state()->group_columns_.back());
 
-            if (collapsed)
+				if (Context.get_table_context().state()->group_columns_.back()) hidden = false;
+			}
+			if (hidden)
             {
                 CP_XML_ATTR(L"hidden", L"true");
             }
-            else
-            {
-				//необязательно
-                //CP_XML_ATTR(L"collapsed", L"false");            
-                //CP_XML_ATTR(L"hidden", L"false");            
-            }
+
 			CP_XML_ATTR(L"max", cMax);
 			CP_XML_ATTR(L"min", (cMin + 1));
 
@@ -544,7 +546,7 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
                                 cm_width = prop->attlist_.style_column_width_->get_value_unit(length::cm);        
 								in_width = prop->attlist_.style_column_width_->get_value_unit(length::inch);
 
-                                if (collapsed)
+                                if (hidden)
                                 {
                                     in_width = 0.0;
                                 }
@@ -915,7 +917,10 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 	
 	if (number_val.empty() && !bool_val)
 	{
-		sharedStringId = content_.xlsx_convert(Context, textFormatProperties);
+		if (!formula.empty())
+			xlsx_value_type = oox::XlsxCellType::str;
+		else
+			sharedStringId = content_.xlsx_convert(Context, textFormatProperties);
 	}	
 	
 //---------------------------------------------------------------------------------------------------------	
@@ -1340,7 +1345,8 @@ void table_content_validation::xlsx_convert(oox::xlsx_conversion_context & Conte
 			std::wstring content = Context.get_text_context().end_only_text();
 
 			Context.get_dataValidations_context().add_error_msg(name, error->table_title_.get_value_or(L""), content, 
-																error->table_display_ ? error->table_display_->get() : true);
+																error->table_display_ ? error->table_display_->get() : true,
+																error->table_message_type_.get_value_or(message_type::stop).get_type());
 		}
 		else if (content_[i]->get_type() == typeTableHelpMassage)
 		{

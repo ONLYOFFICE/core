@@ -400,15 +400,25 @@ void common_xlink_attlist::serialize(CP_ATTR_NODE)
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool common_value_and_type_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
+bool common_value_and_type_attlist::add_attributes(const xml::attributes_wc_ptr & Attributes)
 {
-    CP_APPLY_ATTR(L"office:value-type"	, office_value_type_);
-    CP_APPLY_ATTR(L"office:value"		, office_value_);
-    CP_APPLY_ATTR(L"office:currency"	, office_currency_);
-    CP_APPLY_ATTR(L"office:date-value"	, office_date_value_);
-    CP_APPLY_ATTR(L"office:time-value"	, office_time_value_);
-    CP_APPLY_ATTR(L"office:boolean-value", office_boolean_value_);
-    CP_APPLY_ATTR(L"office:string-value", office_string_value_);
+	CP_APPLY_ATTR(L"office:value-type", office_value_type_);
+	CP_APPLY_ATTR(L"office:value", office_value_);
+	CP_APPLY_ATTR(L"office:currency", office_currency_);
+	CP_APPLY_ATTR(L"office:date-value", office_date_value_);
+	CP_APPLY_ATTR(L"office:time-value", office_time_value_);
+	CP_APPLY_ATTR(L"office:boolean-value", office_boolean_value_);
+	CP_APPLY_ATTR(L"office:string-value", office_string_value_);
+
+	if (!office_value_)
+	{
+		CP_APPLY_ATTR(L"table:value", office_value_);  //openoffice xml 1.0
+	}
+
+	if (!office_value_type_)
+	{
+		CP_APPLY_ATTR(L"table:value-type", office_value_type_); //openoffice xml 1.0
+	}
   
 	if (office_value_type_ || office_value_ || office_currency_ || office_date_value_	|| office_time_value_ 
 																|| office_boolean_value_ || office_string_value_) return true;

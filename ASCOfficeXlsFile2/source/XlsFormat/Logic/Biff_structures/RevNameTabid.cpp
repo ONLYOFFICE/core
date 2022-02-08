@@ -61,7 +61,7 @@ void RevNameTabid::load(CFRecord& record)
 
 const std::wstring RevNameTabid::toString() const
 {
-	return name.toString();
+    return name.toString();
 }
 
 } // namespace XLS

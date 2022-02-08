@@ -32,6 +32,8 @@
 #define ZLIB_H
 
 #include "zconf.h"
+// setup in OfficeUtils.pri
+#include "zlib_addon.h"
 
 #ifdef __cplusplus
 extern "C" {

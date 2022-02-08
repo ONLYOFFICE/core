@@ -108,7 +108,7 @@ namespace DocFileFormat
 				switch (iter->OpCode)
 				{
 					case sprmOldSGprfIhdt:
-					case sprmSGprfIhdt:
+					//case sprmSGprfIhdt: //betesil_pl_it.doc
 					{
 						fHF = FormatUtils::BytesToUChar( iter->Arguments, 0, iter->argumentsSize );
 					}break;
@@ -162,6 +162,7 @@ namespace DocFileFormat
 		//MUST be ignored if the section does not have page number restart enabled.([MS-DOC] — v20101113. стр 152)
 		bool bWasSprmSFPgnRestart = false;
 		std::wstring wsSprmSPgnStart;
+		int nProperty = 0; // for unknown
 
 		for (std::list<SinglePropertyModifier>::iterator iter = sepx->grpprl->begin(); iter != sepx->grpprl->end(); ++iter)
 		{
@@ -352,10 +353,10 @@ namespace DocFileFormat
 			case sprmOldSCcolumns:
 			case sprmSCcolumns:
 			{
-				m_nColumns				=	static_cast<int> (FormatUtils::BytesToInt16 (iter->Arguments, 0, iter->argumentsSize) + 1);
+				m_nColumns = static_cast<int> (FormatUtils::BytesToInt16 (iter->Arguments, 0, iter->argumentsSize) + 1);
 
 				RELEASEARRAYOBJECTS (m_arrSpace);					
-				m_arrSpace				=	new short [m_nColumns];
+				m_arrSpace = new short [m_nColumns];
 
                 appendValueAttribute (&cols, L"w:num", FormatUtils::IntToWideString (m_nColumns));
 			}
@@ -388,10 +389,13 @@ namespace DocFileFormat
 				if (m_nColumns)
 				{
 					if (NULL == m_arrSpace)
-						m_arrSpace			=	new short[m_nColumns];
+						m_arrSpace = new short[m_nColumns];
 
-					unsigned char nInd		=	iter->Arguments[0];
-					m_arrSpace [nInd]		=	FormatUtils::BytesToInt16 (iter->Arguments, 1, iter->argumentsSize);
+					unsigned char nInd = iter->Arguments[0];
+					if (nInd < m_nColumns)
+					{
+						m_arrSpace[nInd] = FormatUtils::BytesToInt16(iter->Arguments, 1, iter->argumentsSize);
+					}
 				}
 			}break;
 
@@ -471,9 +475,14 @@ namespace DocFileFormat
 				break;
 
 			default:
+				if (iter->argumentsSize == 2)
 				{
-					int sz = iter->argumentsSize;
-				}break;
+					nProperty = FormatUtils::BytesToUInt16(iter->Arguments, 0, iter->argumentsSize);
+				}
+				else if (iter->argumentsSize == 1)
+				{
+					nProperty = FormatUtils::BytesToUChar(iter->Arguments, 0, iter->argumentsSize);
+				}
 			}
 		}
 

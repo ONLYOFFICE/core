@@ -122,6 +122,9 @@ namespace BinDocxRW
 				if (L"pkg:xmlData" == sName)
 				{
 					std::wstring data = oReader.GetInnerXml();
+					XmlUtils::replace_all(data, L"&#xA;", L"");
+					XmlUtils::replace_all(data, L"&#x9;", L"");
+					//todooo убрать "красивую" разметку xml
 					WriteXmlFile(*name, data);
 				}
 				if (L"pkg:binaryData" == sName)
@@ -142,6 +145,7 @@ namespace BinDocxRW
 			NSFile::CFileBinary file;
 			if (file.CreateFileW(path.GetPath()))
 			{
+				file.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n");
 				file.WriteStringUTF8(data);
 				file.CloseFile();
 			}
@@ -175,14 +179,10 @@ namespace BinDocxRW
 	};
 }
 
-BinDocxRW::CDocxSerializer::CDocxSerializer()
+BinDocxRW::CDocxSerializer::CDocxSerializer() : m_bIsMacro(false), m_bIsNoBase64Save(false), m_bIsNoBase64(false)
 {
 	m_pParamsWriter		= NULL;
 	m_pCurFileWriter	= NULL;
-
-	m_bIsNoBase64Save	= false;
-	m_bIsNoBase64		= false;
-	m_bSaveChartAsImg	= false;
 }
 BinDocxRW::CDocxSerializer::~CDocxSerializer()
 {
@@ -407,7 +407,7 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const std::wstring& sSrcFileName, 
 				oDrawingConverter.SetMediaDstPath(sMediaPath);
 				oDrawingConverter.SetEmbedDstPath(sEmbedPath);
 				
-				m_pCurFileWriter = new Writers::FileWriter(sDstPath, m_sFontDir, false, nVersion, m_bSaveChartAsImg, &oDrawingConverter, sThemePath);
+				m_pCurFileWriter = new Writers::FileWriter(sDstPath, m_sFontDir, false, nVersion, &oDrawingConverter, sThemePath);
 
 	//папка с картинками
 				std::wstring strFileInDir = NSSystemPath::GetDirectoryName(sSrcFileName);
@@ -415,7 +415,7 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const std::wstring& sSrcFileName, 
 
                 oDrawingConverter.SetSrcPath(sFileInDir);
 				
-				BinaryFileReader oBinaryFileReader(sFileInDir, oBufferedStream, *m_pCurFileWriter);
+				BinaryFileReader oBinaryFileReader(sFileInDir, oBufferedStream, *m_pCurFileWriter, m_bIsMacro);
 				oBinaryFileReader.ReadFile();
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//themes
@@ -476,7 +476,7 @@ bool BinDocxRW::CDocxSerializer::getXmlContent(NSBinPptxRW::CBinaryFileReader& o
 {
 	long nLength = oBufferedStream.GetLong();
 	Writers::ContentWriter oTempContentWriter;
-	BinDocxRW::Binary_DocumentTableReader oBinary_DocumentTableReader(oBufferedStream, *m_pCurFileWriter, oTempContentWriter, m_pCurFileWriter->m_pComments);
+	BinDocxRW::Binary_DocumentTableReader oBinary_DocumentTableReader(oBufferedStream, *m_pCurFileWriter, oTempContentWriter);
 	oBinary_DocumentTableReader.ReadDocumentContentOut(nLength);
 
     sOutputXml = oTempContentWriter.m_oContent.GetData();
@@ -564,7 +564,7 @@ bool BinDocxRW::CDocxSerializer::getXmlContentElem(OOX::EElementType eType, NSBi
 {
 	long nLength = oBufferedStream.GetLong();
 	Writers::ContentWriter oTempContentWriter;
-	BinDocxRW::Binary_DocumentTableReader oBinary_DocumentTableReader(oBufferedStream, *m_pCurFileWriter, oTempContentWriter, m_pCurFileWriter->m_pComments);
+	BinDocxRW::Binary_DocumentTableReader oBinary_DocumentTableReader(oBufferedStream, *m_pCurFileWriter, oTempContentWriter);
 
 	if(OOX::et_m_oMathPara == eType)
 	{
@@ -592,19 +592,18 @@ void BinDocxRW::CDocxSerializer::setEmbeddedFontsDir(const std::wstring& sEmbedd
 {
 	m_sEmbeddedFontsDir = sEmbeddedFontsDir;
 }
-void BinDocxRW::CDocxSerializer::setIsNoBase64Save(bool bIsNoBase64Save)
+void BinDocxRW::CDocxSerializer::setIsNoBase64Save(bool val)
 {
-	m_bIsNoBase64Save = bIsNoBase64Save;
+	m_bIsNoBase64Save = val;
 }
-void BinDocxRW::CDocxSerializer::setIsNoBase64(bool bIsNoBase64)
+void BinDocxRW::CDocxSerializer::setIsNoBase64(bool val)
 {
-	m_bIsNoBase64 = bIsNoBase64;
+	m_bIsNoBase64 = val;
 }
-void BinDocxRW::CDocxSerializer::setSaveChartAsImg(bool bSaveChartAsImg)
+void BinDocxRW::CDocxSerializer::setMacroEnabled(bool val)
 {
-	m_bSaveChartAsImg = bSaveChartAsImg;
+	m_bIsMacro = val;
 }
-
 bool BinDocxRW::CDocxSerializer::unpackageFile(const std::wstring& sSrcFileName, const std::wstring& sDstPath)
 {
 	BinDocxRW::CPackageFile file;

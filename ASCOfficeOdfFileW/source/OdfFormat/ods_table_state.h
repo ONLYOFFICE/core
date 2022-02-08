@@ -136,26 +136,32 @@ namespace utils
 		std::reverse(col.begin(), col.end());
 		std::reverse(row.begin(), row.end());
 	}
-    static void parsing_ref (std::wstring ref, int & col,int & row)
+    static void parsing_ref (std::wstring ref, int & col, int & row)
 	{
-		int pos = (int)ref.rfind(L"!");//oox table name
-		if (pos >= 0)
+		if (std::wstring::npos != ref.find(L" "))
+			return;
+
+		size_t pos = ref.rfind(L"!");//oox table name
+		if (pos != std::wstring::npos)
 			ref = ref.substr(pos + 1);
 		else
 		{
-			pos = (int)ref.rfind(L".");//odf table name
-			if (pos >= 0)
+			pos = ref.rfind(L".");//odf table name
+			if (pos != std::wstring::npos)
 				ref = ref.substr(pos + 1);
 		}
 		
 		std::wstring strCol, strRow;
-		splitCellAddress(ref,strCol,strRow);
+		splitCellAddress(ref, strCol, strRow);
 
 		if (strCol.empty() || strRow.empty()) 
 			return;
 		
-		col = getColAddressInv(strCol)+1;
-		row = getRowAdderssInv(strRow)+1;
+		if (strCol.size() > 3 || strRow.size() > 7)// 1048576 & 16384(xfd)
+			return;
+			
+		col = getColAddressInv(strCol) + 1;
+		row = getRowAdderssInv(strRow) + 1;
 
 	}
 }
@@ -269,16 +275,30 @@ struct data_validation_state
 
 	std::wstring condition;
 
-	bool in_ref(int col, int row)
+	bool in_ref(int col, int row, unsigned int repeate_col, _ref & ref)
 	{
 		for (size_t i = 0; i < refs.size(); i++)
 		{
-			if (col >= refs[i].col_start && col <= refs[i].col_end && row >= refs[i].row_start && row <= refs[i].row_end)
-				return true;
+			if (row < refs[i].row_start || row > refs[i].row_end) continue;
+
+			if (col + (int)repeate_col <= refs[i].col_start ||  col > refs[i].col_end) continue;
+			
+			ref = refs[i];
+			return true;
 		}
 		return false;
 	}
+	bool in_row(int row, unsigned int repeate_row, _ref & ref)
+	{
+		for (size_t i = 0; i < refs.size(); i++)
+		{
+			if (row + (int)repeate_row <= refs[i].row_start || row > refs[i].row_end) continue;
 
+			ref = refs[i];
+			return true;
+		}
+		return false;
+	}
 };
 struct ods_array_formula_state
 {
@@ -338,7 +358,7 @@ public:
 
 	void start_cell(office_element_ptr & elm ,office_element_ptr & style);
 	void end_cell();
-    void add_default_cell(unsigned int repeated);
+    void add_default_cell(int repeated);
 
 	void check_spanned_cells();
 
@@ -361,7 +381,7 @@ public:
 
 	void start_conditional_formats();
 		void start_conditional_format(std::wstring ref);
-            void start_conditional_rule(int rule_type);
+            void start_conditional_rule(int rule_type, _CP_OPT(unsigned int) rank, _CP_OPT(bool) bottom, _CP_OPT(bool) percent);
 				void set_conditional_formula(std::wstring formula);
                 void set_conditional_value(int type, std::wstring value );
                 void set_conditional_iconset(int type_iconset);
@@ -372,6 +392,8 @@ public:
                 void set_conditional_operator(int _operator);
 
 				void set_conditional_text(const std::wstring &text);
+				
+				void set_conditional_time(int period);
 			void end_conditional_rule();
 		void end_conditional_format();
 	void end_conditional_formats();
@@ -380,7 +402,7 @@ public:
 	void end_pilot_table();
 
 ///////////////////////////////
-    void add_hyperlink(const std::wstring & ref,int col, int row, const std::wstring & link, bool bLocation = false);
+    void add_hyperlink(const std::wstring & ref,int col, int row, const std::wstring & link, const std::wstring & location);
 	
 	void add_definded_expression(office_element_ptr & elm);
 
@@ -402,7 +424,8 @@ public:
     int is_cell_hyperlink(int col, int row);
     int is_cell_comment(int col, int row, unsigned int repeate_col = 1);
 	int is_row_comment(int row, int repeate_row = 1);
-	std::wstring is_cell_data_validation(int col, int row);
+	int is_row_validation(int row, int & repeate_row);
+	std::wstring is_cell_data_validation(int col, int row, unsigned int repeate_col, data_validation_state::_ref & ref);
 
 	unsigned int get_last_row_repeated ();
 

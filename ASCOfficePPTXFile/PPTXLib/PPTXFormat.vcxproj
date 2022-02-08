@@ -72,12 +72,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
-    <IncludePath>D:\_Work\core\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\_Work\core\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>../../Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
+    <LibraryPath>../../Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);D:\_Work\core\Common\3dParty\boost\build\win_64\include;</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;D:\_Work\core\Common\3dParty\boost\build\win_64\lib;</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(Configuration)\</OutDir>
@@ -90,7 +92,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\DesktopEditor\freetype-2.5.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\_Work\core\Common\3dParty\boost\build\win_32\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(IncludePath)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_USE_MATH_DEFINES;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;AVS_USE_CONVERT_PPTX_TOCUSTOM_VML;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -113,7 +115,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\..\DesktopEditor\freetype-2.5.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;_LIB;_USE_MATH_DEFINES;NODOCX;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;_AVS_PPT_SHAPE_INCLUDE_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;BUILD_CONFIG_FULL_VERSION;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_LIB;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -130,7 +132,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>..\..\Common\ASCDocxFormat\Source\Utility;..\..\Common\ASCDocxFormat\Source\XML;..\..\Common\ASCDocxFormat\Source;..\..\Common\DocxFormat\Source\XML\libxml2\XML\include;..\..\DesktopEditor\freetype-2.5.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\_Work\core\Common\3dParty\boost\build\win_32\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(IncludePath)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;_LIB;_USE_MATH_DEFINES;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;AVS_USE_CONVERT_PPTX_TOCUSTOM_VML;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader />
@@ -165,11 +167,11 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="..\..\DesktopEditor\raster\exif.cpp" />
     <ClCompile Include="..\..\HtmlRenderer\src\ASCSVGWriter.cpp" />
     <ClCompile Include="..\ASCOfficeDrawingConverter.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Disabled</Optimization>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="..\ASCOfficePPTXFileRealization.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
@@ -341,7 +343,6 @@
   <ItemGroup>
     <ClInclude Include="..\..\Common\DocxFormat\Source\DocxFormat\Namespaces.h" />
     <ClInclude Include="..\..\Common\DocxFormat\Source\DocxFormat\Unit.h" />
-    <ClInclude Include="..\..\Common\DocxFormat\Source\DocxFormat\WritingVector.h" />
     <ClInclude Include="..\..\Common\DocxFormat\Source\SystemUtility\File.h" />
     <ClInclude Include="..\..\Common\DocxFormat\Source\SystemUtility\SystemUtility.h" />
     <ClInclude Include="..\..\DesktopEditor\raster\exif.h" />
@@ -657,6 +658,7 @@
     <ClInclude Include="..\PPTXFormat\Logic\Timing\BldSub.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Timing\BuildNodeBase.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Timing\CBhvr.h" />
+    <ClInclude Include="..\PPTXFormat\Logic\Timing\ChildTnLst.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Timing\Cmd.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Timing\CMediaNode.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Timing\Cond.h" />
@@ -741,7 +743,6 @@
     <ClInclude Include="..\PPTXFormat\ViewProps\SlideViewPr.h" />
     <ClInclude Include="..\PPTXFormat\ViewProps\SorterViewPr.h" />
     <ClInclude Include="..\PPTXFormat\WrapperFile.h" />
-    <ClInclude Include="..\PPTXFormat\WrapperWritingElement.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

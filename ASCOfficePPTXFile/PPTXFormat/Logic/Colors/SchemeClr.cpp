@@ -77,6 +77,53 @@ namespace PPTX
 			
 			return XmlUtils::CreateNode(_T("a:schemeClr"), oAttr, oValue);
 		}
+		void SchemeClr::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			std::wstring sNodeNamespace;
+			std::wstring sAttrNamespace;
+			if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
+			{
+				sNodeNamespace = _T("w14:");
+				sAttrNamespace = sNodeNamespace;
+			}
+			else
+				sNodeNamespace = _T("a:");
+			pWriter->StartNode(sNodeNamespace + _T("schemeClr"));
+
+			pWriter->StartAttributes();
+			pWriter->WriteAttribute(sAttrNamespace + _T("val"), val.get());
+			pWriter->EndAttributes();
+
+			size_t nCount = Modifiers.size();
+			for (size_t i = 0; i < nCount; ++i)
+				Modifiers[i].toXmlWriter(pWriter);
+
+			pWriter->EndNode(sNodeNamespace + _T("schemeClr"));
+		}
+		void SchemeClr::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->StartRecord(COLOR_TYPE_SCHEME);
+
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+			pWriter->WriteLimit1(0, val);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+			ULONG len = (ULONG)Modifiers.size();
+			if (len != 0)
+			{
+				pWriter->StartRecord(0);
+				pWriter->WriteULONG(len);
+
+				for (ULONG i = 0; i < len; ++i)
+				{
+					pWriter->WriteRecord1(1, Modifiers[i]);
+				}
+
+				pWriter->EndRecord();
+			}
+
+			pWriter->EndRecord();
+		}
 
 		DWORD SchemeClr::GetRGBA(DWORD RGBA) const
 		{
@@ -186,5 +233,90 @@ namespace PPTX
 			red		= static_cast<unsigned char>((RGB & 0xFF0000)>>16);
 			alpha	= static_cast<unsigned char>((RGB & 0xFF000000)>>24);
 		}
+//--------------------------------------------------------------------------------
+		void StyleClr::fromXML(XmlUtils::CXmlNode& node)
+		{
+			std::wstring sVal = node.GetAttribute(_T("val"));
+
+			if (sVal == L"auto") bAuto = true;
+			else if (false == sVal.empty()) val = sVal;
+
+			Modifiers.clear();
+			XmlMacroLoadArray(node, _T("*"), Modifiers, ColorModifier);
+		}
+		void StyleClr::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+
+			if (oReader.IsEmptyNode())
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while (oReader.ReadNextSiblingNode(nCurDepth))
+			{
+				std::wstring strName = oReader.GetName();
+
+				ColorModifier m;
+				Modifiers.push_back(m);
+				Modifiers.back().fromXML(oReader);
+			}
+		}
+		std::wstring StyleClr::toXML() const
+		{
+			XmlUtils::CNodeValue oValue;
+			oValue.WriteArray(Modifiers);
+			
+			XmlUtils::CAttribute oAttr;
+			if (val.IsInit())
+				oAttr.Write(L"val", std::to_wstring(*val));
+			else if (bAuto)
+				oAttr.Write(L"val", std::wstring(L"auto"));
+
+			return XmlUtils::CreateNode(L"cs:styleClr", oAttr, oValue);
+		}
+		void StyleClr::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode(L"cs:styleClr");
+
+			pWriter->StartAttributes();
+			if (val.IsInit())
+				pWriter->WriteAttribute(L"val", std::to_wstring(*val));
+			else if (bAuto)
+				pWriter->WriteAttribute(L"val", std::wstring(L"auto"));
+			pWriter->EndAttributes();
+
+			for (size_t i = 0; i < Modifiers.size(); ++i)
+				Modifiers[i].toXmlWriter(pWriter);
+
+			pWriter->EndNode(L"cs:styleClr");
+		}
+		void StyleClr::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->StartRecord(COLOR_TYPE_STYLE);
+
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+			if (val.IsInit())
+				pWriter->WriteUInt2(0, val);
+			else
+				pWriter->WriteBool1(1, bAuto);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+			ULONG len = (ULONG)Modifiers.size();
+			if (len != 0)
+			{
+				pWriter->StartRecord(0);
+				pWriter->WriteULONG(len);
+
+				for (ULONG i = 0; i < len; ++i)
+				{
+					pWriter->WriteRecord1(1, Modifiers[i]);
+				}
+
+				pWriter->EndRecord();
+			}
+
+			pWriter->EndRecord();
+		}
+
 	} // namespace Logic
 } // namespace PPTX

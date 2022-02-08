@@ -32,6 +32,7 @@
 #pragma once
 
 #include "../Xlsx.h"
+#include "../../XlsbFormat/Xlsb.h"
 #include "../XlsxFlat.h"
 #include "../CommonInclude.h"
 
@@ -44,6 +45,17 @@
 #include "Fonts.h"
 #include "NumFmts.h"
 #include "TableStyles.h"
+
+
+#include "../../XlsbFormat/StylesStream.h"
+#include "../../XlsbFormat/Biff12_unions/FMTS.h"
+#include "../../XlsbFormat/Biff12_unions/FONTS.h"
+#include "../../XlsbFormat/Biff12_unions/FILLS.h"
+#include "../../XlsbFormat/Biff12_unions/BORDERS.h"
+#include "../../XlsbFormat/Biff12_unions/CELLSTYLEXFS.h"
+#include "../../XlsbFormat/Biff12_unions/CELLXFS.h"
+#include "../../XlsbFormat/Biff12_unions/STYLES.h"
+#include "../../XlsbFormat/Biff12_unions/DXFS.h"
 
 namespace OOX
 {
@@ -84,10 +96,16 @@ namespace OOX
 				{
 					sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( L"Borders" == sName )
+					if (L"Borders" == sName)
+					{
 						m_oBorder = oReader;
-					//else if ( L"Alignment" == sName )
-					//	m_oAlignment = oReader;
+						if (m_oBorder.IsInit())
+						{
+							bStyleContinuous = m_oBorder->bBorderContinuous; // todooo - one border exclusive
+						}
+					}
+					else if ( L"Alignment" == sName )
+						m_oAligment = oReader;
 					else if ( L"Font" == sName )
 						m_oFont = oReader;
 					else if ( L"Interior" == sName )
@@ -116,10 +134,13 @@ namespace OOX
 			nullable_string		m_sId;
 			nullable_string		m_sParentId;
 
-			nullable<OOX::Spreadsheet::CBorder>		m_oBorder;
+            nullable<OOX::Spreadsheet::CBorder>		m_oBorder;
 			nullable<OOX::Spreadsheet::CFill>		m_oFill;
 			nullable<OOX::Spreadsheet::CFont>		m_oFont;
 			nullable<OOX::Spreadsheet::CNumFmt>		m_oNumFmt;
+			nullable<OOX::Spreadsheet::CAligment>	m_oAligment;
+
+			bool bStyleContinuous = false;
 		};
 
 		//необработанные child:
@@ -156,6 +177,56 @@ namespace OOX
 				}
 				m_arrStyles2003.clear();
 			}
+
+            void readBin(const CPath& oPath)
+            {
+                CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+                if (xlsb)
+                {                    
+                    XLSB::StylesStreamPtr stylesStream = std::make_shared<XLSB::StylesStream>();
+
+                    xlsb->ReadBin(oPath, stylesStream.get());
+
+                    if (stylesStream != nullptr)
+                    {
+                        if (stylesStream->m_FMTS != nullptr)
+                            m_oNumFmts = static_cast<XLSB::FMTS*>(stylesStream->m_FMTS.get())->m_arFmt;
+
+                        if (stylesStream->m_FONTS != nullptr)
+                            m_oFonts = static_cast<XLSB::FONTS*>(stylesStream->m_FONTS.get())->m_arBrtFont;
+
+                        if (stylesStream->m_FILLS != nullptr)
+                            m_oFills = static_cast<XLSB::FILLS*>(stylesStream->m_FILLS.get())->m_arBrtFill;
+
+                        if (stylesStream->m_BORDERS != nullptr)
+                            m_oBorders = static_cast<XLSB::BORDERS*>(stylesStream->m_BORDERS.get())->m_arBrtBorder;
+
+                        if (stylesStream->m_CELLSTYLEXFS != nullptr)
+                            m_oCellStyleXfs = static_cast<XLSB::CELLSTYLEXFS*>(stylesStream->m_CELLSTYLEXFS.get())->m_arBrtXF;
+
+                        if (stylesStream->m_CELLXFS != nullptr)
+                            m_oCellXfs = static_cast<XLSB::CELLXFS*>(stylesStream->m_CELLXFS.get())->m_arBrtXF;
+
+                        if (stylesStream->m_STYLES != nullptr)
+                            m_oCellStyles = static_cast<XLSB::STYLES*>(stylesStream->m_STYLES.get())->m_arBrtStyle;
+
+                        if (stylesStream->m_DXFS != nullptr)
+                            m_oDxfs = static_cast<XLSB::DXFS*>(stylesStream->m_DXFS.get())->m_aruDXF;
+
+                        if (stylesStream->m_TABLESTYLES != nullptr)
+                            m_oTableStyles = stylesStream->m_TABLESTYLES;
+
+                        if (stylesStream->m_COLORPALETTE != nullptr)
+                            m_oColors = stylesStream->m_COLORPALETTE;
+
+                        if (stylesStream->m_FRTSTYLESHEET != nullptr)
+                            m_oExtLst = stylesStream->m_FRTSTYLESHEET;
+
+                        AfterRead();
+                    }
+                }
+            }
+
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -166,6 +237,12 @@ namespace OOX
 			{
 				m_oReadPath = oPath;
 				IFileContainer::Read( oRootPath, oPath );
+
+                if( m_oReadPath.GetExtention() == _T(".bin"))
+                {
+                    readBin(m_oReadPath);
+                    return;
+                }
 
 				XmlUtils::CXmlLiteReader oReader;
 
@@ -265,8 +342,10 @@ namespace OOX
 <styleSheet \
 xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" \
 xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
-mc:Ignorable=\"x14ac\" \
-xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\">");
+xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\" \
+mc:Ignorable=\"x14ac x16r2\" \
+xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\" \
+xmlns:x16r2=\"http://schemas.microsoft.com/office/spreadsheetml/2015/02/main\">");
 
 				toXML(sXml);
 
@@ -288,6 +367,16 @@ xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\">");
 				m_oFills.Init();
 				m_oFonts.Init();
 				m_oNumFmts.Init();
+
+				m_oFills->m_arrItems.push_back(new CFill);
+				m_oFills->m_arrItems.back()->m_oPatternFill.Init();
+				m_oFills->m_arrItems.back()->m_oPatternFill->m_oPatternType.Init();
+				m_oFills->m_arrItems.back()->m_oPatternFill->m_oPatternType->SetValue(SimpleTypes::Spreadsheet::patterntypeNone);
+
+				m_oFills->m_arrItems.push_back(new CFill);
+				m_oFills->m_arrItems.back()->m_oPatternFill.Init();
+				m_oFills->m_arrItems.back()->m_oPatternFill->m_oPatternType.Init();
+				m_oFills->m_arrItems.back()->m_oPatternFill->m_oPatternType->SetValue(SimpleTypes::Spreadsheet::patterntypeGray125);
 
 				for (size_t i = 0; i < m_arrStyles2003.size(); ++i)
 				{
@@ -331,14 +420,74 @@ xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\">");
 						int index = 0;
 						if (m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode.IsInit())
 						{
-							index = 168 + m_oNumFmts->m_arrItems.size();
-							m_arrStyles2003[i]->m_oNumFmt->m_oNumFmtId = index;
-							m_oNumFmts->m_arrItems.push_back(m_arrStyles2003[i]->m_oNumFmt.GetPointerEmptyNullable());
-							
+								if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"General"|| 
+									*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"@")
+								index = 0;
+							else if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"General Number")
+								index = 0;
+							else if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"0")
+								index = 0;
+							else if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"0.0")
+								index = 0;
+							else if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"0.00")
+								index = 2;
+							else if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"General Date")
+								index = 22;
+							else if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"Long Date")
+								index = 15;
+							else if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"Medium Date")
+								index = 14;
+							else if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"Short Date")
+								index = 16;
+							else if (std::wstring::npos != 
+								m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode->find(L"d/m/yy"))
+								index = 16;
+							else if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"Long Time")
+								index = 21;
+							else if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"Medium Time")
+								index = 20;
+							else if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"Short Time")
+								index = 20;
+							else if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"Fixed")
+								index = 2;
+							else if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"Standard")
+								index = 0;
+							else if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"Percent")
+								index = 10;
+							else if (*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode == L"Scientific")
+								index = 11;
+							//Yes/No, True/False, or On/Off
+							else
+							{
+								std::map<std::wstring, int>::iterator pFind = 
+									m_oNumFmts->m_mapFormatCode.find(*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode);
+
+								if (pFind == m_oNumFmts->m_mapFormatCode.end())
+								{
+									index = 168 + m_oNumFmts->m_arrItems.size();	
+									
+									m_arrStyles2003[i]->m_oNumFmt->m_oNumFmtId = index;
+
+									m_oNumFmts->m_mapFormatCode.insert(std::make_pair(*m_arrStyles2003[i]->m_oNumFmt->m_oFormatCode, index));
+									m_oNumFmts->m_arrItems.push_back(m_arrStyles2003[i]->m_oNumFmt.GetPointerEmptyNullable());
+
+									m_arrStyles2003[i]->m_oNumFmt.Init(); //repair
+								}
+								else
+								{
+									index = pFind->second;
+								}
+							}					
 							pStyleXfs->m_oApplyNumberFormat.Init();
 							pStyleXfs->m_oApplyNumberFormat->FromBool(true);
 						}						
 						pStyleXfs->m_oNumFmtId = index;
+					}
+					if (m_arrStyles2003[i]->m_oAligment.IsInit())
+					{
+						pStyleXfs->m_oAligment = m_arrStyles2003[i]->m_oAligment;
+						pStyleXfs->m_oApplyAlignment.Init();
+						pStyleXfs->m_oApplyAlignment->FromBool(true);
 					}
 					CXfs *pCellXfs = new CXfs(*pStyleXfs);
 					
@@ -371,6 +520,9 @@ xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\">");
 						}			
 					}
 					m_mapStyles2003.insert(std::make_pair(*m_arrStyles2003[i]->m_sId, m_oCellXfs->m_arrItems.size() - 1));
+
+					if (m_arrStyles2003[i]->bStyleContinuous)
+						m_mapStylesContinues2003.insert(std::make_pair(m_oCellXfs->m_arrItems.size() - 1, true));
 				}
 			}
 			void PrepareToWrite()
@@ -549,8 +701,9 @@ xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\">");
 
 			nullable<OOX::Drawing::COfficeArtExtensionList>			m_oExtLst;
 
-			std::vector<CStyle2003*>					m_arrStyles2003;
-			std::map<std::wstring, size_t>				m_mapStyles2003;
+			std::vector<CStyle2003*>		m_arrStyles2003;
+			std::map<std::wstring, size_t>	m_mapStyles2003;
+			std::map<unsigned int, bool>	m_mapStylesContinues2003;
 		};
 	} //Spreadsheet
 } // namespace OOX

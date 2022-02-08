@@ -129,6 +129,58 @@ CFRecord::CFRecord(NSFile::CFileBinary &file, GlobalWorkbookInfoPtr global_info)
 	}
 }
 
+CFRecord::CFRecord(NSBinPptxRW::CBinaryFileReader &reader, GlobalWorkbookInfoPtr global_info)
+:	rdPtr(0),
+    size_(0),
+    data_(NULL),
+    global_info_(global_info)
+{
+    file_ptr = reinterpret_cast<std::uintptr_t>(reader.GetPointer(0)) ;
+    BYTE lenght = 0;
+    _UINT32 size = 0;
+    if (reader.GetPos() + 2 < reader.GetSize())
+    {
+        type_id_= reader.XlsbReadRecordType();
+        size = reader.XlsbReadRecordLength();
+
+        std::bitset<16> typeIdBits(type_id_);
+        std::bitset<32> sizeBits(size);
+
+        if(typeIdBits[7] != 0)
+            lenght += 2;
+        else lenght += 1;
+
+        if(sizeBits[23] == 1)
+            lenght += 4;
+        else if(sizeBits[15] == 1)
+            lenght += 3;
+        else if(sizeBits[7] == 1)
+            lenght += 2;
+        else
+            lenght += 1;
+    }
+
+    file_ptr += lenght;
+       /* auto lambdaDetectBusyByteCount = [] (int val) -> {
+            for (int i = 0; i < 4; ++i)
+            {
+                BYTE nPart = GetUChar();
+                nValue |= (nPart & 0x7F) << (7 * i);
+                if(0 == (nPart & 0x80))
+                {
+                    break;
+                }
+            }
+        };*/
+    if (reader.GetPos() + lenght + size_< reader.GetSize())
+    {
+        size_ = size;
+        data_ = new char[size_];
+
+        reader.GetArray(reinterpret_cast<BYTE*>(data_), size_);
+    }
+}
+
 // Create an empty record
 CFRecord::CFRecord(CFRecordType::TypeId type_id, GlobalWorkbookInfoPtr global_info)
 :	type_id_(type_id),
@@ -152,15 +204,15 @@ bool CFRecord::isBOF()
 {
 	switch(type_id_)
 	{
-	case rt_BOF_BIFF8:
+    case rt_BOF_BIFF8:
 	case rt_BOF_BIFF4:
 	case rt_BOF_BIFF3:
 	case rt_BOF_BIFF2:
 		return true;
 	default:
-		return false;
+        return false;
 	}
-	return false;
+    return false;
 }
 const CFRecordType::TypeId CFRecord::getTypeId() const
 {

@@ -57,11 +57,14 @@
 #include "UnknowTypeFile.h"
 #include "Diagram/DiagramDrawing.h"
 #include "Diagram/DiagramData.h"
+#include "Diagram/DiagramColors.h"
+#include "Diagram/DiagramLayout.h"
+#include "Diagram/DiagramQuickStyle.h"
 #include "VmlDrawing.h"
-#include "ChartDrawing.h"
 #include "CustomXml.h"
 
 #include "../XlsxFormat/Chart/Chart.h"
+#include "../XlsxFormat/Chart/ChartDrawing.h"
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/HeadingVariant.h"
 
@@ -148,10 +151,16 @@ namespace OOX
 			return smart_ptr<OOX::File>(new Audio( pMain, oFileName, oRelation.IsExternal() ));
 		else if ( oRelation.Type() == FileTypes::Video)
 			return smart_ptr<OOX::File>(new Video( pMain, oFileName, oRelation.IsExternal() ));
-		else if (oRelation.Type() == FileTypes::Data)			
+		else if (oRelation.Type() == FileTypes::DiagramLayout)
+			return smart_ptr<OOX::File>(new CDiagramLayout(pMain, oRootPath, oFileName));
+		else if (oRelation.Type() == FileTypes::DiagramData)
 			return smart_ptr<OOX::File>(new CDiagramData( pMain, oRootPath, oFileName ));
-		else if (oRelation.Type() == FileTypes::DiagDrawing)
+		else if (oRelation.Type() == FileTypes::DiagramDrawing)
 			return smart_ptr<OOX::File>(new CDiagramDrawing( pMain, oRootPath, oFileName )); 
+		else if (oRelation.Type() == FileTypes::DiagramColors)
+			return smart_ptr<OOX::File>(new CDiagramColors(pMain, oRootPath, oFileName));
+		else if (oRelation.Type() == FileTypes::DiagramQuickStyle)
+			return smart_ptr<OOX::File>(new CDiagramQuickStyle(pMain, oRootPath, oFileName));
 		else if (oRelation.Type() == FileTypes::MicrosoftOfficeUnknown) //ms package
 			return smart_ptr<OOX::File>(new OleObject( pMain, oFileName, true ));
 		else if ( oRelation.Type() == OOX::FileTypes::VmlDrawing )
@@ -159,13 +168,13 @@ namespace OOX
 		else if ( oRelation.Type() == OOX::FileTypes::ChartDrawing)
 			return smart_ptr<OOX::File>(new CChartDrawing( pMain, oRootPath, oFileName ));
 		else if ( oRelation.Type() == OOX::FileTypes::Chart )
-			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpace( pMain, oRootPath, oFileName ));
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartFile( pMain, oRootPath, oFileName ));
 		else if ( oRelation.Type() == OOX::FileTypes::ChartEx )
-			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpaceEx( pMain, oRootPath, oFileName ));
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartExFile( pMain, oRootPath, oFileName ));
 		else if ( oRelation.Type() == OOX::FileTypes::ChartStyle )
-			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartStyle( pMain, oRootPath, oFileName ));
-		else if ( oRelation.Type() == OOX::FileTypes::ChartColorStyle )
-			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartColorStyle( pMain, oRootPath, oFileName ));
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartStyleFile( pMain, oRootPath, oFileName ));
+		else if ( oRelation.Type() == OOX::FileTypes::ChartColors )
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartColorsFile( pMain, oRootPath, oFileName ));
 		else if ( oRelation.Type() == OOX::FileTypes::ActiveX_xml)
 			return smart_ptr<OOX::File>(new OOX::ActiveX_xml( pMain, oRootPath, oFileName));
 		else if ( oRelation.Type() == OOX::FileTypes::ActiveX_bin)
@@ -276,22 +285,28 @@ namespace OOX
 			return smart_ptr<OOX::File>(new CPeople( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::DocumentPeople )
 			return smart_ptr<OOX::File>(new CDocumentPeople( pMain, oFileName ));
-		else if (pRelation->Type() == FileTypes::Data)
+		else if (pRelation->Type() == FileTypes::DiagramData)
 			return smart_ptr<OOX::File>(new CDiagramData( pMain, oRootPath, oFileName ));
-		else if (pRelation->Type() == FileTypes::DiagDrawing)
+		else if (pRelation->Type() == FileTypes::DiagramDrawing)
 			return smart_ptr<OOX::File>(new CDiagramDrawing( pMain, oRootPath, oFileName )); 
+		else if (pRelation->Type() == FileTypes::DiagramLayout)
+			return smart_ptr<OOX::File>(new CDiagramLayout(pMain, oRootPath, oFileName));
+		else if (pRelation->Type() == FileTypes::DiagramColors)
+			return smart_ptr<OOX::File>(new CDiagramColors(pMain, oRootPath, oFileName));
+		else if (pRelation->Type() == FileTypes::DiagramQuickStyle)
+			return smart_ptr<OOX::File>(new CDiagramQuickStyle(pMain, oRootPath, oFileName));
 		else if ( pRelation->Type() == OOX::FileTypes::ChartDrawing)
 			return smart_ptr<OOX::File>(new CChartDrawing( pMain, oRootPath, oFileName ));
 		else if (pRelation->Type() == FileTypes::MicrosoftOfficeUnknown) //ms package
 			return smart_ptr<OOX::File>(new OleObject( pMain, oFileName, true ));
 		else if ( pRelation->Type() == OOX::FileTypes::Chart )
-			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpace( pMain, oRootPath, oFileName ));
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartFile( pMain, oRootPath, oFileName ));
 		else if ( pRelation->Type() == OOX::FileTypes::ChartEx )
-			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpaceEx( pMain, oRootPath, oFileName ));
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartExFile( pMain, oRootPath, oFileName ));
 		else if ( pRelation->Type() == OOX::FileTypes::ChartStyle )
-			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartStyle( pMain, oRootPath, oFileName ));
-		else if ( pRelation->Type() == OOX::FileTypes::ChartColorStyle )
-			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartColorStyle( pMain, oRootPath, oFileName ));
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartStyleFile( pMain, oRootPath, oFileName ));
+		else if ( pRelation->Type() == OOX::FileTypes::ChartColors)
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartColorsFile( pMain, oRootPath, oFileName ));
 		else if ( pRelation->Type() == FileTypes::ActiveX_xml)
 			return smart_ptr<OOX::File>(new ActiveX_xml( pMain, oRootPath, oFileName ));
 		else if ( pRelation->Type() == FileTypes::ActiveX_bin)

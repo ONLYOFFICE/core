@@ -44,7 +44,8 @@ public:
     xlsx_conditionalFormatting_context();
     ~xlsx_conditionalFormatting_context();
 
-	void add(std::wstring ref);
+	void start(std::wstring ref);
+	void end(){}
 
 	void add_rule(int type);
 
@@ -53,6 +54,7 @@ public:
 
 	void set_dxf	(int dxf_id);
 	void set_showVal(bool val);
+	void set_time_period(int val);
 
 	void add_sfv	(int type, std::wstring value);
 	void add_color	(std::wstring col);

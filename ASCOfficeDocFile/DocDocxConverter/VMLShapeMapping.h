@@ -57,15 +57,17 @@ namespace DocFileFormat
 	{
 	public:
 
-		VMLShapeMapping (ConversionContext* ctx ,XMLTools::CStringXmlWriter* writer, Spa* pSpa, PictureDescriptor* pict,  IMapping* caller, bool bullet = false);
+		VMLShapeMapping (ConversionContext* ctx, XMLTools::CStringXmlWriter* writer, Spa* pSpa, PictureDescriptor* pict,  IMapping* caller, bool bullet = false, bool in_group = false);
 		virtual ~VMLShapeMapping();
 		virtual void Apply(IVisitable* visited);
 
-        static std::wstring mapVerticalPosition			(PositionVertical vPos );
+        static std::wstring mapVerticalPosition (PositionVertical vPos );
         static std::wstring mapVerticalPositionRelative	(int vRel );
-        static std::wstring mapHorizontalPosition		(PositionHorizontal hPos );
-        static std::wstring mapHorizontalPositionRelative(int hRel );
+        static std::wstring mapHorizontalPosition (PositionHorizontal hPos );
+        static std::wstring mapHorizontalPositionRelative (int hRel );
+		static std::wstring mapWrapText (int val_);
 
+		bool			m_inGroup;
 		bool			m_isBullete;
 		bool			m_isPictureBroken;
 		std::wstring	m_shapeId;

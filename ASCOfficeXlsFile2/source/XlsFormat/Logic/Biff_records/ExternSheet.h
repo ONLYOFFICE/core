@@ -37,12 +37,13 @@
 namespace XLS
 {
 
+// Logical representation of ExternSheet record in BIFF8 and BrtExternSheet in BIFF12
 class ExternSheet: public BiffRecord
 {
-	BIFF_RECORD_DEFINE_TYPE_INFO(ExternSheet)
+    BIFF_RECORD_DEFINE_TYPE_INFO(ExternSheet)
 	BASE_OBJECT_DEFINE_CLASS_NAME(ExternSheet)
 public:
-	ExternSheet();
+    ExternSheet();
 	~ExternSheet();
 
 	BaseObjectPtr clone();
@@ -51,7 +52,7 @@ public:
 
 	static const ElementType type = typeExternSheet;
 
-	_UINT16						cXTI;	
+    _UINT32						cXTI;
 	BiffStructurePtrVector		rgXTI;
 //------------------------------------------------
 	std::wstring				name; //biff5

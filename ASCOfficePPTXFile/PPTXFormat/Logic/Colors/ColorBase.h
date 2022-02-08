@@ -76,12 +76,10 @@ namespace PPTX
 				luminance	= oSrc.luminance;
 				return *this;
 			}
-
 			virtual ~ColorBase()
 			{
 			}
 
-		public:
 			//Эти функции возвращают цвет с учетом модификаторов
             virtual DWORD GetRGBA(DWORD RGBA) const
 			{
@@ -379,16 +377,6 @@ namespace PPTX
 				}
 				return 0;
 			}
-
-		protected:
-			//origin color
-			unsigned char alpha;
-			unsigned char red;
-			unsigned char green;
-			unsigned char blue;
-			unsigned char hue;
-			unsigned char saturation;
-			unsigned char luminance;
 			//Эти функции использовать для заполнения "origin color"
 			void SetRGB2HSL()
 			{
@@ -397,7 +385,7 @@ namespace PPTX
 				int iDelta = iMax - iMin;
 				double dMax = ( iMax + iMin )/255.0;
 				double dDelta = iDelta/255.0;
-				double H,S,L;
+				double H = 0, S = 0, L = 0;
 
 				L = dMax / 2.0;
 
@@ -462,7 +450,7 @@ namespace PPTX
 				int iDelta = iMax - iMin;
 				double dMax = ( iMax + iMin )/255.0;
 				double dDelta = iDelta/255.0;
-				double H,S,L;
+				double H = 0, S = 0, L = 0;
 
 				L = dMax / 2.0;
 
@@ -545,7 +533,6 @@ namespace PPTX
 					summa += HexChar2Int((char)value[i]) << (4 * (value.length() - i - 1));
 				return summa;
 			}
-		public:
 			void SetHexString(const std::wstring& val)
 			{
 				if (val.length() == 6)
@@ -561,10 +548,6 @@ namespace PPTX
 					blue	= HexString2Int(val.substr(2, 1) + val.substr(2, 1));
 				}
 			}
-
-			std::vector<ColorModifier> Modifiers;
-
-		public:
 			void ReadModsFromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
 				LONG _start = pReader->GetPos();
@@ -616,8 +599,20 @@ namespace PPTX
 
 				pReader->Seek(_end);				
 			}
+			
+			//origin color
+			unsigned char alpha;
+			unsigned char red;
+			unsigned char green;
+			unsigned char blue;
+			unsigned char hue;
+			unsigned char saturation;
+			unsigned char luminance;
+
+			std::vector<ColorModifier> Modifiers;
 
 			friend class UniColor;
+			std::wstring m_namespace;
 		};
 	} // namespace Logic
 } // namespace PPTX

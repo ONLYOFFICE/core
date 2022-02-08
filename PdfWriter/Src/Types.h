@@ -274,6 +274,12 @@ namespace PdfWriter
 			g = oColor.g;
 			b = oColor.b;
 		}
+		TRgb(const unsigned char& R, const unsigned char& G, const unsigned char& B)
+		{
+			r = R / 255.0;
+			g = G / 255.0;
+			b = B / 255.0;
+		}
 		bool operator ==(const TRgb& oColor)const
 		{
 			if (r == oColor.r && g == oColor.g && b == oColor.b)

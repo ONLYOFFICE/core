@@ -33,7 +33,7 @@
 #include "imagemanager.h"
 
 #ifndef DISABLE_FILE_DOWNLOADER
-#include "../../Common/FileDownloader/FileDownloader.h"
+#include "../../Common/Network/FileTransporter/include/FileTransporter.h"
 #endif 
 
 #include <list>
@@ -115,7 +115,7 @@ namespace NSShapeImageGen
 
 #ifndef DISABLE_FILE_DOWNLOADER
 
-			CFileDownloader oDownloader(strFileUrl, true);
+            NSNetwork::NSFileTransport::CFileDownloader oDownloader(strFileUrl, true);
 			if (oDownloader.DownloadSync())
 			{
 				strDownload = oDownloader.GetFilePath();
@@ -179,7 +179,7 @@ namespace NSShapeImageGen
             
 #ifndef DISABLE_FILE_DOWNLOADER
             
-            CFileDownloader oDownloader(strFileUrl, true);
+            NSNetwork::NSFileTransport::CFileDownloader oDownloader(strFileUrl, true);
             if (oDownloader.DownloadSync())
             {
                 strDownload = oDownloader.GetFilePath();

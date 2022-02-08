@@ -213,6 +213,8 @@ namespace NSDirectory
 	{
 		std::vector<std::wstring> oArray;
 
+		if (strDirectory.empty()) return oArray;
+
 #if defined(_WIN32) || defined (_WIN64)
 		WIN32_FIND_DATAW oFD; 
 		
@@ -479,6 +481,8 @@ namespace NSDirectory
     }
     void DeleteDirectory(const std::wstring& strDirectory, bool deleteRoot)
 	{
+		if (strDirectory.empty()) return;
+
 		std::vector<std::wstring> aFiles = GetFiles(strDirectory);
 		for(size_t i = 0; i < aFiles.size(); ++i)
 		{

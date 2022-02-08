@@ -134,6 +134,7 @@ typedef agg::renderer_base<pixfmt_type> base_renderer_type;
 typedef agg::scanline_u8 scanline_type;
 
 typedef agg::span_interpolator_linear<> interpolator_type_linear;
+
 typedef agg::span_allocator<agg::rgba8> span_alloc_type;
 
 #define def_flag_G_ExtBuffer 0x0001
@@ -266,6 +267,7 @@ protected:
 
 	Aggplus::CMatrix	m_oFullTransform;
 
+
 	double m_dClipLeft;
 	double m_dClipTop;
 	double m_dClipWidth;
@@ -295,6 +297,7 @@ public:
 
     // for RGBA painting
     bool    m_bSwapRGB;
+    bool    m_bIsDarkMode;
 
     double m_dDpiTile;
 
@@ -400,10 +403,15 @@ protected:
 	void render_scanlines(Renderer& ren);
 	template<class Rasterizer, class Renderer>
 	void render_scanlines(Rasterizer& ras, Renderer& ren);
+    template<class Renderer>
+    void render_scanlines_alpha(Renderer& ren, BYTE Alpha);
 
 	void DoFillPathSolid(CColor dwColor);
 	void DoFillPathGradient(CBrushLinearGradient *pBrush);
 	void DoFillPathGradient2(CBrushLinearGradient *pBrush);
+    //--Test
+    void DoFillPathGradientType(CBrushLinearGradient *pBrush);
+    //--test
 	void DoFillPathHatch(CBrushHatch *pBrush);
 	void DoFillPathTextureClampSz(const CMatrix &mImgMtx, const void *pImgBuff, DWORD dwImgWidth, DWORD dwImgHeight, int nImgStride);
 	void DoFillPathTextureClampSz2(const CMatrix &mImgMtx, const void *pImgBuff, DWORD dwImgWidth, DWORD dwImgHeight, int nImgStride, BYTE Alpha = 255);
@@ -420,6 +428,11 @@ protected:
 	void PrepareScanlineStorage(agg::scanline_storage_aa8* storage, int x, int y, TGlyphBitmap *pGlyph);
 
 	void UpdateUnits();
+
+    //test 
+    
+	void ScaleGranientInfo(long Type, NSStructures::GradientInfo &ginfo);
+	void ScaleCoords(float &x, float &y);
 };
 }
 

@@ -4,11 +4,19 @@
 
 namespace SVG
 {
-	ColorTable ColorParser::m_oTable;
-    void ColorTable::InitClrTable()
+	bool isDoubleNull(const double& value)
 	{
-        if (m_Table.size())
-            return;
+		double dEps = 0.000001;
+		if (fabs(value) < dEps)
+			return true;
+		return false;
+	}
+
+	ColorTable ColorParser::m_oTable;
+	void ColorTable::InitClrTable()
+	{
+		if (m_Table.size())
+			return;
 
 		ADD_COLOR("aliceblue", 240, 248, 255);
 		ADD_COLOR("antiquewhite", 250, 235, 215); 
@@ -2048,19 +2056,19 @@ namespace SVG
 	{
 		double dAngle = 0.0;
 
-		if ( (X - CX) == 0.0 && 0.0 == (Y - CY) )	//	
+		if ( isDoubleNull(X - CX) && isDoubleNull(Y - CY) )	//
 			return 0.0;
 
-		if ( (X - CX) > 0.0 && 0.0 == (Y - CY) )
+		if ( (X - CX) > 0.0 && isDoubleNull(Y - CY) )
 			return 0.0;
-		if ( (X - CX) < 0.0 && 0.0 == (Y - CY) )
+		if ( (X - CX) < 0.0 && isDoubleNull(Y - CY) )
 			return 180.0;
-		if ( (X - CX) == 0.0 && 0.0 > (Y - CY) )
+		if ( isDoubleNull(X - CX) && 0.0 > (Y - CY) )
 			return 270.0;
-		if ( (X - CX) == 0.0 && 0.0 < (Y - CY) )
+		if ( isDoubleNull(X - CX) && 0.0 < (Y - CY) )
 			return 90.0;
 
-		dAngle	=	atan ( abs ( X - CX ) / abs ( Y - CY ) ) * 180.0 / M_PI;
+		dAngle	=	atan ( fabs ( X - CX ) / fabs ( Y - CY ) ) * 180.0 / M_PI;
 
 		if ( (X - CX) > 0.0 && (Y - CY) > 0.0 )			//	1
 		{

@@ -26,6 +26,8 @@ namespace NSOpenSSL
 {
     Q_DECL_EXPORT int LoadKey(std::wstring file, std::string password);
     Q_DECL_EXPORT int LoadCert(std::wstring file, std::string password);
+    Q_DECL_EXPORT int LoadKeyRaw(unsigned char* data, unsigned int len, std::string password);
+    Q_DECL_EXPORT int LoadCertRaw(unsigned char* data, unsigned int len, std::string password);
 }
 
 class Q_DECL_EXPORT CCertificateInfo
@@ -121,6 +123,7 @@ public:
 public:
     virtual int ShowSelectDialog(void* parent = NULL)   = 0;
     virtual int ShowCertificate(void* parent = NULL)    = 0;
+    virtual std::string Print() = 0;
 
     static CCertificateInfo GetDefault();
     static ICertificate* GetById(const std::string& id);

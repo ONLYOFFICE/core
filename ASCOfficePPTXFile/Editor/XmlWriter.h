@@ -117,11 +117,14 @@ namespace NSBinPptxRW
 #endif
                 {
                     wchar_t* pMalloc = (wchar_t*)malloc(size_alloc );
-                    memcpy(pMalloc, m_pData, m_lSizeCur * sizeof(wchar_t));
+					if (pMalloc)
+					{
+						memcpy(pMalloc, m_pData, m_lSizeCur * sizeof(wchar_t));
 
-                    free(m_pData);
-                    m_pData		= pMalloc;
-                    m_pDataCur	= m_pData + m_lSizeCur;
+						free(m_pData);
+						m_pData = pMalloc;
+						m_pDataCur = m_pData + m_lSizeCur;
+					}
                 }
             }
         }
@@ -626,6 +629,21 @@ namespace NSBinPptxRW
         {
             if (value.IsInit())
                 WriteAttribute(strName, *value);
+        }
+        AVSINLINE void WriteAttribute2(const std::wstring& strName, const unsigned int& value)
+        {
+            m_oWriter.WriteString(g_bstr_node_space);
+            m_oWriter.WriteString(strName);
+            m_oWriter.WriteString(g_bstr_node_equal);
+            m_oWriter.WriteString(g_bstr_node_quote);
+            WriteUINT(value);
+            m_oWriter.WriteString(g_bstr_node_quote);
+
+        }
+        AVSINLINE void WriteAttribute2(const std::wstring& strName, const nullable_uint& value)
+        {
+            if (value.IsInit())
+                WriteAttribute2(strName, *value);
         }
 		AVSINLINE void WriteAttribute(const std::wstring& strName, const nullable_sizet& value)
         {

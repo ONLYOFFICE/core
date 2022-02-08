@@ -37,13 +37,13 @@ namespace XLS
 {
 
 
-PtgFuncVar::PtgFuncVar()
+PtgFuncVar::PtgFuncVar(const unsigned short full_ptg_id) : OperandPtg(full_ptg_id)
 {
 }
 
 
 PtgFuncVar::PtgFuncVar(const unsigned short func_index, const unsigned char data_type)
-:	Ptg(fixed_id | (static_cast<unsigned char>(data_type) << 5)),
+: OperandPtg(fixed_id | (static_cast<unsigned char>(data_type) << 5)),
 	tab(func_index)
 {
 }

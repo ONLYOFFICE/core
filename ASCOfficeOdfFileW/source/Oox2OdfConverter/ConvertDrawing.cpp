@@ -36,7 +36,7 @@
 #include "../utils.h"
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramDrawing.h"
-#include "../../../Common/DocxFormat/Source/DocxFormat/ChartDrawing.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Chart/ChartDrawing.h"
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Chart/Chart.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Slide.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpTreeElem.h"
@@ -74,6 +74,19 @@ namespace Oox2Odf
 	{
 		return (1.0 * emu / (635 * 20.0));
 	}
+	const double c_d_1_6 = 1.0 / 6.0;
+	const double c_d_1_3 = 1.0 / 3.0;
+	const double c_d_2_3 = 2.0 / 3.0;
+
+	inline double Hue2RGB(double dV1, double dV2, double dH)
+	{
+		if (dH < 0.0) dH += 1.0;
+		if (dH > 1.0) dH -= 1.0;
+		if (dH < c_d_1_6) return dV1 + (dV2 - dV1) * 6.0 * dH;
+		if (dH < 0.5) return dV2;
+		if (dH < c_d_2_3) return dV1 + (dV2 - dV1) * (c_d_2_3 - dH) * 6.0;
+		return dV1;
+	}
 //----------------------------------------------------------------------------------
 void OoxConverter::convert(PPTX::Logic::SpTreeElem *oox_element)
 {
@@ -105,7 +118,7 @@ void OoxConverter::convert(PPTX::Logic::GraphicFrame *oox_graphic_frame)
 {
 	if (!oox_graphic_frame)return;
 
-	convert(&oox_graphic_frame->nvGraphicFramePr);		
+	convert(oox_graphic_frame->nvGraphicFramePr.GetPointer());
 	convert(oox_graphic_frame->xfrm.GetPointer());		
 	
 	if ( oox_graphic_frame->chartRec.is_init())
@@ -135,6 +148,69 @@ void OoxConverter::convert(PPTX::Logic::NvGraphicFramePr *oox_framePr)
 {
 	if (oox_framePr == NULL) return;
 
+}
+void OoxConverter::RGB2HSL(DWORD argb, double& dH, double& dS, double& dL)
+{
+	unsigned char unB = (argb & 0xFF);
+	unsigned char unG = (argb & 0xFF00) >> 8;
+	unsigned char unR = (argb & 0xFF0000) >> 16;
+
+	int nmin = (std::min)(unR, (std::min)(unG, unB));
+	int nmax = (std::max)(unR, (std::max)(unG, unB));
+	int nDelta = nmax - nmin;
+	double dmax = (nmax + nmin) / 255.0;
+	double dDelta = nDelta / 255.0;
+
+	dL = dmax / 2.0;
+
+	if (0 == nDelta) //This is a gray, no chroma...
+	{
+		dH = 0.0;
+		dS = 0.0;
+	}
+	else //Chromatic data...
+	{
+		if (dL < 0.5) dS = dDelta / dmax;
+		else            dS = dDelta / (2.0 - dmax);
+
+		dDelta = dDelta * 1530.0;
+
+		double dR = (nmax - unR) / dDelta;
+		double dG = (nmax - unG) / dDelta;
+		double dB = (nmax - unB) / dDelta;
+
+		if (unR == nmax) dH = dB - dG;
+		else if (unG == nmax) dH = c_d_1_3 + dR - dB;
+		else if (unB == nmax) dH = c_d_2_3 + dG - dR;
+
+		if (dH < 0.0) dH += 1.0;
+		if (dH > 1.0) dH -= 1.0;
+	}
+}
+
+DWORD OoxConverter::HSL2RGB(double dH, double dS, double dL)
+{
+	unsigned char unR, unG, unB;
+
+	if (0 == dS)
+	{
+		unR = static_cast<unsigned char>(255 * dL);
+		unG = static_cast<unsigned char>(255 * dL);
+		unB = static_cast<unsigned char>(255 * dL);
+	}
+	else
+	{
+		double dV2;
+		if (dL < 0.5) dV2 = dL * (1.0 + dS);
+		else            dV2 = dL + dS - dS * dL;
+
+		double dV1 = 2.0 * dL - dV2;
+
+		unR = static_cast<unsigned char>(255 * Hue2RGB(dV1, dV2, dH + c_d_1_3));
+		unG = static_cast<unsigned char>(255 * Hue2RGB(dV1, dV2, dH));
+		unB = static_cast<unsigned char>(255 * Hue2RGB(dV1, dV2, dH - c_d_1_3));
+	}
+	return (unR << 16) | (unG << 8) | unB;
 }
 
 void OoxConverter::convert(PPTX::Logic::Xfrm *oox_xfrm)
@@ -381,6 +457,8 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 
 			odf_context()->drawing_context()->set_image_client_rect_inch( l * Width, t * Height, r * Width, b * Height );
 		}
+
+		odf_context()->drawing_context()->start_area_properties();
 		if (oox_picture->blipFill.blip.IsInit())
 		{
 			for (size_t i = 0 ; i < oox_picture->blipFill.blip->Effects.size(); i++)
@@ -388,7 +466,9 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 				convert(oox_picture->blipFill.blip->Effects[i].Effect.GetPointer());
 			}
 		}
-		OoxConverter::convert(&oox_picture->nvPicPr.cNvPr);		
+		odf_context()->drawing_context()->end_area_properties();
+
+		OoxConverter::convert(&oox_picture->nvPicPr.cNvPr);
 		OoxConverter::convert(&oox_picture->spPr, oox_picture->style.GetPointer());
 
 	}
@@ -402,24 +482,24 @@ void OoxConverter::convert(PPTX::Logic::SmartArt *oox_smart_art)
 
 	oox_smart_art->LoadDrawing(current_document());
 
-	if (oox_smart_art->m_diag.IsInit())
+	if (oox_smart_art->m_oDrawing.IsInit())
 	{
         _CP_OPT(double) x, y, width, height, cx = 1., cy= 1.;
 
 		odf_context()->drawing_context()->get_size (width, height);
 		odf_context()->drawing_context()->get_position (x, y);
 
-		oox_current_child_document = oox_smart_art->m_pFileContainer.GetPointer();
+		oox_current_child_document = oox_smart_art->m_pDrawingContainer.GetPointer();
 
 		odf_context()->drawing_context()->start_group();
 
 		odf_context()->drawing_context()->set_group_size (width, height, width, height);
 		odf_context()->drawing_context()->set_group_position (x, y, cx, cy);
 
-		for (size_t i = 0; i < oox_smart_art->m_diag->SpTreeElems.size(); i++)
+		for (size_t i = 0; i < oox_smart_art->m_oDrawing->SpTreeElems.size(); i++)
 		{
 			odf_context()->drawing_context()->start_drawing();
-				convert(&oox_smart_art->m_diag->SpTreeElems[i]);
+				convert(&oox_smart_art->m_oDrawing->SpTreeElems[i]);
 			odf_context()->drawing_context()->end_drawing();
 		}
 
@@ -440,8 +520,8 @@ void OoxConverter::convert(PPTX::Logic::ChartRec *oox_chart)
 	smart_ptr<OOX::File> oFile = find_file_by_id (oox_chart->id_data->get());
 	if (oFile.IsInit())
 	{
-		OOX::Spreadsheet::CChartSpace* pChart = dynamic_cast<OOX::Spreadsheet::CChartSpace*>(oFile.GetPointer());
-		OOX::Spreadsheet::CChartSpaceEx* pChartEx = dynamic_cast<OOX::Spreadsheet::CChartSpaceEx*>(oFile.GetPointer());
+		OOX::Spreadsheet::CChartFile* pChart = dynamic_cast<OOX::Spreadsheet::CChartFile*>(oFile.GetPointer());
+		OOX::Spreadsheet::CChartExFile* pChartEx = dynamic_cast<OOX::Spreadsheet::CChartExFile*>(oFile.GetPointer());
 		
 		if (pChart || pChartEx)
 		{
@@ -1145,6 +1225,7 @@ void OoxConverter::convert(PPTX::Logic::BlipFill *oox_bitmap_fill)
 	if (oox_bitmap_fill == NULL)return;
 
 	odf_context()->drawing_context()->start_bitmap_style();
+	odf_context()->drawing_context()->start_area_properties();
 	{
 		double Width=0, Height = 0;
 		if (oox_bitmap_fill->blip.IsInit())
@@ -1217,6 +1298,7 @@ void OoxConverter::convert(PPTX::Logic::BlipFill *oox_bitmap_fill)
 			if (oox_bitmap_fill->stretch->fillRect.IsInit()){} //заполнение неполного объема
 		}
 	}
+	odf_context()->drawing_context()->end_area_properties();
 	odf_context()->drawing_context()->end_bitmap_style();
 }
 void OoxConverter::convert(PPTX::Logic::GradFill *oox_grad_fill, DWORD nARGB)
@@ -1396,7 +1478,15 @@ void OoxConverter::convert(PPTX::Logic::Ln *oox_line_prop, DWORD ARGB, PPTX::Log
 	}
 	if (oox_line_prop->w.IsInit())
 	{
-		odf_context()->drawing_context()->set_line_width(oox_line_prop->w.get() / 12700.); //pt
+		int width = oox_line_prop->w.get(); 
+		
+		if (width == 12700 && false == oox_line_prop->Fill.is_init())
+		{
+			width = 0;
+			odf_context()->drawing_context()->set_no_fill();
+		}
+		
+		odf_context()->drawing_context()->set_line_width(width / 12700.); //pt
 	}
 	if (oox_line_prop->headEnd.IsInit())
 	{
@@ -2309,8 +2399,8 @@ void OoxConverter::convert(PPTX::Logic::Run *oox_run)
 		text_properties->content_.style_text_underline_style_	= odf_types::line_style::Solid;
 		
 		std::wstring hlink = find_link_by_id(oox_run->rPr->hlinkClick->id.get(), 2);
-		
-		text_context->add_hyperlink(hlink, oox_run->GetText());
+		std::wstring location;
+		text_context->add_hyperlink(hlink, oox_run->GetText(), location);
 	}
 	else
 	{
@@ -2344,8 +2434,9 @@ void OoxConverter::convert(PPTX::Logic::Fld *oox_fld)
 	if ((oox_fld->rPr.IsInit()) && (oox_fld->rPr->hlinkClick.IsInit()) && (oox_fld->rPr->hlinkClick->id.IsInit()))
 	{
 		std::wstring hlink = find_link_by_id(oox_fld->rPr->hlinkClick->id.get(), 2);
+		std::wstring location;
 		
-		odf_context()->text_context()->add_hyperlink(hlink, oox_fld->GetText());
+		odf_context()->text_context()->add_hyperlink(hlink, oox_fld->GetText(), location);
 
 	}
 	else if (fld_type == L"slidenum")
@@ -2370,6 +2461,13 @@ void OoxConverter::convert(PPTX::Logic::Br *oox_br)
 void OoxConverter::convert(PPTX::Logic::MathParaWrapper *oox_math)
 {
 	if (!oox_math) return;
+
+	odf_context()->math_context()->in_text_box_ = true;
+	
+	convert(oox_math->m_oMathPara.GetPointer());
+	convert(oox_math->m_oMath.GetPointer());
+
+	odf_context()->math_context()->in_text_box_ = false;
 }
 void OoxConverter::convert(PPTX::Logic::LineTo *oox_geom_path)
 {

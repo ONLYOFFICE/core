@@ -52,9 +52,9 @@ namespace DocFileFormat
 		m_bInternalXmlWriter	=	false;
 
 		_writeWebHidden			=	false;
-		_isSectionPageBreak		=	0;
 		_isTextBoxContent		=	false;
 
+		m_context->_docx->_isSectionPageBreak =	0;
 //--------------------------------------------
 		_embeddedObject			=	false;
 	}
@@ -68,11 +68,12 @@ namespace DocFileFormat
 		m_bInternalXmlWriter	=	false;
 	
 		_writeWebHidden			=	false;
-		_isSectionPageBreak		=	0;
 		_isTextBoxContent		=	false;
 		_embeddedObject			=	false;
 
 		_cacheListNum			= -1;
+		
+		m_context->_docx->_isSectionPageBreak =	0;
 	}
 
 	DocumentMapping::~DocumentMapping()
@@ -115,7 +116,7 @@ namespace DocFileFormat
 		{
 			if ((fc >= m_document->ListPlex->CharacterPositions[i-1]) && (fc_end <= m_document->ListPlex->CharacterPositions[i]))
 			{
-				ListNumCache* listNum = dynamic_cast<ListNumCache*> (m_document->ListPlex->Elements[i-1]);
+				ListNumCache* listNum = dynamic_cast<ListNumCache*> (m_document->ListPlex->Elements[i - 1]);
 
 				return listNum->value;
 			}
@@ -233,7 +234,7 @@ namespace DocFileFormat
 		}
 //-----------------------------------------------------------		
 		//_cacheListNum		= getListNumCache(fc, fcEnd);
-		_isSectionPageBreak = 0;
+		m_context->_docx->_isSectionPageBreak = 0;
 		if (sectionEnd)
 		{
 			// this is the last paragraph of this section
@@ -244,7 +245,7 @@ namespace DocFileFormat
 				ParagraphPropertiesMapping oMapping(m_pXmlWriter, m_context, m_document, paraEndChpx, isBidi, findValidSepx(cpEnd), _sectionNr);
 				papx->Convert(&oMapping);
 
-				_isSectionPageBreak = oMapping.get_section_page_break();
+				m_context->_docx->_isSectionPageBreak = oMapping.get_section_page_break();
 			}
 
 			++_sectionNr;
@@ -360,8 +361,10 @@ namespace DocFileFormat
 
 		RELEASEOBJECT(chpxFcs);
 		RELEASEOBJECT(chpxs);
-
+		
 		return cpEnd++;
+
+		return (std::max)(cp, cpEnd); //ralph_scovile.doc
 	}
 
 	void DocumentMapping::writeParagraphRsid (const ParagraphPropertyExceptions* papx)
@@ -399,16 +402,17 @@ namespace DocFileFormat
 
 			if (Deleted == rev.Type)
 			{
-				//If it's a deleted run
+				WideString* author = dynamic_cast<WideString*>(m_document->RevisionAuthorTable->operator[](rev.Isbt));
+
                 m_pXmlWriter->WriteNodeBegin(L"w:del", true);
-                m_pXmlWriter->WriteAttribute(L"w:author", L"[b2x: could not retrieve author]");
-                m_pXmlWriter->WriteAttribute(L"w:date", L"[b2x: could not retrieve date]");
-                m_pXmlWriter->WriteNodeEnd(L"", true, false);
+				m_pXmlWriter->WriteAttribute(L"w:author", FormatUtils::XmlEncode(*author));
+				m_pXmlWriter->WriteAttribute(L"w:date", FormatUtils::XmlEncode(rev.Dttm.getString()));
+				m_pXmlWriter->WriteNodeEnd(L"", true, false);
 			}
 			else if ( rev.Type == Inserted )
 			{
 				WideString* author = dynamic_cast<WideString*>(m_document->RevisionAuthorTable->operator[](rev.Isbt));
-				//if it's a inserted run
+
                 m_pXmlWriter->WriteNodeBegin(L"w:ins", true);
                 m_pXmlWriter->WriteAttribute(L"w:author", FormatUtils::XmlEncode(*author));
                 m_pXmlWriter->WriteAttribute(L"w:date", FormatUtils::XmlEncode(rev.Dttm.getString()));
@@ -514,6 +518,7 @@ namespace DocFileFormat
         std::wstring PAGEREF	( L"PAGEREF" );
         std::wstring PAGE		( L"PAGE" );
         std::wstring SHAPE		( L"SHAPE" );
+		std::wstring NREF		( L"NREF");
 
 		if (arField.empty() == false)
 			f = arField[0];
@@ -534,8 +539,9 @@ namespace DocFileFormat
 		bool bEquation		= search( f.begin(), f.end(), Equation.begin(),		Equation.end())			!= f.end();
 		bool bPAGE			= search( f.begin(), f.end(), PAGE.begin(),			PAGE.end())				!= f.end();
 		bool bTOC			= search( f.begin(), f.end(), TOC.begin(),			TOC.end())				!= f.end();
-		bool bSHAPE			= search( f.begin(), f.end(), SHAPE.begin(),		SHAPE.end())				!= f.end();
-		
+		bool bSHAPE			= search( f.begin(), f.end(), SHAPE.begin(),		SHAPE.end())			!= f.end();
+		bool bNREF			= search( f.begin(), f.end(), NREF.begin(),			NREF.end())				!= f.end();
+
 		bool bPAGEREF = false; 
 		if (bHYPERLINK && arField.size() > 1)
 		{
@@ -629,8 +635,8 @@ namespace DocFileFormat
 						d = (int)_writeTocLink.find(L" ");
 						_writeTocLink = _writeTocLink.substr(0, d);
 						
-						_writeAfterRun	=	std::wstring (L"<w:hyperlink w:anchor = \"");
-						_writeAfterRun +=	_writeTocLink;
+						_writeAfterRun	=	std::wstring (L"<w:hyperlink w:anchor=\"");
+						_writeAfterRun +=	XmlUtils::EncodeXmlString(_writeTocLink);
 						_writeAfterRun +=	std::wstring (L"\" w:history=\"1\">");
 
 						break;								
@@ -822,8 +828,10 @@ namespace DocFileFormat
 			}
 			else if (TextMark::PageBreakOrSectionMark == code)
 			{
-				if (_isSectionPageBreak == 0)
+				if (m_context->_docx->_isSectionPageBreak == 0 || m_context->_docx->_isSectionPageBreak == 2)
 				{
+					m_context->_docx->_isSectionPageBreak = -1;
+
                     writeTextElement(text, textType);
 
                     text.clear();
@@ -847,6 +855,8 @@ namespace DocFileFormat
 			}
 			else if (TextMark::FieldBeginMark == code)
 			{
+				_embeddedObject = false;
+				
 				int cpFieldStart = initialCp + i;
 				int cpFieldEnd = searchNextTextMark( m_document->Text, cpFieldStart, TextMark::FieldEndMark );
 				
@@ -909,22 +919,26 @@ namespace DocFileFormat
 
 				//<w:sym w:font="Symbol" w:char="F062"/>
 
-                m_pXmlWriter->WriteNodeBegin(L"w:sym", true);
-                m_pXmlWriter->WriteAttribute(L"w:font", FormatUtils::XmlEncode(s.FontName));
-                m_pXmlWriter->WriteAttribute(L"w:char", FormatUtils::XmlEncode(s.HexValue));
-                m_pXmlWriter->WriteNodeEnd(L"", true);
+				if (false == s.HexValue.empty()) //09FluGuide.doc - поврежденный
+				{
+					m_pXmlWriter->WriteNodeBegin(L"w:sym", true);
+					if (false == s.FontName.empty()) // ??? default
+						m_pXmlWriter->WriteAttribute(L"w:font", FormatUtils::XmlEncode(s.FontName));
+					m_pXmlWriter->WriteAttribute(L"w:char", FormatUtils::XmlEncode(s.HexValue));
+					m_pXmlWriter->WriteNodeEnd(L"", true);
+				}
 			}
 			else if ((TextMark::DrawnObject == code) && fSpec)
 			{
-				Spa* pSpa	=	NULL;
+				Spa* pSpa =	NULL;
 				if (typeid(*this) == typeid(MainDocumentMapping))
 				{
-					pSpa	=	static_cast<Spa*>(m_document->OfficeDrawingPlex->GetStruct(cp));
+					pSpa = static_cast<Spa*>(m_document->OfficeDrawingPlex->GetStruct(cp));
 				}
 				else if ((typeid(*this) == typeid(HeaderMapping) ) || ( typeid(*this) == typeid(FooterMapping)))
 				{
-					int headerCp	=	( cp - m_document->FIB->m_RgLw97.ccpText - m_document->FIB->m_RgLw97.ccpFtn );
-					pSpa	=	static_cast<Spa*>(m_document->OfficeDrawingPlexHeader->GetStruct(headerCp));
+					int headerCp = ( cp - m_document->FIB->m_RgLw97.ccpText - m_document->FIB->m_RgLw97.ccpFtn );
+					pSpa = static_cast<Spa*>(m_document->OfficeDrawingPlexHeader->GetStruct(headerCp));
 				}
 
 				bool bPicture = false;
@@ -1026,7 +1040,7 @@ namespace DocFileFormat
 						}
 						else
 						{
-							VMLShapeMapping oVmlMapper(m_context, &pictWriter, NULL, &oPicture,  _caller, isInline);
+							VMLShapeMapping oVmlMapper(m_context, &pictWriter, NULL, &oPicture,  _caller, isInline, false);
 							oPicture.shapeContainer->Convert(&oVmlMapper);
 						}
 						
@@ -1034,21 +1048,14 @@ namespace DocFileFormat
 
 						if (!bFormula)
 						{
-							if (false == _fieldLevels.empty())
+							m_pXmlWriter->WriteString(pictWriter.GetXmlString());
+							
+							if ((false == _fieldLevels.empty()) && (_fieldLevels.back().bSeparate && !_fieldLevels.back().bResult))	//ege15.doc
 							{
-								if (_fieldLevels.back().bSeparate && !_fieldLevels.back().bResult)	//ege15.doc
-								{
-									m_pXmlWriter->WriteString(pictWriter.GetXmlString());
-									_fieldLevels.back().bResult = true;
-								}
-							}
-							else
-							{
-								m_pXmlWriter->WriteString(pictWriter.GetXmlString());
-							}
+								_fieldLevels.back().bResult = true;
+							}//imrtemplate(endnotes).doc
 						}
 					}
-
 				}                   
 			}
 			else if ((TextMark::AutoNumberedFootnoteReference == code) && fSpec)
@@ -1098,9 +1105,20 @@ namespace DocFileFormat
 			}
 			else if (!FormatUtils::IsControlSymbol(c) && ((int)c != 0xFFFF))
 			{
-
-				writeNotesReferences(cp);//for word95 & non-automatic notes
                 text += FormatUtils::GetXMLSymbol(c);
+				
+				//non-automatic notes
+				if ((m_document->IndividualFootnotesPlex != NULL) && (m_document->IndividualFootnotesPlex->IsCpExists(cp - m_document->FIB->m_RgLw97.ccpText)))
+				{
+					_writeNoteRef = L"<w:footnoteRef/>";
+				}
+				else if ((m_document->IndividualEndnotesPlex != NULL) &&
+					(m_document->IndividualEndnotesPlex->IsCpExists(cp - m_document->FIB->m_RgLw97.ccpAtn - m_document->FIB->m_RgLw97.ccpHdr - m_document->FIB->m_RgLw97.ccpFtn - m_document->FIB->m_RgLw97.ccpText)))
+				{
+					_writeNoteRef = L"<w:endnoteRef/>";
+				}
+				else 
+					writeNotesReferences(cp);//for word95
 			}
 
 			cp++;
@@ -1779,7 +1797,11 @@ namespace DocFileFormat
 	{
 		if ((m_document->FootnoteReferenceCharactersPlex != NULL) && (m_document->FootnoteReferenceCharactersPlex->IsCpExists(cp)))
 		{
-			FootnoteDescriptor* desc = dynamic_cast<FootnoteDescriptor*>(m_document->FootnoteReferenceCharactersPlex->Elements[_footnoteNr]);
+			FootnoteDescriptor* desc = NULL;
+			
+			if (_footnoteNr < m_document->FootnoteReferenceCharactersPlex->Elements.size())
+				desc = dynamic_cast<FootnoteDescriptor*>(m_document->FootnoteReferenceCharactersPlex->Elements[_footnoteNr]);
+			
 			if ((desc) && (false == desc->bUsed))
 			{
 				desc->bUsed = true;
@@ -1817,6 +1839,11 @@ namespace DocFileFormat
 		{
             m_pXmlWriter->WriteNodeBegin( L"w:endnoteRef", true );
             m_pXmlWriter->WriteNodeEnd( L"", true );
+		}
+		else if (false == _writeNoteRef.empty())
+		{
+			m_pXmlWriter->WriteString(_writeNoteRef);
+			_writeNoteRef.clear();
 		}
 		return true;
 	}

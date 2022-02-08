@@ -2849,7 +2849,7 @@ namespace SimpleTypes
 								continue;
 
 							std::wstring sTemp = sValue.substr( nIndex, nLen );
-							double dVal = sTemp.empty() ? 0 : _wtof( sTemp.c_str());
+							double dVal = XmlUtils::GetDouble( sTemp);
 
 							if ( m_nCount >= 32 )
 								break;
@@ -2946,7 +2946,7 @@ namespace SimpleTypes
 				}
 				else
 				{
-                       double dValue = sValue.empty() ? 0 : _wtof( sValue.c_str() );
+                       double dValue = XmlUtils::GetDouble( sValue);
 					SetValue( dValue );
 				}
 
@@ -3254,12 +3254,12 @@ namespace SimpleTypes
 				if ( nLen <= 0 )
 					return 0;
 
-                int nPos = (int)sValue.find( _T(",") );
+                size_t nPos = sValue.find( _T(",") );
 
 				std::wstring strX, strY;
-				if ( -1 == nPos )
+				if (std::wstring::npos == nPos)
 				{
-					strX = sValue.substr( 0, nPos );
+					strX = sValue;// .substr(0, nPos);
 				}
 				else
 				{
@@ -3267,8 +3267,8 @@ namespace SimpleTypes
 					strY = sValue.substr( nPos + 1, nLen - nPos - 1 ) ;
 				}
 
-                m_dX = strX.empty() ? 0 : _wtof(strX.c_str() );
-                m_dY = strY.empty() ? 0 : _wtof(strY.c_str() );
+                m_dX = XmlUtils::GetDouble(strX);
+                m_dY = XmlUtils::GetDouble(strY);
 
 				return 0;
 			}
@@ -3654,7 +3654,6 @@ namespace SimpleTypes
 			ECssMsoPosHorRel	eMsoPosHorRel;
 			ECssMsoPosVer		eMsoPosVer;
 			ECssMsoPosVerRel	eMsoPosVerRel;
-			double				dValue;
 			bool				bValue;
 			ECssMsoWrapStyle	eMsoWrapStyle;
 			ECssPosition		ePosition;
@@ -3909,10 +3908,10 @@ namespace SimpleTypes
 				case cssptMsoPositionHorizontalRelative	: ReadValue_MsoPosHorRel( sValue ); break;
 				case cssptMsoPositionVertical			: ReadValue_MsoPosVer( sValue ); break;
 				case cssptMsoPositionVerticalRelative	: ReadValue_MsoPosVerRel( sValue ); break;
-				case cssptMsoWrapDistanceBottom			: ReadValue_Double( sValue ); break;
-				case cssptMsoWrapDistanceLeft			: ReadValue_Double( sValue ); break;
-				case cssptMsoWrapDistanceRight			: ReadValue_Double( sValue ); break;
-				case cssptMsoWrapDistanceTop			: ReadValue_Double( sValue ); break;
+				case cssptMsoWrapDistanceBottom			: ReadValue_Units( sValue ); break;
+				case cssptMsoWrapDistanceLeft			: ReadValue_Units( sValue ); break;
+				case cssptMsoWrapDistanceRight			: ReadValue_Units( sValue ); break;
+				case cssptMsoWrapDistanceTop			: ReadValue_Units( sValue ); break;
 				case cssptMsoWrapEdited					: ReadValue_Boolean( sValue ); break;
 				case cssptMsoWrapStyle					: ReadValue_MsoWrapStyle( sValue ); break;
 				case cssptPosition						: ReadValue_Position( sValue ); break;
@@ -3930,12 +3929,12 @@ namespace SimpleTypes
 				case cssptMsoLayoutFlowAlt				: ReadValue_LayoutFlowAlt( sValue ); break;
 				case cssptMsoNextTextbox				: ReadValue_String( sValue ); break;
 				case cssptMsoRotate						: ReadValue_MsoRotate( sValue ); break;
-				case cssptMsoTextScale					: ReadValue_Double( sValue ); break;
+				case cssptMsoTextScale					: ReadValue_Units( sValue ); break;
 				case cssptVTextAnchor					: ReadValue_VTextAnchor( sValue ); break;
 
 				case cssptFont							: ReadValue_String( sValue ); break;
 				case cssptFontFamily					: ReadValue_String( sValue ); break;
-				case cssptFontSize						: ReadValue_Double( sValue ); break;
+				case cssptFontSize						: ReadValue_Units( sValue ); break;
 				case cssptFontStyle						: ReadValue_FontStyle( sValue ); break;
 				case cssptFontVariant					: ReadValue_FontVariant( sValue ); break;
 				case cssptFontWeight					: ReadValue_FontWeight( sValue ); break;
@@ -3947,9 +3946,9 @@ namespace SimpleTypes
 				case cssptVTextKern						: ReadValue_Boolean( sValue ); break;
 				case cssptVTextReverse					: ReadValue_Boolean( sValue ); break;
 				case cssptVTextSpacingMode				: ReadValue_VTextSpacingMode( sValue ); break;
-				case cssptVTextSpacing					: ReadValue_Double( sValue ); break;
-				case csspctMsoWidthPercent				: ReadValue_Double( sValue ); break;				
-				case csspctMsoHeightPercent				: ReadValue_Double( sValue ); break;
+				case cssptVTextSpacing					: ReadValue_Units( sValue ); break;
+				case csspctMsoWidthPercent				: ReadValue_Units( sValue ); break;
+				case csspctMsoHeightPercent				: ReadValue_Units( sValue ); break;
 				case cssptHTextAlign					: ReadValue_VTextAlign( sValue ); break;
 				};
 			}
@@ -3981,7 +3980,7 @@ namespace SimpleTypes
 					m_oValue.oValue.eType = cssunitstypeUnits;
 
 					   std::wstring strValue = sValue.substr( 0, nPos );
-                       double dValue = strValue.empty() ? 0 : _wtof(strValue.c_str() );
+                       double dValue = XmlUtils::GetDouble(sValue);
 
 					m_oValue.oValue.dValue = Inch_To_Pt(dValue);
 				}
@@ -3990,7 +3989,7 @@ namespace SimpleTypes
 					m_oValue.oValue.eType = cssunitstypeUnits;
 
 					   std::wstring strValue = sValue.substr( 0, nPos );
-                       double dValue = strValue.empty() ? 0 : _wtof(strValue.c_str() );
+                       double dValue = XmlUtils::GetDouble(sValue);
 
 					   m_oValue.oValue.dValue = Cm_To_Pt(dValue);
 				}
@@ -3999,7 +3998,7 @@ namespace SimpleTypes
 					m_oValue.oValue.eType = cssunitstypeUnits;
 
 					   std::wstring strValue = sValue.substr( 0, nPos );
-                       double dValue = strValue.empty() ? 0 : _wtof(strValue.c_str() );
+                       double dValue = XmlUtils::GetDouble(sValue);
 
 					   m_oValue.oValue.dValue = Mm_To_Pt(dValue);
 				}
@@ -4016,7 +4015,7 @@ namespace SimpleTypes
 					m_oValue.oValue.eType = cssunitstypeUnits;
 
 					   std::wstring strValue = sValue.substr( 0, nPos );
-                       double dValue = strValue.empty() ? 0 : _wtof(strValue.c_str() );
+                       double dValue = XmlUtils::GetDouble(sValue);
 
 					   m_oValue.oValue.dValue = dValue;
 				}
@@ -4025,7 +4024,7 @@ namespace SimpleTypes
 					m_oValue.oValue.eType = cssunitstypeUnits;
 
 					   std::wstring strValue = sValue.substr( 0, nPos );
-                       double dValue = strValue.empty() ? 0 : _wtof(strValue.c_str() );
+                       double dValue = XmlUtils::GetDouble(sValue);
 
 					   m_oValue.oValue.dValue = dValue * 12;
 				}
@@ -4034,14 +4033,14 @@ namespace SimpleTypes
 					m_oValue.oValue.eType = cssunitstypePerc;
 
 					   std::wstring strValue = sValue.substr( 0, nPos );
-                       m_oValue.oValue.dValue = strValue.empty() ? 0 : _wtof(strValue.c_str() );
+                       m_oValue.oValue.dValue = XmlUtils::GetDouble(strValue);
 				}
                 else if ( -1 != ( nPos = (int)sValue.find( _T("px") ) ) )
 				{
 					m_oValue.oValue.eType = cssunitstypeUnits;
 
 					   std::wstring strValue = sValue.substr( 0, nPos );
-                       double dValue = strValue.empty() ? 0 : _wtof(strValue.c_str() );
+                       double dValue = XmlUtils::GetDouble(sValue);
 
 					   m_oValue.oValue.dValue = Px_To_Pt(dValue);
 				}
@@ -4050,7 +4049,7 @@ namespace SimpleTypes
 					m_oValue.oValue.eType = cssunitstypeAbsolute;
 					try
 					{
-                        m_oValue.oValue.dValue = sValue.empty() ? 0 : _wtof(sValue.c_str() );
+                        m_oValue.oValue.dValue = XmlUtils::GetDouble(sValue);
 					}
 					catch(...)
 					{
@@ -4106,23 +4105,18 @@ namespace SimpleTypes
 
             void ReadValue_Rotation(std::wstring& sValue)
             {
-				m_oValue.dValue = sValue.empty() ? 0 : _wtof(sValue.c_str() );
+				m_oValue.oValue.eType = cssunitstypeAbsolute;
+				m_oValue.oValue.dValue = XmlUtils::GetDouble( sValue );
 
 				if (sValue.find(_T("fd")) != std::wstring::npos)
 				{
-					m_oValue.dValue /= 6000.;
+					m_oValue.oValue.dValue /= 6000.;
 				}
 				else if (sValue.find(_T("f")) == sValue.length() - 1)
 				{
-					m_oValue.dValue /= 65536.;
+					m_oValue.oValue.dValue /= 65536.;
 				}
 			}
-
-			void ReadValue_Double(std::wstring& sValue)
-			{
-                    m_oValue.dValue = sValue.empty() ? 0 : _wtof(sValue.c_str() );
-            }
-
 			void ReadValue_Boolean(std::wstring& sValue)
 			{
 				if ( _T("true") == sValue || _T("t") == sValue || _T("1") == sValue ) 
@@ -4130,7 +4124,6 @@ namespace SimpleTypes
 				else
 					m_oValue.bValue = false;
 			}
-
 			void ReadValue_MsoWrapStyle(std::wstring& sValue)
 			{
 				if      ( _T("square") == sValue ) m_oValue.eMsoWrapStyle = cssmsowrapstyleSqaure;
@@ -4834,7 +4827,7 @@ namespace SimpleTypes
 					case '.':
 
 						eValue = vmlvector2dposConstant;
-                    dValue = sValue.empty() ? 0 : _wtof(sValue.c_str() );
+						dValue = XmlUtils::GetDouble(sValue);
 						break;
 
 					case 'c':
@@ -4995,8 +4988,8 @@ namespace SimpleTypes
 						XmlUtils::replace_all(strX, L"@", L"");
 						XmlUtils::replace_all(strY, L"@", L"");
 
-                       int nX = strX.empty() ? 0 : _wtoi(strX.c_str() );
-                       int nY = strY.empty() ? 0 : _wtoi(strY.c_str() );
+                       int nX = XmlUtils::GetDouble(strX);
+                       int nY = XmlUtils::GetDouble(strY );
 
 					   m_arrPoints.push_back( TPoint( nX, nY ) );
 
@@ -5089,12 +5082,12 @@ namespace SimpleTypes
 				else if ( bPercentage )
 				{
 					   std::wstring strValue = sValue.substr( 0, nLen - 1 );
-                       double dValue = strValue.empty() ? 0 : _wtof(strValue.c_str() );
+                       double dValue = XmlUtils::GetDouble(strValue);
 					SetPercentage( dValue );
 				}
 				else
 				{
-                       double dValue = sValue.empty() ? 0 : _wtof(sValue.c_str() );
+                       double dValue = XmlUtils::GetDouble(sValue);
 					SetValue( dValue );
 				}
 
@@ -5217,7 +5210,7 @@ namespace SimpleTypes
 				if ( nEndPos - nStartPos > 0 )
 					{
 					   std::wstring strValue = sValue.substr( nStartPos, nEndPos - nStartPos );
-                       m_dSxx = strValue.empty() ? 0 : _wtof(strValue.c_str() );
+                       m_dSxx = XmlUtils::GetDouble(strValue);
 					}
 
 				// Sxy
@@ -5229,7 +5222,7 @@ namespace SimpleTypes
 				if ( nEndPos - nStartPos > 0 )
 					{
 					   std::wstring strValue = sValue.substr( nStartPos, nEndPos - nStartPos );
-                       m_dSxy = strValue.empty() ? 0 : _wtof(strValue.c_str() );
+                       m_dSxy = XmlUtils::GetDouble(strValue);
 					}
 
 				// Syx
@@ -5241,7 +5234,7 @@ namespace SimpleTypes
 				if ( nEndPos - nStartPos > 0 )
 					{
 					   std::wstring strValue = sValue.substr( nStartPos, nEndPos - nStartPos );
-                       m_dSyx = strValue.empty() ? 0 : _wtof(strValue.c_str() );
+                       m_dSyx = XmlUtils::GetDouble(strValue);
 					}
 
 				// Syy
@@ -5253,7 +5246,7 @@ namespace SimpleTypes
 				if ( nEndPos - nStartPos > 0 )
 					{
 					   std::wstring strValue = sValue.substr( nStartPos, nEndPos - nStartPos );
-                       m_dSyy = strValue.empty() ? 0 : _wtof(strValue.c_str() );
+                       m_dSyy = XmlUtils::GetDouble(strValue);
 					}
 
 				// Px
@@ -5265,7 +5258,7 @@ namespace SimpleTypes
 				if ( nEndPos - nStartPos > 0 )
 					{
 					   std::wstring strValue = sValue.substr( nStartPos, nEndPos - nStartPos );
-                       m_dPx = strValue.empty() ? 0 : _wtof(strValue.c_str() );
+                       m_dPx = XmlUtils::GetDouble(strValue);
 					}
 
 				// Py
@@ -5275,10 +5268,10 @@ namespace SimpleTypes
 					nEndPos = nLen;
 
 				if ( nEndPos - nStartPos > 0 )
-					{
-					   std::wstring strValue = sValue.substr( nStartPos, nEndPos - nStartPos );
-                       m_dPy = strValue.empty() ? 0 : _wtof(strValue.c_str() );
-					}
+				{
+					std::wstring strValue = sValue.substr( nStartPos, nEndPos - nStartPos );
+                    m_dPy = XmlUtils::GetDouble(strValue);
+				}
 
 				nStartPos = nEndPos + 1;		
 				return 0;
@@ -5325,16 +5318,15 @@ namespace SimpleTypes
 			{
 				return m_dY;
 			}
-			double IsXinPoints() const
+			bool IsXinPoints() const
 			{
 				return m_bUnitsX;
 			}
-			double IsYinPoints() const
+			bool IsYinPoints() const
 			{
 				return m_bUnitsY;
 			}
-
-			void   SetValue_Points(double dX, double dY)
+			void SetValue_Points(double dX, double dY)
 			{
 				m_dX = dX;
 				m_dY = dY;

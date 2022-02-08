@@ -584,10 +584,11 @@ void xlsx_drawing_context::reset_alternative_drawing()
 
 	if (oElement.IsInit())
 	{
+		NSBinPptxRW::CXmlWriter writer(XMLWRITER_DOC_TYPE_XLSX);
+
 		smart_ptr<PPTX::Logic::Shape> shape = oElement->GetElem().smart_dynamic_cast<PPTX::Logic::Shape>();
 		if (shape.IsInit())
 		{
-			NSBinPptxRW::CXmlWriter writer(XMLWRITER_DOC_TYPE_XLSX);
 			shape->spPr.Geometry.toXmlWriter(&writer);
 
 			if (shape->spPr.scene3d.IsInit())
@@ -597,37 +598,38 @@ void xlsx_drawing_context::reset_alternative_drawing()
 				shape->spPr.sp3d->toXmlWriter(&writer);
 
 			current_drawing_states->back()->xmlGeomAlternative = writer.GetXmlString();
-
 			writer.ClearNoAttack();
+			
+			if (shape->style.IsInit())
+				shape->style->toXmlWriter(&writer);
+
+			current_drawing_states->back()->xmlStyleAlternative = writer.GetXmlString();
+			writer.ClearNoAttack();
+
 			if ((shape->txBody.IsInit()) && (shape->txBody->bodyPr.IsInit()))
 			{
 				bool bWordArt = shape->txBody->bodyPr->prstTxWarp.IsInit();
-				bool bMath = false;
 
-				if ((false == shape->txBody->Paragrs.empty()) && (false == shape->txBody->Paragrs[0].RunElems.empty()))
-				{
-					bMath = (OOX::et_p_MathPara == shape->txBody->Paragrs[0].RunElems[0].getType());
-				}					
-
-				if (bWordArt || bMath)
+				if (bWordArt || (false == shape->txBody->Paragrs.empty()) && (false == shape->txBody->Paragrs[0].RunElems.empty()))
 				{
 					shape->txBody->toXmlWriter(&writer);
 					current_drawing_states->back()->xmlTxBodyAlternative = writer.GetXmlString();
+					writer.ClearNoAttack();
 				}
 			}
 			if (shape->spPr.Fill.is_init())
 			{
-				NSBinPptxRW::CXmlWriter writerFill(XMLWRITER_DOC_TYPE_XLSX);
-				shape->spPr.Fill.toXmlWriter(&writerFill);
+				shape->spPr.Fill.toXmlWriter(&writer);
 
-				current_drawing_states->back()->xmlFillAlternative = writerFill.GetXmlString();
+				current_drawing_states->back()->xmlFillAlternative = writer.GetXmlString();
+				writer.ClearNoAttack();
 			}
 			if (shape->spPr.EffectList.is_init())
 			{
-				NSBinPptxRW::CXmlWriter writerEffect(XMLWRITER_DOC_TYPE_XLSX);
-				shape->spPr.EffectList.toXmlWriter(&writerEffect);
+				shape->spPr.EffectList.toXmlWriter(&writer);
 
-				current_drawing_states->back()->xmlEffectAlternative = writerEffect.GetXmlString();
+				current_drawing_states->back()->xmlEffectAlternative = writer.GetXmlString();
+				writer.ClearNoAttack();
 			}
 		}
 		smart_ptr<PPTX::Logic::SpTree> groupShape = oElement->GetElem().smart_dynamic_cast<PPTX::Logic::SpTree>();
@@ -636,10 +638,9 @@ void xlsx_drawing_context::reset_alternative_drawing()
 
 			if (groupShape->grpSpPr.Fill.is_init())
 			{
-				NSBinPptxRW::CXmlWriter writerFill(XMLWRITER_DOC_TYPE_XLSX);
-				groupShape->grpSpPr.Fill.toXmlWriter(&writerFill);
-
-				current_drawing_states->back()->xmlFillAlternative = writerFill.GetXmlString();
+				groupShape->grpSpPr.Fill.toXmlWriter(&writer);
+				current_drawing_states->back()->xmlFillAlternative = writer.GetXmlString();
+				writer.ClearNoAttack();
 			}
 
 			if (false == groupShape->SpTreeElems.empty()) // smartArt
@@ -649,10 +650,9 @@ void xlsx_drawing_context::reset_alternative_drawing()
 					groupShape->grpSpPr.xfrm.Init();
 					set_xfrm_from_anchor(groupShape->grpSpPr.xfrm.GetPointer(), current_drawing_states->back());
 				}
-				NSBinPptxRW::CXmlWriter writerObject(XMLWRITER_DOC_TYPE_XLSX);
-				groupShape->toXmlWriter(&writerObject);
-
-				current_drawing_states->back()->xmlAlternative = writerObject.GetXmlString();
+				groupShape->toXmlWriter(&writer);
+				current_drawing_states->back()->xmlAlternative = writer.GetXmlString();
+				writer.ClearNoAttack();
 			}
 		}
 	}
@@ -1550,6 +1550,7 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 		else
 		{
 			customGeom	= convert_custom_shape(drawing_state);
+			drawing_state->bCustom = true;
 		}
 	}
 	else
@@ -1642,7 +1643,24 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 						CP_XML_NODE(L"a:prstGeom")
 						{
 							CP_XML_ATTR(L"prst", prstGeom);
-							if (!drawing_state->wordart.is)	CP_XML_NODE(L"a:avLst");
+							if (false == drawing_state->wordart.is)
+							{
+								CP_XML_NODE(L"a:avLst")
+								{
+									// нужен перерасчет
+									//for (size_t i = 0; i < drawing_state->custom_adjustValues.size(); i++)
+									//{
+									//	if (drawing_state->custom_adjustValues[i])
+									//	{
+									//		CP_XML_NODE(L"a:gd")
+									//		{
+									//			CP_XML_ATTR(L"name", L"adj" + std::to_wstring(i + 1));
+									//			CP_XML_ATTR(L"fmla", L"val " + std::to_wstring(*drawing_state->custom_adjustValues[i]));
+									//		}
+									//	}
+									//}
+								}
+							}
 						}
 					}
 					else if (customGeom.empty() == false)
@@ -1710,6 +1728,10 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 					}
 					//serialize_effect(CP_XML_STREAM(), drawing_state);
 				}
+			}
+			if (false == drawing_state->xmlStyleAlternative.empty())
+			{
+				CP_XML_STREAM() << drawing_state->xmlStyleAlternative;
 			}
 			serialize_text(CP_XML_STREAM(), drawing_state);
 		}
@@ -2219,9 +2241,14 @@ void xlsx_drawing_context::serialize_text(std::wostream & stream, _drawing_state
 			{
 				if (drawing_state->text.wrap == 2 || drawing_state->wordart.is)
 					CP_XML_ATTR(L"wrap", L"none" );
+				else if (drawing_state->bCustom)
+					CP_XML_ATTR(L"wrap", L"square");
 
 				if (false == drawing_state->text.fit_shape)
-					CP_XML_ATTR(L"vertOverflow", L"clip" ); 
+				{
+					CP_XML_ATTR(L"horzOverflow", L"clip");
+					CP_XML_ATTR(L"vertOverflow", L"clip");
+				}			
 
 				if (drawing_state->wordart.is)
 				{

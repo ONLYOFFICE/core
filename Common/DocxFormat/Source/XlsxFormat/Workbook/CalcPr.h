@@ -34,7 +34,7 @@
 #define OOX_CALCPR_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
-
+#include "../../XlsbFormat/Biff12_records/CalcProp.h"
 
 namespace OOX
 {
@@ -44,6 +44,7 @@ namespace OOX
     {
     public:
         WritingElement_AdditionConstructors(CCalcPr)
+        WritingElement_XlsbConstructors(CCalcPr)
             CCalcPr()
 			{
 			}
@@ -83,6 +84,11 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
+
 			virtual EElementType getType () const
 			{
 				return et_x_CalcPr;
@@ -111,6 +117,25 @@ namespace OOX
 
 				WritingElement_ReadAttributes_End( oReader )
 			}
+
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::CalcProp*>(obj.get());
+                m_oCalcId                   = ptr->recalcID;
+                m_oCalcMode                 = (SimpleTypes::Spreadsheet::ECalcMode)ptr->fAutoRecalc;
+                m_oFullCalcOnLoad           = ptr->fFullCalcOnLoad;
+                m_oRefMode                  = (SimpleTypes::Spreadsheet::ERefMode)!ptr->fRefA1;
+                m_oIterate                  = ptr->fIter;
+                m_oIterateCount             = ptr->cCalcCount;
+                m_oIterateDelta             = ptr->xnumDelta.data.value;
+                m_oFullPrecision            = ptr->fFullPrec;
+                m_oCalcCompleted            = ptr->fSomeUncalced;
+                m_oCalcOnSave               = ptr->fSaveRecalc;
+                m_oConcurrentCalc           = ptr->fMTREnabled;
+                m_oConcurrentManualCount    = ptr->cUserThreadCount;
+                m_oForceFullCalc            = ptr->fNoDeps;
+
+            }
 
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCalcId;

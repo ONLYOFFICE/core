@@ -53,8 +53,8 @@
 #define c_oAscNumFormatType_Fraction                        10
 	 
 #define c_oAscDrawingLayerType_BringToFront                 0
-#define c_oAscDrawingLayerType_SendToBack                   1
-#define c_oAscDrawingLayerType_BringForward                 2
+#define c_oAscDrawingLayerType_BringForward                 1
+#define c_oAscDrawingLayerType_SendToBack                   2
 #define c_oAscDrawingLayerType_SendBackward                 3
 
 #define c_oAscTransactionState_No                           -1
@@ -492,6 +492,8 @@
 #define c_oAscTypeSelectElement_Slide				7
 #define c_oAscTypeSelectElement_Chart				8
 #define c_oAscTypeSelectElement_Math                9
+#define c_oAscTypeSelectElement_MailMerge           10
+#define c_oAscTypeSelectElement_ContentControl      11
 
 #define c_oAscTableBordersType_LEFT					0
 #define c_oAscTableBordersType_TOP					1
@@ -669,9 +671,23 @@
 #define c_oAscSectionBreakType_Continuous		0x03
 #define c_oAscSectionBreakType_Column			0x04
 
+#define c_oAscRestriction_None                  0x00
+#define c_oAscRestriction_OnlyForms             0x01
+#define c_oAscRestriction_OnlyComments          0x02
+#define c_oAscRestriction_OnlySignatures        0x04
+#define c_oAscRestriction_View                  0x80
+
 #define c_oAscAdvancedOptionsID_CSV             0
 #define c_oAscAdvancedOptionsID_TXT             1
 #define c_oAscAdvancedOptionsID_DRM             2
+
+#define c_oAscContentControlSpecificTypeNone          0
+#define c_oAscContentControlSpecificTypeCheckBox      1
+#define c_oAscContentControlSpecificTypePicture       2
+#define c_oAscContentControlSpecificTypeComboBox      3
+#define c_oAscContentControlSpecificTypeDropDownList  4
+#define c_oAscContentControlSpecificTypeDateTime      5
+#define c_oAscContentControlSpecificTypeTOC           10
 
 #define INSERT_PAGE_NUM_PARAM(AlignV, AlignH)	((AlignV << 16) | AlignH)
 
@@ -750,6 +766,7 @@
 #define ASC_MENU_EVENT_TYPE_DOCUMENT_CHARTSTYLES    201
 
 #define ASC_MENU_EVENT_TYPE_DOCUMENT_PDFBASE64      202
+#define ASC_MENU_EVENT_TYPE_DOCUMENT_PDFBASE64_PRINT    203
 
 #define ASC_MENU_EVENT_TYPE_USER_SCROLL_PAGE        300
 #define ASC_MENU_EVENT_TYPE_USER_ZOOM               301
@@ -766,6 +783,7 @@
 #define ASC_MENU_EVENT_TYPE_COLOR_SCHEMES           2404    //  CAscColorSchemes
 #define ASC_MENU_EVENT_TYPE_CHANGE_COLOR_SCHEME     2415    //  SET(int)
 #define ASC_MENU_EVENT_TYPE_GET_COLOR_SCHEME        2416    //  GET(int)
+#define ASC_MENU_EVENT_TYPE_THEMECOLORS             2417
 
 #define ASC_MENU_EVENT_TYPE_GO_TO_INTERNAL_LINK     5000
 
@@ -819,6 +837,7 @@
 #define ASC_MENU_EVENT_TYPE_DO_REMOVE_COMMENT               23106
 #define ASC_MENU_EVENT_TYPE_DO_REMOVE_ALL_COMMENTS          23107
 #define ASC_MENU_EVENT_TYPE_DO_CHANGE_COMMENT               23108
+#define ASC_MENU_EVENT_TYPE_DO_CAN_ADD_QUOTED_COMMENT       23109
 
 // Track reviews
 #define ASC_MENU_EVENT_TYPE_SHOW_REVISIONS_CHANGE           24001
@@ -833,5 +852,28 @@
 #define ASC_MENU_EVENT_TYPE_DO_ACCEPT_CHANGES               24108
 #define ASC_MENU_EVENT_TYPE_DO_REJECT_CHANGES               24109
 #define ASC_MENU_EVENT_TYPE_DO_FOLLOW_REVISION_MOVE         24110
+
+// Universal call
+#define ASC_MENU_EVENT_TYPE_DO_API_FUNCTION_CALL            25001
+
+// Fill forms
+#define ASC_MENU_EVENT_TYPE_SHOW_CONTENT_CONTROLS_ACTIONS   26001
+#define ASC_MENU_EVENT_TYPE_HIDE_CONTENT_CONTROLS_ACTIONS   26002
+#define ASC_MENU_EVENT_TYPE_DO_SET_CONTENTCONTROL_PICTURE   26003
+
+// Footnote
+#define ASC_MENU_EVENT_TYPE_SET_FOOTNOTE_PROP               27001
+
+// Others
+#define ASC_MENU_EVENT_TYPE_FOCUS_OBJECT                    26101
+#define ASC_MENU_EVENT_TYPE_LONGACTION_BEGIN                26102
+#define ASC_MENU_EVENT_TYPE_LONGACTION_END                  26103
+#define ASC_MENU_EVENT_TYPE_API_ERROR                       26104
+
+// Document Processing
+
+#define ASC_EVENT_TYPE_OPEN_DOCUMENT_PROCESSING_BEGIN       60100
+#define ASC_EVENT_TYPE_OPEN_DOCUMENT_PROCESSING_END         60101
+#define ASC_EVENT_TYPE_OPEN_DOCUMENT_ERROR                  60102
 
 #endif //_BUILD_EDITOR_DEFINES_CROSSPLATFORM_H_

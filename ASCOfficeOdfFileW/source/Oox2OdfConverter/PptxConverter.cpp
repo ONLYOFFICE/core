@@ -88,16 +88,16 @@ PptxConverter::PptxConverter(const std::wstring & path, bool bTemplate)
 	pptx_document = new PPTX::Document();
 	if (!pptx_document->isValid(oox_path.GetPath())) // true ???
 	{
-		delete pptx_document;
+		delete pptx_document; pptx_document = NULL;
 		return;
 	}
 
-	pptx_document->read(oox_path.GetPath() + FILE_SEPARATOR_STR, NULL);
+	pptx_document->read(oox_path.GetPath() + FILE_SEPARATOR_STR);
 
 	smart_ptr<PPTX::Presentation> presentation_ptr = pptx_document->Get(OOX::Presentation::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
 	if (!presentation_ptr.is_init())
 	{
-		delete pptx_document;
+		delete pptx_document;  pptx_document = NULL;
 		return;
 	}
 	presentation = presentation_ptr.GetPointer();
@@ -513,8 +513,25 @@ void PptxConverter::convert(PPTX::NotesMaster *oox_notes)
 	current_clrMap	= &oox_notes->clrMap;
 	
 	current_slide	= dynamic_cast<OOX::IFileContainer*>(oox_notes);
-	//PPTX::Logic::TxStyles* current_txStyles = oox_notes->notesStyle.GetPointer();
-	
+
+	NSCommon::nullable<PPTX::Logic::TxStyles> current_txStyles;
+	if (oox_notes->notesStyle.IsInit())
+	{
+		current_txStyles.Init();
+		current_txStyles->otherStyle = oox_notes->notesStyle;
+		
+		_CP_OPT(int) inStyles = odf_context()->drawing_context()->get_presentation();
+
+		odf_context()->styles_context()->lists_styles().start_style(inStyles && *inStyles > 0);
+		for (int i = 0; i < 10; i++)
+		{
+			if (oox_notes->notesStyle->levels[i].IsInit())
+			{
+				convert_list_level(oox_notes->notesStyle->levels[i].GetPointer(), i /*- 1*/);
+			}
+		}
+		odf_context()->styles_context()->lists_styles().end_style();
+	}
 	if (presentation->notesSz.IsInit())
 	{
 		_CP_OPT(odf_types::length) width	= odf_types::length(presentation->notesSz->cx / 12700., odf_types::length::pt);
@@ -522,7 +539,7 @@ void PptxConverter::convert(PPTX::NotesMaster *oox_notes)
 		
 		odf_context()->page_layout_context()->set_page_size(width, height);
 	}
-	convert_slide(&oox_notes->cSld, NULL, true, true, NotesMaster);
+	convert_slide(&oox_notes->cSld, current_txStyles.GetPointer(), true, true, NotesMaster);
 	
 	odp_context->end_note();
 
@@ -899,15 +916,26 @@ void PptxConverter::convert(PPTX::Logic::CTn *oox_time_common)
 	//nullable<CondLst>			endCondLst;
 	//nullable<Cond>			endSync;
 	//nullable<Iterate>			iterate;
-	if (oox_time_common->childTnLst.IsInit())
-	{
-		for (size_t i = 0; i < oox_time_common->childTnLst->list.size(); i++)
-		{
-			if (oox_time_common->childTnLst->list[i].is_init() == false) continue;
 
-			convert(&oox_time_common->childTnLst->list[i]);
-		}
-	}
+    // TODO
+//    for (auto& child : oox_time_common->childTnLst)
+//    {
+//        for (size_t i = 0; i <child.m_node. .list.size(); i++)
+//        {
+//            if (tnLst.list[i].is_init() == false) continue;
+
+//            convert(&oox_time_common->childTnLst->list[i]);
+//        }
+//    }
+//	if (oox_time_common->childTnLst.IsInit())
+//	{
+//		for (size_t i = 0; i < oox_time_common->childTnLst->list.size(); i++)
+//		{
+//			if (oox_time_common->childTnLst->list[i].is_init() == false) continue;
+
+//			convert(&oox_time_common->childTnLst->list[i]);
+//		}
+//	}
 	//if (oox_time_common->subTnLst.IsInit())
 	//{
 	//	for (size_t i = 0; i < oox_time_common->subTnLst->list.size(); i++)
@@ -1421,6 +1449,7 @@ void PptxConverter::convert(PPTX::Logic::Bg *oox_background)
 	//}
 
 	odp_context->drawing_context()->end_drawing_background(page_props->content_.common_draw_fill_attlist_);
+	odp_context->drawing_context()->set_background_state(false);
 
 	odp_context->end_drawings();
 }
@@ -1481,23 +1510,23 @@ void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxS
 				if (pPic.IsInit())		pPic->FillLevelUp();
 			}
 			
+			int ph_type = 0;
 			if (pNvPr->ph->type.IsInit())
 			{
-				int ph_type = pNvPr->ph->type->GetBYTECode();
+				ph_type = pNvPr->ph->type->GetBYTECode();
 
 				if (type == Layout && (ph_type == 5 || ph_type == 6 || ph_type == 7 || ph_type == 12))
 					continue;
-
-				odf_context()->drawing_context()->set_placeholder_type(ph_type);
 			}
-			else
-				odf_context()->drawing_context()->set_placeholder_type(0);
-
-			if (pNvPr->ph->idx.IsInit())
-				odf_context()->drawing_context()->set_placeholder_id(pNvPr->ph->idx.get());
 
 			if (!bPlaceholders)
 				continue;
+
+			odf_context()->drawing_context()->set_placeholder_type(ph_type);
+			
+			if (pNvPr->ph->idx.IsInit())
+				odf_context()->drawing_context()->set_placeholder_id(pNvPr->ph->idx.get());
+
 
 			PPTX::Logic::TextListStyle * listMasterStyle = NULL;
 			

@@ -35,20 +35,22 @@
 
 #include "../CommonInclude.h"
 
+#include "../../XlsbFormat/Biff12_records/WbProp.h"
+#include "../../XlsbFormat/Biff12_records/BookProtectionIso.h"
+#include "../../XlsbFormat/Biff12_records/BookProtection.h"
 
 namespace OOX
 {
 	namespace Spreadsheet
 	{
-		//необработано:
-		//<extLst>
 		class CWorkbookPr : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CWorkbookPr)
-			CWorkbookPr()
-			{
-			}
+            WritingElement_XlsbConstructors(CWorkbookPr)
+            CWorkbookPr()
+            {
+            }
 			virtual ~CWorkbookPr()
 			{
 			}
@@ -66,7 +68,7 @@ namespace OOX
 				WritingStringNullableAttrBool(L"autoCompressPictures", m_oAutoCompressPictures);
 				WritingStringNullableAttrBool(L"backupFile", m_oBackupFile);
 				WritingStringNullableAttrBool(L"checkCompatibility", m_oCheckCompatibility);
-				WritingStringNullableAttrBool(L"codeName", m_oCodeName);
+                WritingStringNullableAttrBool(L"codeName", m_oCodeName);
 				WritingStringNullableAttrBool(L"date1904", m_oDate1904);
 				WritingStringNullableAttrBool(L"dateCompatibility", m_oDateCompatibility);
 				WritingStringNullableAttrInt(L"defaultThemeVersion", m_oDefaultThemeVersion, m_oDefaultThemeVersion->GetValue());
@@ -89,6 +91,11 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
+
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 
 			virtual EElementType getType () const
 			{
@@ -121,12 +128,37 @@ namespace OOX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::WbProp*>(obj.get());
+                m_oAllowRefreshQuery            = ptr->fNoSaveSup;//?
+                m_oAutoCompressPictures         = ptr->fAutoCompressPictures;
+                m_oBackupFile                   = ptr->fBackup;
+                m_oCheckCompatibility           = ptr->fCheckCompat;
+                m_oCodeName                     = ptr->strName.value.value();
+                m_oDate1904                     = ptr->f1904;
+                m_oDateCompatibility            = true;//ptr->fNoSaveSup?
+                m_oDefaultThemeVersion          = ptr->dwThemeVersion;
+                m_oFilterPrivacy                = ptr->fFilterPrivacy;
+                m_oHidePivotFieldList           = ptr->fHidePivotTableFList;
+                m_oPromptedSolutions            = ptr->fBuggedUserAboutSolution;
+                m_oPublishItems                 = ptr->fPublishedBookItems;
+                m_oRefreshAllConnections        = ptr->fRefreshAll;
+                m_oShowBorderUnselectedTables   = ptr->fHideBorderUnselLists;
+                m_oShowInkAnnotation            = ptr->fShowInkAnnotation;
+                m_oShowObjects                  = ptr->mdDspObj == 2?false:true;
+                m_oShowPivotChartFilter         = ptr->fShowPivotChartFilter;
+                m_oUpdateLinks                  = (SimpleTypes::Spreadsheet::EUpdateLinksType)ptr->grbitUpdateLinks;
+
+
+            }
+
 		public:
 				nullable<SimpleTypes::COnOff<>>						m_oAllowRefreshQuery;
 				nullable<SimpleTypes::COnOff<>>						m_oAutoCompressPictures;
 				nullable<SimpleTypes::COnOff<>>						m_oBackupFile;
 				nullable<SimpleTypes::COnOff<>>						m_oCheckCompatibility;
-				nullable<SimpleTypes::COnOff<>>						m_oCodeName;
+                nullable<SimpleTypes::COnOff<>>	  					m_oCodeName;
 				nullable<SimpleTypes::COnOff<>>						m_oDate1904;
 				nullable<SimpleTypes::COnOff<>>						m_oDateCompatibility;
 				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oDefaultThemeVersion;
@@ -142,6 +174,123 @@ namespace OOX
 				nullable<SimpleTypes::Spreadsheet::CUpdateLinksType<>>						m_oUpdateLinks;
 		};
 
+		class CWorkbookProtection : public WritingElement
+		{
+		public:
+            WritingElement_AdditionConstructors(CWorkbookProtection)
+            WritingElement_XlsbConstructors(CWorkbookProtection)
+			CWorkbookProtection()
+			{
+			}            
+			virtual ~CWorkbookProtection()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+			virtual std::wstring toXML() const
+			{
+				return L"";
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<workbookProtection");
+					WritingStringNullableAttrString(L"workbookAlgorithmName", m_oWorkbookAlgorithmName, m_oWorkbookAlgorithmName->ToString());
+					WritingStringNullableAttrString(L"workbookHashValue", m_oWorkbookHashValue, m_oWorkbookHashValue.get());
+					WritingStringNullableAttrString(L"workbookSaltValue", m_oWorkbookSaltValue, m_oWorkbookSaltValue.get());
+					WritingStringNullableAttrInt(L"workbookSpinCount", m_oWorkbookSpinCount, m_oWorkbookSpinCount->GetValue());
+					WritingStringNullableAttrInt(L"lockStructure", m_oLockStructure, m_oLockStructure->ToBool() ? 1 : 0);
+					WritingStringNullableAttrInt(L"lockWindows", m_oLockWindows, m_oLockWindows->ToBool() ? 1 : 0);
+					WritingStringNullableAttrString(L"workbookPassword", m_oPassword, m_oPassword.get());
+				writer.WriteString(L"/>");
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
+
+				if (!oReader.IsEmptyNode())
+					oReader.ReadTillEnd();
+			}
+
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
+
+			virtual EElementType getType() const
+			{
+				return et_x_WorkbookProtection;
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start(oReader)
+					WritingElement_ReadAttributes_Read_if(oReader, (L"workbookAlgorithmName"), m_oWorkbookAlgorithmName)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"workbookHashValue"), m_oWorkbookHashValue)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"workbookSaltValue"), m_oWorkbookSaltValue)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"workbookSpinCount"), m_oWorkbookSpinCount)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"revisionsAlgorithmName"), m_oRevisionsAlgorithmName)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"revisionsHashValue"), m_oRevisionsHashValue)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"revisionsSaltValue"), m_oRevisionsSaltValue)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"revisionsSpinCount"), m_oRevisionsSpinCount)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"lockRevision"), m_oLockRevision)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"lockStructure"), m_oLockStructure)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"lockWindows"), m_oLockWindows)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"workbookPassword"), m_oPassword)
+				WritingElement_ReadAttributes_End(oReader)
+			}
+
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptrRecord = static_cast<XLS::BiffRecord*>(obj.get());
+
+                if(ptrRecord->getTypeId() == XLSB::rt_BookProtection)
+                {
+                    auto ptr = static_cast<XLSB::BookProtection*>(obj.get());
+                    m_oLockRevision            = ptr->wFlags.fLockRevision;
+                    m_oLockStructure           = ptr->wFlags.fLockStructure;
+                    m_oLockWindows             = ptr->wFlags.fLockWindow;
+                }
+                else if(ptrRecord->getTypeId() == XLSB::rt_BookProtectionIso)
+                {
+                    auto ptr = static_cast<XLSB::BookProtectionIso*>(obj.get());
+                    m_oLockRevision            = ptr->wFlags.fLockRevision;
+                    m_oLockStructure           = ptr->wFlags.fLockStructure;
+                    m_oLockWindows             = ptr->wFlags.fLockWindow;
+
+                    m_oWorkbookAlgorithmName   = ptr->ipdBookPasswordData.szAlgName.value();
+                    m_oWorkbookSpinCount       = ptr->dwBookSpinCount;
+                    m_oWorkbookHashValue       = std::wstring(ptr->ipdBookPasswordData.rgbHash.rgbData.begin(),
+                                                              ptr->ipdBookPasswordData.rgbHash.rgbData.end());
+                    m_oWorkbookSaltValue       = std::wstring(ptr->ipdBookPasswordData.rgbSalt.rgbData.begin(),
+                                                              ptr->ipdBookPasswordData.rgbSalt.rgbData.end());
+
+                    m_oRevisionsAlgorithmName   = ptr->ipdRevPasswordData.szAlgName.value();
+                    m_oRevisionsSpinCount       = ptr->dwRevSpinCount;
+                    m_oRevisionsHashValue       = std::wstring(ptr->ipdRevPasswordData.rgbHash.rgbData.begin(),
+                                                              ptr->ipdRevPasswordData.rgbHash.rgbData.end());
+                    m_oRevisionsSaltValue       = std::wstring(ptr->ipdRevPasswordData.rgbSalt.rgbData.begin(),
+                                                              ptr->ipdRevPasswordData.rgbSalt.rgbData.end());
+                }
+
+
+            }
+
+			nullable<SimpleTypes::COnOff<>>		m_oLockRevision;
+			nullable<SimpleTypes::COnOff<>>		m_oLockStructure;
+			nullable<SimpleTypes::COnOff<>>		m_oLockWindows;
+
+			nullable<SimpleTypes::CCryptAlgoritmName<>>		m_oWorkbookAlgorithmName;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oWorkbookSpinCount;
+			nullable_string									m_oWorkbookHashValue;
+			nullable_string									m_oWorkbookSaltValue;
+
+			nullable_string									m_oPassword; //for old wrike protection
+			
+			nullable<SimpleTypes::CCryptAlgoritmName<>>		m_oRevisionsAlgorithmName;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oRevisionsSpinCount;
+			nullable_string									m_oRevisionsHashValue;
+			nullable_string									m_oRevisionsSaltValue;			
+		};
 	} //Spreadsheet
 } // namespace OOX
 

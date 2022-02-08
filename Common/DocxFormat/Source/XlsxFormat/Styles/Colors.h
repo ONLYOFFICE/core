@@ -33,6 +33,9 @@
 #include "../CommonInclude.h"
 
 #include "rPr.h"
+#include "../../XlsbFormat/Biff12_unions/COLORPALETTE.h"
+#include "../../XlsbFormat/Biff12_unions/INDEXEDCOLORS.h"
+#include "../../XlsbFormat/Biff12_unions/MRUCOLORS.h"
 
 namespace OOX
 {
@@ -42,6 +45,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CColors)
+            WritingElement_XlsbConstructors(CColors)
 			CColors()
 			{
 			}
@@ -77,6 +81,29 @@ namespace OOX
 				}
 			}
 
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::COLORPALETTE*>(obj.get());
+
+                if(ptr->m_INDEXEDCOLORS != nullptr)
+                {
+                    auto arIndexColor = static_cast<XLSB::INDEXEDCOLORS*>(ptr->m_INDEXEDCOLORS.get())->m_arIndexedColor;
+                    if(!arIndexColor.empty())
+                    {
+                        m_oIndexedColors = arIndexColor;
+                    }
+                }
+
+                if(ptr->m_MRUCOLORS != nullptr)
+                {
+                    auto arMruColors = static_cast<XLSB::MRUCOLORS*>(ptr->m_MRUCOLORS.get())->m_arMRUColor;
+                    if(!arMruColors.empty())
+                    {
+                        m_oMruColors = arMruColors;
+                    }
+                }
+            }
+
 			virtual EElementType getType () const
 			{
 				return et_x_Colors;
@@ -92,6 +119,8 @@ namespace OOX
 
 					WritingElement_ReadAttributes_End( oReader )
 			}
+
+
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;
 

@@ -48,7 +48,7 @@ namespace XmlUtils
 
 		CAttribute()
 		{
-			m_strValue = _T("");
+			m_strValue = L"";
 		}
 		AVSINLINE void Write(const std::wstring& strName, const int& value)
 		{
@@ -64,19 +64,19 @@ namespace XmlUtils
 		}
 		AVSINLINE void Write(const std::wstring& strName, const std::wstring& value)
 		{
-			m_strValue += (_T(" ") + strName + _T("=\"") + value + _T("\""));
+			m_strValue += (L" ") + strName + L"=\"" + value + L"\"";
 		}
 		AVSINLINE void Write(const std::wstring& strName, const bool& value)
 		{
 			if (value)
-				m_strValue += (_T(" ") + strName + _T("=\"true\""));
+				m_strValue += (L" ") + strName + L"=\"true\"";
 			else
-				m_strValue += (_T(" ") + strName + _T("=\"false\""));
+				m_strValue += (L" ") + strName + L"=\"false\"";
 		}
 		template <typename T>
 		AVSINLINE void WriteLimit(const std::wstring& strName, const T& value)
 		{
-			m_strValue += (_T(" ") + strName + _T("=\"") + value.get() + _T("\""));
+			m_strValue += (L" ") + strName + L"=\"" + value.get() + L"\"";
 		}
 		template <typename T>
 		AVSINLINE void WriteNullable(const std::wstring& strName, const nullable<T>& value)
@@ -102,6 +102,12 @@ namespace XmlUtils
 				return;
             m_strValue += L" " + strName + L"=\"" + std::to_wstring(*value) + L"\"";
 		}
+		AVSINLINE void Write(const std::wstring& strName, const nullable_uint& value)
+		{
+			if (!value.IsInit())
+				return;
+			m_strValue += L" " + strName + L"=\"" + std::to_wstring(*value) + L"\"";
+		}
 		AVSINLINE void Write(const std::wstring& strName, const nullable_sizet& value)
 		{
 			if (!value.IsInit())
@@ -118,16 +124,20 @@ namespace XmlUtils
 		{
 			if (!value.IsInit())
 				return;
-			m_strValue += (_T(" ") + strName + _T("=\"") + *value + _T("\""));
+			m_strValue += (L" ") + strName + L"=\"" + *value + L"\"";
 		}
 		AVSINLINE void Write(const std::wstring& strName, const nullable_bool& value)
 		{
 			if (!value.IsInit())
 				return;
-			if (*value)
-				m_strValue += (_T(" ") + strName + _T("=\"true\""));
-			else
-				m_strValue += (_T(" ") + strName + _T("=\"false\""));
+			
+			m_strValue += (L" ") + strName + ((*value) ? L"=\"1\"" : L"=\"0\"");
+		}
+		AVSINLINE void Write2(const std::wstring& strName, const nullable_bool& value)
+		{
+			if (!value.IsInit())
+				return;
+			m_strValue += (L" ") + strName + ((*value) ? L"=\"true\"" : L"=\"false\"");
 		}
 		template <typename T>
 		AVSINLINE void WriteLimitNullable(const std::wstring& strName, const nullable_limit<T>& value)
@@ -157,7 +167,7 @@ namespace XmlUtils
 	public:
 		CNodeValue()
 		{
-			m_strValue = _T("");
+			m_strValue = L"";
 		}
 		template <typename T>
 		AVSINLINE void Write(T& value)
@@ -167,9 +177,9 @@ namespace XmlUtils
 		template <typename T>
 		AVSINLINE void Write(const std::wstring& strNodeName, T& value)
 		{
-			m_strValue += (_T("<") + strNodeName + _T(">"));
+			m_strValue += (L"<") + strNodeName + L">";
 			m_strValue += value.toXML();
-			m_strValue += (_T("</") + strNodeName + _T(">"));
+			m_strValue += (L"</") + strNodeName + L">";
 		}
 		template <typename T>
 		AVSINLINE void WriteNullable(const nullable<T>& value)
@@ -180,11 +190,11 @@ namespace XmlUtils
 		template <typename T>
 		AVSINLINE void WriteArray(const std::wstring& strNodeName, const std::vector<T>& oArray)
 		{
-			m_strValue += (_T("<") + strNodeName + _T(">"));
+			m_strValue += (L"<") + strNodeName + L">";
 			size_t count = oArray.size();
 			for (size_t i = 0; i < count; ++i)
 				m_strValue += oArray[i].toXML();
-			m_strValue += (_T("</") + strNodeName + _T(">"));
+			m_strValue += (L"</") + strNodeName + L">";
 		}
 
         template <typename T>
@@ -211,14 +221,14 @@ namespace XmlUtils
 		}
 		AVSINLINE void Write2(const std::wstring& strName, const std::wstring& value)
 		{
-			m_strValue += (_T("<") + strName + _T(">") + value + _T("</") + strName + _T(">"));
+			m_strValue += (L"<") + strName + L">" + value + L"</" + strName + L">";
 		}
 		AVSINLINE void Write2(const std::wstring& strName, const bool& value)
 		{
 			if (value)
-				m_strValue += (_T("<") + strName + _T(">true</") + strName + _T(">"));
+				m_strValue += (L"<") + strName + L">true</" + strName + L">";
 			else
-				m_strValue += (_T("<") + strName + _T(">false</") + strName + _T(">"));
+				m_strValue += (L"<") + strName + L">false</" + strName + L">";
 		}
 
 		// ---------------------------------------------------------------- //

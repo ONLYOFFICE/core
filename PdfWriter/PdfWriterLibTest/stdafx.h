@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <tchar.h>
 
-#pragma comment(lib, "../../build/bin/icu/win_64/icuuc.lib")
+#pragma comment(lib, "../../Common/3dParty/icu/win_64/build/icuuc.lib")
 
 #ifdef _DEBUG
 #pragma comment(lib, "CryptoPPLib.lib")

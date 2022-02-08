@@ -34,11 +34,11 @@
 
 class CRecordDrawingRecord : public CUnknownRecord
 {
-	UINT m_nCountShapes;
+public:
+    UINT m_nCountShapes;
     /// The last MSOSPID given to an SP in this DG
     UINT m_nPidCur;
 
-public:
 	
 	CRecordDrawingRecord()
 	{

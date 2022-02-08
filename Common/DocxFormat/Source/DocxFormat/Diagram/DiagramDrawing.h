@@ -39,166 +39,20 @@
 #include "../WritingElement.h"
 
 #include "../../../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpTree.h"
-//#include "../Drawing/DrawingCoreInfo.h"
-//#include "../Drawing/DrawingText.h"
-
 
 namespace OOX
 {
-	//namespace Diagram
-	//{
-	//	//--------------------------------------------------------------------------------
-	//	//		?????? sp (Shape)
-	//	//--------------------------------------------------------------------------------
-	//	class CShape : public WritingElement
-	//	{
-	//	public:
-	//		CShape(XmlUtils::CXmlNode &oNode)
-	//		{
-	//			fromXML( oNode );
-	//		}
-	//		CShape(XmlUtils::CXmlLiteReader& oReader)
-	//		{
-	//			fromXML( oReader );
-	//		}
-	//		CShape()
-	//		{
-	//		}
-	//		virtual ~CShape()
-	//		{
-	//		}
-
-	//	public:
-	//		virtual std::wstring      toXML() const
-	//		{
-	//			return _T("");
-	//		}
-	//		virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-	//		{
-	//		}
-	//		virtual void         fromXML(XmlUtils::CXmlNode& node)
-	//		{
-	//		}
-	//		virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
-	//		{
-	//			ReadAttributes( oReader );
-
-	//			if ( oReader.IsEmptyNode() )
-	//				return;
-
-	//			int nCurDepth = oReader.GetDepth();
-	//			while( oReader.ReadNextSiblingNode( nCurDepth ) )
-	//			{
-	//				std::wstring sName = oReader.GetName();
-
-	//				if ( _T("dsp:spPr") == sName )
-	//					m_oSpPr = oReader;
-	//				//else if ( _T("dsp:nvSpPr") == sName )
-	//				//	m_oNvSpPr = oReader;
-	//				else if ( _T("dsp:style") == sName )
-	//					m_oShapeStyle = oReader;
-	//				else if (_T("dsp:txBody") == sName)
-	//					m_oTxBody = oReader;
-	//				else if (_T("dsp:txXfrm") == sName)
-	//					m_oTxXfrm = oReader;
-	//			}
-	//		}
-
-	//		virtual EElementType getType () const
-	//		{
-	//			return et_dsp_Shape;
-	//		}
-
-	//	private:
-	//		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-	//		{
-	//		}
-	//	public:
-	//		//nullable<OOX::Drawing::CShapeNonVisual>		m_oNvSpPr;
-
-	//		nullable<OOX::Drawing::CShapeProperties>		m_oSpPr;
-	//		nullable<OOX::Drawing::CShapeStyle>				m_oShapeStyle;
-	//		nullable<OOX::Drawing::CTxBody>					m_oTxBody;
-	//		nullable<OOX::Drawing::CTransform2D>			m_oTxXfrm;
-
-	//		//extLst (Extension List) І20.1.2.2.15
-
-	//	};
-
-	//	class CShapeTree : public WritingElementWithChilds<OOX::Diagram::CShape>
-	//	{
-	//	public:
-	//		WritingElement_AdditionConstructors(CShapeTree)
-	//		CShapeTree()
-	//		{
-	//		}
-	//		virtual ~CShapeTree()
-	//		{
-	//		}
-
-	//	public:
-	//		virtual void fromXML(XmlUtils::CXmlNode& oNode)
-	//		{
-	//		}
-	//		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-	//		{
-	//			ReadAttributes( oReader );
-
-	//			if ( oReader.IsEmptyNode() )
-	//				return;
-
-	//			int nParentDepth = oReader.GetDepth();
-	//			while( oReader.ReadNextSiblingNode( nParentDepth ) )
-	//			{
-	//				std::wstring sName = oReader.GetName();
-	//				WritingElement *pItem = NULL;
-
-	//				if ( _T("dsp:sp") == sName )
-	//					m_arrItems.push_back( new Diagram::CShape( oReader ));
-	//				//else if ( _T("dsp:nvGrpSpPr") == sName )
-	//				//	m_oGroupShapeNonVisual = oReader;
-	//				else if ( _T("dsp:grpSpPr") == sName )
-	//					m_oGroupShapeProperties = oReader;
-	//			}
-	//		}
-	//		virtual std::wstring toXML() const
-	//		{
-	//			std::wstring sResult = _T("");
-	//			return sResult;
-	//		}
-
-	//		virtual EElementType getType() const
-	//		{
-	//			return et_dsp_ShapeTree;
-	//		}
-	//	private:
-	//		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-	//		{
-	//			// Читаем атрибуты
-	//			WritingElement_ReadAttributes_Start	( oReader )
-	//			WritingElement_ReadAttributes_End	( oReader )
-	//		}
-
-	//	public:
-
-	//		// Attributes
-
-	//		// Childs
-	//		//nullable<Diagram::CGroupShapeNonVisual>		m_oGroupShapeNonVisual;
-	//		nullable<Drawing::CGroupShapeProperties>	m_oGroupShapeProperties;
-	//	};
-	//}
-    class CDiagramDrawing : public OOX::File, public OOX::IFileContainer
+    class CDiagramDrawing : public OOX::IFileContainer, public OOX::FileGlobalEnumerated
     {
     public:
-        CDiagramDrawing(OOX::Document* pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
+        CDiagramDrawing(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
         {
         }
-		CDiagramDrawing(OOX::Document* pMain, const CPath& uri) : OOX::File(pMain), OOX::IFileContainer(pMain)
+		CDiagramDrawing(OOX::Document* pMain, const CPath& uri) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 		{
 			read(uri.GetDirectory(), uri);
 		}
-		CDiagramDrawing(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
+		CDiagramDrawing(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
         {
             read( oRootPath, oPath );
         }
@@ -211,25 +65,13 @@ namespace OOX
             CPath oRootPath;
             read(oRootPath, oFilePath);
         }
-        virtual void read(const CPath& oRootPath, const CPath& oFilePath)
-        {
-			m_oReadPath = oFilePath;
-            IFileContainer::Read( oRootPath, oFilePath );
+		virtual void read(const CPath& oRootPath, const CPath& oFilePath);
 
-			XmlUtils::CXmlNode oNodeDW;
-            if (oNodeDW.FromXmlFile(oFilePath.GetPath() ))
-			{
-				m_oShapeTree = oNodeDW.ReadNodeNoNS(L"spTree");
-			}
-        }
-
-        virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
-        {
-        }
+		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const;
 
         virtual const OOX::FileType type() const
         {
-            return FileTypes::DiagDrawing;
+            return FileTypes::DiagramDrawing;
         }
         virtual const CPath DefaultDirectory() const
         {
@@ -243,9 +85,13 @@ namespace OOX
 		{
 			return m_oReadPath;
 		}
+		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+		virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-		CPath									m_oReadPath;
-		NSCommon::nullable<PPTX::Logic::SpTree> m_oShapeTree;
+		CPath m_oReadPath;
+
+		nullable<PPTX::Logic::SpTree>	m_oShapeTree;
 
     };
 } // namespace OOX

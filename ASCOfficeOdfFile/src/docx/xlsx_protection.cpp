@@ -34,6 +34,7 @@
 #include <boost/functional/hash/hash.hpp>
 
 #include "xlsx_protection.h"
+#include "../odf/style_table_properties.h"
 
 #pragma once
 
@@ -44,7 +45,7 @@ bool xlsx_protection::operator == (const xlsx_protection & rVal) const
 {
      const bool res = 
          hidden.get_value_or(false) == rVal.hidden.get_value_or(false) &&
-         locked.get_value_or(false) == rVal.locked.get_value_or(false);
+         locked.get_value_or(true) == rVal.locked.get_value_or(true);
      return res;
 }
 
@@ -55,7 +56,10 @@ bool xlsx_protection::operator != (const xlsx_protection & rVal) const
 
 void xlsx_serialize(std::wostream & _Wostream, const xlsx_protection & protection)
 {
-    _Wostream << L"<protection ";
+	if (is_default(protection))
+		return;
+
+	_Wostream << L"<protection ";
     
     if (protection.hidden)
         _Wostream << L"hidden=\"" << protection.hidden.get() << L"\" ";
@@ -64,13 +68,48 @@ void xlsx_serialize(std::wostream & _Wostream, const xlsx_protection & protectio
 
     _Wostream << L"/>";    
 }
-
 std::size_t hash_value(xlsx_protection const & val)
 {
     std::size_t seed = 0;
     boost::hash_combine(seed, val.hidden.get_value_or(false));
     boost::hash_combine(seed, val.locked.get_value_or(false));
     return seed;
+}
+bool is_default(const xlsx_protection & rVal)
+{
+	xlsx_protection defaultProtection;
+	return rVal == defaultProtection;
+}
+xlsx_protection OdfProperties2XlsxProtection(const odf_reader::style_table_cell_properties_attlist *cellProp)
+{
+	xlsx_protection protection;
+
+	if (cellProp->style_cell_protect_)
+	{
+		switch (cellProp->style_cell_protect_->get_type())
+		{
+			case odf_types::style_cell_protect::hidden_and_protected:
+			case odf_types::style_cell_protect::protected_formula_hidden:
+			{
+				protection.locked = true;
+				protection.hidden = true;
+
+			}break;
+			case odf_types::style_cell_protect::protected_:
+			{
+				protection.locked = true;
+			}break;
+			case odf_types::style_cell_protect::formula_hidden:
+			{
+				protection.hidden = true;
+			}break;
+			case odf_types::style_cell_protect::none:
+			{
+				protection.locked = false;
+			}break;
+		}
+	}
+	return protection;
 }
 }
 }

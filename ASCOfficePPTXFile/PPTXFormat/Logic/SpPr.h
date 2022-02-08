@@ -91,6 +91,8 @@ namespace PPTX
 				}
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			name_ = L"xdr:spPr";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	name_ = L"cdr:spPr";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM)			name_ = L"dgm:spPr";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DSP_DRAWING)		name_ = L"dsp:spPr";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART)			name_ = L"c:spPr";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		name_ = L"a:spPr";
 				else

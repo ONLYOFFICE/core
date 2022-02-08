@@ -81,14 +81,21 @@ namespace PPTX
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start(oReader)
+					WritingElement_ReadAttributes_Read_if(oReader, _T("macro"), macro)
+				WritingElement_ReadAttributes_End(oReader)
+			}
 			bool IsEmpty()const;
 
 			std::wstring			m_namespace;
 
-			NvGraphicFramePr		nvGraphicFramePr;
+			nullable<NvGraphicFramePr> nvGraphicFramePr;
 
 			nullable<Xfrm>			xfrm;
 
+			nullable_string			macro;
 			nullable_string			vmlSpid;
 			nullable<Pic>			olePic;
 

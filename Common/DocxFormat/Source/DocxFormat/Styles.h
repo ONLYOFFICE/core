@@ -97,7 +97,6 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:locked",         m_oLocked )
 				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:name",           m_sName )
@@ -205,8 +204,8 @@ namespace OOX
 				WritingElement_WriteNode_2( m_oParPr );
 				WritingElement_WriteNode_2( m_oRunPr );
 				WritingElement_WriteNode_2( m_oTblPr );
-				WritingElement_WriteNode_2( m_oTcPr );
 				WritingElement_WriteNode_2( m_oTrPr );
+				WritingElement_WriteNode_2( m_oTcPr );
 
 				sResult += L"</w:tblStylePr>";
 
@@ -219,16 +218,17 @@ namespace OOX
 			static const CTableStyleProperties Merge(const CTableStyleProperties& oPrev, const CTableStyleProperties& oCurrent)
 			{
 				CTableStyleProperties oProperties;
-				oProperties.m_oType            = Merge( oPrev.m_oType,            oCurrent.m_oType );
-				oProperties.m_oParPr            = Merge( oPrev.m_oParPr,            oCurrent.m_oParPr );
-				oProperties.m_oRunPr            = Merge( oPrev.m_oRunPr,            oCurrent.m_oRunPr );
-				oProperties.m_oTblPr            = Merge( oPrev.m_oTblPr,            oCurrent.m_oTblPr );
-				oProperties.m_oTcPr            = Merge( oPrev.m_oTcPr,            oCurrent.m_oTcPr );
-				oProperties.m_oTrPr            = Merge( oPrev.m_oTrPr,            oCurrent.m_oTrPr );
+				oProperties.m_oType = Merge( oPrev.m_oType, oCurrent.m_oType );
+				oProperties.m_oParPr = Merge( oPrev.m_oParPr, oCurrent.m_oParPr );
+				oProperties.m_oRunPr = Merge( oPrev.m_oRunPr, oCurrent.m_oRunPr );
+				oProperties.m_oTblPr = Merge( oPrev.m_oTblPr, oCurrent.m_oTblPr );
+				oProperties.m_oTcPr = Merge( oPrev.m_oTcPr, oCurrent.m_oTcPr );
+				oProperties.m_oTrPr = Merge( oPrev.m_oTrPr, oCurrent.m_oTrPr );
+				
 				return oProperties;
 			}
 			template<typename Type>
-			static nullable<Type>     Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent)
+			static nullable<Type> Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent)
 			{
 				nullable<Type> oResult;
 
@@ -250,13 +250,13 @@ namespace OOX
 
 		public:
 
-			nullable<SimpleTypes::CTblStyleOverrideType<> > m_oType;
+			nullable<SimpleTypes::CTblStyleOverrideType<>> m_oType;
 
-			nullable<OOX::Logic::CParagraphProperty  >      m_oParPr;
-			nullable<OOX::Logic::CRunProperty        >      m_oRunPr;
-			nullable<OOX::Logic::CTableProperty      >      m_oTblPr;
-			nullable<OOX::Logic::CTableCellProperties>      m_oTcPr;
-			nullable<OOX::Logic::CTableRowProperties >      m_oTrPr;
+			nullable<OOX::Logic::CParagraphProperty> m_oParPr;
+			nullable<OOX::Logic::CRunProperty> m_oRunPr;
+			nullable<OOX::Logic::CTableProperty> m_oTblPr;
+			nullable<OOX::Logic::CTableCellProperties> m_oTcPr;
+			nullable<OOX::Logic::CTableRowProperties> m_oTrPr;
 		};
 
 	}
@@ -652,23 +652,27 @@ namespace OOX
 
 			sResult += L">";
 
-			WritingElement_WriteNode_1( L"<w:aliases ",         m_oAliases );
-			WritingElement_WriteNode_1( L"<w:autoRedefine ",    m_oAutoRedefine );
-			WritingElement_WriteNode_1( L"<w:basedOn ",         m_oBasedOn );
-			WritingElement_WriteNode_1( L"<w:hidden ",          m_oHidden );
-			WritingElement_WriteNode_1( L"<w:link ",            m_oLink );
-			WritingElement_WriteNode_1( L"<w:locked ",          m_oLocked );
-			WritingElement_WriteNode_1( L"<w:name ",            m_oName );
-			WritingElement_WriteNode_1( L"<w:next ",            m_oNext );
-			WritingElement_WriteNode_1( L"<w:personal ",        m_oPersonal );
+			WritingElement_WriteNode_1( L"<w:name ", m_oName );
+			WritingElement_WriteNode_1( L"<w:aliases ", m_oAliases );
+			WritingElement_WriteNode_1( L"<w:basedOn ", m_oBasedOn );
+			WritingElement_WriteNode_1( L"<w:next ", m_oNext );
+			WritingElement_WriteNode_1( L"<w:link ", m_oLink );
+			WritingElement_WriteNode_1( L"<w:autoRedefine ", m_oAutoRedefine );
+			WritingElement_WriteNode_1( L"<w:hidden ", m_oHidden );
+			WritingElement_WriteNode_1( L"<w:uiPriority ", m_oUiPriority );
+			WritingElement_WriteNode_1( L"<w:semiHidden ", m_oSemiHidden );
+			WritingElement_WriteNode_1( L"<w:unhideWhenUsed ",  m_oUnhideWhenUsed );
+			WritingElement_WriteNode_1( L"<w:qFormat ", m_oQFormat );
+			WritingElement_WriteNode_1( L"<w:locked ", m_oLocked );
+			WritingElement_WriteNode_1( L"<w:personal ", m_oPersonal );
 			WritingElement_WriteNode_1( L"<w:personalCompose ", m_oPersonalCompose );
-			WritingElement_WriteNode_1( L"<w:personalReply ",   m_oPersonalReply );
+			WritingElement_WriteNode_1( L"<w:personalReply ", m_oPersonalReply );
+			WritingElement_WriteNode_1( L"<w:rsid ", m_oRsid );
 			WritingElement_WriteNode_2( m_oParPr );
-			WritingElement_WriteNode_1( L"<w:qFormat ",         m_oQFormat );
 			WritingElement_WriteNode_2( m_oRunPr );
-			WritingElement_WriteNode_1( L"<w:rsid ",            m_oRsid );
-			WritingElement_WriteNode_1( L"<w:semiHidden ",      m_oSemiHidden );
 			WritingElement_WriteNode_2( m_oTblPr );
+			WritingElement_WriteNode_2( m_oTrPr );
+			WritingElement_WriteNode_2( m_oTcPr );
 
 			for ( unsigned int nIndex = 0; nIndex < m_arrTblStylePr.size(); nIndex++ )
 			{
@@ -676,10 +680,6 @@ namespace OOX
 					sResult += m_arrTblStylePr[nIndex]->toXML();
 			}
 
-			WritingElement_WriteNode_2( m_oTcPr );
-			WritingElement_WriteNode_2( m_oTrPr );
-			WritingElement_WriteNode_1( L"<w:uiPriority ",      m_oUiPriority );
-			WritingElement_WriteNode_1( L"<w:unhideWhenUsed ",  m_oUnhideWhenUsed );
 
 			sResult += L"</w:style>";
 

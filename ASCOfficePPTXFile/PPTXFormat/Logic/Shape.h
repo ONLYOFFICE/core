@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_SHAPE_INCLUDE_H_
-#define PPTX_LOGIC_SHAPE_INCLUDE_H_
 
 #include "../WrapperWritingElement.h"
 #include "NvSpPr.h"
@@ -298,10 +296,14 @@ namespace PPTX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("useBgFill"),	attrUseBgFill)
+					WritingElement_ReadAttributes_Read_if( oReader, _T("useBgFill"), useBgFill)
+					WritingElement_ReadAttributes_Read_else_if(oReader, _T("macro"), macro)
+					WritingElement_ReadAttributes_Read_else_if(oReader, _T("modelId"), modelId)
+					WritingElement_ReadAttributes_Read_else_if(oReader, _T("fLocksText"), fLocksText)					
 				WritingElement_ReadAttributes_End( oReader )
+
 			}
-			std::wstring GetText()const{if(txBody.IsInit()) return txBody->GetText(); return _T(""); };
+			std::wstring GetText()const{if(txBody.IsInit()) return txBody->GetText(); return L""; };
 
 			void FillLevelUp();
 			void Merge(Shape& shape, bool bIsSlidePlaceholder = false);
@@ -331,13 +333,19 @@ namespace PPTX
 			nullable_string						strTextBoxShape;
 			nullable<OOX::Logic::CSdtContent>	oTextBoxShape;
 			nullable<BodyPr>					oTextBoxBodyPr;
+			nullable_uint						oTextBoxId;
+			nullable<LinkedTxbx>				oTextBoxLinkedTxbx;
 
-			nullable_bool						attrUseBgFill;
+			nullable_string						modelId;
+			nullable_bool						useBgFill;
+			nullable_string						macro;
+			nullable_bool						fLocksText;
+			;;
+	//-------------------------------------------------------------------------------------------------
 			nullable<OOX::VmlOffice::CSignatureLine> signatureLine;
+			std::wstring						m_sClientDataXml;
 		protected:
 			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_SHAPE_INCLUDE_H

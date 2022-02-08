@@ -63,7 +63,6 @@
 #include "../OdfFormat/style_graphic_properties.h"
 #include "../OdfFormat/styles_list.h"
 
-
 using namespace cpdoccore;
 
 std::vector<double> current_font_size;
@@ -450,7 +449,7 @@ void DocxConverter::convert(OOX::WritingElement  *oox_unknown)
 		case OOX::et_w_tc:
 		{
 			convert(dynamic_cast<OOX::Logic::CTc*>(oox_unknown));
-		}break;
+		}break;		
 		default:
 		{
 			OoxConverter::convert(oox_unknown);
@@ -1652,66 +1651,82 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 void DocxConverter::convert( ComplexTypes::Word::CShading* shading, _CP_OPT(odf_types::color)& odf_color)
 {	
 	if (!shading) return;	
-	
-	if ((true == shading->m_oVal.IsInit()) && 
-			((shading->m_oVal->GetValue() == SimpleTypes::shdClear && false == shading->m_oFill.IsInit())
-			||
-			(shading->m_oVal->GetValue() == SimpleTypes::shdNil)))
-		return;
 
-	convert(shading->m_oFill.GetPointer(), shading->m_oThemeFill.GetPointer(),
-		shading->m_oThemeFillTint.GetPointer(), shading->m_oThemeShade.GetPointer(), odf_color);
+	if ((shading->m_oVal.IsInit()) && (shading->m_oVal->GetValue() == SimpleTypes::shdNil)) return;
+	
+	bool bColor = ((shading->m_oFill.IsInit()) && (shading->m_oFill->GetValue() == SimpleTypes::hexcolorRGB) )
+		|| ((shading->m_oVal.IsInit()) && shading->m_oColor.IsInit() &&
+			(shading->m_oVal->GetValue() != SimpleTypes::shdClear));
+
+	bool bThemeColor = ((shading->m_oThemeFill.IsInit()) && (shading->m_oThemeFill->GetValue() == SimpleTypes::hexcolorRGB))
+		|| ((shading->m_oVal.IsInit()) && shading->m_oThemeColor.IsInit() &&
+			(shading->m_oVal->GetValue() != SimpleTypes::shdClear));
+
+	if (!bThemeColor && !bColor) return;
+
+	double kf = 0;
+	if (shading->m_oVal.IsInit())
+	{
+		switch (shading->m_oVal->GetValue())
+		{
+		case SimpleTypes::shdPct10: kf = 0.10; break;
+		case SimpleTypes::shdPct12: kf = 0.12; break;
+		case SimpleTypes::shdPct15: kf = 0.15; break;
+		case SimpleTypes::shdPct20: kf = 0.20; break;
+		case SimpleTypes::shdPct25: kf = 0.25; break;
+		case SimpleTypes::shdPct30: kf = 0.30; break;
+		case SimpleTypes::shdPct35: kf = 0.35; break;
+		case SimpleTypes::shdPct37: kf = 0.37; break;
+		case SimpleTypes::shdPct40: kf = 0.40; break;
+		case SimpleTypes::shdPct45: kf = 0.45; break;
+		case SimpleTypes::shdPct5: kf = 0.05; break;
+		case SimpleTypes::shdPct50: kf = 0.50; break;
+		case SimpleTypes::shdPct55: kf = 0.55; break;
+		case SimpleTypes::shdPct60: kf = 0.60; break;
+		case SimpleTypes::shdPct62: kf = 0.62; break;
+		case SimpleTypes::shdPct65: kf = 0.65; break;
+		case SimpleTypes::shdPct70: kf = 0.70; break;
+		case SimpleTypes::shdPct75: kf = 0.75; break;
+		case SimpleTypes::shdPct80: kf = 0.80; break;
+		case SimpleTypes::shdPct85: kf = 0.85; break;
+		case SimpleTypes::shdPct87: kf = 0.87; break;
+		case SimpleTypes::shdPct90: kf = 0.90; break;
+		case SimpleTypes::shdPct95: kf = 0.95; break;
+		default:
+			break;
+		}
+	}
+	convert(NULL, shading->m_oThemeFill.GetPointer(),
+		shading->m_oThemeFillTint.GetPointer(), shading->m_oThemeFillShade.GetPointer(), odf_color);
 		
 	if (odf_color) return;
 
-	if (shading->m_oColor.IsInit())
+	convert(NULL, shading->m_oThemeColor.GetPointer(), 
+		shading->m_oThemeTint.GetPointer(), shading->m_oThemeShade.GetPointer(), odf_color);
+
+	if (odf_color) return;
+
+	if (bColor)
 	{
-		if ((shading->m_oColor->GetValue() == SimpleTypes::hexcolorAuto) && 
-			(shading->m_oVal.IsInit()) && (shading->m_oVal->GetValue() == SimpleTypes::shdClear))
+		BYTE ucR = 0xff, ucB = 0xff, ucG = 0xff;  
+
+		if (shading->m_oFill.IsInit())
 		{
-			return;
+			ucR = shading->m_oFill->Get_R();
+			ucB = shading->m_oFill->Get_B();
+			ucG = shading->m_oFill->Get_G();
+			
+			ucR = (BYTE)(ucR * (1 - kf)); ucB = (BYTE)(ucB * (1 - kf)); ucG = (BYTE)(ucG * (1 - kf));
 		}
-		BYTE ucR = 0xff, ucB = 0xff, ucG = 0xff;  //auto fill
-		if (shading->m_oColor->GetValue() == SimpleTypes::hexcolorRGB)
+		else if (shading->m_oColor->GetValue() == SimpleTypes::hexcolorRGB)
 		{
 			ucR = shading->m_oColor->Get_R(); 
 			ucB = shading->m_oColor->Get_B(); 
 			ucG = shading->m_oColor->Get_G(); 
+			
+			ucR = (BYTE)(ucR * (kf)); ucB = (BYTE)(ucB * (kf)); ucG = (BYTE)(ucG * (kf));
 		}
-		if (shading->m_oVal.IsInit())
-		{
-			double kf = 0;
-			switch(shading->m_oVal->GetValue())
-			{
-				case SimpleTypes::shdPct10: kf = 0.10; break;
-				case SimpleTypes::shdPct12: kf = 0.12; break;
-				case SimpleTypes::shdPct15: kf = 0.15; break;
-				case SimpleTypes::shdPct20: kf = 0.20; break;
-				case SimpleTypes::shdPct25: kf = 0.25; break;
-				case SimpleTypes::shdPct30: kf = 0.30; break;
-				case SimpleTypes::shdPct35: kf = 0.35; break;
-				case SimpleTypes::shdPct37: kf = 0.37; break;
-				case SimpleTypes::shdPct40: kf = 0.40; break;
-				case SimpleTypes::shdPct45: kf = 0.45; break;
-				case SimpleTypes::shdPct5 : kf = 0.05; break;
-				case SimpleTypes::shdPct50: kf = 0.50; break;
-				case SimpleTypes::shdPct55: kf = 0.55; break;
-				case SimpleTypes::shdPct60: kf = 0.60; break;
-				case SimpleTypes::shdPct62: kf = 0.62; break;
-				case SimpleTypes::shdPct65: kf = 0.65; break;
-				case SimpleTypes::shdPct70: kf = 0.70; break;
-				case SimpleTypes::shdPct75: kf = 0.75; break;
-				case SimpleTypes::shdPct80: kf = 0.80; break;
-				case SimpleTypes::shdPct85: kf = 0.85; break;
-				case SimpleTypes::shdPct87: kf = 0.87; break;
-				case SimpleTypes::shdPct90: kf = 0.90; break;
-				case SimpleTypes::shdPct95: kf = 0.95; break;
-				default:
-						break;
-			}
-			ucR = (BYTE)(ucR * (1 - kf)); ucB = (BYTE)(ucB * (1 - kf)); ucG = (BYTE)(ucG * (1 - kf));
-		}
-		SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR,ucG,ucB);
+		SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR, ucG, ucB);
 
 		if (oRgbColor)
 		{
@@ -2052,8 +2067,43 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 		//odt_context->set_master_page_name(odt_context->page_layout_context()->last_master() ?
 		//									  odt_context->page_layout_context()->last_master()->get_name() : L"");
 	}
+	if (oox_section_pr->m_oLnNumType.IsInit())
+	{//linenumbering-configuration один для всех секций и всех разметок страниц ((( - хуевый OpenOffice (также не начала нумерации)
+		//Ms Office тоже фуфло - нет нумерации алфавитами и римскими, нет разделителей
+		odf_writer::office_element_ptr lnNum_elm;
+		odf_writer::create_element(L"text", L"linenumbering-configuration", lnNum_elm, odf_context());
 
-//--------------------------------------------------------------------------------------------------------------------------------------------		
+		odf_writer::text_linenumbering_configuration *linenumbering = dynamic_cast<odf_writer::text_linenumbering_configuration *>(lnNum_elm.get());
+		if (!linenumbering) return;
+
+		linenumbering->text_style_name_ = odt_context->styles_context()->find_free_name(style_family::LineNumbering);
+		linenumbering->text_number_lines_ = true;
+
+		if (oox_section_pr->m_oLnNumType->m_oCountBy.IsInit())
+		{
+			linenumbering->text_increment_ = oox_section_pr->m_oLnNumType->m_oCountBy->GetValue();
+		}
+		if (oox_section_pr->m_oLnNumType->m_oDistance.IsInit())
+		{
+			linenumbering->text_offset_ = odf_types::length(oox_section_pr->m_oLnNumType->m_oDistance->ToPoints(), odf_types::length::pt);
+					}
+		if (oox_section_pr->m_oLnNumType->m_oRestart.IsInit())
+		{
+			if (oox_section_pr->m_oLnNumType->m_oRestart->GetValue() == SimpleTypes::linenumberrestartNewPage)
+			{
+				linenumbering->text_restart_on_page_ = true;
+			}
+			else
+			{
+			}
+		}
+		if (oox_section_pr->m_oLnNumType->m_oStart.IsInit())
+		{
+		}
+		odt_context->styles_context()->add_style(lnNum_elm, false, true, style_family::LineNumbering);
+
+	}
+//------------------------------------------------------------------------------------------------------------------------------------------		
 	// то что относится собственно к секциям-разделам
 
 			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oBidi;
@@ -2062,7 +2112,6 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 			//nullable<OOX::Logic::CFtnProps                               > m_oFootnotePr;
 			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oFormProt;
 
-			//nullable<ComplexTypes::Word::CLineNumber                     > m_oLnNumType;
 			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oNoEndnote;
 			//nullable<ComplexTypes::Word::CPaperSource                    > m_oPaperSrc;
 
@@ -2134,6 +2183,7 @@ void DocxConverter::convert(OOX::Logic::CBgPict *oox_bg_pict, int type)
 	odf_writer::style_page_layout_properties *current_layout_properties = odt_context->page_layout_context()->last_layout()->get_properties();
 
 	odt_context->drawing_context()->end_drawing_background(current_layout_properties->attlist_.common_draw_fill_attlist_);
+	odt_context->drawing_context()->set_background_state(false);
 	odt_context->end_drawings();
 }
 void DocxConverter::convert(OOX::Logic::CBackground *oox_background, int type)
@@ -2163,6 +2213,7 @@ void DocxConverter::convert(OOX::Logic::CBackground *oox_background, int type)
 	odf_writer::style_page_layout_properties * current_layout_properties = odt_context->page_layout_context()->last_layout()->get_properties();
 
 	odt_context->drawing_context()->end_drawing_background(current_layout_properties->attlist_.common_draw_fill_attlist_);
+	odt_context->drawing_context()->set_background_state(false);
 	odt_context->end_drawings();
 }
 
@@ -2402,7 +2453,7 @@ void DocxConverter::convert(ComplexTypes::Word::CPageBorder *borderProp, std::ws
 	if (borderProp->m_oColor.IsInit())
 	{
 		if (borderProp->m_oColor->GetValue() != SimpleTypes::hexcolorAuto)
-			convert(borderProp->m_oColor.GetPointer(), borderProp->m_oThemeColor.GetPointer(), borderProp->m_oThemeTint.GetPointer(),borderProp->m_oThemeShade.GetPointer(), color);
+			convert(borderProp->m_oColor.GetPointer(), borderProp->m_oThemeColor.GetPointer(), borderProp->m_oThemeTint.GetPointer(), borderProp->m_oThemeShade.GetPointer(), color);
 	}
 	if (color) border_color = color->get_hex_value();
 	else border_color = L"000000";
@@ -2414,10 +2465,6 @@ void DocxConverter::convert(ComplexTypes::Word::CBorder *borderProp, std::wstrin
 	odf_border_prop = L"";
 	if (!borderProp)
 		return;
-			//nullable<SimpleTypes::COnOff<>              > m_oFrame;
-			//nullable<SimpleTypes::COnOff<>              > m_oShadow;
-			//nullable<SimpleTypes::CPointMeasure<>       > m_oSpace;
-			//nullable<SimpleTypes::CUcharHexNumber<>     > m_oThemeShade;
 
 	std::wstringstream border_style;
 	std::wstring border_color;
@@ -2458,10 +2505,9 @@ void DocxConverter::convert(ComplexTypes::Word::CBorder *borderProp, std::wstrin
 ///////////////////////////////////////////////////////////////////
 	_CP_OPT(odf_types::color) color;
 
-	if (borderProp->m_oColor.IsInit())
+	if (borderProp->m_oColor.IsInit() || borderProp->m_oThemeColor.IsInit())
 	{
-		if (borderProp->m_oColor->GetValue() != SimpleTypes::hexcolorAuto)
-			convert(borderProp->m_oColor.GetPointer(), borderProp->m_oThemeColor.GetPointer(), borderProp->m_oThemeTint.GetPointer(),borderProp->m_oThemeShade.GetPointer(), color);
+		convert(borderProp->m_oColor.GetPointer(), borderProp->m_oThemeColor.GetPointer(), borderProp->m_oThemeTint.GetPointer(),borderProp->m_oThemeShade.GetPointer(), color);
 	}
 	if (color) border_color = color->get_hex_value();
 	else border_color = L"000000";
@@ -2577,7 +2623,7 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 						(oox_run_pr->m_oTextOutline->Fill.m_type != PPTX::Logic::UniFill::notInit) && 
 						(oox_run_pr->m_oTextOutline->Fill.m_type != PPTX::Logic::UniFill::noFill));
 
-	bool bOutline	= oox_run_pr->m_oOutline.IsInit();
+	bool bOutline	= ((oox_run_pr->m_oOutline.IsInit()) && (oox_run_pr->m_oOutline->m_oVal.ToBool()));
 	bool bColorText = !bOutline && (oox_run_pr->m_oColor.IsInit() && (oox_run_pr->m_oColor->m_oVal.IsInit() && oox_run_pr->m_oColor->m_oVal->GetValue() == SimpleTypes::hexcolorRGB));
 	
 	_CP_OPT(odf_types::color) color;
@@ -2809,16 +2855,19 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 	}
 	if (oox_run_pr->m_oHighlight.IsInit() && oox_run_pr->m_oHighlight->m_oVal.IsInit())
 	{
-		BYTE ucR = oox_run_pr->m_oHighlight->m_oVal->Get_R(); 
-		BYTE ucB = oox_run_pr->m_oHighlight->m_oVal->Get_B(); 
-		BYTE ucG = oox_run_pr->m_oHighlight->m_oVal->Get_G(); 
-		SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR,ucG,ucB);
-
-        if (oRgbColor)
+		if (oox_run_pr->m_oHighlight->m_oVal->GetValue() != SimpleTypes::highlightcolorNone)
 		{
-            std::wstring strColor = L"#" + oRgbColor->ToString().substr(2);//.Right(6);
-			text_properties->content_.fo_background_color_ = odf_types::color(strColor);
-			delete oRgbColor;
+			BYTE ucR = oox_run_pr->m_oHighlight->m_oVal->Get_R();
+			BYTE ucB = oox_run_pr->m_oHighlight->m_oVal->Get_B();
+			BYTE ucG = oox_run_pr->m_oHighlight->m_oVal->Get_G();
+			SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR, ucG, ucB);
+
+			if (oRgbColor)
+			{
+				std::wstring strColor = L"#" + oRgbColor->ToString().substr(2);//.Right(6);
+				text_properties->content_.fo_background_color_ = odf_types::color(strColor);
+				delete oRgbColor;
+			}
 		}
 	}
 	
@@ -2831,12 +2880,25 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 			text_properties->content_.fo_background_color_= *odf_color;
 		}
 	}
-	if (oox_run_pr->m_oOutline.IsInit())
+	if ((oox_run_pr->m_oOutline.IsInit()) && (oox_run_pr->m_oOutline->m_oVal.ToBool()))
 		text_properties->content_.style_text_outline_ = true; //контур
 
 	if (oox_run_pr->m_oVanish.IsInit())
 		text_properties->content_.text_display_ = odf_types::text_display(odf_types::text_display::None);
 
+	if (oox_run_pr->m_oLang.IsInit())
+	{
+		if (oox_run_pr->m_oLang->m_oVal.IsInit())
+		{
+			std::wstring lang = *oox_run_pr->m_oLang->m_oVal;
+			size_t split = lang.find(L"-");
+			if (split != std::wstring::npos)
+			{
+				text_properties->content_.fo_language_ = lang.substr(0, split);
+				text_properties->content_.fo_country_ = lang.substr(split + 1);
+			}
+		}
+	}
 }
 
 void DocxConverter::convert(SimpleTypes::CTheme<>* oox_font_theme, _CP_OPT(std::wstring) & odf_font_name)
@@ -3077,7 +3139,7 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 					bSet = true;
 				}
 
-				if (oox_pic->m_oShape->m_sType.IsInit())
+				if ((oox_pic->m_oShape->m_sType.IsInit()) && (false == oox_pic->m_oShape->m_sType->empty()))
 				{
 					std::wstring type( oox_pic->m_oShape->m_sType.get());
 					type = type.substr(1);//without #
@@ -3418,38 +3480,76 @@ void DocxConverter::convert(SimpleTypes::CHexColor<>		*color,
 	odf_color = boost::none;
 
 	bool result = false;	
-
-	if(color && color->GetValue() == SimpleTypes::hexcolorRGB)//easy, faster,realy  !!
+	if (color)
 	{
-		unsigned char ucA=0, ucR=0, ucG=0, ucB=0;
-		
-		ucR = color->Get_R(); 
-		ucB = color->Get_B(); 
-		ucG = color->Get_G(); 
-		ucA = color->Get_A(); 
-
-		SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR, ucG, ucB);
-
-        if ((oRgbColor) && (oRgbColor->GetValue() == SimpleTypes::hexcolorRGB ))
+		if (color->GetValue() == SimpleTypes::hexcolorAuto)
 		{
-            std::wstring strColor = L"#" + oRgbColor->ToString().substr(2);//.Right(6);
-
-			odf_color = odf_types::color(strColor);
-			result = true;
+			return;
 		}
-		if (oRgbColor)
-			delete oRgbColor;
+		else if (color->GetValue() == SimpleTypes::hexcolorRGB)
+		{
+			unsigned char ucA = 0, ucR = 0, ucG = 0, ucB = 0;
+
+			ucR = color->Get_R();
+			ucB = color->Get_B();
+			ucG = color->Get_G();
+			ucA = color->Get_A();
+
+			SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR, ucG, ucB);
+
+			if ((oRgbColor) && (oRgbColor->GetValue() == SimpleTypes::hexcolorRGB))
+			{
+				std::wstring strColor = L"#" + oRgbColor->ToString().substr(2);//.Right(6);
+
+				odf_color = odf_types::color(strColor);
+				result = true;
+			}
+			if (oRgbColor)
+				delete oRgbColor;
+		}
 	}
 	if(theme_color && result == false)
 	{
 		std::map<std::wstring, PPTX::Logic::UniColor>::iterator pFind = docx_document->m_pTheme->themeElements.clrScheme.Scheme.find(theme_color->ToString());
 
+		if (pFind == docx_document->m_pTheme->themeElements.clrScheme.Scheme.end())
+		{
+			switch (theme_color->GetValue())
+			{
+			case SimpleTypes::themecolorBackground1:
+				pFind = docx_document->m_pTheme->themeElements.clrScheme.Scheme.find(L"lt1");
+				break;
+			case SimpleTypes::themecolorBackground2:
+				pFind = docx_document->m_pTheme->themeElements.clrScheme.Scheme.find(L"lt2");
+				break;
+			case SimpleTypes::themecolorText1:
+				pFind = docx_document->m_pTheme->themeElements.clrScheme.Scheme.find(L"dk1");
+				break;
+			case SimpleTypes::themecolorText2:
+				pFind = docx_document->m_pTheme->themeElements.clrScheme.Scheme.find(L"dk2");
+				break;
+			}
+		}
 		if (pFind != docx_document->m_pTheme->themeElements.clrScheme.Scheme.end())
 		{
-			PPTX::Logic::UniColor & color = pFind->second;
-			
-			DWORD argb = color.GetARGB(); 
+			DWORD argb = pFind->second.GetARGB();
 
+			if (theme_tint || theme_shade)
+			{
+				double dH, dS, dL;
+				RGB2HSL(argb, dH, dS, dL);
+
+				if (theme_shade)
+				{
+					dL = dL * theme_shade->GetValue() / 255. ;
+				}
+				if (theme_tint)
+				{
+					dL = dL * theme_tint->GetValue() / 255. + (1 - theme_tint->GetValue() / 255.);
+				}
+				argb = HSL2RGB(dH, dS, dL);
+
+			}
 			std::wstring strColor = XmlUtils::IntToString(argb & 0x00FFFFFF, L"#%06X");
 			odf_color = odf_types::color(strColor);
 		}
@@ -3534,7 +3634,10 @@ void DocxConverter::convert_lists_styles()
 		if (lists_styles->m_arrNum[i]->m_oAbstractNumId.IsInit() &&  lists_styles->m_arrNum[i]->m_oAbstractNumId->m_oVal.IsInit())
 			abstr_num = *lists_styles->m_arrNum[i]->m_oAbstractNumId->m_oVal;			
 
-		OOX::Numbering::CAbstractNum* num_style = lists_styles->m_arrAbstractNum[abstr_num];		
+		std::map<int, size_t>::iterator pFindAbstractNum = lists_styles->m_mapAbstractNum.find(abstr_num);		
+		if (pFindAbstractNum == lists_styles->m_mapAbstractNum.end()) continue;
+		
+		OOX::Numbering::CAbstractNum* num_style = lists_styles->m_arrAbstractNum[pFindAbstractNum->second];
 		if (!num_style) continue;
 
 		odt_context->styles_context()->lists_styles().start_style(true, *lists_styles->m_arrNum[i]->m_oNumId);
@@ -3593,23 +3696,23 @@ void DocxConverter::convert(OOX::Logic::CHyperlink *oox_hyperlink)
 {
 	if (oox_hyperlink == NULL)return;
 
-	std::wstring ref;
+	std::wstring link, location;
 
 	if (oox_hyperlink->m_oId.IsInit()) //гиперлинк
 	{
-		ref = find_link_by_id(oox_hyperlink->m_oId->GetValue(), 2);
+		link = find_link_by_id(oox_hyperlink->m_oId->GetValue(), 2);
 	}
 	else if (oox_hyperlink->m_sDestinition.IsInit()) //гиперлинк
 	{
-		ref = *oox_hyperlink->m_sDestinition;
+		link = *oox_hyperlink->m_sDestinition;
 	}
-	else if (oox_hyperlink->m_sAnchor.IsInit())
+	if (oox_hyperlink->m_sAnchor.IsInit())
 	{
-		ref = L"#" + *oox_hyperlink->m_sAnchor;
+		location =  *oox_hyperlink->m_sAnchor;
 	}
-	if (false == ref.empty())
+	if (false == link.empty() || false == location.empty())
 	{
-		odt_context->start_hyperlink(ref);
+		odt_context->start_hyperlink(link, location);
 		
         for (size_t i = 0; i < oox_hyperlink->m_arrItems.size(); ++i)
 		{
@@ -3918,7 +4021,10 @@ void DocxConverter::convert(OOX::Numbering::CLvl *oox_num_lvl, OOX::Numbering::C
 
 		for (size_t i = 0; (lists_styles) && (i < lists_styles->m_arrNumPicBullet.size()); i++)
 		{
+			if (!lists_styles->m_arrNumPicBullet[i]) continue;
+			
 			if (false == lists_styles->m_arrNumPicBullet[i]->m_oNumPicBulletId.IsInit()) continue;
+			
 			if ((lists_styles->m_arrNumPicBullet[i]) && (*lists_styles->m_arrNumPicBullet[i]->m_oNumPicBulletId == id))
 			{
 				if (lists_styles->m_arrNumPicBullet[i]->m_oDrawing.IsInit())
@@ -4067,6 +4173,8 @@ void DocxConverter::convert(OOX::CStyle	*oox_style)
 		return;
 	}
 	
+	std::wstring oox_name_id = oox_style->m_sStyleId.get_value_or(L"");
+	bool bDefault = oox_style->m_oDefault.IsInit() && oox_style->m_oDefault->ToBool();
 
 	switch(oox_style->m_oType->GetValue())
 	{
@@ -4075,10 +4183,14 @@ void DocxConverter::convert(OOX::CStyle	*oox_style)
 		default:  
 			return;
 	}
+	if (bDefault && family == odf_types::style_family::Paragraph && oox_name_id != L"Standart")
+	{
+		//todooo ???
+		//odt_context->sRenamedStyle = oox_name_id;
+		//oox_name_id = L"Standart";
+	}
 
-	std::wstring oox_name_id = oox_style->m_sStyleId.get_value_or(L"");
-
-	odt_context->styles_context()->create_style(oox_name_id, family, false, true, -1); 
+	odt_context->styles_context()->create_style(oox_name_id, family, false, true, -1);
 
 	std::wstring style_name;
 	if (oox_style->m_oName.IsInit() && oox_style->m_oName->m_sVal.IsInit()) 
@@ -4086,18 +4198,20 @@ void DocxConverter::convert(OOX::CStyle	*oox_style)
 		style_name = *oox_style->m_oName->m_sVal;
 		odt_context->styles_context()->last_state()->set_display_name(style_name);
 	}
-
+	if (bDefault)
+	{
+		odt_context->styles_context()->last_state()->set_class(L"default");
+	}
 	odf_writer::style_text_properties* text_properties = NULL;
 	if (oox_style->m_oRunPr.IsInit())
 	{
 		text_properties = odt_context->styles_context()->last_state()->get_text_properties();
 	
-		if (oox_style->m_oDefault.IsInit() && oox_style->m_oDefault->ToBool())
+		if (bDefault)
 		{
-			//основан на дефолтовом - накатить
 			odf_writer::odf_style_state_ptr def_style_state;
 			if (odt_context->styles_context()->find_odf_default_style_state(odf_types::style_family::Paragraph, def_style_state) && def_style_state)
-			{
+			{//??
 				odf_writer::style_text_properties * props = def_style_state->get_text_properties();
 				text_properties->apply_from(props);
 			}
@@ -4110,10 +4224,9 @@ void DocxConverter::convert(OOX::CStyle	*oox_style)
 		odf_writer::style_paragraph_properties	*paragraph_properties = odt_context->styles_context()->last_state()->get_paragraph_properties();
 		if (oox_style->m_oDefault.IsInit() && oox_style->m_oDefault->ToBool())
 		{
-			//основан на дефолтовом - накатить
 			odf_writer::odf_style_state_ptr def_style_state;
 			if (odt_context->styles_context()->find_odf_default_style_state(odf_types::style_family::Paragraph, def_style_state) && def_style_state)
-			{
+			{//??
 				odf_writer::style_paragraph_properties *props = def_style_state->get_paragraph_properties();
 				paragraph_properties->apply_from(props);
 			}
@@ -4170,11 +4283,16 @@ void DocxConverter::convert(OOX::Logic::CCommentRangeStart* oox_comm_start)
 
 	int oox_comm_id = oox_comm_start->m_oId->GetValue();
 
-	bool added = odt_context->start_comment(oox_comm_id);
+	int state = odt_context->start_comment(oox_comm_id);
 
-	if (added == false)
+	if (state > 0)
 	{
 		convert_comment(oox_comm_id);
+
+		//if (state == 2)
+		//{
+		//	odt_context->text_context()->end_element();
+		//}
 	}
 }
 
@@ -4215,12 +4333,17 @@ void DocxConverter::convert(OOX::Logic::CCommentReference* oox_comm_ref)
 
 	int oox_comm_id = oox_comm_ref->m_oId->GetValue();
 
-	bool added = odt_context->start_comment(oox_comm_id);
+	int state = odt_context->start_comment(oox_comm_id);
 
-	if (added == false) // типо тока стартанул
+	if (state > 0) // типо тока стартанул
 	{
 		//значит старт тута а не по RangeStart
 		convert_comment(oox_comm_id);
+
+		if (state == 2)
+		{
+			odt_context->text_context()->end_element();
+		}
 	}
 }
 void DocxConverter::convert(OOX::Logic::CFootnoteReference* oox_ref)
@@ -4888,7 +5011,7 @@ bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf_writer
 
 void DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf_writer::style_table_cell_properties * table_cell_properties)
 {
-	if (oox_table_pr == NULL || oox_table_pr == NULL) return;
+	if (oox_table_pr == NULL || table_cell_properties == NULL) return;
 
 	convert(oox_table_pr->m_oTblBorders.GetPointer(), table_cell_properties);
 
@@ -5014,15 +5137,10 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,
 	if (oox_table_cell_pr->m_oShd.IsInit())
 	{
 		_CP_OPT(odf_types::color) odf_color;
-		convert(oox_table_cell_pr->m_oShd->m_oFill.GetPointer(), oox_table_cell_pr->m_oShd->m_oThemeFill.GetPointer(),
-			oox_table_cell_pr->m_oShd->m_oThemeFillTint.GetPointer(), oox_table_cell_pr->m_oShd->m_oThemeShade.GetPointer(), odf_color);
+		convert(oox_table_cell_pr->m_oShd.GetPointer(), odf_color);
+
 		if (odf_color)
 			table_cell_properties->content_.common_background_color_attlist_.fo_background_color_ = *odf_color;
-
-		if (oox_table_cell_pr->m_oShd->m_oVal.IsInit())
-		{
-			//паттерная заливка ячейки :(
-		}
 	}
 
 	if (oox_table_cell_pr->m_oTextDirection.IsInit() && oox_table_cell_pr->m_oTextDirection->m_oVal.IsInit())
@@ -5213,6 +5331,5 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,
 
 	return true;
 }
-
 } 
 

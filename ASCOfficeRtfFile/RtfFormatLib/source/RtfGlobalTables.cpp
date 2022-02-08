@@ -113,3 +113,32 @@ std::wstring RtfListOverrideTable::RenderToOOX(RenderParameter oRenderParameter)
 	}
 	return sResult;
 }
+std::wstring RtfRevisionTable::RenderToRtf(RenderParameter oRenderParameter)
+{
+	if (m_aArray.empty()) return L"";
+
+	std::wstring sResult;
+
+	sResult += _T("{\\*\\revtbl ");
+
+	sResult += L"{Unknown;}";
+	
+	RenderParameter oNewParam = oRenderParameter;
+	oNewParam.nType = RENDER_TO_RTF_PARAM_CHAR;
+
+	for (size_t i = 0; i < m_aArray.size(); i++)
+	{
+		sResult += _T("{");
+		RtfCharPtr pNewChar(new RtfChar());
+
+		pNewChar->setText(m_aArray[i]);
+		sResult += pNewChar->RenderToRtf(oNewParam);
+
+		//sResult += m_aArray[i]
+
+		sResult += L";}";
+	}
+	sResult += _T("}");
+
+	return sResult;
+}

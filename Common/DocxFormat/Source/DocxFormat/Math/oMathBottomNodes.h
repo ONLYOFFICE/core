@@ -66,150 +66,152 @@ namespace OOX
 			virtual ~CMathBottomNodes()
 			{
 			}
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				sNodeName = oNode.GetName();
-				if ( _T("m:aln") == sNodeName )
-					eType = et_m_aln;
-				else if ( _T("m:alnScr") == sNodeName )
-					eType = et_m_alnScr;
-				else if ( _T("m:argSz") == sNodeName )
-					eType = et_m_argSz;
-				else if ( _T("m:baseJc") == sNodeName )
-					eType = et_m_baseJc;
-				else if ( _T("m:begChr") == sNodeName )
-					eType = et_m_begChr;
-				else if ( _T("m:cGp") == sNodeName )
-					eType = et_m_cGp;
-				else if ( _T("m:cGpRule") == sNodeName )
-					eType = et_m_cGpRule;
-				else if ( _T("m:chr") == sNodeName )
-					eType = et_m_chr;
-				else if ( _T("m:count") == sNodeName )
-					eType = et_m_count;
-				else if ( _T("m:cSp") == sNodeName )
-					eType = et_m_cSp;
-				else if ( _T("m:degHide") == sNodeName )
-					eType = et_m_degHide;
-				else if ( _T("m:diff") == sNodeName )
-					eType = et_m_diff;
-				else if ( _T("m:endChr") == sNodeName )
-					eType = et_m_endChr;
-				else if ( _T("m:grow") == sNodeName )
-					eType = et_m_grow;
-				else if ( _T("m:hideBot") == sNodeName )
-					eType = et_m_hideBot;
-				else if ( _T("m:hideLeft") == sNodeName )
-					eType = et_m_hideLeft;
-				else if ( _T("m:hideRight") == sNodeName )
-					eType = et_m_hideRight;
-				else if ( _T("m:hideTop") == sNodeName )
-					eType = et_m_hideTop;
-				else if ( _T("m:jc") == sNodeName )
-					eType = et_m_jc;
-				else if ( _T("m:limLoc") == sNodeName )
-					eType = et_m_limLoc;
-				else if ( _T("m:lit") == sNodeName )
-					eType = et_m_lit;
-				else if ( _T("m:maxDist") == sNodeName )
-					eType = et_m_maxDist;
-				else if ( _T("m:mcJc") == sNodeName )
-					eType = et_m_mcJc;
-				else if ( _T("m:noBreak") == sNodeName )
-					eType = et_m_noBreak;
-				else if ( _T("m:nor") == sNodeName )
-					eType = et_m_nor;
-				else if ( _T("m:objDist") == sNodeName )
-					eType = et_m_objDist;
-				else if ( _T("m:opEmu") == sNodeName )
-					eType = et_m_opEmu;
-				else if ( _T("m:plcHide") == sNodeName )
-					eType = et_m_plcHide;
-				else if ( _T("m:pos") == sNodeName )
-					eType = et_m_pos;
-				else if ( _T("m:rSp") == sNodeName )
-					eType = et_m_rSp;
-				else if ( _T("m:rSpRule") == sNodeName )
-					eType = et_m_rSpRule;
-				else if ( _T("m:scr") == sNodeName )
-					eType = et_m_scr;
-				else if ( _T("m:sepChr") == sNodeName )
-					eType = et_m_sepChr;
-				else if ( _T("m:show") == sNodeName )
-					eType = et_m_show;
-				else if ( _T("m:shp") == sNodeName )
-					eType = et_m_shp;
-				else if ( _T("m:strikeBLTR") == sNodeName )
-					eType = et_m_strikeBLTR;
-				else if ( _T("m:strikeH") == sNodeName )
-					eType = et_m_strikeH;
-				else if ( _T("m:strikeTLBR") == sNodeName )
-					eType = et_m_strikeTLBR;
-				else if ( _T("m:strikeV") == sNodeName )
-					eType = et_m_strikeV;
-				else if ( _T("m:sty") == sNodeName )
-					eType = et_m_sty;
-				else if ( _T("m:subHide") == sNodeName )
-					eType = et_m_subHide;
-				else if ( _T("m:supHide") == sNodeName )
-					eType = et_m_supHide;
-				else if ( _T("m:transp") == sNodeName )
-					eType = et_m_transp;
-				else if ( _T("m:type") == sNodeName )
-					eType = et_m_type;
-				else if ( _T("m:vertJc") == sNodeName )
-					eType = et_m_vertJc;
-				else if ( _T("m:zeroAsc") == sNodeName )
-					eType = et_m_zeroAsc;
-				else if ( _T("m:zeroDesc") == sNodeName )
-					eType = et_m_zeroDesc;
-				else if ( _T("m:zeroWid") == sNodeName )
-					eType = et_m_zeroWid;
+				m_sNodeName = oNode.GetName();
+				if ( _T("m:aln") == m_sNodeName )
+					m_eType = et_m_aln;
+				else if ( _T("m:alnScr") == m_sNodeName )
+					m_eType = et_m_alnScr;
+				else if ( _T("m:argSz") == m_sNodeName )
+					m_eType = et_m_argSz;
+				else if ( _T("m:baseJc") == m_sNodeName )
+					m_eType = et_m_baseJc;
+				else if ( _T("m:begChr") == m_sNodeName )
+					m_eType = et_m_begChr;
+				else if ( _T("m:cGp") == m_sNodeName )
+					m_eType = et_m_cGp;
+				else if ( _T("m:cGpRule") == m_sNodeName )
+					m_eType = et_m_cGpRule;
+				else if ( _T("m:chr") == m_sNodeName )
+					m_eType = et_m_chr;
+				else if ( _T("m:count") == m_sNodeName )
+					m_eType = et_m_count;
+				else if ( _T("m:cSp") == m_sNodeName )
+					m_eType = et_m_cSp;
+				else if ( _T("m:degHide") == m_sNodeName )
+					m_eType = et_m_degHide;
+				else if ( _T("m:diff") == m_sNodeName )
+					m_eType = et_m_diff;
+				else if ( _T("m:endChr") == m_sNodeName )
+					m_eType = et_m_endChr;
+				else if ( _T("m:grow") == m_sNodeName )
+					m_eType = et_m_grow;
+				else if ( _T("m:hideBot") == m_sNodeName )
+					m_eType = et_m_hideBot;
+				else if ( _T("m:hideLeft") == m_sNodeName )
+					m_eType = et_m_hideLeft;
+				else if ( _T("m:hideRight") == m_sNodeName )
+					m_eType = et_m_hideRight;
+				else if ( _T("m:hideTop") == m_sNodeName )
+					m_eType = et_m_hideTop;
+				else if ( _T("m:jc") == m_sNodeName )
+					m_eType = et_m_jc;
+				else if ( _T("m:limLoc") == m_sNodeName )
+					m_eType = et_m_limLoc;
+				else if ( _T("m:lit") == m_sNodeName )
+					m_eType = et_m_lit;
+				else if ( _T("m:maxDist") == m_sNodeName )
+					m_eType = et_m_maxDist;
+				else if ( _T("m:mcJc") == m_sNodeName )
+					m_eType = et_m_mcJc;
+				else if ( _T("m:noBreak") == m_sNodeName )
+					m_eType = et_m_noBreak;
+				else if ( _T("m:nor") == m_sNodeName )
+					m_eType = et_m_nor;
+				else if ( _T("m:objDist") == m_sNodeName )
+					m_eType = et_m_objDist;
+				else if ( _T("m:opEmu") == m_sNodeName )
+					m_eType = et_m_opEmu;
+				else if ( _T("m:plcHide") == m_sNodeName )
+					m_eType = et_m_plcHide;
+				else if ( _T("m:pos") == m_sNodeName )
+					m_eType = et_m_pos;
+				else if ( _T("m:rSp") == m_sNodeName )
+					m_eType = et_m_rSp;
+				else if ( _T("m:rSpRule") == m_sNodeName )
+					m_eType = et_m_rSpRule;
+				else if ( _T("m:scr") == m_sNodeName )
+					m_eType = et_m_scr;
+				else if ( _T("m:sepChr") == m_sNodeName )
+					m_eType = et_m_sepChr;
+				else if ( _T("m:show") == m_sNodeName )
+					m_eType = et_m_show;
+				else if ( _T("m:shp") == m_sNodeName )
+					m_eType = et_m_shp;
+				else if ( _T("m:strikeBLTR") == m_sNodeName )
+					m_eType = et_m_strikeBLTR;
+				else if ( _T("m:strikeH") == m_sNodeName )
+					m_eType = et_m_strikeH;
+				else if ( _T("m:strikeTLBR") == m_sNodeName )
+					m_eType = et_m_strikeTLBR;
+				else if ( _T("m:strikeV") == m_sNodeName )
+					m_eType = et_m_strikeV;
+				else if ( _T("m:sty") == m_sNodeName )
+					m_eType = et_m_sty;
+				else if ( _T("m:subHide") == m_sNodeName )
+					m_eType = et_m_subHide;
+				else if ( _T("m:supHide") == m_sNodeName )
+					m_eType = et_m_supHide;
+				else if ( _T("m:transp") == m_sNodeName )
+					m_eType = et_m_transp;
+				else if ( _T("m:type") == m_sNodeName )
+					m_eType = et_m_type;
+				else if ( _T("m:vertJc") == m_sNodeName )
+					m_eType = et_m_vertJc;
+				else if ( _T("m:zeroAsc") == m_sNodeName )
+					m_eType = et_m_zeroAsc;
+				else if ( _T("m:zeroDesc") == m_sNodeName )
+					m_eType = et_m_zeroDesc;
+				else if ( _T("m:zeroWid") == m_sNodeName )
+					m_eType = et_m_zeroWid;
 
 				XmlMacroReadAttributeBase( oNode, _T("m:val"), m_val );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
-				std::wstring sName = oReader.GetName();
-				if ( _T("m:brkBin") == sName )
-					eType = et_m_brkBin;
-				else if ( _T("m:brkBinSub") == sName )
-					eType = et_m_brkBinSub;
-				else if ( _T("m:defJc") == sName )
-					eType = et_m_defJc;
-				else if ( _T("m:dispDef") == sName )
-					eType = et_m_dispDef;
-				else if ( _T("m:interSp") == sName )
-					eType = et_m_interSp;
-				else if ( _T("m:intLim") == sName )
-					eType = et_m_intLim;
-				else if ( _T("m:intraSp") == sName )
-					eType = et_m_intraSp;				
-				else if ( _T("m:lMargin") == sName )
-					eType = et_m_lMargin;				
-				else if ( _T("m:naryLim") == sName )
-					eType = et_m_naryLim;
-				else if ( _T("m:postSp") == sName )
-					eType = et_m_postSp;
-				else if ( _T("m:preSp") == sName )
-					eType = et_m_preSp;
-				else if ( _T("m:rMargin") == sName )
-					eType = et_m_rMargin;
-				else if ( _T("m:smallFrac") == sName )
-					eType = et_m_smallFrac;
-				else if ( _T("m:wrapIndent") == sName )
-					eType = et_m_wrapIndent;
-				else if ( _T("m:wrapRight") == sName )
-					eType = et_m_wrapRight;
+				m_sNodeName = oReader.GetName();
+				if ( _T("m:brkBin") == m_sNodeName )
+					m_eType = et_m_brkBin;
+				else if ( _T("m:brkBinSub") == m_sNodeName )
+					m_eType = et_m_brkBinSub;
+				else if ( _T("m:defJc") == m_sNodeName )
+					m_eType = et_m_defJc;
+				else if ( _T("m:dispDef") == m_sNodeName )
+					m_eType = et_m_dispDef;
+				else if ( _T("m:interSp") == m_sNodeName )
+					m_eType = et_m_interSp;
+				else if ( _T("m:intLim") == m_sNodeName )
+					m_eType = et_m_intLim;
+				else if ( _T("m:intraSp") == m_sNodeName )
+					m_eType = et_m_intraSp;				
+				else if ( _T("m:lMargin") == m_sNodeName )
+					m_eType = et_m_lMargin;				
+				else if ( _T("m:naryLim") == m_sNodeName )
+					m_eType = et_m_naryLim;
+				else if ( _T("m:postSp") == m_sNodeName )
+					m_eType = et_m_postSp;
+				else if ( _T("m:preSp") == m_sNodeName )
+					m_eType = et_m_preSp;
+				else if ( _T("m:rMargin") == m_sNodeName )
+					m_eType = et_m_rMargin;
+				else if ( _T("m:smallFrac") == m_sNodeName )
+					m_eType = et_m_smallFrac;
+				else if ( _T("m:wrapIndent") == m_sNodeName )
+					m_eType = et_m_wrapIndent;
+				else if ( _T("m:wrapRight") == m_sNodeName )
+					m_eType = et_m_wrapRight;
 
 				ReadAttributes( oReader );
 
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
+				std::wstring sNodeName = m_sNodeName;
+				if (sNodeName.empty())
+					sNodeName = GetMathNodeName(m_eType);
 				if (sNodeName.empty()) return L"";
 
 				std::wstring sResult = _T("<") + sNodeName;
@@ -225,20 +227,15 @@ namespace OOX
 
 			virtual EElementType getType() const
 			{
-				return eType;
+				return m_eType;
 			}
 		private:
-			EElementType eType;	
-
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, _T("m:val"), m_val )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-		public:
-			std::wstring sNodeName;
 			std::wstring GetMathNodeName(const EElementType & enumType)  const
 			{//todooo вытащить в одно место - пересекается с MathArgNodes
 				switch(enumType)
@@ -312,6 +309,10 @@ namespace OOX
                 }
 				return L"";
 			}
+		public:
+			EElementType m_eType;
+			std::wstring m_sNodeName;
+			
 			nullable<TMathBottomType> m_val;			
 		};
 
@@ -319,7 +320,6 @@ namespace OOX
 		inline void CMathBottomNodesExFromXML(CMathBottomNodes<TMathBottomType>& v, NodeType& oNode)
 		{
 			v.fromXML( oNode );
-			v.sNodeName	= v.GetMathNodeName(v.getType());
 		}
 		template<class NodeType>
 		inline void CMathBottomNodesExFromXML(CMathBottomNodes<SimpleTypes::COnOff<>>& v, NodeType& oNode)
@@ -327,13 +327,16 @@ namespace OOX
 			v.m_val.Init();
 			v.m_val->FromBool(true);
 			v.fromXML( oNode );
-			v.sNodeName	= v.GetMathNodeName(v.getType());
 		}
 
-		template <typename TMathBottomType, EElementType EnumType = OOX::et_Unknown>
+		template <typename TMathBottomType, EElementType type = OOX::et_Unknown>
 		class CMathBottomNodesEx : public CMathBottomNodes<TMathBottomType>
 		{
 		public:
+			CMathBottomNodesEx()
+			{
+				CMathBottomNodes<TMathBottomType>::m_eType = type;
+			}
 			CMathBottomNodesEx(XmlUtils::CXmlNode& oNode)
 			{
 				CMathBottomNodesExFromXML(*this, oNode);
@@ -344,7 +347,7 @@ namespace OOX
 			}
 			virtual EElementType getType() const
 			{
-				return EnumType;
+				return CMathBottomNodes<TMathBottomType>::m_eType;
 			}
 		};
 

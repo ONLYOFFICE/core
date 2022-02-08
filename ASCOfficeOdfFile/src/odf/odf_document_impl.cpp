@@ -518,26 +518,19 @@ void odf_document::Impl::parse_fonts(office_element *element)
             std::wstring altName = fontNames.size() >= 2 ? fontNames[1] : L"";
 
             const std::wstring charset = fontFace->style_font_charset_.get_value_or(L"") == L"x-symbol" ? L"02" : L"00";
-            const std::wstring fontFamily 
+            
+			std::wstring fontFamily 
                 = fontFace->style_font_family_generic_.get_value_or( font_family_generic(font_family_generic::System) ).get_type() 
                 == font_family_generic::System ?
                 L"auto" : boost::lexical_cast<std::wstring>(*fontFace->style_font_family_generic_);
-            const std::wstring fontPitch = fontFace->style_font_pitch_ ? boost::lexical_cast<std::wstring>(*fontFace->style_font_pitch_) : L"";
+            
+			const std::wstring fontPitch = fontFace->style_font_pitch_ ? boost::lexical_cast<std::wstring>(*fontFace->style_font_pitch_) : L"";
 
             boost::algorithm::trim_if(fontName, boost::algorithm::is_any_of("'"));
-            
+
             font_instance_ptr fontInstance( new font_instance (styleName, fontName, charset, fontFamily, fontPitch, altName) );
 
             context_->fontContainer().add_font( fontInstance );
-            /*if  (!context_.fontContainer().font_by_name(fontStyleName))
-            {
-                // два раза не добавляем?
-                
-            }
-            else
-            {
-                _CP_LOG << L"[warning] duplicate font name (" << fontName << L")\n";
-            }*/
         }
     }
     while (0);
@@ -555,6 +548,18 @@ int odf_document::Impl::GetMimetype(std::wstring value)
 	else if (std::wstring::npos != value.find(L"application/vnd.oasis.opendocument.presentation"))
 	{
 		return 3;
+	}
+	else if (std::wstring::npos != value.find(L"application/vnd.sun.xml.writer"))
+	{
+		return 4;
+	}
+	else if (std::wstring::npos != value.find(L"application/vnd.sun.xml.calc"))
+	{
+		return 5;
+	}
+	else if (std::wstring::npos != value.find(L"application/vnd.sun.xml.impress"))
+	{
+		return 6;
 	}
 	return 0;
 }
@@ -593,9 +598,9 @@ void odf_document::Impl::parse_manifests(office_element *element)
 			office_mime_type_ = GetMimetype(entry->media_type_);
 		}
 	}
-	if (!office_mime_type_ && !document->office_mimetype_.empty())
+	if (!office_mime_type_ && document->office_mimetype_)
 	{
-		office_mime_type_ = GetMimetype(document->office_mimetype_);
+		office_mime_type_ = GetMimetype(*document->office_mimetype_);
 	}
 }
 
@@ -702,6 +707,7 @@ void odf_document::Impl::parse_meta(office_element *element)
 void odf_document::Impl::parse_styles(office_element *element)
 {
 	text_outline_style *outlineStyle = NULL;
+	text_linenumbering_configuration *linenumberingStyle = NULL;
     
 	do
     {
@@ -752,7 +758,6 @@ void odf_document::Impl::parse_styles(office_element *element)
 				context_->styleContainer().add_style
 					(	L"common:" + styleInst->style_name_,
 						styleInst->style_display_name_.get_value_or(L""),
-						styleInst->style_family_.get_type(),
 						&(styleInst->content_),
 						true,
 						false,
@@ -835,7 +840,6 @@ void odf_document::Impl::parse_styles(office_element *element)
 
                 context_->styleContainer().add_style(L"",
 					L"",
-                    styleInst->style_family_.get_type(), 
                     &(styleInst->content_),
                     false,
                     true,
@@ -843,7 +847,7 @@ void odf_document::Impl::parse_styles(office_element *element)
                     L"",
 					L"",
                     L"",
-					L"");                                            
+					L"default");                                            
             }
 			for (size_t i = 0; i < docStyles->style_presentation_page_layout_.size(); i++)
 			{	
@@ -874,7 +878,6 @@ void odf_document::Impl::parse_styles(office_element *element)
 
                 context_->styleContainer().add_style(styleInst->style_name_,
 					styleInst->style_display_name_.get_value_or(L""),
-                    styleInst->style_family_.get_type(),
                     &(styleInst->content_),
                     false,
                     false,
@@ -900,9 +903,14 @@ void odf_document::Impl::parse_styles(office_element *element)
 
 			if (docStyles->text_outline_style_)
 			{
-                outlineStyle = dynamic_cast<text_outline_style *>(docStyles->text_outline_style_.get());                
+                outlineStyle = dynamic_cast<text_outline_style *>(docStyles->text_outline_style_.get());   
+				context_->listStyleContainer().add_outline_style(outlineStyle);
 			}
-
+			if (docStyles->text_linenumbering_configuration_)
+			{
+				linenumberingStyle = dynamic_cast<text_linenumbering_configuration *>(docStyles->text_linenumbering_configuration_.get());
+				context_->pageLayoutContainer().add_linenumbering(linenumberingStyle);
+			}
 			for (size_t i = 0; i < docStyles->text_notes_configuration_.size(); i++)
 			{	
 				office_element_ptr & elm = docStyles->text_notes_configuration_[i];
@@ -1050,7 +1058,6 @@ void odf_document::Impl::parse_styles(office_element *element)
 
                 context_->styleContainer().add_style(styleInst->style_name_,
 					styleInst->style_display_name_.get_value_or(L""),
-                    styleInst->style_family_.get_type(),
                     &(styleInst->content_),
                     true,
                     false,
@@ -1096,7 +1103,6 @@ void odf_document::Impl::parse_styles(office_element *element)
     while (false);
 
 	context_->listStyleContainer().add_outline_style(outlineStyle);
-
 }
 
 bool odf_document::Impl::docx_convert(oox::docx_conversion_context & Context)
@@ -1104,19 +1110,15 @@ bool odf_document::Impl::docx_convert(oox::docx_conversion_context & Context)
  	if (bUserStopConvert !=0 ) return false;
 
 	Context.process_styles();	
-	if (UpdateProgress(450000)) return false;
 
     Context.process_fonts();
     Context.process_headers_footers();
-	if (UpdateProgress(500000)) return false;
 
     Context.start_document();
 	
 	if (content_xml_)
         content_xml_->docx_convert(Context);
-
-	if (UpdateProgress(800000)) return false;
-    
+   
 	Context.end_document();
 
     // мы обрабатываем стили списка после того как сконвертировали документ,
@@ -1135,21 +1137,17 @@ bool odf_document::Impl::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 	try
     {
-        _CP_LOG << L"[info] convert content" << std::endl;
+		_CP_LOG << L"[info] convert content" << std::endl;
        
 		Context.start_document();
- 		if (UpdateProgress(450000)) return false;
-      
+     
 		if (content_xml_)
             content_xml_->xlsx_convert(Context);
-		if (UpdateProgress(700000)) return false;
 
         Context.end_document();
-		if (UpdateProgress(750000)) return false;
 
         _CP_LOG << L"[info] process styles" << std::endl;
         Context.process_styles();
- 		if (UpdateProgress(800000)) return false;
       
 		Context.add_jsaProject(jsaProject_bin_);
     }
@@ -1183,20 +1181,15 @@ bool odf_document::Impl::pptx_convert(oox::pptx_conversion_context & Context)
         _CP_LOG << L"[info] convert content" << std::endl;
 	
 		Context.start_document();
-		if (UpdateProgress(450000)) return false;
        
 		if (content_xml_)
             content_xml_->pptx_convert(Context);
-		if (UpdateProgress(700000)) return false;
 		
 		Context.process_layouts();
-		if (UpdateProgress(750000)) return false;
 		
 		Context.process_master_pages();
-		if (UpdateProgress(800000)) return false;
 
         Context.end_document();
-		if (UpdateProgress(850000)) return false;
 		
 		Context.add_jsaProject(jsaProject_bin_);
 	}

@@ -41,6 +41,119 @@ namespace PPTX
 {
 	namespace Logic
 	{
+		void SpTree::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			m_namespace = XmlUtils::GetNamespace(oReader.GetName());
+
+			SpTreeElems.clear();
+
+			if (oReader.IsEmptyNode())
+				return;
+
+			int nParentDepth = oReader.GetDepth();
+			while (oReader.ReadNextSiblingNode(nParentDepth))
+			{
+				std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+				if (strName == L"nvGrpSpPr")
+					nvGrpSpPr.fromXML(oReader);
+				else if (strName == L"grpSpPr")
+					grpSpPr.fromXML(oReader);
+				else if (_T("cNvPr") == strName)
+				{
+					nvGrpSpPr.cNvPr = oReader;
+				}
+				else if (_T("cNvGrpSpPr") == strName)
+				{
+					nvGrpSpPr.cNvGrpSpPr = oReader;
+				}
+				else
+				{
+					SpTreeElem elem(oReader);
+					if (elem.is_init())
+					{
+						if (elem.getType() == OOX::et_p_ShapeTree)
+						{
+							smart_ptr<SpTree> e = elem.GetElem().smart_dynamic_cast<SpTree>();
+							e->m_lGroupIndex = m_lGroupIndex + 1;
+						}
+						SpTreeElems.push_back(elem);
+					}
+				}
+			}
+
+			FillParentPointersForChilds();
+		}
+		void SpTree::fromXML(XmlUtils::CXmlNode& node)
+		{
+			m_namespace = XmlUtils::GetNamespace(node.GetName());
+
+			nvGrpSpPr = node.ReadNodeNoNS(_T("nvGrpSpPr"));
+			grpSpPr = node.ReadNodeNoNS(_T("grpSpPr"));
+
+			SpTreeElems.clear();
+
+			XmlUtils::CXmlNodes oNodes;
+			if (node.GetNodes(_T("*"), oNodes))
+			{
+				int nCount = oNodes.GetCount();
+				for (int i = 0; i < nCount; ++i)
+				{
+					XmlUtils::CXmlNode oNode;
+					oNodes.GetAt(i, oNode);
+
+					std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
+
+					if (_T("cNvPr") == strName)
+					{
+						nvGrpSpPr.cNvPr = oNode;
+					}
+					else if (_T("cNvGrpSpPr") == strName)
+					{
+						nvGrpSpPr.cNvGrpSpPr = oNode;
+					}
+					else
+					{
+						SpTreeElem elem(oNode);
+						if (elem.is_init())
+						{
+							if (elem.getType() == OOX::et_p_ShapeTree)
+							{
+								smart_ptr<SpTree> e = elem.GetElem().smart_dynamic_cast<SpTree>();
+								e->m_lGroupIndex = m_lGroupIndex + 1;
+							}
+							SpTreeElems.push_back(elem);
+						}
+					}
+				}
+			}
+
+			FillParentPointersForChilds();
+		}
+		std::wstring SpTree::toXML() const
+		{
+			std::wstring name_;
+			if (m_namespace == L"wp")
+			{
+				if (m_lGroupIndex == 0)		name_ = L"wpg:wgp";
+				else						name_ = L"wpg:grpSp";
+			}
+			else if (m_namespace == L"xdr")	name_ = L"xdr:grpSp";
+			else if (m_namespace == L"dsp")	name_ = L"dsp:grpSp";
+			else
+			{
+				if (m_lGroupIndex == 0)		name_ = L"p:spTree";
+				else						name_ = L"p:grpSp";
+			}
+
+			XmlUtils::CNodeValue oValue;
+			oValue.Write(nvGrpSpPr);
+			oValue.Write(grpSpPr);
+
+			oValue.WriteArray(SpTreeElems);
+
+			return XmlUtils::CreateNode(name_, oValue);
+		}
 		void SpTree::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, const WCHAR* pId, bool in_group)
 		{
 			pWriter->StartNode(_T("v:group"));
@@ -211,6 +324,143 @@ namespace PPTX
 			pWriter->WriteString(pWriter->m_strNodes);
 			pWriter->m_strNodes = _T("");
 			pWriter->EndNode(_T("v:group"));
+		}
+		void SpTree::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			std::wstring name_;
+
+			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+				pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)
+			{
+				if (pWriter->m_lGroupIndex == 0)	name_ = L"wpg:wgp";
+				else								name_ = L"wpg:grpSp";
+			}
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			name_ = L"xdr:grpSp";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	name_ = L"cdr:grpSp";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM)			name_ = L"dgm:grpSp";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		name_ = L"a:grpSp";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DSP_DRAWING)
+			{
+				if (pWriter->m_lGroupIndex == 0)	name_ = L"dsp:spTree";
+				else								name_ = L"dsp:grpSp";
+			}
+			else
+			{
+				if (pWriter->m_lGroupIndex == 0)	name_ = L"p:spTree";
+				else								name_ = L"p:grpSp";
+			}
+			pWriter->StartNode(name_);
+
+			pWriter->EndAttributes();
+
+			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+				pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)
+			{
+				nvGrpSpPr.cNvGrpSpPr.toXmlWriter2(L"wpg", pWriter);
+			}
+			else
+				nvGrpSpPr.toXmlWriter(pWriter);
+
+			grpSpPr.toXmlWriter(pWriter);
+
+			pWriter->m_lGroupIndex++;
+
+			for (size_t i = 0; i < SpTreeElems.size(); ++i)
+				SpTreeElems[i].toXmlWriter(pWriter);
+
+			pWriter->m_lGroupIndex--;
+
+			pWriter->EndNode(name_);
+		}
+
+		void SpTree::NormalizeRect(Aggplus::RECT& rect)const
+		{
+			if (grpSpPr.xfrm.IsInit())
+			{
+				if ((grpSpPr.xfrm->chExtX.get_value_or(0) != 0) && (grpSpPr.xfrm->chExtY.get_value_or(0) != 0))
+				{
+					double ScaleX = grpSpPr.xfrm->extX.get_value_or(0) / (double(grpSpPr.xfrm->chExtX.get()));
+					double ScaleY = grpSpPr.xfrm->extY.get_value_or(0) / (double(grpSpPr.xfrm->chExtY.get()));
+					double RectWidth = ScaleX * (rect.right - rect.left);
+					double RectHeight = ScaleY * (rect.bottom - rect.top);
+					rect.left = (LONG)((rect.left - grpSpPr.xfrm->chOffX.get()) * ScaleX + grpSpPr.xfrm->offX.get());
+					rect.top = (LONG)((rect.top - grpSpPr.xfrm->chOffY.get()) * ScaleY + grpSpPr.xfrm->offY.get());
+					rect.right = (LONG)(rect.left + RectWidth);
+					rect.bottom = (LONG)(rect.top + RectHeight);
+				}
+			}
+			if (parentIs<Logic::SpTree>())
+				parentAs<Logic::SpTree>().NormalizeRect(rect);
+		}
+
+		void SpTree::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			if (getType() == OOX::et_lc_LockedCanvas)
+				pWriter->StartRecord(SPTREE_TYPE_LOCKED_CANVAS);
+			else
+				pWriter->StartRecord(SPTREE_TYPE_SPTREE);
+
+			pWriter->WriteRecord1(0, nvGrpSpPr);
+			pWriter->WriteRecord1(1, grpSpPr);
+			pWriter->WriteRecordArray(2, 0, SpTreeElems);
+
+			pWriter->EndRecord();
+		}
+		void SpTree::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+			pReader->Skip(5); //+ len
+
+			while (pReader->GetPos() < _end_rec)
+			{
+				BYTE _at = pReader->GetUChar();
+				switch (_at)
+				{
+				case 0:
+				{
+					nvGrpSpPr.fromPPTY(pReader);
+					break;
+				}
+				case 1:
+				{
+					grpSpPr.fromPPTY(pReader);
+					break;
+				}
+				case 2:
+				{
+					pReader->Skip(4); // len
+					ULONG _c = pReader->GetULong();
+
+					for (ULONG i = 0; i < _c; ++i)
+					{
+						pReader->Skip(1); // type (0)
+						LONG nElemLength = pReader->GetLong(); // len
+															   //SpTreeElem::fromPPTY сразу делает GetChar, а toPPTY ничего не пишет если не инициализирован
+						if (nElemLength > 0)
+						{
+							SpTreeElem elm;
+							elm.fromPPTY(pReader);
+
+							if (elm.is_init())
+							{
+								if (elm.getType() == OOX::et_p_ShapeTree)
+								{
+									smart_ptr<SpTree> e = elm.GetElem().smart_dynamic_cast<SpTree>();
+									e->m_lGroupIndex = m_lGroupIndex + 1;
+								}
+								SpTreeElems.push_back(elm);
+							}
+						}
+					}
+				}
+				default:
+				{
+					break;
+				}
+				}
+			}
+			pReader->Seek(_end_rec);
 		}
 	}
 }

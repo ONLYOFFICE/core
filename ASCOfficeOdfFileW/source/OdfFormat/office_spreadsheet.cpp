@@ -106,6 +106,8 @@ void office_spreadsheet::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
+			CP_XML_ATTR_OPT(L"table:structure-protected", table_structure_protected_);
+
 			if (forms_)
 				forms_->serialize(CP_XML_STREAM());
 
@@ -116,15 +118,15 @@ void office_spreadsheet::serialize(std::wostream & _Wostream)
 			{
 				content_[i]->serialize(CP_XML_STREAM());
 			}
-
-			if (data_pilot_tables_)
-				data_pilot_tables_->serialize(CP_XML_STREAM());
-
+			
 			if (named_expressions_)
 				named_expressions_->serialize(CP_XML_STREAM());
 
 			if (database_ranges_)
-				database_ranges_->serialize(CP_XML_STREAM());			
+				database_ranges_->serialize(CP_XML_STREAM());		
+
+			if (data_pilot_tables_)
+				data_pilot_tables_->serialize(CP_XML_STREAM());
 		}
 	}
 }

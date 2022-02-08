@@ -79,6 +79,8 @@ namespace ParseAllCultureInfo
             [DataMember]
             public string PMDesignator;
             [DataMember]
+            public int UseAMPM;
+            [DataMember]
             public string DateSeparator;
             [DataMember]
             public string TimeSeparator;
@@ -127,6 +129,7 @@ namespace ParseAllCultureInfo
                     MonthGenitiveNames = null;
                 PMDesignator = di.PMDesignator;
                 TimeSeparator = di.TimeSeparator;
+                UseAMPM = -1 != di.LongTimePattern.IndexOf("t") ? 1 : 0;
                 string ShortDatePatternLower = di.ShortDatePattern.ToLower();
                 int nIndexD = ShortDatePatternLower.IndexOf("d");
                 int nIndexM = ShortDatePatternLower.IndexOf("m");
@@ -194,9 +197,11 @@ namespace ParseAllCultureInfo
             {34, 1},
             {36, 1},
             {38, 1},
+            {39, 1},
             {42, 1},
             {44, 1},
             {63, 1},
+            {80, 1},
             {1026, 1},
             {1028, 1},
             {1029, 1},
@@ -213,15 +218,18 @@ namespace ParseAllCultureInfo
             {1045, 1},
             {1046, 1},
             {1049, 1},
+            {1050, 1},
             {1051, 1},
             {1053, 1},
             {1055, 1},
             {1058, 1},
             {1060, 1},
             {1062, 1},
+            {1063, 1},
             {1066, 1},
             {1068, 1},
             {1087, 1},
+            {1104, 1},
             {2052, 1},
             {2055, 1},
             {2057, 1},
@@ -232,16 +240,19 @@ namespace ParseAllCultureInfo
             {2073, 1},
             {2077, 1},
             {2092, 1},
+            {2128, 1},
             {3076, 1},
             {3079, 1},
             {3081, 1},
             {3082, 1},
             {3084, 1},
+            {3152, 1},
             {4100, 1},
             {4103, 1},
             {4105, 1},
             {4106, 1},
             {4108, 1},
+            {4122, 1},
             {5124, 1},
             {5127, 1},
             {5129, 1},
@@ -291,7 +302,9 @@ namespace ParseAllCultureInfo
             {29740, 1},
             {30724, 1},
             {30764, 1},
-            {31748, 1}
+            {30800, 1},
+            {31748, 1},
+            {31824, 1}
         };
         public static void parse()
         {

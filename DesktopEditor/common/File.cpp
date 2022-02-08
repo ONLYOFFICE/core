@@ -1195,7 +1195,7 @@ namespace NSFile
     {
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
         FILE* pFile = NULL;
-        if ( 0 != _wfopen_s( &pFile, strFileName.c_str(), L"rb"))
+        if ( NULL == (pFile = _wfsopen( strFileName.c_str(), L"rb", _SH_DENYNO)))
             return false;
 #else
         BYTE* pUtf8 = NULL;
@@ -1657,7 +1657,11 @@ namespace NSFile
     }
     std::wstring GetFileName(const std::wstring& sPath)
     {
+#ifdef _WIN32
         std::wstring::size_type nPos1 = sPath.rfind('\\');
+#else
+        std::wstring::size_type nPos1 = std::wstring::npos;
+#endif
         std::wstring::size_type nPos2 = sPath.rfind('/');
         std::wstring::size_type nPos = std::wstring::npos;
 
@@ -1676,7 +1680,11 @@ namespace NSFile
     }
     std::wstring GetDirectoryName(const std::wstring& sPath)
     {
+#ifdef _WIN32
         std::wstring::size_type nPos1 = sPath.rfind('\\');
+#else
+        std::wstring::size_type nPos1 = std::wstring::npos;
+#endif
         std::wstring::size_type nPos2 = sPath.rfind('/');
         std::wstring::size_type nPos = std::wstring::npos;
 

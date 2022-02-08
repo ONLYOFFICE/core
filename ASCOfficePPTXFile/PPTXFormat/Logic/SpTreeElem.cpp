@@ -61,7 +61,7 @@ namespace PPTX
             return L"#" + sstream.str();
 		}
 
-        void CalculateFill(PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, NSCommon::smart_ptr<PPTX::Theme>& oTheme,
+        void CalculateFill(BYTE lDocType, PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, NSCommon::smart_ptr<PPTX::Theme>& oTheme,
 			NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, std::wstring& strAttr, std::wstring& strNode, bool bOle, bool bSignature)
 		{
 			PPTX::Logic::UniFill fill;
@@ -115,18 +115,25 @@ namespace PPTX
 					}
 
 					std::wstring strId = oBlip.blip->embed->ToString();
-
+					if (XMLWRITER_DOC_TYPE_XLSX == lDocType)
+					{
+						strId = L"o:relid=\"" + strId + L"\"";
+					}
+					else
+					{
+						strId = L"r:id=\"" + strId + L"\"";
+					}
 					if (bOle || bSignature)
 					{
 						strAttr = L" filled=\"f\"";
-						strNode = L"<v:imagedata r:id=\"" + strId + L"\" o:title=\"\" />";
+						strNode = L"<v:imagedata " + strId + L" o:title=\"\" />";
 					}
 					else
 					{
 						if (oBlip.tile.is_init())
-							strNode = L"<v:fill r:id=\"" + strId + L"\" o:title=\"\" type=\"tile\"" + fopacity + L" />";
+							strNode = L"<v:fill " + strId + L" o:title=\"\" type=\"tile\"" + fopacity + L"/>";
 						else
-							strNode = L"<v:fill r:id=\"" + strId + L"\" o:title=\"\" type=\"frame\"" + fopacity + L" />";
+							strNode = L"<v:fill " + strId + L" o:title=\"\" type=\"frame\"" + fopacity + L"/>";
 					}
 				}				
 			}
@@ -183,8 +190,8 @@ namespace PPTX
 			}
 			*/
 		}
-        void CalculateLine(PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, NSCommon::smart_ptr<PPTX::Theme>& oTheme,
-			NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, std::wstring& strAttr, std::wstring& strNode, bool bOle, bool bSignature)
+        void CalculateLine(BYTE lDocType, PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, NSCommon::smart_ptr<PPTX::Theme>& oTheme,
+			NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, std::wstring& strAttr, std::wstring& strNode, bool bOle)
 		{
 			PPTX::Logic::Ln line;
 			DWORD ARGB = 0;
@@ -202,7 +209,7 @@ namespace PPTX
 				ARGB = line.Fill.as<SolidFill>().Color.GetRGBColor(oTheme, oClrMap, ARGB);
 				strAttr = L" strokecolor=\"" + GetHexColor(ARGB) + L"\"";
 			}
-			else if (bOle || bSignature)
+			else if (line.Fill.is<NoFill>() || bOle)
 				strAttr = L" stroked=\"f\"";
 
 			if (line.w.is_init())
@@ -308,7 +315,16 @@ namespace PPTX
 			else if (name == L"grpSp" || name == L"wgp" || name == L"spTree" || name == L"wpc")
 				m_elem.reset(new Logic::SpTree(node));
 			else if (name == L"graphicFrame")
+			{
 				m_elem.reset(new Logic::GraphicFrame(node));
+
+				Logic::GraphicFrame *graphic_frame = dynamic_cast<Logic::GraphicFrame*>(m_elem.GetPointer());
+				if (graphic_frame)
+				{
+					if (graphic_frame->IsEmpty())
+						m_elem.reset();
+				}
+			}
 			else if (name == L"AlternateContent")
 			{
 				bool isEmpty = true;
@@ -319,22 +335,33 @@ namespace PPTX
 					XmlUtils::CXmlNodes oNodesC;
 					std::wstring sRequires;
 					//todo better check (a14 can be math, slicer)
-					if(oNodeChoice.GetAttributeIfExist(L"Requires", sRequires) && L"a14" == sRequires)
+					if(oNodeChoice.GetAttributeIfExist(L"Requires", sRequires) && (L"a14" == sRequires || L"cx1" == sRequires))
 					{
 						oNodeChoice.GetNodes(L"*", oNodesC);
+
+						if (1 == oNodesC.GetCount())
+						{
+							XmlUtils::CXmlNode oNodeC;
+							oNodesC.GetAt(0, oNodeC);
+
+							fromXML(oNodeC);
+				
+							isEmpty = (false == m_elem.IsInit());
+						}
 					}
-					else if (node.GetNode(L"mc:Fallback", oNodeFall))
+					if (isEmpty && node.GetNode(L"mc:Fallback", oNodeFall))
 					{
 						oNodeFall.GetNodes(L"*", oNodesC);
-					}
-					if (1 == oNodesC.GetCount())
-					{
-						XmlUtils::CXmlNode oNodeC;
-						oNodesC.GetAt(0, oNodeC);
 
-						fromXML(oNodeC);
-						isEmpty = false;
-					}
+						if (1 == oNodesC.GetCount())
+						{
+							XmlUtils::CXmlNode oNodeC;
+							oNodesC.GetAt(0, oNodeC);
+
+							fromXML(oNodeC);
+							isEmpty = false;
+						}
+					}	
 				}
 				if(isEmpty)
 				{

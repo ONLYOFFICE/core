@@ -20,8 +20,8 @@ class X2t private constructor() {
         const val CONVERTER_CODE_FAIL = -1
         const val CONVERTER_CODE_SUCCESS = 0
         const val CONVERTER_CODE_EXIST = 1
-        const val CONVERTED_CODE_PASSWORD = -2147216550
-        const val CONVERTER_CODE_INVALID_PASSWORD = -2147216549
+        const val CONVERTED_CODE_PASSWORD = 90
+        const val CONVERTER_CODE_INVALID_PASSWORD = 91
 
         init {
             System.loadLibrary(BuildConfig.LIB_X2T)
@@ -238,14 +238,14 @@ class X2t private constructor() {
 
         FileUtils.getCache(context, mConvertFileName, mConvertFolderName)?.let { cache ->
             result.to = mInputParams.to ?: cache.to
-            result.root = File(result.to).parent
+            result.root = File(result.to ?: "").parent
 
             mInputParams.to = mInputParams.to ?: cache.to
             mInputParams.temp = mInputParams.temp ?: cache.temp
             mInputParams.themes = mInputParams.themes ?: "${cache.root}/themes"
             mInputParams.xml = mInputParams.xml ?: "${cache.temp}/param.xml"
 
-            if (File(mInputParams.to).exists()) {
+            if (File(mInputParams.to ?: "").exists()) {
                 if (mIsOverwrite) {
                     FileUtils.deletePath(result.to!!)
                 } else {
@@ -266,7 +266,7 @@ class X2t private constructor() {
             {
                 setIcuDataPath(icu)
                 setFonts(arrayOf(fontsJs), fontsDir)
-                createXmlFileTransform(xml, key, mConvertType, from, to, temp, fontsJs, themes, password,
+                createXmlFileTransform(xml, key, mConvertType, from, to, temp, fontsDir, themes, password,
                     delimiterCode.equals(
                         InputParams.DELIMITER_CODE_NONE
                     ).let {
@@ -382,16 +382,16 @@ class X2t private constructor() {
             fileOutputStream.close()
         }
         catch (e: FileNotFoundException) {
-            e.printStackTrace();
+            e.printStackTrace()
 
         } catch (e: IllegalArgumentException) {
-            e.printStackTrace();
+            e.printStackTrace()
 
         } catch (e: IllegalStateException) {
-            e.printStackTrace();
+            e.printStackTrace()
 
         } catch (e: IOException) {
-            e.printStackTrace();
+            e.printStackTrace()
 
         }
     }

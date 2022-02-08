@@ -128,7 +128,6 @@ namespace PPTX
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
 					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
-					WritingElement *pItem = NULL;
 
 					if (_T("pPr") == strName)
 						pPr = oReader;
@@ -240,7 +239,7 @@ namespace PPTX
 								{
 									case PARRUN_TYPE_RUN:
 									{
-										LONG _end = pReader->GetPos() + pReader->GetLong() + 4;
+										LONG _end = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 										pReader->Skip(1); // start attr
 
@@ -275,12 +274,11 @@ namespace PPTX
 										RunElems.push_back(elm);
 										RunElems.back().InitRun(pRun);
 
-										pReader->Seek(_end);
-										break;
-									}
+										pReader->Seek(_end);										
+									}break;
 									case PARRUN_TYPE_FLD:
 									{
-										LONG _end = pReader->GetPos() + pReader->GetLong() + 4;
+										LONG _end = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 										pReader->Skip(1); // start attr
 
@@ -319,17 +317,15 @@ namespace PPTX
 											else
 												pReader->SkipRecord();
 										}
-
 										RunElem elm;
 										RunElems.push_back(elm);
 										RunElems.back().InitRun(pRun);
 
-										pReader->Seek(_end);
-										break;
-									}
+										pReader->Seek(_end);										
+									}break;
 									case PARRUN_TYPE_BR:
 									{
-										LONG _end = pReader->GetPos() + pReader->GetLong() + 4;
+										LONG _end = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 										Logic::Br* pRun = new Logic::Br();
 										while (pReader->GetPos() < _end)
@@ -350,9 +346,8 @@ namespace PPTX
 										RunElems.push_back(elm);
 										RunElems.back().InitRun(pRun);
 
-										pReader->Seek(_end);
-										break;
-									}
+										pReader->Seek(_end);										
+									}break;
 									case PARRUN_TYPE_MATH:
 									{
 										Logic::MathParaWrapper* pRun = new Logic::MathParaWrapper();
@@ -360,9 +355,8 @@ namespace PPTX
 
 										RunElem elm;
 										RunElems.push_back(elm);
-										RunElems.back().InitRun(pRun);
-										break;
-									}
+										RunElems.back().InitRun(pRun);										
+									}break;
 									case PARRUN_TYPE_MATHPARA:
 									{
 										Logic::MathParaWrapper* pRun = new Logic::MathParaWrapper();
@@ -370,9 +364,8 @@ namespace PPTX
 
 										RunElem elm;
 										RunElems.push_back(elm);
-										RunElems.back().InitRun(pRun);
-										break;
-									}
+										RunElems.back().InitRun(pRun);										
+									}break;
 									default:
 										break;
 								}

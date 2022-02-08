@@ -39,20 +39,21 @@ namespace XLS
 class OperandPtg : public Ptg
 {
 public:
-	OperandPtg() {};
-	OperandPtg(const unsigned short ptg_id_init) : Ptg(ptg_id_init) {};
+	OperandPtg() : dataType(ptg_NO_TYPE_DATA) {}
+
 	enum PtgDataType
 	{
-		pdt_NO_TYPE_DATA = 0x0,	// Error value or type data is absent
-		pdt_REFERENCE = 0x1,	// Specifies a reference to a range.
-		pdt_VALUE = 0x2,		// Specifies a single value of a simple type. The type can be a Boolean, a number, a string, or an error code.
-		pdt_ARRAY = 0x3			// Specifies an array of values.
+		ptg_NO_TYPE_DATA = 0x0,	// Error value or type data is absent
+		ptg_REFERENCE = 0x1,	// Specifies a reference to a range.
+		ptg_VALUE = 0x2,		// Specifies a single value of a simple type. The type can be a Boolean, a number, a string, or an error code.
+		ptg_ARRAY = 0x3			// Specifies an array of values.
+	} dataType;
+	
+	OperandPtg(const unsigned short full_ptg_id) : Ptg(full_ptg_id)
+	{
+		dataType = (PtgDataType)GETBITS(full_ptg_id, 1, 2);
+	}
 	};
-
-
-protected:
-
-};
 
 typedef boost::shared_ptr<OperandPtg> OperandPtgPtr;
 

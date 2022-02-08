@@ -32,6 +32,7 @@
 #pragma once
 
 #include "../CommonInclude.h"
+#include "../../XlsbFormat/Biff12_records/Style.h"
 
 namespace OOX
 {
@@ -43,6 +44,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCellStyle)
+            WritingElement_XlsbConstructors(CCellStyle)
 			CCellStyle()
 			{
 			}
@@ -73,6 +75,11 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
+
 			virtual EElementType getType () const
 			{
 				return et_x_CellStyle;
@@ -90,6 +97,20 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("xfId"),      m_oXfId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
+
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::Style*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    m_oBuiltinId     = ptr->fBuiltIn;
+                    m_oCustomBuiltin = ptr->fCustom;
+                    m_oHidden        = ptr->fHidden;
+                    m_oILevel        = ptr->iLevel;
+                    m_oName          = ptr->stName;
+                    m_oXfId          = ptr->ixf;
+                }
+            }
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oBuiltinId;
 			nullable<SimpleTypes::COnOff<>>					m_oCustomBuiltin;
@@ -103,6 +124,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCellStyles)
+            WritingElement_XlsbVectorConstructors(CCellStyles)
 			CCellStyles()
 			{
 			}
@@ -149,6 +171,17 @@ namespace OOX
 				}
 			}
 
+            void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
+            {
+                ReadAttributes(obj);
+
+                for(auto &style : obj)
+                {
+                    CCellStyle *pXfs = new CCellStyle(style);
+                    m_arrItems.push_back(pXfs);
+                }
+            }
+
 			virtual EElementType getType () const
 			{
 				return et_x_CellStyles;
@@ -161,6 +194,10 @@ namespace OOX
 					WritingElement_ReadAttributes_ReadSingle ( oReader, _T("count"),      m_oCount )
 				WritingElement_ReadAttributes_End( oReader )
 			}
+            void ReadAttributes(std::vector<XLS::BaseObjectPtr>& obj)
+            {
+                m_oCount = (_UINT32)obj.size();
+            }
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;
 		};

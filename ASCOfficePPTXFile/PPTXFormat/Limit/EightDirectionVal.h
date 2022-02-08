@@ -30,11 +30,8 @@
  *
  */
 #pragma once
-#ifndef PPTX_LIMIT_EIGHTDIRECTIONVAL_INCLUDE_H_
-#define PPTX_LIMIT_EIGHTDIRECTIONVAL_INCLUDE_H_
 
 #include "BaseLimit.h"
-
 
 namespace PPTX
 {
@@ -64,8 +61,32 @@ namespace PPTX
 					m_strValue = strValue;
 				}
 			}
+			virtual BYTE GetBYTECode() const
+			{
+				if (L"ld" == m_strValue)	return 0;
+				if (L"lu" == m_strValue)	return 1;
+				if (L"rd" == m_strValue)	return 2;
+				if (L"ru" == m_strValue)	return 3;
+				if (L"d" == m_strValue)		return 4;
+				if (L"l" == m_strValue)		return 5;
+				if (L"r" == m_strValue)		return 6;
+				if (L"u" == m_strValue)		return 7;
+				return 0;
+			}
+			virtual void SetBYTECode(const BYTE& src)
+			{
+				switch (src)
+				{
+				case 0: m_strValue = L"ld"; break;
+				case 1: m_strValue = L"lu"; break;
+				case 2: m_strValue = L"rd"; break;
+				case 3: m_strValue = L"ru"; break;
+				case 4: m_strValue = L"d"; break;
+				case 5: m_strValue = L"l"; break;
+				case 6: m_strValue = L"r"; break;
+				case 7: m_strValue = L"u"; break;
+				}
+			}
 		};
 	} // namespace Limit
 } // namespace PPTX
-
-#endif // PPTX_LIMIT_EIGHTDIRECTIONVAL_INCLUDE_H_

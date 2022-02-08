@@ -265,6 +265,9 @@ void s::pptx_convert(oox::pptx_conversion_context & Context)
     this->text_to_stream(val);
     Context.get_text_context().add_text(val.str());
 }
+//------------------------------------------------------------------------------------------------------------
+const wchar_t * tab_stop::ns = L"text";
+const wchar_t * tab_stop::name = L"tab-stop";
 
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * tab::ns = L"text";
@@ -672,7 +675,23 @@ void a::docx_convert(oox::docx_conversion_context & Context)
 	
 	if (Context.is_table_content())
 	{
-		_Wostream << L"<w:hyperlink w:anchor=\"" << XmlUtils::EncodeXmlString(ref.substr(1)) << L"\" w:history=\"1\">"; //без #
+		size_t pos_outline = ref.find(L"|outline");
+		if (std::wstring::npos != pos_outline)//без #
+		{
+			std::wstringstream strm; 
+			text_to_stream(strm, false);
+			std::wstring outline = strm.str();
+
+			ref = L"_TOC_" + std::to_wstring(0x4321001 + Context.get_table_content_context().mapReferences.size());
+			
+			Context.get_table_content_context().mapReferences.insert(std::make_pair(outline, ref));
+		}
+		else
+		{
+			ref = XmlUtils::EncodeXmlString(ref.substr(1));
+		}
+
+		_Wostream << L"<w:hyperlink w:anchor=\"" << ref << L"\" w:history=\"1\">"; 
 		int type = Context.get_table_content_context().get_type_current_content_template_index();
 		//type == 3 (LinkStart)
 		Context.get_table_content_context().next_level_index();
@@ -759,7 +778,40 @@ void a::pptx_convert(oox::pptx_conversion_context & Context)
 	Context.get_text_context().end_hyperlink(hId);
 
 }
+//------------------------------------------------------------------------------------------------------------
+const wchar_t * endnote::ns = L"text";
+const wchar_t * endnote::name = L"endnote";
 
+void endnote::add_child_element(xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+	if CP_CHECK_NAME(L"text", L"endnote-citation")
+	{
+		create_element_and_read(Reader, L"text", L"note-citation", text_note_citation_, getContext());
+	}
+	else if CP_CHECK_NAME(L"text", L"endnote-body")
+	{
+		create_element_and_read(Reader, L"text", L"note-body", text_note_body_, getContext());
+	}
+	else
+		CP_NOT_APPLICABLE_ELM();
+}
+//------------------------------------------------------------------------------------------------------------
+const wchar_t * footnote::ns = L"text";
+const wchar_t * footnote::name = L"footnote";
+
+void footnote::add_child_element(xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
+{
+	if CP_CHECK_NAME(L"text", L"footnote-citation")
+	{
+		create_element_and_read(Reader, L"text", L"note-citation", text_note_citation_, getContext());
+	}
+	else if CP_CHECK_NAME(L"text", L"footnote-body")
+	{
+		create_element_and_read(Reader, L"text", L"note-body", text_note_body_, getContext());
+	}
+	else
+		CP_NOT_APPLICABLE_ELM();
+}
 //------------------------------------------------------------------------------------------------------------
 const wchar_t * note::ns = L"text";
 const wchar_t * note::name = L"note";
@@ -1367,9 +1419,12 @@ void sequence::docx_convert(oox::docx_conversion_context & Context)
 	//	Context.start_bookmark(ref);
 	//}
 
-	Context.add_new_run();
-		Context.output_stream() << L"<w:t>" << template_ << L"</w:t>";
-	Context.finish_run();
+	if (template_)
+	{
+		Context.add_new_run();
+		Context.output_stream() << L"<w:t>" << *template_ << L"</w:t>";
+		Context.finish_run();
+	}
 
 	std::wstring num_format = L"ARABIC";
 	if (style_num_format_)

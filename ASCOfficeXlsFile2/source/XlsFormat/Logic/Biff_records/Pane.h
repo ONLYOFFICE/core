@@ -32,12 +32,14 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/CellRef.h>
-#include <Logic/Biff_structures/PaneType.h>
+#include "../Biff_structures/CellRef.h"
+#include "../Biff_structures/PaneType.h"
+#include "../Biff_structures/Xnum.h"
 
 namespace XLS
 {
 
+// Logical representation of Pane record in BIFF8 and BrtPane in BIFF12
 class Pane: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Pane)
@@ -52,13 +54,22 @@ public:
 
 	static const ElementType type = typePane;
 
-	_UINT16		x;
+    _UINT16		x;
 	_UINT16		y;
-	_UINT16		rwTop;
-	_UINT16		colLeft;
-	PaneType	pnnAcct;
+    //_UINT16		rwTop;
+    UncheckedRw     rwTop;
+    //_UINT16		colLeft;
+    UncheckedCol    colLeft;
+    PaneType	pnnAcct; //4 byte in biff12
 	
 	std::wstring	topLeftCell;
+
+    //biff12
+    Xnum    xnumXSplit;
+    Xnum    xnumYSplit;
+    bool    fFrozen;
+    bool    fFrozenNoSplit;
+    _UINT32 pnnAcct_xlsb;
 };
 
 } // namespace XLS

@@ -40,19 +40,6 @@ namespace odf_writer {
 class office_spreadsheet;
 class odf_text_context;
 
-struct _font_metrix
-{
-	_font_metrix(){IsCalc = italic = bold = false; font_size = approx_symbol_size =0;}
-	bool IsCalc;
-
-	std::wstring font_name;
-	double		 font_size;
-	bool		 italic;
-	bool		 bold;
-
-	double		 approx_symbol_size;//in pt
-};
-
 struct ods_external_state
 {
 	std::wstring ref;
@@ -66,6 +53,8 @@ public:
 	virtual void start_document();
 	virtual void end_document();
 
+	void set_tables_structure_lock(bool val);
+
 	void start_sheet();
         void set_sheet_dimension(const std::wstring & ref);
 	void end_sheet();
@@ -73,8 +62,6 @@ public:
 	void start_columns();
 		void add_column(int start_column, int repeated, int level = 0, bool _default = false);
 	void end_columns();
-
-	void calculate_font_metrix(std::wstring name, double size, bool italic, bool bold);
 
 	void start_rows();
 		void start_row(int _start_row, int repeated, int level = 0, bool _default = false);
@@ -84,6 +71,7 @@ public:
 		void end_cell();
 
 		void add_row_repeated();
+		void add_default_row(int repeated);
 	void end_rows();
 
 	void start_cell_text();
@@ -93,7 +81,7 @@ public:
 	void add_external_reference(const std::wstring & ref);
 
     void add_merge_cells(const std::wstring & ref);
-	void add_hyperlink(const std::wstring & ref, const std::wstring & link, const std::wstring & display, bool external = true);
+	void add_hyperlink(const std::wstring & ref, const std::wstring & link, const std::wstring & display, const std::wstring & location);
 
 	void start_comment		(int col, int row, std::wstring & author);
 	void set_comment_rect	(double l, double t, double w, double h);
@@ -105,7 +93,7 @@ public:
 		void set_data_validation_operator(int val);
 		void set_data_validation_content(const std::wstring &val1, const std::wstring &val2);
 		void set_data_validation_allow_empty(bool val);
-		void set_data_validation_error(const std::wstring &title, const std::wstring &content, bool display);
+		void set_data_validation_error(const std::wstring &title, const std::wstring &content, bool display, int type);
 		void set_data_validation_promt(const std::wstring &title, const std::wstring &content, bool display);
 	void end_data_validation();
 
@@ -131,8 +119,6 @@ public:
 	void add_text(const std::wstring &text);
 
 	void add_header_footer_image(const std::wstring & name, office_element_ptr image);
-
-	double convert_symbol_width(double val);
 	
     void add_defined_range		(const std::wstring & name, const std::wstring & cell_range, int sheet_id, bool printable = false);
     void add_defined_expression	(const std::wstring & name, const std::wstring & value, int sheet_id, bool printable = false);
@@ -154,7 +140,6 @@ public:
 
 	std::vector<ods_external_state>	externals_;
 private:
-	_font_metrix				font_metrix_;
 	ods_table_context			table_context_;
 	
 	odf_text_context*			current_text_context_;

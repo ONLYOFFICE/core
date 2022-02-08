@@ -30,21 +30,20 @@
  *
  */
 #pragma once
-#ifndef OOX_CUSTOM_XML_INCLUDE_H_
-#define OOX_CUSTOM_XML_INCLUDE_H_
 
 #include "File.h"
 #include "IFileContainer.h"
 #include "FileTypes.h"
 #include "WritingElement.h"
 #include "../Common/SimpleTypes_Shared.h"
+#include "Document.h"
 
 namespace OOX
 {
 	//--------------------------------------------------------------------------------
 	// CCustomXML 22.5
 	//--------------------------------------------------------------------------------	
-	class CCustomXMLProps : public OOX::File
+	class CCustomXMLProps : public OOX::FileGlobalEnumerated, public WritingElement
 	{
 	public:
 
@@ -61,22 +60,16 @@ namespace OOX
 			virtual ~CShemaRef()
 			{
 			}
-
-		public:
-
 			const CShemaRef& operator =(const XmlUtils::CXmlNode& oNode)
 			{
 				fromXML( (XmlUtils::CXmlNode&)oNode );
 				return *this;
 			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, _T("ds:uri"), m_sUri );
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<ds:schemaRef ds:uri=\"") + m_sUri  + _T("\" />");
 				return sResult;
@@ -86,11 +79,9 @@ namespace OOX
 				return OOX::et_ds_schemaRef;
 			}
 
-		public:
-
 			std::wstring m_sUri;
 		};
-
+	//----------------------------------------------------------------------	
 		class CShemaRefs : public WritingElementWithChilds<CShemaRef>
 		{
 		public:
@@ -104,18 +95,12 @@ namespace OOX
 			virtual ~CShemaRefs()
 			{
 			}
-
-		public:
-
 			const CShemaRefs& operator =(const XmlUtils::CXmlNode& oNode)
 			{
 				fromXML( (XmlUtils::CXmlNode&)oNode );
 				return *this;
 			}
-
-		public:
-
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlUtils::CXmlNodes oNodes;
 				if ( oNode.GetNodes( _T("ds:schemaRef"), oNodes ) )
@@ -131,7 +116,7 @@ namespace OOX
 					}
 				}
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = _T("<ds:schemaRefs>");
 
@@ -146,55 +131,64 @@ namespace OOX
 			{
 				return OOX::et_ds_schemaRefs;
 			}
-
-		public:
-
 		};
-
-	public:
-	
-		CCustomXMLProps(OOX::Document *pMain): OOX::File(pMain)
+	//----------------------------------------------------------------------	
+		CCustomXMLProps(OOX::Document *pMain) : OOX::FileGlobalEnumerated(pMain)
 		{
 		}
-		CCustomXMLProps(OOX::Document *pMain, const OOX::CPath& oFilePath): OOX::File(pMain)
+		CCustomXMLProps(OOX::Document *pMain, const OOX::CPath& oFilePath): OOX::FileGlobalEnumerated(pMain)
 		{
 			read( oFilePath );
 		}
 		virtual ~CCustomXMLProps()
 		{
 		}
-
-	public:
-		virtual void read(const CPath& oFilePath)
+		const CCustomXMLProps& operator =(const XmlUtils::CXmlNode& oNode)
 		{
-			XmlUtils::CXmlNode oCustomXml;
-			oCustomXml.FromXmlFile( oFilePath.GetPath(), true );
-
-			if ( _T("ds:datastoreItem") == oCustomXml.GetName() )
+			fromXML((XmlUtils::CXmlNode&)oNode);
+			return *this;
+		}
+		virtual void fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			if (_T("ds:datastoreItem") == oNode.GetName())
 			{
-				m_oItemID = oCustomXml.ReadAttribute(_T("ds:itemID"));
+				m_oItemID = oNode.ReadAttribute(_T("ds:itemID"));
 
 				XmlUtils::CXmlNode oItem;
-				if ( oCustomXml.GetNode( _T("ds:schemaRefs"), oItem ) )
+				if (oNode.GetNode(_T("ds:schemaRefs"), oItem))
 					m_oShemaRefs = oItem;
 			}
 		}
-		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
+		virtual std::wstring toXML() const
 		{
 			std::wstring sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ds:datastoreItem ds:itemID=\"");
 			sXml += m_oItemID.ToString();
 			sXml += _T("\" xmlns:ds=\"http://schemas.openxmlformats.org/officeDocument/2006/customXml\">");
 
-			if ( m_oShemaRefs.IsInit() )
+			if (m_oShemaRefs.IsInit())
 				sXml += m_oShemaRefs->toXML();
 
 			sXml += _T("</ds:datastoreItem>");
-			NSFile::CFileBinary::SaveToFile(oFilePath.GetPath(), sXml);
 
-			oContent.Registration( type().OverrideType(), type().DefaultDirectory(), oFilePath.GetFilename() );
+			return sXml;
 		}
+		virtual void read(const CPath& oFilePath)
+		{
+			XmlUtils::CXmlNode oCustomXml;
+			oCustomXml.FromXmlFile( oFilePath.GetPath(), true );
 
-	public:
+			fromXML(oCustomXml);
+		}
+		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
+		{
+			NSFile::CFileBinary::SaveToFile(oFilePath.GetPath(), toXML());
+
+			oContent.Registration( type().OverrideType(), OOX::CPath(L"customXml"), oFilePath.GetFilename() );
+		}
+		virtual EElementType getType() const
+		{
+			return OOX::et_ds_customXmlProps;
+		}
 		virtual const OOX::FileType type() const
 		{
 			return FileTypes::CustomXmlProps;
@@ -208,31 +202,31 @@ namespace OOX
 			return type().DefaultFileName();
 		}
 
-
-	public:
-
-		// Attributes
+	// Attributes
 		SimpleTypes::CGuid   m_oItemID;
 
-		// Childs
+	// Childs
 		nullable<CShemaRefs> m_oShemaRefs;
+//------------- for write from binary
+		std::wstring m_oCustomXmlContent;
+		std::string m_oCustomXmlContentA;
 	};
 
-	class CCustomXML : public OOX::File, public OOX::IFileContainer
+	class CCustomXML : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 	{
 	public:
-		CCustomXML(OOX::Document *pMain): OOX::File(pMain), OOX::IFileContainer(pMain)
+		CCustomXML(OOX::Document *pMain, bool bDocument = true) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 		{
+			m_bDocument = bDocument;
 		}
-		CCustomXML(OOX::Document *pMain, const CPath& oRootPath, const CPath& oPath): OOX::File(pMain), OOX::IFileContainer(pMain)
+		CCustomXML(OOX::Document *pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 		{
+			m_bDocument = (NULL != dynamic_cast<OOX::CDocument*>(pMain));
 			read( oRootPath, oPath );
 		}
 		virtual ~CCustomXML()
 		{
 		}
-
-	public:
 		virtual void read(const CPath& oPath)
 		{
 			CPath oRootPath;
@@ -242,23 +236,29 @@ namespace OOX
 		{
 			IFileContainer::Read( oRootPath, oFilePath );
 
-			NSFile::CFileBinary::ReadAllTextUtf8(oFilePath.GetPath(), m_sXml);
+			NSFile::CFileBinary::ReadAllTextUtf8A(oFilePath.GetPath(), m_sXmlA);
 		}
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
 		{
-			NSFile::CFileBinary::SaveToFile( oFilePath.GetPath(), m_sXml );
-
-			oContent.Registration( type().OverrideType(), oDirectory, oFilePath.GetFilename() );
+			NSFile::CFileBinary oFile;
+			if (true == oFile.CreateFileW(oFilePath.GetPath()))
+			{
+				if (false == m_sXmlA.empty())
+					oFile.WriteFile((BYTE*)m_sXmlA.c_str(), m_sXmlA.length());
+				oFile.CloseFile();
+			}
+			
+			IFileContainer::Write(oFilePath, oDirectory, oContent);
 		}
-
-	public:
 		virtual const OOX::FileType type() const
 		{
 			return FileTypes::CustomXml;
 		}
 		virtual const CPath DefaultDirectory() const
 		{
-			return type().DefaultDirectory();
+			//if (m_bDocument) return type().DefaultDirectory();
+			//else 
+				return L"../" + type().DefaultDirectory();
 		}
 		virtual const CPath DefaultFileName() const
 		{
@@ -284,13 +284,11 @@ namespace OOX
 			}
 			return L"";
 		}
+		
+		std::string m_sXmlA;
 
-
-	public:
-		// Childs
-		std::wstring m_sXml;
+		bool m_bUsed = false;
+		bool m_bDocument = false;
 	};
 
 } // namespace OOX
-
-#endif // OOX_CUSTOM_XML_INCLUDE_H_

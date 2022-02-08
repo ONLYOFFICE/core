@@ -160,7 +160,7 @@
       <xsd:element name="rPr" type="CT_RPR" minOccurs="0"/>
       <xsd:group ref="w:EG_RPr" minOccurs="0"/>
       <xsd:choice minOccurs="0" maxOccurs="unbounded">
-        <xsd:group ref="w:EG_RunInnerContent"/>
+        <xsd:element name="todo_EG_RunInnerContent" type="CT_String" minOccurs="0"/>
         <xsd:element name="t" type="CT_Text" minOccurs="0"/>
       </xsd:choice>
     </xsd:sequence>
@@ -488,7 +488,7 @@
   </xsd:group>
   <xsd:group name="EG_OMathElements">
     <xsd:choice>
-      <xsd:group ref="EG_OMathMathElements"/>
+      <xsd:element name="todo_EG_OMathMathElements" type="CT_String" minOccurs="0"/>
       <xsd:group ref="w:EG_PContentMath"/>
     </xsd:choice>
   </xsd:group>
@@ -500,7 +500,7 @@
   <xsd:complexType name="CT_OMathArg">
     <xsd:sequence>
       <xsd:element name="argPr" type="CT_OMathArgPr" minOccurs="0"/>
-      <xsd:group ref="EG_OMathElements" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="todo_EG_OMathElements" type="CT_String" minOccurs="0"/>
       <xsd:element name="ctrlPr" type="CT_CtrlPr" minOccurs="0"/>
     </xsd:sequence>
   </xsd:complexType>

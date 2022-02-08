@@ -1,10 +1,10 @@
 #ifndef _XML_RELS_H_
 #define _XML_RELS_H_
 
-#include "../../../xml/include/xmlutils.h"
 #include "../../../common/StringBuilder.h"
 #include "../../../common/File.h"
 #include "../../../common/Directory.h"
+#include "../../../../OfficeUtils/src/ZipFolder.h"
 
 class COOXMLRelationship
 {
@@ -25,6 +25,7 @@ public:
         rid = node.GetAttribute("Id");
         type = node.GetAttribute("Type");
         target = node.GetAttribute("Target");
+        target_mode = node.GetAttribute("TargetMode");
 
         CheckTargetMode();
     }
@@ -52,6 +53,9 @@ public:
 protected:
     void CheckTargetMode()
     {
+        if (!target_mode.empty())
+            return;
+
         if (0 == target.find(L"http") || 0 == target.find(L"www") || 0 == target.find(L"ftp"))
             target_mode = L"External";
         else
@@ -63,11 +67,13 @@ class COOXMLRelationships
 {
 public:
     std::vector<COOXMLRelationship> rels;
+    IFolder* m_pFolder;
 
 public:
 
     COOXMLRelationships()
     {
+        m_pFolder = NULL;
     }
 
     COOXMLRelationships(const std::string& xml, std::map<std::wstring, bool>* check_need = NULL)
@@ -79,18 +85,20 @@ public:
         FromXmlNode(oNode, check_need);
     }
 
-    COOXMLRelationships(const std::wstring& xml, const bool& is_file, std::map<std::wstring, bool>* check_need = NULL)
+    COOXMLRelationships(const std::wstring& xml, IFolder* pFolder, std::map<std::wstring, bool>* check_need = NULL)
     {
         XmlUtils::CXmlNode oNode;
 
-        if (!is_file)
+        if (NULL == pFolder)
         {
             if (!oNode.FromXmlString(xml))
                 return;
         }
         else
         {
-            if (!oNode.FromXmlFile(xml))
+            m_pFolder = pFolder;
+            oNode = pFolder->getNodeFromFile(xml);
+            if (!oNode.IsValid())
                 return;
         }
 
@@ -160,11 +168,15 @@ public:
     void CheckOriginSigs(const std::wstring& file)
     {
         int rId = 0;
+        std::string sReplace = "";
         std::vector<COOXMLRelationship>::iterator i = rels.begin();
         while (i != rels.end())
         {
             if (0 == i->target.find(L"_xmlsignatures/"))
-                return;
+            {
+                sReplace = U_TO_UTF8(i->target);
+                break;
+            }
 
             std::wstring rid = i->rid;
             rid = rid.substr(3);
@@ -177,8 +189,18 @@ public:
             i++;
         }
 
-        std::string sXmlA;
-        NSFile::CFileBinary::ReadAllTextUtf8A(file, sXmlA);
+        if (!sReplace.empty())
+        {
+            if (sReplace == "_xmlsignatures/origin.sigs")
+                return;
+
+            std::string sXmlA = m_pFolder->readXml(file);
+            NSStringUtils::string_replaceA(sXmlA, sReplace, "_xmlsignatures/origin.sigs");
+            m_pFolder->writeXmlA(file, sXmlA);
+            return;
+        }
+
+        std::string sXmlA = m_pFolder->readXml(file);
 
         std::string::size_type pos = sXmlA.rfind("</Relationships>");
         if (pos == std::string::npos)
@@ -189,13 +211,7 @@ public:
         sRet += ("<Relationship Id=\"rId" + std::to_string(rId) + "\" \
 Type=\"http://schemas.openxmlformats.org/package/2006/relationships/digital-signature/origin\" Target=\"_xmlsignatures/origin.sigs\"/>\
 </Relationships>");
-
-        NSFile::CFileBinary::Remove(file);
-
-        NSFile::CFileBinary oFile;
-        oFile.CreateFileW(file);
-        oFile.WriteFile((BYTE*)sRet.c_str(), (DWORD)sRet.length());
-        oFile.CloseFile();
+        m_pFolder->writeXmlA(file, sRet);
     }
 };
 

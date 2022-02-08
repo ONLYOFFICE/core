@@ -39,10 +39,10 @@
 #include "../graphics/Timer.h"
 #include "../common/Directory.h"
 #include "../common/Array.h"
+#include "../common/StringBuilder.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
 
-#include "memorystream.h"
-#include "../fontengine/application_generate_fonts_common.h"
+#include "js_internal/js_base.h"
 
 #if defined(CreateDirectory)
 #undef CreateDirectory
@@ -56,6 +56,31 @@
 #undef CreateFile
 #endif
 
+class CV8Params
+{
+public:
+    bool IsServerSaveVersion;
+    std::wstring DocumentDirectory;
+
+public:
+    CV8Params()
+    {
+        IsServerSaveVersion = false;
+        DocumentDirectory = L"";
+    }
+    CV8Params(const CV8Params& src)
+    {
+        IsServerSaveVersion = src.IsServerSaveVersion;
+        DocumentDirectory = src.DocumentDirectory;
+    }
+    CV8Params& operator=(const CV8Params& src)
+    {
+        IsServerSaveVersion = src.IsServerSaveVersion;
+        DocumentDirectory = src.DocumentDirectory;
+        return *this;
+    }
+};
+
 class CZipWorker
 {
 public:
@@ -67,10 +92,7 @@ public:
 
 public:
 
-    CZipWorker()
-    {
-        m_sWorkerFolder = L"";
-    }
+    CZipWorker() : m_sWorkerFolder(L"") {}
 
     ~CZipWorker()
     {
@@ -136,9 +158,9 @@ public:
 
         url_correct2(m_sTmpFolder);
         int nStart = (int)m_sTmpFolder.length();
-        for (std::vector<std::wstring>::iterator i = arFiles.begin(); i != arFiles.end(); i++)
+        for (const std::wstring& i : arFiles)
         {
-            std::wstring sTmp = *i;
+            std::wstring sTmp = i;
             url_correct2(sTmp);
 
             m_arFiles.push_back(sTmp.substr(nStart + 1));
@@ -160,7 +182,7 @@ private:
 
     void url_correct2(std::wstring& url)
     {
-        NSCommon::string_replace(url, L"/./", L"/");
+        NSStringUtils::string_replace(url, L"/./", L"/");
 
         size_t posn = 0;
         while (std::wstring::npos != (posn = url.find(L"/../")))
@@ -173,9 +195,9 @@ private:
             }
         }
 
-        NSCommon::string_replace(url, L"\\\\", L"\\");
-        NSCommon::string_replace(url, L"//", L"/");
-        NSCommon::string_replace(url, L"\\", L"/");
+        NSStringUtils::string_replace(url, L"\\\\", L"\\");
+        NSStringUtils::string_replace(url, L"//", L"/");
+        NSStringUtils::string_replace(url, L"\\", L"/");
     }
 };
 
@@ -193,6 +215,9 @@ public:
     std::wstring GetImage(const std::wstring& sUrl);
 };
 
+using namespace NSJSBase;
+namespace NSNativeControl
+{
 class CNativeControl
 {
 private:
@@ -232,30 +257,24 @@ public:
     // для добавления картинок -------------------------------------
     CImagesWorker* m_pWorker;
 
+    // серверная версия билдера
+    CV8Params m_oParams;
+    std::map<std::wstring, bool> m_map_access_directories;
+
 public:
-    CMemoryStream* m_pStream;
-
-    CNativeControl()
-    {
-        m_pStream = NULL;
-        m_pChanges = NULL;
-
-        m_nCurrentChangesNumber = -1;
-        m_nMaxChangesNumber = -1;
-
-        m_pSaveBinary = NULL;
-        m_nSaveLen = 0;
-        m_nSaveBinaryLen = 0;
-
-        m_sConsoleLogFile = L"";
-
-        m_nCurrentChangesBuilderIndex = 0;
-
-        m_pWorker = NULL;
-    }
+    CNativeControl() :
+        m_pChanges(NULL),
+        m_nCurrentChangesNumber(-1),
+        m_nMaxChangesNumber(-1),
+        m_pSaveBinary(NULL),
+        m_nSaveLen(0),
+        m_nSaveBinaryLen(0),
+        m_sConsoleLogFile(L""),
+        m_nCurrentChangesBuilderIndex(0),
+        m_pWorker(NULL)
+    {}
     ~CNativeControl()
     {
-        RELEASEOBJECT(m_pStream);
         m_pChanges = NULL;
 
         RELEASEARRAYOBJECTS(m_pSaveBinary);
@@ -300,6 +319,20 @@ public:
 public:
     void getFileData(const std::wstring& strFile, BYTE*& pData, DWORD& dwLen)
     {
+        if (m_oParams.IsServerSaveVersion)
+        {
+            // check access directories
+            std::wstring sFileCorrect = strFile;
+            NSStringUtils::string_replace(sFileCorrect, L"\\", L"/");
+
+            if (m_map_access_directories.end() == m_map_access_directories.find(NSFile::GetDirectoryName(strFile)))
+            {
+                *pData = NULL;
+                dwLen = 0;
+                return;
+            }
+        }
+
         NSFile::CFileBinary oFile;
         oFile.OpenFile(strFile);
         dwLen = (DWORD)oFile.GetFileSize();
@@ -313,7 +346,7 @@ public:
     {
         m_strFilePath = strPath;
 
-        m_oZipWorker.m_sWorkerFolder = NSCommon::GetDirectoryName(strPath);
+        m_oZipWorker.m_sWorkerFolder = NSFile::GetDirectoryName(strPath);
     }
     std::wstring GetFilePath()
     {
@@ -412,32 +445,16 @@ public:
 
             std::vector<NSFonts::CFontInfo*>* pFonts = pApplication->GetList()->GetFonts();
 
-            for (std::vector<NSFonts::CFontInfo*>::iterator i = pFonts->begin(); i < pFonts->end(); i++)
+            for (NSFonts::CFontInfo* i : *pFonts)
             {
-                NSFonts::CFontInfo* pCurrent = *i;
+                NSFonts::CFontInfo* pCurrent = i;
 
-                size_t pos1 = pCurrent->m_wsFontPath.find_last_of(wchar_t('/'));
-                size_t pos2 = pCurrent->m_wsFontPath.find_last_of(wchar_t('\\'));
+                std::wstring sFileName = NSFile::GetFileName(pCurrent->m_wsFontPath);
+                m_map_fonts[sFileName] = pCurrent->m_wsFontPath;
 
-                size_t pos = std::wstring::npos;
-                if (pos1 != std::wstring::npos)
-                    pos = pos1;
-
-                if (pos2 != std::wstring::npos)
+                if (m_oParams.IsServerSaveVersion)
                 {
-                    if (pos == std::wstring::npos)
-                        pos = pos2;
-                    else if (pos2 > pos)
-                        pos = pos2;
-                }
-
-                if (pos != std::wstring::npos)
-                {
-                    m_map_fonts[pCurrent->m_wsFontPath.substr(pos + 1)] = pCurrent->m_wsFontPath;
-                }
-                else
-                {
-                    m_map_fonts[pCurrent->m_wsFontPath] = pCurrent->m_wsFontPath;
+                    CheckAccessDirectory(NSFile::GetDirectoryName(pCurrent->m_wsFontPath));
                 }
             }
 
@@ -452,59 +469,23 @@ public:
 
             RELEASEINTERFACE(pManager);
             RELEASEOBJECT(pApplication);
+
+            CheckAccessDirectory(m_oParams.DocumentDirectory);
         }
     }
+
+    void CheckAccessDirectory(std::wstring sDirectory)
+    {
+        if (!m_oParams.IsServerSaveVersion || sDirectory.empty())
+            return;
+
+        NSStringUtils::string_replace(sDirectory, L"\\", L"/");
+        std::map<std::wstring, bool>::iterator findDir = m_map_access_directories.find(sDirectory);
+        if (findDir == m_map_access_directories.end())
+            m_map_access_directories.insert(std::make_pair(sDirectory, true));
+    }
 };
-
-// wrap_methods -------------
-CNativeControl* unwrap_nativeobject(v8::Handle<v8::Object> obj);
-
-void _GetFilePath(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _SetFilePath(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _GetImagesPath(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _GetFontsDirectory(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _GetEditorType(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _GetChangesCount(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _GetChangesFile(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _GetFileId(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _SetFileId(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _CheckNextChange(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _GetFileArrayBuffer(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _GetFontArrayBuffer(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _GetFileString(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _Save_AllocNative(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _Save_ReAllocNative(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _Save_End(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _ConsoleLog(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _SaveChanges(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-void _GetImageUrl(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-/// ZIP -----
-void _zipOpenFile(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _zipOpenFileBase64(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _zipGetFileAsString(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _zipGetFileAsBinary(const v8::FunctionCallbackInfo<v8::Value>& args);
-void _zipCloseFile(const v8::FunctionCallbackInfo<v8::Value>& args);
-/// ---------
-
-void _AddImageInChanges(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-v8::Handle<v8::ObjectTemplate> CreateNativeControlTemplate(v8::Isolate* isolate);
-v8::Handle<v8::ObjectTemplate> CreateNativeControlTemplateBuilder(v8::Isolate* isolate);
-// --------------------------
+}
 
 class CChangesWorker
 {
@@ -514,7 +495,7 @@ private:
     int		m_nLen;
 
     int		m_nMaxUnionSize = 100 * 1024 * 1024; // 100Mb
-    v8::Local<v8::ArrayBuffer> m_oArrayBuffer;
+    JSSmart<CJSTypedArray> m_oArrayBuffer;
 
     int		m_nFileType; // 0 - docx; 1 - excel
 
@@ -575,7 +556,8 @@ public:
         m_pData = new BYTE[m_nLen];
         m_pDataCur = m_pData;
 
-        m_oArrayBuffer = v8::ArrayBuffer::New(v8::Isolate::GetCurrent(), (void*)m_pData, (size_t)m_nLen);
+        if (CJSContext::IsSupportNativeTypedArrays())
+            m_oArrayBuffer = CJSContext::createUint8Array(m_pData, m_nLen);
     }
 
     inline int Open(std::vector<std::wstring>& oFiles, int nStart)
@@ -685,11 +667,12 @@ public:
         return i;
     }
 
-    v8::Local<v8::Uint8Array> GetData()
+    JSSmart<CJSTypedArray> GetData()
     {
+        if (CJSContext::IsSupportNativeTypedArrays())
+            return m_oArrayBuffer;
         size_t len = (size_t)(m_pDataCur - m_pData);
-        v8::Local<v8::Uint8Array> _array = v8::Uint8Array::New(m_oArrayBuffer, 0, len);
-        return _array;
+        return CJSContext::createUint8Array(m_pData, (int)len);
     }
 
 public:
@@ -801,12 +784,11 @@ public:
         *((int*)m_pData) = nCountData;
     }
 
-    v8::Local<v8::Uint8Array> GetDataFull()
+    JSSmart<CJSTypedArray> GetDataFull()
     {
         size_t len = (size_t)(m_pDataCur - m_pData);
-        v8::Local<v8::ArrayBuffer> _buffer = v8::ArrayBuffer::New(v8::Isolate::GetCurrent(), (void*)m_pData, len);
-        v8::Local<v8::Uint8Array> _array = v8::Uint8Array::New(_buffer, 0, len);
-        return _array;
+        JSSmart<CJSTypedArray> _buffer = CJSContext::createUint8Array(m_pData, (int)len);
+        return _buffer;
     }
 
     int OpenNative(std::wstring strFile)
@@ -830,20 +812,9 @@ public:
 
         m_nLen = read_int2(pData, nCur, nLen);
 
-        if (nVersion < 10)
-        {
-            m_pData = new BYTE[m_nLen];
-            m_pDataCur = m_pData;
-            read_base64_2(pData, nCur, nLen);
-
-            delete[]pData;
-        }
-        else
-        {
-            m_nLen = nLen;
-            m_pData = (BYTE*)pData;
-            m_pDataCur = m_pData + m_nLen;
-        }
+        m_nLen = nLen;
+        m_pData = (BYTE*)pData;
+        m_pDataCur = m_pData + m_nLen;
 
         return nVersion;
     }
@@ -1041,10 +1012,6 @@ private:
 
 //////////////////////////////////////////////////////////////////////////////
 
-void CreateNativeObject(const v8::FunctionCallbackInfo<v8::Value>& args);
-void CreateNativeObjectBuilder(const v8::FunctionCallbackInfo<v8::Value>& args);
-void CreateNativeMemoryStream(const v8::FunctionCallbackInfo<v8::Value>& args);
-
 #if 0
 class CLoggerSpeed
 {
@@ -1059,10 +1026,7 @@ public:
     void Lap(const std::string& details)
     {
         DWORD dwCur = NSTimers::GetTickCount();
-        FILE* f = fopen("D:\\doctrenderer.speed", "a+");
-        std::string sTmp = details + ": %d\n";
-        fprintf(f, sTmp.c_str(), (int)(dwCur - m_dwTime));
-        fclose(f);
+        std::cout << details << ": " << (int)(dwCur - m_dwTime) << std::endl;
         m_dwTime = dwCur;
     }
 };
@@ -1178,172 +1142,10 @@ public:
 };
 #endif
 
-#ifdef V8_OS_XP
-
-class ExternalMallocArrayBufferAllocator : public v8::ArrayBuffer::Allocator
-{
-public:
-    virtual void* Allocate(size_t length)
-    {
-        void* ret = malloc(length);
-        memset(ret, 0, length);
-        return ret;
-    }
-    virtual void* AllocateUninitialized(size_t length)
-    {
-        return malloc(length);
-    }
-    virtual void Free(void* data, size_t length)
-    {
-        free(data);
-    }
-};
-
-#endif
-
-//////////////////////////////////////////////////////////////////////////////
-class CV8Initializer
-{
-private:
-    v8::Platform* m_platform;
-    v8::ArrayBuffer::Allocator* m_pAllocator;
-
-public:
-    CV8Initializer()
-    {
-        std::wstring sPrW = NSFile::GetProcessPath();
-        std::string sPrA = U_TO_UTF8(sPrW);
-
-        m_pAllocator = NULL;
-
-#ifndef V8_OS_XP
-        v8::V8::InitializeICUDefaultLocation(sPrA.c_str());
-        v8::V8::InitializeExternalStartupData(sPrA.c_str());
-        m_platform = v8::platform::CreateDefaultPlatform();
-        v8::V8::InitializePlatform(m_platform);
-        v8::V8::Initialize();
-#else
-        m_platform = v8::platform::CreateDefaultPlatform();
-        v8::V8::InitializePlatform(m_platform);
-
-        v8::V8::Initialize();
-        v8::V8::InitializeICU();
-#endif
-    }
-    ~CV8Initializer()
-    {
-        v8::V8::Dispose();
-        v8::V8::ShutdownPlatform();
-        delete m_platform;
-        if (m_pAllocator)
-            delete m_pAllocator;
-    }
-
-    v8::ArrayBuffer::Allocator* getAllocator()
-    {
-        return m_pAllocator;
-    }
-
-    v8::Isolate* CreateNew()
-    {
-        v8::Isolate::CreateParams create_params;
-#ifndef V8_OS_XP
-        m_pAllocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
-#else
-        m_pAllocator = new ExternalMallocArrayBufferAllocator();
-#endif
-        create_params.array_buffer_allocator = m_pAllocator;
-        return v8::Isolate::New(create_params);
-    }
-};
-
-class CV8Worker
-{
-private:
-    static CV8Initializer* m_pInitializer;
-
-public:
-    CV8Worker() {}
-    ~CV8Worker() {}
-
-    static void Initialize();
-    static void Dispose();
-
-    static CV8Initializer* getInitializer();
-};
-
 bool Doct_renderer_SaveFile_ForBuilder(int nFormat, const std::wstring& strDstFile,
-                               CNativeControl* pNative,
-                               v8::Isolate* isolate,
-                               v8::Local<v8::Context> context,
-                               v8::Local<v8::Object>& global_js,
-                               v8::Handle<v8::Value>* args,
-                               v8::TryCatch& try_catch,
-                               std::wstring& strError);
-
-class CCacheDataScript
-{
-private:
-    BYTE* Data;
-    int Length;
-
-    v8::ScriptCompiler::Source* Source;
-    v8::ScriptCompiler::CachedData* CachedData;
-
-    std::wstring Path;
-
-public:
-    CCacheDataScript(const std::wstring& sPath)
-    {
-        Data = NULL;
-        Length = 0;
-
-        if (!sPath.empty())
-        {
-            BYTE* _data = NULL;
-            DWORD _data_length = 0;
-            if (NSFile::CFileBinary::ReadAllBytes(sPath, &_data, _data_length))
-            {
-                Data = _data;
-                Length = (int)_data_length;
-            }
-        }
-
-        Source      = NULL;
-        CachedData  = NULL;
-        Path        = sPath;
-    }
-    ~CCacheDataScript()
-    {
-        //RELEASEOBJECT(Source);
-        //RELEASEOBJECT(CachedData);
-        RELEASEARRAYOBJECTS(Data);
-    }
-
-    v8::Local<v8::Script> Compile(const v8::Local<v8::Context>& _context, const v8::Local<v8::String>& source)
-    {
-        v8::Local<v8::Script> script;
-        if (NULL == Data)
-        {
-            Source = new v8::ScriptCompiler::Source(source);
-            script = v8::ScriptCompiler::Compile(_context, Source, v8::ScriptCompiler::kProduceCodeCache).ToLocalChecked();
-
-            const v8::ScriptCompiler::CachedData* _cachedData = Source->GetCachedData();
-            NSFile::CFileBinary oFileTest;
-            if (oFileTest.CreateFileW(Path))
-            {
-                oFileTest.WriteFile(_cachedData->data, (DWORD)_cachedData->length);
-                oFileTest.CloseFile();
-            }
-        }
-        else
-        {
-            CachedData = new v8::ScriptCompiler::CachedData(Data, Length);
-            Source = new v8::ScriptCompiler::Source(source, CachedData);
-            script = v8::ScriptCompiler::Compile(_context, Source, v8::ScriptCompiler::kConsumeCodeCache).ToLocalChecked();
-        }
-        return script;
-    }
-};
+                               NSNativeControl::CNativeControl* pNative,
+                               JSSmart<CJSContext> context,
+                               JSSmart<CJSValue>* args,
+                               std::wstring& strError, const std::wstring& jsonParams = L"");
 
 #endif // NATIVECONTROL

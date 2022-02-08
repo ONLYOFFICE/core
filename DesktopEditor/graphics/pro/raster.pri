@@ -198,23 +198,27 @@ SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/cximage/jpeg/ckconfig.c \
     $$LIB_GRAPHICS_PRI_PATH/cximage/jpeg/djpeg.c
 
-SOURCES += $$LIB_GRAPHICS_PRI_PATH/Qt_build/graphics/project/libpsd_pri.c
-SOURCES += $$LIB_GRAPHICS_PRI_PATH/Qt_build/graphics/project/libpsd_pri2.c
-SOURCES += $$LIB_GRAPHICS_PRI_PATH/Qt_build/graphics/project/libpsd_pri3.c
+SOURCES += $$PWD/libpsd_pri.c
+SOURCES += $$PWD/libpsd_pri2.c
+SOURCES += $$PWD/libpsd_pri3.c
 
-!build_cximage_zlib_disable {
+OFFICEUTILS_PATH = $$PWD/../../../OfficeUtils
+INCLUDEPATH += \
+    $$OFFICEUTILS_PATH/src/zlib-1.2.11 \
+    $$OFFICEUTILS_PATH/src
+
 SOURCES += \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/crc32.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/adler32.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/deflate.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/inffast.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/inflate.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/inftrees.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/trees.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/zutil.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/uncompr.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib/compress.c \
-}
+    $$OFFICEUTILS_PATH/src/zlib-1.2.11/crc32.c \
+    $$OFFICEUTILS_PATH/src/zlib-1.2.11/adler32.c \
+    $$OFFICEUTILS_PATH/src/zlib-1.2.11/deflate.c \
+    $$OFFICEUTILS_PATH/src/zlib-1.2.11/inffast.c \
+    $$OFFICEUTILS_PATH/src/zlib-1.2.11/inflate.c \
+    $$OFFICEUTILS_PATH/src/zlib-1.2.11/inftrees.c \
+    $$OFFICEUTILS_PATH/src/zlib-1.2.11/trees.c \
+    $$OFFICEUTILS_PATH/src/zlib-1.2.11/zutil.c \
+    $$OFFICEUTILS_PATH/src/zlib-1.2.11/uncompr.c \
+    $$OFFICEUTILS_PATH/src/zlib-1.2.11/compress.c \
+    $$OFFICEUTILS_PATH/src/zlib_addon.c
 
 SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/cximage/mng/libmng_callback_xs.c \
@@ -332,7 +336,7 @@ SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/raster/JBig2/source/Encoder/jbig2enc.cpp \
     $$LIB_GRAPHICS_PRI_PATH/raster/JBig2/source/Encoder/jbig2sym.cpp
 
-SOURCES += $$LIB_GRAPHICS_PRI_PATH/Qt_build/graphics/project/lepton_lib_all.cpp
+SOURCES += $$PWD/lepton_lib_all.cpp
 
 SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/raster/JBig2/source/LeptonLib/boxbasic.cpp \

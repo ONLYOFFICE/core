@@ -89,19 +89,22 @@ namespace oox {
 		_CP_OPT(std::wstring)		text;
 		_CP_OPT(std::wstring)		formula2;
 		_CP_OPT(int)				rank;
+		_CP_OPT(bool)				bottom;
 //color scale icon set data_bar
 		std::vector<_cfvo>			cfvo;
 //color scale data_bar(1 element)
 		std::vector<std::wstring>	color;
-//data_bar	icon_set	
+//data bar	icon_set	
 		_CP_OPT(bool)				showValue;
-//data_bar
+//data bar
 		_CP_OPT(int)				minLength;
 		_CP_OPT(int)				maxLength;
 //icon set
 		_CP_OPT(bool)				reverse;
 		_CP_OPT(bool)				iconset_percent;
 		_CP_OPT(int)				iconset_type;
+//date is
+		_CP_OPT(int)				time_period;
 	};
 	struct conditionalFormatting
     {
@@ -144,9 +147,8 @@ public:
 								if (c.rules[j].stopIfTrue)	CP_XML_ATTR(L"stopIfTrue",	*c.rules[j].stopIfTrue);
 								if (c.rules[j].text)		CP_XML_ATTR(L"text",		*c.rules[j].text);
 								if (c.rules[j].rank)		CP_XML_ATTR(L"rank",		*c.rules[j].rank);
-
-                                //CP_XML_ATTR(L"bottom"			, 0);
-                                //CP_XML_ATTR(L"equalAverage"	, 0);
+								if (c.rules[j].bottom)		CP_XML_ATTR(L"bottom",		*c.rules[j].bottom);
+                                 //CP_XML_ATTR(L"equalAverage"	, 0);
                                 //CP_XML_ATTR(L"aboveAverage"	, 0);
 								if (c.rules[j].type == 1)
 								{
@@ -220,6 +222,23 @@ public:
 										}										
 									}
 								}
+								else if (c.rules[j].type == 5)
+								{
+									CP_XML_ATTR(L"type", L"timePeriod");
+									switch (*c.rules[j].time_period)
+									{
+										case 0: CP_XML_ATTR(L"timePeriod", L"today"); break;
+										case 1: CP_XML_ATTR(L"timePeriod", L"yesterday"); break;
+										case 2: CP_XML_ATTR(L"timePeriod", L"tomorrow"); break;
+										case 3: CP_XML_ATTR(L"timePeriod", L"last7Days"); break;
+										case 4: CP_XML_ATTR(L"timePeriod", L"thisMonth"); break;
+										case 5: CP_XML_ATTR(L"timePeriod", L"lastMonth"); break;
+										case 6: CP_XML_ATTR(L"timePeriod", L"nextMonth");	break;
+										case 7: CP_XML_ATTR(L"timePeriod", L"thisWeek"); break;
+										case 8: CP_XML_ATTR(L"timePeriod", L"lastWeek"); break;
+										case 9: CP_XML_ATTR(L"timePeriod", L"nextWeek"); break;
+									}
+								}
 							}
 						}
                     } 
@@ -243,7 +262,7 @@ void xlsx_conditionalFormatting_context::serialize(std::wostream & _Wostream)
     return impl_->serialize(_Wostream);
 }
 
-void xlsx_conditionalFormatting_context::add(std::wstring ref)
+void xlsx_conditionalFormatting_context::start(std::wstring ref)
 {
 	formulasconvert::odf2oox_converter converter;
 	impl_->conditionalFormattings_.push_back(conditionalFormatting());
@@ -255,7 +274,6 @@ void xlsx_conditionalFormatting_context::add_rule(int type)
 {
 	impl_->conditionalFormattings_.back().rules.push_back(rule());
 	impl_->conditionalFormattings_.back().rules.back().type = type;
-
 }
 void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 {
@@ -309,11 +327,35 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 	{
 		impl_->conditionalFormattings_.back().rules.back().formula_type = L"duplicateValues";
 	}
+	else if (0 <= (pos = f.find(L"begins-with")))
+	{
+		impl_->conditionalFormattings_.back().rules.back().formula_type = L"beginsWith";
+		std::wstring text = f.substr(pos + 12, f.length() - pos - 13);
+		
+		if (0 == text.find(L"\"") && text.length() - 1 == text.rfind(L"\""))
+		{
+			text = text.substr(1, text.length() - 2);
+		}
+		
+		impl_->conditionalFormattings_.back().rules.back().text = text;
+	}
+	else if (0 <= (pos = f.find(L"ends-with")))
+	{
+		impl_->conditionalFormattings_.back().rules.back().formula_type = L"endsWith";
+		std::wstring text = f.substr(pos + 10, f.length() - pos - 11);
+		
+		if (0 == text.find(L"\"") && text.length() - 1 == text.rfind(L"\""))
+		{
+			text = text.substr(1, text.length() - 2);
+		}
+		
+		impl_->conditionalFormattings_.back().rules.back().text = text;
+	}
 	else if (0 <= (pos = f.find(L"contains-text")))
 	{
 		impl_->conditionalFormattings_.back().rules.back().formula_type = L"containsText";
 
-		std::wstring text = f.substr(14, f.length() - 15);
+		std::wstring text = f.substr(pos + 14, f.length() - pos - 15);
 
 		if (std::wstring::npos != text.find(L"IF(") || 
 			std::wstring::npos != text.find(L"AND(") ||
@@ -361,6 +403,21 @@ void xlsx_conditionalFormatting_context::set_formula(std::wstring f)
 			if (!val.empty())
 				impl_->conditionalFormattings_.back().rules.back().rank = boost::lexical_cast<int>(val);
 		}	
+	}
+	else if (0 <= (pos = f.find(L"bottom")))
+	{
+		impl_->conditionalFormattings_.back().rules.back().formula_type = L"top10";
+		impl_->conditionalFormattings_.back().rules.back().bottom = true;
+		if (0 < (pos = f.find(L"percent")))
+		{
+			impl_->conditionalFormattings_.back().rules.back().percent = true;
+		}
+		if (0 <= (pos = f.find(L"(")))
+		{
+			val = f.substr(pos + 1, f.length() - pos - 2);
+			if (!val.empty())
+				impl_->conditionalFormattings_.back().rules.back().rank = boost::lexical_cast<int>(val);
+		}
 	}
 	else
 	{
@@ -468,7 +525,9 @@ void xlsx_conditionalFormatting_context::set_showVal(bool val)
 {
 	impl_->conditionalFormattings_.back().rules.back().showValue = val;
 }
-
-
+void xlsx_conditionalFormatting_context::set_time_period(int val)
+{
+	impl_->conditionalFormattings_.back().rules.back().time_period = val;
+}
 }
 }

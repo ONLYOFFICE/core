@@ -226,6 +226,63 @@ namespace NSStringExt
 
         return sRet;
     }
+    std::string CConverter::GetUtf8FromUTF32(const unsigned int* pUnicodes, long lCount)
+    {
+        unsigned char* pData = new unsigned char[6 * lCount + 3 + 1];
+        unsigned char* pCodesCur = pData;
+        long lOutputCount = 0;
+
+        for (int i = 0; i < lCount; i++)
+        {
+            unsigned int code = *pUnicodes++;
+
+            if (code < 0x80)
+            {
+                *pCodesCur++ = (unsigned char)code;
+            }
+            else if (code < 0x0800)
+            {
+                *pCodesCur++ = 0xC0 | (code >> 6);
+                *pCodesCur++ = 0x80 | (code & 0x3F);
+            }
+            else if (code < 0x10000)
+            {
+                *pCodesCur++ = 0xE0 | (code >> 12);
+                *pCodesCur++ = 0x80 | (code >> 6 & 0x3F);
+                *pCodesCur++ = 0x80 | (code & 0x3F);
+            }
+            else if (code < 0x1FFFFF)
+            {
+                *pCodesCur++ = 0xF0 | (code >> 18);
+                *pCodesCur++ = 0x80 | (code >> 12 & 0x3F);
+                *pCodesCur++ = 0x80 | (code >> 6 & 0x3F);
+                *pCodesCur++ = 0x80 | (code & 0x3F);
+            }
+            else if (code < 0x3FFFFFF)
+            {
+                *pCodesCur++ = 0xF8 | (code >> 24);
+                *pCodesCur++ = 0x80 | (code >> 18 & 0x3F);
+                *pCodesCur++ = 0x80 | (code >> 12 & 0x3F);
+                *pCodesCur++ = 0x80 | (code >> 6 & 0x3F);
+                *pCodesCur++ = 0x80 | (code & 0x3F);
+            }
+            else if (code < 0x7FFFFFFF)
+            {
+                *pCodesCur++ = 0xFC | (code >> 30);
+                *pCodesCur++ = 0x80 | (code >> 24 & 0x3F);
+                *pCodesCur++ = 0x80 | (code >> 18 & 0x3F);
+                *pCodesCur++ = 0x80 | (code >> 12 & 0x3F);
+                *pCodesCur++ = 0x80 | (code >> 6 & 0x3F);
+                *pCodesCur++ = 0x80 | (code & 0x3F);
+            }
+        }
+
+        lOutputCount = (long)(pCodesCur - pData);
+        *pCodesCur++ = 0;
+        std::string s((char*)pData, lOutputCount);
+        delete [] pData;
+        return s;
+    }
     unsigned int* CConverter::GetUtf32FromUnicode(const std::wstring& wsUnicodeText, unsigned int& unLen)
     {
         if (wsUnicodeText.size() <= 0)
@@ -351,5 +408,86 @@ namespace NSStringExt
         }
 
         return pUtf16;
+    }
+
+    class CStringUnicodeIterator_private
+    {
+    public:
+        const wchar_t* m_str;
+        size_t m_str_len;
+        size_t m_index;
+
+    public:
+        CStringUnicodeIterator_private(const std::wstring& str)
+        {
+            m_str = str.c_str();
+            m_str_len = str.length();
+            m_index = 0;
+        }
+
+        inline bool IsLeadingSurrogateChar(const unsigned int& nCharCode)
+        {
+            return (nCharCode >= 0xD800 && nCharCode <= 0xDFFF);
+        }
+        inline unsigned int DecodeSurrogateChar(const unsigned int& nLeadingChar, const unsigned int& nTrailingChar)
+        {
+            if (nLeadingChar < 0xDC00 && nTrailingChar >= 0xDC00 && nTrailingChar <= 0xDFFF)
+                return 0x10000 + ((nLeadingChar & 0x3FF) << 10) | (nTrailingChar & 0x3FF);
+            else
+                return 0;
+        }
+    };
+
+    CStringUnicodeIterator::CStringUnicodeIterator(const std::wstring& string)
+    {
+        m_internal = new CStringUnicodeIterator_private(string);
+    }
+
+    bool CStringUnicodeIterator::Check()
+    {
+        return (m_internal->m_index < m_internal->m_str_len) ? true : false;
+    }
+
+    void CStringUnicodeIterator::Next()
+    {
+        if (this->m_internal->m_index >= this->m_internal->m_str_len)
+            return;
+
+        if (2 != sizeof(wchar_t))
+        {
+            m_internal->m_index++;
+        }
+        else
+        {
+            if (!m_internal->IsLeadingSurrogateChar((unsigned int)m_internal->m_str[m_internal->m_index]))
+            {
+                m_internal->m_index++;
+                return;
+            }
+            m_internal->m_index += 2;
+        }
+    }
+
+    unsigned int CStringUnicodeIterator::Value()
+    {
+        if (m_internal->m_index >= m_internal->m_str_len)
+            return 0;
+
+        if (2 != sizeof(wchar_t))
+        {
+            return (unsigned int)m_internal->m_str[m_internal->m_index];
+        }
+        else
+        {
+            unsigned int nCharCode = (unsigned int)m_internal->m_str[m_internal->m_index];
+            if (!m_internal->IsLeadingSurrogateChar(nCharCode))
+                return nCharCode;
+
+            if (m_internal->m_index == (m_internal->m_str_len - 1))
+                return nCharCode;
+
+            unsigned int nTrailingChar = (unsigned int)m_internal->m_str[m_internal->m_index + 1];
+            return m_internal->DecodeSurrogateChar(nCharCode, nTrailingChar);
+        }
     }
 }

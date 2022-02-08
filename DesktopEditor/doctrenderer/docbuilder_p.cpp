@@ -31,21 +31,6 @@
  */
 #include "docbuilder_p.h"
 
-namespace NSDoctRenderer
-{
-    CDocBuilderValue_Private::CDocBuilderValue_Private()
-    {
-        m_isolate = NULL;
-    }
-    CDocBuilderValue_Private::~CDocBuilderValue_Private()
-    {
-    }
-    void CDocBuilderValue_Private::Clear()
-    {
-        m_value.Clear();
-    }
-}
-
 void CV8RealTimeWorker::_LOGGING_ERROR_(const std::wstring& strType, const std::wstring& strError)
 {
     std::string sT = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strType);
@@ -54,36 +39,34 @@ void CV8RealTimeWorker::_LOGGING_ERROR_(const std::wstring& strType, const std::
     std::cerr << sT << ": " << sE << std::endl;
 }
 
+using namespace NSJSBase;
+
 CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder)
 {
     m_nFileType = -1;
 
-    m_isolate = CV8Worker::getInitializer()->CreateNew();
+    m_context = new CJSContext();
+    m_context->Initialize();
 
-    m_isolate_scope = new v8::Isolate::Scope(m_isolate);
-    m_isolate_locker = new v8::Locker(m_isolate);
-    m_handle_scope = new CScopeWrapper<v8::HandleScope>(m_isolate);
+    m_isolate_scope = m_context->CreateIsolateScope();
+    m_handle_scope  = m_context->CreateLocalScope();
 
-    v8::Handle<v8::ObjectTemplate> global = v8::ObjectTemplate::New(m_isolate);
-    global->Set(m_isolate, "CreateNativeEngine", v8::FunctionTemplate::New(m_isolate, CreateNativeObjectBuilder));
-    global->Set(m_isolate, "CreateNativeMemoryStream", v8::FunctionTemplate::New(m_isolate, CreateNativeMemoryStream));
-    m_context = v8::Context::New(m_isolate, NULL, global);
+    m_context->CreateGlobalForContext();
+    CNativeControlEmbed::CreateObjectBuilderInContext("CreateNativeEngine", m_context);
+    CMemoryStreamEmbed::CreateObjectInContext  ("CreateNativeMemoryStream", m_context);
+    CGraphicsEmbed::CreateObjectInContext          ("CreateNativeGraphics", m_context);
+    m_context->CreateContext();
 
-    v8::Context::Scope context_scope(m_context);
-    v8::TryCatch try_catch(m_isolate);
+    JSSmart<CJSContextScope> context_scope = m_context->CreateContextScope();
+    JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
 
-    m_context->Global()->Set(m_context, v8::String::NewFromUtf8(m_isolate, "builderJS"), _builder_CreateNative(m_isolate, pBuilder));
+    builder_CreateNative("builderJS", m_context, pBuilder);
 }
 CV8RealTimeWorker::~CV8RealTimeWorker()
 {
-    RELEASEOBJECT(m_handle_scope);
-    m_context.Clear();
-
-    RELEASEOBJECT(m_isolate_locker);
-    RELEASEOBJECT(m_isolate_scope);
-
-    m_isolate->Dispose();
-    m_isolate = NULL;
+    m_handle_scope = NULL;
+    m_isolate_scope = NULL;
+    m_context->Dispose();
 }
 
 bool CV8RealTimeWorker::ExecuteCommand(const std::wstring& command, NSDoctRenderer::CDocBuilderValue* retValue)
@@ -96,46 +79,20 @@ bool CV8RealTimeWorker::ExecuteCommand(const std::wstring& command, NSDoctRender
     std::string commandA = U_TO_UTF8(command);
     //commandA = "Api." + commandA;
 
-    v8::Context::Scope context_scope(m_context);
-
-    v8::TryCatch try_catch(m_isolate);
-
-    v8::Local<v8::String> source = v8::String::NewFromUtf8(m_isolate, commandA.c_str());
-    v8::Local<v8::Script> script = v8::Script::Compile(m_context, source).FromMaybe(v8::Local<v8::Script>());
+    JSSmart<CJSContextScope> context_scope = m_context->CreateContextScope();
+    JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
 
     LOGGER_SPEED_LAP("compile_command")
 
-    if (try_catch.HasCaught())
-    {
-        std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
-        std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
-
-        _LOGGING_ERROR_(L"execute_compile_code", strCode);
-        _LOGGING_ERROR_(L"execute_compile", strException);
-
+    JSSmart<CJSValue> retNativeVal = m_context->runScript(commandA, try_catch);
+    if(try_catch->Check())
         return false;
-    }
-    else
+
+    if (retValue)
     {
-        v8::Local<v8::Value> retNativeVal = script->Run(m_context).FromMaybe(v8::Local<v8::Value>());
-
-        if (try_catch.HasCaught())
-        {
-            std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
-            std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
-
-            _LOGGING_ERROR_(L"execute_run_code", strCode);
-            _LOGGING_ERROR_(L"execute_run", strException);
-
-            return false;
-        }
-
-        if (retValue)
-        {
-            NSDoctRenderer::CDocBuilderValue_Private* privateRet = (NSDoctRenderer::CDocBuilderValue_Private*)retValue->private_get_internal();
-            privateRet->m_isolate = m_isolate;
-            privateRet->m_value = retNativeVal;
-        }
+        NSDoctRenderer::CDocBuilderValue_Private* privateRet = (NSDoctRenderer::CDocBuilderValue_Private*)retValue->private_get_internal();
+        privateRet->m_context = m_context;
+        privateRet->m_value = retNativeVal;
     }
 
     LOGGER_SPEED_LAP("run_command")
@@ -147,138 +104,47 @@ std::string CV8RealTimeWorker::GetGlobalVariable()
 {
     std::string commandA = "JSON.stringify(GlobalVariable);";
 
-    v8::Context::Scope context_scope(m_context);
+    JSSmart<CJSContextScope> context_scope = m_context->CreateContextScope();
+    JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
 
-    v8::TryCatch try_catch(m_isolate);
-
-    v8::Local<v8::String> source = v8::String::NewFromUtf8(m_isolate, commandA.c_str());
-    v8::Local<v8::Script> script = v8::Script::Compile(m_context, source).FromMaybe(v8::Local<v8::Script>());
-
-    std::string sReturn = "{}";
-
-    if (try_catch.HasCaught())
-    {
-        std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
-        std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
-
-        _LOGGING_ERROR_(L"execute_compile_code", strCode);
-        _LOGGING_ERROR_(L"execute_compile", strException);
-
+    JSSmart<CJSValue> _value = m_context->runScript(commandA, try_catch);
+    if(try_catch->Check())
         return "";
-    }
-    else
-    {
-        v8::Local<v8::Value> _value = script->Run(m_context).FromMaybe(v8::Local<v8::Value>());
-
-        if (try_catch.HasCaught())
-        {
-            std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
-            std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
-
-            _LOGGING_ERROR_(L"execute_run_code", strCode);
-            _LOGGING_ERROR_(L"execute_run", strException);
-
-            return "";
-        }
-
-        if (_value->IsString())
-            sReturn = CV8Convert::ToStringA(_value);
-    }
-
-    return sReturn;
+    if(_value->isString())
+        return _value->toStringA();
+    return "{}";
 }
 
 std::wstring CV8RealTimeWorker::GetJSVariable(std::wstring sParam)
 {
     std::string sParamA = U_TO_UTF8(sParam);
-    NSCommon::string_replaceA(sParamA, "\\\"", "\"");
+    NSStringUtils::string_replaceA(sParamA, "\\\"", "\"");
     std::string commandA = "(function(){ return (" + sParamA + "); })()";
 
-    v8::Context::Scope context_scope(m_context);
+    JSSmart<CJSContextScope> context_scope = m_context->CreateContextScope();
+    JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
 
-    v8::TryCatch try_catch(m_isolate);
-
-    v8::Local<v8::String> source = v8::String::NewFromUtf8(m_isolate, commandA.c_str());
-    v8::Local<v8::Script> script = v8::Script::Compile(m_context, source).FromMaybe(v8::Local<v8::Script>());
-
-    if (try_catch.HasCaught())
-    {
-        std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
-        std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
-
-        _LOGGING_ERROR_(L"execute_compile_code", strCode);
-        _LOGGING_ERROR_(L"execute_compile", strException);
-
+    JSSmart<CJSValue> _value = m_context->runScript(commandA, try_catch);
+    if(try_catch->Check())
         return L"jsValue(" + sParam + L")";
-    }
-    else
-    {
-        v8::Local<v8::Value> _value = script->Run(m_context).FromMaybe(v8::Local<v8::Value>());
-
-        if (try_catch.HasCaught())
-        {
-            std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
-            std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
-
-            _LOGGING_ERROR_(L"execute_run_code", strCode);
-            _LOGGING_ERROR_(L"execute_run", strException);
-
-            return L"jsValue(" + sParam + L")";
-        }
-
-        if (_value->IsString())
-            return CV8Convert::ToString(_value);
-    }
-
+    if(_value->isString())
+        return _value->toStringW();
     return L"jsValue(" + sParam + L")";
 }
 
-bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstring& path, const std::string& sString, const std::wstring& sCachePath)
+bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstring& path, const std::string& sString, const std::wstring& sCachePath, CV8Params* pParams)
 {
     LOGGER_SPEED_START
 
-    v8::Context::Scope context_scope(m_context);
+    JSSmart<CJSContextScope> context_scope = m_context->CreateContextScope();
+    JSSmart<CJSTryCatch>         try_catch = m_context->GetExceptions();
 
-    v8::TryCatch try_catch(m_isolate);
+    LOGGER_SPEED_LAP("compile");
 
-    v8::Local<v8::String> source = v8::String::NewFromUtf8(m_isolate, sString.c_str());
-    v8::Local<v8::Script> script;
-
-    CCacheDataScript oCachedScript(sCachePath);
-    if (sCachePath.empty())
-        script = v8::Script::Compile(m_context, source).FromMaybe(v8::Local<v8::Script>());
-    else
-    {
-        script = oCachedScript.Compile(m_context, source);
-    }
-
-    LOGGER_SPEED_LAP("compile")
-
-    if (try_catch.HasCaught())
-    {
-        std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
-        std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
-
-        _LOGGING_ERROR_(L"sdk_compile_code", strCode);
-        _LOGGING_ERROR_(L"sdk_compile", strException);
-
+    m_context->runScript(sString, try_catch, sCachePath);
+    if(try_catch->Check())
         return false;
-    }
-    else
-    {
-        script->Run(m_context);
 
-        if (try_catch.HasCaught())
-        {
-            std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
-            std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
-
-            _LOGGING_ERROR_(L"sdk_run_code", strCode);
-            _LOGGING_ERROR_(L"sdk_run", strException);
-
-            return false;
-        }
-    }
     LOGGER_SPEED_LAP("run")
 
     if (true)
@@ -286,24 +152,13 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
         std::string sArg = m_sUtf8ArgumentJSON;
         if (sArg.empty())
             sArg = "{}";
-        NSCommon::string_replaceA(sArg, "\\", "\\\\");
-        NSCommon::string_replaceA(sArg, "\"", "\\\"");
+        NSStringUtils::string_replaceA(sArg, "\\", "\\\\");
+        NSStringUtils::string_replaceA(sArg, "\"", "\\\"");
         std::string sArgument = "var Argument = JSON.parse(\"" + sArg + "\");";
 
-        v8::Local<v8::String> _sourceArg = v8::String::NewFromUtf8(m_isolate, sArgument.c_str());
-        v8::Local<v8::Script> _scriptArg = v8::Script::Compile(m_context, _sourceArg).FromMaybe(v8::Local<v8::Script>());
-        _scriptArg->Run(m_context);
-
-        if (try_catch.HasCaught())
-        {
-            std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
-            std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
-
-            _LOGGING_ERROR_(L"sdk_argument_code", strCode);
-            _LOGGING_ERROR_(L"sdk_argument", strException);
-
+        m_context->runScript(sArgument, try_catch);
+        if (try_catch->Check())
             return false;
-        }
     }
 
     if (true)
@@ -311,66 +166,43 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
         std::string sArg = m_sGlobalVariable;
         if (sArg.empty())
             sArg = "{}";
-        NSCommon::string_replaceA(sArg, "\\", "\\\\");
-        NSCommon::string_replaceA(sArg, "\"", "\\\"");
+        NSStringUtils::string_replaceA(sArg, "\\", "\\\\");
+        NSStringUtils::string_replaceA(sArg, "\"", "\\\"");
 
         std::string sScriptVar = "var GlobalVariable = JSON.parse(\"" + sArg + "\");";
 
-        v8::Local<v8::String> _sourceArg = v8::String::NewFromUtf8(m_isolate, sScriptVar.c_str());
-        v8::Local<v8::Script> _scriptArg = v8::Script::Compile(m_context, _sourceArg).FromMaybe(v8::Local<v8::Script>());
-        _scriptArg->Run(m_context);
-
-        if (try_catch.HasCaught())
-        {
-            std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
-            std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
-
-            _LOGGING_ERROR_(L"sdk_global_var_code", strCode);
-            _LOGGING_ERROR_(L"sdk_global_var", strException);
-
+        m_context->runScript(sScriptVar, try_catch);
+        if (try_catch->Check())
             return false;
-        }
     }
 
-    CNativeControl* pNative = NULL;
+    NSNativeControl::CNativeControl* pNative = NULL;
     bool bIsBreak = false;
 
-    v8::Local<v8::Object> global_js = m_context->Global();
-    v8::Handle<v8::Value> args[1];
-    args[0] = v8::Int32::New(m_isolate, 0);
+    JSSmart<CJSObject> global_js = m_context->GetGlobal();
+    JSSmart<CJSValue> args[1];
+    args[0] = CJSContext::createInt(0);
 
     // GET_NATIVE_ENGINE
     if (!bIsBreak)
     {
-        v8::Handle<v8::Value> js_func_get_native = global_js->Get(v8::String::NewFromUtf8(m_isolate, "GetNativeEngine"));
-        v8::Local<v8::Object> objNative;
-        if (js_func_get_native->IsFunction())
+        JSSmart<CJSValue> js_result2 = global_js->call_func("GetNativeEngine", 1, args);
+        if (try_catch->Check())
+            bIsBreak = true;
+        else
         {
-            v8::Handle<v8::Function> func_get_native = v8::Handle<v8::Function>::Cast(js_func_get_native);
-            v8::Local<v8::Value> js_result2 = func_get_native->Call(global_js, 1, args);
-
-            if (try_catch.HasCaught())
-            {
-                std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
-                std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
-
-                _LOGGING_ERROR_(L"run_code", strCode);
-                _LOGGING_ERROR_(L"run", strException);
-
-                bIsBreak = true;
-            }
-            else
-            {
-                objNative = js_result2->ToObject();
-                v8::Handle<v8::External> field = v8::Handle<v8::External>::Cast(objNative->GetInternalField(0));
-
-                pNative = static_cast<CNativeControl*>(field->Value());
-            }
+            JSSmart<CJSObject> objNative = js_result2->toObject();
+            pNative = (NSNativeControl::CNativeControl*)objNative->getNative()->getObject();            
         }
     }
 
     if (pNative != NULL)
     {
+        if (pParams)
+        {
+            pNative->m_oParams = *pParams;
+        }
+
         pNative->m_strFontsDirectory = sBasePath + L"/sdkjs/common";
         pNative->m_strImagesDirectory = path + L"/media";
 
@@ -393,42 +225,18 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
     // OPEN
     if (!bIsBreak)
     {
-        v8::Handle<v8::Value> js_func_open = global_js->Get(v8::String::NewFromUtf8(m_isolate, "NativeOpenFileData"));
-        if (js_func_open->IsFunction())
-        {
-            v8::Handle<v8::Function> func_open = v8::Handle<v8::Function>::Cast(js_func_open);
+        CChangesWorker oWorkerLoader;
+        int nVersion = oWorkerLoader.OpenNative(pNative->GetFilePath());
 
-            CChangesWorker oWorkerLoader;
-            int nVersion = oWorkerLoader.OpenNative(pNative->GetFilePath());
+        JSSmart<CJSValue> args_open[3];
+        args_open[0] = oWorkerLoader.GetDataFull()->toObject()->toValue();
+        args_open[1] = CJSContext::createInt(nVersion);
+        std::wstring sXlsx = NSFile::GetDirectoryName(pNative->GetFilePath()) + L"/Editor.xlsx";
+        args_open[2] = NSFile::CFileBinary::Exists(sXlsx) ? CJSContext::createString(sXlsx) : CJSContext::createUndefined();
 
-            v8::Handle<v8::Value> args_open[3];
-            args_open[0] = oWorkerLoader.GetDataFull();
-            args_open[1] = v8::Integer::New(m_isolate, nVersion);
-
-            std::wstring sXlsx = NSCommon::GetDirectoryName(pNative->GetFilePath()) + L"/Editor.xlsx";
-            if (NSFile::CFileBinary::Exists(sXlsx))
-            {
-                std::string sXlsxA = U_TO_UTF8(sXlsx);
-                args_open[2] = v8::String::NewFromUtf8(m_isolate, (char*)(sXlsxA.c_str()));
-            }
-            else
-            {
-                args_open[2] = v8::Undefined(m_isolate);
-            }
-
-            func_open->Call(global_js, 3, args_open);
-
-            if (try_catch.HasCaught())
-            {
-                std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
-                std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
-
-                _LOGGING_ERROR_(L"open_code", strCode);
-                _LOGGING_ERROR_(L"open", strException);
-
-                bIsBreak = true;
-            }
-        }
+        global_js->call_func("NativeOpenFileData", 3, args_open);
+        if (try_catch->Check())
+            bIsBreak = true;
     }
 
     if (!bIsBreak)
@@ -441,7 +249,7 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
     return !bIsBreak;
 }
 
-bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path)
+bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path, const std::wstring& sJsonParams)
 {
     NSDoctRenderer::DoctRendererFormat::FormatFile _formatDst = NSDoctRenderer::DoctRendererFormat::DOCT;
     if (type & AVS_OFFICESTUDIO_FILE_PRESENTATION)
@@ -451,40 +259,23 @@ bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path)
     else if ((type & AVS_OFFICESTUDIO_FILE_CROSSPLATFORM) || (type & AVS_OFFICESTUDIO_FILE_IMAGE))
         _formatDst = NSDoctRenderer::DoctRendererFormat::PDF;
 
-    v8::Context::Scope context_scope(m_context);
-    v8::TryCatch try_catch(m_isolate);
+    JSSmart<CJSContextScope> context_scope = m_context->CreateContextScope();
+    JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
 
-    CNativeControl* pNative = NULL;
+    NSNativeControl::CNativeControl* pNative = NULL;
 
-    v8::Local<v8::Object> global_js = m_context->Global();
-    v8::Handle<v8::Value> args[1];
-    args[0] = v8::Int32::New(m_isolate, 0);
+    JSSmart<CJSObject> global_js = m_context->GetGlobal();
+    JSSmart<CJSValue> args[1];
+    args[0] = CJSContext::createInt(0);
 
     // GET_NATIVE_ENGINE
     if (true)
     {
-        v8::Handle<v8::Value> js_func_get_native = global_js->Get(v8::String::NewFromUtf8(m_isolate, "GetNativeEngine"));
-        v8::Local<v8::Object> objNative;
-        if (js_func_get_native->IsFunction())
+        JSSmart<CJSValue> js_result2 = global_js->call_func("GetNativeEngine", 1, args);
+        if (!try_catch->Check())
         {
-            v8::Handle<v8::Function> func_get_native = v8::Handle<v8::Function>::Cast(js_func_get_native);
-            v8::Local<v8::Value> js_result2 = func_get_native->Call(global_js, 1, args);
-
-            if (try_catch.HasCaught())
-            {
-                std::wstring strCode        = CV8Convert::GetSourceLine(try_catch.Message());
-                std::wstring strException   = CV8Convert::GetMessage(try_catch.Message());
-
-                _LOGGING_ERROR_(L"run_code", strCode);
-                _LOGGING_ERROR_(L"run", strException);
-            }
-            else
-            {
-                objNative = js_result2->ToObject();
-                v8::Handle<v8::External> field = v8::Handle<v8::External>::Cast(objNative->GetInternalField(0));
-
-                pNative = static_cast<CNativeControl*>(field->Value());
-            }
+            JSSmart<CJSObject> objNative = js_result2->toObject();
+            pNative = (NSNativeControl::CNativeControl*)objNative->getNative()->getObject();
         }
     }
 
@@ -498,12 +289,10 @@ bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path)
     bool bIsError = Doct_renderer_SaveFile_ForBuilder(_formatDst,
                                                       _path,
                                                       pNative,
-                                                      m_isolate,
                                                       m_context,
-                                                      global_js,
                                                       args,
-                                                      try_catch,
-                                                      strError);
+                                                      strError,
+                                                      sJsonParams);
 
     if (_formatDst == NSDoctRenderer::DoctRendererFormat::PDF)
         this->ExecuteCommand(L"Api.asc_SetSilentMode(true);");
@@ -519,6 +308,7 @@ namespace NSDoctRenderer
     }
     CDocBuilderValue::CDocBuilderValue(const CDocBuilderValue& src)
     {
+        m_internal = new CDocBuilderValue_Private();
         m_internal->m_value = src.m_internal->m_value;
     }
     CDocBuilderValue& CDocBuilderValue::operator=(const CDocBuilderValue& src)
@@ -537,7 +327,7 @@ namespace NSDoctRenderer
 
     bool CDocBuilderValue::IsEmpty()
     {
-        return m_internal->m_value.IsEmpty();
+        return m_internal->m_value->isEmpty();
     }
     void CDocBuilderValue::Clear()
     {
@@ -545,33 +335,29 @@ namespace NSDoctRenderer
     }
     bool CDocBuilderValue::IsNull()
     {
-        if (m_internal->m_value.IsEmpty())
-            return false;
-        return m_internal->m_value->IsNull();
+        return m_internal->m_value->isNull();
     }
     bool CDocBuilderValue::IsUndefined()
     {
-        if (m_internal->m_value.IsEmpty())
-            return false;
-        return m_internal->m_value->IsUndefined();
+        return m_internal->m_value->isUndefined();
     }
     int CDocBuilderValue::ToInt()
     {
-        if (m_internal->m_value.IsEmpty() || !m_internal->m_value->IsInt32())
+        if (IsEmpty() || !m_internal->m_value->isNumber())
             return 0;
-        return CV8Convert::ToInt(m_internal->m_value);
+        return m_internal->m_value->toInt32();
     }
     double CDocBuilderValue::ToDouble()
     {
-        if (m_internal->m_value.IsEmpty() || !m_internal->m_value->IsNumber())
+        if (IsEmpty() || !m_internal->m_value->isNumber())
             return 0;
-        return CV8Convert::ToDouble(m_internal->m_value);
+        return m_internal->m_value->toDouble();
     }
     wchar_t* CDocBuilderValue::ToString()
     {
-        if (m_internal->m_value.IsEmpty() || !m_internal->m_value->IsString())
+        if (IsEmpty() || !m_internal->m_value->isString())
             return NULL;
-        std::wstring sValue = CV8Convert::ToString(m_internal->m_value);
+        std::wstring sValue = m_internal->m_value->toStringW();
         if (sValue.empty())
             return NULL;
         size_t len = sValue.length();
@@ -587,14 +373,14 @@ namespace NSDoctRenderer
     CDocBuilderValue CDocBuilderValue::GetProperty(const wchar_t* name)
     {
         CDocBuilderValue ret;
-        if (m_internal->m_value.IsEmpty() || !m_internal->m_value->IsObject())
+        if (IsEmpty() || !m_internal->m_value->isObject())
             return ret;
 
         std::wstring sProp(name);
         std::string sPropA = U_TO_UTF8(sProp);
 
-        ret.m_internal->m_isolate = m_internal->m_isolate;
-        ret.m_internal->m_value = m_internal->m_value->ToObject()->Get(v8::String::NewFromUtf8(m_internal->m_isolate, sPropA.c_str()));
+        ret.m_internal->m_context = m_internal->m_context;
+        ret.m_internal->m_value = m_internal->m_value->toObject()->get(sPropA.c_str());
 
         return ret;
     }
@@ -894,6 +680,16 @@ namespace NSDoctRenderer
                 return false;
         }
 
+        if (!sJsCommands.empty())
+        {
+            // Такого быть не должно!!! Так как результат никуда не сохранится. пустое действие.
+            std::wstring sUnicodeCommand = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sJsCommands.c_str(), (LONG)sJsCommands.length());
+            bool bIsNoError = this->ExecuteCommand(sUnicodeCommand.c_str());
+            sJsCommands = "";
+            if (!bIsNoError)
+                return false;
+        }
+
         return true;
     }
 
@@ -923,6 +719,14 @@ namespace NSDoctRenderer
             std::wstring sArg(value);
             m_pInternal->m_oParams.m_sArgumentJSON = U_TO_UTF8(sArg);
         }
+        else if (sParam == "--fonts-system")
+        {
+            m_pInternal->m_oParams.m_bIsSystemFonts = (std::wstring(value) == L"true");
+        }
+        else if (sParam == "--fonts-dir")
+        {
+            m_pInternal->m_oParams.m_arFontDirs.push_back(std::wstring(value));
+        }
     }
     void CDocBuilder::SetPropertyW(const wchar_t* param, const wchar_t* value)
     {
@@ -933,12 +737,12 @@ namespace NSDoctRenderer
 
     void CDocBuilder::Initialize()
     {
-        CV8Worker::Initialize();
+        CJSContext::ExternalInitialize();
     }
 
     void CDocBuilder::Dispose()
     {
-        CV8Worker::Dispose();
+        CJSContext::ExternalDispose();
     }
 
     void CDocBuilder::WriteData(const wchar_t* path, const wchar_t* value, const bool& append)

@@ -18,6 +18,8 @@
 #include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
 #include "../../DesktopEditor/common/Directory.h"
 
+#include "../../UnicodeConverter/UnicodeConverter.h"
+
 #include "../Src/Streams.h"
 #include "../Src/Utils.h"
 #include "../Src/Objects.h"
@@ -33,8 +35,11 @@
 #include "../Src/Font14.h"
 #include "../Src/FontCidTT.h"
 #include "../Src/Pattern.h"
+#include "../Src/Field.h"
 
 using namespace PdfWriter;
+
+std::wstring g_wsOutFolder = L"D:\\Work\\Test\\TextOnline\\";
 
 void TestDocument1()
 {
@@ -46,10 +51,138 @@ void TestDocument1()
 	oPdf.AddPage();
 	oPdf.AddPage();
 	oPdf.AddPageLabel(2, pagenumstyle_UpperRoman, 21, "UppRom-");
-
+	
 	oPdf.SetPasswords(L"123", L"qwe");
 
-	oPdf.SaveToFile(L"D:/Test/PDF/Test1.pdf");
+	oPdf.SaveToFile(g_wsOutFolder + L"Test1.pdf");
+	oPdf.Close();
+}
+void TestField()
+{
+	CDocument oPdf;
+	oPdf.CreateNew();
+	oPdf.SetPDFAConformanceMode(true);
+	CPage* pPage = oPdf.AddPage();
+
+	CFontDict* pFont2 = oPdf.CreateFont14(standard14fonts_Courier);
+
+	CFontTrueType* pFont = oPdf.CreateTrueTypeFont(L"C:/Windows/Fonts/centaur.ttf", 0);
+
+
+	//CTextField* pField1 = oPdf.CreateTextField();
+	//pField1->SetRequiredFlag(false);
+	//pField1->AddPageRect(pPage, TRect(200, 400, 600, 200));
+	//pField1->SetFieldName(L"Test");
+	//pField1->SetFieldHint(L"Илья");
+	//pField1->SetPlaceHolderText(L"123", TRgb(255, 0, 0), TRgb(254, 0, 0));
+	//pField1->SetAlign(CFieldBase::EFieldAlignType::Center);
+	//CTextField* pField2 = oPdf.CreateTextField();
+	//pField2->SetRequiredFlag(false);
+	//pField2->SetCombFlag(true);
+	//pField2->AddPageRect(pPage, TRect(200, 300, 300, 250));
+	//pField2->SetFieldName(L"Test");
+	//pField2->SetFieldHint(L"Hint");
+	//pField2->SetDefaultAppearance((CFontDict*)pFont, 40, TRgb(0, 255, 0));
+	//pField2->SetTextAppearance(L"Enter text", NULL, 0, (CFontDict*)pFont2, TRgb(255, 0, 0), 0.5, 40, 1, 14.3);
+
+	//CTextField* pField3 = oPdf.CreateTextField();
+	//pField3->SetRequiredFlag(false);
+	//pField3->SetCombFlag(true);
+	//pField3->AddPageRect(pPage, TRect(000, 500, 300, 450));
+	//pField3->SetFieldName(L"Test123");
+	//pField3->SetFieldHint(L"Hint123");
+	////pField3->SetMaxLen(100);
+	//pField3->SetTextValue(L"Enter text");
+	//pField3->SetTextAppearance(L"Enter text", NULL, 0, pFont, TRgb(0, 255, 0), 0.5, 40, 1, 14.3);
+
+
+	//CTextField* pField33 = oPdf.CreateTextField();
+	//pField33->SetRequiredFlag(false);
+	//pField33->SetCombFlag(true);
+	//pField33->AddPageRect(pPage, TRect(000, 400, 300, 350));
+	//pField33->SetFieldName(L"Test123");
+	//pField33->SetFieldHint(L"Hint123");
+	////pField33->SetMaxLen(100);
+	//pField33->SetAutoFit(true);
+	//pField33->SetTextValue(L"Enter text");
+	//pField33->SetTextAppearance(L"Enter text", NULL, 0, pFont, TRgb(0, 255, 0), 0.5, 40, 1, 14.3);
+
+
+	//CTextField* pField4 = oPdf.CreateTextField();
+	//pField4->SetRequiredFlag(false);
+	//pField4->AddPageRect(pPage, TRect(400, 500, 500, 450));
+	//pField4->SetFieldName(L"Test1234");
+	//pField4->SetFieldHint(L"Hint1234");
+	//pField4->SetMaxLen(10);
+	//pField4->SetCombFlag(true);
+	//pField4->SetTextValue(L"Ilya");
+	//pField4->SetFieldBorder(border_subtype_Solid, TRgb(255, 0, 0), 1, 0, 0, 0);
+	//pField4->SetTextAppearance(L"Ilya", NULL, 0, pFont, TRgb(255, 0, 0), 1, 40, 1, 14.3);
+
+	CChoiceField* pComboBox = oPdf.CreateChoiceField();
+	pComboBox->SetRequiredFlag(false);
+	pComboBox->AddPageRect(pPage, TRect(200, 600, 500, 550));
+	pComboBox->SetFieldName(L"ComboBox1");
+	pComboBox->SetFieldHint(L"Какой-то текст");
+	pComboBox->SetTextValue(L"Введите цвет");
+	pComboBox->AddOption(L"Зеленый");
+	pComboBox->AddOption(L"Green");
+	pComboBox->AddOption(L"Зеленый");
+	pComboBox->SetComboFlag(true);
+	pComboBox->SetEditFlag(true);
+	pComboBox->SetFieldBorder(border_subtype_Solid, TRgb(0, 255, 0), 1, 0, 0, 0);
+	pComboBox->SetMultiSelectFlag(false);
+	pComboBox->SetPlaceHolderText(L"Введите цвет", TRgb(0, 0, 0), TRgb(122, 122, 122));
+	pComboBox->SetTextAppearance(L"Введите цвет", NULL, 0, (CFontDict*)pFont, TRgb(122, 122, 122), 0.5, 40, 1, 14.3);
+	pComboBox->SetDefaultAppearance((CFontDict*)pFont, 40, TRgb(122, 122, 122));
+
+	//CCheckBoxField* pCheckBox = oPdf.CreateCheckBoxField();
+	//pCheckBox->SetFieldName(L"CheckBox");
+	//pCheckBox->SetRequiredFlag(false);
+	//pCheckBox->AddPageRect(pPage, TRect(50, 600, 100, 550));
+	//pCheckBox->SetValue(true);
+	////pCheckBox->SetAppearance(L"1", NULL, 0, pFont2, L"2", NULL, 0, pFont2, TRgb(0, 0, 0), 1, 40, 0, 0);
+	//pCheckBox->SetAppearance(1, TRgb(0, 0, 0), 1, 40, 0, 0);
+
+	//CRadioGroupField* pRadioGroup = oPdf.GetRadioGroupField(L"RadioGroup");
+	//CCheckBoxField* pRadio1 = pRadioGroup->CreateKid();
+	//pRadio1->AddPageRect(pPage, TRect(50, 700, 100, 650));
+	//pRadio1->SetValue(true);
+	////pRadio1->SetAppearance(L"3", NULL, 0, pFont2, L"4", NULL, 0, pFont2, TRgb(0, 0, 0), 1, 40, 0, 0);
+	//pRadio1->SetAppearance(2, TRgb(0, 0, 0), 1, 40, 0, 0);
+
+	//CCheckBoxField* pRadio2 = pRadioGroup->CreateKid(L"TestName");
+	//pRadio2->AddPageRect(pPage, TRect(150, 700, 200, 650));
+	//pRadio2->SetValue(true);
+	////pRadio2->SetAppearance(L"3", NULL, 0, pFont2, L"4", NULL, 0, pFont2, TRgb(0, 0, 0), 1, 40, 0, 0);
+	//pRadio2->SetAppearance(2, TRgb(0, 0, 0), 1, 40, 0, 0);
+
+	//CCheckBoxField* pRadio3 = pRadioGroup->CreateKid();
+	//pRadio3->AddPageRect(pPage, TRect(250, 700, 300, 650));
+	//pRadio3->SetValue(false);
+	////pRadio3->SetAppearance(L"3", NULL, 0, pFont2, L"4", NULL, 0, pFont2, TRgb(0, 0, 0), 1, 40, 0, 0);
+	//pRadio3->SetAppearance(2, TRgb(0, 0, 0), 1, 40, 0, 0);
+
+	CImageDict* pImage = oPdf.CreateImage();
+	pImage->LoadJpeg(L"D:/1429799187_5060172-vinni-puh-idet-v-gosti.jpg", 3872, 2592);
+	//pImage->LoadJpeg(L"D:/Fry.jpg", 240, 240);
+
+	pPage->DrawImage(pImage, 0, 0, 10, 10);
+
+	//CPictureField* pPictureField = oPdf.CreatePictureField();
+	//pPictureField->SetRequiredFlag(false);
+	//pPictureField->AddPageRect(pPage, TRect(100, 100, 500, 650));
+	//pPictureField->SetFieldName(L"Pic");
+	//pPictureField->SetFieldHint(L"Картинка");
+	//pPictureField->SetShift(0.25, 0.75);
+	//pPictureField->SetScaleType(CPictureField::EScaleType::Bigger);	
+	//pPictureField->SetFieldBorder(border_subtype_Solid, TRgb(255, 0, 0), 3, 0, 0, 0);
+	//pPictureField->SetShd(TRgb(0, 0, 255));
+	//pPictureField->SetRespectBorders(true);
+	//pPictureField->SetAppearance(pImage);
+
+	
+	oPdf.SaveToFile(g_wsOutFolder + L"TestField1.pdf");
 	oPdf.Close();
 }
 void TestDocument2()
@@ -81,7 +214,7 @@ void TestDocument2()
 	pOutline11->SetDestination(pDest);
 
 
-	oPdf.SaveToFile(L"D:/Test/PDF/Test2.pdf");
+	oPdf.SaveToFile(g_wsOutFolder + L"Test2.pdf");
 	oPdf.Close();
 }
 void TestDocument3()
@@ -250,7 +383,7 @@ void TestDocument3()
 
 
 
-	oPdf.SaveToFile(L"D:/Test/PDF/Test3.pdf");
+	oPdf.SaveToFile(g_wsOutFolder + L"Test3.pdf");
 	oPdf.Close();
 }
 void TestDocument4()
@@ -267,10 +400,10 @@ void TestDocument4()
 
 	CDestination* pDest = oPdf.CreateDestination(1);
 	pDest->SetXYZ(0, 792, 0);
-	CAnnotation* pAnnot = oPdf.CreateLinkAnnot(0, TRect(0, 100, 100, 0), pDest);
-	pAnnot = oPdf.CreateUriLinkAnnot(0, TRect(0, 200, 100, 100), "www.rbc.ru");
+	//CAnnotation* pAnnot = oPdf.CreateLinkAnnot(0, TRect(0, 100, 100, 0), pDest);
+	//pAnnot = oPdf.CreateUriLinkAnnot(0, TRect(0, 200, 100, 100), "www.rbc.ru");
 
-	oPdf.SaveToFile(L"D:/Test/PDF/Test4.pdf");
+	oPdf.SaveToFile(g_wsOutFolder + L"Test4.pdf");
 	oPdf.Close();
 }
 void TestDocument5()
@@ -414,7 +547,7 @@ void TestDocument5()
 	//pPage->DrawImage(pRawImage, 300, 300, 200, 200);
 	//delete[] pBgra;
 
-	oPdf.SaveToFile(L"D:/Test/PDF/Test5.pdf");
+	oPdf.SaveToFile(g_wsOutFolder + L"Test5.pdf");
 	oPdf.Close();
 }
 void TestDocument6()
@@ -488,7 +621,7 @@ void TestDocument6()
 	pPage->ClosePath();
 	pPage->Fill();
 
-	oPdf.SaveToFile(L"D:/Test/PDF/Test6.pdf");
+	oPdf.SaveToFile(g_wsOutFolder + L"Test6.pdf");
 	oPdf.Close();
 }
 void TestDocument7()
@@ -521,8 +654,8 @@ void TestDocument7()
 	pPage->SetHeight(600);
 	pPage->SetWidth(1000);
 
-	//CFontCidTrueType* pFont = oPdf.CreateTrueTypeFont(L"D:/test/_pdf/Test.ttf", 0);
-	CFontCidTrueType* pFont = oPdf.CreateTrueTypeFont(L"D:/test/_pdf/cambria.ttc", 1);
+	//CFontCidTrueType* pFont = oPdf.CreateCidTrueTypeFont(L"D:/test/_pdf/Test.ttf", 0);
+	CFontCidTrueType* pFont = oPdf.CreateCidTrueTypeFont(L"D:/test/_pdf/cambria.ttc", 1);
 
 	pPage->BeginText();
 
@@ -553,7 +686,7 @@ void TestDocument7()
 
 	pPage->EndText();
 
-	oPdf.SaveToFile(L"D:/Test/PDF/Test7.pdf");
+	oPdf.SaveToFile(g_wsOutFolder + L"Test7.pdf");
 	oPdf.Close();
 }
 void TestDocument8()
@@ -632,7 +765,7 @@ void TestDocument8()
 	pPage->GrRestore();
 
 
-	oPdf.SaveToFile(L"D:/Test/PDF/Test8.pdf");
+	oPdf.SaveToFile(g_wsOutFolder + L"Test8.pdf");
 	oPdf.Close();
 }
 void TestDocument9()
@@ -660,7 +793,7 @@ void TestDocument9()
 	pPage->GrRestore();
 
 
-	oPdf.SaveToFile(L"D:/Test/PDF/Test9.pdf");
+	oPdf.SaveToFile(g_wsOutFolder + L"Test9.pdf");
 	oPdf.Close();
 }
 
@@ -842,13 +975,40 @@ void TestOnlineBin()
 
 	delete pFonts;
 }
+void TestOnlineBin2()
+{
+	std::wstring wsFileName = L"1234";
+	std::wstring wsFolderPath = L"D:/Work/Test/TextOnline/";
+	std::wstring wsTempFolder = L"D:/Work/Test/TextOnline/Temp/";
+
+	NSFonts::IApplicationFonts* pFonts = NSFonts::NSApplication::Create();
+	if (!pFonts)
+		return;
+
+	pFonts->Initialize();
+
+	clock_t oBeginTime = clock();
+
+	std::wstring wsFilePath = wsFolderPath + wsFileName + L".txt";
+	std::wstring wsOutPath  = wsFolderPath + wsFileName + L".pdf";
+
+	CPdfRenderer oRenderer(pFonts, true);
+	oRenderer.SetTempFolder(wsTempFolder);
+	oRenderer.OnlineWordToPdf(wsFilePath, wsOutPath);
+
+	clock_t oEndTime = clock();
+	double dElapsedSecs = double(oEndTime - oBeginTime) / CLOCKS_PER_SEC;
+	printf("%f\n", dElapsedSecs);
+
+	delete pFonts;
+}
 
 int main()
 {
-	//TestDocument1();
+	TestField();
 	//TestDocument6();
 
-	TestOnlineBin();
+	//TestOnlineBin2();
 
     return 0;
 }

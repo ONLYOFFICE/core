@@ -31,9 +31,9 @@
  */
 #pragma once
 
-#include <Logic/BaseObject.h> 
-#include <Logic/Biff_structures/BitMarkedStructs.h> 
-#include <Logic/BinProcessor.h>
+#include "../BaseObject.h"
+#include "../Biff_structures/BitMarkedStructs.h"
+#include "../BinProcessor.h"
 
 namespace XLS
 {
@@ -61,8 +61,6 @@ public:
 protected:
 	BaseObject* parent_;
 };
-
-#define BIFF_RECORD_DEFINE_TYPE_INFO(class_name) public: const CFRecordType::TypeId getTypeId() const { return rt_ ## class_name; }
-
 } // namespace XLS
 
+#define BIFF_RECORD_DEFINE_TYPE_INFO(class_name) public: const XLS::CFRecordType::TypeId getTypeId() const { return rt_ ## class_name; }

@@ -172,8 +172,11 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 			{
 				if (proc.optional<COLUMNS>())
 				{
-					if (!m_COLUMNS)//???
+					COLUMNS *columns = dynamic_cast<COLUMNS*>(m_COLUMNS.get());
+					if (!columns || (columns && columns->elements_.empty()))
+					{
 						m_COLUMNS = elements_.back();
+					}
 					elements_.pop_back();
 				}
 			}break;
@@ -238,7 +241,8 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 			{
 				if (proc.optional<SORTANDFILTER>())// Let it be optional
 				{
-					m_SORTANDFILTER = elements_.back();
+					if (!m_SORTANDFILTER)
+						m_SORTANDFILTER = elements_.back();
 					elements_.pop_back();
 				}	
 			}break;

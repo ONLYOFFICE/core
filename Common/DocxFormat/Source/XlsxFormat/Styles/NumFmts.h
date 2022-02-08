@@ -33,6 +33,8 @@
 #include "../CommonInclude.h"
 
 #include "rPr.h"
+#include "../../XlsbFormat/Biff12_records/Fmt.h"
+#include "../../XlsbFormat/Biff12_unions/ACFMT.h"
 
 namespace OOX
 {
@@ -42,6 +44,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CNumFmt)
+            WritingElement_XlsbConstructors(CNumFmt)
 			CNumFmt()
 			{
 			}
@@ -80,6 +83,11 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
+
 			virtual EElementType getType () const
 			{
 				return et_x_NumFmt;
@@ -96,6 +104,17 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ss:Format"),		m_oFormatCode )
 				WritingElement_ReadAttributes_End( oReader )
 			}
+
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::Fmt*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    m_oFormatCode = ptr->stFmtCode.value();
+                    m_oNumFmtId   = ptr->ifmt;
+                }
+            }
+
 		public:
 			nullable_string									m_oFormatCode;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oNumFmtId;
@@ -105,6 +124,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CNumFmts)
+            WritingElement_XlsbVectorConstructors(CNumFmts)
 			CNumFmts()
 			{
 			}
@@ -146,10 +166,43 @@ namespace OOX
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("numFmt") == sName )
-						m_arrItems.push_back( new CNumFmt( oReader ));
+					if (L"numFmt" == sName)
+					{
+						m_arrItems.push_back(new CNumFmt(oReader));
+
+						if (m_arrItems.back()->m_oNumFmtId.IsInit())
+						{
+							m_mapNumFmtIndex.insert(std::make_pair(m_arrItems.back()->m_oNumFmtId->GetValue(), m_arrItems.size() - 1));
+						}
+					}
 				}
 			}
+
+            void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
+            {
+                ReadAttributes(obj);
+
+                for(auto &fmt : obj)
+                {
+                    XLS::BaseObjectPtr ptr = nullptr;
+                    if(fmt->get_type() == XLS::typeACFMT)
+                    {
+                        ptr = boost::shared_ptr<XLS::BaseObject>(static_cast<XLSB::ACFMT*>(fmt.get())->m_BrtFmt);
+                    }
+                    else if(fmt->get_type() == XLS::typeFmt)
+                    {
+                        ptr = boost::shared_ptr<XLS::BaseObject>(fmt);
+                    }
+
+                    m_arrItems.push_back(new CNumFmt(ptr));
+
+                    if (m_arrItems.back()->m_oNumFmtId.IsInit())
+                    {
+                        m_mapNumFmtIndex.insert(std::make_pair(m_arrItems.back()->m_oNumFmtId->GetValue(), m_arrItems.size() - 1));
+                    }
+                }
+
+            }
 
 			virtual EElementType getType () const
 			{
@@ -160,11 +213,18 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("count"),      m_oCount )
+					WritingElement_ReadAttributes_Read_if ( oReader, _T("count"), m_oCount )
 				WritingElement_ReadAttributes_End( oReader )
 			}
+            void ReadAttributes(std::vector<XLS::BaseObjectPtr>& obj)
+            {
+                m_oCount = (_INT32)obj.size();
+            }
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oCount;
+
+			std::map<unsigned int, size_t> m_mapNumFmtIndex;
+			std::map<std::wstring, int> m_mapFormatCode;
 		};
 	} //Spreadsheet
 } // namespace OOX

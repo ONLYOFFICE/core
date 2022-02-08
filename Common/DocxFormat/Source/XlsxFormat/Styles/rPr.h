@@ -32,6 +32,9 @@
 #pragma once
 
 #include "../CommonInclude.h"
+#include "../../XlsbFormat/Biff12_records/Color.h"
+#include "../../XlsbFormat/Biff12_records/IndexedColor.h"
+#include "../../XlsbFormat/Biff12_records/MRUColor.h"
 
 namespace NSBinPptxRW
 {
@@ -43,10 +46,13 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
+        class CFont;
+
 		class CRgbColor : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CRgbColor)
+            WritingElement_XlsbConstructors(CRgbColor)
 			CRgbColor()
 			{
 			}
@@ -63,6 +69,14 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::IndexedColor*>(obj.get());
+                if(ptr != nullptr)
+                {
+                     m_oRgb = SimpleTypes::Spreadsheet::CHexColor(ptr->bRed, ptr->bGreen, ptr->bBlue);
+                }
+            }
 			virtual EElementType getType () const
 			{
 				return et_x_RgbColor;
@@ -89,6 +103,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CIndexedColors)
+            WritingElement_XlsbVectorConstructors(CIndexedColors)
 			CIndexedColors()
 			{
 			}
@@ -126,6 +141,18 @@ namespace OOX
 					}
 				}
 			}
+
+            void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
+            {
+                int index = 0;
+
+                for(auto &indexedColor : obj)
+                {
+                    CRgbColor *pRgbColor = new CRgbColor(indexedColor);
+                    mapIndexedColors.insert(std::make_pair(index++, pRgbColor));
+                    m_arrItems.push_back(pRgbColor);
+                }
+            }
 
 			virtual EElementType getType () const
 			{
@@ -368,6 +395,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CColor)
+                        WritingElement_XlsbConstructors(CColor)
 			CColor(OOX::Document *pMain = NULL) :  WritingElement(pMain){}
 			virtual ~CColor()
 			{
@@ -418,6 +446,14 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
+            void fromBin(XLS::BaseObject* obj)
+            {
+                ReadAttributes(obj);
+            }
 			virtual EElementType getType () const
 			{
 				return et_x_Color;
@@ -433,6 +469,85 @@ namespace OOX
                     WritingElement_ReadAttributes_Read_if     ( oReader, _T("tint"),    m_oTint )
 				WritingElement_ReadAttributes_End( oReader )
 			}
+                        void ReadAttributes(XLS::BaseObjectPtr& obj)
+                        {
+                            auto ptr = static_cast<XLSB::Color*>(obj.get());
+
+                            if(ptr != nullptr)
+                            {
+                                switch(ptr->xColorType)
+                                {
+                                    case 0: m_oAuto     = true;		break;
+                                    case 1: m_oIndexed  = ptr->index;	break;
+                                    case 3: m_oThemeColor = (SimpleTypes::Spreadsheet::EThemeColor)ptr->index; break;
+                                        /*switch (ptr->index)
+                                        {
+                                            case 0:
+                                                m_oThemeColor = SimpleTypes::Spreadsheet::EThemeColor::themecolorDark1;
+                                                break;
+                                            case 1:
+                                                m_oThemeColor = SimpleTypes::Spreadsheet::EThemeColor::themecolorLight1;
+                                                break;
+                                            case 2:
+                                                m_oThemeColor = SimpleTypes::Spreadsheet::EThemeColor::themecolorDark2;
+                                                break;
+                                            case 3:
+                                                m_oThemeColor = SimpleTypes::Spreadsheet::EThemeColor::themecolorLight2;
+                                                break;
+                                            default:
+                                                m_oThemeColor = (SimpleTypes::Spreadsheet::EThemeColor)ptr->index;
+                                        }
+                                        break;*/
+                                    default:
+                                        m_oRgb = SimpleTypes::Spreadsheet::CHexColor(ptr->bRed, ptr->bGreen, ptr->bBlue, ptr->bAlpha);
+                                        break;
+                                }
+                                if (ptr->nTintAndShade != 0)
+                                {
+                                     m_oTint     = ptr->nTintAndShade/32767.0;
+                                }
+                            }
+                        }
+
+                        void ReadAttributes(XLS::BaseObject* obj)
+                        {
+                            auto ptr = static_cast<XLSB::Color*>(obj);
+
+                            if(ptr != nullptr)
+                            {
+                                switch(ptr->xColorType)
+                                {
+                                    case 0: m_oAuto     = true;		break;
+                                    case 1: m_oIndexed  = ptr->index;	break;
+                                    case 3: m_oThemeColor = (SimpleTypes::Spreadsheet::EThemeColor)ptr->index; break;
+                                        /*switch (ptr->index)
+                                        {
+                                            case 0:
+                                                m_oThemeColor = SimpleTypes::Spreadsheet::EThemeColor::themecolorDark1;
+                                                break;
+                                            case 1:
+                                                m_oThemeColor = SimpleTypes::Spreadsheet::EThemeColor::themecolorLight1;
+                                                break;
+                                            case 2:
+                                                m_oThemeColor = SimpleTypes::Spreadsheet::EThemeColor::themecolorDark2;
+                                                break;
+                                            case 3:
+                                                m_oThemeColor = SimpleTypes::Spreadsheet::EThemeColor::themecolorLight2;
+                                                break;
+                                            default:
+                                                m_oThemeColor = (SimpleTypes::Spreadsheet::EThemeColor)ptr->index;
+                                        }
+                                        break;*/
+                                    default:
+                                        m_oRgb = SimpleTypes::Spreadsheet::CHexColor(ptr->bRed, ptr->bGreen, ptr->bBlue, ptr->bAlpha);
+                                        break;
+                                }
+                                if (ptr->nTintAndShade != 0)
+                                {
+                                     m_oTint     = ptr->nTintAndShade/32767.0;
+                                }
+                            }
+                        }
 		public:
 			nullable<SimpleTypes::COnOff<>>						m_oAuto;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oIndexed;
@@ -445,6 +560,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CMruColors)
+            WritingElement_XlsbVectorConstructors(CMruColors)
 			CMruColors()
 			{
 			}
@@ -477,7 +593,15 @@ namespace OOX
 						m_arrItems.push_back( new CColor( oReader ));
 				}
 			}
-
+            void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
+            {
+                for(auto &MRUColor : obj)
+                {
+                    auto color = new CColor();
+                    color->fromBin(dynamic_cast<XLS::BaseObject*>(&(static_cast<XLSB::MRUColor*>(MRUColor.get())->colorMRU)));
+                    m_arrItems.push_back(color);
+                }
+            }
 			virtual EElementType getType () const
 			{
 				return et_x_MruColors;
@@ -822,6 +946,7 @@ namespace OOX
 				}
 			}
 
+            void fromFont(CFont* font);
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType);
 			void toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const;
 			_UINT32 getXLSBSize() const;
@@ -851,6 +976,9 @@ namespace OOX
 			nullable<ComplexTypes::Spreadsheet::CDouble>							m_oSz;
             nullable<CUnderline>                                                    m_oUnderline;
             nullable<CVerticalAlign>                                                m_oVertAlign;
+
+            //////
+            nullable<SimpleTypes::CDecimalNumber<>>                                 m_nFontIndex;
 		};
 	} //Spreadsheet
 } // namespace OOX

@@ -12,17 +12,21 @@ build_zlib_as_sources {
 
 INCLUDEPATH += \
     $$PWD/src/zlib-1.2.11/contrib/minizip \
-    $$PWD/src/zlib-1.2.11
+    $$PWD/src/zlib-1.2.11 \
+    $$PWD/src
 
 SOURCES +=  \
     $$PWD/src/OfficeUtils.cpp \
+    $$PWD/src/ZipBuffer.cpp \
     $$PWD/src/ZipUtilsCP.cpp \
+    $$PWD/src/zlib_addon.c \
     $$PWD/src/zlib-1.2.11/contrib/minizip/ioapi.c \
     $$PWD/src/zlib-1.2.11/contrib/minizip/miniunz.c \
     $$PWD/src/zlib-1.2.11/contrib/minizip/minizip.c \
     $$PWD/src/zlib-1.2.11/contrib/minizip/mztools.c \
     $$PWD/src/zlib-1.2.11/contrib/minizip/unzip.c \
-    $$PWD/src/zlib-1.2.11/contrib/minizip/zip.c
+    $$PWD/src/zlib-1.2.11/contrib/minizip/zip.c \
+    $$PWD/src/zlib-1.2.11/contrib/minizip/ioapibuf.c
 core_windows {
 SOURCES +=  \
     $$PWD/src/zlib-1.2.11/contrib/minizip/iowin32.c
@@ -49,12 +53,16 @@ SOURCES += \
 HEADERS +=  \
     $$PWD/src/OfficeUtilsCommon.h \
     $$PWD/src/OfficeUtils.h \
+    $$PWD/src/ZipBuffer.h \
+    $$PWD/src/ZipFolder.h \
     $$PWD/src/ZipUtilsCP.h \
+    $$PWD/src/zlib_addon.h \
     $$PWD/src/zlib-1.2.11/contrib/minizip/crypt.h \
     $$PWD/src/zlib-1.2.11/contrib/minizip/ioapi.h \
     $$PWD/src/zlib-1.2.11/contrib/minizip/mztools.h \
     $$PWD/src/zlib-1.2.11/contrib/minizip/unzip.h \
-    $$PWD/src/zlib-1.2.11/contrib/minizip/zip.h
+    $$PWD/src/zlib-1.2.11/contrib/minizip/zip.h \
+    $$PWD/src/zlib-1.2.11/contrib/minizip/ioapibuf.h
 
 core_ios {
 OBJECTIVE_SOURCES += $$PWD/src/ZipUtilsCP_ios.mm

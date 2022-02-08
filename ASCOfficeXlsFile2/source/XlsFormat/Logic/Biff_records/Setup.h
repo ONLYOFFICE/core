@@ -42,21 +42,21 @@ class Setup: public BiffRecord
 	BIFF_RECORD_DEFINE_TYPE_INFO(Setup)
 	BASE_OBJECT_DEFINE_CLASS_NAME(Setup)
 public:
-	Setup();
+        Setup(bool isChart = false);
 	~Setup();
 
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType type = typeSetup;
+        static const ElementType type = typeSetup;
 
 //-----------------------------
-	_UINT16 iPaperSize;
-	_UINT16 iScale;
-	_INT16 iPageStart;
-	_UINT16 iFitWidth;
-	_UINT16 iFitHeight;
+        _UINT32 iPaperSize;
+        _UINT32 iScale;
+        _INT32 iPageStart;
+        _UINT32 iFitWidth;
+        _UINT32 iFitHeight;
 
 	bool fLeftToRight;
 	bool fPortrait;
@@ -69,11 +69,16 @@ public:
 	bool fEndNotes;
 	unsigned char	iErrors;
 
-	_UINT16 iRes;
-	_UINT16 iVRes;
+        _UINT32 iRes;
+        _UINT32 iVRes;
 	Xnum	numHdr;
 	Xnum	numFtr;
-	_UINT16 iCopies;
+        _UINT32 iCopies;
+
+        std::wstring szRelID; // biff12
+        bool fLandscape; // biff12
+
+        bool _isChart;
 
 };
 

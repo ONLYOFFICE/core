@@ -64,15 +64,68 @@ OOX::Spreadsheet::CXlsx::~CXlsx()
 	m_arWorksheets.clear();
 	m_mapWorksheets.clear();
 }	
+void OOX::Spreadsheet::CXlsx::init()
+{
+    m_bSpreadsheets		= true;
 
+    m_pApp				= NULL;
+    m_pCore				= NULL;
+
+    m_pWorkbook			= NULL;
+    m_pSharedStrings	= NULL;
+    m_pStyles			= NULL;
+    m_pCalcChain		= NULL;
+    m_pVbaProject		= NULL;
+    m_pJsaProject		= NULL;
+    m_pWorkbookComments = NULL;
+    m_pXlsbWriter       = NULL;
+    m_nLastReadRow      = 0;
+    m_nLastReadCol      = -1;
+    m_bNeedCalcChain    = true;
+
+    bDeleteWorkbook			= false;
+    bDeleteSharedStrings	= false;
+    bDeleteStyles			= false;
+    bDeleteCalcChain		= false;
+    bDeleteWorksheets		= false;
+    bDeleteVbaProject		= false;
+    bDeleteJsaProject		= false;
+}
+bool OOX::Spreadsheet::CXlsx::ReadNative(const CPath& oFilePath)
+{
+	m_sDocumentPath = oFilePath.GetPath();
+
+	OOX::CRels oRels(oFilePath / FILE_SEPARATOR_STR);
+	IFileContainer::Read(oRels, oFilePath, oFilePath);
+
+	if (!m_pWorkbook) return false;
+
+	return true;
+}
 bool OOX::Spreadsheet::CXlsx::Read(const CPath& oFilePath)
 {
+	m_sDocumentPath = oFilePath.GetPath();
+
 	OOX::CRels oRels( oFilePath / FILE_SEPARATOR_STR );
 	IFileContainer::Read( oRels, oFilePath, oFilePath );
 
 	if (!m_pWorkbook) return false;
 
- 	return true;
+	for (size_t i = 0; i < m_arWorksheets.size(); ++i)
+	{
+		if (m_arWorksheets[i])
+			m_arWorksheets[i]->PrepareAfterRead();
+	}
+	return true;
+}
+bool OOX::Spreadsheet::CXlsx::WriteNative(const CPath& oDirPath, OOX::CContentTypes &oContentTypes)
+{
+	if (NULL == m_pWorkbook || m_arWorksheets.empty())
+		return false;
+
+	IFileContainer::Write(oDirPath / L"", OOX::CPath(_T("")), oContentTypes);
+
+	oContentTypes.Write(oDirPath);
 }
 bool OOX::Spreadsheet::CXlsx::Write(const CPath& oDirPath, OOX::CContentTypes &oContentTypes)
 {
@@ -215,8 +268,7 @@ void OOX::Spreadsheet::CXlsx::PrepareWorkbook()
 		
 		pWorksheet->m_oSheetViews->m_arrItems.push_back(pSheetView);
 		pWorksheet->m_oSheetFormatPr.Init();
-		pWorksheet->m_oSheetFormatPr->m_oDefaultRowHeight.Init();
-		pWorksheet->m_oSheetFormatPr->m_oDefaultRowHeight->SetValue(15);
+		pWorksheet->m_oSheetFormatPr->m_oDefaultRowHeight = 15.;
 		
 		pWorksheet->m_oPageMargins.Init();
 		pWorksheet->m_oPageMargins->m_oLeft.Init();

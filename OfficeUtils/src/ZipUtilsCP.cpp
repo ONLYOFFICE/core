@@ -281,16 +281,13 @@ namespace ZLibZipUtils
   {   	  
 	char filename_inzipA[256];
 	wchar_t filename_inzip[256];
-    wchar_t* filename_withoutpath;
-    wchar_t* p;
-    int err=UNZ_OK;
-	NSFile::CFileBinary oFile;
-    FILE *fout=NULL;
-    void* buf;
-    uInt size_buf;
+
+    wchar_t* filename_withoutpath = NULL;
+    wchar_t* p = NULL;
+    int err = UNZ_OK;
 
     unz_file_info file_info;
-    uLong ratio=0;
+
     err = unzGetCurrentFileInfo(uf,&file_info,filename_inzipA,sizeof(filename_inzipA),NULL,0,NULL,0);
 
     std::wstring filenameW = codepage_issue_fixFromOEM(filename_inzipA);
@@ -299,13 +296,6 @@ namespace ZLibZipUtils
     if (err!=UNZ_OK)
     {
       return err;
-    }
-
-    size_buf = WRITEBUFFERSIZE;
-    buf = (void*)malloc(size_buf);
-    if (buf==NULL)
-    {
-      return UNZ_INTERNALERROR;
     }
 
     p = filename_withoutpath = filename_inzip;
@@ -333,10 +323,10 @@ namespace ZLibZipUtils
       else
         write_filename = filename_withoutpath;
 
-      err = unzOpenCurrentFilePassword(uf,password);
+      err = unzOpenCurrentFilePassword(uf, password);
       if (((*popt_overwrite)==0) && (err==UNZ_OK))
       {
-        char rep=0;
+        char rep = 0;
 		NSFile::CFileBinary oFileTemp;
 		if (oFileTemp.OpenFile(write_filename))
         {
@@ -349,6 +339,36 @@ namespace ZLibZipUtils
         if (rep == 'A')
           *popt_overwrite=1;
       }
+//-------------------------------------------------------------------------------------------------
+
+      char* current_directory = getcwd(NULL, 0);
+
+      if (current_directory)
+      {
+            std::string current_path(current_directory);
+            free(current_directory);
+
+            current_path += FILE_SEPARATOR_STRA;
+
+            replace_all(current_path, "/", FILE_SEPARATOR_STRA);
+            replace_all(current_path, "\\", FILE_SEPARATOR_STRA);
+
+            std::string filename_inzip(filename_inzipA);
+
+            replace_all(filename_inzip, "/", FILE_SEPARATOR_STRA);
+            replace_all(filename_inzip, "\\", FILE_SEPARATOR_STRA);
+
+            std::string norm_path = normalize_path(current_path + filename_inzip);
+            std::string norm_current_path = normalize_path(current_path);
+
+            if (std::string::npos == norm_path.find(norm_current_path))
+            {
+                return UNZ_INTERNALERROR;
+            }
+     }
+//-------------------------------------------------------------------------------------------------
+      NSFile::CFileBinary oFile;
+      FILE *fout = NULL;
 
       if ((skip==0) && (err==UNZ_OK))
       {
@@ -356,33 +376,10 @@ namespace ZLibZipUtils
 			 fout = oFile.GetFileNative();
 
         // some zipfile don't contain directory alone before file 
-        if ((fout==NULL) && ((*popt_extract_without_path)==0) &&
+        if ((fout == NULL) && ((*popt_extract_without_path)==0) &&
 		    (filename_withoutpath!=(wchar_t*)filename_inzip))
         {
-          char* current_directory = getcwd(NULL, 0);
-          if (current_directory)
-          {
-                std::string current_path(current_directory);
-                free(current_directory);
 
-				current_path += FILE_SEPARATOR_STRA;
-
-                replace_all(current_path, "/", FILE_SEPARATOR_STRA);
-                replace_all(current_path, "\\", FILE_SEPARATOR_STRA);
-
-                std::string filename_inzip(filename_inzipA);
-
-                replace_all(filename_inzip, "/", FILE_SEPARATOR_STRA);
-                replace_all(filename_inzip, "\\", FILE_SEPARATOR_STRA);
-
-                std::string norm_path = normalize_path(current_path + filename_inzip);
-                std::string norm_current_path = normalize_path(current_path);
-
-                if (std::string::npos == norm_path.find(norm_current_path))
-                {
-                    return UNZ_INTERNALERROR;
-                }
-         }
           char c=*(filename_withoutpath-1);
           *(filename_withoutpath-1)='\0';
           makedir(write_filename);
@@ -395,41 +392,50 @@ namespace ZLibZipUtils
         }
       }
 
-      if (fout!=NULL)
-      {
-        do
-        {
-          err = unzReadCurrentFile(uf, buf, size_buf);
-          if (err<0)
-          {
-            break;
-          }
-          if (err>0)
-            if (fwrite(buf,err,1,fout)!=1)
-            {			  
-              err=UNZ_ERRNO;
-              break;
-            }
-        }
-        while (err>0);
-		//close вызовется в oFile
-        //if (fout)
-        //  fclose(fout);
+      uInt size_buf = WRITEBUFFERSIZE;
+      void* buf = (void*)malloc(size_buf);
 
-        if (err==0)
-          change_file_date(write_filename,file_info.dosDate,
-                           file_info.tmu_date);
+      if (buf == NULL)
+      {
+        return UNZ_INTERNALERROR;
       }
 
-      if (err==UNZ_OK)
+      if (fout != NULL)
+      {
+          do
+          {
+            err = unzReadCurrentFile(uf, buf, size_buf);
+            if (err<0)
+            {
+              break;
+            }
+            if (err>0)
+              if (fwrite(buf, err, 1, fout) != 1)
+              {
+                err=UNZ_ERRNO;
+                break;
+              }
+          }
+          while (err>0);
+
+ //close вызовется в oFile
+
+        if (err==0)
+        {
+            change_file_date(write_filename, file_info.dosDate, file_info.tmu_date);
+        }
+      }
+
+      if (err == UNZ_OK)
       {
         err = unzCloseCurrentFile (uf);
       }
       else
-        unzCloseCurrentFile(uf); // don't lose the error 
+        unzCloseCurrentFile(uf); // don't lose the error
+
+      free(buf);
     }
 
-    free(buf);
     return err;
   }
 
@@ -846,7 +852,10 @@ int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback*
 
     if ( ( zipFile != NULL ) && ( unzipDir != NULL ) )
     {
+      int old = zlip_get_addition_flag();
+      zlip_set_addition_flag(old | ZLIB_ADDON_FLAG_READ_ONLY);
 	  uf = unzOpenHelp (zipFile);
+      zlip_set_addition_flag(old);
     }
 
     if ( uf != NULL )

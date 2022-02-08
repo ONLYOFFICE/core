@@ -69,12 +69,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
-    <IncludePath>D:\_Work\core\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\_Work\core\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>../../Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
+    <LibraryPath>../../Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>D:\_Work\core\Common\3dParty\boost\build\win_64\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\_Work\core\Common\3dParty\boost\build\win_64\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(Configuration)\</OutDir>
@@ -87,7 +89,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;..\..\DesktopEditor\freetype-2.5.2\include;..\..\DesktopEditor\xml\libxml2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\_Work\core\ASCOfficeOdfFile\include;C:\_Work\core\Common\3dParty\boost\build\win_32\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(IncludePath)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;USE_LITE_READER;_USE_XMLLITE_READER_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -108,8 +110,8 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../include;../../../DesktopEditor/freetype-2.5.2/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\include;..\..\DesktopEditor\xml\libxml2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;USE_LITE_READER;_USE_XMLLITE_READER_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -126,7 +128,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>../include;../../DesktopEditor/freetype-2.5.2/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\_Work\core\ASCOfficeOdfFile\include;C:\_Work\core\Common\3dParty\boost\build\win_32\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(IncludePath)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader />
@@ -274,7 +276,6 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="..\src\odf\createandread.cpp" />
-    <ClCompile Include="..\src\odf\datatypes\tablefunction.cpp" />
     <ClCompile Include="..\src\odf\documentcontext.cpp" />
     <ClCompile Include="..\src\odf\draw_common.cpp" />
     <ClCompile Include="..\src\odf\draw_frame.cpp" />
@@ -354,11 +355,14 @@
     <ClCompile Include="..\src\odf\style_paragraph_properties_docx.cpp" />
     <ClCompile Include="..\src\odf\style_paragraph_properties_pptx.cpp" />
     <ClCompile Include="..\src\odf\style_presentation.cpp" />
+    <ClCompile Include="..\src\odf\style_properties.cpp" />
     <ClCompile Include="..\src\odf\style_regions.cpp" />
     <ClCompile Include="..\src\odf\style_table_properties.cpp" />
     <ClCompile Include="..\src\odf\style_text_properties.cpp" />
     <ClCompile Include="..\src\odf\svg_parser.cpp" />
-    <ClCompile Include="..\src\odf\table.cpp" />
+    <ClCompile Include="..\src\odf\table.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="..\src\odf\table_calculation_settings.cpp" />
     <ClCompile Include="..\src\odf\table_database_ranges.cpp" />
     <ClCompile Include="..\src\odf\table_data_pilot_tables.cpp" />
@@ -368,7 +372,9 @@
     <ClCompile Include="..\src\odf\table_xlsx.cpp" />
     <ClCompile Include="..\src\odf\templates.cpp" />
     <ClCompile Include="..\src\odf\text_content.cpp" />
-    <ClCompile Include="..\src\odf\text_elements.cpp" />
+    <ClCompile Include="..\src\odf\text_elements.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\cpdoccore\odf\odf_document.h" />
@@ -463,7 +469,6 @@
     <ClInclude Include="..\src\odf\chart_build_oox.h" />
     <ClInclude Include="..\src\odf\chart_objects.h" />
     <ClInclude Include="..\src\odf\datatypes\custom_shape_types_convert.h" />
-    <ClInclude Include="..\src\odf\datatypes\tablefunction.h" />
     <ClInclude Include="..\src\odf\documentcontext.h" />
     <ClInclude Include="..\src\odf\draw_common.h" />
     <ClInclude Include="..\src\odf\draw_frame.h" />
@@ -500,7 +505,6 @@
     <ClInclude Include="..\src\odf\office_settings.h" />
     <ClInclude Include="..\src\odf\office_spreadsheet.h" />
     <ClInclude Include="..\src\odf\office_text.h" />
-    <ClInclude Include="..\src\odf\paragraph_content.h" />
     <ClInclude Include="..\src\odf\paragraph_elements.h" />
     <ClInclude Include="..\src\odf\search_table_cell.h" />
     <ClInclude Include="..\src\odf\serialize_elements.h" />
@@ -513,6 +517,7 @@
     <ClInclude Include="..\src\odf\style_map.h" />
     <ClInclude Include="..\src\odf\style_paragraph_properties.h" />
     <ClInclude Include="..\src\odf\style_presentation.h" />
+    <ClInclude Include="..\src\odf\style_properties.h" />
     <ClInclude Include="..\src\odf\style_ref.h" />
     <ClInclude Include="..\src\odf\style_regions.h" />
     <ClInclude Include="..\src\odf\style_table_properties.h" />
@@ -527,6 +532,20 @@
     <ClInclude Include="..\src\odf\text_content.h" />
     <ClInclude Include="..\src\odf\text_elements.h" />
     <ClInclude Include="..\src\odf\visitor.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="cpcommon.vcxproj">
+      <Project>{609ed938-3ca8-4bed-b363-25096d4c4812}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="cpxml.vcxproj">
+      <Project>{41bed424-4eaf-4053-8a5f-1e2a387d53d1}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="formulasconvert.vcxproj">
+      <Project>{94954a67-a853-43b1-a727-6ef2774c5a6a}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -474,9 +474,6 @@
     <ClCompile Include="..\src\odf\table_xlsx.cpp">
       <Filter>elements</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\odf\datatypes\tablefunction.cpp">
-      <Filter>elements</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\odf\text_content.cpp">
       <Filter>elements</Filter>
     </ClCompile>
@@ -484,6 +481,9 @@
       <Filter>elements</Filter>
     </ClCompile>
     <ClCompile Include="..\src\ConvertOO2OOX.cpp" />
+    <ClCompile Include="..\src\odf\style_properties.cpp">
+      <Filter>style</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\odf\abstract_xml.h">
@@ -912,9 +912,6 @@
     <ClInclude Include="..\src\odf\office_text.h">
       <Filter>elements</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\odf\paragraph_content.h">
-      <Filter>elements</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\odf\paragraph_elements.h">
       <Filter>elements</Filter>
     </ClInclude>
@@ -939,9 +936,6 @@
     <ClInclude Include="..\src\odf\table_named_expressions.h">
       <Filter>elements</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\odf\datatypes\tablefunction.h">
-      <Filter>elements</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\odf\text_content.h">
       <Filter>elements</Filter>
     </ClInclude>
@@ -952,5 +946,8 @@
       <Filter>elements</Filter>
     </ClInclude>
     <ClInclude Include="..\src\ConvertOO2OOX.h" />
+    <ClInclude Include="..\src\odf\style_properties.h">
+      <Filter>style</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

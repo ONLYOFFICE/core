@@ -36,6 +36,7 @@
 #include "../../XlsxFormat/ComplexTypes_Spreadsheet.h"
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../IFileContainer.h"
+#include "../Document.h"
 
 #include <boost/smart_ptr/shared_array.hpp>
 
@@ -174,8 +175,12 @@ namespace OOX
 		}
 		virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 		{
-			writer.WriteString(L"<ocxPr>");
-			writer.WriteString(L"</ocxPr>");
+			writer.WriteString(L"<ocxPr");
+			if (m_oName.IsInit())
+				writer.WriteString(L" ax:name=\"" + *m_oName + L"\"");
+			if (m_oValue.IsInit())
+				writer.WriteString(L" ax:value=\"" + *m_oValue + L"\"");
+			writer.WriteString(L"/>");
 		}
 		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -214,7 +219,7 @@ namespace OOX
 		}
 		ActiveX_xml(OOX::Document *pMain, const CPath& oRootPath, const CPath& filename) : File(pMain), OOX::IFileContainer(pMain)
 		{
-			m_bDocument = false;
+			m_bDocument = (NULL != dynamic_cast<OOX::CDocument*>(pMain));
 			read( oRootPath, filename );
 		}
 		virtual ~ActiveX_xml();
@@ -228,9 +233,8 @@ namespace OOX
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		void read_bin(const CPath& oPath);
 
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, CContentTypes& content) const
-		{
-		}
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, CContentTypes& content) const;
+
 		virtual const FileType type() const
 		{
 			return OOX::FileTypes::ActiveX_xml;
@@ -270,9 +274,6 @@ namespace OOX
 		virtual void read(const CPath& filename)
 		{
 			Media::read(filename);
-		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, CContentTypes& content) const
-		{
 		}
 		virtual const FileType type() const
 		{

@@ -100,9 +100,6 @@ namespace DocFileFormat
 
 	typedef std::pair <int, int> Int_Pair;
 
-	static const int gc_nZeroWidth = 222;
-
-
 #define ENCODING_UTF16			1200
 #define ENCODING_WINDOWS_1250	1250
 #define ENCODING_UTF8			65001

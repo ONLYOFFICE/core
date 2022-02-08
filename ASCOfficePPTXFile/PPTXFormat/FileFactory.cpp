@@ -55,10 +55,13 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/Rels.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/FileTypes.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Chart/Chart.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Chart/ChartDrawing.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/VmlDrawing.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/ChartDrawing.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramData.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramDrawing.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramColors.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramQuickStyle.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramLayout.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/Image.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/Audio.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/Video.h"
@@ -121,13 +124,13 @@ namespace PPTX
 			return smart_ptr<OOX::File>(new PPTX::Comments(pMain, filename, map));
 
 		else if (relation.Type() == OOX::FileTypes::Chart)
-			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpace(pMain, filename, filename));
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartFile(pMain, filename, filename));
 		else if (relation.Type() == OOX::FileTypes::ChartEx)
-			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartSpaceEx(pMain, filename, filename));
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartExFile(pMain, filename, filename));
 		else if (relation.Type() == OOX::FileTypes::ChartStyle)
-			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartStyle(pMain, filename, filename));
-		else if (relation.Type() == OOX::FileTypes::ChartColorStyle)
-			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartColorStyle(pMain, filename, filename));
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartStyleFile(pMain, filename, filename));
+		else if (relation.Type() == OOX::FileTypes::ChartColors)
+			return smart_ptr<OOX::File>(new OOX::Spreadsheet::CChartColorsFile(pMain, filename, filename));
 		else if (relation.Type() == OOX::FileTypes::HyperLink)
 			return smart_ptr<OOX::File>(new OOX::HyperLink(pMain, relation.Target()));
 		else if (relation.Type() == OOX::FileTypes::Image)
@@ -138,10 +141,16 @@ namespace PPTX
 			return smart_ptr<OOX::File>(new OOX::Media(pMain, filename, relation.IsExternal()));
 		else if (relation.Type() == OOX::FileTypes::Video)
 			return smart_ptr<OOX::File>(new OOX::Video(pMain, filename, relation.IsExternal()));
-		else if (relation.Type() == OOX::FileTypes::Data) 
+		else if (relation.Type() == OOX::FileTypes::DiagramData) 
 			return smart_ptr<OOX::File>(new OOX::CDiagramData(pMain, filename));
-		else if (relation.Type() == OOX::FileTypes::DiagDrawing)	
+		else if (relation.Type() == OOX::FileTypes::DiagramDrawing)	
 			return smart_ptr<OOX::File>(new OOX::CDiagramDrawing(pMain, filename)); 
+		else if (relation.Type() == OOX::FileTypes::DiagramColors)
+			return smart_ptr<OOX::File>(new OOX::CDiagramColors(pMain, filename));
+		else if (relation.Type() == OOX::FileTypes::DiagramLayout)
+			return smart_ptr<OOX::File>(new OOX::CDiagramLayout(pMain, filename));
+		else if (relation.Type() == OOX::FileTypes::DiagramQuickStyle)
+			return smart_ptr<OOX::File>(new OOX::CDiagramQuickStyle(pMain, filename));
 		else if (relation.Type() == OOX::FileTypes::OleObject)
 			return smart_ptr<OOX::File>(new OOX::OleObject(pMain, filename));
 		else if (relation.Type() == OOX::FileTypes::MicrosoftOfficeUnknown) //ms package

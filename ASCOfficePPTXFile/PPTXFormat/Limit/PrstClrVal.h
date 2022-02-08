@@ -30,11 +30,7 @@
  *
  */
 #pragma once
-#ifndef PPTX_LIMIT_PRSTCLRVAL_INCLUDE_H_
-#define PPTX_LIMIT_PRSTCLRVAL_INCLUDE_H_
-
 #include "BaseLimit.h"
-
 
 namespace PPTX
 {
@@ -47,9 +43,8 @@ namespace PPTX
 			{
 				m_strValue = _T("black");
 	 		}
-
 			_USE_STRING_OPERATOR
-				
+			
 			virtual void set(const std::wstring& strValue)
 			{
 				if ((_T("aliceBlue") == strValue) || // (Alice Blue Preset Color)  Specifies a color with RGB value (240,248,255) 
@@ -246,8 +241,16 @@ namespace PPTX
 					m_strValue = strValue;
 				}
 			}
+
+			virtual BYTE GetBYTECode() const
+			{
+				//not using
+				return 0;
+			}
+			virtual void SetBYTECode(const BYTE& src)
+			{
+				//not using
+			}
 		};
 	} // namespace Limit
 } // namespace PPTX
-
-#endif // PPTX_LIMIT_PRSTCLRVAL_INCLUDE_H_

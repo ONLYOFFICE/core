@@ -102,7 +102,7 @@ namespace PPTX
 				{
 					fill = *this;
 					return;
-				}
+				} 
 
 				if(m_type != fill.m_type)
 				{

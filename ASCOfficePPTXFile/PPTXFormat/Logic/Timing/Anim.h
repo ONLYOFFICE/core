@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_ANIM_INCLUDE_H_
-#define PPTX_LOGIC_ANIM_INCLUDE_H_
 
 #include "./../../WrapperWritingElement.h"
 #include "CBhvr.h"
@@ -48,7 +46,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(Anim)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
                 XmlMacroReadAttributeBase(node, L"by", by);
@@ -78,8 +75,68 @@ namespace PPTX
 
 				return XmlUtils::CreateNode(_T("p:anim"), oAttr, oValue);
 			}
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_p_anim;
+			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(toXML());
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+				pWriter->WriteLimit2(0, calcmode);
+				pWriter->WriteString2(1, by);
+				pWriter->WriteString2(2, from);
+				pWriter->WriteString2(3, to);
+				pWriter->WriteLimit2(4, valueType);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
-		public:
+				pWriter->WriteRecord1(0, cBhvr);
+				pWriter->WriteRecord2(1, tavLst);
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+				pReader->Skip(1); // attribute start
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					else if (0 == _at)	calcmode = pReader->GetUChar();
+					else if (1 == _at)	by = pReader->GetString2();
+					else if (2 == _at)	from = pReader->GetString2();
+					else if (3 == _at)	to = pReader->GetString2();
+					else if (4 == _at)	valueType = pReader->GetUChar();
+				}
+				while (pReader->GetPos() < end)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+					case 0:
+					{
+						cBhvr.fromPPTY(pReader);
+					}break;
+					case 1:
+					{
+						tavLst.Init();
+						tavLst->fromPPTY(pReader);
+					}break;
+					default:
+					{
+						pReader->SkipRecord();
+					}break;
+					}
+				}
+				pReader->Seek(end);
+			}
+
 			CBhvr cBhvr;
 			nullable<TavLst> tavLst;
 
@@ -99,4 +156,3 @@ namespace PPTX
 	} // namespace Logic
 } // namespace PPTX
 
-#endif // PPTX_LOGIC_ANIM_INCLUDE_H

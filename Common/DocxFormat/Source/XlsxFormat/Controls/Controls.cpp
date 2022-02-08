@@ -30,6 +30,8 @@
  *
  */
 #include "Controls.h"
+#include "../../XlsbFormat/Biff12_unions/ACTIVEXCONTROLS.h"
+#include "../../XlsbFormat/Biff12_records/ActiveX.h"
 
 namespace OOX
 {
@@ -193,6 +195,25 @@ namespace Spreadsheet
 			}
 		}
 	}
+    void CControl::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        ReadAttributes(obj);
+    }
+    void CControl::ReadAttributes(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::ActiveX*>(obj.get());
+        if(ptr != nullptr)
+        {
+            if(ptr->shapeId > 0)
+                m_oShapeId = ptr->shapeId;
+
+            if(!ptr->strName.value().empty())
+                m_oName = ptr->strName.value();
+
+            if(!ptr->strRelID.value.value().empty())
+                m_oRid = ptr->strRelID.value.value();
+        }
+    }
 
 	void CControl::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
@@ -286,6 +307,26 @@ namespace Spreadsheet
 	{
 		read(oReader, false);
 	}
+    void CControls::fromBin(XLS::BaseObjectPtr& obj)
+    {
+        auto ptr = static_cast<XLSB::ACTIVEXCONTROLS*>(obj.get());
+        if(ptr != nullptr)
+        {
+            for(auto &activeX: ptr->m_arBrtActiveX)
+            {
+                CControl* pControl = new CControl(activeX);
+                if(pControl->m_oShapeId.IsInit())
+                {
+                    m_mapControls[pControl->m_oShapeId->GetValue()] = pControl;
+                }
+                else
+                {
+                    delete pControl;
+                }
+            }
+        }
+
+    }
 //--------------------------------------------------------------------------------------------------------------
 	void CListItem::toXML(NSStringUtils::CStringBuilder& writer) const
 	{

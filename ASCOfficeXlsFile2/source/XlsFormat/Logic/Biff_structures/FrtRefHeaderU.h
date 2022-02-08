@@ -35,7 +35,7 @@
 #include "CellRangeRef.h"
 #include "BitMarkedStructs.h"
 
-#include <Binary/CFRecordType.h>
+#include "../../Binary/CFRecordType.h"
 
 namespace XLS
 {

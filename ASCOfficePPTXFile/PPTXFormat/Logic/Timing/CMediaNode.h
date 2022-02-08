@@ -76,8 +76,62 @@ namespace PPTX
 
 				return XmlUtils::CreateNode(_T("p:cMediaNode"), oAttr, oValue);
 			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(toXML());
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+					pWriter->WriteInt2(0, numSld);
+					pWriter->WriteInt2(1, vol);
+					pWriter->WriteBool2(2, mute);
+					pWriter->WriteBool2(3, showWhenStopped);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
-		public:
+				pWriter->WriteRecord1(0, cTn);
+				pWriter->WriteRecord1(1, tgtEl);
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+				pReader->Skip(1); // attribute start
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					else if (0 == _at)	numSld = pReader->GetLong();
+					else if (1 == _at)	vol = pReader->GetLong();
+					else if (2 == _at)	mute = pReader->GetBool();
+					else if (3 == _at)	showWhenStopped = pReader->GetBool();
+				}
+				while (pReader->GetPos() < end)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+						case 0:
+						{
+							cTn.fromPPTY(pReader);
+						}break;
+						case 1:
+						{
+							tgtEl.fromPPTY(pReader);
+						}break;
+						default:
+						{
+							pReader->SkipRecord();
+						}break;
+					}
+				}
+				pReader->Seek(end);
+
+			}
+
 			CTn						cTn;
 			TgtEl					tgtEl;
 

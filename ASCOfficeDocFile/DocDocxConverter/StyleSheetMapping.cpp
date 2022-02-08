@@ -98,12 +98,23 @@ namespace DocFileFormat
                 m_pXmlWriter->WriteAttribute( L"w:styleId", FormatUtils::XmlEncode(MakeStyleId( *iter )));
                 m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
 
-				// <w:name val="" />
+	// <w:name val="" />
+				std::wstring sName = FormatUtils::XmlEncode(getStyleName(*iter), true);
                 m_pXmlWriter->WriteNodeBegin( L"w:name", TRUE );
-                m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::XmlEncode(getStyleName( *iter ), true ));
-                m_pXmlWriter->WriteNodeEnd( L"", TRUE );
+				if ((*iter)->sti == StyleIdentifier::Normal)
+					m_pXmlWriter->WriteAttribute(L"w:val", L"Normal");
+				else
+					m_pXmlWriter->WriteAttribute(L"w:val", sName);
+				m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 
-				// <w:basedOn val="" />
+				if ((*iter)->sti == StyleIdentifier::Normal) // ??? < sti < 159
+				{
+					m_pXmlWriter->WriteNodeBegin(L"w:aliases", TRUE);
+					m_pXmlWriter->WriteAttribute(L"w:val", sName);
+					m_pXmlWriter->WriteNodeEnd(L"", TRUE);
+				}
+
+	// <w:basedOn val="" />
 				if ( ( (*iter)->istdBase != 4095 ) && ( (*iter)->istdBase < sheet->Styles->size() ) )
 				{
                     m_pXmlWriter->WriteNodeBegin( L"w:basedOn", TRUE );
@@ -111,7 +122,7 @@ namespace DocFileFormat
                     m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 				}
 
-				// <w:next val="" />
+	// <w:next val="" />
 				if ( (*iter)->istdNext < sheet->Styles->size() )
 				{
                     m_pXmlWriter->WriteNodeBegin( L"w:next", TRUE );
@@ -119,7 +130,7 @@ namespace DocFileFormat
                     m_pXmlWriter->WriteNodeEnd( L"", TRUE );
 				}
 
-				// <w:link val="" />
+	// <w:link val="" />
 				if ( (*iter)->istdLink < sheet->Styles->size() )
 				{
                     m_pXmlWriter->WriteNodeBegin( L"w:link", TRUE );

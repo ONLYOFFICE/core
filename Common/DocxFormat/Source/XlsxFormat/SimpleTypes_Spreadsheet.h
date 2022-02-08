@@ -82,7 +82,7 @@ namespace SimpleTypes
                 if      ( L"queryTable"	== sValue ) this->m_eValue = typeQueryTable;
                 else if ( L"worksheet"	== sValue ) this->m_eValue = typeWorksheet;
                 else if ( L"xml"		== sValue ) this->m_eValue = typeXml;
-                else                                    this->m_eValue = eDefValue;
+                else this->m_eValue = eDefValue;
 
                 return this->m_eValue;
 			}
@@ -190,7 +190,7 @@ namespace SimpleTypes
                 else if ( L"none"		== sValue ) this->m_eValue = none_method;
                 else if ( L"prompt"		== sValue ) this->m_eValue = prompt_method;
                 else if ( L"stored"		== sValue ) this->m_eValue = stored_method;
-                else								this->m_eValue = integrated_method;
+                else this->m_eValue = integrated_method;
 
                 return this->m_eValue;
 			}
@@ -231,7 +231,7 @@ namespace SimpleTypes
                 if      ( L"hidden"      == sValue ) this->m_eValue = visibleHidden;
                 else if ( L"veryHidden"  == sValue ) this->m_eValue = visibleVeryHidden;
                 else if ( L"visible"     == sValue ) this->m_eValue = visibleVisible;
-                else                                    this->m_eValue = eDefValue;
+                else this->m_eValue = eDefValue;
 
                 return this->m_eValue;
 			}
@@ -266,7 +266,7 @@ namespace SimpleTypes
                 if      ( L"none"		== sValue )	this->m_eValue = htmlNone;
                 else if ( L"veryHidden" == sValue )	this->m_eValue = htmlRtf;
                 else if ( L"visible"	== sValue ) this->m_eValue = htmlAll;
-                else                                this->m_eValue = eDefValue;
+                else this->m_eValue = eDefValue;
 
                 return this->m_eValue;
 			}
@@ -547,25 +547,25 @@ namespace SimpleTypes
                 std::wstring sRes;
                 switch(this->m_eValue)
 				{
-				case fontcharsetANSI: sRes = _T("00");break;
-				case fontcharsetDefault: sRes = _T("01");break;
-				case fontcharsetSymbol: sRes = _T("02");break;
-				case fontcharsetMacintosh: sRes = _T("4D");break;
-				case fontcharsetShitJIS: sRes = _T("80");break;
-				case fontcharsetHangeul: sRes = _T("81");break;
-				case fontcharsetJohab: sRes = _T("82");break;
-				case fontcharsetGB2313: sRes = _T("86");break;
-				case fontcharsetChineseBig5: sRes = _T("88");break;
-				case fontcharsetGreek: sRes = _T("A1");break;
-				case fontcharsetTurkish: sRes = _T("A2");break;
-				case fontcharsetVietnamese: sRes = _T("A3");break;
-				case fontcharsetHebrew: sRes = _T("B1");break;
-				case fontcharsetArabic: sRes = _T("B2");break;
-				case fontcharsetBaltic: sRes = _T("BA");break;
-				case fontcharsetRussian: sRes = _T("CC");break;
-				case fontcharsetThai: sRes = _T("DE");break;
-				case fontcharsetEastEurope: sRes = _T("EE");break;
-				case fontcharsetOEM: sRes = _T("FF");break;
+				case fontcharsetANSI: sRes = L"00";break;
+				case fontcharsetDefault: sRes = L"01";break;
+				case fontcharsetSymbol: sRes = L"02";break;
+				case fontcharsetMacintosh: sRes = L"4D";break;
+				case fontcharsetShitJIS: sRes = L"80";break;
+				case fontcharsetHangeul: sRes = L"81";break;
+				case fontcharsetJohab: sRes = L"82";break;
+				case fontcharsetGB2313: sRes = L"86";break;
+				case fontcharsetChineseBig5: sRes = L"88";break;
+				case fontcharsetGreek: sRes = L"A1";break;
+				case fontcharsetTurkish: sRes = L"A2";break;
+				case fontcharsetVietnamese: sRes = L"A3";break;
+				case fontcharsetHebrew: sRes = L"B1";break;
+				case fontcharsetArabic: sRes = L"B2";break;
+				case fontcharsetBaltic: sRes = L"BA";break;
+				case fontcharsetRussian: sRes = L"CC";break;
+				case fontcharsetThai: sRes = L"DE";break;
+				case fontcharsetEastEurope: sRes = L"EE";break;
+				case fontcharsetOEM: sRes = L"FF";break;
 				}
 				return sRes;
 			}
@@ -637,7 +637,7 @@ namespace SimpleTypes
 				default:
 					return L"";
 				}
-				return _T("");
+				return L"";
 			}
 
 			SimpleType_FromString     (EThemeColor)
@@ -838,13 +838,13 @@ namespace SimpleTypes
                 std::wstring sRes;
                 switch(this->m_eValue)
 				{
-				case fontfamilyNotApplicable:sRes = _T("auto");break;
-				case fontfamilyRoman:sRes = _T("roman");break;
-				case fontfamilySwiss:sRes = _T("swiss");break;
-				case fontfamilyModern:sRes = _T("modern");break;
-				case fontfamilyScript:sRes = _T("script");break;
-				case fontfamilyDecorative:sRes = _T("decorative");break;
-				default:sRes = _T("auto");
+				case fontfamilyNotApplicable:sRes = L"auto";break;
+				case fontfamilyRoman:sRes = L"roman";break;
+				case fontfamilySwiss:sRes = L"swiss";break;
+				case fontfamilyModern:sRes = L"modern";break;
+				case fontfamilyScript:sRes = L"script";break;
+				case fontfamilyDecorative:sRes = L"decorative";break;
+				default:sRes = L"auto";
 				}
 				return sRes;
 			}
@@ -868,11 +868,11 @@ namespace SimpleTypes
 
             virtual EFontScheme FromString(std::wstring &sValue)
 			{
-				if(_T("major") == sValue)
+				if(L"major" == sValue)
                     this->m_eValue = fontschemeMajor;
-				else if(_T("minor") == sValue)
+				else if(L"minor" == sValue)
                     this->m_eValue = fontschemeMinor;
-				else if(_T("none") == sValue)
+				else if(L"none" == sValue)
                     this->m_eValue = fontschemeNone;
 				else
                     this->m_eValue = eDefValue;
@@ -884,9 +884,9 @@ namespace SimpleTypes
                 std::wstring sRes;
                 switch(this->m_eValue)
 				{
-				case fontschemeMajor: sRes = _T("major");break;
-				case fontschemeMinor: sRes = _T("minor");break;
-				case fontschemeNone: sRes = _T("none");break;
+				case fontschemeMajor: sRes = L"major";break;
+				case fontschemeMinor: sRes = L"minor";break;
+				case fontschemeNone: sRes = L"none";break;
 				}
 				return sRes;
 			}
@@ -911,15 +911,15 @@ namespace SimpleTypes
 
             virtual EUnderline FromString(std::wstring &sValue)
 			{
-				if(_T("double") == sValue)
+				if(L"double" == sValue)
                     this->m_eValue = underlineDouble;
-				else if(_T("doubleAccounting") == sValue)
+				else if(L"doubleAccounting" == sValue)
                     this->m_eValue = underlineDoubleAccounting;
-				else if(_T("none") == sValue)
+				else if(L"none" == sValue)
                     this->m_eValue = underlineNone;
-				else if(_T("single") == sValue)
+				else if(L"single" == sValue)
                     this->m_eValue = underlineSingle;
-				else if(_T("singleAccounting") == sValue)
+				else if(L"singleAccounting" == sValue)
                     this->m_eValue = underlineSingleAccounting;
 				else
                     this->m_eValue = eDefValue;
@@ -930,12 +930,12 @@ namespace SimpleTypes
 			{
                 switch(this->m_eValue)
 				{
-				case underlineDouble: return _T("double");break;
-				case underlineDoubleAccounting: return _T("doubleAccounting");break;
-				case underlineNone: return _T("none");break;
-				case underlineSingle: return _T("single");break;
-				case underlineSingleAccounting: return _T("singleAccounting");break;
-				default: return _T("none");
+				case underlineDouble: return L"double";break;
+				case underlineDoubleAccounting: return L"doubleAccounting";break;
+				case underlineNone: return L"none";break;
+				case underlineSingle: return L"single";break;
+				case underlineSingleAccounting: return L"singleAccounting";break;
+				default: return L"none";
 				}
 			}
 
@@ -969,33 +969,33 @@ namespace SimpleTypes
 
             virtual EBorderStyle FromString(std::wstring &sValue)
 			{
-				if(_T("dashDot") == sValue)
+				if(L"dashDot" == sValue)
                     this->m_eValue = borderstyleDashDot;
-				else if(_T("dashDotDot") == sValue)
+				else if(L"dashDotDot" == sValue)
                     this->m_eValue = borderstyleDashDotDot;
-				else if(_T("dashed") == sValue || _T("Dash") == sValue)
+				else if(L"dashed" == sValue)
                     this->m_eValue = borderstyleDashed;
-				else if(_T("dotted") == sValue || _T("Dot") == sValue)
+				else if(L"dotted" == sValue)
                     this->m_eValue = borderstyleDotted;
-				else if(_T("double") == sValue || _T("Double") == sValue)
+				else if(L"double" == sValue)
                     this->m_eValue = borderstyleDouble;
-				else if(_T("hair") == sValue)
+				else if(L"hair" == sValue)
                     this->m_eValue = borderstyleHair;
-				else if(_T("medium") == sValue)
+				else if(L"medium" == sValue)
                     this->m_eValue = borderstyleMedium;
-				else if(_T("mediumDashDot") == sValue)
+				else if(L"mediumDashDot" == sValue)
                     this->m_eValue = borderstyleMediumDashDot;
-				else if(_T("mediumDashDotDot") == sValue)
+				else if(L"mediumDashDotDot" == sValue)
                     this->m_eValue = borderstyleMediumDashDotDot;
-				else if(_T("mediumDashed") == sValue)
+				else if(L"mediumDashed" == sValue)
                     this->m_eValue = borderstyleMediumDashed;
-				else if(_T("none") == sValue)
+				else if(L"none" == sValue)
                     this->m_eValue = borderstyleNone;
-				else if(_T("slantDashDot") == sValue)
+				else if(L"slantDashDot" == sValue)
                     this->m_eValue = borderstyleSlantDashDot;
-				else if(_T("thick") == sValue)
+				else if(L"thick" == sValue)
                     this->m_eValue = borderstyleThick;
-				else if(_T("thin") == sValue)
+				else if(L"thin" == sValue)
                     this->m_eValue = borderstyleThin;
 				else
                     this->m_eValue = eDefValue;
@@ -1006,21 +1006,21 @@ namespace SimpleTypes
 			{
                 switch(this->m_eValue)
 				{
-				case borderstyleDashDot : return _T("dashDot");break;
-				case borderstyleDashDotDot : return _T("dashDotDot");break;
-				case borderstyleDashed : return _T("dashed");break;
-				case borderstyleDotted : return _T("dotted");break;
-				case borderstyleDouble : return _T("double");break;
-				case borderstyleHair : return _T("hair");break;
-				case borderstyleMedium : return _T("medium");break;
-				case borderstyleMediumDashDot : return _T("mediumDashDot");break;
-				case borderstyleMediumDashDotDot : return _T("mediumDashDotDot");break;
-				case borderstyleMediumDashed : return _T("mediumDashed");break;
-				case borderstyleNone : return _T("none");break;
-				case borderstyleSlantDashDot : return _T("slantDashDot");break;
-				case borderstyleThick : return _T("thick");break;
-				case borderstyleThin : return _T("thin");break;
-				default:return _T("none");
+				case borderstyleDashDot : return L"dashDot";break;
+				case borderstyleDashDotDot : return L"dashDotDot";break;
+				case borderstyleDashed : return L"dashed";break;
+				case borderstyleDotted : return L"dotted";break;
+				case borderstyleDouble : return L"double";break;
+				case borderstyleHair : return L"hair";break;
+				case borderstyleMedium : return L"medium";break;
+				case borderstyleMediumDashDot : return L"mediumDashDot";break;
+				case borderstyleMediumDashDotDot : return L"mediumDashDotDot";break;
+				case borderstyleMediumDashed : return L"mediumDashed";break;
+				case borderstyleNone : return L"none";break;
+				case borderstyleSlantDashDot : return L"slantDashDot";break;
+				case borderstyleThick : return L"thick";break;
+				case borderstyleThin : return L"thin";break;
+				default:return L"none";
 				}
 			}
 
@@ -1033,11 +1033,12 @@ namespace SimpleTypes
 			horizontalalignmentCenter			=  0,
 			horizontalalignmentContinuous		=  1,
 			horizontalalignmentDistributed		=  2,
-			horizontalalignmentFill					=  3,
-			horizontalalignmentGeneral				=  4,
-			horizontalalignmentJustify				=  5,
-			horizontalalignmentLeft					=  6,
-			horizontalalignmentRight				=  7
+			horizontalalignmentFill				=  3,
+			horizontalalignmentGeneral			=  4,
+			horizontalalignmentJustify			=  5,
+			horizontalalignmentLeft				=  6,
+			horizontalalignmentRight			=  7,
+			horizontalalignmentCenterContinuous	=  8
 		};
 		template<EHorizontalAlignment eDefValue = horizontalalignmentGeneral>
 		class CHorizontalAlignment : public CSimpleType<EHorizontalAlignment, eDefValue>
@@ -1048,21 +1049,25 @@ namespace SimpleTypes
 
             virtual EHorizontalAlignment FromString(std::wstring &sValue)
 			{
-				if(_T("center") == sValue)
+				// JustifyDistributed
+
+				if(L"center" == sValue || L"Center" == sValue)
                     this->m_eValue = horizontalalignmentCenter;
-				else if(_T("continuous") == sValue)
+				else if (L"centerContinuous" == sValue || L"CenterAcrossSelection" == sValue)
+					this->m_eValue = horizontalalignmentCenterContinuous;
+				else if(L"continuous" == sValue)
                     this->m_eValue = horizontalalignmentContinuous;
-				else if(_T("distributed") == sValue)
+				else if(L"distributed" == sValue || L"Distributed" == sValue)
                     this->m_eValue = horizontalalignmentDistributed;
-				else if(_T("fill") == sValue)
+				else if(L"fill" == sValue || L"Fill" == sValue)
                     this->m_eValue = horizontalalignmentFill;
-				else if(_T("general") == sValue)
+				else if(L"general" == sValue || L"Automatic" == sValue)
                     this->m_eValue = horizontalalignmentGeneral;
-				else if(_T("justify") == sValue)
+				else if(L"justify" == sValue || L"Justify" == sValue)
                     this->m_eValue = horizontalalignmentJustify;
-				else if(_T("left") == sValue)
+				else if(L"left" == sValue || L"Left" == sValue)
                     this->m_eValue = horizontalalignmentLeft;
-				else if(_T("right") == sValue)
+				else if(L"right" == sValue || L"Right" == sValue)
                     this->m_eValue = horizontalalignmentRight;
 				else
                     this->m_eValue = eDefValue;
@@ -1073,20 +1078,20 @@ namespace SimpleTypes
 			{
                 switch(this->m_eValue)
 				{
-				case horizontalalignmentCenter : return _T("center"); break;
-				case horizontalalignmentContinuous : return _T("continuous"); break;
-				case horizontalalignmentDistributed : return _T("distributed"); break;
-				case horizontalalignmentFill : return _T("fill"); break;
-				case horizontalalignmentGeneral : return _T("general"); break;
-				case horizontalalignmentJustify : return _T("justify"); break;
-				case horizontalalignmentLeft : return _T("left"); break;
-				case horizontalalignmentRight : return _T("right"); break;
-				default : return _T("general");
+				case horizontalalignmentCenter : return L"center"; break;
+				case horizontalalignmentContinuous : return L"continuous"; break;
+				case horizontalalignmentDistributed : return L"distributed"; break;
+				case horizontalalignmentFill : return L"fill"; break;
+				case horizontalalignmentGeneral : return L"general"; break;
+				case horizontalalignmentJustify : return L"justify"; break;
+				case horizontalalignmentLeft : return L"left"; break;
+				case horizontalalignmentRight : return L"right"; break;
+				case horizontalalignmentCenterContinuous: return L"centerContinuous"; break;
+				default : return L"general";
 				}
 			}
-
 			SimpleType_FromString     (EHorizontalAlignment)
-				SimpleType_Operator_Equal (CHorizontalAlignment)
+			SimpleType_Operator_Equal (CHorizontalAlignment)
 		};
 		enum EVerticalAlignment
 		{
@@ -1105,34 +1110,33 @@ namespace SimpleTypes
 
             virtual EVerticalAlignment FromString(std::wstring &sValue)
 			{
-				if(_T("bottom") == sValue)
+				//Automatic, JustifyDistributed
+				if(L"bottom" == sValue || L"Bottom" == sValue)
                     this->m_eValue = verticalalignmentBottom;
-				else if(_T("center") == sValue)
+				else if(L"center" == sValue || L"Center" == sValue)
                     this->m_eValue = verticalalignmentCenter;
-				else if(_T("distributed") == sValue)
+				else if(L"distributed" == sValue || L"Distributed" == sValue)
                     this->m_eValue = verticalalignmentDistributed;
-				else if(_T("justify") == sValue)
+				else if(L"justify" == sValue || L"Justify" == sValue)
                     this->m_eValue = verticalalignmentJustify;
-				else if(_T("top") == sValue)
+				else if(L"top" == sValue || L"Top" == sValue)
                     this->m_eValue = verticalalignmentTop;
 				else
                     this->m_eValue = eDefValue;
                 return this->m_eValue;
 			}
-
 			virtual std::wstring     ToString  () const 
 			{
                 switch(this->m_eValue)
 				{
-				case verticalalignmentBottom : return _T("bottom"); break;
-				case verticalalignmentCenter : return _T("center"); break;
-				case verticalalignmentDistributed : return _T("distributed"); break;
-				case verticalalignmentJustify : return _T("justify"); break;
-				case verticalalignmentTop : return _T("top"); break;
-				default:return _T("bottom");
+				case verticalalignmentBottom : return L"bottom"; break;
+				case verticalalignmentCenter : return L"center"; break;
+				case verticalalignmentDistributed : return L"distributed"; break;
+				case verticalalignmentJustify : return L"justify"; break;
+				case verticalalignmentTop : return L"top"; break;
+				default:return L"bottom";
 				}
 			}
-
 			SimpleType_FromString     (EVerticalAlignment)
 			SimpleType_Operator_Equal (CVerticalAlignment)
 		};
@@ -1150,9 +1154,9 @@ namespace SimpleTypes
 
             virtual EGradientType FromString(std::wstring &sValue)
 			{
-				if(_T("line") == sValue)
+				if(L"line" == sValue)
                     this->m_eValue = gradienttypeLine;
-				else if(_T("path") == sValue)
+				else if(L"path" == sValue)
                     this->m_eValue = gradienttypePath;
 				else
                     this->m_eValue = eDefValue;
@@ -1163,9 +1167,9 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-				case gradienttypeLine : return _T("line"); break;
-				case gradienttypePath : return _T("path"); break;
-				default:return _T("line");
+				case gradienttypeLine : return L"line"; break;
+				case gradienttypePath : return L"path"; break;
+				default:return L"line";
 				}
 			}
 
@@ -1203,43 +1207,43 @@ namespace SimpleTypes
 
             virtual EPatternType FromString(std::wstring &sValue)
 			{
-				if(_T("darkDown") == sValue)
+				if(L"darkDown" == sValue)
                     this->m_eValue = patterntypeDarkDown;
-				else if(_T("darkGray") == sValue)
+				else if(L"darkGray" == sValue)
                     this->m_eValue = patterntypeDarkGray;
-				else if(_T("darkGrid") == sValue)
+				else if(L"darkGrid" == sValue)
                     this->m_eValue = patterntypeDarkGrid;
-				else if(_T("darkHorizontal") == sValue)
+				else if(L"darkHorizontal" == sValue)
                     this->m_eValue = patterntypeDarkHorizontal;
-				else if(_T("darkTrellis") == sValue)
+				else if(L"darkTrellis" == sValue)
                     this->m_eValue = patterntypeDarkTrellis;
-				else if(_T("darkUp") == sValue)
+				else if(L"darkUp" == sValue)
                     this->m_eValue = patterntypeDarkUp;
-				else if(_T("darkVertical") == sValue || L"VertStripe" == sValue)
+				else if(L"darkVertical" == sValue || L"VertStripe" == sValue)
                     this->m_eValue = patterntypeDarkVertical;
-				else if(_T("gray0625") == sValue || L"Gray0625" == sValue )
+				else if(L"gray0625" == sValue || L"Gray0625" == sValue )
                     this->m_eValue = patterntypeGray0625;
-				else if(_T("gray125") == sValue || L"Gray125" == sValue)
+				else if(L"gray125" == sValue || L"Gray125" == sValue)
                     this->m_eValue = patterntypeGray125;
-				else if(_T("lightDown") == sValue)
+				else if(L"lightDown" == sValue)
                     this->m_eValue = patterntypeLightDown;
-				else if(_T("lightGray") == sValue)
+				else if(L"lightGray" == sValue)
                     this->m_eValue = patterntypeLightGray;
-				else if(_T("lightGrid") == sValue || L"ThinHorzCross" == sValue)
+				else if(L"lightGrid" == sValue || L"ThinHorzCross" == sValue)
                     this->m_eValue = patterntypeLightGrid;
-				else if(_T("lightHorizontal") == sValue || L"HorzStripe" == sValue)
+				else if(L"lightHorizontal" == sValue || L"HorzStripe" == sValue)
                     this->m_eValue = patterntypeLightHorizontal;
-				else if(_T("lightTrellis") == sValue)
+				else if(L"lightTrellis" == sValue)
                     this->m_eValue = patterntypeLightTrellis;
-				else if(_T("lightUp") == sValue)
+				else if(L"lightUp" == sValue)
                     this->m_eValue = patterntypeLightUp;
-				else if(_T("lightVertical") == sValue)
+				else if(L"lightVertical" == sValue)
                     this->m_eValue = patterntypeLightVertical;
-				else if(_T("mediumGray") == sValue || L"Gray50" == sValue)
+				else if(L"mediumGray" == sValue || L"Gray50" == sValue)
                     this->m_eValue = patterntypeMediumGray;
-				else if(_T("none") == sValue || L"None" == sValue)
+				else if(L"none" == sValue || L"None" == sValue)
                     this->m_eValue = patterntypeNone;
-				else if(_T("solid") == sValue || L"Solid" == sValue)
+				else if(L"solid" == sValue || L"Solid" == sValue)
                     this->m_eValue = patterntypeSolid;
 				else
                     this->m_eValue = eDefValue;
@@ -1250,29 +1254,29 @@ namespace SimpleTypes
 			{
                 switch(this->m_eValue)
 				{
-					case patterntypeDarkDown:return _T("darkDown");break;
-					case patterntypeDarkGray:return _T("darkGray");break;
-					case patterntypeDarkGrid:return _T("darkGrid");break;
-					case patterntypeDarkHorizontal:return _T("darkHorizontal");break;
-					case patterntypeDarkTrellis:return _T("darkTrellis");break;
-					case patterntypeDarkUp:return _T("darkUp");break;
-					case patterntypeDarkVertical:return _T("darkVertical");break;
-					case patterntypeGray0625:return _T("gray0625");break;
-					case patterntypeGray125:return _T("gray125");break;
-					case patterntypeLightDown:return _T("lightDown");break;
-					case patterntypeLightGray:return _T("lightGray");break;
-					case patterntypeLightGrid:return _T("lightGrid");break;
-					case patterntypeLightHorizontal:return _T("lightHorizontal");break;
-					case patterntypeLightTrellis:return _T("lightTrellis");break;
-					case patterntypeLightUp:return _T("lightUp");break;
-					case patterntypeLightVertical:return _T("lightVertical");break;
-					case patterntypeMediumGray:return _T("mediumGray");break;
-					case patterntypeNone:return _T("none");break;
-				case patterntypeSolid:return _T("solid");break;
-				default: return _T("none");
+					case patterntypeDarkDown:return L"darkDown";break;
+					case patterntypeDarkGray:return L"darkGray";break;
+					case patterntypeDarkGrid:return L"darkGrid";break;
+					case patterntypeDarkHorizontal:return L"darkHorizontal";break;
+					case patterntypeDarkTrellis:return L"darkTrellis";break;
+					case patterntypeDarkUp:return L"darkUp";break;
+					case patterntypeDarkVertical:return L"darkVertical";break;
+					case patterntypeGray0625:return L"gray0625";break;
+					case patterntypeGray125:return L"gray125";break;
+					case patterntypeLightDown:return L"lightDown";break;
+					case patterntypeLightGray:return L"lightGray";break;
+					case patterntypeLightGrid:return L"lightGrid";break;
+					case patterntypeLightHorizontal:return L"lightHorizontal";break;
+					case patterntypeLightTrellis:return L"lightTrellis";break;
+					case patterntypeLightUp:return L"lightUp";break;
+					case patterntypeLightVertical:return L"lightVertical";break;
+					case patterntypeMediumGray:return L"mediumGray";break;
+					case patterntypeNone:return L"none";break;
+				case patterntypeSolid:return L"solid";break;
+				default: return L"none";
 				}
 
-				return _T("none");
+				return L"none";
 			}
 
 			SimpleType_FromString     (EPatternType)
@@ -1319,61 +1323,61 @@ namespace SimpleTypes
 
             virtual ETableStyleType FromString(std::wstring &sValue)
 			{
-				if(_T("blankRow") == sValue)
+				if(L"blankRow" == sValue)
                     this->m_eValue = tablestyletypeBlankRow;
-				else if(_T("firstColumn") == sValue)
+				else if(L"firstColumn" == sValue)
                     this->m_eValue = tablestyletypeFirstColumn;
-				else if(_T("firstColumnStripe") == sValue)
+				else if(L"firstColumnStripe" == sValue)
                     this->m_eValue = tablestyletypeFirstColumnStripe;
-				else if(_T("firstColumnSubheading") == sValue)
+				else if(L"firstColumnSubheading" == sValue)
                     this->m_eValue = tablestyletypeFirstColumnSubheading;
-				else if(_T("firstHeaderCell") == sValue)
+				else if(L"firstHeaderCell" == sValue)
                     this->m_eValue = tablestyletypeFirstHeaderCell;
-				else if(_T("firstRowStripe") == sValue)
+				else if(L"firstRowStripe" == sValue)
                     this->m_eValue = tablestyletypeFirstRowStripe;
-				else if(_T("firstRowSubheading") == sValue)
+				else if(L"firstRowSubheading" == sValue)
                     this->m_eValue = tablestyletypeFirstRowSubheading;
-				else if(_T("firstSubtotalColumn") == sValue)
+				else if(L"firstSubtotalColumn" == sValue)
                     this->m_eValue = tablestyletypeFirstSubtotalColumn;
-				else if(_T("firstSubtotalRow") == sValue)
+				else if(L"firstSubtotalRow" == sValue)
                     this->m_eValue = tablestyletypeFirstSubtotalRow;
-				else if(_T("firstTotalCell") == sValue)
+				else if(L"firstTotalCell" == sValue)
                     this->m_eValue = tablestyletypeFirstTotalCell;
-				else if(_T("headerRow") == sValue)
+				else if(L"headerRow" == sValue)
                     this->m_eValue = tablestyletypeHeaderRow;
-				else if(_T("lastColumn") == sValue)
+				else if(L"lastColumn" == sValue)
                     this->m_eValue = tablestyletypeLastColumn;
-				else if(_T("lastHeaderCell") == sValue)
+				else if(L"lastHeaderCell" == sValue)
                     this->m_eValue = tablestyletypeLastHeaderCell;
-				else if(_T("lastTotalCell") == sValue)
+				else if(L"lastTotalCell" == sValue)
                     this->m_eValue = tablestyletypeLastTotalCell;
-				else if(_T("pageFieldLabels") == sValue)
+				else if(L"pageFieldLabels" == sValue)
                     this->m_eValue = tablestyletypePageFieldLabels;
-				else if(_T("pageFieldValues") == sValue)
+				else if(L"pageFieldValues" == sValue)
                     this->m_eValue = tablestyletypePageFieldValues;
-				else if(_T("secondColumnStripe") == sValue)
+				else if(L"secondColumnStripe" == sValue)
                     this->m_eValue = tablestyletypeSecondColumnStripe;
-				else if(_T("secondColumnSubheading") == sValue)
+				else if(L"secondColumnSubheading" == sValue)
                     this->m_eValue = tablestyletypeSecondColumnSubheading;
-				else if(_T("secondRowStripe") == sValue)
+				else if(L"secondRowStripe" == sValue)
                     this->m_eValue = tablestyletypeSecondRowStripe;
-				else if(_T("secondRowSubheading") == sValue)
+				else if(L"secondRowSubheading" == sValue)
                     this->m_eValue = tablestyletypeSecondRowSubheading;
-				else if(_T("secondSubtotalColumn") == sValue)
+				else if(L"secondSubtotalColumn" == sValue)
                     this->m_eValue = tablestyletypeSecondSubtotalColumn;
-				else if(_T("secondSubtotalRow") == sValue)
+				else if(L"secondSubtotalRow" == sValue)
                     this->m_eValue = tablestyletypeSecondSubtotalRow;
-				else if(_T("thirdColumnSubheading") == sValue)
+				else if(L"thirdColumnSubheading" == sValue)
                     this->m_eValue = tablestyletypeThirdColumnSubheading;
-				else if(_T("thirdRowSubheading") == sValue)
+				else if(L"thirdRowSubheading" == sValue)
                     this->m_eValue = tablestyletypeThirdRowSubheading;
-				else if(_T("thirdSubtotalColumn") == sValue)
+				else if(L"thirdSubtotalColumn" == sValue)
                     this->m_eValue = tablestyletypeThirdSubtotalColumn;
-				else if(_T("thirdSubtotalRow") == sValue)
+				else if(L"thirdSubtotalRow" == sValue)
                     this->m_eValue = tablestyletypeThirdSubtotalRow;
-				else if(_T("totalRow") == sValue)
+				else if(L"totalRow" == sValue)
                     this->m_eValue = tablestyletypeTotalRow;
-				else if(_T("wholeTable") == sValue)
+				else if(L"wholeTable" == sValue)
                     this->m_eValue = tablestyletypeWholeTable;
 				else
                     this->m_eValue = eDefValue;
@@ -1384,37 +1388,37 @@ namespace SimpleTypes
 			{
                 switch(this->m_eValue)
 				{
-				case tablestyletypeBlankRow: return _T("blankRow");break;
-				case tablestyletypeFirstColumn: return _T("firstColumn");break;
-				case tablestyletypeFirstColumnStripe: return _T("firstColumnStripe");break;
-				case tablestyletypeFirstColumnSubheading: return _T("firstColumnSubheading");break;
-				case tablestyletypeFirstHeaderCell: return _T("firstHeaderCell");break;
-				case tablestyletypeFirstRowStripe: return _T("firstRowStripe");break;
-				case tablestyletypeFirstRowSubheading: return _T("firstRowSubheading");break;
-				case tablestyletypeFirstSubtotalColumn: return _T("firstSubtotalColumn");break;
-				case tablestyletypeFirstSubtotalRow: return _T("firstSubtotalRow");break;
-				case tablestyletypeFirstTotalCell: return _T("firstTotalCell");break;
-				case tablestyletypeHeaderRow: return _T("headerRow");break;
-				case tablestyletypeLastColumn: return _T("lastColumn");break;
-				case tablestyletypeLastHeaderCell: return _T("lastHeaderCell");break;
-				case tablestyletypeLastTotalCell: return _T("lastTotalCell");break;
-				case tablestyletypePageFieldLabels: return _T("pageFieldLabels");break;
-				case tablestyletypePageFieldValues: return _T("pageFieldValues");break;
-				case tablestyletypeSecondColumnStripe: return _T("secondColumnStripe");break;
-				case tablestyletypeSecondColumnSubheading: return _T("secondColumnSubheading");break;
-				case tablestyletypeSecondRowStripe: return _T("secondRowStripe");break;
-				case tablestyletypeSecondRowSubheading: return _T("secondRowSubheading");break;
-				case tablestyletypeSecondSubtotalColumn: return _T("secondSubtotalColumn");break;
-				case tablestyletypeSecondSubtotalRow: return _T("secondSubtotalRow");break;
-				case tablestyletypeThirdColumnSubheading: return _T("thirdColumnSubheading");break;
-				case tablestyletypeThirdRowSubheading: return _T("thirdRowSubheading");break;
-				case tablestyletypeThirdSubtotalColumn: return _T("thirdSubtotalColumn");break;
-				case tablestyletypeThirdSubtotalRow: return _T("thirdSubtotalRow");break;
-				case tablestyletypeTotalRow: return _T("totalRow");break;
-				case tablestyletypeWholeTable: return _T("wholeTable");break;
-				default : return _T("blankRow");break;
+				case tablestyletypeBlankRow: return L"blankRow";break;
+				case tablestyletypeFirstColumn: return L"firstColumn";break;
+				case tablestyletypeFirstColumnStripe: return L"firstColumnStripe";break;
+				case tablestyletypeFirstColumnSubheading: return L"firstColumnSubheading";break;
+				case tablestyletypeFirstHeaderCell: return L"firstHeaderCell";break;
+				case tablestyletypeFirstRowStripe: return L"firstRowStripe";break;
+				case tablestyletypeFirstRowSubheading: return L"firstRowSubheading";break;
+				case tablestyletypeFirstSubtotalColumn: return L"firstSubtotalColumn";break;
+				case tablestyletypeFirstSubtotalRow: return L"firstSubtotalRow";break;
+				case tablestyletypeFirstTotalCell: return L"firstTotalCell";break;
+				case tablestyletypeHeaderRow: return L"headerRow";break;
+				case tablestyletypeLastColumn: return L"lastColumn";break;
+				case tablestyletypeLastHeaderCell: return L"lastHeaderCell";break;
+				case tablestyletypeLastTotalCell: return L"lastTotalCell";break;
+				case tablestyletypePageFieldLabels: return L"pageFieldLabels";break;
+				case tablestyletypePageFieldValues: return L"pageFieldValues";break;
+				case tablestyletypeSecondColumnStripe: return L"secondColumnStripe";break;
+				case tablestyletypeSecondColumnSubheading: return L"secondColumnSubheading";break;
+				case tablestyletypeSecondRowStripe: return L"secondRowStripe";break;
+				case tablestyletypeSecondRowSubheading: return L"secondRowSubheading";break;
+				case tablestyletypeSecondSubtotalColumn: return L"secondSubtotalColumn";break;
+				case tablestyletypeSecondSubtotalRow: return L"secondSubtotalRow";break;
+				case tablestyletypeThirdColumnSubheading: return L"thirdColumnSubheading";break;
+				case tablestyletypeThirdRowSubheading: return L"thirdRowSubheading";break;
+				case tablestyletypeThirdSubtotalColumn: return L"thirdSubtotalColumn";break;
+				case tablestyletypeThirdSubtotalRow: return L"thirdSubtotalRow";break;
+				case tablestyletypeTotalRow: return L"totalRow";break;
+				case tablestyletypeWholeTable: return L"wholeTable";break;
+				default : return L"blankRow";break;
 				}
-				return _T("blankRow");
+				return L"blankRow";
 			}
 
 			SimpleType_FromString     (ETableStyleType)
@@ -1436,13 +1440,13 @@ namespace SimpleTypes
 
             virtual ECellFormulaType FromString(std::wstring &sValue)
 			{
-				if(_T("array") == sValue)
+				if(L"array" == sValue)
                     this->m_eValue = cellformulatypeArray;
-				else if(_T("dataTable") == sValue)
+				else if(L"dataTable" == sValue)
                     this->m_eValue = cellformulatypeDataTable;
-				else if(_T("normal") == sValue)
+				else if(L"normal" == sValue)
                     this->m_eValue = cellformulatypeNormal;
-				else if(_T("shared") == sValue)
+				else if(L"shared" == sValue)
                     this->m_eValue = cellformulatypeShared;
 				else
                     this->m_eValue = eDefValue;
@@ -1467,11 +1471,11 @@ namespace SimpleTypes
 			{
                 switch(this->m_eValue)
 				{
-				case cellformulatypeArray : return _T("array");break;
-				case cellformulatypeDataTable : return _T("dataTable");break;
-				case cellformulatypeNormal : return _T("normal");break;
-				case cellformulatypeShared : return _T("shared");break;
-				default: return _T("normal");
+				case cellformulatypeArray : return L"array";break;
+				case cellformulatypeDataTable : return L"dataTable";break;
+				case cellformulatypeNormal : return L"normal";break;
+				case cellformulatypeShared : return L"shared";break;
+				default: return L"normal";
 				}
 			}
 
@@ -1493,11 +1497,11 @@ namespace SimpleTypes
 
             virtual EUpdateLinksType FromString(std::wstring &sValue)
 			{
-				if(_T("always") == sValue)
+				if(L"always" == sValue)
                     this->m_eValue = updatelinksAlways;
-				else if(_T("never") == sValue)
+				else if(L"never" == sValue)
                     this->m_eValue = updatelinksNever;
-				else if(_T("userSet") == sValue)
+				else if(L"userSet" == sValue)
                     this->m_eValue = updatelinksUserSet;
 				else
                     this->m_eValue = eDefValue;
@@ -1508,10 +1512,10 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-				case updatelinksAlways: return _T("always");break;
-				case updatelinksNever: return _T("never");break;
-				case updatelinksUserSet: return _T("userSet");break;
-				default: return _T("always");
+				case updatelinksAlways: return L"always";break;
+				case updatelinksNever: return L"never";break;
+				case updatelinksUserSet: return L"userSet";break;
+				default: return L"always";
 				}
 			}
 
@@ -1526,7 +1530,14 @@ namespace SimpleTypes
 			celltypeInlineStr		=  3,
 			celltypeNumber			=  4,
 			celltypeSharedString	=  5,
-			celltypeStr				=  6
+			celltypeStr				=  6,
+//--------------- for our using
+			celltypePercentage		= 7,
+			celltypeScientific		= 8,
+			celltypeFraction		= 9,
+			celltypeTime			= 10,
+			celltypeCurrency		= 11,
+			celltypeDateTime		= 12
 		};
 		template<ECellTypeType eDefValue = celltypeNumber>
 		class CCellTypeType : public CSimpleType<ECellTypeType, eDefValue>
@@ -1537,17 +1548,17 @@ namespace SimpleTypes
 
             virtual ECellTypeType FromString(std::wstring &sValue)
 			{
-				if(_T("b") == sValue)
+				if(L"b" == sValue)
                     this->m_eValue = celltypeBool;
-				else if(_T("d") == sValue || L"DateTime" == sValue)
+				else if(L"d" == sValue || L"DateTime" == sValue)
                     this->m_eValue = celltypeDate;
-				else if(_T("e") == sValue)
+				else if(L"e" == sValue)
                     this->m_eValue = celltypeError;
-				else if(_T("inlineStr") == sValue)
+				else if(L"inlineStr" == sValue)
                     this->m_eValue = celltypeInlineStr;
-				else if(_T("n") == sValue || L"Number" == sValue)
+				else if(L"n" == sValue || L"Number" == sValue)
                     this->m_eValue = celltypeNumber;
-				else if(_T("s") == sValue)
+				else if(L"s" == sValue)
                     this->m_eValue = celltypeSharedString;
 				else if(L"str" == sValue || L"String" == sValue)
                     this->m_eValue = celltypeStr;
@@ -1580,14 +1591,14 @@ namespace SimpleTypes
 			{
                 switch(this->m_eValue)
 				{
-				case celltypeBool: return _T("b");break;
-				case celltypeDate: return _T("d");break;
-				case celltypeError: return _T("e");break;
-				case celltypeInlineStr: return _T("inlineStr");break;
-				case celltypeNumber: return _T("n");break;
-				case celltypeSharedString: return _T("s");break;
-				case celltypeStr: return _T("str");break;
-				default: return _T("n");
+				case celltypeBool: return L"b";break;
+				case celltypeDate: return L"d";break;
+				case celltypeError: return L"e";break;
+				case celltypeInlineStr: return L"inlineStr";break;
+				case celltypeNumber: return L"n";break;
+				case celltypeSharedString: return L"s";break;
+				case celltypeStr: return L"str";break;
+				default: return L"n";
 				}
 			}
 
@@ -1609,11 +1620,11 @@ namespace SimpleTypes
 
             virtual ECellAnchorType FromString(std::wstring &sValue)
 			{
-				if(_T("absolute") == sValue)
+				if(L"absolute" == sValue)
                     this->m_eValue = cellanchorAbsolute;
-				else if(_T("oneCell") == sValue)
+				else if(L"oneCell" == sValue)
                     this->m_eValue = cellanchorOneCell;
-				else if(_T("twoCell") == sValue)
+				else if(L"twoCell" == sValue)
                     this->m_eValue = cellanchorTwoCell;
 				else
                     this->m_eValue = eDefValue;
@@ -1624,10 +1635,10 @@ namespace SimpleTypes
 			{
                 switch(this->m_eValue)
 				{
-				case cellanchorAbsolute: return _T("absolute"); break;
-				case cellanchorOneCell: return _T("oneCell"); break;
-				case cellanchorTwoCell: return _T("twoCell"); break;
-				default: return _T("twoCell");
+				case cellanchorAbsolute: return L"absolute"; break;
+				case cellanchorOneCell: return L"oneCell"; break;
+				case cellanchorTwoCell: return L"twoCell"; break;
+				default: return L"twoCell";
 				}
 			}
 
@@ -1650,11 +1661,11 @@ namespace SimpleTypes
 
             virtual ESheetViewType FromString(std::wstring &sValue)
 			{
-				if(_T("normal") == sValue)
+				if(L"normal" == sValue)
                     this->m_eValue = sheetviewNormal;
-				else if(_T("pageBreakPreview") == sValue)
+				else if(L"pageBreakPreview" == sValue)
                     this->m_eValue = sheetviewPageBreakPreview;
-				else if(_T("pageLayout") == sValue)
+				else if(L"pageLayout" == sValue)
                     this->m_eValue = sheetviewPageLayout;
 				else
                     this->m_eValue = eDefValue;
@@ -1665,10 +1676,10 @@ namespace SimpleTypes
 			{
                 switch(this->m_eValue)
 				{
-				case sheetviewNormal: return _T("normal"); break;
-				case sheetviewPageBreakPreview: return _T("pageBreakPreview"); break;
-				case sheetviewPageLayout: return _T("pageLayout"); break;
-				default: return _T("normal");
+				case sheetviewNormal: return L"normal"; break;
+				case sheetviewPageBreakPreview: return L"pageBreakPreview"; break;
+				case sheetviewPageLayout: return L"pageLayout"; break;
+				default: return L"normal";
 				}
 			}
 
@@ -1692,15 +1703,15 @@ namespace SimpleTypes
 
             virtual EChartLegendPos FromString(std::wstring &sValue)
 			{
-				if(_T("l") == sValue)
+				if(L"l" == sValue)
                     this->m_eValue = chartlegendposLeft;
-				else if(_T("t") == sValue)
+				else if(L"t" == sValue)
                     this->m_eValue = chartlegendposTop;
-				else if(_T("r") == sValue)
+				else if(L"r" == sValue)
                     this->m_eValue = chartlegendposRight;
-				else if(_T("b") == sValue)
+				else if(L"b" == sValue)
                     this->m_eValue = chartlegendposBottom;
-				else if(_T("tr") == sValue)
+				else if(L"tr" == sValue)
                     this->m_eValue = chartlegendposRightTop;
 				else
                     this->m_eValue = eDefValue;
@@ -1711,12 +1722,12 @@ namespace SimpleTypes
 			{
                 switch(this->m_eValue)
 				{
-				case chartlegendposLeft: return _T("l"); break;
-				case chartlegendposTop: return _T("t"); break;
-				case chartlegendposRight: return _T("r"); break;
-				case chartlegendposBottom: return _T("b"); break;
-				case chartlegendposRightTop: return _T("tr"); break;
-				default: return _T("t");
+				case chartlegendposLeft: return L"l"; break;
+				case chartlegendposTop: return L"t"; break;
+				case chartlegendposRight: return L"r"; break;
+				case chartlegendposBottom: return L"b"; break;
+				case chartlegendposRightTop: return L"tr"; break;
+				default: return L"t";
 				}
 			}
 
@@ -1737,9 +1748,9 @@ namespace SimpleTypes
 
             virtual EChartHMode FromString(std::wstring &sValue)
 			{
-				if(_T("factor") == sValue)
+				if(L"factor" == sValue)
                     this->m_eValue = charthmodeFactor;
-				else if(_T("edge") == sValue)
+				else if(L"edge" == sValue)
                     this->m_eValue = charthmodeEdge;
 				else
                     this->m_eValue = eDefValue;
@@ -1750,9 +1761,9 @@ namespace SimpleTypes
 			{
                 switch(this->m_eValue)
 				{
-				case charthmodeFactor: return _T("factor"); break;
-				case charthmodeEdge: return _T("edge"); break;
-				default: return _T("factor");
+				case charthmodeFactor: return L"factor"; break;
+				case charthmodeEdge: return L"edge"; break;
+				default: return L"factor";
 				}
 			}
 
@@ -1773,9 +1784,9 @@ namespace SimpleTypes
 
             virtual EChartLayoutTarget FromString(std::wstring &sValue)
 			{
-				if(_T("inner") == sValue)
+				if(L"inner" == sValue)
                     this->m_eValue = chartlayouttargetInner;
-				else if(_T("outer") == sValue)
+				else if(L"outer" == sValue)
                     this->m_eValue = chartlayouttargetOuter;
 				else
                     this->m_eValue = eDefValue;
@@ -1786,9 +1797,9 @@ namespace SimpleTypes
 			{
                 switch(this->m_eValue)
 				{
-				case chartlayouttargetInner: return _T("inner"); break;
-				case chartlayouttargetOuter: return _T("outer"); break;
-				default: return _T("inner");
+				case chartlayouttargetInner: return L"inner"; break;
+				case chartlayouttargetOuter: return L"outer"; break;
+				default: return L"inner";
 				}
 			}
 
@@ -1811,13 +1822,13 @@ namespace SimpleTypes
 
             virtual EChartAxPos FromString(std::wstring &sValue)
 			{
-				if(_T("l") == sValue)
+				if(L"l" == sValue)
                     this->m_eValue = chartaxposLeft;
-				else if(_T("t") == sValue)
+				else if(L"t" == sValue)
                     this->m_eValue = chartaxposTop;
-				else if(_T("r") == sValue)
+				else if(L"r" == sValue)
                     this->m_eValue = chartaxposRight;
-				else if(_T("b") == sValue)
+				else if(L"b" == sValue)
                     this->m_eValue = chartaxposBottom;
 				else
                     this->m_eValue = eDefValue;
@@ -1828,11 +1839,11 @@ namespace SimpleTypes
 			{
                 switch(this->m_eValue)
 				{
-				case chartaxposLeft: return _T("l"); break;
-				case chartaxposTop: return _T("t"); break;
-				case chartaxposRight: return _T("r"); break;
-				case chartaxposBottom: return _T("b"); break;
-				default: return _T("l");
+				case chartaxposLeft: return L"l"; break;
+				case chartaxposTop: return L"t"; break;
+				case chartaxposRight: return L"r"; break;
+				case chartaxposBottom: return L"b"; break;
+				default: return L"l";
 				}
 			}
 
@@ -1855,13 +1866,13 @@ namespace SimpleTypes
 
             virtual EChartBarGrouping FromString(std::wstring &sValue)
 			{
-				if(_T("clustered") == sValue)
+				if(L"clustered" == sValue)
                     this->m_eValue = chartbargroupingClustered;
-				else if(_T("percentStacked") == sValue)
+				else if(L"percentStacked" == sValue)
                     this->m_eValue = chartbargroupingPercentStacked;
-				else if(_T("stacked") == sValue)
+				else if(L"stacked" == sValue)
                     this->m_eValue = chartbargroupingStacked;
-				else if(_T("standard") == sValue)
+				else if(L"standard" == sValue)
                     this->m_eValue = chartbargroupingStandard;
 				else
                     this->m_eValue = eDefValue;
@@ -1872,11 +1883,11 @@ namespace SimpleTypes
 			{
                 switch(this->m_eValue)
 				{
-				case chartbargroupingClustered: return _T("clustered"); break;
-				case chartbargroupingPercentStacked: return _T("percentStacked"); break;
-				case chartbargroupingStacked: return _T("stacked"); break;
-				case chartbargroupingStandard: return _T("standard"); break;
-				default: return _T("clustered");
+				case chartbargroupingClustered: return L"clustered"; break;
+				case chartbargroupingPercentStacked: return L"percentStacked"; break;
+				case chartbargroupingStacked: return L"stacked"; break;
+				case chartbargroupingStandard: return L"standard"; break;
+				default: return L"clustered";
 				}
 			}
 
@@ -1897,9 +1908,9 @@ namespace SimpleTypes
 
             virtual EChartBarDirection FromString(std::wstring &sValue)
 			{
-				if(_T("bar") == sValue)
+				if(L"bar" == sValue)
                     this->m_eValue = chartbardirectionBar;
-				else if(_T("col") == sValue)
+				else if(L"col" == sValue)
                     this->m_eValue = chartbardirectionCol;
 				else
                     this->m_eValue = eDefValue;
@@ -1943,27 +1954,27 @@ namespace SimpleTypes
 
             virtual EChartSymbol FromString(std::wstring &sValue)
 			{
-				if(_T("circle") == sValue)
+				if(L"circle" == sValue)
                     this->m_eValue = chartsymbolCircle;
-				else if(_T("dash") == sValue)
+				else if(L"dash" == sValue)
                     this->m_eValue = chartsymbolDash;
-				else if(_T("diamond") == sValue)
+				else if(L"diamond" == sValue)
                     this->m_eValue = chartsymbolDiamond;
-				else if(_T("dot") == sValue)
+				else if(L"dot" == sValue)
                     this->m_eValue = chartsymbolDot;
-				else if(_T("none") == sValue)
+				else if(L"none" == sValue)
                     this->m_eValue = chartsymbolNone;
-				else if(_T("picture") == sValue)
+				else if(L"picture" == sValue)
                     this->m_eValue = chartsymbolPicture;
-				else if(_T("plus") == sValue)
+				else if(L"plus" == sValue)
                     this->m_eValue = chartsymbolPlus;
-				else if(_T("square") == sValue)
+				else if(L"square" == sValue)
                     this->m_eValue = chartsymbolSquare;
-				else if(_T("star") == sValue)
+				else if(L"star" == sValue)
                     this->m_eValue = chartsymbolStare;
-				else if(_T("triangle") == sValue)
+				else if(L"triangle" == sValue)
                     this->m_eValue = chartsymbolTriangle;
-				else if(_T("x") == sValue)
+				else if(L"x" == sValue)
                     this->m_eValue = chartsymbolX;
 				else
                     this->m_eValue = eDefValue;
@@ -1974,18 +1985,18 @@ namespace SimpleTypes
 			{
                 switch(this->m_eValue)
 				{
-				case chartsymbolCircle: return _T("circle"); break;
-				case chartsymbolDash: return _T("dash"); break;
-				case chartsymbolDiamond: return _T("diamond"); break;
-				case chartsymbolDot: return _T("dot"); break;
-				case chartsymbolNone: return _T("none"); break;
-				case chartsymbolPicture: return _T("picture"); break;
-				case chartsymbolPlus: return _T("plus"); break;
-				case chartsymbolSquare: return _T("square"); break;
-				case chartsymbolStare: return _T("star"); break;
-				case chartsymbolTriangle: return _T("triangle"); break;
-				case chartsymbolX: return _T("x"); break;
-				default: return _T("none");
+				case chartsymbolCircle: return L"circle"; break;
+				case chartsymbolDash: return L"dash"; break;
+				case chartsymbolDiamond: return L"diamond"; break;
+				case chartsymbolDot: return L"dot"; break;
+				case chartsymbolNone: return L"none"; break;
+				case chartsymbolPicture: return L"picture"; break;
+				case chartsymbolPlus: return L"plus"; break;
+				case chartsymbolSquare: return L"square"; break;
+				case chartsymbolStare: return L"star"; break;
+				case chartsymbolTriangle: return L"triangle"; break;
+				case chartsymbolX: return L"x"; break;
+				default: return L"none";
 				}
 			}
 
@@ -2142,13 +2153,13 @@ namespace SimpleTypes
 		{
 		public:
 			CCellComments() {}
-
+                        CCellComments(const ECellComments & val)	{ this->m_eValue = val; }
 			virtual ECellComments FromString(std::wstring &sValue)
 			{
-				if      ( (L"asDisplayed") == sValue ) this->m_eValue = cellcommentsAsDisplayed;
-				else if ( (L"atEnd")  == sValue ) this->m_eValue = cellcommentsAtEnd;
-				else if ( (L"none")  == sValue ) this->m_eValue = cellcommentsNone;
-				else                                  this->m_eValue = eDefValue;
+				if      (L"asDisplayed" == sValue ) this->m_eValue = cellcommentsAsDisplayed;
+				else if (L"atEnd" ==  sValue ) this->m_eValue = cellcommentsAtEnd;
+				else if (L"none" ==  sValue ) this->m_eValue = cellcommentsNone;
+				else this->m_eValue = eDefValue;
 
 				return this->m_eValue;
 			}
@@ -2157,10 +2168,10 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-				case cellcommentsAsDisplayed : return (L"asDisplayed");
-				case cellcommentsAtEnd  : return (L"atEnd");
-				case cellcommentsNone  : return (L"none");
-				default                  : return (L"none");
+				case cellcommentsAsDisplayed : return L"asDisplayed";
+				case cellcommentsAtEnd : return L"atEnd";
+				case cellcommentsNone : return L"none";
+				default : return L"none";
 				}
 			}
 
@@ -2181,14 +2192,14 @@ namespace SimpleTypes
 		{
 		public:
 			CPrintError() {}
-
+                        CPrintError(const EPrintError & val)	{ this->m_eValue = val; }
 			virtual EPrintError FromString(std::wstring &sValue)
 			{
-				if      ( (L"blank") == sValue ) this->m_eValue = printerrorBlank;
-				else if ( (L"dash")  == sValue ) this->m_eValue = printerrorDash;
-				else if ( (L"displayed")  == sValue ) this->m_eValue = printerrorDisplayed;
-				else if ( (L"NA")  == sValue ) this->m_eValue = printerrorNA;
-				else                                  this->m_eValue = eDefValue;
+				if      (L"blank" == sValue ) this->m_eValue = printerrorBlank;
+				else if (L"dash" ==  sValue ) this->m_eValue = printerrorDash;
+				else if (L"displayed" ==  sValue ) this->m_eValue = printerrorDisplayed;
+				else if (L"NA" ==  sValue ) this->m_eValue = printerrorNA;
+				else this->m_eValue = eDefValue;
 
 				return this->m_eValue;
 			}
@@ -2197,11 +2208,11 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-				case printerrorBlank : return (L"blank");
-				case printerrorDash  : return (L"dash");
-				case printerrorDisplayed  : return (L"displayed");
-				case printerrorNA  : return (L"NA");
-				default                  : return (L"displayed");
+				case printerrorBlank: return L"blank";
+				case printerrorDash: return L"dash";
+				case printerrorDisplayed: return L"displayed";
+				case printerrorNA: return L"NA";
+				default: return L"displayed";
 				}
 			}
 
@@ -2220,23 +2231,23 @@ namespace SimpleTypes
 		{
 		public:
 			CPageOrder() {}
-
+                        CPageOrder(const EPageOrder & val)	{ this->m_eValue = val; }
 			virtual EPageOrder FromString(std::wstring &sValue)
 			{
-				if      ( (L"downThenOver") == sValue ) this->m_eValue = pageorderDownThenOver;
-				else if ( (L"overThenDown")  == sValue ) this->m_eValue = pageorderOverThenDown;
-				else                                  this->m_eValue = eDefValue;
+				if      (L"downThenOver" == sValue ) this->m_eValue = pageorderDownThenOver;
+				else if (L"overThenDown" ==  sValue ) this->m_eValue = pageorderOverThenDown;
+				else this->m_eValue = eDefValue;
 
 				return this->m_eValue;
 			}
 
-			virtual std::wstring          ToString  () const
+			virtual std::wstring ToString  () const
 			{
 				switch(this->m_eValue)
 				{
-				case pageorderDownThenOver : return (L"downThenOver");
-				case pageorderOverThenDown  : return (L"overThenDown");
-				default                  : return (L"downThenOver");
+				case pageorderDownThenOver : return L"downThenOver";
+				case pageorderOverThenDown  : return L"overThenDown";
+				default : return L"downThenOver";
 				}
 			}
 
@@ -2266,25 +2277,25 @@ namespace SimpleTypes
 
             virtual ETotalsRowFunction FromString(std::wstring &sValue)
 			{
-				if(_T("average") == sValue)
+				if(L"average" == sValue)
                     this->m_eValue = totalrowfunctionAverage;
-				else if(_T("count") == sValue)
+				else if(L"count" == sValue)
                     this->m_eValue = totalrowfunctionCount;
-				else if(_T("countNums") == sValue)
+				else if(L"countNums" == sValue)
                     this->m_eValue = totalrowfunctionCountNums;
-				else if(_T("custom") == sValue)
+				else if(L"custom" == sValue)
                     this->m_eValue = totalrowfunctionCustom;
-				else if(_T("max") == sValue)
+				else if(L"max" == sValue)
                     this->m_eValue = totalrowfunctionMax;
-				else if(_T("min") == sValue)
+				else if(L"min" == sValue)
                     this->m_eValue = totalrowfunctionMin;
-				else if(_T("none") == sValue)
+				else if(L"none" == sValue)
                     this->m_eValue = totalrowfunctionNone;
-				else if(_T("stdDev") == sValue)
+				else if(L"stdDev" == sValue)
                     this->m_eValue = totalrowfunctionStdDev;
-				else if(_T("sum") == sValue)
+				else if(L"sum" == sValue)
                     this->m_eValue = totalrowfunctionSum;
-				else if(_T("var") == sValue)
+				else if(L"var" == sValue)
                     this->m_eValue = totalrowfunctionVar;
 				else
                     this->m_eValue = eDefValue;
@@ -2329,13 +2340,13 @@ namespace SimpleTypes
 
             virtual ESortBy FromString(std::wstring &sValue)
 			{
-				if(_T("cellColor") == sValue)
+				if(L"cellColor" == sValue)
                     this->m_eValue = sortbyCellColor;
-				else if(_T("fontColor") == sValue)
+				else if(L"fontColor" == sValue)
                     this->m_eValue = sortbyFontColor;
-				else if(_T("icon") == sValue)
+				else if(L"icon" == sValue)
                     this->m_eValue = sortbyIcon;
-				else if(_T("value") == sValue)
+				else if(L"value" == sValue)
                     this->m_eValue = sortbyValue;
 				else
                     this->m_eValue = eDefValue;
@@ -2376,17 +2387,17 @@ namespace SimpleTypes
 
             virtual ECustomFilter FromString(std::wstring &sValue)
 			{
-				if(_T("equal") == sValue)
+				if(L"equal" == sValue)
                     this->m_eValue = customfilterEqual;
-				else if(_T("greaterThan") == sValue)
+				else if(L"greaterThan" == sValue)
                     this->m_eValue = customfilterGreaterThan;
-				else if(_T("greaterThanOrEqual") == sValue)
+				else if(L"greaterThanOrEqual" == sValue)
                     this->m_eValue = customfilterGreaterThanOrEqual;
-				else if(_T("lessThan") == sValue)
+				else if(L"lessThan" == sValue)
                     this->m_eValue = customfilterLessThan;
-				else if(_T("lessThanOrEqual") == sValue)
+				else if(L"lessThanOrEqual" == sValue)
                     this->m_eValue = customfilterLessThanOrEqual;
-				else if(_T("notEqual") == sValue)
+				else if(L"notEqual" == sValue)
                     this->m_eValue = customfilterNotEqual;
 				else
                     this->m_eValue = eDefValue;
@@ -2429,17 +2440,17 @@ namespace SimpleTypes
 
             virtual EDateTimeGroup FromString(std::wstring &sValue)
 			{
-				if(_T("day") == sValue)
+				if(L"day" == sValue)
                     this->m_eValue = datetimegroupDay;
-				else if(_T("hour") == sValue)
+				else if(L"hour" == sValue)
                     this->m_eValue = datetimegroupHour;
-				else if(_T("minute") == sValue)
+				else if(L"minute" == sValue)
                     this->m_eValue = datetimegroupMinute;
-				else if(_T("month") == sValue)
+				else if(L"month" == sValue)
                     this->m_eValue = datetimegroupMonth;
-				else if(_T("second") == sValue)
+				else if(L"second" == sValue)
                     this->m_eValue = datetimegroupSecond;
-				else if(_T("year") == sValue)
+				else if(L"year" == sValue)
                     this->m_eValue = datetimegroupYear;
 				else
                     this->m_eValue = eDefValue;
@@ -2479,11 +2490,11 @@ namespace SimpleTypes
 
 			virtual ESortMethod FromString(std::wstring &sValue)
 			{
-				if(_T("none") == sValue)
+				if(L"none" == sValue)
 					this->m_eValue = sortmethodNone;
-				else if(_T("pinYin") == sValue)
+				else if(L"pinYin" == sValue)
 					this->m_eValue = sortmethodPinYin;
-				else if(_T("stroke") == sValue)
+				else if(L"stroke" == sValue)
 					this->m_eValue = sortmethodStroke;
 				else
 					this->m_eValue = eDefValue;
@@ -2552,75 +2563,75 @@ namespace SimpleTypes
 
             virtual EDynamicFilterType FromString(std::wstring &sValue)
 			{
-				if(_T("aboveAverage") == sValue)
+				if(L"aboveAverage" == sValue)
                     this->m_eValue = dynamicfiltertypeAboveAverage;
-				else if(_T("belowAverage") == sValue)
+				else if(L"belowAverage" == sValue)
                     this->m_eValue = dynamicfiltertypeBelowAverage;
-				else if(_T("lastMonth") == sValue)
+				else if(L"lastMonth" == sValue)
                     this->m_eValue = dynamicfiltertypeLastMonth;
-				else if(_T("lastQuarter") == sValue)
+				else if(L"lastQuarter" == sValue)
                     this->m_eValue = dynamicfiltertypeLastQuarter;
-				else if(_T("lastWeek") == sValue)
+				else if(L"lastWeek" == sValue)
                     this->m_eValue = dynamicfiltertypeLastWeek;
-				else if(_T("lastYear") == sValue)
+				else if(L"lastYear" == sValue)
                     this->m_eValue = dynamicfiltertypeLastYear;
-				else if(_T("M1") == sValue)
+				else if(L"M1" == sValue)
                     this->m_eValue = dynamicfiltertypeM1;
-				else if(_T("M10") == sValue)
+				else if(L"M10" == sValue)
                     this->m_eValue = dynamicfiltertypeM10;
-				else if(_T("M11") == sValue)
+				else if(L"M11" == sValue)
                     this->m_eValue = dynamicfiltertypeM11;
-				else if(_T("M12") == sValue)
+				else if(L"M12" == sValue)
                     this->m_eValue = dynamicfiltertypeM12;
-				else if(_T("M2") == sValue)
+				else if(L"M2" == sValue)
                     this->m_eValue = dynamicfiltertypeM2;
-				else if(_T("M3") == sValue)
+				else if(L"M3" == sValue)
                     this->m_eValue = dynamicfiltertypeM3;
-				else if(_T("M4") == sValue)
+				else if(L"M4" == sValue)
                     this->m_eValue = dynamicfiltertypeM4;
-				else if(_T("M5") == sValue)
+				else if(L"M5" == sValue)
                     this->m_eValue = dynamicfiltertypeM5;
-				else if(_T("M6") == sValue)
+				else if(L"M6" == sValue)
                     this->m_eValue = dynamicfiltertypeM6;
-				else if(_T("M7") == sValue)
+				else if(L"M7" == sValue)
                     this->m_eValue = dynamicfiltertypeM7;
-				else if(_T("M8") == sValue)
+				else if(L"M8" == sValue)
                     this->m_eValue = dynamicfiltertypeM8;
-				else if(_T("M9") == sValue)
+				else if(L"M9" == sValue)
                     this->m_eValue = dynamicfiltertypeM9;
-				else if(_T("nextMonth") == sValue)
+				else if(L"nextMonth" == sValue)
                     this->m_eValue = dynamicfiltertypeNextMonth;
-				else if(_T("nextQuarter") == sValue)
+				else if(L"nextQuarter" == sValue)
                     this->m_eValue = dynamicfiltertypeNextQuarter;
-				else if(_T("nextWeek") == sValue)
+				else if(L"nextWeek" == sValue)
                     this->m_eValue = dynamicfiltertypeNextWeek;
-				else if(_T("nextYear") == sValue)
+				else if(L"nextYear" == sValue)
                     this->m_eValue = dynamicfiltertypeNextYear;
-				else if(_T("null") == sValue)
+				else if(L"null" == sValue)
                     this->m_eValue = dynamicfiltertypeNull;
-				else if(_T("Q1") == sValue)
+				else if(L"Q1" == sValue)
                     this->m_eValue = dynamicfiltertypeQ1;
-				else if(_T("Q2") == sValue)
+				else if(L"Q2" == sValue)
                     this->m_eValue = dynamicfiltertypeQ2;
-				else if(_T("Q3") == sValue)
+				else if(L"Q3" == sValue)
                     this->m_eValue = dynamicfiltertypeQ3;
-				else if(_T("Q4") == sValue)
+				else if(L"Q4" == sValue)
                     this->m_eValue = dynamicfiltertypeQ4;
-				else if(_T("thisMonth") == sValue)
+				else if(L"thisMonth" == sValue)
                     this->m_eValue = dynamicfiltertypeThisMonth;
-				else if(_T("thisQuarter") == sValue)
+				else if(L"thisQuarter" == sValue)
                     this->m_eValue = dynamicfiltertypeThisQuarter;
-				else if(_T("thisWeek") == sValue)
+				else if(L"thisWeek" == sValue)
                     this->m_eValue = dynamicfiltertypeThisWeek;
-				else if(_T("thisYear") == sValue)
+				else if(L"thisYear" == sValue)
                     this->m_eValue = dynamicfiltertypeThisYear;
-				else if(_T("today") == sValue)
+				else if(L"today" == sValue)
                     this->m_eValue = dynamicfiltertypeToday;
-				else if(_T("tomorrow") == sValue)
+				else if(L"tomorrow" == sValue)
                     this->m_eValue = dynamicfiltertypeTomorrow;
-				else if(_T("yearToDate") == sValue)
+				else if(L"yearToDate" == sValue)
                     this->m_eValue = dynamicfiltertypeYearToDate;
-				else if(_T("yesterday") == sValue)
+				else if(L"yesterday" == sValue)
                     this->m_eValue = dynamicfiltertypeYesterday;
 				else
                     this->m_eValue = eDefValue;
@@ -2877,18 +2888,18 @@ namespace SimpleTypes
 
             virtual ECfOperator FromString(std::wstring &sValue)
 			{
-                if(_T("beginsWith") == sValue)				this->m_eValue = Operator_beginsWith;
-                else if(_T("between") == sValue)			this->m_eValue = Operator_between;
-                else if(_T("containsText") == sValue)		this->m_eValue = Operator_containsText;
-                else if(_T("endsWith") == sValue)			this->m_eValue = Operator_endsWith;
-                else if(_T("equal") == sValue)				this->m_eValue = Operator_equal;
-                else if(_T("greaterThan") == sValue)		this->m_eValue = Operator_greaterThan;
-                else if(_T("greaterThanOrEqual") == sValue)	this->m_eValue = Operator_greaterThanOrEqual;
-                else if(_T("lessThan") == sValue)			this->m_eValue = Operator_lessThan;
-                else if(_T("lessThanOrEqual") == sValue)	this->m_eValue = Operator_lessThanOrEqual;
-                else if(_T("notBetween") == sValue)			this->m_eValue = Operator_notBetween;
-                else if(_T("notContains") == sValue)		this->m_eValue = Operator_notContains;
-                else if(_T("notEqual") == sValue)			this->m_eValue = Operator_notEqual;
+                if(L"beginsWith" == sValue)				this->m_eValue = Operator_beginsWith;
+                else if(L"between" == sValue)			this->m_eValue = Operator_between;
+                else if(L"containsText" == sValue)		this->m_eValue = Operator_containsText;
+                else if(L"endsWith" == sValue)			this->m_eValue = Operator_endsWith;
+                else if(L"equal" == sValue)				this->m_eValue = Operator_equal;
+                else if(L"greaterThan" == sValue)		this->m_eValue = Operator_greaterThan;
+                else if(L"greaterThanOrEqual" == sValue)	this->m_eValue = Operator_greaterThanOrEqual;
+                else if(L"lessThan" == sValue)			this->m_eValue = Operator_lessThan;
+                else if(L"lessThanOrEqual" == sValue)	this->m_eValue = Operator_lessThanOrEqual;
+                else if(L"notBetween" == sValue)			this->m_eValue = Operator_notBetween;
+                else if(L"notContains" == sValue)		this->m_eValue = Operator_notContains;
+                else if(L"notEqual" == sValue)			this->m_eValue = Operator_notEqual;
                 return this->m_eValue;
 			}
 
@@ -2896,25 +2907,87 @@ namespace SimpleTypes
 			{
                 switch(this->m_eValue)
 				{
-					case Operator_beginsWith		:	return _T("beginsWith");		break;			
-					case Operator_between			:	return _T("between");			break;
-					case Operator_containsText		:	return _T("containsText");		break;
-					case Operator_endsWith			:	return _T("endsWith");			break;
-					case Operator_equal				:	return _T("equal");				break;
-					case Operator_greaterThan		:	return _T("greaterThan");		break;
-					case Operator_greaterThanOrEqual:	return _T("greaterThanOrEqual");break;
-					case Operator_lessThan			:	return _T("lessThan");			break;
-					case Operator_lessThanOrEqual	:	return _T("lessThanOrEqual");	break;
-					case Operator_notBetween		:	return _T("notBetween");		break;
-					case Operator_notContains		:	return _T("notContains");		break;
-					case Operator_notEqual			:	return _T("notEqual");			break;
-					default							:	return _T("equal");
+					case Operator_beginsWith		:	return L"beginsWith";		break;			
+					case Operator_between			:	return L"between";			break;
+					case Operator_containsText		:	return L"containsText";		break;
+					case Operator_endsWith			:	return L"endsWith";			break;
+					case Operator_equal				:	return L"equal";				break;
+					case Operator_greaterThan		:	return L"greaterThan";		break;
+					case Operator_greaterThanOrEqual:	return L"greaterThanOrEqual";break;
+					case Operator_lessThan			:	return L"lessThan";			break;
+					case Operator_lessThanOrEqual	:	return L"lessThanOrEqual";	break;
+					case Operator_notBetween		:	return L"notBetween";		break;
+					case Operator_notContains		:	return L"notContains";		break;
+					case Operator_notEqual			:	return L"notEqual";			break;
+					default							:	return L"equal";
 				}
 			}
 
 			SimpleType_FromString     (ECfOperator)
 			SimpleType_Operator_Equal (ST_CfOperator)
 		};
+
+                //----------------------------------------------------
+                //	18.18.82 ST_TimePeriod (Conditional Format Value Object Type)
+                //----------------------------------------------------
+                        enum ETimePeriod
+                        {
+                                last7Days					= 0,
+                                lastMonth					= 1,
+                                lastWeek					= 2,
+                                nextMonth					= 3,
+                                nextWeek					= 4,
+                                thisMonth       				= 5,
+                                thisWeek					= 6,
+                                today                                           = 7,
+                                tomorrow                                        = 8,
+                                yesterday                                       = 9
+                        };
+                        template<ETimePeriod eDefValue = last7Days>
+                        class ST_TimePeriod : public CSimpleType<ETimePeriod, eDefValue>
+                        {
+                        public:
+                                ST_TimePeriod() {}
+                                ST_TimePeriod(const ETimePeriod & val)	{ this->m_eValue = val; }
+
+                    virtual ETimePeriod FromString(std::wstring &sValue)
+                                {
+                        if(_T("last7Days") == sValue)			this->m_eValue = last7Days;
+                        else if(_T("lastMonth") == sValue)		this->m_eValue = lastMonth;
+                        else if(_T("lastWeek") == sValue)		this->m_eValue = lastWeek;
+                        else if(_T("nextMonth") == sValue)		this->m_eValue = nextMonth;
+                        else if(_T("nextWeek") == sValue)               this->m_eValue = nextWeek;
+                        else if(_T("thisMonth") == sValue)              this->m_eValue = thisMonth;
+                        else if(_T("thisWeek") == sValue)               this->m_eValue = thisWeek;
+                        else if(_T("today") == sValue)                  this->m_eValue = today;
+                        else if(_T("tomorrow") == sValue)               this->m_eValue = tomorrow;
+                        else if(_T("yesterday") == sValue)              this->m_eValue = yesterday;
+                        else 								this->m_eValue = eDefValue;
+                        return this->m_eValue;
+                                }
+
+                                virtual std::wstring     ToString  () const
+                                {
+                        switch(this->m_eValue)
+                                        {
+                                                case last7Days:	return _T("last7Days");
+                                                case lastMonth:	return _T("lastMonth");
+                                                case lastWeek:	return _T("lastWeek");
+                                                case nextMonth:	return _T("nextMonth");
+                                                case nextWeek:	return _T("nextWeek");
+                                                case thisMonth: return _T("thisMonth");
+                                                case thisWeek:	return _T("thisWeek");
+                                                case today:	return _T("today");
+                                                case tomorrow:	return _T("tomorrow");
+                                                case yesterday:	return _T("yesterday");
+                                                default		:	return _T("num");
+                                        }
+                                }
+
+                                SimpleType_FromString     (ETimePeriod)
+                                SimpleType_Operator_Equal (ST_TimePeriod)
+                        };
+
 	//----------------------------------------------------
 	//	18.18.12 ST_CfType (Conditional Format Type)
 	//----------------------------------------------------
@@ -2948,25 +3021,25 @@ namespace SimpleTypes
 
             virtual ECfType FromString(std::wstring &sValue)
 			{
-                if(_T("aboveAverage") == sValue)			this->m_eValue = aboveAverage;
-                else if(_T("beginsWith") == sValue)			this->m_eValue = beginsWith;
-                else if(_T("cellIs") == sValue)				this->m_eValue = cellIs;
-                else if(_T("colorScale") == sValue)			this->m_eValue = colorScale;
-                else if(_T("containsBlanks") == sValue)		this->m_eValue = containsBlanks;
-                else if(_T("containsText") == sValue)		this->m_eValue = containsText;
-                else if(_T("containsErrors") == sValue)		this->m_eValue = containsErrors;
-                else if(_T("dataBar") == sValue)			this->m_eValue = dataBar;
-                else if(_T("duplicateValues") == sValue)	this->m_eValue = duplicateValues;
-                else if(_T("expression") == sValue)			this->m_eValue = expression;
-                else if(_T("iconSet") == sValue)			this->m_eValue = iconSet;
-                else if(_T("notContainsBlanks") == sValue)	this->m_eValue = notContainsBlanks;
-                else if(_T("notContainsErrors") == sValue)	this->m_eValue = notContainsErrors;
-                else if(_T("notContainsText") == sValue)	this->m_eValue = notContainsText;
-                else if(_T("timePeriod") == sValue)			this->m_eValue = timePeriod;
-                else if(_T("top10") == sValue)				this->m_eValue = top10;
-                else if(_T("uniqueValues") == sValue)		this->m_eValue = uniqueValues;
-                else if(_T("endsWith") == sValue)			this->m_eValue = endsWith;
-                else 										this->m_eValue = eDefValue;
+                if(L"aboveAverage" == sValue)			this->m_eValue = aboveAverage;
+                else if(L"beginsWith" == sValue)		this->m_eValue = beginsWith;
+                else if(L"cellIs" == sValue)			this->m_eValue = cellIs;
+                else if(L"colorScale" == sValue)		this->m_eValue = colorScale;
+                else if(L"containsBlanks" == sValue)	this->m_eValue = containsBlanks;
+                else if(L"containsText" == sValue)		this->m_eValue = containsText;
+                else if(L"containsErrors" == sValue)	this->m_eValue = containsErrors;
+                else if(L"dataBar" == sValue)			this->m_eValue = dataBar;
+                else if(L"duplicateValues" == sValue)	this->m_eValue = duplicateValues;
+                else if(L"expression" == sValue)		this->m_eValue = expression;
+                else if(L"iconSet" == sValue)			this->m_eValue = iconSet;
+                else if(L"notContainsBlanks" == sValue)	this->m_eValue = notContainsBlanks;
+                else if(L"notContainsErrors" == sValue)	this->m_eValue = notContainsErrors;
+                else if(L"notContainsText" == sValue)	this->m_eValue = notContainsText;
+                else if(L"timePeriod" == sValue)		this->m_eValue = timePeriod;
+                else if(L"top10" == sValue)				this->m_eValue = top10;
+                else if(L"uniqueValues" == sValue)		this->m_eValue = uniqueValues;
+                else if(L"endsWith" == sValue)			this->m_eValue = endsWith;
+                else 									this->m_eValue = eDefValue;
                 return this->m_eValue;
 			}
 
@@ -2974,31 +3047,32 @@ namespace SimpleTypes
 			{
                 switch(this->m_eValue)
 				{
-					case aboveAverage		:	return _T("aboveAverage");		break;			
-					case beginsWith			:	return _T("beginsWith");		break;
-					case cellIs				:	return _T("cellIs");			break;
-					case colorScale			:	return _T("colorScale");		break;
-					case containsBlanks		:	return _T("containsBlanks");	break;
-					case containsErrors		:	return _T("containsErrors");	break;
-					case containsText		:	return _T("containsText");		break;
-					case dataBar			:	return _T("dataBar");			break;
-					case duplicateValues	:	return _T("duplicateValues");	break;
-					case expression			:	return _T("expression");		break;
-					case iconSet			:	return _T("iconSet");			break;
-					case notContainsBlanks	:	return _T("notContainsBlanks");	break;
-					case notContainsErrors	:	return _T("notContainsErrors");	break;
-					case notContainsText	:	return _T("notContainsText");	break;
-					case timePeriod			:	return _T("timePeriod");		break;
-					case top10				:	return _T("top10");				break;
-					case uniqueValues		:	return _T("uniqueValues");		break;
-					case endsWith			:	return _T("endsWith");			break;
-					default					:	return _T("dataBar");
+					case aboveAverage		:	return L"aboveAverage";		break;			
+					case beginsWith			:	return L"beginsWith";		break;
+					case cellIs				:	return L"cellIs";			break;
+					case colorScale			:	return L"colorScale";		break;
+					case containsBlanks		:	return L"containsBlanks";	break;
+					case containsErrors		:	return L"containsErrors";	break;
+					case containsText		:	return L"containsText";		break;
+					case dataBar			:	return L"dataBar";			break;
+					case duplicateValues	:	return L"duplicateValues";	break;
+					case expression			:	return L"expression";		break;
+					case iconSet			:	return L"iconSet";			break;
+					case notContainsBlanks	:	return L"notContainsBlanks";break;
+					case notContainsErrors	:	return L"notContainsErrors";break;
+					case notContainsText	:	return L"notContainsText";	break;
+					case timePeriod			:	return L"timePeriod";		break;
+					case top10				:	return L"top10";			break;
+					case uniqueValues		:	return L"uniqueValues";		break;
+					case endsWith			:	return L"endsWith";			break;
+					default					:	return L"dataBar";
 				}
 			}
 
 			SimpleType_FromString     (ECfType)
 			SimpleType_Operator_Equal (ST_CfType)
 		};
+
 	//----------------------------------------------------
 	//	18.18.13 ST_CfvoType (Conditional Format Value Object Type)
 	//----------------------------------------------------
@@ -3022,15 +3096,15 @@ namespace SimpleTypes
 
             virtual ECfvoType FromString(std::wstring &sValue)
 			{
-                if(_T("formula") == sValue)			this->m_eValue = Formula;
-                else if(_T("max") == sValue)		this->m_eValue = Maximum;
-                else if(_T("min") == sValue)		this->m_eValue = Minimum;
-                else if(_T("num") == sValue)		this->m_eValue = Number;
-                else if(_T("percent") == sValue)	this->m_eValue = Percent;
-                else if(_T("percentile") == sValue)	this->m_eValue = Percentile;
-				else if(_T("autoMin") == sValue)	this->m_eValue = autoMin;
-                else if(_T("autoMax") == sValue)	this->m_eValue = autoMax;
-               else 								this->m_eValue = eDefValue;
+                if(L"formula" == sValue)		this->m_eValue = Formula;
+                else if(L"max" == sValue)		this->m_eValue = Maximum;
+                else if(L"min" == sValue)		this->m_eValue = Minimum;
+                else if(L"num" == sValue)		this->m_eValue = Number;
+                else if(L"percent" == sValue)	this->m_eValue = Percent;
+                else if(L"percentile" == sValue)this->m_eValue = Percentile;
+				else if(L"autoMin" == sValue)	this->m_eValue = autoMin;
+                else if(L"autoMax" == sValue)	this->m_eValue = autoMax;
+               else 							this->m_eValue = eDefValue;
                 return this->m_eValue;
 			}
 
@@ -3038,15 +3112,15 @@ namespace SimpleTypes
 			{
                 switch(this->m_eValue)
 				{
-					case Formula:	return _T("formula");
-					case Maximum:	return _T("max");		
-					case Minimum:	return _T("min");
-					case Number:	return _T("num");	
-					case Percent:	return _T("percent");
-					case Percentile:return _T("percentile");
-					case autoMin:	return _T("autoMin");
-					case autoMax:	return _T("autoMax");
-					default		:	return _T("num");
+					case Formula:	return L"formula";
+					case Maximum:	return L"max";		
+					case Minimum:	return L"min";
+					case Number:	return L"num";	
+					case Percent:	return L"percent";
+					case Percentile:return L"percentile";
+					case autoMin:	return L"autoMin";
+					case autoMax:	return L"autoMax";
+					default		:	return L"num";
 				}
 			}
 
@@ -3069,10 +3143,10 @@ namespace SimpleTypes
 
             virtual ESparklineType FromString(std::wstring &sValue)
             {
-                if(_T("line") == sValue)			this->m_eValue = Line;
-                else if(_T("column") == sValue)		this->m_eValue = Column;
-                else if(_T("stacked") == sValue)	this->m_eValue = Stacked;
-                else 								this->m_eValue = eDefValue;
+                if(L"line" == sValue)			this->m_eValue = Line;
+                else if(L"column" == sValue)	this->m_eValue = Column;
+                else if(L"stacked" == sValue)	this->m_eValue = Stacked;
+                else 							this->m_eValue = eDefValue;
                 return this->m_eValue;
             }
 
@@ -3080,10 +3154,10 @@ namespace SimpleTypes
             {
                 switch(this->m_eValue)
                 {
-                    case Line:	return _T("line");		break;
-                    case Column:	return _T("column");			break;
-                    case Stacked:	return _T("stacked");			break;
-                    default		:	return _T("line");
+                    case Line:		return L"line";		break;
+                    case Column:	return L"column";	break;
+                    case Stacked:	return L"stacked";	break;
+                    default		:	return L"line";
                 }
             }
 
@@ -3093,7 +3167,7 @@ namespace SimpleTypes
 
         enum ESparklineAxisMinMax
         {
-            Individual					= 0,
+            Individual				= 0,
             Group					= 1,
             Custom					= 2
         };
@@ -3106,9 +3180,9 @@ namespace SimpleTypes
 
             virtual ESparklineAxisMinMax FromString(std::wstring &sValue)
             {
-                if(_T("individual") == sValue)			this->m_eValue = Individual;
-                else if(_T("group") == sValue)		this->m_eValue = Group;
-                else if(_T("custom") == sValue)	this->m_eValue = Custom;
+                if(L"individual" == sValue)			this->m_eValue = Individual;
+                else if(L"group" == sValue)		this->m_eValue = Group;
+                else if(L"custom" == sValue)	this->m_eValue = Custom;
                 else 								this->m_eValue = eDefValue;
                 return this->m_eValue;
             }
@@ -3117,10 +3191,10 @@ namespace SimpleTypes
             {
                 switch(this->m_eValue)
                 {
-                    case Individual: return _T("individual");		break;
-                    case Group:	return _T("group");			break;
-                    case Custom: return _T("custom");			break;
-                    default: return _T("individual");
+                    case Individual: return L"individual";	break;
+                    case Group:	return L"group";			break;
+                    case Custom: return L"custom";			break;
+                    default: return L"individual";
                 }
             }
 
@@ -3141,8 +3215,8 @@ namespace SimpleTypes
 
             virtual EDvAspect FromString(std::wstring &sValue)
 			{
-				if(_T("DVASPECT_CONTENT") == sValue)			this->m_eValue = Content;
-				else if(_T("DVASPECT_ICON") == sValue)		this->m_eValue = Icon;
+				if(L"DVASPECT_CONTENT" == sValue)	this->m_eValue = Content;
+				else if(L"DVASPECT_ICON" == sValue)	this->m_eValue = Icon;
 				else 								this->m_eValue = eDefValue;
 				return this->m_eValue;
 			}
@@ -3151,9 +3225,9 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-					case Content: return _T("DVASPECT_CONTENT");		break;
-					case Icon:	return _T("DVASPECT_ICON");			break;
-					default: return _T("DVASPECT_CONTENT");
+					case Content: return L"DVASPECT_CONTENT";		break;
+					case Icon:	return L"DVASPECT_ICON";			break;
+					default: return L"DVASPECT_CONTENT";
 				}
 			}
 
@@ -3162,8 +3236,8 @@ namespace SimpleTypes
 		};
 		enum EOleUpdate
 		{
-			Always					= 0,
-			OnCall					= 1
+			Always = 0,
+			OnCall = 1
 		};
 		template<EOleUpdate eDefValue = Always>
 		class ST_OleUpdate : public CSimpleType<EOleUpdate, eDefValue>
@@ -3174,9 +3248,9 @@ namespace SimpleTypes
 
             virtual EOleUpdate FromString(std::wstring &sValue)
 			{
-				if(_T("OLEUPDATE_ALWAYS") == sValue)			this->m_eValue = Always;
-				else if(_T("OLEUPDATE_ONCALL") == sValue)		this->m_eValue = OnCall;
-				else 								this->m_eValue = eDefValue;
+				if(L"OLEUPDATE_ALWAYS" == sValue) this->m_eValue = Always;
+				else if(L"OLEUPDATE_ONCALL" == sValue) this->m_eValue = OnCall;
+				else this->m_eValue = eDefValue;
 				return this->m_eValue;
 			}
 
@@ -3184,9 +3258,9 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-					case Always: return _T("OLEUPDATE_ALWAYS");		break;
-					case OnCall:	return _T("OLEUPDATE_ONCALL");			break;
-					default: return _T("OLEUPDATE_ALWAYS");
+					case Always: return L"OLEUPDATE_ALWAYS"; break;
+					case OnCall: return L"OLEUPDATE_ONCALL"; break;
+					default: return L"OLEUPDATE_ALWAYS";
 				}
 			}
 
@@ -3211,11 +3285,11 @@ namespace SimpleTypes
 
             virtual EActivePane FromString(std::wstring &sValue)
 			{
-				if      ( _T("bottomLeft") == sValue ) this->m_eValue = activepaneBottomLeft;
-				else if ( _T("bottomRight")  == sValue ) this->m_eValue = activepaneBottomRight;
-				else if ( _T("topLeft")  == sValue ) this->m_eValue = activepaneTopLeft;
-				else if ( _T("topRight")  == sValue ) this->m_eValue = activepaneTopRight;
-				else                                  this->m_eValue = eDefValue;
+				if      ( L"bottomLeft" == sValue ) this->m_eValue = activepaneBottomLeft;
+				else if ( L"bottomRight" ==  sValue ) this->m_eValue = activepaneBottomRight;
+				else if ( L"topLeft" ==  sValue ) this->m_eValue = activepaneTopLeft;
+				else if ( L"topRight" ==  sValue ) this->m_eValue = activepaneTopRight;
+				else this->m_eValue = eDefValue;
 
 				return this->m_eValue;
 			}
@@ -3224,11 +3298,11 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-				case activepaneBottomLeft : return _T("bottomLeft");
-				case activepaneBottomRight  : return _T("bottomRight");
-				case activepaneTopLeft  : return _T("topLeft");
-				case activepaneTopRight  : return _T("topRight");
-				default                  : return _T("topLeft");
+				case activepaneBottomLeft : return L"bottomLeft";
+				case activepaneBottomRight  : return L"bottomRight";
+				case activepaneTopLeft  : return L"topLeft";
+				case activepaneTopRight  : return L"topRight";
+				default : return L"topLeft";
 				}
 			}
 
@@ -3252,9 +3326,9 @@ namespace SimpleTypes
 
             virtual EPaneState FromString(std::wstring &sValue)
 			{
-				if      ( _T("frozen") == sValue ) this->m_eValue = panestateFrozen;
-				else if ( _T("frozenSplit")  == sValue ) this->m_eValue = panestateFrozenSplit;
-				else if ( _T("split")  == sValue ) this->m_eValue = panestateSplit;
+				if      ( L"frozen" == sValue ) this->m_eValue = panestateFrozen;
+				else if ( L"frozenSplit" ==  sValue ) this->m_eValue = panestateFrozenSplit;
+				else if ( L"split" ==  sValue ) this->m_eValue = panestateSplit;
 				else                                  this->m_eValue = eDefValue;
 
 				return this->m_eValue;
@@ -3264,10 +3338,10 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-				case panestateFrozen : return _T("frozen");
-				case panestateFrozenSplit  : return _T("frozenSplit");
-				case panestateSplit  : return _T("split");
-				default                  : return _T("frozen");
+				case panestateFrozen : return L"frozen";
+				case panestateFrozenSplit  : return L"frozenSplit";
+				case panestateSplit  : return L"split";
+				default : return L"frozen";
 				}
 			}
 
@@ -3293,12 +3367,12 @@ namespace SimpleTypes
 
 			virtual EDdeValueType FromString(std::wstring &sValue)
 			{
-				if      ( _T("nil") == sValue ) this->m_eValue = ddevaluetypeNil;
-				else if ( _T("b")  == sValue ) this->m_eValue = ddevaluetypeB;
-				else if ( _T("n")  == sValue ) this->m_eValue = ddevaluetypeN;
-				else if ( _T("e")  == sValue ) this->m_eValue = ddevaluetypeE;
-				else if ( _T("str")  == sValue ) this->m_eValue = ddevaluetypeStr;
-				else                                  this->m_eValue = eDefValue;
+				if      ( L"nil" == sValue ) this->m_eValue = ddevaluetypeNil;
+				else if ( L"b" ==  sValue ) this->m_eValue = ddevaluetypeB;
+				else if ( L"n" ==  sValue ) this->m_eValue = ddevaluetypeN;
+				else if ( L"e" ==  sValue ) this->m_eValue = ddevaluetypeE;
+				else if ( L"str" ==  sValue ) this->m_eValue = ddevaluetypeStr;
+				else this->m_eValue = eDefValue;
 				return this->m_eValue;
 			}
 
@@ -3306,12 +3380,12 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-				case ddevaluetypeNil : return _T("nil");
-				case ddevaluetypeB  : return _T("b");
-				case ddevaluetypeN  : return _T("n");
-				case ddevaluetypeE  : return _T("e");
-				case ddevaluetypeStr  : return _T("str");
-				default                  : return _T("nil");
+				case ddevaluetypeNil : return L"nil";
+				case ddevaluetypeB  : return L"b";
+				case ddevaluetypeN  : return L"n";
+				case ddevaluetypeE  : return L"e";
+				case ddevaluetypeStr  : return L"str";
+				default : return L"nil";
 				}
 			}
 
@@ -3335,22 +3409,22 @@ namespace SimpleTypes
 
 			virtual ECalcMode FromString(std::wstring &sValue)
 			{
-				if      ( _T("auto")      == sValue ) this->m_eValue = calcmodeAuto;
-				else if ( _T("autoNoTable")  == sValue ) this->m_eValue = calcmodeAutoNoTable;
-				else if ( _T("manual")     == sValue ) this->m_eValue = calcmodeManual;
-				else                                    this->m_eValue = eDefValue;
+				if      ( L"auto"      == sValue ) this->m_eValue = calcmodeAuto;
+				else if ( L"autoNoTable" ==  sValue ) this->m_eValue = calcmodeAutoNoTable;
+				else if ( L"manual"     == sValue ) this->m_eValue = calcmodeManual;
+				else this->m_eValue = eDefValue;
 
 				return this->m_eValue;
 			}
 
-			virtual std::wstring       ToString  () const
+			virtual std::wstring  ToString  () const
 			{
 				switch(this->m_eValue)
 				{
-				case calcmodeAuto : return _T("auto");break;
-				case calcmodeAutoNoTable : return _T("autoNoTable");break;
-				case calcmodeManual : return _T("manual");break;
-				default : return _T("auto");
+				case calcmodeAuto : return L"auto";break;
+				case calcmodeAutoNoTable : return L"autoNoTable";break;
+				case calcmodeManual : return L"manual";break;
+				default : return L"auto";
 
 				}
 			}
@@ -3374,20 +3448,20 @@ namespace SimpleTypes
 
 			virtual ERefMode FromString(std::wstring &sValue)
 			{
-				if      ( _T("A1")    == sValue ) this->m_eValue = refmodeA1;
-				else if ( _T("R1C1")  == sValue ) this->m_eValue = refmodeR1C1;
-				else                              this->m_eValue = eDefValue;
+				if      ( L"A1"  == sValue ) this->m_eValue = refmodeA1;
+				else if ( L"R1C1" ==  sValue ) this->m_eValue = refmodeR1C1;
+				else this->m_eValue = eDefValue;
 
 				return this->m_eValue;
 			}
 
-			virtual std::wstring       ToString  () const
+			virtual std::wstring ToString  () const
 			{
 				switch(this->m_eValue)
 				{
-				case refmodeA1 : return _T("A1");break;
-				case refmodeR1C1 : return _T("R1C1");break;
-				default : return _T("A1");
+				case refmodeA1 : return L"A1";break;
+				case refmodeR1C1 : return L"R1C1";break;
+				default : return L"A1";
 
 				}
 			}
@@ -3413,7 +3487,7 @@ namespace SimpleTypes
 
             virtual EDoubleOrAutomatic FromString(std::wstring &sValue)
 			{
-				if(_T("auto") == sValue)
+				if(L"auto" == sValue)
 				{
                     this->m_eValue = typeAuto;
 					m_dValue = 0;
@@ -3433,7 +3507,7 @@ namespace SimpleTypes
 			{
                 switch(this->m_eValue)
 				{
-					case typeAuto : return _T("auto");break;
+					case typeAuto : return L"auto";break;
 					case typeDouble :
 					default: 
 					{
@@ -3466,15 +3540,15 @@ namespace SimpleTypes
 
 			virtual ESeriesLayout FromString(std::wstring &sValue)
 			{
-				if      ( _T("boxWhisker")		== sValue )	this->m_eValue = typeSeriesLayoutBoxWhisker;
-				else if ( _T("clusteredColumn")	== sValue ) this->m_eValue = typeSeriesLayoutClusteredColumn;
-				else if ( _T("funnel")			== sValue ) this->m_eValue = typeSeriesLayoutFunnel;
-				else if ( _T("paretoLine")		== sValue ) this->m_eValue = typeSeriesLayoutParetoLine;
-				else if ( _T("regionMap")		== sValue ) this->m_eValue = typeSeriesLayoutRegionMap;
-				else if ( _T("sunburst")		== sValue ) this->m_eValue = typeSeriesLayoutSunburst;
-				else if ( _T("treemap")			== sValue ) this->m_eValue = typeSeriesLayoutTreemap;
-				else if ( _T("waterfall")		== sValue ) this->m_eValue = typeSeriesLayoutWaterfall;
-				else										this->m_eValue = eDefValue;
+				if      ( L"boxWhisker" ==  sValue ) this->m_eValue = typeSeriesLayoutBoxWhisker;
+				else if ( L"clusteredColumn" == sValue ) this->m_eValue = typeSeriesLayoutClusteredColumn;
+				else if ( L"funnel" ==  sValue ) this->m_eValue = typeSeriesLayoutFunnel;
+				else if ( L"paretoLine" ==  sValue ) this->m_eValue = typeSeriesLayoutParetoLine;
+				else if ( L"regionMap" ==  sValue ) this->m_eValue = typeSeriesLayoutRegionMap;
+				else if ( L"sunburst" ==  sValue ) this->m_eValue = typeSeriesLayoutSunburst;
+				else if ( L"treemap" ==  sValue ) this->m_eValue = typeSeriesLayoutTreemap;
+				else if ( L"waterfall" ==  sValue ) this->m_eValue = typeSeriesLayoutWaterfall;
+				else this->m_eValue = eDefValue;
 
 				return this->m_eValue;
 			}
@@ -3483,15 +3557,15 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-					case typeSeriesLayoutBoxWhisker :		return _T("boxWhisker");break;
-					case typeSeriesLayoutClusteredColumn :	return _T("clusteredColumn");break;
-					case typeSeriesLayoutFunnel:			return _T("funnel");	break;
-					case typeSeriesLayoutParetoLine :		return _T("paretoLine");break;
-					case typeSeriesLayoutRegionMap :		return _T("regionMap");	break;
-					case typeSeriesLayoutSunburst :			return _T("sunburst");	break;
-					case typeSeriesLayoutTreemap :			return _T("treemap");	break;
-					case typeSeriesLayoutWaterfall :		return _T("waterfall");	break;
-					default : return _T("auto");
+					case typeSeriesLayoutBoxWhisker :		return L"boxWhisker";break;
+					case typeSeriesLayoutClusteredColumn :	return L"clusteredColumn";break;
+					case typeSeriesLayoutFunnel:			return L"funnel";	break;
+					case typeSeriesLayoutParetoLine :		return L"paretoLine";break;
+					case typeSeriesLayoutRegionMap :		return L"regionMap";	break;
+					case typeSeriesLayoutSunburst :			return L"sunburst";	break;
+					case typeSeriesLayoutTreemap :			return L"treemap";	break;
+					case typeSeriesLayoutWaterfall :		return L"waterfall";	break;
+					default : return L"auto";
 				}
 			}
 
@@ -3522,17 +3596,17 @@ namespace SimpleTypes
 
 			virtual EAxisUnit FromString(std::wstring &sValue)
 			{
-				if      ( _T("hundreds")		== sValue )	this->m_eValue = unitHundreds;
-				else if ( _T("thousands")		== sValue ) this->m_eValue = unitThousands;
-				else if ( _T("tenThousands")	== sValue ) this->m_eValue = unitTenThousands;
-				else if ( _T("hundredThousands")== sValue ) this->m_eValue = unitHundredThousands;
-				else if ( _T("millions")		== sValue ) this->m_eValue = unitMillions;
-				else if ( _T("tenMillions")		== sValue ) this->m_eValue = unitTenMillions;
-				else if ( _T("hundredMillions")	== sValue ) this->m_eValue = unitHundredMillions;
-				else if ( _T("billions")		== sValue ) this->m_eValue = unitBillions;
-				else if ( _T("trillions")		== sValue ) this->m_eValue = unitTrillions;
-				else if ( _T("percentage")		== sValue ) this->m_eValue = unitPercentage;
-				else										this->m_eValue = eDefValue;
+				if      ( L"hundreds" ==  sValue )	this->m_eValue = unitHundreds;
+				else if ( L"thousands" ==  sValue ) this->m_eValue = unitThousands;
+				else if ( L"tenThousands" == sValue ) this->m_eValue = unitTenThousands;
+				else if ( L"hundredThousands" ==  sValue ) this->m_eValue = unitHundredThousands;
+				else if ( L"millions" ==  sValue ) this->m_eValue = unitMillions;
+				else if ( L"tenMillions" ==  sValue ) this->m_eValue = unitTenMillions;
+				else if ( L"hundredMillions" == sValue ) this->m_eValue = unitHundredMillions;
+				else if ( L"billions" ==  sValue ) this->m_eValue = unitBillions;
+				else if ( L"trillions" ==  sValue ) this->m_eValue = unitTrillions;
+				else if ( L"percentage" ==  sValue ) this->m_eValue = unitPercentage;
+				else this->m_eValue = eDefValue;
 
 				return this->m_eValue;
 			}
@@ -3541,17 +3615,17 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-					case unitHundreds :			return _T("hundreds");		break;
-					case unitThousands :		return _T("thousands");		break;
-					case unitTenThousands:		return _T("tenThousands");	break;
-					case unitHundredThousands :	return _T("hundredThousands");break;
-					case unitMillions :			return _T("millions");		break;
-					case unitTenMillions :		return _T("tenMillions");	break;
-					case unitHundredMillions :	return _T("hundredMillions");break;
-					case unitBillions :			return _T("billions");		break;
-					case unitTrillions :		return _T("trillions");		break;
-					case unitPercentage :		return _T("percentage");	break;
-					default : return _T("");
+					case unitHundreds :			return L"hundreds";		break;
+					case unitThousands :		return L"thousands";		break;
+					case unitTenThousands:		return L"tenThousands";	break;
+					case unitHundredThousands :	return L"hundredThousands";break;
+					case unitMillions :			return L"millions";		break;
+					case unitTenMillions :		return L"tenMillions";	break;
+					case unitHundredMillions :	return L"hundredMillions";break;
+					case unitBillions :			return L"billions";		break;
+					case unitTrillions :		return L"trillions";		break;
+					case unitPercentage :		return L"percentage";	break;
+					default : return L"";
 				}
 			}
 
@@ -3577,14 +3651,14 @@ namespace SimpleTypes
 
 			virtual EDimensionType FromString(std::wstring &sValue)
 			{
-				if      ( _T("val")		== sValue )	this->m_eValue = typeDimensionVal;
-				else if ( _T("x")		== sValue ) this->m_eValue = typeDimensionX;
-				else if ( _T("y")		== sValue ) this->m_eValue = typeDimensionY;
-				else if ( _T("size")	== sValue ) this->m_eValue = typeDimensionSize;
-				else if ( _T("colorVal")== sValue ) this->m_eValue = typeDimensionColorVal;
-				else if ( _T("cat")		== sValue ) this->m_eValue = typeDimensionCat;
-				else if ( _T("colorStr")== sValue ) this->m_eValue = typeDimensionColorStr;
-				else								this->m_eValue = eDefValue;
+				if      ( L"val" ==  sValue )	this->m_eValue = typeDimensionVal;
+				else if ( L"x" ==  sValue ) this->m_eValue = typeDimensionX;
+				else if ( L"y" ==  sValue ) this->m_eValue = typeDimensionY;
+				else if ( L"size" == sValue ) this->m_eValue = typeDimensionSize;
+				else if ( L"colorVal" ==  sValue ) this->m_eValue = typeDimensionColorVal;
+				else if ( L"cat" ==  sValue ) this->m_eValue = typeDimensionCat;
+				else if ( L"colorStr" ==  sValue ) this->m_eValue = typeDimensionColorStr;
+				else this->m_eValue = eDefValue;
 				return this->m_eValue;
 			}
 
@@ -3592,14 +3666,14 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-					case typeDimensionVal :		return _T("val");	
-					case typeDimensionX :		return _T("x");		
-					case typeDimensionY:		return _T("y");		
-					case typeDimensionSize :	return _T("size");	
-					case typeDimensionColorVal :return _T("colorVal");
-					case typeDimensionCat :		return _T("cat");
-					case typeDimensionColorStr :return _T("colorStr");
-					default : return _T("");
+					case typeDimensionVal :		return L"val";	
+					case typeDimensionX :		return L"x";		
+					case typeDimensionY:		return L"y";		
+					case typeDimensionSize :	return L"size";	
+					case typeDimensionColorVal :return L"colorVal";
+					case typeDimensionCat :		return L"cat";
+					case typeDimensionColorStr :return L"colorStr";
+					default : return L"";
 				}
 			}
 
@@ -3620,7 +3694,7 @@ namespace SimpleTypes
 
             virtual EFormulaDirection FromString(std::wstring &sValue)
 			{
-                if(_T("row") == sValue) this->m_eValue = directionRow;
+                if(L"row" == sValue) this->m_eValue = directionRow;
                 else                    this->m_eValue = directionCol;
                 return this->m_eValue;
 			}
@@ -3628,11 +3702,11 @@ namespace SimpleTypes
 			{
                 switch(this->m_eValue)
 				{
-					case directionRow : return _T("row");
+					case directionRow : return L"row";
 					case directionCol :
 					default: 
 					{
-						return _T("col");
+						return L"col";
 					}break;
 				}
 			}
@@ -3656,10 +3730,10 @@ namespace SimpleTypes
 
 			virtual ESidePos FromString(std::wstring &sValue)
 			{
-				if      ( _T("t")	== sValue )	this->m_eValue = sideTop;
-				else if ( _T("l")	== sValue ) this->m_eValue = sideLeft;
-				else if ( _T("r")	== sValue ) this->m_eValue = sideRight;
-				else if ( _T("b")	== sValue ) this->m_eValue = sideBottom;
+				if      ( L"t" == sValue )	this->m_eValue = sideTop;
+				else if ( L"l" == sValue ) this->m_eValue = sideLeft;
+				else if ( L"r" == sValue ) this->m_eValue = sideRight;
+				else if ( L"b" == sValue ) this->m_eValue = sideBottom;
 				else							this->m_eValue = eDefValue;
 				return this->m_eValue;
 			}
@@ -3668,11 +3742,11 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-					case sideLeft :		return _T("l");	
-					case sideRight:		return _T("r");	
-					case sideBottom :	return _T("b");	
+					case sideLeft :		return L"l";	
+					case sideRight:		return L"r";	
+					case sideBottom :	return L"b";	
 					case sideTop :		
-					default : return _T("t");
+					default : return L"t";
 				}
 			}
 
@@ -3694,9 +3768,9 @@ namespace SimpleTypes
 
 			virtual EPosAlign FromString(std::wstring &sValue)
 			{
-				if      ( _T("min")	== sValue )	this->m_eValue = posAlignMin;
-				else if ( _T("max")	== sValue ) this->m_eValue = posAlignMax;
-				else if ( _T("ctr")	== sValue ) this->m_eValue = posAlignCtr;
+				if      ( L"min" == sValue )	this->m_eValue = posAlignMin;
+				else if ( L"max" == sValue ) this->m_eValue = posAlignMax;
+				else if ( L"ctr" == sValue ) this->m_eValue = posAlignCtr;
 				else							this->m_eValue = eDefValue;
 				return this->m_eValue;
 			}
@@ -3705,10 +3779,10 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-					case posAlignMax :	return _T("max");
-					case posAlignMin:	return _T("min");
+					case posAlignMax :	return L"max";
+					case posAlignMin:	return L"min";
 					case posAlignCtr :	
-					default :			return _T("ctr");
+					default :			return L"ctr";
 				}
 			}
 
@@ -3730,9 +3804,9 @@ namespace SimpleTypes
 
 			virtual ERegionLabelLayout FromString(std::wstring &sValue)
 			{
-				if      ( _T("none")		== sValue )	this->m_eValue = layoutNone;
-				else if ( _T("bestFitOnly")	== sValue ) this->m_eValue = layoutBestFitOnly;
-				else if ( _T("showAll")		== sValue ) this->m_eValue = layoutShowAll;
+				if      ( L"none" ==  sValue )	this->m_eValue = layoutNone;
+				else if ( L"bestFitOnly" == sValue ) this->m_eValue = layoutBestFitOnly;
+				else if ( L"showAll" ==  sValue ) this->m_eValue = layoutShowAll;
 				else									this->m_eValue = eDefValue;
 				return this->m_eValue;
 			}
@@ -3741,10 +3815,10 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-					case layoutNone :		return _T("none");
-					case layoutBestFitOnly:	return _T("bestFitOnly");
+					case layoutNone :		return L"none";
+					case layoutBestFitOnly:	return L"bestFitOnly";
 					case layoutShowAll :	
-					default :				return _T("showAll");
+					default :				return L"showAll";
 				}
 			}
 
@@ -3766,9 +3840,9 @@ namespace SimpleTypes
 
 			virtual EParentLabelLayout FromString(std::wstring &sValue)
 			{
-				if      ( _T("none")		== sValue )	this->m_eValue = layoutNone_;
-				else if ( _T("banner")		== sValue ) this->m_eValue = layoutBanner;
-				else if ( _T("overlapping")	== sValue ) this->m_eValue = layoutOverlapping;
+				if      ( L"none" ==  sValue )	this->m_eValue = layoutNone_;
+				else if ( L"banner" ==  sValue ) this->m_eValue = layoutBanner;
+				else if ( L"overlapping" == sValue ) this->m_eValue = layoutOverlapping;
 				else									this->m_eValue = eDefValue;
 				return this->m_eValue;
 			}
@@ -3777,10 +3851,10 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-					case layoutNone_ :		return _T("none");
-					case layoutOverlapping:	return _T("banner");
+					case layoutNone_ :		return L"none";
+					case layoutOverlapping:	return L"banner";
 					case layoutBanner :	
-					default :				return _T("overlapping");
+					default :				return L"overlapping";
 				}
 			}
 
@@ -3802,8 +3876,8 @@ namespace SimpleTypes
 
 			virtual EQuartileMethod FromString(std::wstring &sValue)
 			{
-				if      ( _T("inclusive")	== sValue )	this->m_eValue = methodInclusive;
-				else if ( _T("exclusive")	== sValue ) this->m_eValue = methodExclusive;
+				if      ( L"inclusive" == sValue )	this->m_eValue = methodInclusive;
+				else if ( L"exclusive" == sValue ) this->m_eValue = methodExclusive;
 				else									this->m_eValue = eDefValue;
 				return this->m_eValue;
 			}
@@ -3812,9 +3886,9 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-					case methodInclusive :	return _T("inclusive");
+					case methodInclusive :	return L"inclusive";
 					case methodExclusive:	
-					default :				return _T("exclusive");
+					default :				return L"exclusive";
 				}
 			}
 
@@ -3844,15 +3918,15 @@ namespace SimpleTypes
 
 			virtual EDataLabelPos FromString(std::wstring &sValue)
 			{
-				if      ( _T("bestFit")	== sValue )	this->m_eValue = posBestFit;
-				else if ( _T("b")		== sValue ) this->m_eValue = posBottom;
-				else if ( _T("ctr")		== sValue ) this->m_eValue = posCtr;
-				else if ( _T("inBase")	== sValue ) this->m_eValue = posInBase;
-				else if ( _T("inEnd")	== sValue ) this->m_eValue = posInEnd;
-				else if ( _T("l")		== sValue ) this->m_eValue = posLeft;
-				else if ( _T("outEnd")	== sValue ) this->m_eValue = posOutEnd;
-				else if ( _T("r")		== sValue ) this->m_eValue = posRight;
-				else if ( _T("t")		== sValue ) this->m_eValue = posTop;
+				if      ( L"bestFit" == sValue )	this->m_eValue = posBestFit;
+				else if ( L"b" ==  sValue ) this->m_eValue = posBottom;
+				else if ( L"ctr" ==  sValue ) this->m_eValue = posCtr;
+				else if ( L"inBase" == sValue ) this->m_eValue = posInBase;
+				else if ( L"inEnd" == sValue ) this->m_eValue = posInEnd;
+				else if ( L"l" ==  sValue ) this->m_eValue = posLeft;
+				else if ( L"outEnd" == sValue ) this->m_eValue = posOutEnd;
+				else if ( L"r" ==  sValue ) this->m_eValue = posRight;
+				else if ( L"t" ==  sValue ) this->m_eValue = posTop;
 				else								this->m_eValue = eDefValue;
 				return this->m_eValue;
 			}
@@ -3861,16 +3935,16 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-					case posBottom :	return _T("b");
-					case posCtr :		return _T("ctr");
-					case posInBase :	return _T("inBase");
-					case posInEnd :		return _T("inEnd");
-					case posLeft :		return _T("l");
-					case posOutEnd :	return _T("outEnd");
-					case posRight :		return _T("r");
-					case posTop :		return _T("t");
+					case posBottom :	return L"b";
+					case posCtr :		return L"ctr";
+					case posInBase :	return L"inBase";
+					case posInEnd :		return L"inEnd";
+					case posLeft :		return L"l";
+					case posOutEnd :	return L"outEnd";
+					case posRight :		return L"r";
+					case posTop :		return L"t";
 					case posBestFit:	
-					default :			return _T("bestFit");
+					default :			return L"bestFit";
 				}
 			}
 
@@ -3887,8 +3961,8 @@ namespace SimpleTypes
 
 			virtual ESidePos FromString(std::wstring &sValue)
 			{
-				if      ( _T("l")	== sValue )	this->m_eValue = sideLeft;
-				else if ( _T("r")	== sValue ) this->m_eValue = sideRight;
+				if      ( L"l" == sValue )	this->m_eValue = sideLeft;
+				else if ( L"r" == sValue ) this->m_eValue = sideRight;
 				else							this->m_eValue = eDefValue;
 				return this->m_eValue;
 			}
@@ -3897,9 +3971,9 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-					case sideRight:	return _T("r");
+					case sideRight:	return L"r";
 					case sideLeft :	
-					default :		return _T("l");		
+					default :		return L"l";		
 				}
 			}
 
@@ -3924,10 +3998,10 @@ namespace SimpleTypes
 
 			virtual ETickMarksType FromString(std::wstring &sValue)
 			{
-				if      ( _T("none")	== sValue )	this->m_eValue = marksTypeNone;
-				else if ( _T("out")		== sValue ) this->m_eValue = marksTypeOut;
-				else if ( _T("in")		== sValue ) this->m_eValue = marksTypeIn;
-				else if ( _T("cross")	== sValue ) this->m_eValue = marksTypeCross;
+				if      ( L"none" == sValue )	this->m_eValue = marksTypeNone;
+				else if ( L"out" ==  sValue ) this->m_eValue = marksTypeOut;
+				else if ( L"in" ==  sValue ) this->m_eValue = marksTypeIn;
+				else if ( L"cross" == sValue ) this->m_eValue = marksTypeCross;
 				else								this->m_eValue = eDefValue;
 				return this->m_eValue;
 			}
@@ -3936,11 +4010,11 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-					case marksTypeIn	:	return _T("in");
-					case marksTypeOut	:	return _T("out");
-					case marksTypeCross :	return _T("cross");
+					case marksTypeIn	:	return L"in";
+					case marksTypeOut	:	return L"out";
+					case marksTypeCross :	return L"cross";
 					case marksTypeNone:	
-					default :			return _T("none");
+					default :			return L"none";
 				}
 			}
 
@@ -3963,10 +4037,10 @@ namespace SimpleTypes
 
 			virtual ESourceCacheType FromString(std::wstring &sValue)
 			{
-				if      ( _T("consolidation")	== sValue )	this->m_eValue = typeSourceConsolidation;
-				else if ( _T("external")		== sValue ) this->m_eValue = typeSourceExternal;
-				else if ( _T("scenario")		== sValue ) this->m_eValue = typeSourceScenario;
-				else if ( _T("worksheet")		== sValue ) this->m_eValue = typeSourceWorksheet;
+				if      ( L"consolidation" == sValue )	this->m_eValue = typeSourceConsolidation;
+				else if ( L"external" ==  sValue ) this->m_eValue = typeSourceExternal;
+				else if ( L"scenario" ==  sValue ) this->m_eValue = typeSourceScenario;
+				else if ( L"worksheet" ==  sValue ) this->m_eValue = typeSourceWorksheet;
 
 				return this->m_eValue;
 			}
@@ -3974,11 +4048,11 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-					case typeSourceConsolidation:	return _T("consolidation");
-					case typeSourceExternal:		return _T("external");
-					case typeSourceScenario:		return _T("scenario");
-					case typeSourceWorksheet:		return _T("worksheet");
-					default :						return _T("worksheet");
+					case typeSourceConsolidation:	return L"consolidation";
+					case typeSourceExternal:		return L"external";
+					case typeSourceScenario:		return L"scenario";
+					case typeSourceWorksheet:		return L"worksheet";
+					default :						return L"worksheet";
 				}
 			}
 			SimpleType_FromString     (ESourceCacheType)
@@ -4004,14 +4078,14 @@ namespace SimpleTypes
 
 			virtual EValuesGroupBy FromString(std::wstring &sValue)
 			{
-				if      ( _T("days")	== sValue )	this->m_eValue = groupByDays;
-				else if ( _T("hours")	== sValue ) this->m_eValue = groupByHours;
-				else if ( _T("minutes")	== sValue ) this->m_eValue = groupByMinutes;
-				else if ( _T("months")	== sValue ) this->m_eValue = groupByMonths;
-				else if ( _T("quarters")== sValue ) this->m_eValue = groupByQuarters;
-				else if ( _T("range")	== sValue ) this->m_eValue = groupByNumericRanges;
-				else if ( _T("seconds")	== sValue ) this->m_eValue = groupBySeconds;
-				else if ( _T("years")	== sValue ) this->m_eValue = groupByYears;
+				if      ( L"days" == sValue )	this->m_eValue = groupByDays;
+				else if ( L"hours" == sValue ) this->m_eValue = groupByHours;
+				else if ( L"minutes" == sValue ) this->m_eValue = groupByMinutes;
+				else if ( L"months" == sValue ) this->m_eValue = groupByMonths;
+				else if ( L"quarters" ==  sValue ) this->m_eValue = groupByQuarters;
+				else if ( L"range" == sValue ) this->m_eValue = groupByNumericRanges;
+				else if ( L"seconds" == sValue ) this->m_eValue = groupBySeconds;
+				else if ( L"years" == sValue ) this->m_eValue = groupByYears;
 
 				return this->m_eValue;
 			}
@@ -4019,15 +4093,15 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-					case groupByDays:			return _T("days");
-					case groupByHours:			return _T("hours");
-					case groupByMinutes:		return _T("minutes");
-					case groupByMonths:			return _T("months");
-					case groupByQuarters:		return _T("quarters");
-					case groupByNumericRanges:	return _T("range");
-					case groupBySeconds:		return _T("seconds");
-					case groupByYears:			return _T("years");
-					default :					return _T("");
+					case groupByDays:			return L"days";
+					case groupByHours:			return L"hours";
+					case groupByMinutes:		return L"minutes";
+					case groupByMonths:			return L"months";
+					case groupByQuarters:		return L"quarters";
+					case groupByNumericRanges:	return L"range";
+					case groupBySeconds:		return L"seconds";
+					case groupByYears:			return L"years";
+					default :					return L"";
 				}
 			}
 			SimpleType_FromString     (EValuesGroupBy)
@@ -4060,21 +4134,21 @@ namespace SimpleTypes
 
 			virtual EPivotItemType FromString(std::wstring &sValue)
 			{
-				if      ( _T("avg")		== sValue )	this->m_eValue = typeAverage;
-				else if ( _T("blank")	== sValue ) this->m_eValue = typeBlank;
-				else if ( _T("count")	== sValue ) this->m_eValue = typeCount;
-				else if ( _T("countA")	== sValue ) this->m_eValue = typeCountA;
-				else if ( _T("data")	== sValue ) this->m_eValue = typeData;
-				else if ( _T("default")	== sValue ) this->m_eValue = typeDefault;
-				else if ( _T("grand")	== sValue ) this->m_eValue = typeGrandTotalt;
-				else if ( _T("min")		== sValue ) this->m_eValue = typeMin;
-				else if ( _T("max")		== sValue ) this->m_eValue = typeMax;
-				else if ( _T("product")	== sValue ) this->m_eValue = typeProduct;
-				else if ( _T("stdDev")	== sValue ) this->m_eValue = typeStdDev;
-				else if ( _T("stdDevP")	== sValue ) this->m_eValue = typeStdDevP;
-				else if ( _T("sum")		== sValue ) this->m_eValue = typeSum;
-				else if ( _T("var")		== sValue ) this->m_eValue = typeVar;
-				else if ( _T("varP")	== sValue ) this->m_eValue = typeVarP;
+				if      ( L"avg" ==  sValue )	this->m_eValue = typeAverage;
+				else if ( L"blank" == sValue ) this->m_eValue = typeBlank;
+				else if ( L"count" == sValue ) this->m_eValue = typeCount;
+				else if ( L"countA" == sValue ) this->m_eValue = typeCountA;
+				else if ( L"data" == sValue ) this->m_eValue = typeData;
+				else if ( L"default" == sValue ) this->m_eValue = typeDefault;
+				else if ( L"grand" == sValue ) this->m_eValue = typeGrandTotalt;
+				else if ( L"min" ==  sValue ) this->m_eValue = typeMin;
+				else if ( L"max" ==  sValue ) this->m_eValue = typeMax;
+				else if ( L"product" == sValue ) this->m_eValue = typeProduct;
+				else if ( L"stdDev" == sValue ) this->m_eValue = typeStdDev;
+				else if ( L"stdDevP" == sValue ) this->m_eValue = typeStdDevP;
+				else if ( L"sum" ==  sValue ) this->m_eValue = typeSum;
+				else if ( L"var" ==  sValue ) this->m_eValue = typeVar;
+				else if ( L"varP" == sValue ) this->m_eValue = typeVarP;
 
 				return this->m_eValue;
 			}
@@ -4082,22 +4156,22 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-					case typeAverage:	return _T("avg");
-					case typeBlank:		return _T("blank");
-					case typeCount:		return _T("count");
-					case typeCountA:	return _T("countA");
-					case typeData:		return _T("data");
-					case typeDefault:	return _T("default");
-					case typeGrandTotalt:return _T("grand");
-					case typeMin:		return _T("min");
-					case typeMax:		return _T("max");
-					case typeProduct:	return _T("product");
-					case typeStdDev:	return _T("stdDev");
-					case typeStdDevP:	return _T("stdDevP");
-					case typeSum:		return _T("sum");
-					case typeVar:		return _T("var");
-					case typeVarP:		return _T("varP");
-					default :			return _T("");
+					case typeAverage:	return L"avg";
+					case typeBlank:		return L"blank";
+					case typeCount:		return L"count";
+					case typeCountA:	return L"countA";
+					case typeData:		return L"data";
+					case typeDefault:	return L"default";
+					case typeGrandTotalt:return L"grand";
+					case typeMin:		return L"min";
+					case typeMax:		return L"max";
+					case typeProduct:	return L"product";
+					case typeStdDev:	return L"stdDev";
+					case typeStdDevP:	return L"stdDevP";
+					case typeSum:		return L"sum";
+					case typeVar:		return L"var";
+					case typeVarP:		return L"varP";
+					default :			return L"";
 				}
 			}
 			SimpleType_FromString     (EPivotItemType)
@@ -4118,9 +4192,9 @@ namespace SimpleTypes
 
 			virtual EFieldSortType FromString(std::wstring &sValue)
 			{
-				if      ( _T("manual")		== sValue )	this->m_eValue = sortManual;
-				else if ( _T("ascending")	== sValue ) this->m_eValue = sortAscending;
-				else if ( _T("descending")	== sValue ) this->m_eValue = sortDescending;
+				if      ( L"manual" ==  sValue )	this->m_eValue = sortManual;
+				else if ( L"ascending" == sValue ) this->m_eValue = sortAscending;
+				else if ( L"descending" == sValue ) this->m_eValue = sortDescending;
 
 				return this->m_eValue;
 			}
@@ -4128,10 +4202,10 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-					case sortManual:		return _T("manual");
-					case sortAscending:		return _T("ascending");
-					case sortDescending:	return _T("descending");
-					default :				return _T("");
+					case sortManual:		return L"manual";
+					case sortAscending:		return L"ascending";
+					case sortDescending:	return L"descending";
+					default :				return L"";
 				}
 			}
 			SimpleType_FromString     (EFieldSortType)
@@ -4157,13 +4231,13 @@ namespace SimpleTypes
 
 			virtual EPivotAreaType FromString(std::wstring &sValue)
 			{
-				if      ( _T("all")		== sValue )	this->m_eValue = areaAll;
-				else if ( _T("button")	== sValue ) this->m_eValue = areaFieldButton;
-				else if ( _T("data")	== sValue ) this->m_eValue = areaData;
-				else if ( _T("none")	== sValue ) this->m_eValue = areaNone;
-				else if ( _T("normal")	== sValue ) this->m_eValue = areaNormal;
-				else if ( _T("origin")	== sValue ) this->m_eValue = areaOrigin;
-				else if ( _T("topEnd")	== sValue ) this->m_eValue = areaTopEnd;
+				if      ( L"all" ==  sValue )	this->m_eValue = areaAll;
+				else if ( L"button" == sValue ) this->m_eValue = areaFieldButton;
+				else if ( L"data" == sValue ) this->m_eValue = areaData;
+				else if ( L"none" == sValue ) this->m_eValue = areaNone;
+				else if ( L"normal" == sValue ) this->m_eValue = areaNormal;
+				else if ( L"origin" == sValue ) this->m_eValue = areaOrigin;
+				else if ( L"topEnd" == sValue ) this->m_eValue = areaTopEnd;
 
 				return this->m_eValue;
 			}
@@ -4171,14 +4245,14 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-					case areaAll:			return _T("all");
-					case areaFieldButton:	return _T("button");
-					case areaData:			return _T("data");
-					case areaNone:			return _T("none");
-					case areaNormal:		return _T("normal");
-					case areaOrigin:		return _T("origin");
-					case areaTopEnd:		return _T("topEnd");
-					default :				return _T("");
+					case areaAll:			return L"all";
+					case areaFieldButton:	return L"button";
+					case areaData:			return L"data";
+					case areaNone:			return L"none";
+					case areaNormal:		return L"normal";
+					case areaOrigin:		return L"origin";
+					case areaTopEnd:		return L"topEnd";
+					default :				return L"";
 				}
 			}
 			SimpleType_FromString     (EPivotAreaType)
@@ -4200,10 +4274,10 @@ namespace SimpleTypes
 
 			virtual EPivotAxisType FromString(std::wstring &sValue)
 			{
-				if      ( _T("axisCol")		== sValue )	this->m_eValue = axisCol;
-				else if ( _T("axisPage")	== sValue ) this->m_eValue = axisPage;
-				else if ( _T("axisRow")		== sValue ) this->m_eValue = axisRow;
-				else if ( _T("axisValues")	== sValue ) this->m_eValue = axisValues;
+				if      ( L"axisCol" ==  sValue )	this->m_eValue = axisCol;
+				else if ( L"axisPage" == sValue ) this->m_eValue = axisPage;
+				else if ( L"axisRow" ==  sValue ) this->m_eValue = axisRow;
+				else if ( L"axisValues" == sValue ) this->m_eValue = axisValues;
 
 				return this->m_eValue;
 			}
@@ -4211,11 +4285,11 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-					case axisCol:		return _T("axisCol");
-					case axisPage:		return _T("axisPage");
-					case axisRow:		return _T("countNums");
-					case axisValues:	return _T("axisRow");
-					default :			return _T("");
+					case axisCol:		return L"axisCol";
+					case axisPage:		return L"axisPage";
+					case axisRow:		return L"countNums";
+					case axisValues:	return L"axisRow";
+					default :			return L"";
 				}
 			}
 			SimpleType_FromString     (EPivotAxisType)
@@ -4237,10 +4311,10 @@ namespace SimpleTypes
 
 			virtual EFormatAction FromString(std::wstring &sValue)
 			{
-				if      ( _T("blank")		== sValue )	this->m_eValue = actionBlank;
-				else if ( _T("drill")		== sValue ) this->m_eValue = actionDrill;
-				else if ( _T("formatting")	== sValue ) this->m_eValue = actionFormatting;
-				else if ( _T("formula")		== sValue ) this->m_eValue = actionFormula;
+				if      ( L"blank" ==  sValue )	this->m_eValue = actionBlank;
+				else if ( L"drill" ==  sValue ) this->m_eValue = actionDrill;
+				else if ( L"formatting" == sValue ) this->m_eValue = actionFormatting;
+				else if ( L"formula" ==  sValue ) this->m_eValue = actionFormula;
 
 				return this->m_eValue;
 			}
@@ -4248,11 +4322,11 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-					case actionBlank:		return _T("blank");
-					case actionDrill:		return _T("drill");
-					case actionFormatting:	return _T("formatting");
-					case actionFormula:		return _T("formula");
-					default :				return _T("");
+					case actionBlank:		return L"blank";
+					case actionDrill:		return L"drill";
+					case actionFormatting:	return L"formatting";
+					case actionFormula:		return L"formula";
+					default :				return L"";
 				}
 			}
 			SimpleType_FromString     (EFormatAction)
@@ -4279,15 +4353,15 @@ namespace SimpleTypes
 
 			virtual EShowDataAs FromString(std::wstring &sValue)
 			{
-				if      ( _T("difference")		== sValue )	this->m_eValue = dataAsDifference;
-				else if ( _T("index")			== sValue ) this->m_eValue = dataAsIndex;
-				else if ( _T("normal")			== sValue ) this->m_eValue = dataAsNormal;
-				else if ( _T("percent")			== sValue ) this->m_eValue = dataAsPercentOff;
-				else if ( _T("percentDiff")		== sValue ) this->m_eValue = dataAsPercentDiff;
-				else if ( _T("percentOfCol")	== sValue ) this->m_eValue = dataAsPercentOfCol;
-				else if ( _T("percentOfRow")	== sValue ) this->m_eValue = dataAsPercentOfRow;
-				else if ( _T("percentOfTotal")	== sValue ) this->m_eValue = dataAsPercentOfTotal;
-				else if ( _T("runTotal")		== sValue ) this->m_eValue = dataAsRunTotal;
+				if      ( L"difference" ==  sValue )	this->m_eValue = dataAsDifference;
+				else if ( L"index" ==  sValue ) this->m_eValue = dataAsIndex;
+				else if ( L"normal" ==  sValue ) this->m_eValue = dataAsNormal;
+				else if ( L"percent" ==  sValue ) this->m_eValue = dataAsPercentOff;
+				else if ( L"percentDiff" ==  sValue ) this->m_eValue = dataAsPercentDiff;
+				else if ( L"percentOfCol" == sValue ) this->m_eValue = dataAsPercentOfCol;
+				else if ( L"percentOfRow" == sValue ) this->m_eValue = dataAsPercentOfRow;
+				else if ( L"percentOfTotal" == sValue ) this->m_eValue = dataAsPercentOfTotal;
+				else if ( L"runTotal" ==  sValue ) this->m_eValue = dataAsRunTotal;
 				else										this->m_eValue = eDefValue;
 				return this->m_eValue;
 			}
@@ -4296,16 +4370,16 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-					case dataAsDifference:		return _T("difference");
-					case dataAsIndex:			return _T("index");
-					case dataAsNormal:			return _T("normal");
-					case dataAsPercentOff:		return _T("percent");
-					case dataAsPercentDiff:		return _T("percentDiff");
-					case dataAsPercentOfCol:	return _T("percentOfCol");
-					case dataAsPercentOfRow:	return _T("percentOfRow");
-					case dataAsPercentOfTotal:	return _T("percentOfTotal");
-					case dataAsRunTotal:		return _T("percentOfTotal");
-					default :					return _T("runTotal");
+					case dataAsDifference:		return L"difference";
+					case dataAsIndex:			return L"index";
+					case dataAsNormal:			return L"normal";
+					case dataAsPercentOff:		return L"percent";
+					case dataAsPercentDiff:		return L"percentDiff";
+					case dataAsPercentOfCol:	return L"percentOfCol";
+					case dataAsPercentOfRow:	return L"percentOfRow";
+					case dataAsPercentOfTotal:	return L"percentOfTotal";
+					case dataAsRunTotal:		return L"percentOfTotal";
+					default :					return L"runTotal";
 				}
 			}
 
@@ -4322,7 +4396,7 @@ namespace SimpleTypes
 			functionProduct		=  5,
 			functionStdDev		=  6,
 			functionStdDevP		=  7,
-			functionSum			=  8,
+                        functionSum		=  8,
 			functionVariance	=  9,
 			functionVarP		=  10
 		};
@@ -4335,17 +4409,17 @@ namespace SimpleTypes
 
 			virtual EDataConsolidateFunction FromString(std::wstring &sValue)
 			{
-				if      ( _T("average")		== sValue )	this->m_eValue = functionAverage;
-				else if ( _T("count")		== sValue ) this->m_eValue = functionCount;
-				else if ( _T("countNums")	== sValue ) this->m_eValue = functionCountNums;
-				else if ( _T("max")			== sValue ) this->m_eValue = functionMaximum;
-				else if ( _T("min")			== sValue ) this->m_eValue = functionMinimum;
-				else if ( _T("product")		== sValue ) this->m_eValue = functionProduct;
-				else if ( _T("stdDev")		== sValue ) this->m_eValue = functionStdDev;
-				else if ( _T("stdDevp")		== sValue ) this->m_eValue = functionStdDevP;
-				else if ( _T("sum")			== sValue ) this->m_eValue = functionSum;
-				else if ( _T("var")			== sValue ) this->m_eValue = functionVariance;
-				else if ( _T("varp")		== sValue ) this->m_eValue = functionVarP;
+				if      ( L"average" ==  sValue )	this->m_eValue = functionAverage;
+				else if ( L"count" ==  sValue ) this->m_eValue = functionCount;
+				else if ( L"countNums" == sValue ) this->m_eValue = functionCountNums;
+				else if ( L"max" ==  sValue ) this->m_eValue = functionMaximum;
+				else if ( L"min" ==  sValue ) this->m_eValue = functionMinimum;
+				else if ( L"product" ==  sValue ) this->m_eValue = functionProduct;
+				else if ( L"stdDev" ==  sValue ) this->m_eValue = functionStdDev;
+				else if ( L"stdDevp" ==  sValue ) this->m_eValue = functionStdDevP;
+				else if ( L"sum" ==  sValue ) this->m_eValue = functionSum;
+				else if ( L"var" ==  sValue ) this->m_eValue = functionVariance;
+				else if ( L"varp" ==  sValue ) this->m_eValue = functionVarP;
 				else									this->m_eValue = eDefValue;
 				return this->m_eValue;
 			}
@@ -4354,18 +4428,18 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-					case functionAverage:	return _T("average");
-					case functionCount:		return _T("count");
-					case functionCountNums:	return _T("countNums");
-					case functionMaximum:	return _T("max");
-					case functionMinimum:	return _T("min");
-					case functionProduct:	return _T("product");
-					case functionStdDev:	return _T("stdDev");
-					case functionStdDevP:	return _T("stdDevp");
-					case functionSum:		return _T("sum");
-					case functionVariance:	return _T("var");
-					case functionVarP:		return _T("varp");
-					default :				return _T("sum");
+					case functionAverage:	return L"average";
+					case functionCount:		return L"count";
+					case functionCountNums:	return L"countNums";
+					case functionMaximum:	return L"max";
+					case functionMinimum:	return L"min";
+					case functionProduct:	return L"product";
+					case functionStdDev:	return L"stdDev";
+					case functionStdDevP:	return L"stdDevp";
+					case functionSum:		return L"sum";
+					case functionVariance:	return L"var";
+					case functionVarP:		return L"varp";
+					default :				return L"sum";
 				}
 			}
 
@@ -4439,9 +4513,9 @@ namespace SimpleTypes
 
 			virtual EDataValidationErrorStyle FromString(std::wstring &sValue)
 			{
-				if      ( _T("stop")		== sValue )	this->m_eValue = errorStyleStop;
-				else if ( _T("warning")		== sValue ) this->m_eValue = errorStyleWarning;
-				else if ( _T("information")	== sValue ) this->m_eValue = errorStyleInformation;
+				if      ( L"stop" ==  sValue )	this->m_eValue = errorStyleStop;
+				else if ( L"warning" ==  sValue ) this->m_eValue = errorStyleWarning;
+				else if ( L"information" == sValue ) this->m_eValue = errorStyleInformation;
 				else									this->m_eValue = eDefValue;
 				return this->m_eValue;
 			}
@@ -4450,10 +4524,10 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-					case errorStyleInformation	:	return _T("information");
-					case errorStyleWarning :		return _T("warning");
+					case errorStyleInformation	:	return L"information";
+					case errorStyleWarning :		return L"warning";
 					case errorStyleStop:	
-					default :						return _T("stop");
+					default :						return L"stop";
 				}
 			}
 
@@ -4480,14 +4554,14 @@ namespace SimpleTypes
 
 			virtual EDataValidationOperator FromString(std::wstring &sValue)
 			{
-				if      ( _T("between")			== sValue )	this->m_eValue = operatorBetween;
-				else if ( _T("notBetween")		== sValue ) this->m_eValue = operatorNotBetween;
-				else if ( _T("equal")			== sValue ) this->m_eValue = operatorEqual;
-				else if ( _T("notEqual")		== sValue ) this->m_eValue = operatorNotEqual;
-				else if ( _T("lessThan")		== sValue ) this->m_eValue = operatorLessThan;
-				else if ( _T("lessThanOrEqual")	== sValue ) this->m_eValue = operatorLessThanOrEqual;
-				else if ( _T("greaterThan")		== sValue ) this->m_eValue = operatorGreaterThan;
-				else if ( _T("greaterThanOrEqual")== sValue ) this->m_eValue = operatorGreaterThanOrEqual;
+				if      ( L"between" ==  sValue )	this->m_eValue = operatorBetween;
+				else if ( L"notBetween" ==  sValue ) this->m_eValue = operatorNotBetween;
+				else if ( L"equal" ==  sValue ) this->m_eValue = operatorEqual;
+				else if ( L"notEqual" ==  sValue ) this->m_eValue = operatorNotEqual;
+				else if ( L"lessThan" ==  sValue ) this->m_eValue = operatorLessThan;
+				else if ( L"lessThanOrEqual" == sValue ) this->m_eValue = operatorLessThanOrEqual;
+				else if ( L"greaterThan" ==  sValue ) this->m_eValue = operatorGreaterThan;
+				else if ( L"greaterThanOrEqual" ==  sValue ) this->m_eValue = operatorGreaterThanOrEqual;
 				else										this->m_eValue = eDefValue;
 				return this->m_eValue;
 			}
@@ -4496,15 +4570,15 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-					case operatorBetween	:		return _T("between");
-					case operatorNotBetween	:		return _T("notBetween");
-					case operatorEqual :			return _T("equal");
-					case operatorNotEqual :			return _T("notEqual");
-					case operatorLessThan :			return _T("lessThan");
-					case operatorLessThanOrEqual :	return _T("lessThanOrEqual");
-					case operatorGreaterThan:		return _T("greaterThan");
-					case operatorGreaterThanOrEqual:return _T("greaterThanOrEqual");
-					default :						return _T("between");
+					case operatorBetween	:		return L"between";
+					case operatorNotBetween	:		return L"notBetween";
+					case operatorEqual :			return L"equal";
+					case operatorNotEqual :			return L"notEqual";
+					case operatorLessThan :			return L"lessThan";
+					case operatorLessThanOrEqual :	return L"lessThanOrEqual";
+					case operatorGreaterThan:		return L"greaterThan";
+					case operatorGreaterThanOrEqual:return L"greaterThanOrEqual";
+					default :						return L"between";
 				}
 			}
 
@@ -4534,17 +4608,17 @@ namespace SimpleTypes
 
 			virtual EDataValidationImeMode FromString(std::wstring &sValue)
 			{
-				if      ( _T("noControl")	== sValue )	this->m_eValue = imeModeNoControl;
-				else if ( _T("off")			== sValue ) this->m_eValue = imeModeOff;
-				else if ( _T("on")			== sValue ) this->m_eValue = imeModeOn;
-				else if ( _T("disabled")	== sValue ) this->m_eValue = imeModeDisabled;
-				else if ( _T("hiragana")	== sValue ) this->m_eValue = imeModeHiragana;
-				else if ( _T("fullKatakana")== sValue ) this->m_eValue = imeModeFullKatakana;
-				else if ( _T("halfKatakana")== sValue ) this->m_eValue = imeModeHalfKatakana;
-				else if ( _T("fullAlpha")	== sValue ) this->m_eValue = imeModeFullAlpha;
-				else if ( _T("halfAlpha")	== sValue ) this->m_eValue = imeModeHalfAlpha;
-				else if ( _T("fullHangul")	== sValue ) this->m_eValue = imeModeFullHangul;
-				else if ( _T("halfHangul")	== sValue ) this->m_eValue = imeModeHalfHangul;
+				if      ( L"noControl" == sValue )	this->m_eValue = imeModeNoControl;
+				else if ( L"off" ==  sValue ) this->m_eValue = imeModeOff;
+				else if ( L"on" ==  sValue ) this->m_eValue = imeModeOn;
+				else if ( L"disabled" == sValue ) this->m_eValue = imeModeDisabled;
+				else if ( L"hiragana" == sValue ) this->m_eValue = imeModeHiragana;
+				else if ( L"fullKatakana" ==  sValue ) this->m_eValue = imeModeFullKatakana;
+				else if ( L"halfKatakana" ==  sValue ) this->m_eValue = imeModeHalfKatakana;
+				else if ( L"fullAlpha" == sValue ) this->m_eValue = imeModeFullAlpha;
+				else if ( L"halfAlpha" == sValue ) this->m_eValue = imeModeHalfAlpha;
+				else if ( L"fullHangul" == sValue ) this->m_eValue = imeModeFullHangul;
+				else if ( L"halfHangul" == sValue ) this->m_eValue = imeModeHalfHangul;
 				else									this->m_eValue = eDefValue;
 				return this->m_eValue;
 			}
@@ -4553,18 +4627,18 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-					case imeModeNoControl	:	return _T("noControl");
-					case imeModeOff	:			return _T("off");
-					case imeModeOn :			return _T("on");
-					case imeModeDisabled :		return _T("disabled");
-					case imeModeHiragana :		return _T("hiragana");
-					case imeModeFullKatakana :	return _T("fullKatakana");
-					case imeModeHalfKatakana:	return _T("halfKatakana");
-					case imeModeFullAlpha:		return _T("fullAlpha");
-					case imeModeHalfAlpha:		return _T("halfAlpha");
-					case imeModeFullHangul:		return _T("fullHangul");
-					case imeModeHalfHangul:		return _T("halfHangul");
-					default :					return _T("noControl");
+					case imeModeNoControl	:	return L"noControl";
+					case imeModeOff	:			return L"off";
+					case imeModeOn :			return L"on";
+					case imeModeDisabled :		return L"disabled";
+					case imeModeHiragana :		return L"hiragana";
+					case imeModeFullKatakana :	return L"fullKatakana";
+					case imeModeHalfKatakana:	return L"halfKatakana";
+					case imeModeFullAlpha:		return L"fullAlpha";
+					case imeModeHalfAlpha:		return L"halfAlpha";
+					case imeModeFullHangul:		return L"fullHangul";
+					case imeModeHalfHangul:		return L"halfHangul";
+					default :					return L"noControl";
 				}
 			}
 
@@ -4594,17 +4668,17 @@ namespace SimpleTypes
 
 			virtual EObjectType FromString(std::wstring &sValue)
 			{
-				if      ( _T("Button")	== sValue )	this->m_eValue = objectButton;
-				else if ( _T("CheckBox")== sValue ) this->m_eValue = objectCheckBox;
-				else if ( _T("Drop")	== sValue ) this->m_eValue = objectDrop;
-				else if ( _T("GBox")	== sValue ) this->m_eValue = objectGBox;
-				else if ( _T("Label")	== sValue ) this->m_eValue = objectLabel;
-				else if ( _T("List")	== sValue ) this->m_eValue = objectList;
-				else if ( _T("Radio")	== sValue ) this->m_eValue = objectRadio;
-				else if ( _T("Scroll")	== sValue ) this->m_eValue = objectScroll;
-				else if ( _T("Spin")	== sValue ) this->m_eValue = objectSpin;
-				else if ( _T("EditBox")	== sValue ) this->m_eValue = objectEditBox;
-				else if ( _T("Dialog")	== sValue ) this->m_eValue = objectDialog;
+				if      ( L"Button" == sValue )	this->m_eValue = objectButton;
+				else if ( L"CheckBox" ==  sValue ) this->m_eValue = objectCheckBox;
+				else if ( L"Drop" == sValue ) this->m_eValue = objectDrop;
+				else if ( L"GBox" == sValue ) this->m_eValue = objectGBox;
+				else if ( L"Label" == sValue ) this->m_eValue = objectLabel;
+				else if ( L"List" == sValue ) this->m_eValue = objectList;
+				else if ( L"Radio" == sValue ) this->m_eValue = objectRadio;
+				else if ( L"Scroll" == sValue ) this->m_eValue = objectScroll;
+				else if ( L"Spin" == sValue ) this->m_eValue = objectSpin;
+				else if ( L"EditBox" == sValue ) this->m_eValue = objectEditBox;
+				else if ( L"Dialog" == sValue ) this->m_eValue = objectDialog;
 				else								this->m_eValue = eDefValue;
 				return this->m_eValue;
 			}
@@ -4613,18 +4687,18 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-					case objectButton	:	return _T("Button");
-					case objectCheckBox	:	return _T("CheckBox");
-					case objectDrop :		return _T("Drop");
-					case objectGBox :		return _T("GBox");
-					case objectLabel :		return _T("Label");
-					case objectList :		return _T("List");
-					case objectRadio:		return _T("Radio");
-					case objectScroll:		return _T("Scroll");
-					case objectSpin:		return _T("Spin");
-					case objectEditBox:		return _T("EditBox");
-					case objectDialog:		return _T("Dialog");
-					default :				return _T("Button");
+					case objectButton	:	return L"Button";
+					case objectCheckBox	:	return L"CheckBox";
+					case objectDrop :		return L"Drop";
+					case objectGBox :		return L"GBox";
+					case objectLabel :		return L"Label";
+					case objectList :		return L"List";
+					case objectRadio:		return L"Radio";
+					case objectScroll:		return L"Scroll";
+					case objectSpin:		return L"Spin";
+					case objectEditBox:		return L"EditBox";
+					case objectDialog:		return L"Dialog";
+					default :				return L"Button";
 				}
 			}
 			SimpleType_FromString     (EObjectType)
@@ -4645,11 +4719,11 @@ namespace SimpleTypes
 
 			virtual EChecked FromString(std::wstring &sValue)
 			{
-				if      ( _T("Mixed")		== sValue )	this->m_eValue = valMixed;
-				else if ( _T("Checked")		== sValue ) this->m_eValue = valChecked;
-				else if ( _T("Unchecked")	== sValue ) this->m_eValue = valUnchecked;
-				else if ( _T("1")			== sValue ) this->m_eValue = valChecked;
-				else if ( _T("0")			== sValue ) this->m_eValue = valUnchecked;
+				if      ( L"Mixed" ==  sValue )	this->m_eValue = valMixed;
+				else if ( L"Checked" ==  sValue ) this->m_eValue = valChecked;
+				else if ( L"Unchecked" == sValue ) this->m_eValue = valUnchecked;
+				else if ( L"1" ==  sValue ) this->m_eValue = valChecked;
+				else if ( L"0" ==  sValue ) this->m_eValue = valUnchecked;
 				else									this->m_eValue = eDefValue;
 				return this->m_eValue;
 			}
@@ -4658,10 +4732,10 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-					case valMixed	:	return _T("Mixed");
-					case valChecked :	return _T("Checked");
+					case valMixed	:	return L"Mixed";
+					case valChecked :	return L"Checked";
 					case valUnchecked:	
-					default :			return _T("Unchecked");
+					default :			return L"Unchecked";
 				}
 			}
 
@@ -4683,9 +4757,9 @@ namespace SimpleTypes
 
 			virtual EDropStyle FromString(std::wstring &sValue)
 			{
-				if      ( _T("combo")		== sValue )	this->m_eValue = valCombo;
-				else if ( _T("comboedit")	== sValue ) this->m_eValue = valComboedit;
-				else if ( _T("simple")		== sValue ) this->m_eValue = valSimple;
+				if      ( L"combo" ==  sValue )	this->m_eValue = valCombo;
+				else if ( L"comboedit" == sValue ) this->m_eValue = valComboedit;
+				else if ( L"simple" ==  sValue ) this->m_eValue = valSimple;
 				else									this->m_eValue = eDefValue;
 				return this->m_eValue;
 			}
@@ -4694,10 +4768,10 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-					case valCombo	:	return _T("combo");
-					case valComboedit :	return _T("comboedit");
+					case valCombo	:	return L"combo";
+					case valComboedit :	return L"comboedit";
 					case valSimple:	
-					default :			return _T("simple");
+					default :			return L"simple";
 				}
 			}
 
@@ -4719,9 +4793,9 @@ namespace SimpleTypes
 
 			virtual ESelType FromString(std::wstring &sValue)
 			{
-				if      ( _T("extended")== sValue )	this->m_eValue = valExtended;
-				else if ( _T("multi")	== sValue ) this->m_eValue = valMulti;
-				else if ( _T("single")	== sValue ) this->m_eValue = valSingle;
+				if      ( L"extended" ==  sValue )	this->m_eValue = valExtended;
+				else if ( L"multi" == sValue ) this->m_eValue = valMulti;
+				else if ( L"single" == sValue ) this->m_eValue = valSingle;
 				else								this->m_eValue = eDefValue;
 				return this->m_eValue;
 			}
@@ -4730,10 +4804,10 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-					case valExtended:	return _T("extended");
-					case valMulti :		return _T("multi");
+					case valExtended:	return L"extended";
+					case valMulti :		return L"multi";
 					case valSingle:	
-					default :			return _T("single");
+					default :			return L"single";
 				}
 			}
 
@@ -4757,11 +4831,11 @@ namespace SimpleTypes
 
 			virtual EEditValidation FromString(std::wstring &sValue)
 			{
-				if      ( _T("text")		== sValue )	this->m_eValue = editText;
-				else if ( _T("integer")		== sValue ) this->m_eValue = editInteger;
-				else if ( _T("number")		== sValue ) this->m_eValue = editNumber;
-				else if ( _T("reference")	== sValue ) this->m_eValue = editReference;
-				else if ( _T("formula")		== sValue ) this->m_eValue = editFormula;
+				if      ( L"text" ==  sValue )	this->m_eValue = editText;
+				else if ( L"integer" ==  sValue ) this->m_eValue = editInteger;
+				else if ( L"number" ==  sValue ) this->m_eValue = editNumber;
+				else if ( L"reference" == sValue ) this->m_eValue = editReference;
+				else if ( L"formula" ==  sValue ) this->m_eValue = editFormula;
 				else									this->m_eValue = eDefValue;
 				return this->m_eValue;
 			}
@@ -4770,12 +4844,12 @@ namespace SimpleTypes
 			{
 				switch(this->m_eValue)
 				{
-					case editInteger:		return _T("integer");
-					case editNumber :		return _T("number");
-					case editReference :	return _T("reference");
-					case editFormula :		return _T("formula");
+					case editInteger:		return L"integer";
+					case editNumber :		return L"number";
+					case editReference :	return L"reference";
+					case editFormula :		return L"formula";
 					case editText:	
-					default :				return _T("text");
+					default :				return L"text";
 				}
 			}
 
@@ -4794,6 +4868,7 @@ namespace SimpleTypes
 		{
 		public:
 			CTabularSlicerCacheSortOrder(){}
+                        CTabularSlicerCacheSortOrder(const ETabularSlicerCacheSortOrder & val)	{ this->m_eValue = val; }
 			virtual ETabularSlicerCacheSortOrder FromString(std::wstring &sValue)
 			{
 				if(L"ascending" == sValue)
@@ -4838,6 +4913,7 @@ namespace SimpleTypes
 		{
 		public:
 			CSlicerCacheCrossFilter(){}
+                        CSlicerCacheCrossFilter(const ESlicerCacheCrossFilter & val)	{ this->m_eValue = val; }
 			virtual ESlicerCacheCrossFilter FromString(std::wstring &sValue)
 			{
 				if(L"none" == sValue)
@@ -4887,6 +4963,7 @@ namespace SimpleTypes
 		{
 		public:
 			COlapSlicerCacheSortOrder(){}
+                        COlapSlicerCacheSortOrder(const EOlapSlicerCacheSortOrder & val)	{ this->m_eValue = val; }
 			virtual EOlapSlicerCacheSortOrder FromString(std::wstring &sValue)
 			{
 				if(L"natural" == sValue)

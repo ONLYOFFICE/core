@@ -69,12 +69,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
-    <IncludePath>D:\_Work\core\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\_Work\core\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>../../../Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
+    <LibraryPath>../../../Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>D:\_Work\core\Common\3dParty\boost\build\win_64\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\_Work\core\Common\3dParty\boost\build\win_64\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(Configuration)\</OutDir>
@@ -87,7 +89,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;..\src\odf\datatypes;..\..\DesktopEditor\freetype-2.5.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\_Work\core\ASCOfficeOdfFile\include;C:\_Work\core\Common\3dParty\boost\build\win_32\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(IncludePath)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -108,7 +110,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../include;../src/odf/datatypes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\src\odf\datatypes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -126,7 +128,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>../include;../src/odf/datatypes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\_Work\core\ASCOfficeOdfFile\include;C:\_Work\core\Common\3dParty\boost\build\win_32\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(IncludePath)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader />
@@ -178,6 +180,7 @@
     <ClInclude Include="..\src\odf\datatypes\borderstyle.h" />
     <ClInclude Include="..\src\odf\datatypes\borderwidths.h" />
     <ClInclude Include="..\src\odf\datatypes\calcext_type.h" />
+    <ClInclude Include="..\src\odf\datatypes\stylecellprotect.h" />
     <ClInclude Include="..\src\odf\datatypes\chartclass.h" />
     <ClInclude Include="..\src\odf\datatypes\chartdatalabelnumber.h" />
     <ClInclude Include="..\src\odf\datatypes\charterrorcategory.h" />
@@ -195,6 +198,7 @@
     <ClInclude Include="..\src\odf\datatypes\common_attlists.h" />
     <ClInclude Include="..\src\odf\datatypes\dategroup.h" />
     <ClInclude Include="..\src\odf\datatypes\direction.h" />
+    <ClInclude Include="..\src\odf\datatypes\drawangle.h" />
     <ClInclude Include="..\src\odf\datatypes\drawfill.h" />
     <ClInclude Include="..\src\odf\datatypes\dropcaplength.h" />
     <ClInclude Include="..\src\odf\datatypes\errors.h" />
@@ -226,6 +230,7 @@
     <ClInclude Include="..\src\odf\datatypes\markerstyle.h" />
     <ClInclude Include="..\src\odf\datatypes\mathvariant.h" />
     <ClInclude Include="..\src\odf\datatypes\membertype.h" />
+    <ClInclude Include="..\src\odf\datatypes\messagetype.h" />
     <ClInclude Include="..\src\odf\datatypes\noteclass.h" />
     <ClInclude Include="..\src\odf\datatypes\odfattributes.h" />
     <ClInclude Include="..\src\odf\datatypes\officevaluetype.h" />
@@ -271,6 +276,7 @@
     <ClInclude Include="..\src\odf\datatypes\textposition.h" />
     <ClInclude Include="..\src\odf\datatypes\textrotationscale.h" />
     <ClInclude Include="..\src\odf\datatypes\texttransform.h" />
+    <ClInclude Include="..\src\odf\datatypes\timeperiod.h" />
     <ClInclude Include="..\src\odf\datatypes\underlinecolor.h" />
     <ClInclude Include="..\src\odf\datatypes\verticalalign.h" />
     <ClInclude Include="..\src\odf\datatypes\wrapoption.h" />
@@ -304,6 +310,7 @@
     <ClCompile Include="..\src\odf\datatypes\borderstyle.cpp" />
     <ClCompile Include="..\src\odf\datatypes\borderwidths.cpp" />
     <ClCompile Include="..\src\odf\datatypes\calcext_type.cpp" />
+    <ClCompile Include="..\src\odf\datatypes\stylecellprotect.cpp" />
     <ClCompile Include="..\src\odf\datatypes\chartclass.cpp" />
     <ClCompile Include="..\src\odf\datatypes\chartdatalabelnumber.cpp" />
     <ClCompile Include="..\src\odf\datatypes\charterrorcategory.cpp" />
@@ -321,6 +328,7 @@
     <ClCompile Include="..\src\odf\datatypes\common_attlists.cpp" />
     <ClCompile Include="..\src\odf\datatypes\dategroup.cpp" />
     <ClCompile Include="..\src\odf\datatypes\direction.cpp" />
+    <ClCompile Include="..\src\odf\datatypes\drawangle.cpp" />
     <ClCompile Include="..\src\odf\datatypes\drawfill.cpp" />
     <ClCompile Include="..\src\odf\datatypes\dropcaplength.cpp" />
     <ClCompile Include="..\src\odf\datatypes\fillimagerefpoint.cpp" />
@@ -352,6 +360,7 @@
     <ClCompile Include="..\src\odf\datatypes\markerstyle.cpp" />
     <ClCompile Include="..\src\odf\datatypes\mathvariant.cpp" />
     <ClCompile Include="..\src\odf\datatypes\membertype.cpp" />
+    <ClCompile Include="..\src\odf\datatypes\messagetype.cpp" />
     <ClCompile Include="..\src\odf\datatypes\noteclass.cpp" />
     <ClCompile Include="..\src\odf\datatypes\officevaluetype.cpp" />
     <ClCompile Include="..\src\odf\datatypes\pageusage.cpp" />
@@ -396,6 +405,7 @@
     <ClCompile Include="..\src\odf\datatypes\textposition.cpp" />
     <ClCompile Include="..\src\odf\datatypes\textrotationscale.cpp" />
     <ClCompile Include="..\src\odf\datatypes\texttransform.cpp" />
+    <ClCompile Include="..\src\odf\datatypes\timeperiod.cpp" />
     <ClCompile Include="..\src\odf\datatypes\underlinecolor.cpp" />
     <ClCompile Include="..\src\odf\datatypes\verticalalign.cpp" />
     <ClCompile Include="..\src\odf\datatypes\wrapoption.cpp" />

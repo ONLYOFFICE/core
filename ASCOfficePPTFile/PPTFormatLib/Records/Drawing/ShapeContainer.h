@@ -41,7 +41,7 @@
 #include "../PlaceHolderAtom.h"
 #include "../StyleTextPropAtom.h"
 #include "../OutlineTextRefAtom.h"
-#include "../InteractiveInfoAtom.h"
+#include "../MouseInteractiveInfoContainer.h"
 #include "../TextInteractiveInfoAtom.h"
 #include "../MasterTextPropAtom.h"
 #include "../HeadersFootersAtom.h"
@@ -55,6 +55,7 @@
 #include "../../../../DesktopEditor/raster/BgraFrame.h"
 #include "../../../../Common/DocxFormat/Source/Base/Types_32.h"
 
+
 #define FIXED_POINT_unsigned(val) (double)((WORD)(val >> 16) + ((WORD)(val) / 65536.0))
 
 using namespace ODRAW;
@@ -63,84 +64,92 @@ using namespace PPT_FORMAT;
 class CPPTElement
 {
 public:
-	bool ChangeBlack2ColorImage(std::wstring image_path, int rgbColor1, int rgbColor2);
-	CColor CorrectSysColor(int nColorCode, CElementPtr pElement, CTheme* pTheme);
-	
-	void SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pWrapper, CSlide* pSlide, CProperties* pProperties, bool reset_default);
-	void SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty);
-	void SetUpPropertyVideo(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty);
-	void SetUpPropertyAudio(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty);
-	void SetUpPropertyImage(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty);
-	void SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty);
+    bool ChangeBlack2ColorImage(std::wstring image_path, int rgbColor1, int rgbColor2);
+    CColor CorrectSysColor(int nColorCode, CElementPtr pElement, CTheme* pTheme);
+
+    void SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pWrapper, CSlide* pSlide, CProperties* pProperties, bool reset_default);
+    void SetUpProperty(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty);
+    void SetUpPropertyVideo(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty);
+    void SetUpPropertyAudio(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty);
+    void SetUpPropertyImage(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty);
+    void SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty);
 };
 
 class CRecordShapeContainer : public CRecordsContainer
 {
 private:
-	POLE::Stream* m_pStream;
+    POLE::Stream* m_pStream;
 
 public:
 
-	bool bGroupShape;
+    bool bGroupShape;
 
-	CRecordShapeContainer()
-	{
-		bGroupShape = false;
+    CRecordShapeContainer()
+    {
+        bGroupShape = false;
 
-		m_pStream = NULL;
+        m_pStream = NULL;
 
-	}
+    }
 
-	~CRecordShapeContainer()
-	{
-		m_pStream = NULL;
-	}
+    ~CRecordShapeContainer()
+    {
+        m_pStream = NULL;
+    }
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		m_pStream = pStream;
-		CRecordsContainer::ReadFromStream(oHeader, pStream);
-	}
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+    {
+        m_pStream = pStream;
+        CRecordsContainer::ReadFromStream(oHeader, pStream);
+    }
 
 
-	CElementPtr GetElement (bool inGroup, CExMedia* pMapIDs,
-							CTheme* pTheme, CLayout* pLayout, 
-							CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide = NULL);
+    CElementPtr GetElement (bool inGroup, CExMedia* pMapIDs,
+                            CTheme* pTheme, CLayout* pLayout,
+                            CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide = NULL);
 
-	PPT_FORMAT::ElementType GetTypeElem(eSPT eType)
-	{
-		switch (eType)
-		{
-			//case sptMin:
-		case sptMax:
-		case sptNil:
-			{
-				return etShape;
-			}
-		case sptPictureFrame:
-			{
-				return etPicture;
-			}
-		default:
-			{
-				return etShape;
-			}
-		};
-		return etShape;
-	}
+    PPT_FORMAT::ElementType GetTypeElem(eSPT eType)
+    {
+        switch (eType)
+        {
+            //case sptMin:
+        case sptMax:
+        case sptNil:
+            {
+                return etShape;
+            }
+        case sptPictureFrame:
+            {
+                return etPicture;
+            }
+        default:
+            {
+                return etShape;
+            }
+        };
+        return etShape;
+    }
     AVSINLINE std::wstring GetFileName(std::wstring strFilePath)
-	{
+    {
         int nIndex = strFilePath.rfind(wchar_t('\\'));
-		if (-1 != nIndex)
-		{
+        if (-1 != nIndex)
+        {
             return strFilePath.substr(nIndex + 1);
-		}
-		return strFilePath;
-	}
+        }
+        return strFilePath;
+    }
 
 protected:
 
-	void ApplyThemeStyle(CElementPtr pElem, CTheme* pTheme, CRecordMasterTextPropAtom* master_levels);
-	void SetUpTextStyle(std::wstring& strText, CTheme* pTheme, CLayout* pLayout, CElementPtr pElem, CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide, CRecordMasterTextPropAtom* master_levels);
-	void ApplyHyperlink(CShapeElement* pShape, CColor& oColor);
+    bool isTable()const;
+    std::wstring getTableXmlStr()const;
+    void ApplyThemeStyle(CElementPtr pElem, CTheme* pTheme, CRecordMasterTextPropAtom* master_levels);
+    void SetUpTextStyle(std::wstring& strText, CTheme* pTheme, CLayout* pLayout, CElementPtr pElem, CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide, CRecordMasterTextPropAtom* master_levels);
+    void ApplyHyperlink(CShapeElement* pShape, CColor& oColor);
+    static void addHyperlinkToSpan(CSpan& oSpan, const std::vector<CInteractiveInfo> &arrInteractive, const CColor& oColor);
+    static bool isRealHyperlink( const std::vector<CInteractiveInfo> &arrInteractive);
+    static std::vector<std::vector<CInteractiveInfo> > splitInteractive(const std::vector<CInteractiveInfo>& arrInteractive);
+    static void ConvertInteractiveInfo(CInteractiveInfo& interactiveInfo, const CRecordMouseInteractiveInfoContainer* interactiveCont, CExMedia* pMapIDs);
+    void ConvertStyleTextProp9(CTextAttributesEx *pText);
 };
+

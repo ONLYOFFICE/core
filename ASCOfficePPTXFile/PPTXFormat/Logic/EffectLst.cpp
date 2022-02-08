@@ -95,6 +95,10 @@ namespace PPTX
 			{
 				str = L"<a:effectLst>" + str + L"</a:effectLst>";
 			}
+			else
+			{
+				str = L"<a:effectLst/>";
+			}
 			return str;
 		}
 		void EffectLst::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
@@ -102,6 +106,7 @@ namespace PPTX
 			if (!blur.IsInit() && !fillOverlay.IsInit() && !glow.IsInit() && !innerShdw.IsInit() && 
 				!outerShdw.IsInit() && !prstShdw.IsInit() && !reflection.IsInit() && !softEdge.IsInit())
 			{
+				pWriter->WriteString(L"<a:effectLst/>");
 				return;
 			}
 			

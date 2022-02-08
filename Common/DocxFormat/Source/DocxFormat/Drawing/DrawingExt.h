@@ -105,9 +105,6 @@ namespace OOX
 			virtual ~CDataModelExt()
 			{
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
                 //todo
@@ -119,10 +116,7 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
-            virtual std::wstring      toXML() const
-			{
-				return _T("");
-			}
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const
 			{
 				return OOX::et_a_compatExt;
@@ -136,10 +130,8 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_if( oReader, _T("relId"), m_oRelId )
 				WritingElement_ReadAttributes_End_No_NS( oReader )
 			}
-
 		public:
-
-            nullable<std::wstring> m_oRelId;
+            nullable<OOX::RId> m_oRelId;
 		};
 
 
@@ -159,6 +151,7 @@ namespace OOX
 			{
 				XmlMacroReadAttributeBase(oNode, _T("uri"), m_sUri );
 			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             virtual std::wstring toXML() const;
             std::wstring toXMLWithNS(const std::wstring& sNamespace) const;
@@ -178,28 +171,28 @@ namespace OOX
 
 		public:
 
-            nullable<std::wstring>  m_sUri;
-            std::wstring            m_sAdditionalNamespace;
+            nullable<std::wstring>                                  m_sUri;
+            std::wstring                                            m_sAdditionalNamespace;
 
-			nullable<CCompatExt>							m_oCompatExt;
-			nullable<OOX::Spreadsheet::CSparklineGroups>	m_oSparklineGroups;
-			nullable<CDataModelExt>							m_oDataModelExt;
-			nullable<OOX::Spreadsheet::CAltTextTable>		m_oAltTextTable;
-            nullable<std::wstring>							m_oId;
-			nullable<OOX::Spreadsheet::CDataValidations>	m_oDataValidations;
+            nullable<CCompatExt>                                    m_oCompatExt;
+            nullable<OOX::Spreadsheet::CSparklineGroups>            m_oSparklineGroups;
+            nullable<CDataModelExt>                                 m_oDataModelExt;
+            nullable<OOX::Spreadsheet::CAltTextTable>               m_oAltTextTable;
+            nullable<std::wstring>                                  m_oId;
+            nullable<OOX::Spreadsheet::CDataValidations>            m_oDataValidations;
 
-			nullable<OOX::Spreadsheet::CConnection>			m_oConnection;
-			nullable<OOX::Spreadsheet::CDxfs>				m_oDxfs;
+            nullable<OOX::Spreadsheet::CConnection>                 m_oConnection;
+            nullable<OOX::Spreadsheet::CDxfs>                       m_oDxfs;
 
-			nullable<OOX::Spreadsheet::CSlicerRefs>			m_oSlicerList;
-			nullable<OOX::Spreadsheet::CSlicerRefs>			m_oSlicerListExt;
-			nullable<OOX::Spreadsheet::CSlicerCaches>		m_oSlicerCaches;
-			nullable<OOX::Spreadsheet::CSlicerCaches>		m_oSlicerCachesExt;
-			nullable<OOX::Spreadsheet::CSlicerStyles>		m_oSlicerStyles;
+            nullable<OOX::Spreadsheet::CSlicerRefs>                 m_oSlicerList;
+            nullable<OOX::Spreadsheet::CSlicerRefs>                 m_oSlicerListExt;
+            nullable<OOX::Spreadsheet::CSlicerCaches>               m_oSlicerCaches;
+            nullable<OOX::Spreadsheet::CSlicerCaches>               m_oSlicerCachesExt;
+            nullable<OOX::Spreadsheet::CSlicerStyles>               m_oSlicerStyles;
 
 			std::vector<OOX::Spreadsheet::CSlicerCachePivotTable*>	m_oSlicerCachePivotTables;
-			nullable<OOX::Spreadsheet::CTableSlicerCache>			m_oTableSlicerCache;
-			nullable<OOX::Spreadsheet::CSlicerCacheHideNoData>		m_oSlicerCacheHideItemsWithNoData;
+            nullable<OOX::Spreadsheet::CTableSlicerCache>           m_oTableSlicerCache;
+            nullable<OOX::Spreadsheet::CSlicerCacheHideNoData>      m_oSlicerCacheHideItemsWithNoData;
 			
 			std::vector<OOX::Spreadsheet::CConditionalFormatting*>	m_arrConditionalFormatting;
 
@@ -212,6 +205,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(COfficeArtExtensionList)
+                        WritingElement_XlsbConstructors(COfficeArtExtensionList)
 			COfficeArtExtensionList()
 			{
 			}
@@ -236,15 +230,17 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-                    std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-                    if ( _T("ext") == sName )
+                                        std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+                                        if ( _T("ext") == sName )
 					{
-						OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension(oReader);
-                        if (oExt) m_arrExt.push_back( oExt );
+                                                OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension(oReader);
+                                                if (oExt)
+                                                    m_arrExt.push_back( oExt );
 					}
 				}
 			}
-            virtual std::wstring toXML() const
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual std::wstring toXML() const
             {
                 return toXMLWithNS(L"a:");
             }
@@ -264,6 +260,9 @@ namespace OOX
 
 				return sResult;
 			}
+
+            void fromBin(XLS::BaseObjectPtr& obj);
+
 			virtual EElementType getType() const
 			{
 				return OOX::et_a_extLst;

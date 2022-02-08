@@ -42,10 +42,11 @@ SOURCES += \
     ../Source/DocxFormat/Logic/Sdt.cpp \
     ../Source/DocxFormat/Logic/SectionProperty.cpp \
     ../Source/DocxFormat/Logic/SmartTag.cpp \
-    ../Source/DocxFormat/Logic/Table.cpp \
+     ../Source/DocxFormat/Logic/Table.cpp \
     ../Source/DocxFormat/Logic/TableProperty.cpp \
     ../Source/DocxFormat/Logic/Vml.cpp \
     ../Source/DocxFormat/Logic/DocParts.cpp \
+    ../Source/DocxFormat/Media/Media.cpp \
     ../Source/DocxFormat/Media/VbaProject.cpp \
     ../Source/DocxFormat/Media/JsaProject.cpp \
     ../Source/DocxFormat/Media/ActiveX.cpp \
@@ -57,7 +58,7 @@ SOURCES += \
     ../Source/DocxFormat/DocxFlat.cpp \
     ../Source/DocxFormat/Comments.cpp \
     ../Source/DocxFormat/Document.cpp \
-   ../Source/DocxFormat/VmlDrawing.cpp \
+    ../Source/DocxFormat/VmlDrawing.cpp \
     ../Source/XlsxFormat/Chart/ChartSerialize.cpp \
     ../Source/XlsxFormat/Chart/ChartSerializeEx.cpp \
     ../Source/XlsxFormat/Common.cpp \
@@ -69,6 +70,7 @@ SOURCES += \
     ../Source/XlsxFormat/Worksheets/DataValidation.cpp \
     ../Source/XlsxFormat/Table/Tables.cpp \
     ../Source/XlsxFormat/Controls/Controls.cpp \
+    ../Source/DocxFormat/Settings/Settings.cpp \
     ../Source/DocxFormat/App.cpp \
     ../Source/DocxFormat/Core.cpp \
     ../Source/DocxFormat/FileFactory.cpp \
@@ -76,13 +78,12 @@ SOURCES += \
     ../Source/DocxFormat/Document.cpp \
     ../Source/XlsxFormat/FileFactory_Spreadsheet.cpp \
     ../Source/DocxFormat/Drawing/DrawingExt.cpp \
-    ../Source/Common/Align.cpp \
-    ../Source/Common/Color.cpp \
-    ../Source/Common/Index.cpp \
-    ../Source/Common/NumFormat.cpp \
-    ../Source/Common/Position.cpp \
-    ../Source/Common/Wrap.cpp \
-    ../Source/Common/ZIndex.cpp \
+    ../Source/DocxFormat/Diagram/DiagramColors.cpp \
+    ../Source/DocxFormat/Diagram/DiagramData.cpp \
+    ../Source/DocxFormat/Diagram/DiagramDrawing.cpp \
+    ../Source/DocxFormat/Diagram/DiagramLayout.cpp \
+    ../Source/DocxFormat/Diagram/DiagramQuickStyle.cpp \
+    ../Source/DocxFormat/WritingElement.cpp \
     ../Source/Common/SimpleTypes_Word.cpp \
     ../Source/SystemUtility/SystemUtility.cpp \
     ../Source/XlsxFormat/Styles/rPr.cpp \
@@ -92,7 +93,7 @@ SOURCES += \
     ../Source/XlsxFormat/Slicer/SlicerCache.cpp \
     ../Source/XlsxFormat/Slicer/SlicerCacheExt.cpp \
     ../Source/XlsxFormat/Slicer/Slicer.cpp \
-    ../Source/XlsxFormat/NamedSheetViews/NamedSheetViews.cpp
+    ../Source/XlsxFormat/NamedSheetViews/NamedSheetViews.cpp \
 }
 
 
@@ -101,21 +102,13 @@ SOURCES += docxformatlib.cpp \
     ../Source/Utility/DateTime.cpp \
     ../Source/Utility/TxtFile.cpp \
     ../Source/Base/unicode_util.cpp \
-    ../../3dParty/pole/pole.cpp
+    ../../3dParty/pole/pole.cpp \
 
 HEADERS += docxformatlib.h \
     ../Source/Base/Base.h \
     ../Source/Base/Nullable.h \
     ../Source/Base/SmartPtr.h \
-    ../Source/Common/AbstractConverter.h \
-    ../Source/Common/Align.h \
-    ../Source/Common/Color.h \
-    ../Source/Common/Common.h \
     ../Source/Common/ComplexTypes.h \
-    ../Source/Common/Index.h \
-    ../Source/Common/NumFormat.h \
-    ../Source/Common/Point.h \
-    ../Source/Common/Position.h \
     ../Source/Common/SimpleTypes_Base.h \
     ../Source/Common/SimpleTypes_Drawing.h \
     ../Source/Common/SimpleTypes_OMath.h \
@@ -208,7 +201,7 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/Chart/ChartSerialize.h \
     ../Source/XlsxFormat/Chart/ChartSerializeEx.h \
     ../Source/XlsxFormat/Comments/Comments.h \
-	../Source/XlsxFormat/Comments/ThreadedComments.h \
+    ../Source/XlsxFormat/Comments/ThreadedComments.h \
     ../Source/XlsxFormat/Drawing/CellAnchor.h \
     ../Source/XlsxFormat/Drawing/Drawing.h \
     ../Source/XlsxFormat/Drawing/FromTo.h \
@@ -270,12 +263,15 @@ HEADERS += docxformatlib.h \
     ../Source/XlsxFormat/ExternalLinks/ExternalLinks.h \
     ../Source/XlsxFormat/Worksheets/Sparkline.h \
     ../Source/XlsxFormat/Ole/OleObjects.h \
+    ../Source/DocxFormat/ Diagram/DiagramColors.h \
     ../Source/DocxFormat/Diagram/DiagramData.h \
     ../Source/DocxFormat/Diagram/DiagramDrawing.h \
+    ../Source/DocxFormat/Diagram/DiagramLayout.h \
+    ../Source/DocxFormat/Diagram/DiagramQuickStyle.h \
     ../Source/XlsxFormat/Pivot/PivotTable.h \
     ../Source/XlsxFormat/Pivot/PivotCacheDefinition.h \
     ../Source/XlsxFormat/Pivot/PivotCacheRecords.h \
     ../Source/XlsxFormat/Slicer/SlicerCache.h \
     ../Source/XlsxFormat/Slicer/SlicerCacheExt.h \
     ../Source/XlsxFormat/Slicer/Slicer.h \
-    ../Source/XlsxFormat/NamedSheetViews/NamedSheetViews.h
+    ../Source/XlsxFormat/NamedSheetViews/NamedSheetViews.h 

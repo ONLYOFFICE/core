@@ -35,6 +35,7 @@
 
 #include "../CommonInclude.h"
 #include "../../../../../DesktopEditor/common/StringExt.h"
+#include "../../XlsbFormat/Biff12_structures/RichStr.h"
 
 namespace OOX
 {
@@ -79,7 +80,7 @@ namespace OOX
 			virtual ~CText() {}
 
 			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
+            {
 			}
 			virtual std::wstring toXML() const
 			{
@@ -130,6 +131,12 @@ namespace OOX
 
 				trimString(m_sText, GetSpace());
 			}
+            void fromBin(std::wstring& str)
+            {
+                m_sText = str;
+                m_oSpace.Init();
+                m_oSpace->SetValue(SimpleTypes::xmlspacePreserve);
+            }
 			static void trimString(std::wstring& sVal, SimpleTypes::EXmlSpace eSpace);
 			std::wstring ToString() const
 			{

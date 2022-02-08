@@ -42,7 +42,9 @@ typedef enum
 	aw_WIDE = 1,
 	aw_READ_FROM_RECORD = 2,
 	aw_READ_FROM_CCH = 3,
-	aw_READ_FROM_RECORD_IF_CCH_NOT_ZERO,
+    aw_READ_FROM_RECORD_IF_CCH_NOT_ZERO = 4,
+    aw_NULLABLE_WIDE = 5,
+    aw_NAME_WIDE = 6,
 } AW_DETERMINATION;
 
 
@@ -153,10 +155,21 @@ public:
 				is_wide = false;
 				break;
 			case aw_READ_FROM_CCH:
+            {
 				cchType cch_real = static_cast<cchType>(cch);
 				is_wide = 0 != (cch_real & (1 << ((sizeof(cchType) * 8) - 1)));
 				cch &= (static_cast<cchType>(-1) >> 1);
 				break;
+            }
+            case aw_NULLABLE_WIDE:
+                if(0xFFFFFFFF == cch)
+                    cch = 0;
+                is_wide = true;
+                break;
+            case aw_NAME_WIDE:
+                is_wide = true;
+                if(cch >= 255)
+                    break;
 		}
 
 		

@@ -181,6 +181,8 @@ namespace PPTX
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			namespace_ = L"xdr";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		namespace_ = L"a";
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	namespace_ = L"cdr";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM)			namespace_ = L"dgm";
+				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DSP_DRAWING)		namespace_ = L"dsp";
 
 				pWriter->StartNode(namespace_ + L":grpSpPr");
 
@@ -222,8 +224,7 @@ namespace PPTX
 
 					if (0 == _at)
 					{
-						bwMode = new Limit::BWMode();
-						bwMode->SetBYTECode(pReader->GetUChar());
+						bwMode = pReader->GetUChar();
 					}
 					else
 						break;

@@ -76,15 +76,30 @@ namespace OOX
 		{
 			if (!oRels.m_arRelations[i]) continue;
 
+			std::wstring pathFile = (oPath / oRels.m_arRelations[i]->Target()).GetPath();
+			if (m_pMainDocument)
+			{
+				std::map<std::wstring, smart_ptr<OOX::File>>::iterator pFind = m_pMainDocument->m_mapContent.find(pathFile);
+
+				if (pFind != m_pMainDocument->m_mapContent.end())
+				{
+					Add(oRels.m_arRelations[i]->rId(), pFind->second);
+					continue;
+				}
+			}
+			
 			smart_ptr<OOX::File> pFile;
-			
+
 			if (m_bSpreadsheets)
-				pFile = OOX::Spreadsheet::CreateFile( oRootPath, oPath, oRels.m_arRelations[i], m_pMainDocument );
-			
+				pFile = OOX::Spreadsheet::CreateFile(oRootPath, oPath, oRels.m_arRelations[i], m_pMainDocument);
+
 			if (pFile.IsInit() == false || pFile->type() == FileTypes::Unknow)
-				pFile = OOX::CreateFile( oRootPath, oPath, oRels.m_arRelations[i], m_pMainDocument );
+				pFile = OOX::CreateFile(oRootPath, oPath, oRels.m_arRelations[i], m_pMainDocument);
+
+			Add(oRels.m_arRelations[i]->rId(), pFile);
 			
-			Add( oRels.m_arRelations[i]->rId(), pFile );
+			if (m_pMainDocument)
+				m_pMainDocument->m_mapContent.insert(std::make_pair(pathFile, pFile));
 		}
     }
 
@@ -99,6 +114,8 @@ namespace OOX
 	}
 	void IFileContainer::Write(OOX::CRels& oRels, const OOX::CPath& oCurrent, const OOX::CPath& oDir, OOX::CContentTypes& oContent) const
 	{
+		const OOX::File* pFileOwner = dynamic_cast<const OOX::File*>(this);
+
 		for (boost::unordered_map<std::wstring, smart_ptr<OOX::File>>::const_iterator pPair = m_mapContainer.begin(); pPair != m_mapContainer.end(); ++pPair)
 		{
 			smart_ptr<OOX::File>		pFile	= pPair->second;
@@ -112,7 +129,13 @@ namespace OOX
 				OOX::CPath oDefDir = pFile->DefaultDirectory();
 				OOX::CPath oName   = pFile->DefaultFileName();
 
-                if(false == pFile->m_sOutputFilename.empty())
+				if (pFile->type() == OOX::Spreadsheet::FileTypes::PivotCacheDefinition &&
+					pFileOwner->type() == OOX::Spreadsheet::FileTypes::PivotTable)
+				{
+					oDefDir = L"../" + oDefDir;
+				}
+
+                if (false == pFile->m_sOutputFilename.empty())
 					oName.SetName(pFile->m_sOutputFilename, false);
 
 				boost::unordered_map<std::wstring, std::wstring>::const_iterator itFind = m_mNoWriteContainer.find(pPair->first);

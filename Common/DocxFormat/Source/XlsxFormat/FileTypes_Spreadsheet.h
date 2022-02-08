@@ -123,7 +123,7 @@ namespace OOX
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheDefinition",
 												L"pivotCache/pivotCacheDefinition", true);
 
-			const FileType PivotCacheRecords(L"pivotCache", L"pivotCacheRecords.xml",
+			const FileType PivotCacheRecords(L"", L"pivotCacheRecords.xml",
 												L"application/vnd.openxmlformats-officedocument.spreadsheetml.pivotCacheRecords+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheRecords",
 												L"pivotCache/pivotCacheRecords", true, true);
@@ -143,10 +143,16 @@ namespace OOX
 												L"http://schemas.microsoft.com/office/2019/04/relationships/namedSheetView",
 												L"namedSheetViews/namedSheetView", true, true);
 
+			const FileType XlBinaryIndex	(L"worksheets", L"binaryIndex.bin",
+												L"application/vnd.ms-excel.binIndexW",
+												L"http://schemas.microsoft.com/office/2006/relationships/xlBinaryIndex",
+												L"worksheets/binaryIndex", true);
+
 			//onlyoffice workbook comments
 			const FileType WorkbookComments(L"", L"workbookComments.bin",
 												L"",
 												L"http://schemas.onlyoffice.com/workbookComments");
+
 
 			const FileType SpreadsheetFlat(L"", L"", L"", L"");
 		

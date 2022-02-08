@@ -136,6 +136,38 @@ namespace OOX
 		}
 		file.CloseFile();
 	}
+	void ActiveX_xml::write(const OOX::CPath& oPath, const OOX::CPath& oDirectory, CContentTypes& oContent) const
+	{
+		NSStringUtils::CStringBuilder sXml;
+		sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
+<ax:ocx \
+xmlns:ax=\"http://schemas.microsoft.com/office/2006/activeX\" \
+xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\"");
+
+		if (m_oClassId.IsInit())
+			sXml.WriteString(L" ax:classid=\"" + *m_oClassId + L"\"");
+		if (m_oPersistence.IsInit())
+			sXml.WriteString(L" ax:persistence=\"" + *m_oPersistence + L"\"");
+		if (m_oId.IsInit())
+			sXml.WriteString(L" r:id=\"" + m_oId->ToString() + L"\"");
+		if (m_oLicense.IsInit())
+			sXml.WriteString(L" ax:license=\"" + *m_oLicense + L"\"");
+
+		sXml.WriteString(L">");
+		for (size_t i = 0; i < m_arrOcxPr.size(); ++i)
+		{
+			m_arrOcxPr[i]->toXML(sXml);
+		}
+		sXml.WriteString(L"</ax:ocx>");
+		
+		std::wstring sPath = oPath.GetPath();
+		NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
+
+		oContent.Registration(type().OverrideType(), oDirectory, oPath.GetFilename());
+		IFileContainer::Write(oPath, oDirectory, oContent);
+	}
+
+//---------------------------------------------------------------------------------------------------------
 	ActiveXObject* ActiveXObject::Create(const std::wstring &class_id)
 	{
 			 if (class_id == L"{DFD181E0-5E2F-11CE-A449-00AA004A803D}") return new ActiveXObjectScroll();

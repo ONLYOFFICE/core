@@ -31,7 +31,6 @@
  */
 #pragma once
 
-#include "../Base/SmartPtr.h"
 #include "../DocxFormat/IFileContainer.h"
 
 #include "../../../../DesktopEditor/common/Directory.h"
@@ -71,6 +70,9 @@ namespace OOX
 			bool Read(const CPath& oFilePath);
 			bool Write(const CPath& oDirPath, OOX::CContentTypes &oContentTypes);
 			bool WriteWorkbook(const CPath& oDirPath);
+
+			bool ReadNative(const CPath& oFilePath);
+			bool WriteNative(const CPath& oDirPath, OOX::CContentTypes &oContentTypes);
 			
 			void PrepareToWrite();
 			
@@ -104,37 +106,6 @@ namespace OOX
 
 			std::vector<CWorksheet*>								m_arWorksheets;	//order as is
 			std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>	m_mapWorksheets; //copy, for fast find - order by rId(name) 
-		private:
-			void PrepareWorksheet(CWorksheet* pWorksheet);
-			void init()
-			{
-				m_bSpreadsheets		= true;
-
-				m_pApp				= NULL;
-				m_pCore				= NULL;
-
-				m_pWorkbook			= NULL;
-				m_pSharedStrings	= NULL;
-				m_pStyles			= NULL;
-				m_pCalcChain		= NULL;
-				m_pVbaProject		= NULL;
-				m_pJsaProject		= NULL;
-				m_pWorkbookComments = NULL;
-				m_pXlsbWriter = NULL;
-				m_nLastReadRow = 0;
-				m_nLastReadCol = -1;
-				m_bNeedCalcChain = true;
-
-				bDeleteWorkbook			= false;
-				bDeleteSharedStrings	= false;
-				bDeleteStyles			= false;
-				bDeleteCalcChain		= false;
-				bDeleteWorksheets		= false;
-				bDeleteVbaProject		= false;
-				bDeleteJsaProject		= false;
-			}
-
-            boost::unordered_map<std::wstring, size_t>	m_mapXlsxEnumeratedGlobal;
 			
 			bool bDeleteWorkbook;
 			bool bDeleteSharedStrings;
@@ -143,6 +114,13 @@ namespace OOX
 			bool bDeleteWorksheets;
 			bool bDeleteVbaProject;
 			bool bDeleteJsaProject;
+
+		private:
+
+			void PrepareWorksheet(CWorksheet* pWorksheet);
+            void init();
+
+            boost::unordered_map<std::wstring, size_t>	m_mapXlsxEnumeratedGlobal;
 		};
 
 	} //Spreadsheet

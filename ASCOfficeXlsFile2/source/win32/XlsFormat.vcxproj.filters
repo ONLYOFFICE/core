@@ -2425,6 +2425,18 @@
     <ClInclude Include="..\XlsFormat\Logging\Logger.h">
       <Filter>Logging</Filter>
     </ClInclude>
+    <ClInclude Include="..\XlsFormat\Logic\Biff_structures\PtgAttrIfError.h">
+      <Filter>Logic\Biff_structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsFormat\Logic\Biff_structures\PtgList.h">
+      <Filter>Logic\Biff_structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsFormat\Logic\Biff_structures\PtgExtraCol.h">
+      <Filter>Logic\Biff_structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsFormat\Logic\Biff_structures\PtgExtraList.h">
+      <Filter>Logic\Biff_structures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\XlsFormat\Binary\CFRecord.cpp">
@@ -4766,6 +4778,18 @@
     </ClCompile>
     <ClCompile Include="..\XlsFormat\Logging\Logger.cpp">
       <Filter>Logging</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsFormat\Logic\Biff_structures\PtgAttrIfError.cpp">
+      <Filter>Logic\Biff_structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsFormat\Logic\Biff_structures\PtgList.cpp">
+      <Filter>Logic\Biff_structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsFormat\Logic\Biff_structures\PtgExtraCol.cpp">
+      <Filter>Logic\Biff_structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsFormat\Logic\Biff_structures\PtgExtraList.cpp">
+      <Filter>Logic\Biff_structures</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

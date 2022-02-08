@@ -83,6 +83,8 @@ public:
     void start_document	();
     void end_document	();
 
+	void set_table_structure_protected(bool val);
+
     void start_chart(std::wstring name);
     void end_chart	();
 
@@ -115,9 +117,6 @@ public:
 
     void start_table_cell			(const std::wstring & formula, size_t columnsSpanned, size_t rowsSpanned);
     void end_table_cell				();
-    
-    void set_current_cell_style_id	(unsigned int xfId);
-    int	 get_current_cell_style_id	();
 
     void start_table_covered_cell	();
     void end_table_covered_cell		();
@@ -129,23 +128,15 @@ public:
 
     void start_hyperlink	(const std::wstring & styleName);
     void end_hyperlink		(std::wstring const & href);
+	    
+    void set_current_cell_style_id	(unsigned int xfId);
+    int	 get_current_cell_style_id	();
+	
+    size_t	get_default_cell_style() const { return default_style_; }
+	int		get_dxfId_style(const std::wstring &style_name);
 
 //------------------------------------------------------------------------------------
 	void add_pivot_sheet_source				(const std::wstring & sheet_name, int index_table_view);
-
-	void start_conditional_format			(std::wstring ref);
-	void end_conditional_format				(){}
-
-	void start_conditional_format_rule		(int type);
-	void end_conditional_format_rule		()	{}
-
-	void set_conditional_format_formula		(std::wstring f);
-	void set_conditional_format_dxf			(int dxfId);
-	void set_conditional_format_showval		(bool val);
-
-	void add_conditional_format_color		(std::wstring col);
-	void add_conditional_format_entry		(int type, std::wstring value);
-	void set_conditional_format_dataBar		(_CP_OPT(int) min, _CP_OPT(int) max);
 
 	void add_jsaProject	(const std::string &content);
 
@@ -155,7 +146,6 @@ public:
 
 	void add_table_part(const std::wstring & table) {table_parts_.push_back(table);}
 	size_t get_table_parts_size() {return table_parts_.size();}
-	
 //------------------------------------------------------------------------------------
 
     odf_reader::odf_document * root()
@@ -172,26 +162,25 @@ public:
     const xlsx_table_context    & get_table_context() const { return xlsx_table_context_; }
     xlsx_style_manager          & get_style_manager()		{ return xlsx_style_; }   
 	forms_context				& get_forms_context()		{ return forms_context_; }
-
     oox_chart_context           & current_chart();
 	math_context				& get_math_context()			 { return math_context_; }
     num_format_context          & get_num_format_context()		 { return num_format_context_; }
-    size_t                        get_default_cell_style() const { return default_style_; }
     xlsx_defined_names          & get_xlsx_defined_names()		 { return xlsx_defined_names_; }
 	xlsx_pivots_context			& get_pivots_context()			 { return xlsx_pivots_context_;}
     xlsx_table_metrics          & get_table_metrics();
     xlsx_drawing_context        & get_drawing_context();
     xlsx_comments_context       & get_comments_context();
 	xlsx_comments_context_handle & get_comments_context_handle();
-	xlsx_dataValidations_context& get_dataValidations_context()	{ return xlsx_dataValidations_context_;}
+	xlsx_conditionalFormatting_context	& get_conditionalFormatting_context();
 
-	
-    xlsx_drawing_context_handle_ptr & get_drawing_context_handle();	
+	xlsx_dataValidations_context & get_dataValidations_context()	{ return xlsx_dataValidations_context_;}
+
+	xlsx_drawing_context_handle_ptr & get_drawing_context_handle();	
 	void set_drawing_context_handle(xlsx_drawing_context_handle_ptr &handle);
 
 	mediaitems_ptr & get_mediaitems() { return mediaitems_; }
-	void set_mediaitems(mediaitems_ptr &items);
-
+	void			 set_mediaitems(mediaitems_ptr &items);
+//---------------------------------------
 	static std::unordered_map<std::wstring, int>	mapExternalLink_;
 	std::map<std::wstring, int>						mapUsedNames_;
 private:
@@ -202,12 +191,14 @@ private:
     const odf_reader::office_element	*spreadsheet_;
     odf_reader::odf_document			*odf_document_;
 
+	bool								table_structure_protected_ = false;
+
     std::vector<xlsx_xml_worksheet_ptr> sheets_;
     std::vector<oox_chart_context_ptr>  charts_;
 	std::vector<std::wstring>			table_parts_;
  
     std::wstringstream                  defaultOutput_;
-    std::pair<double, double>              maxDigitSize_;
+    std::pair<double, double>			maxDigitSize_;
     num_format_context                  num_format_context_;
     size_t                              default_style_;
     mediaitems_ptr						mediaitems_;

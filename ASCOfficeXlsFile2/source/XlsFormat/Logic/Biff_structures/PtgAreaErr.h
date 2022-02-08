@@ -38,11 +38,11 @@ namespace XLS
 
 class CFRecord;
 
-class PtgAreaErr: public OperandPtg
+class PtgAreaErr : public OperandPtg
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgAreaErr)
 public:
-	PtgAreaErr();
+	PtgAreaErr(const unsigned short full_ptg_id);
 	PtgAreaErr(const PtgDataType data_type_init);
 	BiffStructurePtr clone();
 

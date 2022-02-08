@@ -49,7 +49,6 @@ public:
 	
 	virtual void load(CFRecord& record);
 
-
 	int serialize(std::wostream & stream);
 
 	unsigned char dgLeft;
@@ -68,7 +67,7 @@ public:
 	unsigned char dgDiag;
 
 //------------------------------------------------
-	DXFN *parent;
+	DXFN *parent = NULL;
 
 
 };

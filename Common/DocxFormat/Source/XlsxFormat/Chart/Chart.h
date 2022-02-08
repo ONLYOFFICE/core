@@ -33,24 +33,28 @@
 
 #include "ChartSerializeEx.h"
 #include "../../DocxFormat/FileTypes.h"
+#include "../../DocxFormat/Document.h"
+#include "../Xlsx.h"
 
 namespace OOX
 {
 	namespace Spreadsheet
 	{
-		class CChartSpace : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
+		class CChartFile: public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 		{
 		public:
-			CChartSpace(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
+			CChartFile(OOX::Document* pMain, bool bDocument = true) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
-				m_bSpreadsheets = true;
+				m_bDocument = bDocument;
+				m_bSpreadsheets = (NULL != dynamic_cast<OOX::Spreadsheet::CXlsx*>(pMain));
 			}
-			CChartSpace(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
+			CChartFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
-				m_bSpreadsheets = true;
+				m_bDocument = (NULL != dynamic_cast<OOX::CDocument*>(pMain));
+				m_bSpreadsheets = (NULL != dynamic_cast<OOX::Spreadsheet::CXlsx*>(pMain));
 				read( oRootPath, oPath );
 			}
-			virtual ~CChartSpace()
+			virtual ~CChartFile()
 			{
 			}
 			virtual void read(const CPath& oPath)
@@ -92,17 +96,16 @@ namespace OOX
 			{
 				m_oChartSpace.toXML(L"c:chartSpace", writer);
 			}
-			bool isValid() const
-			{
-				return true;
-			}
 			virtual const OOX::FileType type() const
 			{
 				return OOX::FileTypes::Chart;
 			}
 			virtual const CPath DefaultDirectory() const
 			{
-				return type().DefaultDirectory();
+				if (m_bDocument)
+					return type().DefaultDirectory();
+				else
+					return L"../" + type().DefaultDirectory();
 			}
 			virtual const CPath DefaultFileName() const
 			{
@@ -113,26 +116,29 @@ namespace OOX
 				return m_oReadPath;
 			}
 
-			CT_ChartSpace	m_oChartSpace;
+			CT_ChartSpace m_oChartSpace;
 		private:
-			CPath			m_oReadPath;
+			CPath m_oReadPath;
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
+			bool m_bDocument = true; //for upper/lower level rels (defaultDirectory)
 		};
-		class CChartSpaceEx : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
+		class CChartExFile : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 		{
 		public:
-			CChartSpaceEx(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
+			CChartExFile(OOX::Document* pMain, bool bDocument = true) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
-				m_bSpreadsheets = true;
+				m_bDocument = bDocument;
+				m_bSpreadsheets = (NULL != dynamic_cast<OOX::Spreadsheet::CXlsx*>(pMain));
 			}
-			CChartSpaceEx(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
+			CChartExFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
-				m_bSpreadsheets = true;
+				m_bDocument = (NULL != dynamic_cast<OOX::CDocument*>(pMain));
+				m_bSpreadsheets = (NULL != dynamic_cast<OOX::Spreadsheet::CXlsx*>(pMain));
 				read( oRootPath, oPath );
 			}
-			virtual ~CChartSpaceEx()
+			virtual ~CChartExFile()
 			{
 			}
 			virtual void read(const CPath& oPath)
@@ -174,17 +180,16 @@ namespace OOX
 			{
 				m_oChartSpace.toXML(writer);
 			}
-			bool isValid() const
-			{
-				return true;
-			}
 			virtual const OOX::FileType type() const
 			{
 				return OOX::FileTypes::ChartEx;
 			}
 			virtual const CPath DefaultDirectory() const
 			{
-				return type().DefaultDirectory();
+				if (m_bDocument)
+					return type().DefaultDirectory();
+				else
+					return L"../" + type().DefaultDirectory();
 			}
 			virtual const CPath DefaultFileName() const
 			{
@@ -195,26 +200,27 @@ namespace OOX
 				return m_oReadPath;
 			}
 
-			ChartEx::CChartSpace	m_oChartSpace;
+			ChartEx::CChartSpace m_oChartSpace;
 		private:
-			CPath			m_oReadPath;
+			CPath m_oReadPath;
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
+			bool m_bDocument = true; //for upper/lower level rels (defaultDirectory)
 		};
-		class CChartStyle : public OOX::FileGlobalEnumerated/*, public OOX::IFileContainer*/
+		class CChartStyleFile : public OOX::FileGlobalEnumerated/*, public OOX::IFileContainer*/
 		{
 		public:
-			CChartStyle(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain)/*, OOX::IFileContainer(pMain)*/
+			CChartStyleFile(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain)/*, OOX::IFileContainer(pMain)*/
 			{
 				//m_bSpreadsheets = true;
 			}
-			CChartStyle(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain)/*, OOX::IFileContainer(pMain)*/
+			CChartStyleFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain)/*, OOX::IFileContainer(pMain)*/
 			{
 				//m_bSpreadsheets = true;
 				read( oRootPath, oPath );
 			}
-			virtual ~CChartStyle()
+			virtual ~CChartStyleFile()
 			{
 			}
 			virtual void read(const CPath& oPath)
@@ -236,7 +242,7 @@ namespace OOX
 				if ( !oReader.ReadNextNode() )
 					return;
 
-				//m_oChartSpace.fromXML(oReader);
+				m_oChartStyle.fromXML(oReader);
 			}
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
@@ -254,7 +260,7 @@ namespace OOX
 			}
 			void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				//m_oChartSpace.toXML(L"cs:chartStyle", writer);
+				m_oChartStyle.toXML(writer);
 			}
 			bool isValid() const
 			{
@@ -277,25 +283,23 @@ namespace OOX
 				return m_oReadPath;
 			}
 
+			ChartEx::CChartStyle m_oChartStyle;
 		private:
-			CPath			m_oReadPath;
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
+			CPath m_oReadPath;
 		};
-		class CChartColorStyle : public OOX::FileGlobalEnumerated/*, public OOX::IFileContainer*/
+		class CChartColorsFile: public OOX::FileGlobalEnumerated/*, public OOX::IFileContainer*/
 		{
 		public:
-			CChartColorStyle(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain)/*, OOX::IFileContainer(pMain)*/
+			CChartColorsFile(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain)/*, OOX::IFileContainer(pMain)*/
 			{
 				//m_bSpreadsheets = true;
 			}
-			CChartColorStyle(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain)/*, OOX::IFileContainer(pMain)*/
+			CChartColorsFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain)/*, OOX::IFileContainer(pMain)*/
 			{
 				//m_bSpreadsheets = true;
 				read( oRootPath, oPath );
 			}
-			virtual ~CChartColorStyle()
+			virtual ~CChartColorsFile()
 			{
 			}
 			virtual void read(const CPath& oPath)
@@ -317,7 +321,7 @@ namespace OOX
 				if ( !oReader.ReadNextNode() )
 					return;
 
-				//m_oChartSpace.fromXML(oReader);
+				m_oColorStyle.fromXML(oReader);
 			}
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
@@ -335,7 +339,7 @@ namespace OOX
 			}
 			void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				//m_oChartSpace.toXML(L"cs:chartStyle", writer);
+				m_oColorStyle.toXML(writer);
 			}
 			bool isValid() const
 			{
@@ -343,7 +347,7 @@ namespace OOX
 			}
 			virtual const OOX::FileType type() const
 			{
-				return OOX::FileTypes::ChartColorStyle;
+				return OOX::FileTypes::ChartColors;
 			}
 			virtual const CPath DefaultDirectory() const
 			{
@@ -358,11 +362,11 @@ namespace OOX
 				return m_oReadPath;
 			}
 
+			ChartEx::CColorStyle m_oColorStyle;
+
 		private:
-			CPath			m_oReadPath;
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
+			CPath m_oReadPath;
+
 		};
 	} //Spreadsheet
 } // namespace OOX

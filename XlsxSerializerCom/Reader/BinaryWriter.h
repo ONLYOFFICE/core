@@ -117,6 +117,7 @@ namespace BinXlsxRW
 		void WriteCellXfs(const OOX::Spreadsheet::CCellXfs& cellXfs);
 		void WriteXfs(const OOX::Spreadsheet::CXfs& xfs);
 		void WriteAligment(const OOX::Spreadsheet::CAligment& aligment);
+		void WriteProtection(const OOX::Spreadsheet::CProtection& protection);
 		void WriteFills(const OOX::Spreadsheet::CFills& fills, OOX::Spreadsheet::CIndexedColors* pIndexedColors, PPTX::Theme* pTheme);
 		void WriteFill(const OOX::Spreadsheet::CFill& fill, OOX::Spreadsheet::CIndexedColors* pIndexedColors);
 		void WritePatternFill(const OOX::Spreadsheet::CPatternFill& fill, OOX::Spreadsheet::CIndexedColors* pIndexedColors);
@@ -159,6 +160,7 @@ namespace BinXlsxRW
 		void Write(OOX::Spreadsheet::CWorkbook& workbook);
 		void WriteWorkbook(OOX::Spreadsheet::CWorkbook& workbook);
 		void WriteWorkbookPr(const OOX::Spreadsheet::CWorkbookPr& workbookPr);
+		void WriteProtection(const OOX::Spreadsheet::CWorkbookProtection& protection);
 		void WriteBookViews(const OOX::Spreadsheet::CBookViews& bookViews);
 		void WriteWorkbookView(const OOX::Spreadsheet::CWorkbookView& workbookView);
 		void WriteDefinedNames(const OOX::Spreadsheet::CDefinedNames& definedNames);
@@ -216,6 +218,9 @@ namespace BinXlsxRW
 		void WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet, OOX::Spreadsheet::CWorksheet& oWorksheet);
 		
 		void WriteWorksheetProp(OOX::Spreadsheet::CSheet& oSheet);
+		void WriteProtection(const OOX::Spreadsheet::CSheetProtection& protection);
+		void WriteProtectedRanges(const OOX::Spreadsheet::CProtectedRanges& protectedRanges);
+		void WriteProtectedRange(const OOX::Spreadsheet::CProtectedRange& protectedRanges);
 		void WriteCols(const OOX::Spreadsheet::CCols& oCols);
 		void WriteCol(const OOX::Spreadsheet::CCol& oCol);
 		void WriteSheetViews(const OOX::Spreadsheet::CSheetViews& oSheetViews);
@@ -249,6 +254,7 @@ namespace BinXlsxRW
 		void WriteFromTo(const OOX::Spreadsheet::CFromTo& oFromTo);
 		void WritePos(const OOX::Spreadsheet::CPos& oPos);
 		void WriteExt(const OOX::Spreadsheet::CExt& oExt);
+		void WriteClientData(const OOX::Spreadsheet::CClientData& oClientData);
         void WriteComments(boost::unordered_map<std::wstring, OOX::Spreadsheet::CCommentItem*>& mapComments);
 		void getSavedComment(OOX::Spreadsheet::CCommentItem& oComment, std::vector<SerializeCommon::CommentData*>& aDatas);
 		void WriteComment(OOX::Spreadsheet::CCommentItem& oComment, std::vector<SerializeCommon::CommentData*>& aCommentDatas);
@@ -264,11 +270,11 @@ namespace BinXlsxRW
 		void WritemRowColBreaks(const OOX::Spreadsheet::CRowColBreaks& oRowColBreaks);		
 		void WritemBreak(const OOX::Spreadsheet::CBreak& oBreak);
 		void WriteConditionalFormattings(std::vector<OOX::Spreadsheet::CConditionalFormatting*>& arrConditionalFormatting,
-			std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx);
+			std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt);
 		void WriteConditionalFormatting(const OOX::Spreadsheet::CConditionalFormatting& oConditionalFormatting,
-			std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx);
+			std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt);
 		void WriteConditionalFormattingRule(const OOX::Spreadsheet::CConditionalFormattingRule& oConditionalFormattingRule,
-			std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx);
+			std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt);
 		void WriteColorScale(const OOX::Spreadsheet::CColorScale& oColorScale);
 		void WriteDataBar(const OOX::Spreadsheet::CDataBar& oDataBar);
 		void WriteIconSet(const OOX::Spreadsheet::CIconSet& oIconSet);
@@ -282,6 +288,13 @@ namespace BinXlsxRW
 		void WriteDataValidationsContent(const OOX::Spreadsheet::CDataValidations& oDataValidations);
 		void WriteDataValidation(const OOX::Spreadsheet::CDataValidation& oDataValidation);
 		void WriteSlicers(OOX::Spreadsheet::CWorksheet& oWorksheet, const OOX::Spreadsheet::CSlicerRefs& oSlicers);
+	};
+	class BinaryCustomsTableWriter
+	{
+		BinaryCommonWriter m_oBcw;
+	public:
+		BinaryCustomsTableWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream);
+		void Write(OOX::IFileContainer *pContainer);
 	};
 	class BinaryCalcChainTableWriter
 	{
@@ -327,7 +340,6 @@ namespace BinXlsxRW
 	private:
 		BinaryCommonWriter* m_oBcw;
 		int m_nLastFilePos;
-		int m_nLastFilePosOffset;
 		int m_nRealTableCount;
 		int m_nMainTableStart;
 		DocWrapper::FontProcessor& m_oFontProcessor;
@@ -338,11 +350,14 @@ namespace BinXlsxRW
             NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const std::wstring& sXMLOptions, bool bIsNoBase64);
 		
 		void intoBindoc(OOX::Document *pDocument, NSBinPptxRW::CBinaryFileWriter &oBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter);
- 	private:
-       std::wstring WriteFileHeader(int nDataSize, int version);
+       
+		std::wstring WriteFileHeader(int nDataSize, int version);
+		int GetMainTableSize();
+	
+		int m_nLastFilePosOffset;
+	private:
 		void WriteMainTableStart();
 		void WriteMainTableEnd();
-		int GetMainTableSize();
 		int WriteTableStart(BYTE type, int nStartPos = -1);
 		void WriteTableEnd(int nCurPos);
 	};

@@ -39,6 +39,9 @@
 #include "DocumentRecords.h"
 #include "DocumentTextInfo.h"
 
+//Animation
+#include "Animations/_includer.h"
+
 // drawing records
 #include "Drawing/ChildAnchor.h"
 #include "Drawing/BlipStoreContainer.h"
@@ -53,8 +56,11 @@
 #include "Drawing/RegGroupItems.h"
 #include "Drawing/DrawingContainer.h"
 
+#include "OfficeArtClientData.h"
+#include "OfficeArtClientTextbox.h"
+
 // others
-#include "AnimationInfoAtom.h"
+
 #include "BlipEntityAtom.h"
 #include "BookmarkEntityAtom.h"
 #include "BookmarkSeedAtom.h"
@@ -62,6 +68,7 @@
 #include "ColorSchemeAtom.h"
 #include "DocRoutingSlipAtom.h"
 #include "DocumentAtom.h"
+#include "DocInfoListContainer.h"
 #include "ExControlAtom.h"
 #include "EndDocument.h"
 #include "ExHyperlinkAtom.h"
@@ -88,10 +95,6 @@
 #include "NoZoomViewInfoAtom.h"
 #include "OutlineTextRefAtom.h"
 #include "PlaceHolderAtom.h"
-#include "RoundTripColorMappingAtom.h"
-#include "RoundTripNewPlaceholderId12Atom.h"
-#include "RoundTripThemeAtom.h"
-#include "RoundTripNotesMasterTextStyles12Atom.h"
 #include "TextRulerAtom.h"
 #include "ShapeFlags10Atom.h"
 #include "ShapeFlagsAtom.h"
@@ -119,9 +122,10 @@
 #include "ViewInfoAtom.h"
 #include "ZoomViewInfoAtom.h"
 
-#include "Animations/AnimationTypes.h"
+#include "Animations/_includer.h"
 #include "InteractiveInfoAtom.h"
 #include "TextInteractiveInfoAtom.h"
+#include "MouseInteractiveInfoContainer.h"
 
 //sound
 #include "ExMIDIAudioContainer.h"
@@ -133,5 +137,5 @@
 #include "SoundCollectionContainer.h"
 #include "SoundContainer.h"
 
-#include "RoundTripOriginalMainMasterId12Atom.h"
-#include "RoundTripCompositeMainMasterId12Atom.h"
+#include "RoundTrip.h"
+

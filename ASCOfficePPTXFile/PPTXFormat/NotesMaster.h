@@ -41,6 +41,8 @@
 #include "Logic/CSld.h"
 #include "Logic/Hf.h"
 #include "Logic/TextListStyle.h"
+#include "TableStyles.h"
+#include "Logic/Shape.h"
 
 namespace PPTX
 {
@@ -143,7 +145,7 @@ namespace PPTX
 		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
 			pReader->Skip(1); // type
-			LONG end = pReader->GetPos() + pReader->GetLong() + 4;
+			LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 			while (pReader->GetPos() < end)
 			{

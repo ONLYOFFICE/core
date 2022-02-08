@@ -84,6 +84,8 @@ namespace OOX
 	}
 	void VbaProject::write(const OOX::CPath& filename, const OOX::CPath& directory, CContentTypes& content) const
 	{
+		Media::write(filename, directory, content);
+
 		content.Registration( type().OverrideType(), directory, filename.GetFilename() );
 		IFileContainer::Write( filename, directory, content );
 	}
@@ -99,7 +101,8 @@ namespace OOX
 	}
 	void VbaProject::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
-		LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+		LONG _rec_size = pReader->GetRecordSize();
+		LONG _end_rec = pReader->GetPos() + _rec_size + 4;
 
 		pReader->Skip(1); // start attributes
 		while (true)

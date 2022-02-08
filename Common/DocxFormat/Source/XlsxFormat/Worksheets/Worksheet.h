@@ -63,7 +63,6 @@ namespace OOX
 		//<customProperties>
 		//<extLst>
 		//<phoneticPr>
-		//<protectedRanges>
 		//<scenarios>
 		//<sheetCalcPr>
 		//<smartTags>
@@ -73,8 +72,11 @@ namespace OOX
 		{
 		public:
 			CWorksheet(OOX::Document* pMain);
-			CWorksheet(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath, const std::wstring & rId);
+            CWorksheet(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath, const std::wstring & rId, bool isChartSheet = false);
 			virtual ~CWorksheet();
+
+            void readBin(const CPath& oPath);
+
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. instead use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -100,7 +102,7 @@ namespace OOX
 			void toXMLEnd(NSStringUtils::CStringBuilder& writer) const;
 			virtual const OOX::FileType type() const
 			{
-				return OOX::Spreadsheet::FileTypes::Worksheet;
+                return m_bIsChartSheet?OOX::Spreadsheet::FileTypes::Chartsheets:OOX::Spreadsheet::FileTypes::Worksheet;
 			}
 			virtual const CPath DefaultDirectory() const
 			{
@@ -119,10 +121,8 @@ namespace OOX
             const OOX::RId AddHyperlink (std::wstring& sHref);
 			smart_ptr<OOX::WritingElement> FindVmlObject(const std::wstring &spid);
 
-			void PrepareDataValidations();
-			void PrepareConditionalFormatting();
-			void PrepareComments(OOX::Spreadsheet::CComments* pComments, OOX::Spreadsheet::CThreadedComments* pThreadedComments, OOX::Spreadsheet::CLegacyDrawingWorksheet* pLegacyDrawing);
 			void PrepareToWrite();
+			void PrepareAfterRead();
 
 			void ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader);
 
@@ -130,6 +130,7 @@ namespace OOX
 			
 			bool	m_bPrepareForBinaryWriter;
 			bool	m_bWriteDirectlyToFile;
+            bool    m_bIsChartSheet;
 
 			nullable<OOX::Spreadsheet::CCols>						m_oCols;
 			nullable<OOX::Spreadsheet::CDimension>					m_oDimension;
@@ -159,6 +160,7 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CDataValidations>			m_oDataValidations;
 			nullable<OOX::Spreadsheet::CDataConsolidate>			m_oDataConsolidate;
 			nullable<OOX::Spreadsheet::CSortState>					m_oSortState;
+			nullable<OOX::Spreadsheet::CProtectedRanges>			m_oProtectedRanges;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList>			m_oExtLst;
 
@@ -167,6 +169,13 @@ namespace OOX
 			CThreadedComments	*m_pThreadedComments;
 
 			std::map<std::wstring, CConditionalFormattingRule*> m_mapConditionalFormattingEx;
+//--------------------------------------------------------------------------------------------
+			std::map<std::wstring, unsigned int> m_mapStyleMerges2003;
+		private:
+			void PrepareDataValidations();
+			void PrepareConditionalFormatting();
+			void PrepareComments(OOX::Spreadsheet::CComments* pComments, OOX::Spreadsheet::CThreadedComments* pThreadedComments, OOX::Spreadsheet::CLegacyDrawingWorksheet* pLegacyDrawing);
+
 		};
 	} //Spreadsheet
 } // namespace OOX

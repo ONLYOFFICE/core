@@ -7,14 +7,20 @@ class COOXMLSigner_private;
 class Q_DECL_EXPORT COOXMLSigner
 {
 public:
-    COOXMLSigner(const std::wstring& sFolder, ICertificate* pContext);
+    COOXMLSigner(const std::wstring& sFolder,               ICertificate* pContext);
+    COOXMLSigner(unsigned char* data, unsigned long length, ICertificate* pContext);
     ~COOXMLSigner();
 
-    void SetGuid(const std::wstring& guid);
-    void SetImageValid(const std::wstring& file);
+    void SetGuid        (const std::wstring& guid);
+    void SetImageValid  (const std::wstring& file);
     void SetImageInvalid(const std::wstring& file);
+    void SetImageValid  (unsigned char* data, unsigned long length);
+    void SetImageInvalid(unsigned char* data, unsigned long length);
 
-    void Sign();
+    int Sign(unsigned char*& pFiletoWrite, unsigned long& dwLenFiletoWrite);
+
+    // Simle alias to Sign(data, len) for folder realization
+    int Sign();
 
 private:
     COOXMLSigner_private* m_internal;

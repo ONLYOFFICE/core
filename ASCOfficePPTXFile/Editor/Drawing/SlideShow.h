@@ -44,9 +44,12 @@ namespace PPT_FORMAT
 		BYTE	m_nEffectType;			// тип перехода
 
 		bool	m_bLoopSound;			// зациклить аудио
-		bool	m_bStopSound;			// перед транзишном перестать играть все аудио до этого
+                bool	m_bStopSound;			// перед транзишном перестать играть все аудио до этого
 
-		int		m_nSpeed;
+//                bool            m_bAdvClick;            // Attributes for true transition
+//                int             m_nAdvTm;
+                int		m_nSpeed;
+
 
 		CTransition() : m_oAudio()
 		{
@@ -58,6 +61,8 @@ namespace PPT_FORMAT
 			m_bLoopSound		= false;
 			m_bStopSound		= false;
 
+//                        m_bAdvClick                     = true;
+//                        m_nAdvTm                        = 0;
 			m_nSpeed			= 2;
 		}
 		~CTransition()
@@ -93,13 +98,15 @@ namespace PPT_FORMAT
 
 		CTransition	m_oTransition;	// переход
 
-		bool	m_bOnlyClick;		// переход на следующий по щелчку
+                bool	m_bAdvClick;        // разрешить автопереход по времени
+                bool    m_bManulClick;      // переход на следующий по щелчку
 
 		CSlideShowInfo() : m_oTransition()
 		{
-			m_dSlideDuration	= 30000.0;
-			m_bHidden			= false;
-			m_bOnlyClick		= false;
+                        m_dSlideDuration	= -1.0;
+                        m_bHidden		= false;
+                        m_bAdvClick		= false;
+                        m_bManulClick           = true;
 		}
 		~CSlideShowInfo()
 		{
@@ -109,7 +116,7 @@ namespace PPT_FORMAT
 		{
 			m_dSlideDuration	= oSrc.m_dSlideDuration;
 			m_bHidden			= oSrc.m_bHidden;
-			m_bOnlyClick		= oSrc.m_bOnlyClick;
+                        m_bAdvClick		= oSrc.m_bAdvClick;
 
 			m_oTransition		= oSrc.m_oTransition;
 			return *this;

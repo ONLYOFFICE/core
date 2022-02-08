@@ -61,7 +61,9 @@ namespace TestDocsWithChart
             //getMath();
             //getFullCalcOnLoad();
             //getGradientPos();
-            getCAFiles();
+            //getCAFiles();
+            //getSlicerFiles();
+            getNamedSheetView();
         }
         static void getFilesPivot()
         {
@@ -371,7 +373,72 @@ namespace TestDocsWithChart
                 System.IO.File.Copy(tuple.Item2, Path.Combine(sDirOutput, tuple.Item1.ToString("D6") + "_" + Path.GetFileName(tuple.Item2)), true);
             }
         }
+        static void getSlicerFiles()
+        {
+            string sDirInput = @"\\192.168.5.3\files\Files\xlsx";
+            string sDirOutput1 = @"D:\Files\Slicers\table";
+            string sFindText1 = "tableSlicerCache";
+            string sDirOutput2 = @"D:\Files\Slicers\olap";
+            string sFindText2 = "olap";
+            string sDirOutput3 = @"D:\Files\Slicers\pivot";
+            String[] allfiles = System.IO.Directory.GetFiles(sDirInput, "*.*", System.IO.SearchOption.AllDirectories);
+            for (var i = 0; i < allfiles.Length; ++i)
+            {
+                string file = allfiles[i];
+                try
+                {
+                    ZipArchive zip = ZipFile.OpenRead(file);
+                    foreach (ZipArchiveEntry entry in zip.Entries)
+                    {
+                        if (entry.FullName.Contains("slicerCache") && entry.FullName.EndsWith(".xml"))
+                        {
+                            using (StreamReader reader = new StreamReader(entry.Open(), Encoding.UTF8))
+                            {
+                                string sXml = reader.ReadToEnd();
+                                if (-1 != sXml.IndexOf(sFindText1))
+                                {
+                                    System.IO.File.Copy(file, Path.Combine(sDirOutput1, Path.GetFileName(file)), true);
+                                }
+                                else if (-1 != sXml.IndexOf(sFindText2))
+                                {
+                                    System.IO.File.Copy(file, Path.Combine(sDirOutput2, Path.GetFileName(file)), true);
+                                }
+                                else
+                                {
+                                    System.IO.File.Copy(file, Path.Combine(sDirOutput3, Path.GetFileName(file)), true);
+                                }
+                            }
+                        }
+                    }
+                }
+                catch { }
+            }
+        }
+        static void getNamedSheetView()
+        {
+            string sDirInput = @"\\192.168.5.3\files\Files\xlsx";
+            string sDirOutput = @"D:\Files\NamedSheetView";
+            String[] allfiles = System.IO.Directory.GetFiles(sDirInput, "*.*", System.IO.SearchOption.AllDirectories);
+            for (var i = 0; i < allfiles.Length; ++i)
+            {
+                string file = allfiles[i];
+                try
+                {
+                    ZipArchive zip = ZipFile.OpenRead(file);
+                    foreach (ZipArchiveEntry entry in zip.Entries)
+                    {
+                        if (entry.FullName.StartsWith("namedSheetView"))
+                        {
+                            System.IO.File.Copy(file, Path.Combine(sDirOutput, Path.GetFileName(file)), true);
+                            break;
+                        }
+                    }
+                }
+                catch { }
+            }
+        }
         
+
         static void getFilesConditional()
         {
             //string sFindText = "conditionalFormatting";

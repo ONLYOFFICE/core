@@ -57,6 +57,8 @@ namespace OOX {
 	
     bool CDocx::Read(const CPath& oFilePath)
     {
+		m_sDocumentPath = oFilePath.GetPath();
+
         // Ищем "/_rels/.rels" и читаем все файлы по рельсам
         OOX::CRels oRels( oFilePath / FILE_SEPARATOR_STR );
         IFileContainer::Read( oRels, oFilePath, oFilePath );
@@ -125,7 +127,8 @@ namespace OOX {
 					OOX::CCustomXML* pCustomXml = dynamic_cast<OOX::CCustomXML*>(container[i].GetPointer());
 					if(OOX::CSettingsCustom::GetSchemaUrl() == pCustomXml->GetSchemaUrl())
 					{
-						return pCustomXml->m_sXml;
+						pCustomXml->m_bUsed = true;
+						return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pCustomXml->m_sXmlA.c_str(), pCustomXml->m_sXmlA.length());
 					}
 				}
 			}

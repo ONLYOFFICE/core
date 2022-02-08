@@ -346,12 +346,6 @@
     <ClInclude Include="..\PPTXFormat\WrapperFile.h">
       <Filter>PPTX</Filter>
     </ClInclude>
-    <ClInclude Include="..\PPTXFormat\WrapperWritingElement.h">
-      <Filter>PPTX</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Common\DocxFormat\Source\DocxFormat\WritingVector.h">
-      <Filter>PPTX</Filter>
-    </ClInclude>
     <ClInclude Include="..\PPTXFormat\App.h">
       <Filter>PPTX\App</Filter>
     </ClInclude>
@@ -1481,6 +1475,9 @@
     <ClInclude Include="..\ASCOfficePPTXFile.h" />
     <ClInclude Include="..\..\DesktopEditor\raster\exif.h">
       <Filter>BinaryReaderWriter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\PPTXFormat\Logic\Timing\ChildTnLst.h">
+      <Filter>PPTX\Logic\Timing</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

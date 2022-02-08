@@ -22,6 +22,12 @@
     <Filter Include="Src\Encrypt">
       <UniqueIdentifier>{e955fc8f-90e5-44a8-89b6-4f281e87c89a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\ZLib">
+      <UniqueIdentifier>{033cacd7-e0b9-4894-8566-3197e61f07a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\FreeType">
+      <UniqueIdentifier>{6336853a-6b37-4a99-943f-d1852309adaa}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -92,6 +98,162 @@
     </ClCompile>
     <ClCompile Include="OnlineOfficeBinToPdf.cpp">
       <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\AcroForm.cpp">
+      <Filter>Src\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OfficeUtils\src\zlib-1.2.11\adler32.c">
+      <Filter>Src\ZLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OfficeUtils\src\zlib-1.2.11\deflate.c">
+      <Filter>Src\ZLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OfficeUtils\src\zlib-1.2.11\crc32.c">
+      <Filter>Src\ZLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OfficeUtils\src\zlib-1.2.11\inffast.c">
+      <Filter>Src\ZLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OfficeUtils\src\zlib-1.2.11\inflate.c">
+      <Filter>Src\ZLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OfficeUtils\src\zlib-1.2.11\inftrees.c">
+      <Filter>Src\ZLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OfficeUtils\src\zlib-1.2.11\zutil.c">
+      <Filter>Src\ZLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OfficeUtils\src\zlib-1.2.11\trees.c">
+      <Filter>Src\ZLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OfficeUtils\src\zlib-1.2.11\uncompr.c">
+      <Filter>Src\ZLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\OfficeUtils\src\zlib-1.2.11\compress.c">
+      <Filter>Src\ZLib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\autofit\autofit.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\bdf\bdf.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\cff\cff.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\base\ftbase.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\base\ftbbox.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\base\ftbdf.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\base\ftbitmap.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\bzip2\ftbzip2.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\cache\ftcache.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\base\ftcid.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\base\ftdebug.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\base\ftfstype.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\base\ftgasp.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\base\ftglyph.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\base\ftgxval.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\gzip\ftgzip.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\base\ftinit.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\lzw\ftlzw.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\base\ftmm.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\base\ftotval.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\base\ftpatent.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\base\ftpfr.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\base\ftstroke.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\base\ftsynth.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\base\ftsystem.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\base\fttype1.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\base\ftwinfnt.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\pcf\pcf.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\pfr\pfr.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\psaux\psaux.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\pshinter\pshinter.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\psnames\psnames.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\raster\raster.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\sfnt\sfnt.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\smooth\smooth.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\truetype\truetype.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\type1\type1.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\cid\type1cid.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\type42\type42.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DesktopEditor\freetype-2.10.4\src\winfonts\winfnt.c">
+      <Filter>Src\FreeType</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Metadata.cpp">
+      <Filter>Src\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -168,6 +330,15 @@
       <Filter>Src</Filter>
     </ClInclude>
     <ClInclude Include="Src\FastStringToDouble.h">
+      <Filter>Src\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\AcroForm.h">
+      <Filter>Src\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\ICCProfile.h">
+      <Filter>Src\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Metadata.h">
       <Filter>Src\Header Files</Filter>
     </ClInclude>
   </ItemGroup>

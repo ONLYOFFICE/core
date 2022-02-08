@@ -52,6 +52,7 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/App.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Core.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/CustomXml.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/SharedStrings/SharedStrings.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/ExternalLinks/ExternalLinkPath.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/Comments/ThreadedComments.h"
@@ -1258,7 +1259,7 @@ void BinaryStyleTableWriter::WriteXfs(const OOX::Spreadsheet::CXfs& xfs)
 {
 	int nCurPos = 0;
 	//ApplyAlignment
-	if(false != xfs.m_oApplyAlignment.IsInit())
+	if (false != xfs.m_oApplyAlignment.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::ApplyAlignment);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
@@ -1272,7 +1273,7 @@ void BinaryStyleTableWriter::WriteXfs(const OOX::Spreadsheet::CXfs& xfs)
 		m_oBcw.m_oStream.WriteBOOL(xfs.m_oApplyBorder->ToBool());
 	}
 	//ApplyFill
-	if(false != xfs.m_oApplyFill.IsInit())
+	if (false != xfs.m_oApplyFill.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::ApplyFill);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
@@ -1286,49 +1287,56 @@ void BinaryStyleTableWriter::WriteXfs(const OOX::Spreadsheet::CXfs& xfs)
 		m_oBcw.m_oStream.WriteBOOL(xfs.m_oApplyFont->ToBool());
 	}
 	//ApplyNumberFormat
-	if(false != xfs.m_oApplyNumberFormat.IsInit())
+	if (false != xfs.m_oApplyNumberFormat.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::ApplyNumberFormat);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 		m_oBcw.m_oStream.WriteBOOL(xfs.m_oApplyNumberFormat->ToBool());
 	}
+	//ApplyProtection
+	if (false != xfs.m_oApplyProtection.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::ApplyProtection);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(xfs.m_oApplyProtection->ToBool());
+	}
 	//BorderId
-	if(false != xfs.m_oBorderId.IsInit())
+	if (false != xfs.m_oBorderId.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::BorderId);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
 		m_oBcw.m_oStream.WriteLONG(xfs.m_oBorderId->GetValue());
 	}
 	//FillId
-	if(false != xfs.m_oFillId.IsInit())
+	if (false != xfs.m_oFillId.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::FillId);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
 		m_oBcw.m_oStream.WriteLONG(xfs.m_oFillId->GetValue());
 	}
 	//FontId
-	if(false != xfs.m_oFontId.IsInit())
+	if (false != xfs.m_oFontId.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::FontId);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
 		m_oBcw.m_oStream.WriteLONG(xfs.m_oFontId->GetValue());
 	}
 	//NumFmtId
-	if(false != xfs.m_oNumFmtId.IsInit())
+	if (false != xfs.m_oNumFmtId.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::NumFmtId);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
 		m_oBcw.m_oStream.WriteLONG(xfs.m_oNumFmtId->GetValue());
 	}
 	//QuotePrefix
-	if(false != xfs.m_oQuotePrefix.IsInit())
+	if (false != xfs.m_oQuotePrefix.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::QuotePrefix);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 		m_oBcw.m_oStream.WriteBOOL(xfs.m_oQuotePrefix->ToBool());
 	}
 	//PivotButton
-	if(false != xfs.m_oPivotButton.IsInit())
+	if (false != xfs.m_oPivotButton.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::PivotButton);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
@@ -1342,13 +1350,38 @@ void BinaryStyleTableWriter::WriteXfs(const OOX::Spreadsheet::CXfs& xfs)
 		m_oBcw.m_oStream.WriteLONG(xfs.m_oXfId->GetValue());
 	}
 	//Aligment
-	if(false != xfs.m_oAligment.IsInit())
+	if (false != xfs.m_oAligment.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::Aligment);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 		nCurPos = m_oBcw.WriteItemWithLengthStart();
 		WriteAligment(xfs.m_oAligment.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	//Protection 
+	if (false != xfs.m_oProtection.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerXfsTypes::Protection);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		nCurPos = m_oBcw.WriteItemWithLengthStart();
+		WriteProtection(xfs.m_oProtection.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+}
+void BinaryStyleTableWriter::WriteProtection(const OOX::Spreadsheet::CProtection& protection)
+{
+	int nCurPos = 0;
+	if (false != protection.m_oHidden.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProtectionTypes::Hidden);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(protection.m_oHidden->ToBool());
+	}
+	if (false != protection.m_oLocked.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProtectionTypes::Locked);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(protection.m_oLocked->ToBool());
 	}
 }
 void BinaryStyleTableWriter::WriteAligment(const OOX::Spreadsheet::CAligment& aligment)
@@ -1366,14 +1399,14 @@ void BinaryStyleTableWriter::WriteAligment(const OOX::Spreadsheet::CAligment& al
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerAligmentTypes::Indent);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
-		m_oBcw.m_oStream.WriteLONG(aligment.m_oIndent->GetValue());
+		m_oBcw.m_oStream.WriteLONG(*aligment.m_oIndent);
 	}
 	//RelativeIndent
 	if(false != aligment.m_oRelativeIndent.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerAligmentTypes::RelativeIndent);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
-		m_oBcw.m_oStream.WriteLONG(aligment.m_oRelativeIndent->GetValue());
+		m_oBcw.m_oStream.WriteLONG(*aligment.m_oRelativeIndent);
 	}
 	//ShrinkToFit
 	if(false != aligment.m_oShrinkToFit.IsInit())
@@ -1387,7 +1420,7 @@ void BinaryStyleTableWriter::WriteAligment(const OOX::Spreadsheet::CAligment& al
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerAligmentTypes::TextRotation);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
-		m_oBcw.m_oStream.WriteLONG(aligment.m_oTextRotation->GetValue());
+		m_oBcw.m_oStream.WriteLONG(*aligment.m_oTextRotation);
 	}
 	//Vertical
 	if(false != aligment.m_oVertical.IsInit())
@@ -2007,6 +2040,13 @@ void BinaryWorkbookTableWriter::WriteWorkbook(OOX::Spreadsheet::CWorkbook& workb
 		WriteWorkbookPr(workbook.m_oWorkbookPr.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
+//WorkbookPr
+	if (workbook.m_oWorkbookProtection.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::Protection);
+		WriteProtection(workbook.m_oWorkbookProtection.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
 //BookViews
 	if(workbook.m_oBookViews.IsInit())
 	{
@@ -2104,6 +2144,51 @@ void BinaryWorkbookTableWriter::WriteWorkbook(OOX::Spreadsheet::CWorkbook& workb
 		m_oBcw.m_oStream.WriteStringW3(*workbook.m_oAppName);
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}	
+}
+void BinaryWorkbookTableWriter::WriteProtection(const OOX::Spreadsheet::CWorkbookProtection& protection)
+{
+	if (protection.m_oWorkbookAlgorithmName.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookProtection::AlgorithmName);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBYTE(protection.m_oWorkbookAlgorithmName->GetValue());
+	}
+	if (protection.m_oWorkbookSpinCount.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookProtection::SpinCount);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteULONG(protection.m_oWorkbookSpinCount->GetValue());
+	}
+	if (protection.m_oWorkbookHashValue.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookProtection::HashValue);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*protection.m_oWorkbookHashValue);
+	}
+	if (protection.m_oWorkbookSaltValue.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookProtection::SaltValue);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*protection.m_oWorkbookSaltValue);
+	}
+	if (protection.m_oLockStructure.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookProtection::LockStructure);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(protection.m_oLockStructure->ToBool());
+	}
+	if (protection.m_oLockWindows.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookProtection::LockWindows);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(protection.m_oLockWindows->ToBool());
+	}
+	if (protection.m_oPassword.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookProtection::Password);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*protection.m_oPassword);
+	}
 }
 void BinaryWorkbookTableWriter::WriteWorkbookPr(const OOX::Spreadsheet::CWorkbookPr& workbookPr)
 {
@@ -3131,7 +3216,13 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
 		WriteWorksheetProp(*pSheet);
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
-
+	//Protection
+	if (oWorksheet.m_oSheetProtection.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Protection);
+		WriteProtection(oWorksheet.m_oSheetProtection.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
 	//Cols
 	if(oWorksheet.m_oCols.IsInit())
 	{
@@ -3150,6 +3241,12 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::SheetViews);
 		WriteSheetViews(oWorksheet.m_oSheetViews.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}	
+	if (oWorksheet.m_oProtectedRanges.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::ProtectedRanges);
+		WriteProtectedRanges(oWorksheet.m_oProtectedRanges.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 	//SheetFormatPr
@@ -3204,7 +3301,7 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
 	// ConditionalFormatting
 	if ( !oWorksheet.m_arrConditionalFormatting.empty() )
     {
-		WriteConditionalFormattings(oWorksheet.m_arrConditionalFormatting, oWorksheet.m_mapConditionalFormattingEx);
+		WriteConditionalFormattings(oWorksheet.m_arrConditionalFormatting, oWorksheet.m_mapConditionalFormattingEx, false);
 	}
     if (oWorksheet.m_oExtLst.IsInit())
     {
@@ -3213,7 +3310,7 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
             OOX::Drawing::COfficeArtExtension* pExt = oWorksheet.m_oExtLst->m_arrExt[i];
 			if ( !pExt->m_arrConditionalFormatting.empty() )
 			{
-				WriteConditionalFormattings(pExt->m_arrConditionalFormatting, oWorksheet.m_mapConditionalFormattingEx);
+				WriteConditionalFormattings(pExt->m_arrConditionalFormatting, oWorksheet.m_mapConditionalFormattingEx, true);
 			}
 			else if ( pExt->m_oSlicerList.IsInit() )
 			{
@@ -3236,7 +3333,9 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
 		WriteDataValidations(oWorksheet.m_oDataValidations.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
+//Drawing
 	 smart_ptr<OOX::CVmlDrawing> currentVmlDrawing;
+	 smart_ptr<OOX::Spreadsheet::CDrawing> currentDrawing;
 
     if (oWorksheet.m_oLegacyDrawing.IsInit() &&
                     oWorksheet.m_oLegacyDrawing->m_oId.IsInit())
@@ -3244,28 +3343,30 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
         smart_ptr<OOX::File> oFile = oWorksheet.Find(oWorksheet.m_oLegacyDrawing->m_oId->GetValue());
 		currentVmlDrawing = oFile.smart_dynamic_cast<OOX::CVmlDrawing>();
 	}
-	//Drawing
 	if (oWorksheet.m_oDrawing.IsInit() && oWorksheet.m_oDrawing->m_oId.IsInit())
 	{
-		smart_ptr<OOX::Spreadsheet::CDrawing> currentDrawing;
-		
 		smart_ptr<OOX::File> oFile = oWorksheet.Find(oWorksheet.m_oDrawing->m_oId->GetValue());
 		currentDrawing = oFile.smart_dynamic_cast<OOX::Spreadsheet::CDrawing>();
-	
-		if (currentDrawing.IsInit())
-		{
-			smart_ptr<OOX::IFileContainer> oldRels = m_pOfficeDrawingConverter->GetRels();
-			m_pOfficeDrawingConverter->SetRels(currentDrawing.smart_dynamic_cast<OOX::IFileContainer>());
-			
-	//из Drawing могут быть ссылки на объекты в VmlDrawing
-			nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Drawings);
-				WriteDrawings(oWorksheet, currentDrawing.GetPointer(), currentVmlDrawing.GetPointer());
-			m_oBcw.WriteItemWithLengthEnd(nCurPos);
-
-			m_pOfficeDrawingConverter->SetRels(oldRels);
-		}
 	}
+	
 	WriteControls(oWorksheet, currentVmlDrawing.GetPointer());
+
+	smart_ptr<OOX::IFileContainer> oldRels;
+	if (currentDrawing.IsInit())
+	{
+		oldRels = m_pOfficeDrawingConverter->GetRels();
+		m_pOfficeDrawingConverter->SetRels(currentDrawing.smart_dynamic_cast<OOX::IFileContainer>());
+	}
+	if (currentDrawing.IsInit() || currentVmlDrawing.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Drawings);
+			WriteDrawings(oWorksheet, currentDrawing.GetPointer(), currentVmlDrawing.GetPointer());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (oldRels.IsInit())
+	{
+		m_pOfficeDrawingConverter->SetRels(oldRels);
+	}
 
 	if (oWorksheet.m_oLegacyDrawingHF.IsInit())
 	{
@@ -3424,6 +3525,197 @@ void BinaryWorksheetTableWriter::WriteWorksheetProp(OOX::Spreadsheet::CSheet& oS
 		m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetPropTypes::State);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 		m_oBcw.m_oStream.WriteBYTE(oSheet.m_oState->GetValue());
+	}
+}
+void BinaryWorksheetTableWriter::WriteProtectedRanges(const OOX::Spreadsheet::CProtectedRanges& protectedRanges)
+{
+	int nCurPos = 0;
+	for (size_t nIndex = 0, nLength = protectedRanges.m_arrItems.size(); nIndex < nLength; ++nIndex)
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::ProtectedRange);
+		WriteProtectedRange(*protectedRanges.m_arrItems[nIndex]);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+}
+
+void BinaryWorksheetTableWriter::WriteProtectedRange(const OOX::Spreadsheet::CProtectedRange& protectedRange)
+{
+	if (protectedRange.m_oAlgorithmName.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProtectedRangeTypes::AlgorithmName);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBYTE(protectedRange.m_oAlgorithmName->GetValue());
+	}
+	if (protectedRange.m_oSpinCount.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProtectedRangeTypes::SpinCount);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteULONG(protectedRange.m_oSpinCount->GetValue());
+	}
+	if (protectedRange.m_oHashValue.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProtectedRangeTypes::HashValue);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*protectedRange.m_oHashValue);
+	}
+	if (protectedRange.m_oSaltValue.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProtectedRangeTypes::SaltValue);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*protectedRange.m_oSaltValue);
+	}
+	if (protectedRange.m_oName.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProtectedRangeTypes::Name);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*protectedRange.m_oName);
+	}
+	if (protectedRange.m_oSqref.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProtectedRangeTypes::SqRef);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*protectedRange.m_oSqref);
+	}
+	for (size_t i = 0; i < protectedRange.m_arSecurityDescriptors.size(); ++i)
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProtectedRangeTypes::SecurityDescriptor);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(protectedRange.m_arSecurityDescriptors[i]);
+	}
+}
+void BinaryWorksheetTableWriter::WriteProtection(const OOX::Spreadsheet::CSheetProtection& protection)
+{
+	if (protection.m_oAlgorithmName.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetProtection::AlgorithmName);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBYTE(protection.m_oAlgorithmName->GetValue());
+	}	
+	if (protection.m_oSpinCount.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetProtection::SpinCount);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteULONG(protection.m_oSpinCount->GetValue());
+	}
+	if (protection.m_oHashValue.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetProtection::HashValue);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*protection.m_oHashValue);
+	}
+	if (protection.m_oSaltValue.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetProtection::SaltValue);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*protection.m_oSaltValue);
+	}
+	if (protection.m_oPassword.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetProtection::Password);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*protection.m_oPassword);
+	}
+	if (protection.m_oAutoFilter.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetProtection::AutoFilter);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(protection.m_oAutoFilter->ToBool());
+	}
+	if (protection.m_oContent.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetProtection::Content);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(protection.m_oContent->ToBool());
+	}
+	if (protection.m_oDeleteColumns.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetProtection::DeleteColumns);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(protection.m_oDeleteColumns->ToBool());
+	}
+	if (protection.m_oDeleteRows.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetProtection::DeleteRows);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(protection.m_oDeleteRows->ToBool());
+	}
+	if (protection.m_oFormatCells.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetProtection::FormatCells);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(protection.m_oFormatCells->ToBool());
+	}
+	if (protection.m_oFormatColumns.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetProtection::FormatColumns);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(protection.m_oFormatColumns->ToBool());
+	}
+	if (protection.m_oFormatRows.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetProtection::FormatRows);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(protection.m_oFormatRows->ToBool());
+	}
+	if (protection.m_oInsertColumns.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetProtection::InsertColumns);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(protection.m_oInsertColumns->ToBool());
+	}
+	if (protection.m_oInsertHyperlinks.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetProtection::InsertHyperlinks);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(protection.m_oInsertHyperlinks->ToBool());
+	}
+	if (protection.m_oInsertRows.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetProtection::InsertRows);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(protection.m_oInsertRows->ToBool());
+	}
+	if (protection.m_oObjects.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetProtection::Objects);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(protection.m_oObjects->ToBool());
+	}
+	if (protection.m_oPivotTables.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetProtection::PivotTables);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(protection.m_oPivotTables->ToBool());
+	}
+	if (protection.m_oScenarios.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetProtection::Scenarios);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(protection.m_oScenarios->ToBool());
+	}
+	if (protection.m_oSelectLockedCells.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetProtection::SelectLockedCells);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(protection.m_oSelectLockedCells->ToBool());
+	}
+	if (protection.m_oSelectUnlockedCells.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetProtection::SelectUnlockedCell);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(protection.m_oSelectUnlockedCells->ToBool());
+	}
+	if (protection.m_oSheet.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetProtection::Sheet);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(protection.m_oSheet->ToBool());
+	}
+	if (protection.m_oSort.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorksheetProtection::Sort);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(protection.m_oSort->ToBool());
 	}
 }
 void BinaryWorksheetTableWriter::WriteCols(const OOX::Spreadsheet::CCols& oCols)
@@ -3718,49 +4010,49 @@ void BinaryWorksheetTableWriter::WriteSheetFormatPr(const OOX::Spreadsheet::CShe
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerSheetFormatPrTypes::DefaultColWidth);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Double);
-		m_oBcw.m_oStream.WriteDoubleReal(oSheetFormatPr.m_oDefaultColWidth->GetValue());
+		m_oBcw.m_oStream.WriteDoubleReal(*oSheetFormatPr.m_oDefaultColWidth);
 	}
 	//DefaultRowHeight
 	if(oSheetFormatPr.m_oDefaultRowHeight.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerSheetFormatPrTypes::DefaultRowHeight);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Double);
-		m_oBcw.m_oStream.WriteDoubleReal(oSheetFormatPr.m_oDefaultRowHeight->GetValue());
+		m_oBcw.m_oStream.WriteDoubleReal(*oSheetFormatPr.m_oDefaultRowHeight);
 	}
 	//BaseColWidth
 	if(oSheetFormatPr.m_oBaseColWidth.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerSheetFormatPrTypes::BaseColWidth);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
-		m_oBcw.m_oStream.WriteLONG(oSheetFormatPr.m_oBaseColWidth->GetValue());
+		m_oBcw.m_oStream.WriteLONG(*oSheetFormatPr.m_oBaseColWidth);
 	}
 	//CustomHeight
 	if(oSheetFormatPr.m_oCustomHeight.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerSheetFormatPrTypes::CustomHeight);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-		m_oBcw.m_oStream.WriteBYTE(oSheetFormatPr.m_oCustomHeight->ToBool());
+		m_oBcw.m_oStream.WriteBYTE(*oSheetFormatPr.m_oCustomHeight);
 	}
 	//ZeroHeight
 	if(oSheetFormatPr.m_oZeroHeight.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerSheetFormatPrTypes::ZeroHeight);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-		m_oBcw.m_oStream.WriteBYTE(oSheetFormatPr.m_oZeroHeight->ToBool());
+		m_oBcw.m_oStream.WriteBYTE(*oSheetFormatPr.m_oZeroHeight);
 	}
 	//OutlineLevelCol
 	if(oSheetFormatPr.m_oOutlineLevelCol.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerSheetFormatPrTypes::OutlineLevelCol);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
-		m_oBcw.m_oStream.WriteLONG(oSheetFormatPr.m_oOutlineLevelCol->GetValue());
+		m_oBcw.m_oStream.WriteLONG(*oSheetFormatPr.m_oOutlineLevelCol);
 	}
 	//OutlineLevelRow
 	if(oSheetFormatPr.m_oOutlineLevelRow.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerSheetFormatPrTypes::OutlineLevelRow);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
-		m_oBcw.m_oStream.WriteLONG(oSheetFormatPr.m_oOutlineLevelRow->GetValue());
+		m_oBcw.m_oStream.WriteLONG(*oSheetFormatPr.m_oOutlineLevelRow);
 	}
 }
 void BinaryWorksheetTableWriter::WritePageMargins(const OOX::Spreadsheet::CPageMargins& oPageMargins)
@@ -4144,7 +4436,7 @@ void BinaryWorksheetTableWriter::WriteCell(const OOX::Spreadsheet::CCell& oCell)
 	if(oCell.m_oStyle.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerCellTypes::Style);
-		m_oBcw.m_oStream.WriteLONG(oCell.m_oStyle->GetValue());
+		m_oBcw.m_oStream.WriteLONG(*oCell.m_oStyle);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	//Type
@@ -4168,7 +4460,7 @@ void BinaryWorksheetTableWriter::WriteCell(const OOX::Spreadsheet::CCell& oCell)
         double dValue = 0;
         try
         {
-            dValue = _wtof(oCell.m_oValue->ToString().c_str());
+            dValue = XmlUtils::GetDouble(oCell.m_oValue->ToString());
         }
         catch(...)
         {   //1.3912059045063478e-310
@@ -4317,86 +4609,87 @@ void BinaryWorksheetTableWriter::WriteOleObjects(const OOX::Spreadsheet::CWorksh
 				pShapeElem	= pFind->second.pElement;
 			}			
 		}
+		SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
+		eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);		
 		bool bSetAnchor = false;
 		if (pOleObject->m_oObjectPr.IsInit() && pOleObject->m_oObjectPr->m_oAnchor.IsInit() && pOleObject->m_oObjectPr->m_oRid.IsInit())
-		{						
+		{
 			const OOX::Spreadsheet::CExtAnchor& oAnchor = pOleObject->m_oObjectPr->m_oAnchor.get();
 
-			SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
-			eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
-			
 			if (oAnchor.m_oFrom.IsInit() && oAnchor.m_oTo.IsInit())
 			{
-				if(oAnchor.m_oMoveWithCells.IsInit() && oAnchor.m_oMoveWithCells->ToBool())
+				if (oAnchor.m_oMoveWithCells.IsInit() && oAnchor.m_oMoveWithCells->ToBool())
 					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorOneCell);
-				else if(oAnchor.m_oSizeWithCells.IsInit() && oAnchor.m_oSizeWithCells->ToBool())
+				else if (oAnchor.m_oSizeWithCells.IsInit() && oAnchor.m_oSizeWithCells->ToBool())
 					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
 				else
 					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorAbsolute);
-				
+
 				oCellAnchor.reset(new OOX::Spreadsheet::CCellAnchor(eAnchorType));
-				
-				oCellAnchor->m_oFrom	= oAnchor.m_oFrom.get();
-				oCellAnchor->m_oTo		= oAnchor.m_oTo.get();
-				
+
+				oCellAnchor->m_oFrom = oAnchor.m_oFrom.get();
+				oCellAnchor->m_oTo = oAnchor.m_oTo.get();
+
 				bSetAnchor = true;
 			}
-			else
-				oCellAnchor.reset(new OOX::Spreadsheet::CCellAnchor(eAnchorType));
+		}
+		if (false == oCellAnchor.IsInit())
+		{
+			oCellAnchor.reset(new OOX::Spreadsheet::CCellAnchor(eAnchorType));
+		}
 
-			oCellAnchor->m_bShapeOle= true;
-			
-			PPTX::Logic::Pic *olePic = new PPTX::Logic::Pic;
-			
-			olePic->oleObject.Init();
-			olePic->blipFill.blip.Init();	
+		oCellAnchor->m_bShapeOle = true;
 
-			if (pOleObject->m_oProgId.IsInit())
-				olePic->oleObject->m_sProgId = pOleObject->m_oProgId.get();
-			
-			olePic->oleObject->m_oId = pRId;
-			olePic->oleObject->m_OleObjectFile = pFileOleObject;
+		PPTX::Logic::Pic *olePic = new PPTX::Logic::Pic;
 
-			if (olePic->oleObject->m_OleObjectFile.IsInit())
+		olePic->oleObject.Init();
+		olePic->blipFill.blip.Init();
+
+		if (pOleObject->m_oProgId.IsInit())
+			olePic->oleObject->m_sProgId = pOleObject->m_oProgId.get();
+
+		olePic->oleObject->m_oId = pRId;
+		olePic->oleObject->m_OleObjectFile = pFileOleObject;
+
+		if (olePic->oleObject->m_OleObjectFile.IsInit())
+		{
+			olePic->blipFill.blip->oleFilepathBin = olePic->oleObject->m_OleObjectFile->filename().GetPath();
+		}
+
+		OOX::Image*		pImageFileCache = NULL;
+		std::wstring	sIdImageFileCache;
+		if ((NULL != pShapeElem) && (OOX::et_v_shapetype != pShapeElem->getType()))
+		{
+			OOX::Vml::CShape* pShape = static_cast<OOX::Vml::CShape*>(pShapeElem);
+			for (size_t j = 0; (pShape) && (j < pShape->m_arrItems.size()); ++j)
 			{
-				olePic->blipFill.blip->oleFilepathBin = olePic->oleObject->m_OleObjectFile->filename().GetPath();
-			}
-
-			OOX::Image*		pImageFileCache = NULL;
-			std::wstring	sIdImageFileCache;
-			if ((NULL != pShapeElem) && (OOX::et_v_shapetype != pShapeElem->getType()))
-			{
-				OOX::Vml::CShape* pShape = static_cast<OOX::Vml::CShape*>(pShapeElem);
-				for(size_t j = 0; (pShape) && (j < pShape->m_arrItems.size()); ++j)
+				OOX::WritingElement* pChildElemShape = pShape->m_arrItems[j];
+				if (!bSetAnchor && OOX::et_v_ClientData == pChildElemShape->getType())
 				{
-					OOX::WritingElement* pChildElemShape = pShape->m_arrItems[j];
-					if(!bSetAnchor && OOX::et_v_ClientData == pChildElemShape->getType())
+					OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pChildElemShape);
+					pClientData->toCellAnchor(oCellAnchor.GetPointer());
+				}
+				if (OOX::et_v_imagedata == pChildElemShape->getType())
+				{
+					OOX::Vml::CImageData* pImageData = static_cast<OOX::Vml::CImageData*>(pChildElemShape);
+
+					if (pImageData->m_oRelId.IsInit())		sIdImageFileCache = pImageData->m_oRelId->GetValue();
+					else if (pImageData->m_rId.IsInit())	sIdImageFileCache = pImageData->m_rId->GetValue();
+					else if (pImageData->m_rPict.IsInit())	sIdImageFileCache = pImageData->m_rPict->GetValue();
+
+					if (!sIdImageFileCache.empty())
 					{
-						OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pChildElemShape);
-						pClientData->toCellAnchor(oCellAnchor.GetPointer());
-					}
-					if(OOX::et_v_imagedata == pChildElemShape->getType())
-					{
-						OOX::Vml::CImageData* pImageData = static_cast<OOX::Vml::CImageData*>(pChildElemShape);									
-											
-						if (pImageData->m_oRelId.IsInit())		sIdImageFileCache = pImageData->m_oRelId->GetValue();
-						else if (pImageData->m_rId.IsInit())	sIdImageFileCache = pImageData->m_rId->GetValue();
-						else if (pImageData->m_rPict.IsInit())	sIdImageFileCache = pImageData->m_rPict->GetValue();
-															
-						if (!sIdImageFileCache.empty())
+						//ищем физический файл ( rId относительно vml_drawing)									
+						smart_ptr<OOX::File> pFile = pVmlDrawing->Find(sIdImageFileCache);
+
+						if (pFile.IsInit() && (OOX::FileTypes::Image == pFile->type()))
 						{
-							//ищем физический файл ( rId относительно vml_drawing)									
-							smart_ptr<OOX::File> pFile = pVmlDrawing->Find(sIdImageFileCache);
-							
-							if (pFile.IsInit() && (	OOX::FileTypes::Image == pFile->type()))
-							{
-								pImageFileCache = static_cast<OOX::Image*>(pFile.GetPointer());
-							}
+							pImageFileCache = static_cast<OOX::Image*>(pFile.GetPointer());
 						}
 					}
-				}	
+				}
 			}
-			
+
 			if (pImageFileCache == NULL && pOleObject->m_oObjectPr.IsInit() && pOleObject->m_oObjectPr->m_oRid.IsInit())
 			{
 				sIdImageFileCache = pOleObject->m_oObjectPr->m_oRid->GetValue();
@@ -4487,11 +4780,17 @@ void BinaryWorksheetTableWriter::WriteControls(const OOX::Spreadsheet::CWorkshee
 		}
 		
 		std::wstring sShapeId = L"_x0000_s" + std::to_wstring(pControl->m_oShapeId->GetValue());
-		smart_ptr<OOX::Vml::CShape> oShape;
+		OOX::Vml::CShape* pShape = NULL;
+		boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind;
+		
 		if (pVmlDrawing)
 		{
-			smart_ptr<OOX::WritingElement> oObjectElement = pVmlDrawing->FindVmlObject(sShapeId);
-			oShape = oObjectElement.smart_dynamic_cast<OOX::Vml::CShape>();
+			pFind = pVmlDrawing->m_mapShapes.find(sShapeId);
+
+			if (pFind != pVmlDrawing->m_mapShapes.end() && !pFind->second.bUsed)
+			{
+				pShape = dynamic_cast<OOX::Vml::CShape*>(pFind->second.pElement);
+			}
 		}
 		SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
 		eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
@@ -4522,19 +4821,18 @@ void BinaryWorksheetTableWriter::WriteControls(const OOX::Spreadsheet::CWorkshee
 			oCellAnchor.reset(new OOX::Spreadsheet::CCellAnchor(eAnchorType));
 			oCellAnchor->m_bShapeOle= true;			
 		}
-		if ((oShape.IsInit()) && (OOX::et_v_shapetype != oShape->getType()))
+		if ((pShape) && (OOX::et_v_shapetype != pShape->getType()))
 		{
-			for(size_t j = 0; (oShape.IsInit()) && (j < oShape->m_arrItems.size()); ++j)
+			for(size_t j = 0; (pShape) && (j < pShape->m_arrItems.size()); ++j)
 			{
-				OOX::WritingElement* pChildElemShape = oShape->m_arrItems[j];
+				OOX::WritingElement* pChildElemShape = pShape->m_arrItems[j];
 				if (OOX::et_v_ClientData == pChildElemShape->getType())
 				{
 					OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pChildElemShape);
 
 					if (!bSetAnchor )
-					{
-						pClientData->toCellAnchor(oCellAnchor.GetPointer());
-						bSetAnchor = true;
+					{						
+						bSetAnchor = pClientData->toCellAnchor(oCellAnchor.GetPointer());
 					}
 					pClientData->toFormControlPr(pFormControlPr);
 				}
@@ -4551,6 +4849,8 @@ void BinaryWorksheetTableWriter::WriteControls(const OOX::Spreadsheet::CWorkshee
 		{
 			continue;
 		}
+		if (pShape)
+			pFind->second.bUsed = true;
 //-----------------------------------------------------------------------------------------------------
 		int nCurPos2 = m_oBcw.WriteItemStart(c_oSerControlTypes::Control);
 			int nCurPos3 = m_oBcw.WriteItemStart(c_oSerControlTypes::ControlAnchor);
@@ -4838,7 +5138,7 @@ void BinaryWorksheetTableWriter::WriteControlPr(OOX::Spreadsheet::CControlPr* pC
 
 void BinaryWorksheetTableWriter::WriteDrawings(const OOX::Spreadsheet::CWorksheet& oWorksheet, OOX::Spreadsheet::CDrawing* pDrawing, OOX::CVmlDrawing *pVmlDrawing)
 {
-	for (size_t i = 0, length = pDrawing->m_arrItems.size(); i  < length ; ++i)
+	for (size_t i = 0; pDrawing && i < pDrawing->m_arrItems.size(); ++i)
 	{
 		OOX::Spreadsheet::CCellAnchor* pCellAnchor = pDrawing->m_arrItems[i];
 
@@ -4891,20 +5191,20 @@ void BinaryWorksheetTableWriter::WriteDrawings(const OOX::Spreadsheet::CWorkshee
 							//преобразуем ClientData в CellAnchor
 							OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pElemShape);
 							
-							OOX::Spreadsheet::CCellAnchor *pCellAnchor = NULL;
-							pClientData->toCellAnchor(pCellAnchor);
+							SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
+							eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
 
-							if (pCellAnchor)
+							OOX::Spreadsheet::CCellAnchor *pCellAnchor = new OOX::Spreadsheet::CCellAnchor(eAnchorType);
+							if (pClientData->toCellAnchor(pCellAnchor))
 							{
 								pCellAnchor->m_sVmlSpId.Init();
 								pCellAnchor->m_sVmlSpId->append(it->first);
 
 								int nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Drawing);
 								WriteDrawing(oWorksheet, pDrawing, pCellAnchor, pVmlDrawing, NULL);
-								m_oBcw.WriteItemEnd(nCurPos);
-								
-								delete pCellAnchor;
+								m_oBcw.WriteItemEnd(nCurPos);								
 							}
+							delete pCellAnchor;
 						}
 					}
 				}
@@ -4957,6 +5257,13 @@ void BinaryWorksheetTableWriter::WriteCellAnchor(OOX::Spreadsheet::CCellAnchor* 
 		WriteExt(pCellAnchor->m_oExt.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+//ClientData
+	if (pCellAnchor->m_oClientData.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_DrawingType::ClientData);
+		WriteClientData(pCellAnchor->m_oClientData.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 }
 void BinaryWorksheetTableWriter::WriteDrawing(const OOX::Spreadsheet::CWorksheet& oWorksheet, OOX::Spreadsheet::CDrawing* pDrawing, OOX::Spreadsheet::CCellAnchor* pCellAnchor, OOX::CVmlDrawing *pVmlDrawing, OOX::Spreadsheet::COleObject* pOleObject)
 {
@@ -5006,9 +5313,8 @@ void BinaryWorksheetTableWriter::WriteDrawing(const OOX::Spreadsheet::CWorksheet
 	}
 	else if (pCellAnchor->m_oElement.IsInit())
 	{
-		smart_ptr<OOX::IFileContainer> oldRels = *m_oBcw.m_oStream.m_pCurrentContainer;
-		*m_oBcw.m_oStream.m_pCurrentContainer = pDrawing;
-		m_oBcw.m_oStream.m_pCurrentContainer->AddRef();
+		smart_ptr<OOX::IFileContainer> oldRels = m_oBcw.m_oStream.GetRels();
+		m_oBcw.m_oStream.SetRels(pDrawing);
 
 		m_oBcw.m_oStream.WriteBYTE(c_oSer_DrawingType::pptxDrawing);
 		int nCurPos = m_oBcw.WriteItemWithLengthStart();
@@ -5017,7 +5323,7 @@ void BinaryWorksheetTableWriter::WriteDrawing(const OOX::Spreadsheet::CWorksheet
 			m_oBcw.m_oStream.EndRecord();
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 
-		*m_oBcw.m_oStream.m_pCurrentContainer = oldRels;
+		m_oBcw.m_oStream.SetRels(oldRels);
 	}
 }
 void BinaryWorksheetTableWriter::WriteLegacyDrawingHF(const OOX::Spreadsheet::CWorksheet& oWorksheet)
@@ -5247,16 +5553,32 @@ void BinaryWorksheetTableWriter::WritePos(const OOX::Spreadsheet::CPos& oPos)
 		m_oBcw.m_oStream.WriteDoubleReal(oPos.m_oY->ToMm());
 	}
 }
+void BinaryWorksheetTableWriter::WriteClientData(const OOX::Spreadsheet::CClientData& oClientData)
+{
+	if (oClientData.fLocksWithSheet.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_DrawingClientDataType::fLocksWithSheet);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(*oClientData.fLocksWithSheet);
+	}
+	if (oClientData.fPrintsWithSheet.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_DrawingClientDataType::fPrintsWithSheet);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(*oClientData.fPrintsWithSheet);
+	}
+}
+
 void BinaryWorksheetTableWriter::WriteExt(const OOX::Spreadsheet::CExt& oExt)
 {
-	//Cx
+//Cx
 	if(oExt.m_oCx.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSer_DrawingExtType::Cx);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Double);
 		m_oBcw.m_oStream.WriteDoubleReal(oExt.m_oCx->ToMm());
 	}
-	//Cy
+//Cy
 	if(oExt.m_oCy.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSer_DrawingExtType::Cy);
@@ -5895,7 +6217,7 @@ void BinaryWorksheetTableWriter::WritemBreak(const OOX::Spreadsheet::CBreak& oBr
 	}
 }
 void BinaryWorksheetTableWriter::WriteConditionalFormattings(std::vector<OOX::Spreadsheet::CConditionalFormatting*>& arrConditionalFormatting,
-	std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx)
+	std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt)
 {
 	int nCurPos = 0;
 	for (size_t nIndex = 0, nLength = arrConditionalFormatting.size(); nIndex < nLength; ++nIndex)
@@ -5903,12 +6225,12 @@ void BinaryWorksheetTableWriter::WriteConditionalFormattings(std::vector<OOX::Sp
 		if (arrConditionalFormatting[nIndex]->IsUsage()) continue;
 
 		nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::ConditionalFormatting);
-		WriteConditionalFormatting(*arrConditionalFormatting[nIndex], mapCFRuleEx);
+		WriteConditionalFormatting(*arrConditionalFormatting[nIndex], mapCFRuleEx, isExt);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 }
 void BinaryWorksheetTableWriter::WriteConditionalFormatting(const OOX::Spreadsheet::CConditionalFormatting& oConditionalFormatting,
-	std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx)
+	std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt)
 {
 	int nCurPos = 0;
 
@@ -5929,13 +6251,13 @@ void BinaryWorksheetTableWriter::WriteConditionalFormatting(const OOX::Spreadshe
 		for (size_t i = 0, length = oConditionalFormatting.m_arrItems.size(); i < length; ++i)
 		{
 			int nCurPos1 = m_oBcw.WriteItemStart(c_oSer_ConditionalFormatting::ConditionalFormattingRule);
-			WriteConditionalFormattingRule(*oConditionalFormatting.m_arrItems[i], mapCFRuleEx);
+			WriteConditionalFormattingRule(*oConditionalFormatting.m_arrItems[i], mapCFRuleEx, isExt);
 			m_oBcw.WriteItemEnd(nCurPos1);
 		}			
 	}
 }
 void BinaryWorksheetTableWriter::WriteConditionalFormattingRule(const OOX::Spreadsheet::CConditionalFormattingRule& oConditionalFormattingRule,
-	std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx)
+	std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>& mapCFRuleEx, bool isExt)
 {
 	std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>::iterator pFind;
 	if (oConditionalFormattingRule.m_oExtId.IsInit())
@@ -5948,7 +6270,7 @@ void BinaryWorksheetTableWriter::WriteConditionalFormattingRule(const OOX::Sprea
 				 OOX::Spreadsheet::CConditionalFormattingRule::Merge(oConditionalFormattingRule, *pFind->second);
 
 			 pFind->second->bUsage = true;
-			 return WriteConditionalFormattingRule(newRule, mapCFRuleEx);
+			 return WriteConditionalFormattingRule(newRule, mapCFRuleEx, true);
 		 }
 	}
 	int nCurPos = 0;
@@ -6020,8 +6342,11 @@ void BinaryWorksheetTableWriter::WriteConditionalFormattingRule(const OOX::Sprea
 	}
 	if (oConditionalFormattingRule.m_oTimePeriod.IsInit())
 	{
-		m_oBcw.m_oStream.WriteBYTE(c_oSer_ConditionalFormattingRule::TimePeriod);
-		m_oBcw.m_oStream.WriteStringW(oConditionalFormattingRule.m_oTimePeriod.get2());
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_ConditionalFormattingRule::strTimePeriod);
+		m_oBcw.m_oStream.WriteStringW(oConditionalFormattingRule.m_oTimePeriod->ToString());
+		
+		//m_oBcw.m_oStream.WriteBYTE(c_oSer_ConditionalFormattingRule::TimePeriod);
+		//m_oBcw.m_oStream.WriteBYTE(oConditionalFormattingRule.m_oTimePeriod->GetValue());
 	}
 	if (oConditionalFormattingRule.m_oType.IsInit())
 	{
@@ -6064,6 +6389,10 @@ void BinaryWorksheetTableWriter::WriteConditionalFormattingRule(const OOX::Sprea
 		WriteIconSet(oConditionalFormattingRule.m_oIconSet.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+
+	nCurPos = m_oBcw.WriteItemStart(c_oSer_ConditionalFormattingRule::IsExt);
+	m_oBcw.m_oStream.WriteBOOL(isExt);
+	m_oBcw.WriteItemEnd(nCurPos);
 }
 
 void BinaryWorksheetTableWriter::WriteColorScale(const OOX::Spreadsheet::CColorScale& oColorScale)
@@ -6622,7 +6951,7 @@ void BinaryWorksheetTableWriter::WriteSlicers(OOX::Spreadsheet::CWorksheet& oWor
 		}
 	}
 }
-
+//---------------------------------------------------------------------------------------------------------------------
 BinaryCalcChainTableWriter::BinaryCalcChainTableWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream) : m_oBcw(oCBufferedStream)
 {
 }
@@ -6688,7 +7017,60 @@ void BinaryCalcChainTableWriter::WriteCalcChain(OOX::Spreadsheet::CCalcCell& oCa
 		m_oBcw.m_oStream.WriteBOOL(oCalcCell.m_oNewThread->ToBool());
 	}
 }
+//-----------------------------------------------------------------------------------------------------
+BinaryCustomsTableWriter::BinaryCustomsTableWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream) : m_oBcw(oCBufferedStream)
+{
+}
+void BinaryCustomsTableWriter::Write(OOX::IFileContainer *pContainer)
+{
+	if (!pContainer) return;
 
+	int nStart = m_oBcw.WriteItemWithLengthStart();
+
+	std::vector<smart_ptr<OOX::File>>& container = pContainer->GetContainer();
+	for (size_t i = 0; i < container.size(); ++i)
+	{
+		if (OOX::FileTypes::CustomXml == container[i]->type())
+		{
+			OOX::CCustomXML* pCustomXml = dynamic_cast<OOX::CCustomXML*>(container[i].GetPointer());
+			if (pCustomXml->m_bUsed) continue;
+
+			int nCurPos = m_oBcw.WriteItemStart(c_oSerCustoms::Custom);
+
+			std::vector<smart_ptr<OOX::File>>& containerCustom = pCustomXml->GetContainer();
+			for (size_t i = 0; i < containerCustom.size(); ++i)
+			{
+				if (OOX::FileTypes::CustomXmlProps == containerCustom[i]->type())
+				{
+					OOX::CCustomXMLProps* pCustomXmlProps = dynamic_cast<OOX::CCustomXMLProps*>(containerCustom[i].GetPointer());
+
+					int nCurPos1 = m_oBcw.WriteItemStart(c_oSerCustoms::ItemId);
+					m_oBcw.m_oStream.WriteStringW3(pCustomXmlProps->m_oItemID.ToString());
+					m_oBcw.WriteItemEnd(nCurPos1);
+
+					if (pCustomXmlProps->m_oShemaRefs.IsInit())
+					{
+						for (size_t j = 0; j < pCustomXmlProps->m_oShemaRefs->m_arrItems.size(); ++j)
+						{
+							nCurPos1 = m_oBcw.WriteItemStart(c_oSerCustoms::Uri);
+							m_oBcw.m_oStream.WriteStringW3(pCustomXmlProps->m_oShemaRefs->m_arrItems[j]->m_sUri);
+							m_oBcw.WriteItemEnd(nCurPos1);
+						}
+					}
+				}
+			}
+
+			int nCurPos2 = m_oBcw.WriteItemStart(c_oSerCustoms::Content);
+			m_oBcw.m_oStream.WriteStringA(pCustomXml->m_sXmlA);
+			m_oBcw.WriteItemEnd(nCurPos2);
+
+			m_oBcw.WriteItemEnd(nCurPos);
+			pCustomXml->m_bUsed = true;
+		}
+	}
+	m_oBcw.WriteItemWithLengthEnd(nStart);
+}
+//------------------------------------------------------------------------------------------------------
 BinaryOtherTableWriter::BinaryOtherTableWriter(NSBinPptxRW::CBinaryFileWriter &oCBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, PPTX::Theme* pTheme, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter)
 	:	m_oBcw					(oCBufferedStream), 
 		m_pEmbeddedFontsManager	(pEmbeddedFontsManager),
@@ -6769,11 +7151,15 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 			result = CSVReader::ReadFromCsvToXlsx(sInputDir, *pXlsx, nCodePage, sDelimiter);
 		}break;
 		case BinXlsxRW::c_oFileTypes::XLSX:
+        case BinXlsxRW::c_oFileTypes::XLSB:
 		default:
 		{
 			if (bIsNoBase64 && BinXlsxRW::c_oFileTypes::JSON != saveFileType)
 			{
-				pXlsx = new OOX::Spreadsheet::CXlsx();
+                if(fileType == BinXlsxRW::c_oFileTypes::XLSB)
+                    pXlsx = new OOX::Spreadsheet::CXlsb();
+                else
+                    pXlsx = new OOX::Spreadsheet::CXlsx();
 				pXlsx->m_bNeedCalcChain = false;
 
 				NSBinPptxRW::CXlsbBinaryWriter oXlsbWriter;
@@ -6782,7 +7168,11 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 				oXlsbWriter.WriteStringUtf8(WriteFileHeader(0, g_nFormatVersionNoBase64));
 				oXlsbWriter.WriteReserved(GetMainTableSize());
 				int nDataStartPos = oXlsbWriter.GetPositionAbsolute();
-				pXlsx->m_pXlsbWriter = &oXlsbWriter;
+				
+				if (fileType == 1)
+				{
+					pXlsx->m_pXlsbWriter = &oXlsbWriter;
+				}
 				//parse
 				pXlsx->Read(OOX::CPath(sInputDir));
 
@@ -6819,7 +7209,13 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 		{
 			RELEASEOBJECT(pXlsx);
 			return AVS_FILEUTILS_ERROR_CONVERT;
-		}	
+        }
+
+        if (fileType == BinXlsxRW::c_oFileTypes::XLSB)
+        {
+            dynamic_cast<OOX::Spreadsheet::CXlsb*>(pXlsx)->PrepareSi();
+            dynamic_cast<OOX::Spreadsheet::CXlsb*>(pXlsx)->PrepareTableFormula();
+        }
 	}
 
 	if (BinXlsxRW::c_oFileTypes::JSON == saveFileType)
@@ -6933,13 +7329,16 @@ void BinaryFileWriter::intoBindoc(OOX::Document *pDocument, NSBinPptxRW::CBinary
 		this->WriteTableEnd(nCurPos);
 	}
 
-	smart_ptr<OOX::File> pFile = pXlsx->Find(OOX::FileTypes::CustomProperties);
-	PPTX::CustomProperties *pCustomProperties = dynamic_cast<PPTX::CustomProperties*>(pFile.GetPointer());
-	if (pCustomProperties)
+	if (pXlsx)
 	{
-		nCurPos = this->WriteTableStart(c_oSerTableTypes::CustomProperties);
-		pCustomProperties->toPPTY(&oBufferedStream);
-		this->WriteTableEnd(nCurPos);
+		smart_ptr<OOX::File> pFile = pXlsx->Find(OOX::FileTypes::CustomProperties);
+		PPTX::CustomProperties *pCustomProperties = dynamic_cast<PPTX::CustomProperties*>(pFile.GetPointer());
+		if (pCustomProperties)
+		{
+			nCurPos = this->WriteTableStart(c_oSerTableTypes::CustomProperties);
+			pCustomProperties->toPPTY(&oBufferedStream);
+			this->WriteTableEnd(nCurPos);
+		}
 	}
 
 	if(pSharedStrings)
@@ -6995,6 +7394,12 @@ void BinaryFileWriter::intoBindoc(OOX::Document *pDocument, NSBinPptxRW::CBinary
 		nCurPos = WriteTableStart(c_oSerTableTypes::Other);
 		BinaryOtherTableWriter oBinaryOtherTableWriter(oBufferedStream, pEmbeddedFontsManager, pXlsx->GetTheme(), pOfficeDrawingConverter);
 		oBinaryOtherTableWriter.Write();
+		WriteTableEnd(nCurPos);
+
+	//Customs from Workbook (todooo - другие)
+		nCurPos = WriteTableStart(c_oSerTableTypes::Customs);
+		BinaryCustomsTableWriter oBinaryCustomsTableWriter(oBufferedStream);
+		oBinaryCustomsTableWriter.Write(pXlsx->m_pWorkbook);
 		WriteTableEnd(nCurPos);
 	}
 	else if (pXlsxFlat)

@@ -581,6 +581,18 @@ namespace NSStringUtils
 		std::wstring str(m_pData, (int)m_lSizeCur);
 		return str;
 	}
+    std::wstring CStringBuilder::GetSubData(const size_t& start, const size_t& count)
+    {
+        if (start >= m_lSizeCur)
+            return L"";
+
+        size_t nCountMax = m_lSizeCur - start;
+        if (count != std::wstring::npos && count <= nCountMax)
+            nCountMax = count;
+
+        return std::wstring(m_pData + start, nCountMax);
+    }
+
 	wchar_t* CStringBuilder::GetBuffer()
 	{
 		return m_pData;
@@ -817,6 +829,14 @@ namespace NSStringUtils
 		WriteHexByteNoSafe((value >> 8) & 0xFF);
 		WriteHexByteNoSafe(value & 0xFF);
 	}
+    void CStringBuilder::WriteHexInt4(const unsigned int& value)
+    {
+        AddSize(8);
+        WriteHexByteNoSafe((value >> 24) & 0xFF);
+        WriteHexByteNoSafe((value >> 16) & 0xFF);
+        WriteHexByteNoSafe((value >> 8) & 0xFF);
+        WriteHexByteNoSafe(value & 0xFF);
+    }
 	void CStringBuilder::WriteHexColor3(const unsigned char& r, const unsigned char& g, const unsigned char& b)
 	{
 		AddSize(7);

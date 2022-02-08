@@ -152,7 +152,7 @@ namespace PPTX
 					if (str == L"tx1")		pPair = Scheme.find(L"dk1");
 					else if (str == L"tx2") pPair = Scheme.find(L"dk2");
 					else if (str == L"bg1") pPair = Scheme.find(L"lt1");
-					else if (str == L"bg2") pPair = Scheme.find(L"lt1");
+					else if (str == L"bg2") pPair = Scheme.find(L"lt2");
 					
 					if (Scheme.end() == pPair) return 0;
 					else return pPair->second.GetARGB();
@@ -189,7 +189,7 @@ namespace PPTX
 
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
-				LONG _e = pReader->GetPos() + pReader->GetLong() + 4;
+				LONG _e = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 				pReader->Skip(1); // start attribute
 

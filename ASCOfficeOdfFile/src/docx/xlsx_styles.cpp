@@ -133,18 +133,21 @@ size_t xlsx_style_manager::Impl::xfId(const odf_reader::text_format_properties_c
     const size_t borderId = borders_.borderId(cellProp, default_border);
 
     bool default_fill = false;
-    const size_t fillId = fills_.fillId(textProp, parProp, cellProp, default_set,default_fill);
+    const size_t fillId = fills_.fillId(textProp, parProp, cellProp, default_set, default_fill);
  
-    if (!default_border || !default_fill || is_visible_set/* || (fillId >2 && default_set!=default_fill)*/)
+    if (!default_border || !default_fill || is_visible_set/* || (fillId > 2 && default_set != default_fill)*/)
 		is_visible = true;
 
     xlsx_alignment alignment = OdfProperties2XlsxAlignment(context, textProp, parProp, cellProp);
-    const unsigned int id = next_index_;//static_cast<unsigned int>(cellXfs_.size());    
+	xlsx_protection protection = OdfProperties2XlsxProtection( cellProp);
+	
+	const unsigned int id = next_index_;//static_cast<unsigned int>(cellXfs_.size());    
 
     xlsx_xf xfRecord;
-    const bool dbgApplyAlignment = !is_default(alignment);
-    xfRecord.applyAlignment = dbgApplyAlignment;
-    
+   
+	xfRecord.applyAlignment = !is_default(alignment);
+	xfRecord.alignment = alignment;
+
     xfRecord.applyBorder = true;
     xfRecord.borderId = borderId;
 
@@ -154,7 +157,8 @@ size_t xlsx_style_manager::Impl::xfId(const odf_reader::text_format_properties_c
     xfRecord.applyFont = true;
     xfRecord.fontId = fontId;
     
-    xfRecord.applyProtection = false; // TODO
+    xfRecord.applyProtection = !is_default(protection);
+	xfRecord.protection = protection;
 
     if (false == num_format.empty())
     {
@@ -170,7 +174,6 @@ size_t xlsx_style_manager::Impl::xfId(const odf_reader::text_format_properties_c
 	}
 
     xfRecord.xfId = 0;
-    xfRecord.alignment = alignment;
 
     xlsx_xf_array::const_iterator i = cellXfs_.find(xfRecord);
     if (i != cellXfs_.end())

@@ -32,6 +32,7 @@
 #pragma once
 
 #include "../Base/Nullable.h"
+
 #include "../Common/SimpleTypes_Word.h"
 #include "../Common/SimpleTypes_Shared.h"
 
@@ -48,3 +49,5 @@
 #include "WritingElement.h"
 #include "Common.h"
 
+#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/BaseObject.h"
+#include "../XlsbFormat/Biff12_records/CommonRecords.h"

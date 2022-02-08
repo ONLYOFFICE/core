@@ -170,6 +170,7 @@ namespace PPT_FORMAT
 
 		bool SetElement(CElementPtr pElem);
 //--------------------------------------------------------------------
+            std::wstring	ConvertTable	();
 			std::wstring	ConvertGroup	();
 			std::wstring	ConvertShape	();
             std::wstring	ConvertImage	();
@@ -445,10 +446,17 @@ namespace PPT_FORMAT
 			m_oWriterPath.WriteString(str);
 		}
 
-		void WriteGroupInfo();
+        void WriteGroupInfo();
+        void WriteTableInfo();
+        void WriteHyperlink(const std::vector<CInteractiveInfo> &actions);
+        std::vector<CInteractiveInfo> getActionsByNum(const int num);
+        std::wstring ConvertTableCells();
+        std::wstring ConvertTableRow();
+        std::wstring ConvertTableCell();
 		void WriteShapeInfo();
 		void WriteImageInfo();
-		void WriteTextInfo();
+        void WriteTextInfo();
+        static std::wstring WriteBullets(CTextPFRun* pPF, CRelsGenerator *pRels);
 		void Write3dShape();
 	};
 }

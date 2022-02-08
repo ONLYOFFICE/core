@@ -53,11 +53,19 @@ BaseObjectPtr ShrFmla::clone()
 
 
 void ShrFmla::readFields(CFRecord& record)
-{
-	record >> ref_;
-	record.skipNunBytes(1); // reserved
-	record >> cUse;
-	formula.load(record);
+{	
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        record >> ref_;
+        record.skipNunBytes(1); // reserved
+        record >> cUse;
+        formula.load(record);
+    }
+    else
+    {
+        record >> rfx;
+        formula.load(record);
+    }
 }
 
 } // namespace XLS

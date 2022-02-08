@@ -43,7 +43,7 @@ class PtgStr: public OperandPtg
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgStr)
 public:
-	PtgStr();
+	PtgStr(const unsigned short full_ptg_id);
 	PtgStr(const std::wstring & str);
 	BiffStructurePtr clone();
 

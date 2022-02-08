@@ -84,7 +84,7 @@ CPPTFileReader::CPPTFileReader(POLE::Storage *pStorage, std::wstring strTemp):
 	
 	RELEASEOBJECT(pStm);
 
-    if (0 == m_strTmpDirectory.length())
+    if (m_strTmpDirectory.empty())
 	{
         m_strTmpDirectory = NSDirectory::GetTempPath();
 	}
@@ -247,7 +247,7 @@ void CPPTFileReader::ReadPictures()
 
 			pDecryptor->Decrypt((char*)pHeader, 8, 0);
 		
-			unsigned short rec =0;
+			unsigned short rec = 0;
 			memcpy(&rec,			pHeader	+ 0, 2);
 			memcpy(&oHeader.RecType,pHeader + 2, 2);
 			memcpy(&oHeader.RecLen,	pHeader + 4, 4);
@@ -268,6 +268,7 @@ void CPPTFileReader::ReadPictures()
 		art_blip.ReadFromStream(oHeader, pStream->stream_);	
 		m_oDocumentInfo.m_mapStoreImageFile[ pos ] = art_blip.m_sFileName;
 
-		pStream->seekFromBegin(pos + oHeader.RecLen + 8);
+		pos += (oHeader.RecLen + 8);
+		pStream->seekFromBegin(pos);
 	}
 }

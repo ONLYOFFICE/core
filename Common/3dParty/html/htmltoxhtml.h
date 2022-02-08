@@ -27,11 +27,10 @@ static std::string mhtTohtml(std::string& sFileContent);
 static void replace_all(std::string& s, const std::string& s1, const std::string& s2)
 {
     size_t pos = s.find(s1);
-    size_t l = s2.length();
     while(pos != std::string::npos)
     {
         s.replace(pos, s1.length(), s2);
-        pos = s.find(s1, pos + l);
+        pos = s.find(s1, pos + s2.length());
     }
 }
 
@@ -44,19 +43,14 @@ static std::wstring htmlToXhtml(std::string& sFileContent)
     if (posEncoding != std::string::npos)
     {
         posEncoding = sFileContent.find("=", posEncoding) + 1;
-        size_t posEnd;
-        if(sFileContent[posEncoding] == '\'')
+        char quoteSymbol = '\"';
+        if(sFileContent[posEncoding] == '\"' || sFileContent[posEncoding] == '\'')
         {
+            quoteSymbol = sFileContent[posEncoding];
             posEncoding += 1;
-            posEnd = sFileContent.find('\'', posEncoding);
-        }
-        else
-        {
-            if(sFileContent[posEncoding] == '\"')
-                posEncoding += 1;
-            posEnd = sFileContent.find('\"', posEncoding);
         }
 
+        size_t posEnd = sFileContent.find(quoteSymbol, posEncoding);
         if (std::string::npos != posEnd)
         {
             std::string sEncoding = sFileContent.substr(posEncoding, posEnd - posEncoding);
@@ -66,6 +60,24 @@ static std::wstring htmlToXhtml(std::string& sFileContent)
                 sFileContent = U_TO_UTF8(oConverter.toUnicode(sFileContent, sEncoding.c_str()));
             }
         }
+    }
+
+    // Избавление от <a/>
+    size_t posA = sFileContent.find("<a ");
+    while(posA != std::string::npos)
+    {
+        size_t nBegin = sFileContent.find('<',  posA + 1);
+        size_t nEnd   = sFileContent.find("/>", posA);
+        if(nEnd < nBegin)
+            sFileContent.replace(nEnd, 2, "></a>");
+        posA = sFileContent.find("<a ", nBegin);
+    }
+    // Избавление от <title/>
+    posA = sFileContent.find("<title/>");
+    while (posA != std::string::npos)
+    {
+        sFileContent.replace(posA, 8, "<title></title>");
+        posA = sFileContent.find("<title/>", posA);
     }
 
     // Gumbo
@@ -100,17 +112,66 @@ static std::string Base64ToString(const std::string& sContent, const std::string
     return sRes;
 }
 
-static std::string QuotedPrintableDecode(const std::string& sContent)
+static std::string QuotedPrintableDecode(const std::string& sContent, std::string& sCharset)
 {
     NSStringUtils::CStringBuilderA sRes;
     size_t ip = 0;
-    size_t i = sContent.find('=');
+    size_t i  = sContent.find('=');
+
+    if(i == 0)
+    {
+        size_t nIgnore = 12;
+        std::string charset = sContent.substr(0, nIgnore);
+        if(charset == "=00=00=FE=FF")
+            sCharset = "UTF-32BE";
+        else if(charset == "=FF=FE=00=00")
+            sCharset = "UTF-32LE";
+        else if(charset == "=2B=2F=76=38" || charset == "=2B=2F=76=39" ||
+                charset == "=2B=2F=76=2B" || charset == "=2B=2F=76=2F")
+            sCharset = "UTF-7";
+        else if(charset == "=DD=73=66=73")
+            sCharset = "UTF-EBCDIC";
+        else if(charset == "=84=31=95=33")
+            sCharset = "GB-18030";
+        else
+        {
+            nIgnore -= 3;
+            charset.erase(nIgnore);
+            if(charset == "=EF=BB=BF")
+                sCharset = "UTF-8";
+            else if(charset == "=F7=64=4C")
+                sCharset = "UTF-1";
+            else if(charset == "=0E=FE=FF")
+                sCharset = "SCSU";
+            else if(charset == "=FB=EE=28")
+                sCharset = "BOCU-1";
+            else
+            {
+                nIgnore -= 3;
+                charset.erase(nIgnore);
+                if(charset == "=FE=FF")
+                    sCharset = "UTF-16BE";
+                else if(charset == "=FF=FE")
+                    sCharset = "UTF-16LE";
+                else
+                    nIgnore -= 6;
+            }
+        }
+
+        ip = nIgnore;
+        i  = sContent.find('=', ip);
+    }
+
     while(i != std::string::npos && i + 2 < sContent.length())
     {
-        sRes.WriteString(sContent.substr(ip, i - ip));
+        sRes.WriteString(sContent.c_str() + ip, i - ip);
         std::string str = sContent.substr(i + 1, 2);
         if(str.front() == '\n' || str.front() == '\r')
-            sRes.WriteString(str);
+        {
+            char ch = str[1];
+            if(ch != '\n' && ch != '\r')
+                sRes.WriteString(&ch, 1);
+        }
         else
         {
             char* err;
@@ -123,7 +184,8 @@ static std::string QuotedPrintableDecode(const std::string& sContent)
         ip = i + 3;
         i = sContent.find('=', ip);
     }
-    sRes.WriteString(sContent.substr(ip));
+    if(ip != std::string::npos)
+        sRes.WriteString(sContent.c_str() + ip);
     return sRes.GetData();
 }
 
@@ -259,7 +321,7 @@ static void ReadMht(std::string& sFileContent, size_t& nFound, size_t& nNextFoun
         }
         else if(sContentEncoding == "quoted-printable" || sContentEncoding == "Quoted-Printable")
         {
-            sContent = QuotedPrintableDecode(sContent);
+            sContent = QuotedPrintableDecode(sContent, sCharset);
             if (sCharset != "utf-8" && sCharset != "UTF-8" && !sCharset.empty())
             {
                 NSUnicodeConverter::CUnicodeConverter oConverter;
@@ -403,11 +465,11 @@ static std::string handle_unknown_tag(GumboStringPiece* text)
     GumboStringPiece gsp = *text;
     gumbo_tag_from_original_text(&gsp);
     std::string sAtr = std::string(gsp.data, gsp.length);
-    size_t found = sAtr.find_first_of("-'+,./:=?;!*#@$_%<>&;\"\'()[]{}");
+    size_t found = sAtr.find_first_of("-'+,./=?;!*#@$_%<>&;\"\'()[]{}");
     while(found != std::string::npos)
     {
         sAtr.erase(found, 1);
-        found = sAtr.find_first_of("-'+,./:=?;!*#@$_%<>&;\"\'()[]{}", found);
+        found = sAtr.find_first_of("-'+,./=?;!*#@$_%<>&;\"\'()[]{}", found);
     }
     return sAtr;
 }
@@ -450,11 +512,11 @@ static void build_attributes(const GumboVector* attribs, bool no_entities, NSStr
         atts.WriteString(" ");
 
         bool bCheck = false;
-        size_t nBad = sName.find_first_of("-'+,.:=?#%<>&;\"\'()[]{}");
+        size_t nBad = sName.find_first_of("+,.=?#%<>&;\"\'()[]{}");
         while(nBad != std::string::npos)
         {
             sName.erase(nBad, 1);
-            nBad = sName.find_first_of("-'+,.:=?#%<>&;\"\'()[]{}", nBad);
+            nBad = sName.find_first_of("+,.=?#%<>&;\"\'()[]{}", nBad);
             if(sName.empty())
                 break;
             bCheck = true;
@@ -498,6 +560,7 @@ static void prettyprint_contents(GumboNode* node, NSStringUtils::CStringBuilderA
     bool no_entity_substitution = no_entity_sub.find(key) != std::string::npos;
     bool keep_whitespace        = preserve_whitespace.find(key) != std::string::npos;
     bool is_inline              = nonbreaking_inline.find(key) != std::string::npos;
+    bool is_like_inline         = treat_like_inline.find(key) != std::string::npos;
 
     GumboVector* children = &node->v.element.children;
 
@@ -525,7 +588,7 @@ static void prettyprint_contents(GumboNode* node, NSStringUtils::CStringBuilderA
             prettyprint(child, contents);
         else if (child->type == GUMBO_NODE_WHITESPACE)
         {
-            if (keep_whitespace || is_inline)
+            if (keep_whitespace || is_inline || is_like_inline)
                 contents.WriteString(child->v.text.text);
         }
         else if (child->type != GUMBO_NODE_COMMENT)

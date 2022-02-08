@@ -345,8 +345,6 @@ namespace PPTX
 						hlinkMouseOver = oReader;
 					else if ( L"rtl" == sName )
 						rtl = oReader;
-					else if ( L"rtl" == sName )
-						rtl = oReader;
 					else if (	L"effectDag"	== sName	||
 								L"effectLst"	== sName)
 					{
@@ -396,10 +394,10 @@ namespace PPTX
 				if (node.GetNodes(L"*", oNodes))
 				{
 					int nCount = oNodes.GetCount();
-					for (int i = 0; i < nCount; ++i)
+					for (int j = 0; j < nCount; ++j)
 					{
 						XmlUtils::CXmlNode oNode;
-						oNodes.GetAt(i, oNode);
+						oNodes.GetAt(j, oNode);
 
 						std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
 
@@ -492,7 +490,10 @@ namespace PPTX
 
 				pWriter->Write(ln);
 				Fill.toXmlWriter(pWriter);
-				EffectList.toXmlWriter(pWriter);
+				EffectList.toXmlWriter(pWriter);				
+				pWriter->Write(highlight);
+				pWriter->Write(uFill);
+				pWriter->Write(uFillTx);
 				pWriter->Write(latin);
 				pWriter->Write(ea);
 				pWriter->Write(cs);
@@ -500,9 +501,6 @@ namespace PPTX
 				pWriter->Write(hlinkClick);
 				pWriter->Write(hlinkMouseOver);
 				pWriter->Write(rtl);
-				pWriter->Write(uFill);
-				pWriter->Write(uFillTx);
-				pWriter->Write(highlight);
 
 				pWriter->EndNode(m_name);
 			}
@@ -525,7 +523,6 @@ namespace PPTX
 					highlight->Merge(props->highlight);
 
 	//			EffectProperties EffectList;
-				//highlight (Highlight Color)  §21.1.2.3.4 
 				//uLn (Underline Stroke)  §21.1.2.3.14 
 				//uLnTx (Underline Follows Text)  §21.1.2.3.15 
 
@@ -636,8 +633,7 @@ namespace PPTX
 						}break;
 						case 4:
 						{
-							cap = new Limit::TextCaps();
-							cap->SetBYTECode(pReader->GetUChar());
+							cap = pReader->GetUChar();
 						}break;
 						case 5:
 						{
@@ -685,8 +681,7 @@ namespace PPTX
 						}break;
 						case 16:
 						{
-							strike = new Limit::TextStrike();
-							strike->SetBYTECode(pReader->GetUChar());
+							strike = pReader->GetUChar();
 						}break;
 						case 17:
 						{
@@ -694,8 +689,7 @@ namespace PPTX
 						}break;
 						case 18:
 						{
-							u = new Limit::TextUnderline();
-							u->SetBYTECode(pReader->GetUChar());
+							u = pReader->GetUChar();
 						}break;
 						default:
 							break;
@@ -784,7 +778,6 @@ namespace PPTX
 				pReader->Seek(_end_rec);
 			}
 
-	//Childs
 			//uLn (Underline Stroke)  §21.1.2.3.14 
 			//uLnTx (Underline Follows Text)  §21.1.2.3.15 
 			nullable<Ln>						ln;
@@ -804,7 +797,6 @@ namespace PPTX
 			nullable<Hyperlink>					hlinkMouseOver;
 			nullable<Rtl>						rtl;
 
-	// Attributes
 			nullable_string						altLang;
 			nullable_bool						b;
 			nullable_int						baseline;

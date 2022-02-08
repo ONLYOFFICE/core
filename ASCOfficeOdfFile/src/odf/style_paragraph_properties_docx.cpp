@@ -171,7 +171,7 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 		if (style_inst)
 		{
 			if (level < 0 && style_inst->outline_level())
-			{
+			{ 
 				level = style_inst->outline_level().get();
 			}
 
@@ -181,14 +181,31 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 			}
 		}
 	
-		if (level >= 0)
+		if (level >= 0 && level < 10)
 		{
-			if (list_styles.outline_style())
+			text_outline_style* outline_style = list_styles.outline_style();
+			if (outline_style)
 			{
-				_pPr << L"<w:numPr>";
-					if (level < 9 && bOutlineList)
+				bool bListEnabled = true;
+				if (level < outline_style->content_.size())
+				{
+					office_element_ptr elm = outline_style->content_[level];
+					text_outline_level_style* outline_level = dynamic_cast<text_outline_level_style*>(elm.get());
+					if (outline_level)
 					{
-						_pPr << L"<w:ilvl w:val=\"" << level - 1  << L"\"/>";
+						if (!outline_level->common_num_format_attlist_.style_num_format_)
+							bListEnabled = false;
+						else if (outline_level->common_num_format_attlist_.style_num_format_->get_type() == odf_types::style_numformat::none)
+							bListEnabled = false;
+					}
+				}
+				else
+					bListEnabled = false;
+
+				_pPr << L"<w:numPr>";
+					if (bListEnabled && level < 9 && bOutlineList)
+					{
+						_pPr << L"<w:ilvl w:val=\"" << level - 1 << L"\"/>";
 						_pPr << L"<w:numId w:val=\"" << list_styles.id_outline() << L"\"/>";
 					}
 					else
@@ -267,9 +284,9 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 			CP_XML_NODE(L"w:textAlignment"){CP_XML_ATTR(L"w:val", L"baseline");}
 		}
 
-		if (Context.get_page_break_before())
+		if (Context.get_page_break_before() == 2)
 		{
-			Context.set_page_break_before(false);
+			Context.set_page_break_before(0);
 			CP_XML_NODE(L"w:pageBreakBefore"){CP_XML_ATTR(L"w:val", L"true");  }  
 		}
 		else if (fo_break_before_)
@@ -279,6 +296,8 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 				val = L"false";
 			else if (fo_break_before_->get_type() == fo_break::Page)
 				val = L"true";
+			else 
+				Context.set_page_break_before(fo_break_before_->get_type());
 
 			if (!val.empty())
 				CP_XML_NODE(L"w:pageBreakBefore"){CP_XML_ATTR(L"w:val", val);}
@@ -449,12 +468,9 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 			}
 		}
 	}
-    if (fo_break_after_ && fo_break_after_->get_type() == fo_break::Page)
+    if (fo_break_after_ && Context.in_automatic_style())
     {
-        if (Context.in_automatic_style())
-        {
-            Context.set_page_break_after(true);
-        }
+		Context.set_page_break_after(fo_break_after_->get_type());
     }
 
 	Context.get_tabs_context().docx_convert(Context);

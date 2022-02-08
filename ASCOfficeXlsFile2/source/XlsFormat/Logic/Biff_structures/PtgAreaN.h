@@ -33,6 +33,7 @@
 
 #include "OperandPtg.h"
 #include "CellRangeRef.h"
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/CellRangeRef.h"
 
 namespace XLS
 {
@@ -43,7 +44,7 @@ class PtgAreaN: public OperandPtg
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgAreaN)
 public:
-	PtgAreaN(const CellRef cell_base_ref_init);
+	PtgAreaN(const unsigned short full_ptg_id, const CellRef cell_base_ref_init);
 	PtgAreaN(const std::wstring& word, const PtgDataType data_type, const CellRef cell_base_ref_init);
 	
 	void set_base_ref(const CellRef& cell_base_ref);
@@ -57,8 +58,11 @@ public:
 
 	static const unsigned short fixed_id = 0x0D;
 
+    GlobalWorkbookInfoPtr	global_info;
+
 	CellRef cell_base_ref;
 	RgceAreaRel area;
+    XLSB::RgceAreaRel areaXlsb; // in biff12
 };
 
 } // namespace XLS

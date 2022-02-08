@@ -36,7 +36,6 @@
 
 namespace NSDoctRenderer
 {
-    class CDocBuilderJS;
 
     /**
      * Class for getting results of called js commands
@@ -196,6 +195,8 @@ namespace NSDoctRenderer
          * Default: false
          * --all-fonts-path Path to AllFonts.js script
          * --argument Json argument, sending to global params of all opened js context
+         * --fonts-system true/false Is use system fonts. Default true
+         * --fonts-dir Path to additional fonts dir. (may be many records)
          * @param param key
          * @param value value
          */
@@ -231,11 +232,12 @@ namespace NSDoctRenderer
          * Unloading the ONLYOFFICE Document Builder from the application memory when it is no longer needed.
          */
         static void Dispose();
+        CDocBuilder_Private* GetPrivate() { return m_pInternal; }
 
     private:
         CDocBuilder_Private* m_pInternal;
 
-        friend class CDocBuilderJS;
+        friend class CBuilderDocumentEmbed;
     };
 
     /**

@@ -56,12 +56,14 @@ namespace PPT_FORMAT
 		int		m_lPlaceholderType;
 		int		m_lPlaceholderID;
 
+
 		// граница
         Aggplus::RECT m_oBounds;
 
 		// настройки по-умолчанию
 		CTextAttributes			m_oAttributes;
 		std::vector<CParagraph>	m_arParagraphs;
+        std::wstring m_originalText;
 
         bool	m_bVertical;
 		bool	m_bAutoFit;

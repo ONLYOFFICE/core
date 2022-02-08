@@ -33,6 +33,8 @@
 
 #include "../CommonInclude.h"
 
+#include "../../XlsbFormat/Biff12_records/BundleSh.h"
+
 
 namespace OOX
 {
@@ -44,13 +46,13 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSheet)
+            WritingElement_XlsbConstructors(CSheet)
 			CSheet(OOX::Document *pMain = NULL) : WritingElement(pMain)
 			{
-			}
+			}           
 			virtual ~CSheet()
 			{
 			}
-
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
@@ -75,6 +77,11 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
+
 			virtual EElementType getType () const
 			{
 				return et_x_Sheet;
@@ -93,6 +100,28 @@ namespace OOX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::BundleSh*>(obj.get());
+                m_oRid                = ptr->strRelID.value.value();
+                m_oName               = ptr->strName.value();
+                m_oSheetId            = ptr->iTabID;
+
+                switch(ptr->hsState)
+                {
+                    case XLSB::BundleSh::ST_SheetState::VISIBLE:
+                        m_oState = SimpleTypes::Spreadsheet::EVisibleType::visibleVisible;
+                        break;
+                    case XLSB::BundleSh::ST_SheetState::HIDDEN:
+                        m_oState = SimpleTypes::Spreadsheet::EVisibleType::visibleHidden;
+                        break;
+                    case XLSB::BundleSh::ST_SheetState::VERYHIDDEN:
+                        m_oState = SimpleTypes::Spreadsheet::EVisibleType::visibleVeryHidden;
+                        break;
+                }
+
+            }
+
 		public:
 				nullable<SimpleTypes::CRelationshipId>				m_oRid;
 				nullable_string										m_oName;
@@ -105,9 +134,10 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSheets)
+            WritingElement_XlsbVectorConstructors(CSheets)
 			CSheets(OOX::Document *pMain = NULL) : WritingElementWithChilds<CSheet>(pMain)
 			{
-			}
+			}            
 			virtual ~CSheets()
 			{
 			}
@@ -154,6 +184,19 @@ namespace OOX
 
 				}
 			}
+
+            void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
+            {
+                //ReadAttributes(obj);
+
+                if (obj.empty())
+                    return;
+
+                for(auto &sheet : obj)
+                {
+                    m_arrItems.push_back(new CSheet(sheet));
+                }
+            }
 
 			virtual EElementType getType () const
 			{

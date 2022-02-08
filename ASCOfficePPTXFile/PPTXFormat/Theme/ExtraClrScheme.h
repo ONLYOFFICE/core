@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_THEME_EXTRACLRSCHEME_INCLUDE_H_
-#define PPTX_THEME_EXTRACLRSCHEME_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "ClrScheme.h"
@@ -81,7 +79,7 @@ namespace PPTX
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
-				LONG _e = pReader->GetPos() + pReader->GetLong() + 4;
+				LONG _e = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 				while (pReader->GetPos() < _e)
 				{
@@ -122,5 +120,3 @@ namespace PPTX
 		};
 	} // namespace nsTheme
 } // namespace PPTX
-
-#endif // PPTX_THEME_EXTRACLRSCHEME_INCLUDE_H

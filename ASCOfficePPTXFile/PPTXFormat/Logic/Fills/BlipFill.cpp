@@ -174,7 +174,7 @@ namespace PPTX
 	{
 		pReader->Skip(4); // len
 		BYTE _type = pReader->GetUChar(); // FILL_TYPE_BLIP
-		LONG _e = pReader->GetPos() + pReader->GetLong() + 4;
+		LONG _e = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
 		pReader->Skip(1);
 
@@ -325,8 +325,7 @@ namespace PPTX
 
 									if (false == detectImageExtension.empty())
 									{
-										if (sImageExtension.empty())
-											sImageExtension = detectImageExtension;
+										sImageExtension = detectImageExtension;
 
 										//папки media может не быть в случае, когда все картинки base64(поскольку файл временный, папку media не создаем)
 										std::wstring tempFilePath = pReader->m_strFolder + FILE_SEPARATOR_STR;
@@ -387,6 +386,7 @@ namespace PPTX
 								if (oRelsGeneratorInfo.nImageRId > 0)
 								{
 									blip->embed = new OOX::RId(oRelsGeneratorInfo.nImageRId);
+									blip->imageFilepath = oRelsGeneratorInfo.sFilepathImage;
 								}
 								
 								if(oRelsGeneratorInfo.nOleRId > 0)

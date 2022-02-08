@@ -861,8 +861,10 @@ void ECMAWriteProtect::Generate()
 	RandomPool prng;
 	SecByteBlock seed_salt(16);
 	OS_GenerateRandomBlock(false, seed_salt, seed_salt.size());
-	prng.IncorporateEntropy(seed_salt, seed_salt.size());
-
+	if (prng.CanIncorporateEntropy())
+	{
+		prng.IncorporateEntropy(seed_salt, seed_salt.size());
+	}
 	_buf pPassword	(password);
 	_buf empty		(NULL, 0, false);		
 	_buf pSalt		(seed_salt.data(), seed_salt.size());
@@ -933,21 +935,30 @@ void ECMAEncryptor::SetPassword(std::wstring _password)
 	//сгенерить соль
     SecByteBlock seed_salt(cryptData.saltSize);
     OS_GenerateRandomBlock(false, seed_salt, seed_salt.size());
-	prng.IncorporateEntropy(seed_salt, seed_salt.size());
-	
+	if (prng.CanIncorporateEntropy())
+	{
+		prng.IncorporateEntropy(seed_salt, seed_salt.size());
+	}
     SecByteBlock seed_datasalt(cryptData.saltSize);
     OS_GenerateRandomBlock(false, seed_datasalt, seed_datasalt.size());
-	prng.IncorporateEntropy(seed_datasalt, seed_datasalt.size());
-
+	if (prng.CanIncorporateEntropy())
+	{
+		prng.IncorporateEntropy(seed_datasalt, seed_datasalt.size());
+	}
 	//сгенерить ключ
     SecByteBlock seed_key(cryptData.keySize);
     OS_GenerateRandomBlock(false, seed_key, seed_key.size());
-	prng.IncorporateEntropy(seed_key, seed_key.size());
-
+	if (prng.CanIncorporateEntropy())
+	{
+		prng.IncorporateEntropy(seed_key, seed_key.size());
+	}
 	//сгенерить проверочный
     SecByteBlock seed_verify(cryptData.saltSize);
     OS_GenerateRandomBlock(false, seed_verify, seed_verify.size());
-	prng.IncorporateEntropy(seed_verify, seed_verify.size());
+	if (prng.CanIncorporateEntropy())
+	{
+		prng.IncorporateEntropy(seed_verify, seed_verify.size());
+	}
 //---------
 	_buf pPassword		(password);
 	_buf empty			(NULL, 0, false);
@@ -1129,6 +1140,8 @@ int ECMAEncryptor::Encrypt(unsigned char* data_inp_ptr, int size, unsigned char*
 	unsigned char* data_inp = data_inp_ptr;
 	unsigned char* data_out = data_out_ptr + 8;
 	
+	int result_size_out = 0;
+
 	if (cryptData.bAgile)
 	{	
 		_buf pBlockKey	((unsigned char*)encrKeyValueBlockKey, 8);	
@@ -1193,7 +1206,7 @@ int ECMAEncryptor::Encrypt(unsigned char* data_inp_ptr, int size, unsigned char*
 
 			enc_size += sz; i++;
 		}
-		return enc_size + 8;
+		result_size_out = enc_size + 8;
 	}
 	else
 	{
@@ -1210,8 +1223,9 @@ int ECMAEncryptor::Encrypt(unsigned char* data_inp_ptr, int size, unsigned char*
 
 		EncryptCipher(hashKey, empty, pInp, pOut, cryptData.cipherAlgorithm/*, StreamTransformationFilter::ZEROS_PADDING*/);	
 	
-		return size_out + 8;
+		result_size_out = size_out + 8;
 	}
+	return result_size_out;
 }
 //-----------------------------------------------------------------------------------------------------------
 ODFDecryptor::ODFDecryptor()
@@ -1344,8 +1358,10 @@ void ODFEncryptor::SetCryptData(_odfCryptData	&data)
 	{
         SecByteBlock seed_salt(16);
         OS_GenerateRandomBlock(false, seed_salt, seed_salt.size());
-		prng.IncorporateEntropy(seed_salt, seed_salt.size());
-
+		if (prng.CanIncorporateEntropy())
+		{
+			prng.IncorporateEntropy(seed_salt, seed_salt.size());
+		}
 		cryptData.saltValue = std::string((char*)seed_salt.data(), seed_salt.size());
 	}
 	
@@ -1353,8 +1369,10 @@ void ODFEncryptor::SetCryptData(_odfCryptData	&data)
 	{
         SecByteBlock start_vector(16);
         OS_GenerateRandomBlock(false, start_vector, start_vector.size());
-		prng.IncorporateEntropy(start_vector, start_vector.size());
-
+		if (prng.CanIncorporateEntropy())
+		{
+			prng.IncorporateEntropy(start_vector, start_vector.size());
+		}
 		cryptData.initializationVector = std::string((char*)start_vector.data(), start_vector.size());
 	}
 }

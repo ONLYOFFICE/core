@@ -65,6 +65,8 @@ namespace NExtractTools
         TCD_DOCT2DOCX,
 		TCD_DOCT2DOTX,
 		TCD_DOCT2DOCM,
+		TCD_DOCT2OFORM,
+		TCD_DOCT2DOCXF,
         TCD_DOCX2DOCT_BIN,
         TCD_DOCT_BIN2DOCX,
         TCD_DOTX2DOCX,
@@ -75,12 +77,13 @@ namespace NExtractTools
 		TCD_DOCXFLAT2DOCT,
 		TCD_DOCXFLAT2DOCT_BIN,
 
-		TCD_PKG2DOCX,
-		TCD_PKG2DOCT,
-		TCD_PKG2DOCT_BIN,
-		
+		TCD_PKG2OOXML,
+		TCD_PKG2BIN,
+		TCD_PKG2BIN_T,
+
 		TCD_XLSXFLAT2XLST,
 		TCD_XLSXFLAT2XLST_BIN,
+		TCD_XLSXFLAT2XLSX,
 
         TCD_XLSX2XLST,
         TCD_XLST2XLSX,
@@ -92,6 +95,7 @@ namespace NExtractTools
 		TCD_XLSM2XLSX,
 		TCD_XLTM2XLSX,
         TCD_XLTM2XLSM,
+        TCD_XLSB2XLST,
 
         TCD_PPTX2PPTT,
         TCD_PPTT2PPTX,
@@ -190,6 +194,8 @@ namespace NExtractTools
 		TCD_MSCRYPT2_RAW,
 		TCD_2MSCRYPT_RAW,
 
+		TCD_MITCRYPT2,
+
 //
 		TCD_HTML2DOCX,
 		TCD_HTML2DOCT,
@@ -228,6 +234,8 @@ namespace NExtractTools
         TCSVD_COMMA = 4,
         TCSVD_SPACE = 5
     } TCsvDelimiter;
+
+	const TConversionDirection getConversionDirectionFromExt (const std::wstring &sFile1, const std::wstring &sFile2);
 
     static bool copyOrigin(const std::wstring& sFileFrom, const std::wstring& sFileTo)
     {
@@ -385,6 +393,44 @@ namespace NExtractTools
 		}
 	};
 
+	class InputParamsText
+	{
+	public:
+		int* m_nTextAssociationType;
+		InputParamsText()
+		{
+			m_nTextAssociationType = NULL;
+		}
+		~InputParamsText()
+		{
+			RELEASEOBJECT(m_nTextAssociationType);
+		}
+
+		bool FromXmlNode(XmlUtils::CXmlNode& oNode)
+		{
+			XmlUtils::CXmlNodes oXmlNodes;
+			if (TRUE == oNode.GetChilds(oXmlNodes))
+			{
+				for (int i = 0; i < oXmlNodes.GetCount(); i++)
+				{
+					XmlUtils::CXmlNode oXmlNode;
+					if (oXmlNodes.GetAt(i, oXmlNode))
+					{
+						std::wstring sValue;
+						if (oXmlNode.GetTextIfExist(sValue))
+						{
+							std::wstring sName = oXmlNode.GetName();
+
+							if (_T("m_nTextAssociationType") == sName)
+								m_nTextAssociationType = new int(XmlUtils::GetInteger(sValue));
+						}
+					}
+				}
+			}
+			return true;
+		}
+	};
+
 	class InputLimit
 	{
 	public:
@@ -404,6 +450,7 @@ namespace NExtractTools
 		std::wstring* m_sKey;
 		std::wstring* m_sFileFrom;
 		std::wstring* m_sFileTo;
+		std::wstring* m_sTitle;
 		int* m_nFormatFrom;
 		int* m_nFormatTo;
 		int* m_nCsvTxtEncoding;
@@ -418,6 +465,7 @@ namespace NExtractTools
 		std::wstring* m_sThemeDir;
         InputParamsMailMerge* m_oMailMergeSend;
 		InputParamsThumbnail* m_oThumbnail;
+		InputParamsText* m_oTextParams;
 		std::wstring* m_sJsonParams;
 		std::wstring* m_sPassword;
 		std::wstring* m_sSavePassword;
@@ -426,14 +474,17 @@ namespace NExtractTools
 		bool* m_bIsNoBase64;
 		boost::unordered_map<int, std::vector<InputLimit>> m_mapInputLimits;
 		bool* m_bIsPDFA;
+		bool* m_bConvertToOrigin;
 		//output params
 		mutable bool m_bOutputConvertCorrupted;
+		mutable bool m_bMacro;
 	public:
 		InputParams()
 		{
 			m_sKey = NULL;
 			m_sFileFrom = NULL;
 			m_sFileTo = NULL;
+			m_sTitle = NULL;
             m_nFormatFrom = new int(AVS_OFFICESTUDIO_FILE_UNKNOWN);
 			m_nFormatTo = NULL;
 			m_nCsvTxtEncoding = NULL;
@@ -448,6 +499,7 @@ namespace NExtractTools
 			m_sThemeDir = NULL;
             m_oMailMergeSend = NULL;
 			m_oThumbnail = NULL;
+			m_oTextParams = NULL;
 			m_sJsonParams = NULL;
 			m_sPassword = NULL;
 			m_sSavePassword = NULL;
@@ -455,14 +507,17 @@ namespace NExtractTools
 			m_sTempDir = NULL;
 			m_bIsNoBase64 = NULL;
 			m_bIsPDFA = NULL;
+			m_bConvertToOrigin = NULL;
 
 			m_bOutputConvertCorrupted = false;
+			m_bMacro = false;
 		}
 		~InputParams()
 		{
 			RELEASEOBJECT(m_sKey);
 			RELEASEOBJECT(m_sFileFrom);
 			RELEASEOBJECT(m_sFileTo);
+			RELEASEOBJECT(m_sTitle);
 			RELEASEOBJECT(m_nFormatFrom);
 			RELEASEOBJECT(m_nFormatTo);
 			RELEASEOBJECT(m_nCsvTxtEncoding);
@@ -477,6 +532,7 @@ namespace NExtractTools
 			RELEASEOBJECT(m_sThemeDir);
             RELEASEOBJECT(m_oMailMergeSend);
 			RELEASEOBJECT(m_oThumbnail);
+			RELEASEOBJECT(m_oTextParams);
 			RELEASEOBJECT(m_sJsonParams);
 			RELEASEOBJECT(m_sPassword);
 			RELEASEOBJECT(m_sSavePassword);
@@ -484,6 +540,7 @@ namespace NExtractTools
 			RELEASEOBJECT(m_sTempDir);
 			RELEASEOBJECT(m_bIsNoBase64);
 			RELEASEOBJECT(m_bIsPDFA);
+			RELEASEOBJECT(m_bConvertToOrigin);
 		}
 		
 		bool FromXmlFile(const std::wstring& sFilename)
@@ -533,6 +590,12 @@ namespace NExtractTools
 							m_oThumbnail = new InputParamsThumbnail();
 							m_oThumbnail->FromXmlNode(oXmlNode);
 						}
+						else if(_T("m_oTextParams") == sName)
+						{
+							RELEASEOBJECT(m_oTextParams);
+							m_oTextParams = new InputParamsText();
+							m_oTextParams->FromXmlNode(oXmlNode);
+						}
 						else if(_T("m_oInputLimits") == sName)
 						{
 							FromLimitsNode(oXmlNode);
@@ -556,6 +619,11 @@ namespace NExtractTools
 								{
 									RELEASEOBJECT(m_sFileTo);
 									m_sFileTo = new std::wstring(sValue);
+								}
+								else if(_T("m_sTitle") == sName)
+								{
+									RELEASEOBJECT(m_sTitle);
+									m_sTitle = new std::wstring(sValue);
 								}
 								else if(_T("m_nFormatFrom") == sName)
 								{
@@ -652,6 +720,11 @@ namespace NExtractTools
 									RELEASEOBJECT(m_bIsPDFA);
 									m_bIsPDFA = new bool(XmlUtils::GetBoolean2(sValue));
 								}
+								else if(_T("m_bConvertToOrigin") == sName)
+								{
+									RELEASEOBJECT(m_bConvertToOrigin);
+									m_bConvertToOrigin = new bool(XmlUtils::GetBoolean2(sValue));
+								}
 							}
 							else if(_T("m_nCsvDelimiterChar") == sName)
 							{
@@ -736,6 +809,10 @@ namespace NExtractTools
 		{
 			return (NULL != m_bIsPDFA) ? (*m_bIsPDFA) : false;
 		}
+		bool getConvertToOrigin() const
+		{
+			return (NULL != m_bConvertToOrigin) ? (*m_bConvertToOrigin) : false;
+		}
         std::wstring getXmlOptions()
 		{
             std::wstring sRes;
@@ -762,6 +839,8 @@ namespace NExtractTools
             int nFileType = 1;
             if(NULL != m_nFormatFrom && AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == *m_nFormatFrom)
                 nFileType = 2;
+            else if(NULL != m_nFormatFrom && AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB == *m_nFormatFrom)
+                nFileType = 4;
 
             std::wstring sSaveType;
             if(NULL != m_nFormatTo)
@@ -773,6 +852,8 @@ namespace NExtractTools
             }
             sRes  = L"<xmlOptions><fileOptions fileType='" + std::to_wstring(nFileType);
             sRes += L"' codePage='" + std::to_wstring(nCsvEncoding);
+			if (m_bMacro)
+				sRes += L"' macro='1";
 			sRes += L"' delimiter='" + XmlUtils::EncodeXmlStringExtend(cDelimiter) + L"' " + sSaveType;
             sRes += L"/><TXTOptions><Encoding>" + std::to_wstring(nCsvEncoding) + L"</Encoding></TXTOptions></xmlOptions>";
 
@@ -781,6 +862,17 @@ namespace NExtractTools
 		TConversionDirection getConversionDirection()
 		{
 			TConversionDirection eRes = TCD_AUTO;
+			if((NULL == m_nFormatFrom || AVS_OFFICESTUDIO_FILE_UNKNOWN == *m_nFormatFrom) && NULL == m_nFormatTo && NULL != m_sFileFrom && NULL != m_sFileTo)
+			{
+				eRes = getConversionDirectionFromExt (*m_sFileFrom, *m_sFileTo);
+				if (TCD_ERROR != eRes)
+					return eRes;
+				COfficeFileFormatChecker FileFormatChecker;
+				RELEASEOBJECT(m_nFormatFrom);
+				m_nFormatFrom = new int(FileFormatChecker.GetFormatByExtension(L"." + NSFile::GetFileExtention(*m_sFileFrom)));
+				RELEASEOBJECT(m_nFormatTo);
+				m_nFormatTo = new int(FileFormatChecker.GetFormatByExtension(L"." + NSFile::GetFileExtention(*m_sFileTo)));
+			}
 
 			if(NULL != m_nFormatFrom && NULL != m_nFormatTo)
 			{
@@ -795,7 +887,7 @@ namespace NExtractTools
                                 FileFormatChecker.nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN)
                     {
                         nFormatFrom = FileFormatChecker.nFileType;
-                        changeFormatFrom(nFormatFrom);
+						changeFormatFrom(nFormatFrom, FileFormatChecker.bMacroEnabled);
                     }
                 }
                 eRes = processDownloadFile();
@@ -824,28 +916,16 @@ namespace NExtractTools
                     eRes = TCD_CANVAS_PDF2;
 				else if(AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO == nFormatFrom)
 					eRes = TCD_MSCRYPT2;
-                else if(AVS_OFFICESTUDIO_FILE_OTHER_ZIP			== nFormatFrom	&& AVS_OFFICESTUDIO_FILE_UNKNOWN			== nFormatTo)
+				else if(AVS_OFFICESTUDIO_FILE_OTHER_MS_MITCRYPTO == nFormatFrom)
+					eRes = TCD_MITCRYPT2;
+                else if(AVS_OFFICESTUDIO_FILE_OTHER_ZIP == nFormatFrom && AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatTo)
                     eRes = TCD_UNZIPDIR;
-                else if(AVS_OFFICESTUDIO_FILE_UNKNOWN			== nFormatFrom	&& AVS_OFFICESTUDIO_FILE_OTHER_ZIP			== nFormatTo)
+                else if(AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatFrom && AVS_OFFICESTUDIO_FILE_OTHER_ZIP == nFormatTo)
                     eRes = TCD_ZIPDIR;
             }
-			else if(NULL != m_sFileFrom && NULL != m_sFileTo)
-			{
-				eRes = TCD_AUTO;
-			}
 			else
 				eRes = TCD_ERROR;
 			return eRes;
-		}
-		TConversionDirection getConversionDirectionFromExt()
-		{
-			if (NULL != m_sFileTo)
-			{
-				COfficeFileFormatChecker FileFormatChecker;
-				RELEASEOBJECT(m_nFormatTo);
-				m_nFormatTo = new int(FileFormatChecker.GetFormatByExtension(L"." + NSFile::GetFileExtention(*m_sFileTo)));
-			}
-			return getConversionDirection();
 		}
 		TConversionDirection processDownloadFile()
         {
@@ -979,7 +1059,7 @@ namespace NExtractTools
             }
             return nRes;
         }
-        void changeFormatFrom(int formatFrom)
+		void changeFormatFrom(int formatFrom, bool bMacroEnabled)
         {
           *m_nFormatFrom = formatFrom;
           int toFormat = *m_nFormatTo;
@@ -1002,26 +1082,68 @@ namespace NExtractTools
               toFormat = AVS_OFFICESTUDIO_FILE_CANVAS_WORD;
             }
           } 
-		  else if ( AVS_OFFICESTUDIO_FILE_OTHER_TEAMLAB_INNER == toFormat) 
+		  else if ( AVS_OFFICESTUDIO_FILE_OTHER_TEAMLAB_INNER == toFormat || AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
 		  {
             if ( AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == formatFrom || 
 				AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY == formatFrom || 
 				0 != ( AVS_OFFICESTUDIO_FILE_SPREADSHEET & formatFrom)) 
 			{
-              toFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
-            } 
+				if (AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
+				{
+					toFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
+				}
+				else
+				{
+					if (bMacroEnabled)
+					{
+						toFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM;
+					}
+					else
+					{
+						toFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
+					}
+				}
+			} 
 			else if ( AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == formatFrom || 
 				AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY == formatFrom || 
 				0 != ( AVS_OFFICESTUDIO_FILE_PRESENTATION & formatFrom)) 
 			{
-              toFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
-            } 
+				if (AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
+				{
+					toFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
+				}
+				else
+				{
+					if (bMacroEnabled)
+					{
+						toFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM;
+					}
+					else
+					{
+						toFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
+					}
+				}
+			} 
 			else if ( AVS_OFFICESTUDIO_FILE_CANVAS_WORD == formatFrom || 
 				AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY == formatFrom || 
 				0 != ( AVS_OFFICESTUDIO_FILE_DOCUMENT & formatFrom)) 
 			{
-              toFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
-            }
+				if (AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
+				{
+					toFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT;
+				}
+				else
+				{
+					if (bMacroEnabled)
+					{
+						toFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM;
+					}
+					else
+					{
+						toFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
+					}
+				}
+			}
             size_t nIndex = m_sFileTo->rfind('.');
             COfficeFileFormatChecker FileFormatChecker;
             if(-1 != nIndex)
@@ -1198,7 +1320,6 @@ namespace NExtractTools
 		return res;
     }
 
-	const TConversionDirection getConversionDirectionFromExt (const std::wstring &sFile1, const std::wstring &sFile2);
     static bool compare_string_by_length (const std::wstring &x, const std::wstring &y)
 	{
 		if (!x.empty() && !y.empty())

@@ -38,8 +38,7 @@
 namespace XLS
 {
 
-
-// Logical representation of Array record in BIFF8
+// Logical representation of Array record in BIFF8 and BrtArrFmla record in biff12
 class Array: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Array)
@@ -54,9 +53,11 @@ public:
 	
 	static const ElementType	type = typeArray;
 
-	Ref					ref_;
-	ArrayParsedFormula	formula;
-	bool				fAlwaysCalc;
+        Ref                 ref_;
+        ArrayParsedFormula  formula;
+        bool                fAlwaysCalc;
+
+        RFX                 rfx; //biff12
 };
 
 typedef boost::shared_ptr<Array> ArrayPtr;

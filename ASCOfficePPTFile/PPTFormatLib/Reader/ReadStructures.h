@@ -34,7 +34,7 @@
 #include "../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.h"
 #include "SlidePersist.h"
 #include "../../../OfficeUtils/src/OfficeUtils.h"
-
+//#include "../Records/OfficeArtClientData.h"
 
 using namespace PPT_FORMAT;
 
@@ -248,15 +248,15 @@ public:
 		}
 	}
 
-	void ToFile(CFile* pFile)
+	void ToFile(NSFile::CFileBinary* pFile)
 	{
 		if (NULL != m_pMetaHeader)
 		{
-			pFile->WriteFile((void*)m_pMetaHeader, m_lMetaHeaderSize);
+			pFile->WriteFile(m_pMetaHeader, m_lMetaHeaderSize);
 		}
 		if (NULL != m_pMetaFile)
 		{
-			pFile->WriteFile((void*)m_pMetaFile, m_lMetaFileSize);
+			pFile->WriteFile(m_pMetaFile, m_lMetaFileSize);
 		}
 	}
 };
@@ -342,6 +342,6 @@ public:
 
 namespace PPT_FORMAT
 {
-	void ConvertPPTTextToEditorStructure(std::vector<CTextPFRunRecord>& oArrayPF, std::vector<CTextCFRunRecord>& oArrayCF, 
-		std::wstring& strText, PPT_FORMAT::CTextAttributesEx& oAttributes);
+    void ConvertPPTTextToEditorStructure(std::vector<CTextPFRunRecord>& oArrayPF, std::vector<CTextCFRunRecord>& oArrayCF,
+        std::wstring& strText, PPT_FORMAT::CTextAttributesEx& oAttributes);
 }

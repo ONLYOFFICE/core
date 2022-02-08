@@ -48,34 +48,35 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(AnimClr)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
                 XmlMacroReadAttributeBase(node, L"clrSpc", clrSpc);
                 XmlMacroReadAttributeBase(node, L"dir", dir);
 
-				cBhvr	= node.ReadNode(_T("cBhvr"));
+				XmlUtils::CXmlNode oNodeBhvr;
+				if (node.GetNode(L"p:cBhvr", oNodeBhvr))
+					cBhvr.fromXML(oNodeBhvr);
 
 				XmlUtils::CXmlNode oNodeFrom;
-				if (node.GetNode(_T("p:from"), oNodeFrom))
+				if (node.GetNode(L"p:from", oNodeFrom))
 					from.GetColorFrom(oNodeFrom);
 
 				XmlUtils::CXmlNode oNodeTo;
-				if (node.GetNode(_T("p:to"), oNodeTo))
+				if (node.GetNode(L"p:to", oNodeTo))
 					to.GetColorFrom(oNodeTo);
 
 				XmlUtils::CXmlNode oNodeBy;
-				if (node.GetNode(_T("p:by"), oNodeBy))
+				if (node.GetNode(L"p:by", oNodeBy))
 				{
 					XmlUtils::CXmlNode oRGB;
 					XmlUtils::CXmlNode oHSL;
-					if (oNodeBy.GetNode(_T("p:rgb"), oRGB))
+					if (oNodeBy.GetNode(L"p:rgb", oRGB))
 					{
                         XmlMacroReadAttributeBase(oRGB, L"r", byR);
                         XmlMacroReadAttributeBase(oRGB, L"g", byG);
                         XmlMacroReadAttributeBase(oRGB, L"b", byB);
 					}
-                    else if (oNodeBy.GetNode(_T("p:hsl"), oHSL))
+                    else if (oNodeBy.GetNode(L"p:hsl", oHSL))
 					{
                         XmlMacroReadAttributeBase(oHSL, L"h", byH);
                         XmlMacroReadAttributeBase(oHSL, L"s", byS);
@@ -89,8 +90,8 @@ namespace PPTX
 			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
-				oAttr.WriteLimitNullable(_T("clrSpc"), clrSpc);
-				oAttr.WriteLimitNullable(_T("dir"), dir);
+				oAttr.WriteLimitNullable(L"clrSpc", clrSpc);
+				oAttr.WriteLimitNullable(L"dir", dir);
 
 				XmlUtils::CNodeValue oValue;
 				oValue.Write(cBhvr);
@@ -98,31 +99,102 @@ namespace PPTX
 				if (byR.IsInit() && byG.IsInit() && byB.IsInit())
 				{
 					XmlUtils::CAttribute oAttr1;
-					oAttr1.Write(_T("r"), byR);
-					oAttr1.Write(_T("g"), byG);
-					oAttr1.Write(_T("b"), byB);
+					oAttr1.Write(L"r", byR);
+					oAttr1.Write(L"g", byG);
+					oAttr1.Write(L"b", byB);
 
-					oValue.m_strValue += (_T("<p:by>") + XmlUtils::CreateNode(_T("p:rgb"), oAttr1) + _T("</p:by>"));
+					oValue.m_strValue += (L"<p:by>") + XmlUtils::CreateNode(L"p:rgb", oAttr1) + L"</p:by>";
 				}
 				else if (byH.IsInit() && byS.IsInit() && byL.IsInit())
 				{
 					XmlUtils::CAttribute oAttr1;
-					oAttr1.Write(_T("h"), byH);
-					oAttr1.Write(_T("s"), byS);
-					oAttr1.Write(_T("l"), byL);
+					oAttr1.Write(L"h", byH);
+					oAttr1.Write(L"s", byS);
+					oAttr1.Write(L"l", byL);
 
-					oValue.m_strValue += (_T("<p:by>") + XmlUtils::CreateNode(_T("p:hsl"), oAttr1) + _T("</p:by>"));
+					oValue.m_strValue += (L"<p:by>") + XmlUtils::CreateNode(L"p:hsl", oAttr1) + L"</p:by>";
 				}
 
 				if (from.is_init())
-					oValue.m_strValue += XmlUtils::CreateNode(_T("p:from"), from.toXML());
+					oValue.m_strValue += XmlUtils::CreateNode(L"p:from", from.toXML());
 				if (to.is_init())
-					oValue.m_strValue += XmlUtils::CreateNode(_T("p:to"), to.toXML());
+					oValue.m_strValue += XmlUtils::CreateNode(L"p:to", to.toXML());
 
-				return XmlUtils::CreateNode(_T("p:animClr"), oAttr, oValue);
+				return XmlUtils::CreateNode(L"p:animClr", oAttr, oValue);
 			}
 
-		public:
+			virtual OOX::EElementType getType() const
+			{
+				return OOX::et_p_animClr;
+			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+			{
+				pWriter->WriteString(toXML());
+			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+					pWriter->WriteLimit2(0, clrSpc);
+					pWriter->WriteLimit2(1, dir);
+					pWriter->WriteInt2(2, byR);
+					pWriter->WriteInt2(3, byG);
+					pWriter->WriteInt2(4, byB);
+					pWriter->WriteInt2(5, byH);
+					pWriter->WriteInt2(6, byS);
+					pWriter->WriteInt2(7, byL);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+				pWriter->WriteRecord1(0, cBhvr);
+				pWriter->WriteRecord1(1, from);
+				pWriter->WriteRecord1(2, to);
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+				pReader->Skip(1); // attribute start
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					else if (0 == _at)	clrSpc = pReader->GetUChar();
+					else if (1 == _at)	dir = pReader->GetUChar();
+					else if (2 == _at)	byR = pReader->GetLong();
+					else if (3 == _at)	byG = pReader->GetLong();
+					else if (4 == _at)	byB = pReader->GetLong();
+					else if (5 == _at)	byH = pReader->GetLong();
+					else if (6 == _at)	byS = pReader->GetLong();
+					else if (7 == _at)	byL = pReader->GetLong();
+				}
+				while (pReader->GetPos() < end)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+						case 0:
+						{
+							cBhvr.fromPPTY(pReader);
+						}break;
+						case 1:
+						{
+							from.fromPPTY(pReader);
+						}break;
+						case 2:
+						{
+							to.fromPPTY(pReader);
+						}break;
+						default:
+						{
+							pReader->SkipRecord();
+						}break;
+					}
+				}
+				pReader->Seek(end);
+			}
+
 			CBhvr			cBhvr;
 
 			nullable_int	byR;
@@ -133,7 +205,7 @@ namespace PPTX
 			nullable_int	byL;
 			UniColor		from;
 			UniColor		to;
-//Attributes
+
 			nullable_limit<Limit::TLColorSpace>		clrSpc; //ST_TLAnimateColorSpace 
 			nullable_limit<Limit::TLColorDirection> dir;	//ST_TLAnimateColorDirection 
 		protected:

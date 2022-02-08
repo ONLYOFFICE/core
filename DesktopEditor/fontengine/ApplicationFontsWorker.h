@@ -36,21 +36,66 @@
 #include <vector>
 #include "../graphics/pro/Fonts.h"
 
-class CApplicationFontsWorker
+#define ONLYOFFICE_FONTS_VERSION     9
+#define ONLYOFFICE_ALL_FONTS_VERSION 2
+
+class CApplicationFontsWorkerBreaker
 {
 public:
+    virtual bool IsFontsWorkerRunned() { return true; }
+};
+
+class CApplicationFontsWorker_private;
+class GRAPHICS_DECL CApplicationFontsWorker
+{
+public:
+    // использовать ли системные шрифты
     bool                        m_bIsUseSystemFonts;
+    // дополнительные папки с шрифтами
     std::vector<std::wstring>   m_arAdditionalFolders;
+
+    // рабоча директория (сюда скидываем все артефакты)
     std::wstring                m_sDirectory;
-    bool                        m_bIsNeedThumbnails;
+
+    // поддерживать ли opentype шрифты
     bool                        m_bIsUseOpenType;
+
+    // поддерживать ли все версии AllFonts.js
     bool                        m_bIsUseAllVersions;
-    
+
+    // нужны ли табнейлы
+    bool                        m_bIsNeedThumbnails;
+    // какой-то табнейл уже есть - нудно ли все равно удалить и перегенерировать?
+    bool                        m_bIsRemoveOldThumbnails;
+    // генерим табнейлы отдельно
+    bool                        m_bSeparateThumbnails;
+    // какие масштабы нужны для табнейлов
+    std::vector<double>         m_arThumbnailsScales;
+    bool                        m_bIsGenerateThumbnailsEA;
+
+    // WEB версия ----
+    std::wstring                m_sThumbnailsDirectory;
+
+    std::wstring                m_sAllFontsJSPath;
+    std::wstring                m_sWebAllFontsJSPath;
+
+    std::wstring                m_sWebFontsDirectory;
+    // ---------------
+
+    bool                        m_bIsCleanDirectory;
+
+private:
+    CApplicationFontsWorker_private* m_pInternal;
+
 public:
     CApplicationFontsWorker();
     ~CApplicationFontsWorker();
     
     NSFonts::IApplicationFonts* Check();
+    void CheckThumbnails();
+
+    void SetBreaker(CApplicationFontsWorkerBreaker* pChecker);
+
     std::string GetAllFonts();
 
     static std::vector<std::wstring> GetFontNames(NSFonts::IApplicationFonts* pFonts);

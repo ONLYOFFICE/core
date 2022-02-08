@@ -1,0 +1,5 @@
+# Ignore everything in this directory
+gumbo-parser
+katana-parser
+# Except this file
+!.gitignore

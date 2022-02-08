@@ -34,6 +34,7 @@
 #include "../CommonInclude.h"
 
 #include "rPr.h"
+#include "../../XlsbFormat/Biff12_records/Border.h"
 
 namespace OOX
 {
@@ -85,7 +86,7 @@ namespace OOX
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("color") == sName )
+					if ( L"color" == sName )
 						m_oColor = oReader;
 				}
 			}
@@ -94,6 +95,49 @@ namespace OOX
 			{
 				return et_x_BorderProp;
 			}
+            void fromBin(XLS::BiffStructure* obj)
+            {
+                auto ptr = static_cast<XLSB::Blxf*>(obj);
+                if(ptr != nullptr)
+                {
+                    m_oColor.Init();
+                    m_oColor->fromBin(dynamic_cast<XLS::BaseObject*>(&ptr->brtColor));
+
+                    switch(ptr->dg)
+                    {
+                        case 0x00:
+                            m_oStyle = SimpleTypes::Spreadsheet::EBorderStyle::borderstyleNone; break;
+                        case 0x01:
+                            m_oStyle = SimpleTypes::Spreadsheet::EBorderStyle::borderstyleThin; break;
+                        case 0x02:
+                            m_oStyle = SimpleTypes::Spreadsheet::EBorderStyle::borderstyleMedium; break;
+                        case 0x03:
+                            m_oStyle = SimpleTypes::Spreadsheet::EBorderStyle::borderstyleDashed; break;
+                        case 0x04:
+                            m_oStyle = SimpleTypes::Spreadsheet::EBorderStyle::borderstyleDotted; break;
+                        case 0x05:
+                            m_oStyle = SimpleTypes::Spreadsheet::EBorderStyle::borderstyleThick; break;
+                        case 0x06:
+                            m_oStyle = SimpleTypes::Spreadsheet::EBorderStyle::borderstyleDouble; break;
+                        case 0x07:
+                            m_oStyle = SimpleTypes::Spreadsheet::EBorderStyle::borderstyleHair; break;
+                        case 0x08:
+                            m_oStyle = SimpleTypes::Spreadsheet::EBorderStyle::borderstyleMediumDashed; break;
+                        case 0x09:
+                            m_oStyle = SimpleTypes::Spreadsheet::EBorderStyle::borderstyleDashDot; break;
+                        case 0x0A:
+                            m_oStyle = SimpleTypes::Spreadsheet::EBorderStyle::borderstyleMediumDashDot; break;
+                        case 0x0B:
+                            m_oStyle = SimpleTypes::Spreadsheet::EBorderStyle::borderstyleDashDotDot; break;
+                        case 0x0C:
+                            m_oStyle = SimpleTypes::Spreadsheet::EBorderStyle::borderstyleMediumDashDotDot; break;
+                        case 0x0D:
+                            m_oStyle = SimpleTypes::Spreadsheet::EBorderStyle::borderstyleSlantDashDot; break;
+                    }
+
+                }
+            }
+
 			bool IsEmpty()
 			{
 				return !(m_oStyle.IsInit() || m_oColor.IsInit());
@@ -101,31 +145,67 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				nullable_string sColor;
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("style"), m_oStyle )
+				nullable_int iWeight;
+				nullable_string sColor, sLineStyle;
 
-					WritingElement_ReadAttributes_Read_else_if ( oReader, _T("ss:Color"), sColor )
-					WritingElement_ReadAttributes_Read_else_if ( oReader, _T("ss:LineStyle"), m_oStyle )
-					WritingElement_ReadAttributes_Read_else_if ( oReader, _T("ss:Position"), m_oType )
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_Start(oReader)
+					WritingElement_ReadAttributes_Read_if(oReader, L"style", m_oStyle)
+					WritingElement_ReadAttributes_Read_else_if(oReader, L"ss:Color", sColor)
+					WritingElement_ReadAttributes_Read_else_if(oReader, L"ss:LineStyle", sLineStyle)
+					WritingElement_ReadAttributes_Read_else_if(oReader, L"ss:Position", m_oType)
+					WritingElement_ReadAttributes_Read_else_if(oReader, L"ss:Weight", iWeight)
+				WritingElement_ReadAttributes_End(oReader)
 
 				if (sColor.IsInit())
 				{
 					m_oColor.Init(); m_oColor->m_oRgb.Init();
 					m_oColor->m_oRgb->FromString(*sColor);
 				}
+				if (sLineStyle.IsInit())
+				{
+					if (*sLineStyle == L"Dot") 
+						m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle<>(SimpleTypes::Spreadsheet::borderstyleDotted));
+					else if (*sLineStyle == L"Dash") 
+						m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle<>(SimpleTypes::Spreadsheet::borderstyleDashed));
+					else if (*sLineStyle == L"Double")
+						m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle<>(SimpleTypes::Spreadsheet::borderstyleDouble));
+					else if (*sLineStyle == L"Continuous")
+					{
+						m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle<>(SimpleTypes::Spreadsheet::borderstyleThin));
+						bBorderContinuous = true;
+					}
+				}
+				if (iWeight.IsInit())
+				{
+					switch (*iWeight)
+					{
+						case 1:	 //Thin
+						{
+							m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle<>(SimpleTypes::Spreadsheet::borderstyleThin));
+						}break;
+						case 3: //Thick
+						{
+							m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle<>(SimpleTypes::Spreadsheet::borderstyleThick));
+						}break;
+						default://2: //Medium
+						{
+						}break;
+					}
+				}
 			}
 		public:
 			nullable<SimpleTypes::Spreadsheet::CBorderStyle<>>	m_oStyle;
 			nullable<CColor>									m_oColor;
 			nullable_string										m_oType;
+
+			bool bBorderContinuous = false; // merge cells border (2003)
 		};
 
 		class CBorder : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CBorder)
+            WritingElement_XlsbConstructors(CBorder)
 			CBorder()
 			{
 			}
@@ -206,9 +286,9 @@ namespace OOX
 						m_oStart = oReader;
 					else if ( _T("top") == sName )
 						m_oTop = oReader;
-					else if ( _T("vertical") == sName )
+					else if ( L"vertical" == sName )
 						m_oVertical = oReader;
-					else if (L"Border")
+					else if (L"Border" == sName)
 					{
 						CBorderProp* border = new CBorderProp(oReader);
 						if ((border) && (border->m_oType.IsInit()))
@@ -217,6 +297,9 @@ namespace OOX
 							else if (*border->m_oType == L"Top")	m_oTop		= border;
 							else if (*border->m_oType == L"Left")	m_oStart	= border;
 							else if (*border->m_oType == L"Right")	m_oEnd		= border;
+
+							if (border->bBorderContinuous)
+								bBorderContinuous = true;
 						}
 						else
 						{
@@ -226,6 +309,11 @@ namespace OOX
 
 				}
 			}
+
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 
 			virtual EElementType getType () const
 			{
@@ -240,24 +328,50 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("outline"),			m_oOutline )
 				WritingElement_ReadAttributes_End( oReader )
 			}
+
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::Border*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    m_oDiagonalDown = ptr->fBdrDiagDown;
+                    m_oDiagonalUp   = ptr->fBdrDiagUp;
+
+                    m_oBottom.Init();
+                    m_oBottom.GetPointer()->fromBin(dynamic_cast<XLS::BiffStructure*>(&ptr->blxfBottom));
+                    m_oDiagonal.Init();
+                    m_oDiagonal.GetPointer()->fromBin(dynamic_cast<XLS::BiffStructure*>(&ptr->blxfDiag));
+                    m_oTop.Init();
+                    m_oTop.GetPointer()->fromBin(dynamic_cast<XLS::BiffStructure*>(&ptr->blxfTop));
+                    m_oStart.Init();
+                    m_oStart.GetPointer()->fromBin(dynamic_cast<XLS::BiffStructure*>(&ptr->blxfLeft));
+                    m_oEnd.Init();
+                    m_oEnd.GetPointer()->fromBin(dynamic_cast<XLS::BiffStructure*>(&ptr->blxfRight));
+                }
+            }
+
+
 		public:
 			nullable<SimpleTypes::COnOff<>>	m_oDiagonalDown;
 			nullable<SimpleTypes::COnOff<>>	m_oDiagonalUp;
 			nullable<SimpleTypes::COnOff<>>	m_oOutline;
 
-			nullable<CBorderProp>			m_oBottom;
-			nullable<CBorderProp>			m_oDiagonal;
-			nullable<CBorderProp>			m_oEnd;
-			nullable<CBorderProp>			m_oHorizontal;
-			nullable<CBorderProp>			m_oStart;
-			nullable<CBorderProp>			m_oTop;
-			nullable<CBorderProp>			m_oVertical;
+			nullable<CBorderProp>	m_oBottom;
+			nullable<CBorderProp>	m_oDiagonal;
+			nullable<CBorderProp>	m_oEnd;
+			nullable<CBorderProp>	m_oHorizontal;
+			nullable<CBorderProp>	m_oStart;
+			nullable<CBorderProp>	m_oTop;
+			nullable<CBorderProp>	m_oVertical;
+
+			bool bBorderContinuous = false;
 		};
 
 		class CBorders : public WritingElementWithChilds<CBorder>
 		{
 		public:
 			WritingElement_AdditionConstructors(CBorders)
+            WritingElement_XlsbVectorConstructors(CBorders)
 			CBorders()
 			{
 			}
@@ -309,7 +423,19 @@ namespace OOX
 					}
 				}
 			}
+            void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
+            {
+                ReadAttributes(obj);
 
+                int index = 0;
+
+                for(auto &border : obj)
+                {
+                    CBorder *pBorder = new CBorder(border);
+                    m_arrItems.push_back(pBorder);
+                    m_mapBorders.insert(std::make_pair(index++, pBorder));
+                }
+            }
 			virtual EElementType getType () const
 			{
 				return et_x_Borders;
@@ -322,6 +448,10 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if ( oReader, L"count", m_oCount )
 				WritingElement_ReadAttributes_End( oReader )
 			}
+            void ReadAttributes(std::vector<XLS::BaseObjectPtr>& obj)
+            {
+                m_oCount = (_UINT32)obj.size();
+            }
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
 			std::map<int, CBorder*>							m_mapBorders;

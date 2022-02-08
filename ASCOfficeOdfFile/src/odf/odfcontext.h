@@ -161,8 +161,7 @@ public:
     
 	void add_style(	const std::wstring				& Name,
 					const std::wstring				& DisplayName,
-					odf_types::style_family::type	 Type,
-					style_content					* Content,
+					style_content					*Content,
 					bool							IsAutomatic,
 					bool							IsDefault,
 					const std::wstring				& ParentStyleName,
@@ -258,6 +257,9 @@ public:
 	style_presentation_page_layout * presentation_page_layout_by_name(const std::wstring & Name); 
    
 	bool compare_page_properties(const std::wstring & master1, const std::wstring & master2);
+	
+	void add_linenumbering(odf_reader::text_linenumbering_configuration *linenumbering) { linenumberingcConfiguration = linenumbering; }
+	odf_reader::text_linenumbering_configuration *linenumbering() { return linenumberingcConfiguration; }
 private:
 	std::vector<style_presentation_page_layout*> presentation_page_layouts_;
     instances_array instances_;
@@ -271,6 +273,7 @@ private:
 
 	boost::unordered_map<std::wstring, int> presentation_page_layout_names_;
 
+	odf_reader::text_linenumbering_configuration *linenumberingcConfiguration = NULL;
 };
 
 

@@ -37,6 +37,7 @@
 #include <CPOptional.h>
 
 #include "../../../Common/DocxFormat/Source/Common/SimpleTypes_Word.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Math/oMathContent.h"
 
 namespace OOX 
 {
@@ -103,7 +104,6 @@ namespace OOX
 		class CBookmarkStart;
 		class CBookmarkEnd;
 		class CBgPict;
-
 	}
 	namespace Numbering
 	{
@@ -273,6 +273,6 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CTableProperty			*oox_table_pr,		odf_writer::style_table_cell_properties	*table_cell_properties);
 		void convert(OOX::Logic::CTableRowProperties	*oox_table_row_pr);
 		void convert(OOX::Logic::CTableRowProperties	*oox_table_row_pr,	odf_writer::style_table_row_properties	*table_row_properties);
-//--------------------------------------------------------------------------------
+		//------------------------------------------------------------------------
 	};
 }

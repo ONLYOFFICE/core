@@ -47,8 +47,9 @@ namespace BinXlsxRW
 	namespace c_oFileTypes{enum c_oFileTypes
 	{
 		XLSX	= 1,
-        CSV		= 2,
-		JSON	= 3
+                CSV	= 2,
+                JSON	= 3,
+                XLSB	= 4
 	};} 
 
 
@@ -83,7 +84,8 @@ namespace BinXlsxRW
 		App = 6,
 		Core = 7,
 		PersonList = 8,
-		CustomProperties = 9
+		CustomProperties = 9,
+		Customs = 10
 	};}
 
 	namespace c_oSerStylesTypes{enum c_oSerStylesTypes
@@ -143,6 +145,11 @@ namespace BinXlsxRW
 		Aligment = 13,
 		Protection = 14
 	};}
+	namespace c_oSerProtectionTypes {enum c_oSerProtectionTypes
+	{
+		Hidden = 0,
+		Locked = 1
+	};}	
 	namespace c_oSerAligmentTypes{enum c_oSerAligmentTypes
 	{
 		Horizontal = 0,
@@ -219,8 +226,18 @@ namespace BinXlsxRW
 		AppName = 17,
 		SlicerCaches = 18,
 		SlicerCachesExt = 19,
-		SlicerCache = 20
+		SlicerCache = 20,
+		Protection = 21
 	};}	
+	namespace c_oSerWorkbookProtection {enum c_oSerWorkbookProtection{
+		AlgorithmName = 0,
+		SpinCount = 1,
+		HashValue = 2,
+		SaltValue = 3,
+		LockStructure = 4,
+		LockWindows = 5,
+		Password = 6
+	}; }
 	namespace c_oSerDbPrTypes{enum c_oSerDbPrTypes
 	{
 		Connection = 0,
@@ -389,7 +406,44 @@ namespace BinXlsxRW
 		Slicers = 37,
 		SlicersExt = 38,
 		Slicer = 39,
-		NamedSheetView = 40
+		NamedSheetView = 40,
+		Protection = 41,
+		ProtectedRanges = 42,
+		ProtectedRange = 43
+	};}
+	namespace c_oSerWorksheetProtection {enum c_oSerWorksheetPropTypes
+	{
+		AlgorithmName = 0,
+		SpinCount = 1,
+		HashValue = 2,
+		SaltValue = 3,
+		Password = 4,
+		AutoFilter = 5,
+		Content = 6,
+		DeleteColumns = 7,
+		DeleteRows = 8,
+		FormatCells = 9,
+		FormatColumns = 10,
+		FormatRows = 11,
+		InsertColumns = 12,
+		InsertHyperlinks = 13,
+		InsertRows = 14,
+		Objects = 15,
+		PivotTables = 16,
+		Scenarios = 17,
+		SelectLockedCells = 18,
+		SelectUnlockedCell = 19,
+		Sheet = 20,
+		Sort = 21
+	};}
+	namespace c_oSerProtectedRangeTypes {enum c_oSerProtectedRangeTypes {
+		AlgorithmName = 0,
+		SpinCount = 1,
+		HashValue = 2,
+		SaltValue = 3,
+		Name = 4,
+		SqRef= 5,
+		SecurityDescriptor = 6
 	};}
 	namespace c_oSerWorksheetPropTypes{enum c_oSerWorksheetPropTypes
 	{
@@ -529,7 +583,8 @@ namespace BinXlsxRW
 		pptxDrawing = 9,
 		//Chart2 = 10,
 		//ObjectName = 11
-		EditAs = 12
+		EditAs = 12,
+		ClientData = 14
 	};}
 	namespace c_oSer_DrawingFromToType{enum c_oSer_DrawingFromToType
 	{
@@ -547,6 +602,11 @@ namespace BinXlsxRW
 	{
 		Cx = 0,
 		Cy = 1
+	};}
+	namespace c_oSer_DrawingClientDataType {enum c_oSer_DrawingClientDataType
+	{
+		fLocksWithSheet = 0,
+		fPrintsWithSheet = 1
 	};}
 	namespace c_oSer_OtherType{enum c_oSer_OtherType
 	{
@@ -566,6 +626,13 @@ namespace BinXlsxRW
 		Ref = 4,
 		ChildChain = 5,
 		NewThread = 6
+	};}
+	namespace c_oSerCustoms {enum c_oSerCustoms
+	{
+		Custom = 0,
+		ItemId = 1,
+		Uri = 2,
+		Content = 3
 	};}
 	namespace c_oSer_ChartType{enum c_oSer_ChartType
 	{
@@ -1011,14 +1078,16 @@ namespace BinXlsxRW
 		StdDev = 8,
 		StopIfTrue = 9,
 		Text = 10,
-		TimePeriod = 11,
+		strTimePeriod = 11,
 		Type = 12,
+		TimePeriod = 13,
 
 		ColorScale = 14,
 		DataBar = 15,
 		FormulaCF = 16,
 		IconSet = 17,
-		Dxf = 18
+		Dxf = 18,
+		IsExt = 19
 	};}
 	namespace c_oSer_ConditionalFormattingRuleColorScale{enum c_oSer_ConditionalFormattingRuleElement
 	{

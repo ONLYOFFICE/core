@@ -71,14 +71,180 @@ void RtfReader::PopState()
 	if( 0 != m_oState->m_pSaveState )
 		m_oState = m_oState->m_pSaveState;
 }
+//---------------------------------------------------------------------------------------------------------------------------------
+bool RtfAbstractReader::Parse(RtfDocument& oDocument, RtfReader& oReader)
+{
+	NFileWriter::CBufferedFileWriter* poOldWriter = oReader.m_oLex.m_oFileWriter;
+	oReader.m_oLex.m_oFileWriter = m_oFileWriter;
 
+	int res = 0;
+	m_oTok = oReader.m_oLex.NextCurToken();
+	
+	if (m_oTok.Type == m_oTok.None)
+		m_oTok = oReader.m_oLex.NextToken();
+
+	while (m_oTok.Type != RtfToken::Eof && false == m_bStopReader)
+	{
+		switch (m_oTok.Type)
+		{
+		case RtfToken::GroupStart:
+		{
+			ExecuteTextInternal2(oDocument, oReader, m_oTok.Key, m_nSkipChars);
+			PushState(oReader);
+		}break;
+		case RtfToken::GroupEnd:
+		{
+			ExecuteTextInternal2(oDocument, oReader, m_oTok.Key, m_nSkipChars);
+
+			PopState(oDocument, oReader);
+		}break;
+		case RtfToken::Keyword:
+		{
+			ExecuteTextInternal2(oDocument, oReader, m_oTok.Key, m_nSkipChars);
+			if (m_oTok.Key == "u")
+			{
+				ExecuteText(oDocument, oReader, ExecuteTextInternal(oDocument, oReader, m_oTok.Key, m_oTok.HasParameter, m_oTok.Parameter, m_nSkipChars));
+				break;
+			}
+			else
+			{
+				if (true == m_bSkip)
+				{
+					if (false == ExecuteCommand(oDocument, oReader, m_oTok.Key, m_oTok.HasParameter, m_oTok.Parameter))
+						Skip(oDocument, oReader);
+					m_bSkip = false;
+				}
+				else
+					ExecuteCommand(oDocument, oReader, m_oTok.Key, m_oTok.HasParameter, m_oTok.Parameter);
+			}
+			if (true == m_bCanStartNewReader)
+				m_bCanStartNewReader = false;
+		}break;
+		case RtfToken::Control:
+		{
+			if (m_oTok.Key == "42")
+				m_bSkip = true;
+			if (m_oTok.Key == "39" && true == m_oTok.HasParameter)
+			{
+				oReader.m_oState->m_sCurText += m_oTok.Parameter;
+				oReader.m_oState->m_bControlPresent = true;
+			}
+			if (m_oTok.Key == "32" && false == m_oTok.HasParameter)
+			{
+				oReader.m_oState->m_sCurText += " ";
+				oReader.m_oState->m_bControlPresent = true;
+			}
+		}break;
+		case RtfToken::Text:
+		{
+			oReader.m_oState->m_sCurText += m_oTok.Key;
+		}break;
+
+		}
+		if (false == m_bStopReader)
+			m_oTok = oReader.m_oLex.NextToken();
+	}
+
+	oReader.m_oLex.m_oFileWriter = poOldWriter;
+
+	return true;
+}
+std::wstring RtfAbstractReader::ExecuteTextInternal(RtfDocument& oDocument, RtfReader& oReader, std::string & sKey, bool bHasPar, int nPar, int& nSkipChars)
+{
+	std::wstring sResult;
+
+	if ("u" == sKey)
+	{
+		if (true == bHasPar)
+			sResult += wchar_t(nPar);
+	}
+	else
+	{
+		std::string sCharString;
+		if ("39" == sKey)
+		{
+			if (true == bHasPar)
+				sCharString += (char)nPar;
+		}
+		else
+			sCharString = sKey;
+
+		sResult = ExecuteTextInternalCodePage(sCharString, oDocument, oReader);
+	}
+	ExecuteTextInternalSkipChars(sResult, oReader, sKey, nSkipChars);
+	return sResult;
+}
+void RtfAbstractReader::ExecuteTextInternal2(RtfDocument& oDocument, RtfReader& oReader, std::string & sKey, int& nSkipChars)
+{
+	if (oReader.m_oState->m_sCurText.length() > 0)
+	{
+		std::string str;
+		ExecuteTextInternalSkipChars(oReader.m_oState->m_sCurText, oReader, str, nSkipChars);
+		
+		std::wstring sResult = ExecuteTextInternalCodePage(oReader.m_oState->m_sCurText, oDocument, oReader);
+		
+		oReader.m_oState->m_sCurText.erase();
+		oReader.m_oState->m_bControlPresent = false;
+		
+		if (false == sResult.empty())
+		{
+			ExecuteText(oDocument, oReader, sResult);
+		}
+	}
+}
+void RtfAbstractReader::ExecuteTextInternalSkipChars(std::string & sResult, RtfReader& oReader, std::string & sKey, int& nSkipChars)
+{
+	//удаляем символы вслед за юникодом
+	if (nSkipChars > 0)
+	{
+		if (nSkipChars >= (int)sResult.length())
+		{
+			//nSkipChars -= nLength;//vedomost.rtf
+			sResult.clear();
+		}
+		else
+		{
+			sResult = sResult.substr(nSkipChars);
+		}
+		nSkipChars = 0;
+	}
+	if ("u" == sKey)
+	{
+		//надо правильно установить m_nSkipChars по значению \ucN
+		nSkipChars = oReader.m_oState->m_nUnicodeClean;
+	}
+}
+void RtfAbstractReader::ExecuteTextInternalSkipChars(std::wstring & sResult, RtfReader& oReader, std::string & sKey, int& nSkipChars)
+{
+	//удаляем символы вслед за юникодом
+	if (nSkipChars > 0)
+	{
+		if (nSkipChars >= (int)sResult.length())
+		{
+			//nSkipChars -= nLength;//vedomost.rtf
+			sResult.clear();
+		}
+		else
+		{
+			sResult = sResult.substr(nSkipChars);
+		}
+		nSkipChars = 0;
+	}
+	if ("u" == sKey)
+	{
+		//надо правильно установить m_nSkipChars по значению \ucN
+		nSkipChars = oReader.m_oState->m_nUnicodeClean;
+	}
+}
 std::wstring RtfAbstractReader::ExecuteTextInternalCodePage( std::string& sCharString, RtfDocument& oDocument, RtfReader& oReader)
 {
     std::wstring sResult;
 
     if( false == sCharString.empty())
     {
-        int         nCodepage = -1;
+		if (sCharString == "*") return L"*";
+
+        int nCodepage = -1;
 
         //применяем параметры codepage от текущего шрифта todo associated fonts.
         RtfFont oFont;

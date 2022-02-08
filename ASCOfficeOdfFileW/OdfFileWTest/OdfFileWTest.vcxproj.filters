@@ -40,9 +40,6 @@
     <ClCompile Include="..\..\XlsxSerializerCom\Writer\CSVWriter.cpp">
       <Filter>Source Files\oox</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\ASCOfficeDocxFile2\BinReader\CustormXmlWriter.cpp">
-      <Filter>Source Files\oox</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\ASCOfficeDocxFile2\DocWrapper\DocxSerializer.cpp">
       <Filter>Source Files\oox</Filter>
     </ClCompile>
@@ -62,6 +59,12 @@
       <Filter>Source Files\oox</Filter>
     </ClCompile>
     <ClCompile Include="OdfFileWTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ASCOfficeDocxFile2\BinReader\CustomXmlWriter.cpp">
+      <Filter>Source Files\oox</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ASCOfficeXlsFile2\source\Common\utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

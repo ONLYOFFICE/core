@@ -50,6 +50,7 @@ namespace Aggplus
         void Translate(double offsetX, double offsetY, MatrixOrder order = MatrixOrderPrepend);
         void Scale(double scaleX, double scaleY, MatrixOrder order = MatrixOrderPrepend);
         void Shear(double shearX, double shearY, MatrixOrder order = MatrixOrderPrepend);
+        double Determinant() const;
 
         void TransformVectors(PointF* pts, int count);
         void TransformPoints(PointF* pts, int count);

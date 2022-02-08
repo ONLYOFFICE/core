@@ -1,0 +1,49 @@
+<<<<<<<
+/*
+ * This function is not part of RAND_METHOD, so if we're not using
+ * the default method, then just call RAND_bytes().  Otherwise make
+ * sure we're instantiated and use the private DRBG.
+ */
+int RAND_priv_bytes(unsigned char *buf, int num)
+{
+    const RAND_METHOD *meth = RAND_get_rand_method();
+    RAND_DRBG *drbg;
+
+    if (meth != NULL && meth != RAND_OpenSSL())
+        return RAND_bytes(buf, num);
+
+    drbg = RAND_DRBG_get0_private();
+    if (drbg != NULL)
+        return RAND_DRBG_bytes(drbg, buf, num);
+
+    return 0;
+}
+
+int RAND_bytes(unsigned char *buf, int num)
+{
+    const RAND_METHOD *meth = RAND_get_rand_method();
+
+    if (meth != NULL && meth->bytes != NULL)
+        return meth->bytes(buf, num);
+    RANDerr(RAND_F_RAND_BYTES, RAND_R_FUNC_NOT_IMPLEMENTED);
+    return -1;
+}
+=======
+#include "emscripten.h"
+EM_JS(int, js_random, (unsigned char* buf, int num), {
+    var byteArray = new Uint8Array(num);
+    var engine = self.crypto || self.msCrypto;
+    engine.getRandomValues(byteArray);
+    Module["HEAP8"].set(byteArray, buf);
+    return 1;
+});
+int RAND_priv_bytes(unsigned char *buf, int num)
+{
+    return js_random(buf, num);
+}
+
+int RAND_bytes(unsigned char *buf, int num)
+{
+    return js_random(buf, num);
+}
+>>>>>>>

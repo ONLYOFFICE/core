@@ -44,7 +44,7 @@ namespace odf_writer {
 void text_list_style_attr::serialize(CP_ATTR_NODE)
 {
     CP_XML_ATTR_OPT(L"style:name",					style_name_);
-    CP_XML_ATTR_OPT(L"style:display-name",			style_display_name_);
+	CP_XML_ATTR_OPT_ENCODE_STRING(L"style:display-name", style_display_name_);
     CP_XML_ATTR_OPT(L"text:consecutive-numbering",	text_consecutive_numbering_);
  }
 
@@ -322,6 +322,93 @@ void text_list_level_style_image::serialize(std::wostream & strm)
 			if (style_list_level_properties_)	style_list_level_properties_->serialize(CP_XML_STREAM());
 			if (style_text_properties_)			style_text_properties_->serialize(CP_XML_STREAM());
 		}
+	}
+}
+// text:outline-style
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * text_outline_style::ns = L"text";
+const wchar_t * text_outline_style::name = L"outline-style";
+
+void text_outline_style::serialize(std::wostream & strm)
+{
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			CP_XML_ATTR(L"style:name", style_name_);
+			
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				if (content_[i])
+					content_[i]->serialize(CP_XML_STREAM());
+			}
+		}
+	}
+}
+void text_outline_style::add_child_element(const office_element_ptr & child)
+{
+	ElementType type_ = child->get_type();
+
+	content_.push_back(child);
+}
+void text_outline_style::create_child_element(const std::wstring & Ns, const std::wstring & Name)
+{
+	if (L"text" == Ns && L"outline-level-style" == Name)
+		CP_CREATE_ELEMENT(content_);
+	else
+	{
+		CP_NOT_APPLICABLE_ELM();
+	}
+}
+// text:outline-level-style
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * text_outline_level_style::ns = L"text";
+const wchar_t * text_outline_level_style::name = L"outline-level-style";
+
+void text_outline_level_style::serialize(std::wostream & strm)
+{
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			common_num_format_attlist_.serialize(CP_GET_XML_NODE());
+			common_num_format_prefix_suffix_attlist_.serialize(CP_GET_XML_NODE());
+
+			CP_XML_ATTR(L"text:style-name", text_style_name_);
+			CP_XML_ATTR(L"text:display-levels", text_display_levels_);
+			CP_XML_ATTR(L"text:start-value", text_start_value_);
+			CP_XML_ATTR(L"text:level", text_level_);
+
+			if (list_level_properties_)
+				list_level_properties_->serialize(CP_XML_STREAM());
+
+			if (text_properties_)
+				text_properties_->serialize(CP_XML_STREAM());
+		}
+	}
+}
+
+void text_outline_level_style::create_child_element(const std::wstring & Ns, const std::wstring & Name)
+{
+	if (L"style" == Ns && L"list-level-properties" == Name)
+		CP_CREATE_ELEMENT(list_level_properties_);
+	else if (L"style" == Ns && L"text-properties" == Name)
+		CP_CREATE_ELEMENT(text_properties_);
+	else
+	{
+		CP_NOT_APPLICABLE_ELM();
+	}
+}
+void text_outline_level_style::add_child_element(const office_element_ptr & child)
+{
+	ElementType type_ = child->get_type();
+
+	if (type_ == typeStyleListLevelProperties)
+		list_level_properties_ = child;
+	else if (type_ == typeStyleTextProperties)
+		text_properties_ = child;
+	else
+	{
 	}
 }
 }

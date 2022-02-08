@@ -7,12 +7,14 @@ core_android {
 }
 
 core_windows {
-    core_win_64:BOOST_POSTFIX = -vc140-mt-x64-1_72
-    core_win_32:BOOST_POSTFIX = -vc140-mt-x32-1_72
-    core_debug {
-        core_win_64:BOOST_POSTFIX = -vc140-mt-gd-x64-1_72
-        core_win_32:BOOST_POSTFIX = -vc140-mt-gd-x32-1_72
-    }
+    VS_VERSION=140
+    VS_DEBUG=
+    VS_ARCH=x64
+    core_debug:VS_DEBUG=gd-
+    core_win_32:VS_ARCH=x32
+    vs2019:VS_VERSION=142
+
+    BOOST_POSTFIX = -vc$${VS_VERSION}-mt-$${VS_DEBUG}$${VS_ARCH}-1_72
 
     core_boost_libs:LIBS += -L$$CORE_BOOST_LIBS -llibboost_system$$BOOST_POSTFIX -llibboost_filesystem$$BOOST_POSTFIX
     core_boost_regex:LIBS += -L$$CORE_BOOST_LIBS -llibboost_regex$$BOOST_POSTFIX

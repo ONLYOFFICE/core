@@ -658,11 +658,7 @@ namespace PdfWriter
 	}
     void CXref::WriteTrailer(CStream* pStream)
 	{
-		// максимальное стартовое смещение из всех m_pPrev + его количество объектов
-		// предполагается что m_pPrev содержит объекты следующие за текущим xRef, и сам m_pPrev уже не имеет
-		// тогда
 		unsigned int unMaxObjId = m_pPrev ? m_pPrev->m_arrEntries.size() + m_pPrev->m_unStartOffset : m_arrEntries.size() + m_unStartOffset;
-		//unsigned int unMaxObjId = m_arrEntries.size() + m_unStartOffset;
 
 		m_pTrailer->Add("Size", unMaxObjId);
 		if (m_pPrev)

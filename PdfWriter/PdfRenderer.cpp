@@ -2054,14 +2054,14 @@ HRESULT CPdfRenderer::AddToPage(const std::wstring& wsPath, std::wstring sPage, 
 		return S_FALSE;
 	m_oCommandManager.Flush();
 
-    CXref* pXref = new CXref(m_pDocument, pPage.first);
-    // pNewPage Освобождается в деструкторе pXref
-    CPage* pNewPage = new CPage(pXref, m_pDocument, sPage);
-    pNewPage->SetRef(pPage.first, pPage.second);
+	CXref* pXref = new CXref(m_pDocument, pPage.first);
+	// pNewPage Освобождается в деструкторе pXref
+	CPage* pNewPage = new CPage(pXref, m_pDocument, sPage);
+	pNewPage->SetRef(pPage.first, pPage.second);
 
-    m_pDocument->AddToPage(wsPath, pNewPage, pXref, nPosLastXRef, nSizeXRef, pRoot.first, pRoot.second);
+	m_pDocument->AddToPage(wsPath, pNewPage, pXref, nPosLastXRef, nSizeXRef, pRoot.first, pRoot.second);
 
-    RELEASEOBJECT(pXref);
+	RELEASEOBJECT(pXref);
 	return S_OK;
 }
 

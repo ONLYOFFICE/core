@@ -194,7 +194,7 @@ void XMLConverter::ObjectToXml(Object *obj, std::wstring &wsXml)
                 wsXml += L"<";
                 AppendStringToXml(wsXml, sKey);
                 wsXml += L">";
-                obj->dictGetValNF(nIndex, &oTemp);
+                obj->dictGetVal(nIndex, &oTemp);
                 ObjectToXml(&oTemp, wsXml);
                 oTemp.free();
                 wsXml += L"</";
@@ -282,7 +282,6 @@ void XMLConverter::PageToXml(Object *obj, std::wstring &wsXml)
             char *sKey = obj->dictGetKey(nIndex);
             wsXml += L"<";
             AppendStringToXml(wsXml, sKey);
-            //wsXml += L">";
             obj->dictGetValNF(nIndex, &oTemp);
             PageToXml(&oTemp, wsXml);
             oTemp.free();

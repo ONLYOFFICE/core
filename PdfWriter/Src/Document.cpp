@@ -1052,13 +1052,13 @@ namespace PdfWriter
 
 		return (!!m_pAcroForm);
 	}
-    void CDocument::AddToPage(const std::wstring& wsPath, CPage* pPage, CXref* pXref, int nPosLastXRef, int nSizeXRef, unsigned int unRootObjId, unsigned int unRootGenNo)
+	void CDocument::AddToPage(const std::wstring& wsPath, CPage* pPage, CXref* pXref, int nPosLastXRef, int nSizeXRef, unsigned int unRootObjId, unsigned int unRootGenNo)
 	{
 		CFileStream* pStream = new CFileStream();
 		if (!pStream || !pStream->OpenFile(wsPath, false))
 			return;
 
-        // не шифрует
+		// не шифрует
 		// Шифруем документ, если это необходимо
 		CEncrypt* pEncrypt = NULL;
 		if (m_bEncrypt)
@@ -1067,28 +1067,28 @@ namespace PdfWriter
 			PrepareEncryption();
 		}
 
-        // Освобождается в деструкторе pXref как m_pPrev
-        CXref* pXrefNew = new CXref(this, nSizeXRef);
+		// Освобождается в деструкторе pXref как m_pPrev
+		CXref* pXrefNew = new CXref(this, nSizeXRef);
 
 #ifndef FILTER_FLATE_DECODE_DISABLED
 		if (m_unCompressMode & COMP_TEXT)
 			pPage->SetFilter(STREAM_FILTER_FLATE_DECODE);
 #endif
 
-        pPage->AddCommands(pXrefNew, L""); // Выполнение команд на странице
+		pPage->AddCommands(pXrefNew, L""); // Выполнение команд на странице
 
-        pXrefNew->SetPrevAddr(nPosLastXRef);
-        pXref->SetPrev(pXrefNew);
+		pXrefNew->SetPrevAddr(nPosLastXRef);
+		pXref->SetPrev(pXrefNew);
 
-        // Root в трейлер
-        CObjectBase* pBase = new CObjectBase();
-        pBase->SetRef(unRootObjId, unRootGenNo);
-        CObjectBase* pRoot = new CProxyObject(pBase);
-        pXref->GetTrailer()->Add("Root", pRoot);
+		// Root в трейлер
+		CObjectBase* pBase = new CObjectBase();
+		pBase->SetRef(unRootObjId, unRootGenNo);
+		CObjectBase* pRoot = new CProxyObject(pBase);
+		pXref->GetTrailer()->Add("Root", pRoot);
 
-        pXref->WriteToStream(pStream, pEncrypt);
+		pXref->WriteToStream(pStream, pEncrypt);
 
-        RELEASEOBJECT(pBase);
-        RELEASEOBJECT(pStream);
+		RELEASEOBJECT(pBase);
+		RELEASEOBJECT(pStream);
 	}
 }

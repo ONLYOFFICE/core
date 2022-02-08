@@ -3080,6 +3080,24 @@
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\SXVD14.h">
       <Filter>records</Filter>
     </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\PIVOTCACHEID.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\PIVOTCACHEIDS.h">
+      <Filter>unions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginPivotCacheID.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginPivotCacheIDs.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndPivotCacheID.h">
+      <Filter>records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndPivotCacheIDs.h">
+      <Filter>records</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\ACProductVersion.cpp">
@@ -6123,6 +6141,24 @@
       <Filter>records</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\SXVD14.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PIVOTCACHEID.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PIVOTCACHEIDS.cpp">
+      <Filter>unions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginPivotCacheID.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginPivotCacheIDs.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndPivotCacheID.cpp">
+      <Filter>records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndPivotCacheIDs.cpp">
       <Filter>records</Filter>
     </ClCompile>
   </ItemGroup>

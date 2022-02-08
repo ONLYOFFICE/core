@@ -2234,24 +2234,23 @@ xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
 mc:Ignorable=\"xr16\" \
 xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"");
 		WritingStringNullableAttrString(L"r:id",			m_oRid, m_oRid->ToString());
-		WritingStringNullableAttrBool2(L"backgroundQuery",	m_oBackgroundQuery);
-		WritingStringNullableAttrBool2(L"enableRefresh",	m_oEnableRefresh);
 		WritingStringNullableAttrBool2(L"invalid",			m_oInvalid);
-		WritingStringNullableAttrInt(L"createdVersion",		m_oCreatedVersion, m_oCreatedVersion->GetValue());
-		WritingStringNullableAttrInt(L"minRefreshableVersion", m_oMinRefreshableVersion, m_oMinRefreshableVersion->GetValue());
-		WritingStringNullableAttrInt(L"missingItemsLimit",	m_oMissingItemsLimit, m_oMissingItemsLimit->GetValue());
-		WritingStringNullableAttrBool2(L"optimizeMemory",	m_oOptimizeMemory);
-		WritingStringNullableAttrInt(L"refreshedVersion",	m_oRefreshedVersion, m_oRefreshedVersion->GetValue());
-		WritingStringNullableAttrInt(L"recordCount",		m_oRecordCount, m_oRecordCount->GetValue());
-		WritingStringNullableAttrString(L"refreshedDateIso", m_oRefreshedDateIso, m_oRefreshedDateIso->ToString());
-		WritingStringNullableAttrBool2(L"refreshOnLoad",	m_oRefreshOnLoad);
 		WritingStringNullableAttrBool2(L"saveData",			m_oSaveData);
-		WritingStringNullableAttrBool2(L"supportAdvancedDrill",m_oSupportAdvancedDrill);
-		WritingStringNullableAttrEncodeXmlString2(L"refreshedBy",m_oRefreshedBy);
-		WritingStringNullableAttrBool2(L"supportAdvancedDrill",	m_oSupportAdvancedDrill);
-		WritingStringNullableAttrBool2(L"supportSubquery",	m_oSupportSubquery);
+		WritingStringNullableAttrBool2(L"refreshOnLoad",	m_oRefreshOnLoad);
+		WritingStringNullableAttrBool2(L"optimizeMemory",	m_oOptimizeMemory);
+		WritingStringNullableAttrBool2(L"enableRefresh",	m_oEnableRefresh);
+		WritingStringNullableAttrEncodeXmlString2(L"refreshedBy", m_oRefreshedBy);
+		WritingStringNullableAttrString(L"refreshedDateIso", m_oRefreshedDateIso, m_oRefreshedDateIso->ToString());
+		WritingStringNullableAttrBool2(L"backgroundQuery",	m_oBackgroundQuery);
+		WritingStringNullableAttrInt(L"missingItemsLimit",	m_oMissingItemsLimit, m_oMissingItemsLimit->GetValue());
+		WritingStringNullableAttrInt(L"createdVersion",		m_oCreatedVersion, m_oCreatedVersion->GetValue());
+		WritingStringNullableAttrInt(L"refreshedVersion",	m_oRefreshedVersion, m_oRefreshedVersion->GetValue());
+		WritingStringNullableAttrInt(L"minRefreshableVersion", m_oMinRefreshableVersion, m_oMinRefreshableVersion->GetValue());
+		WritingStringNullableAttrInt(L"recordCount",		m_oRecordCount, m_oRecordCount->GetValue());
+		WritingStringNullableAttrBool2(L"upgradeOnRefresh", m_oUpgradeOnRefresh);
 		WritingStringNullableAttrBool2(L"tupleCache",		m_oTupleCache);
-		WritingStringNullableAttrBool2(L"upgradeOnRefresh",	m_oUpgradeOnRefresh);
+		WritingStringNullableAttrBool2(L"supportSubquery",	m_oSupportSubquery);
+		WritingStringNullableAttrBool2(L"supportAdvancedDrill", m_oSupportAdvancedDrill);
 		writer.WriteString(L">");
 
 		if(m_oCacheSource.IsInit())

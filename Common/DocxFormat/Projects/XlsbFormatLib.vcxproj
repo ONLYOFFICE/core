@@ -158,6 +158,8 @@
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginPCDSource.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginPCDSRange.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginPivotCacheDef.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginPivotCacheID.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginPivotCacheIDs.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginPivotCacheRecords.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginPivotTableUISettings.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginPName.h" />
@@ -426,6 +428,8 @@
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndPCDSource.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndPCDSRange.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndPivotCacheDef.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndPivotCacheID.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndPivotCacheIDs.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndPivotCacheRecords.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndPivotTableUISettings.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndPName.h" />
@@ -913,6 +917,8 @@
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\PCDSOURCE.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\PCDSOURCE14.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\PCDSRANGE.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\PIVOTCACHEID.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\PIVOTCACHEIDS.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\PIVOTCACHERECORD.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\PIVOTCACHERECORDDT.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\PIVOTCACHERECORDS.h" />
@@ -1194,6 +1200,8 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginPCDSource.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginPCDSRange.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginPivotCacheDef.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginPivotCacheID.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginPivotCacheIDs.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginPivotCacheRecords.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginPivotTableUISettings.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginPName.cpp" />
@@ -1460,6 +1468,8 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndPCDSource.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndPCDSRange.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndPivotCacheDef.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndPivotCacheID.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndPivotCacheIDs.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndPivotCacheRecords.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndPivotTableUISettings.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndPName.cpp" />
@@ -1941,6 +1951,8 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PCDSOURCE.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PCDSOURCE14.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PCDSRANGE.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PIVOTCACHEID.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PIVOTCACHEIDS.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PIVOTCACHERECORD.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PIVOTCACHERECORDDT.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PIVOTCACHERECORDS.cpp" />

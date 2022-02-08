@@ -585,8 +585,7 @@ namespace NSDocxRenderer
 
             switch (m_eTextAssociationType)
             {
-            case TextAssociationTypeDefault:
-            case TextAssociationTypeLine:
+            case TextAssociationTypeBlockChar:
                 {
                     oWriter.WriteString(L"<w:pPr><w:framePr w:hAnchor=\"page\" w:vAnchor=\"page\" w:x=\"");
                     oWriter.AddInt((int)(m_dLeft * c_dMMToDx));
@@ -595,7 +594,7 @@ namespace NSDocxRenderer
                     oWriter.WriteString(L"\"/></w:pPr>");
                     break;
                 }
-            case TextAssociationTypeBlock:
+            case TextAssociationTypeBlockLine:
                 {
                     oWriter.WriteString(L"<w:pPr><w:framePr w:hAnchor=\"page\" w:vAnchor=\"page\" w:x=\"");
                     oWriter.AddInt((int)(m_dLeft * c_dMMToDx));
@@ -604,7 +603,7 @@ namespace NSDocxRenderer
                     oWriter.WriteString(L"\"/></w:pPr>");
                     break;
                 }
-            case TextAssociationTypeNoFrames:
+            case TextAssociationTypePlainLine:
                 {
                     oWriter.WriteString(L"<w:pPr><w:spacing w:before=\"");
                     oWriter.AddInt((int)(m_dSpaceBefore * c_dMMToDx));

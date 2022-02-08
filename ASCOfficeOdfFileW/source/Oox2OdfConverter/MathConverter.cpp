@@ -409,6 +409,31 @@ namespace Oox2Odf
 
 	}
 
+	void OoxConverter::convert(OOX::Logic::CBaseJc *oox_base_js)
+	{
+		if (!oox_base_js) return;
+	}
+	
+	void OoxConverter::convert(OOX::Logic::CMaxDist *oox_max_dist)
+	{
+		if (!oox_max_dist) return;
+	}
+	
+	void OoxConverter::convert(OOX::Logic::CObjDist *oox_obj_dist) // !!! )
+	{
+		if (!oox_obj_dist) return;
+	}
+	
+	void OoxConverter::convert(OOX::Logic::CRSp *oox_r_sp)
+	{
+		if (!oox_r_sp) return;
+	}
+
+	void OoxConverter::convert(OOX::Logic::CRSpRule *oox_r_sp_rule)
+	{
+		if (!oox_r_sp_rule) return;
+	}
+
 	void OoxConverter::convert(OOX::Logic::CFraction *oox_fraction)
 	{
 		if (!oox_fraction) return;		
@@ -841,7 +866,9 @@ namespace Oox2Odf
 		convert(oox_mrun->m_oYearLong.GetPointer());
 		convert(oox_mrun->m_oYearShort.GetPointer());
 		if (clrFlag)
+		{
 			CLOSE_MATH_TAG;
+		}
 	}
 
 	bool OoxConverter::convert(OOX::Logic::CRunProperty *oox_r_pr)
@@ -1046,6 +1073,11 @@ namespace Oox2Odf
 		return result;		
 	}
 
+	void OoxConverter::convert(OOX::Logic::CGrow* oox_grow)
+	{
+		if (!oox_grow) return;
+	}
+
 	bool OoxConverter::convert(OOX::Logic::CSubHide *oox_subHide)
 	{
 		if (!oox_subHide) return false;
@@ -1122,7 +1154,10 @@ namespace Oox2Odf
 	{
 		if (!oox_rad) return;
 
-		nullable<ComplexTypes::Word::CColor> p = oox_rad->m_oRadPr->m_oCtrlPr->m_oRPr->m_oColor;
+		nullable<ComplexTypes::Word::CColor> p;
+		
+		if(oox_rad->m_oRadPr.IsInit() && oox_rad->m_oRadPr->m_oCtrlPr.IsInit() && oox_rad->m_oRadPr->m_oCtrlPr->m_oRPr.IsInit())
+			p = oox_rad->m_oRadPr->m_oCtrlPr->m_oRPr->m_oColor;
 		if (p.IsInit())
 		{
 			/*std::wstring clr = p->m_oVal.GetPointer()->ToString();
@@ -1324,6 +1359,11 @@ namespace Oox2Odf
 		convert(oox_ssub_sup_pr->m_oAlnScr.GetPointer());
 		convert(oox_ssub_sup_pr->m_oCtrlPr.GetPointer());
 
+	}
+
+	void OoxConverter::convert(OOX::Logic::CAlnScr* oox_aln_scr)
+	{
+		if (!oox_aln_scr) return;
 	}
 
 	void OoxConverter::convert(OOX::Logic::CSSup *oox_ssup)

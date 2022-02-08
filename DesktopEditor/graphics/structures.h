@@ -120,6 +120,9 @@ const long c_BrushTextureModeTileCenter = 2;
 namespace NSStructures
 {
 
+    enum class UnderlineType {NONE, SINGLE, DOUBLE, THICK, DOTTED, DOTTEDHEAVY,
+          DASH, DASHEDHEAVY, DASHLONG, DASHLONGHEAVY, DOTDASH, DASHDOTHEAVY,
+          DOTDOTDASH, DASHDOTDOTHEAVY, WAVE, WAVYHEAVY, WAVYDOUBLE};
 
 	class CPen
 	{

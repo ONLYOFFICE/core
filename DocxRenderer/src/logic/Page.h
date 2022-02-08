@@ -545,19 +545,28 @@ namespace NSDocxRenderer
 			return (count <= 5 && str.find(L"m0") != std::string::npos) ? true : false;
 		}
 
-        bool SearchSecondLine(int cur, const CShape* pCurShape)
+        bool IsSecondLine(const CShape* pCurShape, const CShape* pSecondShape)
+        {
+            bool IsEqualLeft = abs(pCurShape->m_dLeft - pSecondShape->m_dLeft) < 0.01;
+            bool IsEqualWidth = abs(pCurShape->m_dWidth - pSecondShape->m_dWidth) < 0.01;
+            double DiffCoord = pSecondShape->m_dTop - pCurShape->m_dTop - pCurShape->m_dHeight;
+            bool IsSuitableDiff = abs(DiffCoord) < 1.5 && pSecondShape->m_dTop > pCurShape->m_dTop;
+
+            return IsEqualLeft && IsEqualWidth && IsSuitableDiff;
+        }
+
+        bool IsSearchSecondLine(int lCurIdx, const CShape* pCurShape)
         {
             size_t nCount = m_arGraphicItems.size();
-            for (size_t i = cur++; i < nCount; ++i)
+            for (size_t i = lCurIdx+1; i < nCount; ++i)
             {
                 if (m_arGraphicItems[i]->m_eType == NSDocxRenderer::CBaseItem::etShape)
                 {
                     CShape* pShape = dynamic_cast <CShape *> (m_arGraphicItems[i]);
-                    if (pShape->m_dHeight < 0.15 && abs(pCurShape->m_dLeft - pShape->m_dLeft) < 0.01 &&
-                        abs(pCurShape->m_dWidth - pShape->m_dWidth) < 0.01 &&
-                        abs(pShape->m_dTop - pCurShape->m_dTop - pCurShape->m_dHeight) < 0.4)
+                    if (IsSecondLine(pCurShape, pShape))
                     {
-                        m_arGraphicItems.erase(m_arGraphicItems.cbegin() + ++i);
+                        m_arGraphicItems.erase(m_arGraphicItems.cbegin() + i);
+                        m_arMarkTypeShape.push_back(static_cast<int>(NSStructures::UnderlineType::DOUBLE));
                         return true;
                     }
                 }
@@ -565,65 +574,157 @@ namespace NSDocxRenderer
             return false;
         }
 
-        double SearchDotted(int cur, const CShape* pCurShape)
+        bool IsDashLine(const CShape* pCurShape, const CShape* pDashShape)
         {
-            double Width = pCurShape->m_dWidth;
+            bool IsEqualWidth = abs(pCurShape->m_dWidth - pDashShape->m_dWidth) < 0.01;
+            bool IsEqualTop = abs(pCurShape->m_dTop - pDashShape->m_dTop) < 0.01;
+            bool IsEqualHeight = abs(pCurShape->m_dHeight - pDashShape->m_dHeight) < 0.01;
+            bool IsMoreLeft = pDashShape->m_dLeft > pCurShape->m_dLeft;
+
+            return IsEqualHeight && IsEqualTop && IsEqualWidth && IsMoreLeft;
+        }
+
+        bool IsSearchDash(int lCurIdx, CShape* pCurShape)
+        {
+            double dCalculatedWidth = pCurShape->m_dWidth;
             size_t nCount = m_arGraphicItems.size();
-            for (size_t i = cur++; i < nCount; ++i)
+            for (size_t i = lCurIdx+1; i < nCount; ++i)
             {
                 if (m_arGraphicItems[i]->m_eType == NSDocxRenderer::CBaseItem::etShape)
                 {
                     CShape* pShape = dynamic_cast <CShape *> (m_arGraphicItems[i]);
-
+                    if (IsDashLine(pCurShape, pShape))
+                    {
+                        dCalculatedWidth = pShape->m_dLeft + pShape->m_dWidth - pCurShape->m_dLeft;
+                        m_arGraphicItems.erase(m_arGraphicItems.cbegin() + i);
+                        --nCount;
+                        --i;
+                    }
                 }
             }
-            return Width;
+
+            if (dCalculatedWidth > pCurShape->m_dWidth)
+            {
+                if (pCurShape->m_dWidth < 0.55)
+                    m_arMarkTypeShape.push_back(static_cast<int>(NSStructures::UnderlineType::DOTTED));
+                else if (pCurShape->m_dWidth < 1.5)
+                    m_arMarkTypeShape.push_back(static_cast<int>(NSStructures::UnderlineType::DASH));
+                else if (pCurShape->m_dWidth < 3)
+                    m_arMarkTypeShape.push_back(static_cast<int>(NSStructures::UnderlineType::DASHLONG));
+                //TODO: убрать
+                else
+                    m_arMarkTypeShape.push_back(static_cast<int>(NSStructures::UnderlineType::SINGLE));
+
+                pCurShape->m_dWidth = dCalculatedWidth;
+                return true;
+            }
+            return false;
+        }
+
+        bool IsDotLine(const CShape* pCurShape, const CShape* pDotShape)
+        {
+            bool IsEqualTop = abs(pCurShape->m_dTop - pDotShape->m_dTop) < 0.01;
+            bool IsSuitableDiff = abs(pDotShape->m_dLeft - pCurShape->m_dLeft - pCurShape->m_dWidth) < 0.5;
+            bool IsSuitableWidth = pDotShape->m_dWidth;
+
+            return IsEqualTop && IsSuitableDiff && IsSuitableWidth;
+        }
+
+        double SearchWidthDotted(int lCurIdx, const CShape* pCurShape)
+        {
+            if (pCurShape->m_dWidth > 1.5)
+                return 0;
+
+            size_t nCount = m_arGraphicItems.size();
+            for (size_t i = lCurIdx+1; i < nCount; ++i)
+            {
+                if (m_arGraphicItems[i]->m_eType == NSDocxRenderer::CBaseItem::etShape)
+                {
+                    CShape* pShape = dynamic_cast <CShape *> (m_arGraphicItems[i]);
+                    if (IsDotLine(pCurShape, pShape))
+                        return pShape->m_dWidth;
+                }
+            }
+            return 0;
+        }
+
+        void SearchDotted(int lCurIdx, CShape* pCurShape, double SecondWidth)
+        {
+            double dCalculatedWidth = pCurShape->m_dWidth;
+            int lLongLine = 1;
+            int lShortLine = 0;
+            size_t nCount = m_arGraphicItems.size();
+            for (size_t i = lCurIdx+1; i < nCount; ++i)
+            {
+                if (m_arGraphicItems[i]->m_eType == NSDocxRenderer::CBaseItem::etShape)
+                {
+                    CShape* pShape = dynamic_cast <CShape *> (m_arGraphicItems[i]);
+                    if (abs(pShape->m_dTop - pCurShape->m_dTop) < 0.01)
+                    {
+                        if (pShape->m_dWidth < 0.5)
+                        {
+                            ++lShortLine;
+                            dCalculatedWidth = pShape->m_dLeft + pShape->m_dWidth - pCurShape->m_dLeft;
+                            m_arGraphicItems.erase(m_arGraphicItems.cbegin() + i);
+                            --nCount;
+                            --i;
+                        }
+                        else if (abs(pShape->m_dWidth - pCurShape->m_dWidth) < 0.01)
+                        {
+                            ++lLongLine;
+                            dCalculatedWidth = pShape->m_dLeft + pShape->m_dWidth - pCurShape->m_dLeft;
+                            m_arGraphicItems.erase(m_arGraphicItems.cbegin() + i);
+                            --nCount;
+                            --i;
+                        }
+                    }
+                }
+            }
+
+            pCurShape->m_dWidth = dCalculatedWidth;
+            if (abs(lLongLine-lShortLine) < 2)
+                m_arMarkTypeShape.push_back(static_cast<int>(NSStructures::UnderlineType::DOTDASH));
+            else
+                m_arMarkTypeShape.push_back(static_cast<int>(NSStructures::UnderlineType::DOTDOTDASH));
+
         }
 
         void ProcessingLineShape()
         {
-            enum {NONE, SINGLE, DOUBLE, THICK, DOTTED, DOTTEDHEAVY,
-                  DASH, DASHEDHEAVY, DASHLONG, DASHLONGHEAVY, DOTDASH, DASHDOTHEAVY,
-                  DOTDOTDASH, DASHDOTDOTHEAVY, WAVE, WAVYHEAVY, WAVYDOUBLE};
-
             size_t nCount = m_arGraphicItems.size();
             for (size_t i = 0; i < nCount; ++i)
             {
                 if (m_arGraphicItems[i]->m_eType == NSDocxRenderer::CBaseItem::etShape)
                 {
                     CShape* pShape = dynamic_cast <CShape *> (m_arGraphicItems[i]);
-                    if (pShape->m_dHeight < 0.15  )
-                    {
-                        if (SearchSecondLine(i, pShape))
-                        {
-                            m_arMarkTypeShape.push_back(DOUBLE);
-                            --nCount;
-                            continue;
-                        }
-                    }
-                    if (pShape->m_dWidth < 0.509)
-                    {
-                        if (SearchDotted(i, pShape))
-                        {
 
-                        }
+                    if (IsSearchSecondLine(i, pShape))
+                    {
+                        nCount = m_arGraphicItems.size();
+                        continue;
                     }
-//                    TODO: определять размер линии при следующем обходе
-//                    if (pShape->m_dHeight > 0.3 && pShape->m_dHeight < 0.5)
-//                    {
-//                        m_arMarkTypeShape.push_back(THICK);
-//                        continue;
-//                    }
 
+                    double dWidthDotted = SearchWidthDotted(i, pShape);
+                    if (dWidthDotted > 0)
+                    {
+                        SearchDotted(i, pShape, dWidthDotted);
+                        nCount = m_arGraphicItems.size();
+                        continue;
+                    }
+
+                    if (IsSearchDash(i, pShape))
+                    {
+                        nCount = m_arGraphicItems.size();
+                        continue;
+                    }
                 }
-                m_arMarkTypeShape.push_back(SINGLE);
+                m_arMarkTypeShape.push_back(static_cast<int>(NSStructures::UnderlineType::SINGLE));
             }
-
         }
 
 		void SetTextOptions()
 		{
-			//ProcessingLineShape();
+			ProcessingLineShape();
 			std::vector <int> arIdxGraphicItems;
 			size_t nCount = m_arGraphicItems.size();
 			int counter = -1;
@@ -680,29 +781,22 @@ namespace NSDocxRenderer
 								&& (pShape->m_dLeft + pShape->m_dWidth) <= (m_arTextLine[j]->m_dX + dWidthTextLine))
 
 							{
-//                                std::cout<<"^^^^^^^^^^^^^^^^^^^^^^^^^^ - highlight"<<"\n";
-//                                std::cout<<"line Top = "<<dTopTextLine<<"\n";
-//                                std::cout<<"line Bottom = "<<dBottomTextLine<<"\n";
-//                                std::cout<<"line Height = "<<m_arTextLine[j]->m_dHeight<<"\n";
-
                                 std::pair<ModeFontOptions, int> oMode(ModeFontOptions::HIGHLIGHT, pShape->m_oBrush.Color1);
 
 								m_arTextLine[j]->SearchInclusions(pShape->m_dLeft, pShape->m_dLeft+pShape->m_dWidth, oMode);
                                 arIdxGraphicItems.push_back(counter);
 								break;
 							}
-//                            std::cout<<"line Top = "<<dTopTextLine<<"\n";
-//                            std::cout<<"line Bottom = "<<dBottomTextLine<<"\n";
-//                            std::cout<<"line Height = "<<m_arTextLine[j]->m_dHeight<<"\n";
 						}
 					}
-//                    std::cout<<"----------------------------------------^"<<"\n";
 				}
 			}
 
             auto iter = m_arGraphicItems.cbegin();
             for (size_t i = arIdxGraphicItems.size(); i > 0; --i)
                 m_arGraphicItems.erase(iter + arIdxGraphicItems[i-1]);
+
+            m_arMarkTypeShape.clear();
 		}
 
 		void Build()

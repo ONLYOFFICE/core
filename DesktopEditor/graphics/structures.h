@@ -120,9 +120,9 @@ const long c_BrushTextureModeTileCenter = 2;
 namespace NSStructures
 {
 
-    enum class UnderlineType {NONE, SINGLE, DOUBLE, THICK, DOTTED, DOTTEDHEAVY,
-          DASH, DASHEDHEAVY, DASHLONG, DASHLONGHEAVY, DOTDASH, DASHDOTHEAVY,
-          DOTDOTDASH, DASHDOTDOTHEAVY, WAVE, WAVYHEAVY, WAVYDOUBLE};
+	enum class UnderlineTypes {NONE, SINGLE, DOUBLE, THICK, DOTTED, DOTTEDHEAVY,
+							DASH, DASHEDHEAVY, DASHLONG, DASHLONGHEAVY, DOTDASH, DASHDOTHEAVY,
+							DOTDOTDASH, DASHDOTDOTHEAVY, WAVE, WAVYHEAVY, WAVYDOUBLE};
 
 	class CPen
 	{
@@ -497,7 +497,7 @@ namespace NSStructures
 		int Bold;
 		int Italic;
 		unsigned char Underline;
-        int UnderlineType;
+		UnderlineTypes UnderlineType;
 		unsigned char Strikeout;
 
 		int StringGID;
@@ -514,8 +514,8 @@ namespace NSStructures
 
 			return ((Name == pFont->Name) && (Path == pFont->Path) && (FaceIndex == pFont->FaceIndex) && (StringGID == pFont->StringGID) && (Size == pFont->Size) &&
 					(Bold == pFont->Bold) && (Italic == pFont->Italic) &&
-                    (Underline == pFont->Underline) && (UnderlineType = pFont->UnderlineType) &&
-                    (Strikeout == pFont->Strikeout) && (HighlightColor == pFont->HighlightColor));
+					(Underline == pFont->Underline) && (UnderlineType == pFont->UnderlineType) &&
+ 					(Strikeout == pFont->Strikeout) && (HighlightColor == pFont->HighlightColor));
 		}
 
 		long GetStyle() const

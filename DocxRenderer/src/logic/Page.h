@@ -63,7 +63,6 @@ namespace NSDocxRenderer
 
 		bool m_bIsDeleteTextClipPage;
 
-        std::vector <int> m_arMarkTypeShape;
 	public:
         CPage(NSFonts::IApplicationFonts* pFonts) : m_oManager(pFonts), m_oManagerLight(pFonts)
 		{
@@ -555,7 +554,7 @@ namespace NSDocxRenderer
             return IsEqualLeft && IsEqualWidth && IsSuitableDiff;
         }
 
-        bool IsSearchSecondLine(int lCurIdx, const CShape* pCurShape)
+        bool IsSearchSecondLine(int lCurIdx, CShape* pCurShape)
         {
             size_t nCount = m_arGraphicItems.size();
             for (size_t i = lCurIdx+1; i < nCount; ++i)
@@ -566,7 +565,7 @@ namespace NSDocxRenderer
                     if (IsSecondLine(pCurShape, pShape))
                     {
                         m_arGraphicItems.erase(m_arGraphicItems.cbegin() + i);
-                        m_arMarkTypeShape.push_back(static_cast<int>(NSStructures::UnderlineType::DOUBLE));
+                        pCurShape->m_TypeLine = NSStructures::UnderlineTypes::DOUBLE;
                         return true;
                     }
                 }
@@ -606,14 +605,14 @@ namespace NSDocxRenderer
             if (dCalculatedWidth > pCurShape->m_dWidth)
             {
                 if (pCurShape->m_dWidth < 0.55)
-                    m_arMarkTypeShape.push_back(static_cast<int>(NSStructures::UnderlineType::DOTTED));
+                    pCurShape->m_TypeLine = NSStructures::UnderlineTypes::DOTTED;
                 else if (pCurShape->m_dWidth < 1.5)
-                    m_arMarkTypeShape.push_back(static_cast<int>(NSStructures::UnderlineType::DASH));
+                    pCurShape->m_TypeLine = NSStructures::UnderlineTypes::DASH;
                 else if (pCurShape->m_dWidth < 3)
-                    m_arMarkTypeShape.push_back(static_cast<int>(NSStructures::UnderlineType::DASHLONG));
+                    pCurShape->m_TypeLine = NSStructures::UnderlineTypes::DASHLONG;
                 //TODO: убрать
                 else
-                    m_arMarkTypeShape.push_back(static_cast<int>(NSStructures::UnderlineType::SINGLE));
+                    pCurShape->m_TypeLine = NSStructures::UnderlineTypes::SINGLE;
 
                 pCurShape->m_dWidth = dCalculatedWidth;
                 return true;
@@ -683,16 +682,16 @@ namespace NSDocxRenderer
 
             pCurShape->m_dWidth = dCalculatedWidth;
             if (abs(lLongLine-lShortLine) < 2)
-                m_arMarkTypeShape.push_back(static_cast<int>(NSStructures::UnderlineType::DOTDASH));
+                pCurShape->m_TypeLine = NSStructures::UnderlineTypes::DOTDASH;
             else
-                m_arMarkTypeShape.push_back(static_cast<int>(NSStructures::UnderlineType::DOTDOTDASH));
+                pCurShape->m_TypeLine = NSStructures::UnderlineTypes::DOTDOTDASH;
 
         }
 
         void ProcessingLineShape()
         {
             size_t nCount = m_arGraphicItems.size();
-            for (size_t i = 0; i < nCount; ++i)
+            for (int i = 0; i < nCount; ++i)
             {
                 if (m_arGraphicItems[i]->m_eType == NSDocxRenderer::CBaseItem::etShape)
                 {
@@ -717,9 +716,85 @@ namespace NSDocxRenderer
                         nCount = m_arGraphicItems.size();
                         continue;
                     }
+                    pShape->m_TypeLine = NSStructures::UnderlineTypes::SINGLE;
                 }
-                m_arMarkTypeShape.push_back(static_cast<int>(NSStructures::UnderlineType::SINGLE));
             }
+        }
+
+        void SetThickUnderlineType(CShape* pShape)
+        {
+            switch (pShape->m_TypeLine)
+            {
+                case NSStructures::UnderlineTypes::SINGLE:
+                    pShape->m_TypeLine = NSStructures::UnderlineTypes::THICK;
+                    break;
+                case NSStructures::UnderlineTypes::DOTTED:
+                    pShape->m_TypeLine = NSStructures::UnderlineTypes::DOTTEDHEAVY;
+                    break;
+                case NSStructures::UnderlineTypes::DASH:
+                    pShape->m_TypeLine = NSStructures::UnderlineTypes::DASHEDHEAVY;
+                    break;
+                case NSStructures::UnderlineTypes::DASHLONG:
+                    pShape->m_TypeLine = NSStructures::UnderlineTypes::DASHLONGHEAVY;
+                    break;
+                case NSStructures::UnderlineTypes::DOTDASH:
+                    pShape->m_TypeLine = NSStructures::UnderlineTypes::DASHDOTHEAVY;
+                    break;
+                case NSStructures::UnderlineTypes::DOTDOTDASH:
+                    pShape->m_TypeLine = NSStructures::UnderlineTypes::DASHDOTDOTHEAVY;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        bool IsStrikeout(CShape* pShape, CTextLine* pTextLine)
+        {
+            double dTopTextLine = pTextLine->m_dBaselinePos - pTextLine->m_dHeight;
+            double dBottomTextLine = pTextLine->m_dBaselinePos;
+
+            bool bCheckTop = dTopTextLine < pShape->m_dTop;
+            bool bCheckBottom = dBottomTextLine > pShape->m_dHeight + pShape->m_dTop;
+            bool bColorEquals = pTextLine->IsMatchColor(pShape->m_oBrush.Color1) ||
+                                pTextLine->IsMatchColor(pShape->m_oPen.Color);
+
+            return bCheckTop && bCheckBottom && bColorEquals;
+        }
+
+        bool IsUnderline(CShape* pShape, CTextLine* pTextLine)
+        {
+            double dBottomTextLine = pTextLine->m_dBaselinePos;
+
+            bool bCheckTop = abs(pShape->m_dTop - dBottomTextLine) < 2;
+            bool bCheckHeight = pShape->m_dHeight < 1.5;
+            bool bCheckBottom = pShape->m_dTop > dBottomTextLine;
+            bool bColorEquals = pTextLine->IsMatchColor(pShape->m_oBrush.Color1) ||
+                                pTextLine->IsMatchColor(pShape->m_oPen.Color);
+
+            return bCheckTop && bCheckHeight && bCheckBottom && bColorEquals;
+        }
+
+        bool IsHighlight(CShape* pShape, CTextLine* pTextLine)
+        {
+            double dTopTextLine = pTextLine->m_dBaselinePos - pTextLine->m_dHeight;
+            double dBottomTextLine = pTextLine->m_dBaselinePos;
+
+            double dWidthTextLine{};
+            for (size_t i = 0; i < pTextLine->m_arConts.size(); ++i)
+                dWidthTextLine += pTextLine->m_arConts[i]->m_dWidth;
+
+            bool bCheckHeight = pShape->m_dHeight > 0.5;
+            bool bCheckTop = dTopTextLine/pShape->m_dTop > 0.92 && pShape->m_dTop > dTopTextLine;
+            bool bCheckBottom = dBottomTextLine/(pShape->m_dHeight + pShape->m_dTop) > 0.92 &&
+                                (pShape->m_dHeight + pShape->m_dTop) > dBottomTextLine;
+
+            bool bCheckLeft = pShape->m_dLeft >= pTextLine->m_dX &&
+                              (pShape->m_dLeft + pShape->m_dWidth) <= (pTextLine->m_dX + dWidthTextLine);
+
+            bool bCheckTopBottomCoord = (pShape->m_dTop) < dBottomTextLine;
+
+            return bCheckHeight && bCheckTop && bCheckBottom &&
+                   bCheckLeft   && bCheckTopBottomCoord;
         }
 
 		void SetTextOptions()
@@ -734,56 +809,32 @@ namespace NSDocxRenderer
 				if (m_arGraphicItems[i]->m_eType == NSDocxRenderer::CBaseItem::etShape)
 				{
 					CShape* pShape = dynamic_cast <CShape *> (m_arGraphicItems[i]);
-
 					if (IsRect(pShape->m_strPath, L","))
 					{
 						size_t nCountTextLine = m_arTextLine.size();
 						for (size_t j = 0; j < nCountTextLine; ++j)
 						{
-							double dTopTextLine = m_arTextLine[j]->m_dBaselinePos - m_arTextLine[j]->m_dHeight;
-							double dBottomTextLine = m_arTextLine[j]->m_dBaselinePos;
-
-							if (     (dTopTextLine < pShape->m_dTop)
-								  && (dBottomTextLine > pShape->m_dHeight + pShape->m_dTop)
-								  && (m_arTextLine[j]->IsMatchColor(pShape->m_oBrush.Color1)
-								  ||  m_arTextLine[j]->IsMatchColor(pShape->m_oPen.Color)))
+                            if ( IsStrikeout(pShape, m_arTextLine[j])  )
 							{
-								std::pair<ModeFontOptions, int> oMode(ModeFontOptions::STRIKEOUT, pShape->m_oBrush.Color1);
-
-								m_arTextLine[j]->SearchInclusions(pShape->m_dLeft, pShape->m_dLeft+pShape->m_dWidth, oMode);
-								arIdxGraphicItems.push_back(counter);
-								break;
-							}
-							if (   pShape->m_dTop > dBottomTextLine 
-								&& pShape->m_dHeight < 1.5 
-								&& abs(pShape->m_dTop - dBottomTextLine) < 2 
-								&& (m_arTextLine[j]->IsMatchColor(pShape->m_oBrush.Color1) 
-								|| m_arTextLine[j]->IsMatchColor(pShape->m_oPen.Color)))
-							{
-								std::pair<ModeFontOptions, int> oMode(ModeFontOptions::UNDERLINE, 1);
-
-								m_arTextLine[j]->SearchInclusions(pShape->m_dLeft, pShape->m_dLeft+pShape->m_dWidth, oMode);
+                                m_arTextLine[j]->SearchInclusions(pShape, ModeFontOptions::STRIKEOUT);
 								arIdxGraphicItems.push_back(counter);
 								break;
 							}
 
-							double dWidthTextLine{};
-							for (size_t k = 0; k < m_arTextLine[j]->m_arConts.size(); ++k)
-							dWidthTextLine += m_arTextLine[j]->m_arConts[k]->m_dWidth;
-
-							if (   pShape->m_dHeight > 0.5
-								&& dTopTextLine/pShape->m_dTop > 0.92
-								&& pShape->m_dTop > dTopTextLine
-								&& dBottomTextLine/(pShape->m_dHeight + pShape->m_dTop) > 0.92
-								&& (pShape->m_dHeight + pShape->m_dTop) > dBottomTextLine
-								&& (pShape->m_dTop) < dBottomTextLine
-								&& pShape->m_dLeft >= m_arTextLine[j]->m_dX
-								&& (pShape->m_dLeft + pShape->m_dWidth) <= (m_arTextLine[j]->m_dX + dWidthTextLine))
-
+                            if ( IsUnderline(pShape, m_arTextLine[j]) )
 							{
-                                std::pair<ModeFontOptions, int> oMode(ModeFontOptions::HIGHLIGHT, pShape->m_oBrush.Color1);
+                                if (m_arTextLine[j]->m_dHeight/pShape->m_dHeight < 18 )
+                                    SetThickUnderlineType(pShape);
 
-								m_arTextLine[j]->SearchInclusions(pShape->m_dLeft, pShape->m_dLeft+pShape->m_dWidth, oMode);
+                                m_arTextLine[j]->SearchInclusions(pShape, ModeFontOptions::UNDERLINE);
+								arIdxGraphicItems.push_back(counter);
+								break;
+							}					
+
+                            if (IsHighlight(pShape, m_arTextLine[j]))
+                            {
+                                m_arTextLine[j]->SearchInclusions(pShape, ModeFontOptions::HIGHLIGHT);
+
                                 arIdxGraphicItems.push_back(counter);
 								break;
 							}
@@ -796,7 +847,6 @@ namespace NSDocxRenderer
             for (size_t i = arIdxGraphicItems.size(); i > 0; --i)
                 m_arGraphicItems.erase(iter + arIdxGraphicItems[i-1]);
 
-            m_arMarkTypeShape.clear();
 		}
 
 		void Build()

@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Common.h"
 #include "FontManager.h"
+#include "ElementShape.h"
 
 namespace NSDocxRenderer
 {
@@ -203,8 +204,41 @@ namespace NSDocxRenderer
             return (m_dX >= oSrc->m_dX) ? true : false;
         }
 
-        std::vector<CContText*> BreakCont(const double &dLeftLineCoord, const double &dRightLineCoord, const std::pair<ModeFontOptions, int> &oMode)
+        void CheckingBoldFont(CShape* pShape)
         {
+            if (!(m_oFont.Bold || 0x01 == (0x01 & m_lPickFontStyle)) )
+                return;
+
+            switch (pShape->m_TypeLine)
+            {
+                case NSStructures::UnderlineTypes::THICK:
+                    pShape->m_TypeLine = NSStructures::UnderlineTypes::SINGLE;
+                    break;
+                case NSStructures::UnderlineTypes::DOTTEDHEAVY:
+                    pShape->m_TypeLine = NSStructures::UnderlineTypes::DOTTED;
+                    break;
+                case NSStructures::UnderlineTypes::DASHEDHEAVY:
+                    pShape->m_TypeLine = NSStructures::UnderlineTypes::DASH;
+                    break;
+                case NSStructures::UnderlineTypes::DASHLONGHEAVY:
+                    pShape->m_TypeLine = NSStructures::UnderlineTypes::DASHLONG;
+                    break;
+                case NSStructures::UnderlineTypes::DASHDOTHEAVY:
+                    pShape->m_TypeLine = NSStructures::UnderlineTypes::DOTDASH;
+                    break;
+                case NSStructures::UnderlineTypes::DASHDOTDOTHEAVY:
+                    pShape->m_TypeLine = NSStructures::UnderlineTypes::DOTDOTDASH;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        std::vector<CContText*> BreakCont(CShape* pShape, ModeFontOptions oMode)
+        {
+            double dLeftLineCoord = pShape->m_dLeft;
+            double dRightLineCoord = pShape->m_dLeft+pShape->m_dWidth;
+
             std::vector<CContText*> arReturnConts;
             size_t nCountChars = m_arWidthText.size();
             bool bPrevMark{};
@@ -226,7 +260,7 @@ namespace NSDocxRenderer
 
                     if (bPrevMark != true)
                     {
-                        arReturnConts.push_back(AddNewCont(nLastIdx, i, oMode, bPrevMark)) ;
+                        arReturnConts.push_back(AddNewCont(nLastIdx, i, oMode, bPrevMark, pShape)) ;
                         nLastIdx = i;
                     }
 
@@ -239,7 +273,7 @@ namespace NSDocxRenderer
 
                     if (bPrevMark != false)
                     {
-                        arReturnConts.push_back(AddNewCont(nLastIdx, i, oMode, bPrevMark)) ;
+                        arReturnConts.push_back(AddNewCont(nLastIdx, i, oMode, bPrevMark, pShape)) ;
                         nLastIdx = i;
                     }
 
@@ -247,15 +281,15 @@ namespace NSDocxRenderer
                 }
             }
 
-            arReturnConts.push_back(AddNewCont(nLastIdx, nCountChars, oMode, bPrevMark));
+            arReturnConts.push_back(AddNewCont(nLastIdx, nCountChars, oMode, bPrevMark, pShape));
             return arReturnConts;
         }
 
-        CContText* AddNewCont(const size_t &nLastIdx, const size_t &nCurrentIdx, const std::pair<ModeFontOptions, int> &oMode, const bool &bMark)
+        CContText* AddNewCont(const size_t &nLastIdx, const size_t &nCurrentIdx, ModeFontOptions oMode, const bool &bMark, CShape* pShape)
         {
             CContText* pCont = new CContText(*this);
             if (true == bMark)
-                pCont->MarkFontProperties(oMode);
+                pCont->MarkFontProperties(pShape, oMode);
 
             if (0 == nLastIdx)
             {
@@ -296,18 +330,18 @@ namespace NSDocxRenderer
 
         }
 
-        void MarkFontProperties(const std::pair<ModeFontOptions, int> &oMode)
+        void MarkFontProperties(CShape* pShape, ModeFontOptions oMode)
         {
-            switch (oMode.first) {
+            switch (oMode) {
                 case ModeFontOptions::STRIKEOUT:
                     m_oFont.Strikeout = 1;
                     break;
                 case ModeFontOptions::UNDERLINE:
                     m_oFont.Underline = 1;
-                    m_oFont.UnderlineType = oMode.second;
+                    m_oFont.UnderlineType = pShape->m_TypeLine;
                     break;
                 case ModeFontOptions::HIGHLIGHT:
-                    m_oFont.HighlightColor = oMode.second;
+                    m_oFont.HighlightColor = pShape->m_oBrush.Color1;
                     break;
             }
         }
@@ -329,11 +363,18 @@ namespace NSDocxRenderer
                return it->second;
         }
 
-        std::wstring GetTypeUnderline(int type)
+        std::wstring GetTypeUnderline(NSStructures::UnderlineTypes type)
         {
-            std::vector <std::wstring> typesUnderline = {L"none", L"single", L"double", L"thick", L"dotted", L"dottedHeavy", L"dash", L"dashedHeavy", L"dashLong", L"dashLongHeavy", L"dotDash", L"dashDotHeavy", L"dotDotDash", L"dashDotDotHeavy", L"wave", L"wavyHeavy", L"wavyDouble"};
-            if (type >= 0 && type < typesUnderline.size())
-                return typesUnderline[type];
+            std::vector <std::wstring> typesUnderline = {L"none"         , L"single"         , L"double",
+                                                         L"thick"        , L"dotted"         , L"dottedHeavy",
+                                                         L"dash"         , L"dashedHeavy"    , L"dashLong",
+                                                         L"dashLongHeavy", L"dotDash"        , L"dashDotHeavy",
+                                                         L"dotDotDash"   , L"dashDotDotHeavy", L"wave",
+                                                         L"wavyHeavy"    , L"wavyDouble"};
+
+            int idx = static_cast<int>(type);
+            if (idx >= 0 && idx < typesUnderline.size())
+                return typesUnderline[idx];
             else
                 return typesUnderline[0];
         }
@@ -629,8 +670,11 @@ namespace NSDocxRenderer
             return false;
         }
 
-        void SearchInclusions(const double &dLeftLineCoord, const double &dRightLineCoord, const std::pair<ModeFontOptions, int> &oMode)
+        void SearchInclusions(CShape* pShape, ModeFontOptions oMode)
         {
+            double dLeftLineCoord = pShape->m_dLeft;
+            double dRightLineCoord = pShape->m_dLeft+pShape->m_dWidth;
+
             std::vector<CContText*> arTempConts;
 
             size_t nCountConts = m_arConts.size();
@@ -640,6 +684,7 @@ namespace NSDocxRenderer
                 double dRightCont = dLeftCont + m_arConts[i]->m_dWidth;
 
                 if (dLeftLineCoord > dRightCont || dLeftCont > dRightLineCoord){
+                    m_arConts[i]->CheckingBoldFont(pShape);
                     arTempConts.push_back(m_arConts[i]);
                     continue;
                 }
@@ -648,7 +693,8 @@ namespace NSDocxRenderer
                 {
                     if (dRightLineCoord > dLeftCont)
                     {
-                        std::vector<CContText*> arBreakCont = m_arConts[i]->BreakCont(dLeftLineCoord, dRightLineCoord, oMode);
+                        m_arConts[i]->CheckingBoldFont(pShape);
+                        std::vector<CContText*> arBreakCont = m_arConts[i]->BreakCont(pShape, oMode);
                         for (size_t j = 0; j < arBreakCont.size(); ++j)
                             arTempConts.push_back(arBreakCont[j]);
                     }
@@ -661,13 +707,15 @@ namespace NSDocxRenderer
                 {
                     if (dLeftLineCoord > dLeftCont)
                     {
-                        std::vector<CContText*> arBreakCont = m_arConts[i]->BreakCont(dLeftLineCoord, dRightLineCoord, oMode);
+                        m_arConts[i]->CheckingBoldFont(pShape);
+                        std::vector<CContText*> arBreakCont = m_arConts[i]->BreakCont(pShape, oMode);
                         for (size_t j = 0; j < arBreakCont.size(); ++j)
                             arTempConts.push_back(arBreakCont[j]);
                     }
                     else
                     {
-                        m_arConts[i]->MarkFontProperties(oMode);
+                        m_arConts[i]->CheckingBoldFont(pShape);
+                        m_arConts[i]->MarkFontProperties(pShape, oMode);
                         arTempConts.push_back(m_arConts[i]);
                     }
                 }

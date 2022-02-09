@@ -189,6 +189,7 @@ namespace NSDocxRenderer
 
 		LONG m_lTxId;
 
+		NSStructures::UnderlineTypes m_TypeLine;
 	public:
 		CShape()
 		{
@@ -204,6 +205,8 @@ namespace NSDocxRenderer
 			m_lCoordSizeY	= 100000;
 
 			m_lTxId			= -1;
+
+			m_TypeLine = NSStructures::UnderlineTypes::NONE;
 		}
 
 		CShape(const CShape& oSrc)
@@ -228,6 +231,8 @@ namespace NSDocxRenderer
 			m_bIsStroke	= oSrc.m_bIsStroke;
 
 			m_lTxId		= oSrc.m_lTxId;
+
+			m_TypeLine = oSrc.m_TypeLine;
 
 			return *this;
 		}

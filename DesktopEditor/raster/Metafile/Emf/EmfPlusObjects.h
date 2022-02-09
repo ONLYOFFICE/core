@@ -163,8 +163,9 @@ namespace MetaFile
 	class CEmfPlusPen: public CEmfPlusObject, public IPen
 	{
 	    public:
-		CEmfPlusPen() : Style(PS_SOLID), Width(1), Color(0, 0, 0), Brush(NULL), DashOffset(0) {}
-		virtual ~CEmfPlusPen() { RELEASEOBJECT(Brush) }
+		CEmfPlusPen() : Style(PS_SOLID), Width(1), Color(0, 0, 0), Brush(NULL), DashOffset(0), DataDash(NULL), SizeDash(0) {}
+		virtual ~CEmfPlusPen() { RELEASEOBJECT(Brush)
+					 RELEASEARRAYOBJECTS(DataDash)}
 		virtual EEmfObjectType GetType()
 		{
 			return EMF_OBJECT_PEN;
@@ -207,11 +208,19 @@ namespace MetaFile
 			return DashOffset;
 		}
 
+		void GetDashData(double*& arDatas, unsigned int& unSize)
+		{
+			arDatas = DataDash;
+			unSize  = SizeDash;
+		}
+
 		unsigned int	Style;
 		double		Width;
 		TEmfPlusARGB	Color;
 		CEmfPlusBrush	*Brush;
 		double		DashOffset;
+		double*		DataDash;
+		unsigned int	SizeDash;
 	};
 
         typedef  enum
@@ -289,6 +298,13 @@ namespace MetaFile
 		bool		m_bStrikeout;
 		std::wstring	m_wsFamilyName;
 	};
+
+        typedef  enum
+        {
+                PathPointTypeStart      = 0x00,
+                PathPointTypeLine       = 0x01,
+                PathPointTypeBezier     = 0x03
+        } EEmfPlusPathPointType;
 
         class CEmfPlusPath : public CEmfPlusObject, public CEmfPath
         {

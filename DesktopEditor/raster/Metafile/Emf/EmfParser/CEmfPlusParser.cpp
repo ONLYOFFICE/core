@@ -613,7 +613,7 @@ namespace MetaFile
 
 			switch (nStartCap)
 			{
-				case 0:	pEmfPlusPen->Style |= PS_STARTCAP_MASK & PS_STARTCAP_FLAT;	 break;
+				case 0:	pEmfPlusPen->Style |= PS_STARTCAP_MASK & PS_STARTCAP_FLAT;   break;
 				case 1: pEmfPlusPen->Style |= PS_STARTCAP_MASK & PS_STARTCAP_SQUARE; break;
 				case 2: pEmfPlusPen->Style |= PS_STARTCAP_MASK & PS_STARTCAP_ROUND;  break;
 			}
@@ -647,20 +647,50 @@ namespace MetaFile
 		if (unFlags & PEN_DATA_MITERLIMIT)
 			m_oStream.Skip(4); // MiterLimit (4 bytes) - floating-point value
 		if (unFlags & PEN_DATA_LINESTYLE)
-			m_oStream.Skip(4); // LineStyle (4 bytes) - signed integer
+		{
+			int nLineStyle;
+
+			m_oStream >> nLineStyle;
+
+			pEmfPlusPen->Style |= PS_STYLE_MASK & nLineStyle;
+		}
 		if (unFlags & PEN_DATA_DASHEDLINECAP)
-			m_oStream.Skip(4); // DashedLineCapType (4 bytes) - signed integer
+		{
+			int nDashedLineCapType;
+
+			m_oStream >> nDashedLineCapType;
+
+			switch (nDashedLineCapType)
+			{
+				case 0:
+				{
+					pEmfPlusPen->Style |= (PS_STARTCAP_MASK & PS_STARTCAP_FLAT) |
+							      (PS_ENDCAP_MASK   & PS_STARTCAP_FLAT);
+					break;
+				}
+				case 1:
+				{
+					pEmfPlusPen->Style |= (PS_STARTCAP_MASK & PS_STARTCAP_ROUND) |
+							      (PS_ENDCAP_MASK   & PS_STARTCAP_ROUND);
+					break;
+				}
+			}
+		}
 		if (unFlags & PEN_DATA_DASHEDLINEOFFSET)
 		{
 			m_oStream >> pEmfPlusPen->DashOffset;
 		}
 		if (unFlags & PEN_DATA_DASHEDLINE)
 		{
-			unsigned int unDashedLineDataSize;
+			m_oStream >> pEmfPlusPen->SizeDash;
 
-			m_oStream >> unDashedLineDataSize;
+			pEmfPlusPen->DataDash = new double[pEmfPlusPen->SizeDash];
 
-			m_oStream.Skip(4 * unDashedLineDataSize); // EmfPlusDashedLineData object
+			if (NULL != pEmfPlusPen->DataDash)
+			{
+				for (unsigned int unIndex = 0; unIndex < pEmfPlusPen->SizeDash; ++unIndex)
+					m_oStream >> pEmfPlusPen->DataDash[unIndex];
+			}
 		}
 		if (unFlags & PEN_DATA_NONCENTER)
 			m_oStream.Skip(4); // PenAlignment (4 bytes) - signed integer
@@ -783,18 +813,30 @@ namespace MetaFile
                         std::vector<TEmfPlusPointF> arPoints    = ReadPointsF(unPathPointCount);
                         std::vector<char> arPointTypes          = ReadPointTypes(unPathPointCount);
 
-                        std::vector<std::pair<char, char>> arFlTp(unPathPointCount);
-
                         CEmfPlusPath *pPath = new CEmfPlusPath();
 
-                        pPath->MoveTo(arPoints[0].X, arPoints[0].Y);
+                        for (unsigned int unIndex = 0; unIndex < unPathPointCount; ++unIndex)
+                        {                                                                
+                                switch (ExpressValue(arPointTypes[unIndex], 0, 3))
+                                {
+                                        case PathPointTypeStart:  pPath->MoveTo(arPoints[unIndex].X, arPoints[unIndex].Y); break;
+                                        case PathPointTypeLine:   pPath->LineTo(arPoints[unIndex].X, arPoints[unIndex].Y); break;
+                                        case PathPointTypeBezier:
+                                        {
+                                                if (unIndex + 2 >= unPathPointCount) break;
 
-                        for (unsigned int unIndex = 1; unIndex < unPathPointCount; ++unIndex)
-                        {
-                                if (ExpressValue(arPointTypes[unIndex], 0, 3) == 0)
-                                        pPath->MoveTo(arPoints[unIndex].X, arPoints[unIndex].Y);
-                                else
-                                        pPath->LineTo(arPoints[unIndex].X, arPoints[unIndex].Y);
+                                                pPath->CurveTo(arPoints[unIndex].X, arPoints[unIndex].Y,
+                                                               arPoints[unIndex + 1].X, arPoints[unIndex + 1].Y,
+                                                               arPoints[unIndex + 2].X, arPoints[unIndex + 2].Y);
+                                                unIndex += 2;
+                                                break;
+                                        }
+                                }
+
+                                if (ExpressValue(arPointTypes[unIndex], 4, 7) == 0x08)
+                                {
+                                        pPath->Close();
+                                }
                         }
 
                         return pPath;
@@ -1414,11 +1456,12 @@ namespace MetaFile
 
                 if ((unShFlags >>(15)) & 1 )//BrushId = Color
                 {
-                        CEmfLogBrushEx oBrush;
-                        oBrush.Color.b = (unBrushId >> 0)  & 0xFF;
-                        oBrush.Color.g = (unBrushId >> 8)  & 0xFF;
-                        oBrush.Color.r = (unBrushId >> 16) & 0xFF;
-                        oBrush.Color.a = (unBrushId >> 24) & 0xFF;
+                        CEmfPlusBrush oBrush;
+
+                        oBrush.Color.chBlue     = (unBrushId >> 0)  & 0xFF;
+                        oBrush.Color.chGreen    = (unBrushId >> 8)  & 0xFF;
+                        oBrush.Color.chRed      = (unBrushId >> 16) & 0xFF;
+                        oBrush.Color.chAlpha    = (unBrushId >> 24) & 0xFF;
 
                         m_pDC->SetBrush(&oBrush);
 
@@ -1455,11 +1498,35 @@ namespace MetaFile
         template<typename T>
         void CEmfPlusParser::Read_EMFPLUS_DRAWELLIPSE_BASE(unsigned short unShFlags)
         {
+                short shObjectID = ExpressValue(unShFlags, 0, 7);
                 T oRect;
 
                 m_oStream >> oRect;
 
-                HANDLE_EMFPLUS_DRAWELLIPSE(ExpressValue(unShFlags, 0, 7), oRect);
+                CEmfPlusPen *pEmfPlusPen = GetPen(shObjectID);
+
+                if (NULL == pEmfPlusPen) return;
+
+                if (NULL != pEmfPlusPen->Brush)
+                        m_pDC->SetBrush(pEmfPlusPen->Brush);
+
+                m_pDC->SetPen(pEmfPlusPen);
+
+                TEmfRectL oBox = oRect.GetRectL();
+
+                if (m_pDC->GetArcDirection() == AD_COUNTERCLOCKWISE)
+                        ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, 0, 360);
+                else
+                        ArcTo(oBox.lLeft, oBox.lBottom, oBox.lRight, oBox.lTop, 0, 360);
+
+                DrawPath(true, false);
+
+                if (NULL != pEmfPlusPen->Brush)
+                        m_pDC->RemoveBrush(pEmfPlusPen->Brush);
+
+                m_pDC->RemovePen(pEmfPlusPen);
+
+//                HANDLE_EMFPLUS_DRAWELLIPSE(ExpressValue(unShFlags, 0, 7), oRect);
         }
 
         void CEmfPlusParser::Read_EMFPLUS_DRAWIMAGE(unsigned short unShFlags)
@@ -1593,9 +1660,15 @@ namespace MetaFile
 
                         if (NULL == pEmfPlusPen) return;
 
+                        if (NULL != pEmfPlusPen->Brush)
+                                m_pDC->SetBrush(pEmfPlusPen->Brush);
+
                         m_pDC->SetPen(pEmfPlusPen);
 
-                        pPath->Draw(m_pInterpretator, true, false);
+                        pPath->DrawWithoutClean(m_pInterpretator, true, false);
+
+                        if (NULL != pEmfPlusPen->Brush)
+                                m_pDC->RemoveBrush(pEmfPlusPen->Brush);
 
                         m_pDC->RemovePen(pEmfPlusPen);
                 }
@@ -1668,7 +1741,65 @@ namespace MetaFile
                 m_oStream >> unBrushId;
                 m_oStream >> unFormatID;
                 m_oStream >> unLength;
+
+                if (0 == unLength)
+                        return;
+
                 m_oStream >> oRect;
+
+		unsigned short* pString = new unsigned short[unLength + 1];
+		if (pString)
+		{
+			pString[unLength] = 0x00;
+			m_oStream.ReadBytes(pString, unLength);
+		}
+
+		std::wstring wsString;
+
+		wsString = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)pString, unLength);
+
+		RELEASEARRAYOBJECTS(pString)
+
+                //----------
+                if (NULL == m_pInterpretator)
+                        return;
+
+                CEmfPlusFont *pFont = GetFont(shOgjectIndex);
+
+                if (NULL == pFont)
+                        return;
+
+                m_pDC->SetFont(pFont);
+
+                if ((unShFlags >>(15)) & 1 )//BrushId = Color
+                {
+                        CEmfPlusBrush oBrush;
+
+                        oBrush.Color.chBlue     = (unBrushId >> 0)  & 0xFF;
+                        oBrush.Color.chGreen    = (unBrushId >> 8)  & 0xFF;
+                        oBrush.Color.chRed      = (unBrushId >> 16) & 0xFF;
+                        oBrush.Color.chAlpha    = (unBrushId >> 24) & 0xFF;
+
+                        m_pDC->SetBrush(&oBrush);
+
+                        m_pInterpretator->DrawString(wsString, wsString.length(), oRect.dX, oRect.dY, NULL, GM_ADVANCED, 1, 1);
+
+                        m_pDC->RemoveBrush(&oBrush);
+                }
+                else //BrushId = Brush id
+                {
+                        CEmfPlusBrush *pBrush = GetBrush(unBrushId);
+
+                        if (NULL == pBrush) return;
+
+                        m_pDC->SetBrush(pBrush);
+
+                        m_pInterpretator->DrawString(wsString, wsString.length(), oRect.dX, oRect.dY, NULL, GM_ADVANCED, 1, 1);
+
+                        m_pDC->RemoveBrush(pBrush);
+                }
+
+                m_pDC->RemoveFont(pFont);
 
                 //TODO: реализовать
         }
@@ -1729,7 +1860,45 @@ namespace MetaFile
                 m_oStream >> unBrushId;
                 m_oStream >> oRect;
 
-                //TODO: реализовать
+                TEmfRectL oBox = oRect.GetRectL();
+
+                if ((unShFlags >>(15)) & 1 )//BrushId = Color
+                {
+                        CEmfPlusBrush oBrush;
+
+                        oBrush.Color.chBlue     = (unBrushId >> 0)  & 0xFF;
+                        oBrush.Color.chGreen    = (unBrushId >> 8)  & 0xFF;
+                        oBrush.Color.chRed      = (unBrushId >> 16) & 0xFF;
+                        oBrush.Color.chAlpha    = (unBrushId >> 24) & 0xFF;
+
+                        m_pDC->SetBrush(&oBrush);
+
+                        if (m_pDC->GetArcDirection() == AD_COUNTERCLOCKWISE)
+                                ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, 0, 360);
+                        else
+                                ArcTo(oBox.lLeft, oBox.lBottom, oBox.lRight, oBox.lTop, 0, 360);
+
+                        DrawPath(false, true);
+
+                        m_pDC->RemoveBrush(&oBrush);
+                }
+                else //BrushId = Brush id
+                {
+                        CEmfPlusBrush *pBrush = GetBrush(unBrushId);
+
+                        if (NULL == pBrush) return;
+
+                        m_pDC->SetBrush(pBrush);
+
+                        if (m_pDC->GetArcDirection() == AD_COUNTERCLOCKWISE)
+                                ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, 0, 360);
+                        else
+                                ArcTo(oBox.lLeft, oBox.lBottom, oBox.lRight, oBox.lTop, 0, 360);
+
+                        DrawPath(false, true);
+
+                        m_pDC->RemoveBrush(pBrush);
+                }
         }
 
         void CEmfPlusParser::Read_EMFPLUS_FILLPATH(unsigned short unShFlags)
@@ -1745,15 +1914,15 @@ namespace MetaFile
 
                 if ((unShFlags >>(15)) & 1 )//BrushId = Color
                 {
-                        CEmfLogBrushEx oBrush;
-                        oBrush.Color.b = (unBrushId >> 0)  & 0xFF;
-                        oBrush.Color.g = (unBrushId >> 8)  & 0xFF;
-                        oBrush.Color.r = (unBrushId >> 16) & 0xFF;
-                        oBrush.Color.a = (unBrushId >> 24) & 0xFF;
+                        CEmfPlusBrush oBrush;
+                        oBrush.Color.chBlue     = (unBrushId >> 0)  & 0xFF;
+                        oBrush.Color.chGreen    = (unBrushId >> 8)  & 0xFF;
+                        oBrush.Color.chRed      = (unBrushId >> 16) & 0xFF;
+                        oBrush.Color.chAlpha    = (unBrushId >> 24) & 0xFF;
 
                         m_pDC->SetBrush(&oBrush);
 
-                        pPath->Draw(m_pInterpretator, false, true);
+                        pPath->DrawWithoutClean(m_pInterpretator, false, true);
 
                         m_pDC->RemoveBrush(&oBrush);
                 }
@@ -1765,7 +1934,7 @@ namespace MetaFile
 
                         m_pDC->SetBrush(pBrush);
 
-                        pPath->Draw(m_pInterpretator, false, true);
+                        pPath->DrawWithoutClean(m_pInterpretator, false, true);
 
                         m_pDC->RemoveBrush(pBrush);
                 }
@@ -1822,9 +1991,55 @@ namespace MetaFile
                 m_oStream >> unBrushId;
                 m_oStream >> unCount;
 
+                if (unCount < 2)
+                        return;
+
                 std::vector<T> arPoints(unCount);
 
-                //TODO: реализовать
+                for (unsigned int unIndex = 0; unIndex < unCount; ++unIndex)
+                        m_oStream >> arPoints[unIndex];
+
+                std::vector<TEmfPlusPointF> arNewPoints = GetConvertedPoints(arPoints);
+
+                if ((unShFlags >>(15)) & 1 )//BrushId = Color
+                {
+                        CEmfPlusBrush oBrush;
+
+                        oBrush.Color.chBlue     = (unBrushId >> 0)  & 0xFF;
+                        oBrush.Color.chGreen    = (unBrushId >> 8)  & 0xFF;
+                        oBrush.Color.chRed      = (unBrushId >> 16) & 0xFF;
+                        oBrush.Color.chAlpha    = (unBrushId >> 24) & 0xFF;
+
+                        m_pDC->SetBrush(&oBrush);
+
+                        MoveTo(arNewPoints[0].X, arNewPoints[0].Y);
+
+                        for (unsigned int unIndex = 1; unIndex < unCount; ++unIndex)
+                                LineTo(arNewPoints[unIndex].X, arNewPoints[unIndex].Y);
+
+                        ClosePath();
+                        DrawPath(false, true);
+
+                        m_pDC->RemoveBrush(&oBrush);
+                }
+                else //BrushId = Brush id
+                {
+                        CEmfPlusBrush *pEmfPlusBrush = GetBrush(unBrushId);
+
+                        if (NULL == pEmfPlusBrush) return;
+
+                        m_pDC->SetBrush(pEmfPlusBrush);
+
+                        MoveTo(arNewPoints[0].X, arNewPoints[0].Y);
+
+                        for (unsigned int unIndex = 1; unIndex < unCount; ++unIndex)
+                                LineTo(arNewPoints[unIndex].X, arNewPoints[unIndex].Y);
+
+                        ClosePath();
+                        DrawPath(false, true);
+
+                        m_pDC->RemoveBrush(pEmfPlusBrush);
+                }
         }
 
         void CEmfPlusParser::Read_EMFPLUS_FILLRECTS(unsigned short unShFlags)
@@ -1854,12 +2069,12 @@ namespace MetaFile
 
                 if ((unShFlags >>(15)) & 1 )//BrushId = Color
                 {
-                        CEmfLogBrushEx oBrush;
+                        CEmfPlusBrush oBrush;
 
-                        oBrush.Color.b = (unBrushId >> 0)  & 0xFF;
-                        oBrush.Color.g = (unBrushId >> 8)  & 0xFF;
-                        oBrush.Color.r = (unBrushId >> 16) & 0xFF;
-                        oBrush.Color.a = (unBrushId >> 24) & 0xFF;
+                        oBrush.Color.chBlue     = (unBrushId >> 0)  & 0xFF;
+                        oBrush.Color.chGreen    = (unBrushId >> 8)  & 0xFF;
+                        oBrush.Color.chRed      = (unBrushId >> 16) & 0xFF;
+                        oBrush.Color.chAlpha    = (unBrushId >> 24) & 0xFF;
 
                         m_pDC->SetBrush(&oBrush);
 

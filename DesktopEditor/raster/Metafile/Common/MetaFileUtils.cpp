@@ -945,6 +945,12 @@ namespace MetaFile
 				}
 			}
 		}
+		//Точная копия картинки, поэтому убераем alpha канал
+		else if (0x00CC0020 == unRasterOperation) //SRCCOPY
+		{
+			for (unsigned int unIndex = 3; unIndex < unWidth * 4 * unHeight; unIndex += 4)
+				pBgra[unIndex] = 0xff;
+		}
 	}
 
 	std::wstring ascii_to_unicode(const char *src)

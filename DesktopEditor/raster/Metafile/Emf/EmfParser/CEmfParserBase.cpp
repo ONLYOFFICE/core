@@ -400,7 +400,7 @@ namespace MetaFile
                 // Пересчет текущей позиции делается в каждой функции отдельно после вызова данной
         }
 
-        void CEmfParserBase::DrawPath(bool bStroke, bool bFill)
+        void CEmfParserBase::DrawPath(bool bStroke, bool bFill, bool bEndPath)
         {
                 if (m_pPath && m_pInterpretator)
                 {
@@ -409,7 +409,9 @@ namespace MetaFile
                 {
                         int lType = (bStroke ? 1 : 0) + (bFill ? 2 : 0);
                         m_pInterpretator->DrawPath(lType);
-                        m_pInterpretator->EndPath();
+
+                        if (bEndPath)
+                                m_pInterpretator->EndPath();
                 }
         }
 
@@ -1928,7 +1930,7 @@ namespace MetaFile
                                 arPoints[unIndex + 1].X, arPoints[unIndex + 1].Y,
                                 arPoints[unIndex + 2].X, arPoints[unIndex + 2].Y);
 
-                DrawPath(true, false);
+                DrawPath(true, false, false);
         }
 
         void CEmfParserBase::HANDLE_EMFPLUS_DRAWBEZIERS(char chPenId, std::vector<TEmfPointS> arPoints)
@@ -2011,7 +2013,7 @@ namespace MetaFile
                 else
                         ArcTo(oBox.lLeft, oBox.lBottom, oBox.lRight, oBox.lTop, 0, 360);
 
-                DrawPath(true, true);
+                DrawPath(true, false);
         }
 
         void CEmfParserBase::HANDLE_EMFPLUS_DRAWDRIVERSTRING(char chFontId, unsigned int unBrushId, unsigned int unDriverStringOptionsFlags, unsigned int unMatrixPresent, const std::wstring& wsString, const std::vector<TEmfPlusPointF>& arGlyphPos)

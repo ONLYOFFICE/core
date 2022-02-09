@@ -163,10 +163,10 @@ namespace MetaFile
 
 			for (int nIndex = 0, nSize = 4 * unWidth * unHeight; nIndex < nSize; nIndex += 4)
 			{
-				pBufferPtr[0] = (unsigned char)pBuffer[nIndex + 0];
-				pBufferPtr[1] = (unsigned char)pBuffer[nIndex + 1];
-				pBufferPtr[2] = (unsigned char)pBuffer[nIndex + 2];
-				pBufferPtr[3] = (unsigned char)pBuffer[nIndex + 3];
+				pBufferPtr[0] = (BYTE)pBuffer[nIndex + 0];
+				pBufferPtr[1] = (BYTE)pBuffer[nIndex + 1];
+				pBufferPtr[2] = (BYTE)pBuffer[nIndex + 2];
+				pBufferPtr[3] = (BYTE)pBuffer[nIndex + 3];
 				pBufferPtr += 4;
 			}
 
@@ -218,7 +218,7 @@ namespace MetaFile
 			UpdateClip();
 
 			m_pRenderer->put_FontName(pFont->GetFaceName());
-			m_pRenderer->put_FontSize(fabs(pFont->GetHeight() * m_dScaleX * 25.4 / 96));
+			m_pRenderer->put_FontSize(fabs(pFont->GetHeight() * m_dScaleX / 25.4 * 72));
 
 			int lStyle = 0;
 			if (pFont->GetWeight() > 550)
@@ -928,7 +928,45 @@ namespace MetaFile
 			// TODO: Реализовать PS_USERSTYLE
 			BYTE nDashStyle = Aggplus::DashStyleSolid;
 
-			m_pRenderer->put_PenDashOffset(pPen->GetDashOffset());
+			double *pDataDash;
+			unsigned int unSizeDash;
+
+			pPen->GetDashData(pDataDash, unSizeDash);
+
+			if (NULL != pDataDash && 0 != unSizeDash)
+			{
+				//на данный момент производьный стиль не отрисовывается,
+				//поэтому замещает по возможно его на стандартный
+				m_pRenderer->put_PenDashOffset(pPen->GetDashOffset());
+
+				if (1 == unSizeDash)
+					ulPenStyle = Aggplus::DashStyleSolid;
+				else if (2 == unSizeDash)
+					ulPenStyle = (pDataDash[0] != pDataDash[1]) ? Aggplus::DashStyleDash : Aggplus::DashStyleDot;
+				else if (4 == unSizeDash)
+					ulPenStyle = Aggplus::DashStyleDashDot;
+				else if (6 == unSizeDash)
+					ulPenStyle = Aggplus::DashStyleDashDotDot;
+
+//				double dDpiX;
+//				m_pRenderer->get_DpiX(&dDpiX);
+//				double dPixelW = dDpiX > 1 ? 25.4 / dDpiX : 25.4 / 72;
+
+//				double *pDashPattern = new double[unSizeDash];
+
+//				if (NULL != pDashPattern)
+//				{
+//					for (unsigned int unIndex = 0; unIndex < unSizeDash; ++unIndex)
+//						pDashPattern[unIndex] = pDataDash[unIndex] * dPixelW;
+//				}
+
+//				m_pRenderer->put_PenDashOffset(pPen->GetDashOffset());
+//				m_pRenderer->PenDashPattern( (NULL != pDashPattern) ? pDashPattern : pDataDash, unSizeDash);
+//				ulPenStyle = Aggplus::DashStyleCustom;
+
+//				RELEASEARRAYOBJECTS(pDashPattern)
+
+			}
 
 			// В WinGDI все карандаши толщиной больше 1px рисуются в стиле PS_SOLID
 			if (1 >= pPen->GetWidth() && PS_SOLID != ulPenStyle && false)

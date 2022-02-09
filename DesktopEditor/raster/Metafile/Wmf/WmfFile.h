@@ -73,6 +73,12 @@ namespace MetaFile
 			}
 			return oBounds;
 		}
+
+		void SetStream(BYTE* pBuf, unsigned int unSize)
+		{
+			m_oStream.SetStream(pBuf, unSize);
+		}
+
 		void         PlayMetaFile()
 		{
 			if (!m_oStream.IsValid())

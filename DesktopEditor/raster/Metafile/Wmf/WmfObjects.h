@@ -232,6 +232,11 @@ namespace MetaFile
 		{
 			return 0;
 		}
+		void GetDashData(double*& arDatas, unsigned int& unSize)
+		{
+			arDatas = NULL;
+			unSize  = 0;
+		}
 
 	public:
 		unsigned short PenStyle;

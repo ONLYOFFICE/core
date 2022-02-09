@@ -1423,18 +1423,21 @@ namespace PdfWriter
 	{
 		Add("Group", pDict);
 	}
-	void CPage::AddCommands(CXref* pXref, const std::wstring& sCommands)
+		void CPage::AddCommands(CXref* pXref)
 	{
 		m_pXref = pXref;
-		m_pContents->Add(new CDictObject(pXref));
-		m_pStream = ((CDictObject*)m_pContents->Get(m_pContents->GetCount() - 1))->GetStream();
 
-		// ТЕСТ КОММАНД
+		// ТЕСТОВЫЕ КОММАНДЫ
 		MoveTo(10, 10);
 		LineTo(20, 20);
 		CurveTo(70, 30, 30, 20, 50, 50);
 		ClosePath();
 		Fill();
+	}
+	void CPage::AddContents(CXref* pXref)
+	{
+		m_pContents->Add(new CDictObject(pXref));
+		m_pStream = ((CDictObject*)m_pContents->Get(m_pContents->GetCount() - 1))->GetStream();
 	}
 	//----------------------------------------------------------------------------------------
 	// CTextWord

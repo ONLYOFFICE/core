@@ -430,7 +430,7 @@ return 0;
 //		return wsXml;
         return L"";
 	}
-    void CPdfReader::AddToPage(int nPageIndex, IRenderer* pPdfWriter, IRenderer* pNewRenderer, const std::wstring& sFile)
+    void CPdfReader::AddToPage(int nPageIndex, IRenderer* pPdfWriter, const std::wstring& sFile)
     {
         long lRendererType;
         pPdfWriter->get_Type(&lRendererType);

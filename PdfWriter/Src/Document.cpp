@@ -1058,24 +1058,15 @@ namespace PdfWriter
 		if (!pStream || !pStream->OpenFile(wsPath, false))
 			return;
 
-		// не шифрует
-		// Шифруем документ, если это необходимо
-		CEncrypt* pEncrypt = NULL;
-		if (m_bEncrypt)
-		{
-			pEncrypt = m_pEncryptDict->GetEncrypt();
-			PrepareEncryption();
-		}
-
 		// Освобождается в деструкторе pXref как m_pPrev
 		CXref* pXrefNew = new CXref(this, nSizeXRef);
 
+		pPage->AddContents(pXrefNew);
 #ifndef FILTER_FLATE_DECODE_DISABLED
 		if (m_unCompressMode & COMP_TEXT)
 			pPage->SetFilter(STREAM_FILTER_FLATE_DECODE);
 #endif
-
-		pPage->AddCommands(pXrefNew, L""); // Выполнение команд на странице
+		pPage->AddCommands(pXrefNew); // Выполнение команд на странице
 
 		pXrefNew->SetPrevAddr(nPosLastXRef);
 		pXref->SetPrev(pXrefNew);
@@ -1086,7 +1077,7 @@ namespace PdfWriter
 		CObjectBase* pRoot = new CProxyObject(pBase);
 		pXref->GetTrailer()->Add("Root", pRoot);
 
-		pXref->WriteToStream(pStream, pEncrypt);
+		pXref->WriteToStream(pStream, NULL);
 
 		RELEASEOBJECT(pBase);
 		RELEASEOBJECT(pStream);

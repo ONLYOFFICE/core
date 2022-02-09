@@ -50,8 +50,8 @@ int main()
         */
     }
 
-    // на какую страницу, писатель PdfWriter, IRenderer с командами дозаписи
-    pReader->AddToPage(0, &pdfWriter, NULL, NSFile::GetProcessDirectory() + L"/test.pdf");
+    // на какую страницу, писатель PdfWriter, файл в который дописать
+    pReader->AddToPage(0, &pdfWriter, NSFile::GetProcessDirectory() + L"/test.pdf");
     //pdfWriter.SaveToFile(NSFile::GetProcessDirectory() + L"/res.pdf");
     RELEASEOBJECT(pReader);
     RELEASEOBJECT(pApplicationFonts);

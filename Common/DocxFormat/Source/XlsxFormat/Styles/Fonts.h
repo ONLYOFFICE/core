@@ -290,8 +290,11 @@ namespace OOX
                     m_oExtend.Init();
                     m_oExtend->FromBool(ptr->fExtend);
 
-                    m_oBold.Init();
-                    m_oBold->FromBool(ptr->bls == 0x02BC);
+                    if(ptr->bls == 0x02BC)
+                    {
+                        m_oBold.Init();
+                        m_oBold->FromBool(true);
+                    }
 
                     m_oUnderline.Init();
                     m_oUnderline->m_oUnderline.Init();

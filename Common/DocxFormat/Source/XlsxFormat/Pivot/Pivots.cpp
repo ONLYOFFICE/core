@@ -122,6 +122,8 @@
 #include "../../XlsbFormat/Biff12_records/BeginPCDSCSet.h"
 #include "../../XlsbFormat/Biff12_records/PCRRecord.h"
 
+#include <boost/range/adaptor/reversed.hpp>
+
 namespace OOX
 {
 namespace Spreadsheet
@@ -249,7 +251,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		WritingStringNullableAttrInt(L"minRefreshableVersion",		m_oMinRefreshableVersion, m_oMinRefreshableVersion->GetValue());
 		WritingStringNullableAttrBool2(L"multipleFieldFilters",		m_oMultipleFieldFilters);
 		WritingStringNullableAttrBool2(L"outline",					m_oOutline);
-        WritingStringNullableAttrBool2(L"outlineDatae",				m_oOutlineData);
+        WritingStringNullableAttrBool2(L"outlineData",				m_oOutlineData);
 		WritingStringNullableAttrBool2(L"pageOverThenDown",			m_oPageOverThenDown);
 		WritingStringNullableAttrInt(L"pageWrap",					m_oPageWrap, m_oPageWrap->GetValue());
 		WritingStringNullableAttrBool2(L"preserveFormatting",		m_oPreserveFormatting);
@@ -440,7 +442,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             if(!ptr->irstGrand.value().empty())
                     m_oGrandTotalCaption    = ptr->irstGrand.value();
 
-            m_oGridDropZones                = ptr->fNewDropZones;
+            m_oGridDropZones                = !ptr->fNewDropZones;
             m_oImmersive                    = ptr->fTurnOffImmersive;
             m_oIndent                       = ptr->cIndentInc;
             m_oItemPrintTitles              = ptr->fRepeatItemsOnEachPrintedPage;
@@ -482,7 +484,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             m_oShowDataDropDown             = !ptr->fHideDDData;
             m_oShowDataTips                 = !ptr->fNoPivotTips;
             m_oShowDrill                    = !ptr->fHideDrillIndicators;
-            m_oShowDropZones                = ptr->fNewDropZones; //? fNoStencil
+            m_oShowDropZones                = !ptr->fNoStencil;
             m_oShowEmptyCol                 = ptr->fIncludeEmptyCol;
             m_oShowEmptyRow                 = ptr->fIncludeEmptyRw;
             m_oShowError                    = ptr->fDisplayErrorString;
@@ -546,7 +548,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"multipleFieldFilters",	m_oMultipleFieldFilters )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"name",	m_oName )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"outline",	m_oOutline )
-            WritingElement_ReadAttributes_Read_else_if	( oReader, L"outlineDatae",	m_oOutlineData )
+            WritingElement_ReadAttributes_Read_else_if	( oReader, L"outlineData",	m_oOutlineData )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"pageOverThenDown",	m_oPageOverThenDown )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"pageStyle",	m_oPageStyle )
 			WritingElement_ReadAttributes_Read_else_if	( oReader, L"pageWrap",	m_oPageWrap )
@@ -2602,7 +2604,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
         {
             ReadAttributes(ptr->m_BrtBeginPCDFAtbl);
 
-            for(auto &item : ptr->m_arSource)
+            for(auto &item : boost::adaptors::reverse(ptr->m_arSource))
             {
                 if(item->get_type() == XLS::typePCDI)
                 {

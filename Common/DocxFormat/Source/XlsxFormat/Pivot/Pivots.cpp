@@ -1097,7 +1097,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 //------------------------------------
 	void CPageField::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
-		writer.WriteString(L"<dataField");
+        writer.WriteString(L"<pageField");
 			WritingStringNullableAttrEncodeXmlString2(L"name", m_oName);
 			WritingStringNullableAttrEncodeXmlString2(L"cap", m_oCap);
 			WritingStringNullableAttrInt2(L"fld", m_oFld);
@@ -1136,8 +1136,11 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
         if(ptr != nullptr)
         {
-            m_oFld  = ptr->isxvd;
-            m_oItem = ptr->isxvi;
+            m_oFld          = ptr->isxvd;
+
+            if(ptr->isxvi != 0x001000FE)
+                m_oItem     = ptr->isxvi;
+
             m_oHier = ptr->isxth;
 
             if(!ptr->irstUnique.value().empty())
@@ -2610,22 +2613,22 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
                         switch(ptrPCDI->m_source->get_type())
                         {
                             case XLS::typePCDIBoolean:
-                                m_arrItems.push_back(new CPivotBooleanValue(item));
+                                m_arrItems.push_back(new CPivotBooleanValue(ptrPCDI->m_source));
                                 break;
                             case XLS::typePCDIDatetime:
-                                m_arrItems.push_back(new CPivotDateTimeValue(item));
+                                m_arrItems.push_back(new CPivotDateTimeValue(ptrPCDI->m_source));
                                 break;
                             case XLS::typePCDIError:
-                                m_arrItems.push_back(new CPivotErrorValue(item));
+                                m_arrItems.push_back(new CPivotErrorValue(ptrPCDI->m_source));
                                 break;
                             case XLS::typePCDIMissing:
-                                m_arrItems.push_back(new CPivotNoValue(item));
+                                m_arrItems.push_back(new CPivotNoValue(ptrPCDI->m_source));
                                 break;
                             case XLS::typePCDINumber:
-                                m_arrItems.push_back(new CPivotNumericValue(item));
+                                m_arrItems.push_back(new CPivotNumericValue(ptrPCDI->m_source));
                                 break;
                             case XLS::typePCDIString:
-                                m_arrItems.push_back(new CPivotCharacterValue(item));
+                                m_arrItems.push_back(new CPivotCharacterValue(ptrPCDI->m_source));
                                 break;
                             case XLS::typePCDIRUN:
                                 {
@@ -2698,22 +2701,22 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
                         switch(ptrPCDIA->m_source->get_type())
                         {
                             case XLS::typePCDIABoolean:
-                                m_arrItems.push_back(new CPivotBooleanValue(item));
+                                m_arrItems.push_back(new CPivotBooleanValue(ptrPCDIA->m_source));
                                 break;
                             case XLS::typePCDIADatetime:
-                                m_arrItems.push_back(new CPivotDateTimeValue(item));
+                                m_arrItems.push_back(new CPivotDateTimeValue(ptrPCDIA->m_source));
                                 break;
                             case XLS::typePCDIAError:
-                                m_arrItems.push_back(new CPivotErrorValue(item));
+                                m_arrItems.push_back(new CPivotErrorValue(ptrPCDIA->m_source));
                                 break;
                             case XLS::typePCDIAMissing:
-                                m_arrItems.push_back(new CPivotNoValue(item));
+                                m_arrItems.push_back(new CPivotNoValue(ptrPCDIA->m_source));
                                 break;
                             case XLS::typePCDIANumber:
-                                m_arrItems.push_back(new CPivotNumericValue(item));
+                                m_arrItems.push_back(new CPivotNumericValue(ptrPCDIA->m_source));
                                 break;
                             case XLS::typePCDIAString:
-                                m_arrItems.push_back(new CPivotCharacterValue(item));
+                                m_arrItems.push_back(new CPivotCharacterValue(ptrPCDIA->m_source));
                                 break;
                         }
                     }
@@ -2880,22 +2883,22 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
                     switch(ptrPCDI->m_source->get_type())
                     {
                         case XLS::typePCDIBoolean:
-                            m_arrItems.push_back(new CPivotBooleanValue(item));
+                            m_arrItems.push_back(new CPivotBooleanValue(ptrPCDI->m_source));
                             break;
                         case XLS::typePCDIDatetime:
-                            m_arrItems.push_back(new CPivotDateTimeValue(item));
+                            m_arrItems.push_back(new CPivotDateTimeValue(ptrPCDI->m_source));
                             break;
                         case XLS::typePCDIError:
-                            m_arrItems.push_back(new CPivotErrorValue(item));
+                            m_arrItems.push_back(new CPivotErrorValue(ptrPCDI->m_source));
                             break;
                         case XLS::typePCDIMissing:
-                            m_arrItems.push_back(new CPivotNoValue(item));
+                            m_arrItems.push_back(new CPivotNoValue(ptrPCDI->m_source));
                             break;
                         case XLS::typePCDINumber:
-                            m_arrItems.push_back(new CPivotNumericValue(item));
+                            m_arrItems.push_back(new CPivotNumericValue(ptrPCDI->m_source));
                             break;
                         case XLS::typePCDIString:
-                            m_arrItems.push_back(new CPivotCharacterValue(item));
+                            m_arrItems.push_back(new CPivotCharacterValue(ptrPCDI->m_source));
                             break;
                         case XLS::typePCDIRUN:
                             {
@@ -4436,25 +4439,25 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
                                 switch(ptrPCDIDT->m_source->get_type())
                                 {
                                     case XLS::typePCDIBoolean:
-                                        m_arrItems.push_back(new CPivotBooleanValue(item));
+                                        m_arrItems.push_back(new CPivotBooleanValue(ptrPCDIDT->m_source));
                                         break;
                                     case XLS::typePCDIDatetime:
-                                        m_arrItems.push_back(new CPivotDateTimeValue(item));
+                                        m_arrItems.push_back(new CPivotDateTimeValue(ptrPCDIDT->m_source));
                                         break;
                                     case XLS::typePCDIError:
-                                        m_arrItems.push_back(new CPivotErrorValue(item));
+                                        m_arrItems.push_back(new CPivotErrorValue(ptrPCDIDT->m_source));
                                         break;
                                     case XLS::typePCDIMissing:
-                                        m_arrItems.push_back(new CPivotNoValue(item));
+                                        m_arrItems.push_back(new CPivotNoValue(ptrPCDIDT->m_source));
                                         break;
                                     case XLS::typePCDINumber:
-                                        m_arrItems.push_back(new CPivotNumericValue(item));
+                                        m_arrItems.push_back(new CPivotNumericValue(ptrPCDIDT->m_source));
                                         break;
                                     case XLS::typePCDIString:
-                                        m_arrItems.push_back(new CPivotCharacterValue(item));
+                                        m_arrItems.push_back(new CPivotCharacterValue(ptrPCDIDT->m_source));
                                         break;
                                     case XLS::typePCDIIndex:
-                                        m_arrItems.push_back(new CSharedItemsIndex(item));
+                                        m_arrItems.push_back(new CSharedItemsIndex(ptrPCDIDT->m_source));
                                         break;
                                 }
                             }

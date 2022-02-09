@@ -482,7 +482,7 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertShadow(CShadow	& shadow)
     }
     else
     {
-        needHiddenEffect = shadow.Visible;
+//        needHiddenEffect = shadow.Visible;
         shadow_writer.WriteString(L"<a:outerShdw");
         shadow_writer.WriteString(strDist);
         shadow_writer.WriteString(strDir);
@@ -499,14 +499,14 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertShadow(CShadow	& shadow)
         shadow_writer.WriteString(L"</a:outerShdw>");
     }
     shadow_writer.WriteString(L"</a:effectLst>");
-    if (needHiddenEffect)
-    {
-        std::wstring STRshadow;
-        STRshadow = L"<a:extLst><a:ext uri=\"{AF507438-7753-43E0-B8FC-AC1667EBCBE1}\"><a14:hiddenEffects xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\">";
-        STRshadow += shadow_writer.GetData();
-        STRshadow += L"</a14:hiddenEffects></a:ext><a:ext uri=\"{53640926-AAD7-44D8-BBD7-CCE9431645EC}\"><a14:shadowObscured xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"1\"/></a:ext></a:extLst>";
-        return STRshadow;
-    }
+//    if (needHiddenEffect)
+//    {
+//        std::wstring STRshadow;
+//        STRshadow = L"<a:extLst><a:ext uri=\"{AF507438-7753-43E0-B8FC-AC1667EBCBE1}\"><a14:hiddenEffects xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\">";
+//        STRshadow += shadow_writer.GetData();
+//        STRshadow += L"</a14:hiddenEffects></a:ext><a:ext uri=\"{53640926-AAD7-44D8-BBD7-CCE9431645EC}\"><a14:shadowObscured xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"1\"/></a:ext></a:extLst>";
+//        return STRshadow;
+//    }
 
     return shadow_writer.GetData();
 }
@@ -1351,6 +1351,10 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo(PPT_FORMAT::CTextCFRun* pLastCF)
             }
 
             //            WriteHyperlink(nIndexPar);
+            if (pCF->FontShadow.get_value_or(false))
+            {
+                m_oWriter.WriteString(L"<a:effectLst><a:outerShdw blurRad=\"38100\" dist=\"38100\" dir=\"2700000\" algn=\"tl\"><a:srgbClr val=\"000000\"><a:alpha val=\"43137\"/></a:srgbClr></a:outerShdw></a:effectLst>");
+            }
 
             m_oWriter.WriteString(std::wstring(L"</a:rPr>"));
 

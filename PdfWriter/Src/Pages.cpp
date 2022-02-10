@@ -299,6 +299,7 @@ namespace PdfWriter
 		while (oCoreReader.ReadNextSiblingNode(nDeath))
 			ReadDict(oCoreReader, this);
 
+		// Инициализация текущего contents
 		CObjectBase* pContents = Get("Contents");
 		if (pContents)
 		{
@@ -312,6 +313,14 @@ namespace PdfWriter
 		}
 		else
 			Add("Contents", m_pContents);
+
+		// Инициализация текущего fonts
+		CObjectBase* pFonts = GetResourcesItem()->Get("Font");
+		if (pFonts && pFonts->GetType() == object_type_DICT)
+		{
+			m_pFonts = (CDictObject*)pFonts;
+			m_unFontsCount = m_pFonts->GetSize();
+		}
 
 		m_pStream = NULL;
 	}

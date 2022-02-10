@@ -430,8 +430,11 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 	{
 		if(false == m_oRef.IsInit() || false == m_oDisplayName.IsInit()) return;
 		
-		m_oId.Init();
-		m_oId->SetValue((unsigned int)nIndex);
+        if(!m_oId.IsInit())
+        {
+            m_oId.Init();
+            m_oId->SetValue((unsigned int)nIndex);
+        }
 
 		toXML(writer);
 	}

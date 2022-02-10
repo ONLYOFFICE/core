@@ -1035,23 +1035,23 @@ namespace OOX
 
                 if(ptr != nullptr)
                 {
-                    if(ptr->m_SLICERCACHEIDS != nullptr)
+                    if(ptr->m_TABLESLICERCACHEIDS != nullptr)
                     {
                         OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
                         oExt->m_sUri.Init();
                         oExt->m_sUri->append(_T("{46BE6895-7355-4a93-B00E-2C351335B9C9}"));
-                        oExt->m_oSlicerCachesExt = ptr->m_SLICERCACHEIDS;
+                        oExt->m_oSlicerCachesExt = ptr->m_TABLESLICERCACHEIDS;
 
                         if (oExt)
                             m_arrExt.push_back( oExt );
                     }
 
-                    if(ptr->m_TABLESLICERCACHEIDS != nullptr)
+                    if(ptr->m_SLICERCACHEIDS != nullptr)
                     {
                         OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
                         oExt->m_sUri.Init();
                         oExt->m_sUri->append(_T("{BBE1A952-AA13-448e-AADC-164F8A28A991}"));
-                        oExt->m_oSlicerCaches = ptr->m_TABLESLICERCACHEIDS;
+                        oExt->m_oSlicerCaches = ptr->m_SLICERCACHEIDS;
 
                         if (oExt)
                             m_arrExt.push_back( oExt );

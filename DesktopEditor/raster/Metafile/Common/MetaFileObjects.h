@@ -79,6 +79,7 @@ namespace MetaFile
 		virtual unsigned int	GetStyle()	= 0;
 		virtual double		GetWidth()	= 0;
 		virtual unsigned int	GetAlpha()	= 0;
+		virtual double		GetMiterLimit() = 0;
 		virtual double		GetDashOffset() = 0;
 		virtual void		GetDashData(double*&, unsigned int&) = 0;
 	};

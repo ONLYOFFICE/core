@@ -429,6 +429,10 @@ public:
 	{
 		return 255;
 	}
+	double GetMiterLimit()
+	{
+		return 0;
+	}
 	double GetDashOffset()
 	{
 		return 0;

@@ -163,7 +163,7 @@ namespace MetaFile
 	class CEmfPlusPen: public CEmfPlusObject, public IPen
 	{
 	    public:
-		CEmfPlusPen() : Style(PS_SOLID), Width(1), Color(0, 0, 0), Brush(NULL), DashOffset(0), DataDash(NULL), SizeDash(0) {}
+		CEmfPlusPen() : Style(PS_SOLID), Width(1), Color(0, 0, 0), Brush(NULL), MiterLimit(0), DashOffset(0), DataDash(NULL), SizeDash(0) {}
 		virtual ~CEmfPlusPen() { RELEASEOBJECT(Brush)
 					 RELEASEARRAYOBJECTS(DataDash)}
 		virtual EEmfObjectType GetType()
@@ -203,6 +203,11 @@ namespace MetaFile
 //			return (unsigned int)Color.chAlpha;
 		}
 
+		double GetMiterLimit()
+		{
+			return MiterLimit;
+		}
+
 		double GetDashOffset()
 		{
 			return DashOffset;
@@ -218,6 +223,7 @@ namespace MetaFile
 		double		Width;
 		TEmfPlusARGB	Color;
 		CEmfPlusBrush	*Brush;
+		double		MiterLimit;
 		double		DashOffset;
 		double*		DataDash;
 		unsigned int	SizeDash;

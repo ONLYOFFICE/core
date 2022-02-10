@@ -72,6 +72,8 @@ namespace MetaFile
                 template<typename T> std::vector<TEmfPlusPointF> GetConvertedPoints(std::vector<T>arPoints);
                 template<typename T> TEmfPlusRectF GetConvertedRectangle(T oRectangle);
 
+                void UpdateMatrix(TEmfPlusXForm& oMatrix);
+
                 void Read_EMRPLUS_OFFSETCLIP();
                 void Read_EMRPLUS_RESETCLIP();
                 void Read_EMFPLUS_SETCLIPPATH(unsigned short unShFlags);

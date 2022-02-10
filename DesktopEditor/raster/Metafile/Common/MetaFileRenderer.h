@@ -233,16 +233,27 @@ namespace MetaFile
 			m_pRenderer->put_FontStyle(lStyle);
 
 			m_pRenderer->put_BrushType(c_BrushTypeSolid);
-			m_pRenderer->put_BrushColor1(m_pFile->GetBrush()->GetColor());
-			m_pRenderer->put_BrushAlpha1(m_pFile->GetBrush()->GetAlpha());
+			m_pRenderer->put_BrushColor1(m_pFile->GetTextColor());
+			m_pRenderer->put_BrushAlpha1(255);
 
-			TPointD oGlyphPoint;
+			double dM11, dM12, dM21, dM22, dX, dY;
+
+			m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dX, &dY);
+			m_pRenderer->ResetTransform();
+
+			m_pRenderer->put_FontSize(fabs(pFont->GetHeight() * dM22 * m_dScaleY / 25.4 * 72));
+
+			std::vector<TPointD> arGlyphPoint(arPoints.size());
+
+			for (unsigned int unIndex = 0; unIndex < arPoints.size(); ++unIndex)
+			{
+				arGlyphPoint[unIndex].x = (arPoints[unIndex].x * dM11) * m_dScaleX + dX;
+				arGlyphPoint[unIndex].y = (arPoints[unIndex].y * dM22) * m_dScaleY + dY;
+			}
 
 			for (unsigned int unIndex = 0; unIndex < std::min(arPoints.size(), wsString.length()); ++unIndex)
-			{
-				oGlyphPoint = TranslatePoint(arPoints[unIndex].x, arPoints[unIndex].y);
-				m_pRenderer->CommandDrawText(std::wstring(1, wsString[unIndex]), oGlyphPoint.x, oGlyphPoint.y, 0, 0);
-			}
+				m_pRenderer->CommandDrawText(std::wstring(1, wsString[unIndex]), arGlyphPoint[unIndex].x, arGlyphPoint[unIndex].y, 0, 0);
+
 		}
 
 		void DrawString(std::wstring& wsText, unsigned int unCharsCount, double _dX, double _dY, double* pDx, int iGraphicsMode, double dXScale, double dYScale)
@@ -333,15 +344,6 @@ namespace MetaFile
 					fL = 0;
 					fW = (float)dTempTextW;
 				}
-				else if (unCharsCount == 1 && NULL != pDx)
-				{
-					fW = pDx[0] * m_dScaleX;
-
-					pFontManager->LoadString1(wsText, 0, 0);
-					TBBox oBox = pFontManager->MeasureString2();
-					fL = (float)dMmToPt * (oBox.fMinX);
-					fW += (float)dMmToPt * (oBox.fMaxX - oBox.fMinX);
-				}
 				else
 				{
 					pFontManager->LoadString1(wsText, 0, 0);
@@ -419,7 +421,6 @@ namespace MetaFile
 				double dShiftY = 0;
 
 				m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
-
 				if (dXScale < -0.00001)
 				{
 					dX -= fabs(fW);
@@ -763,7 +764,7 @@ namespace MetaFile
 			oPoint.x = m_dScaleX * dX + m_dX;
 			oPoint.y = m_dScaleY * dY + m_dY;
 			return oPoint;
-		}
+		}		
 		bool UpdateBrush()
 		{
 			IBrush* pBrush = m_pFile->GetBrush();
@@ -923,7 +924,7 @@ namespace MetaFile
 			else if (PS_JOIN_MITER == ulPenJoin)
 				nJoinStyle = Aggplus::LineJoinMiter;
 
-			double dMiterLimit = m_pFile->GetMiterLimit() * m_dScaleX;
+			double dMiterLimit = (0 != pPen->GetMiterLimit()) ? pPen->GetMiterLimit() : m_pFile->GetMiterLimit() * m_dScaleX;
 
 			// TODO: Реализовать PS_USERSTYLE
 			BYTE nDashStyle = Aggplus::DashStyleSolid;

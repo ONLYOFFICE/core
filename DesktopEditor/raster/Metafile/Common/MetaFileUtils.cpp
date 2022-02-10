@@ -945,7 +945,7 @@ namespace MetaFile
 				}
 			}
 		}
-		//Точная копия картинки, поэтому убераем alpha канал
+		//Точная копия картинки, поэтому делаем alpha канал = 0xff, чтобы нейтрализовать его
 		else if (0x00CC0020 == unRasterOperation) //SRCCOPY
 		{
 			for (unsigned int unIndex = 3; unIndex < unWidth * 4 * unHeight; unIndex += 4)

@@ -232,27 +232,6 @@ namespace MetaFile
                 void HANDLE_EMR_STROKEPATH(TEmfRectL& oBounds);
 
                 void HANDLE_EMR_UNKNOWN(const unsigned int& unRecordSize);
-
-                void HANDLE_EMFPLUS_HEADER(bool bIsEmfPlusDual, bool bIsReferenceDevice, unsigned int unDpiX, unsigned int unDpiY);
-                void HANDLE_EMFPLUS_CLEAR(TEmfPlusARGB oColor);
-                void HANDLE_EMFPLUS_DRAWARC(char chPenId, double dStartAngle, double dSweepAngle, TEmfPlusRect oRect);
-                void HANDLE_EMFPLUS_DRAWARC(char chPenId, double dStartAngle, double dSweepAngle, TEmfPlusRectF oRect);
-                void HANDLE_EMFPLUS_DRAWBEZIERS(char chPenId, std::vector<TEmfPlusPointR> arPoints);
-                void HANDLE_EMFPLUS_DRAWBEZIERS(char chPenId, std::vector<TEmfPlusPointF> arPoints);
-                void HANDLE_EMFPLUS_DRAWBEZIERS(char chPenId, std::vector<TEmfPlusPoint> arPoints);
-                void HANDLE_EMFPLUS_DRAWCLOSEDCURVE(char chPenId, double dTension, std::vector<TEmfPlusPointR> arPoints);
-                void HANDLE_EMFPLUS_DRAWCLOSEDCURVE(char chPenId, double dTension, std::vector<TEmfPlusPointF> arPoints);
-                void HANDLE_EMFPLUS_DRAWCLOSEDCURVE(char chPenId, double dTension, std::vector<TEmfPlusPoint> arPoints);
-                void HANDLE_EMFPLUS_DRAWCURVE(char chPenId, double dTension, unsigned int unOffset, unsigned int unNumSegments, std::vector<TEmfPlusPoint> arPoints);
-                void HANDLE_EMFPLUS_DRAWCURVE(char chPenId, double dTension, unsigned int unOffset, unsigned int unNumSegments, std::vector<TEmfPlusPointF> arPoints);
-                void HANDLE_EMFPLUS_DRAWELLIPSE(char chPenId,  TEmfPlusRect oRect);
-                void HANDLE_EMFPLUS_DRAWELLIPSE(char chPenId,  TEmfPlusRectF oRect);
-                void HANDLE_EMFPLUS_DRAWDRIVERSTRING(char chFontId, unsigned int unBrushId, unsigned int unDriverStringOptionsFlags, unsigned int unMatrixPresent, const std::wstring& wsString, const std::vector<TEmfPlusPointF>& arGlyphPos);
-                void HANDLE_EMFPLUS_DRAWIMAGE(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF& oSrcRect, const TEmfPlusRect& oRectData);
-                void HANDLE_EMFPLUS_DRAWIMAGE(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF& oSrcRect, const TEmfPlusRectF& oRectData);
-                void HANDLE_EMFPLUS_DRAWIMAGEPOINTS(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF& oSrcRect,  const std::vector<TEmfPlusPointR>& arPointData);
-                void HANDLE_EMFPLUS_DRAWIMAGEPOINTS(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF& oSrcRect,  const std::vector<TEmfPlusPoint>& arPointData);
-                void HANDLE_EMFPLUS_DRAWIMAGEPOINTS(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF& oSrcRect,  const std::vector<TEmfPlusPointF>& arPointData);
         };
 
 }

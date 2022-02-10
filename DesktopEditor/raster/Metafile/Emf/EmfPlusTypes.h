@@ -197,6 +197,8 @@ namespace MetaFile
 
                 TEmfPlusPointF(){}
 
+                TEmfPlusPointF(const double& dX, const double& dY) : X(dX), Y(dY) {};
+
                 TEmfPointL ToPointL() const
                 {
                        TEmfPointL oPoint;

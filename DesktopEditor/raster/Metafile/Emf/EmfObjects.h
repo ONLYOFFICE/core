@@ -215,11 +215,14 @@ namespace MetaFile
 		{
 			return 255;
 		}
+		double GetMiterLimit()
+		{
+			return 0;
+		}
 		double GetDashOffset()
 		{
 			return 0;
 		}
-
 		void GetDashData(double*& arDatas, unsigned int& unSize)
 		{
 			arDatas = NULL;

@@ -603,6 +603,9 @@ namespace MetaFile
 		m_oStream >> unUnitType;
 		m_oStream >> pEmfPlusPen->Width;
 
+		pEmfPlusPen->Style |= (PS_STARTCAP_MASK & PS_STARTCAP_FLAT) |
+				      (PS_ENDCAP_MASK & PS_ENDCAP_FLAT);
+
 		if (unFlags & PEN_DATA_TRANSFORM)
 			m_oStream.Skip(24); // TransformMatrix (24 bytes) - EmfPlusTransformMatrix object
 		if (unFlags & PEN_DATA_STARTCAP)
@@ -645,7 +648,9 @@ namespace MetaFile
 			}
 		}
 		if (unFlags & PEN_DATA_MITERLIMIT)
-			m_oStream.Skip(4); // MiterLimit (4 bytes) - floating-point value
+		{
+			m_oStream >> pEmfPlusPen->MiterLimit;
+		}
 		if (unFlags & PEN_DATA_LINESTYLE)
 		{
 			int nLineStyle;
@@ -1019,7 +1024,17 @@ namespace MetaFile
                                 break;
                         }
                         case CombineModeComplement: break;
-                }
+                        }
+        }
+
+        void CEmfPlusParser::UpdateMatrix(TEmfPlusXForm &oMatrix)
+        {
+                oMatrix.M11 *= m_dUnitKoef;
+                oMatrix.M12 *= m_dUnitKoef;
+                oMatrix.M21 *= m_dUnitKoef;
+                oMatrix.M22 *= m_dUnitKoef;
+                oMatrix.Dx  *= m_dUnitKoef;
+                oMatrix.Dy  *= m_dUnitKoef;
         }
 
         BYTE* GetClipedImage(const BYTE* pBuffer, LONG lWidth, LONG lHeight, TEmfRectL& oNewRect)
@@ -1191,15 +1206,18 @@ namespace MetaFile
 
                         TEmfRectL oClipRect;
 
-                        oClipRect.lLeft = oSrcRect.dX;
-                        oClipRect.lTop = oSrcRect.dY;
-                        oClipRect.lRight = (oSrcRect.dX + oSrcRect.dWidth);
-                        oClipRect.lBottom = (oSrcRect.dY + oSrcRect.dHeight);
+                        oClipRect.lLeft   = oSrcRect.dX;
+                        oClipRect.lTop    = oSrcRect.dY;
+                        oClipRect.lRight  = oSrcRect.dX + oSrcRect.dWidth;
+                        oClipRect.lBottom = oSrcRect.dY + oSrcRect.dHeight;
 
                         BYTE* pNewBuffer = GetClipedImage(pPixels, lWidth, lHeight, oClipRect);
 
+                        unsigned int unWidth  = std::min(((unsigned int)fabs(oClipRect.lRight - oClipRect.lLeft)), ((unsigned int)lWidth ));
+                        unsigned int unHeight = std::min(((unsigned int)fabs(oClipRect.lBottom - oClipRect.lTop)), ((unsigned int)lHeight));
+
                         m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X, arPoints[2].Y - arPoints[0].Y,
-                                                     (NULL != pNewBuffer) ? pNewBuffer : pPixels, fabs(oClipRect.lRight - oClipRect.lLeft), fabs(oClipRect.lBottom - oClipRect.lTop));
+                                                     (NULL != pNewBuffer) ? pNewBuffer : pPixels, unWidth, unHeight);
 
                         if (NULL != pNewBuffer)
                                 delete [] pNewBuffer;
@@ -1263,7 +1281,8 @@ namespace MetaFile
 
                 m_bBanEmfProcessing = true;
 
-                HANDLE_EMFPLUS_HEADER(((unShFlags >>(15)) & 1 ), ((unEmfPlusFlags >>(31)) & 1 ), m_unLogicalDpiX, m_unLogicalDpiY);
+                if (NULL != m_pInterpretator)
+                        m_pInterpretator->Begin();
 
                 //TODO: добавить установление нового Dpi (нужно ли?)
         }
@@ -1273,8 +1292,6 @@ namespace MetaFile
                 TEmfPlusARGB oARGB;
 
                 m_oStream >> oARGB;
-
-                HANDLE_EMFPLUS_CLEAR(oARGB);
         }
 
         void CEmfPlusParser::Read_EMFPLUS_DRAWARC(unsigned short unShFlags)
@@ -1296,7 +1313,28 @@ namespace MetaFile
                 m_oStream >> dSweepAngle;
                 m_oStream >> oRect;
 
-                HANDLE_EMFPLUS_DRAWARC(chOgjectIndex, dStartAngle, dSweepAngle, oRect);
+                CEmfPlusPen *pPen = GetPen(chOgjectIndex);
+
+                if (NULL == pPen)
+                        return;
+
+                m_pDC->SetPen(pPen);
+
+                if (AD_COUNTERCLOCKWISE != m_pDC->GetArcDirection())
+                {
+                        dSweepAngle = dSweepAngle - 360;
+                }
+
+                TEmfPlusRectF oConvertedRect = GetConvertedRectangle(oRect);
+
+                MoveTo(oConvertedRect.dX, oConvertedRect.dY);
+                ArcTo(oConvertedRect.dX, oConvertedRect.dY,
+                      oConvertedRect.dX + oConvertedRect.dWidth,
+                      oConvertedRect.dY + oConvertedRect.dHeight,
+                      dStartAngle, dSweepAngle);
+                DrawPath(true, false);
+
+                m_pDC->RemovePen(pPen);
         }
 
 
@@ -1328,7 +1366,7 @@ namespace MetaFile
 
                 m_oStream >> unCountPoints;
 
-                if (unCountPoints == 0)
+                if (unCountPoints < 3)
                         return;
 
                 std::vector<T> arPoints(unCountPoints);
@@ -1336,8 +1374,25 @@ namespace MetaFile
                 for (unsigned int unIndex = 0; unIndex < unCountPoints; ++unIndex)
                         m_oStream >> arPoints[unIndex];
 
-                HANDLE_EMFPLUS_DRAWBEZIERS(shOgjectIndex, arPoints);
-                //TODO: для EmfPlusPointR опредилиться с реализацией
+                CEmfPlusPen *pPen = GetPen(shOgjectIndex);
+
+                if (NULL == pPen)
+                        return;
+
+                m_pDC->SetPen(pPen);
+
+                std::vector<TEmfPlusPointF> arConvertedPoints = GetConvertedPoints(arPoints);
+
+                MoveTo(arConvertedPoints[0].X, arConvertedPoints[0].Y);
+
+                for (unsigned int unIndex = 1; unIndex < arPoints.size(); unIndex += 3)
+                        CurveTo(arConvertedPoints[unIndex + 0].X, arConvertedPoints[unIndex + 0].Y,
+                                arConvertedPoints[unIndex + 1].X, arConvertedPoints[unIndex + 1].Y,
+                                arConvertedPoints[unIndex + 2].X, arConvertedPoints[unIndex + 2].Y);
+
+                DrawPath(true, false);
+
+                m_pDC->RemovePen(pPen);
         }
 
         void CEmfPlusParser::Read_EMFPLUS_DRAWCLOSEDCURVE(unsigned short unShFlags)
@@ -1369,7 +1424,7 @@ namespace MetaFile
                 m_oStream >> dTension;
                 m_oStream >> unCount;
 
-                if (unCount == 0)
+                if (unCount < 3)
                         return;
 
                 std::vector<T> arPoints(unCount);
@@ -1377,7 +1432,27 @@ namespace MetaFile
                 for (unsigned int unIndex = 0; unIndex < unCount; ++unIndex)
                         m_oStream >> arPoints[0];
 
-                HANDLE_EMFPLUS_DRAWCLOSEDCURVE(shOgjectIndex, dTension, arPoints);
+                CEmfPlusPen *pPen = GetPen(shOgjectIndex);
+
+                if (NULL == pPen)
+                        return;
+
+                m_pDC->SetPen(pPen);
+
+                std::vector<TEmfPlusPointF> arConvertedPoints = GetConvertedPoints(arPoints);
+
+                MoveTo(arConvertedPoints[0].X, arConvertedPoints[0].Y);
+
+                for (unsigned int unIndex = 1; unIndex < unCount; unIndex += 3)
+                        CurveTo(arConvertedPoints[unIndex + 0].X, arConvertedPoints[unIndex + 0].Y,
+                                arConvertedPoints[unIndex + 1].X, arConvertedPoints[unIndex + 1].Y,
+                                arConvertedPoints[unIndex + 2].X, arConvertedPoints[unIndex + 2].Y);
+
+                ClosePath();
+
+                DrawPath(true, false);
+
+                m_pDC->RemovePen(pPen);
         }
 
         void CEmfPlusParser::Read_EMFPLUS_DRAWCURVE(unsigned short unShFlags)
@@ -1405,7 +1480,25 @@ namespace MetaFile
                 for (unsigned int unIndex = 0; unIndex < unCountPoints; ++unIndex)
                         m_oStream >> arPoints[0];
 
-                HANDLE_EMFPLUS_DRAWCURVE(shOgjectIndex, dTension, unOffset, unNumSegments, arPoints);
+                CEmfPlusPen *pPen = GetPen(shOgjectIndex);
+
+                if (NULL == pPen)
+                        return;
+
+                m_pDC->SetPen(pPen);
+
+                std::vector<TEmfPlusPointF> arConvertedPoints = GetConvertedPoints(arPoints);
+
+                MoveTo(arConvertedPoints[0].X, arConvertedPoints[0].Y);
+
+                for (unsigned int unIndex = 1; unIndex < unCountPoints; unIndex += 3)
+                        CurveTo(arConvertedPoints[unIndex + 0].X, arConvertedPoints[unIndex + 0].Y,
+                                arConvertedPoints[unIndex + 1].X, arConvertedPoints[unIndex + 1].Y,
+                                arConvertedPoints[unIndex + 2].X, arConvertedPoints[unIndex + 2].Y);
+
+                DrawPath(true, false);
+
+                m_pDC->RemovePen(pPen);
         }
 
         void CEmfPlusParser::Read_EMFPLUS_DRAWDRIVERSTRING(unsigned short unShFlags)
@@ -1436,6 +1529,12 @@ namespace MetaFile
 
                 std::vector<TEmfPlusPointF> arGlyphPos = ReadPointsF(unGlyphCount);
 
+                if (0x00000001 == unMatrixPresent)
+                {
+                        TEmfPlusXForm oMatrix;
+
+                        m_oStream >> oMatrix;
+                }
                 //----------
                 if (NULL == m_pInterpretator || wsString.length() != arGlyphPos.size())
                         return;
@@ -1456,18 +1555,20 @@ namespace MetaFile
 
                 if ((unShFlags >>(15)) & 1 )//BrushId = Color
                 {
-                        CEmfPlusBrush oBrush;
+                        TEmfColor oColor;
 
-                        oBrush.Color.chBlue     = (unBrushId >> 0)  & 0xFF;
-                        oBrush.Color.chGreen    = (unBrushId >> 8)  & 0xFF;
-                        oBrush.Color.chRed      = (unBrushId >> 16) & 0xFF;
-                        oBrush.Color.chAlpha    = (unBrushId >> 24) & 0xFF;
+                        oColor.b = (unBrushId >> 0)  & 0xFF;
+                        oColor.g = (unBrushId >> 8)  & 0xFF;
+                        oColor.r = (unBrushId >> 16) & 0xFF;
+                        oColor.a = (unBrushId >> 24) & 0xFF;
 
-                        m_pDC->SetBrush(&oBrush);
+                        TEmfColor oTextColor = m_pDC->GetTextColor();
+
+                        m_pDC->SetTextColor(oColor);
 
                         m_pInterpretator->DrawDriverString(wsString, arDPoints);
 
-                        m_pDC->RemoveBrush(&oBrush);
+                        m_pDC->SetTextColor(oTextColor);
                 }
                 else //BrushId = Brush id
                 {
@@ -1475,11 +1576,20 @@ namespace MetaFile
 
                         if (NULL == pBrush) return;
 
-                        m_pDC->SetBrush(pBrush);
+                        TEmfColor oColor;
+
+                        oColor.b = pBrush->Color.chBlue;
+                        oColor.g = pBrush->Color.chGreen;
+                        oColor.r = pBrush->Color.chRed;
+                        oColor.a = pBrush->Color.chAlpha;
+
+                        TEmfColor oTextColor = m_pDC->GetTextColor();
+
+                        m_pDC->SetTextColor(oColor);
 
                         m_pInterpretator->DrawDriverString(wsString, arDPoints);
 
-                        m_pDC->RemoveBrush(pBrush);
+                        m_pDC->SetTextColor(oTextColor);
                 }
 
                 m_pDC->RemoveFont(pFont);
@@ -1547,13 +1657,21 @@ namespace MetaFile
 
                 m_oStream >> unImageAttributesID;
                 m_oStream >> nSrcUnit;
+
+                if (nSrcUnit != UnitTypePixel)
+                        return;
+
                 m_oStream >> oSrcRect;
 
                 T oRectData;
 
                 m_oStream >> oRectData;
 
-                HANDLE_EMFPLUS_DRAWIMAGE(shOgjectIndex, unImageAttributesID, nSrcUnit, oSrcRect, oRectData);
+                TEmfPlusRectF oRect = GetConvertedRectangle(oRectData);
+
+                std::vector<TEmfPlusPointF> arPoints = {{oRect.dX, oRect.dY}, {oRect.dX + oRect.dWidth, oRect.dY}, {oRect.dX + oRect.dWidth, oRect.dY + oRect.dHeight}};
+
+                DrawImagePoints(shOgjectIndex, unImageAttributesID, oSrcRect, arPoints);
         }
 
         void CEmfPlusParser::Read_EMFPLUS_DRAWIMAGEPOINTS(unsigned short unShFlags)
@@ -1640,7 +1758,13 @@ namespace MetaFile
 
                 m_pDC->SetPen(pEmfPlusPen);
 
+                if (NULL != pEmfPlusPen->Brush)
+                        m_pDC->SetBrush(pEmfPlusPen->Brush);
+
                 DrawLines(GetConvertedPoints(arPoints), ((unShFlags >>(13)) & 1));
+
+                if (NULL != pEmfPlusPen->Brush)
+                        m_pDC->RemoveBrush(pEmfPlusPen->Brush);
 
                 m_pDC->RemovePen(pEmfPlusPen);
         }
@@ -1773,18 +1897,20 @@ namespace MetaFile
 
                 if ((unShFlags >>(15)) & 1 )//BrushId = Color
                 {
-                        CEmfPlusBrush oBrush;
+                        TEmfColor oColor;
 
-                        oBrush.Color.chBlue     = (unBrushId >> 0)  & 0xFF;
-                        oBrush.Color.chGreen    = (unBrushId >> 8)  & 0xFF;
-                        oBrush.Color.chRed      = (unBrushId >> 16) & 0xFF;
-                        oBrush.Color.chAlpha    = (unBrushId >> 24) & 0xFF;
+                        oColor.b = (unBrushId >> 0)  & 0xFF;
+                        oColor.g = (unBrushId >> 8)  & 0xFF;
+                        oColor.r = (unBrushId >> 16) & 0xFF;
+                        oColor.a = (unBrushId >> 24) & 0xFF;
 
-                        m_pDC->SetBrush(&oBrush);
+                        TEmfColor oTextColor = m_pDC->GetTextColor();
+
+                        m_pDC->SetTextColor(oColor);
 
                         m_pInterpretator->DrawString(wsString, wsString.length(), oRect.dX, oRect.dY, NULL, GM_ADVANCED, 1, 1);
 
-                        m_pDC->RemoveBrush(&oBrush);
+                        m_pDC->SetTextColor(oTextColor);
                 }
                 else //BrushId = Brush id
                 {
@@ -1792,16 +1918,23 @@ namespace MetaFile
 
                         if (NULL == pBrush) return;
 
-                        m_pDC->SetBrush(pBrush);
+                        TEmfColor oColor;
+
+                        oColor.b = pBrush->Color.chBlue;
+                        oColor.g = pBrush->Color.chGreen;
+                        oColor.r = pBrush->Color.chRed;
+                        oColor.a = pBrush->Color.chAlpha;
+
+                        TEmfColor oTextColor = m_pDC->GetTextColor();
+
+                        m_pDC->SetTextColor(oColor);
 
                         m_pInterpretator->DrawString(wsString, wsString.length(), oRect.dX, oRect.dY, NULL, GM_ADVANCED, 1, 1);
 
-                        m_pDC->RemoveBrush(pBrush);
+                        m_pDC->SetTextColor(oTextColor);
                 }
 
                 m_pDC->RemoveFont(pFont);
-
-                //TODO: реализовать
         }
 
         void CEmfPlusParser::Read_EMFPLUS_FILLCLOSEDCURVE(unsigned short unShFlags)
@@ -2363,6 +2496,7 @@ namespace MetaFile
                 m_oStream >> unChPixelOffset;
                 m_oStream >> oMatrix;
 
+                UpdateMatrix(oMatrix);
                 //TODO: реализовать
         }
 
@@ -2373,6 +2507,7 @@ namespace MetaFile
                 m_oStream >> oMatrix;
 
                 //TODO: проверить правильность действий
+                UpdateMatrix(oMatrix);
                 m_pDC->MultiplyTransform(oMatrix, (((unShFlags >>(14)) & 1 )) ? MWT_RIGHTMULTIPLY : MWT_LEFTMULTIPLY);
                 UpdateOutputDC();
         }
@@ -2391,8 +2526,8 @@ namespace MetaFile
 
                 TEmfPlusXForm oMatrix(sinf(dAngle), cosf(dAngle), cosf(dAngle), -sinf(dAngle), 0, 0);
 
+                UpdateMatrix(oMatrix);
                 m_pDC->MultiplyTransform(oMatrix, MWT_RIGHTMULTIPLY);
-
                 UpdateOutputDC();
         }
 
@@ -2405,8 +2540,8 @@ namespace MetaFile
 
                 TEmfPlusXForm oMatrix(dSx, 0, 0, dSy, 0, 0);
 
+                UpdateMatrix(oMatrix);
                 m_pDC->MultiplyTransform(oMatrix, MWT_RIGHTMULTIPLY);
-
                 UpdateOutputDC();
         }
 
@@ -2417,14 +2552,12 @@ namespace MetaFile
                 if (shPageUnit == UnitTypeDisplay || shPageUnit == UnitTypeWorld)
                         return;
 
-                double dPageScale;
-
-                m_oStream >> dPageScale;
+                m_oStream >> m_dUnitKoef;
 
                 if (UnitTypePixel != shPageUnit)
                         return;
 
-                TXForm oMatrix(dPageScale, 0, 0, dPageScale, 0, 0);
+                TXForm oMatrix(m_dUnitKoef, 0, 0, m_dUnitKoef, 0, 0);
 
                 m_pDC->MultiplyTransform(oMatrix, MWT_RIGHTMULTIPLY);
                 UpdateOutputDC();
@@ -2436,8 +2569,7 @@ namespace MetaFile
 
                 m_oStream >> oMatrix;
 
-                LOGGING(oMatrix.M11 << L" _ " << oMatrix.M12 << L" _ " << oMatrix.M21 << L" _ " << oMatrix.M22 << L" | " << oMatrix.Dx << L" _ " << oMatrix.Dy)
-
+                UpdateMatrix(oMatrix);
                 m_pDC->MultiplyTransform(oMatrix, MWT_SET);
                 UpdateOutputDC();
         }
@@ -2451,6 +2583,7 @@ namespace MetaFile
 
                 TEmfPlusXForm oMatrix(1, 0, 0, 1, dX, dY);
 
+                UpdateMatrix(oMatrix);
                 m_pDC->MultiplyTransform(oMatrix, MWT_RIGHTMULTIPLY);
                 UpdateOutputDC();
         }
@@ -2492,7 +2625,16 @@ namespace MetaFile
         {
                 m_bBanEmfProcessing = true;
 
-                //TODO: реализовать
+                BYTE uchObjectId = ExpressValue(unShFlags, 0, 7);
+
+                CEmfPlusPath* pPath = GetPath(uchObjectId);
+
+                if (NULL == pPath) return;
+
+                BYTE uchCM = ExpressValue(unShFlags, 8, 11);
+
+                return;// TODO: при добавлении поддержки регионов становится хуже
+                m_pDC->GetClip()->SetPath(pPath, uchCM, m_pDC->GetTransform());
         }
 
         void CEmfPlusParser::Read_EMFPLUS_SETCLIPRECT(unsigned short unShFlags)
@@ -2504,7 +2646,7 @@ namespace MetaFile
 
                 m_oStream >> oRect;
 
-                return; // TODO: при добавлении поддержки регионов становится хуже
+                return;// TODO: при добавлении поддержки регионов становится хуже
                 CombineClip(oRect.GetRectD(), shCM);
         }
 
@@ -2569,7 +2711,7 @@ namespace MetaFile
                 MoveTo(arPoints[0].X, arPoints[0].Y);
 
                 for (unsigned int unIndex = 1; unIndex < arPoints.size(); ++unIndex)
-                        LineTo(arPoints[unIndex].X, arPoints[unIndex].Y);
+                       LineTo(arPoints[unIndex].X, arPoints[unIndex].Y);
 
                 if (bCloseFigure)
                         ClosePath();

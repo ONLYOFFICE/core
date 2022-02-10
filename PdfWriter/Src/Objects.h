@@ -427,6 +427,7 @@ namespace PdfWriter
 		}
 
 		void WriteToStream(CStream* pStream, CEncrypt* pEncrypt);
+		unsigned int GetSize() { return m_mList.size(); }
 
 	private:
 

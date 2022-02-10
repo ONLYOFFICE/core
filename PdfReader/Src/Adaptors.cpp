@@ -263,13 +263,11 @@ void XMLConverter::PageToXml(Object *obj, std::wstring &wsXml)
         wsXml += L"Null\">";
         break;
     case objArray:
-        wsXml += L"Array\" num=\"";
-        wsXml += std::to_wstring(obj->arrayGetLength());
-        wsXml += L"\">";
+        wsXml += L"Array\">";
         for (int nIndex = 0; nIndex < obj->arrayGetLength(); ++nIndex)
         {
             wsXml += L"<item";
-            obj->arrayGet(nIndex, &oTemp);
+            obj->arrayGetNF(nIndex, &oTemp);
             PageToXml(&oTemp, wsXml);
             oTemp.free();
             wsXml += L"</item>";

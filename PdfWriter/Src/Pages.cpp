@@ -237,22 +237,21 @@ namespace PdfWriter
 					AddToObject(pObject, sName, new CStringObject(sAText.c_str()))
 				else if (sType == "Name")
 					AddToObject(pObject, sName, sAText.c_str())
-				// Null объект - пустой объект, игнорируется
+				// Null игнорируется
 				// Array ниже
 				// Dict ниже
-				// Stream у страницы быть не может
+				// Stream игнорируется
 				else if (sType == "Ref")
 				{
-					// Почему ProxyObject не имеет деструктора своего объекта, везде утечки!
 					CObjectBase* pBase = new CObjectBase();
 					pBase->SetRef(std::stoi(sAText), gen);
 					AddToObject(pObject, sName, new CProxyObject(pBase));
 				}
-				// Речь об OCMD optional content membership dictionary?
+				// Cmd игнорируется
 				else if (sType == "Cmd")
 					AddToObject(pObject, sName, sAText.c_str())
-				// Error объект игнорируется
-				// EOF - признак конца файла. Он не может придти как объект страницы
+				// Error игнорируется
+				// EOF игнорируется
 				// None ниже
 			}
 		}
@@ -278,7 +277,6 @@ namespace PdfWriter
 			while (oCoreReader.ReadNextSiblingNode(n2Death))
 				ReadDict(oCoreReader, pDict);
 		}
-		// None - именной объект?
 		else if (sType == "None")
 			AddToObject(pObject, sName, "None")
 	}
@@ -305,15 +303,15 @@ namespace PdfWriter
 		if (pContents)
 		{
 			if (pContents->GetType() == object_type_ARRAY)
-			{
-				CArrayObject* pArray = (CArrayObject*)pContents;
-				for (int i = 0, count = pArray->GetCount(); i < count; ++i)
-					m_pContents->Add(new CProxyObject(pArray->Get(i)));
-			}
+				m_pContents = (CArrayObject*)pContents;
 			else if (pContents->GetType() == object_type_UNKNOWN)
+			{
 				m_pContents->Add(new CProxyObject(pContents));
+				Add("Contents", m_pContents);
+			}
 		}
-		Add("Contents", m_pContents);
+		else
+			Add("Contents", m_pContents);
 
 		m_pStream = NULL;
 	}

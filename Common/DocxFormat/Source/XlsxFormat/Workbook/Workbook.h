@@ -296,22 +296,22 @@ namespace OOX
                 {
                     readBin(m_oReadPath);
                 }
-				else
-				{ 
-					XmlUtils::CXmlLiteReader oReader;
+                else
+                {
+                    XmlUtils::CXmlLiteReader oReader;
 
-					if (!oReader.FromFile(oPath.GetPath()))
-						return;
+                    if (!oReader.FromFile(oPath.GetPath()))
+                        return;
 
-					if (!oReader.ReadNextNode())
-						return;
+                    if (!oReader.ReadNextNode())
+                        return;
 
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-					if (L"workbook" == sName)
-					{
-						fromXML(oReader);
-					}
-				}
+                    std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+                    if (L"workbook" == sName)
+                    {
+                        fromXML(oReader);
+                    }
+                }
 
                 IFileContainer::Read( oRootPath, oPath ); //в данном случае порядок считывания важен для xlsb
 

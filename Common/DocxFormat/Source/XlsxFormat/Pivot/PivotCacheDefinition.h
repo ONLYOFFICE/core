@@ -511,7 +511,7 @@ namespace OOX
 			nullable<CConsolidationSource>							m_oConsolidation;
 			nullable<CWorksheetSource>								m_oWorksheetSource;
 			nullable<OOX::Drawing::COfficeArtExtensionList>			m_oExtLst;
-		};
+		};        
 		class CPivotCacheDefinition : public WritingElement
 		{
 		public:

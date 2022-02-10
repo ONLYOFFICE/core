@@ -2306,6 +2306,9 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
             if(ptr->m_PCDSOURCE != nullptr)
                 m_oCacheSource = ptr->m_PCDSOURCE;
+
+            if(ptr->m_FRTPIVOTCACHEDEF != nullptr)
+                m_oExtLst      = ptr->m_FRTPIVOTCACHEDEF;
         }
     }
     void CPivotCacheDefinition::ReadAttributes(XLS::BaseObjectPtr& obj)

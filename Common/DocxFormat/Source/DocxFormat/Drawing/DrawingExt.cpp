@@ -42,6 +42,7 @@
 #include "../../XlsxFormat/Worksheets/DataValidation.h"
 #include "../../XlsxFormat/Slicer/SlicerCache.h"
 #include "../../XlsxFormat/Slicer/SlicerCacheExt.h"
+#include "../../XlsxFormat/Pivot/PivotCacheDefinitionExt.h"
 #include "../Comments.h"
 
 #include "../../XlsbFormat/Biff12_unions/FRTWORKSHEET.h"
@@ -61,6 +62,7 @@
 #include "../../XlsbFormat/Biff12_unions/SLICERSEX.h"
 #include "../../XlsbFormat/Biff12_unions/TABLESLICERSEX.h"
 #include "../../XlsbFormat/Biff12_unions/FRTWORKBOOK.h"
+#include "../../XlsbFormat/Biff12_unions/FRTPIVOTCACHEDEF.h"
 
 namespace OOX
 {
@@ -728,6 +730,7 @@ namespace OOX
 			m_oSlicerStyles.reset();
 			m_oTableSlicerCache.reset();
 			m_oSlicerCacheHideItemsWithNoData.reset();
+            m_oPivotCacheDefinitionExt.reset();
 
 			for (size_t nIndex = 0; nIndex < m_arrConditionalFormatting.size(); ++nIndex)
 			{
@@ -762,6 +765,7 @@ namespace OOX
 									  *m_sUri == L"{46F421CA-312F-682f-3DD2-61675219B42D}"	||
 									  *m_sUri == L"{DE250136-89BD-433C-8126-D09CA5730AF9}"	||
 									  *m_sUri == L"{19B8F6BF-5375-455C-9EA6-DF929625EA0E}"	||
+                                      *m_sUri == L"{725AE2AE-9491-48be-B2B4-4EB974FC3084}"	||
 									  *m_sUri == L"http://schemas.microsoft.com/office/drawing/2008/diagram"))   
 			{
 				int nCurDepth = oReader.GetDepth();
@@ -860,6 +864,10 @@ namespace OOX
 					{
 						m_oPresenceInfo = oReader;
 					}
+                    else if (sName == L"pivotCacheDefinition")
+                    {
+                        m_oPivotCacheDefinitionExt = oReader;
+                    }
 				}
 			}
 			else
@@ -992,6 +1000,12 @@ namespace OOX
 				m_oSlicerCacheHideItemsWithNoData->toXML(writer, L"x15:slicerCacheHideItemsWithNoData");
 				sResult += writer.GetData().c_str();
 			}
+            if(m_oPivotCacheDefinitionExt.IsInit())
+            {
+                NSStringUtils::CStringBuilder writer;
+                m_oPivotCacheDefinitionExt->toXML(writer, L"x14:pivotCacheDefinition");
+                sResult += writer.GetData().c_str();
+            }
 			if (m_oId.IsInit())
 			{
 				sResult += L"<" + sNamespace + L"id>" + m_oId.get2() + L"</" + sNamespace + L"id>";
@@ -1059,7 +1073,7 @@ namespace OOX
                 }
             }
 
-            if(obj->get_type() == XLS::typeFRTWORKSHEET)
+            else if(obj->get_type() == XLS::typeFRTWORKSHEET)
             {
                 auto ptr = static_cast<XLSB::FRTWORKSHEET*>(obj.get());
 
@@ -1272,6 +1286,24 @@ namespace OOX
                 }
             }
 
+            else if(obj->get_type() == XLS::typeFRTPIVOTCACHEDEF)
+            {
+                auto ptr = static_cast<XLSB::FRTPIVOTCACHEDEF*>(obj.get());
+
+                if(ptr != nullptr)
+                {
+                    if(ptr->m_PCD14 != nullptr)
+                    {
+                        OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
+                        oExt->m_sUri.Init();
+                        oExt->m_sUri->append(_T("{725AE2AE-9491-48be-B2B4-4EB974FC3084}"));
+                        oExt->m_oPivotCacheDefinitionExt = ptr->m_PCD14;
+
+                        if (oExt)
+                            m_arrExt.push_back( oExt );
+                    }
+                }
+            }
         }
 	}
 }

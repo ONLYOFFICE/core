@@ -26,3 +26,15 @@ Thumbs.db
 *.dat
 *.txt
 *.log
+
+*.ipch
+*.ipch
+*.ipch
+
+*.db-wal
+
+*.db-shm
+
+*.db
+
+*.opendb

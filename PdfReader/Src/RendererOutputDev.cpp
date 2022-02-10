@@ -1538,8 +1538,19 @@ namespace PdfReader
                     }
                     else
                     {
-                        pCodeToGID = NULL;
-                        nLen = 0;
+						pCodeToGID = NULL;
+						nLen       = 0;
+
+						if (m_pFontManager->LoadFontFromFile(wsFileName, 0, 10, 72, 72))
+						{
+							INT* pCodes = NULL;
+							nLen = 256;
+							pCodeToGID = (int*)MemUtilsMallocArray(nLen, sizeof(int));
+							for (int nCode = 0; nCode < nLen; ++nCode)
+							{
+								pCodeToGID[nCode] = m_pFontManager->GetGIDByUnicode(nCode);
+							}
+						}
                     }
                     break;
                 }

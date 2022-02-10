@@ -46,13 +46,19 @@
 	//odf_context()->math_context()->debug_stream << tag << "\n";
 
 #define OPEN_MATH_TAG(elm)\
-	odf_context()->math_context()->start_element(elm); \
-	odf_context()->math_context()->counter++; \
+	odf_context()->math_context()->tagFlag.push_back(odf_context()->math_context()->start_element(elm)); \
+	if(odf_context()->math_context()->tagFlag.back()) \
+		odf_context()->math_context()->counter++; \
 	//odf_context()->math_context()->debug_stream << L"open, counter is " << odf_context()->math_context()->counter << "\n";
 
 #define CLOSE_MATH_TAG\
-	odf_context()->math_context()->end_element();\
-	odf_context()->math_context()->counter--; \
+	if(odf_context()->math_context()->tagFlag.back()) \
+	{\
+		odf_context()->math_context()->end_element();\
+		odf_context()->math_context()->counter--; \
+	}\
+	odf_context()->math_context()->tagFlag.pop_back(); \
+
 	//odf_context()->math_context()->debug_stream /*std::wcout*/ << L"close, counter is " << odf_context()->math_context()->counter << "\n";
 
 namespace cpdoccore {
@@ -76,7 +82,7 @@ namespace cpdoccore {
 
 			void start_math(office_element_ptr & root);
 						
-			void start_element(office_element_ptr & elm); // office_math_element TODO
+			bool start_element(office_element_ptr & elm); // office_math_element TODO
 			
 			void end_element();
 
@@ -92,6 +98,7 @@ namespace cpdoccore {
 			std::wofstream debug_stream;
 			std::string debug_fileName = "debugLog.txt";
 			bool isEmpty();
+			std::vector<bool> tagFlag;
 
 			bool in_text_box_ = false;
 		private:

@@ -534,15 +534,35 @@ namespace NSDocxRenderer
 
 		bool IsRect(const std::wstring& str, const std::wstring& sub)
 		{
-			if (sub.length() == 0) return false;
-			size_t count = 0;
+			if (0 == sub.length())
+				return false;
+
+			size_t count{};
 			for (size_t offset = str.find(sub); offset != std::string::npos;
-			 offset = str.find(sub, offset + sub.length()))
+				 offset = str.find(sub, offset + sub.length()))
 			{
 				++count;
 			}
 			return (count <= 5 && str.find(L"m0") != std::string::npos) ? true : false;
 		}
+
+        bool IsWaveUnderline(CShape* pShape)
+        {
+            std::wstring sub = L",";
+
+            size_t count{};
+            for (size_t offset = pShape->m_strPath.find(sub); offset != std::string::npos;
+                    offset = pShape->m_strPath.find(sub, offset + sub.length()))
+            {
+                ++count;
+            }
+
+            if (count > 5  && pShape->m_dHeight < 2)
+                return true;
+
+            return false;
+
+        }
 
         bool IsSecondLine(const CShape* pCurShape, const CShape* pSecondShape)
         {
@@ -571,6 +591,25 @@ namespace NSDocxRenderer
                 }
             }
             return false;
+        }
+
+        bool IsSearchSecondWave(int lCurIdx, CShape* pCurShape)
+        {
+            size_t nCount = m_arGraphicItems.size();
+            for (size_t i = lCurIdx+1; i < nCount; ++i)
+            {
+                if (m_arGraphicItems[i]->m_eType == NSDocxRenderer::CBaseItem::etShape)
+                {
+                    CShape* pShape = dynamic_cast <CShape *> (m_arGraphicItems[i]);
+                    if (IsWaveUnderline(pShape) && IsSecondLine(pCurShape, pShape))
+                    {
+                        m_arGraphicItems.erase(m_arGraphicItems.cbegin() + i);
+                        return true;
+                    }
+                }
+            }
+            return false;
+
         }
 
         bool IsDashLine(const CShape* pCurShape, const CShape* pDashShape)
@@ -697,6 +736,19 @@ namespace NSDocxRenderer
                 {
                     CShape* pShape = dynamic_cast <CShape *> (m_arGraphicItems[i]);
 
+                    if (IsWaveUnderline(pShape))
+                    {
+                        if (IsSearchSecondWave(i, pShape))
+                        {
+                            pShape->m_TypeLine = NSStructures::UnderlineTypes::WAVYDOUBLE;
+                            nCount = m_arGraphicItems.size();
+                        }
+                        else
+                        {
+                            pShape->m_TypeLine = NSStructures::UnderlineTypes::WAVE;
+                        }
+                        continue;
+                    }
                     if (IsSearchSecondLine(i, pShape))
                     {
                         nCount = m_arGraphicItems.size();
@@ -743,6 +795,9 @@ namespace NSDocxRenderer
                 case NSStructures::UnderlineTypes::DOTDOTDASH:
                     pShape->m_TypeLine = NSStructures::UnderlineTypes::DASHDOTDOTHEAVY;
                     break;
+//                case NSStructures::UnderlineTypes::WAVE:
+//                    pShape->m_TypeLine = NSStructures::UnderlineTypes::WAVYHEAVY;
+//                    break;
                 default:
                     break;
             }
@@ -809,7 +864,7 @@ namespace NSDocxRenderer
 				if (m_arGraphicItems[i]->m_eType == NSDocxRenderer::CBaseItem::etShape)
 				{
 					CShape* pShape = dynamic_cast <CShape *> (m_arGraphicItems[i]);
-					if (IsRect(pShape->m_strPath, L","))
+					if (IsRect(pShape->m_strPath, L",") || IsWaveUnderline(pShape))
 					{
 						size_t nCountTextLine = m_arTextLine.size();
 						for (size_t j = 0; j < nCountTextLine; ++j)

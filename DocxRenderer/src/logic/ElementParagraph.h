@@ -229,6 +229,9 @@ namespace NSDocxRenderer
                 case NSStructures::UnderlineTypes::DASHDOTDOTHEAVY:
                     pShape->m_TypeLine = NSStructures::UnderlineTypes::DOTDOTDASH;
                     break;
+                case NSStructures::UnderlineTypes::WAVYHEAVY:
+                    pShape->m_TypeLine = NSStructures::UnderlineTypes::WAVE;
+                    break;
                 default:
                     break;
             }

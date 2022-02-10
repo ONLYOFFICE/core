@@ -597,6 +597,7 @@ namespace NSStructures
 			FaceIndex = other.FaceIndex;
 
             HighlightColor = other.HighlightColor;
+            UnderlineType = other.UnderlineType;
 
 			return *this;
 		}

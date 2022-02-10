@@ -31,8 +31,8 @@
  */
 
 #include "SHAREDSTRINGS.h"
-#include <Logic/Biff_records/SST.h>
-#include <Logic/Biff_records/Continue.h>
+#include "..//Biff_records/SST.h"
+#include "../Biff_records/Continue.h"
 
 namespace XLS
 {

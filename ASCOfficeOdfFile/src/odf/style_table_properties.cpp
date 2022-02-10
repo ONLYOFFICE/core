@@ -33,14 +33,12 @@
 #include <iostream>
 #include "style_table_properties.h"
 
-#include <xml/attributes.h>
-#include <xml/simple_xml_writer.h>
+#include "../../include/xml/simple_xml_writer.h"
 
 #include "serialize_elements.h"
 #include "datatypes/borderstyle.h"
 #include "odfcontext.h"
 #include "odf_document_impl.h"
-
 
 
 namespace cpdoccore { 

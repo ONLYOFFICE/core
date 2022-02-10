@@ -31,8 +31,8 @@
  */
 
 #include "DVAL.h"
-#include <Logic/Biff_records/DVal.h>
-#include <Logic/Biff_records/Dv.h>
+#include "../Biff_records/DVal.h"
+#include "../Biff_records/Dv.h"
 
 namespace XLS
 {

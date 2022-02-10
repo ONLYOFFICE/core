@@ -32,8 +32,8 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/CellRangeRef.h>
-#include <Logic/Biff_structures/HyperlinkObject.h>
+#include "../Biff_structures/CellRangeRef.h"
+#include "../Biff_structures/HyperlinkObject.h"
 
 namespace XLS
 {

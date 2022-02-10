@@ -34,10 +34,7 @@
 #include <iosfwd>
 #include <string>
 
-#include <CPSharedPtr.h>
-#include <CPOptional.h>
-
-#include <xml/nodetype.h>
+#include "../../include/xml/nodetype.h"
 
 #include "office_elements.h"
 #include "office_elements_create.h"

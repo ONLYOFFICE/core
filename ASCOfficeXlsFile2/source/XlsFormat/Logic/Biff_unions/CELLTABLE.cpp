@@ -39,7 +39,7 @@
 #include "../Biff_records/MulBlank.h"
 #include "../Biff_records/MulRk.h"
 
-#include <simple_xml_writer.h>
+#include "../../../Common/simple_xml_writer.h"
 
 namespace XLS
 {

@@ -58,6 +58,7 @@ namespace formulasconvert {
 		void replace_tilda(std::wstring& expr);
 		void replace_vertical(std::wstring& expr);
 		void replace_space(std::wstring& expr);
+		void replace_apersand(std::wstring& expr);
 	
 		std::wstring convert_named_ref(const std::wstring& expr, bool withTableName, std::wstring separator);
 		std::wstring convert_named_expr(const std::wstring& expr, bool withTableName);
@@ -76,6 +77,17 @@ namespace formulasconvert {
 		static std::wstring				table_name_;
 
 //-------------------------------------------------------------------------------------------------------------
+		static std::wstring replace_apersand_formater(boost::wsmatch const & what)
+		{
+			if (what[1].matched)
+				return L"&amp;";
+			else if (what[2].matched)
+				return what[2].str();
+			else if (what[3].matched)
+				return what[3].str();
+			else
+				return L"";
+		}
 		static std::wstring replace_semicolons_formater(boost::wsmatch const & what)
 		{
 			if (what[1].matched)
@@ -128,6 +140,7 @@ namespace formulasconvert {
 			XmlUtils::replace_all( expr, L"PROBEL", L" ");
 			//XmlUtils::replace_all( expr, L"APOSTROF", L"'");	
 			//XmlUtils::replace_all( expr, L"KAVYCHKA", L"\"");
+			XmlUtils::replace_all(expr, L"APERSAND", L"&");
 		}
 		static void replace_tmp(std::wstring &expr)
 		{
@@ -171,6 +184,10 @@ namespace formulasconvert {
 					case ' ':
 					{
 						result += L"PROBEL";
+					}break;
+					case '&':
+					{
+						result += L"APERSAND";
 					}break;
 					default:
 					{
@@ -495,6 +512,17 @@ namespace formulasconvert {
 
 		 expr = res;
 	}
+	void odf2oox_converter::Impl::replace_apersand(std::wstring& expr)
+	{
+		const std::wstring res = boost::regex_replace(
+			expr,
+			//boost::wregex(L"(;)|(?:\".*?\")|(?:'.*?')"),
+			boost::wregex(L"(&)|(\".*?\")|('.*?')"),
+			&replace_apersand_formater,
+			boost::match_default | boost::format_all);
+
+		expr = res;
+	}
 	// заменить вертикальную черту во всех вхождениях в фигурных скобках, но не внутри строк
 	void odf2oox_converter::Impl::replace_vertical(std::wstring& expr)
 	{
@@ -531,7 +559,8 @@ namespace formulasconvert {
 		replace_semicolons	(workstr);
 		replace_tilda		(workstr);
 		replace_vertical	(workstr);
-		
+		replace_apersand	(workstr);
+
 		if (isFormula)
 		{
 			XmlUtils::replace_all( workstr, L"FDIST(", L"_xlfn.F.DIST(");

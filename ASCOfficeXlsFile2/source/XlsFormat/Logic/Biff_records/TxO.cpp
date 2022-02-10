@@ -34,7 +34,7 @@
 
 #include "Font.h"
 
-#include <utils.h>
+#include "../../../Common/utils.h"
 
 #include "../../../XlsXlsxConverter/XlsConverter.h"
 #include "../../../XlsXlsxConverter/xlsx_conversion_context.h"

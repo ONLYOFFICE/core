@@ -34,7 +34,7 @@
 #include "../odf/style_table_properties.h"
 #include "../odf/style_graphic_properties.h"
 
-#include <xml/simple_xml_writer.h>
+#include "../../include/xml/simple_xml_writer.h"
 
 #include <boost/functional/hash/hash.hpp>
 

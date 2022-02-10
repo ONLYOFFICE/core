@@ -31,7 +31,6 @@
  */
 
 #include "PropertyBagStore.h"
-#include <Binary/CFRecord.h>
 
 namespace OSHARED
 {

@@ -32,7 +32,7 @@
 
 #include "hyperlinks.h"
 
-#include <xml/utils.h>
+#include "../../include/xml/utils.h"
 
 namespace cpdoccore { 
 namespace oox {

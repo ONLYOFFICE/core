@@ -30,11 +30,12 @@
  *
  */
 
-#include <xml/simple_xml_writer.h>
+#include "../../include/xml/simple_xml_writer.h"
 
 #include "xlsx_hyperlinks.h"
 #include "oox_rels.h"
-#include "../formulasconvert/formulasconvert.h"
+#include "../../formulasconvert/formulasconvert.h"
+#include "../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace cpdoccore {
 namespace oox {
@@ -82,24 +83,23 @@ public:
 		r.display = display;
 		r.id = std::wstring(L"hId") + std::to_wstring(records_.size()+1);
 
-		int pos_target = target.find(L"#");
+		size_t pos_target = target.find(L"#");
         if (pos_target == 0)//ссыль на страницу или метку в текущем документе
         {
 			//адресация всегда на ячейку ...
-			int pos =target.find(L".");
+			int pos = target.find(L".");
 			if (pos < 0)
 			{
 				target = L"\"" + target + std::wstring(L"\".A1");
 			}
             r.location = converter_.convert_ref(std::wstring(target.begin() + 1, target.end()));
 			r.type = L"Internal" ;
-        }else
+        }
+		else
 		{
-			r.location = converter_.convert_spacechar(target);
+			r.location = XmlUtils::EncodeXmlString(converter_.convert_spacechar(target));
 			r.type = L"External" ;
 		}
-		if (r.display.length()<1)
-			r.display =target;
         records_.push_back(r);
 
 		return r.id;
@@ -114,7 +114,7 @@ public:
                 CP_XML_NODE(L"hyperlink")
                 {
                     CP_XML_ATTR(L"ref", records_[i].ref);
-                    CP_XML_ATTR(L"display", records_[i].display);
+                    CP_XML_ATTR(L"display", XmlUtils::EncodeXmlString(records_[i].display));
                   
 					if (!records_[i].location.empty() && records_[i].type == L"Internal")
                     {

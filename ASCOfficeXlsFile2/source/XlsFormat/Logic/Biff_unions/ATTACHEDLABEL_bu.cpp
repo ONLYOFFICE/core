@@ -48,7 +48,7 @@
 #include "../Biff_records/SeriesText.h"
 #include "../Biff_records/Font.h"
 
-#include <utils.h>
+#include "../../../Common/utils.h"
 
 namespace XLS
 {

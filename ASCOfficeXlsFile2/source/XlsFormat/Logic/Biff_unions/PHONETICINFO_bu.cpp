@@ -31,8 +31,8 @@
  */
 
 #include "PHONETICINFO.h"
-#include <Logic/Biff_records/PhoneticInfo.h>
-#include <Logic/Biff_records/Continue.h>
+#include "../Biff_records/PhoneticInfo.h"
+#include "../Biff_records/Continue.h"
 
 namespace XLS
 {

@@ -31,7 +31,7 @@
  */
 
 #include "FilePass.h"
-#include <Crypt/Decryptor.h>
+#include "../../Crypt/Decryptor.h"
 
 namespace XLS
 {

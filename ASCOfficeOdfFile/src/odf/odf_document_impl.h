@@ -33,7 +33,7 @@
 
 #include <string>
 #include "odf_content_xml.h"
-#include <odf/odf_document.h>
+#include "../../include/odf/odf_document.h"
 
 namespace cpdoccore 
 { 

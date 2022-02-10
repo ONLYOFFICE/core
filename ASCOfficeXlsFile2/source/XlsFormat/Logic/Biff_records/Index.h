@@ -32,7 +32,7 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/FilePointer.h>
+#include "../Biff_structures/FilePointer.h"
 
 namespace XLS
 {

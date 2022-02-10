@@ -31,9 +31,8 @@
  */
 
 #include "DXFN.h"
-#include <Binary/CFRecord.h>
 
-#include <utils.h>
+#include "../../../Common/utils.h"
 
 namespace XLS
 {

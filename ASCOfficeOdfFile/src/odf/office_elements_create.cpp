@@ -30,12 +30,12 @@
  *
  */
 
+#include <iostream>
 
 #include "office_elements_create.h"
-
-#include <iostream>
-#include <logging.h>
 #include "skipelement.h"
+
+#include "../../include/logging.h"
 
 namespace cpdoccore { 
 namespace odf_reader {

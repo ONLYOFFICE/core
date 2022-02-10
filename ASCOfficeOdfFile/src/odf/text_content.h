@@ -33,12 +33,9 @@
 
 #include <iosfwd>
 
-#include <CPOptional.h>
-#include <CPNoncopyable.h>
-#include <CPSharedPtr.h>
-#include <CPWeakPtr.h>
-#include <xml/xmlelement.h>
-#include <xml/nodetype.h>
+#include "../../include/CPNoncopyable.h"
+#include "../../include/CPWeakPtr.h"
+#include "../../include/xml/nodetype.h"
 
 #include "office_elements.h"
 

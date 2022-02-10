@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include <simple_xml_writer.h>
+#include "../Common/simple_xml_writer.h"
 
 #include "oox_content_type.h"
 #include "namespaces.h"

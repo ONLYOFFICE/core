@@ -31,7 +31,6 @@
  */
 
 #include "NoteRR.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

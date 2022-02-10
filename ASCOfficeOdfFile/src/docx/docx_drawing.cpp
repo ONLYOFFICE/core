@@ -31,7 +31,7 @@
  */
 
 #include "docx_drawing.h"
-#include <xml/simple_xml_writer.h>
+#include "../../include/xml/simple_xml_writer.h"
 #include "../odf/datatypes/custom_shape_types_convert.h"
 
 namespace cpdoccore {

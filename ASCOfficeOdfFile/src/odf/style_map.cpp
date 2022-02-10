@@ -32,8 +32,6 @@
 
 #include "style_map.h"
 
-#include <xml/attributes.h>
-
 #include "serialize_elements.h"
 
 namespace cpdoccore { 

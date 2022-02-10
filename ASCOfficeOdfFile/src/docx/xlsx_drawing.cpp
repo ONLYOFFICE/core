@@ -31,8 +31,8 @@
  */
 
 #include "xlsx_drawing.h"
-#include <xml/simple_xml_writer.h>
-#include <xml/utils.h>
+#include "../../include/xml/simple_xml_writer.h"
+#include "../../include/xml/utils.h"
 
 #include "../odf/datatypes/custom_shape_types_convert.h"
 #include "../../formulasconvert/formulasconvert.h"

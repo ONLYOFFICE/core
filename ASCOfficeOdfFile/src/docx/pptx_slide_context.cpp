@@ -31,9 +31,10 @@
  */
 
 #include <iostream>
-#include <xml/simple_xml_writer.h>
-#include <xml/utils.h>
-#include <odf/odf_document.h>
+
+#include "../../include/xml/simple_xml_writer.h"
+#include "../../include/xml/utils.h"
+#include "../../include/odf/odf_document.h"
 
 #include "pptx_drawing.h"
 #include "pptx_drawings.h"

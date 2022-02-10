@@ -34,10 +34,9 @@
 
 #include "odf_document_impl.h"
 
-#include <odf/odf_document.h>
-#include <CPString.h>
-#include <xml/sax.h>
-#include <common/readdocelement.h>
+#include "../../include/odf/odf_document.h"
+#include "../../include/CPString.h"
+#include "../../include/xml/sax.h"
 
 #include <boost/algorithm/string.hpp>
 

@@ -57,11 +57,8 @@
 #include "SyntaxPtg.h"
 #include "Rgce.h"
 #include "RgbExtra.h"
-#include <boost/regex.hpp>
-//#include <Exception/UnexpectedProgramPath.h>
-//#include <Exception/WrongParenthesisSequence.h>
-//#include <Exception/WrongFormulaString.h>
 
+#include <boost/regex.hpp>
 
 namespace XLS
 {

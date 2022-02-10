@@ -32,7 +32,6 @@
 
 #include <iostream>
 #include "common_attlists.h"
-#include <xml/attributes.h>
 
 namespace cpdoccore { 
 namespace odf_types {

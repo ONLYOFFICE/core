@@ -33,10 +33,10 @@
 #include "CF12.h"
 #include "CFEx.h"
 
-#include <Logic/Biff_structures/CFMultistate.h>
-#include <Logic/Biff_structures/CFDatabar.h>
-#include <Logic/Biff_structures/CFGradient.h>
-#include <utils.h>
+#include "../Biff_structures/CFMultistate.h"
+#include "../Biff_structures/CFDatabar.h"
+#include "../Biff_structures/CFGradient.h"
+#include "../../../Common/utils.h"
 
 namespace XLS
 {

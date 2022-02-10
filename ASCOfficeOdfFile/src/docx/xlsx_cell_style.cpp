@@ -32,7 +32,7 @@
 
 #include "xlsx_cell_style.h"
 
-#include <xml/simple_xml_writer.h>
+#include "../../include/xml/simple_xml_writer.h"
 
 namespace cpdoccore {
 namespace oox {

@@ -32,9 +32,9 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include <Logic/Biff_structures/RRD.h>
-#include <Logic/Biff_structures/BiffString.h>
-#include <Logic/Biff_structures/BitMarkedStructs.h>
+#include "RRD.h"
+#include "BiffString.h"
+#include "BitMarkedStructs.h"
 
 namespace XLS
 {

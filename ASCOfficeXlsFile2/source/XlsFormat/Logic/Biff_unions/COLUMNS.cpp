@@ -31,8 +31,8 @@
  */
 
 #include "COLUMNS.h"
-#include <Logic/Biff_records/DefColWidth.h>
-#include <Logic/Biff_records/ColInfo.h>
+#include "../Biff_records/DefColWidth.h"
+#include "../Biff_records/ColInfo.h"
 
 namespace XLS
 {

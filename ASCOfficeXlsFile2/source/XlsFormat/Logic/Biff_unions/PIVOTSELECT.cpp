@@ -31,8 +31,8 @@
  */
 
 #include "PIVOTSELECT.h"
-#include <Logic/Biff_records/SxSelect.h>
-#include <Logic/Biff_unions/PIVOTRULE.h>
+#include "PIVOTRULE.h"
+#include "../Biff_records/SxSelect.h"
 
 namespace XLS
 {

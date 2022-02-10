@@ -75,9 +75,12 @@ public:
 	}
 	void set_3D_chart(bool val)
 	{
-		for (size_t i = 0 ; i < plot_area_.charts_.size(); i++)
+		for (size_t i = 0 ; i < plot_area_.charts_.size(); ++i)
 		{
 			plot_area_.charts_[i]->is3D_ = val;
+
+			for (size_t j = 0; j < plot_area_.charts_[i]->series_.size(); ++j)
+				plot_area_.charts_[i]->series_[j]->is3D_ = val;
 		}
 	}
 	void set_externalData(const std::wstring & href);

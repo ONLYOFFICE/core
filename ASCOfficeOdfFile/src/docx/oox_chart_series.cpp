@@ -58,6 +58,7 @@ oox_chart_series::oox_chart_series()
 	iSymbolMarkerType_		= 0;
 	bCacheOnly_				= false;
 	labelPosEnabled_		= true;
+	is3D_					= false;
 }
 void oox_chart_series::setName(const std::wstring &value)
 {
@@ -571,10 +572,30 @@ void oox_bar_series::oox_serialize(std::wostream & _Wostream)
 		CP_XML_NODE(L"c:ser")
 		{
 			oox_serialize_common(CP_XML_STREAM());
+			
+			if (is3D_)
+			{
+				CP_XML_NODE(L"c:shape")
+				{
+					switch (iSolidType.get_value_or(0))
+					{
+					case 1: CP_XML_ATTR(L"val", L"cylinder"); break;
+					case 2: CP_XML_ATTR(L"val", L"cone"); break;
+					case 3: CP_XML_ATTR(L"val", L"pyramid"); break;
+					case 0:
+					default: CP_XML_ATTR(L"val", L"box"); break;
+					}
+				}
+			}
 		}
 	}
 }
+void oox_bar_series::set_properties(std::vector<odf_reader::_property> g)
+{
+	oox_chart_series::set_properties(g);
 
+	odf_reader::GetProperty(g, L"solid-type", iSolidType);
+}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 _CP_PTR(oox_chart_series) oox_line_series::create()

@@ -944,7 +944,7 @@ void process_build_object::visit(chart_series& val)
 	ACCEPT_ALL_CONTENT(val.content_);
 
 	ApplyChartProperties	(att.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.series_.back().properties_);
-	ApplyGraphicProperties	(att.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.series_.back().graphic_properties_,object_odf_context_.series_.back().fill_);
+	ApplyGraphicProperties	(att.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.series_.back().graphic_properties_, object_odf_context_.series_.back().fill_);
 	ApplyTextProperties		(att.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.series_.back().text_properties_);
 
 }

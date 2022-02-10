@@ -114,7 +114,7 @@ namespace SerializeCommon
 	{
 		result = BinXlsxRW::c_oFileTypes::XLSX;
 		nCodePage = 46;		//default 46 временно CP_UTF8
-		sDelimiter = L","; // default
+		sDelimiter = L";"; // default
 		cSaveFileType = BinXlsxRW::c_oFileTypes::XLSX;// default
 
 		nullable<SimpleTypes::CUnsignedDecimalNumber<>> fileType;

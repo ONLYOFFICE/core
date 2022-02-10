@@ -911,17 +911,18 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 			&cellFormat, num_format, num_format_type, false, is_style_visible);
 	}
 
-	int sharedStringId = -1;
-	
+	bool need_content_convert = false;
 	if (number_val.empty() && !bool_val)
 	{
-		if (!formula.empty())
+		if (false == formula.empty())
 			xlsx_value_type = oox::XlsxCellType::str;
 		else
-			sharedStringId = content_.xlsx_convert(Context, textFormatProperties);
-	}	
-	
+		{
+			need_content_convert = true;
+		}
+	}		
 //---------------------------------------------------------------------------------------------------------	
+	int sharedStringId = -1;
 	int	 empty_cell_count = 0;
 	bool skip_next_cell	 = false;
 
@@ -932,6 +933,12 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 		if (is_style_visible)
 			Context.set_current_cell_style_id(xfId_last_set);
 //---------------------------------------------------------------------------------------------------------	
+		if (need_content_convert)
+		{
+			need_content_convert = false;
+			sharedStringId = content_.xlsx_convert(Context, textFormatProperties);
+		}
+
 		if (xlsx_value_type == oox::XlsxCellType::str || xlsx_value_type == oox::XlsxCellType::inlineStr)
 		{
 			int index = Context.get_table_context().in_database_range();

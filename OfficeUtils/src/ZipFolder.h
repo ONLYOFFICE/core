@@ -4,6 +4,7 @@
 #include "ZipBuffer.h"
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Directory.h"
+#include "../../DesktopEditor/common/Path.h"
 #include "../../DesktopEditor/xml/include/xmlutils.h"
 
 class IFolder
@@ -239,73 +240,14 @@ class CZipFolderMemory : public IFolder
     CZipBuffer* m_zlib;
 
 protected:
-    std::string normalize_path(const std::string &path)
-    {
-        const char*   pData   = path.c_str();
-        int           nLen    = (int) path.length();
 
-        char* pDataNorm       = new char[nLen + 1];
-        int*  pSlashPoints    = new int[nLen + 1];
-
-        int nStart          = 0;
-        int nCurrent        = 0;
-        int nCurrentSlash   = -1;
-        int nCurrentW       = 0;
-        bool bIsUp          = false;
-
-    #if !defined(_WIN32) && !defined (_WIN64)
-        if (pData[nCurrent] == '/' || pData[nCurrent] == '\\')
-            pDataNorm[nCurrentW++] = pData[nCurrent];
-    #endif
-        while (nCurrent < nLen)
-        {
-            if (pData[nCurrent] == '/' || pData[nCurrent] == '\\')
-            {
-                if (nStart < nCurrent)
-                {
-                    bIsUp = false;
-                    if ((nCurrent - nStart) == 2)
-                    {
-                        if (pData[nStart] == (char)'.' && pData[nStart + 1] == (char)'.')
-                        {
-                            if (nCurrentSlash > 0)
-                            {
-                                --nCurrentSlash;
-                                nCurrentW = pSlashPoints[nCurrentSlash];
-                                bIsUp = true;
-                            }
-                        }
-                    }
-                    if (!bIsUp)
-                    {
-                        pDataNorm[nCurrentW++] = (char)'/';
-                        ++nCurrentSlash;
-                        pSlashPoints[nCurrentSlash] = nCurrentW;
-                    }
-                }
-                nStart = nCurrent + 1;
-                ++nCurrent;
-                continue;
-            }
-            pDataNorm[nCurrentW++] = pData[nCurrent];
-            ++nCurrent;
-        }
-
-        pDataNorm[nCurrentW] = (char)'\0';
-
-        std::string result = std::string(pDataNorm, nCurrentW);
-
-        delete []pDataNorm;
-
-        return result;
-    }
     // Конвертирует wstring -> string и убирает '/' в начале, т.к. пути относительные архива
     std::string getLocalFilePathA(const std::wstring& path)
     {
         std::string sPath = U_TO_UTF8(path);
         if (!sPath.empty() && sPath[0] == '/')
-            return normalize_path(sPath.substr(1));
-        return normalize_path(sPath);
+            return NSSystemPath::NormalizePath(sPath.substr(1));
+        return NSSystemPath::NormalizePath(sPath);
     }
 
 public:

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2021
+ * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,57 +29,56 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "PivotCacheDefinitionExt.h"
+#include "../../XlsbFormat/Biff12_unions/PCD14.h"
+#include "../../XlsbFormat/Biff12_records/BeginPCD14.h"
 
-#include "PCDFIELDS.h"
-#include "../Biff12_records/BeginPCDFields.h"
-#include "../Biff12_unions/PCDFIELD.h"
-#include "../Biff12_records/EndPCDFields.h"
-
-using namespace XLS;
-
-namespace XLSB
+namespace OOX
+{
+namespace Spreadsheet
 {
 
-    PCDFIELDS::PCDFIELDS()
-    {
-    }
+void CPivotCacheDefinitionExt::toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const
+{
+    writer.StartNode(sName);
+    writer.StartAttributes();
+    WritingNullable(m_oPivotCacheId, writer.WriteAttribute(L"pivotCacheId", *m_oPivotCacheId););
+    writer.EndAttributes();
 
-    PCDFIELDS::~PCDFIELDS()
+    writer.EndNode(sName);
+}
+void CPivotCacheDefinitionExt::fromXML(XmlUtils::CXmlLiteReader& oReader)
+{
+    ReadAttributes(oReader);
+    if (oReader.IsEmptyNode())
+        return;
+    oReader.ReadTillEnd();
+}
+void CPivotCacheDefinitionExt::fromBin(XLS::BaseObjectPtr& obj)
+{
+    if(obj->get_type() == XLS::typePCD14)
     {
-    }
-
-    BaseObjectPtr PCDFIELDS::clone()
-    {
-        return BaseObjectPtr(new PCDFIELDS(*this));
-    }
-
-    //PCDFIELDS = BrtBeginPCDFields *PCDFIELD BrtEndPCDFields
-    const bool PCDFIELDS::loadContent(BinProcessor& proc)
-    {
-        if (proc.optional<BeginPCDFields>())
+        auto ptr = static_cast<XLSB::PCD14*>(obj.get());
+        if(ptr != nullptr)
         {
-            m_BrtBeginPCDFields = elements_.back();
-            elements_.pop_back();
+            ReadAttributes(ptr->m_BrtBeginPCD14);
         }
-
-        auto count = proc.repeated<PCDFIELD>(0, 0);
-        if(count > 0)
-            proc.getGlobalWorkbookInfo()->currentPivotCacheRecord++;
-        while(count > 0)
-        {
-            m_arPCDFIELD.insert(m_arPCDFIELD.begin(), elements_.back());
-            elements_.pop_back();
-            count--;
-        }
-
-        if (proc.optional<EndPCDFields>())
-        {
-            m_BrtEndPCDFields = elements_.back();
-            elements_.pop_back();
-        }
-
-        return m_BrtBeginPCDFields && m_BrtEndPCDFields;
     }
+}
+void CPivotCacheDefinitionExt::ReadAttributes(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::BeginPCD14*>(obj.get());
+    if(ptr != nullptr)
+    {
+        m_oPivotCacheId = ptr->icacheId;
+    }
+}
+void CPivotCacheDefinitionExt::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+{
+    WritingElement_ReadAttributes_Start( oReader )
+        WritingElement_ReadAttributes_Read_if	( oReader, L"pivotCacheId", m_oPivotCacheId )
+    WritingElement_ReadAttributes_End( oReader )
+}
 
-} // namespace XLSB
-
+} //Spreadsheet
+} // namespace OOX

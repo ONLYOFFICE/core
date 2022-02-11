@@ -77,6 +77,7 @@ namespace XLSB
         XLS::BaseObjectPtr               m_EXTERNALS;
         XLS::BaseObjectPtr               m_BrtCalcProp;
         XLS::BaseObjectPtr               m_BrtOleSize;
+        XLS::BaseObjectPtr               m_PIVOTCACHEIDS;
         XLS::BaseObjectPtr               m_BrtWebOpt;
         XLS::BaseObjectPtr               m_BrtEndBook;
         XLS::BaseObjectPtr               m_FRTWORKBOOK;

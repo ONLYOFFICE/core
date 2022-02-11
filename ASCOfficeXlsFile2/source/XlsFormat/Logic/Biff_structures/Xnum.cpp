@@ -44,26 +44,6 @@ void Xnum::load(CFRecord& record)
 {
 	record.loadAnyData(data);
 }
-std::wstring Xnum::DateTimeValue()
-{
-    unsigned short	yr  = data.bytes.type;
-    unsigned short	mon = data.bytes.fExprO;
-    unsigned char	dom = data.bytes.Byte1;
-    unsigned char	hr  = data.bytes.Byte2;
-    unsigned char	min = data.bytes.Byte3;
-    unsigned char	sec = data.bytes.Byte4;
-
-    if (mon < 1 || mon > 12) mon = 1;
-    if (dom < 1 || dom > 31) dom = 1;
-
-    if (yr < 1) yr = 1; //???
-
-    std::wstringstream s;
-    s << yr << L"-" << (mon < 10 ? L"0" : L"") << mon << L"-" <<  (dom < 10 ? L"0" : L"") << dom << L"T"
-         << (hr < 10 ? L"0" : L"") << hr << L":" << (min < 10 ? L"0" : L"") << min << L":" << (sec < 10 ? L"0" : L"") << sec;
-
-    return s.str();
-}
 
 } // namespace XLS
 

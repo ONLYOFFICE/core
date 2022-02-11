@@ -94,6 +94,7 @@ SOURCES += \
     ../Source/XlsxFormat/Slicer/SlicerCacheExt.cpp \
     ../Source/XlsxFormat/Slicer/Slicer.cpp \
     ../Source/XlsxFormat/NamedSheetViews/NamedSheetViews.cpp \
+    ../Source/XlsxFormat/Pivot/PivotCacheDefinitionExt.cpp \
 }
 
 
@@ -270,6 +271,7 @@ HEADERS += docxformatlib.h \
     ../Source/DocxFormat/Diagram/DiagramQuickStyle.h \
     ../Source/XlsxFormat/Pivot/PivotTable.h \
     ../Source/XlsxFormat/Pivot/PivotCacheDefinition.h \
+    ../Source/XlsxFormat/Pivot/PivotCacheDefinitionExt.h \
     ../Source/XlsxFormat/Pivot/PivotCacheRecords.h \
     ../Source/XlsxFormat/Slicer/SlicerCache.h \
     ../Source/XlsxFormat/Slicer/SlicerCacheExt.h \

@@ -29,57 +29,28 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "PCDFIELDS.h"
-#include "../Biff12_records/BeginPCDFields.h"
-#include "../Biff12_unions/PCDFIELD.h"
-#include "../Biff12_records/EndPCDFields.h"
-
-using namespace XLS;
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
 namespace XLSB
 {
 
-    PCDFIELDS::PCDFIELDS()
+    class PIVOTCACHEID: public XLS::CompositeObject
     {
-    }
+        BASE_OBJECT_DEFINE_CLASS_NAME(PIVOTCACHEID)
+    public:
+        PIVOTCACHEID();
+        virtual ~PIVOTCACHEID();
 
-    PCDFIELDS::~PCDFIELDS()
-    {
-    }
+        XLS::BaseObjectPtr clone();
 
-    BaseObjectPtr PCDFIELDS::clone()
-    {
-        return BaseObjectPtr(new PCDFIELDS(*this));
-    }
+        virtual const bool loadContent(XLS::BinProcessor& proc);
 
-    //PCDFIELDS = BrtBeginPCDFields *PCDFIELD BrtEndPCDFields
-    const bool PCDFIELDS::loadContent(BinProcessor& proc)
-    {
-        if (proc.optional<BeginPCDFields>())
-        {
-            m_BrtBeginPCDFields = elements_.back();
-            elements_.pop_back();
-        }
+        XLS::BaseObjectPtr               m_BrtBeginPivotCacheID;
+        XLS::BaseObjectPtr               m_BrtEndPivotCacheID;
 
-        auto count = proc.repeated<PCDFIELD>(0, 0);
-        if(count > 0)
-            proc.getGlobalWorkbookInfo()->currentPivotCacheRecord++;
-        while(count > 0)
-        {
-            m_arPCDFIELD.insert(m_arPCDFIELD.begin(), elements_.back());
-            elements_.pop_back();
-            count--;
-        }
-
-        if (proc.optional<EndPCDFields>())
-        {
-            m_BrtEndPCDFields = elements_.back();
-            elements_.pop_back();
-        }
-
-        return m_BrtBeginPCDFields && m_BrtEndPCDFields;
-    }
+    };
 
 } // namespace XLSB
 

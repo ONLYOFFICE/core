@@ -29,57 +29,29 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "PCDFIELDS.h"
-#include "../Biff12_records/BeginPCDFields.h"
-#include "../Biff12_unions/PCDFIELD.h"
-#include "../Biff12_records/EndPCDFields.h"
-
-using namespace XLS;
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
+#include "../../XlsxFormat/WritingElement.h"
 
 namespace XLSB
 {
-
-    PCDFIELDS::PCDFIELDS()
+    // Logical representation of BrtBeginPivotCacheIDs record in BIFF12
+    class BeginPivotCacheIDs: public XLS::BiffRecord
     {
-    }
+            BIFF_RECORD_DEFINE_TYPE_INFO(BeginPivotCacheIDs)
+            BASE_OBJECT_DEFINE_CLASS_NAME(BeginPivotCacheIDs)
+        public:
+            BeginPivotCacheIDs();
+            virtual ~BeginPivotCacheIDs();
 
-    PCDFIELDS::~PCDFIELDS()
-    {
-    }
+            XLS::BaseObjectPtr clone();
 
-    BaseObjectPtr PCDFIELDS::clone()
-    {
-        return BaseObjectPtr(new PCDFIELDS(*this));
-    }
+            void readFields(XLS::CFRecord& record);
 
-    //PCDFIELDS = BrtBeginPCDFields *PCDFIELD BrtEndPCDFields
-    const bool PCDFIELDS::loadContent(BinProcessor& proc)
-    {
-        if (proc.optional<BeginPCDFields>())
-        {
-            m_BrtBeginPCDFields = elements_.back();
-            elements_.pop_back();
-        }
+            //static const XLS::ElementType	type = XLS::typeBeginPivotCacheIDs;
 
-        auto count = proc.repeated<PCDFIELD>(0, 0);
-        if(count > 0)
-            proc.getGlobalWorkbookInfo()->currentPivotCacheRecord++;
-        while(count > 0)
-        {
-            m_arPCDFIELD.insert(m_arPCDFIELD.begin(), elements_.back());
-            elements_.pop_back();
-            count--;
-        }
-
-        if (proc.optional<EndPCDFields>())
-        {
-            m_BrtEndPCDFields = elements_.back();
-            elements_.pop_back();
-        }
-
-        return m_BrtBeginPCDFields && m_BrtEndPCDFields;
-    }
+    };
 
 } // namespace XLSB
 

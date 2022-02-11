@@ -30,60 +30,44 @@
  *
  */
 
-#include "PCRRecord.h"
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/Xnum.h"
-#include "../Biff12_structures/PCDIDateTime.h"
-#include "../Biff12_structures/XLWideString.h"
+#include "PIVOTCACHEID.h"
+#include "../Biff12_records/BeginPivotCacheID.h"
+#include "../Biff12_records/EndPivotCacheID.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
 
-    PCRRecord::PCRRecord()
+    PIVOTCACHEID::PIVOTCACHEID()
     {
     }
 
-    PCRRecord::~PCRRecord()
+    PIVOTCACHEID::~PIVOTCACHEID()
     {
     }
 
-    BaseObjectPtr PCRRecord::clone()
+    BaseObjectPtr PIVOTCACHEID::clone()
     {
-        return BaseObjectPtr(new PCRRecord(*this));
+        return BaseObjectPtr(new PIVOTCACHEID(*this));
     }
 
-    void PCRRecord::readFields(XLS::CFRecord& record)
+    //PIVOTCACHEID = BrtBeginPivotCacheID BrtEndPivotCacheID
+    const bool PIVOTCACHEID::loadContent(BinProcessor& proc)
     {
-        _UINT32 index;
-        Xnum xnum;
-        PCDIDateTime dateTime;
-        XLWideString string;
-
-        auto arrPivotCacheRecordType = record.getGlobalWorkbookInfo()->pivotCacheRecordType.find(record.getGlobalWorkbookInfo()->currentPivotCacheRecord - 1);
-        if (arrPivotCacheRecordType != record.getGlobalWorkbookInfo()->pivotCacheRecordType.end())
+        if (proc.optional<BeginPivotCacheID>())
         {
-            for(const auto& item : arrPivotCacheRecordType->second)
-            switch (item)
-            {
-                case XLS::typePCDIIndex:
-                    record >> index;
-                    data.push_back({XLS::typePCDIIndex, index});
-                    break;
-                case XLS::typePCDINumber:
-                    record >> xnum;
-                    data.push_back({XLS::typePCDINumber, xnum.data.value});
-                    break;
-                case XLS::typePCDIDatetime:
-                    record >> dateTime;
-                    data.push_back({XLS::typePCDIDatetime, dateTime.value()});
-                    break;
-                case XLS::typePCDIString:
-                    record >> string;
-                    data.push_back({XLS::typePCDIString, string.value()});
-                    break;
-            }
+            m_BrtBeginPivotCacheID = elements_.back();
+            elements_.pop_back();
         }
+
+        if (proc.optional<EndPivotCacheID>())
+        {
+            m_BrtEndPivotCacheID = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginPivotCacheID && m_BrtEndPivotCacheID;
     }
 
 } // namespace XLSB

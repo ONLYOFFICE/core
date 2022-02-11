@@ -30,60 +30,29 @@
  *
  */
 
-#include "PCRRecord.h"
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/Xnum.h"
-#include "../Biff12_structures/PCDIDateTime.h"
-#include "../Biff12_structures/XLWideString.h"
+#include "EndPivotCacheID.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
 
-    PCRRecord::PCRRecord()
+    EndPivotCacheID::EndPivotCacheID()
     {
     }
 
-    PCRRecord::~PCRRecord()
+    EndPivotCacheID::~EndPivotCacheID()
     {
     }
 
-    BaseObjectPtr PCRRecord::clone()
+    BaseObjectPtr EndPivotCacheID::clone()
     {
-        return BaseObjectPtr(new PCRRecord(*this));
+        return BaseObjectPtr(new EndPivotCacheID(*this));
     }
 
-    void PCRRecord::readFields(XLS::CFRecord& record)
+    void EndPivotCacheID::readFields(XLS::CFRecord& record)
     {
-        _UINT32 index;
-        Xnum xnum;
-        PCDIDateTime dateTime;
-        XLWideString string;
-
-        auto arrPivotCacheRecordType = record.getGlobalWorkbookInfo()->pivotCacheRecordType.find(record.getGlobalWorkbookInfo()->currentPivotCacheRecord - 1);
-        if (arrPivotCacheRecordType != record.getGlobalWorkbookInfo()->pivotCacheRecordType.end())
-        {
-            for(const auto& item : arrPivotCacheRecordType->second)
-            switch (item)
-            {
-                case XLS::typePCDIIndex:
-                    record >> index;
-                    data.push_back({XLS::typePCDIIndex, index});
-                    break;
-                case XLS::typePCDINumber:
-                    record >> xnum;
-                    data.push_back({XLS::typePCDINumber, xnum.data.value});
-                    break;
-                case XLS::typePCDIDatetime:
-                    record >> dateTime;
-                    data.push_back({XLS::typePCDIDatetime, dateTime.value()});
-                    break;
-                case XLS::typePCDIString:
-                    record >> string;
-                    data.push_back({XLS::typePCDIString, string.value()});
-                    break;
-            }
-        }
+        // No data in this record
     }
 
 } // namespace XLSB

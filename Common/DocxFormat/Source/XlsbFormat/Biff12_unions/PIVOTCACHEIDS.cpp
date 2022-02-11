@@ -30,60 +30,53 @@
  *
  */
 
-#include "PCRRecord.h"
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/Xnum.h"
-#include "../Biff12_structures/PCDIDateTime.h"
-#include "../Biff12_structures/XLWideString.h"
+#include "PIVOTCACHEIDS.h"
+#include "../Biff12_records/BeginPivotCacheIDs.h"
+#include "../Biff12_unions/PIVOTCACHEID.h"
+#include "../Biff12_records/EndPivotCacheIDs.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
 
-    PCRRecord::PCRRecord()
+    PIVOTCACHEIDS::PIVOTCACHEIDS()
     {
     }
 
-    PCRRecord::~PCRRecord()
+    PIVOTCACHEIDS::~PIVOTCACHEIDS()
     {
     }
 
-    BaseObjectPtr PCRRecord::clone()
+    BaseObjectPtr PIVOTCACHEIDS::clone()
     {
-        return BaseObjectPtr(new PCRRecord(*this));
+        return BaseObjectPtr(new PIVOTCACHEIDS(*this));
     }
 
-    void PCRRecord::readFields(XLS::CFRecord& record)
+    //PIVOTCACHEIDS = BrtBeginPivotCacheIDs 1*PIVOTCACHEID BrtEndPivotCacheIDs
+    const bool PIVOTCACHEIDS::loadContent(BinProcessor& proc)
     {
-        _UINT32 index;
-        Xnum xnum;
-        PCDIDateTime dateTime;
-        XLWideString string;
-
-        auto arrPivotCacheRecordType = record.getGlobalWorkbookInfo()->pivotCacheRecordType.find(record.getGlobalWorkbookInfo()->currentPivotCacheRecord - 1);
-        if (arrPivotCacheRecordType != record.getGlobalWorkbookInfo()->pivotCacheRecordType.end())
+        if (proc.optional<BeginPivotCacheIDs>())
         {
-            for(const auto& item : arrPivotCacheRecordType->second)
-            switch (item)
-            {
-                case XLS::typePCDIIndex:
-                    record >> index;
-                    data.push_back({XLS::typePCDIIndex, index});
-                    break;
-                case XLS::typePCDINumber:
-                    record >> xnum;
-                    data.push_back({XLS::typePCDINumber, xnum.data.value});
-                    break;
-                case XLS::typePCDIDatetime:
-                    record >> dateTime;
-                    data.push_back({XLS::typePCDIDatetime, dateTime.value()});
-                    break;
-                case XLS::typePCDIString:
-                    record >> string;
-                    data.push_back({XLS::typePCDIString, string.value()});
-                    break;
-            }
+            m_BrtBeginPivotCacheIDs = elements_.back();
+            elements_.pop_back();
         }
+
+        auto count = proc.repeated<PIVOTCACHEID>(0, 0);
+        while(count > 0)
+        {
+            m_arPIVOTCACHEID.insert(m_arPIVOTCACHEID.begin(), elements_.back());
+            elements_.pop_back();
+            count--;
+        }
+
+        if (proc.optional<EndPivotCacheIDs>())
+        {
+            m_BrtEndPivotCacheIDs = elements_.back();
+            elements_.pop_back();
+        }
+
+        return m_BrtBeginPivotCacheIDs && m_BrtEndPivotCacheIDs;
     }
 
 } // namespace XLSB

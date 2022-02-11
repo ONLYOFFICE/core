@@ -38,6 +38,7 @@
 #include <unordered_map>
 
 #include "Biff_structures/BorderFillInfo.h"
+#include "XlsElementsType.h"
 
 #include "../Crypt/Decryptor.h"
 
@@ -201,9 +202,12 @@ public:
 	int								connectionId;
 	std::map<std::wstring, int>		connectionNames;
 
-        std::unordered_map<int, std::wstring>		mapTableNames;
-        std::unordered_map<int, std::vector<std::wstring>>	mapTableColumnNames;
-        std::unordered_map<std::wstring, int>		mapTableGuidsIndex;
+    std::unordered_map<int, std::wstring>		mapTableNames;
+    std::unordered_map<int, std::vector<std::wstring>>	mapTableColumnNames;
+    std::unordered_map<std::wstring, int>		mapTableGuidsIndex;
+
+    std::unordered_map<int, std::vector<XLS::ElementType>>		pivotCacheRecordType;
+    int                     		currentPivotCacheRecord;
 
 	XlsConverter					*xls_converter;
 

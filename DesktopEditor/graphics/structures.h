@@ -120,7 +120,7 @@ const long c_BrushTextureModeTileCenter = 2;
 namespace NSStructures
 {
 
-	enum class UnderlineTypes {NONE, SINGLE, DOUBLE, THICK, DOTTED, DOTTEDHEAVY,
+	enum class LineProperties {NONE, SINGLE, DOUBLE, THICK, DOTTED, DOTTEDHEAVY,
 							DASH, DASHEDHEAVY, DASHLONG, DASHLONGHEAVY, DOTDASH, DASHDOTHEAVY,
 							DOTDOTDASH, DASHDOTDOTHEAVY, WAVE, WAVYHEAVY, WAVYDOUBLE};
 
@@ -497,15 +497,16 @@ namespace NSStructures
 		int Bold;
 		int Italic;
 		unsigned char Underline;
-		UnderlineTypes UnderlineType;
+		LineProperties UnderlineType;
 		unsigned char Strikeout;
+		LineProperties StrikeoutType;
 
 		int StringGID;
 		double CharSpace;
 
 		int FaceIndex;
 
-        int HighlightColor;
+		int HighlightColor;
 
 		int IsEqual(CFont *pFont)
 		{
@@ -515,7 +516,7 @@ namespace NSStructures
 			return ((Name == pFont->Name) && (Path == pFont->Path) && (FaceIndex == pFont->FaceIndex) && (StringGID == pFont->StringGID) && (Size == pFont->Size) &&
 					(Bold == pFont->Bold) && (Italic == pFont->Italic) &&
 					(Underline == pFont->Underline) && (UnderlineType == pFont->UnderlineType) &&
- 					(Strikeout == pFont->Strikeout) && (HighlightColor == pFont->HighlightColor));
+					(Strikeout == pFont->Strikeout) && (StrikeoutType == pFont->StrikeoutType) &&(HighlightColor == pFont->HighlightColor));
 		}
 
 		long GetStyle() const
@@ -596,8 +597,9 @@ namespace NSStructures
 
 			FaceIndex = other.FaceIndex;
 
-            HighlightColor = other.HighlightColor;
-            UnderlineType = other.UnderlineType;
+			HighlightColor = other.HighlightColor;
+			UnderlineType = other.UnderlineType;
+			StrikeoutType = other.StrikeoutType;
 
 			return *this;
 		}

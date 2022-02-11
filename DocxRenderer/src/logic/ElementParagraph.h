@@ -211,26 +211,26 @@ namespace NSDocxRenderer
 
             switch (pShape->m_TypeLine)
             {
-                case NSStructures::UnderlineTypes::THICK:
-                    pShape->m_TypeLine = NSStructures::UnderlineTypes::SINGLE;
+                case NSStructures::LineProperties::THICK:
+                    pShape->m_TypeLine = NSStructures::LineProperties::SINGLE;
                     break;
-                case NSStructures::UnderlineTypes::DOTTEDHEAVY:
-                    pShape->m_TypeLine = NSStructures::UnderlineTypes::DOTTED;
+                case NSStructures::LineProperties::DOTTEDHEAVY:
+                    pShape->m_TypeLine = NSStructures::LineProperties::DOTTED;
                     break;
-                case NSStructures::UnderlineTypes::DASHEDHEAVY:
-                    pShape->m_TypeLine = NSStructures::UnderlineTypes::DASH;
+                case NSStructures::LineProperties::DASHEDHEAVY:
+                    pShape->m_TypeLine = NSStructures::LineProperties::DASH;
                     break;
-                case NSStructures::UnderlineTypes::DASHLONGHEAVY:
-                    pShape->m_TypeLine = NSStructures::UnderlineTypes::DASHLONG;
+                case NSStructures::LineProperties::DASHLONGHEAVY:
+                    pShape->m_TypeLine = NSStructures::LineProperties::DASHLONG;
                     break;
-                case NSStructures::UnderlineTypes::DASHDOTHEAVY:
-                    pShape->m_TypeLine = NSStructures::UnderlineTypes::DOTDASH;
+                case NSStructures::LineProperties::DASHDOTHEAVY:
+                    pShape->m_TypeLine = NSStructures::LineProperties::DOTDASH;
                     break;
-                case NSStructures::UnderlineTypes::DASHDOTDOTHEAVY:
-                    pShape->m_TypeLine = NSStructures::UnderlineTypes::DOTDOTDASH;
+                case NSStructures::LineProperties::DASHDOTDOTHEAVY:
+                    pShape->m_TypeLine = NSStructures::LineProperties::DOTDOTDASH;
                     break;
-                case NSStructures::UnderlineTypes::WAVYHEAVY:
-                    pShape->m_TypeLine = NSStructures::UnderlineTypes::WAVE;
+                case NSStructures::LineProperties::WAVYHEAVY:
+                    pShape->m_TypeLine = NSStructures::LineProperties::WAVE;
                     break;
                 default:
                     break;
@@ -338,6 +338,7 @@ namespace NSDocxRenderer
             switch (oMode) {
                 case ModeFontOptions::STRIKEOUT:
                     m_oFont.Strikeout = 1;
+                    m_oFont.StrikeoutType = pShape->m_TypeLine;
                     break;
                 case ModeFontOptions::UNDERLINE:
                     m_oFont.Underline = 1;
@@ -366,7 +367,7 @@ namespace NSDocxRenderer
                return it->second;
         }
 
-        std::wstring GetTypeUnderline(NSStructures::UnderlineTypes type)
+        std::wstring GetTypeUnderline(NSStructures::LineProperties type)
         {
             std::vector <std::wstring> typesUnderline = {L"none"         , L"single"         , L"double",
                                                          L"thick"        , L"dotted"         , L"dottedHeavy",
@@ -406,7 +407,16 @@ namespace NSDocxRenderer
                     oWriter.WriteString(L"\"/>");
                 }
                 if (m_oFont.Strikeout)
-                    oWriter.WriteString(L"<w:strike/>");
+                {
+                    if (m_oFont.StrikeoutType == NSStructures::LineProperties::DOUBLE)
+                    {
+                        oWriter.WriteString(L"<w:dstrike w:val=\"true\" />");
+                    }
+                    else
+                    {
+                        oWriter.WriteString(L"<w:strike w:val=\"true\" />");
+                    }
+                }
                 if (m_oFont.HighlightColor >= 0)
                 {
                     oWriter.WriteString(L"<w:highlight w:val=\"");
@@ -433,7 +443,16 @@ namespace NSDocxRenderer
                     oWriter.WriteString(L"\"/>");
                 }
                 if (m_oFont.Strikeout)
-                    oWriter.WriteString(L"<w:strike/>");
+                {
+                    if (m_oFont.StrikeoutType == NSStructures::LineProperties::DOUBLE)
+                    {
+                        oWriter.WriteString(L"<w:dstrike w:val=\"true\" />");
+                    }
+                    else
+                    {
+                        oWriter.WriteString(L"<w:strike w:val=\"true\" />");
+                    }
+                }
                 if (m_oFont.HighlightColor >= 0)
                 {
                     oWriter.WriteString(L"<w:highlight w:val=\"");

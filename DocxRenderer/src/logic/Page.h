@@ -568,8 +568,17 @@ namespace NSDocxRenderer
         {
             bool IsEqualLeft = abs(pCurShape->m_dLeft - pSecondShape->m_dLeft) < 0.01;
             bool IsEqualWidth = abs(pCurShape->m_dWidth - pSecondShape->m_dWidth) < 0.01;
-            double DiffCoord = pSecondShape->m_dTop - pCurShape->m_dTop - pCurShape->m_dHeight;
-            bool IsSuitableDiff = abs(DiffCoord) < 1.5 && pSecondShape->m_dTop > pCurShape->m_dTop;
+            double dDiffCoord{};
+            if (pSecondShape->m_dTop > pCurShape->m_dTop)
+            {
+                dDiffCoord = pSecondShape->m_dTop - pCurShape->m_dTop - pCurShape->m_dHeight;
+            }
+            else
+            {
+                dDiffCoord = pCurShape->m_dTop - pSecondShape->m_dTop - pSecondShape->m_dHeight;
+            }
+
+            bool IsSuitableDiff = abs(dDiffCoord) < 1 ;
 
             return IsEqualLeft && IsEqualWidth && IsSuitableDiff;
         }
@@ -585,7 +594,7 @@ namespace NSDocxRenderer
                     if (IsSecondLine(pCurShape, pShape))
                     {
                         m_arGraphicItems.erase(m_arGraphicItems.cbegin() + i);
-                        pCurShape->m_TypeLine = NSStructures::UnderlineTypes::DOUBLE;
+                        pCurShape->m_TypeLine = NSStructures::LineProperties::DOUBLE;
                         return true;
                     }
                 }
@@ -644,14 +653,14 @@ namespace NSDocxRenderer
             if (dCalculatedWidth > pCurShape->m_dWidth)
             {
                 if (pCurShape->m_dWidth < 0.55)
-                    pCurShape->m_TypeLine = NSStructures::UnderlineTypes::DOTTED;
+                    pCurShape->m_TypeLine = NSStructures::LineProperties::DOTTED;
                 else if (pCurShape->m_dWidth < 1.5)
-                    pCurShape->m_TypeLine = NSStructures::UnderlineTypes::DASH;
+                    pCurShape->m_TypeLine = NSStructures::LineProperties::DASH;
                 else if (pCurShape->m_dWidth < 3)
-                    pCurShape->m_TypeLine = NSStructures::UnderlineTypes::DASHLONG;
+                    pCurShape->m_TypeLine = NSStructures::LineProperties::DASHLONG;
                 //TODO: убрать
                 else
-                    pCurShape->m_TypeLine = NSStructures::UnderlineTypes::SINGLE;
+                    pCurShape->m_TypeLine = NSStructures::LineProperties::SINGLE;
 
                 pCurShape->m_dWidth = dCalculatedWidth;
                 return true;
@@ -721,9 +730,9 @@ namespace NSDocxRenderer
 
             pCurShape->m_dWidth = dCalculatedWidth;
             if (abs(lLongLine-lShortLine) < 2)
-                pCurShape->m_TypeLine = NSStructures::UnderlineTypes::DOTDASH;
+                pCurShape->m_TypeLine = NSStructures::LineProperties::DOTDASH;
             else
-                pCurShape->m_TypeLine = NSStructures::UnderlineTypes::DOTDOTDASH;
+                pCurShape->m_TypeLine = NSStructures::LineProperties::DOTDOTDASH;
 
         }
 
@@ -740,12 +749,12 @@ namespace NSDocxRenderer
                     {
                         if (IsSearchSecondWave(i, pShape))
                         {
-                            pShape->m_TypeLine = NSStructures::UnderlineTypes::WAVYDOUBLE;
+                            pShape->m_TypeLine = NSStructures::LineProperties::WAVYDOUBLE;
                             nCount = m_arGraphicItems.size();
                         }
                         else
                         {
-                            pShape->m_TypeLine = NSStructures::UnderlineTypes::WAVE;
+                            pShape->m_TypeLine = NSStructures::LineProperties::WAVE;
                         }
                         continue;
                     }
@@ -768,7 +777,7 @@ namespace NSDocxRenderer
                         nCount = m_arGraphicItems.size();
                         continue;
                     }
-                    pShape->m_TypeLine = NSStructures::UnderlineTypes::SINGLE;
+                    pShape->m_TypeLine = NSStructures::LineProperties::SINGLE;
                 }
             }
         }
@@ -777,26 +786,26 @@ namespace NSDocxRenderer
         {
             switch (pShape->m_TypeLine)
             {
-                case NSStructures::UnderlineTypes::SINGLE:
-                    pShape->m_TypeLine = NSStructures::UnderlineTypes::THICK;
+                case NSStructures::LineProperties::SINGLE:
+                    pShape->m_TypeLine = NSStructures::LineProperties::THICK;
                     break;
-                case NSStructures::UnderlineTypes::DOTTED:
-                    pShape->m_TypeLine = NSStructures::UnderlineTypes::DOTTEDHEAVY;
+                case NSStructures::LineProperties::DOTTED:
+                    pShape->m_TypeLine = NSStructures::LineProperties::DOTTEDHEAVY;
                     break;
-                case NSStructures::UnderlineTypes::DASH:
-                    pShape->m_TypeLine = NSStructures::UnderlineTypes::DASHEDHEAVY;
+                case NSStructures::LineProperties::DASH:
+                    pShape->m_TypeLine = NSStructures::LineProperties::DASHEDHEAVY;
                     break;
-                case NSStructures::UnderlineTypes::DASHLONG:
-                    pShape->m_TypeLine = NSStructures::UnderlineTypes::DASHLONGHEAVY;
+                case NSStructures::LineProperties::DASHLONG:
+                    pShape->m_TypeLine = NSStructures::LineProperties::DASHLONGHEAVY;
                     break;
-                case NSStructures::UnderlineTypes::DOTDASH:
-                    pShape->m_TypeLine = NSStructures::UnderlineTypes::DASHDOTHEAVY;
+                case NSStructures::LineProperties::DOTDASH:
+                    pShape->m_TypeLine = NSStructures::LineProperties::DASHDOTHEAVY;
                     break;
-                case NSStructures::UnderlineTypes::DOTDOTDASH:
-                    pShape->m_TypeLine = NSStructures::UnderlineTypes::DASHDOTDOTHEAVY;
+                case NSStructures::LineProperties::DOTDOTDASH:
+                    pShape->m_TypeLine = NSStructures::LineProperties::DASHDOTDOTHEAVY;
                     break;
-//                case NSStructures::UnderlineTypes::WAVE:
-//                    pShape->m_TypeLine = NSStructures::UnderlineTypes::WAVYHEAVY;
+//                case NSStructures::LineProperties::WAVE:
+//                    pShape->m_TypeLine = NSStructures::LineProperties::WAVYHEAVY;
 //                    break;
                 default:
                     break;

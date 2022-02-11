@@ -30,7 +30,7 @@
  *
  */
 #include "Number.h"
-#include <Auxiliary/HelpFunc.h>
+#include "../../Auxiliary/HelpFunc.h"
 
 #include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
 

@@ -31,7 +31,6 @@
  */
 
 #include "SerNil.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

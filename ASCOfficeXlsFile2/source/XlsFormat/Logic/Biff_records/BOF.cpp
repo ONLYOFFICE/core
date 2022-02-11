@@ -31,7 +31,6 @@
  */
 
 #include "BOF.h"
-#include <Binary/CFStream.h>
 
 #include "../../../../../Common/MS-LCID.h"
 

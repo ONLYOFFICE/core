@@ -30,7 +30,6 @@
  *
  */
 
-#include <Binary/CFRecord.h>
 #include "Feat11Fmla.h"
 #include "CellRangeRef.h"
 

@@ -33,9 +33,8 @@
 
 #include <boost/lexical_cast.hpp>
 
-#include <Logic/Biff_records/Font.h>
-
-#include "../../../DesktopEditor/graphics/pro/Fonts.h"
+#include "Biff_records/Font.h"
+#include "../../../../DesktopEditor/graphics/pro/Fonts.h"
 
 
 namespace XLS

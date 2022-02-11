@@ -32,7 +32,6 @@
 
 #include "Cell.h"
 #include "CellRef.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

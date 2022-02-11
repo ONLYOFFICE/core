@@ -31,7 +31,6 @@
  */
 
 #include "OfficeArtCOLORREF.h"
-#include <Binary/CFRecord.h>
 
 namespace ODRAW
 {

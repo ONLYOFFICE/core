@@ -31,7 +31,6 @@
  */
 
 #include "DXFId.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

@@ -31,7 +31,6 @@
  */
 
 #include "Feat11XMap.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

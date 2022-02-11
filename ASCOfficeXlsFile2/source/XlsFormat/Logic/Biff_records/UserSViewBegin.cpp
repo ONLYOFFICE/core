@@ -31,8 +31,7 @@
  */
 
 #include "UserSViewBegin.h"
-#include <Logic/Biff_structures/CellRangeRef.h>
-//#include <Exception/AttributeDataWrong.h>
+#include "../Biff_structures/CellRangeRef.h"
 
 namespace XLS
 {

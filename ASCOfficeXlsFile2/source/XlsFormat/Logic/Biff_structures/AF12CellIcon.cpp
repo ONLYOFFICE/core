@@ -31,7 +31,6 @@
  */
 
 #include "AF12CellIcon.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

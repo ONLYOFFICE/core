@@ -123,7 +123,7 @@ namespace NSSystemPath
 		bool bIsUp          = false;
 
 	#if !defined(_WIN32) && !defined (_WIN64)
-		if (pData[nCurrent] == pData[nCurrent] == '/' || pData[nCurrent] == '\\')
+		if (pData[nCurrent] == '/' || pData[nCurrent] == '\\')
 			pDataNorm[nCurrentW++] = pData[nCurrent];
 	#endif
 		while (nCurrent < nLen)

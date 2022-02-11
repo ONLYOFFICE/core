@@ -31,7 +31,6 @@
  */
 
 #include "AF12Criteria.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

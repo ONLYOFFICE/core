@@ -34,8 +34,8 @@
 #include <string>
 #include <vector>
 #include <iosfwd>
-#include <xml/xmlelement.h>
-#include <CPSharedPtr.h>
+#include "../../include/xml/xmlelement.h"
+#include "../../include/CPSharedPtr.h"
 
 namespace cpdoccore { 
 namespace oox {

@@ -94,8 +94,8 @@
 #include "xlsx_conversion_context.h"
 #include "xlsx_package.h"
 
-#include <simple_xml_writer.h>
-#include <utils.h>
+#include "../Common/simple_xml_writer.h"
+#include "../Common/utils.h"
 
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/raster/BgraFrame.h"

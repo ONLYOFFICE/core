@@ -31,8 +31,8 @@
  */
 
 #include "RTD.h"
-#include <Logic/Biff_records/RealTimeData.h>
-#include <Logic/Biff_records/ContinueFrt.h>
+#include "../Biff_records/RealTimeData.h"
+#include "../Biff_records/ContinueFrt.h"
 
 namespace XLS
 {

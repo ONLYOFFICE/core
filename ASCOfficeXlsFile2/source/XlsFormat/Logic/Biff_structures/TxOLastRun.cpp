@@ -31,7 +31,6 @@
  */
 
 #include "TxOLastRun.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

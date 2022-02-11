@@ -34,7 +34,7 @@
 
 #include <boost/functional.hpp>
 #include <boost/unordered_set.hpp>
-#include <xml/simple_xml_writer.h>
+#include "../../include/xml/simple_xml_writer.h"
 
 #include "xlsx_border.h"
 #include "../odf/datatypes/length.h"

@@ -32,7 +32,7 @@
 
 #include <iostream>
 #include "style_paragraph_properties.h"
-#include <xml/simple_xml_writer.h>
+#include "../../include/xml/simple_xml_writer.h"
 
 #include "../docx/pptx_conversion_context.h"
 #include "datatypes/borderstyle.h"

@@ -29,19 +29,14 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-
-
-#include "styles.h"
-#include <xml/xmlchar.h>
-#include <xml/attributes.h>
-#include <xml/simple_xml_writer.h>
-
-#include <odf/odf_document.h>
-
 #include <iostream>
 
-#include "style_properties.h"
+#include "styles.h"
 
+#include "../../include/xml/simple_xml_writer.h"
+#include "../../include/odf/odf_document.h"
+
+#include "style_properties.h"
 
 #include "serialize_elements.h"
 #include "odfcontext.h"

@@ -32,7 +32,7 @@
 #pragma once
 
 #include "OperandPtg.h"
-#include <Logic/Biff_structures/BitMarkedStructs.h>
+#include "BitMarkedStructs.h"
 
 namespace XLS
 {

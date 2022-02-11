@@ -34,7 +34,7 @@
 #include <sstream>
 #include <boost/noncopyable.hpp>
 
-#include "common.h"
+#include "../Common/common.h"
 
 #include "xlsx_textcontext.h"
 #include "xlsx_sheet_context.h"

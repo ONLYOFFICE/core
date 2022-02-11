@@ -33,7 +33,7 @@
 #include "xlsx_fonts.h"
 #include "xlsx_font.h"
 
-#include <xml/simple_xml_writer.h>
+#include "../../include/xml/simple_xml_writer.h"
 
 #include <boost/functional.hpp>
 #include <boost/unordered_set.hpp>

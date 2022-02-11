@@ -31,9 +31,9 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
-#include <Logic/Biff_structures/CellRef.h>
-#include <Logic/Biff_structures/CellRangeRef.h>
+#include "../CompositeObject.h"
+#include "../Biff_structures/CellRef.h"
+#include "../Biff_structures/CellRangeRef.h"
 
 namespace XLS
 {

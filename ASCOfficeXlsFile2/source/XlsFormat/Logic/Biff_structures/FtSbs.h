@@ -32,7 +32,7 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include <Logic/Biff_structures/Boolean.h>
+#include "Boolean.h"
 
 namespace XLS
 {

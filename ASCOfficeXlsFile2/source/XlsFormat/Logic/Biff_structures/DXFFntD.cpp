@@ -31,9 +31,8 @@
  */
 
 #include "DXFN.h"
-#include <Binary/CFRecord.h>
 
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
+#include "../../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
 
 namespace XLS
 {

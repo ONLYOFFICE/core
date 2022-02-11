@@ -113,9 +113,9 @@ namespace SerializeCommon
 	void ReadFileType(const std::wstring& sXMLOptions, BYTE& result, UINT& nCodePage, std::wstring& sDelimiter, BYTE& cSaveFileType)
 	{
 		result = BinXlsxRW::c_oFileTypes::XLSX;
-		nCodePage = 46;//todo 46 временно CP_UTF8
-		sDelimiter = _T("");
-		cSaveFileType = BinXlsxRW::c_oFileTypes::XLSX;
+		nCodePage = 46;		//default 46 временно CP_UTF8
+		sDelimiter = L";"; // default
+		cSaveFileType = BinXlsxRW::c_oFileTypes::XLSX;// default
 
 		nullable<SimpleTypes::CUnsignedDecimalNumber<>> fileType;
 		nullable<SimpleTypes::CUnsignedDecimalNumber<>> codePage;
@@ -135,14 +135,13 @@ namespace SerializeCommon
 		while(oReader.ReadNextSiblingNode(nCurDepth))
 		{
 			std::wstring sName = oReader.GetName();
-			if (_T("fileOptions") == sName)
+			if (L"fileOptions" == sName)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start(oReader)
-				WritingElement_ReadAttributes_Read_if (oReader, _T("fileType"), fileType)
-				WritingElement_ReadAttributes_Read_else_if (oReader, _T("codePage"), codePage)
-				WritingElement_ReadAttributes_Read_else_if (oReader, _T("delimiter"), delimiter)
-				WritingElement_ReadAttributes_Read_else_if (oReader, _T("saveFileType"), saveFileType)
+				WritingElement_ReadAttributes_Read_if (oReader, L"fileType", fileType)
+				WritingElement_ReadAttributes_Read_else_if (oReader, L"codePage", codePage)
+				WritingElement_ReadAttributes_Read_else_if (oReader, L"delimiter", delimiter)
+				WritingElement_ReadAttributes_Read_else_if (oReader, L"saveFileType", saveFileType)
 				WritingElement_ReadAttributes_End(oReader)
 				
 				if (fileType.IsInit())

@@ -32,9 +32,9 @@
 #pragma once
 
 #include <iosfwd>
-#include <CPScopedPtr.h>
-#include <CPSharedPtr.h>
-#include <xml/attributes.h>
+#include "../../include/CPScopedPtr.h"
+#include "../../include/CPSharedPtr.h"
+#include "../../include/xml/attributes.h"
 #include "mediaitems.h"
 
 namespace cpdoccore {

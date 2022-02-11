@@ -37,9 +37,9 @@
 #include <iostream>
 #include <list>
 
-#include <xml/simple_xml_writer.h>
-#include <odf/odf_document.h>
-#include <xml/utils.h>
+#include "../../include/xml/simple_xml_writer.h"
+#include "../../include/odf/odf_document.h"
+#include "../../include/xml/utils.h"
 
 #include "../odf/odfcontext.h"
 #include "../odf/calcs_styles.h"

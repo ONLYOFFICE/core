@@ -36,7 +36,7 @@
 
 #include <sstream>
 
-#include <simple_xml_writer.h>
+#include "../Common/simple_xml_writer.h"
 
 namespace oox {
 

@@ -34,7 +34,6 @@
 #include <string>
 #include <iosfwd>
 
-#include <xml/attributes.h>
 #include "odfattributes.h"
 
 namespace cpdoccore { namespace odf_types { 

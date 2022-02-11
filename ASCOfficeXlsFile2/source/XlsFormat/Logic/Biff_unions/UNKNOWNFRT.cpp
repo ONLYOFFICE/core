@@ -31,7 +31,7 @@
  */
 //
 #include "UNKNOWNFRT.h"
-#include <Logic/Biff_records/SXAddl.h>
+#include "../Biff_records/SXAddl.h"
 
 namespace XLS
 {

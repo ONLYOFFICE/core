@@ -34,8 +34,6 @@
 
 #include <string>
 #include <boost/noncopyable.hpp>
-#include <CPScopedPtr.h>
-#include <CPSharedPtr.h>
 
 #include "pptx_comments.h"
 

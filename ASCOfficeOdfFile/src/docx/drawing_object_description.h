@@ -46,7 +46,12 @@ struct _rect
     double x;
     double y;
 };
-
+enum _anchor_rel
+{
+	anchor_none = 0,
+	anchor_start = 1,
+	anchor_end = 2
+};
 struct drawing_object_description
 {
 	bool									bNotes_;
@@ -58,6 +63,7 @@ struct drawing_object_description
 
 	_CP_OPT(_rect)							svg_rect_;
 
+	_anchor_rel								anchor_rel_;
 	std::wstring							anchor_;
     double									anchor_x_;
     double									anchor_y_;

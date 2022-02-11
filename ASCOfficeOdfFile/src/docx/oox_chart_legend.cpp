@@ -32,11 +32,9 @@
 
 
 #include <boost/functional.hpp>
-#include <CPOptional.h>
-#include <xml/simple_xml_writer.h>
+#include "../../include/xml/simple_xml_writer.h"
 
 #include "oox_chart_legend.h"
-
 #include "oox_chart_shape.h"
 
 namespace cpdoccore {

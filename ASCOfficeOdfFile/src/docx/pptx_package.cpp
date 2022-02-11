@@ -34,7 +34,7 @@
 #include "pptx_package.h"
 #include "pptx_output_xml.h"
 
-#include <utf8cpp/utf8.h>
+#include "../../include/utf8cpp/utf8.h"
 
 namespace cpdoccore { 
 namespace oox {

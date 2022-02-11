@@ -29,11 +29,10 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef CPDOCCORE_COMPLEX_NUMBER_FORMAT
-#define CPDOCCORE_COMPLEX_NUMBER_FORMAT
+#pragma once
 
 #include <string>
-#include <CPScopedPtr.h>
+#include "../../include/CPScopedPtr.h"
 
 namespace cpdoccore {
 namespace oox {
@@ -58,5 +57,3 @@ private:
 
 }
 }
-
-#endif

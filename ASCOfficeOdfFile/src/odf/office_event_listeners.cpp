@@ -31,11 +31,9 @@
  */
 
 #include "office_event_listeners.h"
-
-#include <xml/xmlchar.h>
-#include <xml/attributes.h>
-
 #include "serialize_elements.h"
+
+#include "../../include/xml/xmlchar.h"
 
 namespace cpdoccore { 
 

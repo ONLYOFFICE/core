@@ -31,7 +31,6 @@
  */
 
 #include "XFPropGradient.h"
-#include <Binary/CFRecord.h>
 #include "Xnum.h"
 
 namespace XLS

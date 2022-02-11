@@ -144,6 +144,7 @@ namespace PdfWriter
 
 		void      AddCommands(CXref* pXref);
 		void      AddContents(CXref* pXref);
+		void      SetXref(CXref* pXref) { m_pXref = pXref; }
 		CXref*    GetXref() { return m_pXref; }
 
 	private:

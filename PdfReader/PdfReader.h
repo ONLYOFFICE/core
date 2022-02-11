@@ -40,6 +40,7 @@
 #endif
 #include "../DesktopEditor/graphics/pro/officedrawingfile.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"
+#include "../PdfWriter/PdfRenderer.h"
 
 namespace PdfReader
 {
@@ -97,7 +98,9 @@ namespace PdfReader
         NSFonts::IFontManager* GetFontManager();
 
         std::wstring ToXml(const std::wstring& wsXmlPath);
-        void AddToPage(int nPageIndex, IRenderer* pPdfWriter, const std::wstring& sFile);
+        bool EditPdf(IRenderer* pPdfWriter);
+        bool EditPage(int nPageIndex);
+        bool AddToFile(const std::wstring& wsPath);
 
     #ifdef BUILDING_WASM_MODULE
         virtual BYTE* GetStructure();
@@ -106,6 +109,7 @@ namespace PdfReader
 
     private:
         CPdfReader_Private* m_pInternal;
+        CPdfRenderer*       m_pPdfWriter;
         int              m_eError;
     };
 }

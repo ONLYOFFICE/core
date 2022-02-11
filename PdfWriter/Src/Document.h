@@ -148,7 +148,10 @@ namespace PdfWriter
 		CPictureField*    CreatePictureField();
 		bool              CheckFieldName(CFieldBase* pField, const std::string& sName);
 					  
-		void              AddToPage(const std::wstring& wsPath, CPage* pPage, CXref* pXref, int nPosLastXRef, int nSizeXRef, unsigned int unRootObjId, unsigned int unRootGenNo);
+		bool              EditPdf(int nPosLastXRef, int nSizeXRef);
+		CPage*            EditPage(std::wstring sPage, const std::pair<int, int>& pPage);
+		bool              AddToFile(const std::wstring& wsPath, const std::pair<int, int>& pRoot);
+		void              TEST();
 	private:		  
 					  
 		char*             GetTTFontTag();

@@ -658,11 +658,14 @@ namespace PdfWriter
 	}
     void CXref::WriteTrailer(CStream* pStream)
 	{
-		unsigned int unMaxObjId = m_pPrev ? m_pPrev->m_arrEntries.size() + m_pPrev->m_unStartOffset : m_arrEntries.size() + m_unStartOffset;
+		CXref* pPrev = m_pPrev;
+		if (m_pPrev)
+			while (pPrev->m_pPrev) pPrev = pPrev->m_pPrev;
+		unsigned int unMaxObjId = m_pPrev ? pPrev->m_arrEntries.size() + pPrev->m_unStartOffset : m_arrEntries.size() + m_unStartOffset;
 
 		m_pTrailer->Add("Size", unMaxObjId);
 		if (m_pPrev)
-			m_pTrailer->Add("Prev", m_pPrev->m_unAddr);
+			m_pTrailer->Add("Prev", pPrev->m_unAddr);
 
 		pStream->WriteStr("trailer\012");
 		pStream->Write(m_pTrailer, NULL);

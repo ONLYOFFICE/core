@@ -225,7 +225,10 @@ public:
     HRESULT OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker = false);
     HRESULT OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker = false);
 	HRESULT DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2* pMaskBuffer, const unsigned int& unMaskWidth, const unsigned int& unMaskHeight, const double& dX, const double& dY, const double& dW, const double& dH);
-	HRESULT AddToPage(const std::wstring& wsPath, std::wstring sPage, int nPosLastXRef, int nSizeXRef, const std::pair<int, int>& pRoot, const std::pair<int, int>& pPage);
+	bool EditPdf(int nPosLastXRef, int nSizeXRef);
+	bool EditPage(std::wstring sPage, const std::pair<int, int>& pPage);
+	bool AddToFile(const std::wstring& wsPath, const std::pair<int, int>& pRoot);
+	HRESULT TEST();
 
     NSFonts::IApplicationFonts* GetApplicationFonts();
 

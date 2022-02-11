@@ -25,34 +25,21 @@ int main()
     }
 
     bool bResult = pReader->LoadFromMemory(pData, nBytes);
-    if (bResult)
+    if (bResult && pReader->EditPdf(&pdfWriter))
     {
-        /*
-        for (int i = 0, nPagesCount = pReader->GetPagesCount(); i < nPagesCount; ++i)
+        if (pReader->EditPage(0))
         {
-            pdfWriter.NewPage();
-            pdfWriter.BeginCommand(c_nPageType);
-
-            double dPageDpiX, dPageDpiY;
-            double dWidth, dHeight;
-            pReader->GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
-
-            dWidth  *= 25.4 / dPageDpiX;
-            dHeight *= 25.4 / dPageDpiY;
-
-            pdfWriter.put_Width(dWidth);
-            pdfWriter.put_Height(dHeight);
-
-            pReader->DrawPageOnRenderer(&pdfWriter, i, NULL);
-
-            pdfWriter.EndCommand(c_nPageType);
+            pdfWriter.TEST();
         }
-        */
+
+        if (pReader->EditPage(1))
+        {
+            pdfWriter.TEST();
+        }
+
+        pReader->AddToFile(NSFile::GetProcessDirectory() + L"/test.pdf");
     }
 
-    // на какую страницу, писатель PdfWriter, файл в который дописать
-    pReader->AddToPage(0, &pdfWriter, NSFile::GetProcessDirectory() + L"/test.pdf");
-    //pdfWriter.SaveToFile(NSFile::GetProcessDirectory() + L"/res.pdf");
     RELEASEOBJECT(pReader);
     RELEASEOBJECT(pApplicationFonts);
     RELEASEARRAYOBJECTS(pData);

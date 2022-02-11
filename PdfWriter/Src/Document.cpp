@@ -1052,34 +1052,70 @@ namespace PdfWriter
 
 		return (!!m_pAcroForm);
 	}
-	void CDocument::AddToPage(const std::wstring& wsPath, CPage* pPage, CXref* pXref, int nPosLastXRef, int nSizeXRef, unsigned int unRootObjId, unsigned int unRootGenNo)
+	bool CDocument::EditPdf(int nPosLastXRef, int nSizeXRef)
+	{
+		Close();
+
+		m_pXref = new CXref(this, nSizeXRef);
+		if (!m_pXref)
+			return false;
+		m_pXref->SetPrevAddr(nPosLastXRef);
+
+		m_pTrailer = m_pXref->GetTrailer();
+		if (!m_pTrailer)
+			return false;
+
+		SetCompressionMode(COMP_ALL);
+
+		return true;
+	}
+	CPage* CDocument::EditPage(std::wstring sPage, const std::pair<int, int>& pPage)
+	{
+		CXref* pXref = new CXref(this, pPage.first);
+		// pNewPage Освобождается в деструкторе pXref
+		CPage* pNewPage = new CPage(pXref, this, sPage);
+		pNewPage->SetRef(pPage.first, pPage.second);
+
+		pNewPage->AddContents(m_pXref);
+#ifndef FILTER_FLATE_DECODE_DISABLED
+		if (m_unCompressMode & COMP_TEXT)
+			pNewPage->SetFilter(STREAM_FILTER_FLATE_DECODE);
+#endif
+		pXref->SetPrev(m_pCurPage ? m_pCurPage->GetXref() : m_pXref);
+
+		m_pCurPage = pNewPage;
+		return pNewPage;
+	}
+	bool CDocument::AddToFile(const std::wstring& wsPath, const std::pair<int, int>& pRoot)
 	{
 		CFileStream* pStream = new CFileStream();
 		if (!pStream || !pStream->OpenFile(wsPath, false))
-			return;
+			return false;
 
-		// Освобождается в деструкторе pXref как m_pPrev
-		CXref* pXrefNew = new CXref(this, nSizeXRef);
+		// Шифруем документ, если это необходимо
+		CEncrypt* pEncrypt = NULL;
+		if (m_bEncrypt)
+		{
+			pEncrypt = m_pEncryptDict->GetEncrypt();
+			PrepareEncryption();
+		}
 
-		pPage->AddContents(pXrefNew);
-#ifndef FILTER_FLATE_DECODE_DISABLED
-		if (m_unCompressMode & COMP_TEXT)
-			pPage->SetFilter(STREAM_FILTER_FLATE_DECODE);
-#endif
-		pPage->AddCommands(pXrefNew); // Выполнение команд на странице
-
-		pXrefNew->SetPrevAddr(nPosLastXRef);
-		pXref->SetPrev(pXrefNew);
-
-		// Root в трейлер
+		// Root добавляется в последний трейлер
 		CObjectBase* pBase = new CObjectBase();
-		pBase->SetRef(unRootObjId, unRootGenNo);
-		CObjectBase* pRoot = new CProxyObject(pBase);
-		pXref->GetTrailer()->Add("Root", pRoot);
+		pBase->SetRef(pRoot.first, pRoot.second);
+		CObjectBase* pRootObj = new CProxyObject(pBase);
+		m_pCurPage->GetXref()->GetTrailer()->Add("Root", pRootObj);
 
-		pXref->WriteToStream(pStream, NULL);
+		m_pCurPage->GetXref()->WriteToStream(pStream, pEncrypt);
 
-		RELEASEOBJECT(pBase);
 		RELEASEOBJECT(pStream);
+		m_pXref = NULL;
+		return true;
+	}
+	void CDocument::TEST()
+	{
+		CXref* pXref = m_pCurPage->GetXref();
+		m_pCurPage->AddCommands(m_pXref);
+		m_pCurPage->SetXref(pXref);
 	}
 }

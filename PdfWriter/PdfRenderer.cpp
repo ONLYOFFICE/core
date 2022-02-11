@@ -2048,20 +2048,34 @@ HRESULT CPdfRenderer::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbi
 	m_pPage->GrRestore();
 	return S_OK;
 }
-HRESULT CPdfRenderer::AddToPage(const std::wstring& wsPath, std::wstring sPage, int nPosLastXRef, int nSizeXRef, const std::pair<int, int>& pRoot, const std::pair<int, int>& pPage)
+bool CPdfRenderer::EditPdf(int nPosLastXRef, int nSizeXRef)
+{
+	return m_pDocument->EditPdf(nPosLastXRef, nSizeXRef);
+}
+bool CPdfRenderer::EditPage(std::wstring sPage, const std::pair<int, int>& pPage)
 {
 	if (!IsValid())
-		return S_FALSE;
+		return false;
 	m_oCommandManager.Flush();
 
-	CXref* pXref = new CXref(m_pDocument, pPage.first);
-	// pNewPage Освобождается в деструкторе pXref
-	CPage* pNewPage = new CPage(pXref, m_pDocument, sPage);
-	pNewPage->SetRef(pPage.first, pPage.second);
+	m_pPage = m_pDocument->EditPage(sPage, pPage);
+	return !!m_pPage;
+}
+bool CPdfRenderer::AddToFile(const std::wstring& wsPath, const std::pair<int, int>& pRoot)
+{
+	if (!IsValid())
+		return false;
+	m_oCommandManager.Flush();
 
-	m_pDocument->AddToPage(wsPath, pNewPage, pXref, nPosLastXRef, nSizeXRef, pRoot.first, pRoot.second);
-
+	if (!m_pDocument->AddToFile(wsPath, pRoot))
+		return false;
+	CXref* pXref = m_pPage->GetXref();
 	RELEASEOBJECT(pXref);
+	return true;
+}
+HRESULT CPdfRenderer::TEST()
+{
+	m_pDocument->TEST();
 	return S_OK;
 }
 

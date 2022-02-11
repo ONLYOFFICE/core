@@ -49,8 +49,6 @@
 #include "lib/xpdf/ImageOutputDev.h"
 #include "Src/RendererOutputDev.h"
 
-#include "../PdfWriter/PdfRenderer.h"
-
 #ifdef BUILDING_WASM_MODULE
 #include "../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
 #include "lib/xpdf/Outline.h"
@@ -102,6 +100,7 @@ namespace PdfReader
     #endif
 
         m_eError = errNone;
+        m_pPdfWriter = NULL;
 	}
 	CPdfReader::~CPdfReader()
 	{
@@ -122,6 +121,7 @@ namespace PdfReader
         RELEASEOBJECT((m_pInternal->m_pPDFDocument));
         RELEASEOBJECT((globalParams));
         RELEASEINTERFACE((m_pInternal->m_pFontManager));
+        m_pPdfWriter = NULL;
 	}
     bool CPdfReader::LoadFromFile(const std::wstring& wsSrcPath, const std::wstring& wsOptions,
                                     const std::wstring& wsOwnerPassword, const std::wstring& wsUserPassword)
@@ -430,14 +430,19 @@ return 0;
 //		return wsXml;
         return L"";
 	}
-    void CPdfReader::AddToPage(int nPageIndex, IRenderer* pPdfWriter, const std::wstring& sFile)
+    bool CPdfReader::EditPdf(IRenderer* pPdfWriter)
     {
         long lRendererType;
         pPdfWriter->get_Type(&lRendererType);
         if (c_nPDFWriter != lRendererType || !m_pInternal->m_pPDFDocument)
-            return;
+            return false;
 
-        CPdfRenderer* pdfWriter = (CPdfRenderer*)pPdfWriter;
+        m_pPdfWriter = (CPdfRenderer*)pPdfWriter;
+        XRef* xref = m_pInternal->m_pPDFDocument->getXRef();
+        return m_pPdfWriter->EditPdf(xref->getLastXRefPos(), xref->getNumObjects());
+    }
+    bool CPdfReader::EditPage(int nPageIndex)
+    {
         XRef* xref = m_pInternal->m_pPDFDocument->getXRef();
         Ref* pPageRef = m_pInternal->m_pPDFDocument->getCatalog()->getPageRef(++nPageIndex);
 
@@ -448,7 +453,7 @@ return 0;
         {
             pageObj.free();
             pageRefObj.free();
-            return;
+            return false;
         }
         std::wstring sPage = L"<Page";
         XMLConverter::PageToXml(&pageObj, sPage);
@@ -456,7 +461,12 @@ return 0;
         pageObj.free();
         pageRefObj.free();
 
-        pdfWriter->AddToPage(sFile, sPage, xref->getLastXRefPos(), xref->getNumObjects(), std::make_pair(xref->getRootNum(), xref->getRootGen()), std::make_pair(pPageRef->num, pPageRef->gen));
+        return m_pPdfWriter->EditPage(sPage, std::make_pair(pPageRef->num, pPageRef->gen));
+    }
+    bool CPdfReader::AddToFile(const std::wstring& wsPath)
+    {
+        XRef* xref = m_pInternal->m_pPDFDocument->getXRef();
+        return m_pPdfWriter->AddToFile(wsPath, std::make_pair(xref->getRootNum(), xref->getRootGen()));
     }
 #ifdef BUILDING_WASM_MODULE    
     void getBookmars(PDFDoc* pdfDoc, OutlineItem* pOutlineItem, NSWasm::CData& out, int level)

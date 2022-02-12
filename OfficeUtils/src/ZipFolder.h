@@ -4,6 +4,7 @@
 #include "ZipBuffer.h"
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Directory.h"
+#include "../../DesktopEditor/common/Path.h"
 #include "../../DesktopEditor/xml/include/xmlutils.h"
 
 class IFolder
@@ -239,12 +240,14 @@ class CZipFolderMemory : public IFolder
     CZipBuffer* m_zlib;
 
 protected:
+
     // Конвертирует wstring -> string и убирает '/' в начале, т.к. пути относительные архива
     std::string getLocalFilePathA(const std::wstring& path)
     {
-        if (!path.empty() && path[0] == L'/')
-            return U_TO_UTF8(path.substr(1));
-        return U_TO_UTF8(path);
+        std::string sPath = U_TO_UTF8(path);
+        if (!sPath.empty() && sPath[0] == '/')
+            return NSSystemPath::NormalizePath(sPath.substr(1));
+        return NSSystemPath::NormalizePath(sPath);
     }
 
 public:

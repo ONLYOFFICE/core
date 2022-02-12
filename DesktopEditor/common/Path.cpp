@@ -164,7 +164,8 @@ namespace NSSystemPath
 
 		std::string result = std::string(pDataNorm, nCurrentW);
 
-		delete []pDataNorm;
+		delete[] pDataNorm;
+		delete[] pSlashPoints;
 
 		return result;
 	}

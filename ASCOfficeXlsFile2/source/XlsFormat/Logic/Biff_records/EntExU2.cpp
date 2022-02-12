@@ -31,7 +31,6 @@
  */
 
 #include "EntExU2.h"
-//#include <Exception/UnexpectedProgramPath.h>
 
 namespace XLS
 {

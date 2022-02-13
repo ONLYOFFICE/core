@@ -50,7 +50,7 @@ public:
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeStyle;
+	static const ElementType type = typeStyle;
 
 	int serialize(std::wostream & stream);
 //-----------------------------

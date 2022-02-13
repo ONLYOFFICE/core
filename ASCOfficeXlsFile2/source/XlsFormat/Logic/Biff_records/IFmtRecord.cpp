@@ -53,7 +53,11 @@ BaseObjectPtr IFmtRecord::clone()
 
 void IFmtRecord::readFields(CFRecord& record)
 {
+	GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();
+
 	record >> ifmt;
+	
+	global_info->mapUsedFormatCode.insert(std::make_pair(ifmt, true));
 }
 
 } // namespace XLS

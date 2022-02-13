@@ -35,19 +35,21 @@ namespace XLS
 {
 
 Blank::Blank()
-{
-}
-
-
+{}
 Blank::~Blank()
-{
-}
-
+{}
 BaseObjectPtr Blank::clone()
 {
 	return BaseObjectPtr(new Blank(*this));
 }
-
+Blank_BIFF2::Blank_BIFF2()
+{}
+Blank_BIFF2::~Blank_BIFF2()
+{}
+BaseObjectPtr Blank_BIFF2::clone()
+{
+	return BaseObjectPtr(new Blank_BIFF2(*this));
+}
 
 void Blank::readFields(CFRecord& record)
 {
@@ -66,7 +68,7 @@ int Blank::serialize(std::wostream & stream)
 	int row = cell.rw;
 	int st = (int)cell.ixfe - global_info_->cellStyleXfs_count;
 	
-	if (cell.ixfe > global_info_->cellStyleXfs_count)
+	if (cell.ixfe >= global_info_->cellStyleXfs_count)
 	{
 		CP_XML_WRITER(stream)    
 		{	

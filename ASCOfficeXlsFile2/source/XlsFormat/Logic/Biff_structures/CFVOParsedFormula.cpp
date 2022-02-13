@@ -31,7 +31,6 @@
  */
 
 #include "CFVOParsedFormula.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

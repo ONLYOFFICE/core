@@ -34,61 +34,80 @@
 
 namespace XLS
 {
-
-Row::Row()
-{
-	iOutLevel = 0;
-	ixfe_val = 0;
-}
-
-
+Row::Row() : iOutLevel(0), ixfe_val(0)
+{}
 Row::~Row()
-{
-}
-
-
+{}
 BaseObjectPtr Row::clone()
 {
 	return BaseObjectPtr(new Row(*this));
 }
 
+Row_BIFF2::Row_BIFF2() : Row()
+{}
+Row_BIFF2::~Row_BIFF2()
+{}
+BaseObjectPtr Row_BIFF2::clone()
+{
+	return BaseObjectPtr(new Row_BIFF2(*this));
+}
+//---------------------------------------------------------------------------
 void Row::readFields(CFRecord& record)
 {
-
-    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	global_info_ = record.getGlobalWorkbookInfo();
+	
+	if (global_info_->Version < 0x0800)
     {
-        Rw			rw_2b;
-        _UINT16     ixfe_val_2b;
-
-        global_info_ = record.getGlobalWorkbookInfo();
-
+        Rw rw_2b;
+		unsigned short ixfe_val_2b = 0xffff;
         record >> rw_2b >> colMic >> colMac >> miyRw;
 
-        unsigned short flags, flags2, reserved1, unused1;
+		unsigned short unused1, rel_offset = 0xffff, flags1, flags2;
+		record >> unused1;
+		
+		if (global_info_->Version == 0x0200)
+		{
+			unsigned char flag;
+			record >> flag >> rel_offset;
+			fGhostDirty = flag;
+			
+			if (fGhostDirty)
+			{
+				record >> flag >> flags1 >> ixfe_val_2b;
+			}
+			bValid = true;
+		}
+		else
+		{
+			if (global_info_->Version == 0x0300 ||
+				global_info_->Version == 0x0400)
+			{
+				record >> rel_offset; // relative offset stream for first cell in row
+			}
+			else
+				record >> unused1;
 
-        record >> reserved1 >> unused1 >> flags >> flags2;
+			record >> flags1 >> flags2;
 
-        iOutLevel	= GETBITS(flags, 0, 2);
-        fCollapsed	= GETBIT(flags, 4);
-        fDyZero		= GETBIT(flags, 5);
-        fUnsynced	= GETBIT(flags, 6);
-        fGhostDirty = GETBIT(flags, 7);
+			iOutLevel = GETBITS(flags1, 0, 2);
+			fCollapsed = GETBIT(flags1, 4);
+			fDyZero = GETBIT(flags1, 5);
+			fUnsynced = GETBIT(flags1, 6);
+			fGhostDirty = GETBIT(flags1, 7);
+			
+			ixfe_val_2b = GETBITS(flags2, 0, 11);
+			fExAsc = GETBIT(flags2, 12);
+			fExDes = GETBIT(flags2, 13);
+			fPhonetic = GETBIT(flags2, 14);
 
-        ixfe_val_2b	= GETBITS(flags2, 0, 11);
-        fExAsc		= GETBIT(flags2, 12);
-        fExDes		= GETBIT(flags2, 13);
-        fPhonetic	= GETBIT(flags2, 14);
-
-        bValid = (flags != 0 || flags2 != 0);
-
-        rw = rw_2b;
-        ixfe_val = ixfe_val_2b;
+			bValid = (flags1 != 0 || flags2 != 0);
+		}
+		if (ixfe_val_2b != 0xffff)
+			ixfe_val = ixfe_val_2b;
+		rw = rw_2b;
     }
-
     else
     {
-        global_info_ = record.getGlobalWorkbookInfo();
-
         record >> rw >> ixfe_val >> miyRw;
 
         unsigned short flags;

@@ -34,43 +34,49 @@
 
 namespace XLS
 {
-
-DefaultRowHeight::DefaultRowHeight()
-{
-	miyRw = -1;
-}
-
-
-DefaultRowHeight::~DefaultRowHeight()
-{
-}
-
-
-BaseObjectPtr DefaultRowHeight::clone()
-{
-	return BaseObjectPtr(new DefaultRowHeight(*this));
-}
-
-void DefaultRowHeight::readFields(CFRecord& record)
-{
-	GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();
-
-	unsigned short flags;
-	record >> flags;
-	
-	fUnsynced	= GETBIT(flags, 0);
-	fDyZero		= GETBIT(flags, 1);
-	fExAsc		= GETBIT(flags, 2);
-	fExDsc		= GETBIT(flags, 3);
-	
-	record >> miyRw;
-
-	if (!global_info->sheets_info.empty())
+	DefaultRowHeight_BIFF2::DefaultRowHeight_BIFF2()
+	{}
+	DefaultRowHeight_BIFF2::~DefaultRowHeight_BIFF2()
+	{}
+	BaseObjectPtr DefaultRowHeight_BIFF2::clone()
 	{
-		global_info->sheets_info.back().defaultRowHeight = miyRw / 20.;
+		return BaseObjectPtr(new DefaultRowHeight_BIFF2(*this));
 	}
+//--------------------------------------------------------------
+	DefaultRowHeight::DefaultRowHeight() : miyRw(-1)
+	{}
+	DefaultRowHeight::~DefaultRowHeight()
+	{}
+	BaseObjectPtr DefaultRowHeight::clone()
+	{
+		return BaseObjectPtr(new DefaultRowHeight(*this));
+	}
+	void DefaultRowHeight::readFields(CFRecord& record)
+	{
+		GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();
 
-}
+		unsigned short flags;
+		record >> flags;
 
+		if (global_info->Version == 0x0200)
+		{
+			miyRw = GETBITS(flags, 0, 14);
+		}
+		else
+		{
+			fUnsynced = GETBIT(flags, 0);
+			fDyZero = GETBIT(flags, 1);
+			fExAsc = GETBIT(flags, 2);
+			fExDsc = GETBIT(flags, 3);
+
+			record >> miyRw;
+		}
+
+		if (!global_info->sheets_info.empty())
+		{
+			global_info->sheets_info.back().defaultRowHeight = miyRw / 20.;
+		}
+
+	}
 } // namespace XLS
 

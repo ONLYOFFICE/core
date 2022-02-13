@@ -35,8 +35,6 @@
 #include "../Biff_records/TextPropsStream.h"
 #include "../Biff_records/ContinueFrt12.h"
 
-//#include <Logic/Biff_unions/PAGESETUP.h>
-
 namespace XLS
 {
 

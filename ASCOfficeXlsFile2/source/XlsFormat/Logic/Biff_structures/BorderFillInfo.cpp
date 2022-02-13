@@ -29,11 +29,12 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "BorderFillInfo.h"
-#include <Auxiliary/HelpFunc.h>
 #include <boost/functional/hash/hash.hpp>
 
-#include <simple_xml_writer.h>
+#include "BorderFillInfo.h"
+#include "../../Auxiliary/HelpFunc.h"
+
+#include "../../../Common/simple_xml_writer.h"
 
 namespace XLS
 {

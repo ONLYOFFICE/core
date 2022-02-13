@@ -31,7 +31,6 @@
  */
 
 #include "XFExtGradient.h"
-#include "../../../Common/simple_xml_writer.h"
 
 namespace XLS
 {

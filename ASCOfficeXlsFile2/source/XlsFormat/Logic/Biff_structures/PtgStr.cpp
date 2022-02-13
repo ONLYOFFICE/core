@@ -31,8 +31,6 @@
  */
 
 #include "PtgStr.h"
-#include <Binary/CFRecord.h>
-
 #include <boost/algorithm/string.hpp>
 
 namespace XLS

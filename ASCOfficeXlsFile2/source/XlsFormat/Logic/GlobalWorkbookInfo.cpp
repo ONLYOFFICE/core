@@ -33,9 +33,8 @@
 
 #include <boost/lexical_cast.hpp>
 
-#include <Logic/Biff_records/Font.h>
-
-#include "../../../DesktopEditor/graphics/pro/Fonts.h"
+#include "Biff_records/Font.h"
+#include "../../../../DesktopEditor/graphics/pro/Fonts.h"
 
 
 namespace XLS
@@ -121,7 +120,36 @@ GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConver
 	bMacrosExist			= false;
 	bWorkbookProtectExist	= false;
 
-	idPivotCache			= 0;	
+	idPivotCache			= 0;
+
+	mapDefaultFormatCode.insert(std::make_pair(L"0", 1));
+	mapDefaultFormatCode.insert(std::make_pair(L"0.00", 2));
+	mapDefaultFormatCode.insert(std::make_pair(L"#,##0", 3));
+	mapDefaultFormatCode.insert(std::make_pair(L"#,##0.00", 4));
+	mapDefaultFormatCode.insert(std::make_pair(L"0%", 9));
+	mapDefaultFormatCode.insert(std::make_pair(L"0.00%", 10));
+	mapDefaultFormatCode.insert(std::make_pair(L"0.00E+00", 11));
+	mapDefaultFormatCode.insert(std::make_pair(L"# ?/?", 12));
+	mapDefaultFormatCode.insert(std::make_pair(L"# ??/??", 13));
+	mapDefaultFormatCode.insert(std::make_pair(L"mm-dd-yy", 14));
+	mapDefaultFormatCode.insert(std::make_pair(L"d-mmm-yy", 15));
+	mapDefaultFormatCode.insert(std::make_pair(L"d-mmm", 16));
+	mapDefaultFormatCode.insert(std::make_pair(L"mmm-yy", 17));
+	mapDefaultFormatCode.insert(std::make_pair(L"h:mm AM/PM", 18));
+	mapDefaultFormatCode.insert(std::make_pair(L"h:mm:ss AM/PM", 19));
+	mapDefaultFormatCode.insert(std::make_pair(L"h:mm", 20));
+	mapDefaultFormatCode.insert(std::make_pair(L"h:mm:ss", 21));
+	mapDefaultFormatCode.insert(std::make_pair(L"m/d/yy h:mm", 22));
+	mapDefaultFormatCode.insert(std::make_pair(L"#,##0 ;(#,##0)", 37));
+	mapDefaultFormatCode.insert(std::make_pair(L"#,##0 ;[Red](#,##0)", 38));
+	mapDefaultFormatCode.insert(std::make_pair(L"#,##0.00;(#,##0.00)", 39));
+	mapDefaultFormatCode.insert(std::make_pair(L"#,##0.00;[Red](#,##0.00)", 40));
+	mapDefaultFormatCode.insert(std::make_pair(L"mm:ss", 45));
+	mapDefaultFormatCode.insert(std::make_pair(L"[h]:mm:ss", 46));
+	mapDefaultFormatCode.insert(std::make_pair(L"mmss.0", 47));
+	mapDefaultFormatCode.insert(std::make_pair(L"##0.0E+0", 48));
+	mapDefaultFormatCode.insert(std::make_pair(L"@", 49));
+	mapDefaultFormatCode.insert(std::make_pair(L"General", 0));
 }
 
 GlobalWorkbookInfo::~GlobalWorkbookInfo()

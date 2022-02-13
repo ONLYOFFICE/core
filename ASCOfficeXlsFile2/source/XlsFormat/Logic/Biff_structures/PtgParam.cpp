@@ -32,7 +32,7 @@
 
 #include "PtgParam.h"
 
-#include "Auxiliary/HelpFunc.h"
+#include "../../Auxiliary/HelpFunc.h"
 
 namespace XLS
 {

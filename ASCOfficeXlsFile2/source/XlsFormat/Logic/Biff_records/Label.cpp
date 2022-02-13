@@ -34,30 +34,37 @@
 
 namespace XLS
 {
-
-Label::Label()
-{
-	isst_ = -1;
-}
-
-
+Label::Label() : isst_(-1)
+{}
 Label::~Label()
-{
-}
-
-
+{}
 BaseObjectPtr Label::clone()
 {
 	return BaseObjectPtr(new Label(*this));
 }
-
+Label_BIFF2::Label_BIFF2() : Label()
+{}
+Label_BIFF2::~Label_BIFF2()
+{}
+BaseObjectPtr Label_BIFF2::clone()
+{
+	return BaseObjectPtr(new Label_BIFF2(*this));
+}
+//---------------------------------------------------------------------------------
 void Label::readFields(CFRecord& record)
 {
 	global_info_ = record.getGlobalWorkbookInfo();
 	
 	record >> cell;
 	
-	if (global_info_->Version < 0x0600)
+	if (global_info_->Version == 0x0200)
+	{
+		ShortXLAnsiString name;
+		record >> name;
+
+		st = name;
+	}
+	else if (global_info_->Version < 0x0600)
 	{
 		LPAnsiString name;
 		record >> name;
@@ -82,8 +89,7 @@ int Label::serialize(std::wostream & stream)
 		{
 			CP_XML_ATTR(L"r", ref);
 
-			int st = (int)cell.ixfe - global_info_->cellStyleXfs_count;
-			if (cell.ixfe > global_info_->cellStyleXfs_count)
+			if (cell.ixfe >= global_info_->cellStyleXfs_count)
 			{
 				CP_XML_ATTR(L"s", cell.ixfe - global_info_->cellStyleXfs_count);
 			}

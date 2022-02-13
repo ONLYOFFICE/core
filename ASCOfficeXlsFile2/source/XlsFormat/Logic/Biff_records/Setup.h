@@ -42,44 +42,43 @@ class Setup: public BiffRecord
 	BIFF_RECORD_DEFINE_TYPE_INFO(Setup)
 	BASE_OBJECT_DEFINE_CLASS_NAME(Setup)
 public:
-        Setup(bool isChart = false);
+	Setup(bool isChart = false);
 	~Setup();
 
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
 
-        static const ElementType type = typeSetup;
+	static const ElementType type = typeSetup;
 
-//-----------------------------
-        _UINT32 iPaperSize;
-        _UINT32 iScale;
-        _INT32 iPageStart;
-        _UINT32 iFitWidth;
-        _UINT32 iFitHeight;
+	_UINT32 iPaperSize = 0;
+	_UINT32 iScale = 100;
+	_INT32 iPageStart = 1;
+	_UINT32 iFitWidth = 0;
+	_UINT32 iFitHeight = 0;
 
-	bool fLeftToRight;
-	bool fPortrait;
-	bool fNoPls;
-	bool fNoColor;
-	bool fDraft;
-	bool fNotes;
-	bool fNoOrient;
-	bool fUsePage;
-	bool fEndNotes;
-	unsigned char	iErrors;
+	bool fLeftToRight = false;
+	bool fPortrait = false;
+	bool fNoPls = false;
+	bool fNoColor = false;
+	bool fDraft = false;
+	bool fNotes = false;
+	bool fNoOrient = false;
+	bool fUsePage = false;
+	bool fEndNotes = false;
+	unsigned char iErrors = 0;
 
-        _UINT32 iRes;
-        _UINT32 iVRes;
+	_UINT32 iRes = 0;
+	_UINT32 iVRes = 0;
+
 	Xnum	numHdr;
 	Xnum	numFtr;
-        _UINT32 iCopies;
+	_UINT32 iCopies = 1;
 
-        std::wstring szRelID; // biff12
-        bool fLandscape; // biff12
+	std::wstring szRelID; // biff12
+	bool fLandscape; // biff12
 
-        bool _isChart;
-
+	bool _isChart;
 };
 
 } // namespace XLS

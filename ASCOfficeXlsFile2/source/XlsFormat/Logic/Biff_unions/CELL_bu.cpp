@@ -44,24 +44,20 @@
 
 namespace XLS
 {
-
 CELL::CELL(std::vector<CellRangeRef>& shared_formulas_locations_ref) : shared_formulas_locations_ref_(shared_formulas_locations_ref)
 {
 	ColumnNumber	= -1;
 	RowNumber		= -1;
 }
 
-
 CELL::~CELL()
 {
 }
-
 
 BaseObjectPtr CELL::clone()
 {
 	return BaseObjectPtr(new CELL(*this));
 }
-
 
 // CELL = FORMULA / Blank / MulBlank / RK / MulRk / BoolErr / Number / LabelSst
 const bool CELL::loadContent(BinProcessor& proc)
@@ -76,6 +72,11 @@ const bool CELL::loadContent(BinProcessor& proc)
 	Number		number;
 	LabelSst	labelsst;
 	Label		label;
+
+	Label_BIFF2		label_BIFF2;
+	Number_BIFF2	number_BIFF2;
+	Blank_BIFF2		blank_BIFF2;
+	Integer_BIFF2	integer_BIFF2;
 
 	if(proc.optional(formula_union))
 	{
@@ -121,6 +122,27 @@ const bool CELL::loadContent(BinProcessor& proc)
 	{
 		RowNumber		= labelsst.getLocation().getRow();
 		ColumnNumber	= labelsst.getLocation().getColumn();
+	}
+//----------------------------------------------------------------------------
+	else if (proc.optional(label_BIFF2))
+	{
+		RowNumber = label_BIFF2.cell.getLocation().getRow();
+		ColumnNumber = label_BIFF2.cell.getLocation().getColumn();
+	}
+	else if (proc.optional(number_BIFF2))
+	{
+		RowNumber = number_BIFF2.cell.getLocation().getRow();
+		ColumnNumber = number_BIFF2.cell.getLocation().getColumn();
+	}
+	else if (proc.optional(blank_BIFF2))
+	{
+		RowNumber = blank_BIFF2.cell.getLocation().getRow();
+		ColumnNumber = blank_BIFF2.cell.getLocation().getColumn();
+	}
+	else if (proc.optional(integer_BIFF2))
+	{
+		RowNumber = integer_BIFF2.cell.getLocation().getRow();
+		ColumnNumber = integer_BIFF2.cell.getLocation().getColumn();
 	}
 	else
 	{

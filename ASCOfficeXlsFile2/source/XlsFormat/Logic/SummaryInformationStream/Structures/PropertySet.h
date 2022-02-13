@@ -32,7 +32,6 @@
 #pragma once
 
 #include "Property.h"
-#include "../../../Binary/BinSmartPointers.h"
 
 #include <map>
 #include <vector>

@@ -31,7 +31,6 @@
  */
 
 #include "ExtPtgErr.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

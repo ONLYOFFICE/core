@@ -32,21 +32,14 @@
 
 #include "HeaderFooter.h"
 #include "../Biff_structures/FrtHeader.h"
-//#include <Exception/AttributeDataWrong.h>
 
 namespace XLS
 {
 
 HeaderFooter::HeaderFooter()
-{
-}
-
-
+{}
 HeaderFooter::~HeaderFooter()
-{
-}
-
-
+{}
 BaseObjectPtr HeaderFooter::clone()
 {
 	return BaseObjectPtr(new HeaderFooter(*this));

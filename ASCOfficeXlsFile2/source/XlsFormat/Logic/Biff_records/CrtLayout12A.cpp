@@ -32,8 +32,6 @@
 
 #include "CrtLayout12A.h"
 
-#include <simple_xml_writer.h>
-
 namespace XLS
 {
 

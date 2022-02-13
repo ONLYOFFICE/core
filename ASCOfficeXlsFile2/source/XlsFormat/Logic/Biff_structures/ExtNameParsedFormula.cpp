@@ -31,7 +31,6 @@
  */
 
 #include "ExtNameParsedFormula.h"
-#include <Binary/CFRecord.h>
 #include "ExtPtgRef3D.h"
 #include "ExtPtgArea3D.h"
 #include "ExtPtgRefErr3D.h"

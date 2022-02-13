@@ -31,7 +31,6 @@
  */
 
 #include "ObjFmla.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

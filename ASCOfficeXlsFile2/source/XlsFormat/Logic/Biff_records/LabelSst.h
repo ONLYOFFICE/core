@@ -38,8 +38,6 @@
 namespace XLS
 {
 
-
-// Logical representation of LabelSst record in BIFF8
 class LabelSst: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(LabelSst)
@@ -49,7 +47,6 @@ public:
 	~LabelSst();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 

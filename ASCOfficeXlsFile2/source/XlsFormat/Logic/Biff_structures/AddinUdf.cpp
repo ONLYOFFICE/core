@@ -31,7 +31,6 @@
  */
 
 #include "AddinUdf.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

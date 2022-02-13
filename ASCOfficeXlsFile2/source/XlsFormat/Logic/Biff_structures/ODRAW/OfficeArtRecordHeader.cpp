@@ -31,8 +31,6 @@
  */
 
 #include "OfficeArtRecordHeader.h"
-#include <Binary/CFRecord.h>
-#include <Binary/CFRecordType.h>
 
 namespace ODRAW
 {

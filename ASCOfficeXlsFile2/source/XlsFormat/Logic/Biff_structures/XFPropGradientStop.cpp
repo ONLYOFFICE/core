@@ -31,8 +31,6 @@
  */
 
 #include "XFPropGradientStop.h"
-#include <Binary/CFRecord.h>
-#include <simple_xml_writer.h>
 #include "Xnum.h"
 
 namespace XLS

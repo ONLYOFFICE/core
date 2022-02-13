@@ -31,7 +31,6 @@
  */
 
 #include "SortCond12.h"
-#include <Binary/CFRecord.h>
 #include "CellRangeRef.h"
 
 namespace XLS

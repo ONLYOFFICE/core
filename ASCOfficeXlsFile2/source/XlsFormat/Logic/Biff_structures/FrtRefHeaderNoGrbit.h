@@ -32,9 +32,8 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include <Logic/Biff_structures/CellRangeRef.h>
-#include <Binary/CFRecordType.h>
-#include <Logic/Biff_structures/BitMarkedStructs.h>
+#include "CellRangeRef.h"
+#include "BitMarkedStructs.h"
 
 namespace XLS
 {

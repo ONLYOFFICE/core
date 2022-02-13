@@ -32,7 +32,6 @@
 
 #include "Cell.h"
 #include "CellRef.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {
@@ -58,7 +57,33 @@ BiffStructurePtr Cell::clone()
 
 void Cell::load(CFRecord& record)
 {
-	record >> rw >> col >> ixfe;
+	record >> rw >> col;
+
+	if (record.getGlobalWorkbookInfo()->Version == 0x0200)
+	{
+		unsigned char flags1, flags2, flags3;
+
+		record >> flags1 >> flags2 >> flags3;
+
+		ixfe = GETBITS(flags1, 0, 5);
+		
+		bool fLocked = GETBIT(flags1, 6);
+		bool fHidden = GETBIT(flags1, 7);
+
+		short ifmt_index = GETBITS(flags2, 0, 5);
+		short ifnt_index = GETBITS(flags2, 6, 7);		
+
+		short alc = GETBITS(flags3, 0, 2);
+
+		short border_dgLeft = GETBIT(flags3, 3) ? 1 : 0;
+		short border_dgRight = GETBIT(flags3, 4) ? 1 : 0;
+		short border_dgTop = GETBIT(flags3, 5) ? 1 : 0;
+		short border_dgBottom = GETBIT(flags3, 6) ? 1 : 0;
+	}
+	else
+	{
+		record >> ixfe;
+	}
 }
 
 

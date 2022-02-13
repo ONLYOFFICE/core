@@ -35,9 +35,6 @@
 
 namespace XLS
 {
-
-
-// Logical representation of DefaultRowHeight record in BIFF8
 class DefaultRowHeight: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(DefaultRowHeight)
@@ -47,12 +44,10 @@ public:
 	~DefaultRowHeight();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeDefaultRowHeight;
-
 //-----------------------------
 	bool fUnsynced;
 	bool fDyZero;
@@ -60,8 +55,17 @@ public:
 	bool fExDsc;
 	
 	_INT16 miyRw; // measured in twips (1/20 of of a printer's point)
-
 };
 
+class DefaultRowHeight_BIFF2 : public DefaultRowHeight
+{
+	BIFF_RECORD_DEFINE_TYPE_INFO(DefaultRowHeight_BIFF2)
+	BASE_OBJECT_DEFINE_CLASS_NAME(DefaultRowHeight_BIFF2)
+public:
+	DefaultRowHeight_BIFF2();
+	~DefaultRowHeight_BIFF2();
+
+	BaseObjectPtr clone();
+};
 } // namespace XLS
 

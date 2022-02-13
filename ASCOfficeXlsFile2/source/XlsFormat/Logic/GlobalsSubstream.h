@@ -90,7 +90,6 @@ public:
 	unsigned short					code_page_;
 	GlobalWorkbookInfoPtr			global_info_;
 
-private:
 	void LoadHFPicture();
 	void UpdateXti();
 	void UpdateXFC();

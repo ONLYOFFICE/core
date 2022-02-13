@@ -37,15 +37,9 @@ namespace XLS
 {
 
 HeaderFooter::HeaderFooter()
-{
-}
-
-
+{}
 HeaderFooter::~HeaderFooter()
-{
-}
-
-
+{}
 BaseObjectPtr HeaderFooter::clone()
 {
 	return BaseObjectPtr(new HeaderFooter(*this));

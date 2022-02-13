@@ -38,17 +38,12 @@ namespace XLS
 {
 
 Setup::Setup(bool isChart)
-// the following may appear uninitialized but we have to store them
 : _isChart(isChart), iPaperSize(0), iScale(255), iRes(0), iVRes(0), iCopies(0), fNoOrient(false), fPortrait(false), iPageStart(1), iErrors(0)
 {
+	numHdr.data.value = numFtr.data.value = 0.5;
 }
-
-
 Setup::~Setup()
-{
-}
-
-
+{}
 BaseObjectPtr Setup::clone()
 {
 	return BaseObjectPtr(new Setup(*this));
@@ -65,9 +60,6 @@ void Setup::readFields(CFRecord& record)
         _INT16 iPageStart_2b;
         _UINT16 iFitWidth_2b;
         _UINT16 iFitHeight_2b;
-        _UINT16 iRes_2b;
-        _UINT16 iVRes_2b;
-        _UINT16 iCopies_2b;
 
         record >> iPaperSize_2b >> iScale_2b >> iPageStart_2b >> iFitWidth_2b >> iFitHeight_2b >> flags;
 
@@ -82,16 +74,24 @@ void Setup::readFields(CFRecord& record)
         fEndNotes	= GETBIT(flags, 9);
         iErrors		= GETBITS(flags, 10, 11);
 
-        record >> iRes_2b >> iVRes_2b >> numHdr >> numFtr >> iCopies_2b;
+		iPaperSize = iPaperSize_2b;
+		iScale = iScale_2b;
+		iPageStart = iPageStart_2b;
+		iFitWidth = iFitWidth_2b;
+		iFitHeight = iFitHeight_2b;
 
-        iPaperSize = iPaperSize_2b;
-        iScale     = iScale_2b;
-        iPageStart = iPageStart_2b;
-        iFitWidth  = iFitWidth_2b;
-        iFitHeight = iFitHeight_2b;
-        iRes       = iRes_2b;
-        iVRes      = iVRes_2b;
-        iCopies    = iCopies_2b;
+		if (record.getGlobalWorkbookInfo()->Version > 0x0200)
+		{
+			_UINT16 iRes_2b;
+			_UINT16 iVRes_2b;
+			_UINT16 iCopies_2b;
+			
+			record >> iRes_2b >> iVRes_2b >> numHdr >> numFtr >> iCopies_2b;
+
+			iRes = iRes_2b;
+			iVRes = iVRes_2b;
+			iCopies = iCopies_2b;
+		}
     }
     else
     {

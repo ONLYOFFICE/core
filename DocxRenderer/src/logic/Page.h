@@ -568,6 +568,7 @@ namespace NSDocxRenderer
         {
             bool IsEqualLeft = abs(pCurShape->m_dLeft - pSecondShape->m_dLeft) < 0.01;
             bool IsEqualWidth = abs(pCurShape->m_dWidth - pSecondShape->m_dWidth) < 0.01;
+            bool bCheckHeight = pCurShape->m_dHeight < 3.0 && pSecondShape->m_dHeight < 3.0;
             double dDiffCoord{};
             if (pSecondShape->m_dTop > pCurShape->m_dTop)
             {
@@ -580,7 +581,7 @@ namespace NSDocxRenderer
 
             bool IsSuitableDiff = abs(dDiffCoord) < 1 ;
 
-            return IsEqualLeft && IsEqualWidth && IsSuitableDiff;
+            return IsEqualLeft && IsEqualWidth && bCheckHeight && IsSuitableDiff;
         }
 
         bool IsSearchSecondLine(int lCurIdx, CShape* pCurShape)
@@ -627,8 +628,9 @@ namespace NSDocxRenderer
             bool IsEqualTop = abs(pCurShape->m_dTop - pDashShape->m_dTop) < 0.01;
             bool IsEqualHeight = abs(pCurShape->m_dHeight - pDashShape->m_dHeight) < 0.01;
             bool IsMoreLeft = pDashShape->m_dLeft > pCurShape->m_dLeft;
+            bool bCheckHeight = pCurShape->m_dHeight < 3.0 && pDashShape->m_dHeight < 3.0;
 
-            return IsEqualHeight && IsEqualTop && IsEqualWidth && IsMoreLeft;
+            return IsEqualHeight && IsEqualTop && IsEqualWidth && IsMoreLeft && bCheckHeight;
         }
 
         bool IsSearchDash(int lCurIdx, CShape* pCurShape)
@@ -673,13 +675,14 @@ namespace NSDocxRenderer
             bool IsEqualTop = abs(pCurShape->m_dTop - pDotShape->m_dTop) < 0.01;
             bool IsSuitableDiff = abs(pDotShape->m_dLeft - pCurShape->m_dLeft - pCurShape->m_dWidth) < 0.5;
             bool IsSuitableWidth = pDotShape->m_dWidth;
+            bool bCheckHeight = pCurShape->m_dHeight < 3.0 && pDotShape->m_dHeight < 3.0;
 
-            return IsEqualTop && IsSuitableDiff && IsSuitableWidth;
+            return IsEqualTop && IsSuitableDiff && IsSuitableWidth && bCheckHeight;
         }
 
         double SearchWidthDotted(int lCurIdx, const CShape* pCurShape)
         {
-            if (pCurShape->m_dWidth > 1.5)
+            if (pCurShape->m_dWidth > 1.5 || pCurShape->m_dHeight > 3.0)
                 return 0;
 
             size_t nCount = m_arGraphicItems.size();
@@ -697,6 +700,11 @@ namespace NSDocxRenderer
 
         void SearchDotted(int lCurIdx, CShape* pCurShape, double SecondWidth)
         {
+            if (pCurShape->m_dHeight > 3.0)
+            {
+                pCurShape->m_TypeLine = NSStructures::LineProperties::SINGLE;
+                return;
+            }
             double dCalculatedWidth = pCurShape->m_dWidth;
             int lLongLine = 1;
             int lShortLine = 0;
@@ -706,7 +714,7 @@ namespace NSDocxRenderer
                 if (m_arGraphicItems[i]->m_eType == NSDocxRenderer::CBaseItem::etShape)
                 {
                     CShape* pShape = dynamic_cast <CShape *> (m_arGraphicItems[i]);
-                    if (abs(pShape->m_dTop - pCurShape->m_dTop) < 0.01)
+                    if (abs(pShape->m_dTop - pCurShape->m_dTop) < 0.01 && pShape->m_dHeight < 3.0)
                     {
                         if (pShape->m_dWidth < 0.5)
                         {
@@ -744,6 +752,11 @@ namespace NSDocxRenderer
                 if (m_arGraphicItems[i]->m_eType == NSDocxRenderer::CBaseItem::etShape)
                 {
                     CShape* pShape = dynamic_cast <CShape *> (m_arGraphicItems[i]);
+
+                    if (pShape->m_dHeight > 3.0){
+                        pShape->m_TypeLine = NSStructures::LineProperties::SINGLE;
+                        continue;
+                    }
 
                     if (IsWaveUnderline(pShape))
                     {
@@ -818,11 +831,12 @@ namespace NSDocxRenderer
             double dBottomTextLine = pTextLine->m_dBaselinePos;
 
             bool bCheckTop = dTopTextLine < pShape->m_dTop;
+            bool bCheckHeight = pShape->m_dHeight < 3.0;
             bool bCheckBottom = dBottomTextLine > pShape->m_dHeight + pShape->m_dTop;
             bool bColorEquals = pTextLine->IsMatchColor(pShape->m_oBrush.Color1) ||
                                 pTextLine->IsMatchColor(pShape->m_oPen.Color);
 
-            return bCheckTop && bCheckBottom && bColorEquals;
+            return bCheckTop && bCheckBottom && bColorEquals && bCheckHeight;
         }
 
         bool IsUnderline(CShape* pShape, CTextLine* pTextLine)
@@ -830,7 +844,7 @@ namespace NSDocxRenderer
             double dBottomTextLine = pTextLine->m_dBaselinePos;
 
             bool bCheckTop = abs(pShape->m_dTop - dBottomTextLine) < 2;
-            bool bCheckHeight = pShape->m_dHeight < 1.5;
+            bool bCheckHeight = pShape->m_dHeight < 3.0;
             bool bCheckBottom = pShape->m_dTop > dBottomTextLine;
             bool bColorEquals = pTextLine->IsMatchColor(pShape->m_oBrush.Color1) ||
                                 pTextLine->IsMatchColor(pShape->m_oPen.Color);
@@ -878,28 +892,30 @@ namespace NSDocxRenderer
 						size_t nCountTextLine = m_arTextLine.size();
 						for (size_t j = 0; j < nCountTextLine; ++j)
 						{
-                            if ( IsStrikeout(pShape, m_arTextLine[j])  )
+							if (pShape->m_dHeight > 3.0)
+								break;
+							if ( IsStrikeout(pShape, m_arTextLine[j])  )
 							{
-                                m_arTextLine[j]->SearchInclusions(pShape, ModeFontOptions::STRIKEOUT);
+								m_arTextLine[j]->SearchInclusions(pShape, ModeFontOptions::STRIKEOUT);
 								arIdxGraphicItems.push_back(counter);
 								break;
 							}
 
-                            if ( IsUnderline(pShape, m_arTextLine[j]) )
+							if ( IsUnderline(pShape, m_arTextLine[j]) )
 							{
-                                if (m_arTextLine[j]->m_dHeight/pShape->m_dHeight < 18 )
-                                    SetThickUnderlineType(pShape);
+								if (m_arTextLine[j]->m_dHeight/pShape->m_dHeight < 18 )
+									SetThickUnderlineType(pShape);
 
-                                m_arTextLine[j]->SearchInclusions(pShape, ModeFontOptions::UNDERLINE);
+								m_arTextLine[j]->SearchInclusions(pShape, ModeFontOptions::UNDERLINE);
 								arIdxGraphicItems.push_back(counter);
 								break;
 							}					
 
-                            if (IsHighlight(pShape, m_arTextLine[j]))
-                            {
-                                m_arTextLine[j]->SearchInclusions(pShape, ModeFontOptions::HIGHLIGHT);
+							if (IsHighlight(pShape, m_arTextLine[j]))
+							{
+								m_arTextLine[j]->SearchInclusions(pShape, ModeFontOptions::HIGHLIGHT);
 
-                                arIdxGraphicItems.push_back(counter);
+								arIdxGraphicItems.push_back(counter);
 								break;
 							}
 						}

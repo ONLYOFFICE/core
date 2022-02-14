@@ -36,6 +36,7 @@
 
 #include"../../Common/DocxFormat/Source/XML/Utils.h"
 #include "../src/docx/xlsxconversioncontext.h"
+#include "../src/docx/xlsx_utils.h"
 
 namespace cpdoccore {
 namespace formulasconvert {
@@ -52,7 +53,7 @@ namespace formulasconvert {
 
 		void split_distance_by(const std::wstring& expr, const std::wstring& by, std::vector<std::wstring>& out);
 		
-		void replace_cells_range(std::wstring& expr, bool withTableName);
+		void replace_cells_range(std::wstring& expr, bool withTableName, bool bAbsoluteAlways = false);
 		bool check_formula(std::wstring& expr);
 		void replace_semicolons(std::wstring& expr);
 		void replace_tilda(std::wstring& expr);
@@ -60,21 +61,22 @@ namespace formulasconvert {
 		void replace_space(std::wstring& expr);
 		void replace_apersand(std::wstring& expr);
 	
-		std::wstring convert_named_ref(const std::wstring& expr, bool withTableName, std::wstring separator);
-		std::wstring convert_named_expr(const std::wstring& expr, bool withTableName);
+		std::wstring convert_named_ref(const std::wstring& expr, bool withTableName, std::wstring separator, bool bAbsoluteAlways);
+		std::wstring convert_named_expr(const std::wstring& expr, bool withTableName, bool bAbsoluteAlways);
 		
 		static std::wstring replace_named_ref_formater(boost::wsmatch const & what);
 		static std::wstring replace_named_ref_formater1(boost::wsmatch const & what);
 		//static std::wstring replace_cell_range_formater(boost::wsmatch const & what);
 		
 		void replace_named_formula(std::wstring & expr, bool w = true);
-		void replace_named_ref(std::wstring & expr, bool w = true);
+		void replace_named_ref(std::wstring & expr, bool withTable = true, bool bAbsoluteAlways = false);
 		
 		bool find_first_ref(std::wstring const & expr, std::wstring & table,  std::wstring & ref);
 		bool find_first_last_ref(std::wstring const & expr, std::wstring & table, std::wstring & ref_first,std::wstring & ref_last);
 	
-		static bool						convert_with_TableName;
-		static std::wstring				table_name_;
+		static bool				convert_with_absolute;
+		static bool				convert_with_TableName;
+		static std::wstring		table_name_;
 
 //-------------------------------------------------------------------------------------------------------------
 		static std::wstring replace_apersand_formater(boost::wsmatch const & what)
@@ -259,6 +261,7 @@ namespace formulasconvert {
 	};
 	bool			odf2oox_converter::Impl::convert_with_TableName = true;
 	std::wstring	odf2oox_converter::Impl::table_name_			= L"";
+	bool			odf2oox_converter::Impl::convert_with_absolute	= false;
 	
 	std::unordered_map<std::wstring, int> &odf2oox_converter::Impl::mapExternalLink_ = oox::xlsx_conversion_context::mapExternalLink_;
 
@@ -364,7 +367,6 @@ namespace formulasconvert {
 		std::wstring ref2		= sz == 7 ? what[6].str() : what[5].str();
 		
 		XmlUtils::replace_all( sheet1, L"$", L"");
-		//XmlUtils::replace_all( sheet2, L"$", L"");
 
 		std::wstring result;
 
@@ -398,6 +400,20 @@ namespace formulasconvert {
 		}
 		
 		table_name_ = sheet1;
+
+		if (convert_with_absolute)
+		{
+			size_t col = 0, row = 0;
+			oox::getCellAddressInv(ref1, col, row);
+
+			ref1 = oox::getCellAddress(col, row, true);
+
+			if (false == ref2.empty())
+			{
+				oox::getCellAddressInv(ref2, col, row);
+				ref2 = oox::getCellAddress(col, row, true);
+			}
+		}
 		
 		if (convert_with_TableName)
 		{
@@ -430,13 +446,14 @@ namespace formulasconvert {
 	// [Sheet2.A1:B5] -> Sheet2!A1:B5
 	// [Sheet2.A1] -> Sheet2!A1
 	// [$'Sheet2 A'.$B2] -> 'Sheet2 A'!$B2
-	void odf2oox_converter::Impl::replace_cells_range(std::wstring& expr, bool withTableName)
+	void odf2oox_converter::Impl::replace_cells_range(std::wstring& expr, bool withTableName, bool bAbsoluteAlways)
 	{
 		XmlUtils::replace_all( expr, L"#REF !", L"#REF!");
 		XmlUtils::replace_all( expr, L"#REF!#REF!", L"#REF!");
 		XmlUtils::replace_all( expr, L"$#REF!$#REF!", L"#REF!");
 
 		convert_with_TableName = withTableName;
+		convert_with_absolute = bAbsoluteAlways;
 
 		//boost::wregex complexRef(L"\\[(?:\'([^\']*)\'#){0,1}\\[{0,1}(?:\\$){0,1}([^\\.]+?){0,1}\\.(\\${0,1}[\\w^0-9]*\\${0,1}\\d*)(?::(\\${0,1}[^\\.]+?){0,1}\\.(\\${0,1}[\\w^0-9]*\\${0,1}\\d*)){0,1}\\]{0,1}");
 		boost::wregex complexRef(L"(?:(?:(?:(?:\\[\'([^\']*)\'#)|(?:\'([^\']*)\'#\\[)))|(?:\\[))\
@@ -449,13 +466,14 @@ namespace formulasconvert {
 			&replace_named_ref_formater,
 			boost::match_default | boost::format_all);
 	}
-	void odf2oox_converter::Impl::replace_named_ref(std::wstring & expr, bool withTableName)
+	void odf2oox_converter::Impl::replace_named_ref(std::wstring & expr, bool withTableName, bool bAbsoluteAlways)
 	{
 		XmlUtils::replace_all( expr, L"#REF !", L"#REF!");
 		XmlUtils::replace_all( expr, L"#REF!#REF!", L"#REF!");
 		XmlUtils::replace_all( expr, L"$#REF!$#REF!", L"#REF!");
 
 		convert_with_TableName = withTableName;
+		convert_with_absolute = bAbsoluteAlways;
 		
 		//boost::wregex complexRef(L"\\${0,1}([^\\.]+?){0,1}\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)(?::\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)){0,1}");
 		boost::wregex complexRef(L"\\[{0,1}(?:\'([^\']*)\'#){0,1}\\${0,1}([^\\.\\s]+?){0,1}\\.(\\${0,1}[\\w^0-9]*\\${0,1}\\d*)(?::\\${0,1}([^\\.\\s]+?){0,1}\\.(\\${0,1}[\\w^0-9]*\\${0,1}\\d*)){0,1}\\]{0,1}");
@@ -663,7 +681,7 @@ namespace formulasconvert {
 		
 		return result.substr(0, result.size() - 1);// минус последняя лишняя запятая
 	}
-	std::wstring odf2oox_converter::Impl::convert_named_ref(const std::wstring& expr, bool withTableName, std::wstring separator)
+	std::wstring odf2oox_converter::Impl::convert_named_ref(const std::wstring& expr, bool withTableName, std::wstring separator, bool bAbsoluteAlways)
 	{
 		boost::wregex complexRef(L"('(?!\\s\\'){0,1}.*?')");// поиск того что в апострофах и замена там
 
@@ -674,7 +692,7 @@ namespace formulasconvert {
 			boost::wregex(L"('.*?')|(\".*?\")"),
 			&convert_scobci, boost::match_default | boost::format_all);
 
-		replace_named_ref(workstr, withTableName);
+		replace_named_ref(workstr, withTableName, bAbsoluteAlways);
 
 		if (separator != L" ")
 		{
@@ -689,7 +707,7 @@ namespace formulasconvert {
 		}
 		return workstr;
 	}
-	std::wstring odf2oox_converter::Impl::convert_named_expr(const std::wstring& expr, bool withTableName)
+	std::wstring odf2oox_converter::Impl::convert_named_expr(const std::wstring& expr, bool withTableName, bool bAbsoluteAlways)
 	{
 		std::wstring workstr = expr;
 
@@ -708,7 +726,7 @@ namespace formulasconvert {
 				&convert_scobci, boost::match_default | boost::format_all);
 
 		   
-			replace_cells_range(workstr, withTableName);
+			replace_cells_range(workstr, withTableName, bAbsoluteAlways);
 			replace_semicolons(workstr);
 			replace_vertical(workstr);
 
@@ -755,13 +773,13 @@ namespace formulasconvert {
 	{
 		return impl_->split_distance_by(expr, by, out);
 	}
-	std::wstring odf2oox_converter::convert_named_ref(const std::wstring& expr, bool withTableName, std::wstring separator)
+	std::wstring odf2oox_converter::convert_named_ref(const std::wstring& expr, bool withTableName, std::wstring separator, bool bAbsoluteAlways)
 	{
-		return impl_->convert_named_ref(expr, withTableName, separator);
+		return impl_->convert_named_ref(expr, withTableName, separator, bAbsoluteAlways);
 	}
-	std::wstring odf2oox_converter::convert_named_expr(const std::wstring& expr, bool withTableName)
+	std::wstring odf2oox_converter::convert_named_expr(const std::wstring& expr, bool withTableName, bool bAbsoluteAlways)
 	{
-		return impl_->convert_named_expr(expr, withTableName);
+		return impl_->convert_named_expr(expr, withTableName, bAbsoluteAlways);
 	}
 
 	std::wstring odf2oox_converter::convert_ref(std::wstring const & expr)

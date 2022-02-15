@@ -7,7 +7,7 @@ namespace NSDocxRenderer
 {
     const double c_dMMToDx	 = 72 * 20 / 25.4;
 
-    enum class ModeFontOptions {STRIKEOUT, UNDERLINE, HIGHLIGHT};
+    enum class ModeFontOptions {STRIKEOUT, UNDERLINE, HIGHLIGHT, SHADING};
 
     // у класса T должен быть метод IsBigger, IsBiggerOrEqual
     template<typename T>
@@ -135,6 +135,8 @@ namespace NSDocxRenderer
         double m_dCalculateWidth;
         std::vector <double> m_arWidthText;
 
+        long m_lShadingColor;
+
     public:
         CContText()
         {
@@ -153,6 +155,7 @@ namespace NSDocxRenderer
             m_dSpaceWidthMM	= 0;
 
             m_dCalculateWidth = 0;
+            m_lShadingColor = -1;
         }
         ~CContText()
         {
@@ -191,6 +194,8 @@ namespace NSDocxRenderer
             m_dCalculateWidth = oSrc.m_dCalculateWidth;
 
             m_arWidthText = oSrc.m_arWidthText;
+
+            m_lShadingColor = oSrc.m_lShadingColor;
 
             return *this;
         }
@@ -345,7 +350,16 @@ namespace NSDocxRenderer
                     m_oFont.UnderlineType = pShape->m_TypeLine;
                     break;
                 case ModeFontOptions::HIGHLIGHT:
+                    if (m_lShadingColor >= 0)
+                        m_lShadingColor = -1;
+
                     m_oFont.HighlightColor = pShape->m_oBrush.Color1;
+                    break;
+                case ModeFontOptions::SHADING:
+                    if (m_oFont.HighlightColor >= 0)
+                        m_oFont.HighlightColor = -1;
+
+                    m_lShadingColor = pShape->m_oBrush.Color1;
                     break;
             }
         }
@@ -417,10 +431,18 @@ namespace NSDocxRenderer
                         oWriter.WriteString(L"<w:strike w:val=\"true\" />");
                     }
                 }
+
                 if (m_oFont.HighlightColor >= 0)
                 {
                     oWriter.WriteString(L"<w:highlight w:val=\"");
                     oWriter.WriteString(GetHighlightColor(m_oFont.HighlightColor));
+                    oWriter.WriteString(L"\"/>");
+                }
+
+                if (m_lShadingColor >= 0)
+                {
+                    oWriter.WriteString(L"<w:shd w:fill=\"");
+                    oWriter.WriteHexInt3(ConvertColor(m_lShadingColor));
                     oWriter.WriteString(L"\"/>");
                 }
                 if (bIsAddSpace)
@@ -453,12 +475,21 @@ namespace NSDocxRenderer
                         oWriter.WriteString(L"<w:strike w:val=\"true\" />");
                     }
                 }
+
                 if (m_oFont.HighlightColor >= 0)
                 {
                     oWriter.WriteString(L"<w:highlight w:val=\"");
                     oWriter.WriteString(GetHighlightColor(m_oFont.HighlightColor));
                     oWriter.WriteString(L"\"/>");
                 }
+
+                if (m_lShadingColor >= 0)
+                {
+                    oWriter.WriteString(L"<w:shd w:fill=\"");
+                    oWriter.WriteHexInt3(ConvertColor(m_lShadingColor));
+                    oWriter.WriteString(L"\"/>");
+                }
+
                 if (bIsAddSpace)
                 {
                     m_dWidth  += pManagerLight->GetSpaceWidth();

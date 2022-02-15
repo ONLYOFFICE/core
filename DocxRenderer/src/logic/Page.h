@@ -827,52 +827,95 @@ namespace NSDocxRenderer
 
         bool IsStrikeout(CShape* pShape, CTextLine* pTextLine)
         {
-            double dTopTextLine = pTextLine->m_dBaselinePos - pTextLine->m_dHeight;
+            double dTopTextLine    = pTextLine->m_dBaselinePos - pTextLine->m_dHeight;
             double dBottomTextLine = pTextLine->m_dBaselinePos;
 
-            bool bCheckTop = dTopTextLine < pShape->m_dTop;
+            bool bCheckTop    = dTopTextLine < pShape->m_dTop;
             bool bCheckHeight = pShape->m_dHeight < 3.0;
             bool bCheckBottom = dBottomTextLine > pShape->m_dHeight + pShape->m_dTop;
             bool bColorEquals = pTextLine->IsMatchColor(pShape->m_oBrush.Color1) ||
                                 pTextLine->IsMatchColor(pShape->m_oPen.Color);
 
-            return bCheckTop && bCheckBottom && bColorEquals && bCheckHeight;
+            return bCheckTop && bCheckBottom &&
+                   bColorEquals && bCheckHeight;
         }
 
         bool IsUnderline(CShape* pShape, CTextLine* pTextLine)
         {
             double dBottomTextLine = pTextLine->m_dBaselinePos;
 
-            bool bCheckTop = abs(pShape->m_dTop - dBottomTextLine) < 2;
+            bool bCheckTop    = abs(pShape->m_dTop - dBottomTextLine) < 2;
             bool bCheckHeight = pShape->m_dHeight < 3.0;
             bool bCheckBottom = pShape->m_dTop > dBottomTextLine;
             bool bColorEquals = pTextLine->IsMatchColor(pShape->m_oBrush.Color1) ||
                                 pTextLine->IsMatchColor(pShape->m_oPen.Color);
 
-            return bCheckTop && bCheckHeight && bCheckBottom && bColorEquals;
+            return bCheckTop    && bCheckHeight &&
+                   bCheckBottom && bColorEquals;
         }
 
-        bool IsHighlight(CShape* pShape, CTextLine* pTextLine)
+        bool IsBackground(CShape* pShape, CTextLine* pTextLine)
         {
-            double dTopTextLine = pTextLine->m_dBaselinePos - pTextLine->m_dHeight;
             double dBottomTextLine = pTextLine->m_dBaselinePos;
+            double dLeftTextLine   = pTextLine->m_dX;
+            double dRightTextLine  = pTextLine->m_arConts.back()->m_dX + pTextLine->m_arConts.back()->m_dWidth;
 
-            double dWidthTextLine{};
-            for (size_t i = 0; i < pTextLine->m_arConts.size(); ++i)
-                dWidthTextLine += pTextLine->m_arConts[i]->m_dWidth;
+            bool bCheckTop    = dBottomTextLine > pShape->m_dTop;
+            bool bCheckBottom = dBottomTextLine < pShape->m_dHeight + pShape->m_dTop;
+            bool bCheckLeft   = dLeftTextLine   < pShape->m_dLeft + pShape->m_dWidth;
+            bool bCheckRight  = dRightTextLine  > pShape->m_dLeft;
+            bool bCheckHeight = pShape->m_dHeight/pTextLine->m_dHeight < 2;
 
-            bool bCheckHeight = pShape->m_dHeight > 0.5;
-            bool bCheckTop = dTopTextLine/pShape->m_dTop > 0.92 && pShape->m_dTop > dTopTextLine;
-            bool bCheckBottom = dBottomTextLine/(pShape->m_dHeight + pShape->m_dTop) > 0.92 &&
-                                (pShape->m_dHeight + pShape->m_dTop) > dBottomTextLine;
+            return bCheckTop  && bCheckBottom &&
+                   bCheckLeft && bCheckRight  && bCheckHeight;
+        }
 
-            bool bCheckLeft = pShape->m_dLeft >= pTextLine->m_dX &&
-                              (pShape->m_dLeft + pShape->m_dWidth) <= (pTextLine->m_dX + dWidthTextLine);
+        bool IsHighlightColor(const int &key)
+        {
+            std::map <int, std::wstring> colorHighlight = {
+                {0, L"black"}, {16711680, L"blue"}, {65280, L"green"},
+                {9109504, L"darkBlue"}, {139, L"darkRed"}, {32896, L"darkYellow"},
+                {13882323, L"lightGray"}, {11119017, L"darkGray"}, {25600, L"darkGreen"},
+                {16711935, L"magenta"}, {255, L"red"}, {16776960, L"cyan"},
+                {9145088, L"darkCyan"}, {8388736, L"darkMagenta"}, {65535, L"yellow"}
+            };
 
-            bool bCheckTopBottomCoord = (pShape->m_dTop) < dBottomTextLine;
+            auto it = colorHighlight.find(key);
+            if ( it == colorHighlight.end() )
+               return false;
+            else
+               return true;
+        }
 
-            return bCheckHeight && bCheckTop && bCheckBottom &&
-                   bCheckLeft   && bCheckTopBottomCoord;
+        bool IsShading(const CShape* pCurShape, int lIdx)
+        {
+            double dCurShapeLeft   = pCurShape->m_dLeft;
+            double dCurShapeRight  = pCurShape->m_dLeft + pCurShape->m_dWidth;
+            double dCurShapeTop    = pCurShape->m_dTop;
+            double dCurShapeBottom = pCurShape->m_dTop + pCurShape->m_dHeight;
+
+            size_t nCount = m_arGraphicItems.size();
+            for (int i = 0; i < nCount; ++i)
+            {
+                if (lIdx == i)
+                    break;
+
+                if (m_arGraphicItems[i]->m_eType == NSDocxRenderer::CBaseItem::etShape)
+                {
+                    CShape* pShape = dynamic_cast <CShape *> (m_arGraphicItems[i]);
+                    double dShapeLeft   = pShape->m_dLeft;
+                    double dShapeRight  = pShape->m_dLeft + pShape->m_dWidth;
+                    double dShapeTop    = pShape->m_dTop;
+                    double dShapeBottom = pShape->m_dTop  + pShape->m_dHeight;
+
+                    if (abs(dShapeLeft - dCurShapeLeft) < 0.1 && abs(dShapeRight - dCurShapeRight) < 0.1 &&
+                        (abs(dShapeTop - dCurShapeBottom) < 0.1 || abs(dShapeBottom - dCurShapeTop) < 0.1) )
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
 		void SetTextOptions()
@@ -893,7 +936,26 @@ namespace NSDocxRenderer
 						for (size_t j = 0; j < nCountTextLine; ++j)
 						{
 							if (pShape->m_dHeight > 3.0)
-								break;
+							{
+								if (IsBackground(pShape, m_arTextLine[j]))
+								{
+									if (IsShading(pShape, i))
+									{
+									    m_arTextLine[j]->SearchInclusions(pShape, ModeFontOptions::SHADING);
+									}
+									else if (IsHighlightColor(pShape->m_oBrush.Color1))
+									{
+									    m_arTextLine[j]->SearchInclusions(pShape, ModeFontOptions::HIGHLIGHT);
+									}
+									else
+									{
+									    m_arTextLine[j]->SearchInclusions(pShape, ModeFontOptions::SHADING);
+									}
+
+									arIdxGraphicItems.push_back(counter);
+									break;
+								}
+							}
 							if ( IsStrikeout(pShape, m_arTextLine[j])  )
 							{
 								m_arTextLine[j]->SearchInclusions(pShape, ModeFontOptions::STRIKEOUT);
@@ -909,15 +971,8 @@ namespace NSDocxRenderer
 								m_arTextLine[j]->SearchInclusions(pShape, ModeFontOptions::UNDERLINE);
 								arIdxGraphicItems.push_back(counter);
 								break;
-							}					
-
-							if (IsHighlight(pShape, m_arTextLine[j]))
-							{
-								m_arTextLine[j]->SearchInclusions(pShape, ModeFontOptions::HIGHLIGHT);
-
-								arIdxGraphicItems.push_back(counter);
-								break;
 							}
+
 						}
 					}
 				}

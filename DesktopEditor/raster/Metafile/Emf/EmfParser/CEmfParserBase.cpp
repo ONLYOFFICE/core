@@ -1386,7 +1386,7 @@ namespace MetaFile
                         dSweepAngle = dSweepAngle - 360;
                 }
 
-                oBox.Update(); // Если ширина отрицательная, то не нарисуется
+                oBox.Update((m_pDC->GetFinalTransform(GM_ADVANCED)->M11 < 0), (m_pDC->GetFinalTransform(GM_ADVANCED)->M22 < 0)); // Если ширина отрицательная, то не нарисуется
 
                 TEmfPointL oStartDraw = GetStartPointForArc(oBox, dStartAngle);
 
@@ -1403,7 +1403,7 @@ namespace MetaFile
                 double dStartAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oStart.x, oStart.y);
                 double dSweepAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oEnd.x, oEnd.y) - dStartAngle;
 
-                oBox.Update(); // Если ширина отрицательная, то не нарисуется
+                oBox.Update((m_pDC->GetFinalTransform(GM_ADVANCED)->M11 < 0), (m_pDC->GetFinalTransform(GM_ADVANCED)->M22 < 0)); // Если ширина отрицательная, то не нарисуется
 
                 ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, dStartAngle, dSweepAngle);
                 DrawPath(true, false);
@@ -1430,7 +1430,7 @@ namespace MetaFile
                 if (NULL != m_pInterpretator)
                         m_pInterpretator->HANDLE_EMR_ELLIPSE(oBox);
 
-                oBox.Update(); // Если ширина отрицательная, то не нарисуется
+                oBox.Update((m_pDC->GetFinalTransform(GM_ADVANCED)->M11 < 0), (m_pDC->GetFinalTransform(GM_ADVANCED)->M22 < 0)); // Если ширина отрицательная, то не нарисуется
 
                 if (m_pDC->GetArcDirection() == AD_COUNTERCLOCKWISE)
                         ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, 0, 360);

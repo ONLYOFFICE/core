@@ -196,8 +196,6 @@ namespace MetaFile
 	{
 		if (pOutput)
 		{
-			pOutput->StartPath();
-
 			for (unsigned int ulIndex = 0; ulIndex < m_pCommands.size(); ulIndex++)
 			{
 				CEmfPathCommandBase* pCommand = m_pCommands.at(ulIndex);

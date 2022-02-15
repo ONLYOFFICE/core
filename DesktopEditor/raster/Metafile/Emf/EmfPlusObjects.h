@@ -323,6 +323,11 @@ namespace MetaFile
                         return ObjectTypePath;
                 }
 
+                void Clear()
+                {
+                        CEmfPath::Clear();
+                }
+
                 TRectD ConvertToRect() const
                 {
                         TRectD oRect;

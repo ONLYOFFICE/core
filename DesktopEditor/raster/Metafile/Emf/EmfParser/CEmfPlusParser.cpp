@@ -808,14 +808,45 @@ namespace MetaFile
                         //Определен флаг R (С игнорируется)
                         return NULL;
                 }
-                else if ((unPathPointFlags >>(17)) & 1 )
+                else if ((unPathPointFlags >>(14)) & 1 )
                 {
                         //Не определен флаг R, но определен флаг С
+                        std::vector<TEmfPlusPoint> arPoints     = ReadPoints<TEmfPlusPoint>(unPathPointCount);
+                        std::vector<char> arPointTypes          = ReadPointTypes(unPathPointCount);
+
+                        CEmfPlusPath *pPath = new CEmfPlusPath();
+
+                        for (unsigned int unIndex = 0; unIndex < unPathPointCount; ++unIndex)
+                        {
+                                switch (ExpressValue(arPointTypes[unIndex], 0, 3))
+                                {
+                                        case PathPointTypeStart:  pPath->MoveTo(arPoints[unIndex].x, arPoints[unIndex].y); break;
+                                        case PathPointTypeLine:   pPath->LineTo(arPoints[unIndex].x, arPoints[unIndex].y); break;
+                                        case PathPointTypeBezier:
+                                        {
+                                                if (unIndex + 2 >= unPathPointCount) break;
+
+                                                pPath->CurveTo(arPoints[unIndex + 0].x, arPoints[unIndex + 0].y,
+                                                               arPoints[unIndex + 1].x, arPoints[unIndex + 1].y,
+                                                               arPoints[unIndex + 2].x, arPoints[unIndex + 2].y);
+                                                unIndex += 2;
+                                                break;
+                                        }
+                                }
+
+                                if (ExpressValue(arPointTypes[unIndex], 4, 7) == 0x08)
+                                {
+                                        pPath->Close();
+                                }
+                        }
+
+                        return pPath;
+
                         return NULL;
                 }
                 else
                 {
-                        std::vector<TEmfPlusPointF> arPoints    = ReadPointsF(unPathPointCount);
+                        std::vector<TEmfPlusPointF> arPoints    = ReadPoints<TEmfPlusPointF>(unPathPointCount);
                         std::vector<char> arPointTypes          = ReadPointTypes(unPathPointCount);
 
                         CEmfPlusPath *pPath = new CEmfPlusPath();
@@ -830,7 +861,7 @@ namespace MetaFile
                                         {
                                                 if (unIndex + 2 >= unPathPointCount) break;
 
-                                                pPath->CurveTo(arPoints[unIndex].X, arPoints[unIndex].Y,
+                                                pPath->CurveTo(arPoints[unIndex + 0].X, arPoints[unIndex + 0].Y,
                                                                arPoints[unIndex + 1].X, arPoints[unIndex + 1].Y,
                                                                arPoints[unIndex + 2].X, arPoints[unIndex + 2].Y);
                                                 unIndex += 2;
@@ -891,9 +922,20 @@ namespace MetaFile
                 return NULL;
         }
 
-        std::vector<TEmfPlusPointF> CEmfPlusParser::ReadPointsF(unsigned int unPointCount)
+//        std::vector<TEmfPlusPointF> CEmfPlusParser::ReadPointsF(unsigned int unPointCount)
+//        {
+//                std::vector<TEmfPlusPointF> arPoints(unPointCount);
+
+//                for (unsigned int unIndex = 0; unIndex < unPointCount; ++unIndex)
+//                        m_oStream >> arPoints[unIndex];
+
+//                return arPoints;
+//        }
+
+        template<typename PointType>
+        std::vector<PointType> CEmfPlusParser::ReadPoints(unsigned int unPointCount)
         {
-                std::vector<TEmfPlusPointF> arPoints(unPointCount);
+                std::vector<PointType> arPoints(unPointCount);
 
                 for (unsigned int unIndex = 0; unIndex < unPointCount; ++unIndex)
                         m_oStream >> arPoints[unIndex];
@@ -915,20 +957,19 @@ namespace MetaFile
         {
                 if (NULL != m_pInterpretator)
                 {
-                        TRectD oRectD = oRectangle.GetRectD();
                         if (AD_COUNTERCLOCKWISE != m_pDC->GetArcDirection())
                         {
-                                m_pInterpretator->MoveTo(oRectD.dLeft,  oRectD.dTop);
-                                m_pInterpretator->LineTo(oRectD.dLeft,  oRectD.dBottom);
-                                m_pInterpretator->LineTo(oRectD.dRight, oRectD.dBottom);
-                                m_pInterpretator->LineTo(oRectD.dRight, oRectD.dTop);
+                                m_pInterpretator->MoveTo(oRectangle.dX,  oRectangle.dY);
+                                m_pInterpretator->LineTo(oRectangle.dX,  oRectangle.dY + oRectangle.dHeight);
+                                m_pInterpretator->LineTo(oRectangle.dX + oRectangle.dWidth, oRectangle.dY + oRectangle.dHeight);
+                                m_pInterpretator->LineTo(oRectangle.dX + oRectangle.dWidth, oRectangle.dY);
                         }
                         else
                         {
-                                m_pInterpretator->MoveTo(oRectD.dLeft,  oRectD.dTop);
-                                m_pInterpretator->LineTo(oRectD.dRight, oRectD.dTop);
-                                m_pInterpretator->LineTo(oRectD.dRight, oRectD.dBottom);
-                                m_pInterpretator->LineTo(oRectD.dLeft,  oRectD.dBottom);
+                                m_pInterpretator->MoveTo(oRectangle.dX,  oRectangle.dY);
+                                m_pInterpretator->LineTo(oRectangle.dX + oRectangle.dWidth, oRectangle.dY);
+                                m_pInterpretator->LineTo(oRectangle.dX + oRectangle.dWidth, oRectangle.dY + oRectangle.dHeight);
+                                m_pInterpretator->LineTo(oRectangle.dX,  oRectangle.dY + oRectangle.dHeight);
                         }
 
                         m_pInterpretator->ClosePath();
@@ -1197,6 +1238,8 @@ namespace MetaFile
                         oEmfParser.PlayFile();
 
                         oRenderer.EndCommand(c_nImageType);
+
+                        oFrame.SaveFile(L"Test.png", 4);
 
                         LONG lWidth, lHeight;
 
@@ -1527,7 +1570,7 @@ namespace MetaFile
 
                 RELEASEARRAYOBJECTS(pString)
 
-                std::vector<TEmfPlusPointF> arGlyphPos = ReadPointsF(unGlyphCount);
+                std::vector<TEmfPlusPointF> arGlyphPos = ReadPoints<TEmfPlusPointF>(unGlyphCount);
 
                 if (0x00000001 == unMatrixPresent)
                 {
@@ -1779,15 +1822,18 @@ namespace MetaFile
                 CEmfPlusPath *pPath = GetPath(shOgjectIndex);
 
                 if (NULL != pPath)
-                {
+                {                         
+                        if (pPath->m_pCommands.size() == 2)
+                                LOGGING(L"TEST")
+
                         CEmfPlusPen *pEmfPlusPen = GetPen(unPenId);
 
                         if (NULL == pEmfPlusPen) return;
 
+                        m_pDC->SetPen(pEmfPlusPen);
+
                         if (NULL != pEmfPlusPen->Brush)
                                 m_pDC->SetBrush(pEmfPlusPen->Brush);
-
-                        m_pDC->SetPen(pEmfPlusPen);
 
                         pPath->DrawWithoutClean(m_pInterpretator, true, false);
 
@@ -1845,6 +1891,9 @@ namespace MetaFile
 
                 m_pDC->SetPen(pEmfPlusPen);
 
+                if (NULL != pEmfPlusPen->Brush)
+                        m_pDC->SetBrush(pEmfPlusPen->Brush);
+
                 std::vector<T> arRects(unCount);
 
                 for (unsigned int unIndex = 0; unIndex < unCount; ++unIndex)
@@ -1852,6 +1901,9 @@ namespace MetaFile
                         m_oStream >> arRects[unIndex];
                         DrawRectangle(GetConvertedRectangle(arRects[unIndex]), true, false);
                 }
+
+                if (NULL != pEmfPlusPen->Brush)
+                        m_pDC->RemoveBrush(pEmfPlusPen->Brush);
 
                 m_pDC->RemovePen(pEmfPlusPen);
         }
@@ -2265,6 +2317,10 @@ namespace MetaFile
                         case ObjectTypePen:
                         {
                                 LOGGING(L"Object Pen with index: " << shObjectIndex)
+
+                                if (10 == shObjectIndex)
+                                        LOGGING(L"TEST")
+
                                 CEmfPlusPen *pEmfPlusPen = ReadPen();
 
                                 RegisterObject(pEmfPlusPen, shObjectIndex);
@@ -2502,6 +2558,8 @@ namespace MetaFile
 
         void CEmfPlusParser::Read_EMFPLUS_MULTIPLYWORLDTRANSFORM(unsigned short unShFlags)
         {
+                m_bBanEmfProcessing = true;
+
                 TEmfPlusXForm oMatrix;
 
                 m_oStream >> oMatrix;
@@ -2514,12 +2572,16 @@ namespace MetaFile
 
         void CEmfPlusParser::Read_EMFPLUS_RESETWORLDTRANSFORM()
         {
+                m_bBanEmfProcessing = true;
+
                 m_pDC->ResetTransform();
                 UpdateOutputDC();
         }
 
         void CEmfPlusParser::Read_EMFPLUS_ROTATEWORLDTRANSFORM(unsigned short unShFlags)
         {
+                m_bBanEmfProcessing = true;
+
                 double dAngle;
 
                 m_oStream >> dAngle;
@@ -2533,6 +2595,8 @@ namespace MetaFile
 
         void CEmfPlusParser::Read_EMFPLUS_SCALEWORLDTRANSFORM(unsigned short unShFlags)
         {
+                m_bBanEmfProcessing = true;
+
                 double dSx, dSy;
 
                 m_oStream >> dSx;
@@ -2547,6 +2611,8 @@ namespace MetaFile
 
         void CEmfPlusParser::Read_EMFPLUS_SETPAGETRANSFORM(unsigned short unShFlags)
         {
+                m_bBanEmfProcessing = true;
+
                 short shPageUnit = ExpressValue(unShFlags, 0, 7);
 
                 if (shPageUnit == UnitTypeDisplay || shPageUnit == UnitTypeWorld)
@@ -2554,8 +2620,12 @@ namespace MetaFile
 
                 m_oStream >> m_dUnitKoef;
 
-                if (UnitTypePixel != shPageUnit)
-                        return;
+                switch (shPageUnit)
+                {
+                        case UnitTypePixel: break;
+                        case UnitTypeInch: m_dUnitKoef = m_dUnitKoef / m_pDC->GetFinalTransform(GM_ADVANCED)->M11 * m_unLogicalDpiX; break;
+                        default: break;
+                }
 
                 TXForm oMatrix(m_dUnitKoef, 0, 0, m_dUnitKoef, 0, 0);
 
@@ -2565,6 +2635,8 @@ namespace MetaFile
 
         void CEmfPlusParser::Read_EMFPLUS_SETWORLDTRANSFORM()
         {
+                m_bBanEmfProcessing = true;
+
                 TEmfPlusXForm oMatrix;
 
                 m_oStream >> oMatrix;
@@ -2576,6 +2648,8 @@ namespace MetaFile
 
         void CEmfPlusParser::Read_EMFPLUS_TRANSLATEWORLDTRANSFORM(unsigned short unShFlags)
         {
+                m_bBanEmfProcessing = true;
+
                 double dX, dY;
 
                 m_oStream >> dX;
@@ -2764,5 +2838,4 @@ namespace MetaFile
                         return TEmfPlusRectF((TEmfPlusRect&)oRectangle);
                 else return TEmfPlusRectF();
         }
-
 }

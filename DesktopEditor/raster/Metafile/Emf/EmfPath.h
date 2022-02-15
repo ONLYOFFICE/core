@@ -192,7 +192,7 @@ namespace MetaFile
 		bool Close();
 		void Draw(IOutputDevice* pOutput, bool bStroke, bool bFill, unsigned int unClipMode = -1);
 		void DrawWithoutClean(IOutputDevice* pOutput, bool bStroke, bool bFill);
-	private:
+	protected:
 
 		void Clear();
 

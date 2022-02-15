@@ -55,7 +55,11 @@ namespace MetaFile
 
                 CEmfPlusImageAttributes* GetImageAttributes(unsigned int unImageAttributesIndex);
 
-                std::vector<TEmfPlusPointF> ReadPointsF(unsigned int unPointCount);
+//                std::vector<TEmfPlusPointF> ReadPointsF(unsigned int unPointCount);
+//                std::vector<TEmfPlusPoint> ReadPoints(unsigned int unPointCount);
+                template<typename PointType>
+                std::vector<PointType> ReadPoints(unsigned int unPointCount);
+
                 std::vector<char> ReadPointTypes(unsigned int unPointCount);
 
                 void DrawRectangle(const TEmfPlusRectF& oRectangle, bool bStroke, bool bFill);

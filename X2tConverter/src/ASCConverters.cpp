@@ -1073,6 +1073,7 @@ namespace NExtractTools
 			OOX::Spreadsheet::CXlsb oXlsb;
 			oXlsb.ReadNative(OOX::CPath(sTempUnpackedXLSB));
             oXlsb.PrepareSi();
+            oXlsb.ReadSheetData();
             oXlsb.PrepareTableFormula();
 
 			OOX::CContentTypes oContentTypes;

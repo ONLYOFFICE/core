@@ -766,7 +766,7 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/MERGECELLS.cpp \
     ../Source/XlsbFormat/Biff12_unions/CELLTABLE.cpp \
     ../Source/XlsbFormat/Biff12_unions/ACCELLTABLE.cpp \
-    ../Source/XlsbFormat/Biff12_unions/CELL_bu.cpp \
+    ../Source/XlsbFormat/Biff12_unions/CELL_12bu.cpp \
     ../Source/XlsbFormat/Biff12_unions/DATACELL.cpp \
     ../Source/XlsbFormat/Biff12_unions/FMLACELL.cpp \
     ../Source/XlsbFormat/Biff12_unions/SHRFMLACELL.cpp \

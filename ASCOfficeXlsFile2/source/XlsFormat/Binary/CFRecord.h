@@ -49,7 +49,7 @@ class CFRecord
 public:
 	CFRecord(CFStreamPtr stream, GlobalWorkbookInfoPtr global_info); // Create a record an read its data from the stream
 	CFRecord(NSFile::CFileBinary &file, GlobalWorkbookInfoPtr global_info); // Create a record an read its data from the data stream
-        CFRecord(NSBinPptxRW::CBinaryFileReader &reader, GlobalWorkbookInfoPtr global_info); // Create a record an read its data from the data stream
+    CFRecord(NSBinPptxRW::CBinaryFileReader &reader, GlobalWorkbookInfoPtr global_info); // Create a record an read its data from the data stream
 	CFRecord(CFRecordType::TypeId type_id, GlobalWorkbookInfoPtr global_info); // Create an empty record
 	
 	~CFRecord();
@@ -63,6 +63,7 @@ public:
 	// Pointer to the beginning of the cached data
 	const char* getData() const ;
 	const size_t getDataSize() const;
+    const BYTE getSizeOfRecordTypeRecordLength() const;
 	const size_t getMaxRecordSize() const;
 	void appendRawData(CFRecordPtr where_from);
 	void appendRawData(const char* raw_data, const size_t size);
@@ -129,7 +130,8 @@ private:
 	unsigned int file_ptr;
 	CFRecordType::TypeId type_id_;
 	size_t size_;
-	char* data_;
+    char*  data_;
+    BYTE   sizeOfRecordTypeRecordLength; //размер RecordType и RecordLength
 	size_t rdPtr;
 	static char intData[MAX_RECORD_SIZE];
 

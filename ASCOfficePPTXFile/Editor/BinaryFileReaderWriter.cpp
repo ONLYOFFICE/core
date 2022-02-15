@@ -2097,9 +2097,9 @@ namespace NSBinPptxRW
 	}
 
 	LONG CBinaryFileReader::GetPos()
-	{
+    {
 		return m_lPos;
-	}
+    }
 
 	LONG CBinaryFileReader::GetSize()
 	{

@@ -98,6 +98,8 @@ namespace XLSB
 
         XLS::BaseObjectPtr               m_BrtEndSheet;
 
+        _UINT32                          m_SheetaDataPosition;
+
     };
 
 }

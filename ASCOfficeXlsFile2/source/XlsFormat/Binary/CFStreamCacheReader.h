@@ -65,6 +65,9 @@ public:
 	// Skip the specified number of unsigned chars without processing
 	virtual void skipNunBytes(const size_t n) = 0;
 
+    virtual const int GetRecordPosition() {}
+    virtual void SetRecordPosition(const int) {}
+
 	void SkipRecord();
 	// Seek to the next substream (Read all records till EOF then skip EOF)
 	// Doesn't generate EndOfStreamReached if the stream is the last one
@@ -127,6 +130,8 @@ public:
     bool isEOF() override;
 private:
     const size_t readFromStream(const size_t num_of_records_min_necessary) override;
+    const int GetRecordPosition() override;
+    void SetRecordPosition(const int) override;
     std::shared_ptr<NSBinPptxRW::CBinaryFileReader> binaryStream_;
 };
 } // namespace XLS

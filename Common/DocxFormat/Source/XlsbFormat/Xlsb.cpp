@@ -49,6 +49,8 @@
 
 #include "../../../../DesktopEditor/common/SystemUtils.h"
 
+#include "Biff12_unions/CELLTABLE.h"
+
 using namespace XLS;
 
 OOX::Spreadsheet::CXlsb::~CXlsb()
@@ -79,6 +81,7 @@ bool OOX::Spreadsheet::CXlsb::ReadBin(const CPath& oFilePath, XLS::BaseObject* o
     XLS::StreamCacheReaderPtr reader(new XLS::BinaryStreamCacheReader(m_binaryReader, xls_global_info));
     XLS::BinReaderProcessor proc(reader, objStream, true);
     proc.mandatory(*objStream);
+    delete[] m_pStream;
     return true;
 }
 
@@ -130,6 +133,39 @@ void OOX::Spreadsheet::CXlsb::PrepareSi()
                 }
             }
         }*/
+    }
+}
+//отложенный парсинг SheetData
+void OOX::Spreadsheet::CXlsb::ReadSheetData()
+{
+    for(auto &worksheet : m_arWorksheets)
+    {
+        auto dataPosition = m_mapSheetNameSheetData.find(worksheet->GetReadPath().GetPath())->second;
+
+        NSFile::CFileBinary oFile;
+        if (oFile.OpenFile(worksheet->GetReadPath().GetPath()) == false)
+            continue;
+
+        auto m_lStreamLen = (LONG)oFile.GetFileSize();
+        auto m_pStream = new BYTE[m_lStreamLen];
+        DWORD dwRead = 0;
+        oFile.ReadFile(m_pStream, (DWORD)m_lStreamLen, dwRead);
+        oFile.CloseFile();
+
+        m_binaryReader->Init(m_pStream, 0, dwRead);
+
+        std::vector<CellRangeRef>	shared_formulas_locations;
+        XLSB::CELLTABLE cell_table_temlate(shared_formulas_locations);
+
+        XLS::StreamCacheReaderPtr reader(new XLS::BinaryStreamCacheReader(m_binaryReader, xls_global_info));
+        XLS::BinReaderProcessor proc(reader, &cell_table_temlate, true);
+
+        proc.SetRecordPosition(dataPosition);
+
+        proc.mandatory(cell_table_temlate);
+
+        worksheet->m_oSheetData->fromBin(cell_table_temlate);
+        delete[] m_pStream;
     }
 }
 void OOX::Spreadsheet::CXlsb::PrepareTableFormula()
@@ -190,7 +226,7 @@ void OOX::Spreadsheet::CXlsb::PrepareTableFormula()
                 }
             }
 
-            if(worksheet->m_oSheetData.IsInit())
+           /*if(worksheet->m_oSheetData.IsInit())
             {
                 for(size_t i = 0, length = worksheet->m_oSheetData->m_arrItems.size(); i < length; ++i)
                 {
@@ -208,7 +244,7 @@ void OOX::Spreadsheet::CXlsb::PrepareTableFormula()
                     }
                 }
 
-            }
+            }*/
         }
     }
 }

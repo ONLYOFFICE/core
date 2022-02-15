@@ -439,7 +439,23 @@ return 0;
 
         m_pPdfWriter = (CPdfRenderer*)pPdfWriter;
         XRef* xref = m_pInternal->m_pPDFDocument->getXRef();
-        return m_pPdfWriter->EditPdf(xref->getLastXRefPos(), xref->getNumObjects());
+        Object catDict, pagesRefObj, pagesObj;
+        if (!xref->getCatalog(&catDict)->isDict() || !catDict.dictLookupNF("Pages", &pagesRefObj)->isRef() || !pagesRefObj.fetch(xref, &pagesObj)->isDict())
+        {
+            pagesObj.free();
+            pagesRefObj.free();
+            catDict.free();
+            return false;
+        }
+        std::wstring sPageTree = L"<PageTree";
+        XMLConverter::PageToXml(&pagesRefObj, sPageTree);
+        sPageTree += L"</PageTree>";
+        Ref topPagesRef = pagesRefObj.getRef();
+        pagesObj.free();
+        pagesRefObj.free();
+        catDict.free();
+
+        return m_pPdfWriter->EditPdf(xref->getLastXRefPos(), xref->getNumObjects(), sPageTree, std::make_pair(topPagesRef.num, topPagesRef.gen));
     }
     bool CPdfReader::EditPage(int nPageIndex)
     {

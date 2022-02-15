@@ -1052,7 +1052,7 @@ namespace PdfWriter
 
 		return (!!m_pAcroForm);
 	}
-	bool CDocument::EditPdf(int nPosLastXRef, int nSizeXRef)
+	bool CDocument::EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sPageTree, const std::pair<int, int>& pPageTree)
 	{
 		Close();
 
@@ -1067,13 +1067,19 @@ namespace PdfWriter
 
 		SetCompressionMode(COMP_ALL);
 
+		CXref* pXref = new CXref(this, pPageTree.first);
+		m_pPageTree = new CPageTree(pXref, sPageTree);
+		m_pPageTree->SetRef(pPageTree.first, pPageTree.second);
+		pXref->SetPrev(m_pXref);
+
 		return true;
 	}
-	CPage* CDocument::EditPage(std::wstring sPage, const std::pair<int, int>& pPage)
+	CPage* CDocument::EditPage(const std::wstring& sPage, const std::pair<int, int>& pPage)
 	{
 		CXref* pXref = new CXref(this, pPage.first);
 		// pNewPage Освобождается в деструкторе pXref
 		CPage* pNewPage = new CPage(pXref, this, sPage);
+		m_pPageTree->AddPage(pNewPage);
 		pNewPage->SetRef(pPage.first, pPage.second);
 
 		pNewPage->AddContents(m_pXref);
@@ -1081,7 +1087,7 @@ namespace PdfWriter
 		if (m_unCompressMode & COMP_TEXT)
 			pNewPage->SetFilter(STREAM_FILTER_FLATE_DECODE);
 #endif
-		pXref->SetPrev(m_pCurPage ? m_pCurPage->GetXref() : m_pXref);
+		pXref->SetPrev(m_pCurPage ? m_pCurPage->GetXref() : m_pPageTree->GetXref());
 
 		m_pCurPage = pNewPage;
 		return pNewPage;

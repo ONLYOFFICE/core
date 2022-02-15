@@ -61,14 +61,17 @@ namespace PdfWriter
 	{
 	public:
 		CPageTree(CXref* pXref);
+		CPageTree(CXref* pXref, const std::wstring& sPageTree);
 		void AddPage(CDictObject* pPage);
 		EDictType GetDictType() const
 		{
 			return dict_type_PAGES;
 		}
+		CXref*    GetXref() { return m_pXref; }
 	private:
 		CNumberObject* m_pCount;
 		CArrayObject*  m_pPages;
+		CXref*         m_pXref;
 	};
 	//----------------------------------------------------------------------------------------
 	// CPage

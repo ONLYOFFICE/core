@@ -2048,9 +2048,9 @@ HRESULT CPdfRenderer::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbi
 	m_pPage->GrRestore();
 	return S_OK;
 }
-bool CPdfRenderer::EditPdf(int nPosLastXRef, int nSizeXRef)
+bool CPdfRenderer::EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sPageTree, const std::pair<int, int>& pPageTree)
 {
-	return m_pDocument->EditPdf(nPosLastXRef, nSizeXRef);
+	return m_pDocument->EditPdf(nPosLastXRef, nSizeXRef, sPageTree, pPageTree);
 }
 bool CPdfRenderer::EditPage(std::wstring sPage, const std::pair<int, int>& pPage)
 {

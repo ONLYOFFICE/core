@@ -185,6 +185,19 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CPageTree::CPageTree(CXref* pXref)
 	{
+		m_pXref = pXref;
+		pXref->Add(this);
+
+		m_pPages = new CArrayObject();
+		m_pCount = new CNumberObject(0);
+
+		Add("Type", "Pages");
+		Add("Kids", m_pPages);
+		Add("Count", m_pCount);
+	}
+	CPageTree::CPageTree(CXref* pXref, const std::wstring& sPageTree)
+	{
+		m_pXref = pXref;
 		pXref->Add(this);
 
 		m_pPages = new CArrayObject();

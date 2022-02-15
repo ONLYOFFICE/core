@@ -148,8 +148,8 @@ namespace PdfWriter
 		CPictureField*    CreatePictureField();
 		bool              CheckFieldName(CFieldBase* pField, const std::string& sName);
 					  
-		bool              EditPdf(int nPosLastXRef, int nSizeXRef);
-		CPage*            EditPage(std::wstring sPage, const std::pair<int, int>& pPage);
+		bool              EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sPageTree, const std::pair<int, int>& pPageTree);
+		CPage*            EditPage(const std::wstring& sPage, const std::pair<int, int>& pPage);
 		bool              AddToFile(const std::wstring& wsPath, const std::pair<int, int>& pRoot);
 		void              TEST();
 	private:		  

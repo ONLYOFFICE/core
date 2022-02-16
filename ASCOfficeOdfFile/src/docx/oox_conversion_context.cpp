@@ -44,7 +44,7 @@
 namespace cpdoccore { 
 namespace oox
 {
-void forms_context::start_element (int type)
+void forms_context::start_element (_form_type type)
 {
 	current_state_.clear();
 

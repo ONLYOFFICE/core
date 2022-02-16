@@ -451,14 +451,48 @@ namespace PPTX
 
 						oDrawingConverter.SetFontPicker(pWriter->m_pCommon->m_pFontPicker);
 
-						BinXlsxRW::BinaryFileWriter xlsxBinaryWriter(oFontProcessor);
 //----------------------------
-						OOX::Spreadsheet::CXlsx oXlsxEmbedded(oox_unpacked);
+						BinXlsxRW::BinaryFileWriter xlsxBinaryWriter(oFontProcessor);
+						OOX::Spreadsheet::CXlsx *pXlsxEmbedded = NULL;
+						NSBinPptxRW::CXlsbBinaryWriter oXlsbWriter;
+
+						if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB)
+							pXlsxEmbedded = new OOX::Spreadsheet::CXlsb();
+						else
+							pXlsxEmbedded = new OOX::Spreadsheet::CXlsx();
 
 						//startheader for test
+						//oXlsbWriter.WriteStringUtf8(xlsxBinaryWriter.WriteFileHeader(0, BinXlsxRW::g_nFormatVersionNoBase64));
+						oXlsbWriter.WriteReserved(xlsxBinaryWriter.GetMainTableSize());
+						unsigned int nXlsbWriterStartPos = oXlsbWriter.GetPositionAbsolute();
+
+						pXlsxEmbedded->m_pXlsbWriter = &oXlsbWriter;
+						pXlsxEmbedded->m_bNeedCalcChain = false;
+
+						pXlsxEmbedded->Read(oox_unpacked);
+						pXlsxEmbedded->PrepareWorkbook();
+
+						unsigned int nXlsbWriterEndPos = xlsxBinaryWriter.m_nLastFilePosOffset = oXlsbWriter.GetPositionAbsolute() - nXlsbWriterStartPos;
+
+						if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB)
+						{
+							dynamic_cast<OOX::Spreadsheet::CXlsb*>(pXlsxEmbedded)->PrepareSi();
+							dynamic_cast<OOX::Spreadsheet::CXlsb*>(pXlsxEmbedded)->PrepareTableFormula();
+						}
+						//startheader for test
 						//oDrawingConverter.m_pBinaryWriter->WriteStringUtf8(xlsxBinaryWriter.WriteFileHeader(0, BinXlsxRW::g_nFormatVersionNoBase64));
-						
-						xlsxBinaryWriter.intoBindoc(&oXlsxEmbedded, *oDrawingConverter.m_pBinaryWriter, NULL, &oDrawingConverter);
+						xlsxBinaryWriter.WriteMainTableStart(*oDrawingConverter.m_pBinaryWriter);
+
+						if (nXlsbWriterEndPos - nXlsbWriterStartPos > 0)
+						{
+							xlsxBinaryWriter.WriteBinaryTable(oXlsbWriter.GetBuffer() + nXlsbWriterStartPos, nXlsbWriterEndPos - nXlsbWriterStartPos);
+						}
+						xlsxBinaryWriter.WriteContent(pXlsxEmbedded, NULL, &oDrawingConverter);
+						xlsxBinaryWriter.WriteMainTableEnd();
+
+						pXlsxEmbedded->m_pXlsbWriter = NULL;
+
+						delete pXlsxEmbedded;
 //------------------------------
 						pWriter->SetRels(old_rels);
 						*pWriter->m_pTheme = old_theme;

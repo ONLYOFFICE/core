@@ -469,6 +469,63 @@ namespace NSEditorApi
 		LINK_PROPERTY_INT_JS(ColorSchemeId)
 		LINK_PROPERTY_OBJECT_JS(CColorMods, Mods)
 	};
+
+    class CPrstColor    : public IMenuEventDataBase
+    {
+    private:
+        
+        js_wrapper<int> m_nType; // c_oAscColor_COLOR_TYPE
+        js_wrapper<std::string> m_sId;
+        js_wrapper<unsigned char> m_nR;
+        js_wrapper<unsigned char> m_nG;
+        js_wrapper<unsigned char> m_nB;
+        js_wrapper<unsigned char> m_nA;
+        js_wrapper<bool> m_bNeedRecalc;
+
+    public:
+        CPrstColor()
+        {
+        }
+        virtual ~CPrstColor()
+        {
+        }
+
+        LINK_PROPERTY_INT_JS(Type)
+        LINK_PROPERTY_STRINGA_JS(Id)
+        LINK_PROPERTY_BYTE_JS(R)
+        LINK_PROPERTY_BYTE_JS(G)
+        LINK_PROPERTY_BYTE_JS(B)
+        LINK_PROPERTY_BYTE_JS(A)
+        LINK_PROPERTY_BOOL_JS(NeedRecalc)
+    };
+
+    class CUniColor    : public IMenuEventDataBase
+    {
+    private:
+
+        js_wrapper<CPrstColor> m_oColor;
+        js_wrapper<CColorMods> m_oMods;
+        js_wrapper<unsigned char> m_nR;
+        js_wrapper<unsigned char> m_nG;
+        js_wrapper<unsigned char> m_nB;
+        js_wrapper<unsigned char> m_nA;
+        
+
+    public:
+        CUniColor()
+        {
+        }
+        virtual ~CUniColor()
+        {
+        }
+
+        LINK_PROPERTY_OBJECT_JS(CPrstColor, Color)
+        LINK_PROPERTY_OBJECT_JS(CColorMods, Mods)
+        LINK_PROPERTY_BYTE_JS(R)
+        LINK_PROPERTY_BYTE_JS(G)
+        LINK_PROPERTY_BYTE_JS(B)
+        LINK_PROPERTY_BYTE_JS(A)
+    };
 }
 
 namespace NSEditorApi
@@ -951,6 +1008,41 @@ namespace NSEditorApi
 	};
 }
 
+// shadow
+namespace NSEditorApi
+{
+    class CAscShadow : public IMenuEventDataBase
+    {
+    private:
+
+        js_wrapper<CUniColor>   m_oColor;
+        js_wrapper<int>         m_nAlgn;
+        js_wrapper<int>         m_nBlurRad;
+        js_wrapper<int>         m_nDir;
+        js_wrapper<int>         m_nDist;
+        js_wrapper<bool>        m_bRotWithShape;
+        js_wrapper<bool>        m_bDisplay;
+
+    public:
+        CAscShadow()
+        {
+            m_bRotWithShape = false;
+            m_bDisplay = false;
+        }
+        virtual ~CAscShadow()
+        {
+        }
+
+        LINK_PROPERTY_OBJECT_JS(CUniColor, Color)
+        LINK_PROPERTY_INT_JS(Algn)
+        LINK_PROPERTY_INT_JS(BlurRad)
+        LINK_PROPERTY_INT_JS(Dir)
+        LINK_PROPERTY_INT_JS(Dist)
+        LINK_PROPERTY_BOOL_JS(RotWithShape)
+        LINK_PROPERTY_BOOL_JS(Display)
+    };
+}
+
 // shape/image/chart props
 namespace NSEditorApi
 {
@@ -968,6 +1060,8 @@ namespace NSEditorApi
         js_wrapper<bool>            m_bFromGroup;
         
         js_wrapper<int>             m_nInsertPageNum;
+        
+        js_wrapper<CAscShadow>      m_oShadow;
 
 	public:
 		CAscShapeProp()
@@ -990,7 +1084,9 @@ namespace NSEditorApi
 		LINK_PROPERTY_OBJECT_JS(CAscPaddings, Paddings)
         
         LINK_PROPERTY_INT_JS(InsertPageNum)
-	};
+        
+        LINK_PROPERTY_OBJECT_JS(CAscShadow, Shadow)
+    };
     
     
     

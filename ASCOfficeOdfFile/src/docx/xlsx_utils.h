@@ -49,7 +49,7 @@ std::wstring getRowAddress(size_t row);
 size_t getColAddressInv(const std::wstring & a);
 size_t getRowAdderssInv(const std::wstring & a);
 
-std::wstring getCellAddress(size_t col, size_t row);
+std::wstring getCellAddress(size_t col, size_t row, bool bAbsolute = false);
 void getCellAddressInv(const std::wstring & a, size_t & col, size_t & row);
 
 bool parseBoolVal(const std::wstring & str);

@@ -578,40 +578,51 @@ namespace BinXlsxRW{
 				//SharedStrings
 				if(pCell->m_oValue.IsInit())
 				{
-					pCell->m_oType.Init();
-					const std::wstring& val = pCell->m_oValue->m_sText;
-					if(L"TRUE" == val || L"FALSE" == val)
+					if (pCell->m_oType.IsInit())
 					{
-						pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeBool);
-						if(L"TRUE" == val)
+						if (pCell->m_oType->GetValue() == SimpleTypes::Spreadsheet::celltypeSharedString)
 						{
-							pCell->m_oValue->m_sText = L"1";
+							aSharedStrings.push_back(pCell->m_oValue->m_sText);
+							pCell->m_oValue->m_sText = std::to_wstring(aSharedStrings.size() - 1);
 						}
-						else
-						{
-							pCell->m_oValue->m_sText = L"0";
-						}
-					}
-					else if(L"#NULL!" == val || L"#DIV/0!" == val || L"#VALUE!" == val || L"#REF!" == val || L"#NAME?" == val || L"#NUM!" == val || L"#N/A" == val)
-					{
-						pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeError);
-						pCell->m_oValue->m_sText = val;
 					}
 					else
 					{
-						//как в CsvReader - подозрительный код
-						WCHAR *pEndPtr;
-						wcstod(val.c_str(), &pEndPtr);
-						if (0 != *pEndPtr)
+						pCell->m_oType.Init();
+						const std::wstring& val = pCell->m_oValue->m_sText;
+						if(L"TRUE" == val || L"FALSE" == val)
 						{
-							// Не число
-							aSharedStrings.push_back(val);
-							pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeSharedString);
-							pCell->m_oValue->m_sText = std::to_wstring((int)aSharedStrings.size() - 1);
+							pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeBool);
+							if(L"TRUE" == val)
+							{
+								pCell->m_oValue->m_sText = L"1";
+							}
+							else
+							{
+								pCell->m_oValue->m_sText = L"0";
+							}
+						}
+						else if(L"#NULL!" == val || L"#DIV/0!" == val || L"#VALUE!" == val || L"#REF!" == val || L"#NAME?" == val || L"#NUM!" == val || L"#N/A" == val)
+						{
+							pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeError);
+							pCell->m_oValue->m_sText = val;
 						}
 						else
 						{
-							pCell->m_oValue->m_sText = val;
+							//как в CsvReader - подозрительный код
+							WCHAR *pEndPtr;
+							wcstod(val.c_str(), &pEndPtr);
+							if (0 != *pEndPtr)
+							{
+								// Не число
+								aSharedStrings.push_back(val);
+								pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeSharedString);
+								pCell->m_oValue->m_sText = std::to_wstring((int)aSharedStrings.size() - 1);
+							}
+							else
+							{
+								pCell->m_oValue->m_sText = val;
+							}
 						}
 					}
 				}
@@ -620,7 +631,7 @@ namespace BinXlsxRW{
 			pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
 		}
 	}
-	void ChartWriter::parseCell(const std::wstring& sheet, const int& nRow, const int& nCol, const std::wstring& val, std::wstring* format = NULL)
+	void ChartWriter::parseCell(const std::wstring& sheet, const int& nRow, const int& nCol, const std::wstring& val, std::wstring* format = NULL, bool bAlwaysSharedString)
 	{
         std::map<std::wstring, std::map<int, std::map<int, OOX::Spreadsheet::CCell*>*>*>::const_iterator itSheets = m_mapSheets.find(sheet);
         std::map<int, std::map<int, OOX::Spreadsheet::CCell*>*>* rows = NULL;
@@ -649,6 +660,12 @@ namespace BinXlsxRW{
 		if(cells->find(nCol) == cells->end())
 		{
 			OOX::Spreadsheet::CCell* pNewCell = parseCreateCell(nRow, nCol, val, format);
+
+			if (bAlwaysSharedString)
+			{
+				pNewCell->m_oType.Init();
+				pNewCell->m_oType->SetValue(SimpleTypes::Spreadsheet::ECellTypeType::celltypeSharedString);
+			}
 			cells->insert(std::make_pair(nCol, pNewCell));
 		}
 	}
@@ -707,14 +724,14 @@ namespace BinXlsxRW{
 						{
 							if(nCol1 > 1)
 							{
-								parseCell(sheetFrom, nRow1, nCol1 - 1, std::wstring(cRangeName), NULL);
+								parseCell(sheetFrom, nRow1, nCol1 - 1, std::wstring(cRangeName), NULL, true);
 							}
 						}
 						else
 						{
 							if(nRow1 > 1)
 							{
-								parseCell(sheetFrom, nRow1 - 1, nCol1, std::wstring(cRangeName), NULL);
+								parseCell(sheetFrom, nRow1 - 1, nCol1, std::wstring(cRangeName), NULL, true);
 							}
 						}
 					}
@@ -751,7 +768,7 @@ namespace BinXlsxRW{
 							nRow = nRow1 + *val->m_idx;
 							nCol = nCol1;
 						}
-						parseCell(sheetFrom, nRow, nCol, *val->m_v);
+						parseCell(sheetFrom, nRow, nCol, *val->m_v, NULL, true);
 					}
 				}
 			}

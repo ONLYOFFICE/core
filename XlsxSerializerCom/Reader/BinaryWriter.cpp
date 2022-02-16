@@ -7230,7 +7230,10 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 			oBufferedStream.WriteStringUtf8(WriteFileHeader(0, g_nFormatVersionNoBase64));
 		}
 		int nHeaderLen = oBufferedStream.GetPosition();
-		intoBindoc(pXlsx ? dynamic_cast<OOX::Document*>(pXlsx) : dynamic_cast<OOX::Document*>(pXlsxFlat), oBufferedStream, pEmbeddedFontsManager, pOfficeDrawingConverter);
+		
+		WriteMainTableStart(oBufferedStream);
+		WriteContent(pXlsx ? dynamic_cast<OOX::Document*>(pXlsx) : dynamic_cast<OOX::Document*>(pXlsxFlat), pEmbeddedFontsManager, pOfficeDrawingConverter);
+		WriteMainTableEnd();
 
 		BYTE* pbBinBuffer = oBufferedStream.GetBuffer();
 		int nBinBufferLen = oBufferedStream.GetPosition();
@@ -7280,11 +7283,19 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 
 	return result;
 }
-void BinaryFileWriter::intoBindoc(OOX::Document *pDocument, NSBinPptxRW::CBinaryFileWriter &oBufferedStream, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter)
+void BinaryFileWriter::WriteBinaryTable(const BYTE* pBuffer, size_t size)
 {
-	if (!m_oBcw) 
-		m_oBcw = new BinaryCommonWriter(oBufferedStream);
+	int nCurPos = m_oBcw->m_oStream.GetPosition();
 
+	m_oBcw->m_oStream.SetPosition(m_nLastFilePos);
+	m_oBcw->m_oStream.WriteBYTEArray(pBuffer, size);
+	m_nLastFilePos = m_oBcw->m_oStream.GetPosition();
+
+	m_oBcw->m_oStream.SetPosition(nCurPos);
+}
+
+void BinaryFileWriter::WriteContent(OOX::Document *pDocument, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter)
+{
 	OOX::Spreadsheet::CXlsx *pXlsx = dynamic_cast<OOX::Spreadsheet::CXlsx *>(pDocument);
 	OOX::Spreadsheet::CXlsxFlat *pXlsxFlat = dynamic_cast<OOX::Spreadsheet::CXlsxFlat *>(pDocument);
 
@@ -7306,7 +7317,6 @@ void BinaryFileWriter::intoBindoc(OOX::Document *pDocument, NSBinPptxRW::CBinary
 	}
 
 	int nCurPos;
-	WriteMainTableStart();
 //SharedString
 	OOX::Spreadsheet::CIndexedColors* pIndexedColors = NULL;
 	
@@ -7318,14 +7328,14 @@ void BinaryFileWriter::intoBindoc(OOX::Document *pDocument, NSBinPptxRW::CBinary
 	if(pXlsx && pXlsx->m_pApp)
 	{
 		nCurPos = this->WriteTableStart(c_oSerTableTypes::App);
-		pXlsx->m_pApp->ToPptxApp()->toPPTY(&oBufferedStream);
+		pXlsx->m_pApp->ToPptxApp()->toPPTY(&m_oBcw->m_oStream);
 		this->WriteTableEnd(nCurPos);
 	}
 
 	if(pXlsx && pXlsx->m_pCore)
 	{
 		nCurPos = this->WriteTableStart(c_oSerTableTypes::Core);
-		pXlsx->m_pCore->ToPptxCore()->toPPTY(&oBufferedStream);
+		pXlsx->m_pCore->ToPptxCore()->toPPTY(&m_oBcw->m_oStream);
 		this->WriteTableEnd(nCurPos);
 	}
 
@@ -7336,7 +7346,7 @@ void BinaryFileWriter::intoBindoc(OOX::Document *pDocument, NSBinPptxRW::CBinary
 		if (pCustomProperties)
 		{
 			nCurPos = this->WriteTableStart(c_oSerTableTypes::CustomProperties);
-			pCustomProperties->toPPTY(&oBufferedStream);
+			pCustomProperties->toPPTY(&m_oBcw->m_oStream);
 			this->WriteTableEnd(nCurPos);
 		}
 	}
@@ -7344,7 +7354,7 @@ void BinaryFileWriter::intoBindoc(OOX::Document *pDocument, NSBinPptxRW::CBinary
 	if(pSharedStrings)
 	{
 		nCurPos = WriteTableStart(c_oSerTableTypes::SharedStrings);
-		BinarySharedStringTableWriter oBinarySharedStringTableWriter(oBufferedStream, pEmbeddedFontsManager);
+		BinarySharedStringTableWriter oBinarySharedStringTableWriter(m_oBcw->m_oStream, pEmbeddedFontsManager);
 		oBinarySharedStringTableWriter.Write(*pSharedStrings, pIndexedColors, pXlsx ? pXlsx->GetTheme() : NULL, m_oFontProcessor);
 		WriteTableEnd(nCurPos);
 	}
@@ -7352,7 +7362,7 @@ void BinaryFileWriter::intoBindoc(OOX::Document *pDocument, NSBinPptxRW::CBinary
 	if(pWorkbook && pWorkbook->m_pPersonList)
 	{
 		nCurPos = WriteTableStart(c_oSerTableTypes::PersonList);
-		BinaryPersonTableWriter oBinaryPersonTableWriter(oBufferedStream);
+		BinaryPersonTableWriter oBinaryPersonTableWriter(m_oBcw->m_oStream);
 		oBinaryPersonTableWriter.Write(*pXlsx->m_pWorkbook->m_pPersonList);
 		WriteTableEnd(nCurPos);
 	}
@@ -7360,7 +7370,7 @@ void BinaryFileWriter::intoBindoc(OOX::Document *pDocument, NSBinPptxRW::CBinary
 	if(pStyles)
 	{
 		nCurPos = WriteTableStart(c_oSerTableTypes::Styles);
-		BinaryStyleTableWriter oBinaryStyleTableWriter(oBufferedStream, pEmbeddedFontsManager);
+		BinaryStyleTableWriter oBinaryStyleTableWriter(m_oBcw->m_oStream, pEmbeddedFontsManager);
 		oBinaryStyleTableWriter.Write(*pStyles, pXlsx ? pXlsx->GetTheme() : NULL, m_oFontProcessor);
 		WriteTableEnd(nCurPos);
 	}
@@ -7378,7 +7388,7 @@ void BinaryFileWriter::intoBindoc(OOX::Document *pDocument, NSBinPptxRW::CBinary
 	if ( pWorkbook)
 	{
 		nCurPos = WriteTableStart(c_oSerTableTypes::Workbook);
-		BinaryWorkbookTableWriter oBinaryWorkbookTableWriter(oBufferedStream, pXlsx ? dynamic_cast<OOX::Document*>(pXlsx) : dynamic_cast<OOX::Document*>(pXlsxFlat));
+		BinaryWorkbookTableWriter oBinaryWorkbookTableWriter(m_oBcw->m_oStream, pXlsx ? dynamic_cast<OOX::Document*>(pXlsx) : dynamic_cast<OOX::Document*>(pXlsxFlat));
 		oBinaryWorkbookTableWriter.Write(*pWorkbook);
 		WriteTableEnd(nCurPos);
 	}
@@ -7386,31 +7396,29 @@ void BinaryFileWriter::intoBindoc(OOX::Document *pDocument, NSBinPptxRW::CBinary
 	{
 	//Worksheets
 		nCurPos = WriteTableStart(c_oSerTableTypes::Worksheets);
-		BinaryWorksheetTableWriter oBinaryWorksheetTableWriter(oBufferedStream, pEmbeddedFontsManager, pIndexedColors, pXlsx->GetTheme(), m_oFontProcessor, pOfficeDrawingConverter);
+		BinaryWorksheetTableWriter oBinaryWorksheetTableWriter(m_oBcw->m_oStream, pEmbeddedFontsManager, pIndexedColors, pXlsx->GetTheme(), m_oFontProcessor, pOfficeDrawingConverter);
 		oBinaryWorksheetTableWriter.Write(*pXlsx->m_pWorkbook, pXlsx->m_mapWorksheets); 
 		WriteTableEnd(nCurPos);
 	
 	//OtherTable
 		nCurPos = WriteTableStart(c_oSerTableTypes::Other);
-		BinaryOtherTableWriter oBinaryOtherTableWriter(oBufferedStream, pEmbeddedFontsManager, pXlsx->GetTheme(), pOfficeDrawingConverter);
+		BinaryOtherTableWriter oBinaryOtherTableWriter(m_oBcw->m_oStream, pEmbeddedFontsManager, pXlsx->GetTheme(), pOfficeDrawingConverter);
 		oBinaryOtherTableWriter.Write();
 		WriteTableEnd(nCurPos);
 
 	//Customs from Workbook (todooo - другие)
 		nCurPos = WriteTableStart(c_oSerTableTypes::Customs);
-		BinaryCustomsTableWriter oBinaryCustomsTableWriter(oBufferedStream);
+		BinaryCustomsTableWriter oBinaryCustomsTableWriter(m_oBcw->m_oStream);
 		oBinaryCustomsTableWriter.Write(pXlsx->m_pWorkbook);
 		WriteTableEnd(nCurPos);
 	}
 	else if (pXlsxFlat)
 	{
 		nCurPos = WriteTableStart(c_oSerTableTypes::Worksheets);
-		BinaryWorksheetTableWriter oBinaryWorksheetTableWriter(oBufferedStream, pEmbeddedFontsManager, pIndexedColors, NULL, m_oFontProcessor, pOfficeDrawingConverter);
+		BinaryWorksheetTableWriter oBinaryWorksheetTableWriter(m_oBcw->m_oStream, pEmbeddedFontsManager, pIndexedColors, NULL, m_oFontProcessor, pOfficeDrawingConverter);
 		oBinaryWorksheetTableWriter.Write(*pXlsxFlat->m_pWorkbook.GetPointer(), pXlsxFlat->m_arWorksheets); 
 		WriteTableEnd(nCurPos);
 	}
-	
-	WriteMainTableEnd();
 }
 
 std::wstring BinaryFileWriter::WriteFileHeader(int nDataSize, int version)
@@ -7418,8 +7426,11 @@ std::wstring BinaryFileWriter::WriteFileHeader(int nDataSize, int version)
     std::wstring sHeader = std::wstring(g_sFormatSignature) + L";v" + std::to_wstring(version)+ L";" + std::to_wstring(nDataSize) + L";";
 	return sHeader;
 }
-void BinaryFileWriter::WriteMainTableStart()
+void BinaryFileWriter::WriteMainTableStart(NSBinPptxRW::CBinaryFileWriter &oBufferedStream)
 {
+	if (!m_oBcw)
+		m_oBcw = new BinaryCommonWriter(oBufferedStream);
+
 	m_nRealTableCount = 0;
 	m_nMainTableStart = m_oBcw->m_oStream.GetPosition();
 	//вычисляем с какой позиции можно писать таблицы

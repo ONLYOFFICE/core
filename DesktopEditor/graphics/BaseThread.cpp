@@ -96,16 +96,15 @@ namespace NSThreads
     {
         friend class CBaseThread;
     private:
-        HANDLE m_thread;
+        HANDLE m_thread = nullptr;
 
     public:
         __native_thread() : CThreadDescriptor()
         {
-            m_thread = NULL;
         }
         virtual ~__native_thread()
         {
-            if (m_thread != NULL)
+            if (m_thread)
             {
                 CloseHandle(m_thread);
                 m_thread = NULL;
@@ -114,7 +113,7 @@ namespace NSThreads
     };
 #else
     void* CBaseThread::__ThreadProc(void* pv)
-    {   
+    {
 #ifndef NOT_USE_PTHREAD_CANCEL
         int old_thread_type;
         pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &old_thread_type);
@@ -170,6 +169,8 @@ namespace NSThreads
         m_hThread = new __native_thread();
 
         m_bRunThread = TRUE;
+
+        m_bIsExit.store(false);
 #if defined(_WIN32) || defined(_WIN64) || defined(_WIN32_WCE)
         DWORD dwTemp;
         ((__native_thread*)m_hThread)->m_thread = CreateThread(NULL, 0, &__ThreadProc, (void*)this, 0, &dwTemp);
@@ -191,6 +192,8 @@ namespace NSThreads
     {
         if (!m_bRunThread)
             return;
+
+        m_bIsExit.store(true);
         m_bRunThread = FALSE;
 
         Join();
@@ -199,6 +202,7 @@ namespace NSThreads
     void CBaseThread::StopNoJoin()
     {
         m_bRunThread = FALSE;
+        m_bIsExit.store(true);
         RELEASEOBJECT(m_hThread);
     }
     void CBaseThread::DestroyOnFinish()
@@ -209,6 +213,7 @@ namespace NSThreads
     INT CBaseThread::IsSuspended() { return m_bSuspend; }
     INT CBaseThread::IsRunned() { return m_bRunThread; }
     int CBaseThread::GetError() { return m_lError; }
+    bool CBaseThread::isAborted() {return m_bIsExit && m_bIsExit.load();}
 
     CThreadDescriptor* CBaseThread::GetDescriptor() { return m_hThread; }
     int CBaseThread::GetPriority() { return m_lThreadPriority; }
@@ -229,5 +234,18 @@ namespace NSThreads
 #else
         pthread_join(((__native_thread*)m_hThread)->m_thread, 0);
 #endif
+    }
+
+    void CBaseThread::Cancel()
+    {
+        if (NULL == m_hThread)
+            return;
+
+         m_bIsExit.store(true);
+
+         m_bRunThread = FALSE;
+
+         Join();
+         RELEASEOBJECT(m_hThread);
     }
 }

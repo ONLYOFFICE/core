@@ -241,7 +241,7 @@ namespace NSNetwork
                     if (NSFile::CFileBinary::Exists(m_sDownloadFilePath))
                         NSFile::CFileBinary::Remove(m_sDownloadFilePath);
                 }
-                return download_external(m_sDownloadFileUrl, m_sDownloadFilePath, m_func_onProgress);
+                return download_external(m_sDownloadFileUrl, m_sDownloadFilePath, m_func_onProgress, m_check_aborted);
             }
             virtual int UploadData() override
             {
@@ -264,18 +264,22 @@ namespace NSNetwork
         };
 
         CFileTransporter_private::CFileTransporter_private(const std::wstring &sDownloadFileUrl, bool bDelete)
+            : m_pInternal(new CFileTransporterBaseCURL(sDownloadFileUrl, bDelete))
+
         {
-            m_pInternal = new CFileTransporterBaseCURL(sDownloadFileUrl, bDelete);
+            m_pInternal->m_check_aborted = std::bind(&CBaseThread::isAborted, this);
         }
 
         CFileTransporter_private::CFileTransporter_private(const std::wstring &sUploadUrl, const unsigned char* cData, const int nSize)
+            : m_pInternal(new CFileTransporterBaseCURL(sUploadUrl, cData, nSize))
         {
-            m_pInternal = new CFileTransporterBaseCURL(sUploadUrl, cData, nSize);
+            m_pInternal->m_check_aborted = std::bind(&CBaseThread::isAborted, this);
         }
 
         CFileTransporter_private::CFileTransporter_private(const std::wstring &sUploadUrl, const std::wstring &sUploadFilePath)
+            : m_pInternal(new CFileTransporterBaseCURL(sUploadUrl, sUploadFilePath))
         {
-            m_pInternal = new CFileTransporterBaseCURL(sUploadUrl, sUploadFilePath);
+            m_pInternal->m_check_aborted = std::bind(&CBaseThread::isAborted, this);
         }
     }
 }

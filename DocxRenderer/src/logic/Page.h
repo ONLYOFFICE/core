@@ -986,8 +986,6 @@ namespace NSDocxRenderer
 
 		void Build()
         {
-			SetTextOptions();
-
 			if (m_bIsDeleteTextClipPage)
 			{
                 // удалим все линии, которые выходят за границы страницы
@@ -1129,6 +1127,8 @@ namespace NSDocxRenderer
 				}
 			case TextAssociationTypeParagraphNoFrames:
 				{
+					SetTextOptions();
+
 					SortElements(m_arTextLine);
 					Merge(STANDART_STRING_HEIGHT_MM / 3);
 

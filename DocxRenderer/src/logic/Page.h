@@ -982,6 +982,10 @@ namespace NSDocxRenderer
             for (size_t i = arIdxGraphicItems.size(); i > 0; --i)
                 m_arGraphicItems.erase(iter + arIdxGraphicItems[i-1]);
 
+            for (size_t i = 0 ; i < m_arTextLine.size(); ++i)
+            {
+                m_arTextLine[i]->SetShadingColor();
+            }
 		}
 
 		void Build()
@@ -1151,6 +1155,7 @@ namespace NSDocxRenderer
 							CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
 							pParagraph->m_pManagerLight = &m_oManagerLight;
 							pParagraph->m_bIsTextFrameProperties = false;
+							pParagraph->m_lShadingColor = pTextLine->m_lShadingColor;
 
 							pParagraph->m_dLeft	= pTextLine->m_dX;
 
@@ -1268,6 +1273,9 @@ namespace NSDocxRenderer
 			bool bIsShortPrevLine = pPrevTextLine->m_dWidth <  dMinWidthLine;
 			bool bIsPrevWidthLineLessCur = dDivLines <= 0.9;
 			bool bIsNotPrevWidthLinesLessCur = dDivLines > 0.9 && dDivLines < 1.1;
+
+			if (pTextLine->m_lShadingColor != pPrevTextLine->m_lShadingColor)
+				return true;
 
 			return ( 	   bIsCurLineNewlineCharacter	 || bIsPrevLineNewlineCharacter  
 						|| bIsShortPrevLine				 || bIsPrevWidthLineLessCur

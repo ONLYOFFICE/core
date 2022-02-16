@@ -611,6 +611,8 @@ namespace NSDocxRenderer
         double m_dWidth;
         double m_dHeight;
 
+        long m_lShadingColor;
+
     public:
         CTextLine() : m_arConts()
         {
@@ -620,6 +622,8 @@ namespace NSDocxRenderer
             m_dY			= 0;
             m_dWidth		= 0;
             m_dHeight		= 0;
+
+            m_lShadingColor = -1;
         }
         void Clear()
         {
@@ -653,6 +657,8 @@ namespace NSDocxRenderer
             m_dY			= oSrc.m_dY;
             m_dWidth		= oSrc.m_dWidth;
             m_dHeight		= oSrc.m_dHeight;
+
+            m_lShadingColor = oSrc.m_lShadingColor;
         }
 
         inline void AddCont(CContText* pCont, double dBaselineOffset)
@@ -776,6 +782,17 @@ namespace NSDocxRenderer
             m_arConts = arTempConts;
         }
 
+        void SetShadingColor()
+        {
+            size_t nCountConts = m_arConts.size();
+            for (size_t i = 1; i < nCountConts; ++i)
+            {
+                if (m_arConts[0]->m_lShadingColor != m_arConts[i]->m_lShadingColor)
+                    return;
+            }
+            m_lShadingColor = m_arConts[0]->m_lShadingColor;
+        }
+
         void ToXml(NSStringUtils::CStringBuilder& oWriter, CFontManagerLight* pManagerLight)
         {
             size_t nCountConts = m_arConts.size();
@@ -863,6 +880,7 @@ namespace NSDocxRenderer
         std::vector<CTextLine*> m_arLines;
 
         std::wstring m_strAvailable;
+        long m_lShadingColor;
 
     public:
         CParagraph(const TextAssociationType& eType) : m_arLines()
@@ -883,6 +901,7 @@ namespace NSDocxRenderer
             m_eTextAssociationType = eType;
 
             m_strAvailable = L"left";
+            m_lShadingColor = -1;
         }
         CParagraph(const CParagraph& oSrc)
         {
@@ -930,6 +949,8 @@ namespace NSDocxRenderer
 
             m_pManagerLight = oSrc.m_pManagerLight;
 
+            m_lShadingColor = oSrc.m_lShadingColor;
+
             return *this;
         }
 
@@ -971,7 +992,14 @@ namespace NSDocxRenderer
                 }
             case TextAssociationTypeParagraphNoFrames:
                 {
-                    oWriter.WriteString(L"<w:pPr><w:spacing w:before=\"");
+                    oWriter.WriteString(L"<w:pPr>");
+                    if (m_lShadingColor >=0 && m_arLines.size() > 1)
+                    {
+                        oWriter.WriteString(L"<w:shd w:fill=\"");
+                        oWriter.WriteHexInt3(ConvertColor(m_lShadingColor));
+                        oWriter.WriteString(L"\"/>");
+                    }
+                    oWriter.WriteString(L"<w:spacing w:before=\"");
                     oWriter.AddInt((int)(m_dSpaceBefore * c_dMMToDx));
                     oWriter.WriteString(L"\" w:line=\"");
                     oWriter.AddInt((int)(m_dHeight * c_dMMToDx));

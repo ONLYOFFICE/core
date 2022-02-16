@@ -764,7 +764,7 @@
     #include "../Source/XlsbFormat/Biff12_unions/MERGECELLS.cpp"
     #include "../Source/XlsbFormat/Biff12_unions/CELLTABLE.cpp"
     #include "../Source/XlsbFormat/Biff12_unions/ACCELLTABLE.cpp"
-    #include "../Source/XlsbFormat/Biff12_unions/CELL_bu.cpp"
+    #include "../Source/XlsbFormat/Biff12_unions/CELL_12bu.cpp"
     #include "../Source/XlsbFormat/Biff12_unions/DATACELL.cpp"
     #include "../Source/XlsbFormat/Biff12_unions/FMLACELL.cpp"
     #include "../Source/XlsbFormat/Biff12_unions/SHRFMLACELL.cpp"

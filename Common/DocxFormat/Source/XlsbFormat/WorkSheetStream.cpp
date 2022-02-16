@@ -79,7 +79,6 @@ WorkSheetStream::~WorkSheetStream()
 {
 }
 
-
 BaseObjectPtr WorkSheetStream::clone()
 {
         return BaseObjectPtr(new WorkSheetStream(*this));
@@ -173,12 +172,15 @@ const bool WorkSheetStream::loadContent(BinProcessor& proc)
 
             case rt_BeginSheetData:
             {
-                CELLTABLE cell_table_temlate(shared_formulas_locations);
+                /*CELLTABLE cell_table_temlate(shared_formulas_locations);
                 if (proc.optional(cell_table_temlate))
                 {
                     m_CELLTABLE = elements_.back();
                     elements_.pop_back();
-                }
+                }*/
+                m_SheetaDataPosition = proc.GetRecordPosition();
+                while(proc.getNextRecordType() != rt_EndSheetData)
+                    proc.SkipRecord();
             }break;
 
             case rt_WsFmtInfo:

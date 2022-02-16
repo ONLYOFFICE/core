@@ -485,7 +485,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSheetData)
-            WritingElement_XlsbConstructors(CSheetData)
+            //WritingElement_XlsbConstructors(CSheetData)
 			CSheetData(OOX::Document *pMain = NULL) : WritingElementWithChilds<CRow>(pMain)
 			{
 			}
@@ -522,7 +522,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
 
-            void fromBin(XLS::BaseObjectPtr& obj);
+            void fromBin(XLS::BaseObject& obj);
 
 			virtual EElementType getType () const
 			{
@@ -539,8 +539,6 @@ namespace OOX
 			void fromXLSBToXmlRowEnd (CRow* pRow, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-
-            void ReadAttributes(XLS::BaseObjectPtr& obj);
 
 	// spreadsheets 2003
 

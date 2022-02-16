@@ -7214,6 +7214,7 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
         if (fileType == BinXlsxRW::c_oFileTypes::XLSB)
         {
             dynamic_cast<OOX::Spreadsheet::CXlsb*>(pXlsx)->PrepareSi();
+            dynamic_cast<OOX::Spreadsheet::CXlsb*>(pXlsx)->ReadSheetData();
             dynamic_cast<OOX::Spreadsheet::CXlsb*>(pXlsx)->PrepareTableFormula();
         }
 	}

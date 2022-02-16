@@ -253,7 +253,16 @@ void BinReaderProcessor::SkipRecord()
 	if (reader_)
 		reader_->SkipRecord();
 }
-
+const int BinReaderProcessor::GetRecordPosition()
+{
+ if (reader_)
+     return reader_->GetRecordPosition();
+}
+void BinReaderProcessor::SetRecordPosition(const int position)
+{
+  if (reader_)
+      reader_->SetRecordPosition(position);
+}
 
 
 } // namespace XLS

@@ -2169,11 +2169,6 @@ namespace OOX
 			WritingElement_ReadAttributes_End(oReader)
 		}
 
-        void CSheetData::ReadAttributes(XLS::BaseObjectPtr& obj)
-        {
-            //auto ptr = static_cast<XLSB::CalcProp*>(obj.get());
-        }
-
 		void CSheetData::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes( oReader );
@@ -2405,10 +2400,10 @@ namespace OOX
 		}
 //---------------------------------------------------------------------------------------------------------------------
 
-        void CSheetData::fromBin(XLS::BaseObjectPtr& obj)
+        void CSheetData::fromBin(XLS::BaseObject& obj)
         {
             //ReadAttributes(obj);
-            auto ptr = static_cast<XLSB::CELLTABLE*>(obj.get());
+            auto ptr = static_cast<XLSB::CELLTABLE*>(&obj);
 
             for(auto &Parenthesis_CELLTABLE : ptr->m_arParenthesis_CELLTABLE)
             {

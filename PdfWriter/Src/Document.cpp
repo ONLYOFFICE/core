@@ -1063,10 +1063,6 @@ namespace PdfWriter
 			return false;
 		m_pXref->SetPrevAddr(nPosLastXRef);
 
-		m_pTrailer = m_pXref->GetTrailer();
-		if (!m_pTrailer)
-			return false;
-
 		SetCompressionMode(COMP_ALL);
 
 		m_pLastXref = new CXref(this, pPageTree.first);
@@ -1094,12 +1090,13 @@ namespace PdfWriter
 		m_pCurPage = pNewPage;
 		return pNewPage;
 	}
-	bool CDocument::AddToFile(const std::wstring& wsPath, const std::pair<int, int>& pRoot)
+	bool CDocument::AddToFile(const std::wstring& wsPath, const std::wstring& sTrailer)
 	{
 		CFileStream* pStream = new CFileStream();
 		if (!pStream || !pStream->OpenFile(wsPath, false))
 			return false;
 
+		m_pTrailer = m_pLastXref->GetTrailer();
 		// Шифруем документ, если это необходимо
 		CEncrypt* pEncrypt = NULL;
 		if (m_bEncrypt)
@@ -1108,12 +1105,7 @@ namespace PdfWriter
 			PrepareEncryption();
 		}
 
-		// Root добавляется в последний трейлер
-		CObjectBase* pBase = new CObjectBase();
-		pBase->SetRef(pRoot.first, pRoot.second);
-		CObjectBase* pRootObj = new CProxyObject(pBase);
-		m_pLastXref->GetTrailer()->Add("Root", pRootObj);
-
+		m_pTrailer->FromXml(sTrailer);
 		m_pLastXref->WriteToStream(pStream, pEncrypt);
 
 		RELEASEOBJECT(pStream);

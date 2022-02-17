@@ -37,6 +37,7 @@
 #include <vector>
 
 #include "Types.h"
+#include "../../DesktopEditor/xml/include/xmlutils.h"
 
 namespace PdfWriter
 {
@@ -375,6 +376,7 @@ namespace PdfWriter
 		static CArrayObject* CreateBox(const TBox& oBox);
 		static CArrayObject* CreateBox(double dL, double dB, double dR, double dT);
 		virtual CObjectBase* Copy() const;
+		void FromXml(const std::wstring& sXml);
 
 	protected:
 		std::vector<CObjectBase*> m_arrList;
@@ -428,6 +430,7 @@ namespace PdfWriter
 
 		void WriteToStream(CStream* pStream, CEncrypt* pEncrypt);
 		unsigned int GetSize() { return m_mList.size(); }
+		void FromXml(const std::wstring& sXml);
 
 	private:
 

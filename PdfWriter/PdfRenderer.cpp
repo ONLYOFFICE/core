@@ -2052,7 +2052,7 @@ bool CPdfRenderer::EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& 
 {
 	return m_pDocument->EditPdf(nPosLastXRef, nSizeXRef, sPageTree, pPageTree);
 }
-bool CPdfRenderer::EditPage(std::wstring sPage, const std::pair<int, int>& pPage)
+bool CPdfRenderer::EditPage(const std::wstring& sPage, const std::pair<int, int>& pPage)
 {
 	if (!IsValid())
 		return false;
@@ -2061,13 +2061,13 @@ bool CPdfRenderer::EditPage(std::wstring sPage, const std::pair<int, int>& pPage
 	m_pPage = m_pDocument->EditPage(sPage, pPage);
 	return !!m_pPage;
 }
-bool CPdfRenderer::AddToFile(const std::wstring& wsPath, const std::pair<int, int>& pRoot)
+bool CPdfRenderer::AddToFile(const std::wstring& wsPath, const std::wstring& sTrailer)
 {
 	if (!IsValid())
 		return false;
 	m_oCommandManager.Flush();
 
-	return m_pDocument->AddToFile(wsPath, pRoot);
+	return m_pDocument->AddToFile(wsPath, sTrailer);
 }
 HRESULT CPdfRenderer::TEST()
 {

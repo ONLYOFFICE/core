@@ -42,8 +42,6 @@
 #include "Document.h"
 #include "Field.h"
 
-#include "../../DesktopEditor/xml/include/xmlutils.h"
-
 #ifdef DrawText
 #undef DrawText
 #endif
@@ -183,84 +181,6 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CPageTree
 	//----------------------------------------------------------------------------------------
-
-#define AddToObject(pObject, sName, oVal)\
-{\
-	if (pObject->GetType() == object_type_DICT)\
-		((CDictObject*)pObject)->Add(sName, oVal);\
-	else if (pObject->GetType() == object_type_ARRAY)\
-		((CArrayObject*)pObject)->Add(oVal);\
-}
-
-	void ReadDict(XmlUtils::CXmlLiteReader& oCoreReader, CObjectBase* pObject)
-	{
-		int gen;
-		std::string sType;
-		std::string sName = oCoreReader.GetNameA();
-
-		while (oCoreReader.MoveToNextAttribute())
-		{
-			std::wstring sAName = oCoreReader.GetName();
-			std::string sAText = oCoreReader.GetTextA();
-			if (sAName == L"type")
-				sType = sAText;
-			else if (sAName == L"gen")
-				gen = std::stoi(sAText);
-			else if (sAName == L"num")
-			{
-				if (sType == "Bool")
-					AddToObject(pObject, sName, sAText == "true")
-				else if (sType == "Int")
-					AddToObject(pObject, sName, std::stoi(sAText))
-				else if (sType == "Real")
-					AddToObject(pObject, sName, std::stod(sAText))
-				else if (sType == "String")
-					AddToObject(pObject, sName, new CStringObject(sAText.c_str()))
-				else if (sType == "Name")
-					AddToObject(pObject, sName, sAText.c_str())
-				// Null игнорируется
-				// Array ниже
-				// Dict ниже
-				// Stream игнорируется
-				else if (sType == "Ref")
-				{
-					CObjectBase* pBase = new CObjectBase();
-					pBase->SetRef(std::stoi(sAText), gen);
-					AddToObject(pObject, sName, new CProxyObject(pBase));
-				}
-				// Cmd игнорируется
-				else if (sType == "Cmd")
-					AddToObject(pObject, sName, sAText.c_str())
-				// Error игнорируется
-				// EOF игнорируется
-				// None ниже
-			}
-		}
-		oCoreReader.MoveToElement();
-
-		if (sType == "Array")
-		{
-			// Освобождение pArray происходит в деструкторе pNewXref
-			CArrayObject* pArray = new CArrayObject();
-			AddToObject(pObject, sName, pArray);
-
-			int n2Death = oCoreReader.GetDepth();
-			while (oCoreReader.ReadNextSiblingNode(n2Death))
-				ReadDict(oCoreReader, pArray);
-		}
-		else if (sType == "Dict")
-		{
-			// Освобождение pDict происходит в деструкторе pNewXref
-			CDictObject* pDict = new CDictObject();
-			AddToObject(pObject, sName, pDict);
-
-			int n2Death = oCoreReader.GetDepth();
-			while (oCoreReader.ReadNextSiblingNode(n2Death))
-				ReadDict(oCoreReader, pDict);
-		}
-		else if (sType == "None")
-			AddToObject(pObject, sName, "None")
-	}
 	CPageTree::CPageTree(CXref* pXref)
 	{
 		m_pXref = pXref;
@@ -278,12 +198,7 @@ namespace PdfWriter
 		m_pXref = pXref;
 		pXref->Add(this);
 
-		XmlUtils::CXmlLiteReader oCoreReader;
-		oCoreReader.FromString(sPageTree);
-		oCoreReader.ReadNextNode();
-		int nDeath = oCoreReader.GetDepth();
-		while (oCoreReader.ReadNextSiblingNode(nDeath))
-			ReadDict(oCoreReader, this);
+		FromXml(sPageTree);
 
 		// Инициализация текущего m_pPages
 		CObjectBase* pPages = Get("Kids");
@@ -324,12 +239,7 @@ namespace PdfWriter
 		oFile.CloseFile();
 		*/
 
-		XmlUtils::CXmlLiteReader oCoreReader;
-		oCoreReader.FromString(sXml);
-		oCoreReader.ReadNextNode();
-		int nDeath = oCoreReader.GetDepth();
-		while (oCoreReader.ReadNextSiblingNode(nDeath))
-			ReadDict(oCoreReader, this);
+		FromXml(sXml);
 
 		// Инициализация текущего contents
 		CObjectBase* pContents = Get("Contents");

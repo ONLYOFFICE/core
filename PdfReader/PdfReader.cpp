@@ -482,7 +482,15 @@ return 0;
     bool CPdfReader::AddToFile(const std::wstring& wsPath)
     {
         XRef* xref = m_pInternal->m_pPDFDocument->getXRef();
-        return m_pPdfWriter->AddToFile(wsPath, std::make_pair(xref->getRootNum(), xref->getRootGen()));
+        Object* trailerDict = xref->getTrailerDict();
+        std::wstring sTrailer = L"<Trailer";
+        if (trailerDict)
+            XMLConverter::PageToXml(trailerDict, sTrailer);
+        else
+            sTrailer += L'>';
+        sTrailer += L"</Trailer>";
+
+        return m_pPdfWriter->AddToFile(wsPath, sTrailer);
     }
 #ifdef BUILDING_WASM_MODULE    
     void getBookmars(PDFDoc* pdfDoc, OutlineItem* pOutlineItem, NSWasm::CData& out, int level)

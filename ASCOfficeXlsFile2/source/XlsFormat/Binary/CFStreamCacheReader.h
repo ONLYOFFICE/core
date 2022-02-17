@@ -65,7 +65,7 @@ public:
 	// Skip the specified number of unsigned chars without processing
 	virtual void skipNunBytes(const size_t n) = 0;
 
-    virtual const int GetRecordPosition() {}
+	virtual const int GetRecordPosition() { return 0; }
     virtual void SetRecordPosition(const int) {}
 
 	void SkipRecord();

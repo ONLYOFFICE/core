@@ -1202,7 +1202,11 @@ namespace NSDocxRenderer
 						if (m_arParagraphs[i]->m_dSpaceBefore > m_arParagraphs[i]->m_dHeight)
 							m_arParagraphs[i]->m_dSpaceBefore -= m_arParagraphs[i]->m_dHeight;
 						else
-							m_arParagraphs[i]->m_dSpaceBefore = 0;
+						{
+							double dTemp = m_arParagraphs[i]->m_dSpaceBefore;
+							m_arParagraphs[i]->m_dSpaceBefore = m_arParagraphs[i]->m_dHeight - m_arParagraphs[i]->m_dSpaceBefore;
+							m_arParagraphs[i]->m_dHeight = dTemp;
+						}
 						
 						if (m_arParagraphs[i]->m_arLines.size() == 1)
 							m_arParagraphs[i]->m_dSpaceRight = 0;

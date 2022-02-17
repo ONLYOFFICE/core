@@ -388,6 +388,18 @@ namespace NSDocxRenderer
 
 			SetCurrentLineByBaseline(dBaseLinePos);
 
+			if (!m_pCurrentLine->m_bIsFirstWord)
+			{
+				if (IsSpaceUtf32(oText))
+				{
+					m_pCurrentLine->m_bIsFirstWord = true;
+				}
+				else
+				{
+					m_pCurrentLine->m_dWidthFirstWord += dTextW;
+				}
+			}
+
 			CContText* pLastCont = NULL;
             size_t nCountConts = m_pCurrentLine->m_arConts.size();
 			if (nCountConts != 0)
@@ -972,7 +984,6 @@ namespace NSDocxRenderer
 								arIdxGraphicItems.push_back(counter);
 								break;
 							}
-
 						}
 					}
 				}
@@ -982,10 +993,6 @@ namespace NSDocxRenderer
             for (size_t i = arIdxGraphicItems.size(); i > 0; --i)
                 m_arGraphicItems.erase(iter + arIdxGraphicItems[i-1]);
 
-            for (size_t i = 0 ; i < m_arTextLine.size(); ++i)
-            {
-                m_arTextLine[i]->SetShadingColor();
-            }
 		}
 
 		void Build()
@@ -1155,7 +1162,6 @@ namespace NSDocxRenderer
 							CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
 							pParagraph->m_pManagerLight = &m_oManagerLight;
 							pParagraph->m_bIsTextFrameProperties = false;
-							pParagraph->m_lShadingColor = pTextLine->m_lShadingColor;
 
 							pParagraph->m_dLeft	= pTextLine->m_dX;
 
@@ -1168,12 +1174,16 @@ namespace NSDocxRenderer
 
 							pParagraph->m_arLines.push_back(pTextLine);
 							pParagraph->m_dSpaceRight = dSpacingRight;
+							pParagraph->m_dWidth = pTextLine->m_dWidth;
 							m_arParagraphs.push_back(pParagraph);
 						}
 						else
 						{
  							if (m_arParagraphs.back()->m_dSpaceRight > dSpacingRight)
 								m_arParagraphs.back()->m_dSpaceRight = dSpacingRight;
+
+							if (pTextLine->m_dWidth > m_arParagraphs.back()->m_dWidth)
+								m_arParagraphs.back()->m_dWidth = pTextLine->m_dWidth;
 
 							dPrevDiffBaselinePos = pTextLine->m_dBaselinePos - pPrevTextLine->m_dBaselinePos;
 							m_arParagraphs.back()->m_dHeight = dPrevDiffBaselinePos;
@@ -1260,27 +1270,52 @@ namespace NSDocxRenderer
 			m_arParagraphs.push_back(pParagraph);
 		}
 
-		bool IsNewParagraph(CTextLine* pTextLine, CTextLine* pPrevTextLine, double dPrevDiffBaselinePos)
-		{
-			const double dWidthNewlineChar = 1.2;
-			double dCurDiffBaselinePos = pTextLine->m_dBaselinePos - pPrevTextLine->m_dBaselinePos;
-			double dMinWidthLine = 0.70 * (this->m_dWidth - pPrevTextLine->m_dX);
-			double dDivLines = pPrevTextLine->m_dWidth / pTextLine->m_dWidth;
+        bool IsNewParagraph(CTextLine* pTextLine, CTextLine* pPrevTextLine, double dPrevDiffBaselinePos)
+        {
+            const double dWidthNewlineChar = 1.2;
+            double dCurDiffBaselinePos = pTextLine->m_dBaselinePos - pPrevTextLine->m_dBaselinePos;
 
-			bool bIsCurLineSpacingEqualPrev = abs(dCurDiffBaselinePos - dPrevDiffBaselinePos) > 0.5 ;
-			bool bIsCurLineNewlineCharacter = pTextLine->m_dWidth < dWidthNewlineChar;
-			bool bIsPrevLineNewlineCharacter = pPrevTextLine->m_dWidth < dWidthNewlineChar;
-			bool bIsShortPrevLine = pPrevTextLine->m_dWidth <  dMinWidthLine;
-			bool bIsPrevWidthLineLessCur = dDivLines <= 0.9;
-			bool bIsNotPrevWidthLinesLessCur = dDivLines > 0.9 && dDivLines < 1.1;
+            double dDiffWidth             = abs(pTextLine->m_dWidth - pPrevTextLine->m_dWidth);
+            double dDiffParagraphWidth    = abs(m_arParagraphs.back()->m_dWidth - pPrevTextLine->m_dWidth);
+            double dWidthFirstWordCurLine = pTextLine->m_dWidthFirstWord;
+            bool IsCurLineLongerPrev = pTextLine->m_dWidth >  pPrevTextLine->m_dWidth;
 
-			if (pTextLine->m_lShadingColor != pPrevTextLine->m_lShadingColor)
-				return true;
+            bool bFirstWordCheck1 = IsCurLineLongerPrev  &&  dDiffWidth >= dWidthFirstWordCurLine;
+            bool bFirstWordCheck2 = IsCurLineLongerPrev  &&  dDiffParagraphWidth >= dWidthFirstWordCurLine;
+            bool bFirstWordCheck3 = !IsCurLineLongerPrev &&  dDiffParagraphWidth >= dWidthFirstWordCurLine;
 
-			return ( 	   bIsCurLineNewlineCharacter	 || bIsPrevLineNewlineCharacter  
-						|| bIsShortPrevLine				 || bIsPrevWidthLineLessCur
-						|| (!bIsNotPrevWidthLinesLessCur && bIsCurLineSpacingEqualPrev));
-		}
+            bool bIsCurLineSpacingEqualPrev  = (dCurDiffBaselinePos/dPrevDiffBaselinePos) > 2.0 ||
+                                               (dCurDiffBaselinePos/dPrevDiffBaselinePos) < 0.5 ;
+            bool bIsCurLineNewlineCharacter  = pTextLine->m_dWidth < dWidthNewlineChar;
+            bool bIsPrevLineNewlineCharacter = pPrevTextLine->m_dWidth < dWidthNewlineChar;
+
+            if ( bIsCurLineNewlineCharacter	|| bIsPrevLineNewlineCharacter ||
+                 bIsCurLineSpacingEqualPrev || bFirstWordCheck1            ||
+                 bFirstWordCheck2           || bFirstWordCheck3)
+            {
+                return true;
+            }
+
+            double dMaxWidth = pTextLine->m_dWidth;
+            double dMinWidth = pTextLine->m_dWidth;
+            for (int i = 0; i < m_arParagraphs.back()->m_arLines.size(); ++i)
+            {
+                if (m_arParagraphs.back()->m_arLines[i]->m_dWidth < dMinWidth)
+                    dMinWidth = m_arParagraphs.back()->m_arLines[i]->m_dWidth;
+
+                if (m_arParagraphs.back()->m_arLines[i]->m_dWidth > dMaxWidth)
+                    dMaxWidth = m_arParagraphs.back()->m_arLines[i]->m_dWidth;
+            }
+
+            dDiffWidth = dMaxWidth - dMinWidth;
+
+            if (IsCurLineLongerPrev && dDiffWidth >= dWidthFirstWordCurLine &&
+                m_arParagraphs.back()->m_arLines.size() > 1 )
+            {
+                return true;
+            }
+            return false;
+        }
 
 		void Merge(double dAffinity)
 		{

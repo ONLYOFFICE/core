@@ -833,9 +833,8 @@ namespace NSDocxRenderer
             size_t countConts = m_arConts.size();
             for (size_t i = 0; i < countConts; ++i)
             {
-                m_dWidth += m_arConts[i]->m_dWidth;
+                m_dWidth += m_arConts[i]->m_dWidth + m_arConts[i]->m_dSpaceWidthMM;
             }
-            m_dWidth += 1.2; //прибавила ширину последнего в строке пробела
         }
 
         double CalculatingLineHeight(double dBeforeSpacing)
@@ -939,6 +938,7 @@ namespace NSDocxRenderer
 
             m_pManagerLight = oSrc.m_pManagerLight;
 
+            //m_strAvailable  = oSrc.m_strAvailable; m_strAlignment
 
             return *this;
         }

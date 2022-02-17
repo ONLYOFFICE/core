@@ -1272,6 +1272,13 @@ namespace NSDocxRenderer
 
         bool IsNewParagraph(CTextLine* pTextLine, CTextLine* pPrevTextLine, double dPrevDiffBaselinePos)
         {
+
+            if (pTextLine->m_dX > pPrevTextLine->m_dX && (pTextLine->m_dX + pTextLine->m_dWidth) > (pPrevTextLine->m_dX + pPrevTextLine->m_dWidth))
+                return true;
+
+            if (pTextLine->m_dX < pPrevTextLine->m_dX && (pTextLine->m_dX + pTextLine->m_dWidth) < (pPrevTextLine->m_dX + pPrevTextLine->m_dWidth))
+                return true;
+
             const double dWidthNewlineChar = 1.2;
             double dCurDiffBaselinePos = pTextLine->m_dBaselinePos - pPrevTextLine->m_dBaselinePos;
 

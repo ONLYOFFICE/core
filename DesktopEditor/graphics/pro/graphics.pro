@@ -66,6 +66,16 @@ INCLUDEPATH += \
     $$LIB_GRAPHICS_PRI_PATH/cximage/png
 
 HEADERS += \
+    ../../raster/Metafile/CXmlOutput.h \
+    ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretator.h \
+    ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorArray.h \
+    ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorBase.h \
+    ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorRender.h \
+    ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorXml.h \
+    ../../raster/Metafile/Emf/EmfParser/CEmfParser.h \
+    ../../raster/Metafile/Emf/EmfParser/CEmfParserBase.h \
+    ../../raster/Metafile/Emf/EmfParser/CEmfPlusParser.h \
+    ../../raster/Metafile/Emf/EmfParser/CEmfxParser.h \
     ./../config.h \
     \
     ./../Matrix.h \
@@ -106,6 +116,15 @@ HEADERS += \
     ./../../raster/Metafile/svg/SVGTransformer.h
 
 SOURCES += \
+    ../../raster/Metafile/CXmlOutput.cpp \
+    ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretator.cpp \
+    ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorArray.cpp \
+    ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorRender.cpp \
+    ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorXml.cpp \
+    ../../raster/Metafile/Emf/EmfParser/CEmfParser.cpp \
+    ../../raster/Metafile/Emf/EmfParser/CEmfParserBase.cpp \
+    ../../raster/Metafile/Emf/EmfParser/CEmfPlusParser.cpp \
+    ../../raster/Metafile/Emf/EmfParser/CEmfxParser.cpp \
     ./../Matrix.cpp \
     ./../GraphicsPath.cpp \
     ./../../raster/BgraFrame.cpp \

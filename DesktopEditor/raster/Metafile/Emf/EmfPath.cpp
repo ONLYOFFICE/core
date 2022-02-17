@@ -192,6 +192,53 @@ namespace MetaFile
 		if (-1 == unClipMode)
 			Clear();
 	}
+	void CEmfPath::DrawWithoutClean(IOutputDevice* pOutput, bool bStroke, bool bFill)
+	{
+		if (pOutput)
+		{
+			for (unsigned int ulIndex = 0; ulIndex < m_pCommands.size(); ulIndex++)
+			{
+				CEmfPathCommandBase* pCommand = m_pCommands.at(ulIndex);
+				switch (pCommand->GetType())
+				{
+					case EMF_PATHCOMMAND_MOVETO:
+					{
+						CEmfPathMoveTo* pMoveTo = (CEmfPathMoveTo*)pCommand;
+						pOutput->MoveTo(pMoveTo->x, pMoveTo->y);
+						break;
+					}
+					case EMF_PATHCOMMAND_LINETO:
+					{
+						CEmfPathLineTo* pLineTo = (CEmfPathLineTo*)pCommand;
+						pOutput->LineTo(pLineTo->x, pLineTo->y);
+						break;
+					}
+					case EMF_PATHCOMMAND_CURVETO:
+					{
+						CEmfPathCurveTo* pCurveTo = (CEmfPathCurveTo*)pCommand;
+						pOutput->CurveTo(pCurveTo->x1, pCurveTo->y1, pCurveTo->x2, pCurveTo->y2, pCurveTo->xE, pCurveTo->yE);
+						break;
+					}
+					case EMF_PATHCOMMAND_ARCTO:
+					{
+						CEmfPathArcTo* pArcTo = (CEmfPathArcTo*)pCommand;
+						pOutput->ArcTo(pArcTo->left, pArcTo->top, pArcTo->right, pArcTo->bottom, pArcTo->start, pArcTo->sweep);
+						break;
+					}
+					case EMF_PATHCOMMAND_CLOSE:
+					{
+						pOutput->ClosePath();
+						break;
+					}
+				}
+			}
+
+			int lType = (bStroke ? 1 : 0) + (bFill ? 2 : 0);
+			pOutput->DrawPath(lType);
+			pOutput->EndPath();
+		}
+	}
+
 	void CEmfPath::Clear()
 	{
 		for (unsigned int ulIndex = 0; ulIndex < m_pCommands.size(); ulIndex++)

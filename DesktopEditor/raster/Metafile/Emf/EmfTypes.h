@@ -266,6 +266,14 @@ namespace MetaFile
 			a = 0;
 		}
 
+		void InitWhite()
+		{
+			r = 255;
+			g = 255;
+			b = 255;
+			a = 0;
+		}
+
 		void Copy(TEmfColor* pOther)
 		{
 			r = pOther->r;
@@ -324,6 +332,23 @@ namespace MetaFile
 			lBottom = oRect.nBottom;
 		}
 
+		void Update(bool bFlipedX, double bFlipedY)
+		{
+			if ((lTop > lBottom && !bFlipedY) || (lTop < lBottom && bFlipedY))
+			{
+				int nTemp = lBottom;
+				lBottom = lTop;
+				lTop = nTemp;
+			}
+
+			if ((lLeft > lRight && !bFlipedX) || (lLeft < lRight && bFlipedX))
+			{
+				int nTemp = lRight;
+				lRight = lLeft;
+				lLeft = nTemp;
+			}
+		}
+
 		int lLeft;
 		int lTop;
 		int lRight;
@@ -335,7 +360,7 @@ namespace MetaFile
 		int x;
 		int y;
 
-		TEmfPointL& operator=(TEmfPointL& oPoint)
+		TEmfPointL& operator=(const TEmfPointL& oPoint)
 		{
 			x = oPoint.x;
 			y = oPoint.y;
@@ -358,8 +383,17 @@ namespace MetaFile
 
 	struct TEmfSizeL
 	{
-		unsigned int cx;
-		unsigned int cy;
+		int cx;
+		int cy;
+	};
+
+	struct TEmfScale
+	{
+		double dX;
+		double dY;
+
+		TEmfScale(double dXScale, double dYScale)
+			: dX(dXScale), dY(dYScale){}
 	};
 
 	struct TEmfHeader

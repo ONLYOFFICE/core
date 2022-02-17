@@ -2067,11 +2067,7 @@ bool CPdfRenderer::AddToFile(const std::wstring& wsPath, const std::pair<int, in
 		return false;
 	m_oCommandManager.Flush();
 
-	if (!m_pDocument->AddToFile(wsPath, pRoot))
-		return false;
-	CXref* pXref = m_pPage->GetXref();
-	RELEASEOBJECT(pXref);
-	return true;
+	return m_pDocument->AddToFile(wsPath, pRoot);
 }
 HRESULT CPdfRenderer::TEST()
 {

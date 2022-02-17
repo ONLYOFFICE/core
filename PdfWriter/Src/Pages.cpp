@@ -183,38 +183,6 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CPageTree
 	//----------------------------------------------------------------------------------------
-	CPageTree::CPageTree(CXref* pXref)
-	{
-		m_pXref = pXref;
-		pXref->Add(this);
-
-		m_pPages = new CArrayObject();
-		m_pCount = new CNumberObject(0);
-
-		Add("Type", "Pages");
-		Add("Kids", m_pPages);
-		Add("Count", m_pCount);
-	}
-	CPageTree::CPageTree(CXref* pXref, const std::wstring& sPageTree)
-	{
-		m_pXref = pXref;
-		pXref->Add(this);
-
-		m_pPages = new CArrayObject();
-		m_pCount = new CNumberObject(0);
-
-		Add("Type", "Pages");
-		Add("Kids", m_pPages);
-		Add("Count", m_pCount);
-	}
-	void CPageTree::AddPage(CDictObject* pPage)
-	{
-		m_pPages->Add(pPage);
-		(*m_pCount)++;
-	}
-	//----------------------------------------------------------------------------------------
-	// CPage
-	//----------------------------------------------------------------------------------------
 
 #define AddToObject(pObject, sName, oVal)\
 {\
@@ -293,7 +261,58 @@ namespace PdfWriter
 		else if (sType == "None")
 			AddToObject(pObject, sName, "None")
 	}
+	CPageTree::CPageTree(CXref* pXref)
+	{
+		m_pXref = pXref;
+		pXref->Add(this);
 
+		m_pPages = new CArrayObject();
+		m_pCount = new CNumberObject(0);
+
+		Add("Type", "Pages");
+		Add("Kids", m_pPages);
+		Add("Count", m_pCount);
+	}
+	CPageTree::CPageTree(CXref* pXref, const std::wstring& sPageTree)
+	{
+		m_pXref = pXref;
+		pXref->Add(this);
+
+		XmlUtils::CXmlLiteReader oCoreReader;
+		oCoreReader.FromString(sPageTree);
+		oCoreReader.ReadNextNode();
+		int nDeath = oCoreReader.GetDepth();
+		while (oCoreReader.ReadNextSiblingNode(nDeath))
+			ReadDict(oCoreReader, this);
+
+		// Инициализация текущего m_pPages
+		CObjectBase* pPages = Get("Kids");
+		if (pPages && pPages->GetType() == object_type_ARRAY)
+			m_pPages = (CArrayObject*)pPages;
+		else
+		{
+			m_pPages = new CArrayObject();
+			Add("Kids", m_pPages);
+		}
+
+		// Инициализация текущего m_pCount
+		CObjectBase* pCount = Get("Count");
+		if (pCount && pCount->GetType() == object_type_NUMBER)
+			m_pCount = (CNumberObject*)pCount;
+		else
+		{
+			m_pCount = new CNumberObject(0);
+			Add("Count", m_pCount);
+		}
+	}
+	void CPageTree::AddPage(CDictObject* pPage)
+	{
+		m_pPages->Add(pPage);
+		(*m_pCount)++;
+	}
+	//----------------------------------------------------------------------------------------
+	// CPage
+	//----------------------------------------------------------------------------------------
 	CPage::CPage(CXref* pXref, CDocument* pDocument, const std::wstring& sXml)
 	{
 		Init(pXref, pDocument);

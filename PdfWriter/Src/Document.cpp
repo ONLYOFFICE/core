@@ -69,6 +69,7 @@ namespace PdfWriter
 		m_pCatalog          = NULL;
 		m_pOutlines         = NULL;
 		m_pXref             = NULL;
+		m_pLastXref         = NULL;
 		m_pPageTree         = NULL;
 		m_pCurPage          = NULL;
 		m_nCurPageNum       = -1;
@@ -160,6 +161,7 @@ namespace PdfWriter
 		// Все объекты удаляются внутри CXref
 		RELEASEOBJECT(m_pXref);
 
+		m_pLastXref         = NULL;
 		m_pTrailer          = NULL;
 		m_pResources        = NULL;
 		m_pCatalog          = NULL;
@@ -1067,10 +1069,10 @@ namespace PdfWriter
 
 		SetCompressionMode(COMP_ALL);
 
-		CXref* pXref = new CXref(this, pPageTree.first);
-		m_pPageTree = new CPageTree(pXref, sPageTree);
+		m_pLastXref = new CXref(this, pPageTree.first);
+		m_pPageTree = new CPageTree(m_pLastXref, sPageTree);
 		m_pPageTree->SetRef(pPageTree.first, pPageTree.second);
-		pXref->SetPrev(m_pXref);
+		m_pLastXref->SetPrev(m_pXref);
 
 		return true;
 	}
@@ -1079,7 +1081,6 @@ namespace PdfWriter
 		CXref* pXref = new CXref(this, pPage.first);
 		// pNewPage Освобождается в деструкторе pXref
 		CPage* pNewPage = new CPage(pXref, this, sPage);
-		m_pPageTree->AddPage(pNewPage);
 		pNewPage->SetRef(pPage.first, pPage.second);
 
 		pNewPage->AddContents(m_pXref);
@@ -1087,8 +1088,9 @@ namespace PdfWriter
 		if (m_unCompressMode & COMP_TEXT)
 			pNewPage->SetFilter(STREAM_FILTER_FLATE_DECODE);
 #endif
-		pXref->SetPrev(m_pCurPage ? m_pCurPage->GetXref() : m_pPageTree->GetXref());
+		pXref->SetPrev(m_pLastXref);
 
+		m_pLastXref = pXref;
 		m_pCurPage = pNewPage;
 		return pNewPage;
 	}
@@ -1110,18 +1112,17 @@ namespace PdfWriter
 		CObjectBase* pBase = new CObjectBase();
 		pBase->SetRef(pRoot.first, pRoot.second);
 		CObjectBase* pRootObj = new CProxyObject(pBase);
-		m_pCurPage->GetXref()->GetTrailer()->Add("Root", pRootObj);
+		m_pLastXref->GetTrailer()->Add("Root", pRootObj);
 
-		m_pCurPage->GetXref()->WriteToStream(pStream, pEncrypt);
+		m_pLastXref->WriteToStream(pStream, pEncrypt);
 
 		RELEASEOBJECT(pStream);
+		RELEASEOBJECT(m_pLastXref);
 		m_pXref = NULL;
 		return true;
 	}
 	void CDocument::TEST()
 	{
-		CXref* pXref = m_pCurPage->GetXref();
 		m_pCurPage->AddCommands(m_pXref);
-		m_pCurPage->SetXref(pXref);
 	}
 }

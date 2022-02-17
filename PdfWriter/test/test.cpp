@@ -32,6 +32,11 @@ int main()
             pdfWriter.TEST();
         }
 
+        if (pdfWriter.NewPage() == S_OK)
+        {
+            pdfWriter.TEST();
+        }
+
         if (pReader->EditPage(1))
         {
             pdfWriter.TEST();

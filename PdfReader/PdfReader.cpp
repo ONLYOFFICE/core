@@ -448,7 +448,7 @@ return 0;
             return false;
         }
         std::wstring sPageTree = L"<PageTree";
-        XMLConverter::PageToXml(&pagesRefObj, sPageTree);
+        XMLConverter::PageToXml(&pagesObj, sPageTree);
         sPageTree += L"</PageTree>";
         Ref topPagesRef = pagesRefObj.getRef();
         pagesObj.free();

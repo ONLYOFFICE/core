@@ -186,6 +186,7 @@ namespace PdfWriter
 		CCatalog*                          m_pCatalog;
 		COutline*                          m_pOutlines;
 		CXref*                             m_pXref;
+		CXref*                             m_pLastXref;
 		CPageTree*                         m_pPageTree;
 		CPage*                             m_pCurPage;
 		int                                m_nCurPageNum;

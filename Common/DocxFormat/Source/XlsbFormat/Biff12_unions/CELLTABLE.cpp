@@ -43,8 +43,7 @@ using namespace XLS;
 namespace XLSB
 {
 
-    CELLTABLE::CELLTABLE(std::vector<CellRangeRef>& shared_formulas_locations_ref) :
-        shared_formulas_locations_ref_(shared_formulas_locations_ref)
+    CELLTABLE::CELLTABLE()
     {
     }
 

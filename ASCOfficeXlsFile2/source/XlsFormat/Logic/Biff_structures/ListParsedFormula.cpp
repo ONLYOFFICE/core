@@ -64,7 +64,8 @@ void ListParsedFormula::load(CFRecord& record)
         unsigned int cb;
         record >> cb;
 
-        rgcb.load(record, rgce.getPtgs(), false);
+        if(cb > 0)
+            rgcb.load(record, rgce.getPtgs(), false);
     }
 }
 //-------------------------------------------------------------------------------

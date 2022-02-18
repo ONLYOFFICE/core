@@ -1824,7 +1824,9 @@ namespace MetaFile
                 if (NULL != pPath)
                 {                         
                         if (pPath->m_pCommands.size() == 2)
+                        {
                                 LOGGING(L"TEST")
+                        }
 
                         CEmfPlusPen *pEmfPlusPen = GetPen(unPenId);
 
@@ -2319,8 +2321,9 @@ namespace MetaFile
                                 LOGGING(L"Object Pen with index: " << shObjectIndex)
 
                                 if (10 == shObjectIndex)
-                                        LOGGING(L"TEST")
-
+                                {
+                                    LOGGING(L"TEST")
+                                }
                                 CEmfPlusPen *pEmfPlusPen = ReadPen();
 
                                 RegisterObject(pEmfPlusPen, shObjectIndex);

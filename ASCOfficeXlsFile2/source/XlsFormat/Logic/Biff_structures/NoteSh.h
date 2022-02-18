@@ -32,8 +32,8 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include <Logic/Biff_structures/BitMarkedStructs.h>
-#include <Logic/Biff_structures/BiffString.h>
+#include "BitMarkedStructs.h"
+#include "BiffString.h"
 
 namespace XLS
 {

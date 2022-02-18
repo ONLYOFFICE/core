@@ -101,6 +101,8 @@ namespace NSNetwork
         void CFileDownloader::Suspend() { m_pInternal->Suspend(); }
         void CFileDownloader::Resume() { m_pInternal->Resume(); }
         void CFileDownloader::Stop() { m_pInternal->Stop(); }
+        void CFileDownloader::StopNoJoin() { m_pInternal->StopNoJoin(); }
+        void CFileDownloader::Cancel() { m_pInternal->Cancel(); }
         int CFileDownloader::IsRunned() { return m_pInternal->IsRunned(); }
 
         void CFileDownloader::SetEvent_OnProgress(std::function<void(int)> func)
@@ -164,6 +166,8 @@ namespace NSNetwork
         void CFileUploader::Suspend() { m_pInternal->Suspend(); }
         void CFileUploader::Resume() { m_pInternal->Resume(); }
         void CFileUploader::Stop() { m_pInternal->Stop(); }
+        void CFileUploader::StopNoJoin() { m_pInternal->StopNoJoin(); }
+        void CFileUploader::Cancel() { m_pInternal->Cancel(); }
         int CFileUploader::IsRunned() { return m_pInternal->IsRunned(); }
 
         void CFileUploader::SetEvent_OnProgress(std::function<void(int)> func)

@@ -31,10 +31,9 @@
  */
 
 #include "OfficeArtFOPTE.h"
-#include <Binary/CFRecord.h>
 #include "OfficeArtBlip.h"
 #include <bitset>
-#include <utils.h>
+#include "../../../../Common/utils.h"
 
 #include "../../../../../../OfficeUtils/src/OfficeUtils.h"
 

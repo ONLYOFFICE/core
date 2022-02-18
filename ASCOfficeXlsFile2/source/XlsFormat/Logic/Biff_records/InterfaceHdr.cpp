@@ -31,7 +31,6 @@
  */
 
 #include "InterfaceHdr.h"
-#include <Binary/CFStream.h>
 
 namespace XLS
 {

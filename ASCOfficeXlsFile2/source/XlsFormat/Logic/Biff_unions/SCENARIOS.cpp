@@ -31,9 +31,9 @@
  */
 
 #include "SCENARIOS.h"
-#include <Logic/Biff_records/ScenMan.h>
-#include <Logic/Biff_records/SCENARIO.h>
-#include <Logic/Biff_records/Continue.h>
+#include "../Biff_records/ScenMan.h"
+#include "../Biff_records/SCENARIO.h"
+#include "../Biff_records/Continue.h"
 
 namespace XLS
 {

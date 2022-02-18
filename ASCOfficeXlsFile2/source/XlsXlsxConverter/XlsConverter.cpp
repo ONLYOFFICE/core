@@ -76,6 +76,7 @@
 #include "../XlsFormat/Logic/Biff_records/Note.h"
 #include "../XlsFormat/Logic/Biff_records/WsBool.h"
 #include "../XlsFormat/Logic/Biff_records/Theme.h"
+#include "../XlsFormat/Logic/Biff_records/Format.h"
 
 #include "../XlsFormat/Logic/Biff_structures/URLMoniker.h"
 #include "../XlsFormat/Logic/Biff_structures/FileMoniker.h"
@@ -94,8 +95,8 @@
 #include "xlsx_conversion_context.h"
 #include "xlsx_package.h"
 
-#include <simple_xml_writer.h>
-#include <utils.h>
+#include "../Common/simple_xml_writer.h"
+#include "../Common/utils.h"
 
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/raster/BgraFrame.h"
@@ -158,6 +159,7 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 			xls_global_info->password = password;
 			xls_global_info->tempDirectory = tempPath;
 			xls_global_info->CodePage = 0;
+			xls_global_info->Version = 0;
 
 			XLS::GlobalWorkbookInfo::_sheet_info sheet_info;
 			xls_global_info->sheets_info.push_back(sheet_info);
@@ -167,15 +169,23 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 		
 			XLS::BinReaderProcessor proc(file_reader, xls_document.get(), true);
 			
-			XLS::BaseObjectPtr worksheet = XLS::BaseObjectPtr(new XLS::WorksheetSubstream(0));
-            if (proc.mandatory(*worksheet.get()))
+			XLS::BaseObjectPtr stream = XLS::BaseObjectPtr(new XLS::WorksheetSubstream(0));
+            if (proc.mandatory(*stream.get()))
 			{
+				XLS::WorksheetSubstream *worksheet = dynamic_cast<XLS::WorksheetSubstream*>(stream.get());
 				XLS::WorkbookStreamObject *workbook = dynamic_cast<XLS::WorkbookStreamObject*>(xls_document.get());
 				if (workbook)
 				{
-					workbook->m_arWorksheetSubstream.push_back(worksheet);			
+					workbook->m_arWorksheetSubstream.push_back(stream);
 
 					workbook->m_GlobalsSubstream = XLS::BaseObjectPtr(new XLS::GlobalsSubstream(0));
+
+					XLS::GlobalsSubstream* globals = dynamic_cast<XLS::GlobalsSubstream*>(workbook->m_GlobalsSubstream.get());
+					if (globals)
+					{
+						globals->m_Formating = worksheet->m_Formating;
+						globals->UpdateXFC();
+					}
 				}
 			}
 			else
@@ -791,8 +801,29 @@ void XlsConverter::convert(XLS::FORMATTING* formating)
 			CP_XML_ATTR(L"xmlns:x14ac", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac");
 			CP_XML_ATTR(L"xmlns:x16r2", L"http://schemas.microsoft.com/office/spreadsheetml/2015/02/main");
 			
-			formating->serialize1(CP_XML_STREAM()); //важен порядок в styles
-			
+			CP_XML_NODE(L"numFmts")
+			{
+				CP_XML_ATTR(L"count", xls_global_info->m_arNumFormats.size());
+				for (size_t i = 0; i < xls_global_info->m_arNumFormats.size(); i++)
+				{
+					XLS::Format* fmt = dynamic_cast<XLS::Format*>(xls_global_info->m_arNumFormats[i].get());
+
+					if (fmt->ifmt < 23 || (fmt->ifmt > 36 && fmt->ifmt < 50))
+						continue;
+
+					std::map<_UINT16, bool>::iterator pFind = xls_global_info->mapUsedFormatCode.find(fmt->ifmt);
+
+					if (pFind != xls_global_info->mapUsedFormatCode.end())
+					{
+						CP_XML_NODE(L"numFmt")
+						{
+							CP_XML_ATTR(L"numFmtId", fmt->ifmt);
+							//CP_XML_ATTR(L"formatCode", XmlUtils::EncodeXmlString(fmt->stFormat, true));
+							CP_XML_ATTR(L"formatCode", fmt->stFormat);
+						}
+					}
+				}
+			}
 			CP_XML_NODE(L"fonts")
 			{
 				std::vector<XLS::FontInfo> fonts_out;
@@ -842,8 +873,7 @@ void XlsConverter::convert(XLS::FORMATTING* formating)
 				}
 			}
 
-			formating->serialize2(CP_XML_STREAM());
-
+			formating->serialize(CP_XML_STREAM());
 		}
 	}
     

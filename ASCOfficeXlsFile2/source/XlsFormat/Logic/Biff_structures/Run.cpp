@@ -31,7 +31,6 @@
  */
 
 #include "Run.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

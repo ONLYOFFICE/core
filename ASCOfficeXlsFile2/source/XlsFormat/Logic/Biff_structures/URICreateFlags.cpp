@@ -31,7 +31,6 @@
  */
 
 #include "URICreateFlags.h"
-#include <Binary/CFRecord.h>
 
 namespace OSHARED
 {

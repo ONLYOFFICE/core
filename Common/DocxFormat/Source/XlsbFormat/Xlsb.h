@@ -32,6 +32,7 @@
 #pragma once
 
 #include "../XlsxFormat/Xlsx.h"
+#include <unordered_map>
 
 namespace XLS
 {
@@ -43,37 +44,40 @@ namespace XLS
 
 namespace OOX
 {	
-	namespace Spreadsheet
+    namespace Spreadsheet
     {
 
         class CXlsb : public CXlsx
-		{
-		public:
+        {
+        public:
 
             CXlsb()
-			{
+            {
                 init();
-			}
+            }
             CXlsb(const CPath& oFilePath) : CXlsx(oFilePath)
-			{
+            {
                 init();
-			}
+            }
             virtual ~CXlsb();
 
             bool ReadBin(const CPath& oFilePath, XLS::BaseObject* objStream);			
             XLS::GlobalWorkbookInfo* GetGlobalinfo();
             void PrepareSi();
             void PrepareTableFormula();
+            void ReadSheetData();
 
+            std::unordered_map<std::wstring, _UINT32> m_mapSheetNameSheetData;
         private:
 
-			void init();
+            void init();
             XLS::GlobalWorkbookInfoPtr xls_global_info;
             std::shared_ptr<NSBinPptxRW::CBinaryFileReader> m_binaryReader;
 
             unsigned short workbook_code_page;
-		};
 
-	} //Spreadsheet
+        };
+
+    } //Spreadsheet
 } // OOX
 

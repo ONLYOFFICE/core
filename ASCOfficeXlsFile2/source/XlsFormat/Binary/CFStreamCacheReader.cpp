@@ -518,6 +518,17 @@ const size_t BinaryStreamCacheReader::readFromStream(const size_t num_of_records
     return records_cache.size();
 }
 
+//Return current position in stream
+const int BinaryStreamCacheReader::GetRecordPosition()
+{
+    return binaryStream_->GetPos() - records_cache.front()->getDataSize() - records_cache.front()->getSizeOfRecordTypeRecordLength();
+}
+
+void BinaryStreamCacheReader::SetRecordPosition(const int position)
+{
+    binaryStream_->Seek(position);
+}
+
 // Checks whether the next record is Continue and append its data to the real record if so
 void BinaryStreamCacheReader::checkAndAppendContinueData()
 {

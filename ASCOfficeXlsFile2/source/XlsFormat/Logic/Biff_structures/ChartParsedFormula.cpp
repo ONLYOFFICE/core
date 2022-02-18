@@ -31,7 +31,6 @@
  */
 
 #include "ChartParsedFormula.h"
-#include <Binary/CFRecord.h>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>

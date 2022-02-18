@@ -73,6 +73,12 @@ namespace MetaFile
 			}
 			return oBounds;
 		}
+
+		void SetStream(BYTE* pBuf, unsigned int unSize)
+		{
+			m_oStream.SetStream(pBuf, unSize);
+		}
+
 		void         PlayMetaFile()
 		{
 			if (!m_oStream.IsValid())
@@ -1333,7 +1339,7 @@ namespace MetaFile
 			if (m_pOutput)
 			{
 				BYTE* pBgra = NULL;
-				unsigned int unWidth, unHeight;
+				unsigned int unWidth = 0, unHeight = 0;
 				if (ReadImage(ushColorUsage, &pBgra, &unWidth, &unHeight))
 				{
 					pBrush->SetDibPattern(pBgra, unWidth, unHeight);

@@ -31,7 +31,6 @@
  */
 
 #include "FeatProtection.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

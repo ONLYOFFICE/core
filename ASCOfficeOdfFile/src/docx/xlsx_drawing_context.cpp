@@ -32,7 +32,7 @@
 #include <boost/algorithm/string.hpp>
 
 #include <iostream>
-#include <xml/utils.h>
+#include "../../include/xml/utils.h"
 
 #include "xlsx_drawing.h"
 #include "xlsx_drawings.h"
@@ -41,7 +41,7 @@
 #include "xlsx_table_metrics.h"
 
 #include "../odf/draw_common.h"
-#include "../formulasconvert/formulasconvert.h"
+#include "../../formulasconvert/formulasconvert.h"
 
 #include "drawing_object_description.h"
 
@@ -192,6 +192,7 @@ void xlsx_drawing_context::clear()
     impl_->object_description_.xlink_href_			= L"";
     impl_->object_description_.name_				= L"";
 	impl_->object_description_.anchor_				= L"";
+	impl_->object_description_.anchor_rel_			= anchor_none;
 	impl_->object_description_.anchor_x_			= 0;
 	impl_->object_description_.anchor_y_			= 0;
 	impl_->object_description_.clipping_string_		= L"";
@@ -434,22 +435,41 @@ void xlsx_drawing_context::set_rel_anchor(_INT32 owner_cx, _INT32 owner_cy)
 	impl_->object_description_.owner_cx_ = owner_cx;
 	impl_->object_description_.owner_cy_ = owner_cy;
 }
-
-void xlsx_drawing_context::set_anchor(std::wstring anchor, double x_pt, double y_pt, bool group)
+void xlsx_drawing_context::set_anchor_end(std::wstring anchor, double x_pt, double y_pt, bool group)
 {
 	if (group)
 	{
-		impl_->groups_.back()->anchor_			= anchor;
-		impl_->groups_.back()->anchor_x_		= x_pt;
-		impl_->groups_.back()->anchor_y_		= y_pt;
+		impl_->groups_.back()->anchor_rel_ = anchor_end;
+		impl_->groups_.back()->anchor_ = anchor;
+		impl_->groups_.back()->anchor_x_ = x_pt;
+		impl_->groups_.back()->anchor_y_ = y_pt;
 	}
 	else
 	{
-		impl_->object_description_.anchor_		= anchor;
-		impl_->object_description_.anchor_x_	= x_pt;
-		impl_->object_description_.anchor_y_	= y_pt;
+		impl_->object_description_.anchor_rel_ = anchor_end;
+		impl_->object_description_.anchor_ = anchor;
+		impl_->object_description_.anchor_x_ = x_pt;
+		impl_->object_description_.anchor_y_ = y_pt;
 	}
 
+}
+
+void xlsx_drawing_context::set_anchor_start(std::wstring anchor, double x_pt, double y_pt, bool group)
+{
+	if (group)
+	{
+		impl_->groups_.back()->anchor_rel_ = anchor_start;
+		impl_->groups_.back()->anchor_ = anchor;
+		impl_->groups_.back()->anchor_x_ = x_pt;
+		impl_->groups_.back()->anchor_y_ = y_pt;
+	}
+	else
+	{
+		impl_->object_description_.anchor_rel_ = anchor_start;
+		impl_->object_description_.anchor_ = anchor;
+		impl_->object_description_.anchor_x_ = x_pt;
+		impl_->object_description_.anchor_y_ = y_pt;
+	}
 }
 void xlsx_drawing_context::set_property(odf_reader::_property p)
 {
@@ -494,7 +514,7 @@ bool xlsx_drawing_context::vml_empty() const
 }
 void xlsx_drawing_context::process_common_properties(drawing_object_description & obj, _xlsx_drawing & drawing, xlsx_table_metrics & table_metrics)
 {
-	if (obj.anchor_.empty())
+	if (obj.anchor_rel_ == anchor_none)
 	{
 		if (obj.owner_cx_ && obj.owner_cy_)
 		{
@@ -510,7 +530,7 @@ void xlsx_drawing_context::process_common_properties(drawing_object_description 
 	{
 		xlsx_table_position from, to;
 		
-		process_position_properties	(obj, table_metrics, from, to);
+		process_position_properties	(obj, table_metrics, from, to, obj.anchor_rel_ == anchor_end);
 
 		drawing.from_.type				= xlsx_drawing_position::from;
 		drawing.from_.position.col		= from.col;
@@ -549,7 +569,7 @@ void xlsx_drawing_context::process_common_properties(drawing_object_description 
 	drawing.hlinks		= obj.hlinks_;
 	drawing.action		= obj.action_;
 }
-void xlsx_drawing_context::process_position_properties(drawing_object_description & obj, xlsx_table_metrics & table_metrics,xlsx_table_position & from,xlsx_table_position & to)
+void xlsx_drawing_context::process_position_properties(drawing_object_description & obj, xlsx_table_metrics & table_metrics,xlsx_table_position & from,xlsx_table_position & to, bool byEnd)
 {
 	size_t column_anchor = 0, row_anchor = 0;
 
@@ -568,23 +588,36 @@ void xlsx_drawing_context::process_position_properties(drawing_object_descriptio
 	to		= table_metrics.calc(x + cx, y + cy);
 	from	= table_metrics.calc(x, y);
 
-	if (distance.size() > 0 && !obj.anchor_.empty())
+	if (!distance.empty() && !obj.anchor_.empty())
 	{
 		int ind_cell = distance.size()-1;
 		getCellAddressInv(distance[ind_cell], column_anchor, row_anchor);
 
-		xlsx_table_position pos_anchor = table_metrics.calc(column_anchor, row_anchor, obj.anchor_x_, obj.anchor_y_); //-можно и не считать :) , но проверим ...
+		xlsx_table_position pos_anchor = table_metrics.calc(column_anchor, row_anchor, obj.anchor_x_, obj.anchor_y_); 
 
 		table_metrics.update_pt(column_anchor, row_anchor, obj.anchor_x_, obj.anchor_y_);
 
-		x = obj.anchor_x_ - cx;
-		y = obj.anchor_y_ - cy;
+		if (byEnd)
+		{
+			to = pos_anchor;
+			
+			x = obj.anchor_x_ - cx;
+			y = obj.anchor_y_ - cy;
+			
+			if (x < 0) x = 0;
+			if (y < 0) y = 0; // calcul dun MS.ods
+			
+			from = table_metrics.calc(x, y);
+		}
+		else
+		{
+			from = pos_anchor;
 
-		if (x < 0) x = 0;
-		if (y < 0) y = 0; // calcul dun MS.ods
+			x = obj.anchor_x_ + cx;
+			y = obj.anchor_y_ + cy;
 
-		to		= pos_anchor;
-		from	= table_metrics.calc(x, y);
+			to = table_metrics.calc(x, y);
+		}
 
 		if (obj.svg_rect_)
 		{

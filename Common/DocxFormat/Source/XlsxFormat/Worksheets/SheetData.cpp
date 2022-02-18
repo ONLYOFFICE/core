@@ -1779,8 +1779,8 @@ namespace OOX
                             case XLSB::rt_CellRk:
                                 {
                                     auto pCellRk = static_cast<XLSB::CellRk*>(pSource);
-                                    m_oType.Init();
-                                    m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
+                                    //m_oType.Init();
+                                    //m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
                                     m_oValue.Init();
                                     m_oValue->m_sText         = pCellRk->value.value();
                                 }
@@ -1824,8 +1824,8 @@ namespace OOX
                                     {
                                         str = reinterpret_cast<XLSB::FmlaNum*>(pSource)->formula.getAssembledFormula();
                                     }
-                                    m_oType.Init();
-                                    m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeDate);
+                                    //m_oType.Init();
+                                    //m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
                                     m_oValue.Init();
                                     m_oValue->m_sText = OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(pRealNum);
                                 }
@@ -2169,11 +2169,6 @@ namespace OOX
 			WritingElement_ReadAttributes_End(oReader)
 		}
 
-        void CSheetData::ReadAttributes(XLS::BaseObjectPtr& obj)
-        {
-            //auto ptr = static_cast<XLSB::CalcProp*>(obj.get());
-        }
-
 		void CSheetData::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes( oReader );
@@ -2405,10 +2400,10 @@ namespace OOX
 		}
 //---------------------------------------------------------------------------------------------------------------------
 
-        void CSheetData::fromBin(XLS::BaseObjectPtr& obj)
+        void CSheetData::fromBin(XLS::BaseObject& obj)
         {
             //ReadAttributes(obj);
-            auto ptr = static_cast<XLSB::CELLTABLE*>(obj.get());
+            auto ptr = static_cast<XLSB::CELLTABLE*>(&obj);
 
             for(auto &Parenthesis_CELLTABLE : ptr->m_arParenthesis_CELLTABLE)
             {

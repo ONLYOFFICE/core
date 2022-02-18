@@ -32,14 +32,13 @@
 
 #include "office_annotation.h"
 
-#include <xml/xmlchar.h>
-
-#include <xml/attributes.h>
-#include <xml/utils.h>
+#include "../../include/xml/xmlchar.h"
+#include "../../include/xml/utils.h"
 
 #include "serialize_elements.h"
 
-#include <odf/odf_document.h>
+#include "../../include/odf/odf_document.h"
+
 #include "odfcontext.h"
 #include "draw_common.h"
 #include "calcs_styles.h"

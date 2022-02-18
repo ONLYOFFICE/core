@@ -294,14 +294,15 @@ void CSvmFile::Read_SVM_HEADER()
 
 	m_pDC->SetMapMode(m_oHeader.mapMode, true);
 	
-	if (m_bMainStream)
+	if (m_bMainStream) //из-за 2 идет увеличение самой картинки в 2 раза (содержимое имеет исходный размер, т.е. в 2 раза меньше нужного)
 	{	
+		unsigned int unCoef = 1;
 		m_oBoundingBox			= m_oHeader.boundRect;
-		m_oBoundingBox.nRight	= static_cast<int>(m_pDC->m_dPixelWidthPrefered		* 2 * m_oBoundingBox.nRight); 
-		m_oBoundingBox.nBottom	= static_cast<int>(m_pDC->m_dPixelHeightPrefered	* 2 * m_oBoundingBox.nBottom); 
+		m_oBoundingBox.nRight	= static_cast<int>(m_pDC->m_dPixelWidthPrefered		* unCoef * m_oBoundingBox.nRight);
+		m_oBoundingBox.nBottom	= static_cast<int>(m_pDC->m_dPixelHeightPrefered	* unCoef * m_oBoundingBox.nBottom);
 			
-		m_oBoundingBox.nLeft	= static_cast<int>(m_pDC->m_dPixelWidthPrefered		* 2 * m_oBoundingBox.nLeft); 
-		m_oBoundingBox.nTop		= static_cast<int>(m_pDC->m_dPixelHeightPrefered	* 2 * m_oBoundingBox.nTop);
+		m_oBoundingBox.nLeft	= static_cast<int>(m_pDC->m_dPixelWidthPrefered		* unCoef * m_oBoundingBox.nLeft);
+		m_oBoundingBox.nTop		= static_cast<int>(m_pDC->m_dPixelHeightPrefered	* unCoef * m_oBoundingBox.nTop);
 	}// *2 ради повышения качества картинки (если в векторе насамом деле растр - сментся на растровые размеры ниже
 		
 	m_bFirstPoint = true;
@@ -1081,7 +1082,7 @@ void CSvmFile::Read_META_BMP(TSvmBitmap & bitmap_info, BYTE** ppDstBuffer, unsig
 
         MetaFile::ReadImage(Header , nHeaderSize,  m_oStream.GetCurPtr(), bitmap_info.nSizeImage, ppDstBuffer, pulWidth, pulHeight);
         m_oStream.Skip(bitmap_info.nSizeImage);
-        delete Header;
+        delete[] Header;
     }
 }
 
@@ -1139,10 +1140,7 @@ void CSvmFile::Read_META_BMPEX()
 
     if (pBgraBuffer)
     {
-        if ( m_pOutput)
-        {
-            m_pOutput->DrawBitmap( m_oCurrnetOffset.x, m_oCurrnetOffset.y, bitmap_info.nWidth, bitmap_info.nHeight, pBgraBuffer, bitmap_info.nWidth, bitmap_info.nHeight);
-        }
+        DrawImage(m_oCurrnetOffset.x, m_oCurrnetOffset.y, bitmap_info.nWidth, bitmap_info.nHeight, pBgraBuffer, bitmap_info.nWidth, bitmap_info.nHeight);
 
         delete []pBgraBuffer;
 
@@ -1222,10 +1220,7 @@ void CSvmFile::Read_META_BMPEXSCALE()
 
     if (pBgraBuffer)
     {
-        if ( m_pOutput)
-        {
-            m_pOutput->DrawBitmap( point.x + m_oCurrnetOffset.x, point.y + m_oCurrnetOffset.y, size.cx, size.cy, pBgraBuffer, bitmap_info.nWidth, bitmap_info.nHeight);
-        }
+        DrawImage(point.x + m_oCurrnetOffset.x, point.y + m_oCurrnetOffset.y, size.cx, size.cy, pBgraBuffer, ulWidth, ulHeight);
 
         delete []pBgraBuffer;
 
@@ -1265,10 +1260,7 @@ void CSvmFile::Read_META_BMPSCALE()
 
     if (pBgraBuffer)
     {
-        if ( m_pOutput)
-        {
-            m_pOutput->DrawBitmap( point.x + m_oCurrnetOffset.x, point.y + m_oCurrnetOffset.y, size.cx, size.cy, pBgraBuffer, bitmap_info.nWidth, bitmap_info.nHeight);
-        }
+        DrawImage(point.x + m_oCurrnetOffset.x, point.y + m_oCurrnetOffset.y, size.cx, size.cy, pBgraBuffer, ulWidth, ulHeight);
 
         delete []pBgraBuffer;
 

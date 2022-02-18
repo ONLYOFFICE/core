@@ -38,6 +38,8 @@
 #include "../Biff12_unions/CELLMETA.h"
 #include "../Biff12_unions/FRT.h"
 
+#include "../Biff12_records/ACBegin.h"
+
 using namespace XLS;
 
 namespace XLSB
@@ -106,7 +108,7 @@ namespace XLSB
             count--;
         }
 
-        return true;
+        return m_DATACELL || m_FMLACELL || m_SHRFMLACELL || m_TABLECELL;
     }
 
 } // namespace XLSB

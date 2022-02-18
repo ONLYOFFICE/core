@@ -31,7 +31,6 @@
  */
 
 #include "header_footer.h"
-#include <xml/attributes.h>
 
 #include "serialize_elements.h"
 

@@ -32,7 +32,7 @@
 #pragma once
 
 #include "BitMarkedStructs.h"
-#include <Logic/Biff_structures/URICreateFlags.h>
+#include "URICreateFlags.h"
 
 namespace OSHARED
 {

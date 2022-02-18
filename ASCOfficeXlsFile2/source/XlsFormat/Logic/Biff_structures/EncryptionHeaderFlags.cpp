@@ -31,7 +31,6 @@
  */
 
 #include "EncryptionHeaderFlags.h"
-#include <Binary/CFRecord.h>
 
 namespace CRYPTO
 {

@@ -31,7 +31,6 @@
  */
 
 #include "CalcRefMode.h"
-//#include <Exception/AttributeDataWrong.h>
 
 namespace XLS
 {

@@ -30,7 +30,7 @@
  *
  */
 
-#include <odf/odf_document.h>
+#include "../../include/odf/odf_document.h"
 
 #include "odf_document_impl.h"
 #include "../progressCallback.h"

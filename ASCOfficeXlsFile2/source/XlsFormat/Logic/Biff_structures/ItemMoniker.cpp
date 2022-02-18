@@ -31,7 +31,6 @@
  */
 
 #include "ItemMoniker.h"
-#include <Binary/CFRecord.h>
 
 namespace OSHARED
 {

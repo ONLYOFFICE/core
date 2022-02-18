@@ -31,12 +31,12 @@
  */
 
 #include "SERIESAXIS.h"
-#include <Logic/Biff_records/Axis.h>
-#include <Logic/Biff_records/Begin.h>
-#include <Logic/Biff_records/CatSerRange.h>
-#include <Logic/Biff_unions/AXS.h>
-#include <Logic/Biff_unions/CRTMLFRT.h>
-#include <Logic/Biff_records/End.h>
+#include "AXS.h"
+#include "CRTMLFRT.h"
+#include "../Biff_records/Axis.h"
+#include "../Biff_records/Begin.h"
+#include "../Biff_records/CatSerRange.h"
+#include "../Biff_records/End.h"
 
 namespace XLS
 {

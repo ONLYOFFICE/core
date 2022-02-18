@@ -32,7 +32,7 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/LongRGB.h>
+#include "../Biff_structures/LongRGB.h"
 
 namespace XLS
 {

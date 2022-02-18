@@ -33,7 +33,9 @@
 
 #include <string>
 #include <iosfwd>
-#include <xml/xmlelement.h>
+#include <vector>
+
+#include "../../include/xml/xmlelement.h"
 
 namespace cpdoccore { 
 namespace oox {

@@ -29,10 +29,9 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include <odf/odf_document.h>
-#include <xml/simple_xml_writer.h>
-
-#include "logging.h"
+#include "../../include/odf/odf_document.h"
+#include "../../include/xml/simple_xml_writer.h"
+#include "../../include/logging.h"
 
 #include "xlsx_table_state.h"
 #include "xlsx_utils.h"
@@ -42,7 +41,7 @@
 #include "../odf/style_table_properties.h"
 #include "../odf/datatypes/stylefamily.h"
 
-#include "../formulasconvert/formulasconvert.h"
+#include "../../formulasconvert/formulasconvert.h"
 
 #include "../../../OfficeCryptReader/source/CryptTransform.h"
 

@@ -38,7 +38,7 @@
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-#include "../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace cpdoccore {
 
@@ -84,9 +84,10 @@ std::wstring getRowAddress(size_t row)
     return std::to_wstring(row + 1);
 }
 
-std::wstring getCellAddress(size_t col, size_t row)
+std::wstring getCellAddress(size_t col, size_t row, bool bAbsolute)
 {
-	return getColAddress(col) + getRowAddress(row);
+	std::wstring a = bAbsolute ? L"$" : L"";
+	return a + getColAddress(col) + a + getRowAddress(row);
 }
 
 //_ASSERTE(getColAddressInv(L"A") == 0);

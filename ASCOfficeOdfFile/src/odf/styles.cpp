@@ -29,19 +29,14 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-
-
-#include "styles.h"
-#include <xml/xmlchar.h>
-#include <xml/attributes.h>
-#include <xml/simple_xml_writer.h>
-
-#include <odf/odf_document.h>
-
 #include <iostream>
 
-#include "style_properties.h"
+#include "styles.h"
 
+#include "../../include/xml/simple_xml_writer.h"
+#include "../../include/odf/odf_document.h"
+
+#include "style_properties.h"
 
 #include "serialize_elements.h"
 #include "odfcontext.h"
@@ -1429,7 +1424,7 @@ void style_page_layout_properties::xlsx_serialize(std::wostream & strm, oox::xls
 		if (horizontal_margins.fo_margin_left_	|| horizontal_margins.fo_margin_right_	||
 			vertical_margins.fo_margin_top_		|| vertical_margins.fo_margin_bottom_ )
 		{
-			_CP_OPT(double)  header, footer;
+			_CP_OPT(double)  header, footer, top, bottom;
 
 			header	= Context.get_table_context().get_header_page();
 			footer = Context.get_table_context().get_footer_page();
@@ -1445,17 +1440,33 @@ void style_page_layout_properties::xlsx_serialize(std::wostream & strm, oox::xls
 				else CP_XML_ATTR(L"right", 0);
 				
 				if (vertical_margins.fo_margin_top_ && vertical_margins.fo_margin_top_->get_type() == odf_types::length_or_percent::Length)
-					CP_XML_ATTR(L"top"		, vertical_margins.fo_margin_top_->get_length().get_value_unit(odf_types::length::inch));
+				{
+					top = vertical_margins.fo_margin_top_->get_length().get_value_unit(odf_types::length::inch);
+					CP_XML_ATTR(L"top", *top);
+				}
 				else CP_XML_ATTR(L"top", 1.025);
 
 				if (vertical_margins.fo_margin_bottom_ && vertical_margins.fo_margin_bottom_->get_type() == odf_types::length_or_percent::Length)
-					CP_XML_ATTR(L"bottom"	, vertical_margins.fo_margin_bottom_->get_length().get_value_unit(odf_types::length::inch));
+				{
+					bottom = vertical_margins.fo_margin_bottom_->get_length().get_value_unit(odf_types::length::inch);
+					CP_XML_ATTR(L"bottom", *bottom);
+				}
 				else CP_XML_ATTR(L"bottom", 1.025);
 				
-				if (header) CP_XML_ATTR(L"header"	, *header / 72.0); // pt -> inch
+				if (header)
+				{
+					*header = (*header / 72.0) + top.get_value_or(0); 
+					if (*header < 0) *header = 0.7875;
+					CP_XML_ATTR(L"header", *header); // pt -> inch
+				}
 				else CP_XML_ATTR(L"header", 0.7875);
 
-				if (footer) CP_XML_ATTR(L"footer"	, *footer / 72.0);
+				if (footer)
+				{
+					*footer = (*footer / 72.0) + bottom.get_value_or(0);
+					if (*footer < 0) *footer = 0.7875;
+					CP_XML_ATTR(L"footer", *footer);
+				}
 				else CP_XML_ATTR(L"footer", 0.7875);
 			}
 		}

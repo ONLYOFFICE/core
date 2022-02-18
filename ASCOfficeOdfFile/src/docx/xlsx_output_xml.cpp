@@ -32,7 +32,7 @@
 
 #include "xlsx_output_xml.h"
 #include <boost/make_shared.hpp>
-#include <xml/simple_xml_writer.h>
+#include "../../include/xml/simple_xml_writer.h"
 
 namespace cpdoccore {
 namespace oox {

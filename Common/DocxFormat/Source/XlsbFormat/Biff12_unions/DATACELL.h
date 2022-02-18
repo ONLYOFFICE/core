@@ -38,7 +38,7 @@ namespace XLSB
 
     class DATACELL: public XLS::CompositeObject
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(TABLECELL)
+        BASE_OBJECT_DEFINE_CLASS_NAME(DATACELL)
     public:
         DATACELL();
         virtual ~DATACELL();

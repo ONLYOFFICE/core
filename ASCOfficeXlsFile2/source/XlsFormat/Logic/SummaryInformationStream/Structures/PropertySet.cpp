@@ -32,7 +32,7 @@
 
 
 #include "PropertySet.h"
-#include <Binary/CFStream.h>
+#include "../../../Binary/CFStream.h"
 #include "PropertyFactory.h"
 #include "CodePageOle.h"
 

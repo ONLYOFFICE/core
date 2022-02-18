@@ -58,10 +58,9 @@ public:
 			unsigned short type;
 			unsigned short fExprO;
 		}bytes;
-		double value;
+		double value = 0.;
 	} data;
 
-        std::wstring DateTimeValue();
 };
 
 typedef Xnum DateAsNum;

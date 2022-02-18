@@ -32,9 +32,7 @@
 #pragma once
 
 #include <iosfwd>
-#include <xml/attributes.h>
-#include <CPOptional.h>
-#include <xml/simple_xml_writer.h>
+#include "../../../include/xml/simple_xml_writer.h"
 
 #include "bool.h"
 #include "lengthorpercent.h"

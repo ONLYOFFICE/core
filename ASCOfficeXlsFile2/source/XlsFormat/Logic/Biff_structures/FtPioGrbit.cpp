@@ -31,7 +31,6 @@
  */
 
 #include "FtPioGrbit.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

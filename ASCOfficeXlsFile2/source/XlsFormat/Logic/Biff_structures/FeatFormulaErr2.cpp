@@ -31,7 +31,6 @@
  */
 
 #include "FeatFormulaErr2.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

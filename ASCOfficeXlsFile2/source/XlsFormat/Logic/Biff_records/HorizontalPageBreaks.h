@@ -32,7 +32,7 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/HorzBrk.h>
+#include "../Biff_structures/HorzBrk.h"
 
 namespace XLS
 {

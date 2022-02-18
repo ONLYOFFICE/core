@@ -158,6 +158,8 @@
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginPCDSource.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginPCDSRange.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginPivotCacheDef.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginPivotCacheID.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginPivotCacheIDs.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginPivotCacheRecords.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginPivotTableUISettings.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\BeginPName.h" />
@@ -426,6 +428,8 @@
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndPCDSource.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndPCDSRange.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndPivotCacheDef.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndPivotCacheID.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndPivotCacheIDs.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndPivotCacheRecords.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndPivotTableUISettings.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndPName.h" />
@@ -913,6 +917,8 @@
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\PCDSOURCE.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\PCDSOURCE14.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\PCDSRANGE.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\PIVOTCACHEID.h" />
+    <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\PIVOTCACHEIDS.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\PIVOTCACHERECORD.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\PIVOTCACHERECORDDT.h" />
     <ClInclude Include="..\Source\XlsbFormat\Biff12_unions\PIVOTCACHERECORDS.h" />
@@ -1194,6 +1200,8 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginPCDSource.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginPCDSRange.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginPivotCacheDef.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginPivotCacheID.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginPivotCacheIDs.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginPivotCacheRecords.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginPivotTableUISettings.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\BeginPName.cpp" />
@@ -1460,6 +1468,8 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndPCDSource.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndPCDSRange.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndPivotCacheDef.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndPivotCacheID.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndPivotCacheIDs.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndPivotCacheRecords.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndPivotTableUISettings.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_records\EndPName.cpp" />
@@ -1770,11 +1780,11 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\BOOKVIEWS_bu.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\BORDERS.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\BUNDLESHS.cpp" />
-    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CELL_bu.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CELLMETA_bu.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CELLSTYLEXFS.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CELLTABLE.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CELLXFS.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CELL_12bu.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CFRULE.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CFRULE14.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\COLBRK.cpp" />
@@ -1941,6 +1951,8 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PCDSOURCE.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PCDSOURCE14.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PCDSRANGE.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PIVOTCACHEID.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PIVOTCACHEIDS.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PIVOTCACHERECORD.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PIVOTCACHERECORDDT.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\PIVOTCACHERECORDS.cpp" />
@@ -2134,8 +2146,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(Configuration)\XlsbFormat\</OutDir>
-    <IncludePath>../../../Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
-    <LibraryPath>../../../Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\..\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
     <IntDir>$(Configuration)\XlsbFormat\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -2145,7 +2157,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\_Work\core\Common\3dParty\boost\build\win_32\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(IncludePath)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -2172,7 +2184,6 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\_Work\core\Common\3dParty\boost\build\win_32\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(IncludePath)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

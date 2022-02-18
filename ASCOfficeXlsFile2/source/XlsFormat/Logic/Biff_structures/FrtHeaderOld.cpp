@@ -31,7 +31,6 @@
  */
 
 #include "FrtHeaderOld.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

@@ -32,8 +32,8 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/BiffString.h>
-#include <Logic/Biff_structures/BuiltInStyle.h>
+#include "../Biff_structures/BiffString.h"
+#include "../Biff_structures/BuiltInStyle.h"
 
 namespace XLS
 {
@@ -50,7 +50,7 @@ public:
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeStyle;
+	static const ElementType type = typeStyle;
 
 	int serialize(std::wostream & stream);
 //-----------------------------

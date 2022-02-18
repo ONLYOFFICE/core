@@ -33,8 +33,7 @@
 #include "style_presentation.h"
 
 #include <iostream>
-#include <xml/simple_xml_writer.h>
-#include <xml/attributes.h>
+#include "../../include/xml/simple_xml_writer.h"
 
 namespace cpdoccore { 
 

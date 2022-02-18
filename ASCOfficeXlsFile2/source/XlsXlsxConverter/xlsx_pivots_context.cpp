@@ -32,7 +32,7 @@
 #include "xlsx_pivots_context.h"
 
 #include <boost/make_shared.hpp>
-#include <simple_xml_writer.h>
+#include "../Common/simple_xml_writer.h"
 
 #include <map>
 

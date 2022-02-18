@@ -34,8 +34,8 @@
 
 #include <iostream>
 
-#include <odf/odf_document.h>
-#include <xml/simple_xml_writer.h>
+#include "../../include/odf/odf_document.h"
+#include "../../include/xml/simple_xml_writer.h"
 
 #include "measuredigits.h"
 #include "xlsx_package.h"
@@ -65,7 +65,7 @@ xlsx_conversion_context::xlsx_conversion_context(odf_reader::odf_document * odfD
 	odf_document_		(odfDocument),
 	output_document_	(NULL),
 	num_format_context_	(odf_document_->odf_context()),
-	xlsx_text_context_	(odf_document_->odf_context().styleContainer()),
+	xlsx_text_context_	(odf_document_->odf_context()),
 	xlsx_table_context_	(this, xlsx_text_context_),
 	math_context_		(odf_document_->odf_context().fontContainer(), true),
 	xlsx_style_			(this),

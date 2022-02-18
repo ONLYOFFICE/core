@@ -32,7 +32,7 @@
 
 #include "Dv.h"
 
-#include <utils.h>
+#include "../../../Common/utils.h"
 #include <boost/algorithm/string.hpp>
 
 #include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/DValStrings.h"

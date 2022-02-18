@@ -35,8 +35,6 @@
 #include "../Biff_unions/SUPBOOK.h"
 #include "../Biff_records/SupBook.h"
 
-#include <Binary/CFRecord.h>
-
 namespace XLS
 {
 

@@ -30,9 +30,7 @@
  *
  */
 
-
-#include <xml/attributes.h>
-#include <xml/simple_xml_writer.h>
+#include "../../include/xml/simple_xml_writer.h"
 
 #include "docx_content_type.h"
 #include "namespaces.h"

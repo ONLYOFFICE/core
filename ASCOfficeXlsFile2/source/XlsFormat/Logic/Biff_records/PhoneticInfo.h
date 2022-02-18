@@ -32,8 +32,8 @@
 #pragma once
 
 #include "BiffRecordContinued.h"
-#include <Logic/Biff_structures/Phs.h>
-#include <Logic/Biff_structures/SqRef.h>
+#include "../Biff_structures/Phs.h"
+#include "../Biff_structures/SqRef.h"
 
 namespace XLS
 {

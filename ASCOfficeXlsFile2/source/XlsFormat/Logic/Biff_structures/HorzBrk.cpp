@@ -31,7 +31,6 @@
  */
 
 #include "HorzBrk.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

@@ -31,13 +31,12 @@
  */
 
 #include "PtgFactory.h"
-#include <Binary/CFRecord.h>
 #include "PtgExp.h"
 #include "PtgTbl.h"
 #include "PtgRef3d.h"
 #include "OperatorPtgs.h"
-#include <Logic/Biff_structures/PtgParen.h>
-#include <Logic/Biff_structures/PtgMissArg.h>
+#include "PtgParen.h"
+#include "PtgMissArg.h"
 #include "PtgStr.h"
 #include "PtgErr.h"
 #include "PtgBool.h"

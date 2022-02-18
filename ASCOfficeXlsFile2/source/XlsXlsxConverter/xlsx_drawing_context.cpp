@@ -32,9 +32,9 @@
 
 #include "xlsx_conversion_context.h"
 
-#include <simple_xml_writer.h>
-#include <utils.h>
-#include <Auxiliary/HelpFunc.h>
+#include "../Common/simple_xml_writer.h"
+#include "../Common/utils.h"
+#include "../XlsFormat/Auxiliary/HelpFunc.h"
 
 #include "../../../DesktopEditor/raster/BgraFrame.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpTreeElem.h"

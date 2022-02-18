@@ -910,6 +910,8 @@ enum ElementType
     typeSXLIRWS,
     typeSXLICOLS,
     typePCDIDT,
+    typeFRTPIVOTCACHEDEF,
+    typePCD14,
 };
 
 

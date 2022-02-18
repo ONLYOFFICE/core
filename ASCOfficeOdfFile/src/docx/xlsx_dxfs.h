@@ -34,7 +34,7 @@
 #include <iosfwd>
 #include <string>
 
-#include <CPScopedPtr.h>
+#include "../../include/CPScopedPtr.h"
 #include <boost/shared_ptr.hpp>
 
 namespace cpdoccore {

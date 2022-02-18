@@ -1399,6 +1399,7 @@ namespace OOX
 
 		et_x_PivotTableDefinition,
 		et_x_PivotCacheDefinition,
+                et_x_PivotCacheDefinitionExt,
 		et_x_PivotCacheRecords,
 		et_x_ColumnRowFields,
 		et_x_ColumnRowItems,

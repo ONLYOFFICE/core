@@ -32,8 +32,6 @@
 #pragma once 
 
 #include <iosfwd>
-#include <CPOptional.h>
-#include <CPScopedPtr.h>
 
 #include "oox_types_chart.h"
 #include "oox_chart_axis.h"

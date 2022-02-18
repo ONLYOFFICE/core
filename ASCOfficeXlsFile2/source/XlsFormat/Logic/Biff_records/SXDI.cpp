@@ -50,8 +50,11 @@ BaseObjectPtr SXDI::clone()
 
 void SXDI::readFields(CFRecord& record)
 {
+	GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();
 	record >> isxvdData >> iiftab >> df >> isxvd >> isxvi >> ifmt >> cchName;
 
+	global_info->mapUsedFormatCode.insert(std::make_pair(ifmt, true));
+	
 	if (cchName > 0 && cchName < 0xFFFF)
 	{
 		stName.setSize(cchName);

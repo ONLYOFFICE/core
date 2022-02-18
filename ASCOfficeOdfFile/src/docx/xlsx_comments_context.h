@@ -33,8 +33,7 @@
 
 #include <string>
 #include <boost/noncopyable.hpp>
-#include <CPScopedPtr.h>
-#include <CPSharedPtr.h>
+#include "../../include/CPScopedPtr.h"
 
 #include "xlsx_comments.h"
 

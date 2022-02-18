@@ -32,7 +32,7 @@
 #pragma once
 
 #include "Crypt.h"
-#include <Logic/Biff_structures/RC4EncryptionHeader.h>
+#include "../Logic/Biff_structures/RC4EncryptionHeader.h"
 #include "BiffDecoder_RCF.h"
 
 namespace CRYPT

@@ -259,13 +259,21 @@ NSFonts::IFontFile* CFontsCache::LockFont(NSFonts::CLibrary& library, const std:
         if ((int)m_arFiles.size() > m_lCacheSize)
         {
             std::string sPop = *m_arFiles.begin();
-            m_arFiles.pop_front();
-
             std::map<std::string, CFontFile*>::iterator _find = m_mapFiles.find(sPop);
+
             if (m_mapFiles.end() != _find)
             {
                 CFontFile* pFontRemove = _find->second;
-                RELEASEOBJECT(pFontRemove);
+                if (m_pSafeFont != pFontRemove)
+                {
+                    m_arFiles.pop_front();
+                    RELEASEOBJECT(pFontRemove);
+                    m_mapFiles.erase(_find);
+                }
+            }
+            else
+            {
+                // такого быть не должно
                 m_mapFiles.erase(_find);
             }
         }
@@ -873,7 +881,12 @@ CFontFile* CFontManager::GetFontFileBySymbol(CFontFile* pFile, int code)
     if (pFile->m_bNeedDoItalic || pFile->IsItalic())
         nStyle |= 2;
 
+    CFontsCache* pCache = (CFontsCache*)GetCache();
+    pCache->m_pSafeFont = pFile;
+
     LoadFontByName(sName, pFile->m_dSize, nStyle, pFile->m_unHorDpi, pFile->m_unVerDpi);
+
+    pCache->m_pSafeFont = NULL;
 
     if (!m_pFont)
     {

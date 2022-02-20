@@ -10,7 +10,7 @@ namespace NSFontManager
     static NSFonts::IFontManager* CreateFontManager(NSFonts::IApplicationFonts* pApplication)
     {
         NSFonts::IFontManager* pManager = pApplication->GenerateFontManager();
-        pManager->CreateOwnerCache(4);
+        pManager->CreateOwnerCache(8);
         return pManager;
     }
 

@@ -828,7 +828,7 @@ namespace NSDocxRenderer
 		{
 			if (NULL == m_pFontManager)
 			{
-                m_pFontManager = m_pAppFonts->GenerateFontManager();
+                m_pFontManager = NSFontManager::CreateFontManager(m_pAppFonts);
 			}
 
 			double dPix = m_oFont.CharSpace * m_dDpiX / 25.4;

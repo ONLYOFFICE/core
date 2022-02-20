@@ -3,6 +3,10 @@
 
 #include "CEmfInterpretatorBase.h"
 
+namespace NSFile
+{
+    class CFileBinary;
+}
 namespace MetaFile
 {
         class CEmfInterpretator : public CEmfInterpretatorBase
@@ -119,7 +123,7 @@ namespace MetaFile
                 void HANDLE_EMFPLUS_DRAWIMAGE(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF& oSrcRect, const TEmfPlusRect& oRectData) override;
                 void HANDLE_EMFPLUS_DRAWIMAGE(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF& oSrcRect, const TEmfPlusRectF& oRectData) override;
         private:
-                std::ofstream   *m_pOutStream;
+                NSFile::CFileBinary *m_pOutStream = NULL;
 
                 unsigned int    unFileSize;
                 unsigned int    unNumberRecords;

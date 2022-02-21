@@ -189,6 +189,10 @@ void IMetafileToRenderter::InitPicker(NSFonts::IApplicationFonts* pFonts)
     CMetafileFontPicker* pPicker = new CMetafileFontPicker(pFonts);
     m_pPicker = (void*)pPicker;
 }
+bool IMetafileToRenderter::IsUsePageCommands()
+{
+    return true;
+}
 
 namespace NSOnlineOfficeBinToPdf
 {
@@ -339,18 +343,27 @@ namespace NSOnlineOfficeBinToPdf
 			{
 			case ctPageWidth:
 			{
-				pRenderer->put_Width(ReadInt(current, curindex) / 100000.0);
+                if (pCorrector->IsUsePageCommands())
+                    pRenderer->put_Width(ReadInt(current, curindex) / 100000.0);
+                else
+                    SkipInt(current, curindex);
 				break;
 			}
 			case ctPageHeight:
 			{
-				pRenderer->put_Height(ReadInt(current, curindex) / 100000.0);
+                if (pCorrector->IsUsePageCommands())
+                    pRenderer->put_Height(ReadInt(current, curindex) / 100000.0);
+                else
+                    SkipInt(current, curindex);
 				break;
 			}
 			case ctPageStart:
 			{
-				pRenderer->NewPage();
-				pRenderer->BeginCommand(c_nPageType);
+                if (pCorrector->IsUsePageCommands())
+                {
+                    pRenderer->NewPage();
+                    pRenderer->BeginCommand(c_nPageType);
+                }
 
 				// TODO:
 				pRenderer->put_PenLineStartCap(Aggplus::LineCapFlat);
@@ -366,7 +379,8 @@ namespace NSOnlineOfficeBinToPdf
 				}
 				bIsPathOpened = false;
 
-				pRenderer->EndCommand(c_nPageType);
+                if (pCorrector->IsUsePageCommands())
+                    pRenderer->EndCommand(c_nPageType);
 
 				if (lRendererType == c_nGrRenderer)
 					return true;

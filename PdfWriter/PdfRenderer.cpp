@@ -2061,18 +2061,13 @@ bool CPdfRenderer::EditPage(const std::wstring& sPage, const std::pair<int, int>
 	m_pPage = m_pDocument->EditPage(sPage, pPage);
 	return !!m_pPage;
 }
-bool CPdfRenderer::AddToFile(const std::wstring& wsPath, const std::wstring& sTrailer)
+bool CPdfRenderer::EditClose(const std::wstring& wsPath, const std::wstring& sTrailer)
 {
 	if (!IsValid())
 		return false;
 	m_oCommandManager.Flush();
 
 	return m_pDocument->AddToFile(wsPath, sTrailer);
-}
-HRESULT CPdfRenderer::TEST()
-{
-	m_pDocument->TEST();
-	return S_OK;
 }
 
 NSFonts::IApplicationFonts* CPdfRenderer::GetApplicationFonts()
@@ -2545,16 +2540,16 @@ void CPdfRenderer::UpdateBrush()
 		m_pPage->SetFillAlpha((unsigned char)m_oBrush.GetAlpha1());
 	}
 }
-HRESULT CPdfRenderer::OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker)
+HRESULT CPdfRenderer::OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker, const bool& bIsUsePageCommands)
 {
-    if (!NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, false, bIsUsePicker))
+    if (!NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, false, bIsUsePicker, bIsUsePageCommands))
 		return S_FALSE;
 
 	return S_OK;
 }
-HRESULT CPdfRenderer::OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker)
+HRESULT CPdfRenderer::OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker, const bool& bIsUsePageCommands)
 {
-    if (!NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, true, bIsUsePicker))
+    if (!NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, true, bIsUsePicker, bIsUsePageCommands))
 		return S_FALSE;
 
 	return S_OK;

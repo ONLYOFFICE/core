@@ -222,13 +222,16 @@ public:
 	HRESULT EnableBrushRect(const LONG& lEnable);
 	HRESULT SetLinearGradient(const double& dX1, const double& dY1, const double& dX2, const double& dY2);
 	HRESULT SetRadialGradient(const double& dX1, const double& dY1, const double& dR1, const double& dX2, const double& dY2, const double& dR2);
-    HRESULT OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker = false);
-    HRESULT OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker = false);
+    HRESULT OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker = false, const bool& bIsUsePageCommands = true);
+    HRESULT OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker = false, const bool& bIsUsePageCommands = true);
 	HRESULT DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2* pMaskBuffer, const unsigned int& unMaskWidth, const unsigned int& unMaskHeight, const double& dX, const double& dY, const double& dW, const double& dH);
-	bool EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sPageTree, const std::pair<int, int>& pPageTree);
+
+    //----------------------------------------------------------------------------------------
+    // Дополнительные функции для дозаписи Pdf
+    //----------------------------------------------------------------------------------------
+    bool EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sPageTree, const std::pair<int, int>& pPageTree);
 	bool EditPage(const std::wstring& sPage, const std::pair<int, int>& pPage);
-	bool AddToFile(const std::wstring& wsPath, const std::wstring& sTrailer);
-	HRESULT TEST();
+    bool EditClose(const std::wstring& wsPath, const std::wstring& sTrailer);
 
     NSFonts::IApplicationFonts* GetApplicationFonts();
 

@@ -15,3 +15,5 @@ include($$CORE_ROOT_DIR/Common/3dParty/icu/icu.pri)
 ADD_DEPENDENCY(UnicodeConverter, kernel, graphics, PdfReader, PdfWriter)
 
 SOURCES += test.cpp
+
+DESTDIR = $$PWD/build

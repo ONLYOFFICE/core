@@ -482,7 +482,7 @@ return 0;
 
         return m_pPdfWriter->EditPage(sPage, std::make_pair(pPageRef->num, pPageRef->gen));
     }
-    bool CPdfReader::AddToFile(const std::wstring& wsPath)
+    bool CPdfReader::EditClose(const std::wstring& wsPath)
     {
         XRef* xref = m_pInternal->m_pPDFDocument->getXRef();
         Object* trailerDict = xref->getTrailerDict();
@@ -493,7 +493,7 @@ return 0;
             sTrailer += L'>';
         sTrailer += L"</Trailer>";
 
-        return m_pPdfWriter->AddToFile(wsPath, sTrailer);
+        return m_pPdfWriter->EditClose(wsPath, sTrailer);
     }
 #ifdef BUILDING_WASM_MODULE    
     void getBookmars(PDFDoc* pdfDoc, OutlineItem* pOutlineItem, NSWasm::CData& out, int level)

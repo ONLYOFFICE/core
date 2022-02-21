@@ -1113,8 +1113,4 @@ namespace PdfWriter
 		m_pXref = NULL;
 		return true;
 	}
-	void CDocument::TEST()
-	{
-		m_pCurPage->AddCommands(m_pXref);
-	}
 }

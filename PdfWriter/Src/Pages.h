@@ -144,7 +144,6 @@ namespace PdfWriter
 		CMatrix*  GetTransform();
 		void      AddGroup(CDictObject* pDict);
 
-		void      AddCommands(CXref* pXref);
 		void      AddContents(CXref* pXref);
 
 	private:

@@ -45,11 +45,13 @@ namespace NSOnlineOfficeBinToPdf
     {
     public:
         std::wstring wsHtmlPlace;
+        bool m_bIsUsePageCommands;
 
     public:
         CMetafileToRenderterPDF(IRenderer* pRenderer) : IMetafileToRenderter(pRenderer)
         {
             wsHtmlPlace = L"";
+            m_bIsUsePageCommands = true;
         }
 
     public:
@@ -166,11 +168,18 @@ namespace NSOnlineOfficeBinToPdf
         {
             ((CPdfRenderer*)m_pRenderer)->SetRadialGradient(dX0, dY0, dR0, dX1, dY1, dR1);
         }
+
+        virtual bool IsUsePageCommands()
+        {
+            return m_bIsUsePageCommands;
+        }
     };
 
-    static bool ConvertBufferToPdf(CPdfRenderer* pPdf, BYTE* pBuffer, LONG lBufferLen, const std::wstring& wsHtmlPlace, const bool& bIsUsePicker = false)
+    static bool ConvertBufferToPdf(CPdfRenderer* pPdf, BYTE* pBuffer, LONG lBufferLen, const std::wstring& wsHtmlPlace, const bool& bIsUsePicker = false, const bool& bIsUsePageCommands = true)
     {
         CMetafileToRenderterPDF oCorrector(pPdf);
+        oCorrector.m_bIsUsePageCommands = bIsUsePageCommands;
+
         oCorrector.wsHtmlPlace = wsHtmlPlace;
         if (bIsUsePicker)
             oCorrector.InitPicker(pPdf->GetApplicationFonts());
@@ -178,7 +187,7 @@ namespace NSOnlineOfficeBinToPdf
 
         return true;
     }
-    bool ConvertBinToPdf(CPdfRenderer* pPdf, const std::wstring& wsSrcFile, const std::wstring& wsDstFile, bool bBinary, const bool& bIsUsePicker)
+    bool ConvertBinToPdf(CPdfRenderer* pPdf, const std::wstring& wsSrcFile, const std::wstring& wsDstFile, bool bBinary, const bool& bIsUsePicker, const bool& bIsUsePageCommands)
 	{
 		NSFile::CFileBinary oFile;
 		if (!oFile.OpenFile(wsSrcFile))
@@ -199,7 +208,7 @@ namespace NSOnlineOfficeBinToPdf
 		std::wstring wsHtmlPlace = NSDirectory::GetFolderPath(wsSrcFile);
 		if (bBinary)
 		{
-            ConvertBufferToPdf(pPdf, pFileContent, dwFileSize, wsHtmlPlace, bIsUsePicker);
+            ConvertBufferToPdf(pPdf, pFileContent, dwFileSize, wsHtmlPlace, bIsUsePicker, bIsUsePageCommands);
 		}
 		else
 		{
@@ -213,7 +222,7 @@ namespace NSOnlineOfficeBinToPdf
 
 			if (NSBase64::Base64Decode((const char*)pFileContent, dwFileSize, pBuffer, &nBufferLen))
 			{
-                ConvertBufferToPdf(pPdf, pBuffer, nBufferLen, wsHtmlPlace, bIsUsePicker);
+                ConvertBufferToPdf(pPdf, pBuffer, nBufferLen, wsHtmlPlace, bIsUsePicker, bIsUsePageCommands);
 			}
 			else
 			{
@@ -226,8 +235,11 @@ namespace NSOnlineOfficeBinToPdf
 		}
 		RELEASEARRAYOBJECTS(pFileContent);
 
-		if (0 != pPdf->SaveToFile(wsDstFile))
-			return false;
+        if (!wsDstFile.empty())
+        {
+            if (0 != pPdf->SaveToFile(wsDstFile))
+                return false;
+        }
 
 		return true;
 	}

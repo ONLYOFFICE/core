@@ -32,8 +32,8 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include <Logic/Biff_structures/FactoidData.h>
-//#include <Logic/Biff_structures/BiffString.h>
+#include "FactoidData.h"
+//#include "BiffString.h"
 
 namespace XLS
 {

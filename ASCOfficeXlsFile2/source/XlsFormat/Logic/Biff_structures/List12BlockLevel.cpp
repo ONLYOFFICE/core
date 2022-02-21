@@ -31,7 +31,6 @@
  */
 
 #include "List12BlockLevel.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

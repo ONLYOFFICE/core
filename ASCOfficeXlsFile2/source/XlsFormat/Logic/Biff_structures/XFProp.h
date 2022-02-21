@@ -34,7 +34,7 @@
 #include "BiffStructure.h"
 #include "FullColorExt.h"
 
-#include <simple_xml_writer.h>
+#include "../../../Common/simple_xml_writer.h"
 
 namespace XLS
 {

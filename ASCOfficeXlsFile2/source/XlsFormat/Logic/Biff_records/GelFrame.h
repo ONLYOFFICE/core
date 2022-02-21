@@ -32,8 +32,8 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/ODRAW/OfficeArtFOPT.h>
-#include <Logic/Biff_structures/ODRAW/OfficeArtTertiaryFOPT.h>
+#include "../Biff_structures/ODRAW/OfficeArtFOPT.h"
+#include "../Biff_structures/ODRAW/OfficeArtTertiaryFOPT.h"
 
 namespace XLS
 {

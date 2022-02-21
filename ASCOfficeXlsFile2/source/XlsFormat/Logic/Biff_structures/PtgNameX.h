@@ -32,7 +32,7 @@
 #pragma once
 
 #include "OperandPtg.h"
-#include "Logic/GlobalWorkbookInfo.h"
+#include "../GlobalWorkbookInfo.h"
 
 namespace XLS
 {

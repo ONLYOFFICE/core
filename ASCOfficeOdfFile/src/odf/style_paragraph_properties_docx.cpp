@@ -30,12 +30,12 @@
  *
  */
 
-#include <odf/odf_document.h>
+#include "../../include/odf/odf_document.h"
 #include "odfcontext.h"
 
 #include "style_paragraph_properties.h"
 
-#include <xml/simple_xml_writer.h>
+#include "../../include/xml/simple_xml_writer.h"
 
 #include "../docx/docx_conversion_context.h"
 

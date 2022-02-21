@@ -31,10 +31,10 @@
  */
 
 #include <iostream>
-#include <odf/odf_document.h>
-#include <xml/simple_xml_writer.h>
-#include <xml/attributes.h>
-#include <logging.h>
+
+#include "../../include/odf/odf_document.h"
+#include "../../include/logging.h"
+#include "../../include/xml/simple_xml_writer.h"
 
 #include "calcs_styles.h"
 

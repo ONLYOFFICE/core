@@ -244,6 +244,15 @@ namespace NSFonts
 
     IFontManager::IFontManager() : NSBase::CBaseRefCounter() {}
     IFontManager::~IFontManager() {}
+
+    void IFontManager::CreateOwnerCache(const int& nCacheSize)
+    {
+        NSFonts::IFontsCache* pCache = NSFonts::NSFontCache::Create();
+        pCache->SetStreams(GetApplication()->GetStreams());
+        pCache->SetCacheSize(nCacheSize);
+        SetOwnerCache(pCache);
+    }
+
     namespace NSFontManager
     {
         IFontManager* Create()

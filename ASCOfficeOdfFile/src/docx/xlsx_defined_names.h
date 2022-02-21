@@ -29,13 +29,12 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _CPDOCCORE_XLSX_DEFINED_NAMES_H_
-#define _CPDOCCORE_XLSX_DEFINED_NAMES_H_
+#pragma once
 
 #include <iosfwd>
 #include <string>
-#include <CPOptional.h>
-#include <CPScopedPtr.h>
+
+#include "../../include/CPScopedPtr.h"
 
 namespace cpdoccore {
 namespace oox {
@@ -59,6 +58,3 @@ namespace oox {
 
 }
 }
-
-
-#endif

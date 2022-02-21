@@ -31,7 +31,6 @@
  */
 
 #include "RevNameTabid.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

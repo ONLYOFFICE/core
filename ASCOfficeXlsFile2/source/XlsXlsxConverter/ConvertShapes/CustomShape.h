@@ -34,7 +34,7 @@
 #include "BaseShape.h"
 #include "CustomGeomShape.h"
 #include "../ShapeType.h"
-#include "../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/PPTShape/Enums.h"
+#include "../../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/PPTShape/Enums.h"
 
 namespace NSCustomShapesConvert
 {

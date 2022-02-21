@@ -31,7 +31,6 @@
  */
 
 #include "OfficeArtClientAnchorHF.h"
-#include <Binary/CFRecord.h>
 
 namespace ODRAW
 {

@@ -32,8 +32,7 @@
 
 #include "office_binary_data.h"
 
-#include <xml/xmlchar.h>
-#include <xml/attributes.h>
+#include "../../include/xml/xmlchar.h"
 
 namespace cpdoccore { 
 namespace odf_reader {

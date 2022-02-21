@@ -32,9 +32,8 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include <Binary/CFRecord.h>
-#include <Logic/Biff_structures/FormatRun.h>
-#include <Logic/Biff_structures/ExtRst.h>
+#include "FormatRun.h"
+#include "ExtRst.h"
 
 namespace XLS
 {

@@ -31,7 +31,6 @@
  */
 
 #include "ExtPtgRef3D.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

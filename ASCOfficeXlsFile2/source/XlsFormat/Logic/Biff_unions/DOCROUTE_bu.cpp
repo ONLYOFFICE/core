@@ -31,8 +31,8 @@
  */
 
 #include "DOCROUTE.h"
-#include <Logic/Biff_records/DocRoute.h>
-#include <Logic/Biff_records/RecipName.h>
+#include "../Biff_records/DocRoute.h"
+#include "../Biff_records/RecipName.h"
 
 namespace XLS
 {

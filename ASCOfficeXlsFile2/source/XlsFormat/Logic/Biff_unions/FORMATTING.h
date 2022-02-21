@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
+#include "../CompositeObject.h"
 
 namespace XLS
 {
@@ -49,8 +49,7 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	int serialize1(std::wostream & stream);
-	int serialize2(std::wostream & stream);
+	int serialize(std::wostream & stream);
 
 	void concatinate(FORMATTING* ext);
 	void update_xfs();
@@ -59,7 +58,7 @@ public:
 
 	BaseObjectPtr				m_Styles;
 	BaseObjectPtr				m_XFS;
-	std::vector<BaseObjectPtr>	m_arFormats;
+	//std::vector<BaseObjectPtr>	m_arFormats; in global
 	//std::vector<BaseObjectPtr>	m_arFonts; in global
 	BaseObjectPtr				m_Palette;
 	BaseObjectPtr				m_ClrtClient;

@@ -31,8 +31,8 @@
  */
 #pragma once
 
-#include <CPOptional.h>
-#include <CPScopedPtr.h>
+#include "../../include/CPOptional.h"
+#include "../../include/CPScopedPtr.h"
 #include <string>
 
 namespace cpdoccore {

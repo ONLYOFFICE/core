@@ -80,12 +80,16 @@ private:
 private:
     std::list<std::string>              m_arFiles;
     int m_lCacheSize;
+
+    // обезопасим лок файлов с ограниченным кэшем и режимом без квадратов
+    NSFonts::IFontFile* m_pSafeFont;
     
 public:
     CFontsCache() : NSFonts::IFontsCache()
     {
         m_pApplicationFontStreams = NULL;
         m_lCacheSize = -1;
+        m_pSafeFont = NULL;
     }
     virtual ~CFontsCache()
     {
@@ -206,6 +210,7 @@ public:
 
     virtual std::wstring GetFontType();
     virtual unsigned int GetNameIndex(const std::wstring& wsName);
+	virtual unsigned int GetGIDByUnicode(const unsigned int& unCode);
 
     virtual void SetSubpixelRendering(const bool& hmul, const bool& vmul);
     

@@ -31,7 +31,6 @@
  */
 
 #include "MDir.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

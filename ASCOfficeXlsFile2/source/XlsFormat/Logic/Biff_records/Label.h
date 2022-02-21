@@ -32,14 +32,12 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/BiffString.h>
-#include <Logic/Biff_structures/Cell.h>
+#include "../Biff_structures/BiffString.h"
+#include "../Biff_structures/Cell.h"
 
 namespace XLS
 {
 
-
-// Logical representation of Label record in BIFF8
 class Label: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Label)
@@ -49,7 +47,6 @@ public:
 	~Label();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
@@ -57,6 +54,7 @@ public:
 
 	static const ElementType	type = typeLabel;
 
+	unsigned short		xti = 0xffff;
 	Cell				cell;
 	XLUnicodeString 	st;	
 //-----------------------------
@@ -64,7 +62,16 @@ public:
 	GlobalWorkbookInfoPtr	global_info_;
 	int						isst_;
 };
+class Label_BIFF2 : public Label
+{
+	BIFF_RECORD_DEFINE_TYPE_INFO(Label_BIFF2)
+	BASE_OBJECT_DEFINE_CLASS_NAME(Label_BIFF2)
+public:
+	Label_BIFF2();
+	~Label_BIFF2();
 
+	BaseObjectPtr clone();
+};
 
 class CommentText: public BiffRecord
 {
@@ -75,7 +82,6 @@ public:
 	~CommentText();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 

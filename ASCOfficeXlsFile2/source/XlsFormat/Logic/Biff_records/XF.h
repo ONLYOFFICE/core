@@ -54,38 +54,38 @@ namespace XLS
 
 		BaseObjectPtr clone();
 		
-		void readFields(CFRecord& record);
+		virtual void readFields(CFRecord& record);
 
 		int serialize(std::wostream & stream);
 
-		static const ElementType	type = typeXF;
+		static const ElementType type = typeXF;
 
 		_UINT16		font_index;
 		_UINT16		ifmt;
 		
 		_UINT16		ixfParent;
 
-		bool fLocked;
-		bool fHidden;
-		bool fStyle;
-		bool f123Prefix;
+		bool fLocked = false;
+		bool fHidden = false;
+		bool fStyle = false;
+		bool f123Prefix = false;
 
 	//-----------------------------
-		unsigned char	alc;
-		bool			fWrap;
-		unsigned char	alcV;
-		bool			fJustLast;
-		unsigned short	trot;
-		unsigned char	cIndent;
-		bool			fShrinkToFit;
-		unsigned char	iReadOrder;
+		unsigned char	alc = 0xff;
+		bool			fWrap = false;
+		unsigned char	alcV = 0xff;
+		bool			fJustLast = false;
+		unsigned short	trot = 0;
+		unsigned char	cIndent = 0;
+		bool			fShrinkToFit = false;
+		unsigned char	iReadOrder = 0;
 		
-		bool			fAtrNum;
-		bool			fAtrFnt;
-		bool			fAtrAlc;
-		bool			fAtrBdr;
-		bool			fAtrPat;
-		bool			fAtrProt;
+		bool			fAtrNum = true;
+		bool			fAtrFnt = true;
+		bool			fAtrAlc = true;
+		bool			fAtrBdr = true;
+		bool			fAtrPat = true;
+		bool			fAtrProt = false;
 
 		BorderInfo		border;
 		FillInfo		fill;
@@ -93,15 +93,15 @@ namespace XLS
 
 		FillInfoExt		font_color;
 
-		bool			fHasXFExt;
-		bool			fsxButton;
+		bool			fHasXFExt = false;
+		bool			fsxButton = false;
 
-        //xlsb
-                _UINT16                 iFill;
-                _UINT16                 ixBorder;
-                bool			fMergeCell;
-                unsigned char           xfGrbitAtr;
-	//------------------------------------------------------------------
+//xlsb
+		_UINT16			iFill = 0;
+		_UINT16			ixBorder = 0;
+		bool			fMergeCell = false;
+		unsigned char	xfGrbitAtr = 0;
+//------------------------------------------------------------------
 		BiffStructurePtrVector ext_props;
 		BiffStructurePtrVector xf_props;
 
@@ -113,12 +113,47 @@ namespace XLS
 		void Update(XFProp* xfProps); // xlsx style
 
 		void RegisterFillBorderFont();
-	//------------------------------------------------------------------------
+//------------------------------------------------------------------------
 		size_t&		cell_xf_current_id_;
 		size_t&		style_xf_current_id_;
 		int			ind_xf;	//for ext
 
-		GlobalWorkbookInfoPtr	global_info;
+		GlobalWorkbookInfoPtr global_info;
+	};
+//-------------------------------------------------------------------------------------
+	class XF_BIFF4 : public XF
+	{
+		BIFF_RECORD_DEFINE_TYPE_INFO(XF_BIFF4)
+		BASE_OBJECT_DEFINE_CLASS_NAME(XF_BIFF4)
+	public:
+		XF_BIFF4(size_t& cell_xf_current_id, size_t& style_xf_current_id);
+		~XF_BIFF4();
+
+		BaseObjectPtr clone();
+	};
+//-------------------------------------------------------------------------------------
+	class XF_BIFF3 : public XF
+	{
+		BIFF_RECORD_DEFINE_TYPE_INFO(XF_BIFF3)
+		BASE_OBJECT_DEFINE_CLASS_NAME(XF_BIFF3)
+	public:
+		XF_BIFF3(size_t& cell_xf_current_id, size_t& style_xf_current_id);
+		~XF_BIFF3();
+
+		BaseObjectPtr clone();
+		virtual void readFields(CFRecord& record);
+	};
+//-------------------------------------------------------------------------------------
+	class XF_BIFF2 : public XF
+	{
+		BIFF_RECORD_DEFINE_TYPE_INFO(XF_BIFF2)
+		BASE_OBJECT_DEFINE_CLASS_NAME(XF_BIFF2)
+	public:
+		XF_BIFF2(size_t& cell_xf_current_id, size_t& style_xf_current_id);
+		~XF_BIFF2();
+
+		BaseObjectPtr clone();
+		virtual void readFields(CFRecord& record);
 	};
 
 } // namespace XLS

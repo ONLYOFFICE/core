@@ -79,7 +79,7 @@ namespace NSDocxRenderer
 			m_dHeight		= 0;
 
 			m_pCurrentLine	= NULL;
-			m_eTextAssociationType = TextAssociationTypeNoFrames;
+            m_eTextAssociationType = TextAssociationTypePlainLine;
 
 			m_bIsDeleteTextClipPage = true;
 
@@ -146,9 +146,9 @@ namespace NSDocxRenderer
 
         void SetCurrentLineByBaseline(const double& dBaseLinePos)
 		{
-			if ((NULL == m_pCurrentLine) || (TextAssociationTypeDefault == m_eTextAssociationType))
+            if ((NULL == m_pCurrentLine) || (TextAssociationTypeBlockChar == m_eTextAssociationType))
 			{
-				// пуста¤ (в плане текста) страница
+                // пустая (в плане текста) страница
 				m_pCurrentLine = new CTextLine();
 
 				m_pCurrentLine->m_dBaselinePos = dBaseLinePos;
@@ -1019,8 +1019,7 @@ namespace NSDocxRenderer
 
 			switch (m_eTextAssociationType)
 			{
-			case TextAssociationTypeDefault:
-			case TextAssociationTypeLine:
+                case TextAssociationTypeBlockChar:
 				{
                     size_t nCount = m_arTextLine.size();
 					for (size_t i = 0; i < nCount; ++i)
@@ -1043,59 +1042,59 @@ namespace NSDocxRenderer
                     m_arTextLine.clear();
 					break;
                 }
-                case TextAssociationTypeBlock:
+                case TextAssociationTypeBlockLine:
+                {
+                    size_t nCount = m_arTextLine.size();
+
+                    if (0 == nCount)
+                        break;
+
+                    CTextLine* pFirstLine = m_arTextLine[0];
+
+                    CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
+                    pParagraph->m_pManagerLight = &m_oManagerLight;
+                    pParagraph->m_bIsTextFrameProperties = true;
+
+                    pParagraph->m_dLeft	= pFirstLine->m_dX;
+                    pParagraph->m_dTop	= pFirstLine->m_dBaselinePos - pFirstLine->m_dHeight + pFirstLine->m_dBaselineOffset;
+                    double dCurrentTop = pParagraph->m_dTop;
+
+                    pParagraph->m_arLines.push_back(pFirstLine);
+
+                    m_arParagraphs.push_back(pParagraph);
+
+                    for (size_t i = 1; i < nCount; ++i)
                     {
-                        size_t nCount = m_arTextLine.size();
-
-                        if (0 == nCount)
-                            break;
-
-                        CTextLine* pFirstLine = m_arTextLine[0];
+                        CTextLine* pTextLine = m_arTextLine[i];
 
                         CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
                         pParagraph->m_pManagerLight = &m_oManagerLight;
                         pParagraph->m_bIsTextFrameProperties = true;
 
-                        pParagraph->m_dLeft	= pFirstLine->m_dX;
-                        pParagraph->m_dTop	= pFirstLine->m_dBaselinePos - pFirstLine->m_dHeight + pFirstLine->m_dBaselineOffset;
-                        double dCurrentTop = pParagraph->m_dTop;
-
-                        pParagraph->m_arLines.push_back(pFirstLine);
-
-                        m_arParagraphs.push_back(pParagraph);
-
-                        for (size_t i = 1; i < nCount; ++i)
+                        if (((fabs(pTextLine->m_dBaselinePos - pTextLine->m_dHeight - pFirstLine->m_dBaselinePos) > STANDART_STRING_HEIGHT_MM) && (pTextLine->m_dX == pFirstLine->m_dX)) ||
+                            ((pTextLine->m_dX != pFirstLine->m_dX) && (pTextLine->m_dBaselinePos != pFirstLine->m_dBaselinePos)))
                         {
-                            CTextLine* pTextLine = m_arTextLine[i];
-
-                            CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
-                            pParagraph->m_pManagerLight = &m_oManagerLight;
-                            pParagraph->m_bIsTextFrameProperties = true;
-
-                            if (((fabs(pTextLine->m_dBaselinePos - pTextLine->m_dHeight - pFirstLine->m_dBaselinePos) > STANDART_STRING_HEIGHT_MM) && (pTextLine->m_dX == pFirstLine->m_dX)) ||
-                                ((pTextLine->m_dX != pFirstLine->m_dX) && (pTextLine->m_dBaselinePos != pFirstLine->m_dBaselinePos)))
-                            {
-                                pParagraph->m_dLeft	= pTextLine->m_dX;
-                                pParagraph->m_dTop	= pTextLine->m_dBaselinePos - pTextLine->m_dHeight + pTextLine->m_dBaselineOffset;
-                                dCurrentTop = pParagraph->m_dTop;
-                            }
-                            else
-                            {
-                                pParagraph->m_dLeft	= pFirstLine->m_dX;
-                                pParagraph->m_dTop	= dCurrentTop;
-                            }
-
-                            pFirstLine = pTextLine;
-
-                            pParagraph->m_arLines.push_back(pTextLine);
-                            m_arParagraphs.push_back(pParagraph);
+                            pParagraph->m_dLeft	= pTextLine->m_dX;
+                            pParagraph->m_dTop	= pTextLine->m_dBaselinePos - pTextLine->m_dHeight + pTextLine->m_dBaselineOffset;
+                            dCurrentTop = pParagraph->m_dTop;
+                        }
+                        else
+                        {
+                            pParagraph->m_dLeft	= pFirstLine->m_dX;
+                            pParagraph->m_dTop	= dCurrentTop;
                         }
 
-                        // удалим все линии
-                        m_arTextLine.clear();
-                        break;
+                        pFirstLine = pTextLine;
+
+                        pParagraph->m_arLines.push_back(pTextLine);
+                        m_arParagraphs.push_back(pParagraph);
                     }
-			case TextAssociationTypeNoFrames:
+
+                    // удалим все линии
+                    m_arTextLine.clear();
+                    break;
+                }
+                case TextAssociationTypePlainLine:
 				{
 					SortElements(m_arTextLine);
 					Merge(STANDART_STRING_HEIGHT_MM / 3);
@@ -1136,7 +1135,7 @@ namespace NSDocxRenderer
 					m_arTextLine.clear();
 					break;
 				}
-			case TextAssociationTypeParagraphNoFrames:
+            case TextAssociationTypePlainParagraph:
 				{
 					SetTextOptions();
 

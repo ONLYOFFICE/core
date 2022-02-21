@@ -212,6 +212,13 @@ namespace NSHtmlRenderer
 
         m_pInternal->m_oPage.ClearNoAttack();
         m_pInternal->m_oPage.WriteLONG(0);
+
+        // статистика
+        m_pInternal->m_oPage.WriteLONG(0);
+        m_pInternal->m_oPage.WriteLONG(0);
+        m_pInternal->m_oPage.WriteLONG(0);
+        m_pInternal->m_oPage.WriteLONG(0);
+
     }
 
     BYTE* CHTMLRendererText::GetBuffer()
@@ -219,7 +226,14 @@ namespace NSHtmlRenderer
         m_pInternal->m_oSmartText.ClosePage();
         LONG lPos = m_pInternal->m_oPage.GetPosition();
         m_pInternal->m_oPage.Seek(0);
+        // len
         m_pInternal->m_oPage.WriteLONG(lPos);
+        // stat
+        m_pInternal->m_oPage.WriteLONG(m_pInternal->m_oSmartText.m_lCountParagraphs);
+        m_pInternal->m_oPage.WriteLONG(m_pInternal->m_oSmartText.m_lCountWords);
+        m_pInternal->m_oPage.WriteLONG(m_pInternal->m_oSmartText.m_lCountSymbols);
+        m_pInternal->m_oPage.WriteLONG(m_pInternal->m_oSmartText.m_lCountSpaces);
+        // seek to end
         m_pInternal->m_oPage.Seek(lPos);
         return m_pInternal->m_oPage.GetData();
     }

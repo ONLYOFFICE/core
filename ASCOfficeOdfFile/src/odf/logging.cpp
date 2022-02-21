@@ -30,9 +30,10 @@
  *
  */
 
-#include <logging.h>
 #include <iostream>
 #include <sstream>
+
+#include "../../include/logging.h"
 
 namespace cpdoccore
 {

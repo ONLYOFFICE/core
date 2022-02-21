@@ -33,7 +33,7 @@
 #include "CF.h"
 #include "CFEx.h"
 
-#include <utils.h>
+#include "../../../Common/utils.h"
 
 namespace XLS
 {

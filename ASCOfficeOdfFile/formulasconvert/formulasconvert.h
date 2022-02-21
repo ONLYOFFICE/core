@@ -52,11 +52,11 @@ public:
     std::wstring convert(std::wstring const & expr);
     
     // $Лист1.$A$1 -> Лист1!$A$1
-	std::wstring convert_named_ref(std::wstring const & expr, bool withTableName = true, std::wstring separator = L" ");
+	std::wstring convert_named_ref(std::wstring const & expr, bool withTableName = true, std::wstring separator = L" ", bool bAbsoluteAlways = false);
 	std::wstring get_table_name();
 
 	//a-la convert without check formula
-    std::wstring convert_named_expr(std::wstring const & expr, bool withTableName = true);
+    std::wstring convert_named_expr(std::wstring const & expr, bool withTableName = true, bool bAbsoluteAlways = false);
 	
 	//Sheet2.C3:Sheet2.C19 -> Sheet2!C3:C19
     std::wstring convert_chart_distance(std::wstring const & expr);

@@ -32,10 +32,11 @@
 #pragma once
 
 #include <string>
-#include <CPOptional.h>
 #include <iosfwd>
-#include <CPScopedPtr.h>
+
 #include "xlsx_fill.h"
+
+#include "../../include/CPScopedPtr.h"
 
 namespace cpdoccore { 
 namespace odf_reader {

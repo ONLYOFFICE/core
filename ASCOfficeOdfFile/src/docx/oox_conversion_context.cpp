@@ -33,9 +33,9 @@
 #include "oox_conversion_context.h"
 
 #include <iostream>
-#include <xml/utils.h>
-#include <odf/odf_document.h>
-#include <xml/simple_xml_writer.h>
+#include "../../include/xml/utils.h"
+#include "../../include/odf/odf_document.h"
+#include "../../include/xml/simple_xml_writer.h"
 
 #include "../odf/odfcontext.h"
 #include "../odf/style_text_properties.h"
@@ -44,7 +44,7 @@
 namespace cpdoccore { 
 namespace oox
 {
-void forms_context::start_element (int type)
+void forms_context::start_element (_form_type type)
 {
 	current_state_.clear();
 

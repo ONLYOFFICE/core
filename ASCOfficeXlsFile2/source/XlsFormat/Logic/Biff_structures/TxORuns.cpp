@@ -31,7 +31,7 @@
  */
 
 #include "TxORuns.h"
-#include <Binary/CFRecord.h>
+#include "../../Binary/CFRecord.h"
 
 namespace XLS
 {

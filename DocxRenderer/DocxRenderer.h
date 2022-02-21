@@ -50,11 +50,10 @@ namespace NSDocxRenderer
 {
     enum TextAssociationType
     {
-        TextAssociationTypeDefault				= 0,
-        TextAssociationTypeLine					= 1,
-        TextAssociationTypeNoFrames				= 2,
-        TextAssociationTypeBlock				= 3,
-        TextAssociationTypeParagraphNoFrames	= 4
+        TextAssociationTypeBlockChar        = 0, // Каждый символ во фрейме
+        TextAssociationTypeBlockLine        = 1, // Каждая линия - параграф во фрейме. Линии могут объединяться в рамках одного блока.
+        TextAssociationTypePlainLine        = 2, // Каждая линия - параграф обычный
+        TextAssociationTypePlainParagraph   = 3  // Линии объединяются в параграфы
     };
 }
 

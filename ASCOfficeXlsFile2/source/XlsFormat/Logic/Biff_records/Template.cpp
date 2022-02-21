@@ -31,7 +31,6 @@
  */
 
 #include "Template.h"
-#include <Binary/CFStream.h>
 
 namespace XLS
 {

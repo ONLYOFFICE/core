@@ -37,13 +37,11 @@
 
 #include <boost/algorithm/string.hpp>
 
-#include <xml/xmlchar.h>
-#include <xml/attributes.h>
-#include <xml/utils.h>
-#include <common/readstring.h>
-#include <odf/odf_document.h>
-#include <CPOptional.h>
-#include <CPWeakPtr.h>
+#include "../../include/xml/xmlchar.h"
+
+#include "../../include/xml/utils.h"
+#include "../../include/common/readstring.h"
+#include "../../include/odf/odf_document.h"
 
 #include "styles.h"
 #include "note.h"

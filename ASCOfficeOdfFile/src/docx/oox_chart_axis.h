@@ -32,8 +32,8 @@
 #pragma once 
 
 #include <iosfwd>
-#include <CPOptional.h>
-#include <CPSharedPtr.h>
+#include "../../include/CPOptional.h"
+#include "../../include/CPSharedPtr.h"
 
 #include "oox_chart_shape.h"
 

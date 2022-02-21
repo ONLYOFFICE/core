@@ -31,11 +31,10 @@
  */
 
 #include "note.h"
-
-#include <xml/xmlchar.h>
-#include <xml/attributes.h>
-
 #include "paragraph_elements.h"
+
+#include "../../include/xml/xmlchar.h"
+
 
 namespace cpdoccore { 
 namespace odf_reader {

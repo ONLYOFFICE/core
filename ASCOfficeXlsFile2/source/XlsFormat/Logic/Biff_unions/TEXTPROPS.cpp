@@ -31,11 +31,9 @@
  */
 
 #include "TEXTPROPS.h"
-#include <Logic/Biff_records/RichTextStream.h>
-#include <Logic/Biff_records/TextPropsStream.h>
-#include <Logic/Biff_records/ContinueFrt12.h>
-
-//#include <Logic/Biff_unions/PAGESETUP.h>
+#include "../Biff_records/RichTextStream.h"
+#include "../Biff_records/TextPropsStream.h"
+#include "../Biff_records/ContinueFrt12.h"
 
 namespace XLS
 {

@@ -30,7 +30,7 @@
  *
  */
 
-#include <xml/simple_xml_writer.h>
+#include "../../include/xml/simple_xml_writer.h"
 #include "oox_types_chart.h"
 
 namespace cpdoccore {
@@ -59,6 +59,7 @@ void oox_chart::set_name(const std::wstring& val)
 void oox_chart::set_content_series(odf_reader::chart::series & content)
 {
 	series_.back()->content_= content;
+	series_.back()->set_properties(content.properties_);
 }
 
 void oox_chart::set_values_series(int ind, std::vector<std::wstring> & val)
@@ -146,6 +147,7 @@ void oox_bar_chart::set_properties(std::vector<odf_reader::_property> g)
 	
 	odf_reader::GetProperty(g, L"gap-width", iGapWidth);
 	odf_reader::GetProperty(g, L"overlap", iOverlap);
+	odf_reader::GetProperty(g, L"solid-type", iSolidType);
 }
 
 void oox_bar_chart::set_additional_properties(std::vector<odf_reader::_property> g)
@@ -199,7 +201,14 @@ void oox_bar_chart::oox_serialize(std::wostream & _Wostream)
 			{
 				CP_XML_NODE(L"c:shape")
 				{
-					CP_XML_ATTR(L"val", L"box");
+					switch (iSolidType.get_value_or(0))
+					{
+						case 1: CP_XML_ATTR(L"val", L"cylinder"); break;
+						case 2: CP_XML_ATTR(L"val", L"cone"); break;
+						case 3: CP_XML_ATTR(L"val", L"pyramid"); break;
+						case 0:
+						default: CP_XML_ATTR(L"val", L"box"); break;
+					}
 				}
 			}
 		}

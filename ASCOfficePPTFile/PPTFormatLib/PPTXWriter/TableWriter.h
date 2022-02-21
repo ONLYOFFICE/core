@@ -77,11 +77,13 @@ public:
 private:
     void FillTxBody(PPTX::Logic::TxBody &oTxBody);
     void FillTcPr(PPTX::Logic::TableCellProperties& oTcPr);
-    void SetTcPrInvisibleBorders(PPTX::Logic::TableCellProperties& oTcPr);
-    bool isInvisibleBorder()const;
+    void SetTcPrInvisibleBorders(PPTX::Logic::TableCellProperties& oTcPr)const;
+    void SetTcPrInvisibleBorder(PPTX::Logic::TableCellProperties& oTcPr, eBorderPossition eBP)const;
+    static bool isInvisibleBorder(const CShapeElement *pBorder);
+    bool isInvisibleBorders() const;
     void FillLn(PPTX::Logic::Ln& Ln, eBorderPossition eBP, CShapeElement* pBorder);
-    void SetLnName(PPTX::Logic::Ln& Ln, eBorderPossition eBP);
-    void ApplyLn(PPTX::Logic::TableCellProperties& oTcPr, PPTX::Logic::Ln *pLn, eBorderPossition eBP);
+    void SetLnName(PPTX::Logic::Ln& Ln, eBorderPossition eBP) const;
+    void ApplyLn(PPTX::Logic::TableCellProperties& oTcPr, PPTX::Logic::Ln *pLn, eBorderPossition eBP) const;
     void FillMergeDirection(PPTX::Logic::TableCell& oTc);
     void setParentDirection();
 
@@ -89,6 +91,7 @@ private:
     CShapeElement* m_pShape;
 
     std::map<eBorderPossition, CShapeElement*> m_mapBorders;
+    std::list<CElementPtr> m_lstVirtBorders;
 
     // Proto table's coord
     int m_row, m_col;

@@ -96,11 +96,11 @@ int main(int argc, char *argv[])
     CDocxRenderer oDocxRenderer(pFonts);
 
     // проверить все режимы
-    NSDocxRenderer::TextAssociationType taType = NSDocxRenderer::TextAssociationTypeNoFrames;
-    //taType = NSDocxRenderer::TextAssociationTypeLine;
-    //taType = NSDocxRenderer::TextAssociationTypeBlock;
-    //taType = NSDocxRenderer::TextAssociationTypeNoFrames;
-    //taType = NSDocxRenderer::TextAssociationTypeParagraphNoFrames;
+    NSDocxRenderer::TextAssociationType taType;
+    //taType = NSDocxRenderer::TextAssociationTypeBlockChar;
+    //taType = NSDocxRenderer::TextAssociationTypeBlockLine;
+    //taType = NSDocxRenderer::TextAssociationTypePlainLine;
+    taType = NSDocxRenderer::TextAssociationTypePlainParagraph;
     oDocxRenderer.SetTextAssociationType(taType);
 
     oDocxRenderer.SetTempFolder(sTempDirOut);

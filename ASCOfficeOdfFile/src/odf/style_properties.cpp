@@ -31,11 +31,10 @@
  */
 #include "style_properties.h"
 
-#include <xml/xmlchar.h>
-#include <xml/attributes.h>
-#include <xml/simple_xml_writer.h>
+#include "../../include/xml/xmlchar.h"
+#include "../../include/xml/simple_xml_writer.h"
 
-#include <odf/odf_document.h>
+#include "../../include/odf/odf_document.h"
 
 #include <iostream>
 

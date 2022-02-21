@@ -32,7 +32,7 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include <Logic/Biff_structures/HyperlinkMoniker.h>
+#include "HyperlinkMoniker.h"
 
 namespace OSHARED
 {

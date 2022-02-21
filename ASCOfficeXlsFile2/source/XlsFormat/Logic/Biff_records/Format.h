@@ -32,7 +32,7 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/BiffString.h>
+#include "../Biff_structures/BiffString.h"
 
 namespace XLS
 {
@@ -57,5 +57,15 @@ public:
 	std::wstring	stFormat;
 };
 
+class Format_BIFF23 : public Format
+{
+	BIFF_RECORD_DEFINE_TYPE_INFO(Format_BIFF23)
+	BASE_OBJECT_DEFINE_CLASS_NAME(Format_BIFF23)
+public:
+	Format_BIFF23();
+	~Format_BIFF23();
+
+	BaseObjectPtr clone();
+};
 } // namespace XLS
 

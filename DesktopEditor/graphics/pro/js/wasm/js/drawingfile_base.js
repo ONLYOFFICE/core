@@ -222,15 +222,19 @@
         if (null == retValue)
             return null;
 
-        var lenArray = new Int32Array(Module["HEAP8"].buffer, retValue, 4);
+        var lenArray = new Int32Array(Module["HEAP8"].buffer, retValue, 5);
         var len = lenArray[0];
-        len -= 4;
+        len -= 20;
+
+        if (self.drawingFile.onUpdateStatistics)
+            self.drawingFile.onUpdateStatistics(lenArray[1], lenArray[2], lenArray[3], lenArray[4]);
+
         if (len <= 0)
         {
             return [];
         }
 
-        var textCommandsSrc = new Uint8Array(Module["HEAP8"].buffer, retValue + 4, len);
+        var textCommandsSrc = new Uint8Array(Module["HEAP8"].buffer, retValue + 20, len);
         var textCommands = new Uint8Array(len);
         textCommands.set(textCommandsSrc);
 

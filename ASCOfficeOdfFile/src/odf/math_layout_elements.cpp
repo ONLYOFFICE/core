@@ -35,9 +35,7 @@
 #include "style_text_properties.h"
 #include "math_limit_elements.h"
 
-#include <xml/xmlchar.h>
-#include <xml/attributes.h>
-
+#include "../../include/xml/xmlchar.h"
 
 namespace cpdoccore { 
 

@@ -31,7 +31,6 @@
  */
 
 #include "FileOffset.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

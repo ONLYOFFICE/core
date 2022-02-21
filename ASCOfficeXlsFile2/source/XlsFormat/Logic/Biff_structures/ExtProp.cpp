@@ -31,8 +31,6 @@
  */
 
 #include "ExtProp.h"
-#include <Binary/CFRecord.h>
-//#include <Exception/WrongBiffRecord.h>
 
 namespace XLS
 {

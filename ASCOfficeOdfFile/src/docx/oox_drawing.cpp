@@ -33,8 +33,7 @@
 #include <boost/algorithm/string.hpp>
 
 #include "oox_drawing.h"
-#include <xml/simple_xml_writer.h>
-
+#include "../../include/xml/simple_xml_writer.h"
 #include "../odf/datatypes/custom_shape_types_convert.h"
 
 using namespace cpdoccore;

@@ -31,7 +31,7 @@
  */
 
 #include "BiffString.h"
-#include <utils.h>
+#include "../../../Common/utils.h"
 
 namespace XLS
 {

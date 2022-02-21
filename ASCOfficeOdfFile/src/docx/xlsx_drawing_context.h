@@ -32,8 +32,6 @@
 #pragma once
 
 #include <string>
-#include <CPScopedPtr.h>
-#include <CPSharedPtr.h>
 
 #include "xlsx_drawings.h"
 
@@ -123,8 +121,11 @@ public:
 	void set_rotate		(double angle, bool translate = false);
 
 	void set_rel_anchor	(_INT32 owner_cx, _INT32 owner_cy);
-	void set_anchor		(std::wstring anchor, double x_pt, double y_pt, bool group = false);
-    void set_clipping	(const std::wstring & str );
+	
+	void set_anchor_start(std::wstring anchor, double x_pt, double y_pt, bool group = false);
+	void set_anchor_end	(std::wstring anchor, double x_pt, double y_pt, bool group = false);
+	
+	void set_clipping	(const std::wstring & str );
 	void set_fill		(_oox_fill & fill);
 
 	void set_is_line_shape(bool val);
@@ -169,7 +170,7 @@ private:
 
 	void process_common_properties	(drawing_object_description & obj, _xlsx_drawing & drawing, xlsx_table_metrics & table_metrics);
 
-	void process_position_properties(drawing_object_description & obj, xlsx_table_metrics & table_metrics, xlsx_table_position & from,xlsx_table_position & to);
+	void process_position_properties(drawing_object_description & obj, xlsx_table_metrics & table_metrics, xlsx_table_position & from,xlsx_table_position & to, bool byEnd = true);
 
 	int				hlinks_size_;
 	std::wstring	odf_packet_path_ ;

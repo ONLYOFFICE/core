@@ -244,7 +244,8 @@ bool COfficeFileFormatChecker::isXlsFlatFormatFile(unsigned char* pBuffer, int d
 	// BOF started
 	if ((pBuffer[1] == 0x08 && pBuffer[0] == 0x09) ||
 		(pBuffer[1] == 0x04 && pBuffer[0] == 0x09) ||
-		(pBuffer[1] == 0x02 && pBuffer[0] == 0x09))
+		(pBuffer[1] == 0x02 && pBuffer[0] == 0x09) ||
+		(pBuffer[2] == 0x04 && pBuffer[0] == 0x09 && pBuffer[1] == 0x00 && pBuffer[3] == 0x00))
 		return true;
 
 	return false;

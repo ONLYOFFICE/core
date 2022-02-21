@@ -34,7 +34,6 @@
 #include <string>
 #include <map>
 
-#include <CPSharedPtr.h>
 #include "office_elements.h"
 #include <boost/function.hpp>
 

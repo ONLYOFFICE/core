@@ -29,11 +29,12 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include <iostream>
 
 #include "docx_conversion_context.h"
-#include "logging.h"
-#include <iostream>
-#include <odf/odf_document.h>
+
+#include "../../include/logging.h"
+#include "../../include/odf/odf_document.h"
 #include "../odf/odfcontext.h"
 
 namespace cpdoccore { 

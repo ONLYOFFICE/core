@@ -108,4 +108,65 @@ namespace NSSystemPath
 			sRes = strLeft + strRight;
 		return sRes;
 	}
+	std::string NormalizePath(const std::string& strFileName)
+	{
+		const char*   pData   = strFileName.c_str();
+		int           nLen    = (int) strFileName.length();
+
+		char* pDataNorm       = new char[nLen + 1];
+		int*  pSlashPoints    = new int[nLen + 1];
+
+		int nStart          = 0;
+		int nCurrent        = 0;
+		int nCurrentSlash   = -1;
+		int nCurrentW       = 0;
+		bool bIsUp          = false;
+
+	#if !defined(_WIN32) && !defined (_WIN64)
+		if (pData[nCurrent] == '/' || pData[nCurrent] == '\\')
+			pDataNorm[nCurrentW++] = pData[nCurrent];
+	#endif
+		while (nCurrent < nLen)
+		{
+			if (pData[nCurrent] == '/' || pData[nCurrent] == '\\')
+			{
+				if (nStart < nCurrent)
+				{
+					bIsUp = false;
+					if ((nCurrent - nStart) == 2)
+					{
+						if (pData[nStart] == (char)'.' && pData[nStart + 1] == (char)'.')
+						{
+							if (nCurrentSlash > 0)
+							{
+								--nCurrentSlash;
+								nCurrentW = pSlashPoints[nCurrentSlash];
+								bIsUp = true;
+							}
+						}
+					}
+					if (!bIsUp)
+					{
+						pDataNorm[nCurrentW++] = (char)'/';
+						++nCurrentSlash;
+						pSlashPoints[nCurrentSlash] = nCurrentW;
+					}
+				}
+				nStart = nCurrent + 1;
+				++nCurrent;
+				continue;
+			}
+			pDataNorm[nCurrentW++] = pData[nCurrent];
+			++nCurrent;
+		}
+
+		pDataNorm[nCurrentW] = (char)'\0';
+
+		std::string result = std::string(pDataNorm, nCurrentW);
+
+		delete[] pDataNorm;
+		delete[] pSlashPoints;
+
+		return result;
+	}
 }

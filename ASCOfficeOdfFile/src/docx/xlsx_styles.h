@@ -33,7 +33,7 @@
 
 #include <iosfwd>
 #include <string>
-#include <CPScopedPtr.h>
+#include "../../include/CPScopedPtr.h"
 
 namespace cpdoccore {
 namespace odf_reader {

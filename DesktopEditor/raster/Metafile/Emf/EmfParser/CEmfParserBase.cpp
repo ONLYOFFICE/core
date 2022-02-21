@@ -1635,21 +1635,6 @@ namespace MetaFile
         {
                 HANDLE_EMR_POLYBEZIER_BASE<TEmfPointS>(oBounds, arPoints);
         }
-
-        template<typename T>
-        void CEmfParserBase::HANDLE_EMR_POLYBEZIER_BASE(TEmfRectL &oBounds, std::vector<T> &arPoints)
-        {
-                if (NULL != m_pInterpretator)
-                        m_pInterpretator->HANDLE_EMR_POLYBEZIER(oBounds, arPoints);
-
-                MoveTo(arPoints[0]);
-
-                for (unsigned int unIndex = 1; unIndex < arPoints.size(); unIndex += 3)
-                        CurveTo(arPoints[unIndex], arPoints[unIndex + 1], arPoints[unIndex + 2]);
-
-                DrawPath(true, false);
-        }
-
         void CEmfParserBase::HANDLE_EMR_POLYBEZIERTO(TEmfRectL &oBounds, std::vector<TEmfPointL> &arPoints)
         {
                 HANDLE_EMR_POLYBEZIERTO_BASE<TEmfPointL>(oBounds, arPoints);
@@ -1659,79 +1644,14 @@ namespace MetaFile
         {
                 HANDLE_EMR_POLYBEZIERTO_BASE<TEmfPointS>(oBounds, arPoints);
         }
-
-        template<typename T>
-        void CEmfParserBase::HANDLE_EMR_POLYBEZIERTO_BASE(TEmfRectL &oBounds, std::vector<T> &arPoints)
-        {
-                if (NULL != m_pInterpretator)
-                        m_pInterpretator->HANDLE_EMR_POLYBEZIERTO(oBounds, arPoints);
-
-                for (unsigned int unIndex = 0; unIndex < arPoints.size(); unIndex += 3)
-                        CurveTo(arPoints[unIndex], arPoints[unIndex + 1], arPoints[unIndex + 2]);
-        }
-
         void CEmfParserBase::HANDLE_EMR_POLYDRAW(TEmfRectL &oBounds, TEmfPointL *arPoints, unsigned int &unCount, unsigned char *pAbTypes)
         {
                  HANDLE_EMR_POLYDRAW_BASE<TEmfPointL>(oBounds, arPoints, unCount, pAbTypes);
         }
-
         void CEmfParserBase::HANDLE_EMR_POLYDRAW(TEmfRectL &oBounds, TEmfPointS *arPoints, unsigned int &unCount, unsigned char *pAbTypes)
         {
                 HANDLE_EMR_POLYDRAW_BASE<TEmfPointS>(oBounds, arPoints, unCount, pAbTypes);
         }
-
-        template<typename T>
-        void CEmfParserBase::HANDLE_EMR_POLYDRAW_BASE(TEmfRectL &oBounds, T *arPoints, unsigned int &unCount, unsigned char *pAbTypes)
-        {
-                T* pPoint1 = NULL, *pPoint2 = NULL;
-                for (unsigned int unIndex = 0, unPointIndex = 0; unIndex < unCount; unIndex++)
-                {
-                        unsigned char unType = pAbTypes[unIndex];
-                        T* pPoint = arPoints + unIndex;
-                        if (PT_MOVETO == unType)
-                        {
-                                MoveTo(*pPoint);
-                                unPointIndex = 0;
-                        }
-                        else if (PT_LINETO & unType)
-                        {
-                                LineTo(*pPoint);
-                                if (PT_CLOSEFIGURE & unType)
-                                        ClosePath();
-                                unPointIndex = 0;
-                        }
-                        else if (PT_BEZIERTO & unType)
-                        {
-                                if (0 == unPointIndex)
-                                {
-                                        pPoint1 = pPoint;
-                                        unPointIndex = 1;
-                                }
-                                else if (1 == unPointIndex)
-                                {
-                                        pPoint2 = pPoint;
-                                        unPointIndex = 2;
-                                }
-                                else if (2 == unPointIndex)
-                                {
-                                        CurveTo(*pPoint1, *pPoint2, *pPoint);
-                                        unPointIndex = 0;
-
-                                        if (PT_CLOSEFIGURE & unType)
-                                                ClosePath();
-                                }
-                                else
-                                {
-                                        SetError();
-                                        break;
-                                }
-                        }
-                }
-
-                if (NULL != m_pInterpretator)
-                        m_pInterpretator->HANDLE_EMR_POLYDRAW(oBounds, arPoints, unCount, pAbTypes);
-        }
-
         void CEmfParserBase::HANDLE_EMR_POLYGON(TEmfRectL &oBounds, std::vector<TEmfPointL> &arPoints)
         {
                 HANDLE_EMR_POLYGON_BASE<TEmfPointL>(oBounds, arPoints);
@@ -1741,49 +1661,14 @@ namespace MetaFile
         {
                 HANDLE_EMR_POLYGON_BASE<TEmfPointS>(oBounds, arPoints);
         }
-
-        template<typename T>
-        void CEmfParserBase::HANDLE_EMR_POLYGON_BASE(TEmfRectL &oBounds, std::vector<T> &arPoints)
-        {
-                MoveTo(arPoints[0]);
-
-                for (unsigned int unIndex = 1; unIndex < arPoints.size(); ++unIndex)
-                        LineTo(arPoints[unIndex]);
-
-                if (NULL != m_pInterpretator)
-                        m_pInterpretator->HANDLE_EMR_POLYGON(oBounds, arPoints);
-
-                ClosePath();
-                DrawPath(true, true);
-        }
-
         void CEmfParserBase::HANDLE_EMR_POLYLINE(TEmfRectL &oBounds, std::vector<TEmfPointL> &arPoints)
         {
                 HANDLE_EMR_POLYLINE_BASE<TEmfPointL>(oBounds, arPoints);
         }
-
         void CEmfParserBase::HANDLE_EMR_POLYLINE(TEmfRectL &oBounds, std::vector<TEmfPointS> &arPoints)
         {
                 HANDLE_EMR_POLYLINE_BASE<TEmfPointS>(oBounds, arPoints);
         }
-
-        template<typename T>
-        void CEmfParserBase::HANDLE_EMR_POLYLINE_BASE(TEmfRectL &oBounds, std::vector<T> &arPoints)
-        {
-                if (arPoints.empty())
-                        return;
-
-                MoveTo(arPoints[0]);
-
-                for (unsigned int unIndex = 1; unIndex < arPoints.size(); ++unIndex)
-                        LineTo(arPoints[unIndex]);
-
-                if (NULL != m_pInterpretator)
-                        m_pInterpretator->HANDLE_EMR_POLYLINE(oBounds, arPoints);
-
-                DrawPath(true, false);
-        }
-
         void CEmfParserBase::HANDLE_EMR_POLYLINETO(TEmfRectL &oBounds, std::vector<TEmfPointL> &arPoints)
         {
                 HANDLE_EMR_POLYLINETO_BASE<TEmfPointL>(oBounds, arPoints);
@@ -1792,16 +1677,6 @@ namespace MetaFile
         void CEmfParserBase::HANDLE_EMR_POLYLINETO(TEmfRectL &oBounds, std::vector<TEmfPointS> &arPoints)
         {
                 HANDLE_EMR_POLYLINETO_BASE<TEmfPointS>(oBounds, arPoints);
-        }
-
-        template<typename T>
-        void CEmfParserBase::HANDLE_EMR_POLYLINETO_BASE(TEmfRectL &oBounds, std::vector<T> &arPoints)
-        {
-                for (unsigned int unIndex = 0; unIndex < arPoints.size(); ++unIndex)
-                        LineTo(arPoints[unIndex]);
-
-                if (NULL != m_pInterpretator)
-                        m_pInterpretator->HANDLE_EMR_POLYLINETO(oBounds, arPoints);
         }
 
         void CEmfParserBase::HANDLE_EMR_POLYPOLYGON(TEmfRectL &oBounds, std::vector<std::vector<TEmfPointL>> &arPoints)
@@ -1813,27 +1688,7 @@ namespace MetaFile
         {
                 HANDLE_EMR_POLYPOLYGON_BASE<TEmfPointS>(oBounds, arPoints);
         }
-
-        template<typename T>
-        void CEmfParserBase::HANDLE_EMR_POLYPOLYGON_BASE(TEmfRectL &oBounds, std::vector<std::vector<T>> &arPoints)
-        {
-                for (unsigned int unPolygonIndex = 0; unPolygonIndex < arPoints.size(); ++unPolygonIndex)
-                {
-                        MoveTo(arPoints[unPolygonIndex][0]);
-
-                        for (unsigned int unPointIndex = 1; unPointIndex < arPoints[unPolygonIndex].size(); ++unPointIndex)
-                                LineTo(arPoints[unPolygonIndex][unPointIndex]);
-
-                        ClosePath();
-                }
-
-                DrawPath(true, true);
-
-                if (NULL != m_pInterpretator)
-                        m_pInterpretator->HANDLE_EMR_POLYPOLYGON(oBounds, arPoints);
-        }
-
-        void CEmfParserBase::HANDLE_EMR_POLYPOLYLINE(TEmfRectL &oBounds, std::vector<std::vector<TEmfPointL>> &arPoints)
+         void CEmfParserBase::HANDLE_EMR_POLYPOLYLINE(TEmfRectL &oBounds, std::vector<std::vector<TEmfPointL>> &arPoints)
         {
                 HANDLE_EMR_POLYPOLYLINE_BASE<TEmfPointL>(oBounds, arPoints);
         }
@@ -1841,24 +1696,5 @@ namespace MetaFile
         void CEmfParserBase::HANDLE_EMR_POLYPOLYLINE(TEmfRectL &oBounds, std::vector<std::vector<TEmfPointS>> &arPoints)
         {
                 HANDLE_EMR_POLYPOLYLINE_BASE<TEmfPointS>(oBounds, arPoints);
-        }
-
-        template<typename T>
-        void CEmfParserBase::HANDLE_EMR_POLYPOLYLINE_BASE(TEmfRectL &oBounds, std::vector<std::vector<T>> &arPoints)
-        {
-                for (unsigned int unPolylineIndex = 0; unPolylineIndex < arPoints.size(); ++unPolylineIndex)
-                {
-                        MoveTo(arPoints[unPolylineIndex][0]);
-
-                        for (unsigned int unPointIndex = 1; unPointIndex < arPoints[unPolylineIndex].size(); ++unPointIndex)
-                                LineTo(arPoints[unPolylineIndex][unPointIndex]);
-
-                        ClosePath();
-                }
-
-                DrawPath(true, false);
-
-                if (NULL != m_pInterpretator)
-                        m_pInterpretator->HANDLE_EMR_POLYPOLYLINE(oBounds, arPoints);
         }
 }

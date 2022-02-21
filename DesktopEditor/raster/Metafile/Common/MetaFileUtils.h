@@ -40,6 +40,7 @@
 #include "../Emf/EmfObjects.h"
 #include "../Emf/EmfPlusObjects.h"
 #include "../Wmf/WmfObjects.h"
+#include "../../../../Common/DocxFormat/Source/Base/Types_32.h"
 
 #include <algorithm>
 

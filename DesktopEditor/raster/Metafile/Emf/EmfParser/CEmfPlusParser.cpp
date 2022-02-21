@@ -1211,12 +1211,12 @@ namespace MetaFile
                         if (!pBgraData)
                                 return;
 
-                        unsigned __int32 alfa = 0xffffff;
+                        _UINT32 alfa = 0xffffff;
                         //дефолтный тон должен быть прозрачным, а не белым
                         //memset(pBgraData, 0xff, nWidth * nHeight * 4);
                         for (int i = 0; i < nWidth * nHeight; i++)
                         {
-                                ((unsigned __int32*)pBgraData)[i] = alfa;
+                                ((_UINT32*)pBgraData)[i] = alfa;
                         }
 
                         CBgraFrame oFrame;

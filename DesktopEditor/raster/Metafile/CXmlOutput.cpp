@@ -1,5 +1,6 @@
 #include "CXmlOutput.h"
 #include "../../common/Base64.h"
+#include "../../../Common/DocxFormat/Source/Base/Base.h"
 
 #ifdef _DEBUG
     #include <iostream>

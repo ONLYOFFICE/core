@@ -343,27 +343,27 @@ namespace NSOnlineOfficeBinToPdf
 			{
 			case ctPageWidth:
 			{
-                if (pCorrector->IsUsePageCommands())
-                    pRenderer->put_Width(ReadInt(current, curindex) / 100000.0);
-                else
-                    SkipInt(current, curindex);
+				if (pCorrector->IsUsePageCommands())
+					pRenderer->put_Width(ReadInt(current, curindex) / 100000.0);
+				else
+					SkipInt(current, curindex);
 				break;
 			}
 			case ctPageHeight:
 			{
-                if (pCorrector->IsUsePageCommands())
-                    pRenderer->put_Height(ReadInt(current, curindex) / 100000.0);
-                else
-                    SkipInt(current, curindex);
+				if (pCorrector->IsUsePageCommands())
+					pRenderer->put_Height(ReadInt(current, curindex) / 100000.0);
+				else
+					SkipInt(current, curindex);
 				break;
 			}
 			case ctPageStart:
 			{
-                if (pCorrector->IsUsePageCommands())
-                {
-                    pRenderer->NewPage();
-                    pRenderer->BeginCommand(c_nPageType);
-                }
+				if (pCorrector->IsUsePageCommands())
+				{
+					pRenderer->NewPage();
+					pRenderer->BeginCommand(c_nPageType);
+				}
 
 				// TODO:
 				pRenderer->put_PenLineStartCap(Aggplus::LineCapFlat);
@@ -379,8 +379,8 @@ namespace NSOnlineOfficeBinToPdf
 				}
 				bIsPathOpened = false;
 
-                if (pCorrector->IsUsePageCommands())
-                    pRenderer->EndCommand(c_nPageType);
+				if (pCorrector->IsUsePageCommands())
+					pRenderer->EndCommand(c_nPageType);
 
 				if (lRendererType == c_nGrRenderer)
 					return true;

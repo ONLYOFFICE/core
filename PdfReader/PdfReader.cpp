@@ -451,7 +451,7 @@ return 0;
             return false;
         }
         std::wstring sPageTree = L"<PageTree";
-        XMLConverter::PageToXml(&pagesObj, sPageTree);
+        XMLConverter::DictToXml(&pagesObj, sPageTree);
         sPageTree += L"</PageTree>";
         Ref topPagesRef = pagesRefObj.getRef();
         pagesObj.free();
@@ -475,7 +475,7 @@ return 0;
             return false;
         }
         std::wstring sPage = L"<Page";
-        XMLConverter::PageToXml(&pageObj, sPage);
+        XMLConverter::DictToXml(&pageObj, sPage);
         sPage += L"</Page>";
         pageObj.free();
         pageRefObj.free();
@@ -488,7 +488,7 @@ return 0;
         Object* trailerDict = xref->getTrailerDict();
         std::wstring sTrailer = L"<Trailer";
         if (trailerDict)
-            XMLConverter::PageToXml(trailerDict, sTrailer);
+            XMLConverter::DictToXml(trailerDict, sTrailer);
         else
             sTrailer += L'>';
         sTrailer += L"</Trailer>";

@@ -229,7 +229,7 @@ void XMLConverter::ObjectToXml(Object *obj, std::wstring &wsXml)
     }
 }
 
-void XMLConverter::PageToXml(Object *obj, std::wstring &wsXml)
+void XMLConverter::DictToXml(Object *obj, std::wstring &wsXml, bool bBinary)
 {
     Object oTemp;
 
@@ -252,8 +252,17 @@ void XMLConverter::PageToXml(Object *obj, std::wstring &wsXml)
         wsXml += L"\">";
         break;
     case objString:
-        wsXml += L"String\" num=\"";
-        AppendStringToXml(wsXml, obj->getString()->getCString());
+        if (bBinary)
+        {
+            // TODO
+            wsXml += L"Binary\" num=\"";
+            AppendStringToXml(wsXml, obj->getString()->getCString());
+        }
+        else
+        {
+            wsXml += L"String\" num=\"";
+            AppendStringToXml(wsXml, obj->getString()->getCString());
+        }
         wsXml += L"\">";
         break;
     case objName:
@@ -270,7 +279,7 @@ void XMLConverter::PageToXml(Object *obj, std::wstring &wsXml)
         {
             wsXml += L"<item";
             obj->arrayGetNF(nIndex, &oTemp);
-            PageToXml(&oTemp, wsXml);
+            DictToXml(&oTemp, wsXml);
             oTemp.free();
             wsXml += L"</item>";
         }
@@ -282,8 +291,14 @@ void XMLConverter::PageToXml(Object *obj, std::wstring &wsXml)
             char *sKey = obj->dictGetKey(nIndex);
             wsXml += L"<";
             AppendStringToXml(wsXml, sKey);
-            obj->dictGetValNF(nIndex, &oTemp);
-            PageToXml(&oTemp, wsXml);
+            if (strcmp("Resources", sKey) == 0)
+                obj->dictGetVal(nIndex, &oTemp);
+            else
+                obj->dictGetValNF(nIndex, &oTemp);
+            if (strcmp("ID", sKey) == 0)
+                DictToXml(&oTemp, wsXml, true);
+            else
+                DictToXml(&oTemp, wsXml);
             oTemp.free();
             wsXml += L"</";
             AppendStringToXml(wsXml, sKey);

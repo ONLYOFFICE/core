@@ -60,6 +60,7 @@ int main()
     }
 
     bool bResult = pReader->LoadFromMemory(pData, nBytes);
+
     if (bResult && pReader->EditPdf(&pdfWriter))
     {
         if (pReader->EditPage(0))
@@ -67,14 +68,28 @@ int main()
             TEST(&pdfWriter);
         }
 
-        if (pdfWriter.NewPage() == S_OK)
-        {
-            TEST(&pdfWriter);
-        }
-
         if (pReader->EditPage(1))
         {
             TEST2(&pdfWriter);
+        }
+
+        if (pdfWriter.NewPage() == S_OK)
+        {
+            // Новой странице необходимо выставить длину и ширину
+            double dPageDpiX, dPageDpiY;
+            double dWidth, dHeight;
+            pReader->GetPageInfo(0, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+
+            dWidth  *= 25.4 / dPageDpiX;
+            dHeight *= 25.4 / dPageDpiY;
+
+            pdfWriter.put_Width(dWidth);
+            pdfWriter.put_Height(dHeight);
+
+            pdfWriter.put_Width(100);
+            pdfWriter.put_Height(100);
+
+            TEST(&pdfWriter);
         }
 
         NSFile::CFileBinary::Copy(sSrcFile, sDstFile);

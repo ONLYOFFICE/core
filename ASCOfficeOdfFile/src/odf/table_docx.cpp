@@ -32,12 +32,9 @@
 
 #include "table.h"
 
-#include <xml/xmlchar.h>
-#include <xml/attributes.h>
-
 #include "serialize_elements.h"
 #include "odfcontext.h"
-#include <odf/odf_document.h>
+#include "../../include/odf/odf_document.h"
 
 #include "style_table_properties.h"
 

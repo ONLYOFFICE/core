@@ -33,6 +33,7 @@
 
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
+#include <boost/any.hpp>
 
 namespace XLSB
 {
@@ -50,6 +51,8 @@ namespace XLSB
             static const XLS::ElementType	type = XLS::typePCRRecord;
 
             void readFields(XLS::CFRecord& record);
+
+            std::vector<std::pair<XLS::ElementType, boost::any>>   data;
 
     };
 

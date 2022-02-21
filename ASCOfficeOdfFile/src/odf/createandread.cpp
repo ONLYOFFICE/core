@@ -29,12 +29,11 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-
+#include <sstream>
 
 #include "office_elements_create.h"
-#include <xml/sax.h>
-#include <sstream>
-#include <logging.h>
+#include "../../include/xml/sax.h"
+#include "../../include/logging.h"
 
 namespace cpdoccore { 
 namespace odf_reader {

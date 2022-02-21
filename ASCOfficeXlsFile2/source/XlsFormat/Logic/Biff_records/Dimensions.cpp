@@ -31,7 +31,7 @@
  */
 
 #include "Dimensions.h"
-#include <Logic/Biff_structures/CellRangeRef.h>
+#include "../Biff_structures/CellRangeRef.h"
 
 namespace XLS
 {

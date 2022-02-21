@@ -56,6 +56,8 @@ namespace NSNetwork
             virtual void Suspend() = 0;
             virtual void Resume() = 0;
             virtual void Stop() = 0;
+            virtual void StopNoJoin() = 0;
+            virtual void Cancel() = 0;
             virtual int IsRunned() = 0;
 
             //events
@@ -92,6 +94,8 @@ namespace NSNetwork
             virtual void Suspend();
             virtual void Resume();
             virtual void Stop();
+            virtual void StopNoJoin();
+            virtual void Cancel();
             virtual int IsRunned();
             virtual void SetEvent_OnProgress(std::function<void(int)>);
             virtual void SetEvent_OnComplete(std::function<void(int)>);
@@ -122,6 +126,8 @@ namespace NSNetwork
             virtual void Suspend();
             virtual void Resume();
             virtual void Stop();
+            virtual void StopNoJoin();
+            virtual void Cancel();
             virtual int IsRunned();
             virtual void SetEvent_OnProgress(std::function<void(int)>);
             virtual void SetEvent_OnComplete(std::function<void(int)>);

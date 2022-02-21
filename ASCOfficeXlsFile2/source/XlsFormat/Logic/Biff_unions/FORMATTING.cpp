@@ -94,7 +94,7 @@ const bool FORMATTING::loadContent(BinProcessor& proc)
 	count = proc.repeated<Format>(0, 218); // Originally: proc.repeated<Format>(8, 218);
 	while(count > 0)
 	{
-		m_arFormats.insert(m_arFormats.begin(), elements_.back());
+		global_info->m_arNumFormats.insert(global_info->m_arNumFormats.begin(), elements_.back());
 		elements_.pop_back();
 		count--;
 	}
@@ -223,26 +223,7 @@ void FORMATTING::concatinate(FORMATTING* ext)
 	}
 }
 
-int FORMATTING::serialize1(std::wostream & stream)
-{
-	CP_XML_WRITER(stream)    
-    {
-		if (m_arFormats.size() > 0)
-		{
-			CP_XML_NODE(L"numFmts")
-			{
-				CP_XML_ATTR(L"count", m_arFormats.size());
-                for (size_t i = 0 ; i < m_arFormats.size(); i++)
-				{
-					m_arFormats[i]->serialize(CP_XML_STREAM());
-				}
-			}
-		}
-	}
-	return 0;
-}
-
-int FORMATTING::serialize2(std::wostream & stream)
+int FORMATTING::serialize(std::wostream & stream)
 {
 	CP_XML_WRITER(stream)    
     {

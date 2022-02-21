@@ -31,7 +31,6 @@
  */
 
 #include "DXFN12List.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

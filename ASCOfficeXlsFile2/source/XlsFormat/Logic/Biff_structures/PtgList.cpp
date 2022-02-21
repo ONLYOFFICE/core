@@ -31,7 +31,6 @@
  */
 
 #include "PtgList.h"
-#include <Binary/CFRecord.h>
 #include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace XLS

@@ -38,6 +38,7 @@
 #include <unordered_map>
 
 #include "Biff_structures/BorderFillInfo.h"
+#include "XlsElementsType.h"
 
 #include "../Crypt/Decryptor.h"
 
@@ -111,6 +112,7 @@ public:
 	std::map<int, int>						fonts_charsets;
 	std::map<int,  std::wstring>			colors_palette;
 
+	std::vector<BaseObjectPtr>				m_arNumFormats;
 	std::vector<BaseObjectPtr>				m_arFonts;
 	PPTX::ThemePtr							m_pTheme;
 	
@@ -181,7 +183,7 @@ public:
 	std::vector<std::wstring>		external_sheets_info; //current
 
 	std::pair<float, float>			defaultDigitFontSize;
-        NSFonts::IApplicationFonts*     applicationFonts;
+	NSFonts::IApplicationFonts*     applicationFonts;
 	std::wstring					fontsDirectory;
 
 	std::wstring					tempDirectory;
@@ -192,7 +194,10 @@ public:
 	int								cellXfs_count;
 	int								cellStyleXfs_count;
 	int								cellStyleDxfs_count;
-	
+
+	std::map<std::wstring, int>		mapDefaultFormatCode;
+	std::map<_UINT16, bool>			mapUsedFormatCode;
+
 	std::map<std::wstring, int>		mapUserDxfs;
 	std::vector<std::wstring>		arrUserDxfs;
 
@@ -201,12 +206,14 @@ public:
 	int								connectionId;
 	std::map<std::wstring, int>		connectionNames;
 
-        std::unordered_map<int, std::wstring>		mapTableNames;
-        std::unordered_map<int, std::vector<std::wstring>>	mapTableColumnNames;
-        std::unordered_map<std::wstring, int>		mapTableGuidsIndex;
+    std::unordered_map<int, std::wstring>		mapTableNames;
+    std::unordered_map<int, std::vector<std::wstring>>	mapTableColumnNames;
+    std::unordered_map<std::wstring, int>		mapTableGuidsIndex;
+
+    std::unordered_map<int, std::vector<XLS::ElementType>>		pivotCacheRecordType;
+    int                     		currentPivotCacheRecord;
 
 	XlsConverter					*xls_converter;
-
 };
 
 typedef boost::shared_ptr<GlobalWorkbookInfo> GlobalWorkbookInfoPtr;

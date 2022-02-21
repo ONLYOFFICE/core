@@ -31,7 +31,7 @@
  */
 
 #include "AnySubstream.h"
-#include <Logic/AnyObject.h>
+#include "AnyObject.h"
 
 namespace XLS
 {;

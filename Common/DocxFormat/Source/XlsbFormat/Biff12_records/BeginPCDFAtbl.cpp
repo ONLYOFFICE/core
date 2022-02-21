@@ -74,6 +74,17 @@ namespace XLSB
         if(fNumMinMaxValid)
             record >> xnumMax;
 
+        if(record.getGlobalWorkbookInfo()->pivotCacheRecordType.find(record.getGlobalWorkbookInfo()->currentPivotCacheRecord) == record.getGlobalWorkbookInfo()->pivotCacheRecordType.end())
+            record.getGlobalWorkbookInfo()->pivotCacheRecordType.insert({record.getGlobalWorkbookInfo()->currentPivotCacheRecord, std::vector<XLS::ElementType>()});
+
+        if(citems > 0)
+            record.getGlobalWorkbookInfo()->pivotCacheRecordType[record.getGlobalWorkbookInfo()->currentPivotCacheRecord].push_back(XLS::typePCDIIndex);
+        else if(fNumField)
+            record.getGlobalWorkbookInfo()->pivotCacheRecordType[record.getGlobalWorkbookInfo()->currentPivotCacheRecord].push_back(XLS::typePCDINumber);
+        else if(fDateInField && !fHasTextItem)
+            record.getGlobalWorkbookInfo()->pivotCacheRecordType[record.getGlobalWorkbookInfo()->currentPivotCacheRecord].push_back(XLS::typePCDIDatetime);
+        else
+            record.getGlobalWorkbookInfo()->pivotCacheRecordType[record.getGlobalWorkbookInfo()->currentPivotCacheRecord].push_back(XLS::typePCDIString);
     }
 
 } // namespace XLSB

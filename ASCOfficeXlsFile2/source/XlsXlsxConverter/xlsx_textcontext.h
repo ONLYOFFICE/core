@@ -35,7 +35,7 @@
 #include <boost/noncopyable.hpp>
 #include <boost/scoped_ptr.hpp>
 
-#include "common.h"
+#include "../Common/common.h"
 
 
 namespace oox {

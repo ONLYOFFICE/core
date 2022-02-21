@@ -31,12 +31,12 @@
  */
 
 #include "SERIESDATA.h"
-#include <Logic/Biff_records/Dimensions.h>
-#include <Logic/Biff_records/SIIndex.h>
-#include <Logic/Biff_records/Number.h>
-#include <Logic/Biff_records/BoolErr.h>
-#include <Logic/Biff_records/Blank.h>
-#include <Logic/Biff_records/Label.h>
+#include "../Biff_records/Dimensions.h"
+#include "../Biff_records/SIIndex.h"
+#include "../Biff_records/Number.h"
+#include "../Biff_records/BoolErr.h"
+#include "../Biff_records/Blank.h"
+#include "../Biff_records/Label.h"
 
 namespace XLS
 {

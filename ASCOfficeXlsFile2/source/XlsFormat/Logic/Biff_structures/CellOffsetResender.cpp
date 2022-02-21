@@ -31,8 +31,7 @@
  */
 
 #include "CellOffsetResender.h"
-#include <Binary/CFRecord.h>
-#include <Binary/CFStream.h>
+#include "../../Binary/CFStream.h"
 
 namespace XLS
 {

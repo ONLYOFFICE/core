@@ -32,8 +32,8 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/PropertyBagStore.h>
-#include <Logic/Biff_structures/EnhancedProtection.h>
+#include "../Biff_structures/PropertyBagStore.h"
+#include "../Biff_structures/EnhancedProtection.h"
 
 namespace XLS
 {

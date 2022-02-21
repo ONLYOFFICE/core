@@ -29,8 +29,6 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include <Binary/CFRecord.h>
-
 #include "StyleXF.h"
 
 #include "XFProp.h"

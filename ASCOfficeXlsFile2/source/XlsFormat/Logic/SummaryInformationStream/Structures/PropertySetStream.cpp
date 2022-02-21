@@ -31,9 +31,9 @@
  */
 
 #include "PropertySetStream.h"
-#include "Binary/CFStream.h"
 
-#include "Auxiliary/HelpFunc.h"
+#include "../../../Binary/CFStream.h"
+#include "../../../Auxiliary/HelpFunc.h"
 
 namespace OLEPS
 {

@@ -31,7 +31,6 @@
  */
 
 #include "PtgExtraList.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

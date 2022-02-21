@@ -124,7 +124,7 @@
 	{
 		"name": "co",
 		"folder": "../../../common/",
-		"files": ["File.cpp", "Directory.cpp", "ByteBuilder.cpp", "Base64.cpp", "StringExt.cpp"]
+		"files": ["File.cpp", "Directory.cpp", "ByteBuilder.cpp", "Base64.cpp", "StringExt.cpp", "Path.cpp"]
 	},
 	{
 		"name": "i",

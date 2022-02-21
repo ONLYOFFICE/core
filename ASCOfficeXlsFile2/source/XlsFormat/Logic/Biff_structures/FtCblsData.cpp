@@ -31,8 +31,6 @@
  */
 
 #include "FtCblsData.h"
-#include <Binary/CFRecord.h>
-//#include <Exception/AttributeDataWrong.h>
 
 namespace XLS
 {

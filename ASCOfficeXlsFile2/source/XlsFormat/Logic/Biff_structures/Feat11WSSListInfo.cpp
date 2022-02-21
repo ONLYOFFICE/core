@@ -33,7 +33,6 @@
 #include "Feat11WSSListInfo.h"
 #include "BiffString.h"
 #include "Xnum.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

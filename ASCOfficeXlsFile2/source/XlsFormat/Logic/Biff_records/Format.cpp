@@ -36,26 +36,39 @@
 namespace XLS
 {
 
-Format::Format()
-{
-}
-
-
-Format::~Format()
-{
-}
-
-
-BaseObjectPtr Format::clone()
-{
-	return BaseObjectPtr(new Format(*this));
-}
-
+	Format::Format()
+	{}
+	Format::~Format()
+	{}
+	BaseObjectPtr Format::clone()
+	{
+		return BaseObjectPtr(new Format(*this));
+	}
+	Format_BIFF23::Format_BIFF23()
+	{}
+	Format_BIFF23::~Format_BIFF23()
+	{}
+	BaseObjectPtr Format_BIFF23::clone()
+	{
+		return BaseObjectPtr(new Format_BIFF23(*this));
+	}
+//-----------------------------------------------------------------------------------
 void Format::readFields(CFRecord& record)
 {
 	GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();
-	record >> ifmt;
 	
+	ifmt = 0xffff;
+	if (global_info->Version > 0x0300)
+	{
+		if (global_info->Version == 0x0400)
+		{
+			_UINT16 notUsed;
+			record >> notUsed;
+		}
+		else
+			record >> ifmt;
+	}
+
 	XLUnicodeString format;
 	if (global_info->Version < 0x0600)
 	{
@@ -67,8 +80,7 @@ void Format::readFields(CFRecord& record)
 	else
 		record >> format;
 
-
-	stFormat = XmlUtils::EncodeXmlString(format.value(), true);
+	stFormat = format.value();
 }
 
 int Format::serialize(std::wostream & stream)

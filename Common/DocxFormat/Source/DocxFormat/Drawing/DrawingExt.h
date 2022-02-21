@@ -51,6 +51,7 @@ namespace OOX
 		class CTableSlicerCache;
 		class CSlicerCacheHideNoData;
 		class CConnection;
+        class CPivotCacheDefinitionExt;
 	}
 	namespace Drawing
 	{
@@ -189,6 +190,8 @@ namespace OOX
             nullable<OOX::Spreadsheet::CSlicerCaches>               m_oSlicerCaches;
             nullable<OOX::Spreadsheet::CSlicerCaches>               m_oSlicerCachesExt;
             nullable<OOX::Spreadsheet::CSlicerStyles>               m_oSlicerStyles;
+
+            nullable<OOX::Spreadsheet::CPivotCacheDefinitionExt>    m_oPivotCacheDefinitionExt;
 
 			std::vector<OOX::Spreadsheet::CSlicerCachePivotTable*>	m_oSlicerCachePivotTables;
             nullable<OOX::Spreadsheet::CTableSlicerCache>           m_oTableSlicerCache;

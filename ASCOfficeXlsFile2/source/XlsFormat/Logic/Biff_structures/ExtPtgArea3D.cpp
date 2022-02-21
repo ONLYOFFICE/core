@@ -31,7 +31,6 @@
  */
 
 #include "ExtPtgArea3D.h"
-#include <Binary/CFRecord.h>
 #include "CellRangeRef.h"
 
 namespace XLS

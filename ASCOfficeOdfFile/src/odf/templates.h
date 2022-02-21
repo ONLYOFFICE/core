@@ -35,12 +35,7 @@
 #include <vector>
 #include <iosfwd>
 
-#include <CPNoncopyable.h>
-#include <xml/attributes.h>
-
-#include <CPSharedPtr.h>
-
-#include <CPOptional.h>
+#include "../../include/CPNoncopyable.h"
 
 #include "styles_list.h"
 #include "style_map.h"

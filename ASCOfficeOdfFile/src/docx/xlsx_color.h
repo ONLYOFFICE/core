@@ -32,9 +32,10 @@
 #pragma once
 
 #include <iosfwd>
-#include <CPOptional.h>
 #include <string>
 #include <vector>
+
+#include "../../include/CPOptional.h"
 
 namespace cpdoccore {
 namespace oox {

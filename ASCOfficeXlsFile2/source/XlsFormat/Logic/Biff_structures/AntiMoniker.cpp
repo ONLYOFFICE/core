@@ -31,7 +31,6 @@
  */
 
 #include "AntiMoniker.h"
-#include <Binary/CFRecord.h>
 
 namespace OSHARED
 {

@@ -142,6 +142,8 @@ namespace OOX
 
                     xlsb->ReadBin(oPath, workSheetStream.get());
 
+                    xlsb->m_mapSheetNameSheetData.insert({oPath.GetPath(), workSheetStream->m_SheetaDataPosition});
+
 					if (workSheetStream != nullptr)
 					{
 						if (!workSheetStream->m_arCOLINFOS.empty())
@@ -158,11 +160,11 @@ namespace OOX
 							m_oHyperlinks = static_cast<XLSB::HLINKS*>(workSheetStream->m_HLINKS.get())->m_arHlinks;
 						if (workSheetStream->m_MERGECELLS != nullptr)
 							m_oMergeCells = static_cast<XLSB::MERGECELLS*>(workSheetStream->m_MERGECELLS.get())->m_arBrtMergeCell;
-						if (workSheetStream->m_CELLTABLE != nullptr)
-						{
-							m_oSheetData = new CSheetData(File::m_pMainDocument);
-							m_oSheetData->fromBin(workSheetStream->m_CELLTABLE);
-						}
+                        //if (workSheetStream->m_CELLTABLE != nullptr)
+                        //{
+                        m_oSheetData = new CSheetData(File::m_pMainDocument);
+                        //m_oSheetData->fromBin(workSheetStream->m_CELLTABLE);
+                        //}
                         if (workSheetStream->m_BrtWsFmtInfo != nullptr)
                             m_oSheetFormatPr = workSheetStream->m_BrtWsFmtInfo;
                         if (workSheetStream->m_WSVIEWS2 != nullptr)

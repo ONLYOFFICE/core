@@ -32,8 +32,6 @@
 #pragma once 
 
 #include <iosfwd>
-#include <CPOptional.h>
-#include <CPScopedPtr.h>
 
 #include "../odf/chart_objects.h"
                     

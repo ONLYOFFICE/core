@@ -34,7 +34,7 @@
 #include "xlsx_drawing.h"
 
 #include <vector>
-#include <xml/simple_xml_writer.h>
+#include "../../include/xml/simple_xml_writer.h"
 
 #include "oox_rels.h"
 
@@ -182,8 +182,16 @@ public:
 						}
 						CP_XML_NODE(L"v:path")
 						{
-							CP_XML_ATTR(L"gradientshapeok", L"t");				
+							CP_XML_ATTR(L"shadowok", L"f");
+							CP_XML_ATTR(L"o:extrusionok", L"f");
+							CP_XML_ATTR(L"strokeok", L"f");
+							CP_XML_ATTR(L"fillok", L"f");
 							CP_XML_ATTR(L"o:connecttype", L"rect");
+						}
+						CP_XML_NODE(L"o:lock")
+						{
+							CP_XML_ATTR(L"v:ext", L"edit");
+							CP_XML_ATTR(L"shapetype", L"t");
 						}
 					}
 					CP_XML_NODE(L"v:shapetype")

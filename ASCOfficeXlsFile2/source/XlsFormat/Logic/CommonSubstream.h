@@ -63,7 +63,9 @@ public:
 	BaseObjectPtr					m_SheetExt;
 	BaseObjectPtr					m_SXADDLDBQUERY;
 	BaseObjectPtr					m_CRTMLFRT;
-	
+
+	BaseObjectPtr					m_Formating; // for flat xls
+
 	std::vector<BaseObjectPtr>		m_arHFPicture;
 	std::vector<BaseObjectPtr>		m_arWINDOW;
 	std::vector<BaseObjectPtr>		m_arCUSTOMVIEW;
@@ -71,6 +73,9 @@ public:
 	std::vector<BaseObjectPtr>		m_arRECORD12;
 	std::vector<BaseObjectPtr>		m_arFEAT11;
 	std::vector<BaseObjectPtr>		m_arSORT;
+
+	std::vector<BaseObjectPtr>		m_arCellStyles;
+	std::vector<BaseObjectPtr>		m_arCellXFs;
 
 	void LoadHFPicture();
 };

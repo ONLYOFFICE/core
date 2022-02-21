@@ -50,7 +50,7 @@ public:
         return color_; 
     };
 
-    const std::wstring get_hex_value() const;
+    const std::wstring get_hex_value(bool alfa = false) const;
 
     static color parse(const std::wstring & Str);
 

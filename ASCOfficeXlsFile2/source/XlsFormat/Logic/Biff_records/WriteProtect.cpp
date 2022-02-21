@@ -31,7 +31,6 @@
  */
 
 #include "WriteProtect.h"
-#include <Binary/CFStream.h>
 
 namespace XLS
 {

@@ -35,7 +35,7 @@
 
 #include <boost/make_shared.hpp>
 
-#include <simple_xml_writer.h>
+#include "../Common/simple_xml_writer.h"
 
 #if defined(_WIN32) || defined(_WIN64)
 	#pragma comment(lib, "Ole32.lib")

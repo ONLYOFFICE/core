@@ -31,7 +31,6 @@
  */
 
 #include "UserBView.h"
-//#include <Exception/AttributeDataWrong.h>
 
 namespace XLS
 {

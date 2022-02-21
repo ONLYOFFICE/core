@@ -47,6 +47,8 @@ namespace XLSB
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
+        static const XLS::ElementType	type = XLS::typePCDIRUN;
+
         XLS::BaseObjectPtr               m_BrtBeginPCDIRun;
         XLS::BaseObjectPtr               m_BrtEndPCDIRun;
 

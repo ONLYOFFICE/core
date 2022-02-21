@@ -31,7 +31,6 @@
  */
 
 #include "FixedPoint.h"
-#include <Binary/CFRecord.h>
 
 namespace OSHARED
 {

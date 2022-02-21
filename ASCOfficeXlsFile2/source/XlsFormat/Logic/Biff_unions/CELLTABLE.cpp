@@ -39,8 +39,6 @@
 #include "../Biff_records/MulBlank.h"
 #include "../Biff_records/MulRk.h"
 
-#include <simple_xml_writer.h>
-
 namespace XLS
 {
 
@@ -60,16 +58,20 @@ public:
 
 	const bool loadContent(BinProcessor& proc)
 	{
-		global_info_			= proc.getGlobalWorkbookInfo();
-		int index_sheet_info_	= global_info_->current_sheet - 1;
+		global_info_ = proc.getGlobalWorkbookInfo();
+		int index_sheet_info_ = global_info_->current_sheet - 1;
 
 		GlobalWorkbookInfo::_sheet_info & sheet_info = global_info_->sheets_info[index_sheet_info_];
 		
 		int count, count_row = 0;
 		
-		if(proc.mandatory<Row>() == true)
+		bool bRow = false;
+
+		bRow = (global_info_->Version == 0x0200) ? proc.mandatory<Row_BIFF2>() : proc.mandatory<Row>();
+		
+		if (bRow == true)
 		{
-			count_row = count =  1 + proc.repeated<Row>(0, 0);
+			count_row = count =  1 + ((global_info_->Version == 0x0200) ? proc.repeated<Row_BIFF2>(0, 0) : proc.repeated<Row>(0, 0));
 		
 			while(count > 0)
 			{
@@ -187,8 +189,8 @@ BaseObjectPtr CELLTABLE::clone()
 // CELLTABLE = 1*(1*Row *CELL 1*DBCell) *EntExU2
 const bool CELLTABLE::loadContent(BinProcessor& proc)
 {
-	global_info_		 = proc.getGlobalWorkbookInfo();
-	index_sheet_info_	= global_info_->current_sheet - 1;
+	global_info_ = proc.getGlobalWorkbookInfo();
+	index_sheet_info_ = global_info_->current_sheet - 1;
 
 	GlobalWorkbookInfo::_sheet_info zero;
 	while (index_sheet_info_ >= global_info_->sheets_info.size())

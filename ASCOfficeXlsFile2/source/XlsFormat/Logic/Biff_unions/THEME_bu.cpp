@@ -31,8 +31,8 @@
  */
 
 #include "THEME.h"
-#include <Logic/Biff_records/Theme.h>
-#include <Logic/Biff_records/ContinueFrt12.h>
+#include "../Biff_records/Theme.h"
+#include "../Biff_records/ContinueFrt12.h"
 
 namespace XLS
 {

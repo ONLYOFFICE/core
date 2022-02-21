@@ -31,7 +31,6 @@
  */
 
 #include "DConnParameter.h"
-#include <Binary/CFRecord.h>
 #include "DConnParamBindingValType.h"
 
 namespace XLS

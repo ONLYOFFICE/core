@@ -46,7 +46,6 @@ public:
 	~String();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
@@ -54,8 +53,16 @@ public:
 
 //-----------------------------
 	XLUnicodeString string;
-
 };
+class String_BIFF2 : public String
+{
+	BIFF_RECORD_DEFINE_TYPE_INFO(String_BIFF2)
+	BASE_OBJECT_DEFINE_CLASS_NAME(String_BIFF2)
+public:
+	String_BIFF2();
+	~String_BIFF2();
 
+	BaseObjectPtr clone();
+};
 } // namespace XLS
 

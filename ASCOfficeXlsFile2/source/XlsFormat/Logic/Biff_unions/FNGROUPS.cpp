@@ -31,9 +31,9 @@
  */
 
 #include "FNGROUPS.h"
-#include <Logic/Biff_records/BuiltInFnGroupCount.h>
-#include <Logic/Biff_records/FnGroupName.h>
-#include <Logic/Biff_records/FnGrp12.h>
+#include "../Biff_records/BuiltInFnGroupCount.h"
+#include "../Biff_records/FnGroupName.h"
+#include "../Biff_records/FnGrp12.h"
 
 namespace XLS
 {

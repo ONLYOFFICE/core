@@ -34,61 +34,74 @@
 
 namespace XLS
 {
+	ColWidth::ColWidth()
+	{}
+	ColWidth::~ColWidth()
+	{}
+	BaseObjectPtr ColWidth::clone()
+	{
+		return BaseObjectPtr(new ColWidth(*this));
+	}
+	void ColWidth::readFields(CFRecord& record)
+	{
+		BYTE colLast_1b, colFirst_1b;
+		_UINT16 coldx_2b;
 
-ColInfo::ColInfo()
-{
-	iOutLevel = 0;
-}
+		record >> colFirst_1b >> colLast_1b >> coldx_2b;
 
+		colFirst = colFirst_1b;
+		colLast = colLast_1b;
 
-ColInfo::~ColInfo()
-{
-}
+		coldx = coldx_2b;
+	}
 
+//--------------------------------------------------------------
+	ColInfo::ColInfo() : iOutLevel(0)
+	{}
+	ColInfo::~ColInfo()
+	{}
+	BaseObjectPtr ColInfo::clone()
+	{
+		return BaseObjectPtr(new ColInfo(*this));
+	}
+	void ColInfo::readFields(CFRecord& record)
+	{
+		if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+		{
+			_UINT16		colFirst_2b;
+			_UINT16		colLast_2b;
+			_UINT16		coldx_2b;
 
-BaseObjectPtr ColInfo::clone()
-{
-	return BaseObjectPtr(new ColInfo(*this));
-}
+			unsigned short flags;
+			record >> colFirst_2b >> colLast_2b >> coldx_2b >> ixfe >> flags;
 
-void ColInfo::readFields(CFRecord& record)
-{
-    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
-    {
-        _UINT16		colFirst_2b;
-        _UINT16		colLast_2b;
-        _UINT16		coldx_2b;
+			fHidden = GETBIT(flags, 0);
+			fUserSet = GETBIT(flags, 1);
+			fBestFit = GETBIT(flags, 2);
+			fPhonetic = GETBIT(flags, 3);
+			iOutLevel = GETBITS(flags, 8, 10);
+			fCollapsed = GETBIT(flags, 12);
 
-        unsigned short flags;
-        record >> colFirst_2b >> colLast_2b >> coldx_2b >> ixfe >> flags;
+			colFirst = colFirst_2b;
+			colLast = colLast_2b;
+			coldx = coldx_2b;
+		}
+		else
+		{
+			unsigned short flags;
+			record >> colFirst >> colLast >> coldx >> ixfeXLSB >> flags;
 
-        fHidden		= GETBIT(flags, 0);
-        fUserSet	= GETBIT(flags, 1);
-        fBestFit	= GETBIT(flags, 2);
-        fPhonetic	= GETBIT(flags, 3);
-        iOutLevel	= GETBITS(flags, 8, 10);
-        fCollapsed	= GETBIT(flags, 12);
+			fHidden = GETBIT(flags, 0);
+			fUserSet = GETBIT(flags, 1);
+			fBestFit = GETBIT(flags, 2);
+			fPhonetic = GETBIT(flags, 3);
+			iOutLevel = GETBITS(flags, 8, 10);
+			fCollapsed = GETBIT(flags, 12);
+		}
 
-        colFirst = colFirst_2b;
-        colLast = colLast_2b;
-        coldx = coldx_2b;
-    }
-    else
-    {
-        unsigned short flags;
-        record >> colFirst >> colLast >> coldx >> ixfeXLSB >> flags;
-
-        fHidden		= GETBIT(flags, 0);
-        fUserSet	= GETBIT(flags, 1);
-        fBestFit	= GETBIT(flags, 2);
-        fPhonetic	= GETBIT(flags, 3);
-        iOutLevel	= GETBITS(flags, 8, 10);
-        fCollapsed	= GETBIT(flags, 12);
-    }
-	
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr()); // unused
-	//0x0600 - 2 bytes; lower - 1 byte
-}
+		record.skipNunBytes(record.getDataSize() - record.getRdPtr()); // unused
+																	   //0x0600 - 2 bytes; lower - 1 byte
+	}
 
 } // namespace XLS
 

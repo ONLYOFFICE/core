@@ -31,7 +31,7 @@
  */
 #include <vector>
 
-#include <xml/simple_xml_writer.h>
+#include "../../include/xml/simple_xml_writer.h"
 
 #include "xlsx_cell_styles.h"
 #include "xlsx_cell_style.h"

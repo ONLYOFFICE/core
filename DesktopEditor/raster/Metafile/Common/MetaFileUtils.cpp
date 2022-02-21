@@ -157,7 +157,14 @@ namespace MetaFile
 			TRgbQuad oColor1, oColor2;
 
 			if (oHeaderStream.CanRead() >= 8)
+			{
 				oHeaderStream >> oColor1 >> oColor2;
+			}
+			else
+			{
+				oColor1.r = oColor1.g = oColor1.b = 0;
+				oColor2.r = oColor2.g = oColor2.b = 255;
+			}
 
 			// Считываем саму картинку
 			int lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);
@@ -638,8 +645,6 @@ namespace MetaFile
 				nAdd++;
 			}
 
-			int nSize = nWidth * nHeight * 4;
-
 			pBgraBuffer = new BYTE[nWidth * abs(nHeight) * 4 * sizeof(BYTE)];
 			if (NULL == pBgraBuffer)
 				return false;
@@ -688,9 +693,6 @@ namespace MetaFile
 		else if (BI_BITCOUNT_6 == ushBitCount)
 		{
 			unsigned int ulMaskR  = 0xff000000, ulMaskB = 0x00ff0000, ulMaskG = 0x0000ff00;
-			unsigned int ulShiftR = 24, ulShiftB = 16, ulShiftG = 8;
-			double dKoefR = 1.0, dKoefB = 1.0, dKoefG = 1.0;
-			bool bMask = false;
 
 			if (BI_RGB == unCompression)
 			{
@@ -704,21 +706,6 @@ namespace MetaFile
 				oHeaderStream >> ulMaskB;
 				oHeaderStream >> ulMaskG;
 				oHeaderStream >> ulMaskR;
-
-				ulShiftR = GetLowestBit(ulMaskR);
-				ulShiftB = GetLowestBit(ulMaskB);
-				ulShiftG = GetLowestBit(ulMaskG);
-
-				dKoefR = 255.0 / (ulMaskR >> ulShiftR);
-				dKoefG = 255.0 / (ulMaskG >> ulShiftG);
-				dKoefB = 255.0 / (ulMaskB >> ulShiftB);
-
-				if ((ulMaskR >> ulShiftR) == 255 && (ulMaskG >> ulShiftG) == 255 && (ulMaskB >> ulShiftB) == 255)
-				{
-					bMask = false; // Proper_Attire_CALT2.odt
-				}
-				else
-					bMask = true;
 			}
 			else
 				return false;
@@ -736,8 +723,6 @@ namespace MetaFile
 				nAdd++;
 			}
 
-			int nSize = nWidth * nHeight * 4;
-
 			pBgraBuffer = new BYTE[(nWidth + nAdd) * abs(nHeight) * 4 * sizeof(BYTE)];
 			if (NULL == pBgraBuffer)
 				return false;
@@ -753,26 +738,10 @@ namespace MetaFile
 					{
 						int nIndex = 4 * ((nWidth + nAdd) * nY + nX);
 
-						if (bMask)
-						{
-							unsigned int unValue = ((pBuffer[3] << 24) | (pBuffer[2] << 16) | (pBuffer[1] << 8) | pBuffer[0]) & 0xFFFFFFFF; pBuffer += 4; lBufLen -= 4;
-
-							unsigned char unR = (unValue & ulMaskR) >> ulShiftR;
-							unsigned char unG = (unValue & ulMaskG) >> ulShiftG;
-							unsigned char unB = (unValue & ulMaskB) >> ulShiftB;
-
-							pBgraBuffer[nIndex + 0] = (unsigned char)(unR * dKoefR);
-							pBgraBuffer[nIndex + 1] = (unsigned char)(unG * dKoefG);
-							pBgraBuffer[nIndex + 2] = (unsigned char)(unB * dKoefB);
-							pBgraBuffer[nIndex + 3] = pBuffer[3];
-						}
-						else
-						{
-							pBgraBuffer[nIndex + 0] = pBuffer[0]; pBuffer++; lBufLen--;
-							pBgraBuffer[nIndex + 1] = pBuffer[0]; pBuffer++; lBufLen--;
-							pBgraBuffer[nIndex + 2] = pBuffer[0]; pBuffer++; lBufLen--;
-							pBgraBuffer[nIndex + 3] = 255; pBuffer++; lBufLen--; // Если брать значение из картинки, тогда она получается всегда прозрачной
-						}
+						pBgraBuffer[nIndex + 0] = pBuffer[0]; pBuffer++; lBufLen--;
+						pBgraBuffer[nIndex + 1] = pBuffer[0]; pBuffer++; lBufLen--;
+						pBgraBuffer[nIndex + 2] = pBuffer[0]; pBuffer++; lBufLen--;
+						pBgraBuffer[nIndex + 3] = pBuffer[0]; pBuffer++; lBufLen--; // Если брать значение из картинки, тогда она получается всегда прозрачной
 					}
 					for (int nX = nWidth; nX < nWidth + nAdd; nX++)
 					{
@@ -792,26 +761,11 @@ namespace MetaFile
 					for (int nX = 0; nX < nWidth; nX++)
 					{
 						int nIndex = 4 * ((nWidth + nAdd) * nY + nX);
-						if (bMask)
-						{
-							unsigned int unValue = ((pBuffer[3] << 24) | (pBuffer[2] << 16) | (pBuffer[1] << 8) | pBuffer[0]) & 0xFFFFFFFF; pBuffer += 4; lBufLen -= 4;
 
-							unsigned char unR = (unValue & ulMaskR) >> ulShiftR;
-							unsigned char unG = (unValue & ulMaskG) >> ulShiftG;
-							unsigned char unB = (unValue & ulMaskB) >> ulShiftB;
-
-							pBgraBuffer[nIndex + 0] = (unsigned char)(unR * dKoefR);
-							pBgraBuffer[nIndex + 1] = (unsigned char)(unG * dKoefG);
-							pBgraBuffer[nIndex + 2] = (unsigned char)(unB * dKoefB);
-							pBgraBuffer[nIndex + 3] = pBuffer[3];
-						}
-						else
-						{
-							pBgraBuffer[nIndex + 0] = pBuffer[0]; pBuffer++; lBufLen--;
-							pBgraBuffer[nIndex + 1] = pBuffer[0]; pBuffer++; lBufLen--;
-							pBgraBuffer[nIndex + 2] = pBuffer[0]; pBuffer++; lBufLen--;
-							pBgraBuffer[nIndex + 3] = 255; pBuffer++; lBufLen--; // Если брать значение из картинки, тогда она получается всегда прозрачной
-						}
+						pBgraBuffer[nIndex + 0] = pBuffer[0]; pBuffer++; lBufLen--;
+						pBgraBuffer[nIndex + 1] = pBuffer[0]; pBuffer++; lBufLen--;
+						pBgraBuffer[nIndex + 2] = pBuffer[0]; pBuffer++; lBufLen--;
+						pBgraBuffer[nIndex + 3] = pBuffer[0]; pBuffer++; lBufLen--; // Если брать значение из картинки, тогда она получается всегда прозрачной
 					}
 
 					for (int nX = nWidth; nX < nWidth + nAdd; nX++)
@@ -990,6 +944,12 @@ namespace MetaFile
 						pCur[unIndex + 3] = 0;
 				}
 			}
+		}
+		//Точная копия картинки, поэтому делаем alpha канал = 0xff, чтобы нейтрализовать его
+		else if (0x00CC0020 == unRasterOperation) //SRCCOPY
+		{
+			for (unsigned int unIndex = 3; unIndex < unWidth * 4 * unHeight; unIndex += 4)
+				pBgra[unIndex] = 0xff;
 		}
 	}
 

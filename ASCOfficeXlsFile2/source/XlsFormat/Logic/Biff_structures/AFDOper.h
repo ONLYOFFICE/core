@@ -31,7 +31,6 @@
  */
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h>
 #include "BiffString.h"
 
 #include "AFDOperStr.h"

@@ -31,7 +31,6 @@
  */
 
 #include "PaneType.h"
-//#include <Exception/WrongBiffRecord.h>
 
 namespace XLS
 {

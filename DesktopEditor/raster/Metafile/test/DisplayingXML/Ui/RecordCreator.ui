@@ -1,0 +1,657 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CRecordCreator</class>
+ <widget class="QDialog" name="CRecordCreator">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>98</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QWidget" name="CentralWidget" native="true">
+     <layout class="QVBoxLayout" name="mainLayout">
+      <property name="sizeConstraint">
+       <enum>QLayout::SetMaximumSize</enum>
+      </property>
+      <item>
+       <layout class="QHBoxLayout" name="chooseLayout">
+        <item>
+         <widget class="QComboBox" name="recordsBox">
+          <property name="minimumSize">
+           <size>
+            <width>250</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <item>
+           <property name="text">
+            <string>EMR_POLYBEZIER</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_POLYGON</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_POLYLINE</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_POLYBEZIERTO</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_POLYLINETO</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_POLYPOLYLINE</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_POLYPOLYGON</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SETWINDOWEXTEX</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SETWINDOWORGEX</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SETVIEWPORTEXTEX</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SETVIEWPORTORGEX</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SETBRUSHORGEX</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SETPIXELV</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SETMAPPERFLAGS</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SETMAPMODE</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SETBKMODE</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SETPOLYFILLMODE</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SETROP2</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SETSTRETCHBLTMODE</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SETTEXTALIGN</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SETCOLORADJUSTMENT</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SETTEXTCOLOR</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SETBKCOLOR</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_OFFSETCLIPRGN</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_MOVETOEX</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SETMETARGN</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_EXCLUDECLIPRECT</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_INTERSECTCLIPRECT</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SCALEVIEWPORTEXTEX</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SCALEWINDOWEXTEX</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SAVEDC</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_RESTOREDC</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SETWORLDTRANSFORM</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_MODIFYWORLDTRANSFORM</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SELECTOBJECT</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_CREATEPEN</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_CREATEBRUSHINDIRECT</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_DELETEOBJECT</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_ANGLEARC</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_ELLIPSE</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_RECTANGLE</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_ROUNDRECT</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_ARC</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_CHORD</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_PIE</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SELECTPALETTE</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_CREATEPALETTE</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SETPALETTEENTRIES</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_RESIZEPALETTE</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_REALIZEPALETTE</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_EXTFLOODFILL</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_LINETO</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_ARCTO</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_POLYDRAW</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SETARCDIRECTION</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SETMITERLIMIT</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_BEGINPATH</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_ENDPATH</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_CLOSEFIGURE</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_FILLPATH</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_STROKEANDFILLPATH</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_STROKEPATH</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_FLATTENPATH</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_WIDENPATH</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SELECTCLIPPATH</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_ABORTPATH</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_FILLRGN</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_FRAMERGN</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_INVERTRGN</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_PAINTRGN</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_EXTSELECTCLIPRGN</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_BITBLT</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_STRETCHBLT</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_MASKBLT</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_PLGBLT</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SETDIBITSTODEVICE</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_STRETCHDIBITS</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_EXTCREATEFONTINDIRECTW</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_EXTTEXTOUTA</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_EXTTEXTOUTW</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_POLYBEZIER16</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_POLYGON16</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_POLYLINE16</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_POLYBEZIERTO16</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_POLYLINETO16</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_POLYPOLYLINE16</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_POLYPOLYGON16</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_POLYDRAW16</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_CREATEMONOBRUSH</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_CREATEDIBPATTERNBRUSHPT</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_EXTCREATEPEN</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_POLYTEXTOUTA</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_POLYTEXTOUTW</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SETICMMODE</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_CREATECOLORSPACE</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SETCOLORSPACE</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_DELETECOLORSPACE</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_GLSRECORD</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_GLSBOUNDEDRECORD</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_PIXELFORMAT</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_DRAWESCAPE </string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_EXTESCAPE</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SMALLTEXTOUT</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_FORCEUFIMAPPING</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_NAMEDESCAPE</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_COLORCORRECTPALETTE</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SETICMPROFILEA</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SETICMPROFILEW</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_ALPHABLEND</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SETLAYOUT</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_TRANSPARENTBLT</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_GRADIENTFILL</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SETLINKEDUFIS</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_SETTEXTJUSTIFICATION</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_COLORMATCHTOTARGETW</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>EMR_CREATECOLORSPACEW</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="selectButton">
+          <property name="text">
+           <string>Choose</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="dataLayout">
+        <property name="sizeConstraint">
+         <enum>QLayout::SetMaximumSize</enum>
+        </property>
+       </layout>
+      </item>
+      <item alignment="Qt::AlignBottom">
+       <widget class="QDialogButtonBox" name="buttonBox">
+        <property name="layoutDirection">
+         <enum>Qt::LeftToRight</enum>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="standardButtons">
+         <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+        </property>
+        <property name="centerButtons">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

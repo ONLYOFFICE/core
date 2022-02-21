@@ -36,7 +36,7 @@
 
 #include <boost/ref.hpp>
 
-#include <utf8cpp/utf8.h>
+#include "../../include/utf8cpp/utf8.h"
 
 #include "../../../DesktopEditor/common/Directory.h"
 

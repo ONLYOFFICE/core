@@ -32,9 +32,8 @@
 
 #include "math_limit_elements.h"
 
-#include <xml/xmlchar.h>
-#include <xml/attributes.h>
-#include <xml/simple_xml_writer.h>
+#include "../../include/xml/xmlchar.h"
+#include "../../include/xml/simple_xml_writer.h"
 
 namespace cpdoccore { 
 

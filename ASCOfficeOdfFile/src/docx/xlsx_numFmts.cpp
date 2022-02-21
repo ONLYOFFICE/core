@@ -31,8 +31,8 @@
  */
 #include <vector>
 #include <map>
-#include <xml/utils.h>
-#include <xml/simple_xml_writer.h>
+#include "../../include/xml/utils.h"
+#include "../../include/xml/simple_xml_writer.h"
 
 #include "xlsx_numFmts.h"
 #include "../odf/datatypes/officevaluetype.h"

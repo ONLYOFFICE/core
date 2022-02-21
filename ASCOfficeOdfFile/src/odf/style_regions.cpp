@@ -34,8 +34,7 @@
 #include "text_elements.h"
 #include "paragraph_elements.h"
 
-#include <xml/xmlchar.h>
-#include <xml/attributes.h>
+#include "../../include/xml/xmlchar.h"
 
 #include "serialize_elements.h"
 

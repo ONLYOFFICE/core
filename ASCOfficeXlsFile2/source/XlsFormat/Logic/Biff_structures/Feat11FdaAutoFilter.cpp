@@ -31,7 +31,6 @@
  */
 
 #include "Feat11FdaAutoFilter.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

@@ -679,6 +679,9 @@
     <ClInclude Include="..\Source\Common\Unit.h">
       <Filter>Logic\Common</Filter>
     </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Pivot\PivotCacheDefinitionExt.h">
+      <Filter>XlsxFormat\Pivots</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\DocxFormat\Logic\Table.cpp">
@@ -870,6 +873,9 @@
     </ClCompile>
     <ClCompile Include="..\Source\DocxFormat\Media\Media.cpp">
       <Filter>Media</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsxFormat\Pivot\PivotCacheDefinitionExt.cpp">
+      <Filter>XlsxFormat\Pivots</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

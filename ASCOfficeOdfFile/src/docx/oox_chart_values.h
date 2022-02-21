@@ -32,7 +32,7 @@
 #pragma once 
 
 #include <iosfwd>
-#include <CPOptional.h>
+#include "../../include/CPOptional.h"
 
                  
 namespace cpdoccore {

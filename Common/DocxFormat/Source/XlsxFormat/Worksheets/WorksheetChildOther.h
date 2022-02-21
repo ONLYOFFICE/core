@@ -743,9 +743,9 @@ namespace OOX
                 if(ptr != nullptr)
                 {
                     if(ptr->dxGCol != 0xFFFFFFFF)
-                        m_oBaseColWidth = ptr->dxGCol;
-                    else
-                        m_oDefaultColWidth = ptr->cchDefColWidth;
+                        m_oBaseColWidth = ptr->dxGCol / 256.;
+
+                    m_oDefaultColWidth = ptr->cchDefColWidth;
 
 					if (ptr->fUnsynced)
 						m_oDefaultRowHeight = ptr->miyDefRwHeight;

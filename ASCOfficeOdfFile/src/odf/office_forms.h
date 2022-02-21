@@ -32,9 +32,6 @@
 #pragma once
 
 #include <iosfwd>
-#include <CPOptional.h>
-#include <xml/xmlelement.h>
-#include <xml/nodetype.h>
 
 #include "office_elements.h"
 #include "office_elements_create.h"
@@ -489,7 +486,8 @@ private:
 public:
 	office_element_ptr_array	items_;
 	_CP_OPT(int	)				size_;
-	
+	_CP_OPT(int)				n_value_;
+
 	_CP_OPT(std::wstring)		source_cell_range_;
 	_CP_OPT(std::wstring)		list_source_;
 	
@@ -521,13 +519,13 @@ public:
 	_CP_OPT(std::wstring)		source_cell_range_;
 	_CP_OPT(std::wstring)		list_source_;
 	_CP_OPT(std::wstring)		list_source_type_;
+	_CP_OPT(int)				size_;
+	_CP_OPT(int)				n_value_;
 	
 	//form:bound-column
 	//form:xforms-list-source
 	//form:multiple
 	//form:listlinkage-type
-
-
 };
 CP_REGISTER_OFFICE_ELEMENT2(form_listbox);
 
@@ -634,13 +632,10 @@ CP_REGISTER_OFFICE_ELEMENT2(form_item);
 }
 //<form:connection-resource>7.6.2,  
 //<form:file> 13.5.5,
-//<form:form> 13.3, 
 //<form:formatted-text> 13.5.6, 
-//<form:frame> 13.5.19,
 //<form:generic-control> 13.5.25, 
 //<form:grid> 13.5.22, 
 //<form:hidden> 13.5.21,
 //<form:image> 13.5.16, 
-//<form:image-frame> 13.5.20, 
 //<form:number> 13.5.7,
 //<form:password> 13.5.4, 

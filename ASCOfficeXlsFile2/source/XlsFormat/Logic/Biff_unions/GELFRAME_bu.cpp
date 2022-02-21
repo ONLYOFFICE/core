@@ -31,10 +31,10 @@
  */
 
 #include "GELFRAME.h"
-#include <Logic/Biff_records/GelFrame.h>
-#include <Logic/Biff_records/Continue.h>
+#include "PICF.h"
+#include "../Biff_records/GelFrame.h"
+#include "../Biff_records/Continue.h"
 
-#include <Logic/Biff_unions/PICF.h>
 
 #include "../../../XlsXlsxConverter/XlsConverter.h"
 #include "../../../XlsXlsxConverter/xlsx_conversion_context.h"

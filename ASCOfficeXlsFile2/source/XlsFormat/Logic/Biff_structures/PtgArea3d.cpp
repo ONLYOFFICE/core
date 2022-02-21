@@ -33,7 +33,6 @@
 #include "PtgArea3d.h"
 #include "RevExtern.h"
 #include "CellRangeRef.h"
-#include <Binary/CFRecord.h>
 
 #include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
 

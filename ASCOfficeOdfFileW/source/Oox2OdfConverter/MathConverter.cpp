@@ -1185,7 +1185,7 @@ namespace Oox2Odf
 		if (!oox_nary_pr) return result;
 
 		convert(oox_nary_pr->m_oCtrlPr.GetPointer());
-		result[2] = convert(oox_nary_pr->m_oChr.GetPointer());		
+		/*result[2] = */convert(oox_nary_pr->m_oChr.GetPointer());	// wtf??	
 		convert(oox_nary_pr->m_oGrow.GetPointer());		
 		result[0] = convert(oox_nary_pr->m_oSubHide.GetPointer());
 		result[1] = convert(oox_nary_pr->m_oSupHide.GetPointer());

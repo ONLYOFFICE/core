@@ -31,7 +31,6 @@
  */
 
 #include "SerErr.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

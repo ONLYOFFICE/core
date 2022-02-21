@@ -33,7 +33,7 @@
 #include "xlsx_tablecontext.h"
 
 #include <boost/make_shared.hpp>
-#include <simple_xml_writer.h>
+#include "../Common/simple_xml_writer.h"
 
 namespace oox {
 

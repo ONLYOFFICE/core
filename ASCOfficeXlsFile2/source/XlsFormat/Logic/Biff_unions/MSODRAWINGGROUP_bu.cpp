@@ -31,8 +31,8 @@
  */
 
 #include "MSODRAWINGGROUP.h"
-#include <Logic/Biff_records/MsoDrawingGroup.h>
-#include <Logic/Biff_records/Continue.h>
+#include "../Biff_records/MsoDrawingGroup.h"
+#include "../Biff_records/Continue.h"
 
 namespace XLS
 {

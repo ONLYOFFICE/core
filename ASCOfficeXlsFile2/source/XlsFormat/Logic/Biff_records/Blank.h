@@ -32,14 +32,11 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/CellOffsetResender.h>
-#include <Logic/Biff_structures/Cell.h>
+#include "../Biff_structures/CellOffsetResender.h"
+#include "../Biff_structures/Cell.h"
 
 namespace XLS
 {
-
-
-// Logical representation of Blank record in BIFF8
 class Blank: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Blank)
@@ -50,7 +47,6 @@ public:
 
 	BaseObjectPtr clone();
 
-	
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeBlank;
@@ -63,8 +59,16 @@ public:
 	GlobalWorkbookInfoPtr	global_info_;
 	CellOffsetResender		resender;
 	Cell					cell;
-
 };
+class Blank_BIFF2 : public Blank
+{
+	BIFF_RECORD_DEFINE_TYPE_INFO(Blank_BIFF2)
+	BASE_OBJECT_DEFINE_CLASS_NAME(Blank_BIFF2)
+public:
+	Blank_BIFF2();
+	~Blank_BIFF2();
 
+	BaseObjectPtr clone();
+};
 } // namespace XLS
 

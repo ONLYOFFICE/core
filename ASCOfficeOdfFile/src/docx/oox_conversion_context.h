@@ -60,15 +60,32 @@ namespace odf_reader
 	typedef boost::shared_ptr<office_element> office_element_ptr;
 };
 
-namespace oox {
+namespace oox 
+{
+	enum _form_type
+	{
+		formNone = 0,
+		formButton = 1,
+		formLabel = 2,
+		formCheckbox = 3,
+		formCombobox = 4,
+		formListbox = 5,
+		formDateTime = 6,
+		formSpin = 7,
+		formScroll = 8,
+		formFrame = 9,
+		formImage = 10,
+		formText = 11
+	};
 class forms_context
 {
 public:
+
 	struct _state
 	{
 		std::wstring				id;
 		std::wstring				name;
-		int							type = 0; //enum?
+		_form_type					type;
 		std::wstring				label;
 		std::wstring				uuid;
 		std::wstring				value;
@@ -78,7 +95,7 @@ public:
 	
 		void clear()
 		{
-			type = 0;
+			type = formNone;
 			id.clear();
 			name.clear();
 			label.clear();
@@ -90,7 +107,7 @@ public:
 	};
 	forms_context(){}
 
-	void start_element	(int type);
+	void start_element	(_form_type type);
 		void set_id		(const std::wstring& id);
 		void set_name	(const std::wstring& name);
 		void set_label	(const std::wstring& label);

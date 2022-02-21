@@ -33,10 +33,10 @@
 #include <string>
 
 #include "CodePageOle.h"
-#include <Binary/CFStream.h>
-#include <Auxiliary/HelpFunc.h>
+#include "../../../Binary/CFStream.h"
+#include "../../../Auxiliary/HelpFunc.h"
 
-#include <../../../UnicodeConverter/UnicodeConverter.h>
+#include "../../../../../../UnicodeConverter/UnicodeConverter.h"
 
 namespace OLEPS
 {

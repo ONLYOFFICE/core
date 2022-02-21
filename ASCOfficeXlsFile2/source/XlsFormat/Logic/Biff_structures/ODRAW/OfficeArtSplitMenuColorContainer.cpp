@@ -31,7 +31,6 @@
  */
 
 #include "OfficeArtColorMRUContainer.h"
-#include <Binary/CFRecord.h>
 
 namespace ODRAW
 {

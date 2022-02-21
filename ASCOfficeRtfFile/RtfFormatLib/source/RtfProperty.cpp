@@ -87,7 +87,7 @@ std::wstring RtfFont::RenderToRtf(RenderParameter oRenderParameter)
 		RENDER_RTF_INT( m_nCodePage, sResult, L"cpg" )
 
 		RtfCharProperty oFontNameCharProp;
-        sResult += L" " + RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument, &oFontNameCharProp );
+        sResult += L" " + RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument, &oFontNameCharProp, true );
 		
 //ALL FONTS NEW.docx
 //		if(!m_sAltName.empty() )
@@ -1399,7 +1399,8 @@ std::wstring RtfStyle::RenderToRtfEnd( RenderParameter oRenderParameter )
 	RENDER_RTF_INT	( m_nPriority,	sResult, L"spriority" )
 	RENDER_RTF_BOOL	( m_bUnhiddenWhenUse, sResult, L"sunhideused" )
 
-    sResult += L" " + RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument ) + L";}";
+	RtfCharProperty* props = NULL;
+	sResult += L" " + RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument, props, true) + L";}";
 	return sResult;
 }
 std::wstring RtfCharStyle::RenderToRtf(RenderParameter oRenderParameter)

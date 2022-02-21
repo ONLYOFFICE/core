@@ -33,10 +33,7 @@
 
 #include <string>
 #include <boost/noncopyable.hpp>
-#include <CPScopedPtr.h>
-#include <CPOptional.h>
-
-#include <xml/attributes.h>
+#include "../../include/CPScopedPtr.h"
 
 #include "oox_conversion_context.h"
 #include "../odf/datatypes/stylefamily.h"

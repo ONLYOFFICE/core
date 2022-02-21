@@ -31,7 +31,6 @@
  */
 
 #include "AFDOperRk.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

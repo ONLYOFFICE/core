@@ -35,7 +35,6 @@
 
 namespace XLS
 {
-// Logical representation of ColInfo record in BIFF8 and ColInfo in BIFF12
 class ColInfo: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(ColInfo)
@@ -46,7 +45,7 @@ public:
 
 	BaseObjectPtr clone();
 	
-	void readFields(CFRecord& record);
+	virtual void readFields(CFRecord& record);
 
 	static const ElementType	type = typeColInfo;
 
@@ -54,16 +53,26 @@ public:
     _UINT32		colFirst;
     _UINT32		colLast;
     _UINT32		coldx;
-	IXFCell		ixfe;
-    _UINT32     ixfeXLSB;
+	IXFCell		ixfe = 0xffff;
+    _UINT32     ixfeXLSB = 0xffffffff;
 
-	bool fHidden;
-	bool fUserSet;
-	bool fBestFit;
-	bool fPhonetic;
-	unsigned char	iOutLevel;
-	bool fCollapsed;
+	bool fHidden = false;
+	bool fUserSet = false;
+	bool fBestFit = false;
+	bool fPhonetic = false;
+	unsigned char	iOutLevel = 0;
+	bool fCollapsed = false;
 };
+class ColWidth : public ColInfo
+{
+	BIFF_RECORD_DEFINE_TYPE_INFO(ColWidth)
+	BASE_OBJECT_DEFINE_CLASS_NAME(ColWidth)
+public:
+	ColWidth();
+	~ColWidth();
 
+	BaseObjectPtr clone();
+	virtual void readFields(CFRecord& record);
+};
 } // namespace XLS
 

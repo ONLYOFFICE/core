@@ -121,12 +121,6 @@ public:
 public:
     CFormulaConverter()
     {
-        strGuidsRes = _T("");
-        strPathRes = _T("");
-        strHandleRes = _T("");
-        strAdjRes = _T("");
-        strTextRect = _T("");
-        strCoef = _T("");
         m_lIndexDst = 0;
         m_lIndexSrc = -1;
         m_lWidth = 0;
@@ -150,8 +144,8 @@ public:
         int nAdjCount = m_arAdj.size();
         for (int i = 0; i < nAdjCount; ++i)
         {
-            std::wstring strMem = _T("");
-            strMem.Format(_T("<a:gd name=\"adj%d\" fmla=\"val %d\"/>"), i , m_arAdj[i]);
+            std::wstring strMem;
+            strMem.Format(L"<a:gd name=\"adj%d\" fmla=\"val %d\"/>",  i , m_arAdj[i]);
             strAdjRes += strMem;
         }
     }
@@ -282,7 +276,7 @@ public:
         m_arParts.clear();
         std::vector<std::wstring> oArray;
         CPartPath oPart;
-        NSStringUtils::ParseString(_T("e"), strPath, &oArray);
+        NSStringUtils::ParseString(L"e",  strPath, &oArray);
 
         for (int nIndex = 0; nIndex < oArray.size(); ++nIndex)
         {
@@ -295,15 +289,15 @@ public:
             FromXML( oArray[nIndex], bFill, bStroke);
             LONG nCountSlices = m_arSlicesPath.size();
 
-            strPathRes += _T("<a:path");
-            strValue.Format(_T(" w=\"%d\" h=\"%d\""), m_lWidth, m_lHeight);
+            strPathRes += L"<a:path";
+            strValue.Format(L" w=\"%d\" h=\"%d\"",  m_lWidth, m_lHeight);
             strPathRes += strValue;
 
             if (!bStroke)
-                strPathRes += _T(" stroke=\"false\"");
+                strPathRes += L" stroke=\"false\"");
             if (!bFill)
-                strPathRes += _T(" fill=\"none\"");
-            strPathRes += _T(">");
+                strPathRes += L" fill=\"none\"");
+            strPathRes += L">";
 
             for (int i=0; i<nCountSlices; ++i)
             {
@@ -331,7 +325,7 @@ public:
 
                         m_arIndexDst.push_back(m_lIndexDst-1);
 
-                        strPathRes += _T("<a:moveTo><a:pt x=\"") + GetValue(m_lIndexDst-2, ptFormula, true) + _T("\" y=\"") + GetValue(m_lIndexDst-1, ptFormula, true) + _T("\" /></a:moveTo>");
+                        strPathRes += L"<a:moveTo><a:pt x=\"" + GetValue(m_lIndexDst-2, ptFormula, true) + L"\" y=\"" + GetValue(m_lIndexDst-1, ptFormula, true) + L"\" /></a:moveTo>";
                     }
                 }
 
@@ -347,13 +341,13 @@ public:
                         strGuidsRes += ConvertSum ( m_lIndexDst-2, ptFormula, pCurPoint.y, pCurPointType.y, 0, ptValue, true, false, true);
                         m_arIndexDst.push_back(m_lIndexDst-1);
 
-                        strPathRes += _T("<a:moveTo><a:pt x=\"") + GetValue(m_lIndexDst-2, ptFormula, true) + _T("\" y=\"") + GetValue(m_lIndexDst-1, ptFormula, true) + _T("\" /></a:moveTo>");
+                        strPathRes += L"<a:moveTo><a:pt x=\"") + GetValue(m_lIndexDst-2, ptFormula, true) + L"\" y=\"") + GetValue(m_lIndexDst-1, ptFormula, true) + L"\" /></a:moveTo>");
                     }
                 }
 
                 else if( oSlice.m_eRuler == rtClose )
                 {
-                    strPathRes += _T("<a:close/>");
+                    strPathRes += L"<a:close/>";
                 }
 
                 else if ( oSlice.m_eRuler == rtLineTo)
@@ -368,7 +362,7 @@ public:
                         strGuidsRes += ConvertVal (pCurPoint.y, pCurPointType.y, false);
                         m_arIndexDst.push_back(m_lIndexDst-1);
 
-                        strPathRes += _T("<a:lnTo><a:pt x=\"") + GetValue(m_lIndexDst-2, ptFormula, true) + _T("\" y=\"") + GetValue(m_lIndexDst-1, ptFormula, true) + _T("\" /></a:lnTo>");
+                        strPathRes += L"<a:lnTo><a:pt x=\"" + GetValue(m_lIndexDst-2, ptFormula, true) + L"\" y=\"" + GetValue(m_lIndexDst-1, ptFormula, true) + L"\" /></a:lnTo>");
                     }
                 }
 
@@ -384,7 +378,7 @@ public:
                         strGuidsRes += ConvertSum ( m_lIndexDst-2, ptFormula, pCurPoint.y, pCurPointType.y, 0, ptValue, true, false, true);
                         m_arIndexDst.push_back(m_lIndexDst-1);
 
-                        strPathRes += _T("<a:lnTo><a:pt x=\"") + GetValue(m_lIndexDst-2, ptFormula, true) + _T("\" y=\"") + GetValue(m_lIndexDst-1, ptFormula, true) + _T("\" /></a:lnTo>");
+                        strPathRes += L"<a:lnTo><a:pt x=\"" + GetValue(m_lIndexDst-2, ptFormula, true) + L"\" y=\"" + GetValue(m_lIndexDst-1, ptFormula, true) + L"\" /></a:lnTo>";
                     }
                 }
 
@@ -597,19 +591,19 @@ public:
                         nIndex2 = m_arIndexDst[m_lIndexSrc-1];//swAng
 
                         if (oSlice.m_eRuler == rtArc && j == 0)
-                            strFrmla = _T("moveTo");
+                            strFrmla = L"moveTo";
                         else
-                            strFrmla = _T("lnTo");
+                            strFrmla = L"lnTo";
 
-                        strPathRes += _T("<a:") + strFrmla + _T("><a:pt x=\"") + GetValue(nIndex-5, ptFormula, true) + _T("\" y=\"") + GetValue(nIndex, ptFormula, true) +
-                                + _T("\" /></a:") + strFrmla + _T("><a:arcTo wR=\"") + GetValue(m_lIndexDst-2, ptFormula, true) + _T("\" hR=\"") + GetValue(m_lIndexDst-1, ptFormula, true) +
-                                + _T("\" stAng=\"") + GetValue(nIndex1, ptFormula, true) + _T("\" swAng=\"") + GetValue(nIndex2, ptFormula, true) + _T("\" />");
+                        strPathRes += L"<a:" + strFrmla + L"><a:pt x=\""+ GetValue(nIndex-5, ptFormula, true) + L"\" y=\"" + GetValue(nIndex, ptFormula, true) +
+                                + L"\" /></a:" + strFrmla + L"><a:arcTo wR=\"" + GetValue(m_lIndexDst-2, ptFormula, true) + L"\" hR=\"" + GetValue(m_lIndexDst-1, ptFormula, true) +
+                                + L"\" stAng=\"" + GetValue(nIndex1, ptFormula, true) + L"\" swAng=\"" + GetValue(nIndex2, ptFormula, true) + L"\" />";
 
                         //старт
 
                         /*LONG nIndex3 = m_arIndexDst[m_lIndexSrc-14];
-                                                            strPathRes += _T("<a:moveTo><a:pt x=\"0\" y=\"0\" /></a:moveTo><a:lnTo><a:pt x=\"") + GetValue(nIndex3-1, ptFormula, true) + _T("\" y=\"") + GetValue(nIndex3, ptFormula, true) +
-                                                                    + _T("\" /></a:lnTo>");*/
+                                                            strPathRes += L"<a:moveTo><a:pt x=\"0\" y=\"0\" /></a:moveTo><a:lnTo><a:pt x=\"") + GetValue(nIndex3-1, ptFormula, true) + L"\" y=\"") + GetValue(nIndex3, ptFormula, true) +
+                                                                    + L"\" /></a:lnTo>");*/
 
                         //текущая точка
 
@@ -824,13 +818,13 @@ public:
                         nIndex2 = m_arIndexDst[m_lIndexSrc-1];//swAng
 
                         if (oSlice.m_eRuler == rtClockwiseArc && j == 0)
-                            strFrmla = _T("moveTo");
+                            strFrmla = L"moveTo";
                         else
-                            strFrmla = _T("lnTo");
+                            strFrmla = L"lnTo";
 
-                        strPathRes += _T("<a:") + strFrmla + _T("><a:pt x=\"") + GetValue(nIndex-5, ptFormula, true) + _T("\" y=\"") + GetValue(nIndex, ptFormula, true) +
-                                + _T("\" /></a:") + strFrmla + _T("><a:arcTo wR=\"") + GetValue(m_lIndexDst-2, ptFormula, true) + _T("\" hR=\"") + GetValue(m_lIndexDst-1, ptFormula, true) +
-                                + _T("\" stAng=\"") + GetValue(nIndex1, ptFormula, true) + _T("\" swAng=\"") + GetValue(nIndex2, ptFormula, true) + _T("\" />");
+                        strPathRes += L"<a:" + strFrmla + L"><a:pt x=\"" + GetValue(nIndex-5, ptFormula, true) + L"\" y=\"" + GetValue(nIndex, ptFormula, true) +
+                                + L"\" /></a:" + strFrmla + L"><a:arcTo wR=\"" + GetValue(m_lIndexDst-2, ptFormula, true) + L"\" hR=\"" + GetValue(m_lIndexDst-1, ptFormula, true) +
+                                + L"\" stAng=\"" + GetValue(nIndex1, ptFormula, true) + L"\" swAng=\"" + GetValue(nIndex2, ptFormula, true) + L"\" />";
 
                         //текущая точка
 
@@ -847,24 +841,24 @@ public:
                         int l = nCountPoints - j - 3;
                         if ( l>=0 )
                         {
-                            strPathRes += _T("<a:quadBezTo>");
+                            strPathRes += L"<a:quadBezTo>";
                             for (int k=0; k<2; ++k)
                             {
                                 pCurPoint = oSlice.m_arPoints[j+k];
                                 pCurPointType = oSlice.m_arPointsType[j+k];
-                                strPathRes += _T("<a:pt x=\"") + GetValue(pCurPoint.x, pCurPointType.x, false) + _T("\" y=\"") + GetValue(pCurPoint.y, pCurPointType.y, false) + _T("\" />");
+                                strPathRes += L"<a:pt x=\"" + GetValue(pCurPoint.x, pCurPointType.x, false) + L"\" y=\"" + GetValue(pCurPoint.y, pCurPointType.y, false) + L"\" />";
                             }
-                            strPathRes += _T("</a:quadBezTo>");
+                            strPathRes += L"</a:quadBezTo>";
                         }
                         else
                         {
                             for (int k=0; k<nCountPoints-j; ++k)
                             {
-                                strPathRes += _T("<a:lnTo>");
+                                strPathRes += L"<a:lnTo>";
                                 pCurPoint = oSlice.m_arPoints[j+k];
                                 pCurPointType = oSlice.m_arPointsType[j+k];
-                                strPathRes += _T("<a:pt x=\"") + GetValue(pCurPoint.x, pCurPointType.x, false) + _T("\" y=\"") + GetValue(pCurPoint.y, pCurPointType.y, false) + _T("\" />");
-                                strPathRes += _T("</a:lnTo>");
+                                strPathRes += L"<a:pt x=\"" + GetValue(pCurPoint.x, pCurPointType.x, false) + L"\" y=\"" + GetValue(pCurPoint.y, pCurPointType.y, false) + L"\" />";
+                                strPathRes += L"</a:lnTo>";
                             }
                         }
 
@@ -882,24 +876,24 @@ public:
                         int l = nCountPoints - j - 3;
                         if ( l>=0 )
                         {
-                            strPathRes += _T("<a:cubicBezTo>");
+                            strPathRes += L"<a:cubicBezTo>";
                             for (int k=0; k<3; ++k)
                             {
                                 pCurPoint = oSlice.m_arPoints[j+k];
                                 pCurPointType = oSlice.m_arPointsType[j+k];
-                                strPathRes += _T("<a:pt x=\"") + GetValue(pCurPoint.x, pCurPointType.x, false) + _T("\" y=\"") + GetValue(pCurPoint.y, pCurPointType.y, false) + _T("\" />");
+                                strPathRes += L"<a:pt x=\"" + GetValue(pCurPoint.x, pCurPointType.x, false) + L"\" y=\"" + GetValue(pCurPoint.y, pCurPointType.y, false) + L"\" />";
                             }
-                            strPathRes += _T("</a:cubicBezTo>");
+                            strPathRes += L"</a:cubicBezTo>";
                         }
                         else
                         {
                             for (int k=0; k<nCountPoints-j; ++k)
                             {
-                                strPathRes += _T("<a:lnTo>");
+                                strPathRes += L"<a:lnTo>";
                                 pCurPoint = oSlice.m_arPoints[j+k];
                                 pCurPointType = oSlice.m_arPointsType[j+k];
-                                strPathRes += _T("<a:pt x=\"") + GetValue(pCurPoint.x, pCurPointType.x, false) + _T("\" y=\"") + GetValue(pCurPoint.y, pCurPointType.y, false) + _T("\" />");
-                                strPathRes += _T("</a:lnTo>");
+                                strPathRes += L"<a:pt x=\"" + GetValue(pCurPoint.x, pCurPointType.x, false) + L"\" y=\"" + GetValue(pCurPoint.y, pCurPointType.y, false) + L"\" />";
+                                strPathRes += L"</a:lnTo>";
                             }
                         }
 
@@ -919,7 +913,7 @@ public:
                         int l = nCountPoints - j - 3;
                         if ( l>=0 )
                         {
-                            strPathRes += _T("<a:cubicBezTo>");
+                            strPathRes += L"<a:cubicBezTo>";
                             for (int k=0; k<3; ++k)
                             {
                                 pCurPoint = oSlice.m_arPoints[j+k];
@@ -930,15 +924,15 @@ public:
                                 strGuidsRes += ConvertSum ( nIndex, ptFormula, pCurPoint.y, pCurPointType.y, 0, ptValue, true, false, true);
                                 m_arIndexDst.push_back(m_lIndexDst-1);
 
-                                strPathRes += _T("<a:pt x=\"") + GetValue(m_lIndexDst-2, ptFormula, true) + _T("\" y=\"") + GetValue(m_lIndexDst-1, ptFormula, true) + _T("\" />");
+                                strPathRes += L"<a:pt x=\"" + GetValue(m_lIndexDst-2, ptFormula, true) + L"\" y=\"" + GetValue(m_lIndexDst-1, ptFormula, true) + L"\" />";
                             }
-                            strPathRes += _T("</a:cubicBezTo>");
+                            strPathRes += L"</a:cubicBezTo>";
                         }
                         else
                         {
                             for (int k=0; k<nCountPoints-j; ++k)
                             {
-                                strPathRes += _T("<a:lnTo>");
+                                strPathRes += L"<a:lnTo>";
                                 pCurPoint = oSlice.m_arPoints[j+k];
                                 pCurPointType = oSlice.m_arPointsType[j+k];
 
@@ -947,8 +941,8 @@ public:
                                 strGuidsRes += ConvertSum ( nIndex, ptFormula, pCurPoint.y, pCurPointType.y, 0, ptValue, true, false, true);
                                 m_arIndexDst.push_back(m_lIndexDst-1);
 
-                                strPathRes += _T("<a:pt x=\"") + GetValue(m_lIndexDst-2, ptFormula, true) + _T("\" y=\"") + GetValue(m_lIndexDst-1, ptFormula, true) + _T("\" />");
-                                strPathRes += _T("</a:lnTo>");
+                                strPathRes += L"<a:pt x=\"" + GetValue(m_lIndexDst-2, ptFormula, true) + L"\" y=\"" + GetValue(m_lIndexDst-1, ptFormula, true) + L"\" />";
+                                strPathRes += L"</a:lnTo>";
                             }
                         }
 
@@ -1038,13 +1032,13 @@ public:
                         nIndex2 = m_arIndexDst[m_lIndexSrc-3];//wR и hR
 
                         if (j == 0)
-                            strFrmla = _T("moveTo");
+                            strFrmla = L"moveTo";
                         else
-                            strFrmla = _T("lnTo");
+                            strFrmla = L"lnTo";
 
-                        strPathRes += _T("<a:") + strFrmla + _T("><a:pt x=\"") + GetValue(nIndex-2, ptFormula, true) + _T("\" y=\"") + GetValue(nIndex, ptFormula, true) +
-                                + _T("\" /></a:") + strFrmla + _T("><a:arcTo wR=\"") + GetValue(nIndex2-1, ptFormula, true) + _T("\" hR=\"") + GetValue(nIndex2, ptFormula, true) +
-                                _T("\" stAng=\"") + GetValue(nIndex1-2, ptFormula, true) + _T("\" swAng=\"") + GetValue(nIndex1, ptFormula, true) + _T("\" />");
+                        strPathRes += L"<a:" + strFrmla + L"><a:pt x=\"" + GetValue(nIndex-2, ptFormula, true) + L"\" y=\"" + GetValue(nIndex, ptFormula, true) +
+                                + L"\" /></a:" + strFrmla + L"><a:arcTo wR=\"" + GetValue(nIndex2-1, ptFormula, true) + L"\" hR=\"" + GetValue(nIndex2, ptFormula, true) +
+                                L"\" stAng=\"" + GetValue(nIndex1-2, ptFormula, true) + L"\" swAng=\"" + GetValue(nIndex1, ptFormula, true) + L"\" />";
 
                         //текущая точка
 
@@ -1092,7 +1086,7 @@ public:
                     }
                 }
             }
-            strPathRes += _T("</a:path>");
+            strPathRes += L"</a:path>";
         }
         return;
     }
@@ -1112,9 +1106,9 @@ public:
             SHandle oHandle;
             ParamType ptType;
 
-            if (pHnPoint.position != _T(""))
+            if (pHnPoint.position != L"")
             {
-                NSStringUtils::ParseString(_T(","), pHnPoint.position, &arPos);
+                NSStringUtils::ParseString(L",",  pHnPoint.position, &arPos);
 
                 oHandle.gdRef.x = GetHandleValue(arPos[0], m_lWidth, ptType);
                 oHandle.gdRefType.x = ptType;
@@ -1127,7 +1121,7 @@ public:
                     oHandle.bRefExist.y = true;
 
 
-                if (pHnPoint.polar != _T(""))
+                if (pHnPoint.polar != L"")
                 {
                     //пришел полярный угол
                     oHandle.bRefExist.y = false;
@@ -1135,7 +1129,7 @@ public:
                     oHandle.bRefPolarExist.y = true;
                     oHandle.bMinPolarExist.y = true;
 
-                    NSStringUtils::ParseString(_T(","), pHnPoint.polar, &arPolar);
+                    NSStringUtils::ParseString(L",",  pHnPoint.polar, &arPolar);
 
                     oHandle.PolarCentre.x = GetHandleValue(arPolar[0], m_lWidth, ptType);
                     oHandle.PolarCentreType.x = ptType;
@@ -1173,39 +1167,39 @@ public:
                         m_arIndexDst.push_back(m_lIndexDst-1);
 
                         std::wstring strMem;
-                        strMem.Format (_T("&%d"), m_lIndexDst-2);
-                        oHandle.Pos.x = GetHandlePos (strMem, _T("w"), m_lWidth);
+                        strMem.Format (L"&%d",  m_lIndexDst-2);
+                        oHandle.Pos.x = GetHandlePos (strMem, L"w",  m_lWidth);
                         oHandle.PosType.x = ptFormula;
 
-                        strMem.Format (_T("&%d"), m_lIndexDst-2);
-                        oHandle.Pos.y = GetHandlePos (strMem, _T("h"), m_lHeight);
+                        strMem.Format (L"&%d",  m_lIndexDst-2);
+                        oHandle.Pos.y = GetHandlePos (strMem, L"h",  m_lHeight);
                         oHandle.PosType.y = ptFormula;
                     }
 
                 }
                 else//если пришли обычные координаты
                 {
-                    if ((pHnPoint.xrange != _T("") && oHandle.gdRefType.x != ptAdjust && oHandle.gdRefType.y == ptAdjust) ||
-                            (pHnPoint.yrange != _T("") && oHandle.gdRefType.x == ptAdjust && oHandle.gdRefType.y != ptAdjust))
+                    if ((pHnPoint.xrange != L"" && oHandle.gdRefType.x != ptAdjust && oHandle.gdRefType.y == ptAdjust) ||
+                            (pHnPoint.yrange != L"" && oHandle.gdRefType.x == ptAdjust && oHandle.gdRefType.y != ptAdjust))
                     {
-                        oHandle.Pos.x = GetHandlePos (arPos[1], _T("w"), m_lWidth);
+                        oHandle.Pos.x = GetHandlePos (arPos[1], L"w",  m_lWidth);
                         oHandle.PosType.x = ptFormula;
 
-                        oHandle.Pos.y = GetHandlePos (arPos[0], _T("h"), m_lHeight);
+                        oHandle.Pos.y = GetHandlePos (arPos[0], L"h",  m_lHeight);
                         oHandle.PosType.y = ptFormula;
                     }
                     else
                     {
-                        oHandle.Pos.x = GetHandlePos (arPos[0], _T("w"), m_lWidth);
+                        oHandle.Pos.x = GetHandlePos (arPos[0], L"w",  m_lWidth);
                         oHandle.PosType.x = ptFormula;
 
-                        oHandle.Pos.y = GetHandlePos (arPos[1], _T("h"), m_lHeight);
+                        oHandle.Pos.y = GetHandlePos (arPos[1], L"h",  m_lHeight);
                         oHandle.PosType.y = ptFormula;
                     }
                 }
             }
 
-            if (pHnPoint.xrange != _T(""))
+            if (pHnPoint.xrange != L"")
             {
                 if ( oHandle.gdRefType.x != ptAdjust && oHandle.gdRefType.y == ptAdjust)
                 {
@@ -1218,7 +1212,7 @@ public:
                     oHandle.bRefExist.y = false;
                 }
 
-                NSStringUtils::ParseString(_T(","), pHnPoint.xrange, &arRangeX);
+                NSStringUtils::ParseString(L",",  pHnPoint.xrange, &arRangeX);
                 oHandle.Min.x = GetHandleValue(arRangeX[0], m_lWidth, ptType);
                 oHandle.MinType.x = ptType;
                 if ( oHandle.bRefExist.x)
@@ -1230,7 +1224,7 @@ public:
                     oHandle.bMaxExist.x = true;
             }
 
-            if (pHnPoint.yrange != _T(""))
+            if (pHnPoint.yrange != L"")
             {
                 if ( oHandle.gdRefType.x == ptAdjust && oHandle.gdRefType.y != ptAdjust)
                 {
@@ -1243,7 +1237,7 @@ public:
                     oHandle.bRefExist.y = true;
                 }
 
-                NSStringUtils::ParseString(_T(","), pHnPoint.yrange, &arRangeY);
+                NSStringUtils::ParseString(L",",  pHnPoint.yrange, &arRangeY);
                 oHandle.Min.y = GetHandleValue(arRangeY[0], m_lHeight, ptType);
                 oHandle.MinType.y = ptType;
                 if ( oHandle.bRefExist.y )
@@ -1255,9 +1249,9 @@ public:
                     oHandle.bMaxExist.y = true;
             }
 
-            if (pHnPoint.radiusrange != _T(""))
+            if (pHnPoint.radiusrange != L"")
             {
-                NSStringUtils::ParseString(_T(","), pHnPoint.radiusrange, &arPos);
+                NSStringUtils::ParseString(L",",  pHnPoint.radiusrange, &arPos);
                 oHandle.Min.x = GetHandleValue(arPos[0], m_lHeight, ptType);
                 oHandle.MinType.x = ptType;
                 oHandle.bMinPolarExist.x = true;
@@ -1282,21 +1276,21 @@ public:
 
     void ConvertTextRect ( std::wstring strRect)
     {
-        if (strRect == _T(""))
+        if (strRect == L"")
             return;
 
         std::vector<std::wstring> arBorder;
-        NSStringUtils::ParseString(_T(","), strRect, &arBorder);
+        NSStringUtils::ParseString(L",",  strRect, &arBorder);
 
         m_lIndexSrc++;
-        strGuidsRes += ConvertProd( _T("w"), arBorder[0], m_lWidth );
-        strGuidsRes += ConvertProd( _T("h"), arBorder[1], m_lHeight );
-        strGuidsRes += ConvertProd( _T("w"), arBorder[2], m_lWidth );
-        strGuidsRes += ConvertProd( _T("h"), arBorder[3], m_lHeight );
+        strGuidsRes += ConvertProd( L"w",  arBorder[0], m_lWidth );
+        strGuidsRes += ConvertProd( L"h",  arBorder[1], m_lHeight );
+        strGuidsRes += ConvertProd( L"w",  arBorder[2], m_lWidth );
+        strGuidsRes += ConvertProd( L"h",  arBorder[3], m_lHeight );
         m_arIndexDst.push_back(m_lIndexDst);
 
-        strTextRect = _T("<a:rect l=\"") + GetValue(m_lIndexDst-4, ptFormula, true) + _T("\" t=\"") + GetValue(m_lIndexDst-3, ptFormula, true)
-                + _T("\" r=\"") + GetValue(m_lIndexDst-2, ptFormula, true) + _T("\" b=\"") + GetValue(m_lIndexDst-1, ptFormula, true) + _T("\" />");
+        strTextRect = L"<a:rect l=\"" + GetValue(m_lIndexDst-4, ptFormula, true) + L"\" t=\"" + GetValue(m_lIndexDst-3, ptFormula, true)
+                + L"\" r=\"" + GetValue(m_lIndexDst-2, ptFormula, true) + L"\" b=\"" + GetValue(m_lIndexDst-1, ptFormula, true) + L"\" />";
         return;
     }
 private:
@@ -1310,21 +1304,21 @@ private:
         case ptFormula:
         {
             if (bExtShape)
-                strValue.Format(_T("%d"), lParam);
+                strValue.Format(L"%d",  lParam);
             else
-                strValue.Format(_T("%d"), m_arIndexDst[lParam]);
-            strValue = _T("gd") + strValue;
+                strValue.Format(L"%d",  m_arIndexDst[lParam]);
+            strValue = L"gd" + strValue;
             break;
         }
         case ptAdjust:
         {
-            strValue.Format(_T("%d"), lParam);
-            strValue = _T("adj") + strValue;
+            strValue.Format(L"%d",  lParam);
+            strValue = L"adj" + strValue;
             break;
         }
         case ptValue:
         {
-            strValue.Format(_T("%d"), lParam);
+            strValue.Format(L"%d",  lParam);
             strValue = strValue;
             break;
         }
@@ -1337,14 +1331,14 @@ private:
     std::wstring GetXML (std::wstring strFmlaNum, std::wstring strSign, std::wstring strFrmla)
     {
 
-        return _T("<a:gd name=") + strFmlaNum + _T("fmla=\"") + strSign + strFrmla + _T("\"/>");
+        return L"<a:gd name=" + strFmlaNum + L"fmla=\"" + strSign + strFrmla + L"\"/>";
     }
 
     std::wstring ConvertVal (LONG lparam1, ParamType eType1, bool bExtShape1)
     {
 
-        strFmlaNum.Format(_T("\"gd%d\" "), m_lIndexDst);
-        strSign = _T("val ");
+        strFmlaNum.Format(L"\"gd%d\" ",  m_lIndexDst);
+        strSign = L"val ");
         strFrmla = GetValue(lparam1, eType1, bExtShape1);
         m_lIndexDst++;
         return GetXML (strFmlaNum, strSign, strFrmla);
@@ -1353,9 +1347,9 @@ private:
     std::wstring ConvertSum (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, LONG lParam3, ParamType eType3, bool bExtShape1, bool bExtShape2, bool bExtShape3)
     {
 
-        strFmlaNum.Format(_T("\"gd%d\" "), m_lIndexDst);
-        strSign = _T("+- ");
-        strFrmla = GetValue(lParam1, eType1, bExtShape1) + _T(" ") + GetValue(lParam2, eType2, bExtShape2) + _T(" ") +  GetValue(lParam3, eType3, bExtShape3);
+        strFmlaNum.Format(L"\"gd%d\" ",  m_lIndexDst);
+        strSign = L"+- ";
+        strFrmla = GetValue(lParam1, eType1, bExtShape1) + L" " + GetValue(lParam2, eType2, bExtShape2) + L" " +  GetValue(lParam3, eType3, bExtShape3);
         m_lIndexDst++;
         return GetXML (strFmlaNum, strSign, strFrmla);
     }
@@ -1363,9 +1357,9 @@ private:
     std::wstring ConvertProd (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, LONG lParam3, ParamType eType3, bool bExtShape1, bool bExtShape2, bool bExtShape3)
     {
 
-        strSign = _T("*/ ");
-        strFrmla = GetValue(lParam1, eType1, bExtShape1) + _T(" ") +  GetValue(lParam2, eType2, bExtShape2) + _T(" ") +  GetValue(lParam3, eType3, bExtShape3);
-        strFmlaNum.Format(_T("\"gd%d\" "), m_lIndexDst);
+        strSign = L"*/ ";
+        strFrmla = GetValue(lParam1, eType1, bExtShape1) + L" " +  GetValue(lParam2, eType2, bExtShape2) + L" " +  GetValue(lParam3, eType3, bExtShape3);
+        strFmlaNum.Format(L"\"gd%d\" ",  m_lIndexDst);
         m_lIndexDst++;
         return GetXML (strFmlaNum, strSign, strFrmla);
     }
@@ -1373,8 +1367,8 @@ private:
     std::wstring ConvertAbs (LONG lparam1, ParamType eType1, bool bExtShape1)
     {
 
-        strFmlaNum.Format(_T("\"gd%d\" "), m_lIndexDst);
-        strSign = _T("abs ");
+        strFmlaNum.Format(L"\"gd%d\" ",  m_lIndexDst);
+        strSign = L"abs ";
         strFrmla = GetValue(lparam1, eType1, bExtShape1);
         m_lIndexDst++;
         return GetXML (strFmlaNum, strSign, strFrmla);
@@ -1383,9 +1377,9 @@ private:
     std::wstring ConvertMin (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, bool bExtShape1, bool bExtShape2)
     {
 
-        strSign = _T("min ");
-        strFrmla = GetValue(lParam1, eType1, bExtShape1) + _T(" ") +  GetValue(lParam2, eType2, bExtShape2);
-        strFmlaNum.Format(_T("\"gd%d\" "), m_lIndexDst);
+        strSign = L"min ";
+        strFrmla = GetValue(lParam1, eType1, bExtShape1) + L" " +  GetValue(lParam2, eType2, bExtShape2);
+        strFmlaNum.Format(L"\"gd%d\" ",  m_lIndexDst);
         m_lIndexDst++;
         return GetXML (strFmlaNum, strSign, strFrmla);
     }
@@ -1393,9 +1387,9 @@ private:
     std::wstring ConvertMax (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, bool bExtShape1, bool bExtShape2)
     {
 
-        strSign = _T("max ");
-        strFrmla = GetValue(lParam1, eType1, bExtShape1) + _T(" ") +  GetValue(lParam2, eType2, bExtShape2);
-        strFmlaNum.Format(_T("\"gd%d\" "), m_lIndexDst);
+        strSign = L"max ";
+        strFrmla = GetValue(lParam1, eType1, bExtShape1) + L" " +  GetValue(lParam2, eType2, bExtShape2);
+        strFmlaNum.Format(L"\"gd%d\" ",  m_lIndexDst);
         m_lIndexDst++;
         return GetXML (strFmlaNum, strSign, strFrmla);
     }
@@ -1403,9 +1397,9 @@ private:
     std::wstring ConvertIf (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, LONG lParam3, ParamType eType3, bool bExtShape1, bool bExtShape2, bool bExtShape3)
     {
 
-        strSign = _T("?: ");
-        strFrmla = GetValue(lParam1, eType1, bExtShape1) + _T(" ") +  GetValue(lParam2, eType2, bExtShape2) + _T(" ") +  GetValue(lParam3, eType3, bExtShape3);
-        strFmlaNum.Format(_T("\"gd%d\" "), m_lIndexDst);
+        strSign = L"?: ";
+        strFrmla = GetValue(lParam1, eType1, bExtShape1) + L" " +  GetValue(lParam2, eType2, bExtShape2) + L" " +  GetValue(lParam3, eType3, bExtShape3);
+        strFmlaNum.Format(L"\"gd%d\" ",  m_lIndexDst);
         m_lIndexDst++;
         return GetXML (strFmlaNum, strSign, strFrmla);
     }
@@ -1413,8 +1407,8 @@ private:
     std::wstring ConvertSqrt (LONG lparam1, ParamType eType1, bool bExtShape1)
     {
 
-        strFmlaNum.Format(_T("\"gd%d\" "), m_lIndexDst);
-        strSign = _T("sqrt ");
+        strFmlaNum.Format(L"\"gd%d\" ",  m_lIndexDst);
+        strSign = L"sqrt ";
         strFrmla = GetValue(lparam1, eType1, bExtShape1);
         m_lIndexDst++;
         return GetXML (strFmlaNum, strSign, strFrmla);
@@ -1423,9 +1417,9 @@ private:
     std::wstring ConvertAt2 (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, bool bExtShape1, bool bExtShape2)
     {
 
-        strFmlaNum.Format(_T("\"gd%d\" "), m_lIndexDst);
-        strSign = _T("at2 ");
-        strFrmla = GetValue(lParam1, eType1, bExtShape1) + _T(" ") +  GetValue(lParam2, eType2, bExtShape2);
+        strFmlaNum.Format(L"\"gd%d\" ",  m_lIndexDst);
+        strSign = L"at2 ";
+        strFrmla = GetValue(lParam1, eType1, bExtShape1) + L" " +  GetValue(lParam2, eType2, bExtShape2);
         m_lIndexDst++;
         return GetXML (strFmlaNum, strSign, strFrmla);
     }
@@ -1433,9 +1427,9 @@ private:
     std::wstring ConvertSin (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, bool bExtShape1, bool bExtShape2)
     {
 
-        strFmlaNum.Format(_T("\"gd%d\" "), m_lIndexDst);
-        strSign = _T("sin ");
-        strFrmla = GetValue(lParam1, eType1, bExtShape1) + _T(" ") +  GetValue(lParam2, eType2, bExtShape2);
+        strFmlaNum.Format(L"\"gd%d\" ",  m_lIndexDst);
+        strSign = L"sin ";
+        strFrmla = GetValue(lParam1, eType1, bExtShape1) + L" " +  GetValue(lParam2, eType2, bExtShape2);
         m_lIndexDst++;
         return GetXML (strFmlaNum, strSign, strFrmla);
     }
@@ -1443,45 +1437,45 @@ private:
     std::wstring ConvertCos (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2,  bool bExtShape1, bool bExtShape2)
     {
 
-        strFmlaNum.Format(_T("\"gd%d\" "), m_lIndexDst);
-        strSign = _T("cos ");
-        strFrmla = GetValue(lParam1, eType1, bExtShape1) + _T(" ") +  GetValue(lParam2, eType2, bExtShape2);
+        strFmlaNum.Format(L"\"gd%d\" ",  m_lIndexDst);
+        strSign = L"cos ";
+        strFrmla = GetValue(lParam1, eType1, bExtShape1) + L" " +  GetValue(lParam2, eType2, bExtShape2);
         m_lIndexDst++;
         return GetXML (strFmlaNum, strSign, strFrmla);
     }
 
     std::wstring ConvertCat2 (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, LONG lParam3, ParamType eType3, bool bExtShape1, bool bExtShape2, bool bExtShape3)
     {
-        strFmlaNum.Format(_T("\"gd%d\" "), m_lIndexDst);
-        strSign = _T("cat2 ");
-        strFrmla = GetValue(lParam1, eType1, bExtShape1) + _T(" ") +  GetValue(lParam2, eType2, bExtShape2) + _T(" ") +  GetValue(lParam3, eType3, bExtShape3);
+        strFmlaNum.Format(L"\"gd%d\" ",  m_lIndexDst);
+        strSign = L"cat2 ";
+        strFrmla = GetValue(lParam1, eType1, bExtShape1) + L" " +  GetValue(lParam2, eType2, bExtShape2) + L" " +  GetValue(lParam3, eType3, bExtShape3);
         m_lIndexDst++;
         return GetXML (strFmlaNum, strSign, strFrmla);
     }
 
     std::wstring ConvertSat2 (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, LONG lParam3, ParamType eType3, bool bExtShape1, bool bExtShape2, bool bExtShape3)
     {
-        strFmlaNum.Format(_T("\"gd%d\" "), m_lIndexDst);
-        strSign = _T("sat2 ");
-        strFrmla = GetValue(lParam1, eType1, bExtShape1) + _T(" ") +  GetValue(lParam2, eType2, bExtShape2) + _T(" ") +  GetValue(lParam3, eType3, bExtShape3);
+        strFmlaNum.Format(L"\"gd%d\" ",  m_lIndexDst);
+        strSign = L"sat2 ";
+        strFrmla = GetValue(lParam1, eType1, bExtShape1) + L" " +  GetValue(lParam2, eType2, bExtShape2) + L" " +  GetValue(lParam3, eType3, bExtShape3);
         m_lIndexDst++;
         return GetXML (strFmlaNum, strSign, strFrmla);
     }
 
     std::wstring ConvertMod (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, LONG lParam3, ParamType eType3, bool bExtShape1, bool bExtShape2, bool bExtShape3)
     {
-        strFmlaNum.Format(_T("\"gd%d\" "), m_lIndexDst);
-        strSign = _T("mod ");
-        strFrmla = GetValue(lParam1, eType1, bExtShape1) + _T(" ") +  GetValue(lParam2, eType2, bExtShape2) + _T(" ") +  GetValue(lParam3, eType3, bExtShape3);
+        strFmlaNum.Format(L"\"gd%d\" ",  m_lIndexDst);
+        strSign = L"mod ";
+        strFrmla = GetValue(lParam1, eType1, bExtShape1) + L" " +  GetValue(lParam2, eType2, bExtShape2) + L" " +  GetValue(lParam3, eType3, bExtShape3);
         m_lIndexDst++;
         return GetXML (strFmlaNum, strSign, strFrmla);
     }
 
     std::wstring ConvertTag (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, bool bExtShape1, bool bExtShape2)
     {
-        strFmlaNum.Format(_T("\"gd%d\" "), m_lIndexDst);
-        strSign = _T("tag ");
-        strFrmla = GetValue(lParam1, eType1, bExtShape1) + _T(" ") +  GetValue(lParam2, eType2, bExtShape2);
+        strFmlaNum.Format(L"\"gd%d\" ",  m_lIndexDst);
+        strSign = L"tag ";
+        strFrmla = GetValue(lParam1, eType1, bExtShape1) + L" " +  GetValue(lParam2, eType2, bExtShape2);
         m_lIndexDst++;
         return GetXML (strFmlaNum, strSign, strFrmla);
     }
@@ -1502,9 +1496,9 @@ private:
             strParam2 = GetValue(lRes, ptFormula, false);
         }
 
-        strSign = _T("*/ ");
-        strFrmla = strParam1 + _T(" ") + strParam2 + _T(" ") + GetValue(lParam3, ptValue, false);
-        strFmlaNum.Format(_T("\"gd%d\" "), m_lIndexDst);
+        strSign = L"*/ ";
+        strFrmla = strParam1 + L" " + strParam2 + L" " + GetValue(lParam3, ptValue, false);
+        strFmlaNum.Format(L"\"gd%d\" ",  m_lIndexDst);
         m_lIndexDst++;
         return GetXML (strFmlaNum, strSign, strFrmla);
     }
@@ -1559,53 +1553,53 @@ private:
     }
     std::wstring CreateHandle ( SHandle oHnd )
     {
-        std::wstring strRes = _T("");
+        std::wstring strRes = L"";
         if (oHnd.bRefPolarExist.x || oHnd.bRefPolarExist.y)
-            strFrmla = _T("ahPolar");
+            strFrmla = L"ahPolar";
         else if (oHnd.bRefExist.x || oHnd.bRefExist.y)
-            strFrmla = _T("ahXY");
+            strFrmla = L"ahXY";
         else return strRes;
 
-        strRes += _T("<a:") + strFrmla;
+        strRes += L"<a:" + strFrmla;
         if (oHnd.bRefExist.x)
-            strRes += _T(" gdRefX=\"") + GetValue(oHnd.gdRef.x, oHnd.gdRefType.x, false) + _T("\"");
+            strRes += L" gdRefX=\"" + GetValue(oHnd.gdRef.x, oHnd.gdRefType.x, false) + L"\"";
         if (oHnd.bRefExist.y)
-            strRes += _T(" gdRefY=\"") + GetValue(oHnd.gdRef.y, oHnd.gdRefType.y, false)+ _T("\"");
+            strRes += L" gdRefY=\"" + GetValue(oHnd.gdRef.y, oHnd.gdRefType.y, false)+ L"\"";
         if (oHnd.bRefPolarExist.x)
-            strRes += _T(" gdRefR=\"") + GetValue(oHnd.gdRef.x, oHnd.gdRefType.x, false) + _T("\"");
+            strRes += L" gdRefR=\"" + GetValue(oHnd.gdRef.x, oHnd.gdRefType.x, false) + L"\"";
         if (oHnd.bRefPolarExist.y)
-            strRes += _T(" gdRefAng=\"") + GetValue(oHnd.gdRef.y, oHnd.gdRefType.y, true) + _T("\"");
+            strRes += L" gdRefAng=\"" + GetValue(oHnd.gdRef.y, oHnd.gdRefType.y, true) + L"\"";
 
         //min max 1го параметра
         if (oHnd.bMinExist.x)
         {
-            strRes += _T(" minX=\"") + GetValue(oHnd.Min.x, oHnd.MinType.x, false)+ _T("\"");
-            strRes += _T(" maxX=\"") + GetValue(oHnd.Max.x, oHnd.MaxType.x, false)+ _T("\"");
+            strRes += L" minX=\"" + GetValue(oHnd.Min.x, oHnd.MinType.x, false)+ L"\"";
+            strRes += L" maxX=\"" + GetValue(oHnd.Max.x, oHnd.MaxType.x, false)+ L"\"";
         }
         else if (oHnd.bRefExist.x)
-            strRes += _T(" minX=\"-21474836\" maxX=\"21474836\"");
+            strRes += L" minX=\"-21474836\" maxX=\"21474836\"";
 
         if (oHnd.bMinPolarExist.x)
         {
-            strRes += _T(" minR=\"") + GetValue(oHnd.Min.x, oHnd.MinType.x, false)+ _T("\"");
-            strRes += _T(" maxR=\"") + GetValue(oHnd.Max.x, oHnd.MaxType.x, false)+ _T("\"");
+            strRes += L" minR=\"" + GetValue(oHnd.Min.x, oHnd.MinType.x, false)+ L"\"";
+            strRes += L" maxR=\"" + GetValue(oHnd.Max.x, oHnd.MaxType.x, false)+ L"\"";
         }
 
         //min max 2го параметра
         if (oHnd.bMinExist.y)
         {
-            strRes += _T(" minY=\"") + GetValue(oHnd.Min.y, oHnd.MinType.y, false)+ _T("\"");
-            strRes += _T(" maxY=\"") + GetValue(oHnd.Max.y, oHnd.MaxType.y, false)+ _T("\"");
+            strRes += L" minY=\"" + GetValue(oHnd.Min.y, oHnd.MinType.y, false)+ L"\"";
+            strRes += L" maxY=\"" + GetValue(oHnd.Max.y, oHnd.MaxType.y, false)+ L"\"";
         }
         else if (oHnd.bRefExist.y)
-            strRes += _T(" minY=\"-21474836\" maxY=\"21474836\"");
+            strRes += L" minY=\"-21474836\" maxY=\"21474836\"";
 
         if (oHnd.bMinPolarExist.y)
         {
-            strRes += _T(" minAng=\"0\" maxAng=\"21600000\"");
+            strRes += L" minAng=\"0\" maxAng=\"21600000\"";
         }
 
-        strRes += _T("><a:pos x=\"") + GetValue(oHnd.Pos.x, oHnd.PosType.x, true) + _T("\" y=\"") + GetValue(oHnd.Pos.y, oHnd.PosType.y, true)+ _T("\"/></a:") + strFrmla + _T(">");
+        strRes += L"><a:pos x=\"" + GetValue(oHnd.Pos.x, oHnd.PosType.x, true) + L"\" y=\"" + GetValue(oHnd.Pos.y, oHnd.PosType.y, true)+ L"\"/></a:" + strFrmla + L">";
 
         return strRes;
     }
@@ -1616,7 +1610,7 @@ private:
         std::wstring strSize;
         std::wstring strIndex;
 
-        strSize.Format( _T(" %d"), lSize);
+        strSize.Format( L" %d",  lSize);
 
         if ('#' == strParam[0])
         {
@@ -1635,12 +1629,12 @@ private:
         }
         else if (!NSStringUtils::IsNumber(strParam))
         {
-            if (_T("center") == strParam)
-                strFrmla = _T("1 2");
-            else if (_T("topLeft") == strParam)
-                strFrmla = _T("0 1");
-            else if ( _T("bottomRight") == strParam)
-                strFrmla = _T("1 1");
+            if (L"center" == strParam)
+                strFrmla = L"1 2";
+            else if (L"topLeft" == strParam)
+                strFrmla = L"0 1";
+            else if ( L"bottomRight" == strParam)
+                strFrmla = L"1 1";
         }
         else
         {
@@ -1650,8 +1644,8 @@ private:
 
         m_lIndexSrc++;
         m_arIndexDst.push_back(m_lIndexDst);
-        strIndex.Format( _T("%d"), m_lIndexDst);
-        strGuidsRes += _T("<a:gd name=\"gd") + strIndex + _T("\" fmla=\"*/ ") + strBase + _T(" ") + strFrmla + _T("\"/>");
+        strIndex.Format( L"%d",  m_lIndexDst);
+        strGuidsRes += L"<a:gd name=\"gd" + strIndex + L"\" fmla=\"*/ " + strBase + L" " + strFrmla + L"\"/>";
         m_lIndexDst++;
 
         return m_lIndexDst-1;
@@ -1673,7 +1667,7 @@ private:
         }
         else if (!NSStringUtils::IsNumber(strParam))
         {
-            if (_T("center") == strParam)
+            if (L"center" == strParam)
                 return lVal/2;
         }
         ptType = ptValue;
@@ -1701,8 +1695,8 @@ private:
 
         nIndex = m_arIndexDst[m_lIndexSrc];
 
-        strPathRes += _T("<a:arcTo wR=\"") + GetValue(nIndex-1, ptFormula, true) + _T("\" hR=\"") + GetValue(nIndex, ptFormula, true) +
-                _T("\" stAng=\"") + GetValue(nIndex-5, ptFormula, true) + _T("\" swAng=\"") + GetValue(nIndex-4, ptFormula, true) + _T("\" />");
+        strPathRes += L"<a:arcTo wR=\"" + GetValue(nIndex-1, ptFormula, true) + L"\" hR=\"" + GetValue(nIndex, ptFormula, true) +
+                L"\" stAng=\"" + GetValue(nIndex-5, ptFormula, true) + L"\" swAng=\"" + GetValue(nIndex-4, ptFormula, true) + L"\" />";
 
         m_lIndexSrc++;
         strGuidsRes += ConvertVal ( pPoint.x, pPointType.x, false);
@@ -1732,8 +1726,8 @@ private:
 
         nIndex = m_arIndexDst[m_lIndexSrc];
 
-        strPathRes += _T("<a:arcTo wR=\"") + GetValue(nIndex-1, ptFormula, true) + _T("\" hR=\"") + GetValue(nIndex, ptFormula, true) +
-                _T("\" stAng=\"") + GetValue(nIndex-5, ptFormula, true) + _T("\" swAng=\"") + GetValue(nIndex-4, ptFormula, true) + _T("\" />");
+        strPathRes += L"<a:arcTo wR=\"" + GetValue(nIndex-1, ptFormula, true) + L"\" hR=\"" + GetValue(nIndex, ptFormula, true) +
+                L"\" stAng=\"" + GetValue(nIndex-5, ptFormula, true) + L"\" swAng=\"" + GetValue(nIndex-4, ptFormula, true) + L"\" />";
 
         m_lIndexSrc++;
         strGuidsRes += ConvertVal ( pPoint.x, pPointType.x, false);
@@ -1988,19 +1982,19 @@ public:
     {
         for (int i = 0; i < (int)arAdj.size(); ++i)
         {
-            m_oAdjRes.WriteString(_T("<a:gd name=\"adj"));
+            m_oAdjRes.WriteString(L"<a:gd name=\"adj");
             m_oAdjRes.WriteINT(i);
-            m_oAdjRes.WriteString(_T("\" fmla=\"val "));
+            m_oAdjRes.WriteString(L"\" fmla=\"val ");
             m_oAdjRes.WriteINT(arAdj[i]);
-            m_oAdjRes.WriteString(_T("\"/>"));
+            m_oAdjRes.WriteString(L"\"/>");
         }
         for (int i = (int)arAdj.size(); i <= m_lMaxAdjUse; ++i)
         {
-            m_oAdjRes.WriteString(_T("<a:gd name=\"adj"));
+            m_oAdjRes.WriteString(L"<a:gd name=\"adj");
             m_oAdjRes.WriteINT(i);
-            m_oAdjRes.WriteString(_T("\" fmla=\"val "));
+            m_oAdjRes.WriteString(L"\" fmla=\"val ");
             m_oAdjRes.WriteINT(0);
-            m_oAdjRes.WriteString(_T("\"/>"));
+            m_oAdjRes.WriteString(L"\"/>");
         }
     }
     void ConvertFormula(const std::vector<CFormula>& arFormulas)
@@ -2132,7 +2126,7 @@ public:
     {
         m_arParts.clear();
         std::vector<std::wstring> oArray;
-        boost::algorithm::split(oArray, strPath, boost::algorithm::is_any_of(L"e"), boost::algorithm::token_compress_on);
+        boost::algorithm::split(oArray, strPath, boost::algorithm::is_any_of(L"e"),  boost::algorithm::token_compress_on);
 
         for (size_t nIndex = 0; nIndex < oArray.size(); ++nIndex)
         {
@@ -2151,20 +2145,20 @@ public:
             std::wstring strValue;
             FromXML(oArray[nIndex], bFill, bStroke);
 
-            m_oPathRes.StartNode(_T("a:path"));
+            m_oPathRes.StartNode(L"a:path");
             m_oPathRes.StartAttributes();
-            m_oPathRes.WriteAttribute(_T("w"), m_lWidth);
-            m_oPathRes.WriteAttribute(_T("h"), m_lHeight);
+            m_oPathRes.WriteAttribute(L"w",  m_lWidth);
+            m_oPathRes.WriteAttribute(L"h",  m_lHeight);
 
             if (!bStroke)
-                m_oPathRes.WriteAttribute(_T("stroke"), (std::wstring)_T("false"));
+                m_oPathRes.WriteAttribute(L"stroke",  (std::wstring)L"false");
             if (!bFill)
-                m_oPathRes.WriteAttribute(_T("fill"), (std::wstring)_T("none"));
+                m_oPathRes.WriteAttribute(L"fill",  (std::wstring)L"none");
             m_oPathRes.EndAttributes();
 
             for (size_t i = 0; i < m_arSlicesPath.size(); ++i)
             {
-                CSlicePath& oSlice = m_arSlicesPath[i];
+                CSlicePath& oSlice = m_arSlicesPath[i]; 
 
                 //m_lIndexDst-1 - номер последней записанной формулы
                 //m_lIndexSrc - номер последнего блока формул
@@ -2185,7 +2179,7 @@ public:
                 }
                 case rtClose:
                 {
-                    m_oPathRes.WriteString(_T("<a:close/>"));
+                    m_oPathRes.WriteString(L"<a:close/>");
                     break;
                 }
                 case rtLineTo:
@@ -2246,7 +2240,7 @@ public:
                 }
             }
 
-            m_oPathRes.WriteString(_T("</a:path>"));
+            m_oPathRes.WriteString(L"</a:path>");
         }
     }
 
@@ -2260,15 +2254,15 @@ public:
             const CHandle_& pHnPoint = arHandles[i];
             std::vector<std::wstring> arPos;
 
-            std::wstring sPos0 = _T("");
-            std::wstring sPos1 = _T("");
+            std::wstring sPos0 = L"";
+            std::wstring sPos1 = L"";
 
             SHandle oHandle;
             ParamType ptType;
 
-            if (pHnPoint.position != _T(""))
+            if (pHnPoint.position != L"")
             {
-                boost::algorithm::split(arPos, pHnPoint.position, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+                boost::algorithm::split(arPos, pHnPoint.position, boost::algorithm::is_any_of(L","),  boost::algorithm::token_compress_on);
                 sPos0 = arPos[0];
                 sPos1 = arPos[1];
 
@@ -2282,7 +2276,7 @@ public:
                 if (oHandle.gdRefType.y == ptAdjust)
                     oHandle.bRefExist.y = true;
 
-                if (pHnPoint.polar != _T(""))
+                if (pHnPoint.polar != L"")
                 {
                     //пришел полярный угол
                     oHandle.bRefExist.y = false;
@@ -2290,7 +2284,7 @@ public:
                     oHandle.bRefPolarExist.y = true;
                     oHandle.bMinPolarExist.y = true;
 
-                    boost::algorithm::split(arPos, pHnPoint.polar, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+                    boost::algorithm::split(arPos, pHnPoint.polar, boost::algorithm::is_any_of(L","),  boost::algorithm::token_compress_on);
 
                     oHandle.PolarCentre.x = GetHandleValue(arPos[0], m_lWidth, ptType);
                     oHandle.PolarCentreType.x = ptType;
@@ -2343,38 +2337,38 @@ public:
                         m_arIndexDst.push_back(m_lIndexDst-1);
 
                         std::wstring strMem = L"&" + std::to_wstring(m_lIndexDst-2);
-                        oHandle.Pos.x = GetHandlePos(strMem, _T("w"), m_lWidth);
+                        oHandle.Pos.x = GetHandlePos(strMem, L"w",  m_lWidth);
                         oHandle.PosType.x = ptFormula;
 
                         strMem = L"&" + std::to_wstring(m_lIndexDst-2); //?????
-                        oHandle.Pos.y = GetHandlePos(strMem, _T("h"), m_lHeight);
+                        oHandle.Pos.y = GetHandlePos(strMem, L"h",  m_lHeight);
                         oHandle.PosType.y = ptFormula;
                     }
 
                 }
                 else//если пришли обычные координаты
                 {
-                    if ((pHnPoint.xrange != _T("") && oHandle.gdRefType.x != ptAdjust && oHandle.gdRefType.y == ptAdjust) ||
-                            (pHnPoint.yrange != _T("") && oHandle.gdRefType.x == ptAdjust && oHandle.gdRefType.y != ptAdjust))
+                    if ((pHnPoint.xrange != L"" && oHandle.gdRefType.x != ptAdjust && oHandle.gdRefType.y == ptAdjust) ||
+                            (pHnPoint.yrange != L"" && oHandle.gdRefType.x == ptAdjust && oHandle.gdRefType.y != ptAdjust))
                     {
-                        oHandle.Pos.x = GetHandlePos(sPos1, _T("w"), m_lWidth);
+                        oHandle.Pos.x = GetHandlePos(sPos1, L"w",  m_lWidth);
                         oHandle.PosType.x = ptFormula;
 
-                        oHandle.Pos.y = GetHandlePos(sPos0, _T("h"), m_lHeight);
+                        oHandle.Pos.y = GetHandlePos(sPos0, L"h",  m_lHeight);
                         oHandle.PosType.y = ptFormula;
                     }
                     else
                     {
-                        oHandle.Pos.x = GetHandlePos(sPos0, _T("w"), m_lWidth);
+                        oHandle.Pos.x = GetHandlePos(sPos0, L"w",  m_lWidth);
                         oHandle.PosType.x = ptFormula;
 
-                        oHandle.Pos.y = GetHandlePos(sPos1, _T("h"), m_lHeight);
+                        oHandle.Pos.y = GetHandlePos(sPos1, L"h",  m_lHeight);
                         oHandle.PosType.y = ptFormula;
                     }
                 }
             }
 
-            if (pHnPoint.xrange != _T(""))
+            if (pHnPoint.xrange != L"")
             {
                 if ( oHandle.gdRefType.x != ptAdjust && oHandle.gdRefType.y == ptAdjust)
                 {
@@ -2387,7 +2381,7 @@ public:
                     oHandle.bRefExist.y = false;
                 }
 
-                boost::algorithm::split(arPos, pHnPoint.xrange, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+                boost::algorithm::split(arPos, pHnPoint.xrange, boost::algorithm::is_any_of(L","),  boost::algorithm::token_compress_on);
 
                 oHandle.Min.x = GetHandleValue(arPos[0], m_lWidth, ptType);
                 oHandle.MinType.x = ptType;
@@ -2400,7 +2394,7 @@ public:
                     oHandle.bMaxExist.x = true;
             }
 
-            if (pHnPoint.yrange != _T(""))
+            if (pHnPoint.yrange != L"")
             {
                 if (oHandle.gdRefType.x == ptAdjust && oHandle.gdRefType.y != ptAdjust)
                 {
@@ -2412,7 +2406,7 @@ public:
                     oHandle.gdRefType.y = ptType;
                     oHandle.bRefExist.y = true;
                 }
-                boost::algorithm::split(arPos, pHnPoint.yrange, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+                boost::algorithm::split(arPos, pHnPoint.yrange, boost::algorithm::is_any_of(L","),  boost::algorithm::token_compress_on);
 
                 oHandle.Min.y = GetHandleValue(arPos[0], m_lHeight, ptType);
                 oHandle.MinType.y = ptType;
@@ -2425,9 +2419,9 @@ public:
                     oHandle.bMaxExist.y = true;
             }
 
-            if (pHnPoint.radiusrange != _T(""))
+            if (pHnPoint.radiusrange != L"")
             {
-                boost::algorithm::split(arPos, pHnPoint.radiusrange, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+                boost::algorithm::split(arPos, pHnPoint.radiusrange, boost::algorithm::is_any_of(L","),  boost::algorithm::token_compress_on);
 
                 oHandle.Min.x = GetHandleValue(arPos[0], m_lHeight, ptType);
                 oHandle.MinType.x = ptType;
@@ -2449,33 +2443,69 @@ public:
         }
         ConvertAdj(arAdj);
     }
+	void SetTextRectDefault()
+	{
+		m_lIndexSrc++;
 
+		ConvertProd(L"w",  L"0", m_lWidth, m_oGuidsRes);
+		ConvertProd(L"h",  L"0", m_lHeight, m_oGuidsRes);
+		ConvertProd(L"w",  std::to_wstring(m_lWidth), m_lWidth, m_oGuidsRes);
+		ConvertProd(L"h",  std::to_wstring(m_lHeight), m_lHeight, m_oGuidsRes);
+
+		m_arIndexDst.push_back(m_lIndexDst);
+
+		m_oTextRect.WriteString(L"<a:rect l=\"");
+		GetValue(m_lIndexDst - 4, ptFormula, true, m_oTextRect);
+		m_oTextRect.WriteString(L"\" t=\"");
+		GetValue(m_lIndexDst - 3, ptFormula, true, m_oTextRect);
+		m_oTextRect.WriteString(L"\" r=\"");
+		GetValue(m_lIndexDst - 2, ptFormula, true, m_oTextRect);
+		m_oTextRect.WriteString(L"\" b=\"");
+		GetValue(m_lIndexDst - 1, ptFormula, true, m_oTextRect);
+		m_oTextRect.WriteString(L"\" />");
+	}
     void ConvertTextRect ( std::wstring strRect)
     {
-        if (strRect == _T(""))
+        if (strRect.empty())
             return;
 
         std::vector<std::wstring> arBorder;
-        boost::algorithm::split(arBorder, strRect, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+        boost::algorithm::split(arBorder, strRect, boost::algorithm::is_any_of(L","),  boost::algorithm::token_compress_on);
 
         m_lIndexSrc++;
-        ConvertProd(_T("w"), arBorder[0], m_lWidth, m_oGuidsRes);
-        ConvertProd(_T("h"), arBorder[1], m_lHeight, m_oGuidsRes);
-        ConvertProd(_T("w"), std::to_wstring(m_lWidth), m_lWidth, m_oGuidsRes);
-        ConvertProd(_T("h"), std::to_wstring(m_lHeight), m_lHeight, m_oGuidsRes);
-        m_arIndexDst.push_back(m_lIndexDst);
+		if (arBorder.size() > 0 && !arBorder[0].empty())
+			ConvertProd(L"w",  arBorder[0], m_lWidth, m_oGuidsRes);
+		else
+			ConvertProd(L"w",  L"0", m_lWidth, m_oGuidsRes);
+
+		if (arBorder.size() > 1 && !arBorder[1].empty())
+			ConvertProd(L"h",  arBorder[1], m_lHeight, m_oGuidsRes);
+		else 
+			ConvertProd(L"h",  L"0", m_lHeight, m_oGuidsRes);
+
+		if (arBorder.size() > 2 && !arBorder[2].empty())
+			ConvertProd(L"w",  arBorder[2], m_lWidth, m_oGuidsRes);
+		else
+			ConvertProd(L"w",  std::to_wstring(m_lWidth), m_lWidth, m_oGuidsRes);
+		
+		if (arBorder.size() > 3 && !arBorder[3].empty())
+			ConvertProd(L"h",  arBorder[3], m_lHeight, m_oGuidsRes);
+		else
+			ConvertProd(L"h",  std::to_wstring(m_lHeight), m_lHeight, m_oGuidsRes);
+       
+		m_arIndexDst.push_back(m_lIndexDst);
 
         //            if (true)
         //            {
-        m_oTextRect.WriteString(_T("<a:rect l=\""));
+        m_oTextRect.WriteString(L"<a:rect l=\"");
         GetValue(m_lIndexDst-4, ptFormula, true, m_oTextRect);
-        m_oTextRect.WriteString(_T("\" t=\""));
+        m_oTextRect.WriteString(L"\" t=\"");
         GetValue(m_lIndexDst-3, ptFormula, true, m_oTextRect);
-        m_oTextRect.WriteString(_T("\" r=\""));
+        m_oTextRect.WriteString(L"\" r=\"");
         GetValue(m_lIndexDst-2, ptFormula, true, m_oTextRect);
-        m_oTextRect.WriteString(_T("\" b=\""));
+        m_oTextRect.WriteString(L"\" b=\"");
         GetValue(m_lIndexDst-1, ptFormula, true, m_oTextRect);
-        m_oTextRect.WriteString(_T("\" />"));
+        m_oTextRect.WriteString(L"\" />");
         //            } else
         //            {
         //        m_oTextRect.WriteString(L"<a:rect l=\"l\" t=\"t\" r=\"r\" b=\"b\"/>");
@@ -2533,13 +2563,13 @@ private:
                 strValue = std::to_wstring(lParam);
             else
                 strValue = std::to_wstring(m_arIndexDst[lParam]);
-            strValue = _T("gd") + strValue;
+            strValue = L"gd" + strValue;
             break;
         }
         case ptAdjust:
         {
             strValue = std::to_wstring(lParam);
-            strValue = _T("adj") + strValue;
+            strValue = L"adj" + strValue;
             break;
         }
         case ptValue:
@@ -2726,90 +2756,90 @@ private:
     }
     void CreateHandle ( SHandle oHnd )
     {
-        std::wstring strRes = _T("");
+        std::wstring strRes = L"";
         if (oHnd.bRefPolarExist.x || oHnd.bRefPolarExist.y)
-            m_oHandleRes.WriteString(_T("<a:ahPolar"));
+            m_oHandleRes.WriteString(L"<a:ahPolar");
         else if (oHnd.bRefExist.x || oHnd.bRefExist.y)
-            m_oHandleRes.WriteString(_T("<a:ahXY"));
+            m_oHandleRes.WriteString(L"<a:ahXY");
         else
             return;
 
         if (oHnd.bRefExist.x)
         {
-            m_oHandleRes.WriteString(_T(" gdRefX=\""));
+            m_oHandleRes.WriteString(L" gdRefX=\"");
             GetValue(oHnd.gdRef.x, oHnd.gdRefType.x, false, m_oHandleRes);
-            m_oHandleRes.WriteString(_T("\""));
+            m_oHandleRes.WriteString(L"\"");
         }
         if (oHnd.bRefExist.y)
         {
-            m_oHandleRes.WriteString(_T(" gdRefY=\""));
+            m_oHandleRes.WriteString(L" gdRefY=\"");
             GetValue(oHnd.gdRef.y, oHnd.gdRefType.y, false, m_oHandleRes);
-            m_oHandleRes.WriteString(_T("\""));
+            m_oHandleRes.WriteString(L"\"");
         }
         if (oHnd.bRefPolarExist.x)
         {
-            m_oHandleRes.WriteString(_T(" gdRefR=\""));
+            m_oHandleRes.WriteString(L" gdRefR=\"");
             GetValue(oHnd.gdRef.x, oHnd.gdRefType.x, false, m_oHandleRes);
-            m_oHandleRes.WriteString(_T("\""));
+            m_oHandleRes.WriteString(L"\"");
         }
         if (oHnd.bRefPolarExist.y)
         {
-            m_oHandleRes.WriteString(_T(" gdRefAng=\""));
+            m_oHandleRes.WriteString(L" gdRefAng=\"");
             GetValue(oHnd.gdRef.y, oHnd.gdRefType.y, true, m_oHandleRes);
-            m_oHandleRes.WriteString(_T("\""));
+            m_oHandleRes.WriteString(L"\"");
         }
 
         //min max 1го параметра
         if (oHnd.bMinExist.x)
         {
-            m_oHandleRes.WriteString(_T(" minX=\""));
+            m_oHandleRes.WriteString(L" minX=\"");
             GetValue(oHnd.Min.x, oHnd.MinType.x, false, m_oHandleRes);
-            m_oHandleRes.WriteString(_T("\" maxX=\""));
+            m_oHandleRes.WriteString(L"\" maxX=\"");
             GetValue(oHnd.Max.x, oHnd.MaxType.x, false, m_oHandleRes);
-            m_oHandleRes.WriteString(_T("\""));
+            m_oHandleRes.WriteString(L"\"");
         }
         else if (oHnd.bRefExist.x)
         {
-            m_oHandleRes.WriteString(_T(" minX=\"-21474836\" maxX=\"21474836\""));
+            m_oHandleRes.WriteString(L" minX=\"-21474836\" maxX=\"21474836\"");
         }
 
         if (oHnd.bMinPolarExist.x)
         {
-            m_oHandleRes.WriteString(_T(" minR=\""));
+            m_oHandleRes.WriteString(L" minR=\"");
             GetValue(oHnd.Min.x, oHnd.MinType.x, false, m_oHandleRes);
-            m_oHandleRes.WriteString(_T("\" maxR=\""));
+            m_oHandleRes.WriteString(L"\" maxR=\"");
             GetValue(oHnd.Max.x, oHnd.MaxType.x, false, m_oHandleRes);
-            m_oHandleRes.WriteString(_T("\""));
+            m_oHandleRes.WriteString(L"\"");
         }
 
         //min max 2го параметра
         if (oHnd.bMinExist.y)
         {
-            m_oHandleRes.WriteString(_T(" minY=\""));
+            m_oHandleRes.WriteString(L" minY=\"");
             GetValue(oHnd.Min.y, oHnd.MinType.y, false, m_oHandleRes);
-            m_oHandleRes.WriteString(_T("\" maxY=\""));
+            m_oHandleRes.WriteString(L"\" maxY=\"");
             GetValue(oHnd.Max.y, oHnd.MaxType.y, false, m_oHandleRes);
-            m_oHandleRes.WriteString(_T("\""));
+            m_oHandleRes.WriteString(L"\"");
         }
         else if (oHnd.bRefExist.y)
         {
-            m_oHandleRes.WriteString(_T(" minY=\"-21474836\" maxY=\"21474836\""));
+            m_oHandleRes.WriteString(L" minY=\"-21474836\" maxY=\"21474836\"");
         }
 
         if (oHnd.bMinPolarExist.y)
         {
-            m_oHandleRes.WriteString(_T(" minAng=\"0\" maxAng=\"21600000\""));
+            m_oHandleRes.WriteString(L" minAng=\"0\" maxAng=\"21600000\"");
         }
 
-        m_oHandleRes.WriteString(_T("><a:pos x=\""));
+        m_oHandleRes.WriteString(L"><a:pos x=\"");
         GetValue(oHnd.Pos.x, oHnd.PosType.x, true, m_oHandleRes);
-        m_oHandleRes.WriteString(_T("\" y=\""));
+        m_oHandleRes.WriteString(L"\" y=\"");
         GetValue(oHnd.Pos.y, oHnd.PosType.y, true, m_oHandleRes);
 
         if (oHnd.bRefPolarExist.x || oHnd.bRefPolarExist.y)
-            m_oHandleRes.WriteString(_T("\"/></a:ahPolar>"));
+            m_oHandleRes.WriteString(L"\"/></a:ahPolar>");
         else if (oHnd.bRefExist.x || oHnd.bRefExist.y)
-            m_oHandleRes.WriteString(_T("\"/></a:ahXY>"));
+            m_oHandleRes.WriteString(L"\"/></a:ahXY>");
     }
 
     LONG GetHandlePos(const std::wstring& strParam, const std::wstring& strBase, LONG lSize)
@@ -2835,12 +2865,12 @@ private:
         }
         else if (!NSStringUtils::IsNumber(strParam))
         {
-            if (_T("center") == strParam)
-                strFrmla = _T("1 2");
-            else if (_T("topLeft") == strParam)
-                strFrmla = _T("0 1");
-            else if ( _T("bottomRight") == strParam)
-                strFrmla = _T("1 1");
+            if (L"center" == strParam)
+                strFrmla = L"1 2";
+            else if (L"topLeft" == strParam)
+                strFrmla = L"0 1";
+            else if ( L"bottomRight" == strParam)
+                strFrmla = L"1 1";
         }
         else
         {
@@ -2852,13 +2882,13 @@ private:
         m_arIndexDst.push_back(m_lIndexDst);
         strIndex = std::to_wstring(m_lIndexDst);
 
-        m_oGuidsRes.WriteString(_T("<a:gd name=\"gd"));
+        m_oGuidsRes.WriteString(L"<a:gd name=\"gd");
         m_oGuidsRes.WriteString(strIndex);
-        m_oGuidsRes.WriteString(_T("\" fmla=\"*/ "));
+        m_oGuidsRes.WriteString(L"\" fmla=\"*/ ");
         m_oGuidsRes.WriteString(strBase);
-        m_oGuidsRes.WriteString(_T(" "));
+        m_oGuidsRes.WriteString(L" ");
         m_oGuidsRes.WriteString(strFrmla);
-        m_oGuidsRes.WriteString(_T("\"/>"));
+        m_oGuidsRes.WriteString(L"\"/>");
 
         m_lIndexDst++;
 
@@ -2881,9 +2911,9 @@ private:
         }
         else if (!NSStringUtils::IsNumber(strParam))
         {
-            if (_T("center") == strParam)
+            if (L"center" == strParam)
                 return lVal/2;
-            else if (_T("bottomRight") == strParam)//Demo-Hayden-Management-v2.docx
+            else if (L"bottomRight" == strParam)//Demo-Hayden-Management-v2.docx
                 return lVal;
             else
                 return 0; //???
@@ -2917,15 +2947,15 @@ private:
 
         nIndex = m_arIndexDst[m_lIndexSrc];
 
-        m_oPathRes.WriteString(_T("<a:arcTo wR=\""));
+        m_oPathRes.WriteString(L"<a:arcTo wR=\"");
         GetValue(nIndex-1, ptFormula, true, m_oPathRes);
-        m_oPathRes.WriteString(_T("\" hR=\""));
+        m_oPathRes.WriteString(L"\" hR=\"");
         GetValue(nIndex, ptFormula, true, m_oPathRes);
-        m_oPathRes.WriteString(_T("\" stAng=\""));
+        m_oPathRes.WriteString(L"\" stAng=\"");
         GetValue(nIndex-5, ptFormula, true, m_oPathRes);
-        m_oPathRes.WriteString(_T("\" swAng=\""));
+        m_oPathRes.WriteString(L"\" swAng=\"");
         GetValue(nIndex-4, ptFormula, true, m_oPathRes);
-        m_oPathRes.WriteString(_T("\" />"));
+        m_oPathRes.WriteString(L"\" />");
 
         m_lIndexSrc++;
         ConvertVal(pPoint.x, pPointType.x, false, m_oGuidsRes);
@@ -2955,15 +2985,15 @@ private:
 
         nIndex = m_arIndexDst[m_lIndexSrc];
 
-        m_oPathRes.WriteString(_T("<a:arcTo wR=\""));
+        m_oPathRes.WriteString(L"<a:arcTo wR=\"");
         GetValue(nIndex-1, ptFormula, true, m_oPathRes);
-        m_oPathRes.WriteString(_T("\" hR=\""));
+        m_oPathRes.WriteString(L"\" hR=\"");
         GetValue(nIndex, ptFormula, true, m_oPathRes);
-        m_oPathRes.WriteString(_T("\" stAng=\""));
+        m_oPathRes.WriteString(L"\" stAng=\"");
         GetValue(nIndex-5, ptFormula, true, m_oPathRes);
-        m_oPathRes.WriteString(_T("\" swAng=\""));
+        m_oPathRes.WriteString(L"\" swAng=\"");
         GetValue(nIndex-4, ptFormula, true, m_oPathRes);
-        m_oPathRes.WriteString(_T("\" />"));
+        m_oPathRes.WriteString(L"\" />");
 
         m_lIndexSrc++;
         ConvertVal(pPoint.x, pPointType.x, false, m_oGuidsRes);
@@ -2986,11 +3016,11 @@ private:
 
             m_arIndexDst.push_back(m_lIndexDst-1);
 
-            m_oPathRes.WriteString(_T("<a:moveTo><a:pt x=\""));
+            m_oPathRes.WriteString(L"<a:moveTo><a:pt x=\"");
             GetValue(m_lIndexDst-2, ptFormula, true, m_oPathRes);
-            m_oPathRes.WriteString(_T("\" y=\""));
+            m_oPathRes.WriteString(L"\" y=\"");
             GetValue(m_lIndexDst-1, ptFormula, true, m_oPathRes);
-            m_oPathRes.WriteString(_T("\" /></a:moveTo>"));
+            m_oPathRes.WriteString(L"\" /></a:moveTo>");
         }
     }
 
@@ -3007,11 +3037,11 @@ private:
 
             m_arIndexDst.push_back(m_lIndexDst-1);
 
-            m_oPathRes.WriteString(_T("<a:moveTo><a:pt x=\""));
+            m_oPathRes.WriteString(L"<a:moveTo><a:pt x=\"");
             GetValue(m_lIndexDst-2, ptFormula, true, m_oPathRes);
-            m_oPathRes.WriteString(_T("\" y=\""));
+            m_oPathRes.WriteString(L"\" y=\"");
             GetValue(m_lIndexDst-1, ptFormula, true, m_oPathRes);
-            m_oPathRes.WriteString(_T("\" /></a:moveTo>"));
+            m_oPathRes.WriteString(L"\" /></a:moveTo>");
         }
     }
 
@@ -3028,11 +3058,11 @@ private:
 
             m_arIndexDst.push_back(m_lIndexDst-1);
 
-            m_oPathRes.WriteString(_T("<a:lnTo><a:pt x=\""));
+            m_oPathRes.WriteString(L"<a:lnTo><a:pt x=\"");
             GetValue(m_lIndexDst-2, ptFormula, true, m_oPathRes);
-            m_oPathRes.WriteString(_T("\" y=\""));
+            m_oPathRes.WriteString(L"\" y=\"");
             GetValue(m_lIndexDst-1, ptFormula, true, m_oPathRes);
-            m_oPathRes.WriteString(_T("\" /></a:lnTo>"));
+            m_oPathRes.WriteString(L"\" /></a:lnTo>");
         }
     }
 
@@ -3049,11 +3079,11 @@ private:
 
             m_arIndexDst.push_back(m_lIndexDst-1);
 
-            m_oPathRes.WriteString(_T("<a:lnTo><a:pt x=\""));
+            m_oPathRes.WriteString(L"<a:lnTo><a:pt x=\"");
             GetValue(m_lIndexDst-2, ptFormula, true, m_oPathRes);
-            m_oPathRes.WriteString(_T("\" y=\""));
+            m_oPathRes.WriteString(L"\" y=\"");
             GetValue(m_lIndexDst-1, ptFormula, true, m_oPathRes);
-            m_oPathRes.WriteString(_T("\" /></a:lnTo>"));
+            m_oPathRes.WriteString(L"\" /></a:lnTo>");
         }
     }
 
@@ -3267,48 +3297,48 @@ private:
             nIndex2 = m_arIndexDst[m_lIndexSrc-1];//swAng
 
             if (oSlice.m_eRuler == rtArc && j == 0)
-                strFrmla = _T("moveTo");
+                strFrmla = L"moveTo";
             else
-                strFrmla = _T("lnTo");
+                strFrmla = L"lnTo";
 
             if (oSlice.m_eRuler == rtArc && j == 0)
             {
-                m_oPathRes.WriteString(_T("<a:moveTo><a:pt x=\""));
+                m_oPathRes.WriteString(L"<a:moveTo><a:pt x=\"");
                 GetValue(nIndex-5, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" y=\""));
+                m_oPathRes.WriteString(L"\" y=\"");
                 GetValue(nIndex, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" /></a:moveTo><a:arcTo wR=\""));
+                m_oPathRes.WriteString(L"\" /></a:moveTo><a:arcTo wR=\"");
                 GetValue(m_lIndexDst-2, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" hR=\""));
+                m_oPathRes.WriteString(L"\" hR=\"");
                 GetValue(m_lIndexDst-1, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" stAng=\""));
+                m_oPathRes.WriteString(L"\" stAng=\"");
                 GetValue(nIndex1, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" swAng=\""));
+                m_oPathRes.WriteString(L"\" swAng=\"");
                 GetValue(nIndex2, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" />"));
+                m_oPathRes.WriteString(L"\" />");
             }
             else
             {
-                m_oPathRes.WriteString(_T("<a:lnTo><a:pt x=\""));
+                m_oPathRes.WriteString(L"<a:lnTo><a:pt x=\"");
                 GetValue(nIndex-5, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" y=\""));
+                m_oPathRes.WriteString(L"\" y=\"");
                 GetValue(nIndex, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" /></a:lnTo><a:arcTo wR=\""));
+                m_oPathRes.WriteString(L"\" /></a:lnTo><a:arcTo wR=\"");
                 GetValue(m_lIndexDst-2, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" hR=\""));
+                m_oPathRes.WriteString(L"\" hR=\"");
                 GetValue(m_lIndexDst-1, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" stAng=\""));
+                m_oPathRes.WriteString(L"\" stAng=\"");
                 GetValue(nIndex1, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" swAng=\""));
+                m_oPathRes.WriteString(L"\" swAng=\"");
                 GetValue(nIndex2, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" />"));
+                m_oPathRes.WriteString(L"\" />");
             }
 
             //старт
             /*
                                     LONG nIndex3 = m_arIndexDst[m_lIndexSrc-14];
-                                    strPathRes += _T("<a:moveTo><a:pt x=\"0\" y=\"0\" /></a:moveTo><a:lnTo><a:pt x=\"") + GetValue(nIndex3-1, ptFormula, true) + _T("\" y=\"") + GetValue(nIndex3, ptFormula, true) +
-                                            + _T("\" /></a:lnTo>");
+                                    strPathRes += L"<a:moveTo><a:pt x=\"0\" y=\"0\" /></a:moveTo><a:lnTo><a:pt x=\"") + GetValue(nIndex3-1, ptFormula, true) + L"\" y=\"") + GetValue(nIndex3, ptFormula, true) +
+                                            + L"\" /></a:lnTo>");
                                     */
 
             //текущая точка
@@ -3525,35 +3555,35 @@ private:
 
             if (oSlice.m_eRuler == rtClockwiseArc && j == 0)
             {
-                m_oPathRes.WriteString(_T("<a:moveTo><a:pt x=\""));
+                m_oPathRes.WriteString(L"<a:moveTo><a:pt x=\"");
                 GetValue(nIndex-5, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" y=\""));
+                m_oPathRes.WriteString(L"\" y=\"");
                 GetValue(nIndex, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" /></a:moveTo><a:arcTo wR=\""));
+                m_oPathRes.WriteString(L"\" /></a:moveTo><a:arcTo wR=\"");
                 GetValue(m_lIndexDst-2, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" hR=\""));
+                m_oPathRes.WriteString(L"\" hR=\"");
                 GetValue(m_lIndexDst-1, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" stAng=\""));
+                m_oPathRes.WriteString(L"\" stAng=\"");
                 GetValue(nIndex1, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" swAng=\""));
+                m_oPathRes.WriteString(L"\" swAng=\"");
                 GetValue(nIndex2, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" />"));
+                m_oPathRes.WriteString(L"\" />");
             }
             else
             {
-                m_oPathRes.WriteString(_T("<a:lnTo><a:pt x=\""));
+                m_oPathRes.WriteString(L"<a:lnTo><a:pt x=\"");
                 GetValue(nIndex-5, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" y=\""));
+                m_oPathRes.WriteString(L"\" y=\"");
                 GetValue(nIndex, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" /></a:lnTo><a:arcTo wR=\""));
+                m_oPathRes.WriteString(L"\" /></a:lnTo><a:arcTo wR=\"");
                 GetValue(m_lIndexDst-2, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" hR=\""));
+                m_oPathRes.WriteString(L"\" hR=\"");
                 GetValue(m_lIndexDst-1, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" stAng=\""));
+                m_oPathRes.WriteString(L"\" stAng=\"");
                 GetValue(nIndex1, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" swAng=\""));
+                m_oPathRes.WriteString(L"\" swAng=\"");
                 GetValue(nIndex2, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" />"));
+                m_oPathRes.WriteString(L"\" />");
             }
 
             //текущая точка
@@ -3570,19 +3600,19 @@ private:
             int l = (int)(oSlice.m_arPoints.size() - j - 3);
             if (l >= 0)
             {
-                m_oPathRes.WriteString(_T("<a:quadBezTo>"));
+                m_oPathRes.WriteString(L"<a:quadBezTo>");
                 for (int k = 0; k < 2; ++k)
                 {
                     pCurPoint = oSlice.m_arPoints[j+k];
                     pCurPointType = oSlice.m_arPointsType[j+k];
 
-                    m_oPathRes.WriteString(_T("<a:pt x=\""));
+                    m_oPathRes.WriteString(L"<a:pt x=\"");
                     GetValue(pCurPoint.x, pCurPointType.x, false, m_oPathRes);
-                    m_oPathRes.WriteString(_T("\" y=\""));
+                    m_oPathRes.WriteString(L"\" y=\"");
                     GetValue(pCurPoint.y, pCurPointType.y, false, m_oPathRes);
-                    m_oPathRes.WriteString(_T("\" />"));
+                    m_oPathRes.WriteString(L"\" />");
                 }
-                m_oPathRes.WriteString(_T("</a:quadBezTo>"));
+                m_oPathRes.WriteString(L"</a:quadBezTo>");
             }
             else
             {
@@ -3591,11 +3621,11 @@ private:
                     pCurPoint = oSlice.m_arPoints[j+k];
                     pCurPointType = oSlice.m_arPointsType[j+k];
 
-                    m_oPathRes.WriteString(_T("<a:lnTo><a:pt x=\""));
+                    m_oPathRes.WriteString(L"<a:lnTo><a:pt x=\"");
                     GetValue(pCurPoint.x, pCurPointType.x, false, m_oPathRes);
-                    m_oPathRes.WriteString(_T("\" y=\""));
+                    m_oPathRes.WriteString(L"\" y=\"");
                     GetValue(pCurPoint.y, pCurPointType.y, false, m_oPathRes);
-                    m_oPathRes.WriteString(_T("\" /></a:lnTo>"));
+                    m_oPathRes.WriteString(L"\" /></a:lnTo>");
                 }
             }
 
@@ -3614,29 +3644,29 @@ private:
             int l = (int)(oSlice.m_arPoints.size() - j - 3);
             if ( l >= 0 )
             {
-                m_oPathRes.WriteString(_T("<a:cubicBezTo>"));
+                m_oPathRes.WriteString(L"<a:cubicBezTo>");
                 for (int k = 0; k < 3; ++k)
                 {
                     pCurPoint = oSlice.m_arPoints[j+k];
                     pCurPointType = oSlice.m_arPointsType[j+k];
 
-                    m_oPathRes.WriteString(_T("<a:pt x=\""));
+                    m_oPathRes.WriteString(L"<a:pt x=\"");
                     GetValue(pCurPoint.x, pCurPointType.x, false, m_oPathRes);
-                    m_oPathRes.WriteString(_T("\" y=\""));
+                    m_oPathRes.WriteString(L"\" y=\"");
                     GetValue(pCurPoint.y, pCurPointType.y, false, m_oPathRes);
-                    m_oPathRes.WriteString(_T("\" />"));
+                    m_oPathRes.WriteString(L"\" />");
                 }
-                m_oPathRes.WriteString(_T("</a:cubicBezTo>"));
+                m_oPathRes.WriteString(L"</a:cubicBezTo>");
             }
             else
             {
                 for (size_t k = 0; k < oSlice.m_arPoints.size() - j; ++k)
                 {
-                    m_oPathRes.WriteString(_T("<a:lnTo><a:pt x=\""));
+                    m_oPathRes.WriteString(L"<a:lnTo><a:pt x=\"");
                     GetValue(pCurPoint.x, pCurPointType.x, false, m_oPathRes);
-                    m_oPathRes.WriteString(_T("\" y=\""));
+                    m_oPathRes.WriteString(L"\" y=\"");
                     GetValue(pCurPoint.y, pCurPointType.y, false, m_oPathRes);
-                    m_oPathRes.WriteString(_T("\" /></a:lnTo>"));
+                    m_oPathRes.WriteString(L"\" /></a:lnTo>");
                 }
             }
 
@@ -3657,7 +3687,7 @@ private:
             int l = (int)(oSlice.m_arPoints.size() - j - 3);
             if (l >= 0)
             {
-                m_oPathRes.WriteString(_T("<a:cubicBezTo>"));
+                m_oPathRes.WriteString(L"<a:cubicBezTo>");
                 for (int k = 0; k < 3; ++k)
                 {
                     pCurPoint = oSlice.m_arPoints[j+k];
@@ -3668,13 +3698,13 @@ private:
                     ConvertSum(nIndex, ptFormula, pCurPoint.y, pCurPointType.y, 0, ptValue, true, false, true, m_oGuidsRes);
                     m_arIndexDst.push_back(m_lIndexDst-1);
 
-                    m_oPathRes.WriteString(_T("<a:pt x=\""));
+                    m_oPathRes.WriteString(L"<a:pt x=\"");
                     GetValue(m_lIndexDst-2, ptFormula, true, m_oPathRes);
-                    m_oPathRes.WriteString(_T("\" y=\""));
+                    m_oPathRes.WriteString(L"\" y=\"");
                     GetValue(m_lIndexDst-1, ptFormula, true, m_oPathRes);
-                    m_oPathRes.WriteString(_T("\" />"));
+                    m_oPathRes.WriteString(L"\" />");
                 }
-                m_oPathRes.WriteString(_T("</a:cubicBezTo>"));
+                m_oPathRes.WriteString(L"</a:cubicBezTo>");
             }
             else
             {
@@ -3688,11 +3718,11 @@ private:
                     ConvertSum(nIndex, ptFormula, pCurPoint.y, pCurPointType.y, 0, ptValue, true, false, true, m_oGuidsRes);
                     m_arIndexDst.push_back(m_lIndexDst-1);
 
-                    m_oPathRes.WriteString(_T("<a:lnTo><a:pt x=\""));
+                    m_oPathRes.WriteString(L"<a:lnTo><a:pt x=\"");
                     GetValue(m_lIndexDst-2, ptFormula, true, m_oPathRes);
-                    m_oPathRes.WriteString(_T("\" y=\""));
+                    m_oPathRes.WriteString(L"\" y=\"");
                     GetValue(m_lIndexDst-1, ptFormula, true, m_oPathRes);
-                    m_oPathRes.WriteString(_T("\" /></a:lnTo>"));
+                    m_oPathRes.WriteString(L"\" /></a:lnTo>");
                 }
             }
 
@@ -3786,41 +3816,41 @@ private:
             nIndex2 = m_arIndexDst[m_lIndexSrc-3];//wR и hR
 
             if (j == 0)
-                strFrmla = _T("moveTo");
+                strFrmla = L"moveTo";
             else
-                strFrmla = _T("lnTo");
+                strFrmla = L"lnTo";
 
             if (j == 0)
             {
-                m_oPathRes.WriteString(_T("<a:moveTo><a:pt x=\""));
+                m_oPathRes.WriteString(L"<a:moveTo><a:pt x=\"");
                 GetValue(nIndex-2, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" y=\""));
+                m_oPathRes.WriteString(L"\" y=\"");
                 GetValue(nIndex, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" /></a:moveTo><a:arcTo wR=\""));
+                m_oPathRes.WriteString(L"\" /></a:moveTo><a:arcTo wR=\"");
                 GetValue(nIndex2-1, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" hR=\""));
+                m_oPathRes.WriteString(L"\" hR=\"");
                 GetValue(nIndex2, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" stAng=\""));
+                m_oPathRes.WriteString(L"\" stAng=\"");
                 GetValue(nIndex1-2, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" swAng=\""));
+                m_oPathRes.WriteString(L"\" swAng=\"");
                 GetValue(nIndex1, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" />"));
+                m_oPathRes.WriteString(L"\" />");
             }
             else
             {
-                m_oPathRes.WriteString(_T("<a:lnTo><a:pt x=\""));
+                m_oPathRes.WriteString(L"<a:lnTo><a:pt x=\"");
                 GetValue(nIndex-2, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" y=\""));
+                m_oPathRes.WriteString(L"\" y=\"");
                 GetValue(nIndex, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" /></a:lnTo><a:arcTo wR=\""));
+                m_oPathRes.WriteString(L"\" /></a:lnTo><a:arcTo wR=\"");
                 GetValue(nIndex2-1, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" hR=\""));
+                m_oPathRes.WriteString(L"\" hR=\"");
                 GetValue(nIndex2, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" stAng=\""));
+                m_oPathRes.WriteString(L"\" stAng=\"");
                 GetValue(nIndex1-2, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" swAng=\""));
+                m_oPathRes.WriteString(L"\" swAng=\"");
                 GetValue(nIndex1, ptFormula, true, m_oPathRes);
-                m_oPathRes.WriteString(_T("\" />"));
+                m_oPathRes.WriteString(L"\" />");
             }
 
             //текущая точка

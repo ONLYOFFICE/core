@@ -31,7 +31,6 @@
  */
 
 #include "DXFN12.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {
@@ -56,8 +55,8 @@ void DXFN12::load(CFRecord& record)
 
 		if(record.getRdPtr() < end_of_struct_pos)
 		{
-			xfext = XFExtNoFRTPtr(new XFExtNoFRT);
-			record >> *xfext;
+			dxfn->xfext = XFExtNoFRTPtr(new XFExtNoFRT);
+			record >> *dxfn->xfext;
 		}
 		record.resetPointerToBegin	(); // file (42).xls (sheet2)
 		record.skipNunBytes			(end_of_struct_pos);
@@ -72,24 +71,8 @@ int DXFN12::serialize(std::wostream & stream)
 {
 	if (!dxfn) return -1;
 
-	if (!xfext)
-	{
-		dxfn->serialize(stream);
-	}
-	else
-	{
-		dxfn->serialize(stream);
-	//todoooo - file (42).xls
-		//CP_XML_WRITER(stream)    
-		//{	
-		//	CP_XML_NODE(L"dxf")
-		//	{
-		//		if (xfext)
-		//		{
-		//		}
-		//	}
-		//}
-	}
+	dxfn->serialize(stream);
+
 	return 0;
 }
 

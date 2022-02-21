@@ -31,13 +31,9 @@
  */
 
 #include "ExtProp.h"
-#include <Binary/CFRecord.h>
-//#include <Exception/WrongBiffRecord.h>
 
 namespace XLS
 {
-
-
 BiffStructurePtr ExtProp::clone()
 {
 	return BiffStructurePtr(new ExtProp(*this));
@@ -45,7 +41,10 @@ BiffStructurePtr ExtProp::clone()
 
 void ExtProp::load(CFRecord& record)
 {
-	record >> extType >> cb;
+	unsigned short t;
+	record >> t >> cb;
+
+	extType = (_type)t;
 
 	if ((int)(cb - 4) > (int)(record.getDataSize() - record.getRdPtr()))
 	{
@@ -62,20 +61,25 @@ void ExtProp::load(CFRecord& record)
 		case 0x000B:
 		case 0x000C:
 		case 0x000D:
+		{
 			record >> extPropData.color;
-			break;
+		}break;
 		case 0x0006:
+		{
 			record >> extPropData.gradient_fill;
-			break;
+		}break;
 		case 0x000E:
+		{
 			record >> extPropData.font_scheme;
-			break;
+		}break;
 		case 0x000F:
+		{
 			record >> extPropData.indent_level;
-			break;
+		}break;
 		default:
-			//EXCEPT::RT::WrongBiffRecord("Unsupported type of the extension.", record.getTypeString());
-			break;
+		{
+			extType = None;
+		}break;
 	}
 }
 

@@ -31,8 +31,8 @@
  */
 #pragma once
 
-#include <Logic/CompositeObject.h>
-#include <Logic/Biff_records/MsoDrawing.h>
+#include "../CompositeObject.h"
+#include "../Biff_records/MsoDrawing.h"
 
 namespace XLS
 {

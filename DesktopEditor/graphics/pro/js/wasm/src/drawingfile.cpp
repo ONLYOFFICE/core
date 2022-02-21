@@ -120,9 +120,9 @@ WASM_EXPORT int*  GetInfo   (CGraphicsFileDrawing* pGraphics)
     }
     return buffer;
 }
-WASM_EXPORT BYTE* GetPixmap (CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH)
+WASM_EXPORT BYTE* GetPixmap(CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH, int nBackgroundColor)
 {
-    return pGraphics->GetPage(nPageIndex, nRasterW, nRasterH);
+    return pGraphics->GetPage(nPageIndex, nRasterW, nRasterH, nBackgroundColor);
 }
 WASM_EXPORT BYTE* GetGlyphs (CGraphicsFileDrawing* pGraphics, int nPageIndex)
 {
@@ -153,8 +153,8 @@ static DWORD GetLength(BYTE* x)
 
 int main()
 {
-#define XPS_TEST  0
-#define DJVU_TEST 1
+#define XPS_TEST  1
+#define DJVU_TEST 0
 #define PDF_TEST  0
 #if PDF_TEST
     BYTE* pPdfData = NULL;
@@ -192,7 +192,7 @@ int main()
 
     BYTE* res = NULL;
     if (pages_count > 0)
-        res = GetPixmap(test, test_page, width, height);
+        res = GetPixmap(test, test_page, width, height, 0xFFFFFF);
 
     CBgraFrame* resFrame = new CBgraFrame();
     resFrame->put_Data(res);
@@ -259,7 +259,6 @@ int main()
     Close(test);
     RELEASEARRAYOBJECTS(pPdfData);
     RELEASEARRAYOBJECTS(pLinks);
-    RELEASEARRAYOBJECTS(pGlyphs);
     RELEASEARRAYOBJECTS(pStructure);
     RELEASEARRAYOBJECTS(info);
     RELEASEARRAYOBJECTS(res);
@@ -316,7 +315,7 @@ int main()
 
     BYTE* res = NULL;
     if (pages_count > 0)
-        res = GetPixmap(test, test_page, width, height);
+        res = GetPixmap(test, test_page, width, height, 0xFFFFFF);
     if (!res)
     {
         RELEASEARRAYOBJECTS(pXpsData);
@@ -368,7 +367,6 @@ int main()
     RELEASEARRAYOBJECTS(pXpsData);
     RELEASEARRAYOBJECTS(info);
     RELEASEARRAYOBJECTS(res);
-    RELEASEARRAYOBJECTS(pGlyphs);
     RELEASEARRAYOBJECTS(pLinks);
     RELEASEARRAYOBJECTS(pStructure);
     RELEASEOBJECT(resFrame);

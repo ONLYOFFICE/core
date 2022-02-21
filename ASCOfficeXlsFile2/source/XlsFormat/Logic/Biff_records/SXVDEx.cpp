@@ -51,11 +51,14 @@ BaseObjectPtr SXVDEx::clone()
 
 void SXVDEx::readFields(CFRecord& record)
 {
+	GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();
+
 	unsigned short	flags1;
 	unsigned char	flags2;
 
 	record >> flags1 >> flags2 >> citmAutoShow >> isxdiAutoSort >> isxdiAutoShow >> ifmt;
 
+	global_info->mapUsedFormatCode.insert(std::make_pair(ifmt, true));
 	fShowAllItems	= GETBIT(flags1, 0);
 	fDragToRow		= GETBIT(flags1, 1);
 	fDragToColumn	= GETBIT(flags1, 2);

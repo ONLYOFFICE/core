@@ -31,10 +31,10 @@
  */
 #pragma once
 
-#include <CPOptional.h>
 #include <iosfwd>
 #include <string>
 
+#include "../../include/CPOptional.h"
 
 namespace cpdoccore {
 	namespace odf_reader {

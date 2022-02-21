@@ -31,7 +31,6 @@
  */
 
 #include "RC4EncryptionHeader.h"
-#include <Binary/CFRecord.h>
 
 namespace CRYPTO
 {

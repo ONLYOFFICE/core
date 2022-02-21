@@ -31,7 +31,6 @@
  */
 
 #include "SharedProperty.h"
-#include <Binary/CFRecord.h>
 
 namespace OSHARED
 {

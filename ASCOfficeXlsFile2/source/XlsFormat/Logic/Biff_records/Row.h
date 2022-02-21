@@ -36,56 +36,56 @@
 
 namespace XLS
 {
-// Logical representation of Row record in BIFF8 and BrtRowHdr in BIFF12
-    class Row: public BiffRecord
-    {
-            BIFF_RECORD_DEFINE_TYPE_INFO(Row)
-            BASE_OBJECT_DEFINE_CLASS_NAME(Row)
-        public:
-            Row();
-            ~Row();
+	class Row : public BiffRecord
+	{
+		BIFF_RECORD_DEFINE_TYPE_INFO(Row)
+		BASE_OBJECT_DEFINE_CLASS_NAME(Row)
+	public:
+		Row();
+		~Row();
 
-            BaseObjectPtr clone();
+		BaseObjectPtr clone();
 
-            void readFields(CFRecord& record);
+		void readFields(CFRecord& record);
 
-            int serialize(std::wostream & stream);
+		int serialize(std::wostream & stream);
 
-            static const ElementType type = typeRow;
+		static const ElementType type = typeRow;
 
-            GlobalWorkbookInfoPtr global_info_;
+		UncheckedRw     rw;
+		unsigned short	colMic;
+		unsigned short	colMac;
+		_UINT16			miyRw;
 
-        //-----------------------------
-            //Rw			rw;
-            UncheckedRw     rw;
+		unsigned char	iOutLevel = 0;
+		bool			fCollapsed = false;
+		bool			fDyZero = false;
+		bool			fUnsynced = false;
+		bool			fGhostDirty = false;
 
-            //BackwardOnlyParam<unsigned short> colMic;
-            //BackwardOnlyParam<unsigned short> colMac;
+		_UINT32			ixfe_val = 0xffffffff;
 
-            unsigned short          colMic;
-            unsigned short          colMac;
+		bool			fExAsc = false; //fExtraAsc in biff12
+		bool			fExDes = false; //fExtraDsc in biff12
+		bool			fPhonetic = false; //fPhShow in biff12
 
-            _UINT16                 miyRw;
+		bool			bValid = false;
 
-            unsigned char           iOutLevel;
-            bool			fCollapsed;
-            bool			fDyZero;
-            bool			fUnsynced;
-            bool			fGhostDirty;
+//xlsb
+		_UINT32 ccolspan;
+		std::vector<XLSB::ColSpan> rgBrtColspan;
+//--------------------------------------------------------------------
+		GlobalWorkbookInfoPtr global_info_;
+	};
+	class Row_BIFF2  : public Row
+	{
+		BIFF_RECORD_DEFINE_TYPE_INFO(Row_BIFF2)
+		BASE_OBJECT_DEFINE_CLASS_NAME(Row_BIFF2)
+	public:
+		Row_BIFF2();
+		~Row_BIFF2();
 
-            //_UINT16			ixfe_val;
-            _UINT32			ixfe_val;
-            bool			fExAsc; //fExtraAsc in biff12
-            bool			fExDes; //fExtraDsc in biff12
-            bool			fPhonetic; //fPhShow in biff12
-
-            bool			bValid;
-
-            //xlsb
-            _UINT32                              ccolspan;
-            std::vector<XLSB::ColSpan>           rgBrtColspan;
-
-    };
-
+		BaseObjectPtr clone();
+	};
 } // namespace XLS
 

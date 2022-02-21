@@ -135,6 +135,8 @@ for param in argv:
   if json_data["asm"]:
     flags = json_data["compiler_flags"][:]
     flags.append("-s WASM=0")
+    if (json_data["embed_mem_file"]):
+      flags.append("--memory-init-file 0")
     exec_wasm(json_data, work_dir, flags, False)
 
   base.delete_dir(work_dir + "/o")

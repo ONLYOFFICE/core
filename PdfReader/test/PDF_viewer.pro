@@ -19,13 +19,13 @@ FORMS += \
     mainwindow.ui
 
 INCLUDEPATH += \
-    $$PWD/../../lib/goo \
-    $$PWD/../../lib/fofi \
-    $$PWD/../../lib/splash \
-    $$PWD/../../lib
+    $$PWD/../lib/goo \
+	$$PWD/../lib/fofi \
+	$$PWD/../lib/splash \
+	$$PWD/../lib
 
 PWD_ROOT_DIR = $$PWD
-CORE_ROOT_DIR = $$PWD/../../../../core
+CORE_ROOT_DIR = $$PWD/../../../core
 
 include($$CORE_ROOT_DIR/Common/base.pri)
 

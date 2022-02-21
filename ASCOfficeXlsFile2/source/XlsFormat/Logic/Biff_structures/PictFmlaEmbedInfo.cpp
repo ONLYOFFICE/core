@@ -31,7 +31,6 @@
  */
 
 #include "PictFmlaEmbedInfo.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

@@ -29,14 +29,13 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _CPDOCCORE_XLSX_CELL_STYLE_H_
-#define _CPDOCCORE_XLSX_CELL_STYLE_H_
+#pragma once
 
 #include <iosfwd>
 #include <string>
 
-#include <CPSharedPtr.h>
-#include <CPOptional.h>
+#include "../../include/CPSharedPtr.h"
+#include "../../include/CPOptional.h"
 
 namespace cpdoccore {
 namespace oox {
@@ -54,4 +53,3 @@ namespace oox {
 }
 }
 
-#endif

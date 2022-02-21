@@ -140,7 +140,7 @@ class oox_bar_chart: public oox_chart
 	_CP_OPT(bool)	bConnectBars;
 	_CP_OPT(int)	iGapWidth;
 	_CP_OPT(int)	iOverlap;
-
+	_CP_OPT(int)	iSolidType;
  
 	//gapWidth (Gap Width) §21.2.2.75
 	//overlap (Overlap) §21.2.2.131

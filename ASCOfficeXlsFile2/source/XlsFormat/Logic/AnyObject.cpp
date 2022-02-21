@@ -31,8 +31,6 @@
  */
 
 #include "AnyObject.h"
-#include <Binary/CFStream.h>
-
 
 namespace XLS
 {;

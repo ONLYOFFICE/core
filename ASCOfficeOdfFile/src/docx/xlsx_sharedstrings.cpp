@@ -31,7 +31,7 @@
  */
 #include <vector>
 
-#include <xml/utils.h>
+#include "../../include/xml/utils.h"
 
 #include "xlsx_sharedstrings.h"
 

@@ -31,7 +31,6 @@
  */
 
 #include "BookExt_Conditional11.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

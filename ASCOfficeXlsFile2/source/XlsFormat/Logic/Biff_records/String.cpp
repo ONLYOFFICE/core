@@ -36,20 +36,26 @@ namespace XLS
 {
 
 String::String()
-{
-}
-
+{}
 
 String::~String()
-{
-}
-
+{}
 
 BaseObjectPtr String::clone()
 {
 	return BaseObjectPtr(new String(*this));
 }
 
+String_BIFF2::String_BIFF2()
+{}
+
+String_BIFF2::~String_BIFF2()
+{}
+
+BaseObjectPtr String_BIFF2::clone()
+{
+	return BaseObjectPtr(new String_BIFF2(*this));
+}
 
 void String::readFields(CFRecord& record)
 {

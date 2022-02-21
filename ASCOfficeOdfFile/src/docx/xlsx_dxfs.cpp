@@ -34,7 +34,7 @@
 #include "xlsx_fill.h"
 #include "xlsx_font.h"
 
-#include <xml/simple_xml_writer.h>
+#include "../../include/xml/simple_xml_writer.h"
 
 #include <ostream>
 #include <vector>

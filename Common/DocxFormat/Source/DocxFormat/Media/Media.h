@@ -30,32 +30,19 @@
  *
  */
 #pragma once
-#ifndef OOX_MEDIA_INCLUDE_H_
-#define OOX_MEDIA_INCLUDE_H_
 
-#include "../File.h"
 #include "../FileTypes.h"
-
+#include "../File.h"
 
 namespace OOX
 {
+	class CDocument;
+
 	class Media : public File
 	{
 	public:
-		Media(OOX::Document *pMain, bool bDocument = true) : File(pMain)
-		{
-			m_bExist	= false;
-			m_bExternal = false;
-			m_bDocument = bDocument;
-		}
-		Media(OOX::Document *pMain, const CPath& filename, bool bExternal = false) : File(pMain)
-		{
-			m_bExist = false;
-			m_bDocument = false;
-			m_bExternal	= bExternal;
-			
-			read(filename);
-		}
+		Media(OOX::Document *pMain, bool bDocument = true);
+		Media(OOX::Document *pMain, const CPath& filename, bool bExternal = false);
 		virtual ~Media()
 		{
 		}
@@ -63,28 +50,12 @@ namespace OOX
 		{
 			return FileTypes::Media;
 		}
-		virtual void read(const CPath& filename)
-		{
-			m_filename = filename;
-			m_bExist = NSFile::CFileBinary::Exists(m_filename.GetPath());
-		}
-		virtual void write(const CPath& filename, const CPath& directory, CContentTypes& content) const
-		{
-		}
-		void set_filename(const std::wstring & file_path, bool bExternal)
-		{
-			read(file_path);
-			
-			m_bExternal			= bExternal;
-			m_sOutputFilename	= m_filename.GetFilename();
-		}
-		void set_filename(CPath & file_path, bool bExternal)
-		{
-			m_bExternal			= bExternal;
-			m_filename			= file_path;
-			m_sOutputFilename	= file_path.GetFilename();
-			m_bExist = NSFile::CFileBinary::Exists(m_filename.GetPath());
-		}
+		virtual void read(const CPath& filename);
+		virtual void write(const CPath& filename, const CPath& directory, CContentTypes& content) const;
+
+		void set_filename(const std::wstring & file_path, bool bExternal);
+		void set_filename(CPath & file_path, bool bExternal);
+
 		bool IsExist()
 		{
 			return m_bExist;
@@ -97,14 +68,7 @@ namespace OOX
 		{
 			return m_filename;
 		}
-		virtual void copy_to(const CPath& path) const
-		{
-			if (m_bExternal) return;
-
-			OOX::CPath pathSaveItem =  path + FILE_SEPARATOR_STR + m_filename.GetFilename();
-            
-			NSFile::CFileBinary::Copy(m_filename.GetPath(), pathSaveItem.GetPath());
-		}
+		virtual void copy_to(const CPath& path) const;
 		virtual const CPath DefaultDirectory() const
 		{
 			if (m_bDocument) return type().DefaultDirectory();
@@ -122,4 +86,3 @@ namespace OOX
 	};
 } // namespace OOX
 
-#endif // OOX_MEDIA_INCLUDE_H_

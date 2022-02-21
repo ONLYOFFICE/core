@@ -53,11 +53,15 @@ BaseObjectPtr BRAI::clone()
 
 void BRAI::readFields(CFRecord& record)
 {
+	GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();
+
 	unsigned short flags;
 	record >> id >> rt >> flags;
 	fUnlinkedIfmt = static_cast<unsigned char>(GETBIT(flags, 0));
 	record >> ifmt;
 	
+	global_info->mapUsedFormatCode.insert(std::make_pair(ifmt, true));
+
 	formula.load(record);
 
 }

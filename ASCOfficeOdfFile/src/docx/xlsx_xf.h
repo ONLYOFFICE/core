@@ -34,11 +34,10 @@
 #include <iosfwd>
 #include <string>
 
-#include <CPSharedPtr.h>
-#include <CPOptional.h>
-
 #include "xlsx_alignment.h"
 #include "xlsx_protection.h"
+
+#include "../../include/CPSharedPtr.h"
 
 namespace cpdoccore {
 namespace oox {

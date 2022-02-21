@@ -32,51 +32,16 @@
 
 (function(window, undefined) {
 
-    var printErr = undefined;
-    var FS = undefined;
-    var print = undefined;
-
-    var getBinaryPromise = null;
-    if (window["AscDesktopEditor"] && document.currentScript && 0 == document.currentScript.src.indexOf("file:///"))
-    {
-        // fetch not support file:/// scheme
-        window.fetch = undefined;
-
-        getBinaryPromise = function() {
-
-            var wasmPath = "ascdesktop://fonts/" + wasmBinaryFile.substr(8);
-            return new Promise(function (resolve, reject) {
-
-                var xhr = new XMLHttpRequest();
-                xhr.open('GET', wasmPath, true);
-                xhr.responseType = 'arraybuffer';
-
-                if (xhr.overrideMimeType)
-                    xhr.overrideMimeType('text/plain; charset=x-user-defined');
-                else
-                    xhr.setRequestHeader('Accept-Charset', 'x-user-defined');
-
-                xhr.onload = function () {
-                    if (this.status == 200) {
-                        resolve(new Uint8Array(this.response));
-                    }
-                };
-
-                xhr.send(null);
-            });
-        }
-    }
-    else
-    {
-        getBinaryPromise = function() { return getBinaryPromise2(); }
-    }
-    
     function getMemoryPathIE(name)
     {
         if (self["AscViewer"] && self["AscViewer"]["baseUrl"])
             return self["AscViewer"]["baseUrl"] + name;
         return name;
     }
+	
+	var FS = undefined;
+	
+	//desktop_fetch
 
     //polyfill
 
@@ -189,7 +154,8 @@
                 "W" : _buffer[_cur++], 
                 "H" : _buffer[_cur++], 
                 "Dpi" : _buffer[_cur++],
-                fonts : []
+                fonts : [],
+                text : null
             });
         }
 
@@ -212,7 +178,7 @@
         return this.pages;
     };
 
-    CFile.prototype["getPagePixmap"] = function(pageIndex, width, height)
+    CFile.prototype["getPagePixmap"] = function(pageIndex, width, height, backgroundColor)
     {
         if (this.pages[pageIndex].fonts.length > 0)
         {
@@ -221,7 +187,7 @@
         }
 
         self.drawingFileCurrentPageIndex = pageIndex;
-        var retValue = Module["_GetPixmap"](this.nativeFile, pageIndex, width, height);
+        var retValue = Module["_GetPixmap"](this.nativeFile, pageIndex, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor);
         self.drawingFileCurrentPageIndex = -1;
 		
 		if (this.pages[pageIndex].fonts.length > 0)
@@ -234,21 +200,50 @@
     };
     CFile.prototype["getGlyphs"] = function(pageIndex)
     {
-        var glyphs = Module["_GetGlyphs"](this.nativeFile, pageIndex);
-        if (glyphs == 0)
-            return;
+        if (this.pages[pageIndex].fonts.length > 0)
+        {
+            // ждем загрузки шрифтов для этой страницы
+            return null;
+        }
 
-        var lenArray = new Int32Array(Module["HEAP8"].buffer, glyphs, 4);
+        self.drawingFileCurrentPageIndex = pageIndex;
+        var retValue = Module["_GetGlyphs"](this.nativeFile, pageIndex);
+        // удалять результат не надо, этот буфер используется в качестве текстового буфера 
+        // для текстовых команд других страниц. После получения ВСЕХ текстовых страниц - 
+        // нужно вызвать destroyTextInfo()
+        self.drawingFileCurrentPageIndex = -1;
+
+        if (this.pages[pageIndex].fonts.length > 0)
+        {
+            // ждем загрузки шрифтов для этой страницы
+            retValue = null;
+        }
+
+        if (null == retValue)
+            return null;
+
+        var lenArray = new Int32Array(Module["HEAP8"].buffer, retValue, 5);
         var len = lenArray[0];
-        len -= 4;
+        len -= 20;
+
+        if (self.drawingFile.onUpdateStatistics)
+            self.drawingFile.onUpdateStatistics(lenArray[1], lenArray[2], lenArray[3], lenArray[4]);
+
         if (len <= 0)
-            return;
+        {
+            return [];
+        }
 
-        this.pages[pageIndex].Lines = [];
-        var buffer = new Uint8Array(Module["HEAP8"].buffer, glyphs + 4, len);
+        var textCommandsSrc = new Uint8Array(Module["HEAP8"].buffer, retValue + 20, len);
+        var textCommands = new Uint8Array(len);
+        textCommands.set(textCommandsSrc);
 
-        Module["_free"](glyphs);
-        return buffer;
+        textCommandsSrc = null;
+        return textCommands;
+    };
+    CFile.prototype["destroyTextInfo"] = function()
+    {
+        Module["_DestroyTextInfo"]();
     };
     CFile.prototype["getLinks"] = function(pageIndex)
     {

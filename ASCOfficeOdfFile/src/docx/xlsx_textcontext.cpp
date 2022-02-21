@@ -35,10 +35,10 @@
 #include <iostream>
 #include "xlsx_sharedstrings.h"
 #include <list>
-#include <xml/simple_xml_writer.h>
 
-#include <odf/odf_document.h>
-#include <xml/utils.h>
+#include "../../include/xml/simple_xml_writer.h"
+#include "../../include/odf/odf_document.h"
+#include "../../include/xml/utils.h"
 
 #include "../odf/odfcontext.h"
 #include "../odf/calcs_styles.h"
@@ -52,7 +52,7 @@ namespace oox {
 class xlsx_text_context::Impl: boost::noncopyable
 {
 public:
-	Impl(odf_reader::styles_container & styles_);
+	Impl(odf_reader::odf_read_context & odf_context);
 public:
 	void add_text(const std::wstring & text);
     
@@ -98,8 +98,8 @@ private:
 	bool in_cell_content;
 	bool only_text;
 
-	odf_reader::styles_container				& styles_;
-	odf_reader::styles_container				* local_styles_ptr_;
+	odf_reader::odf_read_context & odf_context_;
+	odf_reader::styles_container * local_styles_ptr_;
 
 	odf_reader::text_format_properties_content_ptr text_properties_cell_;
    
@@ -129,8 +129,9 @@ void xlsx_text_context::Impl::serialize_shared_strings(std::wostream & strm)
 }
 
 
-xlsx_text_context::Impl::Impl(odf_reader::styles_container & styles): paragraphs_cout_(0),styles_(styles),
-				in_comment(false),in_draw(false),in_paragraph(false),in_span(false),in_cell_content(false),only_text(false)
+xlsx_text_context::Impl::Impl(odf_reader::odf_read_context & odf_context) :
+	paragraphs_cout_(0), odf_context_(odf_context),
+	in_comment(false), in_draw(false), in_paragraph(false), in_span(false), in_cell_content(false), only_text(false)
 {
 	local_styles_ptr_		= NULL;
 	text_properties_cell_	= NULL;
@@ -247,8 +248,8 @@ void xlsx_text_context::Impl::ApplyParagraphProperties	(std::wstring style, odf_
 	}
 	else
 	{
-		defaultStyle	= styles_.style_default_by_type(odf_types::style_family::Paragraph);
-		paraStyle		= styles_.style_by_name(style, odf_types::style_family::Paragraph, false/*process_headers_footers_*/);
+		defaultStyle	= odf_context_.styleContainer().style_default_by_type(odf_types::style_family::Paragraph);
+		paraStyle		= odf_context_.styleContainer().style_by_name(style, odf_types::style_family::Paragraph, false/*process_headers_footers_*/);
 	}
 	
 	if (defaultStyle)	instances.push_back(defaultStyle);
@@ -272,9 +273,9 @@ void xlsx_text_context::Impl::ApplyTextProperties(std::wstring style, std::wstri
 	}
 	else
 	{
-		defaultStyle	= styles_.style_default_by_type(odf_types::style_family::Text);
-		paraStyle		= styles_.style_by_name(para_style, odf_types::style_family::Paragraph, false/*process_headers_footers_*/);
-		textStyle		= styles_.style_by_name(style, odf_types::style_family::Text, false/*process_headers_footers_*/);
+		defaultStyle	= odf_context_.styleContainer().style_default_by_type(odf_types::style_family::Text);
+		paraStyle		= odf_context_.styleContainer().style_by_name(para_style, odf_types::style_family::Paragraph, false/*process_headers_footers_*/);
+		textStyle		= odf_context_.styleContainer().style_by_name(style, odf_types::style_family::Text, false/*process_headers_footers_*/);
 	}
 	
 	if (defaultStyle)	instances.push_back(defaultStyle);
@@ -319,8 +320,7 @@ void xlsx_text_context::Impl::write_rPr(std::wostream & strm)
 
 	if (in_draw)
 	{
-		odf_reader::fonts_container fonts;
-		text_properties_.drawing_serialize(strm, L"a:rPr", fonts);
+		text_properties_.drawing_serialize(strm, L"a:rPr", odf_context_.fontContainer());
 	}
 	else
 	{
@@ -328,6 +328,24 @@ void xlsx_text_context::Impl::write_rPr(std::wostream & strm)
 		{
 			CP_XML_NODE(L"rPr")
 			{
+				std::wstring font_name;
+				if (text_properties_.fo_font_family_)
+				{
+					font_name = *text_properties_.fo_font_family_;
+				}
+				else if (text_properties_.style_font_name_)
+				{
+					odf_reader::font_instance *font = odf_context_.fontContainer().font_by_style_name(*text_properties_.style_font_name_);
+					if (font)
+						font_name = font->name();
+				}
+				if (false == font_name.empty())
+				{
+					CP_XML_NODE(L"rFont")
+					{
+						CP_XML_ATTR(L"val", font_name);
+					}
+				}
 				if (text_properties_.fo_font_weight_)
 				{
 					CP_XML_NODE(L"b")		
@@ -348,25 +366,18 @@ void xlsx_text_context::Impl::write_rPr(std::wostream & strm)
 							CP_XML_ATTR(L"val", "false");
 					}
 				}
+				if (text_properties_.fo_color_)
+				{
+					CP_XML_NODE(L"color")
+					{
+						CP_XML_ATTR(L"rgb", text_properties_.fo_color_->get_hex_value(true));
+					}
+				}
 				if (text_properties_.fo_font_size_)
 				{
 					CP_XML_NODE(L"sz")		
 					{
 						CP_XML_ATTR(L"val", (int)text_properties_.fo_font_size_->get_length().get_value());
-					}
-				}
-				if (text_properties_.fo_color_)
-				{
-					CP_XML_NODE(L"color")	
-					{
-						CP_XML_ATTR(L"rgb", text_properties_.fo_color_->get_hex_value());
-					}
-				}
-				if (text_properties_.fo_font_family_)
-				{
-					CP_XML_NODE(L"rFont")	
-					{
-						CP_XML_ATTR(L"val", text_properties_.fo_font_family_.get());
 					}
 				}
 			}
@@ -574,7 +585,8 @@ int xlsx_text_context::Impl::end_cell_content()
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-xlsx_text_context::xlsx_text_context(odf_reader::styles_container & _styles): impl_(new xlsx_text_context::Impl(_styles))
+xlsx_text_context::xlsx_text_context(odf_reader::odf_read_context & odfContext) :
+	impl_(new xlsx_text_context::Impl(odfContext))
 {}
 
 

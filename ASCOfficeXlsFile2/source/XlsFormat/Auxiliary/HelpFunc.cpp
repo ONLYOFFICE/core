@@ -33,7 +33,7 @@
 
 #include "../../../../UnicodeConverter/UnicodeConverter.h"
 
-#include <Logic/Biff_structures/CellRangeRef.h>
+#include "../Logic/Biff_structures/CellRangeRef.h"
 
 #include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
@@ -392,13 +392,13 @@ const std::wstring unescape_ST_Xstring(const std::wstring& wstr)
 }
 
 
-const std::wstring toARGB(const unsigned int rgba)
+const std::wstring toARGB(const _UINT32 rgba)
 {
 	return toARGB(static_cast<unsigned char>(rgba & 0xff), static_cast<unsigned char>((rgba >> 8) & 0xff),
 		static_cast<unsigned char>((rgba >> 16) & 0xff), static_cast<unsigned char>((rgba >> 24) & 0xff));
 }
 
-const std::wstring toRGB(const unsigned int rgba)
+const std::wstring toRGB(const _UINT32 rgba)
 {
 	unsigned char R = static_cast<unsigned char>((rgba >> 16) & 0xff);
 	unsigned char G = static_cast<unsigned char>((rgba >> 8) & 0xff);
@@ -512,7 +512,7 @@ const size_t hex_str2int(const std::wstring::const_iterator& it_begin, const std
 //
 //    return sResult;
 //}
-std::wstring toStdWString(std::string ansi_string, const unsigned int code_page)
+std::wstring toStdWString(std::string ansi_string, const _UINT32 code_page)
 {
     std::string sCodePage;
 	std::map<int, std::string>::const_iterator pFind = NSUnicodeConverter::mapEncodingsICU.find(code_page);
@@ -544,7 +544,7 @@ std::wstring toStdWString(std::string ansi_string, const unsigned int code_page)
 		return result;
 	}
 }
-std::wstring	toStdWString(char* ansi, int size, const unsigned int code_page)
+std::wstring	toStdWString(char* ansi, int size, const _UINT32 code_page)
 {
     std::string sCodePage;
 	std::map<int, std::string>::const_iterator pFind = NSUnicodeConverter::mapEncodingsICU.find(code_page);
@@ -556,15 +556,15 @@ std::wstring	toStdWString(char* ansi, int size, const unsigned int code_page)
 	if (!sCodePage.empty())
 	{
 		NSUnicodeConverter::CUnicodeConverter oConverter;
-        return oConverter.toUnicode(ansi, (unsigned int)size, sCodePage.c_str());
+        return oConverter.toUnicode(ansi, (_UINT32)size, sCodePage.c_str());
 	}
 	else
 	{
 		NSUnicodeConverter::CUnicodeConverter oConverter;
-        return oConverter.toUnicode(ansi, (unsigned int)size, code_page);
+        return oConverter.toUnicode(ansi, (_UINT32)size, code_page);
 	}
 }
-std::string toStdString(std::wstring wide_string, const unsigned int code_page)
+std::string toStdString(std::wstring wide_string, const _UINT32 code_page)
 {
     std::string sCodePage;
 	std::map<int, std::string>::const_iterator pFind = NSUnicodeConverter::mapEncodingsICU.find(code_page);

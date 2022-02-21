@@ -31,11 +31,11 @@
  */
 
 #include "XLUnicodeRichExtendedString.h"
-#include <Logic/BaseObject.h>
-#include <Logic/GlobalWorkbookInfo.h>
-#include <Logic/Biff_records/Font.h>
+#include "../BaseObject.h"
+#include "../GlobalWorkbookInfo.h"
+#include "../Biff_records/Font.h"
 
-#include <utils.h>
+#include "../../../Common/utils.h"
 
 namespace XLS
 {

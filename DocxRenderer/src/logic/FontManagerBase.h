@@ -7,6 +7,13 @@
 
 namespace NSFontManager
 {
+    static NSFonts::IFontManager* CreateFontManager(NSFonts::IApplicationFonts* pApplication)
+    {
+        NSFonts::IFontManager* pManager = pApplication->GenerateFontManager();
+        pManager->CreateOwnerCache(8);
+        return pManager;
+    }
+
 	const double c_dInchToMM	= 25.4;
 	const double c_dPixToMM		= 25.4 / 72.0;
 	const double c_dPtToMM		= 25.4 / 72.0;
@@ -394,7 +401,7 @@ namespace NSFontManager
 	public:
         CFontManagerBase(NSFonts::IApplicationFonts* pFonts) : m_oFont()
 		{
-            m_pManager = pFonts->GenerateFontManager();
+            m_pManager = NSFontManager::CreateFontManager(pFonts);
 
             SetDefaultFont(L"Arial");
 
@@ -678,10 +685,17 @@ namespace NSFontManager
 
             NSFonts::CFontSelectFormat oFormat;
 
+            std::wstring sFontNameSelect = L"";
             if (m_oFont.m_strFamilyName.empty() && !m_oFont.m_oFont.Path.empty())
-                oFormat.wsName = new std::wstring(m_strDefaultFont);
+                sFontNameSelect = m_strDefaultFont;
             else
-                oFormat.wsName = new std::wstring(m_oFont.m_strFamilyName);
+                sFontNameSelect = m_oFont.m_strFamilyName;
+
+            bool bSelectBold = false;
+            bool bSelectItalic = false;
+            CheckFontNamePDF(sFontNameSelect, bSelectBold, bSelectItalic);
+
+            oFormat.wsName = new std::wstring(sFontNameSelect);
 
             if (!m_oFont.m_strPANOSE.empty())
             {
@@ -694,10 +708,12 @@ namespace NSFontManager
                     pPanoseStr += 2;
                 }
             }
+
             oFormat.bBold = new INT(((m_oFont.m_lStyle & 0x01) == 0x01) ? 1 : 0);
             oFormat.bItalic = new INT(((m_oFont.m_lStyle & 0x02) == 0x02) ? 1 : 0);
             oFormat.bFixedWidth = new INT(m_oFont.m_bIsFixedWidth ? 1 : 0);
-            oFormat.shAvgCharWidth = new SHORT((SHORT)m_oFont.m_lAvgWidth);
+            if (-1 != m_oFont.m_lAvgWidth)
+                oFormat.shAvgCharWidth = new SHORT((SHORT)m_oFont.m_lAvgWidth);
             oFormat.ulRange1 = new UINT(dwR1);
             oFormat.ulRange2 = new UINT(dwR2);
             oFormat.ulRange3 = new UINT(dwR3);
@@ -720,6 +736,72 @@ namespace NSFontManager
             m_arListPicUps.push_front(oPick);
 			return true;
 		}
+
+        bool CheckFontNameStyle(std::wstring& sName, const std::wstring& sStyle)
+        {
+            size_t nPos = 0;
+            size_t nLenReplace = sStyle.length();
+            bool bRet = false;
+
+            std::wstring sName2 = sName;
+            NSStringExt::ToLower(sName2);
+
+            while (std::wstring::npos != (nPos = sName2.find(sStyle, nPos)))
+            {
+                size_t nOffset = 0;
+                if ((nPos > 0) && sName2.at(nPos - 1) == '-')
+                {
+                    --nPos;
+                    ++nOffset;
+                }
+
+                bRet = true;
+                sName.erase(nPos, nLenReplace + nOffset);
+                sName2.erase(nPos, nLenReplace + nOffset);
+            }
+            return bRet;
+        }
+
+        void CheckFontNamePDF(std::wstring& sName, bool& bBold, bool& bItalic)
+        {
+            if (sName.length() > 7 && sName.at(6) == '+')
+            {
+                bool bIsRemove = true;
+                for (int nIndex = 0; nIndex < 6; nIndex++)
+                {
+                    wchar_t nChar = sName.at(nIndex);
+                    if (nChar < 'A' || nChar > 'Z')
+                    {
+                        bIsRemove = false;
+                        break;
+                    }
+                }
+                if (bIsRemove)
+                {
+                    sName.erase(0, 7);
+                }
+            }
+
+            CheckFontNameStyle(sName, L"regular");
+            CheckFontNameStyle(sName, L"condensed");
+            CheckFontNameStyle(sName, L"condensedlight");
+            //CheckFontNameStyle(sName, L"light");
+
+            CheckFontNameStyle(sName, L"condensedbold");
+            CheckFontNameStyle(sName, L"semibold");
+            if (CheckFontNameStyle(sName, L"boldmt")) bBold = true;
+            if (CheckFontNameStyle(sName, L"bold")) bBold = true;
+
+            if (CheckFontNameStyle(sName, L"italicmt")) bItalic = true;
+            if (CheckFontNameStyle(sName, L"italic")) bItalic = true;
+            if (CheckFontNameStyle(sName, L"oblique")) bItalic = true;
+
+            if (CheckFontNameStyle(sName, L"bolditalicmt")) { bBold = true; bItalic = true; }
+            if (CheckFontNameStyle(sName, L"bolditalic")) { bBold = true; bItalic = true; }
+            if (CheckFontNameStyle(sName, L"bold_italic")) { bBold = true; bItalic = true; }
+            if (CheckFontNameStyle(sName, L"boldoblique")) { bBold = true; bItalic = true; }
+            if (CheckFontNameStyle(sName, L"bold_oblique")) { bBold = true; bItalic = true; }
+        }
 	};
 }
 

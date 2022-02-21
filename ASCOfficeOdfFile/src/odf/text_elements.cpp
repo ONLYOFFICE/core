@@ -32,15 +32,14 @@
 
 #include "text_elements.h"
 
-#include <xml/xmlchar.h>
-#include <xml/attributes.h>
-#include <xml/utils.h>
+#include "../../include/xml/xmlchar.h"
+#include "../../include/xml/utils.h"
 
 #include "paragraph_elements.h"
 #include "serialize_elements.h"
 #include "list.h"
 
-#include <odf/odf_document.h>
+#include "../../include/odf/odf_document.h"
 #include "odfcontext.h"
 #include "style_paragraph_properties.h"
 #include "style_text_properties.h"

@@ -31,7 +31,6 @@
  */
 
 #include "BuiltInStyle.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

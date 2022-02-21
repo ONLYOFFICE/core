@@ -32,8 +32,8 @@
 
 #include "oox_title.h"
 #include <boost/functional.hpp>
-#include <CPOptional.h>
-#include <xml/simple_xml_writer.h>
+
+#include "../../include/xml/simple_xml_writer.h"
 #include "../odf/odfcontext.h"
 #include "../odf/style_text_properties.h"
 

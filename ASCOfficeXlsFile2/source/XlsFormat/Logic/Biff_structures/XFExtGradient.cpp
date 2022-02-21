@@ -31,7 +31,6 @@
  */
 
 #include "XFExtGradient.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {
@@ -41,7 +40,6 @@ BiffStructurePtr XFExtGradient::clone()
 {
 	return BiffStructurePtr(new XFExtGradient(*this));
 }
-
 
 void XFExtGradient::load(CFRecord& record)
 {
@@ -57,5 +55,33 @@ void XFExtGradient::load(CFRecord& record)
 	}
 }
 
-
+int XFExtGradient::serialize(std::wostream & stream)
+{
+	CP_XML_WRITER(stream)
+	{
+		CP_XML_NODE(L"gradientFill")
+		{
+			for (size_t i = 0; i < rgGradStops.size(); ++i)
+			{
+				CP_XML_NODE(L"stop")
+				{
+					CP_XML_ATTR(L"position", rgGradStops[i].numPosition.data.value);
+					CP_XML_NODE(L"color")
+					{
+						switch (rgGradStops[i].xclrType)
+						{
+							case 0: CP_XML_ATTR(L"auto", 1); break;
+							case 1: CP_XML_ATTR(L"indexed", rgGradStops[i].xclrValue);	break;
+							case 3: CP_XML_ATTR(L"theme", rgGradStops[i].xclrValue);	break;
+							default:
+								CP_XML_ATTR(L"rgb", rgGradStops[i].xclrValue);	break;
+						}
+						CP_XML_ATTR(L"tint", rgGradStops[i].numTint.data.value);
+					}
+				}
+			}
+		}
+	}
+	return 0;
+}
 } // namespace XLS

@@ -32,7 +32,7 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include <Logic/Biff_structures/SecurityDescriptor.h>
+#include "SecurityDescriptor.h"
 
 namespace XLS
 {

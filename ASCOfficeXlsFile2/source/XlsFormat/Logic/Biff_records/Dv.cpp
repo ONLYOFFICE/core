@@ -32,7 +32,7 @@
 
 #include "Dv.h"
 
-#include <utils.h>
+#include "../../../Common/utils.h"
 #include <boost/algorithm/string.hpp>
 
 #include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/DValStrings.h"
@@ -124,11 +124,11 @@ void Dv::readFields(CFRecord& record)
 
     if(!_ext14)
     {
- 	formula1.load(record, valType != typeDvNone);
+ 		formula1.load(record, valType != typeDvNone);
 
-	formula2.load(record, valType != typeDvCustom && valType != typeDvList && valType != typeDvNone && typOperator < 2); 
+		formula2.load(record, valType != typeDvCustom && valType != typeDvList && valType != typeDvNone && typOperator < 2); 
 
-if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+		if (record.getGlobalWorkbookInfo()->Version < 0x0800)
         {
             record >> sqref;
         }

@@ -31,7 +31,7 @@
  */
 
 #include "BUNDLESHEET.h"
-#include <Logic/Biff_records/BoundSheet8.h>
+#include "../Biff_records/BoundSheet8.h"
 
 namespace XLS
 {

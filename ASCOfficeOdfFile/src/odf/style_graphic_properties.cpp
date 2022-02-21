@@ -33,9 +33,7 @@
 #include <iostream>
 #include "style_graphic_properties.h"
 
-#include <xml/attributes.h>
 #include "serialize_elements.h"
-
 
 namespace cpdoccore { 
 

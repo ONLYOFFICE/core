@@ -31,7 +31,7 @@
  */
 
 #include "XFExtNoFRT.h"
-#include <Binary/CFRecord.h>
+#include "../../Binary/CFRecord.h"
 
 namespace XLS
 {
@@ -67,15 +67,10 @@ void XFExtNoFRT::load(CFRecord& record)
 			break;
 		ExtProp prop;
 		record >> prop;
-		rgExt.push_back(prop);
+
+		mapRgExt.insert(std::make_pair(prop.extType, prop));
 	}
 }
 
-int XFExtNoFRT::serialize(std::wostream & stream)
-{
-	//todooo
-
-	return 0;
-}
 } // namespace XLS
 

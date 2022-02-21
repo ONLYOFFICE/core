@@ -52,6 +52,7 @@ public:
 	int serialize(std::wostream & stream, const std::wstring &sNode);
 
 	bool			fValidRGBA;
+	
 	unsigned char	xclrType;
 	unsigned char	icv;
 	short			nTintShade;

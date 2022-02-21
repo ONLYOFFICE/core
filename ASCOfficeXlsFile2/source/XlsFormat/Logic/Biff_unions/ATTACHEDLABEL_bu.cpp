@@ -48,7 +48,7 @@
 #include "../Biff_records/SeriesText.h"
 #include "../Biff_records/Font.h"
 
-#include <utils.h>
+#include "../../../Common/utils.h"
 
 namespace XLS
 {
@@ -364,14 +364,14 @@ int ATTACHEDLABEL::serialize(std::wostream & _stream, bool isPosition)
 	return 0;
 }
 
-int ATTACHEDLABEL::serialize_rPr (std::wostream & _stream, int iFmt, bool rtl, bool defRPr)
+int ATTACHEDLABEL::serialize_rPr (std::wostream & _stream, int iFnt, bool rtl, bool defRPr)
 {
 	if (!pGlobalWorkbookInfoPtr)			return 0;
 
 	int sz = pGlobalWorkbookInfoPtr->m_arFonts.size();
-	if (iFmt -1 > sz || iFmt < 1) return 0;
+	if (iFnt - 1 > sz || iFnt < 1) return 0;
 
-	Font * font = dynamic_cast<Font*>(pGlobalWorkbookInfoPtr->m_arFonts[iFmt-1].get());
+	Font * font = dynamic_cast<Font*>(pGlobalWorkbookInfoPtr->m_arFonts[iFnt -1].get());
 
 	Text * text_props = dynamic_cast<Text*>(m_TextProperties.get());
 	

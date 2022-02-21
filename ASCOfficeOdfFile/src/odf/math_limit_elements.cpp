@@ -32,9 +32,8 @@
 
 #include "math_limit_elements.h"
 
-#include <xml/xmlchar.h>
-#include <xml/attributes.h>
-#include <xml/simple_xml_writer.h>
+#include "../../include/xml/xmlchar.h"
+#include "../../include/xml/simple_xml_writer.h"
 
 namespace cpdoccore { 
 
@@ -282,14 +281,14 @@ void math_munderover::oox_convert(oox::math_context & Context)
 			strm << L"</m:naryPr>";
 			strm << L"<m:sub>";
 			{
-				math_element = dynamic_cast<office_math_element*>(content_[2].get());
+				math_element = dynamic_cast<office_math_element*>(content_[1].get());
 				math_element->oox_convert(Context);		
 			}
 			strm << L"</m:sub>";
 			
 			strm << L"<m:sup>";
 			{
-				math_element = dynamic_cast<office_math_element*>(content_[1].get());
+				math_element = dynamic_cast<office_math_element*>(content_[2].get());
 				math_element->oox_convert(Context);		
 			}
 			strm << L"</m:sup>";

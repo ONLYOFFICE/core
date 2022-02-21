@@ -31,8 +31,8 @@
  */
 
 #include "xlsx_drawing.h"
-#include <xml/simple_xml_writer.h>
-#include <xml/utils.h>
+#include "../../include/xml/simple_xml_writer.h"
+#include "../../include/xml/utils.h"
 
 #include "../odf/datatypes/custom_shape_types_convert.h"
 #include "../../formulasconvert/formulasconvert.h"
@@ -538,7 +538,7 @@ void _xlsx_drawing::serialize_vml(std::wostream & strm)
 				case OBJ_SpinControl:	CP_XML_ATTR(L"ObjectType", L"Spin");	break;
 				case OBJ_Scrollbar:		CP_XML_ATTR(L"ObjectType", L"Scroll");	break;
 				case OBJ_List:			CP_XML_ATTR(L"ObjectType", L"List");	break;
-				case OBJ_DropdownList:	CP_XML_ATTR(L"ObjectType", L"List");	break;
+				case OBJ_DropdownList:	CP_XML_ATTR(L"ObjectType", L"Drop");	break;
 				case OBJ_Note:			CP_XML_ATTR(L"ObjectType", L"Note");	break;
 				}
 
@@ -576,7 +576,7 @@ void _xlsx_drawing::serialize_vml(std::wostream & strm)
 				if (sVal)
 				{
 					formulasconvert::odf2oox_converter converter;
-					std::wstring fmla = converter.convert_named_ref(*sVal);
+					std::wstring fmla = converter.convert_named_ref(*sVal, true, L" ", true);
 					CP_XML_NODE(L"x:FmlaLink")
 					{
 						CP_XML_STREAM() << fmla;
@@ -586,7 +586,7 @@ void _xlsx_drawing::serialize_vml(std::wostream & strm)
 				if (sVal)
 				{
 					formulasconvert::odf2oox_converter converter;
-					std::wstring fmla = converter.convert_named_ref(*sVal);
+					std::wstring fmla = converter.convert_named_ref(*sVal, true, L" ", true);
 					CP_XML_NODE(L"x:FmlaRange")
 					{
 						CP_XML_STREAM() << fmla;

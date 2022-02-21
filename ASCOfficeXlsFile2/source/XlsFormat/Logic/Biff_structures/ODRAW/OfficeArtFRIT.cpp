@@ -31,7 +31,6 @@
  */
 
 #include "OfficeArtFRIT.h"
-#include <Binary/CFRecord.h>
 
 namespace ODRAW
 {

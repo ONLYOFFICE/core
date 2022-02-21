@@ -31,8 +31,8 @@
  */
 
 #include "BACKGROUND.h"
-#include <Logic/Biff_records/BkHim.h>
-#include <Logic/Biff_records/Continue.h>
+#include "../Biff_records/BkHim.h"
+#include "../Biff_records/Continue.h"
 
 namespace XLS
 {

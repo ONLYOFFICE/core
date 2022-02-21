@@ -31,7 +31,7 @@
  */
 
 #include "FullColorExt.h"
-#include <Binary/CFRecord.h>
+#include "../../../Common/simple_xml_writer.h"
 
 namespace XLS
 {
@@ -44,9 +44,34 @@ BiffStructurePtr FullColorExt::clone()
 
 void FullColorExt::load(CFRecord& record)
 {
-	record >> xclrType >> icv >> nTintShade >> xclrValue;
+	record >> xclrType >> nTintShade >> xclrValue;
+
 	record.skipNunBytes(8); //unused
 }
 
+int FullColorExt::serialize(std::wostream & stream, const std::wstring &node_name)
+{
+	if (xclrType > 3) return 0;//not set
+
+	CP_XML_WRITER(stream)
+	{
+		CP_XML_NODE(node_name)
+		{
+			switch (xclrType)
+			{
+			case 0: CP_XML_ATTR(L"auto", 1);		break;
+			case 1: CP_XML_ATTR(L"indexed", xclrValue);	break;
+			case 3: CP_XML_ATTR(L"theme", xclrValue);	break;
+			default:
+				CP_XML_ATTR(L"rgb", xclrValue);	break;
+			}
+			if (nTintShade != 0)
+			{
+				CP_XML_ATTR(L"tint", nTintShade / 32767.0);
+			}
+		}
+	}
+	return 0;
+}
 
 } // namespace XLS

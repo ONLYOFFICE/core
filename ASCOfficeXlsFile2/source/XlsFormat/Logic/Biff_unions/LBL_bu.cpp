@@ -31,15 +31,14 @@
  */
 
 #include "LBL.h"
-#include <Logic/Biff_records/Lbl.h>
-#include <Logic/Biff_records/NameCmt.h>
-#include <Logic/Biff_records/NameFnGrp12.h>
-#include <Logic/Biff_records/NamePublish.h>
+#include "../Biff_records/Lbl.h"
+#include "../Biff_records/NameCmt.h"
+#include "../Biff_records/NameFnGrp12.h"
+#include "../Biff_records/NamePublish.h"
+#include "../Biff_structures/PtgRef3d.h"
+#include "../Biff_structures/PtgArea3d.h"
 
-#include <Logic/Biff_structures/PtgRef3d.h>
-#include <Logic/Biff_structures/PtgArea3d.h>
-
-#include <utils.h>
+#include "../../../Common/utils.h"
 
 namespace XLS
 {

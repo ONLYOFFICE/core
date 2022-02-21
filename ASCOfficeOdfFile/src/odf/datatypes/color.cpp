@@ -31,7 +31,6 @@
  */
 
 #include "color.h"
-#include <logging.h>
 
 #include <ostream>
 #include <sstream>
@@ -79,15 +78,16 @@ color color::parse(const std::wstring & Str)
     return color(Str);
 }
 
-const std::wstring color::get_hex_value() const
+const std::wstring color::get_hex_value(bool alfa) const
 {
     std::wstring tmp = color_;
-    if ( boost::algorithm::contains(tmp, L"#") )
+	std::wstring result;
+	if ( boost::algorithm::contains(tmp, L"#") )
     {
         boost::algorithm::trim(tmp);
         boost::algorithm::trim_left_if(tmp, boost::algorithm::is_any_of("#"));     
 
-        return XmlUtils::GetUpper(tmp);
+		result = XmlUtils::GetUpper(tmp);
     }
     else if (tmp.size() == 6)
     {
@@ -97,15 +97,16 @@ const std::wstring color::get_hex_value() const
             unsigned int t = 0;
             if ((s << tmp) && (s >> std::hex >> t) && (s >> std::ws).eof())
             {
-                return XmlUtils::GetUpper(tmp);
+				result = XmlUtils::GetUpper(tmp);
             }
         }
         catch(...)
         {
-        }
-        
+        }        
     }
-    return L"000000";
+	if (result.empty()) result = L"000000";
+	if (alfa)	return L"FF" + result;
+    else		return result;
 }
 
 } }

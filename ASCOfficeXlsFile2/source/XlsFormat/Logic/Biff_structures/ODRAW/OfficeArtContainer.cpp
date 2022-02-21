@@ -45,7 +45,6 @@
 #include "OfficeArtColorMRUContainer.h"
 #include "OfficeArtSplitMenuColorContainer.h"
 #include "SimpleOfficeArtContainers.h"
-#include <Binary/CFRecord.h>
 //#include "Exception/WrongBiffRecord.h"
 #include "OfficeArtBStoreContainer.h"
 #include "OfficeArtTertiaryFOPT.h"

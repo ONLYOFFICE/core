@@ -34,14 +34,14 @@
 
 #include <boost/regex.hpp>
 
-#include <xml/utils.h>
+#include "../../include/xml/utils.h"
 
-#include "../../Common/DocxFormat/Source/Base/Base.h"
-#include "../../Common/DocxFormat/Source/SystemUtility/File.h"
+#include "../../../Common/DocxFormat/Source/Base/Base.h"
+#include "../../../Common/DocxFormat/Source/SystemUtility/File.h"
 
-#include "../../DesktopEditor/common/Directory.h"
-#include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
-#include "../../DesktopEditor/graphics/pro/Fonts.h"
+#include "../../../DesktopEditor/common/Directory.h"
+#include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
+#include "../../../DesktopEditor/graphics/pro/Fonts.h"
 
 namespace cpdoccore { 
 namespace oox {

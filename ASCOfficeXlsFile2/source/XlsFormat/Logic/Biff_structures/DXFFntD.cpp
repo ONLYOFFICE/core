@@ -31,7 +31,8 @@
  */
 
 #include "DXFN.h"
-#include <Binary/CFRecord.h>
+
+#include "../../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
 
 namespace XLS
 {
@@ -44,6 +45,8 @@ BiffStructurePtr DXFFntD::clone()
 
 void DXFFntD::load(CFRecord& record)
 {
+	global_info = record.getGlobalWorkbookInfo();
+
 	unsigned char cchFont;
 	record >> cchFont;
 	if(cchFont)
@@ -68,15 +71,33 @@ void DXFFntD::load(CFRecord& record)
 
 int DXFFntD::serialize(std::wostream & stream)
 {
+	std::map<ExtProp::_type, ExtProp>::iterator pFind;
+	
 	CP_XML_WRITER(stream)    
     {
 		CP_XML_NODE(L"font")
 		{	
 			if (!stFontName.value().empty())
 			{
+				std::wstring name = stFontName.value();
+				
+				if (parent->xfext)
+					pFind = parent->xfext->mapRgExt.find(ExtProp::FontScheme);
+				
+				BYTE font_scheme = (parent->xfext && pFind != parent->xfext->mapRgExt.end()) ? pFind->second.extPropData.font_scheme : 0;
+
+				if (global_info->m_pTheme && font_scheme == 0x01)
+				{
+					name = global_info->m_pTheme->themeElements.fontScheme.majorFont.latin.typeface;
+				}
+				else if (global_info->m_pTheme && font_scheme == 0x02)
+				{
+					name = global_info->m_pTheme->themeElements.fontScheme.minorFont.latin.typeface;
+				}
+
 				CP_XML_NODE(L"name")
 				{
-					CP_XML_ATTR(L"val", stFontName.value());
+					CP_XML_ATTR(L"val", name);
 				}
 			}
 			if (stxp.twpHeight > 20)
@@ -86,7 +107,14 @@ int DXFFntD::serialize(std::wostream & stream)
 					CP_XML_ATTR(L"val", stxp.twpHeight/20.f);
 				}
 			}
-		   if (icvFore < 0x7fff) 
+			if (parent->xfext)
+				pFind = parent->xfext->mapRgExt.find(ExtProp::ForeColor);
+
+			if (parent->xfext && pFind != parent->xfext->mapRgExt.end())
+			{
+				pFind->second.extPropData.color.serialize(CP_XML_STREAM(), L"color");
+			}
+			else if (icvFore < 0x7fff) 
 			{
 				CP_XML_NODE(L"color")
 				{
@@ -161,8 +189,5 @@ int DXFFntD::serialize(std::wostream & stream)
 	}
 	return 0;
 }
-
-
-
 } // namespace XLS
 

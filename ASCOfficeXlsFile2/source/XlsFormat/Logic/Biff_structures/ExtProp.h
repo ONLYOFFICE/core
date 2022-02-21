@@ -50,8 +50,23 @@ public:
 
 	static const ElementType	type = typeExtProp;
 
-	unsigned short extType;
 	unsigned short cb;
+
+	enum _type
+	{
+		None = 0,
+		ForeColor = 4,
+		BackColor = 5,
+		GradientColor = 6,
+		TopBorderColor = 7,
+		BottomBorderColor = 8,
+		LeftBorderColor = 9,
+		RightBorderColor = 10,
+		DiagonalBorderColor = 11,
+		TextColor = 12,
+		FontScheme = 13,
+		Indent = 14
+	}extType = None;
 	
 	struct extPropData_Tag
 	{

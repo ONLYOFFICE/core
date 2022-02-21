@@ -33,14 +33,15 @@
 #include "oox_plot_area.h"
 
 #include <random>
-#include <CPOptional.h>
-#include <xml/simple_xml_writer.h>
+
+#include "../../include/xml/simple_xml_writer.h"
 #include <boost/algorithm/string.hpp>
 
 #include "../odf/style_text_properties.h"
 
 #include "oox_chart_shape.h"
-#include "../../ASCOfficeOdfFile/src/odf/datatypes/chartclass.h"
+
+#include "../odf/datatypes/chartclass.h"
 
 namespace cpdoccore {
 	namespace oox {

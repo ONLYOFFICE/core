@@ -32,13 +32,10 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/BiffString.h>
+#include "../Biff_structures/BiffString.h"
 
 namespace XLS
 {
-
-
-// Logical representation of HeaderFooter record in BIFF8
 class HeaderFooter: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(HeaderFooter)
@@ -48,11 +45,10 @@ public:
 	~HeaderFooter();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeHeaderFooter;
+	static const ElementType type = typeHeaderFooter;
 
 //-----------------------------
 	std::wstring	guidSView;
@@ -71,7 +67,6 @@ public:
 	XLUnicodeString strFooterEven;
 	XLUnicodeString strHeaderFirst;
 	XLUnicodeString strFooterFirst;
-
 };
 
 } // namespace XLS

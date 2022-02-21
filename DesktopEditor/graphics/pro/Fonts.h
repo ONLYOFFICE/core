@@ -665,6 +665,7 @@ namespace NSFonts
 
         virtual void Initialize() = 0;
         virtual void SetOwnerCache(IFontsCache* pCache) = 0;
+        virtual void CreateOwnerCache(const int& nCacheSize = -1);
 
         virtual void AfterLoad() = 0;
 
@@ -699,6 +700,7 @@ namespace NSFonts
         virtual void SetSubpixelRendering(const bool& hmul, const bool& vmul) = 0;
 
         virtual unsigned int GetNameIndex(const std::wstring& wsName) = 0;
+		virtual unsigned int GetGIDByUnicode(const unsigned int& unCode) = 0;
         
         virtual void GetFace(double& d0, double& d1, double& d2) = 0;
         virtual void GetLimitsY(double& dMin, double& dMax) = 0;

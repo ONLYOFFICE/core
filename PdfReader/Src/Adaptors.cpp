@@ -54,6 +54,8 @@ namespace NSStrings
 
     std::wstring GetString(GString *str)
     {
+        if (!str)
+            return L"";
         return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE *) str->getCString(), (LONG) str->getLength());
     }
 

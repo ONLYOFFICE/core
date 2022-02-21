@@ -31,19 +31,17 @@
  */
 
 #include "FRAME.h"
-#include <Logic/Biff_records/Frame.h>
-#include <Logic/Biff_records/Begin.h>
-#include <Logic/Biff_records/LineFormat.h>
-#include <Logic/Biff_records/AreaFormat.h>
-#include <Logic/Biff_records/End.h>
+#include "GELFRAME.h"
+#include "SHAPEPROPS.h"
+#include "../Biff_records/Frame.h"
+#include "../Biff_records/Begin.h"
+#include "../Biff_records/LineFormat.h"
+#include "../Biff_records/AreaFormat.h"
+#include "../Biff_records/End.h"
+#include "../Biff_records/StartObject.h"
+#include "../Biff_records/EndObject.h"
 
-#include <Logic/Biff_unions/GELFRAME.h>
-#include <Logic/Biff_unions/SHAPEPROPS.h>
-
-#include <Logic/Biff_records/StartObject.h>
-#include <Logic/Biff_records/EndObject.h>
-
-#include <utils.h>
+#include "../../../Common/utils.h"
 
 namespace XLS
 {

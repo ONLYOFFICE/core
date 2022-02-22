@@ -1097,6 +1097,8 @@ namespace PdfReader
                 oFile.WriteFile((BYTE*)pData14, nSize14);
                 oFile.CloseFile();
                 wsFileName = wsTempFileName;
+
+                eFontType = fontTrueType;
             }
         #else
             else if ([&oMemoryFontStream, wsFontBaseName]()

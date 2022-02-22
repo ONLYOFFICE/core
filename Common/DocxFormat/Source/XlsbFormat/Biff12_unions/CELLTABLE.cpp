@@ -65,19 +65,19 @@ namespace XLSB
             elements_.pop_back();
         }
         Parenthesis_CELLTABLE cell_group(shared_formulas_locations_ref_);
-        while(proc.optional(cell_group))
+        /*while(proc.optional(cell_group))
         {
             m_arParenthesis_CELLTABLE.insert(m_arParenthesis_CELLTABLE.begin(), elements_.back());
             elements_.pop_back();
-        }
+        }*/
 
-        /*int countParenthesis_CELLTABLE = proc.repeated(cell_group, 0, 1048576);
+        int countParenthesis_CELLTABLE = proc.repeated(cell_group, 0, 1048576);
         while(countParenthesis_CELLTABLE > 0)
         {
             m_arParenthesis_CELLTABLE.insert(m_arParenthesis_CELLTABLE.begin(), elements_.back());
             elements_.pop_back();
             countParenthesis_CELLTABLE--;
-        }*/
+        }
 
         if (proc.optional<EndSheetData>())
         {
@@ -85,7 +85,7 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        return m_BrtBeginSheetData && m_BrtEndSheetData;
+        return m_BrtBeginSheetData && countParenthesis_CELLTABLE > 0 && m_BrtEndSheetData;
     }
 
     Parenthesis_CELLTABLE::Parenthesis_CELLTABLE(std::vector<CellRangeRef>& shared_formulas_locations_ref) :
@@ -117,20 +117,20 @@ namespace XLSB
 
         CELL cell(static_cast<RowHdr*>(m_BrtRowHdr.get())->rw + 1, shared_formulas_locations_ref_);
 
-        while(proc.optional(cell))
+        /*while(proc.optional(cell))
         {
             m_arCELL.insert(m_arCELL.begin(), elements_.back());
             elements_.pop_back();
-        }
+        }*/
 
-        /*int countCELL = proc.repeated(cell, 0, 16384);
+        int countCELL = proc.repeated(cell, 0, 16384);
 
         while(countCELL > 0)
         {
             m_arCELL.insert(m_arCELL.begin(), elements_.back());
             elements_.pop_back();
             countCELL--;
-        }*/
+        }
 
         int countFRT = proc.repeated<FRT>(0, 0);
 

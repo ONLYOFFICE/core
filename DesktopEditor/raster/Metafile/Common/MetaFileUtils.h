@@ -847,6 +847,42 @@ namespace MetaFile
 
 			Skip(4); //Reserved 2 (4 bytes)
 		}
+		CDataStream& operator>>(TEmfPlusCustomLineCapArrowData& oLineCapData)
+		{
+			*this >> oLineCapData.dWidth;
+			*this >> oLineCapData.dHeight;
+			*this >> oLineCapData.dMiddleInset;
+
+			unsigned int unTempValue;
+			*this >> unTempValue;
+
+			oLineCapData.bFillState = ((1 == unTempValue) ? true : false);
+
+			*this >> oLineCapData.unLineStartCap;
+			*this >> oLineCapData.unLineEndCap;
+			*this >> oLineCapData.unLineJoin;
+			*this >> oLineCapData.dLineMiterLimit;
+			*this >> oLineCapData.dWidthScale;
+			*this >> oLineCapData.oFillHotSpot;
+			*this >> oLineCapData.oLineHotSpot;
+
+			return *this;
+		}
+		CDataStream& operator>>(TEmfPlusCustomLineCapData& oLineCapData)
+		{
+			*this >> oLineCapData.unCustomLineCapDataFlags;
+			*this >> oLineCapData.unBaseCap;
+			*this >> oLineCapData.dBaseInset;
+			*this >> oLineCapData.unStrokeStartCap;
+			*this >> oLineCapData.unStrokeEndCap;
+			*this >> oLineCapData.unStrokeJoin;
+			*this >> oLineCapData.dStrokeMiterLimit;
+			*this >> oLineCapData.dWidthScale;
+			*this >> oLineCapData.oFillHotSpot;
+			*this >> oLineCapData.oStrokeHotSpot;
+
+			return *this;
+		}
 		CDataStream& operator>>(TWmfRect& oRect)
 		{
 			*this >> oRect.Left;

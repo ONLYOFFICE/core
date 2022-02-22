@@ -163,9 +163,13 @@ namespace MetaFile
 	class CEmfPlusPen: public CEmfPlusObject, public IPen
 	{
 	    public:
-		CEmfPlusPen() : Style(PS_SOLID), Width(1), Color(0, 0, 0), Brush(NULL), MiterLimit(0), DashOffset(0), DataDash(NULL), SizeDash(0) {}
+		CEmfPlusPen() : Style(PS_SOLID), Width(1), Color(0, 0, 0),
+			Brush(NULL), MiterLimit(0), DashOffset(0),
+			DataDash(NULL), SizeDash(0), LineStartCapData(NULL), LineEndCapData(NULL) {}
 		virtual ~CEmfPlusPen() { RELEASEOBJECT(Brush)
-					 RELEASEARRAYOBJECTS(DataDash)}
+					 RELEASEARRAYOBJECTS(DataDash)
+					 RELEASEOBJECT(LineStartCapData)
+					 RELEASEOBJECT(LineEndCapData)}
 		virtual EEmfObjectType GetType()
 		{
 			return EMF_OBJECT_PEN;
@@ -227,6 +231,9 @@ namespace MetaFile
 		double		DashOffset;
 		double*		DataDash;
 		unsigned int	SizeDash;
+
+		CLineCapData	*LineStartCapData;
+		CLineCapData	*LineEndCapData;
 	};
 
         typedef  enum

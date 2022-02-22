@@ -254,16 +254,23 @@ void XMLConverter::DictToXml(Object *obj, std::wstring &wsXml, bool bBinary)
     case objString:
         if (bBinary)
         {
-            // TODO
+            GString* str = obj->getString();
             wsXml += L"Binary\" num=\"";
-            AppendStringToXml(wsXml, obj->getString()->getCString());
+            wsXml += std::to_wstring(str->getLength());
+            wsXml += L"\">";
+            for (int nIndex = 0; nIndex < str->getLength(); ++nIndex)
+            {
+                wsXml += L"<i>";
+                wsXml += std::to_wstring((int)str->getChar(nIndex));
+                wsXml += L"</i>";
+            }
         }
         else
         {
             wsXml += L"String\" num=\"";
             AppendStringToXml(wsXml, obj->getString()->getCString());
+            wsXml += L"\">";
         }
-        wsXml += L"\">";
         break;
     case objName:
         wsXml += L"Name\" num=\"";
@@ -279,7 +286,7 @@ void XMLConverter::DictToXml(Object *obj, std::wstring &wsXml, bool bBinary)
         {
             wsXml += L"<item";
             obj->arrayGetNF(nIndex, &oTemp);
-            DictToXml(&oTemp, wsXml);
+            DictToXml(&oTemp, wsXml, bBinary);
             oTemp.free();
             wsXml += L"</item>";
         }
@@ -298,7 +305,7 @@ void XMLConverter::DictToXml(Object *obj, std::wstring &wsXml, bool bBinary)
             if (strcmp("ID", sKey) == 0)
                 DictToXml(&oTemp, wsXml, true);
             else
-                DictToXml(&oTemp, wsXml);
+                DictToXml(&oTemp, wsXml, bBinary);
             oTemp.free();
             wsXml += L"</";
             AppendStringToXml(wsXml, sKey);

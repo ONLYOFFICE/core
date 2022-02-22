@@ -268,7 +268,7 @@ namespace PdfWriter
 		if (pReal)
 			Add(pReal);
 	}
-    void CArrayObject::Insert(CObjectBase *pTarget, CObjectBase* pObject)
+    void CArrayObject::Insert(CObjectBase *pTarget, CObjectBase* pObject, bool bReplace)
 	{
 		if (!pObject)
 			return;
@@ -308,6 +308,11 @@ namespace PdfWriter
 
 			if (pObjectItem == pTarget)
 			{
+				if (bReplace)
+				{
+					m_arrList.erase(m_arrList.begin() + nIndex);
+					RELEASE_OBJECT(pObjectItem);
+				}
 				m_arrList.insert(m_arrList.begin() + nIndex, pObject);
 				return;
 			}
@@ -427,6 +432,8 @@ namespace PdfWriter
 				// Error игнорируется
 				// EOF игнорируется
 				// None ниже
+				else if (sType == "Binary")
+					gen = std::stoi(sAText);
 			}
 		}
 		oCoreReader.MoveToElement();
@@ -452,7 +459,19 @@ namespace PdfWriter
 				ReadDict(oCoreReader, pDict);
 		}
 		else if (sType == "None")
-		    AddToObject(pObject, sName, "None")
+			AddToObject(pObject, sName, "None")
+		else if (sType == "Binary")
+		{
+			BYTE* arrId = new BYTE[gen];
+			int n2Death = oCoreReader.GetDepth(), i = 0;
+			while (oCoreReader.ReadNextSiblingNode(n2Death))
+			{
+				std::wstring sChar = oCoreReader.GetText2();
+				arrId[i++] = std::stoi(sChar);
+			}
+			AddToObject(pObject, sName, new CBinaryObject(arrId, gen));
+			RELEASEARRAYOBJECTS(arrId);
+		}
 	}
 	void CArrayObject::FromXml(const std::wstring& sXml)
 	{

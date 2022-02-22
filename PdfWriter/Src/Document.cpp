@@ -1106,6 +1106,17 @@ namespace PdfWriter
 		}
 
 		m_pTrailer->FromXml(sTrailer);
+		// Вторая часть идентификатора должна обновляться
+		CObjectBase* pID = m_pTrailer->Get("ID");
+		if (pID && pID->GetType() == object_type_ARRAY)
+		{
+			BYTE arrId[16];
+			CEncryptDict::CreateId(m_pInfo, m_pXref, (BYTE*)arrId);
+
+			CObjectBase* pObject = ((CArrayObject*)pID)->Get(1, false);
+			((CArrayObject*)pID)->Insert(pObject, new CBinaryObject(arrId, 16), true);
+		}
+
 		m_pLastXref->WriteToStream(pStream, pEncrypt);
 
 		RELEASEOBJECT(pStream);

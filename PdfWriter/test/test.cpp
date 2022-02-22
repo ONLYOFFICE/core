@@ -49,18 +49,7 @@ int main()
     if (NSFile::CFileBinary::Exists(sDstFile))
         NSFile::CFileBinary::Remove(sDstFile);
 
-    BYTE* pData;
-    DWORD nBytes;
-    NSFile::CFileBinary::ReadAllBytes(sSrcFile, &pData, nBytes);
-    if (!pData)
-    {
-        RELEASEOBJECT(pReader);
-        RELEASEINTERFACE(pApplicationFonts);
-        return 1;
-    }
-
-    bool bResult = pReader->LoadFromMemory(pData, nBytes);
-
+    bool bResult = pReader->LoadFromFile(sSrcFile);
     if (bResult && pReader->EditPdf(&pdfWriter))
     {
         if (pReader->EditPage(0))
@@ -98,6 +87,5 @@ int main()
 
     RELEASEOBJECT(pReader);
     RELEASEINTERFACE(pApplicationFonts);
-    RELEASEARRAYOBJECTS(pData);
     return 0;
 }

@@ -366,7 +366,7 @@ namespace PdfWriter
 		void         Add(float fValue);
 		void         Add(const char* sValue);
 		void         Add(double dValue);
-		void         Insert(CObjectBase* pTarget, CObjectBase* pObject);
+		void         Insert(CObjectBase* pTarget, CObjectBase* pObject, bool bReplace = false);
 		CObjectBase* Get(unsigned int unIndex, bool bCheckProxy = true) const;
 		void         Clear();
 		EObjectType  GetType() const

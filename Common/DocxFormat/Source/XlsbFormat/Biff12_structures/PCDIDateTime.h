@@ -43,7 +43,7 @@ namespace XLSB
     public:
         PCDIDateTime();
         PCDIDateTime(XLS::CFRecord& record);
-        virtual ~PCDIDateTime();
+        ~PCDIDateTime();
        XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;

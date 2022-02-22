@@ -1591,7 +1591,7 @@ namespace OOX
                 CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
                 if (xlsb)
                 {
-                    XLSB::ExternalLinkStreamPtr externalLinkStreamStream = std::make_shared<XLSB::ExternalLinkStream>();
+                    XLSB::ExternalLinkStreamPtr externalLinkStreamStream(new XLSB::ExternalLinkStream);
 
                     xlsb->ReadBin(oPath, externalLinkStreamStream.get());
 
@@ -1622,6 +1622,7 @@ namespace OOX
                         }
                     }
 
+                    //externalLinkStreamStream.reset();
                 }
             }
 			virtual void read(const CPath& oPath)

@@ -1196,11 +1196,8 @@ namespace OOX
             {
                 if(obj->get_type() == XLS::typeWSVIEWS2)
                 {
-                    auto arView = static_cast<XLSB::WSVIEWS2*>(obj.get())->m_arWSVIEW2;
-                    if (arView.empty())
-                        return;
-
-                    for(auto &pView : arView)
+                    auto oWSVIEWS2 = static_cast<XLSB::WSVIEWS2*>(obj.get());
+                    for(auto &pView : oWSVIEWS2->m_arWSVIEW2)
                     {
                         CSheetView *pSheetView = new CSheetView(pView);
                         m_arrItems.push_back(pSheetView);
@@ -1209,11 +1206,9 @@ namespace OOX
                 }
                 else if(obj->get_type() == XLS::typeCSVIEWS)
                 {
-                    auto arView = static_cast<XLSB::CSVIEWS*>(obj.get())->m_arCSVIEW;
-                    if (arView.empty())
-                        return;
+                    auto oCSVIEWS = static_cast<XLSB::CSVIEWS*>(obj.get());
 
-                    for(auto &pView : arView)
+                    for(auto &pView : oCSVIEWS->m_arCSVIEW)
                     {
                         CSheetView *pSheetView = new CSheetView(pView);
                         m_arrItems.push_back(pSheetView);

@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(PCDIString)
         public:
             PCDIString();
-            virtual ~PCDIString();
+            ~PCDIString();
 
             XLS::BaseObjectPtr clone();
 

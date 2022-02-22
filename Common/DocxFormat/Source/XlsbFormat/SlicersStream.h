@@ -47,14 +47,14 @@ namespace XLSB
     class StreamCacheReader;
 
     class SlicersStream;
-    typedef std::shared_ptr<SlicersStream>		SlicersStreamPtr;
+    typedef boost::shared_ptr<SlicersStream>		SlicersStreamPtr;
 
     class SlicersStream: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(SlicersStream)
     public:
         SlicersStream();
-        virtual ~SlicersStream();
+        ~SlicersStream();
 
         XLS::BaseObjectPtr clone();
 

@@ -46,7 +46,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginPivotCacheDef)
         public:
             BeginPivotCacheDef();
-            virtual ~BeginPivotCacheDef();
+            ~BeginPivotCacheDef();
 
             XLS::BaseObjectPtr clone();
 

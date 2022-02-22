@@ -59,7 +59,7 @@ class ExternCell_T: public XLS::BiffRecord
             }
             return str;
         }
-        virtual ~ExternCell_T()
+        ~ExternCell_T()
         {
         }
 

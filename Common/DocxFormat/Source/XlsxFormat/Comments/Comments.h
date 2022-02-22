@@ -371,7 +371,7 @@ namespace OOX
                 CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
                 if (xlsb)
                 {
-                    XLSB::CommentsStreamPtr commentsStream = std::make_shared<XLSB::CommentsStream>();
+                    XLSB::CommentsStreamPtr commentsStream(new XLSB::CommentsStream);
 
                     xlsb->ReadBin(oPath, commentsStream.get());
 
@@ -387,6 +387,8 @@ namespace OOX
                                 m_oCommentList = ptr->m_COMMENTLIST;
                         }
                     }
+
+                    //commentsStream.reset();
                 }
             }
 			virtual void read(const CPath& oPath)

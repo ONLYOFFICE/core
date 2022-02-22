@@ -48,14 +48,14 @@ namespace XLSB
     class StreamCacheReader;
 
     class WorkBookStream;
-    typedef std::shared_ptr<WorkBookStream>		WorkBookStreamPtr;
+    typedef boost::shared_ptr<WorkBookStream>		WorkBookStreamPtr;
 
     class WorkBookStream: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(WorkBookStream)
     public:
         WorkBookStream();
-        virtual ~WorkBookStream();
+        ~WorkBookStream();
 
         XLS::BaseObjectPtr clone();
 

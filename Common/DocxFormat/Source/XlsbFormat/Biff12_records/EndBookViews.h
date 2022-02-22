@@ -46,7 +46,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndBookViews)
         public:
             EndBookViews();
-            virtual ~EndBookViews();
+            ~EndBookViews();
 
             XLS::BaseObjectPtr clone();
 

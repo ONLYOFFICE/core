@@ -43,7 +43,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(SORTCOND14)
     public:
         SORTCOND14();
-        virtual ~SORTCOND14();
+        ~SORTCOND14();
 
         XLS::BaseObjectPtr clone();
 

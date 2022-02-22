@@ -48,7 +48,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginSXEdit)
         public:
             BeginSXEdit();
-            virtual ~BeginSXEdit();
+            ~BeginSXEdit();
 
             XLS::BaseObjectPtr clone();
 

@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginIndexedColors)
         public:
             BeginIndexedColors();
-            virtual ~BeginIndexedColors();
+            ~BeginIndexedColors();
 
             XLS::BaseObjectPtr clone();
 

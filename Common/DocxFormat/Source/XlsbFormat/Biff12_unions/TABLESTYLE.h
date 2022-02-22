@@ -41,14 +41,14 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(TABLESTYLE)
     public:
         TABLESTYLE();
-        virtual ~TABLESTYLE();
+        ~TABLESTYLE();
 
         XLS::BaseObjectPtr clone();
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
 		XLS::BaseObjectPtr               m_BrtBeginTableStyle;
-		XLS::BaseObjectPtr               m_ACUID;
+		//XLS::BaseObjectPtr               m_ACUID;
         std::vector<XLS::BaseObjectPtr>	m_arBrtTableStyleElement;
 		XLS::BaseObjectPtr               m_BrtEndTableStyle;
 

@@ -47,7 +47,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginTimelineStyle)
         public:
             BeginTimelineStyle();
-            virtual ~BeginTimelineStyle();
+            ~BeginTimelineStyle();
 
             XLS::BaseObjectPtr clone();
 

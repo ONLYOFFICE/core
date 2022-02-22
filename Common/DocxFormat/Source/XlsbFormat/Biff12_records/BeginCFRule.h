@@ -49,7 +49,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginCFRule)
         public:
             BeginCFRule(const XLS::CellRef& cell_base_ref);
-            virtual ~BeginCFRule();
+            ~BeginCFRule();
 
             XLS::BaseObjectPtr clone();
 

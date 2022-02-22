@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(PCDIError)
         public:
             PCDIError();
-            virtual ~PCDIError();
+            ~PCDIError();
 
             XLS::BaseObjectPtr clone();
 

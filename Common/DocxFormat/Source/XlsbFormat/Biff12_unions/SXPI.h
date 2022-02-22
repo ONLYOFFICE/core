@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(SXPI)
     public:
         SXPI();
-        virtual ~SXPI();
+        ~SXPI();
 
         XLS::BaseObjectPtr clone();
 

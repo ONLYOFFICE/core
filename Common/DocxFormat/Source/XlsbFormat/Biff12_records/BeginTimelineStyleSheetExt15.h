@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginTimelineStyleSheetExt15)
         public:
             BeginTimelineStyleSheetExt15();
-            virtual ~BeginTimelineStyleSheetExt15();
+            ~BeginTimelineStyleSheetExt15();
 
             XLS::BaseObjectPtr clone();
 

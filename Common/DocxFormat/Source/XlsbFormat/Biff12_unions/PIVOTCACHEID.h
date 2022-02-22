@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(PIVOTCACHEID)
     public:
         PIVOTCACHEID();
-        virtual ~PIVOTCACHEID();
+        ~PIVOTCACHEID();
 
         XLS::BaseObjectPtr clone();
 

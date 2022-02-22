@@ -45,7 +45,7 @@ namespace XLSB
     public:
         DValStrings();
         DValStrings(XLS::CFRecord& record);
-        virtual ~DValStrings();
+        ~DValStrings();
         XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;

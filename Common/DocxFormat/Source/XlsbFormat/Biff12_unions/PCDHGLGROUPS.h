@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(PCDHGLGROUPS)
     public:
         PCDHGLGROUPS();
-        virtual ~PCDHGLGROUPS();
+        ~PCDHGLGROUPS();
 
         XLS::BaseObjectPtr clone();
 

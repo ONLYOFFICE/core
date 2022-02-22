@@ -63,7 +63,7 @@ namespace XLSB
         {
             if (proc.optional<ACUID>())
             {
-                m_ACUID = elements_.back();
+                //m_ACUID = elements_.back();
                 elements_.pop_back();
             }
             if(proc.optional<BookView>())
@@ -77,7 +77,7 @@ namespace XLSB
 
             while(count > 0)
             {
-                m_arFRT.insert(m_arFRT.begin(), elements_.back());
+                //m_arFRT.insert(m_arFRT.begin(), elements_.back());
                 elements_.pop_back();
                 count--;
             }
@@ -87,7 +87,7 @@ namespace XLSB
 
         BaseObjectPtr               m_ACUID;
         BaseObjectPtr               m_BrtBookView;
-        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        //std::vector<XLS::BaseObjectPtr>  m_arFRT;
     };
 
     BaseObjectPtr BOOKVIEWS::clone()

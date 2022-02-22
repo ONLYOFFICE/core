@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(SlicerCacheSelection)
         public:
             SlicerCacheSelection();
-            virtual ~SlicerCacheSelection();
+            ~SlicerCacheSelection();
 
             XLS::BaseObjectPtr clone();
 

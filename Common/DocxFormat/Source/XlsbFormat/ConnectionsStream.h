@@ -46,14 +46,14 @@ namespace XLSB
     class StreamCacheReader;
 
     class ConnectionsStream;
-    typedef std::shared_ptr<ConnectionsStream>		ConnectionsStreamPtr;
+    typedef boost::shared_ptr<ConnectionsStream>		ConnectionsStreamPtr;
 
     class ConnectionsStream: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(ConnectionsStream)
     public:
         ConnectionsStream();
-        virtual ~ConnectionsStream();
+        ~ConnectionsStream();
 
         XLS::BaseObjectPtr clone();
 

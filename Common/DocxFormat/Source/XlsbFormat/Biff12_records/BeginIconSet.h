@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginIconSet)
         public:
             BeginIconSet();
-            virtual ~BeginIconSet();
+            ~BeginIconSet();
 
             XLS::BaseObjectPtr clone();
 

@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(SXFILTER)
     public:
         SXFILTER();
-        virtual ~SXFILTER();
+        ~SXFILTER();
 
         XLS::BaseObjectPtr clone();
 

@@ -93,7 +93,7 @@ namespace XLSB
         auto count = proc.repeated<FRT>(0, 0);
         while(count > 0)
         {
-            m_arFRT.insert(m_arFRT.begin(), elements_.back());
+            //m_arFRT.insert(m_arFRT.begin(), elements_.back());
             elements_.pop_back();
             count--;
         }

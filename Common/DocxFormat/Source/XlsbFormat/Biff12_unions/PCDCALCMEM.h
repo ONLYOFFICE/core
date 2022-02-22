@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(PCDCALCMEM)
     public:
         PCDCALCMEM();
-        virtual ~PCDCALCMEM();
+        ~PCDCALCMEM();
 
         XLS::BaseObjectPtr clone();
 

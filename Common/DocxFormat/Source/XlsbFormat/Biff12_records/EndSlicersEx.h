@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndSlicersEx)
         public:
             EndSlicersEx();
-            virtual ~EndSlicersEx();
+            ~EndSlicersEx();
 
             XLS::BaseObjectPtr clone();
 

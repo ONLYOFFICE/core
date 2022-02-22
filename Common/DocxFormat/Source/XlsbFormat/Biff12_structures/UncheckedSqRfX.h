@@ -44,7 +44,7 @@ namespace XLSB
     public:
         UncheckedSqRfX();
         UncheckedSqRfX(XLS::CFRecord& record);
-        virtual ~UncheckedSqRfX();
+        ~UncheckedSqRfX();
         XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType type = XLS::typeBiffStructure;

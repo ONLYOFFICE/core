@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginSlicerCachesPivotCacheID)
         public:
             BeginSlicerCachesPivotCacheID();
-            virtual ~BeginSlicerCachesPivotCacheID();
+            ~BeginSlicerCachesPivotCacheID();
 
             XLS::BaseObjectPtr clone();
 

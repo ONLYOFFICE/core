@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndPCDCalcMem14)
         public:
             EndPCDCalcMem14();
-            virtual ~EndPCDCalcMem14();
+            ~EndPCDCalcMem14();
 
             XLS::BaseObjectPtr clone();
 

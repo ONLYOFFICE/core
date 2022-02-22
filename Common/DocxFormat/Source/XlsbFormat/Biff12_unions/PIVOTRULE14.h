@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(PIVOTRULE14)
     public:
         PIVOTRULE14();
-        virtual ~PIVOTRULE14();
+        ~PIVOTRULE14();
 
         XLS::BaseObjectPtr clone();
 
@@ -51,7 +51,7 @@ namespace XLSB
 
         XLS::BaseObjectPtr               m_BrtBeginPRule14;
         XLS::BaseObjectPtr               m_PRFILTERS14;
-        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        //std::vector<XLS::BaseObjectPtr>  m_arFRT;
         XLS::BaseObjectPtr               m_BrtEndPRule14;
 
     };

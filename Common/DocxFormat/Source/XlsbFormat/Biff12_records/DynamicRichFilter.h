@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(DynamicRichFilter)
         public:
             DynamicRichFilter();
-            virtual ~DynamicRichFilter();
+            ~DynamicRichFilter();
 
             XLS::BaseObjectPtr clone();
 

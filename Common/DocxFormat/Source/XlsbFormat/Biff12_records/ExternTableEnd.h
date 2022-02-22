@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(ExternTableEnd)
         public:
             ExternTableEnd();
-            virtual ~ExternTableEnd();
+            ~ExternTableEnd();
 
             XLS::BaseObjectPtr clone();
 

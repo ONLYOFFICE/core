@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(FRTSXVIEW15)
     public:
         FRTSXVIEW15();
-        virtual ~FRTSXVIEW15();
+        ~FRTSXVIEW15();
 
         XLS::BaseObjectPtr clone();
 

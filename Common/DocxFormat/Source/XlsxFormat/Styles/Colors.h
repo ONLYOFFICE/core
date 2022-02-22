@@ -87,19 +87,19 @@ namespace OOX
 
                 if(ptr->m_INDEXEDCOLORS != nullptr)
                 {
-                    auto arIndexColor = static_cast<XLSB::INDEXEDCOLORS*>(ptr->m_INDEXEDCOLORS.get())->m_arIndexedColor;
-                    if(!arIndexColor.empty())
+                    auto oINDEXEDCOLORS = static_cast<XLSB::INDEXEDCOLORS*>(ptr->m_INDEXEDCOLORS.get());
+                    if(!oINDEXEDCOLORS->m_arIndexedColor.empty())
                     {
-                        m_oIndexedColors = arIndexColor;
+                        m_oIndexedColors = oINDEXEDCOLORS->m_arIndexedColor;
                     }
                 }
 
                 if(ptr->m_MRUCOLORS != nullptr)
                 {
-                    auto arMruColors = static_cast<XLSB::MRUCOLORS*>(ptr->m_MRUCOLORS.get())->m_arMRUColor;
-                    if(!arMruColors.empty())
+                    auto oMRUCOLORS = static_cast<XLSB::MRUCOLORS*>(ptr->m_MRUCOLORS.get());
+                    if(!oMRUCOLORS->m_arMRUColor.empty())
                     {
-                        m_oMruColors = arMruColors;
+                        m_oMruColors = oMRUCOLORS->m_arMRUColor;
                     }
                 }
             }

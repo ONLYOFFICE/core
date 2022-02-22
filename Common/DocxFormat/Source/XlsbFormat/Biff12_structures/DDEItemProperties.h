@@ -45,7 +45,7 @@ namespace XLSB
     public:
         DDEItemProperties();
         DDEItemProperties(XLS::CFRecord& record);
-        virtual ~DDEItemProperties();
+        ~DDEItemProperties();
         XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;

@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(PCDIDT)
     public:
         PCDIDT();
-        virtual ~PCDIDT();
+        ~PCDIDT();
 
         XLS::BaseObjectPtr clone();
 

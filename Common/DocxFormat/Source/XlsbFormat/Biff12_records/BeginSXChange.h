@@ -47,7 +47,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginSXChange)
         public:
             BeginSXChange();
-            virtual ~BeginSXChange();
+            ~BeginSXChange();
 
             XLS::BaseObjectPtr clone();
 

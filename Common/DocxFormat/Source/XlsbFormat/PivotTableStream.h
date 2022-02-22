@@ -48,20 +48,20 @@ namespace XLSB
     class StreamCacheReader;
 
     class PivotTableStream;
-    typedef std::shared_ptr<PivotTableStream>		PivotTableStreamPtr;
+    typedef boost::shared_ptr<PivotTableStream>		PivotTableStreamPtr;
 
     class PivotTableStream: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(PivotTableStream)
     public:
         PivotTableStream();
-        virtual ~PivotTableStream();
+        ~PivotTableStream();
 
         XLS::BaseObjectPtr clone();
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        XLS::BaseObjectPtr               m_ACUID;
+        //XLS::BaseObjectPtr               m_ACUID;
         XLS::BaseObjectPtr               m_BrtBeginSXView;
         XLS::BaseObjectPtr               m_SXLOCATION;
         XLS::BaseObjectPtr               m_SXVDS;

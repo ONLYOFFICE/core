@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(QSIF)
     public:
         QSIF();
-        virtual ~QSIF();
+        ~QSIF();
 
         XLS::BaseObjectPtr clone();
 

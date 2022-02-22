@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginPivotTableUISettings)
         public:
             BeginPivotTableUISettings();
-            virtual ~BeginPivotTableUISettings();
+            ~BeginPivotTableUISettings();
 
             XLS::BaseObjectPtr clone();
 

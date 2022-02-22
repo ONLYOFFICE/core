@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginPCDSDTupleCache)
         public:
             BeginPCDSDTupleCache();
-            virtual ~BeginPCDSDTupleCache();
+            ~BeginPCDSDTupleCache();
 
             XLS::BaseObjectPtr clone();
 

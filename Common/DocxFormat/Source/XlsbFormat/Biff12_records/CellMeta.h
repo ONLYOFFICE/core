@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(CellMeta)
         public:
             CellMeta();
-            virtual ~CellMeta();
+            ~CellMeta();
 
             XLS::BaseObjectPtr clone();
 

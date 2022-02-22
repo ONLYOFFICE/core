@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(SXTDMPS)
     public:
         SXTDMPS();
-        virtual ~SXTDMPS();
+        ~SXTDMPS();
 
         XLS::BaseObjectPtr clone();
 

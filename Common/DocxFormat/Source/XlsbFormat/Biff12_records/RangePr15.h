@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(RangePr15)
         public:
             RangePr15();
-            virtual ~RangePr15();
+            ~RangePr15();
 
             XLS::BaseObjectPtr clone();
 

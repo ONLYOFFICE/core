@@ -45,7 +45,7 @@ namespace XLSB
     public:
         ExternalNameProperties();
         ExternalNameProperties(XLS::CFRecord& record);
-        virtual ~ExternalNameProperties();
+        ~ExternalNameProperties();
         XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;

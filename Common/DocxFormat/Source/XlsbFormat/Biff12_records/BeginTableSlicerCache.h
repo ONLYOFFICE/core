@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginTableSlicerCache)
         public:
             BeginTableSlicerCache();
-            virtual ~BeginTableSlicerCache();
+            ~BeginTableSlicerCache();
 
             XLS::BaseObjectPtr clone();
 

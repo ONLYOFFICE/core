@@ -43,7 +43,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(BUNDLESHS)
     public:
         BUNDLESHS();
-        virtual ~BUNDLESHS();
+        ~BUNDLESHS();
 
         XLS::BaseObjectPtr clone();
 

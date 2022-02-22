@@ -62,7 +62,7 @@ void OOX::Spreadsheet::CXlsb::init()
 	workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
 	xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(workbook_code_page, nullptr));
 	xls_global_info->Version = 0x0800;    
-    m_binaryReader = std::make_shared<NSBinPptxRW::CBinaryFileReader>();
+    m_binaryReader = boost::shared_ptr<NSBinPptxRW::CBinaryFileReader>(new NSBinPptxRW::CBinaryFileReader);
 }
 bool OOX::Spreadsheet::CXlsb::ReadBin(const CPath& oFilePath, XLS::BaseObject* objStream)
 {
@@ -81,7 +81,10 @@ bool OOX::Spreadsheet::CXlsb::ReadBin(const CPath& oFilePath, XLS::BaseObject* o
     XLS::StreamCacheReaderPtr reader(new XLS::BinaryStreamCacheReader(m_binaryReader, xls_global_info));
     XLS::BinReaderProcessor proc(reader, objStream, true);
     proc.mandatory(*objStream);
+
     delete[] m_pStream;
+    //reader.reset();
+
     return true;
 }
 
@@ -154,18 +157,20 @@ void OOX::Spreadsheet::CXlsb::ReadSheetData()
 
         m_binaryReader->Init(m_pStream, 0, dwRead);
 
-        std::vector<CellRangeRef>	shared_formulas_locations;
-        XLSB::CELLTABLE cell_table_temlate(shared_formulas_locations);
+        XLS::BaseObjectPtr cell_table_temlate = XLS::BaseObjectPtr(new XLSB::CELLTABLE());
 
         XLS::StreamCacheReaderPtr reader(new XLS::BinaryStreamCacheReader(m_binaryReader, xls_global_info));
-        XLS::BinReaderProcessor proc(reader, &cell_table_temlate, true);
+        XLS::BinReaderProcessor proc(reader, cell_table_temlate.get(), true);
 
         proc.SetRecordPosition(dataPosition);
 
-        proc.mandatory(cell_table_temlate);
-
-        worksheet->m_oSheetData->fromBin(cell_table_temlate);
+        proc.mandatory(*cell_table_temlate.get());
         delete[] m_pStream;
+
+        //auto base = boost::static_pointer_cast<BaseObject>(cell_table_temlate);
+        worksheet->m_oSheetData->fromBin(cell_table_temlate);
+        //cell_table_temlate.reset();
+        //reader.reset();
     }
 }
 void OOX::Spreadsheet::CXlsb::PrepareTableFormula()

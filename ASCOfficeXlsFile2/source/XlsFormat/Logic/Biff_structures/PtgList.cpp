@@ -36,6 +36,9 @@
 namespace XLS
 {
 
+PtgList::PtgList(const unsigned short full_ptg_id) : OperandPtg(full_ptg_id)
+{
+}
 
 BiffStructurePtr PtgList::clone()
 {

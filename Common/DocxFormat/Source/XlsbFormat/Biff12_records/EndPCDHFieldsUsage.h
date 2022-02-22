@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndPCDHFieldsUsage)
         public:
             EndPCDHFieldsUsage();
-            virtual ~EndPCDHFieldsUsage();
+            ~EndPCDHFieldsUsage();
 
             XLS::BaseObjectPtr clone();
 

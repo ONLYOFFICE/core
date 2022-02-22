@@ -45,7 +45,7 @@ namespace XLSB
     public:
         SxSu();
         SxSu(XLS::CFRecord& record);
-        virtual ~SxSu();
+        ~SxSu();
         XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;

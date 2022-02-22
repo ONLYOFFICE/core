@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(PCDSDTCENTRIES)
     public:
         PCDSDTCENTRIES();
-        virtual ~PCDSDTCENTRIES();
+        ~PCDSDTCENTRIES();
 
         XLS::BaseObjectPtr clone();
 

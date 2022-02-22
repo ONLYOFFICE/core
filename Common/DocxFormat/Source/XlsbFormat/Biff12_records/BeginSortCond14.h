@@ -47,7 +47,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginSortCond14)
         public:
             BeginSortCond14();
-            virtual ~BeginSortCond14();
+            ~BeginSortCond14();
 
             XLS::BaseObjectPtr clone();
 

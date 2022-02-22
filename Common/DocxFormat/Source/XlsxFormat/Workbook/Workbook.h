@@ -244,7 +244,7 @@ namespace OOX
                 CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
                 if (xlsb)
                 {
-                    XLSB::WorkBookStreamPtr workBookStream = std::make_shared<XLSB::WorkBookStream>();
+                    XLSB::WorkBookStreamPtr workBookStream(new XLSB::WorkBookStream);
 
                     xlsb->ReadBin(oPath, workBookStream.get());
 
@@ -279,6 +279,8 @@ namespace OOX
                         if (workBookStream->m_FRTWORKBOOK != nullptr)
                             m_oExtLst = workBookStream->m_FRTWORKBOOK;
                     }
+
+                   //workBookStream.reset();
 
                 }
             }

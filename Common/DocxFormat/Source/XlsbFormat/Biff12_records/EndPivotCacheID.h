@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndPivotCacheID)
         public:
             EndPivotCacheID();
-            virtual ~EndPivotCacheID();
+            ~EndPivotCacheID();
 
             XLS::BaseObjectPtr clone();
 

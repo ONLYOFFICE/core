@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginEcWpTables)
         public:
             BeginEcWpTables();
-            virtual ~BeginEcWpTables();
+            ~BeginEcWpTables();
 
             XLS::BaseObjectPtr clone();
 

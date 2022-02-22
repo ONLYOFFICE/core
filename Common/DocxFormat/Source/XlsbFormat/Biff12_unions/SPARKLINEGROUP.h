@@ -41,14 +41,14 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(SPARKLINEGROUP)
     public:
         SPARKLINEGROUP();
-        virtual ~SPARKLINEGROUP();
+        ~SPARKLINEGROUP();
 
         XLS::BaseObjectPtr clone();
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
         XLS::BaseObjectPtr               m_BrtBeginSparklineGroup;
-        XLS::BaseObjectPtr               m_ACUID;
+        //XLS::BaseObjectPtr               m_ACUID;
         XLS::BaseObjectPtr               m_BrtBeginSparklines;
         std::vector<XLS::BaseObjectPtr>	 m_arBrtSparkline;
         XLS::BaseObjectPtr               m_BrtEndSparklines;

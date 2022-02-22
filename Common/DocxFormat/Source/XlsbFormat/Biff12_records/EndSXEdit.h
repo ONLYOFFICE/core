@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndSXEdit)
         public:
             EndSXEdit();
-            virtual ~EndSXEdit();
+            ~EndSXEdit();
 
             XLS::BaseObjectPtr clone();
 

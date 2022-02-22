@@ -64,7 +64,7 @@ class SupName_T: public SupNameBase, public XLS::BiffRecord
             }
 			return str;
         }
-        virtual ~SupName_T()
+        ~SupName_T()
         {
         }
 

@@ -104,7 +104,7 @@ namespace OOX
             {
                 if(m_bIsChartSheet)
                 {
-                    XLSB::ChartSheetStreamPtr chartSheetStream = std::make_shared<XLSB::ChartSheetStream>();
+                    XLSB::ChartSheetStreamPtr chartSheetStream(new XLSB::ChartSheetStream);
 
                     xlsb->ReadBin(oPath, chartSheetStream.get());
 
@@ -135,10 +135,12 @@ namespace OOX
                             m_oSheetProtection = chartSheetStream->m_BrtCsProtection;
 
                     }
+
+                    //chartSheetStream.reset();
                 }
                 else
                 {
-                    XLSB::WorkSheetStreamPtr workSheetStream = std::make_shared<XLSB::WorkSheetStream>();
+                    XLSB::WorkSheetStreamPtr workSheetStream(new XLSB::WorkSheetStream);
 
                     xlsb->ReadBin(oPath, workSheetStream.get());
 
@@ -218,6 +220,8 @@ namespace OOX
                         if (workSheetStream->m_FRTWORKSHEET != nullptr)
                             m_oExtLst = workSheetStream->m_FRTWORKSHEET;
                     }
+
+                    //workSheetStream.reset();
 
                 }
 

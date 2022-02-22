@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndWebPubItem)
         public:
             EndWebPubItem();
-            virtual ~EndWebPubItem();
+            ~EndWebPubItem();
 
             XLS::BaseObjectPtr clone();
 

@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(SXTDMPOrder)
         public:
             SXTDMPOrder();
-            virtual ~SXTDMPOrder();
+            ~SXTDMPOrder();
 
             XLS::BaseObjectPtr clone();
 

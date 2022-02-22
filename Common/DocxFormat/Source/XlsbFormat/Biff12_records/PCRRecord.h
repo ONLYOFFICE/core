@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(PCRRecord)
         public:
             PCRRecord();
-            virtual ~PCRRecord();
+            ~PCRRecord();
 
             XLS::BaseObjectPtr clone();
 

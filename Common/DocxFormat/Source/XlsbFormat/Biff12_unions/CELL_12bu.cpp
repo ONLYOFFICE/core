@@ -75,12 +75,16 @@ namespace XLSB
                 FMLACELL fmlacell(m_Row, shared_formulas_locations_ref_);
                 if(proc.optional(fmlacell))
                 {
-                    m_FMLACELL = elements_.back();
+                    //m_FMLACELL = elements_.back();
+                    m_source = elements_.back();
                     elements_.pop_back();
-                    SHRFMLACELL shrfmlacell(m_Row, static_cast<FMLACELL*>(m_FMLACELL.get())->m_Col, shared_formulas_locations_ref_);
+                    SHRFMLACELL shrfmlacell(m_Row, static_cast<FMLACELL*>(m_source.get())->m_Col, shared_formulas_locations_ref_);
                     if(proc.optional(shrfmlacell))
                     {
-                        m_SHRFMLACELL = elements_.back();
+                        //m_SHRFMLACELL = elements_.back();
+                        auto sharedfmla = static_cast<SHRFMLACELL*>(elements_.back().get());
+                        sharedfmla->_fmlacell = m_source;
+                        m_source = elements_.back();
                         elements_.pop_back();
                     }
                 }
@@ -88,14 +92,16 @@ namespace XLSB
             }
             else
             {
-                m_DATACELL = elements_.back();
+                //m_DATACELL = elements_.back();
+                m_source = elements_.back();
                 elements_.pop_back();
             }
         }
         else
         {
             m_CELLMETA = static_cast<TABLECELL*>(elements_.back().get())->m_CELLMETA;
-            m_TABLECELL = elements_.back();
+            //m_TABLECELL = elements_.back();
+            m_source = elements_.back();
             elements_.pop_back();
         }
 
@@ -103,12 +109,12 @@ namespace XLSB
 
         while(count > 0)
         {
-            m_arFRT.insert(m_arFRT.begin(), elements_.back());
+            //m_arFRT.insert(m_arFRT.begin(), elements_.back());
             elements_.pop_back();
             count--;
         }
 
-        return m_DATACELL || m_FMLACELL || m_SHRFMLACELL || m_TABLECELL;
+        return m_source != nullptr;
     }
 
 } // namespace XLSB

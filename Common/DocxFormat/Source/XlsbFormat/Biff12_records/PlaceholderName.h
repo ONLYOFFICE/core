@@ -46,7 +46,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(PlaceholderName)
         public:
             PlaceholderName();
-            virtual ~PlaceholderName();
+            ~PlaceholderName();
 
             XLS::BaseObjectPtr clone();
 

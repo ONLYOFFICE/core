@@ -43,7 +43,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(ACSORTCONDS)
     public:
         ACSORTCONDS();
-        virtual ~ACSORTCONDS();
+        ~ACSORTCONDS();
 
         XLS::BaseObjectPtr clone();
 

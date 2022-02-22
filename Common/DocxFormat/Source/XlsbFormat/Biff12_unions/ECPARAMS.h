@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(ECPARAMS)
     public:
         ECPARAMS();
-        virtual ~ECPARAMS();
+        ~ECPARAMS();
 
         XLS::BaseObjectPtr clone();
 

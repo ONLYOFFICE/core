@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(AFILTER)
     public:
         AFILTER();
-        virtual ~AFILTER();
+        ~AFILTER();
 
         XLS::BaseObjectPtr clone();
 

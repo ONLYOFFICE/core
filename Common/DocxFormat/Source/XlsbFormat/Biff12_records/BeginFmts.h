@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginFmts)
         public:
             BeginFmts();
-            virtual ~BeginFmts();
+            ~BeginFmts();
 
             XLS::BaseObjectPtr clone();
 

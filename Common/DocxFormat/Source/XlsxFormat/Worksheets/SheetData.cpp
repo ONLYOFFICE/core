@@ -44,6 +44,7 @@
 
 #include "../../XlsbFormat/Biff12_unions/ACCELLTABLE.h"
 #include "../../XlsbFormat/Biff12_records/RwDescent.h"
+#include "../../XlsbFormat/Biff12_unions/CELLTABLE.h"
 #include "../../XlsbFormat/Biff12_unions/CELL.h"
 #include "../../XlsbFormat/Biff12_unions/CELLMETA.h"
 #include "../../XlsbFormat/Biff12_unions/DATACELL.h"
@@ -1702,10 +1703,28 @@ namespace OOX
                         m_oCellMetadata = pValueMeta->ivmb;
                 }
 
-                auto pDATACELL = static_cast<XLSB::DATACELL*>(ptr->m_DATACELL.get());
-                auto pTABLECELL = static_cast<XLSB::TABLECELL*>(ptr->m_TABLECELL.get());
-                auto pFMLACELL = static_cast<XLSB::FMLACELL*>(ptr->m_FMLACELL.get());
-                auto pSHRFMLACELL = static_cast<XLSB::SHRFMLACELL*>(ptr->m_SHRFMLACELL.get());
+                XLSB::DATACELL* pDATACELL = nullptr;
+                XLSB::TABLECELL* pTABLECELL = nullptr;
+                XLSB::FMLACELL* pFMLACELL = nullptr;
+                XLSB::SHRFMLACELL* pSHRFMLACELL = nullptr;
+
+                switch(ptr->m_source->get_type())
+                {
+                    case XLS::typeDATACELL:
+                        pDATACELL = static_cast<XLSB::DATACELL*>(ptr->m_source.get());
+                    break;
+                    case XLS::typeTABLECELL:
+                        pTABLECELL = static_cast<XLSB::TABLECELL*>(ptr->m_source.get());
+                    break;
+                    case XLS::typeFMLACELL:
+                        pFMLACELL = static_cast<XLSB::FMLACELL*>(ptr->m_source.get());
+                    break;
+                    case XLS::typeSHRFMLACELL:
+                        pSHRFMLACELL = static_cast<XLSB::SHRFMLACELL*>(ptr->m_source.get());
+                        pFMLACELL = static_cast<XLSB::FMLACELL*>(pSHRFMLACELL->_fmlacell.get());
+                    break;
+                }
+
 
                 if(pDATACELL != nullptr || pTABLECELL != nullptr || pFMLACELL != nullptr)
                 {
@@ -1916,17 +1935,28 @@ namespace OOX
 			}
 		}
 
-        void CRow::fromBin(XLSB::CELLTABLE::_data& obj)
+        void CRow::fromBin(XLS::BaseObjectPtr& obj)
         {
             ReadAttributes(obj);
 
-            for(auto &CELL : obj.m_arCELL)
+            auto ptr = static_cast<XLSB::Parenthesis_CELLTABLE*>(obj.get());
+
+            for (auto it = ptr->m_arCELL.begin(); it != ptr->m_arCELL.end(); /* NOTHING */)
+            {
+              CCell *pCell = new CCell(m_pMainDocument);
+              pCell->fromBin(*it);
+              m_arrItems.push_back(pCell);
+
+              it = ptr->m_arCELL.erase(it);
+            }
+
+            /*for(auto &CELL : obj.m_arCELL)
             {
                 CCell *pCell = new CCell(m_pMainDocument);
                 pCell->fromBin(CELL);
 
                 m_arrItems.push_back(pCell);
-            }
+            }*/
         }
 
 		void CRow::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType)
@@ -2130,29 +2160,33 @@ namespace OOX
 			WritingElement_ReadAttributes_EndChar( oReader )
 		}
 
-        void CRow::ReadAttributes(XLSB::CELLTABLE::_data& obj)
+        void CRow::ReadAttributes(XLS::BaseObjectPtr& obj)
         {
-            auto ptr = static_cast<XLSB::RowHdr*>(obj.m_BrtRowHdr.get());
+            auto ptr = static_cast<XLSB::Parenthesis_CELLTABLE*>(obj.get());
             if(ptr != nullptr)
             {
-                m_oCollapsed                = ptr->fCollapsed;
-                m_oCustomFormat             = ptr->fGhostDirty;
-                m_oCustomHeight             = ptr->fUnsynced;
-                m_oHidden                   = ptr->fDyZero;
-                m_oHt                       = ptr->miyRw/20.;
-                m_oOutlineLevel             = ptr->iOutLevel;
-                m_oPh                       = ptr->fPhonetic;
-                m_oR                        = ptr->rw + 1;
-                m_oS                        = ptr->ixfe_val;
-                m_oThickBot                 = ptr->fExDes;
-                m_oThickTop                 = ptr->fExAsc;
-            }
+                auto ptrRowHdr = static_cast<XLSB::RowHdr*>(ptr->m_BrtRowHdr.get());
+                if(ptrRowHdr != nullptr)
+                {
+                    m_oCollapsed                = ptrRowHdr->fCollapsed;
+                    m_oCustomFormat             = ptrRowHdr->fGhostDirty;
+                    m_oCustomHeight             = ptrRowHdr->fUnsynced;
+                    m_oHidden                   = ptrRowHdr->fDyZero;
+                    m_oHt                       = ptrRowHdr->miyRw/20.;
+                    m_oOutlineLevel             = ptrRowHdr->iOutLevel;
+                    m_oPh                       = ptrRowHdr->fPhonetic;
+                    m_oR                        = ptrRowHdr->rw + 1;
+                    m_oS                        = ptrRowHdr->ixfe_val;
+                    m_oThickBot                 = ptrRowHdr->fExDes;
+                    m_oThickTop                 = ptrRowHdr->fExAsc;
+                }
 
 
-            if(static_cast<XLSB::ACCELLTABLE*>(obj.m_ACCELLTABLE.get()) != nullptr && static_cast<XLSB::ACCELLTABLE*>(obj.m_ACCELLTABLE.get())->m_BrtRwDescent != nullptr)
-            {
-                auto ptr1 = static_cast<XLSB::RwDescent*>(static_cast<XLSB::ACCELLTABLE*>(obj.m_ACCELLTABLE.get())->m_BrtRwDescent.get());
-                m_oDyDescent                = ptr1->dyDescent;
+                if(static_cast<XLSB::ACCELLTABLE*>(ptr->m_ACCELLTABLE.get()) != nullptr && static_cast<XLSB::ACCELLTABLE*>(ptr->m_ACCELLTABLE.get())->m_BrtRwDescent != nullptr)
+                {
+                    auto ptrRwDescent = static_cast<XLSB::RwDescent*>(static_cast<XLSB::ACCELLTABLE*>(ptr->m_ACCELLTABLE.get())->m_BrtRwDescent.get());
+                    m_oDyDescent                = ptrRwDescent->dyDescent;
+                }
             }
         }
 
@@ -2400,19 +2434,26 @@ namespace OOX
 		}
 //---------------------------------------------------------------------------------------------------------------------
 
-        void CSheetData::fromBin(XLS::BaseObject& obj)
+        void CSheetData::fromBin(XLS::BaseObjectPtr& obj)
         {
             //ReadAttributes(obj);
-            auto ptr = static_cast<XLSB::CELLTABLE*>(&obj);
+            auto ptr = static_cast<XLSB::CELLTABLE*>(obj.get());
 
-            for(auto &Parenthesis_CELLTABLE : ptr->m_arParenthesis_CELLTABLE)
+            for (auto it = ptr->m_arParenthesis_CELLTABLE.begin(); it != ptr->m_arParenthesis_CELLTABLE.end(); /* NOTHING */)
             {
+              CRow *pRow = new CRow(m_pMainDocument);
+              pRow->fromBin(*it);
+              m_arrItems.push_back(pRow);
 
+              it = ptr->m_arParenthesis_CELLTABLE.erase(it);
+            }
+            /*for(auto &Parenthesis_CELLTABLE : ptr->m_arParenthesis_CELLTABLE)
+            {
                 CRow *pRow = new CRow(m_pMainDocument);
                 pRow->fromBin(Parenthesis_CELLTABLE);
 
                 m_arrItems.push_back(pRow);
-            }
+            }*/
         }
 
         //---------------------------------------------------------------------------------------------------------------------

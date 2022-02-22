@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndListParts)
         public:
             EndListParts();
-            virtual ~EndListParts();
+            ~EndListParts();
 
             XLS::BaseObjectPtr clone();
 

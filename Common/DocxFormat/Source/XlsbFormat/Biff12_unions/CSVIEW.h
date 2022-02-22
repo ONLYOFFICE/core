@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(CSVIEW)
     public:
         CSVIEW();
-        virtual ~CSVIEW();
+        ~CSVIEW();
 
         XLS::BaseObjectPtr clone();
 
@@ -49,9 +49,9 @@ namespace XLSB
 
         static const XLS::ElementType	type = XLS::typeCSVIEW;
 
-        XLS::BaseObjectPtr               m_ACUID;
+        //XLS::BaseObjectPtr               m_ACUID;
         XLS::BaseObjectPtr               m_BrtBeginCsView;
-        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        //std::vector<XLS::BaseObjectPtr>  m_arFRT;
         XLS::BaseObjectPtr               m_BrtEndCsView;
 
     };

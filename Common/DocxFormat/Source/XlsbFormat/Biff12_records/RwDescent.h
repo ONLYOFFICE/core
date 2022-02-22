@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(RwDescent)
         public:
             RwDescent();
-            virtual ~RwDescent();
+            ~RwDescent();
 
             XLS::BaseObjectPtr clone();
 

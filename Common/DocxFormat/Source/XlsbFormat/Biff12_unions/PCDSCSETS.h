@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(PCDSCSETS)
     public:
         PCDSCSETS();
-        virtual ~PCDSCSETS();
+        ~PCDSCSETS();
 
         XLS::BaseObjectPtr clone();
 

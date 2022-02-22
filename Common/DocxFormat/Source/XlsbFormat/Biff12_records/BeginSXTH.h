@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginSXTH)
         public:
             BeginSXTH();
-            virtual ~BeginSXTH();
+            ~BeginSXTH();
 
             XLS::BaseObjectPtr clone();
 

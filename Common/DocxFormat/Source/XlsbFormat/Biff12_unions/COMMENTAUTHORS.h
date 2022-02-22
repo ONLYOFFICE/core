@@ -43,7 +43,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(COMMENTAUTHORS)
     public:
         COMMENTAUTHORS();
-        virtual ~COMMENTAUTHORS();
+        ~COMMENTAUTHORS();
 
         XLS::BaseObjectPtr clone();
 

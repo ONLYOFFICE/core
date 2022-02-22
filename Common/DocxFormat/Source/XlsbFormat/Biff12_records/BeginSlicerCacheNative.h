@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginSlicerCacheNative)
         public:
             BeginSlicerCacheNative();
-            virtual ~BeginSlicerCacheNative();
+            ~BeginSlicerCacheNative();
 
             XLS::BaseObjectPtr clone();
 

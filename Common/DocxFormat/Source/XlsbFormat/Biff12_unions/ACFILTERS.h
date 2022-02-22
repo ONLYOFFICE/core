@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(ACFILTERS)
     public:
         ACFILTERS();
-        virtual ~ACFILTERS();
+        ~ACFILTERS();
 
         XLS::BaseObjectPtr clone();
 

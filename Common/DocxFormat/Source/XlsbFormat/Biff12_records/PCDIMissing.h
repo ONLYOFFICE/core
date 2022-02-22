@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(PCDIMissing)
         public:
             PCDIMissing();
-            virtual ~PCDIMissing();
+            ~PCDIMissing();
 
             XLS::BaseObjectPtr clone();
 

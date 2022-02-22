@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginDCon)
         public:
             BeginDCon();
-            virtual ~BeginDCon();
+            ~BeginDCon();
 
             XLS::BaseObjectPtr clone();
 

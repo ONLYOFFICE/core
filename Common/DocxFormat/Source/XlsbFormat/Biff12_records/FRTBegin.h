@@ -46,7 +46,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(FRTBegin)
         public:
             FRTBegin();
-            virtual ~FRTBegin();
+            ~FRTBegin();
 
             XLS::BaseObjectPtr clone();
 

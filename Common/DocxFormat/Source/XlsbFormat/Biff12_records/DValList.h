@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(DValList)
         public:
             DValList();
-            virtual ~DValList();
+            ~DValList();
 
             XLS::BaseObjectPtr clone();
 

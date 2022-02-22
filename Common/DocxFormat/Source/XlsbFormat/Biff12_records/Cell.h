@@ -44,6 +44,7 @@ class CellBase
 {
    public:
         Cell cell;
+        virtual ~CellBase(){}
 };
 
 template <class T, CF_RECORD_TYPE id>
@@ -69,7 +70,7 @@ class Cell_T: public CellBase, public XLS::BiffRecord
             }
 			return str;
         }
-        virtual ~Cell_T()
+        ~Cell_T()
         {
         }
 

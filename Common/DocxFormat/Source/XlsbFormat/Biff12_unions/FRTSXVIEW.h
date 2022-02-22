@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(FRTSXVIEW)
     public:
         FRTSXVIEW();
-        virtual ~FRTSXVIEW();
+        ~FRTSXVIEW();
 
         XLS::BaseObjectPtr clone();
 
@@ -52,7 +52,7 @@ namespace XLSB
         XLS::BaseObjectPtr               m_FRTSXVIEW15;
         XLS::BaseObjectPtr               m_SXVIEW16;
         XLS::BaseObjectPtr               m_BrtFRTEnd;
-        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        //std::vector<XLS::BaseObjectPtr>  m_arFRT;
 
     };
 

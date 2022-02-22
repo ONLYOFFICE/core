@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(DELETEDNAME)
     public:
         DELETEDNAME();
-        virtual ~DELETEDNAME();
+        ~DELETEDNAME();
 
         XLS::BaseObjectPtr clone();
 

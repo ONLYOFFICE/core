@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndPRFilter14)
         public:
             EndPRFilter14();
-            virtual ~EndPRFilter14();
+            ~EndPRFilter14();
 
             XLS::BaseObjectPtr clone();
 

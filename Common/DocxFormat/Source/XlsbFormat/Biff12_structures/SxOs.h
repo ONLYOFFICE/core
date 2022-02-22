@@ -45,7 +45,7 @@ namespace XLSB
     public:
         SxOs();
         SxOs(XLS::CFRecord& record);
-        virtual ~SxOs();
+        ~SxOs();
         XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;

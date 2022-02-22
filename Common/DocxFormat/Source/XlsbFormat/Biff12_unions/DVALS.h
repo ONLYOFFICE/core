@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(DVALS)
     public:
         DVALS();
-        virtual ~DVALS();
+        ~DVALS();
 
         XLS::BaseObjectPtr clone();
 

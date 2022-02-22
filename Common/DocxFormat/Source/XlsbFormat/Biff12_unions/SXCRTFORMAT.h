@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(SXCRTFORMAT)
     public:
         SXCRTFORMAT();
-        virtual ~SXCRTFORMAT();
+        ~SXCRTFORMAT();
 
         XLS::BaseObjectPtr clone();
 

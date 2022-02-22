@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(PNAME)
     public:
         PNAME();
-        virtual ~PNAME();
+        ~PNAME();
 
         XLS::BaseObjectPtr clone();
 

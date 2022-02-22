@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginSXCondFmt14)
         public:
             BeginSXCondFmt14();
-            virtual ~BeginSXCondFmt14();
+            ~BeginSXCondFmt14();
 
             XLS::BaseObjectPtr clone();
 

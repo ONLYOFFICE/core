@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginSXRules14)
         public:
             BeginSXRules14();
-            virtual ~BeginSXRules14();
+            ~BeginSXRules14();
 
             XLS::BaseObjectPtr clone();
 

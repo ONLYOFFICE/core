@@ -79,11 +79,7 @@ namespace XLS
             bool			fExDes; //fExtraDsc in biff12
             bool			fPhonetic; //fPhShow in biff12
 
-            bool			bValid;
-
-            //xlsb
-            _UINT32                              ccolspan;
-            std::vector<XLSB::ColSpan>           rgBrtColspan;
+            bool			bValid;            
 
     };
 

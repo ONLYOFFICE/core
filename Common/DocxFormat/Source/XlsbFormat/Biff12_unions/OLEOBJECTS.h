@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(OLEOBJECTS)
     public:
         OLEOBJECTS();
-        virtual ~OLEOBJECTS();
+        ~OLEOBJECTS();
 
         XLS::BaseObjectPtr clone();
 

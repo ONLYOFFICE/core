@@ -43,20 +43,20 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(CELL)
     public:
         CELL(_INT32 row, std::vector<XLS::CellRangeRef>& shared_formulas_locations_ref);
-        virtual ~CELL();
+        ~CELL();
 
         XLS::BaseObjectPtr clone();
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        XLS::BaseObjectPtr                m_TABLECELL;
-        XLS::BaseObjectPtr                m_DATACELL;
-        XLS::BaseObjectPtr                m_FMLACELL;
-        XLS::BaseObjectPtr                m_SHRFMLACELL;
+        //XLS::BaseObjectPtr                m_TABLECELL;
+        //XLS::BaseObjectPtr                m_DATACELL;
+        //XLS::BaseObjectPtr                m_FMLACELL;
+        //XLS::BaseObjectPtr                m_SHRFMLACELL;
         XLS::BaseObjectPtr                m_CELLMETA;
-        std::vector<XLS::BaseObjectPtr>   m_arFRT;
+        XLS::BaseObjectPtr                m_source;
+        //std::vector<XLS::BaseObjectPtr>   m_arFRT;
         _INT32                            m_Row;
-        //_INT32                          m_Col;
 
         std::vector<XLS::CellRangeRef>&   shared_formulas_locations_ref_;
 

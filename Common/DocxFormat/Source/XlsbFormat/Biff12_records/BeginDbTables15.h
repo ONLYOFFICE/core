@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginDbTables15)
         public:
             BeginDbTables15();
-            virtual ~BeginDbTables15();
+            ~BeginDbTables15();
 
             XLS::BaseObjectPtr clone();
 

@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndSXLocation)
         public:
             EndSXLocation();
-            virtual ~EndSXLocation();
+            ~EndSXLocation();
 
             XLS::BaseObjectPtr clone();
 

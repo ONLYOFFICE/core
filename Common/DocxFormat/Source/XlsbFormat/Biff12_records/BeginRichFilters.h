@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginRichFilters)
         public:
             BeginRichFilters();
-            virtual ~BeginRichFilters();
+            ~BeginRichFilters();
 
             XLS::BaseObjectPtr clone();
 

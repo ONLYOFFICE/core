@@ -59,7 +59,7 @@ namespace OOX
             {
                 init();
             }
-            virtual ~CXlsb();
+            ~CXlsb();
 
             bool ReadBin(const CPath& oFilePath, XLS::BaseObject* objStream);			
             XLS::GlobalWorkbookInfo* GetGlobalinfo();
@@ -72,7 +72,7 @@ namespace OOX
 
             void init();
             XLS::GlobalWorkbookInfoPtr xls_global_info;
-            std::shared_ptr<NSBinPptxRW::CBinaryFileReader> m_binaryReader;
+            boost::shared_ptr<NSBinPptxRW::CBinaryFileReader> m_binaryReader;
 
             unsigned short workbook_code_page;
 

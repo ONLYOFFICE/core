@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndISXVDCols)
         public:
             EndISXVDCols();
-            virtual ~EndISXVDCols();
+            ~EndISXVDCols();
 
             XLS::BaseObjectPtr clone();
 

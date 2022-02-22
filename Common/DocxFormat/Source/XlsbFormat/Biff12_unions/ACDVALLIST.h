@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(ACDVALLIST)
     public:
         ACDVALLIST();
-        virtual ~ACDVALLIST();
+        ~ACDVALLIST();
 
         XLS::BaseObjectPtr clone();
 

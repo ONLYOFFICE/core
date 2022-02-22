@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(ISXVIS)
     public:
         ISXVIS(_UINT32 cisxvis);
-        virtual ~ISXVIS();
+        ~ISXVIS();
 
         XLS::BaseObjectPtr clone();
 

@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginDatabar14)
         public:
             BeginDatabar14();
-            virtual ~BeginDatabar14();
+            ~BeginDatabar14();
 
             XLS::BaseObjectPtr clone();
 

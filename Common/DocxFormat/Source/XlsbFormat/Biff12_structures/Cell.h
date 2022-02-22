@@ -44,7 +44,7 @@ namespace XLSB
     public:
         Cell();
         Cell(XLS::CFRecord& record);
-        virtual ~Cell();
+        ~Cell();
         XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;

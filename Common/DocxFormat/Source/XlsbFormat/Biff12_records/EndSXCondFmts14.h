@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndSXCondFmts14)
         public:
             EndSXCondFmts14();
-            virtual ~EndSXCondFmts14();
+            ~EndSXCondFmts14();
 
             XLS::BaseObjectPtr clone();
 

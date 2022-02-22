@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(DIM)
     public:
         DIM();
-        virtual ~DIM();
+        ~DIM();
 
         XLS::BaseObjectPtr clone();
 

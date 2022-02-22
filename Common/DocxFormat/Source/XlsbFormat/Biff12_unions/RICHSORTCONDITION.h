@@ -43,7 +43,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(RICHSORTCONDITION)
     public:
         RICHSORTCONDITION();
-        virtual ~RICHSORTCONDITION();
+        ~RICHSORTCONDITION();
 
         XLS::BaseObjectPtr clone();
 

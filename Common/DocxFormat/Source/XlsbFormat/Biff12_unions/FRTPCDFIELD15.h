@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(FRTPCDFIELD15)
     public:
         FRTPCDFIELD15();
-        virtual ~FRTPCDFIELD15();
+        ~FRTPCDFIELD15();
 
         XLS::BaseObjectPtr clone();
 

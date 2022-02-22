@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginBundleShs)
         public:
             BeginBundleShs();
-            virtual ~BeginBundleShs();
+            ~BeginBundleShs();
 
             XLS::BaseObjectPtr clone();
 

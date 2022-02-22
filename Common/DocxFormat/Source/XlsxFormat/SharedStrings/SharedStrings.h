@@ -83,7 +83,7 @@ namespace OOX
                 CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
                 if (xlsb)
                 {
-                    XLSB::SharedStringsStreamPtr sharedStringsStream = std::make_shared<XLSB::SharedStringsStream>();
+                    XLSB::SharedStringsStreamPtr sharedStringsStream(new XLSB::SharedStringsStream);
 
                     xlsb->ReadBin(oPath, sharedStringsStream.get());
 
@@ -109,6 +109,8 @@ namespace OOX
                         }
 
                     }
+
+                    //sharedStringsStream.reset();
                 }
 
             }

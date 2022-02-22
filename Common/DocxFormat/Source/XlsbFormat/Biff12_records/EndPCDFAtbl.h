@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndPCDFAtbl)
         public:
             EndPCDFAtbl();
-            virtual ~EndPCDFAtbl();
+            ~EndPCDFAtbl();
 
             XLS::BaseObjectPtr clone();
 

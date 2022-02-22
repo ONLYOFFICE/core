@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginECParams)
         public:
             BeginECParams();
-            virtual ~BeginECParams();
+            ~BeginECParams();
 
             XLS::BaseObjectPtr clone();
 

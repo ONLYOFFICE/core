@@ -43,7 +43,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(ICONSET)
     public:
         ICONSET();
-        virtual ~ICONSET();
+        ~ICONSET();
 
         XLS::BaseObjectPtr clone();
 

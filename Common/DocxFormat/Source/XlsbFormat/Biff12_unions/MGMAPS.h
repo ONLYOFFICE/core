@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(MGMAPS)
     public:
         MGMAPS();
-        virtual ~MGMAPS();
+        ~MGMAPS();
 
         XLS::BaseObjectPtr clone();
 

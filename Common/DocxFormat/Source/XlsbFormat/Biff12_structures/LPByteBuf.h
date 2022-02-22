@@ -44,7 +44,7 @@ namespace XLSB
     public:
         LPByteBuf();
         LPByteBuf(XLS::CFRecord& record);
-        virtual ~LPByteBuf();
+        ~LPByteBuf();
        XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;

@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(SupNameFmla)
         public:
             SupNameFmla();
-            virtual ~SupNameFmla();
+            ~SupNameFmla();
 
             XLS::BaseObjectPtr clone();
 

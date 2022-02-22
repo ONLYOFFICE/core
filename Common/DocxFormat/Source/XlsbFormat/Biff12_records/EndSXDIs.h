@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndSXDIs)
         public:
             EndSXDIs();
-            virtual ~EndSXDIs();
+            ~EndSXDIs();
 
             XLS::BaseObjectPtr clone();
 

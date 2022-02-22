@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(PCDINumber)
         public:
             PCDINumber();
-            virtual ~PCDINumber();
+            ~PCDINumber();
 
             XLS::BaseObjectPtr clone();
 

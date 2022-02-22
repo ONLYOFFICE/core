@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(SXTupleItems)
         public:
             SXTupleItems();
-            virtual ~SXTupleItems();
+            ~SXTupleItems();
 
             XLS::BaseObjectPtr clone();
 

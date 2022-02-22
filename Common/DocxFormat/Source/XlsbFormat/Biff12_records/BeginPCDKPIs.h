@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginPCDKPIs)
         public:
             BeginPCDKPIs();
-            virtual ~BeginPCDKPIs();
+            ~BeginPCDKPIs();
 
             XLS::BaseObjectPtr clone();
 

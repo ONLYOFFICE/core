@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(PIVOTROWS15)
     public:
         PIVOTROWS15();
-        virtual ~PIVOTROWS15();
+        ~PIVOTROWS15();
 
         XLS::BaseObjectPtr clone();
 

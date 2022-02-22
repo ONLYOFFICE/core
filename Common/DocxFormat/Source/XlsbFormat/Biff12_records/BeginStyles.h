@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginStyles)
         public:
             BeginStyles();
-            virtual ~BeginStyles();
+            ~BeginStyles();
 
             XLS::BaseObjectPtr clone();
 

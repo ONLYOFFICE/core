@@ -43,7 +43,7 @@ namespace XLSB
         BASE_STRUCTURE_DEFINE_CLASS_NAME(RichStr)
     public:
         RichStr();
-        virtual ~RichStr();
+        ~RichStr();
        XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;

@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(CFIcon)
         public:
             CFIcon();
-            virtual ~CFIcon();
+            ~CFIcon();
 
             XLS::BaseObjectPtr clone();
 

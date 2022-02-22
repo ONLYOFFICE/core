@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(TABLESLICERCACHE)
     public:
         TABLESLICERCACHE();
-        virtual ~TABLESLICERCACHE();
+        ~TABLESLICERCACHE();
 
         XLS::BaseObjectPtr clone();
 
@@ -49,7 +49,7 @@ namespace XLSB
 
         XLS::BaseObjectPtr               m_BrtFRTBegin;
         XLS::BaseObjectPtr               m_BrtBeginTableSlicerCache;
-        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        //std::vector<XLS::BaseObjectPtr>  m_arFRT;
         XLS::BaseObjectPtr               m_BrtEndTableSlicerCache;
         XLS::BaseObjectPtr               m_BrtFRTEnd;
 

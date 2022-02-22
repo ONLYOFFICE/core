@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(ECDBPROPS)
     public:
         ECDBPROPS();
-        virtual ~ECDBPROPS();
+        ~ECDBPROPS();
 
         XLS::BaseObjectPtr clone();
 

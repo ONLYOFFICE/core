@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(FRTSXFILTER)
     public:
         FRTSXFILTER();
-        virtual ~FRTSXFILTER();
+        ~FRTSXFILTER();
 
         XLS::BaseObjectPtr clone();
 
@@ -50,7 +50,7 @@ namespace XLSB
         XLS::BaseObjectPtr               m_BrtFRTBegin;
         XLS::BaseObjectPtr               m_BrtSxFilter15;
         XLS::BaseObjectPtr               m_BrtFRTEnd;
-        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        //std::vector<XLS::BaseObjectPtr>  m_arFRT;
 
     };
 

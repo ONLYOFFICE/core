@@ -46,7 +46,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndMergeCells)
         public:
             EndMergeCells();
-            virtual ~EndMergeCells();
+            ~EndMergeCells();
 
             XLS::BaseObjectPtr clone();
 

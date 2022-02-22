@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(SXDI15)
         public:
             SXDI15();
-            virtual ~SXDI15();
+            ~SXDI15();
 
             XLS::BaseObjectPtr clone();
 

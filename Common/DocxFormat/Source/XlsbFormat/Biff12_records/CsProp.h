@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(CsProp)
         public:
             CsProp();
-            virtual ~CsProp();
+            ~CsProp();
 
             XLS::BaseObjectPtr clone();
 

@@ -121,7 +121,7 @@ private:
 class BinaryStreamCacheReader : public StreamCacheReader
 {
 public:
-    BinaryStreamCacheReader(std::shared_ptr<NSBinPptxRW::CBinaryFileReader> binaryStream, const GlobalWorkbookInfoPtr global_info);
+    BinaryStreamCacheReader(boost::shared_ptr<NSBinPptxRW::CBinaryFileReader> binaryStream, const GlobalWorkbookInfoPtr global_info);
     virtual ~BinaryStreamCacheReader();
 
     CFRecordPtr getNextRecord(const CFRecordType::TypeId desirable_type, const bool gen_except = false) override;
@@ -132,6 +132,6 @@ private:
     const size_t readFromStream(const size_t num_of_records_min_necessary) override;
     const int GetRecordPosition() override;
     void SetRecordPosition(const int) override;
-    std::shared_ptr<NSBinPptxRW::CBinaryFileReader> binaryStream_;
+    boost::shared_ptr<NSBinPptxRW::CBinaryFileReader> binaryStream_;
 };
 } // namespace XLS

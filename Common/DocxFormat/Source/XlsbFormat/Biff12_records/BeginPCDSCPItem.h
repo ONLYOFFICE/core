@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginPCDSCPItem)
         public:
             BeginPCDSCPItem();
-            virtual ~BeginPCDSCPItem();
+            ~BeginPCDSCPItem();
 
             XLS::BaseObjectPtr clone();
 

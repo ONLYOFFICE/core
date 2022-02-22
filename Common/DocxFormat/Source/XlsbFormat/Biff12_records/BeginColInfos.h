@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginColInfos)
         public:
             BeginColInfos();
-            virtual ~BeginColInfos();
+            ~BeginColInfos();
 
             XLS::BaseObjectPtr clone();
 

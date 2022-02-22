@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndFonts)
         public:
             EndFonts();
-            virtual ~EndFonts();
+            ~EndFonts();
 
             XLS::BaseObjectPtr clone();
 

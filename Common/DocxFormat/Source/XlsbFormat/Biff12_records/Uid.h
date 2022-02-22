@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(Uid)
         public:
             Uid();
-            virtual ~Uid();
+            ~Uid();
 
             XLS::BaseObjectPtr clone();
 

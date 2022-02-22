@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(FRTSXDI)
     public:
         FRTSXDI();
-        virtual ~FRTSXDI();
+        ~FRTSXDI();
 
         XLS::BaseObjectPtr clone();
 
@@ -51,7 +51,7 @@ namespace XLSB
         XLS::BaseObjectPtr               m_BrtSXDI14;
         XLS::BaseObjectPtr               m_BrtSXDI15;
         XLS::BaseObjectPtr               m_BrtFRTEnd;
-        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        //std::vector<XLS::BaseObjectPtr>  m_arFRT;
 
     };
 

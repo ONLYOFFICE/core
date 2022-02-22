@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginECTxtWiz)
         public:
             BeginECTxtWiz();
-            virtual ~BeginECTxtWiz();
+            ~BeginECTxtWiz();
 
             XLS::BaseObjectPtr clone();
 

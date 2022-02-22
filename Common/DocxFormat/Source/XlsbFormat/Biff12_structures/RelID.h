@@ -45,7 +45,7 @@ namespace XLSB
     public:
         RelID();
         RelID(XLS::CFRecord& record);
-        virtual ~RelID();
+        ~RelID();
         XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;

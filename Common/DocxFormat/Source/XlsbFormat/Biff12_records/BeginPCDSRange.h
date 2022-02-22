@@ -46,7 +46,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginPCDSRange)
         public:
             BeginPCDSRange();
-            virtual ~BeginPCDSRange();
+            ~BeginPCDSRange();
 
             XLS::BaseObjectPtr clone();
 

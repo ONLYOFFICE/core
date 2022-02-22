@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(TABLESLICERSEX)
     public:
         TABLESLICERSEX();
-        virtual ~TABLESLICERSEX();
+        ~TABLESLICERSEX();
 
         XLS::BaseObjectPtr clone();
 

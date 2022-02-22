@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginCellXFs)
         public:
             BeginCellXFs();
-            virtual ~BeginCellXFs();
+            ~BeginCellXFs();
 
             XLS::BaseObjectPtr clone();
 

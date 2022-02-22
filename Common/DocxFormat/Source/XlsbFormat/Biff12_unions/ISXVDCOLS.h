@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(ISXVDCOLS)
     public:
         ISXVDCOLS();
-        virtual ~ISXVDCOLS();
+        ~ISXVDCOLS();
 
         XLS::BaseObjectPtr clone();
 

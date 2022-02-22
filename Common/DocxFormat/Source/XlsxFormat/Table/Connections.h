@@ -1129,7 +1129,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
                             CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
                             if (xlsb)
                             {
-                                XLSB::ConnectionsStreamPtr connectionsStream = std::make_shared<XLSB::ConnectionsStream>();
+                                XLSB::ConnectionsStreamPtr connectionsStream(new XLSB::ConnectionsStream);
 
                                 xlsb->ReadBin(oPath, connectionsStream.get());
 

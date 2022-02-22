@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(SxvcellBool)
         public:
             SxvcellBool();
-            virtual ~SxvcellBool();
+            ~SxvcellBool();
 
             XLS::BaseObjectPtr clone();
 

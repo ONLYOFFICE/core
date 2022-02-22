@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(KnownFonts)
         public:
             KnownFonts();
-            virtual ~KnownFonts();
+            ~KnownFonts();
 
             XLS::BaseObjectPtr clone();
 

@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(SXVIEW14)
     public:
         SXVIEW14();
-        virtual ~SXVIEW14();
+        ~SXVIEW14();
 
         XLS::BaseObjectPtr clone();
 

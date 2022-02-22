@@ -42,7 +42,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(CFRULE)
     public:
         CFRULE14();
-        virtual ~CFRULE14();
+        ~CFRULE14();
 
         XLS::BaseObjectPtr clone();
 
@@ -52,7 +52,7 @@ namespace XLSB
 
         XLS::BaseObjectPtr               m_BrtBeginCFRule14;
         XLS::BaseObjectPtr               m_source;
-        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        //std::vector<XLS::BaseObjectPtr>  m_arFRT;
         XLS::BaseObjectPtr               m_BrtEndCFRule14;
     };
 

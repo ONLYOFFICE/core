@@ -46,7 +46,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginWebPubItem)
         public:
             BeginWebPubItem();
-            virtual ~BeginWebPubItem();
+            ~BeginWebPubItem();
 
             XLS::BaseObjectPtr clone();
 

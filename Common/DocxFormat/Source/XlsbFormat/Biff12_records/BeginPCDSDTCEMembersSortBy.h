@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginPCDSDTCEMembersSortBy)
         public:
             BeginPCDSDTCEMembersSortBy();
-            virtual ~BeginPCDSDTCEMembersSortBy();
+            ~BeginPCDSDTCEMembersSortBy();
 
             XLS::BaseObjectPtr clone();
 

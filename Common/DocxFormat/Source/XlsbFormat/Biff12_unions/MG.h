@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(MG)
     public:
         MG();
-        virtual ~MG();
+        ~MG();
 
         XLS::BaseObjectPtr clone();
 

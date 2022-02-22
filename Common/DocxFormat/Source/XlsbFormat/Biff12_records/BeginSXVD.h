@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginSXVD)
         public:
             BeginSXVD();
-            virtual ~BeginSXVD();
+            ~BeginSXVD();
 
             XLS::BaseObjectPtr clone();
 

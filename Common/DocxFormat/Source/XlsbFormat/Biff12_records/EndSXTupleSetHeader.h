@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndSXTupleSetHeader)
         public:
             EndSXTupleSetHeader();
-            virtual ~EndSXTupleSetHeader();
+            ~EndSXTupleSetHeader();
 
             XLS::BaseObjectPtr clone();
 

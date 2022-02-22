@@ -409,7 +409,7 @@ bool FileStreamCacheReader::isEOF()
 }
 
 //---------------------------------------------------------------------------------------------------------
-BinaryStreamCacheReader::BinaryStreamCacheReader( std::shared_ptr<NSBinPptxRW::CBinaryFileReader> binaryStream, GlobalWorkbookInfoPtr global_info)
+BinaryStreamCacheReader::BinaryStreamCacheReader( boost::shared_ptr<NSBinPptxRW::CBinaryFileReader> binaryStream, GlobalWorkbookInfoPtr global_info)
     :	StreamCacheReader(global_info), binaryStream_(binaryStream)
 {
 

@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(PivotCacheConnectionName)
         public:
             PivotCacheConnectionName();
-            virtual ~PivotCacheConnectionName();
+            ~PivotCacheConnectionName();
 
             XLS::BaseObjectPtr clone();
 

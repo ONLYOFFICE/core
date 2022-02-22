@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(Fmt)
         public:
             Fmt();
-            virtual ~Fmt();
+            ~Fmt();
 
             XLS::BaseObjectPtr clone();
 

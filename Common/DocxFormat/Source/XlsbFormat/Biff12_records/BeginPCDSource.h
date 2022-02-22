@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginPCDSource)
         public:
             BeginPCDSource();
-            virtual ~BeginPCDSource();
+            ~BeginPCDSource();
 
             XLS::BaseObjectPtr clone();
 

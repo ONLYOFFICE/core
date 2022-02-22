@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(SLICERS)
     public:
         SLICERS();
-        virtual ~SLICERS();
+        ~SLICERS();
 
         XLS::BaseObjectPtr clone();
 

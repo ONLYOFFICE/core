@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(AUTOSORTSCOPE)
     public:
         AUTOSORTSCOPE();
-        virtual ~AUTOSORTSCOPE();
+        ~AUTOSORTSCOPE();
 
         XLS::BaseObjectPtr clone();
 

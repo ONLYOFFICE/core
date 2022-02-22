@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginPCDHierarchy)
         public:
             BeginPCDHierarchy();
-            virtual ~BeginPCDHierarchy();
+            ~BeginPCDHierarchy();
 
             XLS::BaseObjectPtr clone();
 

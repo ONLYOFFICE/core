@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(IconFilter14)
         public:
             IconFilter14();
-            virtual ~IconFilter14();
+            ~IconFilter14();
 
             XLS::BaseObjectPtr clone();
 

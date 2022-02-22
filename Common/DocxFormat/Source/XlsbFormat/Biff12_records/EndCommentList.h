@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndCommentList)
         public:
             EndCommentList();
-            virtual ~EndCommentList();
+            ~EndCommentList();
 
             XLS::BaseObjectPtr clone();
 

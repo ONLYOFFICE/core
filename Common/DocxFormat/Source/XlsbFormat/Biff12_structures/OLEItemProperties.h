@@ -45,7 +45,7 @@ namespace XLSB
     public:
         OLEItemProperties();
         OLEItemProperties(XLS::CFRecord& record);
-        virtual ~OLEItemProperties();
+        ~OLEItemProperties();
         XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;

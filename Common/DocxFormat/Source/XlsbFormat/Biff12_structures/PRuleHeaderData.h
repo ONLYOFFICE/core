@@ -45,7 +45,7 @@ namespace XLSB
     public:
         PRuleHeaderData();
         PRuleHeaderData(XLS::CFRecord& record);
-        virtual ~PRuleHeaderData();
+        ~PRuleHeaderData();
        XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;

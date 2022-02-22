@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndBorders)
         public:
             EndBorders();
-            virtual ~EndBorders();
+            ~EndBorders();
 
             XLS::BaseObjectPtr clone();
 

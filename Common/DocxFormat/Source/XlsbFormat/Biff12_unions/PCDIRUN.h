@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(PCDIRUN)
     public:
         PCDIRUN();
-        virtual ~PCDIRUN();
+        ~PCDIRUN();
 
         XLS::BaseObjectPtr clone();
 

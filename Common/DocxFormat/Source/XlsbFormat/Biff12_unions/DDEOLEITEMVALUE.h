@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(TABLECELL)
     public:
         DDEOLEITEMVALUE();
-        virtual ~DDEOLEITEMVALUE();
+        ~DDEOLEITEMVALUE();
 
         XLS::BaseObjectPtr clone();
 

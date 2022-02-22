@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndColorScale14)
         public:
             EndColorScale14();
-            virtual ~EndColorScale14();
+            ~EndColorScale14();
 
             XLS::BaseObjectPtr clone();
 

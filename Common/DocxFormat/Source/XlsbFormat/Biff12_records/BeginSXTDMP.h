@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginSXTDMP)
         public:
             BeginSXTDMP();
-            virtual ~BeginSXTDMP();
+            ~BeginSXTDMP();
 
             XLS::BaseObjectPtr clone();
 

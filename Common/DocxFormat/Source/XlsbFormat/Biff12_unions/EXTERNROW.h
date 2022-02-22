@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(EXTERNROW)
     public:
         EXTERNROW();
-        virtual ~EXTERNROW();
+        ~EXTERNROW();
 
         XLS::BaseObjectPtr clone();
 

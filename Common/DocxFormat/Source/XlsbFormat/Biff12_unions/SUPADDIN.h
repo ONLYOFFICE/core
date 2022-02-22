@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(SUPADDIN)
     public:
         SUPADDIN();
-        virtual ~SUPADDIN();
+        ~SUPADDIN();
 
         XLS::BaseObjectPtr clone();
 

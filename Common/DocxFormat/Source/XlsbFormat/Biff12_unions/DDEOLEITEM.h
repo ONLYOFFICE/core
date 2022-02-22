@@ -42,7 +42,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(DDEOLEITEM)
     public:
         DDEOLEITEM(ExternalReferenceType type);
-        virtual ~DDEOLEITEM();
+        ~DDEOLEITEM();
 
         XLS::BaseObjectPtr clone();
 

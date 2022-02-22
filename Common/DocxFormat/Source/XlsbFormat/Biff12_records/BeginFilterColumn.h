@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginFilterColumn)
         public:
             BeginFilterColumn();
-            virtual ~BeginFilterColumn();
+            ~BeginFilterColumn();
 
             XLS::BaseObjectPtr clone();
 

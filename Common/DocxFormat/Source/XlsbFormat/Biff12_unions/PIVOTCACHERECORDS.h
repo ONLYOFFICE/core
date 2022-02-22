@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(PIVOTCACHERECORDS)
     public:
         PIVOTCACHERECORDS();
-        virtual ~PIVOTCACHERECORDS();
+        ~PIVOTCACHERECORDS();
 
         XLS::BaseObjectPtr clone();
 
@@ -49,7 +49,7 @@ namespace XLSB
 
         XLS::BaseObjectPtr               m_BrtBeginPivotCacheRecords;
         std::vector<XLS::BaseObjectPtr>  m_arPIVOTCACHERECORD;
-        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        //std::vector<XLS::BaseObjectPtr>  m_arFRT;
         XLS::BaseObjectPtr               m_BrtEndPivotCacheRecords;
 
     };

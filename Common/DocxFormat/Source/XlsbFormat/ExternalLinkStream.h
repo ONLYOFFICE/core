@@ -48,14 +48,14 @@ namespace XLSB
     class StreamCacheReader;
 
     class ExternalLinkStream;
-    typedef std::shared_ptr<ExternalLinkStream>		ExternalLinkStreamPtr;
+    typedef boost::shared_ptr<ExternalLinkStream>		ExternalLinkStreamPtr;
 
     class ExternalLinkStream: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(ExternalLinkStream)
     public:
         ExternalLinkStream();
-        virtual ~ExternalLinkStream();
+        ~ExternalLinkStream();
 
         XLS::BaseObjectPtr clone();
 

@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndMRUColors)
         public:
             EndMRUColors();
-            virtual ~EndMRUColors();
+            ~EndMRUColors();
 
             XLS::BaseObjectPtr clone();
 

@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginAutoSortScope)
         public:
             BeginAutoSortScope();
-            virtual ~BeginAutoSortScope();
+            ~BeginAutoSortScope();
 
             XLS::BaseObjectPtr clone();
 

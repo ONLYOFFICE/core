@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(SLICERCACHEOLAPIMPL)
     public:
         SLICERCACHEOLAPIMPL();
-        virtual ~SLICERCACHEOLAPIMPL();
+        ~SLICERCACHEOLAPIMPL();
 
         XLS::BaseObjectPtr clone();
 
@@ -52,7 +52,7 @@ namespace XLSB
         XLS::BaseObjectPtr               m_BrtBeginSlicerCacheOlapImpl;
         XLS::BaseObjectPtr               m_SLICERCACHELEVELSDATA;
         XLS::BaseObjectPtr               m_SLICERCACHESELECTIONS;
-        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        //std::vector<XLS::BaseObjectPtr>  m_arFRT;
         XLS::BaseObjectPtr               m_BrtEndSlicerCacheOlapImpl;
 
     };

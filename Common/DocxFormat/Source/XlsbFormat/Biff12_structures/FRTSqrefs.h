@@ -45,7 +45,7 @@ namespace XLSB
     public:
         FRTSqrefs();
         FRTSqrefs(XLS::CFRecord& record);
-        virtual ~FRTSqrefs();
+        ~FRTSqrefs();
        XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;

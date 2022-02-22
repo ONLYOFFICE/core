@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(FieldListActiveItem)
         public:
             FieldListActiveItem();
-            virtual ~FieldListActiveItem();
+            ~FieldListActiveItem();
 
             XLS::BaseObjectPtr clone();
 

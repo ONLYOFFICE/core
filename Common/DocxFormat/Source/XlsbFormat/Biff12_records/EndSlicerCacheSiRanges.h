@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndSlicerCacheSiRanges)
         public:
             EndSlicerCacheSiRanges();
-            virtual ~EndSlicerCacheSiRanges();
+            ~EndSlicerCacheSiRanges();
 
             XLS::BaseObjectPtr clone();
 

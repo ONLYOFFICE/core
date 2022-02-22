@@ -87,6 +87,10 @@ void Row::readFields(CFRecord& record)
 
     else
     {
+        //xlsb
+        _UINT32                              ccolspan;
+        std::vector<XLSB::ColSpan>           rgBrtColspan;
+
         global_info_ = record.getGlobalWorkbookInfo();
 
         record >> rw >> ixfe_val >> miyRw;

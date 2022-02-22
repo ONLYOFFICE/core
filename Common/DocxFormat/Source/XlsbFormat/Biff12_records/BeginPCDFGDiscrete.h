@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginPCDFGDiscrete)
         public:
             BeginPCDFGDiscrete();
-            virtual ~BeginPCDFGDiscrete();
+            ~BeginPCDFGDiscrete();
 
             XLS::BaseObjectPtr clone();
 

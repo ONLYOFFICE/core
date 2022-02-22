@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndPivotTableUISettings)
         public:
             EndPivotTableUISettings();
-            virtual ~EndPivotTableUISettings();
+            ~EndPivotTableUISettings();
 
             XLS::BaseObjectPtr clone();
 

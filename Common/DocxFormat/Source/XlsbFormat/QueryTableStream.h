@@ -48,14 +48,14 @@ namespace XLSB
     class StreamCacheReader;
 
     class QueryTableStream;
-    typedef std::shared_ptr<QueryTableStream>		QueryTableStreamPtr;
+    typedef boost::shared_ptr<QueryTableStream>		QueryTableStreamPtr;
 
     class QueryTableStream: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(QueryTableStream)
     public:
         QueryTableStream();
-        virtual ~QueryTableStream();
+        ~QueryTableStream();
 
         XLS::BaseObjectPtr clone();
 

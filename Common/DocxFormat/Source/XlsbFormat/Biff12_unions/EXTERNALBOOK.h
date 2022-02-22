@@ -42,7 +42,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(EXTERNALBOOK)
     public:
         EXTERNALBOOK(ExternalReferenceType type);
-        virtual ~EXTERNALBOOK();
+        ~EXTERNALBOOK();
 
         XLS::BaseObjectPtr clone();
 

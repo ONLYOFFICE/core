@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(EXTERNVALUE)
     public:
         EXTERNVALUE(_INT32 row);
-        virtual ~EXTERNVALUE();
+        ~EXTERNVALUE();
 
         XLS::BaseObjectPtr clone();
 

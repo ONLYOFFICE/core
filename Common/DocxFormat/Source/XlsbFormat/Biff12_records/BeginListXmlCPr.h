@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginListXmlCPr)
         public:
             BeginListXmlCPr();
-            virtual ~BeginListXmlCPr();
+            ~BeginListXmlCPr();
 
             XLS::BaseObjectPtr clone();
 

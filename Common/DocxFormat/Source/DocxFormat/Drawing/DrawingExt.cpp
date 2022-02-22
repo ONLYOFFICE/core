@@ -1085,8 +1085,8 @@ namespace OOX
                         oExt->m_sUri.Init();
                         oExt->m_sUri->append(_T("{78C0D931-6437-407d-A8EE-F0AAD7539E65}"));
 
-                        auto arCF14 = static_cast<XLSB::CONDITIONALFORMATTINGS*>(ptr->m_CONDITIONALFORMATTINGS.get())->m_arCONDITIONALFORMATTING14;
-                        for(auto &item : arCF14)
+                        auto oCONDITIONALFORMATTINGS = static_cast<XLSB::CONDITIONALFORMATTINGS*>(ptr->m_CONDITIONALFORMATTINGS.get());
+                        for(auto &item : oCONDITIONALFORMATTINGS->m_arCONDITIONALFORMATTING14)
                                 oExt->m_arrConditionalFormatting.push_back(new OOX::Spreadsheet::CConditionalFormatting(item));
 
                         if (oExt)

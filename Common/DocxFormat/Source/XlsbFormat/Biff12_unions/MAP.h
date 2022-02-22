@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(MAP)
     public:
         MAP();
-        virtual ~MAP();
+        ~MAP();
 
         XLS::BaseObjectPtr clone();
 

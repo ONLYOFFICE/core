@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(SXVI)
     public:
         SXVI();
-        virtual ~SXVI();
+        ~SXVI();
 
         XLS::BaseObjectPtr clone();
 

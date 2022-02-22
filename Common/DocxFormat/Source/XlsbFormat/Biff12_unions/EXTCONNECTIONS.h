@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(EXTCONNECTIONS)
     public:
         EXTCONNECTIONS();
-        virtual ~EXTCONNECTIONS();
+        ~EXTCONNECTIONS();
 
         XLS::BaseObjectPtr clone();
 

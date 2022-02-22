@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndTimelineStyle)
         public:
             EndTimelineStyle();
-            virtual ~EndTimelineStyle();
+            ~EndTimelineStyle();
 
             XLS::BaseObjectPtr clone();
 

@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(PCDH15)
         public:
             PCDH15();
-            virtual ~PCDH15();
+            ~PCDH15();
 
             XLS::BaseObjectPtr clone();
 

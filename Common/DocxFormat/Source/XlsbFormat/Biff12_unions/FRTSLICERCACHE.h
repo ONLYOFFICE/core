@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(FRTSLICERCACHE)
     public:
         FRTSLICERCACHE();
-        virtual ~FRTSLICERCACHE();
+        ~FRTSLICERCACHE();
 
         XLS::BaseObjectPtr clone();
 
@@ -52,7 +52,7 @@ namespace XLSB
         XLS::BaseObjectPtr               m_SLICERCACHEBOOKPIVOTTABLES;
         XLS::BaseObjectPtr               m_TABLESLICERCACHE;
         XLS::BaseObjectPtr               m_SLICERCACHECROSSFILTEREXT;
-        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        //std::vector<XLS::BaseObjectPtr>  m_arFRT;
 
     };
 

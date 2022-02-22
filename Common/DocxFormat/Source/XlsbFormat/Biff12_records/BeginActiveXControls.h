@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginActiveXControls)
         public:
             BeginActiveXControls();
-            virtual ~BeginActiveXControls();
+            ~BeginActiveXControls();
 
             XLS::BaseObjectPtr clone();
 

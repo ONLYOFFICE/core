@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(ISXTHRWS)
     public:
         ISXTHRWS();
-        virtual ~ISXTHRWS();
+        ~ISXTHRWS();
 
         XLS::BaseObjectPtr clone();
 

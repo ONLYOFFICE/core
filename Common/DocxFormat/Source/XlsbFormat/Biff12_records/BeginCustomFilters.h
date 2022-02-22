@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginCustomFilters)
         public:
             BeginCustomFilters();
-            virtual ~BeginCustomFilters();
+            ~BeginCustomFilters();
 
             XLS::BaseObjectPtr clone();
 

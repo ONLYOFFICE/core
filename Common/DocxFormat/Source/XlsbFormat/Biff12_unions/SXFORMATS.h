@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(SXFORMATS)
     public:
         SXFORMATS();
-        virtual ~SXFORMATS();
+        ~SXFORMATS();
 
         XLS::BaseObjectPtr clone();
 

@@ -62,19 +62,19 @@ const int BinProcessor::repeated(BaseObject& object, const int fromN, const int 
 	bool at_least_one_read = false;
 
 	for(int i = 0; i < fromN; ++i)
-	{
-		mandatory(*object.clone());
+    {
+        mandatory(*object.clone());
 		count++;
-		at_least_one_read = true;
+        at_least_one_read = true;
 	}
 	for(int j = fromN; j < toN || !toN/*infinity*/; ++j)
-	{
-		if(!optional(*object.clone()))
+    {
+        if(!optional(*object.clone()))
 		{
 			break;
 		}
 		count++;
-		at_least_one_read = true;
+        at_least_one_read = true;
 	}
 	return count;
 }

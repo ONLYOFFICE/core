@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndIconSet14)
         public:
             EndIconSet14();
-            virtual ~EndIconSet14();
+            ~EndIconSet14();
 
             XLS::BaseObjectPtr clone();
 

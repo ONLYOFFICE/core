@@ -46,7 +46,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndConditionalFormatting14)
         public:
             EndConditionalFormatting14();
-            virtual ~EndConditionalFormatting14();
+            ~EndConditionalFormatting14();
 
             XLS::BaseObjectPtr clone();
 

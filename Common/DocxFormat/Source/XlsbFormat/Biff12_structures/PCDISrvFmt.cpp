@@ -55,27 +55,42 @@ namespace XLSB
         return BiffStructurePtr(new PCDISrvFmt(*this));
     }
 
-    void PCDISrvFmt::load(XLS::CFRecord& record)
-    {
-        BYTE flags;
-        record >> flags;
+	void PCDISrvFmt::load(XLS::CFRecord& record)
+	{
+		BYTE flags;
+		record >> flags;
 
-        fSrvFmtNum           = GETBIT(flags, 0);
-        fSrvFmtBack          = GETBIT(flags, 1);
-        fSrvFmtFore          = GETBIT(flags, 2);
-        fSrvFmtItalic        = GETBIT(flags, 3);
-        fSrvFmtUnderline     = GETBIT(flags, 4);
-        fSrvFmtBold          = GETBIT(flags, 5);
-        fSrvFmtStrikethrough = GETBIT(flags, 6);
+		fSrvFmtNum = GETBIT(flags, 0);
+		fSrvFmtBack = GETBIT(flags, 1);
+		fSrvFmtFore = GETBIT(flags, 2);
+		fSrvFmtItalic = GETBIT(flags, 3);
+		fSrvFmtUnderline = GETBIT(flags, 4);
+		fSrvFmtBold = GETBIT(flags, 5);
+		fSrvFmtStrikethrough = GETBIT(flags, 6);
 
-        if(fSrvFmtNum)
-            record >> isfci;
+		if (fSrvFmtNum)
+		{
+			if (record.checkFitReadSafe(4))
+				record >> isfci;
+			else
+				fSrvFmtNum = false;
+		}
 
-        if(fSrvFmtBack)
-            record >> cvBack;
+		if (fSrvFmtBack)
+		{
+			if (record.checkFitReadSafe(4))
+				record >> cvBack;
+			else
+				fSrvFmtBack = false;
+		}
 
-        if(fSrvFmtFore)
-            record >> cvFore;
+		if (fSrvFmtFore)
+		{
+			if (record.checkFitReadSafe(4))
+				record >> cvFore;
+			else
+				fSrvFmtFore = false;
+		}
     }
 
 } // namespace XLSB

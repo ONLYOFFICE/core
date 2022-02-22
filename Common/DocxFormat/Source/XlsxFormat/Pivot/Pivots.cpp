@@ -3080,7 +3080,10 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		writer.WriteString(L"<s");
 			WritingStringNullableAttrEncodeXmlString2(L"c", m_oCaption);
 			WritingStringNullableAttrEncodeXmlString2(L"v",	m_oValue);
-			WritingStringAttrInt(L"cp", (int)m_arrItems.size());
+			if (m_arrItems.size() > 0)
+			{
+				WritingStringAttrInt(L"cp", (int)m_arrItems.size());
+			}
 			WritingStringNullableAttrBool2(L"f",	m_oCalculated);
 			WritingStringNullableAttrBool2(L"u",	m_oUnused);
 			WritingStringNullableAttrBool2(L"b",	m_oBold);
@@ -3149,19 +3152,22 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             {
                 m_oValue        = ptr->st.value();
 
-                m_oBold         = ptr->sxvcellextra.fSrvFmtBold;
-                m_oItalic       = ptr->sxvcellextra.fSrvFmtItalic;
-                m_oStrike       = ptr->sxvcellextra.fSrvFmtStrikethrough;
-                m_oUnderline	= ptr->sxvcellextra.fSrvFmtUnderline;
+				if (ptr->sxvcellextra)
+				{
+					m_oBold = ptr->sxvcellextra->fSrvFmtBold;
+					m_oItalic = ptr->sxvcellextra->fSrvFmtItalic;
+					m_oStrike = ptr->sxvcellextra->fSrvFmtStrikethrough;
+					m_oUnderline = ptr->sxvcellextra->fSrvFmtUnderline;
 
-                if(ptr->sxvcellextra.fSrvFmtNum)
-                    m_oFormatIndex  = ptr->sxvcellextra.isfci;
+					if (ptr->sxvcellextra->fSrvFmtNum)
+						m_oFormatIndex = ptr->sxvcellextra->isfci;
 
-                if(ptr->sxvcellextra.fSrvFmtBack)
-                    m_oBackColor    = ptr->sxvcellextra.cvBack.toHex();
+					if (ptr->sxvcellextra->fSrvFmtBack)
+						m_oBackColor = ptr->sxvcellextra->cvBack.toHex();
 
-                if(ptr->sxvcellextra.fSrvFmtFore)
-                    m_oForeColor  = ptr->sxvcellextra.cvFore.toHex();
+					if (ptr->sxvcellextra->fSrvFmtFore)
+						m_oForeColor = ptr->sxvcellextra->cvFore.toHex();
+				}
             }
         }
         else if(obj->get_type() == XLS::typePCDIAString)
@@ -3194,7 +3200,10 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		writer.WriteString(L"<e");
 			WritingStringNullableAttrEncodeXmlString2(L"c", m_oCaption);
 			WritingStringNullableAttrEncodeXmlString2(L"v",	m_oValue);
-			WritingStringAttrInt(L"cp", (int)m_arrItems.size());
+			if (m_arrItems.size() > 0)
+			{
+				WritingStringAttrInt(L"cp", (int)m_arrItems.size());
+			}
 			WritingStringNullableAttrBool2(L"f",	m_oCalculated);
 			WritingStringNullableAttrBool2(L"u",	m_oUnused);
 			WritingStringNullableAttrBool2(L"b",	m_oBold);
@@ -3272,20 +3281,22 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
                     case 0x2A: m_oValue = L"#N/A"; break;
                     case 0x2B: m_oValue = L"#GETTING_DATA"; break;
                 }
+				if (ptr->sxvcellextra)
+				{
+					m_oBold = ptr->sxvcellextra->fSrvFmtBold;
+					m_oItalic = ptr->sxvcellextra->fSrvFmtItalic;
+					m_oStrike = ptr->sxvcellextra->fSrvFmtStrikethrough;
+					m_oUnderline = ptr->sxvcellextra->fSrvFmtUnderline;
 
-                m_oBold         = ptr->sxvcellextra.fSrvFmtBold;
-                m_oItalic       = ptr->sxvcellextra.fSrvFmtItalic;
-                m_oStrike       = ptr->sxvcellextra.fSrvFmtStrikethrough;
-                m_oUnderline	= ptr->sxvcellextra.fSrvFmtUnderline;
+					if (ptr->sxvcellextra->fSrvFmtNum)
+						m_oFormatIndex = ptr->sxvcellextra->isfci;
 
-                if(ptr->sxvcellextra.fSrvFmtNum)
-                    m_oFormatIndex  = ptr->sxvcellextra.isfci;
+					if (ptr->sxvcellextra->fSrvFmtBack)
+						m_oBackColor = ptr->sxvcellextra->cvBack.toHex();
 
-                if(ptr->sxvcellextra.fSrvFmtBack)
-                    m_oBackColor    = ptr->sxvcellextra.cvBack.toHex();
-
-                if(ptr->sxvcellextra.fSrvFmtFore)
-                    m_oForeColor  = ptr->sxvcellextra.cvFore.toHex();
+					if (ptr->sxvcellextra->fSrvFmtFore)
+						m_oForeColor = ptr->sxvcellextra->cvFore.toHex();
+				}
             }
         }
 
@@ -3329,7 +3340,10 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		writer.WriteString(L"<n");
 			WritingStringNullableAttrEncodeXmlString2(L"c", m_oCaption);
 			WritingStringNullableAttrDouble2(L"v",	m_oValue);
-			WritingStringAttrInt(L"cp", (int)m_arrItems.size());
+			if (m_arrItems.size() > 0)
+			{
+				WritingStringAttrInt(L"cp", (int)m_arrItems.size());
+			}
 			WritingStringNullableAttrBool2(L"f",	m_oCalculated);
 			WritingStringNullableAttrBool2(L"u",	m_oUnused);
 			WritingStringNullableAttrBool2(L"b",	m_oBold);
@@ -3396,21 +3410,24 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
             if(ptr != nullptr)
             {
-                m_oValue        = ptr->xnum.data.value;
+                m_oValue = ptr->xnum.data.value;
 
-                m_oBold         = ptr->sxvcellextra.fSrvFmtBold;
-                m_oItalic       = ptr->sxvcellextra.fSrvFmtItalic;
-                m_oStrike       = ptr->sxvcellextra.fSrvFmtStrikethrough;
-                m_oUnderline	= ptr->sxvcellextra.fSrvFmtUnderline;
+				if (ptr->sxvcellextra)
+				{
+					m_oBold = ptr->sxvcellextra->fSrvFmtBold;
+					m_oItalic = ptr->sxvcellextra->fSrvFmtItalic;
+					m_oStrike = ptr->sxvcellextra->fSrvFmtStrikethrough;
+					m_oUnderline = ptr->sxvcellextra->fSrvFmtUnderline;
 
-                if(ptr->sxvcellextra.fSrvFmtNum)
-                    m_oFormatIndex  = ptr->sxvcellextra.isfci;
+					if (ptr->sxvcellextra->fSrvFmtNum)
+						m_oFormatIndex = ptr->sxvcellextra->isfci;
 
-                if(ptr->sxvcellextra.fSrvFmtBack)
-                    m_oBackColor    = ptr->sxvcellextra.cvBack.toHex();
+					if (ptr->sxvcellextra->fSrvFmtBack)
+						m_oBackColor = ptr->sxvcellextra->cvBack.toHex();
 
-                if(ptr->sxvcellextra.fSrvFmtFore)
-                    m_oForeColor  = ptr->sxvcellextra.cvFore.toHex();
+					if (ptr->sxvcellextra->fSrvFmtFore)
+						m_oForeColor = ptr->sxvcellextra->cvFore.toHex();
+				}
             }
         }
 
@@ -3420,7 +3437,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
             if(ptr != nullptr)
             {
-                m_oValue        = ptr->xnum.data.value;
+                m_oValue = ptr->xnum.data.value;
 
                 if(!ptr->info.stCaption.value().empty())
                     m_oCaption = ptr->info.stCaption.value();
@@ -3444,7 +3461,10 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		writer.WriteString(L"<d");
 			WritingStringNullableAttrEncodeXmlString2(L"c", m_oCaption);
 			WritingStringNullableAttrString(L"v",	m_oValue, m_oValue->ToString());
-			WritingStringAttrInt(L"cp", (int)m_arrItems.size());
+			if (m_arrItems.size() > 0)
+			{
+				WritingStringAttrInt(L"cp", (int)m_arrItems.size());
+			}
 			WritingStringNullableAttrBool2(L"f",	m_oCalculated);
 			WritingStringNullableAttrBool2(L"u",	m_oUnused);
 		writer.WriteString(L">");
@@ -3529,7 +3549,10 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		writer.WriteString(L"<b");
 			WritingStringNullableAttrBool2(L"v",	m_oValue);
 			WritingStringNullableAttrEncodeXmlString2(L"c", m_oCaption);
-			WritingStringAttrInt(L"cp", (int)m_arrItems.size());
+			if (m_arrItems.size() > 0)
+			{
+				WritingStringAttrInt(L"cp", (int)m_arrItems.size());
+			}
 			WritingStringNullableAttrBool2(L"f",	m_oCalculated);
 			WritingStringNullableAttrBool2(L"u",	m_oUnused);
 		writer.WriteString(L">");
@@ -3613,7 +3636,10 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 	{
 		writer.WriteString(L"<m");
 			WritingStringNullableAttrEncodeXmlString2(L"c", m_oCaption);
-			WritingStringAttrInt(L"cp", (int)m_arrItems.size());
+			if (m_arrItems.size() > 0)
+			{
+				WritingStringAttrInt(L"cp", (int)m_arrItems.size());
+			}
 			WritingStringNullableAttrBool2(L"f",	m_oCalculated);
 			WritingStringNullableAttrBool2(L"u",	m_oUnused);
 			WritingStringNullableAttrBool2(L"b",	m_oBold);
@@ -3680,19 +3706,22 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
             if(ptr != nullptr)
             {
-                m_oBold         = ptr->sxvcellextra.fSrvFmtBold;
-                m_oItalic       = ptr->sxvcellextra.fSrvFmtItalic;
-                m_oStrike       = ptr->sxvcellextra.fSrvFmtStrikethrough;
-                m_oUnderline	= ptr->sxvcellextra.fSrvFmtUnderline;
+				if (ptr->sxvcellextra)
+				{
+					m_oBold = ptr->sxvcellextra->fSrvFmtBold;
+					m_oItalic = ptr->sxvcellextra->fSrvFmtItalic;
+					m_oStrike = ptr->sxvcellextra->fSrvFmtStrikethrough;
+					m_oUnderline = ptr->sxvcellextra->fSrvFmtUnderline;
 
-                if(ptr->sxvcellextra.fSrvFmtNum)
-                    m_oFormatIndex  = ptr->sxvcellextra.isfci;
+					if (ptr->sxvcellextra->fSrvFmtNum)
+						m_oFormatIndex = ptr->sxvcellextra->isfci;
 
-                if(ptr->sxvcellextra.fSrvFmtBack)
-                    m_oBackColor    = ptr->sxvcellextra.cvBack.toHex();
+					if (ptr->sxvcellextra->fSrvFmtBack)
+						m_oBackColor = ptr->sxvcellextra->cvBack.toHex();
 
-                if(ptr->sxvcellextra.fSrvFmtFore)
-                    m_oForeColor  = ptr->sxvcellextra.cvFore.toHex();
+					if (ptr->sxvcellextra->fSrvFmtFore)
+						m_oForeColor = ptr->sxvcellextra->cvFore.toHex();
+				}
             }
         }
 
@@ -4288,31 +4317,37 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             readBin(m_oReadPath);
             return;
         }
+		NSFile::CFileBinary::ReadAllBytes(oPath.GetPath(), &m_pData, m_nDataLength);
+		
+		return;
 
-		return;// todooo option read
+		//XmlUtils::CXmlLiteReader oReader;
 
-		XmlUtils::CXmlLiteReader oReader;
+		//if ( !oReader.FromFile( oPath.GetPath() ) )
+		//	return;
 
-		if ( !oReader.FromFile( oPath.GetPath() ) )
-			return;
+		//if ( !oReader.ReadNextNode() )
+		//	return;
 
-		if ( !oReader.ReadNextNode() )
-			return;
-
-		m_oPivotCacheRecords = oReader;
+		//m_oPivotCacheRecords = oReader;
 	}
 	void CPivotCacheRecordsFile::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 	{
 		if(m_oPivotCacheRecords.IsInit())
 		{
-			NSStringUtils::CStringBuilder sXml;
-
-			sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
-			m_oPivotCacheRecords->toXML(sXml);
-
 			std::wstring sPath = oPath.GetPath();
-			NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
 
+			if (false == m_oPivotCacheRecords->m_strOutputXml.empty())
+			{
+				NSFile::CFileBinary::SaveToFile(sPath, m_oPivotCacheRecords->m_strOutputXml);
+			}
+			else
+			{
+				NSStringUtils::CStringBuilder sXml;
+				sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+				m_oPivotCacheRecords->toXML(sXml);
+				NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
+			}
 			oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 			IFileContainer::Write( oPath, oDirectory, oContent );
 		}
@@ -4331,21 +4366,21 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 	void CPivotCacheRecords::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
 		writer.WriteString(L"<pivotCacheRecords \
-xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" \
-xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
-xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
-mc:Ignorable=\"xr16\" \
-xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"");			
-			WritingStringAttrInt(L"count", (int)m_arrItems.size());
+	xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" \
+	xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+	xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+	mc:Ignorable=\"xr16\" \
+	xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"");
+		WritingStringAttrInt(L"count", (int)m_arrItems.size());
 		writer.WriteString(L">");
-        
-		for ( size_t i = 0; i < m_arrItems.size(); ++i)
-        {
-            if (  m_arrItems[i] )
-            {
+
+		for (size_t i = 0; i < m_arrItems.size(); ++i)
+		{
+			if (m_arrItems[i])
+			{
 				m_arrItems[i]->toXML(writer);
-            }
-        }
+			}
+		}
 		writer.WriteString(L"</pivotCacheRecords>");
 	}
 	void CPivotCacheRecords::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -4371,13 +4406,34 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
         auto ptr = static_cast<XLSB::PIVOTCACHERECORDS*>(obj.get());
 
         if(ptr != nullptr)
-        {
-            m_oCount = (_UINT32)ptr->m_arPIVOTCACHERECORD.size();
+        {			
+			NSStringUtils::CStringBuilder writer;
+			writer.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+			writer.WriteString(L"<pivotCacheRecords \
+xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" \
+xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+mc:Ignorable=\"xr16\" \
+xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"");
+			WritingStringAttrInt(L"count", ptr->m_arPIVOTCACHERECORD.size());
+			writer.WriteString(L">");
 
-            for(auto &item : ptr->m_arPIVOTCACHERECORD)
+			//m_oCount = (_UINT32)ptr->m_arPIVOTCACHERECORD.size();
+
+            //for(auto &item : ptr->m_arPIVOTCACHERECORD)
+			while(false == ptr->m_arPIVOTCACHERECORD.empty())
             {
-                m_arrItems.push_back(new CPivotCacheRecord(item));
+                //m_arrItems.push_back(new CPivotCacheRecord(item));
+				
+				CPivotCacheRecord xmlItem(ptr->m_arPIVOTCACHERECORD.front());
+				xmlItem.toXML(writer);
+				ptr->m_arPIVOTCACHERECORD.erase(ptr->m_arPIVOTCACHERECORD.begin());
             }
+			ptr->m_arPIVOTCACHERECORD.clear();
+
+			writer.WriteString(L"</pivotCacheRecords>");
+			m_strOutputXml = writer.GetData();
+			writer.Clear();
         }
     }
 	void CPivotCacheRecords::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)

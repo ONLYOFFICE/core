@@ -31,6 +31,7 @@
  */
 
 #include "PCDINumber.h"
+#include <boost/make_shared.hpp>
 
 using namespace XLS;
 
@@ -52,8 +53,13 @@ namespace XLSB
 
     void PCDINumber::readFields(XLS::CFRecord& record)
     {
-        record >> xnum >> sxvcellextra;
-    }
+		record >> xnum;
+		if (record.checkFitReadSafe(1))
+		{
+			sxvcellextra = boost::make_shared<PCDISrvFmt>();
+			record >> *sxvcellextra;
+		}
+	}
 
 } // namespace XLSB
 

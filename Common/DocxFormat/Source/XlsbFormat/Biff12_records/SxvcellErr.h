@@ -55,8 +55,8 @@ namespace XLSB
 
             FRTBlank     FRTheader;
             BYTE         err;
-            PCDISrvFmt   sxvcellextra;
-    };
+			boost::shared_ptr<PCDISrvFmt> sxvcellextra;
+	};
 
 } // namespace XLSB
 

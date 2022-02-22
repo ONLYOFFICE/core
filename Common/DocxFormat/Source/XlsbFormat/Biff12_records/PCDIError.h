@@ -53,8 +53,8 @@ namespace XLSB
             void readFields(XLS::CFRecord& record);
 
             unsigned char    err;
-            PCDISrvFmt       sxvcellextra;
-    };
+			boost::shared_ptr<PCDISrvFmt> sxvcellextra;
+	};
 
 } // namespace XLSB
 

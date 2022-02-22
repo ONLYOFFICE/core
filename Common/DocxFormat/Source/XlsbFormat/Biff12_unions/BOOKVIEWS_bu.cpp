@@ -74,13 +74,13 @@ namespace XLSB
             else return false;
 
             int count = proc.repeated<FRT>(0, 0);
-
-            while(count > 0)
-            {
-                //m_arFRT.insert(m_arFRT.begin(), elements_.back());
-                elements_.pop_back();
-                count--;
-            }
+			elements_.clear();
+            //while(count > 0)
+            //{
+            //    //m_arFRT.insert(m_arFRT.begin(), elements_.back());
+            //    elements_.pop_back();
+            //    count--;
+            //}
 
             return true;
         };

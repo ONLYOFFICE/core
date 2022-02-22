@@ -55,8 +55,8 @@ namespace XLSB
 
             FRTBlank            FRTheader;
             XLS::Boolean<BYTE>  f;
-            PCDISrvFmt          sxvcellextra;
-    };
+			boost::shared_ptr<PCDISrvFmt> sxvcellextra;
+	};
 
 } // namespace XLSB
 

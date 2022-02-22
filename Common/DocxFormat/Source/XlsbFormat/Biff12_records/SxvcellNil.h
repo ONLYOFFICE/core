@@ -54,8 +54,8 @@ namespace XLSB
             void readFields(XLS::CFRecord& record);
 
             FRTBlank     FRTheader;
-            PCDISrvFmt   sxvcellextra;
-    };
+			boost::shared_ptr<PCDISrvFmt> sxvcellextra;
+	};
 
 } // namespace XLSB
 

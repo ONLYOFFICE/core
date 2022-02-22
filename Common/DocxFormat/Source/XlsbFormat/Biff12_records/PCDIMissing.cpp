@@ -31,6 +31,7 @@
  */
 
 #include "PCDIMissing.h"
+#include <boost/make_shared.hpp>
 
 using namespace XLS;
 
@@ -52,7 +53,11 @@ namespace XLSB
 
     void PCDIMissing::readFields(XLS::CFRecord& record)
     {
-        record >> sxvcellextra;
+		if (record.checkFitReadSafe(1))
+		{
+			sxvcellextra = boost::make_shared<PCDISrvFmt>();
+			record >> *sxvcellextra;
+		}
     }
 
 } // namespace XLSB

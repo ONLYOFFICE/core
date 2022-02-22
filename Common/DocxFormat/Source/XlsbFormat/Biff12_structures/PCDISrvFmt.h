@@ -51,14 +51,14 @@ namespace XLSB
 
         virtual void load(XLS::CFRecord& record);
 
-        bool     fSrvFmtNum;
-        bool     fSrvFmtBack;
-        bool     fSrvFmtFore;
-        bool     fSrvFmtItalic;
-        bool     fSrvFmtUnderline;
-        bool     fSrvFmtBold;
-        bool     fSrvFmtStrikethrough;
-        _UINT32  isfci;
+        bool     fSrvFmtNum = false;
+        bool     fSrvFmtBack = false;
+        bool     fSrvFmtFore = false;
+        bool     fSrvFmtItalic = false;
+        bool     fSrvFmtUnderline = false;
+        bool     fSrvFmtBold = false;
+        bool     fSrvFmtStrikethrough = false;
+        _UINT32  isfci = 0;
         SrvFmtCV cvBack;
         SrvFmtCV cvFore;
     };

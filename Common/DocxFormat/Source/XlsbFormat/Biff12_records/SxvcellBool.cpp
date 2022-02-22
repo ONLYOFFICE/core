@@ -31,6 +31,7 @@
  */
 
 #include "SxvcellBool.h"
+#include <boost/make_shared.hpp>
 
 using namespace XLS;
 
@@ -52,7 +53,12 @@ namespace XLSB
 
     void SxvcellBool::readFields(XLS::CFRecord& record)
     {
-        record >> FRTheader >> f >> sxvcellextra;
+        record >> FRTheader >> f;
+		if (record.checkFitReadSafe(1))
+		{
+			sxvcellextra = boost::make_shared<PCDISrvFmt>();
+			record >> *sxvcellextra;
+		}
     }
 
 } // namespace XLSB

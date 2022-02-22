@@ -582,7 +582,14 @@ namespace XmlUtils
 			{
 				while ((m_lSizeCur + nSize) > m_lSize)
 				{
-					m_lSize *= 2;
+					if (m_lSize > 10485760/*10 * 1024 * 1024*/)
+					{
+						m_lSize += (std::max)((int)nSize * 10, 1048576/*1024 * 1024*/);
+					}
+					else
+					{
+						m_lSize *= 2;
+					}
 				}
 
 				wchar_t* pRealloc = (wchar_t*)realloc(m_pData, m_lSize * sizeof(wchar_t));

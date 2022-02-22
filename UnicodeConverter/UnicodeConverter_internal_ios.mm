@@ -149,13 +149,20 @@ namespace NSUnicodeConverter
         std::wstring toUnicode(const char* sInput, const unsigned int& nInputLen, int nCodePage, bool isExact)
         {
             std::wstring sRes = L"";
-            if (!isExact && nInputLen > 0)
+            if (nInputLen > 0)
             {
                 CFStringEncoding nEncodingCF = CFStringConvertWindowsCodepageToEncoding((unsigned int)nCodePage);
                 if (kCFStringEncodingInvalidId == nEncodingCF)
+                {
+                    if (isExact)
+                    {
+                        std::string strInputA(sInput, nInputLen);
+                        sRes = std::wstring(strInputA.begin(), strInputA.end());
+                    }
                     return sRes;
-                NSStringEncoding nEncodingNS = CFStringConvertEncodingToNSStringEncoding(nEncodingCF);
+                }
 
+                NSStringEncoding nEncodingNS = CFStringConvertEncodingToNSStringEncoding(nEncodingCF);
                 NSString* sUnicodeNS = [[NSString alloc] initWithBytes:sInput length:nInputLen encoding:nEncodingNS];
                 sRes = NSStringToStdstring(sUnicodeNS);
             }
@@ -164,12 +171,19 @@ namespace NSUnicodeConverter
         std::wstring toUnicode(const char* sInput, const unsigned int& nInputLen, const char* converterName, bool isExact)
         {
             std::wstring sRes = L"";
-            if (!isExact && nInputLen > 0)
+            if (nInputLen > 0)
             {
                 NSString* sEncodingCF = StringAToNSString(std::string(converterName));
                 CFStringEncoding nEncodingCF = CFStringConvertIANACharSetNameToEncoding((CFStringRef)sEncodingCF);
                 if (kCFStringEncodingInvalidId == nEncodingCF)
+                {
+                    if (isExact)
+                    {
+                        std::string strInputA(sInput, nInputLen);
+                        sRes = std::wstring(strInputA.begin(), strInputA.end());
+                    }
                     return sRes;
+                }
                 NSStringEncoding nEncodingNS = CFStringConvertEncodingToNSStringEncoding(nEncodingCF);
 
                 NSString* sUnicodeNS = [[NSString alloc] initWithBytes:sInput length:nInputLen encoding:nEncodingNS];

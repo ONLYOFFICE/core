@@ -57,7 +57,10 @@
     #define MAX_PATH 1024
 #endif
 
+#define READ_WRITE_FULL_BUFFER_SIZE 10000000 // 10mb
+
 #ifdef __ANDROID__
+#define READ_WRITE_FULL
 #define USE_LINUX_SENDFILE_INSTEAD_STREAMS
 
 // Available since API level 21.
@@ -1216,6 +1219,45 @@ namespace NSFile
     {
         if (strSrc == strDst)
             return true;
+
+#ifdef READ_WRITE_FULL
+        BYTE* pFileData = NULL;
+        DWORD dwChunkSize = READ_WRITE_FULL_BUFFER_SIZE;
+        CFileBinary oFileSrc;
+        CFileBinary oFileDst;
+        if (oFileSrc.OpenFile(strSrc) && oFileDst.CreateFileW(strDst))
+        {
+            DWORD dwFileSrcSize = (DWORD)oFileSrc.GetFileSize();
+            if (dwChunkSize > dwFileSrcSize)
+                dwChunkSize = dwFileSrcSize;
+
+            BYTE* pTempBuffer = new BYTE[dwChunkSize];
+            DWORD dwProcessedBytes = 0;
+            while (dwFileSrcSize != 0)
+            {
+                oFileSrc.ReadFile(pTempBuffer, dwChunkSize, dwProcessedBytes);
+                if (dwProcessedBytes != dwChunkSize)
+                    break;
+
+                if (!oFileDst.WriteFile(pTempBuffer, dwChunkSize))
+                    break;
+
+                dwFileSrcSize -= dwChunkSize;
+                if (dwChunkSize > dwFileSrcSize)
+                    dwChunkSize = dwFileSrcSize;
+            }
+
+            oFileSrc.CloseFile();
+            oFileDst.CloseFile();
+
+            RELEASEARRAYOBJECTS(pTempBuffer);
+
+            if (0 != dwFileSrcSize)
+                Remove(strDst);
+            else
+                return true;
+        }
+#endif
 
 #if !defined(_WIN32) && !defined(_WIN32_WCE) && !defined(_WIN64)
         std::string strSrcA = U_TO_UTF8(strSrc);

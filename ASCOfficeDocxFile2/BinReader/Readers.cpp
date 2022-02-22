@@ -3535,6 +3535,10 @@ int Binary_CustomsTableReader::ReadCustomContent(BYTE type, long length, void* p
 	{
 		pCustomXMLProps->m_oCustomXmlContent = m_oBufferedStream.GetString3(length);
 	}
+	else if (c_oSerCustoms::ContentA == type)
+	{
+		pCustomXMLProps->m_oCustomXmlContentA = m_oBufferedStream.GetString2A();
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;

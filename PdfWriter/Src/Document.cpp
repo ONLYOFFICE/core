@@ -1106,6 +1106,7 @@ namespace PdfWriter
 		}
 
 		m_pTrailer->FromXml(sTrailer);
+
 		// Вторая часть идентификатора должна обновляться
 		CObjectBase* pID = m_pTrailer->Get("ID");
 		if (pID && pID->GetType() == object_type_ARRAY)
@@ -1116,6 +1117,18 @@ namespace PdfWriter
 			CObjectBase* pObject = ((CArrayObject*)pID)->Get(1, false);
 			((CArrayObject*)pID)->Insert(pObject, new CBinaryObject(arrId, 16), true);
 		}
+
+        // m_pTrailer не должен быть stream
+        m_pTrailer->Remove("Length");
+        m_pTrailer->Remove("Filter");
+        m_pTrailer->Remove("DecodeParms");
+        m_pTrailer->Remove("F");
+        m_pTrailer->Remove("FFilter");
+        m_pTrailer->Remove("FDecodeParms");
+        m_pTrailer->Remove("DL");
+        m_pTrailer->Remove("Type");
+        m_pTrailer->Remove("Index");
+        m_pTrailer->Remove("W");
 
 		m_pLastXref->WriteToStream(pStream, pEncrypt);
 

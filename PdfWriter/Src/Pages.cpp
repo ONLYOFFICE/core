@@ -232,13 +232,6 @@ namespace PdfWriter
 	{
 		Init(pXref, pDocument);
 
-		/*
-		NSFile::CFileBinary oFile;
-		oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/test.txt");
-		oFile.WriteStringUTF8(sXml);
-		oFile.CloseFile();
-		*/
-
 		FromXml(sXml);
 
 		// Инициализация текущего contents
@@ -256,12 +249,21 @@ namespace PdfWriter
 		else
 			Add("Contents", m_pContents);
 
-		// Инициализация текущего fonts
-		CObjectBase* pFonts = GetResourcesItem()->Get("Font");
-		if (pFonts && pFonts->GetType() == object_type_DICT)
+		if (GetResourcesItem())
 		{
-			m_pFonts = (CDictObject*)pFonts;
-			m_unFontsCount = m_pFonts->GetSize();
+			// Инициализация текущего fonts
+			CObjectBase* pFonts = GetResourcesItem()->Get("Font");
+			if (pFonts && pFonts->GetType() == object_type_DICT)
+			{
+				m_pFonts = (CDictObject*)pFonts;
+				// TODO: Необходимо вычислить максимальный используемый n у шрифта Fn
+				m_unFontsCount = m_pFonts->GetSize();
+			}
+
+			// Инициализация текущего ExtGStates
+			CObjectBase* pExtGStates = GetResourcesItem()->Get("ExtGState");
+			if (pExtGStates && pExtGStates->GetType() == object_type_DICT)
+				m_pExtGStates = (CDictObject*)pExtGStates;
 		}
 
 		m_pStream = NULL;

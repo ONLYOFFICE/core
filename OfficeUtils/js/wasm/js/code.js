@@ -37,31 +37,22 @@ window.onload = function()
 		reader.onload = function(e) {
 			if (!window.nativeZlibEngine.open(e.target.result)) return;
 			var files = window.nativeZlibEngine.files;
+			var _files = {};
 			for (var _path in files)
 			{
-				var _file = window.nativeZlibEngine.getFile(_path);
-				window.writeFile(_path, _file);
+				_files[_path] = window.nativeZlibEngine.getFile(_path);
+				window.writeFile(_path, _files[_path]);
 			}
 			window.nativeZlibEngine.close();
 
 			if (!window.nativeZlibEngine.create()) return;
 			for (var _path in files)
 			{
-				window.nativeZlibEngine.addFile(_path, files[_path]);
-				window.nativeZlibEngine.addFile(_path + "new", files[_path]);
+				window.nativeZlibEngine.addFile(_path, _files[_path]);
+				window.nativeZlibEngine.addFile(_path + "new", _files[_path]);
 				window.nativeZlibEngine.removeFile(_path);
 			}
 			var archive = window.nativeZlibEngine.save();
-			window.nativeZlibEngine.close();
-			
-			window.nativeZlibEngine.open(archive);
-			var files2 = window.nativeZlibEngine.files;
-			for (var _path in files2)
-			{
-				window.nativeZlibEngine.getFile(_path);
-				window.nativeZlibEngine.addFile(_path + "new", files2[_path]);
-			}
-			var archive2 = window.nativeZlibEngine.save();
 			window.nativeZlibEngine.close();
 			
 			window.nativeZlibEngine.open(archive2);

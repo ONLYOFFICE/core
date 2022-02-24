@@ -1837,11 +1837,11 @@ namespace OOX
                             case XLSB::rt_CellReal:
                             case XLSB::rt_FmlaNum:
                                 {
-                                    std::wstring str;
+                                    //std::wstring str;
                                     auto pRealNum = XLSB::rt_CellReal == nType ? reinterpret_cast<XLSB::CellReal*>(pSource)->value.data.value : reinterpret_cast<XLSB::FmlaNum*>(pSource)->value.data.value;
                                     if(XLSB::rt_FmlaNum == nType)
                                     {
-                                        str = reinterpret_cast<XLSB::FmlaNum*>(pSource)->formula.getAssembledFormula();
+                                        //str = reinterpret_cast<XLSB::FmlaNum*>(pSource)->formula.getAssembledFormula();
                                     }
                                     //m_oType.Init();
                                     //m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
@@ -1941,22 +1941,22 @@ namespace OOX
 
             auto ptr = static_cast<XLSB::Parenthesis_CELLTABLE*>(obj.get());
 
-            for (auto it = ptr->m_arCELL.begin(); it != ptr->m_arCELL.end(); /* NOTHING */)
+            /*for (auto it = ptr->m_arCELL.begin(); it != ptr->m_arCELL.end();)
             {
               CCell *pCell = new CCell(m_pMainDocument);
               pCell->fromBin(*it);
               m_arrItems.push_back(pCell);
 
               it = ptr->m_arCELL.erase(it);
-            }
+            }*/
 
-            /*for(auto &CELL : obj.m_arCELL)
+            for(auto &CELL : ptr->m_arCELL)
             {
                 CCell *pCell = new CCell(m_pMainDocument);
                 pCell->fromBin(CELL);
 
                 m_arrItems.push_back(pCell);
-            }*/
+            }
         }
 
 		void CRow::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType)
@@ -2439,21 +2439,21 @@ namespace OOX
             //ReadAttributes(obj);
             auto ptr = static_cast<XLSB::CELLTABLE*>(obj.get());
 
-            for (auto it = ptr->m_arParenthesis_CELLTABLE.begin(); it != ptr->m_arParenthesis_CELLTABLE.end(); /* NOTHING */)
+            /*for (auto it = ptr->m_arParenthesis_CELLTABLE.begin(); it != ptr->m_arParenthesis_CELLTABLE.end();)
             {
               CRow *pRow = new CRow(m_pMainDocument);
               pRow->fromBin(*it);
               m_arrItems.push_back(pRow);
 
               it = ptr->m_arParenthesis_CELLTABLE.erase(it);
-            }
-            /*for(auto &Parenthesis_CELLTABLE : ptr->m_arParenthesis_CELLTABLE)
+            }*/
+            for(auto &Parenthesis_CELLTABLE : ptr->m_arParenthesis_CELLTABLE)
             {
                 CRow *pRow = new CRow(m_pMainDocument);
                 pRow->fromBin(Parenthesis_CELLTABLE);
 
                 m_arrItems.push_back(pRow);
-            }*/
+            }
         }
 
         //---------------------------------------------------------------------------------------------------------------------

@@ -345,6 +345,8 @@ namespace PPTX
 						hlinkMouseOver = oReader;
 					else if ( L"rtl" == sName )
 						rtl = oReader;
+					else if (L"highlight" == sName)
+						highlight = oReader;
 					else if (	L"effectDag"	== sName	||
 								L"effectLst"	== sName)
 					{

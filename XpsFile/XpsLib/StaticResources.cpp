@@ -163,6 +163,12 @@ namespace XPS
 				return false;
 		}
 
+#ifndef BUILDING_WASM_MODULE
+        pRenderer->put_BrushType(c_BrushTypeTexture);
+        pRenderer->put_BrushTexturePath(m_wsRoot->getFullFilePath(wsPath));
+        return true;
+#endif
+
 		IFolder::CBuffer* buffer = NULL;
 		m_wsRoot->read(wsPath, buffer);
 		int nBase64BufferLen = NSBase64::Base64EncodeGetRequiredLength(buffer->Size);

@@ -133,7 +133,7 @@
 
 		// проверяем - может мы уже его разжимали?
 		if (null !== this.files[path])
-			return this.files[path];
+			return new Uint8Array(Module["HEAP8"].buffer, this.files[path].p, this.files[path].l);
 
 		var tmp = path.toUtf8();
 		var pointer = Module["_Zlib_Malloc"](tmp.length);
@@ -150,11 +150,10 @@
 		
 		var _lenFile = new Int32Array(Module["HEAP8"].buffer, pointerFile, 4);
 		var len = _lenFile[0];
-		var fileData = new Uint8Array(Module["HEAP8"].buffer, pointerFile + 4, len);
 
 		Module["_Zlib_Free"](pointer);
-		this.files[path] = fileData;
-		return fileData;
+		this.files[path] = { p : pointerFile + 4, l : len};
+		return new Uint8Array(Module["HEAP8"].buffer, pointerFile + 4, len);
 	};
 
 	/**
@@ -191,7 +190,7 @@
 		
 		Module["_Zlib_AddFile"](this.engine, pointer, FileRawData, FileRawDataSize);
 
-		this.files[path] = data;
+		this.files[path] = { p : FileRawData, l : FileRawDataSize};
 		return true;
 	};
 

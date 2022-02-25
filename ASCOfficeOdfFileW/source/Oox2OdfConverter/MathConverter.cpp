@@ -131,7 +131,7 @@ namespace Oox2Odf
 		}*/
 		
 		OPEN_MATH_TAG(elm);
-
+		
 		convert(oox_acc->m_oElement.GetPointer());
 		//convert(oox_acc->m_oAccPr.GetPointer());
 		std::wstring diakSymbol = (oox_acc->m_oAccPr->m_oChr.IsInit()) ? oox_acc->m_oAccPr->m_oChr.get().m_val->GetValue() : L"̂";
@@ -354,7 +354,6 @@ namespace Oox2Odf
 		if (!oox_beg_chr) return L"(";
 
 		std::wstring s_val = oox_beg_chr->m_val->GetValue();
-		brackets()[lvl_of_me()].push_back(s_val);
 		return s_val;
 	}
 
@@ -363,7 +362,6 @@ namespace Oox2Odf
 		if (!oox_end_chr) return L")";
 
 		std::wstring s_val = oox_end_chr->m_val->GetValue();
-		brackets()[lvl_of_me()].push_back(s_val);
 		return s_val;
 	}
 

@@ -2,20 +2,11 @@
 
 namespace MetaFile
 {
-        CPathConverter::CPathConverter() : m_dKoefX(1), m_dKoefY(1)
-        {}
-
-        CPathConverter::CPathConverter(double dKoefX, double dKoefY) : m_dKoefX(dKoefX), m_dKoefY(dKoefY)
+        CPathConverter::CPathConverter()
         {}
 
         CPathConverter::~CPathConverter()
         {}
-
-        void CPathConverter::UpdateKoefs(double dKoefX, double dKoefY)
-        {
-               m_dKoefX = dKoefX;
-               m_dKoefY = dKoefY;
-        }
 
         void CPathConverter::GetUpdatedPath(CEmfPath &oNewPath, CEmfPath &oLineCapPath, const CEmfPath &oPath, const CEmfPlusPen &oPen)
         {
@@ -40,15 +31,18 @@ namespace MetaFile
                                 {
                                         CEmfPathLineTo *pCommandLineTo = (CEmfPathLineTo*)pCommand;
 
-                                        if (AddLineStartCap(oLineCapPath, oPen, oLastPoint.X, oLastPoint.Y))
+                                        double dAngle = -90 + (atan((pCommandLineTo->y - oLastPoint.Y) /
+                                                                    (pCommandLineTo->x - oLastPoint.X)) * 180 / 3.14);
+
+                                        if (AddLineStartCap(oLineCapPath, oPen, oLastPoint.X, oLastPoint.Y, dAngle + 180))
                                                 oNewPath.MoveTo(oLastPoint.X, oLastPoint.Y);
 
                                         oLastPoint.X = pCommandLineTo->x;
                                         oLastPoint.Y = pCommandLineTo->y;
 
-                                        AddLineEndCap(oLineCapPath, oPen, oLastPoint.X, oLastPoint.Y);
+                                        AddLineEndCap(oLineCapPath, oPen, oLastPoint.X, oLastPoint.Y, dAngle);
 
-                                        oNewPath.LineTo(oLastPoint.X, oLastPoint.Y);
+                                        oNewPath.LineTo(oLastPoint.X,  oLastPoint.Y);
 
                                         break;
                                 }
@@ -70,33 +64,33 @@ namespace MetaFile
 
         }
 
-        bool CPathConverter::AddLineStartCap(CEmfPath &oPath, const CEmfPlusPen &oPen, double& dX, double& dY)
+        bool CPathConverter::AddLineStartCap(CEmfPath &oPath, const CEmfPlusPen &oPen, double& dX, double& dY, double dAngle)
         {
                 if (NULL != oPen.LineStartCapData)
                 {
                         if (CustomLineCapDataTypeDefault == oPen.LineStartCapData->GetType() && NULL != ((TEmfPlusCustomLineCapData*)oPen.LineStartCapData)->pPath)
                         {
-                                return AddLineCap(oPath, ((TEmfPlusCustomLineCapData*)oPen.LineStartCapData)->pPath, dX, dY, 180);
+                                return AddLineCap(oPath, ((TEmfPlusCustomLineCapData*)oPen.LineStartCapData)->pPath, dX, dY, dAngle, oPen.Width);
                         }
                 }
 
                 return false;
         }
 
-        bool CPathConverter::AddLineEndCap(CEmfPath &oPath, const CEmfPlusPen &oPen, double &dX, double &dY)
+        bool CPathConverter::AddLineEndCap(CEmfPath &oPath, const CEmfPlusPen &oPen, double &dX, double &dY, double dAngle)
         {
                 if (NULL != oPen.LineEndCapData)
                 {
                         if (CustomLineCapDataTypeDefault == oPen.LineEndCapData->GetType() && NULL != ((TEmfPlusCustomLineCapData*)oPen.LineEndCapData)->pPath)
                         {
-                                return AddLineCap(oPath, ((TEmfPlusCustomLineCapData*)oPen.LineEndCapData)->pPath, dX, dY, 0);
+                                return AddLineCap(oPath, ((TEmfPlusCustomLineCapData*)oPen.LineEndCapData)->pPath, dX, dY, dAngle, oPen.Width);
                         }
                 }
 
                 return false;
         }
 
-        bool CPathConverter::AddLineCap(CEmfPath &oPath, const CEmfPath &oLineCapPath, double &dX, double &dY, double dAngle)
+        bool CPathConverter::AddLineCap(CEmfPath &oPath, const CEmfPath &oLineCapPath, double &dX, double &dY, double dAngle, double dPenWidth)
         {
                 double dNewX = 0;
                 double dNewY = 0;
@@ -113,11 +107,11 @@ namespace MetaFile
                                 {
                                         CEmfPathMoveTo *pCommandMoveTo = (CEmfPathMoveTo*)pCommand;
 
-                                        double dTempX = pCommandMoveTo->x / m_dKoefX * dCos - pCommandMoveTo->y / m_dKoefY * dSin;
-                                        double dTempY = pCommandMoveTo->x / m_dKoefY * dSin + pCommandMoveTo->y / m_dKoefY * dCos;
+                                        double dTempX = pCommandMoveTo->x * dPenWidth * dCos - pCommandMoveTo->y * dPenWidth * dSin;
+                                        double dTempY = pCommandMoveTo->x * dPenWidth * dSin + pCommandMoveTo->y * dPenWidth * dCos;
 
-                                        dNewX += dX + dTempX;
-                                        dNewY += dY + dTempY;
+                                        dNewX += dTempX;
+                                        dNewY += dTempY;
 
                                         oPath.MoveTo(dX + dTempX, dY + dTempY);
                                         break;
@@ -126,8 +120,11 @@ namespace MetaFile
                                 {
                                         CEmfPathLineTo *pCommandLineTo = (CEmfPathLineTo*)pCommand;
 
-                                        double dTempX = pCommandLineTo->x / m_dKoefX * dCos - pCommandLineTo->y / m_dKoefY * dSin;
-                                        double dTempY = pCommandLineTo->x / m_dKoefY * dSin + pCommandLineTo->y / m_dKoefY * dCos;
+                                        double dTempX = pCommandLineTo->x * dPenWidth * dCos - pCommandLineTo->y * dPenWidth * dSin;
+                                        double dTempY = pCommandLineTo->x * dPenWidth * dSin + pCommandLineTo->y * dPenWidth * dCos;
+
+                                        dNewX += dTempX;
+                                        dNewY += dTempY;
 
                                         oPath.LineTo(dX + dTempX, dY + dTempY);
                                         break;
@@ -148,10 +145,10 @@ namespace MetaFile
                         }
                 }
 
-                if (!oPath.m_pCommands.empty())
+                if (oPath.m_pCommands.size() > 1)
                 {
-                        dX = dNewX;
-                        dY = dNewY;
+                        dX = dX + dNewX / (oPath.m_pCommands.size() - 1);
+                        dY = dY + dNewY / (oPath.m_pCommands.size() - 1);
 
                         return true;
                 }

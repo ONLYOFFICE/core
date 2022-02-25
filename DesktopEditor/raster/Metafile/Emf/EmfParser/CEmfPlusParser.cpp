@@ -715,6 +715,8 @@ namespace MetaFile
 
 			m_oStream >> unCustomStartCapSize;
 
+			unsigned int unStart = m_oStream.Tell();
+
 			m_oStream.Skip(4); //Version
 
 			int nType;
@@ -745,7 +747,7 @@ namespace MetaFile
 				pEmfPlusPen->LineStartCapData = pLineCapData;
 			}
 
-//			m_oStream.Skip(unCustomStartCapSize); // EmfPlusCustomStartCapData object
+			m_oStream.Skip(unCustomStartCapSize - (m_oStream.Tell() - unStart));
 		}
 		if (unFlags & PEN_DATA_CUSTOMENDCAP)
 		{
@@ -753,6 +755,8 @@ namespace MetaFile
 
 			m_oStream >> unCustomEndCapSize;
 
+			unsigned int unStart = m_oStream.Tell();
+
 			m_oStream.Skip(4); //Version
 
 			int nType;
@@ -782,6 +786,8 @@ namespace MetaFile
 
 				pEmfPlusPen->LineEndCapData = pLineCapData;
 			}
+
+			m_oStream.Skip(unCustomEndCapSize - (m_oStream.Tell() - unStart));
 		}
 
 		pEmfPlusPen->Brush = ReadBrush();
@@ -901,8 +907,6 @@ namespace MetaFile
                         }
 
                         return pPath;
-
-                        return NULL;
                 }
                 else
                 {
@@ -1882,7 +1886,7 @@ namespace MetaFile
                         if (NULL != pEmfPlusPen->Brush)
                                 m_pDC->SetBrush(pEmfPlusPen->Brush);
 
-                        CPathConverter oPathConverter(m_pDC->GetTransform()->M11 * 25.4 / m_unLogicalDpiX, m_pDC->GetTransform()->M22 * 25.4 / m_unLogicalDpiX);
+                        CPathConverter oPathConverter;
                         CEmfPath oNewPath, oLineCapPath;
 
                         oPathConverter.GetUpdatedPath(oNewPath, oLineCapPath, *pPath, *pEmfPlusPen);

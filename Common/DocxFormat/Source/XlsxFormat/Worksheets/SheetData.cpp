@@ -1807,7 +1807,7 @@ namespace OOX
                             case XLSB::rt_CellError:
                             case XLSB::rt_FmlaError:
                                 {
-                                    auto pError = XLSB::rt_CellError == nType ? reinterpret_cast<XLSB::CellError*>(pSource)->value : reinterpret_cast<XLSB::FmlaError*>(pSource)->value;
+                                    auto pError = XLSB::rt_CellError == nType ? static_cast<XLSB::CellError*>(pSource)->value : static_cast<XLSB::FmlaError*>(pSource)->value;
                                     m_oType.Init();
                                     m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeError);
                                     m_oValue.Init();
@@ -1827,7 +1827,7 @@ namespace OOX
                             case XLSB::rt_CellBool:
                             case XLSB::rt_FmlaBool:
                                 {
-                                    auto pBool = XLSB::rt_CellBool == nType ? reinterpret_cast<XLSB::CellBool*>(pSource)->value : reinterpret_cast<XLSB::FmlaBool*>(pSource)->value;
+                                    auto pBool = XLSB::rt_CellBool == nType ? static_cast<XLSB::CellBool*>(pSource)->value : static_cast<XLSB::FmlaBool*>(pSource)->value;
                                     m_oType.Init();
                                     m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeBool);
                                     m_oValue.Init();
@@ -1838,10 +1838,10 @@ namespace OOX
                             case XLSB::rt_FmlaNum:
                                 {
                                     //std::wstring str;
-                                    auto pRealNum = XLSB::rt_CellReal == nType ? reinterpret_cast<XLSB::CellReal*>(pSource)->value.data.value : reinterpret_cast<XLSB::FmlaNum*>(pSource)->value.data.value;
+                                    auto pRealNum = XLSB::rt_CellReal == nType ? static_cast<XLSB::CellReal*>(pSource)->value.data.value : static_cast<XLSB::FmlaNum*>(pSource)->value.data.value;
                                     if(XLSB::rt_FmlaNum == nType)
                                     {
-                                        //str = reinterpret_cast<XLSB::FmlaNum*>(pSource)->formula.getAssembledFormula();
+                                        //str = static_cast<XLSB::FmlaNum*>(pSource)->formula.getAssembledFormula();
                                     }
                                     //m_oType.Init();
                                     //m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
@@ -1861,7 +1861,9 @@ namespace OOX
                             case XLSB::rt_CellSt:
                             case XLSB::rt_FmlaString:
                                 {
-                                    auto pSt = XLSB::rt_CellSt == nType ? reinterpret_cast<XLSB::CellSt*>(pSource)->value.value() : reinterpret_cast<XLSB::FmlaString*>(pSource)->value.value();
+                                    std::wstring pSt = L"";
+                                    if(!(XLSB::rt_CellSt == nType ? static_cast<XLSB::CellSt*>(pSource)->value.value() : static_cast<XLSB::FmlaString*>(pSource)->value.value()).empty())
+                                         pSt = XLSB::rt_CellSt == nType ? static_cast<XLSB::CellSt*>(pSource)->value.value() : static_cast<XLSB::FmlaString*>(pSource)->value.value();
                                     m_oType.Init();
                                     m_oType->SetValue(XLSB::rt_CellSt == nType ? SimpleTypes::Spreadsheet::celltypeInlineStr : SimpleTypes::Spreadsheet::celltypeStr);
                                     m_oValue.Init();
@@ -1941,22 +1943,22 @@ namespace OOX
 
             auto ptr = static_cast<XLSB::Parenthesis_CELLTABLE*>(obj.get());
 
-            /*for (auto it = ptr->m_arCELL.begin(); it != ptr->m_arCELL.end();)
+            for (auto it = ptr->m_arCELL.begin(); it != ptr->m_arCELL.end();)
             {
               CCell *pCell = new CCell(m_pMainDocument);
               pCell->fromBin(*it);
               m_arrItems.push_back(pCell);
 
               it = ptr->m_arCELL.erase(it);
-            }*/
+            }
 
-            for(auto &CELL : ptr->m_arCELL)
+            /*for(auto &CELL : ptr->m_arCELL)
             {
                 CCell *pCell = new CCell(m_pMainDocument);
                 pCell->fromBin(CELL);
 
                 m_arrItems.push_back(pCell);
-            }
+            }*/
         }
 
 		void CRow::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType)
@@ -2439,21 +2441,22 @@ namespace OOX
             //ReadAttributes(obj);
             auto ptr = static_cast<XLSB::CELLTABLE*>(obj.get());
 
-            /*for (auto it = ptr->m_arParenthesis_CELLTABLE.begin(); it != ptr->m_arParenthesis_CELLTABLE.end();)
+            for (auto it = ptr->m_arParenthesis_CELLTABLE.begin(); it != ptr->m_arParenthesis_CELLTABLE.end();)
             {
               CRow *pRow = new CRow(m_pMainDocument);
               pRow->fromBin(*it);
               m_arrItems.push_back(pRow);
 
               it = ptr->m_arParenthesis_CELLTABLE.erase(it);
-            }*/
-            for(auto &Parenthesis_CELLTABLE : ptr->m_arParenthesis_CELLTABLE)
+            }
+
+            /*for(auto &Parenthesis_CELLTABLE : ptr->m_arParenthesis_CELLTABLE)
             {
                 CRow *pRow = new CRow(m_pMainDocument);
                 pRow->fromBin(Parenthesis_CELLTABLE);
 
                 m_arrItems.push_back(pRow);
-            }
+            }*/
         }
 
         //---------------------------------------------------------------------------------------------------------------------

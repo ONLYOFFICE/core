@@ -808,7 +808,19 @@ namespace OOX
 					toXML(sXml);
 				toXMLEnd(sXml);
 
-				NSFile::CFileBinary::SaveToFile(oPath.GetPath(), sXml.GetData());
+                //NSFile::CFileBinary::SaveToFile(oPath.GetPath(), sXml.GetData());
+
+                BYTE* pData = NULL;
+                LONG lLen = 0;
+
+                NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.GetBuffer(), (LONG)sXml.GetCurSize(), pData, lLen);
+
+                NSFile::CFileBinary oFile;
+                oFile.CreateFileW(oPath.GetPath());
+                oFile.WriteFile(pData, lLen);
+                oFile.CloseFile();
+
+                RELEASEARRAYOBJECTS(pData);
 
 				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 				IFileContainer::Write( oPath, oDirectory, oContent );

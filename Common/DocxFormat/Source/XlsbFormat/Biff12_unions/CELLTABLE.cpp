@@ -72,12 +72,16 @@ namespace XLSB
         }*/
 
         int countParenthesis_CELLTABLE = proc.repeated(cell_group, 0, 1048576);
-        while(countParenthesis_CELLTABLE > 0)
+
+        m_arParenthesis_CELLTABLE.reserve(countParenthesis_CELLTABLE);
+        std::move(std::begin(elements_), std::end(elements_), std::back_inserter(m_arParenthesis_CELLTABLE));
+
+        /*while(countParenthesis_CELLTABLE > 0)
         {
             m_arParenthesis_CELLTABLE.insert(m_arParenthesis_CELLTABLE.begin(), elements_.back());
             elements_.pop_back();
             countParenthesis_CELLTABLE--;
-        }
+        }*/
 
         if (proc.optional<EndSheetData>())
         {
@@ -125,12 +129,15 @@ namespace XLSB
 
         int countCELL = proc.repeated(cell, 0, 16384);
 
-        while(countCELL > 0)
+        /*while(countCELL > 0)
         {
             m_arCELL.insert(m_arCELL.begin(), elements_.back());
             elements_.pop_back();
             countCELL--;
-        }
+        }*/
+
+        m_arCELL.reserve(countCELL);
+        std::move(std::begin(elements_), std::end(elements_), std::back_inserter(m_arCELL));
 
         int countFRT = proc.repeated<FRT>(0, 0);
 

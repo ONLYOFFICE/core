@@ -809,18 +809,39 @@ namespace OOX
 				toXMLEnd(sXml);
 
                 //NSFile::CFileBinary::SaveToFile(oPath.GetPath(), sXml.GetData());
+                //for memory optimization fro large files
 
-                BYTE* pData = NULL;
+                wchar_t* pXmlData = sXml.GetBuffer();
+                LONG lwcharLen = (LONG)sXml.GetCurSize();
+                const LONG lcurrentLen = 10485760; //10 Mbyte
+                LONG nCycles = lwcharLen / lcurrentLen;
+
                 LONG lLen = 0;
-
-                NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.GetBuffer(), (LONG)sXml.GetCurSize(), pData, lLen);
-
+                BYTE* pData = NULL;
                 NSFile::CFileBinary oFile;
                 oFile.CreateFileW(oPath.GetPath());
-                oFile.WriteFile(pData, lLen);
-                oFile.CloseFile();
 
-                RELEASEARRAYOBJECTS(pData);
+                while(nCycles--)
+                {
+                    NSFile::CUtf8Converter::GetUtf8StringFromUnicode(pXmlData, lcurrentLen, pData, lLen);
+
+                    oFile.WriteFile(pData, lLen);
+
+                    pXmlData += lcurrentLen;
+
+                    RELEASEARRAYOBJECTS(pData);
+                }
+
+                if(lwcharLen % lcurrentLen > 0)
+                {
+                    NSFile::CUtf8Converter::GetUtf8StringFromUnicode(pXmlData, lwcharLen % lcurrentLen, pData, lLen);
+
+                    oFile.WriteFile(pData, lLen);
+
+                    RELEASEARRAYOBJECTS(pData);
+                }
+
+                oFile.CloseFile();
 
 				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 				IFileContainer::Write( oPath, oDirectory, oContent );

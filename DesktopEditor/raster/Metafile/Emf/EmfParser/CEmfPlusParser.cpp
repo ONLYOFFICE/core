@@ -2375,9 +2375,6 @@ namespace MetaFile
                         {
                                 LOGGING(L"Object Pen with index: " << shObjectIndex)
 
-                                if (10 == shObjectIndex)
-                                        LOGGING(L"TEST")
-
                                 CEmfPlusPen *pEmfPlusPen = ReadPen();
 
                                 RegisterObject(pEmfPlusPen, shObjectIndex);

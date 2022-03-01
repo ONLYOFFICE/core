@@ -48,10 +48,22 @@ namespace MetaFile
                                 }
                                 case EMF_PATHCOMMAND_CURVETO:
                                 {
+                                        CEmfPathCurveTo *pCommandCurveTo = (CEmfPathCurveTo*)pCommand;
+
+                                        oNewPath.CurveTo(pCommandCurveTo->x1, pCommandCurveTo->y1,
+                                                         pCommandCurveTo->x2, pCommandCurveTo->y2,
+                                                         pCommandCurveTo->xE, pCommandCurveTo->yE);
+
                                         break;
                                 }
                                 case EMF_PATHCOMMAND_ARCTO:
                                 {
+                                        CEmfPathArcTo *pCommandArcTo = (CEmfPathArcTo*)pCommand;
+
+                                        oNewPath.ArcTo(pCommandArcTo->left,  pCommandArcTo->top,
+                                                       pCommandArcTo->right, pCommandArcTo->bottom,
+                                                       pCommandArcTo->start, pCommandArcTo->sweep);
+
                                         break;
                                 }
                                 case EMF_PATHCOMMAND_CLOSE:

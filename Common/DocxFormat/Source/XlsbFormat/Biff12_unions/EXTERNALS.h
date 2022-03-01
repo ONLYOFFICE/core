@@ -50,7 +50,7 @@ namespace XLSB
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
 		XLS::BaseObjectPtr               m_BrtBeginExternals;
-        std::vector<XLS::BaseObjectPtr>	m_arSUP;
+        std::vector<XLS::BaseObjectPtr>  m_arSUP;
 		XLS::BaseObjectPtr               m_BrtExternSheet;
 		XLS::BaseObjectPtr               m_BrtEndExternals;
 

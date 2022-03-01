@@ -59,6 +59,7 @@ namespace XLSB
         {
             record >> str;
             sheetNames.push_back(str);
+            record.getGlobalWorkbookInfo()->external_sheets_info.push_back(str.value());
         }
 
     }

@@ -127,7 +127,7 @@ namespace OOX
 			else if ( oRelation.Type() == FileTypes::WorkbookComments)
 				return smart_ptr<OOX::File>(new WorkbookComments( pMain, oRootPath, oFileName));			
 			else if ( oRelation.Type() == FileTypes::ExternalLinks )
-				return smart_ptr<OOX::File>(new CExternalLink( pMain, oRootPath, oFileName ));
+                return smart_ptr<OOX::File>(new CExternalLink( pMain, oRootPath, oFileName, oRelation.rId().ToString() ));
 			else if ( oRelation.Type() == FileTypes::Connections )
 				return smart_ptr<OOX::File>(new CConnectionsFile( pMain, oRootPath, oFileName ));
 			
@@ -264,7 +264,7 @@ namespace OOX
 			else if ( pRelation->Type() == OOX::FileTypes::ChartColors )
 				return smart_ptr<OOX::File>(new CChartColorsFile( pMain, oRootPath, oFileName ));
 			else if ( pRelation->Type() == FileTypes::ExternalLinks )
-				return smart_ptr<OOX::File>(new CExternalLink( pMain, oRootPath, oFileName ));
+                return smart_ptr<OOX::File>(new CExternalLink( pMain, oRootPath, oFileName, pRelation->rId().ToString() ));
 			else if (  pRelation->Type() == OOX::FileTypes::ExternalLinkPath || 
 					  pRelation->Type() == OOX::FileTypes::ExternalLinkPathMissing || 
 					  pRelation->Type() == OOX::FileTypes::ExternalLinkPathStartup || 

@@ -69,18 +69,20 @@ void Format::readFields(CFRecord& record)
 			record >> ifmt;
 	}
 
-	XLUnicodeString format;
 	if (global_info->Version < 0x0600)
 	{
-		ShortXLAnsiString name;
-		record >> name;
+		ShortXLAnsiString format;
+		record >> format;
 		
-		format = name;
+		stFormat = XmlUtils::DeleteNonUnicode(format.value());
 	}
 	else
+	{
+		XLUnicodeString format;
 		record >> format;
 
-	stFormat = format.value();
+		stFormat = format.value();
+	}
 }
 
 int Format::serialize(std::wostream & stream)

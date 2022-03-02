@@ -104,8 +104,6 @@ void BOF::readFields(CFRecord& record)
 		}
 		else
 		{ //ts_2500_06_gruzi 05 06 вып.xls
-			record.getGlobalWorkbookInfo()->Version = 0x0501; 
-			
 			if (record.getGlobalWorkbookInfo()->CodePage == 0 && record.getGlobalWorkbookInfo()->lcid_user > 0)
 			{
 				record.getGlobalWorkbookInfo()->CodePage = msLCID2DefCodePage(record.getGlobalWorkbookInfo()->lcid_user);

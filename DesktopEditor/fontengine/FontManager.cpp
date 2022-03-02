@@ -882,11 +882,13 @@ CFontFile* CFontManager::GetFontFileBySymbol(CFontFile* pFile, int code)
         nStyle |= 2;
 
     CFontsCache* pCache = (CFontsCache*)GetCache();
-    pCache->m_pSafeFont = pFile;
+    if (pCache)
+        pCache->m_pSafeFont = pFile;
 
     LoadFontByName(sName, pFile->m_dSize, nStyle, pFile->m_unHorDpi, pFile->m_unVerDpi);
 
-    pCache->m_pSafeFont = NULL;
+    if (pCache)
+        pCache->m_pSafeFont = NULL;
 
     if (!m_pFont)
     {

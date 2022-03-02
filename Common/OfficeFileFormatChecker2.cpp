@@ -1011,9 +1011,13 @@ std::wstring COfficeFileFormatChecker::GetExtensionByType(int type)
     return L"";
 }
 
-int COfficeFileFormatChecker::GetFormatByExtension(const std::wstring& ext)
+int COfficeFileFormatChecker::GetFormatByExtension(const std::wstring& sExt)
 {
-    if (L".docx" == ext)
+	std::wstring ext;
+	ext.resize(sExt.size());
+	std::transform(sExt.begin(), sExt.end(), ext.begin(), tolower);
+	
+	if (L".docx" == ext)
         return AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
 	if (L".oform" == ext)
 		return AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM;
@@ -1109,7 +1113,13 @@ int COfficeFileFormatChecker::GetFormatByExtension(const std::wstring& ext)
     if (L".xps" == ext)
         return AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS;
 
-    return 0;
+	if (L".doct" == ext)
+		return AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY;
+	if (L".xlst" == ext)
+		return AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY;
+	if (L".pptt" == ext)
+		return AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY;
+	return 0;
 }
 
 std::wstring COfficeFileFormatChecker::GetFormatExtension(const std::wstring & fileName)

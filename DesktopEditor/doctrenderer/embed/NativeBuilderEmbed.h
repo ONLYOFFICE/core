@@ -50,7 +50,7 @@ public:
     JSSmart<CJSValue> builder_OpenFile(JSSmart<CJSValue> sPath, JSSmart<CJSValue> sParams);
     JSSmart<CJSValue> builder_CreateFile(JSSmart<CJSValue> type);
     JSSmart<CJSValue> builder_SetTmpFolder(JSSmart<CJSValue> path);
-    JSSmart<CJSValue> builder_SaveFile(JSSmart<CJSValue> t, JSSmart<CJSValue> path, JSSmart<CJSValue> params);
+    JSSmart<CJSValue> builder_SaveFile(JSSmart<CJSValue> type, JSSmart<CJSValue> path, JSSmart<CJSValue> params);
     JSSmart<CJSValue> builder_CloseFile();
     JSSmart<CJSValue> builder_OpenTmpFile(JSSmart<CJSValue> path, JSSmart<CJSValue> params);
 };

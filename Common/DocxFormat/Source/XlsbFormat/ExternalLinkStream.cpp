@@ -106,7 +106,7 @@ void ExternalLinkStream::UpdateXti(XLS::GlobalWorkbookInfo* global_info_, const 
                        strRange += std::wstring(L":") + XMLSTUFF::name2sheet_name(global_info_->external_sheets_info[xti.itabLast], L"");
                    }
                }
-               xti.link = strRange;
+               xti.link = std::wstring(L"[") + std::to_wstring(xti.iSup) + std::wstring(L"]") + strRange;
            }
        }
     }

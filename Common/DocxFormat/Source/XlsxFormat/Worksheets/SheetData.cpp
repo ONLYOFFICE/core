@@ -900,8 +900,8 @@ namespace OOX
                     {
                         auto formula = dynamic_cast<XLSB::FmlaBase*>(obj.get());
                         m_sText = formula->formula.getAssembledFormula();
-                        m_oCa.Init();
-                        m_oCa = formula->grbitFlags.fAlwaysCalc;
+                        //m_oCa.Init();
+                        //m_oCa = formula->grbitFlags.fAlwaysCalc;
                     }
                     break;
                 case SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeShared:

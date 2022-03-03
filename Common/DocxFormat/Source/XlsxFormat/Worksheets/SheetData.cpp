@@ -916,8 +916,11 @@ namespace OOX
                     {
                         auto formula = dynamic_cast<XLSB::ArrFmla*>(obj.get());
                         m_sText = formula->formula.getAssembledFormula();
-                        m_oAca.Init();
-                        m_oAca = formula->fAlwaysCalc;
+                        if(formula->fAlwaysCalc)
+                        {
+                            m_oAca.Init();
+                            m_oAca = formula->fAlwaysCalc;
+                        }
                         m_oRef.Init();
                         m_oRef = formula->rfx.toString();
                     }
@@ -927,23 +930,38 @@ namespace OOX
                         auto dataTable = dynamic_cast<XLSB::Table*>(obj.get());
                         //m_sText = dataTable->formula.getAssembledFormula();
 
-                        m_oCa.Init();
-                        m_oCa = dataTable->fAlwaysCalc;
+                        if(dataTable->fAlwaysCalc)
+                        {
+                            m_oCa.Init();
+                            m_oCa = dataTable->fAlwaysCalc;
+                        }
 
                         m_oRef.Init();
                         m_oRef = dataTable->rfx.toString();
 
-                        m_oDtr.Init();
-                        m_oDtr = dataTable->fRw;
+                        if(dataTable->fRw)
+                        {
+                            m_oDtr.Init();
+                            m_oDtr = dataTable->fRw;
+                        }
 
-                        m_oDt2D.Init();
-                        m_oDt2D = dataTable->fTbl2;
+                        if(dataTable->fTbl2)
+                        {
+                            m_oDt2D.Init();
+                            m_oDt2D = dataTable->fTbl2;
+                        }
 
-                        m_oDel1.Init();
-                        m_oDel1 = dataTable->fDeleted1;
+                        if(dataTable->fDeleted1)
+                        {
+                            m_oDel1.Init();
+                            m_oDel1 = dataTable->fDeleted1;
+                        }
 
-                        m_oDel2.Init();
-                        m_oDel2 = dataTable->fDeleted2;
+                        if(dataTable->fDeleted2)
+                        {
+                            m_oDel2.Init();
+                            m_oDel2 = dataTable->fDeleted2;
+                        }
 
                         m_oR1.Init();
                         m_oR1 = dataTable->r1;
@@ -1695,12 +1713,12 @@ namespace OOX
                 if(pCELLMETA != nullptr)
                 {
                     auto pCellMeta = static_cast<XLSB::CellMeta*>(pCELLMETA->m_BrtCellMeta.get());
-                    if(pCellMeta != nullptr)
+                    if(pCellMeta != nullptr && pCellMeta->icmb)
                         m_oCellMetadata = pCellMeta->icmb;
 
                     auto pValueMeta = static_cast<XLSB::ValueMeta*>(pCELLMETA->m_BrtValueMeta.get());
-                    if(pValueMeta != nullptr)
-                        m_oCellMetadata = pValueMeta->ivmb;
+                    if(pValueMeta != nullptr && pValueMeta->ivmb)
+                        m_oValueMetadata = pValueMeta->ivmb;
                 }
 
                 XLSB::DATACELL* pDATACELL = nullptr;
@@ -1788,8 +1806,10 @@ namespace OOX
 
                     if(pSource != nullptr)
                     {
-                        m_oShowPhonetic = oCell.fPhShow;
-                        m_oStyle        = oCell.iStyleRef;
+                        if(oCell.fPhShow)
+                            m_oShowPhonetic = oCell.fPhShow;
+                        if(oCell.iStyleRef)
+                            m_oStyle        = oCell.iStyleRef;
                         auto nType = pSource->getTypeId();
                         switch (nType)
                         {
@@ -2170,17 +2190,36 @@ namespace OOX
                 auto ptrRowHdr = static_cast<XLSB::RowHdr*>(ptr->m_BrtRowHdr.get());
                 if(ptrRowHdr != nullptr)
                 {
-                    m_oCollapsed                = ptrRowHdr->fCollapsed;
-                    m_oCustomFormat             = ptrRowHdr->fGhostDirty;
-                    m_oCustomHeight             = ptrRowHdr->fUnsynced;
-                    m_oHidden                   = ptrRowHdr->fDyZero;
-                    m_oHt                       = ptrRowHdr->miyRw/20.;
-                    m_oOutlineLevel             = ptrRowHdr->iOutLevel;
-                    m_oPh                       = ptrRowHdr->fPhonetic;
-                    m_oR                        = ptrRowHdr->rw + 1;
-                    m_oS                        = ptrRowHdr->ixfe_val;
-                    m_oThickBot                 = ptrRowHdr->fExDes;
-                    m_oThickTop                 = ptrRowHdr->fExAsc;
+                    if(ptrRowHdr->fCollapsed)
+                        m_oCollapsed                = ptrRowHdr->fCollapsed;
+
+                    if(ptrRowHdr->fGhostDirty)
+                        m_oCustomFormat             = ptrRowHdr->fGhostDirty;
+
+                    if(ptrRowHdr->fUnsynced)
+                        m_oCustomHeight             = ptrRowHdr->fUnsynced;
+
+                    if(ptrRowHdr->fDyZero)
+                        m_oHidden                   = ptrRowHdr->fDyZero;
+
+                    m_oHt                           = ptrRowHdr->miyRw/20.;
+
+                    if(ptrRowHdr->iOutLevel)
+                        m_oOutlineLevel             = ptrRowHdr->iOutLevel;
+
+                    if(ptrRowHdr->fPhonetic)
+                        m_oPh                       = ptrRowHdr->fPhonetic;
+
+                    m_oR                            = ptrRowHdr->rw + 1;
+
+                    if(ptrRowHdr->ixfe_val)
+                        m_oS                        = ptrRowHdr->ixfe_val;
+
+                    if(ptrRowHdr->ixfe_val)
+                        m_oThickBot                 = ptrRowHdr->fExDes;
+
+                    if(ptrRowHdr->ixfe_val)
+                        m_oThickTop                 = ptrRowHdr->fExAsc;
                 }
 
 

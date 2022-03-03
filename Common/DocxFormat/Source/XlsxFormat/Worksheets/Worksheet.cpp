@@ -59,6 +59,7 @@ namespace OOX
 			m_pComments = NULL;
 			m_pThreadedComments = NULL;
             m_bIsChartSheet = false;
+            bIsWritten = false;
 
 			CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
 			if (xlsx)
@@ -78,6 +79,7 @@ namespace OOX
 			m_pComments = NULL;
 			m_pThreadedComments = NULL;
             m_bIsChartSheet = isChartSheet;
+            bIsWritten = false;
 
 			CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
 			if (xlsx)
@@ -799,7 +801,10 @@ namespace OOX
 			}
 		}
 		void CWorksheet::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
-		{
+        {
+            if (bIsWritten) return;
+
+            bIsWritten = true;
 			if (!m_bWriteDirectlyToFile)
 			{
 				NSStringUtils::CStringBuilder sXml;

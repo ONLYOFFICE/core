@@ -1073,10 +1073,12 @@ namespace NExtractTools
 			OOX::Spreadsheet::CXlsb oXlsb;
 			oXlsb.ReadNative(OOX::CPath(sTempUnpackedXLSB));
             oXlsb.PrepareSi();
-            oXlsb.ReadSheetData();
             oXlsb.PrepareTableFormula();
 
-			OOX::CContentTypes oContentTypes;
+            OOX::CContentTypes oContentTypes;
+            oXlsb.SetPropForWriteSheet(sTo, oContentTypes);
+            oXlsb.ReadSheetData(true);
+
 			nRes = oXlsb.WriteNative(sTo, oContentTypes) ? S_OK : AVS_FILEUTILS_ERROR_CONVERT;
 		}
 		return nRes;

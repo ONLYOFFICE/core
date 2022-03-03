@@ -65,7 +65,9 @@ namespace OOX
             XLS::GlobalWorkbookInfo* GetGlobalinfo();
             void PrepareSi();
             void PrepareTableFormula();
-            void ReadSheetData();
+            void ReadSheetData(bool isWriteSheetToXlsx = false);
+            void SetPropForWriteSheet(const std::wstring &sPath, OOX::CContentTypes& oContentTypes);
+            void WriteSheet(CWorksheet* worksheet);
 
             std::unordered_map<std::wstring, _UINT32> m_mapSheetNameSheetData;
         private:
@@ -75,6 +77,8 @@ namespace OOX
             boost::shared_ptr<NSBinPptxRW::CBinaryFileReader> m_binaryReader;
 
             unsigned short workbook_code_page;
+            std::wstring m_sPath;
+            OOX::CContentTypes m_oContentTypes;
 
         };
 

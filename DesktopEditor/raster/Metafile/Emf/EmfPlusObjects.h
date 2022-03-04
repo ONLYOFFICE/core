@@ -70,6 +70,7 @@ namespace MetaFile
 
         typedef  enum
         {
+                MetafileDataTypeUnknown         = 0x00,
                 MetafileDataTypeWmf             = 0x01,
                 MetafileDataTypeWmfPlaceable    = 0x02,
                 MetafileDataTypeEmf             = 0x03,
@@ -398,7 +399,8 @@ namespace MetaFile
         {
             public:
                 CEmfPlusImage() : CEmfPlusObject(), m_pImageBuffer(NULL), m_ulPosition(0),
-                                  m_ulFullSize(0), m_eImageDataType(ImageDataTypeUnknown){};
+                                  m_ulFullSize(0), m_eImageDataType(ImageDataTypeUnknown),
+                                  m_eMetafileDataType(MetafileDataTypeUnknown){};
                 virtual ~CEmfPlusImage()
                 {
                         if (NULL != m_pImageBuffer)
@@ -421,6 +423,25 @@ namespace MetaFile
                 EEmfPlusImageDataType GetImageDataType() const
                 {
                         return m_eImageDataType;
+                }
+
+                bool SetMetafileType(unsigned int unType)
+                {
+                        switch (unType)
+                        {
+                                case 1: m_eMetafileDataType = MetafileDataTypeWmf;              return true;
+                                case 2: m_eMetafileDataType = MetafileDataTypeWmfPlaceable;     return true;
+                                case 3: m_eMetafileDataType = MetafileDataTypeEmf;              return true;
+                                case 4: m_eMetafileDataType = MetafileDataTypeEmfPlusOnly;      return true;
+                                case 5: m_eMetafileDataType = MetafileDataTypeEmfPlusDual;      return true;
+                                default:m_eMetafileDataType = MetafileDataTypeUnknown;          return false;
+                        }
+
+                }
+
+                EEmfPlusMetafileDataType GetMetafileType() const
+                {
+                        return m_eMetafileDataType;
                 }
 
                 void SetSizeData(unsigned int unSize)
@@ -465,7 +486,8 @@ namespace MetaFile
                 ULONG m_ulPosition;
                 ULONG m_ulFullSize;
 
-                EEmfPlusImageDataType m_eImageDataType;
+                EEmfPlusImageDataType    m_eImageDataType;
+                EEmfPlusMetafileDataType m_eMetafileDataType;
         };
 
         typedef  enum

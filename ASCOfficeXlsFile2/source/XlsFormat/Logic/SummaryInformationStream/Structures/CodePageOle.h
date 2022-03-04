@@ -32,6 +32,7 @@
 #pragma once
 #include "Property.h"
 #include "../../../../../../Common/DocxFormat/Source/Base/Types_32.h"
+#include <string>
 
 namespace OLEPS
 {

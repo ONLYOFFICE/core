@@ -897,6 +897,9 @@ namespace MetaFile
 
 			double dWidth = pPen->GetWidth() * m_dScaleX;
 
+			if (dWidth == 0)
+				dWidth = 25.4 / 96;
+
 			BYTE nStartCapStyle = 0;
 			if (PS_STARTCAP_ROUND == ulPenStartCap)
 				nStartCapStyle = Aggplus::LineCapRound;

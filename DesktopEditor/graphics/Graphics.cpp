@@ -1495,8 +1495,8 @@ namespace Aggplus
             m_rasterizer.gamma(1.0);
         }
 #else
-		agg::rgba8 c1 = agg::rgba8(pBrush->m_dwColor1.GetB(), pBrush->m_dwColor1.GetG(), pBrush->m_dwColor1.GetR(), pBrush->m_dwColor1.GetA());
-		agg::rgba8 c2 = agg::rgba8(pBrush->m_dwColor2.GetB(), pBrush->m_dwColor2.GetG(), pBrush->m_dwColor2.GetR(), pBrush->m_dwColor2.GetA());
+        agg::rgba8 c1 = agg::rgba8(pBrush->m_dwColor1.GetR(), pBrush->m_dwColor1.GetG(), pBrush->m_dwColor1.GetB(), pBrush->m_dwColor1.GetA());
+        agg::rgba8 c2 = agg::rgba8(pBrush->m_dwColor2.GetR(), pBrush->m_dwColor2.GetG(), pBrush->m_dwColor2.GetB(), pBrush->m_dwColor2.GetA());
 
 		BYTE* pPattern = new BYTE[HATCH_TX_SIZE * HATCH_TX_SIZE * 4];
 		agg::GetHatchPattern(pBrush->m_name, (agg::rgba8*)pPattern, c1, c2);

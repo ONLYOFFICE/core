@@ -55,6 +55,13 @@ void BulletsConverter::ConvertPFRun(PPTX::Logic::TextParagraphPr &oPPr, CTextPFR
         oPPr.fontAlgn = new PPTX::Limit::FontAlign;
         oPPr.fontAlgn->set(CStylesWriter::GetFontAlign(pPF->fontAlign.get()));
     }
+    if (pPF->wrapFlags.is_init() && pPF->wrapFlags.get() & 0b111)
+    {
+        const auto& flags = pPF->wrapFlags.get();
+        if (flags & 0b100)
+            oPPr.hangingPunct = true;
+
+    }
 
 
     ConvertTabStops(oPPr.tabLst, pPF->tabStops);
@@ -123,10 +130,19 @@ void BulletsConverter::ConvertTabStops(std::vector<PPTX::Logic::Tab> &arrTabs, s
     }
 }
 
-void BulletsConverter::FillBuChar(PPTX::Logic::Bullet &oBullet, WCHAR symbol)
+void BulletsConverter::FillBuChar(PPTX::Logic::Bullet &oBullet, WCHAR symbol, CTextPFRun *pPF)
 {
     auto pBuChar = new PPTX::Logic::BuChar;
     pBuChar->Char.clear();
+    if (pPF != nullptr && pPF->bulletFontProperties.IsInit())
+    {
+        const auto& fontProp = *(pPF->bulletFontProperties);
+        if (fontProp.Charset == 10)
+        {
+            symbol &= 0x00ff;
+            symbol |= 0xf000;
+        }
+    }
     pBuChar->Char.push_back(symbol);
     oBullet.m_Bullet.reset(pBuChar);
 }
@@ -186,7 +202,7 @@ void BulletsConverter::ConvertAllBullets(PPTX::Logic::TextParagraphPr &oPPr, CTe
             }
             else if (pPF->bulletChar.is_init() && (pPF->bulletAutoNum.is_init() ? pPF->bulletAutoNum->isDefault() : true))
             {
-                FillBuChar(oPPr.ParagraphBullet, pPF->bulletChar.get());
+                FillBuChar(oPPr.ParagraphBullet, pPF->bulletChar.get(), pPF);
             }
             else if (pPF->bulletAutoNum.is_init())
             {

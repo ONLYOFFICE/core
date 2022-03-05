@@ -362,6 +362,15 @@ namespace MetaFile
             WriteNodeEnd(wsNameNode);
     }
 
+    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
+    {
+            WriteNodeBegin(wsNameNode);
+                WriteTRegionDataHeader(oRegionDataHeader);
+                for (unsigned int unIndex = 0; unIndex < arRects.size(); ++unIndex)
+                        WriteNode(L"Rect" + std::to_wstring(unIndex + 1), arRects[unIndex]);
+            WriteNodeEnd(wsNameNode);
+    }
+
     void CXmlOutput::WriteTEmfRectL(const TEmfRectL &oTEmfRectL)
     {
         WriteNode(L"Left",     oTEmfRectL.lLeft);
@@ -606,6 +615,12 @@ namespace MetaFile
         std::wstring wsText = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)oTEmfSmallTextout.TextString, oTEmfSmallTextout.cChars);
 
         WriteNode(L"Text",          StringNormalization(wsText));
+    }
+
+    void CXmlOutput::WriteTRegionDataHeader(const TRegionDataHeader &oTRegionDataHeader)
+    {
+            WriteNode(L"CountRects", oTRegionDataHeader.unCountRects);
+            WriteNode(L"Bounds ",    oTRegionDataHeader.oBounds);
     }
 
     void CXmlOutput::WriteEmfLogBrushEx(const CEmfLogBrushEx &oEmfLogBrushEx)
@@ -1117,6 +1132,22 @@ namespace MetaFile
                 TEmfPointS oPoint;
                 ReadPoint(oPoint);
                 arPoints.push_back(oPoint);
+            }
+            while (m_pXmlLiteReader->ReadNextSiblingNode(unDepth - 1));
+    }
+
+    void CXmlOutput::operator>>(std::vector<TEmfRectL> &arRects)
+    {
+            if (!m_pXmlLiteReader->ReadNextNode())
+                return;
+
+            unsigned int unDepth = m_pXmlLiteReader->GetDepth();
+
+            do
+            {
+                TEmfRectL oRect;
+                *this >> oRect;
+                arRects.push_back(oRect);
             }
             while (m_pXmlLiteReader->ReadNextSiblingNode(unDepth - 1));
     }

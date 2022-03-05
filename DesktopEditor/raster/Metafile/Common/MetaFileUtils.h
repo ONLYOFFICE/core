@@ -511,6 +511,16 @@ namespace MetaFile
 			*this >> oEntry.Red;
 			return *this;
 		}
+		CDataStream& operator>>(TRegionDataHeader& oRegionDataHeader)
+		{
+			*this >> oRegionDataHeader.unSize;
+			*this >> oRegionDataHeader.unType;
+			*this >> oRegionDataHeader.unCountRects;
+			*this >> oRegionDataHeader.unRgnSize;
+			*this >> oRegionDataHeader.oBounds;
+
+			return *this;
+		}
 		CDataStream& operator>>(CEmfLogPalette& oPalette)
 		{
 			unsigned short ushVersion;

@@ -92,7 +92,7 @@ namespace MetaFile
                                 }
                                 case 'F':
                                 {
-                                        (wsRecordName[5] == L'I') ? Read_EMR_FILLPATH()
+                                        (wsRecordName[5] == L'I') ? ((wsRecordName.back() == L'H') ? Read_EMR_FILLPATH() : Read_EMR_FILLRGN())
                                                                   : Read_EMR_FLATTENPATH();
                                         break;
                                 }
@@ -412,7 +412,27 @@ namespace MetaFile
                 *m_pOutput >> m_oStream;
                 m_oStream.Skip(8);
                 HANDLE_EMR_UNKNOWN(0);
-//                m_pOutput->ReadNextRecord();
+                //                m_pOutput->ReadNextRecord();
+        }
+
+        void CEmfxParser::Read_EMR_FILLRGN()
+        {
+                TEmfRectL oBounds, oRegionBounds;
+                unsigned int unIhBrush, unCountRects;
+
+                std::vector<TEmfRectL> arRects;
+
+                *m_pOutput >> oBounds;
+                *m_pOutput >> unIhBrush;
+
+                *m_pOutput >> unCountRects;
+                *m_pOutput >> oRegionBounds;
+
+                *m_pOutput >> arRects;
+
+                TRegionDataHeader oRegionDataHeader{0x00000020, 0x00000001, unCountRects, unCountRects * 16, oRegionBounds};
+
+                HANDLE_EMR_FILLRGN(oBounds, unIhBrush, oRegionDataHeader, arRects);
         }
 
         void CEmfxParser::Read_EMR_SAVEDC()

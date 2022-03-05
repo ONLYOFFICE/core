@@ -29,6 +29,7 @@ namespace MetaFile
                 void Read_EMR_STRETCHBLT();
                 void Read_EMR_EOF();
                 void Read_EMR_UNKNOWN();
+                void Read_EMR_FILLRGN();
                 void Read_EMR_SAVEDC();
                 void Read_EMR_RESTOREDC();
                 void Read_EMR_MODIFYWORLDTRANSFORM();

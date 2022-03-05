@@ -178,10 +178,9 @@ namespace MetaFile
                                 //-----------------------------------------------------------
                                 case EMR_SETWORLDTRANSFORM:	Read_EMR_SETWORLDTRANSFORM(); break;
                                 case EMR_MODIFYWORLDTRANSFORM:	Read_EMR_MODIFYWORLDTRANSFORM(); break;
-                                //-----------------------------------------------------------
-                                // Неподдерживаемые записи
-                                //-----------------------------------------------------------
+
                                 case EMR_GDICOMMENT: Read_EMR_COMMENT(); break;
+                                case EMR_FILLRGN: Read_EMR_FILLRGN(); break;
                                 //-----------------------------------------------------------
                                 // Неизвестные записи
                                 //-----------------------------------------------------------
@@ -1397,5 +1396,33 @@ namespace MetaFile
 
                         m_oStream.Skip(m_ulRecordSize - 8);
                 }
+        }
+
+        void CEmfParser::Read_EMR_FILLRGN()
+        {
+                TEmfRectL oBounds;
+                unsigned int unRgnDataSize, unIhBrush;
+
+                m_oStream >> oBounds;
+                m_oStream >> unRgnDataSize;
+                m_oStream >> unIhBrush;
+
+                if (unRgnDataSize <= 32)
+                        return;
+
+                TRegionDataHeader oRegionDataHeader;
+
+                m_oStream >> oRegionDataHeader;
+
+                if (0x00000020 != oRegionDataHeader.unSize || 0x00000001 != oRegionDataHeader.unType || 0 == oRegionDataHeader.unCountRects)
+                        return;
+
+                std::vector<TEmfRectL> arRects(oRegionDataHeader.unCountRects);
+
+                for (TEmfRectL &oRect : arRects)
+                        m_oStream >> oRect;
+
+                if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+                        HANDLE_EMR_FILLRGN(oBounds, unIhBrush, oRegionDataHeader, arRects);
         }
 }

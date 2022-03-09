@@ -180,6 +180,10 @@ void CXpsFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pB
 
     m_pInternal->m_pDocument->DrawPage(nPageIndex, pRenderer, pBreak);
 }
+BYTE* CXpsFile::GetInfo()
+{
+    return NULL;
+}
 
 #ifndef DISABLE_PDF_CONVERTATION
 void CXpsFile::ConvertToPdf(const std::wstring& wsPath)

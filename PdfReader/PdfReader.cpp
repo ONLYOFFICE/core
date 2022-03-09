@@ -435,6 +435,51 @@ return 0;
 //		return wsXml;
         return L"";
 	}
+#define DICT_LOOKUP(info, obj1, name) \
+    if (info.dictLookup(name, &obj1)->isString())\
+    {\
+        char* str = obj1.getString()->getCString();\
+        int length = obj1.getString()->getLength();\
+        if (str && length > 0)\
+        {\
+            sRes += "\"";\
+            sRes += name;\
+            sRes += "\":\"";\
+            sRes += std::string(str, length);\
+            sRes += "\",";\
+        }\
+    }\
+
+    BYTE* CPdfReader::GetInfo()
+    {
+        if (!m_pInternal->m_pPDFDocument)
+            return NULL;
+
+        std::string sRes = "{";
+
+        Object info, obj1;
+        m_pInternal->m_pPDFDocument->getDocInfo(&info);
+        if (info.isDict())
+        {
+            DICT_LOOKUP(info, obj1, "Creator");
+        }
+
+        info.free();
+        obj1.free();
+
+        if (sRes[sRes.size() - 1] == ',')
+            sRes.pop_back();
+        sRes += "}";
+
+        NSWasm::CData oRes;
+        oRes.SkipLen();
+        oRes.WriteString((BYTE*)sRes.c_str(), sRes.length());
+        oRes.WriteLen();
+
+        BYTE* bRes = oRes.GetBuffer();
+        oRes.ClearWithoutAttack();
+        return bRes;
+    }
 #ifdef BUILDING_WASM_MODULE    
     void getBookmars(PDFDoc* pdfDoc, OutlineItem* pOutlineItem, NSWasm::CData& out, int level)
     {

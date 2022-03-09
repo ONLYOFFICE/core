@@ -3712,12 +3712,14 @@ namespace NExtractTools
 			case AVS_OFFICESTUDIO_FILE_DOCUMENT_FB2:
 			case AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB:
 			case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF:
-			case AVS_OFFICESTUDIO_FILE_IMAGE:
 				bIsNeedDoct = true;
 				break;
 			default:
+				if (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo)
+					bIsNeedDoct = true;
 				break;
 		}
+
 		if(0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & nFormatTo) && !bIsNeedDoct)
 		{
 			if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo || AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM == nFormatTo ||

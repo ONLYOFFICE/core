@@ -347,4 +347,80 @@ namespace XPS
 		m_mStaticResources.insert(std::pair<std::wstring, CStaticResource*>(wsPath, pStaticResource));
 		return pStaticResource;
 	}
+	BYTE* CDocument::GetInfo()
+	{
+		XmlUtils::CXmlLiteReader oReader;
+		NSWasm::CData oRes;
+		oRes.SkipLen();
+
+		if (oReader.FromStringA(m_wsPath->readXml(L"_rels/.rels")) && oReader.ReadNextNode() && L"Relationships" == oReader.GetName())
+		{
+			std::wstring wsCoreFile;
+			while (oReader.ReadNextNode())
+			{
+				if (L"Relationship" == oReader.GetName())
+				{
+					std::wstring wsAttr;
+					ReadAttribute(oReader, L"Type", wsAttr);
+
+					if (wsAttr.find(L"core-properties") != std::wstring::npos)
+					{
+						ReadAttribute(oReader, L"Target", wsCoreFile);
+					}
+				}
+			}
+
+			if (!wsCoreFile.empty() && m_wsPath->exists(wsCoreFile))
+			{
+				oReader.Clear();
+				if (oReader.FromStringA(m_wsPath->readXml(wsCoreFile)) && oReader.ReadNextNode() && oReader.GetName() == L"cp:coreProperties")
+				{
+					std::string sRes = "{";
+					while (oReader.ReadNextNode())
+					{
+						std::string sName = oReader.GetNameA();
+						if (sName == "dc:title")
+							sName = "Title";
+						else if (sName == "dc:subject")
+							sName = "Subject";
+						else if (sName == "dc:creator")
+							sName = "Creator";
+						else if (sName == "dcterms:created")
+							sName = "CreationDate";
+						else if (sName == "dcterms:modified")
+							sName = "ModDate";
+
+						sRes += "\"";
+						sRes += sName;
+						sRes += "\":\"";
+						sRes += oReader.GetText2A();
+						sRes += "\",";
+					}
+
+					int nW = 0;
+					int nH = 0;
+					GetPageSize(0, nW, nH);
+					sRes += "\"PageSize\":\"";
+					sRes += std::to_string(nW);
+					sRes += "x";
+					sRes += std::to_string(nH);
+					sRes += "\",";
+
+					sRes += "\"NumberOfPages\":";
+					sRes += std::to_string(GetPageCount());
+					sRes += ",";
+
+					if (sRes[sRes.size() - 1] == ',')
+						sRes.pop_back();
+					sRes += "}";
+
+					oRes.WriteString((BYTE*)sRes.c_str(), sRes.length());
+				}
+			}
+		}
+		oRes.WriteLen();
+		BYTE* bRes = oRes.GetBuffer();
+		oRes.ClearWithoutAttack();
+		return bRes;
+	}
 }

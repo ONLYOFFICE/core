@@ -164,14 +164,14 @@
         var _info = Module["_GetInfo"](this.nativeFile);
         if (_info)
         {
-            var lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
+            var lenArray = new Int32Array(Module["HEAP8"].buffer, _info, 4);
             if (lenArray)
             {
                 var len = lenArray[0];
                 len -= 4;
                 if (len > 0)
                 {
-                    var buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
+                    var buffer = new Uint8Array(Module["HEAP8"].buffer, _info + 4, len);
                     var reader = new CBinaryReader(buffer, 0, len);
                     
                     while (reader.isValid())
@@ -180,8 +180,8 @@
                     }
                 }
             }
+            Module["_free"](_info);
         }
-        Module["_free"](_info);
 
         return this.pages.length > 0;
     };

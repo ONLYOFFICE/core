@@ -182,7 +182,7 @@ void CXpsFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pB
 }
 BYTE* CXpsFile::GetInfo()
 {
-    return NULL;
+    return m_pInternal->m_pDocument->GetInfo();
 }
 
 #ifndef DISABLE_PDF_CONVERTATION

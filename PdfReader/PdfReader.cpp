@@ -489,42 +489,30 @@ return 0;
 
             DICT_LOOKUP_DATE(info, obj1, "CreationDate");
             DICT_LOOKUP_DATE(info, obj1, "ModDate");
-
-            std::string version = std::to_string(GetVersion());
-            sRes += "\"Version\":";
-            sRes += version.substr(0, version.length() - 5);
-            sRes += ",";
-
-            double nW = 0;
-            double nH = 0;
-            double nDpi = 0;
-            GetPageInfo(0, &nW, &nH, &nDpi, &nDpi);
-            sRes += "\"PageSize\":\"";
-            version = std::to_string(nW);
-            sRes += version.substr(0, version.length() - 4);
-            sRes += "x";
-            version = std::to_string(nH);
-            sRes += version.substr(0, version.length() - 4);
-            sRes += "\",";
-
-            sRes += "\"NumberOfPages\":";
-            sRes += std::to_string(GetPagesCount());
-            sRes += ",";
-
-            sRes += "\"FastWebView\":";
-            sRes += m_pInternal->m_pPDFDocument->isLinearized() ? "true" : "false";
-            sRes += ",";
-
-            sRes += "\"Tagged\":";
-            sRes += m_pInternal->m_pPDFDocument->getStructTreeRoot()->isDict() ? "true" : "false";
-            sRes += ",";
         }
 
         info.free();
         obj1.free();
 
-        if (sRes[sRes.size() - 1] == ',')
-            sRes.pop_back();
+        std::string version = std::to_string(GetVersion());
+        sRes += "\"Version\":";
+        sRes += version.substr(0, version.length() - 5);
+        double nW = 0;
+        double nH = 0;
+        double nDpi = 0;
+        GetPageInfo(0, &nW, &nH, &nDpi, &nDpi);
+        sRes += ",\"PageSize\":\"";
+        version = std::to_string(nW);
+        sRes += version.substr(0, version.length() - 4);
+        sRes += "x";
+        version = std::to_string(nH);
+        sRes += version.substr(0, version.length() - 4);
+        sRes += "\",\"NumberOfPages\":";
+        sRes += std::to_string(GetPagesCount());
+        sRes += ",\"FastWebView\":";
+        sRes += m_pInternal->m_pPDFDocument->isLinearized() ? "true" : "false";
+        sRes += ",\"Tagged\":";
+        sRes += m_pInternal->m_pPDFDocument->getStructTreeRoot()->isDict() ? "true" : "false";
         sRes += "}";
 
         NSWasm::CData oRes;

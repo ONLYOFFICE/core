@@ -275,14 +275,8 @@ BYTE* CDjVuFileImplementation::GetInfo()
     sRes += "x";
     version = std::to_string(nH);
     sRes += version.substr(0, version.length() - 4);
-    sRes += "\",";
-
-    sRes += "\"NumberOfPages\":";
+    sRes += "\",\"NumberOfPages\":";
     sRes += std::to_string(GetPagesCount());
-    sRes += ",";
-
-    if (sRes[sRes.size() - 1] == ',')
-        sRes.pop_back();
     sRes += "}";
 
     oRes.WriteString((BYTE*)sRes.c_str(), sRes.length());

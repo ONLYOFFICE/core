@@ -366,6 +366,7 @@ namespace XPS
 					if (wsAttr.find(L"core-properties") != std::wstring::npos)
 					{
 						ReadAttribute(oReader, L"Target", wsCoreFile);
+						break;
 					}
 				}
 			}
@@ -404,14 +405,8 @@ namespace XPS
 					sRes += std::to_string(nW);
 					sRes += "x";
 					sRes += std::to_string(nH);
-					sRes += "\",";
-
-					sRes += "\"NumberOfPages\":";
+					sRes += "\",\"NumberOfPages\":";
 					sRes += std::to_string(GetPageCount());
-					sRes += ",";
-
-					if (sRes[sRes.size() - 1] == ',')
-						sRes.pop_back();
 					sRes += "}";
 
 					oRes.WriteString((BYTE*)sRes.c_str(), sRes.length());

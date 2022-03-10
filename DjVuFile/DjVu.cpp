@@ -100,6 +100,8 @@ void CDjVuFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* p
 }
 BYTE* CDjVuFile::GetInfo()
 {
+    if (m_pImplementation)
+        return m_pImplementation->GetInfo();
     return NULL;
 }
 void CDjVuFile::ConvertToPdf(const std::wstring& wsDstPath)

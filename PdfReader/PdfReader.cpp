@@ -450,6 +450,25 @@ return 0;
         }\
     }\
 
+#define DICT_LOOKUP_DATE(info, obj1, name) \
+    if (info.dictLookup(name, &obj1)->isString())\
+    {\
+        char* str = obj1.getString()->getCString();\
+        int length = obj1.getString()->getLength();\
+        if (str && length > 21)\
+        {\
+            std::string sNoDate = std::string(str, length);\
+            std::string sDate = sNoDate.substr(2,  4) + '-' + sNoDate.substr(6,  2) + '-' + sNoDate.substr(8,  2) + 'T' +\
+                                sNoDate.substr(10, 2) + ':' + sNoDate.substr(12, 2) + ':' + sNoDate.substr(14, 2) + ".000+" +\
+                                sNoDate.substr(17, 2) + ':' + sNoDate.substr(20, 2);\
+            sRes += "\"";\
+            sRes += name;\
+            sRes += "\":\"";\
+            sRes += sDate;\
+            sRes += "\",";\
+        }\
+    }\
+
     BYTE* CPdfReader::GetInfo()
     {
         if (!m_pInternal->m_pPDFDocument)
@@ -467,8 +486,9 @@ return 0;
             DICT_LOOKUP(info, obj1, "Keywords");
             DICT_LOOKUP(info, obj1, "Creator");
             DICT_LOOKUP(info, obj1, "Producer");
-            DICT_LOOKUP(info, obj1, "CreationDate");
-            DICT_LOOKUP(info, obj1, "ModDate");
+
+            DICT_LOOKUP_DATE(info, obj1, "CreationDate");
+            DICT_LOOKUP_DATE(info, obj1, "ModDate");
 
             std::string version = std::to_string(GetVersion());
             sRes += "\"Version\":";

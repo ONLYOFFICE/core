@@ -157,9 +157,9 @@ static DWORD GetLength(BYTE* x)
 
 int main()
 {
-#define XPS_TEST  1
+#define XPS_TEST  0
 #define DJVU_TEST 0
-#define PDF_TEST  0
+#define PDF_TEST  1
 #if PDF_TEST
     BYTE* pPdfData = NULL;
     DWORD nPdfBytesCount;
@@ -405,11 +405,11 @@ int main()
         RELEASEARRAYOBJECTS(pDjVuData);
         return 1;
     }
-    int* info = GetInfo(test);
-    int pages_count = *info;
+    int* size = GetSize(test);
+    int pages_count = *size;
     int test_page = 1;
-    int width  = info[test_page * 3 + 1];
-    int height = info[test_page * 3 + 2];
+    int width  = size[test_page * 3 + 1];
+    int height = size[test_page * 3 + 2];
     std::cout << "Page " << test_page << " width " << width << " height " << height << std::endl;
 
     std::cout << std::endl;
@@ -435,7 +435,7 @@ int main()
 
     BYTE* res = NULL;
     if (pages_count > 0)
-        res = GetPixmap(test, test_page, width, height);
+        res = GetPixmap(test, test_page, width, height, 0xFFFFFF);
 
     CBgraFrame* resFrame = new CBgraFrame();
     resFrame->put_Data(res);
@@ -445,6 +445,10 @@ int main()
     resFrame->put_IsRGBA(true);
     resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
     resFrame->ClearNoAttack();
+
+    BYTE* info = GetInfo(test);
+    nLength = GetLength(info + 4);
+    std::cout << "json "<< std::string((char*)(info + 8), nLength);
 
     std::cout << std::endl;
     BYTE* pGlyphs = GetGlyphs(test, test_page);
@@ -479,9 +483,9 @@ int main()
 
     Close(test);
     RELEASEARRAYOBJECTS(pDjVuData);
+    RELEASEARRAYOBJECTS(size);
     RELEASEARRAYOBJECTS(info);
     RELEASEARRAYOBJECTS(res);
-    RELEASEARRAYOBJECTS(pGlyphs);
     RELEASEARRAYOBJECTS(pLinks);
     RELEASEARRAYOBJECTS(pStructure);
     RELEASEOBJECT(resFrame);

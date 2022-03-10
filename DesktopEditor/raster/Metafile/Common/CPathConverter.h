@@ -10,7 +10,7 @@ namespace MetaFile
         {
         public:
                 CPathConverter();
-                ~CPathConverter();
+                virtual ~CPathConverter();
 
 
                 void GetUpdatedPath(CEmfPath& oNewPath, CEmfPath& oLineCapPath, const CEmfPath& oPath, const CEmfPlusPen& oPen);

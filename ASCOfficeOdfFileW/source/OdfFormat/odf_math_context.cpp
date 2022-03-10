@@ -129,19 +129,19 @@ namespace odf_writer
 		};
 
 		annotation_diak_symbols = { {L"˙",L"dot"}, {L"¨",L"ddot"}, {L"⃛",L"dddot"}, {L"&#708;", L"hat"}, {L"ˇ",L"check"}, {L"´",L"acute"}, {L"&#715;",L"grave"}, {L"˘",L"breve"},
-			                        {L"~",L"tilde"},{L"¯",L"bar"},{L"→",L"vec"}, {L"⇀",L"harpoon"}, {L"&#45;",L"unnderline"}/*, {L"",L""}, {L"",L""}, {L"",L""}, {L"",L""}, {L"",L""}, {L"",L""},{L"",L""}, 
+			                        {L"~",L"tilde"},{L"¯",L"overline"},{L"→",L"vec"}, {L"⇀",L"harpoon"}, {L"&#45;",L"unnderline"}/*, {L"",L""}, {L"",L""}, {L"",L""}, {L"",L""}, {L"",L""}, {L"",L""},{L"",L""}, 
 			                        {L"",L""}*/
 		};
 
-		annotation_operators = { {L"∬", L"iint "}, {L"∭", L"iiint "}, {L"∮", L"lint "}, {L"∯", L"llint "},
+		annotation_operators = { {L"∫",L"int"}, {L"∬", L"iint "}, {L"∭", L"iiint "}, {L"∮", L"lint "}, {L"∯", L"llint "},
 								 {L"∰", L"lllint "}, {L"∑", L"sum "}, {L"∏", L"prod "}, {L"∐", L"coprod "}
 								
 		};
 
-		annotation_brackets_begin = { {L"(", L"("}, {L"[", L"["}, {L"{", L"lbrace"}, {L"〈", L"langle"}, {L"⌊", L"lfloor"}, {L"⌈", L"lceil"}, {L"|", L"lline"}, {L"‖", L"ldline"},
+		annotation_brackets_begin = { {L"(", L"("}, {L"[", L"["}, {L"{", L"lbrace"}, {L"⟨", L"langle"}, {L"〈", L"langle"}, {L"⌊", L"lfloor"}, {L"⌈", L"lceil"}, {L"|", L"lline"}, {L"‖", L"ldline"},
 									  {L"]", L"]"}, {L"⟦", L"ldbracket"}
 		};
-		annotation_brackets_end   = { {L")", L")"}, {L"]", L"]"}, {L"}", L"rbrace"}, {L"〉", L"rangle"}, {L"⌋", L"rfloor"}, {L"⌉", L"rceil"}, {L"|", L"rline"}, {L"‖", L"rdline"},
+		annotation_brackets_end   = { {L")", L")"}, {L"]", L"]"}, {L"}", L"rbrace"}, {L"⟩", L"rangle"}, {L"〉", L"rangle"},{L"⌋", L"rfloor"}, {L"⌉", L"rceil"}, {L"|", L"rline"}, {L"‖", L"rdline"},
 									  {L"[", L"["}, {L"⟧", L"rdbracket"}
 		};
 		//debug_stream.open(debug_fileName);

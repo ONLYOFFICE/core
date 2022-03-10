@@ -99,6 +99,7 @@ namespace cpdoccore {
 			std::map<std::wstring, std::wstring> annotation_brackets_begin;
 			std::map<std::wstring, std::wstring> annotation_brackets_end;
 			std::map<std::wstring, std::wstring> annotation_diak_symbols;
+			//std::pair<std::set<std::string>, bool> annotation_from_to_operators;
 			void end_math();
 
 			std::wofstream debug_stream;

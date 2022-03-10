@@ -110,6 +110,10 @@ public:
     {
         return pReader->GetStructure();
     }
+    BYTE* GetInfo()
+    {
+        return pReader->GetInfo();
+    }
 
     void DestroyText()
     {

@@ -88,6 +88,7 @@
         this.stream_size = 0;
         this.type = -1;
         this.pages = [];
+        this.info = null;
         this._isNeedPassword = false;
     }
 
@@ -140,12 +141,12 @@
         if (!this.nativeFile)
             return false;
 
-        var _info = Module["_GetInfo"](this.nativeFile);
-        if (!_info)
+        var _size = Module["_GetSize"](this.nativeFile);
+        if (!_size)
             return false;
 
-        var _pages = Module["HEAP32"][_info >> 2];
-        var _buffer = new Int32Array(Module["HEAP8"].buffer, _info, 1 + 3 * _pages);
+        var _pages = Module["HEAP32"][_size >> 2];
+        var _buffer = new Int32Array(Module["HEAP8"].buffer, _size, 1 + 3 * _pages);
 
         var _cur = 1;
         for (var i = 0; i < _pages; i++)
@@ -158,8 +159,30 @@
                 text : null
             });
         }
+        Module["_free"](_size);
+        
+        var _info = Module["_GetInfo"](this.nativeFile);
+        if (_info)
+        {
+            var lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
+            if (lenArray)
+            {
+                var len = lenArray[0];
+                len -= 4;
+                if (len > 0)
+                {
+                    var buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
+                    var reader = new CBinaryReader(buffer, 0, len);
+                    
+                    while (reader.isValid())
+                    {
+                        this.info = reader.readString();
+                    }
+                }
+            }
+        }
+        Module["_free"](_info);
 
-        this.free(_info);
         return this.pages.length > 0;
     };
     CFile.prototype["close"] = function()
@@ -167,6 +190,7 @@
         Module["_Close"](this.nativeFile);
         this.nativeFile = 0;
         this.pages = [];
+        this.info = null;
         if (this.stream > 0)
             Module["_free"](this.stream);
         this.stream = -1;

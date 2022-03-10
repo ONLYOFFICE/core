@@ -461,7 +461,43 @@ return 0;
         m_pInternal->m_pPDFDocument->getDocInfo(&info);
         if (info.isDict())
         {
+            DICT_LOOKUP(info, obj1, "Title");
+            DICT_LOOKUP(info, obj1, "Author");
+            DICT_LOOKUP(info, obj1, "Subject");
+            DICT_LOOKUP(info, obj1, "Keywords");
             DICT_LOOKUP(info, obj1, "Creator");
+            DICT_LOOKUP(info, obj1, "Producer");
+            DICT_LOOKUP(info, obj1, "CreationDate");
+            DICT_LOOKUP(info, obj1, "ModDate");
+
+            std::string version = std::to_string(GetVersion());
+            sRes += "\"Version\":";
+            sRes += version.substr(0, version.length() - 5);
+            sRes += ",";
+
+            double nW = 0;
+            double nH = 0;
+            double nDpi = 0;
+            GetPageInfo(0, &nW, &nH, &nDpi, &nDpi);
+            sRes += "\"PageSize\":\"";
+            version = std::to_string(nW);
+            sRes += version.substr(0, version.length() - 4);
+            sRes += "x";
+            version = std::to_string(nH);
+            sRes += version.substr(0, version.length() - 4);
+            sRes += "\",";
+
+            sRes += "\"NumberOfPages\":";
+            sRes += std::to_string(GetPagesCount());
+            sRes += ",";
+
+            sRes += "\"FastWebView\":";
+            sRes += m_pInternal->m_pPDFDocument->isLinearized() ? "true" : "false";
+            sRes += ",";
+
+            sRes += "\"Tagged\":";
+            sRes += m_pInternal->m_pPDFDocument->getStructTreeRoot()->isDict() ? "true" : "false";
+            sRes += ",";
         }
 
         info.free();

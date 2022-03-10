@@ -102,7 +102,7 @@ WASM_EXPORT void  Close     (CGraphicsFileDrawing* pGraphics)
     delete pGraphics;
     NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NULL);
 }
-WASM_EXPORT int*  GetInfo   (CGraphicsFileDrawing* pGraphics)
+WASM_EXPORT int*  GetSize   (CGraphicsFileDrawing* pGraphics)
 {
     int pages_count = pGraphics->GetPagesCount();
     int* buffer = new int[pages_count * 3 + 1];
@@ -119,6 +119,10 @@ WASM_EXPORT int*  GetInfo   (CGraphicsFileDrawing* pGraphics)
         buffer[buffer_index++] = nDpi;
     }
     return buffer;
+}
+WASM_EXPORT BYTE* GetInfo   (CGraphicsFileDrawing* pGraphics)
+{
+    return pGraphics->GetInfo();
 }
 WASM_EXPORT BYTE* GetPixmap(CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH, int nBackgroundColor)
 {
@@ -153,9 +157,9 @@ static DWORD GetLength(BYTE* x)
 
 int main()
 {
-#define XPS_TEST  1
+#define XPS_TEST  0
 #define DJVU_TEST 0
-#define PDF_TEST  0
+#define PDF_TEST  1
 #if PDF_TEST
     BYTE* pPdfData = NULL;
     DWORD nPdfBytesCount;
@@ -183,12 +187,12 @@ int main()
             return 1;
         }
     }
-    int* info = GetInfo(test);
-    int pages_count = *info;
+    int* size = GetSize(test);
+    int pages_count = *size;
     int test_page = 0;
-    int width  = info[test_page * 3 + 1];
-    int height = info[test_page * 3 + 2];
-    std::cout << "Page " << test_page << " width " << width << " height " << height << " dpi " << info[test_page * 3 + 3] << std::endl;
+    int width  = size[test_page * 3 + 1];
+    int height = size[test_page * 3 + 2];
+    std::cout << "Page " << test_page << " width " << width << " height " << height << " dpi " << size[test_page * 3 + 3] << std::endl;
 
     BYTE* res = NULL;
     if (pages_count > 0)
@@ -203,9 +207,13 @@ int main()
     resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
     resFrame->ClearNoAttack();
 
+    BYTE* info = GetInfo(test);
+    DWORD nLength = GetLength(info + 4);
+    std::cout << "json "<< std::string((char*)(info + 8), nLength);
+
     std::cout << std::endl;
     BYTE* pLinks = GetLinks(test, test_page);
-    DWORD nLength = GetLength(pLinks);
+    nLength = GetLength(pLinks);
     DWORD i = 4;
     nLength -= 4;
     while (i < nLength)
@@ -260,6 +268,7 @@ int main()
     RELEASEARRAYOBJECTS(pPdfData);
     RELEASEARRAYOBJECTS(pLinks);
     RELEASEARRAYOBJECTS(pStructure);
+    RELEASEARRAYOBJECTS(size);
     RELEASEARRAYOBJECTS(info);
     RELEASEARRAYOBJECTS(res);
     RELEASEOBJECT(resFrame);

@@ -347,6 +347,18 @@ namespace XPS
 		m_mStaticResources.insert(std::pair<std::wstring, CStaticResource*>(wsPath, pStaticResource));
 		return pStaticResource;
 	}
+
+	void replace_all(std::wstring& s, const std::wstring& s1, const std::wstring& s2)
+	{
+		size_t pos = s.find(s1);
+		size_t l = s2.length();
+		while (pos != std::wstring::npos)
+		{
+			s.replace(pos, s1.length(), s2);
+			pos = s.find(s1, pos + l);
+		}
+	}
+
 	std::wstring CDocument::GetInfo()
 	{
 		XmlUtils::CXmlLiteReader oReader;
@@ -392,6 +404,8 @@ namespace XPS
 						sRes += L"\"";
 						sRes += sName;
 						sRes += L"\":\"";
+						sName = oReader.GetText2();
+						replace_all(sName, L"\"", L"\\\"");
 						sRes += oReader.GetText2();
 						sRes += L"\",";
 					}

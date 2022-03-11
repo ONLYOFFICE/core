@@ -657,7 +657,7 @@ return 0;
             if (kind == actionGoTo)
             {
                 str = ((LinkGoTo*)pLinkAction)->getNamedDest();
-                LinkDest* pLinkDest = m_pInternal->m_pPDFDocument->findDest(str);
+                LinkDest* pLinkDest = str ? m_pInternal->m_pPDFDocument->findDest(str) : ((LinkGoTo*)pLinkAction)->getDest()->copy();
                 if (pLinkDest)
                 {
                     int pg;

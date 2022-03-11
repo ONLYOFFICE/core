@@ -665,6 +665,7 @@ namespace NSFonts
 
         virtual void Initialize() = 0;
         virtual void SetOwnerCache(IFontsCache* pCache) = 0;
+        virtual void CreateOwnerCache(const int& nCacheSize = -1);
 
         virtual void AfterLoad() = 0;
 

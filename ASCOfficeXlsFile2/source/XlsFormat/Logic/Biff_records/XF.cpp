@@ -626,6 +626,10 @@ int XF::serialize(std::wostream & stream)
 				CP_XML_ATTR(L"applyNumberFormat", fAtrNum);
 				CP_XML_ATTR(L"applyFont"		, fAtrFnt);
 				CP_XML_ATTR(L"applyAlignment"	, fAtrAlc);
+				
+				if (fAtrProt)
+					CP_XML_ATTR(L"applyProtection", fAtrProt);
+
 
 				if ((alc >= 0 && alc < 8) || (alcV >= 0 && alcV < 5) || (fShrinkToFit) || 
 					(cIndent > 0) || (trot > 0 && trot < 0xff) || (fWrap))
@@ -640,6 +644,13 @@ int XF::serialize(std::wostream & stream)
 						CP_XML_ATTR(L"wrapText", fWrap);
 					
 						if (trot > 0 && trot < 0xff) CP_XML_ATTR(L"textRotation", trot);
+					}
+				}
+				if (fAtrProt && !fLocked)
+				{
+					CP_XML_NODE(L"protection")
+					{
+						CP_XML_ATTR(L"locked", false);
 					}
 				}
 			}

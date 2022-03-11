@@ -110,7 +110,7 @@ namespace NSDocxRenderer
 
 			m_pFont->Size = dSizeFont;
 
-            if (m_pFont->IsEqual(&m_oFont.m_oFont))
+            if (m_pFont->IsEqual2(&m_oFont.m_oFont))
 			{
 				m_pFont->Size = dSize;
 				m_pManager->SetCharSpacing(dPix);
@@ -288,7 +288,7 @@ namespace NSDocxRenderer
 			m_dSize			= 0;
             m_dSpaceWidth	= 0;
 
-            m_pManager = pFonts->GenerateFontManager();
+            m_pManager = NSFontManager::CreateFontManager(pFonts);
 		}
 		~CFontManagerLight()
 		{

@@ -1158,7 +1158,8 @@ extern int g_nCurFormatVersion;
 		Custom = 0,
 		ItemId = 1,
 		Uri = 2,
-		Content = 3
+		Content = 3,
+		ContentA = 4
 	};}
 	namespace c_oSerApp{enum c_oSerApp
 	{

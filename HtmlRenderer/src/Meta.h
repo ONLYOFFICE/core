@@ -186,7 +186,18 @@ namespace NSHtmlRenderer
         }
 
     public:
+        template<typename T>
+        inline void write_value(const T& value)
+        {
+#if 0
+            printf("write (%d): %d, %d\n", sizeof(T), (int)value, (int)m_lPosition);
+#endif
+            //*((T*)(m_pBuffer + m_lPosition)) = value;
+            memcpy(m_pBuffer + m_lPosition, &value, sizeof(T));
+            m_lPosition += sizeof(T);
+        }        
 
+    public:
         inline LONG GetPosition()
         {
             return (LONG)m_lPosition;
@@ -260,32 +271,27 @@ namespace NSHtmlRenderer
         }
         inline void WriteLONG_nocheck(const int& lValue)
         {
-            *((int*)(m_pBuffer + m_lPosition))	= lValue;
-            m_lPosition += m_lSizeofLONG;
+            write_value(lValue);
         }
         inline void WriteUSHORT_nocheck(const USHORT& lValue)
         {
-            *((USHORT*)(m_pBuffer + m_lPosition)) = lValue;
-            m_lPosition += sizeof(USHORT);
+            write_value(lValue);
         }
         inline void WriteWCHAR_nocheck(const WCHAR& lValue)
         {
-            *((WCHAR*)(m_pBuffer + m_lPosition))	= lValue;
-            m_lPosition += sizeof(WCHAR);
+            write_value(lValue);
         }
         inline void WriteWCHAR_nocheck2(const int& lValue)
         {
             if (lValue < 0x10000)
             {
-                *((USHORT*)(m_pBuffer + m_lPosition)) = lValue;
-                m_lPosition += 2;
+                write_value((USHORT)lValue);
             }
             else
             {
                 int code = lValue - 0x10000;
-                *((USHORT*)(m_pBuffer + m_lPosition))      = 0xD800 | ((code >> 10) & 0x03FF);
-                *((USHORT*)(m_pBuffer + m_lPosition + 2))  = 0xDC00 | (code & 0x03FF);
-                m_lPosition += 4;
+                write_value((USHORT)(0xD800 | ((code >> 10) & 0x03FF)));
+                write_value((USHORT)(0xDC00 | (code & 0x03FF)));
             }
         }
         inline void WriteDouble_nocheck(const double& dValue)
@@ -293,48 +299,34 @@ namespace NSHtmlRenderer
             // здесь никаких даблов. Сплошные округления
             LONG lValue = (LONG)(dValue * 10000);
             WriteLONG_nocheck(lValue);
-            return;
-
-            CheckBufferSize(m_lSizeofDouble);
-
-            *((double*)(m_pBuffer + m_lPosition)) = dValue;
-            m_lPosition += m_lSizeofDouble;
         }
         inline void WriteDouble2_nocheck(const double& dValue)
         {
-            // здесь никаких даблов. Сплошные округления
-            SHORT lValue = (SHORT)(dValue * 100);
-            *((SHORT*)(m_pBuffer + m_lPosition)) = lValue;
-            m_lPosition += sizeof(SHORT);
+            write_value((SHORT)(dValue * 100));
         }
         //
         inline void WriteBYTE(const BYTE& lValue)
         {
             CheckBufferSize(m_lSizeofBYTE);
 
-            *(m_pBuffer + m_lPosition)	= lValue;
+            m_pBuffer[m_lPosition] = lValue;
             m_lPosition += m_lSizeofBYTE;
         }
         inline void WriteLONG(const int& lValue)
         {
             CheckBufferSize(m_lSizeofLONG);
-
-            *((int*)(m_pBuffer + m_lPosition))	= lValue;
-            m_lPosition += m_lSizeofLONG;
+            write_value(lValue);
         }
         inline void WriteUSHORT(const USHORT& lValue)
         {
             CheckBufferSize(sizeof(USHORT));
+            write_value(lValue);
 
-            *((USHORT*)(m_pBuffer + m_lPosition)) = lValue;
-            m_lPosition += sizeof(USHORT);
         }
         inline void WriteWCHAR(const WCHAR& lValue)
         {
             CheckBufferSize(sizeof(WCHAR));
-
-            *((WCHAR*)(m_pBuffer + m_lPosition))	= lValue;
-            m_lPosition += sizeof(WCHAR);
+            write_value(lValue);
         }
         inline void WriteDouble(const double& dValue)
         {
@@ -350,19 +342,13 @@ namespace NSHtmlRenderer
         }
         inline void WriteDouble2(const double& dValue)
         {
-            // здесь никаких даблов. Сплошные округления
-            SHORT lValue = (SHORT)(dValue * 100);
             CheckBufferSize(sizeof(SHORT));
-
-            *((SHORT*)(m_pBuffer + m_lPosition)) = lValue;
-            m_lPosition += sizeof(SHORT);
+            write_value((SHORT)(dValue * 100));
         }
         inline void WriteFloat(const float& fValue)
         {
             CheckBufferSize(m_lSizeofFloat);
-
-            *((float*)(m_pBuffer + m_lPosition))	= fValue;
-            m_lPosition += m_lSizeofFloat;
+            write_value(fValue);
         }
         inline void WriteString(wchar_t* bstrValue)
         {
@@ -371,9 +357,7 @@ namespace NSHtmlRenderer
             int lSizeMem = lSize * sizeof(wchar_t);
 
             CheckBufferSize(m_lSizeofLONG + lSizeMem);
-
-            *((int*)(m_pBuffer + m_lPosition))	= lSizeMem;
-            m_lPosition += m_lSizeofLONG;
+            write_value(lSizeMem);
 
             memcpy(m_pBuffer + m_lPosition, bstrValue, lSizeMem);
             m_lPosition += lSizeMem;
@@ -396,8 +380,7 @@ namespace NSHtmlRenderer
             *(m_pBuffer + m_lPosition)	= (BYTE)eType;
             m_lPosition += m_lSizeofBYTE;
 
-            *((int*)(m_pBuffer + m_lPosition))	= lValue;
-            m_lPosition += m_lSizeofLONG;
+            write_value(lValue);
         }
         inline void WriteDouble(const CommandType& eType, const double& dValue)
         {
@@ -406,8 +389,7 @@ namespace NSHtmlRenderer
             *(m_pBuffer + m_lPosition)	= (BYTE)eType;
             m_lPosition += m_lSizeofBYTE;
 
-            *((double*)(m_pBuffer + m_lPosition)) = dValue;
-            m_lPosition += m_lSizeofDouble;
+            write_value(dValue);
         }
         inline void WriteFloat(const CommandType& eType, const float& fValue)
         {
@@ -416,8 +398,7 @@ namespace NSHtmlRenderer
             *(m_pBuffer + m_lPosition)	= (BYTE)eType;
             m_lPosition += m_lSizeofBYTE;
 
-            *((float*)(m_pBuffer + m_lPosition))	= fValue;
-            m_lPosition += m_lSizeofFloat;
+            write_value(fValue);
         }
         inline void WriteString(const CommandType& eType, wchar_t* bstrValue)
         {
@@ -430,8 +411,7 @@ namespace NSHtmlRenderer
             *(m_pBuffer + m_lPosition)	= (BYTE)eType;
             m_lPosition += m_lSizeofBYTE;
 
-            *((int*)(m_pBuffer + m_lPosition))	= lSizeMem;
-            m_lPosition += m_lSizeofLONG;
+            write_value(lSizeMem);
 
             memcpy(m_pBuffer + m_lPosition, bstrValue, lSizeMem);
             m_lPosition += lSizeMem;
@@ -451,8 +431,8 @@ namespace NSHtmlRenderer
             CheckBufferSize(lMem);
 
             *(m_pBuffer + m_lPosition)			= (BYTE)eCommand;	m_lPosition += m_lSizeofBYTE;
-            *((double*)(m_pBuffer + m_lPosition))= f1;				m_lPosition += m_lSizeofDouble;
-            *((double*)(m_pBuffer + m_lPosition))= f2;				m_lPosition += m_lSizeofDouble;
+            write_value(f1);
+            write_value(f2);
         }
 
         inline void Write(const CommandType& eCommand, const double& f1, const double& f2, const double& f3, const double& f4, const double& f5, const double& f6)
@@ -462,12 +442,13 @@ namespace NSHtmlRenderer
             CheckBufferSize(lMem);
 
             *(m_pBuffer + m_lPosition)	= (BYTE)eCommand;	m_lPosition += m_lSizeofBYTE;
-            *((double*)(m_pBuffer + m_lPosition))= f1;		m_lPosition += m_lSizeofDouble;
-            *((double*)(m_pBuffer + m_lPosition))= f2;		m_lPosition += m_lSizeofDouble;
-            *((double*)(m_pBuffer + m_lPosition))= f3;		m_lPosition += m_lSizeofDouble;
-            *((double*)(m_pBuffer + m_lPosition))= f4;		m_lPosition += m_lSizeofDouble;
-            *((double*)(m_pBuffer + m_lPosition))= f5;		m_lPosition += m_lSizeofDouble;
-            *((double*)(m_pBuffer + m_lPosition))= f6;		m_lPosition += m_lSizeofDouble;
+
+            write_value(f1);
+            write_value(f2);
+            write_value(f3);
+            write_value(f4);
+            write_value(f5);
+            write_value(f6);
         }
 
         inline void Write(const CommandType& eCommand, const int& lCount, float* pData)
@@ -478,7 +459,7 @@ namespace NSHtmlRenderer
             CheckBufferSize(lMem);
 
             *(m_pBuffer + m_lPosition)	= (BYTE)eCommand;	m_lPosition += m_lSizeofBYTE;
-            *((int*)(m_pBuffer + m_lPosition))	= lCount;	m_lPosition += m_lSizeofLONG;
+            write_value(lCount);
 
             memcpy(m_pBuffer + m_lPosition, pData, lFloats);
             m_lPosition += lFloats;
@@ -491,7 +472,7 @@ namespace NSHtmlRenderer
             CheckBufferSize(lMem);
 
             *(m_pBuffer + m_lPosition)	= (BYTE)eCommand;	m_lPosition += m_lSizeofBYTE;
-            *((int*)(m_pBuffer + m_lPosition))	= lCount;	m_lPosition += m_lSizeofLONG;
+            write_value(lCount);
 
             memcpy(m_pBuffer + m_lPosition, pData, lFloats);
             m_lPosition += lFloats;

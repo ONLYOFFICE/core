@@ -815,12 +815,12 @@ void XlsConverter::convert(XLS::FORMATTING* formating)
 
 					if (pFind != xls_global_info->mapUsedFormatCode.end())
 					{
-						CP_XML_NODE(L"numFmt")
+						CP_XML_STREAM() << L"<numFmt";
 						{
-							CP_XML_ATTR(L"numFmtId", fmt->ifmt);
-							//CP_XML_ATTR(L"formatCode", XmlUtils::EncodeXmlString(fmt->stFormat, true));
-							CP_XML_ATTR(L"formatCode", fmt->stFormat);
+							CP_XML_STREAM() << L" numFmtId=\"" << fmt->ifmt << L"\"";
+							CP_XML_STREAM() << L" formatCode=\"" << fmt->stFormat << L"\"";
 						}
+						CP_XML_STREAM() << L"/>";
 					}
 				}
 			}

@@ -1052,7 +1052,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
                 //case XLSB::ShowDataAs::NORMAL:
                     //m_oShowDataAs = SimpleTypes::Spreadsheet::EShowDataAs::dataAsNormal;
                     //break;
-                case XLSB::ShowDataAs::DIFFERENCE:
+                case XLSB::ShowDataAs::DIFFERENCE_:
                     m_oShowDataAs = SimpleTypes::Spreadsheet::EShowDataAs::dataAsDifference;
                     break;
                 case XLSB::ShowDataAs::PERCENT:

@@ -32,6 +32,8 @@ def exec_wasm(data, work, compiler_flags, wasm):
     compiler_flags.append("-DBUILDING_ASMJS_MODULE")
     compiler_flags.append("-D_ARM_ALIGN_")
 
+  compiler_flags.append("-Wno-deprecated-register")
+
   # arguments
   arguments = ""
   for item in compiler_flags:

@@ -119,7 +119,7 @@
 	{
 		"name": "a",
 		"folder": "../../../agg-2.4/src/",
-		"files": ["agg_arc.cpp", "agg_vcgen_stroke.cpp", "agg_vcgen_dash.cpp", "agg_trans_affine.cpp", "agg_curves.cpp"]
+		"files": ["agg_arc.cpp", "agg_vcgen_stroke.cpp", "agg_vcgen_dash.cpp", "agg_trans_affine.cpp", "agg_curves.cpp", "agg_image_filters.cpp"]
 	},
 	{
 		"name": "co",

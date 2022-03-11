@@ -38,8 +38,8 @@
 #include <xml/simple_xml_writer.h>
 
 #include "office_elements_create.h"
-
 #include "mathvariant.h"
+#include "../datatypes/common_attlists.h"
 
 
 namespace cpdoccore { 
@@ -119,6 +119,8 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeMathAnnotation;
 
+	_CP_OPT(std::wstring)		encoding_;
+
     CPDOCCORE_DEFINE_VISITABLE();
     CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 private:
@@ -127,9 +129,12 @@ private:
 
 	virtual void serialize(std::wostream & _Wostream);
 
+    virtual void add_text(const std::wstring& Text);
+
+    odf_types::common_math_style_attlist	common_attlist_;
+
     office_element_ptr_array	content_;	
 	_CP_OPT(std::wstring)		text_;
-	_CP_OPT(std::wstring)		encoding_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(math_annotation);

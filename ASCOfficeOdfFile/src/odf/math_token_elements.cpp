@@ -116,6 +116,7 @@ void math_mi::oox_convert(oox::math_context & Context)
 			CP_XML_NODE(L"m:t")
 			{
 				//CP_XML_ATTR(L"xml:space", L"preserve");
+				std::wstring new_text_ = text_.get() + L" ";
 				CP_XML_STREAM() << xml::utils::replace_text_to_xml( *text_ );
 			}
 		}

@@ -1452,6 +1452,11 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 				convert(dynamic_cast<SimpleTypes::CUniversalMeasure *>(oox_paragraph_pr->m_oSpacing->m_oLine.GetPointer()), length_);
 				paragraph_properties->content_.fo_line_height_ = odf_types::line_width(*length_);
 			}
+			else if (rule == SimpleTypes::linespacingruleAtLeast)
+			{
+				convert(dynamic_cast<SimpleTypes::CUniversalMeasure *>(oox_paragraph_pr->m_oSpacing->m_oLine.GetPointer()), 
+					paragraph_properties->content_.style_line_height_at_least_);
+			}
 			else
 			{
 				double val = oox_paragraph_pr->m_oSpacing->m_oLine->ToPoints() * 20;

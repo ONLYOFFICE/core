@@ -473,7 +473,7 @@ namespace NSShapeImageGen
 
 			if (bVector)
 			{
-				//copy source vector image
+	//copy source vector image
 				OOX::CPath pathSaveItem = strSaveDir + oInfo.GetPath2();
                 CDirectory::CopyFile(strFileName, pathSaveItem.GetPath());
 
@@ -493,26 +493,37 @@ namespace NSShapeImageGen
 					oWriterSVG.SetFontManager(m_pFontManager);
 					oWriterSVG.put_Width(WW);
 					oWriterSVG.put_Height(HH);
-                    
-					pMetafile->DrawOnRenderer(&oWriterSVG, 0, 0, WW, HH);
-
+                  
+					HRESULT hRes = S_OK;
+					bool bIsBigestSVG = false;
 					bool bIsRaster = true;
-					oWriterSVG.IsRaster(&bIsRaster);
-
-					LONG lSvgDataSize = 0;
-					oWriterSVG.GetSVGDataSize(&lSvgDataSize);
-
-					bool bIsBigestSVG = (lSvgDataSize > 5 * 1024 *1024);
-
-
-					if(bIsRaster || bIsBigestSVG)
+					try
 					{
-						//случай растрового wmf/emf
+						hRes = pMetafile->DrawOnRenderer(&oWriterSVG, 0, 0, WW, HH);
+					}
+					catch (...)
+					{
+						hRes = S_FALSE;
+					}
+
+					if (hRes == S_OK)
+					{
+						oWriterSVG.IsRaster(&bIsRaster);
+
+						LONG lSvgDataSize = 0;
+						oWriterSVG.GetSVGDataSize(&lSvgDataSize);
+
+						bIsBigestSVG = (lSvgDataSize > 5 * 1024 * 1024);
+					}
+
+					if(bIsRaster || bIsBigestSVG || hRes != S_OK)
+					{
+	//случай растрового wmf/emf или г...
 						if (lWidth <= 0 || lHeight <= 0)
 						{
 							int nMaxPixSize = 1000;
 							int nMinPixSize = 10;
-							//usually bound of raster wmf from 0 to 1
+					//usually bound of raster wmf from 0 to 1
 							if ((nMinPixSize <= w && w <= nMaxPixSize) && (nMinPixSize <= h && h <= nMaxPixSize))
 							{
 								lWidth = -1;

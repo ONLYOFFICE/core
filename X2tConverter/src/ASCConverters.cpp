@@ -4151,6 +4151,12 @@ namespace NExtractTools
 		int nFormatTo = AVS_OFFICESTUDIO_FILE_UNKNOWN;
 		if(NULL != params.m_nFormatTo)
 			nFormatTo = *params.m_nFormatTo;
+
+		if (nFormatTo == AVS_OFFICESTUDIO_FILE_UNKNOWN)
+		{
+			return AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
+		}
+
 		std::wstring sFontPath;
 		if(NULL != params.m_sFontDir)
 			sFontPath = *params.m_sFontDir;

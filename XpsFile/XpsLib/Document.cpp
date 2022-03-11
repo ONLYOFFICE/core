@@ -347,11 +347,10 @@ namespace XPS
 		m_mStaticResources.insert(std::pair<std::wstring, CStaticResource*>(wsPath, pStaticResource));
 		return pStaticResource;
 	}
-	BYTE* CDocument::GetInfo()
+	std::wstring CDocument::GetInfo()
 	{
 		XmlUtils::CXmlLiteReader oReader;
-		NSWasm::CData oRes;
-		oRes.SkipLen();
+		std::wstring sRes = L"{";
 
 		if (oReader.FromStringA(m_wsPath->readXml(L"_rels/.rels")) && oReader.ReadNextNode() && L"Relationships" == oReader.GetName())
 		{
@@ -376,46 +375,40 @@ namespace XPS
 				oReader.Clear();
 				if (oReader.FromStringA(m_wsPath->readXml(wsCoreFile)) && oReader.ReadNextNode() && oReader.GetName() == L"cp:coreProperties")
 				{
-					std::string sRes = "{";
 					while (oReader.ReadNextNode())
 					{
-						std::string sName = oReader.GetNameA();
-						if (sName == "dc:title")
-							sName = "Title";
-						else if (sName == "dc:subject")
-							sName = "Subject";
-						else if (sName == "dc:creator")
-							sName = "Creator";
-						else if (sName == "dcterms:created")
-							sName = "CreationDate";
-						else if (sName == "dcterms:modified")
-							sName = "ModDate";
+						std::wstring sName = oReader.GetName();
+						if (sName == L"dc:title")
+							sName = L"Title";
+						else if (sName == L"dc:subject")
+							sName = L"Subject";
+						else if (sName == L"dc:creator")
+							sName = L"Creator";
+						else if (sName == L"dcterms:created")
+							sName = L"CreationDate";
+						else if (sName == L"dcterms:modified")
+							sName = L"ModDate";
 
-						sRes += "\"";
+						sRes += L"\"";
 						sRes += sName;
-						sRes += "\":\"";
-						sRes += oReader.GetText2A();
-						sRes += "\",";
+						sRes += L"\":\"";
+						sRes += oReader.GetText2();
+						sRes += L"\",";
 					}
-
-					int nW = 0;
-					int nH = 0;
-					GetPageSize(0, nW, nH);
-					sRes += "\"PageSize\":\"";
-					sRes += std::to_string(nW);
-					sRes += "x";
-					sRes += std::to_string(nH);
-					sRes += "\",\"NumberOfPages\":";
-					sRes += std::to_string(GetPageCount());
-					sRes += "}";
-
-					oRes.WriteString((BYTE*)sRes.c_str(), sRes.length());
 				}
 			}
 		}
-		oRes.WriteLen();
-		BYTE* bRes = oRes.GetBuffer();
-		oRes.ClearWithoutAttack();
-		return bRes;
+		int nW = 0;
+		int nH = 0;
+		GetPageSize(0, nW, nH);
+		sRes += L"\"PageSize\":\"";
+		sRes += std::to_wstring(nW);
+		sRes += L"x";
+		sRes += std::to_wstring(nH);
+		sRes += L"\",\"NumberOfPages\":";
+		sRes += std::to_wstring(GetPageCount());
+		sRes += L"}";
+
+		return sRes;
 	}
 }

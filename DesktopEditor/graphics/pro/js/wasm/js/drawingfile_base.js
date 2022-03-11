@@ -38,10 +38,10 @@
             return self["AscViewer"]["baseUrl"] + name;
         return name;
     }
-	
-	var FS = undefined;
-	
-	//desktop_fetch
+
+    var FS = undefined;
+
+    //desktop_fetch
 
     //polyfill
 
@@ -141,48 +141,37 @@
         if (!this.nativeFile)
             return false;
 
-        var _size = Module["_GetSize"](this.nativeFile);
-        if (!_size)
+        var _info = Module["_GetInfo"](this.nativeFile);
+        if (_info == 0)
             return false;
 
-        var _pages = Module["HEAP32"][_size >> 2];
-        var _buffer = new Int32Array(Module["HEAP8"].buffer, _size, 1 + 3 * _pages);
+        var lenArray = new Int32Array(Module["HEAP8"].buffer, _info, 4);
+        if (lenArray == null)
+            return false;
 
-        var _cur = 1;
+        var len = lenArray[0];
+        len -= 4;
+        if (len <= 0)
+            return false;
+
+        var buffer = new Uint8Array(Module["HEAP8"].buffer, _info + 4, len);
+        var reader = new CBinaryReader(buffer, 0, len);
+
+        var _pages = reader.readInt();
         for (var i = 0; i < _pages; i++)
         {
-            this.pages.push({ 
-                "W" : _buffer[_cur++], 
-                "H" : _buffer[_cur++], 
-                "Dpi" : _buffer[_cur++],
-                fonts : [],
-                text : null
-            });
+            var rec = {};
+            rec["W"] = reader.readInt();
+            rec["H"] = reader.readInt();
+            rec["Dpi"] = reader.readInt();
+            rec.fonts = [];
+            rec.text = null;
+            this.pages.push(rec);
         }
-        Module["_free"](_size);
-        
-        var _info = Module["_GetInfo"](this.nativeFile);
-        if (_info)
-        {
-            var lenArray = new Int32Array(Module["HEAP8"].buffer, _info, 4);
-            if (lenArray)
-            {
-                var len = lenArray[0];
-                len -= 4;
-                if (len > 0)
-                {
-                    var buffer = new Uint8Array(Module["HEAP8"].buffer, _info + 4, len);
-                    var reader = new CBinaryReader(buffer, 0, len);
-                    
-                    while (reader.isValid())
-                    {
-                        this.info = reader.readString();
-                    }
-                }
-            }
-            Module["_free"](_info);
-        }
+        var json_info = reader.readString();
+        this.info = JSON.parse(json_info);
 
+        Module["_free"](_info);
         return this.pages.length > 0;
     };
     CFile.prototype["close"] = function()
@@ -213,12 +202,12 @@
         self.drawingFileCurrentPageIndex = pageIndex;
         var retValue = Module["_GetPixmap"](this.nativeFile, pageIndex, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor);
         self.drawingFileCurrentPageIndex = -1;
-		
-		if (this.pages[pageIndex].fonts.length > 0)
+
+        if (this.pages[pageIndex].fonts.length > 0)
         {
             // ждем загрузки шрифтов для этой страницы
             Module["_free"](retValue);
-			retValue = null;
+            retValue = null;
         }
         return retValue;
     };
@@ -375,7 +364,7 @@
 	}
 
     self["AscViewer"]["CheckStreamId"] = function(data, status) {
-		var lenArray = new Int32Array(Module["HEAP8"].buffer, data, 4);
+        var lenArray = new Int32Array(Module["HEAP8"].buffer, data, 4);
         var len = lenArray[0];
         len -= 4;
 
@@ -402,11 +391,11 @@
         {
             self.fontStreams[fileId] = self.fontStreams[fileId] || {};
             self.fontStreams[fileId].pages = self.fontStreams[fileId].pages || [];
-			addToArrayAsDictionary(self.fontStreams[fileId].pages, self.drawingFileCurrentPageIndex);
+            addToArrayAsDictionary(self.fontStreams[fileId].pages, self.drawingFileCurrentPageIndex);
 
             if (self.drawingFile)
             {
-				addToArrayAsDictionary(self.drawingFile.pages[self.drawingFileCurrentPageIndex].fonts, fileId);
+                addToArrayAsDictionary(self.drawingFile.pages[self.drawingFileCurrentPageIndex].fonts, fileId);
             }
 
             if (fileStatus != 2)
@@ -447,10 +436,10 @@
 
         var memoryBuffer = fileId.toUtf8();
         var pointer = Module["_malloc"](memoryBuffer.length);
-    	Module.HEAP8.set(memoryBuffer, pointer);
+        Module.HEAP8.set(memoryBuffer, pointer);
         Module["HEAP8"][status] = (fileStatus == 0) ? 1 : 0;
         return pointer;
-	};
+    };
 
     function fontToMemory(file, isCheck)
     {
@@ -468,7 +457,7 @@
             }
         }
 
-		var stream_index = file.GetStreamIndex();
+        var stream_index = file.GetStreamIndex();
         var streams = AscFonts.getFontStreams();
 
         var stream = AscFonts.getFontStream(stream_index);
@@ -481,7 +470,7 @@
 
         Module["_SetFontBinary"](idPointer, streamPointer, stream.size);
 
-		Module["_free"](streamPointer);
+        Module["_free"](streamPointer);
         Module["_free"](idPointer);
     }
 

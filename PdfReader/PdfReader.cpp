@@ -47,6 +47,7 @@
 #include "lib/xpdf/GlobalParams.h"
 #include "lib/xpdf/ErrorCodes.h"
 #include "lib/xpdf/ImageOutputDev.h"
+#include "lib/xpdf/TextString.h"
 #include "Src/RendererOutputDev.h"
 
 #ifdef BUILDING_WASM_MODULE
@@ -57,7 +58,6 @@
 #include "lib/goo/GList.h"
 #include "../DesktopEditor/common/StringExt.h"
 #include <vector>
-//#include <fstream>
 #endif
 
 namespace PdfReader
@@ -435,94 +435,86 @@ return 0;
 //		return wsXml;
         return L"";
 	}
-#define DICT_LOOKUP(info, obj1, name) \
-    if (info.dictLookup(name, &obj1)->isString())\
+#define DICT_LOOKUP(sName, wsName) \
+    if (info.dictLookup(sName, &obj1)->isString())\
     {\
-        char* str = obj1.getString()->getCString();\
-        int length = obj1.getString()->getLength();\
-        if (str && length > 0)\
-        {\
-            sRes += "\"";\
-            sRes += name;\
-            sRes += "\":\"";\
-            sRes += std::string(str, length);\
-            sRes += "\",";\
-        }\
+        TextString* s = new TextString(obj1.getString());\
+        sRes += L"\"";\
+        sRes += wsName;\
+        sRes += L"\":\"";\
+        sRes += NSStringExt::CConverter::GetUnicodeFromUTF32(s->getUnicode(), s->getLength());\
+        sRes += L"\",";\
+        delete s;\
     }\
 
-#define DICT_LOOKUP_DATE(info, obj1, name) \
-    if (info.dictLookup(name, &obj1)->isString())\
+#define DICT_LOOKUP_DATE(sName, wsName) \
+    if (info.dictLookup(sName, &obj1)->isString())\
     {\
         char* str = obj1.getString()->getCString();\
         int length = obj1.getString()->getLength();\
         if (str && length > 21)\
         {\
-            std::string sNoDate = std::string(str, length);\
-            std::string sDate = sNoDate.substr(2,  4) + '-' + sNoDate.substr(6,  2) + '-' + sNoDate.substr(8,  2) + 'T' +\
-                                sNoDate.substr(10, 2) + ':' + sNoDate.substr(12, 2) + ':' + sNoDate.substr(14, 2) + ".000+" +\
-                                sNoDate.substr(17, 2) + ':' + sNoDate.substr(20, 2);\
-            sRes += "\"";\
-            sRes += name;\
-            sRes += "\":\"";\
+            TextString* s = new TextString(obj1.getString());\
+            std::wstring sNoDate = NSStringExt::CConverter::GetUnicodeFromUTF32(s->getUnicode(), s->getLength());\
+            std::wstring sDate = sNoDate.substr(2,  4) + L'-' + sNoDate.substr(6,  2) + L'-' + sNoDate.substr(8,  2) + L'T' +\
+                                 sNoDate.substr(10, 2) + L':' + sNoDate.substr(12, 2) + L':' + sNoDate.substr(14, 2) + L".000+" +\
+                                 sNoDate.substr(17, 2) + L':' + sNoDate.substr(20, 2);\
+            sRes += L"\"";\
+            sRes += wsName;\
+            sRes += L"\":\"";\
             sRes += sDate;\
-            sRes += "\",";\
+            sRes += L"\",";\
+            delete s;\
         }\
     }\
 
-    BYTE* CPdfReader::GetInfo()
+    std::wstring CPdfReader::GetInfo()
     {
         if (!m_pInternal->m_pPDFDocument)
             return NULL;
 
-        std::string sRes = "{";
+        std::wstring sRes = L"{";
 
         Object info, obj1;
         m_pInternal->m_pPDFDocument->getDocInfo(&info);
         if (info.isDict())
         {
-            DICT_LOOKUP(info, obj1, "Title");
-            DICT_LOOKUP(info, obj1, "Author");
-            DICT_LOOKUP(info, obj1, "Subject");
-            DICT_LOOKUP(info, obj1, "Keywords");
-            DICT_LOOKUP(info, obj1, "Creator");
-            DICT_LOOKUP(info, obj1, "Producer");
+            DICT_LOOKUP("Title",    L"Title");
+            DICT_LOOKUP("Author",   L"Author");
+            DICT_LOOKUP("Subject",  L"Subject");
+            DICT_LOOKUP("Keywords", L"Keywords");
+            DICT_LOOKUP("Creator",  L"Creator");
+            DICT_LOOKUP("Producer", L"Producer");
 
-            DICT_LOOKUP_DATE(info, obj1, "CreationDate");
-            DICT_LOOKUP_DATE(info, obj1, "ModDate");
+            DICT_LOOKUP_DATE("CreationDate", L"CreationDate");
+            DICT_LOOKUP_DATE("ModDate", L"ModDate");
         }
 
         info.free();
         obj1.free();
 
-        std::string version = std::to_string(GetVersion());
-        sRes += "\"Version\":";
+        std::wstring version = std::to_wstring(GetVersion());
+        sRes += L"\"Version\":";
         sRes += version.substr(0, version.length() - 5);
         double nW = 0;
         double nH = 0;
         double nDpi = 0;
         GetPageInfo(0, &nW, &nH, &nDpi, &nDpi);
-        sRes += ",\"PageSize\":\"";
-        version = std::to_string(nW);
+        sRes += L",\"PageSize\":\"";
+        version = std::to_wstring(nW);
         sRes += version.substr(0, version.length() - 4);
-        sRes += "x";
-        version = std::to_string(nH);
+        sRes += L"x";
+        version = std::to_wstring(nH);
         sRes += version.substr(0, version.length() - 4);
-        sRes += "\",\"NumberOfPages\":";
-        sRes += std::to_string(GetPagesCount());
-        sRes += ",\"FastWebView\":";
-        sRes += m_pInternal->m_pPDFDocument->isLinearized() ? "true" : "false";
-        sRes += ",\"Tagged\":";
-        sRes += m_pInternal->m_pPDFDocument->getStructTreeRoot()->isDict() ? "true" : "false";
-        sRes += "}";
+        sRes += L"\",\"NumberOfPages\":";
+        sRes += std::to_wstring(GetPagesCount());
+        sRes += L",\"FastWebView\":";
+        sRes += m_pInternal->m_pPDFDocument->isLinearized() ? L"true" : L"false";
+        sRes += L",\"Tagged\":";
+        sRes += m_pInternal->m_pPDFDocument->getStructTreeRoot()->isDict() ? L"true" : L"false";
+        sRes += L"}";
 
-        NSWasm::CData oRes;
-        oRes.SkipLen();
-        oRes.WriteString((BYTE*)sRes.c_str(), sRes.length());
-        oRes.WriteLen();
-
-        BYTE* bRes = oRes.GetBuffer();
-        oRes.ClearWithoutAttack();
-        return bRes;
+        return sRes;
     }
 #ifdef BUILDING_WASM_MODULE    
     void getBookmars(PDFDoc* pdfDoc, OutlineItem* pOutlineItem, NSWasm::CData& out, int level)

@@ -258,33 +258,25 @@ void CDjVuFileImplementation::ConvertToPdf(const std::wstring& wsDstPath)
 
 	oPdf.SaveToFile(wsDstPath);
 }
-BYTE* CDjVuFileImplementation::GetInfo()
+std::wstring CDjVuFileImplementation::GetInfo()
 {
-    NSWasm::CData oRes;
-    oRes.SkipLen();
-
-    std::string sRes = "{";
+    std::wstring sRes = L"{";
 
     double nW = 0;
     double nH = 0;
     double nDpi = 0;
     GetPageInfo(0, &nW, &nH, &nDpi, &nDpi);
-    sRes += "\"PageSize\":\"";
-    std::string version = std::to_string(nW);
-    sRes += version.substr(0, version.length() - 4);
-    sRes += "x";
-    version = std::to_string(nH);
-    sRes += version.substr(0, version.length() - 4);
-    sRes += "\",\"NumberOfPages\":";
-    sRes += std::to_string(GetPagesCount());
-    sRes += "}";
+    sRes += L"\"PageSize\":\"";
+    std::wstring size = std::to_wstring(nW);
+    sRes += size.substr(0, size.length() - 4);
+    sRes += L"x";
+    size = std::to_wstring(nH);
+    sRes += size.substr(0, size.length() - 4);
+    sRes += L"\",\"NumberOfPages\":";
+    sRes += std::to_wstring(GetPagesCount());
+    sRes += L"}";
 
-    oRes.WriteString((BYTE*)sRes.c_str(), sRes.length());
-
-    oRes.WriteLen();
-    BYTE* bRes = oRes.GetBuffer();
-    oRes.ClearWithoutAttack();
-    return bRes;
+    return sRes;
 }
 
 #ifdef BUILDING_WASM_MODULE

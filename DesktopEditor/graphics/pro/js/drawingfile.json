@@ -23,7 +23,6 @@
 		"_Open",
 		"_Close",
 		"_GetErrorCode",
-		"_GetSize",
 		"_GetInfo",
 		"_GetPixmap",
 		"_GetGlyphs",

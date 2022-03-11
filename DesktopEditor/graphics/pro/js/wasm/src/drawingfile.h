@@ -110,7 +110,7 @@ public:
     {
         return pReader->GetStructure();
     }
-    BYTE* GetInfo()
+    std::wstring GetInfo()
     {
         return pReader->GetInfo();
     }

@@ -77,6 +77,7 @@ public:
 	void         GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY) const;
 	void         DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
     void         ConvertToPdf(const std::wstring& wsDstPath);
+    std::wstring GetInfo();
 
 #ifdef BUILDING_WASM_MODULE
     BYTE*        GetStructure();

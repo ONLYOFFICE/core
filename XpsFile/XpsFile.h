@@ -65,6 +65,7 @@ public:
     virtual int GetPagesCount();
     virtual void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
     virtual void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
+    virtual std::wstring GetInfo();
 
 #ifndef DISABLE_PDF_CONVERTATION
     void ConvertToPdf(const std::wstring& wsDstPath);

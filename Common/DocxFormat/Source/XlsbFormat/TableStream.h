@@ -45,7 +45,6 @@
 
 namespace XLSB
 {
-    class StreamCacheReader;
 
     class TableStream;
     typedef boost::shared_ptr<TableStream>		TableStreamPtr;

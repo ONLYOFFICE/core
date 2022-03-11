@@ -45,8 +45,6 @@ typedef BYTE *LPBYTE;
 
 namespace XLSB
 {
-    class StreamCacheReader;
-
     class PivotTableStream;
     typedef boost::shared_ptr<PivotTableStream>		PivotTableStreamPtr;
 

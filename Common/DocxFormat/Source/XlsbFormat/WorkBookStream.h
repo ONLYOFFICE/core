@@ -45,7 +45,6 @@ typedef BYTE *LPBYTE;
 
 namespace XLSB
 {
-    class StreamCacheReader;
 
     class WorkBookStream;
     typedef boost::shared_ptr<WorkBookStream>		WorkBookStreamPtr;

@@ -45,7 +45,6 @@
 
 namespace XLSB
 {
-    class StreamCacheReader;
 
     class CommentsStream;
     typedef boost::shared_ptr<CommentsStream>		CommentsStreamPtr;

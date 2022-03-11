@@ -43,7 +43,6 @@
 
 namespace XLSB
 {
-    class StreamCacheReader;
 
     class ConnectionsStream;
     typedef boost::shared_ptr<ConnectionsStream>		ConnectionsStreamPtr;

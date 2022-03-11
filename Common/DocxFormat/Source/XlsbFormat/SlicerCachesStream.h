@@ -44,7 +44,6 @@
 
 namespace XLSB
 {
-    class StreamCacheReader;
 
     class SlicerCachesStream;
     typedef boost::shared_ptr<SlicerCachesStream>		SlicerCachesStreamPtr;

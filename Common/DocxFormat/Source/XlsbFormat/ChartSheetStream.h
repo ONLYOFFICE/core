@@ -45,8 +45,6 @@ typedef BYTE *LPBYTE;
 
 namespace XLSB
 {
-    class StreamCacheReader;
-
     class ChartSheetStream;
     typedef boost::shared_ptr<ChartSheetStream>		ChartSheetStreamPtr;
 

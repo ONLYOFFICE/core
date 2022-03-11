@@ -45,7 +45,7 @@ public:
 	CompositeObject();
 	~CompositeObject();
 
-	virtual const bool read				(StreamCacheReaderPtr reader, BaseObject* parent, const bool mandatory); // Read self and children
+        virtual const bool read			(StreamCacheReaderPtr reader, BaseObject* parent, const bool mandatory); // Read self and children
 	virtual const bool loadContent		(BinProcessor& proc) = 0;
 	virtual const bool loadContentRead	(BinReaderProcessor& proc);
 

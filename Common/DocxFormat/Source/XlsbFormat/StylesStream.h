@@ -45,7 +45,6 @@
 
 namespace XLSB
 {
-    class StreamCacheReader;
 
     class StylesStream;
     typedef boost::shared_ptr<StylesStream>		StylesStreamPtr;

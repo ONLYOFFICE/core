@@ -45,8 +45,6 @@ typedef BYTE *LPBYTE;
 
 namespace XLSB
 {
-    class StreamCacheReader;
-
     class ExternalLinkStream;
     typedef boost::shared_ptr<ExternalLinkStream>		ExternalLinkStreamPtr;
 

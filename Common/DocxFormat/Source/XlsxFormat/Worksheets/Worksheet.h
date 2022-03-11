@@ -131,6 +131,7 @@ namespace OOX
 			bool	m_bPrepareForBinaryWriter;
 			bool	m_bWriteDirectlyToFile;
             bool    m_bIsChartSheet;
+            mutable bool bIsWritten;
 
 			nullable<OOX::Spreadsheet::CCols>						m_oCols;
 			nullable<OOX::Spreadsheet::CDimension>					m_oDimension;

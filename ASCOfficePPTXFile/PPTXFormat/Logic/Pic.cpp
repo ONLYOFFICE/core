@@ -226,6 +226,12 @@ namespace PPTX
 
 						unsigned int nXlsbWriterEndPos = oXlsbWriter.GetPositionAbsolute();
 
+						if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB)
+						{
+							dynamic_cast<OOX::Spreadsheet::CXlsb*>(pXlsxEmbedded)->PrepareSi();
+							dynamic_cast<OOX::Spreadsheet::CXlsb*>(pXlsxEmbedded)->PrepareTableFormula();
+                            dynamic_cast<OOX::Spreadsheet::CXlsb*>(pXlsxEmbedded)->ReadSheetData();
+						}
 						xlsxBinaryWriter.WriteMainTableStart(*oDrawingConverter.m_pBinaryWriter);
 						
 						if (nXlsbWriterEndPos  > nXlsbWriterStartPos)

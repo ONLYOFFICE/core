@@ -408,101 +408,181 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             m_oApplyAlignmentFormats        = ptr->ibitAtrAlc;
             m_oApplyAlignmentFormats        = ptr->ibitAtrAlc;
 
-            m_oAsteriskTotals               = ptr->fHideTotAnnotation;
-            m_oVisualTotals                 = ptr->fNotVisualTotals;
+            if(ptr->fHideTotAnnotation)
+                m_oAsteriskTotals           = ptr->fHideTotAnnotation;
+
+            if(!ptr->fNotVisualTotals)
+                m_oVisualTotals             = ptr->fNotVisualTotals;
+
             m_oAutoFormatId                 = ptr->itblAutoFmt;
             m_oCacheId                      = ptr->idCache;
-            m_oChartFormat                  = ptr->dwCrtFmtId;
 
-            m_oColGrandTotals               = ptr->fColGrand;
+            if(ptr->dwCrtFmtId)
+                m_oChartFormat              = ptr->dwCrtFmtId;
+
+            if(!ptr->fColGrand)
+                m_oColGrandTotals           = ptr->fColGrand;
 
             if(!ptr->irstColHdrName.value().empty())
                 m_oColHeaderCaption         = ptr->irstColHdrName.value();
 
-            m_oCompact                      = ptr->fDefaultCompact;
-            m_oCompactData                  = ptr->fCompactData;
-            m_oCreatedVersion               = ptr->bVerSxMacro;
+            if(!ptr->fDefaultCompact)
+                m_oCompact                  = ptr->fDefaultCompact;
 
-            m_oCustomListSort               = !ptr->fDontUseCustomLists;
+            if(!ptr->fCompactData)
+                m_oCompactData              = ptr->fCompactData;
+
+            if(ptr->bVerSxMacro)
+                m_oCreatedVersion           = ptr->bVerSxMacro;
+
+            if(ptr->fDontUseCustomLists)
+                m_oCustomListSort           = !ptr->fDontUseCustomLists;
 
             if(!ptr->irstData.value().empty())
                 m_oDataCaption              = ptr->irstData.value();
 
            // m_oDataOnRows                   = ptr->fDefaultCompact;
             m_oDataPosition                 = ptr->ipos4Data;
-            m_oDisableFieldList             = ptr->fDisableFList;
-            m_oEditData                     = ptr->fEnableDataEd;
-            m_oEnableDrill                  = ptr->fEnableDrilldown;
-            m_oEnableFieldProperties        = ptr->fEnableFieldDialog;
-            m_oEnableWizard                 = ptr->fEnableWizard;
+
+            if(ptr->fDisableFList)
+                m_oDisableFieldList         = ptr->fDisableFList;
+
+            if(ptr->fEnableDataEd)
+                m_oEditData                 = ptr->fEnableDataEd;
+
+            if(!ptr->fEnableDrilldown)
+                m_oEnableDrill              = ptr->fEnableDrilldown;
+
+            if(!ptr->fEnableFieldDialog)
+                m_oEnableFieldProperties    = ptr->fEnableFieldDialog;
+
+            if(!ptr->fEnableWizard)
+                m_oEnableWizard             = ptr->fEnableWizard;
 
             if(!ptr->irstErrorString.value().empty())
                     m_oErrorCaption         = ptr->irstErrorString.value();
 
-            m_oFieldListSortAscending       = ptr->fNonDefaultSortInFlist;
-            m_oFieldPrintTitles             = ptr->fPrintTitles;
+            if(ptr->fNonDefaultSortInFlist)
+                m_oFieldListSortAscending   = ptr->fNonDefaultSortInFlist;
+
+            if(ptr->fPrintTitles)
+                m_oFieldPrintTitles         = ptr->fPrintTitles;
 
             if(!ptr->irstGrand.value().empty())
                     m_oGrandTotalCaption    = ptr->irstGrand.value();
 
-            m_oGridDropZones                = !ptr->fNewDropZones;
-            m_oImmersive                    = ptr->fTurnOffImmersive;
-            m_oIndent                       = ptr->cIndentInc;
-            m_oItemPrintTitles              = ptr->fRepeatItemsOnEachPrintedPage;
+            if(!ptr->fNewDropZones)
+                m_oGridDropZones            = !ptr->fNewDropZones;
+
+            if(!ptr->fTurnOffImmersive)
+                m_oImmersive                = ptr->fTurnOffImmersive;
+
+            if(ptr->cIndentInc != 1)
+                m_oIndent                   = ptr->cIndentInc;
+
+            if(ptr->fRepeatItemsOnEachPrintedPage)
+                m_oItemPrintTitles          = ptr->fRepeatItemsOnEachPrintedPage;
+
             //m_oMdxSubqueries                      = ptr->fDefaultCompact;
 
-            m_oMergeItem                    = ptr->fMergeLabels;
-            m_oMinRefreshableVersion        = ptr->bVerSxUpdateableMin;
+            if(ptr->fMergeLabels)
+                m_oMergeItem                = ptr->fMergeLabels;
+
+            if(ptr->bVerSxUpdateableMin)
+                m_oMinRefreshableVersion    = ptr->bVerSxUpdateableMin;
 
             if(!ptr->irstNullString.value().empty())
-                    m_oMissingCaption    = ptr->irstNullString.value();
+                    m_oMissingCaption       = ptr->irstNullString.value();
 
-            m_oMultipleFieldFilters         = !ptr->fSingleFilterPerField;
+            if(ptr->fSingleFilterPerField)
+                m_oMultipleFieldFilters     = !ptr->fSingleFilterPerField;
 
             if(!ptr->irstName.value().empty())
                     m_oName                 = ptr->irstName.value();
 
-            m_oOutline                      = ptr->fDefaultOutline;
-            m_oOutlineData                  = ptr->fOutlineData;
-            m_oPageOverThenDown             = ptr->fAcrossPageLay;
+            if(ptr->fDefaultOutline)
+                m_oOutline                  = ptr->fDefaultOutline;
 
+            if(ptr->fOutlineData)
+                m_oOutlineData              = ptr->fOutlineData;
+
+            if(ptr->fAcrossPageLay)
+                m_oPageOverThenDown         = ptr->fAcrossPageLay;
 
             if(!ptr->irstPageFieldStyle.value().empty())
                     m_oPageStyle            = ptr->irstPageFieldStyle.value();
 
-            m_oPageWrap                     = ptr->cWrapPage;
+            if(ptr->cWrapPage)
+                m_oPageWrap                 = ptr->cWrapPage;
 
             if(!ptr->irstTableStyle.value().empty())
                     m_oPivotTableStyle      = ptr->irstTableStyle.value();
 
-            m_oPreserveFormatting           = ptr->fPreserveFormatting;
-            m_oPrintDrill                   = ptr->fPrintDrillIndicators;
-            m_oPublished                    = ptr->fPublished;
-            m_oRowGrandTotals               = ptr->fRwGrand;
+            if(!ptr->fPreserveFormatting)
+                m_oPreserveFormatting       = ptr->fPreserveFormatting;
+
+            if(ptr->fPrintDrillIndicators)
+                m_oPrintDrill               = ptr->fPrintDrillIndicators;
+
+            if(ptr->fPublished)
+                m_oPublished                = ptr->fPublished;
+
+            if(!ptr->fRwGrand)
+                m_oRowGrandTotals           = ptr->fRwGrand;
 
             if(!ptr->irstRwHdrName.value().empty())
                     m_oRowHeaderCaption     = ptr->irstRwHdrName.value();
 
-            m_oShowCalcMbrs                 = !ptr->fNotViewCalculatedMembers;
-            m_oShowDataDropDown             = !ptr->fHideDDData;
-            m_oShowDataTips                 = !ptr->fNoPivotTips;
-            m_oShowDrill                    = !ptr->fHideDrillIndicators;
-            m_oShowDropZones                = !ptr->fNoStencil;
-            m_oShowEmptyCol                 = ptr->fIncludeEmptyCol;
-            m_oShowEmptyRow                 = ptr->fIncludeEmptyRw;
-            m_oShowError                    = ptr->fDisplayErrorString;
-            m_oShowHeaders                  = !ptr->fNoHeaders;
-            m_oShowItems                    = ptr->fDisplayImmediateItems;
-            m_oShowMemberPropertyTips       = ptr->fMemPropsInTips;
-            m_oShowMissing                  = ptr->fDisplayNullString;
-            m_oShowMultipleLabel            = ptr->fPageMultipleItemLabel;
-            m_oSubtotalHiddenItems          = ptr->fSubtotalHiddenPageItems;
+            if(ptr->fNotViewCalculatedMembers)
+                m_oShowCalcMbrs             = !ptr->fNotViewCalculatedMembers;
+
+            if(ptr->fHideDDData)
+                m_oShowDataDropDown         = !ptr->fHideDDData;
+
+            if(ptr->fNoPivotTips)
+                m_oShowDataTips             = !ptr->fNoPivotTips;
+
+            if(ptr->fHideDrillIndicators)
+                m_oShowDrill                = !ptr->fHideDrillIndicators;
+
+            if(ptr->fNoStencil)
+                m_oShowDropZones            = !ptr->fNoStencil;
+
+            if(ptr->fIncludeEmptyCol)
+                m_oShowEmptyCol             = ptr->fIncludeEmptyCol;
+
+            if(ptr->fIncludeEmptyRw)
+                m_oShowEmptyRow             = ptr->fIncludeEmptyRw;
+
+            if(ptr->fDisplayErrorString)
+                m_oShowError                = ptr->fDisplayErrorString;
+
+            if(ptr->fNoHeaders)
+                m_oShowHeaders              = !ptr->fNoHeaders;
+
+            if(!ptr->fDisplayImmediateItems)
+                m_oShowItems                = ptr->fDisplayImmediateItems;
+
+            if(!ptr->fMemPropsInTips)
+                m_oShowMemberPropertyTips   = ptr->fMemPropsInTips;
+
+            if(!ptr->fDisplayNullString)
+                m_oShowMissing              = ptr->fDisplayNullString;
+
+            if(!ptr->fPageMultipleItemLabel)
+                m_oShowMultipleLabel        = ptr->fPageMultipleItemLabel;
+
+            if(ptr->fSubtotalHiddenPageItems)
+                m_oSubtotalHiddenItems      = ptr->fSubtotalHiddenPageItems;
 
             if(!ptr->irstTag.value().empty())
                     m_oTag                  = ptr->irstTag.value();
 
-            m_oUpdatedVersion               = ptr->bVerSxLastUpdated;
-            m_oUseAutoFormatting            = ptr->fAutoFormat;
+            if(ptr->bVerSxLastUpdated)
+                m_oUpdatedVersion           = ptr->bVerSxLastUpdated;
+
+            if(ptr->fAutoFormat)
+                m_oUseAutoFormatting        = ptr->fAutoFormat;
 
             if(!ptr->irstVacateStyle.value().empty())
                     m_oVacatedStyle         = ptr->irstVacateStyle.value();
@@ -955,8 +1035,12 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
         if(ptr != nullptr)
         {
-            m_oBaseField    = ptr->isxvd;
-            m_oBaseItem     = ptr->isxvi;
+            if(ptr->isxvd != -1)
+                m_oBaseField = ptr->isxvd;
+
+            if(ptr->isxvi != 1048832)
+                m_oBaseItem = ptr->isxvi;
+
             m_oFld          = ptr->isxvdData;
             m_oNumFmtId     = ptr->ifmt.ifmt;
 
@@ -965,10 +1049,10 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
             switch(ptr->df.value().get())
             {
-                case XLSB::ShowDataAs::NORMAL:
-                    m_oShowDataAs = SimpleTypes::Spreadsheet::EShowDataAs::dataAsNormal;
-                    break;
-                case XLSB::ShowDataAs::DIFFERENCE_:
+                //case XLSB::ShowDataAs::NORMAL:
+                    //m_oShowDataAs = SimpleTypes::Spreadsheet::EShowDataAs::dataAsNormal;
+                    //break;
+                case XLSB::ShowDataAs::DIFFERENCE:
                     m_oShowDataAs = SimpleTypes::Spreadsheet::EShowDataAs::dataAsDifference;
                     break;
                 case XLSB::ShowDataAs::PERCENT:
@@ -996,9 +1080,9 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
             switch(ptr->iiftab.value().get())
             {
-                case XLSB::DataConsolidationFunction::SUM:
-                    m_oSubtotal = SimpleTypes::Spreadsheet::EDataConsolidateFunction::functionSum;
-                    break;
+                //case XLSB::DataConsolidationFunction::SUM:
+                    //m_oSubtotal = SimpleTypes::Spreadsheet::EDataConsolidateFunction::functionSum;
+                    //break;
                 case XLSB::DataConsolidationFunction::COUNT:
                     m_oSubtotal = SimpleTypes::Spreadsheet::EDataConsolidateFunction::functionCount;
                     break;
@@ -1259,27 +1343,41 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
         if(ptr != nullptr)
         {
-            m_oChild            = ptr->fHasChildrenEst;
-            m_oExpanded         = ptr->fDrilledMember;
-            m_oDrillAcross      = ptr->fCollapsedMember;
-            m_oCalculated       = ptr->fFormula;
-            m_oHidden           = ptr->fHidden;
-            m_oMissing          = ptr->fMissing;
+            if(ptr->fHasChildrenEst)
+                m_oChild        = ptr->fHasChildrenEst;
+
+            if(ptr->fDrilledMember)
+                m_oExpanded     = ptr->fDrilledMember;
+
+            if(!ptr->fCollapsedMember)
+                m_oDrillAcross  = ptr->fCollapsedMember;
+
+            if(ptr->fFormula)
+                m_oCalculated   = ptr->fFormula;
+
+            if(ptr->fHidden)
+                m_oHidden       = ptr->fHidden;
+
+            if(ptr->fMissing)
+                m_oMissing      = ptr->fMissing;
 
             if(!ptr->displayName.value().empty())
-                    m_oUserCaption = ptr->displayName.value();
+                m_oUserCaption  = ptr->displayName.value();
 
-            m_oCharacter        = ptr->fOlapFilterSelected; //?
-            m_oHideDetails      = !ptr->fHideDetail;
+            if(ptr->fOlapFilterSelected)
+                m_oCharacter    = ptr->fOlapFilterSelected; //?
+
+            if(ptr->fHideDetail)
+                m_oHideDetails  = !ptr->fHideDetail;
 
             if(ptr->iCache != -1)
                 m_oItemIndex    = ptr->iCache;
 
             switch(ptr->itmtype.value().get())
             {
-                case XLSB::PivotItemType::PITDATA:
-                    m_oItemType = SimpleTypes::Spreadsheet::EPivotItemType::typeData;
-                    break;
+                //case XLSB::PivotItemType::PITDATA:
+                //    m_oItemType = SimpleTypes::Spreadsheet::EPivotItemType::typeData;
+                 //   break;
                 case XLSB::PivotItemType::PITDEFAULT:
                     m_oItemType = SimpleTypes::Spreadsheet::EPivotItemType::typeDefault;
                     break;
@@ -1500,9 +1598,14 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
         if(ptr != nullptr)
         {
-            m_oAllDrilled                   = ptr->fDrilledLevel;
-            m_oAutoShow                     = ptr->fAutoShow;
-            m_oAvgSubtotal                  = ptr->fAverage;
+            if(ptr->fDrilledLevel)
+                m_oAllDrilled               = ptr->fDrilledLevel;
+
+            if(ptr->fAutoShow)
+                m_oAutoShow                 = ptr->fAutoShow;
+
+            if(ptr->fAverage)
+                m_oAvgSubtotal              = ptr->fAverage;
 
             if(ptr->sxaxis.bCol)
                 m_oAxis = SimpleTypes::Spreadsheet::EPivotAxisType::axisCol;
@@ -1513,46 +1616,102 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             else if(ptr->sxaxis.bData)
                 m_oAxis = SimpleTypes::Spreadsheet::EPivotAxisType::axisValues;
 
-            m_oCompact                      = ptr->fCompact;
-            m_oCountASubtotal               = ptr->fCounta;
-            m_oCountSubtotal                = ptr->fCount;
+            if(!ptr->fCompact)
+                m_oCompact                  = ptr->fCompact;
+
+            if(ptr->fCounta)
+                m_oCountASubtotal           = ptr->fCounta;
+
+            if(ptr->fCount)
+                m_oCountSubtotal            = ptr->fCount;
             //m_oDataField                    = ptr->fDrilledLevel;
             m_oDataSourceSort               = ptr->fTensorSort;
-            m_oDefaultAttributeDrillState   = ptr->fItemsDrilledByDefault;
-            m_oDefaultSubtotal              = ptr->fDefault;
-            m_oDragOff                      = ptr->fDragToHide;
-            m_oDragToCol                    = ptr->fDragToColumn;
-            m_oDragToData                   = ptr->fDragToData;
-            m_oDragToPage                   = ptr->fDragToPage;
-            m_oDragToRow                    = ptr->fDragToRow;
-            m_oHiddenLevel                  = ptr->fHiddenLvl;
-            m_oHideNewItems                 = ptr->fHideNewItems;
-            m_oIncludeNewItemsInFilter      = ptr->fFilterInclusive;
-            m_oInsertBlankRow               = ptr->fInsertBlankRow;
-            m_oInsertPageBreak              = ptr->fPageBreaksBetweenItems;
-            m_oItemPageCount                = ptr->citmAutoShow;
-            m_oMaxSubtotal                  = ptr->fMax;
-            m_oMeasureFilter                = ptr->fHasAdvFilter;
-            m_oMinSubtotal                  = ptr->fMin;
-            m_oMultipleItemSelectionAllowed = ptr->fEnableMultiplePageItems;
+
+            if(ptr->fItemsDrilledByDefault)
+                m_oDefaultAttributeDrillState = ptr->fItemsDrilledByDefault;
+
+            if(!ptr->fDefault)
+                m_oDefaultSubtotal          = ptr->fDefault;
+
+            if(!ptr->fDragToHide)
+                m_oDragOff                  = ptr->fDragToHide;
+
+            if(!ptr->fDragToColumn)
+                m_oDragToCol                = ptr->fDragToColumn;
+
+            if(!ptr->fDragToData)
+                m_oDragToData               = ptr->fDragToData;
+
+            if(!ptr->fDragToPage)
+                m_oDragToPage               = ptr->fDragToPage;
+
+            if(!ptr->fDragToRow)
+                m_oDragToRow                = ptr->fDragToRow;
+
+            if(ptr->fHiddenLvl)
+                m_oHiddenLevel              = ptr->fHiddenLvl;
+
+            if(ptr->fHideNewItems)
+                m_oHideNewItems             = ptr->fHideNewItems;
+
+            if(ptr->fFilterInclusive)
+                m_oIncludeNewItemsInFilter  = ptr->fFilterInclusive;
+
+            if(ptr->fInsertBlankRow)
+                m_oInsertBlankRow           = ptr->fInsertBlankRow;
+
+            if(ptr->fPageBreaksBetweenItems)
+                m_oInsertPageBreak          = ptr->fPageBreaksBetweenItems;
+
+            if(ptr->citmAutoShow != 10)
+                m_oItemPageCount            = ptr->citmAutoShow;
+
+            if(ptr->fMax)
+                m_oMaxSubtotal              = ptr->fMax;
+
+            if(ptr->fHasAdvFilter)
+                m_oMeasureFilter            = ptr->fHasAdvFilter;
+
+            if(ptr->fMin)
+                m_oMinSubtotal              = ptr->fMin;
+
+            if(ptr->fEnableMultiplePageItems)
+                m_oMultipleItemSelectionAllowed = ptr->fEnableMultiplePageItems;
 
             if(!ptr->irstName.value().empty())
                     m_oName                 = ptr->irstName.value();
 
-            m_oNonAutoSortDefault           = ptr->fNotAutoSortDft;
+            if(ptr->fNotAutoSortDft)
+                m_oNonAutoSortDefault       = ptr->fNotAutoSortDft;
+
             m_oNumFmtId                     = ptr->ifmt;
-            m_oOutline                      = ptr->fOutline;
-            m_oProductSubtotal              = ptr->fProduct;
+
+            if(!ptr->fOutline)
+                m_oOutline                  = ptr->fOutline;
+
+            if(ptr->fProduct)
+                m_oProductSubtotal          = ptr->fProduct;
 
             if(ptr->fAutoShow)
                 m_oRankBy                   = ptr->isxdiAutoShow;
 
-            m_oServerField                  = ptr->fServerBased;
-            m_oShowAll                      = ptr->fShowAllItems;
-            m_oShowDropDowns                = !ptr->fHideDD;
-            m_oShowPropAsCaption            = ptr->fMemPropDisplayInCaption;
-            m_oShowPropCell                 = ptr->fMemPropDisplayInReport;
-            m_oShowPropTip                  = ptr->fMemPropDisplayInTip;
+            if(ptr->fServerBased)
+                m_oServerField              = ptr->fServerBased;
+
+            if(!ptr->fShowAllItems)
+                m_oShowAll                  = ptr->fShowAllItems;
+
+            if(ptr->fHideDD)
+                m_oShowDropDowns            = !ptr->fHideDD;
+
+            if(ptr->fMemPropDisplayInCaption)
+                m_oShowPropAsCaption        = ptr->fMemPropDisplayInCaption;
+
+            if(ptr->fMemPropDisplayInReport)
+                m_oShowPropCell             = ptr->fMemPropDisplayInReport;
+
+            if(ptr->fMemPropDisplayInTip)
+                m_oShowPropTip              = ptr->fMemPropDisplayInTip;
 
             if(!ptr->fAutoSort)
                 m_oSortType                 = SimpleTypes::Spreadsheet::EFieldSortType::sortManual;
@@ -1562,21 +1721,32 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
                 m_oSortType                 = SimpleTypes::Spreadsheet::EFieldSortType::sortAscending;
 
 
-            m_oStdDevPSubtotal              = ptr->fStdevp;
-            m_oStdDevSubtotal               = ptr->fStdev;
+            if(ptr->fStdevp)
+                m_oStdDevPSubtotal          = ptr->fStdevp;
+
+            if(ptr->fStdev)
+                m_oStdDevSubtotal           = ptr->fStdev;
 
             if(!ptr->irstSub.value().empty())
                     m_oSubtotalCaption      = ptr->irstSub.value();
 
-            m_oSubtotalTop                  = ptr->fSubtotalAtTop;
-            m_oSumSubtotal                  = ptr->fSum;
-            m_oTopAutoShow                  = ptr->fTopAutoShow;
+            if(!ptr->fSubtotalAtTop)
+                m_oSubtotalTop              = ptr->fSubtotalAtTop;
+
+            if(ptr->fSum)
+                m_oSumSubtotal              = ptr->fSum;
+
+            if(!ptr->fTopAutoShow)
+                m_oTopAutoShow              = ptr->fTopAutoShow;
 
             if(!ptr->irstMemberPropertyCaption.value().empty())
                     m_oUniqueMemberProperty = ptr->irstMemberPropertyCaption.value();
 
-            m_oVarPSubtotal                 = ptr->fVarp;
-            m_oVarSubtotal                  = ptr->fVar;
+            if(ptr->fVarp)
+                m_oVarPSubtotal             = ptr->fVarp;
+
+            if(ptr->fVar)
+                m_oVarSubtotal              = ptr->fVar;
         }
     }
 	void CPivotField::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -2020,28 +2190,40 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             else if(ptr->pruleheaderdata.sxaxis.bData)
                 m_oAxis = SimpleTypes::Spreadsheet::EPivotAxisType::axisValues;
 
-            m_oCacheIndex                   = ptr->pruleheaderdata.fCacheBased;
-            m_oCollapsedLevelsAreSubtotals  = ptr->pruleheaderdata.fFuzzy; //fPart?
-            m_oDataOnly                     = ptr->pruleheaderdata.fDataOnly;
+            if(ptr->pruleheaderdata.fCacheBased)
+                m_oCacheIndex               = ptr->pruleheaderdata.fCacheBased;
+
+            if(ptr->pruleheaderdata.fFuzzy)
+                m_oCollapsedLevelsAreSubtotals  = ptr->pruleheaderdata.fFuzzy; //fPart?
+
+            if(!ptr->pruleheaderdata.fDataOnly)
+                m_oDataOnly                 = ptr->pruleheaderdata.fDataOnly;
+
             m_oField                        = ptr->pruleheaderdata.isxvd;
             m_oFieldPosition                = ptr->pruleheaderdata.iDim;
-            m_oGrandCol                     = ptr->pruleheaderdata.fGrandCol;
-            m_oGrandRow                     = ptr->pruleheaderdata.fGrandRw;
-            m_oLabelOnly                    = ptr->pruleheaderdata.fLabelOnly;
+
+            if(ptr->pruleheaderdata.fGrandCol)
+                m_oGrandCol                 = ptr->pruleheaderdata.fGrandCol;
+            if(ptr->pruleheaderdata.fGrandRw)
+                m_oGrandRow                 = ptr->pruleheaderdata.fGrandRw;
+
+            if(ptr->pruleheaderdata.fLabelOnly)
+                m_oLabelOnly                = ptr->pruleheaderdata.fLabelOnly;
 
             if(!ptr->pruleheaderdata.rfxLoc.toString().empty())
                     m_oOffsetRef            = ptr->pruleheaderdata.rfxLoc.toString();
 
-            m_oOutline                      = ptr->pruleheaderdata.fLineMode;
+            if(!ptr->pruleheaderdata.fLineMode)
+                m_oOutline                  = ptr->pruleheaderdata.fLineMode;
 
             switch(ptr->pruleheaderdata.isxrtype)
             {
                 case 0x00:
                     m_oType = SimpleTypes::Spreadsheet::EPivotAreaType::areaNone;
                     break;
-                case 0x01:
-                    m_oType = SimpleTypes::Spreadsheet::EPivotAreaType::areaNormal;
-                    break;
+                //case 0x01:
+                    //m_oType = SimpleTypes::Spreadsheet::EPivotAreaType::areaNormal;
+                    //break;
                 case 0x02:
                     m_oType = SimpleTypes::Spreadsheet::EPivotAreaType::areaData;
                     break;
@@ -2322,17 +2504,26 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
         if(ptr != nullptr)
         {
-            m_oBackgroundQuery              = ptr->fBackgroundQuery;
-            m_oEnableRefresh                = ptr->fEnableRefresh;
+            if(ptr->fBackgroundQuery)
+                m_oBackgroundQuery          = ptr->fBackgroundQuery;
+
+            if(!ptr->fEnableRefresh)
+                m_oEnableRefresh            = ptr->fEnableRefresh;
 
             if(!ptr->stRelIDRecords.value.value().empty())
                 m_oRid                      = ptr->stRelIDRecords.value.value();
 
-            m_oInvalid                      = ptr->fInvalid;
-            m_oCreatedVersion               = ptr->bVerCacheCreated;
+            if(ptr->fInvalid)
+                m_oInvalid                  = ptr->fInvalid;
+
+            if(ptr->bVerCacheCreated != 0)
+                m_oCreatedVersion           = ptr->bVerCacheCreated;
+
             m_oMinRefreshableVersion        = ptr->bVerCacheRefreshableMin;
             m_oMissingItemsLimit            = ptr->citmGhostMax;
-            m_oOptimizeMemory               = ptr->fOptimizeCache;
+
+            if(ptr->fOptimizeCache)
+                m_oOptimizeMemory           = ptr->fOptimizeCache;
 
             if(ptr->fSaveData)
                 m_oRecordCount              = ptr->cRecords;
@@ -2342,13 +2533,26 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
             m_oRefreshedDateIso             = std::to_wstring(ptr->xnumRefreshedDate.data.value);
 
-            m_oRefreshedVersion             = ptr->bVerCacheLastRefresh;
-            m_oRefreshOnLoad                = ptr->fRefreshOnLoad;
-            m_oSaveData                     = ptr->fSaveData;
-            m_oSupportAdvancedDrill         = ptr->fSupportAttribDrill;
-            m_oSupportSubquery              = ptr->fSupportSubquery;
-            m_oTupleCache                   = ptr->fSheetData;
-            m_oUpgradeOnRefresh             = ptr->fUpgradeOnRefresh;
+            if(ptr->bVerCacheLastRefresh != 0)
+                m_oRefreshedVersion         = ptr->bVerCacheLastRefresh;
+
+            if(ptr->fRefreshOnLoad)
+                m_oRefreshOnLoad            = ptr->fRefreshOnLoad;
+
+            if(!ptr->fSaveData)
+                m_oSaveData                 = ptr->fSaveData;
+
+            if(ptr->fSupportAttribDrill)
+                m_oSupportAdvancedDrill     = ptr->fSupportAttribDrill;
+
+            if(ptr->fSupportSubquery)
+                m_oSupportSubquery          = ptr->fSupportSubquery;
+
+            if(ptr->fSheetData)
+                m_oTupleCache               = ptr->fSheetData;
+
+            if(ptr->fUpgradeOnRefresh)
+                m_oUpgradeOnRefresh         = ptr->fUpgradeOnRefresh;
         }
     }
 	void CPivotCacheDefinition::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -2510,22 +2714,33 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             if(!ptr->stFldCaption.value().empty())
                 m_oCaption                  = ptr->stFldCaption.value();
 
-            m_oDatabaseField                = ptr->fSrcField;
-            m_oServerField                  = ptr->fServerBased;
+            if(!ptr->fSrcField)
+                m_oDatabaseField            = ptr->fSrcField;
+
+            if(ptr->fServerBased)
+                m_oServerField              = ptr->fServerBased;
 
             if(!ptr->fldFmla.getAssembledFormula().empty())
                 m_oFormula                  = ptr->fldFmla.getAssembledFormula();
 
-            m_oHierarchy                    = ptr->ihdb;
-            m_oMemberPropertyField          = ptr->fOlapMemPropField;
+            if(ptr->ihdb != 0)
+                m_oHierarchy                = ptr->ihdb;
+
+            if(ptr->fOlapMemPropField)
+                m_oMemberPropertyField      = ptr->fOlapMemPropField;
 
             if(!ptr->stMemPropName.value().empty())
                 m_oPropertyName             = ptr->stMemPropName.value();
 
-            m_oSqlType                      = ptr->wTypeSql;
-            m_oUniqueList                   = !ptr->fCantGetUniqueItems;
+            if(ptr->wTypeSql != 0)
+                m_oSqlType                  = ptr->wTypeSql;
 
-            m_oLevel                        = ptr->isxtl;
+            if(ptr->fCantGetUniqueItems)
+                m_oUniqueList               = !ptr->fCantGetUniqueItems;
+
+            if(ptr->isxtl != 0)
+                m_oLevel                    = ptr->isxtl;
+
             m_oMappingCount                 = ptr->cIsxtmps; //?
             m_oNumFmtId                     = ptr->ifmt;
         }
@@ -4203,7 +4418,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
         if(ptr != nullptr)
         {
-            m_oAutoPage = ptr->fAutoPage;
+            if(!ptr->fAutoPage)
+                m_oAutoPage = ptr->fAutoPage;
         }
     }
 	void CConsolidationSource::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)

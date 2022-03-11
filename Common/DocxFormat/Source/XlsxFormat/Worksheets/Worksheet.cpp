@@ -59,6 +59,7 @@ namespace OOX
 			m_pComments = NULL;
 			m_pThreadedComments = NULL;
             m_bIsChartSheet = false;
+            bIsWritten = false;
 
 			CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
 			if (xlsx)
@@ -78,6 +79,7 @@ namespace OOX
 			m_pComments = NULL;
 			m_pThreadedComments = NULL;
             m_bIsChartSheet = isChartSheet;
+            bIsWritten = false;
 
 			CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
 			if (xlsx)
@@ -799,7 +801,10 @@ namespace OOX
 			}
 		}
 		void CWorksheet::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
-		{
+        {
+            if (bIsWritten) return;
+
+            bIsWritten = true;
 			if (!m_bWriteDirectlyToFile)
 			{
 				NSStringUtils::CStringBuilder sXml;
@@ -808,7 +813,40 @@ namespace OOX
 					toXML(sXml);
 				toXMLEnd(sXml);
 
-				NSFile::CFileBinary::SaveToFile(oPath.GetPath(), sXml.GetData());
+                //NSFile::CFileBinary::SaveToFile(oPath.GetPath(), sXml.GetData());
+                //for memory optimization fro large files
+
+                wchar_t* pXmlData = sXml.GetBuffer();
+                LONG lwcharLen = (LONG)sXml.GetCurSize();
+                const LONG lcurrentLen = 10485760; //10 Mbyte
+                LONG nCycles = lwcharLen / lcurrentLen;
+
+                LONG lLen = 0;
+                BYTE* pData = NULL;
+                NSFile::CFileBinary oFile;
+                oFile.CreateFileW(oPath.GetPath());
+
+                while(nCycles--)
+                {
+                    NSFile::CUtf8Converter::GetUtf8StringFromUnicode(pXmlData, lcurrentLen, pData, lLen);
+
+                    oFile.WriteFile(pData, lLen);
+
+                    pXmlData += lcurrentLen;
+
+                    RELEASEARRAYOBJECTS(pData);
+                }
+
+                if(lwcharLen % lcurrentLen > 0)
+                {
+                    NSFile::CUtf8Converter::GetUtf8StringFromUnicode(pXmlData, lwcharLen % lcurrentLen, pData, lLen);
+
+                    oFile.WriteFile(pData, lLen);
+
+                    RELEASEARRAYOBJECTS(pData);
+                }
+
+                oFile.CloseFile();
 
 				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 				IFileContainer::Write( oPath, oDirectory, oContent );

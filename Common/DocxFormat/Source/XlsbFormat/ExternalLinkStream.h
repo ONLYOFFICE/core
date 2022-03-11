@@ -63,6 +63,7 @@ namespace XLSB
 
         XLS::BaseObjectPtr               m_EXTERNALLINK;
 
+        void UpdateXti(XLS::GlobalWorkbookInfo* xls_global_info, const std::wstring & rId);
     };
 
 }

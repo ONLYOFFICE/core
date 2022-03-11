@@ -151,6 +151,8 @@ public:
 	struct _xti
 	{
 		int							iSup;
+        _INT32                      itabFirst; //firstSheet in biff12
+        _INT32                      itabLast; //lastSheet in biff12
 		std::wstring				link;
 		std::vector<std::wstring>*	pNames = NULL;
 	};

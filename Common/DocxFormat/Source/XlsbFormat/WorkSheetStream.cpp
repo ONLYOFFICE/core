@@ -183,6 +183,12 @@ const bool WorkSheetStream::loadContent(BinProcessor& proc)
                     proc.SkipRecord();
             }break;
 
+            case rt_BeginUserShViews:
+            {
+                while(proc.getNextRecordType() != rt_EndUserShViews)
+                    proc.SkipRecord();
+            }break;
+
             case rt_WsFmtInfo:
             {
                 if (proc.optional<WsFmtInfo>())

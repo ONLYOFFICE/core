@@ -169,7 +169,10 @@
             this.pages.push(rec);
         }
         var json_info = reader.readString();
-        this.info = JSON.parse(json_info);
+        try
+        {
+            this.info = JSON.parse(json_info);
+        } catch(err) {}
 
         Module["_free"](_info);
         return this.pages.length > 0;

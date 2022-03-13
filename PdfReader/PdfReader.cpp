@@ -42,6 +42,7 @@
 #include "../DesktopEditor/raster/BgraFrame.h"
 #include "../DesktopEditor/graphics/IRenderer.h"
 #include "../DesktopEditor/common/Directory.h"
+#include "../DesktopEditor/common/StringExt.h"
 
 #include "lib/xpdf/PDFDoc.h"
 #include "lib/xpdf/GlobalParams.h"
@@ -56,7 +57,6 @@
 #include "lib/xpdf/Link.h"
 #include "lib/xpdf/TextOutputDev.h"
 #include "lib/goo/GList.h"
-#include "../DesktopEditor/common/StringExt.h"
 #include <vector>
 #endif
 
@@ -435,6 +435,7 @@ return 0;
 //		return wsXml;
         return L"";
 	}
+
 #define DICT_LOOKUP(sName, wsName) \
     if (info.dictLookup(sName, &obj1)->isString())\
     {\
@@ -442,7 +443,9 @@ return 0;
         sRes += L"\"";\
         sRes += wsName;\
         sRes += L"\":\"";\
-        sRes += NSStringExt::CConverter::GetUnicodeFromUTF32(s->getUnicode(), s->getLength());\
+        std::wstring sValue = NSStringExt::CConverter::GetUnicodeFromUTF32(s->getUnicode(), s->getLength());\
+        NSStringExt::Replace(sValue, L"\"", L"\\\"");\
+        sRes += sValue;\
         sRes += L"\",";\
         delete s;\
     }\
@@ -459,6 +462,7 @@ return 0;
             std::wstring sDate = sNoDate.substr(2,  4) + L'-' + sNoDate.substr(6,  2) + L'-' + sNoDate.substr(8,  2) + L'T' +\
                                  sNoDate.substr(10, 2) + L':' + sNoDate.substr(12, 2) + L':' + sNoDate.substr(14, 2) + L".000+" +\
                                  sNoDate.substr(17, 2) + L':' + sNoDate.substr(20, 2);\
+            NSStringExt::Replace(sDate, L"\"", L"\\\"");\
             sRes += L"\"";\
             sRes += wsName;\
             sRes += L"\":\"";\

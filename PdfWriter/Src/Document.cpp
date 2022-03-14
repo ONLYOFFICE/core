@@ -1118,19 +1118,24 @@ namespace PdfWriter
 			((CArrayObject*)pID)->Insert(pObject, new CBinaryObject(arrId, 16), true);
 		}
 
-        // m_pTrailer не должен быть stream
-        m_pTrailer->Remove("Length");
-        m_pTrailer->Remove("Filter");
-        m_pTrailer->Remove("DecodeParms");
-        m_pTrailer->Remove("F");
-        m_pTrailer->Remove("FFilter");
-        m_pTrailer->Remove("FDecodeParms");
-        m_pTrailer->Remove("DL");
-        m_pTrailer->Remove("Type");
-        m_pTrailer->Remove("Index");
-        m_pTrailer->Remove("W");
+		// Если m_pTrailer поток перекрестных ссылок, то при дозаписи тоже должен быть поток
+		if (m_pTrailer->Get("Type"))
+		{
+			m_pTrailer->Remove("Length");
+			m_pTrailer->Remove("Filter");
+			m_pTrailer->Remove("DecodeParms");
+			m_pTrailer->Remove("F");
+			m_pTrailer->Remove("FFilter");
+			m_pTrailer->Remove("FDecodeParms");
+			m_pTrailer->Remove("DL");
+			m_pTrailer->Remove("Type");
+			m_pTrailer->Remove("Index");
+			m_pTrailer->Remove("W");
 
-		m_pLastXref->WriteToStream(pStream, pEncrypt);
+			m_pLastXref->WriteToStream(pStream, pEncrypt, true);
+		}
+		else
+			m_pLastXref->WriteToStream(pStream, pEncrypt);
 
 		RELEASEOBJECT(pStream);
 		RELEASEOBJECT(m_pLastXref);

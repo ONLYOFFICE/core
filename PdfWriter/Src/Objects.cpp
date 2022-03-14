@@ -788,7 +788,7 @@ namespace PdfWriter
 		pStream->WriteUInt(m_unAddr);
 		pStream->WriteStr("\012%%EOF\012");
 	}
-    void CXref::WriteToStream(CStream* pStream, CEncrypt* pEncrypt)
+    void CXref::WriteToStream(CStream* pStream, CEncrypt* pEncrypt, bool bStream)
 	{
 		char sBuf[SHORT_BUFFER_SIZE];
 		char* pBuf;
@@ -820,6 +820,104 @@ namespace PdfWriter
 				pStream->WriteStr("\012endobj\012");
 			}
 			pXref = pXref->m_pPrev;
+		}
+
+		if (bStream)
+		{
+			CXref* pPrev = m_pPrev;
+			if (m_pPrev)
+				while (pPrev->m_pPrev) pPrev = pPrev->m_pPrev;
+			unsigned int unMaxObjId = m_pPrev ? pPrev->m_arrEntries.size() + pPrev->m_unStartOffset : m_arrEntries.size() + m_unStartOffset;
+
+			m_pTrailer->Add("Type", "XRef");
+			m_pTrailer->Add("Size", unMaxObjId + 1);
+			if (m_pPrev)
+				m_pTrailer->Add("Prev", pPrev->m_unAddr);
+			CArrayObject* pW = new CArrayObject();
+			m_pTrailer->Add("W",  pW);
+			pW->Add(1);
+			pW->Add(3);
+			pW->Add(2);
+			CArrayObject* pIndex = new CArrayObject();
+			m_pTrailer->Add("Index",  pIndex);
+
+			CNumberObject* pLength = new CNumberObject(0);
+			m_pTrailer->Add("Length", pLength);
+			CStream* pTrailerStream = new CMemoryStream();
+#ifndef FILTER_FLATE_DECODE_DISABLED
+			m_pTrailer->SetFilter(STREAM_FILTER_FLATE_DECODE);
+#endif
+			CDictObject* pTrailer = m_pTrailer;
+
+			// Index должен быть в порядке возрастания
+			pXref = this;
+			CXref* q, *p, *pr, *out = NULL;
+			while (pXref)
+			{
+				q = pXref;
+				pXref = pXref->m_pPrev;
+				for ( p = out, pr = NULL; p && (q->m_unStartOffset > p->m_unStartOffset); pr = p, p = p->m_pPrev);
+				if (pr)
+				{
+					q->m_pPrev = p;
+					pr->m_pPrev = q;
+				}
+				else
+				{
+					q->m_pPrev = out;
+					out = q;
+				}
+			}
+
+			pXref = out;
+			int nStreamOffset = pStream->Tell();
+			while (pXref)
+			{
+				pIndex->Add(pXref->m_unStartOffset);
+				pIndex->Add((unsigned int)pXref->m_arrEntries.size() + (pXref->m_pPrev ? 0 : 1));
+
+				for (unsigned int unIndex = 0, unCount = pXref->m_arrEntries.size(); unIndex < unCount; unIndex++)
+				{
+					TXrefEntry* pEntry = pXref->GetEntry(unIndex);
+
+					if (pEntry->nEntryType == FREE_ENTRY)
+						pTrailerStream->WriteStr("00 ");
+					else if (pEntry->nEntryType == IN_USE_ENTRY)
+						pTrailerStream->WriteStr("01 ");
+					pTrailerStream->WriteHex(pEntry->unByteOffset, 6);
+					pTrailerStream->WriteChar(' ');
+					pTrailerStream->WriteHex(pEntry->unGenNo, 4);
+					pTrailerStream->WriteStr("\015\012");
+				}
+
+				pXref = pXref->m_pPrev;
+			}
+			pTrailerStream->WriteStr("01 ");
+			pTrailerStream->WriteHex(nStreamOffset, 6);
+			pTrailerStream->WriteStr(" 0000\012");
+
+			// pEncrypt = NULL поток перекрестных ссылок не шифруется
+			CStream* pFlateStream = new CMemoryStream();
+			pFlateStream->WriteStream(pTrailerStream, pTrailer->GetFilter(), NULL);
+			pLength->Set(pFlateStream->Size());
+
+			pBuf = sBuf;
+			pBuf = ItoA(pBuf, unMaxObjId, pEndPtr);
+			*pBuf++ = ' ';
+			pBuf = ItoA(pBuf, 0, pEndPtr);
+			StrCpy(pBuf, " obj\012", pEndPtr);
+
+			pStream->WriteStr(sBuf);
+			pTrailer->WriteValue(pStream, NULL);
+			pStream->WriteStr("\012stream\015\012");
+			pStream->WriteStream(pFlateStream, 0, NULL);
+			pStream->WriteStr("\012endstream\012endobj\012startxref\012");
+			pStream->WriteUInt(nStreamOffset);
+			pStream->WriteStr("\012%%EOF\012");
+
+			RELEASEOBJECT(pFlateStream);
+			RELEASEOBJECT(pTrailerStream);
+			return;
 		}
 
 		// Записываем cross-reference table

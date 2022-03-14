@@ -158,6 +158,12 @@ namespace PdfWriter
 			Write((const BYTE*)c_pHexStrings[(unsigned char)(nValue >> 8)], 2);
 			Write((const BYTE*)c_pHexStrings[(unsigned char)nValue], 2);
 		}
+		else if (6 == nLen)
+		{
+			Write((const BYTE*)c_pHexStrings[(unsigned char)(nValue >> 16)], 2);
+			Write((const BYTE*)c_pHexStrings[(unsigned char)(nValue >> 8)], 2);
+			Write((const BYTE*)c_pHexStrings[(unsigned char)nValue], 2);
+		}
 	}
     void CStream::WriteReal(float fValue)
 	{

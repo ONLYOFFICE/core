@@ -34,6 +34,7 @@
 
 #include "../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../DesktopEditor/common/File.h"
+#include "../../DesktopEditor/common/StringExt.h"
 
 namespace XPS
 {

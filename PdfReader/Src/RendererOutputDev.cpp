@@ -73,6 +73,12 @@ EM_JS(int, js_free_id, (unsigned char* data), {
 #endif
 #endif
 
+#if defined(_MSC_VER)
+#define OO_INLINE __forceinline
+#else
+#define OO_INLINE inline
+#endif
+
 class CMemoryFontStream
 {
 public:
@@ -3852,6 +3858,22 @@ namespace PdfReader
         DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
         m_pRenderer->DrawImage(&oImage, 0 + dShiftX, 0 + dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
     }
+
+    OO_INLINE bool CheckMask(const int& nComponentsCount, const int* pMaskColors, const unsigned char* pLine)
+    {
+        bool isMask = true;
+        for (int nCompIndex = 0; nCompIndex < nComponentsCount; ++nCompIndex)
+        {
+            if (pMaskColors[nCompIndex * 2] > pLine[nCompIndex] || pLine[nCompIndex] > pMaskColors[nCompIndex * 2 + 1])
+            {
+                isMask = false;
+                break;
+            }
+        }
+
+        return isMask;
+    }
+
     void RendererOutputDev::drawImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, int *pMaskColors, GBool bInlineImg, GBool interpolate)
     {
         if (m_bDrawOnlyText)
@@ -3870,46 +3892,56 @@ namespace PdfReader
         Aggplus::CImage oImage;
         oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
 
-
         int nComponentsCount = pColorMap->getNumPixelComps();
 
         // Пишем данные в pBufferPtr
         ImageStream *pImageStream = new ImageStream(pStream, nWidth, nComponentsCount, pColorMap->getBits());
-
         pImageStream->reset();
 
         unsigned char unAlpha = m_bTransparentGroup ? 255.0 * pGState->getFillOpacity() : 255;
 
-        unsigned char unPixel[32] ={ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        for (int nY = nHeight - 1; nY >= 0; nY--)
+        int nStride = pImageStream->getVals();
+        int nComps = pImageStream->getComps();
+        int nWidthMax = nStride / nComps;
+        int nCheckWidth = std::min(nWidth, nWidthMax);
+
+        // fast realization for some colorspaces (for wasm module)
+        int nColorMapType = pColorMap->getFillType();
+        GfxColorComp** pColorMapLookup = pColorMap->getLookup();
+
+        for (int nY = nHeight - 1; nY >= 0; --nY)
         {
-            for (int nX = 0; nX < nWidth; nX++)
+            unsigned char* pLine = pImageStream->getLine();
+            unsigned char* pLineDst = pBufferPtr + 4 * nWidth * nY;
+
+            for (int nX = 0; nX < nCheckWidth; ++nX)
             {
-                int nIndex = 4 * (nX + nY * nWidth);
-                pImageStream->getPixel(unPixel);
-
-                GfxRGB oRGB;
-                pColorMap->getRGB(unPixel, &oRGB, gfxRenderingIntentAbsoluteColorimetric);
-                pBufferPtr[nIndex + 0] = colToByte(oRGB.b);
-                pBufferPtr[nIndex + 1] = colToByte(oRGB.g);
-                pBufferPtr[nIndex + 2] = colToByte(oRGB.r);
-                pBufferPtr[nIndex + 3] = unAlpha;
-
-                if (pMaskColors)
+                if (2 == nColorMapType)
                 {
-                    bool isMask = true;
-                    for (int nCompIndex = 0; nCompIndex < nComponentsCount; ++nCompIndex)
-                    {
-                        if (pMaskColors[nCompIndex * 2] > unPixel[nCompIndex] || unPixel[nCompIndex] > pMaskColors[nCompIndex * 2 + 1])
-                        {
-                            isMask = false;
-                            break;
-                        }
-                    }
-
-                    if (isMask)
-                        pBufferPtr[nIndex + 3] = 0;
+                    pLineDst[2] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
+                    pLineDst[1] = colToByte(clip01(pColorMapLookup[1][pLine[1]]));
+                    pLineDst[0] = colToByte(clip01(pColorMapLookup[2][pLine[2]]));
                 }
+                else if (1 == nColorMapType)
+                {
+                    pLineDst[0] = pLineDst[1] = pLineDst[2] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
+                }
+                else
+                {
+                    GfxRGB oRGB;
+                    pColorMap->getRGB(pLine, &oRGB, gfxRenderingIntentAbsoluteColorimetric);
+                    pBufferPtr[0] = colToByte(oRGB.b);
+                    pBufferPtr[1] = colToByte(oRGB.g);
+                    pBufferPtr[2] = colToByte(oRGB.r);
+                }
+
+                if (pMaskColors && CheckMask(nComponentsCount, pMaskColors, pLine))
+                    pLineDst[3] = 0;
+                else
+                    pLineDst[3] = unAlpha;
+
+                pLine += nComps;
+                pLineDst += 4;
             }
         }
 

@@ -406,6 +406,15 @@ GBool ImageStream::getPixel(Guchar *pix) {
   return gTrue;
 }
 
+int ImageStream::getVals()
+{
+    return nVals;
+}
+int ImageStream::getComps()
+{
+    return nComps;
+}
+
 Guchar *ImageStream::getLine() {
   Gulong buf, bitMask;
   int bits;

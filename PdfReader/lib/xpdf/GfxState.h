@@ -107,6 +107,10 @@ static inline Gushort colToWord(GfxColorComp x) {
   return (Gushort)(((x << 16) - x + 0x8000) >> 16);
 }
 
+static inline GfxColorComp clip01(GfxColorComp x) {
+  return (x < 0) ? 0 : (x > gfxColorComp1) ? gfxColorComp1 : x;
+}
+
 //------------------------------------------------------------------------
 // GfxColor
 //------------------------------------------------------------------------
@@ -971,6 +975,10 @@ public:
   void getRGB(Guchar *x, GfxRGB *rgb, GfxRenderingIntent ri);
   void getCMYK(Guchar *x, GfxCMYK *cmyk, GfxRenderingIntent ri);
   void getColor(Guchar *x, GfxColor *color);
+
+  // onlyoffice
+  int getFillType();
+  GfxColorComp** getLookup() { return lookup; }
 
   // Convert a line of <n> pixels to 8-bit colors.
   void getGrayByteLine(Guchar *in, Guchar *out, int n, GfxRenderingIntent ri);

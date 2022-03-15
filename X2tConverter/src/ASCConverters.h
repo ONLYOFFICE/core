@@ -110,7 +110,8 @@ namespace NExtractTools
 	_UINT32 csv2xlsx_dir	(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
 	_UINT32 csv2xlst_bin    (const std::wstring &sFrom, const std::wstring &sTo, InputParams& params);
     _UINT32 xlst2csv		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
-    _UINT32 xlsx2csv		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
+	_UINT32 xlsx_dir2csv	(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
+	_UINT32 xlsx2csv		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
     _UINT32 xlst_bin2csv    (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
 
     _UINT32 bin2pdf			(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams& params);

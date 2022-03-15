@@ -126,7 +126,7 @@ struct STextPFException9
             pBulletAutoNumberScheme->ReadFromStream(pStream);
             m_optBulletAutoNumberScheme = pBulletAutoNumberScheme;
         }
-        else if (m_masks.m_bulletHasScheme)
+        else if (m_optfBulletHasAutoNumber.get_value_or(false))
         {
             auto pBulletAutoNumberScheme = new STextAutoNumberScheme;
             pBulletAutoNumberScheme->m_nStartNum = 1;

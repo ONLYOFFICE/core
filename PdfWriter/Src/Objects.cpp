@@ -841,16 +841,14 @@ namespace PdfWriter
 			pW->Add(2);
 			CArrayObject* pIndex = new CArrayObject();
 			pTrailer->Add("Index",  pIndex);
-
 			CNumberObject* pLength = new CNumberObject(0);
 			pTrailer->Add("Length", pLength);
-			CStream* pTrailerStream = new CMemoryStream();
 #ifndef FILTER_FLATE_DECODE_DISABLED
 			pTrailer->SetFilter(STREAM_FILTER_FLATE_DECODE);
 			pTrailer->Add("Filter", "FlateDecode");
 #endif
 
-			// Index должен быть в порядке возрастания
+			// Сортируем pXref, Index должен быть в порядке возрастания
 			pXref = this;
 			CXref* q, *p, *pr, *out = NULL;
 			while (pXref)
@@ -870,8 +868,10 @@ namespace PdfWriter
 				}
 			}
 
+			// Записываем поток
 			pXref = out;
 			int nStreamOffset = pStream->Tell();
+			CStream* pTrailerStream = new CMemoryStream();
 			while (pXref)
 			{
 				pIndex->Add(pXref->m_unStartOffset);
@@ -901,7 +901,7 @@ namespace PdfWriter
 			pTrailerStream->WriteChar('\000');
 			pTrailerStream->WriteChar('\000');
 
-			// pEncrypt = NULL поток перекрестных ссылок не шифруется
+			// Фильтруем поток, pEncrypt = NULL поток перекрестных ссылок не шифруется
 			CStream* pFlateStream = new CMemoryStream();
 			pFlateStream->WriteStream(pTrailerStream, pTrailer->GetFilter(), NULL);
 			pLength->Set(pFlateStream->Size());
@@ -912,6 +912,7 @@ namespace PdfWriter
 			pBuf = ItoA(pBuf, 0, pEndPtr);
 			StrCpy(pBuf, " obj\012", pEndPtr);
 
+			// Записываем cross-reference table
 			pStream->WriteStr(sBuf);
 			pTrailer->WriteValue(pStream, NULL);
 			pStream->WriteStr("\012stream\015\012");

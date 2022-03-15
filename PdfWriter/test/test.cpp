@@ -50,6 +50,8 @@ int main()
         NSFile::CFileBinary::Remove(sDstFile);
 
     bool bResult = pReader->LoadFromFile(sSrcFile);
+    if (!bResult)
+        bResult = pReader->GetError() == 0;
     if (bResult && pReader->EditPdf(&pdfWriter))
     {
         if (pReader->EditPage(0))

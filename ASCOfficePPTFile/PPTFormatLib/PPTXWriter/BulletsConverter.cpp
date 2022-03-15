@@ -200,10 +200,6 @@ void BulletsConverter::ConvertAllBullets(PPTX::Logic::TextParagraphPr &oPPr, CTe
                     oPPr.ParagraphBullet.m_Bullet.reset(pBuBlip);
                 }
             }
-            else if (pPF->bulletChar.is_init() && (pPF->bulletAutoNum.is_init() ? pPF->bulletAutoNum->isDefault() : true))
-            {
-                FillBuChar(oPPr.ParagraphBullet, pPF->bulletChar.get(), pPF);
-            }
             else if (pPF->bulletAutoNum.is_init())
             {
                 auto pBuAutoNum = new PPTX::Logic::BuAutoNum;
@@ -212,6 +208,10 @@ void BulletsConverter::ConvertAllBullets(PPTX::Logic::TextParagraphPr &oPPr, CTe
                     pBuAutoNum->startAt = pPF->bulletAutoNum->startAt.get();
                 if (pPF->bulletAutoNum->type.is_init())
                     pBuAutoNum->type = pPF->bulletAutoNum->type.get();
+            }
+            else if (pPF->bulletChar.is_init())
+            {
+                FillBuChar(oPPr.ParagraphBullet, pPF->bulletChar.get(), pPF);
             }
             else
             {

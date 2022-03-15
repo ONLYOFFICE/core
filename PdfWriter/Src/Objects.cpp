@@ -829,25 +829,26 @@ namespace PdfWriter
 				while (pPrev->m_pPrev) pPrev = pPrev->m_pPrev;
 			unsigned int unMaxObjId = m_pPrev ? pPrev->m_arrEntries.size() + pPrev->m_unStartOffset : m_arrEntries.size() + m_unStartOffset;
 
-			m_pTrailer->Add("Type", "XRef");
-			m_pTrailer->Add("Size", unMaxObjId + 1);
+			CDictObject* pTrailer = m_pTrailer;
+			pTrailer->Add("Type", "XRef");
+			pTrailer->Add("Size", unMaxObjId + 1);
 			if (m_pPrev)
-				m_pTrailer->Add("Prev", pPrev->m_unAddr);
+				pTrailer->Add("Prev", pPrev->m_unAddr);
 			CArrayObject* pW = new CArrayObject();
-			m_pTrailer->Add("W",  pW);
+			pTrailer->Add("W",  pW);
 			pW->Add(1);
 			pW->Add(3);
 			pW->Add(2);
 			CArrayObject* pIndex = new CArrayObject();
-			m_pTrailer->Add("Index",  pIndex);
+			pTrailer->Add("Index",  pIndex);
 
 			CNumberObject* pLength = new CNumberObject(0);
-			m_pTrailer->Add("Length", pLength);
+			pTrailer->Add("Length", pLength);
 			CStream* pTrailerStream = new CMemoryStream();
 #ifndef FILTER_FLATE_DECODE_DISABLED
-			m_pTrailer->SetFilter(STREAM_FILTER_FLATE_DECODE);
+			pTrailer->SetFilter(STREAM_FILTER_FLATE_DECODE);
+			pTrailer->Add("Filter", "FlateDecode");
 #endif
-			CDictObject* pTrailer = m_pTrailer;
 
 			// Index должен быть в порядке возрастания
 			pXref = this;
@@ -881,20 +882,24 @@ namespace PdfWriter
 					TXrefEntry* pEntry = pXref->GetEntry(unIndex);
 
 					if (pEntry->nEntryType == FREE_ENTRY)
-						pTrailerStream->WriteStr("00 ");
+						pTrailerStream->WriteChar('\000');
 					else if (pEntry->nEntryType == IN_USE_ENTRY)
-						pTrailerStream->WriteStr("01 ");
-					pTrailerStream->WriteHex(pEntry->unByteOffset, 6);
-					pTrailerStream->WriteChar(' ');
-					pTrailerStream->WriteHex(pEntry->unGenNo, 4);
-					pTrailerStream->WriteStr("\015\012");
+						pTrailerStream->WriteChar('\001');
+					pTrailerStream->WriteChar((unsigned char)(pEntry->unByteOffset >> 16));
+					pTrailerStream->WriteChar((unsigned char)(pEntry->unByteOffset >> 8));
+					pTrailerStream->WriteChar((unsigned char)(pEntry->unByteOffset));
+					pTrailerStream->WriteChar((unsigned char)(pEntry->unGenNo >> 8));
+					pTrailerStream->WriteChar((unsigned char)(pEntry->unGenNo));
 				}
 
 				pXref = pXref->m_pPrev;
 			}
-			pTrailerStream->WriteStr("01 ");
-			pTrailerStream->WriteHex(nStreamOffset, 6);
-			pTrailerStream->WriteStr(" 0000\012");
+			pTrailerStream->WriteChar('\001');
+			pTrailerStream->WriteChar((unsigned char)(nStreamOffset >> 16));
+			pTrailerStream->WriteChar((unsigned char)(nStreamOffset >> 8));
+			pTrailerStream->WriteChar((unsigned char)(nStreamOffset));
+			pTrailerStream->WriteChar('\000');
+			pTrailerStream->WriteChar('\000');
 
 			// pEncrypt = NULL поток перекрестных ссылок не шифруется
 			CStream* pFlateStream = new CMemoryStream();

@@ -3930,9 +3930,9 @@ namespace PdfReader
                 {
                     GfxRGB oRGB;
                     pColorMap->getRGB(pLine, &oRGB, gfxRenderingIntentAbsoluteColorimetric);
-                    pBufferPtr[0] = colToByte(oRGB.b);
-                    pBufferPtr[1] = colToByte(oRGB.g);
-                    pBufferPtr[2] = colToByte(oRGB.r);
+                    pLineDst[0] = colToByte(oRGB.b);
+                    pLineDst[1] = colToByte(oRGB.g);
+                    pLineDst[2] = colToByte(oRGB.r);
                 }
 
                 if (pMaskColors && CheckMask(nComponentsCount, pMaskColors, pLine))

@@ -3889,9 +3889,6 @@ namespace PdfReader
         if (!pBufferPtr)
             return;
 
-        Aggplus::CImage oImage;
-        oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
-
         int nComponentsCount = pColorMap->getNumPixelComps();
 
         // Пишем данные в pBufferPtr
@@ -3944,6 +3941,15 @@ namespace PdfReader
                 pLineDst += 4;
             }
         }
+
+        bool bIsFlip = false;
+#ifdef USE_GRAPHICS_JPEG2000
+        if (pStream->getKind() == strJPX)
+            bIsFlip = true;
+#endif
+
+        Aggplus::CImage oImage;
+        oImage.Create(pBufferPtr, nWidth, nHeight, bIsFlip ? (4 * nWidth) : (-4 * nWidth));
 
 		delete pImageStream;
 

@@ -472,7 +472,7 @@ namespace PPTX
 						pXlsxEmbedded->Read(oox_unpacked);
 						pXlsxEmbedded->PrepareWorkbook();
 
-						unsigned int nXlsbWriterEndPos = xlsxBinaryWriter.m_nLastFilePosOffset = oXlsbWriter.GetPositionAbsolute() - nXlsbWriterStartPos;
+						unsigned int nXlsbWriterEndPos = oXlsbWriter.GetPositionAbsolute() ;
 
 						if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB)
 						{
@@ -484,7 +484,7 @@ namespace PPTX
 						//oDrawingConverter.m_pBinaryWriter->WriteStringUtf8(xlsxBinaryWriter.WriteFileHeader(0, BinXlsxRW::g_nFormatVersionNoBase64));
 						xlsxBinaryWriter.WriteMainTableStart(*oDrawingConverter.m_pBinaryWriter);
 
-						if (nXlsbWriterEndPos - nXlsbWriterStartPos > 0)
+						if (nXlsbWriterEndPos  > nXlsbWriterStartPos)
 						{
 							xlsxBinaryWriter.WriteBinaryTable(oXlsbWriter.GetBuffer() + nXlsbWriterStartPos, nXlsbWriterEndPos - nXlsbWriterStartPos);
 						}

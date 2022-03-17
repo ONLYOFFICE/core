@@ -257,7 +257,7 @@ void ProtoTable::fillBorders(std::vector<CElementPtr> &arrSpliters)
 
         findCellPos(top, left, posFirstTop, posFirstLeft);
         findCellPos(bottom, right, posLastTop, posLastLeft);
-        if (!isDefaultBoard(pBorder))
+        if (!isDefaultBoard(pBorder) || true) // It doesn't need any more bug 54124 reopen #3
         {
             setBorders(posFirstTop, posFirstLeft, posLastTop, posLastLeft, ptrBorder);
         }

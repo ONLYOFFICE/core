@@ -1394,7 +1394,11 @@ namespace NSCSS
                     return ConvertPtToPx(dValue);
                 case Default:
                 case Point:
-                    return std::to_wstring(static_cast<short int>(dValue));
+                    // Для того чтобы значения не выходили за максимальные нужно их так сказать масштабировать
+                    // Для этого берем за стандарт ширину html страницы = 1366 px и страницу A4 = 210mm
+                    // (1366 / (m_nDpi / 25.4) - Взятая ширина в мм
+                    return std::to_wstring(static_cast<short int>(dValue / (1366 / (m_nDpi / 25.4)) * 210));
+                    //С pt невозможно вычислить универсальные значения, так как всё зависит от имеющейся ширины
                 case Cantimeter:
                     return ConvertPtToCm(dValue);
                 case Millimeter:

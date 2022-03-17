@@ -86,7 +86,7 @@ void Format::readFields(CFRecord& record)
 }
 int Format::serialize(std::wostream & stream)
 {
-	if ((ifmt > 4 && ifmt < 9) || (ifmt > 40 && ifmt < 45)) return 0;
+	if (ifmt < 5 || (ifmt > 8 && ifmt < 23) || (ifmt > 36 && ifmt < 41) || (ifmt > 44 && ifmt < 50)) return 0;
 
 	stream << L"<numFmt";
 	{

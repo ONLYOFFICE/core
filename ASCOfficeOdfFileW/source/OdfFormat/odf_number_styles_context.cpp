@@ -310,9 +310,6 @@ void odf_number_styles_context::create_default(int oox_num_fmt, std::wstring for
 	case 39:	formatCode = L"#,##0.00;(#,##0.00)"; state.ods_type =office_value_type::Float; break;
 	case 40:	formatCode = L"#,##0.00;[Red](#,##0.00)"; state.ods_type =office_value_type::Float; break;
 
-	case 41:	formatCode = L"";					state.ods_type =office_value_type::Currency; break;
-	case 42:	formatCode = L"";					state.ods_type =office_value_type::Currency; break;
-
 	case 45:	formatCode = L"mm:ss";			state.ods_type =office_value_type::Time; break;
 	case 46:	formatCode = L"[h]:mm:ss";		state.ods_type =office_value_type::Time; break;
 	case 47:	formatCode = L"mmss.0";			state.ods_type =office_value_type::Time; break;
@@ -321,25 +318,25 @@ void odf_number_styles_context::create_default(int oox_num_fmt, std::wstring for
 
 	default:
 /////////////////////////////////// с неопределенным formatCode .. он задается в файле
-		if (oox_num_fmt >=5  && oox_num_fmt <=8)	state.ods_type =office_value_type::Currency; 
-		if (oox_num_fmt >=43 && oox_num_fmt <=44)	state.ods_type =office_value_type::Currency; 
+			 if (oox_num_fmt >= 5  && oox_num_fmt <= 8)		state.ods_type =office_value_type::Currency; 
+		else if (oox_num_fmt >= 41 && oox_num_fmt <= 44)	state.ods_type =office_value_type::Currency; 
 		
-		if (oox_num_fmt >=27 && oox_num_fmt <=31)	state.ods_type =office_value_type::Date; 
-		if (oox_num_fmt >=50 && oox_num_fmt <=54)	state.ods_type =office_value_type::Date; 
-		if (oox_num_fmt >=57 && oox_num_fmt <=58)	state.ods_type =office_value_type::Date; 
-		if (oox_num_fmt ==36)						state.ods_type =office_value_type::Date; 
+		else if (oox_num_fmt >= 27 && oox_num_fmt <= 31)	state.ods_type =office_value_type::Date;
+		else if (oox_num_fmt >= 50 && oox_num_fmt <= 54)	state.ods_type =office_value_type::Date;
+		else if (oox_num_fmt >= 57 && oox_num_fmt <= 58)	state.ods_type =office_value_type::Date;
+		else if (oox_num_fmt == 36)							state.ods_type =office_value_type::Date;
 
-		if (oox_num_fmt >=32 && oox_num_fmt <=35)	state.ods_type =office_value_type::Time; 
-		if (oox_num_fmt >=55 && oox_num_fmt <=56)	state.ods_type =office_value_type::Time; 
+		else if (oox_num_fmt >= 32 && oox_num_fmt <= 35)	state.ods_type =office_value_type::Time;
+		else if (oox_num_fmt >= 55 && oox_num_fmt <= 56)	state.ods_type =office_value_type::Time;
 
-		if (oox_num_fmt >=60 && oox_num_fmt <=62)	state.ods_type =office_value_type::Float; 
-		if (oox_num_fmt >=69 && oox_num_fmt <=70)	state.ods_type =office_value_type::Float; 
+		else if (oox_num_fmt >= 60 && oox_num_fmt <= 62)	state.ods_type =office_value_type::Float;
+		else if (oox_num_fmt >= 69 && oox_num_fmt <= 70)	state.ods_type =office_value_type::Float;
 
-		if (oox_num_fmt >=67 && oox_num_fmt <=68)	state.ods_type =office_value_type::Percentage; 
+		else if (oox_num_fmt >= 67 && oox_num_fmt <= 68)	state.ods_type =office_value_type::Percentage;
 
-		if (oox_num_fmt >=71 && oox_num_fmt <=74)	state.ods_type =office_value_type::Date; 
-		if (oox_num_fmt >=75 && oox_num_fmt <=80)	state.ods_type =office_value_type::Time; 
-		if (oox_num_fmt ==81)						state.ods_type =office_value_type::Date; 
+		else if (oox_num_fmt >= 71 && oox_num_fmt <= 74)	state.ods_type =office_value_type::Date;
+		else if (oox_num_fmt >= 75 && oox_num_fmt <= 80)	state.ods_type =office_value_type::Time;
+		else if (oox_num_fmt == 81)							state.ods_type =office_value_type::Date;
 	}
     boost::algorithm::split(state.format_code, formatCode, boost::algorithm::is_any_of(L";"), boost::algorithm::token_compress_on);
 
@@ -522,7 +519,7 @@ void odf_number_styles_context::create_numbers(number_format_state & state, offi
 	if (number_)
 	{
 		number_->number_min_integer_digits_	= min_digit;
-		number_->number_decimal_places_		= min_decimal;
+		number_->number_decimal_places_		= min_digit ? min_decimal.get_value_or(0) : min_decimal;
 
 		if (root_elm && bText)
 			number_->number_grouping_ = true;
@@ -830,9 +827,9 @@ void odf_number_styles_context::detect_format(number_format_state & state)
 	boost::wsmatch result;
 	bool b = boost::regex_search(state.format_code[0], result, re);
 	
-	if (b && result.size() == 3)
+	if (b && result.size() >= 3)
 	{
-		state.currency_str=result[1];
+		state.currency_str = result[1];
 		int code = -1; 
 		try
 		{

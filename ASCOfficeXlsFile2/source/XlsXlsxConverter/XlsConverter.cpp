@@ -808,7 +808,7 @@ void XlsConverter::convert(XLS::FORMATTING* formating)
 				{
 					XLS::Format* fmt = dynamic_cast<XLS::Format*>(xls_global_info->m_arNumFormats[i].get());
 
-					if (fmt->ifmt < 23 || (fmt->ifmt > 36 && fmt->ifmt < 41) || (fmt->ifmt > 44 && fmt->ifmt < 50))
+					if (fmt->ifmt < 5 || (fmt->ifmt > 8 && fmt->ifmt < 23) || (fmt->ifmt > 36 && fmt->ifmt < 41) || (fmt->ifmt > 44 && fmt->ifmt < 50))
 						continue;
 
 					std::map<_UINT16, bool>::iterator pFind = xls_global_info->mapUsedFormatCode.find(fmt->ifmt);

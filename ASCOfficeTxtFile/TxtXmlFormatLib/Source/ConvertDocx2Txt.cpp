@@ -80,23 +80,25 @@ namespace Docx2Txt
 		OOX::CDocx		m_inputFile;
 
     private:
-        void convert(std::vector<OOX::WritingElement *> & items, std::vector<std::wstring>& textOut, bool isFirstLevel,
+        void convert(std::vector<OOX::WritingElement *> & items, std::vector<std::wstring>& textOut, bool bEnter,
 							 OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles *pStyles);
        
-		std::wstring convert( OOX::Logic::CRun* pRun, OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles* pStyles);
-			
+		void convert(OOX::WritingElement *pItem, std::vector<std::wstring>& textOut, bool bEnter,
+			OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles *pStyles);
+		
+		void convert(OOX::Logic::CParagraph *pParagraph, std::vector<std::wstring>& textOut, bool bEnter,
+			OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles *pStyles);
+
+		std::wstring convert( OOX::Logic::CRun *pRun, OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles* pStyles);
+		
 		std::vector<bool> m_Field;
 
-		int m_lPercent;
-        int m_lAddition;
-        bool m_bCancelled;
         int ListCount;
         std::vector<int> Lists;
 		
-		int levelPrev;
+		std::vector<int> levelPrev;
 		int listNumPrev;
 
-		std::wstring convert(OOX::Logic::CParagraph * pParagraph, OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles *pStyles);
 
         size_t NoteCount;
         std::map<std::wstring, std::vector<std::wstring>> Notes;
@@ -157,7 +159,7 @@ namespace Docx2Txt
 	const std::wstring Converter_Impl::m_letters = _T("abcdefghijklmnopqrstuvwxyz");
 
 	Converter_Impl::Converter_Impl()
-		:  m_lAddition(0), Lists(NULL), NoteCount(0), levelPrev(-1), listNumPrev(1)
+		:  Lists(NULL), NoteCount(0), listNumPrev(1)
 	{
 	}
 
@@ -178,12 +180,14 @@ namespace Docx2Txt
 
 			for (int i = 0; i < 9 * ListCount; i++)
 				Lists.push_back(-1);
+
+			for (int i = 0; i < ListCount; i++)
+				levelPrev.push_back(-1);
 		}
 
 		if (!pDocument) return;
 		if (pDocument->m_arrItems.empty()) return;
 
-		m_lAddition = 800000;
 		Notes.clear();
 		
 		convert(pDocument->m_arrItems, m_outputFile.m_listContent, true, pDocument, pNumbering, pStyles);
@@ -231,72 +235,98 @@ namespace Docx2Txt
 	{
 		m_outputFile.writeAnsi(path);
 	}
+	void Converter_Impl::convert(OOX::WritingElement* item, std::vector<std::wstring>& textOut, bool bEnter,
+		OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles *pStyles)
+	{
+		if (!item) return;
 
+		switch (item->getType())
+		{
+			case OOX::et_w_p:
+			{
+				convert(dynamic_cast<OOX::Logic::CParagraph*>(item), textOut, bEnter, pDocument, pNumbering, pStyles);
+			}break;
+			case OOX::et_w_r:
+			{
+				textOut.push_back(convert((dynamic_cast<OOX::Logic::CRun*>(item)), pDocument, pNumbering, pStyles));
+			}break;
+			case OOX::et_w_sdt:
+			{
+				OOX::Logic::CSdt *sdt = dynamic_cast<OOX::Logic::CSdt*>(item);
+				if (sdt)
+					convert(sdt->m_oSdtContent.GetPointer(), textOut, bEnter, pDocument, pNumbering, pStyles);
+			}break;
+			default:
+			{
+				OOX::WritingElementWithChilds<OOX::WritingElement> *item_with_items = dynamic_cast<OOX::WritingElementWithChilds<OOX::WritingElement>*>(item);
 
-    void Converter_Impl::convert(std::vector<OOX::WritingElement*> & items, std::vector<std::wstring>& textOut,
-										bool isFirstLevel, OOX::CDocument *pDocument,  OOX::CNumbering* pNumbering, OOX::CStyles *pStyles)
+				if (item_with_items)
+				{
+					convert(item_with_items->m_arrItems, textOut, bEnter, pDocument, pNumbering, pStyles);
+				}
+			}break;
+		}
+	}
+
+	void Converter_Impl::convert(std::vector<OOX::WritingElement*> & items, std::vector<std::wstring>& textOut, bool bEnter,
+		OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles *pStyles)
 	{
 		if (items.empty()) return;
-
-		if(isFirstLevel)
-			m_lAddition = m_lAddition / items.size();
 			
-        for (std::vector<OOX::WritingElement*>::iterator it = items.begin(); it != items.end(); ++it)
+        for (size_t i = 0; i < items.size(); ++i)
 		{
-			OOX::WritingElement* item = *it;
+			OOX::WritingElement* item = items[i];
 
 			if (!item)continue;
 
-			if (item->getType() == OOX::et_w_p)
+			switch (item->getType())
 			{
-				textOut.push_back(convert((dynamic_cast<OOX::Logic::CParagraph*>(item)), pDocument, pNumbering, pStyles));
-			}
-			else if (item->getType() == OOX::et_w_r)
-			{
-				textOut.push_back(convert((dynamic_cast<OOX::Logic::CRun*>(item)), pDocument, pNumbering, pStyles));
-			}
-			/*else if (item.is<OOX::Logic::List>())
-			{
-				BOOST_FOREACH(const OOX::Logic::ListItem& listItem, *item.as<OOX::Logic::List>().m_arrItems)
+				case OOX::et_w_tc:
 				{
-					convert(listItem.m_arrItems);
-				}
-			}*/
-			//else if (item->getType() == OOX::et_w_tbl)
-			//{
-			//	OOX::Logic::CTbl* tbl = dynamic_cast<OOX::Logic::CTbl*>(item);
-			//	for (int r = 0 ; r < tbl->m_arrItems.size(); r++)
-			//	{
-			//		OOX::WritingElement * item = tbl->m_arrItems[r];
-			//		if (item->getType() == OOX::et_w_tr)
-			//		{
-			//			OOX::Logic::CTr* tr = dynamic_cast<OOX::Logic::CTr*>(item);
-			//			for (int c = 0 ; c < tr->m_arrItems.size(); c++)
-			//			{
-			//				OOX::WritingElement * item = tr->m_arrItems[c];
-			//				if (item->getType() == OOX::et_w_tc)
-			//				{
-			//					OOX::Logic::CTc* tc = dynamic_cast<OOX::Logic::CTc*>(item);
-			//					convert(tc->m_arrItems, Event, false, pDocument, pStyles);
-			//				}
-			//			}
-			//		}
-		
-			//	}
-			//}
-			//else if (item->getType() == OOX::et_w_sdt)
-			//{
-			//	convert((dynamic_cast<OOX::Logic::CSdt*>(item))->m_arrItems, text, Event, false, pDocument, pNumbering, pStyles);
-			//}
-			else
-			{
-				//todoooo  проверить - это общий случай - вместо CSdt ... да и Tbl тож
-				OOX::WritingElementWithChilds<OOX::WritingElement> *item_with_items = dynamic_cast<OOX::WritingElementWithChilds<OOX::WritingElement>*>(item);
+					OOX::Logic::CTc *cell = dynamic_cast<OOX::Logic::CTc*>(item);
+					for (size_t j = 0; cell && j < cell->m_arrItems.size(); ++j)
+					{
+						convert(cell->m_arrItems[j], textOut, false, pDocument, pNumbering, pStyles);
+						if (textOut.empty()) textOut.push_back(L"");
+						
+						textOut.back() += L" |";
+					}
+				}break;
+				case OOX::et_w_tr:
+				{
+					textOut.push_back(L"---------------------------------------------");
+					textOut.push_back(L"|");
 					
-				if (item_with_items)
+					OOX::Logic::CTr *row = dynamic_cast<OOX::Logic::CTr*>(item);
+					convert(row->m_arrItems, textOut, false, pDocument, pNumbering, pStyles);
+				}break;
+				case OOX::et_w_p:
 				{
-					convert(item_with_items->m_arrItems, textOut, false, pDocument, pNumbering, pStyles);
-				}
+					convert(dynamic_cast<OOX::Logic::CParagraph*>(item), textOut, bEnter, pDocument, pNumbering, pStyles);
+				}break;
+				case OOX::et_w_r:
+				{
+					textOut.push_back(convert((dynamic_cast<OOX::Logic::CRun*>(item)), pDocument, pNumbering, pStyles));
+				}break;
+				case OOX::et_w_sdt:
+				{
+					OOX::Logic::CSdt *sdt = dynamic_cast<OOX::Logic::CSdt*>(item);
+					if (sdt)
+						convert(sdt->m_oSdtContent.GetPointer(), textOut, bEnter, pDocument, pNumbering, pStyles);
+				}break;
+				default:
+				{
+					OOX::WritingElementWithChilds<OOX::WritingElement> *item_with_items = dynamic_cast<OOX::WritingElementWithChilds<OOX::WritingElement>*>(item);
+
+					if (item_with_items)
+					{
+						convert(item_with_items->m_arrItems, textOut, bEnter, pDocument, pNumbering, pStyles);
+					}
+					else
+					{
+						convert(item, textOut, bEnter, pDocument, pNumbering, pStyles);
+					}
+				}break;
 			}
 		}
 	}
@@ -366,7 +396,7 @@ namespace Docx2Txt
 
 								if (note && note->m_oId == footnote_ref->m_oId)
 								{
-									convert(m_inputFile.m_oMain.footnotes->m_arrFootnote[r]->m_arrItems, notes_content, false, pDocument, pNumbering, pStyles);
+									convert(m_inputFile.m_oMain.footnotes->m_arrFootnote[r]->m_arrItems, notes_content, true, pDocument, pNumbering, pStyles);
 								}
 							}
 							Notes.insert(std::make_pair(ToWString(++NoteCount), notes_content));
@@ -380,7 +410,7 @@ namespace Docx2Txt
 
 								if (note && note->m_oId == endnote_ref->m_oId)
 								{
-									convert(m_inputFile.m_oMain.endnotes->m_arrEndnote[r]->m_arrItems, notes_content, false, pDocument, pNumbering, pStyles);
+									convert(m_inputFile.m_oMain.endnotes->m_arrEndnote[r]->m_arrItems, notes_content, true, pDocument, pNumbering, pStyles);
 								}
 							}
 							Notes.insert(std::make_pair(ToWString(++NoteCount), notes_content));
@@ -394,10 +424,10 @@ namespace Docx2Txt
 		return line;
 	}
 
-	std::wstring Converter_Impl::convert(OOX::Logic::CParagraph* pParagraph, 
-												OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles* pStyles)
+	void Converter_Impl::convert(OOX::Logic::CParagraph* pParagraph, std::vector<std::wstring>& textOut, bool bEnter,
+										  OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles* pStyles)
 	{
-		if (pParagraph == NULL) return L"";
+		if (pParagraph == NULL) return;
 
 		std::wstring line;
 
@@ -518,9 +548,9 @@ namespace Docx2Txt
 						else if (*restartLvl >= Lists[start + level])
 							reset = true;
 					}
-					else if (levelPrev >= level) reset = false;
+					else if (levelPrev[indexNum] >= level) reset = false;
 
-					levelPrev = level;
+					levelPrev[indexNum] = level;
 
 					if (reset || Lists[start + level] < 0)
 						Lists[start + level] = startLvl.IsInit() ? *startLvl : 1;
@@ -610,6 +640,10 @@ namespace Docx2Txt
 					OOX::Logic::CRun *pRun = dynamic_cast<OOX::Logic::CRun*>(pParagraph->m_arrItems[i]);
 					line += convert(pRun, pDocument, pNumbering, pStyles);
 				}break;
+				case OOX::et_w_sdt:
+				{
+					convert(pParagraph->m_arrItems[i], textOut, bEnter, pDocument, pNumbering, pStyles);
+				}break;
 				case OOX::et_w_hyperlink:
 				{
 					OOX::Logic::CHyperlink *pHyperlink = dynamic_cast<OOX::Logic::CHyperlink*>(pParagraph->m_arrItems[i]);
@@ -637,7 +671,7 @@ namespace Docx2Txt
 
 						for (size_t j = 0; j < pHyperlink->m_arrItems.size(); ++j)
 						{
-							convert(pHyperlink->m_arrItems, arDisplay, false, pDocument, pNumbering, pStyles);
+							convert(pHyperlink->m_arrItems, arDisplay, true, pDocument, pNumbering, pStyles);
 						}
 						for (size_t j = 0; j < arDisplay.size(); ++j)
 							line += arDisplay[j];
@@ -650,7 +684,14 @@ namespace Docx2Txt
 				}break;
 			}
 		}
-		return line;
+		if (bEnter || textOut.empty())
+		{
+			textOut.push_back(line);
+		}
+		else
+		{
+			textOut.back() += L"" + line;
+		}
 	}
 
 	std::wstring Converter_Impl::IntToLowerLetter(int number)

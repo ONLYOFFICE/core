@@ -628,9 +628,16 @@ namespace PPT_FORMAT
 
 				//string rect
 				int nRectCount = (int)pPPTShape->m_arStringTextRects.size();
-				if (0 != nRectCount)
+				if (0 != nRectCount && !pPPTShape->m_arStringTextRects[0].empty())
 				{
-					pFormulaConverter.ConvertTextRect(pPPTShape->m_arStringTextRects[0]);
+					if (pPPTShape->m_eType == PPTShapes::sptCNotchedCircularArrow)
+					{
+						pFormulaConverter.SetTextRectDefault();
+					}
+					else
+					{
+						pFormulaConverter.ConvertTextRect(pPPTShape->m_arStringTextRects[0]);
+					}
 				}
 
 				int nHandlesCount	= (int)pPPTShape->m_arHandles.size();
@@ -836,6 +843,16 @@ namespace PPT_FORMAT
                 SetProperiesToDublicate(pElement);
 
                 return pElement;
+            }
+            int GetWidth()const
+            {
+                double multip = m_bAnchorEnabled ? 1587.5 : 1;
+                return round(m_rcAnchor.GetWidth()  * multip);
+            }
+            int GetHeight()const
+            {
+                double multip = m_bAnchorEnabled ? 1587.5 : 1;
+                return round(m_rcAnchor.GetHeight()  * multip);
             }
             AVSINLINE std::wstring ConvertPPTShapeToPPTX(bool bIsNamespace = false)
             {

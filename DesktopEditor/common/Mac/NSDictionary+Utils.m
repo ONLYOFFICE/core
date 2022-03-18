@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,27 +29,22 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/TxBody.h"
-#include "ShapeWriter.h"
+#import "NSDictionary+Utils.h"
 
-namespace PPT_FORMAT
-{
-class TxBodyConverter
-{
-public:
-    TxBodyConverter(CElementPtr pShapeElement, CRelsGenerator* pRels, CTextCFRun* pLastCF);
+@implementation NSDictionary (Utils)
 
-    void FillTxBody(PPTX::Logic::TxBody& oTxBody);
-private:
-    void ConvertTableTxBody(PPTX::Logic::TxBody& oTxBody);
-    static void FillMergedTxBody(PPTX::Logic::TxBody& oTxBody);
-    static PPTX::Logic::RunProperties* getNewEndParaRPr(const int dirty = -1, const int sz = -1, const std::wstring& lang = L"");
-
-private:
-    CShapeWriter m_oShapeWriter;
-    bool m_bError;
-    CTextCFRun* m_pLastCF;
-};
+- (NSString*)jsonString {
+    NSError *error;
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:self
+                                                       options:(NSJSONWritingOptions)NSJSONWritingPrettyPrinted
+                                                         error:&error];
+    if (!jsonData) {
+        NSLog(@"NSDictionary+Utils dictoonary to json: error: %@", error.localizedDescription);
+        return @"{}";
+    } else {
+        return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    }
 }
+
+@end

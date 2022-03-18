@@ -36,7 +36,6 @@
 
 namespace PPT_FORMAT
 {
-
 struct STextAutoNumberScheme
 {
     TextAutoNumberSchemeEnum    m_eScheme;
@@ -104,28 +103,30 @@ struct STextAutoNumberScheme
 struct STextPFException9
 {
     PFMasks m_masks;
+    int index = -1;
 
     nullable<SHORT>                 m_optBulletBlipRef;
     nullable_bool                   m_optfBulletHasAutoNumber;
     nullable<STextAutoNumberScheme> m_optBulletAutoNumberScheme;
 
 
-    void ReadFromStream(POLE::Stream* pStream){
+    void ReadFromStream(POLE::Stream* pStream)
+    {
         m_masks.ReadFromStream(pStream);
 
-        if (m_masks.m_bulletBlip)
+        if (m_masks.m_bulletBlip)   // 0x0800000 2^23
             m_optBulletBlipRef = StreamUtils::ReadSHORT(pStream);
 
-        if (m_masks.m_bulletHasScheme)
+        if (m_masks.m_bulletHasScheme)  // 0x2000000 2^25
             m_optfBulletHasAutoNumber = (bool)StreamUtils::ReadSHORT(pStream);
 
-        if(m_masks.m_bulletScheme)
+        if(m_masks.m_bulletScheme)  // 0x1000000 2^24
         {
             auto pBulletAutoNumberScheme = new STextAutoNumberScheme;
             pBulletAutoNumberScheme->ReadFromStream(pStream);
             m_optBulletAutoNumberScheme = pBulletAutoNumberScheme;
         }
-        else if (m_masks.m_bulletHasScheme)
+        else if (m_optfBulletHasAutoNumber.get_value_or(false))
         {
             auto pBulletAutoNumberScheme = new STextAutoNumberScheme;
             pBulletAutoNumberScheme->m_nStartNum = 1;

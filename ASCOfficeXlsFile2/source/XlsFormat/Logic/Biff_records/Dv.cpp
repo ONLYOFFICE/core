@@ -113,6 +113,7 @@ void Dv::readFields(CFRecord& record)
     {
         record >> sqrfx;
 
+<<<<<<< HEAD
         XLSB::DValStrings dvalstr;
         record >> dvalstr;
 
@@ -133,6 +134,13 @@ void Dv::readFields(CFRecord& record)
             record >> sqref;
         }
     }
+=======
+	formula1.load(record, valType != typeDvNone);
+
+	formula2.load(record, valType != typeDvCustom && valType != typeDvList && valType != typeDvNone && typOperator < 2);
+	
+	record >> sqref;
+>>>>>>> a5c4cb943841df2cea5dec2aeb473bcbed261417
 }
 
 int Dv::serialize(std::wostream & stream)
@@ -158,24 +166,35 @@ int Dv::serialize(std::wostream & stream)
 
 			CP_XML_ATTR(L"sqref",				sqref.strValue);
 
-			switch(typOperator)
+			if (valType != typeDvCustom && valType != typeDvList && valType != typeDvNone)
 			{
+				switch (typOperator)
+				{
 				case operatorDvBetween:				CP_XML_ATTR(L"operator", L"between");			break;
 				case operatorDvNotBetween:			CP_XML_ATTR(L"operator", L"notBetween");		break;
 				case operatorDvEquals:				CP_XML_ATTR(L"operator", L"equal");				break;
 				case operatorDvNotEquals:			CP_XML_ATTR(L"operator", L"notEqual");			break;
 				case operatorDvGreaterThan:			CP_XML_ATTR(L"operator", L"greaterThan");		break;
 				case operatorDvLessThan:			CP_XML_ATTR(L"operator", L"lessThan");			break;
-				case operatorDvGreaterThanOrEqual:	CP_XML_ATTR(L"operator", L"greaterThanOrEqual");break;
+				case operatorDvGreaterThanOrEqual:	CP_XML_ATTR(L"operator", L"greaterThanOrEqual"); break;
 				case operatorDvLessThanOrEqual:		CP_XML_ATTR(L"operator", L"lessThanOrEqual");	break;
+				}
 			}
             if (PromptTitle.size() > 1)
 			{
+<<<<<<< HEAD
                 CP_XML_ATTR(L"promtTitle", PromptTitle);
+=======
+				CP_XML_ATTR(L"promptTitle", PromptTitle.value());
+>>>>>>> a5c4cb943841df2cea5dec2aeb473bcbed261417
 			}
             if (Prompt.size() > 1)
 			{
+<<<<<<< HEAD
                 CP_XML_ATTR(L"promt", Prompt);
+=======
+				CP_XML_ATTR(L"prompt", Prompt.value());
+>>>>>>> a5c4cb943841df2cea5dec2aeb473bcbed261417
 			}
             if (ErrorTitle.size() > 1)
 			{
@@ -185,11 +204,9 @@ int Dv::serialize(std::wostream & stream)
 			{
                 CP_XML_ATTR(L"error", Error);
 			}
-			if (formula1.IsVolatile())
-				formula1.set_base_ref(sqref.getLocationFirstCell());
 			
-			if (formula2.IsVolatile())
-				formula2.set_base_ref(sqref.getLocationFirstCell());
+			formula1.set_base_ref(sqref.getLocationFirstCell());			
+			formula2.set_base_ref(sqref.getLocationFirstCell());
 
 			std::wstring sFormula1 = formula1.getAssembledFormula();
 			std::wstring sFormula2 = formula2.getAssembledFormula();

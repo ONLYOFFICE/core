@@ -96,6 +96,7 @@ namespace NExtractTools
 		TCD_XLTM2XLSX,
         TCD_XLTM2XLSM,
         TCD_XLSB2XLST,
+		TCD_XLSX2XLSB,
 
         TCD_PPTX2PPTT,
         TCD_PPTT2PPTX,

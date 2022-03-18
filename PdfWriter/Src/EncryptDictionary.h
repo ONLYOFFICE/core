@@ -43,6 +43,7 @@ namespace PdfWriter
 	{
 	public:
 		CEncryptDict(CXref* pXref);
+		CEncryptDict(const std::wstring& sEncrypt);
 		~CEncryptDict();
 		EDictType GetDictType() const
 		{

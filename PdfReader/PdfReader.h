@@ -98,7 +98,7 @@ namespace PdfReader
         NSFonts::IFontManager* GetFontManager();
 
         std::wstring ToXml(const std::wstring& wsXmlPath);
-        bool EditPdf(IRenderer* pPdfWriter);
+        bool EditPdf(IRenderer* pPdfWriter, const std::wstring& sPassword = L"");
         bool EditPage(int nPageIndex);
         bool EditClose(const std::wstring& wsPath);
 

@@ -1054,7 +1054,7 @@ namespace PdfWriter
 
 		return (!!m_pAcroForm);
 	}
-	bool CDocument::EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sPageTree, const std::pair<int, int>& pPageTree)
+	bool CDocument::EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sPageTree, const std::pair<int, int>& pPageTree, const std::wstring& sEncrypt, const std::wstring& sPassword)
 	{
 		Close();
 
@@ -1069,6 +1069,13 @@ namespace PdfWriter
 		m_pPageTree = new CPageTree(m_pLastXref, sPageTree);
 		m_pPageTree->SetRef(pPageTree.first, pPageTree.second);
 		m_pLastXref->SetPrev(m_pXref);
+
+		if (!sEncrypt.empty())
+		{
+			m_pEncryptDict = new CEncryptDict(sEncrypt);
+			m_pEncryptDict->SetPasswords(sPassword, sPassword);
+			m_bEncrypt = true;
+		}
 
 		return true;
 	}
@@ -1097,18 +1104,11 @@ namespace PdfWriter
 			return false;
 
 		m_pTrailer = m_pLastXref->GetTrailer();
-		// Шифруем документ, если это необходимо
-		CEncrypt* pEncrypt = NULL;
-		if (m_bEncrypt)
-		{
-			pEncrypt = m_pEncryptDict->GetEncrypt();
-			PrepareEncryption();
-		}
-
 		m_pTrailer->FromXml(sTrailer);
 
 		// Вторая часть идентификатора должна обновляться
 		CObjectBase* pID = m_pTrailer->Get("ID");
+		CEncrypt* pEncrypt = NULL;
 		if (pID && pID->GetType() == object_type_ARRAY)
 		{
 			BYTE arrId[16];
@@ -1116,6 +1116,14 @@ namespace PdfWriter
 
 			CObjectBase* pObject = ((CArrayObject*)pID)->Get(1, false);
 			((CArrayObject*)pID)->Insert(pObject, new CBinaryObject(arrId, 16), true);
+
+			// Шифруем документ, если он был зашифрован
+			if (m_bEncrypt)
+			{
+				pEncrypt = m_pEncryptDict->GetEncrypt();
+				pObject = ((CArrayObject*)pID)->Get(1, false);
+				pEncrypt->SetID(((CBinaryObject*)pObject)->GetValue(), ((CBinaryObject*)pObject)->GetLength());
+			}
 		}
 
 		// Если m_pTrailer поток перекрестных ссылок, то при дозаписи тоже должен быть поток

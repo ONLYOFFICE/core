@@ -38,6 +38,11 @@
 #include "../../Common/3dParty/cryptopp/md5.h"
 #include "../../UnicodeConverter/UnicodeConverter.h"
 
+#define SET_PARAM(Name, set_func) \
+    pObj = Get(Name);\
+    if (pObj && pObj->GetType() == object_type_BINARY)\
+        m_pEncrypt->set_func(((CBinaryObject*)pObj)->GetValue(), ((CBinaryObject*)pObj)->GetLength());
+
 namespace PdfWriter
 {
     //----------------------------------------------------------------------------------------
@@ -49,6 +54,27 @@ namespace PdfWriter
 
 		pXref->Add(this);
 	}
+    CEncryptDict::CEncryptDict(const std::wstring& sEncrypt)
+    {
+        FromXml(sEncrypt);
+        m_pEncrypt = new CEncrypt();
+
+        CObjectBase* pObj = NULL;
+        SET_PARAM("O", SetO);
+        SET_PARAM("U", SetU);
+        SET_PARAM("OE", SetOE);
+        SET_PARAM("UE", SetUE);
+        SET_PARAM("Perms", SetPerms);
+
+        pObj = Get("P");
+        if (pObj && pObj->GetType() == object_type_NUMBER)
+            m_pEncrypt->SetPermission(((CNumberObject*)pObj)->Get());
+
+        pObj = Get("FileKey");
+        if (pObj && pObj->GetType() == object_type_BINARY)
+            m_pEncrypt->SetKey(((CBinaryObject*)pObj)->GetValue(), ((CBinaryObject*)pObj)->GetLength());
+        Remove("FileKey");
+    }
 	CEncryptDict::~CEncryptDict()
 	{
 		if (m_pEncrypt)

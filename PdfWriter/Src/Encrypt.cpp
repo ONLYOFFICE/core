@@ -139,6 +139,15 @@ namespace PdfWriter
         impl->m_sUserPassword = sUserPassword;
         impl->m_sOwnerPassword = sOwnerPassword;
     }
+    bool CEncrypt::SetKey(const BYTE* pSrc, unsigned int unLen)
+    {
+        if (unLen == m_unKeyLen)
+        {
+            memcpy(impl->m_anEncryptionKey, pSrc, m_unKeyLen);
+            return true;
+        }
+        return false;
+    }
     bool CEncrypt::MakeFileKey3(const std::string &sPassword, unsigned char *pHash, int nHashSize, unsigned char *pHash2, int nHashSize2)
     {
         if (!pHash) return false;

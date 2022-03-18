@@ -49,10 +49,14 @@ int main()
     if (NSFile::CFileBinary::Exists(sDstFile))
         NSFile::CFileBinary::Remove(sDstFile);
 
+    std::wstring sPassword = L"123";
     bool bResult = pReader->LoadFromFile(sSrcFile);
     if (!bResult)
+    {
+        pReader->LoadFromFile(sSrcFile, L"", sPassword, sPassword);
         bResult = pReader->GetError() == 0;
-    if (bResult && pReader->EditPdf(&pdfWriter))
+    }
+    if (bResult && pReader->EditPdf(&pdfWriter, sPassword))
     {
         if (pReader->EditPage(0))
         {

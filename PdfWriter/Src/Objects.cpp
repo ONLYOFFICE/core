@@ -382,7 +382,7 @@ namespace PdfWriter
 		return pArray;
 	}
 
-#define AddToObject(pObject, sName, oVal)\
+#define AddToObject(oVal)\
 {\
 	if (pObject->GetType() == object_type_DICT)\
 		((CDictObject*)pObject)->Add(sName, oVal);\
@@ -407,15 +407,15 @@ namespace PdfWriter
 			else if (sAName == L"num")
 			{
 				if (sType == "Bool")
-					AddToObject(pObject, sName, sAText == "true")
+					AddToObject(sAText == "true")
 				else if (sType == "Int")
-					AddToObject(pObject, sName, std::stoi(sAText))
+					AddToObject(std::stoi(sAText))
 				else if (sType == "Real")
-					AddToObject(pObject, sName, std::stod(sAText))
+					AddToObject(std::stod(sAText))
 				else if (sType == "String")
-					AddToObject(pObject, sName, new CStringObject(sAText.c_str()))
+					AddToObject(new CStringObject(sAText.c_str()))
 				else if (sType == "Name")
-					AddToObject(pObject, sName, sAText.c_str())
+					AddToObject(sAText.c_str())
 				// Null игнорируется
 				// Array ниже
 				// Dict ниже
@@ -424,11 +424,11 @@ namespace PdfWriter
 				{
 					CObjectBase* pBase = new CObjectBase();
 					pBase->SetRef(std::stoi(sAText), gen);
-					AddToObject(pObject, sName, new CProxyObject(pBase));
+					AddToObject(new CProxyObject(pBase));
 				}
 				// Cmd игнорируется
 				else if (sType == "Cmd")
-					AddToObject(pObject, sName, sAText.c_str())
+					AddToObject(sAText.c_str())
 				// Error игнорируется
 				// EOF игнорируется
 				// None ниже
@@ -442,7 +442,7 @@ namespace PdfWriter
 		{
 			// Освобождение pArray происходит в деструкторе pNewXref
 			CArrayObject* pArray = new CArrayObject();
-			AddToObject(pObject, sName, pArray);
+			AddToObject(pArray);
 
 			int n2Death = oCoreReader.GetDepth();
 			while (oCoreReader.ReadNextSiblingNode(n2Death))
@@ -452,14 +452,14 @@ namespace PdfWriter
 		{
 			// Освобождение pDict происходит в деструкторе pNewXref
 			CDictObject* pDict = new CDictObject();
-			AddToObject(pObject, sName, pDict);
+			AddToObject(pDict);
 
 			int n2Death = oCoreReader.GetDepth();
 			while (oCoreReader.ReadNextSiblingNode(n2Death))
 				ReadDict(oCoreReader, pDict);
 		}
 		else if (sType == "None")
-			AddToObject(pObject, sName, "None")
+			AddToObject("None")
 		else if (sType == "Binary")
 		{
 			BYTE* arrId = new BYTE[gen];
@@ -469,7 +469,7 @@ namespace PdfWriter
 				std::wstring sChar = oCoreReader.GetText2();
 				arrId[i++] = std::stoi(sChar);
 			}
-			AddToObject(pObject, sName, new CBinaryObject(arrId, gen));
+			AddToObject(new CBinaryObject(arrId, gen));
 			RELEASEARRAYOBJECTS(arrId);
 		}
 	}

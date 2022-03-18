@@ -37,6 +37,17 @@
 #define ID_LEN              16
 #define PERMISSION_PAD      0xFFFFFFC0
 
+#define SET_FUNC(Name, m_memory, size) \
+bool Name(const BYTE* pSrc, unsigned int unLen)\
+{\
+    if (unLen == size)\
+    {\
+        memcpy(m_memory, pSrc, unLen);\
+        return true;\
+    }\
+    return false;\
+}
+
 namespace PdfWriter
 {
 	class CEncrypt
@@ -54,6 +65,14 @@ namespace PdfWriter
         unsigned int CryptBuf(const BYTE* pSrc, BYTE* pDst, unsigned int unLen);
 		void SetPermission(unsigned int unPermission);
         void SetPasswords(const std::string &sUserPassword, const std::string &sOwnerPassword);
+        bool SetKey(const BYTE* pSrc, unsigned int unLen);
+
+        SET_FUNC(SetID, m_anEncryptID, ID_LEN);
+        SET_FUNC(SetO, m_anOwnerKey, 48);
+        SET_FUNC(SetU, m_anUserKey,  48);
+        SET_FUNC(SetOE, m_anOwnerEncryptKey, 32);
+        SET_FUNC(SetUE, m_anUserEncryptKey,  32);
+        SET_FUNC(SetPerms, m_anPermEncrypt, 16);
 	private:
         class Impl;
         Impl *impl;

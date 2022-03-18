@@ -47,6 +47,7 @@
 #include "lib/xpdf/GlobalParams.h"
 #include "lib/xpdf/ErrorCodes.h"
 #include "lib/xpdf/ImageOutputDev.h"
+#include "lib/xpdf/SecurityHandler.h"
 #include "Src/RendererOutputDev.h"
 
 #ifdef BUILDING_WASM_MODULE
@@ -433,7 +434,7 @@ return 0;
 //		return wsXml;
         return L"";
 	}
-    bool CPdfReader::EditPdf(IRenderer* pPdfWriter)
+    bool CPdfReader::EditPdf(IRenderer* pPdfWriter, const std::wstring& sPassword)
     {
         long lRendererType;
         pPdfWriter->get_Type(&lRendererType);
@@ -458,7 +459,47 @@ return 0;
         pagesRefObj.free();
         catDict.free();
 
-        return m_pPdfWriter->EditPdf(xref->getLastXRefPos(), xref->getNumObjects(), sPageTree, std::make_pair(topPagesRef.num, topPagesRef.gen));
+        std::wstring sEncrypt = L"<Encrypt";
+        if (xref->isEncrypted())
+        {
+            Object encrypt;
+            if (xref->getTrailerDict()->dictLookup("Encrypt", &encrypt)->isDict())
+                XMLConverter::DictToXml(&encrypt, sEncrypt, true);
+            else
+                sEncrypt += L'>';
+
+            SecurityHandler* secHdlr = SecurityHandler::make(m_pInternal->m_pPDFDocument, &encrypt);
+            GString* owner_pswd = NSStrings::CreateString(sPassword);
+            GString* user_pswd  = NSStrings::CreateString(sPassword);
+            if (secHdlr && secHdlr->checkEncryption(owner_pswd, user_pswd))
+            {
+                Guchar* fileKey = secHdlr->getFileKey();
+                int keyLength = secHdlr->getFileKeyLength();
+
+                sEncrypt += L"<FileKey type=\"Binary\" num=\"";
+                sEncrypt += std::to_wstring(keyLength);
+                sEncrypt += L"\">";
+                for (int nIndex = 0; nIndex < keyLength; ++nIndex)
+                {
+                    sEncrypt += L"<i>";
+                    sEncrypt += std::to_wstring((int)fileKey[nIndex]);
+                    sEncrypt += L"</i>";
+                }
+                sEncrypt += L"</FileKey>";
+            }
+
+            RELEASEOBJECT(secHdlr);
+            delete owner_pswd;
+            delete user_pswd;
+            encrypt.free();
+        }
+        else
+            sEncrypt += L'>';
+        sEncrypt += L"</Encrypt>";
+        if (sEncrypt == L"<Encrypt></Encrypt>")
+            sEncrypt.clear();
+
+        return m_pPdfWriter->EditPdf(xref->getLastXRefPos(), xref->getNumObjects(), sPageTree, std::make_pair(topPagesRef.num, topPagesRef.gen), sEncrypt, sPassword);
     }
     bool CPdfReader::EditPage(int nPageIndex)
     {

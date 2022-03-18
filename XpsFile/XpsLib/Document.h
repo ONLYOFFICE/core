@@ -33,12 +33,13 @@
 #define _XPS_XPSLIB_DOCUMENT_H
 
 #include "FontList.h"
-#include "Page.h"
+#include "XpsPage.h"
 #include <map>
 #include <vector>
 
 #include "../../DesktopEditor/graphics/IRenderer.h"
 #include "../../DesktopEditor/graphics/TemporaryCS.h"
+#include "../../OfficeUtils/src/ZipFolder.h"
 
 namespace XPS
 {
@@ -50,16 +51,31 @@ namespace XPS
         CDocument(NSFonts::IFontManager* pFontManager);
 		~CDocument();
 
-		bool ReadFromPath(const std::wstring& wsPath);
+		bool Read(IFolder* pFolder);
 		int  GetPageCount() const;
 		void GetPageSize(int nPageIndex, int& nW, int& nH);
 		void DrawPage(int nPageIndex, IRenderer* pRenderer, bool* pbBreak);
 		void Close();
 		CStaticResource* GetStaticResource(const wchar_t* wsPath);
+		std::wstring GetInfo();
 
+	#ifdef BUILDING_WASM_MODULE
+		struct CDocumentStructure
+		{
+			int nLevel;
+			int nPage;
+			double dY;
+			std::string sDescription;
+			std::wstring wsTarget;
+		};
+		BYTE* GetStructure();
+		BYTE* GetPageLinks (int nPageIndex);
+		std::vector<CDocumentStructure>          m_vStructure;
+		std::map<std::wstring, int>              m_mInternalLinks;
+	#endif
 	private:
 									        
-		std::wstring                             m_wsPath;					      
+		IFolder*                                 m_wsPath;
 		std::map<int, XPS::Page*>                m_mPages;
 		CFontList                                m_oFontList;
         NSFonts::IFontManager*                   m_pFontManager;

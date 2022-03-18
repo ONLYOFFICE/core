@@ -31,13 +31,11 @@
  */
 
 #include "SerAr.h"
-#include <Binary/CFRecord.h>
 #include "SerBool.h"
 #include "SerErr.h"
 #include "SerNil.h"
 #include "SerNum.h"
 #include "SerStr.h"
-//#include <Exception/WrongBiffRecord.h>
 
 namespace XLS
 {

@@ -888,9 +888,9 @@ namespace Aggplus
 
 		trans_type* ptrans			= NULL;
 		agg::trans_affine* paffine	= NULL;
-		if (!m_bIntegerGrid)
+        if (!m_bIntegerGrid)
 			ptrans = new trans_type(p2, m_oFullTransform.m_internal->m_agg_mtx);
-		else
+        else
 		{
 			paffine = new agg::trans_affine();
 			ptrans = new trans_type(p2, *paffine);
@@ -1223,6 +1223,22 @@ namespace Aggplus
 		}		
     }
 
+    template<class Renderer>
+    void CGraphics::render_scanlines_alpha(Renderer& ren, BYTE Alpha)
+    {
+        double dAlpha = m_dGlobalAlpha * Alpha / 255.0;
+        if (fabs(dAlpha - 1.0) < FLT_EPSILON)
+        {
+            render_scanlines(ren);
+        }
+        else
+        {
+            m_rasterizer.gamma_multi(dAlpha);
+            render_scanlines(ren);
+            m_rasterizer.gamma(1.0);
+        }
+    }
+
 	template<class Rasterizer, class Renderer>
 	void CGraphics::render_scanlines(Rasterizer& ras, Renderer& ren)
     {
@@ -1479,8 +1495,8 @@ namespace Aggplus
             m_rasterizer.gamma(1.0);
         }
 #else
-		agg::rgba8 c1 = agg::rgba8(pBrush->m_dwColor1.GetB(), pBrush->m_dwColor1.GetG(), pBrush->m_dwColor1.GetR(), pBrush->m_dwColor1.GetA());
-		agg::rgba8 c2 = agg::rgba8(pBrush->m_dwColor2.GetB(), pBrush->m_dwColor2.GetG(), pBrush->m_dwColor2.GetR(), pBrush->m_dwColor2.GetA());
+        agg::rgba8 c1 = agg::rgba8(pBrush->m_dwColor1.GetR(), pBrush->m_dwColor1.GetG(), pBrush->m_dwColor1.GetB(), pBrush->m_dwColor1.GetA());
+        agg::rgba8 c2 = agg::rgba8(pBrush->m_dwColor2.GetR(), pBrush->m_dwColor2.GetG(), pBrush->m_dwColor2.GetB(), pBrush->m_dwColor2.GetA());
 
 		BYTE* pPattern = new BYTE[HATCH_TX_SIZE * HATCH_TX_SIZE * 4];
 		agg::GetHatchPattern(pBrush->m_name, (agg::rgba8*)pPattern, c1, c2);
@@ -1560,108 +1576,174 @@ namespace Aggplus
 
 	void CGraphics::DoFillPathTextureClampSz2(const CMatrix &mImgMtx, const void *pImgBuff, DWORD dwImgWidth, DWORD dwImgHeight, int nImgStride, BYTE Alpha)
 	{
+        span_alloc_type span_allocator;
+        agg::trans_affine mtx_Work(mImgMtx.m_internal->m_agg_mtx);
+        mtx_Work.invert();
+        interpolator_type_linear interpolator(mtx_Work);
+
+        agg::rendering_buffer PatRendBuff;
+
+        if (nImgStride < 0)
+        {
+            BYTE* pBuffer = (BYTE*)pImgBuff + (dwImgHeight - 1) * nImgStride;
+            PatRendBuff.attach(pBuffer, dwImgWidth, dwImgHeight, nImgStride);
+        }
+        else
+        {
+            PatRendBuff.attach((BYTE*)pImgBuff, dwImgWidth, dwImgHeight, nImgStride);
+        }
+
+        int nCurrentMode = 255;
         if (!m_bSwapRGB)
         {
-            span_alloc_type span_allocator;                  // Span Allocator
-
             typedef agg::pixfmt_bgra32     pixfmt;
-            typedef agg::image_accessor_clip<pixfmt> img_source_type;
-            typedef agg::span_image_filter_rgba_nn<img_source_type, interpolator_type_linear> span_gen_type;
-            typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
+            typedef agg::image_accessor_clone<pixfmt> img_source_type;
 
-            //double dScaleX = 270.0 / dwImgWidth;
-            //double dScaleY = 190.0 / dwImgHeight;
+            pixfmt          img_pixf(PatRendBuff);
+            img_source_type img_src(img_pixf);
 
-            agg::trans_affine mtx_Work(mImgMtx.m_internal->m_agg_mtx);
-            //mtx_Work.scale(dScaleX, dScaleY);
-
-            //mtx_Work.multiply(m_oFullTransform.m_agg_mtx);
-            mtx_Work.invert();
-            interpolator_type_linear interpolator(mtx_Work);
+            switch (nCurrentMode)
             {
-                //agg::rendering_buffer PatRendBuff((BYTE *)pImgBuff, dwImgWidth, dwImgHeight, nImgStride);
-
-                agg::rendering_buffer PatRendBuff;
-
-                if (nImgStride < 0)
+                case 0:
                 {
-                    BYTE* pBuffer = (BYTE*)pImgBuff + (dwImgHeight - 1) * nImgStride;
-                    PatRendBuff.attach(pBuffer, dwImgWidth, dwImgHeight, nImgStride);
+                    typedef agg::span_image_filter_rgba_nn<img_source_type, interpolator_type_linear> span_gen_type;
+                    typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
+                    span_gen_type sg(img_src, interpolator);
+                    renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+                    render_scanlines_alpha(ri, Alpha);
+                    break;
                 }
-                else
+                case 1:
                 {
-                    PatRendBuff.attach((BYTE*)pImgBuff, dwImgWidth, dwImgHeight, nImgStride);
+                    typedef agg::span_image_filter_rgba_bilinear<img_source_type, interpolator_type_linear> span_gen_type;
+                    typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
+                    span_gen_type sg(img_src, interpolator);
+                    renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+                    render_scanlines_alpha(ri, Alpha);
+                    break;
                 }
-
-                pixfmt          img_pixf(PatRendBuff);
-                img_source_type img_src(img_pixf, agg::rgba(0, 0, 0, 0));
-                span_gen_type sg(img_src, interpolator);
-                renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
-                //agg::render_scanlines(m_rasterizer.get_rasterizer(), m_rasterizer.get_scanline(), ri);
-
-                double dAlpha = m_dGlobalAlpha * Alpha / 255.0;
-                if (fabs(dAlpha - 1.0) < FLT_EPSILON)
+                case 2:
                 {
-                    render_scanlines(ri);
+                    typedef agg::span_image_filter_rgba_2x2<img_source_type, interpolator_type_linear> span_gen_type;
+                    typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
+                    agg::image_filter_lut filter;
+                    filter.calculate(agg::image_filter_bicubic(), false);
+                    span_gen_type sg(img_src, interpolator, filter);
+                    renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+                    render_scanlines_alpha(ri, Alpha);
+                    break;
                 }
-                else
+                case 3:
                 {
-                    m_rasterizer.gamma_multi(dAlpha);
-                    render_scanlines(ri);
-                    m_rasterizer.gamma(1.0);
+                    typedef agg::span_image_filter_rgba_2x2<img_source_type, interpolator_type_linear> span_gen_type;
+                    typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
+                    agg::image_filter_lut filter;
+                    filter.calculate(agg::image_filter_spline16(), false);
+                    span_gen_type sg(img_src, interpolator, filter);
+                    renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+                    render_scanlines_alpha(ri, Alpha);
+                    break;
                 }
+                case 4:
+                {
+                    typedef agg::span_image_filter_rgba_2x2<img_source_type, interpolator_type_linear> span_gen_type;
+                    typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
+                    agg::image_filter_lut filter;
+                    filter.calculate(agg::image_filter_blackman256(), false);
+                    span_gen_type sg(img_src, interpolator, filter);
+                    renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+                    render_scanlines_alpha(ri, Alpha);
+                    break;
+                }
+                case 255:
+                {
+                    typedef agg::span_image_resample_rgba_affine<img_source_type> span_gen_type;
+                    typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
+                    agg::image_filter_lut filter;
+                    filter.calculate(agg::image_filter_bilinear(), false);
+                    span_gen_type sg(img_src, interpolator, filter);
+                    renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+                    render_scanlines_alpha(ri, Alpha);
+                    break;
+                }
+            default:
+                break;
             }
         }
         else
         {
-            span_alloc_type span_allocator;                  // Span Allocator
-
             typedef agg::pixfmt_rgba32     pixfmt;
-            typedef agg::image_accessor_clip<pixfmt> img_source_type;
-            typedef agg::span_image_filter_rgba_nn<img_source_type, interpolator_type_linear> span_gen_type;
-            typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
+            typedef agg::image_accessor_clone<pixfmt> img_source_type;
 
-            //double dScaleX = 270.0 / dwImgWidth;
-            //double dScaleY = 190.0 / dwImgHeight;
+            pixfmt          img_pixf(PatRendBuff);
+            img_source_type img_src(img_pixf);
 
-            agg::trans_affine mtx_Work(mImgMtx.m_internal->m_agg_mtx);
-            //mtx_Work.scale(dScaleX, dScaleY);
-
-            //mtx_Work.multiply(m_oFullTransform.m_agg_mtx);
-            mtx_Work.invert();
-            interpolator_type_linear interpolator(mtx_Work);
+            switch (nCurrentMode)
             {
-                //agg::rendering_buffer PatRendBuff((BYTE *)pImgBuff, dwImgWidth, dwImgHeight, nImgStride);
-
-                agg::rendering_buffer PatRendBuff;
-
-                if (nImgStride < 0)
+                case 0:
                 {
-                    BYTE* pBuffer = (BYTE*)pImgBuff + (dwImgHeight - 1) * nImgStride;
-                    PatRendBuff.attach(pBuffer, dwImgWidth, dwImgHeight, nImgStride);
+                    typedef agg::span_image_filter_rgba_nn<img_source_type, interpolator_type_linear> span_gen_type;
+                    typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
+                    span_gen_type sg(img_src, interpolator);
+                    renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+                    render_scanlines_alpha(ri, Alpha);
+                    break;
                 }
-                else
+                case 1:
                 {
-                    PatRendBuff.attach((BYTE*)pImgBuff, dwImgWidth, dwImgHeight, nImgStride);
+                    typedef agg::span_image_filter_rgba_bilinear<img_source_type, interpolator_type_linear> span_gen_type;
+                    typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
+                    span_gen_type sg(img_src, interpolator);
+                    renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+                    render_scanlines_alpha(ri, Alpha);
+                    break;
                 }
-
-                pixfmt          img_pixf(PatRendBuff);
-                img_source_type img_src(img_pixf, agg::rgba(0, 0, 0, 0));
-                span_gen_type sg(img_src, interpolator);
-                renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
-                //agg::render_scanlines(m_rasterizer.get_rasterizer(), m_rasterizer.get_scanline(), ri);
-
-                double dAlpha = m_dGlobalAlpha * Alpha / 255.0;
-                if (fabs(dAlpha - 1.0) < FLT_EPSILON)
+                case 2:
                 {
-                    render_scanlines(ri);
+                    typedef agg::span_image_filter_rgba_2x2<img_source_type, interpolator_type_linear> span_gen_type;
+                    typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
+                    agg::image_filter_lut filter;
+                    filter.calculate(agg::image_filter_bicubic(), false);
+                    span_gen_type sg(img_src, interpolator, filter);
+                    renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+                    render_scanlines_alpha(ri, Alpha);
+                    break;
                 }
-                else
+                case 3:
                 {
-                    m_rasterizer.gamma_multi(dAlpha);
-                    render_scanlines(ri);
-                    m_rasterizer.gamma(1.0);
+                    typedef agg::span_image_filter_rgba_2x2<img_source_type, interpolator_type_linear> span_gen_type;
+                    typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
+                    agg::image_filter_lut filter;
+                    filter.calculate(agg::image_filter_spline16(), false);
+                    span_gen_type sg(img_src, interpolator, filter);
+                    renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+                    render_scanlines_alpha(ri, Alpha);
+                    break;
                 }
+                case 4:
+                {
+                    typedef agg::span_image_filter_rgba_2x2<img_source_type, interpolator_type_linear> span_gen_type;
+                    typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
+                    agg::image_filter_lut filter;
+                    filter.calculate(agg::image_filter_blackman256(), false);
+                    span_gen_type sg(img_src, interpolator, filter);
+                    renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+                    render_scanlines_alpha(ri, Alpha);
+                    break;
+                }
+                case 255:
+                {
+                    typedef agg::span_image_resample_rgba_affine<img_source_type> span_gen_type;
+                    typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
+                    agg::image_filter_lut filter;
+                    filter.calculate(agg::image_filter_bilinear(), false);
+                    span_gen_type sg(img_src, interpolator, filter);
+                    renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+                    render_scanlines_alpha(ri, Alpha);
+                    break;
+                }
+            default:
+                break;
             }
         }
 	}

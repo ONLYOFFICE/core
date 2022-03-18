@@ -292,9 +292,9 @@ namespace NSDoctRenderer
      *
      * builderJS methods:
      * builderJS.OpenFile("path_or_url", "x2t_additons_as_xml");
-     * builderJS.CreateFile(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX);
+     * builderJS.CreateFile(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX); or builderJS.CreateFile("docx");
      * builderJS.SetTmpFolder("folder");
-     * builderJS.SaveFile(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX, "path", "x2t_additons_as_xml");
+     * builderJS.SaveFile(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX, "path", "x2t_additons_as_xml"); or builderJS.SaveFile("docx", "path", "x2t_additons_as_xml");
      * builderJS.CloseFile();
      *
      * Attention: The rule under point 4 does not work for the builderJS object

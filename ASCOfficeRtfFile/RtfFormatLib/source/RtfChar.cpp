@@ -147,7 +147,7 @@ std::wstring RtfChar::renderTextToXML( std::wstring sParam, bool bDelete )
 	return sResult;
 }
 
-std::wstring RtfChar::renderRtfText( std::wstring& sText, void* poDocument, RtfCharProperty* oCharProperty  )
+std::wstring RtfChar::renderRtfText( std::wstring& sText, void* poDocument, RtfCharProperty* oCharProperty, bool bMarker)
 {
     RtfDocument* pDocument = static_cast<RtfDocument*>(poDocument);
 	
@@ -166,11 +166,11 @@ std::wstring RtfChar::renderRtfText( std::wstring& sText, void* poDocument, RtfC
             nCodePage = oFont.m_nCodePage;
     }
 
-	return renderRtfText(sText, pDocument, nCodePage);
+	return renderRtfText(sText, pDocument, nCodePage, bMarker);
 
 }
 
-std::wstring RtfChar::renderRtfText( std::wstring& sText, void* poDocument, int nCodePage  )
+std::wstring RtfChar::renderRtfText( std::wstring& sText, void* poDocument, int nCodePage, bool bMarker)
 {
 	RtfDocument* pDocument = static_cast<RtfDocument*>(poDocument);
     std::wstring sResult;
@@ -226,7 +226,10 @@ std::wstring RtfChar::renderRtfText( std::wstring& sText, void* poDocument, int 
     while (sTextBack.length() < sText.length())
 		sTextBack += L"-";
 
-    for( size_t i = 0; i < sText.length() ; i++ )
+	if (bMarker)
+		sResult += L"{\\uc1";
+
+    for ( size_t i = 0; i < sText.length() ; i++ )
     {
         bool bWriteUnicode = true;
 
@@ -273,7 +276,9 @@ std::wstring RtfChar::renderRtfText( std::wstring& sText, void* poDocument, int 
         }
 
     }
-    return sResult;
+	if (bMarker)
+		sResult += L"}";
+	return sResult;
 }
 std::wstring RtfChar::RenderToRtf(RenderParameter oRenderParameter)
 {

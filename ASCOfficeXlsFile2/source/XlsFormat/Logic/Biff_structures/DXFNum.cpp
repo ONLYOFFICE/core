@@ -31,9 +31,8 @@
  */
 
 #include "DXFN.h"
-#include <Binary/CFRecord.h>
 
-#include <utils.h>
+#include "../../../Common/utils.h"
 
 namespace XLS
 {
@@ -48,6 +47,8 @@ void DXFNum::load(CFRecord& record)
 {
 	if (!parent) return;
 	if (parent->ifmtNinch)return;
+
+	GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();
 
 	if (parent->fIfmtUser)
 	{

@@ -69,9 +69,9 @@ void CSlicerCacheOlapLevelName::ReadAttributes(XLS::BiffStructure& obj)
 void CSlicerCacheOlapLevelName::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {
 	WritingElement_ReadAttributes_StartChar_No_NS(oReader)
-			WritingElement_ReadAttributes_Read_ifChar( oReader, "uniqueName", m_oUniqueName)
-			WritingElement_ReadAttributes_Read_else_ifChar( oReader, "count", m_oCount)
-			WritingElement_ReadAttributes_EndChar_No_NS( oReader )
+	WritingElement_ReadAttributes_Read_ifChar( oReader, "uniqueName", m_oUniqueName)
+	WritingElement_ReadAttributes_Read_else_ifChar( oReader, "count", m_oCount)
+	WritingElement_ReadAttributes_EndChar_No_NS( oReader )
 }
 void CSlicerCacheOlapLevelName::fromXML(XmlUtils::CXmlLiteReader& oReader)
 {

@@ -615,38 +615,7 @@ namespace NSDoctRenderer
                     this->CloseFile();
                 else if ("SaveFile" == sFuncNum)
                 {
-                    int nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
-
-                    if (L"docx" == _builder_params[0])
-                        nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
-                    else if (L"doc" == _builder_params[0])
-                        nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC;
-                    else if (L"odt" == _builder_params[0])
-                        nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT;
-                    else if (L"rtf" == _builder_params[0])
-                        nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF;
-                    else if (L"txt" == _builder_params[0])
-                        nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT;
-                    else if (L"pptx" == _builder_params[0])
-                        nFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
-                    else if (L"odp" == _builder_params[0])
-                        nFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
-                    else if (L"xlsx" == _builder_params[0])
-                        nFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
-                    else if (L"xls" == _builder_params[0])
-                        nFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS;
-                    else if (L"ods" == _builder_params[0])
-                        nFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
-                    else if (L"csv" == _builder_params[0])
-                        nFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
-                    else if (L"pdf" == _builder_params[0])
-                        nFormat = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
-                    else if (L"image" == _builder_params[0])
-                        nFormat = AVS_OFFICESTUDIO_FILE_IMAGE;
-                    else if (L"jpg" == _builder_params[0])
-                        nFormat = AVS_OFFICESTUDIO_FILE_IMAGE;
-                    else if (L"png" == _builder_params[0])
-                        nFormat = AVS_OFFICESTUDIO_FILE_IMAGE;
+                    int nFormat = NSDoctRenderer::GetFormatByTexExtention(_builder_params[0]);
 
                     if (m_pInternal->m_oParams.m_bSaveWithDoctrendererMode)
                     {

@@ -32,11 +32,8 @@
 #pragma once
 
 #include <string>
-#include <CPOptional.h>
-#include <CPSharedPtr.h>
 
 #include "../odf/datatypes/lengthorpercent.h"
-
 
 namespace cpdoccore {
 namespace oox {

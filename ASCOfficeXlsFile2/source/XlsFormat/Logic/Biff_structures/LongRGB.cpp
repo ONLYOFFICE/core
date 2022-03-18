@@ -31,7 +31,6 @@
  */
 
 #include "LongRGB.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {
@@ -81,7 +80,10 @@ void LongRGBA::load(CFRecord& record)
 
 _UINT32 LongRGBA::ToRGBA()
 {
-	return ((unsigned int)( ( (unsigned char)(red) )| ( ( (unsigned char)(green) ) << 8 ) | ( ( (unsigned char)(blue) ) << 16 ) | ( (unsigned char)(alpha) << 24 ) ) );
+	return ((_UINT32)( ( (unsigned char)(red) )| ( ( (unsigned char)(green) ) << 8 ) | ( ( (unsigned char)(blue) ) << 16 ) | ( (unsigned char)(alpha) << 24 ) ) );
 }
-
+_UINT32 LongRGBA::ToRGB()
+{
+	return ((_UINT32)(((unsigned char)(red)) | (((unsigned char)(green)) << 8) | (((unsigned char)(blue)) << 16) ));
+}
 } // namespace XLS

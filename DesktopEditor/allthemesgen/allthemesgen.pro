@@ -28,8 +28,6 @@ core_windows {
 }
 
 core_linux {
-    LIBS += -lz -pthread
-
     QMAKE_LFLAGS += -Wl,--rpath=./
 }
 

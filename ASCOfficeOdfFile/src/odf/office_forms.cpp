@@ -34,13 +34,12 @@
 #include "draw_frame.h"
 #include "text_content.h"
 
-#include <xml/xmlchar.h>
-#include <xml/attributes.h>
-#include <xml/utils.h>
+#include "../../include/xml/xmlchar.h"
+#include "../../include/xml/utils.h"
 
 #include "serialize_elements.h"
 
-#include "../formulasconvert/formulasconvert.h"
+#include "../../formulasconvert/formulasconvert.h"
 
 #define OBJ_Group			0x0000
 #define OBJ_Line			0x0001 
@@ -302,13 +301,13 @@ void form_frame::add_attributes( const xml::attributes_wc_ptr & Attributes )
 }
 void form_frame::docx_convert(oox::docx_conversion_context & Context)
 {
-	Context.get_forms_context().start_element(1);
+	Context.get_forms_context().start_element(oox::formFrame);
 
 	form_element::docx_convert(Context);
 }
 void form_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	Context.get_forms_context().start_element(1);
+	Context.get_forms_context().start_element(oox::formFrame);
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::xlsx_convert(Context);
@@ -341,13 +340,13 @@ void form_button::add_attributes( const xml::attributes_wc_ptr & Attributes )
 }
 void form_button::docx_convert(oox::docx_conversion_context & Context)
 {
-	Context.get_forms_context().start_element(1);
+	Context.get_forms_context().start_element(oox::formButton);
 
 	form_element::docx_convert(Context);
 }
 void form_button::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	Context.get_forms_context().start_element(1);
+	Context.get_forms_context().start_element(oox::formButton);
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::xlsx_convert(Context);
@@ -380,14 +379,14 @@ void form_text::add_attributes( const xml::attributes_wc_ptr & Attributes )
 }
 void form_text::docx_convert(oox::docx_conversion_context & Context)
 {
-	Context.get_forms_context().start_element(2);
+	Context.get_forms_context().start_element(oox::formText);
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::docx_convert(Context);
 }
 void form_text::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	Context.get_forms_context().start_element(2);
+	Context.get_forms_context().start_element(oox::formLabel);
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::xlsx_convert(Context);
@@ -404,9 +403,6 @@ void form_text::serialize_control_props(std::wostream & strm)
 
 			CP_XML_ATTR(L"dx", L"20");
 			CP_XML_ATTR(L"noThreeD", L"1");
-			
-			if (value_)
-				CP_XML_ATTR(L"val", *value_);
 		}
 	}
 }
@@ -464,7 +460,7 @@ void form_text::docx_convert_field(oox::docx_conversion_context & Context, draw_
 	Context.finish_run();	
     Context.output_stream() << L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>";
 }
-// form:fixed-text
+// form:textarea
 //----------------------------------------------------------------------------------
 const wchar_t * form_textarea::ns = L"form";
 const wchar_t * form_textarea::name = L"textarea";
@@ -481,14 +477,14 @@ void form_fixed_text::add_attributes( const xml::attributes_wc_ptr & Attributes 
 }
 void form_fixed_text::docx_convert(oox::docx_conversion_context & Context)
 {
-	Context.get_forms_context().start_element(2);
+	Context.get_forms_context().start_element(oox::formLabel);
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::docx_convert(Context);
 }
 void form_fixed_text::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	Context.get_forms_context().start_element(2);
+	Context.get_forms_context().start_element(oox::formLabel);
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::xlsx_convert(Context);
@@ -501,13 +497,10 @@ void form_fixed_text::serialize_control_props(std::wostream & strm)
 		{
 			CP_XML_ATTR(L"xmlns", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
 
-			CP_XML_ATTR(L"objectType", L"EditBox");
+			CP_XML_ATTR(L"objectType", L"Label");
 
-			CP_XML_ATTR(L"dx", L"20");
+			CP_XML_ATTR(L"lockText", L"1");
 			CP_XML_ATTR(L"noThreeD", L"1");
-			
-			if (value_)
-				CP_XML_ATTR(L"val", *value_);
 		}
 	}
 }
@@ -585,14 +578,14 @@ void form_checkbox::add_attributes( const xml::attributes_wc_ptr & Attributes )
 }
 void form_checkbox::docx_convert(oox::docx_conversion_context & Context)
 {
-	Context.get_forms_context().start_element(3);
+	Context.get_forms_context().start_element(oox::formCheckbox);
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::docx_convert(Context);
 }
 void form_checkbox::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	Context.get_forms_context().start_element(3);
+	Context.get_forms_context().start_element(oox::formCheckbox);
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::xlsx_convert(Context);
@@ -702,7 +695,7 @@ void form_radio::add_attributes( const xml::attributes_wc_ptr & Attributes )
 }
 void form_radio::docx_convert(oox::docx_conversion_context & Context)
 {
-	Context.get_forms_context().start_element(3);
+	Context.get_forms_context().start_element(oox::formCheckbox);
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::docx_convert(Context);
@@ -711,7 +704,7 @@ void form_radio::docx_convert(oox::docx_conversion_context & Context)
 }
 void form_radio::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	Context.get_forms_context().start_element(3);
+	Context.get_forms_context().start_element(oox::formCheckbox);
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::xlsx_convert(Context);
@@ -751,6 +744,8 @@ void form_combobox::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	
 	CP_APPLY_ATTR(L"form:source-cell-range", source_cell_range_);
 	CP_APPLY_ATTR(L"form:list-source", list_source_);
+	CP_APPLY_ATTR(L"form:size", size_);
+	CP_APPLY_ATTR(L"form:value", n_value_);
 }
 void form_combobox::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
@@ -765,14 +760,14 @@ void form_combobox::add_child_element( xml::sax * Reader, const std::wstring & N
 }
 void form_combobox::docx_convert(oox::docx_conversion_context & Context)
 {
-	Context.get_forms_context().start_element(4);
+	Context.get_forms_context().start_element(oox::formCombobox);
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::docx_convert(Context);
 }
 void form_combobox::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	Context.get_forms_context().start_element(4);
+	Context.get_forms_context().start_element(oox::formCombobox);
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::xlsx_convert(Context);
@@ -787,22 +782,29 @@ void form_combobox::serialize_control_props(std::wostream & strm)
 			CP_XML_ATTR(L"xmlns", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
 			CP_XML_ATTR(L"objectType", L"Drop");
 			CP_XML_ATTR(L"dropStyle", L"combo");
-			CP_XML_ATTR(L"dx", L"20");
+			
+			if (size_)
+				CP_XML_ATTR(L"dx", 3 * (*size_));
+			else	
+				CP_XML_ATTR(L"dx", L"20");
+
 			CP_XML_ATTR(L"noThreeD", L"1");
 			
 			if (linked_cell_)
 			{
-				std::wstring fmla = converter.convert_named_ref(*linked_cell_);
+				std::wstring fmla = converter.convert_named_ref(*linked_cell_, true, L" ", true);
 				CP_XML_ATTR(L"fmlaLink", fmla);
 			}
 			if (source_cell_range_)
 			{
-				std::wstring fmla = converter.convert_named_expr(*source_cell_range_);
+				std::wstring fmla = converter.convert_named_ref(*source_cell_range_, true, L" ", true);
 				CP_XML_ATTR(L"fmlaRange", fmla);
 			}
-			//CP_XML_ATTR(L"sel", L"3");
-			if (value_)
-				CP_XML_ATTR(L"val", *value_);
+			CP_XML_ATTR(L"sel", L"3");
+			if (n_value_)
+				CP_XML_ATTR(L"val", *n_value_);
+			else 
+				CP_XML_ATTR(L"val", 0);
 		}
 	}
 }
@@ -874,17 +876,19 @@ void form_listbox::add_attributes( const xml::attributes_wc_ptr & Attributes )
 	CP_APPLY_ATTR(L"form:list-source", list_source_);
 	CP_APPLY_ATTR(L"form:list-source-type", list_source_type_);
 	CP_APPLY_ATTR(L"form:list-linkage-type", list_linkage_type_);
+	CP_APPLY_ATTR(L"form:size", size_);
+	CP_APPLY_ATTR(L"form:value", n_value_);
 }
 void form_listbox::docx_convert(oox::docx_conversion_context & Context)
 {
-	Context.get_forms_context().start_element(5);
+	Context.get_forms_context().start_element(oox::formListbox);
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::docx_convert(Context);
 }
 void form_listbox::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	Context.get_forms_context().start_element(5);
+	Context.get_forms_context().start_element(oox::formListbox);
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::xlsx_convert(Context);
@@ -903,22 +907,26 @@ void form_listbox::serialize_control_props(std::wostream & strm)
 			{
 				CP_XML_ATTR(L"dropStyle", L"combo");
 			}
-			CP_XML_ATTR(L"dx", L"20");
+			if (size_)
+				CP_XML_ATTR(L"dx", 3 * (*size_));
+			else
+				CP_XML_ATTR(L"dx", L"20");
+
 			CP_XML_ATTR(L"noThreeD", L"1");
 			
 			if (linked_cell_)
 			{
-				std::wstring fmla = converter.convert_named_ref(*linked_cell_);
+				std::wstring fmla = converter.convert_named_ref(*linked_cell_, true, L" ", true);
 				CP_XML_ATTR(L"fmlaLink", fmla);
 			}
 			if (source_cell_range_)
 			{
-				std::wstring fmla = converter./*convert_named_expr*/convert_named_ref(*source_cell_range_);
+				std::wstring fmla = converter./*convert_named_expr*/convert_named_ref(*source_cell_range_, true, L" ", true);
 				CP_XML_ATTR(L"fmlaRange", fmla);
 			}
 			//CP_XML_ATTR(L"sel", L"3");
-			if (value_)
-				CP_XML_ATTR(L"val", *value_);
+			if (n_value_)
+				CP_XML_ATTR(L"val", *n_value_);
 
 		}
 	}
@@ -935,14 +943,14 @@ void form_date::add_attributes( const xml::attributes_wc_ptr & Attributes )
 }
 void form_date::docx_convert(oox::docx_conversion_context & Context)
 {
-	Context.get_forms_context().start_element(6);
+	Context.get_forms_context().start_element(oox::formDateTime);
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::docx_convert(Context);
 }
 void form_date::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	Context.get_forms_context().start_element(6);
+	Context.get_forms_context().start_element(oox::formDateTime);
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::xlsx_convert(Context);
@@ -1010,14 +1018,14 @@ void form_time::add_attributes( const xml::attributes_wc_ptr & Attributes )
 }
 void form_time::docx_convert(oox::docx_conversion_context & Context)
 {
-	Context.get_forms_context().start_element(6);
+	Context.get_forms_context().start_element(oox::formDateTime);
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::docx_convert(Context);
 }
 void form_time::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	Context.get_forms_context().start_element(6);
+	Context.get_forms_context().start_element(oox::formDateTime);
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
 	form_element::xlsx_convert(Context);
@@ -1087,17 +1095,17 @@ void form_image_frame::add_attributes( const xml::attributes_wc_ptr & Attributes
 }
 void form_image_frame::docx_convert(oox::docx_conversion_context & Context)
 {
-	//Context.get_forms_context().start_element(xxx);
-	//Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
+	Context.get_forms_context().start_element(oox::formImage);
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
-	//form_element::docx_convert(Context);
+	form_element::docx_convert(Context);
 }
 void form_image_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-	//Context.get_forms_context().start_element(xxx);
-	//Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
+	Context.get_forms_context().start_element(oox::formImage);
+	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
-	//form_element::xlsx_convert(Context);
+	form_element::xlsx_convert(Context);
 }
 void form_image_frame::serialize_control_props(std::wostream & strm)
 {
@@ -1142,9 +1150,9 @@ void form_value_range::docx_convert(oox::docx_conversion_context & Context)
 	if (!control_implementation_) return;
 	
 	if (control_implementation_->find(L"SpinButton") != std::wstring::npos)
-		Context.get_forms_context().start_element(7); //spin
+		Context.get_forms_context().start_element(oox::formSpin); 
 	else
-		Context.get_forms_context().start_element(8); //scroll
+		Context.get_forms_context().start_element(oox::formScroll); 
 
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
@@ -1155,9 +1163,9 @@ void form_value_range::xlsx_convert(oox::xlsx_conversion_context & Context)
 	if (!control_implementation_) return;
 	
 	if (control_implementation_->find(L"SpinButton") != std::wstring::npos)
-		Context.get_forms_context().start_element(7); //spin
+		Context.get_forms_context().start_element(oox::formSpin);
 	else
-		Context.get_forms_context().start_element(8); //scroll
+		Context.get_forms_context().start_element(oox::formScroll);
 
 	Context.get_forms_context().set_element(dynamic_cast<form_element*>(this));
 
@@ -1180,7 +1188,7 @@ void form_value_range::serialize_control_props(std::wostream & strm)
 			
 			if (linked_cell_)
 			{
-				std::wstring fmla = converter.convert_named_ref(*linked_cell_);
+				std::wstring fmla = converter.convert_named_ref(*linked_cell_, true, L" ", true);
 				CP_XML_ATTR(L"fmlaLink", fmla);
 			}
 			if (value_)			CP_XML_ATTR(L"val", *value_);

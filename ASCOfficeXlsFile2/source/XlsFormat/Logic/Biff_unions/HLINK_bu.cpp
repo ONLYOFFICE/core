@@ -31,8 +31,8 @@
  */
 
 #include "HLINK.h"
-#include <Logic/Biff_records/HLink.h>
-#include <Logic/Biff_records/HLinkTooltip.h>
+#include "../Biff_records/HLink.h"
+#include "../Biff_records/HLinkTooltip.h"
 
 namespace XLS
 {

@@ -31,8 +31,8 @@
  */
 
 #include "CRTMLFRT.h"
-#include <Logic/Biff_records/CrtMlFrt.h>
-#include <Logic/Biff_records/CrtMlFrtContinue.h>
+#include "../Biff_records/CrtMlFrt.h"
+#include "../Biff_records/CrtMlFrtContinue.h"
 
 namespace XLS
 {

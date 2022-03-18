@@ -71,11 +71,9 @@ MulBlank::MulBlank()
 {
 }
 
-
 MulBlank::~MulBlank()
 {
 }
-
 
 BaseObjectPtr MulBlank::clone()
 {
@@ -125,12 +123,15 @@ int MulBlank::serialize(std::wostream & stream)
 			{
 				CP_XML_ATTR(L"r", ref);
 				
-				if(( (i-colFirst) < rgixfe.rgixfe.size()) && (rgixfe.rgixfe[i-colFirst] > global_info_->cellStyleXfs_count))
+				if ( ((i-colFirst) < rgixfe.rgixfe.size()) && (rgixfe.rgixfe[i-colFirst] >= global_info_->cellStyleXfs_count))
 				{
-					int st = (int)rgixfe.rgixfe[i-colFirst] - global_info_->cellStyleXfs_count;
 					CP_XML_ATTR(L"s", rgixfe.rgixfe[i-colFirst] - global_info_->cellStyleXfs_count);
 				}
-				else if  ((rgixfe.common_ixfe > 0) && (rgixfe.common_ixfe > global_info_->cellStyleXfs_count))
+				else if (((i - colFirst) < rgixfe.rgixfe.size()) && ((i - colFirst) < global_info_->cellStyleXfs_count))
+				{
+					//CP_XML_ATTR(L"s", rgixfe.rgixfe[i - colFirst]);
+				}
+				else if  ((rgixfe.common_ixfe > 0) && (rgixfe.common_ixfe >= global_info_->cellStyleXfs_count))
 				{
 					int st = (int)rgixfe.common_ixfe - global_info_->cellStyleXfs_count;
 					CP_XML_ATTR(L"s", rgixfe.common_ixfe - global_info_->cellStyleXfs_count);

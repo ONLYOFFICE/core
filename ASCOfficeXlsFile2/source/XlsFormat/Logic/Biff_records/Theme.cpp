@@ -31,10 +31,10 @@
  */
 
 #include "Theme.h"
-#include "../../../DesktopEditor/common/File.h"
-#include "../../../OfficeUtils/src/OfficeUtils.h"
-#include "../../../Common/DocxFormat/Source/Base/Base.h"
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
+#include "../../../../../DesktopEditor/common/File.h"
+#include "../../../../../OfficeUtils/src/OfficeUtils.h"
+#include "../../../../../Common/DocxFormat/Source/Base/Base.h"
+#include "../../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
 
 namespace XLS
 {

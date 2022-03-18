@@ -31,16 +31,16 @@
  */
 
 #include "LD.h"
-#include <Logic/Biff_records/Legend.h>
-#include <Logic/Biff_records/Begin.h>
-#include <Logic/Biff_records/Pos.h>
-#include <Logic/Biff_unions/ATTACHEDLABEL.h>
-#include <Logic/Biff_unions/FRAME.h>
-#include <Logic/Biff_records/CrtLayout12.h>
-#include <Logic/Biff_records/FontX.h>
-#include <Logic/Biff_unions/TEXTPROPS.h>
-#include <Logic/Biff_unions/CRTMLFRT.h>
-#include <Logic/Biff_records/End.h>
+#include "ATTACHEDLABEL.h"
+#include "FRAME.h"
+#include "TEXTPROPS.h"
+#include "CRTMLFRT.h"
+#include "../Biff_records/Legend.h"
+#include "../Biff_records/Begin.h"
+#include "../Biff_records/Pos.h"
+#include "../Biff_records/CrtLayout12.h"
+#include "../Biff_records/FontX.h"
+#include "../Biff_records/End.h"
 
 namespace XLS
 {

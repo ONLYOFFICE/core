@@ -49,6 +49,8 @@ public:
 
 public:
     virtual int CreateFromFile(const std::wstring& strFileName, BYTE* pDataUse = NULL);
+    virtual int CreateFromMemory(BYTE* pData, LONG lSize, bool bClear);
+    virtual void GetMemory(BYTE*& pData, LONG& lSize);
 };
 
 class CApplicationFontStreams : public NSFonts::IApplicationFontStreams
@@ -56,8 +58,8 @@ class CApplicationFontStreams : public NSFonts::IApplicationFontStreams
 private:
 	// этот мап нужно периодически опрашивать и удалять неиспользуемые стримы
 	std::map<std::wstring, CFontStream*> m_mapStreams;
-public:
 
+public:
 	CApplicationFontStreams();
     virtual ~CApplicationFontStreams();
 
@@ -78,12 +80,16 @@ private:
 private:
     std::list<std::string>              m_arFiles;
     int m_lCacheSize;
+
+    // обезопасим лок файлов с ограниченным кэшем и режимом без квадратов
+    NSFonts::IFontFile* m_pSafeFont;
     
 public:
     CFontsCache() : NSFonts::IFontsCache()
     {
         m_pApplicationFontStreams = NULL;
         m_lCacheSize = -1;
+        m_pSafeFont = NULL;
     }
     virtual ~CFontsCache()
     {
@@ -204,6 +210,7 @@ public:
 
     virtual std::wstring GetFontType();
     virtual unsigned int GetNameIndex(const std::wstring& wsName);
+	virtual unsigned int GetGIDByUnicode(const unsigned int& unCode);
 
     virtual void SetSubpixelRendering(const bool& hmul, const bool& vmul);
     

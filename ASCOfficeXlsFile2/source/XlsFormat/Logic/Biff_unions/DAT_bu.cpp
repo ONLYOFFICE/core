@@ -31,10 +31,10 @@
  */
 
 #include "DAT.h"
-#include <Logic/Biff_records/Dat.h>
-#include <Logic/Biff_records/Begin.h>
-#include <Logic/Biff_unions/LD.h>
-#include <Logic/Biff_records/End.h>
+#include "LD.h"
+#include "../Biff_records/Dat.h"
+#include "../Biff_records/Begin.h"
+#include "../Biff_records/End.h"
 
 namespace XLS
 {

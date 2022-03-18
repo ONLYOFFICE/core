@@ -31,7 +31,6 @@
  */
 
 #include "GradStop.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {
@@ -44,15 +43,7 @@ BiffStructurePtr GradStop::clone()
 
 void GradStop::load(CFRecord& record)
 {
-	record >> xclrType;
-	if(2 == xclrType)
-	{
-		record >> xclrValue_rgb;
-	}
-	else
-	{
-		record >> xclrValue;
-	}
+	record >> xclrType >> xclrValue;
 
 	record >> numPosition >> numTint;
 }

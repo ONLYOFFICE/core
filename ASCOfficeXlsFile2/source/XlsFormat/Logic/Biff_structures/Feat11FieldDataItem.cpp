@@ -30,7 +30,6 @@
  *
  */
 
-#include <Binary/CFRecord.h>
 #include "Feat11FieldDataItem.h"
 #include "CellRangeRef.h"
 

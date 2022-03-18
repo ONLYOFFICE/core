@@ -479,7 +479,7 @@ void style::serialize(std::wostream & strm)
 			CP_XML_ATTR_OPT(L"style:data-style-name",		style_data_style_name_);
 			CP_XML_ATTR_OPT(L"style:class",					style_class_);
 			CP_XML_ATTR_OPT(L"style:master-page-name",		style_master_page_name_);
-			CP_XML_ATTR_OPT(L"style:display-name",			style_display_name_);
+			CP_XML_ATTR_OPT_ENCODE_STRING(L"style:display-name", style_display_name_);
 			CP_XML_ATTR(L"style:family",					style_family_);
 			CP_XML_ATTR(L"style:name",						style_name_);
 			

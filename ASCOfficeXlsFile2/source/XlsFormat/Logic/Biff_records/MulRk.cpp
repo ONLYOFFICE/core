@@ -43,7 +43,6 @@ MulRk::~MulRk()
 {
 }
 
-
 BaseObjectPtr MulRk::clone()
 {
 	return BaseObjectPtr(new MulRk(*this));
@@ -53,7 +52,6 @@ void MulRk::readFields(CFRecord& record)
 {
 	global_info_ = record.getGlobalWorkbookInfo();
 
-// A little hack to extract colLast before it is used
 	record.skipNunBytes(record.getDataSize() - sizeof(unsigned short));
 	record >> colLast;
 	record.resetPointerToBegin();
@@ -96,7 +94,7 @@ int MulRk::serialize(std::wostream & stream)
 			{
 				CP_XML_ATTR(L"r", ref);
 
-				if (cell->ixfe > global_info_->cellStyleXfs_count)
+				if (cell->ixfe >= global_info_->cellStyleXfs_count)
 				{
 					CP_XML_ATTR(L"s", cell->ixfe - global_info_->cellStyleXfs_count);
 				}

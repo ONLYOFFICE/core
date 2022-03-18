@@ -345,7 +345,7 @@ namespace OOX
 		class CSSubSup;
 		class CSSubSupPr;
 		class CSSup;
-		class CSSupPr;
+		class CSSupPr;		
 		//class CType;
 		//class CSupHide;
 		//class CSubHide;
@@ -677,6 +677,11 @@ public:
 		std::pair<std::wstring, std::wstring> convert(OOX::Logic::CDelimiterPr			*oox_del_pr);
 		void convert(OOX::Logic::CEqArr					*oox_eq_arr);
 		void convert(OOX::Logic::CEqArrPr				*oox_eq_arr_pr);
+		void convert(OOX::Logic::CBaseJc				*oox_base_jc);
+		void convert(OOX::Logic::CMaxDist				*oox_max_dist);
+		void convert(OOX::Logic::CObjDist				*oox_obj_dist);
+		void convert(OOX::Logic::CRSp					*oox_r_sp);
+		void convert(OOX::Logic::CRSpRule				*oox_r_sp_rule);
 		std::wstring convert(OOX::Logic::CFPr			*oox_f_pr);
 		void convert(OOX::Logic::CFraction				*oox_fraction);
 		void convert(OOX::Logic::CFunc					*oox_func);
@@ -700,6 +705,7 @@ public:
 		void convert(OOX::Logic::CMText					*oox_text);
 		void convert(OOX::Logic::CNary					*oox_nary);
 		std::pair<bool, bool> convert(OOX::Logic::CNaryPr *oox_nary_pr);
+		void convert(OOX::Logic::CGrow					*oox_grow);
 		void convert(OOX::Logic::COMathPara				*oox_math_para);
 		void convert(OOX::Logic::COMathParaPr			*oox_math_para_pr);
 		void convert(OOX::Logic::CPhant					*oox_phant);
@@ -712,6 +718,7 @@ public:
 		void convert(OOX::Logic::CSSubPr				*oox_ssub_pr);
 		void convert(OOX::Logic::CSSubSup				*oox_ssub_sup);
 		void convert(OOX::Logic::CSSubSupPr				*oox_ssub_sup_pr);
+		void convert(OOX::Logic::CAlnScr				*oox_aln_scr);
 		void convert(OOX::Logic::CSSup					*oox_ssup);
 		void convert(OOX::Logic::CSSupPr				*oox_ssup_pr);
 		void convert(OOX::Logic::CNum					*oox_num);

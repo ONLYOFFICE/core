@@ -1079,10 +1079,10 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\COMMENT.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\COMMENTAUTHORS.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\COMMENTLIST.cpp" />
-    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\COMMENTS.cpp" />
-    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CONDITIONALFORMATTING.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\COMMENTS_bu.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CONDITIONALFORMATTING14.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CONDITIONALFORMATTINGS.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CONDITIONALFORMATTING_bu.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CSVIEW.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CSVIEWS.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CUSTOMFILTERS.cpp" />
@@ -1162,8 +1162,6 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\RWBRK.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SHAREDSTRINGS.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SHRFMLACELL.cpp" />
-    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICER.cpp" />
-    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHE.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHEBOOKPIVOTTABLES_bu.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHECROSSFILTEREXT.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHEID.cpp" />
@@ -1177,11 +1175,13 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHESIRANGES.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHESPIVOTCACHEID.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHESPIVOTCACHEIDS.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERCACHE_bu.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICEREX.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERS.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERSEX.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERSTYLE.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICERSTYLES.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SLICER_bu.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SORTCOND.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SORTCOND14.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SORTCONDS.cpp" />
@@ -1198,7 +1198,6 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SXTUPLESETDATA.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SXTUPLESETHEADER.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\SXTUPLESETROW.cpp" />
-    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLE.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLECELL.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERCACHE.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERCACHEID_bu.cpp" />
@@ -1207,6 +1206,7 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESLICERSEX.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESTYLE.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLESTYLES.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TABLE_bu.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TEXTPR15_bu.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TIMELINESTYLE.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\TIMELINESTYLES.cpp" />
@@ -1284,8 +1284,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(Configuration)\XlsbFormat\</OutDir>
-    <IncludePath>D:\_Work\core\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\_Work\core\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\..\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
     <IntDir>$(Configuration)\XlsbFormat\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -1295,6 +1295,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

@@ -168,8 +168,8 @@ public:
                 m_nSize *= 2;
             }
 
-            m_pTexts = (Text *) PdfReader::MemUtilsReallocArray(m_pTexts, m_nSize, sizeof(Text));
-            m_pMatrix = (Matrix *) PdfReader::MemUtilsReallocArray(m_pMatrix, m_nSize, sizeof(Matrix));
+            m_pTexts = (Text *) PdfReader::MemUtilsReallocArray(m_pTexts, m_nSize, sizeof(Text), m_nTextsCount);
+            m_pMatrix = (Matrix *) PdfReader::MemUtilsReallocArray(m_pMatrix, m_nSize, sizeof(Matrix), m_nTextsCount);
         }
     }
 

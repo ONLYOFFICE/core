@@ -31,7 +31,6 @@
  */
 
 #include "RgbExtra.h"
-#include <Binary/CFRecord.h>
 #include "PtgExtraCol.h"
 #include "PtgExtraArray.h"
 #include "PtgExtraList.h"

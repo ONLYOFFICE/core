@@ -1653,6 +1653,12 @@ int BinaryStyleTableReader::ReadNumFmts(BYTE type, long length, void* poResult)
 		OOX::Spreadsheet::CNumFmt* pNumFmt = new OOX::Spreadsheet::CNumFmt();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadNumFmt, pNumFmt);
 		m_oStyles.m_oNumFmts->m_arrItems.push_back(pNumFmt);
+		
+		if (pNumFmt->m_oNumFmtId.IsInit())
+		{
+			m_oStyles.m_oNumFmts->m_mapNumFmtIndex.insert(std::make_pair(pNumFmt->m_oNumFmtId->GetValue(), m_oStyles.m_oNumFmts->m_arrItems.size() - 1));
+		}
+
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -1891,6 +1897,7 @@ int BinaryStyleTableReader::ReadDxf(BYTE type, long length, void* poResult)
 	{
 		pDxf->m_oNumFmt.Init();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadNumFmt, pDxf->m_oNumFmt.GetPointer());
+		//todooo в m_mapNumFmtIndex
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -3748,6 +3755,11 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 	READ2_DEF_SPREADSHEET(length, res, this->ReadProtection, &oProtection);
 	SEEK_TO_POS_END(oProtection);
 //-------------------------------------------------------------------------------------------------------------
+	SEEK_TO_POS_START(c_oSerWorksheetsTypes::ProtectedRanges);
+	OOX::Spreadsheet::CProtectedRanges oProtectedRanges;
+	READ1_DEF(length, res, this->ReadProtectedRanges, &oProtectedRanges);
+	SEEK_TO_POS_END(oProtectedRanges);
+//-------------------------------------------------------------------------------------------------------------
 	SEEK_TO_POS_START(c_oSerWorksheetsTypes::Autofilter);
 		OOX::Spreadsheet::CAutofilter oAutofilter;
 		BinaryTableReader oBinaryTableReader(m_oBufferedStream, m_pCurWorksheet.GetPointer());
@@ -3852,11 +3864,6 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 		OOX::Spreadsheet::CHyperlinks oHyperlinks;
 		READ1_DEF(length, res, this->ReadHyperlinks, &oHyperlinks);
 	SEEK_TO_POS_END(oHyperlinks);
-//-------------------------------------------------------------------------------------------------------------
-	SEEK_TO_POS_START(c_oSerWorksheetsTypes::ProtectedRanges);
-	OOX::Spreadsheet::CProtectedRanges oProtectedRanges;
-	READ1_DEF(length, res, this->ReadProtectedRanges, &oProtectedRanges);
-	SEEK_TO_POS_END(oProtectedRanges);
 //-------------------------------------------------------------------------------------------------------------
 	SEEK_TO_POS_START(c_oSerWorksheetsTypes::PrintOptions);
 		OOX::Spreadsheet::CPrintOptions oPrintOptions;
@@ -5824,6 +5831,10 @@ int BinaryWorksheetsTableReader::ReadCell(BYTE type, long length, void* poResult
 	{
 		pCell->m_oValue.Init();
 		pCell->m_oValue->m_sText = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSerCellTypes::ValueCache == type)
+	{
+		pCell->m_oCacheValue = m_oBufferedStream.GetString4(length);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

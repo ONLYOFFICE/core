@@ -31,7 +31,6 @@
  */
 
 #include "DXFN12List.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {
@@ -71,8 +70,8 @@ void DXFN12List::load(CFRecord& record)
 	}
 	if (size > 0)
 	{
-		xfext = XFExtNoFRTPtr(new XFExtNoFRT);
-		record >> *xfext;
+		dxfn.xfext = XFExtNoFRTPtr(new XFExtNoFRT);
+		record >> *dxfn.xfext;
 
 		size -= (record.getRdPtr() - pos_record);
 	}
@@ -83,20 +82,12 @@ void DXFN12List::load(CFRecord& record)
 		{
 			dxfn.ibitAtrNum = false;
 		}
-		//if (xfext)
-		//{
-		//	if (xfext->serialize(record.getGlobalWorkbookInfo()->users_Dxfs_stream) >= 0)
-		//	{
-		//		dxfId_ = record.getGlobalWorkbookInfo()->cellStyleDxfs_count++;
-		//	}
-		//}
-		//else
-		{
-			std::wstringstream strm;
-			dxfn.serialize(strm);
+
+		std::wstringstream strm;
+		dxfn.serialize(strm);
 			
-			dxfId_ = global_info->RegistrDxfn(strm.str());
-		}
+		dxfId_ = global_info->RegistrDxfn(strm.str());
+
 	}
 }
 

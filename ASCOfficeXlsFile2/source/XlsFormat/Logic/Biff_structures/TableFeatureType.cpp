@@ -31,7 +31,6 @@
  */
 
 #include "TableFeatureType.h"
-#include <Binary/CFRecord.h>
 #include "Feat11FieldDataItem.h"
 
 namespace XLS

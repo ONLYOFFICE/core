@@ -34,8 +34,8 @@
 
 #include "pptx_package.h"
 
-#include <odf/odf_document.h>
-#include <xml/simple_xml_writer.h>
+#include "../../include/odf/odf_document.h"
+#include "../../include/xml/simple_xml_writer.h"
 
 #include <iostream>
 

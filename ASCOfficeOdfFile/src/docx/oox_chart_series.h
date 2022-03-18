@@ -32,7 +32,7 @@
 #pragma once 
 
 #include <iosfwd>
-#include <CPOptional.h>
+
 #include "../odf/chart_objects.h"
 
 #include "oox_chart_values.h"
@@ -55,6 +55,8 @@ public:
 	
 	virtual void oox_serialize(std::wostream & _Wostream) = 0;
 	
+	bool						is3D_;
+
 	bool						labelPosEnabled_;
 	_oox_chart_values			values_[5]; //cat, common, x, y, bubble, 
 
@@ -78,6 +80,8 @@ public:
 
 	odf_reader::chart::series content_;
 
+	virtual void set_properties(std::vector<odf_reader::_property> g) {}
+
 	//extLst (Chart Extensibility) §21.2.2.64
 	//idx (Index) §21.2.2.84
 	//order (Order) §21.2.2.128
@@ -95,7 +99,11 @@ public:
 	
 	static oox_series_ptr create();
 	
+	virtual void set_properties(std::vector<odf_reader::_property> g);
+
 	virtual void oox_serialize(std::wostream & _Wostream);
+	
+	_CP_OPT(int)	iSolidType;
 };
 	//cat (Category Axis Data) §21.2.2.24
 	//errBars (Error Bars) §21.2.2.55

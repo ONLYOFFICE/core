@@ -1,0 +1,49 @@
+{
+	"name": "spell",
+	"res_folder": "./deploy/spell",
+	"wasm": true,
+	"asm": true,
+	"embed_mem_file": true,
+	"run_before": "before.py",
+	"run_after": "import sys;sys.path.append(\"../../../../build_tools/scripts\");import base;base.configure_common_apps();base.replaceInFile(\"./deploy/spell/spell.js\", \"__ATPOSTRUN__=[];\", \"__ATPOSTRUN__=[function(){self.onEngineInit();}];\");base.replaceInFile(\"./deploy/spell/spell.js\", \"function getBinaryPromise(){\", \"function getBinaryPromise2(){\");base.replaceInFile(\"./deploy/spell/spell_ie.js\", \"__ATPOSTRUN__=[];\", \"__ATPOSTRUN__=[function(){self.onEngineInit();}];\");base.replaceInFile(\"./deploy/spell/spell_ie.js\", \"function getBinaryPromise(){\", \"function getBinaryPromise2(){\");base.copy_file(\"./wasm/js/code.js\", \"./deploy/spell.js\");base.copy_file(\"./wasm/js/index.html\", \"./deploy/index.html\")",
+	"base_js_content": "./wasm/js/spell.js",
+
+	"compiler_flags": [
+		"-O3",
+		"-fno-exceptions",
+		"-fno-rtti",
+		"-Wno-unused-command-line-argument",
+		"-s ALLOW_MEMORY_GROWTH=1",
+		"-s FILESYSTEM=0",
+		"-s ENVIRONMENT='web,worker'"
+	],
+	"exported_functions": [
+		"_malloc",
+		"_free",
+		"_Spellchecker_Malloc",
+		"_Spellchecker_Free",
+		"_Spellchecker_Create",
+		"_Spellchecker_Destroy",
+		"_Spellchecker_AddDictionary",
+		"_Spellchecker_RemoveDicrionary",
+		"_Spellchecker_Load",
+		"_Spellchecker_Spell",
+		"_Spellchecker_Suggest",
+		"_Spellchecker_RemoveEngine",
+		"_Spellchecker_TotalAllocatedMemory"
+	],
+	"include_path": ["./hunspell/src/hunspell", "./wasm/src"],
+	"define": ["WIN32", "NDEBUG", "HUNSPELL_STATIC", "BUILDING_LIBHUNSPELL", "HUNSPELL_WASM_MODULE"],
+	"compile_files_array": [
+	{
+		"name": "h",
+		"folder": "./hunspell/src/hunspell/",
+		"files": ["affentry.cxx", "affixmgr.cxx", "csutil.cxx", "hashmgr.cxx", "hunspell.cxx", "hunzip.cxx", "phonet.cxx", "replist.cxx", "suggestmgr.cxx"]
+	},
+	{
+		"name": "s",
+		"folder": "./wasm/src/",
+		"files": ["filemgr_wrapper_new.cxx", "base.cpp"]
+	}
+	]
+}

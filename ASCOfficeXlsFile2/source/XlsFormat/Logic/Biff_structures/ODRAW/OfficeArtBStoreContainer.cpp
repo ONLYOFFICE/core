@@ -31,8 +31,6 @@
  */
 
 #include "OfficeArtBStoreContainer.h"
-#include <Binary/CFRecord.h>
-
 
 namespace ODRAW
 {

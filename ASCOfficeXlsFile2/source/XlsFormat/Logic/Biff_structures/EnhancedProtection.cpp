@@ -31,7 +31,6 @@
  */
 
 #include "EnhancedProtection.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

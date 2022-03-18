@@ -253,9 +253,10 @@ namespace OOX
 
 		const FileType ActiveX_xml			(L"activeX", L"activeX.xml",
 												L"application/vnd.ms-office.activeX+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/control");
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/control",
+												L"activeX/activeX_xml", true, true);
 		
-		const FileType ActiveX_bin			(L"activeX", L"activeX.bin",
+		const FileType ActiveX_bin			(L"", L"activeX.bin",
 												L"application/vnd.ms-office.activeX",
 												L"http://schemas.microsoft.com/office/2006/relationships/activeXControlBinary");
 

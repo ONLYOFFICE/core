@@ -39,9 +39,8 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.h>
 
-#include <xml/xmlchar.h>
-#include <xml/attributes.h>
-#include <odf/odf_document.h>
+#include "../../include/xml/xmlchar.h"
+#include "../../include/odf/odf_document.h"
 
 #include "serialize_elements.h"
 
@@ -96,12 +95,20 @@ void draw_g::xlsx_convert(oox::xlsx_conversion_context & Context)
 ////////////////////////////////////////
 	if (common_draw_attlist_.common_shape_table_attlist_.table_end_cell_address_)
 	{
-		std::wstring Anchor = common_draw_attlist_.common_shape_table_attlist_.table_end_cell_address_.get();
-		
-		const double a_x_pt = common_draw_attlist_.common_shape_table_attlist_.table_end_x_.get_value_or(length(0)).get_value_unit(length::pt);
-		const double a_y_pt = common_draw_attlist_.common_shape_table_attlist_.table_end_y_.get_value_or(length(0)).get_value_unit(length::pt);
+		std::wstring end_Anchor = common_draw_attlist_.common_shape_table_attlist_.table_end_cell_address_.get();
 
-		Context.get_drawing_context().set_anchor(Anchor, a_x_pt, a_y_pt, true);
+		const double end_x_pt = common_draw_attlist_.common_shape_table_attlist_.table_end_x_.get_value_or(length(0)).get_value_unit(length::pt);
+		const double end_y_pt = common_draw_attlist_.common_shape_table_attlist_.table_end_y_.get_value_or(length(0)).get_value_unit(length::pt);
+
+		Context.get_drawing_context().set_anchor_end(end_Anchor, end_x_pt, end_y_pt, true);
+	}
+	else if (Context.in_table_cell())
+	{
+		const double x_pt = common_draw_attlists_.position_.svg_x_.get_value_or(length(0)).get_value_unit(length::pt);
+		const double y_pt = common_draw_attlists_.position_.svg_y_.get_value_or(length(0)).get_value_unit(length::pt);
+		
+		std::wstring Anchor = oox::getCellAddress(Context.current_table_column(), Context.current_table_row());
+		Context.get_drawing_context().set_anchor_start(Anchor, x_pt, y_pt, true);
 	}
 ////////////////////////////////////////////////
 
@@ -130,13 +137,13 @@ void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
 	const _CP_OPT(length) svg_widthVal =  common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_;    
     const _CP_OPT(length) svg_heightVal = common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_;
 
+	const double x_pt = common_draw_attlists_.position_.svg_x_.get_value_or(length(0)).get_value_unit(length::pt);
+	const double y_pt = common_draw_attlists_.position_.svg_y_.get_value_or(length(0)).get_value_unit(length::pt);
+
 	if (svg_widthVal && svg_heightVal)
 	{
 		const double width_pt = svg_widthVal.get_value_or(length(0)).get_value_unit(length::pt);
 		const double height_pt = svg_heightVal.get_value_or(length(0)).get_value_unit(length::pt);
-
-		const double x_pt = common_draw_attlists_.position_.svg_x_.get_value_or(length(0)).get_value_unit(length::pt);
-		const double y_pt = common_draw_attlists_.position_.svg_y_.get_value_or(length(0)).get_value_unit(length::pt);
 
 		Context.get_drawing_context().set_rect(width_pt, height_pt, x_pt, y_pt);
 	}
@@ -147,15 +154,19 @@ void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
 		xlsx_convert_transforms(transformStr, Context);
 	}
 ////////////////////////////////////////
-	std::wstring Anchor;
 	if (common_draw_attlist_.common_shape_table_attlist_.table_end_cell_address_)
 	{
-		Anchor = common_draw_attlist_.common_shape_table_attlist_.table_end_cell_address_.get();
+		std::wstring end_Anchor = common_draw_attlist_.common_shape_table_attlist_.table_end_cell_address_.get();
 		
-		const double a_x_pt = common_draw_attlist_.common_shape_table_attlist_.table_end_x_.get_value_or(length(0)).get_value_unit(length::pt);
-		const double a_y_pt = common_draw_attlist_.common_shape_table_attlist_.table_end_y_.get_value_or(length(0)).get_value_unit(length::pt);
+		const double end_x_pt = common_draw_attlist_.common_shape_table_attlist_.table_end_x_.get_value_or(length(0)).get_value_unit(length::pt);
+		const double end_y_pt = common_draw_attlist_.common_shape_table_attlist_.table_end_y_.get_value_or(length(0)).get_value_unit(length::pt);
 
-		Context.get_drawing_context().set_anchor(Anchor, a_x_pt, a_y_pt);
+		Context.get_drawing_context().set_anchor_end(end_Anchor, end_x_pt, end_y_pt);
+	}
+	else if (Context.in_table_cell())
+	{
+		std::wstring Anchor = oox::getCellAddress(Context.current_table_column(), Context.current_table_row());
+		Context.get_drawing_context().set_anchor_start(Anchor, x_pt, y_pt);
 	}
 //////////////////////////////////////////////
 	std::vector<const odf_reader::style_instance *> instances;

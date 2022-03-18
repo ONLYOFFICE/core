@@ -26,7 +26,7 @@ build_x2t_as_library {
 include(X2tConverter.pri)
 
 build_x2t_as_library {
-shared:QMAKE_LFLAGS += -exported_symbols_list $$PWD/../../src/dylib/export
+!core_debug:shared:QMAKE_LFLAGS += -exported_symbols_list $$PWD/../../src/dylib/export
 }
 
 

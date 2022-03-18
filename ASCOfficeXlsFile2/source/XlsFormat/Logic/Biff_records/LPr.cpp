@@ -31,7 +31,6 @@
  */
 
 #include "LPr.h"
-//#include <Exception/UnexpectedProgramPath.h>
 
 namespace XLS
 {

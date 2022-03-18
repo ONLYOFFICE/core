@@ -32,7 +32,6 @@
 
 #include "PtgElfRw.h"
 #include "CellRangeRef.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

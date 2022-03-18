@@ -32,9 +32,9 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/XORObfuscation.h>
-#include <Logic/Biff_structures/RC4EncryptionHeader.h>
-#include <Logic/Biff_structures/RC4CryptoAPIEncryptionHeader.h>
+#include "../Biff_structures/XORObfuscation.h"
+#include "../Biff_structures/RC4EncryptionHeader.h"
+#include "../Biff_structures/RC4CryptoAPIEncryptionHeader.h"
 
 namespace XLS
 {

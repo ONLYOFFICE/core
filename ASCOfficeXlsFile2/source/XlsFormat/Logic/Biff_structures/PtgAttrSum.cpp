@@ -31,7 +31,6 @@
  */
 
 #include "PtgAttrSum.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

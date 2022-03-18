@@ -31,7 +31,6 @@
  */
 
 #include "PtgElfLel.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

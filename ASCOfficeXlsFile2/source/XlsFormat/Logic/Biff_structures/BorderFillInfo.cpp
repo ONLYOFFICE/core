@@ -29,65 +29,98 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "BorderFillInfo.h"
-#include <Auxiliary/HelpFunc.h>
 #include <boost/functional/hash/hash.hpp>
 
-#include <simple_xml_writer.h>
+#include "BorderFillInfo.h"
+#include "../../Auxiliary/HelpFunc.h"
+
+#include "../../../Common/simple_xml_writer.h"
 
 namespace XLS
 {
+	std::size_t hash_value(FillInfoExt const & val)
+	{
+		std::size_t seed = 0;
 
-std::size_t hash_value(FillInfo const & val)
-{
-    std::size_t seed = 0;
-    boost::hash_combine(seed, val.icvFore);
-    boost::hash_combine(seed, val.icvBack);
-	boost::hash_combine(seed, val.fls);
+		boost::hash_combine(seed, val.enabled);
+		if (val.enabled)
+		{
+			boost::hash_combine(seed, val.icv);
+			boost::hash_combine(seed, val.xclrType);
+			boost::hash_combine(seed, val.xclrValue);
+		}
+		return seed;
+	}
+	std::size_t hash_value(FillInfo const & val)
+	{
+		std::size_t seed = 0;
 
-	return seed;
-}
-std::size_t hash_value(BorderInfo const & val)
-{
-    std::size_t seed = 0;
-	boost::hash_combine(seed, val.dgBottom);
-    boost::hash_combine(seed, val.dgDiag);
-    boost::hash_combine(seed, val.dgLeft);
-    boost::hash_combine(seed, val.dgRight);
-    boost::hash_combine(seed, val.dgTop);
-    boost::hash_combine(seed, val.grbitDiag);
-    boost::hash_combine(seed, val.icvBottom);
-    boost::hash_combine(seed, val.icvDiag);
-    boost::hash_combine(seed, val.icvLeft);
-    boost::hash_combine(seed, val.icvRight);
-    boost::hash_combine(seed, val.icvTop);
+		boost::hash_combine(seed, val.backFillInfo_);
+		boost::hash_combine(seed, val.foreFillInfo_);
 
-	return seed;
-}
-std::size_t hash_value(FontInfo const & val)
-{
-    std::size_t seed = 0;
-	boost::hash_combine(seed, val.dyHeight);
-	boost::hash_combine(seed, val.fItalic);
-    boost::hash_combine(seed, val.fStrikeOut);
-    boost::hash_combine(seed, val.fOutline);
-    boost::hash_combine(seed, val.fShadow);
-    boost::hash_combine(seed, val.fCondense);
-    boost::hash_combine(seed, val.fExtend);
-    boost::hash_combine(seed, val.icv);
-    boost::hash_combine(seed, val.bls);
-    boost::hash_combine(seed, val.sss);
-    boost::hash_combine(seed, val.uls);
-    boost::hash_combine(seed, val.bFamily);
-    boost::hash_combine(seed, val.bCharSet);
-    boost::hash_combine(seed, val.color.icv);
-    boost::hash_combine(seed, val.color.nTintShade);
-    boost::hash_combine(seed, val.color.xclrType);
-    boost::hash_combine(seed, val.color.xclrValue);
-    boost::hash_combine(seed, val.scheme);
-    boost::hash_combine(seed, val.name);
+		if (!val.foreFillInfo_.enabled)
+			boost::hash_combine(seed, val.icvFore);
+		if (!val.backFillInfo_.enabled)
+			boost::hash_combine(seed, val.icvBack);
+		
+		boost::hash_combine(seed, val.fls);
+		
+		return seed;
+	}
+	std::size_t hash_value(BorderInfo const & val)
+	{
+		std::size_t seed = 0;
+		boost::hash_combine(seed, val.bottomFillInfo_);
+		boost::hash_combine(seed, val.leftFillInfo_);
+		boost::hash_combine(seed, val.rightFillInfo_);
+		boost::hash_combine(seed, val.topFillInfo_);
 
-	return seed;
+		boost::hash_combine(seed, val.dgBottom);
+		boost::hash_combine(seed, val.dgLeft);
+		boost::hash_combine(seed, val.dgRight);
+		boost::hash_combine(seed, val.dgTop);
+		boost::hash_combine(seed, val.dgDiag);
+		boost::hash_combine(seed, val.grbitDiag);
+
+		boost::hash_combine(seed, val.icvBottom);
+		boost::hash_combine(seed, val.icvLeft);
+		boost::hash_combine(seed, val.icvRight);
+		boost::hash_combine(seed, val.icvTop);
+		boost::hash_combine(seed, val.icvDiag);
+
+		return seed;
+	}
+	std::size_t hash_value(FontInfo const & val)
+	{
+		std::size_t seed = 0;
+		boost::hash_combine(seed, val.color);
+		boost::hash_combine(seed, val.dyHeight);
+		boost::hash_combine(seed, val.fItalic);
+		boost::hash_combine(seed, val.fStrikeOut);
+		boost::hash_combine(seed, val.fOutline);
+		boost::hash_combine(seed, val.fShadow);
+		boost::hash_combine(seed, val.fCondense);
+		boost::hash_combine(seed, val.fExtend);
+		boost::hash_combine(seed, val.icv);
+		boost::hash_combine(seed, val.bls);
+		boost::hash_combine(seed, val.sss);
+		boost::hash_combine(seed, val.uls);
+		boost::hash_combine(seed, val.bFamily);
+		boost::hash_combine(seed, val.bCharSet);
+		boost::hash_combine(seed, val.scheme);
+		boost::hash_combine(seed, val.name);
+
+		return seed;
+	}
+	bool FillInfoExt::operator == (const FillInfoExt & rVal) const
+	{
+		return  (enabled == false && rVal.enabled == false)
+	||
+		(	enabled == rVal.enabled &&
+			icv == rVal.icv &&
+			nTintShade == rVal.nTintShade &&
+			xclrType == rVal.xclrType &&
+			xclrValue == rVal.xclrValue);
 }
 bool BorderInfo::operator < (const BorderInfo& right) const
 {
@@ -105,7 +138,7 @@ bool BorderInfo::operator < (const BorderInfo& right) const
 }
 bool FontInfo::operator == (const FontInfo & rVal) const
 {
-    const bool res =     
+	const bool res =
 		dyHeight== rVal.dyHeight &&
 		name	== rVal.name &&
 		scheme	== rVal.scheme &&
@@ -120,13 +153,8 @@ bool FontInfo::operator == (const FontInfo & rVal) const
 		uls	== rVal.uls &&
 		bFamily	== rVal.bFamily &&
 		bCharSet	== rVal.bCharSet &&
-		
-		((icv == rVal.icv && rVal.color.enabled == false && color.enabled == false)  || 
-
-		(color.icv		== rVal.color.icv &&
-		color.nTintShade== rVal.color.nTintShade &&
-		color.xclrType	== rVal.color.xclrType &&
-		color.xclrValue	== rVal.color.xclrValue))
+		icv == rVal.icv &&
+		color == rVal.color
 		;
 
     return res;
@@ -302,12 +330,16 @@ int FontInfo::serialize(std::wostream & stream)
 //------------------------------------------------------------------------------------------
 bool FillInfo::operator == (const FillInfo & rVal) const
 {
-    const bool res =     
-		fls		== rVal.fls &&
+	const bool res =
+		fls == rVal.fls &&
 		icvBack == rVal.icvBack &&
-		icvFore	== rVal.icvFore;
+		icvFore == rVal.icvFore;
 
-    return res;
+	const bool res_back_ex = (backFillInfo_ == rVal.backFillInfo_);
+
+	const bool res_fore_ex = (foreFillInfo_ == rVal.foreFillInfo_);
+
+    return res && res_back_ex && res_fore_ex;
 }
 
 bool FillInfo::operator != (const FillInfo & rVal) const
@@ -425,8 +457,11 @@ bool BorderInfo::operator == (const BorderInfo & rVal) const
 		
 		((	dgDiag		== rVal.dgDiag		&&
 			grbitDiag	== rVal.grbitDiag	&& icvDiag	== rVal.icvDiag) || 
-												(dgDiag	== 0 && rVal.dgDiag == 0 && grbitDiag == 0 && rVal.grbitDiag== 0))
+												(dgDiag	== 0 && rVal.dgDiag == 0 && grbitDiag == 0 && rVal.grbitDiag== 0)) &&
 	
+
+		(bottomFillInfo_ == rVal.bottomFillInfo_ && leftFillInfo_ == rVal.leftFillInfo_ && topFillInfo_ == rVal.topFillInfo_
+			&& rightFillInfo_ == rVal.rightFillInfo_)
 		;
 
     return res;
@@ -497,7 +532,7 @@ void serialize1(std::wostream & _stream, unsigned char type, FillInfoExt & color
 					case 2://rgb
 						CP_XML_ATTR(L"rgb", STR::toARGB(color.xclrValue)); break;
 					case 3://theme color
-						CP_XML_ATTR(L"theme", color.xclrValue + 1); 
+						CP_XML_ATTR(L"theme", color.xclrValue); 
 						CP_XML_ATTR(L"tint", color.nTintShade / 32767.0); break;
 					case 4://not set
 						break;

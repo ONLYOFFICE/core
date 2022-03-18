@@ -31,8 +31,8 @@
  */
 
 #include "SORTDATA12.h"
-#include <Logic/Biff_records/SortData.h>
-#include <Logic/Biff_records/ContinueFrt12.h>
+#include "../Biff_records/SortData.h"
+#include "../Biff_records/ContinueFrt12.h"
 
 namespace XLS
 {

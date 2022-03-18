@@ -34,8 +34,11 @@
 #include "../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../DesktopEditor/graphics/IRenderer.h"
 #include "../../DesktopEditor/graphics/structures.h"
-#include "../../PdfWriter/PdfRenderer.h"
 #include "../../DesktopEditor/common/File.h"
+
+#ifndef DISABLE_PDF_CONVERTATION
+#include "../../PdfWriter/PdfRenderer.h"
+#endif
 
 #ifndef M_PI
 #define M_PI       3.14159265358979323846
@@ -47,11 +50,11 @@
 
 namespace XPS
 {
-	CStaticResource::CStaticResource(const wchar_t* wsPath)
+	CStaticResource::CStaticResource(const std::string& wsPath)
 	{
 		XmlUtils::CXmlLiteReader oReader;
 
-		if (!oReader.FromFile(wsPath))
+		if (!oReader.FromStringA(wsPath))
 			return;
 
 		Parse(oReader);
@@ -152,24 +155,39 @@ namespace XPS
 	}
 	bool CImageBrush::SetToRenderer(IRenderer* pRenderer)
 	{
-        std::wstring wsPath = m_wsRoot.c_stdstr();
-        wsPath += m_wsPath.c_stdstr();
-
-		if (!NSFile::CFileBinary::Exists(wsPath))
+		std::wstring wsPath = m_wsPath.c_stdstr();
+		if (!m_wsRoot->exists(wsPath))
 		{
-            wsPath = m_wsPage.c_stdstr();
-            wsPath += m_wsPath.c_stdstr();
-			if (!NSFile::CFileBinary::Exists(wsPath))
+			wsPath = m_wsPage.c_stdstr() + m_wsPath.c_stdstr();
+			if (!m_wsRoot->exists(wsPath))
 				return false;
 		}
 
-		pRenderer->put_BrushType(c_BrushTypeTexture);
-		pRenderer->put_BrushTexturePath(wsPath);
-		return true;
+#ifndef BUILDING_WASM_MODULE
+        pRenderer->put_BrushType(c_BrushTypeTexture);
+        pRenderer->put_BrushTexturePath(m_wsRoot->getFullFilePath(wsPath));
+        return true;
+#endif
+
+		IFolder::CBuffer* buffer = NULL;
+		m_wsRoot->read(wsPath, buffer);
+		int nBase64BufferLen = NSBase64::Base64EncodeGetRequiredLength(buffer->Size);
+		BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen + 64];
+		if (true == NSBase64::Base64Encode(buffer->Buffer, buffer->Size, pbBase64Buffer, &nBase64BufferLen))
+		{
+			pRenderer->put_BrushType(c_BrushTypeTexture);
+			pRenderer->put_BrushTexturePath(L"data:," + NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(pbBase64Buffer, nBase64BufferLen));
+			RELEASEARRAYOBJECTS(pbBase64Buffer);
+			RELEASEOBJECT(buffer);
+			return true;
+		}
+		RELEASEARRAYOBJECTS(pbBase64Buffer);
+		RELEASEOBJECT(buffer);
+		return false;
 	}
-	void CImageBrush::SetPaths(const wchar_t* wsRoot, const wchar_t* wsPage)
+	void CImageBrush::SetPaths(IFolder* wsRoot, const wchar_t* wsPage)
 	{
-		m_wsRoot.create(wsRoot, true);
+		m_wsRoot = wsRoot;
 		m_wsPage.create(wsPage, true);
 	}
 	bool CLinearGradientBrush::SetToRenderer(IRenderer* pRenderer)
@@ -177,8 +195,10 @@ namespace XPS
 		if (!m_pColors || !m_pPositions || !m_lCount)
 			return false;
 
+#ifndef DISABLE_PDF_CONVERTATION
 		LONG lRendererType = c_nUnknownRenderer;
 		pRenderer->get_Type(&lRendererType);
+
 		if (c_nPDFWriter == lRendererType)
 		{
 			CPdfRenderer* pPdf = (CPdfRenderer*)pRenderer;
@@ -186,6 +206,7 @@ namespace XPS
 			pPdf->SetLinearGradient(m_dX0, m_dY0, m_dX1, m_dY1);
 		}
 		else
+#endif
 		{
 			double dX = m_dX1 - m_dX0, dY = m_dY1 - m_dY0;
 			double dHyp = sqrt(dX * dX + dY * dY);
@@ -201,8 +222,10 @@ namespace XPS
 		if (!m_pColors || !m_pPositions || !m_lCount)
 			return false;
 
+#ifndef DISABLE_PDF_CONVERTATION
 		LONG lRendererType = c_nUnknownRenderer;
 		pRenderer->get_Type(&lRendererType);
+
 		if (c_nPDFWriter == lRendererType)
 		{
 			CPdfRenderer* pPdf = (CPdfRenderer*)pRenderer;
@@ -210,6 +233,7 @@ namespace XPS
             pPdf->SetRadialGradient(m_dXo, m_dYo, 0, m_dXc, m_dYc, std::max(m_dRadX, m_dRadY));
 		}
 		else
+#endif
 		{
 			pRenderer->put_BrushType(c_BrushTypePathGradient2);
 			pRenderer->put_BrushGradientColors(m_pColors, m_pPositions, m_lCount);

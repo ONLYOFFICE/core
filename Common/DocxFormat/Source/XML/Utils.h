@@ -467,6 +467,41 @@ namespace XmlUtils
 
         return buffer;
 	}
+	AVSINLINE static std::wstring DeleteNonUnicode(const std::wstring& data)
+	{
+		std::wstring buffer;
+		buffer.reserve(data.size());
+
+		for (size_t pos = 0; pos < data.size(); ++pos)
+		{
+			if (false == IsUnicodeSymbol(data[pos]))
+			{
+				wchar_t symbol1 = data[pos];
+				if (0xD800 <= symbol1 && symbol1 <= 0xDFFF && pos + 1 < data.size())
+				{
+					pos++;
+					wchar_t symbol2 = data[pos];
+					if (symbol1 < 0xDC00 && symbol2 >= 0xDC00 && symbol2 <= 0xDFFF)
+					{
+						buffer.append(&data[pos - 1], 2);
+					}
+					else
+					{
+						buffer.append(L" ");
+					}
+				}
+				else
+				{
+					buffer.append(L" ");
+				}
+			}
+			else
+			{
+				buffer.append(&data[pos], 1);
+			}
+		}
+		return buffer;
+	}
 	AVSINLINE static std::wstring EncodeXmlStringExtend(const std::wstring& data, bool bDeleteNoUnicode = true)
 	{
 		std::wstring buffer;

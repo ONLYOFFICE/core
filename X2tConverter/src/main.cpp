@@ -121,10 +121,12 @@ static std::wstring utf8_to_unicode(const char *src)
 	std::wstring sMemoryLimit = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvMemoryLimit);
 	if (sMemoryLimit.empty())
 		sMemoryLimit = NSSystemUtils::gc_EnvMemoryLimitDefault;
+
+#if !defined(_DEBUG)
 	long long nMemoryLimit;
 	if (NSStringExt::FromHumanReadableByteCount(sMemoryLimit, nMemoryLimit) && nMemoryLimit > 0)
 		limit_memory((size_t)nMemoryLimit);
-
+#endif
 	std::wstring sArg1, sArg2, sExePath;
 
 #if !defined(_WIN32) && !defined (_WIN64)

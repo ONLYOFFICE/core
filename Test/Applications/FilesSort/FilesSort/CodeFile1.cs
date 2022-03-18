@@ -562,7 +562,7 @@ public class FormatChecker
                             {
                                 if (Ionic.Zip.ZipFile.IsZipFile(ms, false))
                                 {
-                                    using (Ionic.Zip.ZipFile oZipFile = Ionic.Zip.ZipFile.Read(aBuffer))
+                                    using (Ionic.Zip.ZipFile oZipFile = Ionic.Zip.ZipFile.Read(ms))
                                     {
                                         format = GetFileFormatByZip(oZipFile);
                                     }

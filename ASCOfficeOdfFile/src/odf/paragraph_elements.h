@@ -33,9 +33,8 @@
 
 #include <iosfwd>
 #include <vector>
-#include <CPOptional.h>
-#include <CPWeakPtr.h>
-#include <xml/nodetype.h>
+
+#include "../../include/CPWeakPtr.h"
 
 #include "office_elements_create.h"
 

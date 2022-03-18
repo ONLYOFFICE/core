@@ -33,7 +33,6 @@
 #include "PtgArea.h"
 #include "CellRangeRef.h"
 #include "PtgParam.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

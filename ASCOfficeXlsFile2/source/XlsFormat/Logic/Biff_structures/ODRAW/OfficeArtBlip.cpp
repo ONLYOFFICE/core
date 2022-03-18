@@ -31,9 +31,8 @@
  */
 
 #include "OfficeArtBlip.h"
-#include <Binary/CFRecord.h>
 
-#include "../../../OfficeUtils/src/OfficeUtils.h"
+#include "../../../../../../OfficeUtils/src/OfficeUtils.h"
 
 namespace ODRAW
 {

@@ -34,14 +34,14 @@
 
 #include <boost/ref.hpp>
 
-#include <utf8cpp/utf8.h>
+#include "../../include/utf8cpp/utf8.h"
 
 #include "mediaitems.h"
-#include "../../DesktopEditor/common/File.h"
-#include "../../DesktopEditor/common/SystemUtils.h"
-#include "../../DesktopEditor/graphics/pro/Image.h"
-#include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
-#include "../../Common/DocxFormat/Source/Base/Base.h"
+#include "../../../DesktopEditor/common/File.h"
+#include "../../../DesktopEditor/common/SystemUtils.h"
+#include "../../../DesktopEditor/graphics/pro/Image.h"
+#include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
+#include "../../../Common/DocxFormat/Source/Base/Base.h"
 
 namespace cpdoccore { 
 namespace oox {

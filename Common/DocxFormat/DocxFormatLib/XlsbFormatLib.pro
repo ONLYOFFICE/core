@@ -29,6 +29,7 @@ SOURCES += \
 
 core_debug {
 SOURCES += \
+    ../Source/XlsbFormat/Biff12_unions/COMMENTS_bu.cpp \
     ../Source/XlsbFormat/Xlsb.cpp \
     ../Source/XlsbFormat/WorkBookStream.cpp \
     ../Source/XlsbFormat/WorkSheetStream.cpp \
@@ -500,7 +501,7 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/COLORSCALE.cpp \
     ../Source/XlsbFormat/Biff12_unions/FRTCFRULE.cpp \
     ../Source/XlsbFormat/Biff12_unions/CFRULE.cpp \
-    ../Source/XlsbFormat/Biff12_unions/CONDITIONALFORMATTING.cpp \
+    ../Source/XlsbFormat/Biff12_unions/CONDITIONALFORMATTING_bu.cpp \
     ../Source/XlsbFormat/Biff12_unions/CFRULE14.cpp \
     ../Source/XlsbFormat/Biff12_unions/CONDITIONALFORMATTING14.cpp \
     ../Source/XlsbFormat/Biff12_unions/COLORSCALE14.cpp \
@@ -539,9 +540,8 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/COMMENT.cpp \
     ../Source/XlsbFormat/Biff12_unions/COMMENTLIST.cpp \
     ../Source/XlsbFormat/Biff12_unions/COMMENTAUTHORS.cpp \
-    ../Source/XlsbFormat/Biff12_unions/COMMENTS.cpp \
     ../Source/XlsbFormat/Biff12_unions/FRTTABLE.cpp \
-    ../Source/XlsbFormat/Biff12_unions/TABLE.cpp \
+    ../Source/XlsbFormat/Biff12_unions/TABLE_bu.cpp \
     ../Source/XlsbFormat/Biff12_unions/LISTCOLS.cpp \
     ../Source/XlsbFormat/Biff12_unions/LISTCOL.cpp \
     ../Source/XlsbFormat/Biff12_unions/LISTXMLCPR.cpp \
@@ -598,7 +598,7 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/SPARKLINEGROUP.cpp \
     ../Source/XlsbFormat/Biff12_unions/SPARKLINEGROUPS.cpp \
     ../Source/XlsbFormat/Biff12_unions/SLICERS.cpp \
-    ../Source/XlsbFormat/Biff12_unions/SLICER.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SLICER_bu.cpp \
     ../Source/XlsbFormat/Biff12_unions/SLICERCACHECROSSFILTEREXT.cpp \
     ../Source/XlsbFormat/Biff12_unions/TABLESLICERCACHE.cpp \
     ../Source/XlsbFormat/Biff12_unions/SLICERCACHEBOOKPIVOTTABLES_bu.cpp \
@@ -610,7 +610,7 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/SLICERCACHELEVELDATA_bu.cpp \
     ../Source/XlsbFormat/Biff12_unions/SLICERCACHELEVELSDATA.cpp \
     ../Source/XlsbFormat/Biff12_unions/SLICERCACHEOLAPIMPL.cpp \
-    ../Source/XlsbFormat/Biff12_unions/SLICERCACHE.cpp \
+    ../Source/XlsbFormat/Biff12_unions/SLICERCACHE_bu.cpp \
     ../Source/XlsbFormat/Biff12_unions/TABLESLICEREX.cpp \
     ../Source/XlsbFormat/Biff12_unions/TABLESLICERSEX.cpp \
     ../Source/XlsbFormat/Biff12_unions/SLICEREX.cpp \
@@ -636,6 +636,7 @@ SOURCES += \
     ../Source/XlsbFormat/Biff12_unions/WEBPUBITEM.cpp \
 }
 HEADERS += \
+    ../Source/XlsbFormat/Biff12_unions/COMMENTS.h \
     ../Source/XlsbFormat/CommentsStream.h \
     ../Source/XlsbFormat/SharedStringsStream.h \
     ../Source/XlsbFormat/StylesStream.h \
@@ -1102,7 +1103,6 @@ HEADERS += \
     ../Source/XlsbFormat/Biff12_unions/COMMENT.h \
     ../Source/XlsbFormat/Biff12_unions/COMMENTAUTHORS.h \
     ../Source/XlsbFormat/Biff12_unions/COMMENTLIST.h \
-    ../Source/XlsbFormat/Biff12_unions/COMMENTS.h \
     ../Source/XlsbFormat/Biff12_unions/CONDITIONALFORMATTING.h \
     ../Source/XlsbFormat/Biff12_unions/CONDITIONALFORMATTING14.h \
     ../Source/XlsbFormat/Biff12_unions/CONDITIONALFORMATTINGS.h \

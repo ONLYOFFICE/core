@@ -32,8 +32,7 @@
 
 #include "xlsx_border.h"
 #include <boost/functional.hpp>
-#include <CPOptional.h>
-#include <xml/simple_xml_writer.h>
+#include "../../include/xml/simple_xml_writer.h"
 #include "../odf/style_text_properties.h"
 
 namespace cpdoccore {

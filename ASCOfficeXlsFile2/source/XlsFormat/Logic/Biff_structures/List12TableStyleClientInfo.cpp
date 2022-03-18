@@ -31,7 +31,6 @@
  */
 
 #include "List12TableStyleClientInfo.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

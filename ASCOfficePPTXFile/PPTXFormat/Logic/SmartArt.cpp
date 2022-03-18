@@ -451,14 +451,43 @@ namespace PPTX
 
 						oDrawingConverter.SetFontPicker(pWriter->m_pCommon->m_pFontPicker);
 
-						BinXlsxRW::BinaryFileWriter xlsxBinaryWriter(oFontProcessor);
 //----------------------------
-						OOX::Spreadsheet::CXlsx oXlsxEmbedded(oox_unpacked);
+						BinXlsxRW::BinaryFileWriter xlsxBinaryWriter(oFontProcessor);
+						OOX::Spreadsheet::CXlsx *pXlsxEmbedded = NULL;
+						NSBinPptxRW::CXlsbBinaryWriter oXlsbWriter;
+
+						if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB)
+							pXlsxEmbedded = new OOX::Spreadsheet::CXlsb();
+						else
+							pXlsxEmbedded = new OOX::Spreadsheet::CXlsx();
+
+						//startheader for test
+						//oXlsbWriter.WriteStringUtf8(xlsxBinaryWriter.WriteFileHeader(0, BinXlsxRW::g_nFormatVersionNoBase64));
+						oXlsbWriter.WriteReserved(xlsxBinaryWriter.GetMainTableSize());
+						unsigned int nXlsbWriterStartPos = oXlsbWriter.GetPositionAbsolute();
+
+						pXlsxEmbedded->m_pXlsbWriter = &oXlsbWriter;
+						pXlsxEmbedded->m_bNeedCalcChain = false;
+
+						pXlsxEmbedded->Read(oox_unpacked);
+						pXlsxEmbedded->PrepareWorkbook();
+
+						unsigned int nXlsbWriterEndPos = oXlsbWriter.GetPositionAbsolute();
 
 						//startheader for test
 						//oDrawingConverter.m_pBinaryWriter->WriteStringUtf8(xlsxBinaryWriter.WriteFileHeader(0, BinXlsxRW::g_nFormatVersionNoBase64));
-						
-						xlsxBinaryWriter.intoBindoc(&oXlsxEmbedded, *oDrawingConverter.m_pBinaryWriter, NULL, &oDrawingConverter);
+						xlsxBinaryWriter.WriteMainTableStart(*oDrawingConverter.m_pBinaryWriter);
+
+						if (nXlsbWriterEndPos > nXlsbWriterStartPos)
+						{
+							xlsxBinaryWriter.WriteBinaryTable(oXlsbWriter.GetBuffer() + nXlsbWriterStartPos, nXlsbWriterEndPos - nXlsbWriterStartPos);
+						}
+						xlsxBinaryWriter.WriteContent(pXlsxEmbedded, NULL, &oDrawingConverter);
+						xlsxBinaryWriter.WriteMainTableEnd();
+
+						pXlsxEmbedded->m_pXlsbWriter = NULL;
+
+						delete pXlsxEmbedded;
 //------------------------------
 						pWriter->SetRels(old_rels);
 						*pWriter->m_pTheme = old_theme;
@@ -580,13 +609,9 @@ namespace PPTX
 
 			oXlsxSerializer.setDrawingConverter(&oDrawingConverter);
 
-			std::wstring strDstChart = pReader->m_pRels->m_pManager->GetDstCharts();
+			std::wstring strDstChart = pReader->m_pRels->m_pManager->GetDstFolder() + FILE_SEPARATOR_STR + L"charts";
+			pReader->m_pRels->m_pManager->SetDstCharts(strDstChart);
 
-			if (strDstChart.empty())
-			{
-				strDstChart = pReader->m_pRels->m_pManager->GetDstFolder() + FILE_SEPARATOR_STR + L"charts";
-				pReader->m_pRels->m_pManager->SetDstCharts(strDstChart);
-			}
 			NSDirectory::CreateDirectory(strDstChart);
 
 			smart_ptr<OOX::File> file;

@@ -36,44 +36,57 @@
 namespace XLS
 {
 
-Format::Format()
-{
-}
-
-
-Format::~Format()
-{
-}
-
-
-BaseObjectPtr Format::clone()
-{
-	return BaseObjectPtr(new Format(*this));
-}
-
+	Format::Format()
+	{}
+	Format::~Format()
+	{}
+	BaseObjectPtr Format::clone()
+	{
+		return BaseObjectPtr(new Format(*this));
+	}
+	Format_BIFF23::Format_BIFF23()
+	{}
+	Format_BIFF23::~Format_BIFF23()
+	{}
+	BaseObjectPtr Format_BIFF23::clone()
+	{
+		return BaseObjectPtr(new Format_BIFF23(*this));
+	}
+//-----------------------------------------------------------------------------------
 void Format::readFields(CFRecord& record)
 {
 	GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();
-	record >> ifmt;
 	
-	XLUnicodeString format;
+	ifmt = 0xffff;
+	if (global_info->Version > 0x0300)
+	{
+		if (global_info->Version == 0x0400)
+		{
+			_UINT16 notUsed;
+			record >> notUsed;
+		}
+		else
+			record >> ifmt;
+	}
+
 	if (global_info->Version < 0x0600)
 	{
-		ShortXLAnsiString name;
-		record >> name;
+		ShortXLAnsiString format;
+		record >> format;
 		
-		format = name;
+		stFormat = XmlUtils::EncodeXmlString(format.value(), true);
 	}
 	else
+	{
+		XLUnicodeString format;
 		record >> format;
 
-
-	stFormat = XmlUtils::EncodeXmlString(format.value(), true);
+		stFormat = XmlUtils::EncodeXmlString(format.value(), true);
+	}
 }
-
 int Format::serialize(std::wostream & stream)
 {
-	if ((ifmt > 4 && ifmt < 9) || (ifmt > 40 && ifmt < 45)) return 0;
+	if (ifmt < 5 || (ifmt > 8 && ifmt < 23) || (ifmt > 36 && ifmt < 41) || (ifmt > 44 && ifmt < 50)) return 0;
 
 	stream << L"<numFmt";
 	{

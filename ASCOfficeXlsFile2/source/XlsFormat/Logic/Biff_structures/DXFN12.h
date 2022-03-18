@@ -33,7 +33,6 @@
 
 #include "BiffStructure.h"
 #include "DXFN.h"
-#include "XFExtNoFRT.h"
 
 namespace XLS
 {
@@ -54,7 +53,6 @@ public:
 
 	_UINT32			cbDxf;
 	DXFNPtr			dxfn;
-	XFExtNoFRTPtr	xfext;
 };
 
 } // namespace XLS

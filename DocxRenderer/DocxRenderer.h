@@ -33,7 +33,7 @@
 #define _DOCX_RENDERER_H
 
 #include "../DesktopEditor/graphics/IRenderer.h"
-#include "../DesktopEditor/common/officedrawingfile.h"
+#include "../DesktopEditor/graphics/pro/officedrawingfile.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"
 #include <string>
 #include <vector>
@@ -50,10 +50,10 @@ namespace NSDocxRenderer
 {
     enum TextAssociationType
     {
-        TextAssociationTypeDefault	= 0,
-        TextAssociationTypeLine		= 1,
-        TextAssociationTypeNoFrames	= 2,
-        TextAssociationTypeBlock	= 3
+        TextAssociationTypeBlockChar        = 0, // Каждый символ во фрейме
+        TextAssociationTypeBlockLine        = 1, // Каждая линия - параграф во фрейме. Линии могут объединяться в рамках одного блока.
+        TextAssociationTypePlainLine        = 2, // Каждая линия - параграф обычный
+        TextAssociationTypePlainParagraph   = 3  // Линии объединяются в параграфы
     };
 }
 

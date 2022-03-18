@@ -32,6 +32,7 @@
 #pragma once
 
 #include <sstream>
+#include "../../../../../Common/DocxFormat/Source/Base/Types_32.h"
 
 namespace XLS
 {
@@ -43,7 +44,9 @@ struct FillInfoExt
 	unsigned char	xclrType = 0;
 	unsigned char	icv = 0;
 	short			nTintShade = 0;
-	unsigned int	xclrValue = 0;
+	_UINT32			xclrValue = 0;
+	
+	bool operator == (const FillInfoExt & rVal) const;
 };
 
 struct FillInfo

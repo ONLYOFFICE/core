@@ -31,7 +31,6 @@
  */
 
 #include "CompositeMoniker.h"
-#include <Binary/CFRecord.h>
 
 namespace OSHARED
 {

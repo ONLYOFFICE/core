@@ -32,7 +32,7 @@
 
 #include "Dv.h"
 
-#include <utils.h>
+#include "../../../Common/utils.h"
 #include <boost/algorithm/string.hpp>
 
 #include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/DValStrings.h"
@@ -113,7 +113,6 @@ void Dv::readFields(CFRecord& record)
     {
         record >> sqrfx;
 
-<<<<<<< HEAD
         XLSB::DValStrings dvalstr;
         record >> dvalstr;
 
@@ -125,22 +124,15 @@ void Dv::readFields(CFRecord& record)
 
     if(!_ext14)
     {
-        formula1.load(record, valType != typeDvCustom);
+ 		formula1.load(record, valType != typeDvNone);
 
-        formula2.load(record, valType != typeDvCustom && valType != typeDvList && valType != typeDvWhole && typOperator < 2);
+		formula2.load(record, valType != typeDvCustom && valType != typeDvList && valType != typeDvNone && typOperator < 2); 
 
-        if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+		if (record.getGlobalWorkbookInfo()->Version < 0x0800)
         {
             record >> sqref;
         }
     }
-=======
-	formula1.load(record, valType != typeDvNone);
-
-	formula2.load(record, valType != typeDvCustom && valType != typeDvList && valType != typeDvNone && typOperator < 2);
-	
-	record >> sqref;
->>>>>>> a5c4cb943841df2cea5dec2aeb473bcbed261417
 }
 
 int Dv::serialize(std::wostream & stream)
@@ -182,19 +174,11 @@ int Dv::serialize(std::wostream & stream)
 			}
             if (PromptTitle.size() > 1)
 			{
-<<<<<<< HEAD
-                CP_XML_ATTR(L"promtTitle", PromptTitle);
-=======
-				CP_XML_ATTR(L"promptTitle", PromptTitle.value());
->>>>>>> a5c4cb943841df2cea5dec2aeb473bcbed261417
+				CP_XML_ATTR(L"promptTitle", PromptTitle);
 			}
             if (Prompt.size() > 1)
 			{
-<<<<<<< HEAD
-                CP_XML_ATTR(L"promt", Prompt);
-=======
-				CP_XML_ATTR(L"prompt", Prompt.value());
->>>>>>> a5c4cb943841df2cea5dec2aeb473bcbed261417
+				CP_XML_ATTR(L"prompt", Prompt);
 			}
             if (ErrorTitle.size() > 1)
 			{

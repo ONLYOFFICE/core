@@ -33,7 +33,7 @@
 #include "xlsx_conversion_context.h"
 
 #include <iostream>
-#include <simple_xml_writer.h>
+#include "../Common/simple_xml_writer.h"
 
 #include "xlsx_package.h"
 

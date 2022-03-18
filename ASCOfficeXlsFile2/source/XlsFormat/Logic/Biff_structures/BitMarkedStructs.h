@@ -357,7 +357,6 @@ struct CFFlag14 : public BiffStructure_NoVtbl // in biff12
     long iIcon;
 };
 
-
 struct FrtFlags : public BiffStructure_NoVtbl
 {
 	FrtFlags() : fFrtRef(false), fFrtAlert(false), reserved2(0), reserved(0) {};

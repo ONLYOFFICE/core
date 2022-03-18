@@ -31,7 +31,6 @@
  */
 
 #include "FeatSmartTag.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

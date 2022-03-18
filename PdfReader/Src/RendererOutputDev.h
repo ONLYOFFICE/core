@@ -48,6 +48,9 @@
 #include "MemoryUtils.h"
 #include "GfxClip.h"
 #include <stack>
+#ifdef BUILDING_WASM_MODULE
+#include "../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
+#endif
 
 namespace PdfReader
 {
@@ -77,6 +80,7 @@ namespace PdfReader
 		void SaveToFile(std::wstring wsDirPath);
 		bool Find(Ref oRef, TFontEntry *pEntry);
 		bool Find2(Ref oRef, TFontEntry **ppEntry);
+		void Remove(Ref oRef);
 		TFontEntry *Add(Ref oRef, std::wstring wsFileName, int *pCodeToGID, int *pCodeToUnicode, unsigned int nLenGID, unsigned int nLenUnicode);
 		void Clear();
 		bool GetFont(Ref *pRef, TFontEntry *pEntry);
@@ -261,17 +265,25 @@ namespace PdfReader
 		void Type3D0(GfxState *pGState, double dWx, double dWy);
 		void Type3D1(GfxState *pGState, double dWx, double dWy, double dBLx, double dBLy, double dTRx, double dTRy);
 		//----- Вывод картинок
-		virtual void drawImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate);
-		virtual void drawImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, int *pMaskColors, GBool bInlineImg, GBool interpolate);
-		virtual void drawMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GBool bMaskInvert, GBool interpolate);
-		//virtual void drawSoftMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GfxImageColorMap *pMaskColorMap, unsigned char *pMatte, GBool interpolate);
+		virtual void drawImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate) override;
+		virtual void drawImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, int *pMaskColors, GBool bInlineImg, GBool interpolate) override;
+		virtual void drawMaskedImage(GfxState *pGState,
+									 Object *pRef,
+									 Stream *pStream,
+									 int nWidth, int nHeight,
+									 GfxImageColorMap *pColorMap,
+									 Object* pMaskRef,
+									 Stream *pMaskStream,
+									 int nMaskWidth, int nMaskHeight,
+									 GBool bMaskInvert,
+									 GBool interpolate) override;
 		virtual void drawSoftMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream,
-                                         int nWidth, int nHeight,
-                                         GfxImageColorMap *pColorMap,
-                                         Object *maskRef, Stream *pMaskStream,
-                                         int nMaskWidth, int nMaskHeight,
-                                         GfxImageColorMap *pMaskColorMap,
-                                         double *pMatte, GBool interpolate);
+										 int nWidth, int nHeight,
+										 GfxImageColorMap *pColorMap,
+										 Object *maskRef, Stream *pMaskStream,
+										 int nMaskWidth, int nMaskHeight,
+										 GfxImageColorMap *pMaskColorMap,
+										 double *pMatte, GBool interpolate) override;
 		//----- Transparency groups и SMasks
 		virtual void beginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, bool bIsolated, bool bKnockout, bool bForSoftMask);
 		virtual void endTransparencyGroup(GfxState *pGState);
@@ -284,7 +296,6 @@ namespace PdfReader
 		{
 			m_pbBreak = pbBreak;
 		}
-
 
 	private:
 

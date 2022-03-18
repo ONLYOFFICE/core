@@ -31,8 +31,6 @@
  */
 
 #include "DXFN.h"
-#include <Binary/CFRecord.h>
-
 
 namespace XLS
 {
@@ -68,7 +66,7 @@ void DXFBdr::load(CFRecord& record)
 
 }
 
-void serialize_one(std::wostream & stream, const std::wstring & name, unsigned char type,  unsigned char color)
+void serialize_one(std::wostream & stream, const std::wstring & name, unsigned char type,  unsigned char color, FullColorExt* colorExt)
 {
 	CP_XML_WRITER(stream)    
     {
@@ -106,22 +104,57 @@ int DXFBdr::serialize(std::wostream & stream)
 	if (parent->glTopNinch && parent->glBottomNinch && parent->glLeftNinch && parent->glRightNinch && 
 		parent->glDiagDownNinch && parent->glDiagUpNinch) return 0;
  
-	CP_XML_WRITER(stream)    
+	std::map<ExtProp::_type, ExtProp>::iterator pFind;
+	FullColorExt* colorExt = NULL;
+
+	CP_XML_WRITER(stream)
     {
 		CP_XML_NODE(L"border")
 		{	
 			if (!parent->glLeftNinch)
-				serialize_one(CP_XML_STREAM(), L"left", dgLeft, icvLeft);
+			{
+				if (parent->xfext)
+					pFind = parent->xfext->mapRgExt.find(ExtProp::LeftBorderColor);
+
+				colorExt = (parent->xfext && pFind != parent->xfext->mapRgExt.end()) ? &pFind->second.extPropData.color : NULL;
+
+				serialize_one(CP_XML_STREAM(), L"left", dgLeft, icvLeft, colorExt);
+			}
 			if (!parent->glRightNinch)
-				serialize_one(CP_XML_STREAM(), L"right", dgRight, icvRight);
+			{
+				if (parent->xfext)
+					pFind = parent->xfext->mapRgExt.find(ExtProp::RightBorderColor);
+
+				colorExt = (parent->xfext && pFind != parent->xfext->mapRgExt.end()) ? &pFind->second.extPropData.color : NULL;
+
+				serialize_one(CP_XML_STREAM(), L"right", dgRight, icvRight, colorExt);
+			}
 			if (!parent->glTopNinch)
-				serialize_one(CP_XML_STREAM(), L"top", dgTop, icvTop);
+			{
+				if (parent->xfext)
+					pFind = parent->xfext->mapRgExt.find(ExtProp::TopBorderColor);
+
+				colorExt = (parent->xfext && pFind != parent->xfext->mapRgExt.end()) ? &pFind->second.extPropData.color : NULL;
+					
+				serialize_one(CP_XML_STREAM(), L"top", dgTop, icvTop, colorExt);
+			}
 			if (!parent->glBottomNinch)
-				serialize_one(CP_XML_STREAM(), L"bottom", dgBottom, icvBottom);
+			{
+				if (parent->xfext)
+					pFind = parent->xfext->mapRgExt.find(ExtProp::BottomBorderColor);
+
+				serialize_one(CP_XML_STREAM(), L"bottom", dgBottom, icvBottom, colorExt);
+			}
 			
 			if (!parent->glDiagDownNinch || !parent->glDiagUpNinch)
-				serialize_one(CP_XML_STREAM(), L"diagonal", dgDiag, icvDiag);
+			{
+				if (parent->xfext)
+					pFind = parent->xfext->mapRgExt.find(ExtProp::DiagonalBorderColor);
 
+				colorExt = (parent->xfext && pFind != parent->xfext->mapRgExt.end()) ? &pFind->second.extPropData.color : NULL;
+
+				serialize_one(CP_XML_STREAM(), L"diagonal", dgDiag, icvDiag, colorExt);
+			}
 		}
 	}
 	return 0;

@@ -511,6 +511,22 @@ namespace NSStructures
 					(Underline == pFont->Underline) && (Strikeout == pFont->Strikeout));
 		}
 
+		int IsEqual2(CFont *pFont)
+		{
+			if (NULL == pFont)
+				return FALSE;
+
+			if (Path != pFont->Path)
+				return FALSE;
+
+			if (Path.empty() && Name != pFont->Name)
+				return FALSE;
+
+			return ((FaceIndex == pFont->FaceIndex) && (StringGID == pFont->StringGID) && (Size == pFont->Size) &&
+				(Bold == pFont->Bold) && (Italic == pFont->Italic) &&
+				(Underline == pFont->Underline) && (Strikeout == pFont->Strikeout));
+		}
+
 		long GetStyle() const
 		{
 			long lStyle = 0;

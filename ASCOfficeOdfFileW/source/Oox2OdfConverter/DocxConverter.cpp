@@ -1452,6 +1452,11 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 				convert(dynamic_cast<SimpleTypes::CUniversalMeasure *>(oox_paragraph_pr->m_oSpacing->m_oLine.GetPointer()), length_);
 				paragraph_properties->content_.fo_line_height_ = odf_types::line_width(*length_);
 			}
+			else if (rule == SimpleTypes::linespacingruleAtLeast)
+			{
+				convert(dynamic_cast<SimpleTypes::CUniversalMeasure *>(oox_paragraph_pr->m_oSpacing->m_oLine.GetPointer()), 
+					paragraph_properties->content_.style_line_height_at_least_);
+			}
 			else
 			{
 				double val = oox_paragraph_pr->m_oSpacing->m_oLine->ToPoints() * 20;
@@ -3139,7 +3144,7 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 					bSet = true;
 				}
 
-				if (oox_pic->m_oShape->m_sType.IsInit())
+				if ((oox_pic->m_oShape->m_sType.IsInit()) && (false == oox_pic->m_oShape->m_sType->empty()))
 				{
 					std::wstring type( oox_pic->m_oShape->m_sType.get());
 					type = type.substr(1);//without #

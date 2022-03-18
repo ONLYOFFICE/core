@@ -5,12 +5,24 @@ var print    = undefined;
 
 var fetch = self.fetch;
 var getBinaryPromise = null;
-if (self.AscDesktopEditor && document.currentScript && 0 == document.currentScript.src.indexOf("file:///"))
+
+function internal_isLocal()
+{
+	if (window.navigator && window.navigator.userAgent.toLowerCase().indexOf("ascdesktopeditor") < 0)
+		return false;
+	if (window.location && window.location.protocol == "file:")
+		return true;
+	if (window.document && window.document.currentScript && 0 == window.document.currentScript.src.indexOf("file:///"))
+		return true;
+	return false;
+}
+
+if (internal_isLocal())
 {
 	fetch = undefined; // fetch not support file:/// scheme
 	getBinaryPromise = function()
 	{
-		var wasmPath = "ascdesktop://zlib/" + wasmBinaryFile.substr(8);
+		var wasmPath = "ascdesktop://fonts/" + wasmBinaryFile.substr(8);
 		return new Promise(function (resolve, reject)
 		{
 			var xhr = new XMLHttpRequest();

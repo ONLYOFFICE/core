@@ -31,8 +31,8 @@
  */
 
 #include "COLUMNS.h"
-#include <Logic/Biff_records/DefColWidth.h>
-#include <Logic/Biff_records/ColInfo.h>
+#include "../Biff_records/DefColWidth.h"
+#include "../Biff_records/ColInfo.h"
 
 namespace XLS
 {
@@ -60,14 +60,13 @@ const bool COLUMNS::loadContent(BinProcessor& proc)
 	global_info_ = proc.getGlobalWorkbookInfo();
 
 	bool def_ok = proc.optional<DefColWidth>(); 
-			// OpenOffice Calc stored files workaround (DefColWidth is mandatory according to [MS-XLS])
 
 	if (def_ok)
 	{
 		m_DefColWidth = elements_.back();
 		elements_.pop_back();
 	}
-	int count = proc.repeated<ColInfo>(0, 255);
+	int count = (global_info_->Version == 0x0200) ? proc.repeated<ColWidth>(0, 255) : proc.repeated<ColInfo>(0, 255);
 
 	int last_add = 0;
 
@@ -112,7 +111,7 @@ int COLUMNS::serialize(std::wostream & stream)
 					CP_XML_ATTR(L"min", column_info->colFirst + 1);/// from 0 
 					CP_XML_ATTR(L"max", column_info->colLast + 1);
 
-					if (column_info->ixfe > global_info_->cellStyleXfs_count)
+					if (column_info->ixfe > global_info_->cellStyleXfs_count && column_info->ixfe != 0xffff)
 					{
 						CP_XML_ATTR(L"style", column_info->ixfe - global_info_->cellStyleXfs_count);
 					}

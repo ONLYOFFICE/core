@@ -31,10 +31,9 @@
  */
 
 
-#include <Binary/CFStream.h>
 #include "PropertyFactory.h"
 #include "CodePageOle.h"
-
+#include "../../../Binary/CFStream.h"
 
 namespace OLEPS
 {

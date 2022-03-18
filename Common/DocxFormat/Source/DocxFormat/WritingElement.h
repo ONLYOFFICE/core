@@ -33,6 +33,7 @@
 
 #include "../../../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/BaseObject.h"
+#include "../Base/SmartPtr.h"
 
 namespace NSBinPptxRW
 {
@@ -1393,8 +1394,12 @@ namespace OOX
 		et_x_ListItems,
 		et_x_ListItem,
 
+		et_x_WorkbookPivotCache,
+		et_x_WorkbookPivotCaches,
+
 		et_x_PivotTableDefinition,
 		et_x_PivotCacheDefinition,
+                et_x_PivotCacheDefinitionExt,
 		et_x_PivotCacheRecords,
 		et_x_ColumnRowFields,
 		et_x_ColumnRowItems,
@@ -1484,6 +1489,8 @@ namespace OOX
 		et_x_Style2003
 	};
 
+	class File;
+
 	class Document
 	{
 	public:
@@ -1491,6 +1498,8 @@ namespace OOX
 		virtual ~Document() {}
 
 		std::wstring m_sDocumentPath;
+
+		std::map<std::wstring, NSCommon::smart_ptr<OOX::File>> m_mapContent;
 	};
 
 	class WritingElement

@@ -38,10 +38,7 @@
 #include "../Base/Types_32.h"
 #include "../XlsxFormat/WritingElement.h"
 #include <string>
-#include <memory.h>
-#include <iostream>
 #include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
-
 
 namespace XLSB
 {

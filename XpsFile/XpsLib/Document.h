@@ -57,6 +57,7 @@ namespace XPS
 		void DrawPage(int nPageIndex, IRenderer* pRenderer, bool* pbBreak);
 		void Close();
 		CStaticResource* GetStaticResource(const wchar_t* wsPath);
+		std::wstring GetInfo();
 
 	#ifdef BUILDING_WASM_MODULE
 		struct CDocumentStructure

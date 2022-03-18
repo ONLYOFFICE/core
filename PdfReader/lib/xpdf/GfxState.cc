@@ -34,10 +34,6 @@
 
 //------------------------------------------------------------------------
 
-static inline GfxColorComp clip01(GfxColorComp x) {
-  return (x < 0) ? 0 : (x > gfxColorComp1) ? gfxColorComp1 : x;
-}
-
 static inline double clip01(double x) {
   return (x < 0) ? 0 : (x > 1) ? 1 : x;
 }
@@ -3862,6 +3858,30 @@ void GfxImageColorMap::getRGB(Guchar *x, GfxRGB *rgb, GfxRenderingIntent ri) {
     }
     colorSpace->getRGB(&color, rgb, ri);
   }
+}
+
+// onlyoffice
+int GfxImageColorMap::getFillType()
+{
+    if (colorSpace2)
+        return 0;
+
+    GfxColorSpace* space = colorSpace;
+    if (space->getMode() == csICCBased)
+        space = ((GfxICCBasedColorSpace*)colorSpace)->getAlt();
+
+    switch (space->getMode())
+    {
+    case csDeviceGray:
+    case csCalGray:
+        return nComps > 0 ? 1 : 0;
+    case csDeviceRGB:
+    case csCalRGB:
+        return nComps > 2 ? 2 : 0;
+    default:
+        return 0;
+    }
+    return 0;
 }
 
 void GfxImageColorMap::getCMYK(Guchar *x, GfxCMYK *cmyk,

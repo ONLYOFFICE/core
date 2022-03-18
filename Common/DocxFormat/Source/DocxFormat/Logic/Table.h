@@ -448,15 +448,16 @@ namespace OOX
 				WritingElementWithChilds::ClearItems();
 			}
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual std::wstring      toXML() const;
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const
 			{
 				return et_w_tbl;
 			}
-
-			int										m_nCountRow; 
+			void CreateElements(XmlUtils::CXmlLiteReader &oReader, int Depth);
+			
+			int										m_nCountRow;
 
 			nullable<OOX::Logic::CTblGrid>			m_oTblGrid;			
 			OOX::Logic::CTableProperty*				m_oTableProperties; //todooo - выкинуть из m_arrItems, переделать на nullable<>

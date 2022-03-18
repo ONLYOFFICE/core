@@ -34,6 +34,7 @@
 
 #include "../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../DesktopEditor/common/File.h"
+#include "../../DesktopEditor/common/StringExt.h"
 
 namespace XPS
 {
@@ -346,5 +347,72 @@ namespace XPS
 		CStaticResource* pStaticResource = new CStaticResource(m_wsPath->readXml(wsPath));
 		m_mStaticResources.insert(std::pair<std::wstring, CStaticResource*>(wsPath, pStaticResource));
 		return pStaticResource;
+	}
+
+	std::wstring CDocument::GetInfo()
+	{
+		XmlUtils::CXmlLiteReader oReader;
+		std::wstring sRes = L"{";
+
+		if (oReader.FromStringA(m_wsPath->readXml(L"_rels/.rels")) && oReader.ReadNextNode() && L"Relationships" == oReader.GetName())
+		{
+			std::wstring wsCoreFile;
+			while (oReader.ReadNextNode())
+			{
+				if (L"Relationship" == oReader.GetName())
+				{
+					std::wstring wsAttr;
+					ReadAttribute(oReader, L"Type", wsAttr);
+
+					if (wsAttr.find(L"core-properties") != std::wstring::npos)
+					{
+						ReadAttribute(oReader, L"Target", wsCoreFile);
+						break;
+					}
+				}
+			}
+
+			if (!wsCoreFile.empty() && m_wsPath->exists(wsCoreFile))
+			{
+				oReader.Clear();
+				if (oReader.FromStringA(m_wsPath->readXml(wsCoreFile)) && oReader.ReadNextNode() && oReader.GetName() == L"cp:coreProperties")
+				{
+					while (oReader.ReadNextNode())
+					{
+						std::wstring sName = oReader.GetName();
+						if (sName == L"dc:title")
+							sName = L"Title";
+						else if (sName == L"dc:subject")
+							sName = L"Subject";
+						else if (sName == L"dc:creator")
+							sName = L"Creator";
+						else if (sName == L"dcterms:created")
+							sName = L"CreationDate";
+						else if (sName == L"dcterms:modified")
+							sName = L"ModDate";
+
+						sRes += L"\"";
+						sRes += sName;
+						sRes += L"\":\"";
+						sName = oReader.GetText2();
+						NSStringExt::Replace(sName, L"\"", L"\\\"");
+						sRes += oReader.GetText2();
+						sRes += L"\",";
+					}
+				}
+			}
+		}
+		int nW = 0;
+		int nH = 0;
+		GetPageSize(0, nW, nH);
+		sRes += L"\"PageSize\":\"";
+		sRes += std::to_wstring(nW);
+		sRes += L"x";
+		sRes += std::to_wstring(nH);
+		sRes += L"\",\"NumberOfPages\":";
+		sRes += std::to_wstring(GetPageCount());
+		sRes += L"}";
+
+		return sRes;
 	}
 }

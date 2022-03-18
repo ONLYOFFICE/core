@@ -65,7 +65,14 @@ namespace OOX
 		// Находим связи(рельсы) с данным файлом
 			m_pCurRels = new OOX::CRels(oPath);
 
-		// Читаем все файлы по рельсам
+			if (m_pMainDocument)
+			{
+				smart_ptr<OOX::File> pFile = dynamic_cast<OOX::File*>(this);
+				pFile.AddRef();
+
+				m_pMainDocument->m_mapContent.insert(std::make_pair(oPath.GetPath(), pFile));
+			}
+			// Читаем все файлы по рельсам
 			Read( *m_pCurRels, oRootPath, oPath.GetDirectory() );
 	}
 
@@ -87,7 +94,7 @@ namespace OOX
 					continue;
 				}
 			}
-			
+
 			smart_ptr<OOX::File> pFile;
 
 			if (m_bSpreadsheets)
@@ -97,9 +104,6 @@ namespace OOX
 				pFile = OOX::CreateFile(oRootPath, oPath, oRels.m_arRelations[i], m_pMainDocument);
 
 			Add(oRels.m_arRelations[i]->rId(), pFile);
-			
-			if (m_pMainDocument)
-				m_pMainDocument->m_mapContent.insert(std::make_pair(pathFile, pFile));
 		}
     }
 

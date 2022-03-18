@@ -188,7 +188,7 @@ namespace ComplexTypes
 			}
 
 			virtual void FromXML(XmlUtils::CXmlNode& oNode)
-			{
+			{//todooo переделать на перебор всех и без неймспейсов
 				XmlMacroReadAttributeBase( oNode, L"r:id",   m_oId );
 				XmlMacroReadAttributeBase( oNode, L"w:type", m_oType );
 				
@@ -228,11 +228,10 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, (L"r:id"),				m_oId )
-					WritingElement_ReadAttributes_Read_else_if( oReader, (L"relationships:id"), m_oId )
-					WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:type"),			m_oType )
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, (L"id"),	m_oId )
+					WritingElement_ReadAttributes_Read_else_if( oReader, (L"type"),	m_oType )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
 			}
 
 		public:

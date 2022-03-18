@@ -411,6 +411,8 @@ namespace OOX
 			nullable<CFormula>		m_oFormula;
 			nullable<CSi>			m_oRichText;
 			nullable<CText>			m_oValue;
+//-----------------------------			
+			nullable_string			m_oCacheValue;
 		};
 
 		//необработано:

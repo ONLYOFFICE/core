@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,27 +29,31 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
+#include "../lib/xpdf/JPXStream.h"
 
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/TxBody.h"
-#include "ShapeWriter.h"
-
-namespace PPT_FORMAT
-{
-class TxBodyConverter
+// Own realize jpeg2000 with use engine from libgraphics
+class JPXStream2: public FilterStream
 {
 public:
-    TxBodyConverter(CElementPtr pShapeElement, CRelsGenerator* pRels, CTextCFRun* pLastCF);
+    JPXStream2(Stream *strA);
+    virtual ~JPXStream2();
+    virtual Stream *copy();
+    virtual StreamKind getKind();
+    virtual void reset();
+    virtual void close();
+    virtual int getChar();
+    virtual int lookChar();
+    virtual GString *getPSFilter(int psLevel, const char *indent,
+                   GBool okToReadStream);
+    virtual GBool isBinary(GBool last = gTrue);
+    virtual void getImageParams(int *bitsPerComponent,
+                  StreamColorSpaceMode *csMode);
+    void reduceResolution(int reductionA);
 
-    void FillTxBody(PPTX::Logic::TxBody& oTxBody);
 private:
-    void ConvertTableTxBody(PPTX::Logic::TxBody& oTxBody);
-    static void FillMergedTxBody(PPTX::Logic::TxBody& oTxBody);
-    static PPTX::Logic::RunProperties* getNewEndParaRPr(const int dirty = -1, const int sz = -1, const std::wstring& lang = L"");
+    unsigned int m_lBufferSize;
+    unsigned int m_lCurPos;
+    unsigned char* m_pSourceBuffer;
 
-private:
-    CShapeWriter m_oShapeWriter;
-    bool m_bError;
-    CTextCFRun* m_pLastCF;
+    unsigned char m_nAlphaChecker;
 };
-}

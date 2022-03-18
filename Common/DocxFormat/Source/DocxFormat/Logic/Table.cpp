@@ -353,92 +353,106 @@ namespace OOX
 			OOX::Document* document = WritingElement::m_pMainDocument;
 			
 			int nParentDepth = oReader.GetDepth();
-			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			CreateElements(oReader, nParentDepth);
+		}
+		void CTbl::CreateElements(XmlUtils::CXmlLiteReader &oReader, int Depth)
+		{
+			OOX::Document* document = WritingElement::m_pMainDocument;
+
+			while (oReader.ReadNextSiblingNode(Depth))
 			{
 				std::wstring sName = oReader.GetName();
 				WritingElement *pItem = NULL;
 
-				if ( _T("w:bookmarkEnd") == sName )
-					pItem = new CBookmarkEnd( document );
-				else if ( _T("w:bookmarkStart") == sName )
-					pItem = new CBookmarkStart( document );
-				else if ( _T("w:commentRangeEnd") == sName )
-					pItem = new CCommentRangeEnd( document );
-				else if ( _T("w:commentRangeStart") == sName )
-					pItem = new CCommentRangeStart( document );
+				if (_T("w:bookmarkEnd") == sName)
+					pItem = new CBookmarkEnd(document);
+				else if (_T("w:bookmarkStart") == sName)
+					pItem = new CBookmarkStart(document);
+				else if (_T("w:commentRangeEnd") == sName)
+					pItem = new CCommentRangeEnd(document);
+				else if (_T("w:commentRangeStart") == sName)
+					pItem = new CCommentRangeStart(document);
 				//else if ( _T("w:customXml") == sName )
 				//	pItem = new CCustomXml( document );
-				else if ( _T("w:customXmlDelRangeEnd") == sName )
-					pItem = new CCustomXmlDelRangeEnd( document );
-				else if ( _T("w:customXmlDelRangeStart") == sName )
-					pItem = new CCustomXmlDelRangeStart( document );
-				else if ( _T("w:customXmlInsRangeEnd") == sName )
-					pItem = new CCustomXmlInsRangeEnd( document );
-				else if ( _T("w:customXmlInsRangeStart") == sName )
-					pItem = new CCustomXmlInsRangeStart( document );
-				else if ( _T("w:customXmlMoveFromRangeEnd") == sName ) 
-					pItem = new CCustomXmlMoveFromRangeEnd( document );
-				else if ( _T("w:customXmlMoveFromRangeStart") == sName )
-					pItem = new CCustomXmlMoveFromRangeStart( document );
-				else if ( _T("w:customXmlMoveToRangeEnd") == sName ) 
-					pItem = new CCustomXmlMoveToRangeEnd( document );
-				else if ( _T("w:customXmlMoveToRangeStart") == sName )
-					pItem = new CCustomXmlMoveToRangeStart( document );
-				else if ( _T("w:del") == sName )
-					pItem = new CDel( document );
-				else if ( _T("w:ins") == sName )
-					pItem = new CIns( document );
-				else if ( _T("w:moveFrom") == sName )
-					pItem = new CMoveFrom( document );
-				else if ( _T("w:moveFromRangeEnd") == sName )
-					pItem = new CMoveFromRangeEnd( document );
-				else if ( _T("w:moveFromRangeStart") == sName )
-					pItem = new CMoveFromRangeStart( document );
-				else if ( _T("w:moveTo") == sName )
-					pItem = new CMoveTo( document );
-				else if ( _T("w:moveToRangeEnd") == sName )
-					pItem = new CMoveToRangeEnd( document );
-				else if ( _T("w:moveToRangeStart") == sName )
-					pItem = new CMoveToRangeStart( document );
-				else if ( _T("m:oMath") == sName )
-					pItem = new COMath( document );
-				else if ( _T("m:oMathPara") == sName )
-					pItem = new COMathPara( document );
-				else if ( _T("w:permEnd") == sName )
-					pItem = new CPermEnd( document );
-				else if ( _T("w:permStart") == sName )
-					pItem = new CPermStart( document );
-				else if ( _T("w:proofErr") == sName )
-					pItem = new CProofErr( document );
-				else if ( _T("w:sdt") == sName )
-					pItem = new CSdt( document );
-				else if ( _T("w:tblGrid") == sName )
+				else if (_T("w:customXmlDelRangeEnd") == sName)
+					pItem = new CCustomXmlDelRangeEnd(document);
+				else if (_T("w:customXmlDelRangeStart") == sName)
+					pItem = new CCustomXmlDelRangeStart(document);
+				else if (_T("w:customXmlInsRangeEnd") == sName)
+					pItem = new CCustomXmlInsRangeEnd(document);
+				else if (_T("w:customXmlInsRangeStart") == sName)
+					pItem = new CCustomXmlInsRangeStart(document);
+				else if (_T("w:customXmlMoveFromRangeEnd") == sName)
+					pItem = new CCustomXmlMoveFromRangeEnd(document);
+				else if (_T("w:customXmlMoveFromRangeStart") == sName)
+					pItem = new CCustomXmlMoveFromRangeStart(document);
+				else if (_T("w:customXmlMoveToRangeEnd") == sName)
+					pItem = new CCustomXmlMoveToRangeEnd(document);
+				else if (_T("w:customXmlMoveToRangeStart") == sName)
+					pItem = new CCustomXmlMoveToRangeStart(document);
+				else if (_T("w:del") == sName)
+					pItem = new CDel(document);
+				else if (_T("w:ins") == sName)
+					pItem = new CIns(document);
+				else if (_T("w:moveFrom") == sName)
+					pItem = new CMoveFrom(document);
+				else if (_T("w:moveFromRangeEnd") == sName)
+					pItem = new CMoveFromRangeEnd(document);
+				else if (_T("w:moveFromRangeStart") == sName)
+					pItem = new CMoveFromRangeStart(document);
+				else if (_T("w:moveTo") == sName)
+					pItem = new CMoveTo(document);
+				else if (_T("w:moveToRangeEnd") == sName)
+					pItem = new CMoveToRangeEnd(document);
+				else if (_T("w:moveToRangeStart") == sName)
+					pItem = new CMoveToRangeStart(document);
+				else if (_T("m:oMath") == sName)
+					pItem = new COMath(document);
+				else if (_T("m:oMathPara") == sName)
+					pItem = new COMathPara(document);
+				else if (_T("w:permEnd") == sName)
+					pItem = new CPermEnd(document);
+				else if (_T("w:permStart") == sName)
+					pItem = new CPermStart(document);
+				else if (_T("w:proofErr") == sName)
+					pItem = new CProofErr(document);
+				else if (_T("w:sdt") == sName)
+					pItem = new CSdt(document);
+				else if (_T("w:tblGrid") == sName)
 				{
 					if (false == m_oTblGrid.IsInit())
 					{
-						m_oTblGrid = new CTblGrid( document );
+						m_oTblGrid = new CTblGrid(document);
 					}
 					m_oTblGrid->fromXML(oReader);
 				}
-				else if ( _T("w:tblPr") == sName )
+				else if (_T("w:tblPr") == sName)
 				{
-					pItem = m_oTableProperties = new CTableProperty( document );
+					pItem = m_oTableProperties = new CTableProperty(document);
 				}
-				else if ( _T("w:tr") == sName )
+				else if (_T("w:tr") == sName)
 				{
-					pItem = new CTr( document );
-					m_nCountRow ++;
+					pItem = new CTr(document);
+					m_nCountRow++;
+				}
+				else if (L"wx:sect" == sName && !oReader.IsEmptyNode())
+				{
+					int nWxSectDepth = oReader.GetDepth();
+					CreateElements(oReader, nWxSectDepth);
+				}
+				else if (L"wx:sub-section" == sName && !oReader.IsEmptyNode())
+				{
+					int nWxSubSectDepth = oReader.GetDepth();
+					CreateElements(oReader, nWxSubSectDepth);
 				}
 
-				if ( pItem )
+				if (pItem)
 				{
-					m_arrItems.push_back( pItem );
+					m_arrItems.push_back(pItem);
 					pItem->fromXML(oReader);
 				}
 			}
 		}
-
-
 		std::wstring CTbl::toXML() const
 		{
 			std::wstring sResult = _T("<w:tbl>");

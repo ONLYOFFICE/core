@@ -2799,7 +2799,8 @@ void CRecordShapeContainer::ConvertStyleTextProp9(CTextAttributesEx *pText)
 
         auto& prop9 = arrStyleTextProp9[pp9rt];
 
-        if (prop9.m_pf9.m_optBulletAutoNumberScheme.is_init())
+        if (prop9.m_pf9.m_optBulletAutoNumberScheme.is_init() &&
+                prop9.m_pf9.m_optfBulletHasAutoNumber.get_value_or(false))
         {
             auto* pBuAutoNum = new CBulletAutoNum;
             pBuAutoNum->type = prop9.m_pf9.m_optBulletAutoNumberScheme->SchemeToStr();

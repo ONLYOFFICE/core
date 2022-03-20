@@ -4,7 +4,9 @@
 #define OPJ_PACKAGE_VERSION "2.4.0"
 
 /* find whether or not have <malloc.h> */
+#ifndef _MAC
 #define OPJ_HAVE_MALLOC_H
+#endif
 /* check if function `aligned_alloc` exists */
 #define OPJ_HAVE_ALIGNED_ALLOC
 /* check if function `_aligned_malloc` exists */

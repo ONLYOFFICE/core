@@ -32,12 +32,13 @@
 #include "./JPXStream2.h"
 #include "./MemoryUtils.h"
 
-#include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/raster/BgraFrame.h"
-#include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
+#ifdef USE_GRAPHICS_JPEG2000
 #include "../../DesktopEditor/raster/Jp2/J2kFile.h"
-#include "../../DesktopEditor/graphics/Timer.h"
+#else
+#include "../../DesktopEditor/raster/Jp2/openjpeg/opj_bgraframe.h"
+#endif
 
 using namespace PdfReader;
 
@@ -92,12 +93,22 @@ void JPXStream2::reset()
     }
 
     CBgraFrame oFrame;
+
+#ifdef USE_GRAPHICS_JPEG2000
     Jpeg2000::CJ2kFile oJ2;
     if (!oJ2.Open(&oFrame, pBuffer, nStreamSize, L"", false))
     {
         MemUtilsFree(pBuffer);
         return;
     }
+#else
+    if (!openjpeg::Parse(pBuffer, nStreamSize, &oFrame, false))
+    {
+        MemUtilsFree(pBuffer);
+        return;
+    }
+#endif
+    MemUtilsFree(pBuffer);
 
     m_pSourceBuffer = oFrame.get_Data();
     m_lBufferSize = 4 * oFrame.get_Width() * oFrame.get_Height();

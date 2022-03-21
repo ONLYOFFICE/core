@@ -34,6 +34,49 @@ namespace Oox2Odf
 		return odf_context()->math_context()->annotation;
 	}
 
+	void annotaionReplaceAll(std::wstring& annotation, std::wstring substr1, std::wstring substr2)
+	{
+		size_t pos = annotation.find(substr1);
+		while (pos != std::wstring::npos)
+		{
+			annotation.replace(pos, substr1.size(), substr2);
+			pos = annotation.find(substr1, pos + substr2.size());
+		}
+	}
+
+	void annotationPostProd(std::wstring& annotation)
+	{
+		annotaionReplaceAll(annotation, L"=", L"\"=\"");
+		annotaionReplaceAll(annotation, L"{) }", L")");
+		annotaionReplaceAll(annotation, L"{( }", L"(");
+		annotaionReplaceAll(annotation, L"*", L"\"*\"");
+		annotaionReplaceAll(annotation, L"|", L"\"|\"");
+		// ∥
+		size_t pos = annotation.find(L"∥");
+		std::vector<size_t> positions;
+		//positions.push_back(pos);
+		while (pos != std::wstring::npos)
+		{
+			positions.push_back(pos);
+			pos = annotation.find(L"∥", pos + 1);
+		}
+		std::wstring str1 = L"ldline";
+		std::wstring str2 = L"rdline";
+		for (int i = positions.size() - 1; i >= 0; i--)
+		{			
+			if (i % 2 == 0)
+				annotation.replace(positions[i], 1, str1);
+			else
+				annotation.replace(positions[i], 1, str2);
+		}
+
+		//if (annotation[0] == L'=')
+		//	annotation = L"\"\"" + annotation;
+
+		//if ((annotation[annotation.size() - 1] == L'=') || (annotation[annotation.size() - 1] == L' ') && annotation[annotation.size() - 2] == L'=')
+		//	annotation = annotation + L"\"\"";
+	}
+
 	bool& OoxConverter::annotation_flag()
 	{
 		return odf_context()->math_context()->annotation_flag;
@@ -78,6 +121,9 @@ namespace Oox2Odf
 			{
 				tmp->encoding_ = L"StarMath 5.0";
 			}
+			
+			annotationPostProd(annotation());
+
 			elm->add_text(annotation());
 			OPEN_MATH_TAG(elm);
 			CLOSE_MATH_TAG;
@@ -85,6 +131,8 @@ namespace Oox2Odf
 		else
 			annotation_flag() = true;
 		annotation().clear();
+
+		
 
 		if (bStart) odf_context()->end_math();
 	}
@@ -355,7 +403,7 @@ namespace Oox2Odf
 			OPEN_MATH_TAG(elm);			
 			CLOSE_MATH_TAG;
 			if (begEndChrs.first == L"")
-				annotation() += L"left none ";
+				annotation() += L"left none "; //left none
 			else
 				annotation() += L"left " + odf_context()->math_context()->annotation_brackets_begin[begEndChrs.first] + L" ";
 		}
@@ -381,7 +429,7 @@ namespace Oox2Odf
 			OPEN_MATH_TAG(elm);
 			CLOSE_MATH_TAG;
 			if (begEndChrs.second == L"")
-				annotation() += L"right none ";
+				annotation() += L"right none "; //right none
 			else
 				annotation() += L"right " + odf_context()->math_context()->annotation_brackets_end[begEndChrs.second] + L" ";
 

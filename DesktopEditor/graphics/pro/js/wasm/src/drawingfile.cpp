@@ -153,9 +153,9 @@ static DWORD GetLength(BYTE* x)
 
 int main()
 {
-#define XPS_TEST  1
+#define XPS_TEST  0
 #define DJVU_TEST 0
-#define PDF_TEST  0
+#define PDF_TEST  1
 #if PDF_TEST
     BYTE* pPdfData = NULL;
     DWORD nPdfBytesCount;
@@ -174,7 +174,7 @@ int main()
         Close(test);
         if (nError == 4)
         {
-            std::string sPassword = "Test123";
+            std::string sPassword = "123456";
             test = Open(pPdfData, nPdfBytesCount, sPassword.c_str());
         }
         else

@@ -1074,6 +1074,7 @@ namespace PdfWriter
 		{
 			m_pEncryptDict = new CEncryptDict(sEncrypt);
 			m_pEncryptDict->SetPasswords(sPassword, sPassword);
+			m_pEncryptDict->UpdateKey();
 			m_bEncrypt = true;
 		}
 
@@ -1145,6 +1146,7 @@ namespace PdfWriter
 		else
 			m_pLastXref->WriteToStream(pStream, pEncrypt);
 
+		RELEASEOBJECT(m_pEncryptDict);
 		RELEASEOBJECT(pStream);
 		RELEASEOBJECT(m_pLastXref);
 		m_pXref = NULL;

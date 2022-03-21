@@ -69,11 +69,6 @@ namespace PdfWriter
         pObj = Get("P");
         if (pObj && pObj->GetType() == object_type_NUMBER)
             m_pEncrypt->SetPermission(((CNumberObject*)pObj)->Get());
-
-        pObj = Get("FileKey");
-        if (pObj && pObj->GetType() == object_type_BINARY)
-            m_pEncrypt->SetKey(((CBinaryObject*)pObj)->GetValue(), ((CBinaryObject*)pObj)->GetLength());
-        Remove("FileKey");
     }
 	CEncryptDict::~CEncryptDict()
 	{
@@ -200,5 +195,9 @@ namespace PdfWriter
 
         CBinaryObject* pEncryptPerm = new CBinaryObject(m_pEncrypt->m_anPermEncrypt, 16);
         Add("Perms", pEncryptPerm);
+    }
+    void CEncryptDict::UpdateKey()
+    {
+        m_pEncrypt->UpdateKey();
     }
 }

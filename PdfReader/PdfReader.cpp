@@ -467,30 +467,6 @@ return 0;
                 XMLConverter::DictToXml(&encrypt, sEncrypt, true);
             else
                 sEncrypt += L'>';
-
-            SecurityHandler* secHdlr = SecurityHandler::make(m_pInternal->m_pPDFDocument, &encrypt);
-            GString* owner_pswd = NSStrings::CreateString(sPassword);
-            GString* user_pswd  = NSStrings::CreateString(sPassword);
-            if (secHdlr && secHdlr->checkEncryption(owner_pswd, user_pswd))
-            {
-                Guchar* fileKey = secHdlr->getFileKey();
-                int keyLength = secHdlr->getFileKeyLength();
-
-                sEncrypt += L"<FileKey type=\"Binary\" num=\"";
-                sEncrypt += std::to_wstring(keyLength);
-                sEncrypt += L"\">";
-                for (int nIndex = 0; nIndex < keyLength; ++nIndex)
-                {
-                    sEncrypt += L"<i>";
-                    sEncrypt += std::to_wstring((int)fileKey[nIndex]);
-                    sEncrypt += L"</i>";
-                }
-                sEncrypt += L"</FileKey>";
-            }
-
-            RELEASEOBJECT(secHdlr);
-            delete owner_pswd;
-            delete user_pswd;
             encrypt.free();
         }
         else

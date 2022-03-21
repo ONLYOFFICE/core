@@ -139,11 +139,34 @@ namespace PdfWriter
         impl->m_sUserPassword = sUserPassword;
         impl->m_sOwnerPassword = sOwnerPassword;
     }
-    bool CEncrypt::SetKey(const BYTE* pSrc, unsigned int unLen)
+    bool CEncrypt::UpdateKey()
     {
-        if (unLen == m_unKeyLen)
+        CryptoPP::SHA256 hash;
+
+        hash.Update( (unsigned char*) impl->m_sUserPassword.c_str(), impl->m_sUserPassword.length());
+        hash.Update( m_anUserKey + 32, 8);
+
+        CryptoPP::SecByteBlock pHashData(hash.DigestSize());
+        hash.Final(pHashData);
+
+        if (MakeFileKey3(impl->m_sUserPassword, pHashData.data(), pHashData.size()) && 0 == memcmp(pHashData.data(), m_anUserKey, 32))
         {
-            memcpy(impl->m_anEncryptionKey, pSrc, m_unKeyLen);
+            hash.Update( (unsigned char*) impl->m_sUserPassword.c_str(), impl->m_sUserPassword.length());
+            hash.Update( m_anUserKey + 40, 8);
+
+            CryptoPP::SecByteBlock pHashKeyData(hash.DigestSize());
+            hash.Final(pHashKeyData);
+
+            MakeFileKey3(impl->m_sUserPassword, pHashKeyData.data(), pHashKeyData.size());
+            unsigned char empty[16] = {};
+
+            CryptoPP::AES::Decryption aesDecryption(pHashKeyData.data(), pHashKeyData.size());
+            CryptoPP::CBC_Mode_ExternalCipher::Decryption cbcDecryption( aesDecryption, empty);
+
+            CryptoPP::StreamTransformationFilter stfDecryptor(cbcDecryption, new CryptoPP::ArraySink( impl->m_anEncryptionKey, 32), CryptoPP::StreamTransformationFilter::NO_PADDING );
+            stfDecryptor.Put2(m_anUserEncryptKey, 32, 1, true);
+            stfDecryptor.MessageEnd();
+
             return true;
         }
         return false;

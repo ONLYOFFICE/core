@@ -6,6 +6,7 @@
 #endif
 
 #include "../js_base.h"
+#include "../js_logger.h"
 #include <iostream>
 
 #include "v8.h"
@@ -425,6 +426,8 @@ namespace NSJSBase
 #ifdef V8_INSPECTOR
             v8_debug::before(V8ContextFirstArg CV8Worker::getInitializer()->getPlatform(), "");
 #endif
+            LOGGER_START
+
             v8::Local<v8::String> _name = CreateV8String(CV8Worker::GetCurrent(), name);
             v8::Handle<v8::Value> _func = value->Get(V8ContextFirstArg _name).ToLocalChecked();
 
@@ -453,6 +456,8 @@ namespace NSJSBase
                     RELEASEARRAYOBJECTS(args);
                 }
             }
+
+            LOGGER_LAP_NAME(name)
 
             JSSmart<CJSValue> _ret = _return;
             return _ret;

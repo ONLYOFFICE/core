@@ -396,7 +396,7 @@ namespace XPS
 						sRes += L"\":\"";
 						sName = oReader.GetText2();
 						NSStringExt::Replace(sName, L"\"", L"\\\"");
-						sRes += oReader.GetText2();
+                        sRes += sName;
 						sRes += L"\",";
 					}
 				}
@@ -405,13 +405,13 @@ namespace XPS
 		int nW = 0;
 		int nH = 0;
 		GetPageSize(0, nW, nH);
-		sRes += L"\"PageSize\":\"";
-		sRes += std::to_wstring(nW);
-		sRes += L"x";
-		sRes += std::to_wstring(nH);
-		sRes += L"\",\"NumberOfPages\":";
-		sRes += std::to_wstring(GetPageCount());
-		sRes += L"}";
+        sRes += L"\"PageWidth\":";
+        sRes += std::to_wstring((int)(nW * 100));
+        sRes += L",\"PageHeight\":";
+        sRes += std::to_wstring((int)(nH * 100));
+        sRes += L",\"NumberOfPages\":";
+        sRes += std::to_wstring(GetPageCount());
+        sRes += L"}";
 
 		return sRes;
 	}

@@ -498,19 +498,21 @@ return 0;
         obj1.free();
 
         std::wstring version = std::to_wstring(GetVersion());
+        std::wstring::size_type posDot = version.find('.');
+        if (posDot != std::wstring::npos)
+            version = version.substr(0, posDot + 2);
+
         sRes += L"\"Version\":";
-        sRes += version.substr(0, version.length() - 5);
+        sRes += version;
         double nW = 0;
         double nH = 0;
         double nDpi = 0;
         GetPageInfo(0, &nW, &nH, &nDpi, &nDpi);
-        sRes += L",\"PageSize\":\"";
-        version = std::to_wstring(nW);
-        sRes += version.substr(0, version.length() - 4);
-        sRes += L"x";
-        version = std::to_wstring(nH);
-        sRes += version.substr(0, version.length() - 4);
-        sRes += L"\",\"NumberOfPages\":";
+        sRes += L",\"PageWidth\":";
+        sRes += std::to_wstring((int)(nW * 100));
+        sRes += L",\"PageHeight\":";
+        sRes += std::to_wstring((int)(nH * 100));
+        sRes += L",\"NumberOfPages\":";
         sRes += std::to_wstring(GetPagesCount());
         sRes += L",\"FastWebView\":";
         sRes += m_pInternal->m_pPDFDocument->isLinearized() ? L"true" : L"false";

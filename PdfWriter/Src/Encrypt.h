@@ -37,15 +37,15 @@
 #define ID_LEN              16
 #define PERMISSION_PAD      0xFFFFFFC0
 
-#define SET_FUNC(Name, m_memory, size) \
-bool Name(const BYTE* pSrc, unsigned int unLen)\
+#define SET_BYTE_FUNC(Name, m_memory) \
+void Name(const BYTE* pSrc, unsigned int unLen)\
 {\
-    if (unLen == size)\
-    {\
-        memcpy(m_memory, pSrc, unLen);\
-        return true;\
-    }\
-    return false;\
+    memcpy(m_memory, pSrc, unLen);\
+}
+#define SET_UN_FUNC(Name, m_memory) \
+void Name(unsigned int unVal)\
+{\
+    m_memory = unVal;\
 }
 
 namespace PdfWriter
@@ -63,21 +63,26 @@ namespace PdfWriter
 		void InitKey(unsigned int unObjectId, unsigned short unGenNo);
 		void Reset();
         unsigned int CryptBuf(const BYTE* pSrc, BYTE* pDst, unsigned int unLen);
-		void SetPermission(unsigned int unPermission);
+        void SetKeyLength(unsigned int unLen);
         void SetPasswords(const std::string &sUserPassword, const std::string &sOwnerPassword);
-        bool UpdateKey();
+        bool MakeFileKey();
 
-        SET_FUNC(SetID, m_anEncryptID, ID_LEN);
-        SET_FUNC(SetO, m_anOwnerKey, 48);
-        SET_FUNC(SetU, m_anUserKey,  48);
-        SET_FUNC(SetOE, m_anOwnerEncryptKey, 32);
-        SET_FUNC(SetUE, m_anUserEncryptKey,  32);
-        SET_FUNC(SetPerms, m_anPermEncrypt, 16);
+        SET_BYTE_FUNC(SetID, m_anEncryptID);
+        SET_BYTE_FUNC(SetO,  m_anOwnerKey);
+        SET_BYTE_FUNC(SetU,  m_anUserKey);
+        SET_BYTE_FUNC(SetOE, m_anOwnerEncryptKey);
+        SET_BYTE_FUNC(SetUE, m_anUserEncryptKey);
+        SET_BYTE_FUNC(SetPerms, m_anPermEncrypt);
+
+        SET_UN_FUNC(SetPermission, m_unPermission);
+        SET_UN_FUNC(SetRevision, m_unRevision);
+        SET_UN_FUNC(SetVersion, m_unVersion);
 	private:
         class Impl;
         Impl *impl;
 
         bool MakeFileKey3(const std::string &sPassword, unsigned char *pHash, int nHashSize, unsigned char *pHash2 = NULL, int nHashSize2 = 0);
+        bool MakeFileKey2(const std::string &sUserPassword);
 		
         unsigned int    m_unKeyLen;
 
@@ -87,6 +92,8 @@ namespace PdfWriter
         BYTE            m_anUserEncryptKey[32];     //UE
         unsigned int    m_unPermission;             //P
         BYTE            m_anPermEncrypt[16];        //Perm
+        unsigned int    m_unVersion;                //V
+        unsigned int    m_unRevision;               //R
 
         BYTE            m_anEncryptID[ID_LEN];
 

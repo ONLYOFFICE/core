@@ -49,13 +49,28 @@ int main()
     if (NSFile::CFileBinary::Exists(sDstFile))
         NSFile::CFileBinary::Remove(sDstFile);
 
-    std::wstring sPassword = L"123";
+    std::wstring sPassword = L"123456";
     bool bResult = pReader->LoadFromFile(sSrcFile);
     if (!bResult)
     {
         pReader->LoadFromFile(sSrcFile, L"", sPassword, sPassword);
         bResult = pReader->GetError() == 0;
     }
+    /*
+    pdfWriter.SetPassword(L"123456");
+    pdfWriter.NewPage();
+    pdfWriter.BeginCommand(c_nPageType);
+    double dPageDpiX, dPageDpiY;
+    double dWidth, dHeight;
+    pReader->GetPageInfo(0, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+    dWidth  *= 25.4 / dPageDpiX;
+    dHeight *= 25.4 / dPageDpiY;
+    pdfWriter.put_Width(dWidth);
+    pdfWriter.put_Height(dHeight);
+    pReader->DrawPageOnRenderer(&pdfWriter, 0, NULL);
+    pdfWriter.EndCommand(c_nPageType);
+    pdfWriter.SaveToFile(sDstFile);
+    */
     if (bResult && pReader->EditPdf(&pdfWriter, sPassword))
     {
         if (pReader->EditPage(0))
@@ -63,6 +78,7 @@ int main()
             TEST(&pdfWriter);
         }
 
+        /*
         if (pReader->EditPage(1))
         {
             TEST2(&pdfWriter);
@@ -86,6 +102,7 @@ int main()
 
             TEST(&pdfWriter);
         }
+        */
 
         NSFile::CFileBinary::Copy(sSrcFile, sDstFile);
         pReader->EditClose(sDstFile);

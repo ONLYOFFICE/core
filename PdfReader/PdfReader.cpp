@@ -462,12 +462,30 @@ return 0;
         std::wstring sEncrypt = L"<Encrypt";
         if (xref->isEncrypted())
         {
-            Object encrypt;
+            Object encrypt, ID, ID1;
             if (xref->getTrailerDict()->dictLookup("Encrypt", &encrypt)->isDict())
                 XMLConverter::DictToXml(&encrypt, sEncrypt, true);
             else
                 sEncrypt += L'>';
             encrypt.free();
+
+            if (xref->getTrailerDict()->dictLookup("ID", &ID)->isArray() && ID.arrayGet(0, &ID1)->isString())
+            {
+                GString* str = ID1.getString();
+
+                sEncrypt += L"<ID type=\"Binary\" num=\"";
+                sEncrypt += std::to_wstring(str->getLength());
+                sEncrypt += L"\">";
+                for (int nIndex = 0; nIndex < str->getLength(); ++nIndex)
+                {
+                    sEncrypt += L"<i>";
+                    sEncrypt += std::to_wstring((int)str->getChar(nIndex));
+                    sEncrypt += L"</i>";
+                }
+                sEncrypt += L"</ID>";
+            }
+            ID.free();
+            ID1.free();
         }
         else
             sEncrypt += L'>';

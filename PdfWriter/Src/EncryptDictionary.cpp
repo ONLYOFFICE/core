@@ -38,10 +38,14 @@
 #include "../../Common/3dParty/cryptopp/md5.h"
 #include "../../UnicodeConverter/UnicodeConverter.h"
 
-#define SET_PARAM(Name, set_func) \
+#define SET_BINARY_PARAM(Name, set_func) \
     pObj = Get(Name);\
     if (pObj && pObj->GetType() == object_type_BINARY)\
         m_pEncrypt->set_func(((CBinaryObject*)pObj)->GetValue(), ((CBinaryObject*)pObj)->GetLength());
+#define SET_NUMBER_PARAM(Name, set_func) \
+    pObj = Get(Name);\
+    if (pObj && pObj->GetType() == object_type_NUMBER)\
+        m_pEncrypt->set_func(((CNumberObject*)pObj)->Get());
 
 namespace PdfWriter
 {
@@ -60,15 +64,18 @@ namespace PdfWriter
         m_pEncrypt = new CEncrypt();
 
         CObjectBase* pObj = NULL;
-        SET_PARAM("O", SetO);
-        SET_PARAM("U", SetU);
-        SET_PARAM("OE", SetOE);
-        SET_PARAM("UE", SetUE);
-        SET_PARAM("Perms", SetPerms);
+        SET_BINARY_PARAM("O", SetO);
+        SET_BINARY_PARAM("U", SetU);
+        SET_BINARY_PARAM("OE", SetOE);
+        SET_BINARY_PARAM("UE", SetUE);
+        SET_BINARY_PARAM("Perms", SetPerms);
+        SET_BINARY_PARAM("ID", SetID);
+        Remove("ID");
 
-        pObj = Get("P");
-        if (pObj && pObj->GetType() == object_type_NUMBER)
-            m_pEncrypt->SetPermission(((CNumberObject*)pObj)->Get());
+        SET_NUMBER_PARAM("P", SetPermission);
+        SET_NUMBER_PARAM("R", SetRevision);
+        SET_NUMBER_PARAM("V", SetVersion);
+        SET_NUMBER_PARAM("Length", SetKeyLength);
     }
 	CEncryptDict::~CEncryptDict()
 	{
@@ -198,6 +205,6 @@ namespace PdfWriter
     }
     void CEncryptDict::UpdateKey()
     {
-        m_pEncrypt->UpdateKey();
+        m_pEncrypt->MakeFileKey();
     }
 }

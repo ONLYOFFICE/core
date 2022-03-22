@@ -1109,7 +1109,6 @@ namespace PdfWriter
 
 		// Вторая часть идентификатора должна обновляться
 		CObjectBase* pID = m_pTrailer->Get("ID");
-		CEncrypt* pEncrypt = NULL;
 		if (pID && pID->GetType() == object_type_ARRAY)
 		{
 			BYTE arrId[16];
@@ -1117,15 +1116,11 @@ namespace PdfWriter
 
 			CObjectBase* pObject = ((CArrayObject*)pID)->Get(1, false);
 			((CArrayObject*)pID)->Insert(pObject, new CBinaryObject(arrId, 16), true);
-
-			// Шифруем документ, если он был зашифрован
-			if (m_bEncrypt)
-			{
-				pEncrypt = m_pEncryptDict->GetEncrypt();
-				pObject = ((CArrayObject*)pID)->Get(1, false);
-				pEncrypt->SetID(((CBinaryObject*)pObject)->GetValue(), ((CBinaryObject*)pObject)->GetLength());
-			}
 		}
+
+		CEncrypt* pEncrypt = NULL;
+		if (m_bEncrypt)
+			pEncrypt = m_pEncryptDict->GetEncrypt();
 
 		// Если m_pTrailer поток перекрестных ссылок, то при дозаписи тоже должен быть поток
 		if (m_pTrailer->Get("Type"))

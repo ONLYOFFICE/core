@@ -92,6 +92,16 @@ namespace NSCSS
         m_UnitMeasure = enUnitMeasure;
     }
 
+    void CCompiledStyle::SetSizeSourceWindow(const CSizeWindow &oSizeWindow)
+    {
+        m_oSourceWindow = oSizeWindow;
+    }
+
+    void CCompiledStyle::SetSizeDeviceWindow(const CSizeWindow &oSizeWindow)
+    {
+            m_oDeviceWindow = oSizeWindow;
+    }
+
     bool CCompiledStyle::Empty() const
     {
         return m_pBackground.Empty() && m_pBorder.Empty() &&
@@ -245,13 +255,13 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f, ScalingDirectionX);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
                             m_pMargin.AddMargin(sValue, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f, ScalingDirectionX);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
                             m_pMargin.AddMargin(sValue, unLevel, true);
 
@@ -268,13 +278,13 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f, ScalingDirectionY);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
                             m_pMargin.AddTopMargin(sValue, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f, ScalingDirectionY);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
                             m_pMargin.AddTopMargin(sValue, unLevel, true);
 
@@ -291,13 +301,13 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f, ScalingDirectionX);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
                             m_pMargin.AddRightMargin(sValue, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f, ScalingDirectionX);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
                             m_pMargin.AddRightMargin(sValue, unLevel, true);
 
@@ -313,13 +323,13 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f, ScalingDirectionY);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
                             m_pMargin.AddBottomMargin(sValue, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f, ScalingDirectionY);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
                             m_pMargin.AddBottomMargin(sValue, unLevel, true);
 
@@ -336,13 +346,13 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f, ScalingDirectionX);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
                             m_pMargin.AddLeftMargin(sValue, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f, ScalingDirectionX);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
                             m_pMargin.AddLeftMargin(sValue, unLevel, true);
 
@@ -359,13 +369,13 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f, ScalingDirectionX);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
                             m_pMargin.AddMargin(sValue, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f, ScalingDirectionX);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
                             m_pMargin.AddMargin(sValue, unLevel, true);
 
@@ -382,13 +392,13 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f, ScalingDirectionY);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
                             m_pMargin.AddTopMargin(sValue, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f, ScalingDirectionY);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
                             m_pMargin.AddTopMargin(sValue, unLevel, true);
 
@@ -406,13 +416,13 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f, ScalingDirectionX);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
                             m_pMargin.AddRightMargin(sValue, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f, ScalingDirectionX);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
                             m_pMargin.AddRightMargin(sValue, unLevel, true);
 
@@ -429,13 +439,13 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f, ScalingDirectionY);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
                             m_pMargin.AddBottomMargin(sValue, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f, ScalingDirectionY);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
                             m_pMargin.AddBottomMargin(sValue, unLevel, true);
 
@@ -452,13 +462,13 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f);
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f, ScalingDirectionX);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
                             m_pMargin.AddLeftMargin(sValue, unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f);
+                        const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f, ScalingDirectionX);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
                             m_pMargin.AddLeftMargin(sValue, unLevel, true);
 
@@ -488,11 +498,11 @@ namespace NSCSS
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
-                        m_pText.SetIndent(ConvertUnitMeasure(pPropertie.second, 540.0f), unLevel, bHardMode);
+                        m_pText.SetIndent(ConvertUnitMeasure(pPropertie.second, 540.0f, ScalingDirectionX), unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        m_pText.SetIndent(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f), unLevel, true);
+                        m_pText.SetIndent(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f, ScalingDirectionX), unLevel, true);
                         m_pText.SetImportantIndent(true);
                     }
 
@@ -990,7 +1000,7 @@ namespace NSCSS
         m_pText         .ClearImportants();
     }
 
-        std::wstring CCompiledStyle::ConvertUnitMeasure(const std::wstring &sValue, const float& fPreviousValue) const
+        std::wstring CCompiledStyle::ConvertUnitMeasure(const std::wstring &sValue, const float& fPreviousValue, ScalingDirection enScalingDirection) const
         {
             if (sValue.empty())
                 return sValue;
@@ -1031,7 +1041,11 @@ namespace NSCSS
                 }
                 else if (sValueTemp.find(L"px") != std::wstring::npos)
                 {
-                    sValueString += ConvertPx(sValueTemp);
+                    int nValue = ConvertPx(sValueTemp);
+
+                    Scale(nValue, enScalingDirection);
+
+                    sValueString += std::to_wstring(nValue);
 
                     if (sValueTemp.find(L';') != std::wstring::npos)
                         sValueString += L';';
@@ -1040,7 +1054,11 @@ namespace NSCSS
                 }
                 else if (sValueTemp.find(L"cm") != std::wstring::npos)
                 {
-                    sValueString += ConvertCm(sValueTemp);
+                    int nValue = ConvertCm(sValueTemp);
+
+                    Scale(nValue, enScalingDirection);
+
+                    sValueString += std::to_wstring(nValue);
 
                     if (sValueTemp.find(L';') != std::wstring::npos)
                         sValueString += L';';
@@ -1049,7 +1067,11 @@ namespace NSCSS
                 }
                 else if (sValueTemp.find(L"mm") != std::wstring::npos)
                 {
-                    sValueString += ConvertMm(sValueTemp);
+                    int nValue = ConvertMm(sValueTemp);
+
+                    Scale(nValue, enScalingDirection);
+
+                    sValueString += std::to_wstring(nValue);
 
                     if (sValueTemp.find(L';') != std::wstring::npos)
                         sValueString += L';';
@@ -1057,8 +1079,12 @@ namespace NSCSS
                         sValueString += L' ';
                 }
                 else if (sValueTemp.find(L"in") != std::wstring::npos)
-                {
-                    sValueString += ConvertIn(sValueTemp);
+                {       
+                    int nValue = ConvertIn(sValueTemp);
+
+                    Scale(nValue, enScalingDirection);
+
+                    sValueString += std::to_wstring(nValue);
 
                     if (sValueTemp.find(L';') != std::wstring::npos)
                         sValueString += L';';
@@ -1067,7 +1093,11 @@ namespace NSCSS
                 }
                 else if (sValueTemp.find(L"pt") != std::wstring::npos)
                 {
-                    sValueString += ConvertPt(sValueTemp);
+                    int nValue = ConvertPt(sValueTemp);
+
+                    Scale(nValue, enScalingDirection);
+
+                    sValueString += std::to_wstring(nValue);
 
                     if (sValueTemp.find(L';') != std::wstring::npos)
                         sValueString += L';';
@@ -1076,7 +1106,11 @@ namespace NSCSS
                 }
                 else if (sValueTemp.find(L"pc") != std::wstring::npos)
                 {
-                    sValueString += ConvertPc(sValueTemp);
+                    int nValue = ConvertPc(sValueTemp);
+
+                    Scale(nValue, enScalingDirection);
+
+                    sValueString += std::to_wstring(nValue);
 
                     if (sValueTemp.find(L';') != std::wstring::npos)
                         sValueString += L';';
@@ -1110,10 +1144,26 @@ namespace NSCSS
             return sValueString;
         }
 
-        inline std::wstring CCompiledStyle::ConvertPx(const std::wstring& sValue) const
+        void CCompiledStyle::Scale(int &nValue, ScalingDirection enScalingDirection) const
+        {
+                if (ScalingDirectionNone == enScalingDirection)
+                        return;
+                else if (ScalingDirectionX == enScalingDirection && 0 != m_oSourceWindow.m_ushWidth &&
+                    0 != m_oDeviceWindow.m_ushWidth && m_oSourceWindow.m_ushWidth != m_oDeviceWindow.m_ushWidth)
+                {
+                        nValue = static_cast<int>((double)nValue / m_oSourceWindow.m_ushWidth * m_oDeviceWindow.m_ushWidth + 0.5f);
+                }
+                else if (ScalingDirectionY == enScalingDirection && 0 != m_oSourceWindow.m_ushHeight &&
+                         0 != m_oDeviceWindow.m_ushHeight && m_oSourceWindow.m_ushHeight != m_oDeviceWindow.m_ushHeight)
+                {
+                        nValue = static_cast<int>((double)nValue / m_oSourceWindow.m_ushHeight * m_oDeviceWindow.m_ushHeight + 0.5f);
+                }
+        }
+
+        inline int CCompiledStyle::ConvertPx(const std::wstring& sValue) const
         {
             if (sValue.empty())
-                return std::wstring();
+                return 0;
 
             const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"px") - 1);
             const float dValue = wcstof(sConvertValue.c_str(), NULL) * 2.0f;
@@ -1121,7 +1171,7 @@ namespace NSCSS
             switch (m_UnitMeasure)
             {
                 case Pixel:
-                    return std::to_wstring(static_cast<short int>(dValue));;
+                    return static_cast<int>(dValue);
                 case Default:
                 case Point:
                     return ConvertPxToPt(dValue);
@@ -1135,53 +1185,39 @@ namespace NSCSS
                     return ConvertPxToPc(dValue);
             }
 
-            return std::wstring();
+            return 0;
         }
 
-        inline std::wstring CCompiledStyle::ConvertPxToCm(const float& dValue) const
+        inline int CCompiledStyle::ConvertPxToCm(const float& dValue) const
         {
-            if (dValue == 0.0f)
-                return std::wstring(L"0");
-
-            return std::to_wstring(static_cast<short int>(dValue / static_cast<float>(m_nDpi) * 2.54f + 0.5f));
+            return static_cast<int>(dValue / m_nDpi * 2.54f);
         }
 
-        inline std::wstring CCompiledStyle::ConvertPxToIn(const float& dValue) const
+        inline int CCompiledStyle::ConvertPxToIn(const float& dValue) const
         {
-            if (dValue == 0.0f)
-                return std::wstring(L"0");
-
-            return std::to_wstring(static_cast<short int>(1.0f / static_cast<float>(m_nDpi) * dValue + 0.5f));
+            return static_cast<int>(1.0f / static_cast<float>(m_nDpi) * dValue + 0.5f);
         }
 
-        inline std::wstring CCompiledStyle::ConvertPxToMm(const float& dValue) const
+        inline int CCompiledStyle::ConvertPxToMm(const float& dValue) const
         {
-            if (dValue == 0.0f)
-                return std::wstring(L"0");
-
-            return std::to_wstring(static_cast<short int>(dValue / static_cast<float>(m_nDpi) * 25.4f + 0.5f));
+            return static_cast<int>(dValue / static_cast<float>(m_nDpi) * 25.4f + 0.5f);
         }
 
-        inline std::wstring CCompiledStyle::ConvertPxToPc(const float& dValue) const
+        inline int CCompiledStyle::ConvertPxToPc(const float& dValue) const
         {
-            if (dValue == 0.0f)
-                return std::wstring(L"0");
 
-            return std::to_wstring(static_cast<short int>(0.16667f / static_cast<float>(m_nDpi) * dValue + 0.5f));
+            return static_cast<int>(0.16667f / static_cast<float>(m_nDpi) * dValue + 0.5f);
         }
 
-        inline std::wstring CCompiledStyle::ConvertPxToPt(const float& dValue) const
+        inline int CCompiledStyle::ConvertPxToPt(const float& dValue) const
         {
-            if (dValue == 0.0f)
-                return std::wstring(L"0");
-
-            return std::to_wstring(static_cast<short int>(72.0f /  static_cast<float>(m_nDpi) * dValue + 0.5f));
+            return static_cast<int>(72.0f /  static_cast<float>(m_nDpi) * dValue + 0.5f);
         }
 
-        inline std::wstring CCompiledStyle::ConvertCm(const std::wstring& sValue) const
+        inline int CCompiledStyle::ConvertCm(const std::wstring& sValue) const
         {
             if (sValue.empty())
-                return std::wstring();
+                return 0;
 
             const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"cm") - 1);
             const float dValue = wcstof(sConvertValue.c_str(), NULL) * 2.0f;
@@ -1194,7 +1230,7 @@ namespace NSCSS
                 case Pixel:
                     return ConvertCmToPx(dValue);
                 case Cantimeter:
-                    return std::to_wstring(static_cast<short int>(dValue));;
+                    return static_cast<int>(dValue);
                 case Millimeter:
                     return ConvertCmToMm(dValue);
                 case Inch:
@@ -1203,53 +1239,38 @@ namespace NSCSS
                     return ConvertCmToPc(dValue);
             }
 
-            return std::wstring();
+            return 0;
         }
 
-        inline std::wstring CCompiledStyle::ConvertCmToIn(const float& dValue) const
+        inline int CCompiledStyle::ConvertCmToIn(const float& dValue) const
         {
-            if (dValue == 0.0f)
-                return std::wstring(L"0");
-
-            return std::to_wstring(static_cast<short int>(dValue / 2.54f + 0.5f));
+            return static_cast<int>(dValue / 2.54f + 0.5f);
         }
 
-        inline std::wstring CCompiledStyle::ConvertCmToMm(const float& dValue) const
+        inline int CCompiledStyle::ConvertCmToMm(const float& dValue) const
         {
-            if (dValue == 0.0f)
-                return std::wstring(L"0");
-
-            return std::to_wstring(static_cast<short int>(dValue * 10.0f + 0.5f));
+            return static_cast<int>(dValue * 10.0f + 0.5f);
         }
 
-        inline std::wstring CCompiledStyle::ConvertCmToPc(const float& dValue) const
+        inline int CCompiledStyle::ConvertCmToPc(const float& dValue) const
         {
-            if (dValue == 0.0f)
-                return std::wstring(L"0");
-
-            return std::to_wstring(static_cast<short int>(2.36f * dValue + 0.5f));
+            return static_cast<int>(2.36f * dValue + 0.5f);
         }
 
-        inline std::wstring CCompiledStyle::ConvertCmToPt(const float& dValue) const
+        inline int CCompiledStyle::ConvertCmToPt(const float& dValue) const
         {
-            if (dValue == 0.0f)
-                return std::wstring(L"0");
-
-            return std::to_wstring(static_cast<short int>(28.35f * dValue + 0.5f));
+            return static_cast<int>(28.35f * dValue + 0.5f);
         }
 
-        inline std::wstring CCompiledStyle::ConvertCmToPx(const float& dValue) const
+        inline int CCompiledStyle::ConvertCmToPx(const float& dValue) const
         {
-            if (dValue == 0.0f)
-                return std::wstring(L"0");
-
-            return std::to_wstring(static_cast<short int>(static_cast<float>(m_nDpi) / 2.54f * dValue + 0.5f));
+            return static_cast<int>(static_cast<float>(m_nDpi) / 2.54f * dValue + 0.5f);
         }
 
-        inline std::wstring CCompiledStyle::ConvertMm(const std::wstring& sValue) const
+        inline int CCompiledStyle::ConvertMm(const std::wstring& sValue) const
         {
             if (sValue.empty())
-                return std::wstring();
+                return 0;
 
             const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"mm") - 1);
             const float dValue = wcstof(sConvertValue.c_str(), NULL) * 2.0f;
@@ -1264,59 +1285,47 @@ namespace NSCSS
                 case Cantimeter:
                     return ConvertMmToCm(dValue);
                 case Millimeter:
-                    return std::to_wstring(static_cast<short int>(dValue));;
+                    return static_cast< int>(dValue);
                 case Inch:
                     return ConvertMmToIn(dValue);
                 case Peak:
                     return ConvertMmToPc(dValue);
             }
-            return std::wstring();
+            return 0;
         }
 
-        inline std::wstring CCompiledStyle::ConvertMmToIn(const float& dValue) const
+        inline int CCompiledStyle::ConvertMmToIn(const float& dValue) const
         {
-            if (dValue == 0.0f)
-                return std::wstring(L"0");
-
-            return std::to_wstring(static_cast<short int>(dValue / 25.4f + 0.5f));
+            return static_cast<int>(dValue / 25.4f + 0.5f);
         }
 
-        inline std::wstring CCompiledStyle::ConvertMmToCm(const float& dValue) const
+        inline int CCompiledStyle::ConvertMmToCm(const float& dValue) const
         {
-            if (dValue == 0.0f)
-                return std::wstring(L"0");
 
-            return std::to_wstring(static_cast<short int>(dValue / 10.0f + 0.5f));
+            return static_cast<int>(dValue / 10.0f + 0.5f);
         }
 
-        inline std::wstring CCompiledStyle::ConvertMmToPc(const float& dValue) const
+        inline int CCompiledStyle::ConvertMmToPc(const float& dValue) const
         {
-            if (dValue == 0.0f)
-                return std::wstring(L"0");
-
-            return std::to_wstring(static_cast<short int>(2.8346f * dValue + 0.5f));
+            return static_cast<int>(2.8346f * dValue + 0.5f);
         }
 
-        inline std::wstring CCompiledStyle::ConvertMmToPt(const float& dValue) const
+        inline int CCompiledStyle::ConvertMmToPt(const float& dValue) const
         {
-            if (dValue == 0)
-                return std::wstring(L"0");
 
-            return std::to_wstring(static_cast<short int>(0.23262f * dValue + 0.5f));
+            return static_cast<int>(0.23262f * dValue + 0.5f);
         }
 
-        inline std::wstring CCompiledStyle::ConvertMmToPx(const float& dValue) const
+        inline int CCompiledStyle::ConvertMmToPx(const float& dValue) const
         {
-            if (dValue == 0)
-                return std::wstring(L"0");
 
-            return std::to_wstring(static_cast<short int>(static_cast<float>(m_nDpi) / 25.4f * dValue + 0.5f));
+            return static_cast<int>(static_cast<float>(m_nDpi) / 25.4f * dValue + 0.5f);
         }
 
-        inline std::wstring CCompiledStyle::ConvertIn(const std::wstring& sValue) const
+        inline int CCompiledStyle::ConvertIn(const std::wstring& sValue) const
         {
             if (sValue.empty())
-                return std::wstring();
+                return 0;
 
             const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"in") - 1);
             const float dValue = wcstof(sConvertValue.c_str(), NULL) * 2.0f;
@@ -1333,60 +1342,48 @@ namespace NSCSS
                 case Millimeter:
                     return ConvertInToMm(dValue);
                 case Inch:
-                    return std::to_wstring(static_cast<short int>(dValue));;
+                    return static_cast<int>(dValue);
                 case Peak:
                     return ConvertInToPc(dValue);
             }
-            return std::wstring();
+            return 0;
         }
 
-        inline std::wstring CCompiledStyle::ConvertInToMm(const float& dValue) const
+        inline int CCompiledStyle::ConvertInToMm(const float& dValue) const
         {
-            if (dValue == 0.0f)
-                return std::wstring(L"0");
-
-            return std::to_wstring(static_cast<short int>(dValue * 25.4f + 0.5f));
+            return static_cast<int>(dValue * 25.4f + 0.5f);
         }
 
-        inline std::wstring CCompiledStyle::ConvertInToCm(const float& dValue) const
+        inline int CCompiledStyle::ConvertInToCm(const float& dValue) const
         {
-            if (dValue == 0.0f)
-                return std::wstring(L"0");
 
-            return std::to_wstring(static_cast<short int>(dValue * 2.54f + 0.5f));
+            return static_cast<int>(dValue * 2.54f + 0.5f);
         }
 
-        inline std::wstring CCompiledStyle::ConvertInToPc(const float& dValue) const
+        inline int CCompiledStyle::ConvertInToPc(const float& dValue) const
         {
-            if (dValue == 0.0f)
-                return std::wstring(L"0");
 
-            return std::to_wstring(static_cast<short int>(dValue / 72.0f + 0.5f));
+            return static_cast<int>(dValue / 72.0f + 0.5f);
         }
 
-        inline std::wstring CCompiledStyle::ConvertInToPt(const float& dValue) const
+        inline int CCompiledStyle::ConvertInToPt(const float& dValue) const
         {
-            if (dValue == 0.0f)
-                return std::wstring(L"0");
 
-            return std::to_wstring(static_cast<short int>(dValue / 6.0f + 0.5f));
+            return static_cast<int>(dValue / 6.0f + 0.5f);
         }
 
-        inline std::wstring CCompiledStyle::ConvertInToPx(const float& dValue) const
+        inline int CCompiledStyle::ConvertInToPx(const float& dValue) const
         {
-            if (dValue == 0.0f)
-                return std::wstring(L"0");
-
-            return std::to_wstring(static_cast<short int>(dValue * static_cast<float>(m_nDpi) + 0.5f));
+            return static_cast<short int>(dValue * static_cast<float>(m_nDpi) + 0.5f);
         }
 
-        inline std::wstring CCompiledStyle::ConvertPt(const std::wstring& sValue) const
+        inline int CCompiledStyle::ConvertPt(const std::wstring& sValue) const
         {
             if (sValue.empty())
-                return std::wstring();
+                return 0;
 
             const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"pt") - 1);
-            const float dValue = wcstof(sConvertValue.c_str(), NULL) * 2.0f;
+            float dValue = wcstof(sConvertValue.c_str(), NULL) * 2.0f;
 
             switch (m_UnitMeasure)
             {
@@ -1394,7 +1391,7 @@ namespace NSCSS
                     return ConvertPtToPx(dValue);
                 case Default:
                 case Point:
-                    return std::to_wstring(static_cast<short int>(dValue));
+                        return static_cast<int>(dValue + 0.5f);
                 case Cantimeter:
                     return ConvertPtToCm(dValue);
                 case Millimeter:
@@ -1405,53 +1402,38 @@ namespace NSCSS
                     return ConvertPtToPc(dValue);
             }
 
-            return std::wstring();
+            return 0;
         }
 
-        inline std::wstring CCompiledStyle::ConvertPtToIn(const float& dValue) const
+        inline int CCompiledStyle::ConvertPtToIn(const float& dValue) const
         {
-            if (dValue == 0.0f)
-                return std::wstring(L"0");
-
-            return std::to_wstring((dValue / 72.0f + 0.5f));
+            return static_cast<int>(dValue / 72.0f + 0.5f);
         }
 
-        inline std::wstring CCompiledStyle::ConvertPtToCm(const float& dValue) const
+        inline int CCompiledStyle::ConvertPtToCm(const float& dValue) const
         {
-            if (dValue == 0.0f)
-                return std::wstring(L"0");
-
-            return std::to_wstring(static_cast<short int>(dValue * 0.03528f + 0.5f));
+            return static_cast<int>(dValue * 0.03528f + 0.5f);
         }
 
-        inline std::wstring CCompiledStyle::ConvertPtToPc(const float& dValue) const
+        inline int CCompiledStyle::ConvertPtToPc(const float& dValue) const
         {
-            if (dValue == 0.0f)
-                return std::wstring(L"0");
-
-            return std::to_wstring(static_cast<short int>(dValue / 12.0f + 0.5f));
+            return static_cast<int>(dValue / 12.0f + 0.5f);
         }
 
-        inline std::wstring CCompiledStyle::ConvertPtToMm(const float& dValue) const
+        inline int CCompiledStyle::ConvertPtToMm(const float& dValue) const
         {
-            if (dValue == 0.0f)
-                return std::wstring(L"0");
-
-            return std::to_wstring((dValue * 0.3528f + 0.5f));
+            return static_cast<int>(dValue * 0.3528f + 0.5f);
         }
 
-        inline std::wstring CCompiledStyle::ConvertPtToPx(const float& dValue) const
+        inline int CCompiledStyle::ConvertPtToPx(const float& dValue) const
         {
-            if (dValue == 0.0f)
-                return std::wstring(L"0");
-
-            return std::to_wstring(static_cast<short int>(static_cast<float>(m_nDpi) / 72.0f * dValue + 0.5f));
+            return static_cast<short int>(static_cast<float>(m_nDpi) / 72.0f * dValue + 0.5f);
         }
 
-        inline std::wstring CCompiledStyle::ConvertPc(const std::wstring& sValue) const
+        inline int CCompiledStyle::ConvertPc(const std::wstring& sValue) const
         {
             if (sValue.empty())
-                return std::wstring();
+                return 0;
 
             const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"pc") - 1);
             const float dValue = wcstof(sConvertValue.c_str(), NULL) * 2.0f;
@@ -1470,50 +1452,35 @@ namespace NSCSS
                 case Inch:
                     return ConvertPcToIn(dValue);
                 case Peak:
-                    return std::to_wstring(static_cast<short int>(dValue));
+                    return static_cast<int>(dValue);
             }
 
-            return std::wstring();
+            return 0;
         }
 
-        inline std::wstring CCompiledStyle::ConvertPcToIn(const float& dValue) const
+        inline int CCompiledStyle::ConvertPcToIn(const float& dValue) const
         {
-            if (dValue == 0.0f)
-                return std::wstring(L"0");
-
-            return std::to_wstring(static_cast<short int>(dValue / 6.0f + 0.5f));
+            return static_cast<int>(dValue / 6.0f + 0.5f);
         }
 
-        inline std::wstring CCompiledStyle::ConvertPcToCm(const float& dValue) const
+        inline int CCompiledStyle::ConvertPcToCm(const float& dValue) const
         {
-            if (dValue == 0.0f)
-                return std::wstring(L"0");
-
-            return std::to_wstring(static_cast<short int>(dValue * 0.423f + 0.5f));
+            return static_cast<int>(dValue * 0.423f + 0.5f);
         }
 
-        inline std::wstring CCompiledStyle::ConvertPcToPt(const float& dValue) const
+        inline int CCompiledStyle::ConvertPcToPt(const float& dValue) const
         {
-            if (dValue == 0.0f)
-                return std::wstring(L"0");
-
-            return std::to_wstring(static_cast<short int>(dValue * 12.0f + 0.5f));
+            return static_cast<int>(dValue * 12.0f + 0.5f);
         }
 
-        inline std::wstring CCompiledStyle::ConvertPcToMm(const float& dValue) const
+        inline int CCompiledStyle::ConvertPcToMm(const float& dValue) const
         {
-            if (dValue == 0.0f)
-                return std::wstring(L"0");
-
-            return std::to_wstring(static_cast<short int>(dValue * 4.23f + 0.5f));
+            return static_cast<int>(dValue * 4.23f + 0.5f);
         }
 
-        inline std::wstring CCompiledStyle::ConvertPcToPx(const float& dValue) const
+        inline int CCompiledStyle::ConvertPcToPx(const float& dValue) const
         {
-            if (dValue == 0.0f)
-                return std::wstring(L"0");
-
-            return std::to_wstring(static_cast<short int>(static_cast<float>(m_nDpi) / 6.0f * dValue + 0.5f));
+            return static_cast<int>(static_cast<float>(m_nDpi) / 6.0f * dValue + 0.5f);
         }
     }
 

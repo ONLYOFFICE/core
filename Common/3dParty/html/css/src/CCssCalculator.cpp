@@ -46,7 +46,17 @@ namespace NSCSS
 
     void CCssCalculator::SetBodyTree(const CTree &oTree)
     {
-        m_pInternal->SetBodyTree(oTree);
+            m_pInternal->SetBodyTree(oTree);
+    }
+
+    void CCssCalculator::SetSizeSourceWindow(const CSizeWindow &oSizeWindow)
+    {
+            m_pInternal->SetSizeSourceWindow(oSizeWindow);
+    }
+
+    void CCssCalculator::SetSizeDeviceWindow(const CSizeWindow &oSizeWindow)
+    {
+            m_pInternal->SetSizeDeviceWindow(oSizeWindow);
     }
 
     UnitMeasure CCssCalculator::GetUnitMeasure() const

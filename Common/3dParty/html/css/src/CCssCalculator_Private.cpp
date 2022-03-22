@@ -326,13 +326,19 @@ namespace NSCSS
             oStyle.SetUnitMeasure(m_UnitMeasure);
             oStyle.SetID(arSelectors.back().m_sName + ((!arSelectors.back().m_sClass.empty()) ? L'.' + arSelectors.back().m_sClass : L"") + ((arSelectors.back().m_sId.empty()) ? L"" : L'#' + arSelectors.back().m_sId) + L'-' + std::to_wstring(++m_nCountNodes));
 
+            oStyle.SetSizeDeviceWindow(m_oDeviceWindow);
+            oStyle.SetSizeSourceWindow(m_oSourceWindow);
+
             return oStyle;
         }
 
-        CCompiledStyle *oStyle = new CCompiledStyle();
+        CCompiledStyle *pStyle = new CCompiledStyle();
 
-        oStyle->SetDpi(m_nDpi);
-        oStyle->SetUnitMeasure(m_UnitMeasure);
+        pStyle->SetDpi(m_nDpi);
+        pStyle->SetUnitMeasure(m_UnitMeasure);
+
+        pStyle->SetSizeDeviceWindow(m_oDeviceWindow);
+        pStyle->SetSizeSourceWindow(m_oSourceWindow);
 
         std::vector<std::wstring> arWords;
         arWords.reserve(arSelectors.size() * 2);
@@ -345,10 +351,10 @@ namespace NSCSS
             arWords.push_back(oNode->m_sName);
 
             if (oNode->m_sName == L"td")
-                oStyle->m_pMargin.SetPermission(false);
+                pStyle->m_pMargin.SetPermission(false);
 
             if (oNode->m_sName == L"table")
-                oStyle->m_pBorder.Block();
+                pStyle->m_pBorder.Block();
 
             if (!oNode->m_sClass.empty())
             {
@@ -415,7 +421,7 @@ namespace NSCSS
             sName = arWords.back();
             arWords.pop_back();
             arNextNodes.push_back(sName);
-            oStyle->AddParent(sName);
+            pStyle->AddParent(sName);
 
             const std::map<std::wstring, CElement*>::const_iterator oFindName = m_mData.find(sName);
             std::map<std::wstring, CElement*>::const_iterator oFindId;
@@ -497,24 +503,24 @@ namespace NSCSS
             }
 
             for (const CElement* oElement : arFindElements)
-                oStyle->AddStyle(oElement->GetStyle(), i + 1);
+                pStyle->AddStyle(oElement->GetStyle(), i + 1);
 
             std::map<StatistickElement, unsigned int>::const_iterator oFindCountStyle = m_mStatictics->find(StatistickElement{StatistickElement::IsStyle, arSelectors[i].m_sStyle});
 
             if(oFindCountStyle != m_mStatictics->end())
                 if ((bIsSettings && oFindCountStyle->second <  MaxNumberRepetitions) ||
                    (!bIsSettings && oFindCountStyle->second >= MaxNumberRepetitions))
-                    oStyle->AddStyle(arSelectors[i].m_sStyle, i + 1,  true);
+                    pStyle->AddStyle(arSelectors[i].m_sStyle, i + 1,  true);
 
         }
 
         if (!bIsSettings)
         {
-            oStyle->SetID(arSelectors.back().m_sName + ((!arSelectors.back().m_sClass.empty()) ? L'.' + arSelectors.back().m_sClass : L"") + ((arSelectors.back().m_sId.empty()) ? L"" : L'#' + arSelectors.back().m_sId) + L'-' + std::to_wstring(++m_nCountNodes));
-            m_mUsedStyles[arSelectors] = oStyle;
+            pStyle->SetID(arSelectors.back().m_sName + ((!arSelectors.back().m_sClass.empty()) ? L'.' + arSelectors.back().m_sClass : L"") + ((arSelectors.back().m_sId.empty()) ? L"" : L'#' + arSelectors.back().m_sId) + L'-' + std::to_wstring(++m_nCountNodes));
+            m_mUsedStyles[arSelectors] = pStyle;
         }
 
-        return *oStyle;
+        return *pStyle;
     }
 
     void CCssCalculator_Private::AddStyles(const std::string &sStyle)
@@ -558,6 +564,16 @@ namespace NSCSS
         CTree::CountingNumberRepetitions(oTree, *m_mStatictics);
     }
 
+    void CCssCalculator_Private::SetSizeSourceWindow(const CSizeWindow &oSizeWindow)
+    {
+            m_oSourceWindow = oSizeWindow;
+    }
+
+    void CCssCalculator_Private::SetSizeDeviceWindow(const CSizeWindow &oSizeWindow)
+    {
+            m_oDeviceWindow = oSizeWindow;
+    }
+
     void CCssCalculator_Private::SetUnitMeasure(const UnitMeasure& nType)
     {
         m_UnitMeasure = nType;
@@ -587,6 +603,9 @@ namespace NSCSS
 
         m_mData.clear();
         m_arFiles.clear();
+
+        m_oDeviceWindow.Clear();
+        m_oSourceWindow.Clear();
     }
 }
 inline static std::wstring StringifyValueList(const KatanaArray* oValues)

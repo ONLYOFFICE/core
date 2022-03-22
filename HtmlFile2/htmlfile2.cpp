@@ -98,7 +98,16 @@ private:
     NSStringUtils::CStringBuilder m_oNumberXml;  // numbering.xml
 public:
 
-    CHtmlFile2_Private() : m_nImageId(1), m_nFootnoteId(1), m_nHyperlinkId(1), m_nCrossId(1), m_nNumberingId(1) {}
+    CHtmlFile2_Private() : m_nImageId(1), m_nFootnoteId(1), m_nHyperlinkId(1), m_nCrossId(1), m_nNumberingId(1)
+    {
+            //Установим размер исходного и нового окна для Css калькулятора (должны быть одинаковые единицы измерения)
+            //Это нужно для масштабирования некоторых значений
+            //Пусть исходное окно будет 1366 x 0 px (0 в высоте задан, так как высота может быть любой)
+            //Новое окно 210 x 0 мм (0 в высоте, так как у исходного окна также 0)
+            //Переведем мм в px -> 210 * (DPI / 25.4)
+            m_oStylesCalculator.SetSizeSourceWindow(NSCSS::CSizeWindow(1366, 0));
+            m_oStylesCalculator.SetSizeDeviceWindow(NSCSS::CSizeWindow(210 * (m_oStylesCalculator.GetDpi() / 25.4), 0));
+    }
 
     ~CHtmlFile2_Private()
     {

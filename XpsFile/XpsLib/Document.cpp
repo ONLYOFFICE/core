@@ -385,7 +385,7 @@ namespace XPS
 						else if (sName == L"dc:subject")
 							sName = L"Subject";
 						else if (sName == L"dc:creator")
-							sName = L"Creator";
+                            sName = L"Author";
 						else if (sName == L"dcterms:created")
 							sName = L"CreationDate";
 						else if (sName == L"dcterms:modified")

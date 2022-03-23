@@ -53,6 +53,21 @@ bool COfficeFileFormatChecker::isRtfFormatFile(unsigned char* pBuffer,int dwByte
 
 	return false;
 }
+bool COfficeFileFormatChecker::isMultiPartsHtmlFormatFile(unsigned char* pBuffer, int dwBytes)
+{
+	if (pBuffer == NULL) return false;
+
+	const char *contentTypeFormatLine1 = "Content-Type: multipart/related";
+	const char *contentTypeFormatLine2 = "Content-Type: text/html"; // может быть и вне заданого буфера (todooo)
+
+	std::string xml_string((char*)pBuffer, dwBytes);
+
+	if ((std::string::npos != xml_string.find(contentTypeFormatLine1)) && (std::string::npos != xml_string.find(contentTypeFormatLine2)))
+	{
+		return true;
+	}
+	return false;
+}
 bool COfficeFileFormatChecker::isHtmlFormatFile(unsigned char* pBuffer, int dwBytes, bool testCloseTag)
 {
 	if (pBuffer == NULL || dwBytes < 4) return false;
@@ -93,7 +108,7 @@ bool COfficeFileFormatChecker::isHtmlFormatFile(unsigned char* pBuffer, int dwBy
 			}
 		}
 	}
-    return false;
+	return false;
 }
 
 bool COfficeFileFormatChecker::isBinaryDoctFormatFile	(unsigned char* pBuffer,int dwBytes)
@@ -512,6 +527,10 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & _fileName)
 		else if (isXlsFlatFormatFile(buffer, sizeRead))// min size - 2
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS; // without compaund container
+		}
+		else if (isMultiPartsHtmlFormatFile(buffer, sizeRead))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT;
 		}
 //------------------------------------------------------------------------------------------------
 		file.CloseFile();

@@ -859,5 +859,8 @@
     <ClCompile Include="..\Records\BlipEntityAtom.cpp">
       <Filter>Records</Filter>
     </ClCompile>
+    <ClCompile Include="..\PPTXWriter\BulletsConverter.cpp">
+      <Filter>OOXWriter</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

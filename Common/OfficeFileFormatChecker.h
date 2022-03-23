@@ -85,6 +85,7 @@ public:
 
 	bool isRtfFormatFile	(unsigned char* pBuffer,int dwBytes);
 	bool isHtmlFormatFile	(unsigned char* pBuffer,int dwBytes, bool testCloseTag);
+	bool isMultiPartsHtmlFormatFile(unsigned char* pBuffer, int dwBytes);
 	bool isPdfFormatFile	(unsigned char* pBuffer,int dwBytes, std::wstring & documentID);
 	bool isOpenOfficeFlatFormatFile(unsigned char* pBuffer,int dwBytes);
 

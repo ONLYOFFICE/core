@@ -494,6 +494,7 @@
     <ClCompile Include="..\..\..\ASCOfficePPTXFile\Editor\Drawing\TextAttributesEx.cpp" />
     <ClCompile Include="..\PPTFormatLib.cpp" />
     <ClCompile Include="..\PPTXWriter\Animation.cpp" />
+    <ClCompile Include="..\PPTXWriter\BulletsConverter.cpp" />
     <ClCompile Include="..\PPTXWriter\Converter.cpp" />
     <ClCompile Include="..\PPTXWriter\ShapeWriter.cpp" />
     <ClCompile Include="..\PPTXWriter\TableWriter.cpp" />

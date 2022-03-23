@@ -67,7 +67,7 @@ int main()
     dHeight *= 25.4 / dPageDpiY;
     pdfWriter.put_Width(dWidth);
     pdfWriter.put_Height(dHeight);
-    pReader->DrawPageOnRenderer(&pdfWriter, 0, NULL);
+    TEST2(&pdfWriter);
     pdfWriter.EndCommand(c_nPageType);
     pdfWriter.SaveToFile(sDstFile);
     */
@@ -75,7 +75,7 @@ int main()
     {
         if (pReader->EditPage(0))
         {
-            TEST(&pdfWriter);
+            TEST2(&pdfWriter);
         }
 
         /*

@@ -459,9 +459,17 @@ return 0;
         pagesRefObj.free();
         catDict.free();
 
+        int nCryptAlgorithm = -1;
         std::wstring sEncrypt = L"<Encrypt";
         if (xref->isEncrypted())
         {
+            CryptAlgorithm encAlgorithm;
+            GBool ownerPasswordOk;
+            int permFlags, keyLength, encVersion;
+            xref->getEncryption(&permFlags, &ownerPasswordOk, &keyLength,
+                          &encVersion, &encAlgorithm);
+            nCryptAlgorithm = encAlgorithm;
+
             Object encrypt, ID, ID1;
             if (xref->getTrailerDict()->dictLookup("Encrypt", &encrypt)->isDict())
                 XMLConverter::DictToXml(&encrypt, sEncrypt, true);
@@ -493,7 +501,7 @@ return 0;
         if (sEncrypt == L"<Encrypt></Encrypt>")
             sEncrypt.clear();
 
-        return m_pPdfWriter->EditPdf(xref->getLastXRefPos(), xref->getNumObjects(), sPageTree, std::make_pair(topPagesRef.num, topPagesRef.gen), sEncrypt, sPassword);
+        return m_pPdfWriter->EditPdf(xref->getLastXRefPos(), xref->getNumObjects(), sPageTree, std::make_pair(topPagesRef.num, topPagesRef.gen), sEncrypt, sPassword, nCryptAlgorithm);
     }
     bool CPdfReader::EditPage(int nPageIndex)
     {

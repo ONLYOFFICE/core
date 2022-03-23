@@ -65,7 +65,7 @@ namespace PdfWriter
         unsigned int CryptBuf(const BYTE* pSrc, BYTE* pDst, unsigned int unLen);
         void SetKeyLength(unsigned int unLen);
         void SetPasswords(const std::string &sUserPassword, const std::string &sOwnerPassword);
-        bool MakeFileKey();
+        bool MakeFileKey(int nCryptAlgorithm);
 
         SET_BYTE_FUNC(SetID, m_anEncryptID);
         SET_BYTE_FUNC(SetO,  m_anOwnerKey);

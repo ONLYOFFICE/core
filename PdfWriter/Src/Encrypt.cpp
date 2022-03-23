@@ -106,7 +106,7 @@ namespace PdfWriter
     class CEncrypt::Impl
     {
     public:
-        Impl() : aesEncryption(NULL), streamEncryption(NULL)
+        Impl() : m_nCryptAlgorithm(2), aesEncryption(NULL), rc4Encryption(NULL), streamEncryption(NULL)
 		{
 			m_unEncryptionKeyLength = 32;
 			MemSet(m_anEncryptionKey, 0, m_unEncryptionKeyLength);
@@ -117,6 +117,8 @@ namespace PdfWriter
                 delete streamEncryption;
             if (aesEncryption)
                 delete aesEncryption;
+            if (rc4Encryption)
+                delete rc4Encryption;
         }
         void Reset()
         {
@@ -124,6 +126,8 @@ namespace PdfWriter
                 delete streamEncryption;
             if (aesEncryption)
                 delete aesEncryption;
+            if (rc4Encryption)
+                delete rc4Encryption;
 
 			CryptoPP::RandomPool prng;
 			CryptoPP::SecByteBlock iv(16);
@@ -131,21 +135,68 @@ namespace PdfWriter
 			prng.IncorporateEntropy(iv, iv.size());
 
 			memcpy(streamInitialization, iv, iv.size());
+
+            if (m_nCryptAlgorithm != 2) // cryptAES256
+            {
+                memcpy(m_anObjectKey, m_anEncryptionKey, m_unEncryptionKeyLength);
+
+                m_anObjectKey[m_unEncryptionKeyLength + 0] =  m_nObjNum & 0xff;
+                m_anObjectKey[m_unEncryptionKeyLength + 1] = (m_nObjNum >> 8) & 0xff;
+                m_anObjectKey[m_unEncryptionKeyLength + 2] = (m_nObjNum >> 16) & 0xff;
+                m_anObjectKey[m_unEncryptionKeyLength + 3] =  m_nObjGen & 0xff;
+                m_anObjectKey[m_unEncryptionKeyLength + 4] = (m_nObjGen >> 8) & 0xff;
+
+                int nLen = 0;
+                if (m_nCryptAlgorithm == 1) // cryptAES
+                {
+                    m_anObjectKey[m_unEncryptionKeyLength + 5] = 0x73; // 's'
+                    m_anObjectKey[m_unEncryptionKeyLength + 6] = 0x41; // 'A'
+                    m_anObjectKey[m_unEncryptionKeyLength + 7] = 0x6c; // 'l'
+                    m_anObjectKey[m_unEncryptionKeyLength + 8] = 0x54; // 'T'
+
+                    nLen = m_unEncryptionKeyLength + 9;
+                }
+                else if (m_nCryptAlgorithm == 0) // cryptRC4
+                    nLen = m_unEncryptionKeyLength + 5;
+                MD5(m_anObjectKey, nLen, m_anObjectKey);
+
+                if ((m_unObjectKeyLength = m_unEncryptionKeyLength + 5) > 16)
+                    m_unObjectKeyLength = 16;
+
+                if (m_nCryptAlgorithm == 0) // cryptRC4
+                {
+                    rc4Encryption = new CryptoPP::ARC4::Encryption();
+                    rc4Encryption->SetKey(m_anObjectKey, m_unObjectKeyLength);
+                }
+                else if (m_nCryptAlgorithm == 1) // cryptAES
+                {
+                    aesEncryption       = new CryptoPP::AES::Encryption(m_anObjectKey, m_unObjectKeyLength);
+                    streamEncryption    = new CryptoPP::CBC_Mode_ExternalCipher::Encryption( *aesEncryption, streamInitialization);
+                }
+
+                return;
+            }
 			
-			aesEncryption       = new CryptoPP::AES::Encryption(m_anEncryptionKey, 32);
+			aesEncryption       = new CryptoPP::AES::Encryption(m_anEncryptionKey, m_unEncryptionKeyLength);
             streamEncryption    = new CryptoPP::CBC_Mode_ExternalCipher::Encryption( *aesEncryption, streamInitialization);
         }
 
         std::string     m_sOwnerPassword;
         std::string     m_sUserPassword;
-        BYTE			m_anEncryptionKey[32];
+        BYTE            m_anEncryptionKey[32];
         unsigned int    m_unEncryptionKeyLength;
+        BYTE            m_anObjectKey[32];
+        unsigned int    m_unObjectKeyLength;
+        int             m_nCryptAlgorithm;
+        int             m_nObjNum;
+        int             m_nObjGen;
 
-		unsigned char streamInitialization[16];
-		CryptoPP::AES::Encryption       *aesEncryption;
+        unsigned char streamInitialization[16];
+        CryptoPP::AES::Encryption       *aesEncryption;
+        CryptoPP::ARC4::Encryption      *rc4Encryption;
         CryptoPP::StreamTransformation  *streamEncryption;
     };
-    CEncrypt::CEncrypt() : m_unKeyLen(32)
+    CEncrypt::CEncrypt() : m_unKeyLen(32), m_unVersion(5), m_unRevision(6)
     {
         impl = new Impl();
 		
@@ -162,8 +213,9 @@ namespace PdfWriter
         impl->m_sUserPassword = sUserPassword;
         impl->m_sOwnerPassword = sOwnerPassword;
     }
-    bool CEncrypt::MakeFileKey()
+    bool CEncrypt::MakeFileKey(int nCryptAlgorithm)
     {
+        impl->m_nCryptAlgorithm = nCryptAlgorithm;
         if (m_unRevision == 5 || m_unRevision == 6)
         {
             CryptoPP::SHA256 hash;
@@ -233,11 +285,10 @@ namespace PdfWriter
                 }
             }
         }
+        else if (impl->m_sOwnerPassword.empty())
+            return MakeFileKey2(impl->m_sUserPassword);
         else
         {
-            if (impl->m_sOwnerPassword.empty())
-                return MakeFileKey2(impl->m_sUserPassword);
-
             int nLen = impl->m_sOwnerPassword.length();
             unsigned char arrOwnerPass[32];
             if (nLen < 32)
@@ -534,6 +585,8 @@ namespace PdfWriter
 	}
 	void CEncrypt::InitKey(unsigned int unObjectId, unsigned short unGenNo)
 	{
+        impl->m_nObjNum = unObjectId;
+        impl->m_nObjGen = unGenNo;
 	}
 	void CEncrypt::Reset()
     {
@@ -542,6 +595,14 @@ namespace PdfWriter
  #define PADDING_SIZE 16
          unsigned int CEncrypt::CryptBuf(const BYTE* pSrc, BYTE* pDst, unsigned int unLen)
         {
+            if (impl->m_nCryptAlgorithm == 0) // cryptRC4
+            {
+                impl->rc4Encryption->ProcessData(pDst, pSrc, unLen);
+                // the algorithm does not change the length of the data
+                return unLen;
+            }
+            // cryptAES & cryptAES256
+
             // Note that the pad is present when M is evenly divisible by 16
             unsigned int unLenOut = (unLen / PADDING_SIZE + 1) * PADDING_SIZE;
 
@@ -555,7 +616,7 @@ namespace PdfWriter
             {
 				unsigned char empty[16] = {};
 				// EXAMPLE A 9-byte message has a pad of 7 bytes, each with the value 0x07.
-				memset(empty, unLenOut - unLen, 16);
+				MemSet(empty, unLenOut - unLen, 16);
 				stfEncryption.Put2(empty, unLenOut - unLen, 0, true);
 
             }

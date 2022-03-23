@@ -1054,7 +1054,7 @@ namespace PdfWriter
 
 		return (!!m_pAcroForm);
 	}
-	bool CDocument::EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sPageTree, const std::pair<int, int>& pPageTree, const std::wstring& sEncrypt, const std::wstring& sPassword)
+	bool CDocument::EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sPageTree, const std::pair<int, int>& pPageTree, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm)
 	{
 		Close();
 
@@ -1074,7 +1074,7 @@ namespace PdfWriter
 		{
 			m_pEncryptDict = new CEncryptDict(sEncrypt);
 			m_pEncryptDict->SetPasswords(sPassword, sPassword);
-			m_pEncryptDict->UpdateKey();
+			m_pEncryptDict->UpdateKey(nCryptAlgorithm);
 			m_bEncrypt = true;
 		}
 

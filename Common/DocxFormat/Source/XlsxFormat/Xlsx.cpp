@@ -82,7 +82,6 @@ void OOX::Spreadsheet::CXlsx::init()
     m_nLastReadRow      = 0;
     m_nLastReadCol      = -1;
     m_bNeedCalcChain    = true;
-	m_bIsBin			= false;
 
     bDeleteWorkbook			= false;
     bDeleteSharedStrings	= false;

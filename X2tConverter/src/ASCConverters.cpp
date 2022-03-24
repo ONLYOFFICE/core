@@ -3078,7 +3078,6 @@ namespace NExtractTools
 		oXlsb.Read(OOX::CPath(sXlsxDir));
 
 		OOX::CContentTypes oContentTypes;
-		oXlsb.m_bIsBin = true;
 		nRes = oXlsb.WriteNative(sTempUnpackedXLSB, oContentTypes) ? S_OK : AVS_FILEUTILS_ERROR_CONVERT;
 
 		if (SUCCEEDED_X2T(nRes))

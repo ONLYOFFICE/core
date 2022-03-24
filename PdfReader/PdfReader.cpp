@@ -479,17 +479,8 @@ return 0;
 
             if (xref->getTrailerDict()->dictLookup("ID", &ID)->isArray() && ID.arrayGet(0, &ID1)->isString())
             {
-                GString* str = ID1.getString();
-
-                sEncrypt += L"<ID type=\"Binary\" num=\"";
-                sEncrypt += std::to_wstring(str->getLength());
-                sEncrypt += L"\">";
-                for (int nIndex = 0; nIndex < str->getLength(); ++nIndex)
-                {
-                    sEncrypt += L"<i>";
-                    sEncrypt += std::to_wstring((int)str->getChar(nIndex));
-                    sEncrypt += L"</i>";
-                }
+                sEncrypt += L"<ID";
+                XMLConverter::DictToXml(&ID1, sEncrypt, true);
                 sEncrypt += L"</ID>";
             }
             ID.free();
@@ -522,6 +513,10 @@ return 0;
         sPage += L"</Page>";
         pageObj.free();
         pageRefObj.free();
+
+        Page* pPage = m_pInternal->m_pPDFDocument->getCatalog()->getPage(nPageIndex);
+        double ctm[6];
+        pPage->getDefaultCTM(ctm, 72, 72, 0, gTrue, gFalse);
 
         return m_pPdfWriter->EditPage(sPage, std::make_pair(pPageRef->num, pPageRef->gen));
     }

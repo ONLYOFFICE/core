@@ -264,6 +264,7 @@ namespace PdfWriter
 			CObjectBase* pExtGStates = GetResourcesItem()->Get("ExtGState");
 			if (pExtGStates && pExtGStates->GetType() == object_type_DICT)
 				m_pExtGStates = (CDictObject*)pExtGStates;
+			m_unExtGStatesCount = m_pExtGStates->GetSize();
 		}
 
 		m_pStream = NULL;
@@ -954,8 +955,7 @@ namespace PdfWriter
 			char *pEndPointer = sExtGrStateName + LIMIT_MAX_NAME_LEN;
 
 			pPointer = (char*)StrCpy(sExtGrStateName, "E", pEndPointer);
-			ItoA(pPointer, m_unExtGStatesCount + 1, pEndPointer);
-			m_unExtGStatesCount++;
+			ItoA(pPointer, ++m_unExtGStatesCount, pEndPointer);
 			m_pExtGStates->Add(sExtGrStateName, pState);
 			sKey = m_pExtGStates->GetKey(pState);
 		}

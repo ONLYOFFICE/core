@@ -1123,6 +1123,7 @@ namespace PdfWriter
 			pEncrypt = m_pEncryptDict->GetEncrypt();
 
 		// Если m_pTrailer поток перекрестных ссылок, то при дозаписи тоже должен быть поток
+		m_pTrailer->Remove("XRefStm");
 		if (m_pTrailer->Get("Type"))
 		{
 			m_pTrailer->Remove("Length");

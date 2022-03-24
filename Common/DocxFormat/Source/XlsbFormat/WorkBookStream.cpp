@@ -69,7 +69,7 @@ WorkBookStream::~WorkBookStream()
 
 BaseObjectPtr WorkBookStream::clone()
 {
-        return BaseObjectPtr(new WorkBookStream(*this));
+	return BaseObjectPtr(new WorkBookStream(*this));
 }
 
 const bool WorkBookStream::loadContent(BinProcessor& proc)
@@ -88,7 +88,7 @@ const bool WorkBookStream::loadContent(BinProcessor& proc)
             {
                 if (proc.optional<BeginBook>())
                 {
-                    m_BrtBeginBook = elements_.back();
+					m_bBeginBook = true;
                     elements_.pop_back();
                 }
             }break;
@@ -301,7 +301,7 @@ const bool WorkBookStream::loadContent(BinProcessor& proc)
             {
                 if (proc.optional<EndBook>())
                 {
-                    m_BrtEndBook = elements_.back();
+					m_bEndBook = true;
                     elements_.pop_back();
                 }
             }break;
@@ -312,6 +312,78 @@ const bool WorkBookStream::loadContent(BinProcessor& proc)
 			}break;
 		}
 	}
+
+	return true;
+}
+
+const bool WorkBookStream::saveContent(XLS::BinProcessor & proc)
+{
+	proc.mandatory<BeginBook>();
+
+	if (m_BrtFileVersion != nullptr)
+		proc.mandatory(*m_BrtFileVersion);
+		
+	if (m_BrtFileSharingIso != nullptr)
+		proc.mandatory(*m_BrtFileSharingIso);
+
+	if (m_BrtFileSharing != nullptr)
+		proc.mandatory(*m_BrtFileSharing);
+
+	if (m_BrtWbProp != nullptr)
+		proc.mandatory(*m_BrtWbProp);
+
+	if (m_BrtBookProtectionIso != nullptr)
+		proc.mandatory(*m_BrtBookProtectionIso);
+
+	if (m_BrtBookProtection != nullptr)
+		proc.mandatory(*m_BrtBookProtection);
+
+	if (m_ACABSPATH != nullptr)
+		proc.mandatory(*m_ACABSPATH);
+
+	if (m_BOOKVIEWS != nullptr)
+		proc.mandatory(*m_BOOKVIEWS);
+
+	if (m_BUNDLESHS != nullptr)
+		proc.mandatory(*m_BUNDLESHS);
+
+	if (m_FNGROUP != nullptr)
+		proc.mandatory(*m_FNGROUP);
+
+	if (m_EXTERNALS != nullptr)
+		proc.mandatory(*m_EXTERNALS);
+
+	for(auto &item: m_arBrtName)
+	{
+		proc.mandatory(*item);
+	}
+
+	if (m_BrtCalcProp != nullptr)
+		proc.mandatory(*m_BrtCalcProp);
+	
+	if (m_BrtOleSize != nullptr)
+		proc.mandatory(*m_BrtOleSize);
+
+	if (m_PIVOTCACHEIDS != nullptr)
+		proc.mandatory(*m_PIVOTCACHEIDS);
+	
+	for (auto &item : m_arBrtUserBookView)
+	{
+		proc.mandatory(*item);
+	}
+
+	if (m_BrtWebOpt != nullptr)
+		proc.mandatory(*m_BrtWebOpt);
+	
+	for (auto &item : m_arBrtFileRecover)
+	{
+		proc.mandatory(*item);
+	}
+	
+	if (m_FRTWORKBOOK != nullptr)
+		proc.mandatory(*m_FRTWORKBOOK);
+
+	proc.mandatory<EndBook>();
 
 	return true;
 }

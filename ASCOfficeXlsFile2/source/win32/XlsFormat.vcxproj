@@ -150,6 +150,7 @@
     <ClInclude Include="..\XlsFormat\Binary\CFRecordType.h" />
     <ClInclude Include="..\XlsFormat\Binary\CFStream.h" />
     <ClInclude Include="..\XlsFormat\Binary\CFStreamCacheReader.h" />
+    <ClInclude Include="..\XlsFormat\Binary\CFStreamCacheWriter.h" />
     <ClInclude Include="..\XlsFormat\Binary\CompoundFile.h" />
     <ClInclude Include="..\XlsFormat\Crypt\BiffDecoder_RCF.h" />
     <ClInclude Include="..\XlsFormat\Crypt\BinaryCodec_RCF.h" />
@@ -948,6 +949,7 @@
     <ClCompile Include="..\XlsFormat\Binary\CFRecordType.cpp" />
     <ClCompile Include="..\XlsFormat\Binary\CFStream.cpp" />
     <ClCompile Include="..\XlsFormat\Binary\CFStreamCacheReader.cpp" />
+    <ClCompile Include="..\XlsFormat\Binary\CFStreamCacheWriter.cpp" />
     <ClCompile Include="..\XlsFormat\Binary\CompoundFile.cpp" />
     <ClCompile Include="..\XlsFormat\Crypt\BiffDecoder_RCF.cpp" />
     <ClCompile Include="..\XlsFormat\Crypt\BinaryCodec_RCF.cpp" />

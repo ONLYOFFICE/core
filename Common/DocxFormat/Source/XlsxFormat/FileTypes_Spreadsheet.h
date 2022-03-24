@@ -44,6 +44,10 @@ namespace OOX
 												L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument");
 
+			const FileType WorkbookBin		(L"xl", L"workbook.bin",
+												L"application/vnd.ms-excel.main",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument");
+
 			const FileType WorkbookMacro	(L"xl", L"workbook.xml",
 												L"application/vnd.ms-excel.sheet.macroEnabled.main+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument");

@@ -82,6 +82,102 @@ namespace OOX
             {
                 ReadAttributes(obj);
             }
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::BookView*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if (m_oActiveTab.IsInit())
+						ptr->itabCur = m_oActiveTab->GetValue();
+					else
+						ptr->itabCur = 0;
+
+					if (m_oAutoFilterDateGrouping.IsInit())
+						ptr->fNoAFDateGroup = m_oAutoFilterDateGrouping->GetValue();
+					else
+						ptr->fNoAFDateGroup = true;
+
+					if (m_oFirstSheet.IsInit())
+						ptr->itabFirst = m_oFirstSheet->GetValue();
+					else
+						ptr->itabFirst = 0;
+
+					if (m_oMinimized.IsInit())
+						ptr->fIconic = m_oMinimized->GetValue();
+					else
+						ptr->fIconic = false;
+
+					if (m_oShowHorizontalScroll.IsInit())
+						ptr->fDspHScroll = m_oShowHorizontalScroll->GetValue();
+					else
+						ptr->fDspHScroll = true;
+
+					if (m_oShowVerticalScroll.IsInit())
+						ptr->fDspVScroll = m_oShowVerticalScroll->GetValue();
+					else
+						ptr->fDspVScroll = true;
+
+					if (m_oShowSheetTabs.IsInit())
+						ptr->fBotAdornment = m_oShowSheetTabs->GetValue();
+					else
+						ptr->fBotAdornment = true;
+
+					if (m_oTabRatio.IsInit())
+						ptr->wTabRatio = m_oTabRatio->GetValue();
+					else
+						ptr->wTabRatio = 600;
+
+					if (m_oWindowHeight.IsInit())
+						ptr->dyWn = m_oWindowHeight->GetValue();
+					else
+						ptr->dyWn = 0;
+
+					if (m_oWindowWidth.IsInit())
+						ptr->dxWn = m_oWindowWidth->GetValue();
+					else
+						ptr->dxWn = 0;
+
+					if (m_oXWindow.IsInit())
+						ptr->xWn = m_oXWindow->GetValue();
+					else
+						ptr->xWn = 0;
+
+					if (m_oYWindow.IsInit())
+						ptr->yWn = m_oYWindow->GetValue();
+					else
+						ptr->yWn = 0;
+
+					if (m_oVisibility.IsInit())
+					{
+						switch (m_oVisibility->GetValue())
+						{
+							case SimpleTypes::Spreadsheet::EVisibleType::visibleHidden:
+							{
+								ptr->fHidden = true;
+								ptr->fVeryHidden = false;
+							}
+							break;
+							case SimpleTypes::Spreadsheet::EVisibleType::visibleVeryHidden:
+							{
+								ptr->fHidden = true;
+								ptr->fVeryHidden = true;
+							}
+							break;
+							case SimpleTypes::Spreadsheet::EVisibleType::visibleVisible:
+							{
+								ptr->fHidden = false;
+								ptr->fVeryHidden = false;
+							}
+							break;
+						}
+					}
+					else
+					{
+						ptr->fHidden = false;
+						ptr->fVeryHidden = false;
+					}
+				}
+			}
 
 			virtual EElementType getType () const
 			{
@@ -115,25 +211,44 @@ namespace OOX
             void ReadAttributes(XLS::BaseObjectPtr& obj)
             {
                 auto ptr = static_cast<XLSB::BookView*>(obj.get());
-                m_oActiveTab                = ptr->itabCur;
-                m_oAutoFilterDateGrouping   = ptr->fNoAFDateGroup;
-                m_oFirstSheet               = ptr->itabFirst;
-                m_oMinimized                = ptr->fIconic;
-                m_oShowHorizontalScroll     = ptr->fDspHScroll;
-                m_oShowSheetTabs            = ptr->fBotAdornment;
-                m_oShowVerticalScroll       = ptr->fDspVScroll;
-                m_oTabRatio                 = ptr->wTabRatio;
-                m_oWindowHeight             = ptr->dyWn;
-                m_oWindowWidth              = ptr->dxWn;
-                m_oXWindow                  = (int)ptr->xWn;
-                m_oYWindow                  = (int)ptr->yWn;
+				if (ptr != nullptr)
+				{
+					if (ptr->itabCur != 0)
+						m_oActiveTab = ptr->itabCur;
 
-                if(ptr->fHidden)
-                    m_oVisibility = SimpleTypes::Spreadsheet::EVisibleType::visibleHidden;
-                else if(ptr->fVeryHidden)
-                    m_oVisibility = SimpleTypes::Spreadsheet::EVisibleType::visibleVeryHidden;
-                else if(!ptr->fHidden && !ptr->fVeryHidden)
-                    m_oVisibility = SimpleTypes::Spreadsheet::EVisibleType::visibleVisible;
+					if (ptr->fNoAFDateGroup != true)
+						m_oAutoFilterDateGrouping = ptr->fNoAFDateGroup;
+
+					if (ptr->itabFirst != 0)
+						m_oFirstSheet = ptr->itabFirst;
+					
+					if (ptr->fIconic != false)
+						m_oMinimized = ptr->fIconic;
+						
+					if (ptr->fDspHScroll != true)
+						m_oShowHorizontalScroll = ptr->fDspHScroll;
+
+					if (ptr->fDspVScroll != true)
+						m_oShowVerticalScroll = ptr->fDspVScroll;
+
+					if (ptr->fBotAdornment != true)
+						m_oShowSheetTabs = ptr->fBotAdornment;
+
+					if (ptr->wTabRatio != 600)
+						m_oTabRatio = ptr->wTabRatio;
+
+					m_oWindowHeight = ptr->dyWn;
+					m_oWindowWidth = ptr->dxWn;
+					m_oXWindow = (int)ptr->xWn;
+					m_oYWindow = (int)ptr->yWn;
+
+					if (ptr->fHidden)
+						m_oVisibility = SimpleTypes::Spreadsheet::EVisibleType::visibleHidden;
+					else if (ptr->fVeryHidden)
+						m_oVisibility = SimpleTypes::Spreadsheet::EVisibleType::visibleVeryHidden;
+					else if (!ptr->fHidden && !ptr->fVeryHidden)
+						m_oVisibility = SimpleTypes::Spreadsheet::EVisibleType::visibleVisible;
+				}
 
             }
 
@@ -215,6 +330,20 @@ namespace OOX
                     m_arrItems.push_back(new CWorkbookView(workbookView));
                 }
             }
+
+			void toBin(std::vector<XLS::BaseObjectPtr>& obj)
+			{
+				obj.reserve(m_arrItems.size());
+				for (size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					if (m_arrItems[i])
+					{
+						XLS::BaseObjectPtr item(new XLSB::BookView());
+						m_arrItems[i]->toBin(item);
+						obj.push_back(item);
+					}
+				}
+			}
 
 			virtual EElementType getType () const
 			{

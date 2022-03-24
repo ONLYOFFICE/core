@@ -132,6 +132,7 @@ private:
     const size_t readFromStream(const size_t num_of_records_min_necessary) override;
     const int GetRecordPosition() override;
     void SetRecordPosition(const int) override;
+
     boost::shared_ptr<NSBinPptxRW::CBinaryFileReader> binaryStream_;
 };
 } // namespace XLS

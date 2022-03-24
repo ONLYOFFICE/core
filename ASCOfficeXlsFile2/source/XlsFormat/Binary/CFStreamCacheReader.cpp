@@ -521,7 +521,9 @@ const size_t BinaryStreamCacheReader::readFromStream(const size_t num_of_records
 //Return current position in stream
 const int BinaryStreamCacheReader::GetRecordPosition()
 {
-    return binaryStream_->GetPos() - records_cache.front()->getDataSize() - records_cache.front()->getSizeOfRecordTypeRecordLength();
+	if(!records_cache.empty())
+		return binaryStream_->GetPos() - records_cache.front()->getDataSize() - records_cache.front()->getSizeOfRecordTypeRecordLength();
+	return 0;
 }
 
 void BinaryStreamCacheReader::SetRecordPosition(const int position)

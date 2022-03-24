@@ -85,7 +85,7 @@ namespace XLSB
             return true;
         };
 
-        BaseObjectPtr               m_ACUID;
+        //BaseObjectPtr               m_ACUID;
         BaseObjectPtr               m_BrtBookView;
         //std::vector<XLS::BaseObjectPtr>  m_arFRT;
     };
@@ -122,6 +122,19 @@ namespace XLSB
 
         return m_BrtBeginBookViews && !m_arBrtBookView.empty() && m_BrtEndBookViews;
     }
+
+	const bool BOOKVIEWS::saveContent(BinProcessor& proc)
+	{
+		proc.mandatory<BeginBookViews>();
+
+		for (auto &item : m_arBrtBookView)
+		{
+			proc.mandatory(*item);
+		}
+		proc.mandatory<EndBookViews>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

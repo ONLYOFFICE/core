@@ -33,6 +33,7 @@
 #include "BinProcessor.h"
 #include "../Binary/CFStream.h"
 #include "../Binary/CFStreamCacheReader.h"
+#include "../Binary/CFStreamCacheWriter.h"
 #include "../Logic/Biff_structures/BiffString.h"
 
 
@@ -262,6 +263,49 @@ void BinReaderProcessor::SetRecordPosition(const int position)
 {
   if (reader_)
       reader_->SetRecordPosition(position);
+}
+	
+// =========================== Writer ======================================
+
+
+BinWriterProcessor::BinWriterProcessor(StreamCacheWriterPtr writer, BaseObject* parent)
+	: writer_(writer),
+	BinProcessor(parent, writer ? writer->getGlobalWorkbookInfo() : NULL)
+{
+}
+
+const bool BinWriterProcessor::optional(BaseObject& object)
+{
+	return writeChild(object, false);
+}
+const bool BinWriterProcessor::mandatory(BaseObject& object)
+{
+	return writeChild(object, true);
+}
+
+// object_copy is necessary in case we haven't found the desired record and have to put it to the queue
+const bool BinWriterProcessor::writeChild(BaseObject& object, const bool is_mandatory)
+{
+	if (!writer_)
+		return false;
+
+	bool ret_val = false;
+	try
+	{
+		ret_val = object.write(writer_, parent_);
+		if (!ret_val && is_mandatory)
+		{
+			if (global_info_->decryptor)
+			{
+				if (global_info_->decryptor->IsVerify() == false)
+					return false;
+			}
+		}
+	}
+	catch (...)
+	{
+	}
+	return ret_val;
 }
 
 

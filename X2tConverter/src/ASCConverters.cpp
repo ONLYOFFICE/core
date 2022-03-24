@@ -3074,14 +3074,12 @@ namespace NExtractTools
 
 		_UINT32 nRes = 0;
 
-		std::wstring sToDir = NSDirectory::GetFolderPath(sTo);
+		OOX::Spreadsheet::CXlsb oXlsb;
+		oXlsb.Read(OOX::CPath(sXlsxDir));
 
-		BinXlsxRW::CXlsxSerializer m_oCXlsxSerializer;
-
-		m_oCXlsxSerializer.setIsNoBase64(params.getIsNoBase64());
-		m_oCXlsxSerializer.setFontDir(params.getFontPath());
-
-		nRes = m_oCXlsxSerializer.saveToFile(sTo, sXlsxDir, params.getXmlOptions());
+		OOX::CContentTypes oContentTypes;
+		oXlsb.m_bIsBin = true;
+		nRes = oXlsb.WriteNative(sTempUnpackedXLSB, oContentTypes) ? S_OK : AVS_FILEUTILS_ERROR_CONVERT;
 
 		if (SUCCEEDED_X2T(nRes))
 		{

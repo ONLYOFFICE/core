@@ -369,6 +369,13 @@ void CFRecord::skipNunBytes(const size_t n)
 	}
 }
 
+void CFRecord::reserveNunBytes(const size_t n)
+{
+	if (rdPtr + n < MAX_RECORD_SIZE)
+		for (size_t i = 0; i < n; ++i)
+			intData[rdPtr++] = 0;
+}
+
 
 void CFRecord::RollRdPtrBack(const size_t n)
 {
@@ -385,11 +392,22 @@ void CFRecord::resetPointerToBegin()
 	rdPtr = 0;
 }
 
+void CFRecord::save(NSBinPptxRW::CXlsbBinaryWriter& writer)
+{
+	writer.XlsbStartRecord(type_id_, rdPtr);
+	writer.WriteBYTEArray((BYTE*)&intData[0], rdPtr);
+}
 
-CFRecord& CFRecord::operator>>(bool& val)
+CFRecord& CFRecord::operator >> (bool& val)
 {
 	throw;// EXCEPT::LE::WrongAPIUsage("This function may only be called by mistake.", __FUNCTION__);
 }
+
+CFRecord& CFRecord::operator << (bool& val)
+{
+	throw;// EXCEPT::LE::WrongAPIUsage("This function may only be called by mistake.", __FUNCTION__);
+}
+
 
 #if !defined(_WIN32) && !defined(_WIN64)
 CFRecord& operator>>(CFRecord & record, std::string & str)

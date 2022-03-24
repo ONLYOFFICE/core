@@ -56,11 +56,13 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+        const bool loadContent(XLS::BinProcessor& proc) override;
+
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         static const XLS::ElementType type = XLS::typeWorkbookStreamObject;
 
-        XLS::BaseObjectPtr               m_BrtBeginBook;
+        bool							 m_bBeginBook;
         XLS::BaseObjectPtr               m_BrtFileVersion;
         XLS::BaseObjectPtr               m_BrtFileSharingIso;
         XLS::BaseObjectPtr               m_BrtFileSharing;
@@ -76,7 +78,7 @@ namespace XLSB
         XLS::BaseObjectPtr               m_BrtOleSize;
         XLS::BaseObjectPtr               m_PIVOTCACHEIDS;
         XLS::BaseObjectPtr               m_BrtWebOpt;
-        XLS::BaseObjectPtr               m_BrtEndBook;
+		bool				             m_bEndBook;
         XLS::BaseObjectPtr               m_FRTWORKBOOK;
 
         std::vector<XLS::BaseObjectPtr>  m_arBrtName;

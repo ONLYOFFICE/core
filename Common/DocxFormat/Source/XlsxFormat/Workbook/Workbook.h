@@ -397,21 +397,73 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 			}
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
-				NSStringUtils::CStringBuilder sXml;
 
-				sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+				if(dynamic_cast<CXlsx*>(File::m_pMainDocument)->m_bIsBin)
+				{
+					writeBin(oPath);
+				}
+				else
+				{
+					NSStringUtils::CStringBuilder sXml;
 
-				toXML(sXml);
+					sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
 
-                std::wstring sPath = oPath.GetPath();
-                NSFile::CFileBinary::SaveToFile(sPath.c_str(), sXml.GetData());
+					toXML(sXml);
+
+					std::wstring sPath = oPath.GetPath();
+	                NSFile::CFileBinary::SaveToFile(sPath.c_str(), sXml.GetData());					
+				}
 
 				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 				IFileContainer::Write( oPath, oDirectory, oContent );
 			}
+			void writeBin(const CPath& oPath) const
+			{
+				CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+				if (xlsb)
+				{
+					XLSB::WorkBookStreamPtr workBookStream(new XLSB::WorkBookStream);					
+
+					if (workBookStream != nullptr)
+					{
+						if (m_oBookViews.IsInit())
+						{
+							workBookStream->m_BOOKVIEWS = XLS::BaseObjectPtr(new XLSB::BOOKVIEWS());
+							m_oBookViews->toBin(static_cast<XLSB::BOOKVIEWS*>(workBookStream->m_BOOKVIEWS.get())->m_arBrtBookView);
+						}
+						/*if (workBookStream->m_BrtCalcProp != nullptr)
+							m_oCalcPr = workBookStream->m_BrtCalcProp;
+						if (!workBookStream->m_arBrtName.empty())
+							m_oDefinedNames = workBookStream->m_arBrtName;
+						if (workBookStream->m_BUNDLESHS != nullptr)
+							m_oSheets = static_cast<XLSB::BUNDLESHS*>(workBookStream->m_BUNDLESHS.get())->m_arBrtBundleSh;
+						if (workBookStream->m_BrtWbProp != nullptr)
+							m_oWorkbookPr = workBookStream->m_BrtWbProp;
+						if (workBookStream->m_PIVOTCACHEIDS != nullptr)
+							m_oPivotCaches = workBookStream->m_PIVOTCACHEIDS;
+
+						if (workBookStream->m_BrtBookProtectionIso != nullptr)
+							m_oWorkbookProtection = workBookStream->m_BrtBookProtectionIso;
+						else if (workBookStream->m_BrtBookProtection != nullptr)
+							m_oWorkbookProtection = workBookStream->m_BrtBookProtection;
+
+						if (workBookStream->m_EXTERNALS != nullptr)
+							m_oExternalReferences = static_cast<XLSB::EXTERNALS*>(workBookStream->m_EXTERNALS.get())->m_arSUP;
+						if (workBookStream->m_BrtFileVersion != nullptr)
+							m_oAppName = static_cast<XLSB::FileVersion*>(workBookStream->m_BrtFileVersion.get())->stAppName.value();
+
+						if (workBookStream->m_FRTWORKBOOK != nullptr)
+							m_oExtLst = workBookStream->m_FRTWORKBOOK;
+							*/
+					}
+					xlsb->WriteBin(oPath, workBookStream.get());					
+
+				}
+			}
 			virtual const OOX::FileType type() const
 			{
 				if (m_bMacroEnabled)	return OOX::Spreadsheet::FileTypes::WorkbookMacro;
+				else if (dynamic_cast<CXlsx*>(File::m_pMainDocument)->m_bIsBin)		return OOX::Spreadsheet::FileTypes::WorkbookBin;
 				else					return OOX::Spreadsheet::FileTypes::Workbook;
 			}
 			virtual const CPath DefaultDirectory() const

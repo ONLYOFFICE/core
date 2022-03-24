@@ -45,6 +45,7 @@
 #include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/GlobalWorkbookInfo.h"
 #include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/WorkbookStreamObject.h"
 #include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Binary/CFStreamCacheReader.h"
+#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Binary/CFStreamCacheWriter.h"
 #include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/BinProcessor.h"
 
 #include "../../../../DesktopEditor/common/SystemUtils.h"
@@ -63,6 +64,7 @@ void OOX::Spreadsheet::CXlsb::init()
 	xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(workbook_code_page, nullptr));
 	xls_global_info->Version = 0x0800;    
     m_binaryReader = boost::shared_ptr<NSBinPptxRW::CBinaryFileReader>(new NSBinPptxRW::CBinaryFileReader);
+	m_binaryWriter = boost::shared_ptr<NSBinPptxRW::CXlsbBinaryWriter>(new NSBinPptxRW::CXlsbBinaryWriter);
 }
 bool OOX::Spreadsheet::CXlsb::ReadBin(const CPath& oFilePath, XLS::BaseObject* objStream)
 {
@@ -86,6 +88,20 @@ bool OOX::Spreadsheet::CXlsb::ReadBin(const CPath& oFilePath, XLS::BaseObject* o
     //reader.reset();
 
     return true;
+}
+
+bool OOX::Spreadsheet::CXlsb::WriteBin(const CPath& oFilePath, XLS::BaseObject* objStream)
+{
+	if (m_binaryWriter->CreateFileW(oFilePath.GetPath()) == false)
+		return false;
+
+	XLS::StreamCacheWriterPtr writer(new XLS::BinaryStreamCacheWriter(m_binaryWriter, xls_global_info));
+	XLS::BinWriterProcessor proc(writer, objStream);
+	proc.mandatory(*objStream);
+	m_binaryWriter->WriteFile(m_binaryWriter->GetBuffer(), m_binaryWriter->GetPosition());	
+	m_binaryWriter->CloseFile();
+
+	return true;
 }
 
 XLS::GlobalWorkbookInfo* OOX::Spreadsheet::CXlsb::GetGlobalinfo()

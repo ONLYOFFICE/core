@@ -48,9 +48,10 @@ namespace XLSB
         XLS::BaseObjectPtr clone();
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
+		virtual const bool saveContent(XLS::BinProcessor& proc);
 
 		XLS::BaseObjectPtr               m_BrtBeginBookViews;
-        std::vector<XLS::BaseObjectPtr>	m_arBrtBookView;
+        std::vector<XLS::BaseObjectPtr>	 m_arBrtBookView;
 		XLS::BaseObjectPtr               m_BrtEndBookViews;
 
     };

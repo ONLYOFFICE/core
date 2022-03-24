@@ -103,6 +103,7 @@ namespace OOX
 			int												m_nLastReadRow;
 			int												m_nLastReadCol;
 			bool											m_bNeedCalcChain;// disable because it is useless but reading takes considerable time
+			bool											m_bIsBin; // save to xlsb/xls format
 
 			std::vector<CWorksheet*>								m_arWorksheets;	//order as is
 			std::map<std::wstring, OOX::Spreadsheet::CWorksheet*>	m_mapWorksheets; //copy, for fast find - order by rId(name) 

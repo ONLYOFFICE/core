@@ -61,7 +61,8 @@ namespace OOX
             }
             ~CXlsb();
 
-            bool ReadBin(const CPath& oFilePath, XLS::BaseObject* objStream);			
+            bool ReadBin(const CPath& oFilePath, XLS::BaseObject* objStream);
+			bool WriteBin(const CPath& oFilePath, XLS::BaseObject* objStream);
             XLS::GlobalWorkbookInfo* GetGlobalinfo();
             void PrepareSi();
             void PrepareTableFormula();
@@ -75,6 +76,7 @@ namespace OOX
             void init();
             XLS::GlobalWorkbookInfoPtr xls_global_info;
             boost::shared_ptr<NSBinPptxRW::CBinaryFileReader> m_binaryReader;
+			boost::shared_ptr<NSBinPptxRW::CXlsbBinaryWriter> m_binaryWriter;
 
             unsigned short workbook_code_page;
             std::wstring m_sPath;

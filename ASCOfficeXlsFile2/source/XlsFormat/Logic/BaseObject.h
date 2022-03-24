@@ -48,6 +48,9 @@ class BinProcessor;
 class StreamCacheReader;
 typedef boost::shared_ptr<StreamCacheReader> StreamCacheReaderPtr;
 
+class StreamCacheWriter;
+typedef boost::shared_ptr<StreamCacheWriter> StreamCacheWriterPtr;
+
 class BaseObject;
 typedef boost::shared_ptr<BaseObject> BaseObjectPtr;
 
@@ -60,6 +63,8 @@ public:
 	virtual boost::shared_ptr<BaseObject> clone() = 0;
 
 	virtual const bool read(StreamCacheReaderPtr reader, BaseObject* parent, const bool mandatory) = 0; // Read self and children
+
+	virtual const bool write(StreamCacheWriterPtr writer, BaseObject* parent) = 0; // Write self and children
 
 	virtual const std::string & getClassName() const = 0; // Must be overridden in every deriver. The return value must be a reference to a static variable inside the getter
 

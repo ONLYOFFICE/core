@@ -514,10 +514,6 @@ return 0;
         pageObj.free();
         pageRefObj.free();
 
-        Page* pPage = m_pInternal->m_pPDFDocument->getCatalog()->getPage(nPageIndex);
-        double ctm[6];
-        pPage->getDefaultCTM(ctm, 72, 72, 0, gTrue, gFalse);
-
         return m_pPdfWriter->EditPage(sPage, std::make_pair(pPageRef->num, pPageRef->gen));
     }
     bool CPdfReader::EditClose(const std::wstring& wsPath)

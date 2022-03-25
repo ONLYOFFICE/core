@@ -2059,7 +2059,14 @@ bool CPdfRenderer::EditPage(const std::wstring& sPage, const std::pair<int, int>
 	m_oCommandManager.Flush();
 
 	m_pPage = m_pDocument->EditPage(sPage, pPage);
-	return !!m_pPage;
+	if (m_pPage)
+	{
+		m_dPageWidth  = PT_2_MM(m_pPage->GetWidth());
+		m_dPageHeight = PT_2_MM(m_pPage->GetHeight());
+
+		return true;
+	}
+	return false;
 }
 bool CPdfRenderer::EditClose(const std::wstring& wsPath, const std::wstring& sTrailer)
 {

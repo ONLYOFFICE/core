@@ -249,6 +249,41 @@ namespace PdfWriter
 		else
 			Add("Contents", m_pContents);
 
+		// Инициализация текущего MediaBox
+		CObjectBase* pMediaBox = Get("MediaBox");
+		if (pMediaBox && pMediaBox->GetType() == object_type_ARRAY)
+		{
+			double dL = 0.0, dB = 0.0, dR = DEF_PAGE_WIDTH, dT = DEF_PAGE_HEIGHT;
+
+			CObjectBase* val = ((CArrayObject*)pMediaBox)->Get(0);
+			if (val && val->GetType() == object_type_NUMBER)
+				dL = ((CNumberObject*)val)->Get();
+			else if (val && val->GetType() == object_type_REAL)
+				dL = ((CRealObject*)val)->Get();
+
+			val = ((CArrayObject*)pMediaBox)->Get(1);
+			if (val && val->GetType() == object_type_NUMBER)
+				dB = ((CNumberObject*)val)->Get();
+			else if (val && val->GetType() == object_type_REAL)
+				dB = ((CRealObject*)val)->Get();
+
+			val = ((CArrayObject*)pMediaBox)->Get(2);
+			if (val && val->GetType() == object_type_NUMBER)
+				dR = ((CNumberObject*)val)->Get();
+			else if (val && val->GetType() == object_type_REAL)
+				dR = ((CRealObject*)val)->Get();
+
+			val = ((CArrayObject*)pMediaBox)->Get(3);
+			if (val && val->GetType() == object_type_NUMBER)
+				dT = ((CNumberObject*)val)->Get();
+			else if (val && val->GetType() == object_type_REAL)
+				dT = ((CRealObject*)val)->Get();
+
+			Add("MediaBox", CArrayObject::CreateBox(dL, dB, dR, dT));
+		}
+		else
+			Add("MediaBox", CArrayObject::CreateBox(0, 0, DEF_PAGE_WIDTH, DEF_PAGE_HEIGHT));
+
 		if (GetResourcesItem())
 		{
 			// Инициализация текущего fonts
@@ -263,8 +298,10 @@ namespace PdfWriter
 			// Инициализация текущего ExtGStates
 			CObjectBase* pExtGStates = GetResourcesItem()->Get("ExtGState");
 			if (pExtGStates && pExtGStates->GetType() == object_type_DICT)
+			{
 				m_pExtGStates = (CDictObject*)pExtGStates;
-			m_unExtGStatesCount = m_pExtGStates->GetSize();
+				m_unExtGStatesCount = m_pExtGStates->GetSize();
+			}
 		}
 
 		m_pStream = NULL;

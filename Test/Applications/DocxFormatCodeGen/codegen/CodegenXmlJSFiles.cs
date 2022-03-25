@@ -173,14 +173,14 @@ namespace codegen
         }
         public void ProcessEnumFromString(StringBuilder sb, GenClassPivot oGenClass)
         {
-            sb.AppendFormat("function fromXml_{0}(val) \n{{\n", GetEnumClassName(oGenClass.sName));
+            sb.AppendFormat("function fromXml_{0}(val, def) \n{{\n", GetEnumClassName(oGenClass.sName));
             sb.AppendFormat("switch (val) {{\n");
             for (int j = 0; j < oGenClass.aMembers.Count; ++j)
             {
                 sb.AppendFormat("case \"{0}\": return {1}.{2};\n", oGenClass.aMembers[j].sName, GetEnumClassName(oGenClass.sName), GetEnumElemName(oGenClass.aMembers[j].sName));
             }
             sb.AppendFormat("}}\n");
-            sb.AppendFormat("return undefined;\n");
+            sb.AppendFormat("return def;\n");
             sb.AppendFormat("}}\n");
         }
         public void ProcessEnumToString(StringBuilder sb, GenClassPivot oGenClass)
@@ -202,7 +202,7 @@ namespace codegen
                 GenClassPivot oGenClass = aGenClasses[i];
                 if (oGenClass.aMembers.Count > 0)
                 {
-                    sb.AppendFormat("var {0} = {{\n", GetEnumClassName(oGenClass.sName));
+                    sb.AppendFormat("let {0} = {{\n", GetEnumClassName(oGenClass.sName));
                     for (int j = 0; j < oGenClass.aMembers.Count; ++j)
                     {
                         GenMemberPivot oGenMember = oGenClass.aMembers[j];
@@ -214,7 +214,7 @@ namespace codegen
                     ProcessEnumToString(sb, oGenClass);
                 }
             }
-            sb.AppendFormat("var prot;\r\n");
+            sb.AppendFormat("let prot;\r\n");
             for (int i = 0; i < aGenClasses.Count; ++i)
             {
                 GenClassPivot oGenClass = aGenClasses[i];
@@ -438,11 +438,10 @@ namespace codegen
             if (aAttributes.Count > 0)
             {
                 sb.AppendFormat("this.readAttr(reader);\n");
-                
             }
             if (aMembers.Count > 0)
             {
-                sb.AppendFormat("var elem, depth = reader.GetDepth();\n");
+                sb.AppendFormat("let elem, depth = reader.GetDepth();\n");
                 sb.AppendFormat("while (reader.ReadNextSiblingNode(depth)) {{\n");
                 sb.AppendFormat("switch (reader.GetNameNoNS()) {{\n");
                 for (int i = 0; i < aMembers.Count; ++i)
@@ -466,7 +465,7 @@ namespace codegen
                             }
                             else
                             {
-                                sb.AppendFormat("var subDepth = reader.GetDepth();\n");
+                                sb.AppendFormat("let subDepth = reader.GetDepth();\n");
                                 sb.AppendFormat("while (reader.ReadNextSiblingNode(subDepth)) {{\n");
                                 sb.AppendFormat("if (\"{0}\" === reader.GetNameNoNS()) {{\n", oGenMemberTmp.sName);
 
@@ -485,6 +484,10 @@ namespace codegen
                     }
                     else
                     {
+                        string sMemberName = getClassMemberName(aMembers[i].sName);
+                        string sMemberSet = "set" + sMemberName.Substring(0, 1).ToUpper() + sMemberName.Substring(1);
+                        sb.AppendFormat("this.{0}({1}.prototype.toVal(reader, this.{2}));\n", sMemberSet, aMembers[i].sType, sMemberName);
+                        sb.AppendFormat("this.{0} = {1}.prototype.toVal(reader, this.{0});\n", getClassMemberName(aMembers[i].sName), aMembers[i].sType);
                         sb.AppendFormat("this.{0} = new {1}();\n", getClassMemberName(aMembers[i].sName), aMembers[i].sType);
                         sb.AppendFormat("this.{0}.fromXml(reader);\n", getClassMemberName(aMembers[i].sName));
                     }
@@ -503,10 +506,12 @@ namespace codegen
         void ProcessAttributeJSFromXml(StringBuilder sb, GenClassPivot oGenClass, GenMemberPivot oGenMember, int index)
         {
             bool bTodo = true;
+            string sMemberName = getClassMemberName(oGenMember.sName);
+            string sMemberSet = "set" + sMemberName.Substring(0, 1).ToUpper() + sMemberName.Substring(1);
             if (null != oGenMember.oSystemType)
             {
                 bTodo = false;
-                sb.AppendFormat("case \"{0}\": {{\n this.{1} = reader.{2}();\n break;\n }}\n", oGenMember.sName, getClassMemberName(oGenMember.sName), ProcessJSTypeFromXml(Type.GetTypeCode(oGenMember.oSystemType), out bTodo));
+                sb.AppendFormat("case \"{0}\": {{\n this.{1}(reader.{2});\n break;\n }}\n", oGenMember.sName, sMemberSet, ProcessJSTypeFromXml(Type.GetTypeCode(oGenMember.oSystemType), "this."+sMemberName, out bTodo));
             }
             else if (null != oGenMember.sType)
             {
@@ -517,7 +522,7 @@ namespace codegen
                     if (oGenClassMember.bIsEnum)
                     {
                         bTodo = false;
-                        sb.AppendFormat("case \"{0}\": {{\nthis.{1} = fromXml_{2}(reader.GetValue());\n break;\n }}\n", oGenMember.sName, getClassMemberName(oGenMember.sName), GetEnumClassName(oGenClassMember.sName));
+                        sb.AppendFormat("case \"{0}\": {{\nthis.{1}(fromXml_{2}(reader.GetValue(), this.{3}));\n break;\n }}\n", oGenMember.sName, sMemberSet, GetEnumClassName(oGenClassMember.sName), sMemberName);
                     }
                 }
             }
@@ -526,43 +531,43 @@ namespace codegen
                 sb.AppendFormat("//todo {0}\n", getClassMemberName(oGenMember.sName));
             }
         }
-        string ProcessJSTypeFromXml(TypeCode oTypeCode, out bool bTodo)
+        string ProcessJSTypeFromXml(TypeCode oTypeCode, string sDef, out bool bTodo)
         {
             bTodo = false;
             string sRes;
             switch (oTypeCode)
             {
                 case TypeCode.Boolean:
-                    sRes = "GetValueBool";
+                    sRes = "GetValueBool()";
                     break;
                 case TypeCode.Byte:
-                    sRes = "GetValueByte";
+                    sRes = "GetValueByte(" + sDef + ")";
                     break;
                 case TypeCode.SByte:
-                    sRes = "GetValueSByte";
+                    sRes = "GetValueSByte(" + sDef + ")";
                     break;
                 case TypeCode.Int16:
                 case TypeCode.Int32:
-                    sRes = "GetValueInt";
+                    sRes = "GetValueInt(" + sDef + ")";
                     break;
                 case TypeCode.UInt16:
                 case TypeCode.UInt32:
-                    sRes = "GetValueUInt";
+                    sRes = "GetValueUInt(" + sDef + ")";
                     break;
                 case TypeCode.Int64:
                     bTodo = true;
-                    sRes = "GetValueInt64";
+                    sRes = "GetValueInt64(" + sDef + ")";
                     break;
                 case TypeCode.UInt64:
                     bTodo = true;
-                    sRes = "GetValueUInt64";
+                    sRes = "GetValueUInt64(" + sDef + ")";
                     break;
                 case TypeCode.Single:
                 case TypeCode.Double:
-                    sRes = "GetValueDouble";
+                    sRes = "GetValueDouble(" + sDef + ")";
                     break;
                 default:
-                    sRes = "GetValueDecodeXml";
+                    sRes = "GetValueDecodeXml()";
                     break;
             }
             return sRes;

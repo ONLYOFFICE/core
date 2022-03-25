@@ -79,9 +79,21 @@ namespace codegen
         //string[] gc_aTargetTypes = new string[] { "CT_Stylesheet" };
         //string gc_sTargetNamespace = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
 
-        string gc_sXsd = "wml.xsd";
-        string[] gc_aTargetTypes = new string[] { "CT_Document", "CT_GlossaryDocument", "CT_Styles", "CT_Numbering", "CT_Settings", "CT_HdrFtr", "CT_Footnotes", "CT_Endnotes", "CT_Comments" };
-        string gc_sTargetNamespace = "http://purl.oclc.org/ooxml/wordprocessingml/main";
+        //string gc_sXsd = "wml.xsd";
+        //string[] gc_aTargetTypes = new string[] { "CT_Document", "CT_GlossaryDocument", "CT_Styles", "CT_Numbering", "CT_Settings", "CT_HdrFtr", "CT_Footnotes", "CT_Endnotes", "CT_Comments" };
+        //string gc_sTargetNamespace = "http://purl.oclc.org/ooxml/wordprocessingml/main";
+
+        //string gc_sXsd = "dml-chart.xsd";
+        //string[] gc_aTargetTypes = new string[] { "CT_ChartSpace" };
+        //string gc_sTargetNamespace = "http://purl.oclc.org/ooxml/drawingml/chart";
+
+        //string gc_sXsd = "xlsx-ext/5.15.xsd";
+        //string[] gc_aTargetTypes = new string[] { "CT_ChartStyle", "CT_ColorStyle" };
+        //string gc_sTargetNamespace = "http://schemas.microsoft.com/office/drawing/2012/chartStyle";
+
+        string gc_sXsd = "shared-math.xsd";
+        string[] gc_aTargetTypes = new string[] { "CT_OMathPara" };
+        string gc_sTargetNamespace = "http://purl.oclc.org/ooxml/officeDocument/math";
 
 
         public void Start(string sDirIn, string sDirCppXmlOut, string sDirCppBinOut, string sDirJsBinOut, ValidationEventHandler oValidationEventHandler)

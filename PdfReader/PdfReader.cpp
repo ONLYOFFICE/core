@@ -402,16 +402,16 @@ return 0;
             ((GlobalParamsAdaptor*)globalParams)->SetTempFolder(m_pInternal->m_wsTempFolder.c_str());
 	}
     std::wstring CPdfReader::GetTempDirectory()
-    {
+    {						
         return m_pInternal->m_wsTempFolder;
     }
 
-    void CPdfReader::SetCMapFolder(const wchar_t* wsCMapFolder)
+	void CPdfReader::SetCMapFolder(const wchar_t* wsCMapFolder)
 	{
         m_pInternal->m_wsCMapFolder = std::wstring(wsCMapFolder);
 
         if (globalParams)
-            ((GlobalParamsAdaptor*)globalParams)->SetCMapFolder(m_pInternal->m_wsCMapFolder.c_str());
+			((GlobalParamsAdaptor*)globalParams)->SetCMapFolder(m_pInternal->m_wsCMapFolder.c_str());
 	}
     NSFonts::IFontManager* CPdfReader::GetFontManager()
 	{

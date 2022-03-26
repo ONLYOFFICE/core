@@ -94,7 +94,7 @@ namespace PdfReader
         bool         ExtractAllImages(const wchar_t* wsDstPath, const wchar_t* wsPrefix = 0);
         int          GetImagesCount();
 
-        void         SetCMapFolder(const wchar_t* wsCMapFolder);
+		void         SetCMapFolder(const wchar_t* wsCMapFolder);
         NSFonts::IFontManager* GetFontManager();
 
         std::wstring ToXml(const std::wstring& wsXmlPath);

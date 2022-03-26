@@ -1447,6 +1447,7 @@ namespace PdfReader
                 case fontType1C:
                 case fontType1COT:
                 {
+					Gfx8BitFont* pFont8bit = NULL;
                     if (fofiType == fofiIdTrueType)
                     {
                     #ifdef FONTS_USE_ONLY_MEMORY_STREAMS
@@ -1469,9 +1470,9 @@ namespace PdfReader
                             nLen = 0;
                         }
                     }
-                    else if (L"" != wsFileName)
-                    {
-                        char **ppEncoding = ((Gfx8BitFont *)pFont)->getEncoding();
+					else if (L"" != wsFileName && (pFont8bit = dynamic_cast<Gfx8BitFont*>(pFont)) && pFont8bit->getHasEncoding())
+                    {					
+						char **ppEncoding = pFont8bit->getEncoding();
                         if (!ppEncoding)
                             break;
 
@@ -1499,12 +1500,13 @@ namespace PdfReader
                 }
                 case fontTrueType:
                 case fontTrueTypeOT:
-                {
-                    if (fofiType == fofiIdType1PFB)
-                    {
-                        if (L"" != wsFileName)
+				{
+					if (fofiType == fofiIdType1PFB)
+                    {						
+						Gfx8BitFont* pFont8bit = dynamic_cast<Gfx8BitFont*>(pFont);
+						if (L"" != wsFileName && pFont8bit && pFont8bit->getHasEncoding())
                         {
-                            char **ppEncoding = ((Gfx8BitFont *)pFont)->getEncoding();
+							char **ppEncoding = pFont8bit->getEncoding();
                             if (!ppEncoding)
                                 break;
 
@@ -1521,7 +1523,7 @@ namespace PdfReader
                             {
                                 pCodeToGID[nIndex] = 0;
                                 char* sName = NULL;
-                                if ((sName = ppEncoding[nIndex]))
+								if ((sName = ppEncoding[nIndex]))
                                 {
                                     unsigned short ushGID = m_pFontManager->GetNameIndex(AStringToWString(sName));
                                     pCodeToGID[nIndex] = ushGID;
@@ -3652,6 +3654,9 @@ namespace PdfReader
         double dPageHeight = pGState->getPageHeight();
 
         std::wstring wsUnicodeText;
+
+		bool isCIDFont = pFont->isCIDFont();
+
         if (NULL != oEntry.pCodeToUnicode && nCode < oEntry.unLenUnicode)
         {
             unsigned short unUnicode = oEntry.pCodeToUnicode[nCode];
@@ -3659,7 +3664,7 @@ namespace PdfReader
         }
         else
         {
-            if (pGState->getFont()->isCIDFont())
+			if (isCIDFont)
             {
                 // Значит кодировка была Identity-H или Identity-V, что означает, что иходные коды и есть юникодные значения
                 wsUnicodeText = (wchar_t(nCode));
@@ -3680,11 +3685,15 @@ namespace PdfReader
             else
                 unGidsCount = 1;
         }
-        else
-        {
-            int nCurCode = (0 == nCode ? 65534 : nCode);
-            unGid       = (unsigned int)nCurCode;
-            unGidsCount = 1;
+		else
+		{
+			bool isIdentity = true;
+			if (!isCIDFont || ((GfxCIDFont*)pFont)->usesIdentityEncoding())
+			{
+				int nCurCode = (0 == nCode ? 65534 : nCode);
+				unGid       = (unsigned int)nCurCode;
+				unGidsCount = 1;
+			}
         }
 
         std::wstring wsSrcCodeText;

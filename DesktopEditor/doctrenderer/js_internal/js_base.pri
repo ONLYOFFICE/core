@@ -9,6 +9,9 @@ INCLUDEPATH += $$PWD
 
 HEADERS += $$PWD/js_base.h
 
+HEADERS += $$PWD/js_logger.h
+SOURCES += $$PWD/js_logger.cpp
+
 !use_javascript_core {
 
     HEADERS += $$PWD/v8/v8_base.h

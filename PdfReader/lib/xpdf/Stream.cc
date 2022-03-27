@@ -39,7 +39,7 @@
 #include "JPXStream.h"
 #include "Stream-CCITT.h"
 
-#ifdef USE_GRAPHICS_JPEG2000
+#ifdef USE_EXTERNAL_JPEG2000
 #include "../../Src/JPXStream2.h"
 #endif
 
@@ -308,7 +308,7 @@ Stream *Stream::makeFilter(char *name, Stream *str, Object *params,
     str = new JBIG2Stream(str, &globals);
     globals.free();
   } else if (!strcmp(name, "JPXDecode")) {
-#ifdef USE_GRAPHICS_JPEG2000
+#ifdef USE_EXTERNAL_JPEG2000
     str = new JPXStream2(str);
 #else
     str = new JPXStream(str);

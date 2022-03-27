@@ -266,13 +266,11 @@ std::wstring CDjVuFileImplementation::GetInfo()
     double nH = 0;
     double nDpi = 0;
     GetPageInfo(0, &nW, &nH, &nDpi, &nDpi);
-    sRes += L"\"PageSize\":\"";
-    std::wstring size = std::to_wstring(nW);
-    sRes += size.substr(0, size.length() - 4);
-    sRes += L"x";
-    size = std::to_wstring(nH);
-    sRes += size.substr(0, size.length() - 4);
-    sRes += L"\",\"NumberOfPages\":";
+    sRes += L"\"PageWidth\":";
+    sRes += std::to_wstring((int)(nW * 100));
+    sRes += L",\"PageHeight\":";
+    sRes += std::to_wstring((int)(nH * 100));
+    sRes += L",\"NumberOfPages\":";
     sRes += std::to_wstring(GetPagesCount());
     sRes += L"}";
 

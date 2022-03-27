@@ -3952,7 +3952,7 @@ namespace PdfReader
         }
 
         bool bIsFlip = false;
-#ifdef USE_GRAPHICS_JPEG2000
+#ifdef USE_EXTERNAL_JPEG2000
         if (pStream->getKind() == strJPX)
             bIsFlip = true;
 #endif

@@ -121,6 +121,7 @@ const long c_nVifFormat			= 0x0009;
 const long c_nGrRenderer		= 0x0010;
 const long c_nHtmlRendrerer3    = 0x0011;
 const long c_nHtmlRendrererText = 0x0012;
+const long c_nQRenderer         = 0x0013;
 
 // типы команд
 const long c_nCommandLongTypeOnlyText = 0x1000;

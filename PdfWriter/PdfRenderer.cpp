@@ -2076,6 +2076,11 @@ bool CPdfRenderer::EditClose(const std::wstring& wsPath, const std::wstring& sTr
 
 	return m_pDocument->AddToFile(wsPath, sTrailer);
 }
+void CPdfRenderer::PageRotate(int nRotate)
+{
+	if (m_pPage)
+		m_pPage->SetRotate(nRotate);
+}
 
 NSFonts::IApplicationFonts* CPdfRenderer::GetApplicationFonts()
 {

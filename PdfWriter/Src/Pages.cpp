@@ -242,12 +242,16 @@ namespace PdfWriter
 				m_pContents = (CArrayObject*)pContents;
 			else if (pContents->GetType() == object_type_UNKNOWN)
 			{
+				m_pContents = new CArrayObject();
 				m_pContents->Add(new CProxyObject(pContents));
 				Add("Contents", m_pContents);
 			}
 		}
 		else
+		{
+			m_pContents = new CArrayObject();
 			Add("Contents", m_pContents);
+		}
 
 		// Инициализация текущего MediaBox
 		CObjectBase* pMediaBox = Get("MediaBox");
@@ -284,10 +288,11 @@ namespace PdfWriter
 		else
 			Add("MediaBox", CArrayObject::CreateBox(0, 0, DEF_PAGE_WIDTH, DEF_PAGE_HEIGHT));
 
-		if (GetResourcesItem())
+		CDictObject* pResources = GetResourcesItem();
+		if (pResources)
 		{
 			// Инициализация текущего fonts
-			CObjectBase* pFonts = GetResourcesItem()->Get("Font");
+			CObjectBase* pFonts = pResources->Get("Font");
 			if (pFonts && pFonts->GetType() == object_type_DICT)
 			{
 				m_pFonts = (CDictObject*)pFonts;
@@ -296,13 +301,39 @@ namespace PdfWriter
 			}
 
 			// Инициализация текущего ExtGStates
-			CObjectBase* pExtGStates = GetResourcesItem()->Get("ExtGState");
+			CObjectBase* pExtGStates = pResources->Get("ExtGState");
 			if (pExtGStates && pExtGStates->GetType() == object_type_DICT)
 			{
 				m_pExtGStates = (CDictObject*)pExtGStates;
 				m_unExtGStatesCount = m_pExtGStates->GetSize();
 			}
+
+			// Инициализация текущего XObject
+			CObjectBase* pXObject = pResources->Get("XObject");
+			if (pXObject && pXObject->GetType() == object_type_DICT)
+			{
+				m_pXObjects = (CDictObject*)pXObject;
+				m_unXObjectsCount = m_pXObjects->GetSize();
+			}
+
+			// Инициализация текущего Shading
+			CObjectBase* pShading = pResources->Get("Shading");
+			if (pShading && pShading->GetType() == object_type_DICT)
+			{
+				m_pShadings = (CDictObject*)pShading;
+				m_unShadingsCount = m_pShadings->GetSize();
+			}
+
+			// Инициализация текущего Pattern
+			CObjectBase* pPattern = pResources->Get("Pattern");
+			if (pPattern && pPattern->GetType() == object_type_DICT)
+			{
+				m_pPatterns = (CDictObject*)pPattern;
+				m_unPatternsCount = m_pPatterns->GetSize();
+			}
 		}
+		else
+			Add("Resources", new CDictObject());
 
 		m_pStream = NULL;
 	}
@@ -310,8 +341,10 @@ namespace PdfWriter
 	{
 		Init(pXref, pDocument);
 
-		m_pContents->Add(new CDictObject(pXref));
-		m_pStream   = ((CDictObject*)m_pContents->Get(0))->GetStream();
+		m_pContents = new CArrayObject();
+		CDictObject* pContent = new CDictObject(pXref);
+		m_pContents->Add(pContent);
+		m_pStream = pContent->GetStream();
 
 		Add("Parent", pParent);
 		Add("MediaBox", CArrayObject::CreateBox(0, 0, DEF_PAGE_WIDTH, DEF_PAGE_HEIGHT));
@@ -335,7 +368,6 @@ namespace PdfWriter
 
 		m_pXref     = pXref;
 		m_pDocument = pDocument;
-		m_pContents = new CArrayObject();
 		m_eGrMode   = grmode_PAGE;
 		m_pGrState  = new CGrState(NULL);
 
@@ -1202,8 +1234,7 @@ namespace PdfWriter
 			char *pEndPointer = sFontName + LIMIT_MAX_NAME_LEN;
 
 			pPointer = (char*)StrCpy(sFontName, "F", pEndPointer);
-			ItoA(pPointer, m_unFontsCount + 1, pEndPointer);
-			m_unFontsCount++;
+			ItoA(pPointer, ++m_unFontsCount, pEndPointer);
 			m_pFonts->Add(sFontName, pFont);
 			sKey = m_pFonts->GetKey(pFont);
 		}
@@ -1285,8 +1316,7 @@ namespace PdfWriter
 			char *pEndPointer = sXObjName + LIMIT_MAX_NAME_LEN;
 
 			pPointer = (char*)StrCpy(sXObjName, "X", pEndPointer);
-			ItoA(pPointer, m_unXObjectsCount + 1, pEndPointer);
-			m_unXObjectsCount++;
+			ItoA(pPointer, ++m_unXObjectsCount, pEndPointer);
 			m_pXObjects->Add(sXObjName, pObject);
 			sKey = m_pXObjects->GetKey(pObject);
 		}
@@ -1340,8 +1370,7 @@ namespace PdfWriter
 			char *pEndPointer = sShadingName + LIMIT_MAX_NAME_LEN;
 
 			pPointer = (char*)StrCpy(sShadingName, "S", pEndPointer);
-			ItoA(pPointer, m_unShadingsCount + 1, pEndPointer);
-			m_unShadingsCount++;
+			ItoA(pPointer, ++m_unShadingsCount, pEndPointer);
 			m_pShadings->Add(sShadingName, pShading);
 			sKey = m_pShadings->GetKey(pShading);
 		}
@@ -1398,8 +1427,9 @@ namespace PdfWriter
 		{
 			for (unsigned int unKidIndex = 0, unKidsCount = m_pContents->GetCount(); unKidIndex < unKidsCount; ++unKidIndex)
 			{
-				CDictObject* pKid = (CDictObject*)m_pContents->Get(unKidIndex);
-				pKid->SetFilter(unFiler);
+				CObjectBase* pKid = m_pContents->Get(unKidIndex);
+				if (pKid->GetType() == object_type_DICT)
+					((CDictObject*)pKid)->SetFilter(unFiler);
 			}
 		}
 	}
@@ -1413,8 +1443,21 @@ namespace PdfWriter
 	}
 	void CPage::AddContents(CXref* pXref)
 	{
-		m_pContents->Add(new CDictObject(pXref));
-		m_pStream = ((CDictObject*)m_pContents->Get(m_pContents->GetCount() - 1))->GetStream();
+		CDictObject* pContent = new CDictObject(pXref);
+		m_pContents->Add(pContent);
+		m_pStream = pContent->GetStream();
+	}
+	void CPage::SetRotate(int nRotate)
+	{
+		// The value shall be a multiple of 90
+		if (nRotate > 0 && nRotate % 90 == 0)
+		{
+			CNumberObject* pRotate = (CNumberObject*)GetRotateItem();
+			if (pRotate)
+				Add("Rotate", (nRotate + pRotate->Get()) % 360);
+			else
+				Add("Rotate", nRotate % 360);
+		}
 	}
 	//----------------------------------------------------------------------------------------
 	// CTextWord

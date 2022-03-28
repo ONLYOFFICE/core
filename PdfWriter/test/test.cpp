@@ -78,6 +78,7 @@ int main()
         if (pReader->EditPage(0))
         {
             TEST(&pdfWriter);
+            pdfWriter.PageRotate(90);
         }
 
         if (pReader->EditPage(1))

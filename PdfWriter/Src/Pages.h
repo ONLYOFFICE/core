@@ -145,6 +145,7 @@ namespace PdfWriter
 		void      AddGroup(CDictObject* pDict);
 
 		void      AddContents(CXref* pXref);
+		void      SetRotate(int nRotate);
 
 	private:
 

@@ -431,11 +431,16 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 							workBookStream->m_BOOKVIEWS = XLS::BaseObjectPtr(new XLSB::BOOKVIEWS());
 							m_oBookViews->toBin(static_cast<XLSB::BOOKVIEWS*>(workBookStream->m_BOOKVIEWS.get())->m_arBrtBookView);
 						}
-						/*if (workBookStream->m_BrtCalcProp != nullptr)
-							m_oCalcPr = workBookStream->m_BrtCalcProp;
-						if (!workBookStream->m_arBrtName.empty())
-							m_oDefinedNames = workBookStream->m_arBrtName;
-						if (workBookStream->m_BUNDLESHS != nullptr)
+						if (m_oCalcPr.IsInit())
+						{							
+							m_oCalcPr->toBin(workBookStream->m_BrtCalcProp);
+						}
+						if (m_oDefinedNames.IsInit())
+						{
+							m_oDefinedNames->toBin(workBookStream->m_arBrtName);
+						}
+
+						/*if (workBookStream->m_BUNDLESHS != nullptr)
 							m_oSheets = static_cast<XLSB::BUNDLESHS*>(workBookStream->m_BUNDLESHS.get())->m_arBrtBundleSh;
 						if (workBookStream->m_BrtWbProp != nullptr)
 							m_oWorkbookPr = workBookStream->m_BrtWbProp;

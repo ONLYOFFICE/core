@@ -34,8 +34,6 @@
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/Xnum.h"
 #include "../../XlsxFormat/WritingElement.h"
 
-
-
 namespace XLSB
 {
     // Logical representation of BrtCalcProp record in BIFF12
@@ -50,6 +48,7 @@ namespace XLSB
             XLS::BaseObjectPtr clone();
 
             void readFields(XLS::CFRecord& record);
+			void writeFields(XLS::CFRecord& record);
 
             enum calcMode {
                 MANUAL       = 0x00000000,
@@ -60,7 +59,7 @@ namespace XLSB
             _UINT32        recalcID;
             _UINT32        fAutoRecalc; //calcMode
             _UINT32        cCalcCount;
-			XLS::Xnum           xnumDelta;
+			XLS::Xnum      xnumDelta;
             _INT32         cUserThreadCount;
             bool           fFullCalcOnLoad;
             bool           fRefA1;

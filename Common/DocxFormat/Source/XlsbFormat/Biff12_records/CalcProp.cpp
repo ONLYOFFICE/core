@@ -69,5 +69,23 @@ namespace XLSB
 
     }
 
+	void CalcProp::writeFields(XLS::CFRecord& record)
+	{
+		_UINT16 flags = 0;
+		
+		if (fFullCalcOnLoad)		SETBIT(flags, 0, true)
+    	if (fRefA1)					SETBIT(flags, 1, true)
+    	if (fIter)					SETBIT(flags, 2, true)
+		if (fFullPrec)				SETBIT(flags, 3, true)
+
+    	if (fSomeUncalced)			SETBIT(flags, 4, true)
+		if (fSaveRecalc)			SETBIT(flags, 5, true)
+		if (fMTREnabled)			SETBIT(flags, 6, true)
+		if (fUserSetThreadCount)	SETBIT(flags, 7, true)
+    	if (fNoDeps)				SETBIT(flags, 8, true)
+
+		record << recalcID << fAutoRecalc << cCalcCount << xnumDelta << cUserThreadCount << flags;
+	}
+
 } // namespace XLSB
 

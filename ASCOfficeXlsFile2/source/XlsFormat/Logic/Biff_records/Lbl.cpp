@@ -172,7 +172,7 @@ void Lbl::readFields(CFRecord& record)
 
     else
     {
-        unsigned int flags;
+		_UINT32 flags;
         record >> flags;
 
         fHidden			= GETBIT(flags, 0);
@@ -198,6 +198,46 @@ void Lbl::readFields(CFRecord& record)
             record >> unusedstring2;
         }
     }
+}
+
+void Lbl::writeFields(CFRecord& record)
+{
+	unsigned short flags;
+
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		//stub
+	}
+
+	else
+	{
+		_UINT32 flags = 0;
+
+		if (fHidden)			SETBIT(flags, 0, true)
+		if (fFunc)				SETBIT(flags, 1, true)
+		if (fOB)				SETBIT(flags, 2, true)
+		if (fProc)				SETBIT(flags, 3, true)
+		if (fCalcExp)			SETBIT(flags, 4, true)
+		if (fBuiltin)			SETBIT(flags, 5, true)
+		if (fGrp)				SETBITS(flags, 6, 14, true)
+		if (fPublished)			SETBIT(flags, 15, true)
+		if (fWorkbookParam)		SETBIT(flags, 16, true)
+		if (fFutureFunction)	SETBIT(flags, 17, true)
+
+		record << flags;
+
+		record << chKey << itab;
+		record << name;
+		rgce.save(record);
+		record << comment;
+		if (fProc)
+		{
+			record << unusedstring1;
+			record << description;
+			record << helpTopic;
+			record << unusedstring2;
+		}
+	}
 }
 
 

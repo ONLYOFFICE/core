@@ -208,6 +208,47 @@ void BiffString::load(CFRecord& record, const size_t cch1, const bool is_wide1)
 	}
 }
 
+void BiffString::save(CFRecord& record, const size_t cch1, const bool is_wide1)
+{
+	bool is_wide = is_wide1;
+
+	size_t cch = cch1;
+	if ((cch_) && (*cch_ != cch1) && cch1 < 1)
+	{
+		cch = cch_.get();
+	}
+	size_t raw_length = cch << (is_wide ? 1 : 0);
+
+	if (is_wide)
+	{
+		if (false == bDeleteZero)
+		{
+#if defined(_WIN32) || defined(_WIN64)
+			str_ = std::wstring(record.getCurData<wchar_t>(), cch);
+#else
+			convertWStringToUtf16(str_, record.getCurStaticData<UTF16>())
+#endif
+			record.skipNunBytes(raw_length);
+		}
+		else
+		{
+			
+			UTF16 *buf_read = new UTF16[cch];
+
+#if defined(_WIN32) || defined(_WIN64)
+			str_ = std::wstring((wchar_t*)buf_read, cch);
+#else
+			str_ = convertUtf16ToWString(buf_read, cch);
+#endif
+			delete[]buf_read;
+		}
+	}
+	else
+	{
+		//stub
+	}
+}
+
 const size_t BiffString::getSize() const
 {
 	if(!cch_)

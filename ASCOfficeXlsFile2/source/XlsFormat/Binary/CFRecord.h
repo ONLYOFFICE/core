@@ -91,6 +91,12 @@ public:
 	{
 		return reinterpret_cast<T*>(&data_[rdPtr]);
 	}
+
+	template<class T>
+	const T* getCurStaticData() const
+	{
+		return reinterpret_cast<T*>(&intData[rdPtr]);
+	}
 	// Obtain the current rdPtr
 	const size_t getRdPtr() const;
 

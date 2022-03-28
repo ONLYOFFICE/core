@@ -88,6 +88,80 @@ namespace OOX
             {
                 ReadAttributes(obj);
             }
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				if (obj == nullptr)
+					obj = XLS::BaseObjectPtr(new XLSB::CalcProp());
+
+				auto ptr = static_cast<XLSB::CalcProp*>(obj.get());
+				if(ptr != nullptr)
+				{
+					if (m_oCalcId.IsInit())
+						ptr->recalcID = m_oCalcId->GetValue();
+					else
+						ptr->recalcID = 0;
+
+					if (m_oCalcMode.IsInit())
+						ptr->fAutoRecalc = m_oCalcMode->GetValue();
+					else
+						ptr->fAutoRecalc = SimpleTypes::Spreadsheet::ECalcMode::calcmodeAuto;
+
+					if (m_oFullCalcOnLoad.IsInit())
+						ptr->fFullCalcOnLoad = m_oFullCalcOnLoad->GetValue();
+					else
+						ptr->fFullCalcOnLoad = false;
+
+					if (m_oRefMode.IsInit())
+						ptr->fAutoRecalc = m_oRefMode->GetValue();
+					else
+						ptr->fAutoRecalc = SimpleTypes::Spreadsheet::ERefMode::refmodeA1;
+
+					if (m_oIterate.IsInit())
+						ptr->fIter = m_oIterate->GetValue();
+					else
+						ptr->fIter = false;
+
+					if (m_oIterateCount.IsInit())
+						ptr->cCalcCount = m_oIterateCount->GetValue();
+					else
+						ptr->cCalcCount = 100;
+
+					if (m_oIterateDelta.IsInit())
+						ptr->xnumDelta.data.value = m_oIterateDelta->GetValue();
+					else
+						ptr->xnumDelta.data.value = 0.001;
+
+					if (m_oFullPrecision.IsInit())
+						ptr->fFullPrec = m_oFullPrecision->GetValue();
+					else
+						ptr->fFullPrec = true;
+					
+					if (m_oCalcCompleted.IsInit())
+						ptr->fSomeUncalced = m_oCalcCompleted->GetValue();
+					else
+						ptr->fSomeUncalced = true;
+
+					if (m_oCalcOnSave.IsInit())
+						ptr->fSaveRecalc = m_oCalcOnSave->GetValue();
+					else
+						ptr->fSaveRecalc = true;
+
+					if (m_oConcurrentCalc.IsInit())
+						ptr->fMTREnabled = m_oConcurrentCalc->GetValue();
+					else
+						ptr->fMTREnabled = true;
+
+					if (m_oConcurrentManualCount.IsInit())
+						ptr->cUserThreadCount = m_oConcurrentManualCount->GetValue();
+					else
+						ptr->cUserThreadCount = 0;
+
+					if (m_oForceFullCalc.IsInit())
+						ptr->fNoDeps = m_oForceFullCalc->GetValue();
+					else
+						ptr->fNoDeps = false;
+				}
+			}
 
 			virtual EElementType getType () const
 			{
@@ -121,19 +195,43 @@ namespace OOX
             void ReadAttributes(XLS::BaseObjectPtr& obj)
             {
                 auto ptr = static_cast<XLSB::CalcProp*>(obj.get());
-                m_oCalcId                   = ptr->recalcID;
-                m_oCalcMode                 = (SimpleTypes::Spreadsheet::ECalcMode)ptr->fAutoRecalc;
-                m_oFullCalcOnLoad           = ptr->fFullCalcOnLoad;
-                m_oRefMode                  = (SimpleTypes::Spreadsheet::ERefMode)!ptr->fRefA1;
-                m_oIterate                  = ptr->fIter;
-                m_oIterateCount             = ptr->cCalcCount;
-                m_oIterateDelta             = ptr->xnumDelta.data.value;
-                m_oFullPrecision            = ptr->fFullPrec;
-                m_oCalcCompleted            = ptr->fSomeUncalced;
-                m_oCalcOnSave               = ptr->fSaveRecalc;
-                m_oConcurrentCalc           = ptr->fMTREnabled;
-                m_oConcurrentManualCount    = ptr->cUserThreadCount;
-                m_oForceFullCalc            = ptr->fNoDeps;
+				if (ptr != nullptr)
+				{
+					m_oCalcId = ptr->recalcID;
+
+					if ((SimpleTypes::Spreadsheet::ECalcMode)ptr->fAutoRecalc != SimpleTypes::Spreadsheet::ECalcMode::calcmodeAuto)
+						m_oCalcMode = (SimpleTypes::Spreadsheet::ECalcMode)ptr->fAutoRecalc;
+
+					if (ptr->fFullCalcOnLoad != false)
+						m_oFullCalcOnLoad = ptr->fFullCalcOnLoad;
+
+					if ((SimpleTypes::Spreadsheet::ERefMode)!ptr->fRefA1 != SimpleTypes::Spreadsheet::ERefMode::refmodeA1)
+						m_oRefMode = (SimpleTypes::Spreadsheet::ERefMode)!ptr->fRefA1;
+
+					if (ptr->fIter != false)
+						m_oIterate = ptr->fIter;
+
+					if (ptr->cCalcCount != 100)
+						m_oIterateCount = ptr->cCalcCount;
+
+					if (ptr->xnumDelta.data.value != 0.001)
+						m_oIterateDelta = ptr->xnumDelta.data.value;
+
+					if (ptr->fFullPrec != true)
+						m_oFullPrecision = ptr->fFullPrec;
+
+					if (ptr->fSomeUncalced != true)
+						m_oCalcCompleted = ptr->fSomeUncalced;
+
+					if (ptr->fSaveRecalc != true)
+						m_oCalcOnSave = ptr->fSaveRecalc;
+
+					if (ptr->fMTREnabled != true)
+						m_oConcurrentCalc = ptr->fMTREnabled;
+
+					m_oConcurrentManualCount = ptr->cUserThreadCount;
+					m_oForceFullCalc = ptr->fNoDeps;
+				}
 
             }
 

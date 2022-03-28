@@ -834,6 +834,11 @@ void text_format_properties_content::docx_serialize(std::wostream & _rPr, fonts_
 					_rPr << L"<w:position w:val=\"" << position << "\" />";
 				}
 			}
+			else
+			{
+				if (mul < -0.3) _rPr << L"<w:vertAlign w:val=\"subscript\"/>";
+				else if (mul > 0.3)  _rPr << L"<w:vertAlign w:val=\"superscript\"/>";
+			}
 		}
 
 		if (style_text_position_->has_font_size() && !noNeedSize)
@@ -1236,11 +1241,11 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
             if (style_text_line_through_type_->get_type() == line_type::Single)
                 _rPr << L"<w:strike w:val=\"true\" />";            
             else if (style_text_line_through_type_->get_type() == line_type::Double)
-                _rPr << L"<w:dstrike w:val=\"true\" />";
+                _rPr << L"<w:dstrike w:val=\"true\"/>";
         }
         else if (style_text_line_through_style_ && style_text_line_through_style_->get_type() != line_style::None)
         {
-            _rPr << L"<w:strike w:val=\"true\" />";
+            _rPr << L"<w:strike w:val=\"true\"/>";
         }
     }
 
@@ -1256,12 +1261,12 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
         bool noNeedSize = false;
         if (style_text_position_->get_type() == text_position::Sub)
         {
-            _rPr << L"<w:vertAlign w:val=\"subscript\" />";
+            _rPr << L"<w:vertAlign w:val=\"subscript\"/>";
             noNeedSize = true;
         }
         if (style_text_position_->get_type() == text_position::Super)
         {
-            _rPr << L"<w:vertAlign w:val=\"superscript\" />";
+            _rPr << L"<w:vertAlign w:val=\"superscript\"/>";
             noNeedSize = true;
         }
 
@@ -1282,6 +1287,11 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
                     _rPr << L"<w:position w:val=\"" << position << "\" />";
                 }
             }
+			else
+			{
+				if (mul < - 0.3) _rPr << L"<w:vertAlign w:val=\"subscript\"/>";
+				else if (mul > 0.3)  _rPr << L"<w:vertAlign w:val=\"superscript\"/>";
+			}
         }
 
         if (style_text_position_->has_font_size() && !noNeedSize)
@@ -1293,7 +1303,7 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
                 if (!fontSize.empty())
                 {
                     needProcessFontSize = false;
-                    _rPr << L"<w:sz w:val=\"" << fontSize << "\" />";
+                    _rPr << L"<w:sz w:val=\"" << fontSize << "\"/>";
                 }
             }
         }

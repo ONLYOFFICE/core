@@ -2814,11 +2814,9 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 		switch(oox_run_pr->m_oVertAlign->m_oVal->GetValue())
 		{
 		case SimpleTypes::verticalalignrunSuperscript:
-			//text_properties->content_.style_text_position_ = odf_types::text_position(odf_types::text_position::Super); break;
-			text_properties->content_.style_text_position_ = odf_types::text_position(+33.); break;
+			text_properties->content_.style_text_position_ = odf_types::text_position(odf_types::text_position::Super, 58); break;
 		case SimpleTypes::verticalalignrunSubscript:
-			//text_properties->content_.style_text_position_ = odf_types::text_position(odf_types::text_position::Sub); break;
-			text_properties->content_.style_text_position_ = odf_types::text_position(-33.); break;//по умолчанию 58% - хуже выглядит
+			text_properties->content_.style_text_position_ = odf_types::text_position(odf_types::text_position::Sub, 58); break;
 		}
 	}
 	if (oox_run_pr->m_oW.IsInit() && oox_run_pr->m_oW->m_oVal.IsInit())

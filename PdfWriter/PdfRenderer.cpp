@@ -2068,6 +2068,11 @@ bool CPdfRenderer::EditPage(const std::wstring& sPage, const std::pair<int, int>
 	}
 	return false;
 }
+bool CPdfRenderer::DeletePage(const std::pair<int, int>& pPage)
+{
+	m_pDocument->DeletePage(pPage);
+	return true;
+}
 bool CPdfRenderer::EditClose(const std::wstring& wsPath, const std::wstring& sTrailer)
 {
 	if (!IsValid())

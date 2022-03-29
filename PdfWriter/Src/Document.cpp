@@ -1098,11 +1098,23 @@ namespace PdfWriter
 		m_pCurPage = pNewPage;
 		return pNewPage;
 	}
+	void CDocument::DeletePage(const std::pair<int, int>& pPage)
+	{
+		CXref* pXref = new CXref(this, pPage.first, pPage.second);
+		pXref->SetPrev(m_pLastXref);
+		m_pLastXref = pXref;
+	}
 	bool CDocument::AddToFile(const std::wstring& wsPath, const std::wstring& sTrailer)
 	{
 		CFileStream* pStream = new CFileStream();
 		if (!pStream || !pStream->OpenFile(wsPath, false))
 			return false;
+
+		// Добавляем первый элемент в таблицу xref
+		// он должен иметь вид 0000000000 65535 f
+		CXref* pXref = new CXref(this, 0, 65535);
+		pXref->SetPrev(m_pLastXref);
+		m_pLastXref = pXref;
 
 		m_pTrailer = m_pLastXref->GetTrailer();
 		m_pTrailer->FromXml(sTrailer);

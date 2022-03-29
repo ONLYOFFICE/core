@@ -75,6 +75,7 @@ int main()
     */
     if (bResult && pReader->EditPdf(&pdfWriter, sPassword))
     {
+        /*
         if (pReader->EditPage(0))
         {
             TEST(&pdfWriter);
@@ -84,9 +85,9 @@ int main()
         if (pReader->EditPage(1))
         {
             TEST2(&pdfWriter);
+            pdfWriter.PageRotate(90);
         }
 
-        /*
         if (pdfWriter.NewPage() == S_OK)
         {
             // Новой странице необходимо выставить длину и ширину
@@ -100,12 +101,11 @@ int main()
             pdfWriter.put_Width(dWidth);
             pdfWriter.put_Height(dHeight);
 
-            pdfWriter.put_Width(100);
-            pdfWriter.put_Height(100);
-
             TEST(&pdfWriter);
         }
         */
+
+        pReader->DeletePage(3);
 
         NSFile::CFileBinary::Copy(sSrcFile, sDstFile);
         pReader->EditClose(sDstFile);

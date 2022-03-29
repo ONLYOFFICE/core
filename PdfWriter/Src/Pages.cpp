@@ -288,6 +288,11 @@ namespace PdfWriter
 		else
 			Add("MediaBox", CArrayObject::CreateBox(0, 0, DEF_PAGE_WIDTH, DEF_PAGE_HEIGHT));
 
+		// Инициализация текущего Rotate
+		CObjectBase* pRotate = GetRotateItem();
+		if (pRotate && pRotate->GetType() == object_type_NUMBER)
+			Add("Rotate", ((CNumberObject*)pRotate)->Get() % 360);
+
 		CDictObject* pResources = GetResourcesItem();
 		if (pResources)
 		{

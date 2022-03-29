@@ -516,6 +516,13 @@ return 0;
 
         return m_pPdfWriter->EditPage(sPage, std::make_pair(pPageRef->num, pPageRef->gen));
     }
+    bool CPdfReader::DeletePage(int nPageIndex)
+    {
+        Ref* pPageRef = m_pInternal->m_pPDFDocument->getCatalog()->getPageRef(++nPageIndex);
+        if (pPageRef)
+            return m_pPdfWriter->DeletePage(std::make_pair(pPageRef->num, pPageRef->gen));
+        return false;
+    }
     bool CPdfReader::EditClose(const std::wstring& wsPath)
     {
         XRef* xref = m_pInternal->m_pPDFDocument->getXRef();

@@ -451,6 +451,7 @@ namespace PdfWriter
 	public:
 
 		CXref(CDocument* pDocument, unsigned int unOffset);
+		CXref(CDocument* pDocument, unsigned int unRemoveId, unsigned int unRemoveGen);
 		~CXref();
 
 		TXrefEntry* GetEntry(unsigned int unIndex) const;

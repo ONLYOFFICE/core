@@ -100,6 +100,7 @@ namespace PdfReader
         std::wstring ToXml(const std::wstring& wsXmlPath);
         bool EditPdf(IRenderer* pPdfWriter, const std::wstring& sPassword = L"");
         bool EditPage(int nPageIndex);
+        bool DeletePage(int nPageIndex);
         bool EditClose(const std::wstring& wsPath);
 
     #ifdef BUILDING_WASM_MODULE

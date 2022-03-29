@@ -689,6 +689,25 @@ namespace PdfWriter
 
 		m_pTrailer = new CDictObject();
 	}
+	CXref::CXref(CDocument* pDocument, unsigned int unRemoveId, unsigned int unRemoveGen)
+	{
+		m_pDocument     = pDocument;
+		m_unStartOffset = unRemoveId;
+		m_unAddr        = 0;
+		m_pPrev         = NULL;
+		m_pTrailer      = NULL;
+
+		// Добавляем удаляемый элемент в таблицу xref
+		// он должен иметь вид 0000000000 gen+1 f
+		TXrefEntry* pEntry = new TXrefEntry;
+		pEntry->nEntryType  =  FREE_ENTRY;
+		pEntry->unByteOffset = 0;
+		pEntry->unGenNo      = unRemoveGen + 1 > MAX_GENERATION_NUM ? MAX_GENERATION_NUM : unRemoveGen + 1;
+		pEntry->pObject      = NULL;
+		m_arrEntries.push_back(pEntry);
+
+		m_pTrailer = new CDictObject();
+	}
 	CXref::~CXref()
 	{
 		for (int nIndex = 0, nCount = m_arrEntries.size(); nIndex < nCount; nIndex++)
@@ -795,32 +814,43 @@ namespace PdfWriter
 		char* pEndPtr = sBuf + SHORT_BUFFER_SIZE - 1;
 
 		CXref* pXref = this;
+		TXrefEntry* pNextFreeObj = NULL;
 		while (pXref)
 		{
-			unsigned int unStartIndex = (0 == pXref->m_unStartOffset ? 1 : 0);
-			for (unsigned int unIndex = unStartIndex, unCount = pXref->m_arrEntries.size(); unIndex < unCount; unIndex++)
+			for (unsigned int unIndex = 0, unCount = pXref->m_arrEntries.size(); unIndex < unCount; unIndex++)
 			{
 				TXrefEntry* pEntry = pXref->m_arrEntries.at(unIndex);
-				unsigned int unObjId = pXref->m_unStartOffset + unIndex;
-				unsigned int unGenNo = pEntry->unGenNo;
+				if (pEntry->nEntryType == FREE_ENTRY)
+				{
+					if (pNextFreeObj)
+						pNextFreeObj->unByteOffset = pXref->m_unStartOffset;
+					pNextFreeObj = pEntry;
+				}
+				else
+				{
+					unsigned int unObjId = pXref->m_unStartOffset + unIndex;
+					unsigned int unGenNo = pEntry->unGenNo;
 
-				pEntry->unByteOffset = pStream->Tell();
+					pEntry->unByteOffset = pStream->Tell();
 
-				if (pEncrypt)
-					pEncrypt->InitKey(unObjId, unGenNo);
+					if (pEncrypt)
+						pEncrypt->InitKey(unObjId, unGenNo);
 
-				pBuf = sBuf;
-				pBuf = ItoA(pBuf, unObjId, pEndPtr);
-				*pBuf++ = ' ';
-				pBuf = ItoA(pBuf, unGenNo, pEndPtr);
-				StrCpy(pBuf, " obj\012", pEndPtr);
+					pBuf = sBuf;
+					pBuf = ItoA(pBuf, unObjId, pEndPtr);
+					*pBuf++ = ' ';
+					pBuf = ItoA(pBuf, unGenNo, pEndPtr);
+					StrCpy(pBuf, " obj\012", pEndPtr);
 
-				pStream->WriteStr(sBuf);
-				pEntry->pObject->WriteValue(pStream, pEncrypt);
-				pStream->WriteStr("\012endobj\012");
+					pStream->WriteStr(sBuf);
+					pEntry->pObject->WriteValue(pStream, pEncrypt);
+					pStream->WriteStr("\012endobj\012");
+				}
 			}
 			pXref = pXref->m_pPrev;
 		}
+		if (pNextFreeObj)
+			pNextFreeObj->unByteOffset = 0;
 
 		if (bStream)
 		{
@@ -932,10 +962,13 @@ namespace PdfWriter
 		pStream->WriteStr("xref\012");
 		while (pXref)
 		{
-			pStream->WriteInt(pXref->m_unStartOffset);
-			pStream->WriteChar(' ');
-			pStream->WriteInt(pXref->m_arrEntries.size());
-			pStream->WriteChar('\012');
+			if (pXref->m_arrEntries.size())
+			{
+				pStream->WriteInt(pXref->m_unStartOffset);
+				pStream->WriteChar(' ');
+				pStream->WriteInt(pXref->m_arrEntries.size());
+				pStream->WriteChar('\012');
+			}
 
 			for (unsigned int unIndex = 0, unCount = pXref->m_arrEntries.size(); unIndex < unCount; unIndex++)
 			{

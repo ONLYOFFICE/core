@@ -75,6 +75,12 @@ public:
 		record >> val;
     }
 
+    virtual void save(CFRecord& record)
+    {
+        version = record.getGlobalWorkbookInfo()->Version;
+        record << val;
+    }
+
     operator Type () const { return (val ? static_cast<Type>(*val) : (Type)0); }
 	
     BiffAttributeSimple<Type> operator= (const BiffAttributeSimple<Type>& other)

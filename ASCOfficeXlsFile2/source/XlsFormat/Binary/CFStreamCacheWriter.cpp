@@ -39,7 +39,7 @@
 namespace XLS
 {
 
-StreamCacheWriter::StreamCacheWriter(GlobalWorkbookInfoPtr global_info)
+StreamCacheWriter::StreamCacheWriter(const GlobalWorkbookInfoPtr global_info)
 	: global_info_(global_info)
 {
 }

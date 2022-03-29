@@ -293,6 +293,25 @@ void CFRecord::appendRawData(const char* raw_data, const size_t size)
 
 }
 
+void CFRecord::appendRawDataToStatic(const unsigned char *raw_data, const size_t size)
+{
+    if(MAX_RECORD_SIZE - rdPtr > size)
+    {
+        memcpy(&intData[rdPtr], raw_data, size);
+        rdPtr += size;
+    }
+
+}
+void CFRecord::appendRawDataToStatic(const wchar_t *raw_data, const size_t size)
+{
+    if(MAX_RECORD_SIZE - rdPtr > size)
+    {
+        for(int i = 0; i < size; ++i)
+            storeAnyData(raw_data[i]);
+    }
+
+}
+
 bool CFRecord::loadAnyData(wchar_t & val)
 {
     if (checkFitRead(2))
@@ -309,6 +328,22 @@ bool CFRecord::loadAnyData(wchar_t & val)
 		return true;
 	}
 	return false;
+}
+
+bool CFRecord::storeAnyData(const wchar_t & val)
+{
+    if (checkFitWrite(2))
+    {
+    #if defined(_WIN32) || defined(_WIN64)
+        *reinterpret_cast<wchar_t*>(&intData[rdPtr]) = val;
+        rdPtr += 2;
+    #else
+        unsigned short temp = val;
+        storeAnyData(temp);
+    #endif
+        return true;
+    }
+    return false;
 }
 
 void CFRecord::insertDataFromRecordToBeginning(CFRecordPtr where_from)
@@ -348,6 +383,11 @@ const bool CFRecord::checkFitReadSafe(const size_t size) const
 	return (rdPtr + size <= size_);
 }
 
+const bool CFRecord::checkFitWriteSafe(const size_t size) const
+{
+    return (rdPtr + size <= MAX_RECORD_SIZE);
+}
+
 
 // Checks whether the specified number of unsigned chars present in the non-read part of the buffer
 // Generates an exception
@@ -358,6 +398,15 @@ bool CFRecord::checkFitRead(const size_t size) const
 		return false;// EXCEPT::RT::WrongBiffRecord("Wrong record size.", getTypeString());
 	}
 	return true;
+}
+
+bool CFRecord::checkFitWrite(const size_t size) const
+{
+    if(!checkFitWriteSafe(size))
+    {
+        return false;// EXCEPT::RT::WrongBiffRecord("Wrong record size.", getTypeString());
+    }
+    return true;
 }
 
 void CFRecord::skipNunBytes(const size_t n)

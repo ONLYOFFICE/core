@@ -67,15 +67,19 @@ public:
 	const size_t getMaxRecordSize() const;
 	void appendRawData(CFRecordPtr where_from);
 	void appendRawData(const char* raw_data, const size_t size);
+    void appendRawDataToStatic(const unsigned char* raw_data, const size_t size);
+    void appendRawDataToStatic(const wchar_t* raw_data, const size_t size);
 	void insertDataFromRecordToBeginning(CFRecordPtr where_from);
 
 	const bool isEOF() const; // whether all the data have bean read
 	// Checks whether the specified number of unsigned chars present in the non-read part of the buffer
 	// Doesn't generate an exception
 	const bool checkFitReadSafe(const size_t size) const;
+    const bool checkFitWriteSafe(const size_t size) const;
 	// Checks whether the specified number of unsigned chars present in the non-read part of the buffer
 	// Generates an exception
 	bool checkFitRead(const size_t size) const;
+    bool checkFitWrite(const size_t size) const;
 	// Checks whether the specified number of unsigned chars fits in max size of the buffer
 	// Generates an exception
 	void skipNunBytes(const size_t n); // Skip the specified number of unsigned chars without reading
@@ -93,7 +97,7 @@ public:
 	}
 
 	template<class T>
-	const T* getCurStaticData() const
+    const T* getCurStaticData() const
 	{
 		return reinterpret_cast<T*>(&intData[rdPtr]);
 	}
@@ -118,7 +122,7 @@ public:
     }
 
 	template<class T>
-	bool storeAnyData(T& val)
+    bool storeAnyData(const T& val)
 	{
 		if (rdPtr + sizeof(T) < MAX_RECORD_SIZE)
 		{
@@ -130,6 +134,7 @@ public:
 	}
 
     bool loadAnyData(wchar_t & val);
+    bool storeAnyData(const wchar_t & val);
 
 	GlobalWorkbookInfoPtr getGlobalWorkbookInfo() { return global_info_; }
 

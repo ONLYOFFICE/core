@@ -47,7 +47,7 @@ namespace XLS
 class StreamCacheWriter
 {
 public:
-	StreamCacheWriter(GlobalWorkbookInfoPtr global_info);
+        StreamCacheWriter(const GlobalWorkbookInfoPtr global_info);
 	virtual ~StreamCacheWriter();
 
 	// Return the next new CFRecord
@@ -70,7 +70,7 @@ protected:
 class CFStreamCacheWriter : public StreamCacheWriter
 {
 public:
-	CFStreamCacheWriter(CFStreamPtr stream, GlobalWorkbookInfoPtr global_info);
+        CFStreamCacheWriter(CFStreamPtr stream, const GlobalWorkbookInfoPtr global_info);
 	~CFStreamCacheWriter();
 
 	// Return the next new CFRecord
@@ -89,8 +89,8 @@ private:
 class BinaryStreamCacheWriter : public StreamCacheWriter
 {
 public:
-	BinaryStreamCacheWriter(boost::shared_ptr<NSBinPptxRW::CXlsbBinaryWriter> binaryStream, const GlobalWorkbookInfoPtr global_info);
-	~BinaryStreamCacheWriter();
+        BinaryStreamCacheWriter(boost::shared_ptr<NSBinPptxRW::CXlsbBinaryWriter> binaryStream, const GlobalWorkbookInfoPtr global_info);
+        ~BinaryStreamCacheWriter();
 	
 private:
 	const size_t writeToStream(const size_t num_of_records_min_necessary) override;

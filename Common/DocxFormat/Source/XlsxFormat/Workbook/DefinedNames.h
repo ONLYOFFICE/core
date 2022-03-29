@@ -151,10 +151,10 @@ namespace OOX
 					else
 						ptr->chKey = 0;
 
-					if (m_oRef.IsInit())
-						ptr->rgce = m_oRef.get();
-					else
-						ptr->rgce = L"";
+                    //if (m_oRef.IsInit())
+                        //ptr->rgce = m_oRef.get();
+                    //else
+                        //ptr->rgce = L"";
 				}
 			}
 

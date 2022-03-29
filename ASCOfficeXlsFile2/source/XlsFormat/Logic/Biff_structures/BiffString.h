@@ -129,13 +129,13 @@ public:
 		switch(cch_where)
 		{
 			case cch_READ_FROM_RECORD:
-				cchType cch_l; // Just to conform size read.
-				record >> cch_l;
-				cch = cch_l;
+                cchType cch_l; // Just to conform size read.
+                record >> cch_l;
+                cch = cch_l;
 				struct_size += sizeof(cchType);
 				break;
 			case cch_PASSED_AS_AN_ARGUMENT:
-				cch = getSize();
+                cch = getSize();
 				break;
 		}
 		switch(det_id)
@@ -143,11 +143,11 @@ public:
 			case aw_READ_FROM_RECORD_IF_CCH_NOT_ZERO:
 				if(0 == cch) break;
 			case aw_READ_FROM_RECORD:
-				unsigned char fHighByte;
-				record >> fHighByte;
-				fHighByte &= 1;
-				is_wide = fHighByte != 0;
-				struct_size += sizeof(fHighByte);
+                unsigned char fHighByte;
+                record >> fHighByte;
+                fHighByte &= 1;
+                is_wide = fHighByte != 0;
+                struct_size += sizeof(fHighByte);
 				break;
 			case aw_WIDE:
 				is_wide = true;
@@ -182,66 +182,59 @@ public:
 
 	void save_(CFRecord& record)
 	{
-		size_t cch;
-		size_t struct_size = 0;
+        size_t cch = cch_.get();
+        size_t struct_size = 0;
 
-		if (record.getRdPtr() >= record.getDataSize())
-			return;
+        bool is_wide = false;
 
-		bool is_wide = false;
-
-		switch (cch_where)
-		{
-		case cch_READ_FROM_RECORD:
-			cchType cch_l; // Just to conform size read.
-			record >> cch_l;
-			cch = cch_l;
-			struct_size += sizeof(cchType);
-			break;
-		case cch_PASSED_AS_AN_ARGUMENT:
-			//stub
-			break;
-		}
-		switch (det_id)
-		{
-		case aw_READ_FROM_RECORD_IF_CCH_NOT_ZERO:
-			if (0 == cch) break;
-		case aw_READ_FROM_RECORD:
-			unsigned char fHighByte;
-			record >> fHighByte;
-			fHighByte &= 1;
-			is_wide = fHighByte != 0;
-			struct_size += sizeof(fHighByte);
-			break;
-		case aw_WIDE:
-			is_wide = true;
-			break;
-		case aw_ANSI:
-			is_wide = false;
-			break;
-		case aw_READ_FROM_CCH:
-		{
-			cchType cch_real = static_cast<cchType>(cch);
-			is_wide = 0 != (cch_real & (1 << ((sizeof(cchType) * 8) - 1)));
-			cch &= (static_cast<cchType>(-1) >> 1);
-			break;
-		}
-		case aw_NULLABLE_WIDE:
-			if (0xFFFFFFFF == cch)
-				cch = 0;
-			is_wide = true;
-			break;
-		case aw_NAME_WIDE:
-			is_wide = true;
-			if (cch >= 255)
-				break;
-		}
+        switch(cch_where)
+        {
+            case cch_READ_FROM_RECORD:
+                cchType cch_l;
+                cch_l = cch; // Just to conform size read.
+                record << cch_l;
+                struct_size += sizeof(cchType);
+                break;
+            case cch_PASSED_AS_AN_ARGUMENT:
+                //stub
+                break;
+        }
+        switch(det_id)
+        {
+            case aw_READ_FROM_RECORD_IF_CCH_NOT_ZERO:
+                if(0 == cch) break;
+            case aw_READ_FROM_RECORD:
+                //stub
+                break;
+            case aw_WIDE:
+                is_wide = true;
+                break;
+            case aw_ANSI:
+                is_wide = false;
+                break;
+            case aw_READ_FROM_CCH:
+            {
+                cchType cch_real = static_cast<cchType>(cch);
+                is_wide = 0 != (cch_real & (1 << ((sizeof(cchType) * 8) - 1)));
+                cch &= (static_cast<cchType>(-1) >> 1);
+                break;
+            }
+            case aw_NULLABLE_WIDE:
+                if(0xFFFFFFFF == cch)
+                    cch = 0;
+                is_wide = true;
+                break;
+            case aw_NAME_WIDE:
+                is_wide = true;
+                if(cch >= 255)
+                    break;
+        }
 
 
-		struct_size += (cch << (is_wide ? 1 : 0));
+        struct_size += (cch << (is_wide ? 1 : 0));
 
-		load(record, cch, is_wide);
-		setStructSize(struct_size);
+        save(record, cch, is_wide);
+        setStructSize(struct_size);
 	}
 
 private:

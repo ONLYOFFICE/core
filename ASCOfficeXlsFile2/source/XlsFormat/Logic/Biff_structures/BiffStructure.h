@@ -49,6 +49,7 @@ class BiffStructure_NoVtbl
 public:
 	void load(CFRecord& record); // this function will never be called ( look at operator>>(CFRecord& record, T& val))
 	void load(IBinaryReader* reader);
+    void save(CFRecord& record);
 };
 
 class BiffStructure;

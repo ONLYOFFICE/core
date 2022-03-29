@@ -310,7 +310,7 @@ void xlsx_pivots_context::Impl::calc_headers()
 	for (size_t i = 0; i < current_.headers.size(); i++)//("F18","F19","F23","G21","H21")
 	{
 		size_t row = 0, col = 0;
-		oox::getCellAddressInv(current_.headers[i], col, row);
+		if (false == oox::getCellAddressInv(current_.headers[i], col, row)) continue;
 
 		//if (i > 0)
 		//{
@@ -390,18 +390,18 @@ void xlsx_pivots_context::Impl::calc_headers()
 	std::vector<std::wstring> split_ref;
 	boost::algorithm::split(split_ref, current_.location_ref, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
 	
-	if (split_ref.size() > 0)
+	if (false == split_ref.empty())
 	{
 		size_t row = 0, col = 0;
-		oox::getCellAddressInv(split_ref[0], col, row);
-
-		if (min_col != 0xffffff && min_row != 0xffffff)
+		if (oox::getCellAddressInv(split_ref[0], col, row))
 		{
-			col = min_col;
-			row = min_row;
+			if (min_col != 0xffffff && min_row != 0xffffff)
+			{
+				col = min_col;
+				row = min_row;
+			}
+			split_ref[0] = oox::getColAddress(col) + oox::getRowAddress(row);
 		}
-
-		split_ref[0] = oox::getColAddress(col) + oox::getRowAddress(row);
 	}
 	if (split_ref.size() > 1)
 	{

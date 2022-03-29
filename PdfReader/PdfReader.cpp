@@ -562,6 +562,8 @@ return 0;
         }
         else
             pg = pLinkDest->getPageNum();
+        if (pg == 0)
+            pg = 1;
         double dy = pdfDoc->getPageCropHeight(pg) - pLinkDest->getTop();
         if (str)
             RELEASEOBJECT(pLinkDest);

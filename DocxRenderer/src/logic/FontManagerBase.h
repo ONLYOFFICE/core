@@ -640,7 +640,7 @@ namespace NSFontManager
 			{
                 std::list<CFontPickUp>::iterator posOld = pos;
                 CFontPickUp& oPick = *(pos++);
-                if ((oPick.m_oFont.m_oFont.IsEqual(&m_oFont.m_oFont)) && (lRangeNum == oPick.m_lRangeNum) && (lRange == oPick.m_lRange))
+                if ((oPick.m_oFont.m_oFont.IsEqual2(&m_oFont.m_oFont)) && (lRangeNum == oPick.m_lRangeNum) && (lRange == oPick.m_lRange))
 				{
 					// нашли! ничего подбирать не нужно
 					// нужно просто выкинуть этот шрифт наверх

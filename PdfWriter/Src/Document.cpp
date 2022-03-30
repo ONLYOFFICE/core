@@ -1098,11 +1098,32 @@ namespace PdfWriter
 		m_pCurPage = pNewPage;
 		return pNewPage;
 	}
-	void CDocument::DeletePage(const std::pair<int, int>& pPage)
+	bool CDocument::DeletePage(const std::pair<int, int>& pPage, const std::wstring& sPageTree, const std::pair<int, int>& pPageTree)
 	{
-		CXref* pXref = new CXref(this, pPage.first, pPage.second);
-		pXref->SetPrev(m_pLastXref);
-		m_pLastXref = pXref;
+		CXref* pXref = m_pLastXref->GetXrefByObjectId(pPageTree.first);
+		CPageTree* pPageT = NULL;
+		if (pXref)
+		{
+			TXrefEntry* pEntry = pXref->GetEntryByObjectId(pPageTree.first);
+			if (pEntry && pEntry->pObject->GetType() == object_type_DICT && ((CDictObject*)(pEntry->pObject))->GetDictType() == dict_type_PAGES)
+				pPageT = (CPageTree*)pEntry->pObject;
+		}
+		else
+		{
+			pXref = new CXref(this, pPageTree.first);
+			CPageTree* pPageT = new CPageTree(pXref, sPageTree);
+			pPageT->SetRef(pPageTree.first, pPageTree.second);
+			pXref->SetPrev(m_pLastXref);
+			m_pLastXref = pXref;
+		}
+		if (pPageT && pPageT->RemovePage(pPage.first, pPage.second))
+		{
+			pXref = new CXref(this, pPage.first, pPage.second);
+			pXref->SetPrev(m_pLastXref);
+			m_pLastXref = pXref;
+			return true;
+		}
+		return false;
 	}
 	bool CDocument::AddToFile(const std::wstring& wsPath, const std::wstring& sTrailer)
 	{

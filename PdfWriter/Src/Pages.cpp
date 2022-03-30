@@ -225,6 +225,15 @@ namespace PdfWriter
 		m_pPages->Add(pPage);
 		(*m_pCount)++;
 	}
+	bool CPageTree::RemovePage(unsigned int unObjId, unsigned int unGenNo)
+	{
+		if (m_pPages->Remove(unObjId, unGenNo))
+		{
+			(*m_pCount)--;
+			return true;
+		}
+		return false;
+	}
 	//----------------------------------------------------------------------------------------
 	// CPage
 	//----------------------------------------------------------------------------------------

@@ -105,6 +105,7 @@ namespace PdfWriter
 		bool IsHidden() const;
 		bool IsDirect() const;
 		bool IsIndirect() const;
+		bool IsIt(unsigned int unObjId, unsigned int unGenNo) const;
 		void SetDirect();
 		void SetIndirect();
 		void SetHidden();
@@ -194,6 +195,10 @@ namespace PdfWriter
 		void operator++(int)
 		{
 			m_nValue++;
+		}
+		void operator--(int)
+		{
+			m_nValue--;
 		}
 
 	private:
@@ -368,6 +373,7 @@ namespace PdfWriter
 		void         Add(double dValue);
 		void         Insert(CObjectBase* pTarget, CObjectBase* pObject, bool bReplace = false);
 		CObjectBase* Get(unsigned int unIndex, bool bCheckProxy = true) const;
+		bool         Remove(unsigned int unObjId, unsigned int unGenNo);
 		void         Clear();
 		EObjectType  GetType() const
 		{
@@ -456,6 +462,7 @@ namespace PdfWriter
 
 		TXrefEntry* GetEntry(unsigned int unIndex) const;
 		TXrefEntry* GetEntryByObjectId(unsigned int unObjectId) const;
+		CXref*      GetXrefByObjectId(unsigned int unObjectId);
 		void        Add(CObjectBase* pObject);		
 		void        WriteToStream(CStream* pStream, CEncrypt* pEncrypt, bool bStream = false);
 		void        SetPrev(CXref* pPrev)

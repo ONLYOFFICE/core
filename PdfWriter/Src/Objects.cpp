@@ -70,6 +70,10 @@ namespace PdfWriter
 	{
 		return (m_unFlags & FLAG_INDIRECT ? true : false);
 	}
+	bool CObjectBase::IsIt(unsigned int unObjId, unsigned int unGenNo) const
+	{
+		return unObjId == m_unObjId && unGenNo == m_unGenNo;
+	}
 	void CObjectBase::SetDirect()
 	{
 		m_unFlags |= FLAG_DIRECT;
@@ -331,6 +335,28 @@ namespace PdfWriter
 			pObject = ((CProxyObject*)pObject)->Get();
 
 		return pObject;
+	}
+	bool CArrayObject::Remove(unsigned int unObjId, unsigned int unGenNo)
+	{
+		for (int nIndex = 0, nCount = m_arrList.size(); nIndex < nCount; nIndex++)
+		{
+			CObjectBase* pObject = m_arrList.at(nIndex);
+			if (pObject->IsIt(unObjId, unGenNo))
+			{
+				m_arrList.erase(m_arrList.begin() + nIndex);
+				return true;
+			}
+			if (pObject->GetType() == object_type_PROXY)
+			{
+				pObject = ((CProxyObject*)pObject)->Get();
+				if (pObject->IsIt(unObjId, unGenNo))
+				{
+					m_arrList.erase(m_arrList.begin() + nIndex);
+					return true;
+				}
+			}
+		}
+		return false;
 	}
     void CArrayObject::Clear()
 	{
@@ -739,10 +765,10 @@ namespace PdfWriter
 
 		while (pXref)
 		{
-			if (pXref->m_arrEntries.size() + pXref->m_unStartOffset > nObjectId)
+			if (pXref->m_arrEntries.size() + pXref->m_unStartOffset <= nObjectId)
 				return NULL;
 
-			if (pXref->m_unStartOffset < nObjectId)
+			if (pXref->m_unStartOffset <= nObjectId)
 			{
 				for (unsigned int unIndex = 0, nCount = pXref->m_arrEntries.size(); unIndex < nCount; unIndex++)
 				{
@@ -754,6 +780,19 @@ namespace PdfWriter
 			}
 
 			pXref = (const CXref*)pXref->m_pPrev;
+		}
+
+		return NULL;
+	}
+	CXref* CXref::GetXrefByObjectId(unsigned int unObjectId)
+	{
+		CXref* pXref = this;
+
+		while (pXref)
+		{
+			if (unObjectId >= pXref->m_unStartOffset && unObjectId < pXref->m_unStartOffset + pXref->m_arrEntries.size())
+				return pXref;
+			pXref = pXref->m_pPrev;
 		}
 
 		return NULL;

@@ -519,9 +519,27 @@ return 0;
     bool CPdfReader::DeletePage(int nPageIndex)
     {
         Ref* pPageRef = m_pInternal->m_pPDFDocument->getCatalog()->getPageRef(++nPageIndex);
-        if (pPageRef)
-            return m_pPdfWriter->DeletePage(std::make_pair(pPageRef->num, pPageRef->gen));
-        return false;
+        if (!pPageRef)
+            return false;
+
+        XRef* xref = m_pInternal->m_pPDFDocument->getXRef();
+        Object catDict, pagesRefObj, pagesObj;
+        if (!xref->getCatalog(&catDict)->isDict() || !catDict.dictLookupNF("Pages", &pagesRefObj)->isRef() || !pagesRefObj.fetch(xref, &pagesObj)->isDict())
+        {
+            pagesObj.free();
+            pagesRefObj.free();
+            catDict.free();
+            return false;
+        }
+        std::wstring sPageTree = L"<PageTree";
+        XMLConverter::DictToXml(&pagesObj, sPageTree);
+        sPageTree += L"</PageTree>";
+        Ref topPagesRef = pagesRefObj.getRef();
+        pagesObj.free();
+        pagesRefObj.free();
+        catDict.free();
+
+        return m_pPdfWriter->DeletePage(std::make_pair(pPageRef->num, pPageRef->gen), sPageTree, std::make_pair(topPagesRef.num, topPagesRef.gen));
     }
     bool CPdfReader::EditClose(const std::wstring& wsPath)
     {

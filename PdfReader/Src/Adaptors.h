@@ -14,7 +14,7 @@
 #include "../../DesktopEditor/common/Directory.h"
 #include <string>
 
-#include "../lib/goo/Glist.h"
+#include "../lib/goo/GList.h"
 #include "../lib/goo/GHash.h"
 
 #define GrClipEOFlag 0x01

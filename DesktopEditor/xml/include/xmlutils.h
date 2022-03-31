@@ -335,6 +335,9 @@ namespace XmlUtils
         std::string KERNEL_DECL Execute(const std::string& sXml, int mode = XML_C14N_1_0, bool withComments = false);
         std::string KERNEL_DECL Execute(const std::wstring& sXmlFile, int mode = XML_C14N_1_0, bool withComments = false);
     }
+
+    // UTF-8 BOM, UTF-16BE BOM, UTF-16LE BOM, UTF-32BE BOM, UTF-32LE BOM
+    std::string KERNEL_DECL GetUtf8FromFileContent(unsigned char* pData, unsigned int len);
 }
 
 #endif // _BUILD_XMLUTILS_CROSSPLATFORM_H_

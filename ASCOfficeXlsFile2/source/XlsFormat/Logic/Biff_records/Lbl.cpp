@@ -228,7 +228,46 @@ void Lbl::writeFields(CFRecord& record)
 
 		record << chKey << itab;
 		record << name;
-		rgce.save(record);
+
+
+       /* std::vector<std::wstring>inputs {
+                L"1E+10+3+5",
+                L"3 * 4 + 5",
+                L"50",
+                L"1+1",
+                L"SUM(1,2,3,4)",
+                L"IF(P5=1.0,\"NA\",IF(P5=2.0,\"A\",IF(P5=3.0,\"B\",IF(P5=4.0,\"C\",IF(P5=5.0,\"D\",IF(P5=6.0,\"E\",IF(P5=7.0,\"F\",IF(P5=8.0,\"G\"))))))))",
+                L"SUM(123 + SUM(456) + (45DATE(2002,1,6),0,IF(ISERROR(R[41]C[2]),0,IF(R13C3>=R[41]C[2],0, IF(AND(R[23]C[11]>=55,R[24]C[11]>=20),R53C3,0))))",
+                L"$A1",
+                L"$B$2",
+                L"SUM(B5:B15)",
+                L"SUM(B5:B15,D5:D15)",
+                L"SUM(B5:B15 A7:D7)",
+                L"SUM(sheet1!$A$1:$B$2)",
+                L"[data.xls]sheet1!$A$1",
+                L"SUM((A:A 1:1))",
+                L"SUM((A:A,1:1))",
+                L"SUM((A:A A1:B1))",
+                L"SUM(D9:D11,E9:E11,F9:F11)",
+                L"SUM((D9:D11,(E9:E11,F9:F11)))",
+                L"{SUM(B2:D2*B3:D3)}",
+                L"IF(R[39]C[11]>65,R[25]C[42],ROUND((R[11]C[11]*IF(OR(AND(R[39]C[11]>=55, "
+                    "(R[40]C[11]>=20),AND(R[40]C[11]>=20,R11C3=\"YES\")),R[44]C[11],R[43]C[11]))+(R[14]C[11] "
+                    "*IF(OR(AND(R[39]C[11]>=55,R[40]C[11]>=20),AND(R[40]C[11]>=20,R11C3=\"YES\")), "
+                    "R[45]C[11],R[43]C[11])),0))"
+            };
+            std::vector<std::wstring> outputs;
+            for (const auto& input: inputs)
+            {
+                NameParsedFormula rg(false);
+                rg.parseStringFormula(input, L"");
+                auto assem = rg.getAssembledFormula();
+                outputs.push_back(assem);
+
+            }
+
+*/
+        rgce.save(record);
 		record << comment;
 		if (fProc)
 		{

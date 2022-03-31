@@ -41,8 +41,10 @@ NameParsedFormula::NameParsedFormula(const bool is_part_of_a_revision)
 {
 
 }
-
-
+void NameParsedFormula::operator=(const std::wstring& value)
+{
+    ParsedFormula::operator = (value);
+}
 BiffStructurePtr NameParsedFormula::clone()
 {
 	return BiffStructurePtr(new NameParsedFormula(*this));
@@ -62,6 +64,13 @@ void NameParsedFormula::load(CFRecord& record)
     rgce.load(record, _cce);
     record >> _cb;
     rgcb.load(record, rgce.getPtgs(), is_part_of_a_revision_);
+}
+
+void NameParsedFormula::save(CFRecord& record)
+{
+    rgce.save(record);
+    rgcb.save(record);
+
 }
 
 } // namespace XLS

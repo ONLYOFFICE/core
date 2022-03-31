@@ -150,7 +150,7 @@ public:
 
             return "";
         }
-        std::string sXmlUtf8((char*)buffer->Buffer, (size_t)buffer->Size);
+        std::string sXmlUtf8 = XmlUtils::GetUtf8FromFileContent(buffer->Buffer, (unsigned int)buffer->Size);
         delete buffer;
         return sXmlUtf8;
     }

@@ -3987,6 +3987,27 @@ namespace PdfReader
         if (nMaskWidth <= 0 || nMaskHeight <= 0)
             drawImage(pGState, pRef, pStream, nWidth, nHeight, pColorMap, NULL, false, interpolate);
 
+        if (nMaskWidth > nWidth || nMaskHeight > nHeight)
+        {
+            // If the mask is higher resolution than the image, use
+            // drawSoftMaskedImage() instead.
+
+            GfxImageColorMap *maskColorMap;
+            Object maskDecode, decodeLow, decodeHigh;
+
+            decodeLow.initInt(bMaskInvert ? 0 : 1);
+            decodeHigh.initInt(bMaskInvert ? 1 : 0);
+            maskDecode.initArray(m_pXref);
+            maskDecode.arrayAdd(&decodeLow);
+            maskDecode.arrayAdd(&decodeHigh);
+            maskColorMap = new GfxImageColorMap(1, &maskDecode, new GfxDeviceGrayColorSpace());
+            maskDecode.free();
+            drawSoftMaskedImage(pGState, pRef, pStream, nWidth, nHeight,
+                                pColorMap, pStreamRef, pMaskStream, nMaskWidth, nMaskHeight, maskColorMap, NULL, interpolate);
+            delete maskColorMap;
+            return;
+        }
+
         double dPageHeight = pGState->getPageHeight();
 
         int nBufferSize = 4 * nWidth * nHeight;
@@ -4020,11 +4041,11 @@ namespace PdfReader
             unsigned char unMask = 0;
             for (int nY = nMaskHeight - 1; nY >= 0; nY--)
             {
+                int nIndex = nY * nMaskWidth;
                 for (int nX = 0; nX < nMaskWidth; nX++)
                 {
-                    int nIndex = nX + nY * nMaskWidth;
                     pMask->getPixel(&unMask);
-                    pMaskBuffer[nIndex] = unMask;
+                    pMaskBuffer[nIndex++] = unMask;
                 }
             }
 
@@ -4034,9 +4055,9 @@ namespace PdfReader
             unsigned char unPixel[4] ={ 0, 0, 0, 0 };
             for (int nY = nHeight - 1; nY >= 0; nY--)
             {
+                int nIndex = 4 * nY * nWidth;
                 for (int nX = 0; nX < nWidth; nX++)
                 {
-                    int nIndex = 4 * (nX + nY * nWidth);
                     pImageStream->getPixel(unPixel);
 
                     int nNearestY = (std::min)((int)(nY / dScaleHeight), nMaskHeight - 1);
@@ -4053,6 +4074,8 @@ namespace PdfReader
                         pBufferPtr[nIndex + 3] = 0;
                     else
                         pBufferPtr[nIndex + 3] = 255;
+
+                    nIndex += 4;
                 }
             }
 
@@ -4064,9 +4087,9 @@ namespace PdfReader
             unsigned char unMask = 0;
             for (int nY = nHeight - 1; nY >= 0; nY--)
             {
+                int nIndex = 4 * nY * nWidth;
                 for (int nX = 0; nX < nWidth; nX++)
                 {
-                    int nIndex = 4 * (nX + nY * nWidth);
                     pImageStream->getPixel(unPixel);
                     pMask->getPixel(&unMask);
                     GfxRGB oRGB;
@@ -4079,6 +4102,8 @@ namespace PdfReader
                         pBufferPtr[nIndex + 3] = 0;
                     else
                         pBufferPtr[nIndex + 3] = 255;
+
+                    nIndex += 4;
                 }
             }
         }

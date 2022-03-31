@@ -52,24 +52,16 @@ public:
     text_position()
     {}
 
-    text_position(type _Type) : type_(_Type), 
-        has_font_size_(false)
+    text_position(type _Type) : type_(_Type)
     {}
 
-    text_position(double _Percent) : type_(Percent), 
-        position_(_Percent), 
-        has_font_size_(false)
+    text_position(double _Percent) : type_(Percent), position_(_Percent)
     {}
 
-    text_position(type _Type, double _FontSize) : type_(_Type), 
-        has_font_size_(true), 
-        font_size_(_FontSize)
+    text_position(type _Type, double _pctFontSize) : type_(_Type), font_size_(_pctFontSize)
     {}
 
-    text_position(double _Percent, double _FontSize) : type_(Percent), 
-        position_(_Percent), 
-        has_font_size_(true), 
-        font_size_(_FontSize)
+    text_position(double _Percent, double _pctFontSize) : type_(Percent), position_(_Percent), font_size_(_pctFontSize)
     {}
 
     type get_type() const
@@ -84,12 +76,12 @@ public:
 
     bool has_font_size() const
     {
-        return has_font_size_; 
+        return font_size_.has_value();
     }
 
     const percent & font_size() const
     {
-        return font_size_;
+        return font_size_.get_value_or(0);
     }
 
     static text_position parse(const std::wstring & Str);
@@ -98,8 +90,7 @@ private:
     type type_;
     percent position_;
     
-    bool has_font_size_;
-    percent font_size_;
+    _CP_OPT(percent) font_size_;
     
 };
 

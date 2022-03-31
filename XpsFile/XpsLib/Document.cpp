@@ -236,10 +236,10 @@ namespace XPS
 				ReadAttribute(oReader, L"Source", wsSource);
 
 				std::wstring wsPagePath = wsSource;
-				if (!m_wsPath->exists(wsPagePath))
+                if (!m_wsPath->existsXml(wsPagePath))
 				{
 					wsPagePath = wsFilePath + wsSource;
-					if (!m_wsPath->exists(wsPagePath))
+                    if (!m_wsPath->existsXml(wsPagePath))
 						continue;
 				}
 

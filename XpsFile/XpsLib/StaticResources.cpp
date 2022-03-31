@@ -155,6 +155,9 @@ namespace XPS
 	}
 	bool CImageBrush::SetToRenderer(IRenderer* pRenderer)
 	{
+		if (!m_wsRoot)
+			return false;
+
 		std::wstring wsPath = m_wsPath.c_stdstr();
 		if (!m_wsRoot->exists(wsPath))
 		{

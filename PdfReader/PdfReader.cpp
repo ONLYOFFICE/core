@@ -42,6 +42,7 @@
 #include "../DesktopEditor/raster/BgraFrame.h"
 #include "../DesktopEditor/graphics/IRenderer.h"
 #include "../DesktopEditor/common/Directory.h"
+#include "../PdfWriter/PdfRenderer.h"
 
 #include "lib/xpdf/PDFDoc.h"
 #include "lib/xpdf/GlobalParams.h"
@@ -58,7 +59,6 @@
 #include "lib/goo/GList.h"
 #include "../DesktopEditor/common/StringExt.h"
 #include <vector>
-//#include <fstream>
 #endif
 
 namespace PdfReader
@@ -72,6 +72,89 @@ namespace PdfReader
         NSFonts::IApplicationFonts* m_pAppFonts;
         NSFonts::IFontManager*      m_pFontManager;
         CFontList*         m_pFontList;
+        CPdfRenderer*      m_pPdfWriter;
+
+        Object* FindPageTree(XRef* xref, Object* pPagesRefObj, int nFindNum, int nFindGen)
+        {
+            if (!pPagesRefObj || !xref)
+                return NULL;
+
+            Object typeDict, pagesObj;
+            if (!pPagesRefObj->isRef() || !pPagesRefObj->fetch(xref, &pagesObj)   ||
+                !pagesObj.isDict()     || !pagesObj.dictLookup("Type", &typeDict) ||
+                !typeDict.isName("Pages"))
+            {
+                pagesObj.free();
+                typeDict.free();
+                return NULL;
+            }
+            typeDict.free();
+
+            Object kidsArrObj;
+            if (!pagesObj.dictLookup("Kids", &kidsArrObj) || !kidsArrObj.isArray())
+            {
+                pagesObj.free();
+                kidsArrObj.free();
+                return NULL;
+            }
+            pagesObj.free();
+
+            Object* kidRefObj = new Object();
+            if (!kidRefObj)
+            {
+                kidsArrObj.free();
+                return NULL;
+            }
+
+            for (int i = 0, count = kidsArrObj.arrayGetLength(); i < count; ++i)
+            {
+                if (kidsArrObj.arrayGetNF(i, kidRefObj))
+                {
+                    if (kidRefObj->isRef())
+                    {
+                        Ref PageOrTreeRef = kidRefObj->getRef();
+                        if (PageOrTreeRef.num == nFindNum && PageOrTreeRef.gen == nFindGen)
+                        {
+                            kidsArrObj.free();
+                            kidRefObj->free();
+                            delete kidRefObj;
+                            return pPagesRefObj;
+                        }
+                    }
+
+                    Object* pRes = FindPageTree(xref, kidRefObj, nFindNum, nFindGen);
+                    if (pRes)
+                    {
+                        kidsArrObj.free();
+                        if (kidRefObj != pRes)
+                        {
+                            std::wstring sPageTree = L"<PageTree";
+                            Object pagesObj;
+                            if (kidRefObj->fetch(xref, &pagesObj))
+                                XMLConverter::DictToXml(&pagesObj, sPageTree);
+                            else
+                                sPageTree += L'>';
+                            sPageTree += L"</PageTree>";
+                            Ref topPagesRef = kidRefObj->getRef();
+
+                            if (sPageTree == L"<PageTree></PageTree>")
+                                sPageTree.clear();
+                            if (!sPageTree.empty())
+                                m_pPdfWriter->DeletePage(std::make_pair(0, 0), sPageTree, std::make_pair(topPagesRef.num, topPagesRef.gen));
+
+                            kidRefObj->free();
+                            delete kidRefObj;
+                        }
+                        return pRes;
+                    }
+                }
+                kidRefObj->free();
+            }
+
+            delete kidRefObj;
+            kidsArrObj.free();
+            return NULL;
+        }
     };
 
     CPdfReader::CPdfReader(NSFonts::IApplicationFonts* pAppFonts)
@@ -83,6 +166,7 @@ namespace PdfReader
 
         m_pInternal->m_pPDFDocument = NULL;
         m_pInternal->m_pFontManager = NULL;
+        m_pInternal->m_pPdfWriter = NULL;
 
         globalParams  = new GlobalParamsAdaptor(NULL);
         m_pInternal->m_pFontList = new CFontList();
@@ -101,7 +185,6 @@ namespace PdfReader
     #endif
 
         m_eError = errNone;
-        m_pPdfWriter = NULL;
 	}
 	CPdfReader::~CPdfReader()
 	{
@@ -122,7 +205,7 @@ namespace PdfReader
         RELEASEOBJECT((m_pInternal->m_pPDFDocument));
         RELEASEOBJECT((globalParams));
         RELEASEINTERFACE((m_pInternal->m_pFontManager));
-        m_pPdfWriter = NULL;
+        m_pInternal->m_pPdfWriter = NULL;
 	}
     bool CPdfReader::LoadFromFile(const std::wstring& wsSrcPath, const std::wstring& wsOptions,
                                     const std::wstring& wsOwnerPassword, const std::wstring& wsUserPassword)
@@ -441,16 +524,22 @@ return 0;
         if (c_nPDFWriter != lRendererType || !m_pInternal->m_pPDFDocument)
             return false;
 
-        m_pPdfWriter = (CPdfRenderer*)pPdfWriter;
+        m_pInternal->m_pPdfWriter = (CPdfRenderer*)pPdfWriter;
         XRef* xref = m_pInternal->m_pPDFDocument->getXRef();
+        if (!xref)
+            return false;
+
         Object catDict, pagesRefObj, pagesObj;
-        if (!xref->getCatalog(&catDict)->isDict() || !catDict.dictLookupNF("Pages", &pagesRefObj)->isRef() || !pagesRefObj.fetch(xref, &pagesObj)->isDict())
+        if (!xref->getCatalog(&catDict)                  || !catDict.isDict()    ||
+            !catDict.dictLookupNF("Pages", &pagesRefObj) || !pagesRefObj.isRef() ||
+            !pagesRefObj.fetch(xref, &pagesObj)          || !pagesObj.isDict())
         {
             pagesObj.free();
             pagesRefObj.free();
             catDict.free();
             return false;
         }
+
         std::wstring sPageTree = L"<PageTree";
         XMLConverter::DictToXml(&pagesObj, sPageTree);
         sPageTree += L"</PageTree>";
@@ -466,25 +555,30 @@ return 0;
             CryptAlgorithm encAlgorithm;
             GBool ownerPasswordOk;
             int permFlags, keyLength, encVersion;
-            xref->getEncryption(&permFlags, &ownerPasswordOk, &keyLength,
-                          &encVersion, &encAlgorithm);
+            xref->getEncryption(&permFlags, &ownerPasswordOk, &keyLength, &encVersion, &encAlgorithm);
             nCryptAlgorithm = encAlgorithm;
 
-            Object encrypt, ID, ID1;
-            if (xref->getTrailerDict()->dictLookup("Encrypt", &encrypt)->isDict())
-                XMLConverter::DictToXml(&encrypt, sEncrypt, true);
+            Object* pTrailerDict = xref->getTrailerDict();
+            if (pTrailerDict)
+            {
+                Object encrypt, ID, ID1;
+                if (pTrailerDict->dictLookup("Encrypt", &encrypt) && encrypt.isDict())
+                    XMLConverter::DictToXml(&encrypt, sEncrypt, true);
+                else
+                    sEncrypt += L'>';
+                encrypt.free();
+
+                if (pTrailerDict->dictLookup("ID", &ID) && ID.isArray() && ID.arrayGet(0, &ID1) && ID1.isString())
+                {
+                    sEncrypt += L"<ID";
+                    XMLConverter::DictToXml(&ID1, sEncrypt, true);
+                    sEncrypt += L"</ID>";
+                }
+                ID.free();
+                ID1.free();
+            }
             else
                 sEncrypt += L'>';
-            encrypt.free();
-
-            if (xref->getTrailerDict()->dictLookup("ID", &ID)->isArray() && ID.arrayGet(0, &ID1)->isString())
-            {
-                sEncrypt += L"<ID";
-                XMLConverter::DictToXml(&ID1, sEncrypt, true);
-                sEncrypt += L"</ID>";
-            }
-            ID.free();
-            ID1.free();
         }
         else
             sEncrypt += L'>';
@@ -492,17 +586,24 @@ return 0;
         if (sEncrypt == L"<Encrypt></Encrypt>")
             sEncrypt.clear();
 
-        return m_pPdfWriter->EditPdf(xref->getLastXRefPos(), xref->getNumObjects(), sPageTree, std::make_pair(topPagesRef.num, topPagesRef.gen), sEncrypt, sPassword, nCryptAlgorithm);
+        return m_pInternal->m_pPdfWriter->EditPdf(xref->getLastXRefPos(), xref->getNumObjects(), sPageTree, std::make_pair(topPagesRef.num, topPagesRef.gen), sEncrypt, sPassword, nCryptAlgorithm);
     }
     bool CPdfReader::EditPage(int nPageIndex)
     {
+        if (!m_pInternal->m_pPdfWriter || !m_pInternal->m_pPDFDocument)
+            return false;
         XRef* xref = m_pInternal->m_pPDFDocument->getXRef();
-        Ref* pPageRef = m_pInternal->m_pPDFDocument->getCatalog()->getPageRef(++nPageIndex);
+        Catalog* pCatalog = m_pInternal->m_pPDFDocument->getCatalog();
+        if (!xref || !pCatalog)
+            return false;
+        Ref* pPageRef = pCatalog->getPageRef(++nPageIndex);
+        if (!pPageRef)
+            return false;
 
         // Получение объекта страницы
         Object pageRefObj, pageObj;
         pageRefObj.initRef(pPageRef->num, pPageRef->gen);
-        if (!pageRefObj.fetch(xref, &pageObj)->isDict())
+        if (!pageRefObj.fetch(xref, &pageObj) || !pageObj.isDict())
         {
             pageObj.free();
             pageRefObj.free();
@@ -514,36 +615,67 @@ return 0;
         pageObj.free();
         pageRefObj.free();
 
-        return m_pPdfWriter->EditPage(sPage, std::make_pair(pPageRef->num, pPageRef->gen));
+        return m_pInternal->m_pPdfWriter->EditPage(sPage, std::make_pair(pPageRef->num, pPageRef->gen));
     }
     bool CPdfReader::DeletePage(int nPageIndex)
     {
-        Ref* pPageRef = m_pInternal->m_pPDFDocument->getCatalog()->getPageRef(++nPageIndex);
+        if (!m_pInternal->m_pPdfWriter || !m_pInternal->m_pPDFDocument)
+            return false;
+        XRef* xref = m_pInternal->m_pPDFDocument->getXRef();
+        Catalog* pCatalog = m_pInternal->m_pPDFDocument->getCatalog();
+        if (!xref || !pCatalog)
+            return false;
+        Ref* pPageRef = pCatalog->getPageRef(++nPageIndex);
         if (!pPageRef)
             return false;
 
-        XRef* xref = m_pInternal->m_pPDFDocument->getXRef();
-        Object catDict, pagesRefObj, pagesObj;
-        if (!xref->getCatalog(&catDict)->isDict() || !catDict.dictLookupNF("Pages", &pagesRefObj)->isRef() || !pagesRefObj.fetch(xref, &pagesObj)->isDict())
+        Object catDict, pagesRefObj;
+        if (!xref->getCatalog(&catDict) || !catDict.isDict() || !catDict.dictLookupNF("Pages", &pagesRefObj))
         {
-            pagesObj.free();
             pagesRefObj.free();
             catDict.free();
             return false;
         }
-        std::wstring sPageTree = L"<PageTree";
-        XMLConverter::DictToXml(&pagesObj, sPageTree);
-        sPageTree += L"</PageTree>";
-        Ref topPagesRef = pagesRefObj.getRef();
-        pagesObj.free();
-        pagesRefObj.free();
         catDict.free();
 
-        return m_pPdfWriter->DeletePage(std::make_pair(pPageRef->num, pPageRef->gen), sPageTree, std::make_pair(topPagesRef.num, topPagesRef.gen));
+        Object* pRefPageTree = m_pInternal->FindPageTree(xref, &pagesRefObj, pPageRef->num, pPageRef->gen);
+        if (!pRefPageTree)
+        {
+            pagesRefObj.free();
+            return false;
+        }
+
+        std::wstring sPageTree = L"<PageTree";
+        Object pagesObj;
+        if (pRefPageTree->fetch(xref, &pagesObj))
+            XMLConverter::DictToXml(&pagesObj, sPageTree);
+        else
+            sPageTree += L'>';
+        sPageTree += L"</PageTree>";
+        Ref topPagesRef = pRefPageTree->getRef();
+
+        pagesRefObj.free();
+        pagesObj.free();
+        if (pRefPageTree != &pagesRefObj)
+        {
+            pRefPageTree->free();
+            delete pRefPageTree;
+        }
+        if (sPageTree == L"<PageTree></PageTree>")
+            sPageTree.clear();
+        if (sPageTree.empty())
+            return false;
+
+        return m_pInternal->m_pPdfWriter->DeletePage(std::make_pair(pPageRef->num, pPageRef->gen), sPageTree, std::make_pair(topPagesRef.num, topPagesRef.gen));
     }
     bool CPdfReader::EditClose(const std::wstring& wsPath)
     {
+        if (!m_pInternal->m_pPdfWriter || !m_pInternal->m_pPDFDocument)
+            return false;
         XRef* xref = m_pInternal->m_pPDFDocument->getXRef();
+        if (!xref)
+            return false;
+
         Object* trailerDict = xref->getTrailerDict();
         std::wstring sTrailer = L"<Trailer";
         if (trailerDict)
@@ -552,7 +684,7 @@ return 0;
             sTrailer += L'>';
         sTrailer += L"</Trailer>";
 
-        return m_pPdfWriter->EditClose(wsPath, sTrailer);
+        return m_pInternal->m_pPdfWriter->EditClose(wsPath, sTrailer);
     }
 #ifdef BUILDING_WASM_MODULE    
     void getBookmars(PDFDoc* pdfDoc, OutlineItem* pOutlineItem, NSWasm::CData& out, int level)

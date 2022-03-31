@@ -105,7 +105,7 @@ int main()
         }
         */
 
-        pReader->DeletePage(3);
+        pReader->DeletePage(5);
 
         NSFile::CFileBinary::Copy(sSrcFile, sDstFile);
         pReader->EditClose(sDstFile);

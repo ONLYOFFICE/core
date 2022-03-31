@@ -40,7 +40,6 @@
 #endif
 #include "../DesktopEditor/graphics/pro/officedrawingfile.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"
-#include "../PdfWriter/PdfRenderer.h"
 
 namespace PdfReader
 {
@@ -110,7 +109,6 @@ namespace PdfReader
 
     private:
         CPdfReader_Private* m_pInternal;
-        CPdfRenderer*       m_pPdfWriter;
         int              m_eError;
     };
 }

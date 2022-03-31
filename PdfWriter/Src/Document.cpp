@@ -1111,17 +1111,38 @@ namespace PdfWriter
 		else
 		{
 			pXref = new CXref(this, pPageTree.first);
-			CPageTree* pPageT = new CPageTree(pXref, sPageTree);
+			if (!pXref)
+				return false;
+
+			pPageT = new CPageTree(pXref, sPageTree);
+			if (!pPageT)
+			{
+				delete pXref;
+				return false;
+			}
+
 			pPageT->SetRef(pPageTree.first, pPageTree.second);
 			pXref->SetPrev(m_pLastXref);
 			m_pLastXref = pXref;
 		}
-		if (pPageT && pPageT->RemovePage(pPage.first, pPage.second))
+		if (pPageT)
 		{
-			pXref = new CXref(this, pPage.first, pPage.second);
-			pXref->SetPrev(m_pLastXref);
-			m_pLastXref = pXref;
-			return true;
+			if (pPage.first && pPageT->RemovePage(pPage.first, pPage.second))
+			{
+				pXref = new CXref(this, pPage.first, pPage.second);
+				if (!pXref)
+					return false;
+
+				m_pPageTree->Reduce();
+				pXref->SetPrev(m_pLastXref);
+				m_pLastXref = pXref;
+				return true;
+			}
+			else
+			{
+				pPageT->Reduce();
+				return true;
+			}
 		}
 		return false;
 	}

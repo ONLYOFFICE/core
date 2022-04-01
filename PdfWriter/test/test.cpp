@@ -75,13 +75,13 @@ int main()
     */
     if (bResult && pReader->EditPdf(&pdfWriter, sPassword))
     {
-        /*
         if (pReader->EditPage(0))
         {
             TEST(&pdfWriter);
             pdfWriter.PageRotate(90);
         }
 
+        /*
         if (pReader->EditPage(1))
         {
             TEST2(&pdfWriter);
@@ -105,7 +105,15 @@ int main()
         }
         */
 
-        pReader->DeletePage(5);
+        pReader->DeletePage(1);
+        pReader->DeletePage(1);
+        pReader->DeletePage(1);
+        pReader->DeletePage(1);
+
+        if (pReader->EditPage(1))
+        {
+            TEST(&pdfWriter);
+        }
 
         NSFile::CFileBinary::Copy(sSrcFile, sDstFile);
         pReader->EditClose(sDstFile);

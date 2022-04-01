@@ -114,6 +114,14 @@ namespace PdfWriter
 			m_unObjId = unObjId;
 			m_unGenNo = unGenNo;
 		}
+		unsigned int GetObjId()
+		{
+			return m_unObjId;
+		}
+		unsigned int GetGenNo()
+		{
+			return m_unGenNo;
+		}
 		void UnSet()
 		{
 			m_unFlags = 0;
@@ -373,7 +381,7 @@ namespace PdfWriter
 		void         Add(double dValue);
 		void         Insert(CObjectBase* pTarget, CObjectBase* pObject, bool bReplace = false);
 		CObjectBase* Get(unsigned int unIndex, bool bCheckProxy = true) const;
-		bool         Remove(unsigned int unObjId, unsigned int unGenNo);
+		CObjectBase* Remove(unsigned int unIndex);
 		void         Clear();
 		EObjectType  GetType() const
 		{

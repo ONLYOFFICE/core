@@ -1054,7 +1054,7 @@ namespace PdfWriter
 
 		return (!!m_pAcroForm);
 	}
-	bool CDocument::EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sPageTree, const std::pair<int, int>& pPageTree, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm)
+	bool CDocument::EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm)
 	{
 		Close();
 
@@ -1062,13 +1062,9 @@ namespace PdfWriter
 		if (!m_pXref)
 			return false;
 		m_pXref->SetPrevAddr(nPosLastXRef);
+		m_pLastXref = m_pXref;
 
 		SetCompressionMode(COMP_ALL);
-
-		m_pLastXref = new CXref(this, pPageTree.first);
-		m_pPageTree = new CPageTree(m_pLastXref, sPageTree);
-		m_pPageTree->SetRef(pPageTree.first, pPageTree.second);
-		m_pLastXref->SetPrev(m_pXref);
 
 		if (!sEncrypt.empty())
 		{
@@ -1079,6 +1075,43 @@ namespace PdfWriter
 		}
 
 		return true;
+	}
+	bool CDocument::CreatePageTree(const std::wstring& sPageTree, const std::pair<int, int>& pPageTree)
+	{
+		CXref* pXref = new CXref(this, pPageTree.first);
+		if (!pXref)
+			return false;
+
+		CPageTree* pPageT = new CPageTree(pXref, sPageTree);
+		if (!pPageT)
+			return false;
+
+		if (!m_pPageTree)
+			m_pPageTree = pPageT;
+		else
+			m_pPageTree->Join(pPageT);
+
+		pPageT->SetRef(pPageTree.first, pPageTree.second);
+		pXref->SetPrev(m_pLastXref);
+		m_pLastXref = pXref;
+
+		return true;
+	}
+	std::pair<int, int> CDocument::GetPageRef(int nPageIndex)
+	{
+		std::pair<int, int> pRes = std::make_pair(0, 0);
+		if (!m_pPageTree)
+			return pRes;
+
+		int nI = 0;
+		CObjectBase* pObj = m_pPageTree->GetPage(nPageIndex, nI);
+		if (pObj)
+		{
+			pRes.first  = pObj->GetObjId();
+			pRes.second = pObj->GetGenNo();
+		}
+
+		return pRes;
 	}
 	CPage* CDocument::EditPage(const std::wstring& sPage, const std::pair<int, int>& pPage)
 	{
@@ -1098,51 +1131,23 @@ namespace PdfWriter
 		m_pCurPage = pNewPage;
 		return pNewPage;
 	}
-	bool CDocument::DeletePage(const std::pair<int, int>& pPage, const std::wstring& sPageTree, const std::pair<int, int>& pPageTree)
+	bool CDocument::DeletePage(int nPageIndex)
 	{
-		CXref* pXref = m_pLastXref->GetXrefByObjectId(pPageTree.first);
-		CPageTree* pPageT = NULL;
-		if (pXref)
+		if (!m_pPageTree)
+			return false;
+
+		int nI = 0;
+		CObjectBase* pObj = m_pPageTree->GetPage(nPageIndex, nI, true);
+		if (pObj)
 		{
-			TXrefEntry* pEntry = pXref->GetEntryByObjectId(pPageTree.first);
-			if (pEntry && pEntry->pObject->GetType() == object_type_DICT && ((CDictObject*)(pEntry->pObject))->GetDictType() == dict_type_PAGES)
-				pPageT = (CPageTree*)pEntry->pObject;
-		}
-		else
-		{
-			pXref = new CXref(this, pPageTree.first);
+			CXref* pXref = new CXref(this, pObj->GetObjId(), pObj->GetGenNo());
+			delete pObj;
 			if (!pXref)
 				return false;
 
-			pPageT = new CPageTree(pXref, sPageTree);
-			if (!pPageT)
-			{
-				delete pXref;
-				return false;
-			}
-
-			pPageT->SetRef(pPageTree.first, pPageTree.second);
 			pXref->SetPrev(m_pLastXref);
 			m_pLastXref = pXref;
-		}
-		if (pPageT)
-		{
-			if (pPage.first && pPageT->RemovePage(pPage.first, pPage.second))
-			{
-				pXref = new CXref(this, pPage.first, pPage.second);
-				if (!pXref)
-					return false;
-
-				m_pPageTree->Reduce();
-				pXref->SetPrev(m_pLastXref);
-				m_pLastXref = pXref;
-				return true;
-			}
-			else
-			{
-				pPageT->Reduce();
-				return true;
-			}
+			return true;
 		}
 		return false;
 	}

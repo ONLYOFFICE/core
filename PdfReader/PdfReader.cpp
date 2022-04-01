@@ -74,10 +74,10 @@ namespace PdfReader
         CFontList*         m_pFontList;
         CPdfRenderer*      m_pPdfWriter;
 
-        Object* FindPageTree(XRef* xref, Object* pPagesRefObj, int nFindNum, int nFindGen)
+        void GetPageTree(XRef* xref, Object* pPagesRefObj)
         {
             if (!pPagesRefObj || !xref)
-                return NULL;
+                return;
 
             Object typeDict, pagesObj;
             if (!pPagesRefObj->isRef() || !pPagesRefObj->fetch(xref, &pagesObj)   ||
@@ -86,74 +86,34 @@ namespace PdfReader
             {
                 pagesObj.free();
                 typeDict.free();
-                return NULL;
+                return;
             }
             typeDict.free();
+
+            std::wstring sPageTree = L"<PageTree";
+            XMLConverter::DictToXml(&pagesObj, sPageTree);
+            sPageTree += L"</PageTree>";
+            Ref topPagesRef = pPagesRefObj->getRef();
+
+            m_pPdfWriter->CreatePageTree(sPageTree, std::make_pair(topPagesRef.num, topPagesRef.gen));
 
             Object kidsArrObj;
             if (!pagesObj.dictLookup("Kids", &kidsArrObj) || !kidsArrObj.isArray())
             {
                 pagesObj.free();
                 kidsArrObj.free();
-                return NULL;
+                return;
             }
             pagesObj.free();
 
-            Object* kidRefObj = new Object();
-            if (!kidRefObj)
-            {
-                kidsArrObj.free();
-                return NULL;
-            }
-
             for (int i = 0, count = kidsArrObj.arrayGetLength(); i < count; ++i)
             {
-                if (kidsArrObj.arrayGetNF(i, kidRefObj))
-                {
-                    if (kidRefObj->isRef())
-                    {
-                        Ref PageOrTreeRef = kidRefObj->getRef();
-                        if (PageOrTreeRef.num == nFindNum && PageOrTreeRef.gen == nFindGen)
-                        {
-                            kidsArrObj.free();
-                            kidRefObj->free();
-                            delete kidRefObj;
-                            return pPagesRefObj;
-                        }
-                    }
-
-                    Object* pRes = FindPageTree(xref, kidRefObj, nFindNum, nFindGen);
-                    if (pRes)
-                    {
-                        kidsArrObj.free();
-                        if (kidRefObj != pRes)
-                        {
-                            std::wstring sPageTree = L"<PageTree";
-                            Object pagesObj;
-                            if (kidRefObj->fetch(xref, &pagesObj))
-                                XMLConverter::DictToXml(&pagesObj, sPageTree);
-                            else
-                                sPageTree += L'>';
-                            sPageTree += L"</PageTree>";
-                            Ref topPagesRef = kidRefObj->getRef();
-
-                            if (sPageTree == L"<PageTree></PageTree>")
-                                sPageTree.clear();
-                            if (!sPageTree.empty())
-                                m_pPdfWriter->DeletePage(std::make_pair(0, 0), sPageTree, std::make_pair(topPagesRef.num, topPagesRef.gen));
-
-                            kidRefObj->free();
-                            delete kidRefObj;
-                        }
-                        return pRes;
-                    }
-                }
-                kidRefObj->free();
+                Object kidRefObj;
+                if (kidsArrObj.arrayGetNF(i, &kidRefObj))
+                    GetPageTree(xref, &kidRefObj);
+                kidRefObj.free();
             }
-
-            delete kidRefObj;
             kidsArrObj.free();
-            return NULL;
         }
     };
 
@@ -529,25 +489,6 @@ return 0;
         if (!xref)
             return false;
 
-        Object catDict, pagesRefObj, pagesObj;
-        if (!xref->getCatalog(&catDict)                  || !catDict.isDict()    ||
-            !catDict.dictLookupNF("Pages", &pagesRefObj) || !pagesRefObj.isRef() ||
-            !pagesRefObj.fetch(xref, &pagesObj)          || !pagesObj.isDict())
-        {
-            pagesObj.free();
-            pagesRefObj.free();
-            catDict.free();
-            return false;
-        }
-
-        std::wstring sPageTree = L"<PageTree";
-        XMLConverter::DictToXml(&pagesObj, sPageTree);
-        sPageTree += L"</PageTree>";
-        Ref topPagesRef = pagesRefObj.getRef();
-        pagesObj.free();
-        pagesRefObj.free();
-        catDict.free();
-
         int nCryptAlgorithm = -1;
         std::wstring sEncrypt = L"<Encrypt";
         if (xref->isEncrypted())
@@ -586,7 +527,22 @@ return 0;
         if (sEncrypt == L"<Encrypt></Encrypt>")
             sEncrypt.clear();
 
-        return m_pInternal->m_pPdfWriter->EditPdf(xref->getLastXRefPos(), xref->getNumObjects(), sPageTree, std::make_pair(topPagesRef.num, topPagesRef.gen), sEncrypt, sPassword, nCryptAlgorithm);
+        if (m_pInternal->m_pPdfWriter->EditPdf(xref->getLastXRefPos(), xref->getNumObjects(), sEncrypt, sPassword, nCryptAlgorithm))
+        {
+            Object catDict, pagesRefObj;
+            if (!xref->getCatalog(&catDict) || !catDict.isDict() || !catDict.dictLookupNF("Pages", &pagesRefObj))
+            {
+                pagesRefObj.free();
+                catDict.free();
+                return false;
+            }
+
+            m_pInternal->GetPageTree(xref, &pagesRefObj);
+            pagesRefObj.free();
+            catDict.free();
+            return true;
+        }
+        return false;
     }
     bool CPdfReader::EditPage(int nPageIndex)
     {
@@ -596,13 +552,13 @@ return 0;
         Catalog* pCatalog = m_pInternal->m_pPDFDocument->getCatalog();
         if (!xref || !pCatalog)
             return false;
-        Ref* pPageRef = pCatalog->getPageRef(++nPageIndex);
-        if (!pPageRef)
+        std::pair<int, int> pPageRef = m_pInternal->m_pPdfWriter->GetPageRef(nPageIndex);
+        if (pPageRef.first == 0)
             return false;
 
         // Получение объекта страницы
         Object pageRefObj, pageObj;
-        pageRefObj.initRef(pPageRef->num, pPageRef->gen);
+        pageRefObj.initRef(pPageRef.first, pPageRef.second);
         if (!pageRefObj.fetch(xref, &pageObj) || !pageObj.isDict())
         {
             pageObj.free();
@@ -615,58 +571,21 @@ return 0;
         pageObj.free();
         pageRefObj.free();
 
-        return m_pInternal->m_pPdfWriter->EditPage(sPage, std::make_pair(pPageRef->num, pPageRef->gen));
+        return m_pInternal->m_pPdfWriter->EditPage(sPage, pPageRef);
     }
     bool CPdfReader::DeletePage(int nPageIndex)
     {
         if (!m_pInternal->m_pPdfWriter || !m_pInternal->m_pPDFDocument)
             return false;
-        XRef* xref = m_pInternal->m_pPDFDocument->getXRef();
-        Catalog* pCatalog = m_pInternal->m_pPDFDocument->getCatalog();
-        if (!xref || !pCatalog)
-            return false;
-        Ref* pPageRef = pCatalog->getPageRef(++nPageIndex);
-        if (!pPageRef)
-            return false;
 
-        Object catDict, pagesRefObj;
-        if (!xref->getCatalog(&catDict) || !catDict.isDict() || !catDict.dictLookupNF("Pages", &pagesRefObj))
-        {
-            pagesRefObj.free();
-            catDict.free();
-            return false;
-        }
-        catDict.free();
-
-        Object* pRefPageTree = m_pInternal->FindPageTree(xref, &pagesRefObj, pPageRef->num, pPageRef->gen);
-        if (!pRefPageTree)
-        {
-            pagesRefObj.free();
-            return false;
-        }
-
-        std::wstring sPageTree = L"<PageTree";
-        Object pagesObj;
-        if (pRefPageTree->fetch(xref, &pagesObj))
-            XMLConverter::DictToXml(&pagesObj, sPageTree);
-        else
-            sPageTree += L'>';
-        sPageTree += L"</PageTree>";
-        Ref topPagesRef = pRefPageTree->getRef();
-
-        pagesRefObj.free();
-        pagesObj.free();
-        if (pRefPageTree != &pagesRefObj)
-        {
-            pRefPageTree->free();
-            delete pRefPageTree;
-        }
-        if (sPageTree == L"<PageTree></PageTree>")
-            sPageTree.clear();
-        if (sPageTree.empty())
+        return m_pInternal->m_pPdfWriter->DeletePage(nPageIndex);
+    }
+    bool CPdfReader::AddPage(int nPageIndex)
+    {
+        if (!m_pInternal->m_pPdfWriter || !m_pInternal->m_pPDFDocument)
             return false;
 
-        return m_pInternal->m_pPdfWriter->DeletePage(std::make_pair(pPageRef->num, pPageRef->gen), sPageTree, std::make_pair(topPagesRef.num, topPagesRef.gen));
+        return m_pInternal->m_pPdfWriter->NewPage();
     }
     bool CPdfReader::EditClose(const std::wstring& wsPath)
     {

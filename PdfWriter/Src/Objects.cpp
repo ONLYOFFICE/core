@@ -336,27 +336,15 @@ namespace PdfWriter
 
 		return pObject;
 	}
-	bool CArrayObject::Remove(unsigned int unObjId, unsigned int unGenNo)
+	CObjectBase* CArrayObject::Remove(unsigned int unIndex)
 	{
-		for (int nIndex = 0, nCount = m_arrList.size(); nIndex < nCount; nIndex++)
-		{
-			CObjectBase* pObject = m_arrList.at(nIndex);
-			if (pObject->IsIt(unObjId, unGenNo))
-			{
-				m_arrList.erase(m_arrList.begin() + nIndex);
-				return true;
-			}
-			if (pObject->GetType() == object_type_PROXY)
-			{
-				pObject = ((CProxyObject*)pObject)->Get();
-				if (pObject->IsIt(unObjId, unGenNo))
-				{
-					m_arrList.erase(m_arrList.begin() + nIndex);
-					return true;
-				}
-			}
-		}
-		return false;
+		if (unIndex >= m_arrList.size())
+			return NULL;
+
+		CObjectBase* pObject = Get(unIndex);
+		if (pObject)
+			m_arrList.erase(m_arrList.begin() + unIndex);
+		return pObject;
 	}
     void CArrayObject::Clear()
 	{
@@ -941,10 +929,21 @@ namespace PdfWriter
 			pXref = out;
 			int nStreamOffset = pStream->Tell();
 			CStream* pTrailerStream = new CMemoryStream();
+			unsigned int unEntries = 0, unEntriesSize = 0;
 			while (pXref)
 			{
-				pIndex->Add(pXref->m_unStartOffset);
-				pIndex->Add((unsigned int)pXref->m_arrEntries.size() + (pXref->m_pPrev ? 0 : 1));
+				unsigned int unNewEntries = pXref->m_unStartOffset;
+				unsigned int unNewEntriesSize = (unsigned int)pXref->m_arrEntries.size() + (pXref->m_pPrev ? 0 : 1);
+				if (unNewEntries == unEntries + unEntriesSize)
+					unEntriesSize += unNewEntriesSize;
+				else
+				{
+					pIndex->Add(unEntries);
+					pIndex->Add(unEntriesSize);
+
+					unEntries = unNewEntries;
+					unEntriesSize = unNewEntriesSize;
+				}
 
 				for (unsigned int unIndex = 0, unCount = pXref->m_arrEntries.size(); unIndex < unCount; unIndex++)
 				{
@@ -963,6 +962,10 @@ namespace PdfWriter
 
 				pXref = pXref->m_pPrev;
 			}
+
+			// Добавляем последний элемент
+			pIndex->Add(unEntries);
+			pIndex->Add(unEntriesSize);
 			pTrailerStream->WriteChar('\001');
 			pTrailerStream->WriteChar((unsigned char)(nStreamOffset >> 16));
 			pTrailerStream->WriteChar((unsigned char)(nStreamOffset >> 8));

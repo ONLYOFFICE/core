@@ -63,8 +63,9 @@ namespace PdfWriter
 		CPageTree(CXref* pXref);
 		CPageTree(CXref* pXref, const std::wstring& sPageTree);
 		void AddPage(CDictObject* pPage);
-		bool RemovePage(unsigned int unObjId, unsigned int unGenNo);
+		CObjectBase* GetPage(int nPageIndex, int& nI, bool bRemove = false);
 		void Reduce();
+		bool Join(CPageTree* pPageTree);
 		EDictType GetDictType() const
 		{
 			return dict_type_PAGES;

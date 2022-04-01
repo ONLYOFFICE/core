@@ -225,18 +225,51 @@ namespace PdfWriter
 		m_pPages->Add(pPage);
 		(*m_pCount)++;
 	}
-	bool CPageTree::RemovePage(unsigned int unObjId, unsigned int unGenNo)
+	CObjectBase* CPageTree::GetPage(int nPageIndex, int& nI, bool bRemove)
 	{
-		if (m_pPages->Remove(unObjId, unGenNo))
+		for (int i = 0, count = m_pPages->GetCount(); i < count; ++i)
 		{
-			(*m_pCount)--;
-			return true;
+			CObjectBase* pObj = m_pPages->Get(i);
+			CObjectBase* pRes = NULL;
+			if (pObj->GetType() == object_type_DICT && ((CDictObject*)pObj)->GetDictType() == dict_type_PAGES)
+				pRes = ((CPageTree*)pObj)->GetPage(nPageIndex, nI, bRemove);
+			else
+			{
+				if (nPageIndex == nI)
+				{
+					pRes = pObj;
+					if (bRemove)
+						pRes = m_pPages->Remove(i);
+				}
+				nI++;
+			}
+			if (pRes)
+			{
+				if (bRemove)
+					(*m_pCount)--;
+				return pRes;
+			}
 		}
-		return false;
+		return NULL;
 	}
 	void CPageTree::Reduce()
 	{
 		(*m_pCount)--;
+	}
+	bool CPageTree::Join(CPageTree* pPageTree)
+	{
+		for (int i = 0, count = m_pPages->GetCount(); i < count; ++i)
+		{
+			CObjectBase* pObj = m_pPages->Get(i);
+			if (pObj->GetObjId() == pPageTree->GetObjId() && pObj->GetGenNo() == pPageTree->GetGenNo())
+			{
+				m_pPages->Insert(pObj, pPageTree, true);
+				return true;
+			}
+			if (pObj->GetType() == object_type_DICT && ((CDictObject*)pObj)->GetDictType() == dict_type_PAGES && ((CPageTree*)pObj)->Join(pPageTree))
+				return true;
+		}
+		return false;
 	}
 	//----------------------------------------------------------------------------------------
 	// CPage

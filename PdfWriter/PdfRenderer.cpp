@@ -2048,9 +2048,17 @@ HRESULT CPdfRenderer::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbi
 	m_pPage->GrRestore();
 	return S_OK;
 }
-bool CPdfRenderer::EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sPageTree, const std::pair<int, int>& pPageTree, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm)
+bool CPdfRenderer::EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm)
 {
-	return m_pDocument->EditPdf(nPosLastXRef, nSizeXRef, sPageTree, pPageTree, sEncrypt, sPassword, nCryptAlgorithm);
+	return m_pDocument->EditPdf(nPosLastXRef, nSizeXRef, sEncrypt, sPassword, nCryptAlgorithm);
+}
+bool CPdfRenderer::CreatePageTree(const std::wstring& sPageTree, const std::pair<int, int>& pPageTree)
+{
+	return m_pDocument->CreatePageTree(sPageTree, pPageTree);
+}
+std::pair<int, int> CPdfRenderer::GetPageRef(int nPageIndex)
+{
+	return m_pDocument->GetPageRef(nPageIndex);
 }
 bool CPdfRenderer::EditPage(const std::wstring& sPage, const std::pair<int, int>& pPage)
 {
@@ -2068,9 +2076,9 @@ bool CPdfRenderer::EditPage(const std::wstring& sPage, const std::pair<int, int>
 	}
 	return false;
 }
-bool CPdfRenderer::DeletePage(const std::pair<int, int>& pPage, const std::wstring& sPageTree, const std::pair<int, int>& pPageTree)
+bool CPdfRenderer::DeletePage(int nPageIndex)
 {
-	return m_pDocument->DeletePage(pPage, sPageTree, pPageTree);
+	return m_pDocument->DeletePage(nPageIndex);
 }
 bool CPdfRenderer::EditClose(const std::wstring& wsPath, const std::wstring& sTrailer)
 {

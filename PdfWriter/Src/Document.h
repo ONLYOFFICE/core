@@ -152,6 +152,7 @@ namespace PdfWriter
 		bool              CreatePageTree(const std::wstring& sPageTree, const std::pair<int, int>& pPageTree);
 		std::pair<int, int> GetPageRef(int nPageIndex);
 		CPage*            EditPage(const std::wstring& sPage, const std::pair<int, int>& pPage);
+		CPage*            AddPage(int nPageIndex);
 		bool              DeletePage(int nPageIndex);
 		bool              AddToFile(const std::wstring& wsPath, const std::wstring& sTrailer);
 	private:		  

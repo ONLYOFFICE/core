@@ -57,6 +57,14 @@ int main()
         pReader->LoadFromFile(sSrcFile, L"", sPassword, sPassword);
         bResult = pReader->GetError() == 0;
     }
+
+    double dPageDpiX, dPageDpiY;
+    double dWidth, dHeight;
+    pReader->GetPageInfo(0, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+
+    dWidth  *= 25.4 / dPageDpiX;
+    dHeight *= 25.4 / dPageDpiY;
+
     /*
     pdfWriter.SetPassword(L"123456");
     pdfWriter.NewPage();
@@ -81,37 +89,22 @@ int main()
             pdfWriter.PageRotate(90);
         }
 
-        /*
+        pReader->DeletePage(1);
+        pReader->DeletePage(1);
+        pReader->DeletePage(1);
+        pReader->DeletePage(1);
+
         if (pReader->EditPage(1))
         {
-            TEST2(&pdfWriter);
-            pdfWriter.PageRotate(90);
+            TEST(&pdfWriter);
         }
 
-        if (pdfWriter.NewPage() == S_OK)
+        if (pReader->AddPage(1))
         {
             // Новой странице необходимо выставить длину и ширину
-            double dPageDpiX, dPageDpiY;
-            double dWidth, dHeight;
-            pReader->GetPageInfo(0, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
-
-            dWidth  *= 25.4 / dPageDpiX;
-            dHeight *= 25.4 / dPageDpiY;
-
             pdfWriter.put_Width(dWidth);
             pdfWriter.put_Height(dHeight);
 
-            TEST(&pdfWriter);
-        }
-        */
-
-        pReader->DeletePage(1);
-        pReader->DeletePage(1);
-        pReader->DeletePage(1);
-        pReader->DeletePage(1);
-
-        if (pReader->EditPage(1))
-        {
             TEST(&pdfWriter);
         }
 

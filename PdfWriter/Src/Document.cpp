@@ -1116,7 +1116,6 @@ namespace PdfWriter
 	CPage* CDocument::EditPage(const std::wstring& sPage, const std::pair<int, int>& pPage)
 	{
 		CXref* pXref = new CXref(this, pPage.first);
-		// pNewPage Освобождается в деструкторе pXref
 		CPage* pNewPage = new CPage(pXref, this, sPage);
 		pNewPage->SetRef(pPage.first, pPage.second);
 
@@ -1128,6 +1127,24 @@ namespace PdfWriter
 		pXref->SetPrev(m_pLastXref);
 
 		m_pLastXref = pXref;
+		m_pCurPage = pNewPage;
+		return pNewPage;
+	}
+	CPage* CDocument::AddPage(int nPageIndex)
+	{
+		if (!m_pPageTree)
+			return NULL;
+
+		int nI = 0;
+		CPage* pNewPage = new CPage(m_pXref, NULL, this);
+		CObjectBase* pObj = m_pPageTree->GetPage(nPageIndex, nI, false, true, pNewPage);
+		if (!pObj)
+			return NULL;
+
+#ifndef FILTER_FLATE_DECODE_DISABLED
+		if (m_unCompressMode & COMP_TEXT)
+			pNewPage->SetFilter(STREAM_FILTER_FLATE_DECODE);
+#endif
 		m_pCurPage = pNewPage;
 		return pNewPage;
 	}

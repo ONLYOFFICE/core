@@ -585,7 +585,7 @@ return 0;
         if (!m_pInternal->m_pPdfWriter || !m_pInternal->m_pPDFDocument)
             return false;
 
-        return m_pInternal->m_pPdfWriter->NewPage();
+        return m_pInternal->m_pPdfWriter->AddPage(nPageIndex);
     }
     bool CPdfReader::EditClose(const std::wstring& wsPath)
     {

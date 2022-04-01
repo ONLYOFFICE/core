@@ -2071,7 +2071,21 @@ bool CPdfRenderer::EditPage(const std::wstring& sPage, const std::pair<int, int>
 	{
 		m_dPageWidth  = PT_2_MM(m_pPage->GetWidth());
 		m_dPageHeight = PT_2_MM(m_pPage->GetHeight());
+		return true;
+	}
+	return false;
+}
+bool CPdfRenderer::AddPage(int nPageIndex)
+{
+	if (!IsValid())
+		return false;
+	m_oCommandManager.Flush();
 
+	m_pPage = m_pDocument->AddPage(nPageIndex);
+	if (m_pPage)
+	{
+		m_pPage->SetWidth(MM_2_PT(m_dPageWidth));
+		m_pPage->SetHeight(MM_2_PT(m_dPageHeight));
 		return true;
 	}
 	return false;

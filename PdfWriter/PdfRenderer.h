@@ -233,6 +233,7 @@ public:
     bool CreatePageTree(const std::wstring& sPageTree, const std::pair<int, int>& pPageTree);
     std::pair<int, int> GetPageRef(int nPageIndex);
     bool EditPage(const std::wstring& sPage, const std::pair<int, int>& pPage);
+    bool AddPage(int nPageIndex);
     bool DeletePage(int nPageIndex);
     bool EditClose(const std::wstring& wsPath, const std::wstring& sTrailer);
     void PageRotate(int nRotate);

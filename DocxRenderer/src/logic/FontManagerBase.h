@@ -560,7 +560,7 @@ namespace NSFontManager
         void LoadFontParams(bool bIsPath = true)
 		{
 			// читаем и выставляем все настройки шрифта
-			if (NULL == m_pManager)
+            if (NULL == m_pManager || NULL == m_pManager->GetFile())
 				return;
 
             m_oFont.m_strFamilyName = m_oFont.m_oFont.Name;

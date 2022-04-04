@@ -1003,6 +1003,11 @@ namespace NSFile
         BYTE* pUtf8 = NULL;
         LONG lLen = 0;
         CUtf8Converter::GetUtf8StringFromUnicode(sFileName.c_str(), sFileName.length(), pUtf8, lLen, false);
+
+        struct stat st;
+        if ((0 == stat((char*)pUtf8, &st)) && S_ISDIR(st.st_mode))
+            return false;
+
         m_pFile = fopen((char*)pUtf8, bRewrite ? "rb+" : "rb");
 
         delete [] pUtf8;
@@ -1545,6 +1550,14 @@ namespace NSFile
         BYTE* pMode = NULL;
         LONG lLenMode;
         CUtf8Converter::GetUtf8StringFromUnicode(sMode.c_str(), sMode.length(), pMode, lLenMode, false);
+
+        struct stat st;
+        if ((0 == stat((char*)pUtf8, &st)) && S_ISDIR(st.st_mode))
+        {
+            delete [] pUtf8;
+            delete [] pMode;
+            return NULL;
+        }
 
         FILE* pFile = fopen((char*)pUtf8, (char*)pMode);
 

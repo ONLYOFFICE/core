@@ -524,7 +524,7 @@ namespace NSDocxRenderer
         HRESULT CommandDrawTextPrivate(const int* pUnicodes, const int* pGids, int nCount, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaseLineOffset = 0)
         {
             double dAngleMatrix = m_oTransform.z_Rotation();
-            if (abs(dAngleMatrix) > 1)
+            if (abs(dAngleMatrix) > 1 || m_oTransform.sx() < 0 || m_oTransform.sy() < 0)
             {
                 _SetFont();
                 PathCommandEnd();

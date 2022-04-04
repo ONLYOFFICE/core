@@ -216,8 +216,7 @@ NSFonts::IFontFile* NSFonts::IFontManager::LoadFontFile(NSFonts::CLibrary& libra
 	pFont->LoadDefaultCharAndSymbolicCmapIndex();
 
 	if (FT_Set_Char_Size(pFace, 0, (FT_F26Dot6)(pFont->m_dSize * 64), 0, 0))
-	{
-		FT_Done_Face(pFace);
+	{		
 		delete pFont;
 		return NULL;
 	}
@@ -313,11 +312,11 @@ CFontManager::CFontManager() : NSFonts::IFontManager()
 
 CFontManager::~CFontManager()
 {
+    RELEASEOBJECT(m_pOwnerCache);
 	if (m_pLibrary)
 	{
 		FT_Done_FreeType(m_pLibrary);
-	}
-	RELEASEOBJECT(m_pOwnerCache);
+	}	
 }
 void CFontManager::SetOwnerCache(NSFonts::IFontsCache* pCache)
 {

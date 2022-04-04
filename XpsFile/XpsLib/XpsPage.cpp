@@ -97,16 +97,16 @@ namespace XPS
 		if (!oReader.ReadNextNode())
 			return;
 
-		CWString wsNodeName = oReader.GetName(), wsAttrName;
-		if (wsNodeName == L"mc:AlternateContent")
+		CWString wsNodeName = oReader.GetNameNoNS(), wsAttrName;
+		if (wsNodeName == L"AlternateContent")
 		{
 			if (!oReader.IsEmptyNode())
 			{
 				int nAltDepth = oReader.GetDepth();
 				while (oReader.ReadNextSiblingNode(nAltDepth))
 				{
-					wsNodeName = oReader.GetName();
-					if (wsNodeName == L"mc:Choice")
+					wsNodeName = oReader.GetNameNoNS();
+					if (wsNodeName == L"Choice")
 					{
 						CWString wsAttr;
 						ReadAttribute(oReader, L"Requires", wsAttr);
@@ -117,14 +117,14 @@ namespace XPS
 								int nAltDepth2 = oReader.GetDepth();
 								while (oReader.ReadNextSiblingNode(nAltDepth2))
 								{
-									wsNodeName = oReader.GetName();
+									wsNodeName = oReader.GetNameNoNS();
 									if (wsNodeName == L"FixedPage")
 									{
 										ReadAttribute(oReader, L"Width", wsAttrName);
-                                        nW = wsAttrName.tointeger();
+										nW = wsAttrName.tointeger();
 
 										ReadAttribute(oReader, L"Height", wsAttrName);
-                                        nH = wsAttrName.tointeger();
+										nH = wsAttrName.tointeger();
 										break;
 									}
 								}
@@ -132,14 +132,14 @@ namespace XPS
 							break;
 						}
 					}
-					else if (wsNodeName == L"mc:Fallback")
+					else if (wsNodeName == L"Fallback")
 					{
 						if (!oReader.IsEmptyNode())
 						{
 							int nAltDepth2 = oReader.GetDepth();
 							while (oReader.ReadNextSiblingNode(nAltDepth2))
 							{
-								wsNodeName = oReader.GetName();
+								wsNodeName = oReader.GetNameNoNS();
 								if (wsNodeName == L"FixedPage")
 								{
 									ReadAttribute(oReader, L"Width", wsAttrName);
@@ -176,16 +176,16 @@ namespace XPS
 			return;
 
 		CContextState oState(pRenderer);
-		CWString wsNodeName = oReader.GetName();
-		if (wsNodeName == L"mc:AlternateContent")
+		CWString wsNodeName = oReader.GetNameNoNS();
+		if (wsNodeName == L"AlternateContent")
 		{
 			if (!oReader.IsEmptyNode())
 			{
 				int nAltDepth = oReader.GetDepth();
 				while (oReader.ReadNextSiblingNode(nAltDepth))
 				{
-					wsNodeName = oReader.GetName();
-					if (wsNodeName == L"mc:Choice")
+					wsNodeName = oReader.GetNameNoNS();
+					if (wsNodeName == L"Choice")
 					{
 						CWString wsAttr;
 						ReadAttribute(oReader, L"Requires", wsAttr);
@@ -196,7 +196,7 @@ namespace XPS
 								int nAltDepth2 = oReader.GetDepth();
 								while (oReader.ReadNextSiblingNode(nAltDepth2))
 								{
-									wsNodeName = oReader.GetName();
+									wsNodeName = oReader.GetNameNoNS();
 									if (wsNodeName == L"FixedPage")
 									{
 										DrawCanvas(oReader, pRenderer, &oState, pbBreak);
@@ -207,14 +207,14 @@ namespace XPS
 							break;
 						}
 					}
-					else if (wsNodeName == L"mc:Fallback")
+					else if (wsNodeName == L"Fallback")
 					{
 						if (!oReader.IsEmptyNode())
 						{
 							int nAltDepth2 = oReader.GetDepth();
 							while (oReader.ReadNextSiblingNode(nAltDepth2))
 							{
-								wsNodeName = oReader.GetName();
+								wsNodeName = oReader.GetNameNoNS();
 								if (wsNodeName == L"FixedPage")
 								{
 									DrawCanvas(oReader, pRenderer, &oState, pbBreak);
@@ -265,7 +265,7 @@ namespace XPS
 		int nCurDepth = oReader.GetDepth();
 		while (oReader.ReadNextSiblingNode(nCurDepth))
 		{
-			wsNodeName = oReader.GetName();
+			wsNodeName = oReader.GetNameNoNS();
 
 			if (wsNodeName == L"FixedPage.Resources")
 			{
@@ -299,15 +299,15 @@ namespace XPS
 			{
 				DrawPath(oReader, pRenderer, pState);
 			}
-			else if (wsNodeName == L"mc:AlternateContent")
+			else if (wsNodeName == L"AlternateContent")
 			{
 				if (!oReader.IsEmptyNode())
 				{
 					int nAltDepth = oReader.GetDepth();
 					while (oReader.ReadNextSiblingNode(nAltDepth))
 					{
-						wsNodeName = oReader.GetName();
-						if (wsNodeName == L"mc:Choice")
+						wsNodeName = oReader.GetNameNoNS();
+						if (wsNodeName == L"Choice")
 						{
 							CWString wsAttr;
 							ReadAttribute(oReader, L"Requires", wsAttr);
@@ -317,7 +317,7 @@ namespace XPS
 								break;
 							}
 						}
-						else if (wsNodeName == L"mc:Fallback")
+						else if (wsNodeName == L"Fallback")
 						{
 							DrawCanvas(oReader, pRenderer, pState, NULL);
 							break;
@@ -351,7 +351,7 @@ namespace XPS
 		int nCurDepth = oReader.GetDepth();
 		while (oReader.ReadNextSiblingNode(nCurDepth))
 		{
-			wsNodeName = oReader.GetName();
+			wsNodeName = oReader.GetNameNoNS();
 			if (wsNodeName == L"ResourceDictionary")
 			{
 				CWString wsSource;
@@ -586,7 +586,7 @@ namespace XPS
 			int nCurDepth = oReader.GetDepth();
 			while (oReader.ReadNextSiblingNode(nCurDepth))
 			{
-				wsNodeName = oReader.GetName();
+				wsNodeName = oReader.GetNameNoNS();
 				if (wsNodeName == L"Glyphs.RenderTransform")
 				{
 					ReadTransform(oReader, wsTransform);
@@ -1060,7 +1060,7 @@ namespace XPS
 			int nCurDepth = oReader.GetDepth();
 			while (oReader.ReadNextSiblingNode(nCurDepth))
 			{
-				wsNodeName = oReader.GetName();
+				wsNodeName = oReader.GetNameNoNS();
 				if (wsNodeName == L"Path.RenderTransform")
 				{
 					ReadTransform(oReader, wsTransform);
@@ -1175,9 +1175,7 @@ namespace XPS
 			int nCurDepth = oReader.GetDepth();
 			while (oReader.ReadNextSiblingNode(nCurDepth))
 			{
-				wsNodeName = oReader.GetName();
-				wsNodeName = RemoveNamespace(wsNodeName);
-
+				wsNodeName = oReader.GetNameNoNS();
 				if (L"SolidColorBrush" == wsNodeName)
 				{
 					int nBgr, nAlpha;
@@ -1204,7 +1202,7 @@ namespace XPS
 		int nCurDepth = oReader.GetDepth();
 		while (oReader.ReadNextSiblingNode(nCurDepth))
 		{
-			wsNodeName = oReader.GetName();
+			wsNodeName = oReader.GetNameNoNS();
 			if (wsNodeName == L"PathGeometry")
 				return ReadPathGeometry(oReader, wsData, wsTransform);
 		}

@@ -1067,3 +1067,92 @@ namespace XmlUtils
         return Execute(sXml, mode, withComments);
     }
 }
+
+std::string XmlUtils::GetUtf8FromFileContent(unsigned char* pData, unsigned int len)
+{
+    if (4 > len)
+        return std::string((char*)pData, (size_t)len);
+
+    if (pData[0] == 0xEF && pData[1] == 0xBB && pData[2] == 0xFE && pData[3] == 0xBF)
+    {
+        return std::string((char*)pData + 3, (size_t)(len - 3));
+    }
+
+    char markerUtf16 = 0;
+    if (pData[0] == 0xFF && pData[1] == 0xFE && !(pData[2] == 0x00 && pData[3] == 0x00))
+        markerUtf16 = 1;
+    if (pData[0] == 0xFE && pData[1] == 0xFF)
+        markerUtf16 = 2;
+
+    if (0 != markerUtf16)
+    {
+        int nCountSymbols = (len - 2) >> 1;
+        int nCountSymbolsNatural = 0;
+
+        unsigned int* pUnicodes = new unsigned int[nCountSymbols];
+        unsigned char* pCurrent = pData + 2;
+
+        for (int i = 0; i < nCountSymbols; ++i)
+        {
+            unsigned short nLeading = (markerUtf16 == 1) ? (pCurrent[0] | (pCurrent[1] << 8)) : (pCurrent[1] | (pCurrent[0] << 8));
+            pCurrent += 2;
+
+            if (nLeading < 0xD800 || nLeading > 0xDFFF)
+            {
+                pUnicodes[nCountSymbolsNatural++] = nLeading;
+            }
+            else
+            {
+                i++;
+                if (i == nCountSymbols)
+                    break;
+
+                unsigned short nTrailing = (markerUtf16 == 1) ? (pCurrent[0] | (pCurrent[1] << 8)) : (pCurrent[1] | (pCurrent[0] << 8));
+                pCurrent += 2;
+
+                if (nTrailing >= 0xDC00 && nTrailing <= 0xDFFF)
+                {
+                    pUnicodes[nCountSymbolsNatural++] = 0x10000 + (((nLeading & 0x03FF) << 10) | (nTrailing & 0x03FF));
+                }
+            }
+        }
+
+        std::string sRet = NSStringExt::CConverter::GetUtf8FromUTF32(pUnicodes, nCountSymbolsNatural);
+
+        RELEASEARRAYOBJECTS(pUnicodes);
+        return sRet;
+    }
+
+    char markerUtf32 = 0;
+    if (pData[0] == 0xFF && pData[1] == 0xFE && pData[2] == 0x00 && pData[3] == 0x00)
+        markerUtf32 = 1;
+    if (pData[0] == 0 && pData[1] == 0 && pData[2] == 0xFE && pData[3] == 0xFF)
+        markerUtf32 = 2;
+
+    if (0 != markerUtf16)
+    {
+        int nCountSymbols = (len - 4) >> 2;
+        int nCountSymbolsNatural = 0;
+
+        unsigned int* pUnicodes = new unsigned int[nCountSymbols];
+        unsigned char* pCurrent = pData + 4;
+
+        if (markerUtf32 == 1)
+        {
+            for (int i = 0; i < nCountSymbols; ++i, pCurrent += 4)
+                pUnicodes[nCountSymbolsNatural++] = (pCurrent[0] | (pCurrent[1] << 8) | (pCurrent[2] << 16) | (pCurrent[3] << 24));
+        }
+        else
+        {
+            for (int i = 0; i < nCountSymbols; ++i, pCurrent += 4)
+                pUnicodes[nCountSymbolsNatural++] = (pCurrent[3] | (pCurrent[2] << 8) | (pCurrent[1] << 16) | (pCurrent[0] << 24));
+        }
+
+        std::string sRet = NSStringExt::CConverter::GetUtf8FromUTF32(pUnicodes, nCountSymbolsNatural);
+
+        RELEASEARRAYOBJECTS(pUnicodes);
+        return sRet;
+    }
+
+    return std::string((char*)pData, (size_t)len);
+}

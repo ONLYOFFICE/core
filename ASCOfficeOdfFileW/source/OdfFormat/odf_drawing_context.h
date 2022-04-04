@@ -302,8 +302,6 @@ public:
 		void add_link	(std::wstring href);
 	void end_action();
 
-	std::map<std::wstring, OOX::Vml::CShapeType*>	m_mapVmlShapeTypes;
-
 private:
 	
     class Impl;

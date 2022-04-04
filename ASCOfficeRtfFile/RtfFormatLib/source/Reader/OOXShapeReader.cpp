@@ -292,15 +292,7 @@ OOXShapeReader::OOXShapeReader(OOX::WritingElementWithChilds<OOX::WritingElement
 
         if (pict)
         {
-                 if (pict->m_oShape.IsInit())           m_vmlElement = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pict->m_oShape.GetPointer());
-            else if (pict->m_oShapeArc.IsInit())        m_vmlElement = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pict->m_oShapeArc.GetPointer());
-            else if (pict->m_oShapeCurve.IsInit())      m_vmlElement = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pict->m_oShapeCurve.GetPointer());
-            else if (pict->m_oShapeLine.IsInit())       m_vmlElement = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pict->m_oShapeLine.GetPointer());
-            else if (pict->m_oShapeOval.IsInit())       m_vmlElement = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pict->m_oShapeOval.GetPointer());
-            else if (pict->m_oShapePolyLine.IsInit())   m_vmlElement = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pict->m_oShapePolyLine.GetPointer());
-            else if (pict->m_oShapeRect.IsInit())       m_vmlElement = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pict->m_oShapeRect.GetPointer());
-            else if (pict->m_oShapeRoundRect.IsInit())  m_vmlElement = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pict->m_oShapeRoundRect.GetPointer());
-            else if (pict->m_oShapeType.IsInit())       m_vmlElement = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pict->m_oShapeType.GetPointer());
+			m_vmlElement = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pict->m_oShapeElement.GetPointer());
         }
 
     }
@@ -1741,8 +1733,8 @@ bool OOXShapeReader::ParseVml( ReaderParameter oParam , RtfShapePtr& pOutput, bo
 		}
 	}
 
-	pOutput->m_bLayoutInCell = m_vmlElement->m_oAllowInCell.GetValue();
-	pOutput->m_bAllowOverlap = m_vmlElement->m_oAllowOverlap.GetValue();
+	pOutput->m_bLayoutInCell = m_vmlElement->m_oAllowInCell.get_value_or(false);
+	pOutput->m_bAllowOverlap = m_vmlElement->m_oAllowOverlap.get_value_or(true);
 
 	pOutput->m_nWrapType	= 3; //default (non wrap)
 	pOutput->m_eAnchorTypeShape	= RtfShape::st_none; //inline or anchor
@@ -1807,8 +1799,8 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 		}
 		pOutput->m_eAnchorTypeShape	= RtfShape::st_none; //inline or anchor
 		
-		pOutput->m_bLayoutInCell	= m_vmlGroup->m_oAllowInCell.GetValue();
-		pOutput->m_bAllowOverlap	= m_vmlGroup->m_oAllowOverlap.GetValue();
+		pOutput->m_bLayoutInCell	= m_vmlGroup->m_oAllowInCell.get_value_or(false);
+		pOutput->m_bAllowOverlap	= m_vmlGroup->m_oAllowOverlap.get_value_or(true);
 
 		pOutput->m_nZOrderRelative	= 0;
 		

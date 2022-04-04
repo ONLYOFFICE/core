@@ -457,7 +457,10 @@ public:
 		OoxConverter() : output_document(NULL), oox_current_child_document(NULL)
 		{
 		}
-		virtual ~OoxConverter(){}
+		virtual ~OoxConverter()
+		{
+			m_mapVmlShapeTypes.clear();
+		}
 
         void set_fonts_directory (const std::wstring & fontsPath);
 		
@@ -752,6 +755,8 @@ public:
 //-----------------------------------
 		void RGB2HSL(DWORD argb, double& dH, double& dS, double& dL);
 		DWORD HSL2RGB(double dH, double dS, double dL);
+	private:
+		std::map<std::wstring, OOX::Vml::CShapeType*> m_mapVmlShapeTypes;
 
 	};
 

@@ -167,172 +167,161 @@ namespace OOX
 {
 	namespace Vml
 	{
+		void CVmlCommonElements::CreateElement(XmlUtils::CXmlLiteReader& oReader)
+		{
+			OOX::Document* document = WritingElementWithChilds<>::m_pMainDocument;
+
+			std::wstring sName = oReader.GetName();
+			wchar_t wsChar1 = sName[0];
+			wchar_t wsChar3 = sName[2];
+
+			WritingElement *pItem = NULL;
+
+			OOX::Vml::CClientData *client_data = NULL; // for set marker comment
+			OOX::Vml::CImageData *image_data = NULL; // for set marker image
+			switch (wsChar1)
+			{
+			case 'o':
+				switch (wsChar3)
+				{
+				case 'c':
+
+					if (L"o:callout" == sName)
+						pItem = new OOX::VmlOffice::CCallout(document);
+					else if (L"o:clippath" == sName)
+						pItem = new OOX::VmlOffice::CClipPath(document);
+
+					break;
+				case 'e':
+
+					if ((L"o:extrusion") == sName)
+						pItem = new OOX::VmlOffice::CExtrusion(document);
+
+					break;
+				case 'l':
+
+					if ((L"o:lock") == sName)
+						pItem = new OOX::VmlOffice::CLock(document);
+
+					break;
+				case 's':
+
+					if ((L"o:signatureline") == sName)
+						pItem = new OOX::VmlOffice::CSignatureLine(document);
+					else if ((L"o:skew") == sName)
+						pItem = new OOX::VmlOffice::CSkew(document);
+
+					break;
+				}
+				break;
+			case 'p':
+				//if ( (L"ppt:textdata") == sName )
+				//	pItem = new OOX::Vml::CTextData( oReader );
+
+				break;
+			case 'v':
+
+				switch (wsChar3)
+				{
+				case 'f':
+					if ((L"v:fill") == sName)
+						pItem = new OOX::Vml::CFill(document);
+					else if ((L"v:formulas") == sName)
+						pItem = new OOX::Vml::CFormulas(document);
+
+					break;
+				case 'h':
+
+					if (L"v:handles" == sName)
+						pItem = new OOX::Vml::CHandles(document);
+
+					break;
+				case 'i':
+
+					if (L"v:imagedata" == sName)
+						pItem = image_data = new OOX::Vml::CImageData(document);
+					break;
+				case 'p':
+
+					if (L"v:path" == sName)
+						pItem = new OOX::Vml::CPath(document);
+
+					break;
+				case 's':
+
+					if (L"v:shadow" == sName)
+						pItem = new OOX::Vml::CShadow(document);
+					else if (L"v:stroke" == sName)
+						pItem = new OOX::Vml::CStroke(document);
+
+					break;
+				case 't':
+
+					if (L"v:textbox" == sName)
+						pItem = new OOX::Vml::CTextbox(document);
+					else if (L"v:textpath" == sName)
+						pItem = new OOX::Vml::CTextPath(document);
+
+					break;
+				}
+				break;
+			case 'w':
+
+				if ((L"wd:anchorLock") == sName)
+					pItem = new OOX::VmlWord::CAnchorLock(document);
+				else if ((L"wd:borderbottom") == sName)
+					pItem = new OOX::VmlWord::CBorder(document);
+				else if ((L"wd:borderleft") == sName)
+					pItem = new OOX::VmlWord::CBorder(document);
+				else if ((L"wd:borderright") == sName)
+					pItem = new OOX::VmlWord::CBorder(document);
+				else if ((L"wd:bordertop") == sName)
+					pItem = new OOX::VmlWord::CBorder(document);
+				else if ((L"wd:wrap") == sName)
+					pItem = new OOX::VmlWord::CWrap(document);
+				else if ((L"w10:wrap") == sName)
+					pItem = new OOX::VmlWord::CWrap(document);
+
+				break;
+			case 'x':
+
+				if (L"x:ClientData" == sName)
+				{
+					pItem = client_data = new OOX::Vml::CClientData(document);
+				}
+				break;
+			}
+
+			if (NULL != pItem)
+			{
+				m_arrItems.push_back(pItem);
+				pItem->fromXML(oReader);
+			}
+
+			if (((image_data) && (image_data->m_rId.IsInit())))
+			{
+				m_bImage = true;
+			}
+			if (((client_data) && (client_data->m_oObjectType.IsInit()))
+				&& (client_data->m_oObjectType->GetValue() == SimpleTypes::Vml::vmlclientdataobjecttypeNote))
+			{
+				m_bComment = true;
+			}
+		}
 		void CVmlCommonElements::ReadElements(XmlUtils::CXmlLiteReader& oReader) 
 		{
 			if ( oReader.IsEmptyNode() )
 				return;
 
-			OOX::Document* document = WritingElementWithChilds<>::m_pMainDocument;
-
-			OOX::Vml::CClientData * client_data = NULL;
-
 			int nCurDepth = oReader.GetDepth();
-			while ( oReader.ReadNextSiblingNode( nCurDepth ) )
+			while (oReader.ReadNextSiblingNode(nCurDepth))
 			{
-				std::wstring sName = oReader.GetName();
-				wchar_t wsChar1 = sName[0];
-				wchar_t wsChar3 = sName[2];
-
-				WritingElement *pItem = NULL;
-				switch ( wsChar1 )
-				{
-				case 'o':
-
-					switch ( wsChar3 )
-					{
-					case 'c':
-
-						if ( (L"o:callout") == sName )
-							pItem = new OOX::VmlOffice::CCallout( document );
-						else if ( (L"o:clippath") == sName )
-							pItem = new OOX::VmlOffice::CClipPath( document );
-
-						break;
-
-					case 'e':
-
-						if ( (L"o:extrusion") == sName )
-							pItem = new OOX::VmlOffice::CExtrusion( document );
-
-						break;
-
-					case 'l':
-
-						if ( (L"o:lock") == sName )
-							pItem = new OOX::VmlOffice::CLock( document );
-
-						break;
-
-					case 's':
-
-						if ( (L"o:signatureline") == sName )
-							pItem = new OOX::VmlOffice::CSignatureLine( document );
-						else if ( (L"o:skew") == sName )
-							pItem = new OOX::VmlOffice::CSkew( document );
-
-						break;
-					}
-
-					break;
-
-				case 'p':
-					//if ( (L"ppt:textdata") == sName )
-					//	pItem = new OOX::Vml::CTextData( oReader );
-
-					break;
-
-				case 'v':
-
-					switch ( wsChar3 )
-					{
-					case 'f':
-						if ( (L"v:fill") == sName )
-							pItem = new OOX::Vml::CFill( document );
-						else if ( (L"v:formulas") == sName )
-							pItem = new OOX::Vml::CFormulas( document );
-
-						break;
-
-					case 'h':
-
-						if ( (L"v:handles") == sName )
-							pItem = new OOX::Vml::CHandles( document );
-
-						break;
-
-					case 'i':
-
-						if ( (L"v:imagedata") == sName )
-							pItem = new OOX::Vml::CImageData( document );
-
-						break;
-
-					case 'p':
-
-						if ( (L"v:path") == sName )
-							pItem = new OOX::Vml::CPath( document );
-
-						break;
-
-					case 's':
-
-						if ( (L"v:shadow") == sName )
-							pItem = new OOX::Vml::CShadow( document );
-						else if ( (L"v:stroke") == sName )
-							pItem = new OOX::Vml::CStroke( document );
-
-						break;
-
-					case 't':
-
-						if ( (L"v:textbox") == sName )
-							pItem = new OOX::Vml::CTextbox( document );
-						else if ( (L"v:textpath") == sName )
-							pItem = new OOX::Vml::CTextPath( document );
-
-						break;
-					}
-
-					break;
-
-
-				case 'w':
-
-					if ( (L"wd:anchorLock") == sName )
-						pItem = new OOX::VmlWord::CAnchorLock( document );
-					else if ( (L"wd:borderbottom") == sName )
-						pItem = new OOX::VmlWord::CBorder( document );
-					else if ( (L"wd:borderleft") == sName )
-						pItem = new OOX::VmlWord::CBorder( document );
-					else if ( (L"wd:borderright") == sName )
-						pItem = new OOX::VmlWord::CBorder( document );
-					else if ( (L"wd:bordertop") == sName )
-						pItem = new OOX::VmlWord::CBorder( document );
-					else if ( (L"wd:wrap") == sName )
-						pItem = new OOX::VmlWord::CWrap( document );
-					else if ( (L"w10:wrap") == sName )
-						pItem = new OOX::VmlWord::CWrap( document );
-
-					break;
-
-				case 'x':
-
-					if ( (L"x:ClientData") == sName )
-                    {
-						pItem = new OOX::Vml::CClientData( document );
-                        client_data = dynamic_cast<OOX::Vml::CClientData*>(pItem);
-                    }
-					break;
-
-				}
-
-				if ( NULL != pItem )
-				{
-					m_arrItems.push_back( pItem );
-					pItem->fromXML(oReader);
-				}
+				CreateElement(oReader);
 			}
-			if ((client_data) && (client_data->m_oObjectType.IsInit()))
-				   if (client_data->m_oObjectType->GetValue() == SimpleTypes::Vml::vmlclientdataobjecttypeNote)
-						m_bComment = true;
 		}
 
 		void CVmlCommonElements::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Выставляем значения по умолчанию
-			m_oHrPct.SetValue( 0 );
-
-			// Читаем атрибуты
 			if ( oReader.GetAttributesCount() <= 0 )
 				return;
 			
@@ -478,124 +467,171 @@ namespace OOX
 
 			return sResult;
 		};
+		void CVmlCommonElements::mergeFrom(CVmlCommonElements* parent)
+		{
+			if (!parent) return;
+
+			if (false == m_oStyle.IsInit()) m_oStyle = parent->m_oStyle;
+			else
+			{
+				m_oStyle->mergeFrom(parent->m_oStyle.GetPointer());
+			}
+			if (false == m_sHref.IsInit())			m_sHref = parent->m_sHref;
+			if (false == m_sTarget.IsInit())		m_sTarget = parent->m_sTarget;
+			if (false == m_sClass.IsInit())			m_sClass = parent->m_sClass;
+			if (false == m_sTitle.IsInit())			m_sTitle = parent->m_sTitle;
+			if (false == m_sAlt.IsInit())			m_sAlt = parent->m_sAlt;
+			if (false == m_oCoordSize.IsInit())		m_oCoordSize = parent->m_oCoordSize;
+			if (false == m_oCoordOrigin.IsInit())	m_oCoordOrigin = parent->m_oCoordOrigin;
+			if (false == m_oWrapCoords.IsInit())	m_oWrapCoords = parent->m_oWrapCoords;
+			if (false == m_oPrint.IsInit())			m_oPrint = parent->m_oPrint;
+
+			if (false == m_sSpId.IsInit())			m_sSpId = parent->m_sSpId;
+			if (false == m_oOned.IsInit())			m_oOned = parent->m_oOned;
+			if (false == m_oRegroupId.IsInit())		m_oRegroupId = parent->m_oRegroupId;
+			if (false == m_oDoubleClickNotify.IsInit())  m_oDoubleClickNotify = parent->m_oDoubleClickNotify;
+			if (false == m_oButton.IsInit())		m_oButton = parent->m_oButton;
+			if (false == m_oUserHidden.IsInit())	m_oUserHidden = parent->m_oUserHidden;
+			if (false == m_oBullet.IsInit())		m_oBullet = parent->m_oBullet;
+			if (false == m_oHr.IsInit())			m_oHr = parent->m_oHr;
+			if (false == m_oHrStd.IsInit())			m_oHrStd = parent->m_oHrStd;
+			if (false == m_oHrNoShade.IsInit())		m_oHrNoShade = parent->m_oHrNoShade;
+			if (false == m_oHrPct.IsInit())			m_oHrPct = parent->m_oHrPct;
+			if (false == m_oHrAlign.IsInit())		m_oHrAlign = parent->m_oHrAlign;
+			if (false == m_oAllowInCell.IsInit())	m_oAllowInCell = parent->m_oAllowInCell;
+			if (false == m_oAllowOverlap.IsInit())  m_oAllowOverlap = parent->m_oAllowOverlap;
+			if (false == m_oUserDrawn.IsInit())		m_oUserDrawn = parent->m_oUserDrawn;
+			if (false == m_oBorderTopColor.IsInit())  m_oBorderTopColor = parent->m_oBorderTopColor;
+			if (false == m_oBorderLeftColor.IsInit())  m_oBorderLeftColor = parent->m_oBorderLeftColor;
+			if (false == m_oBorderBottomColor.IsInit())  m_oBorderBottomColor = parent->m_oBorderBottomColor;
+			if (false == m_oBorderRightColor.IsInit())  m_oBorderRightColor = parent->m_oBorderRightColor;
+			if (false == m_oDgmLayout.IsInit())		m_oDgmLayout = parent->m_oDgmLayout;
+			if (false == m_oDgmNodeKind.IsInit())	m_oDgmNodeKind = parent->m_oDgmNodeKind;
+			if (false == m_oDgmLayoutMru.IsInit())  m_oDgmLayoutMru = parent->m_oDgmLayoutMru;
+			if (false == m_oInsetMode.IsInit())		m_oInsetMode = parent->m_oInsetMode;
+
+			if (false == m_oChromaKey.IsInit())		m_oChromaKey = parent->m_oChromaKey;
+			if (false == m_oFilled.IsInit())		m_oFilled = parent->m_oFilled;
+			if (false == m_oFillColor.IsInit())		m_oFillColor = parent->m_oFillColor;
+			if (false == m_oOpacity.IsInit())		m_oOpacity = parent->m_oOpacity;
+			if (false == m_oStroked.IsInit())		m_oStroked = parent->m_oStroked;
+			if (false == m_oStrokeColor.IsInit())	m_oStrokeColor = parent->m_oStrokeColor;
+			if (false == m_oStrokeWeight.IsInit())  m_oStrokeWeight = parent->m_oStrokeWeight;
+			if (false == m_oInsetPen.IsInit())		m_oInsetPen = parent->m_oInsetPen;
+
+			if (false == m_oSpt.IsInit())			m_oSpt = parent->m_oSpt;
+			if (false == m_oConnectorType.IsInit())	m_oConnectorType = parent->m_oConnectorType;
+			if (false == m_oBwMode.IsInit())		m_oBwMode = parent->m_oBwMode;
+			if (false == m_oBwPure.IsInit())		m_oBwPure = parent->m_oBwPure;
+			if (false == m_oBwNormal.IsInit())		m_oBwNormal = parent->m_oBwNormal;
+			if (false == m_oForceDash.IsInit())		m_oForceDash = parent->m_oForceDash;
+			if (false == m_oOleIcon.IsInit())		m_oOleIcon = parent->m_oOleIcon;
+			if (false == m_oOle.IsInit())			m_oOle = parent->m_oOle;
+			if (false == m_oPreferRelative.IsInit())  m_oPreferRelative = parent->m_oPreferRelative;
+			if (false == m_oClipToWrap.IsInit())	m_oClipToWrap = parent->m_oClipToWrap;
+			if (false == m_oClip.IsInit())			m_oClip = parent->m_oClip;
+		}
+
 		std::wstring CVmlCommonElements::WriteAttributes() const
 		{
 			std::wstring sResult;
 
-			ComplexTypes_WriteAttribute3( (L"id=\""),          m_sId );
-			ComplexTypes_WriteAttribute ( (L"style=\""),       m_oStyle );
-			ComplexTypes_WriteAttribute3( (L"href=\""),        m_sHref );
-			ComplexTypes_WriteAttribute3( (L"target=\""),      m_sTarget );
-			ComplexTypes_WriteAttribute3( (L"class=\""),       m_sClass );
-			ComplexTypes_WriteAttribute3( (L"title=\""),       m_sTitle );
-			ComplexTypes_WriteAttribute3( (L"alt=\""),         m_sAlt );
+			ComplexTypes_WriteAttribute3(L"id=\"",          m_sId );
+			ComplexTypes_WriteAttribute (L"style=\"",       m_oStyle );
+			ComplexTypes_WriteAttribute3(L"href=\"",        m_sHref );
+			ComplexTypes_WriteAttribute3(L"target=\"",      m_sTarget );
+			ComplexTypes_WriteAttribute3(L"class=\"",       m_sClass );
+			ComplexTypes_WriteAttribute3(L"title=\"",       m_sTitle );
+			ComplexTypes_WriteAttribute3(L"alt=\"",         m_sAlt );
+			ComplexTypes_WriteAttribute (L"coordsize=\"",   m_oCoordSize );
+			ComplexTypes_WriteAttribute (L"coordorigin=\"", m_oCoordOrigin );
+			ComplexTypes_WriteAttribute (L"wrapcoords=\"",  m_oWrapCoords );
 
-			ComplexTypes_WriteAttribute ( (L"coordsize=\""),   m_oCoordSize );
-			ComplexTypes_WriteAttribute ( (L"coordorigin=\""), m_oCoordOrigin );
-			ComplexTypes_WriteAttribute ( (L"wrapcoords=\""),  m_oWrapCoords );
-
-			if ( SimpleTypes::booleanTrue != m_oPrint.GetValue() )
+			if (!m_oPrint.get_value_or(true))
 				sResult += (L"print=\"false\" ");
 
-			ComplexTypes_WriteAttribute3( (L"o:spid=\""),      m_sSpId );
+			ComplexTypes_WriteAttribute3(L"o:spid=\"", m_sSpId );
 
-			if ( SimpleTypes::booleanFalse != m_oOned.GetValue() )
+			if (m_oOned.get_value_or(false))
 				sResult += (L"o:oned=\"true\" ");
 			
-			ComplexTypes_WriteAttribute ( (L"o:regroupid=\""), m_oRegroupId );
+			if (m_oRegroupId.IsInit())
+				sResult += L"o:regroupid=\"" + std::to_wstring(*m_oRegroupId) + (L"\" ");
 
-			if ( SimpleTypes::booleanFalse != m_oDoubleClickNotify.GetValue() )
+			if (m_oDoubleClickNotify.get_value_or(false))
 				sResult += (L"o:doubleclicknotify=\"true\" ");
 
-			if ( SimpleTypes::booleanFalse != m_oButton.GetValue() )
+			if (m_oButton.get_value_or(false))
 				sResult += (L"o:button=\"true\" ");
 
-			if ( SimpleTypes::booleanFalse != m_oUserHidden.GetValue() )
+			if (m_oUserHidden.get_value_or(false))
 				sResult += (L"o:userhidden=\"true\" ");
 
-			if ( SimpleTypes::booleanFalse != m_oBullet.GetValue() )
+			if (m_oBullet.get_value_or(false))
 				sResult += (L"o:bullet=\"true\" ");
 
-			if ( SimpleTypes::booleanFalse != m_oHr.GetValue() )
+			if (m_oHr.get_value_or(false))
 				sResult += (L"o:hr=\"true\" ");
 
-			if ( SimpleTypes::booleanFalse != m_oHrStd.GetValue() )
+			if (m_oHrStd.get_value_or(false))
 				sResult += (L"o:hrstd=\"true\" ");
 
-			if ( SimpleTypes::booleanFalse != m_oHrNoShade.GetValue() )
+			if (m_oHrNoShade.get_value_or(false))
 				sResult += (L"o:hrnoshade=\"true\" ");
 
-			if ( 0 != m_oHrPct.GetValue() )
-				sResult += (L"o:hrpct=\"") + m_oHrPct.ToString() + (L"\" ");
+			if (m_oHrPct.IsInit())
+				sResult += L"o:hrpct=\"" + std::to_wstring(*m_oHrPct) + (L"\" ");
 
-			if ( SimpleTypes::hralignLeft != m_oHrAlign.GetValue() )
-				sResult += (L"o:hralign=\"") + m_oHrAlign.ToString() + (L"\" ");
+			ComplexTypes_WriteAttribute(L"o:hralign=\"", m_oHrAlign);
 
-			if ( SimpleTypes::booleanFalse != m_oAllowInCell.GetValue() )
+			if (m_oAllowInCell.get_value_or(false))
 				sResult += (L"o:allowincell=\"true\" ");
 
-			if ( SimpleTypes::booleanFalse != m_oAllowOverlap.GetValue() )
-				sResult += (L"o:allowoverlap=\"true\" ");
+			if (m_oAllowOverlap.IsInit())
+				sResult += L"o:allowoverlap=\"" + std::wstring(*m_oAllowOverlap ? L"true" : L"false") + (L"\" ");
 
-			if ( SimpleTypes::booleanFalse != m_oUserDrawn.GetValue() )
+			if (m_oUserDrawn.get_value_or(false))
 				sResult += (L"o:userdrawn=\"true\" ");
 
-			ComplexTypes_WriteAttribute ( (L"o:bordertopcolor=\""),    m_oBorderTopColor );
-			ComplexTypes_WriteAttribute ( (L"o:borderleftcolor=\""),   m_oBorderLeftColor );
-			ComplexTypes_WriteAttribute ( (L"o:borderbottomcolor=\""), m_oBorderBottomColor );
-			ComplexTypes_WriteAttribute ( (L"o:borderrightcolor=\""),  m_oBorderRightColor );
+			ComplexTypes_WriteAttribute (L"o:bordertopcolor=\"",    m_oBorderTopColor );
+			ComplexTypes_WriteAttribute (L"o:borderleftcolor=\"",   m_oBorderLeftColor );
+			ComplexTypes_WriteAttribute (L"o:borderbottomcolor=\"", m_oBorderBottomColor );
+			ComplexTypes_WriteAttribute (L"o:borderrightcolor=\"",  m_oBorderRightColor );
+			ComplexTypes_WriteAttribute (L"o:dgmlayout=\"",     m_oDgmLayout );
+			ComplexTypes_WriteAttribute (L"o:dgmlayoutmru=\"",  m_oDgmLayoutMru );
+			ComplexTypes_WriteAttribute3(L"o:dgmnodekind=\"",   m_oDgmNodeKind );
+			ComplexTypes_WriteAttribute (L"o:insetmode=\"" , m_oInsetMode);
+			ComplexTypes_WriteAttribute (L"chromakey=\"",  m_oChromaKey );
+			ComplexTypes_WriteAttribute (L"filled=\"",		m_oFilled );
+			ComplexTypes_WriteAttribute (L"fillcolor=\"",	m_oFillColor );
+			ComplexTypes_WriteAttribute (L"opacity=\"",	m_oOpacity );
+			ComplexTypes_WriteAttribute (L"stroked=\"", m_oStroked );
+			ComplexTypes_WriteAttribute (L"strokecolor=\"", m_oStrokeColor);
+			ComplexTypes_WriteAttribute (L"strokeweight=\"", m_oStrokeWeight);
+			ComplexTypes_WriteAttribute (L"insetpen=\"",  m_oInsetPen );
+			ComplexTypes_WriteAttribute (L"o:spt=\"", m_oSpt);
+			ComplexTypes_WriteAttribute (L"o:connectortype=\"", m_oConnectorType);
+			ComplexTypes_WriteAttribute (L"o:bwmode=\"",   m_oBwMode );
+			ComplexTypes_WriteAttribute (L"o:bwpure=\"",   m_oBwPure );
+			ComplexTypes_WriteAttribute (L"o:bwnormal=\"", m_oBwNormal );
 
-			ComplexTypes_WriteAttribute ( (L"o:dgmlayout=\""),     m_oDgmLayout );
-			ComplexTypes_WriteAttribute ( (L"o:dgmlayoutmru=\""),  m_oDgmLayoutMru );
-			ComplexTypes_WriteAttribute3( (L"o:dgmnodekind=\""),   m_oDgmNodeKind );
-
-			if ( SimpleTypes::insetmodeCustom != m_oInsetMode.GetValue() )
-				sResult += (L"o:insetmode=\"") + m_oInsetMode.ToString() + (L"\" ");
-
-			ComplexTypes_WriteAttribute ( (L"chromakey=\""),  m_oChromaKey );
-
-			ComplexTypes_WriteAttribute ( (L"filled=\""),		m_oFilled );
-
-			ComplexTypes_WriteAttribute ( (L"fillcolor=\""),		m_oFillColor );
-			ComplexTypes_WriteAttribute ( (L"opacity=\""),			m_oOpacity );
-
-			ComplexTypes_WriteAttribute ( (L"stroked=\""), m_oStroked );
-
-			ComplexTypes_WriteAttribute ( (L"strokecolor=\""), m_oStrokeColor);
-
-			if ( m_oStrokeWeight.IsInit() )
-				sResult += (L"strokeweight=\"") + m_oStrokeWeight->ToString() + (L"\" ");
-
-			ComplexTypes_WriteAttribute ( (L"insetpen=\""),  m_oInsetPen );
-
-			if ( m_oSpt.IsInit() )
-				sResult += (L"o:spt=\"") + m_oSpt->ToString() + (L"\" ");
-
-			if (m_oConnectorType.IsInit())
-			{
-				sResult += (L"o:connectortype=\"") + m_oConnectorType->ToString() + (L"\" ");
-			}
-
-			ComplexTypes_WriteAttribute ( (L"o:bwmode=\""),   m_oBwMode );
-			ComplexTypes_WriteAttribute ( (L"o:bwpure=\""),   m_oBwPure );
-			ComplexTypes_WriteAttribute ( (L"o:bwnormal=\""), m_oBwNormal );
-
-			if ( SimpleTypes::booleanFalse != m_oForceDash.GetValue() )
+			if (m_oForceDash.get_value_or(false))
 				sResult += (L"o:forcedash=\"true\" ");
 
-			if ( SimpleTypes::booleanFalse != m_oOleIcon.GetValue() )
+			if (m_oOleIcon.get_value_or(false))
 				sResult += (L"o:oleicon=\"true\" ");
 
-			if ( SimpleTypes::booleanFalse != m_oOle.GetValue() )
+			if (m_oOle.get_value_or(false))
 				sResult += (L"o:ole=\"true\" ");
 
-			if ( SimpleTypes::booleanFalse != m_oPreferRelative.GetValue() )
+			if (m_oPreferRelative.get_value_or(false))
 				sResult += (L"o:preferrelative=\"true\" ");
 
-			if ( SimpleTypes::booleanFalse != m_oClipToWrap.GetValue() )
+			if (m_oClipToWrap.get_value_or(false))
 				sResult += (L"o:cliptowrap=\"true\" ");
 
-			ComplexTypes_WriteAttribute ( (L"o:clip=\""), m_oClip );
+			if (m_oClipToWrap.IsInit())
+				sResult += L"o:clip=\"" + std::wstring(*m_oClip ? L"true" : L"false") + (L"\" ");
 
 			return sResult;
 		}
@@ -608,11 +644,11 @@ namespace OOX
 		//--------------------------------------------------------------------------------	
 		void CGroup::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			// TO DO: Реализовать CGroup::fromXML(XmlUtils::CXmlNode& oNode)
 		}
 		void CGroup::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
-			ReadAttributes( oReader );
+			ReadAttributes(oReader);
+			CVmlCommonElements::ReadAttributes(oReader);
 
 			if ( oReader.IsEmptyNode() )
 				return;
@@ -622,421 +658,69 @@ namespace OOX
 			int nCurDepth = oReader.GetDepth();
 			while ( oReader.ReadNextSiblingNode( nCurDepth ) )
 			{
-				std::wstring sName = oReader.GetName();
-				wchar_t wsChar1 = sName[0];
-				wchar_t wsChar3 = sName[2];
-
 				WritingElement *pItem = NULL;
-				switch ( wsChar1 )
+				std::wstring sName = oReader.GetName();
+
+				if (L"v:arc" == sName)
+					pItem = new OOX::Vml::CArc(document);
+				else if (L"v:curve" == sName)
+					pItem = new OOX::Vml::CCurve(document);
+				else if (L"v:line" == sName)
+					pItem = new OOX::Vml::CLine(document);
+				else if (L"v:image" == sName)
+					pItem = new OOX::Vml::CImage(document);
+				else if (L"v:group" == sName)
+					pItem = new OOX::Vml::CGroup(document);
+				else if (L"v:oval" == sName)
+					pItem = new OOX::Vml::COval(document);
+				else if (L"v:shape" == sName)
+					pItem = new OOX::Vml::CShape(document);
+				else if (L"v:polyline" == sName)
+					pItem = new OOX::Vml::CPolyLine(document);
+				else if (L"v:rect" == sName)
+					pItem = new OOX::Vml::CRect(document);
+				else if (L"v:roundrect" == sName)
+					pItem = new OOX::Vml::CRoundRect(document);
+				else if (L"v:shapetype" == sName)
 				{
-				case 'o':
-
-					switch ( wsChar3 )
-					{
-					case 'c':
-
-						if ( (L"o:callout") == sName )
-							pItem = new OOX::VmlOffice::CCallout( document );
-						else if ( (L"o:clippath") == sName )
-							pItem = new OOX::VmlOffice::CClipPath( document );
-
-						break;
-
-					case 'd':
-
-						if ( (L"o:diagram") == sName )
-							pItem = new OOX::VmlOffice::CDiagram( document );
-
-						break;
-
-
-					case 'e':
-
-						if ( (L"o:extrusion") == sName )
-							pItem = new OOX::VmlOffice::CExtrusion( document );
-
-						break;
-
-					case 'l':
-
-						if ( (L"o:lock") == sName )
-							pItem = new OOX::VmlOffice::CLock( document );
-
-						break;
-
-					case 's':
-
-						if ( (L"o:signatureline") == sName )
-							pItem = new OOX::VmlOffice::CSignatureLine( document );
-						else if ( (L"o:skew") == sName )
-							pItem = new OOX::VmlOffice::CSkew( document );
-
-						break;
-					}
-
-					break;
-
-				case 'p':
-					//if ( (L"ppt:textdata") == sName )
-					//	pItem = new OOX::Vml::CTextData( document );
-
-					break;
-
-				case 'v':
-
-					switch ( wsChar3 )
-					{
-					case 'a':
-						if ( (L"v:arc") == sName )
-							pItem = new OOX::Vml::CArc(document);
-						break;
-
-					case 'c':
-						if ( (L"v:curve") == sName )
-							pItem = new OOX::Vml::CCurve(document);
-						break;
-
-					case 'f':
-						if ( (L"v:fill") == sName )
-							pItem = new OOX::Vml::CFill( document );
-						else if ( (L"v:formulas") == sName )
-							pItem = new OOX::Vml::CFormulas( document );
-
-						break;
-
-					case 'g':
-						if ( (L"v:group") == sName )
-							pItem = new OOX::Vml::CGroup(document);
-
-						break;
-
-					case 'h':
-
-						if ( (L"v:handles") == sName )
-							pItem = new OOX::Vml::CHandles( document );
-
-						break;
-
-					case 'i':
-
-						if ( (L"v:imagedata") == sName )
-							pItem = new OOX::Vml::CImageData( document );
-						else if ( (L"v:image") == sName )
-							pItem = new OOX::Vml::CImage( document );
-
-						break;
-
-					case 'l':
-
-						if ( (L"v:line") == sName )
-							pItem = new OOX::Vml::CLine (document);
-
-						break;
-
-					case 'o':
-
-						if ( (L"v:oval") == sName )
-							pItem = new OOX::Vml::COval (document);
-
-						break;
-
-					case 'p':
-
-						if ( (L"v:path") == sName )
-							pItem = new OOX::Vml::CPath( document );
-						else if ( (L"v:polyline") == sName )
-							pItem = new OOX::Vml::CPolyLine(document);
-
-						break;
-
-					case 'r':
-
-						if ( (L"v:rect") == sName )
-							pItem = new OOX::Vml::CRect (document);
-						else if ( (L"v:roundrect") == sName )
-							pItem = new OOX::Vml::CRoundRect( document);
-
-						break;
-
-					case 's':
-
-						if ( (L"v:shadow") == sName )
-							pItem = new OOX::Vml::CShadow( document );
-						else if ( (L"v:shape") == sName )
-							pItem = new OOX::Vml::CShape( document);
-						else if ( (L"v:shapetype") == sName )
-							pItem = new OOX::Vml::CShapeType( document);
-						else if ( (L"v:stroke") == sName )
-							pItem = new OOX::Vml::CStroke( document );
-
-						break;
-
-					case 't':
-
-						if ( (L"v:textbox") == sName )
-							pItem = new OOX::Vml::CTextbox( document );
-						else if ( (L"v:textpath") == sName )
-							pItem = new OOX::Vml::CTextPath( document );
-
-						break;
-					}
-
-					break;
-
-
-				case 'w':
-
-					if ( (L"wd:anchorLock") == sName )
-						pItem = new OOX::VmlWord::CAnchorLock( document );
-					else if ( (L"wd:borderbottom") == sName )
-						pItem = new OOX::VmlWord::CBorder( document );
-					else if ( (L"wd:borderleft") == sName )
-						pItem = new OOX::VmlWord::CBorder( document );
-					else if ( (L"wd:borderright") == sName )
-						pItem = new OOX::VmlWord::CBorder( document );
-					else if ( (L"wd:bordertop") == sName )
-						pItem = new OOX::VmlWord::CBorder( document );
-					else if ( (L"wd:wrap") == sName )
-						pItem = new OOX::VmlWord::CWrap( document );
-
-					break;
-
-				case 'x':
-
-					if ( (L"x:ClientData") == sName )
-						pItem = new OOX::Vml::CClientData( document );
-
-					break;
-
+					m_arrShapeTypes.push_back(new OOX::Vml::CShapeType(document));
+					m_arrShapeTypes.back()->fromXML(oReader);
 				}
+				else
+					CreateElement(oReader);
 
 				if ( NULL != pItem )
 				{
-					m_arrItems.push_back( pItem );
+					m_arrElements.push_back( pItem );
 					pItem->fromXML(oReader);
 				}
 			}
 		}
 		void CGroup::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Выставляем значения по умолчанию
-			m_oHrPct.SetValue( 0 );
-
-			// Читаем атрибуты
-			if ( oReader.GetAttributesCount() <= 0 )
-				return;
-			
-			if ( !oReader.MoveToFirstAttribute() )
-				return;
-			
-			std::wstring wsName = oReader.GetName();
-			while( !wsName.empty() )
-			{
-				wchar_t wsChar = wsName[0];
-				switch ( wsChar )
-				{
-				case 'a':
-					if      ( (L"alt") == wsName ) m_sAlt = oReader.GetText();
-					break;
-
-				case 'c':
-					if      ( (L"class")       == wsName ) m_sClass       = oReader.GetText();
-					else if ( (L"coordorigin") == wsName ) m_oCoordOrigin = oReader.GetText();
-					else if ( (L"coordsize")   == wsName ) m_oCoordSize   = oReader.GetText();
-					break;
-
-				case 'e':
-					if      ( (L"editas") == wsName ) m_oEditAs = oReader.GetText();
-					break;
-
-				case 'f':
-					if      ( (L"fillcolor") == wsName ) m_oFillColor = oReader.GetText();
-					else if ( (L"filled")    == wsName ) m_oFilled    = oReader.GetText();
-					break;
-
-				case 'h':
-					if      ( (L"href") == wsName ) m_sHref = oReader.GetText();
-					break;
-
-				case 'i':
-					if      ( (L"id")       == wsName ) m_sId       = oReader.GetText();
-					break;
-
-				case 'o':
-					{
-						wchar_t wsChar2 = wsName[2]; // o:_
-						switch ( wsChar2 )
-						{
-						case 'a':
-							if      ( (L"o:allowincell")  == wsName ) m_oAllowInCell  = oReader.GetText();
-							else if ( (L"o:allowoverlap") == wsName ) m_oAllowOverlap = oReader.GetText();
-							break;
-						case 'b':
-							if      ( (L"o:borderbottomcolor") == wsName ) m_oBorderBottomColor = oReader.GetText();
-							else if ( (L"o:borderleftcolor")   == wsName ) m_oBorderLeftColor   = oReader.GetText();
-							else if ( (L"o:borderrightcolor")  == wsName ) m_oBorderRightColor  = oReader.GetText();
-							else if ( (L"o:bordertopcolor")    == wsName ) m_oBorderTopColor    = oReader.GetText();
-							else if ( (L"o:bullet")            == wsName ) m_oBullet            = oReader.GetText();
-							else if ( (L"o:button")            == wsName ) m_oButton            = oReader.GetText();
-							break;
-						case 'd':
-							if      ( (L"o:doubleclicknotify") == wsName ) m_oDoubleClickNotify = oReader.GetText();
-							else if ( (L"o:dgmlayout")         == wsName ) m_oDgmLayout         = oReader.GetText();
-							else if ( (L"o:dgmlayoutmru")      == wsName ) m_oDgmLayoutMru      = oReader.GetText();
-							else if ( (L"o:dgmnodekind")       == wsName ) m_oDgmNodeKind       = oReader.GetText();
-							break;
-						case 'h':  
-							if      ( (L"o:hr")        == wsName ) m_oHr        = oReader.GetText();
-							else if ( (L"o:hralign")   == wsName ) m_oHrAlign   = oReader.GetText();
-							else if ( (L"o:hrnoshade") == wsName ) m_oHrNoShade = oReader.GetText();
-							else if ( (L"o:hrpct")     == wsName ) m_oHrPct     = oReader.GetText();
-							else if ( (L"o:hrstd")     == wsName ) m_oHrStd     = oReader.GetText();
-							break;
-						case 'i':
-							if      ( (L"o:insetmode") == wsName ) m_oInsetMode = oReader.GetText();
-							break;
-						case 'o':  
-							if      ( (L"o:oned")    == wsName ) m_oOned       = oReader.GetText();
-							break;
-						case 'r':
-							if      ( (L"o:regroupid") == wsName ) m_oRegroupId = oReader.GetText();
-							break;
-						case 's':
-							if      ( (L"o:spid") == wsName ) m_sSpId = oReader.GetText();
-							break;
-						case 't':
-							if      ( (L"o:tableproperties")  == wsName ) m_oTableProperties = oReader.GetText();
-							else if ( (L"o:tablelimits")      == wsName ) m_oTableLimits     = oReader.GetText();
-							break;
-						case 'u':
-							if      ( (L"o:userdrawn")  == wsName ) m_oUserDrawn  = oReader.GetText();
-							else if ( (L"o:userhidden") == wsName ) m_oUserHidden = oReader.GetText();
-							break;
-						}
-
-					break;
-					}
-
-				case 'p':
-					if      ( (L"print") == wsName ) m_oPrint = oReader.GetText();
-					break;
-				case 's':
-					if      ( (L"style") == wsName ) m_oStyle = oReader.GetText();
-					break;
-				case 't':
-					if      ( (L"target") == wsName ) m_sTarget = oReader.GetText();
-					else if ( (L"title")  == wsName ) m_sTitle  = oReader.GetText();
-					break;
-				case 'w':
-					if      ( (L"wrapcoords") == wsName ) m_oWrapCoords = oReader.GetText();
-					break;
-				}
-
-				if ( !oReader.MoveToNextAttribute() )
-					break;
-
-				wsName = oReader.GetName();
-			}
-			oReader.MoveToElement();
+			WritingElement_ReadAttributes_Start(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, _T("o:tableproperties"), m_oTableProperties)
+				WritingElement_ReadAttributes_Read_else_if(oReader, _T("o:tablelimits"), m_oTableLimits)
+				WritingElement_ReadAttributes_Read_else_if(oReader, _T("w:editas"), m_oEditAs)
+			WritingElement_ReadAttributes_End(oReader)
 		}
 
 
 		std::wstring CGroup::toXML() const
 		{
-			std::wstring sResult = (L"<v:group ");
+			std::wstring sResult = L"<v:group ";
 
-			ComplexTypes_WriteAttribute3( (L"id=\""),          m_sId );
-			ComplexTypes_WriteAttribute ( (L"style=\""),       m_oStyle );
-			ComplexTypes_WriteAttribute3( (L"href=\""),        m_sHref );
-			ComplexTypes_WriteAttribute3( (L"target=\""),      m_sTarget );
-			ComplexTypes_WriteAttribute3( (L"class=\""),       m_sClass );
-			ComplexTypes_WriteAttribute3( (L"title=\""),       m_sTitle );
-			ComplexTypes_WriteAttribute3( (L"alt=\""),         m_sAlt );
-
-			ComplexTypes_WriteAttribute ( (L"coordsize=\""),   m_oCoordSize );
-			ComplexTypes_WriteAttribute ( (L"coordorigin=\""), m_oCoordOrigin );
-			ComplexTypes_WriteAttribute ( (L"wrapcoords=\""),  m_oWrapCoords );
-
-			if ( SimpleTypes::booleanTrue != m_oPrint.GetValue() )
-				sResult += (L"print=\"false\" ");
-
-			ComplexTypes_WriteAttribute3( (L"o:spid=\""),      m_sSpId );
-
-			if ( SimpleTypes::booleanFalse != m_oOned.GetValue() )
-				sResult += (L"o:oned=\"true\" ");
-
-			ComplexTypes_WriteAttribute ( (L"o:regroupid=\""), m_oRegroupId );
-
-			if ( SimpleTypes::booleanFalse != m_oDoubleClickNotify.GetValue() )
-				sResult += (L"o:doubleclicknotify=\"true\" ");
-
-			if ( SimpleTypes::booleanFalse != m_oButton.GetValue() )
-				sResult += (L"o:button=\"true\" ");
-
-			if ( SimpleTypes::booleanFalse != m_oUserHidden.GetValue() )
-				sResult += (L"o:userhidden=\"true\" ");
-
-			if ( SimpleTypes::booleanFalse != m_oBullet.GetValue() )
-				sResult += (L"o:bullet=\"true\" ");
-
-			if ( SimpleTypes::booleanFalse != m_oHr.GetValue() )
-				sResult += (L"o:hr=\"true\" ");
-
-			if ( SimpleTypes::booleanFalse != m_oHrStd.GetValue() )
-				sResult += (L"o:hrstd=\"true\" ");
-
-			if ( SimpleTypes::booleanFalse != m_oHrNoShade.GetValue() )
-				sResult += (L"o:hrnoshade=\"true\" ");
-
-			if ( 0 != m_oHrPct.GetValue() )
-				sResult += (L"o:hrpct=\"") + m_oHrPct.ToString() + (L"\" ");
-
-			if ( SimpleTypes::hralignLeft != m_oHrAlign.GetValue() )
-				sResult += (L"o:hralign=\"") + m_oHrAlign.ToString() + (L"\" ");
-
-			if ( SimpleTypes::booleanFalse != m_oAllowInCell.GetValue() )
-				sResult += (L"o:allowincell=\"true\" ");
-
-			if ( SimpleTypes::booleanFalse != m_oAllowOverlap.GetValue() )
-				sResult += (L"o:allowoverlap=\"true\" ");
-
-			if ( SimpleTypes::booleanFalse != m_oUserDrawn.GetValue() )
-				sResult += (L"o:userdrawn=\"true\" ");
-
-			ComplexTypes_WriteAttribute ( (L"o:bordertopcolor=\""),    m_oBorderTopColor );
-			ComplexTypes_WriteAttribute ( (L"o:borderleftcolor=\""),   m_oBorderLeftColor );
-			ComplexTypes_WriteAttribute ( (L"o:borderbottomcolor=\""), m_oBorderBottomColor );
-			ComplexTypes_WriteAttribute ( (L"o:borderrightcolor=\""),  m_oBorderRightColor );
-
-			ComplexTypes_WriteAttribute ( (L"o:dgmlayout=\""),     m_oDgmLayout );
-			ComplexTypes_WriteAttribute ( (L"o:dgmlayoutmru=\""),  m_oDgmLayoutMru );
-			ComplexTypes_WriteAttribute3( (L"o:dgmnodekind=\""),   m_oDgmNodeKind );
-
-			if ( SimpleTypes::insetmodeCustom != m_oInsetMode.GetValue() )
-				sResult += (L"o:insetmode=\"") + m_oInsetMode.ToString() + (L"\" ");
-
-			if ( SimpleTypes::booleanTrue != m_oFilled.GetValue() )
-				sResult += (L"filled=\"false\" ");
-
-			ComplexTypes_WriteAttribute ( (L"fillcolor=\""),		m_oFillColor );
-			ComplexTypes_WriteAttribute ( (L"editas=\""),			m_oEditAs );
-
+			sResult += CVmlCommonElements::WriteAttributes();
+			ComplexTypes_WriteAttribute ( (L"editas=\""), m_oEditAs );
 			if ( 0 != m_oTableProperties.GetValue() )
 				sResult += (L"o:tableproperties=\"") + m_oTableProperties.ToString() + (L"\" ");
-
 			ComplexTypes_WriteAttribute ( (L"o:tablelimits=\""),  m_oTableLimits );
 
 			sResult += (L">");
 
-            for ( size_t i = 0; i < m_arrItems.size(); ++i)
-            {
-                if ( m_arrItems[i] )
-                {
-                    sResult += m_arrItems[i]->toXML();
-                }
-            }
+			sResult += CVmlCommonElements::WriteElements();
 
-			sResult += (L"</v:group>");
+			sResult += L"</v:group>";
 
 			return sResult;
 		}
@@ -1079,8 +763,6 @@ namespace OOX
 			if ( m_oPath.IsInit() )
 				sResult += L"path=\"" + m_oPath->ToString() + L"\" ";
 
-			// TO DO: сделать запись o:gfxdata
-
 			if ( m_sEquationXML.IsInit() )
 			{
 				sResult += L"equationxml=\"" + *m_sEquationXML + L"\" ";
@@ -1093,6 +775,15 @@ namespace OOX
 			sResult += L"</v:shape>";
 
 			return sResult;
+		}
+		void CShape::mergeFrom(CShapeType* shape_type)
+		{
+			if (!shape_type) return;
+
+			if (false == m_oPath.IsInit()) m_oPath = shape_type->m_oPath;
+			if (false == m_sAdj.IsInit()) m_sAdj = shape_type->m_sAdj;
+
+			CVmlCommonElements::mergeFrom(shape_type);
 		}
 		//--------------------------------------------------------------------------------
 		// CShapeType 14.1.2.20 (Part4)
@@ -1111,7 +802,7 @@ namespace OOX
 			if ( m_oPath.IsInit() )
 				sResult += (L"path=\"") + m_oPath->ToString() + (L"\" ");
 
-			if ( SimpleTypes::booleanFalse != m_oMaster.GetValue() )
+			if ((m_oMaster.IsInit()) && (*m_oMaster))
 				sResult += (L"o:master=\"true\" ");
 
 			sResult += (L">");
@@ -1141,46 +832,46 @@ namespace OOX
 
 				std::wstring sContent = oReader.GetText2();
 
-				if		( L"MoveWithCells"	== sName )	m_oMoveWithCells = sContent.empty() ? L"t" : sContent;
-				else if ( L"SizeWithCells"	== sName )	m_oSizeWithCells = sContent.empty() ? L"t" : sContent;
-				else if ( L"Anchor"			== sName )	m_oAnchor = sContent;
-				else if ( L"Row"			== sName )	m_oRow = sContent;
-				else if ( L"Column"			== sName )	m_oColumn = sContent;
-				else if ( L"DefaultSize"	== sName )	m_oDefaultSize = sContent.empty() ? L"t" : sContent;
-				else if ( L"AutoLine"		== sName )	m_oAutoLine = sContent.empty() ? L"t" : sContent;
-				else if ( L"AutoFill"		== sName )	m_oAutoFill = sContent.empty() ? L"t" : sContent;
-				else if ( L"AutoPict"		== sName )	m_oAutoPict = sContent.empty() ? L"t" : sContent;
-				else if ( L"AutoScale"		== sName )	m_oAutoScale = sContent.empty() ? L"t" : sContent;
-				else if ( L"FmlaLink"		== sName )	m_oFmlaLink = sContent;
-				else if ( L"FmlaRange"		== sName )	m_oFmlaRange = sContent;
-				else if ( L"FmlaMacro"		== sName )	m_oFmlaMacro = sContent;
-				else if ( L"FmlaTxbx"		== sName )	m_oFmlaTxbx = sContent;
-				else if ( L"FmlaGroup"		== sName )	m_oFmlaGroup = sContent;
-				else if ( L"CF"				== sName )	m_oCf = sContent;
-				else if ( L"Min"			== sName )	m_oMin = sContent;
-				else if ( L"Max"			== sName )	m_oMax = sContent;
-				else if ( L"Val"			== sName )	m_oVal = sContent;
-				else if ( L"Inc"			== sName )	m_oInc = sContent;
-				else if ( L"Sel"			== sName )	m_oSel = sContent.empty() ? L"t" : sContent;
-				else if ( L"WidthMin"		== sName )	m_oWidthMin = sContent;
-				else if ( L"Dx"				== sName )	m_oDx = sContent;
-				else if ( L"Page"			== sName )	m_oPage = sContent;
-				else if ( L"DropLines"		== sName )	m_oDropLines = sContent;
-				else if ( L"NoThreeD2"		== sName )	m_oNoThreeD2 = sContent.empty() ? L"t" : sContent;
-				else if ( L"NoThreeD"		== sName )	m_oNoThreeD = sContent.empty() ? L"t" : sContent;
-				else if ( L"DropStyle"		== sName )	m_oDropStyle = sContent;
-				else if ( L"FirstButton"	== sName )	m_oFirstButton = sContent.empty() ? L"t" : sContent;
-				else if ( L"VScroll"		== sName )	m_oVScroll = sContent.empty() ? L"t" : sContent;
-				else if ( L"Horiz"			== sName )	m_oHoriz = sContent.empty() ? L"t" : sContent;
-				else if ( L"TextHAlign"		== sName )	m_oTextHAlign = sContent;
-				else if ( L"TextVAlign"		== sName )	m_oTextVAlign = sContent;
-				else if ( L"Colored"		== sName )	m_oColored = sContent.empty() ? L"t" : sContent;
-				else if ( L"MultiLine"		== sName )	m_oMultiLine = sContent.empty() ? L"t" : sContent;
-				else if ( L"LockText"		== sName )	m_oLockText = sContent.empty() ? L"t" : sContent;
-				else if ( L"JustLastX"		== sName )	m_oJustLastX = sContent.empty() ? L"t" : sContent;
-				else if ( L"SecretEdit"		== sName )	m_oSecretEdit = sContent.empty() ? L"t" : sContent;
-				else if ( L"SelType"		== sName )	m_oSelType = sContent;
-				else if ( L"Visible"		== sName )	m_oVisible = sContent.empty() ? L"t" : sContent;
+				if		(L"MoveWithCells"	== sName )	m_oMoveWithCells = sContent.empty() ? L"t" : sContent;
+				else if (L"SizeWithCells"	== sName )	m_oSizeWithCells = sContent.empty() ? L"t" : sContent;
+				else if (L"Anchor"			== sName )	m_oAnchor = sContent;
+				else if (L"Row"			== sName )	m_oRow = sContent;
+				else if (L"Column"			== sName )	m_oColumn = sContent;
+				else if (L"DefaultSize"	== sName )	m_oDefaultSize = sContent.empty() ? L"t" : sContent;
+				else if (L"AutoLine"		== sName )	m_oAutoLine = sContent.empty() ? L"t" : sContent;
+				else if (L"AutoFill"		== sName )	m_oAutoFill = sContent.empty() ? L"t" : sContent;
+				else if (L"AutoPict"		== sName )	m_oAutoPict = sContent.empty() ? L"t" : sContent;
+				else if (L"AutoScale"		== sName )	m_oAutoScale = sContent.empty() ? L"t" : sContent;
+				else if (L"FmlaLink"		== sName )	m_oFmlaLink = sContent;
+				else if (L"FmlaRange"		== sName )	m_oFmlaRange = sContent;
+				else if (L"FmlaMacro"		== sName )	m_oFmlaMacro = sContent;
+				else if (L"FmlaTxbx"		== sName )	m_oFmlaTxbx = sContent;
+				else if (L"FmlaGroup"		== sName )	m_oFmlaGroup = sContent;
+				else if (L"CF"				== sName )	m_oCf = sContent;
+				else if (L"Min"			== sName )	m_oMin = sContent;
+				else if (L"Max"			== sName )	m_oMax = sContent;
+				else if (L"Val"			== sName )	m_oVal = sContent;
+				else if (L"Inc"			== sName )	m_oInc = sContent;
+				else if (L"Sel"			== sName )	m_oSel = sContent.empty() ? L"t" : sContent;
+				else if (L"WidthMin"		== sName )	m_oWidthMin = sContent;
+				else if (L"Dx"				== sName )	m_oDx = sContent;
+				else if (L"Page"			== sName )	m_oPage = sContent;
+				else if (L"DropLines"		== sName )	m_oDropLines = sContent;
+				else if (L"NoThreeD2"		== sName )	m_oNoThreeD2 = sContent.empty() ? L"t" : sContent;
+				else if (L"NoThreeD"		== sName )	m_oNoThreeD = sContent.empty() ? L"t" : sContent;
+				else if (L"DropStyle"		== sName )	m_oDropStyle = sContent;
+				else if (L"FirstButton"	== sName )	m_oFirstButton = sContent.empty() ? L"t" : sContent;
+				else if (L"VScroll"		== sName )	m_oVScroll = sContent.empty() ? L"t" : sContent;
+				else if (L"Horiz"			== sName )	m_oHoriz = sContent.empty() ? L"t" : sContent;
+				else if (L"TextHAlign"		== sName )	m_oTextHAlign = sContent;
+				else if (L"TextVAlign"		== sName )	m_oTextVAlign = sContent;
+				else if (L"Colored"		== sName )	m_oColored = sContent.empty() ? L"t" : sContent;
+				else if (L"MultiLine"		== sName )	m_oMultiLine = sContent.empty() ? L"t" : sContent;
+				else if (L"LockText"		== sName )	m_oLockText = sContent.empty() ? L"t" : sContent;
+				else if (L"JustLastX"		== sName )	m_oJustLastX = sContent.empty() ? L"t" : sContent;
+				else if (L"SecretEdit"		== sName )	m_oSecretEdit = sContent.empty() ? L"t" : sContent;
+				else if (L"SelType"		== sName )	m_oSelType = sContent;
+				else if (L"Visible"		== sName )	m_oVisible = sContent.empty() ? L"t" : sContent;
 			}
 		}
 		std::wstring CClientData::toXML() const
@@ -1433,7 +1124,7 @@ namespace OOX
 			{
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-				if ( L"txbxContent" == sName ) //namespaces w & wne
+				if (L"txbxContent" == sName ) //namespaces w & wne
 				{
 					m_oTxtbxContent = new OOX::Logic::CTxbxContent(m_pMainDocument);
 					m_oTxtbxContent->fromXML(oReader);
@@ -1635,7 +1326,7 @@ namespace OOX
 
 			// TO DO: Сделать запись m_arrColors
 
-			ComplexTypes_WriteAttribute ( (L"angle=\""),         m_oAngle );
+			ComplexTypes_WriteAttribute ( (L"angle=\""), m_oAngle );
 
 			if ( (m_oAlignShape.IsInit()) && (SimpleTypes::booleanTrue != m_oAlignShape->GetValue() ))
 				sResult += (L"alignshape=\"false\" ");
@@ -1643,7 +1334,7 @@ namespace OOX
 			if ( (m_oFocus.IsInit()) && (0 != m_oFocus->GetValue() ))
 				sResult += (L"focus=\"") + m_oFocus->ToString() + (L"\" ");
 
-			if ( (m_oFocusPosition.IsInit()) && (0 != m_oFocusPosition->GetX() || 0 != m_oFocusPosition->GetY() ))
+			if ( m_oFocusPosition.IsInit())
 				sResult += (L"focusposition=\"") + m_oFocusPosition->ToString() + (L"\" ");
 
 			if ( ( m_oFocusSize.IsInit() ) && (0 != m_oFocusSize->GetX() || 0 != m_oFocusSize->GetY() ))

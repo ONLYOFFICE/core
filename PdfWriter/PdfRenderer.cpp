@@ -533,7 +533,6 @@ CPdfRenderer::CPdfRenderer(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA) :
 	m_pFont       = NULL;
 
 	m_nCounter = 0;
-	m_nPagesCount = 0;
 
 	m_bNeedUpdateTextFont      = true;
 	m_bNeedUpdateTextColor     = true;
@@ -646,19 +645,7 @@ HRESULT CPdfRenderer::NewPage()
 	m_pPage->SetWidth(m_dPageWidth);
 	m_pPage->SetHeight(m_dPageHeight);
 
-	m_oPen.Reset();
-	m_oBrush.Reset();
-	m_oFont.Reset();
-	m_oPath.Clear();
-
-    // clear font!!!
-    m_oFont.SetName(L"");
-    m_oFont.SetSize(-1);
-    m_oFont.SetStyle(1 << 5);
-
-	m_lClipDepth = 0;
-
-    m_nPagesCount++;//printf("Page %d\n", m_nPagesCount++);
+	Reset();
 
 	return S_OK;
 }
@@ -1180,9 +1167,9 @@ HRESULT CPdfRenderer::EndCommand(const DWORD& dwType)
 		for (int nIndex = 0, nCount = m_vDestinations.size(); nIndex < nCount; ++nIndex)
 		{
 			TDestinationInfo& oInfo = m_vDestinations.at(nIndex);
-			if (m_nPagesCount > oInfo.unDestPage && m_nPagesCount > oInfo.unPage)
+			if (m_pDocument->GetPagesCount() > oInfo.unDestPage)
 			{
-				AddLink(oInfo.unPage, oInfo.dX, oInfo.dY, oInfo.dW, oInfo.dH, oInfo.dDestX, oInfo.dDestY, oInfo.unDestPage);
+				AddLink(oInfo.pPage, oInfo.dX, oInfo.dY, oInfo.dW, oInfo.dH, oInfo.dDestX, oInfo.dDestY, oInfo.unDestPage);
 				m_vDestinations.erase(m_vDestinations.begin() + nIndex);
 				nIndex--;
 				nCount--;
@@ -1507,13 +1494,14 @@ HRESULT CPdfRenderer::AddLink(const double& dX, const double& dY, const double& 
 	if (unPagesCount == 0)
 		return S_OK;
 
-	if (!m_pDocument->GetPage(nPage))
+	CPage* pPage = m_pDocument->GetPage(nPage);
+	if (!pPage)
 	{
-		m_vDestinations.push_back(TDestinationInfo(unPagesCount - 1, dX, dY, dW, dH, dDestX, dDestY, nPage));
+		m_vDestinations.push_back(TDestinationInfo(m_pPage, dX, dY, dW, dH, dDestX, dDestY, nPage));
 	}
 	else
 	{
-		AddLink(unPagesCount - 1, dX, dY, dW, dH, dDestX, dDestY, nPage);
+		AddLink(m_pPage, dX, dY, dW, dH, dDestX, dDestY, nPage);
 	}
 
 	return S_OK;
@@ -2071,6 +2059,7 @@ bool CPdfRenderer::EditPage(const std::wstring& sPage, const std::pair<int, int>
 	{
 		m_dPageWidth  = PT_2_MM(m_pPage->GetWidth());
 		m_dPageHeight = PT_2_MM(m_pPage->GetHeight());
+		Reset();
 		return true;
 	}
 	return false;
@@ -2086,6 +2075,7 @@ bool CPdfRenderer::AddPage(int nPageIndex)
 	{
 		m_pPage->SetWidth(MM_2_PT(m_dPageWidth));
 		m_pPage->SetHeight(MM_2_PT(m_dPageHeight));
+		Reset();
 		return true;
 	}
 	return false;
@@ -2099,6 +2089,19 @@ bool CPdfRenderer::EditClose(const std::wstring& wsPath, const std::wstring& sTr
 	if (!IsValid())
 		return false;
 	m_oCommandManager.Flush();
+
+	unsigned int nPagesCount = m_pDocument->GetPagesCount();
+	for (int nIndex = 0, nCount = m_vDestinations.size(); nIndex < nCount; ++nIndex)
+	{
+		TDestinationInfo& oInfo = m_vDestinations.at(nIndex);
+		if (nPagesCount > oInfo.unDestPage)
+		{
+			AddLink(oInfo.pPage, oInfo.dX, oInfo.dY, oInfo.dW, oInfo.dH, oInfo.dDestX, oInfo.dDestY, oInfo.unDestPage);
+			m_vDestinations.erase(m_vDestinations.begin() + nIndex);
+			nIndex--;
+			nCount--;
+		}
+	}
 
 	return m_pDocument->AddToFile(wsPath, sTrailer);
 }
@@ -2578,6 +2581,20 @@ void CPdfRenderer::UpdateBrush()
 		m_pPage->SetFillAlpha((unsigned char)m_oBrush.GetAlpha1());
 	}
 }
+void CPdfRenderer::Reset()
+{
+	m_oPen.Reset();
+	m_oBrush.Reset();
+	m_oFont.Reset();
+	m_oPath.Clear();
+
+	// clear font!!!
+	m_oFont.SetName(L"");
+	m_oFont.SetSize(-1);
+	m_oFont.SetStyle(1 << 5);
+
+	m_lClipDepth = 0;
+}
 HRESULT CPdfRenderer::OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker, const bool& bIsUsePageCommands)
 {
     if (!NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, false, bIsUsePicker, bIsUsePageCommands))
@@ -2759,9 +2776,9 @@ void CPdfRenderer::CBrushState::Reset()
 	m_pShadingPoints      = NULL;
 	m_lShadingPointsCount = 0;
 }
-void CPdfRenderer::AddLink(const unsigned int& unPage, const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const unsigned int& unDestPage)
+void CPdfRenderer::AddLink(PdfWriter::CPage* pPage, const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const unsigned int& unDestPage)
 {
-	CPage* pCurPage  = m_pDocument->GetPage(unPage);
+	CPage* pCurPage  = pPage;
 	CPage* pDestPage = m_pDocument->GetPage(unDestPage);
 	if (!pCurPage || !pDestPage)
 		return;

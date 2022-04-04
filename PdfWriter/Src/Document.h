@@ -199,7 +199,6 @@ namespace PdfWriter
 		bool                               m_bEncrypt;
 		CEncryptDict*                      m_pEncryptDict;
 		unsigned int                       m_unCompressMode;
-		std::vector<CPage*>                m_vPages;
 		std::vector<CExtGrState*>          m_vExtGrStates;
 		std::vector<CExtGrState*>          m_vStrokeAlpha;
 		std::vector<CExtGrState*>          m_vFillAlpha;

@@ -254,6 +254,7 @@ private:
 	void UpdateTransform();
 	void UpdatePen();
 	void UpdateBrush();
+	void Reset();
 	bool IsValid()
 	{
             return m_bValid;
@@ -269,7 +270,7 @@ private:
 	{
             m_bValid = false;;
 	}
-	void AddLink(const unsigned int& unPage, const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const unsigned int& unDestPage);
+	void AddLink(PdfWriter::CPage* pPage, const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const unsigned int& unDestPage);
 
 
 private:
@@ -1559,9 +1560,9 @@ private:
 	};
 	struct TDestinationInfo
 	{
-		TDestinationInfo(const unsigned int& page, const double& x, const double& y, const double& w, const double& h, const double& dx, const double& dy, const unsigned int& undpage)
+		TDestinationInfo(PdfWriter::CPage* page, const double& x, const double& y, const double& w, const double& h, const double& dx, const double& dy, const unsigned int& undpage)
 		{
-			unPage     = page;
+			pPage      = page;
 			dX         = x;
 			dY         = y;
 			dW         = w;
@@ -1571,7 +1572,7 @@ private:
 			unDestPage = undpage;
 		}
 
-		unsigned int unPage;
+		PdfWriter::CPage* pPage;
 		double       dX;
 		double       dY;
 		double       dW;
@@ -1873,7 +1874,6 @@ private:
 								 
 	bool                         m_bValid;
 								 
-	int                          m_nPagesCount;
 	int                          m_nCounter; // TODO: для теста, убрать потом
 };
 

@@ -54,6 +54,7 @@ namespace PdfWriter
 	class CTextLine;
 	class CTextWord;
 	class CFieldBase;
+	class CPage;
 	//----------------------------------------------------------------------------------------
 	// CPageTree
 	//----------------------------------------------------------------------------------------
@@ -63,13 +64,22 @@ namespace PdfWriter
 		CPageTree(CXref* pXref);
 		CPageTree(CXref* pXref, const std::wstring& sPageTree);
 		void AddPage(CDictObject* pPage);
-		CObjectBase* GetPage(int nPageIndex, int& nI, bool bRemove = false, bool bInsert = false, CDictObject* pPage = NULL);
+		CObjectBase* GetObj(int nPageIndex);
+		CPage* GetPage(int nPageIndex);
+		CObjectBase* RemovePage(int nPageIndex);
+		bool InsertPage(int nPageIndex, CPage* pPage);
 		bool Join(CPageTree* pPageTree);
+		unsigned int GetCount()
+		{
+			return m_pCount ? m_pCount->Get() : 0;
+		}
 		EDictType GetDictType() const
 		{
 			return dict_type_PAGES;
 		}
 	private:
+		CObjectBase* GetFromPageTree(int nPageIndex, int& nI, bool bRemove = false, bool bInsert = false, CPage* pPage = NULL);
+
 		CNumberObject* m_pCount;
 		CArrayObject*  m_pPages;
 		CXref*         m_pXref;

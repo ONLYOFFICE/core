@@ -146,7 +146,6 @@ namespace PdfWriter
 
 		m_nCurPageNum = -1;
 
-		m_vPages.clear();
 		m_vExtGrStates.clear();
 		m_vFillAlpha.clear();
 		m_vStrokeAlpha.clear();
@@ -180,7 +179,6 @@ namespace PdfWriter
 		memset((void*)m_sTTFontTag, 0x00, 8);
 		m_pDefaultCheckBoxFont = NULL;
 
-		m_vPages.clear();
 		m_vExtGrStates.clear();
 		m_vStrokeAlpha.clear();
 		m_vFillAlpha.clear();
@@ -279,8 +277,6 @@ namespace PdfWriter
 		CPage* pPage = new CPage(m_pXref, m_pPageTree, this);
 		m_pPageTree->AddPage(pPage);
 		m_pCurPage = pPage;
-		m_vPages.push_back(pPage);
-
 
 #ifndef FILTER_FLATE_DECODE_DISABLED
 		if (m_unCompressMode & COMP_TEXT)
@@ -292,14 +288,14 @@ namespace PdfWriter
 	}
 	CPage* CDocument::GetPage(const unsigned int &unPage)
 	{
-		if (unPage >= m_vPages.size())
+		if (unPage >= m_pPageTree->GetCount())
 			return NULL;
 
-		return m_vPages.at(unPage);
+		return m_pPageTree->GetPage(unPage);
 	}
 	unsigned int CDocument::GetPagesCount() const
 	{
-		return m_vPages.size();
+		return m_pPageTree->GetCount();
 	}
 	void CDocument::SetDocumentID(const std::wstring & documentID)
 	{
@@ -390,11 +386,13 @@ namespace PdfWriter
 	}
     CDestination* CDocument::CreateDestination(unsigned int unPageIndex)
 	{
-		if (unPageIndex >= m_vPages.size())
+		if (unPageIndex >= m_pPageTree->GetCount())
 			return NULL;
 
-		CPage* pPage = m_vPages.at(unPageIndex);
-		return new CDestination(pPage, m_pXref);
+		CPage* pPage = m_pPageTree->GetPage(unPageIndex);
+		if (pPage)
+			return new CDestination(pPage, m_pXref);
+		return NULL;
 	}
     CExtGrState* CDocument::FindExtGrState(double dAlphaStroke, double dAlphaFill, EBlendMode eMode, int nStrokeAdjustment)
 	{
@@ -501,8 +499,9 @@ namespace PdfWriter
 		CAnnotation* pAnnot = new CTextAnnotation(m_pXref, oRect, sText);
 		if (pAnnot)
 		{
-			CPage* pPage = m_vPages.at(unPageNum);
-			pPage->AddAnnotation(pAnnot);
+			CPage* pPage = m_pPageTree->GetPage(unPageNum);
+			if (pPage)
+				pPage->AddAnnotation(pAnnot);
 		}
 
 	    return pAnnot;
@@ -513,8 +512,9 @@ namespace PdfWriter
 	    
 		if (pAnnot)
 		{
-			CPage* pPage = m_vPages.at(unPageNum);
-			pPage->AddAnnotation(pAnnot);
+			CPage* pPage = m_pPageTree->GetPage(unPageNum);
+			if (pPage)
+				pPage->AddAnnotation(pAnnot);
 		}
 	
 	    return pAnnot;
@@ -534,8 +534,9 @@ namespace PdfWriter
 	
 		if (pAnnot)
 		{
-			CPage* pPage = m_vPages.at(unPageNum);
-			pPage->AddAnnotation(pAnnot);
+			CPage* pPage = m_pPageTree->GetPage(unPageNum);
+			if (pPage)
+				pPage->AddAnnotation(pAnnot);
 		}
 
 		return pAnnot;
@@ -1064,6 +1065,10 @@ namespace PdfWriter
 		m_pXref->SetPrevAddr(nPosLastXRef);
 		m_pLastXref = m_pXref;
 
+		m_pTrailer = m_pXref->GetTrailer();
+		if (!m_pTrailer)
+			return false;
+
 		SetCompressionMode(COMP_ALL);
 
 		if (!sEncrypt.empty())
@@ -1103,8 +1108,7 @@ namespace PdfWriter
 		if (!m_pPageTree)
 			return pRes;
 
-		int nI = 0;
-		CObjectBase* pObj = m_pPageTree->GetPage(nPageIndex, nI);
+		CObjectBase* pObj = m_pPageTree->GetObj(nPageIndex);
 		if (pObj)
 		{
 			pRes.first  = pObj->GetObjId();
@@ -1135,10 +1139,9 @@ namespace PdfWriter
 		if (!m_pPageTree)
 			return NULL;
 
-		int nI = 0;
 		CPage* pNewPage = new CPage(m_pXref, NULL, this);
-		CObjectBase* pObj = m_pPageTree->GetPage(nPageIndex, nI, false, true, pNewPage);
-		if (!pObj)
+		bool bRes = m_pPageTree->InsertPage(nPageIndex, pNewPage);
+		if (!bRes)
 			return NULL;
 
 #ifndef FILTER_FLATE_DECODE_DISABLED
@@ -1153,8 +1156,7 @@ namespace PdfWriter
 		if (!m_pPageTree)
 			return false;
 
-		int nI = 0;
-		CObjectBase* pObj = m_pPageTree->GetPage(nPageIndex, nI, true);
+		CObjectBase* pObj = m_pPageTree->RemovePage(nPageIndex);
 		if (pObj)
 		{
 			CXref* pXref = new CXref(this, pObj->GetObjId(), pObj->GetGenNo());

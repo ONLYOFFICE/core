@@ -225,14 +225,40 @@ namespace PdfWriter
 		m_pPages->Add(pPage);
 		(*m_pCount)++;
 	}
-	CObjectBase* CPageTree::GetPage(int nPageIndex, int& nI, bool bRemove, bool bInsert, CDictObject* pPage)
+	CObjectBase* CPageTree::GetObj(int nPageIndex)
+	{
+		int nI = 0;
+		return GetFromPageTree(nPageIndex, nI);
+	}
+	CPage* CPageTree::GetPage(int nPageIndex)
+	{
+		int nI = 0;
+		CObjectBase* pObj = GetFromPageTree(nPageIndex, nI);
+		if (pObj && pObj->GetType() == object_type_DICT && ((CDictObject*)pObj)->GetDictType() == dict_type_PAGE)
+			return (CPage*)pObj;
+		return NULL;
+	}
+	CObjectBase* CPageTree::RemovePage(int nPageIndex)
+	{
+		int nI = 0;
+		return GetFromPageTree(nPageIndex, nI, true);
+	}
+	bool CPageTree::InsertPage(int nPageIndex, CPage* pPage)
+	{
+		int nI = 0;
+		CObjectBase* pObj = GetFromPageTree(nPageIndex, nI, false, true, pPage);
+		if (pObj)
+			return true;
+		return false;
+	}
+	CObjectBase* CPageTree::GetFromPageTree(int nPageIndex, int& nI, bool bRemove, bool bInsert, CPage* pPage)
 	{
 		for (int i = 0, count = m_pPages->GetCount(); i < count; ++i)
 		{
 			CObjectBase* pObj = m_pPages->Get(i);
 			CObjectBase* pRes = NULL;
 			if (pObj->GetType() == object_type_DICT && ((CDictObject*)pObj)->GetDictType() == dict_type_PAGES)
-				pRes = ((CPageTree*)pObj)->GetPage(nPageIndex, nI, bRemove, bInsert, pPage);
+				pRes = ((CPageTree*)pObj)->GetFromPageTree(nPageIndex, nI, bRemove, bInsert, pPage);
 			else
 			{
 				if (nPageIndex == nI)

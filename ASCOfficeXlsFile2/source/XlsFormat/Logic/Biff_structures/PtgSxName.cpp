@@ -56,6 +56,13 @@ void PtgSxName::loadFields(CFRecord& record)
 	global_info = record.getGlobalWorkbookInfo();
 }
 
+void PtgSxName::writeFields(CFRecord& record)
+{
+	record << sxIndex;
+
+	global_info = record.getGlobalWorkbookInfo();
+}
+
 void PtgSxName::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
 	std::wstring _Name;

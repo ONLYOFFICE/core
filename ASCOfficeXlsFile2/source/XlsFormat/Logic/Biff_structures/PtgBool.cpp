@@ -75,6 +75,11 @@ void PtgBool::loadFields(CFRecord& record)
 	record >> boolean_;
 }
 
+void PtgBool::writeFields(CFRecord& record)
+{
+	record << boolean_;
+}
+
 
 void PtgBool::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {

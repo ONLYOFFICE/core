@@ -47,9 +47,11 @@ public:
 	PtgBool(const std::wstring& word);
 	BiffStructurePtr clone();
 		
-	virtual void loadFields(CFRecord& record);
+	void loadFields(CFRecord& record) override;
+
+	void writeFields(CFRecord& record) override;
 	
-	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false);
+	void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false) override;
 
 	static const unsigned short fixed_id = 0x1D;
 

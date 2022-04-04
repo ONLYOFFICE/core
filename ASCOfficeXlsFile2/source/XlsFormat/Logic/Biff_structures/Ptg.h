@@ -58,9 +58,13 @@ public:
 	Ptg();
 	Ptg(const unsigned short ptg_id_init);
 
-	virtual void load(CFRecord& record);
+	void load(CFRecord& record) override;
 
 	virtual void loadFields(CFRecord& record) {};
+
+	virtual void writeFields(CFRecord& record) {};
+
+	void save(CFRecord& record) override;
 
 	static const ElementType	type = typePtg;
 

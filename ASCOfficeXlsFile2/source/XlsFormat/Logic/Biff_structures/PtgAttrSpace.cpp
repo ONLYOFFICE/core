@@ -47,6 +47,11 @@ void PtgAttrSpace::loadFields(CFRecord& record)
 	record.skipNunBytes(2); // I do not use it, but the data present
 }
 
+void PtgAttrSpace::writeFields(CFRecord& record)
+{
+	record.reserveNunBytes(2); // I do not use it, but the data present
+}
+
 
 void PtgAttrSpace::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {

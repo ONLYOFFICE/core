@@ -50,6 +50,11 @@ void PtgMemNoMem::loadFields(CFRecord& record)
 	record >> cce;
 }
 
+void PtgMemNoMem::writeFields(CFRecord& record)
+{
+	record.reserveNunBytes(4); // unused
+	record << cce;
+}
 
 void PtgMemNoMem::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {

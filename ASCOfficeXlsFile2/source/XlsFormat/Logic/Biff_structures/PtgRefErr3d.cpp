@@ -66,6 +66,18 @@ void PtgRefErr3d::loadFields(CFRecord& record)
         record.skipNunBytes(6); // unused
 }
 
+void PtgRefErr3d::writeFields(CFRecord& record)
+{
+	global_info = record.getGlobalWorkbookInfo();
+
+	record << ixti;
+
+	if (global_info->Version < 0x0800)
+		record.reserveNunBytes(4); // unused
+	else
+		record.reserveNunBytes(6); // unused
+}
+
 
 void PtgRefErr3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {

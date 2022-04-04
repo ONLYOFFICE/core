@@ -66,6 +66,11 @@ void RevExtern::load(CFRecord& record)
 	record >> itabFirst >> itabLast;
 }
 
+void RevExtern::save(CFRecord& record)
+{	
+	record << book << itabFirst << itabLast;
+}
+
 
 } // namespace XLS
 

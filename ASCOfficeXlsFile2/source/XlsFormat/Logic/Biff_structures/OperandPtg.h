@@ -53,7 +53,7 @@ public:
 	{
 		dataType = (PtgDataType)GETBITS(full_ptg_id, 1, 2);
 	}
-	};
+};
 
 typedef boost::shared_ptr<OperandPtg> OperandPtgPtr;
 

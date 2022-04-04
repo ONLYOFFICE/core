@@ -46,10 +46,11 @@ public:
 	PtgAreaErr(const PtgDataType data_type_init);
 	BiffStructurePtr clone();
 
-	virtual void loadFields(CFRecord& record);
-	
+	void loadFields(CFRecord& record) override;
 
-	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false);
+	void writeFields(CFRecord& record) override;
+
+	void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false) override;
 
 	virtual const unsigned short getPtgId() const	{ return id_fixed | (static_cast<unsigned char>(data_type) << 5);}
 

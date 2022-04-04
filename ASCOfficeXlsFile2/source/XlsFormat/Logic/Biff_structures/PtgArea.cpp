@@ -67,7 +67,7 @@ void PtgArea::loadFields(CFRecord& record)
 		record >> rwFirst >> rwLast >> colFirst >> colLast;
 
 		area.rowFirstRelative	= rwFirst & 0x8000;
-		area.columnLastRelative	= rwFirst & 0x4000;
+		area.columnFirstRelative= rwFirst & 0x4000;
 		
 		area.columnFirst		= colFirst;
 		area.rowFirst			= rwFirst & 0x3FFF;
@@ -89,6 +89,36 @@ void PtgArea::loadFields(CFRecord& record)
     {
         record >> areaXlsb;
     }
+
+}
+
+void PtgArea::writeFields(CFRecord& record)
+{
+	global_info = record.getGlobalWorkbookInfo();
+
+	if (record.getGlobalWorkbookInfo()->Version < 0x600)
+	{
+		unsigned char	colFirst, colLast;
+		_UINT16			rwFirst, rwLast;
+
+		rwFirst = (area.rowFirstRelative << 17) & (area.columnFirstRelative << 16) & (area.rowFirst & 0x3FFF);
+		colFirst = area.columnFirst;
+
+		rwLast = (area.rowLastRelative << 17) & (area.columnLastRelative << 16) & (area.rowLast & 0x3FFF);
+		colLast = area.columnLast;
+
+		record << rwFirst << rwLast << colFirst << colLast;
+	}
+
+	else if (global_info->Version < 0x0800)
+	{
+		record << area;
+	}
+
+	else
+	{
+		record << areaXlsb;
+	}
 
 }
 

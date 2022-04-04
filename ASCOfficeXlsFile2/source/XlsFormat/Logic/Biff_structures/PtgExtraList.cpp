@@ -70,6 +70,21 @@ void PtgExtraList::load(CFRecord& record)
     record >> columns;
 }
 
+void PtgExtraList::save(CFRecord& record)
+{
+	unsigned short flags = 0;
+	SETBITS(flags, 8, 12, rowType)
+	record << hasColumns << flags;
+	record << cch;
+
+	for (auto& item: table)
+	{
+		record.storeAnyData(item);
+	}
+
+	record << columns;
+}
+
 
 const std::wstring PtgExtraList::toString() const
 {

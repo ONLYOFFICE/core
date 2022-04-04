@@ -47,6 +47,11 @@ void PtgAttrIf::loadFields(CFRecord& record)
 	record >> offset;
 }
 
+void PtgAttrIf::writeFields(CFRecord& record)
+{
+	record << offset;
+}
+
 
 void PtgAttrIf::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {

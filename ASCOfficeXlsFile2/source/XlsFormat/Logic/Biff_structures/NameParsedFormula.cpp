@@ -68,8 +68,29 @@ void NameParsedFormula::load(CFRecord& record)
 
 void NameParsedFormula::save(CFRecord& record)
 {
+	_UINT32 _cce = 0, _cb = 0;
+
+	record << _cce;
+
+	auto rdPtr = record.getRdPtr();
+
     rgce.save(record);
-    rgcb.save(record);
+
+	_UINT32 checkSize = 0;
+	for (auto& item : rgce.getPtgs())
+		checkSize += item->getSizeOfStruct();
+
+	_cce = record.getRdPtr() - rdPtr;
+
+	if(checkSize != _cce)
+	{
+		//throw
+	}
+	record.RollRdPtrBack(_cce + 4);
+	record << _cce;
+	record.skipNunBytes(_cce);
+
+    //rgcb.save(record);
 
 }
 

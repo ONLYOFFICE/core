@@ -61,6 +61,14 @@ void PtgRefErr::loadFields(CFRecord& record)
         record.skipNunBytes(6); // unused
 }
 
+void PtgRefErr::writeFields(CFRecord& record)
+{
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+		record.reserveNunBytes(4); // unused
+	else
+		record.reserveNunBytes(6); // unused
+}
+
 
 void PtgRefErr::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {

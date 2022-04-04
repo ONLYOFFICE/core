@@ -213,16 +213,16 @@ void Lbl::writeFields(CFRecord& record)
 	{
 		_UINT32 flags = 0;
 
-		if (fHidden)			SETBIT(flags, 0, true)
-		if (fFunc)				SETBIT(flags, 1, true)
-		if (fOB)				SETBIT(flags, 2, true)
-		if (fProc)				SETBIT(flags, 3, true)
-		if (fCalcExp)			SETBIT(flags, 4, true)
-		if (fBuiltin)			SETBIT(flags, 5, true)
-		if (fGrp)				SETBITS(flags, 6, 14, true)
-		if (fPublished)			SETBIT(flags, 15, true)
-		if (fWorkbookParam)		SETBIT(flags, 16, true)
-		if (fFutureFunction)	SETBIT(flags, 17, true)
+		SETBIT(flags, 0, fHidden)
+		SETBIT(flags, 1, fFunc)
+		SETBIT(flags, 2, fOB)
+		SETBIT(flags, 3, fProc)
+		SETBIT(flags, 4, fCalcExp)
+		SETBIT(flags, 5, fBuiltin)
+		SETBITS(flags, 6, 14, fGrp)
+		SETBIT(flags, 15, fPublished)
+		SETBIT(flags, 16, fWorkbookParam)
+		SETBIT(flags, 17, fFutureFunction)
 
 		record << flags;
 
@@ -267,6 +267,10 @@ void Lbl::writeFields(CFRecord& record)
             }
 
 */
+		//NameParsedFormula example(false);
+		//example = std::wstring(L"3 * 4 + 5");
+		//example.save(record);
+
         rgce.save(record);
 		record << comment;
 		if (fProc)

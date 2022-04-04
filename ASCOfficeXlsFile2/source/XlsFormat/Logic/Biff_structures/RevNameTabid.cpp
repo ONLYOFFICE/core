@@ -57,6 +57,12 @@ void RevNameTabid::load(CFRecord& record)
 	record >> tabid >> name;
 }
 
+void RevNameTabid::save(CFRecord& record)
+{
+	record << tabid << name;
+}
+
+
 
 const std::wstring RevNameTabid::toString() const
 {

@@ -74,6 +74,26 @@ void PtgNameX::loadFields(CFRecord& record)
 	global_info = record.getGlobalWorkbookInfo();
 }
 
+void PtgNameX::writeFields(CFRecord& record)
+{
+	record << ixti;
+
+	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
+	{
+		record.reserveNunBytes(8);
+
+		_UINT16 val;
+		val = nameindex;
+		record << val;
+
+		record.reserveNunBytes(12);
+	}
+	else
+		record << nameindex;
+
+	global_info = record.getGlobalWorkbookInfo();
+}
+
 
 void PtgNameX::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {

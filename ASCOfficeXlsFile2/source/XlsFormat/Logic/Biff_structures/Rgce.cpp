@@ -117,7 +117,8 @@ void Rgce::load(CFRecord& record)
 
 void Rgce::save(CFRecord& record)
 {
-
+	for (auto & item : sequence)
+		item->save(record);
 }
 
 

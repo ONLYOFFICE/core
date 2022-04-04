@@ -92,6 +92,29 @@ void PtgStr::loadFields(CFRecord& record)
 	string_ = L"\"" + string_ + L"\"";
 }
 
+void PtgStr::writeFields(CFRecord& record)
+{
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		ShortXLUnicodeString s;
+		s = string_;
+		record << s;
+	}
+
+	else
+	{
+		_UINT16 cch;
+		cch = string_.size();
+		record << cch;
+		WCHAR value;
+		for (int i = 0; i < cch; ++i)
+		{
+			value = string_[i];
+			record.storeAnyData(value);
+		}
+	}
+
+}
 
 void PtgStr::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {

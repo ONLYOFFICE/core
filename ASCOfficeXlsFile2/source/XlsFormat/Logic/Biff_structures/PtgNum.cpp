@@ -68,6 +68,16 @@ void PtgNum::loadFields(CFRecord& record)
 	}
 }
 
+void PtgNum::writeFields(CFRecord& record)
+{
+	if (record.checkFitWriteSafe(8))
+	{
+		Xnum tmp;
+		tmp.data.value = value_.get();
+		record << tmp;
+	}
+}
+
 void PtgNum::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
 	if (value_)	ptg_stack.push(STR::double2str(*value_));

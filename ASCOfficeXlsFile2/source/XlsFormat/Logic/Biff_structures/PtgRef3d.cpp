@@ -96,6 +96,38 @@ void PtgRef3d::loadFields(CFRecord& record)
 	
 }
 
+void PtgRef3d::writeFields(CFRecord& record)
+{
+	global_info = record.getGlobalWorkbookInfo();
+	if (global_info->Version < 0x0600)
+	{
+		unsigned char	col = 0;
+		_UINT16			rw = 0;
+		record << ixals;
+		record.reserveNunBytes(8);
+
+		record << itabFirst << itabLast;
+
+		SETBIT(rw, 15, rgce_loc.rowRelative)
+		SETBIT(rw, 14, rgce_loc.colRelative)
+		SETBITS(rw, 0, 13, rgce_loc.row)
+
+		col = rgce_loc.column;
+
+		record << rw << col;
+	}
+	else if (global_info->Version < 0x0800)
+	{
+		record << ixti << rgce_loc;
+
+		rgce_loc_rel = rgce_loc;
+	}
+	else
+	{
+		record << ixti << rgce_loc_xlsb;
+	}
+}
+
 
 void PtgRef3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {

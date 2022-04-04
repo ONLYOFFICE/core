@@ -50,7 +50,8 @@ public:
 
 	static const ElementType	type = typeRevNamePly;
 
-	virtual void load(CFRecord& record);
+	void load(CFRecord& record) override;
+	void save(CFRecord& record) override;
 
 
 	XLUnicodeString sheet;

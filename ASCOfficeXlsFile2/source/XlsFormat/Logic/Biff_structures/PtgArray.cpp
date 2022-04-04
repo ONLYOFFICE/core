@@ -58,6 +58,14 @@ void PtgArray::loadFields(CFRecord& record)
         record.skipNunBytes(16); // unused
 }
 
+void PtgArray::writeFields(CFRecord& record)
+{
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+		record.reserveNunBytes(7); // unused
+	else
+		record.reserveNunBytes(16); // unused
+}
+
 void PtgArray::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
 	std::wstring array_string;

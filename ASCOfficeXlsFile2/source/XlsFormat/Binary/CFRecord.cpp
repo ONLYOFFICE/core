@@ -412,7 +412,14 @@ bool CFRecord::checkFitWrite(const size_t size) const
 void CFRecord::skipNunBytes(const size_t n)
 {
 	//ASSERT(data_); // This throws if we use skipNunBytes instead of reserveNunBytes
-	if (checkFitRead(n))
+	if (size_ == 0 && data_ == NULL)
+	{
+		if (checkFitWrite(n))
+		{
+			rdPtr += n;
+		}
+	}
+	else if (checkFitRead(n))
 	{
 		rdPtr += n;
 	}

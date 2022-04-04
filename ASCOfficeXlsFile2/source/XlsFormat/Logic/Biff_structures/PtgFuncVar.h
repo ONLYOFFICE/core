@@ -49,12 +49,12 @@ public:
 	BiffStructurePtr clone();
 
 	static PtgPtr create(const std::wstring& word, const unsigned char data_type);
-
 	
-	virtual void loadFields(CFRecord& record);
-	
+	void loadFields(CFRecord& record) override;
 
-	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false);
+	void writeFields(CFRecord& record) override;	
+
+	void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false) override;
 
 	void setParamsNum(const unsigned char num);
 

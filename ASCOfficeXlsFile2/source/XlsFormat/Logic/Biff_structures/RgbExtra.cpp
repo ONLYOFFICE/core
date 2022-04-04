@@ -56,6 +56,10 @@ void RgbExtra::load(CFRecord& record)
 {
 }
 
+void RgbExtra::save(CFRecord& record)
+{
+}
+
 
 void RgbExtra::load(CFRecord& record, const PtgVector& records_from_rgce, bool is_part_of_a_revision)
 {

@@ -48,14 +48,15 @@ public:
 	BiffStructurePtr clone();
 
 	
-	virtual void loadFields(CFRecord& record);
-	
+	void loadFields(CFRecord& record) override;
 
-	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false);
+	void writeFields(CFRecord& record) override;
+
+	void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false) override;
 
 	static const unsigned short fixed_id = 0x03;
 
-	_UINT16 nameindex;
+	_UINT32 nameindex;
 private:
 	GlobalWorkbookInfoPtr global_info;
 };

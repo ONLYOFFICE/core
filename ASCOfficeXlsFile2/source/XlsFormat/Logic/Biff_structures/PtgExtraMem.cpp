@@ -80,6 +80,31 @@ void PtgExtraMem::load(CFRecord& record)
     }
 }
 
+void PtgExtraMem::save(CFRecord& record)
+{
+	global_info = record.getGlobalWorkbookInfo();
+	if (global_info->Version < 0x0800)
+	{
+		unsigned short count;
+		count = array_.size();
+		record << count;
+		for (auto& item : array_)
+		{
+			record << item;
+		}
+	}
+	else
+	{
+		unsigned int count;
+		count = array_.size();
+		record << count;
+		for (auto& item : array_xlsb)
+		{
+			record << item;
+		}
+	}
+}
+
 
 const std::wstring PtgExtraMem::toString() const
 {

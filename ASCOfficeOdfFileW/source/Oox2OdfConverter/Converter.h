@@ -445,8 +445,16 @@ namespace PPTX
 
 using namespace cpdoccore;
 
+
+
 namespace Oox2Odf
 {
+	struct returnValues
+	{
+		bool colorFlag;
+		bool auxFlag;
+		std::wstring str;
+	};
 	class OoxConverter
 	{
 public:
@@ -664,7 +672,7 @@ public:
 		void resizeBrackets();
 		void convert(OOX::Logic::COMath					*oox_math);
 		void convert(OOX::Logic::CMathPr				*oox_math_pr);
-		bool convert(OOX::Logic::CCtrlPr				*oox_ctrl_pr);
+		returnValues convert(OOX::Logic::CCtrlPr				*oox_ctrl_pr);
 		void convert(OOX::Logic::CAcc					*oox_acc);
 		void convert(OOX::Logic::CAccPr					*oox_acc_pr);
 		void convert(OOX::Logic::CArgPr					*oox_arg_pr);
@@ -673,7 +681,7 @@ public:
 		void convert(OOX::Logic::CBorderBox				*oox_border_box);
 		void convert(OOX::Logic::CBorderBoxPr			*oox_border_box_pr);
 		void convert(OOX::Logic::CBox					*oox_box);
-		bool convert(OOX::Logic::CBoxPr					*oox_box_pr);
+		returnValues convert(OOX::Logic::CBoxPr					*oox_box_pr);
 		void convert(OOX::Logic::CBrk					*oox_brk);
 		void convert(OOX::Logic::CDelimiter				*oox_del);
 		std::pair<std::wstring, std::wstring> convert(OOX::Logic::CDelimiterPr			*oox_del_pr);
@@ -684,7 +692,7 @@ public:
 		void convert(OOX::Logic::CObjDist				*oox_obj_dist);
 		void convert(OOX::Logic::CRSp					*oox_r_sp);
 		void convert(OOX::Logic::CRSpRule				*oox_r_sp_rule);
-		std::wstring convert(OOX::Logic::CFPr			*oox_f_pr);
+		returnValues convert(OOX::Logic::CFPr			*oox_f_pr);
 		void convert(OOX::Logic::CFraction				*oox_fraction);
 		void convert(OOX::Logic::CFunc					*oox_func);
 		void convert(OOX::Logic::CFuncPr				*oox_func_pr);
@@ -713,7 +721,7 @@ public:
 		void convert(OOX::Logic::CPhant					*oox_phant);
 		void convert(OOX::Logic::CPhantPr				*oox_phant_pr);
 		void convert(OOX::Logic::CRad					*oox_rad);
-		bool convert(OOX::Logic::CRadPr					*oox_rad_pr);
+		returnValues convert(OOX::Logic::CRadPr					*oox_rad_pr);
 		void convert(OOX::Logic::CSPre					*oox_s_pre);
 		void convert(OOX::Logic::CSPrePr				*oox_s_pre_pr);
 		void convert(OOX::Logic::CSSub					*oox_ssub);

@@ -106,7 +106,7 @@ namespace XPS
 		int nCurDepth = oReader.GetDepth();
 		while (oReader.ReadNextSiblingNode(nCurDepth))
 		{
-			wsNodeName = oReader.GetName();
+			wsNodeName = oReader.GetNameNoNS();
 			if (wsNodeName == L"PathGeometry")
 			{				
 				CWString wsKey, wsValue, wsTrasform;
@@ -155,6 +155,9 @@ namespace XPS
 	}
 	bool CImageBrush::SetToRenderer(IRenderer* pRenderer)
 	{
+		if (!m_wsRoot)
+			return false;
+
 		std::wstring wsPath = m_wsPath.c_stdstr();
 		if (!m_wsRoot->exists(wsPath))
 		{
@@ -244,7 +247,7 @@ namespace XPS
 	CBrush* ReadBrushNode(XmlUtils::CXmlLiteReader& oReader, const double& dCurOpacity, CWString* pwsKey)
 	{
 		CBrush* pBrush = NULL;
-		CWString wsNodeName = oReader.GetName();
+		CWString wsNodeName = oReader.GetNameNoNS();
 		if (wsNodeName == L"SolidColorBrush")
 		{
 			int nBgr = 0, nAlpha = 255;
@@ -398,7 +401,7 @@ namespace XPS
 				int nGrDepth = oReader.GetDepth();
 				while (oReader.ReadNextSiblingNode(nGrDepth))
 				{
-					wsNodeName = oReader.GetName();
+					wsNodeName = oReader.GetNameNoNS();
 					if ((wsNodeName == L"LinearGradientBrush.GradientStops" && bLinearGradient)
 						|| (wsNodeName == L"RadialGradientBrush.GradientStops" && !bLinearGradient))
 					{
@@ -407,7 +410,7 @@ namespace XPS
 				}
 			}
 
-            LONG lCount = std::min(vColors.size(), vPositions.size());
+			LONG lCount = std::min(vColors.size(), vPositions.size());
 			if (lCount <= 0)
 			{
 				delete pBrush;

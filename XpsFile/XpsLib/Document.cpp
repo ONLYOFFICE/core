@@ -62,14 +62,14 @@ namespace XPS
 		if (!oReader.ReadNextNode())
 			return false;
 
-		std::wstring wsName = oReader.GetName();
+		std::wstring wsName = oReader.GetNameNoNS();
 		if (L"Relationships" != wsName)
 			return false;
 
 		std::wstring wsTargetFile;
 		while (oReader.ReadNextNode())
 		{
-			wsName = oReader.GetName();
+			wsName = oReader.GetNameNoNS();
 			if (L"Relationship" == wsName)
 			{
 				std::wstring wsAttr;
@@ -104,14 +104,14 @@ namespace XPS
 		if (!oReader.ReadNextNode())
 			return false;
 
-		wsName = oReader.GetName();
+		wsName = oReader.GetNameNoNS();
 		if (L"FixedDocumentSequence" != wsName)
 			return false;
 
 		std::wstring wsSourceFile;
 		while (oReader.ReadNextNode())
 		{
-			wsName = oReader.GetName();
+			wsName = oReader.GetNameNoNS();
 			if (L"DocumentReference" == wsName)
 			{
 				ReadAttribute(oReader, L"Source", wsSourceFile);
@@ -138,11 +138,11 @@ namespace XPS
 		std::wstring wsStructureTargetFile = wsFilePath + L"_rels/" + NSFile::GetFileName(wsSourceFile) + L".rels";
 		std::wstring wsStructureFile;
 		if (m_wsPath->exists(wsStructureTargetFile) && oReader.FromStringA(m_wsPath->readXml(wsStructureTargetFile))
-				&& oReader.ReadNextNode() && oReader.GetName() == L"Relationships")
+				&& oReader.ReadNextNode() && oReader.GetNameNoNS() == L"Relationships")
 		{
 			while (oReader.ReadNextNode())
 			{
-				if (L"Relationship" == oReader.GetName())
+				if (L"Relationship" == oReader.GetNameNoNS())
 				{
 					std::wstring wsAttr;
 					ReadAttribute(oReader, L"Type", wsAttr);
@@ -173,15 +173,15 @@ namespace XPS
 		if (!wsFullStructureFile.empty())
 		{
 			oReader.Clear();
-			if (oReader.FromStringA(m_wsPath->readXml(wsFullStructureFile)) && oReader.ReadNextNode() && oReader.GetName() == L"DocumentStructure")
+			if (oReader.FromStringA(m_wsPath->readXml(wsFullStructureFile)) && oReader.ReadNextNode() && oReader.GetNameNoNS() == L"DocumentStructure")
 			{
 				while (oReader.ReadNextNode())
 				{
-					if (L"DocumentStructure.Outline" == oReader.GetName() && oReader.ReadNextNode() && oReader.GetName() == L"DocumentOutline")
+					if (L"DocumentStructure.Outline" == oReader.GetNameNoNS() && oReader.ReadNextNode() && oReader.GetNameNoNS() == L"DocumentOutline")
 					{
 						while (oReader.ReadNextNode())
 						{
-							if (oReader.GetName() == L"OutlineEntry")
+							if (oReader.GetNameNoNS() == L"OutlineEntry")
 							{
 								CDocumentStructure oStructure;
 								oStructure.nLevel = 1; // OutlineLevel по умолчанию имеет значение 1
@@ -220,7 +220,7 @@ namespace XPS
 		if (!oReader.ReadNextNode())
 			return false;
 
-		wsName = oReader.GetName();
+		wsName = oReader.GetNameNoNS();
 		if (L"FixedDocument" != wsName)
 			return false;
 
@@ -229,17 +229,17 @@ namespace XPS
 		int nIndex = 0;
 		while (oReader.ReadNextNode())
 		{
-			wsName = oReader.GetName();
+			wsName = oReader.GetNameNoNS();
 
 			if (L"PageContent" == wsName)
 			{
 				ReadAttribute(oReader, L"Source", wsSource);
 
 				std::wstring wsPagePath = wsSource;
-				if (!m_wsPath->exists(wsPagePath))
+                if (!m_wsPath->existsXml(wsPagePath))
 				{
 					wsPagePath = wsFilePath + wsSource;
-					if (!m_wsPath->exists(wsPagePath))
+                    if (!m_wsPath->existsXml(wsPagePath))
 						continue;
 				}
 
@@ -247,12 +247,12 @@ namespace XPS
 				int nDepth = oReader.GetDepth();
 				while (oReader.ReadNextSiblingNode(nDepth))
 				{
-					if (oReader.GetName() == L"PageContent.LinkTargets")
+					if (oReader.GetNameNoNS() == L"PageContent.LinkTargets")
 					{
 						int nLinkDepth = oReader.GetDepth();
 						while (oReader.ReadNextSiblingNode(nLinkDepth))
 						{
-							if (oReader.GetName() == L"LinkTarget")
+							if (oReader.GetNameNoNS() == L"LinkTarget")
 							{
 								std::wstring wsNameTarget;
 								ReadAttribute(oReader, L"Name", wsNameTarget);
@@ -354,12 +354,12 @@ namespace XPS
 		XmlUtils::CXmlLiteReader oReader;
 		std::wstring sRes = L"{";
 
-		if (oReader.FromStringA(m_wsPath->readXml(L"_rels/.rels")) && oReader.ReadNextNode() && L"Relationships" == oReader.GetName())
+		if (oReader.FromStringA(m_wsPath->readXml(L"_rels/.rels")) && oReader.ReadNextNode() && L"Relationships" == oReader.GetNameNoNS())
 		{
 			std::wstring wsCoreFile;
 			while (oReader.ReadNextNode())
 			{
-				if (L"Relationship" == oReader.GetName())
+				if (L"Relationship" == oReader.GetNameNoNS())
 				{
 					std::wstring wsAttr;
 					ReadAttribute(oReader, L"Type", wsAttr);
@@ -375,7 +375,7 @@ namespace XPS
 			if (!wsCoreFile.empty() && m_wsPath->exists(wsCoreFile))
 			{
 				oReader.Clear();
-				if (oReader.FromStringA(m_wsPath->readXml(wsCoreFile)) && oReader.ReadNextNode() && oReader.GetName() == L"cp:coreProperties")
+				if (oReader.FromStringA(m_wsPath->readXml(wsCoreFile)) && oReader.ReadNextNode() && oReader.GetNameNoNS() == L"coreProperties")
 				{
 					while (oReader.ReadNextNode())
 					{

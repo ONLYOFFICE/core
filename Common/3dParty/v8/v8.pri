@@ -3,7 +3,11 @@ v8_version_89 {
     CONFIG += c++14
     CONFIG += use_v8_monolith
     DEFINES += V8_VERSION_89_PLUS
-    DEFINES += V8_COMPRESS_POINTERS
+
+    core_win_32:CONFIG += build_platform_32
+    core_linux_32:CONFIG += build_platform_32
+    !build_platform_32:DEFINES += V8_COMPRESS_POINTERS
+
     CORE_V8_PATH_OVERRIDE = $$PWD/../v8_89
 }
 

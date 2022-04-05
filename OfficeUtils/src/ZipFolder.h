@@ -85,12 +85,72 @@ public:
     {
         write(path, (BYTE*)xml.c_str(), (DWORD)xml.length());
     }
+    bool existsXml(const std::wstring& path)
+    {
+        if (exists(path))
+            return true;
+
+        std::vector<std::wstring> arPieces = getFiles(path, false);
+        if (0 < arPieces.size())
+        {
+            std::sort(arPieces.begin(), arPieces.end());
+            std::vector<std::wstring>::iterator iter = arPieces.begin();
+            while (iter != arPieces.end())
+            {
+                std::wstring::size_type len = iter->length();
+                std::wstring::size_type pos = iter->rfind(L".piece");
+                if (std::wstring::npos != pos && ((pos + 6) == len))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
     std::string readXml(const std::wstring& path)
     {
         CBuffer* buffer = NULL;
         if (!read(path, buffer))
+        {
+            std::vector<std::wstring> arPieces = getFiles(path, false);
+            if (0 < arPieces.size())
+            {
+                std::sort(arPieces.begin(), arPieces.end());
+                std::vector<std::wstring>::iterator iter = arPieces.begin();
+                while (iter != arPieces.end())
+                {
+                    std::wstring::size_type len = iter->length();
+                    std::wstring::size_type pos = iter->rfind(L".piece");
+                    if (std::wstring::npos != pos && ((pos + 6) == len))
+                    {
+                        iter++;
+                        continue;
+                    }
+                    else
+                    {
+                        iter = arPieces.erase(iter);
+                    }
+                }
+            }
+            if (0 < arPieces.size())
+            {
+                std::string sResult;
+                for (std::vector<std::wstring>::iterator iter = arPieces.begin(); iter != arPieces.end(); iter++)
+                {
+                    CBuffer* bufferPiece = NULL;
+                    if (read(*iter, bufferPiece))
+                    {
+                        sResult += std::string((char*)bufferPiece->Buffer, (size_t)bufferPiece->Size);
+                    }
+                    delete bufferPiece;
+                }
+                return sResult;
+            }
+
             return "";
-        std::string sXmlUtf8((char*)buffer->Buffer, (size_t)buffer->Size);
+        }
+        std::string sXmlUtf8 = XmlUtils::GetUtf8FromFileContent(buffer->Buffer, (unsigned int)buffer->Size);
         delete buffer;
         return sXmlUtf8;
     }

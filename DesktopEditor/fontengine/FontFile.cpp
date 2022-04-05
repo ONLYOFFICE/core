@@ -142,6 +142,9 @@ CFontFile::~CFontFile()
 {
 	RELEASEINTERFACE(m_pStream);
 	ClearCache();
+
+    if (m_pFace)
+        FT_Done_Face(m_pFace);
 }
 
 void CFontFile::SetDefaultFont(CFontFile* pDefFont)

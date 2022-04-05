@@ -322,10 +322,8 @@ namespace PdfWriter
  #define PADDING_SIZE 16
          unsigned int CEncrypt::CryptBuf(const BYTE* pSrc, BYTE* pDst, unsigned int unLen)
         {
-            unsigned int unLenOut = unLen;
-
-            if (unLenOut % PADDING_SIZE != 0)
-                unLenOut = (unLen / PADDING_SIZE + 1) * PADDING_SIZE;
+            // Note that the pad is present when M is evenly divisible by 16
+            unsigned int unLenOut = (unLen / PADDING_SIZE + 1) * PADDING_SIZE;
 
 			memcpy(pDst, impl->streamInitialization, 16);
 
@@ -336,6 +334,8 @@ namespace PdfWriter
 			if (unLenOut != unLen)
             {
 				unsigned char empty[16] = {};
+				// EXAMPLE A 9-byte message has a pad of 7 bytes, each with the value 0x07.
+				memset(empty, unLenOut - unLen, 16);
 				stfEncryption.Put2(empty, unLenOut - unLen, 0, true);
 
             }

@@ -265,6 +265,7 @@ namespace MetaFile
 	public:
 		short           nextInChain; // не используется
 		short           ObjectType;  // не используется
+		int             ObjectCount; // не используется
 		short           RegionSize;
 		short           ScanCount;
 		short           MaxScan;

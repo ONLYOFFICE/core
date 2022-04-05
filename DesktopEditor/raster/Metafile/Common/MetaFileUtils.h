@@ -967,7 +967,7 @@ namespace MetaFile
 			*this >> oScan.Top;
 			*this >> oScan.Bottom;
 
-			if (oScan.Count > 0 && oScan.Count & 1) // Должно делиться на 2
+			if (oScan.Count > 0 && ! (oScan.Count & (oScan.Count - 1))) // Должно делиться на 2
 			{
 				unsigned short ushCount = oScan.Count >> 1;
 				oScan.ScanLines = new TWmfScanLine[ushCount];
@@ -996,6 +996,11 @@ namespace MetaFile
 		{
 			*this >> pRegion->nextInChain;
 			*this >> pRegion->ObjectType;
+
+			if (0x0006 != pRegion->ObjectType)
+				return *this;
+
+			*this >> pRegion->ObjectCount;
 			*this >> pRegion->RegionSize;
 			*this >> pRegion->ScanCount;
 			*this >> pRegion->MaxScan;

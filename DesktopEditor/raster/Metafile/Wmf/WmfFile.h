@@ -1096,7 +1096,30 @@ namespace MetaFile
 		{
 			unsigned short ushRegionIndex;
 			m_oStream >> ushRegionIndex;
-			// TODO: Реализовать регионы
+
+			m_oPlayer.SelectObject(ushRegionIndex);
+
+			CWmfRegion *pRegion = m_pDC->GetRegion();
+
+			if (NULL != pRegion)
+			{
+				for (unsigned int unScanIndex = 0; unScanIndex < pRegion->ScanCount; ++unScanIndex)
+				{
+					TWmfScanObject *pScanObject = &pRegion->aScans[unScanIndex];
+
+					if (pScanObject->Count == 0) continue;
+
+					for (unsigned int unIndex = 0; unIndex < pScanObject->Count >> 1; ++unIndex)
+					{
+						MoveTo(pScanObject->ScanLines[unIndex].Left,  pScanObject->Top);
+						LineTo(pScanObject->ScanLines[unIndex].Right, pScanObject->Top);
+						LineTo(pScanObject->ScanLines[unIndex].Right, pScanObject->Bottom);
+						LineTo(pScanObject->ScanLines[unIndex].Left,  pScanObject->Bottom);
+						LineTo(pScanObject->ScanLines[unIndex].Left,  pScanObject->Top);
+					}
+				}
+				DrawPath(false, true);
+			}
 		}
 		void Read_META_PATBLT()
 		{

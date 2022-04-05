@@ -68,7 +68,7 @@ namespace OOX
 				WritingStringNullableAttrBool(L"autoCompressPictures", m_oAutoCompressPictures);
 				WritingStringNullableAttrBool(L"backupFile", m_oBackupFile);
 				WritingStringNullableAttrBool(L"checkCompatibility", m_oCheckCompatibility);
-                WritingStringNullableAttrBool(L"codeName", m_oCodeName);
+				WritingStringNullableAttrEncodeXmlString(L"codeName", m_oCodeName, m_oCodeName.get());
 				WritingStringNullableAttrBool(L"date1904", m_oDate1904);
 				WritingStringNullableAttrBool(L"dateCompatibility", m_oDateCompatibility);
 				WritingStringNullableAttrInt(L"defaultThemeVersion", m_oDefaultThemeVersion, m_oDefaultThemeVersion->GetValue());
@@ -96,6 +96,96 @@ namespace OOX
             {
                 ReadAttributes(obj);
             }
+
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				if (obj == nullptr)
+					obj = XLS::BaseObjectPtr(new XLSB::WbProp());
+
+				auto ptr = static_cast<XLSB::WbProp*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if (m_oAutoCompressPictures.IsInit())
+						ptr->fAutoCompressPictures = m_oAutoCompressPictures->GetValue();
+					else
+						ptr->fAutoCompressPictures = true;
+
+					if (m_oBackupFile.IsInit())
+						ptr->fBackup = m_oBackupFile->GetValue();
+					else
+						ptr->fBackup = false;
+
+					if (m_oCheckCompatibility.IsInit())
+						ptr->fCheckCompat = m_oCheckCompatibility->GetValue();
+					else
+						ptr->fCheckCompat = false;
+
+					if (m_oCodeName.IsInit())
+						ptr->strName = m_oCodeName.get();
+					else
+						ptr->strName = std::wstring(L"");
+
+					if (m_oDate1904.IsInit())
+						ptr->f1904 = m_oDate1904->GetValue();
+					else
+						ptr->f1904 = false;
+
+					if (m_oDefaultThemeVersion.IsInit())
+						ptr->dwThemeVersion = m_oDefaultThemeVersion->GetValue();
+					else
+						ptr->dwThemeVersion = 0;
+
+					if (m_oFilterPrivacy.IsInit())
+						ptr->fFilterPrivacy = m_oFilterPrivacy->GetValue();
+					else
+						ptr->fFilterPrivacy = false;
+
+					if (m_oHidePivotFieldList.IsInit())
+						ptr->fHidePivotTableFList = m_oHidePivotFieldList->GetValue();
+					else
+						ptr->fHidePivotTableFList = false;
+
+					if (m_oPromptedSolutions.IsInit())
+						ptr->fBuggedUserAboutSolution = m_oPromptedSolutions->GetValue();
+					else
+						ptr->fBuggedUserAboutSolution = false;
+
+					if (m_oPublishItems.IsInit())
+						ptr->fPublishedBookItems = m_oPublishItems->GetValue();
+					else
+						ptr->fPublishedBookItems = false;
+
+					if (m_oRefreshAllConnections.IsInit())
+						ptr->fRefreshAll = m_oRefreshAllConnections->GetValue();
+					else
+						ptr->fRefreshAll = false;
+
+					if (m_oShowBorderUnselectedTables.IsInit())
+						ptr->fHideBorderUnselLists = m_oShowBorderUnselectedTables->GetValue();
+					else
+						ptr->fHideBorderUnselLists = true;
+
+					if (m_oShowInkAnnotation.IsInit())
+						ptr->fShowInkAnnotation = m_oShowInkAnnotation->GetValue();
+					else
+						ptr->fShowInkAnnotation = true;
+
+					if (m_oShowObjects.IsInit())
+						ptr->mdDspObj = m_oShowObjects->GetValue();
+					else
+						ptr->mdDspObj = 0;
+
+					if (m_oShowPivotChartFilter.IsInit())
+						ptr->fShowPivotChartFilter = m_oShowPivotChartFilter->GetValue();
+					else
+						ptr->fShowPivotChartFilter = false;
+
+					if (m_oUpdateLinks.IsInit())
+						ptr->grbitUpdateLinks = m_oUpdateLinks->GetValue();
+					else
+						ptr->grbitUpdateLinks = SimpleTypes::Spreadsheet::EUpdateLinksType::updatelinksUserSet;
+				}
+			}
 
 			virtual EElementType getType () const
 			{
@@ -131,24 +221,56 @@ namespace OOX
             void ReadAttributes(XLS::BaseObjectPtr& obj)
             {
                 auto ptr = static_cast<XLSB::WbProp*>(obj.get());
-                m_oAllowRefreshQuery            = ptr->fNoSaveSup;//?
-                m_oAutoCompressPictures         = ptr->fAutoCompressPictures;
-                m_oBackupFile                   = ptr->fBackup;
-                m_oCheckCompatibility           = ptr->fCheckCompat;
-                m_oCodeName                     = ptr->strName.value.value();
-                m_oDate1904                     = ptr->f1904;
-                m_oDateCompatibility            = true;//ptr->fNoSaveSup?
-                m_oDefaultThemeVersion          = ptr->dwThemeVersion;
-                m_oFilterPrivacy                = ptr->fFilterPrivacy;
-                m_oHidePivotFieldList           = ptr->fHidePivotTableFList;
-                m_oPromptedSolutions            = ptr->fBuggedUserAboutSolution;
-                m_oPublishItems                 = ptr->fPublishedBookItems;
-                m_oRefreshAllConnections        = ptr->fRefreshAll;
-                m_oShowBorderUnselectedTables   = ptr->fHideBorderUnselLists;
-                m_oShowInkAnnotation            = ptr->fShowInkAnnotation;
-                m_oShowObjects                  = ptr->mdDspObj == 2?false:true;
-                m_oShowPivotChartFilter         = ptr->fShowPivotChartFilter;
-                m_oUpdateLinks                  = (SimpleTypes::Spreadsheet::EUpdateLinksType)ptr->grbitUpdateLinks;
+				if (ptr != nullptr)
+				{
+					//m_oAllowRefreshQuery = ptr->fNoSaveSup;//?
+					if(ptr->fAutoCompressPictures != true)
+						m_oAutoCompressPictures = ptr->fAutoCompressPictures;
+
+					if (ptr->fBackup != false)
+						m_oBackupFile = ptr->fBackup;
+
+					if (ptr->fCheckCompat != false)
+						m_oCheckCompatibility = ptr->fCheckCompat;
+
+					m_oCodeName = ptr->strName.value.value();
+
+					if (ptr->f1904 != false)
+						m_oDate1904 = ptr->f1904;
+
+					//m_oDateCompatibility = true;//ptr->fNoSaveSup?
+					m_oDefaultThemeVersion = ptr->dwThemeVersion;
+
+					if (ptr->fFilterPrivacy != false)
+						m_oFilterPrivacy = ptr->fFilterPrivacy;
+
+					if (ptr->fHidePivotTableFList != false)
+						m_oHidePivotFieldList = ptr->fHidePivotTableFList;
+
+					if (ptr->fBuggedUserAboutSolution != false)
+						m_oPromptedSolutions = ptr->fBuggedUserAboutSolution;
+
+					if (ptr->fPublishedBookItems != false)
+						m_oPublishItems = ptr->fPublishedBookItems;
+
+					if (ptr->fRefreshAll != false)
+						m_oRefreshAllConnections = ptr->fRefreshAll;
+
+					if (ptr->fHideBorderUnselLists != true)
+						m_oShowBorderUnselectedTables = ptr->fHideBorderUnselLists;
+
+					if (ptr->fShowInkAnnotation != true)
+						m_oShowInkAnnotation = ptr->fShowInkAnnotation;
+
+					if (ptr->mdDspObj != 0)
+						m_oShowObjects = ptr->mdDspObj;
+
+					if (ptr->fShowPivotChartFilter != false)
+						m_oShowPivotChartFilter = ptr->fShowPivotChartFilter;
+
+					if ((SimpleTypes::Spreadsheet::EUpdateLinksType)ptr->grbitUpdateLinks != SimpleTypes::Spreadsheet::EUpdateLinksType::updatelinksUserSet)
+						m_oUpdateLinks = (SimpleTypes::Spreadsheet::EUpdateLinksType)ptr->grbitUpdateLinks;
+				}
 
 
             }
@@ -158,7 +280,7 @@ namespace OOX
 				nullable<SimpleTypes::COnOff<>>						m_oAutoCompressPictures;
 				nullable<SimpleTypes::COnOff<>>						m_oBackupFile;
 				nullable<SimpleTypes::COnOff<>>						m_oCheckCompatibility;
-                nullable<SimpleTypes::COnOff<>>	  					m_oCodeName;
+				nullable_string					  					m_oCodeName;
 				nullable<SimpleTypes::COnOff<>>						m_oDate1904;
 				nullable<SimpleTypes::COnOff<>>						m_oDateCompatibility;
 				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oDefaultThemeVersion;
@@ -217,6 +339,111 @@ namespace OOX
                 ReadAttributes(obj);
             }
 
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				if (obj == nullptr)
+				{
+					if (m_oWorkbookSpinCount.IsInit() || m_oRevisionsSpinCount.IsInit())
+						obj = XLS::BaseObjectPtr(new XLSB::BookProtectionIso());
+					else
+						obj = XLS::BaseObjectPtr(new XLSB::BookProtection());
+				}
+				if (obj->get_type() == XLS::typeBookProtection)
+				{
+					auto ptr = static_cast<XLSB::BookProtection*>(obj.get());
+					if (ptr != nullptr)
+					{
+						if (m_oLockRevision.IsInit())
+							ptr->wFlags.fLockRevision = m_oLockRevision->GetValue();
+						else
+							ptr->wFlags.fLockRevision = false;
+
+						if (m_oLockStructure.IsInit())
+							ptr->wFlags.fLockStructure = m_oLockStructure->GetValue();
+						else
+							ptr->wFlags.fLockStructure = false;
+
+						if (m_oLockWindows.IsInit())
+							ptr->wFlags.fLockWindow = m_oLockWindows->GetValue();
+						else
+							ptr->wFlags.fLockWindow = false;
+					}
+				}
+				else if (obj->get_type() == XLS::typeBookProtectionIso)
+				{
+					auto ptr = static_cast<XLSB::BookProtectionIso*>(obj.get());
+					if (ptr != nullptr)
+					{
+						if (m_oLockRevision.IsInit())
+							ptr->wFlags.fLockRevision = m_oLockRevision->GetValue();
+						else
+							ptr->wFlags.fLockRevision = false;
+
+						if (m_oLockStructure.IsInit())
+							ptr->wFlags.fLockStructure = m_oLockStructure->GetValue();
+						else
+							ptr->wFlags.fLockStructure = false;
+
+						if (m_oLockWindows.IsInit())
+							ptr->wFlags.fLockWindow = m_oLockWindows->GetValue();
+						else
+							ptr->wFlags.fLockWindow = false;
+
+						if (m_oWorkbookAlgorithmName.IsInit())
+							ptr->ipdBookPasswordData.szAlgName = m_oWorkbookAlgorithmName->ToString();
+						else
+							ptr->ipdBookPasswordData.szAlgName = L"";
+
+						if (m_oWorkbookSpinCount.IsInit())
+							ptr->dwBookSpinCount = m_oWorkbookSpinCount->GetValue();
+						else
+							ptr->dwBookSpinCount = 0;
+
+						if (m_oWorkbookHashValue.IsInit() && !m_oWorkbookHashValue.get().empty())
+						{
+							BYTE const* p = reinterpret_cast<BYTE const*>(&m_oWorkbookHashValue.get()[0]);
+							std::size_t size = m_oWorkbookHashValue.get().size() * sizeof(m_oWorkbookHashValue.get().front());
+							ptr->ipdBookPasswordData.rgbHash.cbLength = size;
+							ptr->ipdBookPasswordData.rgbHash.rgbData = std::vector<BYTE>(p, p + size);
+						}
+
+						if (m_oWorkbookSaltValue.IsInit() && !m_oWorkbookSaltValue.get().empty())
+						{
+							BYTE const* p = reinterpret_cast<BYTE const*>(&m_oWorkbookSaltValue.get()[0]);
+							std::size_t size = m_oWorkbookSaltValue.get().size() * sizeof(m_oWorkbookSaltValue.get().front());
+							ptr->ipdBookPasswordData.rgbSalt.cbLength = size;
+							ptr->ipdBookPasswordData.rgbSalt.rgbData = std::vector<BYTE>(p, p + size);
+						}
+
+						if (m_oRevisionsAlgorithmName.IsInit())
+							ptr->ipdRevPasswordData.szAlgName = m_oRevisionsAlgorithmName->ToString();
+						else
+							ptr->ipdRevPasswordData.szAlgName = L"";
+
+						if (m_oRevisionsSpinCount.IsInit())
+							ptr->dwRevSpinCount = m_oRevisionsSpinCount->GetValue();
+						else
+							ptr->dwRevSpinCount = 0;
+
+						if (m_oRevisionsHashValue.IsInit() && !m_oRevisionsHashValue.get().empty())
+						{
+							BYTE const* p = reinterpret_cast<BYTE const*>(&m_oRevisionsHashValue.get()[0]);
+							std::size_t size = m_oRevisionsHashValue.get().size() * sizeof(m_oRevisionsHashValue.get().front());
+							ptr->ipdRevPasswordData.rgbHash.cbLength = size;
+							ptr->ipdRevPasswordData.rgbHash.rgbData = std::vector<BYTE>(p, p + size);
+						}
+
+						if (m_oRevisionsSaltValue.IsInit() && !m_oRevisionsSaltValue.get().empty())
+						{
+							BYTE const* p = reinterpret_cast<BYTE const*>(&m_oRevisionsSaltValue.get()[0]);
+							std::size_t size = m_oRevisionsSaltValue.get().size() * sizeof(m_oRevisionsSaltValue.get().front());
+							ptr->ipdRevPasswordData.rgbSalt.cbLength = size;
+							ptr->ipdRevPasswordData.rgbSalt.rgbData = std::vector<BYTE>(p, p + size);
+						}
+					}
+				}
+
+			}
 			virtual EElementType getType() const
 			{
 				return et_x_WorkbookProtection;
@@ -240,36 +467,50 @@ namespace OOX
 			}
 
             void ReadAttributes(XLS::BaseObjectPtr& obj)
-            {
-                auto ptrRecord = static_cast<XLS::BiffRecord*>(obj.get());
-
-                if(ptrRecord->getTypeId() == XLSB::rt_BookProtection)
+            {              
+				if (obj->get_type() == XLS::typeBookProtection)
                 {
                     auto ptr = static_cast<XLSB::BookProtection*>(obj.get());
-                    m_oLockRevision            = ptr->wFlags.fLockRevision;
-                    m_oLockStructure           = ptr->wFlags.fLockStructure;
-                    m_oLockWindows             = ptr->wFlags.fLockWindow;
+					if (ptr != nullptr)
+					{
+						if (ptr->wFlags.fLockRevision != false)
+							m_oLockRevision = ptr->wFlags.fLockRevision;
+
+						if (ptr->wFlags.fLockStructure != false)
+							m_oLockStructure = ptr->wFlags.fLockStructure;
+
+						if (ptr->wFlags.fLockWindow != false)
+							m_oLockWindows = ptr->wFlags.fLockWindow;
+					}
                 }
-                else if(ptrRecord->getTypeId() == XLSB::rt_BookProtectionIso)
+                else if (obj->get_type() == XLS::typeBookProtectionIso)
                 {
                     auto ptr = static_cast<XLSB::BookProtectionIso*>(obj.get());
-                    m_oLockRevision            = ptr->wFlags.fLockRevision;
-                    m_oLockStructure           = ptr->wFlags.fLockStructure;
-                    m_oLockWindows             = ptr->wFlags.fLockWindow;
+					if (ptr != nullptr)
+					{
+						if(ptr->wFlags.fLockRevision != false)
+							m_oLockRevision = ptr->wFlags.fLockRevision;
 
-                    m_oWorkbookAlgorithmName   = ptr->ipdBookPasswordData.szAlgName.value();
-                    m_oWorkbookSpinCount       = ptr->dwBookSpinCount;
-                    m_oWorkbookHashValue       = std::wstring(ptr->ipdBookPasswordData.rgbHash.rgbData.begin(),
-                                                              ptr->ipdBookPasswordData.rgbHash.rgbData.end());
-                    m_oWorkbookSaltValue       = std::wstring(ptr->ipdBookPasswordData.rgbSalt.rgbData.begin(),
-                                                              ptr->ipdBookPasswordData.rgbSalt.rgbData.end());
+						if (ptr->wFlags.fLockStructure != false)
+							m_oLockStructure = ptr->wFlags.fLockStructure;
 
-                    m_oRevisionsAlgorithmName   = ptr->ipdRevPasswordData.szAlgName.value();
-                    m_oRevisionsSpinCount       = ptr->dwRevSpinCount;
-                    m_oRevisionsHashValue       = std::wstring(ptr->ipdRevPasswordData.rgbHash.rgbData.begin(),
-                                                              ptr->ipdRevPasswordData.rgbHash.rgbData.end());
-                    m_oRevisionsSaltValue       = std::wstring(ptr->ipdRevPasswordData.rgbSalt.rgbData.begin(),
-                                                              ptr->ipdRevPasswordData.rgbSalt.rgbData.end());
+						if (ptr->wFlags.fLockWindow != false)
+							m_oLockWindows = ptr->wFlags.fLockWindow;
+
+						m_oWorkbookAlgorithmName = ptr->ipdBookPasswordData.szAlgName.value();
+						m_oWorkbookSpinCount = ptr->dwBookSpinCount;
+						m_oWorkbookHashValue = std::wstring(ptr->ipdBookPasswordData.rgbHash.rgbData.begin(),
+							ptr->ipdBookPasswordData.rgbHash.rgbData.end());
+						m_oWorkbookSaltValue = std::wstring(ptr->ipdBookPasswordData.rgbSalt.rgbData.begin(),
+							ptr->ipdBookPasswordData.rgbSalt.rgbData.end());
+
+						m_oRevisionsAlgorithmName = ptr->ipdRevPasswordData.szAlgName.value();
+						m_oRevisionsSpinCount = ptr->dwRevSpinCount;
+						m_oRevisionsHashValue = std::wstring(ptr->ipdRevPasswordData.rgbHash.rgbData.begin(),
+							ptr->ipdRevPasswordData.rgbHash.rgbData.end());
+						m_oRevisionsSaltValue = std::wstring(ptr->ipdRevPasswordData.rgbSalt.rgbData.begin(),
+							ptr->ipdRevPasswordData.rgbSalt.rgbData.end());
+					}
                 }
 
 

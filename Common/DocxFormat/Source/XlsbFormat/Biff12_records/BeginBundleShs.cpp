@@ -55,5 +55,10 @@ namespace XLSB
         //empty data
     }
 
+	void BeginBundleShs::writeFields(XLS::CFRecord& record)
+	{
+		//empty data
+	}
+
 } // namespace XLSB
 

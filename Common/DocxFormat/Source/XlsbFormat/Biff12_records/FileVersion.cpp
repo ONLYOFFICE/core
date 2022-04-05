@@ -58,6 +58,14 @@ namespace XLSB
         record >> stLowestEdited;
         record >> stRupBuild;
     }
+	void FileVersion::writeFields(XLS::CFRecord& record)
+	{
+		record << guidCodeName;
+		record << stAppName;
+		record << stLastEdited;
+		record << stLowestEdited;
+		record << stRupBuild;
+	}
 
 } // namespace XLSB
 

@@ -55,5 +55,10 @@ namespace XLSB
        //empty data
     }
 
+	void SupSame::writeFields(XLS::CFRecord& record)
+	{
+		//empty data
+	}
+
 } // namespace XLSB
 

@@ -57,5 +57,12 @@ namespace XLSB
         record >> wFlags;
     }
 
+	void BookProtection::writeFields(XLS::CFRecord& record)
+	{
+		record << protpwdBook;
+		record << protpwdRev;
+		record << wFlags;
+	}
+
 } // namespace XLSB
 

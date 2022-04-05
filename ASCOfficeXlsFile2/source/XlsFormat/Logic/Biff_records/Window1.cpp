@@ -111,13 +111,13 @@ void Window1::writeFields(CFRecord& record)
 	{
 		BYTE flags1 = 0;
 
-		if (fHidden)		SETBIT(flags1, 0, true)
-		if (fVeryHidden)	SETBIT(flags1, 1, true)
-		if (fIconic)		SETBIT(flags1, 2, true)
-		if (fDspHScroll)	SETBIT(flags1, 3, true)
-		if (fDspVScroll)	SETBIT(flags1, 4, true)
-		if (fBotAdornment)	SETBIT(flags1, 5, true)
-		if (fNoAFDateGroup)	SETBIT(flags1, 6, true)
+		SETBIT(flags1, 0, fHidden)
+		SETBIT(flags1, 1, fVeryHidden)
+		SETBIT(flags1, 2, fIconic)
+		SETBIT(flags1, 3, fDspHScroll)
+		SETBIT(flags1, 4, fDspVScroll)
+		SETBIT(flags1, 5, fBotAdornment)
+		SETBIT(flags1, 6, fNoAFDateGroup)
 
 		record << xWn << yWn << dxWn << dyWn << wTabRatio << itabFirst << itabCur << flags1;
 	}

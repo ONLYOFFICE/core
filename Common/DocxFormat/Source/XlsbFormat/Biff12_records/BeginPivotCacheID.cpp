@@ -55,5 +55,10 @@ namespace XLSB
         record >> idSx >> irstcacheRelID;
     }
 
+	void BeginPivotCacheID::writeFields(XLS::CFRecord& record)
+	{
+		record << idSx << irstcacheRelID;
+	}
+
 } // namespace XLSB
 

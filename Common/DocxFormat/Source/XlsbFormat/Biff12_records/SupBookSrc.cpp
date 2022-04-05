@@ -55,5 +55,10 @@ namespace XLSB
         record >> strRelID;
     }
 
+	void SupBookSrc::writeFields(XLS::CFRecord& record)
+	{
+		record << strRelID;
+	}
+
 } // namespace XLSB
 

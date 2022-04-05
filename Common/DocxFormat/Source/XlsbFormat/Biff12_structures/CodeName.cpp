@@ -46,6 +46,11 @@ namespace XLSB
         load(record);
     }
 
+	CodeName::CodeName(const std::wstring & str)
+	{
+		value = str;
+	}
+
     CodeName::~CodeName()
     {
     }
@@ -59,6 +64,11 @@ namespace XLSB
     {
         record >> value;
     }
+
+	void CodeName::save(XLS::CFRecord& record)
+	{
+		record << value;
+	}
 
 } // namespace XLSB
 

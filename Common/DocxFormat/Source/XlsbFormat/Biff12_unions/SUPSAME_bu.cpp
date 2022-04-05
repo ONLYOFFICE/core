@@ -57,7 +57,7 @@ namespace XLSB
     {
         if (proc.optional<SupSame>())
         {
-            m_BrtSupSame = elements_.back();
+            m_bBrtSupSame = true;
             elements_.pop_back();
         }
 
@@ -67,8 +67,20 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        return m_BrtSupSame || !m_arBrtPlaceholderName.empty();
+        return m_bBrtSupSame || !m_arBrtPlaceholderName.empty();
     }
+
+	const bool SUPSAME::saveContent(BinProcessor& proc)
+	{
+		proc.mandatory<SupSame>();
+
+		for (auto &item : m_arBrtPlaceholderName)
+		{
+			proc.mandatory(*item);
+		}
+
+		return true;
+	}
 
 } // namespace XLSB
 

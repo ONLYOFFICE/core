@@ -45,12 +45,14 @@ namespace XLSB
     public:
         CodeName();
         CodeName(XLS::CFRecord& record);
+		CodeName(const std::wstring & str);
         ~CodeName();
        XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;
 
-        virtual void load(XLS::CFRecord& record);
+        void load(XLS::CFRecord& record) override;
+		void save(XLS::CFRecord& record) override;
 
         XLWideString     value;
     };

@@ -55,5 +55,10 @@ namespace XLSB
        record >> name;
     }
 
+	void PlaceholderName::writeFields(XLS::CFRecord& record)
+	{
+		record << name;
+	}
+
 } // namespace XLSB
 

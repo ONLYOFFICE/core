@@ -36,6 +36,7 @@
 #include "../CommonInclude.h"
 #include "../../XlsbFormat/Biff12_unions/SUP.h"
 #include "../../XlsbFormat/Biff12_records/SupBookSrc.h"
+#include "../../XlsbFormat/Biff12_records/SupSelf.h"
 
 namespace OOX
 {
@@ -73,11 +74,35 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
-                        virtual void fromBin(XLS::BaseObjectPtr& obj)
-                        {
-                            ReadAttributes(obj);
-                        }
-
+            virtual void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::SUP*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if (m_oRid.IsInit())
+					{
+						XLS::BaseObjectPtr item(new XLSB::SupBookSrc());
+						auto ptrSupBookSrc = static_cast<XLSB::SupBookSrc*>(item.get());
+						if (ptrSupBookSrc != nullptr)
+						{
+							ptrSupBookSrc->strRelID = m_oRid->GetValue();
+							ptr->m_source = item;
+						}						
+					}
+					else
+					{
+						XLS::BaseObjectPtr item(new XLSB::SupSelf());						
+						if (item != nullptr)
+						{							
+							ptr->m_source = item;
+						}
+					}					
+				}
+			}
 			virtual EElementType getType () const
 			{
 				return et_x_ExternalReference;
@@ -92,18 +117,18 @@ namespace OOX
 				WritingElement_ReadAttributes_End_No_NS( oReader )
 			}
 
-                        void ReadAttributes(XLS::BaseObjectPtr& obj)
-                        {
-                            auto ptr = static_cast<XLSB::SUP*>(obj.get());
-                            if(ptr != nullptr && ptr->m_source != nullptr)
-                            {
-                                if(ptr->m_source->get_type() == XLS::typeSupBookSrc)
-                                {
-                                    if(!static_cast<XLSB::SupBookSrc*>(ptr->m_source.get())->strRelID.value.value().empty())
-                                        m_oRid = static_cast<XLSB::SupBookSrc*>(ptr->m_source.get())->strRelID.value.value();
-                                }
-                            }
-                        }
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::SUP*>(obj.get());
+                if(ptr != nullptr && ptr->m_source != nullptr)
+                {
+                    if(ptr->m_source->get_type() == XLS::typeSupBookSrc)
+                    {
+                        if(!static_cast<XLSB::SupBookSrc*>(ptr->m_source.get())->strRelID.value.value().empty())
+                            m_oRid = static_cast<XLSB::SupBookSrc*>(ptr->m_source.get())->strRelID.value.value();
+                    }
+                }
+            }
 
 		public:
 				nullable<SimpleTypes::CRelationshipId>				m_oRid;
@@ -134,13 +159,13 @@ namespace OOX
 
 				writer.WriteString((L"<externalReferences>"));
 				
-                                for ( size_t i = 0; i < m_arrItems.size(); ++i)
-                                {
-                                    if (  m_arrItems[i] )
-                                    {
-                                        m_arrItems[i]->toXML(writer);
-                                    }
-                                }
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if (  m_arrItems[i] )
+                    {
+                        m_arrItems[i]->toXML(writer);
+                    }
+                }
 				
 				writer.WriteString((L"</externalReferences>"));
 			}
@@ -161,20 +186,31 @@ namespace OOX
 
 				}
 			}
+            virtual void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
+            {
+                //ReadAttributes(obj);
 
-                        virtual void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
-                        {
-                            //ReadAttributes(obj);
+                if (obj.empty())
+                    return;
 
-                            if (obj.empty())
-                                return;
-
-                            for(auto &externalReference : obj)
-                            {
-                                m_arrItems.push_back(new CExternalReference(externalReference));
-                            }
-                        }
-
+                for(auto &externalReference : obj)
+                {
+                    m_arrItems.push_back(new CExternalReference(externalReference));
+                }
+            }
+			void toBin(std::vector<XLS::BaseObjectPtr>& obj)
+			{
+				obj.reserve(m_arrItems.size());
+				for (size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					if (m_arrItems[i])
+					{
+						XLS::BaseObjectPtr item(new XLSB::SUP());
+						m_arrItems[i]->toBin(item);
+						obj.push_back(item);
+					}
+				}
+			}
 			virtual EElementType getType () const
 			{
 				return et_x_ExternalReferences;

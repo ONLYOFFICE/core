@@ -55,5 +55,10 @@ namespace XLSB
         // No data in this record
     }
 
+	void EndPivotCacheIDs::writeFields(XLS::CFRecord& record)
+	{
+		// No data in this record
+	}
+
 } // namespace XLSB
 

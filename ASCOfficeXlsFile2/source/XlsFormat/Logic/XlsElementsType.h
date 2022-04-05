@@ -916,6 +916,8 @@ enum ElementType
     typeDATACELL,
     typeFMLACELL,
     typeSHRFMLACELL,
+	typeBookProtection,
+	typeBookProtectionIso,
 };
 
 

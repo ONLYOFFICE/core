@@ -60,5 +60,10 @@ namespace XLSB
         record.getGlobalWorkbookInfo()->sheets_info.push_back(sheet_info);
     }
 
+	void BundleSh::writeFields(XLS::CFRecord& record)
+	{
+		record << hsState << iTabID << strRelID << strName;
+	}
+
 } // namespace XLSB
 

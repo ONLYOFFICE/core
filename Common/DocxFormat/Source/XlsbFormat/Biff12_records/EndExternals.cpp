@@ -55,5 +55,10 @@ namespace XLSB
         //empty data
     }
 
+	void EndExternals::writeFields(XLS::CFRecord& record)
+	{
+		//empty data
+	}
+
 } // namespace XLSB
 

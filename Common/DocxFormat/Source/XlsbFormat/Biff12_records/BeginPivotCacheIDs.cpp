@@ -54,5 +54,9 @@ namespace XLSB
     {
     }
 
+	void BeginPivotCacheIDs::writeFields(XLS::CFRecord& record)
+	{
+	}
+
 } // namespace XLSB
 

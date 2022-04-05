@@ -59,7 +59,7 @@ namespace XLSB
             return BaseObjectPtr(new Parenthesis_BOOKVIEWS(*this));
         }
 
-        const bool loadContent(XLS::BinProcessor& proc)
+        const bool loadContent(XLS::BinProcessor& proc) override
         {
             if (proc.optional<ACUID>())
             {
@@ -83,7 +83,7 @@ namespace XLSB
             //}
 
             return true;
-        };
+        }
 
         //BaseObjectPtr               m_ACUID;
         BaseObjectPtr               m_BrtBookView;
@@ -100,7 +100,7 @@ namespace XLSB
     {
         if (proc.optional<BeginBookViews>())
         {
-            m_BrtBeginBookViews = elements_.back();
+            m_bBrtBeginBookViews = true;
             elements_.pop_back();
         }
 
@@ -113,14 +113,13 @@ namespace XLSB
             count--;
         }
 
-
         if (proc.optional<EndBookViews>())
         {
-            m_BrtEndBookViews = elements_.back();
+            m_bBrtEndBookViews = true;
             elements_.pop_back();
         }
 
-        return m_BrtBeginBookViews && !m_arBrtBookView.empty() && m_BrtEndBookViews;
+        return m_bBrtBeginBookViews && !m_arBrtBookView.empty() && m_bBrtEndBookViews;
     }
 
 	const bool BOOKVIEWS::saveContent(BinProcessor& proc)

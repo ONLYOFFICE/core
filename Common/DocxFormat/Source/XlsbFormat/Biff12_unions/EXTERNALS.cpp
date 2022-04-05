@@ -60,7 +60,7 @@ namespace XLSB
     {
         if (proc.optional<BeginExternals>())
         {
-            m_BrtBeginExternals = elements_.back();
+            m_bBrtBeginExternals = true;
             elements_.pop_back();
         }
 
@@ -79,12 +79,29 @@ namespace XLSB
 
         if (proc.optional<EndExternals>())
         {
-            m_BrtEndExternals = elements_.back();
+			m_bBrtEndExternals = true;
             elements_.pop_back();
         }
 
-        return m_BrtBeginExternals || countSUP > 0 || m_BrtExternSheet || m_BrtEndExternals;
+        return m_bBrtBeginExternals || countSUP > 0 || m_BrtExternSheet || m_bBrtEndExternals;
     }
+
+	const bool EXTERNALS::saveContent(BinProcessor& proc)
+	{
+		proc.mandatory<BeginExternals>();
+
+		for (auto &item : m_arSUP)
+		{
+			proc.mandatory(*item);
+		}
+
+		if(m_BrtExternSheet != nullptr)
+			proc.mandatory(*m_BrtExternSheet);
+
+		proc.mandatory<EndExternals>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

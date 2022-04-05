@@ -73,16 +73,15 @@ namespace XLSB
 	{
 		_UINT16 flags = 0;
 		
-		if (fFullCalcOnLoad)		SETBIT(flags, 0, true)
-    	if (fRefA1)					SETBIT(flags, 1, true)
-    	if (fIter)					SETBIT(flags, 2, true)
-		if (fFullPrec)				SETBIT(flags, 3, true)
-
-    	if (fSomeUncalced)			SETBIT(flags, 4, true)
-		if (fSaveRecalc)			SETBIT(flags, 5, true)
-		if (fMTREnabled)			SETBIT(flags, 6, true)
-		if (fUserSetThreadCount)	SETBIT(flags, 7, true)
-    	if (fNoDeps)				SETBIT(flags, 8, true)
+		SETBIT(flags, 0, fFullCalcOnLoad)
+    	SETBIT(flags, 1, fRefA1)
+    	SETBIT(flags, 2, fIter)
+		SETBIT(flags, 3, fFullPrec)
+    	SETBIT(flags, 4, fSomeUncalced)
+		SETBIT(flags, 5, fSaveRecalc)
+		SETBIT(flags, 6, fMTREnabled)
+		SETBIT(flags, 7, fUserSetThreadCount)
+    	SETBIT(flags, 8, fNoDeps)
 
 		record << recalcID << fAutoRecalc << cCalcCount << xnumDelta << cUserThreadCount << flags;
 	}

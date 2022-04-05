@@ -63,12 +63,21 @@ namespace XLSB
 
         if (proc.optional<EndPivotCacheID>())
         {
-            m_BrtEndPivotCacheID = elements_.back();
+			m_bBrtEndPivotCacheID = true;
             elements_.pop_back();
         }
 
-        return m_BrtBeginPivotCacheID && m_BrtEndPivotCacheID;
+        return m_BrtBeginPivotCacheID && m_bBrtEndPivotCacheID;
     }
+
+	const bool PIVOTCACHEID::saveContent(BinProcessor& proc)
+	{
+		proc.mandatory(*m_BrtBeginPivotCacheID);
+
+		proc.mandatory<EndPivotCacheID>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

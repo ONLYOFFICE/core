@@ -56,5 +56,12 @@ namespace XLSB
         record >> rgbSalt;
         record >> szAlgName;
     }
+
+	void IsoPasswordData::save(XLS::CFRecord& record)
+	{
+		record << rgbHash;
+		record << rgbSalt;
+		record << szAlgName;
+	}
 } // namespace XLSB
 

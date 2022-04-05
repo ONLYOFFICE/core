@@ -95,4 +95,35 @@ void ExternSheet::readFields(CFRecord& record)
     }
 }
 
+void ExternSheet::writeFields(CFRecord& record)
+{
+	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
+	{
+		LPAnsiStringNoCch stName(name);
+		unsigned char type = 0;
+		unsigned char size = stName.getSize();
+		
+		record << size << type;
+
+		record << stName;
+	}
+	else if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		_UINT16 cXTI_2b = cXTI;
+		record << cXTI_2b;
+		for (int i = 0; i < cXTI_2b; ++i)
+		{
+			record << *rgXTI[i];
+		}
+	}
+	else
+	{
+		record << cXTI;
+		for (int i = 0; i < cXTI; ++i)
+		{
+			record << *rgXTI[i];
+		}
+	}
+}
+
 } // namespace XLS

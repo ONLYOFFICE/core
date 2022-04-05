@@ -58,9 +58,24 @@ namespace XLSB
         record >> dwBookSpinCount;
         record >> dwRevSpinCount;
         record >> wFlags;
-        record >> ipdBookPasswordData;
-        record >> ipdRevPasswordData;
+		if (record.checkFitRead(1))
+		{
+			record >> ipdBookPasswordData;
+			record >> ipdRevPasswordData;
+		}
     }
+
+	void BookProtectionIso::writeFields(XLS::CFRecord& record)
+	{
+		record << dwBookSpinCount;
+		record << dwRevSpinCount;
+		record << wFlags;
+		if (record.checkFitWrite(1))
+		{
+			record << ipdBookPasswordData;
+			record << ipdRevPasswordData;
+		}
+	}
 
 } // namespace XLSB
 

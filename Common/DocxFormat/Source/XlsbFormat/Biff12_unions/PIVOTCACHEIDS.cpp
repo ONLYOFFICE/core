@@ -58,7 +58,7 @@ namespace XLSB
     {
         if (proc.optional<BeginPivotCacheIDs>())
         {
-            m_BrtBeginPivotCacheIDs = elements_.back();
+			m_bBrtBeginPivotCacheIDs = true;
             elements_.pop_back();
         }
 
@@ -72,12 +72,25 @@ namespace XLSB
 
         if (proc.optional<EndPivotCacheIDs>())
         {
-            m_BrtEndPivotCacheIDs = elements_.back();
+            m_bBrtEndPivotCacheIDs = true;
             elements_.pop_back();
         }
 
-        return m_BrtBeginPivotCacheIDs && m_BrtEndPivotCacheIDs;
+        return m_bBrtBeginPivotCacheIDs && m_bBrtEndPivotCacheIDs;
     }
+
+	const bool PIVOTCACHEIDS::saveContent(BinProcessor& proc)
+	{
+		proc.mandatory<BeginPivotCacheIDs>();
+
+		for (auto &item : m_arPIVOTCACHEID)
+		{
+			proc.mandatory(*item);
+		}
+		proc.mandatory<EndPivotCacheIDs>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

@@ -51,7 +51,10 @@ namespace XLSB
 
             XLS::BaseObjectPtr clone();
 
-            void readFields(XLS::CFRecord& record);
+			void readFields(XLS::CFRecord& record) override;
+			void writeFields(XLS::CFRecord& record) override;
+
+			static const XLS::ElementType type = XLS::typeBookProtectionIso;
 
             _UINT32                 dwBookSpinCount;
             _UINT32                 dwRevSpinCount;

@@ -46,6 +46,11 @@ namespace XLSB
         load(record);
     }
 
+	RelID::RelID(const std::wstring & str)
+    {
+		value = str;
+    }
+
     RelID::~RelID()
     {
     }
@@ -59,6 +64,10 @@ namespace XLSB
     {
         record >> value;
     }
+	void RelID::save(XLS::CFRecord& record)
+	{
+		record << value;
+	}
 
 } // namespace XLSB
 

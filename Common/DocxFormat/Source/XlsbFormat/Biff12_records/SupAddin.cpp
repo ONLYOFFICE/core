@@ -53,5 +53,10 @@ namespace XLSB
        //empty data
     }
 
+	void SupAddin::writeFields(XLS::CFRecord& record)
+	{
+		//empty data
+	}
+
 } // namespace XLSB
 

@@ -360,10 +360,8 @@ namespace NSOnlineOfficeBinToPdf
 			case ctPageStart:
 			{
 				if (pCorrector->IsUsePageCommands())
-				{
 					pRenderer->NewPage();
-					pRenderer->BeginCommand(c_nPageType);
-				}
+				pRenderer->BeginCommand(c_nPageType);
 
 				// TODO:
 				pRenderer->put_PenLineStartCap(Aggplus::LineCapFlat);
@@ -379,8 +377,7 @@ namespace NSOnlineOfficeBinToPdf
 				}
 				bIsPathOpened = false;
 
-				if (pCorrector->IsUsePageCommands())
-					pRenderer->EndCommand(c_nPageType);
+				pRenderer->EndCommand(c_nPageType);
 
 				if (lRendererType == c_nGrRenderer)
 					return true;

@@ -205,7 +205,7 @@ namespace NSOnlineOfficeBinToPdf
 		oFile.ReadFile(pFileContent, dwFileSize, dwReaded);
 		oFile.CloseFile();
 
-		std::wstring wsHtmlPlace = NSDirectory::GetFolderPath(wsSrcFile);
+		std::wstring wsHtmlPlace = NSFile::GetDirectoryName(wsSrcFile);
 		if (bBinary)
 		{
             ConvertBufferToPdf(pPdf, pFileContent, dwFileSize, wsHtmlPlace, bIsUsePicker, bIsUsePageCommands);

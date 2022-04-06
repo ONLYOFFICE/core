@@ -24,6 +24,11 @@ void TEST2(CPdfRenderer* pRenderer)
     pRenderer->OnlineWordToPdf(NSFile::GetProcessDirectory() + L"/../example/pdf.bin", L"", true, false);
 }
 
+void TEST3(CPdfRenderer* pRenderer)
+{
+    pRenderer->OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/../example1/pdf.bin", L"", true, false);
+}
+
 int main()
 {
     CApplicationFontsWorker oWorker;
@@ -90,16 +95,18 @@ int main()
         }
 
         pReader->DeletePage(1);
-        pReader->DeletePage(1);
-        pReader->DeletePage(1);
-        pReader->DeletePage(1);
 
         if (pReader->EditPage(1))
         {
-            TEST(&pdfWriter);
+            TEST3(&pdfWriter);
         }
 
-        if (pReader->AddPage(1))
+        if (pReader->EditPage(2))
+        {
+            TEST2(&pdfWriter);
+        }
+
+        if (pReader->AddPage(3))
         {
             // Новой странице необходимо выставить длину и ширину
             pdfWriter.put_Width(dWidth);

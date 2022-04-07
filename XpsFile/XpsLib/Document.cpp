@@ -91,10 +91,10 @@ namespace XPS
 
 		oReader.Clear();
 
-		if (!m_wsPath->exists(wsTargetFile))
+        if (!m_wsPath->existsXml(wsTargetFile))
 		{
 			wsTargetFile = GetPath(L"_rels/.rels") + wsTargetFile;
-			if (!m_wsPath->exists(wsTargetFile))
+            if (!m_wsPath->existsXml(wsTargetFile))
 				return false;
 		}
 		
@@ -122,10 +122,10 @@ namespace XPS
 		if (wsSourceFile.empty())
 			return false;
 
-		if (!m_wsPath->exists(wsSourceFile))
+        if (!m_wsPath->existsXml(wsSourceFile))
 		{
 			wsSourceFile = GetPath(wsTargetFile) + wsSourceFile;
-			if (!m_wsPath->exists(wsSourceFile))
+            if (!m_wsPath->existsXml(wsSourceFile))
 				return false;
 		}
 

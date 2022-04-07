@@ -484,7 +484,7 @@ namespace NSShapeImageGen
                     pMetafile->GetBounds(&x, &y, &w, &h);
 
 					double _max = (w >= h) ? w : h;
-					double dKoef = 100000.0 / _max;
+                    double dKoef = 1000.0 / _max;
 
 					int WW = (int)(dKoef * w + 0.5);
 					int HH = (int)(dKoef * h + 0.5);

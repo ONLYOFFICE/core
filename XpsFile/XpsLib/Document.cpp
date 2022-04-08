@@ -244,30 +244,33 @@ namespace XPS
 				}
 
 			#ifdef BUILDING_WASM_MODULE
-				int nDepth = oReader.GetDepth();
-				while (oReader.ReadNextSiblingNode(nDepth))
-				{
-					if (oReader.GetNameNoNS() == L"PageContent.LinkTargets")
-					{
-						int nLinkDepth = oReader.GetDepth();
-						while (oReader.ReadNextSiblingNode(nLinkDepth))
-						{
-							if (oReader.GetNameNoNS() == L"LinkTarget")
-							{
-								std::wstring wsNameTarget;
-								ReadAttribute(oReader, L"Name", wsNameTarget);
-								if (!wsNameTarget.empty())
-								{
-									std::vector<CDocumentStructure>::iterator find = std::find_if(m_vStructure.begin(), m_vStructure.end(), [wsNameTarget](const CDocumentStructure& str){ return str.wsTarget == wsNameTarget; });
-									if (find != m_vStructure.end())
-										find->nPage = nIndex;
-									else
-										m_mInternalLinks.insert(std::pair<std::wstring, int>(wsNameTarget, nIndex));
-								}
-							}
-						}
-					}
-				}
+                if (!oReader.IsEmptyElement())
+                {
+                    int nDepth = oReader.GetDepth();
+                    while (oReader.ReadNextSiblingNode(nDepth))
+                    {
+                        if (oReader.GetNameNoNS() == L"PageContent.LinkTargets")
+                        {
+                            int nLinkDepth = oReader.GetDepth();
+                            while (oReader.ReadNextSiblingNode(nLinkDepth))
+                            {
+                                if (oReader.GetNameNoNS() == L"LinkTarget")
+                                {
+                                    std::wstring wsNameTarget;
+                                    ReadAttribute(oReader, L"Name", wsNameTarget);
+                                    if (!wsNameTarget.empty())
+                                    {
+                                        std::vector<CDocumentStructure>::iterator find = std::find_if(m_vStructure.begin(), m_vStructure.end(), [wsNameTarget](const CDocumentStructure& str){ return str.wsTarget == wsNameTarget; });
+                                        if (find != m_vStructure.end())
+                                            find->nPage = nIndex;
+                                        else
+                                            m_mInternalLinks.insert(std::pair<std::wstring, int>(wsNameTarget, nIndex));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
 			#endif
 
 				m_mPages.insert(std::pair<int, XPS::Page*>(nIndex++, new XPS::Page(wsPagePath, m_wsPath, &m_oFontList, m_pFontManager, this)));

@@ -45,6 +45,7 @@
 #include "../../DesktopEditor/common/StringExt.h"
 
 #include "../Common/FormatUtils.h"
+#include "../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtFOPTE.h"
 
 namespace DocFileFormat
 {

@@ -4321,26 +4321,42 @@ namespace SimpleTypes
 				return m_sCss;
 			}
 
-			SimpleType_FromString2    (std::wstring)
-			SimpleType_Operator_Equal (CCssStyle)
+			void mergeFrom(CCssStyle* parent)
+			{
+				if (!parent) return;
+
+				for (std::map<ECssPropertyType, size_t>::iterator it = parent->m_mapProperties.begin(); it != parent->m_mapProperties.end(); ++it)
+				{
+					std::map<ECssPropertyType, size_t>::iterator pFind = m_mapProperties.find(it->first);
+					if (pFind == m_mapProperties.end())
+					{
+						m_arrProperties.push_back(parent->m_arrProperties[it->second]);
+						m_mapProperties.insert(std::make_pair(it->first, m_arrProperties.size() - 1));
+					}
+				}
+			}
+
+			SimpleType_FromString2(std::wstring)
+			SimpleType_Operator_Equal(CCssStyle)
 
 		private:
 
 			bool ParseProperties()
 			{
 				std::wstring sTemp = m_sCss;
-				while ( sTemp.length() > 0 )
+				while ( false == sTemp.empty() )
 				{
-                    int nPos = (int)sTemp.find( ';' );
-					if ( -1 == nPos )
+                    size_t nPos = (int)sTemp.find( ';' );
+					if ( std::wstring::npos == nPos )
 					{
-						CCssProperty *oProperty = new CCssProperty(sTemp);
-						if ((oProperty) && (cssptUnknown != oProperty->get_Type()) )
+						CCssProperty *pProperty = new CCssProperty(sTemp);
+						if ((pProperty) && (cssptUnknown != pProperty->get_Type()) )
 						{
-							m_arrProperties.push_back( CCssPropertyPtr(oProperty) );
+							m_arrProperties.push_back( CCssPropertyPtr(pProperty) );
+							m_mapProperties.insert(std::make_pair(pProperty->get_Type(), m_arrProperties.size() - 1));
 						}
 						else
-							delete oProperty;
+							delete pProperty;
 
                         sTemp.clear();
 						continue;
@@ -4363,9 +4379,9 @@ namespace SimpleTypes
 			}
 
 		public:
-
-			std::vector<CCssPropertyPtr>	m_arrProperties;
-			std::wstring 					m_sCss;
+			std::map<ECssPropertyType, size_t>	m_mapProperties;
+			std::vector<CCssPropertyPtr>		m_arrProperties;
+			std::wstring 						m_sCss;
 		};
 		//--------------------------------------------------------------------------------
 		// Vml_Vector2D_Units 14.1.2.3 (from, control1, control2, to) 
@@ -5074,20 +5090,21 @@ namespace SimpleTypes
 
 				if ( bFraction )
 				{
-					   std::wstring strValue = sValue.substr( 0, nLen - 1 );
-                       int nValue = strValue.empty() ? 0 : _wtoi(strValue.c_str() );
+					std::wstring strValue = sValue.substr( 0, nLen - 1 );
+					int nValue = strValue.empty() ? 0 : _wtoi(strValue.c_str() );
 
-					   SetValue( nValue );
+					SetValue( nValue );
 				}
 				else if ( bPercentage )
 				{
-					   std::wstring strValue = sValue.substr( 0, nLen - 1 );
-                       double dValue = XmlUtils::GetDouble(strValue);
+					std::wstring strValue = sValue.substr( 0, nLen - 1 );
+					double dValue = XmlUtils::GetDouble(strValue);
+					
 					SetPercentage( dValue );
 				}
 				else
 				{
-                       double dValue = XmlUtils::GetDouble(sValue);
+					double dValue = XmlUtils::GetDouble(sValue);
 					SetValue( dValue );
 				}
 

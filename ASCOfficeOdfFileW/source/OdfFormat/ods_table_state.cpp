@@ -782,6 +782,8 @@ void ods_table_state::set_comment_visible(bool val)
 void ods_table_state::set_comment_rect(double l, double t, double w, double h)
 {
 	if (comments_.empty())return;
+	
+	if (l < 0.1 && t < 0.1 && w < 0.1 && h < 0.1)return;
 
 	office_annotation * annotation = dynamic_cast<office_annotation*>(comments_.back().elm.get());
 	if (!annotation)return;		
@@ -1620,8 +1622,7 @@ void ods_table_state::start_conditional_format(std::wstring ref)
 	{
 		formulasconvert::oox2odf_converter converter;
 		std::wstring out = converter.convert_ref(ref);
-		XmlUtils::replace_all( out,L"[",L"");
-		XmlUtils::replace_all( out,L"]",L"");
+
 		cond_format->calcext_target_range_address_ = out;
 		//проверить конвертацию на диапазонах с именами листов в кавычках и с пробелами
 	}

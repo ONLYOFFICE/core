@@ -590,11 +590,11 @@ void xlsx_drawing_context::process_position_properties(drawing_object_descriptio
 
 	if (!distance.empty() && !obj.anchor_.empty())
 	{
-		int ind_cell = distance.size()-1;
-		getCellAddressInv(distance[ind_cell], column_anchor, row_anchor);
-
-		xlsx_table_position pos_anchor = table_metrics.calc(column_anchor, row_anchor, obj.anchor_x_, obj.anchor_y_); 
-
+		int ind_cell = distance.size() - 1;
+		
+		if (false == getCellAddressInv(distance[ind_cell], column_anchor, row_anchor)) return;
+			
+		xlsx_table_position pos_anchor = table_metrics.calc(column_anchor, row_anchor, obj.anchor_x_, obj.anchor_y_);
 		table_metrics.update_pt(column_anchor, row_anchor, obj.anchor_x_, obj.anchor_y_);
 
 		if (byEnd)

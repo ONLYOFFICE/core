@@ -471,6 +471,47 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			{
 				convert(dynamic_cast<PPTX::Logic::EffectDag*>(oox_unknown));
 			}break;
+//---------------------------------------
+			case OOX::et_v_shapetype:
+			{
+				convert(dynamic_cast<OOX::Vml::CShapeType*>(oox_unknown));
+			}break;
+			case OOX::et_v_shape:
+			{
+				convert(dynamic_cast<OOX::Vml::CShape*>(oox_unknown));
+			}break;
+			case OOX::et_v_oval:
+			{
+				convert(dynamic_cast<OOX::Vml::COval*>(oox_unknown));
+			}break;
+			case OOX::et_v_rect:
+			{
+				convert(dynamic_cast<OOX::Vml::CRect*>(oox_unknown));
+			}break;
+			case OOX::et_v_roundrect:
+			{
+				convert(dynamic_cast<OOX::Vml::CRoundRect*>(oox_unknown));
+			}break;
+			case OOX::et_v_line:
+			{
+				convert(dynamic_cast<OOX::Vml::CLine*>(oox_unknown));
+			}break;
+			case OOX::et_v_arc:
+			{
+				convert(dynamic_cast<OOX::Vml::CArc*>(oox_unknown));
+			}break;
+			case OOX::et_v_curve:
+			{
+				convert(dynamic_cast<OOX::Vml::CCurve*>(oox_unknown));
+			}break;
+			case OOX::et_v_group:
+			{
+				convert(dynamic_cast<OOX::Vml::CGroup*>(oox_unknown));
+			}break;
+			case OOX::et_v_polyline:
+			{
+				convert(dynamic_cast<OOX::Vml::CPolyLine*>(oox_unknown));
+			}break;
 			case OOX::et_v_imagedata:
 			{
 				convert(dynamic_cast<OOX::Vml::CImageData*>(oox_unknown));
@@ -515,6 +556,7 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			{
 				convert(dynamic_cast<OOX::VmlWord::CWrap*>(oox_unknown));
 			}break;
+//----------------------------------
 			case OOX::et_a_extLst:
 			{
 				convert(dynamic_cast<OOX::Drawing::COfficeArtExtensionList*>(oox_unknown));

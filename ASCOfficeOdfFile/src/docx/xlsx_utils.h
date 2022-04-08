@@ -50,7 +50,7 @@ size_t getColAddressInv(const std::wstring & a);
 size_t getRowAdderssInv(const std::wstring & a);
 
 std::wstring getCellAddress(size_t col, size_t row, bool bAbsolute = false);
-void getCellAddressInv(const std::wstring & a, size_t & col, size_t & row);
+bool getCellAddressInv(const std::wstring & a, size_t & col, size_t & row);
 
 bool parseBoolVal(const std::wstring & str);
 

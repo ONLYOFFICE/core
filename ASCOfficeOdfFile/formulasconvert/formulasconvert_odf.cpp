@@ -632,8 +632,6 @@ namespace formulasconvert {
 			boost::wregex(L"('.*?')|(\".*?\")"),
 			&convert_scobci, boost::match_default | boost::format_all);
 	    
-		//распарсить по диапазонам - одф-пробел, ик-эль-запятая
-
 		std::vector<std::wstring> distance_inp;
 		std::vector<std::wstring> distance_out;
 
@@ -650,11 +648,18 @@ namespace formulasconvert {
 			for (size_t j = 0; j < range.size(); j++)
 			{
 				const std::string::size_type colon = range[j].find('.');
-				cells.push_back(range[j].substr(colon + 1));
-				if (sheet.size() < 1)
+
+				if (colon != std::wstring::npos)
 				{
-					sheet = range[j].substr(0, colon);
+					cells.push_back(range[j].substr(colon + 1));
+
+					if (sheet.empty())
+					{
+						sheet = range[j].substr(0, colon);
+					}
 				}
+				else
+					cells.push_back(range[j]);
 			}
 			std::wstring cells_out;
 			for (size_t j = 0; j < cells.size(); j++)
@@ -668,7 +673,7 @@ namespace formulasconvert {
 				sheet = L"'" + sheet + L"'";
 			}
 
-			distance_out.push_back(sheet + L"!" + cells_out.substr(0, cells_out.size()-1));
+			distance_out.push_back((sheet.empty() ? L"" : (sheet + L"!")) + cells_out.substr(0, cells_out.size() - 1));
 		}
 		std::wstring result;
 

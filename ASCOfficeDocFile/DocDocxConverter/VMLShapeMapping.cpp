@@ -923,7 +923,7 @@ namespace DocFileFormat
 		ODRAW::PSegmentInfo*	pSI	= dynamic_cast<ODRAW::PSegmentInfo*>(opSegmentInfo.get());
 		if (pVP && pSI)
 		{		
-			ODRAW::PathParser oParser (pSI->complex.data, pVP->complex.data, m_arrGuides);
+			ODRAW::PathParser oParser (pSI->complex.data, pVP->complex.data, m_arrGuides, xCoord, yCoord);
 			std::wstring path = oParser.GetVmlPath();
 
 			if (false == path.empty())

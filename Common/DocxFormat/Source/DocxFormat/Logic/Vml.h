@@ -1163,7 +1163,6 @@ namespace OOX
 
 		public:
 
-			// Attributes
 			SimpleTypes::Vml::CVml_1_65536_Or_Percentage m_oArcSize;
 
 		};
@@ -1837,8 +1836,8 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
 
-			std::vector<WritingElement *>  m_arrShapeTypes;
-			std::vector<WritingElement *>  m_arrElements;
+			std::vector<CShapeType*>		m_arrShapeTypes;
+			std::vector<WritingElement *>	m_arrElements;
 
 			nullable<SimpleTypes::CEditAs<>>				m_oEditAs;
 			nullable<SimpleTypes::Vml::CVml_TableLimits>	m_oTableLimits;

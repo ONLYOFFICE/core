@@ -648,7 +648,7 @@ public:
 		void convert(OOX::Vml::CStroke					*vml_stroke);
 		void convert(OOX::Vml::CTextbox					*vml_textbox);
 		void convert(OOX::Vml::CTextPath				*vml_textpath);
-		void convert(SimpleTypes::Vml::CCssStyle		*vml_style, bool group = false);
+		void convert(SimpleTypes::Vml::CCssStyle		*vml_style);
 		void convert(OOX::VmlWord::CWrap				*vml_wrap);
 		void convert(OOX::Vml::CGroup					*vml_group);
 		void convert(OOX::Vml::CVmlCommonElements		*vml_attr);

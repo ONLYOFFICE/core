@@ -1000,9 +1000,12 @@ class PathParser
 {
 public:
 
-	PathParser (std::vector<MSOPATHINFO> &arSegments, std::vector<MSOPOINT>& arPoints, std::vector<MSOSG> & arGuides)
+	PathParser (std::vector<MSOPATHINFO> &arSegments, std::vector<MSOPOINT>& arPoints, std::vector<MSOSG> & arGuides, _CP_OPT(size_t) cx, _CP_OPT(size_t) cy)
 		: m_arSegments(arSegments)
 	{
+		if (!cx) cx = 0xffff;
+		if (!cy) cy = 0xffff;
+
 		LONG lMinF = (_INT32)0x80000000;
 		POINT point;
 		for (size_t i = 0; i < arPoints.size(); i++)
@@ -1026,8 +1029,8 @@ public:
 					point.y = arGuides[index].m_param_value3;
 				}
 			}
-			if ((size_t)point.y > 0xffff)	point.y &= 0xffff;
-			if ((size_t)point.x > 0xffff)	point.x &= 0xffff;
+			if ((size_t)point.y > *cy)	point.y &= *cy;
+			if ((size_t)point.x > *cx)	point.x &= *cx;
 
 			m_arPoints.push_back(point);
 		}

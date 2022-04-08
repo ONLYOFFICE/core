@@ -84,7 +84,7 @@ namespace Oox2Odf
 		}
 	}
 
-	void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style, bool group)
+	void OoxConverter::convert(SimpleTypes::Vml::CCssStyle *vml_style)
 	{
 		if (vml_style == NULL) return;
 
@@ -93,6 +93,7 @@ namespace Oox2Odf
 		_CP_OPT(int) anchor_type_x, anchor_type_y;
 
 		bool bPosition = false;
+		bool bTextRelativeX = false, bTextRelativeY = false;
 
 		for (size_t i = 0; i < vml_style->m_arrProperties.size(); i++)
 		{
@@ -141,32 +142,32 @@ namespace Oox2Odf
 			{
 				switch (vml_style->m_arrProperties[i]->get_Value().eMsoPosHorRel)
 				{
-				case SimpleTypes::Vml::cssmsoposhorrelRightMargin:
-				{
-					anchor_type_x = 2;
-					odf_context()->drawing_context()->set_horizontal_rel(5);
-				}break;
-				case SimpleTypes::Vml::cssmsoposhorrelLeftMargin:
-				{
-					anchor_type_x = 2;
-					odf_context()->drawing_context()->set_horizontal_rel(4);
-				}break;
-				case SimpleTypes::Vml::cssmsoposhorrelMargin:
-				{
-					anchor_type_x = 2;
-					odf_context()->drawing_context()->set_horizontal_rel(2);
-				}break;
-				case SimpleTypes::Vml::cssmsoposhorrelPage:
-				{
-					anchor_type_x = 0;
-					odf_context()->drawing_context()->set_horizontal_rel(6);
-				}break;
-				case SimpleTypes::Vml::cssmsoposhorrelText:
-				case SimpleTypes::Vml::cssmsoposhorrelChar:
-				{
-					anchor_type_x = 4;
-					odf_context()->drawing_context()->set_horizontal_rel(0);
-				}break;
+					case SimpleTypes::Vml::cssmsoposhorrelRightMargin:
+					{
+						anchor_type_x = 2;
+						odf_context()->drawing_context()->set_horizontal_rel(5);
+					}break;
+					case SimpleTypes::Vml::cssmsoposhorrelLeftMargin:
+					{
+						anchor_type_x = 2;
+						odf_context()->drawing_context()->set_horizontal_rel(4);
+					}break;
+					case SimpleTypes::Vml::cssmsoposhorrelMargin:
+					{
+						anchor_type_x = 2;
+						odf_context()->drawing_context()->set_horizontal_rel(2);
+					}break;
+					case SimpleTypes::Vml::cssmsoposhorrelPage:
+					{
+						anchor_type_x = 0;
+						odf_context()->drawing_context()->set_horizontal_rel(6);
+					}break;
+					case SimpleTypes::Vml::cssmsoposhorrelText:
+					case SimpleTypes::Vml::cssmsoposhorrelChar:
+					{
+						bTextRelativeX = true;
+						odf_context()->drawing_context()->set_horizontal_rel(0);
+					}break;
 				}
 			}break;
 			case SimpleTypes::Vml::cssptMsoPositionVertical:
@@ -184,32 +185,33 @@ namespace Oox2Odf
 			{
 				switch (vml_style->m_arrProperties[i]->get_Value().eMsoPosVerRel)
 				{
-				case SimpleTypes::Vml::cssmsoposverrelBottomMargin:
-				{
-					anchor_type_y = 2;
-					odf_context()->drawing_context()->set_vertical_pos(0);
-					odf_context()->drawing_context()->set_vertical_rel(3);
-				}break;
-				case SimpleTypes::Vml::cssmsoposverrelTopMargin:
-				case SimpleTypes::Vml::cssmsoposverrelMargin:
-				{
-					anchor_type_y = 2;
-					odf_context()->drawing_context()->set_vertical_rel(3);
-				}break;
-				case SimpleTypes::Vml::cssmsoposverrelPage:
-				{
-					anchor_type_y = 0;
-					odf_context()->drawing_context()->set_vertical_rel(5);
-				}break;
-				case SimpleTypes::Vml::cssmsoposverrelText:
-				{
-					anchor_type_y = 4;
-					odf_context()->drawing_context()->set_vertical_rel(6);
-				}break;
-				case SimpleTypes::Vml::cssmsoposverrelLine:
-				{
-					odf_context()->drawing_context()->set_vertical_rel(2);
-				}break;
+					case SimpleTypes::Vml::cssmsoposverrelBottomMargin:
+					{
+						anchor_type_y = 2;
+						odf_context()->drawing_context()->set_vertical_pos(0);
+						odf_context()->drawing_context()->set_vertical_rel(3);
+					}break;
+					case SimpleTypes::Vml::cssmsoposverrelTopMargin:
+					case SimpleTypes::Vml::cssmsoposverrelMargin:
+					{
+						anchor_type_y = 2;
+						odf_context()->drawing_context()->set_vertical_rel(3);
+					}break;
+					case SimpleTypes::Vml::cssmsoposverrelPage:
+					{
+						anchor_type_y = 0;
+						odf_context()->drawing_context()->set_vertical_rel(5);
+					}break;
+					case SimpleTypes::Vml::cssmsoposverrelText:
+					{
+						bTextRelativeY = true;
+						odf_context()->drawing_context()->set_vertical_rel(6);
+					}break;
+					case SimpleTypes::Vml::cssmsoposverrelLine:
+					{
+						bTextRelativeY = true;
+						odf_context()->drawing_context()->set_vertical_rel(2);
+					}break;
 				}
 			}break;
 			case SimpleTypes::Vml::cssptZIndex:
@@ -229,9 +231,9 @@ namespace Oox2Odf
 			}break;
 			case SimpleTypes::Vml::cssptRotation:
 			{
-				if (group)
-					odf_context()->drawing_context()->set_group_rotate(180 + vml_style->m_arrProperties[i]->get_Value().oValue.dValue);
-				else
+				//if (group)
+				//	odf_context()->drawing_context()->set_group_rotate(180 + vml_style->m_arrProperties[i]->get_Value().oValue.dValue);
+				//else
 					odf_context()->drawing_context()->set_rotate(360 - vml_style->m_arrProperties[i]->get_Value().oValue.dValue);
 			}break;
 			case SimpleTypes::Vml::cssptFlip:
@@ -285,19 +287,19 @@ namespace Oox2Odf
 		if (x2 && !x && width)	x = *x2 - *width;
 		if (y2 && !y && height)	y = *y2 - *height;
 
-		if (group)
-		{
-			_CP_OPT(double) not_set;
-			odf_context()->drawing_context()->set_group_size(width, height, width, height);//not_set ,not_set);
-
-			odf_context()->drawing_context()->set_group_position(x, y, x, y);//not_set , not_set );
-		}
-		else
+		//if (group)
+		//{
+		//	odf_context()->drawing_context()->set_group_size(width, height, width, height);
+		//	odf_context()->drawing_context()->set_group_position(x, y, x, y);
+		//}
+		//else
 		{
 			odf_context()->drawing_context()->set_size(width, height);
 			odf_context()->drawing_context()->set_position(x, y);
 
-			if ((anchor_type_x && anchor_type_y) && (*anchor_type_x == *anchor_type_y))
+			if (bTextRelativeX && bTextRelativeY)
+				odf_context()->drawing_context()->set_anchor(3);
+			else if ((anchor_type_x && anchor_type_y) && (*anchor_type_x == *anchor_type_y))
 				odf_context()->drawing_context()->set_anchor(*anchor_type_x);
 			else if (x && y)
 				odf_context()->drawing_context()->set_anchor(2);
@@ -347,9 +349,49 @@ namespace Oox2Odf
 		}
 		else if (vml_shape->m_oPath.IsInit())
 		{
-			odf_context()->drawing_context()->start_shape(1001);
+			odf_context()->drawing_context()->start_shape(1000);
 			odf_context()->drawing_context()->set_line_width(1.);
-			odf_context()->drawing_context()->set_path(vml_shape->m_oPath->GetValue());
+
+			std::wstring vml_path = vml_shape->m_oPath->GetValue();
+			std::wstring odf_path;
+
+			bool isDigitLast = true;
+
+			for (size_t i = 0; i < vml_path.size(); ++i)
+			{
+				if (vml_path[i] == L',')
+				{
+					odf_path += L" ";
+					isDigitLast = true;
+				}
+				else 
+				{
+					if (vml_path[i] >= L'0' && vml_path[i] <= L'9')
+					{
+						if (!isDigitLast) odf_path += L" ";
+						isDigitLast = true;
+					}
+					else
+					{
+						if (isDigitLast) odf_path += L" ";
+						isDigitLast = false;
+					}
+
+					odf_path += vml_path[i];
+					std::transform(odf_path.begin(), odf_path.end(), odf_path.begin(), toupper);
+				}
+			}
+
+			odf_context()->drawing_context()->set_path(odf_path);
+
+			if (vml_shape->m_oCoordSize.IsInit())
+			{
+				odf_context()->drawing_context()->set_viewBox(vml_shape->m_oCoordSize->GetX(), vml_shape->m_oCoordSize->GetY());
+			}
+			else
+			{
+				odf_context()->drawing_context()->set_viewBox(21600, 212600);
+			}
 		}
 		else if (vml_shape->m_bImage)
 		{
@@ -670,7 +712,11 @@ namespace Oox2Odf
 
 		if (arc_size > 0)
 		{
-			odf_types::length corner = odf_types::length(arc_size * 20, odf_types::length::cm);
+			_CP_OPT(double) width, height;
+
+			odf_context()->drawing_context()->get_size(width, height);
+
+			odf_types::length corner = odf_types::length(width.get_value_or(200) * arc_size, odf_types::length::pt);
 			odf_context()->drawing_context()->set_corner_radius(corner);
 		}
 		odf_context()->drawing_context()->end_shape();

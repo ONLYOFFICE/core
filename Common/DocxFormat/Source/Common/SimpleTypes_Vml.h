@@ -5090,20 +5090,21 @@ namespace SimpleTypes
 
 				if ( bFraction )
 				{
-					   std::wstring strValue = sValue.substr( 0, nLen - 1 );
-                       int nValue = strValue.empty() ? 0 : _wtoi(strValue.c_str() );
+					std::wstring strValue = sValue.substr( 0, nLen - 1 );
+					int nValue = strValue.empty() ? 0 : _wtoi(strValue.c_str() );
 
-					   SetValue( nValue );
+					SetValue( nValue );
 				}
 				else if ( bPercentage )
 				{
-					   std::wstring strValue = sValue.substr( 0, nLen - 1 );
-                       double dValue = XmlUtils::GetDouble(strValue);
+					std::wstring strValue = sValue.substr( 0, nLen - 1 );
+					double dValue = XmlUtils::GetDouble(strValue);
+					
 					SetPercentage( dValue );
 				}
 				else
 				{
-                       double dValue = XmlUtils::GetDouble(sValue);
+					double dValue = XmlUtils::GetDouble(sValue);
 					SetValue( dValue );
 				}
 

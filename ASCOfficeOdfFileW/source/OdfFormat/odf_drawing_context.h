@@ -128,7 +128,7 @@ public:
 		void set_corner_radius	(odf_types::length corner);
 	void end_group();
 
-	void start_shape	(int type);
+	void start_shape	(int ooxDrawPreset);
 	void end_shape		();
 
 	void start_frame	();

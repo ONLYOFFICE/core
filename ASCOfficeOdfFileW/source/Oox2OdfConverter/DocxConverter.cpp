@@ -2976,7 +2976,7 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 	odt_context->start_drawings();
 			
 	if (odt_context->table_context()->empty())
-		odf_context()->drawing_context()->set_anchor(anchor_type::AsChar);//default
+		odf_context()->drawing_context()->set_anchor(anchor_type::Char);//default
 	else
 	{
 		odf_context()->drawing_context()->set_anchor(anchor_type::Paragraph);

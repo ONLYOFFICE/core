@@ -802,7 +802,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 					
 					if (ooxPicture->m_oShapeType.IsInit())
 					{	
-						pShapeReader = new OOXShapeReader(ooxPicture->m_oShapeType.GetPointer());					
+						pShapeReader = new OOXShapeReader(ooxPicture->m_oShapeType.GetPointer());
 						if(pShapeReader)
 						{
 							pShapeReader->Parse( oParam, pNewShape );
@@ -810,7 +810,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 						}
 					}					
 					if (ooxPicture->m_oShapeElement.IsInit())
-						pShapeReader = new OOXShapeReader(ooxPicture->m_oShapeElement.GetPointer());		
+						pShapeReader = new OOXShapeReader(dynamic_cast<OOX::Vml::CVmlCommonElements*>(ooxPicture->m_oShapeElement.GetPointer()));
 					
 					if (pShapeReader)
 					{

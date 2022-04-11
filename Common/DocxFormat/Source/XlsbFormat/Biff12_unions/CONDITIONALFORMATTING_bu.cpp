@@ -82,14 +82,31 @@ namespace XLSB
             count--;
         }
 
-        if (proc.optional<EndConditionalFormatting>())
-        {
-            m_BrtEndConditionalFormatting = elements_.back();
-            elements_.pop_back();
-        }
+		if (proc.optional<EndConditionalFormatting>())
+		{
+			m_bBrtEndConditionalFormatting = true;
+			elements_.pop_back();
+		}
+		else
+			m_bBrtEndConditionalFormatting = false;
 
-        return m_BrtBeginConditionalFormatting && !m_arCFRULE.empty() && m_BrtEndConditionalFormatting;
+        return m_BrtBeginConditionalFormatting && !m_arCFRULE.empty() && m_bBrtEndConditionalFormatting;
     }
+
+	const bool CONDITIONALFORMATTING::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginConditionalFormatting != nullptr)		
+			proc.mandatory(*m_BrtBeginConditionalFormatting);		
+
+		for(auto& item : m_arCFRULE)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndConditionalFormatting>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

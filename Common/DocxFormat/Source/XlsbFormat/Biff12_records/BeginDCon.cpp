@@ -61,5 +61,16 @@ namespace XLSB
         fLinkConsol = GETBIT(flags, 2);
     }
 
+	void BeginDCon::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+
+		SETBIT(flags, 0, fLeftCat)
+		SETBIT(flags, 1, fTopCat)
+		SETBIT(flags, 2, fLinkConsol)
+
+		record << iiftab << flags;
+	}
+
 } // namespace XLSB
 

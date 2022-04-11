@@ -76,6 +76,7 @@ namespace OOX
 			virtual ~CWorksheet();
 
             void readBin(const CPath& oPath);
+			void writeBin(const CPath& oPath) const;
 
 			virtual void read(const CPath& oPath)
 			{

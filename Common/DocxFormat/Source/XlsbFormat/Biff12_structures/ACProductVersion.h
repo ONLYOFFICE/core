@@ -35,7 +35,6 @@
 #include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/BiffStructure.h"
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 
-
 namespace XLSB
 {
     class ACProductVersion : public XLS::BiffStructure
@@ -49,7 +48,8 @@ namespace XLSB
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;
 
-        virtual void load(XLS::CFRecord& record);
+        void load(XLS::CFRecord& record) override;
+		void save(XLS::CFRecord& record) override;
 
         _UINT16     fileVersion;
         _UINT16     fileProduct;

@@ -55,5 +55,10 @@ namespace XLSB
         record >> ibrkMac >> ibrkManMac;
     }
 
+	void BeginRwBrk::writeFields(XLS::CFRecord& record)
+	{
+		record << ibrkMac << ibrkManMac;
+	}
+
 } // namespace XLSB
 

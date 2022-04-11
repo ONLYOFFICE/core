@@ -55,5 +55,10 @@ namespace XLSB
         record >> dwSpinCount >> sqRfX >> rangeProtectionTitleSDRel >> ipdPasswordData;
     }
 
+	void RangeProtectionIso::writeFields(XLS::CFRecord& record)
+	{
+		record << dwSpinCount << sqRfX << rangeProtectionTitleSDRel << ipdPasswordData;
+	}
+
 } // namespace XLSB
 

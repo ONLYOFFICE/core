@@ -55,5 +55,10 @@ namespace XLSB
         record >> cdref;
     }
 
+	void BeginDRefs::writeFields(XLS::CFRecord& record)
+	{
+		record << cdref;
+	}
+
 } // namespace XLSB
 

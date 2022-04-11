@@ -55,5 +55,10 @@ namespace XLSB
         record >> cmcs;
     }
 
+	void BeginMergeCells::writeFields(XLS::CFRecord& record)
+	{
+		record << cmcs;
+	}
+
 } // namespace XLSB
 

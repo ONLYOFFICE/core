@@ -45,14 +45,15 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+        const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         static const XLS::ElementType	type = XLS::typeRICHFILTERCONTENT;
 
         XLS::BaseObjectPtr               m_BrtBeginRichFilterColumn;
         XLS::BaseObjectPtr               m_source;
         //std::vector<XLS::BaseObjectPtr>  m_arFRT;
-        XLS::BaseObjectPtr               m_BrtEndRichFilterColumn;
+        bool							 m_bBrtEndRichFilterColumn;
 
     };
 

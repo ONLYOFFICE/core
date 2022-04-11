@@ -64,5 +64,19 @@ namespace XLSB
         record >> xstrName >> xstrSheet >> relId;
     }
 
+	void DRef::writeFields(XLS::CFRecord& record)
+	{
+		record << fName << fBuiltin;
+
+		if (!fName.value())
+			record << rfx;
+		else
+		{
+			record.reserveNunBytes(16);
+		}
+
+		record << xstrName << xstrSheet << relId;
+	}
+
 } // namespace XLSB
 

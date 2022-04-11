@@ -55,5 +55,10 @@ namespace XLSB
         record >> rgb;
     }
 
+	void BkHim::writeFields(XLS::CFRecord& record)
+	{
+		record << rgb;
+	}
+
 } // namespace XLSB
 

@@ -49,9 +49,6 @@ namespace XLSB
             ~EndExternals();
 
             XLS::BaseObjectPtr clone();
-
-            void readFields(XLS::CFRecord& record) override;
-			void writeFields(XLS::CFRecord& record) override;
     };
 
 } // namespace XLSB

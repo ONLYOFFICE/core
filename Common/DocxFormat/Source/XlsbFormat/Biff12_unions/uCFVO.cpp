@@ -73,5 +73,13 @@ namespace XLSB
         return m_BrtCFVO != nullptr;
     }
 
+	const bool uCFVO::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtCFVO != nullptr)
+			proc.mandatory(*m_BrtCFVO);
+
+		return true;
+	}
+
 } // namespace XLSB
 

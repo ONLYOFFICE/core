@@ -55,5 +55,10 @@ namespace XLSB
         record >> unRwCol >> unColRwStrt >> unColRwEnd >> fMan >> fPivot;
     }
 
+	void Brk::writeFields(XLS::CFRecord& record)
+	{
+		record << unRwCol << unColRwStrt << unColRwEnd << fMan << fPivot;
+	}
+
 } // namespace XLSB
 

@@ -44,8 +44,8 @@ class CellParsedFormula : public ParsedFormula
 public:
 	CellParsedFormula(const bool is_part_of_a_revision);
 	BiffStructurePtr clone();
-	void load(CFRecord& record);
-
+	void load(CFRecord& record) override;
+	void save(CFRecord& record) override;
 
 	bool is_part_of_a_revision_;
 };

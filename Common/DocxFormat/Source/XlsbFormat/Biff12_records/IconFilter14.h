@@ -47,10 +47,11 @@ namespace XLSB
 
             XLS::BaseObjectPtr clone();
 
-            void readFields(XLS::CFRecord& record);
+            void readFields(XLS::CFRecord& record) override;
+			void writeFields(XLS::CFRecord& record) override;
 
             XLS::KPISets14		iIconSet;
-            _INT32                      iIcon;
+            _INT32              iIcon;
     };
 
 } // namespace XLSB

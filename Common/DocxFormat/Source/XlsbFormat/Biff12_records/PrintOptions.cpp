@@ -52,7 +52,7 @@ namespace XLSB
 
     void PrintOptions::readFields(XLS::CFRecord& record)
     {
-        unsigned short flags;
+        _UINT16 flags;
         record >> flags;
 
         fHCenter        = GETBIT(flags, 0);
@@ -60,6 +60,18 @@ namespace XLSB
         fPrintHeaders   = GETBIT(flags, 2);
         fPrintGrid      = GETBIT(flags, 3);
     }
+
+	void PrintOptions::writeFields(XLS::CFRecord& record)
+	{
+		_UINT16 flags = 0;
+
+		SETBIT(flags, 0, fHCenter)
+		SETBIT(flags, 1, fVCenter)
+		SETBIT(flags, 2, fPrintHeaders)
+		SETBIT(flags, 3, fPrintGrid)
+
+		record << flags;
+	}
 
 } // namespace XLSB
 

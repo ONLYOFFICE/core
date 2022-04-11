@@ -55,5 +55,10 @@ namespace XLSB
         record >> dxfid >> fCellColor;
     }
 
+	void ColorFilter::writeFields(XLS::CFRecord& record)
+	{
+		record << dxfid << fCellColor;
+	}
+
 } // namespace XLSB
 

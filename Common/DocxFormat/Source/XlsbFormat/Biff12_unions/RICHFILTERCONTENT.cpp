@@ -87,12 +87,29 @@ namespace XLSB
 
         if (proc.optional<EndRichFilterColumn>())
         {
-            m_BrtEndRichFilterColumn = elements_.back();
+            m_bBrtEndRichFilterColumn = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndRichFilterColumn = false;
 
-        return m_BrtBeginRichFilterColumn && m_source && m_BrtEndRichFilterColumn;
+        return m_BrtBeginRichFilterColumn && m_source && m_bBrtEndRichFilterColumn;
     }
+
+	const bool RICHFILTERCONTENT::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginRichFilterColumn != nullptr)
+			proc.mandatory(*m_BrtBeginRichFilterColumn);
+		else
+			proc.mandatory<BeginRichFilterColumn>();
+
+		if (m_source != nullptr)
+			proc.mandatory(*m_source);
+
+		proc.mandatory<EndRichFilterColumn>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

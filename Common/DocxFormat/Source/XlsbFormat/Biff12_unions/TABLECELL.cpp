@@ -99,12 +99,27 @@ namespace XLSB
         {
             return false;
         }
-
-
+		
         m_source = elements_.back();
         elements_.pop_back();
         return true;
     }
+
+	const bool TABLECELL::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtTable != nullptr)		
+			proc.mandatory(*m_BrtTable);
+		else 
+			return false;
+
+		//if (m_CELLMETA != nullptr)
+		//	proc.mandatory(*m_CELLMETA);
+
+		if (m_source != nullptr)
+			proc.mandatory(*m_source);
+
+		return true;
+	}
 
 } // namespace XLSB
 

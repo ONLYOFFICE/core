@@ -69,5 +69,24 @@ namespace XLSB
             record.skipNunBytes(8);
     }
 
+	void CustomFilter14::writeFields(XLS::CFRecord& record)
+	{
+		record << vts << grbitSgn;
+		if (vts == 0x00000004)
+			record << xdata;
+		else if (vts == 0x00000008)
+		{
+			record.reserveNunBytes(7);
+			record << bdata;
+		}
+		else if (vts == 0x00000006)
+		{
+			record.reserveNunBytes(8);
+			record << vtsStringXls;
+		}
+		else
+			record.reserveNunBytes(8);
+	}
+
 } // namespace XLSB
 

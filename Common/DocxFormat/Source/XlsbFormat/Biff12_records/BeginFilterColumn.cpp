@@ -52,12 +52,22 @@ namespace XLSB
 
     void BeginFilterColumn::readFields(XLS::CFRecord& record)
     {
-        unsigned short flags;
+        _UINT16 flags;
         record >> dwCol >> flags;
 
         fHideArrow = GETBIT(flags, 0);
         fNoBtn     = GETBIT(flags, 1);
     }
+
+	void BeginFilterColumn::writeFields(XLS::CFRecord& record)
+	{
+		_UINT16 flags = 0;
+
+		SETBIT(flags, 0, fHideArrow);
+		SETBIT(flags, 1, fNoBtn);
+
+		record << dwCol << flags;
+	}
 
 } // namespace XLSB
 

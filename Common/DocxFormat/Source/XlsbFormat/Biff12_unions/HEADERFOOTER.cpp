@@ -63,12 +63,26 @@ namespace XLSB
 
         if (proc.optional<EndHeaderFooter>())
         {
-            m_BrtEndHeaderFooter = elements_.back();
+			m_bBrtEndHeaderFooter = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndHeaderFooter = false;
 
-        return m_BrtBeginHeaderFooter && m_BrtEndHeaderFooter;
+        return m_BrtBeginHeaderFooter && m_bBrtEndHeaderFooter;
     }
+
+	const bool HEADERFOOTER::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginHeaderFooter != nullptr)
+		{
+			proc.mandatory(*m_BrtBeginHeaderFooter);
+		}
+
+		proc.mandatory<EndHeaderFooter>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

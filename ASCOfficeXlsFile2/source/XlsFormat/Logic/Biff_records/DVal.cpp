@@ -52,11 +52,19 @@ BaseObjectPtr DVal::clone()
 
 void DVal::readFields(CFRecord& record)
 {
-	unsigned short flags;
+	_UINT16 flags;
 	
 	record >> flags >> xLeft >> yTop >> idObj >> idvMac;
 	
 	fWnClosed = GETBIT(flags, 0);
+}
+
+void DVal::writeFields(CFRecord& record)
+{
+	_UINT16 flags = 0;
+
+	SETBIT(flags, 0, fWnClosed);
+	record << flags << xLeft << yTop << idObj << idvMac;
 }
 
 } // namespace XLS

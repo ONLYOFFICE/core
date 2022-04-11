@@ -108,14 +108,31 @@ namespace XLSB
             count--;
         }
 
-        if (proc.optional<EndDVals>())
-        {
-            m_BrtEndDVals = elements_.back();
-            elements_.pop_back();
-        }
+		if (proc.optional<EndDVals>())
+		{
+			m_bBrtEndDVals = true;
+			elements_.pop_back();
+		}
+		else
+			m_bBrtEndDVals = false;
 
-        return m_BrtBeginDVals && m_BrtEndDVals;
+        return m_BrtBeginDVals && m_bBrtEndDVals;
     }
+
+	const bool DVALS::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginDVals != nullptr)
+			proc.mandatory(*m_BrtBeginDVals);
+
+		for(auto& item : m_arBrtDVal)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndDVals>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

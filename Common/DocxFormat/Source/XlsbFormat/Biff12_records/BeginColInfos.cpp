@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new BeginColInfos(*this));
     }
 
-    void BeginColInfos::readFields(XLS::CFRecord& record)
-    {
-        //empty data
-    }
-
 } // namespace XLSB
 

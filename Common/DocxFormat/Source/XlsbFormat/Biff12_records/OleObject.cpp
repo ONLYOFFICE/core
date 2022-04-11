@@ -66,5 +66,22 @@ namespace XLSB
             record >> strRelID;
     }
 
+	void OleObject::writeFields(XLS::CFRecord& record)
+	{
+		_UINT16 flags = 0;
+
+		SETBIT(flags, 0, fLinked)
+		SETBIT(flags, 1, fAutoLoad)
+
+		record << dwAspect << dwOleUpdate << shapeId << flags;
+
+		record << strProgID;
+
+		if (fLinked != 0)
+			record << link;
+		else
+			record << strRelID;
+	}
+
 } // namespace XLSB
 

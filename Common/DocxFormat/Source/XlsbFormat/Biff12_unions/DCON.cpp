@@ -39,8 +39,9 @@ using namespace XLS;
 
 namespace XLSB
 {
+	class EndListParts;
 
-    DCON::DCON()
+	DCON::DCON()
     {
     }
 
@@ -70,12 +71,27 @@ namespace XLSB
 
         if (proc.optional<EndDCon>())
         {
-            m_BrtEndDCon = elements_.back();
+            m_bBrtEndDCon = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndDCon = false;
 
-        return m_BrtBeginDCon && m_BrtEndDCon;
+        return m_BrtBeginDCon && m_bBrtEndDCon;
     }
+
+	const bool DCON::saveContent(BinProcessor& proc)
+	{	
+    	if (m_BrtBeginDCon != nullptr)		
+			proc.mandatory(*m_BrtBeginDCon);
+
+		if (m_DREFS != nullptr)
+			proc.mandatory(*m_DREFS);
+
+		proc.mandatory<EndDCon>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

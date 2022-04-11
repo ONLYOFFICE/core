@@ -73,12 +73,29 @@ namespace XLSB
 
         if (proc.optional<EndCustomFilters>())
         {
-            m_BrtEndCustomFilters = elements_.back();
+            m_bBrtEndCustomFilters = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndCustomFilters = false;
 
-        return m_BrtBeginCustomFilters14 && m_BrtEndCustomFilters;
+        return m_BrtBeginCustomFilters14 && m_bBrtEndCustomFilters;
     }
+
+	const bool ACCUSTOMFILTER::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginCustomFilters14 != nullptr)
+			proc.mandatory(*m_BrtBeginCustomFilters14);
+
+		for (auto &item : m_arBrtCustomFilter14)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndCustomFilters>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

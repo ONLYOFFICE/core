@@ -69,5 +69,16 @@ namespace XLSB
         return m_BrtCellMeta || m_BrtValueMeta;
     }
 
+	const bool CELLMETA::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtCellMeta != nullptr)
+			proc.mandatory(*m_BrtCellMeta);
+
+		if (m_BrtValueMeta != nullptr)
+			proc.mandatory(*m_BrtValueMeta);
+
+		return true;
+	}
+
 } // namespace XLSB
 

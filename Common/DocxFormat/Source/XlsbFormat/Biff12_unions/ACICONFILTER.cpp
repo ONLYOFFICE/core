@@ -68,12 +68,27 @@ namespace XLSB
         }
         if (proc.optional<ACEnd>())
         {
-            m_BrtACEnd = elements_.back();
+            m_bBrtACEnd = true;
             elements_.pop_back();
         }
 
-        return m_BrtIconFilter14 && m_BrtACEnd;
+        return m_BrtIconFilter14 && m_bBrtACEnd;
     }
+
+	const bool ACICONFILTER::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtACBegin != nullptr)
+			proc.mandatory(*m_BrtACBegin);
+		else
+			proc.mandatory<ACBegin>();
+
+		if (m_BrtIconFilter14 != nullptr)
+			proc.mandatory(*m_BrtIconFilter14);
+
+		proc.mandatory<ACEnd>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

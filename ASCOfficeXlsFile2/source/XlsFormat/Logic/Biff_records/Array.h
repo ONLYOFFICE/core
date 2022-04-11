@@ -49,15 +49,16 @@ public:
 
 	BaseObjectPtr clone();
 	
-	void readFields(CFRecord& record);
+	void readFields(CFRecord& record) override;
+	void writeFields(CFRecord& record) override;
 	
 	static const ElementType	type = typeArray;
 
-        Ref                 ref_;
-        ArrayParsedFormula  formula;
-        bool                fAlwaysCalc;
+    Ref                 ref_;
+    ArrayParsedFormula  formula;
+    bool                fAlwaysCalc;
 
-        RFX                 rfx; //biff12
+    RFX                 rfx; //biff12
 };
 
 typedef boost::shared_ptr<Array> ArrayPtr;

@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new EndHeaderFooter(*this));
     }
 
-    void EndHeaderFooter::readFields(XLS::CFRecord& record)
-    {
-        // No data in this record
-    }
-
 } // namespace XLSB
 

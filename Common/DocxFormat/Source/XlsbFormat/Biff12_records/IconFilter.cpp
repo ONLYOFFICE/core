@@ -55,5 +55,10 @@ namespace XLSB
         record >> iIconSet >> iIcon;
     }
 
+	void IconFilter::writeFields(XLS::CFRecord& record)
+	{
+		record << iIconSet << iIcon;
+	}
+
 } // namespace XLSB
 

@@ -55,5 +55,10 @@ namespace XLSB
         record >> ivmb;
     }
 
+	void ValueMeta::writeFields(XLS::CFRecord& record)
+	{
+		record << ivmb;
+	}
+
 } // namespace XLSB
 

@@ -62,12 +62,26 @@ namespace XLSB
         }       
         if (proc.optional<FRTEnd>())
         {
-            m_BrtFRTEnd = elements_.back();
+			m_bBrtFRTEnd = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtFRTEnd = false;
 
-        return m_BrtFRTBegin && m_BrtFRTEnd;
+        return m_BrtFRTBegin && m_bBrtFRTEnd;
     }
+
+	const bool FRT::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtFRTBegin != nullptr)
+			proc.mandatory(*m_BrtFRTBegin);
+		else
+			proc.mandatory<FRTBegin>();
+
+		proc.mandatory<FRTEnd>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

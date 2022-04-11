@@ -81,18 +81,44 @@ namespace XLSB
 
         if (proc.optional<EndFilters>())
         {
-            m_BrtEndFilters = elements_.back();
+			m_bBrtEndFilters = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndFilters = false;
 
         if (proc.optional<ACEnd>())
         {
-            m_BrtACEnd = elements_.back();
+            m_bBrtACEnd = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtACEnd = false;
 
-        return m_BrtBeginFilters && m_BrtEndFilters && m_BrtACEnd;
+        return m_BrtBeginFilters && m_bBrtEndFilters && m_bBrtACEnd;
     }
+
+	const bool ACFILTERS::saveContent(BinProcessor& proc)
+	{		
+		if (m_BrtACBegin != nullptr)		
+			proc.mandatory(*m_BrtACBegin);
+		else
+			proc.mandatory<ACBegin>();
+
+		if (m_BrtBeginFilters != nullptr)
+			proc.mandatory(*m_BrtBeginFilters);
+
+		for (auto &item : m_arBrtFilter14)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndFilters>();
+
+		proc.mandatory<ACEnd>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

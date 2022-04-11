@@ -100,4 +100,14 @@ namespace XLSB
         return true;
     }
 
+	const bool DATACELL::saveContent(BinProcessor& proc)
+	{
+		if (m_source != nullptr)
+			proc.mandatory(*m_source);
+		else
+			return false;
+
+		return true;
+	}
+
 } // namespace XLSB

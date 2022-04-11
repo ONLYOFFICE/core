@@ -43,7 +43,7 @@ public:
 	CFVOParsedFormula();
 	BiffStructurePtr clone();
 	void load(CFRecord& record);
-
+	void save(CFRecord& record);
 
 };
 

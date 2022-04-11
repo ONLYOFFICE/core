@@ -229,7 +229,70 @@ namespace OOX
 
             }
         }
+		void CWorksheet::writeBin(const CPath& oPath) const
+		{
+			CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+			if (xlsb)
+			{
+				XLSB::WorkSheetStreamPtr workSheetStream(new XLSB::WorkSheetStream);
 
+				if (workSheetStream != nullptr)
+				{
+					/*if (m_oBookViews.IsInit())
+					{
+						workBookStream->m_BOOKVIEWS = XLS::BaseObjectPtr(new XLSB::BOOKVIEWS());
+						m_oBookViews->toBin(static_cast<XLSB::BOOKVIEWS*>(workBookStream->m_BOOKVIEWS.get())->m_arBrtBookView);
+					}
+					if (m_oCalcPr.IsInit())
+					{
+						m_oCalcPr->toBin(workBookStream->m_BrtCalcProp);
+					}
+					if (m_oDefinedNames.IsInit())
+					{
+						m_oDefinedNames->toBin(workBookStream->m_arBrtName);
+					}
+					if (m_oSheets.IsInit())
+					{
+						workBookStream->m_BUNDLESHS = XLS::BaseObjectPtr(new XLSB::BUNDLESHS());
+						m_oSheets->toBin(static_cast<XLSB::BUNDLESHS*>(workBookStream->m_BUNDLESHS.get())->m_arBrtBundleSh);
+					}
+					if (m_oWorkbookPr.IsInit())
+					{
+						m_oWorkbookPr->toBin(workBookStream->m_BrtWbProp);
+					}
+					if (m_oPivotCaches.IsInit())
+					{
+						m_oPivotCaches->toBin(workBookStream->m_PIVOTCACHEIDS);
+					}
+					if (m_oWorkbookProtection.IsInit())
+					{
+						if (m_oWorkbookProtection->m_oWorkbookSpinCount.IsInit() || m_oWorkbookProtection->m_oRevisionsSpinCount.IsInit())
+							m_oWorkbookProtection->toBin(workBookStream->m_BrtBookProtectionIso);
+						else
+							m_oWorkbookProtection->toBin(workBookStream->m_BrtBookProtection);
+					}
+					if (m_oExternalReferences.IsInit())
+					{
+						workBookStream->m_EXTERNALS = XLS::BaseObjectPtr(new XLSB::EXTERNALS());
+						m_oExternalReferences->toBin(static_cast<XLSB::EXTERNALS*>(workBookStream->m_EXTERNALS.get())->m_arSUP);
+					}
+					if (m_oAppName.IsInit())
+					{
+						workBookStream->m_BrtFileVersion = XLS::BaseObjectPtr(new XLSB::FileVersion());
+						static_cast<XLSB::FileVersion*>(workBookStream->m_BrtFileVersion.get())->stAppName = m_oAppName.get();
+						static_cast<XLSB::FileVersion*>(workBookStream->m_BrtFileVersion.get())->stLastEdited = L"";
+						static_cast<XLSB::FileVersion*>(workBookStream->m_BrtFileVersion.get())->stLowestEdited = L"";
+						static_cast<XLSB::FileVersion*>(workBookStream->m_BrtFileVersion.get())->stRupBuild = L"";
+					}
+
+					/*if (workBookStream->m_FRTWORKBOOK != nullptr)
+					m_oExtLst = workBookStream->m_FRTWORKBOOK;
+					*/
+				}
+				xlsb->WriteBin(oPath, workSheetStream.get());
+
+			}
+		}
 		void CWorksheet::read(const CPath& oRootPath, const CPath& oPath)
 		{
 			m_oReadPath = oPath;
@@ -807,46 +870,54 @@ namespace OOX
             bIsWritten = true;
 			if (!m_bWriteDirectlyToFile)
 			{
-				NSStringUtils::CStringBuilder sXml;
-				
-				toXMLStart(sXml);
-					toXML(sXml);
-				toXMLEnd(sXml);
 
-                //NSFile::CFileBinary::SaveToFile(oPath.GetPath(), sXml.GetData());
-                //for memory optimization fro large files
+				if (dynamic_cast<CXlsb*>(File::m_pMainDocument))
+				{
+					writeBin(oPath);
+				}
+				else
+				{
+					NSStringUtils::CStringBuilder sXml;
+					
+					toXMLStart(sXml);
+						toXML(sXml);
+					toXMLEnd(sXml);
 
-                wchar_t* pXmlData = sXml.GetBuffer();
-                LONG lwcharLen = (LONG)sXml.GetCurSize();
-                const LONG lcurrentLen = 10485760; //10 Mbyte
-                LONG nCycles = lwcharLen / lcurrentLen;
+	                //NSFile::CFileBinary::SaveToFile(oPath.GetPath(), sXml.GetData());
+	                //for memory optimization fro large files
 
-                LONG lLen = 0;
-                BYTE* pData = NULL;
-                NSFile::CFileBinary oFile;
-                oFile.CreateFileW(oPath.GetPath());
+	                wchar_t* pXmlData = sXml.GetBuffer();
+	                LONG lwcharLen = (LONG)sXml.GetCurSize();
+	                const LONG lcurrentLen = 10485760; //10 Mbyte
+	                LONG nCycles = lwcharLen / lcurrentLen;
 
-                while(nCycles--)
-                {
-                    NSFile::CUtf8Converter::GetUtf8StringFromUnicode(pXmlData, lcurrentLen, pData, lLen);
+	                LONG lLen = 0;
+	                BYTE* pData = NULL;
+	                NSFile::CFileBinary oFile;
+	                oFile.CreateFileW(oPath.GetPath());
 
-                    oFile.WriteFile(pData, lLen);
+	                while(nCycles--)
+	                {
+	                    NSFile::CUtf8Converter::GetUtf8StringFromUnicode(pXmlData, lcurrentLen, pData, lLen);
 
-                    pXmlData += lcurrentLen;
+	                    oFile.WriteFile(pData, lLen);
 
-                    RELEASEARRAYOBJECTS(pData);
-                }
+	                    pXmlData += lcurrentLen;
 
-                if(lwcharLen % lcurrentLen > 0)
-                {
-                    NSFile::CUtf8Converter::GetUtf8StringFromUnicode(pXmlData, lwcharLen % lcurrentLen, pData, lLen);
+	                    RELEASEARRAYOBJECTS(pData);
+	                }
 
-                    oFile.WriteFile(pData, lLen);
+	                if(lwcharLen % lcurrentLen > 0)
+	                {
+	                    NSFile::CUtf8Converter::GetUtf8StringFromUnicode(pXmlData, lwcharLen % lcurrentLen, pData, lLen);
 
-                    RELEASEARRAYOBJECTS(pData);
-                }
+	                    oFile.WriteFile(pData, lLen);
 
-                oFile.CloseFile();
+	                    RELEASEARRAYOBJECTS(pData);
+	                }
+
+	                oFile.CloseFile();
+				}
 
 				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 				IFileContainer::Write( oPath, oDirectory, oContent );
@@ -857,7 +928,7 @@ namespace OOX
 				oContent.Registration( type().OverrideType(), oDirectory, oRealPath.GetFilename() );
 				IFileContainer::Write( oRealPath, oDirectory, oContent );
 			}
-		}
+		}		
 		void CWorksheet::toXMLStart(NSStringUtils::CStringBuilder& writer) const
 		{
 			writer.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\

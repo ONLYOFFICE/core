@@ -103,6 +103,8 @@ namespace XLSB
             m_bBrtBeginBookViews = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginBookViews = false;
 
         int count = proc.repeated<Parenthesis_BOOKVIEWS>(0, 0);
 
@@ -118,6 +120,8 @@ namespace XLSB
             m_bBrtEndBookViews = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndBookViews = false;
 
         return m_bBrtBeginBookViews && !m_arBrtBookView.empty() && m_bBrtEndBookViews;
     }

@@ -55,5 +55,10 @@ namespace XLSB
         record >> stRelId;
     }
 
+	void LegacyDrawing::writeFields(XLS::CFRecord& record)
+	{
+		record << stRelId;
+	}
+
 } // namespace XLSB
 

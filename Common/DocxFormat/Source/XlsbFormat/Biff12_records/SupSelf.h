@@ -46,10 +46,6 @@ namespace XLSB
             ~SupSelf();
 
             XLS::BaseObjectPtr clone();
-
-            void readFields(XLS::CFRecord& record) override;
-			void writeFields(XLS::CFRecord& record) override;
-
     };
 
 } // namespace XLSB

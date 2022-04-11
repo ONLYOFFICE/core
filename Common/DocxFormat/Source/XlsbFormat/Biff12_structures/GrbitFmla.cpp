@@ -57,11 +57,19 @@ namespace XLSB
 
     void GrbitFmla::load(XLS::CFRecord& record)
     {
-        unsigned short flags;
+        _UINT16 flags;
         record >> flags;
 
-        fAlwaysCalc   = GETBIT(fAlwaysCalc, 1);
+        fAlwaysCalc   = GETBIT(flags, 1);
     }
+
+	void GrbitFmla::save(XLS::CFRecord& record)
+	{
+		_UINT16 flags = 0;
+
+		SETBIT(flags, 1, fAlwaysCalc);
+		record >> flags;
+	}
 
 } // namespace XLSB
 

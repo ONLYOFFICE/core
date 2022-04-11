@@ -55,5 +55,10 @@ namespace XLSB
         record >> rfx;
     }
 
+	void BeginAFilter::writeFields(XLS::CFRecord& record)
+	{
+		record << rfx;
+	}
+
 } // namespace XLSB
 

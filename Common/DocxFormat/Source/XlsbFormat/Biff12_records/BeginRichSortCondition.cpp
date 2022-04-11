@@ -56,5 +56,11 @@ namespace XLSB
         record >> stSsList >> key;
     }
 
+	void BeginRichSortCondition::writeFields(XLS::CFRecord& record)
+	{
+		record.reserveNunBytes(26); // unused
+		record << stSsList << key;
+	}
+
 } // namespace XLSB
 

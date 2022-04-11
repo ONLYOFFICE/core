@@ -57,5 +57,12 @@ namespace XLSB
         record >> dntChecked;
     }
 
+	void AFilterDateGroupItem::writeFields(XLS::CFRecord& record)
+	{
+		record << yr << mon << dom << hour << min << sec;
+		record.reserveNunBytes(6);
+		record << dntChecked;
+	}
+
 } // namespace XLSB
 

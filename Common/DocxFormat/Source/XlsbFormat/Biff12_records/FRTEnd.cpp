@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new FRTEnd(*this));
     }
 
-    void FRTEnd::readFields(XLS::CFRecord& record)
-    {
-        // No data in this record
-    }
-
 } // namespace XLSB
 

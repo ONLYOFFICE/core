@@ -55,5 +55,10 @@ namespace XLSB
         record >> fAnd;
     }
 
+	void BeginCustomRichFilters::writeFields(XLS::CFRecord& record)
+	{
+		record << fAnd;
+	}
+
 } // namespace XLSB
 

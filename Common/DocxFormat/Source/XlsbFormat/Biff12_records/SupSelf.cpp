@@ -50,15 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new SupSelf(*this));
     }
 
-    void SupSelf::readFields(XLS::CFRecord& record)
-    {
-       //empty data
-    }
-
-	void SupSelf::writeFields(XLS::CFRecord& record)
-	{
-		//empty data
-	}
-
 } // namespace XLSB
 

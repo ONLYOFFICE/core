@@ -57,5 +57,12 @@ namespace XLSB
         record >> dntChecked >> key;
     }
 
+	void RichFilterDateGroupItem::writeFields(XLS::CFRecord& record)
+	{
+		record << yr << mon << dom << hour << min << sec;
+		record.reserveNunBytes(6);
+		record << dntChecked << key;
+	}
+
 } // namespace XLSB
 

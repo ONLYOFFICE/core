@@ -63,6 +63,8 @@ namespace XLSB
             m_bBrtBeginExternals = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginExternals = false;
 
         int countSUP = proc.repeated<SUP>(0, 0);
         while(!elements_.empty())
@@ -82,6 +84,8 @@ namespace XLSB
 			m_bBrtEndExternals = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndExternals = false;
 
         return m_bBrtBeginExternals || countSUP > 0 || m_BrtExternSheet || m_bBrtEndExternals;
     }

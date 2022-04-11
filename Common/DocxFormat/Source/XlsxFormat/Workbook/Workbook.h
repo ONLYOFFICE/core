@@ -329,6 +329,70 @@ namespace OOX
 
                 }
             }
+			void writeBin(const CPath& oPath) const
+			{
+				CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+				if (xlsb)
+				{
+					XLSB::WorkBookStreamPtr workBookStream(new XLSB::WorkBookStream);
+
+					if (workBookStream != nullptr)
+					{
+						if (m_oBookViews.IsInit())
+						{
+							workBookStream->m_BOOKVIEWS = XLS::BaseObjectPtr(new XLSB::BOOKVIEWS());
+							m_oBookViews->toBin(static_cast<XLSB::BOOKVIEWS*>(workBookStream->m_BOOKVIEWS.get())->m_arBrtBookView);
+						}
+						if (m_oCalcPr.IsInit())
+						{
+							m_oCalcPr->toBin(workBookStream->m_BrtCalcProp);
+						}
+						if (m_oDefinedNames.IsInit())
+						{
+							m_oDefinedNames->toBin(workBookStream->m_arBrtName);
+						}
+						if (m_oSheets.IsInit())
+						{
+							workBookStream->m_BUNDLESHS = XLS::BaseObjectPtr(new XLSB::BUNDLESHS());
+							m_oSheets->toBin(static_cast<XLSB::BUNDLESHS*>(workBookStream->m_BUNDLESHS.get())->m_arBrtBundleSh);
+						}
+						if (m_oWorkbookPr.IsInit())
+						{
+							m_oWorkbookPr->toBin(workBookStream->m_BrtWbProp);
+						}
+						if (m_oPivotCaches.IsInit())
+						{
+							m_oPivotCaches->toBin(workBookStream->m_PIVOTCACHEIDS);
+						}
+						if (m_oWorkbookProtection.IsInit())
+						{
+							if (m_oWorkbookProtection->m_oWorkbookSpinCount.IsInit() || m_oWorkbookProtection->m_oRevisionsSpinCount.IsInit())
+								m_oWorkbookProtection->toBin(workBookStream->m_BrtBookProtectionIso);
+							else
+								m_oWorkbookProtection->toBin(workBookStream->m_BrtBookProtection);
+						}
+						if (m_oExternalReferences.IsInit())
+						{
+							workBookStream->m_EXTERNALS = XLS::BaseObjectPtr(new XLSB::EXTERNALS());
+							m_oExternalReferences->toBin(static_cast<XLSB::EXTERNALS*>(workBookStream->m_EXTERNALS.get())->m_arSUP);
+						}
+						if (m_oAppName.IsInit())
+						{
+							workBookStream->m_BrtFileVersion = XLS::BaseObjectPtr(new XLSB::FileVersion());
+							static_cast<XLSB::FileVersion*>(workBookStream->m_BrtFileVersion.get())->stAppName = m_oAppName.get();
+							static_cast<XLSB::FileVersion*>(workBookStream->m_BrtFileVersion.get())->stLastEdited = L"";
+							static_cast<XLSB::FileVersion*>(workBookStream->m_BrtFileVersion.get())->stLowestEdited = L"";
+							static_cast<XLSB::FileVersion*>(workBookStream->m_BrtFileVersion.get())->stRupBuild = L"";
+						}
+
+						/*if (workBookStream->m_FRTWORKBOOK != nullptr)
+						m_oExtLst = workBookStream->m_FRTWORKBOOK;
+						*/
+					}
+					xlsb->WriteBin(oPath, workBookStream.get());
+
+				}
+			}
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -462,70 +526,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 				IFileContainer::Write( oPath, oDirectory, oContent );
 			}
-			void writeBin(const CPath& oPath) const
-			{
-				CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
-				if (xlsb)
-				{
-					XLSB::WorkBookStreamPtr workBookStream(new XLSB::WorkBookStream);					
-
-					if (workBookStream != nullptr)
-					{
-						if (m_oBookViews.IsInit())
-						{
-							workBookStream->m_BOOKVIEWS = XLS::BaseObjectPtr(new XLSB::BOOKVIEWS());
-							m_oBookViews->toBin(static_cast<XLSB::BOOKVIEWS*>(workBookStream->m_BOOKVIEWS.get())->m_arBrtBookView);
-						}
-						if (m_oCalcPr.IsInit())
-						{							
-							m_oCalcPr->toBin(workBookStream->m_BrtCalcProp);
-						}
-						if (m_oDefinedNames.IsInit())
-						{
-							m_oDefinedNames->toBin(workBookStream->m_arBrtName);
-						}
-						if (m_oSheets.IsInit())
-						{
-							workBookStream->m_BUNDLESHS = XLS::BaseObjectPtr(new XLSB::BUNDLESHS());
-							m_oSheets->toBin(static_cast<XLSB::BUNDLESHS*>(workBookStream->m_BUNDLESHS.get())->m_arBrtBundleSh);
-						}
-						if (m_oWorkbookPr.IsInit())
-						{
-							m_oWorkbookPr->toBin(workBookStream->m_BrtWbProp);
-						}
-						if (m_oPivotCaches.IsInit())
-						{
-							m_oPivotCaches->toBin(workBookStream->m_PIVOTCACHEIDS);
-						}
-						if (m_oWorkbookProtection.IsInit())
-						{
-							if (m_oWorkbookProtection->m_oWorkbookSpinCount.IsInit() || m_oWorkbookProtection->m_oRevisionsSpinCount.IsInit())
-								m_oWorkbookProtection->toBin(workBookStream->m_BrtBookProtectionIso);
-							else
-								m_oWorkbookProtection->toBin(workBookStream->m_BrtBookProtection);
-						}
-						if (m_oExternalReferences.IsInit())
-						{
-							workBookStream->m_EXTERNALS = XLS::BaseObjectPtr(new XLSB::EXTERNALS());
-							m_oExternalReferences->toBin(static_cast<XLSB::EXTERNALS*>(workBookStream->m_EXTERNALS.get())->m_arSUP);
-						}
-						if (m_oAppName.IsInit())
-						{
-							workBookStream->m_BrtFileVersion = XLS::BaseObjectPtr(new XLSB::FileVersion());
-							static_cast<XLSB::FileVersion*>(workBookStream->m_BrtFileVersion.get())->stAppName = m_oAppName.get();
-							static_cast<XLSB::FileVersion*>(workBookStream->m_BrtFileVersion.get())->stLastEdited = L"";
-							static_cast<XLSB::FileVersion*>(workBookStream->m_BrtFileVersion.get())->stLowestEdited = L"";
-							static_cast<XLSB::FileVersion*>(workBookStream->m_BrtFileVersion.get())->stRupBuild = L"";
-						}
-
-						/*if (workBookStream->m_FRTWORKBOOK != nullptr)
-							m_oExtLst = workBookStream->m_FRTWORKBOOK;
-							*/
-					}
-					xlsb->WriteBin(oPath, workBookStream.get());					
-
-				}
-			}
+			
 			virtual const OOX::FileType type() const
 			{
 				if (m_bMacroEnabled)	return OOX::Spreadsheet::FileTypes::WorkbookMacro;

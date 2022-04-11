@@ -47,14 +47,15 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+        const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         static const XLS::ElementType	type = XLS::typeCONDITIONALFORMATTING;
 
         XLS::BaseObjectPtr               m_BrtBeginConditionalFormatting;
         std::vector<XLS::BaseObjectPtr>  m_arCFRULE;
         //std::vector<XLS::BaseObjectPtr>  m_arFRT;
-        XLS::BaseObjectPtr               m_BrtEndConditionalFormatting;
+        bool							 m_bBrtEndConditionalFormatting;
 
     };
 

@@ -89,10 +89,15 @@ namespace XLSB
                 return XLS::BaseObjectPtr(new Fmla_T<T, id>(*this));
             }
 
-            void readFields(XLS::CFRecord& record)
+            void readFields(XLS::CFRecord& record) override
             {
                 record >> cell >> value >> grbitFlags >> formula;
             }
+
+			void writeFields(XLS::CFRecord& record) override
+			{
+				record << cell << value << grbitFlags << formula;
+			}
 
             T   value;
     };

@@ -52,11 +52,20 @@ namespace XLSB
 
     void DynamicFilter::readFields(XLS::CFRecord& record)
     {
-        unsigned char flags;
+        BYTE flags;
         record >> cft >> flags >> xNumValue >> xNumValueMax;
 
         fApplied = GETBIT(flags, 0);
     }
+
+	void DynamicFilter::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+
+		SETBIT(flags, 0, fApplied);
+		record << cft << flags << xNumValue << xNumValueMax;
+
+	}
 
 } // namespace XLSB
 

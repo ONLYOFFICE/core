@@ -50,15 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new EndBundleShs(*this));
     }
 
-    void EndBundleShs::readFields(XLS::CFRecord& record)
-    {
-        //empty data
-    }
-
-	void EndBundleShs::writeFields(XLS::CFRecord& record)
-	{
-		//empty data
-	}
-
 } // namespace XLSB
 

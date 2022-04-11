@@ -55,5 +55,10 @@ namespace XLSB
         record >> strDvalList;
     }
 
+	void DValList::writeFields(XLS::CFRecord& record)
+	{
+		record << strDvalList;
+	}
+
 } // namespace XLSB
 

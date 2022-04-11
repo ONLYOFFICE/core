@@ -58,5 +58,13 @@ namespace XLSB
             record >> formula;
     }
 
+	void CFVO::writeFields(XLS::CFRecord& record)
+	{
+		record << iType << numParam << fSaveGTE << fGTE << cbFmla;
+
+		if (cbFmla)
+			record << formula;
+	}
+
 } // namespace XLSB
 

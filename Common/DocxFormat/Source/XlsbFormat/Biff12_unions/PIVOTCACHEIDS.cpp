@@ -61,6 +61,8 @@ namespace XLSB
 			m_bBrtBeginPivotCacheIDs = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginPivotCacheIDs = false;
 
         auto count = proc.repeated<PIVOTCACHEID>(0, 0);
         while(count > 0)
@@ -75,6 +77,8 @@ namespace XLSB
             m_bBrtEndPivotCacheIDs = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndPivotCacheIDs = false;
 
         return m_bBrtBeginPivotCacheIDs && m_bBrtEndPivotCacheIDs;
     }

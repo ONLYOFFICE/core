@@ -55,5 +55,10 @@ namespace XLSB
         record >> rgch;
     }
 
+	void Filter::writeFields(XLS::CFRecord& record)
+	{
+		record << rgch;
+	}
+
 } // namespace XLSB
 

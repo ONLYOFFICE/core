@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new EndMergeCells(*this));
     }
 
-    void EndMergeCells::readFields(XLS::CFRecord& record)
-    {
-        //empty data
-    }
-
 } // namespace XLSB
 

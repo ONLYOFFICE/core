@@ -45,7 +45,8 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+        const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         static const XLS::ElementType	type = XLS::typeWSVIEW2;
 
@@ -54,7 +55,7 @@ namespace XLSB
         XLS::BaseObjectPtr               m_BrtPane;
         std::vector<XLS::BaseObjectPtr>  m_arBrtSel;
         //std::vector<XLS::BaseObjectPtr>  m_arFRT;
-        XLS::BaseObjectPtr               m_BrtEndWsView;
+        bool			                 m_bBrtEndWsView;
 
     };
 

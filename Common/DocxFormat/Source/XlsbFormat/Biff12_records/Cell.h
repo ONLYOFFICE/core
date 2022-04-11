@@ -79,12 +79,19 @@ class Cell_T: public CellBase, public XLS::BiffRecord
             return XLS::BaseObjectPtr(new Cell_T<T, id>(*this));
         }
 
-        void readFields(XLS::CFRecord& record)
+        void readFields(XLS::CFRecord& record) override
         {
             record >> cell;
             if(id != rt_CellBlank)
                 record >> value;
         }
+
+		void writeFields(XLS::CFRecord& record) override
+		{
+			record << cell;
+			if (id != rt_CellBlank)
+				record << value;
+		}
 
         T value;
 };

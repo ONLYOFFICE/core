@@ -42,8 +42,8 @@ class CFParsedFormula : public ParsedFormula
 public:
 	CFParsedFormula(const CellRef& cell_base_ref);
 	BiffStructurePtr clone();
-	virtual void load(CFRecord& record);
-
+	void load(CFRecord& record) override;
+	void save(CFRecord& record) override;
 
 };
 

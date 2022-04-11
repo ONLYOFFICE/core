@@ -50,9 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new BeginActiveXControls(*this));
     }
 
-    void BeginActiveXControls::readFields(XLS::CFRecord& record)
-    {
-    }
-
 } // namespace XLSB
 

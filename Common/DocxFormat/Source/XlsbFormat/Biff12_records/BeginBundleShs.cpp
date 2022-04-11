@@ -49,16 +49,6 @@ namespace XLSB
     {
         return BaseObjectPtr(new BeginBundleShs(*this));
     }
-
-    void BeginBundleShs::readFields(XLS::CFRecord& record)
-    {
-        //empty data
-    }
-
-	void BeginBundleShs::writeFields(XLS::CFRecord& record)
-	{
-		//empty data
-	}
-
+	
 } // namespace XLSB
 

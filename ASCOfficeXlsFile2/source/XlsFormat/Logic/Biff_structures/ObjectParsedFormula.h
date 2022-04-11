@@ -44,7 +44,8 @@ class ObjectParsedFormula : public ParsedFormula
 public:
 	ObjectParsedFormula();
 	BiffStructurePtr clone();
-	virtual void load(CFRecord& record);
+	void load(CFRecord& record) override;
+	void save(CFRecord& record) override;
 };
 
 } // namespace XLS

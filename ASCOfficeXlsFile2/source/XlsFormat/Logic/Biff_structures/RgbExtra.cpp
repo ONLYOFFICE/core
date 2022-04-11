@@ -58,6 +58,12 @@ void RgbExtra::load(CFRecord& record)
 
 void RgbExtra::save(CFRecord& record)
 {
+	while (!ptg_records.empty())
+	{
+		auto& front = ptg_records.front();
+		front->save(record);
+		ptg_records.pop();
+	}
 }
 
 

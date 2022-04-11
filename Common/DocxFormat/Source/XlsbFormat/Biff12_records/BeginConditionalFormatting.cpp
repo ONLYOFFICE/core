@@ -55,5 +55,10 @@ namespace XLSB
         record >> ccf >> fPivot >> sqrfx;
     }
 
+	void BeginConditionalFormatting::writeFields(XLS::CFRecord& record)
+	{
+		record << ccf << fPivot << sqrfx;
+	}
+
 } // namespace XLSB
 

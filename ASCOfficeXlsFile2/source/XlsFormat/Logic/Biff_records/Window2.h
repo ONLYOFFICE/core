@@ -48,9 +48,10 @@ public:
 
 	BaseObjectPtr clone();
 	
-	void readFields(CFRecord& record);
+	void readFields(CFRecord& record) override;
+	void writeFields(CFRecord& record) override;
 
-        static const ElementType	type = typeWindow2;
+    static const ElementType	type = typeWindow2;
 
     bool fDspFmlaRt; //fDspFmla in biff12
     bool fDspGridRt; //fDspGrid in biff12

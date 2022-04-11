@@ -91,6 +91,8 @@ const bool WorkBookStream::loadContent(BinProcessor& proc)
 					m_bBeginBook = true;
                     elements_.pop_back();
                 }
+				else
+					m_bBeginBook = false;
             }break;
 
             case rt_FileVersion:
@@ -304,6 +306,8 @@ const bool WorkBookStream::loadContent(BinProcessor& proc)
 					m_bEndBook = true;
                     elements_.pop_back();
                 }
+				else
+					m_bEndBook = false;
             }break;
 
 			default://skip					

@@ -50,14 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new BeginExternals(*this));
     }
 
-    void BeginExternals::readFields(XLS::CFRecord& record)
-    {
-        //empty data
-    }
-	void BeginExternals::writeFields(XLS::CFRecord& record)
-	{
-		//empty data
-	}
-
 } // namespace XLSB
 

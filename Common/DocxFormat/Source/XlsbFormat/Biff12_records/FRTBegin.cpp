@@ -55,5 +55,10 @@ namespace XLSB
         record >> productVersion;
     }
 
+	void FRTBegin::writeFields(XLS::CFRecord& record)
+	{
+		record << productVersion;
+	}
+
 } // namespace XLSB
 

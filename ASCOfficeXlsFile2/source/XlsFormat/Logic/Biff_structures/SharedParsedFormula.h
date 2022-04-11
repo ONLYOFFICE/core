@@ -45,7 +45,8 @@ public:
 	SharedParsedFormula(const bool is_part_of_a_revision, const CellRef& cell_base_ref);
 	BiffStructurePtr clone();
 	
-	virtual void load(CFRecord& record);
+	void load(CFRecord& record) override;
+	void save(CFRecord& record) override;
 
 
 	bool is_part_of_a_revision_;

@@ -61,5 +61,13 @@ namespace XLSB
         record >> ipdPasswordData;
     }
 
+	void SheetProtectionIso::writeFields(XLS::CFRecord& record)
+	{
+		record << dwSpinCount;
+		record << fLocked << fObjects << fScenarios << fFormatCells << fFormatColumns << fFormatRows << fInsertColumns << fInsertRows;
+		record << fInsertHyperlinks << fDeleteColumns << fDeleteRows << fSelLockedCells << fSort << fAutoFilter << fPivotTables << fSelUnlockedCells;
+		record << ipdPasswordData;
+	}
+
 } // namespace XLSB
 

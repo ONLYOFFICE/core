@@ -49,12 +49,13 @@ namespace XLSB
 
             XLS::BaseObjectPtr clone();
 
-            void readFields(XLS::CFRecord& record);
+            void readFields(XLS::CFRecord& record) override;
+			void writeFields(XLS::CFRecord& record) override;
 
             static const XLS::ElementType	type = XLS::typeBeginConditionalFormatting;
 
             _UINT32                     ccf;
-            XLS::Boolean<unsigned int>  fPivot;
+            XLS::Boolean<_UINT32>		fPivot;
             UncheckedSqRfX              sqrfx;
     };
 

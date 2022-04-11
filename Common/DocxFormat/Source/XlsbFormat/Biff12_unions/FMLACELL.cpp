@@ -98,5 +98,15 @@ namespace XLSB
         return true;
     }
 
+	const bool FMLACELL::saveContent(BinProcessor& proc)
+	{
+		if (m_source != nullptr)
+			proc.mandatory(*m_source);
+		else
+			return false;
+
+		return true;
+	}
+
 } // namespace XLSB
 

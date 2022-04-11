@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new EndFilters(*this));
     }
 
-    void EndFilters::readFields(XLS::CFRecord& record)
-    {
-        // No data in this record
-    }
-
 } // namespace XLSB
 

@@ -48,15 +48,5 @@ namespace XLSB
         return XLS::BaseObjectPtr(new SupAddin(*this));
     }
 
-    void SupAddin::readFields(XLS::CFRecord& record)
-    {
-       //empty data
-    }
-
-	void SupAddin::writeFields(XLS::CFRecord& record)
-	{
-		//empty data
-	}
-
 } // namespace XLSB
 

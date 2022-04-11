@@ -63,12 +63,26 @@ namespace XLSB
 
         if (proc.optional<EndRichSortCondition>())
         {
-            m_BrtEndRichSortCondition = elements_.back();
+			m_bBrtEndRichSortCondition = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndRichSortCondition = false;
 
-        return m_BrtBeginRichSortCondition && m_BrtEndRichSortCondition;
+        return m_BrtBeginRichSortCondition && m_bBrtEndRichSortCondition;
     }
+
+	const bool RICHSORTCONDITION::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginRichSortCondition != nullptr)
+		{
+			proc.mandatory(*m_BrtBeginRichSortCondition);
+		}
+
+		proc.mandatory<EndRichSortCondition>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

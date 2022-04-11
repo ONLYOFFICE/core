@@ -82,5 +82,16 @@ namespace XLSB
         return true;
     }
 
+	const bool SHRFMLACELL::saveContent(BinProcessor& proc)
+	{
+		if(_fmlacell != nullptr)
+			proc.mandatory(*_fmlacell);
+
+		if (m_source != nullptr)
+			proc.mandatory(*m_source);
+
+		return true;
+	}
+
 } // namespace XLSB
 

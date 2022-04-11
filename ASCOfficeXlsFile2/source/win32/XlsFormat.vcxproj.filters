@@ -2437,6 +2437,9 @@
     <ClInclude Include="..\XlsFormat\Logic\Biff_structures\PtgExtraList.h">
       <Filter>Logic\Biff_structures</Filter>
     </ClInclude>
+    <ClInclude Include="..\XlsFormat\Binary\CFStreamCacheWriter.h">
+      <Filter>Binary</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\XlsFormat\Binary\CFRecord.cpp">
@@ -4790,6 +4793,9 @@
     </ClCompile>
     <ClCompile Include="..\XlsFormat\Logic\Biff_structures\PtgExtraList.cpp">
       <Filter>Logic\Biff_structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsFormat\Binary\CFStreamCacheWriter.cpp">
+      <Filter>Binary</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

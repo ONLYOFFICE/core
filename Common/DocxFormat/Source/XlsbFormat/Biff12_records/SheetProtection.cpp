@@ -57,5 +57,12 @@ namespace XLSB
         record >> fInsertHyperlinks >> fDeleteColumns >> fDeleteRows >> fSelLockedCells >> fSort >> fAutoFilter >> fPivotTables >> fSelUnlockedCells;
     }
 
+	void SheetProtection::writeFields(XLS::CFRecord& record)
+	{
+		record << protpwd;
+		record << fLocked << fObjects << fScenarios << fFormatCells << fFormatColumns << fFormatRows << fInsertColumns << fInsertRows;
+		record << fInsertHyperlinks << fDeleteColumns << fDeleteRows << fSelLockedCells << fSort << fAutoFilter << fPivotTables << fSelUnlockedCells;
+	}
+
 } // namespace XLSB
 

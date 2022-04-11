@@ -75,12 +75,39 @@ namespace XLSB
 
         if (proc.optional<EndMergeCells>())
         {
-            m_BrtEndMergeCells = elements_.back();
+			m_bBrtEndMergeCells = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndMergeCells = false;
 
-        return m_BrtBeginMergeCells && !m_arBrtMergeCell.empty() && m_BrtEndMergeCells;
+        return m_BrtBeginMergeCells && !m_arBrtMergeCell.empty() && m_bBrtEndMergeCells;
     }
+
+	const bool MERGECELLS::saveContent(BinProcessor& proc)
+	{
+		if(m_BrtBeginMergeCells == nullptr)
+			m_BrtBeginMergeCells = XLS::BaseObjectPtr(new XLSB::BeginMergeCells());
+
+		if (m_BrtBeginMergeCells != nullptr)
+		{
+			auto ptrBrtBeginMergeCells = static_cast<XLSB::BeginMergeCells*>(m_BrtBeginMergeCells.get());
+
+			if (ptrBrtBeginMergeCells != nullptr)
+				ptrBrtBeginMergeCells->cmcs = m_arBrtMergeCell.size();
+
+			proc.mandatory(*m_BrtBeginMergeCells);
+		}
+
+		for (auto &item : m_arBrtMergeCell)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndMergeCells>();
+
+		return true;
+	}	
 
 } // namespace XLSB
 

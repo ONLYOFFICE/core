@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new EndFnGroup(*this));
     }
 
-    void EndFnGroup::readFields(XLS::CFRecord& record)
-    {
-        //empty data
-    }
-
 } // namespace XLSB
 

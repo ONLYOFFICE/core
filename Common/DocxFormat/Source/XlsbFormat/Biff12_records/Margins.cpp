@@ -55,5 +55,10 @@ namespace XLSB
         record >> xnumLeft >> xnumRight >> xnumTop >> xnumBottom >> xnumHeader >> xnumFooter;
     }
 
+	void Margins::writeFields(XLS::CFRecord& record)
+	{
+		record << xnumLeft << xnumRight << xnumTop << xnumBottom << xnumHeader << xnumFooter;
+	}
+
 } // namespace XLSB
 

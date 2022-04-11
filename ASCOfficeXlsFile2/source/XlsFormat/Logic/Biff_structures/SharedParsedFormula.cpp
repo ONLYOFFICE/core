@@ -52,7 +52,7 @@ void SharedParsedFormula::load(CFRecord& record)
 {	
     if (record.getGlobalWorkbookInfo()->Version < 0x0800)
     {
-        unsigned short cce;
+        _UINT16 cce;
         record >> cce;
 
         rgce.load(record, cce);
@@ -60,18 +60,66 @@ void SharedParsedFormula::load(CFRecord& record)
     }
     else
     {
-        unsigned int cce;
+		_UINT32 cce;
         record >> cce;
 
         rgce.load(record, cce);
 
-        unsigned int cb;
+		_UINT32 cb;
         record >> cb;
 
         if(cb > 0)
             rgcb.load(record, rgce.getPtgs(), is_part_of_a_revision_);
 
     }
+}
+
+void SharedParsedFormula::save(CFRecord& record)
+{
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		_UINT16 size = 0;
+		auto saving = [&](BiffStructure& rgceORrgb)
+		{
+			record << size;
+
+			auto rdPtr = record.getRdPtr();
+
+			rgceORrgb.save(record);
+
+			size = record.getRdPtr() - rdPtr;
+
+			record.RollRdPtrBack(size + 4);
+			record << size;
+			record.skipNunBytes(size);
+		};
+
+		saving(rgce);
+		rgcb.save(record);
+	}
+	else
+	{
+		_UINT32 size = 0;
+
+		auto saving = [&](BiffStructure& rgceORrgb)
+		{
+			record << size;
+
+			auto rdPtr = record.getRdPtr();
+
+			rgceORrgb.save(record);
+
+			size = record.getRdPtr() - rdPtr;
+
+			record.RollRdPtrBack(size + 4);
+			record << size;
+			record.skipNunBytes(size);
+		};
+
+		saving(rgce);
+		saving(rgcb);
+	}
+	
 }
 
 } // namespace XLS

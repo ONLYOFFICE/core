@@ -63,35 +63,31 @@ void NameParsedFormula::load(CFRecord& record)
     record >> _cce;
     rgce.load(record, _cce);
     record >> _cb;
-    rgcb.load(record, rgce.getPtgs(), is_part_of_a_revision_);
+	if (_cb > 0)
+		rgcb.load(record, rgce.getPtgs(), is_part_of_a_revision_);
 }
 
 void NameParsedFormula::save(CFRecord& record)
 {
-	_UINT32 _cce = 0, _cb = 0;
+	_UINT32 size = 0;	
 
-	record << _cce;
-
-	auto rdPtr = record.getRdPtr();
-
-    rgce.save(record);
-
-	_UINT32 checkSize = 0;
-	for (auto& item : rgce.getPtgs())
-		checkSize += item->getSizeOfStruct();
-
-	_cce = record.getRdPtr() - rdPtr;
-
-	if(checkSize != _cce)
+	auto saving = [&](BiffStructure& rgceORrgb)
 	{
-		//throw
-	}
-	record.RollRdPtrBack(_cce + 4);
-	record << _cce;
-	record.skipNunBytes(_cce);
+		record << size;
 
-    //rgcb.save(record);
+		auto rdPtr = record.getRdPtr();
 
+		rgceORrgb.save(record);
+
+		size = record.getRdPtr() - rdPtr;
+
+		record.RollRdPtrBack(size + 4);
+		record << size;
+		record.skipNunBytes(size);
+	};
+
+	saving(rgce);
+	saving(rgcb);
 }
 
 } // namespace XLS

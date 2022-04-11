@@ -95,12 +95,32 @@ namespace XLSB
 
         if (proc.optional<EndWsView>())
         {
-            m_BrtEndWsView = elements_.back();
+			m_bBrtEndWsView = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndWsView = false;
 
-        return m_BrtBeginWsView && (!m_arBrtSel.empty() || m_BrtPane) && m_BrtEndWsView;
+        return m_BrtBeginWsView && (!m_arBrtSel.empty() || m_BrtPane) && m_bBrtEndWsView;
     }
+
+	const bool WSVIEW2::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginWsView != nullptr)
+			proc.mandatory(*m_BrtBeginWsView);
+
+		if (m_BrtPane != nullptr)
+			proc.mandatory(*m_BrtPane);
+
+		for (auto &item : m_arBrtSel)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndWsView>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

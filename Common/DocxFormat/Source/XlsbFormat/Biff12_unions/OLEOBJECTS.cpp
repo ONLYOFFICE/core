@@ -56,11 +56,13 @@ namespace XLSB
     //OLEOBJECTS = BrtBeginOleObjects 1*BrtOleObject BrtEndOleObjects
     const bool OLEOBJECTS::loadContent(BinProcessor& proc)
     {
-        if (proc.optional<BeginOleObjects>())
-        {
-            m_BrtBeginOleObjects = elements_.back();
-            elements_.pop_back();
-        }
+		if (proc.optional<BeginOleObjects>())
+		{
+			m_bBrtBeginOleObjects = true;
+			elements_.pop_back();
+		}
+		else
+			m_bBrtBeginOleObjects = false;
 
         auto count = proc.repeated<OleObject>(0, 0);
         while(count > 0)
@@ -70,14 +72,30 @@ namespace XLSB
             count--;
         }
 
-        if (proc.optional<EndOleObjects>())
-        {
-            m_BrtEndOleObjects = elements_.back();
-            elements_.pop_back();
-        }
+		if (proc.optional<EndOleObjects>())
+		{
+			m_bBrtEndOleObjects = true;
+			elements_.pop_back();
+		}
+		else
+			m_bBrtEndOleObjects = false;
 
-        return m_BrtBeginOleObjects && !m_arBrtOleObject.empty() && m_BrtEndOleObjects;
+        return m_bBrtBeginOleObjects && !m_arBrtOleObject.empty() && m_bBrtEndOleObjects;
     }
+
+	const bool OLEOBJECTS::saveContent(BinProcessor& proc)
+	{
+		proc.mandatory<BeginOleObjects>();
+
+		for(auto& item : m_arBrtOleObject)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndOleObjects>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

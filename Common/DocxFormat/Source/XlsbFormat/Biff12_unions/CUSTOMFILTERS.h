@@ -45,13 +45,14 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+        const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         static const XLS::ElementType	type = XLS::typeCUSTOMFILTERS;
 
         XLS::BaseObjectPtr              m_BrtBeginCustomFilters;
         std::vector<XLS::BaseObjectPtr>	m_arBrtCustomFilter;
-        XLS::BaseObjectPtr              m_BrtEndCustomFilters;
+        bool							m_bBrtEndCustomFilters;
 
     };
 

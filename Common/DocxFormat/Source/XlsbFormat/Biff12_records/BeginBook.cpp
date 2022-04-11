@@ -50,15 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new BeginBook(*this));
     }
 
-    void BeginBook::readFields(XLS::CFRecord& record)
-    {
-        // No data in this record
-    }
-
-	void BeginBook::writeFields(XLS::CFRecord& record)
-	{
-		// No data in this record
-	}
-
 } // namespace XLSB
 

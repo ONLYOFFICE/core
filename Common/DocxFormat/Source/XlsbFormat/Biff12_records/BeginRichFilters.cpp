@@ -56,5 +56,11 @@ namespace XLSB
         record.skipNunBytes(4); // unused
     }
 
+	void BeginRichFilters::writeFields(XLS::CFRecord& record)
+	{
+		record << fBlank;
+		record.reserveNunBytes(4); // unused
+	}
+
 } // namespace XLSB
 

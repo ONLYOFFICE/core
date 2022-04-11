@@ -49,11 +49,6 @@ namespace XLSB
     {
         return BaseObjectPtr(new EndDCon(*this));
     }
-
-    void EndDCon::readFields(XLS::CFRecord& record)
-    {
-        // No data in this record
-    }
-
+	
 } // namespace XLSB
 

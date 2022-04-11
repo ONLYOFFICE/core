@@ -295,6 +295,30 @@ const std::wstring guidFromStr(const std::wstring & guid_str)
 
 const bool bstr2guid(const std::wstring & guid_str, _GUID_& guid)
 {
+	std::wstring  guid_str_copy = guid_str;
+
+	if(*guid_str_copy.begin() == L'{')
+		guid_str_copy.erase(guid_str_copy.begin());
+
+	if (*(guid_str_copy.end() - 1) == L'}')
+		guid_str_copy.erase(guid_str_copy.end() - 1);
+
+	guid.Data1 = hex_str2int(guid_str_copy.substr(0, 8));
+
+	guid.Data2 = hex_str2int(guid_str_copy.substr(9, 4));
+
+	guid.Data3 = hex_str2int(guid_str_copy.substr(14, 4));
+
+	guid.Data4[0] = hex_str2int(guid_str_copy.substr(19, 2));
+	guid.Data4[1] = hex_str2int(guid_str_copy.substr(21, 2));
+
+	guid.Data4[2] = hex_str2int(guid_str_copy.substr(24, 2));
+	guid.Data4[3] = hex_str2int(guid_str_copy.substr(26, 2));
+	guid.Data4[4] = hex_str2int(guid_str_copy.substr(28, 2));
+	guid.Data4[5] = hex_str2int(guid_str_copy.substr(30, 2));
+	guid.Data4[6] = hex_str2int(guid_str_copy.substr(32, 2));
+	guid.Data4[7] = hex_str2int(guid_str_copy.substr(34, 2));
+
 	return false;
 }
 

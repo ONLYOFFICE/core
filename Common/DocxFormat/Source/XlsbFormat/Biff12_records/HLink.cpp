@@ -55,5 +55,10 @@ namespace XLSB
         record >> rfx >> relId >> location >> tooltip >> display;
     }
 
+	void HLink::writeFields(XLS::CFRecord& record)
+	{
+		record << rfx << relId << location << tooltip << display;
+	}
+
 } // namespace XLSB
 

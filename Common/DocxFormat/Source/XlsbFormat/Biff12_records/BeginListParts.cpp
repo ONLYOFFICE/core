@@ -55,5 +55,10 @@ namespace XLSB
         record >> cParts;
     }
 
+	void BeginListParts::writeFields(XLS::CFRecord& record)
+	{
+		record << cParts;
+	}
+
 } // namespace XLSB
 

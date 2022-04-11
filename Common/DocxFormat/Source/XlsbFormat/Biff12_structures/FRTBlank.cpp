@@ -60,5 +60,10 @@ namespace XLSB
         record.skipNunBytes(4); // reserved
     }
 
+	void FRTBlank::save(XLS::CFRecord& record)
+	{
+		record.reserveNunBytes(4); // reserved
+	}
+
 } // namespace XLSB
 

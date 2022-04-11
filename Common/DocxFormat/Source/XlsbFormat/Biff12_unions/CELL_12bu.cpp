@@ -117,5 +117,16 @@ namespace XLSB
         return m_source != nullptr;
     }
 
+	const bool CELL::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_CELLMETA != nullptr)
+			proc.mandatory(*m_CELLMETA);
+
+		if (m_source != nullptr)
+			proc.mandatory(*m_source);
+
+		return true;
+	}
+
 } // namespace XLSB
 

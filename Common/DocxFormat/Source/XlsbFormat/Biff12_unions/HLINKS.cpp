@@ -96,5 +96,15 @@ namespace XLSB
         return count > 0;
     }
 
+	const bool HLINKS::saveContent(BinProcessor& proc)
+	{
+		for (auto &item : m_arHlinks)
+		{
+			proc.mandatory(*item);
+		}
+
+		return true;
+	}
+
 } // namespace XLSB
 

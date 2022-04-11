@@ -52,7 +52,7 @@ namespace XLSB
 
     void Color::readFields(XLS::CFRecord& record)
     {
-        unsigned char flags;
+        BYTE flags;
         record >> flags;
 
         fValidRGB       = GETBIT(flags, 0);
@@ -60,6 +60,17 @@ namespace XLSB
 
         record >> index >> nTintAndShade >> bRed >> bGreen >> bBlue >> bAlpha;
     }
+
+	void Color::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+
+		SETBIT(flags, 0, fValidRGB)
+		SETBITS(flags, 1, 7, xColorType)
+
+		record << flags;
+		record << index << nTintAndShade << bRed << bGreen << bBlue << bAlpha;
+	}
 
 } // namespace XLSB
 

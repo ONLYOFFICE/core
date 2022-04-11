@@ -63,5 +63,13 @@ namespace XLSB
             record >> sd;
     }
 
+	void RangeProtectionTitleSDRel::save(XLS::CFRecord& record)
+	{
+		record << rgchTitle << dwsdRel;
+
+		if (dwsdRel != 0x00000000)
+			record << sd;
+	}
+
 } // namespace XLSB
 

@@ -59,15 +59,15 @@ void Row::readFields(CFRecord& record)
 	if (global_info_->Version < 0x0800)
     {
         Rw rw_2b;
-		unsigned short ixfe_val_2b = 0xffff;
+		_UINT16 ixfe_val_2b = 0xffff;
         record >> rw_2b >> colMic >> colMac >> miyRw;
 
-		unsigned short unused1, rel_offset = 0xffff, flags1, flags2;
+		_UINT16 unused1, rel_offset = 0xffff, flags1, flags2;
 		record >> unused1;
 		
 		if (global_info_->Version == 0x0200)
 		{
-			unsigned char flag;
+			BYTE flag;
 			record >> flag >> rel_offset;
 			fGhostDirty = flag;
 			
@@ -134,6 +134,92 @@ void Row::readFields(CFRecord& record)
 
         bValid = (flags != 0 || flags2 != 0);
     }
+
+}
+
+void Row::writeFields(CFRecord& record)
+{
+	global_info_ = record.getGlobalWorkbookInfo();
+
+	if (global_info_->Version < 0x0800)
+	{
+		Rw rw_2b;
+		rw_2b = rw;
+		_UINT16 ixfe_val_2b = 0xffff;
+		record << rw_2b << colMic << colMac << miyRw;
+
+		_UINT16 unused1, rel_offset = 0xffff, flags1 = 0, flags2 = 0;
+		record.reserveNunBytes(2);// unused1
+
+		if (ixfe_val != 0xffff)
+			ixfe_val_2b = ixfe_val;
+
+		if (global_info_->Version == 0x0200)
+		{
+			BYTE flag = 0;
+			flag = fGhostDirty;
+			record << flag << rel_offset;			
+
+			if (fGhostDirty)
+			{
+				record << flag << flags1 << ixfe_val_2b;
+			}
+			bValid = true;
+		}
+		else
+		{
+			if (global_info_->Version == 0x0300 ||
+				global_info_->Version == 0x0400)
+			{
+				record << rel_offset; // relative offset stream for first cell in row
+			}
+			else
+				record.reserveNunBytes(2);// unused1
+
+			SETBITS(flags1, 0, 2, iOutLevel)
+			SETBIT(flags1, 4, fCollapsed)
+			SETBIT(flags1, 5, fDyZero)
+			SETBIT(flags1, 6, fUnsynced)
+			SETBIT(flags1, 7, fGhostDirty)
+
+			SETBITS(flags2, 0, 11, ixfe_val_2b)
+			SETBIT(flags2, 12, fExAsc)
+			SETBIT(flags2, 13, fExDes)
+			SETBIT(flags2, 14, fPhonetic)
+
+			bValid = (flags1 != 0 || flags2 != 0);
+
+			record << flags1 << flags2;
+		}		
+		
+	}
+	else
+	{
+		record << rw << ixfe_val << miyRw;
+
+		_UINT16 flags = 0;
+		BYTE	flags2 = 0;
+
+		SETBIT(flags, 0, fExAsc)
+		SETBIT(flags, 1, fExDes)
+		SETBITS(flags, 8, 10, iOutLevel)
+		SETBIT(flags, 11, fCollapsed)
+		SETBIT(flags, 12, fDyZero)
+		SETBIT(flags, 13, fUnsynced)
+		SETBIT(flags, 14, fGhostDirty)
+
+		SETBIT(flags2, 0, fPhonetic)
+
+		ccolspan = rgBrtColspan.size();
+		record << flags << flags2 << ccolspan;
+
+		for (auto& item : rgBrtColspan)
+		{
+			record << item;
+		}
+
+		bValid = (flags != 0 || flags2 != 0);
+	}
 
 }
 

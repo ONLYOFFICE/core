@@ -47,13 +47,14 @@ namespace XLSB
 
             XLS::BaseObjectPtr clone();
 
-            void readFields(XLS::CFRecord& record);
+            void readFields(XLS::CFRecord& record) override;
+			void writeFields(XLS::CFRecord& record) override;
 
             static const XLS::ElementType	type = XLS::typeBeginDatabar;
 
             BYTE                        bLenMin;
             BYTE                        bLenMax;
-            XLS::Boolean<unsigned char> fShowValue;
+            XLS::Boolean<BYTE>			fShowValue;
     };
 
 } // namespace XLSB

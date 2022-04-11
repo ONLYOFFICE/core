@@ -55,5 +55,10 @@ namespace XLSB
         record >> bLenMin >> bLenMax >> fShowValue;
     }
 
+	void BeginDatabar::writeFields(XLS::CFRecord& record)
+	{
+		record << bLenMin << bLenMax << fShowValue;
+	}
+
 } // namespace XLSB
 

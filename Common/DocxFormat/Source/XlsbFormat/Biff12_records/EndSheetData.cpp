@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new EndSheetData(*this));
     }
 
-    void EndSheetData::readFields(XLS::CFRecord& record)
-    {
-        // No data in this record
-    }
-
 } // namespace XLSB
 

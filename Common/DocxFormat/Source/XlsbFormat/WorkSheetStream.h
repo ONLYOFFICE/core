@@ -56,11 +56,12 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+        const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         static const XLS::ElementType type = XLS::typeWorksheetSubstream;
 
-        XLS::BaseObjectPtr               m_BrtBeginSheet;
+        bool							 m_bBrtBeginSheet;
         std::vector<XLS::BaseObjectPtr>  m_arCOLINFOS;
         XLS::BaseObjectPtr               m_BrtWsDim;
         XLS::BaseObjectPtr               m_BrtDrawing;
@@ -93,7 +94,7 @@ namespace XLSB
         XLS::BaseObjectPtr               m_DCON;
         XLS::BaseObjectPtr               m_FRTWORKSHEET;        
 
-        XLS::BaseObjectPtr               m_BrtEndSheet;
+		bool				             m_bBrtEndSheet;
 
         _UINT32                          m_SheetaDataPosition;
 

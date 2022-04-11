@@ -51,14 +51,15 @@ namespace XLSB
 
             XLS::BaseObjectPtr clone();
 
-            void readFields(XLS::CFRecord& record);
+            void readFields(XLS::CFRecord& record) override;
+			void writeFields(XLS::CFRecord& record) override;
 
             bool                        fSortDes;
-            unsigned short              sortOn;
+            _UINT16						sortOn;
             XLSB::UncheckedRfX          rfx;
 
-			XLS::CondDataValue               condDataValue;
-			XLS::CFFlag14                    cfflag14;
+			XLS::CondDataValue          condDataValue;
+			XLS::CFFlag14               cfflag14;
 
             XLSB::XLNullableWideString  stSslist;
     };

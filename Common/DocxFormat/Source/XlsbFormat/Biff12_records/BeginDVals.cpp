@@ -55,5 +55,10 @@ namespace XLSB
         dVals.readFields(record);
     }
 
+	void BeginDVals::writeFields(XLS::CFRecord& record)
+	{
+		dVals.writeFields(record);
+	}
+
 } // namespace XLSB
 

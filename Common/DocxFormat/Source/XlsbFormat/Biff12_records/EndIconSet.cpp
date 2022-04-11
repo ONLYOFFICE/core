@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new EndIconSet(*this));
     }
 
-    void EndIconSet::readFields(XLS::CFRecord& record)
-    {
-        // No data in this record
-    }
-
 } // namespace XLSB
 

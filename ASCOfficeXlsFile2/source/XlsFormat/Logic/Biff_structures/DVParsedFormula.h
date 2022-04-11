@@ -44,9 +44,11 @@ public:
 	BiffStructurePtr clone();
 
 	void load(CFRecord& record, bool bLoad);
-	virtual void load(CFRecord& record);
+	void load(CFRecord& record) override;
+	void save(CFRecord& record) override;
+	void save(CFRecord& record, bool bSave);
 private:
-    unsigned int cce;
+    _UINT32 cce;
 };
 
 } // namespace XLS

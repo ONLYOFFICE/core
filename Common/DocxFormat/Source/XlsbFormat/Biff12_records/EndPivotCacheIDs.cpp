@@ -50,15 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new EndPivotCacheIDs(*this));
     }
 
-    void EndPivotCacheIDs::readFields(XLS::CFRecord& record)
-    {
-        // No data in this record
-    }
-
-	void EndPivotCacheIDs::writeFields(XLS::CFRecord& record)
-	{
-		// No data in this record
-	}
-
 } // namespace XLSB
 

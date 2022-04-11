@@ -57,5 +57,12 @@ namespace XLSB
         guid = STR::guid2bstr(guid_);
     }
 
+	void CFRuleExt::writeFields(XLS::CFRecord& record)
+	{
+		_GUID_  guid_;
+		if(STR::bstr2guid(guid, guid_))
+			record << FRTHeader << guid_;
+	}
+
 } // namespace XLSB
 

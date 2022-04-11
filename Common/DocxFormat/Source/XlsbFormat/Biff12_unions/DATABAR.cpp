@@ -82,12 +82,32 @@ namespace XLSB
 
         if (proc.optional<EndDatabar>())
         {
-            m_BrtEndDatabar = elements_.back();
+			m_bBrtEndDatabar = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndDatabar = false;
 
-        return m_BrtBeginDatabar && !m_arCFVO.empty() && m_BrtColor && m_BrtEndDatabar;
+        return m_BrtBeginDatabar && !m_arCFVO.empty() && m_BrtColor && m_bBrtEndDatabar;
     }
+
+	const bool DATABAR::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginDatabar != nullptr)
+			proc.mandatory(*m_BrtBeginDatabar);
+
+		for (auto &item : m_arCFVO)
+		{
+			proc.mandatory(*item);
+		}
+
+		if (m_BrtColor != nullptr)
+			proc.mandatory(*m_BrtColor);
+
+		proc.mandatory<EndDatabar>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

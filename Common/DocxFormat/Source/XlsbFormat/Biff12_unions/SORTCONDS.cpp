@@ -65,5 +65,15 @@ namespace XLSB
         return !m_arSORTCOND.empty();
     }
 
+	const bool SORTCONDS::saveContent(BinProcessor& proc)
+	{
+		for (auto &item : m_arSORTCOND)
+		{
+			proc.mandatory(*item);
+		}
+
+		return true;
+	}
+
 } // namespace XLSB
 

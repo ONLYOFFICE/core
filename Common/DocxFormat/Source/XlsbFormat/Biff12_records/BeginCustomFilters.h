@@ -47,11 +47,12 @@ namespace XLSB
 
             XLS::BaseObjectPtr clone();
 
-            void readFields(XLS::CFRecord& record);
+            void readFields(XLS::CFRecord& record) override;
+			void writeFields(XLS::CFRecord& record) override;
 
             //static const XLS::ElementType	type = XLS::typeBeginCustomFilters;
 
-            XLS::Boolean<unsigned int>      fAnd;
+            XLS::Boolean<_UINT32>      fAnd;
     };
 
 } // namespace XLSB

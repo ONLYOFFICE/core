@@ -55,5 +55,10 @@ namespace XLSB
         record >> stRelID;
     }
 
+	void ListPart::writeFields(XLS::CFRecord& record)
+	{
+		record << stRelID;
+	}
+
 } // namespace XLSB
 

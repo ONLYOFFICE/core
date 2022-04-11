@@ -55,5 +55,10 @@ namespace XLSB
         record >> dyDescent;
     }
 
+	void RwDescent::writeFields(XLS::CFRecord& record)
+	{
+		record << dyDescent;
+	}
+
 } // namespace XLSB
 

@@ -61,6 +61,8 @@ namespace XLSB
             m_bBrtBeginBundleShs = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginBundleShs = false;
 
         while (proc.optional<BundleSh>())
         {
@@ -73,6 +75,8 @@ namespace XLSB
             m_bBrtEndBundleShs = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndBundleShs = false;
 
         return m_bBrtBeginBundleShs && !m_arBrtBundleSh.empty() && m_bBrtEndBundleShs;
     }

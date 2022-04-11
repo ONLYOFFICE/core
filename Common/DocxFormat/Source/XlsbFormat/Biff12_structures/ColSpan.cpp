@@ -60,5 +60,10 @@ namespace XLSB
         record >> colMic >> colLast;
     }
 
+	void ColSpan::save(XLS::CFRecord& record)
+	{
+		record << colMic << colLast;
+	}
+
 } // namespace XLSB
 

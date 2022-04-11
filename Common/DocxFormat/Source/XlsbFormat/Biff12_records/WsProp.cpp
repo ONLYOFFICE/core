@@ -79,5 +79,47 @@ namespace XLSB
             syncRef = static_cast<std::wstring >(CellRef(rwSync, colSync, true, true));
     }
 
+	void WsProp::writeFields(XLS::CFRecord& record)
+	{
+		_UINT16 flags1 = 0;
+		BYTE flags2 = 0;		
+
+		SETBIT(flags1, 0, fShowAutoBreaks)
+		SETBIT(flags1, 3, fPublish)
+		SETBIT(flags1, 4, fDialog)
+		SETBIT(flags1, 5, fApplyStyles)
+		SETBIT(flags1, 6, fRowSumsBelow)
+		SETBIT(flags1, 7, fColSumsRight)
+		SETBIT(flags1, 8, fFitToPage)
+		SETBIT(flags1, 10, fShowOutlineSymbols)
+		SETBIT(flags1, 12, fSyncHoriz)
+		SETBIT(flags1, 13, fSyncVert)
+		SETBIT(flags1, 14, fAltExprEval)
+		SETBIT(flags1, 15, fAltFormulaEntry)
+
+		SETBIT(flags2, 16, fFilterMode)
+		SETBIT(flags2, 17, fCondFmtCalc)
+
+		record << flags1 << flags2;
+
+		brtcolorTab.writeFields(record);
+
+		if(syncRef.empty())
+		{
+			rwSync = 0xFFFFFFFF;
+			colSync = 0xFFFFFFFF;
+			record << rwSync << colSync;
+		}
+		else
+		{
+			CellRef ref(syncRef);
+			rwSync = ref.getRow();
+			colSync = ref.getColumn();
+			record << rwSync << colSync;
+		}
+
+		record << strName;		
+	}
+
 } // namespace XLSB
 

@@ -62,5 +62,15 @@ namespace XLSB
         }
     }
 
+	void ACBegin::writeFields(XLS::CFRecord& record)
+	{
+		cver = RgACVer.size();
+		record << cver;
+		for (auto& item: RgACVer)
+		{
+			record << *item;
+		}
+	}
+
 } // namespace XLSB
 

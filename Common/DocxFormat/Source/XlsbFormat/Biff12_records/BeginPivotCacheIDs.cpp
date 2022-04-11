@@ -49,14 +49,6 @@ namespace XLSB
     {
         return BaseObjectPtr(new BeginPivotCacheIDs(*this));
     }
-
-    void BeginPivotCacheIDs::readFields(XLS::CFRecord& record)
-    {
-    }
-
-	void BeginPivotCacheIDs::writeFields(XLS::CFRecord& record)
-	{
-	}
-
+	
 } // namespace XLSB
 

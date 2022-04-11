@@ -66,6 +66,8 @@ namespace XLSB
 			m_bBrtEndPivotCacheID = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndPivotCacheID = false;
 
         return m_BrtBeginPivotCacheID && m_bBrtEndPivotCacheID;
     }

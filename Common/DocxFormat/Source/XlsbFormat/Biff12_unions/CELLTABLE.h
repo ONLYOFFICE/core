@@ -34,7 +34,6 @@
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
 
-
 namespace XLSB
 {
 
@@ -47,11 +46,12 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+        const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
-        XLS::BaseObjectPtr                   m_BrtBeginSheetData;
+        bool								 m_bBrtBeginSheetData;
         std::vector<XLS::BaseObjectPtr>      m_arParenthesis_CELLTABLE;
-        XLS::BaseObjectPtr                   m_BrtEndSheetData;
+		bool			                     m_bBrtEndSheetData;
 
         std::vector<XLS::CellRangeRef>      shared_formulas_locations_ref_;
 
@@ -61,13 +61,13 @@ namespace XLSB
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(Parenthesis_CELLTABLE)
     public:
-
         Parenthesis_CELLTABLE(std::vector<XLS::CellRangeRef>& shared_formulas_locations_ref);
         ~Parenthesis_CELLTABLE();
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+        const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         XLS::BaseObjectPtr                    m_ACCELLTABLE;
         XLS::BaseObjectPtr                    m_BrtRowHdr;

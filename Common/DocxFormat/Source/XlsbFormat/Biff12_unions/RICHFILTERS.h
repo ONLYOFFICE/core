@@ -45,7 +45,8 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+        const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         static const XLS::ElementType	type = XLS::typeRICHFILTERS;
 
@@ -53,7 +54,7 @@ namespace XLSB
         std::vector<XLS::BaseObjectPtr>  m_arBrtRichFilter;
         std::vector<XLS::BaseObjectPtr>  m_arBrtRichFilterDateGroupItem;
         //std::vector<XLS::BaseObjectPtr>  m_arFRT;
-        XLS::BaseObjectPtr               m_BrtEndRichFilters;
+        bool					         m_bBrtEndRichFilters;
 
     };
 

@@ -49,10 +49,6 @@ namespace XLSB
     {
         return BaseObjectPtr(new BeginOleObjects(*this));
     }
-
-    void BeginOleObjects::readFields(XLS::CFRecord& record)
-    {
-    }
-
+	
 } // namespace XLSB
 

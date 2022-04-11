@@ -60,5 +60,10 @@ namespace XLSB
         record >> strErrorTitle >> strError >> strPromptTitle >> strPrompt;
     }
 
+	void DValStrings::save(XLS::CFRecord& record)
+	{
+		record << strErrorTitle << strError << strPromptTitle << strPrompt;
+	}
+
 } // namespace XLSB
 

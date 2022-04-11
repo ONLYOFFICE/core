@@ -31,6 +31,7 @@
  */
 
 #include "Selection.h"
+#include <boost/algorithm/string.hpp>
 
 namespace XLS
 {
@@ -54,7 +55,7 @@ void Selection::readFields(CFRecord& record)
 {
     if (record.getGlobalWorkbookInfo()->Version < 0x0800)
     {
-        unsigned short cref;
+        _UINT16 cref;
         R_RwU			rwAct_2b;
         ColU			colAct_2b;
         _INT16			irefAct_2b;
@@ -90,7 +91,44 @@ void Selection::readFields(CFRecord& record)
         sqref = sqref_str;
     }
 }
+void Selection::writeFields(CFRecord& record)
+{
+	std::vector<std::wstring> results;
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		_UINT16			cref;
+		CellRef			ref(activeCell);
+		R_RwU			rwAct_2b = ref.row;
+		ColU			colAct_2b = ref.column;
+		_INT16			irefAct_2b = irefAct;
 
+		record << pnn << rwAct_2b << colAct_2b << irefAct_2b;
+
+		boost::algorithm::split(results, sqref, boost::is_any_of(L" "));
+		cref = results.size();
+
+		record << cref;
+
+		for (auto& item : results)
+		{
+			RefU refu(item);
+			record << refu;			
+		}
+	}
+	else
+	{
+		XLSB::UncheckedSqRfX    sqrfx;
+		CellRef					ref(activeCell);
+
+		rwAct = ref.row;
+		colAct = ref.column;
+
+		record << pnn_xlsb << rwAct << colAct << irefAct;
+
+		sqrfx.strValue = sqref;
+		record << sqrfx;		
+	}
+}
 int Selection::serialize(std::wostream & stream)
 {	
 	if (pnn == (unsigned char)PaneType::REVTPNNTOPLEFT &&

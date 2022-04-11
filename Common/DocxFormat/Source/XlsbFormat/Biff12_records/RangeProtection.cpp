@@ -55,5 +55,10 @@ namespace XLSB
         record >> protPwd >> sqRfX >> rangeProtectionTitleSDRel;
     }
 
+	void RangeProtection::writeFields(XLS::CFRecord& record)
+	{
+		record << protPwd << sqRfX << rangeProtectionTitleSDRel;
+	}
+
 } // namespace XLSB
 

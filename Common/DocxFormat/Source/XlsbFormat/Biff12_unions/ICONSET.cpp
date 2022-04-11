@@ -75,12 +75,29 @@ namespace XLSB
 
         if (proc.optional<EndIconSet>())
         {
-            m_BrtEndIconSet = elements_.back();
+            m_bBrtEndIconSet = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndIconSet = false;
 
-        return m_BrtBeginIconSet && !m_arCFVO.empty() && m_BrtEndIconSet;
+        return m_BrtBeginIconSet && !m_arCFVO.empty() && m_bBrtEndIconSet;
     }
+
+	const bool ICONSET::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginIconSet != nullptr)
+			proc.mandatory(*m_BrtBeginIconSet);
+
+		for (auto &item : m_arCFVO)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndIconSet>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

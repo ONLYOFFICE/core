@@ -49,9 +49,7 @@ namespace XLSB
 
             XLS::BaseObjectPtr clone();
 
-            void readFields(XLS::CFRecord& record);
-
-            //static const XLS::ElementType	type = XLS::typeBeginSheet;
+    		//static const XLS::ElementType	type = XLS::typeBeginSheet;
     };
 
 } // namespace XLSB

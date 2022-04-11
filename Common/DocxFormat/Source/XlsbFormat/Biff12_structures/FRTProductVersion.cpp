@@ -57,12 +57,21 @@ namespace XLSB
 
     void FRTProductVersion::load(XLS::CFRecord& record)
     {
-        unsigned short flags;
+        _UINT16 flags;
 
         record >> version >> flags;
 
         product     = GETBITS(flags, 0, 14);
     }
+
+	void FRTProductVersion::save(XLS::CFRecord& record)
+	{
+		_UINT16 flags = 0;
+
+		SETBITS(flags, 0, 14, product);
+		record << version << flags;
+
+	}
 
 } // namespace XLSB
 

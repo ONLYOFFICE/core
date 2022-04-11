@@ -54,6 +54,10 @@ namespace XLSB
     {         
         record >> shapeId >> strRelID >> strName;
     }
+	void ActiveX::writeFields(XLS::CFRecord& record)
+	{
+		record << shapeId << strRelID << strName;
+	}
 
 } // namespace XLSB
 

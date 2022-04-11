@@ -417,7 +417,7 @@ namespace NSHtmlRenderer
             WriteClip();
 
             double dScaleTransform = (pTransform->sx() + pTransform->sy()) / 2.0;
-            int nPenW		= int(m_pPen->Size * dScaleTransform);
+            int nPenW		= int(m_pPen->Size * dScaleTransform * SVG_WRITER_SCALE);
 
             if (0 == nPenW)
                 nPenW = 1;

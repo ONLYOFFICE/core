@@ -54,6 +54,4 @@ private:
     unsigned int m_lBufferSize;
     unsigned int m_lCurPos;
     unsigned char* m_pSourceBuffer;
-
-    unsigned char m_nAlphaChecker;
 };

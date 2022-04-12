@@ -3950,14 +3950,8 @@ namespace PdfReader
             }
         }
 
-        bool bIsFlip = false;
-#ifdef USE_EXTERNAL_JPEG2000
-        if (pStream->getKind() == strJPX)
-            bIsFlip = true;
-#endif
-
         Aggplus::CImage oImage;
-        oImage.Create(pBufferPtr, nWidth, nHeight, bIsFlip ? (4 * nWidth) : (-4 * nWidth));
+		oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
 
 		delete pImageStream;
 
@@ -4140,36 +4134,36 @@ namespace PdfReader
 
         double dPageHeight = pGState->getPageHeight();
 
-        int nBufferSize = 4 * nWidth * nHeight;
+		int nBufferSize = 4 * nWidth * nHeight;
         if (nBufferSize < 1)
             return;
 
         unsigned char *pBufferPtr = new unsigned char[nBufferSize];
         if (!pBufferPtr)
-            return;
+			return;
 
-        Aggplus::CImage oImage;
-        oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
+		Aggplus::CImage oImage;
+		oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
 
         // Пишем данные в pBufferPtr
         ImageStream *pImageStream = new ImageStream(pStream, nWidth, pColorMap->getNumPixelComps(), pColorMap->getBits());
         pImageStream->reset();
 
-        double dAlphaKoef = m_bTransparentGroup ? pGState->getFillOpacity() : 1;
+		double dAlphaKoef = m_bTransparentGroup ? pGState->getFillOpacity() : 1;
         unsigned char unPixel[4] ={ 0, 0, 0, 0 };
         for (int nY = nHeight - 1; nY >= 0; nY--)
         {
             for (int nX = 0; nX < nWidth; nX++)
             {
-                int nIndex = 4 * (nX + nY * nWidth);
+				int nIndex = 4 * (nX + nY * nWidth);
                 pImageStream->getPixel(unPixel);
                 GfxRGB oRGB;
                 pColorMap->getRGB(unPixel, &oRGB, gfxRenderingIntentAbsoluteColorimetric);
                 pBufferPtr[nIndex + 0] = colToByte(oRGB.b);
                 pBufferPtr[nIndex + 1] = colToByte(oRGB.g);
                 pBufferPtr[nIndex + 2] = colToByte(oRGB.r);
-                pBufferPtr[nIndex + 3] = 255;
-            }
+				pBufferPtr[nIndex + 3] = 255;
+			}
         }
         delete pImageStream;
 
@@ -4216,7 +4210,7 @@ namespace PdfReader
                             return;
                         }
 
-                        oImage.Create(pBufferPtr, nMaxW, nMaxH, -4 * nMaxW);
+						oImage.Create(pBufferPtr, nMaxW, nMaxH, -4 * nMaxW);
 
                         double dImageScaleWidth  = (double)nWidth / (double)nMaxW;
                         double dImageScaleHeight = (double)nHeight / (double)nMaxH;
@@ -4238,7 +4232,7 @@ namespace PdfReader
                                 pBufferPtr[nIndex + 2] = pImageBuffer[nNearestImageMatch + 2];
                                 pBufferPtr[nIndex + 3] = (unsigned char)(pAlpha[nNearestAlphaMatch] * dAlphaKoef);
                             }
-                        }
+						}
 
                         delete[] pImageBuffer;
                     }
@@ -4288,7 +4282,7 @@ namespace PdfReader
                 }
             }
         }
-        else
+		else
         {
             ImageStream *pSMaskStream = new ImageStream(pMaskStream, nMaskWidth, pMaskColorMap->getNumPixelComps(), pMaskColorMap->getBits());
             pSMaskStream->reset();
@@ -4309,7 +4303,7 @@ namespace PdfReader
         }
 
         // Undo preblend
-        if (pMatteColor)
+		if (pMatteColor)
         {
             GfxRGB oMatteRGB;
             GfxColor oColor;

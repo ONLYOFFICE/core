@@ -5,8 +5,8 @@
 
 namespace openjpeg
 {
-    bool Parse(const std::wstring& sFile, CBgraFrame* pFrame, bool isBGRA);
-    bool Parse(BYTE* pData, const unsigned int& nSize, CBgraFrame* pFrame, bool isBGRA);
+	bool GetData(BYTE* pFildData, const unsigned int& nFileSize, BYTE*& ppData, int& nComponentsCount, int& nWidth, int& nHeight, const bool& isFlip);
+	void DestroyData(BYTE*& pData);
 }
 
 #endif

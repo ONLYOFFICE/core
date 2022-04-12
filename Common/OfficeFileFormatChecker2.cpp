@@ -1217,6 +1217,7 @@ bool COfficeFileFormatChecker::isXpsFile(const std::wstring & fileName)
         HRESULT hresult = OfficeUtils.LoadFileFromArchive(fileName, L"_rels/.rels/[0].piece", &pBuffer, nBufferSize);
         if (hresult == S_OK && pBuffer != NULL)
         {
+            nFileType = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS;
             return true;
         }
     }

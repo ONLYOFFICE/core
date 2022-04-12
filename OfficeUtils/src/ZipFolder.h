@@ -93,7 +93,6 @@ public:
         std::vector<std::wstring> arPieces = getFiles(path, false);
         if (0 < arPieces.size())
         {
-            std::sort(arPieces.begin(), arPieces.end());
             std::vector<std::wstring>::iterator iter = arPieces.begin();
             while (iter != arPieces.end())
             {
@@ -116,7 +115,7 @@ public:
             std::vector<std::wstring> arPieces = getFiles(path, false);
             if (0 < arPieces.size())
             {
-                std::sort(arPieces.begin(), arPieces.end());
+                std::sort(arPieces.begin(), arPieces.end(), compareAsXmlPiece);
                 std::vector<std::wstring>::iterator iter = arPieces.begin();
                 while (iter != arPieces.end())
                 {
@@ -170,6 +169,64 @@ public:
         delete buffer;
 
         return sRet;
+    }
+
+private:
+    static bool compareAsXmlPiece(const std::wstring& a, const std::wstring& b)
+    {
+        size_t aLen = a.length();
+        size_t bLen = b.length();
+
+        size_t posA = 0;
+        size_t posB = 0;
+
+        int nPartA = 0;
+        int nPartB = 0;
+
+        size_t len = (aLen < bLen) ? aLen : bLen;
+        if (2 > len)
+            goto error;
+
+        while (posA < len)
+        {
+            if (a[posA] != b[posA])
+                break;
+            ++posA;
+        }
+
+        if (0 == posA)
+            goto error;
+
+        posB = posA;
+
+        // не ищем '['. просто первый неравный
+        //if ('[' != a[posA - 1] || '[' != b[posB - 1])
+        //    goto error;
+
+        while (posA < aLen)
+        {
+            if (a[posA] < '0' || a[posA] > '9')
+                break;
+            nPartA = 10 * nPartA + (a[posA] - '0');
+            ++posA;
+        }
+        if (posA == aLen || a[posA] != ']')
+            goto error;
+
+        while (posB < bLen)
+        {
+            if (b[posB] < '0' || b[posB] > '9')
+                break;
+            nPartB = 10 * nPartB + (b[posB] - '0');
+            ++posB;
+        }
+        if (posB == bLen || b[posB] != ']')
+            goto error;
+
+        return nPartA < nPartB;
+
+    error:
+        return a < b;
     }
 };
 

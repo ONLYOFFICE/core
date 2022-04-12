@@ -59,7 +59,6 @@ namespace OOX
 			WritingElement_AdditionConstructors(CVmlCommonElements)
             CVmlCommonElements(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain) 
 			{
-				m_bComment = false;
 			}
 			
 			virtual ~CVmlCommonElements(){}
@@ -75,75 +74,79 @@ namespace OOX
 			{
 				return et_v_shape_elements;
 			}
+			virtual void mergeFrom(CVmlCommonElements* parent);
+
+			void CreateElement(XmlUtils::CXmlLiteReader& oReader);
 			
 	// 1 AG_AllCoreAttributes
 	// 1.1 AG_CoreAttributes
-			nullable_string											m_sId;
-			nullable<SimpleTypes::Vml::CCssStyle>					m_oStyle;
-			nullable_string											m_sHref;
-			nullable_string											m_sTarget;
-			nullable_string											m_sClass;
-			nullable_string											m_sTitle;
-			nullable_string											m_sAlt;
-			nullable<SimpleTypes::Vml::CVml_Vector2D>				m_oCoordSize;
-			nullable<SimpleTypes::Vml::CVml_Vector2D>				m_oCoordOrigin;
-			nullable<SimpleTypes::Vml::CVml_Polygon2D>				m_oWrapCoords;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>		m_oPrint;
+			nullable_string								m_sId;
+			nullable<SimpleTypes::Vml::CCssStyle>		m_oStyle;
+			nullable_string								m_sHref;
+			nullable_string								m_sTarget;
+			nullable_string								m_sClass;
+			nullable_string								m_sTitle;
+			nullable_string								m_sAlt;
+			nullable<SimpleTypes::Vml::CVml_Vector2D>	m_oCoordSize;
+			nullable<SimpleTypes::Vml::CVml_Vector2D>	m_oCoordOrigin;
+			nullable<SimpleTypes::Vml::CVml_Polygon2D>	m_oWrapCoords;
+			nullable_bool								m_oPrint;
 	// 1.2 AG_OfficeCoreAttributes
-			nullable_string											m_sSpId;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oOned;
-			nullable<SimpleTypes::CDecimalNumber<>>					m_oRegroupId;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oDoubleClickNotify;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oButton;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oUserHidden;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oBullet;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oHr;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oHrStd;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oHrNoShade;
-			SimpleTypes::CDouble									m_oHrPct;
-			SimpleTypes::CHrAlign<SimpleTypes::hralignLeft>			m_oHrAlign;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oAllowInCell;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>		m_oAllowOverlap;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oUserDrawn;
-			nullable<SimpleTypes::CColorType<>>						m_oBorderTopColor;
-			nullable<SimpleTypes::CColorType<>>						m_oBorderLeftColor;
-			nullable<SimpleTypes::CColorType<>>						m_oBorderBottomColor;
-			nullable<SimpleTypes::CColorType<>>						m_oBorderRightColor;
-			nullable<SimpleTypes::CDiagramLayout<>>					m_oDgmLayout;
-			nullable_string											m_oDgmNodeKind;
-			nullable<SimpleTypes::CDiagramLayout<>>					m_oDgmLayoutMru;
-			SimpleTypes::CInsetMode<SimpleTypes::insetmodeAuto>		m_oInsetMode;
+			nullable_string								m_sSpId;
+			nullable_bool								m_oOned;
+			nullable_int								m_oRegroupId;
+			nullable_bool								m_oDoubleClickNotify;
+			nullable_bool								m_oButton;
+			nullable_bool								m_oUserHidden;
+			nullable_bool								m_oBullet;
+			nullable_bool								m_oHr;
+			nullable_bool								m_oHrStd;
+			nullable_bool								m_oHrNoShade;
+			nullable_double								m_oHrPct;
+			nullable<SimpleTypes::CHrAlign<>>			m_oHrAlign;
+			nullable_bool								m_oAllowInCell;
+			nullable_bool								m_oAllowOverlap;
+			nullable_bool								m_oUserDrawn;
+			nullable<SimpleTypes::CColorType<>>			m_oBorderTopColor;
+			nullable<SimpleTypes::CColorType<>>			m_oBorderLeftColor;
+			nullable<SimpleTypes::CColorType<>>			m_oBorderBottomColor;
+			nullable<SimpleTypes::CColorType<>>			m_oBorderRightColor;
+			nullable<SimpleTypes::CDiagramLayout<>>		m_oDgmLayout;
+			nullable_string								m_oDgmNodeKind;
+			nullable<SimpleTypes::CDiagramLayout<>>		m_oDgmLayoutMru;
+			nullable<SimpleTypes::CInsetMode<>>			m_oInsetMode;
 	// 2 AG_AllShapeAttributes
 	// 2.1 AG_ShapeAttributes
-			nullable<SimpleTypes::CColorType<>>						m_oChromaKey;
-			nullable<SimpleTypes::CTrueFalse<>>						m_oFilled;
-			nullable<SimpleTypes::CColorType<>>						m_oFillColor;
-			nullable<SimpleTypes::Vml::CVml_1_65536>				m_oOpacity;
-			nullable<SimpleTypes::CTrueFalse<>>						m_oStroked;
-			nullable<SimpleTypes::CColorType<>>						m_oStrokeColor;
-			nullable<SimpleTypes::CEmu>								m_oStrokeWeight;
-			nullable<SimpleTypes::CTrueFalse<>>						m_oInsetPen;
+			nullable<SimpleTypes::CColorType<>>			m_oChromaKey;
+			nullable<SimpleTypes::CTrueFalse<>>			m_oFilled;
+			nullable<SimpleTypes::CColorType<>>			m_oFillColor;
+			nullable<SimpleTypes::Vml::CVml_1_65536>	m_oOpacity;
+			nullable<SimpleTypes::CTrueFalse<>>			m_oStroked;
+			nullable<SimpleTypes::CColorType<>>			m_oStrokeColor;
+			nullable<SimpleTypes::CEmu>					m_oStrokeWeight;
+			nullable<SimpleTypes::CTrueFalse<>>			m_oInsetPen;
 	// 2.2 AG_OfficeShapeAttributes
-			nullable<SimpleTypes::CDecimalNumber<>>					m_oSpt;
-			nullable<SimpleTypes::CConnectorType<>>					m_oConnectorType;
-			nullable<SimpleTypes::CBWMode<>>						m_oBwMode;
-			nullable<SimpleTypes::CBWMode<>>						m_oBwPure;
-			nullable<SimpleTypes::CBWMode<>>						m_oBwNormal;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oForceDash;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oOleIcon;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oOle;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oPreferRelative;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oClipToWrap;
-			nullable<SimpleTypes::CTrueFalse<>>						m_oClip;
+			nullable<SimpleTypes::CDecimalNumber<>>		m_oSpt;
+			nullable<SimpleTypes::CConnectorType<>>		m_oConnectorType;
+			nullable<SimpleTypes::CBWMode<>>			m_oBwMode;
+			nullable<SimpleTypes::CBWMode<>>			m_oBwPure;
+			nullable<SimpleTypes::CBWMode<>>			m_oBwNormal;
+			nullable_bool								m_oForceDash;
+			nullable_bool								m_oOleIcon;
+			nullable_bool								m_oOle;
+			nullable_bool								m_oPreferRelative;
+			nullable_bool								m_oClipToWrap;
+			nullable_bool								m_oClip;
 
-			void	ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			void	ReadElements(XmlUtils::CXmlLiteReader& oReader) ;
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			void  ReadElements(XmlUtils::CXmlLiteReader& oReader) ;
 
 			std::wstring WriteAttributes() const;
 			std::wstring WriteElements() const;
 
-//internal
-            bool m_bComment;
+//for internal
+            bool m_bComment = false;
+			bool m_bImage = false;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -223,11 +226,8 @@ namespace OOX
 			}
 
 		public:
-
-			// Attributes
 			SimpleTypes::CDecimalNumber<90> m_oEndAngle;
 			SimpleTypes::CDecimalNumber<0>  m_oStartAngle;
-
 		};
 		//--------------------------------------------------------------------------------
 		// CCurve 14.1.2.3 (Part4)
@@ -312,8 +312,6 @@ namespace OOX
 			}
 
 		public:
-
-			// Attributes
 			SimpleTypes::Vml::CVml_Vector2D_Units m_oFrom;
 			SimpleTypes::Vml::CVml_Vector2D_Units m_oControl1;
 			SimpleTypes::Vml::CVml_Vector2D_Units m_oControl2;
@@ -358,7 +356,6 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				
@@ -441,7 +438,6 @@ namespace OOX
 				SimpleTypes::CColorType<> oColor;
 			};
 
-			// Attributes
 			nullable<SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>>			m_oAlignShape;
 			nullable_string														m_sAltHref;
 			nullable<SimpleTypes::CDecimalNumber<>>								m_oAngle;
@@ -470,7 +466,6 @@ namespace OOX
 			nullable_string														m_sTitle;
 			SimpleTypes::CFillType<SimpleTypes::filltypeSolid, 0>				m_oType;
 
-			// Childs
 			nullable<OOX::VmlOffice::CFill>										m_oFill;
 
 		};
@@ -1168,7 +1163,6 @@ namespace OOX
 
 		public:
 
-			// Attributes
 			SimpleTypes::Vml::CVml_1_65536_Or_Percentage m_oArcSize;
 
 		};
@@ -1320,6 +1314,75 @@ namespace OOX
 			SimpleTypes::CShadowType<SimpleTypes::shadowtypeSingle>	m_oType;
 		};
 		//--------------------------------------------------------------------------------
+		// CShapeType 14.1.2.20 (Part4)
+		//--------------------------------------------------------------------------------	
+		class CShapeType : public CVmlCommonElements
+		{
+		public:
+			WritingElement_AdditionConstructors(CShapeType)
+				CShapeType(OOX::Document *pMain = NULL) : CVmlCommonElements(pMain)
+			{
+			}
+			virtual ~CShapeType() {}
+			virtual void fromXML(XmlUtils::CXmlNode& oNode) {}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
+				CVmlCommonElements::ReadAttributes(oReader);
+				CVmlCommonElements::ReadElements(oReader);
+			}
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const
+			{
+				return OOX::et_v_shapetype;
+			}
+
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if (oReader.GetAttributesCount() <= 0)
+					return;
+				if (!oReader.MoveToFirstAttribute())
+					return;
+
+				std::wstring wsName = oReader.GetName();
+				while (!wsName.empty())
+				{
+					wchar_t wsChar = wsName[0];
+					switch (wsChar)
+					{
+					case 'o':
+						if (_T("o:master") == wsName) m_oMaster = oReader.GetText();
+						break;
+					case 'p':
+						if (_T("path") == wsName) m_oPath = oReader.GetText();
+						break;
+					case 'a':
+						if (_T("adj") == wsName) m_sAdj = oReader.GetText();
+						break;
+					case 't':
+						if (_T("type") == wsName) m_sType = oReader.GetText(); // для некоторых багнутых файлов
+						break;
+					}
+
+					if (!oReader.MoveToNextAttribute())
+						break;
+
+					wsName = oReader.GetName();
+				}
+				oReader.MoveToElement();
+
+				// TO DO: Сделать парсер Adj
+			}
+
+		public:
+			nullable_string	m_sType;
+			nullable_string	m_sAdj;
+			nullable<SimpleTypes::Vml::CVmlPath> m_oPath;
+			nullable_bool m_oMaster;
+		};
+		//--------------------------------------------------------------------------------
 		// CShape 14.1.2.19 (Part4)
 		//--------------------------------------------------------------------------------	
 		class CShape : public CVmlCommonElements
@@ -1344,11 +1407,11 @@ namespace OOX
 				return OOX::et_v_shape;
 			}
 
+			void mergeFrom(CShapeType* shape_type);
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 				
@@ -1389,81 +1452,11 @@ namespace OOX
 			}
 
 		public:
-
-			// Attributes
-            nullable_string		                  m_sType;
-            nullable_string		                  m_sAdj;
-            nullable<SimpleTypes::Vml::CVmlPath>    m_oPath;
-            nullable_string		                  m_sGfxData;
-            nullable_string		                  m_sEquationXML;
-		};
-		//--------------------------------------------------------------------------------
-		// CShapeType 14.1.2.20 (Part4)
-		//--------------------------------------------------------------------------------	
-		class CShapeType : public CVmlCommonElements
-		{
-		public:
-			WritingElement_AdditionConstructors(CShapeType)
-			CShapeType(OOX::Document *pMain = NULL) : CVmlCommonElements(pMain) 
-			{
-			}
-			virtual ~CShapeType(){}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode){}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-				CVmlCommonElements::ReadAttributes( oReader );
-				CVmlCommonElements::ReadElements( oReader );
-			}
-			virtual std::wstring toXML() const;
-			virtual EElementType getType() const
-			{
-				return OOX::et_v_shapetype;
-			}
-
-		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				if ( oReader.GetAttributesCount() <= 0 )
-					return;				
-				if ( !oReader.MoveToFirstAttribute() )
-					return;
-
-				std::wstring sGfxData;
-				
-				std::wstring wsName = oReader.GetName();
-				while( !wsName.empty() )
-				{
-					wchar_t wsChar = wsName[0];
-					switch ( wsChar )
-					{
-					case 'o':
-						if      ( _T("o:master") == wsName ) m_oMaster = oReader.GetText();
-						break;
-					case 'p':
-						if      ( _T("path")     == wsName ) m_oPath   = oReader.GetText();
-						break;
-					case 'a':
-                        if      ( _T("adj")      == wsName ) m_sAdj    = oReader.GetText();
-						break;
-					}
-
-					if ( !oReader.MoveToNextAttribute() )
-						break;
-
-					wsName = oReader.GetName();
-				}
-				oReader.MoveToElement();
-
-				// TO DO: Сделать парсер Adj
-			}
-
-		public:
-
-            nullable_string		                              m_sAdj;
-            nullable<SimpleTypes::Vml::CVmlPath>                m_oPath;
-            SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>  m_oMaster;
+            nullable_string							m_sType;
+            nullable_string							m_sAdj;
+            nullable<SimpleTypes::Vml::CVmlPath>	m_oPath;
+            nullable_string							m_sGfxData;
+            nullable_string							m_sEquationXML;
 		};
 		class CClientData : public WritingElement
 		{
@@ -1821,12 +1814,12 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CGroup 14.1.2.7 (Part4)
 		//--------------------------------------------------------------------------------	
-		class CGroup : public WritingElementWithChilds<>
+		class CGroup : public CVmlCommonElements
 		{
 		public:
 			WritingElement_AdditionConstructors(CGroup);
 			
-			CGroup(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
+			CGroup(OOX::Document *pMain = NULL) : CVmlCommonElements(pMain)
 			{
 			}
 			virtual ~CGroup(){}
@@ -1842,47 +1835,13 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
-			// AG_AllCoreAttributes
-			nullable_string											m_sId;
-			nullable<SimpleTypes::Vml::CCssStyle>					m_oStyle;
-			nullable_string											m_sHref;
-			nullable_string											m_sTarget;
-			nullable_string											m_sClass;
-			nullable_string											m_sTitle;
-			nullable_string											m_sAlt;
-			nullable<SimpleTypes::Vml::CVml_Vector2D>				m_oCoordSize;
-			nullable<SimpleTypes::Vml::CVml_Vector2D>				m_oCoordOrigin;
-			nullable<SimpleTypes::Vml::CVml_Polygon2D>				m_oWrapCoords;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>		m_oPrint;
-			nullable_string											m_sSpId;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oOned;
-			nullable<SimpleTypes::CDecimalNumber<>>					m_oRegroupId;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oDoubleClickNotify;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oButton;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oUserHidden;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oBullet;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oHr;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oHrStd;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oHrNoShade;
-			SimpleTypes::CDouble									m_oHrPct;
-			SimpleTypes::CHrAlign<SimpleTypes::hralignLeft>			m_oHrAlign;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oAllowInCell;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>		m_oAllowOverlap;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>		m_oUserDrawn;
-			nullable<SimpleTypes::CColorType<>>						m_oBorderTopColor;
-			nullable<SimpleTypes::CColorType<>>						m_oBorderLeftColor;
-			nullable<SimpleTypes::CColorType<>>						m_oBorderBottomColor;
-			nullable<SimpleTypes::CColorType<>>						m_oBorderRightColor;
-			nullable<SimpleTypes::CDiagramLayout<>>					m_oDgmLayout;
-			nullable_string											m_oDgmNodeKind;
-			nullable<SimpleTypes::CDiagramLayout<>>					m_oDgmLayoutMru;
-			SimpleTypes::CInsetMode<SimpleTypes::insetmodeCustom>	m_oInsetMode;
 
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>		m_oFilled;
-			nullable<SimpleTypes::CColorType<>>						m_oFillColor;
-			nullable<SimpleTypes::CEditAs<>>						m_oEditAs;
-			nullable<SimpleTypes::Vml::CVml_TableLimits>			m_oTableLimits;
-			SimpleTypes::Vml::CVml_TableProperties<0>				m_oTableProperties;                 
+			std::vector<CShapeType*>		m_arrShapeTypes;
+			std::vector<WritingElement *>	m_arrElements;
+
+			nullable<SimpleTypes::CEditAs<>>				m_oEditAs;
+			nullable<SimpleTypes::Vml::CVml_TableLimits>	m_oTableLimits;
+			SimpleTypes::Vml::CVml_TableProperties<0>		m_oTableProperties;                 
 		};
 	} // namespace Vml
 } // namespace OOX

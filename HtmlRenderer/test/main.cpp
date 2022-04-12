@@ -54,6 +54,7 @@ void Download_OnComplete(int error)
 
 //#define RASTER_TEST
 //#define METAFILE_TEST
+//#define METAFILE_TEST_X2T
 //#define METAFILE_TEST_RASTER
 //#define ONLINE_WORD_TO_PDF
 //#define TO_PDF
@@ -86,6 +87,74 @@ int main(int argc, char *argv[])
         NSDirectory::CreateDirectory(oWorker.m_sDirectory);
 
     NSFonts::IApplicationFonts* pFonts = oWorker.Check();
+
+#ifdef METAFILE_TEST_X2T
+
+    MetaFile::IMetaFile* pMetafile = MetaFile::Create(pFonts);
+    if (pMetafile->LoadFromFile(L"image.emf"))
+    {
+        NSFonts::IFontManager* pFontManager = pFonts->GenerateFontManager();
+
+        double x = 0, y = 0, w = 0, h = 0;
+        pMetafile->GetBounds(&x, &y, &w, &h);
+
+        double _max = (w >= h) ? w : h;
+        double dKoef = 1000.0 / _max;
+
+        int WW = (int)(dKoef * w + 0.5);
+        int HH = (int)(dKoef * h + 0.5);
+
+        NSHtmlRenderer::CASCSVGWriter oWriterSVG;
+        oWriterSVG.SetFontManager(pFontManager);
+        oWriterSVG.put_Width(WW);
+        oWriterSVG.put_Height(HH);
+
+        bool bRes = true;
+        bool bIsBigestSVG = false;
+        bool bIsRaster = true;
+        try
+        {
+            bRes = pMetafile->DrawOnRenderer(&oWriterSVG, 0, 0, WW, HH);
+        }
+        catch (...)
+        {
+            bRes = false;
+        }
+
+        if (bRes)
+        {
+            oWriterSVG.IsRaster(&bIsRaster);
+
+            LONG lSvgDataSize = 0;
+            oWriterSVG.GetSVGDataSize(&lSvgDataSize);
+
+            bIsBigestSVG = (lSvgDataSize > 5 * 1024 * 1024);
+        }
+
+        if (bIsRaster || bIsBigestSVG || !bRes)
+        {
+            int nWidth = 0;
+            int nHeight = 0;
+
+            int nMaxPixSize = 1000;
+
+            double dKoef = nMaxPixSize / _max;
+
+            nWidth = (int)(dKoef * w + 0.5);
+            nHeight = (int)(dKoef * h + 0.5);
+
+            pMetafile->ConvertToRaster(L"image.png", 4 /*CXIMAGE_FORMAT_PNG*/,  nWidth, nHeight);
+        }
+        else
+        {
+            oWriterSVG.SaveFile(L"image.svg");
+        }
+
+        RELEASEINTERFACE(pFontManager);
+    }
+    RELEASEOBJECT(pMetafile);
+
+#endif
 
 #ifdef METAFILE_TEST
 

@@ -337,8 +337,8 @@ namespace OOX
 							case 'a':
 								if ( _T("v:arc") == sName )
 								{
-									m_oShapeArc =  new OOX::Vml::CArc(m_pMainDocument);
-									m_oShapeArc->fromXML(oSubReader );
+									m_oShapeElement =  new OOX::Vml::CArc(m_pMainDocument);
+									m_oShapeElement->fromXML(oSubReader );
 								}break;
 
 							case 'b':
@@ -350,8 +350,8 @@ namespace OOX
 							case 'c':
 								if ( _T("v:curve") == sName )
 								{
-									m_oShapeCurve =  new OOX::Vml::CCurve(m_pMainDocument);//???
-									m_oShapeCurve->fromXML(oSubReader );
+									m_oShapeElement =  new OOX::Vml::CCurve(m_pMainDocument);//???
+									m_oShapeElement->fromXML(oSubReader );
 								}break;
 							case 'f':
 								if ( _T("v:fill") == sName )
@@ -364,8 +364,8 @@ namespace OOX
 							case 'g':
 								if ( _T("v:group") == sName )
 								{
-									m_oShapeGroup =  OOX::Vml::CGroup(m_pMainDocument);
-									m_oShapeGroup->fromXML(oSubReader );
+									m_oShapeElement =  new OOX::Vml::CGroup(m_pMainDocument);
+									m_oShapeElement->fromXML(oSubReader );
 								}break;
 
 							case 'h':
@@ -377,8 +377,8 @@ namespace OOX
 							case 'i':
 								if ( _T("v:image") == sName )
 								{
-									m_oImage =  new OOX::Vml::CImage(m_pMainDocument);
-									m_oImage->fromXML(oSubReader );
+									m_oShapeElement =  new OOX::Vml::CImage(m_pMainDocument);
+									m_oShapeElement->fromXML(oSubReader );
 								}
 								else if ( _T("v:imagedata") == sName )
 								{
@@ -389,16 +389,16 @@ namespace OOX
 							case 'l':
 								if ( _T("v:line") == sName )
 								{
-									m_oShapeLine =  new OOX::Vml::CLine( m_pMainDocument );
-									m_oShapeLine->fromXML(oSubReader );
+									m_oShapeElement =  new OOX::Vml::CLine( m_pMainDocument );
+									m_oShapeElement->fromXML(oSubReader );
 								}
 								break;
 
 							case 'o':
 								if ( _T("v:oval") == sName )
 								{
-									m_oShapeOval =  new OOX::Vml::COval( m_pMainDocument );
-									m_oShapeOval->fromXML(oSubReader );
+									m_oShapeElement =  new OOX::Vml::COval( m_pMainDocument );
+									m_oShapeElement->fromXML(oSubReader );
 								}
 								break;
 
@@ -407,8 +407,8 @@ namespace OOX
 									pItem = new OOX::Vml::CPath( m_pMainDocument );
 								else if ( _T("v:polyline") == sName )
 								{
-									m_oShapePolyLine =  new OOX::Vml::CPolyLine( m_pMainDocument );
-									m_oShapePolyLine->fromXML(oSubReader );
+									m_oShapeElement =  new OOX::Vml::CPolyLine( m_pMainDocument );
+									m_oShapeElement->fromXML(oSubReader );
 								}
 
 								break;
@@ -416,13 +416,13 @@ namespace OOX
 							case 'r':
 								if ( _T("v:rect") == sName )
 								{
-									m_oShapeRect =  new OOX::Vml::CRect( m_pMainDocument );
-									m_oShapeRect->fromXML(oSubReader );
+									m_oShapeElement =  new OOX::Vml::CRect( m_pMainDocument );
+									m_oShapeElement->fromXML(oSubReader );
 								}
 								else if ( _T("v:roundrect") == sName )
 								{
-									m_oShapeRoundRect =  new OOX::Vml::CRoundRect( m_pMainDocument );
-									m_oShapeRoundRect->fromXML(oSubReader );
+									m_oShapeElement =  new OOX::Vml::CRoundRect( m_pMainDocument );
+									m_oShapeElement->fromXML(oSubReader );
 								}
 								break;
 
@@ -431,8 +431,8 @@ namespace OOX
 									pItem = new OOX::Vml::CShadow( m_pMainDocument );
 								else if ( _T("v:shape") == sName )
 								{
-									m_oShape = new OOX::Vml::CShape( m_pMainDocument );
-									m_oShape->fromXML(oSubReader );
+									m_oShapeElement = new OOX::Vml::CShape( m_pMainDocument );
+									m_oShapeElement->fromXML(oSubReader );
 								}
 								else if ( _T("v:shapetype") == sName )
 								{
@@ -488,9 +488,17 @@ namespace OOX
                         sResult += m_arrItems[i]->toXML();
                     }
                 }
+				if (m_oShapeType.IsInit())
+					sResult += m_oShapeType->toXML();
+
+				if (m_oShapeElement.IsInit())
+					sResult += m_oShapeElement->toXML();
 
 				if ( m_oControl.IsInit() )
 					sResult += m_oControl->toXML();
+
+				if (m_oBinData.IsInit())
+					sResult += m_oBinData->toXML();
 
 				sResult += _T("</w:pict>");
 
@@ -506,20 +514,9 @@ namespace OOX
 
 			nullable<OOX::Logic::CControl>	m_oControl;
 			nullable<OOX::Logic::CBinData>	m_oBinData;
-//top childs
-			nullable<OOX::Vml::CShapeType>	m_oShapeType;//custom
-			nullable<OOX::Vml::COval>		m_oShapeOval;
-			nullable<OOX::Vml::CRect>		m_oShapeRect;
-			nullable<OOX::Vml::CLine>		m_oShapeLine;
-			nullable<OOX::Vml::CPolyLine>	m_oShapePolyLine;
-			nullable<OOX::Vml::CArc>		m_oShapeArc;
-			nullable<OOX::Vml::CCurve>		m_oShapeCurve;
-			nullable<OOX::Vml::CRoundRect>	m_oShapeRoundRect;	
-			nullable<OOX::Vml::CImage>		m_oImage;
 
-			nullable<OOX::Vml::CGroup>		m_oShapeGroup;
-			
-			nullable<OOX::Vml::CShape>		m_oShape;
+			nullable<OOX::Vml::CShapeType>	m_oShapeType;
+			nullable<OOX::WritingElement>	m_oShapeElement;
 			
 			// TO DO: Добавить класс, читающий movie
 		};

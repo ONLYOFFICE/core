@@ -87,33 +87,35 @@ void xlsx_data_range::serialize_sort (std::wostream & _Wostream)
 					ref1 = ref.substr(0, pos );
 					ref2 = ref.substr(pos + 1);
 				}
-				getCellAddressInv(ref1, col_1, row_1);
-				getCellAddressInv(ref2, col_2, row_2);
 
-				if (byRow)
+				if (getCellAddressInv(ref1, col_1, row_1) &&
+					getCellAddressInv(ref2, col_2, row_2))
 				{
-					if (bySort[i].first < col_1 || bySort[i].first > col_2 )	in_range = false;
-
-					ref1 = getCellAddress(bySort[i].first + ( withHeader ? 1 : 0), row_1);
-					ref2 = getCellAddress(bySort[i].first + ( withHeader ? 1 : 0), row_2);
-				}
-				else
-				{
-					if (bySort[i].first < row_1 || bySort[i].first > row_2 )	in_range = false;
-
-					ref1 = getCellAddress(col_1, bySort[i].first + ( withHeader ? 1 : 0));
-					ref2 = getCellAddress(col_2, bySort[i].first + ( withHeader ? 1 : 0));
-				}
-				if (in_range)
-				{
-					CP_XML_NODE(L"sortCondition")
+					if (byRow)
 					{
-						CP_XML_ATTR(L"ref", ref1 + L":" + ref2);	
+						if (bySort[i].first < col_1 || bySort[i].first > col_2)	in_range = false;
 
-						if (bySort[i].second)
-							CP_XML_ATTR(L"descending", 1);	
+						ref1 = getCellAddress(bySort[i].first + (withHeader ? 1 : 0), row_1);
+						ref2 = getCellAddress(bySort[i].first + (withHeader ? 1 : 0), row_2);
 					}
+					else
+					{
+						if (bySort[i].first < row_1 || bySort[i].first > row_2)	in_range = false;
 
+						ref1 = getCellAddress(col_1, bySort[i].first + (withHeader ? 1 : 0));
+						ref2 = getCellAddress(col_2, bySort[i].first + (withHeader ? 1 : 0));
+					}
+					if (in_range)
+					{
+						CP_XML_NODE(L"sortCondition")
+						{
+							CP_XML_ATTR(L"ref", ref1 + L":" + ref2);
+
+							if (bySort[i].second)
+								CP_XML_ATTR(L"descending", 1);
+						}
+
+					}
 				}
 			}
 		}	

@@ -127,10 +127,10 @@ namespace NExtractTools
 		return res;
 	}
 
-	void CopyOOXOrigin(const std::wstring& sToDir, const std::wstring& sOOXDir, const std::wstring& sExt, const std::wstring& sOOXFile)
+	void CopyOOXOrigin(const std::wstring& sToDir, const std::wstring& sOOXDir, const std::wstring& sToFile, const std::wstring& sOOXFile)
 	{
 		//save Editor.xlsx for pivot
-		std::wstring sEditorOOX = sToDir + FILE_SEPARATOR_STR + L"Editor" + sExt;
+		std::wstring sEditorOOX = sToDir + FILE_SEPARATOR_STR + sToFile;
 		if(sOOXFile.empty())
 		{
 			dir2zip(sOOXDir, sEditorOOX);
@@ -320,9 +320,9 @@ namespace NExtractTools
     {
 		_UINT32 nRes = S_OK;
 		std::wstring sToDir = NSDirectory::GetFolderPath(sTo);
-		if (params.getConvertToOrigin())
+		if (params.needConvertToOrigin(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX))
 		{
-			CopyOOXOrigin(sToDir, sFrom, L".docx", sDocxFile);
+			CopyOOXOrigin(sToDir, sFrom, L"origin.docx", sDocxFile);
 		}
 		else
 		{
@@ -790,9 +790,9 @@ namespace NExtractTools
     {
 		_UINT32 nRes = S_OK;
 		std::wstring sToDir = NSDirectory::GetFolderPath(sTo);
-		if (params.getConvertToOrigin())
+		if (params.needConvertToOrigin(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX))
 		{
-			CopyOOXOrigin(sToDir, sXlsxDir, L".xlsx", sXlsxFile);
+			CopyOOXOrigin(sToDir, sXlsxDir, L"origin.xlsx", sXlsxFile);
 		}
 		else
 		{
@@ -800,7 +800,7 @@ namespace NExtractTools
 			if (m_oCXlsxSerializer.hasPivot(sXlsxDir))
 			{
 				//save Editor.xlsx for pivot
-				CopyOOXOrigin(sToDir, sXlsxDir, L".xlsx", sXlsxFile);
+				CopyOOXOrigin(sToDir, sXlsxDir, L"Editor.xlsx", sXlsxFile);
 			}
 
 			// Save to file (from temp dir)
@@ -1248,9 +1248,9 @@ namespace NExtractTools
     {
 		_UINT32 nRes = 0;
 		std::wstring sToDir = NSDirectory::GetFolderPath(sTo);
-		if (params.getConvertToOrigin())
+		if (params.needConvertToOrigin(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX))
 		{
-			CopyOOXOrigin(sToDir, sFrom, L".pptx", sPptxFile);
+			CopyOOXOrigin(sToDir, sFrom, L"origin.pptx", sPptxFile);
 		}
 		else
 		{
@@ -4576,7 +4576,7 @@ namespace NExtractTools
        }
        else if(0 != (AVS_OFFICESTUDIO_FILE_CANVAS & nFormatTo))
        {
-		   if (params.getConvertToOrigin())
+		   if (params.needConvertToOrigin(nFormatFrom))
 		   {
 			   copyOrigin(sFrom, *params.m_sFileTo);
 		   }

@@ -3914,11 +3914,19 @@ namespace PdfReader
         // fast realization for some colorspaces (for wasm module)
         int nColorMapType = pColorMap->getFillType();
         GfxColorComp** pColorMapLookup = pColorMap->getLookup();
+        if (!pColorMapLookup)
+            nColorMapType = 0;
 
         for (int nY = nHeight - 1; nY >= 0; --nY)
         {
             unsigned char* pLine = pImageStream->getLine();
             unsigned char* pLineDst = pBufferPtr + 4 * nWidth * nY;
+
+            if (!pLine)
+            {
+                memset(pLineDst, 0, 4 * nWidth);
+                continue;
+            }
 
             for (int nX = 0; nX < nCheckWidth; ++nX)
             {

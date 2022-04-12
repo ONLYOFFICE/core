@@ -219,14 +219,14 @@ namespace ComplexTypes
 			{
 				ReadAttributes(oReader);
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
+if (!oReader.IsEmptyNode())
+oReader.ReadTillEnd();
 			}
-            virtual std::wstring ToString() const
+			virtual std::wstring ToString() const
 			{
-                std::wstring sResult;
+				std::wstring sResult;
 
-				ComplexTypes_WriteAttribute( _T("w:val=\""), m_oVal );
+				ComplexTypes_WriteAttribute(_T("w:val=\""), m_oVal);
 
 				return sResult;
 			}
@@ -234,9 +234,9 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_Start(oReader)
+					WritingElement_ReadAttributes_ReadSingle(oReader, _T("w:val"), m_oVal)
+					WritingElement_ReadAttributes_End(oReader)
 			}
 
 		public:
@@ -266,53 +266,107 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				if ( _T("w:lvl") != oNode.GetName() )
+				if (_T("w:lvl") != oNode.GetName())
 					return;
 
-				XmlMacroReadAttributeBase( oNode, _T("w:ilvl"),      m_oIlvl );
-				XmlMacroReadAttributeBase( oNode, _T("w:tentative"), m_oTentative );
-				XmlMacroReadAttributeBase( oNode, _T("w:tplc"),      m_oTplc );
+				XmlMacroReadAttributeBase(oNode, _T("w:ilvl"), m_oIlvl);
+				XmlMacroReadAttributeBase(oNode, _T("w:tentative"), m_oTentative);
+				XmlMacroReadAttributeBase(oNode, _T("w:tplc"), m_oTplc);
 
 				XmlUtils::CXmlNode oChild;
-				
-				WritingElement_ReadNode( oNode, oChild, _T("w:isLgl"),          m_oIsLgl );
-				WritingElement_ReadNode( oNode, oChild, _T("w:legacy"),         m_oLegacy );
-				WritingElement_ReadNode( oNode, oChild, _T("w:lvlJc"),          m_oLvlJc );
-				WritingElement_ReadNode( oNode, oChild, _T("w:lvlPicBulletId"), m_oLvlPicBulletId );
-				WritingElement_ReadNode( oNode, oChild, _T("w:lvlRestart"),     m_oLvlRestart );
-				WritingElement_ReadNode( oNode, oChild, _T("w:lvlText"),        m_oLvlText );
-				WritingElement_ReadNode( oNode, oChild, _T("w:numFmt"),         m_oNumFmt );
-				WritingElement_ReadNode( oNode, oChild, _T("w:pPr"),            m_oPPr );
-				WritingElement_ReadNode( oNode, oChild, _T("w:pStyle"),         m_oPStyle );
-				WritingElement_ReadNode( oNode, oChild, _T("w:rPr"),            m_oRPr );
-				WritingElement_ReadNode( oNode, oChild, _T("w:start"),          m_oStart );
-				WritingElement_ReadNode( oNode, oChild, _T("w:suff"),           m_oSuffix );
+
+				WritingElement_ReadNode(oNode, oChild, _T("w:isLgl"), m_oIsLgl);
+				WritingElement_ReadNode(oNode, oChild, _T("w:legacy"), m_oLegacy);
+				WritingElement_ReadNode(oNode, oChild, _T("w:lvlJc"), m_oLvlJc);
+				WritingElement_ReadNode(oNode, oChild, _T("w:lvlPicBulletId"), m_oLvlPicBulletId);
+				WritingElement_ReadNode(oNode, oChild, _T("w:lvlRestart"), m_oLvlRestart);
+				WritingElement_ReadNode(oNode, oChild, _T("w:lvlText"), m_oLvlText);
+				WritingElement_ReadNode(oNode, oChild, _T("w:numFmt"), m_oNumFmt);
+				WritingElement_ReadNode(oNode, oChild, _T("w:pPr"), m_oPPr);
+				WritingElement_ReadNode(oNode, oChild, _T("w:pStyle"), m_oPStyle);
+				WritingElement_ReadNode(oNode, oChild, _T("w:rPr"), m_oRPr);
+				WritingElement_ReadNode(oNode, oChild, _T("w:start"), m_oStart);
+				WritingElement_ReadNode(oNode, oChild, _T("w:suff"), m_oSuffix);
 			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
+			void ReadElements(XmlUtils::CXmlLiteReader& oReader, int nDepth)
 			{
-				ReadAttributes( oReader );
-
-				if ( oReader.IsEmptyNode() )
-					return;
-
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
+				while (oReader.ReadNextSiblingNode(nDepth))
 				{
 					std::wstring sName = oReader.GetName();
-					if      ( _T("w:isLgl")          == sName ) m_oIsLgl = oReader;
-					else if ( _T("w:legacy")         == sName ) m_oLegacy = oReader;
-					else if ( _T("w:lvlJc")          == sName ) m_oLvlJc = oReader;
-					else if ( _T("w:lvlPicBulletId") == sName ) m_oLvlPicBulletId = oReader;
-					else if ( _T("w:lvlRestart")     == sName ) m_oLvlRestart = oReader;
-					else if ( _T("w:lvlText")        == sName ) m_oLvlText = oReader;
-					else if ( _T("w:numFmt")         == sName ) m_oNumFmt = oReader;
-					else if ( _T("w:pPr")            == sName ) m_oPPr = oReader;
-					else if ( _T("w:pStyle")         == sName ) m_oPStyle = oReader;
-					else if ( _T("w:rPr")            == sName ) m_oRPr = oReader;
-					else if ( _T("w:start")          == sName ) m_oStart = oReader;
-					else if ( _T("w:suff")           == sName ) m_oSuffix = oReader;
+					if (L"w:isLgl" == sName && !m_oIsLgl.IsInit())
+					{
+						m_oIsLgl = oReader;
+					}
+					else if (L"w:legacy" == sName && !m_oLegacy.IsInit())
+					{
+						m_oLegacy = oReader;
+					}
+					else if (L"w:lvlJc" == sName && !m_oLvlJc.IsInit())
+					{
+						m_oLvlJc = oReader;
+					}
+					else if (L"w:lvlPicBulletId" == sName && !m_oLvlPicBulletId.IsInit())
+					{
+						m_oLvlPicBulletId = oReader;
+					}
+					else if (L"w:lvlRestart" == sName)
+					{
+						m_oLvlRestart = oReader;
+					}
+					else if (L"w:lvlText" == sName && !m_oLvlText.IsInit())
+					{
+						m_oLvlText = oReader;
+					}
+					else if (L"w:numFmt" == sName && !m_oNumFmt.IsInit())
+					{
+						m_oNumFmt = oReader;
+					}
+					else if (L"w:pPr" == sName && !m_oPPr.IsInit())
+					{
+						m_oPPr = oReader;
+					}
+					else if (L"w:pStyle" == sName && !m_oPStyle.IsInit())
+					{
+						m_oPStyle = oReader;
+					}
+					else if (L"w:rPr" == sName && !m_oRPr.IsInit())
+					{
+						m_oRPr = oReader;
+					}
+					else if (L"w:start" == sName && !m_oStart.IsInit())
+					{
+						m_oStart = oReader;
+					}
+					else if (L"w:suff" == sName && !m_oSuffix.IsInit())
+					{
+						m_oSuffix = oReader;
+					}
+					else if (L"mc:AlternateContent" == sName) 
+					{
+						while (oReader.ReadNextSiblingNode(nDepth + 1))
+						{
+							std::wstring sName = oReader.GetName();
 
+							if (L"mc:Choice" == sName)
+							{
+								ReadElements(oReader, nDepth + 2);
+							}
+							else if (L"mc:Fallback" == sName)
+							{
+								ReadElements(oReader, nDepth + 2);
+							}
+						}
+					}
 				}
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
+
+				if (oReader.IsEmptyNode())
+					return;
+
+				ReadElements(oReader, oReader.GetDepth());
 			}
             virtual std::wstring toXML() const
 			{

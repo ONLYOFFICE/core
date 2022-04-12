@@ -1042,10 +1042,10 @@ void xlsx_drawing_context::serialize_vml_shape(_drawing_state_ptr & drawing_stat
 		std::wstringstream strmStyle;
 
 		strmStyle << L"position:absolute;";	
-		strmStyle << L"margin-left:" << std::to_wstring(drawing_state->child_anchor.x / 12700.)	<< L"pt;";	//in pt (1 pt = 12700 emu)
-		strmStyle << L"margin-top:"	<< std::to_wstring(drawing_state->child_anchor.y / 12700.)	<< L"pt;";
-		strmStyle << L"width:" << std::to_wstring(drawing_state->child_anchor.cx / 12700.)	<< L"pt;";
-		strmStyle << L"height:"	<< std::to_wstring(drawing_state->child_anchor.cy / 12700.)	<< L"pt;";
+		strmStyle << L"margin-left:" << std::to_wstring(drawing_state->sheet_anchor.absolute.x / 12700.) << L"pt;";	//in pt (1 pt = 12700 emu)
+		strmStyle << L"margin-top:"	<< std::to_wstring(drawing_state->sheet_anchor.absolute.y / 12700.)	<< L"pt;";
+		strmStyle << L"width:" << std::to_wstring(drawing_state->sheet_anchor.absolute.cx / 12700.)	<< L"pt;";
+		strmStyle << L"height:"	<< std::to_wstring(drawing_state->sheet_anchor.absolute.cy / 12700.) << L"pt;";
 		strmStyle << L"z-index:" << std::to_wstring(drawing_state->id)	 << L";";
 		
 		if (drawing_state->object.bVisible == false) 
@@ -1071,7 +1071,11 @@ void xlsx_drawing_context::serialize_vml_shape(_drawing_state_ptr & drawing_stat
 			if (!current_drawing_states->back()->custom_verticles.empty() &&
 				!current_drawing_states->back()->custom_segments.empty())
 			{		
-				ODRAW::PathParser oParser (current_drawing_states->back()->custom_segments, current_drawing_states->back()->custom_verticles, current_drawing_states->back()->custom_guides);
+				ODRAW::PathParser oParser (	current_drawing_states->back()->custom_segments, 
+											current_drawing_states->back()->custom_verticles, 
+											current_drawing_states->back()->custom_guides,
+											current_drawing_states->back()->custom_x_limo,
+											current_drawing_states->back()->custom_y_limo);
 				std::wstring path = oParser.GetVmlPath();
 
 				if (false == path.empty())
@@ -1203,7 +1207,7 @@ void xlsx_drawing_context::serialize_vml_shape(_drawing_state_ptr & drawing_stat
 				CP_XML_NODE(L"x:MoveWithCells"){}
 				CP_XML_NODE(L"x:SizeWithCells"){}
 
-				if (drawing_state->sheet_anchor.xFrom >= 0 && drawing_state->sheet_anchor.yFrom > 0)
+				if (drawing_state->sheet_anchor.xFrom >= 0 && drawing_state->sheet_anchor.xTo > 0)
 				{//old xls don't have this
 					std::wstringstream strmAnchor;
 					strmAnchor	
@@ -2798,19 +2802,22 @@ void xlsx_drawing_context::set_sheet_anchor(int colFrom, int xFrom, int rwFrom, 
 {
 	if (current_drawing_states == NULL) return;	
 	
-	current_drawing_states->back()->sheet_anchor.colFrom	= colFrom;
-	current_drawing_states->back()->sheet_anchor.colTo		= colTo;
-	current_drawing_states->back()->sheet_anchor.rwFrom		= rwFrom;
-	current_drawing_states->back()->sheet_anchor.rwTo		= rwTo;
-	current_drawing_states->back()->sheet_anchor.xFrom		= xFrom;
-	current_drawing_states->back()->sheet_anchor.yFrom		= yFrom;
-	current_drawing_states->back()->sheet_anchor.xTo		= xTo;
-	current_drawing_states->back()->sheet_anchor.yTo		= yTo;
+	if (colTo > 0 && rwTo > 0)
+	{//  0  in comment old versions
+		current_drawing_states->back()->sheet_anchor.colFrom = colFrom;
+		current_drawing_states->back()->sheet_anchor.colTo = colTo;
+		current_drawing_states->back()->sheet_anchor.rwFrom = rwFrom;
+		current_drawing_states->back()->sheet_anchor.rwTo = rwTo;
+		current_drawing_states->back()->sheet_anchor.xFrom = (std::min)(xFrom, xTo);
+		current_drawing_states->back()->sheet_anchor.yFrom = (std::min)(yFrom, yTo);
+		current_drawing_states->back()->sheet_anchor.xTo = (std::max)(xFrom, xTo);
+		current_drawing_states->back()->sheet_anchor.yTo = (std::max)(yFrom, yTo);
+	}
 
-	current_drawing_states->back()->sheet_anchor.absolute.x		= x;
-	current_drawing_states->back()->sheet_anchor.absolute.y		= y;
-	current_drawing_states->back()->sheet_anchor.absolute.cx	= cx;
-	current_drawing_states->back()->sheet_anchor.absolute.cy	= cy;
+	current_drawing_states->back()->sheet_anchor.absolute.x = x;
+	current_drawing_states->back()->sheet_anchor.absolute.y = y;
+	current_drawing_states->back()->sheet_anchor.absolute.cx = cx;
+	current_drawing_states->back()->sheet_anchor.absolute.cy = cy;
 
 	current_drawing_states->back()->type_anchor	= 1;
 }

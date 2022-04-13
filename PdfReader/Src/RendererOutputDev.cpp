@@ -79,6 +79,83 @@ EM_JS(int, js_free_id, (unsigned char* data), {
 #define OO_INLINE inline
 #endif
 
+namespace NSCorrectFontName
+{
+    bool CheckFontNameStyle(std::wstring& sName, const std::wstring& sStyle)
+    {
+        size_t nPos = 0;
+        size_t nLenReplace = sStyle.length();
+        bool bRet = false;
+
+        std::wstring sName2 = sName;
+        NSStringExt::ToLower(sName2);
+
+        while (std::wstring::npos != (nPos = sName2.find(sStyle, nPos)))
+        {
+            size_t nOffset = 0;
+            if ((nPos > 0) && sName2.at(nPos - 1) == '-')
+            {
+                --nPos;
+                ++nOffset;
+            }
+
+            bRet = true;
+            sName.erase(nPos, nLenReplace + nOffset);
+            sName2.erase(nPos, nLenReplace + nOffset);
+        }
+        return bRet;
+    }
+
+    void CheckFontNamePDF(std::wstring& sName, NSFonts::CFontSelectFormat& format)
+    {
+        if (sName.length() > 7 && sName.at(6) == '+')
+        {
+            bool bIsRemove = true;
+            for (int nIndex = 0; nIndex < 6; nIndex++)
+            {
+                wchar_t nChar = sName.at(nIndex);
+                if (nChar < 'A' || nChar > 'Z')
+                {
+                    bIsRemove = false;
+                    break;
+                }
+            }
+            if (bIsRemove)
+            {
+                sName.erase(0, 7);
+            }
+        }
+
+        bool bBold = false;
+        bool bItalic = false;
+
+        CheckFontNameStyle(sName, L"regular");
+        CheckFontNameStyle(sName, L"condensed");
+        CheckFontNameStyle(sName, L"condensedlight");
+        //CheckFontNameStyle(sName, L"light");
+
+        CheckFontNameStyle(sName, L"condensedbold");
+        CheckFontNameStyle(sName, L"semibold");
+        if (CheckFontNameStyle(sName, L"boldmt")) bBold = true;
+        if (CheckFontNameStyle(sName, L"bold")) bBold = true;
+
+        if (CheckFontNameStyle(sName, L"italicmt")) bItalic = true;
+        if (CheckFontNameStyle(sName, L"italic")) bItalic = true;
+        if (CheckFontNameStyle(sName, L"oblique")) bItalic = true;
+
+        if (CheckFontNameStyle(sName, L"bolditalicmt")) { bBold = true; bItalic = true; }
+        if (CheckFontNameStyle(sName, L"bolditalic")) { bBold = true; bItalic = true; }
+        if (CheckFontNameStyle(sName, L"bold_italic")) { bBold = true; bItalic = true; }
+        if (CheckFontNameStyle(sName, L"boldoblique")) { bBold = true; bItalic = true; }
+        if (CheckFontNameStyle(sName, L"bold_oblique")) { bBold = true; bItalic = true; }
+
+        if (bBold)
+            format.bBold = new INT(1);
+        if (bItalic)
+            format.bItalic = new INT(1);
+    }
+}
+
 class CMemoryFontStream
 {
 public:
@@ -1140,6 +1217,7 @@ namespace PdfReader
                     oRefObject.free();
 
                     NSFonts::CFontSelectFormat oFontSelect;
+                    NSCorrectFontName::CheckFontNamePDF(wsFontBaseName, oFontSelect);
                     if (oFontObject.isDict())
                     {
                         Dict *pFontDict = oFontObject.getDict();
@@ -1173,7 +1251,11 @@ namespace PdfReader
 
                             // ItalicAngle
                             oFontDescriptor.dictLookup("ItalicAngle", &oDictItem);
-                            if (oDictItem.isInt() && 0 != oDictItem.getInt()) oFontSelect.bItalic = new INT(1);
+                            if (oDictItem.isInt() && 0 != oDictItem.getInt())
+                            {
+                                if (oFontSelect.bItalic) RELEASEOBJECT(oFontSelect.bItalic);
+                                oFontSelect.bItalic = new INT(1);
+                            }
                             oDictItem.free();
 
                             // Ascent

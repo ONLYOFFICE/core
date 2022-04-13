@@ -371,6 +371,7 @@ void xl_files::add_vba_project()
 	bVbaProject = true;
 	bMacrosEnabled = true;
 }
+
 void xl_files::add_attachedToolbars()
 {
 	bAttachedToolbars = true;

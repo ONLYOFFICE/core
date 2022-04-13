@@ -262,27 +262,34 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 					last_index = index;
 				}
 			}
-			if (bMacros && xls_file->storage_->isDirectory(L"_VBA_PROJECT_CUR"))
+			if (bMacros)
 			{
-				std::wstring xl_path = xlsx_path + FILE_SEPARATOR_STR + L"xl";	
-				NSDirectory::CreateDirectory(xl_path.c_str());
+				if (xls_file->storage_->isDirectory(L"_VBA_PROJECT_CUR"))
+				{
+					// if false == global_info_->bVbaProjectExist ??
 
-				std::wstring sVbaProjectFile = xl_path + FILE_SEPARATOR_STR + L"vbaProject.bin";
+					std::wstring xl_path = xlsx_path + FILE_SEPARATOR_STR + L"xl";
+					NSDirectory::CreateDirectory(xl_path.c_str());
 
-				POLE::Storage *storageVbaProject = new POLE::Storage(sVbaProjectFile.c_str());
+					std::wstring sVbaProjectFile = xl_path + FILE_SEPARATOR_STR + L"vbaProject.bin";
 
-				if ((storageVbaProject) && (storageVbaProject->open(true, true)))
-				{			
-					xls_file->copy(0, L"_VBA_PROJECT_CUR/", storageVbaProject, false);
+					POLE::Storage *storageVbaProject = new POLE::Storage(sVbaProjectFile.c_str());
 
-					storageVbaProject->close();
-					delete storageVbaProject;
+					if ((storageVbaProject) && (storageVbaProject->open(true, true)))
+					{
+						xls_file->copy(0, L"_VBA_PROJECT_CUR/", storageVbaProject, false);
 
-					output_document->get_xl_files().add_vba_project();
+						storageVbaProject->close();
+						delete storageVbaProject;
+
+						output_document->get_xl_files().add_vba_project();
+					}
 				}
+				else if (xls_global_info->bMacrosExist)
+					output_document->get_xl_files().set_macros_enabled();
+				else 
+					bMacros = false;
 			}
-			else 
-				bMacros = false;
 
 			XLS::CFStreamPtr controls = xls_file->getNamedStream(L"Ctls");
 			if(controls)

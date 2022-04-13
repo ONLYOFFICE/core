@@ -504,6 +504,14 @@ namespace NSHtmlRenderer
             m_oFontManager.Init(pApplicationFonts, nCacheSize);
         }
 
+        void ClearStatistics()
+        {
+            m_lCountParagraphs = 0;
+            m_lCountWords = 0;
+            m_lCountSymbols = 0;
+            m_lCountSpaces = 0;
+        }
+
         template<typename T>
         void SetParams(T writer)
         {

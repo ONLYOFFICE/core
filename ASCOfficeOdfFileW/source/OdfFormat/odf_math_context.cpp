@@ -129,7 +129,7 @@ namespace odf_writer
 		};
 
 		annotation_diak_symbols = { {L"˙",L"dot"}, {L"¨",L"ddot"}, {L"⃛",L"dddot"}, {L"&#708;", L"hat"}, {L"ˇ",L"check"}, {L"´",L"acute"}, {L"&#715;",L"grave"}, {L"˘",L"breve"},
-			                        {L"~",L"tilde"},{L"¯",L"overline"},{L"→",L"vec"}, {L"⇀",L"harpoon"}, {L"&#45;",L"unnderline"}/*, {L"",L""}, {L"",L""}, {L"",L""}, {L"",L""}, {L"",L""}, {L"",L""},{L"",L""}, 
+			                        {L"~",L"tilde"},{L"¯",L"overline"},{L"→",L"vec"}, {L"⇀",L"harpoon"}, {L"&#45;",L"underline"}/*, {L"",L""}, {L"",L""}, {L"",L""}, {L"",L""}, {L"",L""}, {L"",L""},{L"",L""}, 
 			                        {L"",L""}*/
 		};
 

@@ -250,12 +250,11 @@ namespace Oox2Odf
 	{
 		if (!oox_acc) return;		
 
-		CREATE_MATH_TAG(L"mover");
+		returnValues values = convert(oox_acc->m_oAccPr.GetPointer());
 
-		
+		CREATE_MATH_TAG(L"mover");				
 		OPEN_MATH_TAG(elm);
 		
-		returnValues values = convert(oox_acc->m_oAccPr.GetPointer());
 		std::wstring diakSymbol = (oox_acc->m_oAccPr->m_oChr.IsInit()) ? oox_acc->m_oAccPr->m_oChr.get().m_val->GetValue() : L"̂";
 		
 		std::map<std::wstring, std::wstring>& map = odf_context()->math_context()->diak_symbols;
@@ -263,14 +262,24 @@ namespace Oox2Odf
 		
 		symbol = (map[diakSymbol]);
 		std::map<std::wstring, std::wstring>& annotation_map = odf_context()->math_context()->annotation_diak_symbols;
+		bool annotation_flag;
 		if (annotation_map.find(symbol) != annotation_map.end())
+		{
 			annotation() += annotation_map[symbol] + L" ";
-		else
-			annotation_flag() = false;
+			annotation_flag = true;
+		}
+		else		
+			annotation_flag = false;
+		
 
 		annotation() += L"{";
 		convert(oox_acc->m_oElement.GetPointer());
 		annotation() += L"}";
+		if (!annotation_flag)
+		{
+			annotation() += L" csup ";
+			annotation() += L"\"" + symbol + L"\"";
+		}
 		{
 			CREATE_MATH_TAG(L"mo");
 			elm->add_text(symbol);
@@ -807,7 +816,7 @@ namespace Oox2Odf
 
 	}
 
-	void OoxConverter::convert(OOX::Logic::CGroupChr *oox_group_ch)
+	void OoxConverter::convert(OOX::Logic::CGroupChr* oox_group_ch, OOX::Logic::CLim* oox_lim)
 	{
 		if (!oox_group_ch) return;		
 
@@ -818,22 +827,62 @@ namespace Oox2Odf
 		
 		
 		CREATE_MATH_TAG(tag.c_str());
-		OPEN_MATH_TAG(elm);
-		convert(oox_group_ch->m_oElement.GetPointer());
-		if(values.auxFlag)
-			convert(oox_group_ch->m_oGroupChrPr->m_oChr.GetPointer());
+		if (values.auxFlag)
+		{
+			typedef odf_writer::math_mover* T;
+			T tmp = dynamic_cast<T>(elm.get());
+			tmp->accent = true;
+		}
 		else
 		{
-			if (!oox_group_ch->m_oGroupChrPr->m_oChr.IsInit())
+			typedef odf_writer::math_munder* T;
+			T tmp = dynamic_cast<T>(elm.get());
+			tmp->accentunder = true;
+		}
+		
+		OPEN_MATH_TAG(elm);
+		convert(oox_group_ch->m_oElement.GetPointer());
+		if (values.auxFlag)
+		{
+			if (oox_group_ch->m_oGroupChrPr->m_oChr.IsInit() && oox_group_ch->m_oGroupChrPr->m_oChr->m_val->GetValue() == L"⏞")
+			{
+				if (oox_lim)
+				{
+					annotation() += L"overbrace {";
+					convert(oox_lim);
+					annotation() += L"}";
+				}
+				else
+					annotation() += L"overbrace \"\"";
+			}
+			else
+			{
+				annotation() += L" csup ";
+				convert(oox_group_ch->m_oGroupChrPr->m_oChr.GetPointer());
+			}
+		}
+		else
+		{
+			if (oox_group_ch->m_oGroupChrPr->m_oChr.IsInit())
+			{
+				annotation() += L" csub ";
+				convert(oox_group_ch->m_oGroupChrPr->m_oChr.GetPointer());
+			}
+			else
 			{
 				CREATE_MATH_TAG(L"mo");
 				elm->add_text(L" ⏟ ");
 				OPEN_MATH_TAG(elm);
 				CLOSE_MATH_TAG;
-			}				
-			else
-				convert(oox_group_ch->m_oGroupChrPr->m_oChr.GetPointer());
-			
+				if (oox_lim)
+				{
+					annotation() += L"underbrace {";
+					convert(oox_lim);
+					annotation() += L"}";
+				}
+				else
+					annotation() += L"underbrace \"\"";
+			}			
 		}
 		CLOSE_MATH_TAG;	
 		if (values.colorFlag)
@@ -927,15 +976,24 @@ namespace Oox2Odf
 		CREATE_MATH_TAG(L"mover");
 		OPEN_MATH_TAG(elm);
 
-		annotation() += L"oper ";
+		if (oox_lim_upp->m_oElement->m_arrItems[0]->getType() == OOX::EElementType::et_m_groupChr)
+		{
+			
+			convert((OOX::Logic::CGroupChr*)(oox_lim_upp->m_oElement->m_arrItems[0]), oox_lim_upp->m_oLim);
+		}
+		else
+		{
+			annotation() += L"oper ";
 
-		mrow();
+			mrow();
 			convert(oox_lim_upp->m_oElement.GetPointer());
-		endOfMrow();
+			endOfMrow();
 
-		annotation() += L"to {";
+			annotation() += L"to {";
 			convert(oox_lim_upp->m_oLim.GetPointer());
-		annotation() += L"} ";
+			annotation() += L"} ";
+		}
+
 
 		CLOSE_MATH_TAG;
 		endOfMrow();
@@ -1533,7 +1591,7 @@ namespace Oox2Odf
 		annotation().erase(iterator);
 		annotation() += L"nroot {" + degree + L"} {" + root + L"}";
 
-		CLOSE_MATH_TAG
+		CLOSE_MATH_TAG;
 	}
 
 	void OoxConverter::convert(OOX::Logic::CSPre *oox_s_pre)

@@ -703,7 +703,7 @@ public:
 		void convert(OOX::Logic::CFraction				*oox_fraction);
 		void convert(OOX::Logic::CFunc					*oox_func);
 		returnValues convert(OOX::Logic::CFuncPr		*oox_func_pr);
-		void convert(OOX::Logic::CGroupChr				*oox_group_ch);
+		void convert(OOX::Logic::CGroupChr *oox_group_ch, OOX::Logic::CLim *oox_lim);
 		returnValues convert(OOX::Logic::CGroupChrPr	*oox_group_ch_pr);
 		void convert(OOX::Logic::CLimLow				*oox_lim_low);
 		returnValues convert(OOX::Logic::CLimLowPr		*oox_lim_low_pr);

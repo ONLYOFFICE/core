@@ -122,6 +122,7 @@ namespace NSDocxRenderer
         double m_dY;
         double m_dWidth;
         double m_dHeight;
+        double m_dLastX;
 
         double m_dWidthWithoutSpaces;
         double m_dLeftWithoutSpaces;
@@ -141,6 +142,7 @@ namespace NSDocxRenderer
             m_dY			= 0;
             m_dWidth		= 0;
             m_dHeight		= 0;
+            m_dLastX        = 0;
 
             m_dWidthWithoutSpaces	= 0;
             m_dLeftWithoutSpaces	= 0;
@@ -177,6 +179,8 @@ namespace NSDocxRenderer
             m_dY		= oSrc.m_dY;
             m_dWidth	= oSrc.m_dWidth;
             m_dHeight	= oSrc.m_dHeight;
+
+            m_dLastX    = oSrc.m_dLastX;
 
             m_dWidthWithoutSpaces	= oSrc.m_dWidthWithoutSpaces;
             m_dLeftWithoutSpaces	= oSrc.m_dLeftWithoutSpaces;

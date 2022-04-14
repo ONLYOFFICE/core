@@ -1284,23 +1284,31 @@ void docx_conversion_context::process_section(std::wostream & strm, odf_reader::
 				if (!col) continue;
 
 				double percent = col->style_rel_width_ ? col->style_rel_width_->get_value() : 0;
-				if (percent > 1000.) percent /= 100.;
-
-				double width = page_width * percent / 100.;
-
-				double space_end = col->fo_end_indent_ ? col->fo_end_indent_->get_value_unit(odf_types::length::pt) : 0;
-				double space_start = col->fo_start_indent_ ? col->fo_start_indent_->get_value_unit(odf_types::length::pt) : 0;
-
-				width -= space_end;
-				width -= space_start;
-
-				if (i < columns->style_columns_.size() - 1)
+				if (percent > 32767)
 				{
-					col = dynamic_cast<odf_reader::style_column*>( columns->style_columns_[i + 1].get());
-					space_start  = col->fo_start_indent_ ? col->fo_start_indent_->get_value_unit(odf_types::length::pt) : 0;
+					//auto
+					break;
 				}
-				
-				width_space.push_back(std::make_pair(width, space_start + space_end));
+				else
+				{
+					if (percent > 1000.) percent /= 100.;
+
+					double width = page_width * percent / 100.;
+
+					double space_end = col->fo_end_indent_ ? col->fo_end_indent_->get_value_unit(odf_types::length::pt) : 0;
+					double space_start = col->fo_start_indent_ ? col->fo_start_indent_->get_value_unit(odf_types::length::pt) : 0;
+
+					width -= space_end;
+					width -= space_start;
+
+					if (i < columns->style_columns_.size() - 1)
+					{
+						col = dynamic_cast<odf_reader::style_column*>(columns->style_columns_[i + 1].get());
+						space_start = col->fo_start_indent_ ? col->fo_start_indent_->get_value_unit(odf_types::length::pt) : 0;
+					}
+
+					width_space.push_back(std::make_pair(width, space_start + space_end));
+				}
 			}
 		}
 	}

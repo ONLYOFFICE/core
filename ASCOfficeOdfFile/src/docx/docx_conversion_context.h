@@ -523,9 +523,11 @@ public:
 		std::vector<std::wstring>	content;	//delete elements		
 		bool						active = false;
 		bool						in_drawing = false;
-	
+		bool						out_active = false;
+
 		void clear()
 		{
+			out_active = false;
 			type = 0;
 			id.clear();
 			author.clear();

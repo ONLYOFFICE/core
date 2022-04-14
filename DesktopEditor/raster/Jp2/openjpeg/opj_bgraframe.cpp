@@ -356,13 +356,32 @@ namespace openjpeg
 		{
 			unsigned int nLimitY = image->y1;
 			unsigned int nOffsetY = image->y0;
-			while (true)
+			while (nOffsetY < nLimitY)
 			{
 				if ((nLimitY - nOffsetY) < nTileHeight)
 					nTileHeight = nLimitY - nOffsetY;
 
 				if (!opj_set_decode_area(l_codec, image, image->x0, nOffsetY, image->x1, nOffsetY + nTileHeight))
-					goto end;
+				{
+					opj_stream_destroy(l_stream);
+					opj_destroy_codec(l_codec);
+
+					l_stream = get_file_stream(pFileData, nFileSize, codec);
+
+					if (!l_stream)
+						goto end;
+
+					l_codec = opj_create_decompress(codec);
+
+					if (!opj_setup_decoder(l_codec, &parameters))
+						goto end;
+
+					if (!opj_read_header(l_stream, l_codec, &image))
+						goto end;
+
+					if (!opj_set_decode_area(l_codec, image, image->x0, nOffsetY, image->x1, nOffsetY + nTileHeight))
+						goto end;
+				}
 
 				if (!(opj_decode(l_codec, l_stream, image)))
 					goto end;
@@ -374,25 +393,6 @@ namespace openjpeg
 					goto end;
 
 				nOffsetY += nTileHeight;
-
-				if (nOffsetY >= nLimitY)
-					break;
-
-				opj_stream_destroy(l_stream);
-				opj_destroy_codec(l_codec);
-
-				l_stream = get_file_stream(pFileData, nFileSize, codec);
-
-				if (!l_stream)
-					goto end;
-
-				l_codec = opj_create_decompress(codec);
-
-				if (!opj_setup_decoder(l_codec, &parameters))
-					goto end;
-
-				if (!opj_read_header(l_stream, l_codec, &image))
-					goto end;
 			}
 		}
 

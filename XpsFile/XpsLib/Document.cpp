@@ -38,6 +38,65 @@
 
 namespace XPS
 {
+    void RemoveLastSlashes(std::wstring& sPath)
+    {
+        size_t nLen = sPath.length();
+        if (nLen > 0)
+        {
+            if (sPath[nLen - 1] == '/' || sPath[nLen - 1] == '\\')
+                sPath.erase(nLen - 1);
+        }
+
+        if (std::wstring::npos == sPath.find('%'))
+            return;
+
+        std::wstring result;
+        result.reserve(nLen);
+        for (size_t i = 0; i < nLen; ++i)
+        {
+            if (i < nLen - 2 && sPath[i] == '%')
+            {
+                wchar_t a = sPath[i + 1];
+                int aInt = -1;
+                if (a >= '0' && a <= '9')
+                    aInt = a - '0';
+                else if (a >= 'a' && a <= 'f')
+                    aInt = 10 + a - 'a';
+                else if (a >= 'A' && a <= 'F')
+                    aInt = 10 + a - 'A';
+
+                if (aInt < 0)
+                {
+                    result.push_back(sPath[i]);
+                    continue;
+                }
+
+                wchar_t b = sPath[i + 2];
+                int bInt = -1;
+                if (b >= '0' && b <= '9')
+                    bInt = b - '0';
+                else if (b >= 'a' && b <= 'f')
+                    bInt = 10 + b - 'a';
+                else if (b >= 'A' && b <= 'F')
+                    bInt = 10 + b - 'A';
+
+                if (bInt < 0)
+                {
+                    result.push_back(sPath[i]);
+                    continue;
+                }
+
+                result.push_back((wchar_t)((aInt << 4) | bInt));
+                i += 2;
+            }
+            else
+            {
+                result.push_back(sPath[i]);
+            }
+        }
+        sPath = result;
+    }
+
     CDocument::CDocument(NSFonts::IFontManager* pFontManager)
 	{		
 		m_pFontManager = pFontManager;
@@ -86,6 +145,7 @@ namespace XPS
 			}
 		}
 
+        RemoveLastSlashes(wsTargetFile);
 		if (wsTargetFile.empty())
 			return false;
 
@@ -119,6 +179,7 @@ namespace XPS
 			}
 		}
 
+        RemoveLastSlashes(wsSourceFile);
 		if (wsSourceFile.empty())
 			return false;
 
@@ -236,6 +297,7 @@ namespace XPS
 				ReadAttribute(oReader, L"Source", wsSource);
 
 				std::wstring wsPagePath = wsSource;
+                RemoveLastSlashes(wsPagePath);
                 if (!m_wsPath->existsXml(wsPagePath))
 				{
 					wsPagePath = wsFilePath + wsSource;

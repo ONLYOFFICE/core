@@ -49,6 +49,8 @@ namespace Oox2Odf
 	void annotationPostProd(std::wstring& annotation)
 	{
 		annotaionReplaceAll(annotation, L"=", L"\"=\"");
+		annotaionReplaceAll(annotation, L"+", L"\"+\"");
+		annotaionReplaceAll(annotation, L"-", L"\"-\"");
 		annotaionReplaceAll(annotation, L"{) }", L")");
 		annotaionReplaceAll(annotation, L"{( }", L"(");
 		annotaionReplaceAll(annotation, L"*", L"\"*\"");
@@ -924,17 +926,26 @@ namespace Oox2Odf
 		
 		returnValues values = convert(oox_lim_low->m_oLimLowPr.GetPointer());
 		mrow();
-		
+
 		CREATE_MATH_TAG(L"munder");
 		OPEN_MATH_TAG(elm);
-		annotation() += L"oper ";
-		mrow();
-			convert(oox_lim_low->m_oElement.GetPointer());
-		endOfMrow();
 
-		annotation() += L"from {";
+		if (oox_lim_low->m_oElement->m_arrItems[0]->getType() == OOX::EElementType::et_m_groupChr)
+		{
+
+			convert(dynamic_cast<OOX::Logic::CGroupChr*>(oox_lim_low->m_oElement->m_arrItems[0]), oox_lim_low->m_oLim.GetPointer());
+		}
+		else
+		{
+			annotation() += L"oper ";
+			mrow();
+			convert(oox_lim_low->m_oElement.GetPointer());
+			endOfMrow();
+
+			annotation() += L"from {";
 			convert(oox_lim_low->m_oLim.GetPointer());
-		annotation() += L"} ";
+			annotation() += L"} ";
+		}
 
 		CLOSE_MATH_TAG;
 
@@ -979,7 +990,7 @@ namespace Oox2Odf
 		if (oox_lim_upp->m_oElement->m_arrItems[0]->getType() == OOX::EElementType::et_m_groupChr)
 		{
 			
-			convert((OOX::Logic::CGroupChr*)(oox_lim_upp->m_oElement->m_arrItems[0]), oox_lim_upp->m_oLim);
+			convert(dynamic_cast<OOX::Logic::CGroupChr*>(oox_lim_upp->m_oElement->m_arrItems[0]), oox_lim_upp->m_oLim.GetPointer());
 		}
 		else
 		{

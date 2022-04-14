@@ -43,15 +43,19 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(SHRFMLACELL)
     public:
         SHRFMLACELL(_INT32 row, _INT32 col, std::vector<XLS::CellRangeRef>& shared_formulas_locations_ref);
-        virtual ~SHRFMLACELL();
+        ~SHRFMLACELL();
 
         XLS::BaseObjectPtr clone();
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
+        static const XLS::ElementType	type = XLS::typeSHRFMLACELL;
+
         XLS::BaseObjectPtr              m_source;
         _INT32                          m_Row;
         _INT32                          m_Col;
+
+        XLS::BaseObjectPtr              _fmlacell;
 
         std::vector<XLS::CellRangeRef>&	shared_formulas_locations_ref_;
         int				m_sharedIndex;

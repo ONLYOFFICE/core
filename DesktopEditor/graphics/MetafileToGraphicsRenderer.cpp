@@ -221,6 +221,10 @@ namespace NSOnlineOfficeBinToPdf
             int nRasterW = m_internal->m_nRasterW;
             int nRasterH = m_internal->m_nRasterH;
 
+            int nOffsetX = 0;
+            int nResultW = nRasterW;
+            int nResultH = nRasterH;
+
             if (1 == m_internal->m_nSaveType)
             {
                 double w = oInfo.arSizes[nPageIndex].width;
@@ -241,6 +245,24 @@ namespace NSOnlineOfficeBinToPdf
 
                 nRasterW = (int)((w * m_internal->m_dDpiX / 25.4) + 0.5);
                 nRasterH = (int)((h * m_internal->m_dDpiY / 25.4) + 0.5);
+            }
+            else if (3 == m_internal->m_nSaveType)
+            {
+                double w = oInfo.arSizes[nPageIndex].width;
+                double h = oInfo.arSizes[nPageIndex].height;
+
+                double dKoef1 = nRasterW / w;
+                double dKoef2 = nRasterH / h;
+
+                if (dKoef1 > dKoef2)
+                {
+                    nRasterH = (int)(dKoef1 * h) + 1;
+                }
+                else
+                {
+                    nRasterW = (int)(dKoef2 * w) + 1;
+                    nOffsetX = (nRasterW - nResultW) >> 1;
+                }
             }
 
             oFrame.put_Width(nRasterW);
@@ -263,6 +285,36 @@ namespace NSOnlineOfficeBinToPdf
             BYTE* pBufferPage = oInfo.arSizes[nPageIndex].data;
             LONG nLen = lBufferLen - ((LONG)(pBufferPage - pBuffer));
             NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pBufferPage, nLen, this);
+
+            if (3 == m_internal->m_nSaveType)
+            {
+                int nStride = 4 * nResultW;
+                BYTE* pDataResult = new BYTE[nStride * nResultH];
+
+                if (0 == nOffsetX)
+                {
+                    memcpy(pDataResult, pDataRaster, nStride * nResultH);
+                }
+                else
+                {
+                    BYTE* pDataCopy = pDataRaster + 4 * nOffsetX;
+                    BYTE* pDataDst = pDataResult;
+                    int nStrideSrc = 4 * nRasterW;
+                    for (int i = 0; i < nResultH; ++i)
+                    {
+                        memcpy(pDataDst, pDataCopy, nStride);
+                        pDataCopy += nStrideSrc;
+                        pDataDst += nStride;
+                    }
+                }
+
+                oFrame.put_Data(pDataResult);
+                oFrame.put_Width(nResultW);
+                oFrame.put_Height(nResultH);
+                oFrame.put_Stride(nStride);
+
+                RELEASEARRAYOBJECTS(pDataRaster);
+            }
 
             if (m_internal->m_bIsOnlyFirst)
                 oFrame.SaveFile(sMain + sExt, m_internal->m_nRasterFormat);

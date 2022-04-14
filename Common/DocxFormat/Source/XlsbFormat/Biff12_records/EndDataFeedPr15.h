@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndDataFeedPr15)
         public:
             EndDataFeedPr15();
-            virtual ~EndDataFeedPr15();
+            ~EndDataFeedPr15();
 
             XLS::BaseObjectPtr clone();
 

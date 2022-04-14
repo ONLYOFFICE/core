@@ -43,7 +43,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(COLORSCALE)
     public:
         COLORSCALE();
-        virtual ~COLORSCALE();
+        ~COLORSCALE();
 
         XLS::BaseObjectPtr clone();
 

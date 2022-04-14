@@ -85,12 +85,71 @@ public:
     {
         write(path, (BYTE*)xml.c_str(), (DWORD)xml.length());
     }
+    bool existsXml(const std::wstring& path)
+    {
+        if (exists(path))
+            return true;
+
+        std::vector<std::wstring> arPieces = getFiles(path, false);
+        if (0 < arPieces.size())
+        {
+            std::vector<std::wstring>::iterator iter = arPieces.begin();
+            while (iter != arPieces.end())
+            {
+                std::wstring::size_type len = iter->length();
+                std::wstring::size_type pos = iter->rfind(L".piece");
+                if (std::wstring::npos != pos && ((pos + 6) == len))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
     std::string readXml(const std::wstring& path)
     {
         CBuffer* buffer = NULL;
         if (!read(path, buffer))
+        {
+            std::vector<std::wstring> arPieces = getFiles(path, false);
+            if (0 < arPieces.size())
+            {
+                std::sort(arPieces.begin(), arPieces.end(), compareAsXmlPiece);
+                std::vector<std::wstring>::iterator iter = arPieces.begin();
+                while (iter != arPieces.end())
+                {
+                    std::wstring::size_type len = iter->length();
+                    std::wstring::size_type pos = iter->rfind(L".piece");
+                    if (std::wstring::npos != pos && ((pos + 6) == len))
+                    {
+                        iter++;
+                        continue;
+                    }
+                    else
+                    {
+                        iter = arPieces.erase(iter);
+                    }
+                }
+            }
+            if (0 < arPieces.size())
+            {
+                std::string sResult;
+                for (std::vector<std::wstring>::iterator iter = arPieces.begin(); iter != arPieces.end(); iter++)
+                {
+                    CBuffer* bufferPiece = NULL;
+                    if (read(*iter, bufferPiece))
+                    {
+                        sResult += std::string((char*)bufferPiece->Buffer, (size_t)bufferPiece->Size);
+                    }
+                    delete bufferPiece;
+                }
+                return sResult;
+            }
+
             return "";
-        std::string sXmlUtf8((char*)buffer->Buffer, (size_t)buffer->Size);
+        }
+        std::string sXmlUtf8 = XmlUtils::GetUtf8FromFileContent(buffer->Buffer, (unsigned int)buffer->Size);
         delete buffer;
         return sXmlUtf8;
     }
@@ -110,6 +169,64 @@ public:
         delete buffer;
 
         return sRet;
+    }
+
+private:
+    static bool compareAsXmlPiece(const std::wstring& a, const std::wstring& b)
+    {
+        size_t aLen = a.length();
+        size_t bLen = b.length();
+
+        size_t posA = 0;
+        size_t posB = 0;
+
+        int nPartA = 0;
+        int nPartB = 0;
+
+        size_t len = (aLen < bLen) ? aLen : bLen;
+        if (2 > len)
+            goto error;
+
+        while (posA < len)
+        {
+            if (a[posA] != b[posA])
+                break;
+            ++posA;
+        }
+
+        if (0 == posA)
+            goto error;
+
+        posB = posA;
+
+        // не ищем '['. просто первый неравный
+        //if ('[' != a[posA - 1] || '[' != b[posB - 1])
+        //    goto error;
+
+        while (posA < aLen)
+        {
+            if (a[posA] < '0' || a[posA] > '9')
+                break;
+            nPartA = 10 * nPartA + (a[posA] - '0');
+            ++posA;
+        }
+        if (posA == aLen || a[posA] != ']')
+            goto error;
+
+        while (posB < bLen)
+        {
+            if (b[posB] < '0' || b[posB] > '9')
+                break;
+            nPartB = 10 * nPartB + (b[posB] - '0');
+            ++posB;
+        }
+        if (posB == bLen || b[posB] != ']')
+            goto error;
+
+        return nPartA < nPartB;
+
+    error:
+        return a < b;
     }
 };
 

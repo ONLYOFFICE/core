@@ -1943,6 +1943,12 @@ void Binary_tblPrWriter::WriteTblPr(OOX::Logic::CTableProperty* p_tblPr)
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_tblPrType::tblDescription);
 		m_oBcw.m_oStream.WriteStringW(tblPr.m_oTblDescription->ToString2());
 	}
+	if (tblPr.m_oTblOverlap.IsInit() && tblPr.m_oTblOverlap->m_oVal.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_tblPrType::tblOverlap);
+		m_oBcw.m_oStream.WriteBYTE((BYTE)tblPr.m_oTblOverlap->m_oVal->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 }
 void Binary_tblPrWriter::WriteTblMar(const OOX::Logic::CTblCellMar& cellMar)
 {
@@ -6058,7 +6064,17 @@ void BinaryDocumentTableWriter::WriteRunContent(std::vector<OOX::WritingElement*
 				{
 				case SimpleTypes::brtypeColumn:			nBreakType = c_oSerRunType::columnbreak;	break;
 				case SimpleTypes::brtypePage:			nBreakType = c_oSerRunType::pagebreak;		break;
-				case SimpleTypes::brtypeTextWrapping:	nBreakType = c_oSerRunType::linebreak;		break;
+				case SimpleTypes::brtypeTextWrapping:
+				{
+					switch (pBr->m_oClear.GetValue())
+					{
+					case SimpleTypes::brclearAll:	nBreakType = c_oSerRunType::linebreakClearAll;		break;
+					case SimpleTypes::brclearLeft:	nBreakType = c_oSerRunType::linebreakClearLeft;		break;
+					case SimpleTypes::brclearRight:	nBreakType = c_oSerRunType::linebreakClearRight;	break;
+					default:						nBreakType = c_oSerRunType::linebreak;				break;
+					}
+					
+				}break;
 				default:
 					break;
 				}
@@ -6066,9 +6082,8 @@ void BinaryDocumentTableWriter::WriteRunContent(std::vector<OOX::WritingElement*
 				{
 					m_oBcw.m_oStream.WriteBYTE(nBreakType);
 					m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
-				}
-				break;
-			}
+				}				
+			}break;
 		case OOX::et_w_cr:
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSerRunType::cr);
@@ -9058,11 +9073,8 @@ void BinaryCustomsTableWriter::Write(OOX::CDocument* pDocument)
 				}
 			}
 			
-			int nCurPos2 = m_oBcw.WriteItemStart(c_oSerCustoms::Content);
-			
-			std::wstring sXml = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pCustomXml->m_sXmlA.c_str(), pCustomXml->m_sXmlA.length());
-			m_oBcw.m_oStream.WriteStringW3(sXml);
-			
+			int nCurPos2 = m_oBcw.WriteItemStart(c_oSerCustoms::ContentA);
+			m_oBcw.m_oStream.WriteStringA(pCustomXml->m_sXmlA);
 			m_oBcw.WriteItemEnd(nCurPos2);
 			
 			m_oBcw.WriteItemEnd(nCurPos);

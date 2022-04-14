@@ -46,7 +46,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndColInfos)
         public:
             EndColInfos();
-            virtual ~EndColInfos();
+            ~EndColInfos();
 
             XLS::BaseObjectPtr clone();
 

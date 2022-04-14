@@ -44,7 +44,7 @@ namespace XLSB
     public:
         FRTBlank();
         FRTBlank(XLS::CFRecord& record);
-        virtual ~FRTBlank();
+        ~FRTBlank();
 		XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;

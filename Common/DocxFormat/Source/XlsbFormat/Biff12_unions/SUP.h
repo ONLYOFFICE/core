@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(SUP)
     public:
         SUP();
-        virtual ~SUP();
+        ~SUP();
 
         XLS::BaseObjectPtr clone();
 

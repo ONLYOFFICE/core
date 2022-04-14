@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(ECOLAPPROPS)
     public:
         ECOLAPPROPS();
-        virtual ~ECOLAPPROPS();
+        ~ECOLAPPROPS();
 
         XLS::BaseObjectPtr clone();
 

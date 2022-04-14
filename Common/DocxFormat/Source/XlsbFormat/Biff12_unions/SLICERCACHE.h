@@ -41,14 +41,14 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(SLICERCACHE)
     public:
         SLICERCACHE();
-        virtual ~SLICERCACHE();
+        ~SLICERCACHE();
 
         XLS::BaseObjectPtr clone();
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
         XLS::BaseObjectPtr               m_BrtBeginSlicerCache;
-        XLS::BaseObjectPtr               m_ACUID;
+        //XLS::BaseObjectPtr               m_ACUID;
         XLS::BaseObjectPtr               m_BrtBeginSlicerCacheDef;
         XLS::BaseObjectPtr               m_BrtSlicerCachePivotTables;
         XLS::BaseObjectPtr               m_slicerCacheData;

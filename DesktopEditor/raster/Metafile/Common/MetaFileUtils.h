@@ -35,9 +35,12 @@
 #include "MetaFileTypes.h"
 
 #include "../Emf/EmfTypes.h"
+#include "../Emf/EmfPlusTypes.h"
 #include "../Wmf/WmfTypes.h"
 #include "../Emf/EmfObjects.h"
+#include "../Emf/EmfPlusObjects.h"
 #include "../Wmf/WmfObjects.h"
+#include "../../../../Common/DocxFormat/Source/Base/Types_32.h"
 
 #include <algorithm>
 
@@ -230,6 +233,15 @@ namespace MetaFile
 			nValue = ReadLong();
 			return *this;
 		}
+		CDataStream& operator>>(TRectD& oRect)
+		{
+			*this >> oRect.dLeft;
+			*this >> oRect.dTop;
+			*this >> oRect.dRight;
+			*this >> oRect.dBottom;
+
+			return *this;
+		}
 		CDataStream& operator>>(TEmfRect& oRect)
 		{
 			*this >> oRect.shLeft;
@@ -280,6 +292,13 @@ namespace MetaFile
 			return *this;
 		}
 		CDataStream& operator>>(TEmfPointS& oPoint)
+		{
+			*this >> oPoint.x;
+			*this >> oPoint.y;
+
+			return *this;
+		}
+		CDataStream& operator>>(TEmfPointD& oPoint)
 		{
 			*this >> oPoint.x;
 			*this >> oPoint.y;
@@ -661,6 +680,174 @@ namespace MetaFile
 
 			return *this;
 		}
+		CDataStream& operator>>(TEmfPlusRect& oRect)
+		{
+			*this >> oRect.shX;
+			*this >> oRect.shY;
+			*this >> oRect.shWidth;
+			*this >> oRect.shHeight;
+
+			return *this;
+		}
+		CDataStream& operator>>(TEmfPlusRectF& oRect)
+		{
+			*this >> oRect.dX;
+			*this >> oRect.dY;
+			*this >> oRect.dWidth;
+			*this >> oRect.dHeight;
+
+			return *this;
+		}
+		CDataStream& operator>>(TEmfPlusARGB &oARGB)
+		{
+			*this >> oARGB.chBlue;
+			*this >> oARGB.chGreen;
+			*this >> oARGB.chRed;
+			*this >> oARGB.chAlpha;
+
+			return *this;
+		}
+		CDataStream& operator>>(TEmfPlusPointR &oPoint)
+		{
+			//TODO: реализовать
+			return *this;
+		}
+		CDataStream& operator>>(TEmfPlusPointF &oPoint)
+		{
+			*this >> oPoint.X;
+			*this >> oPoint.Y;
+
+			return *this;
+		}
+		CDataStream& operator>>(TEmfPlusRectR &oTEmfPlusRectR)
+		{
+			*this >> oTEmfPlusRectR.chX;
+			*this >> oTEmfPlusRectR.chY;
+			*this >> oTEmfPlusRectR.chWidth;
+			*this >> oTEmfPlusRectR.chHeight;
+
+			return *this;
+		}
+		CDataStream& operator>>(TGUID& oTGUID)
+		{
+			*this >> oTGUID.nData1;
+			*this >> oTGUID.shData2;
+			*this >> oTGUID.shData3;
+
+			BYTE *arBytes = new BYTE[8];
+
+			ReadBytes(arBytes, 8);
+
+			long long int llnValue;
+
+			*((unsigned char*)(&llnValue) + 0) = pCur[0];
+			*((unsigned char*)(&llnValue) + 1) = pCur[1];
+			*((unsigned char*)(&llnValue) + 2) = pCur[2];
+			*((unsigned char*)(&llnValue) + 3) = pCur[3];
+			*((unsigned char*)(&llnValue) + 4) = pCur[4];
+			*((unsigned char*)(&llnValue) + 5) = pCur[5];
+			*((unsigned char*)(&llnValue) + 6) = pCur[6];
+			*((unsigned char*)(&llnValue) + 7) = pCur[7];
+
+			oTGUID.llnData4 = llnValue;
+
+			return *this;
+		}
+		CDataStream& operator>>(CEmfPlusRegionNode& oEmfPlusRegionNode)
+		{
+			unsigned int unType;
+
+			*this >> unType;
+
+			switch (unType)
+			{
+				case RegionNodeDataTypeAnd:
+				{
+					oEmfPlusRegionNode.eType = RegionNodeDataTypeAnd;
+					break;
+				}
+				case RegionNodeDataTypeOr:
+				{
+					oEmfPlusRegionNode.eType = RegionNodeDataTypeOr;
+					break;
+				}
+				case RegionNodeDataTypeXor:
+				{
+					oEmfPlusRegionNode.eType = RegionNodeDataTypeXor;
+					break;
+				}
+				case RegionNodeDataTypeExclude:
+				{
+					oEmfPlusRegionNode.eType = RegionNodeDataTypeExclude;
+					break;
+				}
+				case RegionNodeDataTypeComplement:
+				{
+					oEmfPlusRegionNode.eType = RegionNodeDataTypeComplement;
+					break;
+				}
+				case RegionNodeDataTypeRect:
+				{
+					oEmfPlusRegionNode.pRect = new TEmfPlusRectF;
+
+					*this >> *oEmfPlusRegionNode.pRect;
+
+					oEmfPlusRegionNode.eType = RegionNodeDataTypeRect;
+					break;
+				}
+				case RegionNodeDataTypePath:
+				{
+					oEmfPlusRegionNode.eType = RegionNodeDataTypePath;
+					break;
+				}
+				case RegionNodeDataTypeEmpty:
+				{
+					oEmfPlusRegionNode.eType = RegionNodeDataTypeEmpty;
+					break;
+				}
+				case RegionNodeDataTypeInfinite:
+				{
+					oEmfPlusRegionNode.eType = RegionNodeDataTypeInfinite;
+					break;
+				}
+			}
+
+			return *this;
+		}
+		CDataStream& operator>>(CEmfPlusRegion& oEmfPlusRegion)
+		{
+			unsigned int unVersion, unRegionCount;
+
+			*this >> unVersion;
+			*this >> unRegionCount;
+
+			oEmfPlusRegion.arNodes.resize(unRegionCount + 1);
+
+			for (unsigned int unIndex = 0; unIndex <= unRegionCount; ++unIndex)
+				*this >> oEmfPlusRegion.arNodes[unIndex];
+
+			//TODO: реализовать
+
+			return *this;
+		}
+		CDataStream& operator>>(CEmfPlusImageAttributes& oAttributes)
+		{
+			Skip(8); //Version, Reserved 1 (4 bytes)
+
+			unsigned int unWrapMode;
+
+			*this >> unWrapMode;
+
+			if (unWrapMode < WrapModeTile || unWrapMode > WrapModeClamp)
+				return *this;
+
+			oAttributes.eWrapMode = static_cast<EEmfPlusWrapMode>(unWrapMode);
+
+			*this >> oAttributes.oClampColor;
+			*this >> oAttributes.nObjectClamp;
+
+			Skip(4); //Reserved 2 (4 bytes)
+		}
 		CDataStream& operator>>(TWmfRect& oRect)
 		{
 			*this >> oRect.Left;
@@ -780,7 +967,7 @@ namespace MetaFile
 			*this >> oScan.Top;
 			*this >> oScan.Bottom;
 
-			if (oScan.Count > 0 && oScan.Count & 1) // Должно делиться на 2
+			if (oScan.Count > 0 && !(oScan.Count & 1)) // Должно делиться на 2
 			{
 				unsigned short ushCount = oScan.Count >> 1;
 				oScan.ScanLines = new TWmfScanLine[ushCount];
@@ -809,6 +996,11 @@ namespace MetaFile
 		{
 			*this >> pRegion->nextInChain;
 			*this >> pRegion->ObjectType;
+
+			if (0x0006 != pRegion->ObjectType)
+				return *this;
+
+			*this >> pRegion->ObjectCount;
 			*this >> pRegion->RegionSize;
 			*this >> pRegion->ScanCount;
 			*this >> pRegion->MaxScan;

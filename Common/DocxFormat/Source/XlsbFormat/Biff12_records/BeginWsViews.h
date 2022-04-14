@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginWsViews)
         public:
             BeginWsViews();
-            virtual ~BeginWsViews();
+            ~BeginWsViews();
 
             XLS::BaseObjectPtr clone();
 

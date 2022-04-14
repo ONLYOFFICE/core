@@ -200,7 +200,7 @@ PtgPtr PtgFactory::createPtg(const unsigned short type, const CellRef& cell_base
 			return PtgPtr(new PtgArray(type)); // *
 
         case 0x1918:
-            return PtgPtr(new PtgList); // *
+            return PtgPtr(new PtgList(type)); // *
 
 		case 0x0021:
 		case 0x0041:
@@ -215,7 +215,7 @@ PtgPtr PtgFactory::createPtg(const unsigned short type, const CellRef& cell_base
 		case 0x0023:
 		case 0x0043:
 		case 0x0063:
-			return PtgPtr(new PtgName(type)); // *
+            return PtgPtr(new PtgName(type)); // *
 
 		case 0x0024:
 		case 0x0044:

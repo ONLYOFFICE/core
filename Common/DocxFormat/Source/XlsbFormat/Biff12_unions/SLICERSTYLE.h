@@ -43,7 +43,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(SLICERSTYLE)
     public:
         SLICERSTYLE();
-        virtual ~SLICERSTYLE();
+        ~SLICERSTYLE();
 
         XLS::BaseObjectPtr clone();
 

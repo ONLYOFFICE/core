@@ -43,11 +43,19 @@
 #include "MetaFile.h"
 #include "MetaFileTypes.h"
 #include "MetaFileObjects.h"
+#include "../GraphicsRenderer.h"
 
 #include <cmath>
 
 #ifndef M_PI
 	#define M_PI 3.1415926
+#endif
+
+#ifdef _DEBUG
+    #include <iostream>
+    #define LOGGING(_value) std::wcout << _value << std::endl;
+#else
+    #define LOGGING(_value)
 #endif
 
 namespace MetaFile
@@ -73,14 +81,7 @@ namespace MetaFile
 
 			m_pRenderer = pRenderer;
 
-			TRect* pBounds = m_pFile->GetDCBounds();
-			int nL = pBounds->nLeft;
-			int nR = pBounds->nRight;
-			int nT = pBounds->nTop;
-			int nB = pBounds->nBottom;
-
-			m_dScaleX = (nR - nL <= 0) ? 1 : m_dW / (double)(nR - nL);
-			m_dScaleY = (nB - nT <= 0) ? 1 : m_dH / (double)(nB - nT);
+			UpdateScale();
 
 			m_bStartedPath = false;
 
@@ -101,23 +102,45 @@ namespace MetaFile
 			//m_pRenderer->EndCommand(c_nPathType);
 			//m_pRenderer->PathCommandEnd();
 		}
+
+		CMetaFileRenderer(const CMetaFileRenderer &oMetaFileRenderer, IMetaFileBase *pFile)
+		{
+			m_pFile = pFile;
+
+			m_dX = oMetaFileRenderer.m_dX;
+			m_dY = oMetaFileRenderer.m_dY;
+			m_dW = oMetaFileRenderer.m_dW;
+			m_dH = oMetaFileRenderer.m_dH;
+
+			m_pRenderer = oMetaFileRenderer.m_pRenderer;
+
+			UpdateScale();
+
+			m_bStartedPath = false;
+		}
+
+		void UpdateScale()
+		{
+			if (NULL == m_pFile)
+				return;
+
+			TRect* pBounds = m_pFile->GetDCBounds();
+			int nL = pBounds->nLeft;
+			int nR = pBounds->nRight;
+			int nT = pBounds->nTop;
+			int nB = pBounds->nBottom;
+
+			m_dScaleX = (nR - nL <= 0) ? 1 : m_dW / (double)(nR - nL);
+			m_dScaleY = (nB - nT <= 0) ? 1 : m_dH / (double)(nB - nT);
+		 }
+
 		~CMetaFileRenderer()
 		{
 		}
 
 		void Begin()
 		{
-			if (m_pFile)
-			{
-				TRect* pBounds = m_pFile->GetDCBounds();
-				int nL = pBounds->nLeft;
-				int nR = pBounds->nRight;
-				int nT = pBounds->nTop;
-				int nB = pBounds->nBottom;
-
-				m_dScaleX = (nR - nL <= 0) ? 1 : m_dW / (double)(nR - nL);
-				m_dScaleY = (nB - nT <= 0) ? 1 : m_dH / (double)(nB - nT);
-			}
+			UpdateScale();
 		}
 		void End()
 		{
@@ -140,10 +163,10 @@ namespace MetaFile
 
 			for (int nIndex = 0, nSize = 4 * unWidth * unHeight; nIndex < nSize; nIndex += 4)
 			{
-				pBufferPtr[0] = (unsigned char)pBuffer[nIndex + 0];
-				pBufferPtr[1] = (unsigned char)pBuffer[nIndex + 1];
-				pBufferPtr[2] = (unsigned char)pBuffer[nIndex + 2];
-				pBufferPtr[3] = (unsigned char)pBuffer[nIndex + 3];
+				pBufferPtr[0] = (BYTE)pBuffer[nIndex + 0];
+				pBufferPtr[1] = (BYTE)pBuffer[nIndex + 1];
+				pBufferPtr[2] = (BYTE)pBuffer[nIndex + 2];
+				pBufferPtr[3] = (BYTE)pBuffer[nIndex + 3];
 				pBufferPtr += 4;
 			}
 
@@ -184,10 +207,58 @@ namespace MetaFile
 
 			m_pRenderer->DrawImage(&oImage, dImageX, dImageY, dImageW, dImageH);
 		}
-		void DrawString(std::wstring& wsText, unsigned int unCharsCount, double _dX, double _dY, double* pDx, int iGraphicsMode)
+		void DrawDriverString(const std::wstring& wsString, const std::vector<TPointD>& arPoints)
+		{
+			IFont *pFont = m_pFile->GetFont();
+
+			if (NULL == pFont)
+				return;
+
+			UpdateTransform();
+			UpdateClip();
+
+			m_pRenderer->put_FontName(pFont->GetFaceName());
+			m_pRenderer->put_FontSize(fabs(pFont->GetHeight() * m_dScaleX / 25.4 * 72));
+
+			int lStyle = 0;
+			if (pFont->GetWeight() > 550)
+				lStyle |= 0x01;
+			if (pFont->IsItalic())
+				lStyle |= 0x02;
+			if (pFont->IsUnderline())
+				lStyle |= (1 << 2);
+			if (pFont->IsStrikeOut())
+				lStyle |= (1 << 7);
+
+			m_pRenderer->put_FontStyle(lStyle);
+
+			m_pRenderer->put_BrushType(c_BrushTypeSolid);
+			m_pRenderer->put_BrushColor1(m_pFile->GetTextColor());
+			m_pRenderer->put_BrushAlpha1(255);
+
+			double dM11, dM12, dM21, dM22, dX, dY;
+
+			m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dX, &dY);
+			m_pRenderer->ResetTransform();
+
+			m_pRenderer->put_FontSize(fabs(pFont->GetHeight() * dM22 * m_dScaleY / 25.4 * 72));
+
+			std::vector<TPointD> arGlyphPoint(arPoints.size());
+
+			for (unsigned int unIndex = 0; unIndex < arPoints.size(); ++unIndex)
+			{
+				arGlyphPoint[unIndex].x = (arPoints[unIndex].x * dM11) * m_dScaleX + dX;
+				arGlyphPoint[unIndex].y = (arPoints[unIndex].y * dM22) * m_dScaleY + dY;
+			}
+
+			for (unsigned int unIndex = 0; unIndex < std::min(arPoints.size(), wsString.length()); ++unIndex)
+				m_pRenderer->CommandDrawText(std::wstring(1, wsString[unIndex]), arGlyphPoint[unIndex].x, arGlyphPoint[unIndex].y, 0, 0);
+
+		}
+
+		void DrawString(std::wstring& wsText, unsigned int unCharsCount, double _dX, double _dY, double* pDx, int iGraphicsMode, double dXScale, double dYScale)
 		{
 			CheckEndPath();
-
 			IFont* pFont = m_pFile->GetFont();
 			if (!pFont)
 				return;
@@ -219,10 +290,16 @@ namespace MetaFile
 
 			m_pRenderer->put_FontStyle(lStyle);
 
-			double dTheta = -((((double)pFont->GetEscapement()) / 10) * M_PI / 180);
+			double dTheta = ((((double)pFont->GetEscapement()) / 10) * M_PI / 180);
 
-			double dCosTheta = (float)cos(dTheta);
-			double dSinTheta = (float)sin(dTheta);
+			double dCosTheta = cosf(dTheta);
+			double dSinTheta = sinf(dTheta);
+
+			double dM11, dM12, dM21, dM22, dRx, dRy;
+			m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
+
+			if (dM11 * dM22 > 0)
+				dSinTheta = -dSinTheta;
 
 			float fL = 0, fT = 0, fW = 0, fH = 0;
 			float fUndX1 = 0, fUndY1 = 0, fUndX2 = 0, fUndY2 = 0, fUndSize = 1;
@@ -235,7 +312,7 @@ namespace MetaFile
 				pFontManager->LoadFontByName(wsFaceName, dFontHeight, lStyle, 72, 72);
 				pFontManager->SetCharSpacing(dFontCharSpace * 72 / 25.4);
 
-                double dMmToPt = 25.4 / 72;
+				double dMmToPt = 25.4 / 72;
 
                 double dFHeight = dFontHeight;
                 double dFDescent = dFontHeight;
@@ -283,7 +360,6 @@ namespace MetaFile
 
 				fUndX1 = fL;
 				fUndX2 = fL + fW;
-
 
 				fT = (float)-dFAscent;
 				fH = (float)dFHeight;
@@ -341,45 +417,44 @@ namespace MetaFile
 
 			if (iGraphicsMode == GM_COMPATIBLE)
 			{
-				// В данной ситуации матрица преобразования должна быть диагональной, в ней могут быть только отражения,
-				// которые в данном случае нужно проправить
-
-				double dM11, dM12, dM21, dM22, dRx, dRy;
-				m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
-
 				double dShiftX = 0;
 				double dShiftY = 0;
 
-				// Нам нужно знать в следствие чего происходит флип, из-за Window или Viewport
-				if (dM11 < -0.00001)
+				m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
+				if (dXScale < -0.00001)
 				{
 					dX -= fabs(fW);
 
 					if (m_pFile->IsWindowFlippedX())
 					{
-						dShiftX = (2 * dX + fabs(fW)) * dM11;
-					}
-					else
-					{
 						dShiftX = (2 * dX - fabs(fW)) * dM11;
 					}
+					else
+					{
+						dShiftX = (2 * dX + fabs(fW)) * dM11;
+					}
+
+					dM11 = fabs(dM11);
 				}
 
-				if (dM22 < - 0.00001)
+				if (dYScale < -0.00001)
 				{
 					dY -= fabs(fH);
+
 					if (m_pFile->IsWindowFlippedY())
-					{
-						dShiftY = (2 * dY + fabs(fH)) * dM22;
-					}
-					else
 					{
 						dShiftY = (2 * dY - fabs(fH)) * dM22;
 					}
+					else
+					{
+						dShiftY = (2 * dY + fabs(fH)) * dM22;
+					}
+
+					dM22 = fabs(dM22);
 				}
 
 				m_pRenderer->ResetTransform();
-				m_pRenderer->SetTransform(fabs(dM11), 0, 0, fabs(dM22), dShiftX + dRx, dShiftY + dRy);
+				m_pRenderer->SetTransform(dM11, dM12, dM21, dM22, dShiftX + dRx, dShiftY + dRy);
 
 				bChangeCTM = true;
 			}
@@ -387,7 +462,18 @@ namespace MetaFile
 			if (0 != pFont->GetEscapement())
 			{
 				// TODO: тут реализован только параметр shEscapement, еще нужно реализовать параметр Orientation
-				m_pRenderer->SetTransform(dCosTheta, dSinTheta, -dSinTheta, dCosTheta, dX - dX * dCosTheta + dY * dSinTheta, dY - dX * dSinTheta - dY * dCosTheta);
+				m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
+
+				double dOldX = dX;
+
+				dX = dX * dCosTheta + dY * dSinTheta;
+				dY = dY * dCosTheta - dOldX * dSinTheta;
+
+				m_pRenderer->ResetTransform();
+				m_pRenderer->SetTransform(dCosTheta * dM11, dSinTheta * dM22,
+							 -dSinTheta * dM11, dCosTheta * dM22,
+							  dRx, dRy);
+
 				bChangeCTM = true;
 			}
 
@@ -404,7 +490,6 @@ namespace MetaFile
 				m_pRenderer->PathCommandLineTo(dX + fL + fW, dY + fT);
 				m_pRenderer->PathCommandLineTo(dX + fL + fW, dY + fT + fH);
 				m_pRenderer->PathCommandLineTo(dX + fL, dY + fT + fH);
-				m_pRenderer->PathCommandClose();
 				m_pRenderer->DrawPath(c_nWindingFillMode);
 				m_pRenderer->EndCommand(c_nPathType);
 				m_pRenderer->PathCommandEnd();
@@ -442,7 +527,7 @@ namespace MetaFile
 				unsigned int unUnicodeLen = 0;
 				unsigned int* pUnicode = NSStringExt::CConverter::GetUtf32FromUnicode(wsText, unUnicodeLen);
 				if (pUnicode && unUnicodeLen)
-				{
+				{					
 					double dOffset = 0;
 					double dKoefX = m_dScaleX;
 					for (unsigned int unCharIndex = 0; unCharIndex < unUnicodeLen; unCharIndex++)
@@ -464,8 +549,8 @@ namespace MetaFile
 		{
 			CheckEndPath();
 
-			UpdateClip();
 			UpdateTransform();
+			UpdateClip();
 
 			m_lDrawPathType = -1;
 			if (true == UpdateBrush())
@@ -529,8 +614,7 @@ namespace MetaFile
 		{
 			if (lType <= 0)
 			{
-				if (-1 != m_lDrawPathType)
-					m_pRenderer->DrawPath(m_lDrawPathType);
+				m_pRenderer->DrawPath(1);
 			}
 			else if (-1 != m_lDrawPathType)
 			{
@@ -680,7 +764,7 @@ namespace MetaFile
 			oPoint.x = m_dScaleX * dX + m_dX;
 			oPoint.y = m_dScaleY * dY + m_dY;
 			return oPoint;
-		}
+		}		
 		bool UpdateBrush()
 		{
 			IBrush* pBrush = m_pFile->GetBrush();
@@ -719,10 +803,12 @@ namespace MetaFile
 					m_pRenderer->put_BrushAlpha2(255);
 
 					TColor oBgColor(m_pFile->GetTextBgColor());
+					oBgColor.SwapRGBtoBGR();
 					m_pRenderer->put_BrushColor2(oBgColor.ToInt());
 				}
 
 				TColor oFgColor(pBrush->GetColor());
+				oFgColor.SwapRGBtoBGR();
 				m_pRenderer->put_BrushTexturePath(wsBrushType);
 				m_pRenderer->put_BrushAlpha1(255);
 				m_pRenderer->put_BrushColor1(oFgColor.ToInt());
@@ -739,11 +825,17 @@ namespace MetaFile
 				m_pRenderer->put_BrushAlpha1(pBrush->GetAlpha());
 				m_pRenderer->put_BrushAlpha2(pBrush->GetAlpha2());
 
+				double dX, dY, dWidth, dHeight;
+
+				pBrush->GetBounds(dX, dY, dWidth, dHeight);
+
+				m_pRenderer->BrushBounds(dX, dY, dWidth, dHeight);
+
 				m_pRenderer->put_BrushLinearAngle(pBrush->GetStyleEx());
 
 				long Colors[2];
-				Colors[0] = (pBrush->GetColor()<<8) + pBrush->GetAlpha();
-				Colors[1] = (pBrush->GetColor2()<<8) + pBrush->GetAlpha2();
+				Colors[0] = pBrush->GetColor()  + (pBrush->GetAlpha()  << 24);
+				Colors[1] = pBrush->GetColor2() + (pBrush->GetAlpha2() << 24);
 				double Position[2] = {0, 1};
 
 				m_pRenderer->put_BrushGradientColors(Colors,Position,2);
@@ -794,24 +886,38 @@ namespace MetaFile
 
 			int nColor = pPen->GetColor();
 
-			// TODO: dWidth зависит еще от флага PS_GEOMETRIC в стиле карандаша
-			double dWidth = pPen->GetWidth() * m_dScaleX;
-			if (dWidth <= 0.01)
-				dWidth = 0;
-
 			unsigned int unMetaPenStyle = pPen->GetStyle();
-			unsigned int ulPenType   = unMetaPenStyle & PS_TYPE_MASK;
-			unsigned int ulPenEndCap = unMetaPenStyle & PS_ENDCAP_MASK;
-			unsigned int ulPenJoin   = unMetaPenStyle & PS_JOIN_MASK;
-			unsigned int ulPenStyle  = unMetaPenStyle & PS_STYLE_MASK;
+			unsigned int ulPenType      = unMetaPenStyle & PS_TYPE_MASK;
+			unsigned int ulPenStartCap  = unMetaPenStyle & PS_STARTCAP_MASK;
+			unsigned int ulPenEndCap    = unMetaPenStyle & PS_ENDCAP_MASK;
+			unsigned int ulPenJoin      = unMetaPenStyle & PS_JOIN_MASK;
+			unsigned int ulPenStyle     = unMetaPenStyle & PS_STYLE_MASK;
 
-			BYTE nCapStyle = 0;
+			// TODO: dWidth зависит еще от флага PS_GEOMETRIC в стиле карандаша
+
+			double dWidth = pPen->GetWidth() * m_dScaleX;
+
+			if (dWidth == 0)
+				dWidth = 25.4 / 96;
+
+			BYTE nStartCapStyle = 0;
+			if (PS_STARTCAP_ROUND == ulPenStartCap)
+				nStartCapStyle = Aggplus::LineCapRound;
+			else if (PS_STARTCAP_SQUARE == ulPenStartCap)
+				nStartCapStyle = Aggplus::LineCapSquare;
+			else if (PS_STARTCAP_FLAT == ulPenStartCap)
+				nStartCapStyle = Aggplus::LineCapFlat;
+
+			BYTE nEndCapStyle = 0;
 			if (PS_ENDCAP_ROUND == ulPenEndCap)
-				nCapStyle = Aggplus::LineCapRound;
+				nEndCapStyle = Aggplus::LineCapRound;
 			else if (PS_ENDCAP_SQUARE == ulPenEndCap)
-				nCapStyle = Aggplus::LineCapSquare;
+				nEndCapStyle = Aggplus::LineCapSquare;
 			else if (PS_ENDCAP_FLAT == ulPenEndCap)
-				nCapStyle = Aggplus::LineCapFlat;
+				nEndCapStyle = Aggplus::LineCapFlat;
+
+			if (0 == nStartCapStyle)
+				nStartCapStyle = nEndCapStyle;
 
 			BYTE nJoinStyle = 0;
 			if (PS_JOIN_ROUND == ulPenJoin)
@@ -821,13 +927,53 @@ namespace MetaFile
 			else if (PS_JOIN_MITER == ulPenJoin)
 				nJoinStyle = Aggplus::LineJoinMiter;
 
-			double dMiterLimit = m_pFile->GetMiterLimit() * m_dScaleX;
+			double dMiterLimit = (0 != pPen->GetMiterLimit()) ? pPen->GetMiterLimit() : m_pFile->GetMiterLimit() * m_dScaleX;
 
 			// TODO: Реализовать PS_USERSTYLE
-			BYTE nDashStyle = Aggplus::DashStyleSolid;;
+			BYTE nDashStyle = Aggplus::DashStyleSolid;
+
+			double *pDataDash;
+			unsigned int unSizeDash;
+
+			pPen->GetDashData(pDataDash, unSizeDash);
+
+			if (NULL != pDataDash && 0 != unSizeDash)
+			{
+				//на данный момент производьный стиль не отрисовывается,
+				//поэтому замещает по возможно его на стандартный
+				m_pRenderer->put_PenDashOffset(pPen->GetDashOffset());
+
+				if (1 == unSizeDash)
+					ulPenStyle = Aggplus::DashStyleSolid;
+				else if (2 == unSizeDash)
+					ulPenStyle = (pDataDash[0] != pDataDash[1]) ? Aggplus::DashStyleDash : Aggplus::DashStyleDot;
+				else if (4 == unSizeDash)
+					ulPenStyle = Aggplus::DashStyleDashDot;
+				else if (6 == unSizeDash)
+					ulPenStyle = Aggplus::DashStyleDashDotDot;
+
+//				double dDpiX;
+//				m_pRenderer->get_DpiX(&dDpiX);
+//				double dPixelW = dDpiX > 1 ? 25.4 / dDpiX : 25.4 / 72;
+
+//				double *pDashPattern = new double[unSizeDash];
+
+//				if (NULL != pDashPattern)
+//				{
+//					for (unsigned int unIndex = 0; unIndex < unSizeDash; ++unIndex)
+//						pDashPattern[unIndex] = pDataDash[unIndex] * dPixelW;
+//				}
+
+//				m_pRenderer->put_PenDashOffset(pPen->GetDashOffset());
+//				m_pRenderer->PenDashPattern( (NULL != pDashPattern) ? pDashPattern : pDataDash, unSizeDash);
+//				ulPenStyle = Aggplus::DashStyleCustom;
+
+//				RELEASEARRAYOBJECTS(pDashPattern)
+
+			}
 
 			// В WinGDI все карандаши толщиной больше 1px рисуются в стиле PS_SOLID
-			if (1 >= pPen->GetWidth() && PS_SOLID != ulPenStyle)
+			if (1 >= pPen->GetWidth() && PS_SOLID != ulPenStyle && false)
 			{
 				// TODO: Ранее здесь специально ставилась толщина 0, что любой рендерер должен
 				//       воспринимать как толщину в 1px. Но сейчас это не работает в графическом ренедерере,
@@ -911,13 +1057,18 @@ namespace MetaFile
 				}
 			}
 
-			m_pRenderer->put_PenDashStyle(nDashStyle);
+			if (1 <= pPen->GetWidth() && PS_SOLID != ulPenStyle)
+			{
+				nStartCapStyle = Aggplus::LineCapFlat;
+			}
+
+			m_pRenderer->put_PenDashStyle(ulPenStyle);
 			m_pRenderer->put_PenLineJoin(nJoinStyle);
-			m_pRenderer->put_PenLineStartCap(nCapStyle);
-			m_pRenderer->put_PenLineEndCap(nCapStyle);
+			m_pRenderer->put_PenLineStartCap(nStartCapStyle);
+			m_pRenderer->put_PenLineEndCap(nEndCapStyle);
 			m_pRenderer->put_PenColor(nColor);
 			m_pRenderer->put_PenSize(dWidth);
-			m_pRenderer->put_PenAlpha(255);
+			m_pRenderer->put_PenAlpha(pPen->GetAlpha());
 			m_pRenderer->put_PenMiterLimit(dMiterLimit);
 
 			// TO DO: С текущим интерфейсом AVSRenderer, остальные случаи ushROPMode

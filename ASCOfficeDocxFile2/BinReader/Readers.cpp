@@ -2162,6 +2162,16 @@ int Binary_tblPrReader::Read_tblPr(BYTE type, long length, void* poResult)
 	{
 		pWiterTblPr->Description = m_oBufferedStream.GetString3(length);
 	}
+	else if (c_oSerProp_tblPrType::tblOverlap == type)
+	{
+		BYTE jc = m_oBufferedStream.GetUChar();
+		switch (jc)
+		{
+			case 1: pWiterTblPr->Overlap = std::wstring(_T("<w:tblOverlap w:val=\"never\" />")); break;
+			case 2: pWiterTblPr->Overlap = std::wstring(_T("<w:tblOverlap w:val=\"overlap\" />")); break;
+		}
+
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -3534,6 +3544,10 @@ int Binary_CustomsTableReader::ReadCustomContent(BYTE type, long length, void* p
 	else if (c_oSerCustoms::Content == type)
 	{
 		pCustomXMLProps->m_oCustomXmlContent = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSerCustoms::ContentA == type)
+	{
+		pCustomXMLProps->m_oCustomXmlContentA = m_oBufferedStream.GetString2A();
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7814,6 +7828,7 @@ int Binary_DocumentTableReader::ReadRun(BYTE type, long length, void* poResult)
 int Binary_DocumentTableReader::ReadRunContent(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
+
 	if (c_oSerRunType::run == type)
 	{
         GetRunStringWriter().WriteString(std::wstring(_T("<w:t xml:space=\"preserve\">")));
@@ -7861,15 +7876,27 @@ int Binary_DocumentTableReader::ReadRunContent(BYTE type, long length, void* poR
 	}
 	else if (c_oSerRunType::pagebreak == type)
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<w:br w:type=\"page\"/>")));
+		GetRunStringWriter().WriteString(std::wstring(_T("<w:br w:type=\"page\" w:clear=\"all\"/>")));
 	}
 	else if (c_oSerRunType::linebreak == type)
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<w:br />")));
+		GetRunStringWriter().WriteString(std::wstring(_T("<w:br/>")));
+	}
+	else if (c_oSerRunType::linebreakClearAll == type)
+	{
+		GetRunStringWriter().WriteString(std::wstring(_T("<w:br w:type=\"textWrapping\" w:clear=\"all\"/>")));
+	}
+	else if (c_oSerRunType::linebreakClearLeft == type)
+	{
+		GetRunStringWriter().WriteString(std::wstring(_T("<w:br w:type=\"textWrapping\" w:clear=\"left\"/>")));
+	}
+	else if (c_oSerRunType::linebreakClearRight == type)
+	{
+		GetRunStringWriter().WriteString(std::wstring(_T("<w:br w:type=\"textWrapping\" w:clear=\"right\"/>")));
 	}
 	else if (c_oSerRunType::columnbreak == type)
 	{
-        GetRunStringWriter().WriteString(std::wstring(_T("<w:br w:type=\"column\"/>")));
+		GetRunStringWriter().WriteString(std::wstring(_T("<w:br w:type=\"column\"/>")));
 	}
 	else if(c_oSerRunType::image == type)
 	{

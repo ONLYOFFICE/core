@@ -45,6 +45,40 @@
 #define VALUE(x) VALUE_TO_STRING(x)
 
 #ifdef WIN32
+void parse_args(NSDoctRenderer::CDocBuilder* builder, int argc, wchar_t *argv[])
+#else
+void parse_args(NSDoctRenderer::CDocBuilder* builder, int argc, char *argv[])
+#endif
+{
+    for (int i = 0; i < argc; ++i)
+    {
+#ifdef WIN32
+        std::wstring sW(argv[i]);
+        std::string sParam = U_TO_UTF8(sW);
+#else
+        std::string sParam(argv[i]);
+#endif
+
+        if (sParam.find("--") == 0)
+        {
+            std::string::size_type _pos = sParam.find('=');
+            if (std::string::npos == _pos)
+                builder->SetProperty(sParam.c_str(), L"");
+            else
+            {
+                std::string sName = sParam.substr(0, _pos);
+                std::string sValue = sParam.substr(_pos + 1);
+
+                std::wstring sValueW = UTF8_TO_U(sValue);
+                builder->SetProperty(sName.c_str(), sValueW.c_str());
+            }
+        }
+        else
+            continue;
+    }
+}
+
+#ifdef WIN32
 int wmain(int argc, wchar_t *argv[])
 #else
 int main(int argc, char *argv[])
@@ -54,6 +88,7 @@ int main(int argc, char *argv[])
         return 0;
 
     bool bIsHelp = false;
+    bool bIsFonts = false;
     for (int i = 0; i < argc; ++i)
     {
 #ifdef WIN32
@@ -78,11 +113,23 @@ int main(int argc, char *argv[])
 
             return 0;
         }
-        if (sParam == "-h" ||
-            sParam == "-help")
+        if (sParam == "-h" || sParam == "-help")
         {
             bIsHelp = true;
         }
+        else if (sParam == "-f" || sParam == "-fonts")
+        {
+            bIsFonts = true;
+        }
+    }
+
+    if (bIsFonts)
+    {
+        NSDoctRenderer::CDocBuilder oBuilder;
+        parse_args(&oBuilder, argc, argv);
+
+        oBuilder.ExecuteCommand(L"checkL");
+        return 0;
     }
 
     if (argc < 2 || bIsHelp)
@@ -97,7 +144,7 @@ int main(int argc, char *argv[])
     std::wstring sBuildFile(argv[argc - 1]);
 #else
     std::string sBuildFileA(argv[argc - 1]);
-    std::wstring sBuildFile = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sBuildFileA.c_str(), (LONG)sBuildFileA.length());
+    std::wstring sBuildFile = UTF8_TO_U(sBuildFileA);
 #endif
 
     if (true)
@@ -107,32 +154,7 @@ int main(int argc, char *argv[])
         //oBuilder.SetProperty("--use-doctrenderer-scheme", L"");
         //oBuilder.SetProperty("--work-directory", L"builder");
 
-        for (int i = 0; i < (argc - 1); ++i)
-        {            
-#ifdef WIN32
-            std::wstring sW(argv[i]);
-            std::string sParam = U_TO_UTF8(sW);
-#else
-            std::string sParam(argv[i]);
-#endif
-
-            if (sParam.find("--") == 0)
-            {
-                std::string::size_type _pos = sParam.find('=');
-                if (std::string::npos == _pos)
-                    oBuilder.SetProperty(sParam.c_str(), L"");
-                else
-                {
-                    std::string sName = sParam.substr(0, _pos);
-                    std::string sValue = sParam.substr(_pos + 1);
-
-                    std::wstring sValueW = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sValue.c_str(), (LONG)sValue.length());
-                    oBuilder.SetProperty(sName.c_str(), sValueW.c_str());
-                }
-            }
-            else
-                continue;
-        }
+        parse_args(&oBuilder, argc - 1, argv);
 
         oBuilder.Run(sBuildFile.c_str());
     }

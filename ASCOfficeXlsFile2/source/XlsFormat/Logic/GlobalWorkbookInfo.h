@@ -38,6 +38,7 @@
 #include <unordered_map>
 
 #include "Biff_structures/BorderFillInfo.h"
+#include "XlsElementsType.h"
 
 #include "../Crypt/Decryptor.h"
 
@@ -150,6 +151,8 @@ public:
 	struct _xti
 	{
 		int							iSup;
+        _INT32                      itabFirst; //firstSheet in biff12
+        _INT32                      itabLast; //lastSheet in biff12
 		std::wstring				link;
 		std::vector<std::wstring>*	pNames = NULL;
 	};
@@ -205,11 +208,14 @@ public:
 	int								connectionId;
 	std::map<std::wstring, int>		connectionNames;
 
-	std::unordered_map<int, std::wstring>		mapTableNames;
-	std::unordered_map<int, std::vector<std::wstring>>	mapTableColumnNames;
-	std::unordered_map<std::wstring, int>		mapTableGuidsIndex;
+    std::unordered_map<int, std::wstring>		mapTableNames;
+    std::unordered_map<int, std::vector<std::wstring>>	mapTableColumnNames;
+    std::unordered_map<std::wstring, int>		mapTableGuidsIndex;
 
-	XlsConverter *xls_converter;
+    std::unordered_map<int, std::vector<XLS::ElementType>>		pivotCacheRecordType;
+    int                     		currentPivotCacheRecord;
+
+	XlsConverter					*xls_converter;
 };
 
 typedef boost::shared_ptr<GlobalWorkbookInfo> GlobalWorkbookInfoPtr;

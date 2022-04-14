@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(FRTQSI)
     public:
         FRTQSI();
-        virtual ~FRTQSI();
+        ~FRTQSI();
 
         XLS::BaseObjectPtr clone();
 

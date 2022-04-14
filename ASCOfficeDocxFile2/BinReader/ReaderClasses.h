@@ -2705,6 +2705,7 @@ public:
     std::wstring TableCellSpacing;
 	std::wstring Caption;
 	std::wstring Description;
+	std::wstring Overlap;
 	bool IsEmpty()
 	{
         return Jc.empty() && TableInd.empty() && TableW.empty() && TableCellMar.empty() && TableBorders.empty() && Shd.empty() && tblpPr.empty()&& Style.empty() && Look.empty() && tblPrChange.empty() && TableCellSpacing.empty() && RowBandSize.empty() && ColBandSize.empty();
@@ -2721,7 +2722,9 @@ public:
             sRes += (RowBandSize);
         if(!ColBandSize.empty())
             sRes += (ColBandSize);
-        if(false == TableW.empty())
+		if (!Overlap.empty())
+			sRes += (Overlap);
+		if(false == TableW.empty())
             sRes += (TableW);
         if(false == Jc.empty())
             sRes += (Jc);

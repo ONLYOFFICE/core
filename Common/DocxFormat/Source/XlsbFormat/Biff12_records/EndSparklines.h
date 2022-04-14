@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndSparklines)
         public:
             EndSparklines();
-            virtual ~EndSparklines();
+            ~EndSparklines();
 
             XLS::BaseObjectPtr clone();
 

@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(ACICONFILTER)
     public:
         ACICONFILTER();
-        virtual ~ACICONFILTER();
+        ~ACICONFILTER();
 
         XLS::BaseObjectPtr clone();
 

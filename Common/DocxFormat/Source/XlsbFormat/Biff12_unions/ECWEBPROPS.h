@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(ECWEBPROPS)
     public:
         ECWEBPROPS();
-        virtual ~ECWEBPROPS();
+        ~ECWEBPROPS();
 
         XLS::BaseObjectPtr clone();
 

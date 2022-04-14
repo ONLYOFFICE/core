@@ -43,9 +43,11 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(PCDIIndex)
         public:
             PCDIIndex();
-            virtual ~PCDIIndex();
+            ~PCDIIndex();
 
             XLS::BaseObjectPtr clone();
+
+            static const XLS::ElementType	type = XLS::typePCDIIndex;
 
             void readFields(XLS::CFRecord& record);
 

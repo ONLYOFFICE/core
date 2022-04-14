@@ -122,9 +122,9 @@ namespace MetaFile
 		}
 
 		// IFont
-		int          GetHeight()
+		double          GetHeight()
 		{
-			return (int)Height;
+			return (double)Height;
 		}
 		std::wstring GetFaceName()
 		{
@@ -220,9 +220,26 @@ namespace MetaFile
 		{
 			return (unsigned int)PenStyle;
 		}
-		unsigned int GetWidth()
+		double GetWidth()
 		{
-			return (unsigned int)Width.x;
+			return (double)Width.x;
+		}
+		unsigned int GetAlpha()
+		{
+			return 255;
+		}
+		double GetMiterLimit()
+		{
+			return 0;
+		}
+		double GetDashOffset()
+		{
+			return 0;
+		}
+		void GetDashData(double*& arDatas, unsigned int& unSize)
+		{
+			arDatas = NULL;
+			unSize  = 0;
 		}
 
 	public:
@@ -248,6 +265,7 @@ namespace MetaFile
 	public:
 		short           nextInChain; // не используется
 		short           ObjectType;  // не используется
+		int             ObjectCount; // не используется
 		short           RegionSize;
 		short           ScanCount;
 		short           MaxScan;

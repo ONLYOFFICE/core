@@ -44,7 +44,7 @@ namespace XLSB
     public:
         SlicerCacheNativeItemStruct();
         SlicerCacheNativeItemStruct(XLS::CFRecord& record);
-        virtual ~SlicerCacheNativeItemStruct();
+        ~SlicerCacheNativeItemStruct();
         XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;

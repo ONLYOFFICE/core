@@ -844,6 +844,16 @@ namespace PPT_FORMAT
 
                 return pElement;
             }
+            int GetWidth()const
+            {
+                double multip = m_bAnchorEnabled ? 1587.5 : 1;
+                return round(m_rcAnchor.GetWidth()  * multip);
+            }
+            int GetHeight()const
+            {
+                double multip = m_bAnchorEnabled ? 1587.5 : 1;
+                return round(m_rcAnchor.GetHeight()  * multip);
+            }
             AVSINLINE std::wstring ConvertPPTShapeToPPTX(bool bIsNamespace = false)
             {
 

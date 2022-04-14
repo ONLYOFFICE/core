@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginConditionalFormattings)
         public:
             BeginConditionalFormattings();
-            virtual ~BeginConditionalFormattings();
+            ~BeginConditionalFormattings();
 
             XLS::BaseObjectPtr clone();
 

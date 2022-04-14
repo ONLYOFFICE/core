@@ -43,7 +43,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(SORTSTATE)
     public:
         SORTSTATE();
-        virtual ~SORTSTATE();
+        ~SORTSTATE();
 
         XLS::BaseObjectPtr clone();
 
@@ -51,7 +51,7 @@ namespace XLSB
 
 		XLS::BaseObjectPtr               m_BrtBeginSortState;
 		XLS::BaseObjectPtr               m_source;
-        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        //std::vector<XLS::BaseObjectPtr>  m_arFRT;
 		XLS::BaseObjectPtr               m_BrtEndSortState;
 
     };

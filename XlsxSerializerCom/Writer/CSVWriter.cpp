@@ -40,9 +40,73 @@
 #include "../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Worksheet.h"
 
 #include <boost/date_time.hpp>
+#include <boost/format.hpp>
+#include <boost/regex.hpp>
 
 namespace CSVWriter
 {
+	int detect_format(const std::wstring & format_code)
+	{
+		if (format_code.empty()) return SimpleTypes::Spreadsheet::celltypeStr;
+	
+		//find [$<Currency String>-<language info>].
+		boost::wregex re(L"(?:\\[)(?:\\$)(\\S+)?\-(\\S+)(?:\\])");
+		boost::wsmatch result;
+		bool b = boost::regex_search(format_code, result, re);
+
+		std::wstring currency_str;
+		unsigned int language_code = 0;
+
+		if (b && result.size() >= 3)
+		{
+			currency_str = result[1];
+			int code = -1;
+			try
+			{
+				std::wstringstream ss;
+				ss << std::hex << result[2];
+				ss >> language_code;
+			}
+			catch (...) {}
+
+			//format_code = boost::regex_replace( format_code,re,L"");
+		}
+		if (!currency_str.empty() && language_code != 0xF400 && language_code != 0xF800)
+		{
+			return SimpleTypes::Spreadsheet::celltypeCurrency;
+		}
+
+		if (false == format_code.empty()) //any
+		{
+			std::wstring tmp = format_code;
+			XmlUtils::GetLower(tmp);
+
+			if (std::wstring::npos != tmp.find(L"at") ||
+				std::wstring::npos != tmp.find(L"pm") ||
+				(std::wstring::npos != tmp.find(L"h") && std::wstring::npos != tmp.find(L"s")) || 
+				language_code == 0xF400)
+			{
+				return SimpleTypes::Spreadsheet::celltypeTime;
+			}
+			if ((std::wstring::npos != tmp.find(L"y") && std::wstring::npos != tmp.find(L"d")) ||
+				(std::wstring::npos != tmp.find(L"d") && std::wstring::npos != tmp.find(L"m")) || 
+				language_code == 0xF800)
+			{
+				return SimpleTypes::Spreadsheet::celltypeDate;
+			}
+			if (std::wstring::npos != tmp.find(L"%"))
+			{
+				return SimpleTypes::Spreadsheet::celltypePercentage;
+			}
+			if (std::wstring::npos != tmp.find(L"#") ||
+				std::wstring::npos != tmp.find(L"?") ||
+				std::wstring::npos != tmp.find(L"0"))
+			{
+				return SimpleTypes::Spreadsheet::celltypeNumber;
+			}
+		}
+		return SimpleTypes::Spreadsheet::celltypeStr;
+	}
 	std::wstring convert_date_time (const std::wstring & sValue, const std::wstring & format_code, bool bDate = true, bool bTime = true)
 	{
 		double dTime = XmlUtils::GetDouble(sValue);
@@ -347,72 +411,69 @@ namespace CSVWriter
 		if (m_nColDimension < m_nColCurrent)
 			m_nColDimension = m_nColCurrent;
 
-		// Get cell value
-		std::wstring sCellValue = _T("");
-		
-		if (pCell->m_oValue.IsInit())
-		{
-			if (pCell->m_oType.IsInit() && SimpleTypes::Spreadsheet::celltypeNumber != pCell->m_oType->GetValue())
-			{
-				if(SimpleTypes::Spreadsheet::celltypeStr == pCell->m_oType->GetValue())
-				{
-					sCellValue = pCell->m_oValue->ToString();
-				}
-				else
-				{
-					int nValue = _wtoi(pCell->m_oValue->ToString().c_str());
+		std::wstring sCellValue;
+		boost::optional<int> format_type;
+			
+		if (pCell->m_oType.IsInit())
+			format_type = (int)pCell->m_oType->GetValue();
 
-					if (nValue >= 0 && nValue < (int)m_oXlsx.m_pSharedStrings->m_arrItems.size())
+		if (pCell->m_oCacheValue.IsInit())
+		{
+			sCellValue = *pCell->m_oCacheValue;
+		}
+		else if (pCell->m_oValue.IsInit())
+		{
+			sCellValue = pCell->m_oValue->ToString();
+
+			if (SimpleTypes::Spreadsheet::celltypeSharedString == format_type.get_value_or(SimpleTypes::Spreadsheet::celltypeNumber))
+			{
+				int nValue = XmlUtils::GetInteger(sCellValue);
+
+				if (nValue >= 0 && nValue < (int)m_oXlsx.m_pSharedStrings->m_arrItems.size())
+				{
+					OOX::Spreadsheet::CSi *pSi = m_oXlsx.m_pSharedStrings->m_arrItems[nValue];
+					if (NULL != pSi)
 					{
-						OOX::Spreadsheet::CSi *pSi = m_oXlsx.m_pSharedStrings->m_arrItems[nValue];
-						if(NULL != pSi)
-						{
-							sCellValue = pSi->ToString();
-						}
+						sCellValue = pSi->ToString();
 					}
 				}
 			}
-			else
+			std::wstring format_code;
+
+			if (pCell->m_oStyle.IsInit() && m_oXlsx.m_pStyles)
 			{
-				std::wstring format_code;
-				int format_type = SimpleTypes::Spreadsheet::celltypeNumber;
-
-				if (pCell->m_oStyle.IsInit() && m_oXlsx.m_pStyles)
+				OOX::Spreadsheet::CXfs* xfs = m_oXlsx.m_pStyles->m_oCellXfs->m_arrItems[*pCell->m_oStyle];
+				if (xfs)
 				{
-					OOX::Spreadsheet::CXfs* xfs = m_oXlsx.m_pStyles->m_oCellXfs->m_arrItems[*pCell->m_oStyle];
-					if (xfs)
+					if ((xfs->m_oApplyNumberFormat.IsInit()) && (xfs->m_oApplyNumberFormat->ToBool()))
 					{
-						if ((xfs->m_oApplyNumberFormat.IsInit()) && (xfs->m_oApplyNumberFormat->ToBool()))
+						if ((xfs->m_oNumFmtId.IsInit()) /*&& (xfs->m_oNumFmtId->GetValue() != 0*/)
 						{
-							if ((xfs->m_oNumFmtId.IsInit()) /*&& (xfs->m_oNumFmtId->GetValue() != 0*/)
-							{
-								int numFmt = xfs->m_oNumFmtId->GetValue();
-								//get default code
+							int numFmt = xfs->m_oNumFmtId->GetValue();
 
-								GetDefaultFormatCode(numFmt, format_code, format_type);
-								
-								if (m_oXlsx.m_pStyles->m_oNumFmts.IsInit())
+							GetDefaultFormatCode(numFmt, format_code, format_type);
+
+							if (m_oXlsx.m_pStyles->m_oNumFmts.IsInit())
+							{
+								std::map<unsigned int, size_t>::iterator pFind = m_oXlsx.m_pStyles->m_oNumFmts->m_mapNumFmtIndex.find(numFmt);
+								if (pFind != m_oXlsx.m_pStyles->m_oNumFmts->m_mapNumFmtIndex.end())
 								{
-									std::map<unsigned int, size_t>::iterator pFind = m_oXlsx.m_pStyles->m_oNumFmts->m_mapNumFmtIndex.find(numFmt);
-									if (pFind != m_oXlsx.m_pStyles->m_oNumFmts->m_mapNumFmtIndex.end())
+									OOX::Spreadsheet::CNumFmt *fmt = m_oXlsx.m_pStyles->m_oNumFmts->m_arrItems[pFind->second];
+									if (fmt)
 									{
-										OOX::Spreadsheet::CNumFmt *fmt = m_oXlsx.m_pStyles->m_oNumFmts->m_arrItems[pFind->second];
-										if (fmt)
-										{
-											if (fmt->m_oFormatCode.IsInit())
-												format_code = *fmt->m_oFormatCode;
-										}
+										if (fmt->m_oFormatCode.IsInit())
+											format_code = *fmt->m_oFormatCode;
 									}
 								}
 							}
 						}
 					}
 				}
-				sCellValue = ConvertValueCellToString(pCell->m_oValue->ToString(), format_type, format_code);
 			}
+			sCellValue = ConvertValueCellToString(sCellValue, format_type, format_code);
 		}
 
-		// Escape cell value
+	// Escape cell value
 		if(m_bJSON)
 		{
 			NSStringUtils::CStringBuilder oBuilder;
@@ -426,7 +487,7 @@ namespace CSVWriter
 			NSStringExt::Replace(sCellValue, g_sQuote, g_sDoubleQuote);
 			sCellValue = g_sQuote + sCellValue + g_sQuote;
 		}
-		// Write cell value
+	// Write cell value
 		WriteFile(&m_oFile, &m_pWriteBuffer, m_nCurrentIndex, sCellValue, m_nCodePage);
 		m_bIsWriteCell = true;
 		m_bStartCell = false;
@@ -469,7 +530,7 @@ namespace CSVWriter
 		RELEASEARRAYOBJECTS(m_pWriteBuffer);
 		m_oFile.CloseFile();
 	}
-	void CCSVWriter::GetDefaultFormatCode(int numFmt, std::wstring & format_code, int & format_type)
+	void CCSVWriter::GetDefaultFormatCode(int numFmt, std::wstring & format_code, boost::optional<int> & format_type)
 	{
 		switch (numFmt)
 		{
@@ -501,19 +562,14 @@ namespace CSVWriter
 		case 39:	format_code = L"#,##0.00;(#,##0.00)";	format_type = SimpleTypes::Spreadsheet::celltypeNumber; break;
 		case 40:	format_code = L"#,##0.00;[Red](#,##0.00)"; format_type = SimpleTypes::Spreadsheet::celltypeNumber; break;
 
-		case 41:	format_code = L"";				format_type = SimpleTypes::Spreadsheet::celltypeCurrency; break;
-		case 42:	format_code = L"";				format_type = SimpleTypes::Spreadsheet::celltypeCurrency; break;
-
 		case 45:	format_code = L"mm:ss";			format_type = SimpleTypes::Spreadsheet::celltypeTime; break;
 		case 46:	format_code = L"[h]:mm:ss";		format_type = SimpleTypes::Spreadsheet::celltypeTime; break;
 		case 47:	format_code = L"mmss.0";		format_type = SimpleTypes::Spreadsheet::celltypeTime; break;
 
-		case 49:	format_code = L"@";				format_type = SimpleTypes::Spreadsheet::celltypeStr; break;
-
 		default:
 			/////////////////////////////////// с неопределенным format_code .. он задается в файле
 			if (numFmt >= 5 && numFmt <= 8)		format_type = SimpleTypes::Spreadsheet::celltypeCurrency;
-			if (numFmt >= 43 && numFmt <= 44)	format_type = SimpleTypes::Spreadsheet::celltypeCurrency;
+			if (numFmt >= 41 && numFmt <= 44)	format_type = SimpleTypes::Spreadsheet::celltypeCurrency;
 
 			if (numFmt >= 27 && numFmt <= 31)	format_type = SimpleTypes::Spreadsheet::celltypeDate;
 			if (numFmt >= 50 && numFmt <= 54)	format_type = SimpleTypes::Spreadsheet::celltypeDate;
@@ -533,12 +589,21 @@ namespace CSVWriter
 			if (numFmt == 81)					format_type = SimpleTypes::Spreadsheet::celltypeDate;
 		}
 	}
-	std::wstring CCSVWriter::ConvertValueCellToString(const std::wstring &value, int format_type, const std::wstring & format_code)
+	std::wstring CCSVWriter::ConvertValueCellToString(const std::wstring &value, boost::optional<int> format_type, std::wstring format_code)
 	{
-		switch (format_type)
+
+		if (false == format_code.empty())
 		{
-		case SimpleTypes::Spreadsheet::celltypeNumber:
-		case SimpleTypes::Spreadsheet::celltypeStr:			return value;
+			std::vector<std::wstring> format_codes;
+			boost::algorithm::split(format_codes, format_code, boost::algorithm::is_any_of(L";"), boost::algorithm::token_compress_on);
+
+			format_code = format_codes[0];
+			if (!format_type)
+				format_type = detect_format(format_code);
+		}
+
+		switch (format_type.get_value_or(SimpleTypes::Spreadsheet::celltypeStr))
+		{
 		case SimpleTypes::Spreadsheet::celltypePercentage:	return value + L"%";
 
 		case SimpleTypes::Spreadsheet::celltypeDate:		return convert_date_time(value, format_code, true, false);
@@ -546,8 +611,96 @@ namespace CSVWriter
 		case SimpleTypes::Spreadsheet::celltypeDateTime:	return convert_date_time(value, format_code);
 		case SimpleTypes::Spreadsheet::celltypeFraction:	return convert_fraction(value);
 		case SimpleTypes::Spreadsheet::celltypeScientific:	return convert_scientific(value);
-		default:
+		
+		case SimpleTypes::Spreadsheet::celltypeInlineStr:
+		case SimpleTypes::Spreadsheet::celltypeSharedString:
+		case SimpleTypes::Spreadsheet::celltypeStr:
+		case SimpleTypes::Spreadsheet::celltypeError:
 			return value;
+		
+		default:
+			if (format_code.empty())
+				return value;
+			else
+			{
+				try
+				{
+					std::wstring format_code_tmp;
+					double dValue = XmlUtils::GetDouble(value);
+
+					int count_d = 0;
+					bool bFloat = false, bStart = true, bEnd = false;
+
+					size_t pos_skip = format_code.rfind(L"#");
+					if (pos_skip == std::wstring::npos) pos_skip = 0; 
+					else pos_skip++;
+					
+					for (size_t i = pos_skip; i < format_code.size(); ++i)
+					{
+						if (format_code[i] == L'\\' || format_code[i] == L'\"')
+							continue;
+						else if (format_code[i] != L'0')
+						{
+							if (count_d > 0)
+							{
+								if (bStart) format_code_tmp += L"% 0"; //padding
+								format_code_tmp += std::to_wstring(count_d);
+								
+								if (!bStart && bFloat)
+								{
+									format_code_tmp += L"f";
+									bEnd = true;
+								}								
+								bStart = false;
+								count_d = 0;
+							}
+							if (format_code[i] == L'.')
+							{
+								bFloat = true;
+								format_code_tmp += format_code[i];
+							}
+							else if (format_code[i] == L',')
+							{
+
+							}
+							else
+							{
+								if (!bStart && !bEnd)
+								{
+									format_code_tmp += L"d";
+									bEnd = true;
+								}
+
+								if ((bStart && count_d < 1) || bEnd)
+								{
+									format_code_tmp += format_code[i];
+								}
+							}
+						}
+						else if (!bEnd)
+						{
+							count_d++;
+						}
+					}
+					if (count_d > 0)
+					{
+						if (bStart) format_code_tmp += L"% 0"; //padding
+						format_code_tmp += std::to_wstring(count_d);
+						bStart = false;
+						
+					}
+					if (!bStart && !bEnd) format_code_tmp += bFloat ? L"f" : L"d";
+
+					std::wstringstream stream;
+					stream << boost::wformat(format_code_tmp) % dValue;
+
+					return stream.str();
+				}
+				catch (...)
+				{
+					return value;
+				}
+			}
 		}
 	}
 }

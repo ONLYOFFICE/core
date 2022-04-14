@@ -46,7 +46,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(WsDim)
         public:
             WsDim();
-            virtual ~WsDim();
+            ~WsDim();
 
             XLS::BaseObjectPtr clone();
 

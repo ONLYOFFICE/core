@@ -335,9 +335,9 @@ public:
 	}
 
 	// IFont
-	int          GetHeight()
+	double          GetHeight()
 	{
-		return (int)SizeHeight;
+		return (double)SizeHeight;
 	}
 	std::wstring GetFaceName()
 	{
@@ -421,11 +421,27 @@ public:
 	{
 		return (unsigned int)PenStyle;
 	}
-	unsigned int GetWidth()
+	double GetWidth()
 	{
-		return (unsigned int)Width;
+		return (double)Width;
 	}
-
+	unsigned int GetAlpha()
+	{
+		return 255;
+	}
+	double GetMiterLimit()
+	{
+		return 0;
+	}
+	double GetDashOffset()
+	{
+		return 0;
+	}
+	void GetDashData(double*& arDatas, unsigned int& unSize)
+	{
+		arDatas = NULL;
+		unSize  = 0;
+	}
 public:
 	unsigned short	PenStyle;
 	int				Width;

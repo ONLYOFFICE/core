@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(DCON)
     public:
         DCON();
-        virtual ~DCON();
+        ~DCON();
 
         XLS::BaseObjectPtr clone();
 
@@ -50,7 +50,7 @@ namespace XLSB
         //static const XLS::ElementType	type = XLS::typeDCon;
 
         XLS::BaseObjectPtr      m_BrtBeginDCon;
-        XLS::BaseObjectPtr	m_DREFS;
+        XLS::BaseObjectPtr	    m_DREFS;
         XLS::BaseObjectPtr      m_BrtEndDCon;
 
     };

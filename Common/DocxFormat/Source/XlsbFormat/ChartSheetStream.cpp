@@ -69,8 +69,6 @@ BaseObjectPtr ChartSheetStream::clone()
 
 const bool ChartSheetStream::loadContent(BinProcessor& proc)
 {
-	int	count = 0;
-    std::vector<CellRangeRef>	shared_formulas_locations;
 	while (true)
 	{
 		CFRecordType::TypeId type = proc.getNextRecordType();

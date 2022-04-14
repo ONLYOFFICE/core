@@ -110,6 +110,10 @@ public:
     {
         return pReader->GetStructure();
     }
+    std::wstring GetInfo()
+    {
+        return pReader->GetInfo();
+    }
 
     void DestroyText()
     {

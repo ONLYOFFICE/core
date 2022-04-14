@@ -421,12 +421,14 @@ std::wstring xlsx_text_context::Impl::dump_paragraph(/*bool last*/)
 
 std::wstring xlsx_text_context::Impl::dump_run()
 {
-    const std::wstring content = xml::utils::replace_text_to_xml(text_.str());
+    std::wstring content = XmlUtils::EncodeXmlStringExtend(text_.str());
 	
 	if (content.empty()) return L"";
 
 	std::wstring	prefix_draw;
 	if (in_draw)	prefix_draw = L"a:";
+
+	bool bPreserve = (false == in_draw && (std::wstring::npos != content.find(L" ") || std::wstring::npos != content.find(L"&#x")));
    
 	CP_XML_WRITER(run_)
     {
@@ -438,7 +440,7 @@ std::wstring xlsx_text_context::Impl::dump_run()
 				
 				CP_XML_NODE(prefix_draw + L"t")
 				{
-					if (false == in_draw && std::wstring::npos != content.find(L" "))
+					if (bPreserve)
 					{
 						CP_XML_ATTR(L"xml:space", L"preserve");
 					}

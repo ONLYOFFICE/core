@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndStyles)
         public:
             EndStyles();
-            virtual ~EndStyles();
+            ~EndStyles();
 
             XLS::BaseObjectPtr clone();
 

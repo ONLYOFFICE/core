@@ -88,8 +88,16 @@ bool xlsx_table_context::start_database_range(const std::wstring & name, const s
 		
 		XmlUtils::replace_all( xlsx_table_name, L"'", L"");
 
-		getCellAddressInv(ref1, col1, row1);
-		getCellAddressInv(ref2, col2, row2);
+		bool res1 = getCellAddressInv(ref1, col1, row1);
+		bool res2 = getCellAddressInv(ref2, col2, row2);
+
+		if (!res1) 
+			return false;
+		
+		if (!res2)
+		{
+			ref2 = ref1; col2 = col1; row2 = row1;
+		}
 		
 		xlsx_data_ranges_.push_back(xlsx_data_range_ptr(new xlsx_data_range()));
 		
@@ -150,6 +158,11 @@ void xlsx_table_context::set_database_filter (bool val)
 }
 void xlsx_table_context::end_database_range()
 {
+	if (!xlsx_data_ranges_.back()->bTablePart && !xlsx_data_ranges_.back()->filter && !xlsx_data_ranges_.back()->table_name.empty())
+	{
+		xlsx_conversion_context_->get_xlsx_defined_names().add(xlsx_data_ranges_.back()->name, 
+			xlsx_data_ranges_.back()->table_name + L"!" + xlsx_data_ranges_.back()->ref, false, -1);
+	}
 }
 
 void xlsx_table_context::set_database_range_value(int index, const std::wstring& value)
@@ -172,8 +185,8 @@ void xlsx_table_context::check_database_range_intersection(const std::wstring& t
 		ref1 = ref.substr(0, pos );
 		ref2 = ref.substr(pos + 1);
 	}
-	getCellAddressInv(ref1, col_1, row_1);
-	getCellAddressInv(ref2, col_2, row_2);
+	if (false == getCellAddressInv(ref1, col_1, row_1) ||
+		false == getCellAddressInv(ref2, col_2, row_2)) return;
 		
 	for (size_t i = 0; i < xlsx_data_ranges_.size(); i++)
 	{
@@ -470,23 +483,21 @@ void xlsx_table_context::serialize_autofilter(std::wostream & _Wostream)
 	for (std::multimap<std::wstring, int>::iterator it = range.first; it != range.second; ++it)
 	{
 		if (xlsx_data_ranges_[it->second]->bTablePart) continue;
+		if (!xlsx_data_ranges_[it->second]->filter) continue;
 
-		if (xlsx_data_ranges_[it->second]->filter)
-		{
-			if (cell_start.first < 0 || xlsx_data_ranges_[it->second]->cell_start.first < cell_start.first )
-				cell_start.first = xlsx_data_ranges_[it->second]->cell_start.first;
-			
-			if (cell_start.second < 0 || xlsx_data_ranges_[it->second]->cell_start.second < cell_start.second )
-				cell_start.second = xlsx_data_ranges_[it->second]->cell_start.second;
-			
-			if (cell_end.first < 0 || xlsx_data_ranges_[it->second]->cell_end.first > cell_end.first )
-				cell_end.first = xlsx_data_ranges_[it->second]->cell_end.first;
-			
-			if (cell_end.second < 0 || xlsx_data_ranges_[it->second]->cell_end.second > cell_end.second )
-				cell_end.second = xlsx_data_ranges_[it->second]->cell_end.second;	
+		if (cell_start.first < 0 || xlsx_data_ranges_[it->second]->cell_start.first < cell_start.first )
+			cell_start.first = xlsx_data_ranges_[it->second]->cell_start.first;
 
-			ref = xlsx_data_ranges_[it->second]->ref + L";";
-		}
+		if (cell_start.second < 0 || xlsx_data_ranges_[it->second]->cell_start.second < cell_start.second)
+			cell_start.second = xlsx_data_ranges_[it->second]->cell_start.second;
+
+		if (cell_end.first < 0 || xlsx_data_ranges_[it->second]->cell_end.first > cell_end.first)
+			cell_end.first = xlsx_data_ranges_[it->second]->cell_end.first;
+
+		if (cell_end.second < 0 || xlsx_data_ranges_[it->second]->cell_end.second > cell_end.second)
+			cell_end.second = xlsx_data_ranges_[it->second]->cell_end.second;
+
+		ref = xlsx_data_ranges_[it->second]->ref + L";";
 	}
 	if (cell_end.first < 0  || cell_start.first < 0) return;
 

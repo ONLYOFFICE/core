@@ -808,19 +808,19 @@ void XlsConverter::convert(XLS::FORMATTING* formating)
 				{
 					XLS::Format* fmt = dynamic_cast<XLS::Format*>(xls_global_info->m_arNumFormats[i].get());
 
-					if (fmt->ifmt < 23 || (fmt->ifmt > 36 && fmt->ifmt < 50))
+					if (fmt->ifmt < 5 || (fmt->ifmt > 8 && fmt->ifmt < 23) || (fmt->ifmt > 36 && fmt->ifmt < 41) || (fmt->ifmt > 44 && fmt->ifmt < 50))
 						continue;
 
 					std::map<_UINT16, bool>::iterator pFind = xls_global_info->mapUsedFormatCode.find(fmt->ifmt);
 
 					if (pFind != xls_global_info->mapUsedFormatCode.end())
 					{
-						CP_XML_NODE(L"numFmt")
+						CP_XML_STREAM() << L"<numFmt";
 						{
-							CP_XML_ATTR(L"numFmtId", fmt->ifmt);
-							//CP_XML_ATTR(L"formatCode", XmlUtils::EncodeXmlString(fmt->stFormat, true));
-							CP_XML_ATTR(L"formatCode", fmt->stFormat);
+							CP_XML_STREAM() << L" numFmtId=\"" << fmt->ifmt << L"\"";
+							CP_XML_STREAM() << L" formatCode=\"" << fmt->stFormat << L"\"";
 						}
+						CP_XML_STREAM() << L"/>";
 					}
 				}
 			}
@@ -1881,17 +1881,17 @@ void XlsConverter::convert_geometry(std::vector<ODRAW::OfficeArtFOPTEPtr> & prop
 {
 	if (props.empty()) return;
 
-	oox::_rect					rect;
-	std::vector<_CP_OPT(int)>	adjustValues(8);
+	_CP_OPT(oox::_rect)			rect;
+	std::vector<_CP_OPT(int)>	adjustValues(9);
 	
 	for (size_t i = 0 ; i < props.size() ; i++)
 	{
 		switch(props[i]->opid)
 		{
-			case ODRAW::geoLeft:	rect.x	= props[i]->op; break;
-			case ODRAW::geoTop:		rect.y	= props[i]->op; break;
-			case ODRAW::geoRight:	rect.cx	= props[i]->op; break;
-			case ODRAW::geoBottom:	rect.cy = props[i]->op; break;
+		case ODRAW::geoLeft:		if (!rect) rect = oox::_rect(); rect->x = props[i]->op; break;
+			case ODRAW::geoTop:		if (!rect) rect = oox::_rect(); rect->y	= props[i]->op; break;
+			case ODRAW::geoRight:	if (!rect) rect = oox::_rect(); rect->cx = props[i]->op; break;
+			case ODRAW::geoBottom:	if (!rect) rect = oox::_rect(); rect->cy = props[i]->op; break;
 			case ODRAW::shapePath:
 				xlsx_context->get_drawing_context().set_custom_path(props[i]->op); break;
 			case ODRAW::pVertices:
@@ -1904,13 +1904,15 @@ void XlsConverter::convert_geometry(std::vector<ODRAW::OfficeArtFOPTEPtr> & prop
 					ODRAW::PSegmentInfo * s = (ODRAW::PSegmentInfo *)(props[i].get());
 					xlsx_context->get_drawing_context().set_custom_segments(s->complex.data);
 				}break;
-			case 0x0147: //adjustValue .... //adjust8Value
-			case 0x0148:
-			case 0x0149:
-			case 0x014A:
-			case 0x014B:
-			case 0x014C:
-			case 0x014D:
+			case ODRAW::adjustValue: //0x0147
+			case ODRAW::adjust2Value:
+			case ODRAW::adjust3Value:
+			case ODRAW::adjust4Value:
+			case ODRAW::adjust5Value:
+			case ODRAW::adjust6Value:
+			case ODRAW::adjust7Value:
+			case ODRAW::adjust8Value:
+			case ODRAW::adjust9Value:
 			case ODRAW::adjust10Value:
 			{
 				adjustValues[props[i]->opid - 0x0147] = props[i]->op ;
@@ -1955,9 +1957,13 @@ void XlsConverter::convert_geometry(std::vector<ODRAW::OfficeArtFOPTEPtr> & prop
 			//	}break;
 		}
 	}
-	rect.cy -= rect.y;
-	rect.cx -= rect.x;
-	xlsx_context->get_drawing_context().set_custom_rect(rect);
+	if (rect)
+	{
+		rect->cy -= rect->y;
+		rect->cx -= rect->x;
+
+		xlsx_context->get_drawing_context().set_custom_rect(*rect);
+	}
 	
 	xlsx_context->get_drawing_context().set_custom_adjustValues(adjustValues);
 }
@@ -2285,7 +2291,7 @@ void XlsConverter::convert(XLS::Note* note)
 	if (xls_global_info->Version < 0x0600)
 	{
 		//todooo размеры произвольные .. можно сделать оценку по размеру строки
-		xlsx_context->get_drawing_context().set_child_anchor(note->note_sh.x_ , note->note_sh.y_, 120 * 12700., 64 * 12700.);
+		xlsx_context->get_drawing_context().set_sheet_anchor(0, 0, 0, 0, 0, 0, 0, 0, note->note_sh.x_, note->note_sh.y_, 120 * 12700., 64 * 12700.);
 		xlsx_context->get_drawing_context().set_text(std::wstring(L"<t>") + note->note_sh.stText.value() + std::wstring(L"</t>"));
 	}
 }

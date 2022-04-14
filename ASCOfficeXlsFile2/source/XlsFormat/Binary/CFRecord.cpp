@@ -161,6 +161,7 @@ CFRecord::CFRecord(NSBinPptxRW::CBinaryFileReader &reader, GlobalWorkbookInfoPtr
     }
 
     file_ptr += lenght;
+    sizeOfRecordTypeRecordLength = lenght;
        /* auto lambdaDetectBusyByteCount = [] (int val) -> {
             for (int i = 0; i < 4; ++i)
             {
@@ -252,6 +253,10 @@ const size_t CFRecord::getDataSize() const
 	return size_;
 }
 
+const BYTE CFRecord::getSizeOfRecordTypeRecordLength() const
+{
+    return sizeOfRecordTypeRecordLength;
+}
 
 const size_t CFRecord::getMaxRecordSize() const
 {

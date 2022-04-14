@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(SSTItem)
         public:
             SSTItem();
-            virtual ~SSTItem();
+            ~SSTItem();
 
             XLS::BaseObjectPtr clone();
 

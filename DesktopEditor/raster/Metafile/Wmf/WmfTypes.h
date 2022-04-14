@@ -223,6 +223,9 @@ namespace MetaFile
 		short w;
 		short h;
 
+		bool bUnchangedExt = true;
+		bool bUnchangedOrg = true;
+
 		void Init()
 		{
 			x = 0;
@@ -237,6 +240,9 @@ namespace MetaFile
 			y = oOther.y;
 			w = oOther.w;
 			h = oOther.h;
+
+			bUnchangedExt = oOther.bUnchangedExt;
+			bUnchangedOrg = oOther.bUnchangedOrg;
 		}
 	};
 	struct TWmfLogBrush

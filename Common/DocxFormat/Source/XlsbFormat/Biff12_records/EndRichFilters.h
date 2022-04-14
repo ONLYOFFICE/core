@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndRichFilters)
         public:
             EndRichFilters();
-            virtual ~EndRichFilters();
+            ~EndRichFilters();
 
             XLS::BaseObjectPtr clone();
 

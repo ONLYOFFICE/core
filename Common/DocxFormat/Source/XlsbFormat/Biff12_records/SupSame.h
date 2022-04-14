@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(SupSame)
         public:
             SupSame();
-            virtual ~SupSame();
+            ~SupSame();
 
             XLS::BaseObjectPtr clone();
 

@@ -121,9 +121,9 @@ namespace OOX
 			const FileType PivotCacheDefinition(L"pivotCache", L"pivotCacheDefinition.xml",
 												L"application/vnd.openxmlformats-officedocument.spreadsheetml.pivotCacheDefinition+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheDefinition",
-												L"pivotCache/pivotCacheDefinition", true);
+												L"pivotCache/pivotCacheDefinition", true, true);
 
-			const FileType PivotCacheRecords(L"pivotCache", L"pivotCacheRecords.xml",
+			const FileType PivotCacheRecords(L"", L"pivotCacheRecords.xml",
 												L"application/vnd.openxmlformats-officedocument.spreadsheetml.pivotCacheRecords+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheRecords",
 												L"pivotCache/pivotCacheRecords", true, true);
@@ -131,7 +131,7 @@ namespace OOX
 			const FileType SlicerCache		(L"slicerCaches", L"slicerCache.xml",
 												L"application/vnd.ms-excel.slicerCache+xml",
 												L"http://schemas.microsoft.com/office/2007/relationships/slicerCache",
-												L"slicerCaches/slicerCache", true);
+												L"slicerCaches/slicerCache", true, true);
 
 			const FileType Slicer			(L"../slicers", L"slicer.xml",
 												L"application/vnd.ms-excel.slicer+xml",

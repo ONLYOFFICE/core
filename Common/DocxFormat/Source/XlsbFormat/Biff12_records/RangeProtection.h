@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(RangeProtection)
         public:
             RangeProtection();
-            virtual ~RangeProtection();
+            ~RangeProtection();
 
             XLS::BaseObjectPtr clone();
 

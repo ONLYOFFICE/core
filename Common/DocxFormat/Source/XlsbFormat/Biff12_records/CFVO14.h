@@ -48,7 +48,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(CFVO14)
         public:
             CFVO14();
-            virtual ~CFVO14();
+            ~CFVO14();
 
 			XLS::BaseObjectPtr clone();
 

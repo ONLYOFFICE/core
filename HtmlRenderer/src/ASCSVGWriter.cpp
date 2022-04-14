@@ -861,7 +861,8 @@ namespace NSHtmlRenderer
 		if(oFile.CreateFileW(strFileSave))
         {
             NSStringUtils::CStringBuilder oBuilder;
-            WriteFormatted(L"<svg width=\"", (int)(m_dWidth / 100), L"px\" height=\"", (int)(m_dHeight / 100), L"px\" viewBox=\"0 0 ", (int)m_dWidth, L" ", (int)m_dHeight,
+            WriteFormatted(L"<svg width=\"", (int)(m_dWidth), L"px\" height=\"", (int)(m_dHeight), L"px\" viewBox=\"0 0 ",
+                           (int)(m_dWidth * SVG_WRITER_SCALE), L" ", (int)(m_dHeight * SVG_WRITER_SCALE),
                            L"\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n", &oBuilder);
 
             oFile.WriteStringUTF8(oBuilder.GetData());

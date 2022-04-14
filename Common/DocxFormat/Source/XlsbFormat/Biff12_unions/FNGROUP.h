@@ -43,7 +43,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(FNGROUP)
     public:
         FNGROUP();
-        virtual ~FNGROUP();
+        ~FNGROUP();
 
         XLS::BaseObjectPtr clone();
 

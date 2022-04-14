@@ -399,7 +399,7 @@ namespace NExtractTools
         return oBuilder.GetData();
     }
     std::wstring getDoctXml(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, NSDoctRenderer::DoctRendererFormat::FormatFile eToType,
-                            const std::wstring& sTFileDir, const std::wstring& sPdfBinFile, const std::wstring& sImagesDirectory,
+                            const std::wstring& sTFileSrc, const std::wstring& sPdfBinFile, const std::wstring& sImagesDirectory,
                             const std::wstring& sThemeDir, int nTopIndex, const std::wstring& sMailMerge, const InputParams& params)
     {
         NSStringUtils::CStringBuilder oBuilder;
@@ -408,7 +408,7 @@ namespace NExtractTools
         oBuilder.WriteString(_T("</SrcFileType><DstFileType>"));
         oBuilder.AddInt((int)eToType);
         oBuilder.WriteString(_T("</DstFileType><SrcFilePath>"));
-        oBuilder.WriteEncodeXmlString(sTFileDir.c_str());
+        oBuilder.WriteEncodeXmlString(sTFileSrc.c_str());
         oBuilder.WriteString(_T("</SrcFilePath><DstFilePath>"));
         oBuilder.WriteEncodeXmlString(sPdfBinFile.c_str());
         oBuilder.WriteString(_T("</DstFilePath><FontsDirectory>"));
@@ -446,7 +446,7 @@ namespace NExtractTools
         oBuilder.WriteString(_T("<Changes TopItem=\""));
         oBuilder.AddInt(nTopIndex);
         oBuilder.WriteString(_T("\">"));
-        std::wstring sChangesDir = sTFileDir + FILE_SEPARATOR_STR + _T("changes");
+        std::wstring sChangesDir = NSDirectory::GetFolderPath(sTFileSrc) + FILE_SEPARATOR_STR + _T("changes");
         if (NSDirectory::Exists(sChangesDir))
         {
             std::vector<std::wstring> aChangesFiles;
@@ -486,7 +486,7 @@ namespace NExtractTools
             int nChangeIndex = -1;
             while (true)
             {
-                std::wstring sXml = getDoctXml(eType, eType, sBinDir, sBinTo, sImagesDirectory, sThemeDir, nChangeIndex, _T(""), params);
+                std::wstring sXml = getDoctXml(eType, eType, sBinFrom, sBinTo, sImagesDirectory, sThemeDir, nChangeIndex, _T(""), params);
 				std::wstring sResult;
                 oDoctRenderer.Execute(sXml, sResult);
                 bool bContinue = false;

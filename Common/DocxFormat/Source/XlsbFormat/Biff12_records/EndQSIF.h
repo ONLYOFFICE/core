@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndQSIF)
         public:
             EndQSIF();
-            virtual ~EndQSIF();
+            ~EndQSIF();
 
             XLS::BaseObjectPtr clone();
 

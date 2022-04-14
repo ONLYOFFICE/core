@@ -52,6 +52,7 @@ namespace MetaFile
 	public:
 		CWmfFile() : m_oPlayer(this)
 		{
+			m_pDC = m_oPlayer.GetDC();
 		}
 		~CWmfFile()
 		{
@@ -62,17 +63,24 @@ namespace MetaFile
 		{
             TRect  oBoundsBox = GetBoundingBox();
             TRectD oBounds = oBoundsBox;
-			if (IsPlaceable())
-			{				
-				double dLogicalToMM = (m_oPlaceable.Inch > 0 ? 25.4 / m_oPlaceable.Inch : 25.4 / 1440);
-				oBounds *= dLogicalToMM;
-			}
-			else
-			{
-				// TODO:
-			}
+            //TODO: сильно падает качетсво изображения
+//			if (IsPlaceable())
+//			{
+//				double dLogicalToMM = (m_oPlaceable.Inch > 0 ? 25.4 / m_oPlaceable.Inch : 25.4 / 1440);
+//				oBounds *= dLogicalToMM;
+//			}
+//			else
+//			{
+//				// TODO:
+//			}
 			return oBounds;
 		}
+
+		void SetStream(BYTE* pBuf, unsigned int unSize)
+		{
+			m_oStream.SetStream(pBuf, unSize);
+		}
+
 		void         PlayMetaFile()
 		{
 			if (!m_oStream.IsValid())
@@ -345,6 +353,17 @@ namespace MetaFile
 
 
 	private:
+		void SkipVoid()
+		{
+			char chValue;
+
+			do
+			{
+				chValue = m_oStream.ReadChar();
+			} while (chValue == 0);
+
+			m_oStream.SeekBack(1);
+		}
 
 		void TranslatePoint(short shX, short shY, double& dX, double &dY)
 		{
@@ -392,7 +411,7 @@ namespace MetaFile
 		}
 		inline double GetSweepAngle(const double& dStartAngle, const double& dEndAngle)
 		{
-			return (dEndAngle - dStartAngle) - 360;
+			return (dEndAngle - dStartAngle);
 		}
 		void MoveTo(short shX, short shY)
 		{
@@ -794,8 +813,12 @@ namespace MetaFile
 				m_oStream >> m_oPlaceable.Reserved;
 				m_oStream >> m_oPlaceable.Checksum;
 
-				m_pDC->SetViewportOrg(m_oPlaceable.BoundingBox.Left, m_oPlaceable.BoundingBox.Top);
-				m_pDC->SetViewportExt(m_oPlaceable.BoundingBox.Right - m_oPlaceable.BoundingBox.Left, m_oPlaceable.BoundingBox.Bottom - m_oPlaceable.BoundingBox.Top);
+				if (m_oPlaceable.Inch != 0)
+				{
+					m_pDC->SetViewportOrg(m_oPlaceable.BoundingBox.Left, m_oPlaceable.BoundingBox.Top);
+					m_pDC->SetViewportExt(m_oPlaceable.BoundingBox.Right - m_oPlaceable.BoundingBox.Left, m_oPlaceable.BoundingBox.Bottom - m_oPlaceable.BoundingBox.Top);
+				}
+				SkipVoid();
 			}
 			else
 			{
@@ -1073,7 +1096,30 @@ namespace MetaFile
 		{
 			unsigned short ushRegionIndex;
 			m_oStream >> ushRegionIndex;
-			// TODO: Реализовать регионы
+
+			m_oPlayer.SelectObject(ushRegionIndex);
+
+			CWmfRegion *pRegion = m_pDC->GetRegion();
+
+			if (NULL != pRegion)
+			{
+				for (unsigned int unScanIndex = 0; unScanIndex < pRegion->ScanCount; ++unScanIndex)
+				{
+					TWmfScanObject *pScanObject = &pRegion->aScans[unScanIndex];
+
+					if (pScanObject->Count == 0) continue;
+
+					for (unsigned int unIndex = 0; unIndex < pScanObject->Count >> 1; ++unIndex)
+					{
+						MoveTo(pScanObject->ScanLines[unIndex].Left,  pScanObject->Top);
+						LineTo(pScanObject->ScanLines[unIndex].Right, pScanObject->Top);
+						LineTo(pScanObject->ScanLines[unIndex].Right, pScanObject->Bottom);
+						LineTo(pScanObject->ScanLines[unIndex].Left,  pScanObject->Bottom);
+						LineTo(pScanObject->ScanLines[unIndex].Left,  pScanObject->Top);
+					}
+				}
+				DrawPath(false, true);
+			}
 		}
 		void Read_META_PATBLT()
 		{
@@ -1097,12 +1143,18 @@ namespace MetaFile
 			m_oStream >> shYRadial2 >> shXRadial2 >> shYRadial1 >> shXRadial1;
 			m_oStream >> shB >> shR >> shT >> shL;
 
-			double dStartAngle = GetEllipseAngle(shL, shT, shR, shB, shXRadial1, shYRadial1);
-			double dEndAngle   = GetEllipseAngle(shL, shT, shR, shB, shXRadial2, shYRadial2);
-			double dSweepAngle = GetSweepAngle(dStartAngle, dEndAngle);
-
 			short shCenterX = (shL + shR) / 2;
 			short shCenterY = (shT + shB) / 2;
+
+			double dStartAngle = GetEllipseAngle(shL, shT, shR, shB, shXRadial1, shYRadial1);
+			double dEndAngle   = GetEllipseAngle(shL, shT, shR, shB, shXRadial2, shYRadial2);
+
+			//TODO: это получается заглушка, поэтому нужно научиться определять угол с учетом направления рисования
+			if (shXRadial2 >= shCenterX && shYRadial2 <= shCenterY && shXRadial1 >= shCenterX && shYRadial1 >= shCenterY)
+				dEndAngle -= 360;
+
+			double dSweepAngle = GetSweepAngle(dStartAngle, dEndAngle);
+
 			MoveTo(shCenterX, shCenterY);
 			LineTo(shXRadial1, shYRadial1);
 			ArcTo(shL, shT, shR, shB, dStartAngle, dSweepAngle);
@@ -1333,7 +1385,7 @@ namespace MetaFile
 			if (m_pOutput)
 			{
 				BYTE* pBgra = NULL;
-				unsigned int unWidth, unHeight;
+				unsigned int unWidth = 0, unHeight = 0;
 				if (ReadImage(ushColorUsage, &pBgra, &unWidth, &unHeight))
 				{
 					pBrush->SetDibPattern(pBgra, unWidth, unHeight);

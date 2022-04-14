@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndIndexedColors)
         public:
             EndIndexedColors();
-            virtual ~EndIndexedColors();
+            ~EndIndexedColors();
 
             XLS::BaseObjectPtr clone();
 

@@ -41,6 +41,8 @@
 #include "../../DesktopEditor/graphics/IRenderer.h"
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
 
+#define SVG_WRITER_SCALE 100
+
 namespace NSHtmlRenderer
 {
     class IBaseMatrixUpdater
@@ -291,6 +293,11 @@ namespace NSHtmlRenderer
     inline int round(double dVal)
     {
         return (int)(dVal + 0.5);
+    }
+    inline int round2(double dVal)
+    {
+        // повышаем точность
+        return (int)(SVG_WRITER_SCALE * dVal + 0.5);
     }
 }
 

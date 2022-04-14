@@ -65,6 +65,9 @@ public:
 	// Skip the specified number of unsigned chars without processing
 	virtual void skipNunBytes(const size_t n) = 0;
 
+	virtual const int GetRecordPosition() { return 0; }
+    virtual void SetRecordPosition(const int) {}
+
 	void SkipRecord();
 	// Seek to the next substream (Read all records till EOF then skip EOF)
 	// Doesn't generate EndOfStreamReached if the stream is the last one
@@ -118,7 +121,7 @@ private:
 class BinaryStreamCacheReader : public StreamCacheReader
 {
 public:
-    BinaryStreamCacheReader(std::shared_ptr<NSBinPptxRW::CBinaryFileReader> binaryStream, const GlobalWorkbookInfoPtr global_info);
+    BinaryStreamCacheReader(boost::shared_ptr<NSBinPptxRW::CBinaryFileReader> binaryStream, const GlobalWorkbookInfoPtr global_info);
     virtual ~BinaryStreamCacheReader();
 
     CFRecordPtr getNextRecord(const CFRecordType::TypeId desirable_type, const bool gen_except = false) override;
@@ -127,6 +130,8 @@ public:
     bool isEOF() override;
 private:
     const size_t readFromStream(const size_t num_of_records_min_necessary) override;
-    std::shared_ptr<NSBinPptxRW::CBinaryFileReader> binaryStream_;
+    const int GetRecordPosition() override;
+    void SetRecordPosition(const int) override;
+    boost::shared_ptr<NSBinPptxRW::CBinaryFileReader> binaryStream_;
 };
 } // namespace XLS

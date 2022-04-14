@@ -292,15 +292,7 @@ OOXShapeReader::OOXShapeReader(OOX::WritingElementWithChilds<OOX::WritingElement
 
         if (pict)
         {
-                 if (pict->m_oShape.IsInit())           m_vmlElement = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pict->m_oShape.GetPointer());
-            else if (pict->m_oShapeArc.IsInit())        m_vmlElement = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pict->m_oShapeArc.GetPointer());
-            else if (pict->m_oShapeCurve.IsInit())      m_vmlElement = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pict->m_oShapeCurve.GetPointer());
-            else if (pict->m_oShapeLine.IsInit())       m_vmlElement = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pict->m_oShapeLine.GetPointer());
-            else if (pict->m_oShapeOval.IsInit())       m_vmlElement = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pict->m_oShapeOval.GetPointer());
-            else if (pict->m_oShapePolyLine.IsInit())   m_vmlElement = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pict->m_oShapePolyLine.GetPointer());
-            else if (pict->m_oShapeRect.IsInit())       m_vmlElement = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pict->m_oShapeRect.GetPointer());
-            else if (pict->m_oShapeRoundRect.IsInit())  m_vmlElement = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pict->m_oShapeRoundRect.GetPointer());
-            else if (pict->m_oShapeType.IsInit())       m_vmlElement = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pict->m_oShapeType.GetPointer());
+			m_vmlElement = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pict->m_oShapeElement.GetPointer());
         }
 
     }
@@ -417,6 +409,11 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 
 				if (srId.empty())
                     srId = image_data->m_rPict.IsInit() ? image_data->m_rPict->GetValue() : L"" ;
+
+				if (pOutput->m_nShapeType == PROP_DEF)
+				{
+					pOutput->m_nShapeType = ODRAW::sptPictureFrame;
+				}
 				
 				if (oParam.oReader->m_currentContainer)
 				{        
@@ -1579,16 +1576,16 @@ void OOXShapeReader::Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::L
 	}
 }
 
-bool OOXShapeReader::ParseVml( ReaderParameter oParam , RtfShapePtr& pOutput, bool bUsedType)
+bool OOXShapeReader::ParseVml(ReaderParameter oParam, RtfShapePtr& pOutput, bool bUsedType)
 {
 	if (m_vmlElement == NULL && m_arrElement)	return false;
-	if (m_vmlElement == NULL )					return ParseVmlChild(oParam , pOutput);
+	if (m_vmlElement == NULL)					return ParseVmlChild(oParam, pOutput);
 
-	if( m_vmlElement->m_sId.IsInit())
+	if (m_vmlElement->m_sId.IsInit())
 	{
-		pOutput->m_nID = oParam.oReader->m_oOOXIdGenerator.GetId( m_vmlElement->m_sId.get());
+		pOutput->m_nID = oParam.oReader->m_oOOXIdGenerator.GetId(m_vmlElement->m_sId.get());
 	}
-	
+
 	//pOutput->m_nLeft		= 0; //стили только с widht height (например в Numbering)
 	//pOutput->m_nTop		= 0;
 
@@ -1601,18 +1598,18 @@ bool OOXShapeReader::ParseVml( ReaderParameter oParam , RtfShapePtr& pOutput, bo
 	{
 		if (pOutput->m_nShapeType == PROP_DEF)
 			pOutput->m_nShapeType = ODRAW::sptNotPrimitive;
-		
+
 		if (shape_type->m_oSpt.IsInit())
 		{
 			pOutput->m_nShapeType = shape_type->m_oSpt->GetValue();
 		}
 		if (shape_type->m_sId.IsInit())
 		{
-			if (oParam.oReader->m_mapShapeTypes.find(shape_type->m_sId.get()) == 
+			if (oParam.oReader->m_mapShapeTypes.find(shape_type->m_sId.get()) ==
 				oParam.oReader->m_mapShapeTypes.end())
 			{
-				oParam.oReader->m_mapShapeTypes.insert(oParam.oReader->m_mapShapeTypes.begin(), 
-					std::pair<std::wstring, OOX::Vml::CShapeType*>(shape_type->m_sId.get(), shape_type));				
+				oParam.oReader->m_mapShapeTypes.insert(oParam.oReader->m_mapShapeTypes.begin(),
+					std::pair<std::wstring, OOX::Vml::CShapeType*>(shape_type->m_sId.get(), shape_type));
 			}
 		}
 		custom_path = shape_type->m_oPath.GetPointer();
@@ -1626,36 +1623,33 @@ bool OOXShapeReader::ParseVml( ReaderParameter oParam , RtfShapePtr& pOutput, bo
 	}
 	if (OOX::Vml::CShape* shape = dynamic_cast<OOX::Vml::CShape*>(m_vmlElement))
 	{
-        if (shape->m_sAdj.IsInit())
-            ParseAdjustment( *pOutput, shape->m_sAdj.get() );
-		
+		if (shape->m_sAdj.IsInit())
+			ParseAdjustment(*pOutput, shape->m_sAdj.get());
+
 		if (shape->m_oSpt.IsInit())
 		{
 			pOutput->m_nShapeType = shape->m_oSpt->GetValue();
 		}
-		if (shape->m_sType.IsInit())
+		if (shape->m_sType.IsInit() && false == (shape->m_sType->empty()))
 		{
-            std::wstring type = shape->m_sType.get().substr(1);//without #
+			std::wstring type = shape->m_sType.get().substr(1);//without #
 			std::map<std::wstring, OOX::Vml::CShapeType*>::iterator it = oParam.oReader->m_mapShapeTypes.find(type);
-			
-			if ( it != oParam.oReader->m_mapShapeTypes.end())
+
+			if (it != oParam.oReader->m_mapShapeTypes.end())
 			{
 				OOXShapeReader sub_reader(it->second);
 				sub_reader.Parse(oParam, pOutput, true);
 			}
 			if (pOutput->m_nShapeType == PROP_DEF)
 			{
-                int pos = (int)shape->m_sType->find( L"#_x0000_t" );
+				int pos = (int)shape->m_sType->find(L"#_x0000_t");
 				if (pos >= 0)
-				{				
-                    pOutput->m_nShapeType = _wtoi(shape->m_sType->substr(pos + 9, shape->m_sType->length() - pos - 9).c_str());
+				{
+					pOutput->m_nShapeType = _wtoi(shape->m_sType->substr(pos + 9, shape->m_sType->length() - pos - 9).c_str());
 				}
 			}
 		}
-		else if (pOutput->m_nShapeType == PROP_DEF)
-		{
-			pOutput->m_nShapeType = ODRAW::sptNotPrimitive;
-		}
+
 		custom_path = shape->m_oPath.GetPointer();
 		if (shape->m_oCoordOrigin.IsInit())
 		{
@@ -1665,61 +1659,64 @@ bool OOXShapeReader::ParseVml( ReaderParameter oParam , RtfShapePtr& pOutput, bo
 	}
 	else if (OOX::Vml::CRect* rect = dynamic_cast<OOX::Vml::CRect*>(m_vmlElement))
 	{
-		pOutput->m_nShapeType	= ODRAW::sptRectangle;
+		pOutput->m_nShapeType = ODRAW::sptRectangle;
 	}
 	else if (OOX::Vml::COval* oval = dynamic_cast<OOX::Vml::COval*>(m_vmlElement))
 	{
-		pOutput->m_nShapeType	= ODRAW::sptEllipse;
+		pOutput->m_nShapeType = ODRAW::sptEllipse;
 	}
 	else if (OOX::Vml::CLine* line = dynamic_cast<OOX::Vml::CLine*>(m_vmlElement))
 	{
-		pOutput->m_nShapeType	= ODRAW::sptLine;
+		pOutput->m_nShapeType = ODRAW::sptLine;
 		double x1 = line->m_oFrom.GetX();
 		double y1 = line->m_oFrom.GetY();
 		double x2 = line->m_oTo.GetX();
 		double y2 = line->m_oTo.GetY();
 
-		Width = abs(x1-x2); Height = abs(y1-y2);
+		Width = abs(x1 - x2); Height = abs(y1 - y2);
 
-		pOutput->m_nRelLeft		= (std::min) (x1,x2);
-		pOutput->m_nRelRight	= (std::max) (x1,x2);
-		pOutput->m_nRelTop		= (std::min) (y1,y2);
-		pOutput->m_nRelBottom	= (std::max) (y1,y2);
+		pOutput->m_nRelLeft = (std::min) (x1, x2);
+		pOutput->m_nRelRight = (std::max) (x1, x2);
+		pOutput->m_nRelTop = (std::min) (y1, y2);
+		pOutput->m_nRelBottom = (std::max) (y1, y2);
 	}
 	else if (OOX::Vml::CArc* arc = dynamic_cast<OOX::Vml::CArc*>(m_vmlElement))
 	{
-		pOutput->m_nShapeType	= ODRAW::sptArc;
+		pOutput->m_nShapeType = ODRAW::sptArc;
 	}
-	else if (OOX::Vml::CCurve* curve= dynamic_cast<OOX::Vml::CCurve*>(m_vmlElement))
+	else if (OOX::Vml::CCurve* curve = dynamic_cast<OOX::Vml::CCurve*>(m_vmlElement))
 	{
-		pOutput->m_nShapeType	= ODRAW::sptNotPrimitive;
+		pOutput->m_nShapeType = ODRAW::sptNotPrimitive;
 	}
-	else if (OOX::Vml::CRoundRect* curve= dynamic_cast<OOX::Vml::CRoundRect*>(m_vmlElement))
+	else if (OOX::Vml::CRoundRect* curve = dynamic_cast<OOX::Vml::CRoundRect*>(m_vmlElement))
 	{
-		pOutput->m_nShapeType	= ODRAW::sptRoundRectangle;
+		pOutput->m_nShapeType = ODRAW::sptRoundRectangle;
 	}
 	else if (OOX::Vml::CPolyLine* polyline = dynamic_cast<OOX::Vml::CPolyLine*>(m_vmlElement))
 	{
-		pOutput->m_nShapeType	= ODRAW::sptNotPrimitive;
+		pOutput->m_nShapeType = ODRAW::sptNotPrimitive;
 	}
 
-	if (pOutput->m_nShapeType == ODRAW::sptNotPrimitive && custom_path)
+	if ((pOutput->m_nShapeType == ODRAW::sptNotPrimitive ||
+		pOutput->m_nShapeType == PROP_DEF) && custom_path)
 	{
+		pOutput->m_nShapeType = ODRAW::sptNotPrimitive;
+
 		ParseVmlPath(pOutput, custom_path->GetValue());
-		
+
 		pOutput->m_nShapePath = 4; //complex
-		
-		pOutput->m_nGeoLeft		= 0;	
-		pOutput->m_nGeoTop		= 0;		
-		pOutput->m_nGeoRight	= Width;
-		pOutput->m_nGeoBottom	= Height;
+
+		pOutput->m_nGeoLeft = 0;
+		pOutput->m_nGeoTop = 0;
+		pOutput->m_nGeoRight = Width;
+		pOutput->m_nGeoBottom = Height;
 	}
-//-------------------------------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------------------------------
 	if (m_vmlElement->m_oFilled.IsInit())
-		pOutput->m_bFilled = m_vmlElement->m_oFilled->GetValue() ==  SimpleTypes::booleanFalse ? 0 : 1;
+		pOutput->m_bFilled = m_vmlElement->m_oFilled->GetValue() == SimpleTypes::booleanFalse ? 0 : 1;
 
 	if (m_vmlElement->m_oStroked.IsInit())
-		pOutput->m_bLine = m_vmlElement->m_oStroked->GetValue() ==  SimpleTypes::booleanFalse ? 0 : 1;
+		pOutput->m_bLine = m_vmlElement->m_oStroked->GetValue() == SimpleTypes::booleanFalse ? 0 : 1;
 
 	if (m_vmlElement->m_oFillColor.IsInit())
 		pOutput->m_nFillColor = (m_vmlElement->m_oFillColor->Get_B() << 16) + (m_vmlElement->m_oFillColor->Get_G() << 8) + m_vmlElement->m_oFillColor->Get_R();
@@ -1727,71 +1724,77 @@ bool OOXShapeReader::ParseVml( ReaderParameter oParam , RtfShapePtr& pOutput, bo
 	if (m_vmlElement->m_oStrokeColor.IsInit())
 		pOutput->m_nLineColor = (m_vmlElement->m_oStrokeColor->Get_B() << 16) + (m_vmlElement->m_oStrokeColor->Get_G() << 8) + m_vmlElement->m_oStrokeColor->Get_R();
 
-	if( m_vmlElement->m_oStrokeWeight.IsInit())
+	if (m_vmlElement->m_oStrokeWeight.IsInit())
 		pOutput->m_nLineWidth = (int)m_vmlElement->m_oStrokeWeight->ToEmu();
 
 	if (m_vmlElement->m_oConnectorType.IsInit())
 	{
-		switch(m_vmlElement->m_oConnectorType->GetValue())
+		switch (m_vmlElement->m_oConnectorType->GetValue())
 		{
-			case SimpleTypes::connectortypeCurved	: pOutput->m_nConnectionType = 2; break;
-			case SimpleTypes::connectortypeElbow	: pOutput->m_nConnectionType = 1; break;
-			case SimpleTypes::connectortypeNone		: pOutput->m_nConnectionType = 3; break;
-			case SimpleTypes::connectortypeStraight	: pOutput->m_nConnectionType = 0; break;
+		case SimpleTypes::connectortypeCurved: pOutput->m_nConnectionType = 2; break;
+		case SimpleTypes::connectortypeElbow: pOutput->m_nConnectionType = 1; break;
+		case SimpleTypes::connectortypeNone: pOutput->m_nConnectionType = 3; break;
+		case SimpleTypes::connectortypeStraight: pOutput->m_nConnectionType = 0; break;
 		}
 	}
 
-	pOutput->m_bLayoutInCell = m_vmlElement->m_oAllowInCell.GetValue();
-	pOutput->m_bAllowOverlap = m_vmlElement->m_oAllowOverlap.GetValue();
+	pOutput->m_bLayoutInCell = m_vmlElement->m_oAllowInCell.get_value_or(false);
+	pOutput->m_bAllowOverlap = m_vmlElement->m_oAllowOverlap.get_value_or(true);
 
-	pOutput->m_nWrapType	= 3; //default (non wrap)
-	pOutput->m_eAnchorTypeShape	= RtfShape::st_none; //inline or anchor
-	
-	if ( m_vmlElement->m_oStyle.IsInit())
+	pOutput->m_nWrapType = 3; //default (non wrap)
+	pOutput->m_eAnchorTypeShape = RtfShape::st_none; //inline or anchor
+
+	if (m_vmlElement->m_oStyle.IsInit())
 	{
-		if( false == ParseVmlStyles( pOutput, m_vmlElement->m_oStyle->m_arrProperties ) )
+		if (false == ParseVmlStyles(pOutput, m_vmlElement->m_oStyle->m_arrProperties))
 			return false;
 	}
 
-	if( m_vmlElement->m_oWrapCoords.IsInit())
+	if (m_vmlElement->m_oWrapCoords.IsInit())
 	{
-		if (pOutput->m_nWrapType == 3 && pOutput->m_nZOrderRelative == PROP_DEF) 
+		if (pOutput->m_nWrapType == 3 && pOutput->m_nZOrderRelative == PROP_DEF)
 			pOutput->m_nWrapType = 2;
-		
+
 		int nPosition = 0;
-		std::wstring sPoint =  L"start";
-		for (int i =0 ;i < m_vmlElement->m_oWrapCoords->GetSize(); i++)
+		std::wstring sPoint = L"start";
+		for (int i = 0; i < m_vmlElement->m_oWrapCoords->GetSize(); i++)
 		{
-			pOutput->m_aWrapPoints.push_back( std::pair<int,int>(	m_vmlElement->m_oWrapCoords->GetX(i),
-																	m_vmlElement->m_oWrapCoords->GetY(i)));
+			pOutput->m_aWrapPoints.push_back(std::pair<int, int>(m_vmlElement->m_oWrapCoords->GetX(i),
+				m_vmlElement->m_oWrapCoords->GetY(i)));
 		}
 	}
-	if( m_vmlElement->m_oCoordOrigin.IsInit() )
+	if (m_vmlElement->m_oCoordOrigin.IsInit())
 	{
-		pOutput->m_nGroupLeft	= m_vmlElement->m_oCoordOrigin->GetX();
-		pOutput->m_nGroupTop	= m_vmlElement->m_oCoordOrigin->GetY();
+		pOutput->m_nGroupLeft = m_vmlElement->m_oCoordOrigin->GetX();
+		pOutput->m_nGroupTop = m_vmlElement->m_oCoordOrigin->GetY();
 	}
 
-	if( m_vmlElement->m_oCoordSize.IsInit())
+	if (m_vmlElement->m_oCoordSize.IsInit())
 	{// shapeType content only size
-		pOutput->m_nGroupRight	= (pOutput->m_nGroupLeft != PROP_DEF ? pOutput->m_nGroupLeft : 0)	+ m_vmlElement->m_oCoordSize->GetX();
-		pOutput->m_nGroupBottom = (pOutput->m_nGroupTop != PROP_DEF ? pOutput->m_nGroupTop : 0)		+ m_vmlElement->m_oCoordSize->GetY();
+		pOutput->m_nGroupRight = (pOutput->m_nGroupLeft != PROP_DEF ? pOutput->m_nGroupLeft : 0) + m_vmlElement->m_oCoordSize->GetX();
+		pOutput->m_nGroupBottom = (pOutput->m_nGroupTop != PROP_DEF ? pOutput->m_nGroupTop : 0) + m_vmlElement->m_oCoordSize->GetY();
 	}
 
 	if (m_vmlElement->m_oConnectorType.IsInit())
 	{
-		switch(m_vmlElement->m_oConnectorType->GetValue())
+		switch (m_vmlElement->m_oConnectorType->GetValue())
 		{
-		case SimpleTypes::connectortypeCurved  : pOutput->m_nConnectorStyle = 2; break;			
-		case SimpleTypes::connectortypeElbow   : pOutput->m_nConnectorStyle = 1; break;		
-		case SimpleTypes::connectortypeNone    : pOutput->m_nConnectorStyle = 3; break;		
-		case SimpleTypes::connectortypeStraight: pOutput->m_nConnectorStyle = 0; break;		
-        default: break;
-        }
+		case SimpleTypes::connectortypeCurved: pOutput->m_nConnectorStyle = 2; break;
+		case SimpleTypes::connectortypeElbow: pOutput->m_nConnectorStyle = 1; break;
+		case SimpleTypes::connectortypeNone: pOutput->m_nConnectorStyle = 3; break;
+		case SimpleTypes::connectortypeStraight: pOutput->m_nConnectorStyle = 0; break;
+		default: break;
+		}
 	}
+	
+	bool res = ParseVmlChild(oParam, pOutput);
+	
+	if (pOutput->m_nShapeType == PROP_DEF)
+	{
+		pOutput->m_nShapeType = ODRAW::sptNotPrimitive;
 
-//---------------------
-	return ParseVmlChild(oParam, pOutput);
+	}
+	return res;
 }
 bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 {
@@ -1807,8 +1810,8 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 		}
 		pOutput->m_eAnchorTypeShape	= RtfShape::st_none; //inline or anchor
 		
-		pOutput->m_bLayoutInCell	= m_vmlGroup->m_oAllowInCell.GetValue();
-		pOutput->m_bAllowOverlap	= m_vmlGroup->m_oAllowOverlap.GetValue();
+		pOutput->m_bLayoutInCell	= m_vmlGroup->m_oAllowInCell.get_value_or(false);
+		pOutput->m_bAllowOverlap	= m_vmlGroup->m_oAllowOverlap.get_value_or(true);
 
 		pOutput->m_nZOrderRelative	= 0;
 		
@@ -1843,41 +1846,39 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 			pOutput->m_nGroupRight = (pOutput->m_nGroupLeft != PROP_DEF  ? pOutput->m_nGroupLeft : 0)	+ m_vmlGroup->m_oCoordSize->GetX();
 			pOutput->m_nGroupBottom =(pOutput->m_nGroupTop != PROP_DEF  ? pOutput->m_nGroupTop : 0)		+ m_vmlGroup->m_oCoordSize->GetY();
 		}
-
-        for (size_t i = 0; i < m_vmlGroup->m_arrItems.size(); ++i)
+		for (size_t i = 0; i < m_vmlGroup->m_arrShapeTypes.size(); ++i)
 		{
-			if (m_vmlGroup->m_arrItems[i] == NULL) continue;
+			RtfShapePtr pNewShape(new RtfShape());
 
-			if (m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_group)
+			OOXShapeReader oShapeReader(m_vmlGroup->m_arrShapeTypes[i]);
+
+			pNewShape->m_bInGroup = true;
+			if (true == oShapeReader.Parse(oParam, pNewShape))
+				pOutput->AddItem(pNewShape);
+
+		}
+        for (size_t i = 0; i < m_vmlGroup->m_arrElements.size(); ++i)
+		{
+			if (m_vmlGroup->m_arrElements[i] == NULL) continue;
+
+			if (m_vmlGroup->m_arrElements[i]->getType() == OOX::et_v_group)
 			{
 				RtfShapePtr pNewShape( new RtfShape() );
 				
-				OOXShapeGroupReader oShapeReader(dynamic_cast<OOX::Vml::CGroup*>(m_vmlGroup->m_arrItems[i]));
+				OOXShapeGroupReader oShapeReader(dynamic_cast<OOX::Vml::CGroup*>(m_vmlGroup->m_arrElements[i]));
 				
-				if( true == oShapeReader.Parse( oParam, pNewShape ) )
-					 pOutput->AddItem( pNewShape );
-			}
-			else if (	m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_arc		||
-						m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_line		||
-						m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_oval		||
-						m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_shape		||
-						m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_rect		||
-						m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_roundrect ||
-						m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_polyline	||
-						m_vmlGroup->m_arrItems[i]->getType() == OOX::et_v_shapetype)
-			{
-				RtfShapePtr pNewShape ( new RtfShape() );//set type .. .todooo
-				
-				OOXShapeReader oShapeReader(dynamic_cast<OOX::Vml::CVmlCommonElements*>(m_vmlGroup->m_arrItems[i]));
-				
-				pNewShape->m_bInGroup = true;
 				if( true == oShapeReader.Parse( oParam, pNewShape ) )
 					 pOutput->AddItem( pNewShape );
 			}
 			else
 			{
-				//??? todooo
-				//shapetype как минимум нужен !!!
+				RtfShapePtr pNewShape ( new RtfShape() );
+				
+				OOXShapeReader oShapeReader(dynamic_cast<OOX::Vml::CVmlCommonElements*>(m_vmlGroup->m_arrElements[i]));
+				
+				pNewShape->m_bInGroup = true;
+				if( true == oShapeReader.Parse( oParam, pNewShape ) )
+					 pOutput->AddItem( pNewShape );
 			}
 		}
 	}

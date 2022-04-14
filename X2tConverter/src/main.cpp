@@ -141,7 +141,7 @@ static std::wstring utf8_to_unicode(const char *src)
 
 	_UINT32 result = 0;
     std::wstring sXmlExt = _T(".xml");
-    if((sArg1.length() > 3) && (sXmlExt == sArg1.substr(sArg1.length() - sXmlExt.length(), sXmlExt.length())))
+    if(argc < 3 && (sArg1.length() > 3) && (sXmlExt == sArg1.substr(sArg1.length() - sXmlExt.length(), sXmlExt.length())))
 	{
 		NExtractTools::InputParams oInputParams;
 		if (oInputParams.FromXmlFile(sArg1) && (sArg2.empty() || oInputParams.FromXml(sArg2)))

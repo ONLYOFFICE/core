@@ -39,6 +39,10 @@
 #include "JPXStream.h"
 #include "Stream-CCITT.h"
 
+#ifdef USE_EXTERNAL_JPEG2000
+#include "../../Src/JPXStream2.h"
+#endif
+
 #ifdef __DJGPP__
 static GBool setDJSYSFLAGS = gFalse;
 #endif
@@ -304,7 +308,11 @@ Stream *Stream::makeFilter(char *name, Stream *str, Object *params,
     str = new JBIG2Stream(str, &globals);
     globals.free();
   } else if (!strcmp(name, "JPXDecode")) {
+#ifdef USE_EXTERNAL_JPEG2000
+    str = new JPXStream2(str);
+#else
     str = new JPXStream(str);
+#endif
   } else {
     error(errSyntaxError, getPos(), "Unknown filter '{0:s}'", name);
     str = new EOFStream(str);
@@ -404,6 +412,15 @@ GBool ImageStream::getPixel(Guchar *pix) {
     pix[i] = imgLine[imgIdx++];
   }
   return gTrue;
+}
+
+int ImageStream::getVals()
+{
+    return nVals;
+}
+int ImageStream::getComps()
+{
+    return nComps;
 }
 
 Guchar *ImageStream::getLine() {

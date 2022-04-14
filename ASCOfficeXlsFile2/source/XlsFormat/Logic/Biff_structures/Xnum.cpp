@@ -45,6 +45,5 @@ void Xnum::load(CFRecord& record)
 	record.loadAnyData(data);
 }
 
-
 } // namespace XLS
 

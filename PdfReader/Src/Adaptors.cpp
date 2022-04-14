@@ -1,12 +1,82 @@
-//
-// Created by danya on 23.06.2021.
-//
-
 #include "Adaptors.h"
+#include "./lib/xpdf/NameToCharCode.h"
+
 
 void GlobalParamsAdaptor::SetFontManager(NSFonts::IFontManager *pFontManager)
 {
     m_pFontManager = pFontManager;
+}
+void GlobalParamsAdaptor::SetCMapFolder(const std::wstring &wsFolder)
+{
+	m_wsCMapFolder = wsFolder;
+
+	GString* sFolder = NSStrings::CreateString(wsFolder);
+	if (!sFolder)
+		return;
+
+	unicodeMaps->add(new GString("ISO-8859-6"),   sFolder->copy()->append("/ISO-8859-6.unicodeMap"));
+	unicodeMaps->add(new GString("ISO-2022-CN"),  sFolder->copy()->append("/ISO-2022-CN.unicodeMap"));
+	unicodeMaps->add(new GString("EUC-CN"),       sFolder->copy()->append("/EUC-CN.unicodeMap"));
+	unicodeMaps->add(new GString("GBK"),          sFolder->copy()->append("/GBK.unicodeMap"));
+	unicodeMaps->add(new GString("KOI8-R"),       sFolder->copy()->append("/KOI8-R.unicodeMap"));
+	unicodeMaps->add(new GString("ISO-8859-7"),   sFolder->copy()->append("/ISO-8859-7.unicodeMap"));
+	unicodeMaps->add(new GString("ISO-8859-8"),   sFolder->copy()->append("/ISO-8859-8.unicodeMap"));
+	unicodeMaps->add(new GString("Windows-1255"), sFolder->copy()->append("/Windows-1255.unicodeMap"));
+	unicodeMaps->add(new GString("ISO-2022-JP"),  sFolder->copy()->append("/ISO-2022-JP.unicodeMap"));
+	unicodeMaps->add(new GString("EUC-JP"),       sFolder->copy()->append("/EUC-JP.unicodeMap"));
+	unicodeMaps->add(new GString("Shift-JIS"),    sFolder->copy()->append("/Shift-JIS.unicodeMap"));
+	unicodeMaps->add(new GString("ISO-2022-KR"),  sFolder->copy()->append("/ISO-2022-KR.unicodeMap"));
+	unicodeMaps->add(new GString("TIS-620"),      sFolder->copy()->append("/TIS-620.unicodeMap"));
+	unicodeMaps->add(new GString("ISO-8859-9"),   sFolder->copy()->append("/ISO-8859-9.unicodeMap"));
+	unicodeMaps->add(new GString("Latin2"),       sFolder->copy()->append("/Latin2.unicodeMap"));
+
+	cidToUnicodes->add(new GString("Adobe-GB1"), sFolder->copy()->append("/Adobe-GB1.cidToUnicode"));
+	cidToUnicodes->add(new GString("Adobe-Korea1"), sFolder->copy()->append("/Adobe-Korea1.cidToUnicode"));
+	cidToUnicodes->add(new GString("Adobe-KR"), sFolder->copy()->append("/Adobe-KR.cidToUnicode"));
+	cidToUnicodes->add(new GString("Adobe-Japan1"), sFolder->copy()->append("/Adobe-Japan1.cidToUnicode"));
+
+	AddNameToUnicode(GString(sFolder->getCString()).append("/Bulgarian.nameToUnicode")->getCString());
+	AddNameToUnicode(GString(sFolder->getCString()).append("/Greek.nameToUnicode")->getCString());
+	AddNameToUnicode(GString(sFolder->getCString()).append("/Thai.nameToUnicode")->getCString());
+
+	AddCMapFolder("Adobe-GB1", sFolder);
+	AddCMapFolder("Adobe-Japan1", sFolder);
+	AddCMapFolder("Adobe-Korea1", sFolder);
+	AddCMapFolder("Adobe-KR", sFolder);
+
+	toUnicodeDirs->append(sFolder->copy()->append("/CMap"));
+}
+void GlobalParamsAdaptor::AddNameToUnicode(const char* sFile)
+{
+	char *tok1, *tok2;
+	FILE *f;
+	char buf[256];
+	Unicode u;
+
+	if (!(f = openFile(sFile, "r")))
+	  return;
+
+	while (getLine(buf, sizeof(buf), f))
+	{
+		tok1 = strtok(buf, " \t\r\n");
+		tok2 = strtok(NULL, " \t\r\n");
+		if (tok1 && tok2)
+		{
+			sscanf(tok1, "%x", &u);
+			nameToUnicode->add(tok2, u);
+		}
+	}
+
+	fclose(f);
+}
+void GlobalParamsAdaptor::AddCMapFolder(const char* sCollection, GString* sFolder)
+{
+	GList *pList = new GList();
+	if (!pList)
+		return;
+
+	pList->append(sFolder->copy()->append("/CMap"));
+	cMapDirs->add(new GString(sCollection), pList);
 }
 
 bool operator==(const Ref &a, const Ref &b)

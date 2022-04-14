@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndWsView)
         public:
             EndWsView();
-            virtual ~EndWsView();
+            ~EndWsView();
 
             XLS::BaseObjectPtr clone();
 

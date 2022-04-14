@@ -44,7 +44,7 @@ namespace XLSB
     public:
         BookProtectionFlags();
         BookProtectionFlags(XLS::CFRecord& record);
-        virtual ~BookProtectionFlags();
+        ~BookProtectionFlags();
        XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;

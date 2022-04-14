@@ -35,7 +35,6 @@
 
 #include "../SharedStrings/Si.h"
 #include "Cols.h"
-#include "../../XlsbFormat/Biff12_unions/CELLTABLE.h"
 
 namespace NSBinPptxRW
 {
@@ -412,6 +411,8 @@ namespace OOX
 			nullable<CFormula>		m_oFormula;
 			nullable<CSi>			m_oRichText;
 			nullable<CText>			m_oValue;
+//-----------------------------			
+			nullable_string			m_oCacheValue;
 		};
 
 		//необработано:
@@ -453,7 +454,7 @@ namespace OOX
 			void fromXMLToXLSB(XmlUtils::CXmlLiteReader& oReader, NSBinPptxRW::CXlsbBinaryWriter& oStream, CCellXLSB& oCell);
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType);
 			void toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const;            
-            void fromBin(XLSB::CELLTABLE::_data& obj);
+                        void fromBin(XLS::BaseObjectPtr& obj);
 
 			virtual EElementType getType () const
 			{
@@ -463,7 +464,7 @@ namespace OOX
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-            void ReadAttributes(XLSB::CELLTABLE::_data& obj);
+                        void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void CheckIndex();
 
 		public:
@@ -485,7 +486,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSheetData)
-            WritingElement_XlsbConstructors(CSheetData)
+            //WritingElement_XlsbConstructors(CSheetData)
 			CSheetData(OOX::Document *pMain = NULL) : WritingElementWithChilds<CRow>(pMain)
 			{
 			}
@@ -539,8 +540,6 @@ namespace OOX
 			void fromXLSBToXmlRowEnd (CRow* pRow, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-
-            void ReadAttributes(XLS::BaseObjectPtr& obj);
 
 	// spreadsheets 2003
 

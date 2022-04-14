@@ -444,6 +444,15 @@ namespace MetaFile
 	{
 		m_oWindow.x = shX;
 		m_oWindow.y = shY;
+		m_oWindow.bUnchangedOrg = false;
+
+		if (m_oViewport.bUnchangedOrg)
+		{
+			m_oViewport.x = shX;
+			m_oViewport.y = shY;
+			m_oViewport.bUnchangedOrg = false;
+		}
+
 		UpdatePixelMetrics();
 		UpdateFinalTransform();
 	}
@@ -451,6 +460,15 @@ namespace MetaFile
 	{
 		m_oWindow.w = shW;
 		m_oWindow.h = shH;
+		m_oWindow.bUnchangedExt = false;
+
+		if (m_oViewport.bUnchangedExt)
+		{
+			m_oViewport.w = shW;
+			m_oViewport.h = shH;
+			m_oViewport.bUnchangedExt = false;
+		}
+
 		UpdatePixelMetrics();
 		UpdateFinalTransform();
 	}
@@ -476,6 +494,15 @@ namespace MetaFile
 	{
 		m_oViewport.x = shX;
 		m_oViewport.y = shY;
+		m_oViewport.bUnchangedOrg = false;
+
+		if (m_oWindow.bUnchangedOrg)
+		{
+			m_oWindow.x = shX;
+			m_oWindow.y = shY;
+			m_oWindow.bUnchangedOrg = false;
+		}
+
 		UpdatePixelMetrics();
 		UpdateFinalTransform();
 	}
@@ -483,6 +510,15 @@ namespace MetaFile
 	{
 		m_oViewport.w = shW;
 		m_oViewport.h = shH;
+		m_oViewport.bUnchangedExt = false;
+
+		if (m_oWindow.bUnchangedExt)
+		{
+			m_oWindow.w = shW;
+			m_oWindow.h = shH;
+			m_oWindow.bUnchangedExt = false;
+		}
+
 		UpdatePixelMetrics();
 		UpdateFinalTransform();
 	}
@@ -532,13 +568,14 @@ namespace MetaFile
 		TXForm oViewportXForm((double)GetPixelWidth(), 0, 0, (double)GetPixelHeight(), pViewPort->x, pViewPort->y);
 
 		m_oFinalTransform.Init();
-		m_oFinalTransform.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);
-		m_oFinalTransform.Multiply(m_oTransform, MWT_RIGHTMULTIPLY);
 		m_oFinalTransform.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);
+		m_oFinalTransform.Multiply(m_oTransform, MWT_RIGHTMULTIPLY);
+		m_oFinalTransform.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);
 
 		m_oFinalTransform2.Init();
-		m_oFinalTransform2.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);
 		m_oFinalTransform2.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);
+		m_oFinalTransform2.Multiply(m_oTransform, MWT_RIGHTMULTIPLY);
+		m_oFinalTransform2.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);
 	}
 	void CWmfDC::SetTextColor(TWmfColor& oColor)
 	{

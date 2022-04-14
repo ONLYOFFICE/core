@@ -43,7 +43,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(COMMENTS)
     public:
         COMMENTS();
-        virtual ~COMMENTS();
+        ~COMMENTS();
 
         XLS::BaseObjectPtr clone();
 
@@ -52,7 +52,7 @@ namespace XLSB
         XLS::BaseObjectPtr               m_BrtBeginComments;
         XLS::BaseObjectPtr               m_COMMENTAUTHORS;
         XLS::BaseObjectPtr               m_COMMENTLIST;
-        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        //std::vector<XLS::BaseObjectPtr>  m_arFRT;
         XLS::BaseObjectPtr               m_BrtEndComments;
 
     };

@@ -430,8 +430,11 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 	{
 		if(false == m_oRef.IsInit() || false == m_oDisplayName.IsInit()) return;
 		
-		m_oId.Init();
-		m_oId->SetValue((unsigned int)nIndex);
+        if(!m_oId.IsInit())
+        {
+            m_oId.Init();
+            m_oId->SetValue((unsigned int)nIndex);
+        }
 
 		toXML(writer);
 	}
@@ -695,7 +698,7 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
         CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
         if (xlsb)
         {
-            XLSB::TableStreamPtr tableStream = std::make_shared<XLSB::TableStream>();
+            XLSB::TableStreamPtr tableStream(new XLSB::TableStream);
 
             xlsb->ReadBin(oPath, tableStream.get());
 
@@ -704,6 +707,8 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
                 if (tableStream->m_TABLE != nullptr)
                     m_oTable = tableStream->m_TABLE;
             }
+
+            //tableStream.reset();
 
         }
     }
@@ -1201,7 +1206,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
         CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
         if (xlsb)
         {
-            XLSB::QueryTableStreamPtr querytableStream = std::make_shared<XLSB::QueryTableStream>();
+            XLSB::QueryTableStreamPtr querytableStream(new XLSB::QueryTableStream);
 
             xlsb->ReadBin(oPath, querytableStream.get());
 
@@ -1210,6 +1215,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
                 if (querytableStream->m_QSI != nullptr)
                     m_oQueryTable = querytableStream->m_QSI;
             }
+
+            //querytableStream.reset();
 
         }
     }

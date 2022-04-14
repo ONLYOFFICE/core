@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndSlicerStyles)
         public:
             EndSlicerStyles();
-            virtual ~EndSlicerStyles();
+            ~EndSlicerStyles();
 
             XLS::BaseObjectPtr clone();
 

@@ -43,10 +43,12 @@
 #include "Biff12_unions/FNGROUP.h"
 #include "Biff12_unions/EXTERNALS.h"
 #include "Biff12_records/CalcProp.h"
+#include "Biff12_unions/PIVOTCACHEIDS.h"
 #include "Biff12_records/OleSize.h"
 #include "Biff12_records/EndBook.h"
 #include "Biff12_records/BookProtection.h"
 #include "Biff12_records/BookProtectionIso.h"
+#include "Biff12_records/SupBookSrc.h"
 #include "Biff12_unions/SUP.h"
 #include "Biff12_unions/FRT.h"
 #include "Biff12_unions/FRTWORKBOOK.h"
@@ -221,6 +223,15 @@ const bool WorkBookStream::loadContent(BinProcessor& proc)
                 }
             }break;
 
+            case rt_BeginPivotCacheIDs:
+            {
+                if (proc.optional<PIVOTCACHEIDS>())
+                {
+                    m_PIVOTCACHEIDS = elements_.back();
+                    elements_.pop_back();
+                }
+            }break;
+
             case rt_UserBookView:
             {
                 while (true)
@@ -262,10 +273,27 @@ const bool WorkBookStream::loadContent(BinProcessor& proc)
 
             case rt_FRTBegin:
             {
-                if (proc.optional<FRTWORKBOOK>())
+                FRTWORKBOOK oFRTWORKBOOK;
+                if (proc.optional(oFRTWORKBOOK))
                 {
-                    m_FRTWORKBOOK = elements_.back();
-                    elements_.pop_back();
+                    if(m_FRTWORKBOOK != nullptr)
+                    {
+                        if(oFRTWORKBOOK.m_SLICERCACHEIDS != nullptr)
+                            boost::dynamic_pointer_cast<FRTWORKBOOK>(m_FRTWORKBOOK)->m_SLICERCACHEIDS = oFRTWORKBOOK.m_SLICERCACHEIDS;
+
+                        if(oFRTWORKBOOK.m_SLICERCACHESPIVOTCACHEIDS != nullptr)
+                            boost::dynamic_pointer_cast<FRTWORKBOOK>(m_FRTWORKBOOK)->m_SLICERCACHESPIVOTCACHEIDS = oFRTWORKBOOK.m_SLICERCACHESPIVOTCACHEIDS;
+
+                        if(oFRTWORKBOOK.m_TABLESLICERCACHEIDS != nullptr)
+                            boost::dynamic_pointer_cast<FRTWORKBOOK>(m_FRTWORKBOOK)->m_TABLESLICERCACHEIDS = oFRTWORKBOOK.m_TABLESLICERCACHEIDS;
+
+                        elements_.pop_back();
+                    }
+                    else
+                    {
+                        m_FRTWORKBOOK = elements_.back();
+                        elements_.pop_back();
+                    }
                 }
             }break;
 
@@ -293,63 +321,69 @@ void WorkBookStream::UpdateXti(XLS::GlobalWorkbookInfo* global_info_)
     EXTERNALS* externals = dynamic_cast<EXTERNALS*>(m_EXTERNALS.get());
     if (externals)
     {
-        for (size_t s = 0; s < externals->m_arSUP.size(); s++)
+        //for (size_t s = 0; s < externals->m_arSUP.size(); s++)
+        //{
+          //  SUP* SUPP = dynamic_cast<SUP*>(externals->m_arSUP[s].get());
+          //  if (!SUPP) continue;
+
+        XLSB::ExternSheet* extern_sheet = dynamic_cast<XLSB::ExternSheet*>(externals->m_BrtExternSheet.get());
+
+        //GlobalWorkbookInfo::_xti val;
+
+        //val.iSup	= s;
+        //val.pNames	= &SUPP->arNames;
+
+        for (size_t i = 0; extern_sheet && i < extern_sheet->rgXTI.size(); i++)
         {
-            SUP* SUPP = dynamic_cast<SUP*>(externals->m_arSUP[s].get());
-            if (!SUPP) continue;
+            XTI* xti = dynamic_cast<XTI*>(extern_sheet->rgXTI[i].get());
+            if (!xti) continue;
 
-            XLSB::ExternSheet* extern_sheet = dynamic_cast<XLSB::ExternSheet*>(externals->m_BrtExternSheet.get());
+            SUP* index_book = dynamic_cast<SUP*>(externals->m_arSUP[xti->iSupBook].get());
+            if (!index_book) continue;
 
-            //GlobalWorkbookInfo::_xti val;
+            //if (index_book->arNames.empty()) continue;
 
-            //val.iSup	= s;
-            //val.pNames	= &SUPP->arNames;
+            GlobalWorkbookInfo::_xti val_1;
 
-            for (size_t i = 0; extern_sheet && i < extern_sheet->rgXTI.size(); i++)
+            val_1.iSup		= xti->iSupBook;
+            val_1.pNames	= &index_book->arNames;
+
+            if(index_book->m_source->get_type() == XLS::typeSupBookSrc)
             {
-                XTI* xti = dynamic_cast<XTI*>(extern_sheet->rgXTI[i].get());
-                if (!xti) continue;
-
-                SUP* index_book = dynamic_cast<SUP*>(externals->m_arSUP[xti->iSupBook].get());
-                if (!index_book) continue;
-
-                //if (index_book->arNames.empty()) continue;
-
-                GlobalWorkbookInfo::_xti val_1;
-
-                val_1.iSup		= xti->iSupBook;
-                val_1.pNames	= &index_book->arNames;
-
-                if (xti->itabFirst >= 0 /*|| itabLast >= 0*/)
-                {
-                    std::wstring strRange;
-                    if(-1 == xti->itabFirst)
-                    {
-                        strRange = L"#REF";
-                    }
-                    else if (xti->itabFirst < global_info_->sheets_info.size())
-                    {
-                        strRange = XMLSTUFF::name2sheet_name(global_info_->sheets_info[xti->itabFirst].name, L"");
-                        if (xti->itabFirst != xti->itabLast)
-                        {
-                            strRange += std::wstring(L":") + XMLSTUFF::name2sheet_name(global_info_->sheets_info[xti->itabLast].name, L"");
-                        }
-                    }
-                    val_1.link = strRange;
-                }
-                else if (xti->itabFirst == -1)
-                {
-                    //sheet not found
-                }
-                else if (xti->itabFirst == -2)
-                {
-                    //Workbook-level
-                }
-                global_info_->arXti_External.push_back(val_1);
+                val_1.link      = dynamic_cast<XLSB::SupBookSrc*>(index_book->m_source.get())->strRelID.value.value();
+                val_1.itabFirst = xti->itabFirst;
+                val_1.itabLast  = xti->itabLast;
             }
+            else if (xti->itabFirst >= 0 /*|| itabLast >= 0*/)
+            {
+                std::wstring strRange;
+                if(-1 == xti->itabFirst)
+                {
+                    strRange = L"#REF";
+                }
+                else if (xti->itabFirst < global_info_->sheets_info.size())
+                {
+                    strRange = XMLSTUFF::name2sheet_name(global_info_->sheets_info[xti->itabFirst].name, L"");
+                    if (xti->itabFirst != xti->itabLast)
+                    {
+                        strRange += std::wstring(L":") + XMLSTUFF::name2sheet_name(global_info_->sheets_info[xti->itabLast].name, L"");
+                    }
+                }
+                val_1.link = strRange;
+            }
+            else if (xti->itabFirst == -1)
+            {
+                //sheet not found
+            }
+            else if (xti->itabFirst == -2)
+            {
+                //Workbook-level
+            }
+            global_info_->arXti_External.push_back(val_1);
+        }
 
             //global_info_->arXti.push_back(val);
-        }
+        //}
     }
 }
 

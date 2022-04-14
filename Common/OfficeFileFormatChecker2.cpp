@@ -53,6 +53,21 @@ bool COfficeFileFormatChecker::isRtfFormatFile(unsigned char* pBuffer,int dwByte
 
 	return false;
 }
+bool COfficeFileFormatChecker::isMultiPartsHtmlFormatFile(unsigned char* pBuffer, int dwBytes)
+{
+	if (pBuffer == NULL) return false;
+
+	const char *contentTypeFormatLine1 = "Content-Type: multipart/related";
+	const char *contentTypeFormatLine2 = "Content-Type: text/html"; // может быть и вне заданого буфера (todooo)
+
+	std::string xml_string((char*)pBuffer, dwBytes);
+
+	if ((std::string::npos != xml_string.find(contentTypeFormatLine1)) && (std::string::npos != xml_string.find(contentTypeFormatLine2)))
+	{
+		return true;
+	}
+	return false;
+}
 bool COfficeFileFormatChecker::isHtmlFormatFile(unsigned char* pBuffer, int dwBytes, bool testCloseTag)
 {
 	if (pBuffer == NULL || dwBytes < 4) return false;
@@ -93,7 +108,7 @@ bool COfficeFileFormatChecker::isHtmlFormatFile(unsigned char* pBuffer, int dwBy
 			}
 		}
 	}
-    return false;
+	return false;
 }
 
 bool COfficeFileFormatChecker::isBinaryDoctFormatFile	(unsigned char* pBuffer,int dwBytes)
@@ -512,6 +527,10 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & _fileName)
 		else if (isXlsFlatFormatFile(buffer, sizeRead))// min size - 2
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS; // without compaund container
+		}
+		else if (isMultiPartsHtmlFormatFile(buffer, sizeRead))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT;
 		}
 //------------------------------------------------------------------------------------------------
 		file.CloseFile();
@@ -1011,9 +1030,13 @@ std::wstring COfficeFileFormatChecker::GetExtensionByType(int type)
     return L"";
 }
 
-int COfficeFileFormatChecker::GetFormatByExtension(const std::wstring& ext)
+int COfficeFileFormatChecker::GetFormatByExtension(const std::wstring& sExt)
 {
-    if (L".docx" == ext)
+	std::wstring ext;
+	ext.resize(sExt.size());
+	std::transform(sExt.begin(), sExt.end(), ext.begin(), tolower);
+	
+	if (L".docx" == ext)
         return AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
 	if (L".oform" == ext)
 		return AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM;
@@ -1109,7 +1132,13 @@ int COfficeFileFormatChecker::GetFormatByExtension(const std::wstring& ext)
     if (L".xps" == ext)
         return AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS;
 
-    return 0;
+	if (L".doct" == ext)
+		return AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY;
+	if (L".xlst" == ext)
+		return AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY;
+	if (L".pptt" == ext)
+		return AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY;
+	return 0;
 }
 
 std::wstring COfficeFileFormatChecker::GetFormatExtension(const std::wstring & fileName)
@@ -1188,6 +1217,7 @@ bool COfficeFileFormatChecker::isXpsFile(const std::wstring & fileName)
         HRESULT hresult = OfficeUtils.LoadFileFromArchive(fileName, L"_rels/.rels/[0].piece", &pBuffer, nBufferSize);
         if (hresult == S_OK && pBuffer != NULL)
         {
+            nFileType = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS;
             return true;
         }
     }

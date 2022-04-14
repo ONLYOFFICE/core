@@ -41,11 +41,13 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(PCDI)
     public:
         PCDI();
-        virtual ~PCDI();
+        ~PCDI();
 
         XLS::BaseObjectPtr clone();
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
+
+        static const XLS::ElementType	type = XLS::typePCDI;
 
         XLS::BaseObjectPtr               m_source;
 

@@ -72,11 +72,11 @@ namespace XmlUtils
 		_XmlNodeType_Last = 17
 	} XmlNodeType;
 
-    typedef enum {
-        XML_C14N_1_0            = 0,    /* Origianal C14N 1.0 spec */
-        XML_C14N_EXCLUSIVE_1_0  = 1,    /* Exclusive C14N 1.0 spec */
-        XML_C14N_1_1            = 2     /* C14N 1.1 spec */
-    } xmlC14NMode;
+	typedef enum {
+		XML_C14N_1_0            = 0,    /* Origianal C14N 1.0 spec */
+		XML_C14N_EXCLUSIVE_1_0  = 1,    /* Exclusive C14N 1.0 spec */
+		XML_C14N_1_1            = 2     /* C14N 1.1 spec */
+	} xmlC14NMode;
 
 	class CXmlLiteReader_Private;
 	class KERNEL_DECL CXmlLiteReader
@@ -88,7 +88,7 @@ namespace XmlUtils
 		CXmlLiteReader();
 		virtual ~CXmlLiteReader();
 		
-        public:
+	public:
 
 		void Clear();
 		bool IsValid();
@@ -108,18 +108,21 @@ namespace XmlUtils
 		bool ReadTillEnd(int nDepth = -2);
 		
 		std::wstring	GetName();
-                std::string     GetNameA();
-                const char*     GetNameChar();
-                int             GetDepth();
-                bool            IsEmptyNode();
+		std::string     GetNameA();
+        std::wstring	GetNameNoNS();
+        std::string     GetNameNoNSA();
+
+		const char*     GetNameChar();
+		int             GetDepth();
+		bool            IsEmptyNode();
 
 		std::wstring	GetText();
-                std::string     GetTextA();
-                const char*		GetTextChar();
+		std::string     GetTextA();
+		const char*		GetTextChar();
 		std::wstring	GetAttributeTextWithHHHH();
 
 		std::wstring	GetText2();
-                std::string     GetText2A();
+		std::string     GetText2A();
 		
 		std::wstring	GetText3();
 		void GetTextWithHHHH(bool bPreserve, wchar_t*& sBuffer, long& nSize, long& nLen);
@@ -133,11 +136,11 @@ namespace XmlUtils
 		bool MoveToNextAttribute();
 		bool MoveToElement();
 
-                bool IsEmptyElement();
+		bool IsEmptyElement();
 
-                std::wstring GetNamespacePrefix();
-                XmlNodeType GetNodeType();
-                bool IsDefaultAttribute();
+		std::wstring GetNamespacePrefix();
+		XmlNodeType GetNodeType();
+		bool IsDefaultAttribute();
 	};
 
 	class KERNEL_DECL IXmlDOMDocument
@@ -335,6 +338,9 @@ namespace XmlUtils
         std::string KERNEL_DECL Execute(const std::string& sXml, int mode = XML_C14N_1_0, bool withComments = false);
         std::string KERNEL_DECL Execute(const std::wstring& sXmlFile, int mode = XML_C14N_1_0, bool withComments = false);
     }
+
+    // UTF-8 BOM, UTF-16BE BOM, UTF-16LE BOM, UTF-32BE BOM, UTF-32LE BOM
+    std::string KERNEL_DECL GetUtf8FromFileContent(unsigned char* pData, unsigned int len);
 }
 
 #endif // _BUILD_XMLUTILS_CROSSPLATFORM_H_

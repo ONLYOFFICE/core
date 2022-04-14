@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(WSVIEWS2)
     public:
         WSVIEWS2();
-        virtual ~WSVIEWS2();
+        ~WSVIEWS2();
 
 		XLS::BaseObjectPtr clone();
 
@@ -51,7 +51,7 @@ namespace XLSB
 
 		XLS::BaseObjectPtr               m_BrtBeginWsViews;
         std::vector<XLS::BaseObjectPtr>  m_arWSVIEW2;
-        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        //std::vector<XLS::BaseObjectPtr>  m_arFRT;
 		XLS::BaseObjectPtr               m_BrtEndWsViews;
 
     };

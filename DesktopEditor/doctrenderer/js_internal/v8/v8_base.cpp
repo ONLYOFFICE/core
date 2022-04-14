@@ -274,8 +274,9 @@ namespace NSJSBase
 #ifdef V8_INSPECTOR
         v8_debug::before(m_internal->m_context, CV8Worker::getInitializer()->getPlatform(), "");
 #endif
+        LOGGER_START
+
         v8::Local<v8::String> _source = CreateV8String(CV8Worker::GetCurrent(), script.c_str());
-        
         v8::Local<v8::Script> _script;
         if(!scriptPath.empty())
         {
@@ -289,6 +290,8 @@ namespace NSJSBase
             if (!_scriptRetValue.IsEmpty())
                 _script = _scriptRetValue.ToLocalChecked();
         }
+
+        LOGGER_LAP("compile")
         
         CJSValueV8* _return = new CJSValueV8();
         
@@ -305,6 +308,8 @@ namespace NSJSBase
 
         if (!retValue.IsEmpty())
             _return->value = retValue.ToLocalChecked();
+
+        LOGGER_LAP("run")
         
         return _return;
     }

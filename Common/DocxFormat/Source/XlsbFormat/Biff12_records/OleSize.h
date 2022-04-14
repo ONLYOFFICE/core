@@ -46,7 +46,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(OleSize)
         public:
             OleSize();
-            virtual ~OleSize();
+            ~OleSize();
 
             XLS::BaseObjectPtr clone();
 

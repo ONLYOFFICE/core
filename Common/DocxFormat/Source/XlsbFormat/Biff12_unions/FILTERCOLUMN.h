@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(FILTERCOLUMN)
     public:
         FILTERCOLUMN();
-        virtual ~FILTERCOLUMN();
+        ~FILTERCOLUMN();
 
         XLS::BaseObjectPtr clone();
 
@@ -49,7 +49,7 @@ namespace XLSB
 
         XLS::BaseObjectPtr               m_BrtBeginFilterColumn;
         XLS::BaseObjectPtr               m_source;
-        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        //std::vector<XLS::BaseObjectPtr>  m_arFRT;
         XLS::BaseObjectPtr               m_BrtEndFilterColumn;
 
     };

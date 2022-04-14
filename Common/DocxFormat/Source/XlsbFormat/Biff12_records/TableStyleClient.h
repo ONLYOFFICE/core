@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(TableStyleClient)
         public:
             TableStyleClient();
-            virtual ~TableStyleClient();
+            ~TableStyleClient();
 
             XLS::BaseObjectPtr clone();
 

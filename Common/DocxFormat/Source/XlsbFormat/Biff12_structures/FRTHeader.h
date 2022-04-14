@@ -47,7 +47,7 @@ namespace XLSB
     public:
         FRTHeader();
         FRTHeader(XLS::CFRecord& record);
-        virtual ~FRTHeader();
+        ~FRTHeader();
 		XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;

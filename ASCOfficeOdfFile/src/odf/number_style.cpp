@@ -389,10 +389,10 @@ const wchar_t * number_percentage_style::name = L"percentage-style";
 namespace 
 {
 void format_number_number(
-                          std::wostream & strm,
-                          bool number_grouping_,
-                          int number_min_integer_digits_,
-                          int number_decimal_places_
+						std::wostream & strm,
+						bool number_grouping_,
+						int number_min_integer_digits_,
+						_CP_OPT(int) number_decimal_places_
                         )    
 {
     if (number_grouping_)
@@ -407,16 +407,16 @@ void format_number_number(
     }
     else
     {
-        if (number_min_integer_digits_ > 0)
+        if (number_min_integer_digits_ > 1 || number_decimal_places_)
             strm << std::wstring( number_min_integer_digits_, L'0');
         else
-            strm << L"#";
+            strm << L"General";
     }
 
     if (number_decimal_places_)
     {
         strm << L".";
-        strm << std::wstring(number_decimal_places_, L'0');
+        strm << std::wstring(*number_decimal_places_, L'0');
     }
 }
 }
@@ -429,8 +429,7 @@ void number_number::oox_convert(oox::num_format_context & Context)
         strm,
         number_grouping_.get_value_or(false),
         number_min_integer_digits_.get_value_or(0),
-        number_decimal_places_.get_value_or(0)
-        );
+        number_decimal_places_);
 }
 
 void number_text::oox_convert(oox::num_format_context & Context)
@@ -776,8 +775,7 @@ void number_fraction::oox_convert(oox::num_format_context & Context)
 
     format_number_number(strm, 
         number_grouping_.get_value_or(false),
-        number_min_integer_digits_.get_value_or(0),
-        0);
+        number_min_integer_digits_.get_value_or(0), boost::none);
 
     if (number_min_numerator_digits_.get_value_or(0) &&
         number_min_denominator_digits_.get_value_or(0))
@@ -802,8 +800,7 @@ void number_scientific_number::oox_convert(oox::num_format_context & Context)
         strm,
         number_grouping_.get_value_or(false),
         number_min_integer_digits_.get_value_or(0),
-        number_decimal_places_.get_value_or(0)
-        );
+        number_decimal_places_);
 
     if (int e = number_min_exponent_digits_.get_value_or(0))
     {

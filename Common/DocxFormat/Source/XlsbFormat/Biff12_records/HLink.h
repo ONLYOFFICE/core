@@ -48,7 +48,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(HLink)
         public:
             HLink();
-            virtual ~HLink();
+            ~HLink();
 
             XLS::BaseObjectPtr clone();
 

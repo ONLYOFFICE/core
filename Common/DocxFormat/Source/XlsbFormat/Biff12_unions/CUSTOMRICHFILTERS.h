@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(CUSTOMRICHFILTERS)
     public:
         CUSTOMRICHFILTERS();
-        virtual ~CUSTOMRICHFILTERS();
+        ~CUSTOMRICHFILTERS();
 
         XLS::BaseObjectPtr clone();
 
@@ -51,7 +51,7 @@ namespace XLSB
 
         XLS::BaseObjectPtr               m_BrtBeginCustomRichFilters;
         std::vector<XLS::BaseObjectPtr>  m_arBrtCustomRichFilter;
-        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        //std::vector<XLS::BaseObjectPtr>  m_arFRT;
         XLS::BaseObjectPtr               m_BrtEndCustomRichFilters;
 
     };

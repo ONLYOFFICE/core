@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(SlicerCacheHideItemsWithNoData)
         public:
             SlicerCacheHideItemsWithNoData();
-            virtual ~SlicerCacheHideItemsWithNoData();
+            ~SlicerCacheHideItemsWithNoData();
 
             XLS::BaseObjectPtr clone();
 

@@ -42,7 +42,7 @@ namespace MetaFile
 		IFont(){}
 		virtual ~IFont(){}
 
-		virtual int          GetHeight() = 0;
+		virtual double	     GetHeight() = 0;
 		virtual std::wstring GetFaceName() = 0;
 		virtual int          GetWeight() = 0;
 		virtual bool         IsItalic() = 0;
@@ -75,9 +75,13 @@ namespace MetaFile
 		IPen(){}
 		virtual ~IPen(){}
 
-		virtual int          GetColor() = 0;
-		virtual unsigned int GetStyle() = 0;
-		virtual unsigned int GetWidth() = 0;
+		virtual int		GetColor()	= 0;
+		virtual unsigned int	GetStyle()	= 0;
+		virtual double		GetWidth()	= 0;
+		virtual unsigned int	GetAlpha()	= 0;
+		virtual double		GetMiterLimit() = 0;
+		virtual double		GetDashOffset() = 0;
+		virtual void		GetDashData(double*&, unsigned int&) = 0;
 	};
 }
 

@@ -41,10 +41,6 @@
 #include <algorithm>
 
 #include "../../XlsbFormat/SharedStringsStream.h"
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Binary/CFStreamCacheReader.h"
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/GlobalWorkbookInfo.h"
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/WorkbookStreamObject.h"
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/BinProcessor.h"
 
 #include "../../XlsbFormat/Biff12_records/BeginSst.h"
 #include "../../XlsbFormat/Biff12_unions/SHAREDSTRINGS.h"
@@ -87,7 +83,7 @@ namespace OOX
                 CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
                 if (xlsb)
                 {
-                    XLSB::SharedStringsStreamPtr sharedStringsStream = std::make_shared<XLSB::SharedStringsStream>();
+                    XLSB::SharedStringsStreamPtr sharedStringsStream(new XLSB::SharedStringsStream);
 
                     xlsb->ReadBin(oPath, sharedStringsStream.get());
 
@@ -113,6 +109,8 @@ namespace OOX
                         }
 
                     }
+
+                    //sharedStringsStream.reset();
                 }
 
             }

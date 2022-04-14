@@ -206,8 +206,8 @@ public:
 	_rect							custom_rect;
 	std::vector<_CP_OPT(int)>		custom_adjustValues;
 	int								custom_path= -1;
-	int								custom_x_limo = 0x80000000;
-	int								custom_y_limo = 0x80000000;
+	size_t							custom_x_limo = 0x80000000;
+	size_t							custom_y_limo = 0x80000000;
 //-----------------------------------------------
 	std::wstring					hyperlink;
 	struct _text

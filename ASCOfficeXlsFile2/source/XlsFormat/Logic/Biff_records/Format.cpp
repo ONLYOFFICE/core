@@ -69,23 +69,24 @@ void Format::readFields(CFRecord& record)
 			record >> ifmt;
 	}
 
-	XLUnicodeString format;
 	if (global_info->Version < 0x0600)
 	{
-		ShortXLAnsiString name;
-		record >> name;
+		ShortXLAnsiString format;
+		record >> format;
 		
-		format = name;
+		stFormat = XmlUtils::EncodeXmlString(format.value(), true);
 	}
 	else
+	{
+		XLUnicodeString format;
 		record >> format;
 
-	stFormat = format.value();
+		stFormat = XmlUtils::EncodeXmlString(format.value(), true);
+	}
 }
-
 int Format::serialize(std::wostream & stream)
 {
-	if ((ifmt > 4 && ifmt < 9) || (ifmt > 40 && ifmt < 45)) return 0;
+	if (ifmt < 5 || (ifmt > 8 && ifmt < 23) || (ifmt > 36 && ifmt < 41) || (ifmt > 44 && ifmt < 50)) return 0;
 
 	stream << L"<numFmt";
 	{

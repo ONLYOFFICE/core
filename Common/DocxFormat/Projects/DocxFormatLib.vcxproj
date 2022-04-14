@@ -357,6 +357,7 @@
     <ClInclude Include="..\Source\XlsxFormat\NamedSheetViews\NamedSheetViews.h" />
     <ClInclude Include="..\Source\XlsxFormat\Ole\OleObjects.h" />
     <ClInclude Include="..\Source\XlsxFormat\Pivot\PivotCacheDefinition.h" />
+    <ClInclude Include="..\Source\XlsxFormat\Pivot\PivotCacheDefinitionExt.h" />
     <ClInclude Include="..\Source\XlsxFormat\Pivot\PivotCacheRecords.h" />
     <ClInclude Include="..\Source\XlsxFormat\Pivot\PivotTable.h" />
     <ClInclude Include="..\Source\XlsxFormat\SharedStrings\PhoneticPr.h" />
@@ -591,6 +592,7 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="..\Source\XlsxFormat\NamedSheetViews\NamedSheetViews.cpp" />
+    <ClCompile Include="..\Source\XlsxFormat\Pivot\PivotCacheDefinitionExt.cpp" />
     <ClCompile Include="..\Source\XlsxFormat\Pivot\Pivots.cpp" />
     <ClCompile Include="..\Source\XlsxFormat\SharedStrings\Si.cpp" />
     <ClCompile Include="..\Source\XlsxFormat\SharedStrings\Text.cpp" />

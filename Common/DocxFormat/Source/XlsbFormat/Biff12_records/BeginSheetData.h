@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginSheetData)
         public:
             BeginSheetData();
-            virtual ~BeginSheetData();
+            ~BeginSheetData();
 
             XLS::BaseObjectPtr clone();
 

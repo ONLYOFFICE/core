@@ -43,74 +43,13 @@ using namespace XLS;
 namespace XLSB
 {
 
-    CELLTABLE::CELLTABLE(std::vector<CellRangeRef>& shared_formulas_locations_ref) :
-        shared_formulas_locations_ref_(shared_formulas_locations_ref)
+    CELLTABLE::CELLTABLE()
     {
     }
 
     CELLTABLE::~CELLTABLE()
     {
     }
-
-    class Parenthesis_CELLTABLE: public XLS::CompositeObject
-    {
-        BASE_OBJECT_DEFINE_CLASS_NAME(Parenthesis_CELLTABLE)
-    public:
-
-        Parenthesis_CELLTABLE(std::vector<CellRangeRef>& shared_formulas_locations_ref) :
-                                    shared_formulas_locations_ref_(shared_formulas_locations_ref)
-        {
-        }
-        BaseObjectPtr clone()
-        {
-            return BaseObjectPtr(new Parenthesis_CELLTABLE(*this));
-        }
-
-        const bool loadContent(XLS::BinProcessor& proc)
-        {
-            if (proc.optional<ACCELLTABLE>())
-            {
-                m_ACCELLTABLE = elements_.back();
-                elements_.pop_back();
-            }
-            if(proc.optional<RowHdr>())
-            {
-                m_BrtRowHdr = elements_.back();
-                elements_.pop_back();
-            }
-            else return false;
-
-
-            CELL cell(static_cast<RowHdr*>(m_BrtRowHdr.get())->rw + 1, shared_formulas_locations_ref_);
-
-            int countCELL = proc.repeated(cell, 0, 16384);
-
-            while(countCELL > 0)
-            {
-                m_arCELL.insert(m_arCELL.begin(), elements_.back());
-                elements_.pop_back();
-                countCELL--;
-            }
-
-            int countFRT = proc.repeated<FRT>(0, 0);
-
-            while(countFRT > 0)
-            {
-                m_arFRT.insert(m_arFRT.begin(), elements_.back());
-                elements_.pop_back();
-                countFRT--;
-            }
-
-            return true;
-        };
-
-        BaseObjectPtr               m_ACCELLTABLE;
-        BaseObjectPtr               m_BrtRowHdr;
-        std::vector<XLS::BaseObjectPtr>  m_arCELL;
-        std::vector<XLS::BaseObjectPtr>  m_arFRT;
-
-        std::vector<CellRangeRef>& shared_formulas_locations_ref_;
-    };
 
     BaseObjectPtr CELLTABLE::clone()
     {
@@ -126,16 +65,23 @@ namespace XLSB
             elements_.pop_back();
         }
         Parenthesis_CELLTABLE cell_group(shared_formulas_locations_ref_);
-        int countParenthesis_CELLTABLE = proc.repeated(cell_group, 0, 1048576);
-        while(!elements_.empty())
+        /*while(proc.optional(cell_group))
         {
-            _data data;
-            data.m_ACCELLTABLE = std::move(static_cast<Parenthesis_CELLTABLE*>(elements_.back().get())->m_ACCELLTABLE);
-            data.m_BrtRowHdr = std::move(static_cast<Parenthesis_CELLTABLE*>(elements_.back().get())->m_BrtRowHdr);
-            data.m_arCELL = std::move(static_cast<Parenthesis_CELLTABLE*>(elements_.back().get())->m_arCELL);
-            m_arParenthesis_CELLTABLE.insert(m_arParenthesis_CELLTABLE.begin(), data);
+            m_arParenthesis_CELLTABLE.insert(m_arParenthesis_CELLTABLE.begin(), elements_.back());
             elements_.pop_back();
-        }
+        }*/
+
+        int countParenthesis_CELLTABLE = proc.repeated(cell_group, 0, 1048576);
+
+        m_arParenthesis_CELLTABLE.reserve(countParenthesis_CELLTABLE);
+        std::move(std::begin(elements_), std::end(elements_), std::back_inserter(m_arParenthesis_CELLTABLE));
+
+        /*while(countParenthesis_CELLTABLE > 0)
+        {
+            m_arParenthesis_CELLTABLE.insert(m_arParenthesis_CELLTABLE.begin(), elements_.back());
+            elements_.pop_back();
+            countParenthesis_CELLTABLE--;
+        }*/
 
         if (proc.optional<EndSheetData>())
         {
@@ -144,6 +90,65 @@ namespace XLSB
         }
 
         return m_BrtBeginSheetData && countParenthesis_CELLTABLE > 0 && m_BrtEndSheetData;
+    }
+
+    Parenthesis_CELLTABLE::Parenthesis_CELLTABLE(std::vector<CellRangeRef>& shared_formulas_locations_ref) :
+                                shared_formulas_locations_ref_(shared_formulas_locations_ref)
+    {
+    }
+    Parenthesis_CELLTABLE::~Parenthesis_CELLTABLE()
+    {
+    }
+    BaseObjectPtr Parenthesis_CELLTABLE::clone()
+    {
+        return BaseObjectPtr(new Parenthesis_CELLTABLE(*this));
+    }
+
+    const bool Parenthesis_CELLTABLE::loadContent(XLS::BinProcessor& proc)
+    {
+        if (proc.optional<ACCELLTABLE>())
+        {
+            m_ACCELLTABLE = elements_.back();
+            elements_.pop_back();
+        }
+        if(proc.optional<RowHdr>())
+        {
+            m_BrtRowHdr = elements_.back();
+            elements_.pop_back();
+        }
+        else return false;
+
+
+        CELL cell(static_cast<RowHdr*>(m_BrtRowHdr.get())->rw + 1, shared_formulas_locations_ref_);
+
+        /*while(proc.optional(cell))
+        {
+            m_arCELL.insert(m_arCELL.begin(), elements_.back());
+            elements_.pop_back();
+        }*/
+
+        int countCELL = proc.repeated(cell, 0, 16384);
+
+        /*while(countCELL > 0)
+        {
+            m_arCELL.insert(m_arCELL.begin(), elements_.back());
+            elements_.pop_back();
+            countCELL--;
+        }*/
+
+        m_arCELL.reserve(countCELL);
+        std::move(std::begin(elements_), std::end(elements_), std::back_inserter(m_arCELL));
+
+        int countFRT = proc.repeated<FRT>(0, 0);
+
+        while(countFRT > 0)
+        {
+           // m_arFRT.insert(m_arFRT.begin(), elements_.back());
+            elements_.pop_back();
+            countFRT--;
+        }
+
+        return true;
     }
 
 } // namespace XLSB

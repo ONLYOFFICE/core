@@ -302,6 +302,22 @@ namespace XmlUtils
             std::string sRet((char*)pName);
             return sRet;
         }
+        std::wstring GetNameNoNS()
+        {
+            std::wstring sName = GetName();
+            std::wstring::size_type pos = sName.find(':');
+            if (std::wstring::npos != pos && ((pos + 1) < sName.length()))
+                sName = sName.substr(pos + 1);
+            return sName;
+        }
+        std::string GetNameNoNSA()
+        {
+            std::string sName = GetNameA();
+            std::string::size_type pos = sName.find(':');
+            if (std::string::npos != pos && ((pos + 1) < sName.length()))
+                sName = sName.substr(pos + 1);
+            return sName;
+        }
         const char* GetNameChar()
         {
             if (!IsValid())

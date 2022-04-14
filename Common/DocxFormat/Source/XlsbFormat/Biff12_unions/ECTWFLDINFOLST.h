@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(ECTWFLDINFOLST)
     public:
         ECTWFLDINFOLST();
-        virtual ~ECTWFLDINFOLST();
+        ~ECTWFLDINFOLST();
 
         XLS::BaseObjectPtr clone();
 

@@ -230,6 +230,7 @@ namespace PPTX
 						{
 							dynamic_cast<OOX::Spreadsheet::CXlsb*>(pXlsxEmbedded)->PrepareSi();
 							dynamic_cast<OOX::Spreadsheet::CXlsb*>(pXlsxEmbedded)->PrepareTableFormula();
+                            dynamic_cast<OOX::Spreadsheet::CXlsb*>(pXlsxEmbedded)->ReadSheetData();
 						}
 						xlsxBinaryWriter.WriteMainTableStart(*oDrawingConverter.m_pBinaryWriter);
 						

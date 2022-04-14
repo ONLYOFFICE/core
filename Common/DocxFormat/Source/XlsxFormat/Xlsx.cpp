@@ -100,14 +100,18 @@ bool OOX::Spreadsheet::CXlsx::ReadNative(const CPath& oFilePath)
 
 	if (!m_pWorkbook) return false;
 
+	CXlsb* xlsb = dynamic_cast<CXlsb*>(this);
+	if (xlsb)
+	{
+		xlsb->PrepareSi();
+		xlsb->PrepareTableFormula();
+	}
+
 	return true;
 }
 bool OOX::Spreadsheet::CXlsx::Read(const CPath& oFilePath)
 {
-	m_sDocumentPath = oFilePath.GetPath();
-
-	OOX::CRels oRels( oFilePath / FILE_SEPARATOR_STR );
-	IFileContainer::Read( oRels, oFilePath, oFilePath );
+	ReadNative(oFilePath);
 
 	if (!m_pWorkbook) return false;
 
@@ -120,7 +124,7 @@ bool OOX::Spreadsheet::CXlsx::Read(const CPath& oFilePath)
 }
 bool OOX::Spreadsheet::CXlsx::WriteNative(const CPath& oDirPath, OOX::CContentTypes &oContentTypes)
 {
-	if (NULL == m_pWorkbook || m_arWorksheets.empty())
+    if (NULL == m_pWorkbook)
 		return false;
 
 	IFileContainer::Write(oDirPath / L"", OOX::CPath(_T("")), oContentTypes);

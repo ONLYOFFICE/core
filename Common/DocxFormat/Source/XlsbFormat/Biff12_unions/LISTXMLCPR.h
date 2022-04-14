@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(LISTXMLCPR)
     public:
         LISTXMLCPR();
-        virtual ~LISTXMLCPR();
+        ~LISTXMLCPR();
 
         XLS::BaseObjectPtr clone();
 
@@ -49,7 +49,7 @@ namespace XLSB
 
         XLS::BaseObjectPtr               m_BrtBeginListXmlCPr;
         XLS::BaseObjectPtr               m_BrtEndListXmlCPr;
-        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        //std::vector<XLS::BaseObjectPtr>  m_arFRT;
 
     };
 

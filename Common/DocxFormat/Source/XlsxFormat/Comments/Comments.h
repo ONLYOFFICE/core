@@ -38,11 +38,6 @@
 
 #include "../../XlsbFormat/CommentsStream.h"
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Binary/CFStreamCacheReader.h"
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/GlobalWorkbookInfo.h"
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/WorkbookStreamObject.h"
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/BinProcessor.h"
-
 #include "../../XlsbFormat/Biff12_unions/COMMENTS.h"
 #include "../../XlsbFormat/Biff12_unions/COMMENTAUTHORS.h"
 #include "../../XlsbFormat/Biff12_unions/COMMENTLIST.h"
@@ -376,7 +371,7 @@ namespace OOX
                 CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
                 if (xlsb)
                 {
-                    XLSB::CommentsStreamPtr commentsStream = std::make_shared<XLSB::CommentsStream>();
+                    XLSB::CommentsStreamPtr commentsStream(new XLSB::CommentsStream);
 
                     xlsb->ReadBin(oPath, commentsStream.get());
 
@@ -392,6 +387,8 @@ namespace OOX
                                 m_oCommentList = ptr->m_COMMENTLIST;
                         }
                     }
+
+                    //commentsStream.reset();
                 }
             }
 			virtual void read(const CPath& oPath)

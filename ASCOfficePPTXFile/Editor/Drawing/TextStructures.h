@@ -172,7 +172,7 @@ namespace PPT_FORMAT
         NSCommon::nullable_base<bool>	FontItalic;
         NSCommon::nullable_base<bool>	FontUnderline;
         NSCommon::nullable_base<bool>	FontStrikeout;
-        NSCommon::nullable_base<bool>	FontShadow;
+        NSCommon::nullable_bool     	FontShadow;
 		
 		NSCommon::nullable_base<WORD>	fontRef;			// fontRef
 		NSCommon::nullable_base<WORD>	eaFontRef;			// eaFontRef

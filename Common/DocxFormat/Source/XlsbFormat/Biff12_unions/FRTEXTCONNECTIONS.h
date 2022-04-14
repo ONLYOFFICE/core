@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(FRTEXTCONNECTIONS)
     public:
         FRTEXTCONNECTIONS();
-        virtual ~FRTEXTCONNECTIONS();
+        ~FRTEXTCONNECTIONS();
 
         XLS::BaseObjectPtr clone();
 
@@ -53,7 +53,7 @@ namespace XLSB
         XLS::BaseObjectPtr               m_EXTCONN14;
         XLS::BaseObjectPtr               m_EXTCONN15;
         XLS::BaseObjectPtr               m_BrtFRTEnd;
-        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        //std::vector<XLS::BaseObjectPtr>  m_arFRT;
 
     };
 

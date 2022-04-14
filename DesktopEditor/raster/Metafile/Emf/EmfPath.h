@@ -191,8 +191,8 @@ namespace MetaFile
 		bool ArcTo(double dL, double dT, double dR, double dB, double dStart, double dSweep);
 		bool Close();
 		void Draw(IOutputDevice* pOutput, bool bStroke, bool bFill, unsigned int unClipMode = -1);
-
-	private:
+		void DrawWithoutClean(IOutputDevice* pOutput, bool bStroke, bool bFill);
+	protected:
 
 		void Clear();
 

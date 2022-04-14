@@ -44,7 +44,7 @@ namespace XLSB
     public:
         ACProductVersion();
         ACProductVersion(XLS::CFRecord& record);
-        virtual ~ACProductVersion();
+        ~ACProductVersion();
        XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;

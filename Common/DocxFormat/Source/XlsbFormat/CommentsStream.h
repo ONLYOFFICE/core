@@ -48,14 +48,14 @@ namespace XLSB
     class StreamCacheReader;
 
     class CommentsStream;
-    typedef std::shared_ptr<CommentsStream>		CommentsStreamPtr;
+    typedef boost::shared_ptr<CommentsStream>		CommentsStreamPtr;
 
     class CommentsStream: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(CommentsStream)
     public:
         CommentsStream();
-        virtual ~CommentsStream();
+        ~CommentsStream();
 
         XLS::BaseObjectPtr clone();
 

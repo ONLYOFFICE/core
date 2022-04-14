@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndECTxtWiz15)
         public:
             EndECTxtWiz15();
-            virtual ~EndECTxtWiz15();
+            ~EndECTxtWiz15();
 
             XLS::BaseObjectPtr clone();
 

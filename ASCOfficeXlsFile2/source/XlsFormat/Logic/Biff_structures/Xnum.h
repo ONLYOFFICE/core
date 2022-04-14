@@ -60,6 +60,7 @@ public:
 		}bytes;
 		double value = 0.;
 	} data;
+
 };
 
 typedef Xnum DateAsNum;

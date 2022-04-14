@@ -27,6 +27,9 @@ namespace NSCSS
 
         std::wstring m_sEncoding;
 
+        CSizeWindow m_oSourceWindow;
+        CSizeWindow m_oDeviceWindow;
+
         void GetStylesheet(const KatanaStylesheet* oStylesheet);
         void GetRule(const KatanaRule* oRule);
 
@@ -55,6 +58,9 @@ namespace NSCSS
         void SetUnitMeasure(const UnitMeasure& nType);
         void SetDpi(unsigned short int nValue);
         void SetBodyTree(const CTree &oTree);
+
+        void SetSizeSourceWindow(const CSizeWindow& oSizeWindow);
+        void SetSizeDeviceWindow(const CSizeWindow& oSizeWindow);
 
         UnitMeasure GetUnitMeasure() const;
         std::wstring GetEncoding() const;

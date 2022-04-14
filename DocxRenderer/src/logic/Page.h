@@ -313,7 +313,6 @@ namespace NSDocxRenderer
 					if ((fabs(m_oVector.m_dLeft - m_oVector.m_dRight) < 0.3) || (fabs(m_oVector.m_dTop - m_oVector.m_dBottom) < 0.3))
 					{
 						lType = 0x01;
-						pShape->m_bIsStroke  = true;
 						pShape->m_oPen.Color = m_pBrush->Color1;
 						pShape->m_oPen.Alpha = m_pBrush->Alpha1;
 						//pShape->m_oPen.Size	 = max(pShape->m_oPen.Size, 1);	

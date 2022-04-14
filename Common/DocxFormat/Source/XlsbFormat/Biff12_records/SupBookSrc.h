@@ -46,7 +46,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(SupBookSrc)
         public:
             SupBookSrc();
-            virtual ~SupBookSrc();
+            ~SupBookSrc();
 
             XLS::BaseObjectPtr clone();
 

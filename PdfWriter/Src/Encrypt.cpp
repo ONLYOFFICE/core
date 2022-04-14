@@ -616,7 +616,7 @@ namespace PdfWriter
             {
 				unsigned char empty[16] = {};
 				// EXAMPLE A 9-byte message has a pad of 7 bytes, each with the value 0x07.
-				MemSet(empty, unLenOut - unLen, 16);
+				memset(empty, unLenOut - unLen, 16);
 				stfEncryption.Put2(empty, unLenOut - unLen, 0, true);
 
             }

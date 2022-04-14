@@ -59,6 +59,7 @@ namespace OOX
 			m_pComments = NULL;
 			m_pThreadedComments = NULL;
             m_bIsChartSheet = false;
+            bIsWritten = false;
 
 			CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
 			if (xlsx)
@@ -78,6 +79,7 @@ namespace OOX
 			m_pComments = NULL;
 			m_pThreadedComments = NULL;
             m_bIsChartSheet = isChartSheet;
+            bIsWritten = false;
 
 			CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
 			if (xlsx)
@@ -104,7 +106,7 @@ namespace OOX
             {
                 if(m_bIsChartSheet)
                 {
-                    XLSB::ChartSheetStreamPtr chartSheetStream = std::make_shared<XLSB::ChartSheetStream>();
+                    XLSB::ChartSheetStreamPtr chartSheetStream(new XLSB::ChartSheetStream);
 
                     xlsb->ReadBin(oPath, chartSheetStream.get());
 
@@ -135,12 +137,16 @@ namespace OOX
                             m_oSheetProtection = chartSheetStream->m_BrtCsProtection;
 
                     }
+
+                    //chartSheetStream.reset();
                 }
                 else
                 {
-                    XLSB::WorkSheetStreamPtr workSheetStream = std::make_shared<XLSB::WorkSheetStream>();
+                    XLSB::WorkSheetStreamPtr workSheetStream(new XLSB::WorkSheetStream);
 
                     xlsb->ReadBin(oPath, workSheetStream.get());
+
+                    xlsb->m_mapSheetNameSheetData.insert({oPath.GetPath(), workSheetStream->m_SheetaDataPosition});
 
 					if (workSheetStream != nullptr)
 					{
@@ -158,11 +164,11 @@ namespace OOX
 							m_oHyperlinks = static_cast<XLSB::HLINKS*>(workSheetStream->m_HLINKS.get())->m_arHlinks;
 						if (workSheetStream->m_MERGECELLS != nullptr)
 							m_oMergeCells = static_cast<XLSB::MERGECELLS*>(workSheetStream->m_MERGECELLS.get())->m_arBrtMergeCell;
-						if (workSheetStream->m_CELLTABLE != nullptr)
-						{
-							m_oSheetData = new CSheetData(File::m_pMainDocument);
-							m_oSheetData->fromBin(workSheetStream->m_CELLTABLE);
-						}
+                        //if (workSheetStream->m_CELLTABLE != nullptr)
+                        //{
+                        m_oSheetData = new CSheetData(File::m_pMainDocument);
+                        //m_oSheetData->fromBin(workSheetStream->m_CELLTABLE);
+                        //}
                         if (workSheetStream->m_BrtWsFmtInfo != nullptr)
                             m_oSheetFormatPr = workSheetStream->m_BrtWsFmtInfo;
                         if (workSheetStream->m_WSVIEWS2 != nullptr)
@@ -216,6 +222,8 @@ namespace OOX
                         if (workSheetStream->m_FRTWORKSHEET != nullptr)
                             m_oExtLst = workSheetStream->m_FRTWORKSHEET;
                     }
+
+                    //workSheetStream.reset();
 
                 }
 
@@ -793,7 +801,10 @@ namespace OOX
 			}
 		}
 		void CWorksheet::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
-		{
+        {
+            if (bIsWritten) return;
+
+            bIsWritten = true;
 			if (!m_bWriteDirectlyToFile)
 			{
 				NSStringUtils::CStringBuilder sXml;
@@ -802,7 +813,40 @@ namespace OOX
 					toXML(sXml);
 				toXMLEnd(sXml);
 
-				NSFile::CFileBinary::SaveToFile(oPath.GetPath(), sXml.GetData());
+                //NSFile::CFileBinary::SaveToFile(oPath.GetPath(), sXml.GetData());
+                //for memory optimization fro large files
+
+                wchar_t* pXmlData = sXml.GetBuffer();
+                LONG lwcharLen = (LONG)sXml.GetCurSize();
+                const LONG lcurrentLen = 10485760; //10 Mbyte
+                LONG nCycles = lwcharLen / lcurrentLen;
+
+                LONG lLen = 0;
+                BYTE* pData = NULL;
+                NSFile::CFileBinary oFile;
+                oFile.CreateFileW(oPath.GetPath());
+
+                while(nCycles--)
+                {
+                    NSFile::CUtf8Converter::GetUtf8StringFromUnicode(pXmlData, lcurrentLen, pData, lLen);
+
+                    oFile.WriteFile(pData, lLen);
+
+                    pXmlData += lcurrentLen;
+
+                    RELEASEARRAYOBJECTS(pData);
+                }
+
+                if(lwcharLen % lcurrentLen > 0)
+                {
+                    NSFile::CUtf8Converter::GetUtf8StringFromUnicode(pXmlData, lwcharLen % lcurrentLen, pData, lLen);
+
+                    oFile.WriteFile(pData, lLen);
+
+                    RELEASEARRAYOBJECTS(pData);
+                }
+
+                oFile.CloseFile();
 
 				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 				IFileContainer::Write( oPath, oDirectory, oContent );

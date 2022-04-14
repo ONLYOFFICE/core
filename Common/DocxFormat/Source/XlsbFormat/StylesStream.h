@@ -48,14 +48,14 @@ namespace XLSB
     class StreamCacheReader;
 
     class StylesStream;
-    typedef std::shared_ptr<StylesStream>		StylesStreamPtr;
+    typedef boost::shared_ptr<StylesStream>		StylesStreamPtr;
 
     class StylesStream: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(StylesStream)
     public:
         StylesStream();
-        virtual ~StylesStream();
+        ~StylesStream();
 
         XLS::BaseObjectPtr clone();
 

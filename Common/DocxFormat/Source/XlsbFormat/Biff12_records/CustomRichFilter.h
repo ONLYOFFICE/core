@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(CustomRichFilter)
         public:
             CustomRichFilter();
-            virtual ~CustomRichFilter();
+            ~CustomRichFilter();
 
             XLS::BaseObjectPtr clone();
 

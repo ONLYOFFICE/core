@@ -36,6 +36,7 @@
 #include "oox_rels.h"
 #include "../../formulasconvert/formulasconvert.h"
 #include "../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "xlsx_utils.h"
 
 namespace cpdoccore {
 namespace oox {
@@ -83,17 +84,10 @@ public:
 		r.display = display;
 		r.id = std::wstring(L"hId") + std::to_wstring(records_.size()+1);
 
-		size_t pos_target = target.find(L"#");
-        if (pos_target == 0)//ссыль на страницу или метку в текущем документе
-        {
-			//адресация всегда на ячейку ...
-			int pos = target.find(L".");
-			if (pos < 0)
-			{
-				target = L"\"" + target + std::wstring(L"\".A1");
-			}
-            r.location = converter_.convert_ref(std::wstring(target.begin() + 1, target.end()));
-			r.type = L"Internal" ;
+        if (0 == target.find(L"#"))//ссыль на страницу или метку в текущем документе
+        {			
+			r.location = converter_.convert_chart_distance(target.substr(1));
+			r.type = L"Internal";
         }
 		else
 		{

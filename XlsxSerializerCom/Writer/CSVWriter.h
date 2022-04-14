@@ -65,8 +65,8 @@ namespace CSVWriter
 		bool m_bStartRow;
 		bool m_bStartCell;
 
-		void GetDefaultFormatCode(int numFmt, std::wstring & format_code, int & format_type);
-		std::wstring ConvertValueCellToString(const std::wstring &Value, int format_type, const std::wstring & format_code);
+		void GetDefaultFormatCode(int numFmt, std::wstring & format_code, boost::optional<int> & format_type);
+		std::wstring ConvertValueCellToString(const std::wstring &Value, boost::optional<int> format_type, std::wstring format_code);
 	public:
 		CCSVWriter(OOX::Spreadsheet::CXlsx &oXlsx, unsigned int m_nCodePage, const std::wstring& sDelimiter, bool m_bJSON);
 		~CCSVWriter();

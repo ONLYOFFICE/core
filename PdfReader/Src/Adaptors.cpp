@@ -1,5 +1,5 @@
 #include "Adaptors.h"
-#include "./lib/xpdf/NameToCharCode.h"
+#include "../lib/xpdf/NameToCharCode.h"
 
 
 void GlobalParamsAdaptor::SetFontManager(NSFonts::IFontManager *pFontManager)

@@ -4332,10 +4332,21 @@ namespace PdfReader
         DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
         m_pRenderer->DrawImage(&oImage, 0 + dShiftX, 0 + dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
     }
-    void RendererOutputDev::beginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, bool bIsolated, bool bKnockout, bool bForSoftMask)
+    void RendererOutputDev::beginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, GBool bIsolated, GBool bKnockout, GBool bForSoftMask)
     {
         m_bTransparentGroup = true;
         m_bTransparentGroupSoftMask = bForSoftMask;
+
+        if (!bIsolated || bKnockout)
+        {
+            if (pGState && pGState->hasSaves())
+            {
+                GfxState* before = pGState->restore();
+                updateFillOpacity(before);
+                // TODO: fix it
+                pGState = before->save();
+            }
+        }
     }
     void RendererOutputDev::endTransparencyGroup(GfxState *pGState)
     {

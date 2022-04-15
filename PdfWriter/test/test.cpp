@@ -74,17 +74,16 @@ int main()
     pdfWriter.SetPassword(L"123456");
     pdfWriter.NewPage();
     pdfWriter.BeginCommand(c_nPageType);
-    double dPageDpiX, dPageDpiY;
-    double dWidth, dHeight;
-    pReader->GetPageInfo(0, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
-    dWidth  *= 25.4 / dPageDpiX;
-    dHeight *= 25.4 / dPageDpiY;
     pdfWriter.put_Width(dWidth);
     pdfWriter.put_Height(dHeight);
     pReader->DrawPageOnRenderer(&pdfWriter, 0, NULL);
     TEST2(&pdfWriter);
     pdfWriter.EndCommand(c_nPageType);
     pdfWriter.SaveToFile(sDstFile);
+
+    RELEASEOBJECT(pReader);
+    RELEASEINTERFACE(pApplicationFonts);
+    return 0;
     */
     if (bResult && pReader->EditPdf(&pdfWriter, sPassword))
     {

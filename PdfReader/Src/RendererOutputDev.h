@@ -285,7 +285,7 @@ namespace PdfReader
 										 GfxImageColorMap *pMaskColorMap,
 										 double *pMatte, GBool interpolate) override;
 		//----- Transparency groups и SMasks
-		virtual void beginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, bool bIsolated, bool bKnockout, bool bForSoftMask);
+		virtual void beginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, GBool bIsolated, GBool bKnockout, GBool bForSoftMask);
 		virtual void endTransparencyGroup(GfxState *pGState);
 		virtual void paintTransparencyGroup(GfxState *pGState, double *pBBox);
 		virtual void setSoftMask(GfxState *pGState, double *pBBox, bool bAlpha, Function *pTransferFunc, GfxColor *pBackdropColor);

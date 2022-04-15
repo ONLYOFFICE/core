@@ -770,16 +770,16 @@ namespace PdfWriter
 		{
 			long lPos = Tell();
 
-			//BYTE* pNewBuffer = new BYTE[m_nBufferSize + unSize];
-			//MemCpy(pNewBuffer, m_pBuffer, m_unSize);
-			//delete[] m_pBuffer;
-			//m_pBuffer = pNewBuffer;
-			//m_pCur = m_pBuffer + lPos;
-			//m_nBufferSize = m_nBufferSize + unSize;
-
-			m_pBuffer = (BYTE*)realloc(m_pBuffer, m_nBufferSize + unSize);
+			BYTE* pNewBuffer = new BYTE[m_nBufferSize + unSize];
+			MemCpy(pNewBuffer, m_pBuffer, m_unSize);
+			delete[] m_pBuffer;
+			m_pBuffer = pNewBuffer;
 			m_pCur = m_pBuffer + lPos;
 			m_nBufferSize = m_nBufferSize + unSize;
+
+			//m_pBuffer = (BYTE*)realloc(m_pBuffer, m_nBufferSize + unSize);
+			//m_pCur = m_pBuffer + lPos;
+			//m_nBufferSize = m_nBufferSize + unSize;
 		}
 		else
 		{

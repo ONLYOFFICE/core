@@ -37,6 +37,7 @@
 #include "../Biff12_unions/CELL.h"
 #include "../Biff12_records/EndSheetData.h"
 #include "../Biff12_records/CommonRecords.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/CellRangeRef.h"
 
 using namespace XLS;
 
@@ -115,6 +116,9 @@ namespace XLSB
                                 shared_formulas_locations_ref_(shared_formulas_locations_ref)
     {
     }
+	Parenthesis_CELLTABLE::Parenthesis_CELLTABLE() : shared_formulas_locations_ref_(std::vector<CellRangeRef>())
+	{
+	}
     Parenthesis_CELLTABLE::~Parenthesis_CELLTABLE()
     {
     }

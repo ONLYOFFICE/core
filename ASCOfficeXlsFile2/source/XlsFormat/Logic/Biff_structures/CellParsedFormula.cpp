@@ -42,6 +42,10 @@ CellParsedFormula::CellParsedFormula(const bool is_part_of_a_revision)
 {
 }
 
+void CellParsedFormula::operator=(const std::wstring& value)
+{
+	ParsedFormula::operator = (value);
+}
 
 BiffStructurePtr CellParsedFormula::clone()
 {

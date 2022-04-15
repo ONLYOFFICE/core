@@ -43,6 +43,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(CELL)
     public:
         CELL(_INT32 row, std::vector<XLS::CellRangeRef>& shared_formulas_locations_ref);
+		CELL();
         ~CELL();
 
         XLS::BaseObjectPtr clone();

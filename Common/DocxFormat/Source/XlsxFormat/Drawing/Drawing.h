@@ -83,6 +83,20 @@ namespace OOX
             {
                 ReadAttributes(obj);
             }
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				if (obj == nullptr)
+					obj = XLS::BaseObjectPtr(new XLSB::Drawing());
+
+				auto ptr = static_cast<XLSB::Drawing*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if (m_oId.IsInit())
+						ptr->stRelId = m_oId->GetValue();
+					else
+						ptr->stRelId = std::wstring(L"");
+				}
+			}
 
 			virtual EElementType getType () const
 			{

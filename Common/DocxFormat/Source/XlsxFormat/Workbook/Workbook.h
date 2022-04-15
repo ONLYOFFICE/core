@@ -325,8 +325,6 @@ namespace OOX
                             m_oExtLst = workBookStream->m_FRTWORKBOOK;
                     }
 
-                   //workBookStream.reset();
-
                 }
             }
 			void writeBin(const CPath& oPath) const

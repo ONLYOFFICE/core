@@ -138,7 +138,6 @@ namespace OOX
 
                     }
 
-                    //chartSheetStream.reset();
                 }
                 else
                 {
@@ -223,8 +222,6 @@ namespace OOX
                             m_oExtLst = workSheetStream->m_FRTWORKSHEET;
                     }
 
-                    //workSheetStream.reset();
-
                 }
 
             }
@@ -238,53 +235,91 @@ namespace OOX
 
 				if (workSheetStream != nullptr)
 				{
-					/*if (m_oBookViews.IsInit())
+					if (m_oCols.IsInit())
 					{
-						workBookStream->m_BOOKVIEWS = XLS::BaseObjectPtr(new XLSB::BOOKVIEWS());
-						m_oBookViews->toBin(static_cast<XLSB::BOOKVIEWS*>(workBookStream->m_BOOKVIEWS.get())->m_arBrtBookView);
+						m_oCols->toBin(workSheetStream->m_arCOLINFOS);
 					}
-					if (m_oCalcPr.IsInit())
+					if (m_oDimension.IsInit())
 					{
-						m_oCalcPr->toBin(workBookStream->m_BrtCalcProp);
+						m_oDimension->toBin(workSheetStream->m_BrtWsDim);
 					}
-					if (m_oDefinedNames.IsInit())
+					if (m_oDrawing.IsInit())
 					{
-						m_oDefinedNames->toBin(workBookStream->m_arBrtName);
+						m_oDrawing->toBin(workSheetStream->m_BrtDrawing);
 					}
-					if (m_oSheets.IsInit())
+					if (m_oLegacyDrawing.IsInit())
 					{
-						workBookStream->m_BUNDLESHS = XLS::BaseObjectPtr(new XLSB::BUNDLESHS());
-						m_oSheets->toBin(static_cast<XLSB::BUNDLESHS*>(workBookStream->m_BUNDLESHS.get())->m_arBrtBundleSh);
+						m_oLegacyDrawing->toBin(workSheetStream->m_BrtLegacyDrawing);
 					}
-					if (m_oWorkbookPr.IsInit())
+					if (m_oLegacyDrawingHF.IsInit())
 					{
-						m_oWorkbookPr->toBin(workBookStream->m_BrtWbProp);
+						m_oLegacyDrawingHF->toBin(workSheetStream->m_BrtLegacyDrawingHF);
 					}
-					if (m_oPivotCaches.IsInit())
+					if (m_oHyperlinks.IsInit())
 					{
-						m_oPivotCaches->toBin(workBookStream->m_PIVOTCACHEIDS);
+						workSheetStream->m_HLINKS = XLS::BaseObjectPtr(new XLSB::HLINKS());
+						m_oHyperlinks->toBin(static_cast<XLSB::HLINKS*>(workSheetStream->m_HLINKS.get())->m_arHlinks);
 					}
-					if (m_oWorkbookProtection.IsInit())
+					if (m_oMergeCells.IsInit())
 					{
-						if (m_oWorkbookProtection->m_oWorkbookSpinCount.IsInit() || m_oWorkbookProtection->m_oRevisionsSpinCount.IsInit())
-							m_oWorkbookProtection->toBin(workBookStream->m_BrtBookProtectionIso);
+						workSheetStream->m_MERGECELLS = XLS::BaseObjectPtr(new XLSB::MERGECELLS());
+						m_oMergeCells->toBin(static_cast<XLSB::MERGECELLS*>(workSheetStream->m_MERGECELLS.get())->m_arBrtMergeCell);
+					}
+					if (m_oSheetData.IsInit())
+					{
+						m_oSheetData->toBin(workSheetStream->m_CELLTABLE);
+					}
+					if (m_oSheetFormatPr.IsInit())
+					{
+						m_oSheetFormatPr->toBin(workSheetStream->m_BrtWsFmtInfo);
+					}
+					if (m_oSheetViews.IsInit())
+					{
+						if (workSheetStream->m_WSVIEWS2 == nullptr)
+							workSheetStream->m_WSVIEWS2 = XLS::BaseObjectPtr(new XLSB::WSVIEWS2());
+						m_oSheetViews->toBin(workSheetStream->m_WSVIEWS2);
+					}
+					if (m_oPageMargins.IsInit())
+					{
+						m_oPageMargins->toBin(workSheetStream->m_BrtMargins);
+					}
+					if (m_oPageSetup.IsInit())
+					{
+						if (workSheetStream->m_BrtPageSetup == nullptr)
+							workSheetStream->m_BrtPageSetup = XLS::BaseObjectPtr(new XLSB::PageSetup());
+						m_oPageSetup->toBin(workSheetStream->m_BrtPageSetup);
+					}
+					if (m_oPrintOptions.IsInit())
+					{
+						m_oPrintOptions->toBin(workSheetStream->m_BrtPrintOptions);
+					}
+					if (m_oHeaderFooter.IsInit())
+					{
+						m_oHeaderFooter->toBin(workSheetStream->m_HEADERFOOTER);
+					}
+					if (m_oSheetProtection.IsInit())
+					{
+						if (m_oSheetProtection->m_oAlgorithmName.IsInit()
+							|| m_oSheetProtection->m_oSpinCount.IsInit()
+							|| m_oSheetProtection->m_oHashValue.IsInit()
+							|| m_oSheetProtection->m_oSaltValue.IsInit())
+						{
+							workSheetStream->m_BrtSheetProtectionIso = XLS::BaseObjectPtr(new XLSB::SheetProtectionIso());
+								m_oSheetProtection->toBin(workSheetStream->m_BrtSheetProtectionIso);
+						}
 						else
-							m_oWorkbookProtection->toBin(workBookStream->m_BrtBookProtection);
+						{
+							workSheetStream->m_BrtSheetProtection = XLS::BaseObjectPtr(new XLSB::SheetProtection());
+							m_oSheetProtection->toBin(workSheetStream->m_BrtSheetProtection);
+						}
+
 					}
-					if (m_oExternalReferences.IsInit())
+					if (m_oTableParts.IsInit())
 					{
-						workBookStream->m_EXTERNALS = XLS::BaseObjectPtr(new XLSB::EXTERNALS());
-						m_oExternalReferences->toBin(static_cast<XLSB::EXTERNALS*>(workBookStream->m_EXTERNALS.get())->m_arSUP);
-					}
-					if (m_oAppName.IsInit())
-					{
-						workBookStream->m_BrtFileVersion = XLS::BaseObjectPtr(new XLSB::FileVersion());
-						static_cast<XLSB::FileVersion*>(workBookStream->m_BrtFileVersion.get())->stAppName = m_oAppName.get();
-						static_cast<XLSB::FileVersion*>(workBookStream->m_BrtFileVersion.get())->stLastEdited = L"";
-						static_cast<XLSB::FileVersion*>(workBookStream->m_BrtFileVersion.get())->stLowestEdited = L"";
-						static_cast<XLSB::FileVersion*>(workBookStream->m_BrtFileVersion.get())->stRupBuild = L"";
+						m_oTableParts->toBin(workSheetStream->m_LISTPARTS);
 					}
 
+					/*
 					/*if (workBookStream->m_FRTWORKBOOK != nullptr)
 					m_oExtLst = workBookStream->m_FRTWORKBOOK;
 					*/

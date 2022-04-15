@@ -73,6 +73,17 @@ namespace OOX
             {
                 ReadAttributes(obj);
             }
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::MergeCell*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if (m_oRef.IsInit())
+						ptr->rfx = m_oRef.get();
+					else
+						ptr->rfx = std::wstring(L"");
+				}
+			}
 
 			virtual EElementType getType () const
 			{
@@ -90,7 +101,9 @@ namespace OOX
             void ReadAttributes(XLS::BaseObjectPtr& obj)
             {
                 auto ptr = static_cast<XLSB::MergeCell*>(obj.get());
-                m_oRef  = ptr->rfx.toString();
+				if(ptr != nullptr)
+					if(!ptr->rfx.toString().empty())
+						m_oRef  = ptr->rfx.toString();
             }
 
 		public:
@@ -170,6 +183,19 @@ namespace OOX
                     pMergeCell->fromBin(mergeCell);
                 }
             }
+			void toBin(std::vector<XLS::BaseObjectPtr>& obj)
+			{
+				obj.reserve(m_arrItems.size());
+				for (size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					if (m_arrItems[i])
+					{
+						XLS::BaseObjectPtr item(new XLSB::MergeCell());
+						m_arrItems[i]->toBin(item);
+						obj.push_back(item);
+					}
+				}
+			}
 
 			virtual EElementType getType () const
 			{

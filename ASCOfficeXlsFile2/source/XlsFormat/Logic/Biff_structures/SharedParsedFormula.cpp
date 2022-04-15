@@ -42,6 +42,11 @@ SharedParsedFormula::SharedParsedFormula(const bool is_part_of_a_revision, const
 
 }
 
+void SharedParsedFormula::operator=(const std::wstring& value)
+{
+	ParsedFormula::operator = (value);
+}
+
 BiffStructurePtr SharedParsedFormula::clone()
 {
 	return BiffStructurePtr(new SharedParsedFormula(*this));

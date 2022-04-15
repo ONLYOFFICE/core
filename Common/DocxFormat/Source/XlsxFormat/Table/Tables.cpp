@@ -616,6 +616,20 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
     {
         ReadAttributes(obj);
     }
+	void CTablePart::toBin(XLS::BaseObjectPtr& obj)
+	{
+		if (obj == nullptr)
+			obj = XLS::BaseObjectPtr(new XLSB::ListPart());
+
+		auto ptr = static_cast<XLSB::ListPart*>(obj.get());
+		if (ptr != nullptr)
+		{		
+			if (m_oRId.IsInit())
+				ptr->stRelID = m_oRId->GetValue();
+			else
+				ptr->stRelID = std::wstring(L"");
+		}
+	}
 	void CTablePart::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start_No_NS( oReader )
@@ -626,7 +640,8 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
     {
         auto ptr = static_cast<XLSB::ListPart*>(obj.get());
         if(ptr != nullptr)
-            m_oRId = ptr->stRelID.value.value();
+			if(!ptr->stRelID.value.value().empty())
+				m_oRId = ptr->stRelID.value.value();
     }
 
 	void CTableParts::toXML(NSStringUtils::CStringBuilder& writer) const
@@ -678,6 +693,27 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
             }
         }
     }
+
+	void CTableParts::toBin(XLS::BaseObjectPtr& obj)
+	{
+		if (obj == nullptr)
+			obj = XLS::BaseObjectPtr(new XLSB::LISTPARTS());
+
+		auto pLISTPARTS = static_cast<XLSB::LISTPARTS*>(obj.get());
+		if (pLISTPARTS != nullptr)
+		{
+			pLISTPARTS->m_arBrtListPart.reserve(m_arrItems.size());
+			for (size_t i = 0; i < m_arrItems.size(); ++i)
+			{
+				if (m_arrItems[i])
+				{
+					XLS::BaseObjectPtr item(new XLSB::ListPart());
+					m_arrItems[i]->toBin(item);
+					pLISTPARTS->m_arBrtListPart.push_back(item);
+				}
+			}
+		}
+	}
 
 	void CTableParts::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{

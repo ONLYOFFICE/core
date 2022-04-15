@@ -112,8 +112,8 @@ namespace XLSB
 		else 
 			return false;
 
-		//if (m_CELLMETA != nullptr)
-		//	proc.mandatory(*m_CELLMETA);
+		if (m_CELLMETA != nullptr)
+			proc.mandatory(*m_CELLMETA);
 
 		if (m_source != nullptr)
 			proc.mandatory(*m_source);

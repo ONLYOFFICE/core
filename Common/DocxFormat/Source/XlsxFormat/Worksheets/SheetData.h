@@ -156,6 +156,7 @@ namespace OOX
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream);
 			void fromXLSBExt (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nFlags);
             void fromBin(XLS::BaseObjectPtr& obj, SimpleTypes::Spreadsheet::ECellFormulaType eType);
+			void toBin(XLS::BaseObjectPtr& obj, SimpleTypes::Spreadsheet::ECellFormulaType eType);
 			virtual EElementType getType () const
 			{
 				return et_x_Formula;
@@ -266,6 +267,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, _UINT32 nRow);
             void fromBin(XLS::BaseObjectPtr& obj);
+			void toBin(XLS::BaseObjectPtr& obj);
 
 			virtual EElementType getType () const
 			{
@@ -452,7 +454,8 @@ namespace OOX
 			void fromXMLToXLSB(XmlUtils::CXmlLiteReader& oReader, NSBinPptxRW::CXlsbBinaryWriter& oStream, CCellXLSB& oCell);
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType);
 			void toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const;            
-                        void fromBin(XLS::BaseObjectPtr& obj);
+			void fromBin(XLS::BaseObjectPtr& obj);
+			void toBin(XLS::BaseObjectPtr& obj);
 
 			virtual EElementType getType () const
 			{
@@ -462,7 +465,8 @@ namespace OOX
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-                        void ReadAttributes(XLS::BaseObjectPtr& obj);
+			void WriteAttributes(XLS::BaseObjectPtr& obj);
+			void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void CheckIndex();
 
 		public:
@@ -522,6 +526,7 @@ namespace OOX
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
 
             void fromBin(XLS::BaseObjectPtr& obj);
+			void toBin(XLS::BaseObjectPtr& obj);
 
 			virtual EElementType getType () const
 			{

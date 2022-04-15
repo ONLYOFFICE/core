@@ -37,18 +37,24 @@
 #include "../Biff12_unions/TABLECELL.h"
 #include "../Biff12_unions/CELLMETA.h"
 #include "../Biff12_unions/FRT.h"
-
 #include "../Biff12_records/ACBegin.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/CellRangeRef.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
 
-    CELL::CELL(_INT32 row, std::vector<XLS::CellRangeRef>& shared_formulas_locations_ref)
+    CELL::CELL(_INT32 row, std::vector<CellRangeRef>& shared_formulas_locations_ref)
         : m_Row(row), shared_formulas_locations_ref_(shared_formulas_locations_ref)
     {
     }
+
+
+	CELL::CELL()
+		:shared_formulas_locations_ref_(std::vector<CellRangeRef>())
+	{
+	}
 
     CELL::~CELL()
     {
@@ -119,7 +125,7 @@ namespace XLSB
 
 	const bool CELL::saveContent(XLS::BinProcessor & proc)
 	{
-		if (m_CELLMETA != nullptr)
+		if (m_source->get_type() != typeTABLECELL && m_CELLMETA != nullptr)
 			proc.mandatory(*m_CELLMETA);
 
 		if (m_source != nullptr)

@@ -33,6 +33,7 @@
 #include "SHRFMLACELL.h"
 #include "../Biff12_records/CommonRecords.h"
 #include "../Biff12_structures/CellRef.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/CellRangeRef.h"
 
 using namespace XLS;
 
@@ -43,6 +44,11 @@ namespace XLSB
         : m_Row(row), m_Col(col), shared_formulas_locations_ref_(shared_formulas_locations_ref), m_sharedIndex(-1)
     {
     }
+
+	SHRFMLACELL::SHRFMLACELL()
+		: shared_formulas_locations_ref_(std::vector<CellRangeRef>()), m_sharedIndex(-1)
+	{
+	}
 
     SHRFMLACELL::~SHRFMLACELL()
     {

@@ -521,6 +521,20 @@ mc:Ignorable=\"xr\">");
             {
                 ReadAttributes(obj);
             }
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				if (obj == nullptr)
+					obj = XLS::BaseObjectPtr(new XLSB::LegacyDrawing());
+
+				auto ptr = static_cast<XLSB::LegacyDrawing*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if (m_oId.IsInit())
+						ptr->stRelId = m_oId->GetValue();
+					else
+						ptr->stRelId = std::wstring(L"");
+				}
+			}
 			virtual EElementType getType () const
 			{
 				return et_x_LegacyDrawingWorksheet;
@@ -537,7 +551,8 @@ mc:Ignorable=\"xr\">");
             {
                 auto ptr = static_cast<XLSB::LegacyDrawing*>(obj.get());
                 if(ptr != nullptr)
-                    m_oId = ptr->stRelId.value.value();
+					if(!ptr->stRelId.value.value().empty())
+						m_oId = ptr->stRelId.value.value();
             }
 		public:
 			nullable<SimpleTypes::CRelationshipId > m_oId;

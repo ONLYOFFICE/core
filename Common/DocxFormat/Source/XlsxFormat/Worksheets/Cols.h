@@ -86,6 +86,63 @@ namespace OOX
                 ReadAttributes(obj);
             }
 
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::ColInfo*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if (m_oBestFit.IsInit())
+						ptr->fBestFit = m_oBestFit->GetValue();
+					else
+						ptr->fBestFit = false;
+
+					if (m_oCollapsed.IsInit())
+						ptr->fCollapsed = m_oCollapsed->GetValue();
+					else
+						ptr->fCollapsed = false;
+
+					if (m_oCustomWidth.IsInit())
+						ptr->fUserSet = m_oCustomWidth->GetValue();
+					else
+						ptr->fUserSet = false;
+
+					if (m_oHidden.IsInit())
+						ptr->fHidden = m_oHidden->GetValue();
+					else
+						ptr->fHidden = false;
+
+					if (m_oMax.IsInit())
+						ptr->colLast = m_oMax->GetValue() - 1;
+					else
+						ptr->colLast = 0;
+
+					if (m_oMin.IsInit())
+						ptr->colFirst = m_oMin->GetValue() - 1;
+					else
+						ptr->colFirst = 0;
+
+					if (m_oOutlineLevel.IsInit())
+						ptr->iOutLevel = m_oOutlineLevel->GetValue();
+					else
+						ptr->iOutLevel = 0;
+
+					if (m_oPhonetic.IsInit())
+						ptr->fPhonetic = m_oPhonetic->GetValue();
+					else
+						ptr->fPhonetic = false;
+
+					if (m_oStyle.IsInit())
+						ptr->ixfeXLSB = m_oStyle->GetValue();
+					else
+						ptr->ixfeXLSB = 0;
+
+					if (m_oWidth.IsInit())
+						ptr->coldx = m_oWidth->GetValue() * 256.;
+					else
+						ptr->coldx = 0;
+				}
+			}
+
 			virtual EElementType getType() const
 			{
 				return et_x_Col;
@@ -98,20 +155,37 @@ namespace OOX
             void ReadAttributes(XLS::BaseObjectPtr& obj)
             {
                 auto ptr = static_cast<XLSB::ColInfo*>(obj.get());
-                m_oBestFit                  = ptr->fBestFit;
-                m_oCollapsed                = ptr->fCollapsed;
-                m_oCustomWidth              = ptr->fUserSet;
-                m_oHidden                   = ptr->fHidden;
-                m_oMax                      = ptr->colLast + 1;
-                m_oMin                      = ptr->colFirst + 1;
-                m_oOutlineLevel             = ptr->iOutLevel;
-                m_oPhonetic                 = ptr->fPhonetic;
-                m_oStyle                    = ptr->ixfeXLSB;
+				if (ptr != nullptr)
+				{
+					if(ptr->fBestFit != false)
+						m_oBestFit = ptr->fBestFit;
 
-                if (ptr->coldx > 0)
-                {
-                        m_oWidth            = (double)ptr->coldx / 256.;
-                }
+					if (ptr->fCollapsed != false)
+						m_oCollapsed = ptr->fCollapsed;
+
+					if (ptr->fUserSet != false)
+						m_oCustomWidth = ptr->fUserSet;
+
+					if (ptr->fHidden != false)
+						m_oHidden = ptr->fHidden;
+
+					m_oMax = ptr->colLast + 1;
+					m_oMin = ptr->colFirst + 1;
+
+					if (ptr->iOutLevel != 0)
+						m_oOutlineLevel = ptr->iOutLevel;
+
+					if (ptr->fPhonetic != false)
+						m_oPhonetic = ptr->fPhonetic;
+
+					if (ptr->ixfeXLSB != 0)
+						m_oStyle = ptr->ixfeXLSB;
+
+					if (ptr->coldx > 0)
+					{
+						m_oWidth = (double)ptr->coldx / 256.;
+					}
+				}
 
             }
 
@@ -202,6 +276,25 @@ namespace OOX
                     }
                 }
             }
+
+			void toBin(std::vector<XLS::BaseObjectPtr>& obj)
+			{
+				if (obj.empty())
+					obj.push_back(XLS::BaseObjectPtr(new XLSB::COLINFOS()));
+
+				auto ptrCOLINFO = static_cast<XLSB::COLINFOS*>(obj[0].get());
+
+				ptrCOLINFO->m_arBrtColInfo.reserve(m_arrItems.size());
+				for (size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					if (m_arrItems[i])
+					{
+						XLS::BaseObjectPtr item(new XLSB::ColInfo());
+						m_arrItems[i]->toBin(item);
+						ptrCOLINFO->m_arBrtColInfo.push_back(item);
+					}
+				}
+			}
 
 			virtual EElementType getType () const
 			{

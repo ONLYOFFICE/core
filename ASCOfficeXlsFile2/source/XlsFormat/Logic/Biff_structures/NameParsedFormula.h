@@ -43,13 +43,12 @@ class NameParsedFormula : public ParsedFormula
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(NameParsedFormula)
 public:
 	// is_part_of_a_revision must be set to "true" from RRDDefName or RRDChgCell records only
-	NameParsedFormula(const bool is_part_of_a_revision);
+		NameParsedFormula(const bool is_part_of_a_revision);
         void operator=(const std::wstring& value) override;
-	BiffStructurePtr clone();
+		BiffStructurePtr clone();
+
         virtual void load(CFRecord& record, const size_t cce);
-
         void load(CFRecord& record) override;
-
         void save(CFRecord& record) override;
 
 	bool is_part_of_a_revision_;

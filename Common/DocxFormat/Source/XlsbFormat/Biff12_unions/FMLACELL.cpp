@@ -34,16 +34,22 @@
 #include "../Biff12_records/CommonRecords.h"
 #include "../Biff12_records/Fmla.h"
 #include "../Biff12_structures/CellRef.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/CellRangeRef.h"
 
 using namespace XLS;
 
 namespace XLSB
 {
 
-    FMLACELL::FMLACELL(_INT32 row, std::vector<XLS::CellRangeRef>& shared_formulas_locations_ref)
+    FMLACELL::FMLACELL(_INT32 row, std::vector<CellRangeRef>& shared_formulas_locations_ref)
         : m_Row(row), shared_formulas_locations_ref_(shared_formulas_locations_ref), isShared(false), m_sharedIndex(-1)
     {
     }
+
+	FMLACELL::FMLACELL()
+		: shared_formulas_locations_ref_(std::vector<CellRangeRef>()), isShared(false), m_sharedIndex(-1)
+	{
+	}
 
     FMLACELL::~FMLACELL()
     {

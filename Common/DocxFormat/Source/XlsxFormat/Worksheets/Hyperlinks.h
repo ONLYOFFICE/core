@@ -77,6 +77,38 @@ namespace OOX
             {
                 ReadAttributes(obj);
             }
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::HLink*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if (m_oDisplay.IsInit())
+						ptr->display = m_oDisplay.get();
+					else
+						ptr->display = L"";
+
+					if (m_oRid.IsInit())
+						ptr->relId = m_oRid->GetValue();
+					else
+						ptr->relId = std::wstring(L"");
+
+					if (m_oLocation.IsInit())
+						ptr->location = m_oLocation.get();
+					else
+						ptr->location = L"";
+
+					if (m_oRef.IsInit())
+						ptr->rfx = m_oRef.get();
+					else
+						ptr->rfx = std::wstring(L"");
+
+					if (m_oTooltip.IsInit())
+						ptr->tooltip = m_oTooltip.get();
+					else
+						ptr->tooltip = L"";
+
+				}
+			}
 
 			virtual EElementType getType () const
 			{
@@ -99,11 +131,23 @@ namespace OOX
             void ReadAttributes(XLS::BaseObjectPtr& obj)
             {
                 auto ptr = static_cast<XLSB::HLink*>(obj.get());
-                m_oDisplay          = ptr->display.value();
-                m_oRid              = ptr->relId.value.value();
-                m_oLocation         = ptr->location.value();
-                m_oRef              = ptr->rfx.toString();
-                m_oTooltip          = ptr->tooltip.value();
+				if (ptr != nullptr)
+				{
+					if(!ptr->display.value().empty())
+						m_oDisplay = ptr->display.value();
+
+					if (!ptr->relId.value.value().empty())
+						m_oRid = ptr->relId.value.value();
+
+					if (!ptr->location.value().empty())
+						m_oLocation = ptr->location.value();
+
+					if (!ptr->rfx.toString().empty())
+						m_oRef = ptr->rfx.toString();
+
+					if (!ptr->tooltip.value().empty())
+						m_oTooltip = ptr->tooltip.value();
+				}
 
             }
 
@@ -183,6 +227,19 @@ namespace OOX
                     pHyperlink->fromBin(hyperlink);
                 }
             }
+			void toBin(std::vector<XLS::BaseObjectPtr>& obj)
+			{
+				obj.reserve(m_arrItems.size());
+				for (size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					if (m_arrItems[i])
+					{
+						XLS::BaseObjectPtr item(new XLSB::HLink());
+						m_arrItems[i]->toBin(item);
+						obj.push_back(item);
+					}
+				}
+			}
 
 			virtual EElementType getType () const
 			{

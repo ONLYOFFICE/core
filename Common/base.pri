@@ -92,7 +92,11 @@ linux-g++:contains(QMAKE_HOST.arch, x86_64): {
     message("linux-64")
     CONFIG += core_linux_64
 }
-linux-g++:!contains(QMAKE_HOST.arch, x86_64): {
+linux-g++:contains(QMAKE_HOST.arch, ppc64le): {
+    message("linux-64")
+    CONFIG += core_linux_64
+}
+linux-g++:contains(QMAKE_HOST.arch, i386): {
     message("linux-32")
     CONFIG += core_linux_32
 }

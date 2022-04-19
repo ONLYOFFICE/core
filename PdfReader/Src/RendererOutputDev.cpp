@@ -600,6 +600,7 @@ namespace PdfReader
         m_sClip.push_back(GfxClip());
         m_bClipChanged = true;
         updateAll(pGState);
+        m_sGState.push_back(pGState);
     }
     void RendererOutputDev::restoreState(GfxState *pGState)
     {
@@ -608,6 +609,8 @@ namespace PdfReader
             m_sClip.pop_back();
         m_bClipChanged = true;
         updateAll(pGState);
+        if (!m_sGState.empty())
+            m_sGState.pop_back();
     }
     void RendererOutputDev::updateCTM(GfxState *pGState, double dMatrix11, double dMatrix12, double dMatrix21, double dMatrix22, double dMatrix31, double dMatrix32)
     {
@@ -3932,6 +3935,7 @@ namespace PdfReader
         Aggplus::CImage oImage;
         oImage.Create(pBufferPtr, nWidth, nHeight, bIsFlip ? (4 * nWidth) : (-4 * nWidth));
 
+        pImageStream->close();
 		delete pImageStream;
 
         double arrMatrix[6];
@@ -3949,6 +3953,7 @@ namespace PdfReader
 
         double dShiftX = 0, dShiftY = 0;
         DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
+        oImage.SaveFile(NSFile::GetProcessDirectory() + L"/res1.png", _CXIMAGE_FORMAT_PNG);
         m_pRenderer->DrawImage(&oImage, 0 + dShiftX, 0 + dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
     }
 	void RendererOutputDev::drawMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, Object* pStreamRef, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GBool bMaskInvert, GBool interpolate)
@@ -4339,12 +4344,9 @@ namespace PdfReader
 
         if (!bIsolated || bKnockout)
         {
-            if (pGState && pGState->hasSaves())
+            if (pGState && pGState->hasSaves() && !m_sGState.empty())
             {
-                GfxState* before = pGState->restore();
-                updateFillOpacity(before);
-                // TODO: fix it
-                pGState = before->save();
+                updateFillOpacity(m_sGState.back());
             }
         }
     }

@@ -313,6 +313,7 @@ namespace PdfReader
         NSFonts::IFontManager*        m_pFontManager;
 
 		//GfxTextClip                   *m_pBufferTextClip;
+        std::vector<GfxState*>        m_sGState;
 
 		XRef                         *m_pXref;           // Таблица Xref для данного PDF-документа
 		CFontList                    *m_pFontList;

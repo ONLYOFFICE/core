@@ -106,6 +106,7 @@ HEADERS += \
     ../pch.h \
     ../pkcspad.h \
     ../polynomi.h \
+    ../ppc-simd.h \
     ../pssr.h \
     ../pubkey.h \
     ../pwdbased.h \
@@ -276,6 +277,7 @@ SOURCES += \
     ../pkcspad.cpp \
     ../poly1305.cpp \
     ../polynomi.cpp \
+    ../ppc-simd.cpp \
     ../pssr.cpp \
     ../pubkey.cpp \
     ../queue.cpp \

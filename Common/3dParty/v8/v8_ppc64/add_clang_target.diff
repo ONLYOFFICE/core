@@ -1,0 +1,22 @@
+diff --git a/Common/base.pri b/Common/base.pri
+index e07c164c7..c4139508f 100644
+--- a/Common/base.pri
++++ b/Common/base.pri
+@@ -89,9 +89,15 @@ linux-g++:contains(QMAKE_HOST.arch, x86_64): {
+     message("linux-64")
+     CONFIG += core_linux_64
+ }
++linux-g++:contains(QMAKE_HOST.arch, ppc64le): {
++    message("linux-64")
++    CONFIG += core_linux_64
++}
+ linux-g++:!contains(QMAKE_HOST.arch, x86_64): {
+-    message("linux-32")
+-    CONFIG += core_linux_32
++    linux-g++:!contains(QMAKE_HOST.arch, ppc64le): {
++        message("linux-32")
++        CONFIG += core_linux_32
++    }
+ }
+ linux-g++:contains(DST_ARCH, arm): {
+     message("arm")

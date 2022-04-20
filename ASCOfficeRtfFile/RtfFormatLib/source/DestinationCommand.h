@@ -2652,7 +2652,22 @@ public:
 		m_oParPropDest.Finalize(oReader);
 	}
 };
+class RtfFormFieldReader : public RtfAbstractReader
+{
+public:
+	RtfFormFieldReader(RtfFormField& oFormField) : m_oFormField(oFormField) {}
+	
+	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter);
+	void RtfFormFieldReader::ExecuteText(RtfDocument& oDocument, RtfReader& oReader, std::wstring sText);
 
+private:
+	enum _InternalState {
+		is_none, is_name, is_datafield, is_deftext, is_format, is_helptext, is_stattext, is_entrymcr, is_exitmcr, is_list
+	};
+
+	_InternalState m_eInternalState;
+	RtfFormField& m_oFormField;
+};
 class RtfFieldInstReader : public RtfAbstractReader, public RtfParagraphPropDestination
 {
 

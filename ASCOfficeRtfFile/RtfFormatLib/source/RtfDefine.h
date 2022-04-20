@@ -87,6 +87,8 @@ const long g_cdMaxPercent = 1000000;
 #define TYPE_RTF_ANNOTVALUE						33
 #define TYPE_RTF_ANNOTATION						34
 
+#define TYPE_OOX_FORMFIELD						35
+
 #define RENDER_TO_OOX_PARAM_UNKNOWN				0
 #define RENDER_TO_OOX_PARAM_LAST				1
 #define RENDER_TO_OOX_PARAM_RUN					2

@@ -95,6 +95,7 @@ namespace cpdoccore {
 			std::set<wchar_t> mo;
 			std::map<std::wstring, std::wstring> diak_symbols;
 			bool annotation_flag;
+			bool annotation_oper_flag;
 			std::map<std::wstring, std::wstring> annotation_operators;
 			std::map<std::wstring, std::wstring> annotation_brackets_begin;
 			std::map<std::wstring, std::wstring> annotation_brackets_end;

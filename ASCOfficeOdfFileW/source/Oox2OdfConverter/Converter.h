@@ -705,7 +705,7 @@ public:
 		returnValues convert(OOX::Logic::CFuncPr		*oox_func_pr);
 		void convert(OOX::Logic::CGroupChr *oox_group_ch, OOX::Logic::CLim *oox_lim = NULL);
 		returnValues convert(OOX::Logic::CGroupChrPr	*oox_group_ch_pr);
-		void convert(OOX::Logic::CLimLow				*oox_lim_low);
+		void convert(OOX::Logic::CLimLow *oox_lim_low, OOX::Logic::CElement *oox_elm = NULL);
 		returnValues convert(OOX::Logic::CLimLowPr		*oox_lim_low_pr);
 		void convert(OOX::Logic::CLimUpp				*oox_lim_upp);
 		returnValues convert(OOX::Logic::CLimUppPr		*oox_lim_upp_pr);
@@ -747,7 +747,7 @@ public:
 		void convert(OOX::Logic::CDeg *oox_deg, OOX::Logic::CElement *oox_elm);
 		void convert(OOX::Logic::CSup *oox_sup, OOX::Logic::CElement *oox_elm);
 		void convert(OOX::Logic::CSub *oox_sub, OOX::Logic::CElement *oox_elm);
-		void convert(OOX::Logic::CFName					*oox_fname);
+		bool convert(OOX::Logic::CFName *oox_fname, OOX::Logic::CElement* oox_elm);
 		void convert(OOX::Logic::CLim					*oox_lim);
 		bool convert(OOX::Logic::CChr					*oox_chr);
 		void convert(OOX::Logic::CSup					*oox_csup);

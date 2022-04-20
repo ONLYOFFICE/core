@@ -1284,7 +1284,7 @@ void docx_conversion_context::process_section(std::wostream & strm, odf_reader::
 				if (!col) continue;
 
 				double percent = col->style_rel_width_ ? col->style_rel_width_->get_value() : 0;
-				if (percent > 32767)
+				if (percent > 0x7FFE)
 				{
 					//auto
 					break;

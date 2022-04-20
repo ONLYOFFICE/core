@@ -41,6 +41,11 @@ CFVOParsedFormula::CFVOParsedFormula()
 {
 }
 
+CFVOParsedFormula& CFVOParsedFormula::operator=(const std::wstring& value)
+{
+	ParsedFormula::operator = (value);
+	return *this;
+}
 
 BiffStructurePtr CFVOParsedFormula::clone()
 {

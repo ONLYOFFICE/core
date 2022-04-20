@@ -57,5 +57,12 @@ namespace XLSB
         color.readFields(record);
     }
 
+	void Color14::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader;
+
+		color.writeFields(record);
+	}
+
 } // namespace XLSB
 

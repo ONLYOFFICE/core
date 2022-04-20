@@ -48,15 +48,16 @@ namespace XLSB
 
             XLS::BaseObjectPtr clone();
 
-            void readFields(XLS::CFRecord& record);
+            void readFields(XLS::CFRecord& record) override;
+			void writeFields(XLS::CFRecord& record) override;
 
             static const XLS::ElementType	type = XLS::typeBeginIconSet14;
 
-            FRTBlank     FRTheader;
-			XLS::KPISets14    iSet;
-            bool         fCustom;
-            bool         fIcon;
-            bool         fReverse;
+            FRTBlank			FRTheader;
+			XLS::KPISets14		iSet;
+            bool				fCustom;
+            bool				fIcon;
+            bool				fReverse;
     };
 
 } // namespace XLSB

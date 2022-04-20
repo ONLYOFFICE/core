@@ -57,7 +57,7 @@ namespace XLSB
 
     void FRTRef::load(XLS::CFRecord& record)
     {
-        unsigned int flags;
+        _UINT32 flags;
 
         record >> flags;
 
@@ -68,6 +68,19 @@ namespace XLSB
 
         record >> rfx;
     }
+
+	void FRTRef::save(XLS::CFRecord& record)
+	{
+		_UINT32 flags = 0;
+
+		SETBIT(flags, 0, fAdjDelete)
+		SETBIT(flags, 1, fDoAdjust)
+		SETBIT(flags, 2, fAdjChange)
+		SETBIT(flags, 3, fEdit)
+
+		record << flags;
+		record << rfx;
+	}
 
 } // namespace XLSB
 

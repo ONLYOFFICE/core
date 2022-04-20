@@ -61,5 +61,11 @@ namespace XLSB
         record >> formula;
     }
 
+	void FRTFormula::save(XLS::CFRecord& record)
+	{
+		record.reserveNunBytes(4);
+		record << formula;
+	}
+
 } // namespace XLSB
 

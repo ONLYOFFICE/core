@@ -66,5 +66,16 @@ namespace XLSB
         }
     }
 
+	void FRTFormulas::save(XLS::CFRecord& record)
+	{
+		cformula = array.size();
+		record << cformula;
+
+		for (auto& item : array)
+		{
+			record << item;
+		}
+	}
+
 } // namespace XLSB
 

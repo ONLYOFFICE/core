@@ -918,6 +918,8 @@ enum ElementType
     typeSHRFMLACELL,
 	typeBookProtection,
 	typeBookProtectionIso,
+	typeBeginSortCond,
+	typeBeginSortCond14,
 };
 
 

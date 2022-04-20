@@ -43,5 +43,11 @@ BiffStructurePtr CFVOType14::clone()
     return BiffStructurePtr(new CFVOType14(*this));
 }
 
+CFVOType14& CFVOType14::operator= (const _UINT32& other_val)
+{
+	BiffAttributeSimple::operator=(other_val);
+	return *this;
+}
+
 } // namespace XLSB
 

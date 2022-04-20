@@ -46,8 +46,6 @@ namespace XLSB
             ~BeginConditionalFormattings();
 
             XLS::BaseObjectPtr clone();
-
-            void readFields(XLS::CFRecord& record);
     };
 
 } // namespace XLSB

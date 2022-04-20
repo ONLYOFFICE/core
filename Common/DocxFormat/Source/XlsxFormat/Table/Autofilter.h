@@ -67,8 +67,8 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSortCondition)
-                        WritingElement_XlsbConstructors(CSortCondition)
-			CSortCondition()
+				WritingElement_XlsbConstructors(CSortCondition)
+				CSortCondition()
 			{
 			}
 			virtual ~CSortCondition()
@@ -78,7 +78,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-            virtual std::wstring toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -88,7 +88,7 @@ namespace OOX
 			}
 			void toXMLWithNS(NSStringUtils::CStringBuilder& writer, const std::wstring &node_ns, const std::wstring &node_name, const std::wstring &child_ns) const
 			{
-				if(m_oDescending.IsInit() || m_oRef.IsInit() || m_oSortBy.IsInit() || m_oDxfId.IsInit())
+				if (m_oDescending.IsInit() || m_oRef.IsInit() || m_oSortBy.IsInit() || m_oDxfId.IsInit())
 				{
 					writer.StartNodeWithNS(node_ns, node_name);
 					writer.StartAttributes();
@@ -101,18 +101,106 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				ReadAttributes( oReader );
+				ReadAttributes(oReader);
 
-				if ( !oReader.IsEmptyNode() )
+				if (!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 			}
 
-                        void fromBin(XLS::BaseObjectPtr& obj)
-                        {
-                            ReadAttributes(obj);
-                        }
+			void fromBin(XLS::BaseObjectPtr& obj)
+			{
+				ReadAttributes(obj);
+			}
 
-			virtual EElementType getType () const
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				if (obj->get_type() == XLS::typeBeginSortCond)
+				{
+					auto ptr = static_cast<XLSB::BeginSortCond*>(obj.get());
+					if (ptr != nullptr)
+					{
+						if (m_oDescending.IsInit())
+							ptr->fSortDes = m_oDescending->GetValue();
+						else
+							ptr->fSortDes = false;
+
+						if (m_oRef.IsInit())
+							ptr->rfx = m_oRef->GetValue();
+						else
+							ptr->rfx = std::wstring(L"");
+
+						if(m_oSortBy.IsInit())
+						{
+							switch (m_oSortBy->GetValue())
+							{
+								case SimpleTypes::Spreadsheet::ESortBy::sortbyValue:								
+									ptr->sortOn = 0;
+									break;
+								case SimpleTypes::Spreadsheet::ESortBy::sortbyCellColor:								
+									ptr->sortOn = 1;
+									break;
+								case SimpleTypes::Spreadsheet::ESortBy::sortbyFontColor:
+									ptr->sortOn = 2;
+									break;
+								case SimpleTypes::Spreadsheet::ESortBy::sortbyIcon:
+									ptr->sortOn = 3;
+									break;
+							}
+						}
+						else
+							ptr->sortOn = 0;
+
+						if(m_oDxfId.IsInit())
+							ptr->condDataValue.condDataValue = m_oDxfId->GetValue();
+						else
+							ptr->condDataValue.condDataValue = 0;
+					}
+				}
+				else if (obj->get_type() == XLS::typeBeginSortCond14)
+				{
+					auto ptr = static_cast<XLSB::BeginSortCond14*>(obj.get());
+					if (ptr != nullptr)
+					{
+						if (m_oDescending.IsInit())
+							ptr->fSortDes = m_oDescending->GetValue();
+						else
+							ptr->fSortDes = false;
+
+						if (m_oRef.IsInit())
+							ptr->rfx = m_oRef->GetValue();
+						else
+							ptr->rfx = std::wstring(L"");
+
+						if (m_oSortBy.IsInit())
+						{
+							switch (m_oSortBy->GetValue())
+							{
+							case SimpleTypes::Spreadsheet::ESortBy::sortbyValue:
+								ptr->sortOn = 0;
+								break;
+							case SimpleTypes::Spreadsheet::ESortBy::sortbyCellColor:
+								ptr->sortOn = 1;
+								break;
+							case SimpleTypes::Spreadsheet::ESortBy::sortbyFontColor:
+								ptr->sortOn = 2;
+								break;
+							case SimpleTypes::Spreadsheet::ESortBy::sortbyIcon:
+								ptr->sortOn = 3;
+								break;
+							}
+						}
+						else
+							ptr->sortOn = 0;
+
+						if (m_oDxfId.IsInit())
+							ptr->condDataValue.condDataValue = m_oDxfId->GetValue();
+						else
+							ptr->condDataValue.condDataValue = 0;
+					}
+				}
+			}
+
+			virtual EElementType getType() const
 			{
 				return et_x_SortCondition;
 			}
@@ -121,77 +209,80 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Start(oReader)
 
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("descending"),      m_oDescending )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ref"),      m_oRef )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("sortBy"),      m_oSortBy )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("dxfId"),      m_oDxfId )
+					WritingElement_ReadAttributes_Read_if(oReader, _T("descending"), m_oDescending)
+					WritingElement_ReadAttributes_Read_if(oReader, _T("ref"), m_oRef)
+					WritingElement_ReadAttributes_Read_if(oReader, _T("sortBy"), m_oSortBy)
+					WritingElement_ReadAttributes_Read_if(oReader, _T("dxfId"), m_oDxfId)
 
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_End(oReader)
 			}
 
-                        void ReadAttributes(XLS::BaseObjectPtr& obj)
-                        {
-                            auto ptrRecord = static_cast<XLS::BiffRecord*>(obj.get());
+			void ReadAttributes(XLS::BaseObjectPtr& obj)
+			{
+				if (obj->get_type() == XLS::typeBeginSortCond)
+				{
+					auto ptr = static_cast<XLSB::BeginSortCond*>(obj.get());
+					if (ptr != nullptr)
+					{
+						if(ptr->fSortDes != false)
+							m_oDescending = ptr->fSortDes;
 
-                            if(ptrRecord->getTypeId() == XLSB::rt_BeginSortCond)
-                            {
-                                auto ptr = static_cast<XLSB::BeginSortCond*>(obj.get());
-                                if(ptr != nullptr)
-                                {
-                                    m_oDescending           = ptr->fSortDes;
-                                    m_oRef                  = ptr->rfx.toString();
-                                    switch (ptr->sortOn)
-                                    {
-                                        case 0:
-                                            m_oSortBy = SimpleTypes::Spreadsheet::ESortBy::sortbyValue;
-                                            break;
-                                        case 1:
-                                            m_oSortBy = SimpleTypes::Spreadsheet::ESortBy::sortbyCellColor;
-                                            m_oDxfId  = ptr->condDataValue.condDataValue;
-                                            break;
-                                        case 2:
-                                            m_oSortBy = SimpleTypes::Spreadsheet::ESortBy::sortbyFontColor;
-                                            m_oDxfId  = ptr->condDataValue.condDataValue;
-                                            break;
-                                        case 3:
-                                            m_oSortBy = SimpleTypes::Spreadsheet::ESortBy::sortbyIcon;
-                                            //m_oDxfId  = ptr->cfflag;
-                                            break;
-                                    }
+						m_oRef = ptr->rfx.toString();
 
-                                }
-                            }
-                            else if(ptrRecord->getTypeId() == XLSB::rt_BeginSortCond14)
-                            {
-                                auto ptr = static_cast<XLSB::BeginSortCond14*>(obj.get());
-                                if(ptr != nullptr)
-                                {
-                                    m_oDescending           = ptr->fSortDes;
-                                    m_oRef                  = ptr->rfx.toString();
-                                    switch (ptr->sortOn)
-                                    {
-                                        case 0:
-                                            m_oSortBy = SimpleTypes::Spreadsheet::ESortBy::sortbyValue;
-                                            break;
-                                        case 1:
-                                            m_oSortBy = SimpleTypes::Spreadsheet::ESortBy::sortbyCellColor;
-                                            m_oDxfId  = ptr->condDataValue.condDataValue;
-                                            break;
-                                        case 2:
-                                            m_oSortBy = SimpleTypes::Spreadsheet::ESortBy::sortbyFontColor;
-                                            m_oDxfId  = ptr->condDataValue.condDataValue;
-                                            break;
-                                        case 3:
-                                            m_oSortBy = SimpleTypes::Spreadsheet::ESortBy::sortbyIcon;
-                                            //m_oDxfId  = ptr->cfflag;
-                                            break;
-                                    }
-                                }
-                            }
+						switch (ptr->sortOn)
+						{
+						case 0:
+							m_oSortBy = SimpleTypes::Spreadsheet::ESortBy::sortbyValue;
+							break;
+						case 1:
+							m_oSortBy = SimpleTypes::Spreadsheet::ESortBy::sortbyCellColor;
+							m_oDxfId = ptr->condDataValue.condDataValue;
+							break;
+						case 2:
+							m_oSortBy = SimpleTypes::Spreadsheet::ESortBy::sortbyFontColor;
+							m_oDxfId = ptr->condDataValue.condDataValue;
+							break;
+						case 3:
+							m_oSortBy = SimpleTypes::Spreadsheet::ESortBy::sortbyIcon;
+							//m_oDxfId  = ptr->cfflag;
+							break;
+						}
 
-                        }
+					}
+				}
+				else if (obj->get_type() == XLS::typeBeginSortCond14)
+				{
+					auto ptr = static_cast<XLSB::BeginSortCond14*>(obj.get());
+					if (ptr != nullptr)
+					{
+						if (ptr->fSortDes != false)
+							m_oDescending = ptr->fSortDes;
+
+						m_oRef = ptr->rfx.toString();
+						switch (ptr->sortOn)
+						{
+						case 0:
+							m_oSortBy = SimpleTypes::Spreadsheet::ESortBy::sortbyValue;
+							break;
+						case 1:
+							m_oSortBy = SimpleTypes::Spreadsheet::ESortBy::sortbyCellColor;
+							m_oDxfId = ptr->condDataValue.condDataValue;
+							break;
+						case 2:
+							m_oSortBy = SimpleTypes::Spreadsheet::ESortBy::sortbyFontColor;
+							m_oDxfId = ptr->condDataValue.condDataValue;
+							break;
+						case 3:
+							m_oSortBy = SimpleTypes::Spreadsheet::ESortBy::sortbyIcon;
+							//m_oDxfId  = ptr->cfflag;
+							break;
+						}
+					}
+				}
+
+			}
 		public:
 			nullable<SimpleTypes::COnOff<> > m_oDescending;
 			nullable<SimpleTypes::CRelationshipId > m_oRef;
@@ -202,8 +293,8 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSortState)
-                        WritingElement_XlsbConstructors(CSortState)
-			CSortState()
+				WritingElement_XlsbConstructors(CSortState)
+				CSortState()
 			{
 			}
 			virtual ~CSortState()
@@ -212,13 +303,13 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-                        virtual std::wstring toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if(m_oRef.IsInit() && !m_arrItems.empty())
+				if (m_oRef.IsInit() && !m_arrItems.empty())
 				{
 					writer.WriteString(L"<sortState");
 					WritingStringAttrEncodeXmlString(L"ref", m_oRef->ToString());
@@ -227,87 +318,154 @@ namespace OOX
 					WritingStringNullableAttrString(L"sortMethod", m_oSortMethod, m_oSortMethod->ToString());
 					writer.WriteString(L">");
 
-                    for ( size_t i = 0; i < m_arrItems.size(); ++i)
-                    {
-                        if (  m_arrItems[i] )
-                        {
-                            m_arrItems[i]->toXML(writer);
-                        }
-                    }
+					for (size_t i = 0; i < m_arrItems.size(); ++i)
+					{
+						if (m_arrItems[i])
+						{
+							m_arrItems[i]->toXML(writer);
+						}
+					}
 
 					writer.WriteString(L"</sortState>");
 				}
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				ReadAttributes( oReader );
+				ReadAttributes(oReader);
 
-				if ( oReader.IsEmptyNode() )
+				if (oReader.IsEmptyNode())
 					return;
 
 				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				while (oReader.ReadNextSiblingNode(nCurDepth))
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("sortCondition") == sName )
+					if (_T("sortCondition") == sName)
 						m_arrItems.push_back(new CSortCondition(oReader));
 				}
 			}
 
-                        void fromBin(XLS::BaseObjectPtr& obj)
-                        {
-                            auto ptr = static_cast<XLSB::SORTSTATE*>(obj.get());
+			void fromBin(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::SORTSTATE*>(obj.get());
 
-                            ReadAttributes(ptr->m_BrtBeginSortState);
+				ReadAttributes(ptr->m_BrtBeginSortState);
 
-                            auto ptrSORTCONDS = static_cast<XLSB::SORTCONDS*>(ptr->m_source.get());
-                            auto ptrACSORTCONDS = static_cast<XLSB::ACSORTCONDS*>(ptr->m_source.get());
+				auto ptrSORTCONDS = static_cast<XLSB::SORTCONDS*>(ptr->m_source.get());
+				auto ptrACSORTCONDS = static_cast<XLSB::ACSORTCONDS*>(ptr->m_source.get());
 
-                            if(ptrSORTCONDS != nullptr || ptrACSORTCONDS != nullptr)
-                            {
-                                if(ptrSORTCONDS != nullptr)
-                                    for(auto &pSORTCOND : ptrSORTCONDS->m_arSORTCOND)
-                                        m_arrItems.push_back(new CSortCondition(static_cast<XLSB::SORTCOND*>(pSORTCOND.get())->m_BrtBeginSortCond));
-                                else if(ptrACSORTCONDS != nullptr)
-                                    for(auto &pSORTCOND14 : ptrACSORTCONDS->m_arSORTCOND14)
-                                        m_arrItems.push_back(new CSortCondition(static_cast<XLSB::SORTCOND14*>(pSORTCOND14.get())->m_BrtBeginSortCond14));
-                            }
+				if (ptrSORTCONDS != nullptr || ptrACSORTCONDS != nullptr)
+				{
+					if (ptrSORTCONDS != nullptr)
+						for (auto &pSORTCOND : ptrSORTCONDS->m_arSORTCOND)
+							m_arrItems.push_back(new CSortCondition(static_cast<XLSB::SORTCOND*>(pSORTCOND.get())->m_BrtBeginSortCond));
+					else if (ptrACSORTCONDS != nullptr)
+						for (auto &pSORTCOND14 : ptrACSORTCONDS->m_arSORTCOND14)
+							m_arrItems.push_back(new CSortCondition(static_cast<XLSB::SORTCOND14*>(pSORTCOND14.get())->m_BrtBeginSortCond14));
+				}
+			}
 
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				if (obj == nullptr)
+					obj = XLS::BaseObjectPtr(new XLSB::SORTSTATE());
 
-                        }
-			virtual EElementType getType () const
+				auto ptr = static_cast<XLSB::SORTSTATE*>(obj.get());
+
+				WriteAttributes(ptr->m_BrtBeginSortState);
+
+				if (ptr->m_source == nullptr)
+					ptr->m_source = XLS::BaseObjectPtr(new XLSB::SORTCONDS());
+
+				auto ptrSORTCONDS = static_cast<XLSB::SORTCONDS*>(ptr->m_source.get());
+				//auto ptrACSORTCONDS = static_cast<XLSB::ACSORTCONDS*>(ptr->m_source.get());
+
+				if (ptrSORTCONDS != nullptr)// || ptrACSORTCONDS != nullptr)
+				{
+					ptrSORTCONDS->m_arSORTCOND.reserve(m_arrItems.size());
+					for (size_t i = 0; i < m_arrItems.size(); ++i)
+					{
+						if (m_arrItems[i])
+						{
+							XLS::BaseObjectPtr item(new XLSB::SORTCOND());
+							static_cast<XLSB::SORTCOND*>(item.get())->m_BrtBeginSortCond = XLS::BaseObjectPtr(new XLSB::BeginSortCond());
+							m_arrItems[i]->toBin(static_cast<XLSB::SORTCOND*>(item.get())->m_BrtBeginSortCond);
+							ptrSORTCONDS->m_arSORTCOND.push_back(item);
+						}
+					}
+					/*else if (ptrACSORTCONDS != nullptr)
+						for (auto &pSORTCOND14 : ptrACSORTCONDS->m_arSORTCOND14)
+							m_arrItems.push_back(new CSortCondition(static_cast<XLSB::SORTCOND14*>(pSORTCOND14.get())->m_BrtBeginSortCond14));
+							*/
+				}
+			}
+
+			virtual EElementType getType() const
 			{
 				return et_x_SortState;
 			}
 
 		private:
-                        void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Start(oReader)
 
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("ref"),      m_oRef )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("caseSensitive"),	m_oCaseSensitive )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("columnSort"),		m_oColumnSort )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("sortMethod"),		m_oSortMethod )
+					WritingElement_ReadAttributes_Read_if(oReader, _T("ref"), m_oRef)
+					WritingElement_ReadAttributes_Read_if(oReader, _T("caseSensitive"), m_oCaseSensitive)
+					WritingElement_ReadAttributes_Read_if(oReader, _T("columnSort"), m_oColumnSort)
+					WritingElement_ReadAttributes_Read_if(oReader, _T("sortMethod"), m_oSortMethod)
 
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_End(oReader)
 			}
-                        void ReadAttributes(XLS::BaseObjectPtr& obj)
-                        {
-                            auto ptr = static_cast<XLSB::BeginSortState*>(obj.get());
-                            if(ptr != nullptr)
-                            {
-                                m_oRef           = ptr->rfx;
-                                m_oCaseSensitive = ptr->fCaseSensitive;
-                                m_oColumnSort    = ptr->fCol;
-                                if(ptr->fAltMethod)
-                                    m_oSortMethod = SimpleTypes::Spreadsheet::ESortMethod::sortmethodStroke;
-                                else
-                                    m_oSortMethod = SimpleTypes::Spreadsheet::ESortMethod::sortmethodNone;
-                            }
-                        }
+			void ReadAttributes(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::BeginSortState*>(obj.get());
+				if (ptr != nullptr)
+				{
+					m_oRef = ptr->rfx;
+
+					if (ptr->fCaseSensitive != false)
+						m_oCaseSensitive = ptr->fCaseSensitive;
+
+					if(ptr->fCol != false)
+						m_oColumnSort = ptr->fCol;
+
+					if (ptr->fAltMethod)
+						m_oSortMethod = SimpleTypes::Spreadsheet::ESortMethod::sortmethodStroke;
+					else
+						m_oSortMethod = SimpleTypes::Spreadsheet::ESortMethod::sortmethodNone;
+				}
+			}
+			void WriteAttributes(XLS::BaseObjectPtr& obj)
+			{
+				if (obj == nullptr)
+					obj = XLS::BaseObjectPtr(new XLSB::BeginSortState());
+
+				auto ptr = static_cast<XLSB::BeginSortState*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if (m_oRef.IsInit())
+						ptr->rfx = m_oRef->GetValue();
+					else
+						ptr->rfx = L"";
+
+
+					if (m_oCaseSensitive.IsInit())
+						ptr->fCaseSensitive = m_oCaseSensitive->GetValue();
+					else
+						ptr->fCaseSensitive = false;
+
+					if (m_oColumnSort.IsInit())
+						ptr->fCol = m_oColumnSort->GetValue();
+					else
+						ptr->fCol = false;
+
+					if (m_oSortMethod.IsInit())
+						ptr->fAltMethod = m_oSortMethod->GetValue() != SimpleTypes::Spreadsheet::ESortMethod::sortmethodNone ? true : false;
+				}
+			}
 		public:
 			nullable<SimpleTypes::CRelationshipId > m_oRef;
 			nullable<SimpleTypes::COnOff<> > m_oCaseSensitive;
@@ -320,8 +478,8 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CColorFilter)
-                        WritingElement_XlsbConstructors(CColorFilter)
-			CColorFilter()
+				WritingElement_XlsbConstructors(CColorFilter)
+				CColorFilter()
 			{
 			}
 			virtual ~CColorFilter()
@@ -330,7 +488,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-            virtual std::wstring toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -340,28 +498,44 @@ namespace OOX
 			}
 			void toXMLWithNS(NSStringUtils::CStringBuilder& writer, const std::wstring &node_ns, const std::wstring &node_name, const std::wstring &child_ns) const
 			{
-				if(m_oDxfId.IsInit())
+				if (m_oDxfId.IsInit())
 				{
 					writer.StartNodeWithNS(node_ns, node_name);
 					writer.StartAttributes();
 					WritingStringAttrInt(L"dxfId", m_oDxfId->GetValue());
-					if(m_oCellColor.IsInit() && false == m_oCellColor->ToBool())
+					if (m_oCellColor.IsInit() && false == m_oCellColor->ToBool())
 						writer.WriteString(L" cellColor=\"0\"");
 					writer.EndAttributesAndNode();
 				}
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				ReadAttributes( oReader );
+				ReadAttributes(oReader);
 
-				if ( !oReader.IsEmptyNode() )
+				if (!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 			}
-                        void fromBin(XLS::BaseObjectPtr& obj)
-                        {
-                            ReadAttributes(obj);
-                        }
-			virtual EElementType getType () const
+			void fromBin(XLS::BaseObjectPtr& obj)
+			{
+				ReadAttributes(obj);
+			}
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::ColorFilter*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if (m_oCellColor.IsInit())
+						ptr->fCellColor = m_oCellColor->GetValue();
+					else
+						ptr->fCellColor = true;
+
+					if (m_oDxfId.IsInit())
+						ptr->dxfid = m_oDxfId->GetValue();
+					else
+						ptr->dxfid = 0;
+				}
+			}
+			virtual EElementType getType() const
 			{
 				return et_x_ColorFilter;
 			}
@@ -370,23 +544,25 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-                            // Читаем атрибуты
-                            WritingElement_ReadAttributes_Start( oReader )
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start(oReader)
 
-                            WritingElement_ReadAttributes_Read_if     ( oReader, _T("cellColor"),      m_oCellColor )
-                            WritingElement_ReadAttributes_Read_if     ( oReader, _T("dxfId"),      m_oDxfId )
+					WritingElement_ReadAttributes_Read_if(oReader, _T("cellColor"), m_oCellColor)
+					WritingElement_ReadAttributes_Read_if(oReader, _T("dxfId"), m_oDxfId)
 
-                            WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_End(oReader)
 			}
-                        void ReadAttributes(XLS::BaseObjectPtr& obj)
-                        {
-                            auto ptr = static_cast<XLSB::ColorFilter*>(obj.get());
-                            if(ptr != nullptr)
-                            {
-                               m_oCellColor         = (bool)ptr->fCellColor;
-                               m_oDxfId             = ptr->dxfid;
-                            }
-                        }
+			void ReadAttributes(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::ColorFilter*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if((bool)ptr->fCellColor != true)
+						m_oCellColor = (bool)ptr->fCellColor;
+
+					m_oDxfId = ptr->dxfid;
+				}
+			}
 		public:
 			nullable<SimpleTypes::COnOff<> > m_oCellColor;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oDxfId;
@@ -395,8 +571,8 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDynamicFilter)
-                        WritingElement_XlsbConstructors(CDynamicFilter)
-			CDynamicFilter()
+				WritingElement_XlsbConstructors(CDynamicFilter)
+				CDynamicFilter()
 			{
 			}
 			virtual ~CDynamicFilter()
@@ -405,7 +581,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-            virtual std::wstring toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -415,7 +591,7 @@ namespace OOX
 			}
 			void toXMLWithNS(NSStringUtils::CStringBuilder& writer, const std::wstring &node_ns, const std::wstring &node_name, const std::wstring &child_ns) const
 			{
-				if(m_oType.IsInit())
+				if (m_oType.IsInit())
 				{
 					writer.StartNodeWithNS(node_ns, node_name);
 					writer.StartAttributes();
@@ -427,16 +603,108 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				ReadAttributes( oReader );
+				ReadAttributes(oReader);
 
-				if ( !oReader.IsEmptyNode() )
+				if (!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 			}
-                        void fromBin(XLS::BaseObjectPtr& obj)
-                        {
-                            ReadAttributes(obj);
-                        }
-			virtual EElementType getType () const
+			void fromBin(XLS::BaseObjectPtr& obj)
+			{
+				ReadAttributes(obj);
+			}
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::DynamicFilter*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if (m_oType.IsInit())
+					{
+						switch (m_oType->GetValue())
+						{
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeNull:
+								ptr->cft = 0x00000000; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeAboveAverage:
+								ptr->cft = 0x00000001; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeBelowAverage:
+								ptr->cft = 0x00000002; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeTomorrow:
+								ptr->cft = 0x00000008; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeToday:
+								ptr->cft = 0x00000009; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeYesterday:
+								ptr->cft = 0x0000000A; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeNextWeek:
+								ptr->cft = 0x0000000B; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeThisWeek:
+								ptr->cft = 0x0000000C; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeLastWeek:
+								ptr->cft = 0x0000000D; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeNextMonth:
+								ptr->cft = 0x0000000E; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeThisMonth:
+								ptr->cft = 0x0000000F; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeLastMonth:
+								ptr->cft = 0x00000010; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeNextQuarter:
+								ptr->cft = 0x00000011; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeThisQuarter:
+								ptr->cft = 0x00000012; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeLastQuarter:
+								ptr->cft = 0x00000013; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeNextYear:
+								ptr->cft = 0x00000014; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeThisYear:
+								ptr->cft = 0x00000015; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeLastYear:
+								ptr->cft = 0x00000016; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeYearToDate:
+								ptr->cft = 0x00000017; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeQ1:
+								ptr->cft = 0x00000018; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeQ2:
+								ptr->cft = 0x00000019; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeQ3:
+								ptr->cft = 0x0000001A; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeQ4:
+								ptr->cft = 0x0000001B; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM1:
+								ptr->cft = 0x0000001C; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM2:
+								ptr->cft = 0x0000001D; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM3:
+								ptr->cft = 0x0000001E; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM4:
+								ptr->cft = 0x0000001F; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM5:
+								ptr->cft = 0x00000020; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM6:
+								ptr->cft = 0x00000021; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM7:
+								ptr->cft = 0x00000022; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM8:
+								ptr->cft = 0x00000023; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM9:
+								ptr->cft = 0x00000024; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM10:
+								ptr->cft = 0x00000025; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM11:
+								ptr->cft = 0x00000026; break;
+							case SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM12:
+								ptr->cft = 0x00000027; break;
+						}
+					}
+					if (m_oVal.IsInit())
+						ptr->xNumValue.data.value = m_oVal->GetValue();
+					else
+						ptr->xNumValue.data.value = 0;
+
+					if (m_oMaxVal.IsInit())
+						ptr->xNumValueMax.data.value = m_oMaxVal->GetValue();
+					else
+						ptr->xNumValueMax.data.value = 0;
+				}
+			}
+			virtual EElementType getType() const
 			{
 				return et_x_DynamicFilter;
 			}
@@ -445,98 +713,97 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Start(oReader)
 
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("type"),      m_oType )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("val"),      m_oVal )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("maxVal"),      m_oMaxVal )
+					WritingElement_ReadAttributes_Read_if(oReader, _T("type"), m_oType)
+					WritingElement_ReadAttributes_Read_if(oReader, _T("val"), m_oVal)
+					WritingElement_ReadAttributes_Read_if(oReader, _T("maxVal"), m_oMaxVal)
 
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_End(oReader)
 			}
-                        void ReadAttributes(XLS::BaseObjectPtr& obj)
-                        {
-                            auto ptr = static_cast<XLSB::DynamicFilter*>(obj.get());
-                            if(ptr != nullptr)
-                            {
-                               switch(ptr->cft)
-                               {
-                                   case 0x00000000:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeNull; break;
-                                   case 0x00000001:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeAboveAverage; break;
-                                   case 0x00000002:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeBelowAverage; break;
-                                   case 0x00000008:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeTomorrow; break;
-                                   case 0x00000009:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeToday; break;
-                                   case 0x0000000A:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeYesterday; break;
-                                   case 0x0000000B:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeNextWeek; break;
-                                   case 0x0000000C:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeThisWeek; break;
-                                   case 0x0000000D:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeLastWeek; break;
-                                   case 0x0000000E:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeNextMonth; break;
-                                   case 0x0000000F:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeThisMonth; break;
-                                   case 0x00000010:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeLastMonth; break;
-                                   case 0x00000011:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeNextQuarter; break;
-                                   case 0x00000012:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeThisQuarter; break;
-                                   case 0x00000013:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeLastQuarter; break;
-                                   case 0x00000014:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeNextYear; break;
-                                   case 0x00000015:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeThisYear; break;
-                                   case 0x00000016:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeLastYear; break;
-                                   case 0x00000017:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeYearToDate; break;
-                                   case 0x00000018:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeQ1; break;
-                                   case 0x00000019:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeQ2; break;
-                                   case 0x0000001A:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeQ3; break;
-                                   case 0x0000001B:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeQ4; break;
-                                   case 0x0000001C:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM1; break;
-                                   case 0x0000001D:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM2; break;
-                                   case 0x0000001E:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM3; break;
-                                   case 0x0000001F:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM4; break;
-                                   case 0x00000020:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM5; break;
-                                   case 0x00000021:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM6; break;
-                                   case 0x00000022:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM7; break;
-                                   case 0x00000023:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM8; break;
-                                   case 0x00000024:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM9; break;
-                                   case 0x00000025:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM10; break;
-                                   case 0x00000026:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM11; break;
-                                   case 0x00000027:
-                                       m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM12; break;
-                               }
+			void ReadAttributes(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::DynamicFilter*>(obj.get());
+				if (ptr != nullptr)
+				{
+					switch (ptr->cft)
+					{
+						case 0x00000000:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeNull; break;
+						case 0x00000001:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeAboveAverage; break;
+						case 0x00000002:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeBelowAverage; break;
+						case 0x00000008:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeTomorrow; break;
+						case 0x00000009:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeToday; break;
+						case 0x0000000A:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeYesterday; break;
+						case 0x0000000B:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeNextWeek; break;
+						case 0x0000000C:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeThisWeek; break;
+						case 0x0000000D:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeLastWeek; break;
+						case 0x0000000E:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeNextMonth; break;
+						case 0x0000000F:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeThisMonth; break;
+						case 0x00000010:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeLastMonth; break;
+						case 0x00000011:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeNextQuarter; break;
+						case 0x00000012:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeThisQuarter; break;
+						case 0x00000013:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeLastQuarter; break;
+						case 0x00000014:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeNextYear; break;
+						case 0x00000015:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeThisYear; break;
+						case 0x00000016:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeLastYear; break;
+						case 0x00000017:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeYearToDate; break;
+						case 0x00000018:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeQ1; break;
+						case 0x00000019:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeQ2; break;
+						case 0x0000001A:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeQ3; break;
+						case 0x0000001B:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeQ4; break;
+						case 0x0000001C:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM1; break;
+						case 0x0000001D:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM2; break;
+						case 0x0000001E:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM3; break;
+						case 0x0000001F:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM4; break;
+						case 0x00000020:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM5; break;
+						case 0x00000021:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM6; break;
+						case 0x00000022:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM7; break;
+						case 0x00000023:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM8; break;
+						case 0x00000024:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM9; break;
+						case 0x00000025:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM10; break;
+						case 0x00000026:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM11; break;
+						case 0x00000027:
+							m_oType = SimpleTypes::Spreadsheet::EDynamicFilterType::dynamicfiltertypeM12; break;
+					}
 
-                               m_oVal    = ptr->xNumValue.data.value;
-                               m_oMaxVal = ptr->xNumValueMax.data.value;
-                            }
-
-                        }
+					m_oVal = ptr->xNumValue.data.value;
+					m_oMaxVal = ptr->xNumValueMax.data.value;
+				}
+			}
 		public:
 			nullable<SimpleTypes::Spreadsheet::CDynamicFilterType<> > m_oType;
 			nullable<SimpleTypes::CDouble > m_oVal;
@@ -546,8 +813,8 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCustomFilter)
-                        WritingElement_XlsbConstructors(CCustomFilter)
-			CCustomFilter()
+				WritingElement_XlsbConstructors(CCustomFilter)
+				CCustomFilter()
 			{
 			}
 			virtual ~CCustomFilter()
@@ -556,7 +823,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-            virtual std::wstring toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -566,7 +833,7 @@ namespace OOX
 			}
 			void toXMLWithNS(NSStringUtils::CStringBuilder& writer, const std::wstring &node_ns, const std::wstring &node_name, const std::wstring &child_ns) const
 			{
-				if(m_oOperator.IsInit() && m_oVal.IsInit())
+				if (m_oOperator.IsInit() && m_oVal.IsInit())
 				{
 					writer.StartNodeWithNS(node_ns, node_name);
 					writer.StartAttributes();
@@ -577,16 +844,67 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				ReadAttributes( oReader );
+				ReadAttributes(oReader);
 
-				if ( !oReader.IsEmptyNode() )
+				if (!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 			}
-                        void fromBin(XLS::BaseObjectPtr& obj)
-                        {
-                            ReadAttributes(obj);
-                        }
-			virtual EElementType getType () const
+			void fromBin(XLS::BaseObjectPtr& obj)
+			{
+				ReadAttributes(obj);
+			}
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::CustomFilter*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if (m_oOperator.IsInit())
+					{
+						switch (m_oOperator->GetValue())
+						{
+							case SimpleTypes::Spreadsheet::ECustomFilter::customfilterLessThan:
+								ptr->grbitSgn = 0x01; break;
+							case SimpleTypes::Spreadsheet::ECustomFilter::customfilterEqual:
+								ptr->grbitSgn = 0x02; break;
+							case SimpleTypes::Spreadsheet::ECustomFilter::customfilterLessThanOrEqual:
+								ptr->grbitSgn = 0x03; break;
+							case SimpleTypes::Spreadsheet::ECustomFilter::customfilterGreaterThan:
+								ptr->grbitSgn = 0x04; break;
+							case SimpleTypes::Spreadsheet::ECustomFilter::customfilterNotEqual:
+								ptr->grbitSgn = 0x05; break;
+							case SimpleTypes::Spreadsheet::ECustomFilter::customfilterGreaterThanOrEqual:
+								ptr->grbitSgn = 0x06; break;
+						}
+					}
+					else
+						ptr->grbitSgn = 0x02;
+
+					if(m_oVal.IsInit())
+					{
+						try
+						{
+							ptr->vts = 0x00000004;
+							ptr->xdata.data.value = boost::lexical_cast<double>(m_oVal.get());
+						}
+						catch (boost::bad_lexical_cast &)
+						{
+							ptr->vts = 0x00000008;
+							if (m_oVal.get() == L"true")
+								ptr->bdata = 1;
+							else if (m_oVal.get() == L"false")
+								ptr->bdata = 0;
+							else
+							{
+								ptr->vts = 0x00000006;
+								ptr->vtsStringXls = m_oVal.get();
+							}
+						}						
+					}
+					else
+						ptr->vts = 0x00000000;
+				}
+			}
+			virtual EElementType getType() const
 			{
 				return et_x_CustomFilters;
 			}
@@ -595,44 +913,44 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Start(oReader)
 
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("operator"),      m_oOperator )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("val"),      m_oVal )
+					WritingElement_ReadAttributes_Read_if(oReader, _T("operator"), m_oOperator)
+					WritingElement_ReadAttributes_Read_if(oReader, _T("val"), m_oVal)
 
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_End(oReader)
 			}
-                        void ReadAttributes(XLS::BaseObjectPtr& obj)
-                        {
-                            auto ptr = static_cast<XLSB::CustomFilter*>(obj.get());
-                            if(ptr != nullptr)
-                            {
-                                switch (ptr->grbitSgn)
-                                {
-                                    case 0x01:
-                                        m_oOperator = SimpleTypes::Spreadsheet::ECustomFilter::customfilterLessThan; break;
-                                    case 0x02:
-                                        m_oOperator = SimpleTypes::Spreadsheet::ECustomFilter::customfilterEqual; break;
-                                    case 0x03:
-                                        m_oOperator = SimpleTypes::Spreadsheet::ECustomFilter::customfilterLessThanOrEqual; break;
-                                    case 0x04:
-                                        m_oOperator = SimpleTypes::Spreadsheet::ECustomFilter::customfilterGreaterThan; break;
-                                    case 0x05:
-                                        m_oOperator = SimpleTypes::Spreadsheet::ECustomFilter::customfilterNotEqual; break;
-                                    case 0x06:
-                                        m_oOperator = SimpleTypes::Spreadsheet::ECustomFilter::customfilterGreaterThanOrEqual; break;
-                                }
+			void ReadAttributes(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::CustomFilter*>(obj.get());
+				if (ptr != nullptr)
+				{
+					switch (ptr->grbitSgn)
+					{
+						case 0x01:
+							m_oOperator = SimpleTypes::Spreadsheet::ECustomFilter::customfilterLessThan; break;
+						//case 0x02:
+							//m_oOperator = SimpleTypes::Spreadsheet::ECustomFilter::customfilterEqual; break;
+						case 0x03:
+							m_oOperator = SimpleTypes::Spreadsheet::ECustomFilter::customfilterLessThanOrEqual; break;
+						case 0x04:
+							m_oOperator = SimpleTypes::Spreadsheet::ECustomFilter::customfilterGreaterThan; break;
+						case 0x05:
+							m_oOperator = SimpleTypes::Spreadsheet::ECustomFilter::customfilterNotEqual; break;
+						case 0x06:
+							m_oOperator = SimpleTypes::Spreadsheet::ECustomFilter::customfilterGreaterThanOrEqual; break;
+					}
 
-                                if(ptr->vts == 0x00000004)
-                                    m_oVal = std::to_wstring(ptr->xdata.data.value);
-                                else if(ptr->vts == 0x00000008)
-                                    m_oVal = ptr->bdata.toString();
-                                else if(ptr->vts == 0x00000006)
-                                    m_oVal = ptr->vtsStringXls.value();
+					if (ptr->vts == 0x00000004)
+						m_oVal = std::to_wstring(ptr->xdata.data.value);
+					else if (ptr->vts == 0x00000008)
+						m_oVal = ptr->bdata.toString();
+					else if (ptr->vts == 0x00000006)
+						m_oVal = ptr->vtsStringXls.value();
 
-                            }
+				}
 
-                        }
+			}
 		public:
 			nullable<SimpleTypes::Spreadsheet::CCustomFilter<> > m_oOperator;
 			nullable<std::wstring > m_oVal;
@@ -641,8 +959,8 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCustomFilters)
-                        WritingElement_XlsbConstructors(CCustomFilters)
-			CCustomFilters()
+				WritingElement_XlsbConstructors(CCustomFilters)
+				CCustomFilters()
 			{
 			}
 			virtual ~CCustomFilters()
@@ -651,7 +969,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-            virtual std::wstring toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -661,7 +979,7 @@ namespace OOX
 			}
 			void toXMLWithNS(NSStringUtils::CStringBuilder& writer, const std::wstring &node_ns, const std::wstring &node_name, const std::wstring &child_ns) const
 			{
-				if(m_arrItems.empty()) return;
+				if (m_arrItems.empty()) return;
 
 				writer.StartNodeWithNS(node_ns, node_name);
 				writer.StartAttributes();
@@ -669,9 +987,9 @@ namespace OOX
 					writer.WriteString(L" and=\"1\"");
 				writer.EndAttributes();
 
-				for ( size_t i = 0; i < m_arrItems.size(); ++i)
+				for (size_t i = 0; i < m_arrItems.size(); ++i)
 				{
-					if (  m_arrItems[i] )
+					if (m_arrItems[i])
 					{
 						m_arrItems[i]->toXMLWithNS(writer, child_ns, L"customFilter", child_ns);
 					}
@@ -681,34 +999,53 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				ReadAttributes( oReader );
+				ReadAttributes(oReader);
 
-				if ( oReader.IsEmptyNode() )
+				if (oReader.IsEmptyNode())
 					return;
 
 				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				while (oReader.ReadNextSiblingNode(nCurDepth))
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("customFilter") == sName )
-						m_arrItems.push_back( new CCustomFilter(oReader));
+					if (_T("customFilter") == sName)
+						m_arrItems.push_back(new CCustomFilter(oReader));
 				}
 			}
-                        void fromBin(XLS::BaseObjectPtr& obj)
-                        {
-                            auto ptr = static_cast<XLSB::CUSTOMFILTERS*>(obj.get());
-                            if(ptr != nullptr)
-                            {
-                                ReadAttributes(ptr->m_BrtBeginCustomFilters);
+			void fromBin(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::CUSTOMFILTERS*>(obj.get());
+				if (ptr != nullptr)
+				{
+					ReadAttributes(ptr->m_BrtBeginCustomFilters);
 
-                                for(auto &customFilter : ptr->m_arBrtCustomFilter)
-                                {
-                                    m_arrItems.push_back( new CCustomFilter(customFilter));
-                                }
-                            }
-                        }
-			virtual EElementType getType () const
+					for (auto &customFilter : ptr->m_arBrtCustomFilter)
+					{
+						m_arrItems.push_back(new CCustomFilter(customFilter));
+					}
+				}
+			}
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::CUSTOMFILTERS*>(obj.get());
+				if (ptr != nullptr)
+				{
+					WriteAttributes(ptr->m_BrtBeginCustomFilters);
+
+					ptr->m_arBrtCustomFilter.reserve(m_arrItems.size());
+					for (size_t i = 0; i < m_arrItems.size(); ++i)
+					{
+						if (m_arrItems[i])
+						{
+							XLS::BaseObjectPtr item(new XLSB::CustomFilter());
+							m_arrItems[i]->toBin(item);
+							ptr->m_arBrtCustomFilter.push_back(item);
+						}
+					}
+				}
+			}
+			virtual EElementType getType() const
 			{
 				return et_x_CustomFilters;
 			}
@@ -717,20 +1054,35 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Start(oReader)
 
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("and"),      m_oAnd )
+					WritingElement_ReadAttributes_Read_if(oReader, _T("and"), m_oAnd)
 
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_End(oReader)
 			}
-                        void ReadAttributes(XLS::BaseObjectPtr& obj)
-                        {
-                            auto ptr = static_cast<XLSB::BeginCustomFilters*>(obj.get());
-                            if(ptr != nullptr)
-                            {
-                               m_oAnd = (bool)ptr->fAnd;
-                            }
-                        }
+			void ReadAttributes(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::BeginCustomFilters*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if((bool)ptr->fAnd != false)
+						m_oAnd = (bool)ptr->fAnd;
+				}
+			}
+			void WriteAttributes(XLS::BaseObjectPtr& obj)
+			{
+				if (obj == nullptr)
+					obj = XLS::BaseObjectPtr(new XLSB::BeginCustomFilters());
+
+				auto ptr = static_cast<XLSB::BeginCustomFilters*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if (m_oAnd.IsInit())
+						ptr->fAnd = m_oAnd->GetValue();
+					else
+						ptr->fAnd = false;
+				}
+			}
 		public:
 			nullable<SimpleTypes::COnOff<> > m_oAnd;
 		};
@@ -738,8 +1090,8 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CFilter)
-                        WritingElement_XlsbConstructors(CFilter)
-			CFilter()
+				WritingElement_XlsbConstructors(CFilter)
+				CFilter()
 			{
 			}
 			virtual ~CFilter()
@@ -748,7 +1100,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-            virtual std::wstring toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -758,7 +1110,7 @@ namespace OOX
 			}
 			void toXMLWithNS(NSStringUtils::CStringBuilder& writer, const std::wstring &node_ns, const std::wstring &node_name, const std::wstring &child_ns) const
 			{
-				if(m_oVal.IsInit())
+				if (m_oVal.IsInit())
 				{
 					writer.StartNodeWithNS(node_ns, node_name);
 					writer.StartAttributes();
@@ -768,38 +1120,53 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				ReadAttributes( oReader );
+				ReadAttributes(oReader);
 
-				if ( !oReader.IsEmptyNode() )
+				if (!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 			}
-                        void fromBin(XLS::BaseObjectPtr& obj)
-                        {
-                            ReadAttributes(obj);
-                        }
-			virtual EElementType getType () const
+			void fromBin(XLS::BaseObjectPtr& obj)
+			{
+				ReadAttributes(obj);
+			}
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				if (obj == nullptr)
+					obj = XLS::BaseObjectPtr(new XLSB::Filter());
+
+				auto ptr = static_cast<XLSB::Filter*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if (m_oVal.IsInit())
+						ptr->rgch = m_oVal.get();
+					else
+						ptr->rgch = L"";
+				}
+			}
+			virtual EElementType getType() const
 			{
 				return et_x_Filter;
 			}
-
+			
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Start(oReader)
 
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("val"),      m_oVal )
+					WritingElement_ReadAttributes_Read_if(oReader, _T("val"), m_oVal)
 
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_End(oReader)
 			}
-                        void ReadAttributes(XLS::BaseObjectPtr& obj)
-                        {
-                            auto ptr = static_cast<XLSB::Filter*>(obj.get());
-                            if(ptr != nullptr)
-                            {
-                                m_oVal = ptr->rgch.value();
-                            }
-                        }
+			void ReadAttributes(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::Filter*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if (!ptr->rgch.value().empty())
+						m_oVal = ptr->rgch.value();
+				}
+			}
 		public:
 			nullable<std::wstring > m_oVal;
 		};
@@ -807,8 +1174,8 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDateGroupItem)
-                        WritingElement_XlsbConstructors(CDateGroupItem)
-			CDateGroupItem()
+				WritingElement_XlsbConstructors(CDateGroupItem)
+				CDateGroupItem()
 			{
 			}
 			virtual ~CDateGroupItem()
@@ -817,7 +1184,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-            virtual std::wstring toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -827,7 +1194,7 @@ namespace OOX
 			}
 			void toXMLWithNS(NSStringUtils::CStringBuilder& writer, const std::wstring &node_ns, const std::wstring &node_name, const std::wstring &child_ns) const
 			{
-				if(m_oDateTimeGrouping.IsInit())
+				if (m_oDateTimeGrouping.IsInit())
 				{
 					writer.StartNodeWithNS(node_ns, node_name);
 					writer.StartAttributes();
@@ -843,18 +1210,77 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				ReadAttributes( oReader );
+				ReadAttributes(oReader);
 
-				if ( !oReader.IsEmptyNode() )
+				if (!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 			}
 
-                        void fromBin(XLS::BaseObjectPtr& obj)
-                        {
-                            ReadAttributes(obj);
-                        }
+			void fromBin(XLS::BaseObjectPtr& obj)
+			{
+				ReadAttributes(obj);
+			}
 
-			virtual EElementType getType () const
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				if (obj == nullptr)
+					obj = XLS::BaseObjectPtr(new XLSB::AFilterDateGroupItem());
+
+				auto ptr = static_cast<XLSB::AFilterDateGroupItem*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if (m_oDateTimeGrouping.IsInit())
+					{
+						switch (m_oDateTimeGrouping->GetValue())
+						{
+							case SimpleTypes::Spreadsheet::EDateTimeGroup::datetimegroupYear:
+								ptr->dntChecked = 0x00000000; break;
+							case SimpleTypes::Spreadsheet::EDateTimeGroup::datetimegroupMonth:
+								ptr->dntChecked = 0x00000001; break;
+							case SimpleTypes::Spreadsheet::EDateTimeGroup::datetimegroupDay:
+								ptr->dntChecked = 0x00000002; break;
+							case SimpleTypes::Spreadsheet::EDateTimeGroup::datetimegroupHour:
+								ptr->dntChecked = 0x00000003; break;
+							case SimpleTypes::Spreadsheet::EDateTimeGroup::datetimegroupMinute:
+								ptr->dntChecked = 0x00000004; break;
+							case SimpleTypes::Spreadsheet::EDateTimeGroup::datetimegroupSecond:
+								ptr->dntChecked = 0x00000005; break;
+						}
+					}
+
+					if (m_oDay.IsInit())
+						ptr->dom = m_oDay->GetValue();
+					else
+						ptr->dom = 0;
+
+					if (m_oHour.IsInit())
+						ptr->hour = m_oHour->GetValue();
+					else
+						ptr->hour = 0;
+
+					if (m_oMinute.IsInit())
+						ptr->min = m_oMinute->GetValue();
+					else
+						ptr->min = 0;
+
+					if (m_oMonth.IsInit())
+						ptr->mon = m_oMonth->GetValue();
+					else
+						ptr->mon = 0;
+
+					if (m_oSecond.IsInit())
+						ptr->sec = m_oSecond->GetValue();
+					else
+						ptr->sec = 0;
+
+					if (m_oYear.IsInit())
+						ptr->yr = m_oYear->GetValue();
+					else
+						ptr->yr = 0;					
+				}
+			}
+
+			virtual EElementType getType() const
 			{
 				return et_x_DateGroupItem;
 			}
@@ -863,46 +1289,46 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Start(oReader)
 
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("dateTimeGrouping"),      m_oDateTimeGrouping )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("day"),      m_oDay )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("hour"),      m_oHour )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("minute"),      m_oMinute )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("month"),      m_oMonth )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("second"),      m_oSecond )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("year"),      m_oYear )
+					WritingElement_ReadAttributes_Read_if(oReader, _T("dateTimeGrouping"), m_oDateTimeGrouping)
+					WritingElement_ReadAttributes_Read_if(oReader, _T("day"), m_oDay)
+					WritingElement_ReadAttributes_Read_if(oReader, _T("hour"), m_oHour)
+					WritingElement_ReadAttributes_Read_if(oReader, _T("minute"), m_oMinute)
+					WritingElement_ReadAttributes_Read_if(oReader, _T("month"), m_oMonth)
+					WritingElement_ReadAttributes_Read_if(oReader, _T("second"), m_oSecond)
+					WritingElement_ReadAttributes_Read_if(oReader, _T("year"), m_oYear)
 
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_End(oReader)
 			}
-                        void ReadAttributes(XLS::BaseObjectPtr& obj)
-                        {
-                            auto ptr = static_cast<XLSB::AFilterDateGroupItem*>(obj.get());
-                            if(ptr != nullptr)
-                            {
-                                switch (ptr->dntChecked)
-                                {
-                                    case 0x00000000:
-                                        m_oDateTimeGrouping = SimpleTypes::Spreadsheet::EDateTimeGroup::datetimegroupYear; break;
-                                    case 0x00000001:
-                                        m_oDateTimeGrouping = SimpleTypes::Spreadsheet::EDateTimeGroup::datetimegroupMonth; break;
-                                    case 0x00000002:
-                                        m_oDateTimeGrouping = SimpleTypes::Spreadsheet::EDateTimeGroup::datetimegroupDay; break;
-                                    case 0x00000003:
-                                        m_oDateTimeGrouping = SimpleTypes::Spreadsheet::EDateTimeGroup::datetimegroupHour; break;
-                                    case 0x00000004:
-                                        m_oDateTimeGrouping = SimpleTypes::Spreadsheet::EDateTimeGroup::datetimegroupMinute; break;
-                                    case 0x00000005:
-                                        m_oDateTimeGrouping = SimpleTypes::Spreadsheet::EDateTimeGroup::datetimegroupSecond; break;
-                                }
-                                m_oDay      = ptr->dom;
-                                m_oHour     = ptr->hour;
-                                m_oMinute   = ptr->min;
-                                m_oMonth    = ptr->mon;
-                                m_oSecond   = ptr->sec;
-                                m_oYear     = ptr->yr;
-                            }
-                        }
+			void ReadAttributes(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::AFilterDateGroupItem*>(obj.get());
+				if (ptr != nullptr)
+				{
+					switch (ptr->dntChecked)
+					{
+						case 0x00000000:
+							m_oDateTimeGrouping = SimpleTypes::Spreadsheet::EDateTimeGroup::datetimegroupYear; break;
+						case 0x00000001:
+							m_oDateTimeGrouping = SimpleTypes::Spreadsheet::EDateTimeGroup::datetimegroupMonth; break;
+						case 0x00000002:
+							m_oDateTimeGrouping = SimpleTypes::Spreadsheet::EDateTimeGroup::datetimegroupDay; break;
+						case 0x00000003:
+							m_oDateTimeGrouping = SimpleTypes::Spreadsheet::EDateTimeGroup::datetimegroupHour; break;
+						case 0x00000004:
+							m_oDateTimeGrouping = SimpleTypes::Spreadsheet::EDateTimeGroup::datetimegroupMinute; break;
+						case 0x00000005:
+							m_oDateTimeGrouping = SimpleTypes::Spreadsheet::EDateTimeGroup::datetimegroupSecond; break;
+					}
+					m_oDay = ptr->dom;
+					m_oHour = ptr->hour;
+					m_oMinute = ptr->min;
+					m_oMonth = ptr->mon;
+					m_oSecond = ptr->sec;
+					m_oYear = ptr->yr;
+				}
+			}
 		public:
 			nullable<SimpleTypes::Spreadsheet::CDateTimeGroup<> > m_oDateTimeGrouping;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oDay;
@@ -916,8 +1342,8 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CFilters)
-                        WritingElement_XlsbConstructors(CFilters)
-			CFilters()
+				WritingElement_XlsbConstructors(CFilters)
+				CFilters()
 			{
 			}
 			virtual ~CFilters()
@@ -926,7 +1352,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-            virtual std::wstring toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -936,24 +1362,24 @@ namespace OOX
 			}
 			void toXMLWithNS(NSStringUtils::CStringBuilder& writer, const std::wstring &node_ns, const std::wstring &node_name, const std::wstring &child_ns) const
 			{
-				if(!m_arrItems.empty() || m_oBlank.IsInit())
+				if (!m_arrItems.empty() || m_oBlank.IsInit())
 				{
 					writer.StartNodeWithNS(node_ns, node_name);
 					writer.StartAttributes();
 					WritingStringNullableAttrBool(L"blank", m_oBlank);
 					writer.EndAttributes();
 
-					for ( size_t i = 0; i < m_arrItems.size(); ++i)
+					for (size_t i = 0; i < m_arrItems.size(); ++i)
 					{
-						if (  m_arrItems[i] )
+						if (m_arrItems[i])
 						{
 							CFilter* pFilter = dynamic_cast<CFilter*>(m_arrItems[i]);
 							CDateGroupItem* pDateGroupItem = dynamic_cast<CDateGroupItem*>(m_arrItems[i]);
-							if(pFilter)
+							if (pFilter)
 							{
 								pFilter->toXMLWithNS(writer, child_ns, L"filter", child_ns);
 							}
-							else if(pDateGroupItem)
+							else if (pDateGroupItem)
 							{
 								pDateGroupItem->toXMLWithNS(writer, child_ns, L"dateGroupItem", child_ns);
 							}
@@ -965,41 +1391,69 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				ReadAttributes( oReader );
+				ReadAttributes(oReader);
 
-				if ( oReader.IsEmptyNode() )
+				if (oReader.IsEmptyNode())
 					return;
 
 				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				while (oReader.ReadNextSiblingNode(nCurDepth))
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("dateGroupItem") == sName )
-						m_arrItems.push_back( new CDateGroupItem(oReader));
-					if ( _T("filter") == sName )
-						m_arrItems.push_back( new CFilter(oReader));
+					if (_T("dateGroupItem") == sName)
+						m_arrItems.push_back(new CDateGroupItem(oReader));
+					if (_T("filter") == sName)
+						m_arrItems.push_back(new CFilter(oReader));
 				}
 			}
-                        void fromBin(XLS::BaseObjectPtr& obj)
-                        {
-                            auto ptr = static_cast<XLSB::FILTERS*>(obj.get());
-                            if(ptr != nullptr)
-                            {
-                                ReadAttributes(ptr->m_BrtBeginFilters);
+			void fromBin(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::FILTERS*>(obj.get());
+				if (ptr != nullptr)
+				{
+					ReadAttributes(ptr->m_BrtBeginFilters);
 
-                                for(auto &filter : ptr->m_arBrtFilter)
-                                {
-                                    m_arrItems.push_back( new CFilter(filter));
-                                }
+					for (auto &filter : ptr->m_arBrtFilter)
+					{
+						m_arrItems.push_back(new CFilter(filter));
+					}
 
-                                for(auto &aFilterDateGroupItem : ptr->m_arBrtAFilterDateGroupItem)
-                                {
-                                    m_arrItems.push_back( new CDateGroupItem(aFilterDateGroupItem));
-                                }
-                            }
-                        }
-			virtual EElementType getType () const
+					for (auto &aFilterDateGroupItem : ptr->m_arBrtAFilterDateGroupItem)
+					{
+						m_arrItems.push_back(new CDateGroupItem(aFilterDateGroupItem));
+					}
+				}
+			}
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				auto ptrFILTERS = static_cast<XLSB::FILTERS*>(obj.get());
+				if (ptrFILTERS != nullptr)
+				{
+					WriteAttributes(ptrFILTERS->m_BrtBeginFilters);
+
+					for (size_t i = 0; i < m_arrItems.size(); ++i)
+					{
+						if (m_arrItems[i])
+						{
+							XLS::BaseObjectPtr item = nullptr;
+							CFilter* pFilter = dynamic_cast<CFilter*>(m_arrItems[i]);
+							CDateGroupItem* pDateGroupItem = dynamic_cast<CDateGroupItem*>(m_arrItems[i]);
+							if (pFilter)
+							{
+								pFilter->toBin(item);
+								ptrFILTERS->m_arBrtFilter.push_back(item);
+							}
+							else if (pDateGroupItem)
+							{
+								pDateGroupItem->toBin(item);
+								ptrFILTERS->m_arBrtAFilterDateGroupItem.push_back(item);
+							}
+						}
+					}
+				}
+			}
+			virtual EElementType getType() const
 			{
 				return et_x_Filters;
 			}
@@ -1008,20 +1462,35 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Start(oReader)
 
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("blank"),      m_oBlank )
+					WritingElement_ReadAttributes_Read_if(oReader, _T("blank"), m_oBlank)
 
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_End(oReader)
 			}
-                        void ReadAttributes(XLS::BaseObjectPtr& obj)
-                        {
-                            auto ptr = static_cast<XLSB::BeginFilters*>(obj.get());
-                            if(ptr != nullptr)
-                            {
-                               m_oBlank = (bool)ptr->fBlank;
-                            }
-                        }
+			void ReadAttributes(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::BeginFilters*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if ((bool)ptr->fBlank != false)
+						m_oBlank = (bool)ptr->fBlank;
+				}
+			}
+			void WriteAttributes(XLS::BaseObjectPtr& obj)
+			{
+				if (obj == nullptr)
+					obj = XLS::BaseObjectPtr(new XLSB::BeginFilters());
+
+				auto ptr = static_cast<XLSB::BeginFilters*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if (m_oBlank.IsInit())
+						ptr->fBlank = m_oBlank->GetValue();
+					else
+						ptr->fBlank = false;
+				}
+			}
 		public:
 			nullable<SimpleTypes::COnOff<> > m_oBlank;
 		};
@@ -1029,8 +1498,8 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CTop10)
-                        WritingElement_XlsbConstructors(CTop10)
-			CTop10()
+				WritingElement_XlsbConstructors(CTop10)
+				CTop10()
 			{
 			}
 			virtual ~CTop10()
@@ -1039,7 +1508,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-            virtual std::wstring toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -1049,13 +1518,13 @@ namespace OOX
 			}
 			void toXMLWithNS(NSStringUtils::CStringBuilder& writer, const std::wstring &node_ns, const std::wstring &node_name, const std::wstring &child_ns) const
 			{
-				if(m_oVal.IsInit())
+				if (m_oVal.IsInit())
 				{
 					writer.StartNodeWithNS(node_ns, node_name);
 					writer.StartAttributes();
-					if(m_oTop.IsInit() && false == m_oTop->ToBool())
+					if (m_oTop.IsInit() && false == m_oTop->ToBool())
 						writer.WriteString(L" top=\"0\"");
-					if(m_oPercent.IsInit() && true == m_oPercent->ToBool())
+					if (m_oPercent.IsInit() && true == m_oPercent->ToBool())
 						writer.WriteString(L" percent=\"1\"");
 					WritingStringNullableAttrDouble(L"val", m_oVal, m_oVal->GetValue());
 					WritingStringNullableAttrDouble(L"filterVal", m_oFilterVal, m_oFilterVal->GetValue());
@@ -1064,18 +1533,45 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				ReadAttributes( oReader );
+				ReadAttributes(oReader);
 
-				if ( !oReader.IsEmptyNode() )
+				if (!oReader.IsEmptyNode())
 					oReader.ReadTillEnd();
 			}
 
-                        void fromBin(XLS::BaseObjectPtr& obj)
-                        {
-                            ReadAttributes(obj);
-                        }
+			void fromBin(XLS::BaseObjectPtr& obj)
+			{
+				ReadAttributes(obj);
+			}
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::Top10Filter*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if (m_oTop.IsInit())
+						ptr->fTop = m_oTop->GetValue();
+					else
+						ptr->fTop = true;
+					
+					if (m_oPercent.IsInit())
+						ptr->fPercent = m_oPercent->GetValue();
+					else
+						ptr->fPercent = false;
 
-			virtual EElementType getType () const
+					if (m_oFilterVal.IsInit())
+						ptr->xNumValue.data.value = m_oFilterVal->GetValue();
+					else
+						ptr->xNumValue.data.value = 0;
+
+					if (m_oVal.IsInit())
+						ptr->xNumFilter.data.value = m_oVal->GetValue();
+					else
+						ptr->xNumFilter.data.value = 0;
+
+				}
+			}
+
+			virtual EElementType getType() const
 			{
 				return et_x_ColorFilter;
 			}
@@ -1084,26 +1580,30 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Start(oReader)
 
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("filterVal"),      m_oFilterVal )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("percent"),      m_oPercent )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("top"),      m_oTop )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("val"),      m_oVal )
+					WritingElement_ReadAttributes_Read_if(oReader, _T("filterVal"), m_oFilterVal)
+					WritingElement_ReadAttributes_Read_if(oReader, _T("percent"), m_oPercent)
+					WritingElement_ReadAttributes_Read_if(oReader, _T("top"), m_oTop)
+					WritingElement_ReadAttributes_Read_if(oReader, _T("val"), m_oVal)
 
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_End(oReader)
 			}
-                        void ReadAttributes(XLS::BaseObjectPtr& obj)
-                        {
-                            auto ptr = static_cast<XLSB::Top10Filter*>(obj.get());
-                            if(ptr != nullptr)
-                            {
-                                m_oFilterVal   = ptr->xNumValue.data.value;
-                                m_oPercent     = ptr->fPercent;
-                                m_oTop         = ptr->fTop;
-                                m_oVal         = ptr->xNumFilter.data.value;
-                            }
-                        }
+			void ReadAttributes(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::Top10Filter*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if(ptr->fTop != true)
+						m_oTop = ptr->fTop;
+
+					if (ptr->fPercent != false)
+						m_oPercent = ptr->fPercent;
+
+					m_oFilterVal = ptr->xNumValue.data.value;
+					m_oVal = ptr->xNumFilter.data.value;
+				}
+			}
 		public:
 			nullable<SimpleTypes::CDouble > m_oFilterVal;
 			nullable<SimpleTypes::COnOff<> > m_oPercent;
@@ -1114,8 +1614,8 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CFilterColumn)
-                        WritingElement_XlsbConstructors(CFilterColumn)
-			CFilterColumn()
+				WritingElement_XlsbConstructors(CFilterColumn)
+				CFilterColumn()
 			{
 			}
 			virtual ~CFilterColumn()
@@ -1124,7 +1624,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-            virtual std::wstring toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
@@ -1134,76 +1634,114 @@ namespace OOX
 			}
 			void toXMLWithNS(NSStringUtils::CStringBuilder& writer, const std::wstring &node_ns, const std::wstring &node_name, const std::wstring &child_ns) const
 			{
-				if(m_oColId.IsInit() && (m_oColorFilter.IsInit() || m_oDynamicFilter.IsInit() || m_oCustomFilters.IsInit() || m_oFilters.IsInit() ||
-										m_oTop10.IsInit() || m_oShowButton.IsInit() || m_oHiddenButton.IsInit()))
+				if (m_oColId.IsInit() && (m_oColorFilter.IsInit() || m_oDynamicFilter.IsInit() || m_oCustomFilters.IsInit() || m_oFilters.IsInit() ||
+					m_oTop10.IsInit() || m_oShowButton.IsInit() || m_oHiddenButton.IsInit()))
 				{
 					writer.StartNodeWithNS(node_ns, node_name);
 					writer.StartAttributes();
 					WritingStringNullableAttrInt(L"colId", m_oColId, m_oColId->GetValue());
-					if(m_oShowButton.IsInit() && false == m_oShowButton->ToBool())
+					if (m_oShowButton.IsInit() && false == m_oShowButton->ToBool())
 						writer.WriteString(L" showButton=\"0\"");
 					WritingStringNullableAttrBool(L"hiddenButton", m_oHiddenButton);
 					writer.EndAttributes();
-					if(m_oColorFilter.IsInit())
+					if (m_oColorFilter.IsInit())
 						m_oColorFilter->toXMLWithNS(writer, child_ns, L"colorFilter", child_ns);
-					if(m_oDynamicFilter.IsInit())
+					if (m_oDynamicFilter.IsInit())
 						m_oDynamicFilter->toXMLWithNS(writer, child_ns, L"dynamicFilter", child_ns);
-					if(m_oCustomFilters.IsInit())
+					if (m_oCustomFilters.IsInit())
 						m_oCustomFilters->toXMLWithNS(writer, child_ns, L"customFilters", child_ns);
-					if(m_oFilters.IsInit())
+					if (m_oFilters.IsInit())
 						m_oFilters->toXMLWithNS(writer, child_ns, L"filters", child_ns);
-					if(m_oTop10.IsInit())
+					if (m_oTop10.IsInit())
 						m_oTop10->toXMLWithNS(writer, child_ns, L"top10", child_ns);
 					writer.EndNodeWithNS(node_ns, node_name);
 				}
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				ReadAttributes( oReader );
+				ReadAttributes(oReader);
 
-				if ( oReader.IsEmptyNode() )
+				if (oReader.IsEmptyNode())
 					return;
 
 				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				while (oReader.ReadNextSiblingNode(nCurDepth))
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("colorFilter") == sName )
+					if (_T("colorFilter") == sName)
 						m_oColorFilter = oReader;
-					else if ( _T("dynamicFilter") == sName )
+					else if (_T("dynamicFilter") == sName)
 						m_oDynamicFilter = oReader;
-					else if ( _T("customFilters") == sName )
+					else if (_T("customFilters") == sName)
 						m_oCustomFilters = oReader;
-					else if ( _T("filters") == sName )
+					else if (_T("filters") == sName)
 						m_oFilters = oReader;
-					else if ( _T("top10") == sName )
+					else if (_T("top10") == sName)
 						m_oTop10 = oReader;
 				}
 			}
-                        void fromBin(XLS::BaseObjectPtr& obj)
-                        {
-                            auto ptr = static_cast<XLSB::FILTERCOLUMN*>(obj.get());
-                            if(ptr != nullptr)
-                            {
-                                ReadAttributes(ptr->m_BrtBeginFilterColumn);
+			void fromBin(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::FILTERCOLUMN*>(obj.get());
+				if (ptr != nullptr)
+				{
+					ReadAttributes(ptr->m_BrtBeginFilterColumn);
 
-                                if(ptr->m_source != nullptr)
-                                {
-                                    if(ptr->m_source->get_type() == XLS::typeColorFilter)
-                                        m_oColorFilter = ptr->m_source;
-                                    else if(ptr->m_source->get_type() == XLS::typeDynamicFilter)
-                                        m_oDynamicFilter = ptr->m_source;
-                                    else if(ptr->m_source->get_type() == XLS::typeCUSTOMFILTERS)
-                                        m_oCustomFilters = ptr->m_source;
-                                    else if(ptr->m_source->get_type() == XLS::typeFILTERS)
-                                        m_oFilters = ptr->m_source;
-                                    else if(ptr->m_source->get_type() == XLS::typeTop10Filter)
-                                        m_oTop10 = ptr->m_source;
-                                }
-                            }
-                        }
-			virtual EElementType getType () const
+					if (ptr->m_source != nullptr)
+					{
+						if (ptr->m_source->get_type() == XLS::typeColorFilter)
+							m_oColorFilter = ptr->m_source;
+						else if (ptr->m_source->get_type() == XLS::typeDynamicFilter)
+							m_oDynamicFilter = ptr->m_source;
+						else if (ptr->m_source->get_type() == XLS::typeCUSTOMFILTERS)
+							m_oCustomFilters = ptr->m_source;
+						else if (ptr->m_source->get_type() == XLS::typeFILTERS)
+							m_oFilters = ptr->m_source;
+						else if (ptr->m_source->get_type() == XLS::typeTop10Filter)
+							m_oTop10 = ptr->m_source;
+					}
+				}
+			}
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				if (obj == nullptr)
+					obj = XLS::BaseObjectPtr(new XLSB::FILTERCOLUMN());
+
+				auto ptrFILTERCOLUMN = static_cast<XLSB::FILTERCOLUMN*>(obj.get());
+				if (ptrFILTERCOLUMN != nullptr)
+				{
+					WriteAttributes(ptrFILTERCOLUMN->m_BrtBeginFilterColumn);
+
+					if (m_oColorFilter.IsInit())
+					{
+						ptrFILTERCOLUMN->m_source = XLS::BaseObjectPtr(new XLSB::ColorFilter());
+						m_oColorFilter->toBin(ptrFILTERCOLUMN->m_source);
+					}
+					else if (m_oDynamicFilter.IsInit())
+					{
+						ptrFILTERCOLUMN->m_source = XLS::BaseObjectPtr(new XLSB::DynamicFilter());
+						m_oDynamicFilter->toBin(ptrFILTERCOLUMN->m_source);
+					}
+					else if (m_oCustomFilters.IsInit())
+					{
+						ptrFILTERCOLUMN->m_source = XLS::BaseObjectPtr(new XLSB::CUSTOMFILTERS());
+						m_oCustomFilters->toBin(ptrFILTERCOLUMN->m_source);
+					}
+					else if (m_oFilters.IsInit())
+					{
+						ptrFILTERCOLUMN->m_source = XLS::BaseObjectPtr(new XLSB::FILTERS());
+						m_oFilters->toBin(ptrFILTERCOLUMN->m_source);
+					}
+					else if (m_oTop10.IsInit())
+					{
+						ptrFILTERCOLUMN->m_source = XLS::BaseObjectPtr(new XLSB::Top10Filter());
+						m_oTop10->toBin(ptrFILTERCOLUMN->m_source);
+					}
+				}
+			}
+			
+			virtual EElementType getType() const
 			{
 				return et_x_FilterColumn;
 			}
@@ -1212,24 +1750,52 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Start(oReader)
 
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("colId"),      m_oColId )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("hiddenButton"),      m_oHiddenButton )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showButton"),      m_oShowButton )
+					WritingElement_ReadAttributes_Read_if(oReader, _T("colId"), m_oColId)
+					WritingElement_ReadAttributes_Read_if(oReader, _T("hiddenButton"), m_oHiddenButton)
+					WritingElement_ReadAttributes_Read_if(oReader, _T("showButton"), m_oShowButton)
 
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_End(oReader)
 			}
-                        void ReadAttributes(XLS::BaseObjectPtr& obj)
-                        {
-                            auto ptr = static_cast<XLSB::BeginFilterColumn*>(obj.get());
-                            if(ptr != nullptr)
-                            {
-                               m_oColId         = ptr->dwCol;
-                               m_oHiddenButton  = ptr->fHideArrow;
-                               m_oShowButton    = ptr->fNoBtn;
-                            }
-                        }
+			void ReadAttributes(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::BeginFilterColumn*>(obj.get());
+				if (ptr != nullptr)
+				{
+					m_oColId = ptr->dwCol;
+
+					if (ptr->fHideArrow != false)
+						m_oHiddenButton = ptr->fHideArrow;
+
+					if (ptr->fNoBtn != true)
+						m_oShowButton = ptr->fNoBtn;
+				}
+			}
+			void WriteAttributes(XLS::BaseObjectPtr& obj)
+			{
+				if (obj == nullptr)
+					obj = XLS::BaseObjectPtr(new XLSB::BeginFilterColumn());
+
+				auto ptr = static_cast<XLSB::BeginFilterColumn*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if (m_oColId.IsInit())
+						ptr->dwCol = m_oColId->GetValue();
+					else
+						ptr->dwCol = 0;
+
+					if (m_oHiddenButton.IsInit())
+						ptr->fHideArrow = m_oHiddenButton->GetValue();
+					else
+						ptr->fHideArrow = false;
+
+					if (m_oShowButton.IsInit())
+						ptr->fNoBtn = m_oShowButton->GetValue();
+					else
+						ptr->fNoBtn = true;
+				}
+			}
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oColId;
 			nullable<SimpleTypes::COnOff<> > m_oHiddenButton;
@@ -1245,8 +1811,8 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CAutofilter)
-                        WritingElement_XlsbConstructors(CAutofilter)
-			CAutofilter()
+				WritingElement_XlsbConstructors(CAutofilter)
+				CAutofilter()
 			{
 			}
 			virtual ~CAutofilter()
@@ -1256,67 +1822,93 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-            virtual std::wstring toXML() const
+			virtual std::wstring toXML() const
 			{
 				return _T("");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if(m_oRef.IsInit())
+				if (m_oRef.IsInit())
 				{
 					writer.WriteString(L"<autoFilter");
 					WritingStringNullableAttrEncodeXmlString(L"ref", m_oRef, m_oRef->ToString());
 					writer.WriteString(L">");
-					
-                    for ( size_t i = 0; i < m_arrItems.size(); ++i)
-                    {
-                        if (  m_arrItems[i] )
-                        {
-                            m_arrItems[i]->toXML(writer);
-                        }
-                    }
-					
-					if(m_oSortState.IsInit())
+
+					for (size_t i = 0; i < m_arrItems.size(); ++i)
+					{
+						if (m_arrItems[i])
+						{
+							m_arrItems[i]->toXML(writer);
+						}
+					}
+
+					if (m_oSortState.IsInit())
 						m_oSortState->toXML(writer);
 					writer.WriteString(L"</autoFilter>");
 				}
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				ReadAttributes( oReader );
+				ReadAttributes(oReader);
 
-				if ( oReader.IsEmptyNode() )
+				if (oReader.IsEmptyNode())
 					return;
 
 				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				while (oReader.ReadNextSiblingNode(nCurDepth))
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("filterColumn") == sName )
+					if (_T("filterColumn") == sName)
 						m_arrItems.push_back(new CFilterColumn(oReader));
-					else if ( _T("sortState") == sName )
+					else if (_T("sortState") == sName)
 						m_oSortState = oReader;
 				}
 			}
-                        void fromBin(XLS::BaseObjectPtr& obj)
-                        {
-                            auto ptr = static_cast<XLSB::AUTOFILTER*>(obj.get());
-                            if(ptr != nullptr)
-                            {
-                                ReadAttributes(ptr->m_BrtBeginAFilter);
+			void fromBin(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::AUTOFILTER*>(obj.get());
+				if (ptr != nullptr)
+				{
+					ReadAttributes(ptr->m_BrtBeginAFilter);
 
-                                if(ptr->m_SORTSTATE != nullptr)
-                                    m_oSortState = ptr->m_SORTSTATE;
+					if (ptr->m_SORTSTATE != nullptr)
+						m_oSortState = ptr->m_SORTSTATE;
 
-                                for(auto &filterColumn : ptr->m_arFILTERCOLUMN)
-                                {
-                                    m_arrItems.push_back(new CFilterColumn(filterColumn));
-                                }
-                            }
-                        }
+					for (auto &filterColumn : ptr->m_arFILTERCOLUMN)
+					{
+						m_arrItems.push_back(new CFilterColumn(filterColumn));
+					}
+				}
+			}
 
-			virtual EElementType getType () const
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				if (obj == nullptr)
+					obj = XLS::BaseObjectPtr(new XLSB::AUTOFILTER());
+
+				auto ptrAUTOFILTER = static_cast<XLSB::AUTOFILTER*>(obj.get());
+				if (ptrAUTOFILTER != nullptr)
+				{
+					WriteAttributes(ptrAUTOFILTER->m_BrtBeginAFilter);
+
+					if (m_oSortState.IsInit())
+						m_oSortState->toBin(ptrAUTOFILTER->m_SORTSTATE);
+
+					ptrAUTOFILTER->m_arFILTERCOLUMN.reserve(m_arrItems.size());
+					for (size_t i = 0; i < m_arrItems.size(); ++i)
+					{
+						if (m_arrItems[i])
+						{
+							XLS::BaseObjectPtr item(new XLSB::FILTERCOLUMN());							
+							m_arrItems[i]->toBin(item);
+							ptrAUTOFILTER->m_arFILTERCOLUMN.push_back(item);
+						}
+					}
+				}
+			}
+
+			virtual EElementType getType() const
 			{
 				return et_x_Autofilter;
 			}
@@ -1324,18 +1916,32 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if ( oReader, _T("ref"),      m_oRef )
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_Start(oReader)
+					WritingElement_ReadAttributes_Read_if(oReader, _T("ref"), m_oRef)
+					WritingElement_ReadAttributes_End(oReader)
 			}
-                        void ReadAttributes(XLS::BaseObjectPtr& obj)
-                        {
-                            auto ptr = static_cast<XLSB::BeginAFilter*>(obj.get());
-                            if(ptr != nullptr)
-                            {
-                               m_oRef = ptr->rfx.toString();
-                            }
-                        }
+			void ReadAttributes(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::BeginAFilter*>(obj.get());
+				if (ptr != nullptr)
+				{
+					m_oRef = ptr->rfx.toString();
+				}
+			}
+			void WriteAttributes(XLS::BaseObjectPtr& obj)
+			{
+				if (obj == nullptr)
+					obj = XLS::BaseObjectPtr(new XLSB::BeginAFilter());
+
+				auto ptr = static_cast<XLSB::BeginAFilter*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if (m_oRef.IsInit())
+						ptr->rfx = m_oRef->GetValue();
+					else
+						ptr->rfx = std::wstring(L"");
+				}
+			}
 
 		public:
 			nullable<SimpleTypes::CRelationshipId > m_oRef;

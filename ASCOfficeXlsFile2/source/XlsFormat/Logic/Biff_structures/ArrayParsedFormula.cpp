@@ -42,9 +42,10 @@ ArrayParsedFormula::ArrayParsedFormula(const bool is_part_of_a_revision, const C
 
 }
 
-void ArrayParsedFormula::operator=(const std::wstring& value)
+ArrayParsedFormula& ArrayParsedFormula::operator=(const std::wstring& value)
 {
 	ParsedFormula::operator = (value);
+	return *this;
 }
 
 BiffStructurePtr ArrayParsedFormula::clone()

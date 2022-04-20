@@ -46,11 +46,12 @@ namespace XLSB
         FRTFormula();
         FRTFormula(XLS::CFRecord& record);
         ~FRTFormula();
-       XLS::BiffStructurePtr clone();
+        XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;
 
-        virtual void load(XLS::CFRecord& record);
+		void load(XLS::CFRecord& record) override;
+		void save(XLS::CFRecord& record) override;
 
         FRTParsedFormula    formula;
     };

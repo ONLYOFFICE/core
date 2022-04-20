@@ -84,7 +84,7 @@ namespace XLSB
 
         if (proc.optional<FRTCFRULE>())
         {
-            m_FRTRULE = elements_.back();
+            m_FRTCFRULE = elements_.back();
             elements_.pop_back();
         }
 
@@ -111,9 +111,9 @@ namespace XLSB
 			proc.mandatory(*m_source);
 		}
 
-		if (m_FRTRULE != nullptr)
+		if (m_FRTCFRULE != nullptr)
 		{
-			proc.mandatory(*m_FRTRULE);
+			proc.mandatory(*m_FRTCFRULE);
 		}
 
 		proc.mandatory<EndCFRule>();

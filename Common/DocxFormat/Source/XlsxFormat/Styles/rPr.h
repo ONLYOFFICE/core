@@ -454,6 +454,78 @@ namespace OOX
             {
                 ReadAttributes(obj);
             }
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::Color*>(obj.get());
+
+				if (ptr != nullptr)
+				{
+					if (m_oAuto.IsInit())
+						ptr->xColorType = 0;
+
+					if (m_oIndexed.IsInit())
+					{
+						ptr->xColorType = 1;
+						ptr->index = m_oIndexed->GetValue();
+					}
+
+					if (m_oThemeColor.IsInit())
+					{
+						ptr->xColorType = 3;
+						ptr->index = m_oThemeColor->GetValue();
+					}
+
+					if (m_oRgb.IsInit())
+					{
+						ptr->bRed = m_oRgb->Get_R();
+						ptr->bGreen = m_oRgb->Get_G();
+						ptr->bBlue = m_oRgb->Get_B();
+						ptr->bAlpha = m_oRgb->Get_A();
+					}
+					
+					if (m_oTint.Init())
+						ptr->nTintAndShade = m_oTint->GetValue() * 32767.0;
+					else
+						ptr->nTintAndShade = 0;
+					
+				}
+			}
+			void toBin(XLS::BaseObject* obj)
+			{
+				auto ptr = static_cast<XLSB::Color*>(obj);
+
+				if (ptr != nullptr)
+				{
+					if (m_oAuto.IsInit())
+						ptr->xColorType = 0;
+
+					if (m_oIndexed.IsInit())
+					{
+						ptr->xColorType = 1;
+						ptr->index = m_oIndexed->GetValue();
+					}
+
+					if (m_oThemeColor.IsInit())
+					{
+						ptr->xColorType = 3;
+						ptr->index = m_oThemeColor->GetValue();
+					}
+
+					if (m_oRgb.IsInit())
+					{
+						ptr->bRed = m_oRgb->Get_R();
+						ptr->bGreen = m_oRgb->Get_G();
+						ptr->bBlue = m_oRgb->Get_B();
+						ptr->bAlpha = m_oRgb->Get_A();
+					}
+
+					if (m_oTint.Init())
+						ptr->nTintAndShade = m_oTint->GetValue() * 32767.0;
+					else
+						ptr->nTintAndShade = 0;
+
+				}
+			}
 			virtual EElementType getType () const
 			{
 				return et_x_Color;

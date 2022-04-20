@@ -55,5 +55,10 @@ namespace XLSB
         record >> FRTheader >> iType >> numParam >> fSaveGTE >> fGTE >> cbFmla;
     }
 
+	void CFVO14::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader << iType << numParam << fSaveGTE << fGTE << cbFmla;
+	}
+
 } // namespace XLSB
 

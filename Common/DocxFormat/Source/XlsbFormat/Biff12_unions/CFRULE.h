@@ -52,7 +52,7 @@ namespace XLSB
 
         XLS::BaseObjectPtr               m_BrtBeginCFRule;
         XLS::BaseObjectPtr               m_source;
-        XLS::BaseObjectPtr               m_FRTRULE;
+        XLS::BaseObjectPtr               m_FRTCFRULE;
         bool							 m_bBrtEndCFRule;
 
         XLS::CellRef                     ref;

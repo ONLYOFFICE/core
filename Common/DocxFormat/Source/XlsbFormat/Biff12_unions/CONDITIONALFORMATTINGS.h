@@ -33,8 +33,6 @@
 
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-
-
 namespace XLSB
 {
 
@@ -47,13 +45,14 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+        const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         XLS::BaseObjectPtr               m_BrtFRTBegin;
-        XLS::BaseObjectPtr               m_BrtBeginConditionalFormattings;
+		bool				             m_bBrtBeginConditionalFormattings;
         std::vector<XLS::BaseObjectPtr>  m_arCONDITIONALFORMATTING14;
-        XLS::BaseObjectPtr               m_BrtEndConditionalFormattings;
-        XLS::BaseObjectPtr               m_BrtFRTEnd;
+		bool				             m_bBrtEndConditionalFormattings;
+        bool							 m_bBrtFRTEnd;
 
     };
 

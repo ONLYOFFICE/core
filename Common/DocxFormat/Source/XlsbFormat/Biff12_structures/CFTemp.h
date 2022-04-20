@@ -36,11 +36,11 @@
 namespace XLSB
 {
 
-class CFTemp : public XLS::BiffAttributeSimple<unsigned int>
+class CFTemp : public XLS::BiffAttributeSimple<_UINT32>
 {
 public:
     XLS::BiffStructurePtr clone();
-
+	CFTemp& operator= (const _UINT32& other_val);
 	enum
 	{
             CF_TEMPLATE_EXPR                = 0x00000000,

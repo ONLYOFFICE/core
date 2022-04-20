@@ -55,5 +55,10 @@ namespace XLSB
         record >> FRTheader >> ccf >> fPivot;
     }
 
+	void BeginConditionalFormatting14::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader << ccf << fPivot;
+	}
+
 } // namespace XLSB
 

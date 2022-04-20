@@ -66,5 +66,16 @@ namespace XLSB
         }
     }
 
+	void FRTRefs::save(XLS::CFRecord& record)
+	{
+		cref = array.size();
+		record << cref;
+
+		for (auto& item : array)
+		{
+			record << item;
+		}
+	}
+
 } // namespace XLSB
 

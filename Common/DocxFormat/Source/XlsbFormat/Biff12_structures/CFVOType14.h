@@ -40,7 +40,7 @@ class CFVOType14 : public XLS::BiffAttributeSimple<unsigned int>
 {
 public:
     XLS::BiffStructurePtr clone();
-
+	CFVOType14& operator= (const _UINT32& other_val);
 	enum
 	{
             CFVONUM_14         = 0x00000001,

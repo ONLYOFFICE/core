@@ -41,6 +41,12 @@ FRTParsedFormula::FRTParsedFormula() :	ParsedFormula(CellRef())
 {
 }
 
+FRTParsedFormula& FRTParsedFormula::operator=(const std::wstring& value)
+{
+	ParsedFormula::operator = (value);
+	return *this;
+}
+
 BiffStructurePtr FRTParsedFormula::clone()
 {
     return BiffStructurePtr(new FRTParsedFormula(*this));
@@ -48,14 +54,34 @@ BiffStructurePtr FRTParsedFormula::clone()
 
 void FRTParsedFormula::load(XLS::CFRecord& record)
 {   
-    unsigned int cce;
-    unsigned int cb;
+    _UINT32 cce;
+	_UINT32 cb;
 
     record >> cce;
     record >> cb;
 
     rgce.load(record, cce);
     //rgcb.load(record, rgce.getPtgs(), true);
+}
+
+void FRTParsedFormula::save(XLS::CFRecord& record)
+{
+	_UINT32 cce = 0;
+	_UINT32 cb = 0;
+
+	record << cce;
+	record << cb;
+
+	auto rdPtr = record.getRdPtr();
+
+	rgce.save(record);
+
+	cce = record.getRdPtr() - rdPtr;
+
+	record.RollRdPtrBack(cce + 8);
+	record << cce;
+	record.skipNunBytes(cce + 4);
+
 }
 
 } // namespace XLS

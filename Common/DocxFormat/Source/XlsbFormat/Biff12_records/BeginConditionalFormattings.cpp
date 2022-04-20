@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new BeginConditionalFormattings(*this));
     }
 
-    void BeginConditionalFormattings::readFields(XLS::CFRecord& record)
-    {
-
-    }
-
 } // namespace XLSB
 

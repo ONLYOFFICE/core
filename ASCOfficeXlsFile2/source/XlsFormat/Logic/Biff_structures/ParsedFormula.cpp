@@ -42,9 +42,10 @@ ParsedFormula::ParsedFormula(const CellRef& cell_base_ref)
 	rgce(cell_base_ref)
 {
 }
-void ParsedFormula::operator=(const std::wstring& value)
+ParsedFormula& ParsedFormula::operator=(const std::wstring& value)
 {
     parseStringFormula(value, L"");
+	return *this;
 }
 void ParsedFormula::set_base_ref(const CellRef& cell_base_ref)
 {

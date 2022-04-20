@@ -47,6 +47,8 @@
 
 #include "../../XlsbFormat/Biff12_unions/HLINKS.h"
 #include "../../XlsbFormat/Biff12_unions/MERGECELLS.h"
+#include "../../XlsbFormat/Biff12_unions/CONDITIONALFORMATTING.h"
+#include "../../XlsbFormat/Biff12_unions/DVALS.h"
 
 namespace OOX
 {
@@ -305,7 +307,7 @@ namespace OOX
 							|| m_oSheetProtection->m_oSaltValue.IsInit())
 						{
 							workSheetStream->m_BrtSheetProtectionIso = XLS::BaseObjectPtr(new XLSB::SheetProtectionIso());
-								m_oSheetProtection->toBin(workSheetStream->m_BrtSheetProtectionIso);
+							m_oSheetProtection->toBin(workSheetStream->m_BrtSheetProtectionIso);
 						}
 						else
 						{
@@ -318,10 +320,54 @@ namespace OOX
 					{
 						m_oTableParts->toBin(workSheetStream->m_LISTPARTS);
 					}
+					if (m_oSortState.IsInit())
+					{
+						m_oSortState->toBin(workSheetStream->m_SORTSTATE);
+					}
+					if (m_oAutofilter.IsInit())
+					{
+						m_oAutofilter->toBin(workSheetStream->m_AUTOFILTER);
+					}
+					if (!m_arrConditionalFormatting.empty())
+					{
+						for (auto &item : m_arrConditionalFormatting)
+						{
+							XLS::BaseObjectPtr item_bin(new XLSB::CONDITIONALFORMATTING());
+							item->toBin(item_bin);
+							workSheetStream->m_arCONDITIONALFORMATTING.push_back(item_bin);
+						}
+					}
+					/*if (m_oDataValidations.IsInit())
+					{
+						workSheetStream->m_DVALS = XLS::BaseObjectPtr(new XLSB::DVALS());
+						m_oDataValidations->toBin(workSheetStream->m_DVALS);
+					}
+					
+					
+					/* if (workSheetStream->m_DVALS != nullptr)
+                            m_oDataValidations = workSheetStream->m_DVALS;
+                        if (workSheetStream->m_OLEOBJECTS != nullptr)
+                            m_oOleObjects = workSheetStream->m_OLEOBJECTS;
+                        if (workSheetStream->m_ACTIVEXCONTROLS != nullptr)
+                            m_oControls = workSheetStream->m_ACTIVEXCONTROLS;
+                        if (workSheetStream->m_BrtWsProp != nullptr)
+                            m_oSheetPr = workSheetStream->m_BrtWsProp;
+                        if (workSheetStream->m_BrtBkHim != nullptr)
+                            m_oPicture = workSheetStream->m_BrtBkHim;
+                        if (workSheetStream->m_RWBRK != nullptr)
+                            m_oRowBreaks = workSheetStream->m_RWBRK;
+                        if (workSheetStream->m_COLBRK != nullptr)
+                            m_oColBreaks = workSheetStream->m_COLBRK;
+                        if (workSheetStream->m_DCON != nullptr)
+                            m_oDataConsolidate = workSheetStream->m_DCON;
 
-					/*
-					/*if (workBookStream->m_FRTWORKBOOK != nullptr)
-					m_oExtLst = workBookStream->m_FRTWORKBOOK;
+                        if (!workSheetStream->m_arBrtRangeProtectionIso.empty())
+                            m_oProtectedRanges = workSheetStream->m_arBrtRangeProtectionIso;
+                        else if(!workSheetStream->m_arBrtRangeProtection.empty())
+                            m_oProtectedRanges = workSheetStream->m_arBrtRangeProtection;
+
+                        if (workSheetStream->m_FRTWORKSHEET != nullptr)
+                            m_oExtLst = workSheetStream->m_FRTWORKSHEET;
 					*/
 				}
 				xlsb->WriteBin(oPath, workSheetStream.get());

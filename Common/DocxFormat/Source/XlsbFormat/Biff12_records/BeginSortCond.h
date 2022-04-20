@@ -54,6 +54,8 @@ namespace XLSB
             void readFields(XLS::CFRecord& record) override;
 			void writeFields(XLS::CFRecord& record) override;
 
+			static const XLS::ElementType	type = XLS::typeBeginSortCond;
+
             bool                        fSortDes;
             _UINT16						sortOn;
             XLSB::UncheckedRfX          rfx;

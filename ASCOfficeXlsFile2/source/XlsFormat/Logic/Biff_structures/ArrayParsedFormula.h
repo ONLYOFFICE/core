@@ -43,7 +43,7 @@ class ArrayParsedFormula : public ParsedFormula
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(ArrayParsedFormula)
 public:
 	ArrayParsedFormula(const bool is_part_of_a_revision, const CellRef& cell_base_ref);
-	void operator=(const std::wstring& value) override;
+	ArrayParsedFormula& operator=(const std::wstring& value) override;
 	BiffStructurePtr clone();
 	void load(CFRecord& record) override;
 	void save(CFRecord& record) override;

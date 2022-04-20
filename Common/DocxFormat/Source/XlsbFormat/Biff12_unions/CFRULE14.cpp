@@ -96,12 +96,27 @@ namespace XLSB
 
         if (proc.optional<EndCFRule14>())
         {
-            m_BrtEndCFRule14 = elements_.back();
+			m_bBrtEndCFRule14 = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndCFRule14 = false;
 
-        return m_BrtBeginCFRule14 && m_BrtEndCFRule14;
+        return m_BrtBeginCFRule14 && m_bBrtEndCFRule14;
     }
+
+	const bool CFRULE14::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginCFRule14 != nullptr)		
+			proc.mandatory(*m_BrtBeginCFRule14);
+
+		if (m_source != nullptr)
+			proc.mandatory(*m_source);
+
+		proc.mandatory<EndCFRule14>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

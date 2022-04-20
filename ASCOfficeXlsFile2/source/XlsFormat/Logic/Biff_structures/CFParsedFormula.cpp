@@ -40,6 +40,12 @@ CFParsedFormula::CFParsedFormula(const CellRef& cell_base_ref) :	ParsedFormula(c
 {
 }
 
+CFParsedFormula& CFParsedFormula::operator=(const std::wstring& value)
+{
+	ParsedFormula::operator = (value);
+	return *this;
+}
+
 BiffStructurePtr CFParsedFormula::clone()
 {
 	return BiffStructurePtr(new CFParsedFormula(*this));

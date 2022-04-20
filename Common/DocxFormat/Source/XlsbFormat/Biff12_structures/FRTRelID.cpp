@@ -60,5 +60,10 @@ namespace XLSB
         record >> relId;
     }
 
+	void FRTRelID::save(XLS::CFRecord& record)
+	{
+		record << relId;
+	}
+
 } // namespace XLSB
 

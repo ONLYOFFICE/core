@@ -45,7 +45,7 @@ class ParsedFormula : public BiffStructure
 public:
 	ParsedFormula(const CellRef& cell_base_ref);
 
-    virtual void operator=(const std::wstring& value);
+    virtual ParsedFormula& operator=(const std::wstring& value);
 
 	void set_base_ref(const CellRef& cell_base_ref);
 

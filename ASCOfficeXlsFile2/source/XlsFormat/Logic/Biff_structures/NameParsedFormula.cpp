@@ -41,9 +41,10 @@ NameParsedFormula::NameParsedFormula(const bool is_part_of_a_revision)
 {
 
 }
-void NameParsedFormula::operator=(const std::wstring& value)
+NameParsedFormula& NameParsedFormula::operator=(const std::wstring& value)
 {
     ParsedFormula::operator = (value);
+	return *this;
 }
 BiffStructurePtr NameParsedFormula::clone()
 {

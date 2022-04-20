@@ -45,14 +45,15 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+        const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         static const XLS::ElementType	type = XLS::typeCOLORSCALE14;
 
-        XLS::BaseObjectPtr                           m_BrtBeginColorScale14;
-        std::vector<XLS::BaseObjectPtr>              m_arCFVO14;
-        std::vector<XLS::BaseObjectPtr>              m_arBrtColor14;
-        XLS::BaseObjectPtr                           m_BrtEndColorScale14;
+		bool								m_bBrtBeginColorScale14;
+        std::vector<XLS::BaseObjectPtr>     m_arCFVO14;
+        std::vector<XLS::BaseObjectPtr>     m_arBrtColor14;
+		bool								m_bBrtEndColorScale14;
 
     };
 

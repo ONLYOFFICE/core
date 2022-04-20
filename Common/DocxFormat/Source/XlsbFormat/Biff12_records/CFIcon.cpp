@@ -55,5 +55,10 @@ namespace XLSB
         record >> FRTheader >> iconSet >> index;
     }
 
+	void CFIcon::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader << iconSet << index;
+	}
+
 } // namespace XLSB
 

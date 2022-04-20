@@ -41,6 +41,7 @@ class CFParsedFormula : public ParsedFormula
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(CFParsedFormula)
 public:
 	CFParsedFormula(const CellRef& cell_base_ref);
+	CFParsedFormula& operator=(const std::wstring& value) override;
 	BiffStructurePtr clone();
 	void load(CFRecord& record) override;
 	void save(CFRecord& record) override;

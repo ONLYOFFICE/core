@@ -4134,12 +4134,12 @@ namespace PdfReader
         pImageStream->reset();
 
         double dAlphaKoef = m_bTransparentGroup ? pGState->getFillOpacity() : 1;
-        unsigned char unPixel[4] ={ 0, 0, 0, 0 };
+        unsigned char unPixel[4] = { 0, 0, 0, 0 };
         for (int nY = nHeight - 1; nY >= 0; nY--)
         {
+            int nIndex = 4 * nY * nWidth;
             for (int nX = 0; nX < nWidth; nX++)
             {
-                int nIndex = 4 * (nX + nY * nWidth);
                 pImageStream->getPixel(unPixel);
                 GfxRGB oRGB;
                 pColorMap->getRGB(unPixel, &oRGB, gfxRenderingIntentAbsoluteColorimetric);
@@ -4147,6 +4147,8 @@ namespace PdfReader
                 pBufferPtr[nIndex + 1] = colToByte(oRGB.g);
                 pBufferPtr[nIndex + 2] = colToByte(oRGB.r);
                 pBufferPtr[nIndex + 3] = 255;
+
+                nIndex += 4;
             }
         }
         delete pImageStream;
@@ -4167,26 +4169,25 @@ namespace PdfReader
                     pSMaskStream->reset();
 
                     unsigned char unAlpha = 0;
-                    for (int nY = 0; nY < nMaskHeight; nY++)
+                    for (int i = 0, nCount = nMaskWidth * nMaskHeight; i < nCount; ++i)
                     {
-                        for (int nX = 0; nX < nMaskWidth; nX++)
-                        {
-                            int nIndex = (nX + nY * nMaskWidth);
-                            pSMaskStream->getPixel(&unAlpha);
-                            GfxGray oGray;
-                            pMaskColorMap->getGray(&unAlpha, &oGray, GfxRenderingIntent::gfxRenderingIntentAbsoluteColorimetric);
-                            pAlpha[nIndex] = colToByte(oGray);
-                        }
+                        pSMaskStream->getPixel(&unAlpha);
+                        GfxGray oGray;
+                        pMaskColorMap->getGray(&unAlpha, &oGray, GfxRenderingIntent::gfxRenderingIntentAbsoluteColorimetric);
+                        pAlpha[i] = colToByte(oGray);
                     }
                     delete pSMaskStream;
 
                     int nMaxW = (std::max)(nWidth, nMaskWidth);
                     int nMaxH = (std::max)(nHeight, nMaskHeight);
+
+                    double dAlphaScaleWidth  = (double)nMaskWidth / (double)nMaxW;
+                    double dAlphaScaleHeight = (double)nMaskHeight / (double)nMaxH;
+
 					if (nWidth != nMaxW || nHeight != nMaxH)
 					{
                         unsigned char* pImageBuffer = pBufferPtr;
-                        int nNewBufferSize = 4 * nMaxW * nMaxH;
-                        pBufferPtr = new unsigned char[nNewBufferSize];
+                        pBufferPtr = new unsigned char[4 * nMaxW * nMaxH];
                         if (!pBufferPtr)
                         {
                             delete[] pImageBuffer;
@@ -4199,15 +4200,11 @@ namespace PdfReader
                         double dImageScaleWidth  = (double)nWidth / (double)nMaxW;
                         double dImageScaleHeight = (double)nHeight / (double)nMaxH;
 
-                        double dAlphaScaleWidth  = (double)nMaskWidth / (double)nMaxW;
-                        double dAlphaScaleHeight = (double)nMaskHeight / (double)nMaxH;
-
                         for (int nY = nMaxH - 1; nY >= 0; nY--)
                         {
+                            int nIndex = 4 * nY * nMaxW;
                             for (int nX = 0; nX < nMaxW; nX++)
                             {
-                                int nIndex = 4 * (nY * nMaxW + nX);
-
                                 int nNearestAlphaMatch =  (((int)((nMaxH - 1 - nY) * dAlphaScaleHeight) * nMaskWidth) + ((int)(nX * dAlphaScaleWidth)));
 								int nNearestImageMatch =  4 * (((int)(nY * dImageScaleHeight) * nWidth) + ((int)(nX * dImageScaleWidth)));
 
@@ -4215,6 +4212,7 @@ namespace PdfReader
                                 pBufferPtr[nIndex + 1] = pImageBuffer[nNearestImageMatch + 1];
                                 pBufferPtr[nIndex + 2] = pImageBuffer[nNearestImageMatch + 2];
                                 pBufferPtr[nIndex + 3] = (unsigned char)(pAlpha[nNearestAlphaMatch] * dAlphaKoef);
+                                nIndex += 4;
                             }
                         }
 
@@ -4222,18 +4220,15 @@ namespace PdfReader
                     }
                     else
                     {
-                        double dAlphaScaleWidth  = (double)nMaskWidth / (double)nWidth;
-                        double dAlphaScaleHeight = (double)nMaskHeight / (double)nHeight;
-
                         for (int nY = nHeight - 1; nY >= 0; nY--)
                         {
+                            int nIndex = 4 * nY * nWidth;
                             for (int nX = 0; nX < nWidth; nX++)
                             {
-                                int nIndex = 4 * (nY * nWidth + nX);
-
                                 int nNearestAlphaMatch =  (((int)((nHeight - 1 - nY) * dAlphaScaleHeight) * nMaskWidth) + ((int)(nX * dAlphaScaleWidth)));
 
                                 pBufferPtr[nIndex + 3] = (unsigned char)(pAlpha[nNearestAlphaMatch] * dAlphaKoef);
+                                nIndex += 4;
                             }
                         }
                     }
@@ -4254,15 +4249,11 @@ namespace PdfReader
             else
                 bResize = false;
 
-            if (!bResize)
+            if (!bResize && dAlphaKoef < 1.0)
             {
-                for (int nY = nHeight - 1; nY >= 0; nY--)
+                for (int i = 3, nCount = nWidth * nHeight * 4; i < nCount; i += 4)
                 {
-                    for (int nX = 0; nX < nWidth; nX++)
-                    {
-                        int nIndex = 4 * (nY * nWidth + nX);
-                        pBufferPtr[nIndex + 3] = (unsigned char)(255.0 * dAlphaKoef);
-                    }
+                    pBufferPtr[i] = (unsigned char)(255.0 * dAlphaKoef);
                 }
             }
         }
@@ -4274,13 +4265,14 @@ namespace PdfReader
             unsigned char unAlpha = 0;
             for (int nY = nHeight - 1; nY >= 0; nY--)
             {
+                int nIndex = 4 * nY * nWidth;
                 for (int nX = 0; nX < nWidth; nX++)
                 {
-                    int nIndex = 4 * (nX + nY * nWidth);
                     pSMaskStream->getPixel(&unAlpha);
                     GfxGray oGray;
                     pMaskColorMap->getGray(&unAlpha, &oGray, GfxRenderingIntent::gfxRenderingIntentAbsoluteColorimetric);
-                    pBufferPtr[nIndex + 3] = colToByte(oGray) * dAlphaKoef;
+                    pBufferPtr[nIndex + 3] = (unsigned char)(colToByte(oGray) * dAlphaKoef);
+                    nIndex += 4;
                 }
             }
             delete pSMaskStream;
@@ -4309,14 +4301,15 @@ namespace PdfReader
                     pBufferPtr[nIndex + 0] = 255;
                     pBufferPtr[nIndex + 1] = 255;
                     pBufferPtr[nIndex + 2] = 255;
-                    continue;
                 }
+                else
+                {
+                    double dK = 255.0 / unA;
 
-                double dK = 255.0 / unA;
-
-                pBufferPtr[nIndex + 0] = std::max(0, std::min(255, int((pBufferPtr[nIndex + 0] - unMatteB) * dK + unMatteB)));
-                pBufferPtr[nIndex + 1] = std::max(0, std::min(255, int((pBufferPtr[nIndex + 1] - unMatteG) * dK + unMatteG)));
-                pBufferPtr[nIndex + 2] = std::max(0, std::min(255, int((pBufferPtr[nIndex + 2] - unMatteR) * dK + unMatteR)));
+                    pBufferPtr[nIndex + 0] = std::max(0, std::min(255, int((pBufferPtr[nIndex + 0] - unMatteB) * dK + unMatteB)));
+                    pBufferPtr[nIndex + 1] = std::max(0, std::min(255, int((pBufferPtr[nIndex + 1] - unMatteG) * dK + unMatteG)));
+                    pBufferPtr[nIndex + 2] = std::max(0, std::min(255, int((pBufferPtr[nIndex + 2] - unMatteR) * dK + unMatteR)));
+                }
             }
         }
 

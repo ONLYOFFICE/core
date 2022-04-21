@@ -40,6 +40,11 @@ ObjectParsedFormula::ObjectParsedFormula() : ParsedFormula(CellRef())
 {
 }
 
+ObjectParsedFormula& ObjectParsedFormula::operator=(const std::wstring& value)
+{
+	ParsedFormula::operator = (value);
+	return *this;
+}
 
 BiffStructurePtr ObjectParsedFormula::clone()
 {

@@ -46,7 +46,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CExtAnchor)
-			CExtAnchor()
+				CExtAnchor()
 			{
 			}
 			virtual ~CExtAnchor()
@@ -56,7 +56,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-            virtual std::wstring toXML() const
+			virtual std::wstring toXML() const
 			{
 				return (L"");
 			}
@@ -79,28 +79,28 @@ namespace OOX
 			}
 			virtual void		 fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				ReadAttributes( oReader );
+				ReadAttributes(oReader);
 
-				if ( oReader.IsEmptyNode() )
+				if (oReader.IsEmptyNode())
 					return;
 
 				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				while (oReader.ReadNextSiblingNode(nCurDepth))
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( (L"from") == sName )
+					if ((L"from") == sName)
 					{
 						m_oFrom = oReader;
 					}
-					else if ( (L"to") == sName )
+					else if ((L"to") == sName)
 					{
 						m_oTo = oReader;
 					}
 				}
 			}
 
-			virtual EElementType getType () const
+			virtual EElementType getType() const
 			{
 				return et_x_ExtAnchor;
 			}
@@ -109,13 +109,13 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Start(oReader)
 
-					WritingElement_ReadAttributes_Read_if	 ( oReader, (L"moveWithCells"),	  m_oMoveWithCells )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, (L"sizeWithCells"),	  m_oSizeWithCells )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, (L"z-order"),	  m_oZOrder )
+					WritingElement_ReadAttributes_Read_if(oReader, (L"moveWithCells"), m_oMoveWithCells)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"sizeWithCells"), m_oSizeWithCells)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"z-order"), m_oZOrder)
 
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_End(oReader)
 			}
 		public:
 			nullable<SimpleTypes::COnOff<> > m_oMoveWithCells;
@@ -130,7 +130,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(COleObjectPr)
-			COleObjectPr()
+				COleObjectPr()
 			{
 			}
 			virtual ~COleObjectPr()
@@ -139,7 +139,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-            virtual std::wstring toXML() const
+			virtual std::wstring toXML() const
 			{
 				return (L"");
 			}
@@ -167,24 +167,24 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				ReadAttributes( oReader );
+				ReadAttributes(oReader);
 
-				if ( oReader.IsEmptyNode() )
+				if (oReader.IsEmptyNode())
 					return;
 
 				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				while (oReader.ReadNextSiblingNode(nCurDepth))
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( (L"anchor") == sName )
+					if ((L"anchor") == sName)
 					{
 						m_oAnchor = oReader;
 					}
 				}
 			}
 
-			virtual EElementType getType () const
+			virtual EElementType getType() const
 			{
 				return et_x_OleObjectPr;
 			}
@@ -192,21 +192,21 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if		( oReader, (L"altText"),		m_oAltText )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"autoFill"),		m_oAutoFill )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"autoLine"),		m_oAutoLine )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"autoPict"),		m_oAutoPict )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"dde"),			m_oDde )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"defaultSize"),	m_oDefaultSize )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"disabled"),		m_oDisabled )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"r:id"),			m_oRid )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"relationships:id"), m_oRid )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"locked"),			m_oLocked )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"macro"),			m_oMacro )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"print"),			m_oPrint )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"uiObject"),		m_oUiObject )
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_Start(oReader)
+					WritingElement_ReadAttributes_Read_if(oReader, (L"altText"), m_oAltText)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"autoFill"), m_oAutoFill)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"autoLine"), m_oAutoLine)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"autoPict"), m_oAutoPict)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"dde"), m_oDde)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"defaultSize"), m_oDefaultSize)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"disabled"), m_oDisabled)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"r:id"), m_oRid)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"relationships:id"), m_oRid)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"locked"), m_oLocked)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"macro"), m_oMacro)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"print"), m_oPrint)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"uiObject"), m_oUiObject)
+					WritingElement_ReadAttributes_End(oReader)
 			}
 		public:
 			nullable<std::wstring>				m_oAltText;
@@ -229,8 +229,8 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(COleObject)
-                        WritingElement_XlsbConstructors(COleObject)
-			COleObject()
+				WritingElement_XlsbConstructors(COleObject)
+				COleObject()
 			{
 			}
 			virtual ~COleObject()
@@ -239,7 +239,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-            virtual std::wstring toXML() const
+			virtual std::wstring toXML() const
 			{
 				return (L"");
 			}
@@ -280,14 +280,14 @@ namespace OOX
 					writer.WriteString(L"/>");
 				}
 			}
-            void toXMLPptx(NSStringUtils::CStringBuilder& writer, std::wstring qqq)
+			void toXMLPptx(NSStringUtils::CStringBuilder& writer, std::wstring qqq)
 			{
-                std::wstring sRoot;
+				std::wstring sRoot;
 				writer.WriteString(L"<o:OLEObject");
-				if(m_oDvAspect.IsInit())
+				if (m_oDvAspect.IsInit())
 				{
 					writer.WriteString(L" DrawAspect=\"");
-					if(SimpleTypes::Spreadsheet::Content == m_oDvAspect->GetValue())
+					if (SimpleTypes::Spreadsheet::Content == m_oDvAspect->GetValue())
 						writer.WriteString(L"Content");
 					else
 						writer.WriteString(L"Icon");
@@ -297,10 +297,10 @@ namespace OOX
 				WritingStringNullableAttrEncodeXmlString(L"ProgID", m_oProgId, m_oProgId.get());
 				WritingStringNullableAttrInt(L"ShapeID", m_oShapeId, m_oShapeId->GetValue());
 				writer.WriteString(L" Type=\"Embed\"");
-				if(m_oOleUpdate.IsInit())
+				if (m_oOleUpdate.IsInit())
 				{
 					writer.WriteString(L" UpdateMode=\"");
-					if(SimpleTypes::Spreadsheet::Always == m_oOleUpdate->GetValue())
+					if (SimpleTypes::Spreadsheet::Always == m_oOleUpdate->GetValue())
 						writer.WriteString(L"Always");
 					else
 						writer.WriteString(L"OnCall");
@@ -318,74 +318,131 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				ReadAttributes( oReader );
+				ReadAttributes(oReader);
 
-				if ( oReader.IsEmptyNode() )
+				if (oReader.IsEmptyNode())
 					return;
 
 				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				while (oReader.ReadNextSiblingNode(nCurDepth))
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( (L"objectPr") == sName )
+					if ((L"objectPr") == sName)
 					{
 						m_oObjectPr = oReader;
 					}
 				}
 			}
-                        void fromBin(XLS::BaseObjectPtr& obj)
-                        {
-                            ReadAttributes(obj);
-                        }
-			virtual EElementType getType () const
+			void fromBin(XLS::BaseObjectPtr& obj)
+			{
+				ReadAttributes(obj);
+			}
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::OleObject*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if(m_oDvAspect.IsInit())
+					{
+						if (m_oDvAspect->GetValue() == SimpleTypes::Spreadsheet::EDvAspect::Content)
+							ptr->dwAspect = 0x00000001;
+						else if (m_oDvAspect->GetValue() == SimpleTypes::Spreadsheet::EDvAspect::Icon)
+							ptr->dwAspect = 0x00000004;
+					}
+					else
+						ptr->dwAspect = 0x00000001;
+					
+					if (m_oOleUpdate.IsInit())
+					{
+						if (m_oOleUpdate->GetValue() == SimpleTypes::Spreadsheet::EOleUpdate::Always)
+							ptr->dwOleUpdate = 0x00000001;
+						else if (m_oOleUpdate->GetValue() == SimpleTypes::Spreadsheet::EOleUpdate::OnCall)
+							ptr->dwOleUpdate = 0x00000003;
+					}
+
+					if (m_oShapeId.IsInit())
+						ptr->shapeId = m_oShapeId->GetValue();
+					else
+						ptr->shapeId = 0;
+
+					if (m_oAutoLoad.IsInit())
+						ptr->fAutoLoad = m_oAutoLoad->GetValue();
+					else
+						ptr->fAutoLoad = false;
+
+					if (m_oProgId.IsInit())
+						ptr->strProgID = m_oProgId.get();
+					else
+						ptr->strProgID = L"";
+
+					if (m_oProgId.IsInit())
+						ptr->strProgID = m_oProgId.get();
+					else
+						ptr->strProgID = L"";
+
+					if (m_oLink.IsInit())
+					{
+						ptr->fLinked = true;
+						ptr->link = m_oLink.get();
+					}
+
+					if (m_oRid.IsInit())
+					{
+						ptr->fLinked = false;
+						ptr->strRelID = m_oRid->GetValue();
+					}
+				}
+			}
+			virtual EElementType getType() const
 			{
 				return et_x_OleObject;
 			}
 
 		private:
-                        void ReadAttributes(XLS::BaseObjectPtr& obj)
-                        {
-                            auto ptr = static_cast<XLSB::OleObject*>(obj.get());
-                            if(ptr != nullptr)
-                            {
-                                if(ptr->dwAspect == 0x00000001)
-                                    m_oDvAspect         = SimpleTypes::Spreadsheet::EDvAspect::Content;
-                                else if(ptr->dwAspect == 0x00000004)
-                                    m_oDvAspect         = SimpleTypes::Spreadsheet::EDvAspect::Icon;
+			void ReadAttributes(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::OleObject*>(obj.get());
+				if (ptr != nullptr)
+				{
+					//if (ptr->dwAspect == 0x00000001)
+						//m_oDvAspect = SimpleTypes::Spreadsheet::EDvAspect::Content;
+					if (ptr->dwAspect == 0x00000004)
+						m_oDvAspect = SimpleTypes::Spreadsheet::EDvAspect::Icon;
 
-                                if(ptr->dwOleUpdate == 0x00000001)
-                                    m_oOleUpdate         = SimpleTypes::Spreadsheet::EOleUpdate::Always;
-                                else if(ptr->dwOleUpdate == 0x00000003)
-                                    m_oOleUpdate         = SimpleTypes::Spreadsheet::EOleUpdate::OnCall;
+					if (ptr->dwOleUpdate == 0x00000001)
+						m_oOleUpdate = SimpleTypes::Spreadsheet::EOleUpdate::Always;
+					else if (ptr->dwOleUpdate == 0x00000003)
+						m_oOleUpdate = SimpleTypes::Spreadsheet::EOleUpdate::OnCall;
 
-                                if(ptr->shapeId > 0)
-                                    m_oShapeId = ptr->shapeId;
+					if (ptr->shapeId > 0)
+						m_oShapeId = ptr->shapeId;
 
-                                m_oAutoLoad = ptr->fAutoLoad;
+					if (ptr->fAutoLoad != false)
+						m_oAutoLoad = ptr->fAutoLoad;
 
-                                if(!ptr->strProgID.value().empty())
-                                    m_oProgId = ptr->strProgID.value();
+					if (!ptr->strProgID.value().empty())
+						m_oProgId = ptr->strProgID.value();
 
-                                if(ptr->fLinked != 0 && !ptr->link.getAssembledFormula().empty())
-                                    m_oLink = ptr->link.getAssembledFormula();
+					if (ptr->fLinked != false && !ptr->link.getAssembledFormula().empty())
+						m_oLink = ptr->link.getAssembledFormula();
 
-                                if(ptr->fLinked == 0 && !ptr->strRelID.value.value().empty())
-                                    m_oRid = ptr->strRelID.value.value();
-                            }
-                        }
+					if (ptr->fLinked == false && !ptr->strRelID.value.value().empty())
+						m_oRid = ptr->strRelID.value.value();
+				}
+			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if		( oReader, (L"progId"),		m_oProgId )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"dvAspect"),	m_oDvAspect )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"link"),		m_oLink )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"oleUpdate"),	m_oOleUpdate )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"autoLoad"),	m_oAutoLoad )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"shapeId"),	m_oShapeId )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"r:id"),		m_oRid )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"relationships:id"), m_oRid )
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_Start(oReader)
+					WritingElement_ReadAttributes_Read_if(oReader, (L"progId"), m_oProgId)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"dvAspect"), m_oDvAspect)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"link"), m_oLink)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"oleUpdate"), m_oOleUpdate)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"autoLoad"), m_oAutoLoad)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"shapeId"), m_oShapeId)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"r:id"), m_oRid)
+					WritingElement_ReadAttributes_Read_else_if(oReader, (L"relationships:id"), m_oRid)
+					WritingElement_ReadAttributes_End(oReader)
 			}
 		public:
 			nullable<std::wstring >								m_oProgId;
@@ -396,7 +453,7 @@ namespace OOX
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oShapeId;
 			nullable<SimpleTypes::CRelationshipId>				m_oRid;
 			nullable<COleObjectPr>								m_oObjectPr;
-	//internal
+			//internal
 			smart_ptr<OOX::OleObject>							m_OleObjectFile;
 			nullable<SimpleTypes::CRelationshipId>				m_oRidImg;
 		};
@@ -405,13 +462,13 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(COleObjects)
-                        WritingElement_XlsbConstructors(COleObjects)
-			COleObjects()
+				WritingElement_XlsbConstructors(COleObjects)
+				COleObjects()
 			{
 			}
 			virtual ~COleObjects()
 			{
-                for(boost::unordered_map<unsigned int, COleObject*>::const_iterator it = m_mapOleObjects.begin(); it != m_mapOleObjects.end(); ++it)
+				for (boost::unordered_map<unsigned int, COleObject*>::const_iterator it = m_mapOleObjects.begin(); it != m_mapOleObjects.end(); ++it)
 				{
 					delete it->second;
 				}
@@ -420,16 +477,16 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 			}
-            virtual std::wstring toXML() const
+			virtual std::wstring toXML() const
 			{
 				return (L"");
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
-				if(m_mapOleObjects.size() > 0)
+				if (m_mapOleObjects.size() > 0)
 				{
 					writer.WriteString(L"<oleObjects>");
-                    for(boost::unordered_map<unsigned int, COleObject*>::const_iterator it = m_mapOleObjects.begin(); it != m_mapOleObjects.end(); ++it)
+					for (boost::unordered_map<unsigned int, COleObject*>::const_iterator it = m_mapOleObjects.begin(); it != m_mapOleObjects.end(); ++it)
 					{
 						it->second->toXML(writer);
 					}
@@ -438,20 +495,20 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-				ReadAttributes( oReader );
+				ReadAttributes(oReader);
 
-				if ( oReader.IsEmptyNode() )
+				if (oReader.IsEmptyNode())
 					return;
 
 				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				while (oReader.ReadNextSiblingNode(nCurDepth))
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( (L"oleObject") == sName )
+					if ((L"oleObject") == sName)
 					{
 						COleObject* pOleObject = new COleObject(oReader);
-						if(pOleObject->m_oShapeId.IsInit())
+						if (pOleObject->m_oShapeId.IsInit())
 						{
 							m_mapOleObjects[pOleObject->m_oShapeId->GetValue()] = pOleObject;
 						}
@@ -460,23 +517,23 @@ namespace OOX
 							delete pOleObject;
 						}
 					}
-					else if ( (L"AlternateContent") == sName )
+					else if ((L"AlternateContent") == sName)
 					{
 						int nSubDepth = oReader.GetDepth();
-						while( oReader.ReadNextSiblingNode( nSubDepth ) )
+						while (oReader.ReadNextSiblingNode(nSubDepth))
 						{
 							std::wstring sSubName = XmlUtils::GetNameNoNS(oReader.GetName());
-							if ( (L"Fallback") == sSubName || (L"Choice") == sSubName )
+							if ((L"Fallback") == sSubName || (L"Choice") == sSubName)
 							{
 								bool bFound = false;
 								int nSubSubDepth = oReader.GetDepth();
-								while( oReader.ReadNextSiblingNode( nSubSubDepth ) )
+								while (oReader.ReadNextSiblingNode(nSubSubDepth))
 								{
 									std::wstring sSubSubName = XmlUtils::GetNameNoNS(oReader.GetName());
-									if ( (L"oleObject") == sSubSubName )
+									if ((L"oleObject") == sSubSubName)
 									{
 										COleObject* pOleObject = new COleObject(oReader);
-										if(pOleObject->m_oShapeId.IsInit())
+										if (pOleObject->m_oShapeId.IsInit())
 										{
 											m_mapOleObjects[pOleObject->m_oShapeId->GetValue()] = pOleObject;
 											bFound = true;
@@ -497,27 +554,44 @@ namespace OOX
 					}
 				}
 			}
-                        void fromBin(XLS::BaseObjectPtr& obj)
-                        {
-                            auto ptr = static_cast<XLSB::OLEOBJECTS*>(obj.get());
-                            if(ptr != nullptr)
-                            {
-                                for(auto &oleObject: ptr->m_arBrtOleObject)
-                                {
-                                    COleObject* pOleObject = new COleObject(oleObject);
-                                    if(pOleObject->m_oShapeId.IsInit())
-                                    {
-                                            m_mapOleObjects[pOleObject->m_oShapeId->GetValue()] = pOleObject;
-                                    }
-                                    else
-                                    {
-                                            delete pOleObject;
-                                    }
-                                }
-                            }
+			void fromBin(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::OLEOBJECTS*>(obj.get());
+				if (ptr != nullptr)
+				{
+					for (auto &oleObject : ptr->m_arBrtOleObject)
+					{
+						COleObject* pOleObject = new COleObject(oleObject);
+						if (pOleObject->m_oShapeId.IsInit())
+						{
+							m_mapOleObjects[pOleObject->m_oShapeId->GetValue()] = pOleObject;
+						}
+						else
+						{
+							delete pOleObject;
+						}
+					}
+				}
 
-                        }
-			virtual EElementType getType () const
+			}
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				if(obj == nullptr)
+					obj = XLS::BaseObjectPtr(new XLSB::OLEOBJECTS());
+
+				auto ptr = static_cast<XLSB::OLEOBJECTS*>(obj.get());
+				if (ptr != nullptr)
+				{
+					for (auto &oleObject : m_mapOleObjects)
+					{
+						XLS::BaseObjectPtr item(new XLSB::OleObject());
+						oleObject.second->toBin(item);
+						ptr->m_arBrtOleObject.push_back(item);
+					}
+				}
+
+			}
+			virtual EElementType getType() const
 			{
 				return et_x_OleObjects;
 			}
@@ -527,7 +601,7 @@ namespace OOX
 			{
 			}
 		public:
-            boost::unordered_map<unsigned int, COleObject*> m_mapOleObjects;
+			boost::unordered_map<unsigned int, COleObject*> m_mapOleObjects;
 		};
 	} //Spreadsheet
 } // namespace OOX

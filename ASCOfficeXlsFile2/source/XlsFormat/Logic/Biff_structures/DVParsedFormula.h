@@ -41,6 +41,7 @@ class DVParsedFormula : public ParsedFormula
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(DVParsedFormula)
 public:
 	DVParsedFormula();
+	DVParsedFormula& operator=(const std::wstring& value);
 	BiffStructurePtr clone();
 
 	void load(CFRecord& record, bool bLoad);

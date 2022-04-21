@@ -4588,8 +4588,8 @@ namespace SimpleTypes
 		enum EDataValidationImeMode 
 		{
 			imeModeNoControl		=  0,
-			imeModeOff				=  1,
-			imeModeOn				=  2,
+			imeModeOn				=  1,
+			imeModeOff				=  2,
 			imeModeDisabled		=  3,
 			imeModeHiragana		=  4,
 			imeModeFullKatakana	=  5,

@@ -43,6 +43,7 @@ class ObjectParsedFormula : public ParsedFormula
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(ObjectParsedFormula)
 public:
 	ObjectParsedFormula();
+	ObjectParsedFormula& operator=(const std::wstring& value);
 	BiffStructurePtr clone();
 	void load(CFRecord& record) override;
 	void save(CFRecord& record) override;

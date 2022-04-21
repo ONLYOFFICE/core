@@ -233,144 +233,181 @@ namespace OOX
 			CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
 			if (xlsb)
 			{
-				XLSB::WorkSheetStreamPtr workSheetStream(new XLSB::WorkSheetStream);
-
-				if (workSheetStream != nullptr)
+				if (m_bIsChartSheet)
 				{
-					if (m_oCols.IsInit())
-					{
-						m_oCols->toBin(workSheetStream->m_arCOLINFOS);
-					}
-					if (m_oDimension.IsInit())
-					{
-						m_oDimension->toBin(workSheetStream->m_BrtWsDim);
-					}
-					if (m_oDrawing.IsInit())
-					{
-						m_oDrawing->toBin(workSheetStream->m_BrtDrawing);
-					}
-					if (m_oLegacyDrawing.IsInit())
-					{
-						m_oLegacyDrawing->toBin(workSheetStream->m_BrtLegacyDrawing);
-					}
-					if (m_oLegacyDrawingHF.IsInit())
-					{
-						m_oLegacyDrawingHF->toBin(workSheetStream->m_BrtLegacyDrawingHF);
-					}
-					if (m_oHyperlinks.IsInit())
-					{
-						workSheetStream->m_HLINKS = XLS::BaseObjectPtr(new XLSB::HLINKS());
-						m_oHyperlinks->toBin(static_cast<XLSB::HLINKS*>(workSheetStream->m_HLINKS.get())->m_arHlinks);
-					}
-					if (m_oMergeCells.IsInit())
-					{
-						workSheetStream->m_MERGECELLS = XLS::BaseObjectPtr(new XLSB::MERGECELLS());
-						m_oMergeCells->toBin(static_cast<XLSB::MERGECELLS*>(workSheetStream->m_MERGECELLS.get())->m_arBrtMergeCell);
-					}
-					if (m_oSheetData.IsInit())
-					{
-						m_oSheetData->toBin(workSheetStream->m_CELLTABLE);
-					}
-					if (m_oSheetFormatPr.IsInit())
-					{
-						m_oSheetFormatPr->toBin(workSheetStream->m_BrtWsFmtInfo);
-					}
-					if (m_oSheetViews.IsInit())
-					{
-						if (workSheetStream->m_WSVIEWS2 == nullptr)
-							workSheetStream->m_WSVIEWS2 = XLS::BaseObjectPtr(new XLSB::WSVIEWS2());
-						m_oSheetViews->toBin(workSheetStream->m_WSVIEWS2);
-					}
-					if (m_oPageMargins.IsInit())
-					{
-						m_oPageMargins->toBin(workSheetStream->m_BrtMargins);
-					}
-					if (m_oPageSetup.IsInit())
-					{
-						if (workSheetStream->m_BrtPageSetup == nullptr)
-							workSheetStream->m_BrtPageSetup = XLS::BaseObjectPtr(new XLSB::PageSetup());
-						m_oPageSetup->toBin(workSheetStream->m_BrtPageSetup);
-					}
-					if (m_oPrintOptions.IsInit())
-					{
-						m_oPrintOptions->toBin(workSheetStream->m_BrtPrintOptions);
-					}
-					if (m_oHeaderFooter.IsInit())
-					{
-						m_oHeaderFooter->toBin(workSheetStream->m_HEADERFOOTER);
-					}
-					if (m_oSheetProtection.IsInit())
-					{
-						if (m_oSheetProtection->m_oAlgorithmName.IsInit()
-							|| m_oSheetProtection->m_oSpinCount.IsInit()
-							|| m_oSheetProtection->m_oHashValue.IsInit()
-							|| m_oSheetProtection->m_oSaltValue.IsInit())
-						{
-							workSheetStream->m_BrtSheetProtectionIso = XLS::BaseObjectPtr(new XLSB::SheetProtectionIso());
-							m_oSheetProtection->toBin(workSheetStream->m_BrtSheetProtectionIso);
-						}
-						else
-						{
-							workSheetStream->m_BrtSheetProtection = XLS::BaseObjectPtr(new XLSB::SheetProtection());
-							m_oSheetProtection->toBin(workSheetStream->m_BrtSheetProtection);
-						}
-
-					}
-					if (m_oTableParts.IsInit())
-					{
-						m_oTableParts->toBin(workSheetStream->m_LISTPARTS);
-					}
-					if (m_oSortState.IsInit())
-					{
-						m_oSortState->toBin(workSheetStream->m_SORTSTATE);
-					}
-					if (m_oAutofilter.IsInit())
-					{
-						m_oAutofilter->toBin(workSheetStream->m_AUTOFILTER);
-					}
-					if (!m_arrConditionalFormatting.empty())
-					{
-						for (auto &item : m_arrConditionalFormatting)
-						{
-							XLS::BaseObjectPtr item_bin(new XLSB::CONDITIONALFORMATTING());
-							item->toBin(item_bin);
-							workSheetStream->m_arCONDITIONALFORMATTING.push_back(item_bin);
-						}
-					}
-					/*if (m_oDataValidations.IsInit())
-					{
-						workSheetStream->m_DVALS = XLS::BaseObjectPtr(new XLSB::DVALS());
-						m_oDataValidations->toBin(workSheetStream->m_DVALS);
-					}
-					
-					
-					/* if (workSheetStream->m_DVALS != nullptr)
-                            m_oDataValidations = workSheetStream->m_DVALS;
-                        if (workSheetStream->m_OLEOBJECTS != nullptr)
-                            m_oOleObjects = workSheetStream->m_OLEOBJECTS;
-                        if (workSheetStream->m_ACTIVEXCONTROLS != nullptr)
-                            m_oControls = workSheetStream->m_ACTIVEXCONTROLS;
-                        if (workSheetStream->m_BrtWsProp != nullptr)
-                            m_oSheetPr = workSheetStream->m_BrtWsProp;
-                        if (workSheetStream->m_BrtBkHim != nullptr)
-                            m_oPicture = workSheetStream->m_BrtBkHim;
-                        if (workSheetStream->m_RWBRK != nullptr)
-                            m_oRowBreaks = workSheetStream->m_RWBRK;
-                        if (workSheetStream->m_COLBRK != nullptr)
-                            m_oColBreaks = workSheetStream->m_COLBRK;
-                        if (workSheetStream->m_DCON != nullptr)
-                            m_oDataConsolidate = workSheetStream->m_DCON;
-
-                        if (!workSheetStream->m_arBrtRangeProtectionIso.empty())
-                            m_oProtectedRanges = workSheetStream->m_arBrtRangeProtectionIso;
-                        else if(!workSheetStream->m_arBrtRangeProtection.empty())
-                            m_oProtectedRanges = workSheetStream->m_arBrtRangeProtection;
-
-                        if (workSheetStream->m_FRTWORKSHEET != nullptr)
-                            m_oExtLst = workSheetStream->m_FRTWORKSHEET;
-					*/
 				}
-				xlsb->WriteBin(oPath, workSheetStream.get());
+				else
+				{
+					XLSB::WorkSheetStreamPtr workSheetStream(new XLSB::WorkSheetStream);
+
+					if (workSheetStream != nullptr)
+					{
+						if (m_oCols.IsInit())
+						{
+							m_oCols->toBin(workSheetStream->m_arCOLINFOS);
+						}
+						if (m_oDimension.IsInit())
+						{
+							m_oDimension->toBin(workSheetStream->m_BrtWsDim);
+						}
+						if (m_oDrawing.IsInit())
+						{
+							m_oDrawing->toBin(workSheetStream->m_BrtDrawing);
+						}
+						if (m_oLegacyDrawing.IsInit())
+						{
+							m_oLegacyDrawing->toBin(workSheetStream->m_BrtLegacyDrawing);
+						}
+						if (m_oLegacyDrawingHF.IsInit())
+						{
+							m_oLegacyDrawingHF->toBin(workSheetStream->m_BrtLegacyDrawingHF);
+						}
+						if (m_oHyperlinks.IsInit())
+						{
+							workSheetStream->m_HLINKS = XLS::BaseObjectPtr(new XLSB::HLINKS());
+							m_oHyperlinks->toBin(static_cast<XLSB::HLINKS*>(workSheetStream->m_HLINKS.get())->m_arHlinks);
+						}
+						if (m_oMergeCells.IsInit())
+						{
+							workSheetStream->m_MERGECELLS = XLS::BaseObjectPtr(new XLSB::MERGECELLS());
+							m_oMergeCells->toBin(static_cast<XLSB::MERGECELLS*>(workSheetStream->m_MERGECELLS.get())->m_arBrtMergeCell);
+						}
+						if (m_oSheetData.IsInit())
+						{
+							m_oSheetData->toBin(workSheetStream->m_CELLTABLE);
+						}
+						if (m_oSheetFormatPr.IsInit())
+						{
+							m_oSheetFormatPr->toBin(workSheetStream->m_BrtWsFmtInfo);
+						}
+						if (m_oSheetViews.IsInit())
+						{
+							if (workSheetStream->m_WSVIEWS2 == nullptr)
+								workSheetStream->m_WSVIEWS2 = XLS::BaseObjectPtr(new XLSB::WSVIEWS2());
+							m_oSheetViews->toBin(workSheetStream->m_WSVIEWS2);
+						}
+						if (m_oPageMargins.IsInit())
+						{
+							m_oPageMargins->toBin(workSheetStream->m_BrtMargins);
+						}
+						if (m_oPageSetup.IsInit())
+						{
+							if (workSheetStream->m_BrtPageSetup == nullptr)
+								workSheetStream->m_BrtPageSetup = XLS::BaseObjectPtr(new XLSB::PageSetup());
+							m_oPageSetup->toBin(workSheetStream->m_BrtPageSetup);
+						}
+						if (m_oPrintOptions.IsInit())
+						{
+							m_oPrintOptions->toBin(workSheetStream->m_BrtPrintOptions);
+						}
+						if (m_oHeaderFooter.IsInit())
+						{
+							m_oHeaderFooter->toBin(workSheetStream->m_HEADERFOOTER);
+						}
+						if (m_oSheetProtection.IsInit())
+						{
+							if (m_oSheetProtection->m_oAlgorithmName.IsInit()
+								|| m_oSheetProtection->m_oSpinCount.IsInit()
+								|| m_oSheetProtection->m_oHashValue.IsInit()
+								|| m_oSheetProtection->m_oSaltValue.IsInit())
+							{
+								workSheetStream->m_BrtSheetProtectionIso = XLS::BaseObjectPtr(new XLSB::SheetProtectionIso());
+								m_oSheetProtection->toBin(workSheetStream->m_BrtSheetProtectionIso);
+							}
+							//else
+							//{
+								workSheetStream->m_BrtSheetProtection = XLS::BaseObjectPtr(new XLSB::SheetProtection());
+								m_oSheetProtection->toBin(workSheetStream->m_BrtSheetProtection);
+							//}
+
+						}
+						if (m_oTableParts.IsInit())
+						{
+							m_oTableParts->toBin(workSheetStream->m_LISTPARTS);
+						}
+						if (m_oSortState.IsInit())
+						{
+							m_oSortState->toBin(workSheetStream->m_SORTSTATE);
+						}
+						if (m_oAutofilter.IsInit())
+						{
+							m_oAutofilter->toBin(workSheetStream->m_AUTOFILTER);
+						}
+						if (!m_arrConditionalFormatting.empty())
+						{
+							for (auto &item : m_arrConditionalFormatting)
+							{
+								XLS::BaseObjectPtr item_bin(new XLSB::CONDITIONALFORMATTING());
+								item->toBin(item_bin);
+								workSheetStream->m_arCONDITIONALFORMATTING.push_back(item_bin);
+							}
+						}
+						if (m_oDataValidations.IsInit())
+						{
+							workSheetStream->m_DVALS = XLS::BaseObjectPtr(new XLSB::DVALS());
+							m_oDataValidations->toBin(workSheetStream->m_DVALS);
+						}
+						if (m_oOleObjects.IsInit())
+						{
+							m_oOleObjects->toBin(workSheetStream->m_OLEOBJECTS);
+						}
+						if (m_oControls.IsInit())
+						{
+							m_oControls->toBin(workSheetStream->m_ACTIVEXCONTROLS);
+						}
+						if (m_oSheetPr.IsInit())
+						{
+							workSheetStream->m_BrtWsProp = XLS::BaseObjectPtr(new XLSB::WsProp());
+							m_oSheetPr->toBin(workSheetStream->m_BrtWsProp);
+						}
+						if (m_oPicture.IsInit())
+						{
+							m_oPicture->toBin(workSheetStream->m_BrtBkHim);
+						}
+						if (m_oRowBreaks.IsInit())
+						{
+							workSheetStream->m_RWBRK = XLS::BaseObjectPtr(new XLSB::RWBRK());
+							m_oRowBreaks->toBin(workSheetStream->m_RWBRK);
+						}
+						if (m_oRowBreaks.IsInit())
+						{
+							workSheetStream->m_COLBRK = XLS::BaseObjectPtr(new XLSB::COLBRK());
+							m_oRowBreaks->toBin(workSheetStream->m_COLBRK);
+						}
+						if (m_oDataConsolidate.IsInit())
+						{
+							m_oDataConsolidate->toBin(workSheetStream->m_DCON);
+						}
+						if (m_oProtectedRanges.IsInit())
+						{
+							for (size_t i = 0; i < m_oProtectedRanges->m_arrItems.size(); ++i)
+							{
+								if (m_oProtectedRanges->m_arrItems[i])
+								{
+									if (m_oProtectedRanges->m_arrItems[i]->m_oAlgorithmName.IsInit()
+										|| m_oProtectedRanges->m_arrItems[i]->m_oSpinCount.IsInit()
+										|| m_oProtectedRanges->m_arrItems[i]->m_oHashValue.IsInit()
+										|| m_oProtectedRanges->m_arrItems[i]->m_oSaltValue.IsInit())
+									{
+										XLS::BaseObjectPtr item(new XLSB::RangeProtectionIso());
+										m_oProtectedRanges->m_arrItems[i]->toBin(item);
+										workSheetStream->m_arBrtRangeProtectionIso.push_back(item);
+									}
+
+									XLS::BaseObjectPtr item(new XLSB::RangeProtection());
+									m_oProtectedRanges->m_arrItems[i]->toBin(item);
+									workSheetStream->m_arBrtRangeProtection.push_back(item);
+								}
+							}
+						}
+						/*						
+
+							if (workSheetStream->m_FRTWORKSHEET != nullptr)
+								m_oExtLst = workSheetStream->m_FRTWORKSHEET;
+						*/
+					}
+					xlsb->WriteBin(oPath, workSheetStream.get());
+				}
 
 			}
 		}

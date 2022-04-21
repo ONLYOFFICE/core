@@ -199,6 +199,27 @@ namespace Spreadsheet
     {
         ReadAttributes(obj);
     }
+	void CControl::toBin(XLS::BaseObjectPtr& obj)
+	{
+		auto ptr = static_cast<XLSB::ActiveX*>(obj.get());
+		if (ptr != nullptr)
+		{
+			if (m_oShapeId.IsInit())
+				ptr->shapeId = m_oShapeId->GetValue();
+			else
+				ptr->shapeId = 0;
+
+			if (m_oName.IsInit())
+				ptr->strName = m_oName.get();
+			else
+				ptr->strName = L"";
+
+			if (m_oRid.IsInit())
+				ptr->strRelID.value = m_oRid->GetValue();
+			else
+				ptr->strRelID.value = L"";
+		}
+	}
     void CControl::ReadAttributes(XLS::BaseObjectPtr& obj)
     {
         auto ptr = static_cast<XLSB::ActiveX*>(obj.get());
@@ -327,6 +348,23 @@ namespace Spreadsheet
         }
 
     }
+	void CControls::toBin(XLS::BaseObjectPtr& obj)
+	{
+		if (obj == nullptr)
+			obj = XLS::BaseObjectPtr(new XLSB::ACTIVEXCONTROLS());
+
+		auto ptr = static_cast<XLSB::ACTIVEXCONTROLS*>(obj.get());
+		if (ptr != nullptr)
+		{
+			for (auto &activeX : m_mapControls)
+			{
+				XLS::BaseObjectPtr item(new XLSB::ActiveX());
+				activeX.second->toBin(item);
+				ptr->m_arBrtActiveX.push_back(item);
+			}
+		}
+
+	}
 //--------------------------------------------------------------------------------------------------------------
 	void CListItem::toXML(NSStringUtils::CStringBuilder& writer) const
 	{

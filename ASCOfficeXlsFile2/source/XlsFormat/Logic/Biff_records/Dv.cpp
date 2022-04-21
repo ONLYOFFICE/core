@@ -111,7 +111,8 @@ void Dv::readFields(CFRecord& record)
     }
     else
     {
-        record >> sqrfx;
+		if (!_ext14)
+			record >> sqrfx;
 
         XLSB::DValStrings dvalstr;
         record >> dvalstr;
@@ -167,7 +168,8 @@ void Dv::writeFields(CFRecord& record)
 	}
 	else
 	{
-		record << sqrfx;
+		if (!_ext14)
+			record << sqrfx;
 
 		XLSB::DValStrings dvalstr;
 		dvalstr.strPromptTitle = PromptTitle;

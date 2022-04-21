@@ -60,7 +60,7 @@ namespace XLSB
 
         record >> strProgID;
 
-        if(fLinked != 0)
+        if(fLinked != false)
             record >> link;
         else
             record >> strRelID;
@@ -77,7 +77,7 @@ namespace XLSB
 
 		record << strProgID;
 
-		if (fLinked != 0)
+		if (fLinked != false)
 			record << link;
 		else
 			record << strRelID;

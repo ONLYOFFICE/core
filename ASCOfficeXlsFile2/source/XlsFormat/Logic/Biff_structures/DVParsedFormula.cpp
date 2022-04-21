@@ -39,6 +39,11 @@ DVParsedFormula::DVParsedFormula() : cce(0), ParsedFormula(CellRef())
 {
 }
 
+DVParsedFormula& DVParsedFormula::operator=(const std::wstring& value)
+{
+	ParsedFormula::operator = (value);
+	return *this;
+}
 
 BiffStructurePtr DVParsedFormula::clone()
 {

@@ -40,6 +40,7 @@ class IIFtab : public XLS::BiffAttributeSimple<unsigned char>
 {
 public:
     XLS::BiffStructurePtr clone();
+	IIFtab& operator= (const _UINT32& other_val);
 
 	enum
 	{

@@ -95,6 +95,7 @@ namespace OOX
 
 			bool IsExtended();
             void fromBin(XLS::BaseObjectPtr& obj);
+			void toBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_DataValidation;
@@ -143,8 +144,9 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
-					void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
+			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
             void fromBin(XLS::BaseObjectPtr& obj);
+			void toBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_DataValidations;
@@ -153,6 +155,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
+			void WriteAttributes(XLS::BaseObjectPtr& obj);
 		public:
 			mutable nullable_int							m_oCount;
 			nullable<SimpleTypes::COnOff<>>					m_oDisablePrompts;

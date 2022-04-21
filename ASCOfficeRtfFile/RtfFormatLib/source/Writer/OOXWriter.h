@@ -44,6 +44,7 @@ public:
 	int				m_nCurFitWidth;
 	int				m_nCurTrackChangesId;
 
+	int				m_nFormFieldId;
 	long int		m_nextParaId;
 
 	OOXRelsWriter	m_oDocRels;

@@ -801,6 +801,8 @@ public:
 	bool next_dump_section_;
 	bool last_dump_page_properties_;
 
+	int nFormFieldId_ = 0;
+
     odf_reader::odf_document *root()
     {
         return odf_document_;

@@ -221,7 +221,7 @@ std::wstring RtfField::RenderToOOX(RenderParameter oRenderParameter)
 		}
 		else if ((m_pInsert->m_pFormField) && (m_pInsert->m_pFormField->type == 2))
 		{
-			_UINT32 id = (_UINT32)this;
+			_UINT32 id = 0x7fff + pOOXWriter->m_nFormFieldId++;
 			std::wstring text_ = m_pInsert->m_pFormField->defres < m_pInsert->m_pFormField->list.size() ? 
 				m_pInsert->m_pFormField->list[m_pInsert->m_pFormField->defres] : L"";
 			

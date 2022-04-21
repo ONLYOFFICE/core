@@ -2353,7 +2353,7 @@ void field_fieldmark::docx_convert(oox::docx_conversion_context & Context)
 		//strm << L"<w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>";
 		//strm << L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>";
 
-		_UINT32 id = (_UINT32)this;
+		_UINT32 id = 0x7fff + Context.nFormFieldId_++;
 		std::wstring text_;
 		strm << L"<w:sdt><w:sdtPr><w:alias w:val=\"\"/><w:id w:val=\"" + std::to_wstring(id) << L"\"/><w:dropDownList>";
 		for (size_t i = 0; i < field_params_.size(); i++)

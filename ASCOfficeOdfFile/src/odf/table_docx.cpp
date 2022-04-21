@@ -89,6 +89,8 @@ void table_table_row::docx_convert(oox::docx_conversion_context & Context)
         
         _Wostream << L"<w:trPr>";   
 
+		if (bHeader) _Wostream << L"<w:tblHeader/>";
+
 			bool bCantSplit = false;
 
 			if (row_props)

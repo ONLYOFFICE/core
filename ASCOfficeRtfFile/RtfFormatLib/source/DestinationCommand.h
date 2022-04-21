@@ -2658,7 +2658,7 @@ public:
 	RtfFormFieldReader(RtfFormField& oFormField) : m_oFormField(oFormField) {}
 	
 	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter);
-	void RtfFormFieldReader::ExecuteText(RtfDocument& oDocument, RtfReader& oReader, std::wstring sText);
+	void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, std::wstring sText);
 
 private:
 	enum _InternalState {

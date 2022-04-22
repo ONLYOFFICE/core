@@ -46,13 +46,23 @@ BiffStructurePtr PhRun::clone()
 
 void PhRun::load(XLS::CFRecord& record)
 {
-    unsigned short flags;
+    _UINT16 flags;
     record >> ichFirst >> ichMom >> cchMom >> ifnt >> flags;
 
     phType  = GETBITS(flags, 0, 1);
     alcH    = GETBITS(flags, 2, 3);
 }
 
+void PhRun::save(XLS::CFRecord& record)
+{
+	_UINT16 flags = 0;
+	record << ichFirst << ichMom << cchMom << ifnt;
+
+	SETBITS(flags, 0, 1, phType)
+	SETBITS(flags, 2, 3, alcH)
+
+	record << flags;
+}
 
 } // namespace XLS
 

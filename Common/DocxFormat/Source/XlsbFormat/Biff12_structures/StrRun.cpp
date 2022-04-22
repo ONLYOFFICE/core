@@ -48,5 +48,9 @@ void StrRun::load(XLS::CFRecord& record)
 	record >> ich >> ifnt;
 }
 
+void StrRun::save(XLS::CFRecord& record)
+{
+	record << ich << ifnt;
+}
 
 } // namespace XLSB

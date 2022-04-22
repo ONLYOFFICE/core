@@ -86,11 +86,29 @@ namespace XLSB
 
         if (proc.optional<EndSst>())
         {
-            m_BrtEndSst = elements_.back();
+			m_bBrtEndSst = true;
             elements_.pop_back();
         }
-        return m_BrtBeginSst && m_BrtEndSst;
+		else
+			m_bBrtEndSst = false;
+
+        return m_BrtBeginSst && m_bBrtEndSst;
     }
+
+	const bool SHAREDSTRINGS::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginSst != nullptr)
+			proc.mandatory(*m_BrtBeginSst);
+
+		for (auto &item : m_arBrtSSTItem)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndSst>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

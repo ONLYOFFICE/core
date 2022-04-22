@@ -95,15 +95,29 @@ namespace OOX
 				}
 			}
 
-            void fromBin(std::wstring& str, unsigned short fontindex)
-            {
-                auto ptr = new CText();
-                ptr->fromBin(str);
-                m_arrItems.push_back(ptr);
 
-                m_oRPr.Init();
-                m_oRPr->m_nFontIndex.Init();
-                m_oRPr->m_nFontIndex = fontindex;
+			void fromBin(std::wstring& str, unsigned short fontindex)
+			{
+				auto ptr = new CText();
+				ptr->fromBin(str);
+				m_arrItems.push_back(ptr);
+
+				m_oRPr.Init();
+				m_oRPr->m_nFontIndex.Init();
+				m_oRPr->m_nFontIndex = fontindex;
+			}
+
+            void toBin(std::wstring& str, unsigned short& fontindex)
+            {
+				for (size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					if (m_arrItems[i])
+					{
+						str.append(m_arrItems[i]->m_sText);
+					}
+				}
+				if (m_oRPr.IsInit() && m_oRPr->m_nFontIndex.IsInit())
+					fontindex = m_oRPr->m_nFontIndex->GetValue();
             }
 
 			virtual EElementType getType () const

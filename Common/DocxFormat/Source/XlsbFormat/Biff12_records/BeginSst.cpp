@@ -55,5 +55,10 @@ namespace XLSB
         record >> cstTotal >> cstUnique;
     }
 
+	void BeginSst::writeFields(XLS::CFRecord& record)
+	{
+		record << cstTotal << cstUnique;
+	}
+
 } // namespace XLSB
 

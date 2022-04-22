@@ -74,6 +74,54 @@ namespace OOX
             {
                 ReadAttributes(obj);
             }
+			void toBin(XLS::BiffStructure& obj)
+			{
+				auto ptr = static_cast<XLSB::PhRun*>(&obj);
+
+				if (ptr != nullptr)
+				{
+					if(m_oAlignment.IsInit())
+					{						
+						switch (m_oAlignment->GetValue())
+						{
+						case SimpleTypes::Spreadsheet::phoneticalignmentNoControl:
+							ptr->alcH = 0;
+							break;
+						case SimpleTypes::Spreadsheet::phoneticalignmentLeft:
+							ptr->alcH = 1;
+							break;
+						case SimpleTypes::Spreadsheet::phoneticalignmentCenter:
+							ptr->alcH = 2;
+							break;
+						case SimpleTypes::Spreadsheet::phoneticalignmentDistributed:
+							ptr->alcH = 3;
+							break;
+						}
+					}
+
+					if (m_oType.IsInit())
+					{
+						switch (m_oType->GetValue())
+						{
+						case SimpleTypes::Spreadsheet::phonetictypeHalfwidthKatakana:
+							ptr->phType = 0;
+							break;
+						case SimpleTypes::Spreadsheet::phonetictypeFullwidthKatakana:
+							ptr->phType = 1;
+							break;
+						case SimpleTypes::Spreadsheet::phonetictypeHiragana:
+							ptr->phType = 2;
+							break;
+						case SimpleTypes::Spreadsheet::phonetictypeNoConversion:
+							ptr->phType = 3;
+							break;
+						}
+					}
+
+					if (m_oFontId.IsInit())
+						ptr->ifnt = m_oFontId->GetValue();
+				}
+			}
 			virtual EElementType getType () const
 			{
 				return et_x_PhoneticPr;
@@ -184,6 +232,28 @@ namespace OOX
                 m_arrItems.push_back(ptr);
                 ReadAttributes(obj);
             }
+
+			void toBin(XLS::BiffStructure& obj, std::wstring& str)
+			{			
+				for (size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					if (m_arrItems[i])
+					{
+						str.append(m_arrItems[i]->m_sText);
+					}
+				}
+
+				auto ptr = static_cast<XLSB::PhRun*>(&obj);
+
+				if (ptr != nullptr)
+				{
+					if(m_oEb.IsInit())
+						ptr->ichMom	 = m_oEb->GetValue();
+
+					if (m_oSb.IsInit())
+						ptr->ichFirst = m_oSb->GetValue();
+				}			
+			}
 
 			virtual EElementType getType () const
 			{

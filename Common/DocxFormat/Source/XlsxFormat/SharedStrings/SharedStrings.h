@@ -105,16 +105,46 @@ namespace OOX
                                 m_arrItems.push_back(pItem);
                                 m_nCount++;
                             }
-
                         }
-
                     }
-
-                    //sharedStringsStream.reset();
                 }
 
             }
+			void writeBin(const CPath& oPath) const
+			{
+				CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+				if (xlsb)
+				{
+					XLSB::SharedStringsStreamPtr sharedStringsStream(new XLSB::SharedStringsStream);
 
+					if (sharedStringsStream != nullptr)
+					{
+						sharedStringsStream->m_SHAREDSTRINGS = XLS::BaseObjectPtr(new XLSB::SHAREDSTRINGS());
+						auto ptr = static_cast<XLSB::SHAREDSTRINGS*>(sharedStringsStream->m_SHAREDSTRINGS.get());
+						if (ptr != nullptr)
+						{
+							WriteAttributes(ptr->m_BrtBeginSst);
+							
+							ptr->m_arBrtSSTItem.reserve(m_arrItems.size());
+							for (size_t i = 0; i < m_arrItems.size(); ++i)
+							{
+								if (m_arrItems[i])
+								{
+									XLS::BaseObjectPtr item(new XLSB::SSTItem());
+									auto ptrSSTItem = static_cast<XLSB::SSTItem*>(item.get());
+									if (ptrSSTItem != nullptr)
+									{
+										m_arrItems[i]->toBin(ptrSSTItem->richStr);
+										ptr->m_arBrtSSTItem.push_back(item);
+									}
+								}
+							}
+						}						
+					}
+					xlsb->WriteBin(oPath, sharedStringsStream.get());
+
+				}
+			}
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -172,20 +202,27 @@ namespace OOX
 			}
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
-				NSStringUtils::CStringBuilder writer;
-				writer.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><sst xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\""));
-				WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
-				WritingStringNullableAttrInt(L"uniqueCount", m_oUniqueCount, m_oUniqueCount->GetValue());
-				writer.WriteString(_T(">"));
-
-                for(size_t i = 0; i < m_arrItems.size(); i++)
+				if (dynamic_cast<CXlsb*>(File::m_pMainDocument))
 				{
-                    m_arrItems[i]->toXML(writer);
+					writeBin(oPath);
 				}
+				else
+				{
+					NSStringUtils::CStringBuilder writer;
+					writer.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><sst xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\""));
+					WritingStringNullableAttrInt(L"count", m_oCount, m_oCount->GetValue());
+					WritingStringNullableAttrInt(L"uniqueCount", m_oUniqueCount, m_oUniqueCount->GetValue());
+					writer.WriteString(_T(">"));
 
-				writer.WriteString(_T("</sst>"));
-                std::wstring sPath = oPath.GetPath();
-                NSFile::CFileBinary::SaveToFile(sPath.c_str(), writer.GetData());
+					for (size_t i = 0; i < m_arrItems.size(); i++)
+					{
+						m_arrItems[i]->toXML(writer);
+					}
+
+					writer.WriteString(_T("</sst>"));
+					std::wstring sPath = oPath.GetPath();
+					NSFile::CFileBinary::SaveToFile(sPath.c_str(), writer.GetData());
+				}
 
                 oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 			}
@@ -241,8 +278,23 @@ namespace OOX
                     m_oCount        = ptr->cstTotal;
                     m_oUniqueCount  = ptr->cstUnique;
                 }
-
             }
+			void WriteAttributes(XLS::BaseObjectPtr& obj) const
+			{
+				if(obj == nullptr)
+					obj = XLS::BaseObjectPtr(new XLSB::BeginSst());
+
+				auto ptr = static_cast<XLSB::BeginSst*>(obj.get());
+
+				if (ptr != nullptr)
+				{
+					if (m_oCount.IsInit())
+						ptr->cstTotal = m_oCount->GetValue();
+
+					if (m_oUniqueCount.IsInit())
+						ptr->cstUnique = m_oUniqueCount->GetValue();
+				}
+			}
 
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;

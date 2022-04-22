@@ -82,4 +82,12 @@ const bool SharedStringsStream::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool SharedStringsStream::saveContent(XLS::BinProcessor & proc)
+{
+	if (m_SHAREDSTRINGS != nullptr)
+		proc.mandatory(*m_SHAREDSTRINGS);
+
+	return true;
+}
+
 } // namespace XLSB

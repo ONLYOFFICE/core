@@ -55,5 +55,10 @@ namespace XLSB
         record >> richStr;
     }
 
+	void SSTItem::writeFields(XLS::CFRecord& record)
+	{
+		record << richStr;
+	}
+
 } // namespace XLSB
 

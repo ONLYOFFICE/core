@@ -137,6 +137,10 @@ namespace OOX
                 m_oSpace.Init();
                 m_oSpace->SetValue(SimpleTypes::xmlspacePreserve);
             }
+			void toBin(std::wstring& str)
+			{
+				str = m_sText;
+			}
 			static void trimString(std::wstring& sVal, SimpleTypes::EXmlSpace eSpace);
 			std::wstring ToString() const
 			{

@@ -192,18 +192,75 @@ namespace OOX
                         }
                     }
 
+					int index = 0;
+					std::wstring str;
                     for(auto &phRun : ptr->rgsPhRun)
                     {
+						++index;
+
                         phoneticPr = new CPhonetic();
                         phoneticPr->fromBin(phRun);
                         m_arrItems.push_back(phoneticPr);
+                        
+						//std::wstring val(&ptr->phoneticStr.value()[phRun.ichFirst]);
+						rPh = new CRPh();
+						if (phRun.ichFirst < ptr->str.value().size())
+						{
+							str = ptr->phoneticStr.value().substr(phRun.ichFirst, index == ptr->rgsPhRun.size() ? ptr->phoneticStr.value().size() - phRun.ichFirst : ptr->rgsPhRun[index].ichFirst - phRun.ichFirst);
+						}
 
-                        rPh = new CRPh();
-                        rPh->fromBin(phRun, ptr->phoneticStr.value());
+                        rPh->fromBin(phRun, str);
                         m_arrItems.push_back(rPh);
                     }
                 }
             }
+
+			void toBin(XLS::BiffStructure& obj, bool flagIsComment = false)
+			{
+				auto ptr = static_cast<XLSB::RichStr*>(&obj);
+
+				if (ptr != nullptr)
+				{
+					ptr->str = L"";
+					ptr->phoneticStr = L"";
+					int indexrPh = 0;
+					for (size_t i = 0; i < m_arrItems.size(); ++i)
+					{
+						if (m_arrItems[i]->getType() == et_x_t)
+						{
+							std::wstring val;
+							static_cast<CText*>(m_arrItems[i])->toBin(val);
+							ptr->str = val;
+						}
+						else if (m_arrItems[i]->getType() == et_x_r)
+						{
+							std::wstring val = ptr->str.value();
+							XLSB::StrRun strRun;
+							strRun.ich = val.size();
+							static_cast<CRun*>(m_arrItems[i])->toBin(val, strRun.ifnt);
+							ptr->str = val;
+							ptr->rgsStrRun.push_back(strRun);
+						}
+						else if (m_arrItems[i]->getType() == et_x_rPh)
+						{
+							std::wstring val = ptr->phoneticStr.value();
+							XLSB::PhRun rPh;
+							rPh.ichFirst = val.size();
+							static_cast<CRPh*>(m_arrItems[i])->toBin(rPh, val);
+							ptr->phoneticStr = val;
+							ptr->rgsPhRun.push_back(rPh);							
+						}
+						else if (m_arrItems[i]->getType() == et_x_PhoneticPr)
+						{
+							for (size_t j = indexrPh; j < ptr->rgsPhRun.size(); ++j)
+							{								
+								static_cast<CPhonetic*>(m_arrItems[i])->toBin(ptr->rgsPhRun[j]);
+							}
+							indexrPh = ptr->rgsPhRun.size();
+						}
+					}
+				}
+			}
 
 			void fromXLSBExt (NSBinPptxRW::CBinaryFileReader& oStream);
 			void toXLSBExt (NSBinPptxRW::CXlsbBinaryWriter& oStream);

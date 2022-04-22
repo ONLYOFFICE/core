@@ -44,7 +44,8 @@ RtfReader::RtfReader(RtfDocument& oDocument, std::wstring sFilename ) : m_oDocum
 }
 bool RtfReader::Load()
 {
-	m_oLex.SetSource( m_sFilename );
+	if (false == m_oLex.SetSource(m_sFilename)) return false;
+	
 	RtfNormalReader oNormalReader( m_oDocument, (*this) );
 	oNormalReader.Parse( m_oDocument, (*this) );
 	m_oLex.CloseSource();

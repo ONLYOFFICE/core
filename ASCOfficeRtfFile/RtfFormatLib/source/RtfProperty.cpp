@@ -1207,9 +1207,12 @@ std::wstring RtfListLevelProperty::RenderToOOX2(RenderParameter oRenderParameter
 			else
                 sIndent += L" w:hanging=\"" + std::to_wstring(-m_nFirstIndent) + L"\"";
 		}
-		RENDER_OOX_INT_ATTRIBUTE( m_nIndent,		sIndent, L"w:left" )
-		RENDER_OOX_INT_ATTRIBUTE( m_nIndentStart,	sIndent, L"w:start" )
-		
+		RENDER_OOX_INT_ATTRIBUTE(m_nIndent, sIndent, L"w:left")
+		if (sIndent.empty())
+		{
+			RENDER_OOX_INT_ATTRIBUTE(m_nIndentStart, sIndent, L"w:start")
+		}
+
         if( !sIndent.empty() )
             spPr += L"<w:ind " + sIndent + L"/>";
 
@@ -2248,6 +2251,8 @@ std::wstring RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 		sIndent += L" w:right=\"" + std::to_wstring(m_nIndRight) + L"\"";
 	}
 	RENDER_OOX_INT_ATTRIBUTE	( m_nIndLeft,	sIndent, L"w:left" );
+	RENDER_OOX_INT_ATTRIBUTE	(m_nIndStart,	sIndent, L"w:start")
+
 	if( PROP_DEF != m_nIndFirstLine )
 	{
         if( m_nIndFirstLine >= 0 )	sIndent += L" w:firstLine=\"" + std::to_wstring(m_nIndFirstLine) + L"\"";

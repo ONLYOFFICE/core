@@ -17,6 +17,7 @@ private:
     NSFonts::IFontManager* pFontManager;
     NSHtmlRenderer::CHTMLRendererText* pTextRenderer;
     int nType;
+    int nFileLength;
 public:
     CGraphicsFileDrawing(NSFonts::IApplicationFonts* pFonts)
     {
@@ -32,6 +33,7 @@ public:
         pFontManager->SetOwnerCache(pFontCache);
         
         nType = -1;
+        nFileLength = -1;
     }
     ~CGraphicsFileDrawing()
     {
@@ -40,10 +42,12 @@ public:
         RELEASEOBJECT(pFontManager);
         RELEASEINTERFACE(pApplicationFonts);
         nType = -1;
+        nFileLength = -1;
     }
     bool Open(BYTE* data, DWORD length, int _nType, const char* password)
     {
         nType = _nType;
+        nFileLength = length;
         if (nType == 0)
             pReader = new PdfReader::CPdfReader(pApplicationFonts);
         else if (nType == 1)
@@ -112,7 +116,7 @@ public:
     }
     std::wstring GetInfo()
     {
-        return pReader->GetInfo();
+        return pReader->GetInfo(nFileLength);
     }
 
     void DestroyText()

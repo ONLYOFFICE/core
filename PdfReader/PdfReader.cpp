@@ -51,6 +51,8 @@
 #include "lib/xpdf/ImageOutputDev.h"
 #include "lib/xpdf/TextString.h"
 #include "lib/xpdf/SecurityHandler.h"
+#include "lib/xpdf/Lexer.h"
+#include "lib/xpdf/Parser.h"
 #include "Src/RendererOutputDev.h"
 
 #ifdef BUILDING_WASM_MODULE
@@ -647,9 +649,13 @@ return 0;
         }\
     }\
 
-    std::wstring CPdfReader::GetInfo()
+    std::wstring CPdfReader::GetInfo(unsigned long nFileLength)
     {
         if (!m_pInternal->m_pPDFDocument)
+            return NULL;
+        XRef* xref = m_pInternal->m_pPDFDocument->getXRef();
+        BaseStream* str = m_pInternal->m_pPDFDocument->getBaseStream();
+        if (!xref || !str)
             return NULL;
 
         std::wstring sRes = L"{";
@@ -690,7 +696,34 @@ return 0;
         sRes += L",\"NumberOfPages\":";
         sRes += std::to_wstring(GetPagesCount());
         sRes += L",\"FastWebView\":";
-        sRes += m_pInternal->m_pPDFDocument->isLinearized() ? L"true" : L"false";
+
+        Object obj2, obj3, obj4, obj5, obj6;
+        bool bLinearized = false;
+        obj1.initNull();
+        Parser* parser = new Parser(xref, new Lexer(xref, str->makeSubStream(str->getStart(), gFalse, 0, &obj1)), gTrue);
+        parser->getObj(&obj1);
+        parser->getObj(&obj2);
+        parser->getObj(&obj3);
+        parser->getObj(&obj4);
+        if (obj1.isInt() && obj2.isInt() && obj3.isCmd("obj") && obj4.isDict())
+        {
+            obj4.dictLookup("Linearized", &obj5);
+            obj4.dictLookup("L", &obj6);
+            if (obj5.isNum() && obj5.getNum() > 0 && obj6.isNum())
+            {
+                unsigned long size = obj6.getNum();
+                bLinearized = size == nFileLength;
+            }
+            obj6.free();
+            obj5.free();
+        }
+        obj4.free();
+        obj3.free();
+        obj2.free();
+        obj1.free();
+        delete parser;
+
+        sRes += bLinearized ? L"true" : L"false";
         sRes += L",\"Tagged\":";
         sRes += m_pInternal->m_pPDFDocument->getStructTreeRoot()->isDict() ? L"true" : L"false";
         sRes += L"}";

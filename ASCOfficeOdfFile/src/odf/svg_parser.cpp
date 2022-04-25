@@ -44,7 +44,17 @@ namespace svg_path
             ++io_rPos;
         }
     }
-
+	static void replace_empty_commas(std::wstring& subject)
+	{
+		const std::wstring& search = L",,";
+		const std::wstring& replace = L",0,";
+		size_t pos = 0;
+		while ((pos = subject.find(search, pos)) != std::wstring::npos)
+		{
+			subject.replace(pos, search.length(), replace);
+			pos += 2;
+		}
+	}
     void skipSpacesAndCommas(int& io_rPos,const std::wstring& rStr,const int nLen)
     {
         while(io_rPos < nLen && (wchar_t(' ') == rStr[io_rPos] || wchar_t(',') == rStr[io_rPos]))
@@ -71,7 +81,7 @@ namespace svg_path
 	{
 		wchar_t aChar( rStr[io_rPos] );
 		std::wstring  sNumberString;
-		bool separator_seen=false;
+		bool separator_seen = false;
 		std::wstring  tmpString;
 
 		if(wchar_t(L'+') == aChar || wchar_t(L'-') == aChar)
@@ -109,17 +119,17 @@ namespace svg_path
 				aChar = rStr[++io_rPos];
 			}
 		}
+		if (sNumberString.empty()) 
+			return true;
+
 		bool result = false;
-		if(!sNumberString.empty())
+		try
 		{
-			try
-			{
-				o_fRetval = boost::lexical_cast<double>(sNumberString);
-				result = true;
-			}
-			catch(...)
-			{
-			}
+			o_fRetval = boost::lexical_cast<double>(sNumberString);
+			result = true;
+		}
+		catch (...)
+		{
 		}
 
 		return result;
@@ -127,11 +137,29 @@ namespace svg_path
 
 	bool importDoubleAndSpaces( double& o_fRetval, int& io_rPos, const std::wstring& rStr, const int nLen )
 	{
+		o_fRetval = 0;
+
 		if( !getDoubleChar(o_fRetval, io_rPos, rStr) )
 			return false;
 
 		skipSpacesAndCommas(io_rPos, rStr, nLen);
 
+		return true;
+	}
+	bool importDoubleAndSpacesVml(double& o_fRetval, int& io_rPos, const std::wstring& rStr, const int nLen)
+	{
+		o_fRetval = 0;
+		
+		if (rStr[io_rPos] == L',') // for first after letter
+		{
+			io_rPos++;
+		}
+		else
+		{
+			if (!getDoubleChar(o_fRetval, io_rPos, rStr))
+				return false;
+		}
+		skipSpacesAndCommas(io_rPos, rStr, nLen);
 		return true;
 	}
 
@@ -566,13 +594,18 @@ namespace svg_path
     }
 
 
-	bool parseVml(std::vector<_polyline> & Polyline, const std::wstring &  rSvgDStatement)
+	bool parseVml(std::vector<_polyline> & Polyline, const std::wstring & VmlPath)
 	{
         Polyline.clear();
-        const int nLen(rSvgDStatement.length());
+		
+		std::wstring rSvgDStatement = VmlPath;
+		
+		replace_empty_commas(rSvgDStatement);
+		
+		int nLen(rSvgDStatement.length());
         int nPos(0);
         bool bIsClosed(false);
-        
+
 		double nLastX( 0.0 );
         double nLastY( 0.0 );
 		
@@ -589,8 +622,6 @@ namespace svg_path
             bool bMoveTo	(false);
             const wchar_t aCurrChar(rSvgDStatement[nPos]);
 
-			aCurrPoly.command.clear();
-
             switch(aCurrChar)
             {
                 case 'x' :
@@ -598,7 +629,12 @@ namespace svg_path
                     nPos++;
                     bIsClosed = true;
 
-                } break;
+					if (aCurrPoly.points.size() > 0)
+					{
+						Polyline.push_back(aCurrPoly);
+						aCurrPoly.points.clear();
+					}              
+				} break;
                 case 'm' :
                 case 't' :
                 {
@@ -611,7 +647,9 @@ namespace svg_path
                     {
                         bRelative = true;
                     }
-					
+					if (bMoveTo)	aCurrPoly.command = L"m";
+					else			aCurrPoly.command = L"l";
+
                     if(aCurrPoly.points.size() > 0)
                     {
                         if(bIsClosed)
@@ -619,23 +657,19 @@ namespace svg_path
                         }
                         Polyline.push_back(aCurrPoly);
 
-                        bIsClosed = false;
-						
-						if(bMoveTo)	aCurrPoly.command = L"m";
-						else		aCurrPoly.command = L"l";
+                        bIsClosed = false;						
 						
 						aCurrPoly.points.clear();
                     }
                     nPos++;
                     skipSpaces(nPos, rSvgDStatement, nLen);
-					aCurrPoly.command.clear();
-
-                    while(nPos < nLen && isOnNumberChar(rSvgDStatement, nPos))
+					
+					while ((nPos < nLen) && (isOnNumberChar(rSvgDStatement, nPos) || rSvgDStatement[nPos] == L','))
                     {
                         double nX, nY;
 
-                        if(!importDoubleAndSpaces(nX, nPos, rSvgDStatement, nLen)) return false;
-                        if(!importDoubleAndSpaces(nY, nPos, rSvgDStatement, nLen)) return false;
+						if (!importDoubleAndSpacesVml(nX, nPos, rSvgDStatement, nLen))	return false;
+						if (!importDoubleAndSpacesVml(nY, nPos, rSvgDStatement, nLen))	return false;
 
                         if(bRelative)
                         {
@@ -646,9 +680,6 @@ namespace svg_path
                         nLastX = nX;
                         nLastY = nY;
 
- 						if(bMoveTo)	aCurrPoly.command = L"m";
-						else		aCurrPoly.command = L"l";
-						
 						aCurrPoly.points.push_back(_point(nX, nY));
                         Polyline.push_back(aCurrPoly);
 						aCurrPoly.points.clear();   
@@ -659,21 +690,22 @@ namespace svg_path
 					bRelative = true;
 				case 'c' :
                 {
-                    nPos++;
+					nPos++;
                     skipSpaces(nPos, rSvgDStatement, nLen);
 
-                    while(nPos < nLen && isOnNumberChar(rSvgDStatement, nPos))
+                    while ((nPos < nLen) && (isOnNumberChar(rSvgDStatement, nPos) || rSvgDStatement[nPos] == L','))
                     {
                         double nX, nY;
                         double nX1, nY1;
                         double nX2, nY2;
 
-						if(!importDoubleAndSpaces(nX1, nPos, rSvgDStatement, nLen))	return false;
-                        if(!importDoubleAndSpaces(nY1, nPos, rSvgDStatement, nLen))	return false;
-                        if(!importDoubleAndSpaces(nX2, nPos, rSvgDStatement, nLen))	return false;
-                        if(!importDoubleAndSpaces(nY2, nPos, rSvgDStatement, nLen))	return false;
-                        if(!importDoubleAndSpaces(nX, nPos, rSvgDStatement, nLen))	return false;
-                        if(!importDoubleAndSpaces(nY, nPos, rSvgDStatement, nLen))	return false;
+						if(!importDoubleAndSpacesVml(nX1, nPos, rSvgDStatement, nLen))	return false;
+                        if(!importDoubleAndSpacesVml(nY1, nPos, rSvgDStatement, nLen))	return false;
+                        if(!importDoubleAndSpacesVml(nX2, nPos, rSvgDStatement, nLen))	return false;
+                        
+						if(!importDoubleAndSpacesVml(nY2, nPos, rSvgDStatement, nLen))	return false;
+                        if(!importDoubleAndSpacesVml(nX, nPos, rSvgDStatement, nLen))	return false;
+                        if(!importDoubleAndSpacesVml(nY, nPos, rSvgDStatement, nLen))	return false;
 
                         if(bRelative)
                         {
@@ -703,7 +735,8 @@ namespace svg_path
 
                  default:
                 {
-                     ++nPos;
+					 aCurrPoly.command.clear();
+					 ++nPos;
                     break;
                 }
             }

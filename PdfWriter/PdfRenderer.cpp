@@ -2715,3 +2715,19 @@ void CPdfRenderer::AddLink(const unsigned int& unPage, const double& dX, const d
 	CAnnotation* pAnnot = m_pDocument->CreateLinkAnnot(pCurPage, TRect(MM_2_PT(dX), pCurPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)), pDestination);
 	pAnnot->SetBorderStyle(EBorderSubtype::border_subtype_Solid, 0);
 }
+
+bool CPdfRenderer::IsValid()
+{
+        return m_bValid;
+}
+bool CPdfRenderer::IsPageValid()
+{
+        if (!IsValid() || !m_pPage)
+            return false;
+
+        return true;
+}
+void CPdfRenderer::SetError()
+{
+        m_bValid = false;
+}

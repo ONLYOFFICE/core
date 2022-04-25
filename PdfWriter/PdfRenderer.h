@@ -242,21 +242,9 @@ private:
 	void UpdateTransform();
 	void UpdatePen();
 	void UpdateBrush();
-	bool IsValid()
-	{
-            return m_bValid;
-	}
-	bool IsPageValid()
-	{
-            if (!IsValid() || !m_pPage)
-                return false;
-
-            return true;
-	}
-	void SetError()
-	{
-            m_bValid = false;;
-	}
+    bool IsValid();
+    bool IsPageValid();
+    void SetError();
 	void AddLink(const unsigned int& unPage, const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const unsigned int& unDestPage);
 
 

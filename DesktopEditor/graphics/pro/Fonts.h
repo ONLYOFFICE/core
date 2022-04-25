@@ -224,6 +224,8 @@ namespace NSFonts
         std::wstring*   wsName;
         std::wstring*   wsAltName;
 
+        std::wstring*   wsDefaultName;
+
         std::wstring*   wsFamilyClass;
         SHORT*          sFamilyClass;
 
@@ -270,6 +272,8 @@ namespace NSFonts
             wsName = NULL;
             wsAltName = NULL;
 
+            wsDefaultName = NULL;
+
             wsFamilyClass = NULL;
             sFamilyClass = NULL;
 
@@ -315,6 +319,9 @@ namespace NSFonts
 
             if (NULL != wsAltName)
                 oFormat.wsAltName = new std::wstring(*wsAltName);
+
+            if (NULL != wsDefaultName)
+                oFormat.wsDefaultName = new std::wstring(*wsDefaultName);
 
             if (NULL != wsFamilyClass)
                 oFormat.wsFamilyClass = new std::wstring(*wsFamilyClass);
@@ -380,6 +387,8 @@ namespace NSFonts
         {
             RELEASEOBJECT(wsName);
             RELEASEOBJECT(wsAltName);
+
+            RELEASEOBJECT(wsDefaultName);
 
             RELEASEOBJECT(wsFamilyClass);
             RELEASEOBJECT(sFamilyClass);

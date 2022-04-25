@@ -1009,15 +1009,23 @@ NSFonts::CFontInfo* CFontList::GetByParams(NSFonts::CFontSelectFormat& oSelect, 
             if ( NULL != oSelect.bFixedWidth )
                 nCurPenalty += GetFixedPitchPenalty( pInfo->m_bIsFixed, *oSelect.bFixedWidth );
 
-            if ( oSelect.wsName != NULL && oSelect.wsAltName != NULL )
+            int nNamePenalty = 0;
+            if ( oSelect.wsName != NULL )
+                nNamePenalty = GetFaceNamePenalty2( pInfo, *oSelect.wsName, true );
+            if ( oSelect.wsAltName != NULL )
             {
-                nCurPenalty += min( GetFaceNamePenalty2( pInfo, *oSelect.wsName, true ),
-                                    GetFaceNamePenalty2( pInfo, *oSelect.wsAltName, true ) );
+                int nTmp = GetFaceNamePenalty2( pInfo, *oSelect.wsAltName, true );
+                if (nTmp < nNamePenalty)
+                    nNamePenalty = nTmp;
             }
-            else if ( oSelect.wsName != NULL )
-                nCurPenalty += GetFaceNamePenalty2( pInfo, *oSelect.wsName, true );
-            else if ( oSelect.wsAltName != NULL )
-                nCurPenalty += GetFaceNamePenalty2( pInfo, *oSelect.wsAltName, true );
+            if ( oSelect.wsDefaultName != NULL )
+            {
+                int nTmp = 1000 + GetFaceNamePenalty2( pInfo, *oSelect.wsDefaultName, true );
+                if (nTmp < nNamePenalty)
+                    nNamePenalty = nTmp;
+            }
+
+            nCurPenalty += nNamePenalty;
 
             if ( NULL != oSelect.usWidth )
                 nCurPenalty += GetWidthPenalty( pInfo->m_usWidth, *oSelect.usWidth );

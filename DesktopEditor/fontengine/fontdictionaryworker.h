@@ -75,19 +75,19 @@ namespace NSFontDictionary
 					bool bIsEqual = true;
 					for (int j = 1; j < nNameLen; ++j)
 					{
-						if ('\0' == _name[j] && j != (nNameLen - 1))
-						{
-							bIsEqual = false;
-							break;
-						}
-						if (pName[j] != (wchar_t)_name[j])
+                        if ('\0' == _name[j]) // короче чем нужно
+                        {
+                            bIsEqual = false;
+                            break;
+                        }
+                        if (pName[j] != (wchar_t)_name[j])
 						{
 							bIsEqual = false;
 							break;
 						}
 					}
 
-					if (bIsEqual)
+                    if (bIsEqual && _name[nNameLen] == '\0') // чтобы не длиннее, чем нужно
 					{
 						nIndex = i;
 						break;
@@ -175,7 +175,7 @@ namespace NSFontDictionary
 				bool bIsEqual = true;
 				for (int j = 1; j < nNameLen; ++j)
 				{
-					if (((wchar_t)'\0') == _name[j] && j != (nNameLen - 1))
+                    if ('\0' == _name[j]) // короче чем нужно
 					{
 						bIsEqual = false;
 						break;
@@ -187,7 +187,7 @@ namespace NSFontDictionary
 					}
 				}
 
-				if (bIsEqual)
+                if (bIsEqual && _name[nNameLen] == '\0') // чтобы не длиннее, чем нужно
 				{
 					nIndex = i;
 					break;

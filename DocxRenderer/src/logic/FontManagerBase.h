@@ -724,6 +724,8 @@ namespace NSFontManager
             if (oFormat.bBold && *(oFormat.bBold) == 1 && oFormat.pPanose && oFormat.pPanose[2] < 7)
                 oFormat.pPanose[2] = 7;
 
+            oFormat.wsDefaultName = new std::wstring(L"Arial");
+
             NSFonts::CFontInfo* pInfo = m_pManager->GetFontInfoByParams(oFormat);
 
             oPick.m_strPickFont = pInfo->m_wsFontName;

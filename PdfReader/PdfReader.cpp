@@ -76,6 +76,7 @@ namespace PdfReader
         NSFonts::IFontManager*      m_pFontManager;
         CFontList*         m_pFontList;
         CPdfRenderer*      m_pPdfWriter;
+        DWORD              m_nFileLength;
 
         void GetPageTree(XRef* xref, Object* pPagesRefObj)
         {
@@ -129,7 +130,8 @@ namespace PdfReader
 
         m_pInternal->m_pPDFDocument = NULL;
         m_pInternal->m_pFontManager = NULL;
-        m_pInternal->m_pPdfWriter = NULL;
+        m_pInternal->m_pPdfWriter   = NULL;
+        m_pInternal->m_nFileLength  = 0;
 
         globalParams  = new GlobalParamsAdaptor(NULL);
 #ifndef _DEBUG
@@ -208,6 +210,13 @@ namespace PdfReader
         delete owner_pswd;
         delete user_pswd;
 
+        NSFile::CFileBinary oFile;
+        if (oFile.OpenFile(wsSrcPath))
+        {
+            m_pInternal->m_nFileLength = oFile.GetFileSize();
+            oFile.CloseFile();
+        }
+
         if (m_pInternal->m_pPDFDocument)
             m_eError = m_pInternal->m_pPDFDocument->getErrorCode();
         else
@@ -248,6 +257,7 @@ namespace PdfReader
         // будет освобожден в деструкторе PDFDoc
         BaseStream *str = new MemStream((char*)data, 0, length, &obj);
         m_pInternal->m_pPDFDocument = new PDFDoc(str, owner_pswd, user_pswd);
+        m_pInternal->m_nFileLength = length;
 
         delete owner_pswd;
         delete user_pswd;
@@ -649,7 +659,7 @@ return 0;
         }\
     }\
 
-    std::wstring CPdfReader::GetInfo(unsigned long nFileLength)
+    std::wstring CPdfReader::GetInfo()
     {
         if (!m_pInternal->m_pPDFDocument)
             return NULL;
@@ -712,7 +722,7 @@ return 0;
             if (obj5.isNum() && obj5.getNum() > 0 && obj6.isNum())
             {
                 unsigned long size = obj6.getNum();
-                bLinearized = size == nFileLength;
+                bLinearized = size == m_pInternal->m_nFileLength;
             }
             obj6.free();
             obj5.free();
@@ -758,7 +768,11 @@ return 0;
             pg = pLinkDest->getPageNum();
         if (pg == 0)
             pg = 1;
-        double dy = pdfDoc->getPageCropHeight(pg) - pLinkDest->getTop();
+        double dy = 0;
+        double dTop = pLinkDest->getTop();
+        double dHeight = pdfDoc->getPageCropHeight(pg);
+        if (dTop > 0 && dTop < dHeight)
+            dy = dHeight - dTop;
         if (str)
             RELEASEOBJECT(pLinkDest);
 

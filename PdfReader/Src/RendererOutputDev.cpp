@@ -3953,7 +3953,6 @@ namespace PdfReader
 
         double dShiftX = 0, dShiftY = 0;
         DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
-        oImage.SaveFile(NSFile::GetProcessDirectory() + L"/res1.png", _CXIMAGE_FORMAT_PNG);
         m_pRenderer->DrawImage(&oImage, 0 + dShiftX, 0 + dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
     }
 	void RendererOutputDev::drawMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, Object* pStreamRef, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GBool bMaskInvert, GBool interpolate)

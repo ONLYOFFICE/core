@@ -180,7 +180,7 @@ void CXpsFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pB
 
     m_pInternal->m_pDocument->DrawPage(nPageIndex, pRenderer, pBreak);
 }
-std::wstring CXpsFile::GetInfo()
+std::wstring CXpsFile::GetInfo(unsigned long nFileLength)
 {
     return m_pInternal->m_pDocument->GetInfo();
 }

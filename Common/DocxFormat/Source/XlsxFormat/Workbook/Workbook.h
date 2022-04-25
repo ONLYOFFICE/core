@@ -345,14 +345,36 @@ namespace OOX
 						{
 							m_oCalcPr->toBin(workBookStream->m_BrtCalcProp);
 						}
-						if (m_oDefinedNames.IsInit())
-						{
-							m_oDefinedNames->toBin(workBookStream->m_arBrtName);
-						}
 						if (m_oSheets.IsInit())
 						{
 							workBookStream->m_BUNDLESHS = XLS::BaseObjectPtr(new XLSB::BUNDLESHS());
 							m_oSheets->toBin(static_cast<XLSB::BUNDLESHS*>(workBookStream->m_BUNDLESHS.get())->m_arBrtBundleSh);
+
+							for (auto& item : static_cast<XLSB::BUNDLESHS*>(workBookStream->m_BUNDLESHS.get())->m_arBrtBundleSh)
+								static_cast<XLSB::BundleSh*>(item.get())->saveSheetInfo(xlsb->GetGlobalinfo());
+						}
+						if (m_oExternalReferences.IsInit())
+						{
+							workBookStream->m_EXTERNALS = XLS::BaseObjectPtr(new XLSB::EXTERNALS());
+							m_oExternalReferences->toBin(static_cast<XLSB::EXTERNALS*>(workBookStream->m_EXTERNALS.get())->m_arSUP);
+						}
+						else
+						{
+							workBookStream->m_EXTERNALS = XLS::BaseObjectPtr(new XLSB::EXTERNALS());
+							if(workBookStream->m_EXTERNALS != nullptr)
+							{
+								static_cast<XLSB::EXTERNALS*>(workBookStream->m_EXTERNALS.get())->m_arSUP.push_back(XLS::BaseObjectPtr(new XLSB::SUP()));
+								
+								auto ptr = static_cast<XLSB::SUP*>(static_cast<XLSB::EXTERNALS*>(workBookStream->m_EXTERNALS.get())->m_arSUP[0].get());
+								if (ptr != nullptr)
+								{								
+									ptr->m_source = XLS::BaseObjectPtr(new XLSB::SupSelf());
+								}
+							}
+						}
+						if (m_oDefinedNames.IsInit())
+						{
+							m_oDefinedNames->toBin(workBookStream->m_arBrtName);
 						}
 						if (m_oWorkbookPr.IsInit())
 						{
@@ -368,11 +390,6 @@ namespace OOX
 								m_oWorkbookProtection->toBin(workBookStream->m_BrtBookProtectionIso);
 							else
 								m_oWorkbookProtection->toBin(workBookStream->m_BrtBookProtection);
-						}
-						if (m_oExternalReferences.IsInit())
-						{
-							workBookStream->m_EXTERNALS = XLS::BaseObjectPtr(new XLSB::EXTERNALS());
-							m_oExternalReferences->toBin(static_cast<XLSB::EXTERNALS*>(workBookStream->m_EXTERNALS.get())->m_arSUP);
 						}
 						if (m_oAppName.IsInit())
 						{
@@ -505,7 +522,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
 
-				if(dynamic_cast<CXlsb*>(File::m_pMainDocument))
+				if (dynamic_cast<CXlsb*>(File::m_pMainDocument) && !dynamic_cast<CXlsb*>(File::m_pMainDocument)->IsWriteToXlsx())
 				{
 					writeBin(oPath);
 				}

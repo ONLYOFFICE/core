@@ -202,7 +202,7 @@ namespace OOX
 			}
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
-				if (dynamic_cast<CXlsb*>(File::m_pMainDocument))
+				if (dynamic_cast<CXlsb*>(File::m_pMainDocument) && !dynamic_cast<CXlsb*>(File::m_pMainDocument)->IsWriteToXlsx())
 				{
 					writeBin(oPath);
 				}
@@ -228,6 +228,9 @@ namespace OOX
 			}
 			virtual const OOX::FileType type() const
 			{
+				if (dynamic_cast<CXlsb*>(File::m_pMainDocument))
+					return OOX::Spreadsheet::FileTypes::SharedStringsBin;
+
 				return OOX::Spreadsheet::FileTypes::SharedStrings;
 			}
 			virtual const CPath DefaultDirectory() const

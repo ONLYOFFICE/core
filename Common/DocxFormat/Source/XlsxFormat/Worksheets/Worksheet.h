@@ -103,7 +103,11 @@ namespace OOX
 			void toXMLEnd(NSStringUtils::CStringBuilder& writer) const;
 			virtual const OOX::FileType type() const
 			{
+				if (dynamic_cast<CXlsb*>(File::m_pMainDocument))		
+					return OOX::Spreadsheet::FileTypes::WorksheetBin;
+
                 return m_bIsChartSheet?OOX::Spreadsheet::FileTypes::Chartsheets:OOX::Spreadsheet::FileTypes::Worksheet;
+
 			}
 			virtual const CPath DefaultDirectory() const
 			{

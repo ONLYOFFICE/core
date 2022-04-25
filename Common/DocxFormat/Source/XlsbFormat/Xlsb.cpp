@@ -65,6 +65,7 @@ void OOX::Spreadsheet::CXlsb::init()
 	xls_global_info->Version = 0x0800;    
     m_binaryReader = boost::shared_ptr<NSBinPptxRW::CBinaryFileReader>(new NSBinPptxRW::CBinaryFileReader);
 	m_binaryWriter = boost::shared_ptr<NSBinPptxRW::CXlsbBinaryWriter>(new NSBinPptxRW::CXlsbBinaryWriter);
+	m_bWriteToXlsx = false;
 }
 bool OOX::Spreadsheet::CXlsb::ReadBin(const CPath& oFilePath, XLS::BaseObject* objStream)
 {
@@ -155,7 +156,7 @@ void OOX::Spreadsheet::CXlsb::PrepareSi()
     }
 }
 //отложенный парсинг SheetData
-void OOX::Spreadsheet::CXlsb::ReadSheetData(bool isWriteSheetToXlsx)
+void OOX::Spreadsheet::CXlsb::ReadSheetData()
 {
     for(auto &worksheet : m_arWorksheets)
     {
@@ -187,7 +188,7 @@ void OOX::Spreadsheet::CXlsb::ReadSheetData(bool isWriteSheetToXlsx)
         worksheet->m_oSheetData->fromBin(cell_table_temlate);
 
         //для оптимизации по памяти сразу записываем в файл все листы
-        if(isWriteSheetToXlsx)
+        if(m_bWriteToXlsx)
         {
             WriteSheet(worksheet);
         }
@@ -200,6 +201,14 @@ void OOX::Spreadsheet::CXlsb::SetPropForWriteSheet(const std::wstring &sPath, OO
 {
     m_sPath          = sPath + L"/xl";
     m_oContentTypes = oContentTypes;
+}
+bool OOX::Spreadsheet::CXlsb::IsWriteToXlsx()
+{
+	return m_bWriteToXlsx;
+}
+void OOX::Spreadsheet::CXlsb::WriteToXlsx(bool isXlsx)
+{
+	m_bWriteToXlsx = isXlsx;
 }
 void OOX::Spreadsheet::CXlsb::WriteSheet(CWorksheet* worksheet)
 {

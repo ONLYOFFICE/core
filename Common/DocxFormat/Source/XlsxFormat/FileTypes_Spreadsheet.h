@@ -56,12 +56,21 @@ namespace OOX
 												L"application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings");
 
+			const FileType SharedStringsBin (L"", L"sharedStrings.bin",
+												L"application/vnd.ms-excel.sharedStrings",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings");
+
 			const FileType Styles			(L"", L"styles.xml",
 												L"application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles");
 
 			const FileType Worksheet		(L"worksheets", L"sheet.xml",
 												L"application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet",
+												L"worksheets/sheet", true);
+
+			const FileType WorksheetBin		(L"worksheets", L"sheet.bin",
+												L"application/vnd.ms-excel.worksheet",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet",
 												L"worksheets/sheet", true);
 

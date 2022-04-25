@@ -989,7 +989,7 @@ namespace OOX
 			if (!m_bWriteDirectlyToFile)
 			{
 
-				if (dynamic_cast<CXlsb*>(File::m_pMainDocument))
+				if (dynamic_cast<CXlsb*>(File::m_pMainDocument) && !dynamic_cast<CXlsb*>(File::m_pMainDocument)->IsWriteToXlsx())
 				{
 					writeBin(oPath);
 				}

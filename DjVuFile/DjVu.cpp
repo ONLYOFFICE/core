@@ -98,7 +98,7 @@ void CDjVuFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* p
 	if (m_pImplementation)
 		m_pImplementation->DrawPageOnRenderer(pRenderer, nPageIndex, pBreak);
 }
-std::wstring CDjVuFile::GetInfo(unsigned long nFileLength)
+std::wstring CDjVuFile::GetInfo()
 {
     if (m_pImplementation)
         return m_pImplementation->GetInfo();

@@ -84,7 +84,7 @@ namespace PdfReader
         virtual int GetPagesCount();
         virtual void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
         virtual void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
-        virtual std::wstring GetInfo(unsigned long nFileLength);
+        virtual std::wstring GetInfo();
 
         int          GetError();
         double       GetVersion();

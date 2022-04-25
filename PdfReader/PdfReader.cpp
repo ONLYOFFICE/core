@@ -73,6 +73,7 @@ namespace PdfReader
         NSFonts::IApplicationFonts* m_pAppFonts;
         NSFonts::IFontManager*      m_pFontManager;
         CFontList*         m_pFontList;
+        DWORD              m_nFileLength;
     };
 
     CPdfReader::CPdfReader(NSFonts::IApplicationFonts* pAppFonts)
@@ -161,6 +162,13 @@ namespace PdfReader
         delete owner_pswd;
         delete user_pswd;
 
+        NSFile::CFileBinary oFile;
+        if (oFile.OpenFile(wsSrcPath))
+        {
+            m_pInternal->m_nFileLength = oFile.GetFileSize();
+            oFile.CloseFile();
+        }
+
         if (m_pInternal->m_pPDFDocument)
             m_eError = m_pInternal->m_pPDFDocument->getErrorCode();
         else
@@ -201,6 +209,7 @@ namespace PdfReader
         // будет освобожден в деструкторе PDFDoc
         BaseStream *str = new MemStream((char*)data, 0, length, &obj);
         m_pInternal->m_pPDFDocument = new PDFDoc(str, owner_pswd, user_pswd);
+        m_pInternal->m_nFileLength = length;
 
         delete owner_pswd;
         delete user_pswd;
@@ -474,7 +483,7 @@ return 0;
         }\
     }\
 
-    std::wstring CPdfReader::GetInfo(unsigned long nFileLength)
+    std::wstring CPdfReader::GetInfo()
     {
         if (!m_pInternal->m_pPDFDocument)
             return NULL;
@@ -537,7 +546,7 @@ return 0;
             if (obj5.isNum() && obj5.getNum() > 0 && obj6.isNum())
             {
                 unsigned long size = obj6.getNum();
-                bLinearized = size == nFileLength;
+                bLinearized = size == m_pInternal->m_nFileLength;
             }
             obj6.free();
             obj5.free();

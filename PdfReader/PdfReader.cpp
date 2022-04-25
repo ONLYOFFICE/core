@@ -49,6 +49,8 @@
 #include "lib/xpdf/ErrorCodes.h"
 #include "lib/xpdf/ImageOutputDev.h"
 #include "lib/xpdf/TextString.h"
+#include "lib/xpdf/Lexer.h"
+#include "lib/xpdf/Parser.h"
 #include "Src/RendererOutputDev.h"
 
 #ifdef BUILDING_WASM_MODULE
@@ -71,6 +73,7 @@ namespace PdfReader
         NSFonts::IApplicationFonts* m_pAppFonts;
         NSFonts::IFontManager*      m_pFontManager;
         CFontList*         m_pFontList;
+        DWORD              m_nFileLength;
     };
 
     CPdfReader::CPdfReader(NSFonts::IApplicationFonts* pAppFonts)
@@ -82,6 +85,7 @@ namespace PdfReader
 
         m_pInternal->m_pPDFDocument = NULL;
         m_pInternal->m_pFontManager = NULL;
+        m_pInternal->m_nFileLength  = 0;
 
         globalParams  = new GlobalParamsAdaptor(NULL);
 #ifndef _DEBUG
@@ -159,6 +163,13 @@ namespace PdfReader
         delete owner_pswd;
         delete user_pswd;
 
+        NSFile::CFileBinary oFile;
+        if (oFile.OpenFile(wsSrcPath))
+        {
+            m_pInternal->m_nFileLength = oFile.GetFileSize();
+            oFile.CloseFile();
+        }
+
         if (m_pInternal->m_pPDFDocument)
             m_eError = m_pInternal->m_pPDFDocument->getErrorCode();
         else
@@ -199,6 +210,7 @@ namespace PdfReader
         // будет освобожден в деструкторе PDFDoc
         BaseStream *str = new MemStream((char*)data, 0, length, &obj);
         m_pInternal->m_pPDFDocument = new PDFDoc(str, owner_pswd, user_pswd);
+        m_pInternal->m_nFileLength = length;
 
         delete owner_pswd;
         delete user_pswd;
@@ -476,6 +488,10 @@ return 0;
     {
         if (!m_pInternal->m_pPDFDocument)
             return NULL;
+        XRef* xref = m_pInternal->m_pPDFDocument->getXRef();
+        BaseStream* str = m_pInternal->m_pPDFDocument->getBaseStream();
+        if (!xref || !str)
+            return NULL;
 
         std::wstring sRes = L"{";
 
@@ -515,7 +531,34 @@ return 0;
         sRes += L",\"NumberOfPages\":";
         sRes += std::to_wstring(GetPagesCount());
         sRes += L",\"FastWebView\":";
-        sRes += m_pInternal->m_pPDFDocument->isLinearized() ? L"true" : L"false";
+
+        Object obj2, obj3, obj4, obj5, obj6;
+        bool bLinearized = false;
+        obj1.initNull();
+        Parser* parser = new Parser(xref, new Lexer(xref, str->makeSubStream(str->getStart(), gFalse, 0, &obj1)), gTrue);
+        parser->getObj(&obj1);
+        parser->getObj(&obj2);
+        parser->getObj(&obj3);
+        parser->getObj(&obj4);
+        if (obj1.isInt() && obj2.isInt() && obj3.isCmd("obj") && obj4.isDict())
+        {
+            obj4.dictLookup("Linearized", &obj5);
+            obj4.dictLookup("L", &obj6);
+            if (obj5.isNum() && obj5.getNum() > 0 && obj6.isNum())
+            {
+                unsigned long size = obj6.getNum();
+                bLinearized = size == m_pInternal->m_nFileLength;
+            }
+            obj6.free();
+            obj5.free();
+        }
+        obj4.free();
+        obj3.free();
+        obj2.free();
+        obj1.free();
+        delete parser;
+
+        sRes += bLinearized ? L"true" : L"false";
         sRes += L",\"Tagged\":";
         sRes += m_pInternal->m_pPDFDocument->getStructTreeRoot()->isDict() ? L"true" : L"false";
         sRes += L"}";

@@ -85,6 +85,7 @@ namespace PdfReader
 
         m_pInternal->m_pPDFDocument = NULL;
         m_pInternal->m_pFontManager = NULL;
+        m_pInternal->m_nFileLength  = 0;
 
         globalParams  = new GlobalParamsAdaptor(NULL);
 #ifndef _DEBUG

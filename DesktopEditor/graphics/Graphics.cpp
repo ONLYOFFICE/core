@@ -700,12 +700,7 @@ namespace Aggplus
 					LONG lCount		= pPen->Count;
 					LONG lCount2	= lCount / 2;
 
-					double dKoef	= 0.352777778;
-					if (m_dDpiX > 1)
-						dKoef = 25.4 / m_dDpiX;
-
-					if (m_bIntegerGrid)
-						dKoef = 1.0;
+                    double dKoef = 1.0;
 
 					for (LONG i = 0; i < lCount2; ++i)
 					{

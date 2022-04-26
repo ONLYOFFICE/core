@@ -1214,7 +1214,7 @@ void XlsConverter::convert_old(XLS::OBJECTS* objects, XLS::WorksheetSubstream * 
 			if (obj->old_version.bFill)
 				xlsx_context->get_drawing_context().set_fill_old_version(obj->old_version.fill);
 			else 
-				xlsx_context->get_drawing_context().set_fill_type(0);	//no fill
+				xlsx_context->get_drawing_context().set_fill_type(oox::fillNone);	//no fill
 			
 			xlsx_context->get_drawing_context().set_name(obj->old_version.name);
 			xlsx_context->get_drawing_context().set_line_old_version(obj->old_version.line);
@@ -1516,34 +1516,39 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 				{
 				case 1://fillPattern:
 					{
-						xlsx_context->get_drawing_context().set_fill_type(2);
+						xlsx_context->get_drawing_context().set_fill_type(oox::fillPattern);
 						//texture + change black to color2, white to color1
 					}break;
 					case 2://fillTexture :
 					{
-						xlsx_context->get_drawing_context().set_fill_type(3);
+						xlsx_context->get_drawing_context().set_fill_type(oox::fillTexture);
 						xlsx_context->get_drawing_context().set_fill_texture_mode(0);
 					}break;
 					case 3://fillPicture :
 					{
-						xlsx_context->get_drawing_context().set_fill_type(3);
+						xlsx_context->get_drawing_context().set_fill_type(oox::fillTexture);
 						xlsx_context->get_drawing_context().set_fill_texture_mode(1);
 					}break;
 					case 4://fillShadeCenter://1 color
 					case 5://fillShadeShape:
 					{
-						xlsx_context->get_drawing_context().set_fill_type(5);
+						xlsx_context->get_drawing_context().set_fill_type(oox::fillGradientOne);
 					}break;//
 					case 6://fillShadeTitle://2 colors and more
 					case 7://fillShade : 
 					case 8://fillShadeScale: 
 					{
-						xlsx_context->get_drawing_context().set_fill_type(4);
+						xlsx_context->get_drawing_context().set_fill_type(oox::fillGradient);
 					}break;
 					case 9://fillBackground:
 					{
-						xlsx_context->get_drawing_context().set_fill_type(0);
-					}break;				
+						xlsx_context->get_drawing_context().set_fill_type(oox::fillNone);
+					}break;	
+					case 0:
+					default:
+					{ //undefined
+						xlsx_context->get_drawing_context().set_fill_type(oox::fillUndefined);
+					}break;
 				}
 			}break;
 			case ODRAW::fillColor:
@@ -1655,7 +1660,7 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 				if (bools)
 				{
 					if (bools->fUsefFilled && bools->fFilled == false) 
-						xlsx_context->get_drawing_context().set_fill_type(0);
+						xlsx_context->get_drawing_context().set_fill_type(oox::fillNone);
 				}
 			}break;
 			default:
@@ -2339,9 +2344,9 @@ void XlsConverter::convert(ODRAW::OfficeArtFOPT * fort)
 	convert_shape			(fort->fopt.Shape_props);
 	convert_group_shape		(fort->fopt.GroupShape_props);
 	convert_transform		(fort->fopt.Transform_props);
-	convert_blip			(fort->fopt.Blip_props);
 	convert_geometry		(fort->fopt.Geometry_props);
 	convert_fill_style		(fort->fopt.FillStyle_props);
+	convert_blip			(fort->fopt.Blip_props);
 	convert_line_style		(fort->fopt.LineStyle_props);
 	convert_shadow			(fort->fopt.Shadow_props);
 	convert_text			(fort->fopt.Text_props);

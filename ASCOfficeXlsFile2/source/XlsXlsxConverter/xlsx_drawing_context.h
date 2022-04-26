@@ -120,7 +120,8 @@ enum _fill_type
 	fillPattern,
 	fillTexture,
 	fillGradient,
-	fillGradientOne
+	fillGradientOne,
+	fillUndefined
 };
 enum _texture_mode
 {
@@ -423,7 +424,7 @@ public:
         void set_fill_color			(int nColor, const std::wstring & sColor, bool background = false);
 		void set_fill_color			(int index, int type, bool background = false);
  		void set_fill_opacity		(double val, bool background = false);       
-		void set_fill_type			(int val);
+		void set_fill_type			(_fill_type val);
 		void set_fill_angle			(double val);
 		void set_fill_texture_mode	(int val);
         void set_fill_texture		(const std::wstring & str);

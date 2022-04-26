@@ -407,18 +407,6 @@ namespace NSOnlineOfficeBinToPdf
 							pDash[nDash] = ReadInt(current, curindex) / 100000.0;
 						}
 
-						if (c_nGrRenderer == lRendererType)
-						{
-							for (int nDash = 0; nDash < nCountDash; ++nDash)
-							{
-								// в отрисовщике - баг. зачем-то умножается на коеф 25.4/dpi
-								// чтобы не менять там (перед выпуском) - умножаю здесь на обратку
-								double dDpiX = 0;
-								pRenderer->get_DpiX(&dDpiX);
-								pDash[nDash] *= (dDpiX / 25.4);
-							}
-						}
-
                         pRenderer->PenDashPattern(pDash, nCountDash);
                         delete[] pDash;
 					}

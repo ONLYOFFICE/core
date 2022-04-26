@@ -632,6 +632,11 @@ namespace NSDoctRenderer
                                 oFile.CloseFile();
                             }
                         }
+                        else
+                        {
+                            strError = L"code=\"save (invalid theme)\"";
+                            bIsBreak = true;
+                        }
                     }
                 }
                 break;

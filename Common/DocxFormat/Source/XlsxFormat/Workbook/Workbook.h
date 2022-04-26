@@ -372,6 +372,9 @@ namespace OOX
 								}
 							}
 						}
+
+						workBookStream->UpdateXtiWrite(xlsb->GetGlobalinfo());
+
 						if (m_oDefinedNames.IsInit())
 						{
 							m_oDefinedNames->toBin(workBookStream->m_arBrtName);
@@ -521,7 +524,6 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 			}
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
-
 				if (dynamic_cast<CXlsb*>(File::m_pMainDocument) && !dynamic_cast<CXlsb*>(File::m_pMainDocument)->IsWriteToXlsx())
 				{
 					writeBin(oPath);
@@ -544,9 +546,12 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 			
 			virtual const OOX::FileType type() const
 			{
-				if (m_bMacroEnabled)	return OOX::Spreadsheet::FileTypes::WorkbookMacro;
-				else if (dynamic_cast<CXlsb*>(File::m_pMainDocument))		return OOX::Spreadsheet::FileTypes::WorkbookBin;
-				else					return OOX::Spreadsheet::FileTypes::Workbook;
+				if (m_bMacroEnabled)	
+					return OOX::Spreadsheet::FileTypes::WorkbookMacro;
+				if (dynamic_cast<CXlsb*>(File::m_pMainDocument) && !dynamic_cast<CXlsb*>(File::m_pMainDocument)->IsWriteToXlsx())	
+					return OOX::Spreadsheet::FileTypes::WorkbookBin;
+									
+				return OOX::Spreadsheet::FileTypes::Workbook;
 			}
 			virtual const CPath DefaultDirectory() const
 			{

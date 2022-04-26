@@ -1817,18 +1817,23 @@ namespace OOX
 					m_oValue.Init();
 					m_oValue->m_sText = L"#VALUE!";
 				}
-				if (m_oValue.IsInit() && m_oType.IsInit())
+				if (m_oValue.IsInit())
 				{
-					switch (m_oType->GetValue())
+					if (m_oType.IsInit())
 					{
+						switch (m_oType->GetValue())
+						{
 						case SimpleTypes::Spreadsheet::celltypeNumber: nType = XLSB::rt_CellReal; break;
 						case SimpleTypes::Spreadsheet::celltypeSharedString: nType = XLSB::rt_CellIsst; break;
 						case SimpleTypes::Spreadsheet::celltypeError: nType = XLSB::rt_CellError; break;
 						case SimpleTypes::Spreadsheet::celltypeBool: nType = XLSB::rt_CellBool; break;
 						case SimpleTypes::Spreadsheet::celltypeInlineStr:
 						case SimpleTypes::Spreadsheet::celltypeStr: nType = XLSB::rt_CellSt; break;
+						}
 					}
-				}
+					else
+						nType = XLSB::rt_CellReal;
+				}				
 
 				bool bIsBlankFormula = false;
 				if (XLSB::rt_CellBlank == nType && m_oFormula.IsInit())
@@ -1837,9 +1842,13 @@ namespace OOX
 					bIsBlankFormula = true;
 				}			
 				
-				if (m_oFormula.IsInit() && m_oFormula->m_oT.IsInit() && m_oFormula->m_oT->GetValue() != SimpleTypes::Spreadsheet::cellformulatypeDataTable)
+				if (m_oFormula.IsInit())
 				{
-					if (XLSB::rt_CellReal == nType)
+					if(m_oFormula->m_oT.IsInit() && m_oFormula->m_oT->GetValue() == SimpleTypes::Spreadsheet::cellformulatypeDataTable)
+					{
+						//nothing
+					}
+					else if (XLSB::rt_CellReal == nType)
 					{
 						nType = XLSB::rt_FmlaNum;
 					}

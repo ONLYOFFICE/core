@@ -228,7 +228,7 @@ namespace OOX
 			}
 			virtual const OOX::FileType type() const
 			{
-				if (dynamic_cast<CXlsb*>(File::m_pMainDocument))
+				if (dynamic_cast<CXlsb*>(File::m_pMainDocument) && !dynamic_cast<CXlsb*>(File::m_pMainDocument)->IsWriteToXlsx())
 					return OOX::Spreadsheet::FileTypes::SharedStringsBin;
 
 				return OOX::Spreadsheet::FileTypes::SharedStrings;

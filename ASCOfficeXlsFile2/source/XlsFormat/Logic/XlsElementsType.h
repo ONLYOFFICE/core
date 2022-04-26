@@ -789,6 +789,7 @@ enum ElementType
     typeSUPSAME,
     typeSUPADDIN,
     typeSupBookSrc,
+	typeSupSelf,
     typeDVALS,
     typeDVALS14,
     typeDVal14,

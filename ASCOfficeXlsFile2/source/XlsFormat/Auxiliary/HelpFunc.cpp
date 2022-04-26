@@ -34,6 +34,7 @@
 #include "../../../../UnicodeConverter/UnicodeConverter.h"
 
 #include "../Logic/Biff_structures/CellRangeRef.h"
+#include "../Logic/GlobalWorkbookInfo.h"
 
 #include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
@@ -675,6 +676,19 @@ const std::wstring xti_indexes2sheet_name(const short tabFirst, const short tabL
 	}
 
 	return sheet_first + sheet_last;
+}
+
+const unsigned short sheetsnames2ixti(std::wstring name)
+{
+	auto pos = std::find_if(XLS::GlobalWorkbookInfo::arXti_External_static.cbegin(), XLS::GlobalWorkbookInfo::arXti_External_static.cend(),
+			[&](XLS::GlobalWorkbookInfo::_xti i) {
+		return i.link == name;
+	});
+
+	if (pos != XLS::GlobalWorkbookInfo::arXti_External_static.cend())
+		return pos->iSup;
+
+	return 0xFFFF;
 }
 
 

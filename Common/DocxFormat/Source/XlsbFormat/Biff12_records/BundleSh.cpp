@@ -65,5 +65,13 @@ namespace XLSB
 		record << hsState << iTabID << strRelID << strName;
 	}
 
+	void BundleSh::saveSheetInfo(XLS::GlobalWorkbookInfo* global_info_)
+	{
+		GlobalWorkbookInfo::_sheet_info sheet_info;
+		sheet_info.state = hsState;
+		sheet_info.name = strName.value();
+		global_info_->sheets_info.push_back(sheet_info);
+	}
+
 } // namespace XLSB
 

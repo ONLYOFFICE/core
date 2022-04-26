@@ -84,6 +84,7 @@ namespace XLSB
         std::vector<XLS::BaseObjectPtr>  m_arBrtUserBookView;
         std::vector<XLS::BaseObjectPtr>  m_arBrtFileRecover;
 
+		void UpdateXtiWrite(XLS::GlobalWorkbookInfo* xls_global_info);
         void UpdateXti(XLS::GlobalWorkbookInfo* xls_global_info);
         void UpdateDefineNames(XLS::GlobalWorkbookInfo* global_info_);
 

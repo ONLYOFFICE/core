@@ -55,11 +55,13 @@ namespace XLSB
     // SUPSAME = BrtSupSame *BrtPlaceholderName
     const bool SUPSAME::loadContent(BinProcessor& proc)
     {
-        if (proc.optional<SupSame>())
-        {
-            m_bBrtSupSame = true;
-            elements_.pop_back();
-        }
+		if (proc.optional<SupSame>())
+		{
+			m_bBrtSupSame = true;
+			elements_.pop_back();
+		}
+		else
+			m_bBrtSupSame = false;
 
         while (proc.optional<PlaceholderName>())
         {

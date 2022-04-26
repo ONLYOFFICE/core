@@ -158,6 +158,7 @@ public:
 	};
 	std::vector<_xti>				arXti;
 	std::vector<_xti>				arXti_External;
+	static std::vector<_xti>		arXti_External_static;
 	
 	_UINT32							startAddedSharedStrings;
 	std::vector<std::wstring>		arAddedSharedStrings;

@@ -55,6 +55,8 @@ namespace XLSB
             void readFields(XLS::CFRecord& record) override;
 			void writeFields(XLS::CFRecord& record) override;
 
+			void saveSheetInfo(XLS::GlobalWorkbookInfo* global_info_);
+
             enum ST_SheetState {
                 VISIBLE     = 0x00000000,
                 HIDDEN      = 0x00000001,

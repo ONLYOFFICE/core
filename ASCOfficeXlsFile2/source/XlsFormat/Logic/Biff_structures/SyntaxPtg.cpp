@@ -35,6 +35,8 @@
 #include "PtgParen.h"
 
 #include <boost/regex.hpp>
+#include <boost/algorithm/string/replace.hpp>
+
 #include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace XLS
@@ -425,26 +427,26 @@ const bool SyntaxPtg::extract_PtgName(std::wstring::const_iterator& first, std::
 {
 	static boost::wregex reg_name(L"^(\\w[\\w\\d.]*)([-+*/^&%<=>: ;),]|$)");
 	
-	//boost::match_results<std::wstring::const_iterator> results;
-	//if(boost::regex_search(first, last, results, reg_name))
-	//{
-	//	std::wstring name(results.str(1));
-	//	std::wstring  query(L"root/WorkbookStreamObject/GlobalsSubstream/LBL/Lbl");
-	//	MSXML2::IXMLDOMNodeListPtr nodes = parent->GetownerDocument()->selectNodes(query);
-	//	MSXML2::IXMLDOMElementPtr lbl;
-	//	
-	//	for(size_t counter = 1; (lbl = nodes->nextNode()); ++counter)
-	//	{
-	//		MSXML2::IXMLDOMAttributePtr lbl_name(lbl->getAttributeNode(L"Name"));
-	//		if(lbl_name && boost::algorithm::to_upper_copy(name) == 
-	//			boost::algorithm::to_upper_copy(std::wstring(static_cast<wchar_t*>(static_cast<std::wstring >(lbl_name->Getvalue())))))
-	//		{
-	//			out_num = counter;
-	//			first = results[1].second;
-	//			return true;
-	//		}
-	//	}
-	//}
+	boost::match_results<std::wstring::const_iterator> results;
+	if(boost::regex_search(first, last, results, reg_name))
+	{
+		/*std::wstring name(results.str(1));
+		std::wstring  query(L"root/WorkbookStreamObject/GlobalsSubstream/LBL/Lbl");
+		MSXML2::IXMLDOMNodeListPtr nodes = parent->GetownerDocument()->selectNodes(query);
+		MSXML2::IXMLDOMElementPtr lbl;
+		
+		for(size_t counter = 1; (lbl = nodes->nextNode()); ++counter)
+		{
+			MSXML2::IXMLDOMAttributePtr lbl_name(lbl->getAttributeNode(L"Name"));
+			if(lbl_name && boost::algorithm::to_upper_copy(name) == 
+				boost::algorithm::to_upper_copy(std::wstring(static_cast<wchar_t*>(static_cast<std::wstring >(lbl_name->Getvalue())))))
+			{
+				out_num = counter;
+				first = results[1].second;
+				return true;
+			}
+		}*/
+	}
 	return false;
 }
 
@@ -515,22 +517,22 @@ const bool SyntaxPtg::extract_PtgRef(std::wstring::const_iterator& first, std::w
 // static
 const bool SyntaxPtg::extract_3D_part(std::wstring::const_iterator& first, std::wstring::const_iterator last, unsigned short& ixti)
 {
-	//static boost::wregex reg_sheets(L"^(\\w[\\w\\d.]*(:\\w[\\w\\d.]*)?)!");
-	//static boost::wregex reg_quoted(L"^'((''|[^]['\\/*?])*)'!");
-	//boost::match_results<std::wstring::const_iterator> results;
-	//if (boost::regex_search(first, last, results, reg_sheets) ||
-	//	boost::regex_search(first, last, results, reg_quoted))
-	//{
+	static boost::wregex reg_sheets(L"^(\\w[\\w\\d.]*(:\\w[\\w\\d.]*)?)!");
+	static boost::wregex reg_quoted(L"^'((''|[^]['\\/*?])*)'!");
+	boost::match_results<std::wstring::const_iterator> results;
+	if (boost::regex_search(first, last, results, reg_sheets) ||
+		boost::regex_search(first, last, results, reg_quoted))
+	{
 
-	//	std::wstring sheets_names = results.str(1);
+		std::wstring sheets_names = results.str(1);
 
-	//	ixti = XMLSTUFF::sheetsnames2ixti(boost::algorithm::replace_all_copy(sheets_names, L"''", L"'"), parent->GetownerDocument());
-	//	if(0xFFFF != ixti)
-	//	{
-	//		first = results[0].second;
-	//		return true;
-	//	}
-	//}
+		ixti = XMLSTUFF::sheetsnames2ixti(boost::algorithm::replace_all_copy(sheets_names, L"''", L"'"));
+		if(0xFFFF != ixti)
+		{
+			first = results[0].second;
+			return true;
+		}
+	}
 	return false;
 }
 

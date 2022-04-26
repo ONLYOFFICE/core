@@ -46,6 +46,8 @@ namespace XLSB
             ~SupSelf();
 
             XLS::BaseObjectPtr clone();
+
+			static const XLS::ElementType	type = XLS::typeSupSelf;
     };
 
 } // namespace XLSB

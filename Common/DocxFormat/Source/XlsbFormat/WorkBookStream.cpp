@@ -391,7 +391,86 @@ const bool WorkBookStream::saveContent(XLS::BinProcessor & proc)
 
 	return true;
 }
+void WorkBookStream::UpdateXtiWrite(XLS::GlobalWorkbookInfo* global_info_)
+{
+	EXTERNALS* externals = dynamic_cast<EXTERNALS*>(m_EXTERNALS.get());
+	if (externals && !externals->m_arSUP.empty())
+	{
+		if(externals->m_BrtExternSheet == nullptr)
+			externals->m_BrtExternSheet = XLS::BaseObjectPtr(new XLSB::ExternSheet());
 
+		XLSB::ExternSheet* extern_sheet = dynamic_cast<XLSB::ExternSheet*>(externals->m_BrtExternSheet.get());		
+
+		for (size_t i = 0; extern_sheet && i < externals->m_arSUP.size(); i++)
+		{
+			SUP* index_book = dynamic_cast<SUP*>(externals->m_arSUP[i].get());
+			if (!index_book) continue;
+
+			if (index_book->m_source->get_type() == XLS::typeSupSelf)
+			{
+				XTIPtr xti(new XTI);
+				xti->iSupBook = i;
+				xti->itabFirst = 0;
+				xti->itabLast = 0;
+
+				extern_sheet->rgXTI.push_back(xti);
+			}
+
+		}
+		for (size_t i = 0; extern_sheet && i < extern_sheet->rgXTI.size(); i++)
+		{
+			XTI* xti = dynamic_cast<XTI*>(extern_sheet->rgXTI[i].get());
+			if (!xti) continue;
+
+			SUP* index_book = dynamic_cast<SUP*>(externals->m_arSUP[xti->iSupBook].get());
+			if (!index_book) continue;
+
+			//if (index_book->arNames.empty()) continue;
+
+			GlobalWorkbookInfo::_xti val_1;
+
+			val_1.iSup = xti->iSupBook;
+			val_1.pNames = &index_book->arNames;
+
+			if (index_book->m_source->get_type() == XLS::typeSupBookSrc)
+			{
+				val_1.link = dynamic_cast<XLSB::SupBookSrc*>(index_book->m_source.get())->strRelID.value.value();
+				val_1.itabFirst = xti->itabFirst;
+				val_1.itabLast = xti->itabLast;
+			}
+			else if (xti->itabFirst >= 0 /*|| itabLast >= 0*/)
+			{
+				std::wstring strRange;
+				if (-1 == xti->itabFirst)
+				{
+					strRange = L"#REF";
+				}
+				else if (xti->itabFirst < global_info_->sheets_info.size())
+				{
+					strRange = XMLSTUFF::name2sheet_name(global_info_->sheets_info[xti->itabFirst].name, L"");
+					if (xti->itabFirst != xti->itabLast)
+					{
+						strRange += std::wstring(L":") + XMLSTUFF::name2sheet_name(global_info_->sheets_info[xti->itabLast].name, L"");
+					}
+				}
+				val_1.link = strRange;
+			}
+			else if (xti->itabFirst == -1)
+			{
+				//sheet not found
+			}
+			else if (xti->itabFirst == -2)
+			{
+				//Workbook-level
+			}
+			global_info_->arXti_External.push_back(val_1);
+			GlobalWorkbookInfo::arXti_External_static.push_back(val_1);
+		}
+
+		//global_info_->arXti.push_back(val);
+		//}
+	}
+}
 void WorkBookStream::UpdateXti(XLS::GlobalWorkbookInfo* global_info_)
 {
     EXTERNALS* externals = dynamic_cast<EXTERNALS*>(m_EXTERNALS.get());

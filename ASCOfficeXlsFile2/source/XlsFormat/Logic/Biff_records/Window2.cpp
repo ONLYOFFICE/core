@@ -193,9 +193,9 @@ void Window2::writeFields(CFRecord& record)
 
 		CellRef ref(topLeftCell);
 
-		_UINT16		rwTop_2b = ref.row;
-		_UINT16		colLeft_2b = ref.column;
-
+		_UINT16		rwTop_2b = ref.row == -1 ? 0: ref.row;
+		_UINT16		colLeft_2b = ref.column == -1 ? 0 : ref.column;
+		
 		record << flags;
 		record << rwTop_2b << colLeft_2b << icvHdr;
 		
@@ -238,8 +238,8 @@ void Window2::writeFields(CFRecord& record)
 
 			CellRef ref(topLeftCell);
 
-			rwTop = ref.row;
-			colLeft = ref.column;
+			rwTop = ref.row == -1 ? 0 : ref.row;
+			colLeft = ref.column == -1 ? 0 : ref.column;
 
 			record << xlView << rwTop << colLeft;
 

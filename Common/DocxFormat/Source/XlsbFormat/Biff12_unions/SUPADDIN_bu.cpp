@@ -60,6 +60,8 @@ namespace XLSB
 			m_bBrtSupAddin = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtSupAddin = false;
 
         while (proc.optional<PlaceholderName>())
         {

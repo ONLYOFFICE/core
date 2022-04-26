@@ -1105,13 +1105,13 @@ namespace NExtractTools
 		if (SUCCEEDED_X2T(nRes))
 		{
 			OOX::Spreadsheet::CXlsb oXlsb;
+			oXlsb.WriteToXlsx(true);
 			oXlsb.ReadNative(OOX::CPath(sTempUnpackedXLSB));
             oXlsb.PrepareSi();
             oXlsb.PrepareTableFormula();
 
             OOX::CContentTypes oContentTypes;
             oXlsb.SetPropForWriteSheet(sTo, oContentTypes);
-			oXlsb.WriteToXlsx(true);
             oXlsb.ReadSheetData();
 
 			nRes = oXlsb.WriteNative(sTo, oContentTypes) ? S_OK : AVS_FILEUTILS_ERROR_CONVERT;

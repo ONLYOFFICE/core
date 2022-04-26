@@ -1059,7 +1059,7 @@ namespace OOX
 					if (m_oDefaultColWidth.IsInit())
 						ptr->cchDefColWidth = m_oDefaultColWidth.get();
 					else
-						ptr->cchDefColWidth = 0xFFFFFFFF;
+						ptr->cchDefColWidth = 0xFFFF;
 
 					if (m_oCustomHeight.IsInit())
 						ptr->fUnsynced = m_oCustomHeight.get();
@@ -1069,7 +1069,7 @@ namespace OOX
 					if (m_oDefaultRowHeight.IsInit())
 						ptr->miyDefRwHeight = m_oDefaultRowHeight.get();
 					else
-						ptr->miyDefRwHeight = 14.4;
+						ptr->miyDefRwHeight = 14.25;
 
 					if (m_oOutlineLevelCol.IsInit())
 						ptr->iOutLevelCol = m_oOutlineLevelCol.get();
@@ -1131,7 +1131,10 @@ namespace OOX
 							m_oBaseColWidth = ptr->dxGCol / 256.;
                     }
 
-                    m_oDefaultColWidth = ptr->cchDefColWidth;
+					if (ptr->cchDefColWidth != 0xFFFF)
+					{
+						m_oDefaultColWidth = ptr->cchDefColWidth;
+					}
 
 					if (ptr->fUnsynced)
 					{
@@ -1139,7 +1142,7 @@ namespace OOX
 						m_oDefaultRowHeight = ptr->miyDefRwHeight;
 					}
 					else
-						m_oDefaultRowHeight = 14.4;
+						m_oDefaultRowHeight = 14.25;
                     
 					if (ptr->iOutLevelCol > 0) m_oOutlineLevelCol = ptr->iOutLevelCol;
 					if (ptr->iOutLevelRw > 0) m_oOutlineLevelRow = ptr->iOutLevelRw;
@@ -1359,9 +1362,17 @@ namespace OOX
 				if (pSel != nullptr)
 				{
 					if (m_oPane.IsInit())
-						pSel->pnn_xlsb = m_oPane->GetValue();
+					{
+						switch (m_oPane->GetValue())
+						{
+						case SimpleTypes::Spreadsheet::EActivePane::activepaneBottomRight:  pSel->pnn_xlsb = 0; break;
+						case SimpleTypes::Spreadsheet::EActivePane::activepaneTopRight:  pSel->pnn_xlsb = 1; break;
+						case SimpleTypes::Spreadsheet::EActivePane::activepaneBottomLeft:  pSel->pnn_xlsb = 2; break;
+						case SimpleTypes::Spreadsheet::EActivePane::activepaneTopLeft:  pSel->pnn_xlsb = 3; break;
+						}
+					}
 					else
-						pSel->pnn_xlsb = SimpleTypes::Spreadsheet::EActivePane::activepaneTopLeft;
+						pSel->pnn_xlsb = 3;
 
 					if (m_oActiveCell.IsInit())
 						pSel->activeCell = m_oActiveCell.get();

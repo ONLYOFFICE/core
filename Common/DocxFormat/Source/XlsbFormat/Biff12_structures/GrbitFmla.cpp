@@ -68,7 +68,7 @@ namespace XLSB
 		_UINT16 flags = 0;
 
 		SETBIT(flags, 1, fAlwaysCalc);
-		record >> flags;
+		record << flags;
 	}
 
 } // namespace XLSB

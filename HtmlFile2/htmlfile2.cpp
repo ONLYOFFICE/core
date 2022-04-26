@@ -416,10 +416,31 @@ public:
     // Конвертирует mht в xhtml
     bool mhtXhtml(const std::wstring& sSrc)
     {
-        std::wstring sExtention = NSFile::GetFileExtention(sSrc);
-        if(sExtention == L"mht" || sExtention == L"mhtml")
-            return m_oLightReader.FromString(mhtToXhtml(sSrc));
-        return htmlXhtml(sSrc);
+        NSFile::CFileBinary file;
+        if (!file.OpenFile(sSrc))
+            return false;
+
+        unsigned char* buffer = new unsigned char[4096];
+        if (!buffer)
+        {
+            file.CloseFile();
+            return false;
+        }
+
+        DWORD dwReadBytes = 0;
+        file.ReadFile(buffer, 4096, dwReadBytes);
+        file.CloseFile();
+        std::string xml_string((char*)buffer, dwReadBytes);
+
+        bool bRes = false;
+        if ((std::string::npos != xml_string.find("Content-Type: multipart/related")) &&
+            (std::string::npos != xml_string.find("Content-Type: text/html")))
+            bRes = m_oLightReader.FromString(mhtToXhtml(sSrc));
+        else
+            bRes = htmlXhtml(sSrc);
+
+        RELEASEARRAYOBJECTS(buffer);
+        return bRes;
     }
 
     // Читает стили

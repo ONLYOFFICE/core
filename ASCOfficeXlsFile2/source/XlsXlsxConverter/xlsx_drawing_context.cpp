@@ -2872,6 +2872,12 @@ void xlsx_drawing_context::set_fill_texture(const std::wstring & str)
 	if (false == current_drawing_states->back()->fill.texture_target.empty()) return;
 
 	current_drawing_states->back()->fill.texture_target = str;
+
+	if (current_drawing_states->back()->fill.type == fillUndefined)
+	{
+		current_drawing_states->back()->fill.type = fillTexture;
+		current_drawing_states->back()->fill.texture_mode = textureStretch;
+	}
 }
 void xlsx_drawing_context::set_picture_crop_top	(double val)
 {
@@ -3125,12 +3131,12 @@ void xlsx_drawing_context::add_fill_colors(double position, int index, int type)
 
 	current_drawing_states->back()->fill.colorsPosition.push_back(std::pair<double, _color>(position, color));
 }
-void xlsx_drawing_context::set_fill_type (int val)
+void xlsx_drawing_context::set_fill_type (_fill_type val)
 {
 	if (current_drawing_states == NULL) return;
 	if (current_drawing_states->empty()) return;
 	
-	current_drawing_states->back()->fill.type = (_fill_type) val;
+	current_drawing_states->back()->fill.type = val;
 }
 //---------------------------------------------------------
 void xlsx_drawing_context::set_line_dash(int val)
@@ -3275,7 +3281,7 @@ void xlsx_drawing_context::set_fill_old_version (_UINT32 val)
 	if (auto_)
 	{
 		if (current_drawing_states->back()->shape_id == MSOSPT::msosptTextBox)
-			set_fill_type(0);
+			set_fill_type(oox::fillNone);
 	}
 	else if (pattern)
 	{

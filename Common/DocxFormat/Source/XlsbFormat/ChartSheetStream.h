@@ -48,14 +48,14 @@ namespace XLSB
     class StreamCacheReader;
 
     class ChartSheetStream;
-    typedef std::shared_ptr<ChartSheetStream>		ChartSheetStreamPtr;
+    typedef boost::shared_ptr<ChartSheetStream>		ChartSheetStreamPtr;
 
     class ChartSheetStream: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(ChartSheetStream)
     public:
         ChartSheetStream();
-        virtual ~ChartSheetStream();
+        ~ChartSheetStream();
 
         XLS::BaseObjectPtr clone();
 

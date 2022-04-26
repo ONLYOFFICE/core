@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(PRFILTER)
     public:
         PRFILTER();
-        virtual ~PRFILTER();
+        ~PRFILTER();
 
         XLS::BaseObjectPtr clone();
 

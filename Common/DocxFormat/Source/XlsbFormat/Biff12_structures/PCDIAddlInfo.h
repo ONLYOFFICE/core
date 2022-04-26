@@ -44,7 +44,7 @@ namespace XLSB
     public:
         PCDIAddlInfo();
         PCDIAddlInfo(XLS::CFRecord& record);
-        virtual ~PCDIAddlInfo();
+        ~PCDIAddlInfo();
        XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;

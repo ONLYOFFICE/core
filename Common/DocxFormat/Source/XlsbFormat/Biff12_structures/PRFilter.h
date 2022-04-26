@@ -44,7 +44,7 @@ namespace XLSB
     public:
         PRFilter();
         PRFilter(XLS::CFRecord& record);
-        virtual ~PRFilter();
+        ~PRFilter();
        XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;

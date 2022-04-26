@@ -47,7 +47,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(SupNameBits)
         public:
             SupNameBits(ExternalReferenceType type);
-            virtual ~SupNameBits();
+            ~SupNameBits();
 
             XLS::BaseObjectPtr clone();
 

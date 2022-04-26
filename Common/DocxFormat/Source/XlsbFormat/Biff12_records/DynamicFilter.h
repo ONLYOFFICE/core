@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(DynamicFilter)
         public:
             DynamicFilter();
-            virtual ~DynamicFilter();
+            ~DynamicFilter();
 
             XLS::BaseObjectPtr clone();
 

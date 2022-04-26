@@ -43,7 +43,7 @@ namespace XLSB
     public:
         ColSpan();
         ColSpan(XLS::CFRecord& record);
-        virtual ~ColSpan();
+        ~ColSpan();
 		XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType type = XLS::typeBiffStructure;

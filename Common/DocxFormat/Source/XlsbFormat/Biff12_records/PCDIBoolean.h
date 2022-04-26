@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(PCDIBoolean)
         public:
             PCDIBoolean();
-            virtual ~PCDIBoolean();
+            ~PCDIBoolean();
 
             XLS::BaseObjectPtr clone();
 

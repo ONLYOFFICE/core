@@ -46,7 +46,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(SxvcellDate)
         public:
             SxvcellDate();
-            virtual ~SxvcellDate();
+            ~SxvcellDate();
 
             XLS::BaseObjectPtr clone();
 
@@ -56,8 +56,8 @@ namespace XLSB
 
             FRTBlank     FRTheader;
             XLS::Xnum    xnum;
-            PCDISrvFmt   sxvcellextra;
-    };
+			boost::shared_ptr<PCDISrvFmt> sxvcellextra;
+	};
 
 } // namespace XLSB
 

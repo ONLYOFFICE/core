@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndSXView14)
         public:
             EndSXView14();
-            virtual ~EndSXView14();
+            ~EndSXView14();
 
             XLS::BaseObjectPtr clone();
 

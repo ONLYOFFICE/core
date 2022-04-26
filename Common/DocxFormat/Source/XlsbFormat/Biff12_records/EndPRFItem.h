@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndPRFItem)
         public:
             EndPRFItem();
-            virtual ~EndPRFItem();
+            ~EndPRFItem();
 
             XLS::BaseObjectPtr clone();
 

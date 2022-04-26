@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(ListCCFmla)
         public:
             ListCCFmla();
-            virtual ~ListCCFmla();
+            ~ListCCFmla();
 
             XLS::BaseObjectPtr clone();
 

@@ -43,7 +43,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(FRT)
     public:
         FRT();
-        virtual ~FRT();
+        ~FRT();
 
         XLS::BaseObjectPtr clone();
 

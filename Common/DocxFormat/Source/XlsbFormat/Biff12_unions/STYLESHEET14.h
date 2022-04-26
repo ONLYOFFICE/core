@@ -43,7 +43,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(STYLESHEET14)
     public:
         STYLESHEET14();
-        virtual ~STYLESHEET14();
+        ~STYLESHEET14();
 
         XLS::BaseObjectPtr clone();
 

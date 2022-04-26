@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndECTWFldInfoLst)
         public:
             EndECTWFldInfoLst();
-            virtual ~EndECTWFldInfoLst();
+            ~EndECTWFldInfoLst();
 
             XLS::BaseObjectPtr clone();
 

@@ -48,14 +48,14 @@ namespace XLSB
     class StreamCacheReader;
 
     class PivotCacheRecordsStream;
-    typedef std::shared_ptr<PivotCacheRecordsStream>		PivotCacheRecordsStreamPtr;
+    typedef boost::shared_ptr<PivotCacheRecordsStream>		PivotCacheRecordsStreamPtr;
 
     class PivotCacheRecordsStream: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(PivotCacheRecordsStream)
     public:
         PivotCacheRecordsStream();
-        virtual ~PivotCacheRecordsStream();
+        ~PivotCacheRecordsStream();
 
         XLS::BaseObjectPtr clone();
 

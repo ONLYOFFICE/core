@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(SXCHANGES)
     public:
         SXCHANGES();
-        virtual ~SXCHANGES();
+        ~SXCHANGES();
 
         XLS::BaseObjectPtr clone();
 

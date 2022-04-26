@@ -1,14 +1,14 @@
 #include "CEmfInterpretator.h"
-
-#include <fstream>
-
-#include <iostream>
+#include "../../../../common/File.h"
 
 namespace MetaFile
 {
         CEmfInterpretator::CEmfInterpretator(const wchar_t* wsFilepath) :
-                m_pOutStream(new std::ofstream(wsFilepath, std::ios::binary | std::ios::out)),
-                unFileSize(0), unNumberRecords(0), ushNuberDescriptors(0){}
+                unFileSize(0), unNumberRecords(0), ushNuberDescriptors(0)
+        {
+            m_pOutStream = new NSFile::CFileBinary();
+            bool result = m_pOutStream->CreateFileW(wsFilepath);
+        }
 
         CEmfInterpretator::CEmfInterpretator(const CEmfInterpretator& oEmfInterpretator, const bool bIsLite)
                 : m_pOutStream(oEmfInterpretator.m_pOutStream),
@@ -24,7 +24,7 @@ namespace MetaFile
 
         CEmfInterpretator::~CEmfInterpretator()
         {
-                m_pOutStream->close();
+                m_pOutStream->CloseFile();
                 delete m_pOutStream;
         }
 
@@ -41,23 +41,23 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oTEmfHeader.oBounds);
                 WriteRectangle(oTEmfHeader.oFrame);
 
                 unsigned int unZero = 0;
 
-                m_pOutStream->write((char*)&oTEmfHeader.ulSignature,        sizeof (unsigned int));
-                m_pOutStream->write((char*)&oTEmfHeader.ulVersion,          sizeof (unsigned int));
-                m_pOutStream->write((char*)&oTEmfHeader.ulSize,             sizeof (unsigned int));
-                m_pOutStream->write((char*)&oTEmfHeader.ulRecords,          sizeof (unsigned int));
-                m_pOutStream->write((char*)&oTEmfHeader.ushObjects,         sizeof (unsigned short));
-                m_pOutStream->write((char*)&oTEmfHeader.ushReserved,        sizeof (unsigned short));
-                m_pOutStream->write((char*)&unZero,                         sizeof (unsigned int));
-                m_pOutStream->write((char*)&unZero,                         sizeof (unsigned int));
-                m_pOutStream->write((char*)&unZero,                         sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfHeader.ulSignature,        sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfHeader.ulVersion,          sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfHeader.ulSize,             sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfHeader.ulRecords,          sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfHeader.ushObjects,         sizeof (unsigned short));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfHeader.ushReserved,        sizeof (unsigned short));
+                m_pOutStream->WriteFile((BYTE*)&unZero,                         sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unZero,                         sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unZero,                         sizeof (unsigned int));
 
                 WriteSize(oTEmfHeader.oDevice);
                 WriteSize(oTEmfHeader.oMillimeters);
@@ -71,41 +71,41 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oTEmfAlphaBlend.Bounds);
 
-                m_pOutStream->write((char *)&oTEmfAlphaBlend.xDest,     sizeof (int));
-                m_pOutStream->write((char *)&oTEmfAlphaBlend.yDest,     sizeof (int));
-                m_pOutStream->write((char *)&oTEmfAlphaBlend.cxDest,    sizeof (int));
-                m_pOutStream->write((char *)&oTEmfAlphaBlend.cyDest,    sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfAlphaBlend.xDest,     sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfAlphaBlend.yDest,     sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfAlphaBlend.cxDest,    sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfAlphaBlend.cyDest,    sizeof (int));
 
-                m_pOutStream->write((char *)&oTEmfAlphaBlend.BlendOperation,    sizeof (unsigned char));
-                m_pOutStream->write((char *)&oTEmfAlphaBlend.BlendFlags,        sizeof (unsigned char));
-                m_pOutStream->write((char *)&oTEmfAlphaBlend.SrcConstantAlpha,  sizeof (unsigned char));
-                m_pOutStream->write((char *)&oTEmfAlphaBlend.AlphaFormat,       sizeof (unsigned char));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfAlphaBlend.BlendOperation,    sizeof (unsigned char));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfAlphaBlend.BlendFlags,        sizeof (unsigned char));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfAlphaBlend.SrcConstantAlpha,  sizeof (unsigned char));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfAlphaBlend.AlphaFormat,       sizeof (unsigned char));
 
-                m_pOutStream->write((char *)&oTEmfAlphaBlend.xSrc,      sizeof (int));
-                m_pOutStream->write((char *)&oTEmfAlphaBlend.ySrc,      sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfAlphaBlend.xSrc,      sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfAlphaBlend.ySrc,      sizeof (int));
 
                 WriteForm(oTEmfAlphaBlend.XformSrc);
                 WriteColor(oTEmfAlphaBlend.BkColor);
 
-                m_pOutStream->write((char *)&oTEmfAlphaBlend.UsageSrc,  sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfAlphaBlend.offBmiSrc, sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfAlphaBlend.cbBmiSrc,  sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfAlphaBlend.offBitsSrc,sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfAlphaBlend.cbBitsSrc, sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfAlphaBlend.UsageSrc,  sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfAlphaBlend.offBmiSrc, sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfAlphaBlend.cbBmiSrc,  sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfAlphaBlend.offBitsSrc,sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfAlphaBlend.cbBitsSrc, sizeof (unsigned int));
 
-                m_pOutStream->write((char *)&oTEmfAlphaBlend.cxSrc,      sizeof (int));
-                m_pOutStream->write((char *)&oTEmfAlphaBlend.cySrc,      sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfAlphaBlend.cxSrc,      sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfAlphaBlend.cySrc,      sizeof (int));
 
                 if (oTEmfAlphaBlend.cbBmiSrc > 0)
-                        m_pOutStream->write((char *)oDataStream.GetCurPtr(), sizeof (BYTE) * oTEmfAlphaBlend.cbBmiSrc);
+                        m_pOutStream->WriteFile(oDataStream.GetCurPtr(), sizeof (BYTE) * oTEmfAlphaBlend.cbBmiSrc);
 
                 if (oTEmfAlphaBlend.cbBitsSrc > 0)
-                        m_pOutStream->write((char *)oDataStream.GetCurPtr() + oTEmfAlphaBlend.cbBmiSrc, sizeof (BYTE) * oTEmfAlphaBlend.cbBitsSrc);
+                        m_pOutStream->WriteFile(oDataStream.GetCurPtr() + oTEmfAlphaBlend.cbBmiSrc, sizeof (BYTE) * oTEmfAlphaBlend.cbBitsSrc);
         }
 
         void CEmfInterpretator::HANDLE_EMR_STRETCHDIBITS(const TEmfStretchDIBITS &oTEmfStretchDIBITS, CDataStream &oDataStream)
@@ -116,32 +116,32 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oTEmfStretchDIBITS.Bounds);
 
-                m_pOutStream->write((char *)&oTEmfStretchDIBITS.xDest,      sizeof (int));
-                m_pOutStream->write((char *)&oTEmfStretchDIBITS.yDest,      sizeof (int));
-                m_pOutStream->write((char *)&oTEmfStretchDIBITS.xSrc,       sizeof (int));
-                m_pOutStream->write((char *)&oTEmfStretchDIBITS.ySrc,       sizeof (int));
-                m_pOutStream->write((char *)&oTEmfStretchDIBITS.cxSrc,      sizeof (int));
-                m_pOutStream->write((char *)&oTEmfStretchDIBITS.cySrc,      sizeof (int));
-                m_pOutStream->write((char *)&oTEmfStretchDIBITS.offBmiSrc,  sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfStretchDIBITS.cbBmiSrc,   sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfStretchDIBITS.offBitsSrc, sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfStretchDIBITS.cbBitsSrc,  sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfStretchDIBITS.UsageSrc,   sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfStretchDIBITS.\
+                m_pOutStream->WriteFile((BYTE*)&oTEmfStretchDIBITS.xDest,      sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfStretchDIBITS.yDest,      sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfStretchDIBITS.xSrc,       sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfStretchDIBITS.ySrc,       sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfStretchDIBITS.cxSrc,      sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfStretchDIBITS.cySrc,      sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfStretchDIBITS.offBmiSrc,  sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfStretchDIBITS.cbBmiSrc,   sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfStretchDIBITS.offBitsSrc, sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfStretchDIBITS.cbBitsSrc,  sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfStretchDIBITS.UsageSrc,   sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfStretchDIBITS.\
                                                     BitBltRasterOperation,  sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfStretchDIBITS.cxDest,     sizeof (int));
-                m_pOutStream->write((char *)&oTEmfStretchDIBITS.cyDest,     sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfStretchDIBITS.cxDest,     sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfStretchDIBITS.cyDest,     sizeof (int));
 
                 if (oTEmfStretchDIBITS.cbBmiSrc > 0)
-                        m_pOutStream->write((char *)oDataStream.GetCurPtr(), sizeof (BYTE) * oTEmfStretchDIBITS.cbBmiSrc);
+                        m_pOutStream->WriteFile(oDataStream.GetCurPtr(), sizeof (BYTE) * oTEmfStretchDIBITS.cbBmiSrc);
 
                 if (oTEmfStretchDIBITS.cbBitsSrc > 0)
-                        m_pOutStream->write((char *)oDataStream.GetCurPtr() + oTEmfStretchDIBITS.cbBmiSrc, sizeof (BYTE) * oTEmfStretchDIBITS.cbBitsSrc);
+                        m_pOutStream->WriteFile(oDataStream.GetCurPtr() + oTEmfStretchDIBITS.cbBmiSrc, sizeof (BYTE) * oTEmfStretchDIBITS.cbBitsSrc);
         }
 
         void CEmfInterpretator::HANDLE_EMR_BITBLT(const TEmfBitBlt &oTEmfBitBlt, CDataStream &oDataStream)
@@ -152,34 +152,34 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oTEmfBitBlt.Bounds);
 
-                m_pOutStream->write((char *)&oTEmfBitBlt.xDest,     sizeof (int));
-                m_pOutStream->write((char *)&oTEmfBitBlt.yDest,     sizeof (int));
-                m_pOutStream->write((char *)&oTEmfBitBlt.cxDest,    sizeof (int));
-                m_pOutStream->write((char *)&oTEmfBitBlt.cyDest,    sizeof (int));
-                m_pOutStream->write((char *)&oTEmfBitBlt.\
+                m_pOutStream->WriteFile((BYTE*)&oTEmfBitBlt.xDest,     sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfBitBlt.yDest,     sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfBitBlt.cxDest,    sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfBitBlt.cyDest,    sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfBitBlt.\
                                             BitBltRasterOperation,  sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfBitBlt.xSrc,      sizeof (int));
-                m_pOutStream->write((char *)&oTEmfBitBlt.ySrc,      sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfBitBlt.xSrc,      sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfBitBlt.ySrc,      sizeof (int));
 
                 WriteForm(oTEmfBitBlt.XfromSrc);
                 WriteColor(oTEmfBitBlt.BkColorSrc);
 
-                m_pOutStream->write((char *)&oTEmfBitBlt.UsageSrc,  sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfBitBlt.offBmiSrc, sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfBitBlt.cbBmiSrc,  sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfBitBlt.offBitsSrc,sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfBitBlt.cbBitsSrc, sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfBitBlt.UsageSrc,  sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfBitBlt.offBmiSrc, sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfBitBlt.cbBmiSrc,  sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfBitBlt.offBitsSrc,sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfBitBlt.cbBitsSrc, sizeof (unsigned int));
 
                 if (oTEmfBitBlt.cbBmiSrc > 0)
-                        m_pOutStream->write((char *)oDataStream.GetCurPtr(), sizeof (BYTE) * oTEmfBitBlt.cbBmiSrc);
+                        m_pOutStream->WriteFile(oDataStream.GetCurPtr(), sizeof (BYTE) * oTEmfBitBlt.cbBmiSrc);
 
                 if (oTEmfBitBlt.cbBitsSrc > 0)
-                        m_pOutStream->write((char *)oDataStream.GetCurPtr() + oTEmfBitBlt.cbBmiSrc, sizeof (BYTE) * oTEmfBitBlt.cbBitsSrc);
+                        m_pOutStream->WriteFile(oDataStream.GetCurPtr() + oTEmfBitBlt.cbBmiSrc, sizeof (BYTE) * oTEmfBitBlt.cbBitsSrc);
         }
 
         void CEmfInterpretator::HANDLE_EMR_SETDIBITSTODEVICE(const TEmfSetDiBitsToDevice &oTEmfSetDiBitsToDevice, CDataStream &oDataStream)
@@ -190,30 +190,30 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oTEmfSetDiBitsToDevice.Bounds);
 
-                m_pOutStream->write((char *)&oTEmfSetDiBitsToDevice.xDest,      sizeof (int));
-                m_pOutStream->write((char *)&oTEmfSetDiBitsToDevice.yDest,      sizeof (int));
-                m_pOutStream->write((char *)&oTEmfSetDiBitsToDevice.xSrc,       sizeof (int));
-                m_pOutStream->write((char *)&oTEmfSetDiBitsToDevice.ySrc,       sizeof (int));
-                m_pOutStream->write((char *)&oTEmfSetDiBitsToDevice.cxSrc,      sizeof (int));
-                m_pOutStream->write((char *)&oTEmfSetDiBitsToDevice.cySrc,      sizeof (int));
-                m_pOutStream->write((char *)&oTEmfSetDiBitsToDevice.offBmiSrc,  sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfSetDiBitsToDevice.cbBmiSrc,   sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfSetDiBitsToDevice.offBitsSrc, sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfSetDiBitsToDevice.cbBitsSrc,  sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfSetDiBitsToDevice.UsageSrc,   sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfSetDiBitsToDevice.iStartScan, sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfSetDiBitsToDevice.cScans,     sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfSetDiBitsToDevice.xDest,      sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfSetDiBitsToDevice.yDest,      sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfSetDiBitsToDevice.xSrc,       sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfSetDiBitsToDevice.ySrc,       sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfSetDiBitsToDevice.cxSrc,      sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfSetDiBitsToDevice.cySrc,      sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfSetDiBitsToDevice.offBmiSrc,  sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfSetDiBitsToDevice.cbBmiSrc,   sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfSetDiBitsToDevice.offBitsSrc, sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfSetDiBitsToDevice.cbBitsSrc,  sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfSetDiBitsToDevice.UsageSrc,   sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfSetDiBitsToDevice.iStartScan, sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfSetDiBitsToDevice.cScans,     sizeof (unsigned int));
 
                 if (oTEmfSetDiBitsToDevice.cbBmiSrc > 0)
-                        m_pOutStream->write((char *)oDataStream.GetCurPtr(), sizeof (BYTE) * oTEmfSetDiBitsToDevice.cbBmiSrc);
+                        m_pOutStream->WriteFile(oDataStream.GetCurPtr(), sizeof (BYTE) * oTEmfSetDiBitsToDevice.cbBmiSrc);
 
                 if (oTEmfSetDiBitsToDevice.cbBitsSrc > 0)
-                        m_pOutStream->write((char *)oDataStream.GetCurPtr() + oTEmfSetDiBitsToDevice.cbBmiSrc, sizeof (BYTE) * oTEmfSetDiBitsToDevice.cbBitsSrc);
+                        m_pOutStream->WriteFile(oDataStream.GetCurPtr() + oTEmfSetDiBitsToDevice.cbBmiSrc, sizeof (BYTE) * oTEmfSetDiBitsToDevice.cbBitsSrc);
         }
 
         void CEmfInterpretator::HANDLE_EMR_STRETCHBLT(const TEmfStretchBLT &oTEmfStretchBLT, CDataStream &oDataStream)
@@ -224,37 +224,37 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oTEmfStretchBLT.Bounds);
 
-                m_pOutStream->write((char *)&oTEmfStretchBLT.xDest,      sizeof (int));
-                m_pOutStream->write((char *)&oTEmfStretchBLT.yDest,      sizeof (int));
-                m_pOutStream->write((char *)&oTEmfStretchBLT.cxDest,     sizeof (int));
-                m_pOutStream->write((char *)&oTEmfStretchBLT.cyDest,     sizeof (int));
-                m_pOutStream->write((char *)&oTEmfStretchBLT.\
+                m_pOutStream->WriteFile((BYTE*)&oTEmfStretchBLT.xDest,      sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfStretchBLT.yDest,      sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfStretchBLT.cxDest,     sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfStretchBLT.cyDest,     sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfStretchBLT.\
                                                 BitBltRasterOperation,   sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfStretchBLT.xSrc,       sizeof (int));
-                m_pOutStream->write((char *)&oTEmfStretchBLT.ySrc,       sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfStretchBLT.xSrc,       sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfStretchBLT.ySrc,       sizeof (int));
 
                 WriteForm(oTEmfStretchBLT.XformSrc);
                 WriteColor(oTEmfStretchBLT.BkColorSrc);
 
-                m_pOutStream->write((char *)&oTEmfStretchBLT.UsageSrc,   sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfStretchBLT.offBmiSrc,  sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfStretchBLT.cbBmiSrc,   sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfStretchBLT.offBitsSrc, sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfStretchBLT.cbBitsSrc,  sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfStretchBLT.UsageSrc,   sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfStretchBLT.offBmiSrc,  sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfStretchBLT.cbBmiSrc,   sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfStretchBLT.offBitsSrc, sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfStretchBLT.cbBitsSrc,  sizeof (unsigned int));
 
-                m_pOutStream->write((char *)&oTEmfStretchBLT.cxSrc,       sizeof (int));
-                m_pOutStream->write((char *)&oTEmfStretchBLT.cySrc,       sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfStretchBLT.cxSrc,       sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfStretchBLT.cySrc,       sizeof (int));
 
                 if (oTEmfStretchBLT.cbBmiSrc > 0)
-                        m_pOutStream->write((char *)oDataStream.GetCurPtr(), sizeof (BYTE) * oTEmfStretchBLT.cbBmiSrc);
+                        m_pOutStream->WriteFile(oDataStream.GetCurPtr(), sizeof (BYTE) * oTEmfStretchBLT.cbBmiSrc);
 
                 if (oTEmfStretchBLT.cbBitsSrc > 0)
-                        m_pOutStream->write((char *)oDataStream.GetCurPtr() + oTEmfStretchBLT.cbBmiSrc, sizeof (BYTE) * oTEmfStretchBLT.cbBitsSrc);
+                        m_pOutStream->WriteFile(oDataStream.GetCurPtr() + oTEmfStretchBLT.cbBmiSrc, sizeof (BYTE) * oTEmfStretchBLT.cbBitsSrc);
         }
 
         void CEmfInterpretator::HANDLE_EMR_EOF()
@@ -265,22 +265,22 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 unsigned int unZero = 0;
                 unsigned int unOffPalEntries = 16;
 
-                m_pOutStream->write((char *)&unZero,                sizeof (unsigned int));
-                m_pOutStream->write((char *)&unOffPalEntries,       sizeof (unsigned int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unZero,                sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unOffPalEntries,       sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (unsigned int));
 
-                m_pOutStream->seekp(48);
-                m_pOutStream->write((char *)&unFileSize,            sizeof (unsigned int));
-                m_pOutStream->write((char *)&unNumberRecords,       sizeof (unsigned int));
-                m_pOutStream->write((char *)&ushNuberDescriptors,   sizeof (unsigned short));
+                m_pOutStream->SeekFile(48);
+                m_pOutStream->WriteFile((BYTE*)&unFileSize,            sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unNumberRecords,       sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&ushNuberDescriptors,   sizeof (unsigned short));
 
-                m_pOutStream->close();
+                m_pOutStream->CloseFile();
         }
 
         void CEmfInterpretator::HANDLE_EMR_SAVEDC()
@@ -291,8 +291,8 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
         }
 
         void CEmfInterpretator::HANDLE_EMR_RESTOREDC(const int &nIndexDC)
@@ -303,10 +303,10 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
-                m_pOutStream->write((char *)&nIndexDC,              sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&nIndexDC,              sizeof (int));
         }
 
         void CEmfInterpretator::HANDLE_EMR_MODIFYWORLDTRANSFORM(const TXForm &oXForm, const unsigned int &unMode)
@@ -317,12 +317,12 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteForm(oXForm);
 
-                m_pOutStream->write((char *)&unMode,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unMode,                sizeof (int));
         }
 
         void CEmfInterpretator::HANDLE_EMR_SETWORLDTRANSFORM(const TXForm &oXForm)
@@ -333,8 +333,8 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteForm(oXForm);
         }
@@ -348,15 +348,15 @@ namespace MetaFile
                 ++unNumberRecords;
                 ++ushNuberDescriptors;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
-                m_pOutStream->write((char *)&unBrushIndex,          sizeof (unsigned int));
-                m_pOutStream->write((char *)&(pBrush->BrushStyle),  sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unBrushIndex,          sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&(pBrush->BrushStyle),  sizeof (unsigned int));
 
                 WriteColor(pBrush->Color);
 
-                m_pOutStream->write((char *)&(pBrush->BrushHatch),  sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&(pBrush->BrushHatch),  sizeof (unsigned int));
         }
 
         void CEmfInterpretator::HANDLE_EMR_SETTEXTCOLOR(const TEmfColor &oColor)
@@ -367,8 +367,8 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteColor(oColor);
         }
@@ -381,10 +381,10 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
-                m_pOutStream->write((char *)&unObjectIndex,  sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unObjectIndex,  sizeof (unsigned int));
         }
 
         void CEmfInterpretator::HANDLE_EMR_EXTCREATEFONTINDIRECTW(const unsigned int &unIndex, CEmfLogFont *oLogFont)
@@ -401,24 +401,24 @@ namespace MetaFile
                 ++unNumberRecords;
                 ++ushNuberDescriptors;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
-                m_pOutStream->write((char *)&unIndex,               sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unIndex,               sizeof (unsigned int));
 
-                m_pOutStream->write((char *)&oLogFont->LogFontEx.LogFont.Height,        sizeof (int));
-                m_pOutStream->write((char *)&oLogFont->LogFontEx.LogFont.Width,         sizeof (int));
-                m_pOutStream->write((char *)&oLogFont->LogFontEx.LogFont.Escapement,    sizeof (int));
-                m_pOutStream->write((char *)&oLogFont->LogFontEx.LogFont.Orientation,   sizeof (int));
-                m_pOutStream->write((char *)&oLogFont->LogFontEx.LogFont.Weight,        sizeof (int));
-                m_pOutStream->write((char *)&oLogFont->LogFontEx.LogFont.Italic,        sizeof (unsigned char));
-                m_pOutStream->write((char *)&oLogFont->LogFontEx.LogFont.Underline,     sizeof (unsigned char));
-                m_pOutStream->write((char *)&oLogFont->LogFontEx.LogFont.StrikeOut,     sizeof (unsigned char));
-                m_pOutStream->write((char *)&oLogFont->LogFontEx.LogFont.CharSet,       sizeof (unsigned char));
-                m_pOutStream->write((char *)&oLogFont->LogFontEx.LogFont.OutPrecision,  sizeof (unsigned char));
-                m_pOutStream->write((char *)&oLogFont->LogFontEx.LogFont.ClipPrecision, sizeof (unsigned char));
-                m_pOutStream->write((char *)&oLogFont->LogFontEx.LogFont.Quality,       sizeof (unsigned char));
-                m_pOutStream->write((char *)&oLogFont->LogFontEx.LogFont.PitchAndFamily,sizeof (unsigned char));
+                m_pOutStream->WriteFile((BYTE*)&oLogFont->LogFontEx.LogFont.Height,        sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oLogFont->LogFontEx.LogFont.Width,         sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oLogFont->LogFontEx.LogFont.Escapement,    sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oLogFont->LogFontEx.LogFont.Orientation,   sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oLogFont->LogFontEx.LogFont.Weight,        sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oLogFont->LogFontEx.LogFont.Italic,        sizeof (unsigned char));
+                m_pOutStream->WriteFile((BYTE*)&oLogFont->LogFontEx.LogFont.Underline,     sizeof (unsigned char));
+                m_pOutStream->WriteFile((BYTE*)&oLogFont->LogFontEx.LogFont.StrikeOut,     sizeof (unsigned char));
+                m_pOutStream->WriteFile((BYTE*)&oLogFont->LogFontEx.LogFont.CharSet,       sizeof (unsigned char));
+                m_pOutStream->WriteFile((BYTE*)&oLogFont->LogFontEx.LogFont.OutPrecision,  sizeof (unsigned char));
+                m_pOutStream->WriteFile((BYTE*)&oLogFont->LogFontEx.LogFont.ClipPrecision, sizeof (unsigned char));
+                m_pOutStream->WriteFile((BYTE*)&oLogFont->LogFontEx.LogFont.Quality,       sizeof (unsigned char));
+                m_pOutStream->WriteFile((BYTE*)&oLogFont->LogFontEx.LogFont.PitchAndFamily,sizeof (unsigned char));
 
                 WriteString(oLogFont->LogFontEx.LogFont.FaceName,   32);
                 WriteString(oLogFont->LogFontEx.FullName,           64);
@@ -427,11 +427,11 @@ namespace MetaFile
 
                 if (!oLogFont->IsFixedLength())
                 {
-                        m_pOutStream->write((char *)&oLogFont->DesignVector.Signature,     sizeof (unsigned int));
-                        m_pOutStream->write((char *)&oLogFont->DesignVector.NumAxes,       sizeof (unsigned int));
+                        m_pOutStream->WriteFile((BYTE*)&oLogFont->DesignVector.Signature,     sizeof (unsigned int));
+                        m_pOutStream->WriteFile((BYTE*)&oLogFont->DesignVector.NumAxes,       sizeof (unsigned int));
 
                         for (unsigned int i = 0; i < oLogFont->DesignVector.NumAxes; ++i)
-                                m_pOutStream->write((char *)&oLogFont->DesignVector.Values[i], sizeof (int));
+                                m_pOutStream->WriteFile((BYTE*)&oLogFont->DesignVector.Values[i], sizeof (int));
                 }
         }
 
@@ -443,10 +443,10 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
-                m_pOutStream->write((char *)&unAlign,               sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unAlign,               sizeof (unsigned int));
         }
 
         void CEmfInterpretator::HANDLE_EMR_SETBKMODE(const unsigned int &unBgMode)
@@ -457,10 +457,10 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
-                m_pOutStream->write((char *)&unBgMode,              sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unBgMode,              sizeof (unsigned int));
         }
 
         void CEmfInterpretator::HANDLE_EMR_DELETEOBJECT(const unsigned int &unObjectIndex)
@@ -471,10 +471,10 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
-                m_pOutStream->write((char *)&unObjectIndex,  sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unObjectIndex,  sizeof (unsigned int));
         }
 
         void CEmfInterpretator::HANDLE_EMR_SETMITERLIMIT(const unsigned int &unMeterLimit)
@@ -485,10 +485,10 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
-                m_pOutStream->write((char *)&unMeterLimit,          sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unMeterLimit,          sizeof (unsigned int));
         }
 
         void CEmfInterpretator::HANDLE_EMR_EXTCREATEPEN(const unsigned int &unPenIndex, CEmfLogPen *pPen, const std::vector<unsigned int>& arUnused)
@@ -503,34 +503,34 @@ namespace MetaFile
                 ++unNumberRecords;
                 ++ushNuberDescriptors;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
-                m_pOutStream->write((char *)&unPenIndex,            sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unPenIndex,            sizeof (unsigned int));
                 //Заполняем нулями некоторые поля, так как не используем
                 unsigned int unZero = 0;
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (unsigned int)); // offBmi
-                m_pOutStream->write((char *)&unZero,                sizeof (unsigned int)); // cbBmi
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (unsigned int)); // offBits
-                m_pOutStream->write((char *)&unZero,                sizeof (unsigned int)); // cbBits
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (unsigned int)); // offBmi
+                m_pOutStream->WriteFile((BYTE*)&unZero,                sizeof (unsigned int)); // cbBmi
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (unsigned int)); // offBits
+                m_pOutStream->WriteFile((BYTE*)&unZero,                sizeof (unsigned int)); // cbBits
 
-                m_pOutStream->write((char *)&pPen->PenStyle,    sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&pPen->PenStyle,    sizeof (unsigned int));
 
-                m_pOutStream->write((char *)&pPen->Width,       sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&pPen->Width,       sizeof (unsigned int));
 
-                m_pOutStream->write((char *)&arUnused[0],       sizeof (unsigned int)); // BrushStyle
+                m_pOutStream->WriteFile((BYTE*)&arUnused[0],       sizeof (unsigned int)); // BrushStyle
 
                 WriteColor(pPen->Color);
 
-                m_pOutStream->write((char *)&arUnused[1],       sizeof (unsigned int)); // BrushHatch
+                m_pOutStream->WriteFile((BYTE*)&arUnused[1],       sizeof (unsigned int)); // BrushHatch
 
-                m_pOutStream->write((char *)&pPen->NumStyleEntries, sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&pPen->NumStyleEntries, sizeof (unsigned int));
 
                 for (unsigned int i = 0; i < pPen->NumStyleEntries; ++i)
-                        m_pOutStream->write((char *)&pPen->StyleEntry[i], sizeof (unsigned int));
+                        m_pOutStream->WriteFile((BYTE*)&pPen->StyleEntry[i], sizeof (unsigned int));
 
                 if (pPen->PenStyle != PS_USERSTYLE)
-                        m_pOutStream->write((char *)&unZero,            sizeof (unsigned int));
+                        m_pOutStream->WriteFile((BYTE*)&unZero,            sizeof (unsigned int));
         }
 
         void CEmfInterpretator::HANDLE_EMR_CREATEPEN(const unsigned int &unPenIndex, const unsigned int &unWidthX, const CEmfLogPen *pPen)
@@ -547,14 +547,14 @@ namespace MetaFile
                 ++unNumberRecords;
                 ++ushNuberDescriptors;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
-                m_pOutStream->write((char *)&unPenIndex,            sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unPenIndex,            sizeof (unsigned int));
 
-                m_pOutStream->write((char *)&pPen->PenStyle,        sizeof (unsigned int));
-                m_pOutStream->write((char *)&unWidthX,              sizeof (unsigned int));
-                m_pOutStream->write((char *)&unZero,                sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&pPen->PenStyle,        sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unWidthX,              sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unZero,                sizeof (unsigned int));
 
                 WriteColor(pPen->Color);
         }
@@ -567,10 +567,10 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
-                m_pOutStream->write((char *)&unFillMode,            sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unFillMode,            sizeof (unsigned int));
         }
 
         void CEmfInterpretator::HANDLE_EMR_BEGINPATH()
@@ -581,8 +581,8 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
         }
 
         void CEmfInterpretator::HANDLE_EMR_ENDPATH()
@@ -593,8 +593,8 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
         }
 
         void CEmfInterpretator::HANDLE_EMR_CLOSEFIGURE()
@@ -605,8 +605,8 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
         }
 
         void CEmfInterpretator::HANDLE_EMR_FLATTENPATH()
@@ -617,8 +617,8 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
         }
 
         void CEmfInterpretator::HANDLE_EMR_WIDENPATH()
@@ -629,8 +629,8 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
         }
 
         void CEmfInterpretator::HANDLE_EMR_ABORTPATH()
@@ -641,8 +641,8 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
         }
 
         void CEmfInterpretator::HANDLE_EMR_MOVETOEX(const TEmfPointL &oPoint)
@@ -653,8 +653,8 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WritePoint(oPoint);
         }
@@ -667,10 +667,10 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
-                m_pOutStream->write((char *)&unDirection,           sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unDirection,           sizeof (unsigned int));
         }
 
         void CEmfInterpretator::HANDLE_EMR_FILLPATH(const TEmfRectL &oBounds)
@@ -681,8 +681,8 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oBounds);
         }
@@ -695,10 +695,10 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
-                m_pOutStream->write((char *)&unMapMode,             sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unMapMode,             sizeof (unsigned int));
         }
 
         void CEmfInterpretator::HANDLE_EMR_SETWINDOWORGEX(const TEmfPointL &oOrigin)
@@ -709,8 +709,8 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WritePoint(oOrigin);
         }
@@ -723,8 +723,8 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteSize(oExtent);
         }
@@ -737,8 +737,8 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WritePoint(oOrigin);
         }
@@ -751,8 +751,8 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteSize(oExtent);
         }
@@ -765,10 +765,10 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
-                m_pOutStream->write((char *)&unStretchMode,         sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unStretchMode,         sizeof (unsigned int));
         }
 
         void CEmfInterpretator::HANDLE_EMR_SETICMMODE(const unsigned int &unICMMode)
@@ -779,10 +779,10 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
-                m_pOutStream->write((char *)&unICMMode,             sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unICMMode,             sizeof (unsigned int));
         }
 
         void CEmfInterpretator::HANDLE_EMR_CREATEDIBPATTERNBRUSHPT(const unsigned int &unBrushIndex, const TEmfDibPatternBrush &oDibBrush, CDataStream &oDataStream)
@@ -794,22 +794,22 @@ namespace MetaFile
             ++unNumberRecords;
             ++ushNuberDescriptors;
 
-            m_pOutStream->write((char *)&unType,                sizeof (int));
-            m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+            m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+            m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
-            m_pOutStream->write((char *)&unBrushIndex,          sizeof (unsigned int));
-            m_pOutStream->write((char *)&oDibBrush.Usage,       sizeof (unsigned int));
+            m_pOutStream->WriteFile((BYTE*)&unBrushIndex,          sizeof (unsigned int));
+            m_pOutStream->WriteFile((BYTE*)&oDibBrush.Usage,       sizeof (unsigned int));
 
-            m_pOutStream->write((char *)&oDibBrush.offBmi,      sizeof (unsigned int));
-            m_pOutStream->write((char *)&oDibBrush.cbBmi,       sizeof (unsigned int));
-            m_pOutStream->write((char *)&oDibBrush.offBits,     sizeof (unsigned int));
-            m_pOutStream->write((char *)&oDibBrush.cbBits,      sizeof (unsigned int));
+            m_pOutStream->WriteFile((BYTE*)&oDibBrush.offBmi,      sizeof (unsigned int));
+            m_pOutStream->WriteFile((BYTE*)&oDibBrush.cbBmi,       sizeof (unsigned int));
+            m_pOutStream->WriteFile((BYTE*)&oDibBrush.offBits,     sizeof (unsigned int));
+            m_pOutStream->WriteFile((BYTE*)&oDibBrush.cbBits,      sizeof (unsigned int));
 
             if (oDibBrush.cbBmi > 0)
-                    m_pOutStream->write((char *)oDataStream.GetCurPtr(), sizeof (BYTE) * oDibBrush.cbBmi);
+                    m_pOutStream->WriteFile(oDataStream.GetCurPtr(), sizeof (BYTE) * oDibBrush.cbBmi);
 
             if (oDibBrush.cbBits > 0)
-                    m_pOutStream->write((char *)oDataStream.GetCurPtr() + oDibBrush.cbBmi, sizeof (BYTE) * oDibBrush.cbBits);
+                    m_pOutStream->WriteFile(oDataStream.GetCurPtr() + oDibBrush.cbBmi, sizeof (BYTE) * oDibBrush.cbBits);
         }
 
         void CEmfInterpretator::HANDLE_EMR_CREATEMONOBRUSH(const unsigned int &unBrushIndex, const TEmfDibPatternBrush &oDibBrush, CDataStream &oDataStream)
@@ -821,22 +821,22 @@ namespace MetaFile
                 ++unNumberRecords;
                 ++ushNuberDescriptors;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
-                m_pOutStream->write((char *)&unBrushIndex,          sizeof (unsigned int));
-                m_pOutStream->write((char *)&oDibBrush.Usage,       sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unBrushIndex,          sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oDibBrush.Usage,       sizeof (unsigned int));
 
-                m_pOutStream->write((char *)&oDibBrush.offBmi,      sizeof (unsigned int));
-                m_pOutStream->write((char *)&oDibBrush.cbBmi,       sizeof (unsigned int));
-                m_pOutStream->write((char *)&oDibBrush.offBits,     sizeof (unsigned int));
-                m_pOutStream->write((char *)&oDibBrush.cbBits,      sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oDibBrush.offBmi,      sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oDibBrush.cbBmi,       sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oDibBrush.offBits,     sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oDibBrush.cbBits,      sizeof (unsigned int));
 
                 if (oDibBrush.cbBmi > 0)
-                        m_pOutStream->write((char *)oDataStream.GetCurPtr(), sizeof (BYTE) * oDibBrush.cbBmi);
+                        m_pOutStream->WriteFile(oDataStream.GetCurPtr(), sizeof (BYTE) * oDibBrush.cbBmi);
 
                 if (oDibBrush.cbBits > 0)
-                        m_pOutStream->write((char *)oDataStream.GetCurPtr() + oDibBrush.cbBmi, sizeof (BYTE) * oDibBrush.cbBits);
+                        m_pOutStream->WriteFile(oDataStream.GetCurPtr() + oDibBrush.cbBmi, sizeof (BYTE) * oDibBrush.cbBits);
         }
 
         void CEmfInterpretator::HANDLE_EMR_SELECTCLIPPATH(const unsigned int &unRegionMode)
@@ -847,10 +847,10 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
-                m_pOutStream->write((char *)&unRegionMode,          sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unRegionMode,          sizeof (unsigned int));
         }
 
         void CEmfInterpretator::HANDLE_EMR_SETBKCOLOR(const TEmfColor &oColor)
@@ -861,8 +861,8 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteColor(oColor);
         }
@@ -875,8 +875,8 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oClip);
         }
@@ -889,15 +889,15 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
-                m_pOutStream->write((char *)&unRgnDataSize,         sizeof (unsigned int));
-                m_pOutStream->write((char *)&unRegionMode,          sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unRgnDataSize,         sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unRegionMode,          sizeof (unsigned int));
 
                 if (unRgnDataSize > 0)
                 {
-                        m_pOutStream->write((char *)oDataStream.GetCurPtr(), sizeof (BYTE) * unRgnDataSize);
+                        m_pOutStream->WriteFile(oDataStream.GetCurPtr(), sizeof (BYTE) * unRgnDataSize);
 //                        oDataStream.Skip(unRgnDataSize);
                 }
         }
@@ -910,8 +910,8 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
         }
 
         void CEmfInterpretator::HANDLE_EMR_SETROP2(const unsigned int &unRop2Mode)
@@ -922,10 +922,10 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
-                m_pOutStream->write((char *)&unRop2Mode,            sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unRop2Mode,            sizeof (unsigned int));
         }
 
         void CEmfInterpretator::HANDLE_EMR_CREATEPALETTE(const unsigned int &unPaletteIndex, const CEmfLogPalette *oEmfLogPalette)
@@ -941,13 +941,13 @@ namespace MetaFile
                 ++unNumberRecords;
                 ++ushNuberDescriptors;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
-                m_pOutStream->write((char *)&unPaletteIndex,        sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unPaletteIndex,        sizeof (unsigned int));
 
-                m_pOutStream->write((char *)&unVersion,                         sizeof (short));
-                m_pOutStream->write((char *)&oEmfLogPalette->NumberOfEntries,   sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unVersion,                         sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&oEmfLogPalette->NumberOfEntries,   sizeof (unsigned int));
 
                 for (unsigned int i = 0; i < oEmfLogPalette->NumberOfEntries; ++i)
                         WriteRColor(oEmfLogPalette->PaletteEntries[i]);
@@ -961,10 +961,10 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
-                m_pOutStream->write((char *)&unPaletteIndex,        sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unPaletteIndex,        sizeof (unsigned int));
         }
 
         void CEmfInterpretator::HANDLE_EMR_REALIZEPALETTE()
@@ -975,8 +975,8 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
         }
 
         void CEmfInterpretator::HANDLE_EMR_INTERSECTCLIPRECT(const TEmfRectL &oClip)
@@ -987,8 +987,8 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oClip);
         }
@@ -1001,10 +1001,10 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
-                m_pOutStream->write((char *)&unLayoutMode,          sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unLayoutMode,          sizeof (unsigned int));
         }
 
         void CEmfInterpretator::HANDLE_EMR_SETBRUSHORGEX(const TEmfPointL &oOrigin)
@@ -1015,8 +1015,8 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WritePoint(oOrigin);
         }
@@ -1029,12 +1029,12 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WritePoint(oCenter);
 
-                m_pOutStream->write((char *)&unRadius,          sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unRadius,          sizeof (unsigned int));
 
                 WriteFloat(dStartAngle);
                 WriteFloat(dSweepAngle);
@@ -1048,8 +1048,8 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oBox);
                 WritePoint(oStart);
@@ -1064,8 +1064,8 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oBox);
                 WritePoint(oStart);
@@ -1080,8 +1080,8 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oBox);
                 WritePoint(oStart);
@@ -1096,8 +1096,8 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oBox);
         }
@@ -1112,33 +1112,33 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oTEmfExtTextoutA.Bounds);
 
-                m_pOutStream->write((char *)&oTEmfExtTextoutA.iGraphicsMode,    sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfExtTextoutA.iGraphicsMode,    sizeof (unsigned int));
 
                 WriteFloat(oTEmfExtTextoutA.exScale);
                 WriteFloat(oTEmfExtTextoutA.exScale);
 
                 WritePoint(oTEmfExtTextoutA.aEmrText.Reference);
 
-                m_pOutStream->write((char *)&oTEmfExtTextoutA.aEmrText.Chars,       sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfExtTextoutA.aEmrText.offString,   sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfExtTextoutA.aEmrText.Options,     sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfExtTextoutA.aEmrText.Chars,       sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfExtTextoutA.aEmrText.offString,   sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfExtTextoutA.aEmrText.Options,     sizeof (unsigned int));
 
                 WriteRectangle(oTEmfExtTextoutA.aEmrText.Rectangle);
 
-                m_pOutStream->write((char *)&oTEmfExtTextoutA.aEmrText.offDx,       sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfExtTextoutA.aEmrText.offDx,       sizeof (unsigned int));
 
                 if (oTEmfExtTextoutA.aEmrText.Chars == 0)
                         return;
 
-                m_pOutStream->write((char *)&oTEmfExtTextoutA.aEmrText.OutputString,sizeof (unsigned char) * oTEmfExtTextoutA.aEmrText.Chars);
+                m_pOutStream->WriteFile((BYTE*)&oTEmfExtTextoutA.aEmrText.OutputString,sizeof (unsigned char) * oTEmfExtTextoutA.aEmrText.Chars);
 
                 if (unDxCount > 0)
-                        m_pOutStream->write((char *)&oTEmfExtTextoutA.aEmrText.OutputDx,sizeof (unsigned int) * unDxCount);
+                        m_pOutStream->WriteFile((BYTE*)&oTEmfExtTextoutA.aEmrText.OutputDx,sizeof (unsigned int) * unDxCount);
         }
 
         void CEmfInterpretator::HANDLE_EMR_EXTTEXTOUTW(const TEmfExtTextoutW &oTEmfExtTextoutW)
@@ -1153,36 +1153,36 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oTEmfExtTextoutW.Bounds);
 
-                m_pOutStream->write((char *)&oTEmfExtTextoutW.iGraphicsMode,    sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfExtTextoutW.iGraphicsMode,    sizeof (unsigned int));
 
                 WriteFloat(oTEmfExtTextoutW.exScale);
                 WriteFloat(oTEmfExtTextoutW.eyScale);
 
                 WritePoint(oTEmfExtTextoutW.wEmrText.Reference);
 
-                m_pOutStream->write((char *)&oTEmfExtTextoutW.wEmrText.Chars,       sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfExtTextoutW.wEmrText.offString,   sizeof (unsigned int));
-                m_pOutStream->write((char *)&oTEmfExtTextoutW.wEmrText.Options,     sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfExtTextoutW.wEmrText.Chars,       sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfExtTextoutW.wEmrText.offString,   sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfExtTextoutW.wEmrText.Options,     sizeof (unsigned int));
 
                 WriteRectangle(oTEmfExtTextoutW.wEmrText.Rectangle);
 
-                m_pOutStream->write((char *)&oTEmfExtTextoutW.wEmrText.offDx,       sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oTEmfExtTextoutW.wEmrText.offDx,       sizeof (unsigned int));
 
                 if (oTEmfExtTextoutW.wEmrText.Chars == 0)
                         return;
 
-                m_pOutStream->write((char *)oTEmfExtTextoutW.wEmrText.OutputString, sizeof (unsigned short) * oTEmfExtTextoutW.wEmrText.Chars);
+                m_pOutStream->WriteFile((BYTE*)oTEmfExtTextoutW.wEmrText.OutputString, sizeof (unsigned short) * oTEmfExtTextoutW.wEmrText.Chars);
 
                 for (unsigned int i = 0; i < unAlign; ++i)
-                        m_pOutStream->write((char *)&unZero, sizeof (BYTE));
+                        m_pOutStream->WriteFile((BYTE*)&unZero, sizeof (BYTE));
 
                 if (unDxCount > 0)
-                        m_pOutStream->write((char *)oTEmfExtTextoutW.wEmrText.OutputDx, sizeof (unsigned int) * unDxCount);
+                        m_pOutStream->WriteFile((BYTE*)oTEmfExtTextoutW.wEmrText.OutputDx, sizeof (unsigned int) * unDxCount);
         }
 
         void CEmfInterpretator::HANDLE_EMR_LINETO(const TEmfPointL &oPoint)
@@ -1193,8 +1193,8 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WritePoint(oPoint);
         }
@@ -1207,8 +1207,8 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oBox);
                 WritePoint(oStart);
@@ -1225,12 +1225,12 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oBounds);
 
-                m_pOutStream->write((char *)&unCountPoints,  sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unCountPoints,  sizeof (unsigned int));
 
                 for (const TEmfPointL& oPoint : arPoints)
                         WritePoint(oPoint);
@@ -1246,12 +1246,12 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oBounds);
 
-                m_pOutStream->write((char *)&unCountPoints,  sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unCountPoints,  sizeof (unsigned int));
 
                 for (const TEmfPointS& oPoint : arPoints)
                         WritePoint(oPoint);
@@ -1267,12 +1267,12 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oBounds);
 
-                m_pOutStream->write((char *)&unCountPoints,  sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unCountPoints,  sizeof (unsigned int));
 
                 for (const TEmfPointL& oPoint : arPoints)
                         WritePoint(oPoint);
@@ -1288,12 +1288,12 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oBounds);
 
-                m_pOutStream->write((char *)&unCountPoints,  sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unCountPoints,  sizeof (unsigned int));
 
                 for (const TEmfPointS& oPoint : arPoints)
                         WritePoint(oPoint);
@@ -1310,18 +1310,18 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oBounds);
 
-                m_pOutStream->write((char *)&unCount,  sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unCount,  sizeof (unsigned int));
 
                 for (unsigned int i = 0; i < unCount; ++i)
                         WritePoint(arPoints[i]);
 
                 for (unsigned int i = 0; i < unCount; ++i)
-                        m_pOutStream->write((char *)&pAbTypes[i],  sizeof (unsigned int));
+                        m_pOutStream->WriteFile((BYTE*)&pAbTypes[i],  sizeof (unsigned int));
         }
 
         void CEmfInterpretator::HANDLE_EMR_POLYDRAW(const TEmfRectL &oBounds, TEmfPointS *arPoints, const unsigned int &unCount, const unsigned char *pAbTypes)
@@ -1335,18 +1335,18 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oBounds);
 
-                m_pOutStream->write((char *)&unCount,  sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unCount,  sizeof (unsigned int));
 
                 for (unsigned int i = 0; i < unCount; ++i)
                         WritePoint(arPoints[i]);
 
                 for (unsigned int i = 0; i < unCount; ++i)
-                        m_pOutStream->write((char *)&pAbTypes[i],  sizeof (unsigned int));
+                        m_pOutStream->WriteFile((BYTE*)&pAbTypes[i],  sizeof (unsigned int));
         }
 
         void CEmfInterpretator::HANDLE_EMR_POLYGON(const TEmfRectL &oBounds, const std::vector<TEmfPointL> &arPoints)
@@ -1359,12 +1359,12 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oBounds);
 
-                m_pOutStream->write((char *)&unCountPoints,  sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unCountPoints,  sizeof (unsigned int));
 
                 for (const TEmfPointL& oPoint : arPoints)
                         WritePoint(oPoint);
@@ -1380,12 +1380,12 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oBounds);
 
-                m_pOutStream->write((char *)&unCountPoints,  sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unCountPoints,  sizeof (unsigned int));
 
                 for (const TEmfPointS& oPoint : arPoints)
                         WritePoint(oPoint);
@@ -1401,12 +1401,12 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oBounds);
 
-                m_pOutStream->write((char *)&unCountPoints,  sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unCountPoints,  sizeof (unsigned int));
 
                 for (const TEmfPointL& oPoint : arPoints)
                         WritePoint(oPoint);
@@ -1422,12 +1422,12 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oBounds);
 
-                m_pOutStream->write((char *)&unCountPoints,  sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unCountPoints,  sizeof (unsigned int));
 
                 for (const TEmfPointS& oPoint : arPoints)
                         WritePoint(oPoint);
@@ -1443,12 +1443,12 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oBounds);
 
-                m_pOutStream->write((char *)&unCountPoints,  sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unCountPoints,  sizeof (unsigned int));
 
                 for (const TEmfPointL& oPoint : arPoints)
                         WritePoint(oPoint);
@@ -1464,12 +1464,12 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oBounds);
 
-                m_pOutStream->write((char *)&unCountPoints,  sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unCountPoints,  sizeof (unsigned int));
 
                 for (const TEmfPointS& oPoint : arPoints)
                         WritePoint(oPoint);
@@ -1490,18 +1490,18 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oBounds);
 
-                m_pOutStream->write((char *)&unNumberOfPolygons,     sizeof (unsigned int));
-                m_pOutStream->write((char *)&unCountPoints,          sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unNumberOfPolygons,     sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unCountPoints,          sizeof (unsigned int));
 
                 for (const std::vector<TEmfPointL>& arTempPoints : arPoints)
                 {
                         unsigned int  unPointCount = arTempPoints.size();
-                        m_pOutStream->write((char *)&unPointCount,   sizeof (unsigned int));
+                        m_pOutStream->WriteFile((BYTE*)&unPointCount,   sizeof (unsigned int));
                 }
 
                 for (const std::vector<TEmfPointL>& arTempPoints : arPoints)
@@ -1526,18 +1526,18 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oBounds);
 
-                m_pOutStream->write((char *)&unNumberOfPolygons,     sizeof (unsigned int));
-                m_pOutStream->write((char *)&unCountPoints,          sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unNumberOfPolygons,     sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unCountPoints,          sizeof (unsigned int));
 
                 for (const std::vector<TEmfPointS>& arTempPoints : arPoints)
                 {
                         unsigned int  unPointCount = arTempPoints.size();
-                        m_pOutStream->write((char *)&unPointCount,   sizeof (unsigned int));
+                        m_pOutStream->WriteFile((BYTE*)&unPointCount,   sizeof (unsigned int));
                 }
 
                 for (const std::vector<TEmfPointS>& arTempPoints : arPoints)
@@ -1561,18 +1561,18 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oBounds);
 
-                m_pOutStream->write((char *)&unNumberOfPolygons,     sizeof (unsigned int));
-                m_pOutStream->write((char *)&unCountPoints,          sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unNumberOfPolygons,     sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unCountPoints,          sizeof (unsigned int));
 
                 for (const std::vector<TEmfPointL>& arTempPoints : arPoints)
                 {
                         unsigned int  unPointCount = arTempPoints.size();
-                        m_pOutStream->write((char *)&unPointCount,   sizeof (unsigned int));
+                        m_pOutStream->WriteFile((BYTE*)&unPointCount,   sizeof (unsigned int));
                 }
 
                 for (const std::vector<TEmfPointL>& arTempPoints : arPoints)
@@ -1596,18 +1596,18 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oBounds);
 
-                m_pOutStream->write((char *)&unNumberOfPolygons,     sizeof (unsigned int));
-                m_pOutStream->write((char *)&unCountPoints,          sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unNumberOfPolygons,     sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unCountPoints,          sizeof (unsigned int));
 
                 for (const std::vector<TEmfPointS>& arTempPoints : arPoints)
                 {
                         unsigned int  unPointCount = arTempPoints.size();
-                        m_pOutStream->write((char *)&unPointCount,   sizeof (unsigned int));
+                        m_pOutStream->WriteFile((BYTE*)&unPointCount,   sizeof (unsigned int));
                 }
 
                 for (const std::vector<TEmfPointS>& arTempPoints : arPoints)
@@ -1623,8 +1623,8 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oBox);
         }
@@ -1637,8 +1637,8 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oBox);
                 WriteSize(oCorner);
@@ -1652,8 +1652,8 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WritePoint(oPoint);
                 WriteColor(oColor);
@@ -1669,14 +1669,14 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
-                m_pOutStream->write((char *)&oText.x,               sizeof (int));
-                m_pOutStream->write((char *)&oText.y,               sizeof (int));
-                m_pOutStream->write((char *)&oText.cChars,          sizeof (unsigned int));
-                m_pOutStream->write((char *)&oText.fuOptions,       sizeof (unsigned int));
-                m_pOutStream->write((char *)&oText.iGraphicsMode,   sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oText.x,               sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oText.y,               sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oText.cChars,          sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oText.fuOptions,       sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oText.iGraphicsMode,   sizeof (unsigned int));
 
                 WriteFloat(oText.exScale);
                 WriteFloat(oText.eyScale);
@@ -1687,9 +1687,9 @@ namespace MetaFile
                 if (oText.cChars > 0)
                 {
                     if (oText.fuOptions & ETO_SMALL_CHARS)
-                        m_pOutStream->write((char *)&oText.TextString ,sizeof (unsigned char) * oText.cChars);
+                        m_pOutStream->WriteFile((BYTE*)&oText.TextString ,sizeof (unsigned char) * oText.cChars);
                     else
-                        m_pOutStream->write((char *)&oText.TextString ,sizeof (unsigned short) * oText.cChars);
+                        m_pOutStream->WriteFile((BYTE*)&oText.TextString ,sizeof (unsigned short) * oText.cChars);
                 }
         }
 
@@ -1701,8 +1701,8 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oBounds);
         }
@@ -1715,8 +1715,8 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unType,                sizeof (int));
-                m_pOutStream->write((char *)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oBounds);
         }
@@ -1733,11 +1733,11 @@ namespace MetaFile
                 unFileSize += unRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char *)&unRecordType, sizeof (int));
-                m_pOutStream->write((char *)&unRecordSize, sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unRecordType, sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unRecordSize, sizeof (int));
 
                 if (unRecordSize > 0)
-                        m_pOutStream->write((char *)oDataStream.GetCurPtr(), sizeof (BYTE) * unRecordSize - 8);
+                        m_pOutStream->WriteFile(oDataStream.GetCurPtr(), sizeof (BYTE) * unRecordSize - 8);
         }
 
         void CEmfInterpretator::HANDLE_EMR_FILLRGN(const TEmfRectL &oBounds, unsigned int unIhBrush, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
@@ -1772,14 +1772,14 @@ namespace MetaFile
                 int nVersion;
                 unsigned int unEmfPlusFlags = bIsReferenceDevice << 31;
 
-                m_pOutStream->write((char *)&shType,            sizeof (short));
-                m_pOutStream->write((char *)&shFlags,           sizeof (short));
-                m_pOutStream->write((char *)&unSize,            sizeof (unsigned int));
-                m_pOutStream->write((char *)&unDataSize,        sizeof (unsigned int));
-                m_pOutStream->write((char *)&nVersion,          sizeof (int));
-                m_pOutStream->write((char *)&unEmfPlusFlags,    sizeof (unsigned int));
-                m_pOutStream->write((char *)&unDpiX,            sizeof (float));
-                m_pOutStream->write((char *)&unDpiY,            sizeof (float));
+                m_pOutStream->WriteFile((BYTE*)&shType,            sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&shFlags,           sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&unSize,            sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unDataSize,        sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&nVersion,          sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unEmfPlusFlags,    sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unDpiX,            sizeof (float));
+                m_pOutStream->WriteFile((BYTE*)&unDpiY,            sizeof (float));
         }
 
         void CEmfInterpretator::HANDLE_EMFPLUS_CLEAR(TEmfPlusARGB oColor)
@@ -1789,10 +1789,10 @@ namespace MetaFile
                 unsigned int unSize = 0x00000010;
                 unsigned int unDataSize = 0x00000004;
 
-                m_pOutStream->write((char *)&shType,            sizeof (short));
-                m_pOutStream->write((char *)&shFlags,           sizeof (short));
-                m_pOutStream->write((char *)&unSize,            sizeof (unsigned int));
-                m_pOutStream->write((char *)&unDataSize,        sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&shType,            sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&shFlags,           sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&unSize,            sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unDataSize,        sizeof (unsigned int));
 
                 WriteARGB(oColor);
         }
@@ -1804,12 +1804,12 @@ namespace MetaFile
                 unsigned int unSize = 0x0000001C;
                 unsigned int unDataSize = 0x00000010;
 
-                m_pOutStream->write((char *)&shType,            sizeof (short));
-                m_pOutStream->write((char *)&shFlags,           sizeof (short));
-                m_pOutStream->write((char *)&unSize,            sizeof (unsigned int));
-                m_pOutStream->write((char *)&unDataSize,        sizeof (unsigned int));
-                m_pOutStream->write((char *)&dStartAngle,       sizeof (float));
-                m_pOutStream->write((char *)&dSweepAngle,       sizeof (float));
+                m_pOutStream->WriteFile((BYTE*)&shType,            sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&shFlags,           sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&unSize,            sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unDataSize,        sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&dStartAngle,       sizeof (float));
+                m_pOutStream->WriteFile((BYTE*)&dSweepAngle,       sizeof (float));
 
                 WriteRectangle(oRect);
         }
@@ -1821,12 +1821,12 @@ namespace MetaFile
                 unsigned int unSize = 0x00000024;
                 unsigned int unDataSize = 0x00000018;
 
-                m_pOutStream->write((char *)&shType,            sizeof (short));
-                m_pOutStream->write((char *)&shFlags,           sizeof (short));
-                m_pOutStream->write((char *)&unSize,            sizeof (unsigned int));
-                m_pOutStream->write((char *)&unDataSize,        sizeof (unsigned int));
-                m_pOutStream->write((char *)&dStartAngle,       sizeof (float));
-                m_pOutStream->write((char *)&dSweepAngle,       sizeof (float));
+                m_pOutStream->WriteFile((BYTE*)&shType,            sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&shFlags,           sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&unSize,            sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unDataSize,        sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&dStartAngle,       sizeof (float));
+                m_pOutStream->WriteFile((BYTE*)&dSweepAngle,       sizeof (float));
 
                 WriteRectangle(oRect);
         }
@@ -1839,11 +1839,11 @@ namespace MetaFile
                 unsigned int unSize = (unCount * 0x00000002) + 0x00000010;
                 unsigned int unDataSize = (unCount * 0x00000002) + 0x00000004;
 
-                m_pOutStream->write((char *)&shType,            sizeof (short));
-                m_pOutStream->write((char *)&shFlags,           sizeof (short));
-                m_pOutStream->write((char *)&unSize,            sizeof (unsigned int));
-                m_pOutStream->write((char *)&unDataSize,        sizeof (unsigned int));
-                m_pOutStream->write((char *)&unCount,           sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&shType,            sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&shFlags,           sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&unSize,            sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unDataSize,        sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unCount,           sizeof (unsigned int));
 
                 for (const TEmfPlusPointR& oPoint : arPoints)
                         WritePoint(oPoint);
@@ -1857,11 +1857,11 @@ namespace MetaFile
                 unsigned int unSize = (unCount * 0x00000008) + 0x00000010;
                 unsigned int unDataSize = (unCount * 0x00000008) + 0x00000004;
 
-                m_pOutStream->write((char *)&shType,            sizeof (short));
-                m_pOutStream->write((char *)&shFlags,           sizeof (short));
-                m_pOutStream->write((char *)&unSize,            sizeof (unsigned int));
-                m_pOutStream->write((char *)&unDataSize,        sizeof (unsigned int));
-                m_pOutStream->write((char *)&unCount,           sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&shType,            sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&shFlags,           sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&unSize,            sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unDataSize,        sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unCount,           sizeof (unsigned int));
 
                 for (const TEmfPlusPointF& oPoint : arPoints)
                         WritePoint(oPoint);
@@ -1875,11 +1875,11 @@ namespace MetaFile
                 unsigned int unSize = (unCount * 0x00000004) + 0x00000010;
                 unsigned int unDataSize = (unCount * 0x00000004) + 0x00000004;
 
-                m_pOutStream->write((char *)&shType,            sizeof (short));
-                m_pOutStream->write((char *)&shFlags,           sizeof (short));
-                m_pOutStream->write((char *)&unSize,            sizeof (unsigned int));
-                m_pOutStream->write((char *)&unDataSize,        sizeof (unsigned int));
-                m_pOutStream->write((char *)&unCount,           sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&shType,            sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&shFlags,           sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&unSize,            sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unDataSize,        sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unCount,           sizeof (unsigned int));
 
                 for (const TEmfPlusPoint& oPoint : arPoints)
                         WritePoint(oPoint);
@@ -1893,12 +1893,12 @@ namespace MetaFile
                 unsigned int unSize = ((((unCount * 0x00000002) + 0x00000014 + 0x00000003) / 4) * 4);
                 unsigned int unDataSize = ((((unCount * 0x00000002) + 0x0000008 + 0x00000003) / 4) * 4);
 
-                m_pOutStream->write((char *)&shType,            sizeof (short));
-                m_pOutStream->write((char *)&shFlags,           sizeof (short));
-                m_pOutStream->write((char *)&unSize,            sizeof (unsigned int));
-                m_pOutStream->write((char *)&unDataSize,        sizeof (unsigned int));
-                m_pOutStream->write((char *)&dTension,          sizeof (float));
-                m_pOutStream->write((char *)&unCount,           sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&shType,            sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&shFlags,           sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&unSize,            sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unDataSize,        sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&dTension,          sizeof (float));
+                m_pOutStream->WriteFile((BYTE*)&unCount,           sizeof (unsigned int));
 
                 for (const TEmfPlusPointR& oPoint : arPoints)
                         WritePoint(oPoint);
@@ -1912,12 +1912,12 @@ namespace MetaFile
                 unsigned int unSize = (unCount * 0x00000008) + 0x00000014;
                 unsigned int unDataSize = (unCount * 0x00000008) + 0x00000008;
 
-                m_pOutStream->write((char *)&shType,            sizeof (short));
-                m_pOutStream->write((char *)&shFlags,           sizeof (short));
-                m_pOutStream->write((char *)&unSize,            sizeof (unsigned int));
-                m_pOutStream->write((char *)&unDataSize,        sizeof (unsigned int));
-                m_pOutStream->write((char *)&dTension,          sizeof (float));
-                m_pOutStream->write((char *)&unCount,           sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&shType,            sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&shFlags,           sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&unSize,            sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unDataSize,        sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&dTension,          sizeof (float));
+                m_pOutStream->WriteFile((BYTE*)&unCount,           sizeof (unsigned int));
 
                 for (const TEmfPlusPointF oPoint : arPoints)
                         WritePoint(oPoint);
@@ -1931,12 +1931,12 @@ namespace MetaFile
                 unsigned int unSize = (unCount * 0x00000004) + 0x00000014;
                 unsigned int unDataSize = (unCount * 0x00000004) + 0x00000008;
 
-                m_pOutStream->write((char *)&shType,            sizeof (short));
-                m_pOutStream->write((char *)&shFlags,           sizeof (short));
-                m_pOutStream->write((char *)&unSize,            sizeof (unsigned int));
-                m_pOutStream->write((char *)&unDataSize,        sizeof (unsigned int));
-                m_pOutStream->write((char *)&dTension,          sizeof (float));
-                m_pOutStream->write((char *)&unCount,           sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&shType,            sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&shFlags,           sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&unSize,            sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unDataSize,        sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&dTension,          sizeof (float));
+                m_pOutStream->WriteFile((BYTE*)&unCount,           sizeof (unsigned int));
 
                 for (const TEmfPlusPoint oPoint : arPoints)
                         WritePoint(oPoint);
@@ -1950,14 +1950,14 @@ namespace MetaFile
                 unsigned int unSize = (unCount * 0x00000004) + 0x0000001C;
                 unsigned int unDataSize = (unCount * 0x00000004) + 0x00000010;
 
-                m_pOutStream->write((char *)&shType,            sizeof (short));
-                m_pOutStream->write((char *)&shFlags,           sizeof (short));
-                m_pOutStream->write((char *)&unSize,            sizeof (unsigned int));
-                m_pOutStream->write((char *)&unDataSize,        sizeof (unsigned int));
-                m_pOutStream->write((char *)&dTension,          sizeof (float));
-                m_pOutStream->write((char *)&unOffset,          sizeof (unsigned int));
-                m_pOutStream->write((char *)&unNumSegments,     sizeof (unsigned int));
-                m_pOutStream->write((char *)&unCount,           sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&shType,            sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&shFlags,           sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&unSize,            sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unDataSize,        sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&dTension,          sizeof (float));
+                m_pOutStream->WriteFile((BYTE*)&unOffset,          sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unNumSegments,     sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unCount,           sizeof (unsigned int));
 
                 for (const TEmfPlusPoint oPoint : arPoints)
                         WritePoint(oPoint);
@@ -1971,14 +1971,14 @@ namespace MetaFile
                 unsigned int unSize = (unCount * 0x00000008) + 0x0000001C;
                 unsigned int unDataSize = (unCount * 0x00000008) + 0x00000010;
 
-                m_pOutStream->write((char *)&shType,            sizeof (short));
-                m_pOutStream->write((char *)&shFlags,           sizeof (short));
-                m_pOutStream->write((char *)&unSize,            sizeof (unsigned int));
-                m_pOutStream->write((char *)&unDataSize,        sizeof (unsigned int));
-                m_pOutStream->write((char *)&dTension,          sizeof (float));
-                m_pOutStream->write((char *)&unOffset,          sizeof (unsigned int));
-                m_pOutStream->write((char *)&unNumSegments,     sizeof (unsigned int));
-                m_pOutStream->write((char *)&unCount,           sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&shType,            sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&shFlags,           sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&unSize,            sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unDataSize,        sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&dTension,          sizeof (float));
+                m_pOutStream->WriteFile((BYTE*)&unOffset,          sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unNumSegments,     sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unCount,           sizeof (unsigned int));
 
                 for (const TEmfPlusPointF oPoint : arPoints)
                         WritePoint(oPoint);
@@ -1991,10 +1991,10 @@ namespace MetaFile
                 unsigned int unSize = 0x00000014;
                 unsigned int unDataSize = 0x00000008;
 
-                m_pOutStream->write((char *)&shType,            sizeof (short));
-                m_pOutStream->write((char *)&shFlags,           sizeof (short));
-                m_pOutStream->write((char *)&unSize,            sizeof (unsigned int));
-                m_pOutStream->write((char *)&unDataSize,        sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&shType,            sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&shFlags,           sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&unSize,            sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unDataSize,        sizeof (unsigned int));
 
                 WriteRectangle(oRect);
         }
@@ -2006,10 +2006,10 @@ namespace MetaFile
                 unsigned int unSize = 0x0000001C;
                 unsigned int unDataSize = 0x00000010;
 
-                m_pOutStream->write((char *)&shType,            sizeof (short));
-                m_pOutStream->write((char *)&shFlags,           sizeof (short));
-                m_pOutStream->write((char *)&unSize,            sizeof (unsigned int));
-                m_pOutStream->write((char *)&unDataSize,        sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&shType,            sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&shFlags,           sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&unSize,            sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unDataSize,        sizeof (unsigned int));
 
                 WriteRectangle(oRect);
         }
@@ -2026,13 +2026,13 @@ namespace MetaFile
                 unsigned int unSize = 0x0000002C;
                 unsigned int unDataSize = 0x00000020;
 
-                m_pOutStream->write((char *)&shType,            sizeof (short));
-                m_pOutStream->write((char *)&shFlags,           sizeof (short));
-                m_pOutStream->write((char *)&unSize,            sizeof (unsigned int));
-                m_pOutStream->write((char *)&unDataSize,        sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&shType,            sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&shFlags,           sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&unSize,            sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unDataSize,        sizeof (unsigned int));
 
-                m_pOutStream->write((char *)&unImageAttributesId,       sizeof (unsigned int));
-                m_pOutStream->write((char *)&nSrcUnit,                  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unImageAttributesId,       sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&nSrcUnit,                  sizeof (int));
 
                 WriteRectangle(oSrcRect);
                 WriteRectangle(oRectData);
@@ -2045,13 +2045,13 @@ namespace MetaFile
                 unsigned int unSize = 0x00000034;
                 unsigned int unDataSize = 0x00000028;
 
-                m_pOutStream->write((char *)&shType,            sizeof (short));
-                m_pOutStream->write((char *)&shFlags,           sizeof (short));
-                m_pOutStream->write((char *)&unSize,            sizeof (unsigned int));
-                m_pOutStream->write((char *)&unDataSize,        sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&shType,            sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&shFlags,           sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&unSize,            sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&unDataSize,        sizeof (unsigned int));
 
-                m_pOutStream->write((char *)&unImageAttributesId,       sizeof (unsigned int));
-                m_pOutStream->write((char *)&nSrcUnit,                  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unImageAttributesId,       sizeof (unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&nSrcUnit,                  sizeof (int));
 
                 WriteRectangle(oSrcRect);
                 WriteRectangle(oRectData);
@@ -2069,54 +2069,54 @@ namespace MetaFile
 
         void CEmfInterpretator::WriteRectangle(const TEmfRectL &oBounds)
         {
-                m_pOutStream->write((char *)&oBounds.lLeft,   sizeof(int));
-                m_pOutStream->write((char *)&oBounds.lTop,    sizeof(int));
-                m_pOutStream->write((char *)&oBounds.lRight,  sizeof(int));
-                m_pOutStream->write((char *)&oBounds.lBottom, sizeof(int));
+                m_pOutStream->WriteFile((BYTE*)&oBounds.lLeft,   sizeof(int));
+                m_pOutStream->WriteFile((BYTE*)&oBounds.lTop,    sizeof(int));
+                m_pOutStream->WriteFile((BYTE*)&oBounds.lRight,  sizeof(int));
+                m_pOutStream->WriteFile((BYTE*)&oBounds.lBottom, sizeof(int));
         }
 
         void CEmfInterpretator::WriteRectangle(const TEmfPlusRect &oRect)
         {
-                m_pOutStream->write((char *)&oRect.shX,       sizeof(short));
-                m_pOutStream->write((char *)&oRect.shY,       sizeof(short));
-                m_pOutStream->write((char *)&oRect.shWidth,   sizeof(short));
-                m_pOutStream->write((char *)&oRect.shHeight,  sizeof(short));
+                m_pOutStream->WriteFile((BYTE*)&oRect.shX,       sizeof(short));
+                m_pOutStream->WriteFile((BYTE*)&oRect.shY,       sizeof(short));
+                m_pOutStream->WriteFile((BYTE*)&oRect.shWidth,   sizeof(short));
+                m_pOutStream->WriteFile((BYTE*)&oRect.shHeight,  sizeof(short));
         }
 
         void CEmfInterpretator::WriteRectangle(const TEmfPlusRectF &oRect)
         {
-                m_pOutStream->write((char *)&oRect.dX,       sizeof(float));
-                m_pOutStream->write((char *)&oRect.dY,       sizeof(float));
-                m_pOutStream->write((char *)&oRect.dWidth,   sizeof(float));
-                m_pOutStream->write((char *)&oRect.dHeight,  sizeof(float));
+                m_pOutStream->WriteFile((BYTE*)&oRect.dX,       sizeof(float));
+                m_pOutStream->WriteFile((BYTE*)&oRect.dY,       sizeof(float));
+                m_pOutStream->WriteFile((BYTE*)&oRect.dWidth,   sizeof(float));
+                m_pOutStream->WriteFile((BYTE*)&oRect.dHeight,  sizeof(float));
         }
 
         void CEmfInterpretator::WriteSize(const TEmfSizeL &oSize)
         {
-                m_pOutStream->write((char *)&oSize.cx,   sizeof(unsigned int));
-                m_pOutStream->write((char *)&oSize.cy,   sizeof(unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oSize.cx,   sizeof(unsigned int));
+                m_pOutStream->WriteFile((BYTE*)&oSize.cy,   sizeof(unsigned int));
         }
 
         void CEmfInterpretator::WriteColor(const TEmfColor &oColor)
         {
-                m_pOutStream->write((char *)&oColor.r, sizeof (unsigned char));
-                m_pOutStream->write((char *)&oColor.g, sizeof (unsigned char));
-                m_pOutStream->write((char *)&oColor.b, sizeof (unsigned char));
-                m_pOutStream->write((char *)&oColor.a, sizeof (unsigned char));
+                m_pOutStream->WriteFile((BYTE*)&oColor.r, sizeof (unsigned char));
+                m_pOutStream->WriteFile((BYTE*)&oColor.g, sizeof (unsigned char));
+                m_pOutStream->WriteFile((BYTE*)&oColor.b, sizeof (unsigned char));
+                m_pOutStream->WriteFile((BYTE*)&oColor.a, sizeof (unsigned char));
         }
 
         void CEmfInterpretator::WriteRColor(const TEmfLogPaletteEntry &oRColor)
         {
-                m_pOutStream->write((char *)&oRColor.Reserved,  sizeof (unsigned char));
-                m_pOutStream->write((char *)&oRColor.Blue,      sizeof (unsigned char));
-                m_pOutStream->write((char *)&oRColor.Green,     sizeof (unsigned char));
-                m_pOutStream->write((char *)&oRColor.Red,       sizeof (unsigned char));
+                m_pOutStream->WriteFile((BYTE*)&oRColor.Reserved,  sizeof (unsigned char));
+                m_pOutStream->WriteFile((BYTE*)&oRColor.Blue,      sizeof (unsigned char));
+                m_pOutStream->WriteFile((BYTE*)&oRColor.Green,     sizeof (unsigned char));
+                m_pOutStream->WriteFile((BYTE*)&oRColor.Red,       sizeof (unsigned char));
         }
 
         void CEmfInterpretator::WriteARGB(const TEmfPlusARGB &oARGB)
         {
                 int nARGB = (oARGB.chBlue | (oARGB.chGreen << 8) | (oARGB.chRed << 16) | (oARGB.chAlpha << 24));
-                m_pOutStream->write((char *)&nARGB,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&nARGB,  sizeof (int));
         }
 
         void CEmfInterpretator::WriteForm(const TXForm &oForm)
@@ -2131,14 +2131,14 @@ namespace MetaFile
 
         void CEmfInterpretator::WritePoint(const TEmfPointL &oPoint)
         {
-                m_pOutStream->write((char *)&oPoint.x, sizeof (int));
-                m_pOutStream->write((char *)&oPoint.y, sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oPoint.x, sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&oPoint.y, sizeof (int));
         }
 
         void CEmfInterpretator::WritePoint(const TEmfPointS &oPoint)
         {
-                m_pOutStream->write((char *)&oPoint.x, sizeof (short));
-                m_pOutStream->write((char *)&oPoint.y, sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&oPoint.x, sizeof (short));
+                m_pOutStream->WriteFile((BYTE*)&oPoint.y, sizeof (short));
         }
 
         void CEmfInterpretator::WritePoint(const TEmfPlusPointR &oPoint)
@@ -2148,8 +2148,8 @@ namespace MetaFile
 
         void CEmfInterpretator::WritePoint(const TEmfPlusPointF &oPoint)
         {
-                m_pOutStream->write((char *)&oPoint.X, sizeof (float));
-                m_pOutStream->write((char *)&oPoint.Y, sizeof (float));
+                m_pOutStream->WriteFile((BYTE*)&oPoint.X, sizeof (float));
+                m_pOutStream->WriteFile((BYTE*)&oPoint.Y, sizeof (float));
         }
 
         void CEmfInterpretator::WriteString(const unsigned short arshString[], const unsigned int &unSize)
@@ -2157,7 +2157,7 @@ namespace MetaFile
                 unsigned int unZero = 0;
                 if (NULL == arshString)
                 {
-                        m_pOutStream->write((char *)&unZero, sizeof (unsigned int) * 4);
+                        m_pOutStream->WriteFile((BYTE*)&unZero, sizeof (unsigned int) * 4);
                         return;
                 }
 
@@ -2166,9 +2166,9 @@ namespace MetaFile
                 for (unsigned int i = 0; i < unSize; ++i)
                 {
                         if (arshString[i] != ushNULL)
-                            m_pOutStream->write((char *)&arshString[i], sizeof (unsigned short));
+                            m_pOutStream->WriteFile((BYTE*)&arshString[i], sizeof (unsigned short));
                         else
-                            m_pOutStream->write((char *)&unZero, sizeof (unsigned short));
+                            m_pOutStream->WriteFile((BYTE*)&unZero, sizeof (unsigned short));
                     }
         }
 
@@ -2181,7 +2181,7 @@ namespace MetaFile
                 arValue[2] = *((unsigned char*)(&fValue) + 2);
                 arValue[3] = *((unsigned char*)(&fValue) + 3);
 
-                m_pOutStream->write((char *)arValue, sizeof (arValue));
+                m_pOutStream->WriteFile((BYTE*)arValue, sizeof (arValue));
         }
 }
 

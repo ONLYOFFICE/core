@@ -79,6 +79,8 @@
 			this.files[_path] = null;
 			index += lenRec;
 		}
+		Module["_Zlib_Free"](FileRawData);
+		Module["_Zlib_Free"](pointer);
 		return true;
 	};
 
@@ -133,7 +135,18 @@
 
 		// проверяем - может мы уже его разжимали?
 		if (null !== this.files[path])
-			return this.files[path];
+		{
+			if (this.files[path].l > 0)
+			{
+				return new Uint8Array(Module["HEAP8"].buffer, this.files[path].p, this.files[path].l);
+			}
+			else
+			{
+				var _lenFile = new Int32Array(Module["HEAP8"].buffer, this.files[path].p, 4);
+				var len = _lenFile[0];
+				return new Uint8Array(Module["HEAP8"].buffer, this.files[path].p + 4, len);
+			}
+		}
 
 		var tmp = path.toUtf8();
 		var pointer = Module["_Zlib_Malloc"](tmp.length);
@@ -150,11 +163,10 @@
 		
 		var _lenFile = new Int32Array(Module["HEAP8"].buffer, pointerFile, 4);
 		var len = _lenFile[0];
-		var fileData = new Uint8Array(Module["HEAP8"].buffer, pointerFile + 4, len);
 
 		Module["_Zlib_Free"](pointer);
-		this.files[path] = fileData;
-		return fileData;
+		this.files[path] = { p : pointerFile, l : 0};
+		return new Uint8Array(Module["HEAP8"].buffer, pointerFile + 4, len);
 	};
 
 	/**
@@ -167,6 +179,9 @@
 	{
 		if (!this.isModuleInit || !this.engine)
 			return false;
+		
+		if (!data)
+			return false;
 
 		// проверяем - может такой файл уже есть? тогда его надо сначала удалить?
 		if (undefined !== this.files[path])
@@ -177,21 +192,22 @@
 		if (0 == pointer)
 			return false;
 		Module["HEAP8"].set(tmp, pointer);
-		
-		if (!data)
-			return false;
 
 		var arrayBuffer = (undefined !== data.byteLength) ? new Uint8Array(data) : data;
 
 		var FileRawDataSize = arrayBuffer.length;
 		var FileRawData = Module["_Zlib_Malloc"](FileRawDataSize);
 		if (0 == FileRawData)
+		{
+			Module["_Zlib_Free"](pointer);
 			return false;
+		}
 		Module["HEAP8"].set(arrayBuffer, FileRawData);
 		
 		Module["_Zlib_AddFile"](this.engine, pointer, FileRawData, FileRawDataSize);
 
-		this.files[path] = data;
+		this.files[path] = { p : FileRawData, l : FileRawDataSize};
+		Module["_Zlib_Free"](pointer);
 		return true;
 	};
 
@@ -217,7 +233,12 @@
 		
 		Module["_Zlib_RemoveFile"](this.engine, pointer);
 
-		delete this.files[path];
+		if (this.files[path] && this.files[path].p)
+		{
+			Module["_Zlib_Free"](this.files[path].p);
+			delete this.files[path];
+		}
+		Module["_Zlib_Free"](pointer);
 		return true;
 	};
 
@@ -230,9 +251,15 @@
 		if (!this.isModuleInit || !this.engine)
 			return;
 
+		for (var i in this.files)
+		{
+			if (this.files[i] && this.files[i].p)
+				Module["_Zlib_Free"](this.files[i].p);
+		}
 		this.files = {};
 		if (this.engine)
 			Module["_Zlib_Free"](this.engine);
+		this.engine = 0;
 	};
 
 window.nativeZlibEngine = new ZLib();

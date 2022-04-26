@@ -31,6 +31,7 @@
  */
 
 #include "PCDIString.h"
+#include <boost/make_shared.hpp>
 
 using namespace XLS;
 
@@ -52,7 +53,12 @@ namespace XLSB
 
     void PCDIString::readFields(XLS::CFRecord& record)
     {
-        record >> st >> sxvcellextra;
+		record >> st;
+		if (record.checkFitReadSafe(1))
+		{
+			sxvcellextra = boost::make_shared<PCDISrvFmt>();
+			record >> *sxvcellextra;
+		}
     }
 
 } // namespace XLSB

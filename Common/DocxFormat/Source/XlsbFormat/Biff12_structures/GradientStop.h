@@ -46,7 +46,7 @@ namespace XLSB
     public:
         GradientStop();
         GradientStop(XLS::CFRecord& record);
-        virtual ~GradientStop();
+        ~GradientStop();
         XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;

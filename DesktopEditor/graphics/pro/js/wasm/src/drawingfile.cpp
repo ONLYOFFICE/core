@@ -5,6 +5,7 @@
 #include "../../../../../common/Base64.h"
 #include "../../../../../common/File.h"
 #include "drawingfile.h"
+#include "serialize.h"
 
 #ifdef _WIN32
 #define WASM_EXPORT __declspec(dllexport)
@@ -102,23 +103,31 @@ WASM_EXPORT void  Close     (CGraphicsFileDrawing* pGraphics)
     delete pGraphics;
     NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NULL);
 }
-WASM_EXPORT int*  GetInfo   (CGraphicsFileDrawing* pGraphics)
+WASM_EXPORT BYTE* GetInfo   (CGraphicsFileDrawing* pGraphics)
 {
+    NSWasm::CData oRes;
+    oRes.SkipLen();
+
     int pages_count = pGraphics->GetPagesCount();
-    int* buffer = new int[pages_count * 3 + 1];
-    int buffer_index = 0;
-    buffer[buffer_index++] = pages_count;
+    oRes.AddInt(pages_count);
     for (int page = 0; page < pages_count; ++page)
     {
         int nW = 0;
         int nH = 0;
         int nDpi = 0;
         pGraphics->GetPageInfo(page, nW, nH, nDpi);
-        buffer[buffer_index++] = nW;
-        buffer[buffer_index++] = nH;
-        buffer[buffer_index++] = nDpi;
+        oRes.AddInt(nW);
+        oRes.AddInt(nH);
+        oRes.AddInt(nDpi);
     }
-    return buffer;
+    std::wstring wsInfo = pGraphics->GetInfo();
+    std::string sInfo = U_TO_UTF8(wsInfo);
+    oRes.WriteString((BYTE*)sInfo.c_str(), sInfo.length());
+
+    oRes.WriteLen();
+    BYTE* bRes = oRes.GetBuffer();
+    oRes.ClearWithoutAttack();
+    return bRes;
 }
 WASM_EXPORT BYTE* GetPixmap(CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH, int nBackgroundColor)
 {
@@ -153,9 +162,9 @@ static DWORD GetLength(BYTE* x)
 
 int main()
 {
-#define XPS_TEST  1
+#define XPS_TEST  0
 #define DJVU_TEST 0
-#define PDF_TEST  0
+#define PDF_TEST  1
 #if PDF_TEST
     BYTE* pPdfData = NULL;
     DWORD nPdfBytesCount;
@@ -183,12 +192,14 @@ int main()
             return 1;
         }
     }
-    int* info = GetInfo(test);
-    int pages_count = *info;
+    BYTE* info = GetInfo(test);
+    DWORD nLength = GetLength(info);
+    nLength -= 4;
+    int pages_count = GetLength(info + 4);
     int test_page = 0;
-    int width  = info[test_page * 3 + 1];
-    int height = info[test_page * 3 + 2];
-    std::cout << "Page " << test_page << " width " << width << " height " << height << " dpi " << info[test_page * 3 + 3] << std::endl;
+    int width  = GetLength(info + test_page * 12 + 8);
+    int height = GetLength(info + test_page * 12 + 12);
+    std::cout << "Page " << test_page << " width " << width << " height " << height << " dpi " << GetLength(info + test_page * 12 + 16) << std::endl;
 
     BYTE* res = NULL;
     if (pages_count > 0)
@@ -203,9 +214,12 @@ int main()
     resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
     resFrame->ClearNoAttack();
 
+    nLength = GetLength(info + pages_count * 12 + 8);
+    std::cout << "json "<< std::string((char*)(info + pages_count * 12 + 12), nLength);
+
     std::cout << std::endl;
     BYTE* pLinks = GetLinks(test, test_page);
-    DWORD nLength = GetLength(pLinks);
+    nLength = GetLength(pLinks);
     DWORD i = 4;
     nLength -= 4;
     while (i < nLength)
@@ -284,11 +298,11 @@ int main()
         RELEASEARRAYOBJECTS(pXpsData);
         return 1;
     }
-    int* info = GetInfo(test);
-    int pages_count = *info;
+    int* size = GetSize(test);
+    int pages_count = *size;
     int test_page = 0;
-    int width  = info[test_page * 3 + 1];
-    int height = info[test_page * 3 + 2];
+    int width  = size[test_page * 3 + 1];
+    int height = size[test_page * 3 + 2];
     std::cout << "Page " << test_page << " width " << width << " height " << height << std::endl;
 
     std::cout << std::endl;
@@ -319,7 +333,7 @@ int main()
     if (!res)
     {
         RELEASEARRAYOBJECTS(pXpsData);
-        RELEASEARRAYOBJECTS(info);
+        RELEASEARRAYOBJECTS(size);
         return 1;
     }
 
@@ -331,6 +345,10 @@ int main()
     resFrame->put_IsRGBA(true);
     resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
     resFrame->ClearNoAttack();
+
+    BYTE* info = GetInfo(test);
+    nLength = GetLength(info + 4);
+    std::cout << "json "<< std::string((char*)(info + 8), nLength);
 
     std::cout << std::endl;
     BYTE* pGlyphs = GetGlyphs(test, test_page);
@@ -365,6 +383,7 @@ int main()
 
     Close(test);
     RELEASEARRAYOBJECTS(pXpsData);
+    RELEASEARRAYOBJECTS(size);
     RELEASEARRAYOBJECTS(info);
     RELEASEARRAYOBJECTS(res);
     RELEASEARRAYOBJECTS(pLinks);
@@ -391,11 +410,11 @@ int main()
         RELEASEARRAYOBJECTS(pDjVuData);
         return 1;
     }
-    int* info = GetInfo(test);
-    int pages_count = *info;
+    int* size = GetSize(test);
+    int pages_count = *size;
     int test_page = 1;
-    int width  = info[test_page * 3 + 1];
-    int height = info[test_page * 3 + 2];
+    int width  = size[test_page * 3 + 1];
+    int height = size[test_page * 3 + 2];
     std::cout << "Page " << test_page << " width " << width << " height " << height << std::endl;
 
     std::cout << std::endl;
@@ -421,7 +440,7 @@ int main()
 
     BYTE* res = NULL;
     if (pages_count > 0)
-        res = GetPixmap(test, test_page, width, height);
+        res = GetPixmap(test, test_page, width, height, 0xFFFFFF);
 
     CBgraFrame* resFrame = new CBgraFrame();
     resFrame->put_Data(res);
@@ -431,6 +450,10 @@ int main()
     resFrame->put_IsRGBA(true);
     resFrame->SaveFile(NSFile::GetProcessDirectory() + L"/res.png", _CXIMAGE_FORMAT_PNG);
     resFrame->ClearNoAttack();
+
+    BYTE* info = GetInfo(test);
+    nLength = GetLength(info + 4);
+    std::cout << "json "<< std::string((char*)(info + 8), nLength);
 
     std::cout << std::endl;
     BYTE* pGlyphs = GetGlyphs(test, test_page);
@@ -465,9 +488,9 @@ int main()
 
     Close(test);
     RELEASEARRAYOBJECTS(pDjVuData);
+    RELEASEARRAYOBJECTS(size);
     RELEASEARRAYOBJECTS(info);
     RELEASEARRAYOBJECTS(res);
-    RELEASEARRAYOBJECTS(pGlyphs);
     RELEASEARRAYOBJECTS(pLinks);
     RELEASEARRAYOBJECTS(pStructure);
     RELEASEOBJECT(resFrame);

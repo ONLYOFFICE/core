@@ -3,6 +3,7 @@
 	"res_folder": "./deploy/spell",
 	"wasm": true,
 	"asm": true,
+	"embed_mem_file": true,
 	"run_before": "before.py",
 	"run_after": "import sys;sys.path.append(\"../../../../build_tools/scripts\");import base;base.configure_common_apps();base.replaceInFile(\"./deploy/spell/spell.js\", \"__ATPOSTRUN__=[];\", \"__ATPOSTRUN__=[function(){self.onEngineInit();}];\");base.replaceInFile(\"./deploy/spell/spell.js\", \"function getBinaryPromise(){\", \"function getBinaryPromise2(){\");base.replaceInFile(\"./deploy/spell/spell_ie.js\", \"__ATPOSTRUN__=[];\", \"__ATPOSTRUN__=[function(){self.onEngineInit();}];\");base.replaceInFile(\"./deploy/spell/spell_ie.js\", \"function getBinaryPromise(){\", \"function getBinaryPromise2(){\");base.copy_file(\"./wasm/js/code.js\", \"./deploy/spell.js\");base.copy_file(\"./wasm/js/index.html\", \"./deploy/index.html\")",
 	"base_js_content": "./wasm/js/spell.js",

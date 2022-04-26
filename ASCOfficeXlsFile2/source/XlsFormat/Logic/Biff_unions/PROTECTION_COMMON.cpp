@@ -122,8 +122,10 @@ int PROTECTION_COMMON::serialize (std::wostream & _stream)
 			{
                 CP_XML_ATTR(L"scenarios", (scenario->fScenProtect ? 1 : 0));
 			}
+			CP_XML_ATTR(L"formatCells", 0);
 			CP_XML_ATTR(L"selectLockedCells", 1);
-			CP_XML_ATTR(L"selectUnlockedCells", 1);
+			CP_XML_ATTR(L"autoFilter", 0);
+			//CP_XML_ATTR(L"selectUnlockedCells", 1);
 		}
 		
 	}

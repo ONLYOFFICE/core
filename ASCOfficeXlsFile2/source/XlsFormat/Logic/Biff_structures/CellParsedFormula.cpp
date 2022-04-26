@@ -75,7 +75,8 @@ void CellParsedFormula::load(CFRecord& record)
         unsigned int cb;
         record >> cb;
 
-        rgcb.load(record, rgce.getPtgs(), is_part_of_a_revision_);
+        if(cb > 0)
+            rgcb.load(record, rgce.getPtgs(), is_part_of_a_revision_);
     }
 }
 

@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginDataFeedPr15)
         public:
             BeginDataFeedPr15();
-            virtual ~BeginDataFeedPr15();
+            ~BeginDataFeedPr15();
 
             XLS::BaseObjectPtr clone();
 

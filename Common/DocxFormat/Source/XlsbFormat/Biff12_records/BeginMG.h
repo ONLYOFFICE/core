@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginMG)
         public:
             BeginMG();
-            virtual ~BeginMG();
+            ~BeginMG();
 
             XLS::BaseObjectPtr clone();
 

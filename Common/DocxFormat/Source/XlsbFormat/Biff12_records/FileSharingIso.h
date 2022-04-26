@@ -46,7 +46,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(FileSharingIso)
         public:
             FileSharingIso();
-            virtual ~FileSharingIso();
+            ~FileSharingIso();
 
 			XLS::BaseObjectPtr clone();
 

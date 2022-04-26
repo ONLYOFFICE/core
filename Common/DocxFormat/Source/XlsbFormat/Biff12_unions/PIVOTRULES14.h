@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(PIVOTRULES14)
     public:
         PIVOTRULES14();
-        virtual ~PIVOTRULES14();
+        ~PIVOTRULES14();
 
         XLS::BaseObjectPtr clone();
 

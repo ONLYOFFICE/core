@@ -43,7 +43,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(TABLESTYLES)
     public:
         TABLESTYLES();
-        virtual ~TABLESTYLES();
+        ~TABLESTYLES();
 
         XLS::BaseObjectPtr clone();
 

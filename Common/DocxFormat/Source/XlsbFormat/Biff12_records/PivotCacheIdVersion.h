@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(PivotCacheIdVersion)
         public:
             PivotCacheIdVersion();
-            virtual ~PivotCacheIdVersion();
+            ~PivotCacheIdVersion();
 
             XLS::BaseObjectPtr clone();
 

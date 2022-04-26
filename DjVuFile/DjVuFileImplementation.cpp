@@ -258,6 +258,24 @@ void CDjVuFileImplementation::ConvertToPdf(const std::wstring& wsDstPath)
 
 	oPdf.SaveToFile(wsDstPath);
 }
+std::wstring CDjVuFileImplementation::GetInfo()
+{
+    std::wstring sRes = L"{";
+
+    double nW = 0;
+    double nH = 0;
+    double nDpi = 0;
+    GetPageInfo(0, &nW, &nH, &nDpi, &nDpi);
+    sRes += L"\"PageWidth\":";
+    sRes += std::to_wstring((int)(nW * 100));
+    sRes += L",\"PageHeight\":";
+    sRes += std::to_wstring((int)(nH * 100));
+    sRes += L",\"NumberOfPages\":";
+    sRes += std::to_wstring(GetPagesCount());
+    sRes += L"}";
+
+    return sRes;
+}
 
 #ifdef BUILDING_WASM_MODULE
 void getBookmars(const GP<DjVmNav>& nav, int& pos, int count, NSWasm::CData& out, int level)

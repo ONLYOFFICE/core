@@ -60,28 +60,31 @@ namespace XLSB
         PCDIDateTime dateTime;
         XLWideString string;
 
-        auto arrPivotCacheRecordType = record.getGlobalWorkbookInfo()->pivotCacheRecordType.find(record.getGlobalWorkbookInfo()->currentPivotCacheRecord - 1);
-        if (arrPivotCacheRecordType != record.getGlobalWorkbookInfo()->pivotCacheRecordType.end())
+        if (record.checkFitReadSafe(1))
         {
-            for(const auto& item : arrPivotCacheRecordType->second)
-            switch (item)
+            auto arrPivotCacheRecordType = record.getGlobalWorkbookInfo()->pivotCacheRecordType.find(record.getGlobalWorkbookInfo()->currentPivotCacheRecord - 1);
+            if (arrPivotCacheRecordType != record.getGlobalWorkbookInfo()->pivotCacheRecordType.end())
             {
-                case XLS::typePCDIIndex:
-                    record >> index;
-                    data.push_back({XLS::typePCDIIndex, index});
-                    break;
-                case XLS::typePCDINumber:
-                    record >> xnum;
-                    data.push_back({XLS::typePCDINumber, xnum.data.value});
-                    break;
-                case XLS::typePCDIDatetime:
-                    record >> dateTime;
-                    data.push_back({XLS::typePCDIDatetime, dateTime.value()});
-                    break;
-                case XLS::typePCDIString:
-                    record >> string;
-                    data.push_back({XLS::typePCDIString, string.value()});
-                    break;
+                for(const auto& item : arrPivotCacheRecordType->second)
+                switch (item)
+                {
+                    case XLS::typePCDIIndex:
+                        record >> index;
+                        data.push_back({XLS::typePCDIIndex, index});
+                        break;
+                    case XLS::typePCDINumber:
+                        record >> xnum;
+                        data.push_back({XLS::typePCDINumber, xnum.data.value});
+                        break;
+                    case XLS::typePCDIDatetime:
+                        record >> dateTime;
+                        data.push_back({XLS::typePCDIDatetime, dateTime.value()});
+                        break;
+                    case XLS::typePCDIString:
+                        record >> string;
+                        data.push_back({XLS::typePCDIString, string.value()});
+                        break;
+                }
             }
         }
     }

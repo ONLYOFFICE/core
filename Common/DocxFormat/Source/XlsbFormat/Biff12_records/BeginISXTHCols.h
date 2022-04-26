@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginISXTHCols)
         public:
             BeginISXTHCols();
-            virtual ~BeginISXTHCols();
+            ~BeginISXTHCols();
 
             XLS::BaseObjectPtr clone();
 

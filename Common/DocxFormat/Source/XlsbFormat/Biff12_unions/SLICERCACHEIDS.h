@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(SLICERCACHEIDS)
     public:
         SLICERCACHEIDS();
-        virtual ~SLICERCACHEIDS();
+        ~SLICERCACHEIDS();
 
         XLS::BaseObjectPtr clone();
 

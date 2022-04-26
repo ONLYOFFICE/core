@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginBookViews)
         public:
             BeginBookViews();
-            virtual ~BeginBookViews();
+            ~BeginBookViews();
 
             XLS::BaseObjectPtr clone();
 

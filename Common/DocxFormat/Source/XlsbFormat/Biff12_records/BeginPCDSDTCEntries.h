@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginPCDSDTCEntries)
         public:
             BeginPCDSDTCEntries();
-            virtual ~BeginPCDSDTCEntries();
+            ~BeginPCDSDTCEntries();
 
             XLS::BaseObjectPtr clone();
 

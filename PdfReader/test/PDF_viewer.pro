@@ -30,13 +30,6 @@ CORE_ROOT_DIR = $$PWD/../../../core
 include($$CORE_ROOT_DIR/Common/base.pri)
 
 
-ADD_DEPENDENCY(kernel, graphics, UnicodeConverter)
-ADD_DEPENDENCY(PdfReader)
-ADD_DEPENDENCY(HtmlRenderer)
+ADD_DEPENDENCY(kernel, graphics, UnicodeConverter, PdfReader)
 
 core_linux:include($$CORE_ROOT_DIR/Common/3dParty/icu/icu.pri)
-
-# Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target

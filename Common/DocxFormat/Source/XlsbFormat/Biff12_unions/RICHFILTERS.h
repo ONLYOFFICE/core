@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(RICHFILTERS)
     public:
         RICHFILTERS();
-        virtual ~RICHFILTERS();
+        ~RICHFILTERS();
 
         XLS::BaseObjectPtr clone();
 
@@ -52,7 +52,7 @@ namespace XLSB
         XLS::BaseObjectPtr               m_BrtBeginRichFilters;
         std::vector<XLS::BaseObjectPtr>  m_arBrtRichFilter;
         std::vector<XLS::BaseObjectPtr>  m_arBrtRichFilterDateGroupItem;
-        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        //std::vector<XLS::BaseObjectPtr>  m_arFRT;
         XLS::BaseObjectPtr               m_BrtEndRichFilters;
 
     };

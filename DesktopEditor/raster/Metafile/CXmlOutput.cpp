@@ -1,5 +1,6 @@
 #include "CXmlOutput.h"
 #include "../../common/Base64.h"
+#include "../../../Common/DocxFormat/Source/Base/Base.h"
 
 #ifdef _DEBUG
     #include <iostream>
@@ -7,6 +8,27 @@
 
 namespace MetaFile
 {
+    static int GetInteger (const std::wstring& string)
+    {
+        if (string.empty()) return 0;
+
+        try
+        {
+            return _wtoi(string.c_str());
+        }
+        catch(...)
+        {
+        }
+
+        try
+        {
+            return static_cast<int>(_wtoi64(string.c_str()));
+        }
+        catch(...)
+        {
+            return 0;
+        }
+    }
     std::wstring StringNormalization(std::wstring wsString)
     {
         std::wstring wsText;
@@ -1226,7 +1248,7 @@ namespace MetaFile
             return;
 
         const std::wstring wsValue = m_pXmlLiteReader->GetText2();
-        nValue = (wsValue.empty()) ? 0 : stoi(wsValue);
+        nValue = (wsValue.empty()) ? 0 : GetInteger(wsValue);
     }
 
     void CXmlOutput::operator>>(double &dValue)
@@ -1235,7 +1257,7 @@ namespace MetaFile
             return;
 
         const std::wstring wsValue = m_pXmlLiteReader->GetText2();
-        dValue = (wsValue.empty()) ? 0.0 : stod(wsValue);
+        dValue = (wsValue.empty()) ? 0.0 : GetInteger(wsValue);
     }
 
 
@@ -1245,7 +1267,7 @@ namespace MetaFile
             return;
 
         const std::wstring wsValue = m_pXmlLiteReader->GetText2();
-        unValue = (wsValue.empty()) ? 0 : (unsigned int)stoul(wsValue);
+        unValue = (wsValue.empty()) ? 0 : (unsigned int)GetInteger(wsValue);
     }
 
     void CXmlOutput::operator>>(short &shValue)
@@ -1254,7 +1276,7 @@ namespace MetaFile
             return;
 
         const std::wstring wsValue = m_pXmlLiteReader->GetText2();
-        shValue = (wsValue.empty()) ? 0 : (short)stoi(wsValue);
+        shValue = (wsValue.empty()) ? 0 : (short)GetInteger(wsValue);
     }
 
     void CXmlOutput::operator>>(unsigned short &ushValue)
@@ -1263,7 +1285,7 @@ namespace MetaFile
             return;
 
         const std::wstring wsValue = m_pXmlLiteReader->GetText2();
-        ushValue = (wsValue.empty()) ? 0 : (unsigned short)stoul(wsValue);
+        ushValue = (wsValue.empty()) ? 0 : (unsigned short)GetInteger(wsValue);
     }
 
     void CXmlOutput::operator>>(unsigned char &ucValue)
@@ -1272,7 +1294,7 @@ namespace MetaFile
             return;
 
         const std::wstring wsValue = m_pXmlLiteReader->GetText2();
-        ucValue = (wsValue.empty()) ? 0 : (unsigned char)_wtoi(wsValue.c_str());
+        ucValue = (wsValue.empty()) ? 0 : (unsigned char)GetInteger(wsValue);
     }
 
     void CXmlOutput::operator>>(unsigned short arushValue[])

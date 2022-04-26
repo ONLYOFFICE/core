@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(DCON)
     public:
         DCON();
-        virtual ~DCON();
+        ~DCON();
 
         XLS::BaseObjectPtr clone();
 

@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(PCDSDTCEMEMBERSSORTBY)
     public:
         PCDSDTCEMEMBERSSORTBY();
-        virtual ~PCDSDTCEMEMBERSSORTBY();
+        ~PCDSDTCEMEMBERSSORTBY();
 
         XLS::BaseObjectPtr clone();
 

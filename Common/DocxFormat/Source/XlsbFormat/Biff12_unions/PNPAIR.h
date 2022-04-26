@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(PNPAIR)
     public:
         PNPAIR();
-        virtual ~PNPAIR();
+        ~PNPAIR();
 
         XLS::BaseObjectPtr clone();
 

@@ -604,6 +604,8 @@ private:
 #ifdef _WIN32
   DWORD tlsWin32ErrorInfo;	// TLS index for error info
 #endif
+
+  friend class GlobalParamsAdaptor;
 };
 
 #endif

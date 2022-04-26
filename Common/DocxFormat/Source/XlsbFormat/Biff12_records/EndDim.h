@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndDim)
         public:
             EndDim();
-            virtual ~EndDim();
+            ~EndDim();
 
             XLS::BaseObjectPtr clone();
 

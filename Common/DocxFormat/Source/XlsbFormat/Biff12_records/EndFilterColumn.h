@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndFilterColumn)
         public:
             EndFilterColumn();
-            virtual ~EndFilterColumn();
+            ~EndFilterColumn();
 
             XLS::BaseObjectPtr clone();
 

@@ -65,7 +65,8 @@ void CFVOParsedFormula::load(CFRecord& record)
         unsigned int cb;
         record >> cb;
 
-        rgcb.load(record, rgce.getPtgs(), true);
+        if(cb > 0)
+            rgcb.load(record, rgce.getPtgs(), true);
     }
 }
 

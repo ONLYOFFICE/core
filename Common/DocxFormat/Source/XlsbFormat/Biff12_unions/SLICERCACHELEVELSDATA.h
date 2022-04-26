@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(SLICERCACHELEVELSDATA)
     public:
         SLICERCACHELEVELSDATA();
-        virtual ~SLICERCACHELEVELSDATA();
+        ~SLICERCACHELEVELSDATA();
 
         XLS::BaseObjectPtr clone();
 

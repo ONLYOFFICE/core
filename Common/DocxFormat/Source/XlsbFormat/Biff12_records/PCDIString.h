@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(PCDIString)
         public:
             PCDIString();
-            virtual ~PCDIString();
+            ~PCDIString();
 
             XLS::BaseObjectPtr clone();
 
@@ -54,7 +54,7 @@ namespace XLSB
             void readFields(XLS::CFRecord& record);
 
             XLWideString st;
-            PCDISrvFmt   sxvcellextra;
+            boost::shared_ptr<PCDISrvFmt> sxvcellextra;
     };
 
 } // namespace XLSB

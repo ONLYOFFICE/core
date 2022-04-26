@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(TEXTPR15)
     public:
         TEXTPR15();
-        virtual ~TEXTPR15();
+        ~TEXTPR15();
 
         XLS::BaseObjectPtr clone();
 

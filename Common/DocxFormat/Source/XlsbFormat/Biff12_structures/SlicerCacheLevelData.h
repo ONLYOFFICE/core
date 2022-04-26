@@ -44,7 +44,7 @@ namespace XLSB
     public:
         SlicerCacheLevelData();
         SlicerCacheLevelData(XLS::CFRecord& record);
-        virtual ~SlicerCacheLevelData();
+        ~SlicerCacheLevelData();
         XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;

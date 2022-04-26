@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(AbsPath15)
         public:
             AbsPath15();
-            virtual ~AbsPath15();
+            ~AbsPath15();
 
             XLS::BaseObjectPtr clone();
 

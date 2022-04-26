@@ -43,7 +43,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(FRTSTYLESHEET)
     public:
         FRTSTYLESHEET();
-        virtual ~FRTSTYLESHEET();
+        ~FRTSTYLESHEET();
 
         XLS::BaseObjectPtr clone();
 

@@ -43,7 +43,7 @@ namespace XLSB
     public:
         ECTwFldInfoData();
         ECTwFldInfoData(XLS::CFRecord& record);
-        virtual ~ECTwFldInfoData();
+        ~ECTwFldInfoData();
        XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;

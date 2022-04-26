@@ -76,7 +76,7 @@ namespace PPT_FORMAT
 			RELEASEMEM(m_pData);
 		}
 
-        void AddSize(size_t nSize)
+        void AddSize(const size_t nSize)
 		{
 			if (NULL == m_pData)
 			{
@@ -156,6 +156,27 @@ namespace PPT_FORMAT
 			WriteString(wString.c_str(), nLen);
 		}
 
+        // not works
+        void WriteStringFront(const wchar_t* pString, size_t& nLen)
+        {
+            AddSize(nLen);
+            /// shift data to back
+            std::rotate(m_pData, m_pData + nLen+1, m_pDataCur + nLen);
+            // memcpy(m_pDataCur, pString, nLen * sizeof(wchar_t));
+            // wstring has 4 bytes length (not 2 in WIN32) in linux/macos
+            memcpy(m_pData, pString, sizeof (wchar_t) * nLen);
+
+            m_pDataCur += nLen;
+            m_lSizeCur += nLen;
+        }
+
+        // not works
+        void WriteStringFront(const std::wstring & wString)
+        {
+            size_t nLen = wString.length();
+            WriteStringFront(wString.c_str(), nLen);
+        }
+
         size_t GetCurSize()
 		{
 			return m_lSizeCur;
@@ -184,7 +205,7 @@ namespace PPT_FORMAT
 			m_lSizeCur	= 0;
 		}
 
-		std::wstring GetData()
+                std::wstring GetData() const
 		{
 			return std::wstring(m_pData, (int)m_lSizeCur);
 		}

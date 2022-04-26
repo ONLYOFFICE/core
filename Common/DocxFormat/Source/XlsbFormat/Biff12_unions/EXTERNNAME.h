@@ -42,7 +42,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(EXTERNNAME)
     public:
         EXTERNNAME(ExternalReferenceType type);
-        virtual ~EXTERNNAME();
+        ~EXTERNNAME();
 
         XLS::BaseObjectPtr clone();
 

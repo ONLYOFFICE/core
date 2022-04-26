@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(PIVOTVALUECELL15)
     public:
         PIVOTVALUECELL15();
-        virtual ~PIVOTVALUECELL15();
+        ~PIVOTVALUECELL15();
 
         XLS::BaseObjectPtr clone();
 

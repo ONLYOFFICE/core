@@ -44,7 +44,7 @@ public:
 	enum
 	{
             NORMAL              = 0x00000000,
-            DIFFERENCE_         = 0x00000001,
+            DIFFERENCE_          = 0x00000001,
             PERCENT             = 0x00000002,
             PERCENTDIFF         = 0x00000003,
             RUNTOTAL            = 0x00000004,

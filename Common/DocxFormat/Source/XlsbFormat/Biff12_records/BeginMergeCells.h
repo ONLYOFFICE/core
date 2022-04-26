@@ -46,7 +46,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginMergeCells)
         public:
             BeginMergeCells();
-            virtual ~BeginMergeCells();
+            ~BeginMergeCells();
 
             XLS::BaseObjectPtr clone();
 

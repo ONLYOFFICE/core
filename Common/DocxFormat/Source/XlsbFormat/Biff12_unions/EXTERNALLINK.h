@@ -42,7 +42,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(EXTERNALLINK)
     public:
         EXTERNALLINK();
-        virtual ~EXTERNALLINK();
+        ~EXTERNALLINK();
 
         XLS::BaseObjectPtr clone();
 

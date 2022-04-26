@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(SupAddin)
         public:
             SupAddin();
-            virtual ~SupAddin();
+            ~SupAddin();
 
             XLS::BaseObjectPtr clone();
 

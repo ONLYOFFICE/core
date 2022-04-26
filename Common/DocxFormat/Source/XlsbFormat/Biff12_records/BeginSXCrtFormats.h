@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginSXCrtFormats)
         public:
             BeginSXCrtFormats();
-            virtual ~BeginSXCrtFormats();
+            ~BeginSXCrtFormats();
 
             XLS::BaseObjectPtr clone();
 

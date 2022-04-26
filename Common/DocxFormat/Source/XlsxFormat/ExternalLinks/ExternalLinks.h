@@ -794,7 +794,7 @@ namespace OOX
                 auto ptr = static_cast<XLSB::BeginSupBook*>(obj.get());
                 if(ptr != nullptr)
                 {
-                    if(ptr->string1.empty())
+                    if(!ptr->string1.empty())
                         m_oRid = ptr->string1;
                 }
             }
@@ -1303,9 +1303,9 @@ namespace OOX
                 auto ptr = static_cast<XLSB::BeginSupBook*>(obj.get());
                 if(ptr != nullptr)
                 {
-                    if(ptr->string1.empty())
+                    if(!ptr->string1.empty())
                         m_oDdeService = ptr->string1;
-                    if(ptr->string2.empty())
+                    if(!ptr->string2.empty())
                         m_oDdeTopic   = ptr->string2;
                 }
             }
@@ -1550,9 +1550,9 @@ namespace OOX
                 auto ptr = static_cast<XLSB::BeginSupBook*>(obj.get());
                 if(ptr != nullptr)
                 {
-                    if(ptr->string1.empty())
+                    if(!ptr->string1.empty())
                         m_oRid = ptr->string1;
-                    if(ptr->string2.empty())
+                    if(!ptr->string2.empty())
                         m_oProgId = ptr->string2;
                 }
             }
@@ -1578,9 +1578,10 @@ namespace OOX
 			{
 				m_bSpreadsheets = true;
 			}
-			CExternalLink(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
+            CExternalLink(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath, const std::wstring & rId) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
+                m_rId = rId;
 				read( oRootPath, oPath );
 			}
 			virtual ~CExternalLink()
@@ -1591,9 +1592,11 @@ namespace OOX
                 CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
                 if (xlsb)
                 {
-                    XLSB::ExternalLinkStreamPtr externalLinkStreamStream = std::make_shared<XLSB::ExternalLinkStream>();
+                    XLSB::ExternalLinkStreamPtr externalLinkStreamStream(new XLSB::ExternalLinkStream);
 
                     xlsb->ReadBin(oPath, externalLinkStreamStream.get());
+
+                    externalLinkStreamStream->UpdateXti(xlsb->GetGlobalinfo(), m_rId);
 
                     if (externalLinkStreamStream != nullptr)
                     {
@@ -1622,6 +1625,7 @@ namespace OOX
                         }
                     }
 
+                    //externalLinkStreamStream.reset();
                 }
             }
 			virtual void read(const CPath& oPath)
@@ -1732,6 +1736,7 @@ namespace OOX
 			nullable<CDdeLink>						m_oDdeLink;
 		private:
 			CPath									m_oReadPath;
+            std::wstring                            m_rId;
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}

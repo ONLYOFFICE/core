@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginECTWFldInfoLst)
         public:
             BeginECTWFldInfoLst();
-            virtual ~BeginECTWFldInfoLst();
+            ~BeginECTWFldInfoLst();
 
             XLS::BaseObjectPtr clone();
 

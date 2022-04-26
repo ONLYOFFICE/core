@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginECOlapProps)
         public:
             BeginECOlapProps();
-            virtual ~BeginECOlapProps();
+            ~BeginECOlapProps();
 
             XLS::BaseObjectPtr clone();
 

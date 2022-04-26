@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginISXVIs)
         public:
             BeginISXVIs(_UINT32 cisxvis);
-            virtual ~BeginISXVIs();
+            ~BeginISXVIs();
 
             XLS::BaseObjectPtr clone();
 

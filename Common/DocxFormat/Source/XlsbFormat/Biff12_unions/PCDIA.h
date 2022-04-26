@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(PCDIA)
     public:
         PCDIA();
-        virtual ~PCDIA();
+        ~PCDIA();
 
         XLS::BaseObjectPtr clone();
 

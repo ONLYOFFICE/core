@@ -41,8 +41,35 @@
 #include "../DocxRenderer.h"
 #include "../../Common/OfficeFileFormatChecker.h"
 
+#ifdef TEST_FOR_HTML_RENDERER_TEXT
+#include "../../HtmlRenderer/include/HTMLRendererText.h"
+#endif
+
+//#define LOAD_FILE_AS_BINARY
+//#define TEST_XML_BOM
+
+#ifdef TEST_XML_BOM
+#include "../../DesktopEditor/xml/include/xmlutils.h"
+#endif
+
 int main(int argc, char *argv[])
 {
+#ifdef TEST_XML_BOM
+    std::wstring sFileXmlSrc = L"PATH_TO_SRC_XML";
+    std::wstring sFileXmlDst = L"PATH_TO_DST_XML";
+
+    BYTE* pBufferXml = NULL;
+    DWORD lBufferXmlLen = 0;
+    NSFile::CFileBinary::ReadAllBytes(sFileXmlSrc, &pBufferXml, lBufferXmlLen);
+
+    std::string sUtf8 = XmlUtils::GetUtf8FromFileContent(pBufferXml, lBufferXmlLen);
+    std::wstring sUnicode = UTF8_TO_U(sUtf8);
+
+    NSFile::CFileBinary::SaveToFile(sFileXmlDst, sUnicode, true);
+
+    RELEASEARRAYOBJECTS(pBufferXml);
+#endif
+
     CApplicationFontsWorker oWorker;
     oWorker.m_sDirectory = NSFile::GetProcessDirectory() + L"/fonts_cache";
     oWorker.m_bIsNeedThumbnails = false;
@@ -91,8 +118,30 @@ int main(int argc, char *argv[])
     }
 
     pReader->SetTempDirectory(sTempDir);
-    pReader->LoadFromFile(sSourceFile);
 
+#ifndef LOAD_FILE_AS_BINARY
+    pReader->LoadFromFile(sSourceFile);
+#else
+    BYTE* pFileBinary = NULL;
+    DWORD nFileBinaryLen = 0;
+    NSFile::CFileBinary::ReadAllBytes(sSourceFile, &pFileBinary, nFileBinaryLen);
+
+    pReader->LoadFromMemory(pFileBinary, nFileBinaryLen);
+#endif
+
+#ifdef TEST_FOR_HTML_RENDERER_TEXT
+    if (true)
+    {
+        int nPagesCount = pReader->GetPagesCount();
+
+        NSHtmlRenderer::CHTMLRendererText oTextRenderer;
+        for (int i = 0; i < nPagesCount; i++)
+        {
+            oTextRenderer.Init(pReader, 8);
+            pReader->DrawPageOnRenderer(&oTextRenderer, i, NULL);
+        }
+    }
+#else
     CDocxRenderer oDocxRenderer(pFonts);
 
     // проверить все режимы
@@ -105,8 +154,14 @@ int main(int argc, char *argv[])
 
     oDocxRenderer.SetTempFolder(sTempDirOut);
     oDocxRenderer.Convert(pReader, sDestFile);
+#endif
 
     delete pReader;
     pFonts->Release();
+
+#ifdef LOAD_FILE_AS_BINARY
+    RELEASEARRAYOBJECTS(pFileBinary);
+#endif
+
     return 0;
 }

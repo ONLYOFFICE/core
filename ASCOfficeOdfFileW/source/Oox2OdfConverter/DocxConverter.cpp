@@ -1452,6 +1452,11 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 				convert(dynamic_cast<SimpleTypes::CUniversalMeasure *>(oox_paragraph_pr->m_oSpacing->m_oLine.GetPointer()), length_);
 				paragraph_properties->content_.fo_line_height_ = odf_types::line_width(*length_);
 			}
+			else if (rule == SimpleTypes::linespacingruleAtLeast)
+			{
+				convert(dynamic_cast<SimpleTypes::CUniversalMeasure *>(oox_paragraph_pr->m_oSpacing->m_oLine.GetPointer()), 
+					paragraph_properties->content_.style_line_height_at_least_);
+			}
 			else
 			{
 				double val = oox_paragraph_pr->m_oSpacing->m_oLine->ToPoints() * 20;
@@ -2809,11 +2814,9 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 		switch(oox_run_pr->m_oVertAlign->m_oVal->GetValue())
 		{
 		case SimpleTypes::verticalalignrunSuperscript:
-			//text_properties->content_.style_text_position_ = odf_types::text_position(odf_types::text_position::Super); break;
-			text_properties->content_.style_text_position_ = odf_types::text_position(+33.); break;
+			text_properties->content_.style_text_position_ = odf_types::text_position(odf_types::text_position::Super, 58); break;
 		case SimpleTypes::verticalalignrunSubscript:
-			//text_properties->content_.style_text_position_ = odf_types::text_position(odf_types::text_position::Sub); break;
-			text_properties->content_.style_text_position_ = odf_types::text_position(-33.); break;//по умолчанию 58% - хуже выглядит
+			text_properties->content_.style_text_position_ = odf_types::text_position(odf_types::text_position::Sub, 58); break;
 		}
 	}
 	if (oox_run_pr->m_oW.IsInit() && oox_run_pr->m_oW->m_oVal.IsInit())
@@ -2973,218 +2976,15 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 	odt_context->start_drawings();
 			
 	if (odt_context->table_context()->empty())
-		odf_context()->drawing_context()->set_anchor(anchor_type::AsChar);//default
+		odf_context()->drawing_context()->set_anchor(anchor_type::Char);//default
 	else
 	{
 		odf_context()->drawing_context()->set_anchor(anchor_type::Paragraph);
 		odf_context()->drawing_context()->set_object_background(true);
 	}
 		
-	int type = 1; // shape .. default
-	if (oox_pic->m_oShapeGroup.IsInit())
-	{
-		OoxConverter::convert(oox_pic->m_oShapeGroup.GetPointer());
-	}
-	else
-	{
-		if (oox_pic->m_oShape.IsInit())
-			OoxConverter::convert(oox_pic->m_oShape->m_oStyle.GetPointer());
-		
-		odf_context()->drawing_context()->start_drawing();
-		
-		if (oox_pic->m_oShapeOval.IsInit())
-		{
-			odf_context()->drawing_context()->set_name(L"Oval");
-			odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeEllipse);
-			
-			OoxConverter::convert(oox_pic->m_oShape.GetPointer()); 		
-			OoxConverter::convert(oox_pic->m_oShapeOval.GetPointer());
-			
-			odf_context()->drawing_context()->corrected_line_fill();
-			odf_context()->drawing_context()->end_shape(); 
-		}
-		else if (oox_pic->m_oShapeCurve.IsInit())
-		{
-			odf_context()->drawing_context()->set_name(L"Curve");
-			odf_context()->drawing_context()->start_shape(1000);
-			
-			OoxConverter::convert(oox_pic->m_oShape.GetPointer()); 	
-			OoxConverter::convert(oox_pic->m_oShapeCurve.GetPointer());
-			
-			odf_context()->drawing_context()->end_shape(); 
-		}
-		else if (oox_pic->m_oShapeLine.IsInit())
-		{
-			odf_context()->drawing_context()->set_name(L"Line");
-			odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeLine);
-
-			odf_context()->drawing_context()->set_line_width(1.);
-			
-			OoxConverter::convert(oox_pic->m_oShape.GetPointer());
-			OoxConverter::convert(oox_pic->m_oShapeLine.GetPointer());
-			
-			odf_context()->drawing_context()->end_shape(); 
-		}
-		else if (oox_pic->m_oShapePolyLine.IsInit())
-		{
-			odf_context()->drawing_context()->set_name(L"Polyline");
-			odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeLine);
-			
-			odf_context()->drawing_context()->set_line_width(1.);
-
-			OoxConverter::convert(oox_pic->m_oShape.GetPointer());	
-			OoxConverter::convert(oox_pic->m_oShapePolyLine.GetPointer());
-			
-			odf_context()->drawing_context()->end_shape(); 
-		}
-		else if (oox_pic->m_oShapeArc.IsInit())
-		{
-			odf_context()->drawing_context()->set_name(L"Arc");
-			odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeLine);
-			
-			OoxConverter::convert(oox_pic->m_oShape.GetPointer());		
-			OoxConverter::convert(oox_pic->m_oShapeArc.GetPointer());
-			
-			odf_context()->drawing_context()->corrected_line_fill();
-			odf_context()->drawing_context()->end_shape(); 
-		}
-		else if (oox_pic->m_oShapeRect.IsInit())
-		{
-			if ((oox_pic->m_oShapeRect->m_oFilled.IsInit() && oox_pic->m_oShapeRect->m_oFilled->GetValue() == SimpleTypes::booleanFalse) && 
-				(oox_pic->m_oShapeRect->m_oStroked.IsInit() && oox_pic->m_oShapeRect->m_oStroked->GetValue() == SimpleTypes::booleanFalse))
-			{
-				odf_context()->drawing_context()->start_text_box();
-				
-				OoxConverter::convert(oox_pic->m_oShape.GetPointer());
-				OoxConverter::convert(oox_pic->m_oShapeRect.GetPointer());
-				
-				odf_context()->drawing_context()->end_text_box();
-			}
-			else
-			{
-				odf_context()->drawing_context()->set_name(L"Rect");
-				odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeRect);
-				
-				OoxConverter::convert(oox_pic->m_oShape.GetPointer());
-				OoxConverter::convert(oox_pic->m_oShapeRect.GetPointer());
-				
-				odf_context()->drawing_context()->corrected_line_fill();
-				odf_context()->drawing_context()->end_shape(); 
-			}
-		}
-		else if (oox_pic->m_oShapeRoundRect.IsInit())
-		{
-			odf_context()->drawing_context()->set_name(L"RoundRect");
-			odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeRect);
-
-			odf_types::length corner = odf_types::length(0.5, odf_types::length::cm);
-			odf_context()->drawing_context()->set_corner_radius(corner);
-			
-			OoxConverter::convert(oox_pic->m_oShape.GetPointer());
-			OoxConverter::convert(oox_pic->m_oShapeRoundRect.GetPointer());
-			
-			odf_context()->drawing_context()->corrected_line_fill();
-			odf_context()->drawing_context()->end_shape(); 
-		}
-		else if (oox_pic->m_oImage.IsInit())
-		{
-			odf_context()->drawing_context()->set_name(L"Image");
-			odf_context()->drawing_context()->start_shape(3000);
-
-			OoxConverter::convert(oox_pic->m_oShape.GetPointer());
-			OoxConverter::convert(oox_pic->m_oImage.GetPointer());
-			
-			odf_context()->drawing_context()->corrected_line_fill();
-			odf_context()->drawing_context()->end_shape(); 
-		}
-		else if (oox_pic->m_oShapeType.IsInit())
-		{
-            SimpleTypes::Vml::SptType sptType = oox_pic->m_oShapeType->m_oSpt.IsInit() ? static_cast<SimpleTypes::Vml::SptType>(oox_pic->m_oShapeType->m_oSpt->GetValue()) : SimpleTypes::Vml::sptNotPrimitive;
-
-			odf_context()->drawing_context()->set_name(std::wstring (L"Custom") + std::to_wstring(sptType));
-			odf_context()->drawing_context()->start_shape(OOX::VmlShapeType2PrstShape(sptType));
-			
-			OoxConverter::convert(oox_pic->m_oShapeType.GetPointer());
-			OoxConverter::convert(oox_pic->m_oShape.GetPointer());	
-			
-			odf_context()->drawing_context()->end_shape(); 
-		}
-		else // and oox_pic->m_oShapeRect
-		{
-			bool bSet = false;
-			OOX::Vml::CShapeType* shape_type = NULL;
-			
-			if (oox_pic->m_oShape.IsInit())
-			{
-                SimpleTypes::Vml::SptType sptType = oox_pic->m_oShape->m_oSpt.IsInit() ? static_cast<SimpleTypes::Vml::SptType>(oox_pic->m_oShape->m_oSpt->GetValue()) : SimpleTypes::Vml::sptNotPrimitive;
-               
-				if (sptType != SimpleTypes::Vml::SptType::sptNotPrimitive)
-				{
-					odf_context()->drawing_context()->set_name(std::wstring (L"Custom") + std::to_wstring(sptType));
-					odf_context()->drawing_context()->start_shape(OOX::VmlShapeType2PrstShape(sptType));
-					bSet = true;
-				}
-                else if ((oox_pic->m_oShape->m_oConnectorType.IsInit()) && (oox_pic->m_oShape->m_oConnectorType->GetValue() != SimpleTypes::connectortypeNone))
-				{
-					odf_context()->drawing_context()->set_name(L"Connector");
-					odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeStraightConnector1);
-					odf_context()->drawing_context()->set_line_width(1.);
-					bSet = true;
-				}
-				else if (oox_pic->m_oShape->m_oPath.IsInit())
-				{
-					odf_context()->drawing_context()->set_name(L"Path");
-					odf_context()->drawing_context()->start_shape(1001);
-					odf_context()->drawing_context()->set_line_width(1.);
-					bSet = true;
-				}
-
-				if ((oox_pic->m_oShape->m_sType.IsInit()) && (false == oox_pic->m_oShape->m_sType->empty()))
-				{
-					std::wstring type( oox_pic->m_oShape->m_sType.get());
-					type = type.substr(1);//without #
-					std::map<std::wstring, OOX::Vml::CShapeType*>::iterator it = odf_context()->drawing_context()->m_mapVmlShapeTypes.find(type);
-					
-					if ( it != odf_context()->drawing_context()->m_mapVmlShapeTypes.end())
-					{
-						shape_type = it->second;
-
-						sptType = shape_type->m_oSpt.IsInit() ? static_cast<SimpleTypes::Vml::SptType>(shape_type->m_oSpt->GetValue()) : SimpleTypes::Vml::sptNotPrimitive;
-						
-						if (!bSet && sptType != SimpleTypes::Vml::SptType::sptNotPrimitive)
-						{
-							odf_context()->drawing_context()->start_shape(OOX::VmlShapeType2PrstShape(sptType));
-							bSet = true;
-						}
-					}
-					if (!bSet)
-					{
-                        int pos = (int)oox_pic->m_oShape->m_sType->find(_T("#_x0000_t"));
-						if (pos >= 0)
-						{				
-                            sptType = (SimpleTypes::Vml::SptType)_wtoi(oox_pic->m_oShape->m_sType->substr(pos + 9, oox_pic->m_oShape->m_sType->length() - pos - 9).c_str());
-							odf_context()->drawing_context()->start_shape(OOX::VmlShapeType2PrstShape(sptType));
-							bSet = true;
-						}
-					}
-				}				
-			}
-			if (!bSet)
-			{
-				odf_context()->drawing_context()->set_name(L"Rect");
-				odf_context()->drawing_context()->start_shape(SimpleTypes::shapetypeRect);			
-			}
-			OoxConverter::convert(shape_type);
-			OoxConverter::convert(oox_pic->m_oShape.GetPointer()); 	
-
-			for (size_t i = 0; i < oox_pic->m_arrItems.size(); i++)
-			{
-				convert(oox_pic->m_arrItems[i]);
-			}
-			odf_context()->drawing_context()->end_shape(); 
-		}
-		odf_context()->drawing_context()->end_drawing();
-	}
+	OoxConverter::convert(oox_pic->m_oShapeType.GetPointer());
+	OoxConverter::convert(oox_pic->m_oShapeElement.GetPointer());
 
 	odt_context->end_drawings();
 }

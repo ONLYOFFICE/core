@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(SXLIRWS)
     public:
         SXLIRWS();
-        virtual ~SXLIRWS();
+        ~SXLIRWS();
 
         XLS::BaseObjectPtr clone();
 

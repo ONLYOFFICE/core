@@ -181,8 +181,8 @@ namespace NSDocxRenderer
 		double m_dWidth;
 		double m_dHeight;
 		
-		bool m_bIsFill;
-		bool m_bIsStroke;
+        bool m_bIsNoFill;
+        bool m_bIsNoStroke;
 
 		LONG m_lCoordSizeX;
 		LONG m_lCoordSizeY;
@@ -197,8 +197,8 @@ namespace NSDocxRenderer
 			m_dWidth	= 0;
 			m_dHeight	= 0;
 			
-			m_bIsFill	= false;
-			m_bIsStroke	= false;
+            m_bIsNoFill	= false;
+            m_bIsNoStroke	= false;
 
 			m_lCoordSizeX	= 100000;
 			m_lCoordSizeY	= 100000;
@@ -224,8 +224,8 @@ namespace NSDocxRenderer
 			m_dWidth	= oSrc.m_dWidth;
 			m_dHeight	= oSrc.m_dHeight;
 
-			m_bIsFill	= oSrc.m_bIsFill;
-			m_bIsStroke	= oSrc.m_bIsStroke;
+            m_bIsNoFill	= oSrc.m_bIsNoFill;
+            m_bIsNoStroke = oSrc.m_bIsNoStroke;
 
 			m_lTxId		= oSrc.m_lTxId;
 
@@ -238,6 +238,9 @@ namespace NSDocxRenderer
 			m_dTop		= pVector->m_dTop;
 			m_dWidth	= pVector->m_dRight - m_dLeft;
 			m_dHeight	= pVector->m_dBottom - m_dTop;
+
+            if (m_dWidth < 0.0001) m_dWidth = 0.0001;
+            if (m_dHeight < 0.0001) m_dHeight = 0.0001;
 
 			m_lCoordSizeX = lCoordSize;
 			m_lCoordSizeY = lCoordSize;
@@ -315,9 +318,15 @@ namespace NSDocxRenderer
 			}
 
 			if (0x00 == (lType & 0x01))
+            {
+                m_bIsNoStroke = true;
                 oWriter.WriteString(L"ns");
+            }
 			if (0x00 == (lType >> 8))
+            {
+                m_bIsNoFill = true;
                 oWriter.WriteString(L"nf");
+            }
 
             oWriter.AddCharSafe('e');
 
@@ -347,8 +356,16 @@ namespace NSDocxRenderer
             oWriter.AddInt((int)m_lCoordSizeY);
             oWriter.WriteString(L"\" path=\"");
             oWriter.WriteString(m_strPath);
-            oWriter.WriteString(L"\" fillcolor=\"#");
-            oWriter.WriteHexInt3((int)ConvertColor(m_oBrush.Color1));
+            if (c_BrushTypeTexture == m_oBrush.Type)
+            {
+                // у нас нет таких шейпов в pdf/xps
+                oWriter.WriteString(L"\" fillcolor=\"transparent");
+            }
+            else
+            {
+                oWriter.WriteString(L"\" fillcolor=\"#");
+                oWriter.WriteHexInt3((int)ConvertColor(m_oBrush.Color1));
+            }
             oWriter.WriteString(L"\" strokecolor=\"#");
             oWriter.WriteHexInt3((int)ConvertColor(m_oPen.Color));
             oWriter.WriteString(L"\" strokeweight=\"");
@@ -358,7 +375,7 @@ namespace NSDocxRenderer
             std::wstring g_string_fill_opacity = L"<v:fill opacity=\"%.2lf\"/>";
             std::wstring g_string_stroke_opacity = L"<v:stroke opacity=\"%.2lf\"/>";
 
-            if (c_BrushTypeTexture == m_oBrush.Type)
+            if (c_BrushTypeTexture == m_oBrush.Type && !m_bIsNoFill)
 			{
                 oWriter.WriteString(L"<v:imagedata r:id=\"rId");
                 oWriter.AddInt(10 + m_lTxId);

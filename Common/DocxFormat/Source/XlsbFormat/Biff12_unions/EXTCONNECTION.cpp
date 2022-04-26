@@ -66,7 +66,7 @@ namespace XLSB
     {
         if (proc.optional<ACUID>())
         {
-            m_ACUID = elements_.back();
+            //m_ACUID = elements_.back();
             elements_.pop_back();
         }
 
@@ -78,7 +78,7 @@ namespace XLSB
 
         if (proc.optional<ACUID>())
         {
-            m_ACUID = elements_.back();
+            //m_ACUID = elements_.back();
             elements_.pop_back();
         }
 

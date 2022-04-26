@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(WSVIEW2)
     public:
         WSVIEW2();
-        virtual ~WSVIEW2();
+        ~WSVIEW2();
 
         XLS::BaseObjectPtr clone();
 
@@ -49,11 +49,11 @@ namespace XLSB
 
         static const XLS::ElementType	type = XLS::typeWSVIEW2;
 
-        XLS::BaseObjectPtr               m_ACUID;
+        //XLS::BaseObjectPtr               m_ACUID;
         XLS::BaseObjectPtr               m_BrtBeginWsView;
         XLS::BaseObjectPtr               m_BrtPane;
         std::vector<XLS::BaseObjectPtr>  m_arBrtSel;
-        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        //std::vector<XLS::BaseObjectPtr>  m_arFRT;
         XLS::BaseObjectPtr               m_BrtEndWsView;
 
     };

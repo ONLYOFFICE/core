@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginISXTHRws)
         public:
             BeginISXTHRws();
-            virtual ~BeginISXTHRws();
+            ~BeginISXTHRws();
 
             XLS::BaseObjectPtr clone();
 

@@ -42,7 +42,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(DDEOLELINK)
     public:
         DDEOLELINK(ExternalReferenceType type);
-        virtual ~DDEOLELINK();
+        ~DDEOLELINK();
 
         XLS::BaseObjectPtr clone();
 

@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginSupBook)
         public:
             BeginSupBook();
-            virtual ~BeginSupBook();
+            ~BeginSupBook();
 
             XLS::BaseObjectPtr clone();
 

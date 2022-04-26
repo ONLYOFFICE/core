@@ -56,7 +56,7 @@ SOURCES += \
     Src/RendererOutputDev.cpp \
     Src/Adaptors.cpp \
     Src/GfxClip.cpp \
-    PdfReader.cpp
+	PdfReader.cpp
 
 HEADERS += \
     Src/RendererOutputDev.h \
@@ -87,6 +87,19 @@ SOURCES += \
     Resources/BaseFonts.cpp
 
 core_windows:LIBS += -lOle32
+
+CONFIG += use_external_jpeg2000
+use_external_jpeg2000 {
+    DEFINES += USE_EXTERNAL_JPEG2000
+	CONFIG += use_openjpeg2000
+	use_openjpeg2000 {
+	    include($$PWD/../DesktopEditor/raster/Jp2/openjpeg/openjpeg.pri)
+	} else {
+	    DEFINES += USE_GRAPHICS_JPEG2000
+	}
+	HEADERS += Src/JPXStream2.h
+	SOURCES += Src/JPXStream2.cpp
+}
 
 #CONFIG += build_viewer_module
 build_viewer_module {

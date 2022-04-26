@@ -141,7 +141,12 @@
   </xsd:complexType>
   <xsd:complexType name="CT_FillStyleList">
     <xsd:sequence>
-      <xsd:group ref="EG_FillProperties" minOccurs="3" maxOccurs="unbounded"/>
+      <xsd:element name="noFill" type="CT_NoFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="solidFill" type="CT_SolidColorFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="gradFill" type="CT_GradientFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="blipFill" type="CT_BlipFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="pattFill" type="CT_PatternFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="grpFill" type="CT_GroupFillProperties" minOccurs="1" maxOccurs="1"/>
     </xsd:sequence>
   </xsd:complexType>
   <xsd:complexType name="CT_LineStyleList">
@@ -157,7 +162,12 @@
   </xsd:complexType>
   <xsd:complexType name="CT_BackgroundFillStyleList">
     <xsd:sequence>
-      <xsd:group ref="EG_FillProperties" minOccurs="3" maxOccurs="unbounded"/>
+      <xsd:element name="noFill" type="CT_NoFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="solidFill" type="CT_SolidColorFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="gradFill" type="CT_GradientFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="blipFill" type="CT_BlipFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="pattFill" type="CT_PatternFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="grpFill" type="CT_GroupFillProperties" minOccurs="1" maxOccurs="1"/>
     </xsd:sequence>
   </xsd:complexType>
   <xsd:complexType name="CT_StyleMatrix">
@@ -925,7 +935,12 @@
   </xsd:complexType>
   <xsd:complexType name="CT_BackgroundFormatting">
     <xsd:sequence>
-      <xsd:group ref="EG_FillProperties" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="noFill" type="CT_NoFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="solidFill" type="CT_SolidColorFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="gradFill" type="CT_GradientFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="blipFill" type="CT_BlipFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="pattFill" type="CT_PatternFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="grpFill" type="CT_GroupFillProperties" minOccurs="1" maxOccurs="1"/>
       <xsd:group ref="EG_EffectProperties" minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>
   </xsd:complexType>
@@ -1586,12 +1601,22 @@
   </xsd:group>
   <xsd:complexType name="CT_FillProperties">
     <xsd:sequence>
-      <xsd:group ref="EG_FillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="noFill" type="CT_NoFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="solidFill" type="CT_SolidColorFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="gradFill" type="CT_GradientFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="blipFill" type="CT_BlipFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="pattFill" type="CT_PatternFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="grpFill" type="CT_GroupFillProperties" minOccurs="1" maxOccurs="1"/>
     </xsd:sequence>
   </xsd:complexType>
   <xsd:complexType name="CT_FillEffect">
     <xsd:sequence>
-      <xsd:group ref="EG_FillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="noFill" type="CT_NoFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="solidFill" type="CT_SolidColorFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="gradFill" type="CT_GradientFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="blipFill" type="CT_BlipFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="pattFill" type="CT_PatternFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="grpFill" type="CT_GroupFillProperties" minOccurs="1" maxOccurs="1"/>
     </xsd:sequence>
   </xsd:complexType>
   <xsd:simpleType name="ST_BlendMode">
@@ -1605,7 +1630,12 @@
   </xsd:simpleType>
   <xsd:complexType name="CT_FillOverlayEffect">
     <xsd:sequence>
-      <xsd:group ref="EG_FillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="noFill" type="CT_NoFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="solidFill" type="CT_SolidColorFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="gradFill" type="CT_GradientFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="blipFill" type="CT_BlipFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="pattFill" type="CT_PatternFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="grpFill" type="CT_GroupFillProperties" minOccurs="1" maxOccurs="1"/>
     </xsd:sequence>
     <xsd:attribute name="blend" type="ST_BlendMode" use="required"/>
   </xsd:complexType>
@@ -2224,7 +2254,12 @@
     <xsd:sequence>
       <xsd:element name="xfrm" type="CT_Transform2D" minOccurs="0" maxOccurs="1"/>
       <xsd:group ref="EG_Geometry" minOccurs="0" maxOccurs="1"/>
-      <xsd:group ref="EG_FillProperties" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="noFill" type="CT_NoFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="solidFill" type="CT_SolidColorFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="gradFill" type="CT_GradientFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="blipFill" type="CT_BlipFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="pattFill" type="CT_PatternFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="grpFill" type="CT_GroupFillProperties" minOccurs="1" maxOccurs="1"/>
       <xsd:element name="ln" type="CT_LineProperties" minOccurs="0" maxOccurs="1"/>
       <xsd:group ref="EG_EffectProperties" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="scene3d" type="CT_Scene3D" minOccurs="0" maxOccurs="1"/>
@@ -2236,7 +2271,12 @@
   <xsd:complexType name="CT_GroupShapeProperties">
     <xsd:sequence>
       <xsd:element name="xfrm" type="CT_GroupTransform2D" minOccurs="0" maxOccurs="1"/>
-      <xsd:group ref="EG_FillProperties" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="noFill" type="CT_NoFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="solidFill" type="CT_SolidColorFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="gradFill" type="CT_GradientFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="blipFill" type="CT_BlipFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="pattFill" type="CT_PatternFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="grpFill" type="CT_GroupFillProperties" minOccurs="1" maxOccurs="1"/>
       <xsd:group ref="EG_EffectProperties" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="scene3d" type="CT_Scene3D" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="extLst" type="CT_OfficeArtExtensionList" minOccurs="0" maxOccurs="1"/>
@@ -2353,7 +2393,12 @@
       <xsd:element name="lnTlToBr" type="CT_LineProperties" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="lnBlToTr" type="CT_LineProperties" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="cell3D" type="CT_Cell3D" minOccurs="0" maxOccurs="1"/>
-      <xsd:group ref="EG_FillProperties" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="noFill" type="CT_NoFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="solidFill" type="CT_SolidColorFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="gradFill" type="CT_GradientFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="blipFill" type="CT_BlipFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="pattFill" type="CT_PatternFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="grpFill" type="CT_GroupFillProperties" minOccurs="1" maxOccurs="1"/>
       <xsd:element name="headers" type="CT_Headers" minOccurs="0"/>
       <xsd:element name="extLst" type="CT_OfficeArtExtensionList" minOccurs="0" maxOccurs="1"/>
     </xsd:sequence>
@@ -2404,7 +2449,12 @@
   </xsd:complexType>
   <xsd:complexType name="CT_TableProperties">
     <xsd:sequence>
-      <xsd:group ref="EG_FillProperties" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="noFill" type="CT_NoFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="solidFill" type="CT_SolidColorFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="gradFill" type="CT_GradientFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="blipFill" type="CT_BlipFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="pattFill" type="CT_PatternFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="grpFill" type="CT_GroupFillProperties" minOccurs="1" maxOccurs="1"/>
       <xsd:group ref="EG_EffectProperties" minOccurs="0" maxOccurs="1"/>
       <xsd:choice minOccurs="0" maxOccurs="1">
         <xsd:element name="tableStyle" type="CT_TableStyle"/>
@@ -2842,7 +2892,14 @@
   <xsd:complexType name="CT_TextUnderlineLineFollowText"/>
   <xsd:complexType name="CT_TextUnderlineFillFollowText"/>
   <xsd:complexType name="CT_TextUnderlineFillGroupWrapper">
-    <xsd:group ref="EG_FillProperties" minOccurs="1" maxOccurs="1"/>
+    <xsd:sequence>
+      <xsd:element name="noFill" type="CT_NoFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="solidFill" type="CT_SolidColorFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="gradFill" type="CT_GradientFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="blipFill" type="CT_BlipFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="pattFill" type="CT_PatternFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="grpFill" type="CT_GroupFillProperties" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>
   </xsd:complexType>
   <xsd:group name="EG_TextUnderlineLine">
     <xsd:choice>
@@ -2873,7 +2930,12 @@
   <xsd:complexType name="CT_TextCharacterProperties">
     <xsd:sequence>
       <xsd:element name="ln" type="CT_LineProperties" minOccurs="0" maxOccurs="1"/>
-      <xsd:group ref="EG_FillProperties" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="noFill" type="CT_NoFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="solidFill" type="CT_SolidColorFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="gradFill" type="CT_GradientFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="blipFill" type="CT_BlipFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="pattFill" type="CT_PatternFillProperties" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="grpFill" type="CT_GroupFillProperties" minOccurs="1" maxOccurs="1"/>
       <xsd:group ref="EG_EffectProperties" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="highlight" type="CT_Color" minOccurs="0" maxOccurs="1"/>
       <xsd:group ref="EG_TextUnderlineLine" minOccurs="0" maxOccurs="1"/>

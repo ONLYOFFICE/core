@@ -48,7 +48,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginHeaderFooter)
         public:
             BeginHeaderFooter();
-            virtual ~BeginHeaderFooter();
+            ~BeginHeaderFooter();
 
             XLS::BaseObjectPtr clone();
 

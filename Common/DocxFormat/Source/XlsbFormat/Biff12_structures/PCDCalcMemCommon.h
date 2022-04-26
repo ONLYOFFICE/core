@@ -44,7 +44,7 @@ namespace XLSB
     public:
         PCDCalcMemCommon();
         PCDCalcMemCommon(XLS::CFRecord& record);
-        virtual ~PCDCalcMemCommon();
+        ~PCDCalcMemCommon();
        XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;

@@ -42,11 +42,13 @@
 #include "../DesktopEditor/raster/BgraFrame.h"
 #include "../DesktopEditor/graphics/IRenderer.h"
 #include "../DesktopEditor/common/Directory.h"
+#include "../DesktopEditor/common/StringExt.h"
 
 #include "lib/xpdf/PDFDoc.h"
 #include "lib/xpdf/GlobalParams.h"
 #include "lib/xpdf/ErrorCodes.h"
 #include "lib/xpdf/ImageOutputDev.h"
+#include "lib/xpdf/TextString.h"
 #include "Src/RendererOutputDev.h"
 
 #ifdef BUILDING_WASM_MODULE
@@ -55,9 +57,7 @@
 #include "lib/xpdf/Link.h"
 #include "lib/xpdf/TextOutputDev.h"
 #include "lib/goo/GList.h"
-#include "../DesktopEditor/common/StringExt.h"
 #include <vector>
-//#include <fstream>
 #endif
 
 namespace PdfReader
@@ -84,6 +84,10 @@ namespace PdfReader
         m_pInternal->m_pFontManager = NULL;
 
         globalParams  = new GlobalParamsAdaptor(NULL);
+#ifndef _DEBUG
+        globalParams->setErrQuiet(gTrue);
+#endif
+
         m_pInternal->m_pFontList = new CFontList();
 
         m_pInternal->m_pAppFonts = pAppFonts;
@@ -398,16 +402,16 @@ return 0;
             ((GlobalParamsAdaptor*)globalParams)->SetTempFolder(m_pInternal->m_wsTempFolder.c_str());
 	}
     std::wstring CPdfReader::GetTempDirectory()
-    {
+    {						
         return m_pInternal->m_wsTempFolder;
     }
 
-    void CPdfReader::SetCMapFolder(const wchar_t* wsCMapFolder)
+	void CPdfReader::SetCMapFolder(const wchar_t* wsCMapFolder)
 	{
         m_pInternal->m_wsCMapFolder = std::wstring(wsCMapFolder);
 
         if (globalParams)
-            ((GlobalParamsAdaptor*)globalParams)->SetCMapFolder(m_pInternal->m_wsCMapFolder.c_str());
+			((GlobalParamsAdaptor*)globalParams)->SetCMapFolder(m_pInternal->m_wsCMapFolder.c_str());
 	}
     NSFonts::IFontManager* CPdfReader::GetFontManager()
 	{
@@ -431,6 +435,93 @@ return 0;
 //		return wsXml;
         return L"";
 	}
+
+#define DICT_LOOKUP(sName, wsName) \
+    if (info.dictLookup(sName, &obj1)->isString())\
+    {\
+        TextString* s = new TextString(obj1.getString());\
+        sRes += L"\"";\
+        sRes += wsName;\
+        sRes += L"\":\"";\
+        std::wstring sValue = NSStringExt::CConverter::GetUnicodeFromUTF32(s->getUnicode(), s->getLength());\
+        NSStringExt::Replace(sValue, L"\"", L"\\\"");\
+        sRes += sValue;\
+        sRes += L"\",";\
+        delete s;\
+    }\
+
+#define DICT_LOOKUP_DATE(sName, wsName) \
+    if (info.dictLookup(sName, &obj1)->isString())\
+    {\
+        char* str = obj1.getString()->getCString();\
+        int length = obj1.getString()->getLength();\
+        if (str && length > 21)\
+        {\
+            TextString* s = new TextString(obj1.getString());\
+            std::wstring sNoDate = NSStringExt::CConverter::GetUnicodeFromUTF32(s->getUnicode(), s->getLength());\
+            std::wstring sDate = sNoDate.substr(2,  4) + L'-' + sNoDate.substr(6,  2) + L'-' + sNoDate.substr(8,  2) + L'T' +\
+                                 sNoDate.substr(10, 2) + L':' + sNoDate.substr(12, 2) + L':' + sNoDate.substr(14, 2) + L".000+" +\
+                                 sNoDate.substr(17, 2) + L':' + sNoDate.substr(20, 2);\
+            NSStringExt::Replace(sDate, L"\"", L"\\\"");\
+            sRes += L"\"";\
+            sRes += wsName;\
+            sRes += L"\":\"";\
+            sRes += sDate;\
+            sRes += L"\",";\
+            delete s;\
+        }\
+    }\
+
+    std::wstring CPdfReader::GetInfo()
+    {
+        if (!m_pInternal->m_pPDFDocument)
+            return NULL;
+
+        std::wstring sRes = L"{";
+
+        Object info, obj1;
+        m_pInternal->m_pPDFDocument->getDocInfo(&info);
+        if (info.isDict())
+        {
+            DICT_LOOKUP("Title",    L"Title");
+            DICT_LOOKUP("Author",   L"Author");
+            DICT_LOOKUP("Subject",  L"Subject");
+            DICT_LOOKUP("Keywords", L"Keywords");
+            DICT_LOOKUP("Creator",  L"Creator");
+            DICT_LOOKUP("Producer", L"Producer");
+
+            DICT_LOOKUP_DATE("CreationDate", L"CreationDate");
+            DICT_LOOKUP_DATE("ModDate", L"ModDate");
+        }
+
+        info.free();
+        obj1.free();
+
+        std::wstring version = std::to_wstring(GetVersion());
+        std::wstring::size_type posDot = version.find('.');
+        if (posDot != std::wstring::npos)
+            version = version.substr(0, posDot + 2);
+
+        sRes += L"\"Version\":";
+        sRes += version;
+        double nW = 0;
+        double nH = 0;
+        double nDpi = 0;
+        GetPageInfo(0, &nW, &nH, &nDpi, &nDpi);
+        sRes += L",\"PageWidth\":";
+        sRes += std::to_wstring((int)(nW * 100));
+        sRes += L",\"PageHeight\":";
+        sRes += std::to_wstring((int)(nH * 100));
+        sRes += L",\"NumberOfPages\":";
+        sRes += std::to_wstring(GetPagesCount());
+        sRes += L",\"FastWebView\":";
+        sRes += m_pInternal->m_pPDFDocument->isLinearized() ? L"true" : L"false";
+        sRes += L",\"Tagged\":";
+        sRes += m_pInternal->m_pPDFDocument->getStructTreeRoot()->isDict() ? L"true" : L"false";
+        sRes += L"}";
+
+        return sRes;
+    }
 #ifdef BUILDING_WASM_MODULE    
     void getBookmars(PDFDoc* pdfDoc, OutlineItem* pOutlineItem, NSWasm::CData& out, int level)
     {
@@ -572,7 +663,7 @@ return 0;
             if (kind == actionGoTo)
             {
                 str = ((LinkGoTo*)pLinkAction)->getNamedDest();
-                LinkDest* pLinkDest = m_pInternal->m_pPDFDocument->findDest(str);
+                LinkDest* pLinkDest = str ? m_pInternal->m_pPDFDocument->findDest(str) : ((LinkGoTo*)pLinkAction)->getDest()->copy();
                 if (pLinkDest)
                 {
                     int pg;

@@ -98,6 +98,7 @@ namespace XPS
 		CImageBrush(const wchar_t* wsPath)
 		{
 			m_wsPath.create(wsPath, true);
+			m_wsRoot = NULL;
 		}
 		bool SetToRenderer(IRenderer* pRenderer);
 		bool IsImageBrush() { return true; }

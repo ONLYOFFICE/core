@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(SXTUPLESETROW)
     public:
         SXTUPLESETROW();
-        virtual ~SXTUPLESETROW();
+        ~SXTUPLESETROW();
 
         XLS::BaseObjectPtr clone();
 

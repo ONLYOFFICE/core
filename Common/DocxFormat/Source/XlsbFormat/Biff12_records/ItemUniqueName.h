@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(ItemUniqueName)
         public:
             ItemUniqueName();
-            virtual ~ItemUniqueName();
+            ~ItemUniqueName();
 
             XLS::BaseObjectPtr clone();
 

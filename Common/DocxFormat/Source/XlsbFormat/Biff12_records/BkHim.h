@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BkHim)
         public:
             BkHim();
-            virtual ~BkHim();
+            ~BkHim();
 
             XLS::BaseObjectPtr clone();
 

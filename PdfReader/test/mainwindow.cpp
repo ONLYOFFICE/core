@@ -58,7 +58,10 @@ MainWindow::~MainWindow()
 void MainWindow::OpenFile()
 {
 	if (!m_pReader)
+	{
 		m_pReader = new PdfReader::CPdfReader(m_pFonts);
+		m_pReader->SetCMapFolder(L".//..//..//..//..//Resources//CMap//");
+	}
 
 	m_pReader->Close();
 

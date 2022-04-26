@@ -30,6 +30,8 @@ namespace NSCSS
         void SetDpi(const unsigned short int& nValue);
         void SetBodyTree(const CTree &oTree);
 
+        void SetSizeSourceWindow(const CSizeWindow& oSizeWindow);
+        void SetSizeDeviceWindow(const CSizeWindow& oSizeWindow);
 
         UnitMeasure GetUnitMeasure() const;
         std::wstring GetEncoding()   const;

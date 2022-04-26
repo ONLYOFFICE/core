@@ -85,6 +85,7 @@ public:
                                  bool bIsDarkMode = false);
 
     // Common methods for viewer
+    virtual std::wstring GetInfo() = 0;
 #ifdef BUILDING_WASM_MODULE
     virtual unsigned char* GetStructure() = 0;
     virtual unsigned char* GetLinks(int nPageIndex) = 0;

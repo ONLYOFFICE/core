@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(FRTTABLE)
     public:
         FRTTABLE();
-        virtual ~FRTTABLE();
+        ~FRTTABLE();
 
         XLS::BaseObjectPtr clone();
 
@@ -52,7 +52,7 @@ namespace XLSB
         XLS::BaseObjectPtr               m_BrtFRTBegin;
         XLS::BaseObjectPtr               m_BrtList14;
         XLS::BaseObjectPtr               m_BrtFRTEnd;
-        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        //std::vector<XLS::BaseObjectPtr>  m_arFRT;
 
     };
 

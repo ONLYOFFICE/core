@@ -14,6 +14,9 @@
 #include "../../DesktopEditor/common/Directory.h"
 #include <string>
 
+#include "../lib/goo/GList.h"
+#include "../lib/goo/GHash.h"
+
 #define GrClipEOFlag 0x01
 
 class GlobalParamsAdaptor : public GlobalParams
@@ -35,11 +38,11 @@ public:
         m_wsTempFolder = folder;
     }
 
-    void SetCMapFolder(const std::wstring &folder) {
-        m_wsCMapFolder = folder;
-    }
+	void SetCMapFolder(const std::wstring &wsFolder);
+private:
 
-
+	void AddNameToUnicode(const char* sFile);
+	void AddCMapFolder(const char* sCollection, GString* sFolder);
 };
 
 #ifndef CORE_REF_OPERATORS

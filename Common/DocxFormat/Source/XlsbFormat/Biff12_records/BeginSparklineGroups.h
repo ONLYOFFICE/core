@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginSparklineGroups)
         public:
             BeginSparklineGroups();
-            virtual ~BeginSparklineGroups();
+            ~BeginSparklineGroups();
 
             XLS::BaseObjectPtr clone();
 

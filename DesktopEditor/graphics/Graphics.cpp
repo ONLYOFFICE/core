@@ -1495,8 +1495,8 @@ namespace Aggplus
             m_rasterizer.gamma(1.0);
         }
 #else
-		agg::rgba8 c1 = agg::rgba8(pBrush->m_dwColor1.GetB(), pBrush->m_dwColor1.GetG(), pBrush->m_dwColor1.GetR(), pBrush->m_dwColor1.GetA());
-		agg::rgba8 c2 = agg::rgba8(pBrush->m_dwColor2.GetB(), pBrush->m_dwColor2.GetG(), pBrush->m_dwColor2.GetR(), pBrush->m_dwColor2.GetA());
+        agg::rgba8 c1 = agg::rgba8(pBrush->m_dwColor1.GetR(), pBrush->m_dwColor1.GetG(), pBrush->m_dwColor1.GetB(), pBrush->m_dwColor1.GetA());
+        agg::rgba8 c2 = agg::rgba8(pBrush->m_dwColor2.GetR(), pBrush->m_dwColor2.GetG(), pBrush->m_dwColor2.GetB(), pBrush->m_dwColor2.GetA());
 
 		BYTE* pPattern = new BYTE[HATCH_TX_SIZE * HATCH_TX_SIZE * 4];
 		agg::GetHatchPattern(pBrush->m_name, (agg::rgba8*)pPattern, c1, c2);
@@ -1593,14 +1593,14 @@ namespace Aggplus
             PatRendBuff.attach((BYTE*)pImgBuff, dwImgWidth, dwImgHeight, nImgStride);
         }
 
-        int nCurrentMode = 0;
+        int nCurrentMode = 255;
         if (!m_bSwapRGB)
         {
             typedef agg::pixfmt_bgra32     pixfmt;
-            typedef agg::image_accessor_clip<pixfmt> img_source_type;
+            typedef agg::image_accessor_clone<pixfmt> img_source_type;
 
             pixfmt          img_pixf(PatRendBuff);
-            img_source_type img_src(img_pixf, agg::rgba(0, 0, 0, 0));
+            img_source_type img_src(img_pixf);
 
             switch (nCurrentMode)
             {
@@ -1650,6 +1650,17 @@ namespace Aggplus
                     typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
                     agg::image_filter_lut filter;
                     filter.calculate(agg::image_filter_blackman256(), false);
+                    span_gen_type sg(img_src, interpolator, filter);
+                    renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+                    render_scanlines_alpha(ri, Alpha);
+                    break;
+                }
+                case 255:
+                {
+                    typedef agg::span_image_resample_rgba_affine<img_source_type> span_gen_type;
+                    typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
+                    agg::image_filter_lut filter;
+                    filter.calculate(agg::image_filter_bilinear(), false);
                     span_gen_type sg(img_src, interpolator, filter);
                     renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
                     render_scanlines_alpha(ri, Alpha);
@@ -1662,10 +1673,10 @@ namespace Aggplus
         else
         {
             typedef agg::pixfmt_rgba32     pixfmt;
-            typedef agg::image_accessor_clip<pixfmt> img_source_type;
+            typedef agg::image_accessor_clone<pixfmt> img_source_type;
 
             pixfmt          img_pixf(PatRendBuff);
-            img_source_type img_src(img_pixf, agg::rgba(0, 0, 0, 0));
+            img_source_type img_src(img_pixf);
 
             switch (nCurrentMode)
             {
@@ -1715,6 +1726,17 @@ namespace Aggplus
                     typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
                     agg::image_filter_lut filter;
                     filter.calculate(agg::image_filter_blackman256(), false);
+                    span_gen_type sg(img_src, interpolator, filter);
+                    renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
+                    render_scanlines_alpha(ri, Alpha);
+                    break;
+                }
+                case 255:
+                {
+                    typedef agg::span_image_resample_rgba_affine<img_source_type> span_gen_type;
+                    typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
+                    agg::image_filter_lut filter;
+                    filter.calculate(agg::image_filter_bilinear(), false);
                     span_gen_type sg(img_src, interpolator, filter);
                     renderer_type ri(m_frame_buffer.ren_base(), span_allocator, sg);
                     render_scanlines_alpha(ri, Alpha);

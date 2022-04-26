@@ -98,7 +98,7 @@ namespace NSDocxRenderer
 		}
 
 	public:
-		virtual void LoadFont(long lFaceIndex = 0, bool bNeedAddToMap = true)
+        virtual void LoadFont(long lFaceIndex = 0, bool bNeedAddToMap = true)
 		{
 			if (NULL == m_pManager)
 				return;
@@ -110,11 +110,10 @@ namespace NSDocxRenderer
 
 			m_pFont->Size = dSizeFont;
 
-            if (m_pFont->IsEqual(&m_oFont.m_oFont))
+            if (m_pFont->IsEqual2(&m_oFont.m_oFont))
 			{
 				m_pFont->Size = dSize;
-				m_pManager->SetCharSpacing(dPix);
-				m_pManager->SetStringGID(m_oFont.m_oFont.StringGID);
+                m_pManager->SetCharSpacing(dPix);
 				return;
 			}
 
@@ -288,7 +287,7 @@ namespace NSDocxRenderer
 			m_dSize			= 0;
             m_dSpaceWidth	= 0;
 
-            m_pManager = pFonts->GenerateFontManager();
+            m_pManager = NSFontManager::CreateFontManager(pFonts);
 		}
 		~CFontManagerLight()
 		{

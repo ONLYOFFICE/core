@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndPCDHierarchies)
         public:
             EndPCDHierarchies();
-            virtual ~EndPCDHierarchies();
+            ~EndPCDHierarchies();
 
             XLS::BaseObjectPtr clone();
 

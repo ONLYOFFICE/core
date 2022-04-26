@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(Sparkline)
         public:
             Sparkline();
-            virtual ~Sparkline();
+            ~Sparkline();
 
             XLS::BaseObjectPtr clone();
 

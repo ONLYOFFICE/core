@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginSlicers)
         public:
             BeginSlicers();
-            virtual ~BeginSlicers();
+            ~BeginSlicers();
 
             XLS::BaseObjectPtr clone();
 

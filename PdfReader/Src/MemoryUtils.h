@@ -44,96 +44,84 @@
 
 namespace PdfReader
 {
+    static inline void CheckMemory(void* memory)
+    {
+        if (!memory)
+        {
+            // TODO: Выдать ошибку выделения памяти
+        }
+    }
+
 	//------------------------------------------------------------------------
 	// Аналогично malloc, но с обработкой ошибок.
-	static void *MemUtilsMalloc(int nSize)
+    static void* MemUtilsMalloc(unsigned int nSize)
 	{
-		void *pResult;
+        void* pResult;
 
-		if (nSize <= 0)
+        if (nSize == 0)
 			return NULL;
 
-		if (!(pResult = malloc(nSize)))
-		{
-			// TO DO: Выдать ошибку выделения памяти
-		}
+        pResult = malloc(nSize);
+        CheckMemory(pResult);
+        return pResult;
+    }
+    static void* MemUtilsMallocArray(unsigned int nObjectsCount, unsigned int nObjectSize)
+    {
+        if (0 == nObjectsCount || 0 == nObjectSize)
+            return NULL;
+
+        if (nObjectsCount >= (UINT_MAX / nObjectSize))
+        {
+            CheckMemory(NULL);
+            return NULL;
+        }
+
+        return MemUtilsMalloc(nObjectsCount * nObjectSize);
+    }
+
+    // Тоже что и free, но проверяет и игнорирует NULL-указатели.
+    static void MemUtilsFree(void* pData)
+    {
+        if (pData)
+            free(pData);
+    }
+
+    // Тоже что и realloc, но с обработкой ошибок.
+    static void* MemUtilsRealloc(void* pData, unsigned int nSize, unsigned int nOldSize)
+	{
+        void* pResult;
+
+        if (!pData || nSize == 0)
+            return NULL;
+
+        pResult = realloc(pData, nSize);
+        if (!pResult)
+        {
+            pResult = malloc(nSize);
+            if (pResult)
+            {
+                if (0 != nOldSize)
+                    memcpy(pResult, pData, nOldSize);
+                free(pData);
+            }
+        }
+
+        CheckMemory(pResult);
 		return pResult;
 	}
+    static void* MemUtilsReallocArray(void* pData, unsigned int nObjectsCount, unsigned int nObjectSize, unsigned int nOldCount)
+    {
+        if (0 == nObjectsCount || 0 == nObjectSize)
+            return NULL;
 
+        if (nObjectsCount >= (UINT_MAX / nObjectSize))
+        {
+            CheckMemory(NULL);
+            return NULL;
+        }
 
-	// Тоже что и realloc, но с обработкой ошибок. 
-	// Если <pData> NULL, вызывается функция malloc вместо realloc.
-	static void *MemUtilsRealloc(void *pData, int nSize)
-	{
-		void *pResult;
-
-		if (nSize <= 0)
-		{
-			if (pData)
-				free(pData);
-			return NULL;
-		}
-		if (pData)
-			pResult = realloc(pData, nSize);
-		else
-			pResult = malloc(nSize);
-		if (!pResult)
-		{
-			// TO DO: Выдать ошибку выделения памяти
-		}
-		return pResult;
-	}
-
-
-	// Тоже самое, что и MemUtilsMalloc and MemUtilsRelloc, толькоt
-	// учитывает количество элементов и размер элемента. В результате
-	// выделяется память размером nObjectsCount * nObjectSize байт. 
-	// Кроме того присутствует обработка ошибок и проверка того, чтобы
-	// суммарный размер не превышал предел для int.
-	static void *MemUtilsMallocArray(int nObjectsCount, int nObjectSize)
-	{
-		if (0 == nObjectsCount)
-			return NULL;
-
-		int nSize = nObjectsCount * nObjectSize;
-		if (nObjectSize <= 0 || nObjectsCount < 0 || nObjectsCount >= INT_MAX / nObjectSize)
-		{
-			// TO DO: Выдать ошибку выделения памяти
-		}
-		return MemUtilsMalloc(nSize);
-	}
-
-	// Тоже что и free, но проверяет и игнорирует NULL-указатели.
-	static void MemUtilsFree(void *pData)
-	{
-		if (pData)
-			free(pData);
-	}
-
-	static void *MemUtilsReallocArray(void *pData, int nObjectsCount, int nObjectSize)
-	{
-		if (0 == nObjectsCount)
-		{
-			if (pData)
-				MemUtilsFree(pData);
-			return NULL;
-		}
-		int nSize = nObjectsCount * nObjectSize;
-
-		if (nObjectSize <= 0 || nObjectsCount < 0 || nObjectsCount >= INT_MAX / nObjectSize)
-		{
-			// TO DO: Выдать ошибку выделения памяти
-		}
-		return MemUtilsRealloc(pData, nSize);
-	}
-
-	// Выделяем память и копируем туда строку.
-	static char *CopyString(char *sString)
-	{
-		char *sResult = (char *)MemUtilsMalloc((int)strlen(sString) + 1);
-		strcpy(sResult, sString);
-		return sResult;
-	}
+        return MemUtilsRealloc(pData, nObjectsCount * nObjectSize, nOldCount * nObjectSize);
+    }
 }
 
 #endif // _PDF_READER_MEMORY_UTILS_H

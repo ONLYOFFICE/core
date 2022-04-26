@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginPNPairs)
         public:
             BeginPNPairs();
-            virtual ~BeginPNPairs();
+            ~BeginPNPairs();
 
             XLS::BaseObjectPtr clone();
 

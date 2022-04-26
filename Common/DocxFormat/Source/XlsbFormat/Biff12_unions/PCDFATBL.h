@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(PCDFATBL)
     public:
         PCDFATBL();
-        virtual ~PCDFATBL();
+        ~PCDFATBL();
 
         XLS::BaseObjectPtr clone();
 

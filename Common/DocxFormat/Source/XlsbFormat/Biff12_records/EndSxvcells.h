@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndSxvcells)
         public:
             EndSxvcells();
-            virtual ~EndSxvcells();
+            ~EndSxvcells();
 
             XLS::BaseObjectPtr clone();
 

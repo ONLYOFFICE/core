@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(FRTPIVOTCACHEDEF)
     public:
         FRTPIVOTCACHEDEF();
-        virtual ~FRTPIVOTCACHEDEF();
+        ~FRTPIVOTCACHEDEF();
 
         XLS::BaseObjectPtr clone();
 
@@ -53,7 +53,7 @@ namespace XLSB
         XLS::BaseObjectPtr               m_PCD14;
         XLS::BaseObjectPtr               m_BrtFRTEnd;
         XLS::BaseObjectPtr               m_PCD15;
-        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        //std::vector<XLS::BaseObjectPtr>  m_arFRT;
 
     };
 

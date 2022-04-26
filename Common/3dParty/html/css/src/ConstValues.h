@@ -19,6 +19,43 @@ namespace NSCSS
         Peak
     } UnitMeasure;
 
+    typedef enum
+    {
+        ScalingDirectionNone = 0,
+        ScalingDirectionX = 1,
+        ScalingDirectionY = 2
+    } ScalingDirection;
+
+    struct CSizeWindow
+    {
+            unsigned short m_ushWidth;
+            unsigned short m_ushHeight;
+
+            CSizeWindow()
+                    : m_ushWidth(0), m_ushHeight(0) {};
+            CSizeWindow(unsigned short unWidth, unsigned short unHeight)
+                    : m_ushWidth(unWidth), m_ushHeight(unHeight) {};
+
+            bool Empty() const
+            {
+                    return ((0 == m_ushWidth) && (0 == m_ushHeight));
+            }
+
+            void Clear()
+            {
+                    m_ushWidth = m_ushHeight = 0;
+            }
+
+            bool operator==(const CSizeWindow& oSizeWindow) const
+            {
+                    return ((m_ushWidth == oSizeWindow.m_ushWidth) && (m_ushHeight == oSizeWindow.m_ushHeight));
+            }
+            bool operator!=(const CSizeWindow& oSizeWindow) const
+            {
+                    return ((m_ushWidth != oSizeWindow.m_ushWidth) || (m_ushHeight != oSizeWindow.m_ushHeight));
+            }
+    };
+
     struct StatistickElement
     {
         enum TypeElement

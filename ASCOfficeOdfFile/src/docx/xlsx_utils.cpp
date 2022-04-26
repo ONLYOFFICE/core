@@ -90,19 +90,12 @@ std::wstring getCellAddress(size_t col, size_t row, bool bAbsolute)
 	return a + getColAddress(col) + a + getRowAddress(row);
 }
 
-//_ASSERTE(getColAddressInv(L"A") == 0);
-//_ASSERTE(getColAddressInv(L"B") == 1);
-//_ASSERTE(getColAddressInv(L"Z") == 25);
-//_ASSERTE(getColAddressInv(L"AA") == 26);
-//_ASSERTE(getColAddressInv(L"AZ") == 51);
-//_ASSERTE(getColAddressInv(L"BA") == 52);
-//_ASSERTE(getColAddressInv(L"BZ") == 77);
-//_ASSERTE(getColAddressInv(L"ZZ") == 26 * 26 + 25);
 size_t getColAddressInv(const std::wstring & a_)
 {
     std::wstring a = a_;
     boost::algorithm::to_upper(a);
-    static const size_t r = (L'Z' - L'A' + 1);
+    
+	static const size_t r = (L'Z' - L'A' + 1);
     size_t mul = 1;
     bool f = true;
     size_t res = 0;
@@ -131,46 +124,47 @@ size_t getRowAdderssInv(const std::wstring & a_)
 		return 0;
 }
 
-void splitCellAddress(const std::wstring & a_, std::wstring & col, std::wstring & row)
+bool splitCellAddress(const std::wstring & a_, std::wstring & col, std::wstring & row)
 {   
 	std::wstring a = a_;
 
-	std::reverse(a.begin(), a.end());
     XmlUtils::replace_all( a, L"$", L"");
-    //XmlUtils::replace_all( a, L"'", L"");
 	
 	boost::algorithm::to_upper(a);
 	
 	for (size_t i = 0; i < a.length(); i++)
 	{
 		if (a[i] >= L'0' && a[i] <= L'9')
+		{
+			if (col.empty()) return false;
+
 			row += a[i];
-		else
+		}
+		else if (a[i] >= L'A' && a[i] <= L'Z')
+		{
+			if (false == row.empty()) return false;
+
 			col += a[i];
+		}
+		else
+			return false;
     }
-	std::reverse(col.begin(), col.end());
-	std::reverse(row.begin(), row.end());
+
+	if (col.size() > 5 || row.size() > 7) return false;
+
+	return true;
 }
 
-//size_t colS, rowS;
-//getCellAddressInv(L"A1", colS, rowS);
-//_ASSERTE(colS == 0);
-//_ASSERTE(rowS == 0);
-//
-//getCellAddressInv(L"Z2", colS, rowS);
-//_ASSERTE(colS == 25);
-//_ASSERTE(rowS == 1);
-//
-//getCellAddressInv(L"ZZ1000", colS, rowS);
-//_ASSERTE(colS == 26 * 26 + 25);
-//_ASSERTE(rowS == 999);
-void getCellAddressInv(const std::wstring & a_, size_t & col, size_t & row)
+bool getCellAddressInv(const std::wstring & a_, size_t & col, size_t & row)
 {
     std::wstring colStr = L"", rowStr = L"";
-    splitCellAddress(a_, colStr, rowStr);
+	
+	if (false == splitCellAddress(a_, colStr, rowStr)) return false;
     
     col = getColAddressInv( colStr );
     row = getRowAdderssInv( rowStr );
+
+	return true;
 }
 
 bool parseBoolVal(const std::wstring & str)

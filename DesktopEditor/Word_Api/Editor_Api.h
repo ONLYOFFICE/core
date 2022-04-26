@@ -982,6 +982,7 @@ namespace NSEditorApi
 		js_wrapper<unsigned char> m_nLineEndSize;
 
 		js_wrapper<bool> m_bCanChangeArrows;
+		js_wrapper<int>	 m_nPrstDash;
 
 	public:
 		CAscStroke()
@@ -1005,6 +1006,7 @@ namespace NSEditorApi
 		LINK_PROPERTY_BYTE_JS(LineEndSize)
 
 		LINK_PROPERTY_BOOL_JS(CanChangeArrows)
+		LINK_PROPERTY_INT_JS(PrstDash)
 	};
 }
 

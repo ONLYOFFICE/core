@@ -62,7 +62,7 @@ void OOX::Spreadsheet::CXlsb::init()
 	workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
 	xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(workbook_code_page, nullptr));
 	xls_global_info->Version = 0x0800;    
-    m_binaryReader = std::make_shared<NSBinPptxRW::CBinaryFileReader>();
+    m_binaryReader = boost::shared_ptr<NSBinPptxRW::CBinaryFileReader>(new NSBinPptxRW::CBinaryFileReader);
 }
 bool OOX::Spreadsheet::CXlsb::ReadBin(const CPath& oFilePath, XLS::BaseObject* objStream)
 {
@@ -81,7 +81,10 @@ bool OOX::Spreadsheet::CXlsb::ReadBin(const CPath& oFilePath, XLS::BaseObject* o
     XLS::StreamCacheReaderPtr reader(new XLS::BinaryStreamCacheReader(m_binaryReader, xls_global_info));
     XLS::BinReaderProcessor proc(reader, objStream, true);
     proc.mandatory(*objStream);
+
     delete[] m_pStream;
+    //reader.reset();
+
     return true;
 }
 
@@ -136,7 +139,7 @@ void OOX::Spreadsheet::CXlsb::PrepareSi()
     }
 }
 //отложенный парсинг SheetData
-void OOX::Spreadsheet::CXlsb::ReadSheetData()
+void OOX::Spreadsheet::CXlsb::ReadSheetData(bool isWriteSheetToXlsx)
 {
     for(auto &worksheet : m_arWorksheets)
     {
@@ -154,19 +157,46 @@ void OOX::Spreadsheet::CXlsb::ReadSheetData()
 
         m_binaryReader->Init(m_pStream, 0, dwRead);
 
-        std::vector<CellRangeRef>	shared_formulas_locations;
-        XLSB::CELLTABLE cell_table_temlate(shared_formulas_locations);
+        XLS::BaseObjectPtr cell_table_temlate = XLS::BaseObjectPtr(new XLSB::CELLTABLE());
 
         XLS::StreamCacheReaderPtr reader(new XLS::BinaryStreamCacheReader(m_binaryReader, xls_global_info));
-        XLS::BinReaderProcessor proc(reader, &cell_table_temlate, true);
+        XLS::BinReaderProcessor proc(reader, cell_table_temlate.get(), true);
 
         proc.SetRecordPosition(dataPosition);
 
-        proc.mandatory(cell_table_temlate);
-
-        worksheet->m_oSheetData->fromBin(cell_table_temlate);
+        proc.mandatory(*cell_table_temlate.get());
         delete[] m_pStream;
+
+        //auto base = boost::static_pointer_cast<BaseObject>(cell_table_temlate);
+        worksheet->m_oSheetData->fromBin(cell_table_temlate);
+
+        //для оптимизации по памяти сразу записываем в файл все листы
+        if(isWriteSheetToXlsx)
+        {
+            WriteSheet(worksheet);
+        }
+
+        //cell_table_temlate.reset();
+        //reader.reset();
     }
+}
+void OOX::Spreadsheet::CXlsb::SetPropForWriteSheet(const std::wstring &sPath, OOX::CContentTypes& oContentTypes)
+{
+    m_sPath          = sPath + L"/xl";
+    m_oContentTypes = oContentTypes;
+}
+void OOX::Spreadsheet::CXlsb::WriteSheet(CWorksheet* worksheet)
+{
+    OOX::CPath oDefDir = worksheet->DefaultDirectory();
+    OOX::CPath oName   = worksheet->DefaultFileName();
+
+    if (false == worksheet->m_sOutputFilename.empty())
+        oName.SetName(worksheet->m_sOutputFilename, false);
+
+    OOX::CSystemUtility::CreateDirectories(m_sPath);
+    OOX::CSystemUtility::CreateDirectories( m_sPath / oDefDir );
+    worksheet->write( m_sPath / oDefDir / oName, L"/xl/" + oDefDir, m_oContentTypes );
+    worksheet->m_oSheetData.reset();
 }
 void OOX::Spreadsheet::CXlsb::PrepareTableFormula()
 {

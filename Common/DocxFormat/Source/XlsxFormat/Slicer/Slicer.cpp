@@ -328,7 +328,7 @@ void CSlicerFile::readBin(const CPath& oPath)
     CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
     if (xlsb)
     {
-        XLSB::SlicersStreamPtr slicersStream = std::make_shared<XLSB::SlicersStream>();
+        XLSB::SlicersStreamPtr slicersStream(new XLSB::SlicersStream);
 
         xlsb->ReadBin(oPath, slicersStream.get());
 
@@ -337,6 +337,8 @@ void CSlicerFile::readBin(const CPath& oPath)
             if (slicersStream->m_SLICERS != nullptr)
                 m_oSlicers = slicersStream->m_SLICERS;
         }
+
+        //slicersStream.reset();
 
     }
 }

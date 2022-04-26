@@ -44,7 +44,7 @@ namespace XLSB
     public:
         SlicerCachePivotTable();
         SlicerCachePivotTable(XLS::CFRecord& record);
-        virtual ~SlicerCachePivotTable();
+        ~SlicerCachePivotTable();
         XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;

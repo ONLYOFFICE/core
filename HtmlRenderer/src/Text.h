@@ -952,8 +952,8 @@ namespace NSHtmlRenderer
 
             if (nCount > 1)
             {
-                int* pWidthBuf = (int*)(m_pPageMeta->GetData() + _position);
-                *pWidthBuf = (int)(dWidthLine * 10000);
+                int nWidthBuf = (int)(dWidthLine * 10000);
+                memcpy(m_pPageMeta->GetData() + _position, &nWidthBuf, 4);
             }
 
             m_oLine.Clear();

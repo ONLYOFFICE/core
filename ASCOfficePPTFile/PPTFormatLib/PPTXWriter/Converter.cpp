@@ -614,7 +614,7 @@ void PPT_FORMAT::CPPTXWriter::WriteThemes()
     int nStartLayout = 0, nIndexTheme = 0;
 
     if (HasRoundTrips() && m_pDocument->m_arThemes.size())
-    {  
+    {
         std::unordered_set<std::string> writedFilesHash;
         for (const auto& oIterSlide : m_pUserInfo->m_mapMasters)
         {
@@ -644,6 +644,9 @@ void PPT_FORMAT::CPPTXWriter::WriteThemes()
 
 bool CPPTXWriter::HasRoundTrips() const
 {
+    if (m_pUserInfo == nullptr || m_pUserInfo->m_mapMasters.empty() || m_pUserInfo->m_mapMasters.begin()->second == nullptr)
+        return false;
+
     std::vector<RoundTripTheme12Atom*> arrRTTheme;
     std::vector<RoundTripContentMasterInfo12Atom*> arrRTLayouts;
     auto pSlide = m_pUserInfo->m_mapMasters.begin()->second;
@@ -1018,14 +1021,17 @@ void PPT_FORMAT::CPPTXWriter::WriteTheme(CThemePtr pTheme, int & nIndexTheme, in
 
     WriteColorScheme(oStringWriter, L"Default", pTheme->m_arColorScheme);
 
-    oStringWriter.WriteString(std::wstring(L"<a:fontScheme name=\"default\"><a:majorFont><a:latin typeface=\""));
-    oStringWriter.WriteStringXML(pTheme->m_arFonts[0].Name);
-    oStringWriter.WriteString(std::wstring(L"\"/><a:ea typeface=\"\"/><a:cs typeface=\"\"/></a:majorFont>"));
+    if (!pTheme->m_arFonts.empty())
+    {
+        oStringWriter.WriteString(std::wstring(L"<a:fontScheme name=\"default\"><a:majorFont><a:latin typeface=\""));
+        oStringWriter.WriteStringXML(pTheme->m_arFonts[0].Name);
+        oStringWriter.WriteString(std::wstring(L"\"/><a:ea typeface=\"\"/><a:cs typeface=\"\"/></a:majorFont>"));
 
-    oStringWriter.WriteString(std::wstring(L"<a:minorFont><a:latin typeface=\""));
+        oStringWriter.WriteString(std::wstring(L"<a:minorFont><a:latin typeface=\""));
 
-    if (pTheme->m_arFonts.size() > 1 )	oStringWriter.WriteString	(pTheme->m_arFonts[1].Name);
-    else								oStringWriter.WriteStringXML(pTheme->m_arFonts[0].Name);
+        if (pTheme->m_arFonts.size() > 1 )	oStringWriter.WriteString	(pTheme->m_arFonts[1].Name);
+        else                                oStringWriter.WriteStringXML(pTheme->m_arFonts[0].Name);
+    }
 
     oStringWriter.WriteString(std::wstring(L"\"/><a:ea typeface=\"\"/><a:cs typeface=\"\"/></a:minorFont>"));
     oStringWriter.WriteString(std::wstring(L"</a:fontScheme>"));

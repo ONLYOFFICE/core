@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndListXmlCPr)
         public:
             EndListXmlCPr();
-            virtual ~EndListXmlCPr();
+            ~EndListXmlCPr();
 
             XLS::BaseObjectPtr clone();
 

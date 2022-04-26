@@ -183,7 +183,7 @@ namespace OOX
                 CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
                 if (xlsb)
                 {                    
-                    XLSB::StylesStreamPtr stylesStream = std::make_shared<XLSB::StylesStream>();
+                    XLSB::StylesStreamPtr stylesStream(new XLSB::StylesStream);
 
                     xlsb->ReadBin(oPath, stylesStream.get());
 
@@ -224,6 +224,9 @@ namespace OOX
 
                         AfterRead();
                     }
+
+                    //stylesStream.reset();
+
                 }
             }
 

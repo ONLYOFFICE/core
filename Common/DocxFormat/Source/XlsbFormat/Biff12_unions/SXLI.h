@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(SXLI)
     public:
         SXLI();
-        virtual ~SXLI();
+        ~SXLI();
 
         XLS::BaseObjectPtr clone();
 

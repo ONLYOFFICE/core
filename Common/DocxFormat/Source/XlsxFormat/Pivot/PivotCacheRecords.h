@@ -91,6 +91,8 @@ namespace OOX
 
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
 			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
+
+			std::wstring m_strOutputXml;
 		};
 
 		class CPivotCacheRecordsFile : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
@@ -148,13 +150,13 @@ namespace OOX
 			{
 				return m_oReadPath;
 			}
-
+//---------------------------------------------------------------------
 			nullable<CPivotCacheRecords> m_oPivotCacheRecords;
+	//--------- 
+			BYTE *m_pData = NULL;
+			DWORD m_nDataLength = 0;
 		private:
-			CPath m_oReadPath;
-			
-			BYTE *m_pData;
-			long m_nDataLength;
+			CPath m_oReadPath;			
 		};
 	} //Spreadsheet
 } // namespace OOX

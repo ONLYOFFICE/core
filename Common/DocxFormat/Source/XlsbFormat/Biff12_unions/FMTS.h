@@ -43,7 +43,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(FMTS)
     public:
         FMTS();
-        virtual ~FMTS();
+        ~FMTS();
 
         XLS::BaseObjectPtr clone();
 

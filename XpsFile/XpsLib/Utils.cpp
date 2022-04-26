@@ -1452,7 +1452,7 @@ namespace XPS
 		int nCurDepth = oReader.GetDepth();
 		while (oReader.ReadNextSiblingNode(nCurDepth))
 		{
-			wsNodeName = oReader.GetName();
+			wsNodeName = oReader.GetNameNoNS();
 			if (wsNodeName == L"MatrixTransform")
 			{
 				ReadMatrixTransform(oReader, wsTransform, pwsKey);
@@ -1497,7 +1497,7 @@ namespace XPS
 		int nCurDepth = oReader.GetDepth();
 		while (oReader.ReadNextSiblingNode(nCurDepth))
 		{
-			wsNodeName = oReader.GetName();
+			wsNodeName = oReader.GetNameNoNS();
 			if (wsNodeName == L"PathGeometry.Transform" && wsTransform.empty())
 				ReadTransform(oReader, wsTransform);
 			else if (wsNodeName == L"PathFigure" && wsData.empty())
@@ -1525,7 +1525,7 @@ namespace XPS
 		int nCurDepth = oReader.GetDepth();
 		while (oReader.ReadNextSiblingNode(nCurDepth))
 		{
-			wsNodeName = oReader.GetName();
+			wsNodeName = oReader.GetNameNoNS();
 			wsText.empty();
 			if (L"PolyLineSegment" == wsNodeName)
 			{
@@ -1596,7 +1596,7 @@ namespace XPS
 		int nCurDepth = oReader.GetDepth();
 		while (oReader.ReadNextSiblingNode(nCurDepth))
 		{
-			wsNodeName = oReader.GetName();
+			wsNodeName = oReader.GetNameNoNS();
 			if (wsNodeName == L"GradientStop")
 			{				
 				double dPos = 0;
@@ -1637,7 +1637,7 @@ namespace XPS
 		int nCurDepth = oReader.GetDepth();
 		while (oReader.ReadNextSiblingNode(nCurDepth))
 		{
-			wsNodeName = oReader.GetName();
+			wsNodeName = oReader.GetNameNoNS();
 			if (wsNodeName == L"PathGeometry")
 			{
 				CWString wsTransform;

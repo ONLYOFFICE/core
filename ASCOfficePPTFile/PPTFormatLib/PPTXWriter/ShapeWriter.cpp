@@ -31,7 +31,7 @@
  */
 #include "ShapeWriter.h"
 #include "StylesWriter.h"
-#include "TxBodyConverter.h"
+#include "BulletsConverter.h"
 
 #include "../../../ASCOfficePPTXFile/Editor/Drawing/Theme.h"
 
@@ -65,7 +65,9 @@ void CStylesWriter::ConvertStyleLevel(PPT_FORMAT::CTextStyleLevel& oLevel, PPT_F
 
     // <a:pPr>
     auto pPPr = new PPTX::Logic::TextParagraphPr;
-    TxBodyConverter::ConvertPFRun(*pPPr, &oLevel.m_oPFRun, nullptr);
+    BulletsConverter buConverter;
+    buConverter.ConvertPFRun(*pPPr, &oLevel.m_oPFRun);
+
     std::wstring strPPr = pPPr->toXML().substr(6); // remove <a:pPr
     strPPr = strPPr.substr(0, strPPr.size() - 8);  // remove </a:pPr>
     delete pPPr;
@@ -158,6 +160,12 @@ void CStylesWriter::ConvertStyleLevel(PPT_FORMAT::CTextStyleLevel& oLevel, PPT_F
 
     oWriter.WriteString(str3);
 }
+
+std::wstring CShapeWriter::getOWriterStr() const
+{
+    return m_oWriter.GetData();
+}
+
 PPT_FORMAT::CShapeWriter::CShapeWriter()
 {
     m_pTheme		= NULL;
@@ -441,6 +449,7 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertShadow(CShadow	& shadow)
     PPT_FORMAT::CStringWriter shadow_writer;
 
     shadow_writer.WriteString(L"<a:effectLst>");
+    bool needHiddenEffect = false;
 
     if (!Preset.empty())
     {
@@ -473,22 +482,32 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertShadow(CShadow	& shadow)
     }
     else
     {
+//        needHiddenEffect = shadow.Visible;
         shadow_writer.WriteString(L"<a:outerShdw");
-        shadow_writer.WriteString(L" rotWithShape=\"0\"");
+        shadow_writer.WriteString(strDist);
+        shadow_writer.WriteString(strDir);
         if (strSX.empty() && strSY.empty())
         {
             shadow_writer.WriteString(L" algn=\"ctr\"");
         }
         shadow_writer.WriteString(strSX);
         shadow_writer.WriteString(strSY);
-        shadow_writer.WriteString(strDir);
-        shadow_writer.WriteString(strDist);
+        shadow_writer.WriteString(L" rotWithShape=\"0\"");
         shadow_writer.WriteString(L">");
 
         shadow_writer.WriteString(ConvertColor(shadow.Color,shadow.Alpha));
         shadow_writer.WriteString(L"</a:outerShdw>");
     }
     shadow_writer.WriteString(L"</a:effectLst>");
+//    if (needHiddenEffect)
+//    {
+//        std::wstring STRshadow;
+//        STRshadow = L"<a:extLst><a:ext uri=\"{AF507438-7753-43E0-B8FC-AC1667EBCBE1}\"><a14:hiddenEffects xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\">";
+//        STRshadow += shadow_writer.GetData();
+//        STRshadow += L"</a14:hiddenEffects></a:ext><a:ext uri=\"{53640926-AAD7-44D8-BBD7-CCE9431645EC}\"><a14:shadowObscured xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"1\"/></a:ext></a:extLst>";
+//        return STRshadow;
+//    }
+
     return shadow_writer.GetData();
 }
 
@@ -1038,7 +1057,7 @@ void PPT_FORMAT::CShapeWriter::Write3dShape()
 
     m_oWriter.WriteString(std::wstring(L"</a:sp3d>"));
 }
-void PPT_FORMAT::CShapeWriter::WriteTextInfo()
+void PPT_FORMAT::CShapeWriter::WriteTextInfo(PPT_FORMAT::CTextCFRun* pLastCF)
 {
     CShapeElement* pShapeElement = dynamic_cast<CShapeElement*>(m_pElement.get());
     if (!pShapeElement) return;
@@ -1131,7 +1150,14 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
 
     if (0 == nCount)
     {
-        m_oWriter.WriteString(L"<a:lstStyle/><a:p><a:endParaRPr dirty=\"0\"/></a:p></p:txBody>");
+        if (pLastCF && pLastCF->Size.is_init())
+        {
+            int sz = pLastCF->Size.get() * 100;
+            m_oWriter.WriteString(L"<a:lstStyle/><a:p><a:endParaRPr dirty=\"0\" sz=\"" + std::to_wstring(sz) + L"\"/></a:p></p:txBody>");
+        } else
+        {
+            m_oWriter.WriteString(L"<a:lstStyle/><a:p><a:endParaRPr dirty=\"0\" sz=\"1400\"/></a:p></p:txBody>");
+        }
         return;
     }
     m_oWriter.WriteString(L"<a:lstStyle>");
@@ -1158,7 +1184,8 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
 
         // <a:pPr>
         auto pPPr = new PPTX::Logic::TextParagraphPr;
-        TxBodyConverter::ConvertPFRun(*pPPr, &pParagraph->m_oPFRun, m_pRels);
+        BulletsConverter buConverter(m_pRels);
+        buConverter.FillPPr(*pPPr, *pParagraph);
         m_oWriter.WriteString(pPPr->toXML());
         delete pPPr;
 
@@ -1186,6 +1213,8 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
             }
 
             PPT_FORMAT::CTextCFRun* pCF = &pParagraph->m_arSpans[nSpan].m_oRun;
+            pLastCF = pCF;
+
             int span_sz = pParagraph->m_arSpans[nSpan].m_strText.length() ;
 
             if	((span_sz==1 && ( pParagraph->m_arSpans[nSpan].m_strText[0] == (wchar_t)13 )) ||
@@ -1322,6 +1351,10 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo()
             }
 
             //            WriteHyperlink(nIndexPar);
+            if (pCF->FontShadow.get_value_or(false))
+            {
+                m_oWriter.WriteString(L"<a:effectLst><a:outerShdw blurRad=\"38100\" dist=\"38100\" dir=\"2700000\" algn=\"tl\"><a:srgbClr val=\"000000\"><a:alpha val=\"43137\"/></a:srgbClr></a:outerShdw></a:effectLst>");
+            }
 
             m_oWriter.WriteString(std::wstring(L"</a:rPr>"));
 

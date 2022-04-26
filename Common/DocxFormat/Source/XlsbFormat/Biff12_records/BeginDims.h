@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginDims)
         public:
             BeginDims();
-            virtual ~BeginDims();
+            ~BeginDims();
 
             XLS::BaseObjectPtr clone();
 

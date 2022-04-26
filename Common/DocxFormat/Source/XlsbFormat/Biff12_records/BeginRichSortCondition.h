@@ -46,7 +46,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginRichSortCondition)
         public:
             BeginRichSortCondition();
-            virtual ~BeginRichSortCondition();
+            ~BeginRichSortCondition();
 
             XLS::BaseObjectPtr clone();
 

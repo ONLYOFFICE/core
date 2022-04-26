@@ -912,6 +912,10 @@ enum ElementType
     typePCDIDT,
     typeFRTPIVOTCACHEDEF,
     typePCD14,
+    typeTABLECELL,
+    typeDATACELL,
+    typeFMLACELL,
+    typeSHRFMLACELL,
 };
 
 

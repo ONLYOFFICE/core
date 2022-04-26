@@ -124,6 +124,7 @@ namespace PdfWriter
 		if (sApplication.empty())
 			sApplication = NSSystemUtils::gc_EnvCompanyNameDefault;
 		std::string sApplicationA = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sApplication);
+
 		m_pInfo->SetInfo(InfoProducer, sApplicationA.c_str());
 
 		CMetadata* pMetadata = m_pCatalog->AddMetadata(m_pXref, m_pInfo);

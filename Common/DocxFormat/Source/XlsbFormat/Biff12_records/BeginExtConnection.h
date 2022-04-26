@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginExtConnection)
         public:
             BeginExtConnection();
-            virtual ~BeginExtConnection();
+            ~BeginExtConnection();
 
             XLS::BaseObjectPtr clone();
 

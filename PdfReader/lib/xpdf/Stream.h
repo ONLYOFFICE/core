@@ -233,6 +233,9 @@ public:
   // end of file.
   Guchar *getLine();
 
+  int getVals();
+  int getComps();
+
   // Skip an entire line from the image.
   void skipLine();
 

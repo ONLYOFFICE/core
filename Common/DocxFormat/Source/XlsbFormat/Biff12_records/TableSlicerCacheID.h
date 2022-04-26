@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(TableSlicerCacheID)
         public:
             TableSlicerCacheID();
-            virtual ~TableSlicerCacheID();
+            ~TableSlicerCacheID();
 
             XLS::BaseObjectPtr clone();
 

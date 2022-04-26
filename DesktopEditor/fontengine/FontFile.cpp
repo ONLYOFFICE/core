@@ -142,6 +142,9 @@ CFontFile::~CFontFile()
 {
 	RELEASEINTERFACE(m_pStream);
 	ClearCache();
+
+    if (m_pFace)
+        FT_Done_Face(m_pFace);
 }
 
 void CFontFile::SetDefaultFont(CFontFile* pDefFont)
@@ -1047,6 +1050,7 @@ INT CFontFile::GetString(CGlyphString& oString)
 
         int unGID = 0;
 		int ushUnicode = pCurGlyph->lUnicode;
+        if (ushUnicode < 0) ushUnicode = 0;
         USHORT charSymbolObj = 0xFFFF;
         if (ushUnicode >= 0 && ushUnicode >= 0 && ushUnicode < FONT_CACHE_SIZES_INDEXES_SIZE)     //вылетает под Linux
         {
@@ -1135,7 +1139,8 @@ INT CFontFile::GetString2(CGlyphString& oString)
     {
 		TGlyph* pCurGlyph = oString.GetAt(nIndex);
 
-		int ushUnicode = pCurGlyph->lUnicode;		
+        int ushUnicode = pCurGlyph->lUnicode;
+        if (ushUnicode < 0) ushUnicode = 0;
 		int unGID = 0;
         USHORT charSymbolObj = 0xFFFF;
 
@@ -1215,6 +1220,7 @@ INT CFontFile::GetString2C(CGlyphString& oString)
 
     TGlyph* pCurGlyph = oString.GetAt(0);
     int ushUnicode = pCurGlyph->lUnicode;
+    if (ushUnicode < 0) ushUnicode = 0;
 
     USHORT charSymbolObj = 0xFFFF;
     if (ushUnicode >= 0 && ushUnicode < FONT_CACHE_SIZES_INDEXES_SIZE)     //вылетает под Linux

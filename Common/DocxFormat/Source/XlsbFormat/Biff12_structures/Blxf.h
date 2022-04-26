@@ -45,7 +45,7 @@ namespace XLSB
     public:
         Blxf();
         Blxf(XLS::CFRecord& record);
-        virtual ~Blxf();
+        ~Blxf();
        XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;

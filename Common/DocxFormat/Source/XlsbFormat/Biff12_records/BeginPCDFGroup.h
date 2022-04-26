@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginPCDFGroup)
         public:
             BeginPCDFGroup();
-            virtual ~BeginPCDFGroup();
+            ~BeginPCDFGroup();
 
             XLS::BaseObjectPtr clone();
 

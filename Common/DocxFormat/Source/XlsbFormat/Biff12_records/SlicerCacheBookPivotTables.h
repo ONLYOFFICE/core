@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(SlicerCacheBookPivotTables)
         public:
             SlicerCacheBookPivotTables();
-            virtual ~SlicerCacheBookPivotTables();
+            ~SlicerCacheBookPivotTables();
 
             XLS::BaseObjectPtr clone();
 

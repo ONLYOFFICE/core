@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginCommentList)
         public:
             BeginCommentList();
-            virtual ~BeginCommentList();
+            ~BeginCommentList();
 
             XLS::BaseObjectPtr clone();
 

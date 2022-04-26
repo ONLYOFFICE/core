@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(HEADERFOOTER)
     public:
         HEADERFOOTER();
-        virtual ~HEADERFOOTER();
+        ~HEADERFOOTER();
 
         XLS::BaseObjectPtr clone();
 

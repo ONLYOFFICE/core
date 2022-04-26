@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(PRFITEM14)
     public:
         PRFITEM14();
-        virtual ~PRFITEM14();
+        ~PRFITEM14();
 
         XLS::BaseObjectPtr clone();
 

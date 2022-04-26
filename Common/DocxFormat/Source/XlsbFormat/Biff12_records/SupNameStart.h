@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(SupNameStart)
         public:
             SupNameStart();
-            virtual ~SupNameStart();
+            ~SupNameStart();
 
             XLS::BaseObjectPtr clone();
 

@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(USERCSVIEW)
     public:
         USERCSVIEW();
-        virtual ~USERCSVIEW();
+        ~USERCSVIEW();
 
         XLS::BaseObjectPtr clone();
 

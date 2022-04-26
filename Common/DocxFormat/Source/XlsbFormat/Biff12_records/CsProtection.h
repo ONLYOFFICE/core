@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(CsProtection)
         public:
             CsProtection();
-            virtual ~CsProtection();
+            ~CsProtection();
 
             XLS::BaseObjectPtr clone();
 

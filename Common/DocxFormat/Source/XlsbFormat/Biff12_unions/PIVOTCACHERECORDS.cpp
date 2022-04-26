@@ -64,22 +64,18 @@ namespace XLSB
         }
 
         int countPIVOTCACHERECORD = proc.repeated<PIVOTCACHERECORD>(0, 0);
-
-        while(countPIVOTCACHERECORD > 0)
-        {
-            m_arPIVOTCACHERECORD.insert(m_arPIVOTCACHERECORD.begin(), elements_.back());
-            elements_.pop_back();
-            countPIVOTCACHERECORD--;
-        }
+		
+		m_arPIVOTCACHERECORD.reserve(countPIVOTCACHERECORD);
+		std::move(std::begin(elements_), std::end(elements_), std::back_inserter(m_arPIVOTCACHERECORD));
 
         int count = proc.repeated<FRT>(0, 0);
-
-        while(count > 0)
-        {
-            m_arFRT.insert(m_arFRT.begin(), elements_.back());
-            elements_.pop_back();
-            count--;
-        }
+		elements_.clear();
+        //while(count > 0)
+        //{
+        //    //m_arFRT.insert(m_arFRT.begin(), elements_.back());
+        //    elements_.pop_back();
+        //    count--;
+        //}
 
         if (proc.optional<EndPivotCacheRecords>())
         {

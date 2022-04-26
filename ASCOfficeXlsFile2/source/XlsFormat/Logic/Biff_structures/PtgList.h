@@ -43,6 +43,8 @@ class PtgList: public OperandPtg
     BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgList)
 public:
 
+    PtgList(const unsigned short full_ptg_id);
+
 	BiffStructurePtr clone();
 	
     virtual void loadFields(CFRecord& record);

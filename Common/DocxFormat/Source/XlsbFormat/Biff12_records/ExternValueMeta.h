@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(ExternValueMeta)
         public:
             ExternValueMeta();
-            virtual ~ExternValueMeta();
+            ~ExternValueMeta();
 
             XLS::BaseObjectPtr clone();
 

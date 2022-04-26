@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndECParams)
         public:
             EndECParams();
-            virtual ~EndECParams();
+            ~EndECParams();
 
             XLS::BaseObjectPtr clone();
 

@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(ExternRowHdr)
         public:
             ExternRowHdr();
-            virtual ~ExternRowHdr();
+            ~ExternRowHdr();
 
             XLS::BaseObjectPtr clone();
 

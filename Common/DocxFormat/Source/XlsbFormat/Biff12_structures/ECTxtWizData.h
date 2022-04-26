@@ -43,7 +43,7 @@ namespace XLSB
     public:
         ECTxtWizData();
         ECTxtWizData(XLS::CFRecord& record);
-        virtual ~ECTxtWizData();
+        ~ECTxtWizData();
        XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;

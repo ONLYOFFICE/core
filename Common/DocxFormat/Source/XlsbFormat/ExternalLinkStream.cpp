@@ -33,6 +33,8 @@
 #include "ExternalLinkStream.h"
 
 #include "Biff12_unions/EXTERNALLINK.h"
+#include "Biff12_records/BeginSupBook.h"
+
 
 using namespace XLS;
 
@@ -80,6 +82,34 @@ const bool ExternalLinkStream::loadContent(BinProcessor& proc)
 	}
 
 	return true;
+}
+
+void ExternalLinkStream::UpdateXti(XLS::GlobalWorkbookInfo* global_info_, const std::wstring & rId)
+{
+    for (size_t i = 0; i < global_info_->arXti_External.size(); i++)
+    {
+       if(global_info_->arXti_External[i].link == rId)
+       {
+           auto & xti = global_info_->arXti_External[i];
+           if (xti.itabFirst >= 0)
+           {
+               std::wstring strRange;
+               if(-1 == xti.itabFirst)
+               {
+                   strRange = L"#REF";
+               }
+               else if (xti.itabFirst < global_info_->external_sheets_info.size())
+               {
+                   strRange = XMLSTUFF::name2sheet_name(global_info_->external_sheets_info[xti.itabFirst], L"");
+                   if (xti.itabFirst != xti.itabLast)
+                   {
+                       strRange += std::wstring(L":") + XMLSTUFF::name2sheet_name(global_info_->external_sheets_info[xti.itabLast], L"");
+                   }
+               }
+               xti.link = std::wstring(L"[") + std::to_wstring(xti.iSup) + std::wstring(L"]") + strRange;
+           }
+       }
+    }
 }
 
 } // namespace XLSB

@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndPCDKPI)
         public:
             EndPCDKPI();
-            virtual ~EndPCDKPI();
+            ~EndPCDKPI();
 
             XLS::BaseObjectPtr clone();
 

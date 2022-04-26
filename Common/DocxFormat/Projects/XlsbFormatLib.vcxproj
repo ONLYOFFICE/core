@@ -1780,11 +1780,11 @@
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\BOOKVIEWS_bu.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\BORDERS.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\BUNDLESHS.cpp" />
-    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CELL_bu.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CELLMETA_bu.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CELLSTYLEXFS.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CELLTABLE.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CELLXFS.cpp" />
+    <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CELL_12bu.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CFRULE.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\CFRULE14.cpp" />
     <ClCompile Include="..\Source\XlsbFormat\Biff12_unions\COLBRK.cpp" />

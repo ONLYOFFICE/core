@@ -44,6 +44,7 @@
 
 #include "../../XlsbFormat/Biff12_unions/ACCELLTABLE.h"
 #include "../../XlsbFormat/Biff12_records/RwDescent.h"
+#include "../../XlsbFormat/Biff12_unions/CELLTABLE.h"
 #include "../../XlsbFormat/Biff12_unions/CELL.h"
 #include "../../XlsbFormat/Biff12_unions/CELLMETA.h"
 #include "../../XlsbFormat/Biff12_unions/DATACELL.h"
@@ -899,8 +900,8 @@ namespace OOX
                     {
                         auto formula = dynamic_cast<XLSB::FmlaBase*>(obj.get());
                         m_sText = formula->formula.getAssembledFormula();
-                        m_oCa.Init();
-                        m_oCa = formula->grbitFlags.fAlwaysCalc;
+                        //m_oCa.Init();
+                        //m_oCa = formula->grbitFlags.fAlwaysCalc;
                     }
                     break;
                 case SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeShared:
@@ -915,8 +916,11 @@ namespace OOX
                     {
                         auto formula = dynamic_cast<XLSB::ArrFmla*>(obj.get());
                         m_sText = formula->formula.getAssembledFormula();
-                        m_oAca.Init();
-                        m_oAca = formula->fAlwaysCalc;
+                        if(formula->fAlwaysCalc)
+                        {
+                            m_oAca.Init();
+                            m_oAca = formula->fAlwaysCalc;
+                        }
                         m_oRef.Init();
                         m_oRef = formula->rfx.toString();
                     }
@@ -926,23 +930,38 @@ namespace OOX
                         auto dataTable = dynamic_cast<XLSB::Table*>(obj.get());
                         //m_sText = dataTable->formula.getAssembledFormula();
 
-                        m_oCa.Init();
-                        m_oCa = dataTable->fAlwaysCalc;
+                        if(dataTable->fAlwaysCalc)
+                        {
+                            m_oCa.Init();
+                            m_oCa = dataTable->fAlwaysCalc;
+                        }
 
                         m_oRef.Init();
                         m_oRef = dataTable->rfx.toString();
 
-                        m_oDtr.Init();
-                        m_oDtr = dataTable->fRw;
+                        if(dataTable->fRw)
+                        {
+                            m_oDtr.Init();
+                            m_oDtr = dataTable->fRw;
+                        }
 
-                        m_oDt2D.Init();
-                        m_oDt2D = dataTable->fTbl2;
+                        if(dataTable->fTbl2)
+                        {
+                            m_oDt2D.Init();
+                            m_oDt2D = dataTable->fTbl2;
+                        }
 
-                        m_oDel1.Init();
-                        m_oDel1 = dataTable->fDeleted1;
+                        if(dataTable->fDeleted1)
+                        {
+                            m_oDel1.Init();
+                            m_oDel1 = dataTable->fDeleted1;
+                        }
 
-                        m_oDel2.Init();
-                        m_oDel2 = dataTable->fDeleted2;
+                        if(dataTable->fDeleted2)
+                        {
+                            m_oDel2.Init();
+                            m_oDel2 = dataTable->fDeleted2;
+                        }
 
                         m_oR1.Init();
                         m_oR1 = dataTable->r1;
@@ -1694,18 +1713,36 @@ namespace OOX
                 if(pCELLMETA != nullptr)
                 {
                     auto pCellMeta = static_cast<XLSB::CellMeta*>(pCELLMETA->m_BrtCellMeta.get());
-                    if(pCellMeta != nullptr)
+                    if(pCellMeta != nullptr && pCellMeta->icmb)
                         m_oCellMetadata = pCellMeta->icmb;
 
                     auto pValueMeta = static_cast<XLSB::ValueMeta*>(pCELLMETA->m_BrtValueMeta.get());
-                    if(pValueMeta != nullptr)
-                        m_oCellMetadata = pValueMeta->ivmb;
+                    if(pValueMeta != nullptr && pValueMeta->ivmb)
+                        m_oValueMetadata = pValueMeta->ivmb;
                 }
 
-                auto pDATACELL = static_cast<XLSB::DATACELL*>(ptr->m_DATACELL.get());
-                auto pTABLECELL = static_cast<XLSB::TABLECELL*>(ptr->m_TABLECELL.get());
-                auto pFMLACELL = static_cast<XLSB::FMLACELL*>(ptr->m_FMLACELL.get());
-                auto pSHRFMLACELL = static_cast<XLSB::SHRFMLACELL*>(ptr->m_SHRFMLACELL.get());
+                XLSB::DATACELL* pDATACELL = nullptr;
+                XLSB::TABLECELL* pTABLECELL = nullptr;
+                XLSB::FMLACELL* pFMLACELL = nullptr;
+                XLSB::SHRFMLACELL* pSHRFMLACELL = nullptr;
+
+                switch(ptr->m_source->get_type())
+                {
+                    case XLS::typeDATACELL:
+                        pDATACELL = static_cast<XLSB::DATACELL*>(ptr->m_source.get());
+                    break;
+                    case XLS::typeTABLECELL:
+                        pTABLECELL = static_cast<XLSB::TABLECELL*>(ptr->m_source.get());
+                    break;
+                    case XLS::typeFMLACELL:
+                        pFMLACELL = static_cast<XLSB::FMLACELL*>(ptr->m_source.get());
+                    break;
+                    case XLS::typeSHRFMLACELL:
+                        pSHRFMLACELL = static_cast<XLSB::SHRFMLACELL*>(ptr->m_source.get());
+                        pFMLACELL = static_cast<XLSB::FMLACELL*>(pSHRFMLACELL->_fmlacell.get());
+                    break;
+                }
+
 
                 if(pDATACELL != nullptr || pTABLECELL != nullptr || pFMLACELL != nullptr)
                 {
@@ -1769,8 +1806,10 @@ namespace OOX
 
                     if(pSource != nullptr)
                     {
-                        m_oShowPhonetic = oCell.fPhShow;
-                        m_oStyle        = oCell.iStyleRef;
+                        if(oCell.fPhShow)
+                            m_oShowPhonetic = oCell.fPhShow;
+                        if(oCell.iStyleRef)
+                            m_oStyle        = oCell.iStyleRef;
                         auto nType = pSource->getTypeId();
                         switch (nType)
                         {
@@ -1788,7 +1827,7 @@ namespace OOX
                             case XLSB::rt_CellError:
                             case XLSB::rt_FmlaError:
                                 {
-                                    auto pError = XLSB::rt_CellError == nType ? reinterpret_cast<XLSB::CellError*>(pSource)->value : reinterpret_cast<XLSB::FmlaError*>(pSource)->value;
+                                    auto pError = XLSB::rt_CellError == nType ? static_cast<XLSB::CellError*>(pSource)->value : static_cast<XLSB::FmlaError*>(pSource)->value;
                                     m_oType.Init();
                                     m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeError);
                                     m_oValue.Init();
@@ -1808,7 +1847,7 @@ namespace OOX
                             case XLSB::rt_CellBool:
                             case XLSB::rt_FmlaBool:
                                 {
-                                    auto pBool = XLSB::rt_CellBool == nType ? reinterpret_cast<XLSB::CellBool*>(pSource)->value : reinterpret_cast<XLSB::FmlaBool*>(pSource)->value;
+                                    auto pBool = XLSB::rt_CellBool == nType ? static_cast<XLSB::CellBool*>(pSource)->value : static_cast<XLSB::FmlaBool*>(pSource)->value;
                                     m_oType.Init();
                                     m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeBool);
                                     m_oValue.Init();
@@ -1818,11 +1857,11 @@ namespace OOX
                             case XLSB::rt_CellReal:
                             case XLSB::rt_FmlaNum:
                                 {
-                                    std::wstring str;
-                                    auto pRealNum = XLSB::rt_CellReal == nType ? reinterpret_cast<XLSB::CellReal*>(pSource)->value.data.value : reinterpret_cast<XLSB::FmlaNum*>(pSource)->value.data.value;
+                                    //std::wstring str;
+                                    auto pRealNum = XLSB::rt_CellReal == nType ? static_cast<XLSB::CellReal*>(pSource)->value.data.value : static_cast<XLSB::FmlaNum*>(pSource)->value.data.value;
                                     if(XLSB::rt_FmlaNum == nType)
                                     {
-                                        str = reinterpret_cast<XLSB::FmlaNum*>(pSource)->formula.getAssembledFormula();
+                                        //str = static_cast<XLSB::FmlaNum*>(pSource)->formula.getAssembledFormula();
                                     }
                                     //m_oType.Init();
                                     //m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
@@ -1842,7 +1881,9 @@ namespace OOX
                             case XLSB::rt_CellSt:
                             case XLSB::rt_FmlaString:
                                 {
-                                    auto pSt = XLSB::rt_CellSt == nType ? reinterpret_cast<XLSB::CellSt*>(pSource)->value.value() : reinterpret_cast<XLSB::FmlaString*>(pSource)->value.value();
+                                    std::wstring pSt = L"";
+                                    if(!(XLSB::rt_CellSt == nType ? static_cast<XLSB::CellSt*>(pSource)->value.value() : static_cast<XLSB::FmlaString*>(pSource)->value.value()).empty())
+                                         pSt = XLSB::rt_CellSt == nType ? static_cast<XLSB::CellSt*>(pSource)->value.value() : static_cast<XLSB::FmlaString*>(pSource)->value.value();
                                     m_oType.Init();
                                     m_oType->SetValue(XLSB::rt_CellSt == nType ? SimpleTypes::Spreadsheet::celltypeInlineStr : SimpleTypes::Spreadsheet::celltypeStr);
                                     m_oValue.Init();
@@ -1916,17 +1957,28 @@ namespace OOX
 			}
 		}
 
-        void CRow::fromBin(XLSB::CELLTABLE::_data& obj)
+        void CRow::fromBin(XLS::BaseObjectPtr& obj)
         {
             ReadAttributes(obj);
 
-            for(auto &CELL : obj.m_arCELL)
+            auto ptr = static_cast<XLSB::Parenthesis_CELLTABLE*>(obj.get());
+
+            for (auto it = ptr->m_arCELL.begin(); it != ptr->m_arCELL.end();)
+            {
+              CCell *pCell = new CCell(m_pMainDocument);
+              pCell->fromBin(*it);
+              m_arrItems.push_back(pCell);
+
+              it = ptr->m_arCELL.erase(it);
+            }
+
+            /*for(auto &CELL : ptr->m_arCELL)
             {
                 CCell *pCell = new CCell(m_pMainDocument);
                 pCell->fromBin(CELL);
 
                 m_arrItems.push_back(pCell);
-            }
+            }*/
         }
 
 		void CRow::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType)
@@ -2130,29 +2182,52 @@ namespace OOX
 			WritingElement_ReadAttributes_EndChar( oReader )
 		}
 
-        void CRow::ReadAttributes(XLSB::CELLTABLE::_data& obj)
+        void CRow::ReadAttributes(XLS::BaseObjectPtr& obj)
         {
-            auto ptr = static_cast<XLSB::RowHdr*>(obj.m_BrtRowHdr.get());
+            auto ptr = static_cast<XLSB::Parenthesis_CELLTABLE*>(obj.get());
             if(ptr != nullptr)
             {
-                m_oCollapsed                = ptr->fCollapsed;
-                m_oCustomFormat             = ptr->fGhostDirty;
-                m_oCustomHeight             = ptr->fUnsynced;
-                m_oHidden                   = ptr->fDyZero;
-                m_oHt                       = ptr->miyRw/20.;
-                m_oOutlineLevel             = ptr->iOutLevel;
-                m_oPh                       = ptr->fPhonetic;
-                m_oR                        = ptr->rw + 1;
-                m_oS                        = ptr->ixfe_val;
-                m_oThickBot                 = ptr->fExDes;
-                m_oThickTop                 = ptr->fExAsc;
-            }
+                auto ptrRowHdr = static_cast<XLSB::RowHdr*>(ptr->m_BrtRowHdr.get());
+                if(ptrRowHdr != nullptr)
+                {
+                    if(ptrRowHdr->fCollapsed)
+                        m_oCollapsed                = ptrRowHdr->fCollapsed;
+
+                    if(ptrRowHdr->fGhostDirty)
+                        m_oCustomFormat             = ptrRowHdr->fGhostDirty;
+
+                    if(ptrRowHdr->fUnsynced)
+                        m_oCustomHeight             = ptrRowHdr->fUnsynced;
+
+                    if(ptrRowHdr->fDyZero)
+                        m_oHidden                   = ptrRowHdr->fDyZero;
+
+                    m_oHt                           = ptrRowHdr->miyRw/20.;
+
+                    if(ptrRowHdr->iOutLevel)
+                        m_oOutlineLevel             = ptrRowHdr->iOutLevel;
+
+                    if(ptrRowHdr->fPhonetic)
+                        m_oPh                       = ptrRowHdr->fPhonetic;
+
+                    m_oR                            = ptrRowHdr->rw + 1;
+
+                    if(ptrRowHdr->ixfe_val)
+                        m_oS                        = ptrRowHdr->ixfe_val;
+
+                    if(ptrRowHdr->ixfe_val)
+                        m_oThickBot                 = ptrRowHdr->fExDes;
+
+                    if(ptrRowHdr->ixfe_val)
+                        m_oThickTop                 = ptrRowHdr->fExAsc;
+                }
 
 
-            if(static_cast<XLSB::ACCELLTABLE*>(obj.m_ACCELLTABLE.get()) != nullptr && static_cast<XLSB::ACCELLTABLE*>(obj.m_ACCELLTABLE.get())->m_BrtRwDescent != nullptr)
-            {
-                auto ptr1 = static_cast<XLSB::RwDescent*>(static_cast<XLSB::ACCELLTABLE*>(obj.m_ACCELLTABLE.get())->m_BrtRwDescent.get());
-                m_oDyDescent                = ptr1->dyDescent;
+                if(static_cast<XLSB::ACCELLTABLE*>(ptr->m_ACCELLTABLE.get()) != nullptr && static_cast<XLSB::ACCELLTABLE*>(ptr->m_ACCELLTABLE.get())->m_BrtRwDescent != nullptr)
+                {
+                    auto ptrRwDescent = static_cast<XLSB::RwDescent*>(static_cast<XLSB::ACCELLTABLE*>(ptr->m_ACCELLTABLE.get())->m_BrtRwDescent.get());
+                    m_oDyDescent                = ptrRwDescent->dyDescent;
+                }
             }
         }
 
@@ -2400,19 +2475,27 @@ namespace OOX
 		}
 //---------------------------------------------------------------------------------------------------------------------
 
-        void CSheetData::fromBin(XLS::BaseObject& obj)
+        void CSheetData::fromBin(XLS::BaseObjectPtr& obj)
         {
             //ReadAttributes(obj);
-            auto ptr = static_cast<XLSB::CELLTABLE*>(&obj);
+            auto ptr = static_cast<XLSB::CELLTABLE*>(obj.get());
 
-            for(auto &Parenthesis_CELLTABLE : ptr->m_arParenthesis_CELLTABLE)
+            for (auto it = ptr->m_arParenthesis_CELLTABLE.begin(); it != ptr->m_arParenthesis_CELLTABLE.end();)
             {
+              CRow *pRow = new CRow(m_pMainDocument);
+              pRow->fromBin(*it);
+              m_arrItems.push_back(pRow);
 
+              it = ptr->m_arParenthesis_CELLTABLE.erase(it);
+            }
+
+            /*for(auto &Parenthesis_CELLTABLE : ptr->m_arParenthesis_CELLTABLE)
+            {
                 CRow *pRow = new CRow(m_pMainDocument);
                 pRow->fromBin(Parenthesis_CELLTABLE);
 
                 m_arrItems.push_back(pRow);
-            }
+            }*/
         }
 
         //---------------------------------------------------------------------------------------------------------------------

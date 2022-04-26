@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(ACCUSTOMFILTER)
     public:
         ACCUSTOMFILTER();
-        virtual ~ACCUSTOMFILTER();
+        ~ACCUSTOMFILTER();
 
         XLS::BaseObjectPtr clone();
 

@@ -43,7 +43,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(LISTCOLS)
     public:
         LISTCOLS();
-        virtual ~LISTCOLS();
+        ~LISTCOLS();
 
         XLS::BaseObjectPtr clone();
 

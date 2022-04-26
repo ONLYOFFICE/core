@@ -43,7 +43,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(uCFVO)
     public:
         uCFVO();
-        virtual ~uCFVO();
+        ~uCFVO();
 
         XLS::BaseObjectPtr clone();
 
@@ -52,7 +52,7 @@ namespace XLSB
         static const XLS::ElementType	type = XLS::typeuCFVO;
 
         XLS::BaseObjectPtr               m_BrtCFVO;
-        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        //std::vector<XLS::BaseObjectPtr>  m_arFRT;
 
     };
 

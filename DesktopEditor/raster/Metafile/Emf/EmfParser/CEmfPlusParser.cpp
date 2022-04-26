@@ -67,6 +67,7 @@
 #include <iostream>
 
 #include "CEmfParser.h"
+#include "../../Wmf/WmfFile.h"
 #include "../EmfInterpretator/CEmfInterpretator.h"
 #include "../EmfInterpretator/CEmfInterpretatorXml.h"
 #include "../EmfInterpretator/CEmfInterpretatorArray.h"
@@ -418,11 +419,18 @@ namespace MetaFile
 
         void CEmfPlusParser::ReadMetaFile(CEmfPlusImage& oImage, bool bReadData)
         {
-                m_oStream.Skip(4); // type
+                unsigned int unType;
+
+                m_oStream >> unType;
+
+                if (!oImage.SetMetafileType(unType))
+                        return;
 
                 unsigned int unMetafileSize;
 
                 m_oStream >> unMetafileSize;
+
+                unMetafileSize += 26;
 
                 oImage.SetSizeData(unMetafileSize);
 
@@ -1234,91 +1242,176 @@ namespace MetaFile
                 if (ImageDataTypeBitmap == pImage->GetImageDataType())
                         DrawBitmap(pBuffer, unSizeBuffer, oSrcRect, arPoints);
                 else if (ImageDataTypeMetafile == pImage->GetImageDataType())
-                        DrawMetafile(pBuffer, unSizeBuffer, oSrcRect, arPoints);
+                        DrawMetafile(pBuffer, unSizeBuffer, oSrcRect, arPoints, pImage->GetMetafileType());
         }
 
-        void CEmfPlusParser::DrawMetafile(BYTE *pBuffer, unsigned int unSize, const TEmfPlusRectF& oSrcRect, const std::vector<TEmfPlusPointF>& arPoints)
+        void CEmfPlusParser::DrawMetafile(BYTE *pBuffer, unsigned int unSize, const TEmfPlusRectF& oSrcRect, const std::vector<TEmfPlusPointF>& arPoints, EEmfPlusMetafileDataType eMetafileType)
         {
-                if (NULL == pBuffer || 0 == unSize)
+                if (NULL == pBuffer || 0 == unSize || MetafileDataTypeUnknown == eMetafileType)
                         return;
 
-                CEmfParser oEmfParser;
-                oEmfParser.SetStream(pBuffer, unSize);
-                oEmfParser.SetFontManager(GetFontManager());
-                oEmfParser.Scan();
 
-                if (!oEmfParser.CheckError())
+                if (MetafileDataTypeEmf == eMetafileType ||
+                    MetafileDataTypeEmfPlusOnly == eMetafileType ||
+                    MetafileDataTypeEmfPlusDual == eMetafileType)
                 {
-                        CGraphicsRenderer oRenderer;
-                        oRenderer.SetFontManager(GetFontManager());
+                        CEmfParser oEmfParser;
+                        oEmfParser.SetStream(pBuffer, unSize);
+                        oEmfParser.SetFontManager(GetFontManager());
+                        oEmfParser.Scan();
 
-                        TEmfRectL *pEmfBounds = oEmfParser.GetBounds();
-
-                        int nWidth = fabs(pEmfBounds->lRight - pEmfBounds->lLeft);
-                        int nHeight = fabs(pEmfBounds->lBottom - pEmfBounds->lTop);
-
-                        double dWidth  = 25.4 * nWidth / 96;
-                        double dHeight = 25.4 * nHeight / 96;
-
-                        BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
-
-                        if (!pBgraData)
-                                return;
-
-                        unsigned __int32 alfa = 0xffffff;
-                        //дефолтный тон должен быть прозрачным, а не белым
-                        //memset(pBgraData, 0xff, nWidth * nHeight * 4);
-                        for (int i = 0; i < nWidth * nHeight; i++)
+                        if (!oEmfParser.CheckError())
                         {
-                                ((unsigned __int32*)pBgraData)[i] = alfa;
+                                CGraphicsRenderer oRenderer;
+                                oRenderer.SetFontManager(GetFontManager());
+
+                                TEmfRectL *pEmfBounds = oEmfParser.GetBounds();
+
+                                int nWidth = fabs(pEmfBounds->lRight - pEmfBounds->lLeft);
+                                int nHeight = fabs(pEmfBounds->lBottom - pEmfBounds->lTop);
+
+                                double dWidth  = 25.4 * nWidth / 96;
+                                double dHeight = 25.4 * nHeight / 96;
+
+                                BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
+
+                                if (!pBgraData)
+                                        return;
+
+                                _UINT32 alfa = 0xffffff;
+                                //дефолтный тон должен быть прозрачным, а не белым
+                                //memset(pBgraData, 0xff, nWidth * nHeight * 4);
+                                for (int i = 0; i < nWidth * nHeight; i++)
+                                {
+                                        ((_UINT32*)pBgraData)[i] = alfa;
+                                }
+
+                                CBgraFrame oFrame;
+                                oFrame.put_Data(pBgraData);
+                                oFrame.put_Width(nWidth);
+                                oFrame.put_Height(nHeight);
+                                oFrame.put_Stride(-4 * nWidth);
+
+                                oRenderer.CreateFromBgraFrame(&oFrame);
+                                oRenderer.SetSwapRGB(false);
+                                oRenderer.put_Width(dWidth);
+                                oRenderer.put_Height(dHeight);
+
+                                oRenderer.BeginCommand(c_nImageType);
+
+                                CMetaFileRenderer oEmfOut(&oEmfParser, &oRenderer, 0, 0, dWidth, dHeight);
+                                oEmfParser.SetInterpretator(&oEmfOut);
+
+                                oEmfParser.PlayFile();
+
+                                oRenderer.EndCommand(c_nImageType);
+
+                                LONG lWidth, lHeight;
+
+                                BYTE* pPixels = oRenderer.GetPixels(lWidth, lHeight);
+
+                                FlipYImage(pPixels, lWidth, lHeight); //Проверить на примерах, где WrapMode != WrapModeTileFlipXY
+
+                                TEmfRectL oClipRect;
+
+                                oClipRect.lLeft   = oSrcRect.dX;
+                                oClipRect.lTop    = oSrcRect.dY;
+                                oClipRect.lRight  = oSrcRect.dX + oSrcRect.dWidth;
+                                oClipRect.lBottom = oSrcRect.dY + oSrcRect.dHeight;
+
+                                BYTE* pNewBuffer = GetClipedImage(pPixels, lWidth, lHeight, oClipRect);
+
+                                unsigned int unWidth  = std::min(((unsigned int)fabs(oClipRect.lRight - oClipRect.lLeft)), ((unsigned int)lWidth ));
+                                unsigned int unHeight = std::min(((unsigned int)fabs(oClipRect.lBottom - oClipRect.lTop)), ((unsigned int)lHeight));
+
+                                m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X, arPoints[2].Y - arPoints[0].Y,
+                                                             (NULL != pNewBuffer) ? pNewBuffer : pPixels, unWidth, unHeight);
+
+                                if (NULL != pNewBuffer)
+                                        delete [] pNewBuffer;
                         }
-
-                        CBgraFrame oFrame;
-                        oFrame.put_Data(pBgraData);
-                        oFrame.put_Width(nWidth);
-                        oFrame.put_Height(nHeight);
-                        oFrame.put_Stride(-4 * nWidth);
-
-                        oRenderer.CreateFromBgraFrame(&oFrame);
-                        oRenderer.SetSwapRGB(false);
-                        oRenderer.put_Width(dWidth);
-                        oRenderer.put_Height(dHeight);
-
-                        oRenderer.BeginCommand(c_nImageType);
-
-                        CMetaFileRenderer oEmfOut(&oEmfParser, &oRenderer, 0, 0, dWidth, dHeight);
-                        oEmfParser.SetInterpretator(&oEmfOut);
-
-                        oEmfParser.PlayFile();
-
-                        oRenderer.EndCommand(c_nImageType);
-
-                        oFrame.SaveFile(L"Test.png", 4);
-
-                        LONG lWidth, lHeight;
-
-                        BYTE* pPixels = oRenderer.GetPixels(lWidth, lHeight);
-
-                        FlipYImage(pPixels, lWidth, lHeight); //Проверить на примерах, где WrapMode != WrapModeTileFlipXY
-
-                        TEmfRectL oClipRect;
-
-                        oClipRect.lLeft   = oSrcRect.dX;
-                        oClipRect.lTop    = oSrcRect.dY;
-                        oClipRect.lRight  = oSrcRect.dX + oSrcRect.dWidth;
-                        oClipRect.lBottom = oSrcRect.dY + oSrcRect.dHeight;
-
-                        BYTE* pNewBuffer = GetClipedImage(pPixels, lWidth, lHeight, oClipRect);
-
-                        unsigned int unWidth  = std::min(((unsigned int)fabs(oClipRect.lRight - oClipRect.lLeft)), ((unsigned int)lWidth ));
-                        unsigned int unHeight = std::min(((unsigned int)fabs(oClipRect.lBottom - oClipRect.lTop)), ((unsigned int)lHeight));
-
-                        m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X, arPoints[2].Y - arPoints[0].Y,
-                                                     (NULL != pNewBuffer) ? pNewBuffer : pPixels, unWidth, unHeight);
-
-                        if (NULL != pNewBuffer)
-                                delete [] pNewBuffer;
                 }
+                else if (MetafileDataTypeWmf == eMetafileType ||
+                        MetafileDataTypeWmfPlaceable ==  eMetafileType)
+                {
+
+                        CWmfFile oWmfFile;
+                        oWmfFile.SetStream(pBuffer, unSize);
+                        oWmfFile.SetFontManager(GetFontManager());
+                        oWmfFile.Scan();
+
+                        if (!oWmfFile.CheckError())
+                        {
+                                CGraphicsRenderer oRenderer;
+                                oRenderer.SetFontManager(GetFontManager());
+
+                                TRectD oWmfBounds = oWmfFile.GetBounds();
+
+                                int nWidth = fabs(oWmfBounds.dRight - oWmfBounds.dLeft);
+                                int nHeight = fabs(oWmfBounds.dBottom - oWmfBounds.dTop);
+
+                                double dWidth  = 25.4 * nWidth / 96;
+                                double dHeight = 25.4 * nHeight / 96;
+
+                                BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
+
+                                if (!pBgraData)
+                                        return;
+
+                                _UINT32 alfa = 0xffffff;
+                                //дефолтный тон должен быть прозрачным, а не белым
+                                //memset(pBgraData, 0xff, nWidth * nHeight * 4);
+                                for (int i = 0; i < nWidth * nHeight; i++)
+                                {
+                                        ((_UINT32*)pBgraData)[i] = alfa;
+                                }
+
+                                CBgraFrame oFrame;
+                                oFrame.put_Data(pBgraData);
+                                oFrame.put_Width(nWidth);
+                                oFrame.put_Height(nHeight);
+                                oFrame.put_Stride(-4 * nWidth);
+
+                                oRenderer.CreateFromBgraFrame(&oFrame);
+                                oRenderer.SetSwapRGB(false);
+                                oRenderer.put_Width(dWidth);
+                                oRenderer.put_Height(dHeight);
+
+                                oRenderer.BeginCommand(c_nImageType);
+
+                                CMetaFileRenderer oWmfOut(&oWmfFile, &oRenderer, 0, 0, dWidth, dHeight);
+                                oWmfFile.SetOutputDevice(&oWmfOut);
+
+                                oWmfFile.PlayMetaFile();
+
+                                oRenderer.EndCommand(c_nImageType);
+
+                                LONG lWidth, lHeight;
+
+                                BYTE* pPixels = oRenderer.GetPixels(lWidth, lHeight);
+
+                                FlipYImage(pPixels, lWidth, lHeight); //Проверить на примерах, где WrapMode != WrapModeTileFlipXY
+
+                                TEmfRectL oClipRect;
+
+                                oClipRect.lLeft   = oSrcRect.dX;
+                                oClipRect.lTop    = oSrcRect.dY;
+                                oClipRect.lRight  = oSrcRect.dX + oSrcRect.dWidth;
+                                oClipRect.lBottom = oSrcRect.dY + oSrcRect.dHeight;
+
+                                BYTE* pNewBuffer = GetClipedImage(pPixels, lWidth, lHeight, oClipRect);
+
+                                unsigned int unWidth  = std::min(((unsigned int)fabs(oClipRect.lRight - oClipRect.lLeft)), ((unsigned int)lWidth ));
+                                unsigned int unHeight = std::min(((unsigned int)fabs(oClipRect.lBottom - oClipRect.lTop)), ((unsigned int)lHeight));
+
+                                m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X, arPoints[2].Y - arPoints[0].Y,
+                                                             (NULL != pNewBuffer) ? pNewBuffer : pPixels, unWidth, unHeight);
+
+                                if (NULL != pNewBuffer)
+                                        delete [] pNewBuffer;
+                        }
+                }
+                //TODO: общую часть в идеале нужно вынести
         }
 
         void CEmfPlusParser::DrawBitmap(BYTE *pBuffer, unsigned int unSize, const TEmfPlusRectF& oSrcRect, const std::vector<TEmfPlusPointF>& arPoints)

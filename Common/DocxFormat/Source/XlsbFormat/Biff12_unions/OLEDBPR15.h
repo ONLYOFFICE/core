@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(OLEDBPR15)
     public:
         OLEDBPR15();
-        virtual ~OLEDBPR15();
+        ~OLEDBPR15();
 
         XLS::BaseObjectPtr clone();
 

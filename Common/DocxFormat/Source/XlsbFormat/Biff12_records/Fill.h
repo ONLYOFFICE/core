@@ -47,7 +47,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(Fill)
         public:
             Fill();
-            virtual ~Fill();
+            ~Fill();
 
             XLS::BaseObjectPtr clone();
 

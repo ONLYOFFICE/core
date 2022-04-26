@@ -81,7 +81,7 @@ const bool PivotCacheDefStream::loadContent(BinProcessor& proc)
                 {
                     if (proc.optional<ACUID>())
                     {
-                        m_ACUID = elements_.back();
+                        //m_ACUID = elements_.back();
                         elements_.pop_back();
                     }
                 }break;

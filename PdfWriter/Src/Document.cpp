@@ -120,18 +120,12 @@ namespace PdfWriter
 			return false;
 
 		m_pInfo->SetCreationTime();
-		std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvCompanyName);
-		if (sApplication.empty())
-			sApplication = NSSystemUtils::gc_EnvCompanyNameDefault;
-		std::string sApplicationA = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sApplication);
-
-		m_pInfo->SetInfo(InfoProducer, sApplicationA.c_str());
-
 		std::wstring sCreator = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
 		if (sCreator.empty())
 			sCreator = NSSystemUtils::gc_EnvApplicationNameDefault;
 		std::string sCreatorA = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sCreator);
 
+		m_pInfo->SetInfo(InfoProducer, sCreatorA.c_str());
 		m_pInfo->SetInfo(InfoCreator, sCreatorA.c_str());
 
 		CMetadata* pMetadata = m_pCatalog->AddMetadata(m_pXref, m_pInfo);

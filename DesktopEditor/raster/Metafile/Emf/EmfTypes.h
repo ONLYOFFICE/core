@@ -367,6 +367,11 @@ namespace MetaFile
 
 			return *this;
 		}
+
+		bool operator==(const TEmfPointL& oPoint)
+		{
+			return ((x == oPoint.x) && (y == oPoint.y));
+		}
 	};
 
 	struct TEmfPointS
@@ -436,6 +441,14 @@ namespace MetaFile
 		int          cyDest;
 	};
 
+	struct TRegionDataHeader
+	{
+		unsigned int unSize;
+		unsigned int unType;
+		unsigned int unCountRects;
+		unsigned int unRgnSize;
+		TEmfRectL    oBounds;
+	};
 
 #define TEmfXForm TXForm
 	//struct TEmfXForm

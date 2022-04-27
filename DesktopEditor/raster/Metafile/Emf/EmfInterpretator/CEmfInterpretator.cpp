@@ -1740,6 +1740,29 @@ namespace MetaFile
                         m_pOutStream->WriteFile(oDataStream.GetCurPtr(), sizeof (BYTE) * unRecordSize - 8);
         }
 
+        void CEmfInterpretator::HANDLE_EMR_FILLRGN(const TEmfRectL &oBounds, unsigned int unIhBrush, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
+        {
+                int unRgnDataSize           = 32 + arRects.size() * 16;
+                int unExplicitRecordSize    = 32 + unRgnDataSize;
+                int unType                  = EMR_FILLRGN;
+
+                unFileSize += unExplicitRecordSize;
+                ++unNumberRecords;
+
+                m_pOutStream->write((char*)&unType,                sizeof (int));
+                m_pOutStream->write((char*)&unExplicitRecordSize,  sizeof (int));
+
+                WriteRectangle(oBounds);
+
+                m_pOutStream->write((char*)&unRgnDataSize,          sizeof (int));
+                m_pOutStream->write((char*)&unIhBrush,              sizeof (int));
+
+                WriteRegionDataHeader(oRegionDataHeader);
+
+                for (const TEmfRectL &oRect : arRects)
+                        WriteRectangle(oRect);
+        }
+
         void CEmfInterpretator::HANDLE_EMFPLUS_HEADER(bool bIsEmfPlusDual, bool bIsReferenceDevice, unsigned int unDpiX, unsigned int unDpiY)
         {
                 short shType = 0x4001;
@@ -2032,6 +2055,16 @@ namespace MetaFile
 
                 WriteRectangle(oSrcRect);
                 WriteRectangle(oRectData);
+        }
+
+        void CEmfInterpretator::WriteRegionDataHeader(const TRegionDataHeader &oRegionDataHeader)
+        {
+                m_pOutStream->write((char*)&oRegionDataHeader.unSize,       sizeof(int));
+                m_pOutStream->write((char*)&oRegionDataHeader.unType,       sizeof(int));
+                m_pOutStream->write((char*)&oRegionDataHeader.unCountRects, sizeof(int));
+                m_pOutStream->write((char*)&oRegionDataHeader.unRgnSize,    sizeof(int));
+
+                WriteRectangle(oRegionDataHeader.oBounds);
         }
 
         void CEmfInterpretator::WriteRectangle(const TEmfRectL &oBounds)

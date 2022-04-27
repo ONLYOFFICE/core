@@ -364,6 +364,7 @@ namespace MetaFile
                 void HANDLE_EMR_STROKEPATH(TEmfRectL& oBounds);
 
                 void HANDLE_EMR_UNKNOWN(const unsigned int& unRecordSize);
+                void HANDLE_EMR_FILLRGN(const TEmfRectL& oBounds, unsigned int unIhBrush, const TRegionDataHeader& oRegionDataHeader, const std::vector<TEmfRectL>& arRects);
         };
 
 }

@@ -104,6 +104,7 @@ namespace MetaFile
                 void HANDLE_EMR_STROKEPATH(const TEmfRectL& oBounds) override ;
 
                 void HANDLE_EMR_UNKNOWN(CDataStream &oDataStream) override;
+                void HANDLE_EMR_FILLRGN(const TEmfRectL& oBounds, unsigned int unIhBrush, const TRegionDataHeader& oRegionDataHeader, const std::vector<TEmfRectL>& arRects) override;
 
                 void HANDLE_EMFPLUS_HEADER(bool bIsEmfPlusDual, bool bIsReferenceDevice, unsigned int unDpiX, unsigned int unDpiY) override;
                 void HANDLE_EMFPLUS_CLEAR(TEmfPlusARGB oColor) override;
@@ -129,6 +130,8 @@ namespace MetaFile
                 unsigned int    unNumberRecords;
 
                 unsigned short  ushNuberDescriptors;
+
+                void WriteRegionDataHeader(const TRegionDataHeader& oRegionDataHeader);
 
                 void WriteRectangle (const TEmfRectL&           oBounds);
                 void WriteRectangle (const TEmfPlusRect&        oRect);

@@ -3441,8 +3441,10 @@ namespace SimpleTypes
 			cssptZIndex					= 1022,
 			csspctMsoWidthPercent		= 1023,
 			csspctMsoHeightPercent		= 1024,
+			csspctMsoTopPercent			= 1025,
+			csspctMsoLeftPercent		= 1026,
 
-			//  Для элемента Textbox 14.1.2.22
+//  Для элемента Textbox 14.1.2.22
 			cssptDirection				= 1100,
 			cssptLayoutFlow				= 1101,
 			cssptMsoDirectionAlt		= 1102,
@@ -3454,7 +3456,7 @@ namespace SimpleTypes
 			cssptMsoTextScale			= 1108,
 			cssptVTextAnchor			= 1109,
 			
-			// Для элемента Textpath 14.1.2.23
+// Для элемента Textpath 14.1.2.23
 			cssptFont					= 1200,
 			cssptFontFamily				= 1201,
 			cssptFontSize				= 1202,
@@ -3821,6 +3823,9 @@ namespace SimpleTypes
 									else if ( _T("mso-wrap-style")						== sProperty ) m_eType = cssptMsoWrapStyle;
 									else if ( _T("mso-height-percent")					== sProperty ) m_eType = csspctMsoHeightPercent;
 									else if ( _T("mso-width-percent")					== sProperty ) m_eType = csspctMsoWidthPercent;
+									else if ( _T("mso-top-percent")						== sProperty ) m_eType = csspctMsoTopPercent;
+									else if (_T( "mso-left-percent")					== sProperty ) m_eType = csspctMsoLeftPercent;
+
 									else															m_eType = cssptUnknown;
 
 									break;
@@ -3949,6 +3954,8 @@ namespace SimpleTypes
 				case cssptVTextSpacing					: ReadValue_Units( sValue ); break;
 				case csspctMsoWidthPercent				: ReadValue_Units( sValue ); break;
 				case csspctMsoHeightPercent				: ReadValue_Units( sValue ); break;
+				case csspctMsoLeftPercent				: ReadValue_Units( sValue); break;
+				case csspctMsoTopPercent				: ReadValue_Units( sValue); break;
 				case cssptHTextAlign					: ReadValue_VTextAlign( sValue ); break;
 				};
 			}
@@ -4349,27 +4356,41 @@ namespace SimpleTypes
                     size_t nPos = (int)sTemp.find( ';' );
 					if ( std::wstring::npos == nPos )
 					{
-						CCssProperty *pProperty = new CCssProperty(sTemp);
+						CCssPropertyPtr pProperty = CCssPropertyPtr(new CCssProperty(sTemp));
 						if ((pProperty) && (cssptUnknown != pProperty->get_Type()) )
 						{
-							m_arrProperties.push_back( CCssPropertyPtr(pProperty) );
-							m_mapProperties.insert(std::make_pair(pProperty->get_Type(), m_arrProperties.size() - 1));
+							std::map<ECssPropertyType, size_t>::iterator pFind = m_mapProperties.find(pProperty->get_Type());
+							if (pFind != m_mapProperties.end())
+							{
+								m_arrProperties[pFind->second] = pProperty;
+							}
+							else
+							{
+								m_arrProperties.push_back(pProperty);
+								m_mapProperties.insert(std::make_pair(pProperty->get_Type(), m_arrProperties.size() - 1));
+							}
 						}
-						else
-							delete pProperty;
 
                         sTemp.clear();
 						continue;
 					}
 					else
 					{
-						CCssProperty *oProperty = new  CCssProperty( sTemp.substr( 0, nPos ) );
-						if ((oProperty) &&  (cssptUnknown != oProperty->get_Type()) )
+						CCssPropertyPtr pProperty = CCssPropertyPtr(new  CCssProperty( sTemp.substr( 0, nPos )));
+						
+						if ((pProperty) &&  (cssptUnknown != pProperty->get_Type()) )
 						{
-							m_arrProperties.push_back( CCssPropertyPtr(oProperty) );
+							std::map<ECssPropertyType, size_t>::iterator pFind = m_mapProperties.find(pProperty->get_Type());
+							if (pFind != m_mapProperties.end())
+							{
+								m_arrProperties[pFind->second] = pProperty;
+							}
+							else
+							{
+								m_arrProperties.push_back(pProperty);
+								m_mapProperties.insert(std::make_pair(pProperty->get_Type(), m_arrProperties.size() - 1));
+							}
 						}
-						else
-							delete oProperty;
 
 						sTemp = sTemp.substr( nPos + 1, sTemp.length() - nPos - 1 );
 					}

@@ -887,7 +887,11 @@ namespace DocFileFormat
 			case ODRAW::geometryTextBooleanProperties:
 				{
 					ODRAW::GeometryTextBooleanProperties *props = dynamic_cast<ODRAW::GeometryTextBooleanProperties*>(iter.get());
-					if (props->fUsegFBestFit && props->fBestFit)
+					if (props->fUsegFShrinkFit && props->fShrinkFit && (props->fStretch || props->fUsegFStretch))
+					{
+						appendValueAttribute(&m_textpath, L"fitshape", L"t");
+					}
+					if (props->fUsegFBestFit && props->fBestFit && (!props->fStretch || !props->fUsegFStretch))
 					{
 						appendValueAttribute(&m_textpath, L"fitshape", L"t");
 					}

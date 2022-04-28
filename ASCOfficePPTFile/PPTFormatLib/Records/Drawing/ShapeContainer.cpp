@@ -1269,27 +1269,27 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
     }break;
     case ODRAW::c3DSpecularAmt:
     {
-        pShape->m_o3dOptions.dSpecularAmt = FixedPointToDouble(pProperty->m_lValue);
+        pShape->m_3dOptions.dSpecularAmt = FixedPointToDouble(pProperty->m_lValue);
     }break;
     case ODRAW::c3DDiffuseAmt:
     {
-        pShape->m_o3dOptions.dDiffuseAmt = FixedPointToDouble(pProperty->m_lValue);
+        pShape->m_3dOptions.dDiffuseAmt = FixedPointToDouble(pProperty->m_lValue);
     }break;
     case ODRAW::c3DShininess:
     {
-        pShape->m_o3dOptions.dShininess = FixedPointToDouble(pProperty->m_lValue);
+        pShape->m_3dOptions.dShininess = FixedPointToDouble(pProperty->m_lValue);
     }break;
     case ODRAW::c3DEdgeThickness:
     {
-        pShape->m_o3dOptions.nEdgeThickness = pProperty->m_lValue;
+        pShape->m_3dOptions.nEdgeThickness = pProperty->m_lValue;
     }break;
     case ODRAW::C3DExtrudeForward:
     {
-        pShape->m_o3dOptions.nExtrudeForward = pProperty->m_lValue;
+        pShape->m_3dOptions.nExtrudeForward = pProperty->m_lValue;
     }break;
     case ODRAW::c3DExtrudeBackward:
     {
-        pShape->m_o3dOptions.nExtrudeBackward = pProperty->m_lValue;
+        pShape->m_3dOptions.nExtrudeBackward = pProperty->m_lValue;
     }break;
     case ODRAW::c3DExtrudePlane:
     {
@@ -1304,7 +1304,7 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
         if(oAtom.bSysIndex)	tmp = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
         else				oAtom.ToColor(&tmp);
 
-        pShape->m_o3dOptions.oExtrusionColor = tmp;
+        pShape->m_3dOptions.oExtrusionColor = tmp;
     }break;
     case ODRAW::c3DCrMod:
     {
@@ -1315,7 +1315,7 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
         if(oAtom.bSysIndex)	tmp = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
         else				oAtom.ToColor(&tmp);
 
-        pShape->m_o3dOptions.oCrMod = tmp;
+        pShape->m_3dOptions.oCrMod = tmp;
     }break;
     case ODRAW::c3DExtrusionColorExt:
     {
@@ -1325,35 +1325,35 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
         CColor tmp;
         if(oAtom.bSysIndex)	tmp = CorrectSysColor(pProperty->m_lValue, pElement, pTheme);
         else				oAtom.ToColor(&tmp);
-        pShape->m_o3dOptions.oExtrusionColorExt = tmp;
+        pShape->m_3dOptions.oExtrusionColorExt = tmp;
     }break;
     case ODRAW::c3DExtrusionColorExtMod:
     {
-        pShape->m_o3dOptions.nTypeExtrusionColorExt = (pProperty->m_lValue & 0x00000300) >> 8;
+        pShape->m_3dOptions.nTypeExtrusionColorExt = (pProperty->m_lValue & 0x00000300) >> 8;
     }break;
     case ODRAW::c3DBottomBevelWidth:
     {
-        pShape->m_o3dOptions.dBottomBevelWidth = FixedPointToDouble(pProperty->m_lValue);
+        pShape->m_3dOptions.dBottomBevelWidth = FixedPointToDouble(pProperty->m_lValue);
     }break;
     case ODRAW::c3DBottomBevelHeight:
     {
-        pShape->m_o3dOptions.dBottomBevelHeight = FixedPointToDouble(pProperty->m_lValue);
+        pShape->m_3dOptions.dBottomBevelHeight = FixedPointToDouble(pProperty->m_lValue);
     }break;
     case ODRAW::c3DBottomBevelType:
     {
-        pShape->m_o3dOptions.nBottomBevelType = pProperty->m_lValue;
+        pShape->m_3dOptions.nBottomBevelType = pProperty->m_lValue;
     }break;
     case ODRAW::c3DTopBevelWidth:
     {
-        pShape->m_o3dOptions.dTopBevelWidth = FixedPointToDouble(pProperty->m_lValue);
+        pShape->m_3dOptions.dTopBevelWidth = FixedPointToDouble(pProperty->m_lValue);
     }break;
     case ODRAW::c3DTopBevelHeight:
     {
-        pShape->m_o3dOptions.dTopBevelHeight = FixedPointToDouble(pProperty->m_lValue);
+        pShape->m_3dOptions.dTopBevelHeight = FixedPointToDouble(pProperty->m_lValue);
     }break;
     case ODRAW::c3DTopBevelType:
     {
-        pShape->m_o3dOptions.nTopBevelType = pProperty->m_lValue;
+        pShape->m_3dOptions.nTopBevelType = pProperty->m_lValue;
     }break;
     case ODRAW::threeDObjectBooleanProperties:
     {
@@ -1362,125 +1362,125 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
         bool fUsefc3DUseExtrusionColor	= GETBIT(pProperty->m_lValue, 17);
         bool fUsefc3DLightFace			= GETBIT(pProperty->m_lValue, 16);
 
-        pShape->m_o3dOptions.bEnabled		= fUsef3D					? GETBIT(pProperty->m_lValue, 3)	: false;
-        pShape->m_o3dOptions.bMetallic		= fUsefc3DMetallic			? GETBIT(pProperty->m_lValue, 2)	: false;
-        pShape->m_o3dOptions.bExtrusionColor= fUsefc3DUseExtrusionColor	? GETBIT(pProperty->m_lValue, 1)	: false;
-        pShape->m_o3dOptions.bLightFace		= fUsefc3DLightFace			? GETBIT(pProperty->m_lValue, 0)	: true;
+        pShape->m_3dOptions.bEnabled		= fUsef3D					? GETBIT(pProperty->m_lValue, 3)	: false;
+        pShape->m_3dOptions.bMetallic		= fUsefc3DMetallic			? GETBIT(pProperty->m_lValue, 2)	: false;
+        pShape->m_3dOptions.bExtrusionColor= fUsefc3DUseExtrusionColor	? GETBIT(pProperty->m_lValue, 1)	: false;
+        pShape->m_3dOptions.bLightFace		= fUsefc3DLightFace			? GETBIT(pProperty->m_lValue, 0)	: true;
 
     }break;
     case ODRAW::c3DYRotationAngle:
     {
         double val = FixedPointToDouble(pProperty->m_lValue);
         if (val < 0) val += 360;
-        pShape->m_o3dOptions.dYRotationAngle = val;
+        pShape->m_3dOptions.dYRotationAngle = val;
     }break;
     case ODRAW::c3DXRotationAngle:
     {
         double val = FixedPointToDouble(pProperty->m_lValue);
         if (val < 0) val += 360;
-        pShape->m_o3dOptions.dXRotationAngle = val;
+        pShape->m_3dOptions.dXRotationAngle = val;
     }break;
     case ODRAW::c3DRotationAxisX:
     {
-        pShape->m_o3dOptions.dRotationAxisX = FixedPointToDouble(pProperty->m_lValue);
+        pShape->m_3dOptions.dRotationAxisX = FixedPointToDouble(pProperty->m_lValue);
     }break;
     case ODRAW::c3DRotationAxisY:
     {
-        pShape->m_o3dOptions.dRotationAxisY = FixedPointToDouble(pProperty->m_lValue);
+        pShape->m_3dOptions.dRotationAxisY = FixedPointToDouble(pProperty->m_lValue);
     }break;
     case ODRAW::c3DRotationAxisZ:
     {
-        pShape->m_o3dOptions.dRotationAxisZ = FixedPointToDouble(pProperty->m_lValue);
+        pShape->m_3dOptions.dRotationAxisZ = FixedPointToDouble(pProperty->m_lValue);
     }break;
     case ODRAW::c3DRotationAngle:
     {
-        pShape->m_o3dOptions.dRotationAngle = FixedPointToDouble(pProperty->m_lValue);
+        pShape->m_3dOptions.dRotationAngle = FixedPointToDouble(pProperty->m_lValue);
     }break;
     case ODRAW::c3DRotationCenterX:
     {
-        pShape->m_o3dOptions.dRotationCenterX = FixedPointToDouble(pProperty->m_lValue);
+        pShape->m_3dOptions.dRotationCenterX = FixedPointToDouble(pProperty->m_lValue);
     }break;
     case ODRAW::c3DRotationCenterY:
     {
-        pShape->m_o3dOptions.dRotationCenterY = FixedPointToDouble(pProperty->m_lValue);
+        pShape->m_3dOptions.dRotationCenterY = FixedPointToDouble(pProperty->m_lValue);
     }break;
     case ODRAW::c3DRotationCenterZ:
     {
-        pShape->m_o3dOptions.dRotationCenterZ = FixedPointToDouble(pProperty->m_lValue);
+        pShape->m_3dOptions.dRotationCenterZ = FixedPointToDouble(pProperty->m_lValue);
     }break;
     case ODRAW::c3DRenderMode:
     {
-        pShape->m_o3dOptions.nRenderMode = pProperty->m_lValue;
+        pShape->m_3dOptions.nRenderMode = pProperty->m_lValue;
     }break;
     case ODRAW::c3DTolerance:
     {
-        pShape->m_o3dOptions.dTolerance = FixedPointToDouble(pProperty->m_lValue);
+        pShape->m_3dOptions.dTolerance = FixedPointToDouble(pProperty->m_lValue);
     }break;
     case ODRAW::c3DXViewpoint:
     {
-        pShape->m_o3dOptions.dXViewpoint = FixedPointToDouble(pProperty->m_lValue);
+        pShape->m_3dOptions.dXViewpoint = FixedPointToDouble(pProperty->m_lValue);
     }break;
     case ODRAW::c3DYViewpoint:
     {
-        pShape->m_o3dOptions.dYViewpoint = FixedPointToDouble(pProperty->m_lValue);
+        pShape->m_3dOptions.dYViewpoint = FixedPointToDouble(pProperty->m_lValue);
     }break;
     case ODRAW::c3DZViewpoint:
     {
-        pShape->m_o3dOptions.dZViewpoint = FixedPointToDouble(pProperty->m_lValue);
+        pShape->m_3dOptions.dZViewpoint = FixedPointToDouble(pProperty->m_lValue);
     }break;
     case ODRAW::c3DOriginX:
     {
-        pShape->m_o3dOptions.dOriginX = FixedPointToDouble(pProperty->m_lValue);
+        pShape->m_3dOptions.dOriginX = FixedPointToDouble(pProperty->m_lValue);
     }break;
     case ODRAW::c3DOriginY:
     {
-        pShape->m_o3dOptions.dOriginY = FixedPointToDouble(pProperty->m_lValue);
+        pShape->m_3dOptions.dOriginY = FixedPointToDouble(pProperty->m_lValue);
     }break;
     case ODRAW::c3DSkewAngle:
     {
         double val = FixedPointToDouble(pProperty->m_lValue);
         if (val <= 0) val += 360;
-        pShape->m_o3dOptions.dSkewAngle = val;
+        pShape->m_3dOptions.dSkewAngle = val;
     }break;
     case ODRAW::c3DSkewAmount:
     {
-        pShape->m_o3dOptions.nSkewAmount = pProperty->m_lValue;
+        pShape->m_3dOptions.nSkewAmount = pProperty->m_lValue;
     }break;
     case ODRAW::c3DAmbientIntensity:
     {
-        pShape->m_o3dOptions.dAmbientIntensity = FixedPointToDouble(pProperty->m_lValue);
+        pShape->m_3dOptions.dAmbientIntensity = FixedPointToDouble(pProperty->m_lValue);
     }break;
     case ODRAW::c3DKeyX:
     {
-        pShape->m_o3dOptions.dKeyX = FixedPointToDouble(pProperty->m_lValue);
+        pShape->m_3dOptions.dKeyX = FixedPointToDouble(pProperty->m_lValue);
     }break;
     case ODRAW::c3DKeyY:
     {
-        pShape->m_o3dOptions.dKeyY = FixedPointToDouble(pProperty->m_lValue);
+        pShape->m_3dOptions.dKeyY = FixedPointToDouble(pProperty->m_lValue);
     }break;
     case ODRAW::c3DKeyZ:
     {
-        pShape->m_o3dOptions.dKeyZ = FixedPointToDouble(pProperty->m_lValue);
+        pShape->m_3dOptions.dKeyZ = FixedPointToDouble(pProperty->m_lValue);
     }break;
     case ODRAW::c3DKeyIntensity:
     {
-        pShape->m_o3dOptions.dKeyIntensity = FixedPointToDouble(pProperty->m_lValue);
+        pShape->m_3dOptions.dKeyIntensity = FixedPointToDouble(pProperty->m_lValue);
     }break;
     case ODRAW::c3DFillX:
     {
-        pShape->m_o3dOptions.dFillX = FixedPointToDouble(pProperty->m_lValue);
+        pShape->m_3dOptions.dFillX = FixedPointToDouble(pProperty->m_lValue);
     }break;
     case ODRAW::c3DFillY:
     {
-        pShape->m_o3dOptions.dFillY = FixedPointToDouble(pProperty->m_lValue);
+        pShape->m_3dOptions.dFillY = FixedPointToDouble(pProperty->m_lValue);
     }break;
     case ODRAW::c3DFillZ:
     {
-        pShape->m_o3dOptions.dFillZ = FixedPointToDouble(pProperty->m_lValue);
+        pShape->m_3dOptions.dFillZ = FixedPointToDouble(pProperty->m_lValue);
     }break;
     case ODRAW::c3DFillIntensity:
     {
-        pShape->m_o3dOptions.dFillIntensity = FixedPointToDouble(pProperty->m_lValue);
+        pShape->m_3dOptions.dFillIntensity = FixedPointToDouble(pProperty->m_lValue);
     }break;
     case ODRAW::threeDStyleBooleanProperties:
     {
@@ -1490,11 +1490,11 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
         bool fUsefc3DKeyHarsh			= GETBIT(pProperty->m_lValue, 17);
         bool fUsefc3DFillHarsh			= GETBIT(pProperty->m_lValue, 16);
 
-        pShape->m_o3dOptions.bConstrainRotation	= fUsefc3DConstrainRotation	? GETBIT(pProperty->m_lValue, 4)	: true;
-        pShape->m_o3dOptions.bRotationCenterAuto= fUsefc3DRotationCenterAuto? GETBIT(pProperty->m_lValue, 3)	: false;
-        pShape->m_o3dOptions.bParallel			= fUsefc3DParallel			? GETBIT(pProperty->m_lValue, 2)	: true;
-        pShape->m_o3dOptions.bKeyHarsh			= fUsefc3DKeyHarsh			? GETBIT(pProperty->m_lValue, 1)	: true;
-        pShape->m_o3dOptions.bFillHarsh			= fUsefc3DFillHarsh			? GETBIT(pProperty->m_lValue, 0)	: true;
+        pShape->m_3dOptions.bConstrainRotation	= fUsefc3DConstrainRotation	? GETBIT(pProperty->m_lValue, 4)	: true;
+        pShape->m_3dOptions.bRotationCenterAuto= fUsefc3DRotationCenterAuto? GETBIT(pProperty->m_lValue, 3)	: false;
+        pShape->m_3dOptions.bParallel			= fUsefc3DParallel			? GETBIT(pProperty->m_lValue, 2)	: true;
+        pShape->m_3dOptions.bKeyHarsh			= fUsefc3DKeyHarsh			? GETBIT(pProperty->m_lValue, 1)	: true;
+        pShape->m_3dOptions.bFillHarsh			= fUsefc3DFillHarsh			? GETBIT(pProperty->m_lValue, 0)	: true;
     }break;
     default:
     {

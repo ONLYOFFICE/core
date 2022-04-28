@@ -536,6 +536,16 @@ bool RtfNormalReader::ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader
 		//default set to curent section
 		SectDef( oDocument, oReader );
 	}
+	else if ("defchp" == sCommand)
+	{
+		RtfDefCharPropReader oDefCharPropReader;
+		return StartSubReader(oDefCharPropReader, oDocument, oReader);
+	}
+	else if ("defpap" == sCommand)
+	{
+		RtfDefParPropReader oDefParPropReader;
+		return StartSubReader(oDefParPropReader, oDocument, oReader);
+	}
 	else
 	{
 		bool bResult = false;
@@ -978,13 +988,16 @@ bool RtfCharPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRea
 		if ( hasParameter )
 			charProps->m_nCharacterSpacing  = 5 * parameter; //quater -points
 	}
-    COMMAND_RTF_INT	( "fittext"	, charProps->m_nFitText, sCommand, hasParameter, parameter)
-    COMMAND_RTF_INT	( "f"			, charProps->m_nFont, sCommand, hasParameter, parameter)
+    COMMAND_RTF_INT	( "fittext"		, charProps->m_nFitText, sCommand, hasParameter, parameter)
+	else if ("f" == sCommand && hasParameter)
+	{
+		charProps->m_nFont = parameter;
+		oReader.m_nDefFont = charProps->m_nFont; //reset
+	}
     COMMAND_RTF_INT	( "fs"			, charProps->m_nFontSize, sCommand, hasParameter, parameter)
     COMMAND_RTF_BOOL( "i"			, charProps->m_bItalic, sCommand, hasParameter, parameter)
     COMMAND_RTF_BOOL( "impr"		, charProps->m_bImprint, sCommand, hasParameter, parameter)
-    COMMAND_RTF_INT	( "kerning"	, charProps->m_nKerning, sCommand, hasParameter, parameter)
-	
+    COMMAND_RTF_INT	( "kerning"		, charProps->m_nKerning, sCommand, hasParameter, parameter)
     else if ( "ltrch" == sCommand )
 	{
 		if ( false == hasParameter || 0 != parameter ) 

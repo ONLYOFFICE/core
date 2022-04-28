@@ -437,8 +437,7 @@ public:
 class RtfDefCharPropReader: public RtfAbstractReader
 {
 public: 
-	RtfCharProperty& m_oCharProp;
-	RtfDefCharPropReader( RtfCharProperty& oOutput ):m_oCharProp(oOutput)
+	RtfDefCharPropReader()
 	{
 	}
     bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
@@ -446,11 +445,10 @@ public:
         if( "defchp" == sCommand )
 			return true;
 		else 
-			return RtfCharPropsCommand::ExecuteCommand( oDocument, oReader, sCommand, hasParameter, parameter, &oReader.m_oState->m_oCharProp );
+			return RtfCharPropsCommand::ExecuteCommand( oDocument, oReader, sCommand, hasParameter, parameter, &oDocument.m_oDefaultCharProp);
 	}
 	void ExitReader( RtfDocument& oDocument, RtfReader& oReader )
 	{
-		m_oCharProp = oReader.m_oState->m_oCharProp;
 	}
 };
 

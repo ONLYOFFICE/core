@@ -238,6 +238,14 @@ bool OOXShapeReader::ParseVmlStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssPro
 			{
 				pShape->m_nPctHeight	= (int)prop->get_Value().oValue.dValue;
 			}break;
+		case SimpleTypes::Vml::csspctMsoTopPercent:
+		{
+			pShape->m_nPositionVPct = (int)prop->get_Value().oValue.dValue;
+		}break;
+		case SimpleTypes::Vml::csspctMsoLeftPercent:
+		{
+			pShape->m_nPositionHPct = (int)prop->get_Value().oValue.dValue;
+		}break;
 		case SimpleTypes::Vml::cssptVRotateLetters:
 			{
 				pShape->m_bGtextFVertical	= prop->get_Value().bValue;

@@ -2084,7 +2084,7 @@ bool CPdfRenderer::DeletePage(int nPageIndex)
 {
 	return m_pDocument->DeletePage(nPageIndex);
 }
-bool CPdfRenderer::EditClose(const std::wstring& wsPath, const std::wstring& sTrailer)
+bool CPdfRenderer::EditClose(const std::wstring& wsPath, const std::wstring& sTrailer, const std::wstring& sInfo)
 {
 	if (!IsValid())
 		return false;
@@ -2103,7 +2103,7 @@ bool CPdfRenderer::EditClose(const std::wstring& wsPath, const std::wstring& sTr
 		}
 	}
 
-	return m_pDocument->AddToFile(wsPath, sTrailer);
+	return m_pDocument->AddToFile(wsPath, sTrailer, sInfo);
 }
 void CPdfRenderer::PageRotate(int nRotate)
 {

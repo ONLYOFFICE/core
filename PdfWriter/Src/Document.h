@@ -154,7 +154,7 @@ namespace PdfWriter
 		CPage*            EditPage(const std::wstring& sPage, const std::pair<int, int>& pPage);
 		CPage*            AddPage(int nPageIndex);
 		bool              DeletePage(int nPageIndex);
-		bool              AddToFile(const std::wstring& wsPath, const std::wstring& sTrailer);
+		bool              AddToFile(const std::wstring& wsPath, const std::wstring& sTrailer, const std::wstring& sInfo);
 	private:		  
 					  
 		char*             GetTTFontTag();

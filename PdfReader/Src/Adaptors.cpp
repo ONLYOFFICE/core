@@ -1,5 +1,6 @@
 #include "Adaptors.h"
 #include "../lib/xpdf/NameToCharCode.h"
+#include "../lib/xpdf/TextString.h"
 
 
 void GlobalParamsAdaptor::SetFontManager(NSFonts::IFontManager *pFontManager)
@@ -337,9 +338,12 @@ void XMLConverter::DictToXml(Object *obj, std::wstring &wsXml, bool bBinary)
         }
         else
         {
+            TextString* s = new TextString(obj->getString());
+            std::wstring sValue = NSStringExt::CConverter::GetUnicodeFromUTF32(s->getUnicode(), s->getLength());
             wsXml += L"String\" num=\"";
-            AppendStringToXml(wsXml, obj->getString()->getCString());
+            wsXml += sValue;
             wsXml += L"\">";
+            delete s;
         }
         break;
     case objName:

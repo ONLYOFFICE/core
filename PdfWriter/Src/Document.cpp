@@ -52,6 +52,7 @@
 
 #include "../../DesktopEditor/agg-2.4/include/agg_span_hatch.h"
 #include "../../DesktopEditor/common/SystemUtils.h"
+#include "../../Common/DocxFormat/Source/Base/Base.h"
 
 #ifdef CreateFont
 #undef CreateFont
@@ -120,13 +121,21 @@ namespace PdfWriter
 		if (!m_pInfo)
 			return false;
 
-		m_pInfo->SetCreationTime();
-		std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvCompanyName);
-		if (sApplication.empty())
-			sApplication = NSSystemUtils::gc_EnvCompanyNameDefault;
-		std::string sApplicationA = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sApplication);
+		m_pInfo->SetTime(InfoCreationDate);
+		m_pInfo->SetTime(InfoModaDate);
 
-		m_pInfo->SetInfo(InfoProducer, sApplicationA.c_str());
+		std::wstring sCreator = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvCompanyName);
+		if (sCreator.empty())
+			sCreator = NSSystemUtils::gc_EnvCompanyNameDefault;
+		std::string sCreatorA = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sCreator);
+
+#if defined(INTVER)
+		sCreatorA += "/";
+		sCreatorA += VALUE2STR(INTVER);
+#endif
+
+		m_pInfo->SetInfo(InfoCreator,  sCreatorA.c_str());
+		m_pInfo->SetInfo(InfoProducer, sCreatorA.c_str());
 
 		CMetadata* pMetadata = m_pCatalog->AddMetadata(m_pXref, m_pInfo);
 		if (IsPDFA())
@@ -1171,7 +1180,7 @@ namespace PdfWriter
 		}
 		return false;
 	}
-	bool CDocument::AddToFile(const std::wstring& wsPath, const std::wstring& sTrailer)
+	bool CDocument::AddToFile(const std::wstring& wsPath, const std::wstring& sTrailer, const std::wstring& sInfo)
 	{
 		CFileStream* pStream = new CFileStream();
 		if (!pStream || !pStream->OpenFile(wsPath, false))
@@ -1180,11 +1189,35 @@ namespace PdfWriter
 		// Добавляем первый элемент в таблицу xref
 		// он должен иметь вид 0000000000 65535 f
 		CXref* pXref = new CXref(this, 0, 65535);
-		pXref->SetPrev(m_pLastXref);
-		m_pLastXref = pXref;
-
-		m_pTrailer = m_pLastXref->GetTrailer();
+		m_pTrailer = pXref->GetTrailer();
 		m_pTrailer->FromXml(sTrailer);
+
+		// Обновление Info
+		CObjectBase* pInfo = m_pTrailer->Get("Info");
+		CXref* pInfoXref = new CXref(this, pInfo->GetObjId());
+		m_pInfo = new CInfoDict(pInfoXref, sInfo);
+		if (!m_pInfo)
+			return false;
+		m_pInfo->SetRef(pInfo->GetObjId(), pInfo->GetGenNo());
+		m_pInfo->SetTime(InfoModaDate);
+
+		std::wstring sCreator = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
+		if (sCreator.empty())
+			sCreator = NSSystemUtils::gc_EnvApplicationNameDefault;
+		std::string sCreatorA = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sCreator);
+
+#if defined(INTVER)
+		sCreatorA += "/";
+		sCreatorA += VALUE2STR(INTVER);
+#endif
+
+		const char* cCreator = m_pInfo->GetInfo(InfoProducer);
+		m_pInfo->SetInfo(InfoCreator, cCreator ? cCreator : sCreatorA.c_str());
+		m_pInfo->SetInfo(InfoProducer, sCreatorA.c_str());
+
+		pInfoXref->SetPrev(m_pLastXref);
+		pXref->SetPrev(pInfoXref);
+		m_pLastXref = pXref;
 
 		// Вторая часть идентификатора должна обновляться
 		CObjectBase* pID = m_pTrailer->Get("ID");

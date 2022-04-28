@@ -620,7 +620,17 @@ return 0;
             sTrailer += L'>';
         sTrailer += L"</Trailer>";
 
-        return m_pInternal->m_pPdfWriter->EditClose(wsPath, sTrailer);
+        std::wstring sInfo = L"<Info";
+        Object info;
+        m_pInternal->m_pPDFDocument->getDocInfo(&info);
+        if (info.isDict())
+            XMLConverter::DictToXml(&info, sInfo);
+        else
+            sInfo += L'>';
+        sInfo += L"</Info>";
+        info.free();
+
+        return m_pInternal->m_pPdfWriter->EditClose(wsPath, sTrailer, sInfo);
     }
 
 #define DICT_LOOKUP(sName, wsName) \

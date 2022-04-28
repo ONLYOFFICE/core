@@ -235,7 +235,7 @@ public:
     bool EditPage(const std::wstring& sPage, const std::pair<int, int>& pPage);
     bool AddPage(int nPageIndex);
     bool DeletePage(int nPageIndex);
-    bool EditClose(const std::wstring& wsPath, const std::wstring& sTrailer);
+    bool EditClose(const std::wstring& wsPath, const std::wstring& sTrailer, const std::wstring& sInfo);
     void PageRotate(int nRotate);
 
     NSFonts::IApplicationFonts* GetApplicationFonts();

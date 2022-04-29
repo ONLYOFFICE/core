@@ -1749,13 +1749,13 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
-                m_pOutStream->write((char*)&unType,                sizeof (int));
-                m_pOutStream->write((char*)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 WriteRectangle(oBounds);
 
-                m_pOutStream->write((char*)&unRgnDataSize,          sizeof (int));
-                m_pOutStream->write((char*)&unIhBrush,              sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unRgnDataSize,          sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unIhBrush,              sizeof (int));
 
                 WriteRegionDataHeader(oRegionDataHeader);
 
@@ -2059,10 +2059,10 @@ namespace MetaFile
 
         void CEmfInterpretator::WriteRegionDataHeader(const TRegionDataHeader &oRegionDataHeader)
         {
-                m_pOutStream->write((char*)&oRegionDataHeader.unSize,       sizeof(int));
-                m_pOutStream->write((char*)&oRegionDataHeader.unType,       sizeof(int));
-                m_pOutStream->write((char*)&oRegionDataHeader.unCountRects, sizeof(int));
-                m_pOutStream->write((char*)&oRegionDataHeader.unRgnSize,    sizeof(int));
+                m_pOutStream->WriteFile((BYTE*)&oRegionDataHeader.unSize,       sizeof(int));
+                m_pOutStream->WriteFile((BYTE*)&oRegionDataHeader.unType,       sizeof(int));
+                m_pOutStream->WriteFile((BYTE*)&oRegionDataHeader.unCountRects, sizeof(int));
+                m_pOutStream->WriteFile((BYTE*)&oRegionDataHeader.unRgnSize,    sizeof(int));
 
                 WriteRectangle(oRegionDataHeader.oBounds);
         }

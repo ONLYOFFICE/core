@@ -141,7 +141,8 @@ namespace codegen
             ////for word
             //TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
             //return textInfo.ToTitleCase(sName);
-            return sName.Substring(0, 1).ToUpper() + sName.Substring(1);
+            //return sName.Substring(0, 1).ToUpper() + sName.Substring(1);
+            return sName;
         }
         string GetEnumClassName(string sEnumName)
         {
@@ -491,7 +492,7 @@ namespace codegen
                         sb.AppendFormat("this.{0} = new {1}();\n", getClassMemberName(aMembers[i].sName), aMembers[i].sType);
                         sb.AppendFormat("this.{0}.fromXml(reader);\n", getClassMemberName(aMembers[i].sName));
                     }
-                    sb.AppendFormat("break;");
+                    sb.AppendFormat("break;\n");
                     sb.AppendFormat("}}\n");                   
                 }
                 sb.AppendFormat("}}\n");
@@ -507,11 +508,12 @@ namespace codegen
         {
             bool bTodo = true;
             string sMemberName = getClassMemberName(oGenMember.sName);
-            string sMemberSet = "set" + sMemberName.Substring(0, 1).ToUpper() + sMemberName.Substring(1);
+            //string sMemberSet = "set" + sMemberName.Substring(0, 1).ToUpper() + sMemberName.Substring(1);
             if (null != oGenMember.oSystemType)
             {
                 bTodo = false;
-                sb.AppendFormat("case \"{0}\": {{\n this.{1}(reader.{2});\n break;\n }}\n", oGenMember.sName, sMemberSet, ProcessJSTypeFromXml(Type.GetTypeCode(oGenMember.oSystemType), "this."+sMemberName, out bTodo));
+                //sb.AppendFormat("case \"{0}\": {{\n this.{1}(reader.{2});\n break;\n }}\n", oGenMember.sName, sMemberSet, ProcessJSTypeFromXml(Type.GetTypeCode(oGenMember.oSystemType), "this."+sMemberName, out bTodo));
+                sb.AppendFormat("case \"{0}\": {{\n this.{1} = reader.{2};\n break;\n }}\n", oGenMember.sName, sMemberName, ProcessJSTypeFromXml(Type.GetTypeCode(oGenMember.oSystemType), "this." + sMemberName, out bTodo));
             }
             else if (null != oGenMember.sType)
             {
@@ -522,7 +524,8 @@ namespace codegen
                     if (oGenClassMember.bIsEnum)
                     {
                         bTodo = false;
-                        sb.AppendFormat("case \"{0}\": {{\nthis.{1}(fromXml_{2}(reader.GetValue(), this.{3}));\n break;\n }}\n", oGenMember.sName, sMemberSet, GetEnumClassName(oGenClassMember.sName), sMemberName);
+                        //sb.AppendFormat("case \"{0}\": {{\nthis.{1}(fromXml_{2}(reader.GetValue(), this.{3}));\n break;\n }}\n", oGenMember.sName, sMemberSet, GetEnumClassName(oGenClassMember.sName), sMemberName);
+                        sb.AppendFormat("case \"{0}\": {{\nthis.{1} = fromXml_{2}(reader.GetValue(), this.{3});\n break;\n }}\n", oGenMember.sName, sMemberName, GetEnumClassName(oGenClassMember.sName), sMemberName);
                     }
                 }
             }

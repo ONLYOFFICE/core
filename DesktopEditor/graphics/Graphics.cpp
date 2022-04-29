@@ -1497,6 +1497,9 @@ namespace Aggplus
 		agg::GetHatchPattern(pBrush->m_name, (agg::rgba8*)pPattern, c1, c2);
 
 		agg::trans_affine mtx_Work(m_oTransform.m_internal->m_agg_mtx);
+		if (m_dDpiTile > 1)
+			mtx_Work.scale(m_dDpiX / m_dDpiTile, m_dDpiY / m_dDpiTile);
+
 		mtx_Work.invert();
 
 		span_alloc_type				span_allocator; 

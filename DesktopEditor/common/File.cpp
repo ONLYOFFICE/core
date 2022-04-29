@@ -1007,7 +1007,7 @@ namespace NSFile
     bool CFileBinary::OpenFile(const std::wstring& sFileName, bool bRewrite)
     {
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
-        if ( 0 != _wfopen_s(&m_pFile, sFileName.c_str(), bRewrite ? L"rb+" : L"rb"))
+        if ( NULL == (m_pFile = _wfsopen( sFileName.c_str(), bRewrite ? L"rb+" : L"rb", _SH_DENYNO)))
             return false;
 #else
         BYTE* pUtf8 = NULL;

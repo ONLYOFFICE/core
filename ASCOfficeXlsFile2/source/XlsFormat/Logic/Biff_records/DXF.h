@@ -51,7 +51,8 @@ public:
 	BaseObjectPtr clone();
 
 	
-	void readFields(CFRecord& record);
+	void readFields(CFRecord& record) override;
+	void writeFields(CFRecord& record) override;
 
 	static const ElementType	type = typeDXF;
 

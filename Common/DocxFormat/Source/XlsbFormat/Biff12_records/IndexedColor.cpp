@@ -57,5 +57,12 @@ namespace XLSB
         record.skipNunBytes(1);
     }
 
+	void IndexedColor::writeFields(XLS::CFRecord& record)
+	{
+		record << bRed << bGreen << bBlue;
+
+		record.reserveNunBytes(1);
+	}
+
 } // namespace XLSB
 

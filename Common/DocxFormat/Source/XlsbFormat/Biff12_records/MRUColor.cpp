@@ -55,5 +55,10 @@ namespace XLSB
         colorMRU.readFields(record);
     }
 
+	void MRUColor::writeFields(XLS::CFRecord& record)
+	{
+		colorMRU.writeFields(record);
+	}
+
 } // namespace XLSB
 

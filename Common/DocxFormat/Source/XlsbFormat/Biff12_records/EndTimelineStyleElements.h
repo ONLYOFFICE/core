@@ -48,9 +48,6 @@ namespace XLSB
             ~EndTimelineStyleElements();
 
             XLS::BaseObjectPtr clone();
-
-            void readFields(XLS::CFRecord& record);
-
     };
 
 } // namespace XLSB

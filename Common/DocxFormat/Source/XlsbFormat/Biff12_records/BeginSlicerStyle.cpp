@@ -55,5 +55,10 @@ namespace XLSB
         record >> FRTheader >> stName;
     }
 
+	void BeginSlicerStyle::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader << stName;
+	}
+
 } // namespace XLSB
 

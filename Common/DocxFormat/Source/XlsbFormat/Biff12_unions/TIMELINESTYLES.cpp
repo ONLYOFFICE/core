@@ -73,12 +73,29 @@ namespace XLSB
 
         if (proc.optional<EndTimelineStyles>())
         {
-            m_BrtEndTimelineStyles = elements_.back();
+            m_bBrtEndTimelineStyles = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndTimelineStyles = false;
 
-        return m_BrtBeginTimelineStyles && m_BrtEndTimelineStyles;
+        return m_BrtBeginTimelineStyles && m_bBrtEndTimelineStyles;
     }
+
+	const bool TIMELINESTYLES::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginTimelineStyles != nullptr)
+			proc.mandatory(*m_BrtBeginTimelineStyles);
+
+		for (auto &item : m_arTIMELINESTYLE)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndTimelineStyles>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

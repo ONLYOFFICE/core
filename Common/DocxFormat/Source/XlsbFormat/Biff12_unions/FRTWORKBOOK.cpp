@@ -79,5 +79,19 @@ namespace XLSB
         return m_SLICERCACHESPIVOTCACHEIDS || m_SLICERCACHEIDS || m_TABLESLICERCACHEIDS;
     }
 
+	const bool FRTWORKBOOK::saveContent(BinProcessor& proc)
+	{
+		if (m_SLICERCACHESPIVOTCACHEIDS != nullptr)
+			proc.mandatory(*m_SLICERCACHESPIVOTCACHEIDS);
+
+		if (m_SLICERCACHEIDS != nullptr)
+			proc.mandatory(*m_SLICERCACHEIDS);
+
+		if (m_TABLESLICERCACHEIDS != nullptr)
+			proc.mandatory(*m_TABLESLICERCACHEIDS);
+
+		return true;
+	}
+
 } // namespace XLSB
 

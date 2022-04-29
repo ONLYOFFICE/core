@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new EndSparklineGroups(*this));
     }
 
-    void EndSparklineGroups::readFields(XLS::CFRecord& record)
-    {
-        // No data in this record
-    }
-
 } // namespace XLSB
 

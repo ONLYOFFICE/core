@@ -55,5 +55,10 @@ namespace XLSB
         record >> cfmts;
     }
 
+	void BeginFmts::writeFields(XLS::CFRecord& record)
+	{
+		record << cfmts;
+	}
+
 } // namespace XLSB
 

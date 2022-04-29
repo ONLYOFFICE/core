@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new BeginMRUColors(*this));
     }
 
-    void BeginMRUColors::readFields(XLS::CFRecord& record)
-    {
-        // No data in this record
-    }
-
 } // namespace XLSB
 

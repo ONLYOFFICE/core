@@ -47,12 +47,13 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+		const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
-		XLS::BaseObjectPtr               m_BrtBeginColorPalette;
+		bool			                 m_bBrtBeginColorPalette;
 		XLS::BaseObjectPtr               m_INDEXEDCOLORS;
 		XLS::BaseObjectPtr               m_MRUCOLORS;
-		XLS::BaseObjectPtr               m_BrtEndColorPalette;
+		bool							 m_bBrtEndColorPalette;
 
     };
 

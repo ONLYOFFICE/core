@@ -45,14 +45,15 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+		const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         XLS::BaseObjectPtr               m_BrtBeginSparklineGroup;
         //XLS::BaseObjectPtr               m_ACUID;
-        XLS::BaseObjectPtr               m_BrtBeginSparklines;
+		bool				             m_bBrtBeginSparklines;
         std::vector<XLS::BaseObjectPtr>	 m_arBrtSparkline;
-        XLS::BaseObjectPtr               m_BrtEndSparklines;
-        XLS::BaseObjectPtr               m_BrtEndSparklineGroup;
+		bool							 m_bBrtEndSparklines;
+		bool							 m_bBrtEndSparklineGroup;
 
     };
 

@@ -62,5 +62,16 @@ namespace XLSB
         record >> blxfTop >> blxfBottom >> blxfLeft >> blxfRight >> blxfDiag;
     }
 
+	void Border::writeFields(XLS::CFRecord& record)
+	{
+		unsigned char flags = 0;
+
+		SETBIT(flags, 0, fBdrDiagDown)
+		SETBIT(flags, 1, fBdrDiagUp)
+
+		record << flags;
+		record << blxfTop << blxfBottom << blxfLeft << blxfRight << blxfDiag;
+	}
+
 } // namespace XLSB
 

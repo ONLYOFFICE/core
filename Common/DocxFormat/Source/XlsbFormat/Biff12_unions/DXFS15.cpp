@@ -80,18 +80,49 @@ namespace XLSB
 
         if (proc.optional<EndDXFs15>())
         {
-            m_BrtEndDXFs15 = elements_.back();
+            m_bBrtEndDXFs15 = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndDXFs15 = false;
 
         if (proc.optional<FRTEnd>())
         {
-            m_BrtFRTEnd = elements_.back();
+            m_bBrtFRTEnd = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtFRTEnd = false;
 
-        return m_BrtBeginDXFs15 && !m_arDXF15.empty() && m_BrtEndDXFs15;
+        return m_BrtBeginDXFs15 && !m_arDXF15.empty() && m_bBrtEndDXFs15;
     }
+
+	const bool DXFS15::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtFRTBegin != nullptr)
+			proc.mandatory(*m_BrtFRTBegin);
+		else
+			proc.mandatory<FRTBegin>();
+
+		if (m_BrtBeginDXFs15 == nullptr)
+			m_BrtBeginDXFs15 = XLS::BaseObjectPtr(new XLSB::BeginDXFs15());
+
+		if (m_BrtBeginDXFs15 != nullptr)
+		{
+			auto ptrBrtBeginDXFs15 = static_cast<XLSB::BeginDXFs15*>(m_BrtBeginDXFs15.get());
+
+			if (ptrBrtBeginDXFs15 != nullptr)
+				ptrBrtBeginDXFs15->cdxfs = m_arDXF15.size();
+
+			proc.mandatory(*m_BrtBeginDXFs15);
+		}
+
+		proc.mandatory<EndDXFs15>();
+
+		proc.mandatory<FRTEnd>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

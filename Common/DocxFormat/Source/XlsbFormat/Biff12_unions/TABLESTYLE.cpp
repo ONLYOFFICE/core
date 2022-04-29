@@ -79,12 +79,29 @@ namespace XLSB
 
         if (proc.optional<EndTableStyle>())
         {
-            m_BrtEndTableStyle = elements_.back();
+            m_bBrtEndTableStyle = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndTableStyle = false;
 
-        return m_BrtBeginTableStyle && !m_arBrtTableStyleElement.empty() && m_BrtEndTableStyle;
+        return m_BrtBeginTableStyle && !m_arBrtTableStyleElement.empty() && m_bBrtEndTableStyle;
     }
+
+	const bool TABLESTYLE::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginTableStyle != nullptr)
+			proc.mandatory(*m_BrtBeginTableStyle);		
+
+		for (auto &item : m_arBrtTableStyleElement)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndTableStyle>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

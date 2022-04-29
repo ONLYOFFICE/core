@@ -334,6 +334,12 @@ namespace XLSB
             record.skipNunBytes(4);
             XLS::DXF::readFields(record);
         }
+
+		void writeFields(XLS::CFRecord& record) override
+		{
+			record.reserveNunBytes(4);
+			XLS::DXF::writeFields(record);
+		}
     };
 
     class DXF15: public DXF14

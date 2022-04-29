@@ -56,5 +56,11 @@ namespace XLSB
         record.skipNunBytes(4);
     }
 
+	void BeginSlicerCachesPivotCacheID::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader;
+		record.reserveNunBytes(4);
+	}
+
 } // namespace XLSB
 

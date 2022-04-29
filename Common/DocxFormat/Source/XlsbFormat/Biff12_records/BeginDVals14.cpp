@@ -56,5 +56,11 @@ namespace XLSB
         dVals.readFields(record);
     }
 
+	void BeginDVals14::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader;
+		dVals.writeFields(record);
+	}
+
 } // namespace XLSB
 

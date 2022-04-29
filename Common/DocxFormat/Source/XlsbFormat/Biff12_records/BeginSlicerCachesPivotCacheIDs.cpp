@@ -50,9 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new BeginSlicerCachesPivotCacheIDs(*this));
     }
 
-    void BeginSlicerCachesPivotCacheIDs::readFields(XLS::CFRecord& record)
-    {
-    }
-
 } // namespace XLSB
 

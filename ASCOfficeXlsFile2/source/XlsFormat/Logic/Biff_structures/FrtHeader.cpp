@@ -51,6 +51,11 @@ void FrtHeader::load(CFRecord& record)
 	record.skipNunBytes(8); // reserved
 }
 
+void FrtHeader::save(CFRecord& record)
+{
+	record << rt << grbitFrt;
+	record.reserveNunBytes(8); // reserved
+}
 
 } // namespace XLS
 

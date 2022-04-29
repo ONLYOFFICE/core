@@ -46,9 +46,6 @@ namespace XLSB
             ~EndSlicerCacheIDs();
 
             XLS::BaseObjectPtr clone();
-
-            void readFields(XLS::CFRecord& record);
-
     };
 
 } // namespace XLSB

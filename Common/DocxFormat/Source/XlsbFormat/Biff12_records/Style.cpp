@@ -70,5 +70,24 @@ namespace XLSB
         stName = str.value();
     }
 
+	void Style::writeFields(XLS::CFRecord& record)
+	{
+		record << ixf;
+
+		_UINT16 flag = 0;
+
+		SETBIT(flag, 0, fBuiltIn)
+		SETBIT(flag, 1, fHidden)
+		SETBIT(flag, 2 , fCustom)
+
+		record << flag;
+
+		record << iStyBuiltIn;
+		record << iLevel;
+
+		XLNullableWideString str(stName);
+		record << str;
+	}
+
 } // namespace XLSB
 

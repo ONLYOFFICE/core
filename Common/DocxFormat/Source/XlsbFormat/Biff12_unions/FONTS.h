@@ -45,12 +45,13 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+		const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         XLS::BaseObjectPtr               m_BrtBeginFonts;
         std::vector<XLS::BaseObjectPtr>	 m_arBrtFont;
         XLS::BaseObjectPtr               m_ACFONTS;
-        XLS::BaseObjectPtr               m_BrtEndFonts;
+		bool				             m_bBrtEndFonts;
 
         //GlobalWorkbookInfoPtr		global_info;
 

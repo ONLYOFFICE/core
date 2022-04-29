@@ -51,7 +51,8 @@ namespace XLSB
 
             XLS::BaseObjectPtr clone();
 
-            void readFields(XLS::CFRecord& record);
+            void readFields(XLS::CFRecord& record) override;
+			void writeFields(XLS::CFRecord& record) override;
 
             //static const XLS::ElementType	type = XLS::typeFill;
 
@@ -59,11 +60,11 @@ namespace XLSB
             Color                        brtColorFore;
             Color                        brtColorBack;
             _UINT32                      iGradientType;
-			XLS::Xnum                         xnumDegree;
-			XLS::Xnum                         xnumFillToLeft;
-			XLS::Xnum                         xnumFillToRight;
-			XLS::Xnum                         xnumFillToTop;
-			XLS::Xnum                         xnumFillToBottom;
+			XLS::Xnum                    xnumDegree;
+			XLS::Xnum                    xnumFillToLeft;
+			XLS::Xnum                    xnumFillToRight;
+			XLS::Xnum                    xnumFillToTop;
+			XLS::Xnum                    xnumFillToBottom;
             _UINT32                      cNumStop;
             std::vector<GradientStop>    xfillGradientStop;
 

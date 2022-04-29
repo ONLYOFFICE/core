@@ -49,11 +49,6 @@ namespace XLSB
     {
         return BaseObjectPtr(new BeginColorPalette(*this));
     }
-
-    void BeginColorPalette::readFields(XLS::CFRecord& record)
-    {
-        // No data in this record
-    }
-
+	
 } // namespace XLSB
 

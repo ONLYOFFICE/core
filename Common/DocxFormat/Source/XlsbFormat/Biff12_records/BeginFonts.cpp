@@ -55,5 +55,10 @@ namespace XLSB
         record >> cfonts;
     }
 
+	void BeginFonts::writeFields(XLS::CFRecord& record)
+	{
+		record << cfonts;
+	}
+
 } // namespace XLSB
 

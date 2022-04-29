@@ -73,12 +73,29 @@ namespace XLSB
 
         if (proc.optional<EndSlicerStyles>())
         {
-            m_BrtEndSlicerStyles = elements_.back();
+            m_bBrtEndSlicerStyles = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSlicerStyles = false;
 
-        return m_BrtBeginSlicerStyles && m_BrtEndSlicerStyles;
+        return m_BrtBeginSlicerStyles && m_bBrtEndSlicerStyles;
     }
+
+	const bool SLICERSTYLES::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginSlicerStyles != nullptr)
+			proc.mandatory(*m_BrtBeginSlicerStyles);
+
+		for (auto &item : m_arSLICERSTYLE)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndSlicerStyles>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

@@ -55,5 +55,10 @@ namespace XLSB
         record >> cborders;
     }
 
+	void BeginBorders::writeFields(XLS::CFRecord& record)
+	{
+		record << cborders;
+	}
+
 } // namespace XLSB
 

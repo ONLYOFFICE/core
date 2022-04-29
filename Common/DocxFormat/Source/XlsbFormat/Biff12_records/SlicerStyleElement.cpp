@@ -55,5 +55,10 @@ namespace XLSB
         record >> FRTheader >> tseType >> dxfId;
     }
 
+	void SlicerStyleElement::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader << tseType << dxfId;
+	}
+
 } // namespace XLSB
 

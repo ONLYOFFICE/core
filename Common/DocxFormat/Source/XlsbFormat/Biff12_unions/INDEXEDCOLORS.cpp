@@ -58,9 +58,11 @@ namespace XLSB
     {
         if (proc.optional<BeginIndexedColors>())
         {
-            m_BrtBeginIndexedColors = elements_.back();
+			m_bBrtBeginIndexedColors = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginIndexedColors = false;
 
         int count = proc.repeated<IndexedColor>(0, 64);
 
@@ -73,12 +75,28 @@ namespace XLSB
 
         if (proc.optional<EndIndexedColors>())
         {
-            m_BrtEndIndexedColors = elements_.back();
+            m_bBrtEndIndexedColors = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndIndexedColors = false;
 
-        return m_BrtBeginIndexedColors && !m_arIndexedColor.empty() && m_BrtEndIndexedColors;
+        return m_bBrtBeginIndexedColors && !m_arIndexedColor.empty() && m_bBrtEndIndexedColors;
     }
+
+	const bool INDEXEDCOLORS::saveContent(XLS::BinProcessor & proc)
+	{
+		proc.mandatory<BeginIndexedColors>();
+
+		for (auto &item : m_arIndexedColor)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndIndexedColors>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

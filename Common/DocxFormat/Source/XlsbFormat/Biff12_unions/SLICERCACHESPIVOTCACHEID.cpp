@@ -63,12 +63,24 @@ namespace XLSB
 
         if (proc.optional<EndSlicerCachesPivotCacheID>())
         {
-            m_BrtEndSlicerCachesPivotCacheID = elements_.back();
+            m_bBrtEndSlicerCachesPivotCacheID = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSlicerCachesPivotCacheID = false;
 
-        return m_BrtBeginSlicerCachesPivotCacheID && m_BrtEndSlicerCachesPivotCacheID;
+        return m_BrtBeginSlicerCachesPivotCacheID && m_bBrtEndSlicerCachesPivotCacheID;
     }
+
+	const bool SLICERCACHESPIVOTCACHEID::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginSlicerCachesPivotCacheID != nullptr)
+			proc.mandatory(*m_BrtBeginSlicerCachesPivotCacheID);
+
+		proc.mandatory<EndSlicerCachesPivotCacheID>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

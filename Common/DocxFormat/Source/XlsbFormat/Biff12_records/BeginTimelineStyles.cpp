@@ -55,5 +55,10 @@ namespace XLSB
         record >> FRTheader >> stDefTimelineStyle;
     }
 
+	void BeginTimelineStyles::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader << stDefTimelineStyle;
+	}
+
 } // namespace XLSB
 

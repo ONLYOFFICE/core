@@ -55,5 +55,10 @@ namespace XLSB
         record >> ifmt >> stFmtCode;
     }
 
+	void Fmt::writeFields(XLS::CFRecord& record)
+	{
+		record << ifmt << stFmtCode;
+	}
+
 } // namespace XLSB
 

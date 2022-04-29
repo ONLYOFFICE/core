@@ -61,5 +61,11 @@ namespace XLSB
         record >> xnumPosition;
     }
 
+	void GradientStop::save(XLS::CFRecord& record)
+	{
+		brtColor.writeFields(record);
+		record << xnumPosition;
+	}
+
 } // namespace XLSB
 

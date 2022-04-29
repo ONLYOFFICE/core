@@ -55,5 +55,10 @@ namespace XLSB
         record >> cdxfs;
     }
 
+	void BeginDXFs::writeFields(XLS::CFRecord& record)
+	{
+		record << cdxfs;
+	}
+
 } // namespace XLSB
 

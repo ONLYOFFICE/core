@@ -50,9 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new BeginSparklineGroups(*this));
     }
 
-    void BeginSparklineGroups::readFields(XLS::CFRecord& record)
-    {
-    }
-
 } // namespace XLSB
 

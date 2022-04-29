@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new EndColorPalette(*this));
     }
 
-    void EndColorPalette::readFields(XLS::CFRecord& record)
-    {
-        // No data in this record
-    }
-
 } // namespace XLSB
 

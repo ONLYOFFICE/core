@@ -56,9 +56,10 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+        const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
-        XLS::BaseObjectPtr               m_BrtBeginStyleSheet;
+        bool				             m_bBrtBeginStyleSheet;
         XLS::BaseObjectPtr               m_FMTS;
         XLS::BaseObjectPtr               m_FONTS;
         XLS::BaseObjectPtr               m_FILLS;
@@ -69,7 +70,7 @@ namespace XLSB
         XLS::BaseObjectPtr               m_DXFS;
         XLS::BaseObjectPtr               m_TABLESTYLES;
         XLS::BaseObjectPtr               m_COLORPALETTE;
-        XLS::BaseObjectPtr               m_BrtEndStyleSheet;
+		bool							 m_bBrtEndStyleSheet;
         XLS::BaseObjectPtr               m_FRTSTYLESHEET;
 
     };

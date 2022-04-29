@@ -55,5 +55,10 @@ namespace XLSB
         record >> cxfs;
     }
 
+	void BeginCellStyleXFs::writeFields(XLS::CFRecord& record)
+	{
+		record << cxfs;
+	}
+
 } // namespace XLSB
 

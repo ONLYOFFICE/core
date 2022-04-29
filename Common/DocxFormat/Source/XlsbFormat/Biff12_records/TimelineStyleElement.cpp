@@ -55,5 +55,10 @@ namespace XLSB
         record >> FRTheader >> tseType >> dxfId;
     }
 
+	void TimelineStyleElement::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader << tseType << dxfId;
+	}
+
 } // namespace XLSB
 

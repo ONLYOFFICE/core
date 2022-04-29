@@ -47,13 +47,14 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+		const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
 		XLS::BaseObjectPtr               m_BrtFRTBegin;
-		XLS::BaseObjectPtr               m_BrtBeginStyleSheetExt14;
+		bool				             m_bBrtBeginStyleSheetExt14;
 		XLS::BaseObjectPtr               m_SLICERSTYLES;
-		XLS::BaseObjectPtr               m_BrtEndStyleSheetExt14;
-		XLS::BaseObjectPtr               m_BrtFRTEnd;
+		bool				             m_bBrtEndStyleSheetExt14;
+		bool							 m_bBrtFRTEnd;
 
     };
 

@@ -47,13 +47,14 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+		const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         XLS::BaseObjectPtr               m_BrtBeginSlicerStyle;
-        XLS::BaseObjectPtr               m_BrtBeginSlicerStyleElements;
+		bool			                 m_bBrtBeginSlicerStyleElements;
         std::vector<XLS::BaseObjectPtr>  m_arBrtSlicerStyleElement;
-        XLS::BaseObjectPtr               m_BrtEndSlicerStyleElements;
-        XLS::BaseObjectPtr               m_BrtEndSlicerStyle;
+		bool			                 m_bBrtEndSlicerStyleElements;
+		bool			                 m_bBrtEndSlicerStyle;
 
     };
 

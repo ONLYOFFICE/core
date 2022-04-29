@@ -50,9 +50,10 @@ namespace XLSB
 
             XLS::BaseObjectPtr clone();
 
-            void readFields(XLS::CFRecord& record);
+            void readFields(XLS::CFRecord& record) override;
+			void writeFields(XLS::CFRecord& record) override;
 
-            FRTBlank            FRTheader;
+            FRTBlank    FRTheader;
             _UINT32		tseType;
             _UINT32		dxfId;
 

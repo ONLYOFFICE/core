@@ -49,7 +49,8 @@ public:
 
 	BiffStructurePtr clone();
 
-	virtual void load(CFRecord& record);
+	void load(CFRecord& record);
+	void save(CFRecord& record);
 	
 	static const ElementType	type = typeFrtHeader;
 	

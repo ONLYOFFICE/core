@@ -73,11 +73,13 @@ namespace XLSB
 
         if (proc.optional<EndDXFs>())
         {
-            m_BrtEndDXFs = elements_.back();
+			m_bBrtEndDXFs = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndDXFs = false;
 
-        return m_BrtBeginDXFs && m_BrtEndDXFs;
+        return m_BrtBeginDXFs && m_bBrtEndDXFs;
     }
 
 } // namespace XLSB

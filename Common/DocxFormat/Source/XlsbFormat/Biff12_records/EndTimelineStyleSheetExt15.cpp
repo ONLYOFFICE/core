@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new EndTimelineStyleSheetExt15(*this));
     }
 
-    void EndTimelineStyleSheetExt15::readFields(XLS::CFRecord& record)
-    {
-        // No data in this record
-    }
-
 } // namespace XLSB
 

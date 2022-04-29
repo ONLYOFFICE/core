@@ -55,5 +55,10 @@ namespace XLSB
         record >> FRTheader >> cdxfs;
     }
 
+	void BeginDXF14s::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader << cdxfs;
+	}
+
 } // namespace XLSB
 

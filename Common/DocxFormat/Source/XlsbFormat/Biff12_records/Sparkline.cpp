@@ -55,5 +55,10 @@ namespace XLSB
         record >> FRTheader;
     }
 
+	void Sparkline::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader;
+	}
+
 } // namespace XLSB
 

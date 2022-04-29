@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new EndIndexedColors(*this));
     }
 
-    void EndIndexedColors::readFields(XLS::CFRecord& record)
-    {
-        // No data in this record
-    }
-
 } // namespace XLSB
 

@@ -63,5 +63,13 @@ namespace XLSB
         return m_BrtTableSlicerCacheID != nullptr;
     }
 
+	const bool TABLESLICERCACHEID::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtTableSlicerCacheID != nullptr)
+			proc.mandatory(*m_BrtTableSlicerCacheID);
+
+		return true;
+	}
+
 } // namespace XLSB
 

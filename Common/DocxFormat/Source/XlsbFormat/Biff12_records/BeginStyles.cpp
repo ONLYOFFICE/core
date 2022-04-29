@@ -55,5 +55,10 @@ namespace XLSB
         record >> cstyles;
     }
 
+	void BeginStyles::writeFields(XLS::CFRecord& record)
+	{
+		record << cstyles;
+	}
+
 } // namespace XLSB
 

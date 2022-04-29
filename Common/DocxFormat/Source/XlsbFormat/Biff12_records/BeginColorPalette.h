@@ -46,9 +46,6 @@ namespace XLSB
             ~BeginColorPalette();
 
             XLS::BaseObjectPtr clone();
-
-            void readFields(XLS::CFRecord& record);
-
             //static const XLS::ElementType	type = XLS::typeBeginColorPalette;
     };
 

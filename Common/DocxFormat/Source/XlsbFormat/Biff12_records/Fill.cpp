@@ -67,5 +67,22 @@ namespace XLSB
         }
     }
 
+	void Fill::writeFields(XLS::CFRecord& record)
+	{
+		record << fls;
+		brtColorFore.writeFields(record);
+		brtColorBack.writeFields(record);
+		record << iGradientType;
+		record << xnumDegree << xnumFillToLeft << xnumFillToRight << xnumFillToTop << xnumFillToBottom;
+
+		cNumStop = xfillGradientStop.size();
+		record << cNumStop;
+
+		for (auto& item : xfillGradientStop)
+		{
+			record << item;
+		}
+	}
+
 } // namespace XLSB
 

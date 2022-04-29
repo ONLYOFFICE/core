@@ -50,9 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new KnownFonts(*this));
     }
 
-    void KnownFonts::readFields(XLS::CFRecord& record)
-    {
-    }
-
 } // namespace XLSB
 

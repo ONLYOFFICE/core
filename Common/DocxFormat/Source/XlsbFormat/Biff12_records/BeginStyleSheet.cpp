@@ -49,11 +49,6 @@ namespace XLSB
     {
         return BaseObjectPtr(new BeginStyleSheet(*this));
     }
-
-    void BeginStyleSheet::readFields(XLS::CFRecord& record)
-    {
-        // No data in this record
-    }
-
+	
 } // namespace XLSB
 

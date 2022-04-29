@@ -1020,7 +1020,9 @@ NSFonts::CFontInfo* CFontList::GetByParams(NSFonts::CFontSelectFormat& oSelect, 
             }
             if ( oSelect.wsDefaultName != NULL )
             {
-                int nTmp = 1000 + GetFaceNamePenalty2( pInfo, *oSelect.wsDefaultName, true );
+                int nTmp = GetFaceNamePenalty2( pInfo, *oSelect.wsDefaultName, true );
+                if (nTmp < 3000) // max value in picker
+                    nTmp += 3000;
                 if (nTmp < nNamePenalty)
                     nNamePenalty = nTmp;
             }

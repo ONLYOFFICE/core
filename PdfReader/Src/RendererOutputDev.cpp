@@ -450,6 +450,7 @@ namespace PdfReader
 
         m_lRendererType = c_nUnknownRenderer;
         m_pRenderer     = pRenderer;
+        m_arrRenderer.push_back(pRenderer);
 
         if (NULL != m_pRenderer)
         {
@@ -600,7 +601,6 @@ namespace PdfReader
         m_sClip.push_back(GfxClip());
         m_bClipChanged = true;
         updateAll(pGState);
-        m_sGState.push_back(pGState);
     }
     void RendererOutputDev::restoreState(GfxState *pGState)
     {
@@ -609,8 +609,6 @@ namespace PdfReader
             m_sClip.pop_back();
         m_bClipChanged = true;
         updateAll(pGState);
-        if (!m_sGState.empty())
-            m_sGState.pop_back();
     }
     void RendererOutputDev::updateCTM(GfxState *pGState, double dMatrix11, double dMatrix12, double dMatrix21, double dMatrix22, double dMatrix31, double dMatrix32)
     {
@@ -4334,26 +4332,79 @@ namespace PdfReader
         m_bTransparentGroup = true;
         m_bTransparentGroupSoftMask = bForSoftMask;
 
-        if (!bIsolated || bKnockout)
+        if (m_bTransparentGroupSoftMask)
         {
-            if (pGState && pGState->hasSaves() && !m_sGState.empty())
-            {
-                updateFillOpacity(m_sGState.back());
-            }
+            int nWidth  = pBBox[2] - pBBox[0];
+            int nHeight = pBBox[3] - pBBox[1];
+            BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
+
+            CBgraFrame* pFrame = new CBgraFrame();
+            pFrame->put_Data(pBgraData);
+            pFrame->put_Width(nWidth);
+            pFrame->put_Height(nHeight);
+            pFrame->put_Stride(-4 * nWidth);
+            m_arrTransparency.push_back(pFrame);
+
+            NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
+            pRenderer->SetFontManager(m_pFontManager);
+
+            Aggplus::CDoubleRect oRect;
+            oRect.left		= 0;
+            oRect.top		= 0;
+            oRect.right		= pFrame->get_Width();
+            oRect.bottom	= pFrame->get_Height();
+            pRenderer->Create(pFrame->get_Data(), oRect, pFrame->get_Width(), pFrame->get_Height());
+
+            pRenderer->put_Width(nWidth);
+            pRenderer->put_Height(nHeight);
+
+            m_arrRenderer.push_back(pRenderer);
+            m_pRenderer = pRenderer;
         }
     }
     void RendererOutputDev::endTransparencyGroup(GfxState *pGState)
     {
+        if (m_bTransparentGroupSoftMask)
+        {
+            RELEASEOBJECT(m_pTransparentGroupSoftMask);
+            m_pTransparentGroupSoftMask = m_arrTransparency.back();
+            m_arrTransparency.pop_back();
+
+            IRenderer* pRenderer = m_arrRenderer.back();
+            RELEASEOBJECT(pRenderer);
+            m_arrRenderer.pop_back();
+            m_pRenderer = m_arrRenderer.back();
+        }
+
         m_bTransparentGroup = false;
         m_bTransparentGroupSoftMask = false;
-
-        if (m_pTransparentGroupSoftMask)
-            delete[]m_pTransparentGroupSoftMask;
-
-        m_pTransparentGroupSoftMask = NULL;
     }
     void RendererOutputDev::paintTransparencyGroup(GfxState *pGState, double *pBBox)
     {
+        double arrMatrix[6];
+        double *pCTM = pGState->getCTM();
+        double dPageHeight = pGState->getPageHeight();
+        //  Исходное предобразование
+        //             |1  0  0|   |pCTM[0] pCTM[1] 0|
+        // arrMatrix = |0 -1  0| * |pCTM[2] pCTM[3] 0|
+        //             |0  1  1|   |pCTM[4] pCTM[5] 1|
+        arrMatrix[0] =     pCTM[0];
+        arrMatrix[1] =  -pCTM[1];
+        arrMatrix[2] =    -pCTM[2];
+        arrMatrix[3] =  -(-pCTM[3]);
+        arrMatrix[4] =     pCTM[2] + pCTM[4];
+        arrMatrix[5] =  -(pCTM[3] + pCTM[5]) + dPageHeight;
+
+        double dShiftX = 0, dShiftY = 0;
+        DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
+
+        Aggplus::CImage oImage;
+        oImage.Create(m_pTransparentGroupSoftMask->get_Data(), m_pTransparentGroupSoftMask->get_Width(), m_pTransparentGroupSoftMask->get_Height(), m_pTransparentGroupSoftMask->get_Stride());
+        m_pTransparentGroupSoftMask->ClearNoAttack();
+
+        m_pRenderer->DrawImage(&oImage, 0 + dShiftX, 0 + dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
+
+        RELEASEOBJECT(m_pTransparentGroupSoftMask);
     }
     void RendererOutputDev::setSoftMask(GfxState *pGState, double *pBBox, bool bAlpha, Function *pTransferFunc, GfxColor *pBackdropColor)
     {

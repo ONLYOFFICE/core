@@ -313,7 +313,6 @@ namespace PdfReader
         NSFonts::IFontManager*        m_pFontManager;
 
 		//GfxTextClip                   *m_pBufferTextClip;
-        std::vector<GfxState*>        m_sGState;
 
 		XRef                         *m_pXref;           // Таблица Xref для данного PDF-документа
 		CFontList                    *m_pFontList;
@@ -327,7 +326,9 @@ namespace PdfReader
 		bool                          m_bTransparentGroup;
 
 		bool                          m_bTransparentGroupSoftMask;
-		unsigned char*                m_pTransparentGroupSoftMask;
+		CBgraFrame*                   m_pTransparentGroupSoftMask;
+		std::vector<CBgraFrame*>      m_arrTransparency;
+		std::vector<IRenderer*>       m_arrRenderer;
 
         bool                          m_bDrawOnlyText; // Special option for html-renderer
 

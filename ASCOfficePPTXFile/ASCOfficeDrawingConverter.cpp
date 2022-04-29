@@ -2292,6 +2292,8 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 							if (pFind != oCssStyle.m_mapProperties.end())
 							{
 								sFont = oCssStyle.m_arrProperties[pFind->second]->get_Value().wsValue;
+
+								XmlUtils::replace_all(sFont, L"\"", L"");
 							}
 							pFind = pFind = oCssStyle.m_mapProperties.find(SimpleTypes::Vml::cssptFontSize);
 							if (pFind != oCssStyle.m_mapProperties.end())
@@ -2736,9 +2738,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 				pShape->oTextBoxBodyPr->rIns = 0;
 				pShape->oTextBoxBodyPr->bIns = 0;
 
-				if (pPPTShape->m_textPath.bFitShape)
-					pShape->oTextBoxBodyPr->Fit.type = PPTX::Logic::TextFit::FitSpAuto;
-				else if (pPPTShape->m_textPath.bFitPath)
+				if (pPPTShape->m_textPath.bFitShape || pPPTShape->m_textPath.bFitPath)
 					pShape->oTextBoxBodyPr->Fit.type = PPTX::Logic::TextFit::FitNormAuto;
 
 				pShape->oTextBoxBodyPr->wrap = new PPTX::Limit::TextWrap(1);

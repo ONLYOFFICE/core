@@ -1312,7 +1312,7 @@ namespace DocFileFormat
 		
 		TableInfo tai( papx, m_document->nWordVersion );
 
-		//build the table grid
+	//build the table grid
 		std::vector<short> grid;
 		buildTableGrid( cp, nestingLevel, grid);
 
@@ -1389,9 +1389,9 @@ namespace DocFileFormat
 		
 		while ( tai.fInTable )
 		{
-			iTap_current = 1;
+			fEndNestingLevel = false;
 
-			for ( std::list<SinglePropertyModifier>::iterator iter = papx->grpprl->begin(); iter != papx->grpprl->end(); iter++ )
+			for ( std::list<SinglePropertyModifier>::iterator iter = papx->grpprl->begin(); !fEndNestingLevel && iter != papx->grpprl->end(); iter++ )
 			{
 				DWORD code = iter->OpCode;
 
@@ -1400,7 +1400,7 @@ namespace DocFileFormat
 					case sprmPFInnerTableCell:
 					case sprmPFInnerTtp:
 					{
-						fEndNestingLevel = ( iter->Arguments[0] == 1 ) ? (true) : (false);
+						fEndNestingLevel = ( iter->Arguments[0] == 1 && (nestingLevel == iTap_current)) ? (true) : (false);
 					}break;
 
 					case sprmOldPFInTable:
@@ -1433,19 +1433,9 @@ namespace DocFileFormat
 								boundary1 = FormatUtils::BytesToInt16( iter->Arguments + 1, i * 2 , iter->argumentsSize );
 								boundary2 = FormatUtils::BytesToInt16( iter->Arguments + 1, ( i + 1 ) * 2, iter->argumentsSize );
 
-								//if (boundary1 < 0) boundary1 = 0;
-								//if (boundary2 < 0) boundary2 = 0;
-
 								mapBoundaries.insert(std::make_pair(boundary1, 0));
 								mapBoundaries.insert(std::make_pair(boundary2, 0));
-								//AddBoundary(boundary1, boundary2, mapBoundaries);
 							}
-							if (max_boundary < boundary2)
-								max_boundary = boundary2;
-
-							mapBoundaries.insert(std::make_pair(boundary2, 0));
-							mapBoundaries.insert(std::make_pair(max_boundary, 0));
-							//AddBoundary(boundary2, max_boundary, mapBoundaries);
 							bPresent = true;
 						}break;
 						default:
@@ -1453,9 +1443,9 @@ namespace DocFileFormat
 					}
 				}
 			}
-			if (nestingLevel != iTap_current && fEndNestingLevel && !mapBoundaries.empty())
+			if ((nestingLevel != iTap_current || fEndNestingLevel) && !mapBoundaries.empty())
 				break;
-			//get the next papx
+	//get the next papx
 			papx = findValidPapx( fcRowEnd );
 			tai = TableInfo( papx, m_document->nWordVersion );
 			fcRowEnd = findRowEndFc( cp, cp, nestingLevel );
@@ -1475,7 +1465,7 @@ namespace DocFileFormat
 			{
 				int sz = it_next->first - it->first;
 				if (sz > 2)
-					grid.push_back( it_next->first - it->first );
+					grid.push_back(it_next->first - it->first);
 			}
 		}
 		_lastValidPapx = backup;

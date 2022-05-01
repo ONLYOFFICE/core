@@ -94,7 +94,7 @@ namespace DocFileFormat
 			numberOfColumns = bytes[0];
 			int pointer = 1;
 
-			// rgdxaCenter
+		// rgdxaCenter
 			for (int i = 0; i < numberOfColumns + 1; ++i)
 			{
 				int pos = FormatUtils::BytesToInt16(bytes, pointer, size);
@@ -103,7 +103,7 @@ namespace DocFileFormat
 			}
 
 
-			// rgTc80
+		// rgTc80
 
 			for (int i = 0; i < numberOfColumns; ++i)
 			{
@@ -116,21 +116,21 @@ namespace DocFileFormat
 						oTC80.ftsWidth		=	Global::dxa;
 						oTC80.wWidth		=	0;
 
-						oTC80.brcTop		=	new BorderCode();
-						oTC80.brcLeft		=	new BorderCode();
-						oTC80.brcBottom		=	new BorderCode();
-						oTC80.brcRight		=	new BorderCode();
-						
+						oTC80.brcTop = new BorderCode();
+						oTC80.brcLeft = new BorderCode();
+						oTC80.brcBottom = new BorderCode();
+						oTC80.brcRight = new BorderCode();
+
 						rgTc80.push_back(oTC80);
 					}
 
 					break;
-				}	
+				}
 
 				TC80 tc;
-				// the flags
+	// the flags				
 				
-				unsigned short flags	=	FormatUtils::BytesToUInt16(bytes, pointer, size);
+				unsigned short flags = FormatUtils::BytesToUInt16(bytes, pointer, size);
 				
 				tc.horzMerge			=	(unsigned char)FormatUtils::BitmaskToInt((int)flags, 0x3);
 				tc.textFlow				=	(Global::TextFlow)FormatUtils::BitmaskToInt((int)flags, 0x1C);
@@ -139,38 +139,26 @@ namespace DocFileFormat
 				tc.ftsWidth				=	(Global::CellWidthType)FormatUtils::BitmaskToInt((int)flags, 0xE00);
 				tc.fFitText				=	FormatUtils::BitmaskToBool(flags, 0x1000);
 				tc.fNoWrap				=	FormatUtils::BitmaskToBool(flags, 0x2000);
-				tc.fHideMark			=	FormatUtils::BitmaskToBool(flags, 0x4000);
-				
+				tc.fHideMark			=	FormatUtils::BitmaskToBool(flags, 0x4000);				
+
 				pointer					+=	2;
 
-				// cell width
-				tc.wWidth				=	FormatUtils::BytesToInt16(bytes, pointer, size);
-				pointer					+=	2;
+	// cell width
+				tc.wWidth =	FormatUtils::BytesToInt16(bytes, pointer, size);
+				pointer +=	2;
 
 				const int borderCodeBytes = 4;
 
-				//border top
-				unsigned char brcTopBytes[borderCodeBytes];
-				memcpy(brcTopBytes, (bytes + pointer), borderCodeBytes);
-				tc.brcTop = new BorderCode(brcTopBytes, borderCodeBytes);
+				tc.brcTop = new BorderCode((bytes + pointer), borderCodeBytes);
 				pointer += borderCodeBytes;
 
-				//border left
-				unsigned char brcLeftBytes[borderCodeBytes];
-				memcpy(brcLeftBytes, (bytes + pointer), borderCodeBytes);
-				tc.brcLeft = new BorderCode(brcLeftBytes, borderCodeBytes);
+				tc.brcLeft = new BorderCode((bytes + pointer), borderCodeBytes);
 				pointer += borderCodeBytes;
 
-				//border bottom
-				unsigned char brcBottomBytes[borderCodeBytes];
-				memcpy(brcBottomBytes, (bytes + pointer), borderCodeBytes);
-				tc.brcBottom = new BorderCode(brcBottomBytes, borderCodeBytes);
+				tc.brcBottom = new BorderCode((bytes + pointer), borderCodeBytes);
 				pointer += borderCodeBytes;
 
-				//border top
-				unsigned char brcRightBytes[borderCodeBytes];
-				memcpy(brcRightBytes, (bytes + pointer), borderCodeBytes);
-				tc.brcRight = new BorderCode(brcRightBytes, borderCodeBytes);
+				tc.brcRight = new BorderCode((bytes + pointer), borderCodeBytes);
 				pointer += borderCodeBytes;
 
 				rgTc80.push_back(tc);

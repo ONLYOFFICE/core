@@ -186,6 +186,125 @@ namespace OOX
                 ReadAttributes(obj);
             }
 
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::Font*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if (m_oSz.IsInit() && m_oSz->m_oVal.Init())
+						ptr->dyHeight = m_oSz->m_oVal->GetValue() * 20.;
+					else
+						ptr->dyHeight = 0;
+
+					if (m_oItalic.IsInit())
+						ptr->fItalic = m_oItalic->ToBool();
+					else
+						ptr->fItalic = true;
+
+					if (m_oStrike.IsInit())
+						ptr->fStrikeOut = m_oStrike->ToBool();
+					else
+						ptr->fStrikeOut = true;
+
+					if (m_oOutline.IsInit())
+						ptr->fOutline = m_oOutline->ToBool();
+					else
+						ptr->fOutline = true;
+
+					if (m_oShadow.IsInit())
+						ptr->fShadow = m_oShadow->ToBool();
+					else
+						ptr->fShadow = true;
+
+					if (m_oCondense.IsInit())
+						ptr->fCondense = m_oCondense->ToBool();
+					else
+						ptr->fCondense = true;
+
+					if (m_oExtend.IsInit())
+						ptr->fExtend = m_oExtend->ToBool();
+					else
+						ptr->fExtend = true;
+
+					if (m_oBold.IsInit())
+					{
+						if (m_oBold->ToBool() == true)
+							ptr->bls = 0x02BC;
+						else
+							ptr->bls = 0x0190;
+					}
+					else
+						ptr->bls = 0x0190;
+
+					if (m_oUnderline.IsInit() && m_oUnderline->m_oUnderline.Init())
+					{
+						switch (m_oUnderline->m_oUnderline->GetValue())
+						{
+						case SimpleTypes::Spreadsheet::EUnderline::underlineNone:
+							ptr->uls = 0; break;
+						case SimpleTypes::Spreadsheet::EUnderline::underlineSingle:
+							ptr->uls = 1; break;
+						case SimpleTypes::Spreadsheet::EUnderline::underlineDouble:
+							ptr->uls = 2; break;
+						case SimpleTypes::Spreadsheet::EUnderline::underlineSingleAccounting:
+							ptr->uls = 33; break;
+						case SimpleTypes::Spreadsheet::EUnderline::underlineDoubleAccounting:
+							ptr->uls = 34; break;
+						}
+					}
+					else
+						ptr->uls = 1;
+
+					if (m_oFamily.IsInit() && m_oFamily->m_oFontFamily.IsInit())
+						ptr->bFamily = m_oFamily->m_oFontFamily->GetValue();
+					else
+						ptr->bFamily = 1;
+
+					if (m_oCharset.IsInit() && m_oCharset->m_oCharset.IsInit())
+						ptr->bCharSet = m_oCharset->m_oCharset->GetValue();
+					else
+						ptr->bCharSet = 1;
+
+					if (m_oColor.IsInit())
+						m_oColor->toBin(&ptr->brtColor);
+
+					if (m_oScheme.IsInit() && m_oScheme->m_oFontScheme.Init())
+					{
+						switch (m_oScheme->m_oFontScheme->GetValue())
+						{
+						case SimpleTypes::Spreadsheet::EFontScheme::fontschemeNone:
+							ptr->bFontScheme = 0; break;
+						case SimpleTypes::Spreadsheet::EFontScheme::fontschemeMajor:
+							ptr->bFontScheme = 1; break;
+						case SimpleTypes::Spreadsheet::EFontScheme::fontschemeMinor:
+							ptr->bFontScheme = 2; break;
+						}
+					}
+					else
+						ptr->bFontScheme = 0;
+
+					if (m_oRFont.IsInit() && m_oRFont->m_sVal.IsInit())
+						ptr->fontName = m_oRFont->m_sVal.get();
+					else
+						ptr->fontName = L"";
+
+					if (m_oVertAlign.IsInit() && m_oVertAlign->m_oVerticalAlign.Init())
+					{
+						switch (m_oVertAlign->m_oVerticalAlign->GetValue())
+						{
+						case SimpleTypes::EVerticalAlignRun::verticalalignrunBaseline:
+							ptr->sss = 0; break;
+						case SimpleTypes::EVerticalAlignRun::verticalalignrunSuperscript:
+							ptr->sss = 1; break;
+						case SimpleTypes::EVerticalAlignRun::verticalalignrunSubscript:
+							ptr->sss = 2; break;
+						}
+					}
+					else
+						ptr->sss = 0;
+				}
+			}
+
 			virtual EElementType getType () const
 			{
 				return et_x_Font;
@@ -437,6 +556,20 @@ namespace OOX
                     m_mapFonts.insert(std::make_pair(index++, pFont));
                 }
             }
+
+			void toBin(std::vector<XLS::BaseObjectPtr>& obj)
+			{
+				obj.reserve(m_arrItems.size());
+				for (size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					if (m_arrItems[i])
+					{
+						XLS::BaseObjectPtr item(new XLSB::Font());
+						m_arrItems[i]->toBin(item);
+						obj.push_back(item);
+					}
+				}
+			}
 
 			virtual EElementType getType () const
 			{

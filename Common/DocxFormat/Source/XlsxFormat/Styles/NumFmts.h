@@ -88,6 +88,23 @@ namespace OOX
                 ReadAttributes(obj);
             }
 
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::Fmt*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if (m_oFormatCode.IsInit())
+						ptr->stFmtCode = m_oFormatCode.get();
+					else
+						ptr->stFmtCode = L"";
+
+					if (m_oNumFmtId.IsInit())
+						ptr->ifmt = m_oNumFmtId->GetValue();
+					else
+						ptr->ifmt = 0;
+				}
+			}
+
 			virtual EElementType getType () const
 			{
 				return et_x_NumFmt;
@@ -110,7 +127,7 @@ namespace OOX
                 auto ptr = static_cast<XLSB::Fmt*>(obj.get());
                 if(ptr != nullptr)
                 {
-                    m_oFormatCode = ptr->stFmtCode.value();
+                    m_oFormatCode	= ptr->stFmtCode.value();
                     m_oNumFmtId   = ptr->ifmt;
                 }
             }
@@ -203,6 +220,20 @@ namespace OOX
                 }
 
             }
+
+			void toBin(std::vector<XLS::BaseObjectPtr>& obj)
+			{
+				obj.reserve(m_arrItems.size());
+				for (size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					if (m_arrItems[i])
+					{
+						XLS::BaseObjectPtr item(new XLSB::Fmt());
+						m_arrItems[i]->toBin(item);
+						obj.push_back(item);
+					}
+				}
+			}
 
 			virtual EElementType getType () const
 			{

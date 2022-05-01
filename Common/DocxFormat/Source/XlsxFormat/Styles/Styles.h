@@ -230,6 +230,83 @@ namespace OOX
                 }
             }
 
+			void writeBin(const CPath& oPath) const
+			{
+				CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+				if (xlsb)
+				{
+					XLSB::StylesStreamPtr stylesStream(new XLSB::StylesStream);
+
+					if (stylesStream != nullptr)
+					{
+						if (m_oNumFmts.IsInit())
+						{
+							stylesStream->m_FMTS = XLS::BaseObjectPtr(new XLSB::FMTS());
+							m_oNumFmts->toBin(static_cast<XLSB::FMTS*>(stylesStream->m_FMTS.get())->m_arBrtFmt);
+						}
+						if (m_oFonts.IsInit())
+						{
+							stylesStream->m_FONTS = XLS::BaseObjectPtr(new XLSB::FONTS());
+							m_oFonts->toBin(static_cast<XLSB::FONTS*>(stylesStream->m_FONTS.get())->m_arBrtFont);
+						}
+						if (m_oFills.IsInit())
+						{
+							stylesStream->m_FILLS = XLS::BaseObjectPtr(new XLSB::FILLS());
+							m_oFills->toBin(static_cast<XLSB::FILLS*>(stylesStream->m_FILLS.get())->m_arBrtFill);
+						}
+						
+						if (m_oBorders.IsInit())
+						{
+							stylesStream->m_BORDERS = XLS::BaseObjectPtr(new XLSB::BORDERS());
+							m_oBorders->toBin(static_cast<XLSB::BORDERS*>(stylesStream->m_BORDERS.get())->m_arBrtBorder);
+						}
+
+						if (m_oCellStyleXfs.IsInit())
+						{
+							stylesStream->m_CELLSTYLEXFS = XLS::BaseObjectPtr(new XLSB::CELLSTYLEXFS());
+							m_oCellStyleXfs->toBin(static_cast<XLSB::CELLSTYLEXFS*>(stylesStream->m_CELLSTYLEXFS.get())->m_arBrtXF);
+						}
+
+						if (m_oCellXfs.IsInit())
+						{
+							stylesStream->m_CELLXFS = XLS::BaseObjectPtr(new XLSB::CELLXFS());
+							m_oCellXfs->toBin(static_cast<XLSB::CELLXFS*>(stylesStream->m_CELLXFS.get())->m_arBrtXF);
+						}
+						
+						if (m_oCellStyles.IsInit())
+						{
+							stylesStream->m_STYLES = XLS::BaseObjectPtr(new XLSB::STYLES());
+							m_oCellStyles->toBin(static_cast<XLSB::STYLES*>(stylesStream->m_STYLES.get())->m_arBrtStyle);
+						}
+
+						//if (m_oDxfs.IsInit())
+						//{
+						//	stylesStream->m_DXFS = XLS::BaseObjectPtr(new XLSB::DXFS());
+						//	m_oDxfs->toBin(static_cast<XLSB::DXFS*>(stylesStream->m_DXFS.get())->m_aruDXF);
+						//}
+
+						if (m_oTableStyles.IsInit())
+						{
+							stylesStream->m_TABLESTYLES = XLS::BaseObjectPtr(new XLSB::TABLESTYLES());
+							m_oTableStyles->toBin(stylesStream->m_TABLESTYLES);
+						}
+
+						if (m_oColors.IsInit())
+						{
+							stylesStream->m_COLORPALETTE = XLS::BaseObjectPtr(new XLSB::COLORPALETTE());
+							m_oColors->toBin(stylesStream->m_COLORPALETTE);
+						}
+						
+
+						/*if (stylesStream->m_FRTSTYLESHEET != nullptr)
+						m_oExtLst = stylesStream->m_FRTSTYLESHEET;
+						*/
+					}
+					xlsb->WriteBin(oPath, stylesStream.get());
+
+				}
+			}
+
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -339,23 +416,30 @@ namespace OOX
 			}
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
-				NSStringUtils::CStringBuilder sXml;
+				if (dynamic_cast<CXlsb*>(File::m_pMainDocument) && !dynamic_cast<CXlsb*>(File::m_pMainDocument)->IsWriteToXlsx())
+				{
+					writeBin(oPath);
+				}
+				else
+				{
+					NSStringUtils::CStringBuilder sXml;
 
-				sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
-<styleSheet \
-xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" \
-xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
-xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\" \
-mc:Ignorable=\"x14ac x16r2\" \
-xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\" \
-xmlns:x16r2=\"http://schemas.microsoft.com/office/spreadsheetml/2015/02/main\">");
+					sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
+	<styleSheet \
+	xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" \
+	xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+	xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\" \
+	mc:Ignorable=\"x14ac x16r2\" \
+	xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\" \
+	xmlns:x16r2=\"http://schemas.microsoft.com/office/spreadsheetml/2015/02/main\">");
 
-				toXML(sXml);
+					toXML(sXml);
 
- 				sXml.WriteString(L"</styleSheet>");
+ 					sXml.WriteString(L"</styleSheet>");
 
-               std::wstring sPath = oPath.GetPath();
-                NSFile::CFileBinary::SaveToFile(sPath.c_str(), sXml.GetData());
+	               std::wstring sPath = oPath.GetPath();
+	                NSFile::CFileBinary::SaveToFile(sPath.c_str(), sXml.GetData());					
+				}
 
 				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 			}
@@ -672,6 +756,9 @@ xmlns:x16r2=\"http://schemas.microsoft.com/office/spreadsheetml/2015/02/main\">"
 			}
 			virtual const OOX::FileType type() const
 			{
+				if (dynamic_cast<CXlsb*>(File::m_pMainDocument) && !dynamic_cast<CXlsb*>(File::m_pMainDocument)->IsWriteToXlsx())
+					return OOX::SpreadsheetBin::FileTypes::StylesBin;
+
 				return OOX::Spreadsheet::FileTypes::Styles;
 			}
 			virtual const CPath DefaultDirectory() const

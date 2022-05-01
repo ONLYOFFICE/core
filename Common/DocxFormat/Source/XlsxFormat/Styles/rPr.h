@@ -77,6 +77,16 @@ namespace OOX
                      m_oRgb = SimpleTypes::Spreadsheet::CHexColor(ptr->bRed, ptr->bGreen, ptr->bBlue);
                 }
             }
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::IndexedColor*>(obj.get());
+				if (ptr != nullptr)
+				{
+					ptr->bRed	= m_oRgb->Get_R();
+					ptr->bGreen = m_oRgb->Get_G();
+					ptr->bBlue  = m_oRgb->Get_B();
+				}
+			}
 			virtual EElementType getType () const
 			{
 				return et_x_RgbColor;
@@ -153,6 +163,20 @@ namespace OOX
                     m_arrItems.push_back(pRgbColor);
                 }
             }
+
+			void toBin(std::vector<XLS::BaseObjectPtr>& obj)
+			{
+				obj.reserve(m_arrItems.size());
+				for (size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					if (m_arrItems[i])
+					{
+						XLS::BaseObjectPtr item(new XLSB::IndexedColor());
+						m_arrItems[i]->toBin(item);
+						obj.push_back(item);
+					}
+				}
+			}
 
 			virtual EElementType getType () const
 			{
@@ -456,6 +480,9 @@ namespace OOX
             }
 			void toBin(XLS::BaseObjectPtr& obj)
 			{
+				if (obj == nullptr)
+					obj = XLS::BaseObjectPtr(new XLSB::Color);
+
 				auto ptr = static_cast<XLSB::Color*>(obj.get());
 
 				if (ptr != nullptr)
@@ -491,7 +518,7 @@ namespace OOX
 				}
 			}
 			void toBin(XLS::BaseObject* obj)
-			{
+			{				
 				auto ptr = static_cast<XLSB::Color*>(obj);
 
 				if (ptr != nullptr)
@@ -674,6 +701,19 @@ namespace OOX
                     m_arrItems.push_back(color);
                 }
             }
+			void toBin(std::vector<XLS::BaseObjectPtr>& obj)
+			{
+				obj.reserve(m_arrItems.size());
+				for (size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					if (m_arrItems[i])
+					{
+						XLS::BaseObjectPtr item(new XLSB::MRUColor());
+						m_arrItems[i]->toBin(&static_cast<XLSB::MRUColor*>(item.get())->colorMRU);
+						obj.push_back(item);
+					}
+				}
+			}
 			virtual EElementType getType () const
 			{
 				return et_x_MruColors;

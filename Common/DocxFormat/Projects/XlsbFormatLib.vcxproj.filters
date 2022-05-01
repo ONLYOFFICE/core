@@ -3098,6 +3098,7 @@
     <ClInclude Include="..\Source\XlsbFormat\Biff12_records\EndPivotCacheIDs.h">
       <Filter>records</Filter>
     </ClInclude>
+    <ClInclude Include="..\Source\XlsbFormat\FileTypes_SpreadsheetBin.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\XlsbFormat\Biff12_structures\ACProductVersion.cpp">

@@ -1,5 +1,5 @@
-/*
- * (c) Copyright Ascensio System SIA 2010-2021
+﻿/*
+ * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,45 +29,35 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#include "Blxf.h"
+#include "../DocxFormat/FileType.h"
 
-using namespace XLS;
 
-namespace XLSB
+namespace OOX
 {
-
-    Blxf::Blxf()
-    {
-    }
-
-    Blxf::Blxf(XLS::CFRecord& record)
-    {
-        load(record);
-    }
-
-    Blxf::~Blxf()
-    {
-    }
-
-    BiffStructurePtr Blxf::clone()
-    {
-        return BiffStructurePtr(new Blxf(*this));
-    }
-
-    void Blxf::load(XLS::CFRecord& record)
-    {
-        record >> dg;
-        record.skipNunBytes(1);
-        brtColor.readFields(record);
-    }
-
-	void Blxf::save(XLS::CFRecord& record)
+	namespace SpreadsheetBin
 	{
-		record << dg;
-		record.reserveNunBytes(1);
-		brtColor.writeFields(record);
+		namespace FileTypes
+		{			
+
+			const FileType WorkbookBin		(L"xl", L"workbook.bin",
+												L"application/vnd.ms-excel.main",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument");
+
+			const FileType SharedStringsBin (L"", L"sharedStrings.bin",
+												L"application/vnd.ms-excel.sharedStrings",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings");
+
+			const FileType StylesBin		(L"", L"styles.bin",
+												L"application/vnd.ms-excel.styles",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles");
+
+			const FileType WorksheetBin		(L"worksheets", L"sheet.bin",
+												L"application/vnd.ms-excel.worksheet",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet",
+												L"worksheets/sheet", true);		
+
+		} // namespace FileTypes
 	}
-
-} // namespace XLSB
-
+} // namespace OOX

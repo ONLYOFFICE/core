@@ -115,6 +115,66 @@ namespace OOX
                 ReadAttributes(obj);
             }
 
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::Fill*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if (m_oPatternType.IsInit())
+					{
+						switch (m_oPatternType->GetValue())
+						{
+						case SimpleTypes::Spreadsheet::EPatternType::patterntypeNone:
+							ptr->fls = 0x00; break;
+						case SimpleTypes::Spreadsheet::EPatternType::patterntypeSolid:
+							ptr->fls = 0x01; break;
+						case SimpleTypes::Spreadsheet::EPatternType::patterntypeMediumGray:
+							ptr->fls = 0x02; break;
+						case SimpleTypes::Spreadsheet::EPatternType::patterntypeDarkGray:
+							ptr->fls = 0x03; break;
+						case SimpleTypes::Spreadsheet::EPatternType::patterntypeLightGray:
+							ptr->fls = 0x04; break;
+						case SimpleTypes::Spreadsheet::EPatternType::patterntypeDarkHorizontal:
+							ptr->fls = 0x05; break;
+						case SimpleTypes::Spreadsheet::EPatternType::patterntypeDarkVertical:
+							ptr->fls = 0x06; break;
+						case SimpleTypes::Spreadsheet::EPatternType::patterntypeDarkDown:
+							ptr->fls = 0x07; break;
+						case SimpleTypes::Spreadsheet::EPatternType::patterntypeDarkUp:
+							ptr->fls = 0x08; break;
+						case SimpleTypes::Spreadsheet::EPatternType::patterntypeDarkGrid:
+							ptr->fls = 0x09; break;
+						case SimpleTypes::Spreadsheet::EPatternType::patterntypeDarkTrellis:
+							ptr->fls = 0x0A; break;
+						case SimpleTypes::Spreadsheet::EPatternType::patterntypeLightHorizontal:
+							ptr->fls = 0x0B; break;
+						case SimpleTypes::Spreadsheet::EPatternType::patterntypeLightVertical:
+							ptr->fls = 0x0C; break;
+						case SimpleTypes::Spreadsheet::EPatternType::patterntypeLightDown:
+							ptr->fls = 0x0D; break;
+						case SimpleTypes::Spreadsheet::EPatternType::patterntypeLightUp:
+							ptr->fls = 0x0E; break;
+						case SimpleTypes::Spreadsheet::EPatternType::patterntypeLightGrid:
+							ptr->fls = 0x0F; break;
+						case SimpleTypes::Spreadsheet::EPatternType::patterntypeLightTrellis:
+							ptr->fls = 0x10; break;
+						case SimpleTypes::Spreadsheet::EPatternType::patterntypeGray125:
+							ptr->fls = 0x11; break;
+						case SimpleTypes::Spreadsheet::EPatternType::patterntypeGray0625:
+							ptr->fls = 0x12; break;
+						}
+					}
+					else
+						ptr->fls = 0x00;
+					
+					if (m_oBgColor.IsInit())
+						m_oBgColor->toBin(&ptr->brtColorBack);
+						
+					if (m_oFgColor.IsInit())
+						m_oFgColor->toBin(&ptr->brtColorFore);
+				}
+			}
+
 			virtual EElementType getType () const
 			{
 				return et_x_PatternFill;
@@ -127,7 +187,6 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if ( oReader, L"patternType", m_oPatternType )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-
 
             void ReadAttributes(XLS::BaseObjectPtr& obj)
             {
@@ -177,10 +236,10 @@ namespace OOX
                     }
 
                     m_oBgColor.Init();
-                    m_oBgColor->fromBin(dynamic_cast<XLS::BaseObject*>(&ptr->brtColorBack));
+                    m_oBgColor->fromBin(&ptr->brtColorBack);
 
                     m_oFgColor.Init();
-                    m_oFgColor->fromBin(dynamic_cast<XLS::BaseObject*>(&ptr->brtColorFore));
+                    m_oFgColor->fromBin(&ptr->brtColorFore);
                 }
             }
 
@@ -245,9 +304,22 @@ namespace OOX
                 {
                     m_oPosition = ptr->xnumPosition.data.value;
                     m_oColor.Init();
-                    m_oColor->fromBin(dynamic_cast<XLS::BaseObject*>(&ptr->brtColor));
+                    m_oColor->fromBin(&ptr->brtColor);
                 }
             }
+			void toBin(XLS::BiffStructure* obj)
+			{
+				auto ptr = static_cast<XLSB::GradientStop*>(obj);
+				if (ptr != nullptr)
+				{
+					if (m_oPosition.IsInit())
+						ptr->xnumPosition.data.value = m_oPosition->GetValue();
+
+					if (m_oColor.IsInit())
+						m_oColor->toBin(&ptr->brtColor);
+
+				}
+			}
 			virtual EElementType getType () const
 			{
 				return et_x_GradientStop;
@@ -329,14 +401,30 @@ namespace OOX
                     for(auto &gradStop : ptr->xfillGradientStop)
                     {
                         auto ptrGradStop = new CGradientStop();
-                        auto ptrBiffStruct = dynamic_cast<XLS::BiffStructure*>(&gradStop);
-                        ptrGradStop->fromBin(ptrBiffStruct);
+                        ptrGradStop->fromBin(&gradStop);
                         m_arrItems.push_back(ptrGradStop);
                     }
                 }
-
-
             }
+
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::Fill*>(obj.get());
+				if (ptr != nullptr)
+				{
+					ptr->xfillGradientStop.reserve(m_arrItems.size());
+					for (size_t i = 0; i < m_arrItems.size(); ++i)
+					{
+						if (m_arrItems[i])
+						{
+							XLSB::GradientStop item;
+							m_arrItems[i]->toBin(&item);
+							ptr->xfillGradientStop.push_back(item);
+						}
+					}
+				}
+			}
+
 			virtual EElementType getType () const
 			{
 				return et_x_GradientFill;
@@ -433,6 +521,14 @@ namespace OOX
                 m_oPatternFill  = obj;
                 m_oGradientFill = obj;
             }
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				if (m_oPatternFill.IsInit())
+					m_oPatternFill->toBin(obj);
+
+				if (m_oGradientFill.IsInit())
+					m_oGradientFill->toBin(obj);
+			}
 			virtual EElementType getType () const
 			{
 				return et_x_Fill;
@@ -546,6 +642,20 @@ namespace OOX
                     m_mapFills.insert(std::make_pair(index++, pFill));
                 }
             }
+
+			void toBin(std::vector<XLS::BaseObjectPtr>& obj)
+			{
+				obj.reserve(m_arrItems.size());
+				for (size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					if (m_arrItems[i])
+					{
+						XLS::BaseObjectPtr item(new XLSB::Fill());
+						m_arrItems[i]->toBin(item);
+						obj.push_back(item);
+					}
+				}
+			}
 
 			virtual EElementType getType () const
 			{

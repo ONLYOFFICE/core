@@ -549,7 +549,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 				if (m_bMacroEnabled)	
 					return OOX::Spreadsheet::FileTypes::WorkbookMacro;
 				if (dynamic_cast<CXlsb*>(File::m_pMainDocument) && !dynamic_cast<CXlsb*>(File::m_pMainDocument)->IsWriteToXlsx())	
-					return OOX::Spreadsheet::FileTypes::WorkbookBin;
+					return OOX::SpreadsheetBin::FileTypes::WorkbookBin;
 									
 				return OOX::Spreadsheet::FileTypes::Workbook;
 			}

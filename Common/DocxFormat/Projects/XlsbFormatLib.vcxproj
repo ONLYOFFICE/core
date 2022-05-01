@@ -1046,6 +1046,7 @@
     <ClInclude Include="..\Source\XlsbFormat\CommentsStream.h" />
     <ClInclude Include="..\Source\XlsbFormat\ConnectionsStream.h" />
     <ClInclude Include="..\Source\XlsbFormat\ExternalLinkStream.h" />
+    <ClInclude Include="..\Source\XlsbFormat\FileTypes_SpreadsheetBin.h" />
     <ClInclude Include="..\Source\XlsbFormat\PivotCacheDefStream.h" />
     <ClInclude Include="..\Source\XlsbFormat\PivotCacheRecordsStream.h" />
     <ClInclude Include="..\Source\XlsbFormat\PivotTableStream.h" />

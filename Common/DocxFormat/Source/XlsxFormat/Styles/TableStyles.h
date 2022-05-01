@@ -85,6 +85,88 @@ namespace OOX
                 ReadAttributes(obj);
             }
 
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::TableStyleElement*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if (m_oDxfId.IsInit())
+						ptr->index = m_oDxfId->GetValue();
+					else
+						ptr->index = 0;
+
+					if (m_oSize.IsInit())
+						ptr->size = m_oSize->GetValue();
+					else
+						ptr->size = 1;
+
+					if (m_oType.IsInit())
+					{
+						switch (m_oType->GetValue())
+						{
+						case SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeWholeTable:
+							ptr->tseType = 0; break;
+						case SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeHeaderRow:
+							ptr->tseType = 1; break;
+						case SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeTotalRow:
+							ptr->tseType = 2; break;
+						case SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeFirstColumn:
+							ptr->tseType = 3; break;
+						case SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeLastColumn:
+							ptr->tseType = 4; break;
+						case SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeFirstRowStripe:
+							ptr->tseType = 5; break;
+						case SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeSecondRowStripe:
+							ptr->tseType = 6; break;
+						case SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeFirstColumnStripe:
+							ptr->tseType = 7; break;
+						case SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeSecondColumnStripe:
+							ptr->tseType = 8; break;
+						case SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeFirstHeaderCell:
+							ptr->tseType = 9; break;
+						case SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeLastHeaderCell:
+							ptr->tseType = 10; break;
+						case SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeFirstTotalCell:
+							ptr->tseType = 11; break;
+						case SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeLastTotalCell:
+							ptr->tseType = 12; break;
+						case SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeFirstSubtotalColumn:
+							ptr->tseType = 13; break;
+						case SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeSecondSubtotalColumn:
+							ptr->tseType = 14; break;
+						case SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeThirdSubtotalColumn:
+							ptr->tseType = 15; break;
+						case SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeFirstSubtotalRow:
+							ptr->tseType = 16; break;
+						case SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeSecondSubtotalRow:
+							ptr->tseType = 17; break;
+						case SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeThirdSubtotalRow:
+							ptr->tseType = 18; break;
+						case SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeBlankRow:
+							ptr->tseType = 19; break;
+						case SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeFirstColumnSubheading:
+							ptr->tseType = 20; break;
+						case SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeSecondColumnSubheading:
+							ptr->tseType = 21; break;
+						case SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeThirdColumnSubheading:
+							ptr->tseType = 22; break;
+						case SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeFirstRowSubheading:
+							ptr->tseType = 23; break;
+						case SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeSecondRowSubheading:
+							ptr->tseType = 24; break;
+						case SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeThirdRowSubheading:
+							ptr->tseType = 25; break;
+						case SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypePageFieldLabels:
+							ptr->tseType = 26; break;
+						case SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypePageFieldValues:
+							ptr->tseType = 27; break;
+						}
+					}
+					else
+						ptr->tseType = 19;
+				}
+			}
+
 			virtual EElementType getType () const
 			{
 				return et_x_TableStyleElement;
@@ -109,7 +191,9 @@ namespace OOX
                 if(ptr != nullptr)
                 {
                     m_oDxfId                = ptr->index;
-                    m_oSize                 = ptr->size;
+
+					if(ptr->size != 1)
+						m_oSize             = ptr->size;
 
                     switch(ptr->tseType)
                     {
@@ -173,7 +257,6 @@ namespace OOX
                             m_oType = SimpleTypes::Spreadsheet::ETableStyleType::tablestyletypeBlankRow; break;
 
                     }
-
                 }
             }
 
@@ -252,6 +335,28 @@ namespace OOX
 
             }
 
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				if (obj == nullptr)
+					obj = XLS::BaseObjectPtr(new XLSB::TABLESTYLE());
+
+				auto ptrTABLESTYLE = static_cast<XLSB::TABLESTYLE*>(obj.get());
+
+				WriteAttributes(ptrTABLESTYLE->m_BrtBeginTableStyle);
+
+				ptrTABLESTYLE->m_arBrtTableStyleElement.reserve(m_arrItems.size());
+				for (size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					if (m_arrItems[i])
+					{
+						XLS::BaseObjectPtr item(new XLSB::TableStyleElement());
+						m_arrItems[i]->toBin(item);
+						ptrTABLESTYLE->m_arBrtTableStyleElement.push_back(item);
+					}
+				}
+			}
+
+
 			virtual EElementType getType () const
 			{
 				return et_x_TableStyle;
@@ -277,12 +382,52 @@ namespace OOX
                 if(ptr != nullptr)
                 {
                     m_oCount                = ptr->ctse;
-                    m_oPivot                = ptr->fIsPivot;
-                    m_oTable                = ptr->fIsTable;
+
+					if(ptr->fIsPivot != true)
+						m_oPivot          = ptr->fIsPivot;
+
+					if (ptr->fIsTable != true)
+						m_oTable = ptr->fIsTable;
+
                     m_oName                 = ptr->rgchName;
                     m_oDisplayName          = ptr->rgchName;
                 }
             }
+
+			void WriteAttributes(XLS::BaseObjectPtr& obj)
+			{
+				if (obj == nullptr)
+					obj = XLS::BaseObjectPtr(new XLSB::BeginTableStyle());
+
+				auto ptr = static_cast<XLSB::BeginTableStyle*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if (m_oCount.IsInit())
+						ptr->ctse = m_oCount->GetValue();
+					else
+						ptr->ctse = 0;
+
+					if (m_oPivot.IsInit())
+						ptr->fIsPivot = m_oPivot->GetValue();
+					else
+						ptr->fIsPivot = true;
+
+					if (m_oTable.IsInit())
+						ptr->fIsTable = m_oTable->GetValue();
+					else
+						ptr->fIsTable = true;
+
+					if (m_oName.IsInit())
+						ptr->rgchName = m_oName.get();
+					else
+						ptr->rgchName = L"";
+
+					if (m_oDisplayName.IsInit())
+						ptr->rgchName = m_oDisplayName.get();
+					else
+						ptr->rgchName = L"";
+				}
+			}
 
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
@@ -362,6 +507,27 @@ namespace OOX
 
             }
 
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				if(obj == nullptr)
+					obj = XLS::BaseObjectPtr(new XLSB::TABLESTYLES());
+
+				auto ptrTABLESTYLES = static_cast<XLSB::TABLESTYLES*>(obj.get());
+
+				WriteAttributes(ptrTABLESTYLES->m_BrtBeginTableStyles);
+
+				ptrTABLESTYLES->m_arTABLESTYLE.reserve(m_arrItems.size());
+				for (size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					if (m_arrItems[i])
+					{
+						XLS::BaseObjectPtr item(new XLSB::TABLESTYLE());
+						m_arrItems[i]->toBin(item);
+						ptrTABLESTYLES->m_arTABLESTYLE.push_back(item);
+					}
+				}
+			}
+
 			virtual EElementType getType () const
 			{
 				return et_x_TableStyles;
@@ -390,6 +556,31 @@ namespace OOX
                     m_oDefaultTableStyle    = ptr->rgchDefTableStyle;
                 }
             }
+
+			void WriteAttributes(XLS::BaseObjectPtr& obj)
+			{
+				if (obj == nullptr)
+					obj = XLS::BaseObjectPtr(new XLSB::BeginTableStyles());
+
+				auto ptr = static_cast<XLSB::BeginTableStyles*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if (m_oCount.IsInit())
+						ptr->cts = m_oCount->GetValue();
+					else
+						ptr->cts = 0;
+
+					if (m_oDefaultPivotStyle.IsInit())
+						ptr->rgchDefPivotStyle = m_oDefaultPivotStyle.get();
+					else
+						ptr->rgchDefPivotStyle = L"";
+
+					if (m_oDefaultTableStyle.IsInit())
+						ptr->rgchDefTableStyle = m_oDefaultTableStyle.get();
+					else
+						ptr->rgchDefTableStyle = L"";
+				}
+			}
 
 		public:
             nullable<SimpleTypes::CUnsignedDecimalNumber<>>         m_oCount;

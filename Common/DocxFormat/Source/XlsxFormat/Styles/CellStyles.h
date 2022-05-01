@@ -80,6 +80,43 @@ namespace OOX
                 ReadAttributes(obj);
             }
 
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::Style*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if (m_oBuiltinId.IsInit())
+						ptr->fBuiltIn = m_oBuiltinId->GetValue();
+					else
+						ptr->fBuiltIn = false;
+
+					if (m_oCustomBuiltin.IsInit())
+						ptr->fCustom = m_oCustomBuiltin->GetValue();
+					else
+						ptr->fCustom = false;
+
+					if (m_oHidden.IsInit())
+						ptr->fHidden = m_oHidden->GetValue();
+					else
+						ptr->fHidden = false;
+
+					if (m_oILevel.IsInit())
+						ptr->iLevel = m_oILevel->GetValue();
+					else
+						ptr->iLevel = 0;
+					
+					if (m_oName.IsInit())
+						ptr->stName = m_oName.get();
+					else
+						ptr->stName = L"";
+					
+					if (m_oXfId.IsInit())
+						ptr->ixf = m_oXfId->GetValue();
+					else
+						ptr->ixf = 0;
+				}
+			}
+
 			virtual EElementType getType () const
 			{
 				return et_x_CellStyle;
@@ -177,10 +214,24 @@ namespace OOX
 
                 for(auto &style : obj)
                 {
-                    CCellStyle *pXfs = new CCellStyle(style);
-                    m_arrItems.push_back(pXfs);
+                    CCellStyle *pCellStyle = new CCellStyle(style);
+                    m_arrItems.push_back(pCellStyle);
                 }
             }
+
+			void toBin(std::vector<XLS::BaseObjectPtr>& obj)
+			{
+				obj.reserve(m_arrItems.size());
+				for (size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					if (m_arrItems[i])
+					{
+						XLS::BaseObjectPtr item(new XLSB::Style());
+						m_arrItems[i]->toBin(item);
+						obj.push_back(item);
+					}
+				}
+			}
 
 			virtual EElementType getType () const
 			{

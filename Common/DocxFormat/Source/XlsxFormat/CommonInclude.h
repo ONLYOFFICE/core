@@ -46,6 +46,7 @@
 
 #include "ComplexTypes_Spreadsheet.h"
 #include "FileTypes_Spreadsheet.h"
+#include "../XlsbFormat/FileTypes_SpreadsheetBin.h"
 #include "WritingElement.h"
 #include "Common.h"
 

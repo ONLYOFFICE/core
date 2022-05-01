@@ -104,6 +104,31 @@ namespace OOX
                 }
             }
 
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::COLORPALETTE*>(obj.get());
+
+				if (m_oIndexedColors.IsInit())
+				{
+					ptr->m_INDEXEDCOLORS = XLS::BaseObjectPtr(new XLSB::INDEXEDCOLORS());
+
+					auto oINDEXEDCOLORS = static_cast<XLSB::INDEXEDCOLORS*>(ptr->m_INDEXEDCOLORS.get());
+
+					if(oINDEXEDCOLORS != nullptr)
+						m_oIndexedColors->toBin(oINDEXEDCOLORS->m_arIndexedColor);
+				}
+
+				if (m_oMruColors.IsInit())
+				{
+					ptr->m_MRUCOLORS = XLS::BaseObjectPtr(new XLSB::MRUCOLORS());
+
+					auto oMRUCOLORS = static_cast<XLSB::MRUCOLORS*>(ptr->m_MRUCOLORS.get());
+
+					if (oMRUCOLORS != nullptr)
+						m_oMruColors->toBin(oMRUCOLORS->m_arMRUColor);
+				}
+			}
+
 			virtual EElementType getType () const
 			{
 				return et_x_Colors;

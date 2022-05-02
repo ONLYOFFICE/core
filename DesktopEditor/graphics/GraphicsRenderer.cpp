@@ -939,7 +939,7 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
 					}
 				#else
 					pTextureBrush = new Aggplus::CBrushTexture(m_oBrush.TexturePath, oMode);
-				#endif
+                #endif
 				}
 
 				if( pTextureBrush )
@@ -952,6 +952,15 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
 					}
                     
 					pTextureBrush->Alpha = (BYTE)m_oBrush.TextureAlpha;
+
+                    if (m_oBrush.Rectable == 1)
+                    {
+                        pTextureBrush->m_bUseBounds = true;
+                        pTextureBrush->m_oBounds.left = m_oBrush.Rect.X;
+                        pTextureBrush->m_oBounds.top = m_oBrush.Rect.Y;
+                        pTextureBrush->m_oBounds.right = pTextureBrush->m_oBounds.left + m_oBrush.Rect.Width;
+                        pTextureBrush->m_oBounds.bottom = pTextureBrush->m_oBounds.top + m_oBrush.Rect.Height;
+                    }
 				}
 
 				pBrush = pTextureBrush;

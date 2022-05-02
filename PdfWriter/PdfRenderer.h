@@ -521,6 +521,79 @@ private:
 	};
 	class CBrushState
 	{
+    public:
+        struct TColorAndPoint
+        {
+            TColorAndPoint()
+            {
+                lColor = 0;
+                dPoint = 0;
+                bUse   = false;
+            }
+            TColorAndPoint(const LONG& color, const double& point)
+            {
+                lColor = color;
+                dPoint = point;
+                bUse   = true;
+            }
+
+            static bool Compare(const TColorAndPoint& oFirst, const TColorAndPoint& oSecond)
+            {
+                return (oFirst.dPoint < oSecond.dPoint);
+            }
+            static LONG GetLinearApprox(const TColorAndPoint& oPoint1, const TColorAndPoint& oPoint2, const double& dDstPoint)
+            {
+                double dPoint1 = oPoint1.dPoint;
+                double dPoint2 = oPoint2.dPoint;
+                LONG lColor1 = oPoint1.lColor;
+                LONG lColor2 = oPoint2.lColor;
+
+                double dDiff = dPoint2 - dPoint1;
+                if (fabs(dDiff) < 0)
+                    return lColor1;
+
+                TColor oColor1 = lColor1;
+                TColor oColor2 = lColor2;
+
+                BYTE r = (BYTE)(std::max)(0, (std::min)(255, (int)(oColor1.r + (oColor2.r - oColor1.r) / dDiff * (dDstPoint - dPoint1))));
+                BYTE g = (BYTE)(std::max)(0, (std::min)(255, (int)(oColor1.g + (oColor2.g - oColor1.g) / dDiff * (dDstPoint - dPoint1))));
+                BYTE b = (BYTE)(std::max)(0, (std::min)(255, (int)(oColor1.b + (oColor2.b - oColor1.b) / dDiff * (dDstPoint - dPoint1))));
+                BYTE a = (BYTE)(std::max)(0, (std::min)(255, (int)(oColor1.a + (oColor2.a - oColor1.a) / dDiff * (dDstPoint - dPoint1))));
+
+                TColor oResColor;
+                oResColor.Set(r, g, b, a);
+                return oResColor.lColor;
+            }
+
+            LONG   lColor;
+            double dPoint;
+            bool   bUse;
+        };
+        struct TBrushRect
+        {
+            TBrushRect()
+            {
+                Reset();
+            }
+
+            void Reset()
+            {
+                bUse    = false;
+                nVal    = 0;
+                dLeft   = 0;
+                dTop    = 0;
+                dWidth  = 0;
+                dHeight = 0;
+            }
+
+            bool   bUse;
+            int    nVal;
+            double dLeft;
+            double dTop;
+            double dWidth;
+            double dHeight;
+        };
+
 	public:
 		CBrushState()
 		{
@@ -908,6 +981,11 @@ private:
 		{
 			m_oRect.bUse = bEnable;
 		}
+        TBrushRect& GetBrushRect()
+        {
+            return m_oRect;
+        }
+
 		inline void         SetLinearGradientPattern(const double& dX0, const double& dY0, const double& dX1, const double& dY1)
 		{
 			m_pShadingPattern[0] = dX0;
@@ -946,80 +1024,6 @@ private:
 			pPoints = m_pShadingPoints;
 			lCount  = m_lShadingPointsCount;
 		}
-
-	private:
-
-		struct TColorAndPoint
-		{
-			TColorAndPoint()
-			{
-				lColor = 0;
-				dPoint = 0;
-				bUse   = false;
-			}
-			TColorAndPoint(const LONG& color, const double& point)
-			{
-				lColor = color;
-				dPoint = point;
-				bUse   = true;
-			}
-
-			static bool Compare(const TColorAndPoint& oFirst, const TColorAndPoint& oSecond)
-			{
-				return (oFirst.dPoint < oSecond.dPoint);
-			}
-			static LONG GetLinearApprox(const TColorAndPoint& oPoint1, const TColorAndPoint& oPoint2, const double& dDstPoint)
-			{
-				double dPoint1 = oPoint1.dPoint;
-				double dPoint2 = oPoint2.dPoint;
-				LONG lColor1 = oPoint1.lColor;
-				LONG lColor2 = oPoint2.lColor;
-
-				double dDiff = dPoint2 - dPoint1;
-				if (fabs(dDiff) < 0)
-					return lColor1;
-
-				TColor oColor1 = lColor1;
-				TColor oColor2 = lColor2;
-
-                BYTE r = (BYTE)(std::max)(0, (std::min)(255, (int)(oColor1.r + (oColor2.r - oColor1.r) / dDiff * (dDstPoint - dPoint1))));
-                BYTE g = (BYTE)(std::max)(0, (std::min)(255, (int)(oColor1.g + (oColor2.g - oColor1.g) / dDiff * (dDstPoint - dPoint1))));
-                BYTE b = (BYTE)(std::max)(0, (std::min)(255, (int)(oColor1.b + (oColor2.b - oColor1.b) / dDiff * (dDstPoint - dPoint1))));
-                BYTE a = (BYTE)(std::max)(0, (std::min)(255, (int)(oColor1.a + (oColor2.a - oColor1.a) / dDiff * (dDstPoint - dPoint1))));
-
-				TColor oResColor;
-				oResColor.Set(r, g, b, a);
-				return oResColor.lColor;
-			}
-
-			LONG   lColor;
-			double dPoint;
-			bool   bUse;
-		};
-		struct TBrushRect
-		{
-			TBrushRect()
-			{
-				Reset();
-			}
-
-			void Reset()
-			{
-				bUse    = false;
-				nVal    = 0;
-				dLeft   = 0;
-				dTop    = 0;
-				dWidth  = 0;
-				dHeight = 0;
-			}
-
-			bool   bUse;
-			int    nVal;
-			double dLeft;
-			double dTop;
-			double dWidth;
-			double dHeight; 
-		};
 
 	private:
 

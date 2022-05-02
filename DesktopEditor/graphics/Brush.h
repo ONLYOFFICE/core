@@ -202,6 +202,9 @@ public:
 	INT m_bUsePattern;
 	CColor m_colors[2];
 
+    bool m_bUseBounds;
+    CDoubleRect m_oBounds;
+
 	BYTE Alpha;
 };
 }

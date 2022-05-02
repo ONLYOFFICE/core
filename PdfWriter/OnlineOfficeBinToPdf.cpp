@@ -153,10 +153,6 @@ namespace NSOnlineOfficeBinToPdf
             return wsTempString;
         }
 
-        virtual void EnableBrushRect(bool bValue)
-        {
-            ((CPdfRenderer*)m_pRenderer)->EnableBrushRect(bValue ? 1 : 0);
-        }
         virtual void SetLinearGradiant(const double& x0, const double& y0, const double& x1, const double& y1)
         {
             ((CPdfRenderer*)m_pRenderer)->SetLinearGradient(x0, y0, x1, y1);

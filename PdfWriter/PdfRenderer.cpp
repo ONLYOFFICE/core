@@ -914,6 +914,7 @@ HRESULT CPdfRenderer::BrushRect(const INT& nVal, const double& dLeft, const doub
 	// Данными параметрами пользуемся, только если пришла команда EnableBrushRect, если команда не пришла, тогда
 	// ориентируемся на границы пата.
 	m_oBrush.SetBrushRect(nVal, dLeft, dTop, dWidth, dHeight);
+    m_oBrush.EnableBrushRect(1 == nVal ? true : false);
 	return S_OK;
 }
 HRESULT CPdfRenderer::BrushBounds(const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight)
@@ -2422,14 +2423,29 @@ void CPdfRenderer::UpdateBrush()
 		}
 
 		if (pImage)
-		{		
+		{
+			BYTE nAlpha = m_oBrush.GetTextureAlpha();
+			if (0xFF != nAlpha)
+				pImage->AddTransparency(nAlpha);
+
 			LONG lTextureMode = m_oBrush.GetTextureMode();
 
 			double dW = 10;
 			double dH = 10;
 
 			double dL, dR, dT, dB;
-			m_oPath.GetBounds(dL, dT, dR, dB);
+            CBrushState::TBrushRect& oRect = m_oBrush.GetBrushRect();
+            if (!oRect.bUse)
+            {
+                m_oPath.GetBounds(dL, dT, dR, dB);
+            }
+            else
+            {
+                dL = MM_2_PT(oRect.dLeft);
+                dB = MM_2_PT(m_dPageHeight - oRect.dTop);
+                dR = MM_2_PT(oRect.dLeft + oRect.dWidth);
+                dT = MM_2_PT(m_dPageHeight - oRect.dTop - oRect.dHeight);
+            }
 
 			double dXStepSpacing = 0, dYStepSpacing = 0;
 			if (c_BrushTextureModeStretch == lTextureMode)

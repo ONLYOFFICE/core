@@ -912,10 +912,21 @@ namespace Aggplus
 			double y = 0;
 			double r = 0;
 			double b = 0;
-			pPath->GetBounds(x, y, r, b);
 
-			r += x;
-			b += y;
+            if (!ptxBrush->m_bUseBounds)
+            {
+                pPath->GetBounds(x, y, r, b);
+
+                r += x;
+                b += y;
+            }
+            else
+            {
+                x = ptxBrush->m_oBounds.left;
+                y = ptxBrush->m_oBounds.top;
+                r = ptxBrush->m_oBounds.right;
+                b = ptxBrush->m_oBounds.bottom;
+            }
 
 			CMatrix brushMatrix;
 			if (ptxBrush->GetWrapMode() == Aggplus::WrapModeClamp)

@@ -2423,7 +2423,11 @@ void CPdfRenderer::UpdateBrush()
 		}
 
 		if (pImage)
-		{		
+		{
+			BYTE nAlpha = m_oBrush.GetTextureAlpha();
+			if (0xFF != nAlpha)
+				pImage->AddTransparency(nAlpha);
+
 			LONG lTextureMode = m_oBrush.GetTextureMode();
 
 			double dW = 10;

@@ -868,13 +868,14 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
 	switch (lFillType)
 	{
 	case c_nWindingFillMode:
+    case c_nEvenOddFillMode:
 		{
-			m_pPath->SetRuler(false);
+            m_pPath->SetRuler((lFillType == c_nWindingFillMode) ? false : true);
 
 			CCacheImage* pCacheImage	= NULL;
 			Aggplus::CBrush* pBrush		= NULL;
 			
-			if (m_oBrush.Type == c_BrushTypeTexture || m_oBrush.Type == c_BrushTypePattern)
+			if (m_oBrush.Type == c_BrushTypeTexture)
 			{
 				Aggplus::WrapMode oMode = Aggplus::WrapModeClamp;
 				switch (m_oBrush.TextureMode)
@@ -944,13 +945,6 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
 
 				if( pTextureBrush )
 				{
-					if( m_oBrush.Type == c_BrushTypePattern )
-					{
-						pTextureBrush->m_bUsePattern = TRUE;
-						pTextureBrush->m_colors[0] = Aggplus::CColor((BYTE)m_oBrush.Alpha1, m_oBrush.Color1);
-						pTextureBrush->m_colors[1] = Aggplus::CColor((BYTE)m_oBrush.Alpha2, m_oBrush.Color2);
-					}
-                    
 					pTextureBrush->Alpha = (BYTE)m_oBrush.TextureAlpha;
 
                     if (m_oBrush.Rectable == 1)
@@ -974,104 +968,7 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
 			RELEASEOBJECT(pBrush);
 			RELEASEINTERFACE(pCacheImage);
 			break;
-		}
-	case c_nEvenOddFillMode:
-		{
-			m_pPath->SetRuler(true);
-
-			CCacheImage* pCacheImage	= NULL;
-			Aggplus::CBrush* pBrush		= NULL;
-			
-			if (m_oBrush.Type == c_BrushTypeTexture || m_oBrush.Type == c_BrushTypePattern)
-			{
-				Aggplus::WrapMode oMode = Aggplus::WrapModeClamp;
-				switch (m_oBrush.TextureMode)
-				{
-				case c_BrushTextureModeTile:
-					oMode = Aggplus::WrapModeTile;
-					break;
-				case c_BrushTextureModeTileCenter:
-					oMode = Aggplus::WrapModeTile;
-					break;
-				default:
-					break;
-				}
-				Aggplus::CBrushTexture* pTextureBrush = NULL;
-				
-				if (NULL != m_pCache)
-				{
-                    pCacheImage = (CCacheImage*)m_pCache->Lock(m_oBrush.TexturePath);
-
-					pTextureBrush = new Aggplus::CBrushTexture(pCacheImage->GetImage(), oMode);
-				}
-				else
-				{
-				#ifdef BUILDING_WASM_MODULE
-					if (m_oBrush.TexturePath.find(L"data:") == 0)
-					{
-						bool bIsOnlyOfficeHatch = false;
-						if (m_oBrush.TexturePath.find(L"onlyoffice_hatch") != std::wstring::npos)
-							bIsOnlyOfficeHatch = true;
-						std::string sBase64MultyByte(m_oBrush.TexturePath.begin(), m_oBrush.TexturePath.end());
-						sBase64MultyByte.erase(0, sBase64MultyByte.find(',') + 1);
-						int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(sBase64MultyByte.length());
-						BYTE* pImageData = new BYTE[nDecodeLen + 64];
-						if (TRUE == NSBase64::Base64Decode(sBase64MultyByte.c_str(), sBase64MultyByte.length(), pImageData, &nDecodeLen))
-						{
-							CBgraFrame oFrame;
-							if (bIsOnlyOfficeHatch)
-							{
-								int nSize = (int)sqrt(nDecodeLen >> 2);
-								oFrame.put_IsRGBA(true);
-								oFrame.put_Data(pImageData);
-								oFrame.put_Width(nSize);
-								oFrame.put_Height(nSize);
-								oFrame.put_Stride(4 * nSize);
-							}
-							else
-							{
-								oFrame.put_IsRGBA(false);
-								oFrame.Decode(pImageData, nDecodeLen);
-								RELEASEARRAYOBJECTS(pImageData);
-							}
-							// pImage отдается pTextureBrush и освобождается вместе с pBrush
-							Aggplus::CImage* pImage = new Aggplus::CImage();
-							pImage->Create(oFrame.get_Data(), oFrame.get_Width(), oFrame.get_Height(), oFrame.get_Stride());
-							oFrame.ClearNoAttack();
-							pTextureBrush = new Aggplus::CBrushTexture(pImage, oMode);
-							pTextureBrush->m_bReleaseImage = TRUE;
-						}
-						else
-							RELEASEARRAYOBJECTS(pImageData);
-					}
-				#else
-					pTextureBrush = new Aggplus::CBrushTexture(m_oBrush.TexturePath, oMode);
-				#endif
-				}
-
-				if( pTextureBrush )
-				{
-					if( m_oBrush.Type == c_BrushTypePattern )
-					{
-						pTextureBrush->m_bUsePattern = TRUE;
-						pTextureBrush->m_colors[0] = Aggplus::CColor((BYTE)m_oBrush.Alpha1, m_oBrush.Color1);
-						pTextureBrush->m_colors[1] = Aggplus::CColor((BYTE)m_oBrush.Alpha2, m_oBrush.Color2);
-					}
-				}
-
-				pBrush = pTextureBrush;
-			}
-			else
-			{
-				pBrush = CreateBrush(&m_oBrush);
-			}
-
-			m_pRenderer->FillPath(pBrush, m_pPath);
-			RELEASEOBJECT(pBrush);
-			RELEASEINTERFACE(pCacheImage);
-
-			break;
-		}
+        }
 	default:
 		break;
 	};

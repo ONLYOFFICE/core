@@ -162,8 +162,11 @@ public:
         }
 
         CCacheImage* pImage = new CCacheImage(m_pApplicationFonts, strFile);
-		m_mapImages[strFile] = pImage;
 
+        if (pImage->GetImage()->GetLastStatus() != Aggplus::Ok)
+            return pImage;
+
+		m_mapImages[strFile] = pImage;
 		pImage->AddRef();
 		return pImage;
 	}

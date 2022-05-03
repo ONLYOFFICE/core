@@ -1563,16 +1563,7 @@ namespace Aggplus
 			//agg::rendering_buffer PatRendBuff((BYTE *)pImgBuff, dwImgWidth, dwImgHeight, nImgStride);
 
 			agg::rendering_buffer PatRendBuff;
-
-			if (nImgStride < 0)
-			{
-				BYTE* pBuffer = (BYTE*)pImgBuff + (dwImgHeight - 1) * nImgStride;
-				PatRendBuff.attach(pBuffer, dwImgWidth, dwImgHeight, nImgStride);
-			}
-			else
-			{
-				PatRendBuff.attach((BYTE*)pImgBuff, dwImgWidth, dwImgHeight, nImgStride);
-			}			
+            PatRendBuff.attach((BYTE*)pImgBuff, dwImgWidth, dwImgHeight, nImgStride);
 			
 			pixfmt          img_pixf(PatRendBuff);
 			img_source_type img_src(img_pixf, agg::rgba(0, 0, 0, 0));
@@ -1591,16 +1582,7 @@ namespace Aggplus
         interpolator_type_linear interpolator(mtx_Work);
 
         agg::rendering_buffer PatRendBuff;
-
-        if (nImgStride < 0)
-        {
-            BYTE* pBuffer = (BYTE*)pImgBuff + (dwImgHeight - 1) * nImgStride;
-            PatRendBuff.attach(pBuffer, dwImgWidth, dwImgHeight, nImgStride);
-        }
-        else
-        {
-            PatRendBuff.attach((BYTE*)pImgBuff, dwImgWidth, dwImgHeight, nImgStride);
-        }
+        PatRendBuff.attach((BYTE*)pImgBuff, dwImgWidth, dwImgHeight, nImgStride);
 
         int nCurrentMode = 255;
         if (!m_bSwapRGB)
@@ -1774,16 +1756,7 @@ namespace Aggplus
         
         //agg::rendering_buffer PatRendBuff((BYTE *)pImgBuff, dwImgWidth, dwImgHeight, nImgStride);
         agg::rendering_buffer PatRendBuff;
-        
-        if (nImgStride < 0)
-        {
-            BYTE* pBuffer = (BYTE*)pImgBuff + (dwImgHeight - 1) * nImgStride;
-            PatRendBuff.attach(pBuffer, dwImgWidth, dwImgHeight, nImgStride);
-        }
-        else
-        {
-            PatRendBuff.attach((BYTE*)pImgBuff, dwImgWidth, dwImgHeight, nImgStride);
-        }
+        PatRendBuff.attach((BYTE*)pImgBuff, dwImgWidth, dwImgHeight, nImgStride);
         
         typedef ColorSpacePix     pixfmt;
         if(wrapmode == WrapModeTileFlipX)
@@ -1911,7 +1884,7 @@ namespace Aggplus
 		{
 			CBrushTexture *ptxBrush = (CBrushTexture *)Brush;
 			
-			LPVOID pImgBuff = ptxBrush->PatternFinalize();
+			LPVOID pImgBuff = ptxBrush->GetData();
 			if (pImgBuff)
 			{
 				DWORD dwImgWidth = ptxBrush->PatternGetWidth();
@@ -1922,42 +1895,6 @@ namespace Aggplus
 				{
 					Aggplus::WrapMode wrapmode = ptxBrush->m_wrapMode;
 					Aggplus::CMatrix matrix = ptxBrush->m_mtx;
-
-					BYTE* pTmpBuffer = NULL;
-					
-					if( ptxBrush->m_bUsePattern )
-					{
-						pTmpBuffer = new BYTE[dwImgWidth*dwImgHeight*4];
-						if( pTmpBuffer )
-						{
-							BYTE clr2[4] = {ptxBrush->m_colors[0].GetR(), ptxBrush->m_colors[0].GetG(), ptxBrush->m_colors[0].GetB(), ptxBrush->m_colors[0].GetA()};
-							BYTE clr1[4] = {ptxBrush->m_colors[1].GetR(), ptxBrush->m_colors[1].GetG(), ptxBrush->m_colors[1].GetB(), ptxBrush->m_colors[1].GetA()};
-							
-							BYTE* src = (BYTE*)pImgBuff;
-							BYTE* dst = pTmpBuffer;
-							int stride = nImgStride - dwImgWidth * 4;
-							
-							for( unsigned y = 0; y < dwImgHeight; ++y, src += stride )
-							{
-								for( unsigned x = 0; x < dwImgWidth; ++x, src += 4, dst += 4 )
-								{
-									unsigned grey2 = (src[2] * 77 + src[1] * 150 + src[0] * 29 + 128) >> 8;
-									unsigned grey1 = 255 - grey2;
-
-									dst[0] = (BYTE)((clr1[0] * grey1 + clr2[0] * grey2 + 128) * 0x8081 >> 23);
-									dst[1] = (BYTE)((clr1[1] * grey1 + clr2[1] * grey2 + 128) * 0x8081 >> 23);
-									dst[2] = (BYTE)((clr1[2] * grey1 + clr2[2] * grey2 + 128) * 0x8081 >> 23);
-									dst[3] = (BYTE)((clr1[3] * (255 - src[3]) + clr2[3] * src[3] + 128) * 0x8081 >> 23);
-								}
-							}
-
-							pImgBuff = pTmpBuffer;
-							nImgStride = dwImgWidth * 4;
-
-							wrapmode = WrapModeTile;
-							matrix.Reset();
-						}
-					}
 					
 					if(wrapmode == WrapModeClamp)
 					{
@@ -1974,9 +1911,6 @@ namespace Aggplus
                             DoFillPathTextureClampSz3<agg::pixfmt_rgba32>(matrix, pImgBuff, dwImgWidth, dwImgHeight, nImgStride, wrapmode, ptxBrush->Alpha);
                         }
 					}
-
-					if( pTmpBuffer )
-						delete [] pTmpBuffer;
 				}
 			}
 		}

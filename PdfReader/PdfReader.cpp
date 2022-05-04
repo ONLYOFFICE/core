@@ -841,37 +841,6 @@ return 0;
         NSWasm::CPageLink oLinks;
         double height = m_pInternal->m_pPDFDocument->getPageCropHeight(nPageIndex);
 
-        // Текст-ссылка
-        TextOutputControl textOutControl;
-        textOutControl.mode = textOutReadingOrder;
-        TextOutputDev* pTextOut = new TextOutputDev(NULL, &textOutControl, gFalse);
-        m_pInternal->m_pPDFDocument->displayPage(pTextOut, nPageIndex, 72, 72, 0, gFalse, gTrue, gFalse);
-        m_pInternal->m_pPDFDocument->processLinks(pTextOut, nPageIndex);
-        TextWordList* pWordList = pTextOut->makeWordList();
-        for (int i = 0; i < pWordList->getLength(); i++)
-        {
-            TextWord* pWord = pWordList->get(i);
-            if (!pWord)
-                continue;
-            GString* sLink = pWord->getText();
-            if (!sLink)
-                continue;
-            std::string link(sLink->getCString(), sLink->getLength());
-            size_t find = link.find("http://");
-            if (find == std::string::npos)
-                find = link.find("https://");
-            if (find == std::string::npos)
-                find = link.find("www.");
-            if (find != std::string::npos)
-            {
-                link.erase(0, find);
-                double x1, y1, x2, y2;
-                pWord->getBBox(&x1, &y1, &x2, &y2);
-                oLinks.m_arLinks.push_back({link, 0, x1, y1, x2 - x1, y2 - y1});
-            }
-        }
-        RELEASEOBJECT(pTextOut);
-
         // Гиперссылка
         Links* pLinks = m_pInternal->m_pPDFDocument->getLinks(nPageIndex);
         if (!pLinks)
@@ -921,6 +890,38 @@ return 0;
             RELEASEOBJECT(str);
         }
         RELEASEOBJECT(pLinks);
+
+        // Текст-ссылка
+        TextOutputControl textOutControl;
+        textOutControl.mode = textOutReadingOrder;
+        TextOutputDev* pTextOut = new TextOutputDev(NULL, &textOutControl, gFalse);
+        m_pInternal->m_pPDFDocument->displayPage(pTextOut, nPageIndex, 72, 72, 0, gFalse, gTrue, gFalse);
+        m_pInternal->m_pPDFDocument->processLinks(pTextOut, nPageIndex);
+        TextWordList* pWordList = pTextOut->makeWordList();
+        for (int i = 0; i < pWordList->getLength(); i++)
+        {
+            TextWord* pWord = pWordList->get(i);
+            if (!pWord)
+                continue;
+            GString* sLink = pWord->getText();
+            if (!sLink)
+                continue;
+            std::string link(sLink->getCString(), sLink->getLength());
+            size_t find = link.find("http://");
+            if (find == std::string::npos)
+                find = link.find("https://");
+            if (find == std::string::npos)
+                find = link.find("www.");
+            if (find != std::string::npos)
+            {
+                link.erase(0, find);
+                double x1, y1, x2, y2;
+                pWord->getBBox(&x1, &y1, &x2, &y2);
+                oLinks.m_arLinks.push_back({link, 0, x1, y1, x2 - x1, y2 - y1});
+            }
+        }
+        RELEASEOBJECT(pTextOut);
+
         return oLinks.Serialize();
     }
 #endif

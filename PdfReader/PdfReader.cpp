@@ -745,7 +745,26 @@ return 0;
 
         sRes += bLinearized ? L"true" : L"false";
         sRes += L",\"Tagged\":";
-        sRes += m_pInternal->m_pPDFDocument->getStructTreeRoot()->isDict() ? L"true" : L"false";
+
+        bool bTagged = false;
+        Object catDict, markInfoObj;
+        if (xref->getCatalog(&catDict) && catDict.isDict() && catDict.dictLookup("MarkInfo", &markInfoObj) && markInfoObj.isDict())
+        {
+            Object marked, suspects;
+            if (markInfoObj.dictLookup("Marked", &marked) && marked.isBool() && marked.getBool())
+            {
+                bTagged = true;
+                // If Suspects is true, the document may not completely conform to Tagged PDF conventions.
+                if (markInfoObj.dictLookup("Suspects", &suspects) && suspects.isBool() && suspects.getBool())
+                    bTagged = false;
+            }
+            marked.free();
+            suspects.free();
+        }
+        markInfoObj.free();
+        catDict.free();
+
+        sRes += bTagged ? L"true" : L"false";
         sRes += L"}";
 
         return sRes;

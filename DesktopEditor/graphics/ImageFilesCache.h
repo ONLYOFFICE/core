@@ -170,6 +170,21 @@ public:
 		pImage->AddRef();
 		return pImage;
 	}
+
+    virtual bool UnLock(const std::wstring& strFile)
+    {
+        CTemporaryCS oCS(&m_oCS);
+
+        std::map<std::wstring,CCacheImage*>::iterator it = m_mapImages.find(strFile);
+        if (it != m_mapImages.end())
+        {
+            it->second->Release();
+            m_mapImages.erase(it);
+            return true;
+        }
+
+        return false;
+    }
 	
     virtual int Release()
 	{

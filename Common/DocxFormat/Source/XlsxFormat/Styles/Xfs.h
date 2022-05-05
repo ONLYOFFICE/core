@@ -462,9 +462,40 @@ namespace OOX
 
 				if (m_oAligment.IsInit())
 					m_oAligment->toBin(obj);
+				else
+				{
+					if (obj->get_type() == XLS::typeXF)
+					{
+						auto ptr = static_cast<XLS::XF*>(obj.get());
+						if (ptr != nullptr)
+						{
+							ptr->cIndent = 0;
+							ptr->fJustLast = false;
+							ptr->iReadOrder = 0;
+							ptr->iReadOrder = 0;
+							ptr->fShrinkToFit = false;
+							ptr->trot = 0;
+							ptr->fWrap = false;
+							ptr->alc = 0;
+							ptr->alcV = 0;
+						}
+					}
+				}
 
 				if (m_oProtection.IsInit())
 					m_oProtection->toBin(obj);
+				else
+				{
+					if (obj->get_type() == XLS::typeXF)
+					{
+						auto ptr = static_cast<XLS::XF*>(obj.get());
+						if (ptr != nullptr)
+						{
+							ptr->fHidden = false;
+							ptr->fLocked = false;
+						}
+					}
+				}
 			}
 
 		private:

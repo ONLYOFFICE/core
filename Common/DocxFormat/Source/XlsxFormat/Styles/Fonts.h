@@ -194,37 +194,37 @@ namespace OOX
 					if (m_oSz.IsInit() && m_oSz->m_oVal.Init())
 						ptr->dyHeight = m_oSz->m_oVal->GetValue() * 20.;
 					else
-						ptr->dyHeight = 0;
+						ptr->dyHeight = 11.0 * 20.;
 
 					if (m_oItalic.IsInit())
 						ptr->fItalic = m_oItalic->ToBool();
 					else
-						ptr->fItalic = true;
+						ptr->fItalic = false;
 
 					if (m_oStrike.IsInit())
 						ptr->fStrikeOut = m_oStrike->ToBool();
 					else
-						ptr->fStrikeOut = true;
+						ptr->fStrikeOut = false;
 
 					if (m_oOutline.IsInit())
 						ptr->fOutline = m_oOutline->ToBool();
 					else
-						ptr->fOutline = true;
+						ptr->fOutline = false;
 
 					if (m_oShadow.IsInit())
 						ptr->fShadow = m_oShadow->ToBool();
 					else
-						ptr->fShadow = true;
+						ptr->fShadow = false;
 
 					if (m_oCondense.IsInit())
 						ptr->fCondense = m_oCondense->ToBool();
 					else
-						ptr->fCondense = true;
+						ptr->fCondense = false;
 
 					if (m_oExtend.IsInit())
 						ptr->fExtend = m_oExtend->ToBool();
 					else
-						ptr->fExtend = true;
+						ptr->fExtend = false;
 
 					if (m_oBold.IsInit())
 					{
@@ -253,7 +253,7 @@ namespace OOX
 						}
 					}
 					else
-						ptr->uls = 1;
+						ptr->uls = 0;
 
 					if (m_oFamily.IsInit() && m_oFamily->m_oFontFamily.IsInit())
 						ptr->bFamily = m_oFamily->m_oFontFamily->GetValue();
@@ -420,7 +420,7 @@ namespace OOX
                     switch(ptr->uls)
                     {
                         case 0:
-                           m_oUnderline->m_oUnderline = SimpleTypes::Spreadsheet::EUnderline::underlineNone; break;
+                            m_oUnderline->m_oUnderline = SimpleTypes::Spreadsheet::EUnderline::underlineNone; break;
                         case 1:
                             m_oUnderline->m_oUnderline = SimpleTypes::Spreadsheet::EUnderline::underlineSingle; break;
                         case 2:

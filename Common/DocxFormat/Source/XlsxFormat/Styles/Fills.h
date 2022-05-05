@@ -409,9 +409,12 @@ namespace OOX
 
 			void toBin(XLS::BaseObjectPtr& obj)
 			{
+				WriteAttributes(obj);
+
 				auto ptr = static_cast<XLSB::Fill*>(obj.get());
 				if (ptr != nullptr)
 				{
+					ptr->fls = 0x28;
 					ptr->xfillGradientStop.reserve(m_arrItems.size());
 					for (size_t i = 0; i < m_arrItems.size(); ++i)
 					{
@@ -442,20 +445,66 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if     ( oReader, L"type",	m_oType )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            void WriteAttributes(XLS::BaseObjectPtr& obj)
             {
                 auto ptr = static_cast<XLSB::Fill*>(obj.get());
-                if(ptr != nullptr && ptr->fls == 0x28)
+                if(ptr != nullptr)
                 {
-                    m_oType         = (SimpleTypes::Spreadsheet::EGradientType)ptr->iGradientType;
+					if (m_oType.IsInit())
+						ptr->iGradientType = m_oType->GetValue();
+					else
+						ptr->iGradientType = 0;
 
-                    m_oDegree       = ptr->xnumDegree.data.value;
-                    m_oLeft         = ptr->xnumFillToLeft.data.value;
-                    m_oRight        = ptr->xnumFillToRight.data.value;
-                    m_oTop          = ptr->xnumFillToTop.data.value;
-                    m_oBottom       = ptr->xnumFillToBottom.data.value;
+					if (m_oDegree.IsInit())
+						ptr->xnumDegree.data.value = m_oDegree->GetValue();
+					else
+						ptr->xnumDegree.data.value = 0;
+
+					if (m_oLeft.IsInit())
+						ptr->xnumFillToLeft.data.value = m_oLeft->GetValue();
+					else
+						ptr->xnumFillToLeft.data.value = 0;
+                     
+					if (m_oRight.IsInit())
+						ptr->xnumFillToRight.data.value = m_oRight->GetValue();
+					else
+						ptr->xnumFillToRight.data.value = 0;
+                   
+					if (m_oTop.IsInit())
+						ptr->xnumFillToTop.data.value = m_oTop->GetValue();
+					else
+						ptr->xnumFillToTop.data.value = 0;
+                     
+					if (m_oBottom.IsInit())
+						ptr->xnumFillToBottom.data.value = m_oBottom->GetValue();
+					else
+						ptr->xnumFillToBottom.data.value = 0;
                 }
             }
+			void ReadAttributes(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::Fill*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if((SimpleTypes::Spreadsheet::EGradientType)ptr->iGradientType != SimpleTypes::Spreadsheet::EGradientType::gradienttypeLine)
+						m_oType = (SimpleTypes::Spreadsheet::EGradientType)ptr->iGradientType;
+
+					if(ptr->xnumDegree.data.value != 0)
+						m_oDegree = ptr->xnumDegree.data.value;
+
+					if (ptr->xnumFillToLeft.data.value != 0)
+						m_oLeft = ptr->xnumFillToLeft.data.value;
+
+					if (ptr->xnumFillToRight.data.value != 0)
+						m_oRight = ptr->xnumFillToRight.data.value;
+
+					if (ptr->xnumFillToTop.data.value != 0)
+						m_oTop = ptr->xnumFillToTop.data.value;
+
+					if (ptr->xnumFillToBottom.data.value != 0)
+						m_oBottom = ptr->xnumFillToBottom.data.value;
+				}
+			}
 		public:
 			nullable<SimpleTypes::CDouble>		m_oBottom;
 			nullable<SimpleTypes::CDouble>		m_oDegree;
@@ -517,9 +566,14 @@ namespace OOX
 			}
             void fromBin(XLS::BaseObjectPtr& obj)
             {
-                //ReadAttributes(obj);
-                m_oPatternFill  = obj;
-                m_oGradientFill = obj;
+				auto ptr = static_cast<XLSB::Fill*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if (ptr->fls != 0x28)
+						m_oPatternFill  = obj;
+					else
+						m_oGradientFill = obj;					
+				}
             }
 			void toBin(XLS::BaseObjectPtr& obj)
 			{

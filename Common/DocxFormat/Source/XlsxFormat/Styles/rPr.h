@@ -553,6 +553,14 @@ namespace OOX
 
 				}
 			}
+			const bool operator==(const CColor& oOther) const
+			{
+				return this->m_oAuto == oOther.m_oAuto &&
+					this->m_oIndexed == oOther.m_oIndexed &&
+					this->m_oRgb == oOther.m_oRgb &&
+					this->m_oThemeColor == oOther.m_oThemeColor &&
+					this->m_oTint == oOther.m_oTint;
+			}
 			virtual EElementType getType () const
 			{
 				return et_x_Color;
@@ -568,47 +576,47 @@ namespace OOX
                     WritingElement_ReadAttributes_Read_if     ( oReader, _T("tint"),    m_oTint )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-                        void ReadAttributes(XLS::BaseObjectPtr& obj)
-                        {
-                            auto ptr = static_cast<XLSB::Color*>(obj.get());
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::Color*>(obj.get());
 
-                            if(ptr != nullptr)
+                if(ptr != nullptr)
+                {
+                    switch(ptr->xColorType)
+                    {
+                        case 0: m_oAuto     = true;		break;
+                        case 1: m_oIndexed  = ptr->index;	break;
+                        case 3: m_oThemeColor = (SimpleTypes::Spreadsheet::EThemeColor)ptr->index; break;
+                            /*switch (ptr->index)
                             {
-                                switch(ptr->xColorType)
-                                {
-                                    case 0: m_oAuto     = true;		break;
-                                    case 1: m_oIndexed  = ptr->index;	break;
-                                    case 3: m_oThemeColor = (SimpleTypes::Spreadsheet::EThemeColor)ptr->index; break;
-                                        /*switch (ptr->index)
-                                        {
-                                            case 0:
-                                                m_oThemeColor = SimpleTypes::Spreadsheet::EThemeColor::themecolorDark1;
-                                                break;
-                                            case 1:
-                                                m_oThemeColor = SimpleTypes::Spreadsheet::EThemeColor::themecolorLight1;
-                                                break;
-                                            case 2:
-                                                m_oThemeColor = SimpleTypes::Spreadsheet::EThemeColor::themecolorDark2;
-                                                break;
-                                            case 3:
-                                                m_oThemeColor = SimpleTypes::Spreadsheet::EThemeColor::themecolorLight2;
-                                                break;
-                                            default:
-                                                m_oThemeColor = (SimpleTypes::Spreadsheet::EThemeColor)ptr->index;
-                                        }
-                                        break;*/
-                                    default:
-                                        m_oRgb = SimpleTypes::Spreadsheet::CHexColor(ptr->bRed, ptr->bGreen, ptr->bBlue, ptr->bAlpha);
-                                        break;
-                                }
-                                if (ptr->nTintAndShade != 0)
-                                {
-                                     m_oTint     = ptr->nTintAndShade/32767.0;
-                                }
+                                case 0:
+                                    m_oThemeColor = SimpleTypes::Spreadsheet::EThemeColor::themecolorDark1;
+                                    break;
+                                case 1:
+                                    m_oThemeColor = SimpleTypes::Spreadsheet::EThemeColor::themecolorLight1;
+                                    break;
+                                case 2:
+                                    m_oThemeColor = SimpleTypes::Spreadsheet::EThemeColor::themecolorDark2;
+                                    break;
+                                case 3:
+                                    m_oThemeColor = SimpleTypes::Spreadsheet::EThemeColor::themecolorLight2;
+                                    break;
+                                default:
+                                    m_oThemeColor = (SimpleTypes::Spreadsheet::EThemeColor)ptr->index;
                             }
-                        }
+                            break;*/
+                        default:
+                            m_oRgb = SimpleTypes::Spreadsheet::CHexColor(ptr->bRed, ptr->bGreen, ptr->bBlue, ptr->bAlpha);
+                            break;
+                    }
+                    if (ptr->nTintAndShade != 0)
+                    {
+                         m_oTint     = ptr->nTintAndShade/32767.0;
+                    }
+                }
+            }
 
-                        void ReadAttributes(XLS::BaseObject* obj)
+            void ReadAttributes(XLS::BaseObject* obj)
                         {
                             auto ptr = static_cast<XLSB::Color*>(obj);
 
@@ -749,6 +757,10 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 			}
+			const bool operator==(const CCharset& oOther) const
+			{
+				return this->m_oCharset == oOther.m_oCharset;
+			}
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -784,6 +796,10 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 			}
+			const bool operator==(const CVerticalAlign& oOther) const
+			{
+				return this->m_oVerticalAlign == oOther.m_oVerticalAlign;
+			}
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -818,6 +834,10 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
+			}
+			const bool operator==(const CFontFamily& oOther) const
+			{
+				return this->m_oFontFamily == oOther.m_oFontFamily;
 			}
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -856,6 +876,10 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 			}
+			const bool operator==(const CFontScheme& oOther) const
+			{
+				return this->m_oFontScheme == oOther.m_oFontScheme;
+			}
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -890,6 +914,10 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
+			}
+			const bool operator==(const CUnderline& oOther) const
+			{
+				return this->m_oUnderline == oOther.m_oUnderline;
 			}
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -1059,6 +1087,7 @@ namespace OOX
 			}
 
             void fromFont(CFont* font);
+			bool compareFont(CFont* font);
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType);
 			void toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const;
 			_UINT32 getXLSBSize() const;

@@ -134,7 +134,7 @@ namespace OOX
 									auto ptrSSTItem = static_cast<XLSB::SSTItem*>(item.get());
 									if (ptrSSTItem != nullptr)
 									{
-										m_arrItems[i]->toBin(ptrSSTItem->richStr);
+										m_arrItems[i]->toBin(ptrSSTItem->richStr, xlsb);
 										ptr->m_arBrtSSTItem.push_back(item);
 									}
 								}

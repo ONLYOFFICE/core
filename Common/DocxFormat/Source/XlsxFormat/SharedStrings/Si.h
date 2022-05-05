@@ -38,6 +38,8 @@
 #include "PhoneticPr.h"
 #include "Run.h"
 #include "../../XlsbFormat/Biff12_records/SSTItem.h"
+#include "../../XlsbFormat/Xlsb.h"
+#include "../Styles/Styles.h"
 
 namespace NSBinPptxRW
 {
@@ -215,8 +217,9 @@ namespace OOX
                 }
             }
 
-			void toBin(XLS::BiffStructure& obj, bool flagIsComment = false)
+			void toBin(XLS::BiffStructure& obj, OOX::Document* pMain)
 			{
+				CXlsb* xlsb = dynamic_cast<CXlsb*>(pMain);
 				auto ptr = static_cast<XLSB::RichStr*>(&obj);
 
 				if (ptr != nullptr)
@@ -234,6 +237,10 @@ namespace OOX
 						}
 						else if (m_arrItems[i]->getType() == et_x_r)
 						{
+							for (auto& item : xlsb->m_pStyles->m_oFonts->m_mapFonts)
+								if (static_cast<CRun*>(m_arrItems[i])->m_oRPr->compareFont(item.second))
+									static_cast<CRun*>(m_arrItems[i])->m_oRPr->m_nFontIndex = item.first;
+
 							std::wstring val = ptr->str.value();
 							XLSB::StrRun strRun;
 							strRun.ich = val.size();

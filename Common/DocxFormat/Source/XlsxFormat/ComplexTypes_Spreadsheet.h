@@ -80,6 +80,10 @@ namespace ComplexTypes
 
 				return sResult;
 			}
+			const bool operator==(const COnOff2<eDefValue>& oOther) const
+			{
+				return this->m_oVal == oOther.m_oVal;
+			}
 			void FromBool(bool bVal)
 			{
 				m_oVal.FromBool(bVal);
@@ -135,6 +139,10 @@ namespace ComplexTypes
 
 				return sResult;
 			}
+			const bool operator==(const String& oOther) const
+			{
+				return this->m_sVal == oOther.m_sVal;
+			}
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -182,6 +190,10 @@ namespace ComplexTypes
 				}
 
 				return sResult;
+			}
+			const bool operator==(const CDouble& oOther) const
+			{
+				return this->m_oVal == oOther.m_oVal;
 			}
 		private:
 		

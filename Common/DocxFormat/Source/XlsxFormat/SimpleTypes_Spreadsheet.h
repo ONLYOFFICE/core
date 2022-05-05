@@ -572,6 +572,7 @@ namespace SimpleTypes
 
 			SimpleType_FromString     (EFontCharset)
 			SimpleType_Operator_Equal (CFontCharset)
+			SimpleTypes_AdditionalOpearators(CFontCharset)
 		};
 
 		enum EThemeColor
@@ -642,6 +643,7 @@ namespace SimpleTypes
 
 			SimpleType_FromString     (EThemeColor)
 			SimpleType_Operator_Equal (CThemeColor)
+			SimpleTypes_AdditionalOpearators(CThemeColor)
 		};
 
 		class CHexColor
@@ -688,6 +690,15 @@ namespace SimpleTypes
                 FromString( wsStr);
                 return *this;
             }
+			const bool operator==(const CHexColor& oOther) const
+			{
+				if (this->m_unA == oOther.m_unA && 
+					this->m_unR == oOther.m_unR &&
+					this->m_unG == oOther.m_unG &&
+					this->m_unB == oOther.m_unB)
+					return true; 
+					return false; 
+			}
 			virtual std::wstring   ToString  () const 
 			{
                 std::wstring sResult;
@@ -851,6 +862,7 @@ namespace SimpleTypes
 
 			SimpleType_FromString     (EFontFamily)
 			SimpleType_Operator_Equal (CFontFamily)
+			SimpleTypes_AdditionalOpearators(CFontFamily)
 		};
 
 		enum EFontScheme
@@ -892,7 +904,8 @@ namespace SimpleTypes
 			}
 
 			SimpleType_FromString     (EFontScheme)
-				SimpleType_Operator_Equal (CFontScheme)
+			SimpleType_Operator_Equal (CFontScheme)
+			SimpleTypes_AdditionalOpearators(CFontScheme)
 		};
 		enum EUnderline
 		{
@@ -941,6 +954,7 @@ namespace SimpleTypes
 
 			SimpleType_FromString     (EUnderline)
 			SimpleType_Operator_Equal (CUnderline)
+			SimpleTypes_AdditionalOpearators (CUnderline)
 		};
 
 		enum EBorderStyle

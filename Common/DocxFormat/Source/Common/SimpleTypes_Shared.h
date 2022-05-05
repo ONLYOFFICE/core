@@ -685,6 +685,7 @@ namespace SimpleTypes
 
 		SimpleType_FromString     (EOnOff)
 		SimpleType_Operator_Equal (COnOff)
+		SimpleTypes_AdditionalOpearators(COnOff)
 	};
 
 	class CBool : public COnOff<>
@@ -897,6 +898,7 @@ namespace SimpleTypes
 
         SimpleType_FromString     (unsigned int)
 		SimpleType_Operator_Equal (CUnsignedDecimalNumber)
+		SimpleTypes_AdditionalOpearators(CUnsignedDecimalNumber)
 	};
 
 	//--------------------------------------------------------------------------------
@@ -939,6 +941,7 @@ namespace SimpleTypes
 
 		SimpleType_FromString     (EVerticalAlignRun)
 		SimpleType_Operator_Equal (CVerticalAlignRun)
+		SimpleTypes_AdditionalOpearators(CVerticalAlignRun)
 	};
 
 

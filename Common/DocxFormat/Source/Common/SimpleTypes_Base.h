@@ -506,6 +506,7 @@ namespace SimpleTypes
 		}
 		SimpleType_FromString          (double)
 		SimpleType_Operator_Equal      (CDouble)
+		UniversalMeasure_AdditionalOpearators (CDouble)
 
 	private:
 

@@ -1648,7 +1648,7 @@ namespace Aggplus
                 }
                 case 255:
                 {
-                    typedef agg::span_image_resample_rgba_affine<img_source_type> span_gen_type;
+                    typedef agg::span_image_resample_rgba_affine_for_draw<img_source_type> span_gen_type;
                     typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
                     agg::image_filter_lut filter;
                     filter.calculate(agg::image_filter_bilinear(), false);
@@ -1724,7 +1724,7 @@ namespace Aggplus
                 }
                 case 255:
                 {
-                    typedef agg::span_image_resample_rgba_affine<img_source_type> span_gen_type;
+                    typedef agg::span_image_resample_rgba_affine_for_draw<img_source_type> span_gen_type;
                     typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
                     agg::image_filter_lut filter;
                     filter.calculate(agg::image_filter_bilinear(), false);

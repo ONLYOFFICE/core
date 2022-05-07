@@ -465,7 +465,25 @@ namespace OOX
 				m_oSz == font->m_oSz &&
 				m_oUnderline == font->m_oUnderline &&
 				m_oVertAlign == font->m_oVertAlign;
+		}
 
+		void CRPr::toFont(CFont* font)
+		{
+			font->m_oBold = m_oBold;
+			font->m_oCharset = m_oCharset;
+			font->m_oColor = m_oColor;
+			font->m_oCondense = m_oCondense;
+			font->m_oExtend = m_oExtend;
+			font->m_oFamily = m_oFamily;
+			font->m_oItalic = m_oItalic;
+			font->m_oOutline = m_oOutline;
+			font->m_oRFont = m_oRFont;
+			font->m_oScheme = m_oScheme;
+			font->m_oShadow = m_oShadow;
+			font->m_oStrike = m_oStrike;
+			font->m_oSz = m_oSz;
+			font->m_oUnderline = m_oUnderline;
+			font->m_oVertAlign = m_oVertAlign;
 		}
 
 	} //Spreadsheet

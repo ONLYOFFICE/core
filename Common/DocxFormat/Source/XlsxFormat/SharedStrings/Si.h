@@ -236,15 +236,31 @@ namespace OOX
 							ptr->str = val;
 						}
 						else if (m_arrItems[i]->getType() == et_x_r)
-						{
+						{							
+							auto oCRun = static_cast<CRun*>(m_arrItems[i]);
+							
 							for (auto& item : xlsb->m_pStyles->m_oFonts->m_mapFonts)
-								if (static_cast<CRun*>(m_arrItems[i])->m_oRPr->compareFont(item.second))
-									static_cast<CRun*>(m_arrItems[i])->m_oRPr->m_nFontIndex = item.first;
+							{
+								if (oCRun->m_oRPr->compareFont(item.second))
+								{
+									oCRun->m_oRPr->m_nFontIndex = item.first;
+									break;
+								}
+
+							}
+							if(oCRun->m_oRPr->m_nFontIndex.IsInit() == false)
+							{
+								CFont* font = new CFont;
+								oCRun->m_oRPr->toFont(font);
+								oCRun->m_oRPr->m_nFontIndex = xlsb->m_pStyles->m_oFonts->m_mapFonts.size() + 1;
+								xlsb->m_pStyles->m_oFonts->m_mapFonts.insert(std::make_pair(oCRun->m_oRPr->m_nFontIndex->GetValue(), font));
+								xlsb->m_pStyles->m_oFonts->m_arrItems.push_back(font);
+							}
 
 							std::wstring val = ptr->str.value();
 							XLSB::StrRun strRun;
 							strRun.ich = val.size();
-							static_cast<CRun*>(m_arrItems[i])->toBin(val, strRun.ifnt);
+							oCRun->toBin(val, strRun.ifnt);
 							ptr->str = val;
 							ptr->rgsStrRun.push_back(strRun);
 						}

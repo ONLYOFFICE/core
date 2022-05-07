@@ -1088,6 +1088,7 @@ namespace OOX
 
             void fromFont(CFont* font);
 			bool compareFont(CFont* font);
+			void toFont(CFont* font);
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType);
 			void toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const;
 			_UINT32 getXLSBSize() const;

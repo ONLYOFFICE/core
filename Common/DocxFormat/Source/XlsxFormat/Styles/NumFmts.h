@@ -72,6 +72,7 @@ namespace OOX
 				writer.StartAttributes();
 				WritingStringNullableAttrInt(L"numFmtId", m_oNumFmtId, m_oNumFmtId->GetValue());
 				WritingStringNullableAttrEncodeXmlString(L"formatCode", m_oFormatCode, *m_oFormatCode);
+				WritingStringNullableAttrEncodeXmlString(L"x16r2:formatCode16", m_oFormatCode16, *m_oFormatCode16);
 				WritingStringNullableAttrBool(L"sourceLinked", m_oSourceLinked);
 				writer.EndAttributesAndNode();
 			}
@@ -98,6 +99,7 @@ namespace OOX
 			{
 				WritingElement_ReadAttributes_Start( oReader )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("formatCode"),		m_oFormatCode )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("x16r2:formatCode16"),	m_oFormatCode16 )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("numFmtId"),		m_oNumFmtId )
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("sourceLinked"),	m_oSourceLinked )
 
@@ -117,6 +119,7 @@ namespace OOX
 
 		public:
 			nullable_string									m_oFormatCode;
+			nullable_string									m_oFormatCode16;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oNumFmtId;
 			nullable<SimpleTypes::COnOff<>>					m_oSourceLinked;
 		};

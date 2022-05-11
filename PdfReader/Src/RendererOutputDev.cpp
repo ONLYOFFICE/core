@@ -3832,6 +3832,81 @@ namespace PdfReader
         DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
         m_pRenderer->DrawImage(&oImage, 0 + dShiftX, 0 + dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
     }
+    void RendererOutputDev::setSoftMaskFromImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate)
+    {
+        if (m_bDrawOnlyText)
+            return;
+
+        if (pGState->getFillColorSpace()->isNonMarking())
+        {
+            return;
+        }
+
+        double dPageHeight = pGState->getPageHeight();
+
+        int nBufferSize = 4 * nWidth * nHeight;
+        if (nBufferSize < 1)
+            return;
+
+        unsigned char *pBufferPtr = new unsigned char[nBufferSize];
+        if (!pBufferPtr)
+            return;
+
+        Aggplus::CImage oImage;
+        oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
+
+        // Пишем данные в pBufferPtr
+        ImageStream *pImageStream = new ImageStream(pStream, nWidth, 1, 1);
+
+        pImageStream->reset();
+
+        GfxColorSpace* pColorSpace = pGState->getFillColorSpace();
+        GfxRGB oRGB;
+        pColorSpace->getRGB(pGState->getFillColor(), &oRGB, GfxRenderingIntent::gfxRenderingIntentAbsoluteColorimetric);
+
+        unsigned char r = colToByte(oRGB.r);
+        unsigned char g = colToByte(oRGB.g);
+        unsigned char b = colToByte(oRGB.b);
+
+        unsigned char unAlpha = m_bTransparentGroup ? 255.0 * pGState->getFillOpacity() : 255;
+        unsigned char unPixel = 0;
+        int nInvert = (bInvert ? 1 : 0);
+        for (int nY = nHeight - 1; nY >= 0; nY--)
+        {
+            unsigned char *pMask = NULL;
+            int nX = 0;
+            for (nX = 0, pMask = pImageStream->getLine(); nX < nWidth; nX++)
+            {
+                int nIndex = 4 * (nX + nY * nWidth);
+                unsigned char unPixel = *pMask++ ^ nInvert;
+                pBufferPtr[nIndex + 0] = unPixel ? 255 : b;
+                pBufferPtr[nIndex + 1] = unPixel ? 255 : g;
+                pBufferPtr[nIndex + 2] = unPixel ? 255 : r;
+                pBufferPtr[nIndex + 3] = unPixel ? 0 : unAlpha;
+            }
+        }
+
+        delete pImageStream;
+
+        double arrMatrix[6];
+        double *pCTM = pGState->getCTM();
+
+        //  Исходное предобразование
+        //              |1  0  0|   |pCTM[0] pCTM[1] 0|
+        // arrMattrix = |0 -1  0| * |pCTM[2] pCTM[3] 0|
+        //              |0  1  1|   |pCTM[4] pCTM[5] 1|
+
+        arrMatrix[0] =     pCTM[0];
+        arrMatrix[1] =  -pCTM[1];
+        arrMatrix[2] =    -pCTM[2];
+        arrMatrix[3] =  -(-pCTM[3]);
+        arrMatrix[4] =     pCTM[2] + pCTM[4];
+        arrMatrix[5] =  -(pCTM[3] + pCTM[5]) + dPageHeight;
+
+        double dShiftX = 0, dShiftY = 0;
+        DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
+        m_pRenderer->DrawImage(&oImage, 0 + dShiftX, 0 + dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
+    }
 
     OO_INLINE bool CheckMask(const int& nComponentsCount, const int* pMaskColors, const unsigned char* pLine)
     {

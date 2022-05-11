@@ -1,5 +1,5 @@
 core_mac {
-    CONFIG += use_javascript_core
+    !use_v8:CONFIG += use_javascript_core
 }
 core_ios {
     CONFIG += use_javascript_core

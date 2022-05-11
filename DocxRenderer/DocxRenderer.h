@@ -62,7 +62,7 @@ class DOCXRENDERER_DECL_EXPORT CDocxRenderer : public IRenderer
 {
 public:
     CDocxRenderer(NSFonts::IApplicationFonts* pAppFonts);
-    ~CDocxRenderer();
+    virtual ~CDocxRenderer();
 
     HRESULT      CreateNewFile(const std::wstring& wsPath, bool bIsOutCompress = true);
     HRESULT      Close();

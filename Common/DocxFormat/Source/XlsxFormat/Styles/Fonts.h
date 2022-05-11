@@ -191,7 +191,7 @@ namespace OOX
 				auto ptr = static_cast<XLSB::Font*>(obj.get());
 				if (ptr != nullptr)
 				{
-					if (m_oSz.IsInit() && m_oSz->m_oVal.Init())
+					if (m_oSz.IsInit() && m_oSz->m_oVal.IsInit())
 						ptr->dyHeight = m_oSz->m_oVal->GetValue() * 20.;
 					else
 						ptr->dyHeight = 11.0 * 20.;
@@ -236,7 +236,7 @@ namespace OOX
 					else
 						ptr->bls = 0x0190;
 
-					if (m_oUnderline.IsInit() && m_oUnderline->m_oUnderline.Init())
+					if (m_oUnderline.IsInit() && m_oUnderline->m_oUnderline.IsInit())
 					{
 						switch (m_oUnderline->m_oUnderline->GetValue())
 						{
@@ -268,7 +268,7 @@ namespace OOX
 					if (m_oColor.IsInit())
 						m_oColor->toBin(&ptr->brtColor);
 
-					if (m_oScheme.IsInit() && m_oScheme->m_oFontScheme.Init())
+					if (m_oScheme.IsInit() && m_oScheme->m_oFontScheme.IsInit())
 					{
 						switch (m_oScheme->m_oFontScheme->GetValue())
 						{
@@ -288,7 +288,7 @@ namespace OOX
 					else
 						ptr->fontName = L"";
 
-					if (m_oVertAlign.IsInit() && m_oVertAlign->m_oVerticalAlign.Init())
+					if (m_oVertAlign.IsInit() && m_oVertAlign->m_oVerticalAlign.IsInit())
 					{
 						switch (m_oVertAlign->m_oVerticalAlign->GetValue())
 						{

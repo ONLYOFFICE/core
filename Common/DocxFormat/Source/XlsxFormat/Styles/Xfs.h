@@ -173,7 +173,7 @@ namespace OOX
 							}
 						}
 						else
-							ptr->alcV = 0;
+							ptr->alcV = 2;
 					}
 				}
 			}
@@ -477,7 +477,7 @@ namespace OOX
 							ptr->trot = 0;
 							ptr->fWrap = false;
 							ptr->alc = 0;
-							ptr->alcV = 0;
+							ptr->alcV = 2;
 						}
 					}
 				}

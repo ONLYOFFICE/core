@@ -252,7 +252,7 @@ namespace OOX
 							{
 								CFont* font = new CFont;
 								oCRun->m_oRPr->toFont(font);
-								oCRun->m_oRPr->m_nFontIndex = xlsb->m_pStyles->m_oFonts->m_mapFonts.size() + 1;
+								oCRun->m_oRPr->m_nFontIndex = xlsb->m_pStyles->m_oFonts->m_mapFonts.size();
 								xlsb->m_pStyles->m_oFonts->m_mapFonts.insert(std::make_pair(oCRun->m_oRPr->m_nFontIndex->GetValue(), font));
 								xlsb->m_pStyles->m_oFonts->m_arrItems.push_back(font);
 							}

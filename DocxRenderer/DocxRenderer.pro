@@ -40,6 +40,9 @@ HEADERS += \
     DocxRenderer.h
 
 SOURCES += \
+    src/logic/Document.cpp \
+    src/logic/ElementParagraph.cpp \
+    src/logic/Page.cpp \
     src/resources/resources.cpp \
     \
     DocxRenderer.cpp

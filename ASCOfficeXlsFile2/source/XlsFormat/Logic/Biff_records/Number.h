@@ -48,7 +48,6 @@ public:
 	~Number();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
@@ -64,6 +63,39 @@ public:
 //-----------------------------
 	GlobalWorkbookInfoPtr	global_info_;
 };
+class Number_BIFF2 : public Number
+{
+	BIFF_RECORD_DEFINE_TYPE_INFO(Number_BIFF2)
+	BASE_OBJECT_DEFINE_CLASS_NAME(Number_BIFF2)
+public:
+	Number_BIFF2();
+	~Number_BIFF2();
 
+	BaseObjectPtr clone();
+};
+class Integer_BIFF2 : public BiffRecord
+{
+	BIFF_RECORD_DEFINE_TYPE_INFO(Integer_BIFF2)
+	BASE_OBJECT_DEFINE_CLASS_NAME(Integer_BIFF2)
+public:
+	Integer_BIFF2();
+	~Integer_BIFF2();
+
+	BaseObjectPtr clone();
+
+	void readFields(CFRecord& record);
+
+	static const ElementType type = typeNumber;
+
+	int serialize(std::wostream & stream);
+
+	const CellRef getLocation() const;
+
+	CellOffsetResender		resender;
+	Cell					cell;
+	_INT32					num;
+//-----------------------------
+	GlobalWorkbookInfoPtr	global_info_;
+};
 } // namespace XLS
 

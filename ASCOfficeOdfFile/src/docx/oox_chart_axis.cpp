@@ -30,10 +30,9 @@
  *
  */
 
+#include "../../include/xml/simple_xml_writer.h"
 
 #include "oox_chart_axis.h"
-#include <xml/simple_xml_writer.h>
-
 #include "oox_title.h"
 #include "oox_chart_shape.h"
 

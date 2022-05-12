@@ -49,6 +49,8 @@ public:
 
 public:
     virtual int CreateFromFile(const std::wstring& strFileName, BYTE* pDataUse = NULL);
+    virtual int CreateFromMemory(BYTE* pData, LONG lSize, bool bClear);
+    virtual void GetMemory(BYTE*& pData, LONG& lSize);
 };
 
 class CApplicationFontStreams : public NSFonts::IApplicationFontStreams
@@ -56,8 +58,8 @@ class CApplicationFontStreams : public NSFonts::IApplicationFontStreams
 private:
 	// этот мап нужно периодически опрашивать и удалять неиспользуемые стримы
 	std::map<std::wstring, CFontStream*> m_mapStreams;
-public:
 
+public:
 	CApplicationFontStreams();
     virtual ~CApplicationFontStreams();
 
@@ -78,36 +80,17 @@ private:
 private:
     std::list<std::string>              m_arFiles;
     int m_lCacheSize;
+
+    // обезопасим лок файлов с ограниченным кэшем и режимом без квадратов
+    NSFonts::IFontFile* m_pSafeFont;
+    FT_Library m_pLibrary;
     
 public:
-    CFontsCache() : NSFonts::IFontsCache()
-    {
-        m_pApplicationFontStreams = NULL;
-        m_lCacheSize = -1;
-    }
-    virtual ~CFontsCache()
-    {
-        Clear();
-    }
-    virtual void Clear()
-    {
-        for (std::map<std::string, CFontFile*>::iterator iter = m_mapFiles.begin(); iter != m_mapFiles.end(); ++iter)
-        {
-            CFontFile* pFile = iter->second;
-            RELEASEOBJECT(pFile);
-        }
-        m_mapFiles.clear();
-
-        if (-1 != m_lCacheSize)
-            m_arFiles.clear();
-    }
-    virtual void SetCacheSize(const int& lMaxSize)
-    {
-        if (lMaxSize <= 0)
-            m_lCacheSize = -1;
-        else
-            m_lCacheSize = lMaxSize;
-    }
+    CFontsCache();
+    virtual ~CFontsCache();
+    virtual void Clear();
+    virtual void SetCacheSize(const int& lMaxSize);
+    FT_Library GetLibrary();
 
 public:
     virtual void SetStreams(NSFonts::IApplicationFontStreams* pStreams) { m_pApplicationFontStreams = pStreams; }
@@ -120,8 +103,6 @@ class CFontManager : public NSFonts::IFontManager
 	friend class CApplicationFonts;
 
 public:
-	FT_Library		m_pLibrary;
-	
 	CFontFile*		m_pFont;
 	CGlyphString	m_oString;
 
@@ -204,6 +185,7 @@ public:
 
     virtual std::wstring GetFontType();
     virtual unsigned int GetNameIndex(const std::wstring& wsName);
+	virtual unsigned int GetGIDByUnicode(const unsigned int& unCode);
 
     virtual void SetSubpixelRendering(const bool& hmul, const bool& vmul);
     

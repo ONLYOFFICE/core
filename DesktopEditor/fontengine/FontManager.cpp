@@ -82,6 +82,34 @@ int CFontStream::CreateFromFile(const std::wstring& strFileName, BYTE* pDataUse)
 	return true;
 }
 
+int CFontStream::CreateFromMemory(BYTE* pData, LONG lSize, bool bClear)
+{
+    if (bClear)
+    {
+        m_pData = new BYTE[lSize];
+        memcpy(m_pData, pData, lSize);
+        m_bIsAttach = false;
+    }
+    else
+    {
+        m_pData = pData;
+        m_bIsAttach = true;
+    }
+    m_lSize = lSize;
+
+    if (!m_pData)
+    {
+        m_lSize = 0;
+        return FALSE;
+    }
+    return TRUE;
+}
+void CFontStream::GetMemory(BYTE*& pData, LONG& lSize)
+{
+    pData = m_pData;
+    lSize = m_lSize;
+}
+
 CApplicationFontStreams::CApplicationFontStreams() : NSFonts::IApplicationFontStreams()
 {
 }
@@ -92,13 +120,26 @@ CApplicationFontStreams::~CApplicationFontStreams()
 
 NSFonts::IFontStream* CApplicationFontStreams::GetStream(const std::wstring &strFile)
 {
-	CFontStream* pStream = m_mapStreams[strFile];
+    CFontStream* pStream = m_mapStreams[strFile];
 
 	if (NULL != pStream)
 		return pStream;
 
-	pStream = new CFontStream();
-	pStream->CreateFromFile(strFile);
+    if (NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage())
+    {
+        pStream = (CFontStream*)NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Get(strFile);
+        if (pStream)
+        {
+            // чтобы удалить и из мапа и из стораджа
+            pStream->AddRef();
+        }
+    }
+
+    if (!pStream)
+	{
+		pStream = new CFontStream();
+		pStream->CreateFromFile(strFile);
+	}
 
 	m_mapStreams[strFile] = pStream;
 	return pStream;
@@ -112,8 +153,8 @@ void CApplicationFontStreams::CheckStreams(std::map<std::wstring,bool> &mapFiles
 
         if (mapFiles.find(iter->first) != mapFiles.end())
         {
-            iter = m_mapStreams.erase(iter);
             RELEASEINTERFACE(pFile);
+            iter = m_mapStreams.erase(iter);
         }
         else
             iter++;
@@ -122,6 +163,9 @@ void CApplicationFontStreams::CheckStreams(std::map<std::wstring,bool> &mapFiles
 
 void CApplicationFontStreams::Clear()
 {
+    if (NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage())
+        NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Clear();
+
     for (std::map<std::wstring, CFontStream*>::iterator iter = m_mapStreams.begin(); iter != m_mapStreams.end(); ++iter)
     {
         CFontStream* pFile = iter->second;
@@ -172,8 +216,7 @@ NSFonts::IFontFile* NSFonts::IFontManager::LoadFontFile(NSFonts::CLibrary& libra
 	pFont->LoadDefaultCharAndSymbolicCmapIndex();
 
 	if (FT_Set_Char_Size(pFace, 0, (FT_F26Dot6)(pFont->m_dSize * 64), 0, 0))
-	{
-		FT_Done_Face(pFace);
+	{		
 		delete pFont;
 		return NULL;
 	}
@@ -203,6 +246,8 @@ NSFonts::IFontFile* CFontsCache::LockFont(NSFonts::CLibrary& library, const std:
 		return pFile;
 
     CFontStream* pStream = (CFontStream*)m_pApplicationFontStreams->GetStream(strFileName);
+    if (NULL == pStream)
+        return NULL;
     pFile = (CFontFile*)CFontManager::LoadFontFile(library, pStream, lFaceIndex);
 	if (NULL == pFile)
 		return NULL;
@@ -213,13 +258,21 @@ NSFonts::IFontFile* CFontsCache::LockFont(NSFonts::CLibrary& library, const std:
         if ((int)m_arFiles.size() > m_lCacheSize)
         {
             std::string sPop = *m_arFiles.begin();
-            m_arFiles.pop_front();
-
             std::map<std::string, CFontFile*>::iterator _find = m_mapFiles.find(sPop);
+
             if (m_mapFiles.end() != _find)
             {
                 CFontFile* pFontRemove = _find->second;
-                RELEASEOBJECT(pFontRemove);
+                if (m_pSafeFont != pFontRemove)
+                {
+                    m_arFiles.pop_front();
+                    RELEASEOBJECT(pFontRemove);
+                    m_mapFiles.erase(_find);
+                }
+            }
+            else
+            {
+                // такого быть не должно
                 m_mapFiles.erase(_find);
             }
         }
@@ -232,14 +285,51 @@ NSFonts::IFontFile* CFontsCache::LockFont(NSFonts::CLibrary& library, const std:
 	return pFile;
 }
 
+CFontsCache::CFontsCache() : NSFonts::IFontsCache()
+{
+    m_pApplicationFontStreams = NULL;
+    m_lCacheSize = -1;
+    m_pSafeFont = NULL;
+
+    m_pLibrary = NULL;
+    FT_Init_FreeType(&m_pLibrary);
+    FT_Library_SetLcdFilter(m_pLibrary, FT_LCD_FILTER_DEFAULT);
+}
+CFontsCache::~CFontsCache()
+{
+    Clear();
+
+    if (m_pLibrary)
+        FT_Done_FreeType(m_pLibrary);
+}
+void CFontsCache::Clear()
+{
+    for (std::map<std::string, CFontFile*>::iterator iter = m_mapFiles.begin(); iter != m_mapFiles.end(); ++iter)
+    {
+        CFontFile* pFile = iter->second;
+        RELEASEOBJECT(pFile);
+    }
+    m_mapFiles.clear();
+
+    if (-1 != m_lCacheSize)
+        m_arFiles.clear();
+}
+void CFontsCache::SetCacheSize(const int& lMaxSize)
+{
+    if (lMaxSize <= 0)
+        m_lCacheSize = -1;
+    else
+        m_lCacheSize = lMaxSize;
+}
+FT_Library CFontsCache::GetLibrary()
+{
+    return m_pLibrary;
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 CFontManager::CFontManager() : NSFonts::IFontManager()
 {
-	m_pLibrary = NULL;
-	FT_Init_FreeType(&m_pLibrary);
-	FT_Library_SetLcdFilter(m_pLibrary, FT_LCD_FILTER_DEFAULT);
-
-	m_pFont = NULL;
+    m_pFont = NULL;
 	m_pApplication = NULL;
 	m_pOwnerCache = NULL;
 
@@ -259,11 +349,7 @@ CFontManager::CFontManager() : NSFonts::IFontManager()
 
 CFontManager::~CFontManager()
 {
-	if (m_pLibrary)
-	{
-		FT_Done_FreeType(m_pLibrary);
-	}
-	RELEASEOBJECT(m_pOwnerCache);
+    RELEASEOBJECT(m_pOwnerCache);		
 }
 void CFontManager::SetOwnerCache(NSFonts::IFontsCache* pCache)
 {
@@ -662,8 +748,8 @@ INT CFontManager::LoadFontByName(const std::wstring& sName, const double& dSize,
 		*oFormat.bItalic = TRUE;
 
     NSFonts::CFontInfo* pInfo = m_pApplication->GetList()->GetByParams(oFormat);
-	if (NULL == pInfo)
-		return FALSE;
+    if (NULL == pInfo)
+        return FALSE;
 
     INT bLoad = LoadFontFromFile(pInfo->m_wsFontPath, pInfo->m_lIndex, dSize, dDpiX, dDpiY);
 
@@ -690,7 +776,7 @@ INT CFontManager::LoadFontFromFile(const std::wstring& sPath, const int& lFaceIn
     CFontsCache* pCache		= (CFontsCache*)((m_pOwnerCache != NULL) ? m_pOwnerCache : m_pApplication->GetCache());
 	
     NSFonts::CLibrary library;
-    library.m_internal->m_library = m_pLibrary;
+    library.m_internal->m_library = pCache->GetLibrary();
     m_pFont = (CFontFile*)pCache->LockFont(library, sPath, lFaceIndex, dSize);
     if (NULL == m_pFont)
         return FALSE;
@@ -714,7 +800,7 @@ INT CFontManager::LoadFontFromFile2(NSFonts::IFontsCache* pCache, const std::wst
 		return FALSE;
 
     NSFonts::CLibrary library;
-    library.m_internal->m_library = m_pLibrary;
+    library.m_internal->m_library = ((CFontsCache*)pCache)->GetLibrary();
     m_pFont = (CFontFile*)pCache->LockFont(library, sPath, lFaceIndex, dSize);
 	if (NULL == m_pFont)
 		return FALSE;
@@ -755,7 +841,13 @@ unsigned int CFontManager::GetNameIndex(const std::wstring& wsName)
 
 	return m_pFont->GetNameIndex(wsName);
 }
+unsigned int CFontManager::GetGIDByUnicode(const unsigned int& unCode)
+{
+	if (!m_pFont)
+		return 0;
 
+	return m_pFont->GetGIDByUnicode(unCode);
+}
 void CFontManager::SetSubpixelRendering(const bool& hmul, const bool& vmul)
 {
     if (hmul)
@@ -821,7 +913,14 @@ CFontFile* CFontManager::GetFontFileBySymbol(CFontFile* pFile, int code)
     if (pFile->m_bNeedDoItalic || pFile->IsItalic())
         nStyle |= 2;
 
+    CFontsCache* pCache = (CFontsCache*)GetCache();
+    if (pCache)
+        pCache->m_pSafeFont = pFile;
+
     LoadFontByName(sName, pFile->m_dSize, nStyle, pFile->m_unHorDpi, pFile->m_unVerDpi);
+
+    if (pCache)
+        pCache->m_pSafeFont = NULL;
 
     if (!m_pFont)
     {

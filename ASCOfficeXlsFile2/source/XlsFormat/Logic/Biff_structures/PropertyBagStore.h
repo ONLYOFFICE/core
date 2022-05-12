@@ -32,8 +32,8 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include <Logic/Biff_structures/FactoidType.h>
-#include <Logic/Biff_structures/BiffString.h>
+#include "FactoidType.h"
+#include "BiffString.h"
 
 namespace OSHARED
 {

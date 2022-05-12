@@ -31,7 +31,6 @@
  */
 
 #include "DXFId.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {
@@ -45,6 +44,10 @@ DXFId::DXFId()
 DXFId::DXFId(CFRecord& record)
 {
 	load(record);
+}
+
+DXFId::~DXFId()
+{
 }
 
 

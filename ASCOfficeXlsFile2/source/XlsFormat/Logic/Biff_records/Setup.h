@@ -42,7 +42,7 @@ class Setup: public BiffRecord
 	BIFF_RECORD_DEFINE_TYPE_INFO(Setup)
 	BASE_OBJECT_DEFINE_CLASS_NAME(Setup)
 public:
-	Setup();
+	Setup(bool isChart = false);
 	~Setup();
 
 	BaseObjectPtr clone();
@@ -51,30 +51,34 @@ public:
 
 	static const ElementType type = typeSetup;
 
-//-----------------------------
-	_UINT16 iPaperSize;
-	_UINT16 iScale;
-	_INT16 iPageStart;
-	_UINT16 iFitWidth;
-	_UINT16 iFitHeight;
+	_UINT32 iPaperSize = 0;
+	_UINT32 iScale = 100;
+	_INT32 iPageStart = 1;
+	_UINT32 iFitWidth = 0;
+	_UINT32 iFitHeight = 0;
 
-	bool fLeftToRight;
-	bool fPortrait;
-	bool fNoPls;
-	bool fNoColor;
-	bool fDraft;
-	bool fNotes;
-	bool fNoOrient;
-	bool fUsePage;
-	bool fEndNotes;
-	unsigned char	iErrors;
+	bool fLeftToRight = false;
+	bool fPortrait = false;
+	bool fNoPls = false;
+	bool fNoColor = false;
+	bool fDraft = false;
+	bool fNotes = false;
+	bool fNoOrient = false;
+	bool fUsePage = false;
+	bool fEndNotes = false;
+	unsigned char iErrors = 0;
 
-	_UINT16 iRes;
-	_UINT16 iVRes;
+	_UINT32 iRes = 0;
+	_UINT32 iVRes = 0;
+
 	Xnum	numHdr;
 	Xnum	numFtr;
-	_UINT16 iCopies;
+	_UINT32 iCopies = 1;
 
+	std::wstring szRelID; // biff12
+	bool fLandscape; // biff12
+
+	bool _isChart;
 };
 
 } // namespace XLS

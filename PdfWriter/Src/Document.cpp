@@ -57,6 +57,11 @@
 #undef CreateFont
 #endif
 
+#ifndef VALUE2STR
+#define VALUE_TO_STRING(x) #x
+#define VALUE2STR(x) VALUE_TO_STRING(x)
+#endif
+
 namespace PdfWriter
 {
 	const char* c_sPdfHeader = "%PDF-1.7\015%\315\312\322\251\015";
@@ -120,11 +125,18 @@ namespace PdfWriter
 			return false;
 
 		m_pInfo->SetCreationTime();
-		std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvCompanyName);
-		if (sApplication.empty())
-			sApplication = NSSystemUtils::gc_EnvCompanyNameDefault;
-		std::string sApplicationA = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sApplication);
-		m_pInfo->SetInfo(InfoProducer, sApplicationA.c_str());
+		std::wstring sCreator = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
+		if (sCreator.empty())
+			sCreator = NSSystemUtils::gc_EnvApplicationNameDefault;
+		std::string sCreatorA = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sCreator);
+
+#if defined(INTVER)
+        std::string sVersion = VALUE2STR(INTVER);
+        sCreatorA += ("/" + sVersion);
+#endif
+
+		m_pInfo->SetInfo(InfoProducer, sCreatorA.c_str());
+		m_pInfo->SetInfo(InfoCreator, sCreatorA.c_str());
 
 		CMetadata* pMetadata = m_pCatalog->AddMetadata(m_pXref, m_pInfo);
 		if (IsPDFA())

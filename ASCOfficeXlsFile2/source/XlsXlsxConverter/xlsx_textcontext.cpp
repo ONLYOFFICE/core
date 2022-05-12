@@ -36,8 +36,8 @@
 #include <iostream>
 #include <list>
 
-#include <simple_xml_writer.h>
-#include "utils.h"
+#include "../Common/simple_xml_writer.h"
+#include "../Common/utils.h"
 
 namespace oox {
 

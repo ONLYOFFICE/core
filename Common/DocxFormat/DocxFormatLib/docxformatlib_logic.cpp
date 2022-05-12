@@ -51,6 +51,7 @@
 #include "../Source/DocxFormat/Math/oMath.cpp"
 #include "../Source/DocxFormat/Math/oMathContent.cpp"
 #include "../Source/DocxFormat/Math/oMathPara.cpp"
+#include "../Source/DocxFormat/Media/Media.cpp"
 #include "../Source/DocxFormat/Media/VbaProject.cpp"
 #include "../Source/DocxFormat/Media/JsaProject.cpp"
 #include "../Source/DocxFormat/Media/ActiveX.cpp"

@@ -201,14 +201,43 @@ namespace PPTX
 						pWriter->m_pMainDocument = old_serializer;
 					}
 					else if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX ||
-						office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM)
+						office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM || 
+						office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB)
 					{
-						type = 2;
-					
-						BinXlsxRW::BinaryFileWriter xlsxBinaryWriter(oFontProcessor); 
-						OOX::Spreadsheet::CXlsx oXlsxEmbedded(oox_unpacked);										
-					
-						xlsxBinaryWriter.intoBindoc(&oXlsxEmbedded, *oDrawingConverter.m_pBinaryWriter , NULL, &oDrawingConverter);					
+						type = 2;					
+
+						BinXlsxRW::BinaryFileWriter xlsxBinaryWriter(oFontProcessor);
+						OOX::Spreadsheet::CXlsx *pXlsxEmbedded = NULL;
+						NSBinPptxRW::CXlsbBinaryWriter oXlsbWriter;
+
+						if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB)
+							pXlsxEmbedded = new OOX::Spreadsheet::CXlsb();
+						else
+							pXlsxEmbedded = new OOX::Spreadsheet::CXlsx();
+						
+						oXlsbWriter.WriteReserved(xlsxBinaryWriter.GetMainTableSize());
+						unsigned int nXlsbWriterStartPos = oXlsbWriter.GetPositionAbsolute();
+
+						pXlsxEmbedded->m_pXlsbWriter = &oXlsbWriter;
+						pXlsxEmbedded->m_bNeedCalcChain = false;
+						
+						pXlsxEmbedded->Read(oox_unpacked);
+						pXlsxEmbedded->PrepareWorkbook();
+
+						unsigned int nXlsbWriterEndPos = oXlsbWriter.GetPositionAbsolute();
+
+						xlsxBinaryWriter.WriteMainTableStart(*oDrawingConverter.m_pBinaryWriter);
+						
+						if (nXlsbWriterEndPos  > nXlsbWriterStartPos)
+						{
+							xlsxBinaryWriter.WriteBinaryTable(oXlsbWriter.GetBuffer() + nXlsbWriterStartPos, nXlsbWriterEndPos  - nXlsbWriterStartPos);
+						}
+						xlsxBinaryWriter.WriteContent(pXlsxEmbedded, NULL, &oDrawingConverter);					
+						xlsxBinaryWriter.WriteMainTableEnd();
+
+						pXlsxEmbedded->m_pXlsbWriter = NULL;
+						
+						delete pXlsxEmbedded;
 					}
 					//else if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX)
 					//{

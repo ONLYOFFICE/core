@@ -31,7 +31,6 @@
  */
 
 #include "FontIndex.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

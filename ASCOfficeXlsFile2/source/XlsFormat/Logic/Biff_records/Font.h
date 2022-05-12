@@ -32,8 +32,8 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include "../Biff_structures/BiffString.h"
 #include "../Biff_structures/BorderFillInfo.h"
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_records/Color.h"
 
 namespace XLS
 {
@@ -72,18 +72,32 @@ public:
 	bool fExtend;
 
 	_UINT16 icv;
-	_UINT16 bls;
-	_UINT16 sss;
-	unsigned char	uls;
-	unsigned char	bFamily;
-	unsigned char	bCharSet;
+	_UINT16 bls = 0;
+	_UINT16 sss = 0;
+	unsigned char uls = 0;
+	unsigned char bFamily = 0;
+	unsigned char bCharSet = 0;
 
-	ShortXLUnicodeString	fontName;
-	FillInfoExt				color_ext;
+    std::wstring fontName;
+	FillInfoExt color_ext;
 
-	bool					correct;
+	bool correct;
+
+ //xlsb
+    XLSB::Color brtColor;
+    unsigned char bFontScheme;
 	
 };
+class Font_BIFF34 : public Font
+{
+	BIFF_RECORD_DEFINE_TYPE_INFO(Font_BIFF34)
+	BASE_OBJECT_DEFINE_CLASS_NAME(Font_BIFF34)
+public:
+	Font_BIFF34();
+	~Font_BIFF34();
 
+	BaseObjectPtr clone();
+};
+//0045H 5.47 FONTCOLOR
 } // namespace XLS
 

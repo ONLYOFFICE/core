@@ -471,6 +471,47 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			{
 				convert(dynamic_cast<PPTX::Logic::EffectDag*>(oox_unknown));
 			}break;
+//---------------------------------------
+			case OOX::et_v_shapetype:
+			{
+				convert(dynamic_cast<OOX::Vml::CShapeType*>(oox_unknown));
+			}break;
+			case OOX::et_v_shape:
+			{
+				convert(dynamic_cast<OOX::Vml::CShape*>(oox_unknown));
+			}break;
+			case OOX::et_v_oval:
+			{
+				convert(dynamic_cast<OOX::Vml::COval*>(oox_unknown));
+			}break;
+			case OOX::et_v_rect:
+			{
+				convert(dynamic_cast<OOX::Vml::CRect*>(oox_unknown));
+			}break;
+			case OOX::et_v_roundrect:
+			{
+				convert(dynamic_cast<OOX::Vml::CRoundRect*>(oox_unknown));
+			}break;
+			case OOX::et_v_line:
+			{
+				convert(dynamic_cast<OOX::Vml::CLine*>(oox_unknown));
+			}break;
+			case OOX::et_v_arc:
+			{
+				convert(dynamic_cast<OOX::Vml::CArc*>(oox_unknown));
+			}break;
+			case OOX::et_v_curve:
+			{
+				convert(dynamic_cast<OOX::Vml::CCurve*>(oox_unknown));
+			}break;
+			case OOX::et_v_group:
+			{
+				convert(dynamic_cast<OOX::Vml::CGroup*>(oox_unknown));
+			}break;
+			case OOX::et_v_polyline:
+			{
+				convert(dynamic_cast<OOX::Vml::CPolyLine*>(oox_unknown));
+			}break;
 			case OOX::et_v_imagedata:
 			{
 				convert(dynamic_cast<OOX::Vml::CImageData*>(oox_unknown));
@@ -515,6 +556,7 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			{
 				convert(dynamic_cast<OOX::VmlWord::CWrap*>(oox_unknown));
 			}break;
+//----------------------------------
 			case OOX::et_a_extLst:
 			{
 				convert(dynamic_cast<OOX::Drawing::COfficeArtExtensionList*>(oox_unknown));
@@ -530,6 +572,224 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 			{
 				//бяка
 			}break;
+			//--Math
+			case OOX::et_m_oMath:
+			{
+				convert(dynamic_cast<OOX::Logic::COMath*>(oox_unknown));
+			}break;
+			case OOX::et_m_mathPr:
+			{
+				convert(dynamic_cast<OOX::Logic::CMathPr*>(oox_unknown));
+			}break;
+			case OOX::et_m_oMathPara:
+			{
+				convert(dynamic_cast<OOX::Logic::COMathPara*>(oox_unknown));
+			}break;
+			case OOX::et_m_oMathParaPr:
+			{
+				convert(dynamic_cast<OOX::Logic::COMathParaPr*>(oox_unknown));
+			}break;
+			case OOX::et_m_ctrlPr:
+			{
+				convert(dynamic_cast<OOX::Logic::CCtrlPr*>(oox_unknown));
+			}break;
+			case OOX::et_m_acc:
+			{
+				convert(dynamic_cast<OOX::Logic::CAcc*>(oox_unknown));
+			}break;
+			case OOX::et_m_accPr:
+			{
+				convert(dynamic_cast<OOX::Logic::CAccPr*>(oox_unknown));
+			}break;
+			case OOX::et_m_argPr:
+			{
+				convert(dynamic_cast<OOX::Logic::CArgPr*>(oox_unknown));
+			}break;
+			case OOX::et_m_bar:
+			{
+				convert(dynamic_cast<OOX::Logic::CBar*>(oox_unknown));
+			}break;
+			case OOX::et_m_barPr:
+			{
+				convert(dynamic_cast<OOX::Logic::CBarPr*>(oox_unknown));
+			}break;
+			case OOX::et_m_borderBox:
+			{
+				convert(dynamic_cast<OOX::Logic::CBorderBox*>(oox_unknown));
+			}break;
+			case OOX::et_m_borderBoxPr:
+			{
+				convert(dynamic_cast<OOX::Logic::CBorderBoxPr*>(oox_unknown));
+			}break;
+			case OOX::et_m_box:
+			{
+				convert(dynamic_cast<OOX::Logic::CBox*>(oox_unknown));
+			}break;
+			case OOX::et_m_boxPr:
+			{
+				convert(dynamic_cast<OOX::Logic::CBoxPr*>(oox_unknown));
+			}break;
+			case OOX::et_m_brk:
+			{
+				convert(dynamic_cast<OOX::Logic::CBrk*>(oox_unknown));
+			}break;
+			case OOX::et_m_d:
+			{
+				convert(dynamic_cast<OOX::Logic::CDelimiter*>(oox_unknown));
+			}break;
+			case OOX::et_m_dPr:
+			{
+				convert(dynamic_cast<OOX::Logic::CDelimiterPr*>(oox_unknown));
+			}break;
+			case OOX::et_m_eqArr:
+			{
+				convert(dynamic_cast<OOX::Logic::CEqArr *>(oox_unknown));
+			}break;
+			case OOX::et_m_eqArrPr:
+			{
+				convert(dynamic_cast<OOX::Logic::CEqArrPr *>(oox_unknown));
+			}break;
+			case OOX::et_m_f:
+			{
+				convert(dynamic_cast<OOX::Logic::CFraction*>(oox_unknown));
+			}break;
+			case OOX::et_m_fPr:
+			{
+				convert(dynamic_cast<OOX::Logic::CFPr*>(oox_unknown));
+			}break;
+			case OOX::et_m_func:
+			{
+				convert(dynamic_cast<OOX::Logic::CFunc*>(oox_unknown));
+			}break;
+			case OOX::et_m_funcPr:
+			{
+				convert(dynamic_cast<OOX::Logic::CFuncPr*>(oox_unknown));
+			}break;
+			case OOX::et_m_groupChr:
+			{
+				convert(dynamic_cast<OOX::Logic::CGroupChr*>(oox_unknown));
+			}break;
+			case OOX::et_m_groupChrPr:
+			{
+				convert(dynamic_cast<OOX::Logic::CGroupChrPr*>(oox_unknown));
+			}break;
+			case OOX::et_m_limLow:
+			{
+				convert(dynamic_cast<OOX::Logic::CLimLow*>(oox_unknown));
+			}break;
+			case OOX::et_m_limLowPr:
+			{
+				convert(dynamic_cast<OOX::Logic::CLimLowPr*>(oox_unknown));
+			}break;
+			case OOX::et_m_limUpp:
+			{
+				convert(dynamic_cast<OOX::Logic::CLimUpp*>(oox_unknown));
+			}break;
+			case OOX::et_m_limUppPr:
+			{
+				convert(dynamic_cast<OOX::Logic::CLimUppPr*>(oox_unknown));
+			}break;
+			case OOX::et_m_mathFont:
+			{
+				convert(dynamic_cast<OOX::Logic::CMathFont*>(oox_unknown));
+			}break;
+			case OOX::et_m_m:
+			{
+				convert(dynamic_cast<OOX::Logic::CMatrix*>(oox_unknown));
+			}break;
+			case OOX::et_m_mc:
+			{
+				convert(dynamic_cast<OOX::Logic::CMc*>(oox_unknown));
+			}break;
+			case OOX::et_m_mcPr:
+			{
+				convert(dynamic_cast<OOX::Logic::CMcPr*>(oox_unknown));
+			}break;
+			case OOX::et_m_mcs:
+			{
+				convert(dynamic_cast<OOX::Logic::CMcs*>(oox_unknown));
+			}break;
+			case OOX::et_m_mPr:
+			{
+				convert(dynamic_cast<OOX::Logic::CMPr*>(oox_unknown));
+			}break;
+			case OOX::et_m_mr:
+			{
+				convert(dynamic_cast<OOX::Logic::CMr*>(oox_unknown));
+			}break;
+			case OOX::et_m_r:
+			{
+				convert(dynamic_cast<OOX::Logic::CMRun*>(oox_unknown));
+			}break;
+			case OOX::et_m_t:
+			{
+				convert(dynamic_cast<OOX::Logic::CMText*>(oox_unknown));
+			}break;
+			case OOX::et_m_nary:
+			{
+				convert(dynamic_cast<OOX::Logic::CNary*>(oox_unknown));
+			}break;
+			case OOX::et_m_naryPr:
+			{
+				convert(dynamic_cast<OOX::Logic::CNaryPr*>(oox_unknown));
+			}break;
+			case OOX::et_m_phant:
+			{
+				convert(dynamic_cast<OOX::Logic::CPhant*>(oox_unknown));
+			}break;
+			case OOX::et_m_phantPr:
+			{
+				convert(dynamic_cast<OOX::Logic::CPhantPr*>(oox_unknown));
+			}break;
+			case OOX::et_m_rad:
+			{
+				convert(dynamic_cast<OOX::Logic::CRad*>(oox_unknown));
+			}break;
+			case OOX::et_m_radPr:
+			{
+				convert(dynamic_cast<OOX::Logic::CRadPr*>(oox_unknown));
+			}break;
+			case OOX::et_m_sPre:
+			{
+				convert(dynamic_cast<OOX::Logic::CSPre*>(oox_unknown));
+			}break;
+			case OOX::et_m_sPrePr:
+			{
+				convert(dynamic_cast<OOX::Logic::CSPrePr*>(oox_unknown));
+			}break;
+			case OOX::et_m_sSub:
+			{
+				convert(dynamic_cast<OOX::Logic::CSSub*>(oox_unknown));
+			}break;
+			case OOX::et_m_sSubPr:
+			{
+				convert(dynamic_cast<OOX::Logic::CSSubPr*>(oox_unknown));
+			}break;
+			case OOX::et_m_sSubSup:
+			{
+				convert(dynamic_cast<OOX::Logic::CSSubSup*>(oox_unknown));
+			}break;
+			case OOX::et_m_sSubSupPr:
+			{
+				convert(dynamic_cast<OOX::Logic::CSSubSupPr*>(oox_unknown));
+			}break;
+			case OOX::et_m_sSup:
+			{
+				convert(dynamic_cast<OOX::Logic::CSSup*>(oox_unknown));
+			}break;
+			case OOX::et_m_sSupPr:
+			{
+				convert(dynamic_cast<OOX::Logic::CSSupPr*>(oox_unknown));
+			}break;
+			case OOX::et_m_e:
+			{
+				convert(dynamic_cast<OOX::Logic::CElement*>(oox_unknown));
+			}break;
+			case OOX::et_w_rPr:
+			{
+				convert(dynamic_cast<OOX::Logic::CRunProperty*>(oox_unknown));
+			}
+			break;
 			default:
 			{
                 _CP_LOG << L"[warning] :  no convert element(" << oox_unknown->getType() << L")\n";

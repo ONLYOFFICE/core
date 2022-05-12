@@ -31,7 +31,6 @@
  */
 
 #include "SerStr.h"
-#include <Binary/CFRecord.h>
 
 #include <boost/algorithm/string.hpp>
 
@@ -57,8 +56,19 @@ BiffStructurePtr SerStr::clone()
 }
 
 void SerStr::load(CFRecord& record)
-{
-	record >> string_;
+{	
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+        record >> string_;
+    else
+    {
+        record >> cch;
+        WCHAR value;
+        for(int i = 0; i < cch; ++i)
+        {
+            record.loadAnyData(value);
+            rgch.push_back(value);
+        }
+    }
 }
 
 

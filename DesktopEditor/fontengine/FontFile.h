@@ -321,7 +321,7 @@ public:
 
     virtual bool IsSymbolic(bool bIsOS2Check = false);
 
-    static EFontFormat GetFontFormatType(FT_Face pFace);
+    static NSFonts::EFontFormat GetFontFormatType(FT_Face pFace);
     virtual int GetEmbeddingLicenceType();
     virtual void FillFontSelectFormat(NSFonts::CFontSelectFormat& oFormat);
 };

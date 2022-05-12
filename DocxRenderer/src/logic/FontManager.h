@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Common.h"
 #include "FontManagerBase.h"
+#include "../../DocxRenderer.h"
 
 namespace NSDocxRenderer
 {
@@ -9,28 +10,20 @@ namespace NSDocxRenderer
 	const double c_dDpiX		= 72.0;
 	const double c_dDpiY		= 72.0;
 
-	enum TextAssociationType
-	{
-		TextAssociationTypeDefault	= 0,
-		TextAssociationTypeLine		= 1,
-		TextAssociationTypeNoFrames	= 2,
-		TextAssociationTypeBlock	= 3
-	};
-
 	class CFontTableEntry
 	{
 	public:
-		CString							m_strFamilyName;
-		CString							m_strPANOSE;
-		LONG							m_lStyle;
-		CAtlArray<DWORD>				m_arSignature;
-		bool							m_bIsFixedWidth;
+        std::wstring    	m_strFamilyName;
+        std::wstring		m_strPANOSE;
+        LONG				m_lStyle;
+        std::vector<UINT>	m_arSignature;
+        bool				m_bIsFixedWidth;
 
 	public:
 		CFontTableEntry() : m_arSignature()
 		{
-			m_strFamilyName		= _T("");
-			m_strPANOSE			= _T("");
+            m_strFamilyName		= L"";
+            m_strPANOSE			= L"";
 			m_lStyle			= 0;
 			m_bIsFixedWidth		= false;
 		}
@@ -46,7 +39,7 @@ namespace NSDocxRenderer
 			m_strFamilyName	= oSrc.m_strFamilyName;
 			m_strPANOSE		= oSrc.m_strPANOSE;
 			m_lStyle		= oSrc.m_lStyle;
-			m_arSignature.Copy(oSrc.m_arSignature);
+            m_arSignature   = oSrc.m_arSignature;
 			m_bIsFixedWidth	= oSrc.m_bIsFixedWidth;
 
 			return *this;
@@ -56,7 +49,7 @@ namespace NSDocxRenderer
 	class CFontTable
 	{
 	public:
-		CAtlMap<CString, CFontTableEntry> m_mapTable;
+        std::map<std::wstring, CFontTableEntry> m_mapTable;
 
 	public:
 		CFontTable() : m_mapTable()
@@ -67,18 +60,17 @@ namespace NSDocxRenderer
 	class CFontManager : public CFontManagerBase
 	{
 	public:
-		NSStructures::CFont*			m_pFont;
-		NSDocxRenderer::CMatrix*		m_pTransform;
-		double							m_dSpaceWidthMM;
+        NSStructures::CFont*	m_pFont;
+        Aggplus::CMatrix*		m_pTransform;
+        double					m_dSpaceWidthMM;
 
 	public:
-		CFontTable						m_oFontTable;
+        CFontTable				m_oFontTable;
 
 	public:
-		CFontManager() : m_pFont(NULL), CFontManagerBase()
+        CFontManager(NSFonts::IApplicationFonts* pFonts) : m_pFont(NULL), CFontManagerBase(pFonts)
 		{
 			m_pTransform = NULL;
-
 			m_dSpaceWidthMM = 0;
 		}
 		virtual ~CFontManager()
@@ -86,44 +78,42 @@ namespace NSDocxRenderer
 		}
 
 	public:
-		AVSINLINE void Init()
+        void Init()
 		{
-			m_oFontTable.m_mapTable.RemoveAll();
+            m_oFontTable.m_mapTable.clear();
 		}
-		AVSINLINE void AddFontToMap()
+        void AddFontToMap()
 		{
-			CAtlMap<CString, CFontTableEntry>::CPair* pPair = m_oFontTable.m_mapTable.Lookup(m_oFont.m_strFamilyName);
-			if (NULL == pPair)
-			{
-				CFontTableEntry oEntry;
-				oEntry.m_strFamilyName	= m_oFont.m_strFamilyName;
-				oEntry.m_strPANOSE		= m_oFont.m_strPANOSE;
-				oEntry.m_lStyle			= m_oFont.m_lStyle;
-				oEntry.m_bIsFixedWidth	= m_oFont.m_bIsFixedWidth;
-				oEntry.m_arSignature.Copy(m_oFont.m_arSignature);
+            if (m_oFontTable.m_mapTable.end() != m_oFontTable.m_mapTable.find(m_oFont.m_strFamilyName))
+            {
+                CFontTableEntry oEntry;
+                oEntry.m_strFamilyName	= m_oFont.m_strFamilyName;
+                oEntry.m_strPANOSE		= m_oFont.m_strPANOSE;
+                oEntry.m_lStyle			= m_oFont.m_lStyle;
+                oEntry.m_bIsFixedWidth	= m_oFont.m_bIsFixedWidth;
+                oEntry.m_arSignature    = m_oFont.m_arSignature;
 
-				m_oFontTable.m_mapTable.SetAt(m_oFont.m_strFamilyName, oEntry);
-			}
+                m_oFontTable.m_mapTable.insert(std::pair<std::wstring, CFontTableEntry>(m_oFont.m_strFamilyName, oEntry));
+            }
 		}
 
 	public:
-		virtual void LoadFont(long lFaceIndex = 0, bool bNeedAddToMap = true)
+        virtual void LoadFont(long lFaceIndex = 0, bool bNeedAddToMap = true)
 		{
 			if (NULL == m_pManager)
 				return;
 
 			double dSize = m_pFont->Size;
-			double dSizeFont = dSize * ((m_pTransform->m_agg_mtx.sx + m_pTransform->m_agg_mtx.sy) / 2);
+            double dSizeFont = dSize * ((m_pTransform->sx() + m_pTransform->sy()) / 2);
 
 			double dPix = m_pFont->CharSpace / c_dPixToMM;
 
 			m_pFont->Size = dSizeFont;
 
-			if (m_pFont->IsEqual2(&m_oFont.m_oFont))
+            if (m_pFont->IsEqual2(&m_oFont.m_oFont))
 			{
 				m_pFont->Size = dSize;
-				m_pManager->SetCharSpacing(dPix);
-				m_pManager->SetStringGID(m_oFont.m_oFont.StringGID);
+                m_pManager->SetCharSpacing(dPix);
 				return;
 			}
 
@@ -132,7 +122,7 @@ namespace NSDocxRenderer
 
 			bool bIsPath = false;
 
-			if (_T("") == m_pFont->Path)
+            if (m_pFont->Path.empty())
 			{
 				CFontManagerBase::LoadFontByName(m_oFont.m_oFont.Name, m_oFont.m_oFont.Size, m_oFont.m_oFont.GetStyle(), c_dDpiX, c_dDpiY);
 			}
@@ -146,52 +136,25 @@ namespace NSDocxRenderer
 				bIsPath = true;
 			}
 
-			long lGid = 0;
-			m_pManager->GetStringGID(&lGid);
+            int bIsGID = m_pManager->GetStringGID();
 			m_pManager->SetStringGID(FALSE);
 			
-			m_pManager->LoadString(L" ", 0, 0);
-			float _x = 0;
-			float _y = 0;
-			float _w = 0;
-			float _h = 0;
+            m_pManager->LoadString2(L" ", 0, 0);
+            TBBox bbox = m_pManager->MeasureString2();
 
-			m_pManager->MeasureString2(&_x, &_y, &_w, &_h);
-
-			m_dSpaceWidthMM = (double)_w * c_dPixToMM;
+            m_dSpaceWidthMM = (double)(bbox.fMaxX - bbox.fMinX) * c_dPixToMM;
 			if (0 >= m_dSpaceWidthMM)
 			{
 				m_dSpaceWidthMM = 1.0;
 			}
 
-			m_pManager->SetStringGID(lGid);
-
-			LoadFontMetrics();
-			LoadFontParams(bIsPath);
+            m_pManager->SetStringGID(bIsGID);
 
 			if (bNeedAddToMap)
 				AddFontToMap();
 		}
 		
-		AVSINLINE void MeasureString(const CString& strText, double x, double y, double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType)
-		{
-			BSTR bsText = strText.AllocSysString();
-			MeasureString(bsText, x, y, dBoxX, dBoxY, dBoxWidth, dBoxHeight, measureType);
-			SysFreeString(bsText);
-		}
-		AVSINLINE void MeasureStringUNICODE(const CString& strText, double x, double y, double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType)
-		{
-			m_pManager->SetStringGID(FALSE);
-			MeasureString(strText, x, y, dBoxX, dBoxY, dBoxWidth, dBoxHeight, measureType);
-			m_pManager->SetStringGID(TRUE);
-		}
-		AVSINLINE void MeasureStringUNICODE(BSTR strText, double x, double y, double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType)
-		{
-			m_pManager->SetStringGID(FALSE);
-			MeasureString(strText, x, y, dBoxX, dBoxY, dBoxWidth, dBoxHeight, measureType);
-			m_pManager->SetStringGID(TRUE);
-		}
-		void MeasureString(BSTR bsText, double x, double y, double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType)
+        void MeasureString(std::wstring sText, double x, double y, double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType)
 		{
 			LoadFont();
 
@@ -203,26 +166,22 @@ namespace NSDocxRenderer
 			if (NULL == m_pManager)
 				return;
 
-			m_pManager->LoadString(bsText, (float)x, (float)y);
+            m_pManager->LoadString1(sText, (float)x, (float)y);
 
-			float fx		= 0;
-			float fy		= 0;
-			float fwidth	= 0;
-			float fheight	= 0;
-
+            TBBox bbox;
 			if (MeasureTypeGlyph == measureType)
 			{
-				m_pManager->MeasureString(&fx, &fy, &fwidth, &fheight);
+                bbox = m_pManager->MeasureString();
 			}
 			else if (MeasureTypePosition == measureType)
 			{
-				m_pManager->MeasureString2(&fx, &fy, &fwidth, &fheight);
+                bbox = m_pManager->MeasureString2();
 			}
 
-			dBoxX		= (double)fx;
-			dBoxY		= (double)fy;
-			dBoxWidth	= (double)fwidth;
-			dBoxHeight	= (double)fheight;
+            dBoxX		= (double)bbox.fMinX;
+            dBoxY		= (double)bbox.fMinY;
+            dBoxWidth	= (double)(bbox.fMaxX - bbox.fMinX);
+            dBoxHeight	= (double)(bbox.fMaxY - bbox.fMinY);
 
 			// переводим в миллиметры
 			dBoxX		*= c_dPixToMM;
@@ -230,9 +189,43 @@ namespace NSDocxRenderer
 			dBoxWidth	*= c_dPixToMM;
 			dBoxHeight	*= c_dPixToMM;
 		}
+        void MeasureStringGids(unsigned int* pGids, unsigned int count, double x, double y, double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType)
+        {
+            LoadFont();
 
+            dBoxX		= 0;
+            dBoxY		= 0;
+            dBoxWidth	= 0;
+            dBoxHeight	= 0;
 
-		__forceinline double GetBaseLineOffset()
+            if (NULL == m_pManager)
+                return;
+
+            m_pManager->LoadString1(pGids, count, (float)x, (float)y);
+
+            TBBox bbox;
+            if (MeasureTypeGlyph == measureType)
+            {
+                bbox = m_pManager->MeasureString();
+            }
+            else if (MeasureTypePosition == measureType)
+            {
+                bbox = m_pManager->MeasureString2();
+            }
+
+            dBoxX		= (double)bbox.fMinX;
+            dBoxY		= (double)bbox.fMinY;
+            dBoxWidth	= (double)(bbox.fMaxX - bbox.fMinX);
+            dBoxHeight	= (double)(bbox.fMaxY - bbox.fMinY);
+
+            // переводим в миллиметры
+            dBoxX		*= c_dPixToMM;
+            dBoxY		*= c_dPixToMM;
+            dBoxWidth	*= c_dPixToMM;
+            dBoxHeight	*= c_dPixToMM;
+        }
+
+        inline double GetBaseLineOffset()
 		{
 			LoadFont();
 
@@ -243,35 +236,34 @@ namespace NSDocxRenderer
 			return d1;
 		}
 
-		__forceinline double GetFontHeight()
+        inline double GetFontHeight()
 		{
 			return c_dPtToMM * (m_oFont.m_dLineSpacing * m_oFont.m_oFont.Size ) / m_oFont.m_dEmHeight;
 		}
 
-		__forceinline void SetStringGid(const LONG& lGid)
+        inline void SetStringGid(const LONG& lGid)
 		{
 			if (NULL != m_pManager)
 				m_pManager->SetStringGID(lGid);
 		}
 
-		__forceinline void GenerateFontName2(CString& strText)
+        inline void GenerateFontName2(NSStringUtils::CStringUTF32& oText)
 		{
-			bool bIsNeedAddToMap = CFontManagerBase::GenerateFontName(strText);
+            bool bIsNeedAddToMap = CFontManagerBase::GenerateFontName(oText);
 
 			if (bIsNeedAddToMap)
 			{
-				CAtlMap<CString, CFontTableEntry>::CPair* pPair = m_oFontTable.m_mapTable.Lookup(m_strCurrentPickFont);
-				if (NULL == pPair)
-				{
-					CFontTableEntry oEntry;
-					oEntry.m_strFamilyName	= m_strCurrentPickFont;
-					oEntry.m_strPANOSE		= m_oFont.m_strPANOSE;
-					oEntry.m_lStyle			= m_oFont.m_lStyle;
-					oEntry.m_bIsFixedWidth	= m_oFont.m_bIsFixedWidth;
-					oEntry.m_arSignature.Copy(m_oFont.m_arSignature);
+                if (m_oFontTable.m_mapTable.end() != m_oFontTable.m_mapTable.find(m_strCurrentPickFont))
+                {
+                    CFontTableEntry oEntry;
+                    oEntry.m_strFamilyName	= m_strCurrentPickFont;
+                    oEntry.m_strPANOSE		= m_oFont.m_strPANOSE;
+                    oEntry.m_lStyle			= m_oFont.m_lStyle;
+                    oEntry.m_bIsFixedWidth	= m_oFont.m_bIsFixedWidth;
+                    oEntry.m_arSignature    = m_oFont.m_arSignature;
 
-					m_oFontTable.m_mapTable.SetAt(m_oFont.m_oFont.Path, oEntry);
-				}
+                    m_oFontTable.m_mapTable.insert(std::pair<std::wstring, CFontTableEntry>(m_oFont.m_strFamilyName, oEntry));
+                }
 			}
 		}
 	};
@@ -279,40 +271,36 @@ namespace NSDocxRenderer
 	class CFontManagerLight
 	{
 	private:
-		CString m_strFontName;
+        std::wstring m_strFontName;
 		LONG	m_lFontStyle;
 		double	m_dSize;
 
 		double	m_dSpaceWidth;
 
-		AVSGraphics::IASCFontManager*	m_pManager;
+        NSFonts::IFontManager*	m_pManager;
 	
 	public:
-		CFontManagerLight()
+        CFontManagerLight(NSFonts::IApplicationFonts* pFonts)
 		{
-			m_strFontName	= _T("");
+            m_strFontName	= L"";
 			m_lFontStyle	= 0;
 			m_dSize			= 0;
-			m_dSpaceWidth	= 0;
+            m_dSpaceWidth	= 0;
 
-			m_pManager = NULL;
-			CoCreateInstance(AVSGraphics::CLSID_CASCFontManager, NULL, CLSCTX_ALL, AVSGraphics::IID_IASCFontManager, (void**)&m_pManager);
-
-			m_pManager->Initialize(L"");
-			m_pManager->SetDefaultFont(L"Arial");
+            m_pManager = NSFontManager::CreateFontManager(pFonts);
 		}
 		~CFontManagerLight()
 		{
 			RELEASEINTERFACE(m_pManager);
 		}
 
-		AVSINLINE double GetSpaceWidth()
+        inline double GetSpaceWidth()
 		{
 			return m_dSpaceWidth;
 		}
 
 	public:
-		AVSINLINE void LoadFont(CString& strFontName, LONG& lStyle, double& dSize, const BOOL& bIsGID)
+        void LoadFont(std::wstring& strFontName, LONG& lStyle, double& dSize, const bool& bIsGID)
 		{
 			if ((strFontName == m_strFontName) && (lStyle == m_lFontStyle) && (dSize == m_dSize))
 			{
@@ -324,30 +312,18 @@ namespace NSDocxRenderer
 			m_lFontStyle	= lStyle;
 			m_dSize			= dSize;
 
-			BSTR bsName = m_strFontName.AllocSysString();
-			m_pManager->LoadFontByName(bsName, (float)m_dSize, m_lFontStyle, c_dDpiX, c_dDpiY);
-			SysFreeString(bsName);
-
-			CString strSpace = _T(" ");
-			m_dSpaceWidth = MeasureStringWidth(strSpace);
+            m_pManager->LoadFontByName(strFontName, (float)m_dSize, m_lFontStyle, c_dDpiX, c_dDpiY);
+            m_dSpaceWidth = MeasureStringWidth(L" ");
 
 			m_pManager->SetStringGID(bIsGID);
 		}
 
-		AVSINLINE double MeasureStringWidth(CString& sText)
+        double MeasureStringWidth(const std::wstring& sText)
 		{
-			BSTR bsText = sText.AllocSysString();
-			m_pManager->LoadString(bsText, (float)0, (float)0);
-			SysFreeString(bsText);
+            m_pManager->LoadString2(sText, (float)0, (float)0);
+            TBBox bbox = m_pManager->MeasureString2();
 
-			float fx		= 0;
-			float fy		= 0;
-			float fwidth	= 0;
-			float fheight	= 0;
-
-			m_pManager->MeasureString2(&fx, &fy, &fwidth, &fheight);
-
-			return fwidth * c_dPixToMM;
+            return (bbox.fMaxX - bbox.fMinX) * c_dPixToMM;
 		}
 	};
 

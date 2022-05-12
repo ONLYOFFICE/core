@@ -33,7 +33,7 @@
 #include <iostream>
 
 #include "conversionelement.h"
-#include "logging.h"
+#include "../include/logging.h"
 
 namespace cpdoccore { 
 namespace oox {

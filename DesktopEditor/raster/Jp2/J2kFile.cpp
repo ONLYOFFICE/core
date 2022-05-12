@@ -4,16 +4,6 @@
 
 namespace Jpeg2000
 {
-	//extern Image* Jp2ToImage(const std::wstring& wsFileName, DecoderParams* pDecoderParams);
-	//extern Image* J2kToImage(const std::wstring& wsFileName, DecoderParams* pDecoderParams);
-	//extern Image* JptToImage(const std::wstring& wsFileName, DecoderParams* pDecoderParams);
-	//extern Image* Mj2ToImage(const std::wstring& wsFileName, DecoderParams* pDecoderParams);
-	//extern bool   ImageToJ2k(Image *pImage, const std::wstring& wsFilePath, EncoderParams* pEncoderParams);
-	//extern bool   ImageToJ2p(Image *pImage, const std::wstring& wsFilePath, EncoderParams* pEncoderParams);
-
-	//extern void   Image_Destroy(Image *pImage);
-	//extern Image* Image_Create(int nComponentsCount, ImageComponentParams *pCompParams, ColorSpace eColorSpace);
-
 	void* Malloc(size_t nSize)
 	{
 		void *pMemBlock = malloc(nSize);
@@ -27,6 +17,46 @@ namespace Jpeg2000
 		}
 		return pMemBlock;
 	}
+    int check_j2000_type(BYTE* pBuffer, int nSize)
+    {
+        if (!pBuffer)
+            return 0;
+
+        int type = 0;
+        if ((32 <= nSize) && (0x00 == pBuffer[0] && 0x00 == pBuffer[1] && 0x00 == pBuffer[2] && 0x0c == pBuffer[3]
+            && 0x6a == pBuffer[4] && 0x50 == pBuffer[5] && 0x20 == pBuffer[6] && 0x20 == pBuffer[7]
+
+            && 0x0d == pBuffer[8] && 0x0a == pBuffer[9] && 0x87 == pBuffer[10] && 0x0a == pBuffer[11]
+            && 0x00 == pBuffer[12] && 0x00 == pBuffer[13] && 0x00 == pBuffer[14] /*&&  (0x14 == pBuffer[15] || 0x18 == pBuffer[15] )*/
+
+            && 0x66 == pBuffer[16] && 0x74 == pBuffer[17] && 0x79 == pBuffer[18] && 0x70 == pBuffer[19]
+            && 0x6a == pBuffer[20] && 0x70 == pBuffer[21] && 0x32 == pBuffer[22] && 0x20 == pBuffer[23]
+
+            && 0x00 == pBuffer[24] && 0x00 == pBuffer[25] && 0x00 == pBuffer[26] && 0x00 == pBuffer[27]
+            /*&& 0x6a == pBuffer[28] && 0x70 == pBuffer[29]  && 0x32 == pBuffer[30] && 0x20 == pBuffer[31]*/))
+        {
+            type = 1;
+        }
+        if ((4 <= nSize) && (0xff == pBuffer[0] && 0x4f == pBuffer[1] && 0xff == pBuffer[2] && 0x51 == pBuffer[3]))
+        {
+            type = 2;
+        }
+        if ((32 <= nSize) && (0x00 == pBuffer[0] && 0x00 == pBuffer[1] && 0x00 == pBuffer[2] && 0x0c == pBuffer[3]
+            && 0x6a == pBuffer[4] && 0x50 == pBuffer[5] && 0x20 == pBuffer[6] && 0x20 == pBuffer[7]
+
+            && 0x0d == pBuffer[8] && 0x0a == pBuffer[9] && 0x87 == pBuffer[10] && 0x0a == pBuffer[11]
+            && 0x00 == pBuffer[12] && 0x00 == pBuffer[13] && 0x00 == pBuffer[14] && 0x18 == pBuffer[15]
+
+            && 0x66 == pBuffer[16] && 0x74 == pBuffer[17] && 0x79 == pBuffer[18] && 0x70 == pBuffer[19]
+            && 0x6d == pBuffer[20] && 0x6a == pBuffer[21] && 0x70 == pBuffer[22] && 0x32 == pBuffer[23]
+
+            && 0x00 == pBuffer[24] && 0x00 == pBuffer[25] && 0x00 == pBuffer[26] && 0x00 == pBuffer[27]
+            && 0x6d == pBuffer[28] && 0x6a == pBuffer[29] && 0x70 == pBuffer[30] && 0x32 == pBuffer[31]))
+        {
+            type = 3;
+        }
+        return type;
+    }
 	int check_j2000_type(FILE* pFile)
 	{
 		if (!pFile)
@@ -38,87 +68,105 @@ namespace Jpeg2000
 			return 0;
 
 		size_t nBytesRead = fread(pBuffer, 1, 1024, pFile);
-
-		int type =0;
-		if ((32 <= nBytesRead) && (0x00 == pBuffer[0] && 0x00 == pBuffer[1] && 0x00 == pBuffer[2] && 0x0c == pBuffer[3]
-			&& 0x6a == pBuffer[4] && 0x50 == pBuffer[5] && 0x20 == pBuffer[6] && 0x20 == pBuffer[7]
-
-			&& 0x0d == pBuffer[8] && 0x0a == pBuffer[9] && 0x87 == pBuffer[10] && 0x0a == pBuffer[11]
-			&& 0x00 == pBuffer[12] && 0x00 == pBuffer[13] && 0x00 == pBuffer[14] /*&&  (0x14 == pBuffer[15] || 0x18 == pBuffer[15] )*/
-
-			&& 0x66 == pBuffer[16] && 0x74 == pBuffer[17] && 0x79 == pBuffer[18] && 0x70 == pBuffer[19]
-			&& 0x6a == pBuffer[20] && 0x70 == pBuffer[21] && 0x32 == pBuffer[22] && 0x20 == pBuffer[23]
-
-			&& 0x00 == pBuffer[24] && 0x00 == pBuffer[25] && 0x00 == pBuffer[26] && 0x00 == pBuffer[27]
-			/*&& 0x6a == pBuffer[28] && 0x70 == pBuffer[29]  && 0x32 == pBuffer[30] && 0x20 == pBuffer[31]*/))
-		{
-			type = 1;
-		}
-		if ((4 <= nBytesRead) && (0xff == pBuffer[0] && 0x4f == pBuffer[1] && 0xff == pBuffer[2] && 0x51 == pBuffer[3]))
-		{
-			type = 2;
-		}
-		if ((32 <= nBytesRead) && (0x00 == pBuffer[0] && 0x00 == pBuffer[1] && 0x00 == pBuffer[2] && 0x0c == pBuffer[3]
-			&& 0x6a == pBuffer[4] && 0x50 == pBuffer[5] && 0x20 == pBuffer[6] && 0x20 == pBuffer[7]
-
-			&& 0x0d == pBuffer[8] && 0x0a == pBuffer[9] && 0x87 == pBuffer[10] && 0x0a == pBuffer[11]
-			&& 0x00 == pBuffer[12] && 0x00 == pBuffer[13] && 0x00 == pBuffer[14] && 0x18 == pBuffer[15]
-
-			&& 0x66 == pBuffer[16] && 0x74 == pBuffer[17] && 0x79 == pBuffer[18] && 0x70 == pBuffer[19]
-			&& 0x6d == pBuffer[20] && 0x6a == pBuffer[21] && 0x70 == pBuffer[22] && 0x32 == pBuffer[23]
-
-			&& 0x00 == pBuffer[24] && 0x00 == pBuffer[25] && 0x00 == pBuffer[26] && 0x00 == pBuffer[27]
-			&& 0x6d == pBuffer[28] && 0x6a == pBuffer[29] && 0x70 == pBuffer[30] && 0x32 == pBuffer[31]))
-		{
-			type = 3;
-		}
-
+        int type = check_j2000_type(pBuffer, nBytesRead);
 		delete[] pBuffer;
 		fseek(pFile, 0, SEEK_SET);
 		return type;
-	}
-	int check_j2000_type(BYTE* pBuffer, int nSize)
-	{
-		if (!pBuffer)
-			return 0;
-
-		int type = 0;
-		if ((32 <= nSize) && (0x00 == pBuffer[0] && 0x00 == pBuffer[1] && 0x00 == pBuffer[2] && 0x0c == pBuffer[3]
-			&& 0x6a == pBuffer[4] && 0x50 == pBuffer[5] && 0x20 == pBuffer[6] && 0x20 == pBuffer[7]
-
-			&& 0x0d == pBuffer[8] && 0x0a == pBuffer[9] && 0x87 == pBuffer[10] && 0x0a == pBuffer[11]
-			&& 0x00 == pBuffer[12] && 0x00 == pBuffer[13] && 0x00 == pBuffer[14] /*&&  (0x14 == pBuffer[15] || 0x18 == pBuffer[15] )*/
-
-			&& 0x66 == pBuffer[16] && 0x74 == pBuffer[17] && 0x79 == pBuffer[18] && 0x70 == pBuffer[19]
-			&& 0x6a == pBuffer[20] && 0x70 == pBuffer[21] && 0x32 == pBuffer[22] && 0x20 == pBuffer[23]
-
-			&& 0x00 == pBuffer[24] && 0x00 == pBuffer[25] && 0x00 == pBuffer[26] && 0x00 == pBuffer[27]
-			/*&& 0x6a == pBuffer[28] && 0x70 == pBuffer[29]  && 0x32 == pBuffer[30] && 0x20 == pBuffer[31]*/))
-		{
-			type = 1;
-		}
-		if ((4 <= nSize) && (0xff == pBuffer[0] && 0x4f == pBuffer[1] && 0xff == pBuffer[2] && 0x51 == pBuffer[3]))
-		{
-			type = 2;
-		}
-		if ((32 <= nSize) && (0x00 == pBuffer[0] && 0x00 == pBuffer[1] && 0x00 == pBuffer[2] && 0x0c == pBuffer[3]
-			&& 0x6a == pBuffer[4] && 0x50 == pBuffer[5] && 0x20 == pBuffer[6] && 0x20 == pBuffer[7]
-
-			&& 0x0d == pBuffer[8] && 0x0a == pBuffer[9] && 0x87 == pBuffer[10] && 0x0a == pBuffer[11]
-			&& 0x00 == pBuffer[12] && 0x00 == pBuffer[13] && 0x00 == pBuffer[14] && 0x18 == pBuffer[15]
-
-			&& 0x66 == pBuffer[16] && 0x74 == pBuffer[17] && 0x79 == pBuffer[18] && 0x70 == pBuffer[19]
-			&& 0x6d == pBuffer[20] && 0x6a == pBuffer[21] && 0x70 == pBuffer[22] && 0x32 == pBuffer[23]
-
-			&& 0x00 == pBuffer[24] && 0x00 == pBuffer[25] && 0x00 == pBuffer[26] && 0x00 == pBuffer[27]
-			&& 0x6d == pBuffer[28] && 0x6a == pBuffer[29] && 0x70 == pBuffer[30] && 0x32 == pBuffer[31]))
-		{
-			type = 3;
-		}
-		return type;
-	}
+	}	
 
 	// CJ2kFile
+    bool ImageToFrame(Image* pImage, CBgraFrame* pFrame, bool isBGRA)
+    {
+        int nWidth  = pImage->pComponents[0].nWidth;
+        int nHeight = pImage->pComponents[0].nHeight;
+        int nBufferSize = 4 /*pImage->nCsiz*/ * nWidth * nHeight;
+
+        if (nBufferSize < 1)
+            return false;
+
+        pFrame->put_Width(nWidth);
+        pFrame->put_Height(nHeight);
+        pFrame->put_Stride(4 * nWidth);
+
+        BYTE* pData = new BYTE[nBufferSize];
+        if (!pData)
+            return false;
+
+        pFrame->put_Data(pData);
+
+        unsigned char* pBufferPtr = (unsigned char*)pData;
+
+        unsigned char indR = isBGRA ? 2 : 0;
+        unsigned char indG = 1;
+        unsigned char indB = isBGRA ? 0 : 2;
+        Jpeg2000::ImageComponent* pComponents = pImage->pComponents;
+
+        // Пишем данные в pBufferPtr
+        if (pImage->nCsiz == 3 && pImage->pComponents[0].nXRsiz == pImage->pComponents[1].nXRsiz && pImage->pComponents[1].nXRsiz == pImage->pComponents[2].nXRsiz
+            && pImage->pComponents[0].nYRsiz == pImage->pComponents[1].nYRsiz && pImage->pComponents[1].nYRsiz == pImage->pComponents[2].nYRsiz
+            && pImage->pComponents[0].nPrecision == pImage->pComponents[1].nPrecision && pImage->pComponents[1].nPrecision == pImage->pComponents[2].nPrecision)
+        {
+            int nResW = CeilDivPow2(pImage->pComponents[0].nWidth, pImage->pComponents[0].nFactorDiv2);
+            int nResH = CeilDivPow2(pImage->pComponents[0].nHeight, pImage->pComponents[0].nFactorDiv2);
+
+            int nValue = nWidth * (nResH - 1);
+            for (int j = 0; j < nResH; ++j)
+            {
+                for (int i = 0; i < nResW; ++i)
+                {
+                    pBufferPtr[indR] = pComponents[0].pData[nValue + i];
+                    pBufferPtr[indG] = pComponents[1].pData[nValue + i];
+                    pBufferPtr[indB] = pComponents[2].pData[nValue + i];
+                    pBufferPtr[3] = 255;
+                    pBufferPtr += 4;
+                }
+                nValue -= nWidth;
+            }
+        }
+        else if (pImage->nCsiz >= 4 && pImage->pComponents[0].nXRsiz == pImage->pComponents[1].nXRsiz && pImage->pComponents[1].nXRsiz == pImage->pComponents[2].nXRsiz && pImage->pComponents[2].nXRsiz == pImage->pComponents[3].nXRsiz
+                 && pImage->pComponents[0].nYRsiz == pImage->pComponents[1].nYRsiz && pImage->pComponents[1].nYRsiz == pImage->pComponents[2].nYRsiz && pImage->pComponents[2].nYRsiz == pImage->pComponents[3].nYRsiz
+                 && pImage->pComponents[0].nPrecision == pImage->pComponents[1].nPrecision && pImage->pComponents[1].nPrecision == pImage->pComponents[2].nPrecision && pImage->pComponents[2].nPrecision == pImage->pComponents[3].nPrecision)
+        {
+            int nResW = CeilDivPow2(pImage->pComponents[0].nWidth, pImage->pComponents[0].nFactorDiv2);
+            int nResH = CeilDivPow2(pImage->pComponents[0].nHeight, pImage->pComponents[0].nFactorDiv2);
+
+            int nValue = nWidth * (nResH - 1);
+            for (int j = 0; j < nResH; ++j)
+            {
+                for (int i = 0; i < nResW; ++i)
+                {
+                    pBufferPtr[indR] = pComponents[0].pData[nValue + i];
+                    pBufferPtr[indG] = pComponents[1].pData[nValue + i];
+                    pBufferPtr[indB] = pComponents[2].pData[nValue + i];
+                    pBufferPtr[3]    = pComponents[3].pData[nValue + i];
+                    pBufferPtr += 4;
+                }
+                nValue -= nWidth;
+            }
+        }
+        else // Grayscale
+        {
+            int nResW = CeilDivPow2(pImage->pComponents[0].nWidth, pImage->pComponents[0].nFactorDiv2);
+            int nResH = CeilDivPow2(pImage->pComponents[0].nHeight, pImage->pComponents[0].nFactorDiv2);
+
+            int nValue = nWidth * (nResH - 1);
+            for (int j = 0; j < nResH; ++j)
+            {
+                for (int i = 0; i < nResW; ++i)
+                {
+                    pBufferPtr[0] = pComponents[0].pData[nValue + i];
+                    pBufferPtr[1] = pBufferPtr[0];
+                    pBufferPtr[2] = pBufferPtr[0];
+                    pBufferPtr[3] = 255;
+                    pBufferPtr += 4;
+                }
+                nValue -= nWidth;
+            }
+        }
+
+        return true;
+    }
+
 	bool CJ2kFile::Open(CBgraFrame* pFrame, const std::wstring& wsSrcPath, const std::wstring& wsXmlOptions, bool isBGRA)
 	{
 		Image *pImage = NULL;
@@ -133,8 +181,6 @@ namespace Jpeg2000
 		NSFile::CFileBinary oFile;
 		if (!oFile.OpenFile(wsSrcPath))
 			return false;
-
-		DWORD nFileSize = oFile.GetFileSize();
 
 		int type = check_j2000_type(oFile.GetFileNative());
 		oFile.CloseFile();
@@ -158,96 +204,10 @@ namespace Jpeg2000
 			return false;
 		}
 
-		int nWidth  = pImage->pComponents[0].nWidth;
-		int nHeight = pImage->pComponents[0].nHeight;
-		int nBufferSize = 4 /*pImage->nCsiz*/ * nWidth * nHeight;
+        bool bFrame = ImageToFrame(pImage, pFrame, isBGRA);
 
-		if (nBufferSize < 1)
-		{
-			Image_Destroy(pImage);
-			return false;
-		}
-
-		pFrame->put_Width(nWidth);
-		pFrame->put_Height(nHeight);
-		pFrame->put_Stride(4 * nWidth);
-
-		BYTE* pData = new BYTE[nBufferSize];
-		if (!pData)
-		{
-			Image_Destroy(pImage);
-			return false;
-		}
-
-		pFrame->put_Data(pData);
-
-		unsigned char* pBufferPtr = (unsigned char*)pData;
-		long nCreatedBufferSize = nBufferSize;
-
-		// Пишем данные в pBufferPtr
-		if (pImage->nCsiz == 3 && pImage->pComponents[0].nXRsiz == pImage->pComponents[1].nXRsiz && pImage->pComponents[1].nXRsiz == pImage->pComponents[2].nXRsiz
-			&& pImage->pComponents[0].nYRsiz == pImage->pComponents[1].nYRsiz && pImage->pComponents[1].nYRsiz == pImage->pComponents[2].nYRsiz
-			&& pImage->pComponents[0].nPrecision == pImage->pComponents[1].nPrecision && pImage->pComponents[1].nPrecision == pImage->pComponents[2].nPrecision)
-		{
-			int nResW = CeilDivPow2(pImage->pComponents[0].nWidth, pImage->pComponents[0].nFactorDiv2);
-			int nResH = CeilDivPow2(pImage->pComponents[0].nHeight, pImage->pComponents[0].nFactorDiv2);
-
-
-			for (int nIndex = 0; nIndex < nResW * nResH; nIndex++)
-			{
-				unsigned char nR = pImage->pComponents[0].pData[nWidth * nResH - ((nIndex) / (nResW)+1) * nWidth + (nIndex) % (nResW)];
-				unsigned char nG = pImage->pComponents[1].pData[nWidth * nResH - ((nIndex) / (nResW)+1) * nWidth + (nIndex) % (nResW)];
-				unsigned char nB = pImage->pComponents[2].pData[nWidth * nResH - ((nIndex) / (nResW)+1) * nWidth + (nIndex) % (nResW)];
-
-				pBufferPtr[0] = isBGRA ? nB : nR;
-				pBufferPtr[1] = nG;
-				pBufferPtr[2] = isBGRA ? nR : nB;
-				pBufferPtr[3] = 255;
-				pBufferPtr += 4;
-
-			}
-		}
-		else if (pImage->nCsiz >= 4 && pImage->pComponents[0].nXRsiz == pImage->pComponents[1].nXRsiz && pImage->pComponents[1].nXRsiz == pImage->pComponents[2].nXRsiz && pImage->pComponents[2].nXRsiz == pImage->pComponents[3].nXRsiz
-				 && pImage->pComponents[0].nYRsiz == pImage->pComponents[1].nYRsiz && pImage->pComponents[1].nYRsiz == pImage->pComponents[2].nYRsiz && pImage->pComponents[2].nYRsiz == pImage->pComponents[3].nYRsiz
-				 && pImage->pComponents[0].nPrecision == pImage->pComponents[1].nPrecision && pImage->pComponents[1].nPrecision == pImage->pComponents[2].nPrecision && pImage->pComponents[2].nPrecision == pImage->pComponents[3].nPrecision)
-		{
-			int nResW = CeilDivPow2(pImage->pComponents[0].nWidth, pImage->pComponents[0].nFactorDiv2);
-			int nResH = CeilDivPow2(pImage->pComponents[0].nHeight, pImage->pComponents[0].nFactorDiv2);
-
-
-			for (int nIndex = 0; nIndex < nResW * nResH; nIndex++)
-			{
-				unsigned char nR = pImage->pComponents[0].pData[nWidth * nResH - ((nIndex) / (nResW)+1) * nWidth + (nIndex) % (nResW)];
-				unsigned char nG = pImage->pComponents[1].pData[nWidth * nResH - ((nIndex) / (nResW)+1) * nWidth + (nIndex) % (nResW)];
-				unsigned char nB = pImage->pComponents[2].pData[nWidth * nResH - ((nIndex) / (nResW)+1) * nWidth + (nIndex) % (nResW)];
-				unsigned char nA = pImage->pComponents[3].pData[nWidth * nResH - ((nIndex) / (nResW)+1) * nWidth + (nIndex) % (nResW)];
-
-				pBufferPtr[0] = isBGRA ? nB : nR;
-				pBufferPtr[1] = nG;
-				pBufferPtr[2] = isBGRA ? nR : nB;
-				pBufferPtr[3] = nA;
-				pBufferPtr += 4;
-
-			}
-		}
-		else // Grayscale
-		{
-			int nResW = CeilDivPow2(pImage->pComponents[0].nWidth, pImage->pComponents[0].nFactorDiv2);
-			int nResH = CeilDivPow2(pImage->pComponents[0].nHeight, pImage->pComponents[0].nFactorDiv2);
-
-			for (int nIndex = 0; nIndex < nResW * nResH; nIndex++)
-			{
-				unsigned char nG = pImage->pComponents[0].pData[nWidth * nResH - ((nIndex) / (nResW)+1) * nWidth + (nIndex) % (nResW)];
-				pBufferPtr[0] = nG;
-				pBufferPtr[1] = nG;
-				pBufferPtr[2] = nG;
-				pBufferPtr[3] = 255;
-				pBufferPtr += 4;
-			}
-		}
-
-		Image_Destroy(pImage);
-		return true;
+        Image_Destroy(pImage);
+        return bFrame;
 	}
 	bool CJ2kFile::Open(CBgraFrame* pFrame, BYTE* pBuffer, int nSize,      const std::wstring& wsXmlOptions, bool isBGRA)
 	{
@@ -281,95 +241,10 @@ namespace Jpeg2000
 			return false;
 		}
 
-		int nWidth  = pImage->pComponents[0].nWidth;
-		int nHeight = pImage->pComponents[0].nHeight;
-		int nBufferSize = 4 /*pImage->nCsiz*/ * nWidth * nHeight;
+        bool bFrame = ImageToFrame(pImage, pFrame, isBGRA);
 
-		if (nBufferSize < 1)
-		{
-			Image_Destroy(pImage);
-			return false;
-		}
-
-		pFrame->put_Width(nWidth);
-		pFrame->put_Height(nHeight);
-		pFrame->put_Stride(4 * nWidth);
-
-		BYTE* pData = new BYTE[nBufferSize];
-		if (!pData)
-		{
-			Image_Destroy(pImage);
-			return false;
-		}
-
-		pFrame->put_Data(pData);
-
-		unsigned char* pBufferPtr = (unsigned char*)pData;
-		long nCreatedBufferSize = nBufferSize;
-
-		// Пишем данные в pBufferPtr
-		if (pImage->nCsiz == 3 && pImage->pComponents[0].nXRsiz == pImage->pComponents[1].nXRsiz && pImage->pComponents[1].nXRsiz == pImage->pComponents[2].nXRsiz
-			&& pImage->pComponents[0].nYRsiz == pImage->pComponents[1].nYRsiz && pImage->pComponents[1].nYRsiz == pImage->pComponents[2].nYRsiz
-			&& pImage->pComponents[0].nPrecision == pImage->pComponents[1].nPrecision && pImage->pComponents[1].nPrecision == pImage->pComponents[2].nPrecision)
-		{
-			int nResW = CeilDivPow2(pImage->pComponents[0].nWidth, pImage->pComponents[0].nFactorDiv2);
-			int nResH = CeilDivPow2(pImage->pComponents[0].nHeight, pImage->pComponents[0].nFactorDiv2);
-
-
-			for (int nIndex = 0; nIndex < nResW * nResH; nIndex++)
-			{
-				unsigned char nR = pImage->pComponents[0].pData[nWidth * nResH - ((nIndex) / (nResW)+1) * nWidth + (nIndex) % (nResW)];
-				unsigned char nG = pImage->pComponents[1].pData[nWidth * nResH - ((nIndex) / (nResW)+1) * nWidth + (nIndex) % (nResW)];
-				unsigned char nB = pImage->pComponents[2].pData[nWidth * nResH - ((nIndex) / (nResW)+1) * nWidth + (nIndex) % (nResW)];
-
-				pBufferPtr[0] = isBGRA ? nB : nR;
-				pBufferPtr[1] = nG;
-				pBufferPtr[2] = isBGRA ? nR : nB;
-				pBufferPtr[3] = 255;
-				pBufferPtr += 4;
-
-			}
-		}
-		else if (pImage->nCsiz >= 4 && pImage->pComponents[0].nXRsiz == pImage->pComponents[1].nXRsiz && pImage->pComponents[1].nXRsiz == pImage->pComponents[2].nXRsiz && pImage->pComponents[2].nXRsiz == pImage->pComponents[3].nXRsiz
-				 && pImage->pComponents[0].nYRsiz == pImage->pComponents[1].nYRsiz && pImage->pComponents[1].nYRsiz == pImage->pComponents[2].nYRsiz && pImage->pComponents[2].nYRsiz == pImage->pComponents[3].nYRsiz
-				 && pImage->pComponents[0].nPrecision == pImage->pComponents[1].nPrecision && pImage->pComponents[1].nPrecision == pImage->pComponents[2].nPrecision && pImage->pComponents[2].nPrecision == pImage->pComponents[3].nPrecision)
-		{
-			int nResW = CeilDivPow2(pImage->pComponents[0].nWidth, pImage->pComponents[0].nFactorDiv2);
-			int nResH = CeilDivPow2(pImage->pComponents[0].nHeight, pImage->pComponents[0].nFactorDiv2);
-
-
-			for (int nIndex = 0; nIndex < nResW * nResH; nIndex++)
-			{
-				unsigned char nR = pImage->pComponents[0].pData[nWidth * nResH - ((nIndex) / (nResW)+1) * nWidth + (nIndex) % (nResW)];
-				unsigned char nG = pImage->pComponents[1].pData[nWidth * nResH - ((nIndex) / (nResW)+1) * nWidth + (nIndex) % (nResW)];
-				unsigned char nB = pImage->pComponents[2].pData[nWidth * nResH - ((nIndex) / (nResW)+1) * nWidth + (nIndex) % (nResW)];
-				unsigned char nA = pImage->pComponents[3].pData[nWidth * nResH - ((nIndex) / (nResW)+1) * nWidth + (nIndex) % (nResW)];
-
-				pBufferPtr[0] = isBGRA ? nB : nR;
-				pBufferPtr[1] = nG;
-				pBufferPtr[2] = isBGRA ? nR : nB;
-				pBufferPtr[3] = nA;
-				pBufferPtr += 4;
-			}
-		}
-		else // Grayscale
-		{
-			int nResW = CeilDivPow2(pImage->pComponents[0].nWidth, pImage->pComponents[0].nFactorDiv2);
-			int nResH = CeilDivPow2(pImage->pComponents[0].nHeight, pImage->pComponents[0].nFactorDiv2);
-
-			for (int nIndex = 0; nIndex < nResW * nResH; nIndex++)
-			{
-				unsigned char nG = pImage->pComponents[0].pData[nWidth * nResH - ((nIndex) / (nResW)+1) * nWidth + (nIndex) % (nResW)];
-				pBufferPtr[0] = nG;
-				pBufferPtr[1] = nG;
-				pBufferPtr[2] = nG;
-				pBufferPtr[3] = 255;
-				pBufferPtr += 4;
-			}
-		}
-
-		Image_Destroy(pImage);
-		return true;
+        Image_Destroy(pImage);
+        return bFrame;
 	}
 	bool CJ2kFile::Open(BYTE** ppData, int& nComponentsCount, int& nWidth, int& nHeight, const std::wstring& wsSrcPath, const std::wstring& wsXmlOptions)
 	{

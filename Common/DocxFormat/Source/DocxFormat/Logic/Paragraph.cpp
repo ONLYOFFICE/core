@@ -172,20 +172,27 @@ namespace OOX
 			}
 		}
 
-
 		void CParagraph::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			m_oParagraphProperty = NULL;
-			
-			ReadAttributes( oReader );
 
+			ReadAttributes(oReader);
+
+			if (oReader.IsEmptyNode())
+				return;
+
+			int nParentDepth = oReader.GetDepth();
+
+			fromXML(nParentDepth, oReader);
+		}
+		void CParagraph::fromXML(int nDepth, XmlUtils::CXmlLiteReader& oReader)
+		{
 			if ( oReader.IsEmptyNode() )
 				return;
 
 			OOX::Document* document = WritingElement::m_pMainDocument;
 
-			int nParentDepth = oReader.GetDepth();
-			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			while( oReader.ReadNextSiblingNode(nDepth) )
 			{
 				std::wstring sName = oReader.GetName();
 				WritingElement *pItem = NULL;
@@ -307,6 +314,11 @@ namespace OOX
 					pItem = new CSmartTag( document );
 				//else if ( _T("w:subDoc") == sName )
 				//	pItem = new CSubDoc( document );
+				else if (_T("w:sdtContent") == sName)
+				{
+					int nDepthChild = oReader.GetDepth();
+					fromXML(nDepthChild, oReader);
+				}
 
 				if ( pItem )
 				{

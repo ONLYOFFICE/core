@@ -38,6 +38,7 @@
 namespace PdfWriter
 {
 	class CDocument;
+	class CMemoryStream;
 	class CXObject : public CDictObject
 	{
 	public:
@@ -63,13 +64,20 @@ namespace PdfWriter
 		void LoadCCITT4(const wchar_t* wsTempFile, unsigned int unWidth, unsigned int unHeight);
 		void LoadRaw(const BYTE* pBgra, unsigned int unWidth, unsigned int unHeight);
 		void LoadRaw(const BYTE* pBuffer, unsigned int unSize, unsigned int unWidth, unsigned int unHeight);
-		void LoadSMask(const BYTE* pBgra, unsigned int unWidth, unsigned int unHeight, unsigned char lAlpha = 255, bool bVerFlip = false);
+		void LoadSMask(CMemoryStream* pStream, const unsigned int unWidth, const unsigned int& unHeight);
+		void LoadSMask(const BYTE* pBgra, unsigned int unWidth, unsigned int unHeight, unsigned char lAlpha = 255, bool bVerFlip = false);		
 		void LoadSMask(const BYTE* pBuffer, unsigned int unSize, unsigned int unWidth, unsigned int unHeight);
+		void LoadSMask(const BYTE& unAlpha, const unsigned int& unWidth, const unsigned int& unHeight);
 		void LoadBW(const BYTE* pImage, unsigned int unWidth, unsigned int unHeight, unsigned int unStride);
         void LoadBW(NSImages::CPixJbig2* pPix, unsigned int unWidth, unsigned int unHeight);
         void LoadMask(NSImages::CPixJbig2* pPix, unsigned int unWidth, unsigned int unHeight);
 		unsigned int GetWidth() const;
 		unsigned int GetHeight() const;
+		void AddTransparency(const BYTE& unAlpha);
+
+	private:
+
+		bool CheckSMask();
 
 	private:
 

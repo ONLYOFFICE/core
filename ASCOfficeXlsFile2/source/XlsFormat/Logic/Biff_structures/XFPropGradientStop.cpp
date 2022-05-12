@@ -31,8 +31,7 @@
  */
 
 #include "XFPropGradientStop.h"
-#include <Binary/CFRecord.h>
-#include <simple_xml_writer.h>
+#include "Xnum.h"
 
 namespace XLS
 {
@@ -47,7 +46,19 @@ BiffStructurePtr XFPropGradientStop::clone()
 void XFPropGradientStop::load(CFRecord& record)
 {
 	record.skipNunBytes(2); // unused
-	record >> numPosition >> color;
+
+    if(record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        record >> numPosition;
+    }
+    else
+    {
+        Xnum numPosition_;
+
+        record >> numPosition_;
+        numPosition = numPosition_.data.value;
+    }
+    record >> color;
 }
 
 

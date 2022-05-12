@@ -31,7 +31,6 @@
  */
 
 #include "NameParsedFormula.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {
@@ -55,6 +54,15 @@ void NameParsedFormula::load(CFRecord& record, const size_t cce)
 	rgcb.load(record, rgce.getPtgs(), is_part_of_a_revision_);
 }
 
+void NameParsedFormula::load(CFRecord& record)
+{
+    //biff 12
+    _UINT32 _cce, _cb;
+    record >> _cce;
+    rgce.load(record, _cce);
+    record >> _cb;
+    rgcb.load(record, rgce.getPtgs(), is_part_of_a_revision_);
+}
 
 } // namespace XLS
 

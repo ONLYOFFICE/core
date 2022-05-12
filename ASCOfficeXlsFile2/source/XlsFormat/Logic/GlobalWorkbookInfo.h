@@ -111,13 +111,14 @@ public:
 	std::map<int, int>						fonts_charsets;
 	std::map<int,  std::wstring>			colors_palette;
 
+	std::vector<BaseObjectPtr>				m_arNumFormats;
 	std::vector<BaseObjectPtr>				m_arFonts;
 	PPTX::ThemePtr							m_pTheme;
 	
-	unsigned int							current_sheet;
+	_UINT32									current_sheet;
 
-	unsigned int							last_Axes_id;
-	unsigned int							last_Extern_id;
+	_UINT32									last_Axes_id;
+	_UINT32									last_Extern_id;
 
 	std::map<std::wstring, BaseObjectPtr>	mapStrConnection;
 	std::map<int, BaseObjectPtr>			mapIdConnection;
@@ -155,7 +156,7 @@ public:
 	std::vector<_xti>				arXti;
 	std::vector<_xti>				arXti_External;
 	
-	unsigned int					startAddedSharedStrings;
+	_UINT32							startAddedSharedStrings;
 	std::vector<std::wstring>		arAddedSharedStrings;
 	
 	struct _row_info
@@ -181,7 +182,7 @@ public:
 	std::vector<std::wstring>		external_sheets_info; //current
 
 	std::pair<float, float>			defaultDigitFontSize;
-    NSFonts::IApplicationFonts*     applicationFonts;
+	NSFonts::IApplicationFonts*     applicationFonts;
 	std::wstring					fontsDirectory;
 
 	std::wstring					tempDirectory;
@@ -192,7 +193,10 @@ public:
 	int								cellXfs_count;
 	int								cellStyleXfs_count;
 	int								cellStyleDxfs_count;
-	
+
+	std::map<std::wstring, int>		mapDefaultFormatCode;
+	std::map<_UINT16, bool>			mapUsedFormatCode;
+
 	std::map<std::wstring, int>		mapUserDxfs;
 	std::vector<std::wstring>		arrUserDxfs;
 
@@ -201,8 +205,11 @@ public:
 	int								connectionId;
 	std::map<std::wstring, int>		connectionNames;
 
-	XlsConverter					*xls_converter;
+	std::unordered_map<int, std::wstring>		mapTableNames;
+	std::unordered_map<int, std::vector<std::wstring>>	mapTableColumnNames;
+	std::unordered_map<std::wstring, int>		mapTableGuidsIndex;
 
+	XlsConverter *xls_converter;
 };
 
 typedef boost::shared_ptr<GlobalWorkbookInfo> GlobalWorkbookInfoPtr;

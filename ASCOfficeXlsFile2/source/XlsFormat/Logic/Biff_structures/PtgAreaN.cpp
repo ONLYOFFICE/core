@@ -32,7 +32,6 @@
 
 #include "PtgAreaN.h"
 #include "CellRangeRef.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {
@@ -44,18 +43,22 @@ PtgAreaN::PtgAreaN(const unsigned short full_ptg_id, const CellRef cell_base_ref
 PtgAreaN::PtgAreaN(const std::wstring& word, const PtgDataType data_type, const CellRef cell_base_ref_init)
 :	OperandPtg(fixed_id | (static_cast<unsigned char>(data_type) << 5)),
 	area(word),
+    areaXlsb(word),
 	cell_base_ref(cell_base_ref_init)
 {
 	area -= cell_base_ref;
+    areaXlsb -= cell_base_ref;
 }
 
 void PtgAreaN::set_base_ref(const CellRef& cell_base_ref_new)
 {
 	area += cell_base_ref;
+    areaXlsb += cell_base_ref;
 	
 	cell_base_ref = cell_base_ref_new;
 	
 	area -= cell_base_ref;
+    areaXlsb -= cell_base_ref;
 }
 
 
@@ -67,7 +70,9 @@ BiffStructurePtr PtgAreaN::clone()
 
 void PtgAreaN::loadFields(CFRecord& record)
 {
-	if (record.getGlobalWorkbookInfo()->Version < 0x600)
+    global_info = record.getGlobalWorkbookInfo();
+
+    if (global_info->Version < 0x600)
 	{
 		unsigned char	colFirst, colLast;
 		_UINT16			rwFirst, rwLast;
@@ -86,14 +91,29 @@ void PtgAreaN::loadFields(CFRecord& record)
 		area.columnLast			= colLast;
 		area.rowLast			= rwLast & 0x3FFF;
 	}
-	else
-		record >> area;
+    else if (global_info->Version < 0x0800)
+    {
+        record >> area;
+    }
+
+    else
+    {
+        record >> areaXlsb;
+    }
 }
 
 
 void PtgAreaN::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
-	ptg_stack.push((area + cell_base_ref).toString());
+    if (global_info->Version < 0x0800)
+    {
+        ptg_stack.push((area + cell_base_ref).toString());
+    }
+
+    else
+    {
+        ptg_stack.push((areaXlsb + cell_base_ref).toString());
+    }
 }
 
 

@@ -41,6 +41,10 @@
 #include "NumFmts.h"
 #include "Xfs.h"
 
+#include "../../XlsbFormat/Biff12_unions/DXF.h"
+#include "../../XlsbFormat/Biff12_unions/FRTDXF.h"
+#include "../../XlsbFormat/Biff12_records/CommonRecords.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -49,6 +53,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDxf)
+            WritingElement_XlsbConstructors(CDxf)
 			CDxf()
 			{
 			}
@@ -117,6 +122,81 @@ namespace OOX
 				}
 			}
 
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                if(obj->get_type() == XLS::typeDXF)
+                {
+                    auto ptrDXF = static_cast<XLSB::DXF*>(obj.get());
+
+                    if(ptrDXF != nullptr)
+                    {                       
+                        std::wstringstream strm;
+                        ptrDXF->serialize(strm);
+
+                        XmlUtils::CXmlLiteReader oReader;
+                        std::wstring str = strm.str();
+
+                        if ( !oReader.FromString(str))
+                            return;
+
+                        int nCurDepth = oReader.GetDepth();
+                        while( oReader.ReadNextSiblingNode( nCurDepth ) )
+                        {
+                            std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+                            if ( _T("alignment") == sName )
+                                m_oAlignment = oReader;
+                            else if ( _T("border") == sName )
+                                m_oBorder = oReader;
+                            else if ( _T("fill") == sName )
+                                m_oFill = oReader;
+                            else if ( _T("font") == sName )
+                                m_oFont = oReader;
+                            else if ( _T("numFmt") == sName )
+                                m_oNumFmt = oReader;
+                            else if ( _T("protection") == sName )
+                                m_oProtection = oReader;
+                        }
+                    }              
+                }
+
+                else if(obj->get_type() == XLS::typeDXF14)
+                {
+                    auto ptrDXF14 = static_cast<XLSB::DXF14*>(obj.get());
+                    if(ptrDXF14 != nullptr)
+                    {
+                        std::wstringstream strm;
+                        ptrDXF14->serialize(strm);
+
+                        XmlUtils::CXmlLiteReader oReader;
+                        std::wstring str = strm.str();
+
+                        if ( !oReader.FromString(str))
+                            return;
+
+                        int nCurDepth = oReader.GetDepth();
+                        while( oReader.ReadNextSiblingNode( nCurDepth ) )
+                        {
+                            std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+                            if ( _T("alignment") == sName )
+                                m_oAlignment = oReader;
+                            else if ( _T("border") == sName )
+                                m_oBorder = oReader;
+                            else if ( _T("fill") == sName )
+                                m_oFill = oReader;
+                            else if ( _T("font") == sName )
+                                m_oFont = oReader;
+                            else if ( _T("numFmt") == sName )
+                                m_oNumFmt = oReader;
+                            else if ( _T("protection") == sName )
+                                m_oProtection = oReader;
+                        }
+                    }
+                }
+
+            }
+
 			virtual EElementType getType () const
 			{
 				return et_x_Dxf;
@@ -138,6 +218,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDxfs)
+            WritingElement_XlsbVectorConstructors(CDxfs)
 			CDxfs()
 			{
 			}
@@ -208,6 +289,31 @@ namespace OOX
 				return et_x_Dxfs;
 			}
 
+            void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
+            {
+                ReadAttributes(obj);
+
+                for(auto &dxf : obj)
+                {
+                    if(dxf->get_type() == XLS::typeuDXF)
+                    {
+                        auto ptruDXF = static_cast<XLSB::uDXF*>(dxf.get());
+
+                        if(ptruDXF && ptruDXF->m_BrtDXF != nullptr)
+                        {
+                            m_arrItems.push_back(new CDxf(ptruDXF->m_BrtDXF));
+                        }
+                        if(ptruDXF && ptruDXF->m_BrtFRTDXF != nullptr)
+                        {
+                            auto ptr = static_cast<XLSB::FRTDXF*>(ptruDXF->m_BrtFRTDXF.get())->m_BrtDXF;
+                            m_arrItems.push_back(new CDxf(ptr));
+                        }
+                    }
+                    else
+                        m_arrItems.push_back(new CDxf(dxf));
+                }
+            }
+
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -216,6 +322,12 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("count"), m_oCount )
 				WritingElement_ReadAttributes_End( oReader )
 			}
+
+            void ReadAttributes(std::vector<XLS::BaseObjectPtr>& obj)
+            {
+                m_oCount = (_UINT32)obj.size();
+            }
+
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;
 		};

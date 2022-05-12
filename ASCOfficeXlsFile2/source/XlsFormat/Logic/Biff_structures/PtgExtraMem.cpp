@@ -31,7 +31,6 @@
  */
 
 #include "PtgExtraMem.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {
@@ -55,26 +54,54 @@ BiffStructurePtr PtgExtraMem::clone()
 
 
 void PtgExtraMem::load(CFRecord& record)
-{
-	unsigned short count;
-	record >> count;
-	for(int i = 0; i < count; ++i)
-	{
-		Ref8U ref8;
-		record >> ref8;
-		array_.push_back(ref8);
-	}
+{	
+    global_info = record.getGlobalWorkbookInfo();
+    if (global_info->Version < 0x0800)
+    {
+        unsigned short count;
+        record >> count;
+        for(int i = 0; i < count; ++i)
+        {
+            Ref8U ref8;
+            record >> ref8;
+            array_.push_back(ref8);
+        }
+    }
+    else
+    {
+        unsigned int count;
+        record >> count;
+        for(int i = 0; i < count; ++i)
+        {
+            XLSB::UncheckedRfX uncheckedRfX;
+            record >> uncheckedRfX;
+            array_xlsb.push_back(uncheckedRfX);
+        }
+    }
 }
 
 
 const std::wstring PtgExtraMem::toString() const
 {
 	std::wstring range;
-	for(std::vector<Ref8U>::const_iterator it = array_.begin(), itEnd = --array_.end(); it != itEnd; ++it)
-	{
-		range += it->toString() + L';';
-	}
-	return range + array_.back().toString();
+    if (global_info->Version < 0x0800)
+    {
+        for(std::vector<Ref8U>::const_iterator it = array_.begin(), itEnd = --array_.end(); it != itEnd; ++it)
+        {
+            range += it->toString() + L';';
+        }
+        return range + array_.back().toString();
+    }
+    else
+    {
+        for(std::vector<XLSB::UncheckedRfX>::const_iterator it = array_xlsb.begin(), itEnd = --array_xlsb.end(); it != itEnd; ++it)
+        {
+            range += it->toString() + L';';
+        }
+        return range + array_xlsb.back().toString();
+    }
+
+    return L"";
 }
 
 

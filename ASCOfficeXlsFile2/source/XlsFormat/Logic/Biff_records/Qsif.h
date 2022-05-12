@@ -62,7 +62,9 @@ public:
 	bool			fClipped;
 	_UINT32			idField;
 	_UINT32			idList;
-	XLUnicodeString	rgbTitle;
+    std::wstring	name;
+
+    bool            fIrstName; // biff12
 };
 
 } // namespace XLS

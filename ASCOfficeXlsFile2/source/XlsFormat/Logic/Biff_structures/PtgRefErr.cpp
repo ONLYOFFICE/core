@@ -31,7 +31,6 @@
  */
 
 #include "PtgRefErr.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {
@@ -56,7 +55,10 @@ BiffStructurePtr PtgRefErr::clone()
 
 void PtgRefErr::loadFields(CFRecord& record)
 {
-	record.skipNunBytes(4); // unused
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+        record.skipNunBytes(4); // unused
+    else
+        record.skipNunBytes(6); // unused
 }
 
 

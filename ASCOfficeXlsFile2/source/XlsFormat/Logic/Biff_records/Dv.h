@@ -35,6 +35,8 @@
 #include "../Biff_structures/BiffString.h"
 #include "../Biff_structures/DVParsedFormula.h"
 #include "../Biff_structures/SqRefU.h"
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/UncheckedSqRfX.h"
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/FRTHeader.h"
 
 namespace XLS
 {
@@ -65,11 +67,12 @@ class Dv: public BiffRecord
 	BIFF_RECORD_DEFINE_TYPE_INFO(Dv)
 	BASE_OBJECT_DEFINE_CLASS_NAME(Dv)
 public:
+    Dv(bool ext14 = false);
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeDv;
+        static const ElementType	type = typeDv;
 
 	int serialize(std::wostream & stream);
 
@@ -85,15 +88,23 @@ public:
 	bool			fShowErrorMsg;
 	_typOperatorDv	typOperator;
 
-	XLUnicodeString PromptTitle;
-	XLUnicodeString ErrorTitle;
-	XLUnicodeString Prompt;
-	XLUnicodeString Error;
+        std::wstring    PromptTitle;//XLUnicodeString
+        std::wstring    ErrorTitle;
+        std::wstring    Prompt;
+        std::wstring    Error;
 	
 	DVParsedFormula formula1;
 	DVParsedFormula formula2;
 	
-	SqRefU			sqref;
+        SqRefU			sqref;
+
+        XLSB::UncheckedSqRfX sqrfx; //biff12
+        //for ext14
+        bool            _ext14;
+        bool            fDVMinFmla;
+        bool            fDVMaxFmla;
+        XLSB::FRTHeader FRTheader;
+
 
 };
 

@@ -37,6 +37,7 @@
 #include <string>
 #include <vector>
 #include "../common/IGrObject.h"
+#include "structures.h"
 #include "Matrix.h"
 
 // тип в DrawPath
@@ -118,7 +119,12 @@ const long c_nEbookWriter		= 0x0007;
 const long c_nDocxWriter		= 0x0008;
 const long c_nVifFormat			= 0x0009;
 const long c_nGrRenderer		= 0x0010;
-const long c_nHtmlRendrerer3            = 0x0011;
+const long c_nHtmlRendrerer3    = 0x0011;
+const long c_nHtmlRendrererText = 0x0012;
+const long c_nQRenderer         = 0x0013;
+
+// типы команд
+const long c_nCommandLongTypeOnlyText = 0x1000;
 
 class CFormFieldInfo;
 
@@ -192,6 +198,7 @@ public:
 	virtual HRESULT BrushBounds(const double& left, const double& top, const double& width, const double& height) = 0;
 
 	virtual HRESULT put_BrushGradientColors(LONG* lColors, double* pPositions, LONG nCount) = 0;
+	//virtual void put_BrushGradInfo(const NSStructures::GradientInfo &_ginfo) {};
 
 // font -------------------------------------------------------------------------------------
 	virtual HRESULT get_FontName(std::wstring* bsName)			= 0;

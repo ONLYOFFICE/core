@@ -1,5 +1,5 @@
 core_mac {
-    CONFIG += use_javascript_core
+    !use_v8:CONFIG += use_javascript_core
 }
 core_ios {
     CONFIG += use_javascript_core
@@ -9,11 +9,20 @@ INCLUDEPATH += $$PWD
 
 HEADERS += $$PWD/js_base.h
 
+HEADERS += $$PWD/js_logger.h
+SOURCES += $$PWD/js_logger.cpp
+
 !use_javascript_core {
 
     HEADERS += $$PWD/v8/v8_base.h
     SOURCES += $$PWD/v8/v8_base.cpp
-    include($$PWD/../../../Common/3dParty/v8/v8.pri)
+
+    !build_xp {
+        include($$PWD/../../../Common/3dParty/v8/v8.pri)
+    } else {
+        DEFINES += V8_OS_XP
+        include($$PWD/../../../Common/3dParty/v8/v8_xp/v8.pri)
+    }
 
     v8_use_inspector {
         #define

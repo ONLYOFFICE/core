@@ -36,12 +36,13 @@
 #include <vector>
 #include <map>
 
-#include <xml/simple_xml_writer.h>
-#include <CPSharedPtr.h>
+#include "../../include/xml/simple_xml_writer.h"
+#include "../../include/CPSharedPtr.h"
+
 #include <boost/regex.hpp>
 #include <boost/algorithm/string/regex.hpp>
 
-#include "../formulasconvert/formulasconvert.h"
+#include "../../formulasconvert/formulasconvert.h"
 #include "../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace cpdoccore {

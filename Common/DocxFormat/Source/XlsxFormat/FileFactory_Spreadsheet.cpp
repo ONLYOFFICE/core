@@ -101,7 +101,7 @@ namespace OOX
 			else if ( oRelation.Type() == FileTypes::CalcChain )
 				return smart_ptr<OOX::File>(new CCalcChain( pMain, oRootPath, oFileName ));
 			else if ( oRelation.Type() == FileTypes::Chartsheets )
-				return smart_ptr<OOX::File>(new CWorksheet( pMain, oRootPath, oFileName, oRelation.rId().ToString() ));
+                return smart_ptr<OOX::File>(new CWorksheet( pMain, oRootPath, oFileName, oRelation.rId().ToString(), true ));
 			else if ( oRelation.Type() == FileTypes::Table )
 				return smart_ptr<OOX::File>(new CTableFile( pMain, oRootPath, oFileName ));
 			else if ( oRelation.Type() == FileTypes::QueryTable )
@@ -176,6 +176,8 @@ namespace OOX
 				return smart_ptr<OOX::File>(new OOX::ActiveX_bin( pMain, oFileName ));
 			else if (	oRelation.Type() == FileTypes::CtrlProp)
 				return smart_ptr<OOX::File>(new CCtrlPropFile( pMain, oRootPath, oFileName ));
+			else if (	oRelation.Type() == FileTypes::XlBinaryIndex)
+				return smart_ptr<OOX::File>(new UnknowTypeFile(pMain)); // ????
 
 			return smart_ptr<OOX::File>( new UnknowTypeFile(pMain) );
 		}
@@ -198,7 +200,7 @@ namespace OOX
 			else if ( pRelation->Type() == FileTypes::Styles )
 				return smart_ptr<OOX::File>(new CStyles( pMain, oRootPath, oFileName ));
 			else if ( pRelation->Type() == FileTypes::Worksheet )
-				return smart_ptr<OOX::File>(new CWorksheet( pMain, oRootPath, oFileName, pRelation->rId().ToString() ));
+                return smart_ptr<OOX::File>(new CWorksheet( pMain, oRootPath, oFileName, pRelation->rId().ToString() ));
 			else if ( pRelation->Type() == OOX::FileTypes::Theme )
 			{
 				smart_ptr<OOX::File> pFile;
@@ -226,7 +228,7 @@ namespace OOX
 			else if ( pRelation->Type() == OOX::FileTypes::Image )
 				return smart_ptr<OOX::File>(new Image( pMain, oFileName ));
 			else if ( pRelation->Type() == FileTypes::Chartsheets )
-				return smart_ptr<OOX::File>(new CWorksheet( pMain, oRootPath, oFileName, pRelation->rId().ToString() ));
+                return smart_ptr<OOX::File>(new CWorksheet( pMain, oRootPath, oFileName, pRelation->rId().ToString(), true ));
 			else if ( pRelation->Type() == FileTypes::Table )
 				return smart_ptr<OOX::File>(new CTableFile( pMain, oRootPath, oFileName ));
 			else if ( pRelation->Type() == FileTypes::QueryTable )
@@ -304,6 +306,8 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CCtrlPropFile( pMain, oRootPath, oFileName ));
 			else if (pRelation->Type() == FileTypes::WorkbookComments)
 				return smart_ptr<OOX::File>(new WorkbookComments( pMain, oRootPath, oFileName));
+			else if (pRelation->Type() == FileTypes::XlBinaryIndex)
+				return smart_ptr<OOX::File>(new UnknowTypeFile(pMain)); // ????
 
 			return smart_ptr<OOX::File>( new UnknowTypeFile(pMain) );
 		}

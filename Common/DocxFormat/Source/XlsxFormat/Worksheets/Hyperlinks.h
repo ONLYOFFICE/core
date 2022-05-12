@@ -31,6 +31,7 @@
  */
 #pragma once
 #include "../CommonInclude.h"
+#include "../../XlsbFormat/Biff12_records/HLink.h"
 
 namespace OOX
 {
@@ -72,6 +73,10 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 
 			virtual EElementType getType () const
 			{
@@ -91,6 +96,16 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"tooltip"),	m_oTooltip )
 				WritingElement_ReadAttributes_End( oReader )
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::HLink*>(obj.get());
+                m_oDisplay          = ptr->display.value();
+                m_oRid              = ptr->relId.value.value();
+                m_oLocation         = ptr->location.value();
+                m_oRef              = ptr->rfx.toString();
+                m_oTooltip          = ptr->tooltip.value();
+
+            }
 
 		public:
 				nullable_string							m_oDisplay;
@@ -105,7 +120,8 @@ namespace OOX
 		class CHyperlinks  : public WritingElementWithChilds<CHyperlink>
 		{
 		public:
-			WritingElement_AdditionConstructors(CHyperlinks)
+            WritingElement_AdditionConstructors(CHyperlinks)
+            WritingElement_XlsbVectorConstructors(CHyperlinks)
 			CHyperlinks(OOX::Document *pMain = NULL) : WritingElementWithChilds<CHyperlink>(pMain)
 			{
 			}
@@ -154,6 +170,19 @@ namespace OOX
 					}
 				}
 			}
+            void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
+            {
+                if (obj.empty())
+                    return;
+
+                for(auto &hyperlink : obj)
+                {
+                    CHyperlink *pHyperlink = new CHyperlink(m_pMainDocument);
+                    m_arrItems.push_back(pHyperlink);
+
+                    pHyperlink->fromBin(hyperlink);
+                }
+            }
 
 			virtual EElementType getType () const
 			{

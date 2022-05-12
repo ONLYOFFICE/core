@@ -31,7 +31,6 @@
  */
 
 #include "PtgFunc.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

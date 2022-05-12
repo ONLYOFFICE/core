@@ -211,6 +211,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CControl)
+                        WritingElement_XlsbConstructors(CControl)
 			CControl()
 			{
 			}
@@ -228,13 +229,14 @@ namespace OOX
 			virtual void toXML2(NSStringUtils::CStringBuilder& writer, bool bControlPr) const;
    
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-
+                        void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_Control;
 			}
 
 		private:
+                        void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
 			nullable_string										m_oName;
@@ -254,6 +256,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CControls)
+                        WritingElement_XlsbConstructors(CControls)
 			CControls()
 			{
 			}
@@ -269,7 +272,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			
 			void read(XmlUtils::CXmlLiteReader& oReader, bool bOldVersion = false);
-			
+                        void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_Controls;

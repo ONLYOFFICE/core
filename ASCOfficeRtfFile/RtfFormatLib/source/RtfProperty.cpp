@@ -87,7 +87,7 @@ std::wstring RtfFont::RenderToRtf(RenderParameter oRenderParameter)
 		RENDER_RTF_INT( m_nCodePage, sResult, L"cpg" )
 
 		RtfCharProperty oFontNameCharProp;
-        sResult += L" " + RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument, &oFontNameCharProp );
+        sResult += L" " + RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument, &oFontNameCharProp, true );
 		
 //ALL FONTS NEW.docx
 //		if(!m_sAltName.empty() )
@@ -1207,9 +1207,12 @@ std::wstring RtfListLevelProperty::RenderToOOX2(RenderParameter oRenderParameter
 			else
                 sIndent += L" w:hanging=\"" + std::to_wstring(-m_nFirstIndent) + L"\"";
 		}
-		RENDER_OOX_INT_ATTRIBUTE( m_nIndent,		sIndent, L"w:left" )
-		RENDER_OOX_INT_ATTRIBUTE( m_nIndentStart,	sIndent, L"w:start" )
-		
+		RENDER_OOX_INT_ATTRIBUTE(m_nIndent, sIndent, L"w:left")
+		if (sIndent.empty())
+		{
+			RENDER_OOX_INT_ATTRIBUTE(m_nIndentStart, sIndent, L"w:start")
+		}
+
         if( !sIndent.empty() )
             spPr += L"<w:ind " + sIndent + L"/>";
 
@@ -1399,7 +1402,8 @@ std::wstring RtfStyle::RenderToRtfEnd( RenderParameter oRenderParameter )
 	RENDER_RTF_INT	( m_nPriority,	sResult, L"spriority" )
 	RENDER_RTF_BOOL	( m_bUnhiddenWhenUse, sResult, L"sunhideused" )
 
-    sResult += L" " + RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument ) + L";}";
+	RtfCharProperty* props = NULL;
+	sResult += L" " + RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument, props, true) + L";}";
 	return sResult;
 }
 std::wstring RtfCharStyle::RenderToRtf(RenderParameter oRenderParameter)
@@ -2247,6 +2251,8 @@ std::wstring RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 		sIndent += L" w:right=\"" + std::to_wstring(m_nIndRight) + L"\"";
 	}
 	RENDER_OOX_INT_ATTRIBUTE	( m_nIndLeft,	sIndent, L"w:left" );
+	RENDER_OOX_INT_ATTRIBUTE	(m_nIndStart,	sIndent, L"w:start")
+
 	if( PROP_DEF != m_nIndFirstLine )
 	{
         if( m_nIndFirstLine >= 0 )	sIndent += L" w:firstLine=\"" + std::to_wstring(m_nIndFirstLine) + L"\"";

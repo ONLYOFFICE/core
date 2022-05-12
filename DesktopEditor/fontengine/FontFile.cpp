@@ -142,6 +142,9 @@ CFontFile::~CFontFile()
 {
 	RELEASEINTERFACE(m_pStream);
 	ClearCache();
+
+    if (m_pFace)
+        FT_Done_Face(m_pFace);
 }
 
 void CFontFile::SetDefaultFont(CFontFile* pDefFont)
@@ -1047,6 +1050,7 @@ INT CFontFile::GetString(CGlyphString& oString)
 
         int unGID = 0;
 		int ushUnicode = pCurGlyph->lUnicode;
+        if (ushUnicode < 0) ushUnicode = 0;
         USHORT charSymbolObj = 0xFFFF;
         if (ushUnicode >= 0 && ushUnicode >= 0 && ushUnicode < FONT_CACHE_SIZES_INDEXES_SIZE)     //вылетает под Linux
         {
@@ -1135,7 +1139,8 @@ INT CFontFile::GetString2(CGlyphString& oString)
     {
 		TGlyph* pCurGlyph = oString.GetAt(nIndex);
 
-		int ushUnicode = pCurGlyph->lUnicode;		
+        int ushUnicode = pCurGlyph->lUnicode;
+        if (ushUnicode < 0) ushUnicode = 0;
 		int unGID = 0;
         USHORT charSymbolObj = 0xFFFF;
 
@@ -1215,6 +1220,7 @@ INT CFontFile::GetString2C(CGlyphString& oString)
 
     TGlyph* pCurGlyph = oString.GetAt(0);
     int ushUnicode = pCurGlyph->lUnicode;
+    if (ushUnicode < 0) ushUnicode = 0;
 
     USHORT charSymbolObj = 0xFFFF;
     if (ushUnicode >= 0 && ushUnicode < FONT_CACHE_SIZES_INDEXES_SIZE)     //вылетает под Linux
@@ -1279,21 +1285,21 @@ std::wstring CFontFile::GetFontFormat()
 	const char* sFormat = FT_Get_X11_Font_Format(m_pFace);
     return NSFile::CUtf8Converter::GetUnicodeFromCharPtr(sFormat, strlen(sFormat));
 }
-EFontFormat CFontFile::GetFontFormatType(FT_Face pFace)
+NSFonts::EFontFormat CFontFile::GetFontFormatType(FT_Face pFace)
 {
     if (!pFace)
-        return fontUnknown;
+        return NSFonts::fontUnknown;
 
     std::string wsFormat( FT_Get_X11_Font_Format( pFace ) );
 
     if ( "Windows FNT" == wsFormat )
-        return fontWindowsFNT;
+        return NSFonts::fontWindowsFNT;
     else if ( "TrueType" == wsFormat )
-        return fontTrueType;
+        return NSFonts::fontTrueType;
     else if ( "CFF" == wsFormat )
-        return fontOpenType;
+        return NSFonts::fontOpenType;
 
-    return fontUnknown;
+    return NSFonts::fontUnknown;
 }
 
 unsigned int CFontFile::GetNameIndex(const std::wstring& wsName) const

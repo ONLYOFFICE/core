@@ -32,10 +32,6 @@
 
 #include "math_elements.h"
 
-#include <xml/xmlchar.h>
-#include <xml/attributes.h>
-
-
 namespace cpdoccore { 
 
 	using namespace odf_types;

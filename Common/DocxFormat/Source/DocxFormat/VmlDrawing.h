@@ -35,6 +35,7 @@
 #include "Logic/Vml.h"
 
 #include "../XlsxFormat/Comments/Comments.h"
+#include "Document.h"
 
 #include <boost/unordered_map.hpp>
 
@@ -63,7 +64,7 @@ namespace OOX
 		}
 		CVmlDrawing(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 		{
-			m_bDocument = false;
+			m_bDocument = (NULL != dynamic_cast<OOX::CDocument*>(pMain));;
 			m_mapComments = NULL;
 			read( oRootPath, oPath );
 		}
@@ -119,11 +120,13 @@ namespace OOX
         CPath                                                                   m_oReadPath;
         boost::unordered_map<std::wstring, _vml_shape>							m_mapShapes;
 		std::vector<_vml_shape>													m_arrShapeTypes;
+
+		std::wstring															m_sFileContent;
 //writing
         boost::unordered_map<std::wstring, OOX::Spreadsheet::CCommentItem*>*    m_mapComments;
         std::vector<std::wstring>                                               m_arObjectXml;
         std::vector<std::wstring>                                               m_arControlXml;
 
-        long                                                                    m_lObjectIdVML;
+		long                                                                    m_lObjectIdVML;
 	};
 } // namespace OOX

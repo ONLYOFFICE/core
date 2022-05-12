@@ -44,14 +44,6 @@
 #define NSFONTS_EMBEDDING_RIGHTS_EDITABLE          0x02
 #define NSFONTS_EMBEDDING_RIGHTS_INSTALLABLE       0x03
 
-enum EFontFormat
-{
-    fontWindowsFNT = 0, // *.fon
-    fontTrueType   = 1, // *.ttf
-    fontOpenType   = 2, // *.ttf, *.otf (CFF формат)
-    fontUnknown    = 3
-};
-
 struct TBBox
 {
     float fMinX;
@@ -67,6 +59,7 @@ struct TBBoxAdvance
     float fAdvanceX;
     float fAdvanceY;
 };
+
 
 namespace NSBase
 {
@@ -88,85 +81,93 @@ namespace NSBase
 
 namespace NSFonts
 {
-	class CFontInfo
-	{
-	public:
-		CFontInfo(const std::wstring& wsFontName,
-			const std::wstring& wsStyle,
-			const std::wstring& wsFontPath,
-			long lIndex,
-			INT bBold,
-			INT bItalic,
-			INT bFixedWidth,
-			BYTE *pPanose,
-			UINT ulRange1,
-			UINT ulRange2,
-			UINT ulRange3,
-			UINT ulRange4,
-			UINT ulCodeRange1,
-			UINT ulCodeRange2,
-			USHORT usWeigth,
-			USHORT usWidth,
-			SHORT sFamilyClass,
-			EFontFormat eFormat,
-			SHORT shAvgCharWidth,
-			SHORT shAscent,
-			SHORT shDescent,
-			SHORT shLineGap,
-			SHORT shXHeight,
-			SHORT shCapHeight,
-			USHORT usType)
-		{
-			m_wsFontName = wsFontName;
-			m_wsFontPath = wsFontPath;
-			m_wsStyle    = wsStyle;
-			m_lIndex     = lIndex;
+    enum EFontFormat
+    {
+        fontWindowsFNT = 0, // *.fon
+        fontTrueType   = 1, // *.ttf
+        fontOpenType   = 2, // *.ttf, *.otf (CFF формат)
+        fontUnknown    = 3
+    };
 
-			m_bBold      = bBold;
-			m_bItalic    = bItalic;
+    class CFontInfo
+    {
+    public:
+        CFontInfo(const std::wstring& wsFontName,
+            const std::wstring& wsStyle,
+            const std::wstring& wsFontPath,
+            long lIndex,
+            INT bBold,
+            INT bItalic,
+            INT bFixedWidth,
+            BYTE *pPanose,
+            UINT ulRange1,
+            UINT ulRange2,
+            UINT ulRange3,
+            UINT ulRange4,
+            UINT ulCodeRange1,
+            UINT ulCodeRange2,
+            USHORT usWeigth,
+            USHORT usWidth,
+            SHORT sFamilyClass,
+            EFontFormat eFormat,
+            SHORT shAvgCharWidth,
+            SHORT shAscent,
+            SHORT shDescent,
+            SHORT shLineGap,
+            SHORT shXHeight,
+            SHORT shCapHeight,
+            USHORT usType)
+        {
+            m_wsFontName = wsFontName;
+            m_wsFontPath = wsFontPath;
+            m_wsStyle    = wsStyle;
+            m_lIndex     = lIndex;
 
-			m_bIsFixed   = bFixedWidth;
+            m_bBold      = bBold;
+            m_bItalic    = bItalic;
 
-			if ( pPanose )
-				memcpy( (void*)m_aPanose, (const void *)pPanose, 10 );
-			else
-				memset( (void*)m_aPanose, 0x00, 10 );
+            m_bIsFixed   = bFixedWidth;
 
-			m_ulUnicodeRange1  = ulRange1;
-			m_ulUnicodeRange2  = ulRange2;
-			m_ulUnicodeRange3  = ulRange3;
-			m_ulUnicodeRange4  = ulRange4;
-			m_ulCodePageRange1 = ulCodeRange1;
-			m_ulCodePageRange2 = ulCodeRange2;
-			m_usWeigth         = usWeigth;
-			m_usWidth          = usWidth;
+            if ( pPanose )
+                memcpy( (void*)m_aPanose, (const void *)pPanose, 10 );
+            else
+                memset( (void*)m_aPanose, 0x00, 10 );
 
-			m_sFamilyClass     = sFamilyClass;
+            m_ulUnicodeRange1  = ulRange1;
+            m_ulUnicodeRange2  = ulRange2;
+            m_ulUnicodeRange3  = ulRange3;
+            m_ulUnicodeRange4  = ulRange4;
+            m_ulCodePageRange1 = ulCodeRange1;
+            m_ulCodePageRange2 = ulCodeRange2;
+            m_usWeigth         = usWeigth;
+            m_usWidth          = usWidth;
 
-			m_eFontFormat      = eFormat;
+            m_sFamilyClass     = sFamilyClass;
 
-			m_shAvgCharWidth   = shAvgCharWidth;
-			m_shAscent         = shAscent;
-			m_shDescent        = shDescent;
-			m_shLineGap        = shLineGap;
-			m_shXHeight        = shXHeight;
-			m_shCapHeight      = shCapHeight;
+            m_eFontFormat      = eFormat;
 
-			m_usType = usType;
-		}
+            m_shAvgCharWidth   = shAvgCharWidth;
+            m_shAscent         = shAscent;
+            m_shDescent        = shDescent;
+            m_shLineGap        = shLineGap;
+            m_shXHeight        = shXHeight;
+            m_shCapHeight      = shCapHeight;
 
-		~CFontInfo()
-		{
-		}
+            m_usType = usType;
+        }
 
-		int IsEquals(const CFontInfo *pFontInfo)
-		{
-			return (m_wsFontName == pFontInfo->m_wsFontName &&
-				m_wsStyle == pFontInfo->m_wsStyle &&
-				m_wsFontPath == pFontInfo->m_wsFontPath &&
-				m_bItalic == pFontInfo->m_bItalic &&
-				m_bBold == pFontInfo->m_bBold);
-		}
+        ~CFontInfo()
+        {
+        }
+
+        int IsEquals(const CFontInfo *pFontInfo)
+        {
+            return (m_wsFontName == pFontInfo->m_wsFontName &&
+                m_wsStyle == pFontInfo->m_wsStyle &&
+                m_wsFontPath == pFontInfo->m_wsFontPath &&
+                m_bItalic == pFontInfo->m_bItalic &&
+                m_bBold == pFontInfo->m_bBold);
+        }
 		static inline bool CanEmbedForPreviewAndPrint(const USHORT& usType)
 		{
 			return (2 != usType);
@@ -180,78 +181,80 @@ namespace NSFonts
 			return (0 == usType || !(2 == usType || (usType & 2) || (usType & 4) || (usType & 8) || (usType & 512)));
 		}
 
-	public:
-		std::wstring m_wsFontName;   // Имя шрифта
-		std::wstring m_wsFontPath;   // Путь к файлу с шрифтом
-		long         m_lIndex;       // Номер шрифта в файле(если в файле больше 1 шрифта)
-		std::wstring m_wsStyle;
+    public:
+        std::wstring m_wsFontName;   // Имя шрифта
+        std::wstring m_wsFontPath;   // Путь к файлу с шрифтом
+        long         m_lIndex;       // Номер шрифта в файле(если в файле больше 1 шрифта)
+        std::wstring m_wsStyle;
 
-		INT         m_bBold;            // Bold text
-		INT         m_bItalic;          // Italic text
-		INT         m_bIsFixed;         // Моноширинный шрифт?
+        INT         m_bBold;            // Bold text
+        INT         m_bItalic;          // Italic text
+        INT         m_bIsFixed;         // Моноширинный шрифт?
 
-		BYTE        m_aPanose[10];
-		UINT	    m_ulUnicodeRange1;  // Bits 0-31
-		UINT        m_ulUnicodeRange2;  // Bits 32-63
-		UINT        m_ulUnicodeRange3;  // Bits 64-95
-		UINT        m_ulUnicodeRange4;  // Bits 96-127
+        BYTE        m_aPanose[10];
+        UINT        m_ulUnicodeRange1;  // Bits 0-31
+        UINT        m_ulUnicodeRange2;  // Bits 32-63
+        UINT        m_ulUnicodeRange3;  // Bits 64-95
+        UINT        m_ulUnicodeRange4;  // Bits 96-127
 
-		UINT        m_ulCodePageRange1; // Bits 0-31
-		UINT        m_ulCodePageRange2; // Bits 32-63
+        UINT        m_ulCodePageRange1; // Bits 0-31
+        UINT        m_ulCodePageRange2; // Bits 32-63
 
-		USHORT       m_usWeigth;
-		USHORT       m_usWidth;
+        USHORT       m_usWeigth;
+        USHORT       m_usWidth;
 
-		SHORT        m_sFamilyClass;
-		EFontFormat  m_eFontFormat;
+        SHORT        m_sFamilyClass;
+        EFontFormat  m_eFontFormat;
 
-		SHORT        m_shAvgCharWidth;   // Средняя ширина символов
-		SHORT        m_shAscent;         // Ascent
-		SHORT        m_shDescent;        // Descent
-		SHORT        m_shLineGap;        // Межсимвольный интервал
-		SHORT        m_shXHeight;        // Высота буквы 'x' (в нижнем регистре)
-		SHORT        m_shCapHeight;      // Высота буквы 'H' (в верхнем регистре)
+        SHORT        m_shAvgCharWidth;   // Средняя ширина символов
+        SHORT        m_shAscent;         // Ascent
+        SHORT        m_shDescent;        // Descent
+        SHORT        m_shLineGap;        // Межсимвольный интервал
+        SHORT        m_shXHeight;        // Высота буквы 'x' (в нижнем регистре)
+        SHORT        m_shCapHeight;      // Высота буквы 'H' (в верхнем регистре)
 
-		USHORT       m_usType;
+        USHORT       m_usType;
 
-		std::vector<std::wstring> names;
-	};
+        std::vector<std::wstring> names;
+    };
 
     class CFontSelectFormat
     {
     public:
-        std::wstring*	wsName;
-        std::wstring*	wsAltName;
+        std::wstring*   wsName;
+        std::wstring*   wsAltName;
 
-        std::wstring*	wsFamilyClass;
-        SHORT*			sFamilyClass;
+        std::wstring*   wsDefaultName;
 
-        INT*			bBold;
-        INT*			bItalic;
+        std::wstring*   wsFamilyClass;
+        SHORT*          sFamilyClass;
 
-        INT*			bFixedWidth;
+        INT*            bBold;
+        INT*            bItalic;
 
-        BYTE*			pPanose;
+        INT*            bFixedWidth;
 
-        UINT*			ulRange1;
-        UINT*			ulRange2;
-        UINT*			ulRange3;
-        UINT*			ulRange4;
-        UINT*			ulCodeRange1;
-        UINT*			ulCodeRange2;
+        BYTE*           pPanose;
 
-        USHORT*			usWeight;
-        USHORT*			usWidth;
+        UINT*           ulRange1;
+        UINT*           ulRange2;
+        UINT*           ulRange3;
+        UINT*           ulRange4;
+        UINT*           ulCodeRange1;
+        UINT*           ulCodeRange2;
 
-        int*			nFontFormat;
-        BYTE*			unCharset;
+        USHORT*         usWeight;
+        USHORT*         usWidth;
 
-        SHORT*			shAvgCharWidth;
-        SHORT*			shAscent;
-        SHORT*			shDescent;
-        SHORT*			shLineGap;
-        SHORT*			shXHeight;
-        SHORT*			shCapHeight;
+        int*            nFontFormat;
+        BYTE*           unCharset;
+
+        SHORT*          shAvgCharWidth;
+        SHORT*          shAscent;
+        SHORT*          shDescent;
+        SHORT*          shLineGap;
+        SHORT*          shXHeight;
+        SHORT*          shCapHeight;
 
         // mask for allowed os2.fsType field
         // https://docs.microsoft.com/en-us/typography/opentype/spec/os2#fstype
@@ -268,6 +271,8 @@ namespace NSFonts
         {
             wsName = NULL;
             wsAltName = NULL;
+
+            wsDefaultName = NULL;
 
             wsFamilyClass = NULL;
             sFamilyClass = NULL;
@@ -314,6 +319,9 @@ namespace NSFonts
 
             if (NULL != wsAltName)
                 oFormat.wsAltName = new std::wstring(*wsAltName);
+
+            if (NULL != wsDefaultName)
+                oFormat.wsDefaultName = new std::wstring(*wsDefaultName);
 
             if (NULL != wsFamilyClass)
                 oFormat.wsFamilyClass = new std::wstring(*wsFamilyClass);
@@ -380,6 +388,8 @@ namespace NSFonts
             RELEASEOBJECT(wsName);
             RELEASEOBJECT(wsAltName);
 
+            RELEASEOBJECT(wsDefaultName);
+
             RELEASEOBJECT(wsFamilyClass);
             RELEASEOBJECT(sFamilyClass);
 
@@ -415,39 +425,41 @@ namespace NSFonts
 
             RELEASEOBJECT(usType);
         }
-		void Fill(CFontInfo* pFontInfo)
-		{
-			Destroy();
+        void Fill(CFontInfo* pFontInfo)
+        {
+            Destroy();
 
-			wsName = new std::wstring(pFontInfo->m_wsFontName);
+            wsName = new std::wstring(pFontInfo->m_wsFontName);
 
-			bItalic     = new INT(pFontInfo->m_bItalic ? 1 : 0);
-			bBold       = new INT(pFontInfo->m_bBold ? 1 : 0);
-			bFixedWidth = new INT(pFontInfo->m_bIsFixed ? 1 : 0);
+            bItalic     = new INT(pFontInfo->m_bItalic ? 1 : 0);
+            bBold       = new INT(pFontInfo->m_bBold ? 1 : 0);
+            bFixedWidth = new INT(pFontInfo->m_bIsFixed ? 1 : 0);
 
-			pPanose = new BYTE[10];
-			memcpy((void*)pPanose, pFontInfo->m_aPanose, 10);
+            pPanose = new BYTE[10];
+            memcpy((void*)pPanose, pFontInfo->m_aPanose, 10);
 
-			ulRange1 = new UINT(pFontInfo->m_ulUnicodeRange1);
-			ulRange2 = new UINT(pFontInfo->m_ulUnicodeRange2);
-			ulRange3 = new UINT(pFontInfo->m_ulUnicodeRange3);
-			ulRange4 = new UINT(pFontInfo->m_ulUnicodeRange4);
+            ulRange1 = new UINT(pFontInfo->m_ulUnicodeRange1);
+            ulRange2 = new UINT(pFontInfo->m_ulUnicodeRange2);
+            ulRange3 = new UINT(pFontInfo->m_ulUnicodeRange3);
+            ulRange4 = new UINT(pFontInfo->m_ulUnicodeRange4);
 
-			ulCodeRange1 = new UINT(pFontInfo->m_ulCodePageRange1);
-			ulCodeRange2 = new UINT(pFontInfo->m_ulCodePageRange2);
+            ulCodeRange1 = new UINT(pFontInfo->m_ulCodePageRange1);
+            ulCodeRange2 = new UINT(pFontInfo->m_ulCodePageRange2);
 
-			usWeight = new USHORT(pFontInfo->m_usWeigth);
-			usWidth  = new USHORT(pFontInfo->m_usWidth);
+            usWeight = new USHORT(pFontInfo->m_usWeigth);
+            usWidth  = new USHORT(pFontInfo->m_usWidth);
 
-			shAvgCharWidth = new SHORT(pFontInfo->m_shAvgCharWidth);
-			shAscent       = new SHORT(pFontInfo->m_shAscent);
-			shDescent      = new SHORT(pFontInfo->m_shDescent);
-			shLineGap      = new SHORT(pFontInfo->m_shLineGap);
-			shXHeight      = new SHORT(pFontInfo->m_shXHeight);
-			shCapHeight    = new SHORT(pFontInfo->m_shCapHeight);
-		}
+            shAvgCharWidth = new SHORT(pFontInfo->m_shAvgCharWidth);
+            shAscent       = new SHORT(pFontInfo->m_shAscent);
+            shDescent      = new SHORT(pFontInfo->m_shDescent);
+            shLineGap      = new SHORT(pFontInfo->m_shLineGap);
+            shXHeight      = new SHORT(pFontInfo->m_shXHeight);
+            shCapHeight    = new SHORT(pFontInfo->m_shCapHeight);
 
-	};
+            usType = new USHORT(pFontInfo->m_usType);
+        }
+
+    };
 
     class CFontListToBufferSerializer
     {
@@ -481,10 +493,10 @@ namespace NSFonts
     class GRAPHICS_DECL ISimpleGraphicsPath
     {
     public:
-        virtual bool _MoveTo(double x, double y)													= 0;
-        virtual bool _LineTo(double x, double y)													= 0;
-        virtual bool _CurveTo(double x1, double y1, double x2, double y2, double x3, double y3)		= 0;
-        virtual bool _Close()																		= 0;
+        virtual bool _MoveTo(double x, double y)                                                    = 0;
+        virtual bool _LineTo(double x, double y)                                                    = 0;
+        virtual bool _CurveTo(double x1, double y1, double x2, double y2, double x3, double y3)     = 0;
+        virtual bool _Close()                                                                       = 0;
     };
 
     class GRAPHICS_DECL IFontPath : public NSBase::CBaseRefCounter
@@ -513,6 +525,22 @@ namespace NSFonts
 
     public:
         virtual int CreateFromFile(const std::wstring& strFileName, unsigned char* pDataUse = NULL) = 0;
+        virtual int CreateFromMemory(BYTE* pData, LONG lSize, bool bClear) = 0;
+        virtual void GetMemory(BYTE*& pData, LONG& lSize) = 0;
+    };
+
+    class GRAPHICS_DECL IFontsMemoryStorage : public NSBase::CBaseRefCounter
+    {
+    public:
+        IFontsMemoryStorage();
+        virtual ~IFontsMemoryStorage();
+
+        virtual bool Add(const std::wstring& id, BYTE* data, LONG size, bool bClear = false) = 0;
+        virtual bool Remove(const std::wstring& id) = 0;
+        virtual IFontStream* Get(const std::wstring& id) = 0;
+
+        virtual std::wstring GenerateId() = 0;
+        virtual void Clear() = 0;
     };
 
     class GRAPHICS_DECL IApplicationFontStreams : public NSBase::CBaseRefCounter
@@ -535,6 +563,13 @@ namespace NSFonts
     namespace NSApplicationFontStream
     {
         GRAPHICS_DECL IApplicationFontStreams* Create();
+
+        // create default
+        GRAPHICS_DECL IFontsMemoryStorage* CreateDefaultGlobalMemoryStorage();
+
+        // without AddRef!!!
+        GRAPHICS_DECL IFontsMemoryStorage* GetGlobalMemoryStorage();
+        GRAPHICS_DECL void SetGlobalMemoryStorage(IFontsMemoryStorage* pStorage);
     }
 }
 
@@ -639,6 +674,7 @@ namespace NSFonts
 
         virtual void Initialize() = 0;
         virtual void SetOwnerCache(IFontsCache* pCache) = 0;
+        virtual void CreateOwnerCache(const int& nCacheSize = -1);
 
         virtual void AfterLoad() = 0;
 
@@ -673,6 +709,7 @@ namespace NSFonts
         virtual void SetSubpixelRendering(const bool& hmul, const bool& vmul) = 0;
 
         virtual unsigned int GetNameIndex(const std::wstring& wsName) = 0;
+		virtual unsigned int GetGIDByUnicode(const unsigned int& unCode) = 0;
         
         virtual void GetFace(double& d0, double& d1, double& d2) = 0;
         virtual void GetLimitsY(double& dMin, double& dMax) = 0;
@@ -697,7 +734,7 @@ namespace NSFonts
         virtual ~IFontList();
 
     public:
-		virtual std::vector<NSFonts::CFontInfo*>* GetFonts() = 0;
+        virtual std::vector<NSFonts::CFontInfo*>* GetFonts() = 0;
         virtual CFontInfo* GetByParams(CFontSelectFormat& oSelect, bool bIsDictionaryUse = true) = 0;
         virtual void ToBuffer(BYTE** pDstData, LONG* pLen, CFontListToBufferSerializer& oSerializer) = 0;
     };
@@ -715,6 +752,7 @@ namespace NSFonts
 
         virtual void InitializeFromFolder(std::wstring strFolder, bool bIsCheckSelection = true) = 0;
         virtual void Initialize(bool bIsCheckSelection = true) = 0;
+        virtual void InitializeFromBin(BYTE* pData, unsigned int nLen) = 0;
         virtual void InitializeRanges(unsigned char* data) = 0;
 
         virtual std::vector<std::wstring> GetSetupFontFiles() = 0;
@@ -732,8 +770,8 @@ namespace NSFonts
 
         virtual std::wstring GetFontBySymbol(int symbol) = 0;
     };
-	
-	namespace NSApplication
+    
+    namespace NSApplication
     {
         GRAPHICS_DECL IApplicationFonts* Create();
     }

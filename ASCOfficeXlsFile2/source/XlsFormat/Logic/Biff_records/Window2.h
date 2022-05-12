@@ -32,48 +32,65 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/CellRef.h>
+#include "../Biff_structures/CellRef.h"
 
 namespace XLS
 {
 
+// Logical representation of Window2 record in BIFF8 and BrtBeginWsView in BIFF12
 class Window2: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Window2)
 	BASE_OBJECT_DEFINE_CLASS_NAME(Window2)
 public:
-	Window2();
+    Window2(bool isChart = false);
 	~Window2();
 
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeWindow2;
+        static const ElementType	type = typeWindow2;
 
-	bool fDspFmlaRt;
-	bool fDspGridRt;
-	bool fDspRwColRt;
+    bool fDspFmlaRt; //fDspFmla in biff12
+    bool fDspGridRt; //fDspGrid in biff12
+    bool fDspRwColRt; //fDspRwCol in biff12
 	bool fFrozenRt;
-	bool fDspZerosRt;
-	bool fDefaultHdr;
-	bool fRightToLeft;
-	bool fDspGuts;
+    bool fDspZerosRt; // fDspZeros in biff12
+    bool fDefaultHdr; // *
+    bool fRightToLeft; // *
+    bool fDspGuts; // *
 	bool fFrozenNoSplit;
-	bool fSelected;
+    bool fSelected; // *
 	bool fPaged;
 	bool fSLV;
 
 	bool is_contained_in_chart_substream;
 
-	_UINT16		rwTop;
-	_UINT16		colLeft;
+    //_UINT16		rwTop;
+    UncheckedRw		rwTop;
+    //_UINT16		colLeft;
+    UncheckedCol    colLeft;
 
-	_UINT16		icvHdr;
+    _UINT16		icvHdr; // 1 Byte in biff12
 	
 	_UINT16		wScaleSLV;
 	_UINT16		wScaleNormal;
 	std::wstring	topLeftCell;
+
+    //biff12
+    bool fWnProt;
+    bool fDspRuler;
+    bool fWhitespaceHidden;
+
+    _UINT32     xlView;
+
+    _UINT16     wScale;
+    _UINT16     wScalePLV;
+    _UINT32     iWbkView;
+
+    bool        _isChart;
+
 };
 
 } // namespace XLS

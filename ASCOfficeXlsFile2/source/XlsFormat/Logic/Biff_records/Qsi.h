@@ -70,8 +70,14 @@ public:
 	bool			fibitAtrBdr;
 	bool			fibitAtrPat;
 	bool			fibitAtrProt;
-	
-	XLUnicodeString	rgchName;
+
+        //biff12
+        _UINT32         dwConnID;
+        bool            fDummyList;
+        bool            fAutoFit;
+        bool            fPreserveFmt;
+
+        std::wstring	name;
 };
 
 } // namespace XLS

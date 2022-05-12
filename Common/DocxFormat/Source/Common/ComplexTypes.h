@@ -1079,7 +1079,6 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:format", m_sFormat )
 				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:val",    m_oVal )
@@ -1088,8 +1087,8 @@ namespace ComplexTypes
 
 		public:
 
-            nullable<std::wstring                      > m_sFormat;
-			nullable<SimpleTypes::CNumberFormat<> > m_oVal;
+            nullable<std::wstring> m_sFormat;
+			nullable<SimpleTypes::CNumberFormat<>> m_oVal;
 		};
 
 

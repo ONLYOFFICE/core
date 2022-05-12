@@ -32,7 +32,7 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/HideObjEnum.h>
+#include "../Biff_structures/HideObjEnum.h"
 
 namespace XLS
 {

@@ -432,7 +432,6 @@ namespace PPTX
 					case 6:
 					{
 						txXfrm = new PPTX::Logic::Xfrm(); txXfrm->node_name = L"dsp:txXfrm";
-
 						txXfrm->fromPPTY(pReader);						
 					}break;
 					case 7:

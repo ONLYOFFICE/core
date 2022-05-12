@@ -32,9 +32,6 @@
 #pragma once
 
 #include <iosfwd>
-#include <CPOptional.h>
-#include <xml/xmlelement.h>
-#include <xml/nodetype.h>
 
 #include "office_elements.h"
 #include "office_elements_create.h"

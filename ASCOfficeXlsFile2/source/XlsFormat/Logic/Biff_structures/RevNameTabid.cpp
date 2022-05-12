@@ -31,7 +31,6 @@
  */
 
 #include "RevNameTabid.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {
@@ -61,7 +60,7 @@ void RevNameTabid::load(CFRecord& record)
 
 const std::wstring RevNameTabid::toString() const
 {
-	return name.toString();
+    return name.toString();
 }
 
 } // namespace XLS

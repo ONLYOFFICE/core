@@ -32,14 +32,12 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/CellOffsetResender.h>
-#include <Logic/Biff_structures/Cell.h>
+#include "../Biff_structures/CellOffsetResender.h"
+#include "../Biff_structures/Cell.h"
 
 namespace XLS
 {
 
-
-// Logical representation of LabelSst record in BIFF8
 class LabelSst: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(LabelSst)
@@ -49,7 +47,6 @@ public:
 	~LabelSst();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 

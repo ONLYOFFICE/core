@@ -31,8 +31,8 @@
  */
 
 #include "IMDATAOBJECT.h"
-#include <Logic/Biff_records/IMDATA.h>
-#include <Logic/Biff_records/Continue.h>
+#include "../Biff_records/IMDATA.h"
+#include "../Biff_records/Continue.h"
 
 namespace XLS
 {

@@ -31,7 +31,6 @@
  */
 
 #include "EncryptionVerifier.h"
-#include <Binary/CFRecord.h>
 
 namespace CRYPTO
 {

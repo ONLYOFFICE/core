@@ -2153,7 +2153,7 @@ namespace SimpleTypes
 		{
 		public:
 			CCellComments() {}
-
+                        CCellComments(const ECellComments & val)	{ this->m_eValue = val; }
 			virtual ECellComments FromString(std::wstring &sValue)
 			{
 				if      (L"asDisplayed" == sValue ) this->m_eValue = cellcommentsAsDisplayed;
@@ -2192,7 +2192,7 @@ namespace SimpleTypes
 		{
 		public:
 			CPrintError() {}
-
+                        CPrintError(const EPrintError & val)	{ this->m_eValue = val; }
 			virtual EPrintError FromString(std::wstring &sValue)
 			{
 				if      (L"blank" == sValue ) this->m_eValue = printerrorBlank;
@@ -2231,7 +2231,7 @@ namespace SimpleTypes
 		{
 		public:
 			CPageOrder() {}
-
+                        CPageOrder(const EPageOrder & val)	{ this->m_eValue = val; }
 			virtual EPageOrder FromString(std::wstring &sValue)
 			{
 				if      (L"downThenOver" == sValue ) this->m_eValue = pageorderDownThenOver;
@@ -2926,6 +2926,68 @@ namespace SimpleTypes
 			SimpleType_FromString     (ECfOperator)
 			SimpleType_Operator_Equal (ST_CfOperator)
 		};
+
+                //----------------------------------------------------
+                //	18.18.82 ST_TimePeriod (Conditional Format Value Object Type)
+                //----------------------------------------------------
+                        enum ETimePeriod
+                        {
+                                last7Days					= 0,
+                                lastMonth					= 1,
+                                lastWeek					= 2,
+                                nextMonth					= 3,
+                                nextWeek					= 4,
+                                thisMonth       				= 5,
+                                thisWeek					= 6,
+                                today                                           = 7,
+                                tomorrow                                        = 8,
+                                yesterday                                       = 9
+                        };
+                        template<ETimePeriod eDefValue = last7Days>
+                        class ST_TimePeriod : public CSimpleType<ETimePeriod, eDefValue>
+                        {
+                        public:
+                                ST_TimePeriod() {}
+                                ST_TimePeriod(const ETimePeriod & val)	{ this->m_eValue = val; }
+
+                    virtual ETimePeriod FromString(std::wstring &sValue)
+                                {
+                        if(_T("last7Days") == sValue)			this->m_eValue = last7Days;
+                        else if(_T("lastMonth") == sValue)		this->m_eValue = lastMonth;
+                        else if(_T("lastWeek") == sValue)		this->m_eValue = lastWeek;
+                        else if(_T("nextMonth") == sValue)		this->m_eValue = nextMonth;
+                        else if(_T("nextWeek") == sValue)               this->m_eValue = nextWeek;
+                        else if(_T("thisMonth") == sValue)              this->m_eValue = thisMonth;
+                        else if(_T("thisWeek") == sValue)               this->m_eValue = thisWeek;
+                        else if(_T("today") == sValue)                  this->m_eValue = today;
+                        else if(_T("tomorrow") == sValue)               this->m_eValue = tomorrow;
+                        else if(_T("yesterday") == sValue)              this->m_eValue = yesterday;
+                        else 								this->m_eValue = eDefValue;
+                        return this->m_eValue;
+                                }
+
+                                virtual std::wstring     ToString  () const
+                                {
+                        switch(this->m_eValue)
+                                        {
+                                                case last7Days:	return _T("last7Days");
+                                                case lastMonth:	return _T("lastMonth");
+                                                case lastWeek:	return _T("lastWeek");
+                                                case nextMonth:	return _T("nextMonth");
+                                                case nextWeek:	return _T("nextWeek");
+                                                case thisMonth: return _T("thisMonth");
+                                                case thisWeek:	return _T("thisWeek");
+                                                case today:	return _T("today");
+                                                case tomorrow:	return _T("tomorrow");
+                                                case yesterday:	return _T("yesterday");
+                                                default		:	return _T("num");
+                                        }
+                                }
+
+                                SimpleType_FromString     (ETimePeriod)
+                                SimpleType_Operator_Equal (ST_TimePeriod)
+                        };
+
 	//----------------------------------------------------
 	//	18.18.12 ST_CfType (Conditional Format Type)
 	//----------------------------------------------------
@@ -3010,65 +3072,7 @@ namespace SimpleTypes
 			SimpleType_FromString     (ECfType)
 			SimpleType_Operator_Equal (ST_CfType)
 		};
-		//----------------------------------------------------
-		//	18.18.82 ST_TimePeriod (Time Period Types)
-		//----------------------------------------------------
-		enum ETimePeriod
-		{
-			timePeriodToday = 0,
-			timePeriodYesterday = 1,
-			timePeriodTomorrow = 2,
-			timePeriodLast7Days = 3,
-			timePeriodThisMonth = 4,
-			timePeriodLastMonth = 5,
-			timePeriodNextMonth = 6,
-			timePeriodThisWeek = 7,
-			timePerioLastWeek = 8,
-			timePeriodNextWeek = 9
-		};
-		template<ETimePeriod eDefValue = timePeriodToday>
-		class CTimePeriod : public CSimpleType<ETimePeriod, eDefValue>
-		{
-		public:
-			CTimePeriod() {}
-			CTimePeriod(const ETimePeriod & val) { this->m_eValue = val; }
 
-			virtual ETimePeriod FromString(std::wstring &sValue)
-			{
-					 if (L"today" == sValue)		this->m_eValue = timePeriodToday;
-				else if (L"yesterday" == sValue)	this->m_eValue = timePeriodYesterday;
-				else if (L"tomorrow" == sValue)		this->m_eValue = timePeriodTomorrow;
-				else if (L"last7Days" == sValue)	this->m_eValue = timePeriodLast7Days;
-				else if (L"thisMonth" == sValue)	this->m_eValue = timePeriodThisMonth;
-				else if (L"lastMonth" == sValue)	this->m_eValue = timePeriodLastMonth;
-				else if (L"nextMonth" == sValue)	this->m_eValue = timePeriodNextMonth;
-				else if (L"thisWeek" == sValue)		this->m_eValue = timePeriodThisWeek;
-				else if (L"lastWeek" == sValue)		this->m_eValue = timePerioLastWeek;
-				else if (L"nextWeek" == sValue)		this->m_eValue = timePeriodNextWeek;
-				else 								this->m_eValue = eDefValue;
-				return this->m_eValue;
-			}
-			virtual std::wstring ToString() const
-			{
-				switch (this->m_eValue)
-				{
-					case timePeriodToday:		return L"today";		break;
-					case timePeriodYesterday:	return L"yesterday";	break;
-					case timePeriodTomorrow:	return L"tomorrow";		break;
-					case timePeriodLast7Days:	return L"last7Days";	break;
-					case timePeriodThisMonth:	return L"thisMonth";	break;
-					case timePeriodLastMonth:	return L"lastMonth";	break;
-					case timePeriodNextMonth:	return L"nextMonth";	break;
-					case timePeriodThisWeek:	return L"thisWeek";		break;
-					case timePerioLastWeek:		return L"lastWeek";		break;
-					case timePeriodNextWeek:	return L"nextWeek";		break;
-					default: return L"today";
-				}
-			}
-
-			SimpleType_FromString(ETimePeriod)
-			SimpleType_Operator_Equal(CTimePeriod)
-		};
 	//----------------------------------------------------
 	//	18.18.13 ST_CfvoType (Conditional Format Value Object Type)
 	//----------------------------------------------------
@@ -4392,7 +4396,7 @@ namespace SimpleTypes
 			functionProduct		=  5,
 			functionStdDev		=  6,
 			functionStdDevP		=  7,
-			functionSum			=  8,
+                        functionSum		=  8,
 			functionVariance	=  9,
 			functionVarP		=  10
 		};
@@ -4864,6 +4868,7 @@ namespace SimpleTypes
 		{
 		public:
 			CTabularSlicerCacheSortOrder(){}
+                        CTabularSlicerCacheSortOrder(const ETabularSlicerCacheSortOrder & val)	{ this->m_eValue = val; }
 			virtual ETabularSlicerCacheSortOrder FromString(std::wstring &sValue)
 			{
 				if(L"ascending" == sValue)
@@ -4908,6 +4913,7 @@ namespace SimpleTypes
 		{
 		public:
 			CSlicerCacheCrossFilter(){}
+                        CSlicerCacheCrossFilter(const ESlicerCacheCrossFilter & val)	{ this->m_eValue = val; }
 			virtual ESlicerCacheCrossFilter FromString(std::wstring &sValue)
 			{
 				if(L"none" == sValue)
@@ -4957,6 +4963,7 @@ namespace SimpleTypes
 		{
 		public:
 			COlapSlicerCacheSortOrder(){}
+                        COlapSlicerCacheSortOrder(const EOlapSlicerCacheSortOrder & val)	{ this->m_eValue = val; }
 			virtual EOlapSlicerCacheSortOrder FromString(std::wstring &sValue)
 			{
 				if(L"natural" == sValue)

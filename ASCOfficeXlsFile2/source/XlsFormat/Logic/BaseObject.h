@@ -81,8 +81,8 @@ public:
 };
 
 #define BASE_OBJECT_DEFINE_CLASS_NAME(class_name)\
-public: const std::string & getClassName() const { static std::string  str(#class_name); return str; };\
-virtual ElementType get_type() { return type; }
+public: const std::string & getClassName() const { static std::string  str(#class_name); return str; }\
+virtual XLS::ElementType get_type() { return type; }
 
 #define BASE_OBJECT_DEFINE_CLASS_TYPE(class_name) public: const int & getClassType() const { static std::string  str(#class_name); return str; }
 

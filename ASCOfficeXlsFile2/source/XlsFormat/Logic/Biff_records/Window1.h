@@ -36,8 +36,7 @@
 namespace XLS
 {
 
-
-// Logical representation of Window1 record in BIFF8
+// Logical representation of Window1 record in BIFF8 and BrtBookView in BIFF12
 class Window1: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Window1)
@@ -54,21 +53,21 @@ public:
 
 	int serialize(std::wostream & stream);
 //-----------------------------
-	_INT16 xWn;
-	_INT16 yWn;
-	_INT16 dxWn;
-	_INT16 dyWn;
+    _INT32 xWn;
+    _INT32 yWn;
+    _UINT32 dxWn;
+    _UINT32 dyWn;
 	bool fHidden;
 	bool fIconic;
 	bool fVeryHidden;
 	bool fDspHScroll;
 	bool fDspVScroll;
 	bool fBotAdornment;
-	bool fNoAFDateGroup;
-	_UINT16 itabCur;
-	_UINT16 itabFirst;
+    bool fNoAFDateGroup; //fAFDateGroup in BIFF12
+    _UINT32 itabCur;
+    _UINT32 itabFirst;
 	_UINT16 ctabSel;
-	_UINT16 wTabRatio;
+    _UINT32 wTabRatio; //itabRatio in BIFF12
 
 };
 

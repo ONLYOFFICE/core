@@ -35,8 +35,6 @@
 #include "../Biff_unions/SUPBOOK.h"
 #include "../Biff_records/SupBook.h"
 
-#include <Binary/CFRecord.h>
-
 namespace XLS
 {
 
@@ -51,7 +49,20 @@ void XTI::load(CFRecord& record)
 	if (record.checkFitReadSafe(6) == false) //Version < 0x0600
 		return;
 
-	record >> iSupBook >> itabFirst >> itabLast;
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        _UINT16 iSupBook_2b;
+        _INT16 itabFirst_2b;
+        _INT16 itabLast_2b;
+
+        record >> iSupBook_2b >> itabFirst_2b >> itabLast_2b;
+        iSupBook = iSupBook_2b;
+        itabFirst = itabFirst_2b;
+        itabLast = itabLast_2b;
+    }
+    else
+        record >> iSupBook >> itabFirst >> itabLast;
+
 }
 
 

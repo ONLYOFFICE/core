@@ -32,8 +32,8 @@
 #pragma once 
 
 #include <iosfwd>
-#include <CPOptional.h>
-#include <CPScopedPtr.h>
+#include "../../include/CPOptional.h"
+#include "../../include/CPScopedPtr.h"
 
 #include "oox_layout.h"
             

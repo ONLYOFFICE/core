@@ -32,14 +32,12 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/RkRec.h>
-#include <Logic/Biff_structures/Cell.h>
+#include "../Biff_structures/RkRec.h"
+#include "../Biff_structures/Cell.h"
 
 namespace XLS
 {
 
-
-// Logical representation of MulRk record in BIFF8
 class MulRk: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(MulRk)
@@ -49,7 +47,6 @@ public:
 	~MulRk();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 

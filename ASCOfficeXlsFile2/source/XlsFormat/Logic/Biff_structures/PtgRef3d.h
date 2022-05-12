@@ -32,7 +32,8 @@
 #pragma once
 
 #include "OperandPtg.h"
-#include "Logic/GlobalWorkbookInfo.h"
+#include "../GlobalWorkbookInfo.h"
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/CellRef.h"
 
 namespace XLS
 {
@@ -67,6 +68,8 @@ private:
 	_UINT16					ixals;
 	_UINT16					itabFirst;
 	_UINT16					itabLast;
+//biff12
+    XLSB::RgceLoc           rgce_loc_xlsb;
 
 	GlobalWorkbookInfoPtr	global_info;
 

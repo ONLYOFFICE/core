@@ -31,7 +31,6 @@
  */
 
 #include "CellParsedFormula.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {
@@ -50,19 +49,34 @@ BiffStructurePtr CellParsedFormula::clone()
 }
 
 void CellParsedFormula::load(CFRecord& record)
-{
-	unsigned short cce;
-	record >> cce;
-	
-	//if (record.getGlobalWorkbookInfo()->Version < 0x0600)
-	//{
-	//	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
-	//}
-	//else
-	{
-		rgce.load(record, cce);
-		rgcb.load(record, rgce.getPtgs(), is_part_of_a_revision_);
-	}
+{	
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        unsigned short cce;
+        record >> cce;
+
+        //if (record.getGlobalWorkbookInfo()->Version < 0x0600)
+        //{
+        //	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
+        //}
+        //else
+        {
+            rgce.load(record, cce);
+            rgcb.load(record, rgce.getPtgs(), is_part_of_a_revision_);
+        }
+    }
+    else
+    {
+        unsigned int cce;
+        record >> cce;
+
+        rgce.load(record, cce);
+
+        unsigned int cb;
+        record >> cb;
+
+        rgcb.load(record, rgce.getPtgs(), is_part_of_a_revision_);
+    }
 }
 
 

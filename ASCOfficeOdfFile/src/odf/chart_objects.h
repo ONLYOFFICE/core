@@ -32,7 +32,6 @@
 #pragma once
 
 #include "../docx/oox_drawing_fills.h"
-#include <xml/attributes.h>
 #include "datatypes/chartclass.h"
 
 namespace cpdoccore { 

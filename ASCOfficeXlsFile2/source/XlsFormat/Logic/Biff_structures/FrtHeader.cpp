@@ -31,22 +31,15 @@
  */
 
 #include "FrtHeader.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {
 
 FrtHeader::FrtHeader()
-{
-}
-
-
+{}
 FrtHeader::FrtHeader(const CFRecordType::TypeId type)
 :	rt(type)
-{
-}
-
-
+{}
 BiffStructurePtr FrtHeader::clone()
 {
 	return BiffStructurePtr(new FrtHeader(*this));

@@ -33,7 +33,6 @@
 #include "PtgArea.h"
 #include "CellRangeRef.h"
 #include "PtgParam.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {
@@ -46,7 +45,7 @@ PtgArea::PtgArea(const unsigned short full_ptg_id) : OperandPtg(full_ptg_id)
 
 PtgArea::PtgArea(const std::wstring& word, const PtgDataType data_type)
 :	OperandPtg(fixed_id | (static_cast<unsigned char>(data_type) << 5)),
-	area(word)
+    area(word), areaXlsb(word)
 {
 }
 
@@ -58,6 +57,8 @@ BiffStructurePtr PtgArea::clone()
 
 void PtgArea::loadFields(CFRecord& record)
 {
+    global_info = record.getGlobalWorkbookInfo();
+
 	if (record.getGlobalWorkbookInfo()->Version < 0x600)
 	{
 		unsigned char	colFirst, colLast;
@@ -76,33 +77,49 @@ void PtgArea::loadFields(CFRecord& record)
 		
 		area.columnLast			= colLast;
 		area.rowLast			= rwLast & 0x3FFF;
+
 	}
-	else
-		record >> area;
+
+    else if (global_info->Version < 0x0800)
+    {
+        record >> area;
+    }
+
+    else
+    {
+        record >> areaXlsb;
+    }
+
 }
 
 
 void PtgArea::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
-	RgceArea range(area);
-	if(!ptg_stack.empty())
-	{
-		// Check whether we should process PtgElfRadical's value
-		PtgParam param(ptg_stack.top());
-		if(param.getType() == PtgParam::ptELF_RADICAL)
-		{
-			ptg_stack.pop();
-			if(range.getColumnFirst() == range.getColumnLast())
-			{
-				range.setColumnRelativity(0 != param.getFirstParam());
-			}
-			if(range.getRowFirst() == range.getRowLast())
-			{
-				range.setRowRelativity(0 != param.getFirstParam());
-			}
-		}
-	}
-	ptg_stack.push(range.toString());
+    RgceArea range;
+    if(global_info->Version < 0x0800)
+        range = area;
+    else
+        range = areaXlsb;
+
+    if(!ptg_stack.empty())
+    {
+        // Check whether we should process PtgElfRadical's value
+        PtgParam param(ptg_stack.top());
+        if(param.getType() == PtgParam::ptELF_RADICAL)
+        {
+            ptg_stack.pop();
+            if(range.getColumnFirst() == range.getColumnLast())
+            {
+                range.setColumnRelativity(0 != param.getFirstParam());
+            }
+            if(range.getRowFirst() == range.getRowLast())
+            {
+                range.setRowRelativity(0 != param.getFirstParam());
+            }
+        }
+    }
+    ptg_stack.push(range.toString());
+
 }
 
 } // namespace XLS

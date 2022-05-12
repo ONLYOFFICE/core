@@ -123,7 +123,11 @@ namespace PPT_FORMAT
     {
     public:
         NSCommon::nullable<USHORT>  startAt;
-        NSCommon::nullable_string	type;
+        NSCommon::nullable_string   type;
+
+        inline bool isDefault()const
+        {return type.get_value_or(L"arabicPeriod") == L"arabicPeriod" &&
+                    (startAt.is_init() ? *startAt == 1 : true);}
 
     };
 
@@ -168,7 +172,7 @@ namespace PPT_FORMAT
         NSCommon::nullable_base<bool>	FontItalic;
         NSCommon::nullable_base<bool>	FontUnderline;
         NSCommon::nullable_base<bool>	FontStrikeout;
-        NSCommon::nullable_base<bool>	FontShadow;
+        NSCommon::nullable_bool     	FontShadow;
 		
 		NSCommon::nullable_base<WORD>	fontRef;			// fontRef
 		NSCommon::nullable_base<WORD>	eaFontRef;			// eaFontRef

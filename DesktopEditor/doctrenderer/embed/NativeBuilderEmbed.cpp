@@ -12,7 +12,13 @@ JSSmart<CJSValue> CBuilderEmbed::builder_OpenFile(JSSmart<CJSValue> sPath, JSSma
 }
 JSSmart<CJSValue> CBuilderEmbed::builder_CreateFile(JSSmart<CJSValue> type)
 {
-    bool ret = m_pBuilder->CreateFile(type->toInt32());
+    int nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
+    if (type->isString())
+        nFormat = NSDoctRenderer::GetFormatByTexExtention(type->toStringW());
+    else
+        nFormat = type->toInt32();
+
+    bool ret = m_pBuilder->CreateFile(nFormat);
     return CJSContext::createBool(ret);
 }
 JSSmart<CJSValue> CBuilderEmbed::builder_SetTmpFolder(JSSmart<CJSValue> path)
@@ -21,12 +27,17 @@ JSSmart<CJSValue> CBuilderEmbed::builder_SetTmpFolder(JSSmart<CJSValue> path)
     m_pBuilder->SetTmpFolder(sPath.c_str());
     return NULL;
 }
-JSSmart<CJSValue> CBuilderEmbed::builder_SaveFile(JSSmart<CJSValue> t, JSSmart<CJSValue> path, JSSmart<CJSValue> params)
+JSSmart<CJSValue> CBuilderEmbed::builder_SaveFile(JSSmart<CJSValue> type, JSSmart<CJSValue> path, JSSmart<CJSValue> params)
 {
-    int type = t->toInt32();
+    int nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
+    if (type->isString())
+        nFormat = NSDoctRenderer::GetFormatByTexExtention(type->toStringW());
+    else
+        nFormat = type->toInt32();
+
     std::wstring sPath = path->toStringW();
     std::wstring sParams = params->toStringW();
-    int ret = m_pBuilder->SaveFile(type, sPath.c_str(), sParams.empty() ? NULL : sParams.c_str());
+    int ret = m_pBuilder->SaveFile(nFormat, sPath.c_str(), sParams.empty() ? NULL : sParams.c_str());
     return CJSContext::createInt(ret);
 }
 JSSmart<CJSValue> CBuilderEmbed::builder_CloseFile()

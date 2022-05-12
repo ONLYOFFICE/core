@@ -31,8 +31,9 @@
  */
 
 #include "RgbExtra.h"
-#include <Binary/CFRecord.h>
+#include "PtgExtraCol.h"
 #include "PtgExtraArray.h"
+#include "PtgExtraList.h"
 #include "PtgExtraMem.h"
 #include "PtgExtraElf.h"
 #include "RevNameTabid.h"
@@ -71,6 +72,12 @@ void RgbExtra::load(CFRecord& record, unsigned short rgce_record_type, bool is_p
 	PtgPtr extra_ptg;
 	switch(rgce_record_type)
 	{
+        case 0x0001: // PtgExp
+            extra_ptg = PtgPtr(new PtgExtraCol);
+            break;
+        case 0x1918: // PtgList
+            extra_ptg = PtgPtr(new PtgExtraList);
+            break;
 		case 0x0020: // PtgArray type = REFERENCE
 		case 0x0040: // PtgArray type = VALUE
 		case 0x0060: // PtgArray type = ARRAY

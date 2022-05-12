@@ -49,35 +49,6 @@ namespace OOX
 		virtual ~Image()
 		{
 		}
-		virtual void write(const CPath& filename, const CPath& directory, CContentTypes& content) const
-		{
-			if (m_bExternal) return;
-
-            std::wstring newFilename = filename.GetFilename();
-			CPath newFilePath = filename.GetDirectory();
-
-            XmlUtils::replace_all(newFilename, L" ", L"_");
-			if (CSystemUtility::IsFileExist(m_filename) && !CSystemUtility::IsFileExist(newFilePath/newFilename))	
-			{
-				//if (m_filename.GetExtention(true) == _T(".svm"))
-				//{
-				//	ConvertSvmToImage(m_filename, replace_extension(newFilePath/newFilename, L"png"));
-				//}
-				//else if (m_filename.extension() != L"")
-				//{
-				//	boost::filesystem::copy_file(m_filename, newFilePath/newFilename);
-				//}
-				//else
-				//{
-				//	newFilename += L".wmf";
-				//	boost::filesystem::copy_file(m_filename, newFilePath/newFilename);
-				//}
-			}
-			//if (m_filename.extension() == L".svm")
-			//	content.Default->add(replace_extension(newFilePath/newFilename, L"png"));
-			//else
-			//	content.Default->add(newFilePath/newFilename);
-		}
 		virtual const FileType type() const
 		{
 			return FileTypes::Image;

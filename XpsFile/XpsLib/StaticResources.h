@@ -33,6 +33,7 @@
 #define _XPS_XPSLIB_STATICRESOURCES_H
 
 #include "Utils.h"
+#include "../../OfficeUtils/src/ZipFolder.h"
 #include <map>
 
 namespace XmlUtils
@@ -51,7 +52,7 @@ namespace XPS
 	class CStaticResource
 	{
 	public:
-		CStaticResource(const wchar_t* wsPath);
+		CStaticResource(const std::string& wsPath);
 		CStaticResource(XmlUtils::CXmlLiteReader& oReader);
 		~CStaticResource();
 		bool    GetFigure(CWString& wsKey, CWString& wsFigure);
@@ -97,14 +98,15 @@ namespace XPS
 		CImageBrush(const wchar_t* wsPath)
 		{
 			m_wsPath.create(wsPath, true);
+			m_wsRoot = NULL;
 		}
 		bool SetToRenderer(IRenderer* pRenderer);
 		bool IsImageBrush() { return true; }
-		void SetPaths(const wchar_t* wsRoot, const wchar_t* wsPage);
+		void SetPaths(IFolder* wsRoot, const wchar_t* wsPage);
 	private:
 
 		CWString m_wsPath;
-		CWString m_wsRoot;
+		IFolder* m_wsRoot;
 		CWString m_wsPage;
 	};
 	class CGradientBrush : public CBrush

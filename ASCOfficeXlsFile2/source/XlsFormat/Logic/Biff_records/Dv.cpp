@@ -32,8 +32,10 @@
 
 #include "Dv.h"
 
-#include <utils.h>
+#include "../../../Common/utils.h"
 #include <boost/algorithm/string.hpp>
+
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/DValStrings.h"
 
 namespace XLS
 {
@@ -63,7 +65,10 @@ static std::wstring replace_zero (const std::wstring &str, const std::wstring &d
 	}
 	return out;
 }
+Dv::Dv(bool ext14) : _ext14(ext14)
+{
 
+}
 BaseObjectPtr Dv::clone()
 {
 	return BaseObjectPtr(new Dv(*this));
@@ -71,6 +76,9 @@ BaseObjectPtr Dv::clone()
 
 void Dv::readFields(CFRecord& record)
 {
+    if(_ext14 && record.getGlobalWorkbookInfo()->Version == 0x0800)
+        record >> FRTheader;
+
 	_UINT32 flags;
 	record >> flags;
 
@@ -84,14 +92,47 @@ void Dv::readFields(CFRecord& record)
 	fShowInputMsg	= GETBIT(flags, 18);
 	fShowErrorMsg	= GETBIT(flags, 19);
 	typOperator		= static_cast<_typOperatorDv>(GETBITS(flags, 20, 23));
+    fDVMinFmla      = GETBIT(flags, 24);
+    fDVMaxFmla      = GETBIT(flags, 25);
 
-	record >> PromptTitle >> ErrorTitle >> Prompt >> Error;
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        XLUnicodeString    PromptTitle_;
+        XLUnicodeString    ErrorTitle_;
+        XLUnicodeString    Prompt_;
+        XLUnicodeString    Error_;
 
-	formula1.load(record, valType != typeDvNone);
+        record >> PromptTitle_ >> ErrorTitle_ >> Prompt_ >> Error_;
 
-	formula2.load(record, valType != typeDvCustom && valType != typeDvList && valType != typeDvNone && typOperator < 2);
-	
-	record >> sqref;
+        PromptTitle = PromptTitle_.value();
+        ErrorTitle  = ErrorTitle_.value();
+        Prompt      = Prompt_.value();
+        Error       = Error_.value();
+    }
+    else
+    {
+        record >> sqrfx;
+
+        XLSB::DValStrings dvalstr;
+        record >> dvalstr;
+
+        PromptTitle = dvalstr.strPromptTitle.value();
+        ErrorTitle  = dvalstr.strErrorTitle.value();
+        Prompt      = dvalstr.strPrompt.value();
+        Error       = dvalstr.strError.value();
+    }
+
+    if(!_ext14)
+    {
+ 		formula1.load(record, valType != typeDvNone);
+
+		formula2.load(record, valType != typeDvCustom && valType != typeDvList && valType != typeDvNone && typOperator < 2); 
+
+		if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+        {
+            record >> sqref;
+        }
+    }
 }
 
 int Dv::serialize(std::wostream & stream)
@@ -131,21 +172,21 @@ int Dv::serialize(std::wostream & stream)
 				case operatorDvLessThanOrEqual:		CP_XML_ATTR(L"operator", L"lessThanOrEqual");	break;
 				}
 			}
-			if (PromptTitle.value().size() > 1)
+            if (PromptTitle.size() > 1)
 			{
-				CP_XML_ATTR(L"promptTitle", PromptTitle.value());
+				CP_XML_ATTR(L"promptTitle", PromptTitle);
 			}
-			if (Prompt.value().size() > 1)
+            if (Prompt.size() > 1)
 			{
-				CP_XML_ATTR(L"prompt", Prompt.value());
+				CP_XML_ATTR(L"prompt", Prompt);
 			}
-			if (ErrorTitle.value().size() > 1)
+            if (ErrorTitle.size() > 1)
 			{
-				CP_XML_ATTR(L"errorTitle", ErrorTitle.value());
+                CP_XML_ATTR(L"errorTitle", ErrorTitle);
 			}
-			if (Error.value().size() > 1)
+            if (Error.size() > 1)
 			{
-				CP_XML_ATTR(L"error", Error.value());
+                CP_XML_ATTR(L"error", Error);
 			}
 			
 			formula1.set_base_ref(sqref.getLocationFirstCell());			

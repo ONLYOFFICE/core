@@ -34,6 +34,7 @@
 #include "../../DocxFormat/IFileContainer.h"
 #include "../../../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpTreeElem.h"
 #include "../WritingElement.h"
+#include "../../DocxFormat/Document.h"
 
 namespace OOX
 {
@@ -389,7 +390,7 @@ namespace OOX
 		}
 		CChartDrawing(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 		{
-			m_bDocument = false;
+			m_bDocument = (NULL != dynamic_cast<OOX::CDocument*>(pMain));
 			read( oRootPath, oPath );
 		}
 		virtual ~CChartDrawing()
@@ -495,7 +496,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\"\
 		{
 		}
 
-		bool m_bDocument;
+		bool m_bDocument = false;
 
 	public:
 //reading

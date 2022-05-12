@@ -40,9 +40,9 @@ namespace PPTX
 		class TextWrap : public BaseLimit
 		{
 		public:
-			TextWrap()
+                        TextWrap(const BYTE& src = 1)
 			{
-				m_strValue = _T("square");
+                                SetBYTECode(src);
 			}
 
 			_USE_STRING_OPERATOR

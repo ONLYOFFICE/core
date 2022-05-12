@@ -31,22 +31,19 @@
  */
 
 #include "Setup.h"
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/XLWideString.h"
+#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/RelID.h"
 
 namespace XLS
 {
 
-Setup::Setup()
-// the following may appear uninitialized but we have to store them
-:	iPaperSize(0), iScale(255), iRes(0), iVRes(0), iCopies(0), fNoOrient(false), fPortrait(false), iPageStart(1), iErrors(0)
+Setup::Setup(bool isChart)
+: _isChart(isChart), iPaperSize(0), iScale(255), iRes(0), iVRes(0), iCopies(0), fNoOrient(false), fPortrait(false), iPageStart(1), iErrors(0)
 {
+	numHdr.data.value = numFtr.data.value = 0.5;
 }
-
-
 Setup::~Setup()
-{
-}
-
-
+{}
 BaseObjectPtr Setup::clone()
 {
 	return BaseObjectPtr(new Setup(*this));
@@ -55,20 +52,85 @@ BaseObjectPtr Setup::clone()
 void Setup::readFields(CFRecord& record)
 {
 	unsigned short flags;
-	record >> iPaperSize >> iScale >> iPageStart >> iFitWidth >> iFitHeight >> flags;
-	
-	fLeftToRight = GETBIT(flags, 0);
-	fPortrait	= GETBIT(flags, 1);
-	fNoPls		= GETBIT(flags, 2);
-	fNoColor	= GETBIT(flags, 3);
-	fDraft		= GETBIT(flags, 4);
-	fNotes		= GETBIT(flags, 5);
-	fNoOrient	= GETBIT(flags, 6);
-	fUsePage	= GETBIT(flags, 7);
-	fEndNotes	= GETBIT(flags, 9);
-	iErrors		= GETBITS(flags, 10, 11);
 
-	record >> iRes >> iVRes >> numHdr >> numFtr >> iCopies;
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        _UINT16 iPaperSize_2b;
+        _UINT16 iScale_2b;
+        _INT16 iPageStart_2b;
+        _UINT16 iFitWidth_2b;
+        _UINT16 iFitHeight_2b;
+
+        record >> iPaperSize_2b >> iScale_2b >> iPageStart_2b >> iFitWidth_2b >> iFitHeight_2b >> flags;
+
+        fLeftToRight = GETBIT(flags, 0);
+        fPortrait	= GETBIT(flags, 1);
+        fNoPls		= GETBIT(flags, 2);
+        fNoColor	= GETBIT(flags, 3);
+        fDraft		= GETBIT(flags, 4);
+        fNotes		= GETBIT(flags, 5);
+        fNoOrient	= GETBIT(flags, 6);
+        fUsePage	= GETBIT(flags, 7);
+        fEndNotes	= GETBIT(flags, 9);
+        iErrors		= GETBITS(flags, 10, 11);
+
+		iPaperSize = iPaperSize_2b;
+		iScale = iScale_2b;
+		iPageStart = iPageStart_2b;
+		iFitWidth = iFitWidth_2b;
+		iFitHeight = iFitHeight_2b;
+
+		if (record.getGlobalWorkbookInfo()->Version > 0x0200)
+		{
+			_UINT16 iRes_2b;
+			_UINT16 iVRes_2b;
+			_UINT16 iCopies_2b;
+			
+			record >> iRes_2b >> iVRes_2b >> numHdr >> numFtr >> iCopies_2b;
+
+			iRes = iRes_2b;
+			iVRes = iVRes_2b;
+			iCopies = iCopies_2b;
+		}
+    }
+    else
+    {
+        if(_isChart)
+        {
+            _INT16 iPageStart_2b;
+            record >> iPaperSize >> iRes >> iVRes >> iCopies >> iPageStart_2b >> flags;
+
+            iPageStart = iPageStart_2b;
+
+            fLandscape	= GETBIT(flags, 0);
+            fNoColor	= GETBIT(flags, 2);
+            fNoOrient	= GETBIT(flags, 3);
+            fUsePage	= GETBIT(flags, 4);
+            fDraft  	= GETBIT(flags, 5);
+
+            XLSB::RelID str;
+            record >> str;
+            szRelID = str.value.value();
+        }
+        else
+        {
+            record >> iPaperSize >> iScale >> iRes >> iVRes >> iCopies >> iPageStart >> iFitWidth >> iFitHeight >> flags;
+
+            fLeftToRight = GETBIT(flags, 0);
+            fLandscape	= GETBIT(flags, 1);
+            fNoColor	= GETBIT(flags, 3);
+            fDraft		= GETBIT(flags, 4);
+            fNotes		= GETBIT(flags, 5);
+            fNoOrient	= GETBIT(flags, 6);
+            fUsePage	= GETBIT(flags, 7);
+            fEndNotes	= GETBIT(flags, 8);
+            iErrors		= GETBITS(flags, 9, 10);
+
+            XLSB::XLNullableWideString str;
+            record >> str;
+            szRelID = str.value();
+        }
+    }
 }
 
 } // namespace XLS

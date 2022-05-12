@@ -3,13 +3,269 @@
 
 #include "Common.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"
+#include <list>
 
 namespace NSFontManager
 {
+    static NSFonts::IFontManager* CreateFontManager(NSFonts::IApplicationFonts* pApplication)
+    {
+        NSFonts::IFontManager* pManager = pApplication->GenerateFontManager();
+        pManager->CreateOwnerCache(8);
+        return pManager;
+    }
+
 	const double c_dInchToMM	= 25.4;
 	const double c_dPixToMM		= 25.4 / 72.0;
 	const double c_dPtToMM		= 25.4 / 72.0;
 	const double c_dMMToPt		= 72.0 / 25.4;
+
+    class CUnicodeRange
+    {
+    public:
+        BYTE RangeNum;
+        BYTE Range;
+
+        int Start;
+        int End;
+
+        CUnicodeRange(const int& _start = 0,
+                      const int& _end = 0,
+                      const BYTE& _range = 0,
+                      const BYTE& _rangenum = 0)
+        {
+            Range = _range;
+            RangeNum = _rangenum;
+            Start = _start;
+            End = _end;
+        }
+    };
+
+    // класс для проставления Ranges для подбора шрифта по символу
+    class CUnicodeRanges
+    {
+    public:
+        std::list<CUnicodeRange> m_arRanges;
+
+    public:
+        CUnicodeRanges()
+        {
+            // https://docs.microsoft.com/en-us/typography/opentype/spec/os2#ur
+
+            m_arRanges.push_back(CUnicodeRange(0x0000, 0x007F, 0, 0)); // Basic Latin
+            m_arRanges.push_back(CUnicodeRange(0x0080, 0x00FF, 1, 0)); // Latin-1 Supplement
+            m_arRanges.push_back(CUnicodeRange(0x0100, 0x017F, 2, 0)); // Latin Extended-A
+            m_arRanges.push_back(CUnicodeRange(0x0180, 0x024F, 3, 0)); // Latin Extended-B
+            m_arRanges.push_back(CUnicodeRange(0x0250, 0x02AF, 4, 0)); // IPA Extensions
+            m_arRanges.push_back(CUnicodeRange(0x1D00, 0x1D7F, 4, 0)); // Phonetic Extensions
+            m_arRanges.push_back(CUnicodeRange(0x1D80, 0x1DBF, 4, 0)); // Phonetic Extensions Supplement
+            m_arRanges.push_back(CUnicodeRange(0x02B0, 0x02FF, 5, 0)); // Spacing Modifier Letters
+            m_arRanges.push_back(CUnicodeRange(0xA700, 0xA71F, 5, 0)); // Modifier Tone Letters
+            m_arRanges.push_back(CUnicodeRange(0x0300, 0x036F, 6, 0)); // Combining Diacritical Marks
+            m_arRanges.push_back(CUnicodeRange(0x1DC0, 0x1DFF, 6, 0)); // Combining Diacritical Marks Supplement
+            m_arRanges.push_back(CUnicodeRange(0x0370, 0x03FF, 7, 0)); // Greek and Coptic
+            m_arRanges.push_back(CUnicodeRange(0x2C80, 0x2CFF, 8, 0)); // Coptic
+            m_arRanges.push_back(CUnicodeRange(0x0400, 0x04FF, 9, 0)); // Cyrillic
+            m_arRanges.push_back(CUnicodeRange(0x0500, 0x052F, 9, 0)); // Cyrillic Supplement
+            m_arRanges.push_back(CUnicodeRange(0x2DE0, 0x2DFF, 9, 0)); // Cyrillic Extended-A
+            m_arRanges.push_back(CUnicodeRange(0xA640, 0xA69F, 9, 0)); // Cyrillic Extended-B
+            m_arRanges.push_back(CUnicodeRange(0x0530, 0x058F, 10, 0)); // Armenian
+            m_arRanges.push_back(CUnicodeRange(0x0590, 0x05FF, 11, 0)); // Hebrew
+            m_arRanges.push_back(CUnicodeRange(0xA500, 0xA63F, 12, 0)); // Vai
+            m_arRanges.push_back(CUnicodeRange(0x0600, 0x06FF, 13, 0)); // Arabic
+            m_arRanges.push_back(CUnicodeRange(0x0750, 0x077F, 13, 0)); // Arabic Supplement
+            m_arRanges.push_back(CUnicodeRange(0x07C0, 0x07FF, 14, 0)); // NKo
+            m_arRanges.push_back(CUnicodeRange(0x0900, 0x097F, 15, 0)); // Devanagari
+            m_arRanges.push_back(CUnicodeRange(0x0980, 0x09FF, 16, 0)); // Bengali
+            m_arRanges.push_back(CUnicodeRange(0x0A00, 0x0A7F, 17, 0)); // Gurmukhi
+            m_arRanges.push_back(CUnicodeRange(0x0A80, 0x0AFF, 18, 0)); // Gujarati
+            m_arRanges.push_back(CUnicodeRange(0x0B00, 0x0B7F, 19, 0)); // Oriya
+            m_arRanges.push_back(CUnicodeRange(0x0B80, 0x0BFF, 20, 0)); // Tamil
+            m_arRanges.push_back(CUnicodeRange(0x0C00, 0x0C7F, 21, 0)); // Telugu
+            m_arRanges.push_back(CUnicodeRange(0x0C80, 0x0CFF, 22, 0)); // Kannada
+            m_arRanges.push_back(CUnicodeRange(0x0D00, 0x0D7F, 23, 0)); // Malayalam
+            m_arRanges.push_back(CUnicodeRange(0x0E00, 0x0E7F, 24, 0)); // Thai
+            m_arRanges.push_back(CUnicodeRange(0x0E80, 0x0EFF, 25, 0)); // Lao
+            m_arRanges.push_back(CUnicodeRange(0x10A0, 0x10FF, 26, 0)); // Georgian
+            m_arRanges.push_back(CUnicodeRange(0x2D00, 0x2D2F, 26, 0)); // Georgian Supplement
+            m_arRanges.push_back(CUnicodeRange(0x1B00, 0x1B7F, 27, 0)); // Balinese
+            m_arRanges.push_back(CUnicodeRange(0x1100, 0x11FF, 28, 0)); // Hangul Jamo
+            m_arRanges.push_back(CUnicodeRange(0x1E00, 0x1EFF, 29, 0)); // Latin Extended Additional
+            m_arRanges.push_back(CUnicodeRange(0x2C60, 0x2C7F, 29, 0)); // Latin Extended-C
+            m_arRanges.push_back(CUnicodeRange(0xA720, 0xA7FF, 29, 0)); // Latin Extended-D
+            m_arRanges.push_back(CUnicodeRange(0x1F00, 0x1FFF, 30, 0)); // Greek Extended
+            m_arRanges.push_back(CUnicodeRange(0x2000, 0x206F, 31, 0)); // General Punctuation
+            m_arRanges.push_back(CUnicodeRange(0x2E00, 0x2E7F, 31, 0)); // Supplemental Punctuation
+
+            m_arRanges.push_back(CUnicodeRange(0x2070, 0x209F, 0, 1)); // Superscripts And Subscripts
+            m_arRanges.push_back(CUnicodeRange(0x20A0, 0x20CF, 1, 1)); // Currency Symbols
+            m_arRanges.push_back(CUnicodeRange(0x20D0, 0x20FF, 2, 1)); // Combining Diacritical Marks For Symbols
+            m_arRanges.push_back(CUnicodeRange(0x2100, 0x214F, 3, 1)); // Letterlike Symbols
+            m_arRanges.push_back(CUnicodeRange(0x2150, 0x218F, 4, 1)); // Number Forms
+            m_arRanges.push_back(CUnicodeRange(0x2190, 0x21FF, 5, 1)); // Arrows
+            m_arRanges.push_back(CUnicodeRange(0x27F0, 0x27FF, 5, 1)); // Supplemental Arrows-A
+            m_arRanges.push_back(CUnicodeRange(0x2900, 0x297F, 5, 1)); // Supplemental Arrows-B
+            m_arRanges.push_back(CUnicodeRange(0x2B00, 0x2BFF, 5, 1)); // Miscellaneous Symbols and Arrows
+            m_arRanges.push_back(CUnicodeRange(0x2200, 0x22FF, 6, 1)); // Mathematical Operators
+            m_arRanges.push_back(CUnicodeRange(0x2A00, 0x2AFF, 6, 1)); // Supplemental Mathematical Operators
+            m_arRanges.push_back(CUnicodeRange(0x27C0, 0x27EF, 6, 1)); // Miscellaneous Mathematical Symbols-A
+            m_arRanges.push_back(CUnicodeRange(0x2980, 0x29FF, 6, 1)); // Miscellaneous Mathematical Symbols-B
+            m_arRanges.push_back(CUnicodeRange(0x2300, 0x23FF, 7, 1)); // Miscellaneous Technical
+            m_arRanges.push_back(CUnicodeRange(0x2400, 0x243F, 8, 1)); // Control Pictures
+            m_arRanges.push_back(CUnicodeRange(0x2440, 0x245F, 9, 1)); // Optical Character Recognition
+            m_arRanges.push_back(CUnicodeRange(0x2460, 0x24FF, 10, 1)); // Enclosed Alphanumerics
+            m_arRanges.push_back(CUnicodeRange(0x2500, 0x257F, 11, 1)); // Box Drawing
+            m_arRanges.push_back(CUnicodeRange(0x2580, 0x259F, 12, 1)); // Block Elements
+            m_arRanges.push_back(CUnicodeRange(0x25A0, 0x25FF, 13, 1)); // Geometric Shapes
+            m_arRanges.push_back(CUnicodeRange(0x2600, 0x26FF, 14, 1)); // Miscellaneous Symbols
+            m_arRanges.push_back(CUnicodeRange(0x2700, 0x27BF, 15, 1)); // Dingbats
+            m_arRanges.push_back(CUnicodeRange(0x3000, 0x303F, 16, 1)); // CJK Symbols And Punctuation
+            m_arRanges.push_back(CUnicodeRange(0x3040, 0x309F, 17, 1)); // Hiragana
+            m_arRanges.push_back(CUnicodeRange(0x30A0, 0x30FF, 18, 1)); // Katakana
+            m_arRanges.push_back(CUnicodeRange(0x31F0, 0x31FF, 18, 1)); // Katakana Phonetic Extensions
+            m_arRanges.push_back(CUnicodeRange(0x3100, 0x312F, 19, 1)); // Bopomofo
+            m_arRanges.push_back(CUnicodeRange(0x31A0, 0x31BF, 19, 1)); // Bopomofo Extended
+            m_arRanges.push_back(CUnicodeRange(0x3130, 0x318F, 20, 1)); // Hangul Compatibility Jamo
+            m_arRanges.push_back(CUnicodeRange(0xA840, 0xA87F, 21, 1)); // Phags-pa
+            m_arRanges.push_back(CUnicodeRange(0x3200, 0x32FF, 22, 1)); // Enclosed CJK Letters And Months
+            m_arRanges.push_back(CUnicodeRange(0x3300, 0x33FF, 23, 1)); // CJK Compatibility
+            m_arRanges.push_back(CUnicodeRange(0xAC00, 0xD7AF, 24, 1)); // Hangul Syllables
+            m_arRanges.push_back(CUnicodeRange(0x10000, 0x10FFFF, 25, 1)); // Non-Plane 0
+            m_arRanges.push_back(CUnicodeRange(0x10900, 0x1091F, 26, 1)); // Phoenician
+            m_arRanges.push_back(CUnicodeRange(0x4E00, 0x9FFF, 27, 1)); // CJK Unified Ideographs
+            m_arRanges.push_back(CUnicodeRange(0x2E80, 0x2EFF, 27, 1)); // CJK Radicals Supplement
+            m_arRanges.push_back(CUnicodeRange(0x2F00, 0x2FDF, 27, 1)); // Kangxi Radicals
+            m_arRanges.push_back(CUnicodeRange(0x2FF0, 0x2FFF, 27, 1)); // Ideographic Description Characters
+            m_arRanges.push_back(CUnicodeRange(0x3400, 0x4DBF, 27, 1)); // CJK Unified Ideographs Extension A
+            m_arRanges.push_back(CUnicodeRange(0x3190, 0x319F, 27, 1)); // Kanbun
+            m_arRanges.push_back(CUnicodeRange(0x20000, 0x2A6DF, 27, 1)); // CJK Unified Ideographs Extension B
+            m_arRanges.push_back(CUnicodeRange(0xE000, 0xF8FF, 28, 1)); // Private Use Area (plane 0)
+            m_arRanges.push_back(CUnicodeRange(0x31C0, 0x31EF, 29, 1)); // CJK Strokes
+            m_arRanges.push_back(CUnicodeRange(0xF900, 0xFAFF, 29, 1)); // CJK Compatibility Ideographs
+            m_arRanges.push_back(CUnicodeRange(0x2F800, 0x2FA1F, 29, 1)); // CJK Compatibility Ideographs Supplement
+            m_arRanges.push_back(CUnicodeRange(0xFB00, 0xFB4F, 30, 1)); // Alphabetic Presentation Forms
+            m_arRanges.push_back(CUnicodeRange(0xFB50, 0xFDFF, 31, 1)); // Arabic Presentation Forms-A
+
+            m_arRanges.push_back(CUnicodeRange(0xFE20, 0xFE2F, 0, 2)); // Combining Half Marks
+            m_arRanges.push_back(CUnicodeRange(0xFE10, 0xFE1F, 1, 2)); // Vertical Forms
+            m_arRanges.push_back(CUnicodeRange(0xFE30, 0xFE4F, 1, 2)); // CJK Compatibility Forms
+            m_arRanges.push_back(CUnicodeRange(0xFE50, 0xFE6F, 2, 2)); // Small Form Variants
+            m_arRanges.push_back(CUnicodeRange(0xFE70, 0xFEFF, 3, 2)); // Arabic Presentation Forms-B
+            m_arRanges.push_back(CUnicodeRange(0xFF00, 0xFFEF, 4, 2)); // Halfwidth And Fullwidth Forms
+            m_arRanges.push_back(CUnicodeRange(0xFFF0, 0xFFFF, 5, 2)); // Specials
+            m_arRanges.push_back(CUnicodeRange(0x0F00, 0x0FFF, 6, 2)); // Tibetan
+            m_arRanges.push_back(CUnicodeRange(0x0700, 0x074F, 7, 2)); // Syriac
+            m_arRanges.push_back(CUnicodeRange(0x0780, 0x07BF, 8, 2)); // Thaana
+            m_arRanges.push_back(CUnicodeRange(0x0D80, 0x0DFF, 9, 2)); // Sinhala
+            m_arRanges.push_back(CUnicodeRange(0x1000, 0x109F, 10, 2)); // Myanmar
+            m_arRanges.push_back(CUnicodeRange(0x1200, 0x137F, 11, 2)); // Ethiopic
+            m_arRanges.push_back(CUnicodeRange(0x1380, 0x139F, 11, 2)); // Ethiopic Supplement
+            m_arRanges.push_back(CUnicodeRange(0x2D80, 0x2DDF, 11, 2)); // Ethiopic Extended
+            m_arRanges.push_back(CUnicodeRange(0x13A0, 0x13FF, 12, 2)); // Cherokee
+            m_arRanges.push_back(CUnicodeRange(0x1400, 0x167F, 13, 2)); // Unified Canadian Aboriginal Syllabics
+            m_arRanges.push_back(CUnicodeRange(0x1680, 0x169F, 14, 2)); // Ogham
+            m_arRanges.push_back(CUnicodeRange(0x16A0, 0x16FF, 15, 2)); // Runic
+            m_arRanges.push_back(CUnicodeRange(0x1780, 0x17FF, 16, 2)); // Khmer
+            m_arRanges.push_back(CUnicodeRange(0x19E0, 0x19FF, 16, 2)); // Khmer Symbols
+            m_arRanges.push_back(CUnicodeRange(0x1800, 0x18AF, 17, 2)); // Mongolian
+            m_arRanges.push_back(CUnicodeRange(0x2800, 0x28FF, 18, 2)); // Braille Patterns
+            m_arRanges.push_back(CUnicodeRange(0xA000, 0xA48F, 19, 2)); // Yi Syllables
+            m_arRanges.push_back(CUnicodeRange(0xA490, 0xA4CF, 19, 2)); // Yi Radicals
+            m_arRanges.push_back(CUnicodeRange(0x1700, 0x171F, 20, 2)); // Tagalog
+            m_arRanges.push_back(CUnicodeRange(0x1720, 0x173F, 20, 2)); // Hanunoo
+            m_arRanges.push_back(CUnicodeRange(0x1740, 0x175F, 20, 2)); // Buhid
+            m_arRanges.push_back(CUnicodeRange(0x1760, 0x177F, 20, 2)); // Tagbanwa
+            m_arRanges.push_back(CUnicodeRange(0x10300, 0x1032F, 21, 2)); // Old Italic
+            m_arRanges.push_back(CUnicodeRange(0x10330, 0x1034F, 22, 2)); // Gothic
+            m_arRanges.push_back(CUnicodeRange(0x10400, 0x1044F, 23, 2)); // Deseret
+            m_arRanges.push_back(CUnicodeRange(0x1D000, 0x1D0FF, 24, 2)); // Byzantine Musical Symbols
+            m_arRanges.push_back(CUnicodeRange(0x1D100, 0x1D1FF, 24, 2)); // Musical Symbols
+            m_arRanges.push_back(CUnicodeRange(0x1D200, 0x1D24F, 24, 2)); // Ancient Greek Musical Notation
+            m_arRanges.push_back(CUnicodeRange(0x1D400, 0x1D7FF, 25, 2)); // Mathematical Alphanumeric Symbols
+            m_arRanges.push_back(CUnicodeRange(0xF0000, 0xFFFFD, 26, 2)); // Private Use (plane 15)
+            m_arRanges.push_back(CUnicodeRange(0x100000, 0x10FFFD, 26, 2)); // Private Use (plane 16)
+            m_arRanges.push_back(CUnicodeRange(0xFE00, 0xFE0F, 27, 2)); // Variation Selectors
+            m_arRanges.push_back(CUnicodeRange(0xE0100, 0xE01EF, 27, 2)); // Variation Selectors Supplement
+            m_arRanges.push_back(CUnicodeRange(0xE0000, 0xE007F, 28, 2)); // Tags
+            m_arRanges.push_back(CUnicodeRange(0x1900, 0x194F, 29, 2)); // Limbu
+            m_arRanges.push_back(CUnicodeRange(0x1950, 0x197F, 30, 2)); // Tai Le
+            m_arRanges.push_back(CUnicodeRange(0x1980, 0x19DF, 31, 2)); // New Tai Lue
+
+            m_arRanges.push_back(CUnicodeRange(0x1A00, 0x1A1F, 0, 3)); // Buginese
+            m_arRanges.push_back(CUnicodeRange(0x2C00, 0x2C5F, 1, 3)); // Glagolitic
+            m_arRanges.push_back(CUnicodeRange(0x2D30, 0x2D7F, 2, 3)); // Tifinagh
+            m_arRanges.push_back(CUnicodeRange(0x4DC0, 0x4DFF, 3, 3)); // Yijing Hexagram Symbols
+            m_arRanges.push_back(CUnicodeRange(0xA800, 0xA82F, 4, 3)); // Syloti Nagri
+            m_arRanges.push_back(CUnicodeRange(0x10000, 0x1007F, 5, 3)); // Linear B Syllabary
+            m_arRanges.push_back(CUnicodeRange(0x10080, 0x100FF, 5, 3)); // Linear B Ideograms
+            m_arRanges.push_back(CUnicodeRange(0x10100, 0x1013F, 5, 3)); // Aegean Numbers
+            m_arRanges.push_back(CUnicodeRange(0x10140, 0x1018F, 6, 3)); // Ancient Greek Numbers
+            m_arRanges.push_back(CUnicodeRange(0x10380, 0x1039F, 7, 3)); // Ugaritic
+            m_arRanges.push_back(CUnicodeRange(0x103A0, 0x103DF, 8, 3)); // Old Persian
+            m_arRanges.push_back(CUnicodeRange(0x10450, 0x1047F, 9, 3)); // Shavian
+            m_arRanges.push_back(CUnicodeRange(0x10480, 0x104AF, 10, 3)); // Osmanya
+            m_arRanges.push_back(CUnicodeRange(0x10800, 0x1083F, 11, 3)); // Cypriot Syllabary
+            m_arRanges.push_back(CUnicodeRange(0x10A00, 0x10A5F, 12, 3)); // Kharoshthi
+            m_arRanges.push_back(CUnicodeRange(0x1D300, 0x1D35F, 13, 3)); // Tai Xuan Jing Symbols
+            m_arRanges.push_back(CUnicodeRange(0x12000, 0x123FF, 14, 3)); // Cuneiform
+            m_arRanges.push_back(CUnicodeRange(0x12400, 0x1247F, 14, 3)); // Cuneiform Numbers and Punctuation
+            m_arRanges.push_back(CUnicodeRange(0x1D360, 0x1D37F, 15, 3)); // Counting Rod Numerals
+            m_arRanges.push_back(CUnicodeRange(0x1B80, 0x1BBF, 16, 3)); // Sundanese
+            m_arRanges.push_back(CUnicodeRange(0x1C00, 0x1C4F, 17, 3)); // Lepcha
+            m_arRanges.push_back(CUnicodeRange(0x1C50, 0x1C7F, 18, 3)); // Ol Chiki
+            m_arRanges.push_back(CUnicodeRange(0xA880, 0xA8DF, 19, 3)); // Saurashtra
+            m_arRanges.push_back(CUnicodeRange(0xA900, 0xA92F, 20, 3)); // Kayah Li
+            m_arRanges.push_back(CUnicodeRange(0xA930, 0xA95F, 21, 3)); // Rejang
+            m_arRanges.push_back(CUnicodeRange(0xAA00, 0xAA5F, 22, 3)); // Cham
+            m_arRanges.push_back(CUnicodeRange(0x10190, 0x101CF, 23, 3)); // Ancient Symbols
+            m_arRanges.push_back(CUnicodeRange(0x101D0, 0x101FF, 24, 3)); // Phaistos Disc
+            m_arRanges.push_back(CUnicodeRange(0x102A0, 0x102DF, 25, 3)); // Carian
+            m_arRanges.push_back(CUnicodeRange(0x10280, 0x1029F, 25, 3)); // Lycian
+            m_arRanges.push_back(CUnicodeRange(0x10920, 0x1093F, 25, 3)); // Lydian
+            m_arRanges.push_back(CUnicodeRange(0x1F030, 0x1F09F, 26, 3)); // Domino Tiles
+            m_arRanges.push_back(CUnicodeRange(0x1F000, 0x1F02F, 26, 3)); // Mahjong Tiles
+            // 27: "Reserved for process-internal usage"
+            // 28: "Reserved for process-internal usage"
+            // 29: "Reserved for process-internal usage"
+            // 30: "Reserved for process-internal usage"
+            // 31: "Reserved for process-internal usage"
+        }
+
+        void CheckRange(const int& symbol, BYTE& Range, BYTE& RangeNum)
+        {
+            // определяем range и двигаем его в начало.
+            std::list<CUnicodeRange>::iterator iter = m_arRanges.begin();
+            while (iter != m_arRanges.end())
+            {
+                CUnicodeRange& range = *iter;
+                if (symbol >= range.Start && symbol <= range.End)
+                {
+                    Range = range.Range;
+                    RangeNum = range.RangeNum;
+
+                    m_arRanges.splice(m_arRanges.begin(), m_arRanges, iter);
+                    return;
+                }
+                iter++;
+            }
+        }
+
+        void CheckRange(const int& symbol, int& Range1, int& Range2, int& Range3, int& Range4)
+        {
+            BYTE nRange = 0xFF;
+            BYTE nRangeNum = 0xFF;
+            CheckRange(symbol, nRange, nRangeNum);
+
+            switch (nRangeNum)
+            {
+            case 0: Range1 |= (1 << nRange); break;
+            case 1: Range2 |= (1 << nRange); break;
+            case 2: Range3 |= (1 << nRange); break;
+            case 3: Range4 |= (1 << nRange); break;
+            default:
+                break;
+            }
+        }
+    };
 
 	class CFontAdvanced
 	{
@@ -30,9 +286,9 @@ namespace NSFontManager
         std::wstring					m_strFamilyName;
         std::wstring					m_strPANOSE;
 		LONG							m_lStyle;
-        std::vector<DWORD>   			m_arSignature;
+        std::vector<UINT>   			m_arSignature;
 		bool							m_bIsFixedWidth;
-		LONG							m_lAvgWidth;
+        SHORT							m_lAvgWidth;
 
 	public:
 		CFontAdvanced()
@@ -128,8 +384,7 @@ namespace NSFontManager
 		};
 
 	protected:
-        CApplicationFonts*              m_pFonts;
-        CFontManager*                   m_pManager;
+        NSFonts::IFontManager*          m_pManager;
         std::wstring					m_strDefaultFont;
 
 	public:
@@ -137,64 +392,51 @@ namespace NSFontManager
 		CFontAdvanced					m_oFont;
 
 		//для подбора шрифтов
-		BYTE							m_pRanges[0xFFFF];
-		BYTE							m_pRangesNums[0xFFFF];
+        CUnicodeRanges                  m_oRanges;
 
         std::list<CFontPickUp>			m_arListPicUps;
         std::wstring					m_strCurrentPickFont;
 		LONG							m_lCurrentPictFontStyle;
 
 	public:
-		CFontManagerBase() : m_oFont()
+        CFontManagerBase(NSFonts::IApplicationFonts* pFonts) : m_oFont()
 		{
-			m_pManager = NULL;
-			CoCreateInstance(AVSGraphics::CLSID_CASCFontManager, NULL, CLSCTX_ALL, AVSGraphics::IID_IASCFontManager, (void**)&m_pManager);
+            m_pManager = NSFontManager::CreateFontManager(pFonts);
 
-			m_pManager->Initialize(L"");
+            SetDefaultFont(L"Arial");
 
-			SetDefaultFont(_T("Arial"));
-
-			ClearPickUps();
-
-			InitializeRanges();
-
-			ClearPickUps();
+            ClearPickUps();
 		}
 		virtual ~CFontManagerBase()
 		{
 			RELEASEINTERFACE(m_pManager);
 		}
 
-		__forceinline void ClearPickUps()
-		{
-			m_arListPicUps.RemoveAll();
-			m_strCurrentPickFont = _T("");
+        void ClearPickUps()
+        {
+            m_arListPicUps.clear();
+            m_strCurrentPickFont = L"";
 			m_lCurrentPictFontStyle = 0;
 		}
 
 	public:
-		__forceinline void SetDefaultFont(const CString& strName)
+        void SetDefaultFont(const std::wstring& strName)
 		{
 			m_strDefaultFont = strName;
-
-			BSTR bsDefault = m_strDefaultFont.AllocSysString();
-			m_pManager->SetDefaultFont(bsDefault);
-			SysFreeString(bsDefault);
 		}
-		__forceinline CString GetDefaultFont()
+        std::wstring GetDefaultFont()
 		{
-			return m_strDefaultFont;
+            return m_strDefaultFont;
 		}
 
 		virtual void LoadFont(long lFaceIndex = 0, bool bIsNeedAddToMap = true)
 		{
 		}
 
-		void LoadFontByName(CString& strName, const double& dSize, const LONG& lStyle, const double& dDpiX, const double& dDpiY)
+        void LoadFontByName(const std::wstring& strName, const double& dSize, const LONG& lStyle, const double& dDpiX, const double& dDpiY)
 		{
-			BSTR bsName = strName.AllocSysString();
-			m_pManager->LoadFontByName(bsName, (float)dSize, lStyle, dDpiX, dDpiY);
-			SysFreeString(bsName);
+            m_pManager->LoadFontByName(strName, (float)dSize, lStyle, dDpiX, dDpiY);
+            m_pManager->AfterLoad();
 
 			LoadFontMetrics();
 			LoadFontParams();
@@ -202,47 +444,52 @@ namespace NSFontManager
 			m_oFont.m_lAvgWidth = -1;
 		}
 
-		void LoadFontByFile(CString& strPath, const double& dSize, const double& dDpiX, const double& dDpiY, const LONG& lFaceIndex)
+        void LoadFontByFile(const std::wstring& strPath, const double& dSize, const double& dDpiX, const double& dDpiY, const LONG& lFaceIndex)
 		{
-			BSTR bsPath = strPath.AllocSysString();
-			m_pManager->LoadFontFromFile(bsPath, (float)dSize, dDpiX, dDpiY, lFaceIndex);
-			SysFreeString(bsPath);
+            m_pManager->LoadFontFromFile(strPath, (int)lFaceIndex, (float)dSize, dDpiX, dDpiY);
+            m_pManager->AfterLoad();
 
 			LoadFontMetrics();
 			LoadFontParams();
+            m_oFont.m_oFont.Name = m_pManager->GetName();
+            m_oFont.m_strFamilyName = m_oFont.m_oFont.Name;
 
 			m_oFont.m_lAvgWidth = -1;
 
-			wchar_t wsDrive[MAX_PATH], wsDir[MAX_PATH], wsFilename[MAX_PATH], wsExt[MAX_PATH];
-			_wsplitpath( strPath.GetBuffer(), wsDrive, wsDir, wsFilename, wsExt );
-			CString wsEncodingPath = CString(wsDrive) + CString(wsDir) + CString(wsFilename) + CString(_T(".enc"));
+            bool bIsCID = false;
+            std::wstring sFileExt = NSFile::GetFileExtention(strPath);
+            if (std::wstring::npos != sFileExt.find(L"cid"))
+                bIsCID = true;
 
-			bool bIsCID = false;
-			CString strExt(wsExt);
-			if (-1 != strExt.Find(_T("cid")))
-				bIsCID = true;
+            std::wstring sFileName = NSFile::GetFileName(strPath);
+            std::wstring::size_type pos = sFileName.rfind('.');
+            if (std::wstring::npos != pos)
+                sFileName = sFileName.substr(0, pos);
+            std::wstring sEncFilePath = NSFile::GetDirectoryName(strPath) + L"/" + sFileName + L".enc";
 
 			XmlUtils::CXmlNode oMainNode;
-			oMainNode.FromXmlFile(wsEncodingPath);
+            oMainNode.FromXmlFile(sEncFilePath);
 
-			if (_T("PDF-resources") == oMainNode.GetName())
+            if (L"PDF-resources" == oMainNode.GetName())
 			{
 				if (bIsCID)
 				{
 					XmlUtils::CXmlNode oType0Node;
-					if ( oMainNode.GetNode( _T("Type0"), oType0Node ) )
+                    if ( oMainNode.GetNode( L"Type0", oType0Node ) )
 					{
 						XmlUtils::CXmlNode oNode;
-						if ( oType0Node.GetNode( _T("DescendantFonts"), oNode ) )
+                        if ( oType0Node.GetNode( L"DescendantFonts", oNode ) )
 						{
 							XmlUtils::CXmlNode oDescNode;
-							if ( oNode.GetNode( _T("FontDescriptor"), oDescNode ) )
+                            if ( oNode.GetNode( L"FontDescriptor", oDescNode ) )
 							{
 								XmlUtils::CXmlNode oCurNode;
-								if ( oNode.GetNode( _T("AvgWidth"), oCurNode ) )
+                                if ( oNode.GetNode( L"AvgWidth", oCurNode ) )
 								{
-									CString sValue = oCurNode.GetAttribute( _T("value") );
-									m_oFont.m_lAvgWidth = XmlUtils::GetInteger( sValue );
+                                    std::wstring sValue = oCurNode.GetAttribute(L"value");
+                                    try {
+                                        m_oFont.m_lAvgWidth = (SHORT)std::stol(sValue);
+                                    } catch (std::invalid_argument &) {}
 								}
 							}
 						}
@@ -251,13 +498,15 @@ namespace NSFontManager
 				else
 				{
 					XmlUtils::CXmlNode oNode;
-					if ( oMainNode.GetNode( _T("FontDescriptor"), oNode ) )
+                    if ( oMainNode.GetNode( L"FontDescriptor", oNode ) )
 					{
 						XmlUtils::CXmlNode oCurNode;
-						if ( oNode.GetNode( _T("AvgWidth"), oCurNode ) )
+                        if ( oNode.GetNode( L"AvgWidth", oCurNode ) )
 						{
-							CString sValue = oCurNode.GetAttribute( _T("value") );
-							m_oFont.m_lAvgWidth = XmlUtils::GetInteger( sValue );
+                            std::wstring sValue = oCurNode.GetAttribute(L"value");
+                            try {
+                                m_oFont.m_lAvgWidth = (SHORT)std::stol(sValue);
+                            } catch (std::invalid_argument &) {}
 						}
 					}
 				}
@@ -265,26 +514,7 @@ namespace NSFontManager
 		}
 
 	public:
-	
-		__forceinline void MeasureString(const CString& strText, double x, double y, double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType)
-		{
-			BSTR bsText = strText.AllocSysString();
-			MeasureString(bsText, x, y, dBoxX, dBoxY, dBoxWidth, dBoxHeight, measureType);
-			SysFreeString(bsText);
-		}
-		__forceinline void MeasureStringUNICODE(const CString& strText, double x, double y, double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType)
-		{
-			m_pManager->SetStringGID(FALSE);
-			MeasureString(strText, x, y, dBoxX, dBoxY, dBoxWidth, dBoxHeight, measureType);
-			m_pManager->SetStringGID(TRUE);
-		}
-		__forceinline void MeasureStringUNICODE(BSTR strText, double x, double y, double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType)
-		{
-			m_pManager->SetStringGID(FALSE);
-			MeasureString(strText, x, y, dBoxX, dBoxY, dBoxWidth, dBoxHeight, measureType);
-			m_pManager->SetStringGID(TRUE);
-		}
-		virtual void MeasureString(BSTR bsText, double x, double y, double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType)
+        virtual void MeasureString(const std::wstring& sText, double x, double y, double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType)
 		{
 		}
 		virtual void CalculateBaselineOffset()
@@ -301,971 +531,82 @@ namespace NSFontManager
 	public:
 		void LoadFontMetrics()
 		{
-			unsigned short iTemp = 0;
-            m_pManager->GetCellAscent(&iTemp);
-			m_oFont.m_dAscent = iTemp;
-			m_pManager->GetCellDescent(&iTemp);
-			m_oFont.m_dDescent = iTemp;
-			m_pManager->GetLineSpacing(&iTemp);
-			m_oFont.m_dLineSpacing = iTemp;
-			m_pManager->GetEmHeight(&iTemp);
-			m_oFont.m_dEmHeight = iTemp;
+            m_oFont.m_dAscent = m_pManager->GetAscender();
+            m_oFont.m_dDescent = m_pManager->GetDescender();
+            m_oFont.m_dLineSpacing = m_pManager->GetLineHeight();
+            m_oFont.m_dEmHeight = m_pManager->GetUnitsPerEm();
 
 			m_oFont.m_dBaselineOffset = (c_dPtToMM * m_oFont.m_dDescent * m_oFont.m_oFont.Size / m_oFont.m_dEmHeight);
 		}
 
-		__forceinline CString ToHexString( BYTE uc )
+        std::wstring ToHexString( BYTE uc )
 		{
-			CString strRes = _T("");
-			strRes.Format(_T("%02X"), uc);
-			return strRes;
+            std::wstring sRet = L"";
+            char c1 = (char)(uc >> 4);
+            char c2 = (char)(uc & 0x0F);
+            sRet += (wchar_t)((c1 < 10) ? ('0' + c1) : ('A' + c1 - 10));
+            sRet += (wchar_t)((c2 < 10) ? ('0' + c2) : ('A' + c2 - 10));
+            return sRet;
 		}
+        BYTE FromHexString( wchar_t c1, wchar_t c2 )
+        {
+            BYTE res = 0;
+            res |= ((c1 >= 'A') ? (c1 - 'A' + 10) : (c1 - '0'));
+            res <<= 4;
+            res |= ((c2 >= 'A') ? (c2 - 'A' + 10) : (c2 - '0'));
+            return res;
+        }
 
-		void LoadFontParams(BOOL bIsPath = TRUE)
+        void LoadFontParams(bool bIsPath = true)
 		{
 			// читаем и выставляем все настройки шрифта
-			if (NULL == m_pManager)
+            if (NULL == m_pManager || NULL == m_pManager->GetFile())
 				return;
 
-			if (_T("") == m_oFont.m_oFont.Name)
-			{
-				// FamilyName
-				BSTR bsFamilyName = NULL;
-				m_pManager->GetFamilyNameEx(_bstr_t("<DeletePDFPrefix/>"), &bsFamilyName);
-				m_oFont.m_strFamilyName = (CString)bsFamilyName;
-				SysFreeString(bsFamilyName);
-			}
-			else
-			{
-				m_oFont.m_strFamilyName = m_oFont.m_oFont.Name;
-			}
+            m_oFont.m_strFamilyName = m_oFont.m_oFont.Name;
 
-			// StyleName
-			BSTR bsStyleName = NULL;
-			m_pManager->GetStyleName(&bsStyleName);
-			CString strStyle = (CString)bsStyleName;
-			SysFreeString(bsStyleName);
-
-			if (_T("Bold") == strStyle)
+            m_oFont.m_lStyle = 0x00;
+            if (m_pManager->GetFile()->IsBold())
 			{
-				m_oFont.m_lStyle = 0x01;
+                m_oFont.m_lStyle |= 0x01;
 			}
-			else if (_T("Italic") == strStyle)
+            if (m_pManager->GetFile()->IsItalic())
 			{
-				m_oFont.m_lStyle = 0x02;
-			}
-			else if (_T("Bold Italic") == strStyle)
-			{
-				m_oFont.m_lStyle = 0x03;				
-			}
-			else
-			{
-				m_oFont.m_lStyle = 0x00;
+                m_oFont.m_lStyle |= 0x02;
 			}
 
 			// PANOSE
-			SAFEARRAY* panoseSafeArray = NULL;
-			m_oFont.m_strPANOSE = _T("");
-			m_pManager->GetPanose(&panoseSafeArray);
-
-			if (NULL != panoseSafeArray)
-			{
-				LONG lCount = panoseSafeArray->rgsabound[0].cElements;
-				BYTE* pData = (BYTE*)(panoseSafeArray->pvData);
-
-				for ( LONG i = 0; i < (LONG)( lCount ); i++ )
-				{
-					m_oFont.m_strPANOSE += ToHexString(pData[i]);
-				}
-
-				SafeArrayDestroy(panoseSafeArray);
-			}
+            BYTE pPanose[10];
+            m_pManager->GetFile()->GetPanose(pPanose);
+            for ( int i = 0; i < 10; i++ )
+            {
+                m_oFont.m_strPANOSE += ToHexString(pPanose[i]);
+            }
 
 			// IsFixed
-			LONG lIsFixedWidthLong = 0;
-			m_pManager->IsFixedWidth(&lIsFixedWidthLong);
-			m_oFont.m_bIsFixedWidth = (lIsFixedWidthLong != 0) ? true : false;
+            m_oFont.m_bIsFixedWidth = m_pManager->GetFile()->IsFixedWidth();
 
 			// Signature
-			VARIANT_BOOL vbSuccess = VARIANT_FALSE;
 			m_oFont.m_arSignature.clear();
 
-			for ( unsigned int i = 0; i < 6; i++ )
+            for ( unsigned int i = 0; i < 6; i++ )
 			{
 				DWORD value = 0;
 
 				for ( unsigned long bit = 0; bit < 32; bit++ )
 				{
-					m_pManager->IsUnicodeRangeAvailable( bit, i, &vbSuccess );
-
-					if( VARIANT_TRUE == vbSuccess )
+                    if (m_pManager->GetFile()->IsUnicodeRangeAvailable(bit, i))
 					{
 						value |= ( 1 << bit );
 					}
 				}
 
-				m_oFont.m_arSignature.push_bak(value);
+                m_oFont.m_arSignature.push_back(value);
 			}
 		}
 
 	private:
-		void InitializeRanges()
-		{
-			memset(m_pRanges, 0xFF, 0xFFFF);
-			memset(m_pRangesNums, 0xFF, 0xFFFF);
-
-			// теперь просто по порядку заполняем все рэнджи
-			int nStart = 0;
-			int nCount = 0;
-			
-			// rangeNum 0
-			// case 00: sUCRName = "Basic Latin"; break; /* U+0020-U+007E */
-			nStart = 0x0020;
-			nCount = 0x007E - nStart + 1;
-			memset(m_pRanges + nStart, 0, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-			
-            //case 01: sUCRName = "Latin-1 Supplement"; break; /* U+0080-U+00FF */
-			nStart = 0x0080;
-			nCount = 0x00FF - nStart + 1;
-			memset(m_pRanges + nStart, 1, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-            //case 02: sUCRName = "Latin Extended-A"; break; /* U+0100-U+017F */
-			nStart = 0x0100;
-			nCount = 0x017F - nStart + 1;
-			memset(m_pRanges + nStart, 2, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-            //case 03: sUCRName = "Latin Extended-B"; break; /* U+0180-U+024F */
-			nStart = 0x0180;
-			nCount = 0x024F - nStart + 1;
-			memset(m_pRanges + nStart, 3, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-            //case 04: sUCRName = "IPA Extensions"; break; /* U+0250-U+02AF */ /* U+1D00-U+1D7F */ /* U+1D80-U+1DBF */
-			nStart = 0x0250;
-			nCount = 0x02AF - nStart + 1;
-			memset(m_pRanges + nStart, 4, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-			nStart = 0x1D00;
-			nCount = 0x1D7F - nStart + 1;
-			memset(m_pRanges + nStart, 4, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-			nStart = 0x1D80;
-			nCount = 0x1DBF - nStart + 1;
-			memset(m_pRanges + nStart, 4, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-			//case 05: sUCRName = "Spacing Modifier Letters"; break; /* U+02B0-U+02FF */ /* U+A700-U+A71F */
-			nStart = 0x02B0;
-			nCount = 0x02FF - nStart + 1;
-			memset(m_pRanges + nStart, 5, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-			nStart = 0xA700;
-			nCount = 0xA71F - nStart + 1;
-			memset(m_pRanges + nStart, 5, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-            //case 06: sUCRName = "Combining Diacritical Marks"; break; /* U+0300-U+036F */ /* U+1DC0-U+1DFF */
-			nStart = 0x0300;
-			nCount = 0x036F - nStart + 1;
-			memset(m_pRanges + nStart, 6, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-			nStart = 0x1DC0;
-			nCount = 0x1DFF - nStart + 1;
-			memset(m_pRanges + nStart, 6, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-            //case 07: sUCRName = "Greek and Coptic"; break; /* U+0370-U+03FF */
-			nStart = 0x0370;
-			nCount = 0x03FF - nStart + 1;
-			memset(m_pRanges + nStart, 7, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-            //case 08: sUCRName = "Coptic"; break; /* U+2C80-U+2CFF */
-			nStart = 0x2C80;
-			nCount = 0x2CFF - nStart + 1;
-			memset(m_pRanges + nStart, 8, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-			
-            //case 09: sUCRName = "Cyrillic"; break; /* U+0400-U+04FF */ /* U+0500-U+052F */ /* U+2DE0-U+2DFF */ /* U+A640-U+A69F */
-			nStart = 0x0400;
-			nCount = 0x04FF - nStart + 1;
-			memset(m_pRanges + nStart, 9, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-			nStart = 0x0500;
-			nCount = 0x052F - nStart + 1;
-			memset(m_pRanges + nStart, 9, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-			nStart = 0x2DE0;
-			nCount = 0x2DFF - nStart + 1;
-			memset(m_pRanges + nStart, 9, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-			nStart = 0xA640;
-			nCount = 0xA69F - nStart + 1;
-			memset(m_pRanges + nStart, 9, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-            //case 10: sUCRName = "Armenian"; break; /* U+0530-U+058F */
-			nStart = 0x0530;
-			nCount = 0x058F - nStart + 1;
-			memset(m_pRanges + nStart, 10, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-            //case 11: sUCRName = "Hebrew"; break; /* U+0590-U+05FF */
-			nStart = 0x0590;
-			nCount = 0x05FF - nStart + 1;
-			memset(m_pRanges + nStart, 11, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-            //case 12: sUCRName = "Vai"; break; /* U+A500-U+A63F */
-			nStart = 0xA500;
-			nCount = 0xA63F - nStart + 1;
-			memset(m_pRanges + nStart, 12, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-            //case 13: sUCRName = "Arabic"; break; /* U+0600-U+06FF */ /* U+0750-U+077F */
-			nStart = 0x0600;
-			nCount = 0x06FF - nStart + 1;
-			memset(m_pRanges + nStart, 13, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-			nStart = 0x0750;
-			nCount = 0x077F - nStart + 1;
-			memset(m_pRanges + nStart, 13, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-            //case 14: sUCRName = "NKo"; break; /* U+07C0-U+07FF */
-			nStart = 0x07C0;
-			nCount = 0x07FF - nStart + 1;
-			memset(m_pRanges + nStart, 14, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-            //case 15: sUCRName = "Devanagari"; break; /* U+0900-U+097F */
-			nStart = 0x0900;
-			nCount = 0x097F - nStart + 1;
-			memset(m_pRanges + nStart, 15, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-            //case 16: sUCRName = "Bengali"; break; /* U+0980-U+09FF */
-			nStart = 0x0980;
-			nCount = 0x09FF - nStart + 1;
-			memset(m_pRanges + nStart, 16, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-            //case 17: sUCRName = "Gurmukhi"; break; /* U+0A00-U+0A7F */
-			nStart = 0x0A00;
-			nCount = 0x0A7F - nStart + 1;
-			memset(m_pRanges + nStart, 17, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-            //case 18: sUCRName = "Gujarati"; break; /* U+0A80-U+0AFF */
-			nStart = 0x0A80;
-			nCount = 0x0AFF - nStart + 1;
-			memset(m_pRanges + nStart, 18, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-            //case 19: sUCRName = "Oriya"; break; /* U+0B00-U+0B7F */
-			nStart = 0x0B00;
-			nCount = 0x0B7F - nStart + 1;
-			memset(m_pRanges + nStart, 19, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-            //case 20: sUCRName = "Tamil"; break; /* U+0B80-U+0BFF */
-			nStart = 0x0B80;
-			nCount = 0x0BFF - nStart + 1;
-			memset(m_pRanges + nStart, 20, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-            //case 21: sUCRName = "Telugu"; break; /* U+0C00-U+0C7F */
-			nStart = 0x0C00;
-			nCount = 0x0C7F - nStart + 1;
-			memset(m_pRanges + nStart, 21, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-            //case 22: sUCRName = "Kannada"; break; /* U+0C80-U+0CFF */
-			nStart = 0x0C80;
-			nCount = 0x0CFF - nStart + 1;
-			memset(m_pRanges + nStart, 22, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-            //case 23: sUCRName = "Malayalam"; break; /* U+0D00-U+0D7F */
-			nStart = 0x0D00;
-			nCount = 0x0D7F - nStart + 1;
-			memset(m_pRanges + nStart, 23, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-            //case 24: sUCRName = "Thai"; break; /* U+0E00-U+0E7F */
-			nStart = 0x0E00;
-			nCount = 0x0E7F - nStart + 1;
-			memset(m_pRanges + nStart, 24, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-            //case 25: sUCRName = "Lao"; break; /* U+0E80-U+0EFF */
-			nStart = 0x0E80;
-			nCount = 0x0EFF - nStart + 1;
-			memset(m_pRanges + nStart, 25, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-            //case 26: sUCRName = "Georgian"; break; /* U+10A0-U+10FF */ /* U+2D00-U+2D2F */
-			nStart = 0x10A0;
-			nCount = 0x10FF - nStart + 1;
-			memset(m_pRanges + nStart, 26, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-			nStart = 0x2D00;
-			nCount = 0x2D2F - nStart + 1;
-			memset(m_pRanges + nStart, 26, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-            //case 27: sUCRName = "Balinese"; break; /* U+1B00-U+1B7F */
-			nStart = 0x1B00;
-			nCount = 0x1B7F - nStart + 1;
-			memset(m_pRanges + nStart, 27, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-            //case 28: sUCRName = "Hangul Jamo"; break; /* U+1100-U+11FF */
-			nStart = 0x1100;
-			nCount = 0x11FF - nStart + 1;
-			memset(m_pRanges + nStart, 28, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-            //case 29: sUCRName = "Latin Extended Additional"; break; /* U+1E00-U+1EFF */ /* U+2C60-U+2C7F */ /* U+A720-U+A7FF */
-			nStart = 0x1E00;
-			nCount = 0x1EFF - nStart + 1;
-			memset(m_pRanges + nStart, 29, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-			nStart = 0x2C60;
-			nCount = 0x2C7F - nStart + 1;
-			memset(m_pRanges + nStart, 29, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-			nStart = 0xA720;
-			nCount = 0xA7FF - nStart + 1;
-			memset(m_pRanges + nStart, 29, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-            //case 30: sUCRName = "Greek Extended"; break; /* U+1F00-U+1FFF */
-			nStart = 0x1F00;
-			nCount = 0x1FFF - nStart + 1;
-			memset(m_pRanges + nStart, 30, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-            //case 31: sUCRName = "General Punctuation"; break; /* U+2000-U+206F */ /* U+2E00-U+2E7F */
-			nStart = 0x2000;
-			nCount = 0x206F - nStart + 1;
-			memset(m_pRanges + nStart, 31, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-			nStart = 0x2E00;
-			nCount = 0x2E7F - nStart + 1;
-			memset(m_pRanges + nStart, 31, nCount);
-			memset(m_pRangesNums + nStart, 0, nCount);
-
-			// rangeNum 1
-			//case 00: sUCRName = "Superscripts And Subscripts"; break; /* U+2070-U+209F */
-			nStart = 0x2070;
-			nCount = 0x209F - nStart + 1;
-			memset(m_pRanges + nStart, 0, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-            //case 01: sUCRName = "Currency Symbols"; break; /* U+20A0-U+20CF */
-			nStart = 0x20A0;
-			nCount = 0x20CF - nStart + 1;
-			memset(m_pRanges + nStart, 1, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-            //case 02: sUCRName = "Combining Diacritical Marks For Symbols"; break; /* U+20D0-U+20FF */
-			nStart = 0x20D0;
-			nCount = 0x20FF - nStart + 1;
-			memset(m_pRanges + nStart, 2, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-            //case 03: sUCRName = "Letterlike Symbols"; break; /* U+2100-U+214F */
-			nStart = 0x2100;
-			nCount = 0x214F - nStart + 1;
-			memset(m_pRanges + nStart, 3, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-            //case 04: sUCRName = "Number Forms"; break; /* U+2150-U+218F */
-			nStart = 0x2150;
-			nCount = 0x218F - nStart + 1;
-			memset(m_pRanges + nStart, 4, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-            //case 05: sUCRName = "Arrows"; break; /* U+2190-U+21FF */ /* U+27F0-U+27FF */ /* U+2900-U+297F */ /* U+2B00-U+2BFF */
-			nStart = 0x2190;
-			nCount = 0x21FF - nStart + 1;
-			memset(m_pRanges + nStart, 5, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-			nStart = 0x27F0;
-			nCount = 0x27FF - nStart + 1;
-			memset(m_pRanges + nStart, 5, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-			nStart = 0x2900;
-			nCount = 0x297F - nStart + 1;
-			memset(m_pRanges + nStart, 5, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-			nStart = 0x2B00;
-			nCount = 0x2BFF - nStart + 1;
-			memset(m_pRanges + nStart, 5, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-            //case 06: sUCRName = "Mathematical Operators"; break; /* U+2200-U+22FF */ /* U+2A00-U+2AFF */ /* U+27C0-U+27EF */ /* U+2980-U+29FF */
-			nStart = 0x2200;
-			nCount = 0x22FF - nStart + 1;
-			memset(m_pRanges + nStart, 6, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-			nStart = 0x2A00;
-			nCount = 0x2AFF - nStart + 1;
-			memset(m_pRanges + nStart, 6, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-			nStart = 0x27C0;
-			nCount = 0x27EF - nStart + 1;
-			memset(m_pRanges + nStart, 6, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-			nStart = 0x2980;
-			nCount = 0x29FF - nStart + 1;
-			memset(m_pRanges + nStart, 6, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-            //case 07: sUCRName = "Miscellaneous Technical"; break; /* U+2300-U+23FF */
-			nStart = 0x2300;
-			nCount = 0x23FF - nStart + 1;
-			memset(m_pRanges + nStart, 7, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-            //case 08: sUCRName = "Control Pictures"; break; /* U+2400-U+243F */
-			nStart = 0x2400;
-			nCount = 0x243F - nStart + 1;
-			memset(m_pRanges + nStart, 8, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-            //case 09: sUCRName = "Optical Character Recognition"; break; /* U+2440-U+245F */
-			nStart = 0x2440;
-			nCount = 0x245F - nStart + 1;
-			memset(m_pRanges + nStart, 9, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-            //case 10: sUCRName = "Enclosed Alphanumerics"; break; /* U+2460-U+24FF */
-			nStart = 0x2460;
-			nCount = 0x24FF - nStart + 1;
-			memset(m_pRanges + nStart, 10, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-            //case 11: sUCRName = "Box Drawing"; break; /* U+2500-U+257F */
-			nStart = 0x2500;
-			nCount = 0x257F - nStart + 1;
-			memset(m_pRanges + nStart, 11, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-            //case 12: sUCRName = "Block Elements"; break; /* U+2580-U+259F */
-			nStart = 0x2580;
-			nCount = 0x259F - nStart + 1;
-			memset(m_pRanges + nStart, 12, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-            //case 13: sUCRName = "Geometric Shapes"; break; /* U+25A0-U+25FF */
-			nStart = 0x25A0;
-			nCount = 0x25FF - nStart + 1;
-			memset(m_pRanges + nStart, 13, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-            //case 14: sUCRName = "Miscellaneous Symbols"; break; /* U+2600-U+26FF */
-			nStart = 0x2600;
-			nCount = 0x26FF - nStart + 1;
-			memset(m_pRanges + nStart, 14, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-            //case 15: sUCRName = "Dingbats"; break; /* U+2700-U+27BF */
-			nStart = 0x2700;
-			nCount = 0x27BF - nStart + 1;
-			memset(m_pRanges + nStart, 15, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-            //case 16: sUCRName = "CJK Symbols and Punctuation"; break; /* U+3000-U+303F */
-			nStart = 0x3000;
-			nCount = 0x303F - nStart + 1;
-			memset(m_pRanges + nStart, 16, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-            //case 17: sUCRName = "Hiragana"; break;  /* U+3040-U+309F */
-			nStart = 0x3040;
-			nCount = 0x309F - nStart + 1;
-			memset(m_pRanges + nStart, 17, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-            //case 18: sUCRName = "Katakana"; break; /* U+30A0-U+30FF */ /* U+31F0-U+31FF */
-			nStart = 0x30A0;
-			nCount = 0x30FF - nStart + 1;
-			memset(m_pRanges + nStart, 18, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-			nStart = 0x31F0;
-			nCount = 0x31FF - nStart + 1;
-			memset(m_pRanges + nStart, 18, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-            //case 19: sUCRName = "Bopomofo"; break; /* U+3100-U+312F */ /* U+31A0-U+31BF */
-			nStart = 0x3100;
-			nCount = 0x312F - nStart + 1;
-			memset(m_pRanges + nStart, 19, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-			nStart = 0x31A0;
-			nCount = 0x31BF - nStart + 1;
-			memset(m_pRanges + nStart, 19, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-            //case 20: sUCRName = "Hangul Compatibility Jamo"; break; /* U+3130-U+318F */
-			nStart = 0x3130;
-			nCount = 0x318F - nStart + 1;
-			memset(m_pRanges + nStart, 20, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-            //case 21: sUCRName = "Phags-pa"; break; /* U+A840-U+A87F */
-			nStart = 0xA840;
-			nCount = 0xA87F - nStart + 1;
-			memset(m_pRanges + nStart, 21, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-            //case 22: sUCRName = "Enclosed CJK Letters and Months"; break; /* U+3200-U+32FF */
-			nStart = 0x3200;
-			nCount = 0x32FF - nStart + 1;
-			memset(m_pRanges + nStart, 22, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-            //case 23: sUCRName = "CJK Compatibility"; break; /* U+3300-U+33FF */
-			nStart = 0x3300;
-			nCount = 0x33FF - nStart + 1;
-			memset(m_pRanges + nStart, 23, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-            //case 24: sUCRName = "Hangul Syllables"; break; /* U+AC00-U+D7AF */
-			nStart = 0xAC00;
-			nCount = 0xD7AF - nStart + 1;
-			memset(m_pRanges + nStart, 24, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-            //case 25: sUCRName = "Non-Plane 0"; break; /* U+D800-U+DB7F */ /* U+DB80-U+DBFF */ /* U+DC00-U+DFFF */ // Не юникодные символы
-			nStart = 0xD800;
-			nCount = 0xDB7F - nStart + 1;
-			memset(m_pRanges + nStart, 25, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-			nStart = 0xDB80;
-			nCount = 0xDBFF - nStart + 1;
-			memset(m_pRanges + nStart, 25, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-			nStart = 0xDC00;
-			nCount = 0xDFFF - nStart + 1;
-			memset(m_pRanges + nStart, 25, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-            //case 26: sUCRName = "Phoenician"; break; /*U+10900-U+1091F*/
-
-            //case 27: sUCRName = "CJK Unified Ideographs"; break; /* U+4E00-U+9FFF */ /* U+2E80-U+2EFF */ /* U+2F00-U+2FDF */ /* U+2FF0-U+2FFF */ /* U+3400-U+4DB5 */ /*U+20000-U+2A6D6*/ /* U+3190-U+319F */
-			nStart = 0x4E00;
-			nCount = 0x9FFF - nStart + 1;
-			memset(m_pRanges + nStart, 27, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-			nStart = 0x2E80;
-			nCount = 0x2EFF - nStart + 1;
-			memset(m_pRanges + nStart, 27, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-			nStart = 0x2F00;
-			nCount = 0x2FDF - nStart + 1;
-			memset(m_pRanges + nStart, 27, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-			nStart = 0x2FF0;
-			nCount = 0x2FFF - nStart + 1;
-			memset(m_pRanges + nStart, 27, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-			nStart = 0x3400;
-			nCount = 0x4DB5 - nStart + 1;
-			memset(m_pRanges + nStart, 27, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-			nStart = 0x3190;
-			nCount = 0x319F - nStart + 1;
-			memset(m_pRanges + nStart, 27, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-            //case 28: sUCRName = "Private Use Area (plane 0)"; break; /* U+E000-U+F8FF */ // Не юникодные символы
-			nStart = 0xE000;
-			nCount = 0xF8FF - nStart + 1;
-			memset(m_pRanges + nStart, 28, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-            //case 29: sUCRName = "CJK Strokes"; break; /* U+31C0-U+31EF */ /* U+F900-U+FAFF */ /*U+2F800-U+2FA1F*/
-			nStart = 0x31C0;
-			nCount = 0x31EF - nStart + 1;
-			memset(m_pRanges + nStart, 29, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-			nStart = 0xF900;
-			nCount = 0xFAFF - nStart + 1;
-			memset(m_pRanges + nStart, 29, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-            //case 30: sUCRName = "Alphabetic Presentation Forms"; break; /* U+FB00-U+FB4F */
-			nStart = 0xFB00;
-			nCount = 0xFB4F - nStart + 1;
-			memset(m_pRanges + nStart, 30, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-            //case 31: sUCRName = "Arabic Presentation Forms-A"; break; /* U+FB50-U+FDFF */
-			nStart = 0xFB50;
-			nCount = 0xFDFF - nStart + 1;
-			memset(m_pRanges + nStart, 31, nCount);
-			memset(m_pRangesNums + nStart, 1, nCount);
-
-			// rangeNum 2
-			//case 00: sUCRName = "Combining Half Marks"; break; /* U+FE20-U+FE2F */
-			nStart = 0xFE20;
-			nCount = 0xFE2F - nStart + 1;
-			memset(m_pRanges + nStart, 0, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-            //case 01: sUCRName = "Vertical forms"; break; /* U+FE10-U+FE1F */ /* U+FE30-U+FE4F */
-			nStart = 0xFE10;
-			nCount = 0xFE1F - nStart + 1;
-			memset(m_pRanges + nStart, 1, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-			nStart = 0xFE30;
-			nCount = 0xFE4F - nStart + 1;
-			memset(m_pRanges + nStart, 1, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-            //case 02: sUCRName = "Small Form Variants"; break; /* U+FE50-U+FE6F */
-			nStart = 0xFE50;
-			nCount = 0xFE6F - nStart + 1;
-			memset(m_pRanges + nStart, 2, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-            //case 03: sUCRName = "Arabic Presentation Forms-B"; break; /* U+FE70-U+FEFE */
-			nStart = 0xFE70;
-			nCount = 0xFEFE - nStart + 1;
-			memset(m_pRanges + nStart, 3, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-            //case 04: sUCRName = "Halfwidth and Fullwidth Forms"; break; /* U+FF00-U+FFEF */
-			nStart = 0xFF00;
-			nCount = 0xFFEF - nStart + 1;
-			memset(m_pRanges + nStart, 4, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-            //case 05: sUCRName = "Specials"; break; /* U+FFF0-U+FFFF */
-			nStart = 0xFFF0;
-			nCount = 0xFFFF - nStart + 1;
-			memset(m_pRanges + nStart, 5, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-            //case 06: sUCRName = "Tibetan"; break; /* U+0F00-U+0FFF */
-			nStart = 0x0F00;
-			nCount = 0x0FFF - nStart + 1;
-			memset(m_pRanges + nStart, 6, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-            //case 07: sUCRName = "Syriac"; break; /* U+0700-U+074F */
-			nStart = 0x0700;
-			nCount = 0x074F - nStart + 1;
-			memset(m_pRanges + nStart, 7, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-            //case 08: sUCRName = "Thaana"; break; /* U+0780-U+07BF */
-			nStart = 0x0780;
-			nCount = 0x07BF - nStart + 1;
-			memset(m_pRanges + nStart, 8, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-            //case 09: sUCRName = "Sinhala"; break; /* U+0D80-U+0DFF */
-			nStart = 0x0D80;
-			nCount = 0x0DFF - nStart + 1;
-			memset(m_pRanges + nStart, 9, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-            //case 10: sUCRName = "Myanmar"; break; /* U+1000-U+109F */
-			nStart = 0x1000;
-			nCount = 0x109F - nStart + 1;
-			memset(m_pRanges + nStart, 10, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-            //case 11: sUCRName = "Ethiopic"; break; /* U+1200-U+137F */ /* U+1380-U+139F */ /* U+2D80-U+2DDF */
-			nStart = 0x1200;
-			nCount = 0x137F - nStart + 1;
-			memset(m_pRanges + nStart, 11, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-			nStart = 0x1380;
-			nCount = 0x139F - nStart + 1;
-			memset(m_pRanges + nStart, 11, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-			nStart = 0x2D80;
-			nCount = 0x2DDF - nStart + 1;
-			memset(m_pRanges + nStart, 11, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-            //case 12: sUCRName = "Cherokee"; break; /* U+13A0-U+13FF */
-			nStart = 0x13A0;
-			nCount = 0x13FF - nStart + 1;
-			memset(m_pRanges + nStart, 12, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-            //case 13: sUCRName = "Unified Canadian Aboriginal Syllabics"; break; /* U+1400-U+167F */
-			nStart = 0x1400;
-			nCount = 0x167F - nStart + 1;
-			memset(m_pRanges + nStart, 13, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-            //case 14: sUCRName = "Ogham"; break; /* U+1680-U+169F */
-			nStart = 0x1680;
-			nCount = 0x169F - nStart + 1;
-			memset(m_pRanges + nStart, 14, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-            //case 15: sUCRName = "Runic"; break; /* U+16A0-U+16FF */
-			nStart = 0x16A0;
-			nCount = 0x16FF - nStart + 1;
-			memset(m_pRanges + nStart, 15, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-            //case 16: sUCRName = "Khmer"; break; /* U+1780-U+17FF */ /* U+19E0-U+19FF */
-			nStart = 0x1780;
-			nCount = 0x17FF - nStart + 1;
-			memset(m_pRanges + nStart, 16, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-			nStart = 0x19E0;
-			nCount = 0x19FF - nStart + 1;
-			memset(m_pRanges + nStart, 16, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-            //case 17: sUCRName = "Mongolian"; break; /* U+1800-U+18AF */
-			nStart = 0x1800;
-			nCount = 0x18AF - nStart + 1;
-			memset(m_pRanges + nStart, 17, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-            //case 18: sUCRName = "Braille Patterns"; break; /* U+2800-U+28FF */
-			nStart = 0x2800;
-			nCount = 0x28FF - nStart + 1;
-			memset(m_pRanges + nStart, 18, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-            //case 19: sUCRName = "Yi Syllables"; break; /* U+A000-U+A48F */ /* U+A490-U+A4CF */
-			nStart = 0xA000;
-			nCount = 0xA48F - nStart + 1;
-			memset(m_pRanges + nStart, 19, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-			nStart = 0xA490;
-			nCount = 0xA4CF - nStart + 1;
-			memset(m_pRanges + nStart, 19, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-            //case 20: sUCRName = "Tagalog"; break; /* U+1700-U+171F */ /* U+1720-U+173F */ /* U+1740-U+175F */ /* U+1760-U+177F */
-			nStart = 0x1700;
-			nCount = 0x171F - nStart + 1;
-			memset(m_pRanges + nStart, 20, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-			nStart = 0x1720;
-			nCount = 0x173F - nStart + 1;
-			memset(m_pRanges + nStart, 20, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-			nStart = 0x1740;
-			nCount = 0x175F - nStart + 1;
-			memset(m_pRanges + nStart, 20, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-			nStart = 0x1760;
-			nCount = 0x177F - nStart + 1;
-			memset(m_pRanges + nStart, 20, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-            //case 21: sUCRName = "Old Italic"; break; /*U+10300-U+1032F*/
-            //case 22: sUCRName = "Gothic"; break; /*U+10330-U+1034F*/
-            //case 23: sUCRName = "Deseret"; break; /*U+10400-U+1044F*/
-            //case 24: sUCRName = "Byzantine Musical Symbols"; break; /*U+1D000-U+1D0FF*/ /*U+1D100-U+1D1FF*/ /*U+1D200-U+1D24F*/
-            //case 25: sUCRName = "Mathematical Alphanumeric Symbols"; break; /*U+1D400-U+1D7FF*/
-            //case 26: sUCRName = "Private Use (plane 15)"; break; /*U+F0000-U+FFFFD*/ /*U+100000-U+10FFFD*/ // Не юникодные символы
-            
-			//case 27: sUCRName = "Variation Selectors"; break; /* U+FE00-U+FE0F */ /*U+E0100-U+E01EF*/
-			nStart = 0xFE00;
-			nCount = 0xFE0F - nStart + 1;
-			memset(m_pRanges + nStart, 27, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-            //case 28: sUCRName = "Tags"; break; /*U+E0000-U+E007F*/
-            //case 29: sUCRName = "Limbu"; break; /* U+1900-U+194F */
-			nStart = 0x1900;
-			nCount = 0x194F - nStart + 1;
-			memset(m_pRanges + nStart, 29, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-            //case 30: sUCRName = "Tai Le"; break; /* U+1950-U+197F */
-			nStart = 0x1950;
-			nCount = 0x197F - nStart + 1;
-			memset(m_pRanges + nStart, 30, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-            //case 31: sUCRName = "New Tai Lue"; break; /* U+1980-U+19DF */
-			nStart = 0x1980;
-			nCount = 0x19DF - nStart + 1;
-			memset(m_pRanges + nStart, 31, nCount);
-			memset(m_pRangesNums + nStart, 2, nCount);
-
-			// rangeNum 3
-			//case 00: sUCRName = "Buginese"; break; /* U+1A00-U+1A1F */
-			nStart = 0x1A00;
-			nCount = 0x1A1F - nStart + 1;
-			memset(m_pRanges + nStart, 0, nCount);
-			memset(m_pRangesNums + nStart, 3, nCount);
-
-            //case 01: sUCRName = "Glagolitic"; break; /* U+2C00-U+2C5F */
-			nStart = 0x2C00;
-			nCount = 0x2C5F - nStart + 1;
-			memset(m_pRanges + nStart, 1, nCount);
-			memset(m_pRangesNums + nStart, 3, nCount);
-
-            //case 02: sUCRName = "Tifinagh"; break; /* U+2D30-U+2D7F */
-			nStart = 0x2D30;
-			nCount = 0x2D7F - nStart + 1;
-			memset(m_pRanges + nStart, 2, nCount);
-			memset(m_pRangesNums + nStart, 3, nCount);
-
-            //case 03: sUCRName = "Yijing Hexagram Symbols"; break; /* U+4DC0-U+4DFF */
-			nStart = 0x4DC0;
-			nCount = 0x4DFF - nStart + 1;
-			memset(m_pRanges + nStart, 3, nCount);
-			memset(m_pRangesNums + nStart, 3, nCount);
-
-            //case 04: sUCRName = "Syloti Nagri"; break; /* U+A800-U+A82F */
-			nStart = 0xA800;
-			nCount = 0xA82F - nStart + 1;
-			memset(m_pRanges + nStart, 4, nCount);
-			memset(m_pRangesNums + nStart, 3, nCount);
-
-            //case 05: sUCRName = "Linear B Syllabary"; break; /*U+10000-U+1007F*/ /*U+10080-U+100FF*/ /*U+10100-U+1013F*/
-            //case 06: sUCRName = "Ancient Greek Numbers"; break; /*U+10140-U+1018F*/
-            //case 07: sUCRName = "Ugaritic"; break; /*U+10380-U+1039F*/
-            //case 08: sUCRName = "Old Persian"; break; /*U+103A0-U+103DF*/
-            //case 09: sUCRName = "Shavian"; break; /*U+10450-U+1047F*/
-            //case 10: sUCRName = "Osmanya"; break; /*U+10480-U+104AF*/
-            //case 11: sUCRName = "Cypriot Syllabary"; break; /*U+10800-U+1083F*/
-            //case 12: sUCRName = "Kharoshthi"; break; /*U+10A00-U+10A5F*/
-            //case 13: sUCRName = "Tai Xuan Jing Symbols"; break; /*U+1D300-U+1D35F*/
-            //case 14: sUCRName = "Cuneiform"; break; /*U+12000-U+123FF*/ /*U+12400-U+1247F*/
-            //case 15: sUCRName = "Counting Rod Numerals"; break; /*U+1D360-U+1D37F*/
-            
-			//case 16: sUCRName = "Sundanese"; break; /* U+1B80-U+1BBF */
-			nStart = 0x1B80;
-			nCount = 0x1BBF - nStart + 1;
-			memset(m_pRanges + nStart, 16, nCount);
-			memset(m_pRangesNums + nStart, 3, nCount);
-
-            //case 17: sUCRName = "Lepcha"; break; /* U+1C00-U+1C4F */
-			nStart = 0x1C00;
-			nCount = 0x1C4F - nStart + 1;
-			memset(m_pRanges + nStart, 17, nCount);
-			memset(m_pRangesNums + nStart, 3, nCount);
-
-            //case 18: sUCRName = "Ol Chiki"; break; /* U+1C50-U+1C7F */
-			nStart = 0x1C50;
-			nCount = 0x1C7F - nStart + 1;
-			memset(m_pRanges + nStart, 18, nCount);
-			memset(m_pRangesNums + nStart, 3, nCount);
-
-            //case 19: sUCRName = "Saurashtra"; break; /* U+A880-U+A8DF */
-			nStart = 0xA880;
-			nCount = 0xA8DF - nStart + 1;
-			memset(m_pRanges + nStart, 19, nCount);
-			memset(m_pRangesNums + nStart, 3, nCount);
-
-            //case 20: sUCRName = "Kayah Li"; break; /* U+A900-U+A92F */
-			nStart = 0xA900;
-			nCount = 0xA92F - nStart + 1;
-			memset(m_pRanges + nStart, 20, nCount);
-			memset(m_pRangesNums + nStart, 3, nCount);
-
-            //case 21: sUCRName = "Rejang"; break; /* U+A930-U+A95F */
-			nStart = 0xA930;
-			nCount = 0xA95F - nStart + 1;
-			memset(m_pRanges + nStart, 21, nCount);
-			memset(m_pRangesNums + nStart, 3, nCount);
-
-            //case 22: sUCRName = "Cham"; break; /* U+AA00-U+AA5F */
-			nStart = 0xAA00;
-			nCount = 0xAA5F - nStart + 1;
-			memset(m_pRanges + nStart, 22, nCount);
-			memset(m_pRangesNums + nStart, 3, nCount);
-
-            //case 23: sUCRName = "Ancient Symbols"; break; /*U+10190-U+101CF*/
-            //case 24: sUCRName = "Phaistos Disc"; break; /*U+101D0-U+101FF*/
-			//case 25: sUCRName = "Carian"; break; /*U+102A0-U+102DF*/ /*U+10280-U+1029F*/ /*U+10920-U+1093F*/
-            //case 26: sUCRName = "Domino Tiles"; break; /*U+1F030-U+1F09F*/ /*U+1F000-U+1F02F*/
-            //case 27: sUCRName = "Reserved for process-internal usage"; break;
-            //case 28: sUCRName = "Reserved for process-internal usage"; break;
-            //case 29: sUCRName = "Reserved for process-internal usage"; break;
-            //case 30: sUCRName = "Reserved for process-internal usage"; break;
-            //case 31: sUCRName = "Reserved for process-internal usage"; break;
-		}
-
-        inline bool GetRange(const WCHAR& symbol, BYTE& lRangeNum, BYTE& lRange)
-		{
-			lRangeNum	= m_pRangesNums[symbol];
-			lRange		= m_pRanges[symbol];
-
-			return (0xFF != lRangeNum);
-		}
-
-        inline void CheckRanges(DWORD& lRange1, DWORD& lRange2, DWORD& lRange3, DWORD& lRange4, const std::wstring& strText)
-		{
-            int lCount   = (int)strText.length();
-            WCHAR* pData = strText.c_str();
-
-			BYTE lRangeNum  = 0xFF;
-			BYTE lRange		= 0xFF;
-			for (int i = 0; i < lCount; ++i, ++pData)
-			{
-				if (GetRange(*pData, lRangeNum, lRange))
-				{
-					if (0 == lRangeNum)
-						lRange1 |= 1 << lRange;
-					else if (1 == lRangeNum)
-						lRange2 |= 1 << lRange;
-					else if (2 == lRangeNum)
-						lRange3 |= 1 << lRange;
-					else
-						lRange4 |= 1 << lRange;
-				}
-			}
-		}
-        inline void CheckRanges(DWORD& lRange1, DWORD& lRange2, DWORD& lRange3, DWORD& lRange4, BYTE& lRangeNum, BYTE& lRange)
+        inline void CheckRanges(UINT& lRange1, UINT& lRange2, UINT& lRange3, UINT& lRange4, BYTE& lRangeNum, BYTE& lRange)
 		{
 			if (0 == lRangeNum)
 				lRange1 |= 1 << lRange;
@@ -1279,9 +620,9 @@ namespace NSFontManager
 
 		
 	public:		
-		__forceinline bool GenerateFontName(CString& strText)
+        bool GenerateFontName(NSStringUtils::CStringUTF32& oText)
 		{
-			if (_T("") == m_oFont.m_oFont.Path || (0 == strText.GetLength()))
+            if (m_oFont.m_oFont.Path.empty() || oText.empty())
 			{
 				m_strCurrentPickFont = m_oFont.m_strFamilyName;
 				m_lCurrentPictFontStyle = m_oFont.m_lStyle;
@@ -1291,19 +632,19 @@ namespace NSFontManager
 			BYTE lRangeNum	= 0xFF;
 			BYTE lRange		= 0xFF;
 
-			GetRange(strText[0], lRangeNum, lRange);
-			POSITION posStart = m_arListPicUps.GetHeadPosition();
-			POSITION pos = posStart;
+            m_oRanges.CheckRange(oText[0], lRange, lRangeNum);
+            std::list<CFontPickUp>::iterator posStart, pos;
+            posStart = pos = m_arListPicUps.begin();
 
-			while (NULL != pos)
+            while (m_arListPicUps.end() != pos)
 			{
-				POSITION posOld = pos;
-				CFontPickUp& oPick = m_arListPicUps.GetNext(pos);
-				if ((oPick.m_oFont.m_oFont.IsEqual3(&m_oFont.m_oFont)) && (lRangeNum == oPick.m_lRangeNum) && (lRange == oPick.m_lRange))
+                std::list<CFontPickUp>::iterator posOld = pos;
+                CFontPickUp& oPick = *(pos++);
+                if ((oPick.m_oFont.m_oFont.IsEqual2(&m_oFont.m_oFont)) && (lRangeNum == oPick.m_lRangeNum) && (lRange == oPick.m_lRange))
 				{
 					// нашли! ничего подбирать не нужно
 					// нужно просто выкинуть этот шрифт наверх
-					m_arListPicUps.MoveToHead(posOld);
+                    m_arListPicUps.splice(m_arListPicUps.begin(), m_arListPicUps, posOld);
 					m_strCurrentPickFont = oPick.m_strPickFont;
 					m_lCurrentPictFontStyle = oPick.m_lPickStyle;
 					return false;
@@ -1311,27 +652,19 @@ namespace NSFontManager
 			}
 
 			// не нашли...
-			m_arListPicUps.AddHead();
-			CFontPickUp& oPick = m_arListPicUps.GetHead();
-
+            CFontPickUp oPick;
 			oPick.m_lRangeNum	= lRangeNum;
 			oPick.m_lRange		= lRange;
 			oPick.m_oFont		= m_oFont;
 			oPick.m_strPickFont	= m_oFont.m_strFamilyName;
-			oPick.m_lPickStyle	= m_oFont.m_lStyle;
-			
-			AVSGraphics::IASCFontManager2* pManager2 = NULL;
-			m_pManager->QueryInterface(AVSGraphics::IID_IASCFontManager2, (void**)&pManager2);
+            oPick.m_lPickStyle	= m_oFont.m_lStyle;
 
-			BSTR bsFontName = m_oFont.m_strFamilyName.AllocSysString();
-			BSTR bsNewFontName = NULL;
-
-			DWORD dwR1 = m_oFont.m_arSignature[0];
-			DWORD dwR2 = m_oFont.m_arSignature[1];
-			DWORD dwR3 = m_oFont.m_arSignature[2];
-			DWORD dwR4 = m_oFont.m_arSignature[3];
-			DWORD dwCodePage1	= 0;
-			DWORD dwCodePage2	= 0;
+            UINT dwR1 = m_oFont.m_arSignature[0];
+            UINT dwR2 = m_oFont.m_arSignature[1];
+            UINT dwR3 = m_oFont.m_arSignature[2];
+            UINT dwR4 = m_oFont.m_arSignature[3];
+            UINT dwCodePage1	= 0;
+            UINT dwCodePage2	= 0;
 
 			if ((lRangeNum == 1) && (lRange == 28))
 			{
@@ -1340,7 +673,7 @@ namespace NSFontManager
 			}
 			else if (((lRangeNum == 2) && (lRange == 3)) || ((lRangeNum == 1) && (lRange == 31)) || ((lRangeNum == 0) && (lRange == 13)))
 			{
-				// ебаный арабский язык!!!
+                // арабский язык!!!
 				dwR1 = 1 << 13;
 				dwR2 = 1 << 31;
 				dwR3 = 1 << 3;
@@ -1350,26 +683,131 @@ namespace NSFontManager
 				CheckRanges(dwR1, dwR2, dwR3, dwR4, lRangeNum, lRange);
 			}
 
-			BSTR bsPanose = m_oFont.m_strPANOSE.AllocSysString();
+            NSFonts::CFontSelectFormat oFormat;
 
-			LONG lFontStyle = m_oFont.m_oFont.GetStyle();
-			pManager2->GetWinFontByParams2(&bsNewFontName, bsFontName, -1, NULL, &lFontStyle, m_oFont.m_bIsFixedWidth ? 1 : 0, bsPanose, 
-				dwR1, dwR2, dwR3, dwR4, dwCodePage1, dwCodePage2, m_oFont.m_lAvgWidth);
+            std::wstring sFontNameSelect = L"";
+            if (m_oFont.m_strFamilyName.empty() && !m_oFont.m_oFont.Path.empty())
+                sFontNameSelect = m_strDefaultFont;
+            else
+                sFontNameSelect = m_oFont.m_strFamilyName;
 
-			oPick.m_strPickFont = (CString)bsNewFontName;
-			oPick.m_lPickStyle	= lFontStyle;
+            bool bSelectBold = false;
+            bool bSelectItalic = false;
+            CheckFontNamePDF(sFontNameSelect, bSelectBold, bSelectItalic);
+
+            oFormat.wsName = new std::wstring(sFontNameSelect);
+
+            if (!m_oFont.m_strPANOSE.empty())
+            {
+                oFormat.pPanose = new BYTE[10];
+
+                const wchar_t* pPanoseStr = m_oFont.m_strPANOSE.c_str();
+                for (int i = 0; i < 10; ++i)
+                {
+                    oFormat.pPanose[i] = FromHexString(pPanoseStr[0], pPanoseStr[1]);
+                    pPanoseStr += 2;
+                }
+            }
+
+            oFormat.bBold = new INT(((m_oFont.m_lStyle & 0x01) == 0x01) ? 1 : 0);
+            oFormat.bItalic = new INT(((m_oFont.m_lStyle & 0x02) == 0x02) ? 1 : 0);
+            oFormat.bFixedWidth = new INT(m_oFont.m_bIsFixedWidth ? 1 : 0);
+            if (-1 != m_oFont.m_lAvgWidth)
+                oFormat.shAvgCharWidth = new SHORT((SHORT)m_oFont.m_lAvgWidth);
+            oFormat.ulRange1 = new UINT(dwR1);
+            oFormat.ulRange2 = new UINT(dwR2);
+            oFormat.ulRange3 = new UINT(dwR3);
+            oFormat.ulRange4 = new UINT(dwR4);
+            oFormat.ulCodeRange1 = new UINT(dwCodePage1);
+            oFormat.ulCodeRange2 = new UINT(dwCodePage2);
+
+            if (oFormat.bBold && *(oFormat.bBold) == 1 && oFormat.pPanose && oFormat.pPanose[2] < 7)
+                oFormat.pPanose[2] = 7;
+
+            oFormat.wsDefaultName = new std::wstring(L"Arial");
+
+            NSFonts::CFontInfo* pInfo = m_pManager->GetFontInfoByParams(oFormat);
+
+            oPick.m_strPickFont = pInfo->m_wsFontName;
+            oPick.m_lPickStyle = 0;
+            if (pInfo->m_bBold)
+                oPick.m_lPickStyle |= 0x01;
+            if (pInfo->m_bItalic)
+                oPick.m_lPickStyle |= 0x02;
+
 			m_strCurrentPickFont = oPick.m_strPickFont;
 			m_lCurrentPictFontStyle = oPick.m_lPickStyle;
 
-			SysFreeString(bsFontName);
-			SysFreeString(bsPanose);
-			SysFreeString(bsNewFontName);
-
-			RELEASEINTERFACE(pManager2);
-
+            m_arListPicUps.push_front(oPick);
 			return true;
 		}
+
+        bool CheckFontNameStyle(std::wstring& sName, const std::wstring& sStyle)
+        {
+            size_t nPos = 0;
+            size_t nLenReplace = sStyle.length();
+            bool bRet = false;
+
+            std::wstring sName2 = sName;
+            NSStringExt::ToLower(sName2);
+
+            while (std::wstring::npos != (nPos = sName2.find(sStyle, nPos)))
+            {
+                size_t nOffset = 0;
+                if ((nPos > 0) && sName2.at(nPos - 1) == '-')
+                {
+                    --nPos;
+                    ++nOffset;
+                }
+
+                bRet = true;
+                sName.erase(nPos, nLenReplace + nOffset);
+                sName2.erase(nPos, nLenReplace + nOffset);
+            }
+            return bRet;
+        }
+
+        void CheckFontNamePDF(std::wstring& sName, bool& bBold, bool& bItalic)
+        {
+            if (sName.length() > 7 && sName.at(6) == '+')
+            {
+                bool bIsRemove = true;
+                for (int nIndex = 0; nIndex < 6; nIndex++)
+                {
+                    wchar_t nChar = sName.at(nIndex);
+                    if (nChar < 'A' || nChar > 'Z')
+                    {
+                        bIsRemove = false;
+                        break;
+                    }
+                }
+                if (bIsRemove)
+                {
+                    sName.erase(0, 7);
+                }
+            }
+
+            CheckFontNameStyle(sName, L"regular");
+            CheckFontNameStyle(sName, L"condensed");
+            CheckFontNameStyle(sName, L"condensedlight");
+            //CheckFontNameStyle(sName, L"light");
+
+            CheckFontNameStyle(sName, L"condensedbold");
+            CheckFontNameStyle(sName, L"semibold");
+            if (CheckFontNameStyle(sName, L"boldmt")) bBold = true;
+            if (CheckFontNameStyle(sName, L"bold")) bBold = true;
+
+            if (CheckFontNameStyle(sName, L"italicmt")) bItalic = true;
+            if (CheckFontNameStyle(sName, L"italic")) bItalic = true;
+            if (CheckFontNameStyle(sName, L"oblique")) bItalic = true;
+
+            if (CheckFontNameStyle(sName, L"bolditalicmt")) { bBold = true; bItalic = true; }
+            if (CheckFontNameStyle(sName, L"bolditalic")) { bBold = true; bItalic = true; }
+            if (CheckFontNameStyle(sName, L"bold_italic")) { bBold = true; bItalic = true; }
+            if (CheckFontNameStyle(sName, L"boldoblique")) { bBold = true; bItalic = true; }
+            if (CheckFontNameStyle(sName, L"bold_oblique")) { bBold = true; bItalic = true; }
+        }
 	};
-};
+}
 
 #endif // DOCX_RENDERER_FMB_H

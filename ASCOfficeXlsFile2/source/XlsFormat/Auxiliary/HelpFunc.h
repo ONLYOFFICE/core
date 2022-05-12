@@ -71,6 +71,7 @@ namespace STR
 	const std::string	bin2str		(const char* buf, const size_t nbuf);
 	const std::wstring  guid2bstr	(const _GUID_ guid);
 	const std::string	guid2str	(const _GUID_ guid);
+    const std::wstring	guidFromStr	(const std::wstring & guid_str);
 	const bool			bstr2guid	(const std::wstring & guid_str, _GUID_& guid);
 	const std::wstring	int2hex_wstr(const int val, const size_t size_of = 4);
 
@@ -78,19 +79,19 @@ namespace STR
 	const std::wstring	escape_ST_Xstring	(const std::wstring& str);
 	const std::wstring	unescape_ST_Xstring	(const std::wstring& str);
 
-	const std::wstring	toARGB		(const unsigned int rgba);
+	const std::wstring	toARGB		(const _UINT32 rgba);
 	const std::wstring	toARGB		(const unsigned char red, const unsigned char green, const unsigned char blue, const unsigned char alpha);
-	const std::wstring	toRGB		(const unsigned int rgba);
+	const std::wstring	toRGB		(const _UINT32 rgba);
 	const std::wstring	toRGB		(const unsigned char red, const unsigned char green, const unsigned char blue);
 	const bool			fromARGB	(const std::wstring& argb, unsigned char& red, unsigned char& green, unsigned char& blue, unsigned char& alpha);
 	
 	const size_t		hex_str2int	(const std::wstring& hex);
 	const size_t		hex_str2int	(const std::wstring::const_iterator& it_begin, const std::wstring::const_iterator& it_end);
 
-	std::string		toStdString	(std::wstring wide_string, const unsigned int code_page);
-	std::wstring	toStdWString(std::string ansi_string, const unsigned int code_page);
-	std::wstring	toStdWString(char* ansi, int size, const unsigned int code_page);
-	//std::wstring	toStdWStringSystem(std::string ansi_string, const unsigned int code_page);  .. to UnicodeConverter
+	std::string		toStdString	(std::wstring wide_string, const _UINT32 code_page);
+	std::wstring	toStdWString(std::string ansi_string, const _UINT32 code_page);
+	std::wstring	toStdWString(char* ansi, int size, const _UINT32 code_page);
+	//std::wstring	toStdWStringSystem(std::string ansi_string, const _UINT32 code_page);  .. to UnicodeConverter
 };
 
 namespace XMLSTUFF

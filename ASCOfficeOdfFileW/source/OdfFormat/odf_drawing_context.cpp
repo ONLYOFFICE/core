@@ -293,8 +293,8 @@ public:
 	bool			is_background_;
 	_CP_OPT(int)	is_presentation_;
 
-	void				create_draw_base(int type);
-	office_element_ptr	create_draw_element(int type);
+	void				create_draw_base(eOdfDrawElements type);
+	office_element_ptr	create_draw_element(eOdfDrawElements type);
 
 	graphic_format_properties		*current_graphic_properties;
 	style_paragraph_properties		*current_paragraph_properties;
@@ -388,7 +388,7 @@ size_t odf_drawing_context::get_group_level()
 }
 void odf_drawing_context::start_group()
 {
-    office_element_ptr group_elm = impl_->create_draw_element(5000);
+    office_element_ptr group_elm = impl_->create_draw_element(drawGroup);
 
 	draw_g* group = dynamic_cast<draw_g*>(group_elm.get());
 
@@ -707,48 +707,48 @@ void odf_drawing_context::end_drawing()
 }
 
 ////////////////////////////////////////////////////////////////////////////
-office_element_ptr odf_drawing_context::Impl::create_draw_element(int type)
+office_element_ptr odf_drawing_context::Impl::create_draw_element(eOdfDrawElements type)
 {
 	office_element_ptr element;
 	switch(type)
 	{
-	case 0:
+	case drawFrame:
 		create_element(L"draw", L"frame", element, odf_context_);
 		break;
-	case 1:
+	case drawCaption:
 		create_element(L"draw", L"caption", element, odf_context_);
 		break;
-	case 2:
+	case drawRect:
 		create_element(L"draw", L"rect", element, odf_context_);
 		break;
-	case 3:
+	case drawEllipse:
 		create_element(L"draw", L"ellipse", element, odf_context_);
 		break;
-	case 4:
+	case drawCircle:
 		create_element(L"draw", L"circle", element, odf_context_);
 		break;
-	case 5:
+	case drawLine:
 		create_element(L"draw", L"line", element, odf_context_);
 		break;
-	case 6:
+	case drawPath:
 		create_element(L"draw", L"path", element, odf_context_);
 		break;
-	case 7:
+	case drawCustom:
 		create_element(L"draw", L"custom-shape", element, odf_context_);
 		break;
-	case 8:
+	case drawPolygon:
 		create_element(L"draw", L"polygon", element, odf_context_);
 		break;
-	case 9:
-	case 10:
+	case drawConnector:
+	case drawCurveConnector:
 	{
 		create_element(L"draw", L"connector", element, odf_context_);
 		draw_connector* connector = dynamic_cast<draw_connector*>(element.get());
 
-		if (type == 10)	connector->draw_connector_attlist_.draw_type_ = L"curve";
-		else			connector->draw_connector_attlist_.draw_type_ = L"standard";
+		if (type == drawCurveConnector)	connector->draw_connector_attlist_.draw_type_ = L"curve";
+		else							connector->draw_connector_attlist_.draw_type_ = L"standard";
 	}break;
-	case 5000:
+	case drawGroup:
 		create_element(L"draw", L"g", element, odf_context_);
 		break;
 	}
@@ -756,7 +756,7 @@ office_element_ptr odf_drawing_context::Impl::create_draw_element(int type)
 
 	return element;
 }
-void odf_drawing_context::Impl::create_draw_base(int type)
+void odf_drawing_context::Impl::create_draw_base(eOdfDrawElements type)
 {	
     office_element_ptr draw_elm = create_draw_element(type);
 
@@ -800,37 +800,37 @@ void odf_drawing_context::Impl::create_draw_base(int type)
 	current_drawing_state_.elements_.push_back(state);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	if (type == 7)
+	if (type == drawCustom)
 		current_drawing_state_.oox_shape_ = oox_shape_ptr(new oox_shape());
 }
 
-void odf_drawing_context::start_shape(int type)
+void odf_drawing_context::start_shape(int ooxDrawPreset)
 {
-	impl_->current_drawing_state_.oox_shape_preset_ = type;
+	impl_->current_drawing_state_.oox_shape_preset_ = ooxDrawPreset;
 	
-	if (type < sizeof(Shape_Types_Mapping)/sizeof(_sh_typ))
+	if (ooxDrawPreset < sizeof(Shape_Types_Mapping)/sizeof(_sh_typ))
 	{
-		impl_->create_draw_base(Shape_Types_Mapping[type].second);
+		impl_->create_draw_base(Shape_Types_Mapping[ooxDrawPreset].second);
 	}
-	else if (type == 1000)
+	else if (ooxDrawPreset == 1000)
 	{
-		impl_->create_draw_base(7);//пока кастом .. потом переделать на path, что правильнее
+		impl_->create_draw_base(drawCustom);//пока кастом .. потом переделать на path, что правильнее
 	}
-	else if (type == 1001)
+	else if (ooxDrawPreset == 1001)
 	{
-		impl_->create_draw_base(6); //path
+		impl_->create_draw_base(drawPath); //path
 	}
-	else if (type == 2000)
+	else if (ooxDrawPreset == 2000)
 	{
 		start_text_box();
 	}
-	else if (type == 3000)
+	else if (ooxDrawPreset == 3000)
 	{
 		start_image(L"");
 	}
-	else if (type > 2000 && type < 3000)	//custom text path
+	else if (ooxDrawPreset > 2000 && ooxDrawPreset < 3000)	//custom text path
 	{
-		impl_->create_draw_base(7); 
+		impl_->create_draw_base(drawCustom);
 	}
 }
 
@@ -855,7 +855,7 @@ bool odf_drawing_context::change_text_box_2_wordart()
 	if (t)
 	{
 	//------------------------------------------------------------------------
-		office_element_ptr draw_elm = impl_->create_draw_element(7);
+		office_element_ptr draw_elm = impl_->create_draw_element(drawCustom);
 		
 		draw_base* draw = dynamic_cast<draw_base*>(draw_elm.get());
 		if (draw == NULL)	return false;
@@ -896,7 +896,7 @@ bool odf_drawing_context::change_text_box_2_wordart()
 	if (s)
 	{
 	//------------------------------------------------------------------------
-		office_element_ptr draw_elm = impl_->create_draw_element(7);
+		office_element_ptr draw_elm = impl_->create_draw_element(drawCustom);
 		
 		draw_base* draw = dynamic_cast<draw_base*>(draw_elm.get());
 		if (draw == NULL)	return false;
@@ -1233,7 +1233,7 @@ void odf_drawing_context::corrected_line_fill() //for vml objects
 }
 void odf_drawing_context::start_frame()
 {
-	impl_->create_draw_base(0);
+	impl_->create_draw_base(drawFrame);
 	
 	if (impl_->current_graphic_properties)
 	{
@@ -1254,8 +1254,16 @@ void odf_drawing_context::start_element(office_element_ptr elm, office_element_p
 {
     size_t level = (int)impl_->current_level_.size();
 	
-	if (false == impl_->current_level_.empty() && elm)
-		impl_->current_level_.back()->add_child_element(elm);
+	//если  фейковый предыдущий уровень (для сохранения порядка выше) - привязывааем к уровню выше
+
+	for (int i = impl_->current_level_.size() - 1; elm && i >= 0; i--)
+	{
+		if (impl_->current_level_[i])
+		{
+			impl_->current_level_[i]->add_child_element(elm);
+			break;
+		}
+	}
 
 	std::wstring style_name;
 	style* style_ = dynamic_cast<style*>(style_elm.get());
@@ -1538,9 +1546,6 @@ void odf_drawing_context::set_z_order(int id)
 }
 void odf_drawing_context::set_path(std::wstring path_string)
 {
-	//boost::replace_all(path_string, L",,", L" 0 ");
-	//boost::replace_all(path_string, L" -", L"-");
-	//boost::replace_all(path_string, L",", L"0"); // нужен разбор
 	impl_->current_drawing_state_.path_ = path_string;
 }
 void odf_drawing_context::add_path_element(std::wstring command, std::wstring strE)
@@ -1837,10 +1842,13 @@ void odf_drawing_context::set_margin_bottom	(double valPt)
 }
 void odf_drawing_context::set_anchor(int  type)
 {
+	if (impl_->current_drawing_state_.in_group_) return;
+	
 	if ((impl_->is_footer_|| impl_->is_header_ || impl_->is_background_) && type == anchor_type::Page)
 	{
 		type = anchor_type::Paragraph;
 	}
+
 	impl_->anchor_settings_.anchor_type_ = anchor_type((anchor_type::type)type);
 }
 anchor_type::type odf_drawing_context::get_anchor()
@@ -2127,15 +2135,23 @@ void odf_drawing_context::set_position(_CP_OPT(double) & x_pt, _CP_OPT(double) &
 			//cy *= impl_->group_list_[i]->scale_cy;
 		}
 	}
-
+	else
+	{
+		if (false == impl_->group_list_.empty())
+		{
+			impl_->current_group_->shift_x = x / impl_->current_group_->scale_cx - impl_->current_group_->shift_x;
+			impl_->current_group_->shift_y = y / impl_->current_group_->scale_cy - impl_->current_group_->shift_y;
+		}
+	}
 	if (!impl_->current_drawing_state_.svg_x_ || impl_->current_drawing_state_.in_group_)
 	{
-		impl_->current_drawing_state_.svg_x_ = length(length(x , length::pt).get_value_unit(length::cm), length::cm);
-	}	
+		impl_->current_drawing_state_.svg_x_ = length(length(x, length::pt).get_value_unit(length::cm), length::cm);
+	}
 	if (!impl_->current_drawing_state_.svg_y_ || impl_->current_drawing_state_.in_group_)
 	{
 		impl_->current_drawing_state_.svg_y_ = length(length(y, length::pt).get_value_unit(length::cm), length::cm);
 	}
+
 }
 void odf_drawing_context::get_size( _CP_OPT(double) & width_pt, _CP_OPT(double) & height_pt)
 {
@@ -2177,11 +2193,22 @@ void odf_drawing_context::set_size( _CP_OPT(double) & width_pt, _CP_OPT(double) 
 	}
 	else
 	{
-        if ((!impl_->current_drawing_state_.svg_width_ || reset_always) && width_pt) 
-			impl_->current_drawing_state_.svg_width_ = length(length(*width_pt,length::pt).get_value_unit(length::cm), length::cm);
+		if (false == impl_->group_list_.empty())
+		{
+			if (impl_->current_group_->scale_cx)
+				impl_->current_group_->scale_cx = *width_pt / impl_->current_group_->scale_cx;
+			
+			if (impl_->current_group_->scale_cy)
+				impl_->current_group_->scale_cy = *height_pt / impl_->current_group_->scale_cy;
+		}
+		else
+		{
+			if ((!impl_->current_drawing_state_.svg_width_ || reset_always) && width_pt)
+				impl_->current_drawing_state_.svg_width_ = length(length(*width_pt, length::pt).get_value_unit(length::cm), length::cm);
 
-        if ((!impl_->current_drawing_state_.svg_height_ || reset_always) && height_pt) 
-			impl_->current_drawing_state_.svg_height_= length(length(*height_pt,length::pt).get_value_unit(length::cm), length::cm);
+			if ((!impl_->current_drawing_state_.svg_height_ || reset_always) && height_pt)
+				impl_->current_drawing_state_.svg_height_ = length(length(*height_pt, length::pt).get_value_unit(length::cm), length::cm);
+		}
 	}
 }
 void odf_drawing_context::set_line_width(double pt)
@@ -2641,9 +2668,26 @@ void odf_drawing_context::start_image(std::wstring odf_path)
 			
 	set_image_style_repeat(1);//default
 }
-void odf_drawing_context::start_object(std::wstring name)
+void odf_drawing_context::start_object(std::wstring name, bool in_frame)
 {
-	start_frame();
+	if (in_frame)
+		start_frame();
+	else
+	{
+		//remove text_box - он лишний (оставляя фейковый, который не запишется)
+		impl_->current_level_.back() = office_element_ptr(); // чтоб внутрении элементы добавлялись к тому что выше
+		
+		if (impl_->current_level_.size() > 1)
+		{
+			draw_base* draw = dynamic_cast<draw_base*>(impl_->current_level_[impl_->current_level_.size() - 2].get());
+			if (draw)
+			{
+				if (false == draw->content_.empty())
+					draw->content_.pop_back();
+			}
+
+		}
+	}
 	
 	office_element_ptr object_elm;
 	create_element(L"draw", L"object", object_elm, impl_->odf_context_);
@@ -3033,11 +3077,12 @@ void odf_drawing_context::end_text_box()
 
 	end_frame();
 }
-void odf_drawing_context::end_object()
+void odf_drawing_context::end_object(bool in_frame)
 {
 	end_element();
 
-	end_frame();
+	if (in_frame)
+		end_frame();
 }
 void odf_drawing_context::start_object_ole(std::wstring ref)
 {
@@ -3105,11 +3150,13 @@ void odf_drawing_context::set_text(odf_text_context* text_context)
 {
 	if (text_context == NULL || impl_->current_level_.empty() ) return;
 	
+	if (!impl_->current_level_.back()) return; // фейковый текстбокс к примеру
+
 	//if (impl_->is_presentation_ && *impl_->is_presentation_) return; 
 
 	for (size_t i = 0; i < text_context->text_elements_list_.size(); i++)
 	{
-		if (text_context->text_elements_list_[i].level ==0)
+		if (text_context->text_elements_list_[i].level == 0)
 		{
 			impl_->current_level_.back()->add_child_element(text_context->text_elements_list_[i].elm);
 		}

@@ -47,6 +47,9 @@
 #include <iomanip>
 #include <fstream>
 
+
+//#include <execinfo.h>
+
 //using namespace PPT_FORMAT;
 using namespace XLS;
 
@@ -133,7 +136,7 @@ public:
 //        void** backTraceData = (void**)(new char*[40]);
 //        int backTraceSize = backtrace(backTraceData, 40);
 
-//        std::ofstream file("/home/ivaz28/pp/52046/ppt/pptRecords.txt", std::ios::out | std::ios::app);
+//        std::ofstream file("/home/ivaz28/pp/dia/ppt/pptRecords.txt", std::ios::out | std::ios::app);
 
 //        file << std::string(backTraceSize - 11, ' ')
 //             << "0x" << std::setw(4) << std::setfill('0') << std::hex << (int)RecType

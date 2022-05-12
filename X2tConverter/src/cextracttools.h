@@ -95,6 +95,7 @@ namespace NExtractTools
 		TCD_XLSM2XLSX,
 		TCD_XLTM2XLSX,
         TCD_XLTM2XLSM,
+        TCD_XLSB2XLST,
 
         TCD_PPTX2PPTT,
         TCD_PPTT2PPTX,
@@ -233,6 +234,8 @@ namespace NExtractTools
         TCSVD_COMMA = 4,
         TCSVD_SPACE = 5
     } TCsvDelimiter;
+
+	const TConversionDirection getConversionDirectionFromExt (const std::wstring &sFile1, const std::wstring &sFile2);
 
     static bool copyOrigin(const std::wstring& sFileFrom, const std::wstring& sFileTo)
     {
@@ -390,6 +393,44 @@ namespace NExtractTools
 		}
 	};
 
+	class InputParamsText
+	{
+	public:
+		int* m_nTextAssociationType;
+		InputParamsText()
+		{
+			m_nTextAssociationType = NULL;
+		}
+		~InputParamsText()
+		{
+			RELEASEOBJECT(m_nTextAssociationType);
+		}
+
+		bool FromXmlNode(XmlUtils::CXmlNode& oNode)
+		{
+			XmlUtils::CXmlNodes oXmlNodes;
+			if (TRUE == oNode.GetChilds(oXmlNodes))
+			{
+				for (int i = 0; i < oXmlNodes.GetCount(); i++)
+				{
+					XmlUtils::CXmlNode oXmlNode;
+					if (oXmlNodes.GetAt(i, oXmlNode))
+					{
+						std::wstring sValue;
+						if (oXmlNode.GetTextIfExist(sValue))
+						{
+							std::wstring sName = oXmlNode.GetName();
+
+							if (_T("m_nTextAssociationType") == sName)
+								m_nTextAssociationType = new int(XmlUtils::GetInteger(sValue));
+						}
+					}
+				}
+			}
+			return true;
+		}
+	};
+
 	class InputLimit
 	{
 	public:
@@ -424,6 +465,7 @@ namespace NExtractTools
 		std::wstring* m_sThemeDir;
         InputParamsMailMerge* m_oMailMergeSend;
 		InputParamsThumbnail* m_oThumbnail;
+		InputParamsText* m_oTextParams;
 		std::wstring* m_sJsonParams;
 		std::wstring* m_sPassword;
 		std::wstring* m_sSavePassword;
@@ -432,6 +474,7 @@ namespace NExtractTools
 		bool* m_bIsNoBase64;
 		boost::unordered_map<int, std::vector<InputLimit>> m_mapInputLimits;
 		bool* m_bIsPDFA;
+		std::wstring* m_sConvertToOrigin;
 		//output params
 		mutable bool m_bOutputConvertCorrupted;
 		mutable bool m_bMacro;
@@ -456,6 +499,7 @@ namespace NExtractTools
 			m_sThemeDir = NULL;
             m_oMailMergeSend = NULL;
 			m_oThumbnail = NULL;
+			m_oTextParams = NULL;
 			m_sJsonParams = NULL;
 			m_sPassword = NULL;
 			m_sSavePassword = NULL;
@@ -463,6 +507,7 @@ namespace NExtractTools
 			m_sTempDir = NULL;
 			m_bIsNoBase64 = NULL;
 			m_bIsPDFA = NULL;
+			m_sConvertToOrigin = NULL;
 
 			m_bOutputConvertCorrupted = false;
 			m_bMacro = false;
@@ -487,6 +532,7 @@ namespace NExtractTools
 			RELEASEOBJECT(m_sThemeDir);
             RELEASEOBJECT(m_oMailMergeSend);
 			RELEASEOBJECT(m_oThumbnail);
+			RELEASEOBJECT(m_oTextParams);
 			RELEASEOBJECT(m_sJsonParams);
 			RELEASEOBJECT(m_sPassword);
 			RELEASEOBJECT(m_sSavePassword);
@@ -494,6 +540,7 @@ namespace NExtractTools
 			RELEASEOBJECT(m_sTempDir);
 			RELEASEOBJECT(m_bIsNoBase64);
 			RELEASEOBJECT(m_bIsPDFA);
+			RELEASEOBJECT(m_sConvertToOrigin);
 		}
 		
 		bool FromXmlFile(const std::wstring& sFilename)
@@ -542,6 +589,12 @@ namespace NExtractTools
 							RELEASEOBJECT(m_oThumbnail);
 							m_oThumbnail = new InputParamsThumbnail();
 							m_oThumbnail->FromXmlNode(oXmlNode);
+						}
+						else if(_T("m_oTextParams") == sName)
+						{
+							RELEASEOBJECT(m_oTextParams);
+							m_oTextParams = new InputParamsText();
+							m_oTextParams->FromXmlNode(oXmlNode);
 						}
 						else if(_T("m_oInputLimits") == sName)
 						{
@@ -667,6 +720,11 @@ namespace NExtractTools
 									RELEASEOBJECT(m_bIsPDFA);
 									m_bIsPDFA = new bool(XmlUtils::GetBoolean2(sValue));
 								}
+								else if(_T("m_sConvertToOrigin") == sName)
+								{
+									RELEASEOBJECT(m_sConvertToOrigin);
+									m_sConvertToOrigin = new std::wstring(sValue);
+								}
 							}
 							else if(_T("m_nCsvDelimiterChar") == sName)
 							{
@@ -751,6 +809,17 @@ namespace NExtractTools
 		{
 			return (NULL != m_bIsPDFA) ? (*m_bIsPDFA) : false;
 		}
+		std::wstring getConvertToOrigin() const
+		{
+			return (NULL != m_sConvertToOrigin) ? (*m_sConvertToOrigin) : L"";
+		}
+		bool needConvertToOrigin(long nFormatFrom) const
+		{
+			COfficeFileFormatChecker FileFormatChecker;
+			std::wstring sExt = FileFormatChecker.GetExtensionByType(nFormatFrom);
+			size_t index = getConvertToOrigin().find(sExt);
+			return std::wstring::npos != index;
+		}
         std::wstring getXmlOptions()
 		{
             std::wstring sRes;
@@ -777,6 +846,8 @@ namespace NExtractTools
             int nFileType = 1;
             if(NULL != m_nFormatFrom && AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == *m_nFormatFrom)
                 nFileType = 2;
+            else if(NULL != m_nFormatFrom && AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB == *m_nFormatFrom)
+                nFileType = 4;
 
             std::wstring sSaveType;
             if(NULL != m_nFormatTo)
@@ -798,6 +869,17 @@ namespace NExtractTools
 		TConversionDirection getConversionDirection()
 		{
 			TConversionDirection eRes = TCD_AUTO;
+			if((NULL == m_nFormatFrom || AVS_OFFICESTUDIO_FILE_UNKNOWN == *m_nFormatFrom) && NULL == m_nFormatTo && NULL != m_sFileFrom && NULL != m_sFileTo)
+			{
+				eRes = getConversionDirectionFromExt (*m_sFileFrom, *m_sFileTo);
+				if (TCD_ERROR != eRes)
+					return eRes;
+				COfficeFileFormatChecker FileFormatChecker;
+				RELEASEOBJECT(m_nFormatFrom);
+				m_nFormatFrom = new int(FileFormatChecker.GetFormatByExtension(L"." + NSFile::GetFileExtention(*m_sFileFrom)));
+				RELEASEOBJECT(m_nFormatTo);
+				m_nFormatTo = new int(FileFormatChecker.GetFormatByExtension(L"." + NSFile::GetFileExtention(*m_sFileTo)));
+			}
 
 			if(NULL != m_nFormatFrom && NULL != m_nFormatTo)
 			{
@@ -848,23 +930,9 @@ namespace NExtractTools
                 else if(AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatFrom && AVS_OFFICESTUDIO_FILE_OTHER_ZIP == nFormatTo)
                     eRes = TCD_ZIPDIR;
             }
-			else if(NULL != m_sFileFrom && NULL != m_sFileTo)
-			{
-				eRes = TCD_AUTO;
-			}
 			else
 				eRes = TCD_ERROR;
 			return eRes;
-		}
-		TConversionDirection getConversionDirectionFromExt()
-		{
-			if (NULL != m_sFileTo)
-			{
-				COfficeFileFormatChecker FileFormatChecker;
-				RELEASEOBJECT(m_nFormatTo);
-				m_nFormatTo = new int(FileFormatChecker.GetFormatByExtension(L"." + NSFile::GetFileExtention(*m_sFileTo)));
-			}
-			return getConversionDirection();
 		}
 		TConversionDirection processDownloadFile()
         {
@@ -1259,7 +1327,6 @@ namespace NExtractTools
 		return res;
     }
 
-	const TConversionDirection getConversionDirectionFromExt (const std::wstring &sFile1, const std::wstring &sFile2);
     static bool compare_string_by_length (const std::wstring &x, const std::wstring &y)
 	{
 		if (!x.empty() && !y.empty())
@@ -1280,7 +1347,7 @@ namespace NExtractTools
 	}
     std::wstring getMailMergeXml(const std::wstring& sJsonPath, int nRecordFrom, int nRecordTo, const std::wstring& sField);
     std::wstring getDoctXml(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, NSDoctRenderer::DoctRendererFormat::FormatFile eToType,
-                            const std::wstring& sTFileDir, const std::wstring& sPdfBinFile, const std::wstring& sImagesDirectory,
+                            const std::wstring& sTFileSrc, const std::wstring& sPdfBinFile, const std::wstring& sImagesDirectory,
                             const std::wstring& sThemeDir, int nTopIndex, const std::wstring& sMailMerge, const InputParams& params);
     _UINT32 apply_changes(const std::wstring &sBinFrom, const std::wstring &sToResult, NSDoctRenderer::DoctRendererFormat::FormatFile eType, const std::wstring &sThemeDir, std::wstring &sBinTo, const InputParams& params);
 }

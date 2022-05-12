@@ -74,25 +74,28 @@ public:
 
 	virtual odf_style_context		* styles_context();
 		
-	odf_comment_context				* comment_context(); 
+	odf_comment_context				* comment_context();
 	odf_table_context				* table_context();
 	
 	odf_notes_context				* notes_context();
-	void start_drawings		();
-	void end_drawings		();
+	void start_drawings ();
+	void end_drawings ();
+
+	virtual bool start_math();
+	virtual void end_math();
 
 	void add_text_content	(const std::wstring & text);
 
-	void start_paragraph	(bool styled = false);
-	void end_paragraph		();
+	void start_paragraph (bool styled = false);
+	void end_paragraph ();
 
 	void add_paragraph_break(int type);
 
-	void start_hyperlink	(const std::wstring& link, const std::wstring& location);
-	void end_hyperlink		();
+	void start_hyperlink (const std::wstring& link, const std::wstring& location);
+	void end_hyperlink ();
 	
-	void start_bookmark		(int id, const std::wstring& name);
-	void end_bookmark		(int id);
+	void start_bookmark (int id, const std::wstring& name);
+	void end_bookmark (int id);
 
 	void start_sequence ();
 	void end_sequence ();

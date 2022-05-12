@@ -32,13 +32,11 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/FilePointer.h>
+#include "../Biff_structures/FilePointer.h"
 
 namespace XLS
 {
 
-
-// Logical representation of Index record in BIFF8
 class Index: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Index)
@@ -48,11 +46,10 @@ public:
 	~Index();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeIndex;
+	static const ElementType type = typeIndex;
 
 //-----------------------------
 	BackwardOnlyParam<_UINT32>	rwMic;
@@ -63,6 +60,6 @@ public:
 	BiffStructurePtrVector rgibRw;
 
 };
-
+//000BH biff2
 } // namespace XLS
 

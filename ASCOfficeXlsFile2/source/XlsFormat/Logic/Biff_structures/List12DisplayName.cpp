@@ -31,7 +31,6 @@
  */
 
 #include "List12DisplayName.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

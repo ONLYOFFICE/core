@@ -120,7 +120,8 @@ enum _fill_type
 	fillPattern,
 	fillTexture,
 	fillGradient,
-	fillGradientOne
+	fillGradientOne,
+	fillUndefined
 };
 enum _texture_mode
 {
@@ -156,6 +157,7 @@ public:
 	std::wstring			xmlTxBodyAlternative;
 	std::wstring			xmlFillAlternative;
 	std::wstring			xmlEffectAlternative;
+	std::wstring			xmlStyleAlternative;
 
 	std::wstring			objectId;
 	std::wstring			objectProgId;
@@ -205,8 +207,8 @@ public:
 	_rect							custom_rect;
 	std::vector<_CP_OPT(int)>		custom_adjustValues;
 	int								custom_path= -1;
-	int								custom_x_limo = 0x80000000;
-	int								custom_y_limo = 0x80000000;
+	size_t							custom_x_limo = 0x80000000;
+	size_t							custom_y_limo = 0x80000000;
 //-----------------------------------------------
 	std::wstring					hyperlink;
 	struct _text
@@ -422,7 +424,7 @@ public:
         void set_fill_color			(int nColor, const std::wstring & sColor, bool background = false);
 		void set_fill_color			(int index, int type, bool background = false);
  		void set_fill_opacity		(double val, bool background = false);       
-		void set_fill_type			(int val);
+		void set_fill_type			(_fill_type val);
 		void set_fill_angle			(double val);
 		void set_fill_texture_mode	(int val);
         void set_fill_texture		(const std::wstring & str);

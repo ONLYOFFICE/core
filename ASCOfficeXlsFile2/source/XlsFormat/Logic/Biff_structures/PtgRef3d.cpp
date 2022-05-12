@@ -33,7 +33,6 @@
 #include "PtgRef3d.h"
 #include "RevExtern.h"
 #include "CellRef.h"
-#include <Binary/CFRecord.h>
 
 #include <boost/algorithm/string.hpp>
 
@@ -48,6 +47,7 @@ PtgRef3d::PtgRef3d(const unsigned short full_ptg_id, const CellRef& cell_base_re
 PtgRef3d::PtgRef3d(const unsigned short ixti_init, const std::wstring& ref_str, const PtgDataType data_type, const CellRef& cell_base_ref_init)
 :	OperandPtg(fixed_id | (static_cast<unsigned char>(data_type) << 5)),
 	rgce_loc(boost::algorithm::to_upper_copy(ref_str)),
+    rgce_loc_xlsb(boost::algorithm::to_upper_copy(ref_str)),
 	ixti(ixti_init),
 	cell_base_ref(cell_base_ref_init)
 {
@@ -83,12 +83,16 @@ void PtgRef3d::loadFields(CFRecord& record)
 		rgce_loc.column			= col;
 		rgce_loc.row			= GETBITS(rw, 0, 13);
 	}
-	else
-	{
-		record >> ixti >> rgce_loc;
-	
-		rgce_loc_rel = rgce_loc;
-	}
+    else if (global_info->Version < 0x0800)
+    {
+        record >> ixti >> rgce_loc;
+
+        rgce_loc_rel = rgce_loc;
+    }
+    else
+    {
+        record >> ixti >> rgce_loc_xlsb;
+    }
 	
 }
 
@@ -104,7 +108,15 @@ void PtgRef3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool fu
 		extra_data.pop();
 		return;
 	}
-	std::wstring cell_ref = rgce_loc.toString();
+    std::wstring cell_ref;
+    if (global_info->Version < 0x0800)
+    {
+       cell_ref = rgce_loc.toString();
+    }
+    else
+    {
+        cell_ref = rgce_loc_xlsb.toString();
+    }
 
 	if (global_info->Version < 0x0600)
 	{

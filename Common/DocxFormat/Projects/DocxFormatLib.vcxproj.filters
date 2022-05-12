@@ -79,9 +79,6 @@
     <Filter Include="Headers and Footers">
       <UniqueIdentifier>{b6708f83-36ae-4023-9775-911656ab244d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Fonts">
-      <UniqueIdentifier>{140828f3-10ae-46f8-97d3-7467bafa5915}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Media">
       <UniqueIdentifier>{0e0298e4-3603-4007-8f6d-f180a5f03ac2}</UniqueIdentifier>
     </Filter>
@@ -96,9 +93,6 @@
     </Filter>
     <Filter Include="Utility\FileSys">
       <UniqueIdentifier>{547fea33-88e2-4642-9c2a-c290c3405e3e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Common">
-      <UniqueIdentifier>{548a010c-e7a5-43ed-ae81-770c2e93141a}</UniqueIdentifier>
     </Filter>
     <Filter Include="Comments">
       <UniqueIdentifier>{bf396d1c-4838-484f-bbc6-1398bb363c27}</UniqueIdentifier>
@@ -162,9 +156,15 @@
     </Filter>
     <Filter Include="Diagram">
       <UniqueIdentifier>{da1b6ba4-f567-4fa5-afe5-ba031ec0ad29}</UniqueIdentifier>
-     </Filter>
-   <Filter Include="XlsxFormat\Slicer\Styles">
+    </Filter>
+    <Filter Include="Logic\Common">
+      <UniqueIdentifier>{b119b15b-959b-4679-9848-0918f9d71193}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XlsxFormat\Styles">
       <UniqueIdentifier>{ebf55a86-a27b-4d5d-a95b-1f9cbc890855}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\Fonts">
+      <UniqueIdentifier>{140828f3-10ae-46f8-97d3-7467bafa5915}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -277,10 +277,10 @@
       <Filter>Headers and Footers</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\DocxFormat\Font.h">
-      <Filter>Fonts</Filter>
+      <Filter>External\Fonts</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\DocxFormat\FontTable.h">
-      <Filter>Fonts</Filter>
+      <Filter>External\Fonts</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\DocxFormat\Media\ActiveX.h">
       <Filter>Media</Filter>
@@ -332,63 +332,6 @@
     </ClInclude>
     <ClInclude Include="..\Source\SystemUtility\SystemUtility.h">
       <Filter>Utility\FileSys</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\AbstractConverter.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\Align.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\Color.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\Common.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\ComplexTypes.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\Encoding.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\Index.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\NumFormat.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\Point.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\Position.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\SimpleTypes_Base.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\SimpleTypes_Drawing.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\SimpleTypes_Shared.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\SimpleTypes_Vml.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\SimpleTypes_Word.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\Size.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\Unit.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\Wrap.h">
-      <Filter>Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\Common\ZIndex.h">
-      <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\DocxFormat\Comments.h">
       <Filter>Comments</Filter>
@@ -478,37 +421,37 @@
       <Filter>XlsxFormat\SharedStrings</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\XlsxFormat\Styles\Borders.h">
-      <Filter>XlsxFormat\Slicer\Styles</Filter>
+      <Filter>XlsxFormat\Styles</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\XlsxFormat\Styles\CellStyles.h">
-      <Filter>XlsxFormat\Slicer\Styles</Filter>
+      <Filter>XlsxFormat\Styles</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\XlsxFormat\Styles\Colors.h">
-      <Filter>XlsxFormat\Slicer\Styles</Filter>
+      <Filter>XlsxFormat\Styles</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\XlsxFormat\Styles\dxf.h">
-      <Filter>XlsxFormat\Slicer\Styles</Filter>
+      <Filter>XlsxFormat\Styles</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\XlsxFormat\Styles\Fills.h">
-      <Filter>XlsxFormat\Slicer\Styles</Filter>
+      <Filter>XlsxFormat\Styles</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\XlsxFormat\Styles\Fonts.h">
-      <Filter>XlsxFormat\Slicer\Styles</Filter>
+      <Filter>XlsxFormat\Styles</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\XlsxFormat\Styles\NumFmts.h">
-      <Filter>XlsxFormat\Slicer\Styles</Filter>
+      <Filter>XlsxFormat\Styles</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\XlsxFormat\Styles\rPr.h">
-      <Filter>XlsxFormat\Slicer\Styles</Filter>
+      <Filter>XlsxFormat\Styles</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\XlsxFormat\Styles\Styles.h">
-      <Filter>XlsxFormat\Slicer\Styles</Filter>
+      <Filter>XlsxFormat\Styles</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\XlsxFormat\Styles\TableStyles.h">
-      <Filter>XlsxFormat\Slicer\Styles</Filter>
+      <Filter>XlsxFormat\Styles</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\XlsxFormat\Styles\Xfs.h">
-      <Filter>XlsxFormat\Slicer\Styles</Filter>
+      <Filter>XlsxFormat\Styles</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\XlsxFormat\Table\Autofilter.h">
       <Filter>XlsxFormat\Table</Filter>
@@ -712,6 +655,30 @@
     <ClInclude Include="..\Source\XlsxFormat\Worksheets\WorksheetChildOther.h">
       <Filter>XlsxFormat\Worksheets</Filter>
     </ClInclude>
+    <ClInclude Include="..\Source\Common\ComplexTypes.h">
+      <Filter>Logic\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\SimpleTypes_Base.h">
+      <Filter>Logic\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\SimpleTypes_Drawing.h">
+      <Filter>Logic\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\SimpleTypes_OMath.h">
+      <Filter>Logic\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\SimpleTypes_Shared.h">
+      <Filter>Logic\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\SimpleTypes_Vml.h">
+      <Filter>Logic\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\SimpleTypes_Word.h">
+      <Filter>Logic\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\Unit.h">
+      <Filter>Logic\Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\DocxFormat\Logic\Table.cpp">
@@ -774,30 +741,6 @@
     <ClCompile Include="..\Source\SystemUtility\SystemUtility.cpp">
       <Filter>Utility\FileSys</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Common\Align.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Common\Color.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Common\Index.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Common\NumFormat.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Common\Position.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Common\SimpleTypes_Word.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Common\Wrap.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Common\ZIndex.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\DocxFormat\Comments.cpp">
       <Filter>Comments</Filter>
     </ClCompile>
@@ -829,7 +772,7 @@
       <Filter>XlsxFormat\SharedStrings</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\XlsxFormat\Styles\rPr.cpp">
-      <Filter>XlsxFormat\Slicer\Styles</Filter>
+      <Filter>XlsxFormat\Styles</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\XlsxFormat\Table\Tables.cpp">
       <Filter>XlsxFormat\Table</Filter>
@@ -921,6 +864,12 @@
     </ClCompile>
     <ClCompile Include="..\Source\DocxFormat\Settings\Settings.cpp">
       <Filter>Settings\DocumentSettings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Common\SimpleTypes_Word.cpp">
+      <Filter>Logic\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Media\Media.cpp">
+      <Filter>Media</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

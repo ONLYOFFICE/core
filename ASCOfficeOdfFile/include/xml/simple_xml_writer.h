@@ -41,7 +41,7 @@ namespace cpdoccore
 {
 
 namespace xml 
-{
+{  
 
 namespace writer 
 {
@@ -83,7 +83,7 @@ namespace writer
         static const wchar_t apos = L'\'';
         static const wchar_t * cdata_open() { return L"<![CDATA["; }
         static const wchar_t * cdata_close() { return L"]]>"; }
-        static const wchar_t * amp_str(){ return L"&amp;"; }
+        static const wchar_t * amp_str(){ return L"&"/* L"&amp;"*/; }
         static const wchar_t * left_brocket_str() { return L"&lt;"; }
         static const wchar_t * right_brocket_str() { return L"&gt;"; }
         static const wchar_t * apos_str() { return L"&apos;"; }
@@ -225,7 +225,7 @@ namespace writer
         template <class V>
         element& contents(V value) 
         {
-            std::basic_stringstream<T, std::char_traits<T>,	std::allocator<T> > ss;
+            std::basic_stringstream<T, std::char_traits<T>,	std::allocator<T> > ss;              
             ss << value;
             contents(ss.str());
             return *this;
@@ -319,9 +319,12 @@ typedef xml::writer::element<wchar_t> xml_element;
 #define CP_ATTR_NODE xml_element & _xml_node_
 
 
-
 #define CP_XML_ATTR_OPT(NAME, VAL) if (VAL)CP_XML_ATTR(NAME, (*VAL))
+#define CP_XML_ATTR_OPT_ENCODE_STRING(NAME, STR) if (STR)CP_XML_ATTR(NAME, XmlUtils::EncodeXmlString(XmlUtils::EncodeXmlString(*STR)))
 
 #define CP_XML_NODE_SIMPLE() std::wstring NS_NAME = std::wstring(ns) + std::wstring(L":") + std::wstring(name); CP_XML_NODE(NS_NAME)
+
+#define CP_XML_NODE_SIMPLE_NONS() CP_XML_NODE(std::wstring(name))
+
 
 }

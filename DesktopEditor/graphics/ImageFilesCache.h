@@ -63,8 +63,8 @@ public:
         }
         else
         {
-            MetaFile::CMetaFile oMetafile(pFonts);
-            bool bIsMetafile = oMetafile.LoadFromFile(strFile.c_str());
+            MetaFile::IMetaFile* pMetafile = MetaFile::Create(pFonts);
+            bool bIsMetafile = pMetafile->LoadFromFile(strFile.c_str());
             if (!bIsMetafile)
             {
                 m_oImage.Create(strFile);
@@ -72,11 +72,12 @@ public:
             else
             {
                 std::wstring sTempFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"AscMetafile_");
-                oMetafile.ConvertToRaster(sTempFile.c_str(), 4, 1000, -1);
+                pMetafile->ConvertToRaster(sTempFile.c_str(), 4, 1000, -1);
                 m_oImage.Create(sTempFile);
 
                 NSFile::CFileBinary::Remove(sTempFile);
             }
+            RELEASEINTERFACE(pMetafile);
         }
 	}
 
@@ -161,11 +162,29 @@ public:
         }
 
         CCacheImage* pImage = new CCacheImage(m_pApplicationFonts, strFile);
-		m_mapImages[strFile] = pImage;
 
+        if (pImage->GetImage()->GetLastStatus() != Aggplus::Ok)
+            return pImage;
+
+		m_mapImages[strFile] = pImage;
 		pImage->AddRef();
 		return pImage;
 	}
+
+    virtual bool UnLock(const std::wstring& strFile)
+    {
+        CTemporaryCS oCS(&m_oCS);
+
+        std::map<std::wstring,CCacheImage*>::iterator it = m_mapImages.find(strFile);
+        if (it != m_mapImages.end())
+        {
+            it->second->Release();
+            m_mapImages.erase(it);
+            return true;
+        }
+
+        return false;
+    }
 	
     virtual int Release()
 	{

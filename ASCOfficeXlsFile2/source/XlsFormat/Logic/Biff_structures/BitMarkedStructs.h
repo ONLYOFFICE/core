@@ -35,10 +35,10 @@
     #include <inttypes.h>
 #endif
 
-#include "../../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../../../../Common/DocxFormat/Source/Base/Types_32.h"
 #include "BiffStructure.h"
 #include "BiffAttribute.h"
-#include <Auxiliary/HelpFunc.h>
+#include "../../Auxiliary/HelpFunc.h"
 #include "Boolean.h"
 
 #pragma pack(1)
@@ -67,6 +67,8 @@ typedef unsigned char	ColunByte;
 typedef unsigned char	ColunByteU;
 
 typedef _INT32			Rw12;
+typedef _INT32			UncheckedRw; // in biff12
+typedef _INT32			UncheckedCol; // in biff12
 typedef _INT32			Col12;
 typedef unsigned short	Rwx;
 typedef unsigned short	Colx;
@@ -155,6 +157,10 @@ struct BErr : public BiffStructure_NoVtbl
 		{
 			err = 0x2A;
 		}
+        else if(std::wstring (L"#GETTING_DATA") == str) // in biff12
+        {
+            err = 0x2B;
+        }
 		else
 		{
 			// EXCEPT::RT::WrongBiffRecord("Unsupported type of BErr.", "unknown");
@@ -179,6 +185,8 @@ struct BErr : public BiffStructure_NoVtbl
 			return L"#NUM!";
 		case 0x2A:
 			return L"#N/A";
+        case 0x2B:
+            return L"#GETTING_DATA"; // in biff12
 		default:
 			// EXCEPT::RT::WrongBiffRecord("Unsupported type of BErr.", "unknown");
 			break;
@@ -308,6 +316,34 @@ struct KPISets : public BiffStructure_NoVtbl
 	};
 };
 
+struct KPISets14 : public BiffStructure_NoVtbl // in biff12
+{
+    _UINT32 set;
+    enum {
+        KPINIL_14 = 0xFFFFFFFF, // Sort by no-icon
+        KPI3ARROWS_14 = 0x00000000, // Kpi3 Arrows set
+        KPI3ARROWSGRAY_14 = 0x00000001, // Kpi3 Arrows Gray set
+        KPI3FLAGS_14 = 0x00000002, // Kpi3 Flags set
+        KPI3TRAFFICLIGHTS1_14 = 0x00000003, // Kpi3 Traffic Lights 1 set
+        KPI3TRAFFICLIGHTS2_14 = 0x00000004, // Kpi3 Traffic Lights 2 set
+        KPI3SIGNS_14 = 0x00000005, // Kpi3 Signs set
+        KPI3SYMBOLS_14 = 0x00000006, // Kpi3 Symbols set
+        KPI3SYMBOLS2_14 = 0x00000007, // Kpi3 Symbols 2 set
+        KPI4ARROWS_14 = 0x00000008, // Kpi4 Arrows set
+        KPI4ARROWSGRAY_14 = 0x00000009, // Kpi4 Arrows Gray set
+        KPI4REDTOBLACK_14 = 0x0000000A, // Kpi4 Red To Black set
+        KPI4RATING_14 = 0x0000000B, // Kpi4 Rating set
+        KPI4TRAFFICLIGHTS_14 = 0x0000000C, // Kpi4 Traffic Lights set
+        KPI5ARROWS_14 = 0x0000000D, // Kpi5 Arrows set
+        KPI5ARROWSGRAY_14 = 0x0000000E, // Kpi5 Arrows Gray set
+        KPI5RATING_14 = 0x0000000F, // Kpi5 Rating set
+        KPI5QUARTERS_14 = 0x00000010, // Kpi5 Quarters set
+        KPI3STARS_14 = 0x00000011, // Kpi3 Stars set
+        KPI3TRIANGLES_14 = 0x00000012, // Kpi3 Triangles set
+        KPI5BOXES_14 = 0x00000013 // Kpi5 Boxes set
+    };
+};
+
 
 struct CFFlag : public BiffStructure_NoVtbl
 {
@@ -315,6 +351,11 @@ struct CFFlag : public BiffStructure_NoVtbl
 	long iIcon;
 };
 
+struct CFFlag14 : public BiffStructure_NoVtbl // in biff12
+{
+    KPISets14 iIconSet;
+    long iIcon;
+};
 
 struct FrtFlags : public BiffStructure_NoVtbl
 {

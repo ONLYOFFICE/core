@@ -1204,7 +1204,7 @@ namespace SimpleTypes
 			else
 				m_bTrailingPercentSign = false;
 
-            m_dValue = _wtof( sValue.substr(0, nLen).c_str() );
+            m_dValue = XmlUtils::GetDouble( sValue.substr(0, nLen));
 
 			return m_dValue;
 		}
@@ -4304,7 +4304,7 @@ namespace SimpleTypes
 	{
 	public:
 		CPageOrientation() {}
-
+                CPageOrientation(const EPageOrientation & val)	{ this->m_eValue = val; }
         virtual EPageOrientation FromString(std::wstring &sValue)
 		{
             if      ( (L"landscape") == sValue ) this->m_eValue = pageorientLandscape;

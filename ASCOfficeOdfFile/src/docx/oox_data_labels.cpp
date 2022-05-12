@@ -29,10 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-
-
-#include <CPOptional.h>
-#include <xml/simple_xml_writer.h>
+#include "../../include/xml/simple_xml_writer.h"
 
 #include "oox_data_labels.h"
 #include "oox_chart_shape.h"

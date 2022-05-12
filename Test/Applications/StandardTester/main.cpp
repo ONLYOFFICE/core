@@ -603,6 +603,7 @@ CConverter* CInternalWorker::GetNextConverter()
         return NULL;
 
     CConverter* pConverter = new CConverter(this);
+    pConverter->DestroyOnFinish();
     pConverter->m_file = m_files[m_nCurrent];
     ++m_nCurrent;
     std::wstring sName = NSFile::GetFileName(pConverter->m_file);
@@ -621,11 +622,9 @@ void CInternalWorker::OnConvertFile(CConverter* pConverter, int nCode)
 {
     CTemporaryCS oCS(&m_oCS);
 
-    std::cout << "file (complete) : " << U_TO_UTF8(m_files[m_nCurrentComplete]) << ", code : " << nCode << std::endl;
+    std::cout << "file (complete) : " << U_TO_UTF8(pConverter->m_file) << ", code : " << nCode << std::endl;
 
     ++m_nCurrentComplete;
-
-    RELEASEOBJECT(pConverter);
     GetNextConverter();
 }
 

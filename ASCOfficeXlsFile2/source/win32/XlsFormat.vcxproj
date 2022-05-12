@@ -69,8 +69,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
-    <IncludePath>D:\_Work\core\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\_Work\core\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\..\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
@@ -87,7 +87,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\XlsFormat;..\Common;..\..\..\DesktopEditor\freetype-2.5.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -686,6 +686,7 @@
     <ClInclude Include="..\XlsFormat\Logic\Biff_structures\PtgAttrChoose.h" />
     <ClInclude Include="..\XlsFormat\Logic\Biff_structures\PtgAttrGoto.h" />
     <ClInclude Include="..\XlsFormat\Logic\Biff_structures\PtgAttrIf.h" />
+    <ClInclude Include="..\XlsFormat\Logic\Biff_structures\PtgAttrIfError.h" />
     <ClInclude Include="..\XlsFormat\Logic\Biff_structures\PtgAttrSemi.h" />
     <ClInclude Include="..\XlsFormat\Logic\Biff_structures\PtgAttrSpace.h" />
     <ClInclude Include="..\XlsFormat\Logic\Biff_structures\PtgAttrSpaceSemi.h" />
@@ -704,12 +705,15 @@
     <ClInclude Include="..\XlsFormat\Logic\Biff_structures\PtgErr.h" />
     <ClInclude Include="..\XlsFormat\Logic\Biff_structures\PtgExp.h" />
     <ClInclude Include="..\XlsFormat\Logic\Biff_structures\PtgExtraArray.h" />
+    <ClInclude Include="..\XlsFormat\Logic\Biff_structures\PtgExtraCol.h" />
     <ClInclude Include="..\XlsFormat\Logic\Biff_structures\PtgExtraElf.h" />
+    <ClInclude Include="..\XlsFormat\Logic\Biff_structures\PtgExtraList.h" />
     <ClInclude Include="..\XlsFormat\Logic\Biff_structures\PtgExtraMem.h" />
     <ClInclude Include="..\XlsFormat\Logic\Biff_structures\PtgFactory.h" />
     <ClInclude Include="..\XlsFormat\Logic\Biff_structures\PtgFunc.h" />
     <ClInclude Include="..\XlsFormat\Logic\Biff_structures\PtgFuncVar.h" />
     <ClInclude Include="..\XlsFormat\Logic\Biff_structures\PtgInt.h" />
+    <ClInclude Include="..\XlsFormat\Logic\Biff_structures\PtgList.h" />
     <ClInclude Include="..\XlsFormat\Logic\Biff_structures\PtgMemArea.h" />
     <ClInclude Include="..\XlsFormat\Logic\Biff_structures\PtgMemAreaN.h" />
     <ClInclude Include="..\XlsFormat\Logic\Biff_structures\PtgMemErr.h" />
@@ -1479,6 +1483,7 @@
     <ClCompile Include="..\XlsFormat\Logic\Biff_structures\PtgAttrChoose.cpp" />
     <ClCompile Include="..\XlsFormat\Logic\Biff_structures\PtgAttrGoto.cpp" />
     <ClCompile Include="..\XlsFormat\Logic\Biff_structures\PtgAttrIf.cpp" />
+    <ClCompile Include="..\XlsFormat\Logic\Biff_structures\PtgAttrIfError.cpp" />
     <ClCompile Include="..\XlsFormat\Logic\Biff_structures\PtgAttrSemi.cpp" />
     <ClCompile Include="..\XlsFormat\Logic\Biff_structures\PtgAttrSpace.cpp" />
     <ClCompile Include="..\XlsFormat\Logic\Biff_structures\PtgAttrSpaceSemi.cpp" />
@@ -1497,12 +1502,15 @@
     <ClCompile Include="..\XlsFormat\Logic\Biff_structures\PtgErr.cpp" />
     <ClCompile Include="..\XlsFormat\Logic\Biff_structures\PtgExp.cpp" />
     <ClCompile Include="..\XlsFormat\Logic\Biff_structures\PtgExtraArray.cpp" />
+    <ClCompile Include="..\XlsFormat\Logic\Biff_structures\PtgExtraCol.cpp" />
     <ClCompile Include="..\XlsFormat\Logic\Biff_structures\PtgExtraElf.cpp" />
+    <ClCompile Include="..\XlsFormat\Logic\Biff_structures\PtgExtraList.cpp" />
     <ClCompile Include="..\XlsFormat\Logic\Biff_structures\PtgExtraMem.cpp" />
     <ClCompile Include="..\XlsFormat\Logic\Biff_structures\PtgFactory.cpp" />
     <ClCompile Include="..\XlsFormat\Logic\Biff_structures\PtgFunc.cpp" />
     <ClCompile Include="..\XlsFormat\Logic\Biff_structures\PtgFuncVar.cpp" />
     <ClCompile Include="..\XlsFormat\Logic\Biff_structures\PtgInt.cpp" />
+    <ClCompile Include="..\XlsFormat\Logic\Biff_structures\PtgList.cpp" />
     <ClCompile Include="..\XlsFormat\Logic\Biff_structures\PtgMemArea.cpp" />
     <ClCompile Include="..\XlsFormat\Logic\Biff_structures\PtgMemAreaN.cpp" />
     <ClCompile Include="..\XlsFormat\Logic\Biff_structures\PtgMemErr.cpp" />

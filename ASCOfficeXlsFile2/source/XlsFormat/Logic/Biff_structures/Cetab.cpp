@@ -31,7 +31,6 @@
  */
 
 #include "Cetab.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {

@@ -34,13 +34,11 @@
 #include "text_elements.h"
 
 #include <boost/make_shared.hpp>
-#include <xml/xmlchar.h>
-#include <xml/attributes.h>
 
 #include "serialize_elements.h"
 
 #include "odfcontext.h"
-#include <odf/odf_document.h>
+#include "../../include/odf/odf_document.h"
 
 
 namespace cpdoccore { 
@@ -570,8 +568,12 @@ void table_table_header_rows::add_child_element( xml::sax * Reader, const std::w
 {
     if CP_CHECK_NAME(L"table", L"table-row")
     {
-        CP_CREATE_ELEMENT(table_table_row_);        
-    }
+        CP_CREATE_ELEMENT(table_table_row_);      
+
+		table_table_row* row = dynamic_cast<table_table_row*>(table_table_row_.back().get());
+		if (row)
+			row->bHeader = true;
+	}
     else
         CP_NOT_APPLICABLE_ELM();    
 }

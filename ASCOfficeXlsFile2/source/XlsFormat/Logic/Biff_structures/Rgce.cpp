@@ -32,7 +32,6 @@
 
 #include "Rgce.h"
 #include "PtgFactory.h"
-#include <Binary/CFRecord.h>
 
 #include "PtgExp.h"
 #include "PtgTbl.h"
@@ -44,7 +43,6 @@
 
 namespace XLS
 {
-
 
 Rgce::Rgce(const CellRef& cell_base_ref_init) :	cell_base_ref(cell_base_ref_init)
 {

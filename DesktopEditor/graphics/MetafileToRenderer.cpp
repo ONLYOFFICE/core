@@ -160,9 +160,6 @@ IMetafileToRenderter::~IMetafileToRenderter()
     RELEASEOBJECT(pPicker);
     m_pPicker = NULL;
 }
-void IMetafileToRenderter::EnableBrushRect(bool bValue)
-{
-}
 void IMetafileToRenderter::SetLinearGradiant(const double& x0, const double& y0, const double& x1, const double& y1)
 {
     double dAngle = 0;
@@ -329,6 +326,8 @@ namespace NSOnlineOfficeBinToPdf
 		bool bIsPathOpened = false;
 		int curindex = 0;
 
+        bool bIsEnableBrushRect = false;
+
 		BYTE* current = pBuffer;
 		while (curindex < lBufferLen)
 		{
@@ -407,18 +406,6 @@ namespace NSOnlineOfficeBinToPdf
 							pDash[nDash] = ReadInt(current, curindex) / 100000.0;
 						}
 
-						if (c_nGrRenderer == lRendererType)
-						{
-							for (int nDash = 0; nDash < nCountDash; ++nDash)
-							{
-								// в отрисовщике - баг. зачем-то умножается на коеф 25.4/dpi
-								// чтобы не менять там (перед выпуском) - умножаю здесь на обратку
-								double dDpiX = 0;
-								pRenderer->get_DpiX(&dDpiX);
-								pDash[nDash] *= (dDpiX / 25.4);
-							}
-						}
-
                         pRenderer->PenDashPattern(pDash, nCountDash);
                         delete[] pDash;
 					}
@@ -472,13 +459,15 @@ namespace NSOnlineOfficeBinToPdf
 				double m2 = ReadInt(current, curindex) / 100000.0;
 				double m3 = ReadInt(current, curindex) / 100000.0;
 				double m4 = ReadInt(current, curindex) / 100000.0;
-				pRenderer->BrushRect(0, m1, m2, m3, m4);
+                pRenderer->BrushRect(bIsEnableBrushRect ? 1 : 0, m1, m2, m3, m4);
 				break;
 			}
 			case ctBrushRectableEnabled:
 			{
-				bool bEnable = (1 == *current) ? true : false;
-				pCorrector->EnableBrushRect(bEnable);
+                bIsEnableBrushRect = (1 == *current) ? true : false;
+
+                if (!bIsEnableBrushRect)
+                    pRenderer->BrushRect(bIsEnableBrushRect ? 1 : 0, 0, 0, 1, 1);
 
 				current += 1;
 				curindex += 1;

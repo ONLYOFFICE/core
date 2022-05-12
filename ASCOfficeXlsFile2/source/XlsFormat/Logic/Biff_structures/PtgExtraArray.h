@@ -33,7 +33,7 @@
 
 #include "Ptg.h"
 #include "SerAr.h"
-#include <Logic/Biff_structures/BitMarkedStructs.h>
+#include "BitMarkedStructs.h"
 
 namespace XLS
 {
@@ -56,9 +56,13 @@ public:
 	void fromString(const std::wstring& str);
 
 private:
-	DColunByteU cols;
-	DRw rows;
+    //DColunByteU cols;
+    //DRw rows;
 	std::vector<SerArPtr> array_;
+
+    //biff12
+    _INT32 rows;
+    _INT32 cols;
 };
 
 typedef boost::shared_ptr<PtgExtraArray> PtgExtraArrayPtr;

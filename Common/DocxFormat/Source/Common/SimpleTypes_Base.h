@@ -224,13 +224,8 @@ namespace SimpleTypes
 
             if ( sValue.length() <= 2 )
 			{
-				try
-				{
-                    m_dValue = _wtof( sValue.c_str() ) / dKoef;
-				}
-				catch(...)
-				{
-				}
+				m_dValue = XmlUtils::GetDouble( sValue.c_str() ) / dKoef;
+
 				return;
 			}
 
@@ -240,43 +235,38 @@ namespace SimpleTypes
 
 			if ( _T("cm") == sUnit )
 			{
-                double dValue = _wtof( sValue.substr( 0, sValue.length() - 2 ).c_str() );
+                double dValue = XmlUtils::GetDouble( sValue.substr( 0, sValue.length() - 2 ).c_str() );
 				m_dValue = Cm_To_Pt( dValue );
 			}
 			else if ( _T("mm") == sUnit )
 			{
-                double dValue = _wtof( sValue.substr( 0, sValue.length() - 2 ).c_str() );
+                double dValue = XmlUtils::GetDouble( sValue.substr( 0, sValue.length() - 2 ).c_str() );
 				m_dValue = Mm_To_Pt( dValue );
 			}
 			else if ( _T("in") == sUnit )
 			{
-                double dValue = _wtof( sValue.substr( 0, sValue.length() - 2 ).c_str() );
+                double dValue = XmlUtils::GetDouble( sValue.substr( 0, sValue.length() - 2 ).c_str() );
 				m_dValue = Inch_To_Pt( dValue );
 			}
 			else if ( _T("pt") == sUnit )
 			{
-                m_dValue = _wtof( sValue.substr( 0, sValue.length() - 2 ).c_str() );
+                m_dValue = XmlUtils::GetDouble( sValue.substr( 0, sValue.length() - 2 ).c_str() );
 			}
 			else if ( _T("pc") == sUnit )
 			{
-                double dValue = _wtof( sValue.substr( 0, sValue.length() - 2 ).c_str() );
+                double dValue = XmlUtils::GetDouble( sValue.substr( 0, sValue.length() - 2 ).c_str() );
 				m_dValue = dValue * 12.0;
 			}
 			else if ( _T("pi") == sUnit )
 			{
-                double dValue = _wtof( sValue.substr( 0, sValue.length() - 2 ).c_str() );
+                double dValue = XmlUtils::GetDouble( sValue.substr( 0, sValue.length() - 2 ).c_str() );
 				m_dValue = dValue * 12.0;
 			}
 			else
 			{
 				m_bUnit = false;
-				try
-				{
-                    m_dValue = _wtof( sValue.c_str() ) / dKoef;
-				}
-				catch(...)
-				{
-				}
+				m_dValue = XmlUtils::GetDouble( sValue.c_str() ) / dKoef;
+
 				return;
 			}
 		}
@@ -312,7 +302,7 @@ namespace SimpleTypes
 			if('%' == sValue[sValue.length() - 1])
 			{
 				m_bTrailingPercentSign = true;
-				m_dValue = _wtof( sValue.substr(0, sValue.length() - 1).c_str() );
+				m_dValue = XmlUtils::GetDouble( sValue.substr(0, sValue.length() - 1).c_str() );
 			}
 			else
 			{
@@ -484,9 +474,14 @@ namespace SimpleTypes
 		CDouble() {}
         virtual ~CDouble() {}
 
+        CDouble(const double& val)
+        {
+            this->m_dValue = (double)val;
+        }
+
         virtual double FromString(std::wstring &sValue)
 		{
-            m_dValue = _wtof( sValue.c_str() );
+            m_dValue = XmlUtils::GetDouble( sValue );
 			return m_dValue;
 		}
 
@@ -500,7 +495,7 @@ namespace SimpleTypes
 		{
 			return boost::lexical_cast<std::wstring>(m_dValue);
 		}
-  
+
 		void SetValue(double dValue)
 		{
 			m_dValue = dValue;
@@ -526,6 +521,11 @@ namespace SimpleTypes
 	{
 	public:
 		CDecimalNumber() {}
+
+                CDecimalNumber(const _UINT32& val)
+                {
+                    this->m_eValue = (int)val;
+                }
 
 		virtual int FromString(std::wstring &sValue)
 		{
@@ -554,7 +554,7 @@ namespace SimpleTypes
 		{
 			return std::to_wstring(this->m_eValue);
 		}
-		SimpleType_FromString(int)
+        SimpleType_FromString(int)
 		SimpleType_Operator_Equal(CDecimalNumber)
 		SimpleTypes_AdditionalOpearators(CDecimalNumber)
 	};

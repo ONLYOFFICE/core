@@ -33,6 +33,7 @@
 
 #include <CPOptional.h>
 #include "../../../Common/DocxFormat/Source/Base/SmartPtr.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Math/oMathContent.h"
 
 #include "../progressCallback.h"
 
@@ -65,7 +66,6 @@ namespace cpdoccore
 		class style_chart_properties;
 		class style_drawing_page_properties;
 		class graphic_format_properties;
-
 		namespace package
 		{
 			class odf_document;
@@ -281,6 +281,81 @@ namespace OOX
 	{	
 		class CWrap;
 	}
+	namespace Logic
+	{
+		class CDeg;
+		class CDen;
+		class CElement;
+		class CFName;
+		class CLim;
+		class CNum;
+		class COMath;
+		class CSub;
+		class CSup;
+		class CCtrlPr;
+		class CAcc;
+		class CAccPr;
+		class CArgPr;
+		class CBar;
+		class CBarPr;
+		class CBorderBox;
+		class CBorderBoxPr;
+		class CBox;
+		class CBoxPr;
+		class CBrk;
+		class CDelimiter;
+		class CDelimiterPr;
+		class CEqArr;
+		class CEqArrPr;
+		class CFPr;
+		class CFraction;
+		class CFunc;
+		class CFuncPr;
+		class CGroupChr;
+		class CGroupChrPr;
+		class CLimLow;
+		class CLimLowPr;
+		class CLimUpp;
+		class CLimUppPr;
+		class CMathFont;
+		class CMathPr;
+		class CMatrix;
+		class CMc;
+		class CMcPr;
+		class CMcs;
+		class CMDel;
+		class CMIns;
+		class CMPr;
+		class CMr;
+		class CMRPr;
+		class CMRun;
+		class CMText;
+		class CNary;
+		class CNaryPr;
+		class COMathPara;
+		class COMathParaPr;
+		class CPhant;
+		class CPhantPr;
+		class CRad;
+		class CRadPr;
+		class CSPre;
+		class CSPrePr;
+		class CSSub;
+		class CSSubPr;
+		class CSSubSup;
+		class CSSubSupPr;
+		class CSSup;
+		class CSSupPr;		
+		//class CType;
+		//class CSupHide;
+		//class CSubHide;
+		//class CBegChr;
+		//class CEndChr;
+		//class CDiff;
+		//class CDegHide;
+		//class CChr;
+		//class CArgSz;
+	}
 }
 namespace SimpleTypes
 {
@@ -368,6 +443,8 @@ namespace PPTX
 	}
 }
 
+using namespace cpdoccore;
+
 namespace Oox2Odf
 {
 	class OoxConverter
@@ -380,7 +457,10 @@ public:
 		OoxConverter() : output_document(NULL), oox_current_child_document(NULL)
 		{
 		}
-		virtual ~OoxConverter(){}
+		virtual ~OoxConverter()
+		{
+			m_mapVmlShapeTypes.clear();
+		}
 
         void set_fonts_directory (const std::wstring & fontsPath);
 		
@@ -568,17 +648,116 @@ public:
 		void convert(OOX::Vml::CStroke					*vml_stroke);
 		void convert(OOX::Vml::CTextbox					*vml_textbox);
 		void convert(OOX::Vml::CTextPath				*vml_textpath);
-		void convert(SimpleTypes::Vml::CCssStyle		*vml_style, bool group = false);
+		void convert(SimpleTypes::Vml::CCssStyle		*vml_style);
 		void convert(OOX::VmlWord::CWrap				*vml_wrap);
 		void convert(OOX::Vml::CGroup					*vml_group);
 		void convert(OOX::Vml::CVmlCommonElements		*vml_attr);
 		void convert(OOX::Vml::CFormulas				*vml_formulas);
 
-		void convert(OOX::Drawing::COfficeArtExtensionList *ext_list);
-		void convert(OOX::Drawing::COfficeArtExtension *art_ext);
+		void convert(OOX::Drawing::COfficeArtExtensionList		*ext_list);
+		void convert(OOX::Drawing::COfficeArtExtension			*art_ext);
+//math............................................................................................................................
+		std::vector<std::vector<std::wstring>>& brackets();
+		int& lvl_of_me();
+		std::vector<int>& end_counter();
+		void mrow();
+		void endOfMrow();
+		void resizeBrackets();
+		void convert(OOX::Logic::COMath					*oox_math);
+		void convert(OOX::Logic::CMathPr				*oox_math_pr);
+		bool convert(OOX::Logic::CCtrlPr				*oox_ctrl_pr);
+		void convert(OOX::Logic::CAcc					*oox_acc);
+		void convert(OOX::Logic::CAccPr					*oox_acc_pr);
+		void convert(OOX::Logic::CArgPr					*oox_arg_pr);
+		void convert(OOX::Logic::CBar					*oox_bar);
+		bool convert(OOX::Logic::CBarPr					*oox_bar_pr);
+		void convert(OOX::Logic::CBorderBox				*oox_border_box);
+		void convert(OOX::Logic::CBorderBoxPr			*oox_border_box_pr);
+		void convert(OOX::Logic::CBox					*oox_box);
+		void convert(OOX::Logic::CBoxPr					*oox_box_pr);
+		void convert(OOX::Logic::CBrk					*oox_brk);
+		void convert(OOX::Logic::CDelimiter				*oox_del);
+		std::pair<std::wstring, std::wstring> convert(OOX::Logic::CDelimiterPr			*oox_del_pr);
+		void convert(OOX::Logic::CEqArr					*oox_eq_arr);
+		void convert(OOX::Logic::CEqArrPr				*oox_eq_arr_pr);
+		void convert(OOX::Logic::CBaseJc				*oox_base_jc);
+		void convert(OOX::Logic::CMaxDist				*oox_max_dist);
+		void convert(OOX::Logic::CObjDist				*oox_obj_dist);
+		void convert(OOX::Logic::CRSp					*oox_r_sp);
+		void convert(OOX::Logic::CRSpRule				*oox_r_sp_rule);
+		std::wstring convert(OOX::Logic::CFPr			*oox_f_pr);
+		void convert(OOX::Logic::CFraction				*oox_fraction);
+		void convert(OOX::Logic::CFunc					*oox_func);
+		void convert(OOX::Logic::CFuncPr				*oox_func_pr);
+		void convert(OOX::Logic::CGroupChr				*oox_group_ch);
+		bool convert(OOX::Logic::CGroupChrPr			*oox_group_ch_pr);
+		void convert(OOX::Logic::CLimLow				*oox_lim_low);
+		void convert(OOX::Logic::CLimLowPr				*oox_lim_low_pr);
+		void convert(OOX::Logic::CLimUpp				*oox_lim_upp);
+		void convert(OOX::Logic::CLimUppPr				*oox_lim_upp_pr);
+		void convert(OOX::Logic::CMathFont				*oox_math_font);
+		void convert(OOX::Logic::CMatrix				*oox_matrix);
+		void convert(OOX::Logic::CMc					*oox_mc);
+		void convert(OOX::Logic::CMcPr					*oox_mc_pr);
+		void convert(OOX::Logic::CMcs					*oox_mcs);
+		void convert(OOX::Logic::CMDel					*oox_m_del);
+		void convert(OOX::Logic::CMIns					*oox_m_ins);
+		void convert(OOX::Logic::CMPr					*oox_m_pr);
+		void convert(OOX::Logic::CMr					*oox_mr);
+		void convert(OOX::Logic::CMRun					*oox_run);
+		void convert(OOX::Logic::CMText					*oox_text);
+		void convert(OOX::Logic::CNary					*oox_nary);
+		std::pair<bool, bool> convert(OOX::Logic::CNaryPr *oox_nary_pr);
+		void convert(OOX::Logic::CGrow					*oox_grow);
+		void convert(OOX::Logic::COMathPara				*oox_math_para);
+		void convert(OOX::Logic::COMathParaPr			*oox_math_para_pr);
+		void convert(OOX::Logic::CPhant					*oox_phant);
+		void convert(OOX::Logic::CPhantPr				*oox_phant_pr);
+		void convert(OOX::Logic::CRad					*oox_rad);
+		bool convert(OOX::Logic::CRadPr					*oox_rad_pr);
+		void convert(OOX::Logic::CSPre					*oox_s_pre);
+		void convert(OOX::Logic::CSPrePr				*oox_s_pre_pr);
+		void convert(OOX::Logic::CSSub					*oox_ssub);
+		void convert(OOX::Logic::CSSubPr				*oox_ssub_pr);
+		void convert(OOX::Logic::CSSubSup				*oox_ssub_sup);
+		void convert(OOX::Logic::CSSubSupPr				*oox_ssub_sup_pr);
+		void convert(OOX::Logic::CAlnScr				*oox_aln_scr);
+		void convert(OOX::Logic::CSSup					*oox_ssup);
+		void convert(OOX::Logic::CSSupPr				*oox_ssup_pr);
+		void convert(OOX::Logic::CNum					*oox_num);
+		void convert(OOX::Logic::CDen					*oox_den);
+		std::wstring convert(OOX::Logic::CBegChr				*oox_beg_chr);
+		std::wstring convert(OOX::Logic::CEndChr				*oox_end_chr);
+		void convert(OOX::Logic::CElement				*oox_elm);
+		bool convert(OOX::Logic::CDegHide				*oox_deg_hide);
+		void convert(OOX::Logic::CDeg *oox_deg, OOX::Logic::CElement *oox_elm);
+		void convert(OOX::Logic::CSup *oox_sup, OOX::Logic::CElement *oox_elm);
+		void convert(OOX::Logic::CSub *oox_sub, OOX::Logic::CElement *oox_elm);
+		void convert(OOX::Logic::CFName					*oox_fname);
+		void convert(OOX::Logic::CLim					*oox_lim);
+		void convert(OOX::Logic::CChr					*oox_chr);
+		void convert(OOX::Logic::CSup					*oox_csup);
+		void convert(OOX::Logic::CSub					*oox_csub);
+		bool convert(OOX::Logic::CSubHide				*oox_subHide);
+		bool convert(OOX::Logic::CSupHide				*oox_supHide);
+		std::wstring convert(OOX::Logic::CType			*oox_type);
+		void convert(OOX::Logic::CDiff					*oox_diff);
+		void convert(OOX::Logic::CArgSz					*oox_arg_sz);
+		void convert(OOX::Logic::COpEmu					*oox_op_emu);
+		bool convert(OOX::Logic::CPos					*oox_pos);
+		void convert(OOX::Logic::CVertJc				*oox_vert_jc);
+		void convert(OOX::Logic::CNoBreak				*oox_no_break);
+		void convert(OOX::Logic::CCount					*oox_count);
+		void convert(OOX::Logic::CMcJc					*oox_mc_jc);
+		void convert(OOX::Logic::CPlcHide				*oox_plc_hide);
+		bool convert(OOX::Logic::CRunProperty			*oox_r_pr);
+
 //-----------------------------------
 		void RGB2HSL(DWORD argb, double& dH, double& dS, double& dL);
 		DWORD HSL2RGB(double dH, double dS, double dL);
+	private:
+		std::map<std::wstring, OOX::Vml::CShapeType*> m_mapVmlShapeTypes;
+
 	};
 
 } // namespace Oox2Odf

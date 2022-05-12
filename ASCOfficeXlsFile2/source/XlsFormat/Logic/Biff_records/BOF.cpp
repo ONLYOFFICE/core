@@ -31,7 +31,6 @@
  */
 
 #include "BOF.h"
-#include <Binary/CFStream.h>
 
 #include "../../../../../Common/MS-LCID.h"
 
@@ -105,8 +104,6 @@ void BOF::readFields(CFRecord& record)
 		}
 		else
 		{ //ts_2500_06_gruzi 05 06 вып.xls
-			record.getGlobalWorkbookInfo()->Version = 0x0501; 
-			
 			if (record.getGlobalWorkbookInfo()->CodePage == 0 && record.getGlobalWorkbookInfo()->lcid_user > 0)
 			{
 				record.getGlobalWorkbookInfo()->CodePage = msLCID2DefCodePage(record.getGlobalWorkbookInfo()->lcid_user);
@@ -124,9 +121,9 @@ void BOF::readFields(CFRecord& record)
 		switch(type_id_)
 		{
 		case rt_BOF_BIFF8: verLowestBiff = 6; break;
-		case rt_BOF_BIFF4: verLowestBiff = 4; break;
-		case rt_BOF_BIFF3: verLowestBiff = 3; break;
-		case rt_BOF_BIFF2: verLowestBiff = 2; break;
+		case rt_BOF_BIFF4: verLowestBiff = 4; vers = 0x0400; break;
+		case rt_BOF_BIFF3: verLowestBiff = 3; vers = 0x0300; break;
+		case rt_BOF_BIFF2: verLowestBiff = 2; vers = 0x0200; break;;
 		default:
 			break;
 		}		 

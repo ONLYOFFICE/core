@@ -33,7 +33,6 @@
 #include "PtgArea3d.h"
 #include "RevExtern.h"
 #include "CellRangeRef.h"
-#include <Binary/CFRecord.h>
 
 #include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
 
@@ -47,6 +46,7 @@ PtgArea3d::PtgArea3d(const unsigned short full_ptg_id, const CellRef& cell_base_
 PtgArea3d::PtgArea3d(const unsigned short ixti_init, const std::wstring& ref_str, const PtgDataType data_type, const CellRef& cell_base_ref_init)
 :	OperandPtg(fixed_id | (static_cast<unsigned char>(data_type) << 5)),
 	area(ref_str),
+    areaXlsb(ref_str),
 	ixti(ixti_init),
 	cell_base_ref(cell_base_ref_init)
 {
@@ -89,12 +89,19 @@ void PtgArea3d::loadFields(CFRecord& record)
 		area.rowLast			= rwLast & 0x3FFF;
 
 	}
-	else
-	{
-		record >> ixti;
-		record >> area;
-		area_rel = area;
-	}
+    else if (global_info->Version < 0x0800)
+    {
+        record >> ixti;
+        record >> area;
+        area_rel = area;
+    }
+
+    else
+    {
+        record >> ixti;
+        record >> areaXlsb;
+    }
+
 }
 
 
@@ -108,7 +115,11 @@ void PtgArea3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool f
 		extra_data.pop();
 		return;
 	}
-	std::wstring range_ref = area.toString();
+    std::wstring range_ref;
+    if(global_info->Version < 0x0800)
+        range_ref = area.toString();
+    else
+        range_ref = areaXlsb.toString();
 
 	if (global_info->Version < 0x0600)
 	{

@@ -1,0 +1,6 @@
+<<<<<<<
+#define FT_COMPONENT  smooth
+=======
+#define FT_COMPONENT  smooth
+#include <wasm_jmp.h>
+>>>>>>>

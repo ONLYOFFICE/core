@@ -31,20 +31,19 @@
  */
 
 #include "AXS.h"
-#include <Logic/Biff_records/IFmtRecord.h>
-#include <Logic/Biff_records/Tick.h>
-#include <Logic/Biff_records/FontX.h>
-#include <Logic/Biff_records/AxisLine.h>
-#include <Logic/Biff_records/LineFormat.h>
-#include <Logic/Biff_records/AreaFormat.h>
-#include <Logic/Biff_unions/GELFRAME.h>
-#include <Logic/Biff_unions/SHAPEPROPS.h>
-#include <Logic/Biff_records/TextPropsStream.h>
-#include <Logic/Biff_records/ContinueFrt12.h>
-#include <Logic/Biff_records/Font.h>
-
-#include <Logic/Biff_records/StartObject.h>
-#include <Logic/Biff_records/EndObject.h>
+#include "GELFRAME.h"
+#include "SHAPEPROPS.h"
+#include "../Biff_records/IFmtRecord.h"
+#include "../Biff_records/Tick.h"
+#include "../Biff_records/FontX.h"
+#include "../Biff_records/AxisLine.h"
+#include "../Biff_records/LineFormat.h"
+#include "../Biff_records/AreaFormat.h"
+#include "../Biff_records/TextPropsStream.h"
+#include "../Biff_records/ContinueFrt12.h"
+#include "../Biff_records/Font.h"
+#include "../Biff_records/StartObject.h"
+#include "../Biff_records/EndObject.h"
 namespace XLS
 {
 

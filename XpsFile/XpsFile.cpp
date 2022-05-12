@@ -36,9 +36,13 @@
 #include "../DesktopEditor/common/Directory.h"
 #include "../DesktopEditor/graphics/pro/Graphics.h"
 #include "../DesktopEditor/raster/BgraFrame.h"
+
+#ifndef DISABLE_PDF_CONVERTATION
 #include "../PdfWriter/PdfRenderer.h"
+#endif
 
 #include "../OfficeUtils/src/OfficeUtils.h"
+#include "../OfficeUtils/src/ZipFolder.h"
 
 using namespace XPS;
 
@@ -47,7 +51,7 @@ class CXpsFile_Private
 public:
     NSFonts::IApplicationFonts* m_pAppFonts;
     NSFonts::IFontManager*      m_pFontManager;
-    std::wstring       m_wsTempFolder;
+    IFolder*           m_wsTempFolder;
     XPS::CDocument*    m_pDocument;
 
 public:
@@ -64,7 +68,7 @@ public:
         m_pFontManager->SetOwnerCache(pMeasurerCache);
         pMeasurerCache->SetCacheSize(16);
 
-        m_wsTempFolder = L"";
+        m_wsTempFolder = NULL;
     }
     ~CXpsFile_Private()
     {
@@ -74,33 +78,30 @@ public:
 CXpsFile::CXpsFile(NSFonts::IApplicationFonts* pAppFonts)
 {
     m_pInternal = new CXpsFile_Private(pAppFonts);
-    SetTempDirectory(NSFile::CFileBinary::GetTempPath());
 }
 CXpsFile::~CXpsFile()
 {
-    if (L"" != m_pInternal->m_wsTempFolder)
-        NSDirectory::DeleteDirectory(m_pInternal->m_wsTempFolder);
-
 	Close();
+    RELEASEOBJECT(m_pInternal->m_wsTempFolder);
     RELEASEINTERFACE((m_pInternal->m_pFontManager));
 }
 std::wstring CXpsFile::GetTempDirectory()
 {
-    return m_pInternal->m_wsTempFolder;
+    return m_pInternal->m_wsTempFolder->getFullFilePath(L"");
 }
 void CXpsFile::SetTempDirectory(const std::wstring& wsPath)
 {
-    if (L"" != m_pInternal->m_wsTempFolder)
-        NSDirectory::DeleteDirectory(m_pInternal->m_wsTempFolder);
+    RELEASEOBJECT(m_pInternal->m_wsTempFolder);
 
 	int nCounter = 0;
-    m_pInternal->m_wsTempFolder = wsPath + L"/XPS/";
-    while (NSDirectory::Exists(m_pInternal->m_wsTempFolder))
+    std::wstring wsTempFolder = wsPath + L"/XPS/";
+    while (NSDirectory::Exists(wsTempFolder))
 	{
-        m_pInternal->m_wsTempFolder = wsPath + L"/XPS" + std::to_wstring(nCounter) + L"/";
+        wsTempFolder = wsPath + L"/XPS" + std::to_wstring(nCounter) + L"/";
 		nCounter++;
 	}
-    NSDirectory::CreateDirectory(m_pInternal->m_wsTempFolder);
+    NSDirectory::CreateDirectory(wsTempFolder);
+    m_pInternal->m_wsTempFolder = new CFolderSystem(wsTempFolder);
 }
 bool CXpsFile::LoadFromFile(const std::wstring& wsSrcFileName, const std::wstring& wsXmlOptions,
                             const std::wstring& owner_password, const std::wstring& user_password)
@@ -109,17 +110,30 @@ bool CXpsFile::LoadFromFile(const std::wstring& wsSrcFileName, const std::wstrin
 
 	// Распаковываем Zip-архив в темповую папку
 	COfficeUtils oUtils(NULL);
-    if (S_OK != oUtils.ExtractToDirectory(wsSrcFileName, m_pInternal->m_wsTempFolder, NULL, 0))
+    if (S_OK != oUtils.ExtractToDirectory(wsSrcFileName, m_pInternal->m_wsTempFolder->getFullFilePath(L""), NULL, 0))
 		return false;
 
     m_pInternal->m_pDocument = new XPS::CDocument(m_pInternal->m_pFontManager);
     if (!m_pInternal->m_pDocument)
 		return false;
 
-    std::wstring wsPath = m_pInternal->m_wsTempFolder + L"/";
-    m_pInternal->m_pDocument->ReadFromPath(wsPath);
+    m_pInternal->m_pDocument->Read(m_pInternal->m_wsTempFolder);
 
 	return true;
+}
+bool CXpsFile::LoadFromMemory(BYTE* data, DWORD length, const std::wstring& options,
+                              const std::wstring& owner_password, const std::wstring& user_password)
+{
+    Close();
+
+    m_pInternal->m_wsTempFolder = new CZipFolderMemory(data, length);
+
+    m_pInternal->m_pDocument = new XPS::CDocument(m_pInternal->m_pFontManager);
+    if (!m_pInternal->m_pDocument)
+        return false;
+
+    m_pInternal->m_pDocument->Read(m_pInternal->m_wsTempFolder);
+    return true;
 }
 void CXpsFile::Close()
 {
@@ -128,7 +142,17 @@ void CXpsFile::Close()
         m_pInternal->m_pDocument->Close();
         delete m_pInternal->m_pDocument;
         m_pInternal->m_pDocument = NULL;
+        m_pInternal->m_wsTempFolder = NULL;
 	}
+}
+NSFonts::IApplicationFonts* CXpsFile::GetFonts()
+{
+    return m_pInternal->m_pAppFonts;
+}
+
+OfficeDrawingFileType CXpsFile::GetType()
+{
+    return odftXPS;
 }
 int CXpsFile::GetPagesCount()
 {
@@ -156,46 +180,12 @@ void CXpsFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pB
 
     m_pInternal->m_pDocument->DrawPage(nPageIndex, pRenderer, pBreak);
 }
-void CXpsFile::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType, const int nRasterW, const int nRasterH)
+std::wstring CXpsFile::GetInfo()
 {
-    NSFonts::IFontManager *pFontManager = m_pInternal->m_pAppFonts->GenerateFontManager();
-    NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
-    pFontCache->SetStreams(m_pInternal->m_pAppFonts->GetStreams());
-	pFontManager->SetOwnerCache(pFontCache);
-
-    NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
-    pRenderer->SetFontManager(pFontManager);
-
-	double dPageDpiX, dPageDpiY;
-	double dWidth, dHeight;
-	GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
-
-    int nWidth  = (nRasterW > 0) ? nRasterW : ((int)dWidth * 96 / dPageDpiX);
-    int nHeight = (nRasterH > 0) ? nRasterH : ((int)dHeight * 96 / dPageDpiX);
-
-	BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
-	if (!pBgraData)
-		return;
-
-	memset(pBgraData, 0xff, nWidth * nHeight * 4);
-	CBgraFrame oFrame;
-	oFrame.put_Data(pBgraData);
-	oFrame.put_Width(nWidth);
-	oFrame.put_Height(nHeight);
-	oFrame.put_Stride(-4 * nWidth);
-
-    pRenderer->CreateFromBgraFrame(&oFrame);
-    pRenderer->SetSwapRGB(false);
-    pRenderer->put_Width(dWidth);
-    pRenderer->put_Height(dHeight);
-
-	bool bBreak = false;
-    DrawPageOnRenderer(pRenderer, nPageIndex, &bBreak);
-
-	oFrame.SaveFile(wsDstPath, nImageType);
-	RELEASEINTERFACE(pFontManager);
-    RELEASEOBJECT(pRenderer);
+    return m_pInternal->m_pDocument->GetInfo();
 }
+
+#ifndef DISABLE_PDF_CONVERTATION
 void CXpsFile::ConvertToPdf(const std::wstring& wsPath)
 {
     CPdfRenderer oPdf(m_pInternal->m_pAppFonts);
@@ -228,3 +218,15 @@ void CXpsFile::ConvertToPdf(const std::wstring& wsPath)
 
 	oPdf.SaveToFile(wsPath);
 }
+#endif
+
+#ifdef BUILDING_WASM_MODULE
+BYTE* CXpsFile::GetStructure()
+{
+	return m_pInternal->m_pDocument->GetStructure();
+}
+BYTE* CXpsFile::GetLinks (int nPageIndex)
+{
+	return m_pInternal->m_pDocument->GetPageLinks(nPageIndex);
+}
+#endif

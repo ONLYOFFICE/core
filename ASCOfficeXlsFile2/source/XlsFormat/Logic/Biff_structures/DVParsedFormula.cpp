@@ -31,7 +31,6 @@
  */
 
 #include "DVParsedFormula.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {
@@ -48,8 +47,17 @@ BiffStructurePtr DVParsedFormula::clone()
 
 void DVParsedFormula::load(CFRecord& record, bool bLoad)
 {
-	record >> cce;
-	record.skipNunBytes(2); // unused
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        unsigned short cce_;
+        record >> cce_;
+        cce = cce_;
+        record.skipNunBytes(2); // unused
+    }
+    else
+    {
+        record >> cce;
+    }
 
 	if (bLoad) 
 		return load(record);
@@ -60,8 +68,17 @@ void DVParsedFormula::load(CFRecord& record, bool bLoad)
 }
 	
 void DVParsedFormula::load(CFRecord& record)
-{
-	rgce.load(record, cce);
+{	
+    rgce.load(record, cce);
+
+    if (record.getGlobalWorkbookInfo()->Version == 0x0800)
+    {
+        unsigned int cb;
+        record >> cb;
+        record.skipNunBytes(cb);
+
+        //rgcb.load(record, rgce.getPtgs(), true);
+    }
 }
 
 

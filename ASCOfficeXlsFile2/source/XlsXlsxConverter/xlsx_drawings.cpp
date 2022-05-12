@@ -36,7 +36,7 @@
 #include <boost/make_shared.hpp>
 #include <vector>
 
-#include <simple_xml_writer.h>
+#include "../Common/simple_xml_writer.h"
 
 #include "mediaitems_utils.h"
 #include "oox_rels.h"

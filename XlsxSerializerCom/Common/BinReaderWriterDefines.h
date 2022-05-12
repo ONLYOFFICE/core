@@ -47,8 +47,9 @@ namespace BinXlsxRW
 	namespace c_oFileTypes{enum c_oFileTypes
 	{
 		XLSX	= 1,
-        CSV		= 2,
-		JSON	= 3
+                CSV	= 2,
+                JSON	= 3,
+                XLSB	= 4
 	};} 
 
 
@@ -235,7 +236,7 @@ namespace BinXlsxRW
 		SaltValue = 3,
 		LockStructure = 4,
 		LockWindows = 5,
-		Password
+		Password = 6
 	}; }
 	namespace c_oSerDbPrTypes{enum c_oSerDbPrTypes
 	{
@@ -550,7 +551,8 @@ namespace BinXlsxRW
 		Value = 3,
 		Formula = 4,
 		RefRowCol = 5,
-		ValueText = 6
+		ValueText = 6,
+		ValueCache = 7
 	};}
 	namespace c_oSerFormulaTypes{enum c_oSerFormulaTypes
 	{

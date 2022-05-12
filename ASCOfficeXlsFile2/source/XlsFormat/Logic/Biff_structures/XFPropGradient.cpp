@@ -31,7 +31,7 @@
  */
 
 #include "XFPropGradient.h"
-#include <Binary/CFRecord.h>
+#include "Xnum.h"
 
 namespace XLS
 {
@@ -44,34 +44,37 @@ BiffStructurePtr XFPropGradient::clone()
 
 void XFPropGradient::load(CFRecord& record)
 {
-	_UINT32 temp;
-	
-	record >> temp >> numDegree >> numFillToLeft >> numFillToRight >> numFillToTop >> numFillToBottom;
-	
-	type1 = temp;
+	_UINT32 temp;	
+
+    if(record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        record >> temp >> numDegree >> numFillToLeft >> numFillToRight >> numFillToTop >> numFillToBottom;
+
+        type1 = temp;
+    }
+    else
+    {
+        Xnum numDegree_;
+        Xnum numFillToLeft_;
+        Xnum numFillToRight_;
+        Xnum numFillToTop_;
+        Xnum numFillToBottom_;
+
+        record >> temp >> numDegree_ >> numFillToLeft_ >> numFillToRight_ >> numFillToTop_ >> numFillToBottom_;
+
+        type1 = temp;
+
+        numDegree = numDegree_.data.value;
+        numFillToLeft = numFillToLeft_.data.value;
+        numFillToRight = numFillToRight_.data.value;
+        numFillToTop = numFillToTop_.data.value;
+        numFillToBottom = numFillToBottom_.data.value;
+    }
 }
 
 void XFPropGradient::serialize_attr(CP_ATTR_NODE)
 {
-       //<xsl:if test="$gradient/@type = 'true'"> <!-- Default is 'linear' -->
-    //    <xsl:attribute name="type">path</xsl:attribute>
-    //  </xsl:if>
-    //  <xsl:if test="$gradient/@numDegree != 0"> <!-- Default is 0 -->
-    //    <xsl:attribute name="degree"><xsl:value-of select="$gradient/@numDegree"/></xsl:attribute>
-    //  </xsl:if>
-    //  <xsl:if test="$gradient/@numFillToLeft != 0"> <!-- Default is 0 -->
-    //    <xsl:attribute name="left"><xsl:value-of select="$gradient/@numFillToLeft"/></xsl:attribute>
-    //  </xsl:if>
-    //  <xsl:if test="$gradient/@numFillToRight != 0"> <!-- Default is 0 -->
-    //    <xsl:attribute name="right"><xsl:value-of select="$gradient/@numFillToRight"/></xsl:attribute>
-    //  </xsl:if>
-    //  <xsl:if test="$gradient/@numFillToTop != 0"> <!-- Default is 0 -->
-    //    <xsl:attribute name="top"><xsl:value-of select="$gradient/@numFillToTop"/></xsl:attribute>
-    //  </xsl:if>
-    //  <xsl:if test="$gradient/@numFillToBottom != 0"> <!-- Default is 0 -->
-    //    <xsl:attribute name="bottom"><xsl:value-of select="$gradient/@numFillToBottom"/></xsl:attribute>
-    //  </xsl:if>
-
+	//todooo
 }
 
 } // namespace XLS

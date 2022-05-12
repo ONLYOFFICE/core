@@ -36,9 +36,9 @@
 #include <vector>
 #include <boost/noncopyable.hpp>
 
-#include <CPOptional.h>
-#include <CPScopedPtr.h>
-#include <xml/attributes.h>
+#include "../../include/CPOptional.h"
+#include "../../include/CPScopedPtr.h"
+#include "../../include/xml/attributes.h"
             
 namespace cpdoccore {
 

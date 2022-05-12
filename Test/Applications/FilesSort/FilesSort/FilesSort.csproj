@@ -35,8 +35,9 @@
     <Reference Include="Ionic.Zip.Reduced">
       <HintPath>..\..\..\..\..\..\..\activex\AVS\Sources\TeamlabOffice\trunk\wwwroot\Bin\Ionic.Zip.Reduced.dll</HintPath>
     </Reference>
-    <Reference Include="OpenMcdf">
-      <HintPath>..\..\..\..\..\..\..\activex\AVS\Sources\TeamlabOffice\trunk\wwwroot\Bin\OpenMcdf.dll</HintPath>
+    <Reference Include="OpenMcdf, Version=2.2.1.9, Culture=neutral, PublicKeyToken=fdbb1629d7c00800, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenMcdf.2.2.1.9\lib\net40\OpenMcdf.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -53,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

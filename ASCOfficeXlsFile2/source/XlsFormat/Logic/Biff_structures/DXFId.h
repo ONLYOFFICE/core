@@ -46,6 +46,7 @@ class DXFId : public BiffStructure
 public:
 	DXFId();
 	DXFId(CFRecord& record);
+    ~DXFId();
 	BiffStructurePtr clone();
 
 	static const ElementType	type = typeDXFId;

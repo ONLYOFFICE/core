@@ -32,6 +32,33 @@
 
 #include "WorksheetSubstream.h"
 
+#include "Biff_unions/BACKGROUND.h"
+#include "Biff_unions/BIGNAME.h"
+#include "Biff_unions/PROTECTION_COMMON.h" 
+#include "Biff_unions/COLUMNS.h"
+#include "Biff_unions/SCENARIOS.h"
+#include "Biff_unions/SORTANDFILTER.h"
+#include "Biff_unions/CELLTABLE.h"
+#include "Biff_unions/OBJECTS.h"
+#include "Biff_unions/PIVOTVIEW.h"
+#include "Biff_unions/DCON.h"
+#include "Biff_unions/WINDOW.h"
+#include "Biff_unions/CUSTOMVIEW.h"
+#include "Biff_unions/SORT.h"
+#include "Biff_unions/QUERYTABLE.h"
+#include "Biff_unions/PHONETICINFO.h"
+#include "Biff_unions/CONDFMTS.h"
+#include "Biff_unions/HLINK.h"
+#include "Biff_unions/DVAL.h"
+#include "Biff_unions/FEAT.h"
+#include "Biff_unions/FEAT11.h"
+#include "Biff_unions/RECORD12.h"
+#include "Biff_unions/SHFMLA_SET.h"
+
+#include "Biff_unions/FORMATTING.h"
+#include "Biff_unions/XFS.h"
+#include "Biff_unions/STYLES.h"
+
 #include "Biff_records/Uncalced.h"
 #include "Biff_records/Index.h"
 #include "Biff_unions/GLOBALS.h"
@@ -58,29 +85,10 @@
 #include "Biff_records/WsBool.h"
 #include "Biff_records/ExternSheet.h"
 #include "Biff_records/SXAddl.h"
-
-#include "Biff_unions/BACKGROUND.h"
-#include "Biff_unions/BIGNAME.h"
-#include "Biff_unions/PROTECTION_COMMON.h" 
-#include "Biff_unions/COLUMNS.h"
-#include "Biff_unions/SCENARIOS.h"
-#include "Biff_unions/SORTANDFILTER.h"
-#include "Biff_unions/CELLTABLE.h"
-#include "Biff_unions/OBJECTS.h"
-#include "Biff_unions/PIVOTVIEW.h"
-#include "Biff_unions/DCON.h"
-#include "Biff_unions/WINDOW.h"
-#include "Biff_unions/CUSTOMVIEW.h"
-#include "Biff_unions/SORT.h"
-#include "Biff_unions/QUERYTABLE.h"
-#include "Biff_unions/PHONETICINFO.h"
-#include "Biff_unions/CONDFMTS.h"
-#include "Biff_unions/HLINK.h"
-#include "Biff_unions/DVAL.h"
-#include "Biff_unions/FEAT.h"
-#include "Biff_unions/FEAT11.h"
-#include "Biff_unions/RECORD12.h"
-#include "Biff_unions/SHFMLA_SET.h"
+#include "Biff_records/CodePage.h"
+#include "Biff_records/XF.h"
+#include "Biff_records/Format.h"
+#include "Biff_records/Font.h"
 
 #include "Biff_structures/ODRAW/OfficeArtDgContainer.h"
 
@@ -118,10 +126,21 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 	int count = 0;
 	std::vector<CellRangeRef>	shared_formulas_locations;
 	
-	if(!proc.mandatory<BOF>())
+	if(proc.mandatory<BOF>())
 	{
-		return false;
-    }
+		if (!global_info_->Version) // sheet, not workbook
+		{
+			BOF *bof = dynamic_cast<BOF*>(elements_.back().get());
+			global_info_->Version = bof->vers;
+			global_info_->CodePage = 0;
+
+			m_Formating = BaseObjectPtr(new FORMATTING);
+			FORMATTING* fmts = dynamic_cast<FORMATTING*>(m_Formating.get());
+			if (fmts) fmts->global_info = global_info_;
+		}
+		elements_.pop_back();
+	}
+	else return false;
 
 	while (true)
 	{
@@ -132,13 +151,26 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 		if (type == rt_EOF) 
 		{
 			proc.mandatory<EOF_T>();
+			elements_.pop_back();
 			break;
 		}
 
 		switch(type)
 		{
-			case rt_Uncalced:		proc.optional<Uncalced>();		break;
-			case rt_Index:			proc.optional<Index>();			break;
+			case rt_Uncalced:
+			{
+				if (proc.optional<Uncalced>())
+				{
+					elements_.pop_back();
+				}
+			}break;
+			case rt_Index:
+			{
+				if (proc.optional<Index>())
+				{
+					elements_.pop_back();
+				}
+			}break;
 			case rt_CalcRefMode://todooo сделать вариативно по всем проверку
 			case rt_CalcMode:
 			case rt_PrintRowCol:
@@ -167,8 +199,10 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 					count--;
 				}
 			}break;
+			case rt_ColumnDefault:
 			case rt_DefColWidth:
 			case rt_ColInfo:
+			case rt_ColWidth:
 			{
 				if (proc.optional<COLUMNS>())
 				{
@@ -177,6 +211,14 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 					{
 						m_COLUMNS = elements_.back();
 					}
+					elements_.pop_back();
+				}
+			}break;
+			case rt_DefaultRowHeight_BIFF2:
+			{
+				if (proc.optional<DefaultRowHeight_BIFF2>())
+				{
+					m_DefaultRowHeight = elements_.back();
 					elements_.pop_back();
 				}
 			}break;
@@ -232,7 +274,13 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 					elements_.pop_back();
 				}
 			}break;
-			case rt_ScenMan:		proc.optional<SCENARIOS>();			break;	
+			case rt_ScenMan:
+			{
+				if (proc.optional<SCENARIOS>())
+				{
+					elements_.pop_back();
+				}
+			}break;
 			case rt_Sort:
 			case rt_AutoFilterInfo:
 			case rt_FilterMode:
@@ -241,13 +289,16 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 			{
 				if (proc.optional<SORTANDFILTER>())// Let it be optional
 				{
-					m_SORTANDFILTER = elements_.back();
+					if (!m_SORTANDFILTER)
+						m_SORTANDFILTER = elements_.back();
 					elements_.pop_back();
 				}	
 			}break;
 			case rt_LabelSst://order_history.xls
 			case rt_Label://file(6).xls
+			case rt_Label_BIFF2:
 			case rt_Row:
+			case rt_Row_BIFF2:
 			{
 				CELLTABLE cell_table_temlate(shared_formulas_locations);
 				if (proc.optional(cell_table_temlate))
@@ -545,18 +596,116 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 					elements_.pop_back();
 				}
 			}break;
-			//case rt_SXAddl:
-			//{
-			//	proc.optional<SXAddl>();
-			//	SXAddl* addl = dynamic_cast<SXAddl*>(elements_.back().get());				
-			//	if (!addl) continue;
-			//	
-			//	if (false == addl->bEndElement)
-			//	{
-			//		m_arSXAddl.push_back(elements_.back()); 
-			//	}
-			//	elements_.pop_back();
-			//}break;
+			case rt_CodePage:
+			{
+				if (proc.optional<CodePage>())				
+				{
+					CodePage *CodePage_ = dynamic_cast<CodePage*>(elements_.back().get());
+
+					if ((CodePage_) && (CodePage_->cv != 0/* && CodePage_->cv != 1200*/))
+						global_info_->CodePage = CodePage_->cv;
+
+					if (global_info_->CodePage == 0x8001 &&
+						(global_info_->Version == 0x0200 || global_info_->Version == 0x0300))
+						global_info_->CodePage = 1252;
+
+					elements_.pop_back();
+				}
+			}break;
+			case rt_XF_BIFF2:
+			case rt_XF_BIFF3:
+			case rt_XF_BIFF4:
+			{
+				size_t cell_xf_current_id = 0;
+				size_t style_xf_current_id = 0;
+				int count = 0;
+				
+				if (type == rt_XF_BIFF4)
+				{
+					XF_BIFF4 xf(cell_xf_current_id, style_xf_current_id);
+					count = proc.repeated(xf, 0, 0);
+				}
+				else if (type == rt_XF_BIFF3)
+				{
+					XF_BIFF3 xf(cell_xf_current_id, style_xf_current_id);
+					count = proc.repeated(xf, 0, 0);
+				}
+				else if (type == rt_XF_BIFF2)
+				{
+					XF_BIFF2 xf(cell_xf_current_id, style_xf_current_id);
+					count = proc.repeated(xf, 0, 0);
+				}
+				XFS* xfs = new XFS();
+				int ind = 0;
+				while (count > 0 && !elements_.empty())
+				{
+					XF* xf = dynamic_cast<XF*>(elements_.front().get());
+					if (xf)
+					{
+						xf->ind_xf = ind++;
+
+						if (xf->fStyle)	xfs->m_arCellStyles.push_back(elements_.front());
+						else			xfs->m_arCellXFs.push_back(elements_.front());
+					}
+					elements_.pop_front();
+					count--;
+				}
+				global_info_->cellXfs_count = m_arCellXFs.size();
+				global_info_->cellStyleXfs_count = m_arCellStyles.size();
+
+				FORMATTING* fmts = dynamic_cast<FORMATTING*>(m_Formating.get());
+				if (fmts)
+					fmts->m_XFS = BaseObjectPtr(xfs);
+			}break;
+			case rt_Font:
+			case rt_Font_BIFF34:
+			{
+				elements_.clear();
+				count = (type == rt_Font) ? proc.repeated<Font>(0, 0) : proc.repeated<Font_BIFF34>(0, 0);
+				while (count > 0)
+				{
+					global_info_->m_arFonts.push_back(elements_.front());
+					elements_.pop_front();
+					count--;
+				}
+			}break;
+			case rt_Format:
+			case rt_Format_BIFF23:
+			{
+				elements_.clear();
+				if (type == rt_Format_BIFF23)	count = proc.repeated<Format_BIFF23>(0, 0);
+				else							count = proc.repeated<Format>(0, 0);
+
+				while (count > 0)
+				{
+					Format *fmt = dynamic_cast<Format *>(elements_.front().get());
+					if ((fmt) && (fmt->ifmt == 0xffff))
+					{
+						std::map<std::wstring, int>::iterator pFind = global_info_->mapDefaultFormatCode.find(fmt->stFormat);
+						if (pFind != global_info_->mapDefaultFormatCode.end())
+						{
+							fmt->ifmt = pFind->second;
+						}
+						else
+						{
+							fmt->ifmt = 168 + global_info_->m_arNumFormats.size();
+						}
+					}
+					global_info_->m_arNumFormats.push_back(elements_.front());
+					elements_.pop_front();
+					count--;
+				} 
+			}break;
+			case rt_Style:
+			{
+				if (proc.optional<STYLES>())
+				{
+					FORMATTING* fmts = dynamic_cast<FORMATTING*>(m_Formating.get());
+					if (fmts)
+						fmts->m_Styles = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
 			default://unknown .... skip					
 			{
 				proc.SkipRecord();	

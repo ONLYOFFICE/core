@@ -34,45 +34,107 @@
 
 namespace XLS
 {
-
-Row::Row()
-{
-	iOutLevel = 0;
-	ixfe_val = 0;
-}
-
-
+Row::Row() : iOutLevel(0), ixfe_val(0)
+{}
 Row::~Row()
-{
-}
-
-
+{}
 BaseObjectPtr Row::clone()
 {
 	return BaseObjectPtr(new Row(*this));
 }
 
+Row_BIFF2::Row_BIFF2() : Row()
+{}
+Row_BIFF2::~Row_BIFF2()
+{}
+BaseObjectPtr Row_BIFF2::clone()
+{
+	return BaseObjectPtr(new Row_BIFF2(*this));
+}
+//---------------------------------------------------------------------------
 void Row::readFields(CFRecord& record)
 {
 	global_info_ = record.getGlobalWorkbookInfo();
-	record >> rw >> colMic >> colMac >> miyRw;
-
-	unsigned short flags, flags2, reserved1, unused1;
-
-	record >> reserved1 >> unused1 >> flags >> flags2;
 	
-	iOutLevel	= GETBITS(flags, 0, 2);
-	fCollapsed	= GETBIT(flags, 4);
-	fDyZero		= GETBIT(flags, 5);
-	fUnsynced	= GETBIT(flags, 6);
-	fGhostDirty = GETBIT(flags, 7);
+	if (global_info_->Version < 0x0800)
+    {
+        Rw rw_2b;
+		unsigned short ixfe_val_2b = 0xffff;
+        record >> rw_2b >> colMic >> colMac >> miyRw;
 
-	ixfe_val	= GETBITS(flags2, 0, 11);
-	fExAsc		= GETBIT(flags2, 12);
-	fExDes		= GETBIT(flags2, 13);
-	fPhonetic	= GETBIT(flags2, 14);
+		unsigned short unused1, rel_offset = 0xffff, flags1, flags2;
+		record >> unused1;
+		
+		if (global_info_->Version == 0x0200)
+		{
+			unsigned char flag;
+			record >> flag >> rel_offset;
+			fGhostDirty = flag;
+			
+			if (fGhostDirty)
+			{
+				record >> flag >> flags1 >> ixfe_val_2b;
+			}
+			bValid = true;
+		}
+		else
+		{
+			if (global_info_->Version == 0x0300 ||
+				global_info_->Version == 0x0400)
+			{
+				record >> rel_offset; // relative offset stream for first cell in row
+			}
+			else
+				record >> unused1;
 
-	bValid = (flags != 0 || flags2 != 0);
+			record >> flags1 >> flags2;
+
+			iOutLevel = GETBITS(flags1, 0, 2);
+			fCollapsed = GETBIT(flags1, 4);
+			fDyZero = GETBIT(flags1, 5);
+			fUnsynced = GETBIT(flags1, 6);
+			fGhostDirty = GETBIT(flags1, 7);
+			
+			ixfe_val_2b = GETBITS(flags2, 0, 11);
+			fExAsc = GETBIT(flags2, 12);
+			fExDes = GETBIT(flags2, 13);
+			fPhonetic = GETBIT(flags2, 14);
+
+			bValid = (flags1 != 0 || flags2 != 0);
+		}
+		if (ixfe_val_2b != 0xffff)
+			ixfe_val = ixfe_val_2b;
+		rw = rw_2b;
+    }
+    else
+    {
+        record >> rw >> ixfe_val >> miyRw;
+
+        unsigned short flags;
+        unsigned char  flags2;
+
+        record >> flags >> flags2 >> ccolspan;
+
+        fExAsc      = GETBIT(flags, 0);
+        fExDes      = GETBIT(flags, 1);
+        iOutLevel	= GETBITS(flags, 8, 10);
+        fCollapsed	= GETBIT(flags, 11);
+        fDyZero 	= GETBIT(flags, 12);
+        fUnsynced   = GETBIT(flags, 13);
+        fGhostDirty = GETBIT(flags, 14);
+
+        fPhonetic	= GETBIT(flags2, 0);
+
+        for(auto i = 0; i < ccolspan; i++)
+        {
+            XLSB::ColSpan temp;
+            record >> temp;
+            rgBrtColspan.push_back(temp);
+        }
+
+        bValid = (flags != 0 || flags2 != 0);
+    }
+
 }
 
 int Row::serialize(std::wostream &stream)

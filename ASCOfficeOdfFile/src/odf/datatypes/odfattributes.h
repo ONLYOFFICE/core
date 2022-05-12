@@ -31,10 +31,10 @@
  */
 #pragma once
 
-#include <xml/attributes.h>
-#include <CPOptional.h>
+#include "../../../include/xml/attributes.h"
+#include "../../../include/CPOptional.h"
 #include "errors.h"
-#include <logging.h>
+#include "../../../include/logging.h"
 
 namespace cpdoccore {
 namespace xml {

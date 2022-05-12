@@ -31,8 +31,6 @@
  */
 
 #include "ArrayParsedFormula.h"
-#include <Binary/CFRecord.h>
-//#include <Exception/UnexpectedProgramPath.h>
 
 namespace XLS
 {
@@ -53,10 +51,27 @@ BiffStructurePtr ArrayParsedFormula::clone()
 
 void ArrayParsedFormula::load(CFRecord& record)
 {
-	unsigned short cce;
-	record >> cce;
-	rgce.load(record, cce);
-	rgcb.load(record, rgce.getPtgs(), is_part_of_a_revision_);
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        unsigned short cce;
+        record >> cce;
+
+        rgce.load(record, cce);
+        rgcb.load(record, rgce.getPtgs(), is_part_of_a_revision_);
+    }
+    else
+    {
+        unsigned int cce;
+        record >> cce;
+
+        rgce.load(record, cce);
+
+        unsigned int cb;
+        record >> cb;
+
+        rgcb.load(record, rgce.getPtgs(), is_part_of_a_revision_);
+
+    }
 }
 
 } // namespace XLS

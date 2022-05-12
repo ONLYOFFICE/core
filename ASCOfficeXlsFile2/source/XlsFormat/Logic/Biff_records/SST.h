@@ -32,7 +32,7 @@
 #pragma once
 
 #include "BiffRecordContinued.h"
-#include <Logic/Biff_structures/XLUnicodeRichExtendedString.h>
+#include "../Biff_structures/XLUnicodeRichExtendedString.h"
 
 namespace XLS
 {

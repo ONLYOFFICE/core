@@ -31,13 +31,12 @@
  */
 
 #include "PtgFactory.h"
-#include <Binary/CFRecord.h>
 #include "PtgExp.h"
 #include "PtgTbl.h"
 #include "PtgRef3d.h"
 #include "OperatorPtgs.h"
-#include <Logic/Biff_structures/PtgParen.h>
-#include <Logic/Biff_structures/PtgMissArg.h>
+#include "PtgParen.h"
+#include "PtgMissArg.h"
 #include "PtgStr.h"
 #include "PtgErr.h"
 #include "PtgBool.h"
@@ -49,6 +48,7 @@
 #include "PtgName.h"
 #include "PtgRef.h"
 #include "PtgArea.h"
+#include "PtgList.h"
 #include "PtgMemArea.h"
 #include "PtgMemErr.h"
 #include "PtgMemNoMem.h"
@@ -73,6 +73,7 @@
 #include "PtgSxName.h"
 #include "PtgAttrSemi.h"
 #include "PtgAttrIf.h"
+#include "PtgAttrIfError.h"
 #include "PtgAttrChoose.h"
 #include "PtgAttrGoto.h"
 #include "PtgAttrSum.h"
@@ -140,7 +141,7 @@ PtgPtr PtgFactory::createPtg(const unsigned short type, const CellRef& cell_base
 			return PtgPtr(new PtgLt); // *
 
 		case 0x000A:
-			return PtgPtr(new PtgLe); // *
+            return PtgPtr(new PtgLe); // *
 
 		case 0x000B:
 			return PtgPtr(new PtgEq); // *
@@ -197,6 +198,9 @@ PtgPtr PtgFactory::createPtg(const unsigned short type, const CellRef& cell_base
 		case 0x0040: // type = VALUE
 		case 0x0060: // type = ARRAY
 			return PtgPtr(new PtgArray(type)); // *
+
+        case 0x1918:
+            return PtgPtr(new PtgList); // *
 
 		case 0x0021:
 		case 0x0041:
@@ -347,6 +351,9 @@ PtgPtr PtgFactory::createPtg(const unsigned short type, const CellRef& cell_base
 
 		case 0x0219:
 			return PtgPtr(new PtgAttrIf); // *
+
+        case 0x8019:
+            return PtgPtr(new PtgAttrIfError); // *
 
 		case 0x0419:
 			return PtgPtr(new PtgAttrChoose); // *

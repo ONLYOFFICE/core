@@ -35,10 +35,10 @@
 
 #include <vector>
 #include <boost/lexical_cast.hpp>
-#include <xml/simple_xml_writer.h>
+#include "../../include/xml/simple_xml_writer.h"
 #include "../../../Common/DocxFormat/Source/XML/Utils.h"
 
-#include "../formulasconvert/formulasconvert.h"
+#include "../../formulasconvert/formulasconvert.h"
 
 namespace cpdoccore {
 namespace oox {

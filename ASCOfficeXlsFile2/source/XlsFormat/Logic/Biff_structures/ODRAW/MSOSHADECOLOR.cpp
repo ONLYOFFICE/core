@@ -31,7 +31,6 @@
  */
 
 #include "MSOSHADECOLOR.h"
-#include <Binary/CFRecord.h>
 
 namespace ODRAW
 {

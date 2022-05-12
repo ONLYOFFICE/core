@@ -40,19 +40,6 @@ namespace odf_writer {
 class office_spreadsheet;
 class odf_text_context;
 
-struct _font_metrix
-{
-	_font_metrix(){IsCalc = italic = bold = false; font_size = approx_symbol_size =0;}
-	bool IsCalc;
-
-	std::wstring font_name;
-	double		 font_size;
-	bool		 italic;
-	bool		 bold;
-
-	double		 approx_symbol_size;//in pt
-};
-
 struct ods_external_state
 {
 	std::wstring ref;
@@ -75,8 +62,6 @@ public:
 	void start_columns();
 		void add_column(int start_column, int repeated, int level = 0, bool _default = false);
 	void end_columns();
-
-	void calculate_font_metrix(std::wstring name, double size, bool italic, bool bold);
 
 	void start_rows();
 		void start_row(int _start_row, int repeated, int level = 0, bool _default = false);
@@ -134,8 +119,6 @@ public:
 	void add_text(const std::wstring &text);
 
 	void add_header_footer_image(const std::wstring & name, office_element_ptr image);
-
-	double convert_symbol_width(double val);
 	
     void add_defined_range		(const std::wstring & name, const std::wstring & cell_range, int sheet_id, bool printable = false);
     void add_defined_expression	(const std::wstring & name, const std::wstring & value, int sheet_id, bool printable = false);
@@ -157,7 +140,6 @@ public:
 
 	std::vector<ods_external_state>	externals_;
 private:
-	_font_metrix				font_metrix_;
 	ods_table_context			table_context_;
 	
 	odf_text_context*			current_text_context_;

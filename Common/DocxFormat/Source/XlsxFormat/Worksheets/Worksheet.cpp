@@ -40,6 +40,14 @@
 #include "../../DocxFormat/Media/Image.h"
 #include "../../DocxFormat/VmlDrawing.h"
 
+#include "../../XlsbFormat/Xlsb.h"
+
+#include "../../XlsbFormat/WorkSheetStream.h"
+#include "../../XlsbFormat/ChartSheetStream.h"
+
+#include "../../XlsbFormat/Biff12_unions/HLINKS.h"
+#include "../../XlsbFormat/Biff12_unions/MERGECELLS.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -50,6 +58,7 @@ namespace OOX
 			m_bWriteDirectlyToFile = false;
 			m_pComments = NULL;
 			m_pThreadedComments = NULL;
+            m_bIsChartSheet = false;
 
 			CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
 			if (xlsx)
@@ -62,12 +71,13 @@ namespace OOX
 			else 
 				m_bPrepareForBinaryWriter = false;
 		}
-		CWorksheet::CWorksheet(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath, const std::wstring & rId) : OOX::File(pMain), OOX::IFileContainer(pMain), WritingElement(pMain)
+        CWorksheet::CWorksheet(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath, const std::wstring & rId, bool isChartSheet) : OOX::File(pMain), OOX::IFileContainer(pMain), WritingElement(pMain)
 		{
 			m_bSpreadsheets = true;
 			m_bWriteDirectlyToFile = false;
 			m_pComments = NULL;
 			m_pThreadedComments = NULL;
+            m_bIsChartSheet = isChartSheet;
 
 			CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
 			if (xlsx)
@@ -86,25 +96,158 @@ namespace OOX
 		{
 			ClearItems();
 		}
+
+        void CWorksheet::readBin(const CPath& oPath)
+        {
+            CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+            if (xlsb)
+            {
+                if(m_bIsChartSheet)
+                {
+                    XLSB::ChartSheetStreamPtr chartSheetStream = std::make_shared<XLSB::ChartSheetStream>();
+
+                    xlsb->ReadBin(oPath, chartSheetStream.get());
+
+                    if(chartSheetStream != nullptr)
+                    {
+                        if (chartSheetStream->m_BrtMargins != nullptr)
+                            m_oPageMargins = chartSheetStream->m_BrtMargins;
+                        if (chartSheetStream->m_HEADERFOOTER != nullptr)
+                            m_oHeaderFooter = chartSheetStream->m_HEADERFOOTER;
+                        if (chartSheetStream->m_BrtDrawing != nullptr)
+                            m_oDrawing = chartSheetStream->m_BrtDrawing;
+                        if (chartSheetStream->m_BrtLegacyDrawing != nullptr)
+                            m_oLegacyDrawing = chartSheetStream->m_BrtLegacyDrawing;
+                        if (chartSheetStream->m_BrtLegacyDrawingHF != nullptr)
+                            m_oLegacyDrawingHF = chartSheetStream->m_BrtLegacyDrawingHF;
+                        if (chartSheetStream->m_BrtBkHim != nullptr)
+                            m_oPicture = chartSheetStream->m_BrtBkHim;
+                        if (chartSheetStream->m_CSVIEWS != nullptr)
+                            m_oSheetViews = chartSheetStream->m_CSVIEWS;
+                        if (chartSheetStream->m_BrtCsProp != nullptr)
+                            m_oSheetPr = chartSheetStream->m_BrtCsProp;
+                        if (chartSheetStream->m_BrtCsPageSetup != nullptr)
+                            m_oPageSetup = chartSheetStream->m_BrtCsPageSetup;
+
+                        if (chartSheetStream->m_BrtCsProtectionIso != nullptr)
+                            m_oSheetProtection = chartSheetStream->m_BrtCsProtectionIso;
+                        else if(chartSheetStream->m_BrtCsProtection != nullptr)
+                            m_oSheetProtection = chartSheetStream->m_BrtCsProtection;
+
+                    }
+                }
+                else
+                {
+                    XLSB::WorkSheetStreamPtr workSheetStream = std::make_shared<XLSB::WorkSheetStream>();
+
+                    xlsb->ReadBin(oPath, workSheetStream.get());
+
+					if (workSheetStream != nullptr)
+					{
+						if (!workSheetStream->m_arCOLINFOS.empty())
+							m_oCols = workSheetStream->m_arCOLINFOS;
+						if (workSheetStream->m_BrtWsDim != nullptr)
+							m_oDimension = workSheetStream->m_BrtWsDim;
+						if (workSheetStream->m_BrtDrawing != nullptr)
+							m_oDrawing = workSheetStream->m_BrtDrawing;
+						if (workSheetStream->m_BrtLegacyDrawing != nullptr)
+							m_oLegacyDrawing = workSheetStream->m_BrtLegacyDrawing;
+						if (workSheetStream->m_BrtLegacyDrawingHF != nullptr)
+							m_oLegacyDrawingHF = workSheetStream->m_BrtLegacyDrawingHF;
+						if (workSheetStream->m_HLINKS != nullptr)
+							m_oHyperlinks = static_cast<XLSB::HLINKS*>(workSheetStream->m_HLINKS.get())->m_arHlinks;
+						if (workSheetStream->m_MERGECELLS != nullptr)
+							m_oMergeCells = static_cast<XLSB::MERGECELLS*>(workSheetStream->m_MERGECELLS.get())->m_arBrtMergeCell;
+						if (workSheetStream->m_CELLTABLE != nullptr)
+						{
+							m_oSheetData = new CSheetData(File::m_pMainDocument);
+							m_oSheetData->fromBin(workSheetStream->m_CELLTABLE);
+						}
+                        if (workSheetStream->m_BrtWsFmtInfo != nullptr)
+                            m_oSheetFormatPr = workSheetStream->m_BrtWsFmtInfo;
+                        if (workSheetStream->m_WSVIEWS2 != nullptr)
+                            m_oSheetViews = workSheetStream->m_WSVIEWS2;
+                        if (workSheetStream->m_BrtMargins != nullptr)
+                            m_oPageMargins = workSheetStream->m_BrtMargins;
+                        if (workSheetStream->m_BrtPageSetup != nullptr)
+                            m_oPageSetup = workSheetStream->m_BrtPageSetup;
+                        if (workSheetStream->m_BrtPrintOptions != nullptr)
+                            m_oPrintOptions = workSheetStream->m_BrtPrintOptions;
+                        if (workSheetStream->m_HEADERFOOTER != nullptr)
+                            m_oHeaderFooter = workSheetStream->m_HEADERFOOTER;
+
+                        if (workSheetStream->m_BrtSheetProtectionIso != nullptr)
+                            m_oSheetProtection = workSheetStream->m_BrtSheetProtectionIso;
+                        else if(workSheetStream->m_BrtSheetProtection != nullptr)
+                            m_oSheetProtection = workSheetStream->m_BrtSheetProtection;
+
+                        if (workSheetStream->m_LISTPARTS != nullptr)
+                            m_oTableParts = workSheetStream->m_LISTPARTS;
+                        if (workSheetStream->m_SORTSTATE != nullptr)
+                            m_oSortState = workSheetStream->m_SORTSTATE;
+                        if (!workSheetStream->m_arCONDITIONALFORMATTING.empty())
+                                for(auto &item : workSheetStream->m_arCONDITIONALFORMATTING)
+                                    m_arrConditionalFormatting.push_back(new OOX::Spreadsheet::CConditionalFormatting(item));
+
+                        if (workSheetStream->m_AUTOFILTER != nullptr)
+                            m_oAutofilter = workSheetStream->m_AUTOFILTER;
+                        if (workSheetStream->m_DVALS != nullptr)
+                            m_oDataValidations = workSheetStream->m_DVALS;
+                        if (workSheetStream->m_OLEOBJECTS != nullptr)
+                            m_oOleObjects = workSheetStream->m_OLEOBJECTS;
+                        if (workSheetStream->m_ACTIVEXCONTROLS != nullptr)
+                            m_oControls = workSheetStream->m_ACTIVEXCONTROLS;
+                        if (workSheetStream->m_BrtWsProp != nullptr)
+                            m_oSheetPr = workSheetStream->m_BrtWsProp;
+                        if (workSheetStream->m_BrtBkHim != nullptr)
+                            m_oPicture = workSheetStream->m_BrtBkHim;
+                        if (workSheetStream->m_RWBRK != nullptr)
+                            m_oRowBreaks = workSheetStream->m_RWBRK;
+                        if (workSheetStream->m_COLBRK != nullptr)
+                            m_oColBreaks = workSheetStream->m_COLBRK;
+                        if (workSheetStream->m_DCON != nullptr)
+                            m_oDataConsolidate = workSheetStream->m_DCON;
+
+                        if (!workSheetStream->m_arBrtRangeProtectionIso.empty())
+                            m_oProtectedRanges = workSheetStream->m_arBrtRangeProtectionIso;
+                        else if(!workSheetStream->m_arBrtRangeProtection.empty())
+                            m_oProtectedRanges = workSheetStream->m_arBrtRangeProtection;
+
+                        if (workSheetStream->m_FRTWORKSHEET != nullptr)
+                            m_oExtLst = workSheetStream->m_FRTWORKSHEET;
+                    }
+
+                }
+
+            }
+        }
+
 		void CWorksheet::read(const CPath& oRootPath, const CPath& oPath)
 		{
 			m_oReadPath = oPath;
 			IFileContainer::Read( oRootPath, oPath );
 
-			XmlUtils::CXmlLiteReader oReader;
-
-			if ( !oReader.FromFile( oPath.GetPath() ) )
-				return;
-
-			if ( !oReader.ReadNextNode() )
-				return;
-
-			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-			if ( L"worksheet" == sName || L"chartsheet" == sName)
-			{
-				fromXML(oReader);
+            if( m_oReadPath.GetExtention() == _T(".bin"))
+            {
+                readBin(m_oReadPath);
 			}
+			else
+			{
+				XmlUtils::CXmlLiteReader oReader;
+				if (!oReader.FromFile(oPath.GetPath()))
+					return;
+				if (!oReader.ReadNextNode())
+					return;
 
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				if (L"worksheet" == sName || L"chartsheet" == sName)
+				{
+					fromXML(oReader);
+				}
+			}
+		}
+		void CWorksheet::PrepareAfterRead()
+		{
 			PrepareComments(m_pComments, m_pThreadedComments, m_oLegacyDrawing.GetPointer());
 			PrepareConditionalFormatting();
 			PrepareDataValidations();
@@ -433,7 +576,6 @@ namespace OOX
 							{
 								pCommentItem->m_sAuthor = arAuthors[nAuthorId];
 							}
-
 							OOX::Spreadsheet::CSi* pSi = pComment->m_oText.GetPointerEmptyNullable();
 							if(NULL != pSi)
 								pCommentItem->m_oText.reset(pSi);

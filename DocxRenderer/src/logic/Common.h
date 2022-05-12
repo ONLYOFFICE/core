@@ -2,13 +2,16 @@
 #define DOCX_RENDERER_COMMON_H
 
 #include "../DesktopEditor/common/StringBuilder.h"
+#include "../DesktopEditor/common/StringUTF32.h"
 #include "../DesktopEditor/common/CalculatorCRC32.h"
 #include "../DesktopEditor/graphics/Matrix.h"
 #include "../DesktopEditor/graphics/structures.h"
 #include "../DesktopEditor/graphics/TemporaryCS.h"
 #include "../DesktopEditor/raster/BgraFrame.h"
 #include "../DesktopEditor/common/Directory.h"
-
+#include "../DesktopEditor/xml/include/xmlutils.h"
+#include "../DesktopEditor/graphics/pro/Graphics.h"
+#include <algorithm>
 #include <map>
 
 namespace NSDocxRenderer
@@ -34,6 +37,7 @@ namespace NSDocxRenderer
 		{
 			m_eType = etShape;
 		}
+        virtual ~CBaseItem() {}
 
         virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) = 0;
 	};
@@ -91,7 +95,7 @@ namespace NSDocxRenderer
 		}
 
 	public:
-        CImageInfo WriteImage(CBgraFrame* pImage, double& x, double& y, double& width, double& height)
+        CImageInfo WriteImage(Aggplus::CImage* pImage, double& x, double& y, double& width, double& height)
 		{
 			if (height < 0)
 			{
@@ -102,7 +106,7 @@ namespace NSDocxRenderer
 			
             return GenerateImageID(pImage);
 		}
-        CImageInfo WriteImage(std::wstring& strFile, double& x, double& y, double& width, double& height)
+        CImageInfo WriteImage(const std::wstring& strFile, double& x, double& y, double& width, double& height)
 		{
 			return GenerateImageID(strFile);
 		}
@@ -112,19 +116,19 @@ namespace NSDocxRenderer
 		{
             NSFile::CFileBinary::Copy(strFileSrc, strFileDst);
 		}
-        void SaveImage(std::wstring& strFileSrc, CImageInfo& oInfo)
+        void SaveImage(const std::wstring& strFileSrc, CImageInfo& oInfo)
 		{
-            CBgraFrame oFrame;
-            if (oFrame.OpenFile(strFileSrc))
+            Aggplus::CImage oFrame(strFileSrc);
+            if (NULL != oFrame.GetData())
                 return SaveImage(&oFrame, oInfo);
 		}
-        void SaveImage(CBgraFrame* pImage, CImageInfo& oInfo)
+        void SaveImage(Aggplus::CImage* pImage, CImageInfo& oInfo)
 		{
             if (NULL == pImage)
 				return;
 
-            int w = pImage->get_Width();
-            int h = pImage->get_Height();
+            int w = pImage->GetWidth();
+            int h = pImage->GetHeight();
 
             oInfo.m_eType = GetImageType(pImage);
 
@@ -158,10 +162,10 @@ namespace NSDocxRenderer
             }
 		}
 
-        CImageInfo GenerateImageID(CBgraFrame* pImage)
+        CImageInfo GenerateImageID(Aggplus::CImage* pImage)
 		{
-            BYTE* pData = pImage->get_Data();
-            int nSize = pImage->get_Stride() * pImage->get_Height();
+            BYTE* pData = pImage->GetData();
+            int nSize = pImage->GetStride() * pImage->GetHeight();
             if (nSize < 0)
                 nSize = -nSize;
 
@@ -169,40 +173,40 @@ namespace NSDocxRenderer
 
             std::map<DWORD, CImageInfo>::iterator find = m_mapImageData.find(dwSum);
             if (find != m_mapImageData.end())
-                return *find;
+                return find->second;
 
             ++m_lNextIDImage;
             CImageInfo oInfo;
-            oInfo.m_lID = m_lNextIDImage;
+            oInfo.m_nId = m_lNextIDImage;
             SaveImage(pImage, oInfo);
-            m_mapImageData.insert(std::pair<std::DWORD, CImageInfo>(dwSum, oInfo);
+            m_mapImageData.insert(std::pair<DWORD, CImageInfo>(dwSum, oInfo));
 
             return oInfo;
 		}
 
-        CImageInfo GenerateImageID(std::wstring& strFileName)
+        CImageInfo GenerateImageID(const std::wstring& strFileName)
 		{
             std::map<std::wstring, CImageInfo>::iterator find = m_mapImagesFile.find(strFileName);
             if (find != m_mapImagesFile.end())
-                return *find;
+                return find->second;
 
             ++m_lNextIDImage;
             CImageInfo oInfo;
-            oInfo.m_lID = m_lNextIDImage;
+            oInfo.m_nId = m_lNextIDImage;
             SaveImage(strFileName, oInfo);
-            m_mapImagesFile.insert(std::pair<std::wstring, CImageInfo>(strFileName, oInfo);
+            m_mapImagesFile.insert(std::pair<std::wstring, CImageInfo>(strFileName, oInfo));
 
 			return oInfo;
 		}
 
-        CImageInfo::ImageType GetImageType(CBgraFrame* pFrame)
+        CImageInfo::ImageType GetImageType(Aggplus::CImage* pFrame)
 		{
-            int w = pFrame->get_Width();
-            int h = pFrame->get_Height();
-            BYTE* pBuffer = pFrame->get_Data();
+            int w = pFrame->GetWidth();
+            int h = pFrame->GetHeight();
+            BYTE* pBuffer = pFrame->GetData();
 
 			BYTE* pBufferMem = pBuffer + 3;
-			LONG lCountPix = lWidth * lHeight;
+            LONG lCountPix = w * h;
 
 			for (LONG i = 0; i < lCountPix; ++i, pBufferMem += 4)
 			{
@@ -212,15 +216,15 @@ namespace NSDocxRenderer
             return CImageInfo::itJPG;
 		}
 
-        void FlipY(CBgraFrame* pImage)
+        void FlipY(Aggplus::CImage* pImage)
 		{
             if (NULL == pImage)
 				return;
 
-            int w = pImage->get_Width();
-            int h = pImage->get_Height();
-            BYTE* pBuffer = pImage->get_Data();
-            int stride = pImage->get_Stride();
+            int w = pImage->GetWidth();
+            int h = pImage->GetHeight();
+            BYTE* pBuffer = pImage->GetData();
+            int stride = pImage->GetStride();
 
             if (stride < 0)
                 stride = -stride;
@@ -269,7 +273,7 @@ namespace NSDocxRenderer
             for (LONG lIndexV = 0; lIndexV < h; ++lIndexV)
 			{
 				DWORD* pMem1 = pBufferDWORD;
-				DWORD* pMem2 = pBufferDWORD + lWidth - 1;
+                DWORD* pMem2 = pBufferDWORD + w - 1;
 				
 				LONG lI = 0;
 				while (lI < lW2)

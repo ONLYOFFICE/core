@@ -34,6 +34,7 @@
 
 #include "FontManager.h"
 #include "../../Common/OfficeFileFormats.h"
+#include "Meta.h"
 
 #ifdef min
 #undef min
@@ -319,10 +320,18 @@ namespace NSHtmlRenderer
         {
             m_pManager = NULL;
         }
-        void Init(NSFonts::IApplicationFonts* pApplicationFonts)
+        void Init(NSFonts::IApplicationFonts* pApplicationFonts, int nCacheSize = 0)
         {
             RELEASEOBJECT(m_pManager);
             m_pManager = pApplicationFonts->GenerateFontManager();
+
+            if (0 != nCacheSize)
+            {
+                NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
+                pFontCache->SetStreams(pApplicationFonts->GetStreams());
+                pFontCache->SetCacheSize(nCacheSize);
+                m_pManager->SetOwnerCache(pFontCache);
+            }
         }
 
         virtual ~CFontManagerWrapper()
@@ -338,7 +347,7 @@ namespace NSHtmlRenderer
     public:
         inline void LoadCurrentFont(bool bIsAttack, int lFaceIndex = 0)
         {
-            if (L"" == m_pFont->Path)
+            if (m_pFont->Path.empty())
             {
                 std::wstring sFind = m_pFont->Name + L"__ASC_FONT__" + std::to_wstring(m_pFont->GetStyle());
 
@@ -466,7 +475,6 @@ namespace NSHtmlRenderer
         NSStructures::CFont*	m_pFont;
 
         NSStructures::CBrush*	m_pLastBrush;
-        NSStructures::CFont*	m_pLastFont;
 
         Aggplus::CMatrix*		m_pTransform;
         Aggplus::CMatrix*		m_pLastTransform;
@@ -491,9 +499,17 @@ namespace NSHtmlRenderer
             m_lCountSymbols = 0;
             m_lCountSpaces = 0;
         }
-        void Init(NSFonts::IApplicationFonts* pApplicationFonts)
+        void Init(NSFonts::IApplicationFonts* pApplicationFonts, int nCacheSize = 0)
         {
-            m_oFontManager.Init(pApplicationFonts);
+            m_oFontManager.Init(pApplicationFonts, nCacheSize);
+        }
+
+        void ClearStatistics()
+        {
+            m_lCountParagraphs = 0;
+            m_lCountWords = 0;
+            m_lCountSymbols = 0;
+            m_lCountSpaces = 0;
         }
 
         template<typename T>
@@ -505,7 +521,6 @@ namespace NSHtmlRenderer
             m_pFont		= writer->m_pFont;
 
             m_pLastBrush	= &writer->m_oLastBrush;
-            m_pLastFont		= &writer->m_oLastFont;
 
             m_pTransform		= writer->m_pTransform;
             m_pLastTransform	= &writer->m_oLastTransform;
@@ -736,7 +751,7 @@ namespace NSHtmlRenderer
             LONG lTextLen = nCount;
             bool bIsLoadFontAttack = true;
 
-            // говенные значения приходят из пдф
+            // плохие значения приходят из пдф
             /*
             if (1 == lTextLen && 0 <= width)
                 bIsLoadFontAttack = false;
@@ -945,8 +960,8 @@ namespace NSHtmlRenderer
 
             if (nCount > 1)
             {
-                int* pWidthBuf = (int*)(m_pPageMeta->GetData() + _position);
-                *pWidthBuf = (int)(dWidthLine * 10000);
+                int nWidthBuf = (int)(dWidthLine * 10000);
+                memcpy(m_pPageMeta->GetData() + _position, &nWidthBuf, 4);
             }
 
             m_oLine.Clear();

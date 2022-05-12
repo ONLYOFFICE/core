@@ -801,158 +801,132 @@
     <xsd:attribute name="id" type="ST_DecimalNumber" use="required"/>
   </xsd:complexType>
   <xsd:complexType name="CT_TrackChange">
-    <xsd:complexContent>
-      <xsd:extension base="CT_Markup">
-        <xsd:attribute name="author" type="s:ST_String" use="required"/>
-        <xsd:attribute name="date" type="ST_DateTime" use="optional"/>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:attribute name="id" type="ST_DecimalNumber" use="required"/>
+    <xsd:attribute name="author" type="s:ST_String" use="required"/>
+    <xsd:attribute name="date" type="ST_DateTime" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_CellMergeTrackChange">
-    <xsd:complexContent>
-      <xsd:extension base="CT_TrackChange">
-        <xsd:attribute name="vMerge" type="ST_AnnotationVMerge" use="optional"/>
-        <xsd:attribute name="vMergeOrig" type="ST_AnnotationVMerge" use="optional"/>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:attribute name="id" type="ST_DecimalNumber" use="required"/>
+    <xsd:attribute name="author" type="s:ST_String" use="required"/>
+    <xsd:attribute name="date" type="ST_DateTime" use="optional"/>
+    <xsd:attribute name="vMerge" type="ST_AnnotationVMerge" use="optional"/>
+    <xsd:attribute name="vMergeOrig" type="ST_AnnotationVMerge" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_TrackChangeRange">
-    <xsd:complexContent>
-      <xsd:extension base="CT_TrackChange">
-        <xsd:attribute name="displacedByCustomXml" type="ST_DisplacedByCustomXml" use="optional"/>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:attribute name="id" type="ST_DecimalNumber" use="required"/>
+    <xsd:attribute name="author" type="s:ST_String" use="required"/>
+    <xsd:attribute name="date" type="ST_DateTime" use="optional"/>
+    <xsd:attribute name="displacedByCustomXml" type="ST_DisplacedByCustomXml" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_MarkupRange">
-    <xsd:complexContent>
-      <xsd:extension base="CT_Markup">
-        <xsd:attribute name="displacedByCustomXml" type="ST_DisplacedByCustomXml" use="optional"/>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:attribute name="id" type="ST_DecimalNumber" use="required"/>
+    <xsd:attribute name="displacedByCustomXml" type="ST_DisplacedByCustomXml" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_BookmarkRange">
-    <xsd:complexContent>
-      <xsd:extension base="CT_MarkupRange">
+    <xsd:attribute name="id" type="ST_DecimalNumber" use="required"/>
+        <xsd:attribute name="displacedByCustomXml" type="ST_DisplacedByCustomXml" use="optional"/>
         <xsd:attribute name="colFirst" type="ST_DecimalNumber" use="optional"/>
         <xsd:attribute name="colLast" type="ST_DecimalNumber" use="optional"/>
-      </xsd:extension>
-    </xsd:complexContent>
   </xsd:complexType>
   <xsd:complexType name="CT_Bookmark">
-    <xsd:complexContent>
-      <xsd:extension base="CT_BookmarkRange">
-        <xsd:attribute name="name" type="s:ST_String" use="required"/>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:attribute name="colFirst" type="ST_DecimalNumber" use="optional"/>
+    <xsd:attribute name="colLast" type="ST_DecimalNumber" use="optional"/>
+    <xsd:attribute name="name" type="s:ST_String" use="required"/>
   </xsd:complexType>
   <xsd:complexType name="CT_MoveBookmark">
-    <xsd:complexContent>
-      <xsd:extension base="CT_Bookmark">
-        <xsd:attribute name="author" type="s:ST_String" use="required"/>
-        <xsd:attribute name="date" type="ST_DateTime" use="required"/>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:attribute name="colFirst" type="ST_DecimalNumber" use="optional"/>
+    <xsd:attribute name="colLast" type="ST_DecimalNumber" use="optional"/>
+    <xsd:attribute name="name" type="s:ST_String" use="required"/>
+    <xsd:attribute name="author" type="s:ST_String" use="required"/>
+    <xsd:attribute name="date" type="ST_DateTime" use="required"/>
   </xsd:complexType>
   <xsd:complexType name="CT_Comment">
-    <xsd:complexContent>
-      <xsd:extension base="CT_TrackChange">
-        <xsd:sequence>
-          <xsd:group ref="EG_BlockLevelElts" minOccurs="0" maxOccurs="unbounded"/>
-        </xsd:sequence>
-        <xsd:attribute name="initials" type="s:ST_String" use="optional"/>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:sequence>
+      <xsd:element name="todo_EG_BlockLevelElts" type="CT_String" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="id" type="ST_DecimalNumber" use="required"/>
+    <xsd:attribute name="author" type="s:ST_String" use="required"/>
+    <xsd:attribute name="date" type="ST_DateTime" use="optional"/>
+    <xsd:attribute name="initials" type="s:ST_String" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_TblPrExChange">
-    <xsd:complexContent>
-      <xsd:extension base="CT_TrackChange">
-        <xsd:sequence>
-          <xsd:element name="tblPrEx" type="CT_TblPrExBase" minOccurs="1"/>
-        </xsd:sequence>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:sequence>
+      <xsd:element name="tblPrEx" type="CT_TblPrExBase" minOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attribute name="id" type="ST_DecimalNumber" use="required"/>
+    <xsd:attribute name="author" type="s:ST_String" use="required"/>
+    <xsd:attribute name="date" type="ST_DateTime" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_TcPrChange">
-    <xsd:complexContent>
-      <xsd:extension base="CT_TrackChange">
-        <xsd:sequence>
+    <xsd:sequence>
           <xsd:element name="tcPr" type="CT_TcPrInner" minOccurs="1"/>
         </xsd:sequence>
-      </xsd:extension>
-    </xsd:complexContent>
+        <xsd:attribute name="id" type="ST_DecimalNumber" use="required"/>
+        <xsd:attribute name="author" type="s:ST_String" use="required"/>
+        <xsd:attribute name="date" type="ST_DateTime" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_TrPrChange">
-    <xsd:complexContent>
-      <xsd:extension base="CT_TrackChange">
-        <xsd:sequence>
-          <xsd:element name="trPr" type="CT_TrPrBase" minOccurs="1"/>
-        </xsd:sequence>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:sequence>
+      <xsd:element name="trPr" type="CT_TrPrBase" minOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attribute name="id" type="ST_DecimalNumber" use="required"/>
+    <xsd:attribute name="author" type="s:ST_String" use="required"/>
+    <xsd:attribute name="date" type="ST_DateTime" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_TblGridChange">
-    <xsd:complexContent>
-      <xsd:extension base="CT_Markup">
-        <xsd:sequence>
-          <xsd:element name="tblGrid" type="CT_TblGridBase"/>
-        </xsd:sequence>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:sequence>
+      <xsd:element name="tblGrid" type="CT_TblGridBase"/>
+    </xsd:sequence>
+    <xsd:attribute name="id" type="ST_DecimalNumber" use="required"/>
   </xsd:complexType>
   <xsd:complexType name="CT_TblPrChange">
-    <xsd:complexContent>
-      <xsd:extension base="CT_TrackChange">
-        <xsd:sequence>
-          <xsd:element name="tblPr" type="CT_TblPrBase"/>
-        </xsd:sequence>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:sequence>
+      <xsd:element name="tblPr" type="CT_TblPrBase"/>
+    </xsd:sequence>
+    <xsd:attribute name="id" type="ST_DecimalNumber" use="required"/>
+    <xsd:attribute name="author" type="s:ST_String" use="required"/>
+    <xsd:attribute name="date" type="ST_DateTime" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_SectPrChange">
-    <xsd:complexContent>
-      <xsd:extension base="CT_TrackChange">
-        <xsd:sequence>
-          <xsd:element name="sectPr" type="CT_SectPrBase" minOccurs="0"/>
-        </xsd:sequence>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:sequence>
+      <xsd:element name="sectPr" type="CT_SectPrBase" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="id" type="ST_DecimalNumber" use="required"/>
+    <xsd:attribute name="author" type="s:ST_String" use="required"/>
+    <xsd:attribute name="date" type="ST_DateTime" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_PPrChange">
-    <xsd:complexContent>
-      <xsd:extension base="CT_TrackChange">
-        <xsd:sequence>
-          <xsd:element name="pPr" type="CT_PPrBase" minOccurs="1"/>
-        </xsd:sequence>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:sequence>
+      <xsd:element name="pPr" type="CT_PPrBase" minOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attribute name="id" type="ST_DecimalNumber" use="required"/>
+    <xsd:attribute name="author" type="s:ST_String" use="required"/>
+    <xsd:attribute name="date" type="ST_DateTime" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_RPrChange">
-    <xsd:complexContent>
-      <xsd:extension base="CT_TrackChange">
-        <xsd:sequence>
-          <xsd:element name="rPr" type="CT_RPrOriginal" minOccurs="1"/>
-        </xsd:sequence>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:sequence>
+      <xsd:element name="rPr" type="CT_RPrOriginal" minOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attribute name="id" type="ST_DecimalNumber" use="required"/>
+    <xsd:attribute name="author" type="s:ST_String" use="required"/>
+    <xsd:attribute name="date" type="ST_DateTime" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_ParaRPrChange">
-    <xsd:complexContent>
-      <xsd:extension base="CT_TrackChange">
-        <xsd:sequence>
-          <xsd:element name="rPr" type="CT_ParaRPrOriginal" minOccurs="1"/>
-        </xsd:sequence>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:sequence>
+      <xsd:element name="rPr" type="CT_ParaRPrOriginal" minOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attribute name="id" type="ST_DecimalNumber" use="required"/>
+    <xsd:attribute name="author" type="s:ST_String" use="required"/>
+    <xsd:attribute name="date" type="ST_DateTime" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_RunTrackChange">
-    <xsd:complexContent>
-      <xsd:extension base="CT_TrackChange">
-        <xsd:choice minOccurs="0" maxOccurs="unbounded">
-          <xsd:group ref="EG_ContentRunContent"/>
-          <xsd:group ref="m:EG_OMathMathElements"/>
-        </xsd:choice>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:choice minOccurs="0" maxOccurs="unbounded">
+      <xsd:element name="todo_EG_ContentRunContent" type="CT_String" minOccurs="0"/>
+      <xsd:group ref="m:EG_OMathMathElements"/>
+    </xsd:choice>
+    <xsd:attribute name="id" type="ST_DecimalNumber" use="required"/>
+    <xsd:attribute name="author" type="s:ST_String" use="required"/>
+    <xsd:attribute name="date" type="ST_DateTime" use="optional"/>
   </xsd:complexType>
   <xsd:group name="EG_PContentMath">
     <xsd:choice>
@@ -1036,15 +1010,44 @@
     <xsd:attribute name="val" type="ST_TextboxTightWrap" use="required"/>
   </xsd:complexType>
   <xsd:complexType name="CT_PPr">
-    <xsd:complexContent>
-      <xsd:extension base="CT_PPrBase">
-        <xsd:sequence>
-          <xsd:element name="rPr" type="CT_ParaRPr" minOccurs="0"/>
-          <xsd:element name="sectPr" type="CT_SectPr" minOccurs="0"/>
-          <xsd:element name="pPrChange" type="CT_PPrChange" minOccurs="0"/>
-        </xsd:sequence>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:sequence>
+      <xsd:element name="pStyle" type="CT_String" minOccurs="0"/>
+      <xsd:element name="keepNext" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="keepLines" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="pageBreakBefore" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="framePr" type="CT_FramePr" minOccurs="0"/>
+      <xsd:element name="widowControl" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="numPr" type="CT_NumPr" minOccurs="0"/>
+      <xsd:element name="suppressLineNumbers" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="pBdr" type="CT_PBdr" minOccurs="0"/>
+      <xsd:element name="shd" type="CT_Shd" minOccurs="0"/>
+      <xsd:element name="tabs" type="CT_Tabs" minOccurs="0"/>
+      <xsd:element name="suppressAutoHyphens" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="kinsoku" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="wordWrap" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="overflowPunct" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="topLinePunct" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="autoSpaceDE" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="autoSpaceDN" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="bidi" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="adjustRightInd" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="snapToGrid" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="spacing" type="CT_Spacing" minOccurs="0"/>
+      <xsd:element name="ind" type="CT_Ind" minOccurs="0"/>
+      <xsd:element name="contextualSpacing" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="mirrorIndents" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="suppressOverlap" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="jc" type="CT_Jc" minOccurs="0"/>
+      <xsd:element name="textDirection" type="CT_TextDirection" minOccurs="0"/>
+      <xsd:element name="textAlignment" type="CT_TextAlignment" minOccurs="0"/>
+      <xsd:element name="textboxTightWrap" type="CT_TextboxTightWrap" minOccurs="0"/>
+      <xsd:element name="outlineLvl" type="CT_DecimalNumber" minOccurs="0"/>
+      <xsd:element name="divId" type="CT_DecimalNumber" minOccurs="0"/>
+      <xsd:element name="cnfStyle" type="CT_Cnf" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="rPr" type="CT_ParaRPr" minOccurs="0"/>
+      <xsd:element name="sectPr" type="CT_SectPr" minOccurs="0"/>
+      <xsd:element name="pPrChange" type="CT_PPrChange" minOccurs="0"/>
+    </xsd:sequence>
   </xsd:complexType>
   <xsd:complexType name="CT_PPrBase">
     <xsd:sequence>
@@ -1084,13 +1087,42 @@
     </xsd:sequence>
   </xsd:complexType>
   <xsd:complexType name="CT_PPrGeneral">
-    <xsd:complexContent>
-      <xsd:extension base="CT_PPrBase">
-        <xsd:sequence>
-          <xsd:element name="pPrChange" type="CT_PPrChange" minOccurs="0"/>
-        </xsd:sequence>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:sequence>
+      <xsd:element name="pStyle" type="CT_String" minOccurs="0"/>
+      <xsd:element name="keepNext" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="keepLines" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="pageBreakBefore" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="framePr" type="CT_FramePr" minOccurs="0"/>
+      <xsd:element name="widowControl" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="numPr" type="CT_NumPr" minOccurs="0"/>
+      <xsd:element name="suppressLineNumbers" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="pBdr" type="CT_PBdr" minOccurs="0"/>
+      <xsd:element name="shd" type="CT_Shd" minOccurs="0"/>
+      <xsd:element name="tabs" type="CT_Tabs" minOccurs="0"/>
+      <xsd:element name="suppressAutoHyphens" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="kinsoku" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="wordWrap" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="overflowPunct" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="topLinePunct" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="autoSpaceDE" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="autoSpaceDN" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="bidi" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="adjustRightInd" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="snapToGrid" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="spacing" type="CT_Spacing" minOccurs="0"/>
+      <xsd:element name="ind" type="CT_Ind" minOccurs="0"/>
+      <xsd:element name="contextualSpacing" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="mirrorIndents" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="suppressOverlap" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="jc" type="CT_Jc" minOccurs="0"/>
+      <xsd:element name="textDirection" type="CT_TextDirection" minOccurs="0"/>
+      <xsd:element name="textAlignment" type="CT_TextAlignment" minOccurs="0"/>
+      <xsd:element name="textboxTightWrap" type="CT_TextboxTightWrap" minOccurs="0"/>
+      <xsd:element name="outlineLvl" type="CT_DecimalNumber" minOccurs="0"/>
+      <xsd:element name="divId" type="CT_DecimalNumber" minOccurs="0"/>
+      <xsd:element name="cnfStyle" type="CT_Cnf" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="pPrChange" type="CT_PPrChange" minOccurs="0"/>
+    </xsd:sequence>
   </xsd:complexType>
   <xsd:complexType name="CT_Control">
     <xsd:attribute name="name" type="s:ST_String" use="optional"/>
@@ -1136,12 +1168,13 @@
     </xsd:restriction>
   </xsd:simpleType>
   <xsd:complexType name="CT_ObjectLink">
-    <xsd:complexContent>
-      <xsd:extension base="CT_ObjectEmbed">
-        <xsd:attribute name="updateMode" type="ST_ObjectUpdateMode" use="required"/>
-        <xsd:attribute name="lockedField" type="s:ST_OnOff" use="optional"/>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:attribute name="drawAspect" type="ST_ObjectDrawAspect" use="optional"/>
+    <xsd:attribute ref="r:id" use="required"/>
+    <xsd:attribute name="progId" type="s:ST_String" use="optional"/>
+    <xsd:attribute name="shapeId" type="s:ST_String" use="optional"/>
+    <xsd:attribute name="fieldCodes" type="s:ST_String" use="optional"/>
+    <xsd:attribute name="updateMode" type="ST_ObjectUpdateMode" use="required"/>
+    <xsd:attribute name="lockedField" type="s:ST_OnOff" use="optional"/>
   </xsd:complexType>
   <xsd:simpleType name="ST_ObjectUpdateMode">
     <xsd:restriction base="xsd:string">
@@ -1157,7 +1190,7 @@
   </xsd:complexType>
   <xsd:complexType name="CT_SimpleField">
     <xsd:sequence>
-      <xsd:group ref="EG_PContent" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="todo_EG_PContent" type="CT_String" minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="instr" type="s:ST_String" use="required"/>
     <xsd:attribute name="fldLock" type="s:ST_OnOff"/>
@@ -1216,7 +1249,9 @@
     <xsd:attribute name="dirty" type="s:ST_OnOff"/>
   </xsd:complexType>
   <xsd:complexType name="CT_Hyperlink">
-    <xsd:group ref="EG_PContent" minOccurs="0" maxOccurs="unbounded"/>
+    <xsd:sequence>
+      <xsd:element name="todo_EG_PContent" type="CT_String" minOccurs="0"/>
+    </xsd:sequence>
     <xsd:attribute name="tgtFrame" type="s:ST_String" use="optional"/>
     <xsd:attribute name="tooltip" type="s:ST_String" use="optional"/>
     <xsd:attribute name="docLocation" type="s:ST_String" use="optional"/>
@@ -1410,27 +1445,43 @@
     <xsd:attribute name="offsetFrom" type="ST_PageBorderOffset" use="optional" default="text"/>
   </xsd:complexType>
   <xsd:complexType name="CT_PageBorder">
-    <xsd:complexContent>
-      <xsd:extension base="CT_Border">
-        <xsd:attribute ref="r:id" use="optional"/>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:attribute name="val" type="ST_Border" use="required"/>
+    <xsd:attribute name="color" type="ST_HexColor" use="optional" default="auto"/>
+    <xsd:attribute name="themeColor" type="ST_ThemeColor" use="optional"/>
+    <xsd:attribute name="themeTint" type="ST_UcharHexNumber" use="optional"/>
+    <xsd:attribute name="themeShade" type="ST_UcharHexNumber" use="optional"/>
+    <xsd:attribute name="sz" type="ST_EighthPointMeasure" use="optional"/>
+    <xsd:attribute name="space" type="ST_PointMeasure" use="optional" default="0"/>
+    <xsd:attribute name="shadow" type="s:ST_OnOff" use="optional"/>
+    <xsd:attribute name="frame" type="s:ST_OnOff" use="optional"/>
+    <xsd:attribute ref="r:id" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_BottomPageBorder">
-    <xsd:complexContent>
-      <xsd:extension base="CT_PageBorder">
-        <xsd:attribute ref="r:bottomLeft" use="optional"/>
-        <xsd:attribute ref="r:bottomRight" use="optional"/>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:attribute name="val" type="ST_Border" use="required"/>
+    <xsd:attribute name="color" type="ST_HexColor" use="optional" default="auto"/>
+    <xsd:attribute name="themeColor" type="ST_ThemeColor" use="optional"/>
+    <xsd:attribute name="themeTint" type="ST_UcharHexNumber" use="optional"/>
+    <xsd:attribute name="themeShade" type="ST_UcharHexNumber" use="optional"/>
+    <xsd:attribute name="sz" type="ST_EighthPointMeasure" use="optional"/>
+    <xsd:attribute name="space" type="ST_PointMeasure" use="optional" default="0"/>
+    <xsd:attribute name="shadow" type="s:ST_OnOff" use="optional"/>
+    <xsd:attribute name="frame" type="s:ST_OnOff" use="optional"/>
+    <xsd:attribute ref="r:bottomLeft" use="optional"/>
+    <xsd:attribute ref="r:bottomRight" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_TopPageBorder">
-    <xsd:complexContent>
-      <xsd:extension base="CT_PageBorder">
-        <xsd:attribute ref="r:topLeft" use="optional"/>
-        <xsd:attribute ref="r:topRight" use="optional"/>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:attribute name="val" type="ST_Border" use="required"/>
+    <xsd:attribute name="color" type="ST_HexColor" use="optional" default="auto"/>
+    <xsd:attribute name="themeColor" type="ST_ThemeColor" use="optional"/>
+    <xsd:attribute name="themeTint" type="ST_UcharHexNumber" use="optional"/>
+    <xsd:attribute name="themeShade" type="ST_UcharHexNumber" use="optional"/>
+    <xsd:attribute name="sz" type="ST_EighthPointMeasure" use="optional"/>
+    <xsd:attribute name="space" type="ST_PointMeasure" use="optional" default="0"/>
+    <xsd:attribute name="shadow" type="s:ST_OnOff" use="optional"/>
+    <xsd:attribute name="frame" type="s:ST_OnOff" use="optional"/>
+    <xsd:attribute ref="r:id" use="optional"/>
+    <xsd:attribute ref="r:topLeft" use="optional"/>
+    <xsd:attribute ref="r:topRight" use="optional"/>
   </xsd:complexType>
   <xsd:simpleType name="ST_ChapterSep">
     <xsd:restriction base="xsd:string">
@@ -1513,11 +1564,8 @@
     </xsd:restriction>
   </xsd:simpleType>
   <xsd:complexType name="CT_HdrFtrRef">
-    <xsd:complexContent>
-      <xsd:extension base="CT_Rel">
-        <xsd:attribute name="type" type="ST_HdrFtr" use="required"/>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:attribute ref="r:id" use="required"/>
+    <xsd:attribute name="type" type="ST_HdrFtr" use="required"/>
   </xsd:complexType>
   <xsd:group name="EG_HdrFtrReferences">
     <xsd:choice>
@@ -1526,7 +1574,9 @@
     </xsd:choice>
   </xsd:group>
   <xsd:complexType name="CT_HdrFtr">
-    <xsd:group ref="EG_BlockLevelElts" minOccurs="1" maxOccurs="unbounded"/>
+    <xsd:sequence>
+      <xsd:element name="todo_EG_BlockLevelElts" type="CT_String" minOccurs="0"/>
+    </xsd:sequence>
   </xsd:complexType>
   <xsd:group name="EG_SectPrContents">
     <xsd:sequence>
@@ -1648,21 +1698,15 @@
     <xsd:attribute name="displacedByCustomXml" type="ST_DisplacedByCustomXml" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_PermStart">
-    <xsd:complexContent>
-      <xsd:extension base="CT_Perm">
-        <xsd:attribute name="edGrp" type="ST_EdGrp" use="optional"/>
-        <xsd:attribute name="ed" type="s:ST_String" use="optional"/>
-        <xsd:attribute name="colFirst" type="ST_DecimalNumber" use="optional"/>
-        <xsd:attribute name="colLast" type="ST_DecimalNumber" use="optional"/>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:attribute name="id" type="s:ST_String" use="required"/>
+    <xsd:attribute name="displacedByCustomXml" type="ST_DisplacedByCustomXml" use="optional"/>
+    <xsd:attribute name="edGrp" type="ST_EdGrp" use="optional"/>
+    <xsd:attribute name="ed" type="s:ST_String" use="optional"/>
+    <xsd:attribute name="colFirst" type="ST_DecimalNumber" use="optional"/>
+    <xsd:attribute name="colLast" type="ST_DecimalNumber" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_Text">
-    <xsd:simpleContent>
-      <xsd:extension base="s:ST_String">
-        <xsd:attribute ref="xml:space" use="optional"/>
-      </xsd:extension>
-    </xsd:simpleContent>
+    <xsd:attribute ref="xml:space" use="optional"/>
   </xsd:complexType>
   <xsd:group name="EG_RunInnerContent">
     <xsd:choice>
@@ -1805,23 +1849,21 @@
     </xsd:choice>
   </xsd:group>
   <xsd:complexType name="CT_MathCtrlIns">
-    <xsd:complexContent>
-      <xsd:extension base="CT_TrackChange">
-        <xsd:choice minOccurs="0">
-          <xsd:element name="del" type="CT_RPrChange" minOccurs="1"/>
-          <xsd:element name="rPr" type="CT_RPr" minOccurs="1"/>
-        </xsd:choice>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:choice minOccurs="0">
+      <xsd:element name="del" type="CT_RPrChange" minOccurs="1"/>
+      <xsd:element name="rPr" type="CT_RPr" minOccurs="1"/>
+    </xsd:choice>
+    <xsd:attribute name="id" type="ST_DecimalNumber" use="required"/>
+    <xsd:attribute name="author" type="s:ST_String" use="required"/>
+    <xsd:attribute name="date" type="ST_DateTime" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_MathCtrlDel">
-    <xsd:complexContent>
-      <xsd:extension base="CT_TrackChange">
-        <xsd:choice minOccurs="0">
-          <xsd:element name="rPr" type="CT_RPr" minOccurs="1"/>
-        </xsd:choice>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:sequence>
+      <xsd:element name="rPr" type="CT_RPr" minOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attribute name="id" type="ST_DecimalNumber" use="required"/>
+    <xsd:attribute name="author" type="s:ST_String" use="required"/>
+    <xsd:attribute name="date" type="ST_DateTime" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_RPrOriginal">
     <xsd:sequence>
@@ -1886,7 +1928,7 @@
   <xsd:group name="EG_RubyContent">
     <xsd:choice>
       <xsd:element name="r" type="CT_R"/>
-      <xsd:group ref="EG_RunLevelElts" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="todo_EG_RunLevelElts" type="CT_String" minOccurs="0"/>
     </xsd:choice>
   </xsd:group>
   <xsd:complexType name="CT_RubyContent">
@@ -2010,15 +2052,19 @@
       <xsd:element name="dir" type="CT_DirContentRun"/>
       <xsd:element name="bdo" type="CT_BdoContentRun"/>
       <xsd:element name="r" type="CT_R"/>
-      <xsd:group ref="EG_RunLevelElts" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="todo_EG_RunLevelElts" type="CT_String" minOccurs="0"/>
     </xsd:choice>
   </xsd:group>
   <xsd:complexType name="CT_DirContentRun">
-    <xsd:group ref="EG_PContent" minOccurs="0" maxOccurs="unbounded"/>
+	<xsd:sequence>
+      <xsd:element name="todo_EG_PContent" type="CT_String" minOccurs="0"/>
+    </xsd:sequence>
     <xsd:attribute name="val" type="ST_Direction" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_BdoContentRun">
-    <xsd:group ref="EG_PContent" minOccurs="0" maxOccurs="unbounded"/>
+	<xsd:sequence>
+      <xsd:element name="todo_EG_PContent" type="CT_String" minOccurs="0"/>
+    </xsd:sequence>
     <xsd:attribute name="val" type="ST_Direction" use="optional"/>
   </xsd:complexType>
   <xsd:simpleType name="ST_Direction">
@@ -2028,7 +2074,9 @@
     </xsd:restriction>
   </xsd:simpleType>
   <xsd:complexType name="CT_SdtContentRun">
-    <xsd:group ref="EG_PContent" minOccurs="0" maxOccurs="unbounded"/>
+	<xsd:sequence>
+      <xsd:element name="todo_EG_PContent" type="CT_String" minOccurs="0"/>
+    </xsd:sequence>
   </xsd:complexType>
   <xsd:group name="EG_ContentBlockContent">
     <xsd:choice>
@@ -2036,33 +2084,41 @@
       <xsd:element name="sdt" type="CT_SdtBlock"/>
       <xsd:element name="p" type="CT_P" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="tbl" type="CT_Tbl" minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:group ref="EG_RunLevelElts" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="todo_EG_RunLevelElts" type="CT_String" minOccurs="0"/>
     </xsd:choice>
   </xsd:group>
   <xsd:complexType name="CT_SdtContentBlock">
-    <xsd:group ref="EG_ContentBlockContent" minOccurs="0" maxOccurs="unbounded"/>
+	<xsd:sequence>
+      <xsd:element name="todo_EG_ContentBlockContent" type="CT_String" minOccurs="0"/>
+    </xsd:sequence>
   </xsd:complexType>
   <xsd:group name="EG_ContentRowContent">
     <xsd:choice>
       <xsd:element name="tr" type="CT_Row" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="customXml" type="CT_CustomXmlRow"/>
       <xsd:element name="sdt" type="CT_SdtRow"/>
-      <xsd:group ref="EG_RunLevelElts" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="todo_EG_RunLevelElts" type="CT_String" minOccurs="0"/>
     </xsd:choice>
   </xsd:group>
   <xsd:complexType name="CT_SdtContentRow">
-    <xsd:group ref="EG_ContentRowContent" minOccurs="0" maxOccurs="unbounded"/>
+    <xsd:sequence>
+      <xsd:element name="todo_EG_ContentRowContent" type="CT_String" minOccurs="0"/>
+    </xsd:sequence>
   </xsd:complexType>
   <xsd:group name="EG_ContentCellContent">
     <xsd:choice>
       <xsd:element name="tc" type="CT_Tc" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="customXml" type="CT_CustomXmlCell"/>
       <xsd:element name="sdt" type="CT_SdtCell"/>
-      <xsd:group ref="EG_RunLevelElts" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="todo_EG_RunLevelElts" type="CT_String" minOccurs="0"/>
     </xsd:choice>
   </xsd:group>
   <xsd:complexType name="CT_SdtContentCell">
-    <xsd:group ref="EG_ContentCellContent" minOccurs="0" maxOccurs="unbounded"/>
+    <xsd:sequence>
+      <xsd:element name="tblPrEx" type="CT_TblPrEx" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="trPr" type="CT_TrPr" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="todo_EG_ContentCellContent" type="CT_String" minOccurs="0"/>
+    </xsd:sequence>
   </xsd:complexType>
   <xsd:complexType name="CT_SdtBlock">
     <xsd:sequence>
@@ -2100,7 +2156,7 @@
   <xsd:complexType name="CT_CustomXmlRun">
     <xsd:sequence>
       <xsd:element name="customXmlPr" type="CT_CustomXmlPr" minOccurs="0" maxOccurs="1"/>
-      <xsd:group ref="EG_PContent" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="todo_EG_PContent" type="CT_String" minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="uri" type="s:ST_String"/>
     <xsd:attribute name="element" type="s:ST_XmlName" use="required"/>
@@ -2108,7 +2164,7 @@
   <xsd:complexType name="CT_SmartTagRun">
     <xsd:sequence>
       <xsd:element name="smartTagPr" type="CT_SmartTagPr" minOccurs="0" maxOccurs="1"/>
-      <xsd:group ref="EG_PContent" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="todo_EG_PContent" type="CT_String" minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="uri" type="s:ST_String"/>
     <xsd:attribute name="element" type="s:ST_XmlName" use="required"/>
@@ -2116,7 +2172,7 @@
   <xsd:complexType name="CT_CustomXmlBlock">
     <xsd:sequence>
       <xsd:element name="customXmlPr" type="CT_CustomXmlPr" minOccurs="0" maxOccurs="1"/>
-      <xsd:group ref="EG_ContentBlockContent" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="todo_EG_ContentBlockContent" type="CT_String" minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="uri" type="s:ST_String"/>
     <xsd:attribute name="element" type="s:ST_XmlName" use="required"/>
@@ -2130,7 +2186,7 @@
   <xsd:complexType name="CT_CustomXmlRow">
     <xsd:sequence>
       <xsd:element name="customXmlPr" type="CT_CustomXmlPr" minOccurs="0" maxOccurs="1"/>
-      <xsd:group ref="EG_ContentRowContent" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="todo_EG_ContentRowContent" type="CT_String" minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="uri" type="s:ST_String"/>
     <xsd:attribute name="element" type="s:ST_XmlName" use="required"/>
@@ -2138,7 +2194,7 @@
   <xsd:complexType name="CT_CustomXmlCell">
     <xsd:sequence>
       <xsd:element name="customXmlPr" type="CT_CustomXmlPr" minOccurs="0" maxOccurs="1"/>
-      <xsd:group ref="EG_ContentCellContent" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="todo_EG_ContentCellContent" type="CT_String" minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="uri" type="s:ST_String"/>
     <xsd:attribute name="element" type="s:ST_XmlName" use="required"/>
@@ -2195,13 +2251,10 @@
     </xsd:sequence>
   </xsd:complexType>
   <xsd:complexType name="CT_TblGrid">
-    <xsd:complexContent>
-      <xsd:extension base="CT_TblGridBase">
-        <xsd:sequence>
-          <xsd:element name="tblGridChange" type="CT_TblGridChange" minOccurs="0"/>
-        </xsd:sequence>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:sequence>
+      <xsd:element name="gridCol" type="CT_TblGridCol" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="tblGridChange" type="CT_TblGridChange" minOccurs="0"/>
+    </xsd:sequence>
   </xsd:complexType>
   <xsd:complexType name="CT_TcBorders">
     <xsd:sequence>
@@ -2250,27 +2303,46 @@
     </xsd:sequence>
   </xsd:complexType>
   <xsd:complexType name="CT_TcPr">
-    <xsd:complexContent>
-      <xsd:extension base="CT_TcPrInner">
-        <xsd:sequence>
-          <xsd:element name="tcPrChange" type="CT_TcPrChange" minOccurs="0"/>
-        </xsd:sequence>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:sequence>
+      <xsd:element name="cnfStyle" type="CT_Cnf" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="tcW" type="CT_TblWidth" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="gridSpan" type="CT_DecimalNumber" minOccurs="0"/>
+      <xsd:element name="vMerge" type="CT_VMerge" minOccurs="0"/>
+      <xsd:element name="tcBorders" type="CT_TcBorders" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="shd" type="CT_Shd" minOccurs="0"/>
+      <xsd:element name="noWrap" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="tcMar" type="CT_TcMar" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="textDirection" type="CT_TextDirection" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="tcFitText" type="CT_OnOff" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="vAlign" type="CT_VerticalJc" minOccurs="0"/>
+      <xsd:element name="hideMark" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="headers" type="CT_Headers" minOccurs="0"/>
+      <xsd:group ref="EG_CellMarkupElements" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="tcPrChange" type="CT_TcPrChange" minOccurs="0"/>
+    </xsd:sequence>
   </xsd:complexType>
   <xsd:complexType name="CT_TcPrInner">
-    <xsd:complexContent>
-      <xsd:extension base="CT_TcPrBase">
-        <xsd:sequence>
-          <xsd:group ref="EG_CellMarkupElements" minOccurs="0" maxOccurs="1"/>
-        </xsd:sequence>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:sequence>
+      <xsd:element name="cnfStyle" type="CT_Cnf" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="tcW" type="CT_TblWidth" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="gridSpan" type="CT_DecimalNumber" minOccurs="0"/>
+      <xsd:element name="vMerge" type="CT_VMerge" minOccurs="0"/>
+      <xsd:element name="tcBorders" type="CT_TcBorders" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="shd" type="CT_Shd" minOccurs="0"/>
+      <xsd:element name="noWrap" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="tcMar" type="CT_TcMar" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="textDirection" type="CT_TextDirection" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="tcFitText" type="CT_OnOff" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="vAlign" type="CT_VerticalJc" minOccurs="0"/>
+      <xsd:element name="hideMark" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="headers" type="CT_Headers" minOccurs="0"/>
+      <xsd:group ref="EG_CellMarkupElements" minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
   </xsd:complexType>
   <xsd:complexType name="CT_Tc">
     <xsd:sequence>
       <xsd:element name="tcPr" type="CT_TcPr" minOccurs="0" maxOccurs="1"/>
-      <xsd:group ref="EG_BlockLevelElts" minOccurs="1" maxOccurs="unbounded"/>
+      <xsd:element name="todo_EG_BlockLevelElts" type="CT_String" minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="id" type="s:ST_String" use="optional"/>
   </xsd:complexType>
@@ -2310,15 +2382,23 @@
     </xsd:choice>
   </xsd:complexType>
   <xsd:complexType name="CT_TrPr">
-    <xsd:complexContent>
-      <xsd:extension base="CT_TrPrBase">
-        <xsd:sequence>
-          <xsd:element name="ins" type="CT_TrackChange" minOccurs="0"/>
-          <xsd:element name="del" type="CT_TrackChange" minOccurs="0"/>
-          <xsd:element name="trPrChange" type="CT_TrPrChange" minOccurs="0"/>
-        </xsd:sequence>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:sequence>
+      <xsd:element name="cnfStyle" type="CT_Cnf" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="divId" type="CT_DecimalNumber" minOccurs="0"/>
+      <xsd:element name="gridBefore" type="CT_DecimalNumber" minOccurs="0"/>
+      <xsd:element name="gridAfter" type="CT_DecimalNumber" minOccurs="0"/>
+      <xsd:element name="wBefore" type="CT_TblWidth" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="wAfter" type="CT_TblWidth" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="cantSplit" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="trHeight" type="CT_Height" minOccurs="0"/>
+      <xsd:element name="tblHeader" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="tblCellSpacing" type="CT_TblWidth" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="jc" type="CT_JcTable" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="hidden" type="CT_OnOff" minOccurs="0"/>
+      <xsd:element name="ins" type="CT_TrackChange" minOccurs="0"/>
+      <xsd:element name="del" type="CT_TrackChange" minOccurs="0"/>
+      <xsd:element name="trPrChange" type="CT_TrPrChange" minOccurs="0"/>
+    </xsd:sequence>
   </xsd:complexType>
   <xsd:complexType name="CT_Row">
     <xsd:sequence>
@@ -2401,13 +2481,26 @@
     </xsd:sequence>
   </xsd:complexType>
   <xsd:complexType name="CT_TblPr">
-    <xsd:complexContent>
-      <xsd:extension base="CT_TblPrBase">
-        <xsd:sequence>
-          <xsd:element name="tblPrChange" type="CT_TblPrChange" minOccurs="0"/>
-        </xsd:sequence>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:sequence>
+      <xsd:element name="tblStyle" type="CT_String" minOccurs="0"/>
+      <xsd:element name="tblpPr" type="CT_TblPPr" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="tblOverlap" type="CT_TblOverlap" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="bidiVisual" type="CT_OnOff" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="tblStyleRowBandSize" type="CT_DecimalNumber" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="tblStyleColBandSize" type="CT_DecimalNumber" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="tblW" type="CT_TblWidth" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="jc" type="CT_JcTable" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="tblCellSpacing" type="CT_TblWidth" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="tblInd" type="CT_TblWidth" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="tblBorders" type="CT_TblBorders" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="shd" type="CT_Shd" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="tblLayout" type="CT_TblLayoutType" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="tblCellMar" type="CT_TblCellMar" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="tblLook" type="CT_TblLook" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="tblCaption" type="CT_String" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="tblDescription" type="CT_String" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="tblPrChange" type="CT_TblPrChange" minOccurs="0"/>
+    </xsd:sequence>
   </xsd:complexType>
   <xsd:complexType name="CT_TblPrExBase">
     <xsd:sequence>
@@ -2423,13 +2516,18 @@
     </xsd:sequence>
   </xsd:complexType>
   <xsd:complexType name="CT_TblPrEx">
-    <xsd:complexContent>
-      <xsd:extension base="CT_TblPrExBase">
-        <xsd:sequence>
-          <xsd:element name="tblPrExChange" type="CT_TblPrExChange" minOccurs="0"/>
-        </xsd:sequence>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:sequence>
+      <xsd:element name="tblW" type="CT_TblWidth" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="jc" type="CT_JcTable" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="tblCellSpacing" type="CT_TblWidth" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="tblInd" type="CT_TblWidth" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="tblBorders" type="CT_TblBorders" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="shd" type="CT_Shd" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="tblLayout" type="CT_TblLayoutType" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="tblCellMar" type="CT_TblCellMar" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="tblLook" type="CT_TblLook" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="tblPrExChange" type="CT_TblPrExChange" minOccurs="0"/>
+    </xsd:sequence>
   </xsd:complexType>
   <xsd:complexType name="CT_Tbl">
     <xsd:sequence>
@@ -2490,7 +2588,7 @@
   </xsd:complexType>
   <xsd:complexType name="CT_FtnEdn">
     <xsd:sequence>
-      <xsd:group ref="EG_BlockLevelElts" minOccurs="1" maxOccurs="unbounded"/>
+      <xsd:element name="todo_EG_BlockLevelElts" type="CT_String" minOccurs="0"/>
     </xsd:sequence>
     <xsd:attribute name="type" type="ST_FtnEdn" use="optional"/>
     <xsd:attribute name="id" type="ST_DecimalNumber" use="required"/>
@@ -2516,22 +2614,20 @@
     </xsd:sequence>
   </xsd:complexType>
   <xsd:complexType name="CT_FtnDocProps">
-    <xsd:complexContent>
-      <xsd:extension base="CT_FtnProps">
-        <xsd:sequence>
-          <xsd:element name="footnote" type="CT_FtnEdnSepRef" minOccurs="0" maxOccurs="3"/>
-        </xsd:sequence>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:sequence>
+      <xsd:element name="pos" type="CT_FtnPos" minOccurs="0"/>
+      <xsd:element name="numFmt" type="CT_NumFmt" minOccurs="0"/>
+      <xsd:group ref="EG_FtnEdnNumProps" minOccurs="0"/>
+      <xsd:element name="footnote" type="CT_FtnEdnSepRef" minOccurs="0" maxOccurs="3"/>
+    </xsd:sequence>
   </xsd:complexType>
   <xsd:complexType name="CT_EdnDocProps">
-    <xsd:complexContent>
-      <xsd:extension base="CT_EdnProps">
-        <xsd:sequence>
-          <xsd:element name="endnote" type="CT_FtnEdnSepRef" minOccurs="0" maxOccurs="3"/>
-        </xsd:sequence>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:sequence>
+      <xsd:element name="pos" type="CT_EdnPos" minOccurs="0"/>
+      <xsd:element name="numFmt" type="CT_NumFmt" minOccurs="0"/>
+      <xsd:group ref="EG_FtnEdnNumProps" minOccurs="0"/>
+      <xsd:element name="endnote" type="CT_FtnEdnSepRef" minOccurs="0" maxOccurs="3"/>
+    </xsd:sequence>
   </xsd:complexType>
   <xsd:complexType name="CT_RecipientData">
     <xsd:sequence>
@@ -2888,11 +2984,8 @@
     <xsd:attribute name="val" type="ST_FrameScrollbar" use="required"/>
   </xsd:complexType>
   <xsd:complexType name="CT_OptimizeForBrowser">
-    <xsd:complexContent>
-      <xsd:extension base="CT_OnOff">
-        <xsd:attribute name="target" type="s:ST_String" use="optional"/>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:attribute name="val" type="s:ST_OnOff"/>
+    <xsd:attribute name="target" type="s:ST_String" use="optional"/>
   </xsd:complexType>
   <xsd:complexType name="CT_Frame">
     <xsd:sequence>
@@ -3146,12 +3239,9 @@
     <xsd:attribute name="csb1" use="required" type="ST_LongHexNumber"/>
   </xsd:complexType>
   <xsd:complexType name="CT_FontRel">
-    <xsd:complexContent>
-      <xsd:extension base="CT_Rel">
-        <xsd:attribute name="fontKey" type="s:ST_Guid"/>
-        <xsd:attribute name="subsetted" type="s:ST_OnOff"/>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:attribute ref="r:id" use="required"/>
+    <xsd:attribute name="fontKey" type="s:ST_Guid"/>
+    <xsd:attribute name="subsetted" type="s:ST_OnOff"/>
   </xsd:complexType>
   <xsd:complexType name="CT_Font">
     <xsd:sequence>
@@ -3208,7 +3298,7 @@
   </xsd:group>
   <xsd:group name="EG_BlockLevelChunkElts">
     <xsd:choice>
-      <xsd:group ref="EG_ContentBlockContent" minOccurs="0" maxOccurs="unbounded"/>
+		<xsd:group ref="EG_ContentBlockContent" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:choice>
   </xsd:group>
   <xsd:group name="EG_BlockLevelElts">
@@ -3437,23 +3527,17 @@
     </xsd:sequence>
   </xsd:complexType>
   <xsd:complexType name="CT_Document">
-    <xsd:complexContent>
-      <xsd:extension base="CT_DocumentBase">
-        <xsd:sequence>
-          <xsd:element name="body" type="CT_Body" minOccurs="0" maxOccurs="1"/>
-        </xsd:sequence>
-        <xsd:attribute name="conformance" type="s:ST_ConformanceClass"/>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:sequence>
+      <xsd:element name="background" type="CT_Background" minOccurs="0"/>
+      <xsd:element name="body" type="CT_Body" minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attribute name="conformance" type="s:ST_ConformanceClass"/>
   </xsd:complexType>
   <xsd:complexType name="CT_GlossaryDocument">
-    <xsd:complexContent>
-      <xsd:extension base="CT_DocumentBase">
-        <xsd:sequence>
-          <xsd:element name="docParts" type="CT_DocParts" minOccurs="0"/>
-        </xsd:sequence>
-      </xsd:extension>
-    </xsd:complexContent>
+    <xsd:sequence>
+      <xsd:element name="background" type="CT_Background" minOccurs="0"/>
+      <xsd:element name="docParts" type="CT_DocParts" minOccurs="0"/>
+    </xsd:sequence>
   </xsd:complexType>
   <xsd:element name="document" type="CT_Document"/>
   <xsd:element name="glossaryDocument" type="CT_GlossaryDocument"/>

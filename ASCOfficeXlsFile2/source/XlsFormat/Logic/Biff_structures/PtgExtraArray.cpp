@@ -32,8 +32,6 @@
 
 #include "PtgExtraArray.h"
 #include "SyntaxPtg.h"
-#include <Binary/CFRecord.h>
-//#include <Exception/UnexpectedProgramPath.h>
 #include "SerBool.h"
 #include "SerErr.h"
 #include "SerNil.h"
@@ -62,7 +60,18 @@ BiffStructurePtr PtgExtraArray::clone()
 
 void PtgExtraArray::load(CFRecord& record)
 {
-	record >> cols >> rows;
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        DColunByteU cols_xls;
+        DRw rows_xls;
+        record >> cols_xls >> rows_xls;
+        cols = cols_xls;
+        rows = rows_xls;
+    }
+    else
+    {
+        record >> cols >> rows;
+    }
 	for(int i = 0; i < (cols + 1) * (rows + 1); ++i)
 	{
 		if (record.getRdPtr() >= record.getDataSize()) 
@@ -112,7 +121,7 @@ void PtgExtraArray::fromString(const std::wstring& str)
 	std::wstring::const_iterator last = str.end() - 1;
 
 	cols = 0;
-	rows = 0;
+    rows = 0;
 	while(first != last)
 	{
 		std::wstring operand_str;

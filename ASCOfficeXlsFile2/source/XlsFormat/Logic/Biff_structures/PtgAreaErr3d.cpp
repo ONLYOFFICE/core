@@ -32,7 +32,6 @@
 
 #include "PtgAreaErr3d.h"
 #include "RevExtern.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {
@@ -51,7 +50,12 @@ void PtgAreaErr3d::loadFields(CFRecord& record)
 	global_info = record.getGlobalWorkbookInfo();
 
 	record >> ixti;
-	record.skipNunBytes(8); // unused
+
+    if (global_info->Version < 0x0800)
+        record.skipNunBytes(8); // unused
+    else
+        record.skipNunBytes(12); // unused
+
 }
 
 

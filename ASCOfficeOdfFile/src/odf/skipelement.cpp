@@ -31,8 +31,8 @@
  */
 
 #include "skipelement.h"
-#include "logging.h"
-#include <xml/attributes.h>
+#include "../../include/logging.h"
+#include "../../include/xml/attributes.h"
 
 namespace cpdoccore { 
 namespace odf_reader {

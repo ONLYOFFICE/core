@@ -34,7 +34,7 @@
 
 #include "Font.h"
 
-#include <utils.h>
+#include "../../../Common/utils.h"
 
 #include "../../../XlsXlsxConverter/XlsConverter.h"
 #include "../../../XlsXlsxConverter/xlsx_conversion_context.h"
@@ -195,7 +195,7 @@ int TxO::serialize_vml (std::wostream & _stream)
 	std::wstring str_ = rawText.value();
 	int str_size = str_.size();
 
-	int iFmt = 0; 
+	int iFnt = 0; 
 	
 	CP_XML_WRITER(_stream)    
 	{
@@ -218,20 +218,20 @@ int TxO::serialize_vml (std::wostream & _stream)
 				//style='text-align:left'
 				CP_XML_NODE(L"font")
 				{
-					iFmt = run->formatRun.ifnt;
+					iFnt = run->formatRun.ifnt;
 					Font *font = NULL;
-					if (iFmt >= 0 && iFmt < global_info->m_arFonts.size())
+					if (iFnt >= 0 && iFnt < global_info->m_arFonts.size())
 					{
-						font = dynamic_cast<Font *>(global_info->m_arFonts[iFmt].get());
+						font = dynamic_cast<Font *>(global_info->m_arFonts[iFnt].get());
 					}
 					if (font)
 					{
 						if (font->dyHeight > 0)	CP_XML_ATTR(L"size", font->dyHeight);
 						if (font->bls == 700)	CP_XML_ATTR(L"bold", true);
 						if (font->fItalic)		CP_XML_ATTR(L"italic", true);
-						if (!font->fontName.value().empty())
+                        if (!font->fontName.empty())
 						{
-							CP_XML_ATTR(L"face", font->fontName.value());
+                            CP_XML_ATTR(L"face", font->fontName);
 						}
 						if ( font->icv < 0x7fff )
 						{

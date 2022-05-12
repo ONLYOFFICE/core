@@ -119,7 +119,7 @@ namespace OOX
 			}
 
 		private:
-
+			void fromXML(int nDepth, XmlUtils::CXmlLiteReader& oReader);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:

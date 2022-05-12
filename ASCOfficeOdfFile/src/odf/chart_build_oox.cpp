@@ -33,10 +33,10 @@
 #include "../docx/xlsx_num_format_context.h"
 
 #include "serialize_elements.h"
-#include <odf/odf_document.h>
-#include <xml/utils.h>
+#include "../../include/odf/odf_document.h"
+#include "../../include/xml/utils.h"
 
-#include "../formulasconvert/formulasconvert.h"
+#include "../../formulasconvert/formulasconvert.h"
 
 #include "style_graphic_properties.h"
 #include "style_chart_properties.h"
@@ -350,10 +350,10 @@ void object_odf_context::calc_cache_series(std::wstring adress, std::vector<std:
 		if (!converter.find_first_last_ref(adress, table, ref_1, ref_2))return;
 		//if ((res = table.find(L"local-table"))<0)return;
 
-		oox::getCellAddressInv(ref_1, col_1, row_1);
-		oox::getCellAddressInv(ref_2, col_2, row_2);
+		bool res1 = oox::getCellAddressInv(ref_1, col_1, row_1);
+		bool res2 = oox::getCellAddressInv(ref_2, col_2, row_2);
 
- 		for (size_t i = 0; i < cash_values.size(); i++)
+ 		for (size_t i = 0; res1 && res2 && i < cash_values.size(); i++)
 		{
 			if (cash_values[i].col >= col_1 && cash_values[i].col <= col_2 &&
 				cash_values[i].row >= row_1 && cash_values[i].row <= row_2)
@@ -944,7 +944,7 @@ void process_build_object::visit(chart_series& val)
 	ACCEPT_ALL_CONTENT(val.content_);
 
 	ApplyChartProperties	(att.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.series_.back().properties_);
-	ApplyGraphicProperties	(att.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.series_.back().graphic_properties_,object_odf_context_.series_.back().fill_);
+	ApplyGraphicProperties	(att.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.series_.back().graphic_properties_, object_odf_context_.series_.back().fill_);
 	ApplyTextProperties		(att.common_attlist_.chart_style_name_.get_value_or(L""),	object_odf_context_.series_.back().text_properties_);
 
 }

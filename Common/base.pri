@@ -37,9 +37,9 @@ QMAKE_TARGET_COPYRIGHT = Copyright (C) $${PUBLISHER_NAME} $${CURRENT_YEAR}. All 
 # CONFIGURATION
 CONFIG(debug, debug|release) {
     CONFIG += core_debug
-} else {
-    CONFIG += core_release
 }
+force_debug_info:CONFIG += core_debug
+!core_debug:CONFIG += core_release
 
 not_use_dynamic_libs {
 shared {
@@ -92,14 +92,19 @@ linux-g++:contains(QMAKE_HOST.arch, x86_64): {
     message("linux-64")
     CONFIG += core_linux_64
 }
-linux-g++:!contains(QMAKE_HOST.arch, x86_64): {
+linux-g++:contains(QMAKE_HOST.arch, arm64): {
+    message("linux-64")
+    CONFIG += core_linux_64
+    CONFIG += core_linux_host_arm64
+}
+linux-g++:contains(QMAKE_HOST.arch, aarch64): {
+    message("linux-64")
+    CONFIG += core_linux_64
+    CONFIG += core_linux_host_arm64
+}
+!core_linux_64: {
     message("linux-32")
     CONFIG += core_linux_32
-}
-linux-g++:contains(DST_ARCH, arm): {
-    message("arm")
-    CONFIG += core_linux_arm
-    DEFINES += LINUX_ARM
 }
 }
 
@@ -134,6 +139,10 @@ core_win_64 {
 core_linux {
     DEFINES += LINUX _LINUX
 }
+core_linux_host_arm64 {
+    message("build on arm64")
+    DEFINES += _ARM_ALIGN_
+}
 
 core_mac {
     DEFINES += LINUX _LINUX MAC _MAC
@@ -154,6 +163,12 @@ core_windows {
     QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
     QMAKE_CXXFLAGS -= -Zc:strictStrings
     QMAKE_CXXFLAGS += /MP
+
+    vs2019 {
+        QMAKE_CXXFLAGS_RELEASE -= -permissive-
+        QMAKE_CXXFLAGS -= -permissive-
+    }
+
     DEFINES += WINDOWS_IGNORE_PACKING_MISMATCH
 
     OO_WINDOWS_IGNORE_PACKING_MISMATCH = $$(OO_WINDOWS_IGNORE_PACKING_MISMATCH)
@@ -200,6 +215,31 @@ core_mac_64 {
 }
 core_linux_arm {
     CORE_BUILDS_PLATFORM_PREFIX = arm
+}
+linux_arm64 {
+    CORE_BUILDS_PLATFORM_PREFIX = linux_arm64
+    DEFINES += _ARM_ALIGN_
+
+    ARM64_TOOLCHAIN_BIN = $$(ARM64_TOOLCHAIN_BIN)
+    ARM64_TOOLCHAIN_BIN_PREFIX = $$(ARM64_TOOLCHAIN_BIN_PREFIX)
+
+    !isEmpty(ARM64_TOOLCHAIN_BIN){
+        !isEmpty(ARM64_TOOLCHAIN_BIN_PREFIX){
+
+            ARM64_TOOLCHAIN_BIN_FULL = $$ARM64_TOOLCHAIN_BIN/$$ARM64_TOOLCHAIN_BIN_PREFIX
+
+            QMAKE_CC          = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "gcc")
+            QMAKE_CXX         = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "g++")
+            QMAKE_LINK        = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "g++")
+            QMAKE_LINK_SHLIB  = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "g++")
+
+            QMAKE_AR          = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "ar cqs")
+            QMAKE_OBJCOPY     = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "objcopy")
+            QMAKE_NM          = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "nm -P")
+            QMAKE_STRIP       = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "strip")
+
+        }
+    }
 }
 core_ios {
     CORE_BUILDS_PLATFORM_PREFIX = ios
@@ -290,6 +330,9 @@ core_release {
     CORE_BUILDS_CONFIGURATION_PREFIX    = release
 }
 
+CONFIG += object_parallel_to_source
+core_windows:CONFIG += no_batch
+
 # MESSAGE
 message($$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX)
 
@@ -297,8 +340,10 @@ message($$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX)
 CONFIG += c++11
 
 greaterThan(QT_MAJOR_VERSION, 5) {
-    QMAKE_CXXFLAGS += -Wno-register
-    QMAKE_CFLAGS += -Wno-register
+    !core_windows {
+        QMAKE_CXXFLAGS += -Wno-register
+        QMAKE_CFLAGS += -Wno-register
+    }
 }
 
 core_linux {

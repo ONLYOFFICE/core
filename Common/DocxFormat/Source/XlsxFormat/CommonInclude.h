@@ -49,3 +49,5 @@
 #include "WritingElement.h"
 #include "Common.h"
 
+#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/BaseObject.h"
+#include "../XlsbFormat/Biff12_records/CommonRecords.h"

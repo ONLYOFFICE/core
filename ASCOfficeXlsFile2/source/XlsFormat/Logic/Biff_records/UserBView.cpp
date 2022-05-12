@@ -31,7 +31,6 @@
  */
 
 #include "UserBView.h"
-//#include <Exception/AttributeDataWrong.h>
 
 namespace XLS
 {
@@ -53,68 +52,131 @@ BaseObjectPtr UserBView::clone()
 
 void UserBView::readFields(CFRecord& record)
 {
-	record.skipNunBytes(4); // unused1
-	record >> tabId;
-	record.skipNunBytes(2); // reserved1
-	
-	_GUID_ guid_num;
-	record >> guid_num >> x >> y >> dx >> dy >> wTabRatio;
-	
-	guid = STR::guid2bstr(guid_num);
+    if(record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        record.skipNunBytes(4); // unused1
+        _UINT16			tabId_2b;
+        record >> tabId_2b;
+        tabId = tabId_2b;
+        record.skipNunBytes(2); // reserved1
 
-	unsigned short flags1;
-	record >> flags1;
-	fDspFmlaBar	= GETBIT(flags1, 0);
-	fDspStatus	= GETBIT(flags1, 1);
-	
-	unsigned char mdNoteDisp_num = GETBITS(flags1, 2, 3);
-	switch(mdNoteDisp_num)
-	{
-		case 0x0:
-			mdNoteDisp = std::wstring (L"commNone");
-			break;
-		case 0x2:
-			mdNoteDisp = std::wstring (L"commIndAndComment");
-			break;
-		case 0x1:
-		default:
-			mdNoteDisp = std::wstring (L"commIndicator");
-			break;
-	}
-	fDspHScroll		= GETBIT(flags1, 4);
-	fDspVScroll		= GETBIT(flags1, 5);
-	fBotAdornment	= GETBIT(flags1, 6);
-	fZoom			= GETBIT(flags1, 7);
-	
-	unsigned char fHideObj_num = GETBITS(flags1, 8, 9);
-	switch(fHideObj_num)
-	{
-	case 0x1:
-		fHideObj = std::wstring (L"placeholders");
-		break;
-	case 0x2:
-		fHideObj = std::wstring (L"none");
-		break;
-	case 0x0:
-	default:
-		fHideObj = std::wstring (L"all");
-		break;
-	}
-	fPrintIncl		= GETBIT(flags1, 10);
-	fRowColIncl		= GETBIT(flags1, 11);
-	fInvalidTabId	= GETBIT(flags1, 12);
-	fTimedUpdate	= GETBIT(flags1, 13);
-	fAllMemChanges	= GETBIT(flags1, 14);
-	fOnlySync		= GETBIT(flags1, 15);
+        _GUID_ guid_num;
+        _UINT16	wTabRatio_2b;
+        record >> guid_num >> x >> y >> dx >> dy >> wTabRatio_2b;
+        wTabRatio = wTabRatio_2b;
 
-	record.skipNunBytes(2); // unused2
-	unsigned short flags2;
-	record >> flags2;
-	
-	fPersonalView	= GETBIT(flags2, 0);
-	fIconic			= GETBIT(flags2, 1);
+        guid = STR::guid2bstr(guid_num);
 
-	record >> wMergeInterval >> st;
+        unsigned short flags1;
+        record >> flags1;
+        fDspFmlaBar	= GETBIT(flags1, 0);
+        fDspStatus	= GETBIT(flags1, 1);
+
+        unsigned char mdNoteDisp_num = GETBITS(flags1, 2, 3);
+        switch(mdNoteDisp_num)
+        {
+            case 0x0:
+                mdNoteDisp = std::wstring (L"commNone");
+                break;
+            case 0x2:
+                mdNoteDisp = std::wstring (L"commIndAndComment");
+                break;
+            case 0x1:
+            default:
+                mdNoteDisp = std::wstring (L"commIndicator");
+                break;
+        }
+        fDspHScroll		= GETBIT(flags1, 4);
+        fDspVScroll		= GETBIT(flags1, 5);
+        fBotAdornment	= GETBIT(flags1, 6);
+        fZoom			= GETBIT(flags1, 7);
+
+        unsigned char fHideObj_num = GETBITS(flags1, 8, 9);
+        switch(fHideObj_num)
+        {
+        case 0x1:
+            fHideObj = std::wstring (L"placeholders");
+            break;
+        case 0x2:
+            fHideObj = std::wstring (L"none");
+            break;
+        case 0x0:
+        default:
+            fHideObj = std::wstring (L"all");
+            break;
+        }
+        fPrintIncl		= GETBIT(flags1, 10);
+        fRowColIncl		= GETBIT(flags1, 11);
+        fInvalidTabId	= GETBIT(flags1, 12);
+        fTimedUpdate	= GETBIT(flags1, 13);
+        fAllMemChanges	= GETBIT(flags1, 14);
+        fOnlySync		= GETBIT(flags1, 15);
+
+        record.skipNunBytes(2); // unused2
+        unsigned short flags2;
+        record >> flags2;
+
+        fPersonalView	= GETBIT(flags2, 0);
+        fIconic			= GETBIT(flags2, 1);
+
+        record >> wMergeInterval >> st;
+    }
+    else
+    {
+        _GUID_ guid_num;
+        record >> x >> y >> dx >> dy >> tabId >> wTabRatio >> guid_num;
+
+        guid = STR::guid2bstr(guid_num);
+
+        record >> wMergeInterval;
+
+        unsigned int flags;
+        record >> flags;
+        fIconic         = GETBIT(flags, 0);
+        fDspHScroll     = GETBIT(flags, 1);
+        fDspVScroll     = GETBIT(flags, 2);
+        fBotAdornment   = GETBIT(flags, 3);
+        fZoom           = GETBIT(flags, 4);
+        fDspFmlaBar     = GETBIT(flags, 5);
+        fDspStatus      = GETBIT(flags, 6);
+
+        unsigned char mdNoteDisp_num = GETBITS(flags, 7, 8);
+        switch(mdNoteDisp_num)
+        {
+            case 0x0:
+                mdNoteDisp = std::wstring (L"commNone");
+                break;
+            case 0x2:
+                mdNoteDisp = std::wstring (L"commIndAndComment");
+                break;
+            case 0x1:
+            default:
+                mdNoteDisp = std::wstring (L"commIndicator");
+                break;
+        }
+
+        unsigned char fHideObj_num = GETBITS(flags, 9, 10);
+        switch(fHideObj_num)
+        {
+        case 0x1:
+            fHideObj = std::wstring (L"placeholders");
+            break;
+        case 0x2:
+            fHideObj = std::wstring (L"none");
+            break;
+        case 0x0:
+        default:
+            fHideObj = std::wstring (L"all");
+            break;
+        }
+        fPrintIncl		= GETBIT(flags, 11);
+        fRowColIncl		= GETBIT(flags, 12);
+        fTimedUpdate	= GETBIT(flags, 13);
+        fAllMemChanges	= GETBIT(flags, 14);
+        fOnlySync		= GETBIT(flags, 15);
+        fPersonalView	= GETBIT(flags, 16);
+        record >> stName;
+    }
 }
 
 int UserBView::serialize(std::wostream & stream)

@@ -70,15 +70,23 @@ Aggplus::CBrush* CGraphicsRenderer::CreateBrush(NSStructures::CBrush* pBrush)
 
 		return pNew;
 	}
-	else if	   ((c_BrushTypeHorizontal		== Type) ||
-				(c_BrushTypeVertical		== Type) ||
-				(c_BrushTypeDiagonal1		== Type) ||
-				(c_BrushTypeDiagonal2		== Type) ||
-				(c_BrushTypeCenter			== Type) ||
-				(c_BrushTypePathGradient1	== Type) ||
-				(c_BrushTypePathGradient2	== Type) ||
-				(c_BrushTypeCylinderHor		== Type) ||
-				(c_BrushTypeCylinderVer		== Type))
+	else if	   ((c_BrushTypeHorizontal	    == Type) 		||
+				(c_BrushTypeVertical		== Type) 		||
+				(c_BrushTypeDiagonal1		== Type)		||
+				(c_BrushTypeDiagonal2		== Type)		||
+				(c_BrushTypeCenter			== Type) 		||
+				(c_BrushTypePathGradient1	== Type) 		||
+				(c_BrushTypePathGradient2	== Type) 		||
+				(c_BrushTypeCylinderHor		== Type) 		||
+				(c_BrushTypeCylinderVer		== Type) 		|| 
+                (c_BrushTypePathRadialGradient  == Type) 	||
+                (c_BrushTypePathNewLinearGradient == Type)  ||
+                (c_BrushTypePathConicalGradient == Type) 	||
+                (c_BrushTypePathDiamondGradient == Type) 	||
+                (c_BrushTypeMyTestGradient  == Type)  		||
+                (c_BrushTypeTriagnleMeshGradient  == Type)  ||
+                (c_BrushTypeCurveGradient  == Type)  		||
+                (c_BrushTypeTensorCurveGradient == Type))
 	{
         Aggplus::CColor o1((BYTE)(pBrush->Alpha1 * m_dGlobalAlpha), pBrush->Color1, bIsSwappedRGB);
         Aggplus::CColor o2((BYTE)(pBrush->Alpha2 * m_dGlobalAlpha), pBrush->Color2, bIsSwappedRGB);
@@ -87,7 +95,7 @@ Aggplus::CBrush* CGraphicsRenderer::CreateBrush(NSStructures::CBrush* pBrush)
 		if( pNew )
 		{
 			pNew->SetRelativeCoords( TRUE );
-
+            pNew->m_oGradientInfo = pBrush->m_oGradientInfo;
             int nCountSubColors = pBrush->m_arrSubColors.size();
 			if( nCountSubColors > 0 )
 			{
@@ -124,10 +132,43 @@ Aggplus::CBrush* CGraphicsRenderer::CreateBrush(NSStructures::CBrush* pBrush)
 
 			pNew->SetBounds(pBrush->Bounds);
 		}
-
-		if (pNew && c_BrushTypePathGradient2 == Type)
-			pNew->m_bType = Aggplus::BrushTypePathGradient;
-
+        if(!pNew)
+            return NULL;
+        
+        switch (Type)
+        {
+            case c_BrushTypePathGradient2:
+                pNew->m_bType = Aggplus::BrushTypePathGradient;
+                break;
+            case c_BrushTypeMyTestGradient:
+                pNew->m_bType = Aggplus::BrushTypeMyTestGradient;
+                break;
+            case c_BrushTypePathRadialGradient:
+                pNew->m_bType = Aggplus::BrushTypeRadialGradient;
+                break;
+            case c_BrushTypePathNewLinearGradient:
+                pNew->m_bType = Aggplus::BrushTypeNewLinearGradient;
+                break;
+            case c_BrushTypePathConicalGradient:
+                pNew->m_bType = Aggplus::BrushTypeConicalGradient;
+                break;
+            case c_BrushTypePathDiamondGradient:
+                pNew->m_bType = Aggplus::BrushTypeDiamondGradient;
+                break;
+			case c_BrushTypeTensorCurveGradient:
+                pNew->m_bType = Aggplus::BrushTypeTensorCurveGradient;
+                break;
+			case c_BrushTypeCurveGradient:
+                pNew->m_bType = Aggplus::BrushTypeCurveGradient;
+                break;
+			case c_BrushTypeTriagnleMeshGradient:
+                pNew->m_bType = Aggplus::BrushTypeTriagnleMeshGradient;
+                break;
+            
+            default:
+                break;
+        }
+        
 		return pNew;
 	}
 	else if (c_BrushTypeHatch1 == Type)
@@ -827,13 +868,14 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
 	switch (lFillType)
 	{
 	case c_nWindingFillMode:
+    case c_nEvenOddFillMode:
 		{
-			m_pPath->SetRuler(false);
+            m_pPath->SetRuler((lFillType == c_nWindingFillMode) ? false : true);
 
 			CCacheImage* pCacheImage	= NULL;
 			Aggplus::CBrush* pBrush		= NULL;
 			
-			if (m_oBrush.Type == c_BrushTypeTexture || m_oBrush.Type == c_BrushTypePattern)
+			if (m_oBrush.Type == c_BrushTypeTexture)
 			{
 				Aggplus::WrapMode oMode = Aggplus::WrapModeClamp;
 				switch (m_oBrush.TextureMode)
@@ -858,19 +900,61 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
 				}
 				else
 				{
+				#ifdef BUILDING_WASM_MODULE
+					if (m_oBrush.TexturePath.find(L"data:") == 0)
+					{
+						bool bIsOnlyOfficeHatch = false;
+						if (m_oBrush.TexturePath.find(L"onlyoffice_hatch") != std::wstring::npos)
+							bIsOnlyOfficeHatch = true;
+						std::string sBase64MultyByte(m_oBrush.TexturePath.begin(), m_oBrush.TexturePath.end());
+						sBase64MultyByte.erase(0, sBase64MultyByte.find(',') + 1);
+						int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(sBase64MultyByte.length());
+						BYTE* pImageData = new BYTE[nDecodeLen + 64];
+						if (TRUE == NSBase64::Base64Decode(sBase64MultyByte.c_str(), sBase64MultyByte.length(), pImageData, &nDecodeLen))
+						{
+							CBgraFrame oFrame;
+							if (bIsOnlyOfficeHatch)
+							{
+								int nSize = (int)sqrt(nDecodeLen >> 2);
+								oFrame.put_IsRGBA(true);
+								oFrame.put_Data(pImageData);
+								oFrame.put_Width(nSize);
+								oFrame.put_Height(nSize);
+								oFrame.put_Stride(4 * nSize);
+							}
+							else
+							{
+								oFrame.put_IsRGBA(false);
+								oFrame.Decode(pImageData, nDecodeLen);
+								RELEASEARRAYOBJECTS(pImageData);
+							}
+							// pImage отдается pTextureBrush и освобождается вместе с pBrush
+							Aggplus::CImage* pImage = new Aggplus::CImage();
+							pImage->Create(oFrame.get_Data(), oFrame.get_Width(), oFrame.get_Height(), oFrame.get_Stride());
+							oFrame.ClearNoAttack();
+							pTextureBrush = new Aggplus::CBrushTexture(pImage, oMode);
+							pTextureBrush->m_bReleaseImage = TRUE;
+						}
+						else
+							RELEASEARRAYOBJECTS(pImageData);
+					}
+				#else
 					pTextureBrush = new Aggplus::CBrushTexture(m_oBrush.TexturePath, oMode);
+                #endif
 				}
 
 				if( pTextureBrush )
 				{
-					if( m_oBrush.Type == c_BrushTypePattern )
-					{
-						pTextureBrush->m_bUsePattern = TRUE;
-						pTextureBrush->m_colors[0] = Aggplus::CColor((BYTE)m_oBrush.Alpha1, m_oBrush.Color1);
-						pTextureBrush->m_colors[1] = Aggplus::CColor((BYTE)m_oBrush.Alpha2, m_oBrush.Color2);
-					}
-                    
 					pTextureBrush->Alpha = (BYTE)m_oBrush.TextureAlpha;
+
+                    if (m_oBrush.Rectable == 1)
+                    {
+                        pTextureBrush->m_bUseBounds = true;
+                        pTextureBrush->m_oBounds.left = m_oBrush.Rect.X;
+                        pTextureBrush->m_oBounds.top = m_oBrush.Rect.Y;
+                        pTextureBrush->m_oBounds.right = pTextureBrush->m_oBounds.left + m_oBrush.Rect.Width;
+                        pTextureBrush->m_oBounds.bottom = pTextureBrush->m_oBounds.top + m_oBrush.Rect.Height;
+                    }
 				}
 
 				pBrush = pTextureBrush;
@@ -884,64 +968,7 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
 			RELEASEOBJECT(pBrush);
 			RELEASEINTERFACE(pCacheImage);
 			break;
-		}
-	case c_nEvenOddFillMode:
-		{
-			m_pPath->SetRuler(true);
-
-			CCacheImage* pCacheImage	= NULL;
-			Aggplus::CBrush* pBrush		= NULL;
-			
-			if (m_oBrush.Type == c_BrushTypeTexture || m_oBrush.Type == c_BrushTypePattern)
-			{
-				Aggplus::WrapMode oMode = Aggplus::WrapModeClamp;
-				switch (m_oBrush.TextureMode)
-				{
-				case c_BrushTextureModeTile:
-					oMode = Aggplus::WrapModeTile;
-					break;
-				case c_BrushTextureModeTileCenter:
-					oMode = Aggplus::WrapModeTile;
-					break;
-				default:
-					break;
-				}
-				Aggplus::CBrushTexture* pTextureBrush = NULL;
-				
-				if (NULL != m_pCache)
-				{
-                    pCacheImage = (CCacheImage*)m_pCache->Lock(m_oBrush.TexturePath);
-
-					pTextureBrush = new Aggplus::CBrushTexture(pCacheImage->GetImage(), oMode);
-				}
-				else
-				{
-					pTextureBrush = new Aggplus::CBrushTexture(m_oBrush.TexturePath, oMode);
-				}
-
-				if( pTextureBrush )
-				{
-					if( m_oBrush.Type == c_BrushTypePattern )
-					{
-						pTextureBrush->m_bUsePattern = TRUE;
-						pTextureBrush->m_colors[0] = Aggplus::CColor((BYTE)m_oBrush.Alpha1, m_oBrush.Color1);
-						pTextureBrush->m_colors[1] = Aggplus::CColor((BYTE)m_oBrush.Alpha2, m_oBrush.Color2);
-					}
-				}
-
-				pBrush = pTextureBrush;
-			}
-			else
-			{
-				pBrush = CreateBrush(&m_oBrush);
-			}
-
-			m_pRenderer->FillPath(pBrush, m_pPath);
-			RELEASEOBJECT(pBrush);
-			RELEASEINTERFACE(pCacheImage);
-
-			break;
-		}
+        }
 	default:
 		break;
 	};

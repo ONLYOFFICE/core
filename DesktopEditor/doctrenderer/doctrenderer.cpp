@@ -485,14 +485,15 @@ namespace NSDoctRenderer
                 {
                     std::string sHTML_Utf8 = js_result2->toStringA();
 
-                    JSSmart<CJSObject> js_objectCore = js_objectApi->call_func("asc_getCoreProps", 1, args)->toObject();
+                    JSSmart<CJSValue> js_objectCoreVal = js_objectApi->call_func("asc_getCoreProps", 1, args);
                     if(try_catch->Check())
                     {
                         strError = L"code=\"core_props\"";
                         bIsBreak = true;
                     }
-                    else if (js_objectCore->isObject())
+                    else if (js_objectCoreVal->isObject())
                     {
+                        JSSmart<CJSObject> js_objectCore = js_objectCoreVal->toObject();
                         JSSmart<CJSValue> js_results = js_objectCore->call_func("asc_getTitle", 1, args);
                         if(try_catch->Check())
                         {
@@ -631,6 +632,11 @@ namespace NSDoctRenderer
                                 oFile.CloseFile();
                             }
                         }
+                        else
+                        {
+                            strError = L"code=\"save (invalid theme)\"";
+                            bIsBreak = true;
+                        }
                     }
                 }
                 break;
@@ -726,10 +732,25 @@ namespace NSDoctRenderer
                     args_open[1] = CJSContext::createInt(nVersion);
                     std::wstring sXlsx = NSFile::GetDirectoryName(pNative->GetFilePath()) + L"/Editor.xlsx";
                     args_open[2] = NSFile::CFileBinary::Exists(sXlsx) ? CJSContext::createString(sXlsx) : CJSContext::createUndefined();
-                    JSSmart<CJSObject> globalParams = CJSContext::createObject();
-                    if (0 < m_oParams.m_nLcid)
-                        globalParams->set("locale", CJSContext::createInt(m_oParams.m_nLcid));
-                    args_open[3] = globalParams->toValue();
+
+                    if (!m_oParams.m_sJsonParams.empty())
+                    {
+                        std::string sTmp = U_TO_UTF8((m_oParams.m_sJsonParams));
+                        args_open[3] = context->JSON_Parse(sTmp.c_str());
+
+                        if (0 < m_oParams.m_nLcid)
+                        {
+                            if (args_open[3]->isObject())
+                                args_open[3]->toObject()->set("locale", CJSContext::createInt(m_oParams.m_nLcid));
+                        }
+                    }
+                    else
+                    {
+                        JSSmart<CJSObject> optionsParams = CJSContext::createObject();
+                        if (0 < m_oParams.m_nLcid)
+                            optionsParams->set("locale", CJSContext::createInt(m_oParams.m_nLcid));
+                        args_open[3] = optionsParams->toValue();
+                    }
 
                     global_js->call_func("NativeOpenFileData", 4, args_open);
                     if (try_catch->Check())
@@ -921,14 +942,15 @@ namespace NSDoctRenderer
                 // CORE PARAMS
                 if (!bIsBreak && m_oParams.m_eDstFormat == DoctRendererFormat::HTML && !bIsMailMerge)
                 {
-                    JSSmart<CJSObject> js_objectCore = js_objectApi->call_func("asc_getCoreProps", 1, args)->toObject();
+                    JSSmart<CJSValue> js_objectCoreVal = js_objectApi->call_func("asc_getCoreProps", 1, args);
                     if(try_catch->Check())
                     {
                         strError = L"code=\"core_props\"";
                         bIsBreak = true;
                     }
-                    else if (js_objectCore->isObject())
+                    else if (js_objectCoreVal->isObject())
                     {
+                        JSSmart<CJSObject> js_objectCore = js_objectCoreVal->toObject();
                         JSSmart<CJSValue> js_results = js_objectCore->call_func("asc_getTitle", 1, args);
                         if(try_catch->Check())
                         {

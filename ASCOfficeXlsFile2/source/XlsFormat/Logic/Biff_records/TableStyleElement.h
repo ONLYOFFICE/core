@@ -36,6 +36,7 @@
 
 namespace XLS
 {
+// Logical representation of TableStyleElement record in BIFF8 and BrtTableStyleElement BIFF12
 
 class TableStyleElement: public BiffRecord
 {

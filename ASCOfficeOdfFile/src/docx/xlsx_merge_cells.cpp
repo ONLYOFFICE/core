@@ -34,7 +34,7 @@
 #include "xlsx_utils.h"
 
 #include <vector>
-#include <xml/simple_xml_writer.h>
+#include "../../include/xml/simple_xml_writer.h"
 
 namespace cpdoccore {
 namespace oox {

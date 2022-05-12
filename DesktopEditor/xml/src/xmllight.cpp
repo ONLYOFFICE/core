@@ -145,6 +145,14 @@ namespace XmlUtils
 	{
 		return m_pInternal->GetNameA();
 	}
+    std::wstring CXmlLiteReader::GetNameNoNS()
+    {
+        return m_pInternal->GetNameNoNS();
+    }
+    std::string CXmlLiteReader::GetNameNoNSA()
+    {
+        return m_pInternal->GetNameNoNSA();
+    }
 	const char* CXmlLiteReader::GetNameChar()
 	{
 		return m_pInternal->GetNameChar();

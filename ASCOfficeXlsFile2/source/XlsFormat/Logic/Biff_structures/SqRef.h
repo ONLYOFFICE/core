@@ -32,7 +32,7 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include <Logic/Biff_structures/CellRangeRef.h>
+#include "CellRangeRef.h"
 
 namespace XLS
 {

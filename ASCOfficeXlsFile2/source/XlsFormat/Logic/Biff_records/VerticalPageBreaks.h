@@ -32,7 +32,7 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/VertBrk.h>
+#include "../Biff_structures/VertBrk.h"
 
 namespace XLS
 {

@@ -32,6 +32,7 @@
 #pragma once
 
 #include "../Xlsx.h"
+#include "../../XlsbFormat/Xlsb.h"
 #include "../XlsxFlat.h"
 #include "../CommonInclude.h"
 
@@ -44,6 +45,17 @@
 #include "Fonts.h"
 #include "NumFmts.h"
 #include "TableStyles.h"
+
+
+#include "../../XlsbFormat/StylesStream.h"
+#include "../../XlsbFormat/Biff12_unions/FMTS.h"
+#include "../../XlsbFormat/Biff12_unions/FONTS.h"
+#include "../../XlsbFormat/Biff12_unions/FILLS.h"
+#include "../../XlsbFormat/Biff12_unions/BORDERS.h"
+#include "../../XlsbFormat/Biff12_unions/CELLSTYLEXFS.h"
+#include "../../XlsbFormat/Biff12_unions/CELLXFS.h"
+#include "../../XlsbFormat/Biff12_unions/STYLES.h"
+#include "../../XlsbFormat/Biff12_unions/DXFS.h"
 
 namespace OOX
 {
@@ -122,7 +134,7 @@ namespace OOX
 			nullable_string		m_sId;
 			nullable_string		m_sParentId;
 
-			nullable<OOX::Spreadsheet::CBorder>		m_oBorder;
+            nullable<OOX::Spreadsheet::CBorder>		m_oBorder;
 			nullable<OOX::Spreadsheet::CFill>		m_oFill;
 			nullable<OOX::Spreadsheet::CFont>		m_oFont;
 			nullable<OOX::Spreadsheet::CNumFmt>		m_oNumFmt;
@@ -165,6 +177,56 @@ namespace OOX
 				}
 				m_arrStyles2003.clear();
 			}
+
+            void readBin(const CPath& oPath)
+            {
+                CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+                if (xlsb)
+                {                    
+                    XLSB::StylesStreamPtr stylesStream = std::make_shared<XLSB::StylesStream>();
+
+                    xlsb->ReadBin(oPath, stylesStream.get());
+
+                    if (stylesStream != nullptr)
+                    {
+                        if (stylesStream->m_FMTS != nullptr)
+                            m_oNumFmts = static_cast<XLSB::FMTS*>(stylesStream->m_FMTS.get())->m_arFmt;
+
+                        if (stylesStream->m_FONTS != nullptr)
+                            m_oFonts = static_cast<XLSB::FONTS*>(stylesStream->m_FONTS.get())->m_arBrtFont;
+
+                        if (stylesStream->m_FILLS != nullptr)
+                            m_oFills = static_cast<XLSB::FILLS*>(stylesStream->m_FILLS.get())->m_arBrtFill;
+
+                        if (stylesStream->m_BORDERS != nullptr)
+                            m_oBorders = static_cast<XLSB::BORDERS*>(stylesStream->m_BORDERS.get())->m_arBrtBorder;
+
+                        if (stylesStream->m_CELLSTYLEXFS != nullptr)
+                            m_oCellStyleXfs = static_cast<XLSB::CELLSTYLEXFS*>(stylesStream->m_CELLSTYLEXFS.get())->m_arBrtXF;
+
+                        if (stylesStream->m_CELLXFS != nullptr)
+                            m_oCellXfs = static_cast<XLSB::CELLXFS*>(stylesStream->m_CELLXFS.get())->m_arBrtXF;
+
+                        if (stylesStream->m_STYLES != nullptr)
+                            m_oCellStyles = static_cast<XLSB::STYLES*>(stylesStream->m_STYLES.get())->m_arBrtStyle;
+
+                        if (stylesStream->m_DXFS != nullptr)
+                            m_oDxfs = static_cast<XLSB::DXFS*>(stylesStream->m_DXFS.get())->m_aruDXF;
+
+                        if (stylesStream->m_TABLESTYLES != nullptr)
+                            m_oTableStyles = stylesStream->m_TABLESTYLES;
+
+                        if (stylesStream->m_COLORPALETTE != nullptr)
+                            m_oColors = stylesStream->m_COLORPALETTE;
+
+                        if (stylesStream->m_FRTSTYLESHEET != nullptr)
+                            m_oExtLst = stylesStream->m_FRTSTYLESHEET;
+
+                        AfterRead();
+                    }
+                }
+            }
+
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -175,6 +237,12 @@ namespace OOX
 			{
 				m_oReadPath = oPath;
 				IFileContainer::Read( oRootPath, oPath );
+
+                if( m_oReadPath.GetExtention() == _T(".bin"))
+                {
+                    readBin(m_oReadPath);
+                    return;
+                }
 
 				XmlUtils::CXmlLiteReader oReader;
 
@@ -274,8 +342,10 @@ namespace OOX
 <styleSheet \
 xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" \
 xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
-mc:Ignorable=\"x14ac\" \
-xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\">");
+xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\" \
+mc:Ignorable=\"x14ac x16r2\" \
+xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\" \
+xmlns:x16r2=\"http://schemas.microsoft.com/office/spreadsheetml/2015/02/main\">");
 
 				toXML(sXml);
 

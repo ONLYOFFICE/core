@@ -362,9 +362,9 @@ namespace NSHtmlRenderer
             m_oPath.AddCharNoCheck('M');
             m_oPath.AddSpaceNoCheck();
 
-            m_oPath.AddIntNoCheck(round(x));
+            m_oPath.AddIntNoCheck(round2(x));
             m_oPath.AddCharNoCheck(',');
-            m_oPath.AddIntNoCheck(round(y));
+            m_oPath.AddIntNoCheck(round2(y));
             m_oPath.AddSpaceNoCheck();
         }
         void WritePathLineTo(double& x, double& y)
@@ -378,9 +378,9 @@ namespace NSHtmlRenderer
             m_oPath.AddCharNoCheck('L');
             m_oPath.AddSpaceNoCheck();
 
-            m_oPath.AddIntNoCheck(round(x));
+            m_oPath.AddIntNoCheck(round2(x));
             m_oPath.AddCharNoCheck(',');
-            m_oPath.AddIntNoCheck(round(y));
+            m_oPath.AddIntNoCheck(round2(y));
             m_oPath.AddSpaceNoCheck();
         }
         void WritePathCurveTo(double& x1, double& y1, double& x2, double& y2, double& x3, double& y3)
@@ -394,19 +394,19 @@ namespace NSHtmlRenderer
             m_oPath.AddCharNoCheck('C');
             m_oPath.AddSpaceNoCheck();
 
-            m_oPath.AddIntNoCheck(round(x1));
+            m_oPath.AddIntNoCheck(round2(x1));
             m_oPath.AddCharNoCheck(',');
-            m_oPath.AddIntNoCheck(round(y1));
+            m_oPath.AddIntNoCheck(round2(y1));
             m_oPath.AddSpaceNoCheck();
 
-            m_oPath.AddIntNoCheck(round(x2));
+            m_oPath.AddIntNoCheck(round2(x2));
             m_oPath.AddCharNoCheck(',');
-            m_oPath.AddIntNoCheck(round(y2));
+            m_oPath.AddIntNoCheck(round2(y2));
             m_oPath.AddSpaceNoCheck();
 
-            m_oPath.AddIntNoCheck(round(x3));
+            m_oPath.AddIntNoCheck(round2(x3));
             m_oPath.AddCharNoCheck(',');
-            m_oPath.AddIntNoCheck(round(y3));
+            m_oPath.AddIntNoCheck(round2(y3));
             m_oPath.AddSpaceNoCheck();
         }
         void WriteDrawPath(LONG nType, Aggplus::CMatrix* pTransform, Aggplus::CGraphicsPathSimpleConverter* pConverter, CImageInfo& oInfo, const double& dAngle)
@@ -417,7 +417,7 @@ namespace NSHtmlRenderer
             WriteClip();
 
             double dScaleTransform = (pTransform->sx() + pTransform->sy()) / 2.0;
-            int nPenW		= int(m_pPen->Size * dScaleTransform);
+            int nPenW		= int(m_pPen->Size * dScaleTransform * SVG_WRITER_SCALE);
 
             if (0 == nPenW)
                 nPenW = 1;
@@ -494,13 +494,8 @@ namespace NSHtmlRenderer
                     oTemp.TransformPoint(r, b);
                 }
 
-                int _x = round(x);
-                int _y = round(y);
-                int _w = round(r - x);
-                int _h = round(b - y);
-
                 // пока заглушка
-                return WriteImage(oInfo, _x, _y, _w, _h, dAngle);
+                return WriteImage(oInfo, x, y, r - x, b - y, dAngle);
 
 #if 0
                 CString strPattern = _T("");
@@ -637,6 +632,9 @@ namespace NSHtmlRenderer
             double dCentreX = x + w / 2.0;
             double dCentreY = y + h / 2.0;
 
+            dCentreX *= SVG_WRITER_SCALE;
+            dCentreY *= SVG_WRITER_SCALE;
+
             bool bIsRotate = (abs(dAngle) > 1) ? true : false;
 
             if (itJPG == oInfo.m_eType)
@@ -644,13 +642,13 @@ namespace NSHtmlRenderer
                 if (bIsClipping)
                 {
                     m_oDocument.WriteString(L"<image x=\"", 10);
-                    m_oDocument.AddInt(round(x));
+                    m_oDocument.AddInt(round2(x));
                     m_oDocument.WriteString(L"\" y=\"", 5);
-                    m_oDocument.AddInt(round(y));
+                    m_oDocument.AddInt(round2(y));
                     m_oDocument.WriteString(L"\" width=\"", 10);
-                    m_oDocument.AddInt(round(w));
+                    m_oDocument.AddInt(round2(w));
                     m_oDocument.WriteString(L"\" height=\"", 11);
-                    m_oDocument.AddInt(round(h));
+                    m_oDocument.AddInt(round2(h));
                     m_oDocument.WriteString(L"\" clip-path=\"url(#clip", 22);
                     m_oDocument.AddInt(m_lClippingPath - 1);
                     m_oDocument.WriteString(L")\" xlink:href=\"media/image", 26);
@@ -673,13 +671,13 @@ namespace NSHtmlRenderer
                 else
                 {
                     m_oDocument.WriteString(L"<image x=\"", 10);
-                    m_oDocument.AddInt(round(x));
+                    m_oDocument.AddInt(round2(x));
                     m_oDocument.WriteString(L"\" y=\"", 5);
-                    m_oDocument.AddInt(round(y));
+                    m_oDocument.AddInt(round2(y));
                     m_oDocument.WriteString(L"\" width=\"", 10);
-                    m_oDocument.AddInt(round(w));
+                    m_oDocument.AddInt(round2(w));
                     m_oDocument.WriteString(L"\" height=\"", 11);
-                    m_oDocument.AddInt(round(h));
+                    m_oDocument.AddInt(round2(h));
                     m_oDocument.WriteString(L"\" xlink:href=\"media/image", 25);
                     m_oDocument.AddInt(oInfo.m_lID);
 
@@ -704,13 +702,13 @@ namespace NSHtmlRenderer
                 if (bIsClipping)
                 {
                     m_oDocument.WriteString(L"<image x=\"", 10);
-                    m_oDocument.AddInt(round(x));
+                    m_oDocument.AddInt(round2(x));
                     m_oDocument.WriteString(L"\" y=\"", 5);
-                    m_oDocument.AddInt(round(y));
+                    m_oDocument.AddInt(round2(y));
                     m_oDocument.WriteString(L"\" width=\"", 10);
-                    m_oDocument.AddInt(round(w));
+                    m_oDocument.AddInt(round2(w));
                     m_oDocument.WriteString(L"\" height=\"", 11);
-                    m_oDocument.AddInt(round(h));
+                    m_oDocument.AddInt(round2(h));
                     m_oDocument.WriteString(L"\" clip-path=\"url(#clip", 22);
                     m_oDocument.AddInt(m_lClippingPath - 1);
                     m_oDocument.WriteString(L")\" xlink:href=\"media/image", 26);
@@ -733,13 +731,13 @@ namespace NSHtmlRenderer
                 else
                 {
                     m_oDocument.WriteString(L"<image x=\"", 10);
-                    m_oDocument.AddInt(round(x));
+                    m_oDocument.AddInt(round2(x));
                     m_oDocument.WriteString(L"\" y=\"", 5);
-                    m_oDocument.AddInt(round(y));
+                    m_oDocument.AddInt(round2(y));
                     m_oDocument.WriteString(L"\" width=\"", 10);
-                    m_oDocument.AddInt(round(w));
+                    m_oDocument.AddInt(round2(w));
                     m_oDocument.WriteString(L"\" height=\"", 11);
-                    m_oDocument.AddInt(round(h));
+                    m_oDocument.AddInt(round2(h));
                     m_oDocument.WriteString(L"\" xlink:href=\"media/image", 25);
                     m_oDocument.AddInt(oInfo.m_lID);
 

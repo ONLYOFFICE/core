@@ -41,6 +41,10 @@ DEFINES += FILE_FORMAT_CHECKER_WITH_MACRO
 DEFINES += KERNEL_USE_DYNAMIC_LIBRARY
 DEFINES += GRAPHICS_USE_DYNAMIC_LIBRARY
 
+core_windows {
+	DEFINES += _RWSTD_NO_SETRLIMIT
+}
+
 INCLUDEPATH += $$PWD/../../../Common/DocxFormat
 DEPENDPATH += $$PWD/../../../Common/DocxFormat
 
@@ -86,13 +90,15 @@ LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lASCOfficeDocxFile2Lib
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPPTXFormatLib
 #docxformat
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lDocxFormatLib
+#xlsbformat
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lXlsbFormatLib
 
 #Crypto++
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
 
 #All dynamic libs
 
-ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, kernel_network, Fb2File, PdfWriter, PdfReader, HtmlFile2, EpubFile, XpsFile, DjVuFile, HtmlRenderer, doctrenderer)
+ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, kernel_network, Fb2File, PdfWriter, PdfReader, HtmlFile2, EpubFile, XpsFile, DjVuFile, HtmlRenderer, doctrenderer, DocxRenderer)
 
 
 #####################################################

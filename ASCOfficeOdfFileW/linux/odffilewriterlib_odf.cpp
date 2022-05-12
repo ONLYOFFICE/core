@@ -30,13 +30,6 @@
  *
  */
 
-#ifndef min
-#define min(a,b) ((a) < (b) ? (a) : (b))
-#endif
-#ifndef max
-#define max(a,b) ((a) > (b) ? (a) : (b))
-#endif
-
 #include "../source/OdfFormat/office_document.cpp"
 #include "../source/OdfFormat/office_forms.cpp"
 #include "../source/OdfFormat/calcext_elements.cpp"
@@ -106,3 +99,10 @@
 #include "../source/OdfFormat/office_scripts.cpp"
 #include "../source/OdfFormat/office_event_listeners.cpp"
 #include "../source/utils.cpp"
+#include "../source/OdfFormat/odf_math_context.cpp"
+#include "../source/OdfFormat/math_elementaries.cpp"
+#include "../source/OdfFormat/math_elements.cpp"
+#include "../source/OdfFormat/math_layout_elements.cpp"
+#include "../source/OdfFormat/math_limit_elements.cpp"
+#include "../source/OdfFormat/math_table_elements.cpp"
+#include "../source/OdfFormat/math_token_elements.cpp"

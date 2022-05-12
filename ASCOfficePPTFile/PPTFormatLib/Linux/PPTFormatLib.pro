@@ -32,6 +32,7 @@ HEADERS += \
     ../Enums/enums.h \
     ../PPTFormatLib.h \
     ../PPTXWriter/Animation.h \
+    ../PPTXWriter/BulletsConverter.h \
     ../PPTXWriter/TableWriter.h \
     ../PPTXWriter/TxBodyConverter.h \
     ../Reader/ClassesAtom.h \
@@ -295,5 +296,6 @@ SOURCES += \
 SOURCES += \
     ../../../ASCOfficePPTXFile/Editor/Drawing/Elements.cpp \
     ../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.cpp \
-    ../../../Common/3dParty/pole/pole.cpp
+    ../../../Common/3dParty/pole/pole.cpp \
+    ../PPTXWriter/BulletsConverter.cpp
 

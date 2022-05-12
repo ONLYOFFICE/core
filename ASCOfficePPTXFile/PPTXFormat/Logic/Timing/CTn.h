@@ -123,9 +123,9 @@ namespace PPTX
 				XmlUtils::CNodeValue oValue;
 
                 oValue.WriteNullable(stCondLst);
-                oValue.WriteNullable(iterate);
                 oValue.WriteNullable(endCondLst);
                 oValue.WriteNullable(endSync);
+                oValue.WriteNullable(iterate);
                 oValue.WriteNullable(childTnLst);
                 oValue.WriteNullable(subTnLst);
 
@@ -161,17 +161,17 @@ namespace PPTX
 				if (stCondLst.IsInit())
 					stCondLst->toXmlWriter(pWriter);
 
-                if (iterate.IsInit())
+				if (endCondLst.IsInit())
+					endCondLst->toXmlWriter(pWriter);
+                
+				if (endSync.IsInit())
+					endSync->toXmlWriter(pWriter);
+
+				if (iterate.IsInit())
                     iterate->toXmlWriter(pWriter);
 
 				if (childTnLst.IsInit())
 					childTnLst->toXmlWriter(pWriter);
-
-				if (endCondLst.IsInit())
-					endCondLst->toXmlWriter(pWriter);
-
-				if (endSync.IsInit())
-					endSync->toXmlWriter(pWriter);
 
 				if (subTnLst.IsInit())
 					subTnLst->toXmlWriter(pWriter);

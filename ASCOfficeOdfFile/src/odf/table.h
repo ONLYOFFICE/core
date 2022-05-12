@@ -32,9 +32,6 @@
 #pragma once
 
 #include <iosfwd>
-#include <CPOptional.h>
-#include <xml/xmlelement.h>
-#include <xml/nodetype.h>
 
 #include "office_elements.h"
 #include "office_elements_create.h"
@@ -367,8 +364,10 @@ public:
 	bool empty();
 	bool empty_content_cells(bool bWithCellStyle = true);
 
+	bool bHeader = false;
+
     table_table_row_attlist		attlist_;
-    office_element_ptr_array	content_;					// table-table-cell or table-covered-table-cell
+    office_element_ptr_array	content_; // table-table-cell or table-covered-table-cell
     
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_table_row);

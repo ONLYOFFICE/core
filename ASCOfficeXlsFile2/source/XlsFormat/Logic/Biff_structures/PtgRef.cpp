@@ -32,7 +32,6 @@
 
 #include "PtgRef.h"
 #include "CellRef.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {
@@ -57,25 +56,40 @@ BiffStructurePtr PtgRef::clone()
 
 void PtgRef::loadFields(CFRecord& record)
 {
-	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
-	{
-		unsigned char	col;
-		_UINT16			rw;
-		record >> rw >> col;
+    global_info = record.getGlobalWorkbookInfo();
+    if (global_info->Version < 0x0600)
+    {
+        unsigned char	col;
+        _UINT16			rw;
+        record >> rw >> col;
 
-		loc.rowRelative	= GETBIT(rw, 15);
-		loc.colRelative	= GETBIT(rw, 14);
+        loc.rowRelative	= GETBIT(rw, 15);
+        loc.colRelative	= GETBIT(rw, 14);
 
-		loc.column		= col;
-		loc.row			= GETBITS(rw, 0, 13);
-	}
-	else
-		record >> loc;
+        loc.column		= col;
+        loc.row			= GETBITS(rw, 0, 13);
+    }
+    else if (global_info->Version < 0x0800)
+    {
+       record >> loc;
+    }
+    else
+    {
+       record >> loc_xlsb;
+    }
 }
 
 void PtgRef::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
-	ptg_stack.push(loc.toString());
+    if (global_info->Version < 0x0800)
+    {
+        ptg_stack.push(loc.toString());
+    }
+    else
+    {
+        ptg_stack.push(loc_xlsb.toString());
+    }
+
 }
 
 

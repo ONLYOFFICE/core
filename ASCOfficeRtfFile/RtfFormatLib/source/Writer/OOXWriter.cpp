@@ -53,10 +53,11 @@
 
 OOXWriter::OOXWriter( RtfDocument& oDocument, std::wstring sPath ) : 
 		m_oDocument			( oDocument ),
-		m_sTargetFolder		( sPath.c_str() ),
+		m_sTargetFolder		( sPath),
 		m_oRels				( L"", oDocument ),
 		m_nCurTrackChangesId( 0),
-		m_nextParaId		( 0x00000000),
+		m_nextParaId		( 0),
+		m_nFormFieldId		( 0),
 		m_oDocRels			( L"document.xml", oDocument )
 {
 	m_nCurFitWidth		= PROP_DEF;

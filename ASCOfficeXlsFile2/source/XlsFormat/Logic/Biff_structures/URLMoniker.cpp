@@ -31,7 +31,7 @@
  */
 
 #include "URLMoniker.h"
-#include <Binary/CFRecord.h>
+#include "../../Binary/CFRecord.h"
 
 namespace OSHARED
 {

@@ -32,7 +32,6 @@
 
 #include "PtgRefN.h"
 #include "CellRef.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {
@@ -44,7 +43,8 @@ PtgRefN::PtgRefN(const unsigned short full_ptg_id, const CellRef& cell_base_ref_
 
 PtgRefN::PtgRefN(const std::wstring& word, const PtgDataType data_type, const CellRef& cell_base_ref_init)
 :	OperandPtg(fixed_id | (static_cast<unsigned char>(data_type) << 5)),
-	loc(word),
+    loc(word),
+    loc_xlsb(word),
 	cell_base_ref(cell_base_ref_init)
 {
 	loc -= cell_base_ref;
@@ -53,11 +53,19 @@ PtgRefN::PtgRefN(const std::wstring& word, const PtgDataType data_type, const Ce
 
 void PtgRefN::set_base_ref(const CellRef& cell_base_ref_new)
 {
-	if (bUseLocInit) loc += cell_base_ref;
+    if (bUseLocInit)
+    {
+        loc += cell_base_ref;
+        loc_xlsb += cell_base_ref;
+    }
 	
 	cell_base_ref = cell_base_ref_new;
 	
-	if (bUseLocInit) loc -= cell_base_ref;
+    if (bUseLocInit)
+    {
+        loc -= cell_base_ref;
+        loc_xlsb -= cell_base_ref;
+    }
 }
 
 BiffStructurePtr PtgRefN::clone()
@@ -67,7 +75,8 @@ BiffStructurePtr PtgRefN::clone()
 
 void PtgRefN::loadFields(CFRecord& record)
 {
-	if (record.getGlobalWorkbookInfo()->Version < 0x0600)
+    global_info = record.getGlobalWorkbookInfo();
+    if (global_info->Version < 0x0600)
 	{
 		unsigned char	col;
 		_UINT16			rw;
@@ -79,16 +88,28 @@ void PtgRefN::loadFields(CFRecord& record)
 		loc.column	= col;
 		loc.row		= GETBITS(rw, 0, 13);
 	}
-	else
-	{
-		record >> loc;
-	}
+    if (global_info->Version < 0x0800)
+    {
+       record >> loc;
+    }
+    else
+    {
+       record >> loc_xlsb;
+    }
+
 }
 
 
 void PtgRefN::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)
 {
-	ptg_stack.push((loc + cell_base_ref).toString());
+    if (global_info->Version < 0x0800)
+    {
+       ptg_stack.push((loc + cell_base_ref).toString());
+    }
+    else
+    {
+       ptg_stack.push((loc_xlsb + cell_base_ref).toString());
+    }
 }
 
 

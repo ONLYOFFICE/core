@@ -33,15 +33,17 @@
 
 #include <string>
 #include <boost/noncopyable.hpp>
-#include <CPScopedPtr.h>
-#include <CPOptional.h>
+#include "../../include/CPScopedPtr.h"
+#include "../../include/CPOptional.h"
 
-#include <xml/attributes.h>
+#include "../../include/xml/attributes.h"
 
 
 namespace cpdoccore {
 namespace odf_reader
 {
+	class odf_read_context;
+
 	class styles_container;
 	typedef boost::shared_ptr<styles_container> styles_container_ptr;
 	
@@ -55,7 +57,7 @@ class xlsx_conversion_context;
 class xlsx_text_context: boost::noncopyable
 {
 public:
-	xlsx_text_context	(odf_reader::styles_container & styles_);
+	xlsx_text_context	(odf_reader::odf_read_context & odfContext);
     ~xlsx_text_context	();
 
 	void set_local_styles_container	(odf_reader::styles_container *local_styles_);

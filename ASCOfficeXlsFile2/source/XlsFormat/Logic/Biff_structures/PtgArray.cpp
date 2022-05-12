@@ -32,7 +32,6 @@
 
 #include "PtgArray.h"
 #include "PtgExtraArray.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {
@@ -53,7 +52,10 @@ BiffStructurePtr PtgArray::clone()
 
 void PtgArray::loadFields(CFRecord& record)
 {
-	record.skipNunBytes(7); // unused
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+        record.skipNunBytes(7); // unused
+    else
+        record.skipNunBytes(16); // unused
 }
 
 void PtgArray::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref)

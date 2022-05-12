@@ -255,6 +255,28 @@ namespace PdfWriter
 		Add("BitsPerComponent", 8);
 		SetFilter(STREAM_FILTER_FLATE_DECODE);
 	}
+	void CImageDict::LoadSMask(CMemoryStream* pStream, const unsigned int unWidth, const unsigned int& unHeight)
+	{
+		CImageDict* pImageSMask = new CImageDict(m_pXref, m_pDocument);
+		if (!pImageSMask)
+			return;
+
+		pImageSMask->SetStream(m_pXref, pStream);
+		pImageSMask->Add("Type", "XObject");
+		pImageSMask->Add("Subtype", "Image");
+		pImageSMask->Add("ColorSpace", "DeviceGray");
+		pImageSMask->Add("Width", unWidth);
+		pImageSMask->Add("Height", unHeight);
+		pImageSMask->Add("BitsPerComponent", 8);
+
+//#ifndef FILTER_FLATE_DECODE_DISABLED
+//		pImageSMask->SetFilter(STREAM_FILTER_LZW_DECODE | STREAM_FILTER_FLATE_DECODE);
+//#else
+		pImageSMask->SetFilter(STREAM_FILTER_FLATE_DECODE);
+//#endif
+
+		Add("SMask", pImageSMask);
+	}
 	void CImageDict::LoadSMask(const BYTE* pBgra, unsigned int unWidth, unsigned int unHeight, unsigned char unAlpha, bool bVerFlip)
 	{
 		if (m_pDocument->IsPDFA())
@@ -315,25 +337,7 @@ namespace PdfWriter
 			}
 		}
 
-		CImageDict* pImageSMask = new CImageDict(m_pXref, m_pDocument);
-		if (!pImageSMask)
-			return;
-
-		pImageSMask->SetStream(m_pXref, pStream);
-		pImageSMask->Add("Type", "XObject");
-		pImageSMask->Add("Subtype", "Image");
-		pImageSMask->Add("ColorSpace", "DeviceGray");
-		pImageSMask->Add("Width", unWidth);
-		pImageSMask->Add("Height", unHeight);
-		pImageSMask->Add("BitsPerComponent", 8);
-
-//#ifndef FILTER_FLATE_DECODE_DISABLED
-//		pImageSMask->SetFilter(STREAM_FILTER_LZW_DECODE | STREAM_FILTER_FLATE_DECODE);
-//#else
-		pImageSMask->SetFilter(STREAM_FILTER_FLATE_DECODE);
-//#endif
-
-		Add("SMask", pImageSMask);
+		LoadSMask(pStream, unWidth, unHeight);
 	}
 	void CImageDict::LoadSMask(const BYTE* pBuffer, unsigned int unSize, unsigned int unWidth, unsigned int unHeight)
 	{
@@ -342,19 +346,19 @@ namespace PdfWriter
 			return;
 
 		pStream->Write(pBuffer, unSize);
-		CImageDict* pImageSMask = new CImageDict(m_pXref, m_pDocument);
-		if (!pImageSMask)
+		LoadSMask(pStream, unWidth, unHeight);
+	}
+	void CImageDict::LoadSMask(const BYTE& unAlpha, const unsigned int& unWidth, const unsigned int& unHeight)
+	{
+		unsigned int unSize = unWidth * unHeight;
+		CMemoryStream* pStream = new CMemoryStream(unSize);
+		if (!pStream)
 			return;
 
-		pImageSMask->SetStream(m_pXref, pStream);
-		pImageSMask->Add("Type", "XObject");
-		pImageSMask->Add("Subtype", "Image");
-		pImageSMask->Add("ColorSpace", "DeviceGray");
-		pImageSMask->Add("Width", unWidth);
-		pImageSMask->Add("Height", unHeight);
-		pImageSMask->Add("BitsPerComponent", 8);
-		pImageSMask->SetFilter(STREAM_FILTER_FLATE_DECODE);
-		Add("SMask", pImageSMask);
+		for (unsigned int unPos = 0; unPos < unSize; unPos++)
+			pStream->WriteChar(unAlpha);
+
+		LoadSMask(pStream, unWidth, unHeight);
 	}
 	void CImageDict::LoadBW(const BYTE* pImage, unsigned int unWidth, unsigned int unHeight, unsigned int unStride)
 	{	
@@ -422,6 +426,38 @@ namespace PdfWriter
 
 		Add("Mask", pMask);
 	}
+	void CImageDict::AddTransparency(const BYTE& unAlpha)
+	{
+		if (CheckSMask())
+		{
+			CImageDict* pSMask = (CImageDict*)Get("SMask");
+			CStream* pMaskStream = pSMask->GetStream();
+
+			pMaskStream->Seek(0, EWhenceMode::SeekEnd);
+			int nSize = pMaskStream->Tell();
+			if (nSize <= 0)
+				return;
+
+			CMemoryStream* pStream = new CMemoryStream(nSize);
+			if (!pStream)
+				return;
+
+			double dKoef = unAlpha / 255.0;
+
+			pMaskStream->Seek(0, EWhenceMode::SeekSet);
+			while (!pMaskStream->IsEof())
+			{
+				BYTE nChar = pMaskStream->ReadUChar();
+				pStream->WriteChar((BYTE)(nChar * dKoef));
+			}
+
+			pSMask->SetStream(m_pXref, pStream);
+		}
+		else
+		{
+			LoadSMask(unAlpha, GetWidth(), GetHeight());
+		}
+	}
 	unsigned int CImageDict::GetWidth() const
 	{
 		return ((unsigned int)((CNumberObject*)this->Get("Width"))->Get());
@@ -429,6 +465,22 @@ namespace PdfWriter
 	unsigned int CImageDict::GetHeight() const
 	{
 		return ((unsigned int)((CNumberObject*)this->Get("Height"))->Get());
+	}
+	bool CImageDict::CheckSMask()
+	{
+		CImageDict* pSMask = (CImageDict*)this->Get("SMask");
+		if (!pSMask)
+			return false;
+
+		CStream* pMaskStream = pSMask->GetStream();
+		if (!pMaskStream)
+			return false;
+
+		CNumberObject* pBits = (CNumberObject*)pSMask->Get("BitsPerComponent");
+		if (!pBits || 8 != pBits->Get())
+			return false;
+
+		return true;
 	}
 	//----------------------------------------------------------------------------------------
 	// CJbig2Global

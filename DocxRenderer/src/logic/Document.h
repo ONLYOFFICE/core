@@ -1,38 +1,14 @@
 ﻿#pragma once
 #include "Page.h"
+#include "../resources/resources.h"
 
 namespace NSDocxRenderer
 {
-	static CString g_string_imageRID_png = _T("<Relationship Id=\"rId%d\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/image%d.png\"/>");
-	static CString g_string_imageRID_jpg = _T("<Relationship Id=\"rId%d\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/image%d.jpg\"/>");
-
-	static _bstr_t g_bstr_FontNameStart		= L"<w:font w:name=\"";
-	static _bstr_t g_bstr_FontPanoseStart	= L"<w:panose1 w:val=\"";
-	static _bstr_t g_bstr_FontCharsetStart	= L"<w:charset w:val=\"";
-	static _bstr_t g_bstr_FontFamilyStart	= L"<w:family w:val=\"";
-	static _bstr_t g_bstr_FontPitchTrue		= L"<w:pitch w:val=\"fixed\" />";
-	static _bstr_t g_bstr_FontPitchFalse	= L"<w:pitch w:val=\"variable\" />";
-
-	static CString g_string_SIG				= _T("<w:sig w:usb0=\"%08x\" w:usb1=\"%08x\" w:usb2=\"%08x\" w:usb3=\"%08x\" w:csb0=\"%08x\" w:csb1=\"%08x\"/>");
-	static _bstr_t g_bstr_end				= L"\"/>";
-	static _bstr_t g_bstr_end2				= L"\">";
-	static _bstr_t g_bstr_FontNameEnd		= L"</w:font>";
-
-	static CString g_string_DocumentStart	= L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
-<w:document xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
-xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
-xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
-xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\" \
-xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
-xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
-xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\">\
-<w:body>";
-
-	static CString g_string_DocumentEnd		= L"</w:body></w:document>";
-
-	class CDocument
+    class CDocument
 	{
 	public:
+        NSFonts::IApplicationFonts* m_pAppFonts;
+
 		NSStructures::CPen				m_oPen;
 		NSStructures::CBrush			m_oBrush;
 		NSStructures::CFont				m_oFont;
@@ -41,19 +17,17 @@ xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:
 
 		NSStructures::CFont				m_oInstalledFont;
 
-		AVSGraphics::IASCGraphicSimpleComverter*	m_pSimpleGraphicsConverter;
-		AVSGraphics::IASCFontManager*				m_pFontManager;
+        NSFonts::IFontManager*                m_pFontManager;
+        Aggplus::CGraphicsPathSimpleConverter m_oSimpleGraphicsConverter;
 
-		NSDocxRenderer::CMatrix						m_oTransform;
+        Aggplus::CMatrix				m_oTransform;
 
 		LONG							m_lCurrentCommandType;
 
 		LONG							m_lClipMode;
 		CPage							m_oCurrentPage;
 
-		IUnknown*						m_punkRenderer;
-
-		CImageManager					m_oManager;
+        CImageManager					m_oManager;
 
 		double							m_dWidth;
 		double							m_dHeight;
@@ -61,22 +35,23 @@ xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:
 		double							m_dDpiX;
 		double							m_dDpiY;
 
-		CString							m_strTempDirectory;
+        std::wstring					m_strTempDirectory;
+        std::wstring                    m_strDstFilePath;
 
-		CFile							m_oDocumentStream;
+        NSFile::CFileBinary				m_oDocumentStream;
 		LONG							m_lPagesCount;
 
-		NSDocxRenderer::CStringWriter	m_oWriter;
-		bool							m_bIsNeedPDFTextAnalyzer;
+        NSStringUtils::CStringBuilder	m_oWriter;
+        bool							m_bIsNeedPDFTextAnalyzer;
+
+        bool                            m_bIsDisablePageCommand; // disable commands inside draw function
 
 	public:
-		CDocument() : m_oWriter()
+        CDocument(IRenderer* pRenderer, NSFonts::IApplicationFonts* pFonts) : m_oWriter(), m_oCurrentPage(pFonts)
 		{
-			m_pSimpleGraphicsConverter  = NULL;
+            m_pAppFonts = pFonts;
+            m_oSimpleGraphicsConverter.SetRenderer(pRenderer);
 			m_lCurrentCommandType		= 0;
-
-			m_pFontManager				= NULL;
-			m_punkRenderer				= NULL;
 
 			m_dWidth	= 0;
 			m_dHeight	= 0;
@@ -84,29 +59,28 @@ xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:
 			m_dDpiX		= 72;
 			m_dDpiY		= 72;
 
-			m_strTempDirectory			= _T("");
+            m_strTempDirectory			= L"";
 			m_lPagesCount				= 0;
 
 			m_bIsNeedPDFTextAnalyzer	= false;
+            m_pFontManager = NULL;
+
+            m_bIsDisablePageCommand = false;
 		}
-		AVSINLINE void Clear()
+        void Clear()
 		{
-			m_lClipMode = 0;
-			RELEASEINTERFACE(m_punkRenderer);
-			RELEASEINTERFACE(m_pSimpleGraphicsConverter);
-			RELEASEINTERFACE(m_pFontManager);
+			m_lClipMode = 0;            
 		}
 
 		~CDocument()
 		{
-			m_lClipMode = 0;
-			RELEASEINTERFACE(m_pSimpleGraphicsConverter);
-			RELEASEINTERFACE(m_pFontManager);
+            m_lClipMode = 0;
+            RELEASEINTERFACE(m_pFontManager);
 		}
 
 	public:
 
-		AVSINLINE HRESULT NewPage()
+        HRESULT NewPage()
 		{
 			if (0 != m_lPagesCount)
 			{
@@ -128,253 +102,243 @@ xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:
 			
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_Height(double* dHeight)
+        HRESULT get_Height(double* dHeight)
 		{
 			*dHeight = m_dHeight;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_Height(double dHeight)
+        HRESULT put_Height(double dHeight)
 		{
 			m_dHeight					= dHeight;
 			m_oCurrentPage.m_dHeight	= dHeight;
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_Width(double* dWidth)
+        HRESULT get_Width(double* dWidth)
 		{
 			*dWidth = m_dWidth;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_Width(double dWidth)
+        HRESULT put_Width(double dWidth)
 		{
 			m_dWidth					= dWidth;
 			m_oCurrentPage.m_dWidth		= dWidth;
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_DpiX(double* dDpiX)
+        HRESULT get_DpiX(double* dDpiX)
 		{
 			*dDpiX = m_dDpiX;
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_DpiY(double* dDpiY)
+        HRESULT get_DpiY(double* dDpiY)
 		{
 			*dDpiY = m_dDpiY;
 			return S_OK;
 		}
 		//-------- Функции для задания настроек текста ----------------------------------------------
 		// pen --------------------------------------------------------------------------------------
-		AVSINLINE HRESULT SetPen(BSTR bsXML)
-		{
-			m_oPen.FromXmlString((CString)bsXML);
-			return S_OK;
-		}
-		AVSINLINE HRESULT get_PenColor(LONG* lColor)
+        HRESULT get_PenColor(LONG* lColor)
 		{
 			*lColor = m_oPen.Color;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_PenColor(LONG lColor)
+        HRESULT put_PenColor(LONG lColor)
 		{
 			m_oPen.Color = lColor;
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_PenAlpha(LONG* lAlpha)
+        HRESULT get_PenAlpha(LONG* lAlpha)
 		{
 			*lAlpha = m_oPen.Alpha;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_PenAlpha(LONG lAlpha)
+        HRESULT put_PenAlpha(LONG lAlpha)
 		{
 			m_oPen.Alpha = lAlpha;
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_PenSize(double* dSize)
+        HRESULT get_PenSize(double* dSize)
 		{
 			*dSize = m_oPen.Size;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_PenSize(double dSize)
+        HRESULT put_PenSize(double dSize)
 		{
 			m_oPen.Size = dSize;
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_PenDashStyle(BYTE* val)
+        HRESULT get_PenDashStyle(BYTE* val)
 		{
 			*val = m_oPen.DashStyle;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_PenDashStyle(BYTE val)
+        HRESULT put_PenDashStyle(BYTE val)
 		{
 			m_oPen.DashStyle = val;
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_PenLineStartCap(BYTE* val)
+        HRESULT get_PenLineStartCap(BYTE* val)
 		{
 			*val = m_oPen.LineStartCap;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_PenLineStartCap(BYTE val)
+        HRESULT put_PenLineStartCap(BYTE val)
 		{
 			m_oPen.LineStartCap = val;
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_PenLineEndCap(BYTE* val)
+        HRESULT get_PenLineEndCap(BYTE* val)
 		{
 			*val = m_oPen.LineEndCap;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_PenLineEndCap(BYTE val)
+        HRESULT put_PenLineEndCap(BYTE val)
 		{
 			m_oPen.LineEndCap = val;
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_PenLineJoin(BYTE* val)
+        HRESULT get_PenLineJoin(BYTE* val)
 		{
 			*val = m_oPen.LineJoin;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_PenLineJoin(BYTE val)
+        HRESULT put_PenLineJoin(BYTE val)
 		{
 			m_oPen.LineJoin = val;
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_PenDashOffset(double* val)
+        HRESULT get_PenDashOffset(double* val)
 		{
 			*val = m_oPen.DashOffset;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_PenDashOffset(double val)
+        HRESULT put_PenDashOffset(double val)
 		{
 			m_oPen.DashOffset = val;
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_PenAlign(LONG* val)
+        HRESULT get_PenAlign(LONG* val)
 		{
 			*val = m_oPen.Align;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_PenAlign(LONG val)
+        HRESULT put_PenAlign(LONG val)
 		{
 			m_oPen.Align = val;
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_PenMiterLimit(double* val)
+        HRESULT get_PenMiterLimit(double* val)
 		{
 			*val = m_oPen.MiterLimit;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_PenMiterLimit(double val)
+        HRESULT put_PenMiterLimit(double val)
 		{
 			m_oPen.MiterLimit = val;
 			return S_OK;
 		}
-		AVSINLINE HRESULT PenDashPattern(SAFEARRAY* pPattern)
+        HRESULT PenDashPattern(double* pPattern, LONG lCount)
 		{
 			if (NULL != pPattern)
 			{
-				m_oPen.SetDashPattern((double*)pPattern->pvData, pPattern->rgsabound[0].cElements);
+                m_oPen.SetDashPattern(pPattern, lCount);
 			}
 
 			return S_OK;
 		}
 		// brush ------------------------------------------------------------------------------------
-		AVSINLINE HRESULT SetBrush(BSTR bsXML)
-		{
-			m_oBrush.FromXmlString((CString)bsXML);
-			return S_OK;
-		}
-		AVSINLINE HRESULT get_BrushType(LONG* lType)
+        HRESULT get_BrushType(LONG* lType)
 		{
 			*lType = m_oBrush.Type;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_BrushType(LONG lType)
+        HRESULT put_BrushType(LONG lType)
 		{
 			m_oBrush.Type = lType;
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_BrushColor1(LONG* lColor)
+        HRESULT get_BrushColor1(LONG* lColor)
 		{
 			*lColor = m_oBrush.Color1;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_BrushColor1(LONG lColor)
+        HRESULT put_BrushColor1(LONG lColor)
 		{
 			m_oBrush.Color1 = lColor;
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_BrushAlpha1(LONG* lAlpha)
+        HRESULT get_BrushAlpha1(LONG* lAlpha)
 		{
 			*lAlpha = m_oBrush.Alpha1;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_BrushAlpha1(LONG lAlpha)
+        HRESULT put_BrushAlpha1(LONG lAlpha)
 		{
 			m_oBrush.Alpha1 = lAlpha;
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_BrushColor2(LONG* lColor)
+        HRESULT get_BrushColor2(LONG* lColor)
 		{
 			*lColor = m_oBrush.Color2;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_BrushColor2(LONG lColor)
+        HRESULT put_BrushColor2(LONG lColor)
 		{
 			m_oBrush.Color2 = lColor;
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_BrushAlpha2(LONG* lAlpha)
+        HRESULT get_BrushAlpha2(LONG* lAlpha)
 		{
 			*lAlpha = m_oBrush.Alpha2;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_BrushAlpha2(LONG lAlpha)
+        HRESULT put_BrushAlpha2(LONG lAlpha)
 		{
 			m_oBrush.Alpha2 = lAlpha;
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_BrushTexturePath(BSTR* bsPath)
+        HRESULT get_BrushTexturePath(std::wstring* sPath)
 		{
-			*bsPath = m_oBrush.TexturePath.AllocSysString();
+            *sPath = m_oBrush.TexturePath;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_BrushTexturePath(BSTR bsPath)
+        HRESULT put_BrushTexturePath(const std::wstring& sPath)
 		{
-			m_oBrush.TexturePath = (CString)bsPath;
+            m_oBrush.TexturePath = sPath;
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_BrushTextureMode(LONG* lMode)
+        HRESULT get_BrushTextureMode(LONG* lMode)
 		{
 			*lMode = m_oBrush.TextureMode;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_BrushTextureMode(LONG lMode)
+        HRESULT put_BrushTextureMode(LONG lMode)
 		{
 			m_oBrush.TextureMode = lMode;
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_BrushTextureAlpha(LONG* lTxAlpha)
+        HRESULT get_BrushTextureAlpha(LONG* lTxAlpha)
 		{
 			*lTxAlpha = m_oBrush.TextureAlpha;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_BrushTextureAlpha(LONG lTxAlpha)
+        HRESULT put_BrushTextureAlpha(LONG lTxAlpha)
 		{
 			m_oBrush.TextureAlpha = lTxAlpha;
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_BrushLinearAngle(double* dAngle)
+        HRESULT get_BrushLinearAngle(double* dAngle)
 		{
 			*dAngle = m_oBrush.LinearAngle;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_BrushLinearAngle(double dAngle)
+        HRESULT put_BrushLinearAngle(double dAngle)
 		{
 			m_oBrush.LinearAngle = dAngle;
 			return S_OK;
 		}
-		AVSINLINE HRESULT BrushRect(BOOL val, double left, double top, double width, double height)
+        HRESULT BrushRect(bool val, double left, double top, double width, double height)
 		{
-			m_oBrush.Rectable = val;
+            m_oBrush.Rectable = val ? 1 : 0;
 			m_oBrush.Rect.X = (float)left;
 			m_oBrush.Rect.Y = (float)top;
 			m_oBrush.Rect.Width  = (float)width;
@@ -383,229 +347,252 @@ xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:
 			return S_OK;
 		}
 		// font -------------------------------------------------------------------------------------
-		AVSINLINE HRESULT SetFont(BSTR bsXML)
+        HRESULT get_FontName(std::wstring* sName)
 		{
-			m_oFont.FromXmlString((CString)bsXML);
+            *sName = m_oFont.Name;
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_FontName(BSTR* bsName)
+        HRESULT put_FontName(std::wstring sName)
 		{
-			*bsName = m_oFont.Name.AllocSysString();
+            m_oFont.Name = sName;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_FontName(BSTR bsName)
+        HRESULT get_FontPath(std::wstring* sPath)
 		{
-			m_oFont.Name = (CString)bsName;
+            *sPath = m_oFont.Path;
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_FontPath(BSTR* bsName)
+        HRESULT put_FontPath(std::wstring sPath)
 		{
-			*bsName = m_oFont.Path.AllocSysString();
+            m_oFont.Path = sPath;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_FontPath(BSTR bsName)
-		{
-			m_oFont.Path = bsName;
-			return S_OK;
-		}
-		AVSINLINE HRESULT get_FontSize(double* dSize)
+        HRESULT get_FontSize(double* dSize)
 		{
 			*dSize = m_oFont.Size;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_FontSize(double dSize)
+        HRESULT put_FontSize(double dSize)
 		{
 			m_oFont.Size = dSize;
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_FontStyle(LONG* lStyle)
+        HRESULT get_FontStyle(LONG* lStyle)
 		{
 			*lStyle = m_oFont.GetStyle();
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_FontStyle(LONG lStyle)
+        HRESULT put_FontStyle(LONG lStyle)
 		{
 			m_oFont.SetStyle(lStyle);
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_FontStringGID(BOOL* bGID)
+        HRESULT get_FontStringGID(INT* bGID)
 		{
 			*bGID = m_oFont.StringGID;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_FontStringGID(BOOL bGID)
+        HRESULT put_FontStringGID(INT bGID)
 		{
 			m_oFont.StringGID = bGID;
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_FontCharSpace(double* dSpace)
+        HRESULT get_FontCharSpace(double* dSpace)
 		{
 			*dSpace = m_oFont.CharSpace;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_FontCharSpace(double dSpace)
+        HRESULT put_FontCharSpace(double dSpace)
 		{
 			m_oFont.CharSpace = dSpace;
 			return S_OK;
 		}
+        HRESULT get_FontFaceIndex(int* lFaceIndex)
+        {
+            *lFaceIndex = m_oFont.FaceIndex;
+            return S_OK;
+        }
+        HRESULT put_FontFaceIndex(const int& lFaceIndex)
+        {
+            m_oFont.FaceIndex = lFaceIndex;
+            return S_OK;
+        }
 		// shadow -----------------------------------------------------------------------------------
-		AVSINLINE HRESULT SetShadow(BSTR bsXML)
-		{
-			m_oShadow.FromXmlString((CString)bsXML);
-			return S_OK;
-		}
-		AVSINLINE HRESULT get_ShadowDistanceX(double* val)
+        HRESULT get_ShadowDistanceX(double* val)
 		{
 			*val = m_oShadow.DistanceX;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_ShadowDistanceX(double val)
+        HRESULT put_ShadowDistanceX(double val)
 		{
 			m_oShadow.DistanceX = val;
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_ShadowDistanceY(double* val)
+        HRESULT get_ShadowDistanceY(double* val)
 		{
 			*val = m_oShadow.DistanceY;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_ShadowDistanceY(double val)
+        HRESULT put_ShadowDistanceY(double val)
 		{
 			m_oShadow.DistanceY = val;
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_ShadowBlurSize(double* val)
+        HRESULT get_ShadowBlurSize(double* val)
 		{
 			*val = m_oShadow.BlurSize;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_ShadowBlurSize(double val)
+        HRESULT put_ShadowBlurSize(double val)
 		{
 			m_oShadow.BlurSize = val;
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_ShadowColor(LONG* val)
+        HRESULT get_ShadowColor(LONG* val)
 		{
 			*val = m_oShadow.Color;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_ShadowColor(LONG val)
+        HRESULT put_ShadowColor(LONG val)
 		{
 			m_oShadow.Color = val;
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_ShadowAlpha(LONG* val)
+        HRESULT get_ShadowAlpha(LONG* val)
 		{
 			*val = m_oShadow.Alpha;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_ShadowAlpha(LONG val)
+        HRESULT put_ShadowAlpha(LONG val)
 		{
 			m_oShadow.Alpha = val;
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_ShadowVisible(BOOL* val)
+        HRESULT get_ShadowVisible(INT* val)
 		{
 			*val = m_oShadow.Visible;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_ShadowVisible(BOOL val)
+        HRESULT put_ShadowVisible(INT val)
 		{
 			m_oShadow.Visible = val;
 			return S_OK;
 		}
 		// edge -------------------------------------------------------------------------------------
-		AVSINLINE HRESULT SetEdgeText(BSTR bsXML)
-		{
-			m_oEdge.FromXmlString((CString)bsXML);
-			return S_OK;
-		}
-		AVSINLINE HRESULT get_EdgeVisible(LONG* val)
+        HRESULT get_EdgeVisible(LONG* val)
 		{
 			*val = m_oEdge.Visible;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_EdgeVisible(LONG val)
+        HRESULT put_EdgeVisible(LONG val)
 		{
 			m_oEdge.Visible = val;
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_EdgeColor(LONG* val)
+        HRESULT get_EdgeColor(LONG* val)
 		{
 			*val = m_oEdge.Color;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_EdgeColor(LONG val)
+        HRESULT put_EdgeColor(LONG val)
 		{
 			m_oEdge.Color = val;
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_EdgeAlpha(LONG* val)
+        HRESULT get_EdgeAlpha(LONG* val)
 		{
 			*val = m_oEdge.Alpha;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_EdgeAlpha(LONG val)
+        HRESULT put_EdgeAlpha(LONG val)
 		{
 			m_oEdge.Alpha = val;
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_EdgeDist(double* val)
+        HRESULT get_EdgeDist(double* val)
 		{
 			*val = m_oEdge.Dist;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_EdgeDist(double val)
+        HRESULT put_EdgeDist(double val)
 		{
 			m_oEdge.Dist = val;
 			return S_OK;
 		}
 
 		//-------- Функции для вывода текста --------------------------------------------------------
-		AVSINLINE HRESULT CommandDrawText(BSTR bsText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset)
-		{
-			double dAngleMatrix = m_oTransform.z_Rotation();
-			if (abs(dAngleMatrix) > 1)
-			{
-				PathCommandEnd();
-				BeginCommand(c_nPathType);
-				PathCommandText(bsText, fX, fY, fWidth, fHeight, fBaseLineOffset);
-				DrawPath(c_nWindingFillMode);
-				EndCommand(c_nPathType);
-				PathCommandEnd();
-				return S_OK;
-			}
+        HRESULT CommandDrawTextPrivate(const int* pUnicodes, const int* pGids, int nCount, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaseLineOffset = 0)
+        {
+            double dAngleMatrix = m_oTransform.z_Rotation();
+            if (abs(dAngleMatrix) > 1 || m_oTransform.sx() < 0 || m_oTransform.sy() < 0)
+            {
+                _SetFont();
+                PathCommandEnd();
+                BeginCommand(c_nPathType);
+                m_oSimpleGraphicsConverter.PathCommandText2(pUnicodes, pGids, nCount, m_pFontManager, dX, dY, dW, dH);
+                DrawPath(c_nWindingFillMode);
+                EndCommand(c_nPathType);
+                PathCommandEnd();
+                return S_OK;
+            }
 
-			m_oCurrentPage.WriteText(bsText, NULL, fX, fY, fWidth, fHeight, fBaseLineOffset, m_bIsNeedPDFTextAnalyzer);
-			return S_OK;
-		}
-		AVSINLINE HRESULT CommandDrawTextEx(BSTR bsUnicodeText, BSTR bsGidText, BSTR bsSourceCodeText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, DWORD lFlags)
-		{
-			double dAngleMatrix = m_oTransform.z_Rotation();
-			if (abs(dAngleMatrix) > 1)
-			{
-				PathCommandEnd();
-				BeginCommand(c_nPathType);
-				PathCommandTextEx(bsUnicodeText, bsGidText, bsSourceCodeText, fX, fY, fWidth, fHeight, fBaseLineOffset, lFlags);
-				DrawPath(c_nWindingFillMode);
-				EndCommand(c_nPathType);
-				PathCommandEnd();
-				return S_OK;
-			}
+            m_oCurrentPage.WriteText((unsigned int*)pUnicodes, (unsigned int*)pGids, nCount, dX, dY, dW, dH, 0, m_bIsNeedPDFTextAnalyzer);
+            return S_OK;
+        }
 
-			m_oCurrentPage.WriteText(bsUnicodeText, bsGidText, fX, fY, fWidth, fHeight, fBaseLineOffset, m_bIsNeedPDFTextAnalyzer);
-			return S_OK;
-		}
+        HRESULT CommandDrawTextCHAR(const int& lUnicode, const double& dX, const double& dY, const double& dW, const double& dH)
+        {
+            return CommandDrawTextPrivate(&lUnicode, NULL, 1, dX, dY, dW, dH);
+        }
+        HRESULT CommandDrawTextExCHAR(const int& lUnicode, const int& lGid, const double& dX, const double& dY, const double& dW, const double& dH)
+        {
+            return CommandDrawTextPrivate(&lUnicode, &lGid, 1, dX, dY, dW, dH);
+        }
+        virtual HRESULT CommandDrawText(const std::wstring& wsUnicodeText, const double& dX, const double& dY, const double& dW, const double& dH)
+        {
+            unsigned int nLen = 0;
+            unsigned int* pUnicodes = NSStringExt::CConverter::GetUtf32FromUnicode(wsUnicodeText, nLen);
+            if (nLen == 0)
+                return S_OK;
+            CommandDrawTextPrivate((int*)pUnicodes, NULL, nLen, dX, dY, dW, dH);
+            delete [] pUnicodes;
+            return S_OK;
+        }
+        virtual HRESULT CommandDrawTextEx(const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& dX, const double& dY, const double& dW, const double& dH)
+        {
+            unsigned int nLen = 0;
+            unsigned int* pUnicodes = NSStringExt::CConverter::GetUtf32FromUnicode(wsUnicodeText, nLen);
+            if (nLen == 0)
+                return S_OK;
+            if (nLen != nGidsCount)
+            {
+                delete [] pUnicodes;
+                return S_OK;
+            }
+
+            CommandDrawTextPrivate((int*)pUnicodes, (int*)pGids, (int)nLen, dX, dY, dW, dH);
+            delete [] pUnicodes;
+            return S_OK;
+        }
 		//-------- Маркеры для команд ---------------------------------------------------------------
-		AVSINLINE HRESULT BeginCommand(DWORD lType)
+        HRESULT BeginCommand(DWORD lType)
 		{
+            if (c_nPageType == lType && m_bIsDisablePageCommand)
+                return S_OK;
+
 			m_lCurrentCommandType = (LONG)lType;
 			m_oCurrentPage.m_lCurrentCommand	= m_lCurrentCommandType;
 
+            if (c_nTextType == lType)
+                m_oCurrentPage.m_dLastTextX_block = -1;
+
 			return S_OK;
 		}
-		AVSINLINE HRESULT EndCommand(DWORD lType)
+        HRESULT EndCommand(DWORD lType)
 		{
+            if (c_nPageType == lType && m_bIsDisablePageCommand)
+                return S_OK;
+
 			m_lCurrentCommandType				= -1;
 			m_oCurrentPage.m_lCurrentCommand	= m_lCurrentCommandType;
 
@@ -620,10 +607,13 @@ xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:
 				m_oCurrentPage.End();
 			}
 
+            if (c_nTextType == lType)
+                m_oCurrentPage.m_dLastTextX_block = -1;
+
 			return S_OK;
 		}
 		//-------- Функции для работы с Graphics Path -----------------------------------------------
-		AVSINLINE HRESULT PathCommandMoveTo(double fX, double fY)
+        HRESULT PathCommandMoveTo(double fX, double fY)
 		{
 			if (c_nSimpleGraphicType == m_lCurrentCommandType)
 			{
@@ -631,11 +621,11 @@ xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:
 			}
 			else
 			{
-				m_pSimpleGraphicsConverter->PathCommandMoveTo(fX, fY);
+                m_oSimpleGraphicsConverter.PathCommandMoveTo(fX, fY);
 			}
 			return S_OK;
 		}
-		AVSINLINE HRESULT PathCommandLineTo(double fX, double fY)
+        HRESULT PathCommandLineTo(double fX, double fY)
 		{
 			if (c_nSimpleGraphicType == m_lCurrentCommandType)
 			{
@@ -643,16 +633,16 @@ xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:
 			}
 			else
 			{
-				m_pSimpleGraphicsConverter->PathCommandLineTo(fX, fY);
+                m_oSimpleGraphicsConverter.PathCommandLineTo(fX, fY);
 			}
 			return S_OK;
 		}
-		AVSINLINE HRESULT PathCommandLinesTo(SAFEARRAY* pPoints)
+        HRESULT PathCommandLinesTo(double* pPoints, LONG lCount)
 		{
-			m_pSimpleGraphicsConverter->PathCommandLinesTo(pPoints);
+            m_oSimpleGraphicsConverter.PathCommandLinesTo(pPoints, lCount);
 			return S_OK;
 		}
-		AVSINLINE HRESULT PathCommandCurveTo(double fX1, double fY1, double fX2, double fY2, double fX3, double fY3)
+        HRESULT PathCommandCurveTo(double fX1, double fY1, double fX2, double fY2, double fX3, double fY3)
 		{
 			if (c_nSimpleGraphicType == m_lCurrentCommandType)
 			{
@@ -660,21 +650,21 @@ xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:
 			}
 			else
 			{
-				m_pSimpleGraphicsConverter->PathCommandCurveTo(fX1, fY1, fX2, fY2, fX3, fY3);
+                m_oSimpleGraphicsConverter.PathCommandCurveTo(fX1, fY1, fX2, fY2, fX3, fY3);
 			}
 			return S_OK;
 		}
-		AVSINLINE HRESULT PathCommandCurvesTo(SAFEARRAY* pPoints)
+        HRESULT PathCommandCurvesTo(double* pPoints, LONG lCount)
 		{
-			m_pSimpleGraphicsConverter->PathCommandCurvesTo(pPoints);
+            m_oSimpleGraphicsConverter.PathCommandCurvesTo(pPoints, lCount);
 			return S_OK;
 		}
-		AVSINLINE HRESULT PathCommandArcTo(double fX, double fY, double fWidth, double fHeight, double fStartAngle, double fSweepAngle)
+        HRESULT PathCommandArcTo(double fX, double fY, double fWidth, double fHeight, double fStartAngle, double fSweepAngle)
 		{
-			m_pSimpleGraphicsConverter->PathCommandArcTo(fX, fY, fWidth, fHeight, fStartAngle, fSweepAngle);
+            m_oSimpleGraphicsConverter.PathCommandArcTo(fX, fY, fWidth, fHeight, fStartAngle, fSweepAngle);
 			return S_OK;
 		}
-		AVSINLINE HRESULT PathCommandClose()
+        HRESULT PathCommandClose()
 		{
 			if (c_nSimpleGraphicType == m_lCurrentCommandType)
 			{
@@ -682,11 +672,11 @@ xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:
 			}
 			else
 			{
-				m_pSimpleGraphicsConverter->PathCommandClose();
+                m_oSimpleGraphicsConverter.PathCommandClose();
 			}
 			return S_OK;
 		}
-		AVSINLINE HRESULT PathCommandEnd()
+        HRESULT PathCommandEnd()
 		{
 			if (c_nSimpleGraphicType == m_lCurrentCommandType)
 			{
@@ -694,11 +684,11 @@ xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:
 			}
 			else
 			{
-				m_pSimpleGraphicsConverter->PathCommandEnd();
+                m_oSimpleGraphicsConverter.PathCommandEnd();
 			}
 			return S_OK;
 		}
-		AVSINLINE HRESULT DrawPath(long nType)
+        HRESULT DrawPath(long nType)
 		{
 			LONG lTxId = -1;
 			if ((nType > 0xFF) && (c_BrushTypeTexture == m_oBrush.Type))
@@ -708,13 +698,13 @@ xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:
 				double w = 0;
 				double h = 0;
 				CImageInfo oInfo = m_oManager.WriteImage(m_oBrush.TexturePath, x, y, w, h);
-				lTxId = oInfo.m_lID;
+                lTxId = oInfo.m_nId;
 			}
 
 			m_oCurrentPage.DrawPath(nType, lTxId);
 			return S_OK;
 		}
-		AVSINLINE HRESULT PathCommandStart()
+        HRESULT PathCommandStart()
 		{
 			if (c_nSimpleGraphicType == m_lCurrentCommandType)
 			{
@@ -722,93 +712,91 @@ xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:
 			}
 			else
 			{
-				m_pSimpleGraphicsConverter->PathCommandStart();
+                m_oSimpleGraphicsConverter.PathCommandStart();
 			}
 			return S_OK;
 		}
-		AVSINLINE HRESULT PathCommandGetCurrentPoint(double* fX, double* fY)
+        HRESULT PathCommandGetCurrentPoint(double* fX, double* fY)
 		{
-			m_pSimpleGraphicsConverter->PathCommandGetCurrentPoint(fX, fY);	
+            m_oSimpleGraphicsConverter.PathCommandGetCurrentPoint(fX, fY);
 			return S_OK;
 		}
 
-		AVSINLINE HRESULT PathCommandText(BSTR bsText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset)
+        HRESULT PathCommandTextCHAR(const int& lUnicode, const double& dX, const double& dY, const double& dW, const double& dH)
+        {
+            _SetFont();
+            m_oSimpleGraphicsConverter.PathCommandText2(&lUnicode, NULL, 1, m_pFontManager, dX, dY, dW, dH);
+            return S_OK;
+        }
+        HRESULT PathCommandTextExCHAR(const int& lUnicode, const int& lGid, const double& dX, const double& dY, const double& dW, const double& dH)
+        {
+            _SetFont();
+            m_oSimpleGraphicsConverter.PathCommandText2(&lUnicode, &lGid, 1, m_pFontManager, dX, dY, dW, dH);
+            return S_OK;
+        }
+        HRESULT PathCommandText(const std::wstring& wsUnicodeText, const double& dX, const double& dY, const double& dW, const double& dH)
+        {
+            _SetFont();
+            m_oSimpleGraphicsConverter.PathCommandText(wsUnicodeText, m_pFontManager, dX, dY, dW, dH, 0);
+            return S_OK;
+        }
+        HRESULT PathCommandTextEx(const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& dX, const double& dY, const double& dW, const double& dH)
+        {
+            _SetFont();
+            m_oSimpleGraphicsConverter.PathCommandText2(wsUnicodeText, (const int*)pGids, nGidsCount, m_pFontManager, dX, dY, dW, dH);
+            return S_OK;
+        }
+
+        HRESULT GetCommandParams(double* dAngle, double* dLeft, double* dTop, double* dWidth, double* dHeight, DWORD* lFlags)
 		{
-			_SetFont();
-			m_pSimpleGraphicsConverter->PathCommandText(bsText, m_pFontManager, fX, fY, fWidth, fHeight, fBaseLineOffset);
 			return S_OK;
 		}
-		AVSINLINE HRESULT PathCommandTextEx(BSTR bsUnicodeText, BSTR bsGidText, BSTR bsSourceCodeText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, DWORD lFlags)
-		{
-			if (NULL != bsGidText)
-			{
-				m_oFont.StringGID = TRUE;
-				return PathCommandText(bsGidText, fX, fY, fWidth, fHeight, fBaseLineOffset);
-			}
-			
-			m_oFont.StringGID = FALSE;
-			return PathCommandText(bsUnicodeText, fX, fY, fWidth, fHeight, fBaseLineOffset);
-		}
-		
-		AVSINLINE HRESULT GetCommandParams(double* dAngle, double* dLeft, double* dTop, double* dWidth, double* dHeight, DWORD* lFlags)
-		{
-			return S_OK;
-		}
-		AVSINLINE HRESULT SetCommandParams(double dAngle, double dLeft, double dTop, double dWidth, double dHeight, DWORD lFlags)
+        HRESULT SetCommandParams(double dAngle, double dLeft, double dTop, double dWidth, double dHeight, DWORD lFlags)
 		{
 			ApplyTransform2(dAngle, dLeft, dTop, dWidth, dHeight, lFlags);
 			return S_OK;
 		}
 		//-------- Функции для вывода изображений --------------------------------------------------
-		AVSINLINE HRESULT DrawImage(IUnknown* pInterface, double fX, double fY, double fWidth, double fHeight)
+        HRESULT DrawImage(IGrObject* pImage, double fX, double fY, double fWidth, double fHeight)
 		{
-			CImageInfo oInfo = m_oManager.WriteImage(pInterface, fX, fY, fWidth, fHeight);
+            CImageInfo oInfo = m_oManager.WriteImage((Aggplus::CImage*)pImage, fX, fY, fWidth, fHeight);
 			m_oCurrentPage.WriteImage(oInfo, fX, fY, fWidth, fHeight);
 			return S_OK;
 		}
-		AVSINLINE HRESULT DrawImageFromFile(BSTR bstrVal, double fX, double fY, double fWidth, double fHeight)
+        HRESULT DrawImageFromFile(const std::wstring& sVal, double fX, double fY, double fWidth, double fHeight)
 		{
-			CImageInfo oInfo = m_oManager.WriteImage((CString)bstrVal, fX, fY, fWidth, fHeight);
+            CImageInfo oInfo = m_oManager.WriteImage(sVal, fX, fY, fWidth, fHeight);
 			m_oCurrentPage.WriteImage(oInfo, fX, fY, fWidth, fHeight);
 			return S_OK;
 		}
 		//------------------------------------------------------------------------------------------
-		AVSINLINE HRESULT SetAdditionalParam(BSTR ParamName, VARIANT ParamValue)
-		{
-			return S_OK;
-		}
-		AVSINLINE HRESULT GetAdditionalParam(BSTR ParamName, VARIANT* ParamValue)
-		{
-			return S_OK;
-		}
-
-		AVSINLINE HRESULT SetTransform(double dA, double dB, double dC, double dD, double dE, double dF)
+        HRESULT SetTransform(double dA, double dB, double dC, double dD, double dE, double dF)
 		{
 			ApplyTransform(dA, dB, dC, dD, dE, dF);
 			return S_OK;
 		}
-		AVSINLINE HRESULT GetTransform(double *pdA, double *pdB, double *pdC, double *pdD, double *pdE, double *pdF)
+        HRESULT GetTransform(double *pdA, double *pdB, double *pdC, double *pdD, double *pdE, double *pdF)
 		{
 			return S_OK;
 		}
-		AVSINLINE HRESULT ResetTransform(void)
+        HRESULT ResetTransform(void)
 		{
 			m_oTransform.Reset();
 			return S_OK;
 		}
-		AVSINLINE HRESULT get_ClipMode(LONG* plMode)
+        HRESULT get_ClipMode(LONG* plMode)
 		{
 			*plMode = m_lClipMode;
 			return S_OK;
 		}
-		AVSINLINE HRESULT put_ClipMode(LONG lMode)
+        HRESULT put_ClipMode(LONG lMode)
 		{
 			m_lClipMode = lMode;
 			return S_OK;
 		}
 
 	protected:
-		AVSINLINE void ApplyTransform(double d1, double d2, double d3, double d4, double d5, double d6)
+        void ApplyTransform(double d1, double d2, double d3, double d4, double d5, double d6)
 		{
 			m_oTransform.SetElements(d1, d2, d3, d4, d5, d6);
 		}
@@ -818,13 +806,13 @@ xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:
 			if ((dWidth <= 1) || (dHeight <= 1))
 				lFlags = 0;
 
-			BOOL bFlipX = (0 != (c_nParamFlipX & lFlags));
-			BOOL bFlipY = (0 != (c_nParamFlipY & lFlags));
+            bool bFlipX = (0 != (c_nParamFlipX & lFlags));
+            bool bFlipY = (0 != (c_nParamFlipY & lFlags));
 			
 			double m11 = bFlipX ? -1.0 : 1.0;
 			double m22 = bFlipY ? -1.0 : 1.0;
 			
-			NSDocxRenderer::CMatrix oMatrix(1, 0, 0, 1, 0, 0);
+            Aggplus::CMatrix oMatrix(1, 0, 0, 1, 0, 0);
 
 			if ((0 != dAngle) || (0 != lFlags))
 			{
@@ -846,8 +834,7 @@ xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:
 		{
 			if (NULL == m_pFontManager)
 			{
-				CoCreateInstance(__uuidof(AVSGraphics::CASCFontManager), NULL, CLSCTX_ALL, __uuidof(AVSGraphics::IASCFontManager), (void**)&m_pFontManager);
-				m_pFontManager->Initialize(L"");
+                m_pFontManager = NSFontManager::CreateFontManager(m_pAppFonts);
 			}
 
 			double dPix = m_oFont.CharSpace * m_dDpiX / 25.4;
@@ -867,17 +854,13 @@ xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:
 				m_pFontManager->SetCharSpacing(dPix);
 			}
 
-			if (_T("") == m_oFont.Path)
+            if (m_oFont.Path.empty())
 			{
-				BSTR bsName = m_oFont.Name.AllocSysString();
-				m_pFontManager->LoadFontByName(bsName, (float)m_oFont.Size, m_oFont.GetStyle(), m_dDpiX, m_dDpiY);
-				SysFreeString(bsName);
+                m_pFontManager->LoadFontByName(m_oFont.Name, (float)m_oFont.Size, m_oFont.GetStyle(), m_dDpiX, m_dDpiY);
 			}
 			else
 			{
-				BSTR bsName = m_oFont.Path.AllocSysString();
-				m_pFontManager->LoadFontFromFile(bsName, (float)m_oFont.Size, m_dDpiX, m_dDpiY, 0);
-				SysFreeString(bsName);
+                m_pFontManager->LoadFontFromFile(m_oFont.Path, m_oFont.FaceIndex, (float)m_oFont.Size, m_dDpiX, m_dDpiY);
 			}
 
 			m_oInstalledFont = m_oFont;
@@ -885,68 +868,36 @@ xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:
 
 	public:
 		
-		bool CreateDocument(IUnknown* pRenderer, CString strTempDirectory)
+        bool CreateDocument()
 		{
-			HINSTANCE hInst = _AtlBaseModule.GetModuleInstance();
-			m_strTempDirectory = strTempDirectory;
-
-			// rels
-			CString strRels = strTempDirectory + _T("\\_rels");
-			CDirectory::CreateDirectory(strRels);
-			
-			LoadResourceFile(hInst, MAKEINTRESOURCE(IDB_DEFAULT_DOC_RELS), _T("DOCXREND"), strRels + _T("\\.rels"));
-
-			// docProps
-			CString strDocProps = strTempDirectory + _T("\\docProps");
-			CDirectory::CreateDirectory(strDocProps);
-
-			LoadResourceFile(hInst, MAKEINTRESOURCE(IDB_DEFAULT_DOC_APP),  _T("DOCXREND"), strDocProps + _T("\\app.xml"));
-			LoadResourceFile(hInst, MAKEINTRESOURCE(IDB_DEFAULT_DOC_CORE), _T("DOCXREND"), strDocProps + _T("\\core.xml"));
-
-			// contentTypes
-			LoadResourceFile(hInst, MAKEINTRESOURCE(IDB_DEFAULT_DOC_CONTENT_TYPES), _T("DOCXREND"), strTempDirectory + _T("\\[Content_Types].xml"));
-
-			// word
-			CString strWord = strTempDirectory + _T("\\word");
-			CDirectory::CreateDirectory(strWord);
-
-			LoadResourceFile(hInst, MAKEINTRESOURCE(IDB_DEFAULT_DOC_SETTINGS),		_T("DOCXREND"), strWord + _T("\\settings.xml"));
-			LoadResourceFile(hInst, MAKEINTRESOURCE(IDB_DEFAULT_DOC_STYLES),		_T("DOCXREND"), strWord + _T("\\styles.xml"));
-			LoadResourceFile(hInst, MAKEINTRESOURCE(IDB_DEFAULT_DOC_WEBSETTINGS),	_T("DOCXREND"), strWord + _T("\\webSettings.xml"));
-
-			// theme
-			CString strTheme = strWord + _T("\\theme");
-			CDirectory::CreateDirectory(strTheme);
-			LoadResourceFile(hInst, MAKEINTRESOURCE(IDB_DEFAULT_DOC_THEME),	_T("DOCXREND"), strTheme + _T("\\theme.xml"));
-
-			// documentRels
-			CDirectory::CreateDirectory(strWord + _T("\\_rels"));
+            CreateTemplate(m_strTempDirectory);
 
 			// Init
 			Clear();
 
-			CoCreateInstance(__uuidof(AVSGraphics::CASCGraphicSimpleComverter), NULL, CLSCTX_ALL, 
-				__uuidof(AVSGraphics::IASCGraphicSimpleComverter), (void**)&m_pSimpleGraphicsConverter);
-
-			m_punkRenderer = pRenderer;
-			ADDREFINTERFACE(m_punkRenderer);
-			m_pSimpleGraphicsConverter->put_Renderer(m_punkRenderer);
 			m_lCurrentCommandType = 0;
-
-			m_oCurrentPage.Init(&m_oFont, &m_oPen, &m_oBrush, &m_oShadow, &m_oEdge, &m_oTransform, m_pSimpleGraphicsConverter);
+            m_oCurrentPage.Init(&m_oFont, &m_oPen, &m_oBrush, &m_oShadow, &m_oEdge, &m_oTransform, &m_oSimpleGraphicsConverter);
 
 			m_oManager.NewDocument();
 			// media
-			m_oManager.m_strDstMedia = strWord + _T("\\media");
-			CDirectory::CreateDirectory(m_oManager.m_strDstMedia);
+            m_oManager.m_strDstMedia = m_strTempDirectory + L"/word/media";
+            NSDirectory::CreateDirectory(m_oManager.m_strDstMedia);
 
-			m_oCurrentPage.m_oManager.m_oFontTable.m_mapTable.RemoveAll();
+            m_oCurrentPage.m_oManager.m_oFontTable.m_mapTable.clear();
 
 			m_oDocumentStream.CloseFile();
-			m_oDocumentStream.CreateFile(strWord + _T("\\document.xml"));
-			m_oDocumentStream.WriteStringUTF8(g_string_DocumentStart);
+            m_oDocumentStream.CreateFileW(m_strTempDirectory + L"/word/document.xml");
+            m_oDocumentStream.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
+<w:document xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
+xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
+xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
+xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\" \
+xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
+xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\">\
+<w:body>");
 
-			m_lPagesCount				= 0;
+            m_lPagesCount = 0;
 			m_oWriter.Clear();
 			m_oWriter.AddSize(10000);
 
@@ -956,12 +907,9 @@ xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:
 		void Close()
 		{
 			// сохраним rels (images & docs)
-			CFile oFile;
-			oFile.CreateFile(m_strTempDirectory + _T("\\word\\_rels\\document.xml.rels"));
+            NSStringUtils::CStringBuilder oWriter;
 
-			NSDocxRenderer::CStringWriter oWriter;
-
-			CString strStart = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
+            oWriter.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
 <Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\
 <Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" Target=\"styles.xml\"/>\
 <Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings\" Target=\"settings.xml\"/>\
@@ -969,139 +917,84 @@ xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w10=\"urn:schemas-microsoft-com:
 <Relationship Id=\"rId4\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable\" Target=\"fontTable.xml\"/>\
 <Relationship Id=\"rId5\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"theme/theme.xml\"/>");
 
-			oWriter.WriteString(strStart);
+            for (std::map<DWORD, CImageInfo>::iterator iterImage = m_oManager.m_mapImageData.begin(); iterImage != m_oManager.m_mapImageData.end(); iterImage++)
+            {
+                CImageInfo& oInfo = iterImage->second;
 
-			POSITION pos = m_oManager.m_mapImageData.GetStartPosition();
-			while (NULL != pos)
-			{
-				CAtlMap<DWORD, CImageInfo>::CPair* pPair = m_oManager.m_mapImageData.GetNext(pos);
+                oWriter.WriteString(L"<Relationship Id=\"rId");
+                oWriter.AddInt(10 + oInfo.m_nId);
+                oWriter.WriteString(L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/image");
+                oWriter.AddInt(oInfo.m_nId);
+                (oInfo.m_eType == CImageInfo::itPNG) ? oWriter.WriteString(L".png\"/>") : oWriter.WriteString(L".jpg\"/>");
+            }
 
-				LONG lId = pPair->m_value.m_lID;
-				if (pPair->m_value.m_eType == itPNG)
-				{
-					CString strImage = _T("");
-					strImage.Format(g_string_imageRID_png, 10 + lId, lId);
-					oWriter.WriteString(strImage);
-				}
-				else
-				{
-					CString strImage = _T("");
-					strImage.Format(g_string_imageRID_jpg, 10 + lId, lId);
-					oWriter.WriteString(strImage);
-				}
-			}
+            for (std::map<std::wstring, CImageInfo>::iterator iterImage = m_oManager.m_mapImagesFile.begin(); iterImage != m_oManager.m_mapImagesFile.end(); iterImage++)
+            {
+                CImageInfo& oInfo = iterImage->second;
 
-			pos = m_oManager.m_mapImagesFile.GetStartPosition();
-			while (NULL != pos)
-			{
-				CAtlMap<CString, CImageInfo>::CPair* pPair = m_oManager.m_mapImagesFile.GetNext(pos);
+                oWriter.WriteString(L"<Relationship Id=\"rId");
+                oWriter.AddInt(10 + oInfo.m_nId);
+                oWriter.WriteString(L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/image");
+                oWriter.AddInt(oInfo.m_nId);
+                (oInfo.m_eType == CImageInfo::itPNG) ? oWriter.WriteString(L".png\"/>") : oWriter.WriteString(L".jpg\"/>");
+            }
 
-				LONG lId = pPair->m_value.m_lID;
-				if (pPair->m_value.m_eType == itPNG)
-				{
-					CString strImage = _T("");
-					strImage.Format(g_string_imageRID_png, 10 + lId, lId);
-					oWriter.WriteString(strImage);
-				}
-				else
-				{
-					CString strImage = _T("");
-					strImage.Format(g_string_imageRID_jpg, 10 + lId, lId);
-					oWriter.WriteString(strImage);
-				}
-			}
+            oWriter.WriteString(L"</Relationships>");
 
-			CString strEnd = _T("</Relationships>"); 
-			oWriter.WriteString(strEnd);
+            NSFile::CFileBinary::SaveToFile(m_strTempDirectory + L"/word/_rels/document.xml.rels", oWriter.GetData());
+            oWriter.ClearNoAttack();
 
-			oFile.WriteStringUTF8(oWriter.GetData());
-			oFile.CloseFile();
-
-			// сохраним fontTable
-			CFile oFileFontTable;
-			oFileFontTable.CreateFile(m_strTempDirectory + _T("\\word\\fontTable.xml"));
-
-			oWriter.ClearNoAttack();
-
-			strStart = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
+			// сохраним fontTable			
+            oWriter.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
 <w:fonts xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">");
 
-			oWriter.WriteString(strStart);
+            CFontTable* pFontTable = &m_oCurrentPage.m_oManager.m_oFontTable;
+            for (std::map<std::wstring, CFontTableEntry>::iterator iterFont = pFontTable->m_mapTable.begin(); iterFont != pFontTable->m_mapTable.end(); iterFont++)
+            {
+                CFontTableEntry& oEntry = iterFont->second;
 
-			CFontTable* pFontTable = &m_oCurrentPage.m_oManager.m_oFontTable;
+                oWriter.WriteString(L"<w:font w:name=\"");
+                oWriter.WriteEncodeXmlString(oEntry.m_strFamilyName);
+                oWriter.WriteString(L"\">");
 
-			pos = pFontTable->m_mapTable.GetStartPosition();
-			while (NULL != pos)
-			{
-				CAtlMap<CString, CFontTableEntry>::CPair* pPair = pFontTable->m_mapTable.GetNext(pos);
+                oWriter.WriteString(L"<w:panose1 w:val=\"");
+                oWriter.WriteString(oEntry.m_strPANOSE);
+                oWriter.WriteString(L"\"/>");
 
-				oWriter.WriteString(g_bstr_FontNameStart);
-				oWriter.WriteString((CString)pPair->m_value.m_strFamilyName);
-				oWriter.WriteString(g_bstr_end2);
+                if (oEntry.m_bIsFixedWidth)
+                    oWriter.WriteString(L"<w:pitch w:val=\"fixed\" />");
+                else
+                    oWriter.WriteString(L"<w:pitch w:val=\"variable\" />");
 
-				oWriter.WriteString(g_bstr_FontPanoseStart);
-				oWriter.WriteString(pPair->m_value.m_strPANOSE);
-				oWriter.WriteString(g_bstr_end);
+                oWriter.WriteString(L"<w:charset w:val=\"00\"/>");
 
-				oWriter.WriteString(g_bstr_FontCharsetStart);
-				oWriter.WriteString((CString)_T("00"));
-				oWriter.WriteString(g_bstr_end);
+                oWriter.WriteString(L"<w:sig w:usb0=\"");
+                oWriter.WriteHexInt4(oEntry.m_arSignature[0]);
+                oWriter.WriteString(L"\" w:usb1=\"");
+                oWriter.WriteHexInt4(oEntry.m_arSignature[1]);
+                oWriter.WriteString(L"\" w:usb2=\"");
+                oWriter.WriteHexInt4(oEntry.m_arSignature[2]);
+                oWriter.WriteString(L"\" w:usb3=\"");
+                oWriter.WriteHexInt4(oEntry.m_arSignature[3]);
+                oWriter.WriteString(L"\" w:csb0=\"");
+                oWriter.WriteHexInt4(oEntry.m_arSignature[4]);
+                oWriter.WriteString(L"\" w:csb1=\"");
+                oWriter.WriteHexInt4(oEntry.m_arSignature[5]);
+                oWriter.WriteString(L"\"/>");
 
-				//oWriter.WriteString(g_bstr_FontFamilyStart);
-				//oWriter.WriteString((CString)_T("roman"));
-				//oWriter.WriteString(g_bstr_end);
+                oWriter.WriteString(L"</w:font>");
+            }
 
-				if (pPair->m_value.m_bIsFixedWidth)
-				{
-					oWriter.WriteString(g_bstr_FontPitchTrue);
-				}
-				else
-				{
-					oWriter.WriteString(g_bstr_FontPitchFalse);
-				}
-
-				CString strSig = _T("");
-				strSig.Format(g_string_SIG, pPair->m_value.m_arSignature[0], pPair->m_value.m_arSignature[1], pPair->m_value.m_arSignature[2], 
-					pPair->m_value.m_arSignature[3], pPair->m_value.m_arSignature[4], pPair->m_value.m_arSignature[5]);
-
-				oWriter.WriteString(strSig);
-
-				oWriter.WriteString(g_bstr_FontNameEnd);		
-			}
-
-			strEnd = _T("</w:fonts>");
-			oWriter.WriteString(strEnd);
-
-			oFileFontTable.WriteStringUTF8(oWriter.GetData());
-			oFileFontTable.CloseFile();
+            oWriter.WriteString(L"</w:fonts>");
+            NSFile::CFileBinary::SaveToFile(m_strTempDirectory + L"/word/fontTable.xml", oWriter.GetData());
 
 			// document
 			m_oCurrentPage.WriteSectionToFile(true, m_oWriter);
-			m_oWriter.WriteString(g_string_DocumentEnd);
+            m_oWriter.WriteString(L"</w:body></w:document>");
 			m_oDocumentStream.WriteStringUTF8(m_oWriter.GetData());
 			m_oWriter.ClearNoAttack();
 
 			m_oDocumentStream.CloseFile();
 		}
-
-	protected:
-
-		void LoadResourceFile(HINSTANCE hInst, LPCTSTR sResName, LPCTSTR sResType, const CString& strDstFile)
-		{
-			HRSRC hrRes = FindResource(hInst, sResName, sResType);
-			if (!hrRes)
-				return;
-
-			HGLOBAL hGlobal = LoadResource(hInst, hrRes);
-			DWORD sz = SizeofResource(hInst, hrRes);
-			void* ptrRes = LockResource(hGlobal);
-			
-			CFile oFile;
-			oFile.CreateFile(strDstFile);
-			oFile.WriteFile(ptrRes, sz);
-
-			UnlockResource(hGlobal);
-			FreeResource(hGlobal);
-		}			
 	};
 }

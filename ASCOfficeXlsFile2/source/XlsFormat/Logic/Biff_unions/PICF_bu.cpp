@@ -31,9 +31,9 @@
  */
 
 #include "PICF.h"
-#include <Logic/Biff_records/Begin.h>
-#include <Logic/Biff_records/PicF.h>
-#include <Logic/Biff_records/End.h>
+#include "../Biff_records/Begin.h"
+#include "../Biff_records/PicF.h"
+#include "../Biff_records/End.h"
 
 namespace XLS
 {

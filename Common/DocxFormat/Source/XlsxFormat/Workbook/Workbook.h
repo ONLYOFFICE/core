@@ -33,6 +33,8 @@
 
 #include "../Xlsx.h"
 #include "../XlsxFlat.h"
+#include "../../XlsbFormat/Xlsb.h"
+
 #include "../CommonInclude.h"
 
 #include "BookViews.h"
@@ -41,6 +43,18 @@
 #include "Sheets.h"
 #include "WorkbookPr.h"
 #include "ExternalReferences.h"
+
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Binary/CFStreamCacheReader.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/GlobalWorkbookInfo.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/WorkbookStreamObject.h"
+#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/BinProcessor.h"
+
+#include "../../XlsbFormat/WorkBookStream.h"
+
+#include "../../XlsbFormat/Biff12_unions/BOOKVIEWS.h"
+#include "../../XlsbFormat/Biff12_unions/BUNDLESHS.h"
+#include "../../XlsbFormat/Biff12_unions/EXTERNALS.h"
+#include "../../XlsbFormat/Biff12_records/FileVersion.h"
 
 namespace OOX
 {
@@ -91,7 +105,47 @@ namespace OOX
 			virtual ~CWorkbook()
 			{
 			}
+            void readBin(const CPath& oPath)
+            {
+                CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+                if (xlsb)
+                {
+                    XLSB::WorkBookStreamPtr workBookStream = std::make_shared<XLSB::WorkBookStream>();
 
+                    xlsb->ReadBin(oPath, workBookStream.get());
+
+                    workBookStream->UpdateXti(xlsb->GetGlobalinfo());
+                    workBookStream->UpdateDefineNames(xlsb->GetGlobalinfo());
+
+                    if (workBookStream != nullptr)
+                    {
+                        if (workBookStream->m_BOOKVIEWS != nullptr)
+                            m_oBookViews = static_cast<XLSB::BOOKVIEWS*>(workBookStream->m_BOOKVIEWS.get())->m_arBrtBookView;
+                        if (workBookStream->m_BrtCalcProp != nullptr)
+                            m_oCalcPr = workBookStream->m_BrtCalcProp;
+                        if (!workBookStream->m_arBrtName.empty())
+                            m_oDefinedNames = workBookStream->m_arBrtName;
+                        if (workBookStream->m_BUNDLESHS != nullptr)
+                            m_oSheets = static_cast<XLSB::BUNDLESHS*>(workBookStream->m_BUNDLESHS.get())->m_arBrtBundleSh;
+                        if (workBookStream->m_BrtWbProp != nullptr)
+                            m_oWorkbookPr = workBookStream->m_BrtWbProp;
+
+                        if (workBookStream->m_BrtBookProtectionIso != nullptr)
+                            m_oWorkbookProtection = workBookStream->m_BrtBookProtectionIso;
+                        else if(workBookStream->m_BrtBookProtection != nullptr)
+                            m_oWorkbookProtection = workBookStream->m_BrtBookProtection;
+
+                        if (workBookStream->m_EXTERNALS != nullptr)
+                            m_oExternalReferences = static_cast<XLSB::EXTERNALS*>(workBookStream->m_EXTERNALS.get())->m_arSUP;
+                        if (workBookStream->m_BrtFileVersion != nullptr )
+                            m_oAppName = static_cast<XLSB::FileVersion*>(workBookStream->m_BrtFileVersion.get())->stAppName.value();
+
+                        if (workBookStream->m_FRTWORKBOOK != nullptr)
+                            m_oExtLst = workBookStream->m_FRTWORKBOOK;
+                    }
+
+                }
+            }
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -101,6 +155,14 @@ namespace OOX
 			virtual void read(const CPath& oRootPath, const CPath& oPath)
 			{
 				m_oReadPath = oPath;
+
+                if( m_oReadPath.GetExtention() == _T(".bin"))
+                {
+                    readBin(m_oReadPath);
+                    IFileContainer::Read( oRootPath, oPath );
+                    return;
+                }
+
 				IFileContainer::Read( oRootPath, oPath );
 
   				CXlsx* xlsx = dynamic_cast<CXlsx*>(File::m_pMainDocument);
@@ -285,7 +347,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 
 			nullable<OOX::Spreadsheet::CWorkbookProtection>	m_oWorkbookProtection;
 			nullable<OOX::Spreadsheet::CBookViews>			m_oBookViews;
-			nullable<OOX::Spreadsheet::CDefinedNames>		m_oDefinedNames;
+            nullable<OOX::Spreadsheet::CDefinedNames>		m_oDefinedNames;
 			nullable<OOX::Spreadsheet::CSheets>				m_oSheets;
 			nullable<OOX::Spreadsheet::CWorkbookPr>			m_oWorkbookPr;
 			nullable<OOX::Spreadsheet::CExternalReferences>	m_oExternalReferences;

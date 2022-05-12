@@ -33,7 +33,7 @@
 
 #include "../../../../UnicodeConverter/UnicodeConverter.h"
 
-#include <Logic/Biff_structures/CellRangeRef.h>
+#include "../Logic/Biff_structures/CellRangeRef.h"
 
 #include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
@@ -282,6 +282,16 @@ const std::string guid2str(const _GUID_ guid)
 	return std::string(s.begin(),s.end());
 }
 
+const std::wstring guidFromStr(const std::wstring & guid_str)
+{
+    boost::wregex match_guid(L"[A-Za-z0-9_]{8}-[A-Za-z0-9_]{4}-[A-Za-z0-9_]{4}-[A-Za-z0-9_]{4}-[A-Za-z0-9_]{12}");
+    boost::wsmatch result;
+    if(boost::regex_search(guid_str, result, match_guid))
+    {
+        return result.str();
+    }
+    return L"";
+}
 
 const bool bstr2guid(const std::wstring & guid_str, _GUID_& guid)
 {
@@ -359,12 +369,9 @@ const std::wstring unescape_ST_Xstring(const std::wstring& wstr)
     while(true)
 	{
         
-#if defined(__linux__) || defined(_MAC) || defined(_IOS)
 		const auto it_range = boost::make_iterator_range(x_pos_noncopied, wstr_end);
         x_pos_next = boost::algorithm::find_first(it_range, L"_x").begin();
-#else
-        x_pos_next = boost::algorithm::find_first(boost::make_iterator_range(x_pos_noncopied, wstr_end), L"_x").begin();
-#endif
+
         if ( wstr_end == x_pos_next) break;
         if(!boost::regex_search(x_pos_next, wstr_end, match_hex))
 		{
@@ -385,13 +392,13 @@ const std::wstring unescape_ST_Xstring(const std::wstring& wstr)
 }
 
 
-const std::wstring toARGB(const unsigned int rgba)
+const std::wstring toARGB(const _UINT32 rgba)
 {
 	return toARGB(static_cast<unsigned char>(rgba & 0xff), static_cast<unsigned char>((rgba >> 8) & 0xff),
 		static_cast<unsigned char>((rgba >> 16) & 0xff), static_cast<unsigned char>((rgba >> 24) & 0xff));
 }
 
-const std::wstring toRGB(const unsigned int rgba)
+const std::wstring toRGB(const _UINT32 rgba)
 {
 	unsigned char R = static_cast<unsigned char>((rgba >> 16) & 0xff);
 	unsigned char G = static_cast<unsigned char>((rgba >> 8) & 0xff);
@@ -505,7 +512,7 @@ const size_t hex_str2int(const std::wstring::const_iterator& it_begin, const std
 //
 //    return sResult;
 //}
-std::wstring toStdWString(std::string ansi_string, const unsigned int code_page)
+std::wstring toStdWString(std::string ansi_string, const _UINT32 code_page)
 {
     std::string sCodePage;
 	std::map<int, std::string>::const_iterator pFind = NSUnicodeConverter::mapEncodingsICU.find(code_page);
@@ -537,7 +544,7 @@ std::wstring toStdWString(std::string ansi_string, const unsigned int code_page)
 		return result;
 	}
 }
-std::wstring	toStdWString(char* ansi, int size, const unsigned int code_page)
+std::wstring	toStdWString(char* ansi, int size, const _UINT32 code_page)
 {
     std::string sCodePage;
 	std::map<int, std::string>::const_iterator pFind = NSUnicodeConverter::mapEncodingsICU.find(code_page);
@@ -549,15 +556,15 @@ std::wstring	toStdWString(char* ansi, int size, const unsigned int code_page)
 	if (!sCodePage.empty())
 	{
 		NSUnicodeConverter::CUnicodeConverter oConverter;
-        return oConverter.toUnicode(ansi, (unsigned int)size, sCodePage.c_str());
+        return oConverter.toUnicode(ansi, (_UINT32)size, sCodePage.c_str());
 	}
 	else
 	{
 		NSUnicodeConverter::CUnicodeConverter oConverter;
-        return oConverter.toUnicode(ansi, (unsigned int)size, code_page);
+        return oConverter.toUnicode(ansi, (_UINT32)size, code_page);
 	}
 }
-std::string toStdString(std::wstring wide_string, const unsigned int code_page)
+std::string toStdString(std::wstring wide_string, const _UINT32 code_page)
 {
     std::string sCodePage;
 	std::map<int, std::string>::const_iterator pFind = NSUnicodeConverter::mapEncodingsICU.find(code_page);

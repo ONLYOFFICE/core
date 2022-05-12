@@ -297,7 +297,7 @@ private:
 	int GetWeightPenalty(USHORT usCandWeight, USHORT usReqWeight);
     int GetItalicPenalty(INT bCandItalic, INT bReqItalic);
     int GetBoldPenalty(INT bCandBold, INT bReqBold);
-    int GetFontFormatPenalty(EFontFormat eCandFormat, EFontFormat eReqFormat);
+    int GetFontFormatPenalty(NSFonts::EFontFormat eCandFormat, NSFonts::EFontFormat eReqFormat);
 	int GetPanosePenalty(BYTE *pCandPanose, BYTE *pReqPanose);
 	int GetAvgWidthPenalty(SHORT shCandWidth, SHORT shReqWidth);
 	int GetAscentPenalty(SHORT shCandAscent, SHORT shReqAscent);
@@ -308,13 +308,14 @@ private:
 	bool CheckEmbeddingRights(const USHORT* ushRights, const USHORT& fsType);
 
 public:
-    static EFontFormat GetFontFormat(FT_Face pFace);
+    static NSFonts::EFontFormat GetFontFormat(FT_Face pFace);
     virtual void ToBuffer(BYTE** pDstData, LONG* pLen, NSFonts::CFontListToBufferSerializer& oSerializer);
 
 public:
 	void LoadFromArrayFiles (std::vector<std::wstring>& arrFiles, int nFlag = 0);
 	void LoadFromFolder (const std::wstring& strDirectory);
-	bool CheckLoadFromFolderBin	(const std::wstring& strDirectory);
+    bool CheckLoadFromFolderBin(const std::wstring& strDirectory);
+    void CheckLoadFromSelectionBin(const std::wstring& strDirectory, BYTE* pData, DWORD len);
     void Add (NSFonts::CFontInfo* pInfo);
     NSFonts::CFontInfo* GetByParams (NSFonts::CFontSelectFormat& oSelect, bool bIsDictionaryUse = true);
     std::vector<NSFonts::CFontInfo*> GetAllByName (const std::wstring& strFontName);
@@ -341,7 +342,8 @@ public:
 
     void InitializeFromFolder(std::wstring strFolder, bool bIsCheckSelection = true);
     void Initialize(bool bIsCheckSelection = true);
-    void InitializeRanges(unsigned char* data);
+    void InitializeFromBin(BYTE* pData, unsigned int nLen);
+    void InitializeRanges(unsigned char* data);    
       
 	std::vector<std::wstring> GetSetupFontFiles();
 	void InitializeFromArrayFiles(std::vector<std::wstring>& files, int nFlag = 0);

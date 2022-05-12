@@ -32,9 +32,9 @@
 
 #include "xlsx_conversion_context.h"
 
-#include <simple_xml_writer.h>
-#include <utils.h>
-#include <Auxiliary/HelpFunc.h>
+#include "../Common/simple_xml_writer.h"
+#include "../Common/utils.h"
+#include "../XlsFormat/Auxiliary/HelpFunc.h"
 
 #include "../../../DesktopEditor/raster/BgraFrame.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpTreeElem.h"
@@ -584,10 +584,11 @@ void xlsx_drawing_context::reset_alternative_drawing()
 
 	if (oElement.IsInit())
 	{
+		NSBinPptxRW::CXmlWriter writer(XMLWRITER_DOC_TYPE_XLSX);
+
 		smart_ptr<PPTX::Logic::Shape> shape = oElement->GetElem().smart_dynamic_cast<PPTX::Logic::Shape>();
 		if (shape.IsInit())
 		{
-			NSBinPptxRW::CXmlWriter writer(XMLWRITER_DOC_TYPE_XLSX);
 			shape->spPr.Geometry.toXmlWriter(&writer);
 
 			if (shape->spPr.scene3d.IsInit())
@@ -597,37 +598,38 @@ void xlsx_drawing_context::reset_alternative_drawing()
 				shape->spPr.sp3d->toXmlWriter(&writer);
 
 			current_drawing_states->back()->xmlGeomAlternative = writer.GetXmlString();
-
 			writer.ClearNoAttack();
+			
+			if (shape->style.IsInit())
+				shape->style->toXmlWriter(&writer);
+
+			current_drawing_states->back()->xmlStyleAlternative = writer.GetXmlString();
+			writer.ClearNoAttack();
+
 			if ((shape->txBody.IsInit()) && (shape->txBody->bodyPr.IsInit()))
 			{
 				bool bWordArt = shape->txBody->bodyPr->prstTxWarp.IsInit();
-				bool bMath = false;
 
-				if ((false == shape->txBody->Paragrs.empty()) && (false == shape->txBody->Paragrs[0].RunElems.empty()))
-				{
-					bMath = (OOX::et_p_MathPara == shape->txBody->Paragrs[0].RunElems[0].getType());
-				}					
-
-				if (bWordArt || bMath)
+				if (bWordArt || (false == shape->txBody->Paragrs.empty()) && (false == shape->txBody->Paragrs[0].RunElems.empty()))
 				{
 					shape->txBody->toXmlWriter(&writer);
 					current_drawing_states->back()->xmlTxBodyAlternative = writer.GetXmlString();
+					writer.ClearNoAttack();
 				}
 			}
 			if (shape->spPr.Fill.is_init())
 			{
-				NSBinPptxRW::CXmlWriter writerFill(XMLWRITER_DOC_TYPE_XLSX);
-				shape->spPr.Fill.toXmlWriter(&writerFill);
+				shape->spPr.Fill.toXmlWriter(&writer);
 
-				current_drawing_states->back()->xmlFillAlternative = writerFill.GetXmlString();
+				current_drawing_states->back()->xmlFillAlternative = writer.GetXmlString();
+				writer.ClearNoAttack();
 			}
 			if (shape->spPr.EffectList.is_init())
 			{
-				NSBinPptxRW::CXmlWriter writerEffect(XMLWRITER_DOC_TYPE_XLSX);
-				shape->spPr.EffectList.toXmlWriter(&writerEffect);
+				shape->spPr.EffectList.toXmlWriter(&writer);
 
-				current_drawing_states->back()->xmlEffectAlternative = writerEffect.GetXmlString();
+				current_drawing_states->back()->xmlEffectAlternative = writer.GetXmlString();
+				writer.ClearNoAttack();
 			}
 		}
 		smart_ptr<PPTX::Logic::SpTree> groupShape = oElement->GetElem().smart_dynamic_cast<PPTX::Logic::SpTree>();
@@ -636,10 +638,9 @@ void xlsx_drawing_context::reset_alternative_drawing()
 
 			if (groupShape->grpSpPr.Fill.is_init())
 			{
-				NSBinPptxRW::CXmlWriter writerFill(XMLWRITER_DOC_TYPE_XLSX);
-				groupShape->grpSpPr.Fill.toXmlWriter(&writerFill);
-
-				current_drawing_states->back()->xmlFillAlternative = writerFill.GetXmlString();
+				groupShape->grpSpPr.Fill.toXmlWriter(&writer);
+				current_drawing_states->back()->xmlFillAlternative = writer.GetXmlString();
+				writer.ClearNoAttack();
 			}
 
 			if (false == groupShape->SpTreeElems.empty()) // smartArt
@@ -649,10 +650,9 @@ void xlsx_drawing_context::reset_alternative_drawing()
 					groupShape->grpSpPr.xfrm.Init();
 					set_xfrm_from_anchor(groupShape->grpSpPr.xfrm.GetPointer(), current_drawing_states->back());
 				}
-				NSBinPptxRW::CXmlWriter writerObject(XMLWRITER_DOC_TYPE_XLSX);
-				groupShape->toXmlWriter(&writerObject);
-
-				current_drawing_states->back()->xmlAlternative = writerObject.GetXmlString();
+				groupShape->toXmlWriter(&writer);
+				current_drawing_states->back()->xmlAlternative = writer.GetXmlString();
+				writer.ClearNoAttack();
 			}
 		}
 	}
@@ -1042,10 +1042,10 @@ void xlsx_drawing_context::serialize_vml_shape(_drawing_state_ptr & drawing_stat
 		std::wstringstream strmStyle;
 
 		strmStyle << L"position:absolute;";	
-		strmStyle << L"margin-left:" << std::to_wstring(drawing_state->child_anchor.x / 12700.)	<< L"pt;";	//in pt (1 pt = 12700 emu)
-		strmStyle << L"margin-top:"	<< std::to_wstring(drawing_state->child_anchor.y / 12700.)	<< L"pt;";
-		strmStyle << L"width:" << std::to_wstring(drawing_state->child_anchor.cx / 12700.)	<< L"pt;";
-		strmStyle << L"height:"	<< std::to_wstring(drawing_state->child_anchor.cy / 12700.)	<< L"pt;";
+		strmStyle << L"margin-left:" << std::to_wstring(drawing_state->sheet_anchor.absolute.x / 12700.) << L"pt;";	//in pt (1 pt = 12700 emu)
+		strmStyle << L"margin-top:"	<< std::to_wstring(drawing_state->sheet_anchor.absolute.y / 12700.)	<< L"pt;";
+		strmStyle << L"width:" << std::to_wstring(drawing_state->sheet_anchor.absolute.cx / 12700.)	<< L"pt;";
+		strmStyle << L"height:"	<< std::to_wstring(drawing_state->sheet_anchor.absolute.cy / 12700.) << L"pt;";
 		strmStyle << L"z-index:" << std::to_wstring(drawing_state->id)	 << L";";
 		
 		if (drawing_state->object.bVisible == false) 
@@ -1071,7 +1071,11 @@ void xlsx_drawing_context::serialize_vml_shape(_drawing_state_ptr & drawing_stat
 			if (!current_drawing_states->back()->custom_verticles.empty() &&
 				!current_drawing_states->back()->custom_segments.empty())
 			{		
-				ODRAW::PathParser oParser (current_drawing_states->back()->custom_segments, current_drawing_states->back()->custom_verticles, current_drawing_states->back()->custom_guides);
+				ODRAW::PathParser oParser (	current_drawing_states->back()->custom_segments, 
+											current_drawing_states->back()->custom_verticles, 
+											current_drawing_states->back()->custom_guides,
+											current_drawing_states->back()->custom_x_limo,
+											current_drawing_states->back()->custom_y_limo);
 				std::wstring path = oParser.GetVmlPath();
 
 				if (false == path.empty())
@@ -1203,7 +1207,7 @@ void xlsx_drawing_context::serialize_vml_shape(_drawing_state_ptr & drawing_stat
 				CP_XML_NODE(L"x:MoveWithCells"){}
 				CP_XML_NODE(L"x:SizeWithCells"){}
 
-				if (drawing_state->sheet_anchor.xFrom >= 0 && drawing_state->sheet_anchor.yFrom > 0)
+				if (drawing_state->sheet_anchor.xFrom >= 0 && drawing_state->sheet_anchor.xTo > 0)
 				{//old xls don't have this
 					std::wstringstream strmAnchor;
 					strmAnchor	
@@ -1728,6 +1732,10 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 					}
 					//serialize_effect(CP_XML_STREAM(), drawing_state);
 				}
+			}
+			if (false == drawing_state->xmlStyleAlternative.empty())
+			{
+				CP_XML_STREAM() << drawing_state->xmlStyleAlternative;
 			}
 			serialize_text(CP_XML_STREAM(), drawing_state);
 		}
@@ -2794,19 +2802,22 @@ void xlsx_drawing_context::set_sheet_anchor(int colFrom, int xFrom, int rwFrom, 
 {
 	if (current_drawing_states == NULL) return;	
 	
-	current_drawing_states->back()->sheet_anchor.colFrom	= colFrom;
-	current_drawing_states->back()->sheet_anchor.colTo		= colTo;
-	current_drawing_states->back()->sheet_anchor.rwFrom		= rwFrom;
-	current_drawing_states->back()->sheet_anchor.rwTo		= rwTo;
-	current_drawing_states->back()->sheet_anchor.xFrom		= xFrom;
-	current_drawing_states->back()->sheet_anchor.yFrom		= yFrom;
-	current_drawing_states->back()->sheet_anchor.xTo		= xTo;
-	current_drawing_states->back()->sheet_anchor.yTo		= yTo;
+	if (colTo > 0 && rwTo > 0)
+	{//  0  in comment old versions
+		current_drawing_states->back()->sheet_anchor.colFrom = colFrom;
+		current_drawing_states->back()->sheet_anchor.colTo = colTo;
+		current_drawing_states->back()->sheet_anchor.rwFrom = rwFrom;
+		current_drawing_states->back()->sheet_anchor.rwTo = rwTo;
+		current_drawing_states->back()->sheet_anchor.xFrom = (std::min)(xFrom, xTo);
+		current_drawing_states->back()->sheet_anchor.yFrom = (std::min)(yFrom, yTo);
+		current_drawing_states->back()->sheet_anchor.xTo = (std::max)(xFrom, xTo);
+		current_drawing_states->back()->sheet_anchor.yTo = (std::max)(yFrom, yTo);
+	}
 
-	current_drawing_states->back()->sheet_anchor.absolute.x		= x;
-	current_drawing_states->back()->sheet_anchor.absolute.y		= y;
-	current_drawing_states->back()->sheet_anchor.absolute.cx	= cx;
-	current_drawing_states->back()->sheet_anchor.absolute.cy	= cy;
+	current_drawing_states->back()->sheet_anchor.absolute.x = x;
+	current_drawing_states->back()->sheet_anchor.absolute.y = y;
+	current_drawing_states->back()->sheet_anchor.absolute.cx = cx;
+	current_drawing_states->back()->sheet_anchor.absolute.cy = cy;
 
 	current_drawing_states->back()->type_anchor	= 1;
 }
@@ -2861,6 +2872,12 @@ void xlsx_drawing_context::set_fill_texture(const std::wstring & str)
 	if (false == current_drawing_states->back()->fill.texture_target.empty()) return;
 
 	current_drawing_states->back()->fill.texture_target = str;
+
+	if (current_drawing_states->back()->fill.type == fillUndefined)
+	{
+		current_drawing_states->back()->fill.type = fillTexture;
+		current_drawing_states->back()->fill.texture_mode = textureStretch;
+	}
 }
 void xlsx_drawing_context::set_picture_crop_top	(double val)
 {
@@ -3114,12 +3131,12 @@ void xlsx_drawing_context::add_fill_colors(double position, int index, int type)
 
 	current_drawing_states->back()->fill.colorsPosition.push_back(std::pair<double, _color>(position, color));
 }
-void xlsx_drawing_context::set_fill_type (int val)
+void xlsx_drawing_context::set_fill_type (_fill_type val)
 {
 	if (current_drawing_states == NULL) return;
 	if (current_drawing_states->empty()) return;
 	
-	current_drawing_states->back()->fill.type = (_fill_type) val;
+	current_drawing_states->back()->fill.type = val;
 }
 //---------------------------------------------------------
 void xlsx_drawing_context::set_line_dash(int val)
@@ -3264,7 +3281,7 @@ void xlsx_drawing_context::set_fill_old_version (_UINT32 val)
 	if (auto_)
 	{
 		if (current_drawing_states->back()->shape_id == MSOSPT::msosptTextBox)
-			set_fill_type(0);
+			set_fill_type(oox::fillNone);
 	}
 	else if (pattern)
 	{

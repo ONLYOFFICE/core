@@ -46,6 +46,7 @@
 
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
 
+#include "../utils.h"
 
 namespace cpdoccore { 
 
@@ -53,10 +54,32 @@ namespace cpdoccore {
 
 namespace odf_writer {
 
+	namespace utils
+	{
+
+		void calculate_size_font_symbols(_font_metrix & metrix, NSFonts::IApplicationFonts *appFonts)
+		{
+			std::pair<float, float> appr = _graphics_utils_::calculate_size_symbol_asc(metrix.font_name, metrix.font_size, metrix.italic, metrix.bold, appFonts);
+
+			if (appr.first < 0.01 || appr.second < 0.01)
+			{
+				appr.first = _graphics_utils_::calculate_size_symbol_win(metrix.font_name, metrix.font_size, false/*metrix.italic*/, false/*metrix.bold*/);
+				appr.first = ((int)(appr.first + 0.5) + 2 * (int)appr.first) / 3.;
+			}
+
+			if (appr.first > 0)
+			{
+				//pixels to pt
+				metrix.approx_symbol_size = appr.first;///1.1;//"1.2" волшебное число оО
+				metrix.IsCalc = true;
+			}
+
+		}
+	}
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 odf_conversion_context::odf_conversion_context(_office_type_document type_, package::odf_document * outputDocument) 
-	: type (type_), chart_context_ (this), page_layout_context_(this)
+	: type (type_), chart_context_ (this), page_layout_context_(this), math_context_(this), font_metrix_()
 { 
 	output_document_	= outputDocument;
 	current_object_		= 0;
@@ -74,6 +97,34 @@ void odf_conversion_context::set_fonts_directory(std::wstring pathFonts)
 {
     if (applicationFonts_)
         applicationFonts_->InitializeFromFolder(pathFonts);
+}
+void odf_conversion_context::calculate_font_metrix(std::wstring name, double size, bool italic, bool bold)
+{
+	if (font_metrix_.IsCalc) return;
+
+	if (size < 1)
+		size = 12;
+
+	font_metrix_.font_size = size;
+	font_metrix_.italic = italic;
+	font_metrix_.bold = bold;
+	font_metrix_.font_name = name;
+
+	////////////////////////////////////////////
+	utils::calculate_size_font_symbols(font_metrix_, applicationFonts_);
+}
+double odf_conversion_context::convert_symbol_width(double val)
+{
+	//width = ((int)((column_width * Digit_Width + 5) / Digit_Width * 256 )) / 256.;
+	//width = (int)(((256. * width + ((int)(128. / Digit_Width ))) / 256. ) * Digit_Width ); //in pixels
+	//
+	//_dxR = dxR / 1024. * width * 9525.;  // to emu
+
+	val = ((int)((val * font_metrix_.approx_symbol_size + 5) / font_metrix_.approx_symbol_size * 256)) / 256.;
+
+	double pixels = (int)(((256. * val + ((int)(128. / font_metrix_.approx_symbol_size))) / 256.) * font_metrix_.approx_symbol_size); //in pixels
+
+	return pixels * 0.75; //* 9525. * 72.0 / (360000.0 * 2.54);
 }
 
 odf_style_context* odf_conversion_context::styles_context()
@@ -101,6 +152,10 @@ odf_chart_context* odf_conversion_context::chart_context()
 	return &chart_context_;
 }
 
+odf_math_context* odf_conversion_context::math_context()
+{
+	return &math_context_;
+}
 
 odf_number_styles_context* odf_conversion_context::numbers_styles_context()	
 {
@@ -149,7 +204,7 @@ void odf_conversion_context::end_document()
 		package::object_files *object_files =  new package::object_files();
 		if (object_files)
 		{
-			object_files->set_content	(content_root_);
+			object_files->set_content	(content_root_, object.content_ext);
 			object_files->set_styles	(content_style_);
 			object_files->set_mediaitems(object.mediaitems);
 			object_files->set_settings	(content_settings_);
@@ -170,7 +225,22 @@ void odf_conversion_context::end_document()
 			}
 			else
 			{
-				rels_.add(relationship(std::wstring(L"application/vnd.oasis.opendocument.") + object.content->get_name(), object_files->local_path));
+				switch (object.content->get_type())
+				{
+				case typeOfficeText:
+					rels_.add(relationship(std::wstring(L"application/vnd.oasis.opendocument.text"), object_files->local_path)); break;
+				case typeOfficeSpreadsheet:
+					rels_.add(relationship(std::wstring(L"application/vnd.oasis.opendocument.spreadsheet"), object_files->local_path)); break;
+				case typeOfficePresentation:
+					rels_.add(relationship(std::wstring(L"application/vnd.oasis.opendocument.presentation"), object_files->local_path)); break;
+				case typeOfficeChart:
+					rels_.add(relationship(std::wstring(L"application/vnd.oasis.opendocument.chart"), object_files->local_path)); break;
+				case typeMath:
+					rels_.add(relationship(std::wstring(L"application/vnd.oasis.opendocument.formula"), object_files->local_path)); break;
+				default:
+					rels_.add(relationship(std::wstring(L"application/vnd.oasis.opendocument.") + object.content->get_name(), object_files->local_path));
+					break;
+				}
 			}
 
 			output_document_->add_object(package::element_ptr(object_files), isRoot);
@@ -205,10 +275,11 @@ void odf_conversion_context::start_presentation()
 
 	create_element(L"office", L"scripts", objects_.back().scripts, this);
 }
-void odf_conversion_context::create_object()
+void odf_conversion_context::create_object(bool bAddContentExt)
 {
 	_object obj;
 	
+	obj.content_ext			= bAddContentExt;
 	obj.style_context		= boost::make_shared<odf_style_context>();
 	obj.settings_context	= boost::make_shared<odf_settings_context>();
 	
@@ -227,6 +298,51 @@ void odf_conversion_context::end_chart()
 
 	end_object();
 	chart_context_.set_styles_context(styles_context());
+}
+bool odf_conversion_context::start_math()
+{
+	if (false == math_context_.isEmpty()) return false;
+
+	if (false == math_context_.in_text_box_)
+	{
+		drawing_context()->start_drawing();
+		drawing_context()->set_anchor(anchor_type::AsChar);
+	}
+	drawing_context()->start_object(get_next_name_object(), !math_context_.in_text_box_); 
+			//имитация рисованного объекта - высота-ширина ????
+
+	create_object(false);
+	create_element(L"math", L"math", objects_.back().content, this, true);
+	
+	math_context_.set_styles_context(odf_conversion_context::styles_context());
+	math_context_.start_math(get_current_object_element());
+
+	return true;
+}
+void odf_conversion_context::end_math()
+{
+	math_context_.end_math();
+
+	end_object();
+	math_context_.set_styles_context(styles_context());
+	
+	calculate_font_metrix(L"Cambria Math", 12, false, false); // смотреть по формуле - перевычислять только если есть изменения
+	
+	int count_symbol_height = 3; //сосчитать в math_context_
+	int count_symbol_width = 10;
+
+	_CP_OPT(double)width = convert_symbol_width(count_symbol_width);
+	_CP_OPT(double)height = convert_symbol_width(count_symbol_height);
+
+	//if (false == math_context_.in_text_box_)
+	//	drawing_context()->set_size(width, height); 
+	
+	drawing_context()->end_object(!math_context_.in_text_box_);
+
+	if (false == math_context_.in_text_box_)
+	{
+		drawing_context()->end_drawing();
+	}
 }
 void odf_conversion_context::end_text()
 {

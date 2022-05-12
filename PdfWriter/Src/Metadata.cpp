@@ -34,6 +34,7 @@
 #include "Info.h"
 
 #include "../../DesktopEditor/common/SystemUtils.h"
+#include "../../Common/DocxFormat/Source/Base/Base.h"
 
 namespace PdfWriter
 {
@@ -69,9 +70,16 @@ namespace PdfWriter
 		std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
 		if (sApplication.empty())
 			sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
+
 		sXML += "<rdf:Description rdf:about=\"\" xmlns:xmp=\"http://ns.adobe.com/xap/1.0/\">\n";
 		sXML += "<xmp:CreatorTool>";
 		sXML += NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sApplication);
+
+#if defined(INTVER)
+		sXML += "/";
+		sXML += VALUE2STR(INTVER);
+#endif
+
 		sXML += "</xmp:CreatorTool>\n";
 
 		TDate oDate = pInfo->GetDate();

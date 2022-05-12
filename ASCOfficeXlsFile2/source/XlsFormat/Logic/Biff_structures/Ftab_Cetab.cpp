@@ -31,7 +31,6 @@
  */
 
 #include "Ftab_Cetab.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {
@@ -430,6 +429,110 @@ Ftab_Cetab::ValuesDetermination::ValuesDetermination()
 	params_fixed.insert(ParamsFixed(0x0179, 1, L"ROUNDBAHTUP"));
 	params_fixed.insert(ParamsFixed(0x017A, 1, L"THAIYEAR"));
 	params_fixed.insert(ParamsFixed(0x017B, -1, L"RTD"));
+    params_fixed.insert(ParamsFixed(0x017C, -1, L"CUBEVALUE"));
+    params_fixed.insert(ParamsFixed(0x017D, -1, L"CUBEMEMBER"));
+    params_fixed.insert(ParamsFixed(0x017E, -1, L"CUBEMEMBERPROPERTY"));
+    params_fixed.insert(ParamsFixed(0x017F, -1, L"CUBERANKEDMEMBER"));
+    params_fixed.insert(ParamsFixed(0x0180, 1, L"HEX2BIN"));
+    params_fixed.insert(ParamsFixed(0x0181, 1, L"HEX2DEC"));
+    params_fixed.insert(ParamsFixed(0x0182, 1, L"HEX2OCT"));
+    params_fixed.insert(ParamsFixed(0x0183, 1, L"DEC2BIN"));
+    params_fixed.insert(ParamsFixed(0x0184, 1, L"DEC2HEX"));
+    params_fixed.insert(ParamsFixed(0x0185, 1, L"DEC2OCT"));
+    params_fixed.insert(ParamsFixed(0x0186, 1, L"OCT2BIN"));
+    params_fixed.insert(ParamsFixed(0x0187, 1, L"OCT2HEX"));
+    params_fixed.insert(ParamsFixed(0x0188, 1, L"OCT2DEC"));
+    params_fixed.insert(ParamsFixed(0x0189, 1, L"BIN2DEC"));
+    params_fixed.insert(ParamsFixed(0x018A, 1, L"BIN2OCT"));
+    params_fixed.insert(ParamsFixed(0x018B, 1, L"BIN2HEX"));
+    params_fixed.insert(ParamsFixed(0x018C, 2, L"IMSUB"));
+    params_fixed.insert(ParamsFixed(0x018D, 2, L"IMDIV"));
+    params_fixed.insert(ParamsFixed(0x018E, 2, L"IMPOWER"));
+    params_fixed.insert(ParamsFixed(0x018F, 1, L"IMABS"));
+    params_fixed.insert(ParamsFixed(0x0190, 1, L"IMSQRT"));
+    params_fixed.insert(ParamsFixed(0x0191, 1, L"IMLN"));
+    params_fixed.insert(ParamsFixed(0x0192, 1, L"IMLOG2"));
+    params_fixed.insert(ParamsFixed(0x0193, 1, L"IMLOG10"));
+    params_fixed.insert(ParamsFixed(0x0194, 1, L"IMSIN"));
+    params_fixed.insert(ParamsFixed(0x0195, 1, L"IMCOS"));
+    params_fixed.insert(ParamsFixed(0x0196, 1, L"IMEXP"));
+    params_fixed.insert(ParamsFixed(0x0197, 1, L"IMARGUMENT"));
+    params_fixed.insert(ParamsFixed(0x0198, 1, L"IMCONJUGATE"));
+    params_fixed.insert(ParamsFixed(0x0199, 1, L"IMAGINARY"));
+    params_fixed.insert(ParamsFixed(0x019A, 1, L"IMREAL"));
+    params_fixed.insert(ParamsFixed(0x019B, 2, L"COMPLEX"));
+    params_fixed.insert(ParamsFixed(0x019C, -1, L"IMSUM"));
+    params_fixed.insert(ParamsFixed(0x019D, -1, L"IMPRODUCT"));
+    params_fixed.insert(ParamsFixed(0x019E, 4, L"SERIESSUM"));
+    params_fixed.insert(ParamsFixed(0x019F, 1, L"FACTDOUBLE"));
+    params_fixed.insert(ParamsFixed(0x01A0, 1, L"SQRTPI"));
+    params_fixed.insert(ParamsFixed(0x01A1, 2, L"QUOTIENT"));
+    params_fixed.insert(ParamsFixed(0x01A2, 1, L"DELTA"));
+    params_fixed.insert(ParamsFixed(0x01A3, 1, L"GESTEP"));
+    params_fixed.insert(ParamsFixed(0x01A4, 1, L"ISEVEN"));
+    params_fixed.insert(ParamsFixed(0x01A5, 1, L"ISODD"));
+    params_fixed.insert(ParamsFixed(0x01A6, 2, L"MROUND"));
+    params_fixed.insert(ParamsFixed(0x01A7, 1, L"ERF"));
+    params_fixed.insert(ParamsFixed(0x01A8, 1, L"ERFC"));
+    params_fixed.insert(ParamsFixed(0x01A9, 2, L"BESSELJ"));
+    params_fixed.insert(ParamsFixed(0x01AA, 2, L"BESSELK"));
+    params_fixed.insert(ParamsFixed(0x01AB, 2, L"BESSELY"));
+    params_fixed.insert(ParamsFixed(0x01AC, 2, L"BESSELI"));
+    params_fixed.insert(ParamsFixed(0x01AD, 1, L"XIRR"));
+    params_fixed.insert(ParamsFixed(0x01AE, 3, L"XNPV"));
+    params_fixed.insert(ParamsFixed(0x01AF, 5, L"PRICEMAT"));
+    params_fixed.insert(ParamsFixed(0x01B0, 5, L"YIELDMAT"));
+    params_fixed.insert(ParamsFixed(0x01B1, 4, L"INTRATE"));
+    params_fixed.insert(ParamsFixed(0x01B2, 4, L"RECEIVED"));
+    params_fixed.insert(ParamsFixed(0x01B3, 4, L"DISC"));
+    params_fixed.insert(ParamsFixed(0x01B4, 4, L"PRICEDISC"));
+    params_fixed.insert(ParamsFixed(0x01B5, 4, L"YIELDDISC"));
+    params_fixed.insert(ParamsFixed(0x01B6, 3, L"TBILLEQ"));
+    params_fixed.insert(ParamsFixed(0x01B7, 3, L"TBILLPRICE"));
+    params_fixed.insert(ParamsFixed(0x01B8, 3, L"TBILLYIELD"));
+    params_fixed.insert(ParamsFixed(0x01B9, 6, L"PRICE"));
+    params_fixed.insert(ParamsFixed(0x01BA, 6, L"YIELD"));
+    params_fixed.insert(ParamsFixed(0x01BB, 2, L"DOLLARDE"));
+    params_fixed.insert(ParamsFixed(0x01BC, 2, L"DOLLARFR"));
+    params_fixed.insert(ParamsFixed(0x01BD, 2, L"NOMINAL"));
+    params_fixed.insert(ParamsFixed(0x01BE, 2, L"EFFECT"));
+    params_fixed.insert(ParamsFixed(0x01BF, 6, L"CUMPRINC"));
+    params_fixed.insert(ParamsFixed(0x01C0, 6, L"CUMIPMT"));
+    params_fixed.insert(ParamsFixed(0x01C1, 2, L"EDATE"));
+    params_fixed.insert(ParamsFixed(0x01C2, 2, L"EOMONTH"));
+    params_fixed.insert(ParamsFixed(0x01C3, 2, L"YEARFRAC"));
+    params_fixed.insert(ParamsFixed(0x01C4, 3, L"COUPDAYBS"));
+    params_fixed.insert(ParamsFixed(0x01C5, 3, L"COUPDAYS"));
+    params_fixed.insert(ParamsFixed(0x01C6, 3, L"COUPDAYSNC"));
+    params_fixed.insert(ParamsFixed(0x01C7, 3, L"COUPNCD"));
+    params_fixed.insert(ParamsFixed(0x01C8, 3, L"COUPNUM"));
+    params_fixed.insert(ParamsFixed(0x01C9, 3, L"COUPPCD"));
+    params_fixed.insert(ParamsFixed(0x01CA, 5, L"DURATION"));
+    params_fixed.insert(ParamsFixed(0x01CB, 5, L"MDURATION"));
+    params_fixed.insert(ParamsFixed(0x01CC, 7, L"ODDLPRICE"));
+    params_fixed.insert(ParamsFixed(0x01CD, 7, L"ODDLYIELD"));
+    params_fixed.insert(ParamsFixed(0x01CE, 8, L"ODDFPRICE"));
+    params_fixed.insert(ParamsFixed(0x01CF, 8, L"ODDFYIELD"));
+    params_fixed.insert(ParamsFixed(0x01D0, 2, L"RANDBETWEEN"));
+    params_fixed.insert(ParamsFixed(0x01D1, 1, L"WEEKNUM"));
+    params_fixed.insert(ParamsFixed(0x01D2, 6, L"AMORDEGRC"));
+    params_fixed.insert(ParamsFixed(0x01D3, 6, L"AMORLINC"));
+    params_fixed.insert(ParamsFixed(0x01D5, 6, L"ACCRINT"));
+    params_fixed.insert(ParamsFixed(0x01D6, 4, L"ACCRINTM"));
+    params_fixed.insert(ParamsFixed(0x01D7, 2, L"WORKDAY"));
+    params_fixed.insert(ParamsFixed(0x01D8, 2, L"NETWORKDAYS"));
+    params_fixed.insert(ParamsFixed(0x01D9, 1, L"GCD"));
+    params_fixed.insert(ParamsFixed(0x01DA, 1, L"MULTINOMIAL"));
+    params_fixed.insert(ParamsFixed(0x01DB, 1, L"LCM"));
+    params_fixed.insert(ParamsFixed(0x01DC, 2, L"FVSCHEDULE"));
+    params_fixed.insert(ParamsFixed(0x01DD, 3, L"CUBEKPIMEMBER"));
+    params_fixed.insert(ParamsFixed(0x01DE, 1, L"CUBESET"));
+    params_fixed.insert(ParamsFixed(0x01DF, 1, L"CUBESETCOUNT"));
+    params_fixed.insert(ParamsFixed(0x01E0, 2, L"IFERROR"));
+    params_fixed.insert(ParamsFixed(0x01E1, 2, L"COUNTIFS"));
+    params_fixed.insert(ParamsFixed(0x01E2, 3, L"SUMIFS"));
+    params_fixed.insert(ParamsFixed(0x01E3, 2, L"AVERAGEIF"));
+    params_fixed.insert(ParamsFixed(0x01E4, 3, L"AVERAGEIFS"));
 
 // Cetab values
 	params_fixed.insert(ParamsFixed(0x8000, -1, L"BEEP"));

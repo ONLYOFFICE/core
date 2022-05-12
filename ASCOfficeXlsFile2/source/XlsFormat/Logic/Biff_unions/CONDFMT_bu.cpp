@@ -31,8 +31,8 @@
  */
 
 #include "CONDFMT.h"
-#include <Logic/Biff_records/CondFmt.h>
-#include <Logic/Biff_records/CF.h>
+#include "../Biff_records/CondFmt.h"
+#include "../Biff_records/CF.h"
 
 namespace XLS
 {

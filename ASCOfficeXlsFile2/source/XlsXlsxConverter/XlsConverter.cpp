@@ -76,6 +76,7 @@
 #include "../XlsFormat/Logic/Biff_records/Note.h"
 #include "../XlsFormat/Logic/Biff_records/WsBool.h"
 #include "../XlsFormat/Logic/Biff_records/Theme.h"
+#include "../XlsFormat/Logic/Biff_records/Format.h"
 
 #include "../XlsFormat/Logic/Biff_structures/URLMoniker.h"
 #include "../XlsFormat/Logic/Biff_structures/FileMoniker.h"
@@ -94,8 +95,8 @@
 #include "xlsx_conversion_context.h"
 #include "xlsx_package.h"
 
-#include <simple_xml_writer.h>
-#include <utils.h>
+#include "../Common/simple_xml_writer.h"
+#include "../Common/utils.h"
 
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/raster/BgraFrame.h"
@@ -158,6 +159,7 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 			xls_global_info->password = password;
 			xls_global_info->tempDirectory = tempPath;
 			xls_global_info->CodePage = 0;
+			xls_global_info->Version = 0;
 
 			XLS::GlobalWorkbookInfo::_sheet_info sheet_info;
 			xls_global_info->sheets_info.push_back(sheet_info);
@@ -167,15 +169,23 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 		
 			XLS::BinReaderProcessor proc(file_reader, xls_document.get(), true);
 			
-			XLS::BaseObjectPtr worksheet = XLS::BaseObjectPtr(new XLS::WorksheetSubstream(0));
-            if (proc.mandatory(*worksheet.get()))
+			XLS::BaseObjectPtr stream = XLS::BaseObjectPtr(new XLS::WorksheetSubstream(0));
+            if (proc.mandatory(*stream.get()))
 			{
+				XLS::WorksheetSubstream *worksheet = dynamic_cast<XLS::WorksheetSubstream*>(stream.get());
 				XLS::WorkbookStreamObject *workbook = dynamic_cast<XLS::WorkbookStreamObject*>(xls_document.get());
 				if (workbook)
 				{
-					workbook->m_arWorksheetSubstream.push_back(worksheet);			
+					workbook->m_arWorksheetSubstream.push_back(stream);
 
 					workbook->m_GlobalsSubstream = XLS::BaseObjectPtr(new XLS::GlobalsSubstream(0));
+
+					XLS::GlobalsSubstream* globals = dynamic_cast<XLS::GlobalsSubstream*>(workbook->m_GlobalsSubstream.get());
+					if (globals)
+					{
+						globals->m_Formating = worksheet->m_Formating;
+						globals->UpdateXFC();
+					}
 				}
 			}
 			else
@@ -252,27 +262,34 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 					last_index = index;
 				}
 			}
-			if (bMacros && xls_file->storage_->isDirectory(L"_VBA_PROJECT_CUR"))
+			if (bMacros)
 			{
-				std::wstring xl_path = xlsx_path + FILE_SEPARATOR_STR + L"xl";	
-				NSDirectory::CreateDirectory(xl_path.c_str());
+				if (xls_file->storage_->isDirectory(L"_VBA_PROJECT_CUR"))
+				{
+					// if false == global_info_->bVbaProjectExist ??
 
-				std::wstring sVbaProjectFile = xl_path + FILE_SEPARATOR_STR + L"vbaProject.bin";
+					std::wstring xl_path = xlsx_path + FILE_SEPARATOR_STR + L"xl";
+					NSDirectory::CreateDirectory(xl_path.c_str());
 
-				POLE::Storage *storageVbaProject = new POLE::Storage(sVbaProjectFile.c_str());
+					std::wstring sVbaProjectFile = xl_path + FILE_SEPARATOR_STR + L"vbaProject.bin";
 
-				if ((storageVbaProject) && (storageVbaProject->open(true, true)))
-				{			
-					xls_file->copy(0, L"_VBA_PROJECT_CUR/", storageVbaProject, false);
+					POLE::Storage *storageVbaProject = new POLE::Storage(sVbaProjectFile.c_str());
 
-					storageVbaProject->close();
-					delete storageVbaProject;
+					if ((storageVbaProject) && (storageVbaProject->open(true, true)))
+					{
+						xls_file->copy(0, L"_VBA_PROJECT_CUR/", storageVbaProject, false);
 
-					output_document->get_xl_files().add_vba_project();
+						storageVbaProject->close();
+						delete storageVbaProject;
+
+						output_document->get_xl_files().add_vba_project();
+					}
 				}
+				else if (xls_global_info->bMacrosExist)
+					output_document->get_xl_files().set_macros_enabled();
+				else 
+					bMacros = false;
 			}
-			else 
-				bMacros = false;
 
 			XLS::CFStreamPtr controls = xls_file->getNamedStream(L"Ctls");
 			if(controls)
@@ -791,8 +808,29 @@ void XlsConverter::convert(XLS::FORMATTING* formating)
 			CP_XML_ATTR(L"xmlns:x14ac", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac");
 			CP_XML_ATTR(L"xmlns:x16r2", L"http://schemas.microsoft.com/office/spreadsheetml/2015/02/main");
 			
-			formating->serialize1(CP_XML_STREAM()); //важен порядок в styles
-			
+			CP_XML_NODE(L"numFmts")
+			{
+				CP_XML_ATTR(L"count", xls_global_info->m_arNumFormats.size());
+				for (size_t i = 0; i < xls_global_info->m_arNumFormats.size(); i++)
+				{
+					XLS::Format* fmt = dynamic_cast<XLS::Format*>(xls_global_info->m_arNumFormats[i].get());
+
+					if (fmt->ifmt < 5 || (fmt->ifmt > 8 && fmt->ifmt < 23) || (fmt->ifmt > 36 && fmt->ifmt < 41) || (fmt->ifmt > 44 && fmt->ifmt < 50))
+						continue;
+
+					std::map<_UINT16, bool>::iterator pFind = xls_global_info->mapUsedFormatCode.find(fmt->ifmt);
+
+					if (pFind != xls_global_info->mapUsedFormatCode.end())
+					{
+						CP_XML_STREAM() << L"<numFmt";
+						{
+							CP_XML_STREAM() << L" numFmtId=\"" << fmt->ifmt << L"\"";
+							CP_XML_STREAM() << L" formatCode=\"" << fmt->stFormat << L"\"";
+						}
+						CP_XML_STREAM() << L"/>";
+					}
+				}
+			}
 			CP_XML_NODE(L"fonts")
 			{
 				std::vector<XLS::FontInfo> fonts_out;
@@ -842,8 +880,7 @@ void XlsConverter::convert(XLS::FORMATTING* formating)
 				}
 			}
 
-			formating->serialize2(CP_XML_STREAM());
-
+			formating->serialize(CP_XML_STREAM());
 		}
 	}
     
@@ -1177,7 +1214,7 @@ void XlsConverter::convert_old(XLS::OBJECTS* objects, XLS::WorksheetSubstream * 
 			if (obj->old_version.bFill)
 				xlsx_context->get_drawing_context().set_fill_old_version(obj->old_version.fill);
 			else 
-				xlsx_context->get_drawing_context().set_fill_type(0);	//no fill
+				xlsx_context->get_drawing_context().set_fill_type(oox::fillNone);	//no fill
 			
 			xlsx_context->get_drawing_context().set_name(obj->old_version.name);
 			xlsx_context->get_drawing_context().set_line_old_version(obj->old_version.line);
@@ -1479,34 +1516,39 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 				{
 				case 1://fillPattern:
 					{
-						xlsx_context->get_drawing_context().set_fill_type(2);
+						xlsx_context->get_drawing_context().set_fill_type(oox::fillPattern);
 						//texture + change black to color2, white to color1
 					}break;
 					case 2://fillTexture :
 					{
-						xlsx_context->get_drawing_context().set_fill_type(3);
+						xlsx_context->get_drawing_context().set_fill_type(oox::fillTexture);
 						xlsx_context->get_drawing_context().set_fill_texture_mode(0);
 					}break;
 					case 3://fillPicture :
 					{
-						xlsx_context->get_drawing_context().set_fill_type(3);
+						xlsx_context->get_drawing_context().set_fill_type(oox::fillTexture);
 						xlsx_context->get_drawing_context().set_fill_texture_mode(1);
 					}break;
 					case 4://fillShadeCenter://1 color
 					case 5://fillShadeShape:
 					{
-						xlsx_context->get_drawing_context().set_fill_type(5);
+						xlsx_context->get_drawing_context().set_fill_type(oox::fillGradientOne);
 					}break;//
 					case 6://fillShadeTitle://2 colors and more
 					case 7://fillShade : 
 					case 8://fillShadeScale: 
 					{
-						xlsx_context->get_drawing_context().set_fill_type(4);
+						xlsx_context->get_drawing_context().set_fill_type(oox::fillGradient);
 					}break;
 					case 9://fillBackground:
 					{
-						xlsx_context->get_drawing_context().set_fill_type(0);
-					}break;				
+						xlsx_context->get_drawing_context().set_fill_type(oox::fillNone);
+					}break;	
+					case 0:
+					default:
+					{ //undefined
+						xlsx_context->get_drawing_context().set_fill_type(oox::fillUndefined);
+					}break;
 				}
 			}break;
 			case ODRAW::fillColor:
@@ -1618,7 +1660,7 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 				if (bools)
 				{
 					if (bools->fUsefFilled && bools->fFilled == false) 
-						xlsx_context->get_drawing_context().set_fill_type(0);
+						xlsx_context->get_drawing_context().set_fill_type(oox::fillNone);
 				}
 			}break;
 			default:
@@ -1851,17 +1893,17 @@ void XlsConverter::convert_geometry(std::vector<ODRAW::OfficeArtFOPTEPtr> & prop
 {
 	if (props.empty()) return;
 
-	oox::_rect					rect;
-	std::vector<_CP_OPT(int)>	adjustValues(8);
+	_CP_OPT(oox::_rect)			rect;
+	std::vector<_CP_OPT(int)>	adjustValues(9);
 	
 	for (size_t i = 0 ; i < props.size() ; i++)
 	{
 		switch(props[i]->opid)
 		{
-			case ODRAW::geoLeft:	rect.x	= props[i]->op; break;
-			case ODRAW::geoTop:		rect.y	= props[i]->op; break;
-			case ODRAW::geoRight:	rect.cx	= props[i]->op; break;
-			case ODRAW::geoBottom:	rect.cy = props[i]->op; break;
+		case ODRAW::geoLeft:		if (!rect) rect = oox::_rect(); rect->x = props[i]->op; break;
+			case ODRAW::geoTop:		if (!rect) rect = oox::_rect(); rect->y	= props[i]->op; break;
+			case ODRAW::geoRight:	if (!rect) rect = oox::_rect(); rect->cx = props[i]->op; break;
+			case ODRAW::geoBottom:	if (!rect) rect = oox::_rect(); rect->cy = props[i]->op; break;
 			case ODRAW::shapePath:
 				xlsx_context->get_drawing_context().set_custom_path(props[i]->op); break;
 			case ODRAW::pVertices:
@@ -1874,13 +1916,15 @@ void XlsConverter::convert_geometry(std::vector<ODRAW::OfficeArtFOPTEPtr> & prop
 					ODRAW::PSegmentInfo * s = (ODRAW::PSegmentInfo *)(props[i].get());
 					xlsx_context->get_drawing_context().set_custom_segments(s->complex.data);
 				}break;
-			case 0x0147: //adjustValue .... //adjust8Value
-			case 0x0148:
-			case 0x0149:
-			case 0x014A:
-			case 0x014B:
-			case 0x014C:
-			case 0x014D:
+			case ODRAW::adjustValue: //0x0147
+			case ODRAW::adjust2Value:
+			case ODRAW::adjust3Value:
+			case ODRAW::adjust4Value:
+			case ODRAW::adjust5Value:
+			case ODRAW::adjust6Value:
+			case ODRAW::adjust7Value:
+			case ODRAW::adjust8Value:
+			case ODRAW::adjust9Value:
 			case ODRAW::adjust10Value:
 			{
 				adjustValues[props[i]->opid - 0x0147] = props[i]->op ;
@@ -1925,9 +1969,13 @@ void XlsConverter::convert_geometry(std::vector<ODRAW::OfficeArtFOPTEPtr> & prop
 			//	}break;
 		}
 	}
-	rect.cy -= rect.y;
-	rect.cx -= rect.x;
-	xlsx_context->get_drawing_context().set_custom_rect(rect);
+	if (rect)
+	{
+		rect->cy -= rect->y;
+		rect->cx -= rect->x;
+
+		xlsx_context->get_drawing_context().set_custom_rect(*rect);
+	}
 	
 	xlsx_context->get_drawing_context().set_custom_adjustValues(adjustValues);
 }
@@ -2255,7 +2303,7 @@ void XlsConverter::convert(XLS::Note* note)
 	if (xls_global_info->Version < 0x0600)
 	{
 		//todooo размеры произвольные .. можно сделать оценку по размеру строки
-		xlsx_context->get_drawing_context().set_child_anchor(note->note_sh.x_ , note->note_sh.y_, 120 * 12700., 64 * 12700.);
+		xlsx_context->get_drawing_context().set_sheet_anchor(0, 0, 0, 0, 0, 0, 0, 0, note->note_sh.x_, note->note_sh.y_, 120 * 12700., 64 * 12700.);
 		xlsx_context->get_drawing_context().set_text(std::wstring(L"<t>") + note->note_sh.stText.value() + std::wstring(L"</t>"));
 	}
 }
@@ -2296,9 +2344,9 @@ void XlsConverter::convert(ODRAW::OfficeArtFOPT * fort)
 	convert_shape			(fort->fopt.Shape_props);
 	convert_group_shape		(fort->fopt.GroupShape_props);
 	convert_transform		(fort->fopt.Transform_props);
-	convert_blip			(fort->fopt.Blip_props);
 	convert_geometry		(fort->fopt.Geometry_props);
 	convert_fill_style		(fort->fopt.FillStyle_props);
+	convert_blip			(fort->fopt.Blip_props);
 	convert_line_style		(fort->fopt.LineStyle_props);
 	convert_shadow			(fort->fopt.Shadow_props);
 	convert_text			(fort->fopt.Text_props);

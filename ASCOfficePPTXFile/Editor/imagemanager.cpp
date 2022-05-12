@@ -484,7 +484,7 @@ namespace NSShapeImageGen
                     pMetafile->GetBounds(&x, &y, &w, &h);
 
 					double _max = (w >= h) ? w : h;
-					double dKoef = 100000.0 / _max;
+                    double dKoef = 1000.0 / _max;
 
 					int WW = (int)(dKoef * w + 0.5);
 					int HH = (int)(dKoef * h + 0.5);
@@ -493,21 +493,32 @@ namespace NSShapeImageGen
 					oWriterSVG.SetFontManager(m_pFontManager);
 					oWriterSVG.put_Width(WW);
 					oWriterSVG.put_Height(HH);
-                    
-					pMetafile->DrawOnRenderer(&oWriterSVG, 0, 0, WW, HH);
 
+					bool bRes = true;
+					bool bIsBigestSVG = false;
 					bool bIsRaster = true;
-					oWriterSVG.IsRaster(&bIsRaster);
-
-					LONG lSvgDataSize = 0;
-					oWriterSVG.GetSVGDataSize(&lSvgDataSize);
-
-					bool bIsBigestSVG = (lSvgDataSize > 5 * 1024 *1024);
-
-
-					if(bIsRaster || bIsBigestSVG)
+					try
 					{
-						//случай растрового wmf/emf
+						bRes = pMetafile->DrawOnRenderer(&oWriterSVG, 0, 0, WW, HH);
+					}
+					catch (...)
+					{
+						bRes = false;
+					}
+
+					if (bRes)
+					{
+						oWriterSVG.IsRaster(&bIsRaster);
+
+						LONG lSvgDataSize = 0;
+						oWriterSVG.GetSVGDataSize(&lSvgDataSize);
+
+						bIsBigestSVG = (lSvgDataSize > 5 * 1024 * 1024);
+					}
+
+					if (bIsRaster || bIsBigestSVG || !bRes)
+					{
+						//случай растрового wmf/emf или г...
 						if (lWidth <= 0 || lHeight <= 0)
 						{
 							int nMaxPixSize = 1000;

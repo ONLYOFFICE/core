@@ -35,7 +35,7 @@
 namespace XLS
 {
 
-Window2::Window2()
+Window2::Window2(bool isChart)
 {
 	is_contained_in_chart_substream = false;
 	
@@ -53,6 +53,8 @@ Window2::Window2()
 	fSLV			= false;
 
 	wScaleSLV = wScaleNormal = 0;
+
+    _isChart = isChart;
 }
 
 
@@ -73,40 +75,95 @@ void Window2::readFields(CFRecord& record)
 		is_contained_in_chart_substream = (10 == record.getDataSize());
 	}
 
-	unsigned short flags;
-	record >> flags;
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        unsigned short flags;
+        record >> flags;
 
-	fSelected		= GETBIT(flags, 9);
+        fSelected		= GETBIT(flags, 9);
 
-	if(is_contained_in_chart_substream)
-	{
-		record.skipNunBytes(8); // must be ignored
-		return;
-	}
-	fDspFmlaRt		= GETBIT(flags, 0);
-	fDspGridRt		= GETBIT(flags, 1);
-	fDspRwColRt		= GETBIT(flags, 2);
-	fFrozenRt		= GETBIT(flags, 3);
-	fDspZerosRt		= GETBIT(flags, 4);
-	fDefaultHdr		= GETBIT(flags, 5);
-	fRightToLeft	= GETBIT(flags, 6);
-	fDspGuts		= GETBIT(flags, 7);
-	fFrozenNoSplit	= GETBIT(flags, 8);
-	fPaged			= GETBIT(flags, 10);
-	fSLV			= GETBIT(flags, 11);
-	
-	record >> rwTop >> colLeft >> icvHdr;
-	
-	topLeftCell = static_cast<std::wstring >(CellRef(rwTop, colLeft, true, true));
-	record.skipNunBytes(2); // reserved
+        if(is_contained_in_chart_substream)
+        {
+            record.skipNunBytes(8); // must be ignored
+            return;
+        }
+        fDspFmlaRt		= GETBIT(flags, 0);
+        fDspGridRt		= GETBIT(flags, 1);
+        fDspRwColRt		= GETBIT(flags, 2);
+        fFrozenRt		= GETBIT(flags, 3);
+        fDspZerosRt		= GETBIT(flags, 4);
+        fDefaultHdr		= GETBIT(flags, 5);
+        fRightToLeft	= GETBIT(flags, 6);
+        fDspGuts		= GETBIT(flags, 7);
+        fFrozenNoSplit	= GETBIT(flags, 8);
+        fPaged			= GETBIT(flags, 10);
+        fSLV			= GETBIT(flags, 11);
 
-	if (10 > record.getDataSize())
-	{
-		record >> wScaleSLV >> wScaleNormal;
-	}
-	int sz = record.getDataSize() - record.getRdPtr();
-		
-	record.skipNunBytes(sz); // unused / reserved
+        _UINT16		rwTop_2b;
+        _UINT16		colLeft_2b;
+
+        record >> rwTop_2b >> colLeft_2b >> icvHdr;
+
+        rwTop   = rwTop_2b;
+        colLeft = colLeft_2b;
+
+        topLeftCell = static_cast<std::wstring >(CellRef(rwTop_2b, colLeft_2b, true, true));
+        record.skipNunBytes(2); // reserved
+
+        if (10 > record.getDataSize())
+        {
+            record >> wScaleSLV >> wScaleNormal;
+        }
+        int sz = record.getDataSize() - record.getRdPtr();
+
+        record.skipNunBytes(sz); // unused / reserved
+    }
+
+    else
+    {
+        if(_isChart)
+        {
+            _UINT16 flags;
+            _UINT32 wScale_4b;
+
+            record >> flags;
+
+            fSelected           = GETBIT(flags, 0);
+
+            record >> wScale_4b >> iWbkView;
+            wScale = wScale_4b;
+        }
+        else
+        {
+            unsigned short flags;
+            record >> flags;
+
+            fWnProt             = GETBIT(flags, 0);
+            fDspFmlaRt          = GETBIT(flags, 1);
+            fDspGridRt          = GETBIT(flags, 2);
+            fDspRwColRt         = GETBIT(flags, 3);
+            fDspZerosRt         = GETBIT(flags, 4);
+            fRightToLeft        = GETBIT(flags, 5);
+            fSelected           = GETBIT(flags, 6);
+            fDspRuler           = GETBIT(flags, 7);
+            fDspGuts            = GETBIT(flags, 8);
+            fDefaultHdr         = GETBIT(flags, 9);
+            fWhitespaceHidden   = GETBIT(flags, 10);
+
+            record >> xlView >> rwTop >> colLeft;
+
+            topLeftCell = static_cast<std::wstring >(CellRef(rwTop, colLeft, true, true));
+
+            BYTE	icvHdr_1b;
+            record >> icvHdr_1b;
+            icvHdr = icvHdr_1b;
+
+            record.skipNunBytes(3); // reserved
+
+            record >> wScale >> wScaleNormal >> wScaleSLV >> wScalePLV >> iWbkView;
+        }
+
+    }
 }
 
 

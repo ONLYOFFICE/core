@@ -40,13 +40,15 @@ namespace NSSystemUtils
 	static const wchar_t* gc_EnvApplicationName = L"APPLICATION_NAME";
 	static const wchar_t* gc_EnvApplicationNameDefault = L"ONLYOFFICE";
 	static const wchar_t* gc_EnvCompanyName = L"COMPANY_NAME";
-	static const wchar_t* gc_EnvCompanyNameDefault = L"Ascensio System SIA Copyright (c) 2018";
+	static const wchar_t* gc_EnvCompanyNameDefault = L"Ascensio System SIA Copyright (c) 2022";
 	static const wchar_t* gc_EnvMethodEncrypt = L"METHOD_CRYPT";
 	static const wchar_t* gc_EnvMethodEncryptDefault = L"Strong";
 	static const wchar_t* gc_EnvCreator = L"CREATOR";
 	static const wchar_t* gc_EnvCreated = L"CREATED";
 	static const wchar_t* gc_EnvLastModifiedBy = L"LAST_MODIFIED_BY";
 	static const wchar_t* gc_EnvModified = L"MODIFIED";
+	static const wchar_t* gc_EnvMemoryLimit = L"X2T_MEMORY_LIMIT";
+	static const wchar_t* gc_EnvMemoryLimitDefault = L"4GiB";
 
 	KERNEL_DECL std::wstring GetEnvVariable(const std::wstring& strName);
 }

@@ -128,7 +128,7 @@ public:
 		void set_corner_radius	(odf_types::length corner);
 	void end_group();
 
-	void start_shape	(int type);
+	void start_shape	(int ooxDrawPreset);
 	void end_shape		();
 
 	void start_frame	();
@@ -152,8 +152,8 @@ public:
 		void set_text_box_tableframe	(bool val);		
 	void end_text_box					();
 
-	void start_object(std::wstring ref); //формулы, диаграммы ... 
-	void end_object();
+	void start_object(std::wstring ref, bool in_frame = true); //формулы, диаграммы ... 
+	void end_object(bool in_frame = true);
 
 	void start_object_ole(std::wstring ref);
 	void end_object_ole();
@@ -301,8 +301,6 @@ public:
 		void add_sound	(std::wstring href);
 		void add_link	(std::wstring href);
 	void end_action();
-
-	std::map<std::wstring, OOX::Vml::CShapeType*>	m_mapVmlShapeTypes;
 
 private:
 	

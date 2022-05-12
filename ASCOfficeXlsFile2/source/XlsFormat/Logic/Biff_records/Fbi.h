@@ -32,7 +32,7 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/FontIndex.h>
+#include "../Biff_structures/FontIndex.h"
 
 namespace XLS
 {

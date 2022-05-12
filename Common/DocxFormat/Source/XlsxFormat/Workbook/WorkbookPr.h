@@ -35,6 +35,9 @@
 
 #include "../CommonInclude.h"
 
+#include "../../XlsbFormat/Biff12_records/WbProp.h"
+#include "../../XlsbFormat/Biff12_records/BookProtectionIso.h"
+#include "../../XlsbFormat/Biff12_records/BookProtection.h"
 
 namespace OOX
 {
@@ -44,9 +47,10 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CWorkbookPr)
-			CWorkbookPr()
-			{
-			}
+            WritingElement_XlsbConstructors(CWorkbookPr)
+            CWorkbookPr()
+            {
+            }
 			virtual ~CWorkbookPr()
 			{
 			}
@@ -64,7 +68,7 @@ namespace OOX
 				WritingStringNullableAttrBool(L"autoCompressPictures", m_oAutoCompressPictures);
 				WritingStringNullableAttrBool(L"backupFile", m_oBackupFile);
 				WritingStringNullableAttrBool(L"checkCompatibility", m_oCheckCompatibility);
-				WritingStringNullableAttrBool(L"codeName", m_oCodeName);
+                WritingStringNullableAttrBool(L"codeName", m_oCodeName);
 				WritingStringNullableAttrBool(L"date1904", m_oDate1904);
 				WritingStringNullableAttrBool(L"dateCompatibility", m_oDateCompatibility);
 				WritingStringNullableAttrInt(L"defaultThemeVersion", m_oDefaultThemeVersion, m_oDefaultThemeVersion->GetValue());
@@ -87,6 +91,11 @@ namespace OOX
 				if ( !oReader.IsEmptyNode() )
 					oReader.ReadTillEnd();
 			}
+
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 
 			virtual EElementType getType () const
 			{
@@ -119,12 +128,37 @@ namespace OOX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::WbProp*>(obj.get());
+                m_oAllowRefreshQuery            = ptr->fNoSaveSup;//?
+                m_oAutoCompressPictures         = ptr->fAutoCompressPictures;
+                m_oBackupFile                   = ptr->fBackup;
+                m_oCheckCompatibility           = ptr->fCheckCompat;
+                m_oCodeName                     = ptr->strName.value.value();
+                m_oDate1904                     = ptr->f1904;
+                m_oDateCompatibility            = true;//ptr->fNoSaveSup?
+                m_oDefaultThemeVersion          = ptr->dwThemeVersion;
+                m_oFilterPrivacy                = ptr->fFilterPrivacy;
+                m_oHidePivotFieldList           = ptr->fHidePivotTableFList;
+                m_oPromptedSolutions            = ptr->fBuggedUserAboutSolution;
+                m_oPublishItems                 = ptr->fPublishedBookItems;
+                m_oRefreshAllConnections        = ptr->fRefreshAll;
+                m_oShowBorderUnselectedTables   = ptr->fHideBorderUnselLists;
+                m_oShowInkAnnotation            = ptr->fShowInkAnnotation;
+                m_oShowObjects                  = ptr->mdDspObj == 2?false:true;
+                m_oShowPivotChartFilter         = ptr->fShowPivotChartFilter;
+                m_oUpdateLinks                  = (SimpleTypes::Spreadsheet::EUpdateLinksType)ptr->grbitUpdateLinks;
+
+
+            }
+
 		public:
 				nullable<SimpleTypes::COnOff<>>						m_oAllowRefreshQuery;
 				nullable<SimpleTypes::COnOff<>>						m_oAutoCompressPictures;
 				nullable<SimpleTypes::COnOff<>>						m_oBackupFile;
 				nullable<SimpleTypes::COnOff<>>						m_oCheckCompatibility;
-				nullable<SimpleTypes::COnOff<>>						m_oCodeName;
+                nullable<SimpleTypes::COnOff<>>	  					m_oCodeName;
 				nullable<SimpleTypes::COnOff<>>						m_oDate1904;
 				nullable<SimpleTypes::COnOff<>>						m_oDateCompatibility;
 				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oDefaultThemeVersion;
@@ -143,10 +177,11 @@ namespace OOX
 		class CWorkbookProtection : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CWorkbookProtection)
+            WritingElement_AdditionConstructors(CWorkbookProtection)
+            WritingElement_XlsbConstructors(CWorkbookProtection)
 			CWorkbookProtection()
 			{
-			}
+			}            
 			virtual ~CWorkbookProtection()
 			{
 			}
@@ -177,6 +212,11 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
+
 			virtual EElementType getType() const
 			{
 				return et_x_WorkbookProtection;
@@ -198,6 +238,43 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_if(oReader, (L"workbookPassword"), m_oPassword)
 				WritingElement_ReadAttributes_End(oReader)
 			}
+
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptrRecord = static_cast<XLS::BiffRecord*>(obj.get());
+
+                if(ptrRecord->getTypeId() == XLSB::rt_BookProtection)
+                {
+                    auto ptr = static_cast<XLSB::BookProtection*>(obj.get());
+                    m_oLockRevision            = ptr->wFlags.fLockRevision;
+                    m_oLockStructure           = ptr->wFlags.fLockStructure;
+                    m_oLockWindows             = ptr->wFlags.fLockWindow;
+                }
+                else if(ptrRecord->getTypeId() == XLSB::rt_BookProtectionIso)
+                {
+                    auto ptr = static_cast<XLSB::BookProtectionIso*>(obj.get());
+                    m_oLockRevision            = ptr->wFlags.fLockRevision;
+                    m_oLockStructure           = ptr->wFlags.fLockStructure;
+                    m_oLockWindows             = ptr->wFlags.fLockWindow;
+
+                    m_oWorkbookAlgorithmName   = ptr->ipdBookPasswordData.szAlgName.value();
+                    m_oWorkbookSpinCount       = ptr->dwBookSpinCount;
+                    m_oWorkbookHashValue       = std::wstring(ptr->ipdBookPasswordData.rgbHash.rgbData.begin(),
+                                                              ptr->ipdBookPasswordData.rgbHash.rgbData.end());
+                    m_oWorkbookSaltValue       = std::wstring(ptr->ipdBookPasswordData.rgbSalt.rgbData.begin(),
+                                                              ptr->ipdBookPasswordData.rgbSalt.rgbData.end());
+
+                    m_oRevisionsAlgorithmName   = ptr->ipdRevPasswordData.szAlgName.value();
+                    m_oRevisionsSpinCount       = ptr->dwRevSpinCount;
+                    m_oRevisionsHashValue       = std::wstring(ptr->ipdRevPasswordData.rgbHash.rgbData.begin(),
+                                                              ptr->ipdRevPasswordData.rgbHash.rgbData.end());
+                    m_oRevisionsSaltValue       = std::wstring(ptr->ipdRevPasswordData.rgbSalt.rgbData.begin(),
+                                                              ptr->ipdRevPasswordData.rgbSalt.rgbData.end());
+                }
+
+
+            }
+
 			nullable<SimpleTypes::COnOff<>>		m_oLockRevision;
 			nullable<SimpleTypes::COnOff<>>		m_oLockStructure;
 			nullable<SimpleTypes::COnOff<>>		m_oLockWindows;

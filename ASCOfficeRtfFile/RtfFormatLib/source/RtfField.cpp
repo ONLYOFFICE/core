@@ -219,6 +219,21 @@ std::wstring RtfField::RenderToOOX(RenderParameter oRenderParameter)
 			sResult += m_pResult->RenderToOOX(oNewParam);
 			sResult += L"</w:hyperlink>";
 		}
+		else if ((m_pInsert->m_pFormField) && (m_pInsert->m_pFormField->type == 2))
+		{
+			_UINT32 id = 0x7fff + pOOXWriter->m_nFormFieldId++;
+			std::wstring text_ = m_pInsert->m_pFormField->defres < m_pInsert->m_pFormField->list.size() ? 
+				m_pInsert->m_pFormField->list[m_pInsert->m_pFormField->defres] : L"";
+			
+			sResult += L"<w:sdt><w:sdtPr><w:alias w:val=\"\"/><w:id w:val=\"" + std::to_wstring(id) + L"\"/><w:dropDownList>";
+			for (size_t i = 0; i < m_pInsert->m_pFormField->list.size(); i++)
+			{
+				sResult += L"<w:listItem w:value=\"" + XmlUtils::EncodeXmlString(m_pInsert->m_pFormField->list[i]) + L"\" w:displayText=\"" + m_pInsert->m_pFormField->list[i] + L"\"/>";
+			}
+			sResult += L"</w:dropDownList></w:sdtPr><w:sdtEndPr/><w:sdtContent>";
+			sResult += L"<w:r><w:t>" + XmlUtils::EncodeXmlString(text_) + L"</w:t></w:r>";
+			sResult += L"</w:sdtContent></w:sdt>";
+		}
 		else
 		{
 			RenderParameter oNewParametr	= oRenderParameter;
@@ -231,7 +246,70 @@ std::wstring RtfField::RenderToOOX(RenderParameter oRenderParameter)
             sResult += L"<w:r>";
             if (!props.empty())
 				sResult += props;			
-			sResult += L"<w:fldChar w:fldCharType=\"begin\"/>";
+			sResult += L"<w:fldChar w:fldCharType=\"begin\"";
+			if (m_pInsert->m_pFormField)
+			{
+				sResult += L"><w:ffData>";
+				sResult += L"<w:name w:val=\"" + XmlUtils::EncodeXmlString(m_pInsert->m_pFormField->name) + L"\"/>";
+				sResult += L"<w:enabled/>";
+				
+				if (m_pInsert->m_pFormField->recalc == 1) 
+					sResult += L"<w:calcOnExit/>";
+				else
+					sResult += L"<w:calcOnExit w:val=\"0\"/>";
+
+				if (false == m_pInsert->m_pFormField->entrymcr.empty())
+					sResult += L"<w:entryMacro w:val=\"" + m_pInsert->m_pFormField->entrymcr + L"\"/>";
+				if (false == m_pInsert->m_pFormField->exitmcr.empty())
+					sResult += L"<w:exitMacro w:val=\"" + m_pInsert->m_pFormField->exitmcr + L"\"/>";
+
+				if (false == m_pInsert->m_pFormField->helptext.empty())
+					sResult += L"<w:helpText w:type=\"text\" w:val=\"" + XmlUtils::EncodeXmlString(m_pInsert->m_pFormField->helptext) + L"\"/>";
+				if (false == m_pInsert->m_pFormField->stattext.empty())
+					sResult += L"<w:statusText w:type=\"text\" w:val=\"" + XmlUtils::EncodeXmlString(m_pInsert->m_pFormField->stattext) + L"\"/>";
+				
+				if (m_pInsert->m_pFormField->type == 0)
+				{
+					sResult += L"<w:textInput>";
+					switch (m_pInsert->m_pFormField->typetx)
+					{
+					case 1: sResult += L"<w:type w:val=\"number\"/>"; break;
+					case 2: sResult += L"<w:type w:val=\"date\"/>"; break;
+					case 3: sResult += L"<w:type w:val=\"currentDate\"/>"; break;
+					case 4: sResult += L"<w:type w:val=\"currentTime\"/>"; break;
+					case 5: sResult += L"<w:type w:val=\"calculated\"/>"; break;
+					}
+					if (false == m_pInsert->m_pFormField->deftext.empty())
+						sResult += L"<w:default w:val=\"" + XmlUtils::EncodeXmlString(m_pInsert->m_pFormField->deftext) + L"\"/>";
+					if (false == m_pInsert->m_pFormField->format.empty())
+						sResult += L"<w:format w:val=\"" + XmlUtils::EncodeXmlString(m_pInsert->m_pFormField->format) + L"\"/>";
+					if (m_pInsert->m_pFormField->maxlen > 0)
+						sResult += L"<w:maxLength w:val=\"" + std::to_wstring(m_pInsert->m_pFormField->maxlen) + L"\"/>";
+					sResult += L"</w:textInput>";
+				}
+				else if (m_pInsert->m_pFormField->type == 1)
+				{
+					sResult += L"<w:checkBox>";
+					if (m_pInsert->m_pFormField->sizeCheckBox == 1)
+						sResult += L"<w:size w:val=\"" + std::to_wstring(m_pInsert->m_pFormField->hps) + L"\"/>";
+					else 
+						sResult += L"<w:sizeAuto/>";
+					sResult += L"<w:default w:val=\"0\"/>";
+					if (m_pInsert->m_pFormField->res == 1)
+					{
+						sResult += L"<w:checked/>";
+					}
+					else
+					{
+						sResult += L"<w:checked w:val=\"0\"/>";
+					}
+
+					sResult += L"</w:checkBox>";
+				}
+				sResult += L"</w:ffData></w:fldChar>";
+			}
+			else sResult += L"/>";
+
 			sResult += L"</w:r>";
 	//-----------
             sResult += L"<w:r>";

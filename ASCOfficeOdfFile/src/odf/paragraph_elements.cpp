@@ -37,13 +37,11 @@
 
 #include <boost/algorithm/string.hpp>
 
-#include <xml/xmlchar.h>
-#include <xml/attributes.h>
-#include <xml/utils.h>
-#include <common/readstring.h>
-#include <odf/odf_document.h>
-#include <CPOptional.h>
-#include <CPWeakPtr.h>
+#include "../../include/xml/xmlchar.h"
+
+#include "../../include/xml/utils.h"
+#include "../../include/common/readstring.h"
+#include "../../include/odf/odf_document.h"
 
 #include "styles.h"
 #include "note.h"
@@ -1560,20 +1558,30 @@ void text_drop_down::docx_convert(oox::docx_conversion_context & Context)
     std::wostream & strm = Context.output_stream();
 	Context.finish_run();
 	
-	strm << L"<w:r><w:fldChar w:fldCharType=\"begin\"><w:ffData><w:name w:val=\"" << text_name_.get_value_or(L"") << L"\"/><w:enabled/>";
+	//strm << L"<w:r><w:fldChar w:fldCharType=\"begin\"><w:ffData><w:name w:val=\"" << text_name_.get_value_or(L"") << L"\"/><w:enabled/>";
 
-	strm << L"<w:ddList><w:result w:val=\"0\"/>";
+	//strm << L"<w:ddList><w:result w:val=\"0\"/>";
+	//for (size_t i = 0; i < content_.size(); i++)
+	//{
+	//	content_[i]->docx_convert(Context);
+	//}
+	//strm << L"</w:ddList></w:ffData>";
+
+	//strm << L"</w:fldChar></w:r>";
+	//strm << L"<w:r><w:instrText>FORMDROPDOWN</w:instrText></w:r>";
+	//strm << L"<w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>";
+	//strm << L"<w:r><w:t>" << text_ << L"</w:t></w:r>";
+	//strm << L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>";
+
+	_UINT32 id = 0x7fff + Context.nFormFieldId_++;
+	strm << L"<w:sdt><w:sdtPr><w:alias w:val=\"\"/><w:id w:val=\"" + std::to_wstring(id) << L"\"/><w:dropDownList>";
 	for (size_t i = 0; i < content_.size(); i++)
-    {
-        content_[i]->docx_convert(Context);
-    }
-	strm << L"</w:ddList></w:ffData>";
-
-	strm << L"</w:fldChar></w:r>";
-	strm << L"<w:r><w:instrText>FORMDROPDOWN</w:instrText></w:r>";
-	strm << L"<w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>";
+	{
+		content_[i]->docx_convert(Context);
+	}
+	strm << L"</w:dropDownList></w:sdtPr><w:sdtEndPr/><w:sdtContent>";
 	strm << L"<w:r><w:t>" << text_ << L"</w:t></w:r>";
-    strm << L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>";
+	strm << L"</w:sdtContent></w:sdt>";
 }
 //-------------------------------------------------------------------------------------------------------------------
 const wchar_t * text_label::ns		= L"text";
@@ -1587,7 +1595,7 @@ void text_label::docx_convert(oox::docx_conversion_context & Context)
 {
     std::wostream & strm = Context.output_stream();
 	
-	strm << L"<w:listEntry w:val=\"" << text_value_.get_value_or(L"") << L"\"/>";
+	strm << L"<w:listItem w:value=\"" << text_value_.get_value_or(L"") << L"\" w:displayText=\"" << text_value_.get_value_or(L"") << L"\"/>";
 }
 //-------------------------------------------------------------------------------------------------------------------
 const wchar_t * sheet_name::ns = L"text";
@@ -2331,19 +2339,37 @@ void field_fieldmark::docx_convert(oox::docx_conversion_context & Context)
 		std::wostream & strm = Context.output_stream();
 		Context.finish_run();
 		
-		strm << L"<w:r><w:fldChar w:fldCharType=\"begin\"><w:ffData><w:name w:val=\"" << text_name_.get_value_or(L"") << L"\"/><w:enabled/>";
+		//strm << L"<w:r><w:fldChar w:fldCharType=\"begin\"><w:ffData><w:name w:val=\"" << text_name_.get_value_or(L"") << L"\"/><w:enabled/>";
 
-		strm << L"<w:ddList><w:result w:val=\"0\"/>";
+		//strm << L"<w:ddList><w:result w:val=\"0\"/>";
+		//for (size_t i = 0; i < field_params_.size(); i++)
+		//{
+		//	field_params_[i]->docx_convert(Context);
+		//}
+		//strm << L"</w:ddList></w:ffData>";
+
+		//strm << L"</w:fldChar></w:r>";
+		//strm << L"<w:r><w:instrText>FORMDROPDOWN</w:instrText></w:r>";
+		//strm << L"<w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>";
+		//strm << L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>";
+
+		_UINT32 id = 0x7fff + Context.nFormFieldId_++;
+		std::wstring text_;
+		strm << L"<w:sdt><w:sdtPr><w:alias w:val=\"\"/><w:id w:val=\"" + std::to_wstring(id) << L"\"/><w:dropDownList>";
 		for (size_t i = 0; i < field_params_.size(); i++)
 		{
-			field_params_[i]->docx_convert(Context);
-		}
-		strm << L"</w:ddList></w:ffData>";
+			field_param* param = dynamic_cast<field_param*>(field_params_[i].get());
+			if (!param) continue;
+			
+			strm << L"<w:listItem w:value=\"" << XmlUtils::EncodeXmlString(param->field_value_.get_value_or(L""))
+				<< L"\" w:displayText=\"" << XmlUtils::EncodeXmlString(param->field_value_.get_value_or(L"")) << L"\"/>";
 
-		strm << L"</w:fldChar></w:r>";
-		strm << L"<w:r><w:instrText>FORMDROPDOWN</w:instrText></w:r>";
-		strm << L"<w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>";
-		strm << L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>";
+			if (text_.empty())
+				text_ = param->field_value_.get_value_or(L"");
+		}
+		strm << L"</w:dropDownList></w:sdtPr><w:sdtEndPr/><w:sdtContent>";
+		strm << L"<w:r><w:t>" << XmlUtils::EncodeXmlString(text_) << L"</w:t></w:r>";
+		strm << L"</w:sdtContent></w:sdt>";
 	}
 	else if (std::wstring::npos != field_type_->find(L"FORMTEXT"))
 	{

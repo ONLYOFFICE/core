@@ -1,0 +1,7 @@
+<<<<<<<
+#include <freetype/ftlist.h>
+=======
+#include <wasm_jmp.h>
+
+#include <freetype/ftlist.h>
+>>>>>>>

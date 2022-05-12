@@ -32,15 +32,15 @@
 
 #include <iostream>
 
-#include <xml/simple_xml_writer.h>
-#include <odf/odf_document.h>
+#include "../../include/xml/simple_xml_writer.h"
+#include "../../include/odf/odf_document.h"
 
 #include "../odf/odfcontext.h"
 #include "../odf/draw_common.h"
 #include "../odf/calcs_styles.h"
 #include "../odf/datatypes/borderstyle.h"
 
-#include "logging.h"
+#include "../../include/logging.h"
 
 #include "pptx_conversion_context.h"
 

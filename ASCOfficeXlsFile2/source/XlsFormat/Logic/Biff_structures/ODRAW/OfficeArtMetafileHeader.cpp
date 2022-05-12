@@ -31,7 +31,6 @@
  */
 
 #include "OfficeArtMetafileHeader.h"
-#include <Binary/CFRecord.h>
 #include "OfficeArtBlip.h"
 
 namespace ODRAW

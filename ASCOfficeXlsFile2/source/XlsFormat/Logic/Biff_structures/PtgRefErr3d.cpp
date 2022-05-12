@@ -32,7 +32,6 @@
 
 #include "PtgRefErr3d.h"
 #include "RevExtern.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
 {
@@ -60,7 +59,11 @@ void PtgRefErr3d::loadFields(CFRecord& record)
 	global_info = record.getGlobalWorkbookInfo();
 
 	record >> ixti;
-	record.skipNunBytes(4); // unused
+
+    if (global_info->Version < 0x0800)
+        record.skipNunBytes(4); // unused
+    else
+        record.skipNunBytes(6); // unused
 }
 
 

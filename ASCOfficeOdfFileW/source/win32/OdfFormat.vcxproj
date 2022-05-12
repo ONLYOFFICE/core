@@ -69,8 +69,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
-    <IncludePath>D:\_Work\core\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\_Work\core\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\..\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
@@ -162,6 +162,12 @@
     <ClCompile Include="..\OdfFormat\header_footer.cpp" />
     <ClCompile Include="..\OdfFormat\list.cpp" />
     <ClCompile Include="..\OdfFormat\logging.cpp" />
+    <ClCompile Include="..\OdfFormat\math_elementaries.cpp" />
+    <ClCompile Include="..\OdfFormat\math_elements.cpp" />
+    <ClCompile Include="..\OdfFormat\math_layout_elements.cpp" />
+    <ClCompile Include="..\OdfFormat\math_limit_elements.cpp" />
+    <ClCompile Include="..\OdfFormat\math_table_elements.cpp" />
+    <ClCompile Include="..\OdfFormat\math_token_elements.cpp" />
     <ClCompile Include="..\OdfFormat\mediaitems.cpp" />
     <ClCompile Include="..\OdfFormat\mediaitems_utils.cpp" />
     <ClCompile Include="..\OdfFormat\number_style.cpp" />
@@ -172,6 +178,7 @@
     <ClCompile Include="..\OdfFormat\odf_conversion_context.cpp" />
     <ClCompile Include="..\OdfFormat\odf_drawing_context.cpp" />
     <ClCompile Include="..\OdfFormat\odf_lists_styles_context.cpp" />
+    <ClCompile Include="..\OdfFormat\odf_math_context.cpp" />
     <ClCompile Include="..\OdfFormat\odf_notes_context.cpp" />
     <ClCompile Include="..\OdfFormat\odf_number_styles_context.cpp" />
     <ClCompile Include="..\OdfFormat\odf_page_layout_context.cpp" />
@@ -244,6 +251,12 @@
     <ClInclude Include="..\OdfFormat\draw_shapes.h" />
     <ClInclude Include="..\OdfFormat\header_footer.h" />
     <ClInclude Include="..\OdfFormat\list.h" />
+    <ClInclude Include="..\OdfFormat\math_elementaries.h" />
+    <ClInclude Include="..\OdfFormat\math_elements.h" />
+    <ClInclude Include="..\OdfFormat\math_layout_elements.h" />
+    <ClInclude Include="..\OdfFormat\math_limit_elements.h" />
+    <ClInclude Include="..\OdfFormat\math_table_elements.h" />
+    <ClInclude Include="..\OdfFormat\math_token_elements.h" />
     <ClInclude Include="..\OdfFormat\mediaitems.h" />
     <ClInclude Include="..\OdfFormat\mediaitems_utils.h" />
     <ClInclude Include="..\OdfFormat\number_style.h" />
@@ -253,6 +266,7 @@
     <ClInclude Include="..\OdfFormat\odf_conversion_context.h" />
     <ClInclude Include="..\OdfFormat\odf_drawing_context.h" />
     <ClInclude Include="..\OdfFormat\odf_lists_styles_context.h" />
+    <ClInclude Include="..\OdfFormat\odf_math_context.h" />
     <ClInclude Include="..\OdfFormat\odf_notes_context.h" />
     <ClInclude Include="..\OdfFormat\odf_number_styles_context.h" />
     <ClInclude Include="..\OdfFormat\odf_page_layout_context.h" />

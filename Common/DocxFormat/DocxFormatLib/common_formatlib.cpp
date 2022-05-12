@@ -30,12 +30,12 @@
  *
  */
 
-#include "../Source/Common/Align.cpp"
-#include "../Source/Common/Color.cpp"
-#include "../Source/Common/Index.cpp"
-#include "../Source/Common/NumFormat.cpp"
-#include "../Source/Common/Position.cpp"
-#include "../Source/Common/Wrap.cpp"
-#include "../Source/Common/ZIndex.cpp"
+//#include "../Source/Common/Align.cpp"
+//#include "../Source/Common/Color.cpp"
+//#include "../Source/Common/Index.cpp"
+//#include "../Source/Common/NumFormat.cpp"
+//#include "../Source/Common/Position.cpp"
+//#include "../Source/Common/Wrap.cpp"
+//#include "../Source/Common/ZIndex.cpp"
 #include "../Source/Common/SimpleTypes_Word.cpp"
 #include "../Source/SystemUtility/SystemUtility.cpp"

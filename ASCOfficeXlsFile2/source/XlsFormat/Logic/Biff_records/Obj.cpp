@@ -31,11 +31,11 @@
  */
 
 #include "Obj.h"
-#include <Logic/Biff_records/MsoDrawing.h>
-#include <Logic/Biff_records/TxO.h>
-#include <Logic/Biff_structures/ODRAW/SimpleOfficeArtContainers.h>
-#include <Logic/Biff_structures/ODRAW/OfficeArtClientAnchorSheet.h>
-#include <Logic/Biff_structures/ODRAW/OfficeArtFOPT.h>
+#include "MsoDrawing.h"
+#include "TxO.h"
+#include "../Biff_structures/ODRAW/SimpleOfficeArtContainers.h"
+#include "../Biff_structures/ODRAW/OfficeArtClientAnchorSheet.h"
+#include "../Biff_structures/ODRAW/OfficeArtFOPT.h"
 
 
 #include "../../../XlsXlsxConverter/XlsConverter.h"

@@ -49,11 +49,27 @@ bool CDjVuFile::LoadFromFile(const std::wstring& file, const std::wstring& optio
 
     return false;
 }
+bool CDjVuFile::LoadFromMemory(BYTE* data, DWORD length, const std::wstring& options,
+                               const std::wstring& owner_password, const std::wstring& user_password)
+{
+    if (m_pImplementation)
+        return m_pImplementation->LoadFromMemory(data, length, options);
+    return false;
+}
 
 void CDjVuFile::Close()
 {
 	if (m_pImplementation)
 		m_pImplementation->Close();
+}
+
+OfficeDrawingFileType CDjVuFile::GetType()
+{
+    return odftDJVU;
+}
+NSFonts::IApplicationFonts* CDjVuFile::GetFonts()
+{
+    return m_pImplementation->GetFonts();
 }
 
 std::wstring CDjVuFile::GetTempDirectory()
@@ -82,13 +98,28 @@ void CDjVuFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* p
 	if (m_pImplementation)
 		m_pImplementation->DrawPageOnRenderer(pRenderer, nPageIndex, pBreak);
 }
-void CDjVuFile::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType, const int nRasterW, const int nRasterH)
+std::wstring CDjVuFile::GetInfo()
 {
-	if (m_pImplementation)
-        m_pImplementation->ConvertToRaster(nPageIndex, wsDstPath, nImageType, nRasterW, nRasterH);
+    if (m_pImplementation)
+        return m_pImplementation->GetInfo();
+    return L"";
 }
 void CDjVuFile::ConvertToPdf(const std::wstring& wsDstPath)
 {
 	if (m_pImplementation)
         m_pImplementation->ConvertToPdf(wsDstPath);
 }
+#ifdef BUILDING_WASM_MODULE
+BYTE* CDjVuFile::GetStructure()
+{
+    if (m_pImplementation)
+        return m_pImplementation->GetStructure();
+    return NULL;
+}
+BYTE* CDjVuFile::GetLinks (int nPageIndex)
+{
+    if (m_pImplementation)
+        return m_pImplementation->GetPageLinks(nPageIndex);
+    return NULL;
+}
+#endif

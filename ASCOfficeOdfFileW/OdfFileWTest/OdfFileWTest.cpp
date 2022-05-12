@@ -50,10 +50,12 @@
 	#if defined(_DEBUG)
 		#pragma comment(lib, "../../build/lib/win_32/DEBUG/graphics.lib")
 		#pragma comment(lib, "../../build/lib/win_32/DEBUG/kernel.lib")
+		#pragma comment(lib, "../../build/lib/win_32/DEBUG/kernel_network")
 		#pragma comment(lib, "../../build/lib/win_32/DEBUG/UnicodeConverter.lib")
 	#else
 		#pragma comment(lib, "../../build/lib/win_32/graphics.lib")
 		#pragma comment(lib, "../../build/lib/win_32/kernel.lib")
+		#pragma comment(lib, "../../build/lib/win_32/kernel_network")
 		#pragma comment(lib, "../../build/lib/win_32/UnicodeConverter.lib")
 	#endif
 	#pragma comment(lib, "../../build/bin/icu/win_32/icuuc.lib")

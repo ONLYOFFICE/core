@@ -68,6 +68,45 @@
 
 namespace NSDoctRenderer
 {
+    static int GetFormatByTexExtention(const std::wstring& sExt)
+    {
+        int nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
+        if (L"docx" == sExt)
+            nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
+        else if (L"doc" == sExt)
+            nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC;
+        else if (L"odt" == sExt)
+            nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT;
+        else if (L"rtf" == sExt)
+            nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF;
+        else if (L"txt" == sExt)
+            nFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT;
+        else if (L"pptx" == sExt)
+            nFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
+        else if (L"odp" == sExt)
+            nFormat = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
+        else if (L"xlsx" == sExt)
+            nFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
+        else if (L"xls" == sExt)
+            nFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS;
+        else if (L"ods" == sExt)
+            nFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
+        else if (L"csv" == sExt)
+            nFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
+        else if (L"pdf" == sExt)
+            nFormat = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
+        else if (L"image" == sExt)
+            nFormat = AVS_OFFICESTUDIO_FILE_IMAGE;
+        else if (L"jpg" == sExt)
+            nFormat = AVS_OFFICESTUDIO_FILE_IMAGE;
+        else if (L"png" == sExt)
+            nFormat = AVS_OFFICESTUDIO_FILE_IMAGE;
+        return nFormat;
+    }
+}
+
+namespace NSDoctRenderer
+{
     class CDocBuilderValue_Private
     {
     public:

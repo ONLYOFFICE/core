@@ -3085,7 +3085,7 @@ namespace PdfReader
 
 
 		long brush;
-		int alpha = pGState->getFillOpacity() * 255;
+		double dAlphaKoef = pGState->getFillOpacity();
 		m_pRenderer->get_BrushType(&brush);
 		m_pRenderer->put_BrushType(c_BrushTypePathNewLinearGradient);
 
@@ -3110,12 +3110,14 @@ namespace PdfReader
 			GfxColor c;
 			pShading->getColor(t, &c);
 
-            GfxRGB draw_color;
+            GfxRGB  draw_color;
+            GfxGray draw_alpha;
 
             // RenderingIntent in this case does nothing but it's an obligatory arguments
             ColorSpace->getRGB(&c, &draw_color, gfxRenderingIntentAbsoluteColorimetric);
+            ColorSpace->getGray(&c, &draw_alpha, gfxRenderingIntentAbsoluteColorimetric);
             info.shading.function.set_color(i, colToByte(draw_color.b),
-                                            colToByte(draw_color.g), colToByte(draw_color.r), alpha);
+                                            colToByte(draw_color.g), colToByte(draw_color.r), dAlphaKoef * 255.0);
             t+=delta;
 		}
 
@@ -3868,21 +3870,21 @@ namespace PdfReader
         unsigned char g = colToByte(oRGB.g);
         unsigned char b = colToByte(oRGB.b);
 
-        unsigned char unAlpha = m_bTransparentGroup ? 255.0 * pGState->getFillOpacity() : 255;
-        unsigned char unPixel = 0;
+        double dAlphaKoef = m_bTransparentGroup ? pGState->getFillOpacity() : 1;
         int nInvert = (bInvert ? 1 : 0);
         for (int nY = nHeight - 1; nY >= 0; nY--)
         {
             unsigned char *pMask = NULL;
             int nX = 0;
+            int nIndex = 4 * nY * nWidth;
             for (nX = 0, pMask = pImageStream->getLine(); nX < nWidth; nX++)
             {
-                int nIndex = 4 * (nX + nY * nWidth);
                 unsigned char unPixel = *pMask++ ^ nInvert;
                 pBufferPtr[nIndex + 0] = unPixel ? 255 : b;
                 pBufferPtr[nIndex + 1] = unPixel ? 255 : g;
                 pBufferPtr[nIndex + 2] = unPixel ? 255 : r;
-                pBufferPtr[nIndex + 3] = unPixel ? 0 : unAlpha;
+                pBufferPtr[nIndex + 3] = unPixel ? 0 : (unsigned char)(255.0 * dAlphaKoef);
+                nIndex += 4;
             }
         }
 

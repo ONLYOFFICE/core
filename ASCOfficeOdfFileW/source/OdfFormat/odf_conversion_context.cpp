@@ -322,16 +322,20 @@ bool odf_conversion_context::start_math()
 void odf_conversion_context::end_math()
 {
 	math_context_.end_math();
-
+	
 	end_object();
 	math_context_.set_styles_context(styles_context());
-	
-	calculate_font_metrix(L"Cambria Math", 12, false, false); // смотреть по формуле - перевычислять только если есть изменения
-	
-	int count_symbol_height = 3; //сосчитать в math_context_
-	int count_symbol_width = 10;
 
-	_CP_OPT(double)width = convert_symbol_width(count_symbol_width);
+	calculate_font_metrix(math_context_.font, math_context_.size, false, false); // смотреть по формуле - перевычислять только если есть изменения это шрифт и кегль
+	settings_context()->add_property(L"BaseFontHeight", L"short", std::to_wstring(math_context_.size));
+	settings_context()->add_property(L"FontNameFunctions", L"string", math_context_.font);
+	settings_context()->add_property(L"FontNameNumbers", L"string", math_context_.font);
+	settings_context()->add_property(L"FontNameText", L"string", math_context_.font);
+	settings_context()->add_property(L"FontNameVariables", L"string", math_context_.font);
+	int count_symbol_height = 30; //сосчитать в math_context_ кол-во этажей
+	int count_symbol_width = 100; //длина символов
+
+	_CP_OPT(double)width = convert_symbol_width(count_symbol_width); // либра рамка формулы(её параметры)
 	_CP_OPT(double)height = convert_symbol_width(count_symbol_height);
 
 	//if (false == math_context_.in_text_box_)
@@ -343,6 +347,7 @@ void odf_conversion_context::end_math()
 	{
 		drawing_context()->end_drawing();
 	}
+	this->math_context()->symbol_counter = 0;
 }
 void odf_conversion_context::end_text()
 {

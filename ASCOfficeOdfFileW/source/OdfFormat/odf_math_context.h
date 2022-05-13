@@ -43,6 +43,8 @@
 #define CREATE_MATH_TAG(tag)\
 	odf_writer::office_element_ptr elm;\
 	odf_writer::create_element(L"math", tag, elm, odf_context());\
+	if(tag == L"mi" || tag == L"mo" || tag == L"mn")\
+		odf_context()->math_context()->symbol_counter++;\
 	//odf_context()->math_context()->debug_stream << tag << "\n";
 
 #define OPEN_MATH_TAG(elm)\
@@ -91,7 +93,11 @@ namespace cpdoccore {
 			int lvl_of_me;
 			int matrix_row_counter;
 			std::vector<int> end_counter;
-			int counter; 
+			bool style_flag;
+			int counter;
+			int symbol_counter;
+			std::wstring font;
+			double size;
 			std::set<wchar_t> mo;
 			std::map<std::wstring, std::wstring> diak_symbols;
 			bool annotation_flag;

@@ -404,9 +404,9 @@ namespace Oox2Odf
 
 		if (val.auxFlag)
 		{
-			annotation() += L"\"";
+			//annotation() += L"\"";
 			convert(oox_box->m_oElement.GetPointer());
-			annotation() += L"\"";
+			//annotation() += L"\"";
 		}
 		else
 			convert(oox_box->m_oElement.GetPointer());
@@ -789,10 +789,11 @@ namespace Oox2Odf
 		if (!oox_func) return;
 
 		returnValues values = convert(oox_func->m_oFuncPr.GetPointer());
-		convert(oox_func->m_oFName.GetPointer());
+		bool flag = convert(oox_func->m_oFName.GetPointer(), oox_func->m_oElement.GetPointer());
 
-		
-		convert(oox_func->m_oElement.GetPointer());	
+		if(!flag)
+			convert(oox_func->m_oElement.GetPointer());
+
 		if (values.colorFlag)
 		{
 			CLOSE_MATH_TAG;
@@ -809,13 +810,24 @@ namespace Oox2Odf
 		return values;
 	}
 
-	void OoxConverter::convert(OOX::Logic::CFName *oox_fname)
+	bool OoxConverter::convert(OOX::Logic::CFName *oox_fname, OOX::Logic::CElement *oox_elm)
 	{
-		if (!oox_fname) return;
-
+		if (!oox_fname) return false;
+		bool result;
 		for (size_t i = 0; i < oox_fname->m_arrItems.size(); ++i)
-			convert(oox_fname->m_arrItems[i]);
-
+		{
+			if (oox_fname->m_arrItems[i]->getType() == OOX::et_m_limLow)
+			{
+				convert(dynamic_cast<OOX::Logic::CLimLow*>(oox_fname->m_arrItems[i]), oox_elm);
+				result = true;
+			}
+			else
+			{
+				convert(oox_fname->m_arrItems[i]);						
+				result = false;
+			}
+		}
+		return result;
 	}
 
 	void OoxConverter::convert(OOX::Logic::CGroupChr* oox_group_ch, OOX::Logic::CLim* oox_lim)
@@ -920,7 +932,7 @@ namespace Oox2Odf
 		if (!oox_vert_jc) return;
 	}
 
-	void OoxConverter::convert(OOX::Logic::CLimLow *oox_lim_low)
+	void OoxConverter::convert(OOX::Logic::CLimLow *oox_lim_low, OOX::Logic::CElement *oox_elm)
 	{
 		if (!oox_lim_low) return;
 		
@@ -937,7 +949,7 @@ namespace Oox2Odf
 		}
 		else
 		{
-			annotation() += L"oper ";
+			odf_context()->math_context()->annotation_oper_flag = true;
 			mrow();
 			convert(oox_lim_low->m_oElement.GetPointer());
 			endOfMrow();
@@ -948,6 +960,9 @@ namespace Oox2Odf
 		}
 
 		CLOSE_MATH_TAG;
+
+		if (oox_elm)
+			convert(oox_elm);
 
 		endOfMrow();
 		if (values.colorFlag)
@@ -1225,8 +1240,13 @@ namespace Oox2Odf
 		convert(oox_mrun->m_oYearShort.GetPointer());
 		if (clrFlag)
 		{
-			CLOSE_MATH_TAG;
-			annotation() += L"}";
+			CLOSE_MATH_TAG;	
+			if(odf_context()->math_context()->annotation_oper_flag)
+				odf_context()->math_context()->annotation_oper_flag = false;
+			else
+			{
+				annotation() += L"}";
+			}
 		}
 	}
 
@@ -1234,7 +1254,20 @@ namespace Oox2Odf
 	{
 		if (!oox_r_pr) return false;
 
-		if (oox_r_pr->m_oColor.IsInit())
+		if (odf_context()->math_context()->style_flag)
+		{
+			odf_context()->math_context()->style_flag = false;
+			odf_context()->math_context()->font = *oox_r_pr->m_oRFonts->m_sAscii;
+			odf_context()->math_context()->size = oox_r_pr->m_oSz->m_oVal->GetValue();
+			/*odf_context()->settings_context()->add_property(L"BaseFontHeight", L"short", oox_r_pr->m_oSz->m_oVal->ToString());
+			odf_context()->settings_context()->add_property(L"FontNameFunctions", L"string", *oox_r_pr->m_oRFonts->m_sAscii);
+			odf_context()->settings_context()->add_property(L"FontNameNumbers", L"string", *oox_r_pr->m_oRFonts->m_sAscii);
+			odf_context()->settings_context()->add_property(L"FontNameText", L"string", *oox_r_pr->m_oRFonts->m_sAscii);
+			odf_context()->settings_context()->add_property(L"FontNameVariables", L"string", *oox_r_pr->m_oRFonts->m_sAscii);*/
+		}
+
+
+		if (oox_r_pr->m_oColor.IsInit() && oox_r_pr->m_oColor->m_oVal->ToString() != L"auto")
 		{
 			if (oox_r_pr->m_oColor->m_oVal.IsInit())
 			{
@@ -1252,7 +1285,12 @@ namespace Oox2Odf
 				clr2.erase(0, 1);
 				std::vector<int> rgb = hexToIntColor(clr2);
 				boost::to_upper(clr2);
-				annotation() += L" color hex " + clr2 + L"{";
+				if (odf_context()->math_context()->annotation_oper_flag)
+				{
+					annotation() += L" color hex " + clr2 + L" oper ";				
+				}
+				else
+					annotation() += L" color hex " + clr2  + L"{" ;
 				return true;
 			}
 		}

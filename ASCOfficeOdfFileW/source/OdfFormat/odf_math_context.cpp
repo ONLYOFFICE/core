@@ -110,7 +110,7 @@ namespace odf_writer
 	static formulasconvert::oox2odf_converter formulas_converter_math;
 
 	odf_math_context::odf_math_context(odf_conversion_context *odf_context)
-		: impl_(new  odf_math_context::Impl(odf_context)), lvl_of_me(0), counter(0), annotation_flag(true), annotation_oper_flag(false), matrix_row_counter(0)
+		: impl_(new  odf_math_context::Impl(odf_context)), lvl_of_me(0), style_flag(true), counter(0), symbol_counter(0), annotation_flag(true), annotation_oper_flag(false), matrix_row_counter(0)
 	{
 		mo = { L'+', L'-', L'±', L'∓', L'∙', L'×', L'∗', L'÷', L'/', L'≂', L'⊕', L'⊖', L'⊙', L'⊗', L'⊘', L'∘', L'¬', L'∧', L'∨',		// un/bi operators
 				L'=', L'≠', L'<', L'≤', L'>', L'≥', L'≪', L'≫', L'≈', L'~', L'≃', L'≡', L'∝', L'∥', L'⟂', L'|', L'∤', L'→', L'⊷',	// relations

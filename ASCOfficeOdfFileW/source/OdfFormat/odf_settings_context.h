@@ -65,6 +65,7 @@ public:
 	void end_table	();
 
 	void add_property(std::wstring name, std::wstring type, std::wstring value);
+	void add_config_content_item(std::wstring name, std::wstring type, std::wstring value);
 private:
 	struct _table
 	{

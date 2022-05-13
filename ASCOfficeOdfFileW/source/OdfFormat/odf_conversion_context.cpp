@@ -327,11 +327,13 @@ void odf_conversion_context::end_math()
 	math_context_.set_styles_context(styles_context());
 
 	calculate_font_metrix(math_context_.font, math_context_.size, false, false); // смотреть по формуле - перевычислять только если есть изменения это шрифт и кегль
+	/*settings_context()->start_view();
 	settings_context()->add_property(L"BaseFontHeight", L"short", std::to_wstring(math_context_.size));
 	settings_context()->add_property(L"FontNameFunctions", L"string", math_context_.font);
 	settings_context()->add_property(L"FontNameNumbers", L"string", math_context_.font);
 	settings_context()->add_property(L"FontNameText", L"string", math_context_.font);
 	settings_context()->add_property(L"FontNameVariables", L"string", math_context_.font);
+	settings_context()->end_view();*/
 	int count_symbol_height = 30; //сосчитать в math_context_ кол-во этажей
 	int count_symbol_width = 100; //длина символов
 

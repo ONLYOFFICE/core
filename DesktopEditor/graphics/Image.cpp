@@ -75,14 +75,14 @@ namespace Aggplus
 
 		oFrame.ClearNoAttack();
 	}
-	void CImage::Create(BYTE* pImgData, const DWORD& dwWidth, const DWORD& dwHeight, const long& nStride)
+	void CImage::Create(BYTE* pImgData, const DWORD& dwWidth, const DWORD& dwHeight, const long& nStride, bool bExternalBuffer)
 	{
 		m_pImgData = pImgData;
 		m_dwWidth = dwWidth;
 		m_dwHeight = dwHeight;
 		m_nStride = nStride;
 
-		m_bExternalBuffer = false;
+		m_bExternalBuffer = bExternalBuffer;
 		m_Status = Ok;
 	}
 

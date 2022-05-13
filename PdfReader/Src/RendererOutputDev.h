@@ -326,6 +326,10 @@ namespace PdfReader
 		bool                          m_bTiling;
 		bool                          m_bTransparentGroup;
 
+		unsigned char*                m_pSoftMask;
+		int                           m_nSoftMaskWidth;
+		int                           m_nSoftMaskHeight;
+
 		bool                          m_bTransparentGroupSoftMask;
 		CBgraFrame*                   m_pTransparentGroupSoftMask;
 		std::vector<CBgraFrame*>      m_arrTransparency;

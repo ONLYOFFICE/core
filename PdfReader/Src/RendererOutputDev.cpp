@@ -470,6 +470,8 @@ namespace PdfReader
         m_bTransparentGroupSoftMask = false;
         m_pTransparentGroupSoftMask = NULL;
 
+        m_pSoftMask = NULL;
+
         m_bDrawOnlyText = false;
         m_bClipChanged = true;
 
@@ -565,8 +567,9 @@ namespace PdfReader
 //        if (m_pBufferTextClip) tmpchange
 //            delete m_pBufferTextClip;
 
-        if (m_pTransparentGroupSoftMask)
-            delete[]m_pTransparentGroupSoftMask;
+        RELEASEOBJECT(m_pTransparentGroupSoftMask);
+
+        RELEASEARRAYOBJECTS(m_pSoftMask);
     }
     void RendererOutputDev::startPage(int nPageIndex, GfxState *pGState)
     {
@@ -604,6 +607,7 @@ namespace PdfReader
     }
     void RendererOutputDev::restoreState(GfxState *pGState)
     {
+        RELEASEARRAYOBJECTS(m_pSoftMask);
 
         if (!m_sClip.empty())
             m_sClip.pop_back();
@@ -2834,10 +2838,64 @@ namespace PdfReader
         if (m_bTransparentGroupSoftMask)
             return;
 
-        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
-        m_pRenderer->DrawPath(c_nWindingFillMode);
+        if (m_pSoftMask)
+        {
+            if (pGState->getFillColorSpace()->isNonMarking())
+                return;
 
-        m_pRenderer->EndCommand(c_nPathType);
+            Aggplus::CImage oImage;
+            oImage.Create(m_pSoftMask, m_nSoftMaskWidth, m_nSoftMaskHeight, -4 * m_nSoftMaskWidth, true);
+
+            GfxColorSpace* pColorSpace = pGState->getFillColorSpace();
+            GfxRGB oRGB;
+            pColorSpace->getRGB(pGState->getFillColor(), &oRGB, GfxRenderingIntent::gfxRenderingIntentAbsoluteColorimetric);
+
+            unsigned char r = colToByte(oRGB.r);
+            unsigned char g = colToByte(oRGB.g);
+            unsigned char b = colToByte(oRGB.b);
+
+            for (int nY = m_nSoftMaskHeight - 1; nY >= 0; nY--)
+            {
+                int nIndex = 4 * nY * m_nSoftMaskWidth;
+                for (int nX = 0; nX < m_nSoftMaskWidth; nX++)
+                {
+                    if (m_pSoftMask[nIndex + 3])
+                    {
+                        m_pSoftMask[nIndex + 0] = b;
+                        m_pSoftMask[nIndex + 1] = g;
+                        m_pSoftMask[nIndex + 2] = r;
+                    }
+                    nIndex += 4;
+                }
+            }
+
+            double arrMatrix[6];
+            double *pCTM = pGState->getCTM();
+
+            //  Исходное предобразование
+            //              |1  0  0|   |pCTM[0] pCTM[1] 0|
+            // arrMattrix = |0 -1  0| * |pCTM[2] pCTM[3] 0|
+            //              |0  1  1|   |pCTM[4] pCTM[5] 1|
+
+            arrMatrix[0] =     pCTM[0];
+            arrMatrix[1] =  -pCTM[1];
+            arrMatrix[2] =    -pCTM[2];
+            arrMatrix[3] =  -(-pCTM[3]);
+            arrMatrix[4] =     pCTM[2] + pCTM[4];
+            arrMatrix[5] =  -(pCTM[3] + pCTM[5]) + pGState->getPageHeight();
+
+            double dShiftX = 0, dShiftY = 0;
+            // TODO неверные преобразования перед отрисовкой картинки
+            DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
+            //DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
+            m_pRenderer->DrawImage(&oImage, 0 + dShiftX, 0 + dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
+        }
+        else
+        {
+            DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
+            m_pRenderer->DrawPath(c_nWindingFillMode);
+            m_pRenderer->EndCommand(c_nPathType);
+        }
     }
     void RendererOutputDev::eoFill(GfxState *pGState)
     {
@@ -3853,9 +3911,10 @@ namespace PdfReader
         unsigned char *pBufferPtr = new unsigned char[nBufferSize];
         if (!pBufferPtr)
             return;
-
-        Aggplus::CImage oImage;
-        oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
+        RELEASEARRAYOBJECTS(m_pSoftMask);
+        m_pSoftMask = pBufferPtr;
+        m_nSoftMaskWidth  = nWidth;
+        m_nSoftMaskHeight = nHeight;
 
         // Пишем данные в pBufferPtr
         ImageStream *pImageStream = new ImageStream(pStream, nWidth, 1, 1);
@@ -3906,8 +3965,10 @@ namespace PdfReader
         arrMatrix[5] =  -(pCTM[3] + pCTM[5]) + dPageHeight;
 
         double dShiftX = 0, dShiftY = 0;
+        /* Отложено до Gfx::doPatternFill
         DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
         m_pRenderer->DrawImage(&oImage, 0 + dShiftX, 0 + dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
+        */
     }
 
     OO_INLINE bool CheckMask(const int& nComponentsCount, const int* pMaskColors, const unsigned char* pLine)

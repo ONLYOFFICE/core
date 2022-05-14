@@ -1547,6 +1547,10 @@ public:
                         alphaIndex += 4;
                     }
                 }
+                else
+                {
+                    imagePixels[alphaIndex - 5] = imagePixels[alphaIndex - 6] = imagePixels[alphaIndex - 7] = 0xFF - binaryAlpha[binaryIndex - 1];
+                }
             }
 
             oFrameTest.SaveFile(L"FILE", 4);

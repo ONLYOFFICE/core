@@ -187,6 +187,7 @@ public:
 	 
 public:
 
+	void* GetData();
 	void* PatternFinalize();
 	DWORD PatternGetWidth();
 	DWORD PatternGetHeight();
@@ -199,8 +200,10 @@ public:
 	WrapMode m_wrapMode;
 	CMatrix m_mtx;
 
-	INT m_bUsePattern;
 	CColor m_colors[2];
+
+	bool m_bUseBounds;
+	CDoubleRect m_oBounds;
 
 	BYTE Alpha;
 };

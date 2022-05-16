@@ -259,214 +259,162 @@ static int int_ceildivpow2(int a, int b)
 
 namespace openjpeg
 {
-    BYTE* ImageToFrameCheckFrame(opj_image_t* pImage, CBgraFrame* pFrame, int nOffsetY = 0)
-    {
-        if (NULL != pFrame->get_Data())
-        {
-            return pFrame->get_Data() + 4 * pFrame->get_Width() * nOffsetY;
-        }
+	bool ImageToData(const opj_image_t* pImage, BYTE* pData, const int& nComponentsCount, const int& nWidth, const int& nHeight, const int& nYOffset, const bool isFlip)
+	{
+		if (!pData)
+			return false;
 
-        unsigned int nW = pImage->x1 - pImage->x0;
-        unsigned int nH = pImage->y1 - pImage->y0;
+		BYTE* pPtr = pData;
 
-        unsigned int nBufferSize = 4 * nW * nH;
+		int nResW = int_ceildivpow2(pImage->comps[0].w, pImage->comps[0].factor);
+		int nResH = int_ceildivpow2(pImage->comps[0].h, pImage->comps[0].factor);
 
-        if (nBufferSize < 1)
-            return NULL;
+		for (int nY = 0, nIndex = 0; nY < nResH; ++nY)
+		{
+			if (isFlip)
+				pPtr = pData + (nHeight - 1 - nYOffset - nY) * nWidth * nComponentsCount;
 
-        BYTE* pData = new BYTE[nBufferSize];
+			for (int nX = 0; nX < nResW; ++nX, ++nIndex)
+			{
+				for (int nComponent = 0; nComponent < nComponentsCount; nComponent++)
+				{
+					pPtr[nComponent] = pImage->comps[nComponent].data[nWidth * nResH - ((nIndex) / (nResW)+1) * nWidth + (nIndex) % (nResW)];
+				}
+				pPtr += nComponentsCount;
+			}
+		}
 
-        if (!pData)
-            return NULL;
+		return true;
+	}
+	BYTE* GetBuffer(opj_image_t* pImage, BYTE*& pData, int& nComponentsCount,  int& nWidth, int& nHeight)
+	{
+		nWidth  = pImage->comps[0].w;
+		nHeight = pImage->comps[0].h;
+		nComponentsCount = pImage->numcomps;
 
-        pFrame->put_Width(nW);
-        pFrame->put_Height(nH);
-        pFrame->put_Stride(4 * nW);
-        pFrame->put_Data(pData);
-        return pData;
-    }
+		for (int nComponent = 1; nComponent < nComponentsCount; nComponent++)
+		{
+			if (pImage->comps[0].w != pImage->comps[nComponent].w
+					|| pImage->comps[0].h != pImage->comps[nComponent].h
+					|| pImage->comps[0].prec != pImage->comps[nComponent].prec)
 
-    bool ImageToFrame(opj_image_t* pImage, CBgraFrame* pFrame, bool isBGRA, int nOffsetY = 0)
-    {
-        unsigned char* pBufferPtr = ImageToFrameCheckFrame(pImage, pFrame, nOffsetY);
-        if (NULL == pBufferPtr)
-            return NULL;
+			{
+				return NULL;
+			}
+		}
 
-        if (true)
-        {
-            if (pImage->color_space != OPJ_CLRSPC_SYCC && pImage->numcomps == 3 && pImage->comps[0].dx == pImage->comps[0].dy && pImage->comps[1].dx != 1)
-                pImage->color_space = OPJ_CLRSPC_SYCC;
-            else if (pImage->numcomps <= 2)
-                pImage->color_space = OPJ_CLRSPC_GRAY;
+		int nBufferSize = nComponentsCount * nWidth * nHeight;
+		if (nBufferSize < 1 || nComponentsCount <= 0)
+			return NULL;
 
-            if (pImage->color_space == OPJ_CLRSPC_SYCC)
-                color_sycc_to_rgb(pImage);
-            else if (pImage->color_space == OPJ_CLRSPC_CMYK)
-                color_cmyk_to_rgb(pImage);
-            else if (pImage->color_space == OPJ_CLRSPC_EYCC)
-                color_esycc_to_rgb(pImage);
-        }
+		pData = new BYTE[nBufferSize];
 
-        int nWidth  = pImage->comps[0].w;
-        int nHeight = pImage->comps[0].h;
+		return pData;
+	}
+	bool GetData(BYTE* pFileData, const unsigned int& nFileSize, BYTE*& pData, int& nComponents, int& nWidth, int& nHeight, const bool& isFlip)
+	{
+		OPJ_CODEC_FORMAT codec = OPJ_CODEC_UNKNOWN;
+		opj_stream_t* l_stream = get_file_stream(pFileData, nFileSize, codec);
 
-        unsigned char indR = isBGRA ? 2 : 0;
-        unsigned char indG = 1;
-        unsigned char indB = isBGRA ? 0 : 2;
-        opj_image_comp_t* components = pImage->comps;
+		if (!l_stream)
+			return false;
 
-        // Пишем данные в pBufferPtr
-        if (pImage->numcomps == 3 &&
-            components[0].dx == components[1].dx && components[1].dx == components[2].dx &&
-            components[0].dy == components[1].dy && components[1].dy == components[2].dy &&
-            components[0].prec == components[1].prec && components[1].prec == components[2].prec)
-        {
-            int nResW = int_ceildivpow2(components[0].w, components[0].factor);
-            int nResH = int_ceildivpow2(components[0].h, components[0].factor);
+		opj_dparameters_t parameters;
+		opj_set_default_decoder_parameters(&parameters);
 
-            int nValue = nWidth * (nResH - 1);
-            for (int j = 0; j < nResH; ++j)
-            {
-                for (int i = 0; i < nResW; ++i)
-                {
-                    pBufferPtr[indR] = components[0].data[nValue + i];
-                    pBufferPtr[indG] = components[1].data[nValue + i];
-                    pBufferPtr[indB] = components[2].data[nValue + i];
-                    pBufferPtr[3] = 255;
-                    pBufferPtr += 4;
-                }
-                nValue -= nWidth;
-            }
-        }
-        else if (pImage->numcomps >= 4 &&
-            components[0].dx == components[1].dx && components[1].dx == components[2].dx && components[2].dx == components[3].dx &&
-            components[0].dy == components[1].dy && components[1].dy == components[2].dy && components[2].dy == components[3].dy &&
-            components[0].prec == components[1].prec && components[1].prec == components[2].prec && components[2].prec == components[3].prec)
-        {
-            int nResW = int_ceildivpow2(components[0].w, components[0].factor);
-            int nResH = int_ceildivpow2(components[0].h, components[0].factor);
+		opj_codec_t* l_codec = opj_create_decompress(codec);
 
-            int nValue = nWidth * (nResH - 1);
-            for (int j = 0; j < nResH; ++j)
-            {
-                for (int i = 0; i < nResW; ++i)
-                {
-                    pBufferPtr[indR] = components[0].data[nValue + i];
-                    pBufferPtr[indG] = components[1].data[nValue + i];
-                    pBufferPtr[indB] = components[2].data[nValue + i];
-                    pBufferPtr[3]    = components[3].data[nValue + i];
-                    pBufferPtr += 4;
-                }
-                nValue -= nWidth;
-            }
-        }
-        else // Grayscale
-        {
-            int nResW = int_ceildivpow2(components[0].w, components[0].factor);
-            int nResH = int_ceildivpow2(components[0].h, components[0].factor);
+		bool bResult = false;
 
-            int nValue = nWidth * (nResH - 1);
-            for (int j = 0; j < nResH; ++j)
-            {
-                for (int i = 0; i < nResW; ++i)
-                {
-                    pBufferPtr[0] = components[0].data[nValue + i];
-                    pBufferPtr[1] = pBufferPtr[0];
-                    pBufferPtr[2] = pBufferPtr[0];
-                    pBufferPtr[3] = 255;
-                    pBufferPtr += 4;
-                }
-                nValue -= nWidth;
-            }
-        }
+		opj_image_t* image = NULL;
+		unsigned int nTileHeight = 0;
 
-        return true;
-    }
+		if (!opj_setup_decoder(l_codec, &parameters))
+			goto end;
 
-    bool Parse(opj_stream_t* l_stream, OPJ_CODEC_FORMAT codec, CBgraFrame* pFrame, bool isBGRA)
-    {
-        if (!l_stream)
-            return false;
-
-        opj_dparameters_t parameters;
-        opj_set_default_decoder_parameters(&parameters);
-
-        opj_codec_t* l_codec = opj_create_decompress(codec);
-
-        bool bResult = false;
-        opj_image_t* image = NULL;
-        unsigned int nTileHeight = 0;
-
-        if (!opj_setup_decoder(l_codec, &parameters))
-            goto end;
-
-        if (!opj_read_header(l_stream, l_codec, &image))
-            goto end;
+		if (!opj_read_header(l_stream, l_codec, &image))
+			goto end;
 
 #ifdef USE_SEPARATE_COMPONENTS
-        if (((image->x1 - image->x0) * (image->y1 - image->y0)) > MEMORY_LIMIT_FOR_TILE)
-            nTileHeight = MEMORY_LIMIT_FOR_TILE / (image->x1 - image->x0);
+		if (((image->x1 - image->x0) * (image->y1 - image->y0)) > MEMORY_LIMIT_FOR_TILE)
+			nTileHeight = MEMORY_LIMIT_FOR_TILE / (image->x1 - image->x0);
 #endif
+		pData       = NULL;
+		nComponents = 0;
+		nWidth      = 0;
+		nHeight     = 0;
 
-        if (0 == nTileHeight)
-        {
-            if (!(opj_decode(l_codec, l_stream, image) && opj_end_decompress(l_codec, l_stream)))
-                goto end;
-        }
-        else
-        {
-            ImageToFrameCheckFrame(image, pFrame, 0);
+		if (!GetBuffer(image, pData, nComponents, nWidth, nHeight))
+			goto end;
 
-            unsigned int nStartY = image->y0;
-            unsigned int nLimitY = image->y1;
-            unsigned int nOffsetY = nStartY;
-            while (nOffsetY < nLimitY)
-            {
-                if ((nLimitY - nOffsetY) < nTileHeight)
-                    nTileHeight = nLimitY - nOffsetY;
+		if (0 == nTileHeight)
+		{
+			if (!(opj_decode(l_codec, l_stream, image) && opj_end_decompress(l_codec, l_stream)))
+				goto end;
+		}
+		else
+		{
+			unsigned int nLimitY = image->y1;
+			unsigned int nOffsetY = image->y0;
+			while (nOffsetY < nLimitY)
+			{
+				if ((nLimitY - nOffsetY) < nTileHeight)
+					nTileHeight = nLimitY - nOffsetY;
 
-                if (!opj_set_decode_area(l_codec, image, image->x0, nOffsetY, image->x1, nOffsetY + nTileHeight))
-                    goto end;
+				if (!opj_set_decode_area(l_codec, image, image->x0, nOffsetY, image->x1, nOffsetY + nTileHeight))
+				{
+					opj_stream_destroy(l_stream);
+					opj_destroy_codec(l_codec);
 
-                if (!(opj_decode(l_codec, l_stream, image)))
-                    goto end;
+					l_stream = get_file_stream(pFileData, nFileSize, codec);
 
-                if (!opj_end_decompress(l_codec, l_stream))
-                    goto end;
+					if (!l_stream)
+						goto end;
 
-                if (!ImageToFrame(image, pFrame, isBGRA, nLimitY - nOffsetY - nTileHeight))
-                    goto end;
+					l_codec = opj_create_decompress(codec);
 
-                nOffsetY += nTileHeight;
-            }
-        }
+					if (!opj_setup_decoder(l_codec, &parameters))
+						goto end;
 
-        bResult = true;
+					if (!opj_read_header(l_stream, l_codec, &image))
+						goto end;
 
-    end:
-        opj_stream_destroy(l_stream);
-        opj_destroy_codec(l_codec);
+					if (!opj_set_decode_area(l_codec, image, image->x0, nOffsetY, image->x1, nOffsetY + nTileHeight))
+						goto end;
+				}
 
-        if (bResult && image && 0 == nTileHeight)
-            bResult = ImageToFrame(image, pFrame, isBGRA);
+				if (!(opj_decode(l_codec, l_stream, image)))
+					goto end;
 
-        opj_image_destroy(image);
+				if (!opj_end_decompress(l_codec, l_stream))
+					goto end;
 
-        return bResult;
-    }
+				if (!ImageToData(image, isFlip ? pData : pData + (nComponents * nWidth) * (nLimitY - nOffsetY - nTileHeight), nComponents, nWidth, nHeight, (nLimitY - nOffsetY - nTileHeight), isFlip))
+					goto end;
 
-    bool Parse(const std::wstring& sFile, CBgraFrame* pFrame, bool isBGRA)
-    {
-        OPJ_CODEC_FORMAT codec = OPJ_CODEC_UNKNOWN;
-        opj_stream_t* l_stream = get_file_stream(sFile, codec);
+				nOffsetY += nTileHeight;
+			}
+		}
 
-        return Parse(l_stream, codec, pFrame, isBGRA);
-    }
-    bool Parse(BYTE* pData, const unsigned int& nSize, CBgraFrame* pFrame, bool isBGRA)
-    {
-        OPJ_CODEC_FORMAT codec = OPJ_CODEC_UNKNOWN;
-        opj_stream_t* l_stream = get_file_stream(pData, nSize, codec);
+		bResult = true;
 
-        return Parse(l_stream, codec, pFrame, isBGRA);
-    }
+end:
+		opj_stream_destroy(l_stream);
+		opj_destroy_codec(l_codec);
+
+		if (bResult && image && 0 == nTileHeight)
+			bResult = ImageToData(image, pData, nComponents, nWidth, nHeight, 0, isFlip);
+
+		opj_image_destroy(image);
+
+		return bResult;
+	}
+	void DestroyData(BYTE*& pData)
+	{
+		if (pData)
+		{
+			delete[] pData;
+			pData = NULL;
+		}
+	}
 }

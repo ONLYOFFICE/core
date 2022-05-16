@@ -64,7 +64,7 @@ _UINT32 RtfConvertationManager::ConvertRtfToOOX( std::wstring sSrcFileName, std:
     RtfReader oReader( oDocument, sSrcFileName );
     OOXWriter oWriter( oDocument, sDstPath );
 
-    if (m_sTempFolder.length()< 1)
+    if (m_sTempFolder.empty())
         m_sTempFolder = NSDirectory::GetTempPath();
 
 	std::wstring sTempFolder = m_sTempFolder;
@@ -86,7 +86,7 @@ _UINT32 RtfConvertationManager::ConvertRtfToOOX( std::wstring sSrcFileName, std:
 
     //m_poRtfReader->m_convertationManager = this;
 
-    bool succes = oReader.Load( );
+    if (false == oReader.Load( )) return AVS_FILEUTILS_ERROR_CONVERT;
 
     //сохранение будет поэлементое в обработчике OnCompleteItemRtf
     //надо только завершить
@@ -103,10 +103,7 @@ _UINT32 RtfConvertationManager::ConvertRtfToOOX( std::wstring sSrcFileName, std:
     NSDirectory::DeleteDirectory(oReader.m_sTempFolder);
     NSDirectory::DeleteDirectory(oWriter.m_sTempFolder);
 
-    if( true == succes )
-        return 0;
-    else
-        return AVS_FILEUTILS_ERROR_CONVERT;
+    return S_OK;        
 }
 _UINT32 RtfConvertationManager::ConvertOOXToRtf( std::wstring sDstFileName, std::wstring sSrcPath )
 {

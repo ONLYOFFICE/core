@@ -321,7 +321,7 @@ namespace Oox2Odf
 
 		if (vml_shape->m_sType.IsInit())
 		{
-			if (vml_shape->m_sType->at(0) == (wchar_t)('#'))
+			if ((false == vml_shape->m_sType->empty()) && (vml_shape->m_sType->at(0) == (wchar_t)('#')))
 			{
 				vml_shape->m_sType = vml_shape->m_sType->substr(1);
 			}

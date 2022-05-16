@@ -330,6 +330,8 @@ namespace NSJSBase
         v8::MaybeLocal<v8::Value> retValue = v8::JSON::Parse(m_internal->m_context, CreateV8String(CV8Worker::GetCurrent(), sTmp));
         if (!retValue.IsEmpty())
             _value->value = retValue.ToLocalChecked();
+        else
+            _value->doUndefined();
     #else
         _value->value = v8::JSON::Parse(CreateV8String(CV8Worker::GetCurrent(), sTmp));
     #endif

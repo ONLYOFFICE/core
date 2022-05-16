@@ -162,11 +162,29 @@ public:
         }
 
         CCacheImage* pImage = new CCacheImage(m_pApplicationFonts, strFile);
-		m_mapImages[strFile] = pImage;
 
+        if (pImage->GetImage()->GetLastStatus() != Aggplus::Ok)
+            return pImage;
+
+		m_mapImages[strFile] = pImage;
 		pImage->AddRef();
 		return pImage;
 	}
+
+    virtual bool UnLock(const std::wstring& strFile)
+    {
+        CTemporaryCS oCS(&m_oCS);
+
+        std::map<std::wstring,CCacheImage*>::iterator it = m_mapImages.find(strFile);
+        if (it != m_mapImages.end())
+        {
+            it->second->Release();
+            m_mapImages.erase(it);
+            return true;
+        }
+
+        return false;
+    }
 	
     virtual int Release()
 	{

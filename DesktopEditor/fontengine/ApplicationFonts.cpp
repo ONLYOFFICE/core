@@ -1009,15 +1009,25 @@ NSFonts::CFontInfo* CFontList::GetByParams(NSFonts::CFontSelectFormat& oSelect, 
             if ( NULL != oSelect.bFixedWidth )
                 nCurPenalty += GetFixedPitchPenalty( pInfo->m_bIsFixed, *oSelect.bFixedWidth );
 
-            if ( oSelect.wsName != NULL && oSelect.wsAltName != NULL )
+            int nNamePenalty = 0;
+            if ( oSelect.wsName != NULL )
+                nNamePenalty = GetFaceNamePenalty2( pInfo, *oSelect.wsName, true );
+            if ( oSelect.wsAltName != NULL )
             {
-                nCurPenalty += min( GetFaceNamePenalty2( pInfo, *oSelect.wsName, true ),
-                                    GetFaceNamePenalty2( pInfo, *oSelect.wsAltName, true ) );
+                int nTmp = GetFaceNamePenalty2( pInfo, *oSelect.wsAltName, true );
+                if (nTmp < nNamePenalty)
+                    nNamePenalty = nTmp;
             }
-            else if ( oSelect.wsName != NULL )
-                nCurPenalty += GetFaceNamePenalty2( pInfo, *oSelect.wsName, true );
-            else if ( oSelect.wsAltName != NULL )
-                nCurPenalty += GetFaceNamePenalty2( pInfo, *oSelect.wsAltName, true );
+            if ( oSelect.wsDefaultName != NULL )
+            {
+                int nTmp = GetFaceNamePenalty2( pInfo, *oSelect.wsDefaultName, true );
+                if (nTmp < 3000) // max value in picker
+                    nTmp += 3000;
+                if (nTmp < nNamePenalty)
+                    nNamePenalty = nTmp;
+            }
+
+            nCurPenalty += nNamePenalty;
 
             if ( NULL != oSelect.usWidth )
                 nCurPenalty += GetWidthPenalty( pInfo->m_usWidth, *oSelect.usWidth );
@@ -1741,7 +1751,7 @@ std::vector<std::wstring> CApplicationFonts::GetSetupFontFiles()
 
     if (true)
     {
-        std::vector<std::wstring> oArray2 = NSDirectory::GetFiles(L"C:/Windows/Fonts", true);
+        std::vector<std::wstring> oArray2 = NSDirectory::GetFiles(L"C:\\Windows\\Fonts", true);
 
         wchar_t sUserName[1000];
         DWORD nUserNameLen = 1000 + 1;
@@ -1749,6 +1759,7 @@ std::vector<std::wstring> CApplicationFonts::GetSetupFontFiles()
         std::wstring strUserName(sUserName, nUserNameLen - 1);
 
         NSDirectory::GetFiles2(L"C:\\Users\\" + strUserName + L"\\AppData\\Local\\Microsoft\\Windows\\Fonts", oArray2, false);
+        NSDirectory::GetFiles2(L"C:\\Users\\" + strUserName + L"\\AppData\\Local\\Microsoft\\FontCache\\4\\CloudFonts", oArray2, true);
 
         for (std::vector<std::wstring>::iterator i = oArray2.begin(); i != oArray2.end(); i++)
         {

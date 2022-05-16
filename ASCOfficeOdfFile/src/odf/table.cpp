@@ -568,8 +568,12 @@ void table_table_header_rows::add_child_element( xml::sax * Reader, const std::w
 {
     if CP_CHECK_NAME(L"table", L"table-row")
     {
-        CP_CREATE_ELEMENT(table_table_row_);        
-    }
+        CP_CREATE_ELEMENT(table_table_row_);      
+
+		table_table_row* row = dynamic_cast<table_table_row*>(table_table_row_.back().get());
+		if (row)
+			row->bHeader = true;
+	}
     else
         CP_NOT_APPLICABLE_ELM();    
 }

@@ -776,6 +776,13 @@ namespace NSFile
 
     void CUtf8Converter::GetUtf8StringFromUnicode(const wchar_t* pUnicodes, LONG lCount, BYTE*& pData, LONG& lOutputCount, bool bIsBOM)
     {
+        if (NULL == pUnicodes || 0 == lCount)
+        {
+            pData = NULL;
+            lOutputCount = 0;
+            return;
+        }
+
         if (sizeof(WCHAR) == 2)
             return GetUtf8StringFromUnicode_2bytes(pUnicodes, lCount, pData, lOutputCount, bIsBOM);
         return GetUtf8StringFromUnicode_4bytes(pUnicodes, lCount, pData, lOutputCount, bIsBOM);
@@ -783,6 +790,9 @@ namespace NSFile
 
     std::string CUtf8Converter::GetUtf8StringFromUnicode2(const wchar_t* pUnicodes, LONG lCount, bool bIsBOM)
     {
+        if (NULL == pUnicodes || 0 == lCount)
+            return "";
+
         BYTE* pData = NULL;
         LONG lLen = 0;
 
@@ -997,7 +1007,7 @@ namespace NSFile
     bool CFileBinary::OpenFile(const std::wstring& sFileName, bool bRewrite)
     {
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
-        if ( 0 != _wfopen_s(&m_pFile, sFileName.c_str(), bRewrite ? L"rb+" : L"rb"))
+        if ( NULL == (m_pFile = _wfsopen( sFileName.c_str(), bRewrite ? L"rb+" : L"rb", _SH_DENYNO)))
             return false;
 #else
         BYTE* pUtf8 = NULL;

@@ -325,7 +325,7 @@ namespace DocFileFormat
 		{
 			nComputedCellWidthsGrid += _grid->at(ccc);
 		}//zadost.doc
-		if (_gridSpan <= 1 && nComputedCellWidth > _width && _width > 1 && nComputedCellWidths > nComputedCellWidthsGrid)
+		if (_gridSpan <= 1 && nComputedCellWidth > _width/* && _width > 1*/ && nComputedCellWidths > nComputedCellWidthsGrid)
 		{
 			int width_current = 0;
 			for (int i = _gridIndex; i < _grid->size();  i++)
@@ -338,11 +338,17 @@ namespace DocFileFormat
 			_width = nComputedCellWidth;
 		}
 
-		XMLTools::XMLElement    tcW     ( L"w:tcW" );
+		XMLTools::XMLElement tcW ( L"w:tcW" );
 	
-
+		if (_width > 1 || nComputedCellWidth > 0)
+		{
+			if (_ftsWidth == Global::CellWidthType::nil)
+				_ftsWidth = Global::CellWidthType::dxa;
+		}
+		else _ftsWidth = Global::CellWidthType::Auto;
+	
 		XMLTools::XMLAttribute  tcWVal  ( L"w:w", FormatUtils::IntToWideString( _width > 1 ? _width : nComputedCellWidth) );
-		XMLTools::XMLAttribute  tcWType ( L"w:type",  (_width > 1 || nComputedCellWidth > 0) ? FormatUtils::MapValueToWideString( _ftsWidth, &Global::CellWidthTypeMap[0][0], 4, 5 ) : L"auto");
+		XMLTools::XMLAttribute  tcWType ( L"w:type", FormatUtils::MapValueToWideString(_ftsWidth, &Global::CellWidthTypeMap[0][0], 4, 5 ));
 
 		tcW.AppendAttribute( tcWVal );
 		tcW.AppendAttribute( tcWType );

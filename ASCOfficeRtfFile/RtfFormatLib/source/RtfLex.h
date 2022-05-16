@@ -64,15 +64,20 @@ public:
 		m_nSizeAbs = 0;
 		m_nPosAbs = -1;			
 	} 
-	void SetSource( std::wstring sPath  )
+	bool SetSource( std::wstring sPath  )
 	{
 		Clear();
 
 		CFile srcFile;
 		
-		if (srcFile.OpenFile(sPath.c_str()) != S_OK) return;
+		if (srcFile.OpenFile(sPath.c_str()) != S_OK) return false;
 
 		__int64 totalFileSize = srcFile.GetFileSize();
+		if (totalFileSize < 5)
+		{
+			srcFile.CloseFile();
+			return false;
+		}
 
 		m_nSizeAbs = (long)totalFileSize;
 		m_aBuffer = new unsigned char[m_nSizeAbs];
@@ -82,6 +87,7 @@ public:
 
 		dwBytesRead = (DWORD)srcFile.GetPosition();
 		srcFile.CloseFile();
+		return true;
 	}
     void getBytes( int nCount, BYTE** pbData )
 	{
@@ -166,9 +172,9 @@ public:
 	{
 		return 1.0 * m_oStream.getCurPosition() / m_oStream.getSize();
 	}
-	void SetSource( std::wstring sPath )
+	bool SetSource( std::wstring sPath )
 	{
-		m_oStream.SetSource( sPath);
+		if (false == m_oStream.SetSource(sPath)) return false;
 
 		if (m_oStream.getSize() > m_nReadBufSize)
 		{
@@ -176,6 +182,7 @@ public:
 			if (m_caReadBuffer) delete []m_caReadBuffer;
 			m_caReadBuffer = new char[m_nReadBufSize];
 		}
+		return true;
 	}
 	void CloseSource()
 	{

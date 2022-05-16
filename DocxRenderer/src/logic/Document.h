@@ -583,6 +583,9 @@ namespace NSDocxRenderer
 			m_lCurrentCommandType = (LONG)lType;
 			m_oCurrentPage.m_lCurrentCommand	= m_lCurrentCommandType;
 
+            if (c_nTextType == lType)
+                m_oCurrentPage.m_dLastTextX_block = -1;
+
 			return S_OK;
 		}
         HRESULT EndCommand(DWORD lType)
@@ -603,6 +606,9 @@ namespace NSDocxRenderer
 			{
 				m_oCurrentPage.End();
 			}
+
+            if (c_nTextType == lType)
+                m_oCurrentPage.m_dLastTextX_block = -1;
 
 			return S_OK;
 		}

@@ -122,6 +122,7 @@ namespace NSDocxRenderer
         double m_dY;
         double m_dWidth;
         double m_dHeight;
+        double m_dLastX;
 
         double m_dWidthWithoutSpaces;
         double m_dLeftWithoutSpaces;
@@ -130,6 +131,7 @@ namespace NSDocxRenderer
         double m_dSpaceWidthMM;
 
         double m_dCalculateWidth;
+        double m_dSpaceByText;
 
     public:
         CContText()
@@ -141,6 +143,7 @@ namespace NSDocxRenderer
             m_dY			= 0;
             m_dWidth		= 0;
             m_dHeight		= 0;
+            m_dLastX        = 0;
 
             m_dWidthWithoutSpaces	= 0;
             m_dLeftWithoutSpaces	= 0;
@@ -149,6 +152,8 @@ namespace NSDocxRenderer
             m_dSpaceWidthMM	= 0;
 
             m_dCalculateWidth = 0;
+
+            m_dSpaceByText = 0;
         }
         ~CContText()
         {
@@ -178,6 +183,8 @@ namespace NSDocxRenderer
             m_dWidth	= oSrc.m_dWidth;
             m_dHeight	= oSrc.m_dHeight;
 
+            m_dLastX    = oSrc.m_dLastX;
+
             m_dWidthWithoutSpaces	= oSrc.m_dWidthWithoutSpaces;
             m_dLeftWithoutSpaces	= oSrc.m_dLeftWithoutSpaces;
 
@@ -185,6 +192,7 @@ namespace NSDocxRenderer
             m_dSpaceWidthMM = oSrc.m_dSpaceWidthMM;
 
             m_dCalculateWidth = oSrc.m_dCalculateWidth;
+            m_dSpaceByText = oSrc.m_dSpaceByText;
 
             return *this;
         }
@@ -196,6 +204,16 @@ namespace NSDocxRenderer
         inline bool IsBiggerOrEqual(const CContText* oSrc)
         {
             return (m_dX >= oSrc->m_dX) ? true : false;
+        }
+
+        inline double GetIntersect(const CContText* oSrc) const
+        {
+            double d1 = std::max(m_dX, oSrc->m_dX);
+            double d2 = std::min(m_dX + m_dWidth, oSrc->m_dX + oSrc->m_dWidth);
+
+            if (d2 > d1)
+                return d2 - d1;
+            return 0;
         }
 
         inline void Write(NSStringUtils::CStringBuilder& oWriter, CFontManagerLight* pManagerLight, bool bIsAddSpace = false)
@@ -450,6 +468,74 @@ namespace NSDocxRenderer
             }
         }
 
+        void Analyze()
+        {
+            size_t nCountConts = m_arConts.size();
+
+            if (0 == nCountConts)
+                return;
+
+            CContText* pFirst = m_arConts[0];
+
+            for (size_t i = 1; i < nCountConts; ++i)
+            {
+                CContText* pCurrent = m_arConts[i];
+
+                if (pFirst->m_strPickFontName != pCurrent->m_strPickFontName ||
+                    pFirst->m_oFont.Bold != pCurrent->m_oFont.Bold ||
+                    pFirst->m_oFont.Italic != pCurrent->m_oFont.Italic)
+                {
+                    // вообще надо бы все объединить. но пока этот метод на соединение "первых"
+                    break;
+                }
+
+                double dRight = pFirst->m_dX + pFirst->m_dWidth;
+                double dLeft = pCurrent->m_dX;
+
+                if (fabs(dRight - dLeft) > 0.5)
+                {
+                    // вообще надо бы все объединить. но пока этот метод на соединение "первых"
+                    break;
+                }
+
+                // продолжаем слово
+                pFirst->m_oText += pCurrent->m_oText;
+                pFirst->m_dWidth = (dLeft + pCurrent->m_dWidth - pFirst->m_dX);
+
+                if (pFirst->m_dWidthWithoutSpaces < 0.0001)
+                {
+                    pFirst->m_dLeftWithoutSpaces = pCurrent->m_dLeftWithoutSpaces;
+                }
+
+                if (pCurrent->m_dWidthWithoutSpaces > 0.0001)
+                {
+                    pFirst->m_dWidthWithoutSpaces = pCurrent->m_dLeftWithoutSpaces + pCurrent->m_dWidthWithoutSpaces - pFirst->m_dLeftWithoutSpaces;
+                }
+
+                m_arConts.erase(m_arConts.begin() + i);
+                --i;
+                --nCountConts;
+            }
+        }
+
+        bool IsForceBlock()
+        {
+            // линия отсортирована, так что сравниваем только соседние conts
+            size_t nCount = m_arConts.size();
+            if (nCount <= 1)
+                return false;
+
+            for (size_t i = 0; i < nCount; i++)
+            {
+                for (size_t j = i + 1; j < nCount; j++)
+                {
+                    if (m_arConts[i]->GetIntersect(m_arConts[j]) > 10)
+                        return true;
+                }
+            }
+            return false;
+        }
+
         void ToXml(NSStringUtils::CStringBuilder& oWriter, CFontManagerLight* pManagerLight)
         {
             size_t nCountConts = m_arConts.size();
@@ -575,7 +661,6 @@ namespace NSDocxRenderer
             }
 
             m_pManagerLight = oSrc.m_pManagerLight;
-
             return *this;
         }
 
@@ -605,6 +690,15 @@ namespace NSDocxRenderer
                 }
             case TextAssociationTypePlainLine:
                 {
+                    if (m_bIsTextFrameProperties)
+                    {
+                        oWriter.WriteString(L"<w:pPr><w:framePr w:hAnchor=\"page\" w:vAnchor=\"page\" w:x=\"");
+                        oWriter.AddInt((int)(m_dLeft * c_dMMToDx));
+                        oWriter.WriteString(L"\" w:y=\"");
+                        oWriter.AddInt((int)(m_dTop * c_dMMToDx));
+                        oWriter.WriteString(L"\"/></w:pPr>");
+                        break;
+                    }
                     oWriter.WriteString(L"<w:pPr><w:spacing w:before=\"");
                     oWriter.AddInt((int)(m_dSpaceBefore * c_dMMToDx));
                     oWriter.WriteString(L"\" w:line=\"");

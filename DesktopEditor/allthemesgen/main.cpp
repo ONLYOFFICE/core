@@ -463,6 +463,11 @@ int main(int argc, char** argv)
                 continue;
             }
         }
+        else if (!NSDirectory::Exists(sOut))
+        {
+            --nThemeIndex;
+            continue;
+        }
 
         oBuilder.ClearNoAttack();
         oBuilder.WriteString(L"<Settings><SrcFileType>");

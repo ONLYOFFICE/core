@@ -49,7 +49,7 @@
 #include <iostream>
 #include <fstream>
 
-#define SUCCEEDED_X2T(nRes) (0 == (nRes))
+#define SUCCEEDED_X2T(nRes) (0 == (nRes) || AVS_FILEUTILS_ERROR_CONVERT_ROWLIMITS == (nRes))
 
 namespace NExtractTools
 {

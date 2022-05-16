@@ -7196,7 +7196,7 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 			}
 		}break;
 	}		
-	if (0 != result)
+	if (0 != result && AVS_FILEUTILS_ERROR_CONVERT_ROWLIMITS != result)
 	{
 		RELEASEOBJECT(pXlsx);
 		return result;

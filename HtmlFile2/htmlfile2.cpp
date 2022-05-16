@@ -574,6 +574,8 @@ public:
                 oTree.m_oNode.m_sId = m_oLightReader.GetText();
             else if(sNameA == L"style")
                 oTree.m_oNode.m_sStyle += m_oLightReader.GetText();
+            //else
+            //    oTree.m_oNode.m_mAttrs[sNameA] = m_oLightReader.GetText();
             else if(sNameA == L"align")
                 oTree.m_oNode.m_sStyle += L"; text-align: " + m_oLightReader.GetText() + L";";
 
@@ -586,6 +588,7 @@ public:
                 else if (sNameA == L"cellpadding")
                     oTree.m_oNode.m_sStyle += L"; padding: " + m_oLightReader.GetText() + L";";
             }
+            // Удалять до сюда
         }
         m_oLightReader.MoveToElement();
 

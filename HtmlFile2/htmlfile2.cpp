@@ -389,9 +389,26 @@ public:
     // Конвертирует html в xhtml
     bool htmlXhtml(const std::wstring& sSrc)
     {
-        std::string sFileContent;
-        if(!NSFile::CFileBinary::ReadAllTextUtf8A(sSrc, sFileContent))
+        BYTE* pData;
+        DWORD nLength;
+        if (!NSFile::CFileBinary::ReadAllBytes(sSrc, &pData, nLength))
             return false;
+
+        std::string sFileContent = XmlUtils::GetUtf8FromFileContent(pData, nLength);
+        bool bNeedConvert = true;
+        if (nLength > 4)
+        {
+            if (pData[0] == 0xFF && pData[1] == 0xFE && !(pData[2] == 0x00 && pData[3] == 0x00))
+                bNeedConvert = false;
+            if (pData[0] == 0xFE && pData[1] == 0xFF)
+                bNeedConvert = false;
+
+            if (pData[0] == 0xFF && pData[1] == 0xFE && pData[2] == 0x00 && pData[3] == 0x00)
+                bNeedConvert = false;
+            if (pData[0] == 0 && pData[1] == 0 && pData[2] == 0xFE && pData[3] == 0xFF)
+                bNeedConvert = false;
+        }
+        RELEASEARRAYOBJECTS(pData);
 
         size_t nFind = sFileContent.find("version=\"");
         if(nFind != std::string::npos)
@@ -402,7 +419,7 @@ public:
                 sFileContent.replace(nFind, nFindEnd - nFind, "1.0");
         }
         /*
-        std::wstring sRes = htmlToXhtml(sFileContent);
+        std::wstring sRes = htmlToXhtml(sFileContent, bNeedConvert);
         NSFile::CFileBinary oWriter;
         if (oWriter.CreateFileW(m_sTmp + L"/res.html"))
         {
@@ -410,7 +427,7 @@ public:
             oWriter.CloseFile();
         }
         */
-        return m_oLightReader.FromString(htmlToXhtml(sFileContent));
+        return m_oLightReader.FromString(htmlToXhtml(sFileContent, bNeedConvert));
     }
 
     // Конвертирует mht в xhtml
@@ -430,12 +447,22 @@ public:
         DWORD dwReadBytes = 0;
         file.ReadFile(buffer, 4096, dwReadBytes);
         file.CloseFile();
-        std::string xml_string((char*)buffer, dwReadBytes);
+        std::string xml_string = XmlUtils::GetUtf8FromFileContent(buffer, dwReadBytes);
 
         bool bRes = false;
         if ((std::string::npos != xml_string.find("Content-Type: multipart/related")) &&
             (std::string::npos != xml_string.find("Content-Type: text/html")))
-            bRes = m_oLightReader.FromString(mhtToXhtml(sSrc));
+        {
+            BYTE* pData;
+            DWORD nLength;
+            if (!NSFile::CFileBinary::ReadAllBytes(sSrc, &pData, nLength))
+                return false;
+
+            std::string sFileContent = XmlUtils::GetUtf8FromFileContent(pData, nLength);
+            RELEASEARRAYOBJECTS(pData);
+
+            bRes = m_oLightReader.FromString(mhtToXhtml(sFileContent));
+        }
         else
             bRes = htmlXhtml(sSrc);
 

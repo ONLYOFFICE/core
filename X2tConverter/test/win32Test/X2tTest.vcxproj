@@ -317,6 +317,9 @@
     <ProjectReference Include="..\..\..\ASCOfficeTxtFile\TxtXmlFormatLib\Win32\TxtXmlFormatLib.vcxproj">
       <Project>{dacbe6ca-e089-47d1-8ce7-c7db59c15417}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\ASCOfficeXlsFile2\source\win32\VbaFormat.vcxproj">
+      <Project>{041dd428-2d5c-4d97-8ab7-7207f3d5b801}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\ASCOfficeXlsFile2\source\win32\XlsFormat.vcxproj">
       <Project>{77ddc8d7-5b12-4ff2-9629-26aebca8436d}</Project>
     </ProjectReference>

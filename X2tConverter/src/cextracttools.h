@@ -196,6 +196,8 @@ namespace NExtractTools
 
 		TCD_MITCRYPT2,
 
+		TCD_VBAPROJECT2XML,
+
 //
 		TCD_HTML2DOCX,
 		TCD_HTML2DOCT,
@@ -927,7 +929,9 @@ namespace NExtractTools
 					eRes = TCD_MITCRYPT2;
                 else if(AVS_OFFICESTUDIO_FILE_OTHER_ZIP == nFormatFrom && AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatTo)
                     eRes = TCD_UNZIPDIR;
-                else if(AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatFrom && AVS_OFFICESTUDIO_FILE_OTHER_ZIP == nFormatTo)
+				else if (AVS_OFFICESTUDIO_FILE_OTHER_MS_VBAPROJECT == nFormatFrom && AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatTo)
+					eRes = TCD_VBAPROJECT2XML;
+				else if(AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatFrom && AVS_OFFICESTUDIO_FILE_OTHER_ZIP == nFormatTo)
                     eRes = TCD_ZIPDIR;
             }
 			else

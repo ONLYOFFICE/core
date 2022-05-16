@@ -39,6 +39,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cryptlib", "..\..\..\Common
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XlsbFormatLib", "..\..\..\Common\DocxFormat\Projects\XlsbFormatLib.vcxproj", "{13E13907-49DA-482E-AD58-026D06A5CD11}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7C53A1E0-F93F-4E32-88B5-6274AF921ABE}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VbaFormat", "..\..\..\ASCOfficeXlsFile2\source\win32\VbaFormat.vcxproj", "{041DD428-2D5C-4D97-8AB7-7207F3D5B801}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -410,6 +414,26 @@ Global
 		{13E13907-49DA-482E-AD58-026D06A5CD11}.ReleaseOpenSource|Win32.Build.0 = Release|Win32
 		{13E13907-49DA-482E-AD58-026D06A5CD11}.ReleaseOpenSource|x64.ActiveCfg = Release|x64
 		{13E13907-49DA-482E-AD58-026D06A5CD11}.ReleaseOpenSource|x64.Build.0 = Release|x64
+		{041DD428-2D5C-4D97-8AB7-7207F3D5B801}.Debug|Win32.ActiveCfg = Debug|Win32
+		{041DD428-2D5C-4D97-8AB7-7207F3D5B801}.Debug|Win32.Build.0 = Debug|Win32
+		{041DD428-2D5C-4D97-8AB7-7207F3D5B801}.Debug|x64.ActiveCfg = Debug|x64
+		{041DD428-2D5C-4D97-8AB7-7207F3D5B801}.Debug|x64.Build.0 = Debug|x64
+		{041DD428-2D5C-4D97-8AB7-7207F3D5B801}.DLL-Import Debug|Win32.ActiveCfg = Debug|Win32
+		{041DD428-2D5C-4D97-8AB7-7207F3D5B801}.DLL-Import Debug|Win32.Build.0 = Debug|Win32
+		{041DD428-2D5C-4D97-8AB7-7207F3D5B801}.DLL-Import Debug|x64.ActiveCfg = Debug|x64
+		{041DD428-2D5C-4D97-8AB7-7207F3D5B801}.DLL-Import Debug|x64.Build.0 = Debug|x64
+		{041DD428-2D5C-4D97-8AB7-7207F3D5B801}.DLL-Import Release|Win32.ActiveCfg = Release|Win32
+		{041DD428-2D5C-4D97-8AB7-7207F3D5B801}.DLL-Import Release|Win32.Build.0 = Release|Win32
+		{041DD428-2D5C-4D97-8AB7-7207F3D5B801}.DLL-Import Release|x64.ActiveCfg = Release|x64
+		{041DD428-2D5C-4D97-8AB7-7207F3D5B801}.DLL-Import Release|x64.Build.0 = Release|x64
+		{041DD428-2D5C-4D97-8AB7-7207F3D5B801}.Release|Win32.ActiveCfg = Release|Win32
+		{041DD428-2D5C-4D97-8AB7-7207F3D5B801}.Release|Win32.Build.0 = Release|Win32
+		{041DD428-2D5C-4D97-8AB7-7207F3D5B801}.Release|x64.ActiveCfg = Release|x64
+		{041DD428-2D5C-4D97-8AB7-7207F3D5B801}.Release|x64.Build.0 = Release|x64
+		{041DD428-2D5C-4D97-8AB7-7207F3D5B801}.ReleaseOpenSource|Win32.ActiveCfg = Release|Win32
+		{041DD428-2D5C-4D97-8AB7-7207F3D5B801}.ReleaseOpenSource|Win32.Build.0 = Release|Win32
+		{041DD428-2D5C-4D97-8AB7-7207F3D5B801}.ReleaseOpenSource|x64.ActiveCfg = Release|x64
+		{041DD428-2D5C-4D97-8AB7-7207F3D5B801}.ReleaseOpenSource|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -576,6 +576,16 @@ public:
                 oTree.m_oNode.m_sStyle += m_oLightReader.GetText();
             else if(sNameA == L"align")
                 oTree.m_oNode.m_sStyle += L"; text-align: " + m_oLightReader.GetText() + L";";
+
+            if (sName == L"table")
+            {
+                if (sNameA == L"border")
+                    oTree.m_oNode.m_sStyle += L"; border: " + m_oLightReader.GetText() + L";";
+                else if (sNameA == L"cellspacing")
+                    oTree.m_oNode.m_sStyle += L"; border-spacing: " + m_oLightReader.GetText() + L";";
+                else if (sNameA == L"cellpadding")
+                    oTree.m_oNode.m_sStyle += L"; padding: " + m_oLightReader.GetText() + L";";
+            }
         }
         m_oLightReader.MoveToElement();
 
@@ -1148,12 +1158,6 @@ private:
         if(m_oLightReader.IsEmptyNode())
             return;
 
-        std::wstring sBorders;
-        while (m_oLightReader.MoveToNextAttribute())
-            if (m_oLightReader.GetName() == L"border")
-                sBorders = L"<w:left w:val=\"single\" w:color=\"000000\" w:sz=\"4\" w:space=\"0\"/><w:top w:val=\"single\" w:color=\"000000\" w:sz=\"4\" w:space=\"0\"/><w:right w:val=\"single\" w:color=\"000000\" w:sz=\"4\" w:space=\"0\"/><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"4\" w:space=\"0\"/>";
-        m_oLightReader.MoveToElement();
-
         NSStringUtils::CStringBuilder oHead;
         NSStringUtils::CStringBuilder oBody;
         NSStringUtils::CStringBuilder oFoot;
@@ -1171,7 +1175,7 @@ private:
 
         // borders
         oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors, true);
-
+        std::wstring sBorders;
         oStyle.m_pBorder.Unlock();
         if (oStyle.m_pBorder.Empty())
         {

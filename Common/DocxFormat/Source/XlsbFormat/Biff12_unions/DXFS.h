@@ -48,7 +48,7 @@ namespace XLSB
         XLS::BaseObjectPtr clone();
 
         const bool loadContent(XLS::BinProcessor& proc) override;
-		//const bool saveContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
 		XLS::BaseObjectPtr               m_BrtBeginDXFs;
         std::vector<XLS::BaseObjectPtr>	 m_aruDXF;

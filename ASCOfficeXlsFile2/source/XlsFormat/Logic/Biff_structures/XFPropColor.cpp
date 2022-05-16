@@ -32,6 +32,8 @@
 
 #include "XFPropColor.h"
 #include "../../../Common/simple_xml_writer.h"
+#include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../DesktopEditor/xml/include/xmlutils.h"
 
 namespace XLS
 {
@@ -54,6 +56,17 @@ void XFPropColor::load(CFRecord& record)
 	record >> icv >> nTintShade >> dwRgba;
 }
 
+void XFPropColor::save(CFRecord& record)
+{
+	unsigned char flags = 0;
+
+	SETBIT(flags, 0, fValidRGBA)
+	SETBITS(flags, 1, 7, xclrType)
+
+	record << flags;
+	record << icv << nTintShade << dwRgba;
+}
+
 int XFPropColor::serialize(std::wostream & stream, const std::wstring &node_name)
 {
 	if (xclrType > 3 )return 0;//not set
@@ -74,6 +87,45 @@ int XFPropColor::serialize(std::wostream & stream, const std::wstring &node_name
 			{
 				CP_XML_ATTR(L"tint", nTintShade/ 32767.0);
 			}
+		}
+	}
+	return 0;
+}
+
+int XFPropColor::deserialize(XmlUtils::CXmlLiteReader& oReader)
+{
+	if (oReader.GetAttributesCount() > 0 && oReader.MoveToFirstAttribute() == true)
+	{
+		std::wstring wsPropName = oReader.GetName();
+
+		while (!wsPropName.empty())
+		{
+			if (wsPropName == L"auto" && oReader.GetText() == L"1")
+				xclrType = 0;
+			else if (wsPropName == L"indexed")
+			{
+				xclrType = 1;
+				icv = XmlUtils::GetInteger(oReader.GetText());
+			}
+			else if (wsPropName == L"theme")
+			{
+				xclrType = 3;
+				icv = XmlUtils::GetInteger(oReader.GetText());
+			}
+			else if (wsPropName == L"rgb")
+			{
+				xclrType = 3;
+				dwRgba.Parse(oReader.GetText());
+			}
+			else if (wsPropName == L"tint")
+			{
+				nTintShade = XmlUtils::GetInteger(oReader.GetText()) * 32767.0;
+			}
+
+			if (!oReader.MoveToNextAttribute())
+				break;
+
+			wsPropName = oReader.GetName();
 		}
 	}
 	return 0;

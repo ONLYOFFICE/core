@@ -233,7 +233,8 @@ const bool StylesStream::saveContent(XLS::BinProcessor & proc)
 	if(m_STYLES != nullptr)
 		proc.mandatory(*m_STYLES);
 
-	//DXFS
+	if(m_DXFS != nullptr)
+		proc.mandatory(*m_DXFS);
 
 	if (m_TABLESTYLES != nullptr)
 		proc.mandatory(*m_TABLESTYLES);

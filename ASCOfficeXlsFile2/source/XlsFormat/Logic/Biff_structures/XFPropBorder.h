@@ -47,10 +47,11 @@ public:
 
 	static const ElementType	type = typeXFPropBorder;
 
-	virtual void load(CFRecord& record);
+	void load(CFRecord& record) override;
+	void save(CFRecord& record) override;
 
 	XFPropColor		color;
-	unsigned short	dgBorder;
+	_UINT16			dgBorder;
 };
 
 } // namespace XLS

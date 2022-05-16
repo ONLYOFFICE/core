@@ -82,5 +82,30 @@ namespace XLSB
         return m_BrtBeginDXFs && m_bBrtEndDXFs;
     }
 
+	const bool DXFS::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginDXFs == nullptr)
+			m_BrtBeginDXFs = XLS::BaseObjectPtr(new XLSB::BeginDXFs());
+
+		if (m_BrtBeginDXFs != nullptr)
+		{
+			auto ptrBrtBeginDXFs = static_cast<XLSB::BeginDXFs*>(m_BrtBeginDXFs.get());
+
+			if (ptrBrtBeginDXFs != nullptr)
+				ptrBrtBeginDXFs->cdxfs = m_aruDXF.size();
+
+			proc.mandatory(*m_BrtBeginDXFs);
+		}
+
+		for (auto &item : m_aruDXF)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndDXFs>();
+
+		return true;
+	}
+
 } // namespace XLSB
 

@@ -194,8 +194,38 @@ namespace OOX
                         }
                     }
                 }
-
             }
+
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				NSStringUtils::CStringBuilder sXml;
+				XmlUtils::CXmlLiteReader oReader;
+
+				toXML(sXml);
+
+				if (!oReader.FromString(sXml.GetData()))
+					return;
+
+				if (obj->get_type() == XLS::typeDXF)
+				{
+					auto ptrDXF = static_cast<XLSB::DXF*>(obj.get());
+
+					if (ptrDXF != nullptr)
+					{					
+						ptrDXF->deserialize(oReader);
+					}
+				}
+
+				else if (obj->get_type() == XLS::typeDXF14)
+				{
+					auto ptrDXF14 = static_cast<XLSB::DXF14*>(obj.get());
+					if (ptrDXF14 != nullptr)
+					{
+						ptrDXF14->deserialize(oReader);
+					}
+				}
+
+			}
 
 			virtual EElementType getType () const
 			{
@@ -314,6 +344,35 @@ namespace OOX
                 }
             }
 
+			void toBin(std::vector<XLS::BaseObjectPtr>& obj)
+			{
+				obj.reserve(m_arrItems.size());
+				for (size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					if (m_arrItems[i])
+					{
+						XLS::BaseObjectPtr item;
+						if (isExt)
+						{
+							item = XLS::BaseObjectPtr(new XLSB::DXF14());
+							m_arrItems[i]->toBin(item);
+						}
+						else
+						{
+							item = XLS::BaseObjectPtr(new XLSB::uDXF());
+							auto ptruDXF = static_cast<XLSB::uDXF*>(item.get());
+
+							if(ptruDXF != nullptr)
+								ptruDXF->m_BrtDXF = XLS::BaseObjectPtr(new XLSB::DXF());
+
+							m_arrItems[i]->toBin(ptruDXF->m_BrtDXF);
+						}
+						
+						obj.push_back(item);
+					}
+				}
+			}
+
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -330,6 +389,7 @@ namespace OOX
 
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;
+			bool												isExt;
 		};
 	} //Spreadsheet
 } // namespace OOX

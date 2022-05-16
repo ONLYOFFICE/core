@@ -72,5 +72,13 @@ namespace XLSB
         return m_BrtDXF != nullptr;
     }
 
+	const bool FRTDXF::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtDXF != nullptr)
+			proc.mandatory(*m_BrtDXF);
+
+		return true;
+	}
+
 } // namespace XLSB
 

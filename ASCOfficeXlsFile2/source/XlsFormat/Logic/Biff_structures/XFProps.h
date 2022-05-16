@@ -33,6 +33,11 @@
 
 #include "BiffStructure.h"
 
+namespace XmlUtils
+{
+	class CXmlLiteReader;
+}
+
 namespace XLS
 {
 
@@ -48,7 +53,7 @@ public:
 	BiffStructurePtr clone();
 
 	void load(CFRecord& record) override;
-	//void save(CFRecord& record) override;
+	void save(CFRecord& record) override;
 
 	static const ElementType	type = typeXFProps;
 
@@ -56,6 +61,7 @@ public:
 
 	int serialize(std::wostream & stream){ return serialize(stream, false) ; }
 	int serialize(std::wostream & stream, bool dxf);
+	int deserialize(XmlUtils::CXmlLiteReader & oReader);
 
 	int serialize_fill(std::wostream & stream);
 	

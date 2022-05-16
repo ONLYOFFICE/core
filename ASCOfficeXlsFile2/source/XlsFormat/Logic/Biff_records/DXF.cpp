@@ -102,5 +102,12 @@ int DXF::serialize(std::wostream & stream)
 	return 0;
 }
 
+int DXF::deserialize(XmlUtils::CXmlLiteReader & oReader)
+{
+	xfprops.deserialize(oReader);
+
+	return 0;
+}
+
 } // namespace XLS
 

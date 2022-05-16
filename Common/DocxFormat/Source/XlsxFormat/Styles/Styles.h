@@ -279,11 +279,12 @@ namespace OOX
 							m_oCellStyles->toBin(static_cast<XLSB::STYLES*>(stylesStream->m_STYLES.get())->m_arBrtStyle);
 						}
 
-						//if (m_oDxfs.IsInit())
-						//{
-						//	stylesStream->m_DXFS = XLS::BaseObjectPtr(new XLSB::DXFS());
-						//	m_oDxfs->toBin(static_cast<XLSB::DXFS*>(stylesStream->m_DXFS.get())->m_aruDXF);
-						//}
+						if (m_oDxfs.IsInit())
+						{
+							stylesStream->m_DXFS = XLS::BaseObjectPtr(new XLSB::DXFS());
+							m_oDxfs->isExt = false;
+							m_oDxfs->toBin(static_cast<XLSB::DXFS*>(stylesStream->m_DXFS.get())->m_aruDXF);
+						}
 
 						if (m_oTableStyles.IsInit())
 						{

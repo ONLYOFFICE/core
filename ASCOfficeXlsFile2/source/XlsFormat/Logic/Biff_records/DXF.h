@@ -35,6 +35,11 @@
 #include "../Biff_structures/FrtRefHeaderU.h"
 #include "../Biff_structures/XFProps.h"
 
+namespace XmlUtils
+{
+	class CXmlLiteReader;
+}
+
 namespace XLS
 {
 
@@ -49,7 +54,6 @@ public:
 	~DXF();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record) override;
 	void writeFields(CFRecord& record) override;
@@ -57,6 +61,7 @@ public:
 	static const ElementType	type = typeDXF;
 
 	int serialize(std::wostream & stream);
+	int deserialize(XmlUtils::CXmlLiteReader & oReader);
 	
 	FrtRefHeaderU	frtRefHeaderU;
 	XFProps			xfprops;

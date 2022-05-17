@@ -318,6 +318,17 @@ namespace OOX
 				int nWxBdrGroupDepth = oReader.GetDepth();							
 				CreateElements(oReader, nWxBdrGroupDepth);
 			}
+			else if (L"w:background" == sName)
+			{
+				m_oBackground = new OOX::Logic::CBackground(WritingElement::m_pMainDocument);
+				m_oBackground->fromXML(oReader);
+			}
+			else if (L"w:docParts" == sName && !oReader.IsEmptyNode())
+			{
+				WritingElement *pItem = new OOX::Logic::CDocParts(WritingElement::m_pMainDocument);
+				m_arrItems.push_back(pItem);
+				pItem->fromXML(oReader);
+			}
 
 			if ( pItem )
 			{
@@ -388,38 +399,9 @@ namespace OOX
 			return;
 
 		int nDocumentDepth = oReader.GetDepth();
-		while ( oReader.ReadNextSiblingNode( nDocumentDepth ) )
-		{
-			std::wstring sName = oReader.GetName();
+		std::wstring sName = oReader.GetName();
 
-			if ( L"w:body" == sName && !oReader.IsEmptyNode() )
-			{
-				int nBodyDepth = oReader.GetDepth();
-					
-				CreateElements(oReader, nBodyDepth);
-			}
-			else if ( L"w:background" == sName )
-			{
-				m_oBackground = new OOX::Logic::CBackground(WritingElement::m_pMainDocument);
-				m_oBackground->fromXML(oReader);
-			}
-			else if ( L"wx:sect" == sName && !oReader.IsEmptyNode() )
-			{
-				int nWxSect = oReader.GetDepth();
-				CreateElements(oReader, nWxSect);
-			}
-			else if ( L"wx:sub-section" == sName && !oReader.IsEmptyNode() )
-			{
-				int nWxSubSection = oReader.GetDepth();
-				CreateElements(oReader, nWxSubSection);
-			}
-			else if (L"w:docParts" == sName && !oReader.IsEmptyNode())
-			{
-				WritingElement *pItem = new OOX::Logic::CDocParts(WritingElement::m_pMainDocument);
-				m_arrItems.push_back(pItem);
-				pItem->fromXML(oReader);
-			}
-		}
+		CreateElements(oReader, nDocumentDepth);
 	}
     std::wstring CDocument::toXML() const
 	{

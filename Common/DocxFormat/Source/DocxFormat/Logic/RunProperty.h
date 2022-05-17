@@ -61,11 +61,11 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				XmlMacroReadAttributeBase( oNode, _T("w:combine"),         m_oCombine );
-				XmlMacroReadAttributeBase( oNode, _T("w:combineBrackets"), m_oCombineBrackets );
-				XmlMacroReadAttributeBase( oNode, _T("w:id"),              m_oID );
-				XmlMacroReadAttributeBase( oNode, _T("w:vert"),            m_oVert );
-				XmlMacroReadAttributeBase( oNode, _T("w:vertCompress"),    m_oVertCompress );
+				XmlMacroReadAttributeBase( oNode, L"w:combine",         m_oCombine );
+				XmlMacroReadAttributeBase( oNode, L"w:combineBrackets", m_oCombineBrackets );
+				XmlMacroReadAttributeBase( oNode, L"w:id",              m_oID );
+				XmlMacroReadAttributeBase( oNode, L"w:vert",            m_oVert );
+				XmlMacroReadAttributeBase( oNode, L"w:vertCompress",    m_oVertCompress );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -80,37 +80,37 @@ namespace ComplexTypes
 
 				if ( m_oCombine.IsInit() )
 				{
-					sResult += _T("w:combine=\"");
+					sResult += L"w:combine=\"";
 					sResult += m_oCombine->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oCombineBrackets.IsInit() )
 				{
-					sResult += _T("w:combineBrackets=\"");
+					sResult += L"w:combineBrackets=\"";
 					sResult += m_oCombineBrackets->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oID.IsInit() )
 				{
-					sResult += _T("w:themeTint=\"");
+					sResult += L"w:themeTint=\"";
 					sResult += m_oID->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oVert.IsInit() )
 				{
-					sResult += _T("w:vert=\"");
+					sResult += L"w:vert=\"";
 					sResult += m_oVert->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oVertCompress.IsInit() )
 				{
-					sResult += _T("w:vertCompress=\"");
+					sResult += L"w:vertCompress=\"";
 					sResult += m_oVert->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				return sResult;
@@ -121,11 +121,11 @@ namespace ComplexTypes
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:combine"),         m_oCombine )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:combineBrackets"), m_oCombineBrackets )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),              m_oID )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:vert"),            m_oVert )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:vertCompress"),    m_oVertCompress )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:combine",         m_oCombine )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:combineBrackets", m_oCombineBrackets )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",              m_oID )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:vert",            m_oVert )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:vertCompress",    m_oVertCompress )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -154,7 +154,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, L"w:val", m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -169,9 +169,9 @@ namespace ComplexTypes
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += _T("w:val=\"");
+					sResult += L"w:val=\"";
 					sResult += m_oVal->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				return sResult;
@@ -182,7 +182,7 @@ namespace ComplexTypes
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle ( oReader, _T("w:val"), m_oVal )
+				WritingElement_ReadAttributes_ReadSingle ( oReader, L"w:val", m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -208,7 +208,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, L"w:val", m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -223,9 +223,9 @@ namespace ComplexTypes
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += _T("w:val=\"");
+					sResult += L"w:val=\"";
 					sResult += m_oVal->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				return sResult;
@@ -236,7 +236,7 @@ namespace ComplexTypes
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle ( oReader, _T("w:val"), m_oVal )
+				WritingElement_ReadAttributes_ReadSingle ( oReader, L"w:val", m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -262,8 +262,8 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				XmlMacroReadAttributeBase( oNode, _T("w:id"),  m_oID );
-				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, L"w:id",  m_oID );
+				XmlMacroReadAttributeBase( oNode, L"w:val", m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -278,16 +278,16 @@ namespace ComplexTypes
 
 				if ( m_oID.IsInit() )
 				{
-					sResult += _T("w:id=\"");
+					sResult += L"w:id=\"";
 					sResult += m_oID->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += _T("w:val=\"");
+					sResult += L"w:val=\"";
 					sResult += m_oVal->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				return sResult;
@@ -298,8 +298,8 @@ namespace ComplexTypes
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:id"),  m_oID  )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:val"), m_oVal )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:id",  m_oID  )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:val", m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -326,7 +326,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, L"w:val", m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -341,9 +341,9 @@ namespace ComplexTypes
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += _T("w:val=\"");
+					sResult += L"w:val=\"";
 					sResult += m_oVal->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				return sResult;
@@ -354,7 +354,7 @@ namespace ComplexTypes
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle ( oReader, _T("w:val"), m_oVal )
+				WritingElement_ReadAttributes_ReadSingle ( oReader, L"w:val", m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -362,141 +362,6 @@ namespace ComplexTypes
 
 			nullable<SimpleTypes::CHighlightColor<>> m_oVal;
 		};
-
-		//--------------------------------------------------------------------------------
-		// rFonts (Fonts) 17.3.2.20 (Part 1)
-		//--------------------------------------------------------------------------------
-		class CFonts : public ComplexType
-		{
-		public:
-			ComplexTypes_AdditionConstructors(CFonts)
-			CFonts()
-			{
-			}
-			virtual ~CFonts()
-			{
-			}
-
-			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, _T("w:ascii"),         m_sAscii );
-				XmlMacroReadAttributeBase( oNode, _T("w:asciiTheme"),    m_oAsciiTheme );
-				XmlMacroReadAttributeBase( oNode, _T("w:cs"),            m_sCs );
-				XmlMacroReadAttributeBase( oNode, _T("w:cstheme"),       m_oCsTheme );
-				XmlMacroReadAttributeBase( oNode, _T("w:eastAsia"),      m_sEastAsia );
-				XmlMacroReadAttributeBase( oNode, _T("w:eastAsiaTheme"), m_oEastAsiaTheme );
-				XmlMacroReadAttributeBase( oNode, _T("w:hAnsi"),         m_sHAnsi );
-				XmlMacroReadAttributeBase( oNode, _T("w:hAnsiTheme"),    m_oHAnsiTheme );
-				XmlMacroReadAttributeBase( oNode, _T("w:hint"),          m_oHint );
-			}
-			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes(oReader);
-
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-            virtual std::wstring ToString() const
-			{			
-                std::wstring sResult;
-
-				if ( m_sAscii.IsInit() )
-				{
-					sResult += _T("w:ascii=\"");
-                    sResult += m_sAscii.get2();
-					sResult += _T("\" ");
-				}
-
-				if ( m_oAsciiTheme.IsInit() )
-				{
-					sResult += _T("w:asciiTheme=\"");
-					sResult += m_oAsciiTheme->ToString();
-					sResult += _T("\" ");
-				}
-
-				if ( m_sCs.IsInit() )
-				{
-					sResult += _T("w:cs=\"");
-                    sResult += m_sCs.get2();
-					sResult += _T("\" ");
-				}
-
-				if ( m_oCsTheme.IsInit() )
-				{
-					sResult += _T("w:cstheme=\"");
-					sResult += m_oCsTheme->ToString();
-					sResult += _T("\" ");
-				}
-
-				if ( m_sEastAsia.IsInit() )
-				{
-					sResult += _T("w:eastAsia=\"");
-                    sResult += m_sEastAsia.get2();
-					sResult += _T("\" ");
-				}
-
-				if ( m_oEastAsiaTheme.IsInit() )
-				{
-					sResult += _T("w:eastAsiaTheme=\"");
-					sResult += m_oEastAsiaTheme->ToString();
-					sResult += _T("\" ");
-				}
-
-				if ( m_sHAnsi.IsInit() )
-				{
-					sResult += _T("w:hAnsi=\"");
-                    sResult += m_sHAnsi.get2();
-					sResult += _T("\" ");
-				}
-
-				if ( m_oHAnsiTheme.IsInit() )
-				{
-					sResult += _T("w:hAnsiTheme=\"");
-					sResult += m_oHAnsiTheme->ToString();
-					sResult += _T("\" ");
-				}
-
-				if ( m_oHint.IsInit() )
-				{
-					sResult += _T("w:hint=\"");
-					sResult += m_oHint->ToString();
-					sResult += _T("\" ");
-				}
-
-				return sResult;
-			}
-		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:ascii"),         m_sAscii )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:asciiTheme"),    m_oAsciiTheme )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:cs"),            m_sCs )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:cstheme"),       m_oCsTheme )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:eastAsia"),      m_sEastAsia )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:eastAsiaTheme"), m_oEastAsiaTheme )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:hAnsi"),         m_sHAnsi )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:hAnsiTheme"),    m_oHAnsiTheme )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:hint"),          m_oHint )
-				WritingElement_ReadAttributes_End( oReader )
-			}
-
-		public:
-
-            nullable<std::wstring              > m_sAscii;
-			nullable<SimpleTypes::CTheme<>> m_oAsciiTheme;
-            nullable<std::wstring              > m_sCs;
-			nullable<SimpleTypes::CTheme<>> m_oCsTheme;
-            nullable<std::wstring              > m_sEastAsia;
-			nullable<SimpleTypes::CTheme<>> m_oEastAsiaTheme;
-            nullable<std::wstring              > m_sHAnsi;
-			nullable<SimpleTypes::CTheme<>> m_oHAnsiTheme;
-			nullable<SimpleTypes::CHint<> > m_oHint;
-		};
-
-
 
 		//--------------------------------------------------------------------------------
 		// u (Underline) 17.3.2.40 (Part 1)
@@ -513,11 +378,11 @@ namespace ComplexTypes
 			}
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				XmlMacroReadAttributeBase( oNode, _T("w:color"),      m_oColor );
-				XmlMacroReadAttributeBase( oNode, _T("w:themeColor"), m_oThemeColor );
-				XmlMacroReadAttributeBase( oNode, _T("w:themeShade"), m_oThemeShade );
-				XmlMacroReadAttributeBase( oNode, _T("w:themeTint"),  m_oThemeTint );
-				XmlMacroReadAttributeBase( oNode, _T("w:val"),        m_oVal );
+				XmlMacroReadAttributeBase( oNode, L"w:color",      m_oColor );
+				XmlMacroReadAttributeBase( oNode, L"w:themeColor", m_oThemeColor );
+				XmlMacroReadAttributeBase( oNode, L"w:themeShade", m_oThemeShade );
+				XmlMacroReadAttributeBase( oNode, L"w:themeTint",  m_oThemeTint );
+				XmlMacroReadAttributeBase( oNode, L"w:val",        m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -532,37 +397,37 @@ namespace ComplexTypes
 
 				if ( m_oColor.IsInit() )
 				{
-					sResult += _T("w:color=\"");
+					sResult += L"w:color=\"";
 					sResult += m_oColor->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oThemeColor.IsInit() )
 				{
-					sResult += _T("w:themeColor=\"");
+					sResult += L"w:themeColor=\"";
 					sResult += m_oThemeColor->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oThemeShade.IsInit() )
 				{
-					sResult += _T("w:themeShade=\"");
+					sResult += L"w:themeShade=\"";
 					sResult += m_oThemeShade->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oThemeTint.IsInit() )
 				{
-					sResult += _T("w:themeTint=\"");
+					sResult += L"w:themeTint=\"";
 					sResult += m_oThemeTint->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += _T("w:val=\"");
+					sResult += L"w:val=\"";
 					sResult += m_oVal->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				return sResult;
@@ -573,11 +438,11 @@ namespace ComplexTypes
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:color"),      m_oColor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:themeColor"), m_oThemeColor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:themeShade"), m_oThemeShade )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:themeTint"),  m_oThemeTint )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:val"),        m_oVal )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:color",      m_oColor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:themeColor", m_oThemeColor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:themeShade", m_oThemeShade )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:themeTint",  m_oThemeTint )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:val",        m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -605,7 +470,7 @@ namespace ComplexTypes
 			}
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				XmlMacroReadAttributeBase( oNode, _T("w:val"),        m_oVal );
+				XmlMacroReadAttributeBase( oNode, L"w:val",        m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -620,9 +485,9 @@ namespace ComplexTypes
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += _T("w:val=\"");
+					sResult += L"w:val=\"";
 					sResult += m_oVal->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				return sResult;
@@ -633,7 +498,7 @@ namespace ComplexTypes
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle ( oReader, _T("w:val"), m_oVal )
+				WritingElement_ReadAttributes_ReadSingle ( oReader, L"w:val", m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -657,7 +522,7 @@ namespace ComplexTypes
 			}
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, L"w:val", m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -672,9 +537,9 @@ namespace ComplexTypes
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += _T("w:val=\"");
+					sResult += L"w:val=\"";
 					sResult += m_oVal->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				return sResult;
@@ -685,7 +550,7 @@ namespace ComplexTypes
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle ( oReader, _T("w:val"), m_oVal )
+				WritingElement_ReadAttributes_ReadSingle ( oReader, L"w:val", m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 

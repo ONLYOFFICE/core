@@ -37,6 +37,8 @@
 
 #include "../Common/SimpleTypes_Word.h"
 #include "../Common/SimpleTypes_Shared.h"
+#include "../Common/ComplexTypes.h"
+
 #include "../SystemUtility/File.h"
 	
 namespace OOX
@@ -165,6 +167,10 @@ namespace OOX
 						m_arrFonts.push_back( pFont );
 					}
 				}
+				else if (L"w:defaultFonts")
+				{
+					m_oDefaultFonts = oReader;
+				}
 			}
 		}
         virtual std::wstring toXML() const
@@ -187,8 +193,8 @@ xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">";
 			return et_w_fonts;
 		}
 //------------------------------------------------------------------------
-
-		std::vector<CFont*> m_arrFonts;
+		nullable<ComplexTypes::Word::CFonts>	m_oDefaultFonts;
+		std::vector<CFont*>						m_arrFonts;
 
 	};
 

@@ -256,31 +256,173 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
+				nullable<SimpleTypes::CSignedTwipsMeasure> m_oWidth;
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:color",      m_oColor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:frame",      m_oFrame )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:shadow",     m_oShadow )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:space",      m_oSpace )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:sz",         m_oSz )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:themeColor", m_oThemeColor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:themeShade", m_oThemeShade )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:themeTint",  m_oThemeTint )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:val",        m_oVal )
+					WritingElement_ReadAttributes_Read_if     ( oReader, L"w:color",      m_oColor )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:frame",      m_oFrame )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:shadow",     m_oShadow )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:space",      m_oSpace )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:sz",         m_oSz )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:themeColor", m_oThemeColor )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:themeShade", m_oThemeShade )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:themeTint",  m_oThemeTint )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:val",        m_oVal )
+					WritingElement_ReadAttributes_Read_else_if(oReader,  L"wx:bdrwidth",  m_oWidth)
 				WritingElement_ReadAttributes_End( oReader )
+
+				if (m_oWidth.IsInit())
+				{
+					m_oSz.Init();  m_oSz->SetValue((int)(m_oWidth->GetValue() * 8));
+				}
 			}
 
 		public:
 
-			nullable<SimpleTypes::CHexColor<>           > m_oColor;
-			nullable<SimpleTypes::COnOff<>              > m_oFrame;
-			nullable<SimpleTypes::COnOff<>              > m_oShadow;
-			nullable<SimpleTypes::CPointMeasure<>       > m_oSpace;
-			nullable<SimpleTypes::CEighthPointMeasure<> > m_oSz;
-			nullable<SimpleTypes::CThemeColor<>         > m_oThemeColor;
-			nullable<SimpleTypes::CUcharHexNumber<>     > m_oThemeShade;
-			nullable<SimpleTypes::CUcharHexNumber<>     > m_oThemeTint;
-			nullable<SimpleTypes::CBorder<>             > m_oVal;
+			nullable<SimpleTypes::CHexColor<>>			m_oColor;
+			nullable<SimpleTypes::COnOff<>>				m_oFrame;
+			nullable<SimpleTypes::COnOff<>>				m_oShadow;
+			nullable<SimpleTypes::CPointMeasure<>>		m_oSpace;
+			nullable<SimpleTypes::CEighthPointMeasure<>> m_oSz;
+			nullable<SimpleTypes::CThemeColor<>>		m_oThemeColor;
+			nullable<SimpleTypes::CUcharHexNumber<>>	m_oThemeShade;
+			nullable<SimpleTypes::CUcharHexNumber<>>	m_oThemeTint;
+			nullable<SimpleTypes::CBorder<>>			m_oVal;
 
+		};
+
+		//--------------------------------------------------------------------------------
+		// rFonts (Fonts) 17.3.2.20 (Part 1)
+		//--------------------------------------------------------------------------------
+		class CFonts : public ComplexType
+		{
+		public:
+			ComplexTypes_AdditionConstructors(CFonts)
+				CFonts()
+			{
+			}
+			virtual ~CFonts()
+			{
+			}
+
+			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
+			{
+				XmlMacroReadAttributeBase(oNode, L"w:ascii", m_sAscii);
+				XmlMacroReadAttributeBase(oNode, L"w:asciiTheme", m_oAsciiTheme);
+				XmlMacroReadAttributeBase(oNode, L"w:cs", m_sCs);
+				XmlMacroReadAttributeBase(oNode, L"w:cstheme", m_oCsTheme);
+				XmlMacroReadAttributeBase(oNode, L"w:eastAsia", m_sEastAsia);
+				XmlMacroReadAttributeBase(oNode, L"w:eastAsiaTheme", m_oEastAsiaTheme);
+				XmlMacroReadAttributeBase(oNode, L"w:hAnsi", m_sHAnsi);
+				XmlMacroReadAttributeBase(oNode, L"w:hAnsiTheme", m_oHAnsiTheme);
+				XmlMacroReadAttributeBase(oNode, L"w:hint", m_oHint);
+			}
+			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
+
+				if (!oReader.IsEmptyNode())
+					oReader.ReadTillEnd();
+			}
+			virtual std::wstring ToString() const
+			{
+				std::wstring sResult;
+
+				if (m_sAscii.IsInit())
+				{
+					sResult += L"w:ascii=\"";
+					sResult += m_sAscii.get2();
+					sResult += L"\" ";
+				}
+
+				if (m_oAsciiTheme.IsInit())
+				{
+					sResult += L"w:asciiTheme=\"";
+					sResult += m_oAsciiTheme->ToString();
+					sResult += L"\" ";
+				}
+
+				if (m_sCs.IsInit())
+				{
+					sResult += L"w:cs=\"";
+					sResult += m_sCs.get2();
+					sResult += L"\" ";
+				}
+
+				if (m_oCsTheme.IsInit())
+				{
+					sResult += L"w:cstheme=\"";
+					sResult += m_oCsTheme->ToString();
+					sResult += L"\" ";
+				}
+
+				if (m_sEastAsia.IsInit())
+				{
+					sResult += L"w:eastAsia=\"";
+					sResult += m_sEastAsia.get2();
+					sResult += L"\" ";
+				}
+
+				if (m_oEastAsiaTheme.IsInit())
+				{
+					sResult += L"w:eastAsiaTheme=\"";
+					sResult += m_oEastAsiaTheme->ToString();
+					sResult += L"\" ";
+				}
+
+				if (m_sHAnsi.IsInit())
+				{
+					sResult += L"w:hAnsi=\"";
+					sResult += m_sHAnsi.get2();
+					sResult += L"\" ";
+				}
+
+				if (m_oHAnsiTheme.IsInit())
+				{
+					sResult += L"w:hAnsiTheme=\"";
+					sResult += m_oHAnsiTheme->ToString();
+					sResult += L"\" ";
+				}
+
+				if (m_oHint.IsInit())
+				{
+					sResult += L"w:hint=\"";
+					sResult += m_oHint->ToString();
+					sResult += L"\" ";
+				}
+
+				return sResult;
+			}
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start(oReader)
+					WritingElement_ReadAttributes_Read_if(oReader, L"w:ascii", m_sAscii)
+					WritingElement_ReadAttributes_Read_else_if(oReader, L"w:asciiTheme", m_oAsciiTheme)
+					WritingElement_ReadAttributes_Read_else_if(oReader, L"w:cs", m_sCs)
+					WritingElement_ReadAttributes_Read_else_if(oReader, L"w:cstheme", m_oCsTheme)
+					WritingElement_ReadAttributes_Read_else_if(oReader, L"w:eastAsia", m_sEastAsia)
+					WritingElement_ReadAttributes_Read_else_if(oReader, L"w:eastAsiaTheme", m_oEastAsiaTheme)
+					WritingElement_ReadAttributes_Read_else_if(oReader, L"w:hAnsi", m_sHAnsi)
+					WritingElement_ReadAttributes_Read_else_if(oReader, L"w:hAnsiTheme", m_oHAnsiTheme)
+					WritingElement_ReadAttributes_Read_else_if(oReader, L"w:hint", m_oHint)
+					//2003				
+					WritingElement_ReadAttributes_Read_else_if(oReader, L"w:h-ansi", m_oHint)
+					WritingElement_ReadAttributes_Read_else_if(oReader, L"w:fareast", m_sEastAsia)
+					WritingElement_ReadAttributes_End(oReader)
+			}
+
+		public:
+
+			nullable<std::wstring              > m_sAscii;
+			nullable<SimpleTypes::CTheme<>> m_oAsciiTheme;
+			nullable<std::wstring              > m_sCs;
+			nullable<SimpleTypes::CTheme<>> m_oCsTheme;
+			nullable<std::wstring              > m_sEastAsia;
+			nullable<SimpleTypes::CTheme<>> m_oEastAsiaTheme;
+			nullable<std::wstring              > m_sHAnsi;
+			nullable<SimpleTypes::CTheme<>> m_oHAnsiTheme;
+			nullable<SimpleTypes::CHint<> > m_oHint;
 		};
 
 		//--------------------------------------------------------------------------------

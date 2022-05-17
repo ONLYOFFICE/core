@@ -1536,7 +1536,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
         bool bIsMaster = oArrayShape[0]->m_bHaveMaster;
         if (bIsMaster && elType !=etPicture)
         {
-            for (int i = 0; i < oArrayOptions[0]->m_oProperties.m_lCount; ++i)
+            for (size_t i = 0; i < oArrayOptions[0]->m_oProperties.m_lCount; ++i)
             {
                 if (hspMaster == oArrayOptions[0]->m_oProperties.m_arProperties[i].m_ePID)
                 {

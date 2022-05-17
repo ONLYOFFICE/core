@@ -96,5 +96,16 @@ namespace OOX
 			else if ( L"w:bgPict" == sName )
 				m_oBgPict = oReader;
 		}
+
+		if ((m_pFontTable.IsInit() && m_pStyles.IsInit()) && (m_pFontTable->m_oDefaultFonts.IsInit()))
+		{
+			if (false == m_pStyles->m_oDocDefaults.IsInit())
+				m_pStyles->m_oDocDefaults.Init();
+			if (false == m_pStyles->m_oDocDefaults->m_oRunPr.IsInit())
+				m_pStyles->m_oDocDefaults->m_oRunPr.Init();
+
+			if (!m_pStyles->m_oDocDefaults->m_oRunPr->m_oRFonts.IsInit())
+				m_pStyles->m_oDocDefaults->m_oRunPr->m_oRFonts = m_pFontTable->m_oDefaultFonts;
+		}
 	}
 }

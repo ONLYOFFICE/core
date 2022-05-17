@@ -262,27 +262,34 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 					last_index = index;
 				}
 			}
-			if (bMacros && xls_file->storage_->isDirectory(L"_VBA_PROJECT_CUR"))
+			if (bMacros)
 			{
-				std::wstring xl_path = xlsx_path + FILE_SEPARATOR_STR + L"xl";	
-				NSDirectory::CreateDirectory(xl_path.c_str());
+				if (xls_file->storage_->isDirectory(L"_VBA_PROJECT_CUR"))
+				{
+					// if false == global_info_->bVbaProjectExist ??
 
-				std::wstring sVbaProjectFile = xl_path + FILE_SEPARATOR_STR + L"vbaProject.bin";
+					std::wstring xl_path = xlsx_path + FILE_SEPARATOR_STR + L"xl";
+					NSDirectory::CreateDirectory(xl_path.c_str());
 
-				POLE::Storage *storageVbaProject = new POLE::Storage(sVbaProjectFile.c_str());
+					std::wstring sVbaProjectFile = xl_path + FILE_SEPARATOR_STR + L"vbaProject.bin";
 
-				if ((storageVbaProject) && (storageVbaProject->open(true, true)))
-				{			
-					xls_file->copy(0, L"_VBA_PROJECT_CUR/", storageVbaProject, false);
+					POLE::Storage *storageVbaProject = new POLE::Storage(sVbaProjectFile.c_str());
 
-					storageVbaProject->close();
-					delete storageVbaProject;
+					if ((storageVbaProject) && (storageVbaProject->open(true, true)))
+					{
+						xls_file->copy(0, L"_VBA_PROJECT_CUR/", storageVbaProject, false);
 
-					output_document->get_xl_files().add_vba_project();
+						storageVbaProject->close();
+						delete storageVbaProject;
+
+						output_document->get_xl_files().add_vba_project();
+					}
 				}
+				else if (xls_global_info->bMacrosExist)
+					output_document->get_xl_files().set_macros_enabled();
+				else 
+					bMacros = false;
 			}
-			else 
-				bMacros = false;
 
 			XLS::CFStreamPtr controls = xls_file->getNamedStream(L"Ctls");
 			if(controls)
@@ -1207,7 +1214,7 @@ void XlsConverter::convert_old(XLS::OBJECTS* objects, XLS::WorksheetSubstream * 
 			if (obj->old_version.bFill)
 				xlsx_context->get_drawing_context().set_fill_old_version(obj->old_version.fill);
 			else 
-				xlsx_context->get_drawing_context().set_fill_type(0);	//no fill
+				xlsx_context->get_drawing_context().set_fill_type(oox::fillNone);	//no fill
 			
 			xlsx_context->get_drawing_context().set_name(obj->old_version.name);
 			xlsx_context->get_drawing_context().set_line_old_version(obj->old_version.line);
@@ -1509,34 +1516,39 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 				{
 				case 1://fillPattern:
 					{
-						xlsx_context->get_drawing_context().set_fill_type(2);
+						xlsx_context->get_drawing_context().set_fill_type(oox::fillPattern);
 						//texture + change black to color2, white to color1
 					}break;
 					case 2://fillTexture :
 					{
-						xlsx_context->get_drawing_context().set_fill_type(3);
+						xlsx_context->get_drawing_context().set_fill_type(oox::fillTexture);
 						xlsx_context->get_drawing_context().set_fill_texture_mode(0);
 					}break;
 					case 3://fillPicture :
 					{
-						xlsx_context->get_drawing_context().set_fill_type(3);
+						xlsx_context->get_drawing_context().set_fill_type(oox::fillTexture);
 						xlsx_context->get_drawing_context().set_fill_texture_mode(1);
 					}break;
 					case 4://fillShadeCenter://1 color
 					case 5://fillShadeShape:
 					{
-						xlsx_context->get_drawing_context().set_fill_type(5);
+						xlsx_context->get_drawing_context().set_fill_type(oox::fillGradientOne);
 					}break;//
 					case 6://fillShadeTitle://2 colors and more
 					case 7://fillShade : 
 					case 8://fillShadeScale: 
 					{
-						xlsx_context->get_drawing_context().set_fill_type(4);
+						xlsx_context->get_drawing_context().set_fill_type(oox::fillGradient);
 					}break;
 					case 9://fillBackground:
 					{
-						xlsx_context->get_drawing_context().set_fill_type(0);
-					}break;				
+						xlsx_context->get_drawing_context().set_fill_type(oox::fillNone);
+					}break;	
+					case 0:
+					default:
+					{ //undefined
+						xlsx_context->get_drawing_context().set_fill_type(oox::fillUndefined);
+					}break;
 				}
 			}break;
 			case ODRAW::fillColor:
@@ -1648,7 +1660,7 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 				if (bools)
 				{
 					if (bools->fUsefFilled && bools->fFilled == false) 
-						xlsx_context->get_drawing_context().set_fill_type(0);
+						xlsx_context->get_drawing_context().set_fill_type(oox::fillNone);
 				}
 			}break;
 			default:
@@ -2332,9 +2344,9 @@ void XlsConverter::convert(ODRAW::OfficeArtFOPT * fort)
 	convert_shape			(fort->fopt.Shape_props);
 	convert_group_shape		(fort->fopt.GroupShape_props);
 	convert_transform		(fort->fopt.Transform_props);
-	convert_blip			(fort->fopt.Blip_props);
 	convert_geometry		(fort->fopt.Geometry_props);
 	convert_fill_style		(fort->fopt.FillStyle_props);
+	convert_blip			(fort->fopt.Blip_props);
 	convert_line_style		(fort->fopt.LineStyle_props);
 	convert_shadow			(fort->fopt.Shadow_props);
 	convert_text			(fort->fopt.Text_props);

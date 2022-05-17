@@ -54,7 +54,7 @@ CFRecord::CFRecord(CFStreamPtr stream, GlobalWorkbookInfoPtr global_info)
 	unsigned long rec_data_pos = stream->getStreamPointer();
 
 	stream->read(data_, size_);
-	if(global_info->decryptor && 0 != size_)
+	if((global_info) && (global_info->decryptor) && (0 != size_))
 	{
 		size_t block_size = global_info->Version == 0x0500 ? 16 : 1024;
 

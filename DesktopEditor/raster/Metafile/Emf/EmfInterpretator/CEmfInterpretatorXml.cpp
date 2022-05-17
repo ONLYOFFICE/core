@@ -1,4 +1,5 @@
 #include "CEmfInterpretatorXml.h"
+#include <typeinfo>
 
 namespace MetaFile
 {
@@ -690,6 +691,15 @@ namespace MetaFile
                 m_pOutputXml->WriteNodeBegin(L"EMR_UNKNOWN");
                         m_pOutputXml->WriteNode(L"Buffer", oDataStream, unRecordSize);
                         m_pOutputXml->WriteNodeEnd(L"EMR_UNKNOWN");
+        }
+
+        void CEmfInterpretatorXml::HANDLE_EMR_FILLRGN(const TEmfRectL &oBounds, unsigned int unIhBrush, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
+        {
+                m_pOutputXml->WriteNodeBegin(L"EMR_FILLRGN");
+                        m_pOutputXml->WriteNode(L"Bounds",  oBounds);
+                        m_pOutputXml->WriteNode(L"ihBrush", unIhBrush);
+                        m_pOutputXml->WriteNode(L"RgnData", oRegionDataHeader, arRects);
+                        m_pOutputXml->WriteNodeEnd(L"EMR_FILLRGN");
         }
 
         void CEmfInterpretatorXml::HANDLE_EMFPLUS_HEADER(bool bIsEmfPlusDual, bool bIsReferenceDevice, unsigned int unDpiX, unsigned int unDpiY)

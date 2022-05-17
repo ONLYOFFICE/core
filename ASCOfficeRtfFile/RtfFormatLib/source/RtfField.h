@@ -112,7 +112,48 @@ public:
 	}
 };
 
+class RtfFormField : public IDocumentElement
+{
+public:
+	RtfFormField(){	}
 
+	int type = PROP_DEF;
+	int ownhelp = PROP_DEF;
+	int ownstat = PROP_DEF;
+	int prot = PROP_DEF;
+	int sizeCheckBox = PROP_DEF; //Auto, Exact
+	int typetx = PROP_DEF;
+	int recalc = PROP_DEF;
+	int haslistbox = PROP_DEF;
+	int maxlen = PROP_DEF;
+	int hps = PROP_DEF;
+	int defres = PROP_DEF;
+	int res = PROP_DEF;
+
+	std::wstring name;
+	std::wstring deftext;
+	std::wstring format;
+	std::wstring helptext;
+	std::wstring stattext;
+	std::wstring entrymcr;
+	std::wstring exitmcr;
+	std::vector<std::wstring> list;
+	std::wstring datafield;
+
+	int GetType()
+	{
+		return TYPE_OOX_FORMFIELD;
+	}
+	std::wstring RenderToRtf(RenderParameter oRenderParameter)
+	{
+		return L"";
+	}
+	std::wstring RenderToOOX(RenderParameter oRenderParameter)
+	{
+		return L"";
+	}
+};
+typedef boost::shared_ptr<RtfFormField>	RtfFormFieldPtr;
 
 class RtfFieldInst : public IDocumentElement
 {
@@ -139,6 +180,8 @@ public:
 
 	RtfCharProperty			m_oCharProperty;
 	TextItemContainerPtr	m_pTextItems;
+
+	RtfFormFieldPtr			m_pFormField;
 };
 typedef boost::shared_ptr<RtfFieldInst>	RtfFieldInstPtr;
 
@@ -156,7 +199,7 @@ public:
 
 	_FieldMode				m_eMode;
 	bool					m_bReferenceToEndnote;
-    std::wstring					m_sData;
+    std::wstring			m_sData;
 	
 	RtfFieldInstPtr			m_pInsert;
 	RtfFieldInstPtr			m_pResult;

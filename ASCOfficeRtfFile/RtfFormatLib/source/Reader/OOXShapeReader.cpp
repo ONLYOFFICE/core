@@ -238,6 +238,14 @@ bool OOXShapeReader::ParseVmlStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssPro
 			{
 				pShape->m_nPctHeight	= (int)prop->get_Value().oValue.dValue;
 			}break;
+		case SimpleTypes::Vml::csspctMsoTopPercent:
+		{
+			pShape->m_nPositionVPct = (int)prop->get_Value().oValue.dValue;
+		}break;
+		case SimpleTypes::Vml::csspctMsoLeftPercent:
+		{
+			pShape->m_nPositionHPct = (int)prop->get_Value().oValue.dValue;
+		}break;
 		case SimpleTypes::Vml::cssptVRotateLetters:
 			{
 				pShape->m_bGtextFVertical	= prop->get_Value().bValue;
@@ -1613,10 +1621,10 @@ bool OOXShapeReader::ParseVml(ReaderParameter oParam, RtfShapePtr& pOutput, bool
 			}
 		}
 		custom_path = shape_type->m_oPath.GetPointer();
-		if (shape_type->m_oCoordOrigin.IsInit())
+		if (shape_type->m_oCoordSize.IsInit())
 		{
-			Width = shape_type->m_oCoordOrigin->GetX();
-			Height = shape_type->m_oCoordOrigin->GetY();
+			Width = shape_type->m_oCoordSize->GetX();
+			Height = shape_type->m_oCoordSize->GetY();
 		}
 		if (false == bUsedType)
 			return false;//add type, not add object
@@ -1651,10 +1659,10 @@ bool OOXShapeReader::ParseVml(ReaderParameter oParam, RtfShapePtr& pOutput, bool
 		}
 
 		custom_path = shape->m_oPath.GetPointer();
-		if (shape->m_oCoordOrigin.IsInit())
+		if (shape->m_oCoordSize.IsInit())
 		{
-			Width = shape->m_oCoordOrigin->GetX();
-			Height = shape->m_oCoordOrigin->GetY();
+			Width = shape->m_oCoordSize->GetX();
+			Height = shape->m_oCoordSize->GetY();
 		}
 	}
 	else if (OOX::Vml::CRect* rect = dynamic_cast<OOX::Vml::CRect*>(m_vmlElement))
@@ -1724,7 +1732,7 @@ bool OOXShapeReader::ParseVml(ReaderParameter oParam, RtfShapePtr& pOutput, bool
 	if (m_vmlElement->m_oStrokeColor.IsInit())
 		pOutput->m_nLineColor = (m_vmlElement->m_oStrokeColor->Get_B() << 16) + (m_vmlElement->m_oStrokeColor->Get_G() << 8) + m_vmlElement->m_oStrokeColor->Get_R();
 
-	if (m_vmlElement->m_oStrokeWeight.IsInit())
+	if (m_vmlElement->m_oStrokeWeight.IsInit() && (m_vmlElement->m_oStrokeWeight->GetValue() > 0))
 		pOutput->m_nLineWidth = (int)m_vmlElement->m_oStrokeWeight->ToEmu();
 
 	if (m_vmlElement->m_oConnectorType.IsInit())
@@ -1965,38 +1973,56 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 	return true;
 }
 
-void OOXShapeReader::ParseVmlPath (RtfShapePtr& pOutput, const std::wstring &custom_path)
+void OOXShapeReader::ParseVmlPath (RtfShapePtr& pOutput, const std::wstring &custom_vml_path)
 {
-	std::vector<svg_path::_polyline> o_Polyline;
-	
-	bool res = svg_path::parseVml(o_Polyline, custom_path);
+	std::vector< std::wstring > splitted;
 
-	int val = 0;
-	for (size_t i = 0; i < o_Polyline.size(); i++)
+	boost::algorithm::split(splitted, custom_vml_path, boost::algorithm::is_any_of(L"e"), boost::algorithm::token_compress_on);
+
+	for (size_t i = 0; i < splitted.size(); ++i)
 	{
-		if (o_Polyline[i].command == L"m")
-		{
-			val = 0x4000;
-		}
-		else if (o_Polyline[i].command == L"l")	
-		{
-			val = 0x0000 | 1;
-		}
-		else if (o_Polyline[i].command == L"c")
-		{
-			val = 0x2000 | 1;
-		}	
-		
-		pOutput->m_aPSegmentInfo.push_back(val);
+		std::wstring & custom_path = splitted[i];
 
-		for (size_t j = 0; j < o_Polyline[i].points.size(); j++)
+		if (custom_path.empty()) continue;
+
+		std::vector<svg_path::_polyline> o_Polyline;
+
+		bool bLine = (custom_path.find(L"ns") == std::wstring::npos);
+		bool bFill = (custom_path.find(L"nf") == std::wstring::npos);
+
+		bool res = svg_path::parseVml(o_Polyline, custom_path);
+
+		int val = 0;
+		for (size_t i = 0; i < o_Polyline.size(); i++)
 		{
-			pOutput->m_aPVerticles.push_back(std::make_pair((int)(o_Polyline[i].points[j].x.get_value_or(0)/* / 10000. * W*/),
-															(int)(o_Polyline[i].points[j].y.get_value_or(0)/* / 10000. * H*/)));
+			if (o_Polyline[i].command == L"m")
+			{
+				val = 0x4000;
+			}
+			else if (o_Polyline[i].command == L"l")
+			{
+				val = 0x0000 | 1;
+			}
+			else if (o_Polyline[i].command == L"c")
+			{
+				val = 0x2000 | 1;
+			}
+
+			if (!bFill)
+				pOutput->m_aPSegmentInfo.push_back(0xac00);
+			if (!bLine)
+				pOutput->m_aPSegmentInfo.push_back(0xab00);
+			pOutput->m_aPSegmentInfo.push_back(val);
+
+			for (size_t j = 0; j < o_Polyline[i].points.size(); j++)
+			{
+				pOutput->m_aPVerticles.push_back(std::make_pair((int)(o_Polyline[i].points[j].x.get_value_or(0)/* / 10000. * W*/),
+					(int)(o_Polyline[i].points[j].y.get_value_or(0)/* / 10000. * H*/)));
+			}
 		}
+
+		pOutput->m_aPSegmentInfo.push_back(0x6001);
 	}
-
-	pOutput->m_aPSegmentInfo.push_back(0x6001);
 	pOutput->m_aPSegmentInfo.push_back(0x8000);
 }
 

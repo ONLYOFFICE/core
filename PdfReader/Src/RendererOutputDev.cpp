@@ -79,6 +79,83 @@ EM_JS(int, js_free_id, (unsigned char* data), {
 #define OO_INLINE inline
 #endif
 
+namespace NSCorrectFontName
+{
+    bool CheckFontNameStyle(std::wstring& sName, const std::wstring& sStyle)
+    {
+        size_t nPos = 0;
+        size_t nLenReplace = sStyle.length();
+        bool bRet = false;
+
+        std::wstring sName2 = sName;
+        NSStringExt::ToLower(sName2);
+
+        while (std::wstring::npos != (nPos = sName2.find(sStyle, nPos)))
+        {
+            size_t nOffset = 0;
+            if ((nPos > 0) && sName2.at(nPos - 1) == '-')
+            {
+                --nPos;
+                ++nOffset;
+            }
+
+            bRet = true;
+            sName.erase(nPos, nLenReplace + nOffset);
+            sName2.erase(nPos, nLenReplace + nOffset);
+        }
+        return bRet;
+    }
+
+    void CheckFontNamePDF(std::wstring& sName, NSFonts::CFontSelectFormat& format)
+    {
+        if (sName.length() > 7 && sName.at(6) == '+')
+        {
+            bool bIsRemove = true;
+            for (int nIndex = 0; nIndex < 6; nIndex++)
+            {
+                wchar_t nChar = sName.at(nIndex);
+                if (nChar < 'A' || nChar > 'Z')
+                {
+                    bIsRemove = false;
+                    break;
+                }
+            }
+            if (bIsRemove)
+            {
+                sName.erase(0, 7);
+            }
+        }
+
+        bool bBold = false;
+        bool bItalic = false;
+
+        CheckFontNameStyle(sName, L"regular");
+        CheckFontNameStyle(sName, L"condensed");
+        CheckFontNameStyle(sName, L"condensedlight");
+        //CheckFontNameStyle(sName, L"light");
+
+        CheckFontNameStyle(sName, L"condensedbold");
+        CheckFontNameStyle(sName, L"semibold");
+        if (CheckFontNameStyle(sName, L"boldmt")) bBold = true;
+        if (CheckFontNameStyle(sName, L"bold")) bBold = true;
+
+        if (CheckFontNameStyle(sName, L"italicmt")) bItalic = true;
+        if (CheckFontNameStyle(sName, L"italic")) bItalic = true;
+        if (CheckFontNameStyle(sName, L"oblique")) bItalic = true;
+
+        if (CheckFontNameStyle(sName, L"bolditalicmt")) { bBold = true; bItalic = true; }
+        if (CheckFontNameStyle(sName, L"bolditalic")) { bBold = true; bItalic = true; }
+        if (CheckFontNameStyle(sName, L"bold_italic")) { bBold = true; bItalic = true; }
+        if (CheckFontNameStyle(sName, L"boldoblique")) { bBold = true; bItalic = true; }
+        if (CheckFontNameStyle(sName, L"bold_oblique")) { bBold = true; bItalic = true; }
+
+        if (bBold)
+            format.bBold = new INT(1);
+        if (bItalic)
+            format.bItalic = new INT(1);
+    }
+}
+
 class CMemoryFontStream
 {
 public:
@@ -1145,6 +1222,7 @@ namespace PdfReader
                     oRefObject.free();
 
                     NSFonts::CFontSelectFormat oFontSelect;
+                    NSCorrectFontName::CheckFontNamePDF(wsFontBaseName, oFontSelect);
                     if (oFontObject.isDict())
                     {
                         Dict *pFontDict = oFontObject.getDict();
@@ -1178,7 +1256,11 @@ namespace PdfReader
 
                             // ItalicAngle
                             oFontDescriptor.dictLookup("ItalicAngle", &oDictItem);
-                            if (oDictItem.isInt() && 0 != oDictItem.getInt()) oFontSelect.bItalic = new INT(1);
+                            if (oDictItem.isInt() && 0 != oDictItem.getInt())
+                            {
+                                if (oFontSelect.bItalic) RELEASEOBJECT(oFontSelect.bItalic);
+                                oFontSelect.bItalic = new INT(1);
+                            }
                             oDictItem.free();
 
                             // Ascent
@@ -4062,14 +4144,8 @@ namespace PdfReader
             }
         }
 
-        bool bIsFlip = false;
-#ifdef USE_EXTERNAL_JPEG2000
-        if (pStream->getKind() == strJPX)
-            bIsFlip = true;
-#endif
-
         Aggplus::CImage oImage;
-        oImage.Create(pBufferPtr, nWidth, nHeight, bIsFlip ? (4 * nWidth) : (-4 * nWidth));
+		oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
 
         pImageStream->close();
 		delete pImageStream;
@@ -4253,16 +4329,16 @@ namespace PdfReader
 
         double dPageHeight = pGState->getPageHeight();
 
-        int nBufferSize = 4 * nWidth * nHeight;
+		int nBufferSize = 4 * nWidth * nHeight;
         if (nBufferSize < 1)
             return;
 
         unsigned char *pBufferPtr = new unsigned char[nBufferSize];
         if (!pBufferPtr)
-            return;
+			return;
 
-        Aggplus::CImage oImage;
-        oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
+		Aggplus::CImage oImage;
+		oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
 
         // Пишем данные в pBufferPtr
         ImageStream *pImageStream = new ImageStream(pStream, nWidth, pColorMap->getNumPixelComps(), pColorMap->getBits());
@@ -4330,7 +4406,7 @@ namespace PdfReader
                             return;
                         }
 
-                        oImage.Create(pBufferPtr, nMaxW, nMaxH, -4 * nMaxW);
+						oImage.Create(pBufferPtr, nMaxW, nMaxH, -4 * nMaxW);
 
                         double dImageScaleWidth  = (double)nWidth / (double)nMaxW;
                         double dImageScaleHeight = (double)nHeight / (double)nMaxH;
@@ -4349,7 +4425,7 @@ namespace PdfReader
                                 pBufferPtr[nIndex + 3] = (unsigned char)(pAlpha[nNearestAlphaMatch] * dAlphaKoef);
                                 nIndex += 4;
                             }
-                        }
+						}
 
                         delete[] pImageBuffer;
                     }
@@ -4392,7 +4468,7 @@ namespace PdfReader
                 }
             }
         }
-        else
+		else
         {
             ImageStream *pSMaskStream = new ImageStream(pMaskStream, nMaskWidth, pMaskColorMap->getNumPixelComps(), pMaskColorMap->getBits());
             pSMaskStream->reset();
@@ -4414,7 +4490,7 @@ namespace PdfReader
         }
 
         // Undo preblend
-        if (pMatteColor)
+		if (pMatteColor)
         {
             GfxRGB oMatteRGB;
             GfxColor oColor;

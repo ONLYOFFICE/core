@@ -7,6 +7,7 @@ include(../../../Common/base.pri)
 
 SUBDIRS = \
     XlsbFormatLib \
+    VbaFormatLib \
     DocxFormatLib \
     PPTXFormatLib \
     ASCOfficeDocxFile2Lib \
@@ -35,6 +36,7 @@ DocFormatLib.file = ../../../ASCOfficeDocFile/DocFormatLib/Linux/DocFormatLib.pr
 OdfFileReaderLib.file = ../../../ASCOfficeOdfFile/linux/OdfFileReaderLib.pro
 OdfFileWriterLib.file = ../../../ASCOfficeOdfFileW/linux/OdfFileWriterLib.pro
 XlsFormatLib.file = ../../../ASCOfficeXlsFile2/source/linux/XlsFormatLib.pro
+VbaFormatLib.file = ../../../ASCOfficeXlsFile2/source/linux/VbaFormatLib.pro
 HtmlFile2.file = ../../../HtmlFile2/HtmlFile2.pro
 EpubFile.file = ../../../EpubFile/CEpubFile.pro
 XpsFile.file = ../../../XpsFile/XpsFile.pro
@@ -42,6 +44,7 @@ kernel.file = ../../../Common/kernel.pro
 doctrenderer.file = ../../../DesktopEditor/doctrenderer/doctrenderer.pro
 
 X2tConverter.depends = \
+    VbaFormatLib \
     XlsbFormatLib \
     DocxFormatLib \
     PPTXFormatLib \

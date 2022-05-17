@@ -87,7 +87,6 @@ namespace NExtractTools
 			}
 			else
 			{
-				// zip -> dir
 				return TCD_UNZIPDIR;
 			}
 		}
@@ -347,12 +346,16 @@ namespace NExtractTools
                                  0 == sExt2.compare(_T(".xlsm")) ||
                                  0 == sExt2.compare(_T(".pptm")))		res = TCD_ODF_FLAT2OOX;
                     }break;
+				case AVS_OFFICESTUDIO_FILE_OTHER_MS_VBAPROJECT:
+					{
+						res = TCD_VBAPROJECT2XML;
+					}break;
 				case AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO:
 					{
-							 if (0 == sExt2.compare(_T(".doct")))		res = TCD_MSCRYPT2DOCT;
-                        else if (0 == sExt2.compare(_T(".xlst")))		res = TCD_MSCRYPT2XLST;
-                        else if (0 == sExt2.compare(_T(".pptt")))		res = TCD_MSCRYPT2PPTT;
- 						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_MSCRYPT2BIN;
+						if (0 == sExt2.compare(_T(".doct")))			res = TCD_MSCRYPT2DOCT;
+						else if (0 == sExt2.compare(_T(".xlst")))		res = TCD_MSCRYPT2XLST;
+						else if (0 == sExt2.compare(_T(".pptt")))		res = TCD_MSCRYPT2PPTT;
+						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_MSCRYPT2BIN;
 					}break;
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER:
 					{

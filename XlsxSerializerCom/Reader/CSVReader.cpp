@@ -57,59 +57,55 @@ namespace CSVReader
 		facet.widen((char*)data, (char*)data + data_size, &result[0]);
 		return result;
 	}
-	const std::wstring utf8_2_unicode(const unsigned char* data, DWORD data_size)
+	void utf8_2_unicode(const unsigned char* data, DWORD data_size, std::wstring &wStr)
 	{
+		wStr.resize(data_size + 1);
+		unsigned int nLength = data_size;
+		
 		if (sizeof(wchar_t) == 2)//utf8 -> utf16
 		{
-			unsigned int nLength = data_size;
-
-			UTF16 *pStrUtf16 = new UTF16 [nLength + 1];
-			memset ((void *) pStrUtf16, 0, sizeof (UTF16) * (nLength + 1));
+			//UTF16 *pStrUtf16 = new UTF16 [nLength + 64];
+			memset ((void *)wStr.data(), 0, sizeof (UTF16) * (nLength + 1));
 
 			UTF8 *pStrUtf8 = (UTF8 *) data;
 
 			const UTF8 *pStrUtf8_Conv = pStrUtf8;
-			UTF16 *pStrUtf16_Conv = pStrUtf16;
+			UTF16 *pStrUtf16_Conv = (UTF16 *)wStr.data();
 
 			ConversionResult eUnicodeConversionResult = ConvertUTF8toUTF16 (&pStrUtf8_Conv,	 &pStrUtf8[nLength]
-					, &pStrUtf16_Conv, &pStrUtf16 [nLength]
+					, &pStrUtf16_Conv, &((UTF16 *)wStr.data())[nLength]
 					, strictConversion);
 
 			if (conversionOK != eUnicodeConversionResult)
 			{
-				delete [] pStrUtf16;
-				return std::wstring();
+				//delete [] pStrUtf16;
 			}
-			std::wstring utf16Str ((wchar_t *) pStrUtf16);
+			//std::wstring utf16Str ((wchar_t *) pStrUtf16);
 
-			delete [] pStrUtf16;
-			return utf16Str;
+			//delete [] pStrUtf16;
 		}
 		else //utf8 -> utf32
 		{
-			unsigned int nLength = data_size;
-
-			UTF32 *pStrUtf32 = new UTF32 [nLength + 1];
-			memset ((void *) pStrUtf32, 0, sizeof (UTF32) * (nLength + 1));
+			//UTF32 *pStrUtf32 = new UTF32 [nLength + 1];
+			//memset ((void *) pStrUtf32, 0, sizeof (UTF32) * (nLength + 1));
+			memset((void *)wStr.data(), 0, sizeof(UTF16) * (nLength + 1));
 
 			UTF8 *pStrUtf8 = (UTF8 *) data;
 
 			const UTF8 *pStrUtf8_Conv = pStrUtf8;
-			UTF32 *pStrUtf32_Conv = pStrUtf32;
+			UTF32 *pStrUtf32_Conv = (UTF32 *)wStr.data();;
 
 			ConversionResult eUnicodeConversionResult = ConvertUTF8toUTF32 (&pStrUtf8_Conv, &pStrUtf8[nLength]
-					, &pStrUtf32_Conv, &pStrUtf32 [nLength]
+					, &pStrUtf32_Conv, &((UTF32 *)wStr.data())[nLength]
 					, strictConversion);
 
 			if (conversionOK != eUnicodeConversionResult)
 			{
-				delete [] pStrUtf32;
-				return std::wstring();
+				//delete [] pStrUtf32;
 			}
-			std::wstring utf32Str ((wchar_t *) pStrUtf32);
+			//std::wstring utf32Str ((wchar_t *) pStrUtf32);
 
-			delete [] pStrUtf32;
-			return utf32Str;
+			//delete [] pStrUtf32;
 		}
 	}
 
@@ -277,7 +273,7 @@ namespace CSVReader
 		
 //-----------------------------------------------------------------------------------
 		DWORD nFileSize = 0;
-		BYTE* pFileData = new BYTE[oFile.GetFileSize()];
+		BYTE* pFileData = new BYTE[oFile.GetFileSize() + 64];
 		
 		oFile.ReadFile(pFileData, oFile.GetFileSize(), nFileSize);
 		oFile.CloseFile();
@@ -303,7 +299,7 @@ namespace CSVReader
 		}
 		else if (nCodePage == 46)//utf-8
 		{
-			sFileDataW = utf8_2_unicode(pInputBuffer, nInputBufferSize);
+			utf8_2_unicode(pInputBuffer, nInputBufferSize, sFileDataW);
 		}
 		else if (nCodePage == 48)//utf-16
 		{
@@ -321,6 +317,7 @@ namespace CSVReader
 			sFileDataW = oUnicodeConverter.toUnicode((const char*)pInputBuffer, nInputBufferSize, oEncodindId.Name);
 		}
  //------------------------------------------------------------------------------------------------------------------------------     
+		delete[]pFileData;
 
 		size_t nSize = sFileDataW.length();
 
@@ -334,7 +331,6 @@ namespace CSVReader
 			nSize = sFileDataW.length();
 			//return AVS_FILEUTILS_ERROR_CONVERT_ICU;
 		}
-        const WCHAR *pTemp = sFileDataW.c_str();
 
 		WCHAR wcDelimiterLeading = L'\0';
 		WCHAR wcDelimiterTrailing = L'\0';
@@ -361,13 +357,15 @@ namespace CSVReader
 		INT nStartCell = 0;
 		std::stack<INT> oDeleteChars;
 
-        bool bInQuote = false;
+		bool bMsLimit = false;
+		bool bInQuote = false;
 		INT nIndexRow = 0;
 		INT nIndexCol = 0;
 		OOX::Spreadsheet::CRow *pRow = new OOX::Spreadsheet::CRow();
 		pRow->m_oR.Init();
 		pRow->m_oR->SetValue(nIndexRow + 1);
 		
+		const WCHAR *pTemp = sFileDataW.c_str();
 		for (size_t nIndex = 0; nIndex < nSize; ++nIndex)
 		{
 			wcCurrent = pTemp[nIndex];
@@ -377,15 +375,25 @@ namespace CSVReader
 					continue;
 				// New Cell
                 std::wstring sCellText(pTemp + nStartCell, nIndex - nStartCell);
-				AddCell(sCellText, nStartCell, oDeleteChars, *pRow, nIndexRow, nIndexCol++, bIsWrap);
+				//AddCell(sCellText, nStartCell, oDeleteChars, *pRow, nIndexRow, nIndexCol++, bIsWrap);
+				oDeleteChars = std::stack<INT>();
                 bIsWrap = false;
 
-				nStartCell = nIndex + nDelimiterSize;
-				if (nStartCell == nSize)
+				if (nIndex + nDelimiterSize == nSize)
 				{
 					pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
 					pRow = NULL;
+				}	
+				
+				if (nIndex + nDelimiterSize > 1000000)
+				{
+					nStartCell = 0;
+					sFileDataW.erase(0, nIndex + nDelimiterSize);
+					nIndex = 0; nSize -= (nIndex + nDelimiterSize);
+					pTemp = sFileDataW.c_str();
 				}
+				else
+					nStartCell = nIndex + nDelimiterSize;
 			}
 			else if (wcNewLineN == wcCurrent || wcNewLineR == wcCurrent)
 			{
@@ -409,13 +417,28 @@ namespace CSVReader
 					++nIndex;
 				}
 				
-				nStartCell = nIndex + 1;
+				if (nIndex + 1 > 1000000)
+				{
+					nStartCell = 0;
+					sFileDataW.erase(0, nIndex + 1);
+					nIndex = 0; nSize -= (nIndex + 1);
+					pTemp = sFileDataW.c_str();
+				}
+				else
+					nStartCell = nIndex + 1;
 
 				pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
+
 				pRow = new OOX::Spreadsheet::CRow();
 				pRow->m_oR.Init();
 				pRow->m_oR->SetValue(++nIndexRow + 1);
 				nIndexCol = 0;
+				
+				if (pWorksheet->m_oSheetData->m_arrItems.size() > 1048576)
+				{
+					bMsLimit = true;
+					break; // ограниечние мс
+				}			
 			}
 			else if (wcQuote == wcCurrent)
 			{
@@ -445,9 +468,9 @@ namespace CSVReader
 			}
 		}
 
-		if (nStartCell != nSize)
+		if (nStartCell != nSize && !bMsLimit)
 		{
-			// New line
+		// New line
             std::wstring sCellText(pTemp + nStartCell, nSize - nStartCell);
 			AddCell(sCellText, nStartCell, oDeleteChars, *pRow, nIndexRow, nIndexCol++, bIsWrap);
 			pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
@@ -474,6 +497,6 @@ namespace CSVReader
 		oXlsx.m_pWorkbook->m_oSheets.Init();
 		oXlsx.m_pWorkbook->m_oSheets->m_arrItems.push_back(pSheet);
 
-		return 0;
+		return bMsLimit ? AVS_FILEUTILS_ERROR_CONVERT_ROWLIMITS : 0;
 	}
 }

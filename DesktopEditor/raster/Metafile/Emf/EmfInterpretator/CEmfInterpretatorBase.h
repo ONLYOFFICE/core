@@ -107,6 +107,7 @@ namespace MetaFile
                 virtual void HANDLE_EMR_STROKEPATH(const TEmfRectL&) = 0;
 
                 virtual void HANDLE_EMR_UNKNOWN(CDataStream &oDataStream) = 0;
+                virtual void HANDLE_EMR_FILLRGN(const TEmfRectL& oBounds, unsigned int unIhBrush, const TRegionDataHeader& oRegionDataHeader, const std::vector<TEmfRectL>& arRects) = 0;
 
                 virtual void HANDLE_EMFPLUS_HEADER(bool bIsEmfPlusDual, bool bIsReferenceDevice, unsigned int unDpiX, unsigned int unDpiY) = 0;
                 virtual void HANDLE_EMFPLUS_CLEAR(TEmfPlusARGB oColor) = 0;

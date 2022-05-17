@@ -536,6 +536,16 @@ bool RtfNormalReader::ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader
 		//default set to curent section
 		SectDef( oDocument, oReader );
 	}
+	else if ("defchp" == sCommand)
+	{
+		RtfDefCharPropReader oDefCharPropReader;
+		return StartSubReader(oDefCharPropReader, oDocument, oReader);
+	}
+	else if ("defpap" == sCommand)
+	{
+		RtfDefParPropReader oDefParPropReader;
+		return StartSubReader(oDefParPropReader, oDocument, oReader);
+	}
 	else
 	{
 		bool bResult = false;
@@ -978,13 +988,16 @@ bool RtfCharPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRea
 		if ( hasParameter )
 			charProps->m_nCharacterSpacing  = 5 * parameter; //quater -points
 	}
-    COMMAND_RTF_INT	( "fittext"	, charProps->m_nFitText, sCommand, hasParameter, parameter)
-    COMMAND_RTF_INT	( "f"			, charProps->m_nFont, sCommand, hasParameter, parameter)
+    COMMAND_RTF_INT	( "fittext"		, charProps->m_nFitText, sCommand, hasParameter, parameter)
+	else if ("f" == sCommand && hasParameter)
+	{
+		charProps->m_nFont = parameter;
+		oReader.m_nDefFont = charProps->m_nFont; //reset
+	}
     COMMAND_RTF_INT	( "fs"			, charProps->m_nFontSize, sCommand, hasParameter, parameter)
     COMMAND_RTF_BOOL( "i"			, charProps->m_bItalic, sCommand, hasParameter, parameter)
     COMMAND_RTF_BOOL( "impr"		, charProps->m_bImprint, sCommand, hasParameter, parameter)
-    COMMAND_RTF_INT	( "kerning"	, charProps->m_nKerning, sCommand, hasParameter, parameter)
-	
+    COMMAND_RTF_INT	( "kerning"		, charProps->m_nKerning, sCommand, hasParameter, parameter)
     else if ( "ltrch" == sCommand )
 	{
 		if ( false == hasParameter || 0 != parameter ) 
@@ -1752,9 +1765,7 @@ bool RtfFieldReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, 
 			m_oField.m_pInsert = oNewFieldInst;
 		}
 	}
-    else if ( "datafield" == sCommand )
-		Skip( oDocument, oReader );
-    else if ( "fldrslt" == sCommand )
+	else if ( "fldrslt" == sCommand )
 	{
 		RtfFieldInstPtr oNewFieldInst = RtfFieldInstPtr(new RtfFieldInst());
 		oNewFieldInst->m_oCharProperty = oReader.m_oState->m_oCharProp;
@@ -1783,12 +1794,68 @@ bool RtfFieldInstReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRead
 		return true;
     if( "fldrslt" == sCommand )
 		return true;
+	else if ("formfield" == sCommand)
+	{
+		RtfFormFieldPtr oNewFormField = RtfFormFieldPtr(new RtfFormField());
+
+		RtfFormFieldReader oFormFieldReader(*oNewFormField.get());
+		StartSubReader(oFormFieldReader, oDocument, oReader);
+
+		if (oNewFormField->IsValid())
+		{
+			m_oFieldInst.m_pFormField = oNewFormField;
+		}
+	}
+	else if ("ffdeftext" == sCommand)
+		Skip(oDocument, oReader);
 	else
 	{
 		RtfCharPropsCommand::ExecuteCommand( oDocument, oReader, sCommand, hasParameter, parameter, &m_oFieldInst.m_oCharProperty );
 		
 		return RtfParagraphPropDestination::ExecuteCommand( oDocument, oReader, (*this), sCommand, hasParameter, parameter );
 	}
+}
+void RtfFormFieldReader::ExecuteText(RtfDocument& oDocument, RtfReader& oReader, std::wstring sText)
+{
+	if (is_name == m_eInternalState)			m_oFormField.name += sText;
+	else if (is_deftext == m_eInternalState)	m_oFormField.deftext += sText;
+	else if (is_datafield == m_eInternalState)	m_oFormField.datafield += sText;
+	else if (is_format == m_eInternalState)		m_oFormField.format += sText;
+	else if (is_helptext == m_eInternalState)	m_oFormField.helptext += sText;
+	else if (is_stattext == m_eInternalState)	m_oFormField.stattext += sText;
+	else if (is_entrymcr == m_eInternalState)	m_oFormField.entrymcr += sText;
+	else if (is_exitmcr == m_eInternalState)	m_oFormField.exitmcr += sText;
+	else if (is_list == m_eInternalState)		m_oFormField.list.push_back(sText);
+}
+bool RtfFormFieldReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
+{
+	if ("formfield" == sCommand)
+		return true;
+
+	m_eInternalState = is_none;
+	if ("datafield" == sCommand)		m_eInternalState = is_datafield;
+	else if ("ffname" == sCommand)		m_eInternalState = is_name;
+	else if ("ffdeftext" == sCommand)	m_eInternalState = is_deftext;
+	else if ("ffformat" == sCommand)	m_eInternalState = is_format;
+	else if ("ffhelptext" == sCommand)	m_eInternalState = is_helptext;
+	else if ("ffstattext" == sCommand)	m_eInternalState = is_stattext;
+	else if ("ffentrymcr" == sCommand)	m_eInternalState = is_entrymcr;
+	else if ("ffexitmcr" == sCommand)	m_eInternalState = is_exitmcr;
+	else if ("ffl" == sCommand)			m_eInternalState = is_list;
+	COMMAND_RTF_INT("fftype", m_oFormField.type, sCommand, hasParameter, parameter)
+	COMMAND_RTF_INT("ffownhelp", m_oFormField.ownhelp, sCommand, hasParameter, parameter)
+	COMMAND_RTF_INT("ffownstat", m_oFormField.ownstat, sCommand, hasParameter, parameter)
+	COMMAND_RTF_INT("ffprot", m_oFormField.prot, sCommand, hasParameter, parameter)
+	COMMAND_RTF_INT("ffsize", m_oFormField.sizeCheckBox, sCommand, hasParameter, parameter)
+	COMMAND_RTF_INT("fftypetx", m_oFormField.typetx, sCommand, hasParameter, parameter)
+	COMMAND_RTF_INT("ffrecalc", m_oFormField.recalc, sCommand, hasParameter, parameter)
+	COMMAND_RTF_INT("ffhaslistbox", m_oFormField.haslistbox, sCommand, hasParameter, parameter)
+	COMMAND_RTF_INT("ffmaxlen", m_oFormField.maxlen, sCommand, hasParameter, parameter)
+	COMMAND_RTF_INT("ffhps", m_oFormField.hps, sCommand, hasParameter, parameter)
+	COMMAND_RTF_INT("ffdefres", m_oFormField.defres, sCommand, hasParameter, parameter)
+	COMMAND_RTF_INT("ffres", m_oFormField.res, sCommand, hasParameter, parameter)
+
+	return true;
 }
 bool RtfOleBinReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
 {

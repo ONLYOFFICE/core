@@ -389,9 +389,26 @@ public:
     // Конвертирует html в xhtml
     bool htmlXhtml(const std::wstring& sSrc)
     {
-        std::string sFileContent;
-        if(!NSFile::CFileBinary::ReadAllTextUtf8A(sSrc, sFileContent))
+        BYTE* pData;
+        DWORD nLength;
+        if (!NSFile::CFileBinary::ReadAllBytes(sSrc, &pData, nLength))
             return false;
+
+        std::string sFileContent = XmlUtils::GetUtf8FromFileContent(pData, nLength);
+        bool bNeedConvert = true;
+        if (nLength > 4)
+        {
+            if (pData[0] == 0xFF && pData[1] == 0xFE && !(pData[2] == 0x00 && pData[3] == 0x00))
+                bNeedConvert = false;
+            if (pData[0] == 0xFE && pData[1] == 0xFF)
+                bNeedConvert = false;
+
+            if (pData[0] == 0xFF && pData[1] == 0xFE && pData[2] == 0x00 && pData[3] == 0x00)
+                bNeedConvert = false;
+            if (pData[0] == 0 && pData[1] == 0 && pData[2] == 0xFE && pData[3] == 0xFF)
+                bNeedConvert = false;
+        }
+        RELEASEARRAYOBJECTS(pData);
 
         size_t nFind = sFileContent.find("version=\"");
         if(nFind != std::string::npos)
@@ -402,7 +419,7 @@ public:
                 sFileContent.replace(nFind, nFindEnd - nFind, "1.0");
         }
         /*
-        std::wstring sRes = htmlToXhtml(sFileContent);
+        std::wstring sRes = htmlToXhtml(sFileContent, bNeedConvert);
         NSFile::CFileBinary oWriter;
         if (oWriter.CreateFileW(m_sTmp + L"/res.html"))
         {
@@ -410,16 +427,47 @@ public:
             oWriter.CloseFile();
         }
         */
-        return m_oLightReader.FromString(htmlToXhtml(sFileContent));
+        return m_oLightReader.FromString(htmlToXhtml(sFileContent, bNeedConvert));
     }
 
     // Конвертирует mht в xhtml
     bool mhtXhtml(const std::wstring& sSrc)
     {
-        std::wstring sExtention = NSFile::GetFileExtention(sSrc);
-        if(sExtention == L"mht" || sExtention == L"mhtml")
-            return m_oLightReader.FromString(mhtToXhtml(sSrc));
-        return htmlXhtml(sSrc);
+        NSFile::CFileBinary file;
+        if (!file.OpenFile(sSrc))
+            return false;
+
+        unsigned char* buffer = new unsigned char[4096];
+        if (!buffer)
+        {
+            file.CloseFile();
+            return false;
+        }
+
+        DWORD dwReadBytes = 0;
+        file.ReadFile(buffer, 4096, dwReadBytes);
+        file.CloseFile();
+        std::string xml_string = XmlUtils::GetUtf8FromFileContent(buffer, dwReadBytes);
+
+        bool bRes = false;
+        if ((std::string::npos != xml_string.find("Content-Type: multipart/related")) &&
+            (std::string::npos != xml_string.find("Content-Type: text/html")))
+        {
+            BYTE* pData;
+            DWORD nLength;
+            if (!NSFile::CFileBinary::ReadAllBytes(sSrc, &pData, nLength))
+                return false;
+
+            std::string sFileContent = XmlUtils::GetUtf8FromFileContent(pData, nLength);
+            RELEASEARRAYOBJECTS(pData);
+
+            bRes = m_oLightReader.FromString(mhtToXhtml(sFileContent));
+        }
+        else
+            bRes = htmlXhtml(sSrc);
+
+        RELEASEARRAYOBJECTS(buffer);
+        return bRes;
     }
 
     // Читает стили
@@ -526,8 +574,21 @@ public:
                 oTree.m_oNode.m_sId = m_oLightReader.GetText();
             else if(sNameA == L"style")
                 oTree.m_oNode.m_sStyle += m_oLightReader.GetText();
+            //else
+            //    oTree.m_oNode.m_mAttrs[sNameA] = m_oLightReader.GetText();
             else if(sNameA == L"align")
                 oTree.m_oNode.m_sStyle += L"; text-align: " + m_oLightReader.GetText() + L";";
+
+            if (sName == L"table")
+            {
+                if (sNameA == L"border")
+                    oTree.m_oNode.m_sStyle += L"; border: " + m_oLightReader.GetText() + L";";
+                else if (sNameA == L"cellspacing")
+                    oTree.m_oNode.m_sStyle += L"; border-spacing: " + m_oLightReader.GetText() + L";";
+                else if (sNameA == L"cellpadding")
+                    oTree.m_oNode.m_sStyle += L"; padding: " + m_oLightReader.GetText() + L";";
+            }
+            // Удалять до сюда
         }
         m_oLightReader.MoveToElement();
 
@@ -1100,12 +1161,6 @@ private:
         if(m_oLightReader.IsEmptyNode())
             return;
 
-        std::wstring sBorders;
-        while (m_oLightReader.MoveToNextAttribute())
-            if (m_oLightReader.GetName() == L"border")
-                sBorders = L"<w:left w:val=\"single\" w:color=\"000000\" w:sz=\"4\" w:space=\"0\"/><w:top w:val=\"single\" w:color=\"000000\" w:sz=\"4\" w:space=\"0\"/><w:right w:val=\"single\" w:color=\"000000\" w:sz=\"4\" w:space=\"0\"/><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"4\" w:space=\"0\"/>";
-        m_oLightReader.MoveToElement();
-
         NSStringUtils::CStringBuilder oHead;
         NSStringUtils::CStringBuilder oBody;
         NSStringUtils::CStringBuilder oFoot;
@@ -1123,7 +1178,7 @@ private:
 
         // borders
         oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors, true);
-
+        std::wstring sBorders;
         oStyle.m_pBorder.Unlock();
         if (oStyle.m_pBorder.Empty())
         {

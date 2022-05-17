@@ -235,6 +235,8 @@ namespace NSHtmlRenderer
         m_pInternal->m_oPage.WriteLONG(m_pInternal->m_oSmartText.m_lCountSpaces);
         // seek to end
         m_pInternal->m_oPage.Seek(lPos);
+
+        m_pInternal->m_oSmartText.ClearStatistics();
         return m_pInternal->m_oPage.GetData();
     }
 

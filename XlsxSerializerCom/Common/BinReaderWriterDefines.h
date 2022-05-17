@@ -195,7 +195,8 @@ namespace BinXlsxRW
 	namespace c_oSerNumFmtTypes{enum c_oSerNumFmtTypes
 	{
 		FormatCode = 0,
-		NumFmtId = 1
+		NumFmtId = 1,
+		FormatCode16 = 2
 	};}
 	namespace c_oSerSharedStringTypes{enum c_oSerSharedStringTypes
 	{

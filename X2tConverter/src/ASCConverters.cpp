@@ -60,6 +60,7 @@
 #include "../../HtmlFile2/htmlfile2.h"
 #include "../../EpubFile/CEpubFile.h"
 #include "../../ASCOfficeXlsFile2/source/XlsXlsxConverter/ConvertXls2Xlsx.h"
+#include "../../ASCOfficeXlsFile2/source/VbaFormat/VbaReader.h"
 #include "../../OfficeCryptReader/source/ECMACryptFile.h"
 
 #include "../../XlsxSerializerCom/Reader/CSVReader.h"
@@ -3215,7 +3216,15 @@ namespace NExtractTools
 		//todo
 		return AVS_FILEUTILS_ERROR_CONVERT_DRM_UNSUPPORTED;
 	}
+	_UINT32 msVbaProject2Xml(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
+	{
+		CVbaReader vbaReader(sFrom, sTo);
 
+		if (false == vbaReader.convert())
+			return AVS_FILEUTILS_ERROR_CONVERT;
+
+		return 0;
+	}
 	_UINT32 oox2mscrypt	 (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
 	{
 		std::wstring password	= params.getSavePassword();
@@ -5408,6 +5417,10 @@ namespace NExtractTools
 			case TCD_FB22DOCX:
 			{
 				result = fb2docx (sFileFrom, sFileTo, sTempDir, oInputParams);
+			}break;
+			case TCD_VBAPROJECT2XML:
+			{
+				result = msVbaProject2Xml(sFileFrom, sFileTo, sTempDir, oInputParams);
 			}break;
 			//TCD_FB22DOCT,
 			//TCD_FB22DOCT_BIN,

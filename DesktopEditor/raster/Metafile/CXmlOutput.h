@@ -82,6 +82,7 @@ namespace MetaFile
         void WriteNode(const std::wstring& wsNameNode,  const CEmfLogPalette&           oNodeValue);
 
         void WriteNode(const std::wstring& wsNameNode, const std::vector<TEmfPlusPointF>& arValues);
+        void WriteNode(const std::wstring& wsNameNode, const TRegionDataHeader& oRegionDataHeader, const std::vector<TEmfRectL>& arRects);
 
     private:
         XmlUtils::CXmlWriter        *m_pXmlWriter;
@@ -108,6 +109,7 @@ namespace MetaFile
         void WriteTEmfPlusPointF        (const TEmfPlusPointF&          oTEmfPlusPointF);
         void WriteTEmfExtTextoutW       (const TEmfExtTextoutW&         oTEmfExtTextoutW);
         void WriteTEmfSmallTextout      (const TEmfSmallTextout&        oTEmfSmallTextout);
+        void WriteTRegionDataHeader     (const TRegionDataHeader&       oTRegionDataHeader);
 
         void WriteEmfLogBrushEx         (const CEmfLogBrushEx&          oEmfLogBrushEx);
         void WriteEmfLogFont            (      CEmfLogFont&             oEmfLogFont);
@@ -154,6 +156,7 @@ namespace MetaFile
 
         void operator>>(std::vector<TEmfPointL> &arPoints);
         void operator>>(std::vector<TEmfPointS> &arPoints);
+        void operator>>(std::vector<TEmfRectL>  &arRects);
         void operator>>(std::vector<std::vector<TEmfPointL>>& arPoints);
         void operator>>(std::vector<std::vector<TEmfPointS>>& arPoints);
 

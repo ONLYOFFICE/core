@@ -41,6 +41,8 @@
 
 const char* fileSystemRepresentation(const std::wstring& sFileName)
 {
+    if (sFileName.empty())
+        return NULL;
     NSString *path = [[NSString alloc] initWithBytes:(char*)sFileName.data()
                                               length:sFileName.size()* sizeof(wchar_t)
                                             encoding:CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingUTF32LE)];

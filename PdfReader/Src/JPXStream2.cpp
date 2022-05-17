@@ -45,7 +45,6 @@ using namespace PdfReader;
 JPXStream2::JPXStream2(Stream *pStream) :
     FilterStream(pStream)
 {
-    m_nAlphaChecker = 0;
     m_lCurPos       = 0;
     m_lBufferSize   = 0;
     m_pSourceBuffer = NULL;
@@ -64,13 +63,6 @@ void JPXStream2::reset()
     // Инизиализация
     m_lCurPos       = 0;
     m_lBufferSize   = 0;
-
-    if (m_pSourceBuffer)
-    {
-        CBgraFrame oFrame;
-        oFrame.put_Data(m_pSourceBuffer);
-        m_pSourceBuffer = NULL;
-    }
 
     unsigned int nAllocSize = 4096;
     unsigned int nStreamSize = 0;
@@ -92,29 +84,21 @@ void JPXStream2::reset()
         pBuffer[nStreamSize++] = nCurrentChar;
     }
 
-    CBgraFrame oFrame;
+	BYTE* pBufferPointer;
+	int nHeight = 0;
+	int nWidth  = 0;
+	int nComponentsCount = 0;
 
-#ifdef USE_GRAPHICS_JPEG2000
-    Jpeg2000::CJ2kFile oJ2;
-    if (!oJ2.Open(&oFrame, pBuffer, nStreamSize, L"", false))
+	if (!openjpeg::GetData(pBuffer, nStreamSize, pBufferPointer, nComponentsCount, nWidth, nHeight, true))
     {
         MemUtilsFree(pBuffer);
         return;
     }
-#else
-    if (!openjpeg::Parse(pBuffer, nStreamSize, &oFrame, false))
-    {
-        MemUtilsFree(pBuffer);
-        return;
-    }
-#endif
+
     MemUtilsFree(pBuffer);
 
-    m_pSourceBuffer = oFrame.get_Data();
-    m_lBufferSize = 4 * oFrame.get_Width() * oFrame.get_Height();
-
-    oFrame.put_Data(NULL);
-    m_nAlphaChecker = 0;
+	m_pSourceBuffer = pBufferPointer;
+	m_lBufferSize = nComponentsCount * nWidth * nHeight;
 }
 
 Stream* JPXStream2::copy()
@@ -124,29 +108,20 @@ Stream* JPXStream2::copy()
 
 void JPXStream2::close()
 {
-    if (m_pSourceBuffer)
-    {
-        CBgraFrame oFrame;
-        oFrame.put_Data(m_pSourceBuffer);
-        m_pSourceBuffer = NULL;
-    }
+	if (m_pSourceBuffer)
+		openjpeg::DestroyData(m_pSourceBuffer);
 }
 
 int JPXStream2::getChar()
 {
-    if (m_lCurPos < m_lBufferSize)
-    {
-        int nRet = m_pSourceBuffer[m_lCurPos++];
-        ++m_nAlphaChecker;
-        if (m_nAlphaChecker == 3)
-        {
-            // skip alpha
-            m_nAlphaChecker = 0;
-            ++m_lCurPos;
-        }
-        return nRet;
-    }
-    return EOF;
+	int nChar = 0;
+
+	if (m_lCurPos < m_lBufferSize)
+		nChar = m_pSourceBuffer[m_lCurPos++];
+	else
+		return EOF;
+
+	return nChar;
 }
 
 int JPXStream2::lookChar()

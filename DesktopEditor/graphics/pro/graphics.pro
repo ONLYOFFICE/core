@@ -67,6 +67,7 @@ INCLUDEPATH += \
 
 HEADERS += \
     ../../raster/Metafile/CXmlOutput.h \
+    ../../raster/Metafile/Common/CPathConverter.h \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretator.h \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorArray.h \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorBase.h \
@@ -117,6 +118,7 @@ HEADERS += \
 
 SOURCES += \
     ../../raster/Metafile/CXmlOutput.cpp \
+    ../../raster/Metafile/Common/CPathConverter.cpp \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretator.cpp \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorArray.cpp \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorRender.cpp \

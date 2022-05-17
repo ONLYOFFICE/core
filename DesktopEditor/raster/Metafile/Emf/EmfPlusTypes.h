@@ -239,6 +239,74 @@ namespace MetaFile
                 CombineModeExclude      = 0x04,
                 CombineModeComplement   = 0x05
         } EEmfPlusCombineMode;
+
+        typedef enum
+        {
+                CustomLineCapDataTypeDefault            = 0x00000000,
+                CustomLineCapDataTypeAdjustableArrow    = 0x00000001
+        } CustomLineCapDataType;
+
+        typedef enum
+        {
+                CustomLineCapDataFillPath = 0x00000001,
+                CustomLineCapDataLinePath = 0x00000002
+        } CustomLineCapDataFlags;
+
+        class CLineCapData
+        {
+            public:
+                CLineCapData() {};
+                virtual ~CLineCapData() {};
+
+                virtual CustomLineCapDataType GetType() const = 0;
+        };
+
+        struct TEmfPlusCustomLineCapArrowData : public CLineCapData
+        {
+                double          dWidth;
+                double          dHeight;
+                double          dMiddleInset;
+                bool            bFillState;
+                unsigned int    unLineStartCap;
+                unsigned int    unLineEndCap;
+                unsigned int    unLineJoin;
+                double          dLineMiterLimit;
+                double          dWidthScale;
+                TEmfPlusPointF  oFillHotSpot;
+                TEmfPlusPointF  oLineHotSpot;
+
+                virtual ~TEmfPlusCustomLineCapArrowData() {};
+
+                CustomLineCapDataType GetType() const override
+                {
+                        return CustomLineCapDataTypeAdjustableArrow;
+                };
+        };
+
+        class CEmfPlusPath;
+
+        struct TEmfPlusCustomLineCapData : public CLineCapData
+        {
+                unsigned int    unCustomLineCapDataFlags;
+                unsigned int    unBaseCap;
+                double          dBaseInset;
+                unsigned int    unStrokeStartCap;
+                unsigned int    unStrokeEndCap;
+                unsigned int    unStrokeJoin;
+                double          dStrokeMiterLimit;
+                double          dWidthScale;
+                TEmfPlusPointF  oFillHotSpot;
+                TEmfPlusPointF  oStrokeHotSpot;
+                CEmfPlusPath*   pPath;
+
+                TEmfPlusCustomLineCapData() : pPath(NULL) {};
+                virtual ~TEmfPlusCustomLineCapData() { RELEASEOBJECT(pPath) };
+
+                CustomLineCapDataType GetType() const override
+                {
+                        return CustomLineCapDataTypeDefault;
+                };
+        };
 }
 
 #endif // EMFPLUSTYPES_H

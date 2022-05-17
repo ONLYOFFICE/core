@@ -195,6 +195,8 @@ namespace NExtractTools
 	
 	_UINT32 oox2mscrypt		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
 
+	_UINT32 msVbaProject2dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
+		
 	_UINT32 html2doct_bin	(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
 	_UINT32 html2doct		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);
     _UINT32 html2docx		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params);

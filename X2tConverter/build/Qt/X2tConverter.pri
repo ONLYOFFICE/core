@@ -70,6 +70,8 @@ HEADERS +=  ../../src/cextracttools.h \
             ../../src/ASCConverters.h
 
 
+#vbaformat
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lVbaFormatLib
 #Xls file
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lXlsFormatLib
 # odf format writer

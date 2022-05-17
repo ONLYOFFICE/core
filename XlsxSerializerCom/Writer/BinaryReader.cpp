@@ -1672,6 +1672,10 @@ int BinaryStyleTableReader::ReadNumFmt(BYTE type, long length, void* poResult)
 	{
 		pNumFmt->m_oFormatCode = m_oBufferedStream.GetString4(length);
 	}
+	else if(c_oSerNumFmtTypes::FormatCode16 == type)
+	{
+		pNumFmt->m_oFormatCode16 = m_oBufferedStream.GetString4(length);
+	}
 	else if(c_oSerNumFmtTypes::NumFmtId == type)
 	{
 		pNumFmt->m_oNumFmtId.Init();

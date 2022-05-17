@@ -656,15 +656,18 @@ return 0;
         {\
             TextString* s = new TextString(obj1.getString());\
             std::wstring sNoDate = NSStringExt::CConverter::GetUnicodeFromUTF32(s->getUnicode(), s->getLength());\
-            std::wstring sDate = sNoDate.substr(2,  4) + L'-' + sNoDate.substr(6,  2) + L'-' + sNoDate.substr(8,  2) + L'T' +\
-                                 sNoDate.substr(10, 2) + L':' + sNoDate.substr(12, 2) + L':' + sNoDate.substr(14, 2) + L".000+" +\
-                                 sNoDate.substr(17, 2) + L':' + sNoDate.substr(20, 2);\
-            NSStringExt::Replace(sDate, L"\"", L"\\\"");\
-            sRes += L"\"";\
-            sRes += wsName;\
-            sRes += L"\":\"";\
-            sRes += sDate;\
-            sRes += L"\",";\
+            if (sNoDate.length() > 21)\
+            {\
+                std::wstring sDate = sNoDate.substr(2,  4) + L'-' + sNoDate.substr(6,  2) + L'-' + sNoDate.substr(8,  2) + L'T' +\
+                                     sNoDate.substr(10, 2) + L':' + sNoDate.substr(12, 2) + L':' + sNoDate.substr(14, 2) + L".000+" +\
+                                     sNoDate.substr(17, 2) + L':' + sNoDate.substr(20, 2);\
+                NSStringExt::Replace(sDate, L"\"", L"\\\"");\
+                sRes += L"\"";\
+                sRes += wsName;\
+                sRes += L"\":\"";\
+                sRes += sDate;\
+                sRes += L"\",";\
+            }\
             delete s;\
         }\
     }\

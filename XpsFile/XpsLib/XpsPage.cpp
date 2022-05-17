@@ -447,10 +447,7 @@ namespace XPS
 						std::wstring wsRelativePath = (std::wstring::npos == nSlashPos) ? m_wsPagePath : m_wsPagePath.substr(0, nSlashPos + 1);
 						wsFontPath = wsRelativePath + wsFontPath;
 					}
-					else
-					{
-						wsFontPath = m_wsRootPath->getFullFilePath(wsFontPath);
-					}
+                    wsFontPath = m_wsRootPath->getFullFilePath(wsFontPath);
 
 					std::wstring wsExt = GetFileExtension(wsFontPath);
 					NSStringExt::ToLower(wsExt);

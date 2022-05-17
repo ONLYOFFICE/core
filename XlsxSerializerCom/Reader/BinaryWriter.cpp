@@ -1663,6 +1663,16 @@ void BinaryStyleTableWriter::WriteNumFmt(const OOX::Spreadsheet::CNumFmt& numFmt
 		if(NULL != m_pEmbeddedFontsManager)
 			m_pEmbeddedFontsManager->CheckString(sFormatCode);
 	}
+	if(numFmt.m_oFormatCode16.IsInit())
+	{
+		std::wstring& sFormatCode = *numFmt.m_oFormatCode16;
+		m_oBcw.m_oStream.WriteBYTE(c_oSerNumFmtTypes::FormatCode16);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(sFormatCode);
+
+		if(NULL != m_pEmbeddedFontsManager)
+			m_pEmbeddedFontsManager->CheckString(sFormatCode);
+	}
 	//NumFmtId
 	if(numFmt.m_oNumFmtId.IsInit())
 	{
@@ -7186,7 +7196,7 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 			}
 		}break;
 	}		
-	if (0 != result)
+	if (0 != result && AVS_FILEUTILS_ERROR_CONVERT_ROWLIMITS != result)
 	{
 		RELEASEOBJECT(pXlsx);
 		return result;

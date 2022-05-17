@@ -700,12 +700,7 @@ namespace Aggplus
 					LONG lCount		= pPen->Count;
 					LONG lCount2	= lCount / 2;
 
-					double dKoef	= 0.352777778;
-					if (m_dDpiX > 1)
-						dKoef = 25.4 / m_dDpiX;
-
-					if (m_bIntegerGrid)
-						dKoef = 1.0;
+                    double dKoef = 1.0;
 
 					for (LONG i = 0; i < lCount2; ++i)
 					{
@@ -917,10 +912,21 @@ namespace Aggplus
 			double y = 0;
 			double r = 0;
 			double b = 0;
-			pPath->GetBounds(x, y, r, b);
 
-			r += x;
-			b += y;
+            if (!ptxBrush->m_bUseBounds)
+            {
+                pPath->GetBounds(x, y, r, b);
+
+                r += x;
+                b += y;
+            }
+            else
+            {
+                x = ptxBrush->m_oBounds.left;
+                y = ptxBrush->m_oBounds.top;
+                r = ptxBrush->m_oBounds.right;
+                b = ptxBrush->m_oBounds.bottom;
+            }
 
 			CMatrix brushMatrix;
 			if (ptxBrush->GetWrapMode() == Aggplus::WrapModeClamp)
@@ -1502,6 +1508,9 @@ namespace Aggplus
 		agg::GetHatchPattern(pBrush->m_name, (agg::rgba8*)pPattern, c1, c2);
 
 		agg::trans_affine mtx_Work(m_oTransform.m_internal->m_agg_mtx);
+		if (m_dDpiTile > 1)
+			mtx_Work.scale(m_dDpiX / m_dDpiTile, m_dDpiY / m_dDpiTile);
+
 		mtx_Work.invert();
 
 		span_alloc_type				span_allocator; 
@@ -1554,16 +1563,7 @@ namespace Aggplus
 			//agg::rendering_buffer PatRendBuff((BYTE *)pImgBuff, dwImgWidth, dwImgHeight, nImgStride);
 
 			agg::rendering_buffer PatRendBuff;
-
-			if (nImgStride < 0)
-			{
-				BYTE* pBuffer = (BYTE*)pImgBuff + (dwImgHeight - 1) * nImgStride;
-				PatRendBuff.attach(pBuffer, dwImgWidth, dwImgHeight, nImgStride);
-			}
-			else
-			{
-				PatRendBuff.attach((BYTE*)pImgBuff, dwImgWidth, dwImgHeight, nImgStride);
-			}			
+            PatRendBuff.attach((BYTE*)pImgBuff, dwImgWidth, dwImgHeight, nImgStride);
 			
 			pixfmt          img_pixf(PatRendBuff);
 			img_source_type img_src(img_pixf, agg::rgba(0, 0, 0, 0));
@@ -1582,16 +1582,7 @@ namespace Aggplus
         interpolator_type_linear interpolator(mtx_Work);
 
         agg::rendering_buffer PatRendBuff;
-
-        if (nImgStride < 0)
-        {
-            BYTE* pBuffer = (BYTE*)pImgBuff + (dwImgHeight - 1) * nImgStride;
-            PatRendBuff.attach(pBuffer, dwImgWidth, dwImgHeight, nImgStride);
-        }
-        else
-        {
-            PatRendBuff.attach((BYTE*)pImgBuff, dwImgWidth, dwImgHeight, nImgStride);
-        }
+        PatRendBuff.attach((BYTE*)pImgBuff, dwImgWidth, dwImgHeight, nImgStride);
 
         int nCurrentMode = 255;
         if (!m_bSwapRGB)
@@ -1657,7 +1648,7 @@ namespace Aggplus
                 }
                 case 255:
                 {
-                    typedef agg::span_image_resample_rgba_affine<img_source_type> span_gen_type;
+                    typedef agg::span_image_resample_rgba_affine_for_draw<img_source_type> span_gen_type;
                     typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
                     agg::image_filter_lut filter;
                     filter.calculate(agg::image_filter_bilinear(), false);
@@ -1733,7 +1724,7 @@ namespace Aggplus
                 }
                 case 255:
                 {
-                    typedef agg::span_image_resample_rgba_affine<img_source_type> span_gen_type;
+                    typedef agg::span_image_resample_rgba_affine_for_draw<img_source_type> span_gen_type;
                     typedef agg::renderer_scanline_aa<base_renderer_type, span_alloc_type, span_gen_type> renderer_type;
                     agg::image_filter_lut filter;
                     filter.calculate(agg::image_filter_bilinear(), false);
@@ -1765,16 +1756,7 @@ namespace Aggplus
         
         //agg::rendering_buffer PatRendBuff((BYTE *)pImgBuff, dwImgWidth, dwImgHeight, nImgStride);
         agg::rendering_buffer PatRendBuff;
-        
-        if (nImgStride < 0)
-        {
-            BYTE* pBuffer = (BYTE*)pImgBuff + (dwImgHeight - 1) * nImgStride;
-            PatRendBuff.attach(pBuffer, dwImgWidth, dwImgHeight, nImgStride);
-        }
-        else
-        {
-            PatRendBuff.attach((BYTE*)pImgBuff, dwImgWidth, dwImgHeight, nImgStride);
-        }
+        PatRendBuff.attach((BYTE*)pImgBuff, dwImgWidth, dwImgHeight, nImgStride);
         
         typedef ColorSpacePix     pixfmt;
         if(wrapmode == WrapModeTileFlipX)
@@ -1902,7 +1884,7 @@ namespace Aggplus
 		{
 			CBrushTexture *ptxBrush = (CBrushTexture *)Brush;
 			
-			LPVOID pImgBuff = ptxBrush->PatternFinalize();
+			LPVOID pImgBuff = ptxBrush->GetData();
 			if (pImgBuff)
 			{
 				DWORD dwImgWidth = ptxBrush->PatternGetWidth();
@@ -1913,42 +1895,6 @@ namespace Aggplus
 				{
 					Aggplus::WrapMode wrapmode = ptxBrush->m_wrapMode;
 					Aggplus::CMatrix matrix = ptxBrush->m_mtx;
-
-					BYTE* pTmpBuffer = NULL;
-					
-					if( ptxBrush->m_bUsePattern )
-					{
-						pTmpBuffer = new BYTE[dwImgWidth*dwImgHeight*4];
-						if( pTmpBuffer )
-						{
-							BYTE clr2[4] = {ptxBrush->m_colors[0].GetR(), ptxBrush->m_colors[0].GetG(), ptxBrush->m_colors[0].GetB(), ptxBrush->m_colors[0].GetA()};
-							BYTE clr1[4] = {ptxBrush->m_colors[1].GetR(), ptxBrush->m_colors[1].GetG(), ptxBrush->m_colors[1].GetB(), ptxBrush->m_colors[1].GetA()};
-							
-							BYTE* src = (BYTE*)pImgBuff;
-							BYTE* dst = pTmpBuffer;
-							int stride = nImgStride - dwImgWidth * 4;
-							
-							for( unsigned y = 0; y < dwImgHeight; ++y, src += stride )
-							{
-								for( unsigned x = 0; x < dwImgWidth; ++x, src += 4, dst += 4 )
-								{
-									unsigned grey2 = (src[2] * 77 + src[1] * 150 + src[0] * 29 + 128) >> 8;
-									unsigned grey1 = 255 - grey2;
-
-									dst[0] = (BYTE)((clr1[0] * grey1 + clr2[0] * grey2 + 128) * 0x8081 >> 23);
-									dst[1] = (BYTE)((clr1[1] * grey1 + clr2[1] * grey2 + 128) * 0x8081 >> 23);
-									dst[2] = (BYTE)((clr1[2] * grey1 + clr2[2] * grey2 + 128) * 0x8081 >> 23);
-									dst[3] = (BYTE)((clr1[3] * (255 - src[3]) + clr2[3] * src[3] + 128) * 0x8081 >> 23);
-								}
-							}
-
-							pImgBuff = pTmpBuffer;
-							nImgStride = dwImgWidth * 4;
-
-							wrapmode = WrapModeTile;
-							matrix.Reset();
-						}
-					}
 					
 					if(wrapmode == WrapModeClamp)
 					{
@@ -1965,9 +1911,6 @@ namespace Aggplus
                             DoFillPathTextureClampSz3<agg::pixfmt_rgba32>(matrix, pImgBuff, dwImgWidth, dwImgHeight, nImgStride, wrapmode, ptxBrush->Alpha);
                         }
 					}
-
-					if( pTmpBuffer )
-						delete [] pTmpBuffer;
 				}
 			}
 		}

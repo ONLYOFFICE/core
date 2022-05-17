@@ -73,6 +73,8 @@
 #include "../EmfInterpretator/CEmfInterpretatorArray.h"
 #include "../EmfInterpretator/CEmfInterpretatorRender.h"
 
+#include "../../Common/CPathConverter.h"
+
 namespace MetaFile
 {
         static std::map<unsigned short, std::wstring> ActionNamesEmfPlus =
@@ -721,7 +723,39 @@ namespace MetaFile
 
 			m_oStream >> unCustomStartCapSize;
 
-			m_oStream.Skip(unCustomStartCapSize); // EmfPlusCustomStartCapData object
+			unsigned int unStart = m_oStream.Tell();
+
+			m_oStream.Skip(4); //Version
+
+			int nType;
+
+			m_oStream >> nType;
+
+			if (CustomLineCapDataTypeDefault == nType)
+			{
+				TEmfPlusCustomLineCapData *pLineCapData = new TEmfPlusCustomLineCapData;
+
+				m_oStream >> *pLineCapData;
+
+				if (CustomLineCapDataFillPath == pLineCapData->unCustomLineCapDataFlags ||
+				    CustomLineCapDataLinePath == pLineCapData->unCustomLineCapDataFlags)
+				{
+					m_oStream.Skip(4); // FillPathLength or LinePathLength
+					pLineCapData->pPath = ReadPath();
+				}
+
+				pEmfPlusPen->LineStartCapData = pLineCapData;
+			}
+			else if (CustomLineCapDataTypeAdjustableArrow == nType)
+			{
+				TEmfPlusCustomLineCapArrowData *pLineCapData = new TEmfPlusCustomLineCapArrowData;
+
+				m_oStream >> *pLineCapData;
+
+				pEmfPlusPen->LineStartCapData = pLineCapData;
+			}
+
+			m_oStream.Skip(unCustomStartCapSize - (m_oStream.Tell() - unStart));
 		}
 		if (unFlags & PEN_DATA_CUSTOMENDCAP)
 		{
@@ -729,7 +763,39 @@ namespace MetaFile
 
 			m_oStream >> unCustomEndCapSize;
 
-			m_oStream.Skip(unCustomEndCapSize); // EmfPlusCustomEndCapData object
+			unsigned int unStart = m_oStream.Tell();
+
+			m_oStream.Skip(4); //Version
+
+			int nType;
+
+			m_oStream >> nType;
+
+			if (CustomLineCapDataTypeDefault == nType)
+			{
+				TEmfPlusCustomLineCapData *pLineCapData = new TEmfPlusCustomLineCapData;
+
+				m_oStream >> *pLineCapData;
+
+				if (CustomLineCapDataFillPath == pLineCapData->unCustomLineCapDataFlags ||
+				    CustomLineCapDataLinePath == pLineCapData->unCustomLineCapDataFlags)
+				{
+					m_oStream.Skip(4); // FillPathLength or LinePathLength
+					pLineCapData->pPath = ReadPath();
+				}
+
+				pEmfPlusPen->LineEndCapData = pLineCapData;
+			}
+			else if (CustomLineCapDataTypeAdjustableArrow == nType)
+			{
+				TEmfPlusCustomLineCapArrowData *pLineCapData = new TEmfPlusCustomLineCapArrowData;
+
+				m_oStream >> *pLineCapData;
+
+				pEmfPlusPen->LineEndCapData = pLineCapData;
+			}
+
+			m_oStream.Skip(unCustomEndCapSize - (m_oStream.Tell() - unStart));
 		}
 
 		pEmfPlusPen->Brush = ReadBrush();
@@ -849,8 +915,6 @@ namespace MetaFile
                         }
 
                         return pPath;
-
-                        return NULL;
                 }
                 else
                 {
@@ -929,16 +993,6 @@ namespace MetaFile
 
                 return NULL;
         }
-
-//        std::vector<TEmfPlusPointF> CEmfPlusParser::ReadPointsF(unsigned int unPointCount)
-//        {
-//                std::vector<TEmfPlusPointF> arPoints(unPointCount);
-
-//                for (unsigned int unIndex = 0; unIndex < unPointCount; ++unIndex)
-//                        m_oStream >> arPoints[unIndex];
-
-//                return arPoints;
-//        }
 
         template<typename PointType>
         std::vector<PointType> CEmfPlusParser::ReadPoints(unsigned int unPointCount)
@@ -1916,11 +1970,6 @@ namespace MetaFile
 
                 if (NULL != pPath)
                 {                         
-                        if (pPath->m_pCommands.size() == 2)
-                        {
-                                LOGGING(L"TEST")
-                        }
-
                         CEmfPlusPen *pEmfPlusPen = GetPen(unPenId);
 
                         if (NULL == pEmfPlusPen) return;
@@ -1930,7 +1979,13 @@ namespace MetaFile
                         if (NULL != pEmfPlusPen->Brush)
                                 m_pDC->SetBrush(pEmfPlusPen->Brush);
 
-                        pPath->DrawWithoutClean(m_pInterpretator, true, false);
+                        CPathConverter oPathConverter;
+                        CEmfPath oNewPath, oLineCapPath;
+
+                        oPathConverter.GetUpdatedPath(oNewPath, oLineCapPath, *pPath, *pEmfPlusPen);
+
+                        oNewPath.DrawWithoutClean(m_pInterpretator, true, false);
+                        oLineCapPath.DrawWithoutClean(m_pInterpretator, false, true);
 
                         if (NULL != pEmfPlusPen->Brush)
                                 m_pDC->RemoveBrush(pEmfPlusPen->Brush);
@@ -2413,10 +2468,6 @@ namespace MetaFile
                         {
                                 LOGGING(L"Object Pen with index: " << shObjectIndex)
 
-                                if (10 == shObjectIndex)
-                                {
-                                    LOGGING(L"TEST")
-                                }
                                 CEmfPlusPen *pEmfPlusPen = ReadPen();
 
                                 RegisterObject(pEmfPlusPen, shObjectIndex);

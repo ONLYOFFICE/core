@@ -1032,7 +1032,7 @@ namespace MetaFile
 			m_oStream.ReadBytes(pString, shStringLength);
 
 			short* pDx = NULL;
-			if (shStringLength > 1 && ((GetRecordRemainingBytesCount() >= shStringLength * 2 && !(ushFwOptions & ETO_PDY)) || (GetRecordRemainingBytesCount() >= shStringLength * 4 && ushFwOptions & ETO_PDY)))
+			if (shStringLength > 0 && ((GetRecordRemainingBytesCount() >= shStringLength * 2 && !(ushFwOptions & ETO_PDY)) || (GetRecordRemainingBytesCount() >= shStringLength * 4 && ushFwOptions & ETO_PDY)))
 			{
 				if (shStringLength & 1) // Если длина нечетная, тогда пропускаем 1 байт, т.к. тут прилегание по 2 байта
 					m_oStream.Skip(1);

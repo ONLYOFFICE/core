@@ -205,6 +205,28 @@ bool COfficeFileFormatChecker::isDocFormatFile	(POLE::Storage * storage)
 
 	return false;
 }
+bool COfficeFileFormatChecker::isVbaProjectFile(POLE::Storage * storage)
+{
+	if (storage == NULL) return false;
+	
+	unsigned char buffer[10];
+	
+	POLE::Stream stream(storage, L"PROJECT");
+	if (stream.read(buffer, 10) < 1)
+	{
+		return false;
+	}
+	if (false == storage->isDirectory(L"VBA"))
+	{
+		return false;
+	} 
+	POLE::Stream stream2(storage, L"VBA/dir");
+	if (stream2.read(buffer, 10) < 1)
+	{
+		return false;
+	}
+	return true;
+}
 bool COfficeFileFormatChecker::isXlsFormatFile	(POLE::Storage * storage)
 {
 	if (storage == NULL) return false;
@@ -392,6 +414,24 @@ bool COfficeFileFormatChecker::isMS_MITCRYPTOFormatFile	(POLE::Storage * storage
 
 	return result;
 }
+bool COfficeFileFormatChecker::isVbaProjectFile(const std::wstring & _fileName)
+{
+#if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
+	std::wstring fileName = CorrectPathW(_fileName);
+#else
+	std::wstring fileName = _fileName;
+#endif
+	POLE::Storage storage(fileName.c_str());
+	if (storage.open())
+	{
+		if (isVbaProjectFile(&storage))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_OTHER_MS_VBAPROJECT;
+			return true;
+		}
+	}
+	return false;
+}
 bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & _fileName)
 {
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
@@ -439,6 +479,11 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & _fileName)
 		else if (isMS_MITCRYPTOFormatFile(&storage, sDocumentID))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_OTHER_MS_MITCRYPTO;
+			return true;
+		}
+		else if (isVbaProjectFile(&storage))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_OTHER_MS_VBAPROJECT;
 			return true;
 		}
 	}

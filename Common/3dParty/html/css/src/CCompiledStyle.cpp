@@ -362,6 +362,7 @@ namespace NSCSS
                 }
                 //PADDING
                 CASE(L"padding"):
+                CASE(L"mso-padding-alt"):
                 {
                     if (bIsThereBorder)
                         break;
@@ -385,6 +386,7 @@ namespace NSCSS
                     break;
                 }
                 CASE(L"padding-top"):
+                CASE(L"mso-padding-top-alt"):
                 {
                     if (bIsThereBorder)
                         break;
@@ -408,6 +410,7 @@ namespace NSCSS
                     break;
                 }
                 CASE(L"padding-right"):
+                CASE(L"mso-padding-right-alt"):
                 {
                     if (bIsThereBorder)
                         break;
@@ -432,6 +435,7 @@ namespace NSCSS
                     break;
                 }
                 CASE(L"padding-bottom"):
+                CASE(L"mso-padding-bottom-alt"):
                 {
                     if (bIsThereBorder)
                         break;
@@ -455,6 +459,7 @@ namespace NSCSS
                     break;
                 }
                 CASE(L"padding-left"):
+                CASE(L"mso-padding-left-alt"):
                 {
                     if (bIsThereBorder)
                         break;

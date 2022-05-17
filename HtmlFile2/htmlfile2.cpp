@@ -574,21 +574,8 @@ public:
                 oTree.m_oNode.m_sId = m_oLightReader.GetText();
             else if(sNameA == L"style")
                 oTree.m_oNode.m_sStyle += m_oLightReader.GetText();
-            //else
-            //    oTree.m_oNode.m_mAttrs[sNameA] = m_oLightReader.GetText();
-            else if(sNameA == L"align")
-                oTree.m_oNode.m_sStyle += L"; text-align: " + m_oLightReader.GetText() + L";";
-
-            if (sName == L"table")
-            {
-                if (sNameA == L"border")
-                    oTree.m_oNode.m_sStyle += L"; border: " + m_oLightReader.GetText() + L";";
-                else if (sNameA == L"cellspacing")
-                    oTree.m_oNode.m_sStyle += L"; border-spacing: " + m_oLightReader.GetText() + L";";
-                else if (sNameA == L"cellpadding")
-                    oTree.m_oNode.m_sStyle += L"; padding: " + m_oLightReader.GetText() + L";";
-            }
-            // Удалять до сюда
+            else
+                oTree.m_oNode.m_mAttrs[sNameA] = m_oLightReader.GetText();
         }
         m_oLightReader.MoveToElement();
 
@@ -638,8 +625,8 @@ private:
                 oNode.m_sStyle += m_oLightReader.GetText();
             else if(sName == L"title")
                 sNote           = m_oLightReader.GetText();
-            else if(sName == L"align")
-                oNode.m_sStyle += L"; text-align: " + m_oLightReader.GetText() + L";";
+            else
+                oNode.m_mAttrs[sName] = m_oLightReader.GetText();
         }
         m_oLightReader.MoveToElement();
         sSelectors.push_back(oNode);
@@ -1166,22 +1153,27 @@ private:
         NSStringUtils::CStringBuilder oFoot;
 
         // Начало таблицы
-        oXml->WriteString(L"<w:tbl><w:tblPr><w:tblStyle w:val=\"table\"/><w:tblW w:w=\"0\" w:type=\"auto\"/>");
+        std::wstring wsTable = L"<w:tbl><w:tblPr><w:tblStyle w:val=\"\"/><w:tblW w:w=\"0\" w:type=\"auto\"/>";
+
         NSCSS::CNode oLast = sSelectors.back();
         sSelectors.pop_back();
         NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
         std::wstring sAlign = oStyle.m_pText.GetAlign();
         if(sAlign == L"left" || sAlign == L"center" || sAlign == L"right" || sAlign == L"both")
-            oXml->WriteString(L"<w:jc w:val=\"" + sAlign + L"\"/>");
-        oXml->WriteString(L"</w:tblPr>");
+            wsTable += L"<w:jc w:val=\"" + sAlign + L"\"/>";
+
+        wsTable += L"</w:tblPr>";
+
         sSelectors.push_back(oLast);
 
         // borders
-        oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors, true);
+        oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors, false);
+
         std::wstring sBorders;
         oStyle.m_pBorder.Unlock();
         if (oStyle.m_pBorder.Empty())
         {
+            wsTable.insert(35, L"table");
             sBorders = L"<w:left w:val=\"single\" w:color=\"000000\" w:sz=\"4\" w:space=\"0\"/><w:top w:val=\"single\" w:color=\"000000\" w:sz=\"4\" w:space=\"0\"/><w:right w:val=\"single\" w:color=\"000000\" w:sz=\"4\" w:space=\"0\"/><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"4\" w:space=\"0\"/>";
         }
         else
@@ -1190,31 +1182,47 @@ private:
             {
                 std::wstring sColor = oStyle.m_pBorder.GetColorBottomSide();
                 std::wstring sSz    = oStyle.m_pBorder.GetWidthBottomSideW();
-                sBorders =  L"<w:top w:val=\"single\" w:color=\""       + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>" +
-                            L"<w:left w:val=\"single\" w:color=\""      + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>" +
-                            L"<w:bottom w:val=\"single\" w:color=\""    + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>" +
-                            L"<w:right w:val=\"single\" w:color=\""     + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>" +
-                            L"<w:insideH w:val=\"single\" w:color=\""   + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>" +
-                            L"<w:insideV w:val=\"single\" w:color=\""   + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>";
+                std::wstring sStyle = oStyle.m_pBorder.GetStyleBottomSide();
+
+                if (L"none" == sStyle)
+                        wsTable.insert(35, oStyle.GetId());
+                else
+                        wsTable.insert(35, L"table");
+
+                sBorders =  L"<w:top w:val=\""      + sStyle + L"\" w:color=\"" + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>" +
+                            L"<w:left w:val=\""     + sStyle + L"\" w:color=\"" + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>" +
+                            L"<w:bottom w:val=\""   + sStyle + L"\" w:color=\"" + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>" +
+                            L"<w:right w:val=\""    + sStyle + L"\" w:color=\"" + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>" +
+                            L"<w:insideH w:val=\""  + sStyle + L"\" w:color=\"" + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>" +
+                            L"<w:insideV w:val=\""  + sStyle + L"\" w:color=\"" + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>";
             }
             else
             {
+                    wsTable.insert(35, oStyle.GetId());
+
                     std::wstring sColorLeftSide     = oStyle.m_pBorder.GetColorLeftSide();
                     std::wstring sSzLeftSide        = oStyle.m_pBorder.GetWidthLeftSideW();
+                    std::wstring sStyleLeftSide     = oStyle.m_pBorder.GetStyleLeftSide();
                     std::wstring sColorTopSide      = oStyle.m_pBorder.GetColorTopSide();
                     std::wstring sSzTopSide         = oStyle.m_pBorder.GetWidthTopSideW();
+                    std::wstring sStyleTopSide      = oStyle.m_pBorder.GetStyleLeftSide();
                     std::wstring sColorRightSide    = oStyle.m_pBorder.GetColorRightSide();
                     std::wstring sSzRightSide       = oStyle.m_pBorder.GetWidthRightSideW();
+                    std::wstring sStyleRightSide    = oStyle.m_pBorder.GetStyleLeftSide();
                     std::wstring sColorBottomSide   = oStyle.m_pBorder.GetColorBottomSide();
                     std::wstring sSzBottomSide      = oStyle.m_pBorder.GetWidthBottomSideW();
+                    std::wstring sStyleBottomSide   = oStyle.m_pBorder.GetStyleLeftSide();
 
-                    sBorders =  L"<w:left w:val=\"single\" w:color=\""  + sColorLeftSide    + L"\" w:sz=\"" + sSzLeftSide   + L"\" w:space=\"0\"/>" +
-                                L"<w:top w:val=\"single\" w:color=\""   + sColorTopSide     + L"\" w:sz=\"" + sSzTopSide    + L"\" w:space=\"0\"/>" +
-                                L"<w:right w:val=\"single\" w:color=\"" + sColorRightSide   + L"\" w:sz=\"" + sSzRightSide  + L"\" w:space=\"0\"/>" +
-                                L"<w:bottom w:val=\"single\" w:color=\""+ sColorBottomSide  + L"\" w:sz=\"" + sSzBottomSide + L"\" w:space=\"0\"/>";
+                    sBorders =  L"<w:left w:val=\""     + sStyleLeftSide    + L"\" w:color=\"" + sColorLeftSide    + L"\" w:sz=\"" + sSzLeftSide   + L"\" w:space=\"0\"/>" +
+                                L"<w:top w:val=\""      + sStyleTopSide     + L"\" w:color=\"" + sColorTopSide     + L"\" w:sz=\"" + sSzTopSide    + L"\" w:space=\"0\"/>" +
+                                L"<w:right w:val=\""    + sStyleRightSide   + L"\" w:color=\"" + sColorRightSide   + L"\" w:sz=\"" + sSzRightSide  + L"\" w:space=\"0\"/>" +
+                                L"<w:bottom w:val=\""   + sStyleBottomSide  + L"\" w:color=\"" + sColorBottomSide  + L"\" w:sz=\"" + sSzBottomSide + L"\" w:space=\"0\"/>";
 
             }
         }
+
+        oXml->WriteString(wsTable);
+
         /*
         NSCSS::CCompiledStyle oStyleSetting = m_oStylesCalculator.GetCompiledStyle(sSelectors, true);
         oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);

@@ -502,6 +502,8 @@ namespace NSCSS
                           });
             }
 
+            pStyle->AddStyle(arSelectors[i].m_mAttrs, i + 1);
+
             for (const CElement* oElement : arFindElements)
                 pStyle->AddStyle(oElement->GetStyle(), i + 1);
 

@@ -1738,7 +1738,7 @@ namespace NSCSS
 
                 bool Empty() const
                 {
-                    return fWidth  <= 0;
+                    return fWidth  < 0;
                 }
 
                 void SetWidthWithoutChecking(const float& fWidth, const unsigned int& unLevel, const bool &bHardMode = false)
@@ -1926,7 +1926,10 @@ namespace NSCSS
 
                 std::wstring GetStyle() const
                 {
-                    return (bBlock) ? L"auto" : sStyle;
+                    if (bBlock) return L"auto";
+                    if (0 == fWidth) return L"none";
+                    else if (L"auto" == sStyle) return L"single";
+                    else return sStyle;
                 }
 
                 std::wstring GetColor() const
@@ -1979,7 +1982,7 @@ namespace NSCSS
                         else if (iswdigit(sValue[0]))
                         {
                             const float fWidth = wcstof(sValue.c_str(), NULL);
-                            if (fWidth > 0.0f)
+                            if (fWidth >= 0.0f)
                                 oBorderSide.fWidth = fWidth;
                         }
                         else if (sValue.substr(0, 3) == L"rgb")

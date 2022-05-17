@@ -17,6 +17,7 @@ void BulletsConverter::FillPPr(PPTX::Logic::TextParagraphPr &oPPr, CParagraph &p
 void BulletsConverter::ConvertPFRun(PPTX::Logic::TextParagraphPr &oPPr, CTextPFRun *pPF)
 {
     const int oneTabSize = 457200;
+    const int tabLvl = oPPr.lvl.get_value_or(0);
     int leftMargin = 0;
     if (pPF->leftMargin.is_init())
     {
@@ -25,7 +26,7 @@ void BulletsConverter::ConvertPFRun(PPTX::Logic::TextParagraphPr &oPPr, CTextPFR
     }
     if (pPF->indent.is_init())
     {
-        if (pPF->hasBullet.get_value_or(false) && pPF->indent.get() != -leftMargin)
+        if (pPF->hasBullet.get_value_or(false) && tabLvl == -1)
         {
             oPPr.indent = pPF->indent.get() - leftMargin;
         }
@@ -35,7 +36,6 @@ void BulletsConverter::ConvertPFRun(PPTX::Logic::TextParagraphPr &oPPr, CTextPFR
         }
     } else if (pPF->hasBullet.get_value_or(false))
     {
-        const int tabLvl = oPPr.lvl.get_value_or(0);
         if (tabLvl != -1)
             oPPr.indent = oneTabSize*tabLvl - leftMargin;
         else

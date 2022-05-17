@@ -177,10 +177,17 @@ namespace PPTX
 			{
 				if (oTheme.is_init())
 				{
+					std::wstring str_scheme;
 					if (oClrMap.is_init())
-						str = oClrMap->GetColorSchemeIndex(str);
+					{
+						str_scheme = oClrMap->GetColorSchemeIndex(str);
+					}
+					if (str_scheme.empty())
+					{
+						str_scheme = str;
+					}
 
-					RGB = oTheme->GetARGBFromScheme(str);
+					RGB = oTheme->GetARGBFromScheme(str_scheme);
 				}				
 			}				
 

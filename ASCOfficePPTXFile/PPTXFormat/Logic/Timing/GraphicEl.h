@@ -56,7 +56,7 @@ namespace PPTX
                     XmlMacroReadAttributeBase(oNode, L"seriesIdx", seriesIdx);
                     XmlMacroReadAttributeBase(oNode, L"categoryIdx", categoryIdx);
 				}
-				else if (node.GetNode(_T("p:dgm"), oNode))
+				else if (node.GetNode(_T("a:dgm"), oNode))
 				{
                     XmlMacroReadAttributeBase(oNode, L"bldStep", dgmBuildStep);
                     XmlMacroReadAttributeBase(oNode, L"id", dgmId);
@@ -79,7 +79,7 @@ namespace PPTX
 				oAttr.Write(_T("id"), dgmId);
 				oAttr.WriteLimitNullable(_T("bldStep"), dgmBuildStep);
 
-				return XmlUtils::CreateNode(_T("p:graphicEl"), XmlUtils::CreateNode(_T("p:dgm"), oAttr));
+				return XmlUtils::CreateNode(_T("p:graphicEl"), XmlUtils::CreateNode(_T("a:dgm"), oAttr));
 			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{

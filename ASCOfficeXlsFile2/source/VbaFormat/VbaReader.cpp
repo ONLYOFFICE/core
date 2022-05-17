@@ -12,18 +12,18 @@ CVbaReader::CVbaReader(const std::wstring & vbaFileName, const std::wstring & vb
 
 	if (vbaProject_file_->isError()) return;
 }
-bool CVbaReader::convert()
+const std::wstring CVbaReader::convert()
 {
 	_UINT32 code_page_ = 0;
 
 	CVbaFileStreamPtr strmPROJECT = vbaProject_file_->getNamedStream(L"PROJECT");
-	
-	if (false == vbaProject_file_->isDirectory(L"VBA")) return false;
+
+	if (false == vbaProject_file_->isDirectory(L"VBA")) return L"";
 
 	CVbaFileStreamPtr strmDir = vbaProject_file_->getNamedStream(L"VBA/dir");
 	VBA::DirStreamObjectPtr DirStreamObject = VBA::DirStreamObjectPtr(new VBA::DirStreamObject(strmDir));
 
-	if (false == DirStreamObject->loadContent()) return false;
+	if (false == DirStreamObject->loadContent()) return L"";
 
 	code_page_ = strmDir->CodePage;
 
@@ -40,9 +40,9 @@ bool CVbaReader::convert()
 				CP_XML_ATTR(L"Lcid", DirStreamObject->InformationRecord->LcidRecord->Lcid);
 
 			if (DirStreamObject->InformationRecord->ConstantsRecord)
-				CP_XML_ATTR(L"Constants",	DirStreamObject->InformationRecord->ConstantsRecord->uConstants.value.empty() ?
-											DirStreamObject->InformationRecord->ConstantsRecord->aConstants.value :
-											DirStreamObject->InformationRecord->ConstantsRecord->uConstants.value);
+				CP_XML_ATTR(L"Constants", DirStreamObject->InformationRecord->ConstantsRecord->uConstants.value.empty() ?
+					DirStreamObject->InformationRecord->ConstantsRecord->aConstants.value :
+					DirStreamObject->InformationRecord->ConstantsRecord->uConstants.value);
 
 		}
 		CP_XML_NODE(L"References")
@@ -137,14 +137,20 @@ bool CVbaReader::convert()
 			}
 		}
 	}
+	return strm.str();
+}
 
+bool CVbaReader::write()
+{
+	const std::wstring sXml = convert();
+	
 	NSFile::CFileBinary file;
 	if (file.CreateFileW(vbaExtractFile_))
 	{
 		std::string root = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
         file.WriteFile((BYTE*)root.c_str(), (DWORD)root.length());
 		
-		file.WriteStringUTF8(strm.str());
+		file.WriteStringUTF8(sXml);
 		file.CloseFile();
 
         return true;

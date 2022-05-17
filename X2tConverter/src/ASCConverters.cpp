@@ -3220,7 +3220,7 @@ namespace NExtractTools
 	{
 		CVbaReader vbaReader(sFrom, sTo);
 
-		if (false == vbaReader.convert())
+		if (false == vbaReader.write())
 			return AVS_FILEUTILS_ERROR_CONVERT;
 
 		return 0;

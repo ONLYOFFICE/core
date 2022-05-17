@@ -43,6 +43,8 @@
 #include "../../ASCOfficePPTXFile/PPTXFormat/Core.h"
 #include "../../ASCOfficePPTXFile/PPTXFormat/Logic/HeadingVariant.h"
 
+#include "../../ASCOfficeXlsFile2/source/VbaFormat/VbaReader.h"
+
 #include "../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/XlsxFlat.h"
 
@@ -2112,6 +2114,16 @@ void BinaryWorkbookTableWriter::WriteWorkbook(OOX::Spreadsheet::CWorkbook& workb
 		m_oBcw.m_oStream.StartRecord(0);
         m_pXlsx->m_pVbaProject->toPPTY(&m_oBcw.m_oStream);
         m_oBcw.m_oStream.EndRecord();
+
+		CVbaReader vbaReader(m_pXlsx->m_pVbaProject->filename().GetPath(), L"");
+		std::wstring sXml = vbaReader.convert();
+
+		if (false == sXml.empty())
+		{
+			m_oBcw.m_oStream.StartRecord(1);
+			m_oBcw.m_oStream.WriteStringW(sXml);
+			m_oBcw.m_oStream.EndRecord();
+		}
 
         m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}

@@ -1,4 +1,5 @@
 #include "CEmfInterpretatorXml.h"
+#include <typeinfo>
 
 namespace MetaFile
 {

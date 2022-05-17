@@ -1966,7 +1966,8 @@ HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sC
     NSFile::CFileBinary::ReadAllTextUtf8A(sHtmlFile, sContent);;
     XmlUtils::CXmlLiteReader oIndexHtml;
     std::vector<std::wstring> arrBinary;
-    if (oIndexHtml.FromString(htmlToXhtml(sContent)))
+    std::wstring xhtml = htmlToXhtml(sContent, false); // ????
+    if (oIndexHtml.FromString(xhtml))
     {
         oIndexHtml.ReadNextNode(); // html
         int nDepth = oIndexHtml.GetDepth();

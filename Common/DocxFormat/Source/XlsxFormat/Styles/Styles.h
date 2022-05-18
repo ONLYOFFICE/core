@@ -56,6 +56,7 @@
 #include "../../XlsbFormat/Biff12_unions/CELLXFS.h"
 #include "../../XlsbFormat/Biff12_unions/STYLES.h"
 #include "../../XlsbFormat/Biff12_unions/DXFS.h"
+#include "../../XlsbFormat/Biff12_unions/FRTSTYLESHEET.h"
 
 namespace OOX
 {
@@ -297,11 +298,13 @@ namespace OOX
 							stylesStream->m_COLORPALETTE = XLS::BaseObjectPtr(new XLSB::COLORPALETTE());
 							m_oColors->toBin(stylesStream->m_COLORPALETTE);
 						}
-						
 
-						/*if (stylesStream->m_FRTSTYLESHEET != nullptr)
-						m_oExtLst = stylesStream->m_FRTSTYLESHEET;
-						*/
+						if (m_oExtLst.IsInit())
+						{
+							stylesStream->m_FRTSTYLESHEET = XLS::BaseObjectPtr(new XLSB::FRTSTYLESHEET());
+							m_oExtLst->toBin(stylesStream->m_FRTSTYLESHEET);
+						}
+
 					}
 					xlsb->WriteBin(oPath, stylesStream.get());
 

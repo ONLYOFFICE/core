@@ -146,6 +146,8 @@ int XFPropGradient::deserialize(XmlUtils::CXmlLiteReader& oReader)
 
 			wsPropName = oReader.GetName();
 		}
+
+		oReader.MoveToElement();
 	}
 	return 0;
 }

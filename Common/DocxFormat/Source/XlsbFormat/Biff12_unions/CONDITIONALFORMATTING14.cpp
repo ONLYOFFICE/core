@@ -94,7 +94,14 @@ namespace XLSB
 	const bool CONDITIONALFORMATTING14::saveContent(BinProcessor& proc)
 	{
 		if (m_BrtBeginConditionalFormatting14 != nullptr)
+		{
+			auto ptrBeginConditionalFormatting14 = static_cast<XLSB::BeginConditionalFormatting14*>(m_BrtBeginConditionalFormatting14.get());
+
+			if (ptrBeginConditionalFormatting14 != nullptr)
+				ptrBeginConditionalFormatting14->ccf = m_arCFRULE14.size();
+
 			proc.mandatory(*m_BrtBeginConditionalFormatting14);
+		}
 
 		for (auto& item : m_arCFRULE14)
 		{

@@ -57,6 +57,16 @@ namespace OOX
 			CDxf()
 			{
 			}
+			CDxf(const CDxf &oDxf)
+			{
+				m_oAlignment  = oDxf.m_oAlignment;
+				m_oBorder	  = oDxf.m_oBorder;
+				m_oFill		  = oDxf.m_oFill;
+				m_oFont		  = oDxf.m_oFont;
+				m_oNumFmt	  = oDxf.m_oNumFmt;
+				m_oProtection = oDxf.m_oProtection;
+
+			}
 			virtual ~CDxf()
 			{
 			}

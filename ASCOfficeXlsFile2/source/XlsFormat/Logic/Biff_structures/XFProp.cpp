@@ -265,8 +265,34 @@ static void deserialize_val_prop(XmlUtils::CXmlLiteReader& oReader, const std::w
 				val.reset(new LPWideString(value));
 			}
 		}
+
+		oReader.MoveToElement();
 	}
 
+}
+static void deserialize_prop(XmlUtils::CXmlLiteReader& oReader, const std::wstring & typeName, BiffStructurePtr & val)
+{
+	auto value = oReader.GetText();
+
+	if (typeName == L"BIFF_BYTE")
+	{
+		BYTE byte = 0;
+
+		if (L"true" == value) byte = 1;
+		else if (L"True" == value) byte = 1;
+		else if (L"1" == value) byte = 1;
+		else if (L"t" == value) byte = 1;
+		else if (L"on" == value) byte = 1;
+		else if (L"f" == value) byte = 0;
+		else if (L"0" == value) byte = 0;
+		else if (L"false" == value) byte = 0;
+		else if (L"False" == value) byte = 0;
+		else if (L"off" == value) byte = 0;
+
+		else byte = XmlUtils::GetInteger(value);
+
+		val.reset(new BIFF_BYTE(byte, L"value"));
+	}
 }
 static void serialize_val_attr(CP_ATTR_NODE, const std::wstring & name, BiffStructurePtr & val)
 {
@@ -352,6 +378,8 @@ static XFPropBorder* deserialize_border_prop(XmlUtils::CXmlLiteReader& oReader)
 
 			//oReader.MoveToNextAttribute();
 		}
+
+		oReader.MoveToElement();
 	}
 
 	if (!oReader.IsEmptyNode())
@@ -365,6 +393,8 @@ static XFPropBorder* deserialize_border_prop(XmlUtils::CXmlLiteReader& oReader)
 				border->color.deserialize(oReader);			
 		}
 	}
+
+	return border;
 }
 	
 void XFProp::serialize_attr(CP_ATTR_NODE)
@@ -496,26 +526,32 @@ void XFProp::deserialize_attr(XmlUtils::CXmlLiteReader& oReader)
 		//case 0x0017:
 			xfPropDataBlob.reset(new BIFF_BYTE(XmlUtils::GetInteger(oReader.GetText()), L"value"));
 			break;
-		case 0x001C:
-		case 0x001D:
-		case 0x001E:
-		case 0x001F:
-		case 0x0020:
+		case 0x001C: 
+		case 0x001D: 
+		case 0x001E: 
+		case 0x001F: 
+		case 0x0020: 
 		case 0x0021:
 		case 0x0022:
 		case 0x0023:
+			xfPropDataBlob.reset(new BIFF_BYTE(1, L"value"));
 		case 0x0025:
+			deserialize_val_prop(oReader, L"BIFF_BYTE", xfPropDataBlob);
+			break;
 		case 0x002B:
 		case 0x002C:
-			deserialize_val_prop(oReader, L"BIFF_BYTE", xfPropDataBlob);
+			deserialize_prop(oReader, L"BIFF_BYTE", xfPropDataBlob);
 			break;
 		case 0x0018:
 			deserialize_val_prop(oReader, L"LPWideString", xfPropDataBlob);
 			break;		
+		case 0x0029:
+			xfPropDataBlob.reset(new BIFF_WORD(XmlUtils::GetInteger(oReader.GetText()), L"value"));
+			break;
 		case 0x0019:
 		case 0x001A:
+			xfPropDataBlob.reset(new BIFF_WORD(1, L"value"));
 		case 0x001B:
-		case 0x0029:
 		case 0x002A:
 			deserialize_val_prop(oReader, L"BIFF_WORD", xfPropDataBlob);			
 			break;

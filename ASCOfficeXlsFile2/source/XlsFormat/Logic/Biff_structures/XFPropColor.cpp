@@ -97,9 +97,9 @@ int XFPropColor::deserialize(XmlUtils::CXmlLiteReader& oReader)
 	if (oReader.GetAttributesCount() > 0 && oReader.MoveToFirstAttribute() == true)
 	{
 		std::wstring wsPropName = oReader.GetName();
-
+		nTintShade = 0;
 		while (!wsPropName.empty())
-		{
+		{			
 			if (wsPropName == L"auto" && oReader.GetText() == L"1")
 				xclrType = 0;
 			else if (wsPropName == L"indexed")
@@ -114,7 +114,7 @@ int XFPropColor::deserialize(XmlUtils::CXmlLiteReader& oReader)
 			}
 			else if (wsPropName == L"rgb")
 			{
-				xclrType = 3;
+				xclrType = 2;
 				dwRgba.Parse(oReader.GetText());
 			}
 			else if (wsPropName == L"tint")
@@ -127,6 +127,7 @@ int XFPropColor::deserialize(XmlUtils::CXmlLiteReader& oReader)
 
 			wsPropName = oReader.GetName();
 		}
+		oReader.MoveToElement();
 	}
 	return 0;
 }

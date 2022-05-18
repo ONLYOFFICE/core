@@ -2806,6 +2806,7 @@ void CConditionalFormattingRule::WriteAttributes(XLS::BaseObjectPtr& obj)
 				case SimpleTypes::Spreadsheet::ECfType::cellIs:
 				{
 					ptr->iType = XLSB::CFType::CF_TYPE_CELLIS;
+					ptr->iTemplate = XLSB::CFTemp::CF_TEMPLATE_EXPR;
 					if (m_oOperator.IsInit())
 					{
 						switch (m_oOperator->GetValue())
@@ -3063,6 +3064,7 @@ void CConditionalFormattingRule::WriteAttributes(XLS::BaseObjectPtr& obj)
 				case SimpleTypes::Spreadsheet::ECfType::cellIs:
 				{
 					ptr->iType = XLSB::CFType::CF_TYPE_CELLIS;
+					ptr->iTemplate = XLSB::CFTemp::CF_TEMPLATE_EXPR;
 					if (m_oOperator.IsInit())
 					{
 						switch (m_oOperator->GetValue())
@@ -3283,9 +3285,13 @@ void CConditionalFormattingRule::WriteAttributes(XLS::BaseObjectPtr& obj)
 
 			if (m_oText.IsInit())
 				ptr->strParam = m_oText.get();
+			else
+				ptr->strParam = L"";
 
 			 if (m_oId.IsInit())
 				ptr->guid = m_oId.get();
+			 else
+				 ptr->guid = L"";
 
 			ptr->cbFmla1 = false;
 			ptr->cbFmla2 = false;

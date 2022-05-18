@@ -49,6 +49,7 @@
 #include "../../XlsbFormat/Biff12_unions/MERGECELLS.h"
 #include "../../XlsbFormat/Biff12_unions/CONDITIONALFORMATTING.h"
 #include "../../XlsbFormat/Biff12_unions/DVALS.h"
+#include "../../XlsbFormat/Biff12_unions/FRTWORKSHEET.h"
 
 namespace OOX
 {
@@ -400,11 +401,27 @@ namespace OOX
 								}
 							}
 						}
-						/*						
-
-							if (workSheetStream->m_FRTWORKSHEET != nullptr)
-								m_oExtLst = workSheetStream->m_FRTWORKSHEET;
-						*/
+						if (m_oExtLst.IsInit())
+						{
+							workSheetStream->m_FRTWORKSHEET = XLS::BaseObjectPtr(new XLSB::FRTWORKSHEET());
+							for (auto& itemExt :m_oExtLst->m_arrExt)
+							{
+								for (auto& itemCondFmt : itemExt->m_arrConditionalFormatting)
+								{
+									for (auto& itemRule : itemCondFmt->m_arrItems)
+									{
+										if (itemRule->m_oDxf.IsInit())
+										{
+											xlsb->m_pStyles->m_oDxfs->m_arrItems.push_back(new CDxf(itemRule->m_oDxf.get()));
+											itemRule->m_oDxfId.Init();
+											itemRule->m_oDxfId->SetValue(xlsb->m_pStyles->m_oDxfs->m_arrItems.size() - 1);
+										}
+									}
+								}
+								
+							}
+							m_oExtLst->toBin(workSheetStream->m_FRTWORKSHEET);
+						}
 					}
 					xlsb->WriteBin(oPath, workSheetStream.get());
 				}

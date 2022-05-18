@@ -1305,5 +1305,88 @@ namespace OOX
                 }
             }
         }
+
+		void COfficeArtExtensionList::toBin(XLS::BaseObjectPtr& obj)
+		{
+			for (auto& itemExt : m_arrExt)
+			{
+				if (obj->get_type() == XLS::typeFRTWORKBOOK)
+				{
+					auto ptr = static_cast<XLSB::FRTWORKBOOK*>(obj.get());
+
+					if (ptr != nullptr)
+					{
+						if(itemExt->m_oSlicerCachesExt.IsInit())
+						{
+							//itemExt->m_oSlicerCachesExt.toBin(ptr->m_TABLESLICERCACHEIDS);
+						}
+						if (itemExt->m_oSlicerCaches.IsInit())
+						{
+							//itemExt->m_oSlicerCaches.toBin(ptr->m_SLICERCACHEIDS);
+						}						
+					}
+				}
+
+				else if (obj->get_type() == XLS::typeFRTWORKSHEET)
+				{
+					auto ptr = static_cast<XLSB::FRTWORKSHEET*>(obj.get());
+
+					if (ptr != nullptr)
+					{
+						if(!itemExt->m_arrConditionalFormatting.empty())
+						{
+							ptr->m_CONDITIONALFORMATTINGS = XLS::BaseObjectPtr(new XLSB::CONDITIONALFORMATTINGS());
+							auto pCONDITIONALFORMATTINGS = static_cast<XLSB::CONDITIONALFORMATTINGS*>(ptr->m_CONDITIONALFORMATTINGS.get());
+
+							pCONDITIONALFORMATTINGS->m_arCONDITIONALFORMATTING14.reserve(itemExt->m_arrConditionalFormatting.size());
+
+							for (auto& itemCondFmt : itemExt->m_arrConditionalFormatting)
+							{
+								XLS::BaseObjectPtr item(new XLSB::CONDITIONALFORMATTING14());
+								itemCondFmt->toBin(item);
+								pCONDITIONALFORMATTINGS->m_arCONDITIONALFORMATTING14.push_back(item);
+							}
+						}
+						if (itemExt->m_oDataValidations.IsInit())
+						{
+							//itemExt->m_oDataValidations.toBin(ptr->m_DVALS14);
+						}
+						if (itemExt->m_oSparklineGroups.IsInit())
+						{
+							//itemExt->m_oSparklineGroups.toBin(ptr->m_SPARKLINEGROUPS);
+						}
+
+						if (itemExt->m_oSlicerList.IsInit())
+						{
+							if(itemExt->m_sUri.IsInit())
+							{
+								//if(itemExt->m_sUri == _T("{A8765BA9-456A-4dab-B4F3-ACF838C121DE}"))
+									//itemExt->m_oSlicerList.toBin(ptr->m_TABLESLICERSEX);
+								//else if (itemExt->m_sUri == _T("{A8765BA9-456A-4dab-B4F3-ACF838C121DE}"))
+									//itemExt->m_oSlicerList.toBin(ptr->m_SLICERSEX);
+							}
+						}
+					}
+				}
+
+				else if (obj->get_type() == XLS::typeFRTSTYLESHEET)
+				{
+					auto ptr = static_cast<XLSB::FRTSTYLESHEET*>(obj.get());
+
+					if (ptr != nullptr)
+					{
+						if (itemExt->m_oSlicerStyles.IsInit())
+						{
+							//itemExt->m_oSlicerStyles.toBin(ptr->m_STYLESHEET14);
+						}
+						if (itemExt->m_oDxfs.IsInit())
+						{
+							itemExt->m_oDxfs->isExt = true;
+							itemExt->m_oDxfs->toBin(static_cast<XLSB::DXF14S*>(ptr->m_DXF14S.get())->m_arDXF14);
+						}
+					}
+				}
+			}
+		}
 	}
 }

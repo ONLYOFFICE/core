@@ -105,6 +105,7 @@ int XFPropGradientStop::deserialize(XmlUtils::CXmlLiteReader& oReader)
 		{
 			numPosition = XmlUtils::GetDouble(oReader.GetText());
 		}
+		oReader.MoveToElement();
 	}
 
 	if (!oReader.IsEmptyNode())

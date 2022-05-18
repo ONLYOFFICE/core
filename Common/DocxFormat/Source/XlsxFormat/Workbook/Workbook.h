@@ -51,6 +51,7 @@
 #include "../../XlsbFormat/Biff12_unions/EXTERNALS.h"
 #include "../../XlsbFormat/Biff12_unions/PIVOTCACHEIDS.h"
 #include "../../XlsbFormat/Biff12_unions/PIVOTCACHEID.h"
+#include "../../XlsbFormat/Biff12_unions/FRTWORKBOOK.h"
 #include "../../XlsbFormat/Biff12_records/FileVersion.h"
 #include "../../XlsbFormat/Biff12_records/BeginPivotCacheID.h"
 
@@ -402,10 +403,12 @@ namespace OOX
 							static_cast<XLSB::FileVersion*>(workBookStream->m_BrtFileVersion.get())->stLowestEdited = L"";
 							static_cast<XLSB::FileVersion*>(workBookStream->m_BrtFileVersion.get())->stRupBuild = L"";
 						}
-
-						/*if (workBookStream->m_FRTWORKBOOK != nullptr)
-						m_oExtLst = workBookStream->m_FRTWORKBOOK;
-						*/
+						if (m_oExtLst.IsInit())
+						{
+							workBookStream->m_FRTWORKBOOK = XLS::BaseObjectPtr(new XLSB::FRTWORKBOOK());
+							m_oExtLst->toBin(workBookStream->m_FRTWORKBOOK);
+						}
+						
 					}
 					xlsb->WriteBin(oPath, workBookStream.get());
 

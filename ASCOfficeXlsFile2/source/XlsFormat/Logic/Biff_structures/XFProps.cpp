@@ -284,7 +284,6 @@ int XFProps::deserialize(XmlUtils::CXmlLiteReader& oReader)
 			while (!wsPropName.empty())
 			{
 				XFPropPtr prop(new XFProp);
-				if (!prop) continue;
 
 				prop->deserialize(wsNodeName, wsPropName, oReader);
 				rgExt.push_back(prop);
@@ -294,6 +293,8 @@ int XFProps::deserialize(XmlUtils::CXmlLiteReader& oReader)
 
 				wsPropName = oReader.GetName();
 			}
+
+			oReader.MoveToElement();
 		}
 
 		if (!oReader.IsEmptyNode())
@@ -301,16 +302,15 @@ int XFProps::deserialize(XmlUtils::CXmlLiteReader& oReader)
 			int nCurDepth = oReader.GetDepth();
 			while (oReader.ReadNextSiblingNode(nCurDepth))
 			{
-				std::wstring sName = oReader.GetName();
-
-				XFPropPtr prop(new XFProp);
-				if (!prop) continue;
+				std::wstring sName = oReader.GetName();				
 
 				if (wsNodeName == L"fill")
 				{
 					if (sName == L"gradientFill")
 					{
+						XFPropPtr prop(new XFProp);
 						prop->deserialize(wsNodeName, sName, oReader);
+						rgExt.push_back(prop);
 
 						if (!oReader.IsEmptyNode())
 						{
@@ -318,8 +318,9 @@ int XFProps::deserialize(XmlUtils::CXmlLiteReader& oReader)
 							while (oReader.ReadNextSiblingNode(nCurDepth))
 							{
 								std::wstring wsPropName2 = oReader.GetName();
-
+								XFPropPtr prop(new XFProp);
 								prop->deserialize(wsNodeName, wsPropName2, oReader);
+								rgExt.push_back(prop);
 							}
 						}
 					}
@@ -331,9 +332,11 @@ int XFProps::deserialize(XmlUtils::CXmlLiteReader& oReader)
 
 							if (!wsPropName1.empty())
 							{
+								XFPropPtr prop(new XFProp);
 								prop->deserialize(wsNodeName, wsPropName1, oReader);
-								//oReader.MoveToNextAttribute();
+								rgExt.push_back(prop);
 							}
+							oReader.MoveToElement();
 						}
 
 						if (!oReader.IsEmptyNode())
@@ -342,16 +345,20 @@ int XFProps::deserialize(XmlUtils::CXmlLiteReader& oReader)
 							while (oReader.ReadNextSiblingNode(nCurDepth))
 							{
 								std::wstring wsPropName2 = oReader.GetName();
-
+								XFPropPtr prop(new XFProp);
 								prop->deserialize(wsNodeName, wsPropName2, oReader);
+								rgExt.push_back(prop);
 							}
 						}
 					}
 				}
 				else
+				{
+					XFPropPtr prop(new XFProp);
 					prop->deserialize(wsNodeName, sName, oReader);
+					rgExt.push_back(prop);
+				}
 
-				rgExt.push_back(prop);
 			}
 		}
 	}		

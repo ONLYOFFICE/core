@@ -70,6 +70,10 @@ isEqual(QT_MAJOR_VERSION, 5) {
     }
 }
 
+greaterThan(QT_MAJOR_VERSION, 5) {
+    DEFINES += QT_VERSION_6
+}
+
 ios {
     CONFIG += core_ios
     DEFINES += _IOS IOS LINUX _LINUX MAC _MAC _XCODE _ARM_ALIGN_

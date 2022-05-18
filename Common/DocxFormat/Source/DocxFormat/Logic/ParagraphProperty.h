@@ -61,21 +61,21 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				XmlMacroReadAttributeBase( oNode, _T("w:anchorLock"), m_oAnchorLock );
-				XmlMacroReadAttributeBase( oNode, _T("w:dropCap"),    m_oDropCap );
-				XmlMacroReadAttributeBase( oNode, _T("w:h"),          m_oH );
-				XmlMacroReadAttributeBase( oNode, _T("w:hAnchor"),    m_oHAnchor );
-				XmlMacroReadAttributeBase( oNode, _T("w:hRule"),      m_oHRule );
-				XmlMacroReadAttributeBase( oNode, _T("w:hSpace"),     m_oHSpace );
-				XmlMacroReadAttributeBase( oNode, _T("w:lines"),      m_oLines );
-				XmlMacroReadAttributeBase( oNode, _T("w:vAnchor"),    m_oVAnchor );
-				XmlMacroReadAttributeBase( oNode, _T("w:vSpace"),     m_oVSpace );
-				XmlMacroReadAttributeBase( oNode, _T("w:w"),          m_oW );
-				XmlMacroReadAttributeBase( oNode, _T("w:wrap"),       m_oWrap );
-				XmlMacroReadAttributeBase( oNode, _T("w:x"),          m_oX );
-				XmlMacroReadAttributeBase( oNode, _T("w:xAlign"),     m_oXAlign );
-				XmlMacroReadAttributeBase( oNode, _T("w:y"),          m_oY );
-				XmlMacroReadAttributeBase( oNode, _T("w:yAlign"),     m_oYAlign );
+				XmlMacroReadAttributeBase( oNode, L"w:anchorLock", m_oAnchorLock );
+				XmlMacroReadAttributeBase( oNode, L"w:dropCap",    m_oDropCap );
+				XmlMacroReadAttributeBase( oNode, L"w:h",          m_oH );
+				XmlMacroReadAttributeBase( oNode, L"w:hAnchor",    m_oHAnchor );
+				XmlMacroReadAttributeBase( oNode, L"w:hRule",      m_oHRule );
+				XmlMacroReadAttributeBase( oNode, L"w:hSpace",     m_oHSpace );
+				XmlMacroReadAttributeBase( oNode, L"w:lines",      m_oLines );
+				XmlMacroReadAttributeBase( oNode, L"w:vAnchor",    m_oVAnchor );
+				XmlMacroReadAttributeBase( oNode, L"w:vSpace",     m_oVSpace );
+				XmlMacroReadAttributeBase( oNode, L"w:w",          m_oW );
+				XmlMacroReadAttributeBase( oNode, L"w:wrap",       m_oWrap );
+				XmlMacroReadAttributeBase( oNode, L"w:x",          m_oX );
+				XmlMacroReadAttributeBase( oNode, L"w:xAlign",     m_oXAlign );
+				XmlMacroReadAttributeBase( oNode, L"w:y",          m_oY );
+				XmlMacroReadAttributeBase( oNode, L"w:yAlign",     m_oYAlign );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -90,107 +90,107 @@ namespace ComplexTypes
 
 				if ( m_oAnchorLock.IsInit() )
 				{
-					sResult += _T("w:anchorLock=\"");
+					sResult += L"w:anchorLock=\"";
 					sResult += m_oAnchorLock->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oDropCap.IsInit() )
 				{
-					sResult += _T("w:dropCap=\"");
+					sResult += L"w:dropCap=\"";
 					sResult += m_oDropCap->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oH.IsInit() )
 				{
-					sResult += _T("w:h=\"");
+					sResult += L"w:h=\"";
 					sResult += m_oH->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oHAnchor.IsInit() )
 				{
-					sResult += _T("w:hAnchor=\"");
+					sResult += L"w:hAnchor=\"";
 					sResult += m_oHAnchor->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oHRule.IsInit() )
 				{
-					sResult += _T("w:hRule=\"");
+					sResult += L"w:hRule=\"";
 					sResult += m_oHRule->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oHSpace.IsInit() )
 				{
-					sResult += _T("w:hSpace=\"");
+					sResult += L"w:hSpace=\"";
 					sResult += m_oHSpace->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oLines.IsInit() )
 				{
-					sResult += _T("w:lines=\"");
+					sResult += L"w:lines=\"";
 					sResult += m_oLines->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oVAnchor.IsInit() )
 				{
-					sResult += _T("w:vAnchor=\"");
+					sResult += L"w:vAnchor=\"";
 					sResult += m_oVAnchor->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oVSpace.IsInit() )
 				{
-					sResult += _T("w:vSpace=\"");
+					sResult += L"w:vSpace=\"";
 					sResult += m_oVSpace->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oW.IsInit() )
 				{
-					sResult += _T("w:w=\"");
+					sResult += L"w:w=\"";
 					sResult += m_oW->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oWrap.IsInit() )
 				{
-					sResult += _T("w:wrap=\"");
+					sResult += L"w:wrap=\"";
 					sResult += m_oWrap->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oX.IsInit() )
 				{
-					sResult += _T("w:x=\"");
+					sResult += L"w:x=\"";
 					sResult += m_oX->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oXAlign.IsInit() )
 				{
-					sResult += _T("w:xAlign=\"");
+					sResult += L"w:xAlign=\"";
 					sResult += m_oXAlign->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oY.IsInit() )
 				{
-					sResult += _T("w:y=\"");
+					sResult += L"w:y=\"";
 					sResult += m_oY->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oYAlign.IsInit() )
 				{
-					sResult += _T("w:yAlign=\"");
+					sResult += L"w:yAlign=\"";
 					sResult += m_oYAlign->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				return sResult;
@@ -200,21 +200,21 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:anchorLock"), m_oAnchorLock )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:dropCap"),    m_oDropCap )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:h"),          m_oH )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:hAnchor"),    m_oHAnchor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:hRule"),      m_oHRule )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:hSpace"),     m_oHSpace )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:lines"),      m_oLines )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:vAnchor"),    m_oVAnchor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:vSpace"),     m_oVSpace )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:w"),          m_oW )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:wrap"),       m_oWrap )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:x"),          m_oX )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:xAlign"),     m_oXAlign )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:y"),          m_oY )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:yAlign"),     m_oYAlign )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:anchorLock", m_oAnchorLock )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:dropCap",    m_oDropCap )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:h",          m_oH )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:hAnchor",    m_oHAnchor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:hRule",      m_oHRule )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:hSpace",     m_oHSpace )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:lines",      m_oLines )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:vAnchor",    m_oVAnchor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:vSpace",     m_oVSpace )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:w",          m_oW )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:wrap",       m_oWrap )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:x",          m_oX )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:xAlign",     m_oXAlign )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:y",          m_oY )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:yAlign",     m_oYAlign )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -250,28 +250,28 @@ namespace ComplexTypes
 			{
 			}
 
-			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
+			virtual void FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				XmlMacroReadAttributeBase( oNode, _T("w:end"),            m_oEnd );
-				XmlMacroReadAttributeBase( oNode, _T("w:endChars"),       m_oEndChars );
-				XmlMacroReadAttributeBase( oNode, _T("w:firstLine"),      m_oFirstLine );
-				XmlMacroReadAttributeBase( oNode, _T("w:firstLineChars"), m_oFirstLineChars );
-				XmlMacroReadAttributeBase( oNode, _T("w:hanging"),        m_oHanging );
-				XmlMacroReadAttributeBase( oNode, _T("w:hangingChars"),   m_oHangingChars );
-				XmlMacroReadAttributeBase( oNode, _T("w:start"),          m_oStart );
-				XmlMacroReadAttributeBase( oNode, _T("w:startChars"),     m_oStartChars );
+				XmlMacroReadAttributeBase( oNode, L"w:end",            m_oEnd );
+				XmlMacroReadAttributeBase( oNode, L"w:endChars",       m_oEndChars );
+				XmlMacroReadAttributeBase( oNode, L"w:firstLine",      m_oFirstLine );
+				XmlMacroReadAttributeBase( oNode, L"w:firstLineChars", m_oFirstLineChars );
+				XmlMacroReadAttributeBase( oNode, L"w:hanging",        m_oHanging );
+				XmlMacroReadAttributeBase( oNode, L"w:hangingChars",   m_oHangingChars );
+				XmlMacroReadAttributeBase( oNode, L"w:start",          m_oStart );
+				XmlMacroReadAttributeBase( oNode, L"w:startChars",     m_oStartChars );
 
 				// См. 9.2.1.2 Part4
 				if ( !m_oStart.IsInit() )
-					XmlMacroReadAttributeBase( oNode, _T("w:left"), m_oStart );
+					XmlMacroReadAttributeBase( oNode, L"w:left", m_oStart );
 				if ( !m_oStartChars.IsInit() )
-					XmlMacroReadAttributeBase( oNode, _T("w:leftChars"), m_oStartChars );
+					XmlMacroReadAttributeBase( oNode, L"w:leftChars", m_oStartChars );
 				if ( !m_oEnd.IsInit() )
-					XmlMacroReadAttributeBase( oNode, _T("w:right"), m_oEnd );
+					XmlMacroReadAttributeBase( oNode, L"w:right", m_oEnd );
 				if ( !m_oEndChars.IsInit() )
-					XmlMacroReadAttributeBase( oNode, _T("w:rightChars"), m_oEndChars );
+					XmlMacroReadAttributeBase( oNode, L"w:rightChars", m_oEndChars );
 			}
-			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes(oReader);
 
@@ -284,58 +284,58 @@ namespace ComplexTypes
 
 				if ( m_oEnd.IsInit() )
 				{
-					sResult += _T("w:end=\"");
+					sResult += L"w:end=\"";
 					sResult += m_oEnd->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oEndChars.IsInit() )
 				{
-					sResult += _T("w:endChars=\"");
+					sResult += L"w:endChars=\"";
 					sResult += m_oEndChars->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oFirstLine.IsInit() )
 				{
-					sResult += _T("w:firstLine=\"");
+					sResult += L"w:firstLine=\"";
 					sResult += m_oFirstLine->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oFirstLineChars.IsInit() )
 				{
-					sResult += _T("w:firstLineChars=\"");
+					sResult += L"w:firstLineChars=\"";
 					sResult += m_oFirstLineChars->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oHanging.IsInit() )
 				{
-					sResult += _T("w:hanging=\"");
+					sResult += L"w:hanging=\"";
 					sResult += m_oHanging->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oHangingChars.IsInit() )
 				{
-					sResult += _T("w:hangingChars=\"");
+					sResult += L"w:hangingChars=\"";
 					sResult += m_oHangingChars->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oStart.IsInit() )
 				{
-					sResult += _T("w:start=\"");
+					sResult += L"w:start=\"";
 					sResult += m_oStart->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oStartChars.IsInit() )
 				{
-					sResult += _T("w:startChars=\"");
+					sResult += L"w:startChars=\"";
 					sResult += m_oStartChars->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				return sResult;
@@ -371,18 +371,24 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:end"),            m_oEnd )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:endChars"),       m_oEndChars )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:firstLine"),      m_oFirstLine )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:firstLineChars"), m_oFirstLineChars )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:hanging"),        m_oHanging )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:hangingChars"),   m_oHangingChars )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:start"),          m_oStart )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:startChars"),     m_oStartChars )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:left"),           m_oStart )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:leftChars"),      m_oStartChars )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:right"),          m_oEnd )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:rightChars"),     m_oEndChars )
+					WritingElement_ReadAttributes_Read_if     ( oReader, L"w:end",            m_oEnd )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:endChars",       m_oEndChars )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:firstLine",      m_oFirstLine )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:firstLineChars", m_oFirstLineChars )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:hanging",        m_oHanging )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:hangingChars",   m_oHangingChars )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:start",          m_oStart )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:startChars",     m_oStartChars )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:left",           m_oStart )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:leftChars",      m_oStartChars )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:right",          m_oEnd )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:rightChars",     m_oEndChars )
+//2003
+					WritingElement_ReadAttributes_Read_else_if(oReader, L"w:first-line",		m_oFirstLine)
+					WritingElement_ReadAttributes_Read_else_if(oReader, L"w:first-line-chars",	m_oFirstLineChars)
+					WritingElement_ReadAttributes_Read_else_if(oReader, L"w:hanging-chars",		m_oHangingChars)
+					WritingElement_ReadAttributes_Read_else_if(oReader, L"w:left-chars",		m_oStartChars)
+					WritingElement_ReadAttributes_Read_else_if(oReader, L"w:right-charss",		m_oEndChars)
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
@@ -411,18 +417,18 @@ namespace ComplexTypes
 			{
 			}
 
-			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
+			virtual void FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				XmlMacroReadAttributeBase( oNode, _T("w:after"),             m_oAfter );
-				XmlMacroReadAttributeBase( oNode, _T("w:afterAutospacing"),  m_oAfterAutospacing );
-				XmlMacroReadAttributeBase( oNode, _T("w:afterLines"),        m_oAfterLines );
-				XmlMacroReadAttributeBase( oNode, _T("w:before"),            m_oBefore );
-				XmlMacroReadAttributeBase( oNode, _T("w:beforeAutospacing"), m_oBeforeAutospacing );
-				XmlMacroReadAttributeBase( oNode, _T("w:beforeLines"),       m_oBeforeLines );
-				XmlMacroReadAttributeBase( oNode, _T("w:line"),              m_oLine );
-				XmlMacroReadAttributeBase( oNode, _T("w:lineRule"),          m_oLineRule );
+				XmlMacroReadAttributeBase( oNode, L"w:after",             m_oAfter );
+				XmlMacroReadAttributeBase( oNode, L"w:afterAutospacing",  m_oAfterAutospacing );
+				XmlMacroReadAttributeBase( oNode, L"w:afterLines",        m_oAfterLines );
+				XmlMacroReadAttributeBase( oNode, L"w:before",            m_oBefore );
+				XmlMacroReadAttributeBase( oNode, L"w:beforeAutospacing", m_oBeforeAutospacing );
+				XmlMacroReadAttributeBase( oNode, L"w:beforeLines",       m_oBeforeLines );
+				XmlMacroReadAttributeBase( oNode, L"w:line",              m_oLine );
+				XmlMacroReadAttributeBase( oNode, L"w:lineRule",          m_oLineRule );
 			}
-			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes(oReader);
 
@@ -435,58 +441,58 @@ namespace ComplexTypes
 
 				if ( m_oAfter.IsInit() )
 				{
-					sResult += _T("w:after=\"");
+					sResult += L"w:after=\"";
 					sResult += m_oAfter->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oAfterAutospacing.IsInit() )
 				{
-					sResult += _T("w:afterAutospacing=\"");
+					sResult += L"w:afterAutospacing=\"";
 					sResult += m_oAfterAutospacing->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oAfterLines.IsInit() )
 				{
-					sResult += _T("w:afterLines=\"");
+					sResult += L"w:afterLines=\"";
 					sResult += m_oAfterLines->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oBefore.IsInit() )
 				{
-					sResult += _T("w:before=\"");
+					sResult += L"w:before=\"";
 					sResult += m_oBefore->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oBeforeAutospacing.IsInit() )
 				{
-					sResult += _T("w:beforeAutospacing=\"");
+					sResult += L"w:beforeAutospacing=\"";
 					sResult += m_oBeforeAutospacing->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oBeforeLines.IsInit() )
 				{
-					sResult += _T("w:beforeLines=\"");
+					sResult += L"w:beforeLines=\"";
 					sResult += m_oBeforeLines->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oLine.IsInit() )
 				{
-					sResult += _T("w:line=\"");
+					sResult += L"w:line=\"";
 					sResult += m_oLine->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oLineRule.IsInit() )
 				{
-					sResult += _T("w:lineRule=\"");
+					sResult += L"w:lineRule=\"";
 					sResult += m_oLineRule->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				return sResult;
@@ -495,14 +501,14 @@ namespace ComplexTypes
 			static const CSpacing Merge(const CSpacing& oPrev, const CSpacing& oCurrent)
 			{
 				CSpacing oProperties;
-				oProperties.m_oAfter            = Merge( oPrev.m_oAfter,            oCurrent.m_oAfter );
-				oProperties.m_oAfterAutospacing            = Merge( oPrev.m_oAfterAutospacing,            oCurrent.m_oAfterAutospacing );
-				oProperties.m_oAfterLines            = Merge( oPrev.m_oAfterLines,            oCurrent.m_oAfterLines );
-				oProperties.m_oBefore            = Merge( oPrev.m_oBefore,            oCurrent.m_oBefore );
-				oProperties.m_oBeforeAutospacing            = Merge( oPrev.m_oBeforeAutospacing,            oCurrent.m_oBeforeAutospacing );
-				oProperties.m_oBeforeLines            = Merge( oPrev.m_oBeforeLines,            oCurrent.m_oBeforeLines );
-				oProperties.m_oLine            = Merge( oPrev.m_oLine,            oCurrent.m_oLine );
-				oProperties.m_oLineRule            = Merge( oPrev.m_oLineRule,            oCurrent.m_oLineRule );
+				oProperties.m_oAfter            = Merge( oPrev.m_oAfter,			oCurrent.m_oAfter );
+				oProperties.m_oAfterAutospacing	= Merge( oPrev.m_oAfterAutospacing,	oCurrent.m_oAfterAutospacing );
+				oProperties.m_oAfterLines		= Merge( oPrev.m_oAfterLines,		oCurrent.m_oAfterLines );
+				oProperties.m_oBefore			= Merge( oPrev.m_oBefore,            oCurrent.m_oBefore );
+				oProperties.m_oBeforeAutospacing	= Merge( oPrev.m_oBeforeAutospacing,	oCurrent.m_oBeforeAutospacing );
+				oProperties.m_oBeforeLines		= Merge( oPrev.m_oBeforeLines,		oCurrent.m_oBeforeLines );
+				oProperties.m_oLine				= Merge( oPrev.m_oLine,				oCurrent.m_oLine );
+				oProperties.m_oLineRule			= Merge( oPrev.m_oLineRule,			oCurrent.m_oLineRule );
 				return oProperties;
 			}
 			template<typename Type>
@@ -521,16 +527,17 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:after"),             m_oAfter )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:afterAutospacing"),  m_oAfterAutospacing )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:afterLines"),        m_oAfterLines )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:before"),            m_oBefore )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:beforeAutospacing"), m_oBeforeAutospacing )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:beforeLines"),       m_oBeforeLines )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:line"),              m_oLine )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:lineRule"),          m_oLineRule )
+					WritingElement_ReadAttributes_Read_if     ( oReader, L"w:after",             m_oAfter )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:afterAutospacing",  m_oAfterAutospacing )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:afterLines",        m_oAfterLines )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:before",            m_oBefore )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:beforeAutospacing", m_oBeforeAutospacing )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:beforeLines",       m_oBeforeLines )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:line",              m_oLine )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:lineRule",          m_oLineRule )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:before-autospacing", m_oBeforeAutospacing)
+					WritingElement_ReadAttributes_Read_else_if(oReader, L"w:after-autospacing", m_oAfterAutospacing)
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
@@ -561,9 +568,9 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				XmlMacroReadAttributeBase( oNode, _T("w:leader"), m_oLeader );
-				XmlMacroReadAttributeBase( oNode, _T("w:pos"),    m_oPos );
-				XmlMacroReadAttributeBase( oNode, _T("w:val"),    m_oVal );
+				XmlMacroReadAttributeBase( oNode, L"w:leader", m_oLeader );
+				XmlMacroReadAttributeBase( oNode, L"w:pos",    m_oPos );
+				XmlMacroReadAttributeBase( oNode, L"w:val",    m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -578,23 +585,23 @@ namespace ComplexTypes
 
 				if ( m_oLeader.IsInit() )
 				{
-					sResult += _T("w:leader=\"");
+					sResult += L"w:leader=\"";
 					sResult += m_oLeader->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oPos.IsInit() )
 				{
-					sResult += _T("w:pos=\"");
+					sResult += L"w:pos=\"";
 					sResult += m_oPos->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += _T("w:val=\"");
+					sResult += L"w:val=\"";
 					sResult += m_oVal->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				return sResult;
@@ -605,9 +612,9 @@ namespace ComplexTypes
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:leader"), m_oLeader )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:pos"),    m_oPos )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:val"),    m_oVal )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:leader", m_oLeader )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:pos",    m_oPos )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:val",    m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -634,7 +641,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, L"w:val", m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -649,9 +656,9 @@ namespace ComplexTypes
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += _T("w:val=\"");
+					sResult += L"w:val=\"";
 					sResult += m_oVal->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				return sResult;
@@ -661,7 +668,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"w:val", m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -686,7 +693,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, L"w:val", m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -701,9 +708,9 @@ namespace ComplexTypes
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += _T("w:val=\"");
+					sResult += L"w:val=\"";
 					sResult += m_oVal->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				return sResult;
@@ -713,7 +720,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"w:val", m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -783,30 +790,30 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const
 			{
-				std::wstring sResult = _T("<w:numPr>");
+				std::wstring sResult = L"<w:numPr>";
 
 				if ( m_oIlvl.IsInit() )
 				{
-					sResult += _T("<w:ilvl ");
+					sResult += L"<w:ilvl ";
 					sResult += m_oIlvl->ToString();
-					sResult += _T("/>");
+					sResult += L"/>";
 				}
 
 				if ( m_oIns.IsInit() )
 				{
-					sResult += _T("<w:ins ");
+					sResult += L"<w:ins ";
 					sResult += m_oIns->ToString();
-					sResult += _T("/>");
+					sResult += L"/>";
 				}
 
 				if ( m_oNumID.IsInit() )
 				{
-					sResult += _T("<w:numId ");
+					sResult += L"<w:numId ";
 					sResult += m_oNumID->ToString();
-					sResult += _T("/>");
+					sResult += L"/>";
 				}
 
-				sResult += _T("</w:numPr>");
+				sResult += L"</w:numPr>";
 
 				return sResult;
 			}
@@ -840,27 +847,27 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				if ( _T("w:pBdr") != oNode.GetName() )
+				if ( L"w:pBdr" != oNode.GetName() )
 					return;
 
 				XmlUtils::CXmlNode oChild;
 
-				if ( oNode.GetNode( _T("w:bar"), oChild ) )
+				if ( oNode.GetNode( L"w:bar", oChild ) )
 					m_oBar = oChild;
 
-				if ( oNode.GetNode( _T("w:between"), oChild ) )
+				if ( oNode.GetNode( L"w:between", oChild ) )
 					m_oBetween = oChild;
 
-				if ( oNode.GetNode( _T("w:bottom"), oChild ) )
+				if ( oNode.GetNode( L"w:bottom", oChild ) )
 					m_oBottom = oChild;
 
-				if ( oNode.GetNode( _T("w:left"), oChild ) )
+				if ( oNode.GetNode( L"w:left", oChild ) )
 					m_oLeft = oChild;
 
-				if ( oNode.GetNode( _T("w:right"), oChild ) )
+				if ( oNode.GetNode( L"w:right", oChild ) )
 					m_oRight = oChild;
 
-				if ( oNode.GetNode( _T("w:top"), oChild ) )
+				if ( oNode.GetNode( L"w:top", oChild ) )
 					m_oTop = oChild;
 
 			}
@@ -873,67 +880,67 @@ namespace OOX
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
 					std::wstring sName = oReader.GetName();
-					if ( _T("w:bar") == sName )
+					if ( L"w:bar" == sName )
 						m_oBar = oReader;
-					else if ( _T("w:between") == sName )
+					else if ( L"w:between" == sName )
 						m_oBetween = oReader;
-					else if ( _T("w:bottom") == sName )
+					else if ( L"w:bottom" == sName )
 						m_oBottom = oReader;
-					else if ( _T("w:left") == sName )
+					else if ( L"w:left" == sName )
 						m_oLeft = oReader;
-					else if ( _T("w:right") == sName )
+					else if ( L"w:right" == sName )
 						m_oRight = oReader;
-					else if ( _T("w:top") == sName )
+					else if ( L"w:top" == sName )
 						m_oTop = oReader;
 				}
 			}
 			virtual std::wstring toXML() const
 			{
-				std::wstring sResult = _T("<w:pBdr>");
+				std::wstring sResult = L"<w:pBdr>";
 
 				if ( m_oBar.IsInit() )
 				{
-					sResult += _T("<w:bar ");
+					sResult += L"<w:bar ";
 					sResult += m_oBar->ToString();
-					sResult += _T("/>");
+					sResult += L"/>";
 				}
 
 				if ( m_oBetween.IsInit() )
 				{
-					sResult += _T("<w:between ");
+					sResult += L"<w:between ";
 					sResult += m_oBetween->ToString();
-					sResult += _T("/>");
+					sResult += L"/>";
 				}
 
 				if ( m_oBottom.IsInit() )
 				{
-					sResult += _T("<w:bottom ");
+					sResult += L"<w:bottom ";
 					sResult += m_oBottom->ToString();
-					sResult += _T("/>");
+					sResult += L"/>";
 				}
 
 				if ( m_oLeft.IsInit() )
 				{
-					sResult += _T("<w:left ");
+					sResult += L"<w:left ";
 					sResult += m_oLeft->ToString();
-					sResult += _T("/>");
+					sResult += L"/>";
 				}
 
 				if ( m_oRight.IsInit() )
 				{
-					sResult += _T("<w:right ");
+					sResult += L"<w:right ";
 					sResult += m_oRight->ToString();
-					sResult += _T("/>");
+					sResult += L"/>";
 				}
 
 				if ( m_oTop.IsInit() )
 				{
-					sResult += _T("<w:top ");
+					sResult += L"<w:top ";
 					sResult += m_oTop->ToString();
-					sResult += _T("/>");
+					sResult += L"/>";
 				}
 
-				sResult += _T("</w:pBdr>");
+				sResult += L"</w:pBdr>";
 
 				return sResult;
 			}
@@ -1043,11 +1050,11 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				if ( _T("w:tabs") != oNode.GetName() )
+				if ( L"w:tabs" != oNode.GetName() )
 					return;
 
 				XmlUtils::CXmlNodes oTabs;
-				if ( oNode.GetNodes( _T("w:tab"), oTabs ) )
+				if ( oNode.GetNodes( L"w:tab", oTabs ) )
 				{
 					XmlUtils::CXmlNode oTab;
 					for ( int nIndex = 0; nIndex < oTabs.GetCount(); nIndex++ )
@@ -1069,7 +1076,7 @@ namespace OOX
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
 					std::wstring sName = oReader.GetName();
-					if ( _T("w:tab") == sName )
+					if ( L"w:tab" == sName )
 					{
 						ComplexTypes::Word::CTabStop *oTabStop = new ComplexTypes::Word::CTabStop(oReader);
 						if (oTabStop) m_arrTabs.push_back( oTabStop );
@@ -1078,17 +1085,17 @@ namespace OOX
 			}
 			virtual std::wstring      toXML() const
 			{
-				std::wstring sResult = _T("<w:tabs>");
+				std::wstring sResult = L"<w:tabs>";
 
 				for (unsigned int nIndex = 0; nIndex < m_arrTabs.size(); nIndex++ )
 				{
-					sResult += _T("<w:tab ");
+					sResult += L"<w:tab ";
 					if (m_arrTabs[nIndex])
 						sResult += m_arrTabs[nIndex]->ToString();
-					sResult += _T("/>");
+					sResult += L"/>";
 				}
 
-				sResult += _T("</w:tabs>");
+				sResult += L"</w:tabs>";
 
 				return sResult;
 			}

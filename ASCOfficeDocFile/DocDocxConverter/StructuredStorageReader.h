@@ -140,7 +140,7 @@ namespace DocFileFormat
 			POLE::Stream *streamNew = new POLE::Stream(storageOut, streamName, true, size_stream);
 			if (!streamNew) return;
 
-			unsigned char* data_stream = new unsigned char[size_stream];
+			unsigned char* data_stream = new unsigned char[(unsigned int)size_stream];
 			if (data_stream)
 			{
 				stream->read(data_stream, size_stream);

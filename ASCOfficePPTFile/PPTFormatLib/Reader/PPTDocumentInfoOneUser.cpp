@@ -1094,7 +1094,8 @@ void CPPTUserInfo::LoadGroupShapeContainer(CRecordGroupShapeContainer* pGroupCon
                 CElementPtr pElement = pShapeGroup->GetElement(m_current_level > 1, &m_oExMedia, pTheme, pLayout, pThemeWrapper, pSlideWrapper, pSlide);
 
                 CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement.get());
-                LoadBulletBlip(pShape);
+//                LoadBulletBlip(pShape);
+                LoadAutoNumBullet(pShape);
                 if (NULL != pElement)
                 {
                     pElement->m_pParentElements = pParentElements;
@@ -2612,24 +2613,86 @@ void CPPTUserInfo::LoadBulletBlip(CShapeElement *pShape)
     auto& arrPars = pShape->m_pShape->m_oText.m_arParagraphs;
 
     // TODO need to find BlipEntity;
+     IRecord* pRecPPT9 = arrDocInfoCont[0]->getDocBinaryTagExtension(___PPT9);
+     auto* pProgBinaryTag = dynamic_cast<CRecordPP9DocBinaryTagExtension*>(pRecPPT9);
+     if (pProgBinaryTag == nullptr || !pProgBinaryTag->m_blipCollectionContainer.is_init())
+         return;
+
+     const auto& arrBlipEntity = pProgBinaryTag->m_blipCollectionContainer.get().m_rgBlipEntityAtom;
+ //    const auto& arrAutoNum      = pProgBinaryTag->m_outlineTextPropsContainer.get()
+     if(arrBlipEntity.empty())
+         return;
+
+     for (auto& par : arrPars)
+     {
+         if (par.m_oPFRun.bulletBlip.IsInit())
+         {
+             auto& buBlip = par.m_oPFRun.bulletBlip.get();
+             if (buBlip.bulletBlipRef >= 0 && (UINT)buBlip.bulletBlipRef < arrBlipEntity.size())
+             {
+                 buBlip.tmpImagePath = arrBlipEntity[buBlip.bulletBlipRef]->getTmpImgPath();
+             }
+         }
+
+     }
+}
+
+void CPPTUserInfo::LoadAutoNumBullet(CShapeElement *pShape)
+{
+    if (pShape == nullptr || pShape->m_pShape == nullptr) return;
+    std::vector<CRecordDocInfoListContainer*> arrDocInfoCont;
+    m_oDocument.GetRecordsByType(&arrDocInfoCont, false, true);
+
+    if (arrDocInfoCont.empty())
+        return;
+    auto& arrPars = pShape->m_pShape->m_oText.m_arParagraphs;
+
+    // TODO need to find BlipEntity;
     IRecord* pRecPPT9 = arrDocInfoCont[0]->getDocBinaryTagExtension(___PPT9);
     auto* pProgBinaryTag = dynamic_cast<CRecordPP9DocBinaryTagExtension*>(pRecPPT9);
-    if (pProgBinaryTag == nullptr || !pProgBinaryTag->m_blipCollectionContainer.is_init())
+    if (pProgBinaryTag == nullptr)
         return;
 
-    const auto& arrBlipEntity = pProgBinaryTag->m_blipCollectionContainer.get().m_rgBlipEntityAtom;
-    if(arrBlipEntity.empty())
+    const auto& optOutlineCont = pProgBinaryTag->m_outlineTextPropsContainer;
+    if (optOutlineCont.IsInit() == false)
         return;
 
+    const auto& vecOutline9Entry = optOutlineCont->m_rgOutlineTextProps9Entry;
+    const auto& arrStyleTextProp9 = vecOutline9Entry.front()->m_styleTextProp9Atom.m_rgStyleTextProp9;
+
+
+    WORD pp9rt = 0;
     for (auto& par : arrPars)
     {
-        if (par.m_oPFRun.bulletBlip.IsInit())
+        if (par.m_arSpans.empty())
+            continue;
+
+        if (par.m_arSpans[0].m_oRun.pp9rt.is_init())
+            pp9rt = par.m_arSpans[0].m_oRun.pp9rt.get();
+
+        if (pp9rt >= arrStyleTextProp9.size())
+            continue;
+
+        auto& prop9 = arrStyleTextProp9[pp9rt];
+
+        if (prop9.m_pf9.m_optBulletAutoNumberScheme.is_init() &&
+                prop9.m_pf9.m_optfBulletHasAutoNumber.get_value_or(false))
         {
-            auto& buBlip = par.m_oPFRun.bulletBlip.get();
-            if (buBlip.bulletBlipRef >= 0 && (UINT)buBlip.bulletBlipRef < arrBlipEntity.size())
-            {
-                buBlip.tmpImagePath = arrBlipEntity[buBlip.bulletBlipRef]->getTmpImgPath();
-            }
+            auto* pBuAutoNum = new CBulletAutoNum;
+            pBuAutoNum->type = prop9.m_pf9.m_optBulletAutoNumberScheme->SchemeToStr();
+            pBuAutoNum->startAt = prop9.m_pf9.m_optBulletAutoNumberScheme->m_nStartNum;
+
+            par.m_oPFRun.bulletAutoNum.reset(pBuAutoNum);
+        }
+        if (prop9.m_pf9.m_optBulletBlipRef.is_init())
+        {
+            auto* pBuBlip = new CBulletBlip;
+            if (prop9.m_pf9.m_optBulletBlipRef.IsInit())
+                pBuBlip->bulletBlipRef = prop9.m_pf9.m_optBulletBlipRef.get();
+            else
+                pBuBlip->bulletBlipRef = -1;
+
+            par.m_oPFRun.bulletBlip.reset(pBuBlip);
         }
     }
 }

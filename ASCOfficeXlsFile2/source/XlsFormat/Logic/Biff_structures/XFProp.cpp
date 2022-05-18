@@ -148,7 +148,14 @@ void XFProp::save(CFRecord& record)
 
 		record << xfPropType << cb;
 
-		record << *xfPropDataBlob;
+		if (xfPropType == 0x0026 || xfPropType == 0x0018)
+		{
+			LPWideString* string = dynamic_cast<LPWideString*>(xfPropDataBlob.get());
+			if (string)
+				record << *string;
+		}
+		else
+			 record << *xfPropDataBlob;
 	}
 }
 static void serialize_color_prop(std::wostream & stream, const std::wstring & name, BiffStructurePtr & val)

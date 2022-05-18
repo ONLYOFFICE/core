@@ -126,6 +126,10 @@ namespace OOX
 				{
 					WritingValNodeIf(child_ns, L"u", SimpleTypes::Spreadsheet::underlineSingle != m_oUnderline->m_oUnderline->GetValue(), m_oUnderline->m_oUnderline->ToString());
 				}
+				else if(m_oUnderline.IsInit())
+				{
+					WritingValNodeIf(child_ns, L"u", false, L"");
+				}
 				if(m_oVertAlign.IsInit() && m_oVertAlign->m_oVerticalAlign.IsInit())
 				{
 					WritingValNode(child_ns, L"vertAlign", m_oVertAlign->m_oVerticalAlign->ToString());

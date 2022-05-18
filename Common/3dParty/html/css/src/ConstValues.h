@@ -158,6 +158,31 @@ namespace NSCSS
             };
         }
 
+        static const std::vector<std::wstring> arDisplayValues =
+        {
+                /* <display-outside> values */
+                L"block", L"inline", L"run-in",
+                /* <display-inside> values */
+                L"flow", L"flow-root", L"table", L"flex", L"grid", L"ruby",
+                /* <display-outside> plus <display-inside> values */
+                L"block flow", L"inline table", L"flex run-in",
+                /* <display-listitem> values */
+                L"list-item", L"list-item block", L"list-item inline", L"list-item flow",
+                L"list-item flow-root", L"list-item block flow",
+                L"list-item block flow-root", L"flow list-item block",
+                /* <display-internal> values */
+                L"table-row-group", L"table-header-group", L"table-footer-group",
+                L"table-row", L"table-cell", L"table-column-group", L"table-column",
+                L"table-caption", L"ruby-base", L"ruby-text", L"ruby-base-container",
+                L"ruby-text-container",
+                /* <display-box> values */
+                L"contents", L"none",
+                /* <display-legacy> values */
+                L"inline-block", L"inline-table", L"inline-flex", L"inline-grid",
+                /* Global values */
+                L"inherit", L"initial", L"unset"
+        };
+
         namespace NSProperties {
 
             typedef enum
@@ -2484,8 +2509,10 @@ namespace NSCSS
 
                 Background operator+=(const Background& oBackground)
                 {
-                    if (oBackground.sColor.empty())
-                        sColor = oBackground.sColor;
+                    if (oBackground.sColor.empty() || (bImportants[0] && !oBackground.bImportants[0]))
+                        return *this;
+
+                    sColor = oBackground.sColor;
 
                     return *this;
                 }
@@ -2625,6 +2652,87 @@ namespace NSCSS
                             return oIter->first;
 
                     return L"";
+                }
+            };
+
+            class Display
+            {
+                std::wstring wsDisplay;
+
+                std::vector<bool> bImportants;
+                std::vector<unsigned int> arLevels;
+
+            public:
+                Display() : wsDisplay(L"inline"), bImportants{false}, arLevels{0} {};
+
+                void ClearImportants()
+                {
+                    bImportants = {false};
+                }
+
+                Display operator+=(const Display& oDisplay)
+                {
+                    if (oDisplay.wsDisplay.empty() || (bImportants[0] && !oDisplay.bImportants[0]))
+                        return *this;
+
+                    wsDisplay = oDisplay.wsDisplay;
+
+                    return *this;
+                }
+
+                static void DisplayEquation(Display &oFirstDisplay, Display &oSecondDisplay)
+                {
+                    if (oFirstDisplay.bImportants[0] && !oSecondDisplay.bImportants[0] && !oFirstDisplay.wsDisplay.empty())
+                        oSecondDisplay.wsDisplay.clear();
+                    else if (oSecondDisplay.bImportants[0] && !oFirstDisplay.bImportants[0] && !oSecondDisplay.wsDisplay.empty())
+                        oFirstDisplay.wsDisplay.clear();
+                    else if (!oSecondDisplay.wsDisplay.empty())
+                    {
+                        if (oFirstDisplay.arLevels[0] < oSecondDisplay.arLevels[0])
+                            oFirstDisplay.wsDisplay.clear();
+                        else
+                            oSecondDisplay.wsDisplay.clear();
+                    }
+                }
+
+                bool operator==(const Display& oDisplay) const
+                {
+                    return wsDisplay == oDisplay.wsDisplay;
+                }
+
+                bool Empty() const
+                {
+                    return L"inline" == wsDisplay || wsDisplay.empty();
+                }
+
+                void SetImportantAll(const bool &bImportant)
+                {
+                    if (bImportant)
+                        bImportants = {true};
+                    else
+                        bImportants = {false};
+                }
+
+                void SetImportantDisplay(const bool &bImportant)
+                {
+                    bImportants[0] = bImportant;
+                }
+
+                void SetDisplay(const std::wstring& wsNewDisplay, const unsigned int& unLevel, const bool &bHardMode = false)
+                {
+                    if (wsNewDisplay.empty() || (bImportants[0] && !bHardMode))
+                        return;
+
+                    if (arDisplayValues.end() != std::find(arDisplayValues.begin(), arDisplayValues.end(), wsNewDisplay))
+                    {
+                        wsDisplay = wsNewDisplay;
+                        arLevels[0] = unLevel;
+                    }
+                }
+
+                std::wstring GetDisplay() const
+                {
+                    return wsDisplay;
                 }
             };
         }

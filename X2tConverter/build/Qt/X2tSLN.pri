@@ -44,7 +44,6 @@ kernel.file = ../../../Common/kernel.pro
 doctrenderer.file = ../../../DesktopEditor/doctrenderer/doctrenderer.pro
 
 X2tConverter.depends = \
-    VbaFormatLib \
     XlsbFormatLib \
     DocxFormatLib \
     PPTXFormatLib \
@@ -55,6 +54,7 @@ X2tConverter.depends = \
     DocFormatLib \
     OdfFileReaderLib \
     OdfFileWriterLib \
+    VbaFormatLib \
     XlsFormatLib \
     kernel.pro \
     HtmlFile2 \

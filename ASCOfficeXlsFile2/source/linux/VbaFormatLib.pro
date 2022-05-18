@@ -16,22 +16,12 @@ PWD_ROOT_DIR = $$PWD
 CONFIG += core_x2t
 include(../../../Common/base.pri)
 
+DEFINES += UNICODE \
+           _UNICODE \
+            DONT_WRITE_EMBEDDED_FONTS
+
 #BOOST
 include($$PWD/../../../Common/3dParty/boost/boost.pri)
-
-DEFINES +=  UNICODE \
-        _UNICODE \
-        DONT_WRITE_EMBEDDED_FONTS
-
-CONFIG(debug, debug|release){
-
-message(Debug)
-DEFINES += _DEBUG
-}
-
-core_mac {
-LIBS += $$DESTDIR -lUnicodeConverter
-}
 
 SOURCES +=  \
     ../VbaFormat/Records.cpp \

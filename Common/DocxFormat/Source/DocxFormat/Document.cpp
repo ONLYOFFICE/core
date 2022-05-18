@@ -303,6 +303,11 @@ namespace OOX
 			}
 			else if (L"w:tbl" == sName )
 				pItem = new Logic::CTbl( document );
+			else if (L"w:body" == sName && !oReader.IsEmptyNode())
+			{
+				int nWBodyDepth = oReader.GetDepth();
+				CreateElements(oReader, nWBodyDepth);
+			}
 			else if (L"wx:sect" == sName && !oReader.IsEmptyNode())
 			{
 				int nWxSectDepth = oReader.GetDepth();							

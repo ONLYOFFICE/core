@@ -1091,6 +1091,7 @@ private:
                 }
                 oXml->WriteString(L"</w:tcPr>");
                 size_t nEmpty = oXml->GetCurSize();
+                m_bWasPStyle = false;
 
                 GetSubClass(oXml, sSelectors);
                 // Читаем th. Ячейка заголовка таблицы. Выравнивание посередине. Выделяется полужирным
@@ -1114,7 +1115,7 @@ private:
                     oXml->WriteString(L"</w:p>");
                     m_bInP = false;
                 }
-                if (oXml->GetCurSize() - nEmpty == 0)
+                if ((!m_bInP && !m_bWasPStyle) || oXml->GetCurSize() - nEmpty == 0)
                     oXml->WriteString(L"<w:p></w:p>");
                 oXml->WriteString(L"</w:tc>");
                 j++;

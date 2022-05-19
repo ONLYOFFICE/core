@@ -1111,11 +1111,10 @@ private:
                     for (const NSCSS::CNode& item : sSelectors)
                         if (item.m_sName == L"a")
                             oXml->WriteString(L"</w:hyperlink>");
-                    oXml->WriteString(L"<w:r></w:r>");
-                    oXml->WriteString(L"</w:p>");
+                    oXml->WriteString(L"<w:r></w:r></w:p>");
                     m_bInP = false;
                 }
-                if ((!m_bInP && !m_bWasPStyle) || oXml->GetCurSize() - nEmpty == 0)
+                else if (oXml->GetSubData(oXml->GetCurSize() - 6) != L"</w:p>")
                     oXml->WriteString(L"<w:p></w:p>");
                 oXml->WriteString(L"</w:tc>");
                 j++;

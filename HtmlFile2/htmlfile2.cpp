@@ -693,13 +693,6 @@ private:
             else if(!(find == 1 && sText.front() == L' '))
                 sText.erase(0, find);
 
-            if (!m_bInP)
-            {
-                oXml->WriteString(L"<w:p>");
-                m_bInP = true;
-                m_bWasPStyle = false;
-            }
-
             std::wstring sPStyle = wrP(oXml, sSelectors, oTS);
             oXml->WriteString(L"<w:r>");
             std::wstring sRStyle = wrR(oXml, sSelectors, oTS);
@@ -786,12 +779,6 @@ private:
         // Перенос строки
         else if(sName == L"br")
         {
-            if (!m_bInP)
-            {
-                oXml->WriteString(L"<w:p>");
-                m_bInP = true;
-                m_bWasPStyle = false;
-            }
             wrP(oXml, sSelectors, oTS);
             oXml->WriteString(L"<w:r>");
             NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
@@ -881,12 +868,6 @@ private:
         // Цитата, выделенная кавычками, обычно выделяется курсивом
         else if(sName == L"q")
         {
-            if (!m_bInP)
-            {
-                oXml->WriteString(L"<w:p>");
-                m_bInP = true;
-                m_bWasPStyle = false;
-            }
             wrP(oXml, sSelectors, oTS);
             oXml->WriteString(L"<w:r>");
             std::wstring sRStyle = wrR(oXml, sSelectors, oTS);
@@ -896,12 +877,6 @@ private:
             oTSR.sRStyle += L"<w:i/>";
             readStream(oXml, sSelectors, oTSR);
 
-            if (!m_bInP)
-            {
-                oXml->WriteString(L"<w:p>");
-                m_bInP = true;
-                m_bWasPStyle = false;
-            }
             wrP(oXml, sSelectors, oTS);
             oXml->WriteString(L"<w:r><w:rPr><w:rStyle w:val=\"");
             oXml->WriteString(sRStyle);
@@ -933,12 +908,6 @@ private:
         // Векторная картинка
         else if(sName == L"svg" || (sName.length() > 3 && sName.compare(sName.length() - 3, 3, L"svg") == 0))
         {
-            if (!m_bInP)
-            {
-                oXml->WriteString(L"<w:p>");
-                m_bInP = true;
-                m_bWasPStyle = false;
-            }
             wrP(oXml, sSelectors, oTS);
             readSVG(oXml);
         }
@@ -962,17 +931,11 @@ private:
         // С нового абзаца
         else
         {
-            size_t nHyp = 0;
             if (m_bInP)
             {
                 for (const NSCSS::CNode& item : sSelectors)
-                {
                     if (item.m_sName == L"a")
-                    {
                         oXml->WriteString(L"</w:hyperlink>");
-                        nHyp++;
-                    }
-                }
                 oXml->WriteString(L"</w:p>");
                 m_bInP = false;
             }
@@ -1031,24 +994,19 @@ private:
             // Неизвестный тэг. Выделять ли его абзацем?
             else
                 readStream(oXml, sSelectors, oTS);
-            readNote(oXml, sNote);
+            readNote(oXml, sSelectors, sNote);
             sNote = L"";
 
             if (m_bInP)
             {
                 for (const NSCSS::CNode& item : sSelectors)
-                {
                     if (item.m_sName == L"a")
-                    {
                         oXml->WriteString(L"</w:hyperlink>");
-                        nHyp++;
-                    }
-                }
                 oXml->WriteString(L"</w:p>");
                 m_bInP = false;
             }
         }
-        readNote(oXml, sNote);
+        readNote(oXml, sSelectors, sNote);
         sSelectors.pop_back();
     }
 
@@ -1070,11 +1028,6 @@ private:
         std::vector<CTc> mTable;
         int nDeath = m_oLightReader.GetDepth();
         int i = 1; // Строка
-
-        size_t nHyp = 0;
-        for(const NSCSS::CNode& item : sSelectors)
-            if(item.m_sName == L"a")
-                nHyp++;
 
         while(m_oLightReader.ReadNextSiblingNode(nDeath))
         {
@@ -1153,9 +1106,10 @@ private:
                 sSelectors.pop_back();
                 if (m_bInP)
                 {
-                    for(size_t i = 0; i < nHyp; i++)
-                        oXml->WriteString(L"</w:hyperlink>");
                     wrP(oXml, sSelectors, oTS);
+                    for (const NSCSS::CNode& item : sSelectors)
+                        if (item.m_sName == L"a")
+                            oXml->WriteString(L"</w:hyperlink>");
                     oXml->WriteString(L"<w:r></w:r>");
                     oXml->WriteString(L"</w:p>");
                     m_bInP = false;
@@ -1301,28 +1255,28 @@ private:
             // Заголовок таблицы
             if(sName == L"caption")
             {
+                size_t nHyp = 0;
                 if (!m_bInP)
                 {
                     oXml->WriteString(L"<w:p>");
+                    for (const NSCSS::CNode& item : sSelectors)
+                    {
+                        if (item.m_sName == L"a")
+                        {
+                            oXml->WriteString(L"<w:hyperlink>");
+                            nHyp++;
+                        }
+                    }
                     m_bInP = true;
                     m_bWasPStyle = false;
-                }
-                size_t nHyp = 0;
-                for(const NSCSS::CNode& item : sSelectors)
-                {
-                    if(item.m_sName == L"a")
-                    {
-                        oXml->WriteString(L"<w:hyperlink>");
-                        nHyp++;
-                    }
                 }
                 // Заголовок таблицы выравнивание посередине
                 CTextSettings oTSP { oTS.bBdo, oTS.bPre, oTS.nLi, oTS.sRStyle, oTS.sPStyle + L"<w:jc w:val=\"center\"/>" };
                 readStream(oXml, sSelectors, oTSP);
-                for(size_t i = 0; i < nHyp; i++)
-                    oXml->WriteString(L"</w:hyperlink>");
                 if (m_bInP)
                 {
+                    for (size_t i = 0; i < nHyp; i++)
+                        oXml->WriteString(L"</w:hyperlink>");
                     oXml->WriteString(L"</w:p>");
                     m_bInP = false;
                     m_bWasPStyle = false;
@@ -1368,12 +1322,6 @@ private:
             sValue = sAlt;
         if(!sValue.empty())
         {
-            if (!m_bInP)
-            {
-                oXml->WriteString(L"<w:p>");
-                m_bInP = true;
-                m_bWasPStyle = false;
-            }
             wrP(oXml, sSelectors, oTS);
             oXml->WriteString(L"<w:r>");
             wrR(oXml, sSelectors, oTS);
@@ -1406,25 +1354,13 @@ private:
                 {
                     if(m_oLightReader.GetName() != L"label")
                         continue;
-                    size_t nHyp = 0;
                     if (m_bInP)
                     {
                         for (const NSCSS::CNode& item : sSelectors)
-                        {
                             if (item.m_sName == L"a")
-                            {
                                 oXml->WriteString(L"</w:hyperlink>");
-                                nHyp++;
-                            }
-                        }
                         oXml->WriteString(L"</w:p>");
                         m_bInP = false;
-                    }
-                    else
-                    {
-                        oXml->WriteString(L"<w:p>");
-                        m_bInP = true;
-                        m_bWasPStyle = false;
                     }
                     wrP(oXml, sSelectors, oTS);
                     oXml->WriteString(L"<w:r>");
@@ -1452,12 +1388,8 @@ private:
             if (m_bInP)
             {
                 for (const NSCSS::CNode& item : sSelectors)
-                {
                     if (item.m_sName == L"a")
-                    {
                         oXml->WriteString(L"</w:hyperlink>");
-                    }
-                }
                 oXml->WriteString(L"</w:p>");
                 m_bInP = false;
             }
@@ -1469,12 +1401,8 @@ private:
             if (m_bInP)
             {
                 for (const NSCSS::CNode& item : sSelectors)
-                {
                     if (item.m_sName == L"a")
-                    {
                         oXml->WriteString(L"</w:hyperlink>");
-                    }
-                }
                 oXml->WriteString(L"</w:p>");
                 m_bInP = false;
             }
@@ -1542,6 +1470,9 @@ private:
         if (!m_bInP)
         {
             oXml->WriteString(L"<w:p>");
+            for (size_t i = 0; i < sSelectors.size() - 1; i++)
+                if (sSelectors[i].m_sName == L"a")
+                    oXml->WriteString(L"<w:hyperlink>");
             m_bInP = true;
             m_bWasPStyle = false;
         }
@@ -1582,7 +1513,8 @@ private:
             oXml->WriteEncodeXmlString(sAlt);
             oXml->WriteString(L"</w:t></w:r>");
         }
-        oXml->WriteString(L"</w:hyperlink>");
+        if (m_bInP)
+            oXml->WriteString(L"</w:hyperlink>");
         sNote = L"";
     }
 
@@ -1674,12 +1606,6 @@ private:
             }
             if(bRes)
             {
-                if (!m_bInP)
-                {
-                    oXml->WriteString(L"<w:p>");
-                    m_bInP = true;
-                    m_bWasPStyle = false;
-                }
                 wrP(oXml, sSelectors, oTS);
                 bRes = ImageRels(oXml, sImageId, L"i" + sImageName);
             }
@@ -1688,12 +1614,6 @@ private:
 
         if(!bRes)
         {
-            if (!m_bInP)
-            {
-                oXml->WriteString(L"<w:p>");
-                m_bInP = true;
-                m_bWasPStyle = false;
-            }
             wrP(oXml, sSelectors, oTS);
             oXml->WriteString(L"<w:r>");
             wrR(oXml, sSelectors, oTS);
@@ -1705,7 +1625,16 @@ private:
 
     std::wstring wrP(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
     {
-        if (!m_bInP || m_bWasPStyle)
+        if (!m_bInP)
+        {
+            oXml->WriteString(L"<w:p>");
+            for (const NSCSS::CNode& item : sSelectors)
+                if (item.m_sName == L"a")
+                    oXml->WriteString(L"<w:hyperlink>");
+            m_bInP = true;
+            m_bWasPStyle = false;
+        }
+        if (m_bWasPStyle)
             return L"";
         oXml->WriteString(L"<w:pPr><w:pStyle w:val=\"");
         
@@ -1842,13 +1771,16 @@ private:
         return true;
     }
 
-    void readNote   (NSStringUtils::CStringBuilder* oXml, const std::wstring& sNote)
+    void readNote   (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const std::wstring& sNote)
     {
         if(sNote.empty())
             return;
         if (!m_bInP)
         {
             oXml->WriteString(L"<w:p>");
+            for (const NSCSS::CNode& item : sSelectors)
+                if (item.m_sName == L"a")
+                    oXml->WriteString(L"<w:hyperlink>");
             m_bInP = true;
             m_bWasPStyle = false;
         }

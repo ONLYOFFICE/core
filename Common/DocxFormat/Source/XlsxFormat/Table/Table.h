@@ -35,6 +35,8 @@
 
 #include "Autofilter.h"
 
+#include "../../XlsbFormat/Xlsb.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -95,6 +97,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			void toBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_TableStyleInfo;
@@ -131,6 +134,8 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			void toBin(XLS::BaseObjectPtr& obj);
+			
 			virtual EElementType getType () const
 			{
 				return et_x_TableColumn;
@@ -139,6 +144,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
+			void WriteAttributes(XLS::BaseObjectPtr& obj);
 		public:
 			nullable_string												m_oDataCellStyle;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oDataDxfId;
@@ -181,6 +187,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			void toBin(XLS::BaseObjectPtr& obj);
 
 			virtual EElementType getType () const
 			{
@@ -216,6 +223,7 @@ namespace OOX
 			virtual void toXML2(NSStringUtils::CStringBuilder& writer, int nIndex);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
+			void toBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_Table;
@@ -224,6 +232,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
+			void WriteAttributes(XLS::BaseObjectPtr& obj);
 		public:
 			nullable_string										m_oComment;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oConnectionId;
@@ -341,6 +350,7 @@ namespace OOX
 			{
 			}
             void readBin(const CPath& oPath);
+			void writeBin(const CPath& oPath) const;
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -351,6 +361,9 @@ namespace OOX
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
 			virtual const OOX::FileType type() const
 			{
+				if (dynamic_cast<CXlsb*>(File::m_pMainDocument) && !dynamic_cast<CXlsb*>(File::m_pMainDocument)->IsWriteToXlsx())
+					return OOX::SpreadsheetBin::FileTypes::TableBin;
+
 				return OOX::Spreadsheet::FileTypes::Table;
 			}
 			virtual const CPath DefaultDirectory() const

@@ -45,7 +45,8 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+        const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         //XLS::BaseObjectPtr               m_ACUID;
         XLS::BaseObjectPtr               m_BrtBeginListCol;
@@ -53,7 +54,7 @@ namespace XLSB
         XLS::BaseObjectPtr               m_BrtListTrFmla;
         XLS::BaseObjectPtr               m_LISTXMLCPR;
         //std::vector<XLS::BaseObjectPtr>  m_arFRT;
-        XLS::BaseObjectPtr               m_BrtEndListCol;
+		bool							 m_bBrtEndListCol;
 
         _UINT32                          indexList;
 

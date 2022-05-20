@@ -40,7 +40,7 @@ class ListTotalRowFunction : public XLS::BiffAttributeSimple<unsigned int>
 {
 public:
         XLS::BiffStructurePtr clone();
-
+		ListTotalRowFunction& operator= (const _UINT32& other_val);
 	enum
 	{
             ILTA_NONE                   = 0x00000000,

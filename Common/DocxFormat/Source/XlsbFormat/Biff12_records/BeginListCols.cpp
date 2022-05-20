@@ -55,5 +55,10 @@ namespace XLSB
         record >> nCols;
     }
 
+	void BeginListCols::writeFields(XLS::CFRecord& record)
+	{
+		record << nCols;
+	}
+
 } // namespace XLSB
 

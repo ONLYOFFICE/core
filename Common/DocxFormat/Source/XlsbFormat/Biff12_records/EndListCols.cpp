@@ -50,9 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new EndListCols(*this));
     }
 
-    void EndListCols::readFields(XLS::CFRecord& record)
-    {
-    }
-
 } // namespace XLSB
 

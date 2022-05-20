@@ -40,5 +40,11 @@ XLS::BiffStructurePtr ListType::clone()
     return XLS::BiffStructurePtr(new ListType(*this));
 }
 
+ListType& ListType::operator= (const _UINT32& other_val)
+{
+	BiffAttributeSimple::operator=(other_val);
+	return *this;
+}
+
 } // namespace XLSB
 

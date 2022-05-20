@@ -45,7 +45,8 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+        const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         //XLS::BaseObjectPtr               m_ACUID;
         XLS::BaseObjectPtr               m_BrtBeginList;
@@ -54,7 +55,7 @@ namespace XLSB
         XLS::BaseObjectPtr               m_LISTCOLS;
         XLS::BaseObjectPtr               m_BrtTableStyleClient;
         XLS::BaseObjectPtr               m_FRTTABLE;
-        XLS::BaseObjectPtr               m_BrtEndList;
+        bool							 m_bBrtEndList;
 
     };
 

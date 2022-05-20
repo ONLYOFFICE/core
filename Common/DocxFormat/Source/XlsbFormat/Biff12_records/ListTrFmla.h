@@ -48,12 +48,13 @@ namespace XLSB
 
             XLS::BaseObjectPtr clone();
 
-            void readFields(XLS::CFRecord& record);
+			void readFields(XLS::CFRecord& record) override;
+			void writeFields(XLS::CFRecord& record) override;
 
             //static const XLS::ElementType	type = XLS::typeListTrFmla;
 
             bool                        fArray;
-            XLS::ListParsedFormula	formula;
+            XLS::ListParsedFormula		formula;
             XLS::ListParsedArrayFormula	arrayFormula;
 
     };

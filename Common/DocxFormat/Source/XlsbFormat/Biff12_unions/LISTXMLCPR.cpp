@@ -73,12 +73,24 @@ namespace XLSB
 
         if (proc.optional<EndListXmlCPr>())
         {
-            m_BrtEndListXmlCPr = elements_.back();
+			m_bBrtEndListXmlCPr = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndListXmlCPr = false;
 
-        return m_BrtBeginListXmlCPr && m_BrtEndListXmlCPr;
+        return m_BrtBeginListXmlCPr && m_bBrtEndListXmlCPr;
     }
+
+	const bool LISTXMLCPR::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginListXmlCPr != nullptr)		
+			proc.mandatory(*m_BrtBeginListXmlCPr);				
+
+		proc.mandatory<EndListXmlCPr>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

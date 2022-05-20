@@ -111,12 +111,39 @@ namespace XLSB
 
         if (proc.optional<EndList>())
         {
-            m_BrtEndList = elements_.back();
+            m_bBrtEndList = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndList = false;
 
-        return m_BrtBeginList && m_LISTCOLS && m_BrtTableStyleClient && m_BrtEndList;
+        return m_BrtBeginList && m_LISTCOLS && m_BrtTableStyleClient && m_bBrtEndList;
     }
+
+	const bool TABLE::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginList != nullptr)
+			proc.mandatory(*m_BrtBeginList);
+
+		if (m_AUTOFILTER != nullptr)
+			proc.mandatory(*m_AUTOFILTER);
+
+		if (m_SORTSTATE != nullptr)
+			proc.mandatory(*m_SORTSTATE);
+
+		if (m_LISTCOLS != nullptr)
+			proc.mandatory(*m_LISTCOLS);
+
+		if (m_BrtTableStyleClient != nullptr)
+			proc.mandatory(*m_BrtTableStyleClient);
+
+		if (m_FRTTABLE != nullptr)
+			proc.mandatory(*m_FRTTABLE);
+
+		proc.mandatory<EndList>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

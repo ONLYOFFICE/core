@@ -50,13 +50,14 @@ namespace XLSB
 
             XLS::BaseObjectPtr clone();
 
-            void readFields(XLS::CFRecord& record);
+            void readFields(XLS::CFRecord& record) override;
+			void writeFields(XLS::CFRecord& record) override;
 
             XLS::RFX                    rfxList;
             ListType                    lt;
             _UINT32                     idList;
-            XLS::Boolean<_UINT32>	crwHeader;
-            XLS::Boolean<_UINT32>	crwTotals;
+            XLS::Boolean<_UINT32>		crwHeader;
+            XLS::Boolean<_UINT32>		crwTotals;
             bool                        fShownTotalRow;
             bool                        fSingleCell;
             bool                        fForceInsertToBeVisible;

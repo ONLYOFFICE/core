@@ -59,7 +59,7 @@ namespace XLSB
     {
         if (proc.optional<FRTBegin>())
         {
-            m_BrtFRTBegin = elements_.back();
+			m_BrtFRTBegin = elements_.back();
             elements_.pop_back();
         }
 
@@ -71,9 +71,11 @@ namespace XLSB
 
         if (proc.optional<FRTEnd>())
         {
-            m_BrtFRTEnd = elements_.back();
+            m_bBrtFRTEnd = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtFRTEnd = false;
 
         int count = proc.repeated<FRT>(0, 0);
 
@@ -84,8 +86,23 @@ namespace XLSB
             count--;
         }        
 
-        return m_BrtFRTBegin && m_BrtList14 && m_BrtFRTEnd;
+        return m_BrtFRTBegin && m_BrtList14 && m_bBrtFRTEnd;
     }
+
+	const bool FRTTABLE::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtFRTBegin != nullptr)
+			proc.mandatory(*m_BrtFRTBegin);
+		else
+			proc.mandatory<FRTBegin>();
+
+		if(m_BrtList14 != nullptr)
+			proc.mandatory(*m_BrtList14);		
+
+		proc.mandatory<FRTEnd>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

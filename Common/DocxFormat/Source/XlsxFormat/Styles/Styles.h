@@ -441,7 +441,7 @@ namespace OOX
 
  					sXml.WriteString(L"</styleSheet>");
 
-	               std::wstring sPath = oPath.GetPath();
+	                std::wstring sPath = oPath.GetPath();
 	                NSFile::CFileBinary::SaveToFile(sPath.c_str(), sXml.GetData());					
 				}
 

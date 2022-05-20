@@ -64,5 +64,11 @@ namespace XLSB
         }
     }
 
+	void BeginListCol::writeFields(XLS::CFRecord& record)
+	{
+		record << idField << ilta << nDxfHdr << nDxfInsertRow << nDxfAgg << idqsif <<
+			stName << stCaption << stTotal << stStyleHeader << stStyleInsertRow << stStyleAgg;		
+	}
+
 } // namespace XLSB
 

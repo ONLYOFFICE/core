@@ -56,7 +56,12 @@ namespace OOX
 			const FileType WorksheetBin		(L"worksheets", L"sheet.bin",
 												L"application/vnd.ms-excel.worksheet",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet",
-												L"worksheets/sheet", true);		
+												L"worksheets/sheet", true);
+
+			const FileType TableBin			(L"../tables", L"table.bin",
+												L"application/vnd.ms-excel.table",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/table",
+												L"tables/table", true, true);
 
 		} // namespace FileTypes
 	}

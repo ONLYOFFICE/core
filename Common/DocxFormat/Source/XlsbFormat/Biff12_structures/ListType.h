@@ -36,11 +36,11 @@
 namespace XLSB
 {
 
-class ListType : public XLS::BiffAttributeSimple<unsigned int>
+class ListType : public XLS::BiffAttributeSimple<_UINT32>
 {
 public:
     XLS::BiffStructurePtr clone();
-
+	ListType& operator= (const _UINT32& other_val);
 	enum
 	{
             LTRANGE         = 0x00000000,

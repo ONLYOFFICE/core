@@ -50,17 +50,29 @@ namespace XLSB
         return BaseObjectPtr(new ListTrFmla(*this));
     }
 
-    void ListTrFmla::readFields(XLS::CFRecord& record)
-    {
-        unsigned char flags;
-        record >> flags;
+	void ListTrFmla::readFields(XLS::CFRecord& record)
+	{
+		BYTE flags;
+		record >> flags;
 
-        fArray = GETBIT(flags, 1);
-        if (fArray)
-            arrayFormula.load(record);
-        else
-            formula.load(record);
-    }
+		fArray = GETBIT(flags, 1);
+		if (fArray)
+			arrayFormula.load(record);
+		else
+			formula.load(record);
+	}
+
+	void ListTrFmla::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+
+		SETBIT(flags, 1, fArray);
+		record << flags;
+		if (fArray)
+			arrayFormula.save(record);
+		else
+			formula.save(record);
+	}
 
 } // namespace XLSB
 

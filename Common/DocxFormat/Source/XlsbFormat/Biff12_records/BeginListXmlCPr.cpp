@@ -52,8 +52,21 @@ namespace XLSB
 
     void BeginListXmlCPr::readFields(XLS::CFRecord& record)
     {
-        record >> dwMapId >> fCanBeSingle >> lfxidtDisk >> xpath;
+		_UINT32 flags;
+
+        record >> dwMapId >> flags >> lfxidtDisk >> xpath;
+
+		fCanBeSingle = GETBIT(flags, 1);
     }
+
+	void BeginListXmlCPr::writeFields(XLS::CFRecord& record)
+	{
+		_UINT32 flags = 0;
+
+		SETBIT(flags, 1, fCanBeSingle);
+
+		record << dwMapId << flags << lfxidtDisk << xpath;
+	}
 
 } // namespace XLSB
 

@@ -55,5 +55,10 @@ namespace XLSB
         record >> FRTheader >> stAltText >> stAltTextSummary;
     }
 
+	void List14::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader << stAltText << stAltTextSummary;
+	}
+
 } // namespace XLSB
 

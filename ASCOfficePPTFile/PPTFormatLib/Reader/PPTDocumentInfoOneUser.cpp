@@ -598,6 +598,8 @@ void CPPTUserInfo::FromDocument()
         pSlide->m_dEndTime			= DurationSlide;
         pSlide->m_dDuration			= DurationSlide;
 
+        pSlide->m_lSlideID          = pPair->first;
+
         LoadSlide ( pPair->first, pSlide);
     }
 
@@ -1095,7 +1097,7 @@ void CPPTUserInfo::LoadGroupShapeContainer(CRecordGroupShapeContainer* pGroupCon
 
                 CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElement.get());
 //                LoadBulletBlip(pShape);
-                LoadAutoNumBullet(pShape);
+                LoadAutoNumBullet(pShape, pSlide ? pSlide->m_lSlideID : -1);
                 if (NULL != pElement)
                 {
                     pElement->m_pParentElements = pParentElements;
@@ -2637,7 +2639,7 @@ void CPPTUserInfo::LoadBulletBlip(CShapeElement *pShape)
      }
 }
 
-void CPPTUserInfo::LoadAutoNumBullet(CShapeElement *pShape)
+void CPPTUserInfo::LoadAutoNumBullet(CShapeElement *pShape, int slideID)
 {
     if (pShape == nullptr || pShape->m_pShape == nullptr) return;
     std::vector<CRecordDocInfoListContainer*> arrDocInfoCont;
@@ -2658,7 +2660,15 @@ void CPPTUserInfo::LoadAutoNumBullet(CShapeElement *pShape)
         return;
 
     const auto& vecOutline9Entry = optOutlineCont->m_rgOutlineTextProps9Entry;
-    const auto& arrStyleTextProp9 = vecOutline9Entry.front()->m_styleTextProp9Atom.m_rgStyleTextProp9;
+    std::vector<SStyleTextProp9>* arrStyleTextProp9 = nullptr;
+    for (const auto& entry : vecOutline9Entry)
+        if ((int)entry->m_slideIdRef == slideID)
+        {
+            arrStyleTextProp9 = &(entry->m_styleTextProp9Atom.m_rgStyleTextProp9);
+            break;
+        }
+    if (!arrStyleTextProp9)
+        return;
 
 
     WORD pp9rt = 0;
@@ -2670,10 +2680,10 @@ void CPPTUserInfo::LoadAutoNumBullet(CShapeElement *pShape)
         if (par.m_arSpans[0].m_oRun.pp9rt.is_init())
             pp9rt = par.m_arSpans[0].m_oRun.pp9rt.get();
 
-        if (pp9rt >= arrStyleTextProp9.size())
+        if (pp9rt >= arrStyleTextProp9->size())
             continue;
 
-        auto& prop9 = arrStyleTextProp9[pp9rt];
+        auto& prop9 = (*arrStyleTextProp9)[pp9rt];
 
         if (prop9.m_pf9.m_optBulletAutoNumberScheme.is_init() &&
                 prop9.m_pf9.m_optfBulletHasAutoNumber.get_value_or(false))

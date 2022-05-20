@@ -950,6 +950,55 @@ namespace NSCSS
 
                         break;
                 }
+                //OTHER
+                CASE(L"width"):
+                {
+                        if (bIsThereBorder)
+                            break;
+
+                        const size_t unPositionImp = pPropertie.second.find(L"!i");
+                        if (unPositionImp == std::wstring::npos)
+                        {
+                            m_pDisplay.SetWidth(ConvertUnitMeasure(pPropertie.second, m_oDeviceWindow.m_ushWidth, ScalingDirectionX), unLevel, bHardMode);
+                        }
+                        else if (unPositionImp != 0)
+                        {
+                            m_pDisplay.SetWidth(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), m_oDeviceWindow.m_ushWidth, ScalingDirectionX), unLevel, true);
+                            m_pDisplay.SetImportantWidth(true);
+                        }
+
+//                        std::wstring wsWidth;
+
+
+
+//                        if (unPositionImp == std::wstring::npos)
+//                            wsWidth = pPropertie.second;
+//                        else
+//                            wsWidth = pPropertie.second.substr(0, unPositionImp - 1);
+
+//                        wsWidth = ConvertUnitMeasure(wsWidth, m_oDeviceWindow.m_ushWidth, ScalingDirectionX);
+//                        int nWidth = std::stoi(wsWidth);
+
+//                        if (m_oDeviceWindow.m_ushWidth != nWidth)
+//                                m_pDisplay.SetWidth(m_oDeviceWindow.m_ushWidth - nWidth, unLevel);
+
+                        break;
+                }
+                CASE(L"align"):
+                {
+
+                        const size_t unPositionImp = pPropertie.second.find(L"!i");
+                        if (unPositionImp == std::wstring::npos)
+                        {
+                            m_pDisplay.SetAlign(pPropertie.second, unLevel, bHardMode);
+                        }
+                        else if (unPositionImp != 0)
+                        {
+                            m_pDisplay.SetAlign(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
+                            m_pDisplay.SetImportantAlign(true);
+                        }
+                        break;
+                }
             }
         }
     }
@@ -1145,6 +1194,7 @@ namespace NSCSS
                 else if (sValueTemp.find(L"em") != std::wstring::npos)
                 {
                     const float fValue = wcstof(sValueTemp.c_str(), NULL) * m_pFont.GetSize();
+
                     sValueString += std::to_wstring(static_cast<short int>(fValue + 0.5f));
 
                     if (sValueTemp.find(L';') != std::wstring::npos)
@@ -1154,7 +1204,16 @@ namespace NSCSS
                 }
                 else
                 {
-                    sValueString += sValueTemp;
+                    if (iswdigit(sValueTemp[0]))
+                    {
+                        int nValue = static_cast<int>(wcstof(sValueTemp.c_str(), NULL) + 0.5f);
+
+                        Scale(nValue, enScalingDirection);
+
+                        sValueString += std::to_wstring(nValue);
+                    }
+                    else
+                        sValueString += sValueTemp;
 
                     if (sValueTemp.find(L";") != std::wstring::npos)
                         sValueString += L';';

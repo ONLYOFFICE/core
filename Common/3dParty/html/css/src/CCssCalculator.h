@@ -33,6 +33,9 @@ namespace NSCSS
         void SetSizeSourceWindow(const CSizeWindow& oSizeWindow);
         void SetSizeDeviceWindow(const CSizeWindow& oSizeWindow);
 
+        CSizeWindow GetSizeSourceWindow() const;
+        CSizeWindow GetSizeDeviceWindow() const;
+
         UnitMeasure GetUnitMeasure() const;
         std::wstring GetEncoding()   const;
         unsigned short int GetDpi()  const;

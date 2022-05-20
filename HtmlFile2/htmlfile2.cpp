@@ -103,13 +103,10 @@ public:
 
     CHtmlFile2_Private() : m_nImageId(1), m_nFootnoteId(1), m_nHyperlinkId(1), m_nCrossId(1), m_nNumberingId(1), m_bInP(false), m_bWasPStyle(false)
     {
-            //Установим размер исходного и нового окна для Css калькулятора (должны быть одинаковые единицы измерения)
+            //Установим размер исходного и нового окна для Css калькулятора (должны быть одинаковые единицы измерения (желательно пункты))
             //Это нужно для масштабирования некоторых значений
-            //Пусть исходное окно будет 1366 x 0 px (0 в высоте задан, так как высота может быть любой)
-            //Новое окно 210 x 0 мм (0 в высоте, так как у исходного окна также 0)
-            //Переведем мм в px -> 210 * (DPI / 25.4)
-            m_oStylesCalculator.SetSizeSourceWindow(NSCSS::CSizeWindow(1366, 0));
-            m_oStylesCalculator.SetSizeDeviceWindow(NSCSS::CSizeWindow(210 * (m_oStylesCalculator.GetDpi() / 25.4), 0));
+            m_oStylesCalculator.SetSizeSourceWindow(NSCSS::CSizeWindow(5000 * (1366 / (8.26667 * m_oStylesCalculator.GetDpi())), 0));
+            m_oStylesCalculator.SetSizeDeviceWindow(NSCSS::CSizeWindow(5000, 0));
     }
 
     ~CHtmlFile2_Private()
@@ -1149,23 +1146,27 @@ private:
         NSStringUtils::CStringBuilder oBody;
         NSStringUtils::CStringBuilder oFoot;
 
-        // Начало таблицы
-        std::wstring wsTable = L"<w:tbl><w:tblPr><w:tblStyle w:val=\"\"/><w:tblW w:w=\"0\" w:type=\"auto\"/>";
+        NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors, false);
 
-        NSCSS::CNode oLast = sSelectors.back();
-        sSelectors.pop_back();
-        NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
-        std::wstring sAlign = oStyle.m_pText.GetAlign();
-        if(sAlign == L"left" || sAlign == L"center" || sAlign == L"right" || sAlign == L"both")
-            wsTable += L"<w:jc w:val=\"" + sAlign + L"\"/>";
+        // Начало таблицы
+        std::wstring wsTable = L"<w:tbl><w:tblPr><w:tblStyle w:val=\"\"/>";
+
+        std::wstring wsWidth = oStyle.m_pDisplay.GetWidthW();
+        std::wstring wsAlign = oStyle.m_pDisplay.GetAlign();
+
+        if (!wsWidth.empty())
+                wsTable += L"<w:tblW w:w=\"" + wsWidth + L"\" w:type=\"pct\"/>";
+        else if (m_oStylesCalculator.GetSizeDeviceWindow().m_ushWidth != 0)
+                wsTable += L"<w:tblW w:w=\"" + std::to_wstring(m_oStylesCalculator.GetSizeDeviceWindow().m_ushWidth) + L"\" w:type=\"pct\"/>";
+        else
+                wsTable += L"<w:tblW w:w=\"0\" w:type=\"auto\">";
+
+        if (!wsAlign.empty())
+                wsTable += L"<w:jc w:val=\"" + wsAlign + L"\"/>";
 
         wsTable += L"</w:tblPr>";
 
-        sSelectors.push_back(oLast);
-
         // borders
-        oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors, false);
-
         std::wstring sBorders;
         oStyle.m_pBorder.Unlock();
         if (oStyle.m_pBorder.Empty())

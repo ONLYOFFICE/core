@@ -576,6 +576,16 @@ namespace NSCSS
             m_oDeviceWindow = oSizeWindow;
     }
 
+    CSizeWindow CCssCalculator_Private::GetSizeSourceWindow() const
+    {
+            return m_oSourceWindow;
+    }
+
+    CSizeWindow CCssCalculator_Private::GetSizeDeviceWindow() const
+    {
+            return m_oDeviceWindow;
+    }
+
     void CCssCalculator_Private::SetUnitMeasure(const UnitMeasure& nType)
     {
         m_UnitMeasure = nType;

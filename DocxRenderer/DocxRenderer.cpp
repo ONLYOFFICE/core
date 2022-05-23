@@ -36,18 +36,18 @@
 
 class CDocxRenderer_Private
 {
-public:
-    NSDocxRenderer::CDocument m_oDocument;
-    std::wstring m_sTempDirectory;
+    public:
+        NSDocxRenderer::CDocument m_oDocument;
+        std::wstring m_sTempDirectory;
 
-public:
-    CDocxRenderer_Private(NSFonts::IApplicationFonts* pFonts, IRenderer* pRenderer) : m_oDocument(pRenderer, pFonts)
-    {
-    }
-    ~CDocxRenderer_Private()
-    {
+    public:
+        CDocxRenderer_Private(NSFonts::IApplicationFonts* pFonts, IRenderer* pRenderer) : m_oDocument(pRenderer, pFonts)
+        {
+        }
+        ~CDocxRenderer_Private()
+        {
 
-    }
+        }
 };
 
 CDocxRenderer::CDocxRenderer(NSFonts::IApplicationFonts* pAppFonts)
@@ -96,7 +96,7 @@ int CDocxRenderer::Convert(IOfficeDrawingFile* pFile, const std::wstring& sDstFi
     for (int i = 0; i < nPagesCount; ++i)
     {
         NewPage();
-        BeginCommand(c_nPageType);        
+        BeginCommand(c_nPageType);
         m_pInternal->m_oDocument.m_bIsDisablePageCommand = true;
 
         double dPageDpiX, dPageDpiY;

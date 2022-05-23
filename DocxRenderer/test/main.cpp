@@ -87,15 +87,39 @@ int main(int argc, char *argv[])
     if (!NSDirectory::Exists(sTempDirOut))
         NSDirectory::CreateDirectory(sTempDirOut);
 
-    std::wstring sSourceFile = L"PATH_TO_TEST_FILE";
-    std::wstring sDestFile = NSFile::GetProcessDirectory() + L"/output.docx";
+    //todo сделать централизованный тест сразу для всех нужных файлов или для каталога
+    /*std::wstring sSourceFiles [] = {
+        L"C:\\Development\\test\\(1917) - Das geheimnisvolle Haus.pdf",
+        L"C:\\Development\\test\\08 Правила дорожного движения РФ(108p).pdf",
+        L"C:\\Development\\test\\andersen_skazki_tom_1.pdf",
+        L"C:\\Users\\Alexander\\Desktop\\Hello.pdf"
+    };
+    std::wstring* psDestFiles = new std::wstring[sizeof(sSourceFiles)];*/
+
+    std::wstring sSourceFile1 = L"C:\\Development\\test\\andersen_skazki_tom_1.pdf";
+    std::wstring sSourceFile2 = L"C:\\Development\\test\\08 Правила дорожного движения РФ(108p).pdf";
+    std::wstring sSourceFile3 = L"C:\\Development\\test\\(1917) - Das geheimnisvolle Haus.pdf";
+    std::wstring sSourceFile4 = L"C:\\Development\\test\\=Программирование=C, C++Библиотека программиста C++ (Элджер).pdf";
+    std::wstring sSourceFile5 = L"C:\\Development\\test\\[MS-CTDOC].pdf";
+
+    std::wstring sDestFile_BlockChar_Docx = NSFile::GetProcessDirectory() + L"/output_BlockChar.docx";
+    std::wstring sDestFile_BlockChar_Zip = NSFile::GetProcessDirectory() + L"/output_BlockChar.zip";
+    std::wstring sDestFile_BlockLine_Docx = NSFile::GetProcessDirectory() + L"/output_BlockLine.docx";
+    std::wstring sDestFile_BlockLine_Zip = NSFile::GetProcessDirectory() + L"/output_BlockLine.zip";
+
+    std::wstring sDestFile_PlainLine_Docx = NSFile::GetProcessDirectory() + L"/output_PlainLine.docx";
+    std::wstring sDestFile_PlainLine_Zip = NSFile::GetProcessDirectory() + L"/output_PlainLine.zip";
+    std::wstring sDestFile_PlainParagraph_Docx = NSFile::GetProcessDirectory() + L"/output_PlainParagraph.docx";
+    std::wstring sDestFile_PlainParagraph_Zip = NSFile::GetProcessDirectory() + L"/output_PlainParagraph.zip";
 
     IOfficeDrawingFile* pReader = NULL;
 
     COfficeFileFormatChecker oChecker;
-    if (oChecker.isOfficeFile(sSourceFile))
+    int	                	 nFileType = 0;
+    if (oChecker.isOfficeFile(sSourceFile2))
     {
-        switch (oChecker.nFileType)
+        nFileType = oChecker.nFileType;
+        switch (nFileType)
         {
         case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF:
             pReader = new PdfReader::CPdfReader(pFonts);
@@ -120,7 +144,7 @@ int main(int argc, char *argv[])
     pReader->SetTempDirectory(sTempDir);
 
 #ifndef LOAD_FILE_AS_BINARY
-    pReader->LoadFromFile(sSourceFile);
+    pReader->LoadFromFile(sSourceFile2);
 #else
     BYTE* pFileBinary = NULL;
     DWORD nFileBinaryLen = 0;
@@ -144,16 +168,29 @@ int main(int argc, char *argv[])
 #else
     CDocxRenderer oDocxRenderer(pFonts);
 
+    oDocxRenderer.SetTempFolder(sTempDirOut);
     // проверить все режимы
     NSDocxRenderer::TextAssociationType taType;
-    //taType = NSDocxRenderer::TextAssociationTypeBlockChar;
-    //taType = NSDocxRenderer::TextAssociationTypeBlockLine;
-    taType = NSDocxRenderer::TextAssociationTypePlainLine;
-    //taType = NSDocxRenderer::TextAssociationTypePlainParagraph;
-    oDocxRenderer.SetTextAssociationType(taType);
 
-    oDocxRenderer.SetTempFolder(sTempDirOut);
-    oDocxRenderer.Convert(pReader, sDestFile);
+    taType = NSDocxRenderer::TextAssociationTypePlainParagraph;
+    oDocxRenderer.SetTextAssociationType(taType);
+    oDocxRenderer.Convert(pReader, sDestFile_PlainParagraph_Docx);
+    oDocxRenderer.Convert(pReader, sDestFile_PlainParagraph_Zip);
+
+    taType = NSDocxRenderer::TextAssociationTypePlainLine;
+    oDocxRenderer.SetTextAssociationType(taType);
+    oDocxRenderer.Convert(pReader, sDestFile_PlainLine_Docx);
+    oDocxRenderer.Convert(pReader, sDestFile_PlainLine_Zip);
+
+    taType = NSDocxRenderer::TextAssociationTypeBlockLine;
+    oDocxRenderer.SetTextAssociationType(taType);
+    oDocxRenderer.Convert(pReader, sDestFile_BlockLine_Docx);
+    oDocxRenderer.Convert(pReader, sDestFile_BlockLine_Zip);
+
+    /*taType = NSDocxRenderer::TextAssociationTypeBlockChar;
+    oDocxRenderer.SetTextAssociationType(taType);
+    oDocxRenderer.Convert(pReader, sDestFile_BlockChar_Docx);
+    oDocxRenderer.Convert(pReader, sDestFile_BlockChar_Zip);*/
 #endif
 
     delete pReader;

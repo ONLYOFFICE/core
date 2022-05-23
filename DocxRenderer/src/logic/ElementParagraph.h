@@ -85,7 +85,7 @@ namespace NSDocxRenderer
         }
     }
 
-    void DeleteSpaces(NSStringUtils::CStringUTF32& oText);
+    void RemoveSpacesAtBothEnds(NSStringUtils::CStringUTF32& oText);
 
     class CContText
     {
@@ -97,7 +97,7 @@ namespace NSDocxRenderer
         LONG	m_lPickFontStyle;
 
         NSStringUtils::CStringUTF32 m_oText;
-        NSStringUtils::CStringUTF32 m_oGidText;
+        NSStringUtils::CStringUTF32 m_oGidText; //что это?
 
         double m_dX;
         double m_dY;
@@ -113,6 +113,8 @@ namespace NSDocxRenderer
 
         double m_dCalculateWidth;
         double m_dSpaceByText;
+
+        bool   m_bIsNeedSpaceAtTheEnd;
 
     public:
         CContText();
@@ -137,6 +139,8 @@ namespace NSDocxRenderer
         void WriteTo(double dSpacingMM,
                      NSStringUtils::CStringBuilder& oWriter,
                      CFontManagerLight* pManagerLight);
+
+        void AddSpaceToEnd();
     };
 
     class CTextLine

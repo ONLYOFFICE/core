@@ -1159,7 +1159,7 @@ private:
         else if (m_oStylesCalculator.GetSizeDeviceWindow().m_ushWidth != 0)
                 wsTable += L"<w:tblW w:w=\"" + std::to_wstring(m_oStylesCalculator.GetSizeDeviceWindow().m_ushWidth) + L"\" w:type=\"pct\"/>";
         else
-                wsTable += L"<w:tblW w:w=\"0\" w:type=\"auto\">";
+                wsTable += L"<w:tblW w:w=\"0\" w:type=\"auto\"/>";
 
         if (!wsAlign.empty())
                 wsTable += L"<w:jc w:val=\"" + wsAlign + L"\"/>";
@@ -1297,8 +1297,6 @@ private:
         oXml->WriteString(oBody.GetData());
         oXml->WriteString(oFoot.GetData());
         oXml->WriteString(L"</w:tbl>");
-        // Пустая строка после таблицы, чтобы следующий текст не приклеивался
-        // oXml->WriteString(L"<w:p></w:p>");
     }
 
     void readInput  (NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)

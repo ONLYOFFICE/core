@@ -23,7 +23,7 @@ namespace NSCSS
         m_arParentsStyles(oStyle.m_arParentsStyles), m_sId(oStyle.m_sId),
         m_nDpi(oStyle.m_nDpi), m_UnitMeasure(oStyle.m_UnitMeasure),
         m_pFont(oStyle.m_pFont), m_pMargin(oStyle.m_pMargin), m_pBackground(oStyle.m_pBackground),
-        m_pText(oStyle.m_pText), m_pBorder(oStyle.m_pBorder){}
+        m_pText(oStyle.m_pText), m_pBorder(oStyle.m_pBorder), m_pDisplay(oStyle.m_pDisplay){}
 
     CCompiledStyle::~CCompiledStyle()
     {
@@ -38,6 +38,7 @@ namespace NSCSS
         m_pFont         += oElement.m_pFont;
         m_pMargin       += oElement.m_pMargin;
         m_pText         += oElement.m_pText;
+        m_pDisplay      += oElement.m_pDisplay;
 
         return *this;
     }
@@ -55,6 +56,7 @@ namespace NSCSS
         m_pFont         = oElement.m_pFont;
         m_pMargin       = oElement.m_pMargin;
         m_pText         = oElement.m_pText;
+        m_pDisplay      = oElement.m_pDisplay;
 
         return *this;
     }
@@ -67,7 +69,8 @@ namespace NSCSS
                m_pBorder         == oStyle.m_pBorder         &&
                m_pFont           == oStyle.m_pFont           &&
                m_pMargin         == oStyle.m_pMargin         &&
-                m_pText           == oStyle.m_pText;
+               m_pText           == oStyle.m_pText           &&
+               m_pDisplay        == oStyle.m_pDisplay;
     }
 
     void CCompiledStyle::StyleEquation(CCompiledStyle &oFirstStyle, CCompiledStyle &oSecondStyle)
@@ -77,6 +80,7 @@ namespace NSCSS
         NSConstValues::NSCssProperties::Background::BackgroundEquation(oFirstStyle.m_pBackground, oSecondStyle.m_pBackground);
         NSConstValues::NSCssProperties::Text::TextEquation(oFirstStyle.m_pText, oSecondStyle.m_pText);
         NSConstValues::NSCssProperties::Border::BorderEquation(oFirstStyle.m_pBorder, oSecondStyle.m_pBorder);
+        NSConstValues::NSCssProperties::Display::DisplayEquation(oFirstStyle.m_pDisplay, oSecondStyle.m_pDisplay);
 
         oFirstStyle.ClearImportants();
         oSecondStyle.ClearImportants();
@@ -105,7 +109,7 @@ namespace NSCSS
     bool CCompiledStyle::Empty() const
     {
         return m_pBackground.Empty() && m_pBorder.Empty() &&
-               m_pFont.Empty() && m_pMargin.Empty() && m_pText.Empty();
+               m_pFont.Empty() && m_pMargin.Empty() && m_pText.Empty() && m_pDisplay.Empty();
     }
 
     void CCompiledStyle::AddPropSel(const std::wstring& sProperty, const std::wstring& sValue, const unsigned int unLevel, const bool& bHardMode)
@@ -362,6 +366,7 @@ namespace NSCSS
                 }
                 //PADDING
                 CASE(L"padding"):
+                CASE(L"mso-padding-alt"):
                 {
                     if (bIsThereBorder)
                         break;
@@ -385,6 +390,7 @@ namespace NSCSS
                     break;
                 }
                 CASE(L"padding-top"):
+                CASE(L"mso-padding-top-alt"):
                 {
                     if (bIsThereBorder)
                         break;
@@ -408,6 +414,7 @@ namespace NSCSS
                     break;
                 }
                 CASE(L"padding-right"):
+                CASE(L"mso-padding-right-alt"):
                 {
                     if (bIsThereBorder)
                         break;
@@ -432,6 +439,7 @@ namespace NSCSS
                     break;
                 }
                 CASE(L"padding-bottom"):
+                CASE(L"mso-padding-bottom-alt"):
                 {
                     if (bIsThereBorder)
                         break;
@@ -455,6 +463,7 @@ namespace NSCSS
                     break;
                 }
                 CASE(L"padding-left"):
+                CASE(L"mso-padding-left-alt"):
                 {
                     if (bIsThereBorder)
                         break;
@@ -925,6 +934,71 @@ namespace NSCSS
 
                     break;
                 }
+                //DISPLAY
+                CASE(L"display"):
+                {
+                        const size_t unPositionImp = pPropertie.second.find(L"!i");
+                        if (unPositionImp == std::wstring::npos)
+                        {
+                            m_pDisplay.SetDisplay(pPropertie.second, unLevel, bHardMode);
+                        }
+                        else if (unPositionImp != 0)
+                        {
+                            m_pDisplay.SetDisplay(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
+                            m_pDisplay.SetImportantDisplay(true);
+                        }
+
+                        break;
+                }
+                //OTHER
+                CASE(L"width"):
+                {
+                        if (bIsThereBorder)
+                            break;
+
+                        const size_t unPositionImp = pPropertie.second.find(L"!i");
+                        if (unPositionImp == std::wstring::npos)
+                        {
+                            m_pDisplay.SetWidth(ConvertUnitMeasure(pPropertie.second, m_oDeviceWindow.m_ushWidth, ScalingDirectionX), unLevel, bHardMode);
+                        }
+                        else if (unPositionImp != 0)
+                        {
+                            m_pDisplay.SetWidth(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), m_oDeviceWindow.m_ushWidth, ScalingDirectionX), unLevel, true);
+                            m_pDisplay.SetImportantWidth(true);
+                        }
+
+//                        std::wstring wsWidth;
+
+
+
+//                        if (unPositionImp == std::wstring::npos)
+//                            wsWidth = pPropertie.second;
+//                        else
+//                            wsWidth = pPropertie.second.substr(0, unPositionImp - 1);
+
+//                        wsWidth = ConvertUnitMeasure(wsWidth, m_oDeviceWindow.m_ushWidth, ScalingDirectionX);
+//                        int nWidth = std::stoi(wsWidth);
+
+//                        if (m_oDeviceWindow.m_ushWidth != nWidth)
+//                                m_pDisplay.SetWidth(m_oDeviceWindow.m_ushWidth - nWidth, unLevel);
+
+                        break;
+                }
+                CASE(L"align"):
+                {
+
+                        const size_t unPositionImp = pPropertie.second.find(L"!i");
+                        if (unPositionImp == std::wstring::npos)
+                        {
+                            m_pDisplay.SetAlign(pPropertie.second, unLevel, bHardMode);
+                        }
+                        else if (unPositionImp != 0)
+                        {
+                            m_pDisplay.SetAlign(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
+                            m_pDisplay.SetImportantAlign(true);
+                        }
+                        break;
+                }
             }
         }
     }
@@ -1120,6 +1194,7 @@ namespace NSCSS
                 else if (sValueTemp.find(L"em") != std::wstring::npos)
                 {
                     const float fValue = wcstof(sValueTemp.c_str(), NULL) * m_pFont.GetSize();
+
                     sValueString += std::to_wstring(static_cast<short int>(fValue + 0.5f));
 
                     if (sValueTemp.find(L';') != std::wstring::npos)
@@ -1129,7 +1204,16 @@ namespace NSCSS
                 }
                 else
                 {
-                    sValueString += sValueTemp;
+                    if (iswdigit(sValueTemp[0]))
+                    {
+                        int nValue = static_cast<int>(wcstof(sValueTemp.c_str(), NULL) + 0.5f);
+
+                        Scale(nValue, enScalingDirection);
+
+                        sValueString += std::to_wstring(nValue);
+                    }
+                    else
+                        sValueString += sValueTemp;
 
                     if (sValueTemp.find(L";") != std::wstring::npos)
                         sValueString += L';';

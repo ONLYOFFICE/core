@@ -502,6 +502,8 @@ namespace NSCSS
                           });
             }
 
+            pStyle->AddStyle(arSelectors[i].m_mAttrs, i + 1);
+
             for (const CElement* oElement : arFindElements)
                 pStyle->AddStyle(oElement->GetStyle(), i + 1);
 
@@ -572,6 +574,16 @@ namespace NSCSS
     void CCssCalculator_Private::SetSizeDeviceWindow(const CSizeWindow &oSizeWindow)
     {
             m_oDeviceWindow = oSizeWindow;
+    }
+
+    CSizeWindow CCssCalculator_Private::GetSizeSourceWindow() const
+    {
+            return m_oSourceWindow;
+    }
+
+    CSizeWindow CCssCalculator_Private::GetSizeDeviceWindow() const
+    {
+            return m_oDeviceWindow;
     }
 
     void CCssCalculator_Private::SetUnitMeasure(const UnitMeasure& nType)

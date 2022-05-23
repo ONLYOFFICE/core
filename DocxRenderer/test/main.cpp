@@ -87,40 +87,77 @@ int main(int argc, char *argv[])
     if (!NSDirectory::Exists(sTempDirOut))
         NSDirectory::CreateDirectory(sTempDirOut);
 
-    std::wstring sSourceFile = L"PATH_TO_TEST_FILE";
-    std::wstring sDestFile = NSFile::GetProcessDirectory() + L"/output.docx";
+    //Добавляем все файлы из определенного каталога
+    //std::vector<std::wstring> sSourceFiles = NSDirectory::GetFiles(L"C:\\Docs\\Рекомендуемая литература");
+    std::vector<std::wstring> sSourceFiles;
+    //Или добавляем любой нужный файл
+    sSourceFiles.push_back(L"C:\\Development\\test\\andersen_skazki_tom_1.pdf");
+    sSourceFiles.push_back(L"C:\\Development\\test\\08 Правила дорожного движения РФ(108p).pdf");
+    sSourceFiles.push_back(L"C:\\Docs\\Рекомендуемая литература\\Мартин Фаулер - Рефакторинг.pdf");
+    //sSourceFiles.push_back(L"C:\\Development\\test\\(1917) - Das geheimnisvolle Haus.pdf");
+    //sSourceFiles.push_back(L"C:\\Docs\\Рекомендуемая литература\\Embedded_Linux_system_design_and_development_ru.pdf");
+    //sSourceFiles.push_back(L"C:\\Docs\\Рекомендуемая литература\\Алан Купер - Психбольница в руках пациентов.pdf");
+    ///sSourceFiles.push_back(L"C:\\Docs\\Рекомендуемая литература\\Брюс Эккель - Философия C++.pdf");
+    //sSourceFiles.push_back(L"C:\\Docs\\Рекомендуемая литература\\Кент Бек - Экстремальное программирование.pdf");
+    //sSourceFiles.push_back(L"C:\\Docs\\Рекомендуемая литература\\Приёмы объектно-ориентированного проектирования. Паттерны проектирования.pdf");
+    //sSourceFiles.push_back(L"C:\\Docs\\Рекомендуемая литература\\Роберт Мартин - Чистый Код.pdf");
+
+    std::wstring sTextDirOut = NSFile::GetProcessDirectory() + L"/text";
+    if (!NSDirectory::Exists(sTextDirOut))
+        NSDirectory::CreateDirectory(sTextDirOut);
+    std::wstring sPlainParagraphDirOut = sTextDirOut + L"/PlainParagraph";
+    if (!NSDirectory::Exists(sPlainParagraphDirOut))
+        NSDirectory::CreateDirectory(sPlainParagraphDirOut);
+    std::wstring sPlainLineDirOut = sTextDirOut + L"/PlainLine";
+    if (!NSDirectory::Exists(sPlainLineDirOut))
+        NSDirectory::CreateDirectory(sPlainLineDirOut);
+    /*std::wstring sBlockCharDirOut = sTextDirOut + L"/BlockChar";
+    if (!NSDirectory::Exists(sBlockCharDirOut))
+        NSDirectory::CreateDirectory(sBlockCharDirOut);
+    std::wstring sBlockLineDirOut = sTextDirOut + L"/BlockLine";
+    if (!NSDirectory::Exists(sBlockLineDirOut))
+        NSDirectory::CreateDirectory(sBlockCharDirOut);*/
+
 
     IOfficeDrawingFile* pReader = NULL;
 
     COfficeFileFormatChecker oChecker;
-    if (oChecker.isOfficeFile(sSourceFile))
+    int	                	 nFileType = 0;
+
+    CDocxRenderer oDocxRenderer(pFonts);
+    oDocxRenderer.SetTempFolder(sTempDirOut);
+
+    for (size_t index = 0; index < sSourceFiles.size(); index++)
     {
-        switch (oChecker.nFileType)
+        if (oChecker.isOfficeFile(sSourceFiles[index]))
         {
-        case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF:
-            pReader = new PdfReader::CPdfReader(pFonts);
-            break;
-        case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS:
-            pReader = new CXpsFile(pFonts);
-            break;
-        case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU:
-            pReader = new CDjVuFile(pFonts);
-            break;
-        default:
-            break;
+            nFileType = oChecker.nFileType;
+            switch (nFileType)
+            {
+            case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF:
+                pReader = new PdfReader::CPdfReader(pFonts);
+                break;
+            case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS:
+                pReader = new CXpsFile(pFonts);
+                break;
+            case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU:
+                pReader = new CDjVuFile(pFonts);
+                break;
+            default:
+                break;
+            }
         }
-    }
 
-    if (!pReader)
-    {
-        pFonts->Release();
-        return 0;
-    }
+        if (!pReader)
+        {
+            pFonts->Release();
+            return 0;
+        }
 
-    pReader->SetTempDirectory(sTempDir);
+        pReader->SetTempDirectory(sTempDir);
 
 #ifndef LOAD_FILE_AS_BINARY
-    pReader->LoadFromFile(sSourceFile);
+        pReader->LoadFromFile(sSourceFiles[index]);
 #else
     BYTE* pFileBinary = NULL;
     DWORD nFileBinaryLen = 0;
@@ -142,19 +179,37 @@ int main(int argc, char *argv[])
         }
     }
 #else
-    CDocxRenderer oDocxRenderer(pFonts);
 
     // проверить все режимы
-    NSDocxRenderer::TextAssociationType taType;
-    //taType = NSDocxRenderer::TextAssociationTypeBlockChar;
-    //taType = NSDocxRenderer::TextAssociationTypeBlockLine;
-    taType = NSDocxRenderer::TextAssociationTypePlainLine;
-    //taType = NSDocxRenderer::TextAssociationTypePlainParagraph;
-    oDocxRenderer.SetTextAssociationType(taType);
+        std::wstring sExtention = NSFile::GetFileExtention(sSourceFiles[index]);
+        std::wstring sFileNameWithExtention = NSFile::GetFileName(sSourceFiles[index]);
+        std::wstring sFileName = sFileNameWithExtention.substr(0, sFileNameWithExtention.size() - 1 - sExtention.size());
+        std::wstring sDocx = L"/" + sFileName + L".docx";
+        std::wstring sZip = L"/" + sFileName + L".zip";
 
-    oDocxRenderer.SetTempFolder(sTempDirOut);
-    oDocxRenderer.Convert(pReader, sDestFile);
+        NSDocxRenderer::TextAssociationType taType;
+
+        taType = NSDocxRenderer::TextAssociationTypePlainParagraph;
+        oDocxRenderer.SetTextAssociationType(taType);
+        oDocxRenderer.Convert(pReader, sPlainParagraphDirOut+sDocx);
+        oDocxRenderer.Convert(pReader, sPlainParagraphDirOut+sZip);
+
+        taType = NSDocxRenderer::TextAssociationTypePlainLine;
+        oDocxRenderer.SetTextAssociationType(taType);
+        oDocxRenderer.Convert(pReader, sPlainLineDirOut + sDocx);
+        oDocxRenderer.Convert(pReader, sPlainLineDirOut + sZip);
+
+        /*taType = NSDocxRenderer::TextAssociationTypeBlockLine;
+        oDocxRenderer.SetTextAssociationType(taType);
+        oDocxRenderer.Convert(pReader, sBlockLineDirOut + sDocx);
+        oDocxRenderer.Convert(pReader, sBlockLineDirOut + sZip);
+
+        taType = NSDocxRenderer::TextAssociationTypeBlockChar;
+        oDocxRenderer.SetTextAssociationType(taType);
+        oDocxRenderer.Convert(pReader, sBlockCharDirOut + sDocx);
+        oDocxRenderer.Convert(pReader, sBlockCharDirOut + sZip);*/
 #endif
+    }
 
     delete pReader;
     pFonts->Release();

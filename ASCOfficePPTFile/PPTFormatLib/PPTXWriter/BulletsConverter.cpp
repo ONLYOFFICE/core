@@ -17,6 +17,8 @@ void BulletsConverter::FillPPr(PPTX::Logic::TextParagraphPr &oPPr, CParagraph &p
 void BulletsConverter::ConvertPFRun(PPTX::Logic::TextParagraphPr &oPPr, CTextPFRun *pPF)
 {
     const int oneTabSize = 457200;
+
+    const int tabLvl = oPPr.lvl.get_value_or(0);
     int leftMargin = 0;
     if (pPF->leftMargin.is_init())
     {
@@ -25,7 +27,7 @@ void BulletsConverter::ConvertPFRun(PPTX::Logic::TextParagraphPr &oPPr, CTextPFR
     }
     if (pPF->indent.is_init())
     {
-        if (pPF->hasBullet.get_value_or(false) && pPF->indent.get() != -leftMargin)
+        if (pPF->hasBullet.get_value_or(false) && tabLvl == -1)
         {
             oPPr.indent = pPF->indent.get() - leftMargin;
         }
@@ -35,7 +37,6 @@ void BulletsConverter::ConvertPFRun(PPTX::Logic::TextParagraphPr &oPPr, CTextPFR
         }
     } else if (pPF->hasBullet.get_value_or(false))
     {
-        const int tabLvl = oPPr.lvl.get_value_or(0);
         if (tabLvl != -1)
             oPPr.indent = oneTabSize*tabLvl - leftMargin;
         else
@@ -154,81 +155,80 @@ void BulletsConverter::FillBuChar(PPTX::Logic::Bullet &oBullet, WCHAR symbol, CT
 
 void BulletsConverter::ConvertAllBullets(PPTX::Logic::TextParagraphPr &oPPr, CTextPFRun *pPF)
 {
-    if (pPF->hasBullet.is_init())
+    if (pPF->hasBullet.is_init() == false)
+        return;
+
+    if (pPF->hasBullet.get() == false)
     {
-        if (pPF->hasBullet.get())
+        oPPr.buTypeface.m_Typeface.reset(new PPTX::Logic::BuNone);
+        return;
+    }
+    if (pPF->bulletColor.is_init())
+    {
+        FillBuClr(oPPr.buColor, pPF->bulletColor.get());
+    }
+    if (pPF->bulletSize.is_init())
+    {
+        PPTX::WrapperWritingElement* pBuSize(nullptr);
+        if (pPF->bulletSize.get() > 24 && pPF->bulletSize.get() < 401)
         {
-            if (pPF->bulletColor.is_init())
-            {
-                FillBuClr(oPPr.buColor, pPF->bulletColor.get());
-            }
-            if (pPF->bulletSize.is_init())
-            {
-                PPTX::WrapperWritingElement* pBuSize(nullptr);
-                if (pPF->bulletSize.get() > 24 && pPF->bulletSize.get() < 401)
-                {
-                    pBuSize = new PPTX::Logic::BuSzPct;
-                    static_cast<PPTX::Logic::BuSzPct*>(pBuSize)->val = pPF->bulletSize.get() * 1000 ;
-                }
-                if (pPF->bulletSize.get() < 0 && pPF->bulletSize.get() > -4001)
-                {
-                    pBuSize = new PPTX::Logic::BuSzPts;
-                    static_cast<PPTX::Logic::BuSzPts*>(pBuSize)->val = - (pPF->bulletSize.get());
-                }
-                if (pBuSize != nullptr)
-                    oPPr.buSize.m_Size = pBuSize;
-            }
-            if (pPF->bulletFontProperties.is_init())
-            {
-                auto pBuFont = new PPTX::Logic::TextFont;
-                pBuFont->m_name = L"a:buFont";
-                pBuFont->typeface = pPF->bulletFontProperties->Name;
-
-                if ( pPF->bulletFontProperties->PitchFamily > 0)
-                    pBuFont->pitchFamily = std::to_wstring(pPF->bulletFontProperties->PitchFamily);
-                if ( pPF->bulletFontProperties->Charset > 0)
-                    pBuFont->charset = std::to_wstring(pPF->bulletFontProperties->Charset);
-
-                oPPr.buTypeface.m_Typeface.reset(pBuFont);
-            }
-
-            // Bullets (numbering, else picture, else char, else default)
-            if (pPF->bulletBlip.is_init() && pPF->bulletBlip->tmpImagePath.size() && m_pRels != nullptr)
-            {
-                auto strRID = m_pRels->WriteImage(pPF->bulletBlip->tmpImagePath);
-                if (strRID.empty())
-                    FillBuChar(oPPr.ParagraphBullet, L'\x2022');    // error rId
-                else
-                {
-                    auto pBuBlip = new PPTX::Logic::BuBlip;
-                    pBuBlip->blip.embed = new OOX::RId(strRID);
-                    oPPr.ParagraphBullet.m_Bullet.reset(pBuBlip);
-                }
-            }
-            else if (pPF->bulletAutoNum.is_init())
-            {
-                auto pBuAutoNum = new PPTX::Logic::BuAutoNum;
-                oPPr.ParagraphBullet.m_Bullet.reset(pBuAutoNum);
-                if (pPF->bulletAutoNum->startAt.is_init() && pPF->bulletAutoNum->startAt.get() != 1)
-                    pBuAutoNum->startAt = pPF->bulletAutoNum->startAt.get();
-                if (pPF->bulletAutoNum->type.is_init())
-                    pBuAutoNum->type = pPF->bulletAutoNum->type.get();
-            }
-            else if (pPF->bulletChar.is_init())
-            {
-                FillBuChar(oPPr.ParagraphBullet, pPF->bulletChar.get(), pPF);
-            }
-            else
-            {
-                FillBuChar(oPPr.ParagraphBullet, L'\x2022');
-            }
+            pBuSize = new PPTX::Logic::BuSzPct;
+            static_cast<PPTX::Logic::BuSzPct*>(pBuSize)->val = pPF->bulletSize.get() * 1000 ;
         }
+        if (pPF->bulletSize.get() < 0 && pPF->bulletSize.get() > -4001)
+        {
+            pBuSize = new PPTX::Logic::BuSzPts;
+            static_cast<PPTX::Logic::BuSzPts*>(pBuSize)->val = - (pPF->bulletSize.get());
+        }
+        if (pBuSize != nullptr)
+            oPPr.buSize.m_Size = pBuSize;
+    }
+    if (pPF->bulletFontProperties.is_init())
+    {
+        auto pBuFont = new PPTX::Logic::TextFont;
+        pBuFont->m_name = L"a:buFont";
+        pBuFont->typeface = pPF->bulletFontProperties->Name;
+
+        if ( pPF->bulletFontProperties->PitchFamily > 0)
+            pBuFont->pitchFamily = std::to_wstring(pPF->bulletFontProperties->PitchFamily);
+        if ( pPF->bulletFontProperties->Charset > 0)
+            pBuFont->charset = std::to_wstring(pPF->bulletFontProperties->Charset);
+
+        oPPr.buTypeface.m_Typeface.reset(pBuFont);
+    }
+
+    // Bullets (numbering, else picture, else char, else default)
+    if (pPF->bulletBlip.is_init() && pPF->bulletBlip->tmpImagePath.size() && m_pRels != nullptr)
+    {
+        auto strRID = m_pRels->WriteImage(pPF->bulletBlip->tmpImagePath);
+        if (strRID.empty())
+            FillBuChar(oPPr.ParagraphBullet, L'\x2022');    // error rId
         else
         {
-            oPPr.buTypeface.m_Typeface.reset(new PPTX::Logic::BuNone);
+            auto pBuBlip = new PPTX::Logic::BuBlip;
+            pBuBlip->blip.embed = new OOX::RId(strRID);
+            oPPr.ParagraphBullet.m_Bullet.reset(pBuBlip);
         }
     }
+    else if (pPF->bulletAutoNum.is_init())
+    {
+        auto pBuAutoNum = new PPTX::Logic::BuAutoNum;
+        oPPr.ParagraphBullet.m_Bullet.reset(pBuAutoNum);
+        if (pPF->bulletAutoNum->startAt.is_init() && pPF->bulletAutoNum->startAt.get() != 1)
+            pBuAutoNum->startAt = pPF->bulletAutoNum->startAt.get();
+        if (pPF->bulletAutoNum->type.is_init())
+            pBuAutoNum->type = pPF->bulletAutoNum->type.get();
+    }
+    else if (pPF->bulletChar.is_init())
+    {
+        FillBuChar(oPPr.ParagraphBullet, pPF->bulletChar.get(), pPF);
+    }
+    else
+    {
+        FillBuChar(oPPr.ParagraphBullet, L'\x2022');
+    }
 }
+
 
 void BulletsConverter::FillBuClr(PPTX::Logic::BulletColor &oBuClr, CColor &oColor)
 {

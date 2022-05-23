@@ -159,6 +159,7 @@ public:
 
     void LoadAutoNumbering(CRecordGroupShapeContainer* pGroupContainer, PPT_FORMAT::CTheme* pTheme);
     void LoadBulletBlip(CShapeElement* pShape);
+    void LoadAutoNumBullet(CShapeElement* pShape, int slideID);
 	void CreateDefaultStyle(PPT_FORMAT::CTextStyles& pStyle, PPT_FORMAT::CTheme* pTheme);
 	void CorrectColorScheme(std::vector<CColor>& oScheme)
 	{

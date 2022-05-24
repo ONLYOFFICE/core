@@ -2166,6 +2166,12 @@ void BinaryWorkbookTableWriter::WriteWorkbook(OOX::Spreadsheet::CWorkbook& workb
 		m_oBcw.m_oStream.WriteStringW3(*workbook.m_oAppName);
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}	
+	if (workbook.m_oOleSize.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::OleSize);
+		m_oBcw.m_oStream.WriteStringW3(*workbook.m_oOleSize);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
 }
 void BinaryWorkbookTableWriter::WriteProtection(const OOX::Spreadsheet::CWorkbookProtection& protection)
 {

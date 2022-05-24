@@ -95,6 +95,7 @@ SOURCES += \
     ../Source/XlsxFormat/Slicer/Slicer.cpp \
     ../Source/XlsxFormat/NamedSheetViews/NamedSheetViews.cpp \
     ../Source/XlsxFormat/Pivot/PivotCacheDefinitionExt.cpp \
+    ../Source/XlsxFormat/Workbook/Workbook.cpp
 }
 
 

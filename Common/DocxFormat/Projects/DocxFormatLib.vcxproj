@@ -601,6 +601,7 @@
     <ClCompile Include="..\Source\XlsxFormat\Slicer\SlicerCacheExt.cpp" />
     <ClCompile Include="..\Source\XlsxFormat\Styles\rPr.cpp" />
     <ClCompile Include="..\Source\XlsxFormat\Table\Tables.cpp" />
+    <ClCompile Include="..\Source\XlsxFormat\Workbook\Workbook.cpp" />
     <ClCompile Include="..\Source\XlsxFormat\Worksheets\ConditionalFormatting.cpp" />
     <ClCompile Include="..\Source\XlsxFormat\Worksheets\DataValidation.cpp" />
     <ClCompile Include="..\Source\XlsxFormat\Worksheets\SheetData.cpp" />

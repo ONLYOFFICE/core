@@ -2114,6 +2114,10 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 		READ1_DEF(length, res, this->ReadPivotCaches, poResult);
 		m_oWorkbook.m_oPivotCachesXml->append(L"</pivotCaches>");
 	}
+	else if (c_oSerWorkbookTypes::OleSize == type)
+	{
+		m_oWorkbook.m_oOleSize = m_oBufferedStream.GetString4(length);
+	}
 	else if(c_oSerWorkbookTypes::VbaProject == type)
 	{
 		m_oBufferedStream.Skip(1); //skip type

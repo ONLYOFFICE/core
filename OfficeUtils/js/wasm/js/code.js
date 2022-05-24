@@ -55,12 +55,12 @@ window.onload = function()
 			var archive = window.nativeZlibEngine.save();
 			window.nativeZlibEngine.close();
 			
-			window.nativeZlibEngine.open(archive2);
-			var files3 = window.nativeZlibEngine.files;
-			for (var _path in files3)
+			window.nativeZlibEngine.open(archive);
+			var files2 = window.nativeZlibEngine.files;
+			for (var _path in files2)
 			{
 				window.nativeZlibEngine.getFile(_path);
-				window.writeFile(_path, files3[_path]);
+				window.writeFile(_path, files2[_path]);
 			}
 			window.nativeZlibEngine.close();
 		};
@@ -74,5 +74,5 @@ window.writeFile = function(path, file)
 {
 	if (!file) return;
 	var dst = document.getElementById("main");
-	dst.innerHTML += path + ' ' + file.length + '\n';
+	dst.innerHTML += ("<p>" + path + ' ' + file.length + "</p>");
 };

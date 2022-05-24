@@ -110,7 +110,8 @@ namespace odf_writer
 	static formulasconvert::oox2odf_converter formulas_converter_math;
 
 	odf_math_context::odf_math_context(odf_conversion_context *odf_context)
-		: impl_(new  odf_math_context::Impl(odf_context)), lvl_of_me(0), style_flag(true), counter(0), symbol_counter(0), annotation_flag(true), annotation_oper_flag(false), matrix_row_counter(0)
+		: impl_(new  odf_math_context::Impl(odf_context)),
+		lvl_of_me(0), style_flag(true), counter(0), symbol_counter(0), annotation_flag(true), annotation_oper_flag(false), matrix_row_counter(0)
 	{
 		mo = { L'+', L'-', L'±', L'∓', L'∙', L'×', L'∗', L'÷', L'/', L'≂', L'⊕', L'⊖', L'⊙', L'⊗', L'⊘', L'∘', L'¬', L'∧', L'∨',		// un/bi operators
 				L'=', L'≠', L'<', L'≤', L'>', L'≥', L'≪', L'≫', L'≈', L'~', L'≃', L'≡', L'∝', L'∥', L'⟂', L'|', L'∤', L'→', L'⊷',	// relations
@@ -144,6 +145,11 @@ namespace odf_writer
 		annotation_brackets_end   = { {L")", L")"}, {L"]", L"]"}, {L"}", L"rbrace"}, {L"⟩", L"rangle"}, {L"〉", L"rangle"},{L"⌋", L"rfloor"}, {L"⌉", L"rceil"}, {L"|", L"rline"}, {L"‖", L"rdline"},
 									  {L"[", L"["}, {L"⟧", L"rdbracket"}
 		};
+		lvl_counter = 1;
+		lvl_up_counter = 1;
+		lvl_down_counter = -1;
+		lvl_max = 1;
+		lvl_min = -1;
 		//debug_stream.open(debug_fileName);
 	}
 
@@ -184,6 +190,7 @@ namespace odf_writer
 
 		impl_->current_level_.push_back(level_state);
 		impl_->current_math_state_.elements_.push_back(state);
+		style_flag = true;		
 	}
 
 	bool odf_math_context::start_element(office_element_ptr & elm)

@@ -31,6 +31,36 @@ namespace Oox2Odf
 		return odf_context()->math_context()->end_counter;
 	}
 
+	void OoxConverter::lvl_up_counter_increace(double val)
+	{
+		double& lvl_max = odf_context()->math_context()->lvl_max;
+		double& lvl_up_counter = odf_context()->math_context()->lvl_up_counter;
+		lvl_up_counter += val;
+		if (lvl_max < lvl_up_counter)
+			lvl_max = lvl_up_counter;
+	}
+
+	void OoxConverter::lvl_up_counter_decreace(double val)
+	{		
+		double& lvl_up_counter = odf_context()->math_context()->lvl_up_counter;
+		lvl_up_counter -= val;
+	}
+
+	void OoxConverter::lvl_down_counter_decreace(double val)
+	{
+		double& lvl_min = odf_context()->math_context()->lvl_min;
+		double& lvl_down_counter = odf_context()->math_context()->lvl_down_counter;
+		lvl_down_counter -= val;
+		if (lvl_min > lvl_down_counter)
+			lvl_min = lvl_down_counter;
+	}
+
+	void OoxConverter::lvl_down_counter_increace(double val)
+	{
+		double& lvl_down_counter = odf_context()->math_context()->lvl_down_counter;
+		lvl_down_counter += val;
+	}
+
 	std::wstring& OoxConverter::annotation()
 	{
 		return odf_context()->math_context()->annotation;
@@ -255,8 +285,8 @@ namespace Oox2Odf
 		returnValues values = convert(oox_acc->m_oAccPr.GetPointer());
 
 		CREATE_MATH_TAG(L"mover");				
-		OPEN_MATH_TAG(elm);
-		
+		OPEN_MATH_TAG(elm);		
+		lvl_up_counter_increace(1);
 		std::wstring diakSymbol = (oox_acc->m_oAccPr->m_oChr.IsInit()) ? oox_acc->m_oAccPr->m_oChr.get().m_val->GetValue() : L"̂";
 		
 		std::map<std::wstring, std::wstring>& map = odf_context()->math_context()->diak_symbols;
@@ -288,7 +318,9 @@ namespace Oox2Odf
 			OPEN_MATH_TAG(elm);
 			CLOSE_MATH_TAG;
 		}	
+		
 		CLOSE_MATH_TAG;
+		lvl_up_counter_decreace(1);
 		if (values.colorFlag)
 		{
 			CLOSE_MATH_TAG;
@@ -326,9 +358,17 @@ namespace Oox2Odf
 		
 		returnValues values = convert(oox_bar->m_oBarPr.GetPointer());
 		std::wstring tag;
-		if (values.auxFlag) tag = L"mover";
-		else	  tag = L"munder";
-		CREATE_MATH_TAG(tag.c_str());
+		if (values.auxFlag)
+		{
+			tag = L"mover";
+			lvl_up_counter_increace(1);
+		}
+		else
+		{
+			tag = L"munder";
+			lvl_down_counter_decreace(1);
+		}
+		CREATE_MATH_TAG(tag);
 		OPEN_MATH_TAG(elm);
 		{
 			if(values.auxFlag) annotation() += L"bar {";
@@ -345,6 +385,10 @@ namespace Oox2Odf
 			annotation() += L"} ";
 		}
 		CLOSE_MATH_TAG;
+		if (values.auxFlag)
+			lvl_up_counter_decreace(1);
+		else
+			lvl_down_counter_increace(1);
 		if (values.colorFlag)
 		{
 			CLOSE_MATH_TAG;
@@ -656,8 +700,8 @@ namespace Oox2Odf
 			annotation() += L"} / {";
 
 			CREATE_MATH_TAG(L"mo");
-			OPEN_MATH_TAG(elm);
 			elm->add_text(L"/");
+			OPEN_MATH_TAG(elm);
 			CLOSE_MATH_TAG;
 			mrow();
 				convert(oox_fraction->m_oDen.GetPointer());
@@ -668,6 +712,8 @@ namespace Oox2Odf
 		else if (val.str == L"skw")
 		{
 			CREATE_MATH_TAG(L"mfrac");
+			lvl_up_counter_increace(1);
+			lvl_down_counter_decreace(1);
 			typedef odf_writer::math_mfrac* T;
 			T tmp = dynamic_cast<T>(elm.get());
 
@@ -686,6 +732,8 @@ namespace Oox2Odf
 			endOfMrow();
 			annotation() += L"}";
 			CLOSE_MATH_TAG;
+			lvl_up_counter_decreace(1);
+			lvl_down_counter_increace(1);
 		}
 		else if (val.str == L"noBar")
 		{
@@ -724,7 +772,9 @@ namespace Oox2Odf
 		}
 		else
 		{
-			CREATE_MATH_TAG(L"mfrac");			
+			CREATE_MATH_TAG(L"mfrac");
+			lvl_up_counter_increace(1);
+			lvl_down_counter_decreace(1);
 			annotation() += L"{";
 			OPEN_MATH_TAG(elm);
 			mrow();
@@ -736,7 +786,9 @@ namespace Oox2Odf
 			endOfMrow();
 			annotation() += L"}";
 			CLOSE_MATH_TAG;
-		}	
+			lvl_up_counter_decreace(1);
+			lvl_down_counter_increace(1);
+		}
 		if (val.colorFlag)
 		{
 			annotation() += L"}";
@@ -836,11 +888,19 @@ namespace Oox2Odf
 
 		returnValues values = convert(oox_group_ch->m_oGroupChrPr.GetPointer());
 		std::wstring tag;
-		if (values.auxFlag) tag = L"mover";
-		else tag = L"munder";
+		if (values.auxFlag)
+		{
+			tag = L"mover";
+			lvl_up_counter_increace(1);
+		}
+		else
+		{
+			tag = L"munder";
+			lvl_down_counter_decreace(1);
+		}
 		
 		
-		CREATE_MATH_TAG(tag.c_str());
+		CREATE_MATH_TAG(tag);
 		if (values.auxFlag)
 		{
 			typedef odf_writer::math_mover* T;
@@ -898,7 +958,11 @@ namespace Oox2Odf
 					annotation() += L"underbrace \"\"";
 			}			
 		}
-		CLOSE_MATH_TAG;	
+		CLOSE_MATH_TAG;
+		if (values.auxFlag)
+			lvl_up_counter_decreace(1);
+		else
+			lvl_down_counter_increace(1);
 		if (values.colorFlag)
 		{
 			CLOSE_MATH_TAG;
@@ -941,7 +1005,7 @@ namespace Oox2Odf
 
 		CREATE_MATH_TAG(L"munder");
 		OPEN_MATH_TAG(elm);
-
+		lvl_down_counter_decreace(1);
 		if (oox_lim_low->m_oElement->m_arrItems[0]->getType() == OOX::EElementType::et_m_groupChr)
 		{
 
@@ -960,7 +1024,7 @@ namespace Oox2Odf
 		}
 
 		CLOSE_MATH_TAG;
-
+		lvl_down_counter_increace(1);
 		if (oox_elm)
 			convert(oox_elm);
 
@@ -1001,7 +1065,7 @@ namespace Oox2Odf
 		mrow();
 		CREATE_MATH_TAG(L"mover");
 		OPEN_MATH_TAG(elm);
-
+		lvl_up_counter_increace(1);
 		if (oox_lim_upp->m_oElement->m_arrItems[0]->getType() == OOX::EElementType::et_m_groupChr)
 		{
 			
@@ -1022,6 +1086,7 @@ namespace Oox2Odf
 
 
 		CLOSE_MATH_TAG;
+		lvl_up_counter_decreace(1);
 		endOfMrow();
 		if (values.colorFlag)
 		{
@@ -1400,16 +1465,21 @@ namespace Oox2Odf
 		{
 			tag = L"munderover";			
 			flag_nary = true;
+			
+			lvl_up_counter_increace(1);
+			lvl_down_counter_decreace(1);
 		}
 		else if ((oox_nary->m_oSub.GetPointer()->m_arrItems.size() != 0) && (oox_nary->m_oSup.GetPointer()->m_arrItems.size() == 0))
 		{
 			tag = L"munder";
 			flag_nary = true;
+			lvl_down_counter_decreace(1);
 		}
 		else if ((oox_nary->m_oSub.GetPointer()->m_arrItems.size() == 0) && (oox_nary->m_oSup.GetPointer()->m_arrItems.size() != 0))
 		{
 			tag = L"mover";
 			flag_nary = true;
+			lvl_up_counter_increace(1);
 		}
 
 		if (flag_nary)
@@ -1453,6 +1523,15 @@ namespace Oox2Odf
 		if (flag_nary)
 		{
 			CLOSE_MATH_TAG;
+			if (tag == L"munderover")
+			{
+				lvl_up_counter_decreace(1);
+				lvl_down_counter_increace(1);
+			}
+			else if (tag == L"mover")
+				lvl_up_counter_decreace(1);
+			else if (tag == L"munder")
+				lvl_down_counter_increace(1);
 		}
 		annotation() += L" {";
 		convert(oox_nary->m_oElement.GetPointer());
@@ -1586,6 +1665,7 @@ namespace Oox2Odf
 			endOfMrow();
 			annotation() += L"}";
 			CLOSE_MATH_TAG;
+			odf_context()->math_context()->symbol_counter++;
 		}
 		else
 			convert(oox_rad->m_oDeg.GetPointer(), oox_rad->m_oElement.GetPointer());
@@ -1653,7 +1733,8 @@ namespace Oox2Odf
 		
 		CREATE_MATH_TAG(L"mmultiscripts");
 		OPEN_MATH_TAG(elm);
-
+		lvl_up_counter_increace(0.4);
+		lvl_down_counter_decreace(0.4);
 		annotation() += L"{";
 		mrow();
 			convert(oox_s_pre->m_oElement.GetPointer());
@@ -1679,6 +1760,8 @@ namespace Oox2Odf
 			annotation() += L"}";
 		}
 		CLOSE_MATH_TAG;
+		lvl_up_counter_decreace(0.4);
+		lvl_down_counter_increace(0.4);
 		if (values.colorFlag)
 		{
 			annotation() += L"}";
@@ -1701,7 +1784,7 @@ namespace Oox2Odf
 		
 		CREATE_MATH_TAG(L"msup");
 		OPEN_MATH_TAG(elm);		
-		
+		lvl_up_counter_increace(0.4);
 		annotation() += L"{";
 
 		mrow();
@@ -1718,7 +1801,8 @@ namespace Oox2Odf
 		endOfMrow();
 
 		annotation() += L"}";
-		CLOSE_MATH_TAG
+		CLOSE_MATH_TAG;
+		lvl_up_counter_decreace(0.4);
 	}
 
 	void OoxConverter::convert(OOX::Logic::CSub *oox_sub, OOX::Logic::CElement *oox_elm)
@@ -1727,7 +1811,7 @@ namespace Oox2Odf
 		
 		CREATE_MATH_TAG(L"msub");
 		OPEN_MATH_TAG(elm);
-
+		lvl_down_counter_decreace(0.4);
 		annotation() += L"{";
 		
 		mrow();
@@ -1742,7 +1826,8 @@ namespace Oox2Odf
 
 		}
 		annotation() += L"}";
-		CLOSE_MATH_TAG
+		CLOSE_MATH_TAG;
+		lvl_down_counter_increace(0.4);
 	}
 
 	void OoxConverter::convert(OOX::Logic::CSub *oox_csub)
@@ -1795,7 +1880,8 @@ namespace Oox2Odf
 		{
 			CREATE_MATH_TAG(L"msubsup");
 			OPEN_MATH_TAG(elm);
-
+			lvl_up_counter_increace(0.4);
+			lvl_down_counter_decreace(0.4);
 			annotation() += L"{";
 
 			mrow();
@@ -1815,7 +1901,9 @@ namespace Oox2Odf
 			endOfMrow();
 
 			annotation() += L"}";
-			CLOSE_MATH_TAG; 
+			CLOSE_MATH_TAG;
+			lvl_up_counter_decreace(0.4);
+			lvl_down_counter_increace(0.4);
 		}
 		if (values.colorFlag)
 		{

@@ -293,7 +293,6 @@ namespace NSJSBase
     public:
         CJSTypedArrayJSC(JSContext* _context, BYTE* data = NULL, int count = 0, const bool& isExternalize = true)
         {
-            data_old_version = NULL;
             context = _context;
             if (0 >= count)
                 return;
@@ -302,7 +301,7 @@ namespace NSJSBase
                 JSObjectRef object = JSObjectMakeTypedArrayWithBytesNoCopy(context.JSGlobalContextRef,
                                                                            kJSTypedArrayTypeUint8Array,
                                                                            (void*)data, (size_t)count,
-                                                                           isExternalize ? data_no_destroy_memory : data_destroy, 
+                                                                           isExternalize ? data_no_destroy_memory : data_destroy_memory,
 																		   nullptr, nullptr);
                 if (object)
                 {
@@ -328,7 +327,7 @@ namespace NSJSBase
 
         static void data_destroy_memory(void* bytes, void* deallocatorContext)
         {
-            NSJSBase::NSAllocator::Free(bytes, 0);
+            NSJSBase::NSAllocator::Free((unsigned char*)bytes, 0);
         }
 		static void data_no_destroy_memory(void* bytes, void* deallocatorContext)
         {            
@@ -367,9 +366,16 @@ namespace NSJSBase
             JSValue* dataBase64 = [context[@"jsc_toBase64"] callWithArguments:arr];
             std::string sBase64Data = [[dataBase64 toString] stdstring];
 
-            int nDstLen = 0;
-			buffer.IsExternalize = true;			
-            NSFile::CBase64Converter::Decode(sBase64Data.c_str(), (int)sBase64Data.length(), data_old_version, nDstLen);
+            buffer.IsExternalize = true;
+
+            int nLenDst = NSBase64::Base64DecodeGetRequiredLength((int)sBase64Data.length());
+            buffer.Data = NSAllocator::Alloc(nLenDst);
+
+            if (FALSE == NSBase64::Base64Decode(sBase64Data.c_str(), (int)sBase64Data.length(), buffer.Data, &nLenDst))
+            {
+                buffer.Free();
+                return buffer;
+            }
             return buffer;
         }
 

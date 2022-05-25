@@ -138,7 +138,10 @@ namespace NSJSBase
         void Free()
         {
             if (Data)
+            {
                 NSAllocator::Free(Data, Len);
+                Data = NULL;
+            }
         }
     };
 

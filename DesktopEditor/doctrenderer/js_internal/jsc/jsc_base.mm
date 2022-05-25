@@ -253,10 +253,10 @@ namespace NSJSBase
         return _value;
     }
 
-    CJSTypedArray* CJSContext::createUint8Array(BYTE* data, int count)
+    CJSTypedArray* CJSContext::createUint8Array(BYTE* data, int count, const bool& isExternalize)
     {
         JSContext* _current = _getCurrentContext();
-        CJSTypedArrayJSC* _value = new CJSTypedArrayJSC(_current, data, count);
+        CJSTypedArrayJSC* _value = new CJSTypedArrayJSC(_current, data, count, isExternalize);
         return _value;
     }
 
@@ -267,6 +267,15 @@ namespace NSJSBase
         _value->context = m_internal->context;
         return _value;
     }
+	
+	unsigned char* NSAllocator::Alloc(const size_t& size)
+	{
+		return (unsigned char*)malloc(size);
+	}	
+    void NSAllocator::Free(unsigned char* data, const size_t& size)
+	{
+		free(data);
+	}
 
     CJSContext* CJSContext::GetCurrent()
     {

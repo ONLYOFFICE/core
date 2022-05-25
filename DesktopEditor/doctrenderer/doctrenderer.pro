@@ -53,6 +53,7 @@ HEADERS += \
     graphics.h
 
 HEADERS += \
+    embed/ZipEmbed.h \
     embed/GraphicsEmbed.h \
     embed/MemoryStreamEmbed.h \
     embed/NativeControlEmbed.h \
@@ -60,6 +61,7 @@ HEADERS += \
     js_internal/js_base.h
 
 SOURCES += \
+    embed/ZipEmbed.cpp \
     embed/GraphicsEmbed.cpp \
     embed/MemoryStreamEmbed.cpp \
     embed/NativeControlEmbed.cpp \

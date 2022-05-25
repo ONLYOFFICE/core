@@ -290,10 +290,8 @@ namespace NSJSBase
 
     class CJSTypedArrayJSC : public CJSValueJSCTemplate<CJSTypedArray>
     {
-    private:
-        BYTE* data_old_version;
     public:
-        CJSTypedArrayJSC(JSContext* _context, BYTE* data = NULL, int count = 0)
+        CJSTypedArrayJSC(JSContext* _context, BYTE* data = NULL, int count = 0, const bool& isExternalize = true)
         {
             data_old_version = NULL;
             context = _context;
@@ -304,7 +302,8 @@ namespace NSJSBase
                 JSObjectRef object = JSObjectMakeTypedArrayWithBytesNoCopy(context.JSGlobalContextRef,
                                                                            kJSTypedArrayTypeUint8Array,
                                                                            (void*)data, (size_t)count,
-                                                                           data_destroy, nullptr, nullptr);
+                                                                           isExternalize ? data_no_destroy_memory : data_destroy, 
+																		   nullptr, nullptr);
                 if (object)
                 {
                     value = [JSValue valueWithJSValueRef:object inContext:context];
@@ -323,14 +322,16 @@ namespace NSJSBase
         }
         virtual ~CJSTypedArrayJSC()
         {
-            RELEASEARRAYOBJECTS(data_old_version);
             value = nil;
             context = nil;
         }
 
-        static void data_destroy(void* bytes, void* deallocatorContext)
+        static void data_destroy_memory(void* bytes, void* deallocatorContext)
         {
-            free(bytes);
+            NSJSBase::NSAllocator::Free(bytes, 0);
+        }
+		static void data_no_destroy_memory(void* bytes, void* deallocatorContext)
+        {            
         }
 
         virtual int getCount()
@@ -348,12 +349,16 @@ namespace NSJSBase
             return 0;
         }
 
-        virtual const BYTE* getData()
+        virtual CJSDataBuffer getData()
         {
+			CJSDataBuffer buffer;
             if (!CJSContextPrivate::g_oldVersion)
             {
                 JSObjectRef obj = JSValueToObject(context.JSGlobalContextRef, value.JSValueRef, NULL);
-                return (BYTE*)JSObjectGetTypedArrayBytesPtr(context.JSGlobalContextRef, obj, NULL);
+				buffer.IsExternalize = false;
+				buffer.Data = (BYTE*)JSObjectGetTypedArrayBytesPtr(context.JSGlobalContextRef, obj, NULL);
+				buffer.Len = (size_t)JSObjectGetTypedArrayByteLength(context.JSGlobalContextRef, obj, NULL);
+                return buffer;
             }
 
             NSMutableArray* arr = [[NSMutableArray alloc] init];
@@ -362,10 +367,10 @@ namespace NSJSBase
             JSValue* dataBase64 = [context[@"jsc_toBase64"] callWithArguments:arr];
             std::string sBase64Data = [[dataBase64 toString] stdstring];
 
-            RELEASEARRAYOBJECTS(data_old_version);
             int nDstLen = 0;
+			buffer.IsExternalize = true;			
             NSFile::CBase64Converter::Decode(sBase64Data.c_str(), (int)sBase64Data.length(), data_old_version, nDstLen);
-            return data_old_version;
+            return buffer;
         }
 
         virtual JSSmart<CJSValue> toValue()

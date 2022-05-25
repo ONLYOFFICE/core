@@ -237,6 +237,7 @@ public:
     bool DeletePage(int nPageIndex);
     bool EditClose(const std::wstring& wsPath, const std::wstring& sTrailer, const std::wstring& sInfo);
     void PageRotate(int nRotate);
+    void Sign(BYTE* pCert, unsigned int nCertLength);
 
     NSFonts::IApplicationFonts* GetApplicationFonts();
 

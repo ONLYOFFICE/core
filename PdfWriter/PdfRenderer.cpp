@@ -2111,6 +2111,10 @@ void CPdfRenderer::PageRotate(int nRotate)
 	if (m_pPage)
 		m_pPage->SetRotate(nRotate);
 }
+void CPdfRenderer::Sign(BYTE* pCert, unsigned int nCertLength)
+{
+    m_pDocument->Sign(pCert, nCertLength);
+}
 
 NSFonts::IApplicationFonts* CPdfRenderer::GetApplicationFonts()
 {

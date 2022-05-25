@@ -3,6 +3,7 @@
 #include "../EmfInterpretator/CEmfInterpretatorRender.h"
 #include "../EmfInterpretator/CEmfInterpretatorArray.h"
 #include "../EmfInterpretator/CEmfInterpretatorXml.h"
+#include "../EmfInterpretator/CEmfInterpretatorSvg.h"
 #include "../EmfInterpretator/CEmfInterpretator.h"
 
 namespace MetaFile
@@ -785,6 +786,8 @@ namespace MetaFile
                         m_pInterpretator = new CEmfInterpretatorXml(wsFilePath);
                 else if (oInterpretatorType == InterpretatorType::Emf)
                         m_pInterpretator = new CEmfInterpretator(wsFilePath);
+                else if (oInterpretatorType == InterpretatorType::Svg)
+                        m_pInterpretator = new CEmfInterpretatorSvg(wsFilePath);
         }
 
         void CEmfParserBase::SetInterpretator(IOutputDevice *pOutput, const wchar_t *wsFilePath)

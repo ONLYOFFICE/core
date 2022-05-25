@@ -57,6 +57,9 @@ namespace MetaFile
 		void ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1);
 		NSFonts::IFontManager* get_FontManager();
 
+		//конвертация в Svg
+		void ConvertToSvg(const wchar_t *wsFilePath);
+
 		//Для тестов
 		void ConvertToXml(const wchar_t *wsFilePath);
 		void ConvertToXmlAndRaster(const wchar_t *wsXmlFilePath, const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1);

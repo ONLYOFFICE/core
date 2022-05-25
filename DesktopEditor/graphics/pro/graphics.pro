@@ -72,6 +72,7 @@ HEADERS += \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorArray.h \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorBase.h \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorRender.h \
+    ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorSvg.h \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorXml.h \
     ../../raster/Metafile/Emf/EmfParser/CEmfParser.h \
     ../../raster/Metafile/Emf/EmfParser/CEmfParserBase.h \
@@ -122,6 +123,7 @@ SOURCES += \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretator.cpp \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorArray.cpp \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorRender.cpp \
+    ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorSvg.cpp \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorXml.cpp \
     ../../raster/Metafile/Emf/EmfParser/CEmfParser.cpp \
     ../../raster/Metafile/Emf/EmfParser/CEmfParserBase.cpp \

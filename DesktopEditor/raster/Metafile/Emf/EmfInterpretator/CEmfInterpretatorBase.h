@@ -13,6 +13,7 @@ namespace MetaFile
                 Emf,
                 Render,
                 XML,
+                Svg,
                 Array
         };
 

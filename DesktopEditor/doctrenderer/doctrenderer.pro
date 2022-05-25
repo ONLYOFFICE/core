@@ -79,7 +79,8 @@ include($$PWD/js_internal/js_base.pri)
         embed/v8/v8_MemoryStream.cpp \
         embed/v8/v8_NativeControl.cpp \
         embed/v8/v8_NativeBuilder.cpp \
-        embed/v8/v8_Graphics.cpp
+		embed/v8/v8_Graphics.cpp \
+		embed/v8/v8_Zip.cpp
 
     build_xp:DESTDIR=$$DESTDIR/xp
 } else {
@@ -88,7 +89,8 @@ include($$PWD/js_internal/js_base.pri)
         embed/jsc/jsc_Graphics.mm \
         embed/jsc/jsc_MemoryStream.mm \
         embed/jsc/jsc_NativeControl.mm \
-        embed/jsc/jsc_NativeBuilder.mm
+		embed/jsc/jsc_NativeBuilder.mm \
+		embed/jsc/jsc_Zip.mm
 
     LIBS += -framework Foundation
 }

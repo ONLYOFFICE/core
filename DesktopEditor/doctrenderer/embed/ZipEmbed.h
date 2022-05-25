@@ -1,5 +1,5 @@
-#ifndef _BUILD_NATIVE_GRAPHICS_EMBED_H_
-#define _BUILD_NATIVE_GRAPHICS_EMBED_H_
+#ifndef _BUILD_NATIVE_ZIP_EMBED_H_
+#define _BUILD_NATIVE_ZIP_EMBED_H_
 
 #include "../../OfficeUtils/src/ZipFolder.h"
 #include "../js_internal/js_base.h"
@@ -34,4 +34,4 @@ public:
     static void CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context);
 };
 
-#endif // _BUILD_NATIVE_GRAPHICS_EMBED_H_
+#endif // _BUILD_NATIVE_ZIP_EMBED_H_

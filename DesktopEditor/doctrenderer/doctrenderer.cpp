@@ -39,6 +39,7 @@
 #include "embed/NativeControlEmbed.h"
 #include "embed/MemoryStreamEmbed.h"
 #include "embed/GraphicsEmbed.h"
+#include "embed/ZipEmbed.h"
 
 #include "../xml/include/xmlutils.h"
 
@@ -673,6 +674,7 @@ namespace NSDoctRenderer
                 CNativeControlEmbed::CreateObjectBuilderInContext("CreateNativeEngine", context);
                 CMemoryStreamEmbed::CreateObjectInContext  ("CreateNativeMemoryStream", context);
                 CGraphicsEmbed::CreateObjectInContext          ("CreateNativeGraphics", context);
+                CZipEmbed::CreateObjectInContext                    ("CreateNativeZip", context);
                 context->CreateContext();
 
                 JSSmart<CJSContextScope> context_scope = context->CreateContextScope();

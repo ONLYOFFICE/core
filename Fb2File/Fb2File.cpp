@@ -1962,11 +1962,32 @@ HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sC
     oDocument.WriteString(L"</version></document-info>");
     // body
     oDocument.WriteString(L"</description><body><section>");
-    std::string sContent;
-    NSFile::CFileBinary::ReadAllTextUtf8A(sHtmlFile, sContent);;
+
+    BYTE* pData;
+    DWORD nLength;
+    if (!NSFile::CFileBinary::ReadAllBytes(sHtmlFile, &pData, nLength))
+        return S_FALSE;
+
+    std::string sContent = XmlUtils::GetUtf8FromFileContent(pData, nLength);
+    bool bNeedConvert = true;
+    if (nLength > 4)
+    {
+        if (pData[0] == 0xFF && pData[1] == 0xFE && !(pData[2] == 0x00 && pData[3] == 0x00))
+            bNeedConvert = false;
+        if (pData[0] == 0xFE && pData[1] == 0xFF)
+            bNeedConvert = false;
+
+        if (pData[0] == 0xFF && pData[1] == 0xFE && pData[2] == 0x00 && pData[3] == 0x00)
+            bNeedConvert = false;
+        if (pData[0] == 0 && pData[1] == 0 && pData[2] == 0xFE && pData[3] == 0xFF)
+            bNeedConvert = false;
+    }
+    RELEASEARRAYOBJECTS(pData);
+
     XmlUtils::CXmlLiteReader oIndexHtml;
     std::vector<std::wstring> arrBinary;
-    if (oIndexHtml.FromString(htmlToXhtml(sContent)))
+    std::wstring xhtml = htmlToXhtml(sContent, bNeedConvert);
+    if (oIndexHtml.FromString(xhtml))
     {
         oIndexHtml.ReadNextNode(); // html
         int nDepth = oIndexHtml.GetDepth();

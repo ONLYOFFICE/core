@@ -248,6 +248,23 @@ namespace NSJSBase
 
         static CJSTypedArray* createUint8Array(BYTE* data = NULL, int count = 0, const bool& isExternalize = true);
 
+        static CJSValue* createUint8Array(const std::wstring& sFilePath)
+        {
+            NSFile::CFileBinary oFileBinary;
+            if (oFileBinary.OpenFile(sFilePath))
+            {
+                long nFileSize = oFileBinary.GetFileSize();
+                BYTE* pData = NSAllocator::Alloc((size_t)nFileSize);
+                DWORD dwSizeRead;
+                if (oFileBinary.ReadFile(pData, (DWORD)nFileSize, dwSizeRead))
+                {
+                    return CJSContext::createUint8Array(pData, (int)nFileSize, false);
+                }
+                NSAllocator::Free(pData, (size_t)nFileSize);
+            }
+            return CJSContext::createNull();
+        }
+
     public:
         static CJSContext* GetCurrent();
 

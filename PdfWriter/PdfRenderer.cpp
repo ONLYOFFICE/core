@@ -2396,10 +2396,6 @@ void CPdfRenderer::UpdateBrush()
         std::wstring wsTexturePath = m_oBrush.GetTexturePath();
 		CImageFileFormatChecker oImageFormat(wsTexturePath);
 
-        FILE* f = fopen("D:/111.txt", "a+");
-        fprintf(f, "ff: %d\n", oImageFormat.eFileType);
-        fclose(f);
-
 		CImageDict* pImage = NULL;
 		int nImageW = 0;
 		int nImageH = 0;

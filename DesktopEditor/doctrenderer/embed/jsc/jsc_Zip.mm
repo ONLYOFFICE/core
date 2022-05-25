@@ -20,7 +20,7 @@
 
 @implementation CJSCZip
 
-EMBED_OBJECT_WRAPPER_METHODS(CJSCZip)
+EMBED_OBJECT_WRAPPER_METHODS(CZipEmbed)
 
 FUNCTION_WRAPPER_JS_1(open, open)
 FUNCTION_WRAPPER_JS(create, create)
@@ -32,7 +32,7 @@ FUNCTION_WRAPPER_JS(close, close)
 
 @end
 
-void CGraphicsEmbed::CreateObjectInContext(const std::string &name, JSSmart<CJSContext> context)
+void CZipEmbed::CreateObjectInContext(const std::string &name, JSSmart<CJSContext> context)
 {
     context->m_internal->context[[NSString stringWithAString:name]] = ^(){
         return [[CJSCZip alloc] init];

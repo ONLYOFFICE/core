@@ -1905,7 +1905,7 @@ namespace DocFileFormat
             XMLTools::XMLElement bookmarkElem(L"w:bookmarkStart");
 
             bookmarkElem.AppendAttribute(L"w:id", FormatUtils::IntToWideString(id));
-            bookmarkElem.AppendAttribute(L"w:name", *bookmarkName);
+            bookmarkElem.AppendAttribute(L"w:name", XmlUtils::EncodeXmlString(*bookmarkName));
 
 			m_pXmlWriter->WriteString(bookmarkElem.GetXMLString());
 

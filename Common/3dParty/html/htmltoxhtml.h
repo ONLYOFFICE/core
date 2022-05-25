@@ -34,30 +34,33 @@ static void replace_all(std::string& s, const std::string& s1, const std::string
     }
 }
 
-static std::wstring htmlToXhtml(std::string& sFileContent)
+static std::wstring htmlToXhtml(std::string& sFileContent, bool bNeedConvert)
 {
-    // Распознование кодировки
-    size_t posEncoding = sFileContent.find("charset=");
-    if (posEncoding == std::string::npos)
-        posEncoding = sFileContent.find("encoding=");
-    if (posEncoding != std::string::npos)
+    // Распознование кодировк
+    if (bNeedConvert)
     {
-        posEncoding = sFileContent.find("=", posEncoding) + 1;
-        char quoteSymbol = '\"';
-        if(sFileContent[posEncoding] == '\"' || sFileContent[posEncoding] == '\'')
+        size_t posEncoding = sFileContent.find("charset=");
+        if (posEncoding == std::string::npos)
+            posEncoding = sFileContent.find("encoding=");
+        if (posEncoding != std::string::npos)
         {
-            quoteSymbol = sFileContent[posEncoding];
-            posEncoding += 1;
-        }
-
-        size_t posEnd = sFileContent.find(quoteSymbol, posEncoding);
-        if (std::string::npos != posEnd)
-        {
-            std::string sEncoding = sFileContent.substr(posEncoding, posEnd - posEncoding);
-            if (sEncoding != "utf-8" && sEncoding != "UTF-8")
+            posEncoding = sFileContent.find("=", posEncoding) + 1;
+            char quoteSymbol = '\"';
+            if(sFileContent[posEncoding] == '\"' || sFileContent[posEncoding] == '\'')
             {
-                NSUnicodeConverter::CUnicodeConverter oConverter;
-                sFileContent = U_TO_UTF8(oConverter.toUnicode(sFileContent, sEncoding.c_str()));
+                quoteSymbol = sFileContent[posEncoding];
+                posEncoding += 1;
+            }
+
+            size_t posEnd = sFileContent.find(quoteSymbol, posEncoding);
+            if (std::string::npos != posEnd)
+            {
+                std::string sEncoding = sFileContent.substr(posEncoding, posEnd - posEncoding);
+                if (sEncoding != "utf-8" && sEncoding != "UTF-8")
+                {
+                    NSUnicodeConverter::CUnicodeConverter oConverter;
+                    sFileContent = U_TO_UTF8(oConverter.toUnicode(sFileContent, sEncoding.c_str()));
+                }
             }
         }
     }
@@ -423,11 +426,8 @@ static std::string mhtTohtml(std::string& sFileContent)
     return sFile;
 }
 
-static std::wstring mhtToXhtml(const std::wstring& sFile)
+static std::wstring mhtToXhtml(std::string& sFileContent)
 {
-    std::string sFileContent;
-    if(!NSFile::CFileBinary::ReadAllTextUtf8A(sFile, sFileContent))
-        return L"";
     sFileContent = mhtTohtml(sFileContent);
 
     // Gumbo

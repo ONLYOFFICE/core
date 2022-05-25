@@ -43,12 +43,19 @@
 #define CREATE_MATH_TAG(tag)\
 	odf_writer::office_element_ptr elm;\
 	odf_writer::create_element(L"math", tag, elm, odf_context());\
+	odf_context()->math_context()->current_tag = tag;\
 	//odf_context()->math_context()->debug_stream << tag << "\n";
 
 #define OPEN_MATH_TAG(elm)\
-	odf_context()->math_context()->tagFlag.push_back(odf_context()->math_context()->start_element(elm)); \
+	odf_context()->math_context()->tagFlag.push_back(odf_context()->math_context()->start_element(elm));\	
+	if(odf_context()->math_context()->current_tag == L"mi" || odf_context()->math_context()->current_tag == L"mo" || odf_context()->math_context()->current_tag == L"mn")\
+	{\
+		int text_size = elm->text_to_string().size();\
+		odf_context()->math_context()->symbol_counter += text_size;\
+	}\
 	if(odf_context()->math_context()->tagFlag.back()) \
 		odf_context()->math_context()->counter++; \
+	 odf_context()->math_context()->current_tag = L"";\	
 	//odf_context()->math_context()->debug_stream << L"open, counter is " << odf_context()->math_context()->counter << "\n";
 
 #define CLOSE_MATH_TAG\
@@ -91,10 +98,21 @@ namespace cpdoccore {
 			int lvl_of_me;
 			int matrix_row_counter;
 			std::vector<int> end_counter;
-			int counter; 
+			bool style_flag;
+			int counter;
+			std::wstring current_tag;
+			int symbol_counter;
+			double lvl_counter;
+			double lvl_up_counter;
+			double lvl_down_counter;
+			double lvl_max;
+			double lvl_min;
+			std::wstring font;
+			double size;
 			std::set<wchar_t> mo;
 			std::map<std::wstring, std::wstring> diak_symbols;
 			bool annotation_flag;
+			bool annotation_oper_flag;
 			std::map<std::wstring, std::wstring> annotation_operators;
 			std::map<std::wstring, std::wstring> annotation_brackets_begin;
 			std::map<std::wstring, std::wstring> annotation_brackets_end;

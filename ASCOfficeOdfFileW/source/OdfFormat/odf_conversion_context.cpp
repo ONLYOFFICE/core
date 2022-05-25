@@ -322,20 +322,19 @@ bool odf_conversion_context::start_math()
 void odf_conversion_context::end_math()
 {
 	math_context_.end_math();
-
+	
 	end_object();
 	math_context_.set_styles_context(styles_context());
-	
-	calculate_font_metrix(L"Cambria Math", 12, false, false); // смотреть по формуле - перевычислять только если есть изменения
-	
-	int count_symbol_height = 3; //сосчитать в math_context_
-	int count_symbol_width = 10;
 
-	_CP_OPT(double)width = convert_symbol_width(count_symbol_width);
-	_CP_OPT(double)height = convert_symbol_width(count_symbol_height);
+	calculate_font_metrix(math_context_.font, math_context_.size, false, false); // смотреть по формуле - перевычислять только если есть изменения это шрифт и кегль	
+	int count_symbol_height = 30; //сосчитать в math_context_ кол-во этажей
+	int count_symbol_width = 100; //длина символов
 
-	//if (false == math_context_.in_text_box_)
-	//	drawing_context()->set_size(width, height); 
+	_CP_OPT(double)width = convert_symbol_width(math_context_.symbol_counter * 1.73); // либра рамка формулы(её параметры)
+	_CP_OPT(double)height = convert_symbol_width(1.73 * (math_context_.lvl_max - math_context_.lvl_min));
+
+	if (false == math_context_.in_text_box_)
+		drawing_context()->set_size(width, height); // раскомиттить по завершению
 	
 	drawing_context()->end_object(!math_context_.in_text_box_);
 
@@ -343,6 +342,11 @@ void odf_conversion_context::end_math()
 	{
 		drawing_context()->end_drawing();
 	}
+	this->math_context()->symbol_counter = 0;
+	this->math_context()->lvl_max = 1;
+	this->math_context()->lvl_min = -1;
+	this->math_context()->lvl_down_counter = -1;
+	this->math_context()->lvl_up_counter = 1;
 }
 void odf_conversion_context::end_text()
 {

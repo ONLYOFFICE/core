@@ -1149,7 +1149,7 @@ private:
         NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors, false);
 
         if (oXml->GetSubData(oXml->GetCurSize() - 6) != L"</w:p>")
-            oXml->WriteString(L"<w:p><w:pPr><w:rPr><w:vanish/></w:rPr></w:pPr></w:p>");
+            oXml->WriteString(L"<w:p><w:pPr><w:spacing w:line=\"0\"/></w:pPr></w:p>");
 
         // Начало таблицы
         std::wstring wsTable = L"<w:tbl><w:tblPr>";

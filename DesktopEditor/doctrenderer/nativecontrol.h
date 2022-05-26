@@ -557,7 +557,7 @@ public:
         m_pDataCur = m_pData;
 
         if (CJSContext::IsSupportNativeTypedArrays())
-            m_oArrayBuffer = CJSContext::createUint8Array(m_pData, m_nLen);
+            m_oArrayBuffer = CJSContext::createUint8Array(m_pData, m_nLen, true);
     }
 
     inline int Open(std::vector<std::wstring>& oFiles, int nStart)
@@ -672,7 +672,7 @@ public:
         if (CJSContext::IsSupportNativeTypedArrays())
             return m_oArrayBuffer;
         size_t len = (size_t)(m_pDataCur - m_pData);
-        return CJSContext::createUint8Array(m_pData, (int)len);
+        return CJSContext::createUint8Array(m_pData, (int)len, true);
     }
 
 public:
@@ -787,7 +787,7 @@ public:
     JSSmart<CJSTypedArray> GetDataFull()
     {
         size_t len = (size_t)(m_pDataCur - m_pData);
-        JSSmart<CJSTypedArray> _buffer = CJSContext::createUint8Array(m_pData, (int)len);
+        JSSmart<CJSTypedArray> _buffer = CJSContext::createUint8Array(m_pData, (int)len, true);
         return _buffer;
     }
 

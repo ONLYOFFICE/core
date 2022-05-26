@@ -39,6 +39,7 @@
 #include "embed/NativeControlEmbed.h"
 #include "embed/MemoryStreamEmbed.h"
 #include "embed/GraphicsEmbed.h"
+#include "embed/ZipEmbed.h"
 
 #include "../xml/include/xmlutils.h"
 
@@ -431,7 +432,7 @@ namespace NSDoctRenderer
                 }
                 else
                 {
-                    const BYTE* pData = js_result2->toTypedArray()->getData();
+                    NSJSBase::CJSDataBuffer oBuffer = js_result2->toTypedArray()->getData();
 
                     NSFile::CFileBinary oFile;
                     if (true == oFile.CreateFileW(pParams->m_strDstFilePath))
@@ -442,7 +443,7 @@ namespace NSDoctRenderer
 
                             char* pDst64 = NULL;
                             int nDstLen = 0;
-                            NSFile::CBase64Converter::Encode(const_cast<BYTE*>(pData), pNative->m_nSaveBinaryLen, pDst64, nDstLen, NSBase64::B64_BASE64_FLAG_NOCRLF);
+                            NSFile::CBase64Converter::Encode(oBuffer.Data, pNative->m_nSaveBinaryLen, pDst64, nDstLen, NSBase64::B64_BASE64_FLAG_NOCRLF);
 
                             oFile.WriteFile((BYTE*)pDst64, (DWORD)nDstLen);
 
@@ -450,10 +451,13 @@ namespace NSDoctRenderer
                         }
                         else
                         {
-                            oFile.WriteFile(pData, (DWORD)pNative->m_nSaveBinaryLen);
+                            oFile.WriteFile(oBuffer.Data, (DWORD)pNative->m_nSaveBinaryLen);
                         }
                         oFile.CloseFile();
                     }
+
+                    if (oBuffer.IsExternalize)
+                        oBuffer.Free();
                 }
                 break;
             }
@@ -565,20 +569,20 @@ namespace NSDoctRenderer
                     }
                     else
                     {
-                        const BYTE* pData = js_result2->toTypedArray()->getData();
+                        NSJSBase::CJSDataBuffer oBuffer = js_result2->toTypedArray()->getData();
 
                         NSFile::CFileBinary oFile;
                         if (true == oFile.CreateFileW(pParams->m_strDstFilePath))
                         {
                             if (!bIsPdfBase64)
                             {
-                                oFile.WriteFile(pData, (DWORD)pNative->m_nSaveBinaryLen);
+                                oFile.WriteFile(oBuffer.Data, (DWORD)pNative->m_nSaveBinaryLen);
                             }
                             else
                             {
                                 char* pDataDst = NULL;
                                 int nDataDst = 0;
-                                if (NSFile::CBase64Converter::Encode(const_cast<BYTE*>(pData), pNative->m_nSaveBinaryLen, pDataDst, nDataDst))
+                                if (NSFile::CBase64Converter::Encode(oBuffer.Data, pNative->m_nSaveBinaryLen, pDataDst, nDataDst))
                                 {
                                     oFile.WriteFile((BYTE*)pDataDst, (DWORD)nDataDst);
                                     RELEASEARRAYOBJECTS(pDataDst);
@@ -586,6 +590,9 @@ namespace NSDoctRenderer
                             }
                             oFile.CloseFile();
                         }
+
+                        if (oBuffer.IsExternalize)
+                            oBuffer.Free();
                     }
                 }
                 if (!bIsBreak && DoctRendererFormat::PPTX_THEME_THUMBNAIL == pParams->m_eDstFormat)
@@ -618,7 +625,7 @@ namespace NSDoctRenderer
                         {
                             JSSmart<CJSObject> objNative = js_result2->toObject();
 
-                            const BYTE* pData = objNative->get("data")->toTypedArray()->getData();
+                            NSJSBase::CJSDataBuffer oBuffer = objNative->get("data")->toTypedArray()->getData();
                             std::wstring sThemeName = objNative->get("name")->toStringW();
                             int nDataLen = objNative->get("dataLen")->toInt32();
 
@@ -628,9 +635,12 @@ namespace NSDoctRenderer
                             NSFile::CFileBinary oFile;
                             if (true == oFile.CreateFileW(pParams->m_strDstFilePath + L"/" + sThemeName + L".theme"))
                             {
-                                oFile.WriteFile(pData, (DWORD)nDataLen);
+                                oFile.WriteFile(oBuffer.Data, (DWORD)nDataLen);
                                 oFile.CloseFile();
                             }
+
+                            if (oBuffer.IsExternalize)
+                                oBuffer.Free();
                         }
                         else
                         {
@@ -664,6 +674,7 @@ namespace NSDoctRenderer
                 CNativeControlEmbed::CreateObjectBuilderInContext("CreateNativeEngine", context);
                 CMemoryStreamEmbed::CreateObjectInContext  ("CreateNativeMemoryStream", context);
                 CGraphicsEmbed::CreateObjectInContext          ("CreateNativeGraphics", context);
+                CZipEmbed::CreateObjectInContext                    ("CreateNativeZip", context);
                 context->CreateContext();
 
                 JSSmart<CJSContextScope> context_scope = context->CreateContextScope();

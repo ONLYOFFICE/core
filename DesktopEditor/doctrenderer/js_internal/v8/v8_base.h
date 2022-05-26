@@ -576,11 +576,12 @@ namespace NSJSBase
     class CJSTypedArrayV8 : public CJSValueV8Template<v8::Uint8Array, CJSTypedArray>
     {
     public:
-        CJSTypedArrayV8(BYTE* data = NULL, int count = 0)
+        CJSTypedArrayV8(BYTE* data = NULL, int count = 0, const bool& isExternalize = true)
         {
             if (0 < count)
             {
-                v8::Local<v8::ArrayBuffer> _buffer = v8::ArrayBuffer::New(CV8Worker::GetCurrent(), (void*)data, (size_t)count);
+                v8::Local<v8::ArrayBuffer> _buffer = v8::ArrayBuffer::New(CV8Worker::GetCurrent(), (void*)data, (size_t)count,
+                        isExternalize ? v8::ArrayBufferCreationMode::kExternalized : v8::ArrayBufferCreationMode::kInternalized);
                 value = v8::Uint8Array::New(_buffer, 0, (size_t)count);
             }
         }
@@ -594,9 +595,14 @@ namespace NSJSBase
             return (int)value->ByteLength();
         }
 
-        virtual const BYTE* getData()
+        virtual CJSDataBuffer getData()
         {
-            return (BYTE*)value->Buffer()->Externalize().Data();
+            v8::ArrayBuffer::Contents contents = value->Buffer()->Externalize();
+            CJSDataBuffer buffer;
+            buffer.Data = (BYTE*)contents.Data();
+            buffer.Len = contents.ByteLength();
+            buffer.IsExternalize = true;
+            return buffer;
         }
 
         virtual JSSmart<CJSValue> toValue()

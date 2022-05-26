@@ -263,9 +263,9 @@ namespace NSJSBase
         return _value;
     }
 
-    CJSTypedArray* CJSContext::createUint8Array(BYTE* data, int count)
+    CJSTypedArray* CJSContext::createUint8Array(BYTE* data, int count, const bool& isExternalize)
     {
-        CJSTypedArrayV8* _value = new CJSTypedArrayV8(data, count);
+        CJSTypedArrayV8* _value = new CJSTypedArrayV8(data, count, isExternalize);
         return _value;
     }
 
@@ -349,5 +349,14 @@ namespace NSJSBase
     bool CJSContext::IsSupportNativeTypedArrays()
     {
         return true;
+    }
+
+    unsigned char* NSAllocator::Alloc(const size_t& size)
+    {
+        return (unsigned char*)CV8Worker::getInitializer()->getAllocator()->AllocateUninitialized(size);
+    }
+    void NSAllocator::Free(unsigned char* data, const size_t& size)
+    {
+        CV8Worker::getInitializer()->getAllocator()->Free(data, size);
     }
 }

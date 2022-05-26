@@ -288,8 +288,8 @@ namespace NSCSS
                 sSpacingValue += L"w:line=\"" + sLineHeight + L"\" ";
                 sSpacingValue += L"w:lineRule=\"auto\"";
         }
-        else if (!oStyle.m_pBorder.Empty())
-                sSpacingValue += L"w:line=\"240\" w:lineRule=\"auto\" ";
+//        else if (!oStyle.m_pBorder.Empty())
+//                sSpacingValue += L"w:line=\"240\" w:lineRule=\"auto\" ";
 
         if (!sSpacingValue.empty())
         {

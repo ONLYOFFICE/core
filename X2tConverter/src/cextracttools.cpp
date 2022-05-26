@@ -482,7 +482,9 @@ namespace NExtractTools
 		std::wstring sChangesDir = sBinDir + FILE_SEPARATOR_STR + _T("changes");
         if (NSDirectory::Exists(sChangesDir))
         {
-			sBinTo = sBinDir + FILE_SEPARATOR_STR + _T("EditorWithChanges.bin");
+			std::wstring sBinFromFileName = NSFile::GetFileName(sBinFrom);
+			std::wstring sBinFromExt = NSFile::GetFileExtention(sBinFromFileName);
+			sBinTo = sBinDir + FILE_SEPARATOR_STR + sBinFromFileName.substr(0, sBinFromFileName.length() - sBinFromExt.length() - 1) + _T("WithChanges.") + sBinFromExt;
 			std::wstring sImagesDirectory = sBinDir + FILE_SEPARATOR_STR + _T("media");
            
 			NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : _T(""));

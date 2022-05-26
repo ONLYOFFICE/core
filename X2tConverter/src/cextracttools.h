@@ -1169,6 +1169,16 @@ namespace NExtractTools
             return NULL != m_bDontSaveAdditional && *m_bDontSaveAdditional;
         }
 		bool checkInputLimits();
+		bool getFromChanges()
+		{
+			return (NULL != m_bFromChanges) ? (*m_bFromChanges) : false;
+
+		}
+		void setFromChanges(bool bVal)
+		{
+			RELEASEOBJECT(m_bFromChanges);
+			m_bFromChanges = new bool(bVal);
+		}
 	};
 
     static std::wstring string_replaceAll(std::wstring str, const std::wstring& from, const std::wstring& to)

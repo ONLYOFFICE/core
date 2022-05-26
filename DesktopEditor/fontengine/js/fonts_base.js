@@ -32,316 +32,316 @@
 
 (function(window, undefined) {
 
-    var AscFonts = window['AscFonts'];
-    
-    var FS = undefined;
-    
-    //desktop_fetch
+	var AscFonts = window['AscFonts'];
 
-    //polyfill
+	var FS = undefined;
 
-    //string_utf8
+	//desktop_fetch
 
-    //module
+	//polyfill
 
-    window['AscFonts'] = window['AscFonts'] || {};
-    var AscFonts = window['AscFonts'];
+	//string_utf8
 
-    AscFonts.CreateLibrary = function()
-    {
-        return Module["_ASC_FT_Init"]();
-    };
+	//module
 
-    AscFonts.TT_INTERPRETER_VERSION_35 = 35;
-    AscFonts.TT_INTERPRETER_VERSION_38 = 38;
-    AscFonts.TT_INTERPRETER_VERSION_40 = 40;
+	window['AscFonts'] = window['AscFonts'] || {};
+	var AscFonts = window['AscFonts'];
 
-    AscFonts.FT_Set_TrueType_HintProp = function(library, tt_interpreter)
-    {
-        return Module["_ASC_FT_Set_TrueType_HintProp"](library, tt_interpreter);
-    };
+	AscFonts.CreateLibrary = function()
+	{
+		return Module["_ASC_FT_Init"]();
+	};
 
-    AscFonts.CreateNativeStream = function(_typed_array)
-    {
-        var _fontStreamPointer = Module["_ASC_FT_Malloc"](_typed_array.size);
-        Module["HEAP8"].set(_typed_array.data, _fontStreamPointer);
-        return { asc_marker: true, data: _fontStreamPointer, len: _typed_array.size};
-    };
+	AscFonts.TT_INTERPRETER_VERSION_35 = 35;
+	AscFonts.TT_INTERPRETER_VERSION_38 = 38;
+	AscFonts.TT_INTERPRETER_VERSION_40 = 40;
 
-    AscFonts.CreateNativeStreamByIndex = function(stream_index)
-    {
-        var _stream_pos = AscFonts.g_fonts_streams[stream_index];
-        if (_stream_pos && true !== _stream_pos.asc_marker)
-        {
-            var _native_stream = AscFonts.CreateNativeStream(AscFonts.g_fonts_streams[stream_index]);
-            AscFonts.g_fonts_streams[stream_index] = null;
-            AscFonts.g_fonts_streams[stream_index] = _native_stream;
-        }
-    };
+	AscFonts.FT_Set_TrueType_HintProp = function(library, tt_interpreter)
+	{
+		return Module["_ASC_FT_Set_TrueType_HintProp"](library, tt_interpreter);
+	};
 
-    function CFaceInfo()
-    {
-        this.units_per_EM = 0;
-        this.ascender = 0;
-        this.descender = 0;
-        this.height = 0;
-        this.face_flags = 0;
-        this.num_faces = 0;
-        this.num_glyphs = 0;
-        this.num_charmaps = 0;
-        this.style_flags = 0;
-        this.face_index = 0;
+	AscFonts.CreateNativeStream = function(_typed_array)
+	{
+		var _fontStreamPointer = Module["_ASC_FT_Malloc"](_typed_array.size);
+		Module["HEAP8"].set(_typed_array.data, _fontStreamPointer);
+		return { asc_marker: true, data: _fontStreamPointer, len: _typed_array.size};
+	};
 
-        this.family_name = "";
+	AscFonts.CreateNativeStreamByIndex = function(stream_index)
+	{
+		var _stream_pos = AscFonts.g_fonts_streams[stream_index];
+		if (_stream_pos && true !== _stream_pos.asc_marker)
+		{
+			var _native_stream = AscFonts.CreateNativeStream(AscFonts.g_fonts_streams[stream_index]);
+			AscFonts.g_fonts_streams[stream_index] = null;
+			AscFonts.g_fonts_streams[stream_index] = _native_stream;
+		}
+	};
 
-        this.style_name = "";
+	function CFaceInfo()
+	{
+		this.units_per_EM = 0;
+		this.ascender = 0;
+		this.descender = 0;
+		this.height = 0;
+		this.face_flags = 0;
+		this.num_faces = 0;
+		this.num_glyphs = 0;
+		this.num_charmaps = 0;
+		this.style_flags = 0;
+		this.face_index = 0;
 
-        this.os2_version = 0;
-        this.os2_usWeightClass = 0;
-        this.os2_fsSelection = 0;
-        this.os2_usWinAscent = 0;
-        this.os2_usWinDescent = 0;
-        this.os2_usDefaultChar = 0;
-        this.os2_sTypoAscender = 0;
-        this.os2_sTypoDescender = 0;
-        this.os2_sTypoLineGap = 0;
+		this.family_name = "";
 
-        this.os2_ulUnicodeRange1 = 0;
-        this.os2_ulUnicodeRange2 = 0;
-        this.os2_ulUnicodeRange3 = 0;
-        this.os2_ulUnicodeRange4 = 0;
-        this.os2_ulCodePageRange1 = 0;
-        this.os2_ulCodePageRange2 = 0;
+		this.style_name = "";
 
-        this.os2_nSymbolic = 0;
+		this.os2_version = 0;
+		this.os2_usWeightClass = 0;
+		this.os2_fsSelection = 0;
+		this.os2_usWinAscent = 0;
+		this.os2_usWinDescent = 0;
+		this.os2_usDefaultChar = 0;
+		this.os2_sTypoAscender = 0;
+		this.os2_sTypoDescender = 0;
+		this.os2_sTypoLineGap = 0;
 
-        this.header_yMin = 0;
-        this.header_yMax = 0;
+		this.os2_ulUnicodeRange1 = 0;
+		this.os2_ulUnicodeRange2 = 0;
+		this.os2_ulUnicodeRange3 = 0;
+		this.os2_ulUnicodeRange4 = 0;
+		this.os2_ulCodePageRange1 = 0;
+		this.os2_ulCodePageRange2 = 0;
 
-        this.monochromeSizes = [];
-    };
+		this.os2_nSymbolic = 0;
 
-    CFaceInfo.prototype.load = function(face)
-    {
-        var _bufferPtr = Module["_ASC_FT_GetFaceInfo"](face);
-        if (!_bufferPtr)
-            return;
+		this.header_yMin = 0;
+		this.header_yMax = 0;
 
-        var _len_buffer = Math.min((Module["HEAP8"].length - _bufferPtr) >> 2, 250); //max 230 symbols on name & style
-        var _buffer = new Int32Array(Module["HEAP8"].buffer, _bufferPtr, _len_buffer);
-        var _index = 0;
+		this.monochromeSizes = [];
+	};
 
-        this.units_per_EM 	= Math.abs(_buffer[_index++]);
-        this.ascender 		= _buffer[_index++];
-        this.descender 		= _buffer[_index++];
-        this.height 		= _buffer[_index++];
-        this.face_flags 	= _buffer[_index++];
-        this.num_faces 		= _buffer[_index++];
-        this.num_glyphs 	= _buffer[_index++];
-        this.num_charmaps 	= _buffer[_index++];
-        this.style_flags 	= _buffer[_index++];
-        this.face_index 	= _buffer[_index++];
+	CFaceInfo.prototype.load = function(face)
+	{
+		var _bufferPtr = Module["_ASC_FT_GetFaceInfo"](face);
+		if (!_bufferPtr)
+			return;
 
-        var c = _buffer[_index++];
-        while (c)
-        {
-            this.family_name += String.fromCharCode(c);
-            c = _buffer[_index++];
-        }
+		var _len_buffer = Math.min((Module["HEAP8"].length - _bufferPtr) >> 2, 250); //max 230 symbols on name & style
+		var _buffer = new Int32Array(Module["HEAP8"].buffer, _bufferPtr, _len_buffer);
+		var _index = 0;
 
-        c = _buffer[_index++];
-        while (c)
-        {
-            this.style_name += String.fromCharCode(c);
-            c = _buffer[_index++];
-        }
+		this.units_per_EM 	= Math.abs(_buffer[_index++]);
+		this.ascender 		= _buffer[_index++];
+		this.descender 		= _buffer[_index++];
+		this.height 		= _buffer[_index++];
+		this.face_flags 	= _buffer[_index++];
+		this.num_faces 		= _buffer[_index++];
+		this.num_glyphs 	= _buffer[_index++];
+		this.num_charmaps 	= _buffer[_index++];
+		this.style_flags 	= _buffer[_index++];
+		this.face_index 	= _buffer[_index++];
 
-        this.os2_version 		= _buffer[_index++];
-        this.os2_usWeightClass 	= _buffer[_index++];
-        this.os2_fsSelection 	= _buffer[_index++];
-        this.os2_usWinAscent 	= _buffer[_index++];
-        this.os2_usWinDescent 	= _buffer[_index++];
-        this.os2_usDefaultChar 	= _buffer[_index++];
-        this.os2_sTypoAscender 	= _buffer[_index++];
-        this.os2_sTypoDescender = _buffer[_index++];
-        this.os2_sTypoLineGap 	= _buffer[_index++];
+		var c = _buffer[_index++];
+		while (c)
+		{
+			this.family_name += String.fromCharCode(c);
+			c = _buffer[_index++];
+		}
 
-        this.os2_ulUnicodeRange1 	= AscFonts.FT_Common.IntToUInt(_buffer[_index++]);
-        this.os2_ulUnicodeRange2 	= AscFonts.FT_Common.IntToUInt(_buffer[_index++]);
-        this.os2_ulUnicodeRange3 	= AscFonts.FT_Common.IntToUInt(_buffer[_index++]);
-        this.os2_ulUnicodeRange4 	= AscFonts.FT_Common.IntToUInt(_buffer[_index++]);
-        this.os2_ulCodePageRange1 	= AscFonts.FT_Common.IntToUInt(_buffer[_index++]);
-        this.os2_ulCodePageRange2 	= AscFonts.FT_Common.IntToUInt(_buffer[_index++]);
+		c = _buffer[_index++];
+		while (c)
+		{
+			this.style_name += String.fromCharCode(c);
+			c = _buffer[_index++];
+		}
 
-        this.os2_nSymbolic 			= _buffer[_index++];
-        this.header_yMin 			= _buffer[_index++];
-        this.header_yMax 			= _buffer[_index++];
+		this.os2_version 		= _buffer[_index++];
+		this.os2_usWeightClass 	= _buffer[_index++];
+		this.os2_fsSelection 	= _buffer[_index++];
+		this.os2_usWinAscent 	= _buffer[_index++];
+		this.os2_usWinDescent 	= _buffer[_index++];
+		this.os2_usDefaultChar 	= _buffer[_index++];
+		this.os2_sTypoAscender 	= _buffer[_index++];
+		this.os2_sTypoDescender = _buffer[_index++];
+		this.os2_sTypoLineGap 	= _buffer[_index++];
 
-        var fixedSizesCount = _buffer[_index++];
-        for (var i = 0; i < fixedSizesCount; i++)
-            this.monochromeSizes.push(_buffer[_index++]);
+		this.os2_ulUnicodeRange1 	= AscFonts.FT_Common.IntToUInt(_buffer[_index++]);
+		this.os2_ulUnicodeRange2 	= AscFonts.FT_Common.IntToUInt(_buffer[_index++]);
+		this.os2_ulUnicodeRange3 	= AscFonts.FT_Common.IntToUInt(_buffer[_index++]);
+		this.os2_ulUnicodeRange4 	= AscFonts.FT_Common.IntToUInt(_buffer[_index++]);
+		this.os2_ulCodePageRange1 	= AscFonts.FT_Common.IntToUInt(_buffer[_index++]);
+		this.os2_ulCodePageRange2 	= AscFonts.FT_Common.IntToUInt(_buffer[_index++]);
 
-        Module["_ASC_FT_Free"](_bufferPtr);
-    };
+		this.os2_nSymbolic 			= _buffer[_index++];
+		this.header_yMin 			= _buffer[_index++];
+		this.header_yMax 			= _buffer[_index++];
 
-    function CGlyphMetrics()
-    {
-        this.bbox_xMin = 0;
-        this.bbox_yMin = 0;
-        this.bbox_xMax = 0;
-        this.bbox_yMax = 0;
+		var fixedSizesCount = _buffer[_index++];
+		for (var i = 0; i < fixedSizesCount; i++)
+			this.monochromeSizes.push(_buffer[_index++]);
 
-        this.width          = 0;
-        this.height         = 0;
+		Module["_ASC_FT_Free"](_bufferPtr);
+	};
 
-        this.horiAdvance    = 0;
-        this.horiBearingX   = 0;
-        this.horiBearingY   = 0;
+	function CGlyphMetrics()
+	{
+		this.bbox_xMin = 0;
+		this.bbox_yMin = 0;
+		this.bbox_xMax = 0;
+		this.bbox_yMax = 0;
 
-        this.vertAdvance    = 0;
-        this.vertBearingX   = 0;
-        this.vertBearingY   = 0;
+		this.width          = 0;
+		this.height         = 0;
 
-        this.linearHoriAdvance = 0;
-        this.linearVertAdvance = 0;
-    }
+		this.horiAdvance    = 0;
+		this.horiBearingX   = 0;
+		this.horiBearingY   = 0;
 
-    function CGlyphBitmapImage()
-    {
-        this.left   = 0;
-        this.top    = 0;
-        this.width  = 0;
-        this.rows   = 0;
-        this.pitch  = 0;
-        this.mode   = 0;
-    }
+		this.vertAdvance    = 0;
+		this.vertBearingX   = 0;
+		this.vertBearingY   = 0;
 
-    AscFonts.CFaceInfo = CFaceInfo;
-    AscFonts.CGlyphMetrics = CGlyphMetrics;
-    AscFonts.CGlyphBitmapImage = CGlyphBitmapImage;
+		this.linearHoriAdvance = 0;
+		this.linearVertAdvance = 0;
+	}
 
-    AscFonts.FT_Open_Face = function(library, stream, face_index)
-    {
-        return Module["_ASC_FT_Open_Face"](library, stream.data, stream.len, face_index);
-    };
+	function CGlyphBitmapImage()
+	{
+		this.left   = 0;
+		this.top    = 0;
+		this.width  = 0;
+		this.rows   = 0;
+		this.pitch  = 0;
+		this.mode   = 0;
+	}
 
-    AscFonts.FT_Glyph_Get_Measure = function(face, vector_worker, painter)
-    {
-        var _bufferPtr = Module["_ASC_FT_Get_Glyph_Measure_Params"](face, vector_worker ? 1 : 0);
-        if (!_bufferPtr)
-            return null;
+	AscFonts.CFaceInfo = CFaceInfo;
+	AscFonts.CGlyphMetrics = CGlyphMetrics;
+	AscFonts.CGlyphBitmapImage = CGlyphBitmapImage;
 
-        var _len = 15;
-        if (vector_worker)
-            _len = Module["HEAP32"][_bufferPtr >> 2];
+	AscFonts.FT_Open_Face = function(library, stream, face_index)
+	{
+		return Module["_ASC_FT_Open_Face"](library, stream.data, stream.len, face_index);
+	};
 
-        var _buffer = new Int32Array(Module["HEAP8"].buffer, _bufferPtr, _len);
+	AscFonts.FT_Glyph_Get_Measure = function(face, vector_worker, painter)
+	{
+		var _bufferPtr = Module["_ASC_FT_Get_Glyph_Measure_Params"](face, vector_worker ? 1 : 0);
+		if (!_bufferPtr)
+			return null;
 
-        var _info = new CGlyphMetrics();
-        _info.bbox_xMin     = _buffer[1];
-        _info.bbox_yMin     = _buffer[2];
-        _info.bbox_xMax     = _buffer[3];
-        _info.bbox_yMax     = _buffer[4];
+		var _len = 15;
+		if (vector_worker)
+			_len = Module["HEAP32"][_bufferPtr >> 2];
 
-        _info.width         = _buffer[5];
-        _info.height        = _buffer[6];
+		var _buffer = new Int32Array(Module["HEAP8"].buffer, _bufferPtr, _len);
 
-        _info.horiAdvance   = _buffer[7];
-        _info.horiBearingX  = _buffer[8];
-        _info.horiBearingY  = _buffer[9];
+		var _info = new CGlyphMetrics();
+		_info.bbox_xMin     = _buffer[1];
+		_info.bbox_yMin     = _buffer[2];
+		_info.bbox_xMax     = _buffer[3];
+		_info.bbox_yMax     = _buffer[4];
 
-        _info.vertAdvance   = _buffer[10];
-        _info.vertBearingX  = _buffer[11];
-        _info.vertBearingY  = _buffer[12];
+		_info.width         = _buffer[5];
+		_info.height        = _buffer[6];
 
-        _info.linearHoriAdvance     = _buffer[13];
-        _info.linearVertAdvance     = _buffer[14];
+		_info.horiAdvance   = _buffer[7];
+		_info.horiBearingX  = _buffer[8];
+		_info.horiBearingY  = _buffer[9];
 
-        if (vector_worker)
-        {
-            painter.start(vector_worker);
+		_info.vertAdvance   = _buffer[10];
+		_info.vertBearingX  = _buffer[11];
+		_info.vertBearingY  = _buffer[12];
 
-            var _pos = 15;
-            while (_pos < _len)
-            {
-                switch (_buffer[_pos++])
-                {
-                    case 0:
-                    {
-                        painter._move_to(_buffer[_pos++], _buffer[_pos++], vector_worker);
-                        break;
-                    }
-                    case 1:
-                    {
-                        painter._line_to(_buffer[_pos++], _buffer[_pos++], vector_worker);
-                        break;
-                    }
-                    case 2:
-                    {
-                        painter._conic_to(_buffer[_pos++], _buffer[_pos++], _buffer[_pos++], _buffer[_pos++], vector_worker);
-                        break;
-                    }
-                    case 3:
-                    {
-                        painter._cubic_to(_buffer[_pos++], _buffer[_pos++], _buffer[_pos++], _buffer[_pos++], _buffer[_pos++], _buffer[_pos++], vector_worker);
-                        break;
-                    }
-                    default:
-                        break;
-                }
-            }
+		_info.linearHoriAdvance     = _buffer[13];
+		_info.linearVertAdvance     = _buffer[14];
 
-            painter.end(vector_worker);
-        }
+		if (vector_worker)
+		{
+			painter.start(vector_worker);
 
-        Module["_ASC_FT_Free"](_bufferPtr);
-        _buffer = null;
+			var _pos = 15;
+			while (_pos < _len)
+			{
+				switch (_buffer[_pos++])
+				{
+					case 0:
+					{
+						painter._move_to(_buffer[_pos++], _buffer[_pos++], vector_worker);
+						break;
+					}
+					case 1:
+					{
+						painter._line_to(_buffer[_pos++], _buffer[_pos++], vector_worker);
+						break;
+					}
+					case 2:
+					{
+						painter._conic_to(_buffer[_pos++], _buffer[_pos++], _buffer[_pos++], _buffer[_pos++], vector_worker);
+						break;
+					}
+					case 3:
+					{
+						painter._cubic_to(_buffer[_pos++], _buffer[_pos++], _buffer[_pos++], _buffer[_pos++], _buffer[_pos++], _buffer[_pos++], vector_worker);
+						break;
+					}
+					default:
+						break;
+				}
+			}
 
-        return _info;
-    };
+			painter.end(vector_worker);
+		}
 
-    AscFonts.FT_Glyph_Get_Raster = function(face, render_mode)
-    {
-        var _bufferPtr = Module["_ASC_FT_Get_Glyph_Render_Params"](face, render_mode);
-        if (!_bufferPtr)
-            return null;
+		Module["_ASC_FT_Free"](_bufferPtr);
+		_buffer = null;
 
-        var _buffer = new Int32Array(Module["HEAP8"].buffer, _bufferPtr, 6);
+		return _info;
+	};
 
-        var _info = new CGlyphBitmapImage();
-        _info.left    = _buffer[0];
-        _info.top     = _buffer[1];
-        _info.width   = _buffer[2];
-        _info.rows    = _buffer[3];
-        _info.pitch   = _buffer[4];
-        _info.mode    = _buffer[5];
+	AscFonts.FT_Glyph_Get_Raster = function(face, render_mode)
+	{
+		var _bufferPtr = Module["_ASC_FT_Get_Glyph_Render_Params"](face, render_mode);
+		if (!_bufferPtr)
+			return null;
 
-        Module["_ASC_FT_Free"](_bufferPtr);
-        return _info;
-    };
+		var _buffer = new Int32Array(Module["HEAP8"].buffer, _bufferPtr, 6);
 
-    AscFonts.FT_Load_Glyph = Module["_FT_Load_Glyph"];
-    AscFonts.FT_Set_Transform = Module["_ASC_FT_Set_Transform"];
-    AscFonts.FT_Set_Char_Size = Module["_FT_Set_Char_Size"];
+		var _info = new CGlyphBitmapImage();
+		_info.left    = _buffer[0];
+		_info.top     = _buffer[1];
+		_info.width   = _buffer[2];
+		_info.rows    = _buffer[3];
+		_info.pitch   = _buffer[4];
+		_info.mode    = _buffer[5];
 
-    AscFonts.FT_SetCMapForCharCode = Module["_ASC_FT_SetCMapForCharCode"];
-    AscFonts.FT_GetKerningX = Module["_ASC_FT_GetKerningX"];
-    AscFonts.FT_GetFaceMaxAdvanceX = Module["_ASC_FT_GetFaceMaxAdvanceX"];
-    AscFonts.FT_Get_Glyph_Render_Buffer = function(face, rasterInfo, isCopyToRasterMemory)
-    {
-        var _bufferPtr = Module["_ASC_FT_Get_Glyph_Render_Buffer"](face);
-        var tmp = new Uint8Array(Module["HEAP8"].buffer, _bufferPtr, rasterInfo.pitch * rasterInfo.rows);
+		Module["_ASC_FT_Free"](_bufferPtr);
+		return _info;
+	};
 
-        if (!isCopyToRasterMemory)
-            return tmp;
+	AscFonts.FT_Load_Glyph = Module["_FT_Load_Glyph"];
+	AscFonts.FT_Set_Transform = Module["_ASC_FT_Set_Transform"];
+	AscFonts.FT_Set_Char_Size = Module["_FT_Set_Char_Size"];
 
-        AscFonts.raster_memory.CheckSize(rasterInfo.width, rasterInfo.rows);
+	AscFonts.FT_SetCMapForCharCode = Module["_ASC_FT_SetCMapForCharCode"];
+	AscFonts.FT_GetKerningX = Module["_ASC_FT_GetKerningX"];
+	AscFonts.FT_GetFaceMaxAdvanceX = Module["_ASC_FT_GetFaceMaxAdvanceX"];
+	AscFonts.FT_Get_Glyph_Render_Buffer = function(face, rasterInfo, isCopyToRasterMemory)
+	{
+		var _bufferPtr = Module["_ASC_FT_Get_Glyph_Render_Buffer"](face);
+		var tmp = new Uint8Array(Module["HEAP8"].buffer, _bufferPtr, rasterInfo.pitch * rasterInfo.rows);
 
-        var offsetSrc = 0;
-        var offsetDst = 3;
-        var dstData = AscFonts.raster_memory.m_oBuffer.data;
+		if (!isCopyToRasterMemory)
+			return tmp;
 
-        if (rasterInfo.pitch >= rasterInfo.width)
+		AscFonts.raster_memory.CheckSize(rasterInfo.width, rasterInfo.rows);
+
+		var offsetSrc = 0;
+		var offsetDst = 3;
+		var dstData = AscFonts.raster_memory.m_oBuffer.data;
+
+		if (rasterInfo.pitch >= rasterInfo.width)
 		{
 			for (var j = 0; j < rasterInfo.rows; ++j, offsetSrc += rasterInfo.pitch)
 			{
@@ -353,9 +353,9 @@
 			}
 		}
 		else
-        {
-            var bitNumber = 0;
-            var byteNumber = 0;
+		{
+			var bitNumber = 0;
+			var byteNumber = 0;
 			for (var j = 0; j < rasterInfo.rows; ++j, offsetSrc += rasterInfo.pitch)
 			{
 				offsetDst = 3 + j * AscFonts.raster_memory.pitch;
@@ -363,312 +363,318 @@
 				byteNumber = 0;
 				for (var i = 0; i < rasterInfo.width; i++, offsetDst += 4, bitNumber++)
 				{
-				    if (8 == bitNumber)
-                    {
-                        bitNumber = 0;
-                        byteNumber++;
-                    }
+					if (8 == bitNumber)
+					{
+						bitNumber = 0;
+						byteNumber++;
+					}
 					dstData[offsetDst] = (tmp[offsetSrc + byteNumber] & (1 << (7 - bitNumber))) ? 255 : 0;
 				}
 			}
-        }
+		}
 
-        tmp = null;
-    };
+		tmp = null;
+	};
 
-    function CBinaryReader(data, start, size)
-    {
-        this.data = data;
-        this.pos = start;
-        this.limit = start + size;
-    }
-    CBinaryReader.prototype.readInt = function()
-    {
-        var val = this.data[this.pos] | this.data[this.pos + 1] << 8 | this.data[this.pos + 2] << 16 | this.data[this.pos + 3] << 24;
-        this.pos += 4;
-        return val;
-    };
-    CBinaryReader.prototype.readUInt = function()
-    {
-        var val = this.data[this.pos] | this.data[this.pos + 1] << 8 | this.data[this.pos + 2] << 16 | this.data[this.pos + 3] << 24;
-        this.pos += 4;
-        return (val < 0) ? val + 4294967296 : val;
-    };
-    CBinaryReader.prototype.readByte = function()
-    {
-        return this.data[this.pos++];
-    };
-    CBinaryReader.prototype.readPointer64 = function()
-    {
-        let i1 = this.readUInt();
-        let i2 = this.readUInt();
-        if (i2 === 0)
-            return i1;
-        return i2 * 4294967296 + i1;
-    };
-    CBinaryReader.prototype.isValid = function()
-    {
-        return (this.pos < this.limit) ? true : false;
-    };
+	function CBinaryReader(data, start, size)
+	{
+		this.data = data;
+		this.pos = start;
+		this.limit = start + size;
+	}
+	CBinaryReader.prototype.init = function(data, start, size)
+	{
+		this.data = data;
+		this.pos = start;
+		this.limit = start + size;
+	}
+	CBinaryReader.prototype.readInt = function()
+	{
+		var val = this.data[this.pos] | this.data[this.pos + 1] << 8 | this.data[this.pos + 2] << 16 | this.data[this.pos + 3] << 24;
+		this.pos += 4;
+		return val;
+	};
+	CBinaryReader.prototype.readUInt = function()
+	{
+		var val = this.data[this.pos] | this.data[this.pos + 1] << 8 | this.data[this.pos + 2] << 16 | this.data[this.pos + 3] << 24;
+		this.pos += 4;
+		return (val < 0) ? val + 4294967296 : val;
+	};
+	CBinaryReader.prototype.readByte = function()
+	{
+		return this.data[this.pos++];
+	};
+	CBinaryReader.prototype.readPointer64 = function()
+	{
+		let i1 = this.readUInt();
+		let i2 = this.readUInt();
+		if (i2 === 0)
+			return i1;
+		return i2 * 4294967296 + i1;
+	};
+	CBinaryReader.prototype.isValid = function()
+	{
+		return (this.pos < this.limit) ? true : false;
+	};
 
-    AscFonts.HB_Shape = function(fontFile, text, features, script, direction, language)
-    {
-        if (text.length === 0)
-            return null;
+	AscFonts.HB_Shape = function(fontFile, text, features, script, direction, language)
+	{
+		if (text.length === 0)
+			return null;
 
-        let textBuffer = text.toUtf8();
-        let textPointer = Module["_malloc"](textBuffer.length);
-        Module["HEAP8"].set(textBuffer, textPointer);
+		let textBuffer = text.toUtf8();
+		let textPointer = Module["_malloc"](textBuffer.length);
+		Module["HEAP8"].set(textBuffer, textPointer);
 
-        if (!AscFonts.hb_cache_languages[language])
-        {
-            let langBuffer = language.toUtf8();
-            var langPointer = Module["_malloc"](langBuffer.length);
-            Module["HEAP8"].set(langBuffer, langBuffer);
+		if (!AscFonts.hb_cache_languages[language])
+		{
+			let langBuffer = language.toUtf8();
+			var langPointer = Module["_malloc"](langBuffer.length);
+			Module["HEAP8"].set(langBuffer, langBuffer);
 
-            AscFonts.hb_cache_languages[language] = langPointer;
-        }
+			AscFonts.hb_cache_languages[language] = langPointer;
+		}
 
-        let shapeData = Module["_ASC_HP_ShapeText"](fontFile.m_pFace, fontFile.m_pHBFont, textPointer, features, script, direction, AscFonts.hb_cache_languages[language]);
+		let shapeData = Module["_ASC_HP_ShapeText"](fontFile.m_pFace, fontFile.m_pHBFont, textPointer, features, script, direction, AscFonts.hb_cache_languages[language]);
 
-        Module["_free"](textPointer);
+		Module["_free"](textPointer);
 
-        let len = new Int32Array(Module["HEAP8"].buffer, shapeData, 4)[0];
+		let len = new Int32Array(Module["HEAP8"].buffer, shapeData, 4)[0];
 
-        let buffer = new Uint8Array(Module["HEAP8"].buffer, shapeData + 4, len - 4);
-        let reader = new CBinaryReader(buffer, 0, len - 4);
+		let buffer = new Uint8Array(Module["HEAP8"].buffer, shapeData + 4, len - 4);
+		let reader = new CBinaryReader(buffer, 0, len - 4);
 
-        let glyphsCount = (len - 12) / 26;
+		let glyphsCount = (len - 12) / 26;
 
-        fontFile.m_pHBFont = reader.readPointer64();
+		fontFile.m_pHBFont = reader.readPointer64();
 
-        let glyphs = [];
-        for (let i = 0; i < glyphsCount; i++)
-        {
-            let glyph = {};
+		let glyphs = [];
+		for (let i = 0; i < glyphsCount; i++)
+		{
+			let glyph = {};
 
-            glyph.type = reader.readByte();
-            glyph.flags = reader.readByte();
+			glyph.type = reader.readByte();
+			glyph.flags = reader.readByte();
 
-            glyph.gid = reader.readInt();
-            glyph.cluster = reader.readInt();
+			glyph.gid = reader.readInt();
+			glyph.cluster = reader.readInt();
 
-            glyph.x_advance = reader.readInt();
-            glyph.y_advance = reader.readInt();
-            glyph.x_offset = reader.readInt();
-            glyph.y_offset = reader.readInt();
+			glyph.x_advance = reader.readInt();
+			glyph.y_advance = reader.readInt();
+			glyph.x_offset = reader.readInt();
+			glyph.y_offset = reader.readInt();
 
-            glyphs.push(glyph);
-        }
+			glyphs.push(glyph);
+		}
 
-        let utf8_start = 0;
-        let utf8_end = 0;
+		let utf8_start = 0;
+		let utf8_end = 0;
 
-        if (direction === AscFonts.HB_DIRECTION.HB_DIRECTION_RTL)
-        {
-            for (let i = glyphsCount - 1; i >= 0; i--)
-            {
-                if (i === 0)
-                    utf8_end = textBuffer.length - 1;
-                else
-                    utf8_end = glyphs[i - 1].cluster;
+		if (direction === AscFonts.HB_DIRECTION.HB_DIRECTION_RTL)
+		{
+			for (let i = glyphsCount - 1; i >= 0; i--)
+			{
+				if (i === 0)
+					utf8_end = textBuffer.length - 1;
+				else
+					utf8_end = glyphs[i - 1].cluster;
 
-                glyphs[i].text = String.prototype.fromUtf8(textBuffer, utf8_start, utf8_end - utf8_start);
-                utf8_start = utf8_end;
-            }
-        }
-        else
-        {
-            for (let i = 0; i < glyphsCount; i++)
-            {
-                if (i === (glyphsCount - 1))
-                    utf8_end = textBuffer.length - 1;
-                else
-                    utf8_end = glyphs[i + 1].cluster;
+				glyphs[i].text = String.prototype.fromUtf8(textBuffer, utf8_start, utf8_end - utf8_start);
+				utf8_start = utf8_end;
+			}
+		}
+		else
+		{
+			for (let i = 0; i < glyphsCount; i++)
+			{
+				if (i === (glyphsCount - 1))
+					utf8_end = textBuffer.length - 1;
+				else
+					utf8_end = glyphs[i + 1].cluster;
 
-                glyphs[i].text = String.prototype.fromUtf8(textBuffer, utf8_start, utf8_end - utf8_start);
-                utf8_start = utf8_end;
-            }
-        }
+				glyphs[i].text = String.prototype.fromUtf8(textBuffer, utf8_start, utf8_end - utf8_start);
+				utf8_start = utf8_end;
+			}
+		}
 
-        Module["_ASC_FT_Free"](shapeData);
+		Module["_ASC_FT_Free"](shapeData);
 
-        return glyphs;
-    };
+		return glyphs;
+	};
 
-    const STRING_MAX_LEN = AscFonts.GRAPHEME_STRING_MAX_LEN;
-    const COEF           = AscFonts.GRAPHEME_COEF;
-    let   STRING_POINTER = null;
-    let   STRING_LEN     = 0;
-    const CLUSTER        = new Uint16Array(STRING_MAX_LEN);
-    let   CLUSTER_LEN    = 0;
-    let   CLUSTER_MAX    = 0;
-    const READER         = new CBinaryReader(null, 0, 0);
-    const LIGATURE       = 2;
+	const STRING_MAX_LEN = AscFonts.GRAPHEME_STRING_MAX_LEN;
+	const COEF           = AscFonts.GRAPHEME_COEF;
+	let   STRING_POINTER = null;
+	let   STRING_LEN     = 0;
+	const CLUSTER        = new Uint16Array(STRING_MAX_LEN);
+	let   CLUSTER_LEN    = 0;
+	let   CLUSTER_MAX    = 0;
+	const READER         = new CBinaryReader(null, 0, 0);
+	const LIGATURE       = 2;
 
-    function GetCodePointsCount(nPrev, nCurr)
-    {
-        let nCodePointsCount = 0;
+	function GetCodePointsCount(nPrev, nCurr)
+	{
+		let nCodePointsCount = 0;
 
-        if (nPrev > nCurr)
-        {
-            // TODO: RTL
-        }
-        else
-        {
-            let nCluster = 0;
-            let nCodePointIndex = 0;
-            while (nCluster < nPrev)
-                nCluster += CLUSTER[nCodePointIndex++];
+		if (nPrev > nCurr)
+		{
+			// TODO: RTL
+		}
+		else
+		{
+			let nCluster = 0;
+			let nCodePointIndex = 0;
+			while (nCluster < nPrev)
+				nCluster += CLUSTER[nCodePointIndex++];
 
-            while (nCluster < nCurr)
-            {
-                nCluster += CLUSTER[nCodePointIndex + nCodePointsCount];
-                nCodePointsCount++;
-            }
-        }
+			while (nCluster < nCurr)
+			{
+				nCluster += CLUSTER[nCodePointIndex + nCodePointsCount];
+				nCodePointsCount++;
+			}
+		}
 
-        return nCodePointsCount;
-    }
+		return nCodePointsCount;
+	}
 
-    AscFonts.HB_StartString = function()
-    {
-        if (!STRING_POINTER)
-            STRING_POINTER = Module["_malloc"](6 * STRING_MAX_LEN + 1);
+	AscFonts.HB_StartString = function()
+	{
+		if (!STRING_POINTER)
+			STRING_POINTER = Module["_malloc"](6 * STRING_MAX_LEN + 1);
 
-        STRING_LEN  = 0;
-        CLUSTER_LEN = 0;
-        CLUSTER_MAX = 0;
-    };
-    AscFonts.HB_AppendToString = function(code)
-    {
-        let arrBuffer   = Module["HEAP8"];
-        let nOffset     = STRING_POINTER;
-        let nClusterLen = -1;
+		STRING_LEN  = 0;
+		CLUSTER_LEN = 0;
+		CLUSTER_MAX = 0;
+	};
+	AscFonts.HB_AppendToString = function(code)
+	{
+		let arrBuffer   = Module["HEAP8"];
+		let nOffset     = STRING_POINTER;
+		let nClusterLen = -1;
 
-        if (code < 0x80)
-        {
-            arrBuffer[nOffset + STRING_LEN++] = code;
-            nClusterLen = 1;
-        }
-        else if (code < 0x0800)
-        {
-            arrBuffer[nOffset + STRING_LEN++] = (0xC0 | (code >> 6));
-            arrBuffer[nOffset + STRING_LEN++] = (0x80 | (code & 0x3F));
-            nClusterLen = 2;
-        }
-        else if (code < 0x10000)
-        {
-            arrBuffer[nOffset + STRING_LEN++] = (0xE0 | (code >> 12));
-            arrBuffer[nOffset + STRING_LEN++] = (0x80 | ((code >> 6) & 0x3F));
-            arrBuffer[nOffset + STRING_LEN++] = (0x80 | (code & 0x3F));
-            nClusterLen = 3;
-        }
-        else if (code < 0x1FFFFF)
-        {
-            arrBuffer[nOffset + STRING_LEN++] = (0xF0 | (code >> 18));
-            arrBuffer[nOffset + STRING_LEN++] = (0x80 | ((code >> 12) & 0x3F));
-            arrBuffer[nOffset + STRING_LEN++] = (0x80 | ((code >> 6) & 0x3F));
-            arrBuffer[nOffset + STRING_LEN++] = (0x80 | (code & 0x3F));
-            nClusterLen = 4;
-        }
-        else if (code < 0x3FFFFFF)
-        {
-            arrBuffer[nOffset + STRING_LEN++] = (0xF8 | (code >> 24));
-            arrBuffer[nOffset + STRING_LEN++] = (0x80 | ((code >> 18) & 0x3F));
-            arrBuffer[nOffset + STRING_LEN++] = (0x80 | ((code >> 12) & 0x3F));
-            arrBuffer[nOffset + STRING_LEN++] = (0x80 | ((code >> 6) & 0x3F));
-            arrBuffer[nOffset + STRING_LEN++] = (0x80 | (code & 0x3F));
-            nClusterLen = 5;
-        }
-        else if (code < 0x7FFFFFFF)
-        {
-            arrBuffer[nOffset + STRING_LEN++] = (0xFC | (code >> 30));
-            arrBuffer[nOffset + STRING_LEN++] = (0x80 | ((code >> 24) & 0x3F));
-            arrBuffer[nOffset + STRING_LEN++] = (0x80 | ((code >> 18) & 0x3F));
-            arrBuffer[nOffset + STRING_LEN++] = (0x80 | ((code >> 12) & 0x3F));
-            arrBuffer[nOffset + STRING_LEN++] = (0x80 | ((code >> 6) & 0x3F));
-            arrBuffer[nOffset + STRING_LEN++] = (0x80 | (code & 0x3F));
-            nClusterLen = 6;
-        }
+		if (code < 0x80)
+		{
+			arrBuffer[nOffset + STRING_LEN++] = code;
+			nClusterLen = 1;
+		}
+		else if (code < 0x0800)
+		{
+			arrBuffer[nOffset + STRING_LEN++] = (0xC0 | (code >> 6));
+			arrBuffer[nOffset + STRING_LEN++] = (0x80 | (code & 0x3F));
+			nClusterLen = 2;
+		}
+		else if (code < 0x10000)
+		{
+			arrBuffer[nOffset + STRING_LEN++] = (0xE0 | (code >> 12));
+			arrBuffer[nOffset + STRING_LEN++] = (0x80 | ((code >> 6) & 0x3F));
+			arrBuffer[nOffset + STRING_LEN++] = (0x80 | (code & 0x3F));
+			nClusterLen = 3;
+		}
+		else if (code < 0x1FFFFF)
+		{
+			arrBuffer[nOffset + STRING_LEN++] = (0xF0 | (code >> 18));
+			arrBuffer[nOffset + STRING_LEN++] = (0x80 | ((code >> 12) & 0x3F));
+			arrBuffer[nOffset + STRING_LEN++] = (0x80 | ((code >> 6) & 0x3F));
+			arrBuffer[nOffset + STRING_LEN++] = (0x80 | (code & 0x3F));
+			nClusterLen = 4;
+		}
+		else if (code < 0x3FFFFFF)
+		{
+			arrBuffer[nOffset + STRING_LEN++] = (0xF8 | (code >> 24));
+			arrBuffer[nOffset + STRING_LEN++] = (0x80 | ((code >> 18) & 0x3F));
+			arrBuffer[nOffset + STRING_LEN++] = (0x80 | ((code >> 12) & 0x3F));
+			arrBuffer[nOffset + STRING_LEN++] = (0x80 | ((code >> 6) & 0x3F));
+			arrBuffer[nOffset + STRING_LEN++] = (0x80 | (code & 0x3F));
+			nClusterLen = 5;
+		}
+		else if (code < 0x7FFFFFFF)
+		{
+			arrBuffer[nOffset + STRING_LEN++] = (0xFC | (code >> 30));
+			arrBuffer[nOffset + STRING_LEN++] = (0x80 | ((code >> 24) & 0x3F));
+			arrBuffer[nOffset + STRING_LEN++] = (0x80 | ((code >> 18) & 0x3F));
+			arrBuffer[nOffset + STRING_LEN++] = (0x80 | ((code >> 12) & 0x3F));
+			arrBuffer[nOffset + STRING_LEN++] = (0x80 | ((code >> 6) & 0x3F));
+			arrBuffer[nOffset + STRING_LEN++] = (0x80 | (code & 0x3F));
+			nClusterLen = 6;
+		}
 
-        if (-1 !== nClusterLen)
-        {
-            CLUSTER[CLUSTER_LEN++] = nClusterLen;
-            CLUSTER_MAX += nClusterLen;
-        }
-    };
-    AscFonts.HB_EndString = function()
-    {
-        Module["HEAP8"][STRING_POINTER + STRING_LEN++] = 0;
-    };
-    AscFonts.HB_GetStringLength = function()
-    {
-        return STRING_LEN;
-    };
-    AscFonts.HB_ShapeString = function(textShaper, fontId, fontStyle, fontFile, features, script, direction, language)
-    {
-        if (!STRING_POINTER)
-            return;
+		if (-1 !== nClusterLen)
+		{
+			CLUSTER[CLUSTER_LEN++] = nClusterLen;
+			CLUSTER_MAX += nClusterLen;
+		}
+	};
+	AscFonts.HB_EndString = function()
+	{
+		Module["HEAP8"][STRING_POINTER + STRING_LEN++] = 0;
+	};
+	AscFonts.HB_GetStringLength = function()
+	{
+		return STRING_LEN;
+	};
+	AscFonts.HB_ShapeString = function(textShaper, fontId, fontStyle, fontFile, features, script, direction, language)
+	{
+		if (!STRING_POINTER)
+			return;
 
-        if (!AscFonts.hb_cache_languages[language])
-        {
-            let langBuffer = language.toUtf8();
-            var langPointer = Module["_malloc"](langBuffer.length);
-            Module["HEAP8"].set(langBuffer, langBuffer);
+		if (!AscFonts.hb_cache_languages[language])
+		{
+			let langBuffer = language.toUtf8();
+			var langPointer = Module["_malloc"](langBuffer.length);
+			Module["HEAP8"].set(langBuffer, langBuffer);
 
-            AscFonts.hb_cache_languages[language] = langPointer;
-        }
+			AscFonts.hb_cache_languages[language] = langPointer;
+		}
 
-        let shapeData = Module["_ASC_HP_ShapeText"](fontFile.m_pFace, fontFile.m_pHBFont, STRING_POINTER, features, script, direction, AscFonts.hb_cache_languages[language]);
+		let shapeData = Module["_ASC_HP_ShapeText"](fontFile.m_pFace, fontFile.m_pHBFont, STRING_POINTER, features, script, direction, AscFonts.hb_cache_languages[language]);
 
-        let buffer = Module["HEAP8"];
-        let len = (buffer[shapeData + 3] & 0xFF) << 24 | (buffer[shapeData + 2] & 0xFF) << 16 | (buffer[shapeData + 1] & 0xFF) << 8 | (buffer[shapeData] & 0xFF);
-        READER.init(buffer, shapeData + 4, len - 4);
-        let reader = READER;
+		let buffer = Module["HEAP8"];
+		let len = (buffer[shapeData + 3] & 0xFF) << 24 | (buffer[shapeData + 2] & 0xFF) << 16 | (buffer[shapeData + 1] & 0xFF) << 8 | (buffer[shapeData] & 0xFF);
+		READER.init(buffer, shapeData + 4, len - 4);
+		let reader = READER;
 
-        let glyphsCount = (len - 12) / 26;
+		let glyphsCount = (len - 12) / 26;
 
-        fontFile.m_pHBFont = reader.readPointer64();
+		fontFile.m_pHBFont = reader.readPointer64();
 
-        let prevCluster = -1, type, flags, gid, cluster, x_advance, y_advance, x_offset, y_offset;
-        let isLigature = false;
-        let nWidth     = 0;
-        for (let i = 0; i < glyphsCount; i++)
-        {
-            type      = reader.readByte();
-            flags     = reader.readByte();
-            gid       = reader.readInt();
-            cluster   = reader.readInt();
-            x_advance = reader.readInt();
-            y_advance = reader.readInt();
-            x_offset  = reader.readInt();
-            y_offset  = reader.readInt();
+		let prevCluster = -1, type, flags, gid, cluster, x_advance, y_advance, x_offset, y_offset;
+		let isLigature = false;
+		let nWidth     = 0;
+		for (let i = 0; i < glyphsCount; i++)
+		{
+			type      = reader.readByte();
+			flags     = reader.readByte();
+			gid       = reader.readInt();
+			cluster   = reader.readInt();
+			x_advance = reader.readInt();
+			y_advance = reader.readInt();
+			x_offset  = reader.readInt();
+			y_offset  = reader.readInt();
 
-            if (cluster !== prevCluster && -1 !== prevCluster)
-            {
-                textShaper.FlushGrapheme(AscFonts.GetGrapheme(), nWidth, GetCodePointsCount(prevCluster, cluster), isLigature);
-                nWidth = 0;
-            }
+			if (cluster !== prevCluster && -1 !== prevCluster)
+			{
+				textShaper.FlushGrapheme(AscFonts.GetGrapheme(), nWidth, GetCodePointsCount(prevCluster, cluster), isLigature);
+				nWidth = 0;
+			}
 
-            if (cluster !== prevCluster)
-            {
-                prevCluster = cluster;
-                isLigature  = LIGATURE === type;
-                AscFonts.InitGrapheme(fontId, fontStyle);
-            }
+			if (cluster !== prevCluster)
+			{
+				prevCluster = cluster;
+				isLigature  = LIGATURE === type;
+				AscFonts.InitGrapheme(fontId, fontStyle);
+			}
 
-            AscFonts.AddGlyphToGrapheme(gid, x_advance, y_advance, x_offset, y_offset);
-            nWidth += x_advance * COEF;
-        }
-        textShaper.FlushGrapheme(AscFonts.GetGrapheme(), nWidth, GetCodePointsCount(prevCluster, CLUSTER_MAX), isLigature);
+			AscFonts.AddGlyphToGrapheme(gid, x_advance, y_advance, x_offset, y_offset);
+			nWidth += x_advance * COEF;
+		}
+		textShaper.FlushGrapheme(AscFonts.GetGrapheme(), nWidth, GetCodePointsCount(prevCluster, CLUSTER_MAX), isLigature);
 
-        Module["_ASC_FT_Free"](shapeData);
-    };
+		Module["_ASC_FT_Free"](shapeData);
+	};
 
-    AscFonts.onLoadModule();
+	AscFonts.onLoadModule();
 
-    // this memory is not freed
-    AscFonts.hb_cache_languages = {};
+	// this memory is not freed
+	AscFonts.hb_cache_languages = {};
 
 })(window, undefined);

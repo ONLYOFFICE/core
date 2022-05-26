@@ -678,11 +678,11 @@ const std::wstring xti_indexes2sheet_name(const short tabFirst, const short tabL
 	return sheet_first + sheet_last;
 }
 
-const unsigned short sheetsnames2ixti(std::wstring name)
+unsigned short sheetsnames2ixti(std::wstring name)
 {
 	auto pos = std::find_if(XLS::GlobalWorkbookInfo::arXti_External_static.cbegin(), XLS::GlobalWorkbookInfo::arXti_External_static.cend(),
 			[&](XLS::GlobalWorkbookInfo::_xti i) {
-		return i.link == name;
+		return boost::algorithm::erase_last_copy(boost::algorithm::erase_first_copy(i.link, L"'"), L"'") == name;
 	});
 
 	if (pos != XLS::GlobalWorkbookInfo::arXti_External_static.cend())
@@ -691,6 +691,35 @@ const unsigned short sheetsnames2ixti(std::wstring name)
 	return 0xFFFF;
 }
 
+bool isTableFmla(const std::wstring& tableName, _UINT32& listIndex)
+{
+	for(const auto& item : XLS::GlobalWorkbookInfo::mapTableNames_static)
+	{
+		if (tableName == item.second)
+		{
+			listIndex = item.first;
+			return true;
+		}
+	}
+	return false;
+}
+bool isColumn(const std::wstring& columnName, _UINT32 listIndex, _UINT16& indexColumn)
+{
+	const auto& arrColumn = XLS::GlobalWorkbookInfo::mapTableColumnNames_static.find(listIndex);
+	if(arrColumn != XLS::GlobalWorkbookInfo::mapTableColumnNames_static.end())
+	{
+		indexColumn = -1;
+		for (const auto& itemColumn : arrColumn->second)
+		{
+			++indexColumn;
+			if (columnName == itemColumn)
+			{
+				return true;
+			}
+		}		
+	}
+	return false;
+}
 
 } //namespace XMLSTUFF
 

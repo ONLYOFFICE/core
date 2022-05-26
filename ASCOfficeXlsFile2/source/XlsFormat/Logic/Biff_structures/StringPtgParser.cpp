@@ -52,6 +52,7 @@
 #include "PtgNameX.h"
 #include "PtgRefN.h"
 #include "PtgAreaN.h"
+#include "PtgList.h"
 
 #include "OperatorPtgs.h"
 #include "SyntaxPtg.h"
@@ -278,6 +279,7 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             std::wstring operand_str;
             unsigned int number;
             unsigned short ixti;
+			PtgList ptgList(PtgList::fixed_id);
 
             if(SyntaxPtg::extract_PtgBool(it, itEnd, operand_str))
             {
@@ -309,6 +311,10 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
                 {
                     rgce.addPtg(found_operand = OperandPtgPtr(new PtgRefErr3d(ixti, OperandPtg::ptg_VALUE)));
                 }
+				else if (SyntaxPtg::extract_PtgList(it, itEnd, ptgList, ixti))// Shall be placed strongly before PtgArea and PtgRef
+				{
+					rgce.addPtg(found_operand = OperandPtgPtr(new PtgList(ptgList)));
+				}
                 else
                 {
                     // EXCEPT::RT::WrongFormulaString("Unknown format of 3D reference in formula.", assembled_formula);
@@ -318,6 +324,10 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
             {
                 rgce.addPtg(found_operand = OperandPtgPtr(new PtgName(number, OperandPtg::ptg_VALUE)));
             }
+			else if (SyntaxPtg::extract_PtgList(it, itEnd, ptgList))// Shall be placed strongly before PtgArea and PtgRef
+			{
+				rgce.addPtg(found_operand = OperandPtgPtr(new PtgList(ptgList)));
+			}
             else if(SyntaxPtg::extract_PtgArea(it, itEnd, operand_str)) // Sequence is important (in pair with PtgRef)
             {
                 if(L"SharedParsedFormula" == tag_name || L"CFParsedFormulaNoCCE" == tag_name)

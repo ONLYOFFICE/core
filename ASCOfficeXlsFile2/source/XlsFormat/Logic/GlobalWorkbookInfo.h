@@ -211,6 +211,8 @@ public:
 
     std::unordered_map<int, std::wstring>		mapTableNames;
     std::unordered_map<int, std::vector<std::wstring>>	mapTableColumnNames;
+	static std::unordered_map<int, std::wstring>		mapTableNames_static;
+	static std::unordered_map<int, std::vector<std::wstring>>	mapTableColumnNames_static;
     std::unordered_map<std::wstring, int>		mapTableGuidsIndex;
 
     std::unordered_map<int, std::vector<XLS::ElementType>>		pivotCacheRecordType;

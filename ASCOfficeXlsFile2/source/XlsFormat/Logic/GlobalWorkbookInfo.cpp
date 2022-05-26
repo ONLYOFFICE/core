@@ -91,7 +91,9 @@ std::pair<float, float> GetMaxDigitSizePixelsImpl(const std::wstring & fontName,
 	double width = (minWidth + 2 * maxWidth) /3. /5.;
     return std::pair<float, float>(width, maxHeight);
 }
-std::vector<GlobalWorkbookInfo::_xti>		GlobalWorkbookInfo::arXti_External_static;
+std::vector<GlobalWorkbookInfo::_xti>				GlobalWorkbookInfo::arXti_External_static;
+std::unordered_map<int, std::wstring>				GlobalWorkbookInfo::mapTableNames_static;
+std::unordered_map<int, std::vector<std::wstring>>	GlobalWorkbookInfo::mapTableColumnNames_static;
 GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConverter * converter) :	CodePage(code_page), xls_converter(converter)
 {
 	fill_x_ids[FillInfo(0, 0, 0)]		= 0;
@@ -160,6 +162,8 @@ GlobalWorkbookInfo::~GlobalWorkbookInfo()
         delete applicationFonts;
 
 	arXti_External_static.clear();
+	mapTableNames_static.clear();
+	mapTableColumnNames_static.clear();
 }
 
 const size_t GlobalWorkbookInfo::RegisterBorderId(const BorderInfo& border)

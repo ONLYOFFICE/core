@@ -35,7 +35,9 @@
 #include "PtgParen.h"
 
 #include <boost/regex.hpp>
+#include <boost/algorithm/string/erase.hpp>
 #include <boost/algorithm/string/replace.hpp>
+#include "PtgList.h"
 
 #include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
 
@@ -450,6 +452,143 @@ const bool SyntaxPtg::extract_PtgName(std::wstring::const_iterator& first, std::
 	return false;
 }
 
+// static
+const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::wstring::const_iterator last, PtgList& ptgList, unsigned short ixti)
+{
+	static boost::wregex reg_table_name(L"^(\\w[\\w\\d.]*)\\["); //tableName '=SUM(tblName[Total])'
+
+	boost::match_results<std::wstring::const_iterator> results;
+	if (boost::regex_search(first, last, results, reg_table_name))
+	{
+		std::wstring tableName;
+		_UINT32 indexTable;
+		tableName = results.str(1);
+
+		if (XMLSTUFF::isTableFmla(tableName, indexTable))
+		{
+			ptgList.listIndex = indexTable;
+			ptgList.squareBracketSpace = false;
+			ptgList.commaSpace = false;
+			ptgList.invalid = false;
+			ptgList.nonresident = false;
+			ptgList.ixti = ixti;
+			static boost::wregex reg_inside_table1(L"\\[#?\\w[\\s\\w\\d.]*\\]");
+			static boost::wregex reg_inside_table2(L"\\[#\\w[\\s\\w\\d.]*\\],\\[#\\w[\\s\\w\\d.]*\\]");
+			static boost::wregex reg_inside_table3(L"^[,;:]?\\[#?\\w[\\s\\w\\d.]*\\]");
+
+			first = results[1].second;
+
+			boost::match_results<std::wstring::const_iterator> results_1;
+			if (boost::regex_search(first, last, results_1, reg_inside_table1))
+			{
+				_UINT16 indexColumn = -1;
+				std::wstring insider;
+				ptgList.rowType = 0x00;
+				ptgList.columns = 0x00;
+				ptgList.colFirst = 65535;
+
+				insider = results_1.str(0);
+
+				if (insider == L"[#Data]")
+				{
+					if (boost::regex_search(first, last, results_1, reg_inside_table2))
+					{
+						if (results_1.str(0) == L"[#Data],[#Totals]")
+						{
+							ptgList.rowType = 0x0C;
+						}
+					}
+					else
+						ptgList.rowType = 0x00;
+
+				}
+				else if (insider == L"[#All]")
+				{
+					ptgList.rowType = 0x01;
+				}
+				else if (insider == L"[#Headers]")
+				{
+					if (boost::regex_search(first, last, results_1, reg_inside_table2))
+					{
+						if (results_1.str(0) == L"[#Headers],[#Data]")
+						{
+							ptgList.rowType = 0x06;
+						}
+					}
+					else
+						ptgList.rowType = 0x02;
+				}
+				else if (insider == L"[#Totals]")
+				{
+					ptgList.rowType = 0x08;
+				}
+				else if (insider == L"[#This Row]")
+				{
+					ptgList.rowType = 0x10;
+				}
+
+				else if (XMLSTUFF::isColumn(boost::algorithm::erase_last_copy(boost::algorithm::erase_first_copy(insider, L"["), L"]"), indexTable, indexColumn))
+				{
+					ptgList.rowType = 0x00;
+					ptgList.colFirst = indexColumn;
+					ptgList.columns = 0x01;
+				}
+
+				first = results_1[0].first;
+				first = results_1[0].second;
+
+				if (boost::regex_search(first, last, results_1, reg_inside_table3))
+				{
+					insider = results_1.str(0);
+					if (!insider.empty() && insider[0] != '[')
+						insider.erase(0, 1);
+
+					if (XMLSTUFF::isColumn(boost::algorithm::erase_last_copy(boost::algorithm::erase_first_copy(insider, L"["), L"]"), indexTable, indexColumn))
+					{
+						if (ptgList.colFirst == 65535)
+						{
+							ptgList.columns = 0x01;
+							ptgList.colFirst = indexColumn;
+
+							first = results_1[0].first;
+							first = results_1[0].second;
+
+							if (boost::regex_search(first, last, results_1, reg_inside_table3))
+							{
+								insider = results_1.str(0);
+								if (!insider.empty() && insider[0] != '[')
+									insider.erase(0, 1);
+
+								if (XMLSTUFF::isColumn(boost::algorithm::erase_last_copy(boost::algorithm::erase_first_copy(insider, L"["), L"]"), indexTable, indexColumn))
+								{
+									ptgList.columns = 0x02;
+									ptgList.colLast = indexColumn;
+								}
+							}
+						}
+						else
+						{
+							ptgList.columns = 0x02;
+							ptgList.colLast = indexColumn;
+						}
+					}
+					
+
+					first = results_1[0].first;
+					first = results_1[0].second;
+					
+				}
+
+				if (first != last && *first == ']')
+					++first;
+					
+				return true;
+				
+			}
+		}
+	}
+	return false;
+}
 
 // static
 const bool SyntaxPtg::extract_PtgRefErr(std::wstring::const_iterator& first, std::wstring::const_iterator last)

@@ -345,6 +345,35 @@ namespace OOX
 			{
 				m_bSpreadsheets = true;
 				read( oRootPath, oPath );
+
+				CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+				if (xlsb && !xlsb->IsWriteToXlsx())
+				{
+					if(m_oTable.IsInit())
+					{
+						int id = 0;
+						std::wstring name = L"";
+
+						if (m_oTable->m_oId.IsInit())
+							id = m_oTable->m_oId->GetValue();
+
+						if (m_oTable->m_oDisplayName.IsInit())
+							name = m_oTable->m_oDisplayName.get();
+
+						xlsb->GetGlobalinfo()->mapTableNames_static.insert({ id , name });
+						xlsb->GetGlobalinfo()->mapTableColumnNames_static.insert({ id, std::vector<std::wstring>() });
+
+						if (m_oTable->m_oTableColumns.IsInit())
+						{
+							for(const auto& column : m_oTable->m_oTableColumns->m_arrItems)
+							{
+								if (column->m_oName.IsInit())
+									xlsb->GetGlobalinfo()->mapTableColumnNames_static[id].push_back(column->m_oName.get());
+							}
+						}
+					}
+				}
+
 			}
 			virtual ~CTableFile()
 			{

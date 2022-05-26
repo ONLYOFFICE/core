@@ -239,12 +239,12 @@ namespace NSCSS
 
                     if (unPositionImp == std::wstring::npos)
                     {
-                        const float fValue = wcstof(ConvertUnitMeasure(pPropertie.second, m_pFont.GetSize()).c_str(), NULL);
+                        const float fValue = wcstof(ConvertUnitMeasure(pPropertie.second, m_pFont.GetSize() * 1.2).c_str(), NULL);
                         m_pFont.SetLineHeight(std::to_wstring(fValue * unCoefficient), unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        const float fValue = wcstof(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), m_pFont.GetSize()).c_str(), NULL);
+                        const float fValue = wcstof(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), m_pFont.GetSize() * 1.2).c_str(), NULL);
                         m_pFont.SetLineHeight(std::to_wstring(fValue * unCoefficient), unLevel, true);
                         m_pFont.SetImportantenLineHeight(true);
                     }
@@ -953,9 +953,6 @@ namespace NSCSS
                 //OTHER
                 CASE(L"width"):
                 {
-                        if (bIsThereBorder)
-                            break;
-
                         const size_t unPositionImp = pPropertie.second.find(L"!i");
                         if (unPositionImp == std::wstring::npos)
                         {

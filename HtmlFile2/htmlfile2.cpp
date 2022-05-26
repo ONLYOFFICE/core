@@ -1128,7 +1128,7 @@ private:
         NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors, false);
 
         // Начало таблицы
-        std::wstring wsTable = L"<w:tbl><w:tblPr><w:tblStyle w:val=\"\"/>";
+        std::wstring wsTable = L"<w:tbl><w:tblPr>";
 
         std::wstring wsWidth = oStyle.m_pDisplay.GetWidthW();
         std::wstring wsAlign = oStyle.m_pDisplay.GetAlign();
@@ -1150,8 +1150,7 @@ private:
         oStyle.m_pBorder.Unlock();
         if (oStyle.m_pBorder.Empty())
         {
-            wsTable.insert(35, L"table");
-            sBorders = L"<w:left w:val=\"single\" w:color=\"000000\" w:sz=\"4\" w:space=\"0\"/><w:top w:val=\"single\" w:color=\"000000\" w:sz=\"4\" w:space=\"0\"/><w:right w:val=\"single\" w:color=\"000000\" w:sz=\"4\" w:space=\"0\"/><w:bottom w:val=\"single\" w:color=\"000000\" w:sz=\"4\" w:space=\"0\"/>";
+            sBorders = L"<w:left w:val=\"none\" w:sz=\"4\" w:color=\"auto\" w:space=\"0\"/><w:top w:val=\"none\" w:sz=\"4\" w:color=\"auto\" w:space=\"0\"/><w:right w:val=\"none\" w:sz=\"4\" w:color=\"auto\" w:space=\"0\"/><w:bottom w:val=\"none\" w:color=\"auto\" w:sz=\"4\" w:space=\"0\"/>";
         }
         else
         {
@@ -1160,11 +1159,6 @@ private:
                 std::wstring sColor = oStyle.m_pBorder.GetColorBottomSide();
                 std::wstring sSz    = oStyle.m_pBorder.GetWidthBottomSideW();
                 std::wstring sStyle = oStyle.m_pBorder.GetStyleBottomSide();
-
-                if (L"none" == sStyle)
-                        wsTable.insert(35, oStyle.GetId());
-                else
-                        wsTable.insert(35, L"table");
 
                 sBorders =  L"<w:top w:val=\""      + sStyle + L"\" w:color=\"" + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>" +
                             L"<w:left w:val=\""     + sStyle + L"\" w:color=\"" + sColor + L"\" w:sz=\"" + sSz + L"\" w:space=\"0\"/>" +
@@ -1175,8 +1169,6 @@ private:
             }
             else
             {
-                    wsTable.insert(35, oStyle.GetId());
-
                     std::wstring sColorLeftSide     = oStyle.m_pBorder.GetColorLeftSide();
                     std::wstring sSzLeftSide        = oStyle.m_pBorder.GetWidthLeftSideW();
                     std::wstring sStyleLeftSide     = oStyle.m_pBorder.GetStyleLeftSide();

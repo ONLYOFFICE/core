@@ -1763,7 +1763,7 @@ namespace NSCSS
 
                 bool Empty() const
                 {
-                    return fWidth  < 0;
+                    return fWidth < 0 && !bBlock;
                 }
 
                 void SetWidthWithoutChecking(const float& fWidth, const unsigned int& unLevel, const bool &bHardMode = false)
@@ -2490,7 +2490,7 @@ namespace NSCSS
                 std::vector<unsigned int> arLevels;
             public:
 
-                Background() : bImportants({false}), arLevels({0}), bInBorder(false){}
+                Background() : bInBorder(false), bImportants({false}), arLevels({0}){}
 
                 void ClearImportants()
                 {

@@ -863,8 +863,8 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 		drawing->relativeHeight	= L"2";
         drawing->behindDoc		= L"0";
 
-		if (((drawing->styleWrap && drawing->styleWrap->get_type() == style_wrap::RunThrough) ||
-			!drawing->styleWrap) && styleRunThrough && styleRunThrough->get_type() == run_through::Background)
+		if (((drawing->styleWrap && drawing->styleWrap->get_type() == style_wrap::RunThrough) || !drawing->styleWrap) 
+			&& ((styleRunThrough && styleRunThrough->get_type() == run_through::Background) || !styleRunThrough))
         {
            drawing->behindDoc = L"1";  
 		   if (!drawing->styleWrap)

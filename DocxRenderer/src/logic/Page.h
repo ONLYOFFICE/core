@@ -5,10 +5,6 @@
 
 namespace NSDocxRenderer
 {
-    const double STANDART_STRING_HEIGHT_MM		= 4.2333333333333334;
-    const double THE_SAME_STRING_Y_PRECISION_MM = 0.01;
-    const double THE_STRING_X_PRECISION_MM      = 0.1;
-
     const double STANDART_LEFT_INDENT_MM = 30;
     const double STANDART_RIGHT_INDENT_MM = 15;
     const double STANDART_FIRSTLINE_INDENT_MM = 12.5;
@@ -91,9 +87,11 @@ namespace NSDocxRenderer
         void ClearParagraphsBlocks();
 
         void SetCurrentLineByBaseline(const double& dBaseLinePos);
+        //удаляем то, что выходит за границы страницы
         void DeleteTextClipPage();
 
         // image commands
+        //набивается содержимым вектор m_arGraphicItems
         void WriteImage(CImageInfo& oInfo, double& fX, double& fY, double& fWidth, double& fHeight);
 
         // path commands
@@ -103,8 +101,10 @@ namespace NSDocxRenderer
         void Start();
         void End();
         void Close();
+        //набивается содержимым вектор m_arGraphicItems
         void DrawPath(LONG lType, LONG lTxId);
 
+        //набивается содержимым вектор m_arTextLine
         void WriteText(unsigned int* pUnicodes, unsigned int* pGids, unsigned int nCount,
                        double fX, double fY, double fWidth, double fHeight,
                        double fBaseLineOffset, bool bIsPDFAnalyzer);
@@ -115,11 +115,13 @@ namespace NSDocxRenderer
         void BuildByTypePlainLine();
         void BuildByTypePlainParagraph();
 
+        //вычисляем примерный тип выравнивания строки
         void CalculateTextAlignmentType(CParagraph& a_rParagraph);
 
         //Объединяем строки, которые находятся на расстроянии не большем dAffinity
         void Merge(double dAffinity);
 
+        //конвертим m_arGraphicItems, m_arParagraphs и m_arParagraphsBlocks в xml-строку
         void Write(NSStringUtils::CStringBuilder& oWriter);
 
         void WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter);

@@ -42,6 +42,7 @@ HEADERS += \
 SOURCES += \
     src/logic/Document.cpp \
     src/logic/ElementParagraph.cpp \
+    src/logic/ElementShape.cpp \
     src/logic/Page.cpp \
     src/resources/resources.cpp \
     \

@@ -1,10 +1,15 @@
-﻿#pragma once
+﻿#ifndef DOCX_RENDERER_ELEMENT_PARAGRAPH_H
+#define DOCX_RENDERER_ELEMENT_PARAGRAPH_H
+
 #include "Common.h"
 #include "FontManager.h"
 
 namespace NSDocxRenderer
 {
     const double c_dMMToDx	 = 72 * 20 / 25.4;
+    const double c_dSTANDART_STRING_HEIGHT_MM		= 4.2333333333333334;
+    const double c_dTHE_SAME_STRING_Y_PRECISION_MM = 0.01;
+    const double c_dTHE_STRING_X_PRECISION_MM      = 0.5;
 
     // у класса T должен быть метод IsBigger, IsBiggerOrEqual
     template<typename T>
@@ -185,15 +190,17 @@ namespace NSDocxRenderer
     public:
         enum TextAlignmentType
         {
-            TextAlignmentType_ByLeftEdge        = 0,
-            TextAlignmentType_ByCenter          = 1,
-            TextAlignmentType_ByRightEdge       = 2,
-            TextAlignmentType_ByWidth           = 3
+            TextAlignmentType_Unknown,
+            TextAlignmentType_ByLeftEdge,
+            TextAlignmentType_ByCenter,
+            TextAlignmentType_ByRightEdge,
+            TextAlignmentType_ByWidth
         };
 
         // text frame properties
         bool		m_bIsTextFrameProperties;
         bool		m_bIsNeedFirstLineIndent;
+        bool        m_bIsAroundTextWrapping;
         TextAlignmentType m_eTextAlignmentType;
 
         // geometry paragraph
@@ -213,7 +220,7 @@ namespace NSDocxRenderer
         std::vector<CTextLine*> m_arLines;
 
         // statistic
-        size_t      m_numLines; //число изначально входящих линий
+        size_t      m_nNumLines; //число изначально входящих линий
 
     public:
         CParagraph(const TextAssociationType& eType);
@@ -226,5 +233,7 @@ namespace NSDocxRenderer
         virtual void ToXml(NSStringUtils::CStringBuilder& oWriter);
 
         void CalculateTextAlignmentType();
-    };
+   };
 }
+
+#endif // DOCX_RENDERER_ELEMENT_PARAGRAPH_H

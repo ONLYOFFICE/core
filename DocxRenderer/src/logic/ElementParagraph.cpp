@@ -254,6 +254,7 @@ namespace NSDocxRenderer
     void CContText::AddSpaceToEnd()
     {
         m_bIsNeedSpaceAtTheEnd = true;
+        m_dWidth += m_dSpaceWidthMM;
     }
 
     CTextLine::CTextLine() : m_arConts()
@@ -381,26 +382,29 @@ namespace NSDocxRenderer
         {
             CContText* pCurrent = m_arConts[i];
 
+            double dFirstRight = pFirst->m_dX + pFirst->m_dWidth;
+            double dCurrLeft = pCurrent->m_dX;
+            double dDelta = dFirstRight - dCurrLeft;
+
             if (pFirst->m_strPickFontName != pCurrent->m_strPickFontName ||
-                    pFirst->m_oFont.Bold != pCurrent->m_oFont.Bold ||
-                    pFirst->m_oFont.Italic != pCurrent->m_oFont.Italic)
+                pFirst->m_oFont.Bold != pCurrent->m_oFont.Bold ||
+                pFirst->m_oFont.Italic != pCurrent->m_oFont.Italic ||
+                fabs(dDelta) > c_dTHE_STRING_X_PRECISION_MM)
             {
                 // вообще надо бы все объединить. но пока этот метод на соединение "первых"
-                break;
-            }
-
-            double dRight = pFirst->m_dX + pFirst->m_dWidth;
-            double dLeft = pCurrent->m_dX;
-
-            if (fabs(dRight - dLeft) > 0.1)
-            {
-                // вообще надо бы все объединить. но пока этот метод на соединение "первых"
-                break;
+                //break;
+                if (i < nCountConts - 1)
+                {
+                    //переходим на
+                    pFirst = m_arConts[i];
+                }
+                continue;
             }
 
             // продолжаем слово
             pFirst->m_oText += pCurrent->m_oText;
-            pFirst->m_dWidth = (dLeft + pCurrent->m_dWidth - pFirst->m_dX);
+            //pFirst->m_dWidth = (dLeft + pCurrent->m_dWidth - pFirst->m_dX);
+            pFirst->m_dWidth += pCurrent->m_dWidth + fabs(dDelta);
 
             pFirst->m_dWidthWithoutSpaces < 0.0001 ?
                         pFirst->m_dLeftWithoutSpaces = pCurrent->m_dLeftWithoutSpaces :
@@ -415,11 +419,11 @@ namespace NSDocxRenderer
 
     void CTextLine::CalculateWidth()
     {
-        m_dWidth = 1; //это хак - по идее должно == 0.
+        m_dWidth = 1; //todo исправить этот хак - по идее должно == 0.
         for (size_t i = 0; i < m_arConts.size(); ++i)
         {
             m_dWidth += m_arConts[i]->m_dWidthWithoutSpaces;
-            m_dWidth += m_arConts[i]->m_dSpaceWidthMM;
+            m_dWidth += m_arConts[i]->m_dSpaceWidthMM; //заранее добавляем ширину пробелов
         }
     }
 
@@ -430,6 +434,7 @@ namespace NSDocxRenderer
         if (pCurrent->m_oText[pCurrent->m_oText.length()-1] != uint32_t(' '))
         {
             pCurrent->AddSpaceToEnd();
+            this->m_dWidth += pCurrent->m_dSpaceWidthMM;
         }
     }
 
@@ -470,7 +475,7 @@ namespace NSDocxRenderer
 
             dDelta = pCurrent->m_dLeftWithoutSpaces - (pPrev->m_dLeftWithoutSpaces + pPrev->m_dWidthWithoutSpaces);
 
-            if (dDelta < 0.5)
+            if (dDelta < c_dTHE_STRING_X_PRECISION_MM)
             {
                 // просто текст на тексте или сменились настройки (font/brush)
                 pPrev->Write(oWriter, pManagerLight);
@@ -500,7 +505,8 @@ namespace NSDocxRenderer
 
         m_bIsTextFrameProperties	= false;
         m_bIsNeedFirstLineIndent    = false;
-        m_eTextAlignmentType = TextAlignmentType_ByWidth;
+        m_bIsAroundTextWrapping     = true; //по умолчанию
+        m_eTextAlignmentType = TextAlignmentType_Unknown;
 
         m_dLeft		= 0.0;
         m_dRight    = 0.0;
@@ -515,7 +521,7 @@ namespace NSDocxRenderer
         m_pManagerLight = NULL;
         m_eTextAssociationType = eType;
 
-        m_numLines  = 0;
+        m_nNumLines  = 0;
     }
     CParagraph::CParagraph(const CParagraph& oSrc)
     {
@@ -550,6 +556,7 @@ namespace NSDocxRenderer
 
         m_bIsTextFrameProperties	= oSrc.m_bIsTextFrameProperties;
         m_bIsNeedFirstLineIndent    = oSrc.m_bIsNeedFirstLineIndent;
+        m_bIsAroundTextWrapping     = oSrc.m_bIsAroundTextWrapping;
         m_eTextAlignmentType        = oSrc.m_eTextAlignmentType;
 
         m_dLeft		= oSrc.m_dLeft;
@@ -573,7 +580,7 @@ namespace NSDocxRenderer
 
         m_pManagerLight = oSrc.m_pManagerLight;
 
-        m_numLines = oSrc.m_numLines;
+        m_nNumLines = oSrc.m_nNumLines;
         return *this;
     }
 
@@ -598,7 +605,21 @@ namespace NSDocxRenderer
         {
             if (m_bIsTextFrameProperties)
             {
-                oWriter.WriteString(L"<w:pPr><w:framePr w:hAnchor=\"page\" w:vAnchor=\"page\" w:x=\"");
+                if (m_eTextAssociationType == TextAssociationTypePlainParagraph)
+                {
+                    if (m_bIsAroundTextWrapping)
+                    {
+                        oWriter.WriteString(L"<w:pPr><w:framePr w:wrap=\"around\" w:hAnchor=\"page\" w:vAnchor=\"page\" w:x=\"");
+                    }
+                    else
+                    {
+                        oWriter.WriteString(L"<w:pPr><w:framePr w:wrap=\"notBeside\" w:hAnchor=\"page\" w:vAnchor=\"page\" w:x=\"");
+                    }
+                }
+                else
+                {
+                    oWriter.WriteString(L"<w:pPr><w:framePr w:hAnchor=\"page\" w:vAnchor=\"page\" w:x=\""); //по умолчанию обтекание включено
+                }
                 oWriter.AddInt((int)(m_dLeft * c_dMMToDx));
                 oWriter.WriteString(L"\" w:y=\"");
                 oWriter.AddInt((int)(m_dTop * c_dMMToDx));
@@ -609,9 +630,9 @@ namespace NSDocxRenderer
             oWriter.AddInt((int)(m_dSpaceBefore * c_dMMToDx));
             oWriter.WriteString(L"\" w:line=\"");
             oWriter.AddInt((int)(m_dHeight * c_dMMToDx));
-            oWriter.WriteString(L"\" w:lineRule=\"exact\"/><w:ind w:left=\"");
+            oWriter.WriteString(L"\" w:lineRule=\"exact\"/><w:ind w:left=\""); // exact - точный размер строки
             oWriter.AddInt((int)(m_dLeft * c_dMMToDx));
-            if (m_dRight > 0.0)
+            if (m_eTextAssociationType == TextAssociationTypePlainParagraph)
             {
                 oWriter.WriteString(L"\" w:right=\"");
                 oWriter.AddInt((int)(m_dRight * c_dMMToDx));
@@ -636,7 +657,9 @@ namespace NSDocxRenderer
                     oWriter.WriteString(L"\"/><w:jc w:val=\"both");
                     break;
                 case TextAlignmentType_ByLeftEdge:
-                default:
+                    oWriter.WriteString(L"\"/><w:jc w:val=\"begin");
+                    break;
+                default: //по умолчанию выравнивание по левому краю - можно ничего не добавлять
                     break;
                 }
             }

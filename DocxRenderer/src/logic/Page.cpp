@@ -127,14 +127,14 @@ namespace NSDocxRenderer
             m_arTextLine.push_back(m_pCurrentLine);
             return;
         }
-        if (fabs(m_pCurrentLine->m_dBaselinePos - dBaseLinePos) <= THE_SAME_STRING_Y_PRECISION_MM)
+        if (fabs(m_pCurrentLine->m_dBaselinePos - dBaseLinePos) <= c_dTHE_SAME_STRING_Y_PRECISION_MM)
         {
             return;
         }
         size_t nCount = m_arTextLine.size();
         for (size_t i = 0; i < nCount; ++i)
         {
-            if (fabs(m_arTextLine[i]->m_dBaselinePos - dBaseLinePos) <= THE_SAME_STRING_Y_PRECISION_MM)
+            if (fabs(m_arTextLine[i]->m_dBaselinePos - dBaseLinePos) <= c_dTHE_SAME_STRING_Y_PRECISION_MM)
             {
                 m_pCurrentLine = m_arTextLine[i];
                 return;
@@ -471,8 +471,7 @@ namespace NSDocxRenderer
             else if ((dRight < dTextX) && ((dTextX - dRight) < m_oManager.m_dSpaceWidthMM))
             {
                 // продолжаем слово с пробелом
-                if (m_eTextAssociationType != TextAssociationTypePlainLine &&
-                        m_eTextAssociationType != TextAssociationTypePlainParagraph)
+                if (m_eTextAssociationType != TextAssociationTypePlainParagraph)
                 {
                     pLastCont->m_oText += uint32_t(' ');
                 }
@@ -535,8 +534,7 @@ namespace NSDocxRenderer
                 if (dTextX > dRight && (dTextX - dRight) < 5 && fabs(m_dLastTextX_block - m_dLastTextX) < 0.01)
                 {
                     // продолжаем слово с пробелом
-                    if (m_eTextAssociationType != TextAssociationTypePlainLine &&
-                            m_eTextAssociationType != TextAssociationTypePlainParagraph)
+                    if (m_eTextAssociationType != TextAssociationTypePlainParagraph)
                     {
                         pLastCont->m_oText += uint32_t(' ');
                     }
@@ -630,9 +628,6 @@ namespace NSDocxRenderer
         default:
             break;
         }
-
-        m_arTextLine.clear(); //todo удалить нельзя и ClearTextLines(); тоже нельзя - наверное переделать
-        //использовать не указатели, а новые объекты
     }
 
     void CPage::BuildByTypeBlockChar()
@@ -640,7 +635,7 @@ namespace NSDocxRenderer
         size_t nCount = m_arTextLine.size();
         for (size_t i = 0; i < nCount; ++i)
         {
-            CTextLine* pTextLine = m_arTextLine[i];
+            CTextLine* pTextLine = new CTextLine(*m_arTextLine[i]);;
 
             CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
             pParagraph->m_pManagerLight = &m_oManagerLight;
@@ -657,7 +652,7 @@ namespace NSDocxRenderer
 
     void CPage::BuildByTypeBlockLine()
     {
-        CTextLine* pFirstLine = m_arTextLine[0];
+        CTextLine* pFirstLine = new CTextLine(*m_arTextLine[0]);
 
         CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
         pParagraph->m_pManagerLight = &m_oManagerLight;
@@ -673,13 +668,13 @@ namespace NSDocxRenderer
         size_t nCount = m_arTextLine.size();
         for (size_t i = 1; i < nCount; ++i)
         {
-            CTextLine* pTextLine = m_arTextLine[i];
+            CTextLine* pTextLine = new CTextLine(*m_arTextLine[i]);
 
             CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
             pParagraph->m_pManagerLight = &m_oManagerLight;
             pParagraph->m_bIsTextFrameProperties = true;
 
-            if (((fabs(pTextLine->m_dBaselinePos - pTextLine->m_dHeight - pFirstLine->m_dBaselinePos) > STANDART_STRING_HEIGHT_MM) && (pTextLine->m_dX == pFirstLine->m_dX)) ||
+            if (((fabs(pTextLine->m_dBaselinePos - pTextLine->m_dHeight - pFirstLine->m_dBaselinePos) > c_dSTANDART_STRING_HEIGHT_MM) && (pTextLine->m_dX == pFirstLine->m_dX)) ||
                     ((pTextLine->m_dX != pFirstLine->m_dX) && (pTextLine->m_dBaselinePos != pFirstLine->m_dBaselinePos)))
             {
                 pParagraph->m_dLeft	= pTextLine->m_dX;
@@ -712,14 +707,14 @@ namespace NSDocxRenderer
                     (*iter)->Analyze();
                 }
             }
-            Merge(STANDART_STRING_HEIGHT_MM / 3);
+            Merge(c_dSTANDART_STRING_HEIGHT_MM / 3);
         }
 
         double previousStringOffset = 0;
         size_t nCount = m_arTextLine.size();
         for (size_t i = 0; i < nCount; ++i)
         {
-            CTextLine* pTextLine = m_arTextLine[i];
+            CTextLine* pTextLine = new CTextLine(*m_arTextLine[i]);;
 
             CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
             pParagraph->m_pManagerLight = &m_oManagerLight;
@@ -764,11 +759,11 @@ namespace NSDocxRenderer
             previousStringOffset = pTextLine->m_dBaselinePos - pTextLine->m_dBaselineOffset;
 
             pParagraph->m_arLines.push_back(pTextLine);
-            pParagraph->m_numLines++;
+            pParagraph->m_nNumLines++;
 
-            if (m_eTextAssociationType != TextAssociationTypePlainLine)
+            if (m_eTextAssociationType == TextAssociationTypePlainParagraph)
             {
-                CalculateTextAlignmentType(*pParagraph);
+               CalculateTextAlignmentType(*pParagraph);
             }
 
             m_arParagraphs.push_back(pParagraph);
@@ -779,26 +774,26 @@ namespace NSDocxRenderer
     {
         if (a_rParagraph.m_dFirstLine == 0) //еще не был определен или для параграфа с одной строкой внутри
         {
-            static double maxSringWidth = m_dWidth / 4 * 3; //нужна какая-нибудь константа...
-            static const double ERROR_X_MM = 3;
-            double delta = 2 * ERROR_X_MM; //координата m_dWidth/2 +- THE_STRING_X_PRECISION_MM
+            static const double maxStringWidth = m_dWidth/2; //нужна какая-нибудь константа...
+            static const double ERROR_X_MM = 1;
+            double delta = 2 * ERROR_X_MM; //координата m_dWidth/2 +- c_dTHE_STRING_X_PRECISION_MM
 
-            if (fabs(m_dWidth/2 - a_rParagraph.m_dLeft - a_rParagraph.m_dWidth/2) <= delta && //если середины линий по x одинаковы
-                    a_rParagraph.m_dWidth < maxSringWidth)
+            /*if (fabs(m_dWidth/2 - a_rParagraph.m_dLeft - a_rParagraph.m_dWidth/2) <= delta && //если середины линий по x одинаковы
+                    a_rParagraph.m_dWidth < maxStringWidth )
             {
                 a_rParagraph.m_eTextAlignmentType = CParagraph::TextAlignmentType_ByCenter;
             }
             else if ((a_rParagraph.m_dLeft + a_rParagraph.m_dWidth/2) > (m_dWidth/2 + ERROR_X_MM) && //середина строки правее центра страницы
-                     a_rParagraph.m_dWidth < maxSringWidth)
+                     a_rParagraph.m_dWidth < maxStringWidth)
             {
                 a_rParagraph.m_eTextAlignmentType = CParagraph::TextAlignmentType_ByRightEdge;
             }
             else if ((a_rParagraph.m_dLeft + a_rParagraph.m_dWidth/2) < (m_dWidth/2 - ERROR_X_MM) && //середина строки левее центра страницы
-                     a_rParagraph.m_dWidth < maxSringWidth)
+                     a_rParagraph.m_dWidth < maxStringWidth)
             {
                 a_rParagraph.m_eTextAlignmentType = CParagraph::TextAlignmentType_ByLeftEdge;
             }
-            else
+            else*/
             {
                 a_rParagraph.m_eTextAlignmentType = CParagraph::TextAlignmentType_ByWidth;
             }
@@ -814,144 +809,212 @@ namespace NSDocxRenderer
 
     void CPage::BuildByTypePlainParagraph()
     {
-        //todo возможно лучше разделить все сразу на фреймы и параграфы, до разбиения по линиям,
-        //т.к. если разномастный текст находится на примерно одной линии его корректно будет сложно отобразить
-        BuildByTypePlainLine();
+        //todo если линия содержит длинный пробел, то выравнивание по правому краю неправильно
+        //(больше чем нужно относительно правого края) Поэтому строка переносится
 
-        CParagraph *currP, *nextP;
+        //todo не отображается перенос в линии
+        //todo если в линии есть перенос нужно обеъдинить строки в один параграф
 
-        //todo выравнивание m_arParagraphsBlocks с TextAlignmentType_ByWidth по всей странице для нескольких стилей
-        //пока работает только если присутствует один стиль сплошного текста
-        double corrRight = 0, corrHeight = 0; //
+        //todo добавить различные типы текста для распознавания: обычный-сплошной, списки-содержание и тд
 
-        //todo добавить междустрочные интервалы если их нет
+        SortElements(m_arTextLine);
+        for (std::vector<CTextLine*>::iterator iter = m_arTextLine.begin(); iter != m_arTextLine.end(); ++iter)
+        {
+            (*iter)->SortConts();
+            (*iter)->Analyze();
+            (*iter)->CalculateWidth();
+        }
 
-        //коррекция BeforeSpacing
-        double corrBeforeSpacing = 0;
+        CTextLine *pCurrLine, *pNextLine, *pPrevLine;
+        double dCurrRight = 0, dNextRight = 0;
+        double dCurrBeforeSpacing = 0, dNextBeforeSpacing = 0, dPrevBeforeSpacing = 0;
+        double dPreviousStringOffset = 0;
 
-        for (size_t index = 0; index < m_arParagraphs.size(); index++)
+        for (size_t index = 0; index < m_arTextLine.size(); ++index)
         {
             size_t nextIndex = index+1;
             CParagraph* pParagraph = nullptr;
 
-            currP = m_arParagraphs[index];
-            nextIndex == m_arParagraphs.size() ?
-                        nextP = nullptr :
-                    nextP = m_arParagraphs[nextIndex];
+            pCurrLine = new CTextLine(*m_arTextLine[index]);
+            nextIndex == m_arTextLine.size() ?
+                    pNextLine = nullptr :
+                    pNextLine = m_arTextLine[nextIndex];
 
-            corrBeforeSpacing = 0;
+            dCurrRight = m_dWidth - (pCurrLine->m_dX + pCurrLine->m_dWidth + pCurrLine->m_arConts.back()->m_dSpaceWidthMM); //добавляем ширину пробела
+            if (pNextLine)
+                dNextRight = m_dWidth - (pNextLine->m_dX + pNextLine->m_dWidth + pNextLine->m_arConts.back()->m_dSpaceWidthMM);
 
-            //todo пока только для левостроннего письма! - tmp!
-            if (nextP && //это должна быть не последняя строка
-                    fabs(currP->m_dHeight - nextP->m_dHeight) <= THE_SAME_STRING_Y_PRECISION_MM && //высота строк должна быть примерно одинаковой
-                    (currP->m_eTextAlignmentType == CParagraph::TextAlignmentType_ByLeftEdge || //todo - есть проблема если весь текст выровнен по центру
-                     currP->m_eTextAlignmentType == CParagraph::TextAlignmentType_ByWidth) &&
-                    ((currP->m_dLeft > nextP->m_dLeft && fabs(currP->m_dRight - nextP->m_dRight) > THE_STRING_X_PRECISION_MM) ||
-                     (fabs(currP->m_dRight - nextP->m_dRight) <= THE_STRING_X_PRECISION_MM)))
+            dPrevBeforeSpacing = dCurrBeforeSpacing;
+            dCurrBeforeSpacing = pCurrLine->m_dBaselinePos - dPreviousStringOffset - pCurrLine->m_dHeight - pCurrLine->m_dBaselineOffset;
+            dPreviousStringOffset = pCurrLine->m_dBaselinePos - pCurrLine->m_dBaselineOffset;
+
+
+            if (pNextLine &&
+                fabs(pCurrLine->m_dBaselinePos - pNextLine->m_dBaselinePos - pNextLine->m_dHeight) < c_dSTANDART_STRING_HEIGHT_MM &&
+                //fabs(pCurrLine->m_dBaselinePos - pNextLine->m_dBaselinePos) < c_dTHE_SAME_STRING_Y_PRECISION_MM && //если примерно на одной строке
+                fabs(pCurrLine->m_dX + pCurrLine->m_dWidth - pNextLine->m_dX) > c_dTHE_STRING_X_PRECISION_MM)  //но расстрояние между словами нестандартное в этом месте
+            {
+                //todo фреймы не работают корректно с параграфами, переделать в шейпы
+                //будет фреймом
+                pParagraph = new CParagraph(m_eTextAssociationType);
+                pParagraph->m_pManagerLight = &m_oManagerLight;
+                pParagraph->m_bIsTextFrameProperties = true;
+
+                pParagraph->m_dLeft	= pCurrLine->m_dX;
+                pParagraph->m_dTop	= pCurrLine->m_dBaselinePos - pCurrLine->m_dHeight - pCurrLine->m_dBaselineOffset;
+
+                pParagraph->m_dFirstLine = 0;
+                pParagraph->m_dRight = dCurrRight;
+                pParagraph->m_dWidth = pCurrLine->m_dWidth;
+                pParagraph->m_dHeight = pCurrLine->m_dHeight;
+
+                pParagraph->m_dSpaceBefore = std::max(dCurrBeforeSpacing, 0.0);
+                pParagraph->m_dBaselinePos = pCurrLine->m_dBaselinePos;
+
+                pParagraph->m_arLines.push_back(pCurrLine);
+                pParagraph->m_nNumLines++;
+            }
+            else if (pNextLine && //это должна быть не последняя строка
+                    fabs(pCurrLine->m_dHeight - pNextLine->m_dHeight) <= c_dTHE_SAME_STRING_Y_PRECISION_MM && //высота строк должна быть примерно одинаковой
+                    //(pCurrLine->m_eTextAlignmentType == CParagraph::TextAlignmentType_ByLeftEdge || //todo - есть проблема если весь текст выровнен по центру
+                     //pCurrLine->m_eTextAlignmentType == CParagraph::TextAlignmentType_ByWidth) &&
+                    ((pCurrLine->m_dX > pNextLine->m_dX && //есть отступ
+                      (fabs(dCurrRight - dNextRight) <= c_dTHE_STRING_X_PRECISION_MM || dCurrRight < dNextRight)) || //а следующая строка либо короче, либо такая же
+                    ((pCurrLine->m_dX == pNextLine->m_dX && //нет отступа
+                      (fabs(dCurrRight - dNextRight) <= c_dTHE_STRING_X_PRECISION_MM || dCurrRight < dNextRight))) //а следующая строка либо короче, либо такая же
+            ))
             {
                 index++;
 
                 //наверное это сплошной текст
-                pParagraph = new CParagraph(*currP);
+                pParagraph = new CParagraph(m_eTextAssociationType);
+                pParagraph->m_pManagerLight = &m_oManagerLight;
+                pParagraph->m_bIsTextFrameProperties = false;
 
                 //делаем абзац в сплошном тексте
-                pParagraph->m_bIsNeedFirstLineIndent = true;
+                pParagraph->m_bIsNeedFirstLineIndent = pCurrLine->m_dX > pNextLine->m_dX ? true : false;
 
-                //Объединим 2 параграфа-строчки
-                pParagraph->m_arLines.back()->AddSpaceToEnd();
-                for (size_t i = 0; i < nextP->m_arLines.size(); ++i)
+                pParagraph->m_dFirstLine = pCurrLine->m_dX - pNextLine->m_dX;
+                pParagraph->m_dRight = std::min(dCurrRight, dNextRight);
+                pParagraph->m_dLeft = std::min(pCurrLine->m_dX, pNextLine->m_dX);
+                pParagraph->m_dWidth = std::max(pCurrLine->m_dWidth + pCurrLine->m_arConts.back()->m_dSpaceWidthMM,
+                                                pNextLine->m_dWidth + pNextLine->m_arConts.back()->m_dSpaceWidthMM);
+                pParagraph->m_dSpaceBefore = std::max(dCurrBeforeSpacing, 0.0);
+                pParagraph->m_dBaselinePos = pCurrLine->m_dBaselinePos;
+                if (fabs(dCurrRight - dNextRight) <= c_dTHE_STRING_X_PRECISION_MM)
                 {
-                    pParagraph->m_arLines.push_back(new CTextLine(*nextP->m_arLines[i]));
-                    pParagraph->m_numLines++;
+                    pParagraph->m_eTextAlignmentType = CParagraph::TextAlignmentType_ByWidth;
                 }
-                pParagraph->m_dFirstLine = currP->m_dLeft - nextP->m_dLeft;
-                pParagraph->m_dRight = std::min(currP->m_dRight, nextP->m_dRight);
-                pParagraph->m_dLeft = std::min(currP->m_dLeft, nextP->m_dLeft);
-                pParagraph->m_dWidth = std::max(currP->m_dWidth, nextP->m_dWidth);
-                pParagraph->m_dHeight = (pParagraph->m_dHeight + nextP->m_dHeight) / 2; //берем среднее
 
-                //для последующей коррекции
-                corrRight > 0 ?
-                            corrRight = (corrRight + currP->m_dRight)/2:
-                        corrRight = currP->m_dRight;
-                corrHeight > 0 ?
-                            corrHeight = (corrHeight + currP->m_dHeight)/2:
-                        corrHeight = currP->m_dHeight;
-                corrBeforeSpacing = nextP->m_dSpaceBefore;
+                dNextBeforeSpacing = pNextLine->m_dBaselinePos - dPreviousStringOffset - pNextLine->m_dHeight - pNextLine->m_dBaselineOffset;
+                dPreviousStringOffset = pNextLine->m_dBaselinePos - pNextLine->m_dBaselineOffset;
+                //междустрочный интервал во всем параграфе
+                pParagraph->m_dHeight = pCurrLine->m_dHeight + dNextBeforeSpacing;
 
-                //проверим, подходят ли следующие параграфы-строчки для текущего pParagraph
-                if (nextIndex < m_arParagraphs.size()-1)
+                //Объединим 2 строчки в параграф
+                pParagraph->m_arLines.push_back(pCurrLine);
+                pParagraph->m_nNumLines++;
+                pParagraph->m_arLines.back()->AddSpaceToEnd();
+                //todo записать все строки из одного параграфа в одну строчку
+                //pParagraph->m_arLines.back()->m_arConts.back()->m_oText += pNextLine->m_arConts.back()->m_oText;
+                pParagraph->m_arLines.push_back(new CTextLine(*pNextLine));
+                pParagraph->m_nNumLines++;
+
+                //проверим, подходят ли следующие строчки для текущего pParagraph
+                if (nextIndex < m_arTextLine.size()-1)
                 {
-                    currP = nextP;
-                    ++nextIndex;
-                    nextP = m_arParagraphs[nextIndex];
+                    nextIndex++;
+                    pPrevLine = pCurrLine;
+                    pCurrLine = pNextLine;
+                    pNextLine = m_arTextLine[nextIndex];
 
-                    while(nextIndex < m_arParagraphs.size() &&
-                          fabs(currP->m_dHeight - nextP->m_dHeight) < THE_SAME_STRING_Y_PRECISION_MM &&
-                          fabs(currP->m_dSpaceBefore - nextP->m_dSpaceBefore) <= THE_SAME_STRING_Y_PRECISION_MM && //расстрояние между строк тоже одинаково
-                          (currP->m_eTextAlignmentType == nextP->m_eTextAlignmentType ||
-                           nextP->m_eTextAlignmentType == CParagraph::TextAlignmentType_ByLeftEdge) &&
-                          fabs(currP->m_dLeft - nextP->m_dLeft) < THE_STRING_X_PRECISION_MM  //у последующих строк одинаковый отступ
+                    dPrevBeforeSpacing = dCurrBeforeSpacing;
+                    dCurrBeforeSpacing = dNextBeforeSpacing;
+                    dNextBeforeSpacing = pNextLine->m_dBaselinePos - dPreviousStringOffset - pNextLine->m_dHeight - pNextLine->m_dBaselineOffset;
+
+                    dCurrRight = dNextRight;
+                    dNextRight = m_dWidth - (pNextLine->m_dX + pNextLine->m_dWidth + pNextLine->m_arConts.back()->m_dSpaceWidthMM);
+
+                    while(nextIndex < m_arTextLine.size()-1 &&
+                          fabs(pCurrLine->m_dHeight - pNextLine->m_dHeight) < c_dTHE_SAME_STRING_Y_PRECISION_MM && //высота строк должна быть примерно одинаковой
+                          fabs(dCurrBeforeSpacing - dNextBeforeSpacing) < c_dTHE_SAME_STRING_Y_PRECISION_MM && //расстрояние между строк тоже одинаково
+                          //(pCurrLine->m_eTextAlignmentType == pNextLine->m_eTextAlignmentType ||
+                           //pNextLine->m_eTextAlignmentType == CParagraph::TextAlignmentType_ByLeftEdge) &&
+                          ((fabs(pCurrLine->m_dX - pNextLine->m_dX) <= c_dTHE_STRING_X_PRECISION_MM && //у последующих строк нет отступа относительно предыдущей непервой строки
+                            (fabs(dCurrRight - dNextRight) <= c_dTHE_STRING_X_PRECISION_MM || dCurrRight < dNextRight))) //а следующая строка либо короче, либо такая же
                           )
                     {
                         index++;
 
                         //Объединим 2 параграфа-строчки
                         pParagraph->m_arLines.back()->AddSpaceToEnd();
-                        for (size_t i = 0; i < nextP->m_arLines.size()-1; ++i)
+                        //pParagraph->m_arLines.back()->m_arConts.back()->m_oText += pNextLine->m_arConts.back()->m_oText;
+                        pParagraph->m_arLines.push_back(new CTextLine(*pNextLine));
+                        pParagraph->m_nNumLines++;
+
+                        dCurrRight = dNextRight;
+                        dNextRight = m_dWidth - (pNextLine->m_dX + pNextLine->m_dWidth + pNextLine->m_arConts.back()->m_dSpaceWidthMM);
+
+                        pParagraph->m_dRight = std::min(pParagraph->m_dRight, dNextRight);
+                        pParagraph->m_dLeft = std::min(pParagraph->m_dLeft, pNextLine->m_dX);
+                        pParagraph->m_dWidth = std::max(pParagraph->m_dWidth, pNextLine->m_dWidth);
+
+                        dPrevBeforeSpacing = dCurrBeforeSpacing;
+                        dCurrBeforeSpacing = dNextBeforeSpacing;
+                        dNextBeforeSpacing = pNextLine->m_dBaselinePos - dPreviousStringOffset - pNextLine->m_dHeight - pNextLine->m_dBaselineOffset;
+                        dPreviousStringOffset = pNextLine->m_dBaselinePos - pNextLine->m_dBaselineOffset;
+
+                        if (nextIndex < m_arTextLine.size()-1)
                         {
-                            pParagraph->m_arLines.push_back(new CTextLine(*nextP->m_arLines[i]));
-                            pParagraph->m_numLines++;
+                            nextIndex++;
+                            pPrevLine = pCurrLine;
+                            pCurrLine = pNextLine;
+                            pNextLine = m_arTextLine[nextIndex];
                         }
-                        pParagraph->m_dRight = std::min(pParagraph->m_dRight, nextP->m_dRight);
-                        pParagraph->m_dLeft = std::min(pParagraph->m_dLeft, nextP->m_dLeft);
-                        pParagraph->m_dWidth = std::max(currP->m_dWidth, nextP->m_dWidth);
-                        pParagraph->m_dHeight = (pParagraph->m_dHeight + nextP->m_dHeight) / 2;
-
-                        corrRight = (corrRight + currP->m_dRight)/2;
-                        corrHeight = (corrHeight + currP->m_dHeight)/2;
-                        corrBeforeSpacing += nextP->m_dSpaceBefore;
-
-                        if (nextIndex < m_arParagraphs.size()-1) {
-                            currP = nextP;
-                            ++nextIndex;
-                            nextP = m_arParagraphs[nextIndex];
-                        } else {
+                        else
+                        {
                             break;
                         }
                     }
                 }
-            } else {
-                //todo может нужно некоторые параграфы сделать фреймами? условия?
-                /*if (currP->m_eTextAlignmentType == CParagraph::TextAlignmentType_ByRightEdge)
+            }
+            else
             {
-                currP->m_bIsTextFrameProperties = true;
-            }*/
-                pParagraph = new CParagraph(*currP);
+                //будет отдельной параграфом-строчкой
+                pParagraph = new CParagraph(m_eTextAssociationType);
+                pParagraph->m_pManagerLight = &m_oManagerLight;
+                pParagraph->m_bIsTextFrameProperties = false;
+
+                pParagraph->m_dLeft	= pCurrLine->m_dX;
+                pParagraph->m_dTop	= pCurrLine->m_dBaselinePos - pCurrLine->m_dHeight - pCurrLine->m_dBaselineOffset;
+
+                pParagraph->m_dFirstLine = 0;
+                //pParagraph->m_dRight = dCurrRight; //по идее должно быть так, но если строка с длинным пробелом - не работает
+                //поэтому
+                pParagraph->m_dRight = 0;
+                pParagraph->m_dWidth = pCurrLine->m_dWidth;
+                pParagraph->m_dHeight = pCurrLine->m_dHeight;
+
+                pParagraph->m_dSpaceBefore = std::max(dCurrBeforeSpacing, 0.0);
+                pParagraph->m_dBaselinePos = pCurrLine->m_dBaselinePos;
+
+                pParagraph->m_arLines.push_back(pCurrLine);
+                pParagraph->m_nNumLines++;
             }
 
-            if (pParagraph)
-            {
-                if (corrBeforeSpacing > 0)
-                {
-                    pParagraph->m_dSpaceBefore += corrBeforeSpacing;
-                }
-                m_arParagraphsBlocks.push_back(pParagraph);
-            }
+            m_arParagraphs.push_back(pParagraph);
         }
 
-        //коррекция всей страницы
-        for (std::vector<CParagraph*>::iterator iter = m_arParagraphsBlocks.begin();
-             iter != m_arParagraphsBlocks.end(); ++iter)
+        //коррекция всей страницы - возможно не понадобится
+        /*for (std::vector<CParagraph*>::iterator iter = m_arParagraphsBlocks.begin();
+             iter < m_arParagraphsBlocks.end(); ++iter)
         {
-            if ((*iter)->m_eTextAlignmentType == CParagraph::TextAlignmentType_ByWidth)
-            {
-                (*iter)->m_dRight = corrRight;
-                (*iter)->m_dHeight = corrHeight;
-            }
-        }
-
-        ClearParagraphs();
+             if ((*iter)->m_eTextAlignmentType == CParagraph::TextAlignmentType_ByWidth)
+             {
+                 (*iter)->m_dRight = corrRight;
+                 (*iter)->m_dHeight = corrHeight;
+             }
+        }*/
     }
 
     void CPage::Merge(double dAffinity)
@@ -997,14 +1060,16 @@ namespace NSDocxRenderer
             oWriter.WriteString(L"</w:p>");
         }
 
-        size_t nCountParagraphs = m_eTextAssociationType != TextAssociationTypePlainParagraph ?
-                    m_arParagraphs.size(): m_arParagraphsBlocks.size();
-        for (size_t i = 0; i < nCountParagraphs; ++i)
+        for (size_t i = 0; i < m_arParagraphs.size(); ++i)
         {
-            m_eTextAssociationType != TextAssociationTypePlainParagraph ?
-                        m_arParagraphs[i]->ToXml(oWriter):
-                        m_arParagraphsBlocks[i]->ToXml(oWriter);
+                m_arParagraphs[i]->ToXml(oWriter);
         }
+
+        for (size_t i = 0; i < m_arParagraphsBlocks.size(); ++i)
+        {
+            m_arParagraphsBlocks[i]->ToXml(oWriter);
+        }
+
     }
 
     void CPage::WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter)

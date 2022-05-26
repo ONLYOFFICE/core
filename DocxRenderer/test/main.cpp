@@ -91,9 +91,12 @@ int main(int argc, char *argv[])
     //std::vector<std::wstring> sSourceFiles = NSDirectory::GetFiles(L"C:\\Docs\\Рекомендуемая литература");
     std::vector<std::wstring> sSourceFiles;
     //Или добавляем любой нужный файл
+    sSourceFiles.push_back(L"C:\\Users\\Alexander\\Desktop\\MSF_Lec1.pdf");
     sSourceFiles.push_back(L"C:\\Development\\test\\andersen_skazki_tom_1.pdf");
-    sSourceFiles.push_back(L"C:\\Development\\test\\08 Правила дорожного движения РФ(108p).pdf");
+    //перестал работать - текста нет
+    ///sSourceFiles.push_back(L"C:\\Development\\test\\08 Правила дорожного движения РФ(108p).pdf");
     sSourceFiles.push_back(L"C:\\Docs\\Рекомендуемая литература\\Мартин Фаулер - Рефакторинг.pdf");
+    sSourceFiles.push_back(L"C:\\Users\\Alexander\\Desktop\\MSF_Lec1.pdf");
     //sSourceFiles.push_back(L"C:\\Development\\test\\(1917) - Das geheimnisvolle Haus.pdf");
     //sSourceFiles.push_back(L"C:\\Docs\\Рекомендуемая литература\\Embedded_Linux_system_design_and_development_ru.pdf");
     //sSourceFiles.push_back(L"C:\\Docs\\Рекомендуемая литература\\Алан Купер - Психбольница в руках пациентов.pdf");
@@ -108,15 +111,16 @@ int main(int argc, char *argv[])
     std::wstring sPlainParagraphDirOut = sTextDirOut + L"/PlainParagraph";
     if (!NSDirectory::Exists(sPlainParagraphDirOut))
         NSDirectory::CreateDirectory(sPlainParagraphDirOut);
-    std::wstring sPlainLineDirOut = sTextDirOut + L"/PlainLine";
+    /*std::wstring sPlainLineDirOut = sTextDirOut + L"/PlainLine";
     if (!NSDirectory::Exists(sPlainLineDirOut))
-        NSDirectory::CreateDirectory(sPlainLineDirOut);
+        NSDirectory::CreateDirectory(sPlainLineDirOut);*/
+    /*std::wstring sBlockLineDirOut = sTextDirOut + L"/BlockLine";
+    if (!NSDirectory::Exists(sBlockLineDirOut))
+        NSDirectory::CreateDirectory(sBlockLineDirOut);*/
     /*std::wstring sBlockCharDirOut = sTextDirOut + L"/BlockChar";
     if (!NSDirectory::Exists(sBlockCharDirOut))
-        NSDirectory::CreateDirectory(sBlockCharDirOut);
-    std::wstring sBlockLineDirOut = sTextDirOut + L"/BlockLine";
-    if (!NSDirectory::Exists(sBlockLineDirOut))
         NSDirectory::CreateDirectory(sBlockCharDirOut);*/
+
 
 
     IOfficeDrawingFile* pReader = NULL;
@@ -194,17 +198,17 @@ int main(int argc, char *argv[])
         oDocxRenderer.Convert(pReader, sPlainParagraphDirOut+sDocx);
         oDocxRenderer.Convert(pReader, sPlainParagraphDirOut+sZip);
 
-        taType = NSDocxRenderer::TextAssociationTypePlainLine;
+        /*taType = NSDocxRenderer::TextAssociationTypePlainLine;
         oDocxRenderer.SetTextAssociationType(taType);
         oDocxRenderer.Convert(pReader, sPlainLineDirOut + sDocx);
-        oDocxRenderer.Convert(pReader, sPlainLineDirOut + sZip);
+        oDocxRenderer.Convert(pReader, sPlainLineDirOut + sZip);*/
 
         /*taType = NSDocxRenderer::TextAssociationTypeBlockLine;
         oDocxRenderer.SetTextAssociationType(taType);
         oDocxRenderer.Convert(pReader, sBlockLineDirOut + sDocx);
-        oDocxRenderer.Convert(pReader, sBlockLineDirOut + sZip);
+        oDocxRenderer.Convert(pReader, sBlockLineDirOut + sZip);*/
 
-        taType = NSDocxRenderer::TextAssociationTypeBlockChar;
+        /*taType = NSDocxRenderer::TextAssociationTypeBlockChar;
         oDocxRenderer.SetTextAssociationType(taType);
         oDocxRenderer.Convert(pReader, sBlockCharDirOut + sDocx);
         oDocxRenderer.Convert(pReader, sBlockCharDirOut + sZip);*/

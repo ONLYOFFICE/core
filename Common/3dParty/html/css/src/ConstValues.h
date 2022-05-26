@@ -890,7 +890,10 @@ namespace NSCSS
                         return;
 
                     if (sLineHeight == L"normal")
-                        fLineHeight = 1.2;
+                    {
+                        arLevels[5] = unLevel;
+                        fLineHeight = 24;
+                    }
                     else
                     {
                         const float fValue = wcstof(sLineHeight.c_str(), NULL);

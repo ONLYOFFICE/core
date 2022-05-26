@@ -390,19 +390,19 @@
 	}
 	CBinaryReader.prototype.readInt = function()
 	{
-		var val = this.data[this.pos] | this.data[this.pos + 1] << 8 | this.data[this.pos + 2] << 16 | this.data[this.pos + 3] << 24;
+		var val = (this.data[this.pos] & 0xFF) | (this.data[this.pos + 1] & 0xFF) << 8 | (this.data[this.pos + 2] & 0xFF) << 16 | (this.data[this.pos + 3] & 0xFF) << 24;
 		this.pos += 4;
 		return val;
 	};
 	CBinaryReader.prototype.readUInt = function()
 	{
-		var val = this.data[this.pos] | this.data[this.pos + 1] << 8 | this.data[this.pos + 2] << 16 | this.data[this.pos + 3] << 24;
+		var val = (this.data[this.pos] & 0xFF) | (this.data[this.pos + 1] & 0xFF) << 8 | (this.data[this.pos + 2] & 0xFF) << 16 | (this.data[this.pos + 3] & 0xFF) << 24;
 		this.pos += 4;
 		return (val < 0) ? val + 4294967296 : val;
 	};
 	CBinaryReader.prototype.readByte = function()
 	{
-		return this.data[this.pos++];
+		return (this.data[this.pos++] & 0xFF);
 	};
 	CBinaryReader.prototype.readPointer64 = function()
 	{

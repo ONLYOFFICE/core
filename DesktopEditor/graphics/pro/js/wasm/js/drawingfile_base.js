@@ -466,13 +466,13 @@
         }
 
         var stream_index = file.GetStreamIndex();
-        var streams = AscFonts.getFontStreams();
-
+        
         var stream = AscFonts.getFontStream(stream_index);
         var streamPointer = Module["_malloc"](stream.size);
         Module["HEAP8"].set(stream.data, streamPointer);
 
         // не скидываем стрим, чтобы можно было использовать его а fonts.js
+        //var streams = AscFonts.getFontStreams();
         //streams[stream_index] = null;
         //streams[stream_index] = AscFonts.updateFontStreamNative(streamPointer, stream.size);
 

@@ -1265,12 +1265,48 @@ namespace PdfWriter
 		m_pXref = NULL;
 		return true;
 	}
-    void CDocument::Sign(BYTE* pCert, unsigned int nCertLength)
+    void CDocument::Sign(const unsigned int& unPageNum, const TRect& oRect, BYTE* pCert, unsigned int nCertLength)
     {
+        if (!CheckAcroForm())
+            return;
+
+        CAnnotation* pWidget = new CWidgetAnnotation(m_pXref, oRect);
+        if (!pWidget)
+            return;
+
+        // TODO DR - Словарь ресурсов, содержащий ресурсы по умолчанию (такие как шрифты, шаблоны или цветовые пространства),
+        // которые должны использоваться потоками внешнего вида полей формы - смотри AP ниже
+        CResourcesDict* pFieldsResources = GetFieldsResources();
+
+        // TODO DA - Значение по умолчанию для всего документа для атрибута DA переменных текстовых полей
+        std::string sDA;
+        m_pAcroForm->Add("DA", new CStringObject(sDA.c_str()));
+
+        // 3 ~ 11, где
+        // первый бит - Если установлено, документ содержит как минимум одно поле для подписи,
+        // второй бит - Если установлено, документ содержит подписи, которые могут быть признаны недействительными,
+        // если файл сохраняется таким образом, что изменяется его предыдущее содержимое, в отличие от инкрементного обновления
+        m_pAcroForm->Add("SigFlags", 3);
+
+        CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
+        ppFields->Add(pWidget);
+        CPage* pPage = m_pPageTree->GetPage(unPageNum);
+        if (pPage)
+            pPage->AddAnnotation(pWidget);
+
+        pWidget->Add("P", m_pCatalog);
+        pWidget->Add("FT", "Sig");
+        // TODO Частичное имя поля 12.7.3.2
+        pWidget->Add("T", "Signature1");
+
+        // TODO AP - Словарь внешнего вида, указывающий, как аннотация должна быть визуально представлена на странице 12.5.5
+
+        // Словарь сигнатур
         CDictObject* pSig = new CDictObject(m_pXref);
+        pWidget->Add("V", pSig);
 
         pSig->Add("Type", "Sig");
-        // Имя обработчика подписи, Приложение Е
+        // Имя предпочтительного обработчика подписи
         pSig->Add("Filter", "Adobe.PPKLite");
         // Кодировка значения подписи, 12.8.3 Совместимость подписи
         pSig->Add("SubFilter", "adbe.pkcs7.detached");
@@ -1290,14 +1326,19 @@ namespace PdfWriter
         // Дайджест этих SignedData должен быть включен как обычный дайджест PKCS#7
 
 
+        // Память под дайджест должна быть выделена заранее, т.к. заполнение происходит после записи всего документа
+        // Размер дайджеста должен быть исчерпывающим, а лишняя часть должна быть заполнена нулями
+        unsigned int unDigestLength = 50000;
+        BYTE* pDigest = new BYTE[unDigestLength];
+        memset(pDigest, 0, unDigestLength);
         // Значение подписи, дайджест диапазона байтов
-        pSig->Add("Contents", new CBinaryObject(pCert, nCertLength));
+        pSig->Add("Contents", new CBinaryObject(pDigest, unDigestLength));
         // Для подписей с открытым ключом Contents должен быть либо двоичным объектом данных PKCS#1 в кодировке DER,
         // либо объектом двоичных данных PKCS#7 в кодировке DER
 
 
         // Сертификат X.509 используемый при подписании и проверке подписей
-        pSig->Add("Cert", new CBinaryObject(pCert, nCertLength));
+        // pSig->Add("Cert", new CBinaryObject(pCert, nCertLength));
         // Сертификат использует криптографию с открытым ключом
         // Сертификат подписи должен стоять первым в массиве
 

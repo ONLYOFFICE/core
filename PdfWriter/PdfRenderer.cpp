@@ -2111,9 +2111,9 @@ void CPdfRenderer::PageRotate(int nRotate)
 	if (m_pPage)
 		m_pPage->SetRotate(nRotate);
 }
-void CPdfRenderer::Sign(BYTE* pCert, unsigned int nCertLength)
+void CPdfRenderer::Sign(int nPageIndex, const double& dX, const double& dY, const double& dW, const double& dH, BYTE* pCert, unsigned int nCertLength)
 {
-    m_pDocument->Sign(pCert, nCertLength);
+    m_pDocument->Sign(nPageIndex, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)), pCert, nCertLength);
 }
 
 NSFonts::IApplicationFonts* CPdfRenderer::GetApplicationFonts()

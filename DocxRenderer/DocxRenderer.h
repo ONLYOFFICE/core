@@ -53,7 +53,8 @@ namespace NSDocxRenderer
         TextAssociationTypeBlockChar        = 0, // Каждый символ во фрейме
         TextAssociationTypeBlockLine        = 1, // Каждая линия - параграф во фрейме. Линии могут объединяться в рамках одного блока.
         TextAssociationTypePlainLine        = 2, // Каждая линия - параграф обычный
-        TextAssociationTypePlainParagraph   = 3  // Линии объединяются в параграфы
+        TextAssociationTypeShapeLine        = 3, // Каждая линия - параграф в шейпе. Линии могут объединяться в рамках одного блока.
+        TextAssociationTypePlainParagraph   = 4  // Линии объединяются в параграфы
     };
 }
 

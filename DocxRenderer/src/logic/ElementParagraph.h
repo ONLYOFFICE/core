@@ -197,11 +197,19 @@ namespace NSDocxRenderer
             TextAlignmentType_ByWidth
         };
 
+        enum TextConversionType
+        {
+            UnknownConversionType,
+            TextToParagraph,
+            TextToFrame,
+            TextToShape
+        };
+
         // text frame properties
-        bool		m_bIsTextFrameProperties;
-        bool		m_bIsNeedFirstLineIndent;
-        bool        m_bIsAroundTextWrapping;
-        TextAlignmentType m_eTextAlignmentType;
+        TextConversionType m_eTextConversionType;
+        bool               m_bIsNeedFirstLineIndent;
+        bool               m_bIsAroundTextWrapping; //по умолчанию обтекание включено, если отсутсвует w:wrap
+        TextAlignmentType  m_eTextAlignmentType;
 
         // geometry paragraph
         double		m_dLeft;  //сдвиг относительно левого края страницы
@@ -213,7 +221,8 @@ namespace NSDocxRenderer
 
         CFontManagerLight* m_pManagerLight;
 
-        double		m_dSpaceBefore;
+        double		m_dSpaceBefore; //по умолчанию выставляется 0, если отсутсвует w:before
+        double		m_dSpaceAfter; //в shape по умолчанию выставляется 8pt, если отсутсвует w:after
         double		m_dBaselinePos;
         TextAssociationType m_eTextAssociationType;
 

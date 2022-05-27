@@ -56,8 +56,6 @@ namespace NSDocxRenderer
         std::vector<CBaseItem*>	m_arGraphicItems;
         std::vector<CParagraph*> m_arParagraphs;
 
-        std::vector<CParagraph*> m_arParagraphsBlocks;
-
         std::vector<CTextLine*> m_arTextLine;
         CTextLine* m_pCurrentLine;
 
@@ -84,7 +82,6 @@ namespace NSDocxRenderer
         void ClearTextLines();
         void ClearGraphicItems();
         void ClearParagraphs();
-        void ClearParagraphsBlocks();
 
         void SetCurrentLineByBaseline(const double& dBaseLinePos);
         //удаляем то, что выходит за границы страницы
@@ -113,6 +110,7 @@ namespace NSDocxRenderer
         void BuildByTypeBlockChar();
         void BuildByTypeBlockLine();
         void BuildByTypePlainLine();
+        void BuildByTypeShapeLine();
         void BuildByTypePlainParagraph();
 
         //вычисляем примерный тип выравнивания строки
@@ -121,7 +119,7 @@ namespace NSDocxRenderer
         //Объединяем строки, которые находятся на расстроянии не большем dAffinity
         void Merge(double dAffinity);
 
-        //конвертим m_arGraphicItems, m_arParagraphs и m_arParagraphsBlocks в xml-строку
+        //конвертим m_arGraphicItems, m_arParagraphs в xml-строку
         void Write(NSStringUtils::CStringBuilder& oWriter);
 
         void WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter);

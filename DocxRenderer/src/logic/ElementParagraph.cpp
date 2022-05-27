@@ -503,10 +503,10 @@ namespace NSDocxRenderer
     {
         m_eType = etParagraph;
 
-        m_bIsTextFrameProperties	= false;
-        m_bIsNeedFirstLineIndent    = false;
-        m_bIsAroundTextWrapping     = true; //по умолчанию
-        m_eTextAlignmentType = TextAlignmentType_Unknown;
+        m_eTextConversionType	 = UnknownConversionType;
+        m_bIsNeedFirstLineIndent = false;
+        m_bIsAroundTextWrapping  = true; //по умолчанию в word
+        m_eTextAlignmentType     = TextAlignmentType_Unknown;
 
         m_dLeft		= 0.0;
         m_dRight    = 0.0;
@@ -516,6 +516,7 @@ namespace NSDocxRenderer
         m_dFirstLine= 0.0;
 
         m_dSpaceBefore = 0.0;
+        m_dSpaceAfter  = 0.0;
         m_dBaselinePos = 0.0;
 
         m_pManagerLight = NULL;
@@ -554,10 +555,10 @@ namespace NSDocxRenderer
 
         m_eType = etParagraph;
 
-        m_bIsTextFrameProperties	= oSrc.m_bIsTextFrameProperties;
-        m_bIsNeedFirstLineIndent    = oSrc.m_bIsNeedFirstLineIndent;
-        m_bIsAroundTextWrapping     = oSrc.m_bIsAroundTextWrapping;
-        m_eTextAlignmentType        = oSrc.m_eTextAlignmentType;
+        m_eTextConversionType	 = oSrc.m_eTextConversionType;
+        m_bIsNeedFirstLineIndent = oSrc.m_bIsNeedFirstLineIndent;
+        m_bIsAroundTextWrapping  = oSrc.m_bIsAroundTextWrapping;
+        m_eTextAlignmentType     = oSrc.m_eTextAlignmentType;
 
         m_dLeft		= oSrc.m_dLeft;
         m_dRight    = oSrc.m_dRight;
@@ -567,6 +568,7 @@ namespace NSDocxRenderer
         m_dFirstLine= oSrc.m_dFirstLine;
 
         m_dSpaceBefore	= oSrc.m_dSpaceBefore;
+        m_dSpaceAfter   = oSrc.m_dSpaceAfter;
         m_dBaselinePos  = oSrc.m_dBaselinePos;
 
         m_eTextAssociationType		= oSrc.m_eTextAssociationType;
@@ -586,90 +588,116 @@ namespace NSDocxRenderer
 
     void CParagraph::ToXml(NSStringUtils::CStringBuilder& oWriter)
     {
+        //todo использовать паттерн builder
         oWriter.WriteString(L"<w:p>");
+        oWriter.WriteString(L"<w:pPr>");
 
-        switch (m_eTextAssociationType)
+        switch (m_eTextConversionType)
         {
-        case TextAssociationTypeBlockChar:
-        case TextAssociationTypeBlockLine:
+        case TextToFrame:
         {
-            oWriter.WriteString(L"<w:pPr><w:framePr w:hAnchor=\"page\" w:vAnchor=\"page\" w:x=\"");
-            oWriter.AddInt((int)(m_dLeft * c_dMMToDx));
-            oWriter.WriteString(L"\" w:y=\"");
-            oWriter.AddInt((int)(m_dTop * c_dMMToDx));
-            oWriter.WriteString(L"\"/></w:pPr>");
-            break;
-        }
-        case TextAssociationTypePlainLine:
-        case TextAssociationTypePlainParagraph:
-        {
-            if (m_bIsTextFrameProperties)
+            oWriter.WriteString(L"<w:framePr");
+
+            if (m_eTextAssociationType == TextAssociationTypePlainParagraph)
             {
-                if (m_eTextAssociationType == TextAssociationTypePlainParagraph)
+                if (m_bIsAroundTextWrapping)
                 {
-                    if (m_bIsAroundTextWrapping)
-                    {
-                        oWriter.WriteString(L"<w:pPr><w:framePr w:wrap=\"around\" w:hAnchor=\"page\" w:vAnchor=\"page\" w:x=\"");
-                    }
-                    else
-                    {
-                        oWriter.WriteString(L"<w:pPr><w:framePr w:wrap=\"notBeside\" w:hAnchor=\"page\" w:vAnchor=\"page\" w:x=\"");
-                    }
+                    oWriter.WriteString(L" w:wrap=\"around\"");
                 }
                 else
                 {
-                    oWriter.WriteString(L"<w:pPr><w:framePr w:hAnchor=\"page\" w:vAnchor=\"page\" w:x=\""); //по умолчанию обтекание включено
+                    oWriter.WriteString(L" w:wrap=\"notBeside\"");
                 }
-                oWriter.AddInt((int)(m_dLeft * c_dMMToDx));
-                oWriter.WriteString(L"\" w:y=\"");
-                oWriter.AddInt((int)(m_dTop * c_dMMToDx));
-                oWriter.WriteString(L"\"/></w:pPr>");
-                break;
             }
-            oWriter.WriteString(L"<w:pPr><w:spacing w:before=\"");
-            oWriter.AddInt((int)(m_dSpaceBefore * c_dMMToDx));
-            oWriter.WriteString(L"\" w:line=\"");
-            oWriter.AddInt((int)(m_dHeight * c_dMMToDx));
-            oWriter.WriteString(L"\" w:lineRule=\"exact\"/><w:ind w:left=\""); // exact - точный размер строки
+
+            oWriter.WriteString(L" w:hAnchor=\"page\"");
+            oWriter.WriteString(L" w:vAnchor=\"page\"");
+
+            oWriter.WriteString(L" w:x=\"");
             oWriter.AddInt((int)(m_dLeft * c_dMMToDx));
-            if (m_eTextAssociationType == TextAssociationTypePlainParagraph)
+            oWriter.WriteString(L"\"");
+
+            oWriter.WriteString(L" w:y=\"");
+            oWriter.AddInt((int)(m_dTop * c_dMMToDx));
+            oWriter.WriteString(L"\"");
+
+            oWriter.WriteString(L"/>"); //конец w:framePr
+            break;
+        }
+        case TextToShape:
+        case TextToParagraph:
+        {
+            oWriter.WriteString(L"<w:spacing");
+            if (m_eTextConversionType == TextToParagraph)
             {
-                oWriter.WriteString(L"\" w:right=\"");
+                oWriter.WriteString(L" w:before=\"");
+                oWriter.AddInt((int)(m_dSpaceBefore * c_dMMToDx));
+                oWriter.WriteString(L"\"");
+            }
+
+            if (m_eTextConversionType == TextToShape)
+            {
+                oWriter.WriteString(L" w:after=\"");
+                oWriter.AddInt((int)(m_dSpaceAfter * c_dMMToDx));
+                oWriter.WriteString(L"\"");
+            }
+            //if (m_eTextConversionType == TextToParagraph)
+            {
+                oWriter.WriteString(L" w:line=\"");
+                oWriter.AddInt((int)(m_dHeight * c_dMMToDx));
+                oWriter.WriteString(L"\" w:lineRule=\"exact\""); // exact - точный размер строки
+            }
+            oWriter.WriteString(L"/>"); //конец w:spacing
+
+            oWriter.WriteString(L"<w:ind");
+            if (m_dLeft > 0)
+            {
+                oWriter.WriteString(L" w:left=\"");
+                oWriter.AddInt((int)(m_dLeft * c_dMMToDx));
+                oWriter.WriteString(L"\"");
+            }
+            if (m_eTextAssociationType == TextAssociationTypePlainParagraph && m_dRight > 0)
+            {
+                oWriter.WriteString(L" w:right=\"");
                 oWriter.AddInt((int)(m_dRight * c_dMMToDx));
+                oWriter.WriteString(L"\"");
             }
             if (m_bIsNeedFirstLineIndent)
             {
-                oWriter.WriteString(L"\" w:firstLine=\"");
+                oWriter.WriteString(L" w:firstLine=\"");
                 oWriter.AddInt((int)(m_dFirstLine * c_dMMToDx));
+                oWriter.WriteString(L"\"");
             }
+            oWriter.WriteString(L"/>"); //конец w:ind
+
 
             if (m_eTextAssociationType == TextAssociationTypePlainParagraph)
             {
                 switch (m_eTextAlignmentType)
                 {
                 case TextAlignmentType_ByCenter:
-                    oWriter.WriteString(L"\"/><w:jc w:val=\"center");
+                    oWriter.WriteString(L"<w:jc w:val=\"center\"/>");
                     break;
                 case TextAlignmentType_ByRightEdge:
-                    oWriter.WriteString(L"\"/><w:jc w:val=\"end");
+                    oWriter.WriteString(L"<w:jc w:val=\"end\"/>");
                     break;
                 case TextAlignmentType_ByWidth:
-                    oWriter.WriteString(L"\"/><w:jc w:val=\"both");
+                    oWriter.WriteString(L"<w:jc w:val=\"both\"/>");
                     break;
                 case TextAlignmentType_ByLeftEdge:
-                    oWriter.WriteString(L"\"/><w:jc w:val=\"begin");
+                    oWriter.WriteString(L"<w:jc w:val=\"begin\"/>");
                     break;
                 default: //по умолчанию выравнивание по левому краю - можно ничего не добавлять
                     break;
                 }
             }
-
-            oWriter.WriteString(L"\"/></w:pPr>");
             break;
         }
         default:
             break;
         }
+
+        oWriter.WriteString(L"</w:pPr>");
 
         size_t nCount = m_arLines.size();
         for (size_t i = 0; i < nCount; ++i)

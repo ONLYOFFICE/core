@@ -91,12 +91,12 @@ int main(int argc, char *argv[])
     //std::vector<std::wstring> sSourceFiles = NSDirectory::GetFiles(L"C:\\Docs\\Рекомендуемая литература");
     std::vector<std::wstring> sSourceFiles;
     //Или добавляем любой нужный файл
-    sSourceFiles.push_back(L"C:\\Users\\Alexander\\Desktop\\MSF_Lec1.pdf");
+    //sSourceFiles.push_back(L"C:\\Users\\Alexander\\Desktop\\MSF_Lec1.pdf");
     sSourceFiles.push_back(L"C:\\Development\\test\\andersen_skazki_tom_1.pdf");
     //перестал работать - текста нет
     ///sSourceFiles.push_back(L"C:\\Development\\test\\08 Правила дорожного движения РФ(108p).pdf");
     sSourceFiles.push_back(L"C:\\Docs\\Рекомендуемая литература\\Мартин Фаулер - Рефакторинг.pdf");
-    sSourceFiles.push_back(L"C:\\Users\\Alexander\\Desktop\\MSF_Lec1.pdf");
+    //sSourceFiles.push_back(L"C:\\Users\\Alexander\\Desktop\\MSF_Lec1.pdf");
     //sSourceFiles.push_back(L"C:\\Development\\test\\(1917) - Das geheimnisvolle Haus.pdf");
     //sSourceFiles.push_back(L"C:\\Docs\\Рекомендуемая литература\\Embedded_Linux_system_design_and_development_ru.pdf");
     //sSourceFiles.push_back(L"C:\\Docs\\Рекомендуемая литература\\Алан Купер - Психбольница в руках пациентов.pdf");
@@ -193,10 +193,12 @@ int main(int argc, char *argv[])
 
         NSDocxRenderer::TextAssociationType taType;
 
+
+        taType = NSDocxRenderer::TextAssociationTypeShapeLine;
         taType = NSDocxRenderer::TextAssociationTypePlainParagraph;
         oDocxRenderer.SetTextAssociationType(taType);
         oDocxRenderer.Convert(pReader, sPlainParagraphDirOut+sDocx);
-        oDocxRenderer.Convert(pReader, sPlainParagraphDirOut+sZip);
+        //oDocxRenderer.Convert(pReader, sPlainParagraphDirOut+sZip);
 
         /*taType = NSDocxRenderer::TextAssociationTypePlainLine;
         oDocxRenderer.SetTextAssociationType(taType);

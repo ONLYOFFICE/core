@@ -169,6 +169,11 @@ namespace NSDocxRenderer
             m_dBottom = y;
     }
 
+    const double CShape::POSITION_CORRECTION_FOR_X_MM = 3.0;
+    const double CShape::POSITION_CORRECTION_FOR_Y_MM = 2.0;
+    const double CShape::SIZE_CORRECTION_FOR_X_MM = 10.0;
+    const double CShape::SIZE_CORRECTION_FOR_Y_MM = 5.0;
+
     CShape::CShape()
     {
         m_dLeft = 0;
@@ -188,6 +193,21 @@ namespace NSDocxRenderer
     CShape::CShape(const CShape &oSrc)
     {
         *this = oSrc;
+    }
+
+    CShape::~CShape()
+    {
+        Clear();
+    }
+
+    void CShape::Clear()
+    {
+        for (size_t i = 0; i <  m_arParagraphs.size(); ++i)
+        {
+            CParagraph* pTemp = m_arParagraphs[i];
+            RELEASEOBJECT(pTemp);
+        }
+        m_arParagraphs.clear();
     }
 
     CShape &CShape::operator=(const CShape &oSrc)
@@ -327,6 +347,8 @@ namespace NSDocxRenderer
         oWriter.WriteString(
                     L"<w:r><w:pict><v:shape id=\"\" o:spid=\"\" style=\"position:absolute;");
 
+        //oWriter.WriteString(L"left:0;text-align:left;");
+
         oWriter.WriteString(L"margin-left:");
         oWriter.AddDouble(m_dLeft, 2);
         oWriter.WriteString(L"mm;margin-top:");
@@ -395,6 +417,19 @@ namespace NSDocxRenderer
         }
 
         oWriter.WriteString(L"<w10:wrap anchorx=\"page\" "
-                            L"anchory=\"page\"/></v:shape></w:pict></w:r>");
+                            L"anchory=\"page\"/>");
+
+        if (!m_arParagraphs.empty())
+        {
+            oWriter.WriteString(L"<v:textbox><w:txbxContent>");
+            for (size_t i = 0; i < m_arParagraphs.size(); ++i)
+            {
+                CParagraph* pParagraph = m_arParagraphs[i];
+                pParagraph->ToXml(oWriter);
+            }
+            oWriter.WriteString(L"</w:txbxContent></v:textbox>");
+        }
+
+        oWriter.WriteString(L"</v:shape></w:pict></w:r>");
     }
 } // namespace NSDocxRenderer

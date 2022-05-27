@@ -2,6 +2,7 @@
 #define DOCX_RENDERER_ELEMENT_SHAPE_H
 
 #include "Common.h"
+#include "ElementParagraph.h"
 
 namespace NSDocxRenderer
 {
@@ -45,6 +46,13 @@ namespace NSDocxRenderer
     class CShape : public CBaseItem
     {
         public:
+            //Подобранные константы
+            static const double POSITION_CORRECTION_FOR_X_MM;
+            static const double POSITION_CORRECTION_FOR_Y_MM;
+            static const double SIZE_CORRECTION_FOR_X_MM;
+            static const double SIZE_CORRECTION_FOR_Y_MM;
+
+        public:
             std::wstring m_strPath;
             NSStructures::CBrush	m_oBrush;
             NSStructures::CPen		m_oPen;
@@ -62,8 +70,14 @@ namespace NSDocxRenderer
 
             LONG m_lTxId;
 
+            std::vector<CParagraph*> m_arParagraphs;
+
+            CFontManagerLight* m_pManagerLight;
+
         public:
             CShape();
+            ~CShape();
+            void Clear();
 
             CShape(const CShape& oSrc);
 

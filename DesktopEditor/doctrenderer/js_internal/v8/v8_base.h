@@ -597,11 +597,11 @@ namespace NSJSBase
 
         virtual CJSDataBuffer getData()
         {
-            v8::ArrayBuffer::Contents contents = value->Buffer()->Externalize();
+            v8::ArrayBuffer::Contents contents = value->Buffer()->GetContents();
             CJSDataBuffer buffer;
             buffer.Data = (BYTE*)contents.Data();
             buffer.Len = contents.ByteLength();
-            buffer.IsExternalize = true;
+            buffer.IsExternalize = false;
             return buffer;
         }
 

@@ -4,7 +4,7 @@ JSSmart<CJSValue> CZipEmbed::open(JSSmart<CJSValue> typedArray)
 {
     close();
     if (!typedArray->isTypedArray())
-        return CJSContext::createBool(false);
+        return CJSContext::createNull();
 
     JSSmart<CJSTypedArray> pArray = typedArray->toTypedArray();
     CJSDataBuffer buffer = pArray->getData();
@@ -12,7 +12,17 @@ JSSmart<CJSValue> CZipEmbed::open(JSSmart<CJSValue> typedArray)
     m_pFolder = new CZipFolderMemory(buffer.Data, (DWORD)buffer.Len);
     buffer.Free();
 
-    return CJSContext::createBool(true);
+    std::vector<std::wstring> arFiles = m_pFolder->getFiles(L"", true);
+    if (arFiles.empty())
+        return CJSContext::createNull();
+
+    JSSmart<CJSArray> retFiles = CJSContext::createArray((int)arFiles.size());
+
+    int nCurCount = 0;
+    for (std::vector<std::wstring>::const_iterator i = arFiles.begin(); i != arFiles.end(); i++)
+        retFiles->set(nCurCount++, CJSContext::createString(*i));
+
+    return retFiles->toValue();
 }
 JSSmart<CJSValue> CZipEmbed::create()
 {
@@ -26,11 +36,13 @@ JSSmart<CJSValue> CZipEmbed::save()
         return CJSContext::createNull();
 
     IFolder::CBuffer* pBuffer = m_pFolder->finalize();
-    BYTE* pMemory = NSJSBase::NSAllocator::Alloc((size_t)pBuffer->Size);
-    memcpy(pMemory, pBuffer->Buffer, (size_t)pBuffer->Size);
+
+    size_t nBufferSize = (size_t)pBuffer->Size;
+    BYTE* pMemory = NSJSBase::NSAllocator::Alloc(nBufferSize);
+    memcpy(pMemory, pBuffer->Buffer, nBufferSize);
     RELEASEOBJECT(pBuffer);
 
-    return NSJSBase::CJSContext::createUint8Array(pMemory, (int)pBuffer->Size, false);
+    return NSJSBase::CJSContext::createUint8Array(pMemory, (int)nBufferSize, false);
 }
 JSSmart<CJSValue> CZipEmbed::getFile(JSSmart<CJSValue> filePath)
 {
@@ -42,11 +54,12 @@ JSSmart<CJSValue> CZipEmbed::getFile(JSSmart<CJSValue> filePath)
     if (m_pFolder->read(sFilePath, pBuffer))
         return CJSContext::createNull();
 
-    BYTE* pMemory = NSJSBase::NSAllocator::Alloc((size_t)pBuffer->Size);
-    memcpy(pMemory, pBuffer->Buffer, (size_t)pBuffer->Size);
+    size_t nBufferSize = (size_t)pBuffer->Size;
+    BYTE* pMemory = NSJSBase::NSAllocator::Alloc(nBufferSize);
+    memcpy(pMemory, pBuffer->Buffer, nBufferSize);
     RELEASEOBJECT(pBuffer);
 
-    return NSJSBase::CJSContext::createUint8Array(pMemory, (int)pBuffer->Size, false);
+    return NSJSBase::CJSContext::createUint8Array(pMemory, (int)nBufferSize, false);
 }
 JSSmart<CJSValue> CZipEmbed::addFile(JSSmart<CJSValue> filePath, JSSmart<CJSValue> typedArray)
 {

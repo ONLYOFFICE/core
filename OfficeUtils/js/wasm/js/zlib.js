@@ -152,6 +152,24 @@
 	};
 
 	/**
+	 * Get all file paths in archive
+	 * @returns {Array}
+	 */
+	ZLib.prototype.getPaths = function()
+	{
+		var retFiles = [];
+		if (!this.files)
+			return retFiles;
+
+		for (var path in this.files) 
+		{
+			if (this.files.hasOwnProperty(path))
+				retFiles.push(path);
+		}
+		return retFiles;
+	};
+
+	/**
 	 * Get uncomressed file from archive
 	 * @param {string} path
 	 * @returns {Uint8Array | null} bytes of uncompressed data, or null if error

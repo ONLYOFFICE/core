@@ -52,8 +52,7 @@ namespace PdfWriter
 		"Underline",
 		"Ink",
 		"FileAttachment",
-		"Popup",
-		"Widget"
+		"Popup"
 	};
 	const static char* c_sAnnotIconNames[] =
 	{
@@ -212,14 +211,5 @@ namespace PdfWriter
 		pAction->Add("Type", "Action");
 		pAction->Add("S", "URI");
 		pAction->Add("URI", new CStringObject(sUri));
-	}
-	//----------------------------------------------------------------------------------------
-	// CWidgetAnnotation
-	//----------------------------------------------------------------------------------------
-	CWidgetAnnotation::CWidgetAnnotation(CXref* pXref, const TRect& oRect) : CAnnotation(pXref, AnnotWidget, oRect)
-	{
-		// 3 - Печать, печатать аннотацию при печати страницы
-		// 8 - Заблокировано, пользователь не может удалить аннотацию или изменить ее свойства
-		Add("F", 132);
 	}
 }

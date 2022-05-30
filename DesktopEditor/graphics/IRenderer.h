@@ -745,6 +745,10 @@ public:
 	{
 		return (m_nType == 4);
 	}
+	bool IsSignature() const
+	{
+		return (m_nType == 5);
+	}
 	CTextFormPr* GetTextFormPr()
 	{
 		return &m_oTextPr;

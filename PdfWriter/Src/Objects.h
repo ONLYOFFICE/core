@@ -79,7 +79,8 @@ namespace PdfWriter
 		dict_type_ENCRYPT      = 0x09,
 		dict_type_EXT_GSTATE   = 0x0A,
 		dict_type_EXT_GSTATE_R = 0x0B,  /* read only object */
-		dict_type_METADATA     = 0x0C
+		dict_type_METADATA     = 0x0C,
+		dict_type_SIGNATURE    = 0x0D
 	} EDictType;
 
 	class CObjectBase

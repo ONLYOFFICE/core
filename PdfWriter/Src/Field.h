@@ -48,6 +48,8 @@ namespace PdfWriter
 	class CRadioGroupField;
 	class CImageDict;
 	class CFontCidTrueType;
+	class CInfoDict;
+	class CSignatureDict;
 
 	class CFieldBase : public CDictObject
 	{
@@ -239,6 +241,17 @@ namespace PdfWriter
 		double          m_dShiftX;
 		double          m_dShiftY;
 		CResourcesDict* m_pResources;
+	};
+
+	class CSignatureField : public CFieldBase
+	{
+	public:
+		CSignatureField(CXref* pXref, CDocument* pDocument);
+		virtual void SetFieldName(const std::string& sName, bool isSkipCheck = false);
+		virtual void SetFieldName(const std::wstring& wsName, bool isSkipCheck = false);
+
+	private:
+		CSignatureDict* m_pSig; // Словарь сигнатур
 	};
 
 	class CAnnotAppearance : public CDictObject

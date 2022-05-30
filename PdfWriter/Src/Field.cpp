@@ -37,6 +37,8 @@
 #include "Types.h"
 #include "Image.h"
 #include "Font.h"
+#include "Info.h"
+#include "EncryptDictionary.h"
 
 #include <algorithm>
 #include <math.h>
@@ -1017,7 +1019,7 @@ namespace PdfWriter
 		return m_wsFieldName;
 	}
 	//----------------------------------------------------------------------------------------
-	// CAnnotAppearance
+	// CPictureField
 	//----------------------------------------------------------------------------------------
 	CPictureField::CPictureField(CXref* pXref, CDocument* pDocument) : CFieldBase(pXref, pDocument)
 	{
@@ -1242,6 +1244,29 @@ namespace PdfWriter
 		return m_pResources;
 	}
 	//----------------------------------------------------------------------------------------
+	// CSignatureField
+	//----------------------------------------------------------------------------------------
+	CSignatureField::CSignatureField(CXref* pXref, CDocument* pDocument) : CFieldBase(pXref, pDocument)
+	{
+		Add("FT", "Sig");
+
+		// Словарь сигнатур
+		m_pSig = new CSignatureDict(pXref);
+		if (!m_pSig)
+			return;
+		Add("V", m_pSig);
+	}
+	void CSignatureField::SetFieldName(const std::string& sName, bool isSkipCheck)
+	{
+		std::string _sName = sName + "_sig";
+		CFieldBase::SetFieldName(_sName, isSkipCheck);
+	}
+	void CSignatureField::SetFieldName(const std::wstring& wsName, bool isSkipCheck)
+	{
+		std::string sName = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsName) + "_sig";
+		CFieldBase::SetFieldName(sName, isSkipCheck);
+	}
+	//----------------------------------------------------------------------------------------
 	// CAnnotAppearance
 	//----------------------------------------------------------------------------------------
 	CAnnotAppearance::CAnnotAppearance(CXref* pXref, CFieldBase* pField)
@@ -1280,7 +1305,7 @@ namespace PdfWriter
 		return m_pDown;
 	}
 	//----------------------------------------------------------------------------------------
-	// CAnnotAppearance
+	// CCheckBoxAnnotAppearance
 	//----------------------------------------------------------------------------------------
 	CCheckBoxAnnotAppearance::CCheckBoxAnnotAppearance(CXref* pXref, CFieldBase* pField, const char* sYesName)
 	{

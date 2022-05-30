@@ -62,5 +62,16 @@ namespace PdfWriter
 		CEncrypt* m_pEncrypt;
 		std::string PadOrTrancatePassword(const std::wstring & wsPassword);
 	};
+
+	class CSignatureDict : public CDictObject
+	{
+	public:
+		CSignatureDict(CXref* pXref);
+		~CSignatureDict();
+		EDictType GetDictType() const
+		{
+			return dict_type_SIGNATURE;
+		}
+	};
 }
 #endif // _PDF_WRITER_SRC_ENCRYPT_DICTIONARY_H

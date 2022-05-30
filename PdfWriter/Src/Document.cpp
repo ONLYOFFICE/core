@@ -934,6 +934,20 @@ namespace PdfWriter
 
 		return pField;
 	}
+	CSignatureField* CDocument::CreateSignatureField()
+	{
+		if (!CheckAcroForm())
+			return NULL;
+
+		CSignatureField* pField = new CSignatureField(m_pXref, this);
+		if (!pField)
+			return NULL;
+
+		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
+		ppFields->Add(pField);
+
+		return pField;
+	}
 	CCheckBoxField* CDocument::CreateCheckBoxField()
 	{
 		if (!CheckAcroForm())
@@ -1267,20 +1281,15 @@ namespace PdfWriter
 	}
     void CDocument::Sign(const unsigned int& unPageNum, const TRect& oRect, BYTE* pCert, unsigned int nCertLength)
     {
-        if (!CheckAcroForm())
-            return;
-
-        CAnnotation* pWidget = new CWidgetAnnotation(m_pXref, oRect);
-        if (!pWidget)
-            return;
+        CSignatureField* pField = CreateSignatureField();
 
         // TODO DR - Словарь ресурсов, содержащий ресурсы по умолчанию (такие как шрифты, шаблоны или цветовые пространства),
         // которые должны использоваться потоками внешнего вида полей формы - смотри AP ниже
-        CResourcesDict* pFieldsResources = GetFieldsResources();
+        // CResourcesDict* pFieldsResources = GetFieldsResources();
 
         // TODO DA - Значение по умолчанию для всего документа для атрибута DA переменных текстовых полей
-        std::string sDA;
-        m_pAcroForm->Add("DA", new CStringObject(sDA.c_str()));
+        // std::string sDA;
+        // m_pAcroForm->Add("DA", new CStringObject(sDA.c_str()));
 
         // 3 ~ 11, где
         // первый бит - Если установлено, документ содержит как минимум одно поле для подписи,
@@ -1288,94 +1297,17 @@ namespace PdfWriter
         // если файл сохраняется таким образом, что изменяется его предыдущее содержимое, в отличие от инкрементного обновления
         m_pAcroForm->Add("SigFlags", 3);
 
-        CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
-        ppFields->Add(pWidget);
         CPage* pPage = m_pPageTree->GetPage(unPageNum);
-        if (pPage)
-            pPage->AddAnnotation(pWidget);
+        if (!pPage)
+            return;
+        pField->AddPageRect(pPage, oRect);
+        // 3 - Печать, печатать аннотацию при печати страницы
+        // 8 - Заблокировано, пользователь не может удалить аннотацию или изменить ее свойства
+        pField->Add("F", 132);
 
-        pWidget->Add("P", m_pCatalog);
-        pWidget->Add("FT", "Sig");
         // TODO Частичное имя поля 12.7.3.2
-        pWidget->Add("T", "Signature1");
+        pField->SetFieldName("Sig1");
 
         // TODO AP - Словарь внешнего вида, указывающий, как аннотация должна быть визуально представлена на странице 12.5.5
-
-        // Словарь сигнатур
-        CDictObject* pSig = new CDictObject(m_pXref);
-        pWidget->Add("V", pSig);
-
-        pSig->Add("Type", "Sig");
-        // Имя предпочтительного обработчика подписи
-        pSig->Add("Filter", "Adobe.PPKLite");
-        // Кодировка значения подписи, 12.8.3 Совместимость подписи
-        pSig->Add("SubFilter", "adbe.pkcs7.detached");
-        // adbe.x509.rsa_sha1, adbe.pkcs7.detached, adbe.pkcs7.sha1
-
-        // Подписи PKCS#1 - adbe.x509.rsa_sha1, в котором используется алгоритм шифрования RSA и метод дайджеста SHA-1.
-        // Цепочка сертификатов подписывающей стороны должна храниться в записи Cert
-
-        // Подписи PKCS#7 должен соответствовать синтаксису криптографических сообщений RFC3852
-
-        // adbe.pkcs7.detached - дайджест исходного подписанного сообщения в диапазоне байтов документа,
-        // должен быть включен в качестве обычного поля SignedData PKCS#7.
-        // Никакие данные не должны быть инкапсулированы в поле SignedData PKCS#7
-
-        // adbe.pkcs7.sha1 - дайджест SHA1 диапазона байтов документа
-        // должен быть инкапсулирован в поле SignedData PKCS#7 с ContentInfo типа Data.
-        // Дайджест этих SignedData должен быть включен как обычный дайджест PKCS#7
-
-
-        // Память под дайджест должна быть выделена заранее, т.к. заполнение происходит после записи всего документа
-        // Размер дайджеста должен быть исчерпывающим, а лишняя часть должна быть заполнена нулями
-        unsigned int unDigestLength = 50000;
-        BYTE* pDigest = new BYTE[unDigestLength];
-        memset(pDigest, 0, unDigestLength);
-        // Значение подписи, дайджест диапазона байтов
-        pSig->Add("Contents", new CBinaryObject(pDigest, unDigestLength));
-        // Для подписей с открытым ключом Contents должен быть либо двоичным объектом данных PKCS#1 в кодировке DER,
-        // либо объектом двоичных данных PKCS#7 в кодировке DER
-
-
-        // Сертификат X.509 используемый при подписании и проверке подписей
-        // pSig->Add("Cert", new CBinaryObject(pCert, nCertLength));
-        // Сертификат использует криптографию с открытым ключом
-        // Сертификат подписи должен стоять первым в массиве
-
-        // он должен использоваться для проверки значения подписи в Содержимом,
-        // а другие сертификаты должны использоваться для проверки подлинности сертификата подписи
-
-        // Если подфильтром является adbe.pkcs7.detached или adbe.pkcs7.sha1, эта запись не должна использоваться,
-        // а цепочка сертификатов должна быть помещена в конверт PKCS#7 в разделе Contents
-
-
-        // Массив пар целых чисел (начальное смещение в байтах, длина в байтах),
-        // который должен описывать точный диапазон байтов для вычисления дайджеста
-        pSig->Add("ByteRange", new CArrayObject());
-        // Несколько несмежных диапазонов байтов должны использоваться для описания дайджеста, который не включает само значение подписи
-
-        // Диапазоны данных используемые для вычисления Contents - обычно включается всё до < у Contents, и после > у Contents до конца файла
-        // Таким образом ByteRange вычисляется при окончательной записи - 0 положение_на_начало_записи_Contents положение_на_конец_записи_Contents
-        // количество_байт_до_конца_файла...
-
-
-        // Reference - Массив справочных словарей сигнатур
-
-        // Changes - Массив из трех чисел, который указывает изменения в документе в порядке: количество измененных страниц,
-        // количество измененных полей и количество заполненных полей
-        // Порядок подписей определяется значением ByteRange. Поскольку каждая подпись приводит к добавочному сохранению,
-        // более поздние подписи имеют большее значение длины
-
-        // Name - Текстовая строка, Имя лица или органа, подписавшего документ.
-        // Значение следует использовать когда невозможно извлечь имя из подписи или сертификата подписавшего.
-
-        // M - Дата, Время подписания
-        // Значение следует использовать когда время подписания недоступно в подписи
-
-        // Reason - Строка, Причина подписания, например (Я согласен)
-
-        // Prop_Build - Словарь, который может использоваться обработчиком подписи для записи информации о состоянии компьютерной среды,
-        // используемой для подписи, такой как имя обработчика, используемого для создания подписи, дата сборки программного обеспечения,
-        // версия, и операционная система. Спецификация словаря PDF Signature Build содержит рекомендации по использованию этого словаря
     }
 }

@@ -1565,6 +1565,11 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 		CPictureField* pField = m_pDocument->CreatePictureField();
 		pFieldBase = static_cast<CFieldBase*>(pField);
 	}
+	else if (oInfo.IsSignature())
+	{
+		CSignatureField* pField = m_pDocument->CreateSignatureField();
+		pFieldBase = static_cast<CFieldBase*>(pField);
+	}
 
 	if (!pFieldBase)
 		return S_FALSE;

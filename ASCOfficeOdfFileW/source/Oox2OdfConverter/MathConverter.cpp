@@ -368,7 +368,7 @@ namespace Oox2Odf
 			tag = L"munder";
 			lvl_down_counter_decreace(1);
 		}
-		CREATE_MATH_TAG(tag);
+		CREATE_MATH_TAG(tag.c_str());
 		OPEN_MATH_TAG(elm);
 		{
 			if(values.auxFlag) annotation() += L"bar {";
@@ -900,7 +900,7 @@ namespace Oox2Odf
 		}
 		
 		
-		CREATE_MATH_TAG(tag);
+		CREATE_MATH_TAG(tag.c_str());
 		if (values.auxFlag)
 		{
 			typedef odf_writer::math_mover* T;
@@ -1412,8 +1412,8 @@ namespace Oox2Odf
 				CREATE_MATH_TAG(L"mn");
 
 				elm->add_text(std::wstring(1, s_val[i]));
-
 				OPEN_MATH_TAG(elm);
+				
 				CLOSE_MATH_TAG;
 				annotation() += std::wstring(1, s_val[i]) + L" ";
 			}

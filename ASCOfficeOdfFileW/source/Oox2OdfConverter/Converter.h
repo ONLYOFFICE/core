@@ -677,6 +677,10 @@ public:
 		std::vector<int>& end_counter();
 		std::wstring& annotation();
 		bool& annotation_flag();
+		void lvl_up_counter_increace(double val);
+		void lvl_up_counter_decreace(double val);
+		void lvl_down_counter_increace(double val);
+		void lvl_down_counter_decreace(double val);
 		void mrow();
 		void endOfMrow();
 		void resizeBrackets();

@@ -2,7 +2,7 @@
 
 JSSmart<CJSValue> CZipEmbed::open(JSSmart<CJSValue> typedArray)
 {
-    close();
+    RELEASEOBJECT(m_pFolder);
     if (!typedArray->isTypedArray())
         return CJSContext::createNull();
 
@@ -10,7 +10,8 @@ JSSmart<CJSValue> CZipEmbed::open(JSSmart<CJSValue> typedArray)
     CJSDataBuffer buffer = pArray->getData();
 
 	m_pFolder = new CZipFolderMemory(buffer.Data, (DWORD)buffer.Len);
-    buffer.Free();
+    if (buffer.IsExternalize)
+        buffer.Free();
 
     std::vector<std::wstring> arFiles = m_pFolder->getFiles(L"", true);
     if (arFiles.empty())
@@ -26,7 +27,7 @@ JSSmart<CJSValue> CZipEmbed::open(JSSmart<CJSValue> typedArray)
 }
 JSSmart<CJSValue> CZipEmbed::create()
 {
-    close();
+    RELEASEOBJECT(m_pFolder);
     m_pFolder = new CZipFolderMemory();
     return CJSContext::createBool(true);
 }

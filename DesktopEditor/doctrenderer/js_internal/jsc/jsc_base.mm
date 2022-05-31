@@ -77,6 +77,11 @@ int CJSValueJSCTemplate<T>::toInt32()
     return [value toInt32];
 }
 template<typename T>
+unsigned int CJSValueJSCTemplate<T>::toUInt32()
+{
+    return [value toUInt32];
+}
+template<typename T>
 double CJSValueJSCTemplate<T>::toDouble()
 {
     return [value toDouble];
@@ -202,6 +207,14 @@ namespace NSJSBase
         CJSValueJSC* _value = new CJSValueJSC();
         _value->context = _getCurrentContext();
         _value->value = [JSValue valueWithInt32:((int32_t) value) inContext:_value->context];
+        return _value;
+    }
+
+    CJSValue* CJSContext::createUInt(const unsigned int& value)
+    {
+        CJSValueJSC* _value = new CJSValueJSC();
+        _value->context = _getCurrentContext();
+        _value->value = [JSValue valueWithUInt32:((uint32_t) value) inContext:_value->context];
         return _value;
     }
 

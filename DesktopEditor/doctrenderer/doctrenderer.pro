@@ -59,7 +59,7 @@ HEADERS += \
     embed/MemoryStreamEmbed.h \
     embed/NativeControlEmbed.h \
     embed/NativeBuilderEmbed.h \
-	embed/TextMeasurerEmbed.h \
+    embed/TextMeasurerEmbed.h \
     js_internal/js_base.h
 
 SOURCES += \
@@ -68,8 +68,8 @@ SOURCES += \
     embed/GraphicsEmbed.cpp \
     embed/MemoryStreamEmbed.cpp \
     embed/NativeControlEmbed.cpp \
-	embed/NativeBuilderEmbed.cpp \
-	embed/TextMeasurerEmbed.cpp
+    embed/NativeBuilderEmbed.cpp \
+    embed/TextMeasurerEmbed.cpp
 
 core_mac {
     !use_v8:CONFIG += use_javascript_core
@@ -83,9 +83,9 @@ include($$PWD/js_internal/js_base.pri)
         embed/v8/v8_MemoryStream.cpp \
         embed/v8/v8_NativeControl.cpp \
         embed/v8/v8_NativeBuilder.cpp \
-		embed/v8/v8_Graphics.cpp \
-		embed/v8/v8_Zip.cpp \
-		embed/v8/v8_Pointer.cpp
+        embed/v8/v8_Graphics.cpp \
+        embed/v8/v8_Zip.cpp \
+        embed/v8/v8_Pointer.cpp
 
     build_xp:DESTDIR=$$DESTDIR/xp
 } else {
@@ -94,9 +94,9 @@ include($$PWD/js_internal/js_base.pri)
         embed/jsc/jsc_Graphics.mm \
         embed/jsc/jsc_MemoryStream.mm \
         embed/jsc/jsc_NativeControl.mm \
-		embed/jsc/jsc_NativeBuilder.mm \
-		embed/jsc/jsc_Zip.mm \
-		embed/v8/jsc_Pointer.cpp
+        embed/jsc/jsc_NativeBuilder.mm \
+        embed/jsc/jsc_Zip.mm \
+        embed/jsc/jsc_Pointer.mm
 
     LIBS += -framework Foundation
 }

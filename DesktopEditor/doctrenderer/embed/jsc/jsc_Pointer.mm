@@ -13,7 +13,23 @@
 
 @implementation CJSCPointer
 
-EMBED_OBJECT_WRAPPER_METHODS(CPointerEmbedObject)
+-(id) init
+{
+    self = [super init];
+    return self;
+}
+-(void) dealloc
+{
+    RELEASEOBJECT(m_internal);
+
+#if !__has_feature(objc_arc)
+    [super dealloc];
+#endif
+}
+-(void*) getNative
+{
+    return m_internal;
+}
 
 -(id) initWithPointer:(CPointerEmbedObject*) pointer
 {
@@ -27,5 +43,8 @@ EMBED_OBJECT_WRAPPER_METHODS(CPointerEmbedObject)
 
 JSSmart<CJSValue> CPointerEmbedObject::createObject()
 {
-    return [[CJSCPointer alloc] initWithPointer:this];
+    CJSValueJSC* pRet = new CJSValueJSC();
+    pRet->context = _getCurrentContext();
+    pRet->value = [JSValue valueWithObject:(id)[[CJSCPointer alloc] initWithPointer:this] inContext:pRet->context];
+    return pRet;
 }

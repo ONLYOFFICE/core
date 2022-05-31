@@ -691,6 +691,21 @@ unsigned short sheetsnames2ixti(std::wstring name)
 	return 0xFFFF;
 }
 
+unsigned int definenames2index(std::wstring name)
+{
+	unsigned int index;
+
+	auto pos = std::find(XLS::GlobalWorkbookInfo::arDefineNames_static.cbegin(), XLS::GlobalWorkbookInfo::arDefineNames_static.cend(), name);
+
+	if (pos != XLS::GlobalWorkbookInfo::arDefineNames_static.cend())
+	{
+		index = pos - XLS::GlobalWorkbookInfo::arDefineNames_static.cbegin() + 1;
+		return index;
+	}
+
+	return 0xFFFFFFFF;
+}
+
 bool isTableFmla(const std::wstring& tableName, _UINT32& listIndex)
 {
 	for(const auto& item : XLS::GlobalWorkbookInfo::mapTableNames_static)

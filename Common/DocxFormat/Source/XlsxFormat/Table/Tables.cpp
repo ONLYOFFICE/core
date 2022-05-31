@@ -45,6 +45,7 @@
 #include "../../XlsbFormat/Biff12_records/ListCCFmla.h"
 #include "../../XlsbFormat/Biff12_records/ListTrFmla.h"
 #include "../../XlsbFormat/Biff12_records/List14.h"
+#include "../../XlsbFormat/Biff12_unions/FRTTABLE.h"
 
 #include "../../XlsbFormat/QueryTableStream.h"
 #include "../../XlsbFormat/Biff12_unions/QSI.h"
@@ -78,6 +79,25 @@ namespace Spreadsheet
     {
         ReadAttributes(obj);
     }
+	void CAltTextTable::toBin(XLS::BaseObjectPtr& obj)
+	{
+		if (obj == nullptr)
+			obj = XLS::BaseObjectPtr(new XLSB::List14());
+
+		auto ptr = static_cast<XLSB::List14*>(obj.get());
+		if (ptr != nullptr)
+		{
+			if (m_oAltText.IsInit())
+				ptr->stAltText = m_oAltText.get();
+			else
+				ptr->stAltText = L"";
+
+			if (m_oAltTextSummary.IsInit())
+				ptr->stAltTextSummary = m_oAltTextSummary.get();
+			else
+				ptr->stAltTextSummary = L"";
+		}
+	}
 	void CAltTextTable::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -695,7 +715,10 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 				m_oTableStyleInfo->toBin(ptr->m_BrtTableStyleClient);
 
 			if (m_oExtLst.IsInit())
+			{
+				ptr->m_FRTTABLE = XLS::BaseObjectPtr(new XLSB::FRTTABLE());
 				m_oExtLst->toBin(ptr->m_FRTTABLE);
+			}
 		}
 	}
 	void CTable::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)

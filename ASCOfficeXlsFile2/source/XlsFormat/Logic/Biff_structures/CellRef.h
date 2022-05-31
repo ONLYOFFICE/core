@@ -56,7 +56,8 @@ public:
 	void operator+=(const CellRef& appended_ref);
 	void operator-=(const CellRef& subtracted_ref);
 
-    virtual void load(CFRecord& record) {}
+    void load(CFRecord& record) override {}
+	void save(CFRecord& record) override {}
 
     const int	getRow() const;
     const int	getColumn() const;
@@ -142,7 +143,7 @@ public:
 		return BiffStructurePtr(new CellRef_T(*this));
 	};
 
-	virtual void load(CFRecord& record)
+	void load(CFRecord& record) override
 	{
 		RwType rw;
 		ColType col;
@@ -167,7 +168,18 @@ public:
 				fQuoted = 0 != (col & (1 << (sizeof(ColType) * 8 - 2)));
 				break;
 		}
-	};
+	}
+
+	void save(CFRecord& record) override
+	{
+		RwType rw;
+		ColType col;
+
+		rw = row;
+		col = column;
+
+		record << rw << col;
+	}
 
 };
 

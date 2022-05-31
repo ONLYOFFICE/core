@@ -44,6 +44,7 @@ class PtgNameX: public OperandPtg
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgNameX)
 public:
 	PtgNameX(const unsigned short full_ptg_id);
+	PtgNameX(const unsigned short ixti, const unsigned int index, const PtgDataType data_type_init);
 	PtgNameX(const std::wstring& word, const PtgDataType data_type_init);
 	BiffStructurePtr clone();
 

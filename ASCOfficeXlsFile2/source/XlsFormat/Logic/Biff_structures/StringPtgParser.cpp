@@ -315,6 +315,10 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
 				{
 					rgce.addPtg(found_operand = OperandPtgPtr(new PtgList(ptgList)));
 				}
+				else if (SyntaxPtg::extract_PtgName(it, itEnd, number))// Shall be placed strongly before PtgArea and PtgRef
+				{
+					rgce.addPtg(found_operand = OperandPtgPtr(new PtgNameX(ixti, number, OperandPtg::ptg_VALUE)));
+				}
                 else
                 {
                     // EXCEPT::RT::WrongFormulaString("Unknown format of 3D reference in formula.", assembled_formula);

@@ -379,6 +379,15 @@ namespace OOX
 						if (m_oDefinedNames.IsInit())
 						{
 							m_oDefinedNames->toBin(workBookStream->m_arBrtName);
+
+							for (size_t i = 0; i < m_oDefinedNames->m_arrItems.size(); ++i)
+							{
+								if (m_oDefinedNames->m_arrItems[i])
+								{
+									XLS::GlobalWorkbookInfo::arDefineNames_static.push_back(m_oDefinedNames->m_arrItems[i]->m_oName.get());
+								}
+							}
+							
 						}
 						if (m_oWorkbookPr.IsInit())
 						{

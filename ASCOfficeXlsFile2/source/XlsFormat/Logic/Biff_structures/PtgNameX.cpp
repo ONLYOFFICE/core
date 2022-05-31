@@ -41,6 +41,12 @@ PtgNameX::PtgNameX(const unsigned short full_ptg_id) : OperandPtg(full_ptg_id)
 {
 }
 
+PtgNameX::PtgNameX(const unsigned short ixti, const unsigned int index, const PtgDataType data_type)
+: OperandPtg(fixed_id | (static_cast<unsigned char>(data_type) << 5))
+{
+	this->ixti = ixti;
+	this->nameindex = index;
+}
 
 PtgNameX::PtgNameX(const std::wstring& word, const PtgDataType data_type)
 :	OperandPtg(fixed_id | (static_cast<unsigned char>(data_type) << 5))

@@ -80,8 +80,8 @@ public:
 	void operator+=(const CellRef& appended_ref);
 	void operator-=(const CellRef& subtracted_ref);
 
-    virtual void load(CFRecord& record) {}
-	virtual void save(CFRecord& record) {}
+    void load(CFRecord& record) override {}
+	void save(CFRecord& record) override {}
 
     int		rowFirst;
     int		rowLast;

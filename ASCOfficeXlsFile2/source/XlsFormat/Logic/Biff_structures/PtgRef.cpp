@@ -44,7 +44,7 @@ PtgRef::PtgRef(const unsigned short full_ptg_id) : OperandPtg(full_ptg_id)
 
 PtgRef::PtgRef(const std::wstring& word, const PtgDataType data_type)
 :	OperandPtg(fixed_id | (static_cast<unsigned char>(data_type) << 5)),
-	loc(word)
+	loc(word), loc_xlsb(word)
 {
 }
 

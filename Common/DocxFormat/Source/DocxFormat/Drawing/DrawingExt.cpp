@@ -1386,6 +1386,19 @@ namespace OOX
 						}
 					}
 				}
+
+				else if (obj->get_type() == XLS::typeFRTTABLE)
+				{
+					auto ptr = static_cast<XLSB::FRTTABLE*>(obj.get());
+
+					if (ptr != nullptr)
+					{
+						if (itemExt->m_oAltTextTable.IsInit())
+						{
+							itemExt->m_oAltTextTable->toBin(ptr->m_BrtList14);
+						}					
+					}
+				}
 			}
 		}
 	}

@@ -432,22 +432,14 @@ const bool SyntaxPtg::extract_PtgName(std::wstring::const_iterator& first, std::
 	boost::match_results<std::wstring::const_iterator> results;
 	if(boost::regex_search(first, last, results, reg_name))
 	{
-		/*std::wstring name(results.str(1));
-		std::wstring  query(L"root/WorkbookStreamObject/GlobalsSubstream/LBL/Lbl");
-		MSXML2::IXMLDOMNodeListPtr nodes = parent->GetownerDocument()->selectNodes(query);
-		MSXML2::IXMLDOMElementPtr lbl;
-		
-		for(size_t counter = 1; (lbl = nodes->nextNode()); ++counter)
+		std::wstring define_names = results.str(1);
+
+		out_num = XMLSTUFF::definenames2index(define_names);
+		if (0xFFFFFFFF != out_num)
 		{
-			MSXML2::IXMLDOMAttributePtr lbl_name(lbl->getAttributeNode(L"Name"));
-			if(lbl_name && boost::algorithm::to_upper_copy(name) == 
-				boost::algorithm::to_upper_copy(std::wstring(static_cast<wchar_t*>(static_cast<std::wstring >(lbl_name->Getvalue())))))
-			{
-				out_num = counter;
-				first = results[1].second;
-				return true;
-			}
-		}*/
+			first = results[1].second;
+			return true;
+		}
 	}
 	return false;
 }
@@ -472,9 +464,9 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
 			ptgList.invalid = false;
 			ptgList.nonresident = false;
 			ptgList.ixti = ixti;
-			static boost::wregex reg_inside_table1(L"\\[#?\\w[\\s\\w\\d.]*\\]");
+			static boost::wregex reg_inside_table1(L"\\[#?[\\s\\w\\d.]+\\]");
 			static boost::wregex reg_inside_table2(L"\\[#\\w[\\s\\w\\d.]*\\],\\[#\\w[\\s\\w\\d.]*\\]");
-			static boost::wregex reg_inside_table3(L"^[,;:]?\\[#?\\w[\\s\\w\\d.]*\\]");
+			static boost::wregex reg_inside_table3(L"^[,;:]?\\[#?[\\s\\w\\d.]+\\]");
 
 			first = results[1].second;
 
@@ -534,7 +526,7 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
 					ptgList.columns = 0x01;
 				}
 
-				first = results_1[0].first;
+				//first = results_1[0].first;
 				first = results_1[0].second;
 
 				if (boost::regex_search(first, last, results_1, reg_inside_table3))
@@ -545,13 +537,13 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
 
 					if (XMLSTUFF::isColumn(boost::algorithm::erase_last_copy(boost::algorithm::erase_first_copy(insider, L"["), L"]"), indexTable, indexColumn))
 					{
+						//first = results_1[0].first;
+						first = results_1[0].second;
+
 						if (ptgList.colFirst == 65535)
 						{
 							ptgList.columns = 0x01;
-							ptgList.colFirst = indexColumn;
-
-							first = results_1[0].first;
-							first = results_1[0].second;
+							ptgList.colFirst = indexColumn;							
 
 							if (boost::regex_search(first, last, results_1, reg_inside_table3))
 							{
@@ -563,6 +555,8 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
 								{
 									ptgList.columns = 0x02;
 									ptgList.colLast = indexColumn;
+									//first = results_1[0].first;
+									first = results_1[0].second;
 								}
 							}
 						}
@@ -571,12 +565,7 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
 							ptgList.columns = 0x02;
 							ptgList.colLast = indexColumn;
 						}
-					}
-					
-
-					first = results_1[0].first;
-					first = results_1[0].second;
-					
+					}					
 				}
 
 				if (first != last && *first == ']')

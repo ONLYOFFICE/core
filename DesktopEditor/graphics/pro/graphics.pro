@@ -493,20 +493,7 @@ SOURCES += ./../../fontengine/FontsAssistant.cpp
 HEADERS += ./../../fontengine/TextShaper.h
 SOURCES += ./../../fontengine/TextShaper.cpp
 
-CONFIG += enable_support_shaper
-
-core_windows {
-    MSVC_VERSION_DETECT = $$(VisualStudioVersion)
-
-    lessThan(MSVC_VERSION_DETECT, 16.0) {
-	    CONFIG -= enable_support_shaper
-	}
-}
-
-enable_support_shaper {
-    DEFINES += SUPPORT_HARFBUZZ_SHAPER
-	include($$CORE_ROOT_DIR/Common/3dParty/harfbuzz/harfbuzz.pri)
-}
+include($$PWD/textshaper.pri)
 # -------------------------------------------------
 
 core_ios {

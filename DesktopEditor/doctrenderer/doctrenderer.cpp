@@ -1186,19 +1186,7 @@ namespace NSDoctRenderer
         }
 
         std::wstring strFileName = m_pInternal->m_oParams.m_strSrcFilePath;
-        size_t nFileNameLen = strFileName.length();
-        if (4 < nFileNameLen)
-        {
-            const wchar_t* bufFileName = strFileName.c_str();
-            if (bufFileName[nFileNameLen - 4] != '.' ||
-                bufFileName[nFileNameLen - 3] != 'b' ||
-                bufFileName[nFileNameLen - 2] != 'i' ||
-                bufFileName[nFileNameLen - 1] != 'n')
-            {
-                strFileName += L"/Editor.bin";
-            }
-        }
-        else
+        if (!NSFile::CFileBinary::Exists(strFileName))
         {
             strFileName += L"/Editor.bin";
         }

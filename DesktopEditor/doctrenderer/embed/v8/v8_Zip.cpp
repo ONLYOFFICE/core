@@ -43,6 +43,8 @@ namespace NSZip
         v8::Local<v8::Object> obj = ZipTemplate->NewInstance(isolate->GetCurrentContext()).ToLocalChecked();
         obj->SetInternalField(0, v8::External::New(CV8Worker::GetCurrent(), pZip));
 
+        NSJSBase::CJSEmbedObjectPrivate::CreateWeaker(obj);
+
         args.GetReturnValue().Set(obj);
     }
 }

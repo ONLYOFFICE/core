@@ -489,6 +489,13 @@ HEADERS += ./../../fontengine/FontsAssistant.h
 SOURCES += ./../../fontengine/FontsAssistant.cpp
 # -------------------------------------------------
 
+# ------------------- shaper ----------------------
+HEADERS += ./../../fontengine/TextShaper.h
+SOURCES += ./../../fontengine/TextShaper.cpp
+
+include(./../../fontengine/js/common/graphics_shaper.pri)
+# -------------------------------------------------
+
 core_ios {
 
     OBJECTIVE_SOURCES += \

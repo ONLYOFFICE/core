@@ -50,14 +50,27 @@ namespace NSJSBase
         virtual CJSFunction* toFunction()   = 0;
     };
 
+    class CJSEmbedObjectPrivateBase
+    {
+    public:
+        CJSEmbedObjectPrivateBase() {}
+        virtual ~CJSEmbedObjectPrivateBase() {}
+    };
+
     class CJSEmbedObject
     {
     public:
-        CJSEmbedObject() {}
-        virtual ~CJSEmbedObject() {}
+        CJSEmbedObject() { embed_native_internal = NULL; }
+        virtual ~CJSEmbedObject() { RELEASEOBJECT(embed_native_internal); }
 
     public:
         virtual void* getObject() { return NULL; }
+
+    protected:
+        CJSEmbedObjectPrivateBase* embed_native_internal;
+
+        friend class CJSEmbedObjectPrivateBase;
+        friend class CJSEmbedObjectPrivate;
     };
 
     class CJSObject : public CJSValue

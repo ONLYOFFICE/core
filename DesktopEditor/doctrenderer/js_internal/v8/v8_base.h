@@ -745,6 +745,57 @@ namespace NSJSBase
     };
 }
 
+namespace NSJSBase
+{
+    class CJSEmbedObjectPrivate : public CJSEmbedObjectPrivateBase
+    {
+    public:
+        v8::Persistent<v8::Object> handle;
+
+        CJSEmbedObjectPrivate(v8::Local<v8::Object> obj)
+        {
+            SetWeak(obj);
+        }
+        virtual ~CJSEmbedObjectPrivate()
+        {
+            ClearWeak();
+        }
+
+    public:
+        void SetWeak(v8::Local<v8::Object> obj)
+        {
+            v8::Handle<v8::External> field = v8::Handle<v8::External>::Cast(obj->GetInternalField(0));
+            CJSEmbedObject* pEmbedObject = (NSJSBase::CJSEmbedObject*)field->Value();
+
+            handle.Reset(CV8Worker::GetCurrent(), obj);
+            handle.SetWeak(pEmbedObject, EmbedObjectWeakCallback, v8::WeakCallbackType::kParameter);
+
+            pEmbedObject->embed_native_internal = this;
+        }
+        void ClearWeak()
+        {
+            if (handle.IsEmpty())
+                return;
+            handle.ClearWeak();
+            handle.Reset();
+        }
+
+        static void EmbedObjectWeakCallback(const v8::WeakCallbackInfo<CJSEmbedObject>& data)
+        {
+            v8::Isolate* isolate = data.GetIsolate();
+            v8::HandleScope scope(isolate);
+            CJSEmbedObject* wrap = data.GetParameter();
+            ((CJSEmbedObjectPrivate*)wrap->embed_native_internal)->handle.Reset();
+            delete wrap;
+        }
+
+        static void CreateWeaker(v8::Local<v8::Object> obj)
+        {
+            new CJSEmbedObjectPrivate(obj);
+        }
+    };
+}
+
 namespace NSV8Objects
 {
     static void Template_Set(v8::Local<v8::ObjectTemplate>& obj, const char* name, v8::FunctionCallback callback)

@@ -31,7 +31,7 @@
 
 @end
 
-@interface CJSCTextMeasurer : NSObject<IJSCZip, JSEmbedObjectProtocol>
+@interface CJSCTextMeasurer : NSObject<IJSCTextMeasurer, JSEmbedObjectProtocol>
 {
 @public
     CTextMeasurerEmbed* m_internal;
@@ -48,7 +48,7 @@ FUNCTION_WRAPPER_JS_1(FT_Free, FT_Free)
 FUNCTION_WRAPPER_JS(FT_Init, FT_Init)
 FUNCTION_WRAPPER_JS_2(FT_Set_TrueType_HintProp, FT_Set_TrueType_HintProp)
 
-FUNCTION_WRAPPER_JS_4(FT_Load_Glyph, FT_Load_Glyph)
+FUNCTION_WRAPPER_JS_4(FT_Open_Face, FT_Open_Face)
 FUNCTION_WRAPPER_JS_3(FT_Open_Face2, FT_Open_Face2)
 FUNCTION_WRAPPER_JS_1(FT_GetFaceInfo, FT_GetFaceInfo)
 
@@ -71,7 +71,7 @@ FUNCTION_WRAPPER_JS_1(HB_FontFree, HB_FontFree)
 
 @end
 
-void CZipEmbed::CreateObjectInContext(const std::string &name, JSSmart<CJSContext> context)
+void CTextMeasurerEmbed::CreateObjectInContext(const std::string &name, JSSmart<CJSContext> context)
 {
     context->m_internal->context[[NSString stringWithAString:name]] = ^(){
         return [[CJSCTextMeasurer alloc] init];

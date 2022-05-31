@@ -2,6 +2,7 @@
 #define CEMFINTERPRETATORSVG_H
 
 #include "CEmfInterpretatorBase.h"
+#include "../EmfParser/CEmfParserBase.h"
 
 namespace MetaFile
 {
@@ -19,7 +20,7 @@ namespace MetaFile
         class CEmfInterpretatorSvg : public CEmfInterpretatorBase
         {
             public:
-                CEmfInterpretatorSvg(const wchar_t* wsFilePath);
+                CEmfInterpretatorSvg(const wchar_t* wsFilePath, CEmfParserBase* pParser = NULL);
                 CEmfInterpretatorSvg(const CEmfInterpretatorSvg& oInterpretator);
                 virtual ~CEmfInterpretatorSvg();
 
@@ -138,12 +139,17 @@ namespace MetaFile
                 std::wstring            m_wsSvgFilePath;
 
                 SvgParameters           m_oParameters;
+
+                CEmfParserBase          *m_pParser;
+
+                double                  m_dScaleX;
+                double                  m_dScaleY;
         public:
                 void Begin() override;
                 void End() override;
                 //Следующие методы ничего не делают
 
-                void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight) override {};
+                void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight) override;
 
                 void DrawString(std::wstring& wsText, unsigned int unCharsCount, double dX, double dY, double* pDx,
                                 int iGraphicsMode = 1, double dXScale = 1, double dYScale = 1) override {};
@@ -169,6 +175,15 @@ namespace MetaFile
                 void GetTransform(double* pdM11, double* pdM12, double* pdM21, double* pdM22, double* pdX, double* pdY) override {};
         private:
                 void WriteNode(const std::wstring& wsNodeName, const std::vector<std::pair<std::wstring, std::wstring>>& arAttributes, const std::wstring& wsValueNode = L"");
+
+                void UpdateStroke(std::wstring& wsStroke);
+                void UpdateFill(std::wstring& wsFill);
+
+                double TranslateX(double nX);
+                double TranslateY(double nY);
+
+                TPointD TranslatePoint(const TPointD& oPoint);
+                TEmfRectL TranslateRect(const TEmfRectL& oRect);
         };
 }
 

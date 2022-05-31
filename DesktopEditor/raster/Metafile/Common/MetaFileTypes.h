@@ -48,6 +48,7 @@ typedef unsigned char BYTE;
 #endif
 
 #define METAFILE_RGBA(r, g, b) ((unsigned int)( ( (unsigned char)(r) )| ( ( (unsigned char)(g) ) << 8 ) | ( ( (unsigned char)(b) ) << 16 ) | ( (unsigned char)(0) << 24 ) ) )
+#define INTCOLOR_TO_RGB(color) std::to_wstring(color >> 0 & 0xFF) + L", " + std::to_wstring(color >> 8 & 0xFF) + L", " + std::to_wstring(color >> 16 & 0xFF)
 
 #if !defined (_WIN32) && !defined(_WIN64)
 	#define BLACKONWHITE                 1

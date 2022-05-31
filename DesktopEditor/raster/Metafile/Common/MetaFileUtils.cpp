@@ -1044,4 +1044,25 @@ namespace MetaFile
 
 		return FALSE;
 		}
-		}
+
+	    std::wstring StringNormalization(std::wstring wsString)
+	    {
+		std::wstring wsText;
+		for (wchar_t wChar : wsString)
+		    if (wChar == L'<')
+			   wsText += L"&lt;";
+		    else if (wChar == L'>')
+			   wsText += L"&gt;";
+		    else if (wChar == L'&')
+			   wsText += L"&amp;";
+		    else if (wChar == L'\'')
+			   wsText += L"&apos;";
+		    else if (wChar == L'"')
+			   wsText += L"&quot;";
+		    else if (wChar == 0x00)
+			   return wsText;
+
+		    else wsText += wChar;
+		return wsText;
+	    }
+}

@@ -787,7 +787,7 @@ namespace MetaFile
                 else if (oInterpretatorType == InterpretatorType::Emf)
                         m_pInterpretator = new CEmfInterpretator(wsFilePath);
                 else if (oInterpretatorType == InterpretatorType::Svg)
-                        m_pInterpretator = new CEmfInterpretatorSvg(wsFilePath);
+                        m_pInterpretator = new CEmfInterpretatorSvg(wsFilePath, this);
         }
 
         void CEmfParserBase::SetInterpretator(IOutputDevice *pOutput, const wchar_t *wsFilePath)

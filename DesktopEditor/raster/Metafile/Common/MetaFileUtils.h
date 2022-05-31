@@ -1241,5 +1241,7 @@ namespace MetaFile
 	double GetEllipseAngle(int nL, int nT, int nR, int nB, int nX, int nY);
 	void ProcessRasterOperation(unsigned int unRasterOperation, BYTE** ppBgra, unsigned int unWidth, unsigned int unHeight);
     bool OpenTempFile(std::wstring *pwsName, FILE **ppFile, const wchar_t *wsMode, const wchar_t *wsExt, const wchar_t *wsFolder);
+
+        std::wstring StringNormalization(std::wstring wsString);
 };
 #endif // _METAFILE_COMMON_METAFILEUTILS_H

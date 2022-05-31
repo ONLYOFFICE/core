@@ -9,7 +9,7 @@ JSSmart<CJSValue> CZipEmbed::open(JSSmart<CJSValue> typedArray)
     JSSmart<CJSTypedArray> pArray = typedArray->toTypedArray();
     CJSDataBuffer buffer = pArray->getData();
 
-    m_pFolder = new CZipFolderMemory(buffer.Data, (DWORD)buffer.Len);
+	m_pFolder = new CZipFolderMemory(buffer.Data, (DWORD)buffer.Len);
     buffer.Free();
 
     std::vector<std::wstring> arFiles = m_pFolder->getFiles(L"", true);
@@ -51,7 +51,7 @@ JSSmart<CJSValue> CZipEmbed::getFile(JSSmart<CJSValue> filePath)
 
     std::wstring sFilePath = filePath->toStringW();
     IFolder::CBuffer* pBuffer;
-    if (m_pFolder->read(sFilePath, pBuffer))
+    if (!m_pFolder->read(sFilePath, pBuffer))
         return CJSContext::createNull();
 
     size_t nBufferSize = (size_t)pBuffer->Size;

@@ -14,5 +14,4 @@ core_linux {
 
 enable_support_shaper {
     DEFINES += SUPPORT_HARFBUZZ_SHAPER
-	include($$CORE_ROOT_DIR/Common/3dParty/harfbuzz/harfbuzz.pri)
 }

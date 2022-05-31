@@ -2,6 +2,7 @@
 #include "./../../fontengine/TextShaper.h"
 
 #define RAW_POINTER(value) ((CPointerEmbedObject*)value->toObject()->getNative())->Data
+#define POINTER_OBJECT(value) ((CPointerEmbedObject*)value->toObject()->getNative())
 
 class CExternalPointerJS : public NSShaper::CExternalPointer
 {
@@ -26,10 +27,12 @@ JSSmart<CJSValue> CTextMeasurerEmbed::FT_Malloc(JSSmart<CJSValue> typed_array_or
 {
     void* pData = NULL;
     size_t len = 0;
+
     if (typed_array_or_len->isNumber())
     {
         len = (size_t)typed_array_or_len->toInt32();
-        pData = malloc((size_t)len);
+        if (0 != len)
+            pData = malloc((size_t)len);
     }
     else
     {
@@ -64,6 +67,13 @@ JSSmart<CJSValue> CTextMeasurerEmbed::FT_Open_Face(JSSmart<CJSValue> library, JS
 {
     void* face = NSShaper::FT_Open_Face(RAW_POINTER(library), (unsigned char*)RAW_POINTER(memory), size->toUInt32(), face_index->toInt32());
     CPointerEmbedObject* pointer = new CPointerEmbedObject(face, [](void* data) { NSShaper::FT_Done_Face(data); });
+    return pointer->createObject();
+}
+JSSmart<CJSValue> CTextMeasurerEmbed::FT_Open_Face2(JSSmart<CJSValue> library, JSSmart<CJSValue> array, JSSmart<CJSValue> face_index)
+{
+    CJSDataBuffer buffer = array->toTypedArray()->getData();
+    void* face = NSShaper::FT_Open_Face(RAW_POINTER(library), (unsigned char*)buffer.Data, (unsigned int)buffer.Len, face_index->toInt32());
+    CPointerEmbedObject* pointer = new CPointerEmbedObject(face, NSPointerObjectDeleters::EmptyDeleter);
     return pointer->createObject();
 }
 JSSmart<CJSValue> CTextMeasurerEmbed::FT_GetFaceInfo(JSSmart<CJSValue> face)
@@ -123,3 +133,32 @@ JSSmart<CJSValue> CTextMeasurerEmbed::FT_GetFaceMaxAdvanceX(JSSmart<CJSValue> fa
 {
     return CJSContext::createInt(NSShaper::FT_GetFaceMaxAdvanceX(RAW_POINTER(face)));
 }
+
+#ifdef SUPPORT_HARFBUZZ_SHAPER
+JSSmart<CJSValue> CTextMeasurerEmbed::HB_LanguageFromString(JSSmart<CJSValue> language_bcp_47)
+{
+    void* Data = NSShaper::HB_LanguageFromString(language_bcp_47->toStringA());
+    CPointerEmbedObject* pObject = new CPointerEmbedObject(Data, [](void* data) { NSShaper::HB_free(data); });
+    return pObject->createObject();
+}
+
+JSSmart<CJSValue> CTextMeasurerEmbed::HB_ShapeText(JSSmart<CJSValue> face, JSSmart<CJSValue> font, JSSmart<CJSValue> text,
+    JSSmart<CJSValue> nFeatures, JSSmart<CJSValue> nScript, JSSmart<CJSValue> nDirection, JSSmart<CJSValue> nLanguage)
+{
+    CPointerEmbedObject* pFont = POINTER_OBJECT(font);
+    CExternalPointerJS result;
+    NSShaper::HB_ShapeText(RAW_POINTER(face), pFont->Data, text->toStringA(),
+                           nFeatures->toUInt32(), nScript->toUInt32(), nDirection->toUInt32(), RAW_POINTER(nLanguage), &result);
+
+    if (NULL == result.Data)
+        return CJSContext::createNull();
+
+    return CJSContext::createUint8Array(result.Data, result.Len, false);
+}
+
+JSSmart<CJSValue> CTextMeasurerEmbed::HB_FontFree(JSSmart<CJSValue> font)
+{
+    NSShaper::HB_FontFree(RAW_POINTER(font));
+    return CJSContext::createUndefined();
+}
+#endif

@@ -636,7 +636,7 @@ namespace NSShaper
         HB_free(data);
     }
 
-    void HB_ShapeText(void* face, void* font, char* text,
+    void HB_ShapeText(void* face, void*& font, const std::string& text,
                       unsigned int nFeatures, unsigned int nScript, unsigned int nDirection, void* nLanguage, CExternalPointer* result)
     {
         // init features
@@ -665,6 +665,7 @@ namespace NSShaper
         {
             pFont = hb_ft_font_create((FT_Face)face, NULL);
             hb_ft_font_set_funcs(pFont);
+            font = (void*)pFont;
         }
         else
             pFont = (hb_font_t*)font;
@@ -679,8 +680,8 @@ namespace NSShaper
         hb_buffer_set_script(hbBuffer, (hb_script_t)nScript);
         hb_buffer_set_language(hbBuffer, (hb_language_t)nLanguage);
         hb_buffer_set_cluster_level(hbBuffer, HB_BUFFER_CLUSTER_LEVEL_MONOTONE_GRAPHEMES);
-        int text_len = (int)strlen(text);
-        hb_buffer_add_utf8(hbBuffer, text, text_len, 0, text_len);
+        int text_len = (int)text.length();
+        hb_buffer_add_utf8(hbBuffer, text.c_str(), text_len, 0, text_len);
         hb_buffer_guess_segment_properties(hbBuffer);
 
         // shape

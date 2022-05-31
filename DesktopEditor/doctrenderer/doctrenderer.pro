@@ -85,7 +85,8 @@ include($$PWD/js_internal/js_base.pri)
         embed/v8/v8_NativeBuilder.cpp \
         embed/v8/v8_Graphics.cpp \
         embed/v8/v8_Zip.cpp \
-        embed/v8/v8_Pointer.cpp
+		embed/v8/v8_Pointer.cpp \
+		embed/v8/v8_TextMeasurer.cpp
 
     build_xp:DESTDIR=$$DESTDIR/xp
 } else {
@@ -96,11 +97,14 @@ include($$PWD/js_internal/js_base.pri)
         embed/jsc/jsc_NativeControl.mm \
         embed/jsc/jsc_NativeBuilder.mm \
         embed/jsc/jsc_Zip.mm \
-        embed/jsc/jsc_Pointer.mm
+		embed/jsc/jsc_Pointer.mm \
+		embed/jsc/jsc_TextMeasurer.mm
 
     LIBS += -framework Foundation
 }
 }
+
+include(../graphics/pro/textshaper.pri)
 
 # downloader
 DEFINES += BUIDLER_OPEN_DOWNLOAD_ENABLED

@@ -23,6 +23,7 @@ public:
     JSSmart<CJSValue> FT_Set_TrueType_HintProp(JSSmart<CJSValue> library, JSSmart<CJSValue> tt_interpreter);
 
     JSSmart<CJSValue> FT_Open_Face(JSSmart<CJSValue> library, JSSmart<CJSValue> memory, JSSmart<CJSValue> size, JSSmart<CJSValue> face_index);
+    JSSmart<CJSValue> FT_Open_Face2(JSSmart<CJSValue> library, JSSmart<CJSValue> array, JSSmart<CJSValue> face_index);
     JSSmart<CJSValue> FT_GetFaceInfo(JSSmart<CJSValue> face);
 
     JSSmart<CJSValue> FT_Load_Glyph(JSSmart<CJSValue> face, JSSmart<CJSValue> gid, JSSmart<CJSValue> mode);
@@ -35,6 +36,15 @@ public:
     JSSmart<CJSValue> FT_SetCMapForCharCode(JSSmart<CJSValue> face, JSSmart<CJSValue> unicode);
     JSSmart<CJSValue> FT_GetKerningX(JSSmart<CJSValue> face, JSSmart<CJSValue> gid1, JSSmart<CJSValue> gid2);
     JSSmart<CJSValue> FT_GetFaceMaxAdvanceX(JSSmart<CJSValue> face);
+
+#ifdef SUPPORT_HARFBUZZ_SHAPER
+    JSSmart<CJSValue> HB_LanguageFromString(JSSmart<CJSValue> language_bcp_47);
+
+    JSSmart<CJSValue> HB_ShapeText(JSSmart<CJSValue> face, JSSmart<CJSValue> font, JSSmart<CJSValue> text,
+                                   JSSmart<CJSValue> nFeatures, JSSmart<CJSValue> nScript, JSSmart<CJSValue> nDirection, JSSmart<CJSValue> nLanguage);
+
+    JSSmart<CJSValue> HB_FontFree(JSSmart<CJSValue> font);
+#endif
 
     static void CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context);
 };

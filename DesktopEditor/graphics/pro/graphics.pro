@@ -494,6 +494,10 @@ HEADERS += ./../../fontengine/TextShaper.h
 SOURCES += ./../../fontengine/TextShaper.cpp
 
 include($$PWD/textshaper.pri)
+
+enable_support_shaper {
+    include($$CORE_ROOT_DIR/Common/3dParty/harfbuzz/harfbuzz.pri)
+}
 # -------------------------------------------------
 
 core_ios {

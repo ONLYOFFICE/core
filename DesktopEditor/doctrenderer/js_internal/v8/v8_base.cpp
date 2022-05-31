@@ -221,6 +221,13 @@ namespace NSJSBase
         return _value;
     }
 
+    CJSValue* CJSContext::createUInt(const unsigned int& value)
+    {
+        CJSValueV8* _value = new CJSValueV8();
+        _value->value = v8::Integer::NewFromUnsigned(CV8Worker::GetCurrent(), value);
+        return _value;
+    }
+
     CJSValue* CJSContext::createDouble(const double& value)
     {
         CJSValueV8* _value = new CJSValueV8();

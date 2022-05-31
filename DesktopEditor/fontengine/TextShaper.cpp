@@ -46,15 +46,12 @@
 #include <freetype/internal/tttypes.h>
 #include "ftmodapi.h"
 
-#include <hb.h>
-#include <hb-ft.h>
-#include <hb-ot.h>
-
 namespace NSShaper
 {
     #define ALLOC_WRITER(size) result->Alloc((size)); unsigned char* pCurData = result->Data
     #define WRITE_INT(value) result->WriteInt(pCurData, value); pCurData += 4
     #define WRITE_UINT(value) result->WriteUInt(pCurData, value); pCurData += 4
+    #define WRITE_UCHAR(value) *pCurData++ = value
 
     CExternalPointer::CExternalPointer()
     {
@@ -617,3 +614,115 @@ namespace NSShaper
         return true;
     }
 }
+
+#ifdef SUPPORT_HARFBUZZ_SHAPER
+
+#include <hb.h>
+#include <hb-ft.h>
+#include <hb-ot.h>
+
+namespace NSShaper
+{
+    #define g_userfeatures_count 5
+    hb_feature_t g_userfeatures[g_userfeatures_count];
+    bool g_userfeatures_init = false;
+
+    void* HB_LanguageFromString(const std::string language_bcp_47)
+    {
+        return (void*)hb_language_from_string(language_bcp_47.c_str(), language_bcp_47.length());
+    }
+    void HB_free(void* data)
+    {
+        HB_free(data);
+    }
+
+    void HB_ShapeText(void* face, void* font, char* text,
+                      unsigned int nFeatures, unsigned int nScript, unsigned int nDirection, void* nLanguage, CExternalPointer* result)
+    {
+        // init features
+        if (!g_userfeatures_init)
+        {
+            hb_tag_t tags[] = {
+                HB_TAG('l','i','g','a'),
+                HB_TAG('c','l','i','g'),
+                HB_TAG('h','l','i','g'),
+                HB_TAG('d','l','i','g'),
+                HB_TAG('k','e','r','n')
+            };
+            for (int nTag = 0; nTag < g_userfeatures_count; ++nTag)
+            {
+                g_userfeatures[nTag].tag = tags[nTag];
+                g_userfeatures[nTag].value = 0;
+                g_userfeatures[nTag].start = HB_FEATURE_GLOBAL_START;
+                g_userfeatures[nTag].end = HB_FEATURE_GLOBAL_END;
+            }
+            g_userfeatures_init = true;
+        }
+
+        // font
+        hb_font_t* pFont;
+        if (NULL == font)
+        {
+            pFont = hb_ft_font_create((FT_Face)face, NULL);
+            hb_ft_font_set_funcs(pFont);
+        }
+        else
+            pFont = (hb_font_t*)font;
+
+        // features
+        for (int nTag = 0; nTag < g_userfeatures_count; ++nTag)
+            g_userfeatures[nTag].value = (nFeatures & (1 << nTag)) ? 1 : 0;
+
+        // buffer
+        hb_buffer_t* hbBuffer = hb_buffer_create();
+        hb_buffer_set_direction(hbBuffer, (hb_direction_t)nDirection);
+        hb_buffer_set_script(hbBuffer, (hb_script_t)nScript);
+        hb_buffer_set_language(hbBuffer, (hb_language_t)nLanguage);
+        hb_buffer_set_cluster_level(hbBuffer, HB_BUFFER_CLUSTER_LEVEL_MONOTONE_GRAPHEMES);
+        int text_len = (int)strlen(text);
+        hb_buffer_add_utf8(hbBuffer, text, text_len, 0, text_len);
+        hb_buffer_guess_segment_properties(hbBuffer);
+
+        // shape
+        hb_shape(pFont, hbBuffer, g_userfeatures, g_userfeatures_count);
+
+        unsigned int glyph_count;
+        hb_glyph_info_t* glyph_info = hb_buffer_get_glyph_infos(hbBuffer, &glyph_count);
+        hb_glyph_position_t* glyph_pos = hb_buffer_get_glyph_positions(hbBuffer, &glyph_count);
+
+        int nSize = 4 + 8 + glyph_count * (1 + 1 + 4 * 6);
+
+        ALLOC_WRITER(nSize);
+
+        WRITE_UINT(nSize);
+
+        uint64_t pFontPointer = (uint64_t)pFont;
+        WRITE_UINT(pFontPointer & 0xFFFFFFFF);
+        WRITE_UINT((pFontPointer >> 32) & 0xFFFFFFFF);
+
+        for (unsigned i = 0; i < glyph_count; ++i)
+        {
+            unsigned char nGlyphType = (unsigned char)hb_ot_layout_get_glyph_class(hb_font_get_face(pFont), glyph_info[i].codepoint);
+            unsigned char nGlyphFlags = (unsigned char)hb_glyph_info_get_glyph_flags(&glyph_info[i]);
+
+            WRITE_UCHAR(nGlyphType);
+            WRITE_UCHAR(nGlyphFlags);
+
+            WRITE_UINT(glyph_info[i].codepoint);
+            WRITE_UINT(glyph_info[i].cluster);
+
+            WRITE_INT(glyph_pos[i].x_advance);
+            WRITE_INT(glyph_pos[i].y_advance);
+            WRITE_INT(glyph_pos[i].x_offset);
+            WRITE_INT(glyph_pos[i].y_offset);
+        }
+
+        hb_buffer_destroy(hbBuffer);
+    }
+
+    void HB_FontFree(void* font)
+    {
+        hb_font_destroy((hb_font_t*)font);
+    }
+}
+#endif

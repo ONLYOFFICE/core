@@ -282,6 +282,11 @@ namespace NSJSBase
             return 0;
         }
 
+        virtual unsigned int toUInt32()
+        {
+            return 0;
+        }
+
         virtual double toDouble()
         {
             return 0;
@@ -340,6 +345,11 @@ namespace NSJSBase
         virtual int toInt32()
         {
             return value.IsEmpty() ? 0 : value->Int32Value(V8ContextOneArg).V8ToChecked();
+        }
+
+        virtual unsigned int toUInt32()
+        {
+            return value.IsEmpty() ? 0 : value->Uint32Value(V8ContextOneArg).V8ToChecked();
         }
 
         virtual double toDouble()

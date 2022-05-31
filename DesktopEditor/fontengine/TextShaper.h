@@ -77,6 +77,16 @@ namespace NSShaper
     GRAPHICS_DECL unsigned int FT_SetCMapForCharCode(void* face, unsigned int unicode);
     GRAPHICS_DECL int FT_GetKerningX(void* face, unsigned int prev_gid, unsigned int gid);
     GRAPHICS_DECL int FT_GetFaceMaxAdvanceX(void* face);
+
+#ifdef SUPPORT_HARFBUZZ_SHAPER
+    GRAPHICS_DECL void* HB_LanguageFromString(const std::string language_bcp_47);
+    GRAPHICS_DECL void HB_free(void* data);
+
+    GRAPHICS_DECL void HB_ShapeText(void* face, void* font, char* text,
+                                    unsigned int nFeatures, unsigned int nScript, unsigned int nDirection, void* nLanguage, CExternalPointer* result);
+
+    GRAPHICS_DECL void HB_FontFree(void* font);
+#endif
 }
 
 #endif // _BUILD_TEXT_MANAGER_FONTMANAGER_H_

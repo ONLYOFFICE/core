@@ -51,7 +51,7 @@ JSSmart<CJSValue> CZipEmbed::getFile(JSSmart<CJSValue> filePath)
 
     std::wstring sFilePath = filePath->toStringW();
     IFolder::CBuffer* pBuffer;
-    if (m_pFolder->read(sFilePath, pBuffer))
+    if (!m_pFolder->read(sFilePath, pBuffer))
         return CJSContext::createNull();
 
     size_t nBufferSize = (size_t)pBuffer->Size;

@@ -21,7 +21,10 @@ JSSmart<CJSValue> CZipEmbed::open(JSSmart<CJSValue> typedArray)
 
     int nCurCount = 0;
     for (std::vector<std::wstring>::const_iterator i = arFiles.begin(); i != arFiles.end(); i++)
-        retFiles->set(nCurCount++, CJSContext::createString(*i));
+    {
+        const std::wstring& val = *i;
+        retFiles->set(nCurCount++, CJSContext::createString(val.empty() ? val : val.substr(1)));
+    }
 
     return retFiles->toValue();
 }

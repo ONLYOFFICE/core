@@ -505,7 +505,7 @@ core_windows {
 
 enable_support_shaper {
     DEFINES += SUPPORT_HARFBUZZ_SHAPER
-	include(./../../fontengine/js/common/graphics_shaper.pri)
+	include($$CORE_ROOT_DIR/Common/3dParty/harfbuzz/harfbuzz.pri)
 }
 # -------------------------------------------------
 

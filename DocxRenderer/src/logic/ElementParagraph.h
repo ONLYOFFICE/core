@@ -9,7 +9,8 @@ namespace NSDocxRenderer
     const double c_dMMToDx	 = 72 * 20 / 25.4;
     const double c_dSTANDART_STRING_HEIGHT_MM		= 4.2333333333333334;
     const double c_dTHE_SAME_STRING_Y_PRECISION_MM = 0.01;
-    const double c_dTHE_STRING_X_PRECISION_MM      = 0.5;
+    const double c_dLINE_DISTANCE_ERROR_MM      = 1.5;
+    const double c_dTHE_STRING_X_PRECISION_MM      = 1.5;
 
     // у класса T должен быть метод IsBigger, IsBiggerOrEqual
     template<typename T>

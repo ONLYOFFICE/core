@@ -420,10 +420,13 @@ namespace NSDocxRenderer
     void CTextLine::CalculateWidth()
     {
         m_dWidth = 1; //todo исправить этот хак - по идее должно == 0.
-        for (size_t i = 0; i < m_arConts.size(); ++i)
+
+        m_dWidth += m_arConts[0]->m_dWidthWithoutSpaces;
+
+        for (size_t i = 1; i < m_arConts.size(); ++i)
         {
+            m_dWidth += m_arConts[i]->m_dLeftWithoutSpaces - (m_arConts[i-1]->m_dLeftWithoutSpaces + m_arConts[i-1]->m_dWidthWithoutSpaces);;
             m_dWidth += m_arConts[i]->m_dWidthWithoutSpaces;
-            m_dWidth += m_arConts[i]->m_dSpaceWidthMM; //заранее добавляем ширину пробелов
         }
     }
 

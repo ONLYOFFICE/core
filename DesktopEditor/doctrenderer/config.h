@@ -115,31 +115,37 @@ namespace NSDoctRenderer
                         m_strAllFonts = private_GetFile(sConfigDir, sAllFontsPath);
                     }
                 }
-                else
-                {
-                    m_arrFiles.push_back(m_strAllFonts);
-                }
-
-
-                std::wstring sFontsPath = oNode.ReadNodeText(L"fonts");
-#ifdef SUPPORT_HARFBUZZ_SHAPER
-                sFontsPath += L"/fonts_native.js";
-#else
-                sFontsPath += L"/fonts_ie.js";
-#endif
+                m_arrFiles.push_back(m_strAllFonts);
             }
 
-            XmlUtils::CXmlNode oNodeSdk = oNode.ReadNode(L"DoctSdk");
-            if (oNodeSdk.IsValid())
-                private_LoadSDK_scripts(oNodeSdk, m_arDoctSDK, sConfigDir);
+            std::wstring sSdkPath = oNode.ReadNodeText(L"sdkjs");
+            if (!sSdkPath.empty())
+            {
+                if (!NSDirectory::Exists(sSdkPath))
+                    sSdkPath = sConfigDir + sSdkPath;
 
-            oNodeSdk = oNode.ReadNode(L"PpttSdk");
-            if (oNodeSdk.IsValid())
-                private_LoadSDK_scripts(oNodeSdk, m_arPpttSDK, sConfigDir);
+                std::wstring sFontsPath = sSdkPath + L"/common/libfont/engine";
+                if (!sFontsPath.empty())
+                {
+    #ifdef SUPPORT_HARFBUZZ_SHAPER
+                    sFontsPath += L"/fonts_native.js";
+    #else
+                    sFontsPath += L"/fonts_ie.js";
+    #endif
+                }
 
-            oNodeSdk = oNode.ReadNode(L"XlstSdk");
-            if (oNodeSdk.IsValid())
-                private_LoadSDK_scripts(oNodeSdk, m_arXlstSDK, sConfigDir);
+                m_arDoctSDK.push_back(sSdkPath + L"/word/sdk-all-min.js");
+                m_arDoctSDK.push_back(sFontsPath);
+                m_arDoctSDK.push_back(sSdkPath + L"/word/sdk-all.js");
+
+                m_arPpttSDK.push_back(sSdkPath + L"/slide/sdk-all-min.js");
+                m_arPpttSDK.push_back(sFontsPath);
+                m_arPpttSDK.push_back(sSdkPath + L"/slide/sdk-all.js");
+
+                m_arXlstSDK.push_back(sSdkPath + L"/cell/sdk-all-min.js");
+                m_arXlstSDK.push_back(sFontsPath);
+                m_arXlstSDK.push_back(sSdkPath + L"/cell/sdk-all.js");
+            }
 
             m_sConsoleLogFile = oNode.ReadNodeText(L"LogFileConsoleLog");
             m_sErrorsLogFile = oNode.ReadNodeText(L"LogFileErrors");

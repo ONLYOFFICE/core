@@ -35,6 +35,9 @@
 	window['AscFonts'] = window['AscFonts'] || {};
 	var AscFonts = window['AscFonts'];
 
+	if (window["NATIVE_EDITOR_ENJINE"])
+		window.setImmediate = function(fn) { fn(); };
+
 	AscFonts.TT_INTERPRETER_VERSION_35 = 35;
 	AscFonts.TT_INTERPRETER_VERSION_38 = 38;
 	AscFonts.TT_INTERPRETER_VERSION_40 = 40;

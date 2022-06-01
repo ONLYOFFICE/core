@@ -722,6 +722,21 @@ namespace NSJSBase
                 std::string strCode        = _line->toStringA();
                 std::string strException   = _exception->toStringA();
 
+#if 1
+                v8::Local<v8::Value> stack_trace_string;
+                if (try_catch.StackTrace(V8ContextOneArg).ToLocal(&stack_trace_string) &&
+                    stack_trace_string->IsString() &&
+                    v8::Local<v8::String>::Cast(stack_trace_string)->Length() > 0)
+                {
+                    v8::String::Utf8Value data(V8IsolateFirstArg stack_trace_string);
+                    if (NULL != *data)
+                    {
+                        std::string sStack((char*)(*data), data.length());
+                        std::cerr << sStack << std::endl;
+                    }
+                }
+#endif
+
 #ifndef __ANDROID__
                 std::cerr << strException << std::endl;
 #else

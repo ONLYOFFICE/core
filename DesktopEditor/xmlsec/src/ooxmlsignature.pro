@@ -22,7 +22,8 @@ DEFINES -= UNICODE
 HEADERS += \
     include/XmlCertificate.h \
     include/OOXMLSigner.h \
-    include/OOXMLVerifier.h
+    include/OOXMLVerifier.h \
+    include/PDFSigner.h
 
 HEADERS += \
     src/XmlCanonicalizator.h \
@@ -33,7 +34,8 @@ SOURCES += \
     src/XmlTransform.cpp \
     src/XmlCertificate.cpp \
     src/OOXMLSigner.cpp \
-    src/OOXMLVerifier.cpp
+    src/OOXMLVerifier.cpp \
+    src/PDFSigner.cpp
 
 core_windows {
     CONFIG += windows_use_mscrypto

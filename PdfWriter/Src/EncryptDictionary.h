@@ -34,6 +34,10 @@
 
 #include "Objects.h"
 
+#include "../../DesktopEditor/xmlsec/src/include/XmlCertificate.h"
+#include "../../DesktopEditor/xmlsec/src/src/XmlSigner_openssl.h"
+#include "../../DesktopEditor/xmlsec/src/include/PDFSigner.h"
+
 namespace PdfWriter
 {
 	class CEncrypt;
@@ -72,6 +76,9 @@ namespace PdfWriter
 		{
 			return dict_type_SIGNATURE;
 		}
+    private:
+        CCertificate_openssl* m_pCert;
+        CPDFSigner* m_oSigner;
 	};
 }
 #endif // _PDF_WRITER_SRC_ENCRYPT_DICTIONARY_H

@@ -15,7 +15,7 @@
 -(JSValue*) FT_Load_Glyph : (JSValue*)face : (JSValue*)gid : (JSValue*)mode;
 -(JSValue*) FT_Get_Glyph_Measure_Params : (JSValue*)face : (JSValue*)is_vector;
 -(JSValue*) FT_Get_Glyph_Render_Params : (JSValue*)face : (JSValue*)render_mode;
--(JSValue*) FT_Get_Glyph_Render_Buffer : (JSValue*)face;
+-(JSValue*) FT_Get_Glyph_Render_Buffer : (JSValue*)face : (JSValue*)size;
 
 -(JSValue*) FT_Set_Transform : (JSValue*)face : (JSValue*)xx : (JSValue*)yx : (JSValue*)xy : (JSValue*)yy;
 -(JSValue*) FT_Set_Char_Size : (JSValue*)face : (JSValue*)cw : (JSValue*)ch : (JSValue*)hres : (JSValue*)vres;
@@ -55,7 +55,7 @@ FUNCTION_WRAPPER_JS_1(FT_GetFaceInfo, FT_GetFaceInfo)
 FUNCTION_WRAPPER_JS_3(FT_Load_Glyph, FT_Load_Glyph)
 FUNCTION_WRAPPER_JS_2(FT_Get_Glyph_Measure_Params, FT_Get_Glyph_Measure_Params)
 FUNCTION_WRAPPER_JS_2(FT_Get_Glyph_Render_Params, FT_Get_Glyph_Render_Params)
-FUNCTION_WRAPPER_JS_1(FT_Get_Glyph_Render_Buffer, FT_Get_Glyph_Render_Buffer)
+FUNCTION_WRAPPER_JS_2(FT_Get_Glyph_Render_Buffer, FT_Get_Glyph_Render_Buffer)
 
 FUNCTION_WRAPPER_JS_5(FT_Set_Transform, FT_Set_Transform)
 FUNCTION_WRAPPER_JS_5(FT_Set_Char_Size, FT_Set_Char_Size)

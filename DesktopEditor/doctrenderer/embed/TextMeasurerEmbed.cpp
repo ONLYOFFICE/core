@@ -105,11 +105,10 @@ JSSmart<CJSValue> CTextMeasurerEmbed::FT_Get_Glyph_Render_Params(JSSmart<CJSValu
 
     return CJSContext::createUint8Array(result.Data, result.Len, false);
 }
-JSSmart<CJSValue> CTextMeasurerEmbed::FT_Get_Glyph_Render_Buffer(JSSmart<CJSValue> face)
+JSSmart<CJSValue> CTextMeasurerEmbed::FT_Get_Glyph_Render_Buffer(JSSmart<CJSValue> face, JSSmart<CJSValue> size)
 {
     void* Data = NSShaper::FT_Get_Glyph_Render_Buffer(RAW_POINTER(face));
-    CPointerEmbedObject* pObject = new CPointerEmbedObject(Data, NSPointerObjectDeleters::EmptyDeleter);
-    return pObject->createObject();
+    return CJSContext::createUint8Array((unsigned char*)Data, size->toInt32(), true);
 }
 
 JSSmart<CJSValue> CTextMeasurerEmbed::FT_Set_Transform(JSSmart<CJSValue> face, JSSmart<CJSValue> xx, JSSmart<CJSValue> yx, JSSmart<CJSValue> xy, JSSmart<CJSValue> yy)

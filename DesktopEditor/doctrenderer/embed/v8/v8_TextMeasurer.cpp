@@ -18,7 +18,7 @@ namespace NSMeasurer
     FUNCTION_WRAPPER_V8_3(_FT_Load_Glyph, FT_Load_Glyph)
     FUNCTION_WRAPPER_V8_2(_FT_Get_Glyph_Measure_Params, FT_Get_Glyph_Measure_Params)
     FUNCTION_WRAPPER_V8_2(_FT_Get_Glyph_Render_Params, FT_Get_Glyph_Render_Params)
-    FUNCTION_WRAPPER_V8_1(_FT_Get_Glyph_Render_Buffer, FT_Get_Glyph_Render_Buffer)
+    FUNCTION_WRAPPER_V8_2(_FT_Get_Glyph_Render_Buffer, FT_Get_Glyph_Render_Buffer)
 
     FUNCTION_WRAPPER_V8_5(_FT_Set_Transform, FT_Set_Transform)
     FUNCTION_WRAPPER_V8_5(_FT_Set_Char_Size, FT_Set_Char_Size)

@@ -71,6 +71,11 @@ WASM_EXPORT FT_Face ASC_FT_Open_Face(FT_Library library, unsigned char* memory, 
 	return face;
 }
 
+WASM_EXPORT void ASC_FT_Done_Face(FT_Face face)
+{
+    FT_Done_Face(face);
+}
+
 WASM_EXPORT unsigned int ASC_FT_SetCMapForCharCode(FT_Face face, unsigned int unicode)
 {	
 	if (!face)

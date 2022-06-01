@@ -825,11 +825,12 @@ namespace NSDocxRenderer
 
     void CPage::BuildByTypePlainParagraph()
     {
-        //todo если линия содержит длинный пробел, то выравнивание по правому краю неправильно
-        //(больше чем нужно относительно правого края) Поэтому строка переносится
+        //todo выравнивание по высоте имеет погрешности - есть небольшое смещение
 
         //todo не отображается перенос в линии
         //todo если в линии есть перенос нужно обеъдинить строки в один параграф
+
+        //todo сноски не работают - формат сохраняется на всю строку
 
         //todo добавить различные типы текста для распознавания: обычный-сплошной, списки-содержание и тд
 
@@ -857,6 +858,10 @@ namespace NSDocxRenderer
                     pNextLine = nullptr :
                     pNextLine = m_arTextLine[nNextIndex];
 
+            nIndex == 0 ?
+                    pPrevLine = nullptr :
+                    pPrevLine = m_arTextLine[nIndex-1];
+
             dCurrRight = m_dWidth - (pCurrLine->m_dX + pCurrLine->m_dWidth + pCurrLine->m_arConts.back()->m_dSpaceWidthMM); //добавляем ширину пробела
             if (pNextLine)
                 dNextRight = m_dWidth - (pNextLine->m_dX + pNextLine->m_dWidth + pNextLine->m_arConts.back()->m_dSpaceWidthMM);
@@ -864,7 +869,6 @@ namespace NSDocxRenderer
             dPrevBeforeSpacing = dCurrBeforeSpacing;
             dCurrBeforeSpacing = pCurrLine->m_dBaselinePos - dPreviousStringOffset - pCurrLine->m_dHeight - pCurrLine->m_dBaselineOffset;
             dPreviousStringOffset = pCurrLine->m_dBaselinePos - pCurrLine->m_dBaselineOffset;
-
 
             /*if (pNextLine &&
                 fabs(pCurrLine->m_dBaselinePos - pNextLine->m_dBaselinePos - pNextLine->m_dHeight) < c_dSTANDART_STRING_HEIGHT_MM &&
@@ -914,15 +918,19 @@ namespace NSDocxRenderer
                 pParagraph->m_dLeft = std::min(pCurrLine->m_dX, pNextLine->m_dX);
                 pParagraph->m_dWidth = std::max(pCurrLine->m_dWidth + pCurrLine->m_arConts.back()->m_dSpaceWidthMM,
                                                 pNextLine->m_dWidth + pNextLine->m_arConts.back()->m_dSpaceWidthMM);
+                pParagraph->m_dTop	= pCurrLine->m_dBaselinePos - pCurrLine->m_dHeight - pCurrLine->m_dBaselineOffset;
 
                 pParagraph->m_dSpaceBefore = dBeforeSpacingWithShapes + std::max(dCurrBeforeSpacing, 0.0);;
                 dBeforeSpacingWithShapes = 0;
 
                 pParagraph->m_dBaselinePos = pCurrLine->m_dBaselinePos;
-                /*if (fabs(dCurrRight - dNextRight) <= c_dTHE_STRING_X_PRECISION_MM) //предположение
+                if (fabs(dCurrRight - dNextRight) <= c_dTHE_STRING_X_PRECISION_MM) //предположение
                 {
                     pParagraph->m_eTextAlignmentType = CParagraph::TextAlignmentType_ByWidth;
-                }*/
+                }
+
+                //междустрочный интервал во всем параграфе
+                pParagraph->m_dHeight = pCurrLine->m_dHeight;
 
                 //Объединим 2 строчки в параграф
                 pParagraph->m_arLines.push_back(pCurrLine);
@@ -933,6 +941,7 @@ namespace NSDocxRenderer
                 pParagraph->m_arLines.push_back(new CTextLine(*pNextLine));
                 pParagraph->m_nNumLines++;
 
+                //сдвигаем рабочую точку
                 pPrevLine = pCurrLine;
                 pCurrLine = pNextLine;
                 ++nNextIndex < m_arTextLine.size()-1?
@@ -942,6 +951,7 @@ namespace NSDocxRenderer
                 dPrevBeforeSpacing = dCurrBeforeSpacing;
                 dCurrBeforeSpacing = pCurrLine->m_dBaselinePos - dPreviousStringOffset - pCurrLine->m_dHeight - pCurrLine->m_dBaselineOffset;
                 dPreviousStringOffset = pCurrLine->m_dBaselinePos - pCurrLine->m_dBaselineOffset;
+
                 dCurrRight = dNextRight;
 
                 if (pNextLine)
@@ -950,18 +960,13 @@ namespace NSDocxRenderer
                     dNextRight = m_dWidth - (pNextLine->m_dX + pNextLine->m_dWidth + pNextLine->m_arConts.back()->m_dSpaceWidthMM);
                 }
 
-                //междустрочный интервал во всем параграфе
-                /*pParagraph->m_dHeight = pCurrLine->m_dHeight;
-                if (dCurrBeforeSpacing < 0)
-                {
-                    pParagraph->m_dHeight += dCurrBeforeSpacing;
-                }*/
-                pParagraph->m_dHeight = pCurrLine->m_dHeight + std::max(dCurrBeforeSpacing, 0.0);
+                //коррекция междустрочный интервал во всем параграфе
+                pParagraph->m_dHeight += std::max(dCurrBeforeSpacing, 0.0);;
 
                 //проверим, подходят ли следующие строчки для текущего pParagraph
                 while(pNextLine &&
                       fabs(pCurrLine->m_dHeight - pNextLine->m_dHeight) < c_dTHE_SAME_STRING_Y_PRECISION_MM && //высота строк должна быть примерно одинаковой
-                      fabs(dCurrBeforeSpacing - dNextBeforeSpacing) < c_dTHE_SAME_STRING_Y_PRECISION_MM && //расстрояние между строк тоже одинаково
+                      fabs(dCurrBeforeSpacing - dNextBeforeSpacing) < c_dLINE_DISTANCE_ERROR_MM && //расстрояние между строк тоже одинаково
                       //(pCurrLine->m_eTextAlignmentType == pNextLine->m_eTextAlignmentType ||
                        //pNextLine->m_eTextAlignmentType == CParagraph::TextAlignmentType_ByLeftEdge) &&
                       ((fabs(pCurrLine->m_dX - pNextLine->m_dX) <= c_dTHE_STRING_X_PRECISION_MM && //у последующих строк нет отступа относительно предыдущей непервой строки

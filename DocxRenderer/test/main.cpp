@@ -91,13 +91,12 @@ int main(int argc, char *argv[])
     //std::vector<std::wstring> sSourceFiles = NSDirectory::GetFiles(L"C:\\Docs\\Рекомендуемая литература");
     std::vector<std::wstring> sSourceFiles;
     //Или добавляем любой нужный файл
-    //sSourceFiles.push_back(L"C:\\Users\\Alexander\\Desktop\\MSF_Lec1.pdf");
+    sSourceFiles.push_back(L"C:\\Users\\Alexander\\Desktop\\MSF_Lec1.pdf");
     sSourceFiles.push_back(L"C:\\Development\\test\\andersen_skazki_tom_1.pdf");
     //перестал работать - текста нет
     ///sSourceFiles.push_back(L"C:\\Development\\test\\08 Правила дорожного движения РФ(108p).pdf");
     sSourceFiles.push_back(L"C:\\Docs\\Рекомендуемая литература\\Мартин Фаулер - Рефакторинг.pdf");
-    //sSourceFiles.push_back(L"C:\\Users\\Alexander\\Desktop\\MSF_Lec1.pdf");
-    //sSourceFiles.push_back(L"C:\\Development\\test\\(1917) - Das geheimnisvolle Haus.pdf");
+    sSourceFiles.push_back(L"C:\\Development\\test\\(1917) - Das geheimnisvolle Haus.pdf");
     //sSourceFiles.push_back(L"C:\\Docs\\Рекомендуемая литература\\Embedded_Linux_system_design_and_development_ru.pdf");
     //sSourceFiles.push_back(L"C:\\Docs\\Рекомендуемая литература\\Алан Купер - Психбольница в руках пациентов.pdf");
     ///sSourceFiles.push_back(L"C:\\Docs\\Рекомендуемая литература\\Брюс Эккель - Философия C++.pdf");

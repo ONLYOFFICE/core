@@ -139,7 +139,7 @@ namespace NSJSBase
 
     void CJSContext::CreateContext()
     {
-        // NONE
+		[m_internal->context globalObject setValue:m_internal->context globalObject forProperty:[[NSString alloc] initWithUTF8String:"window"]];        
     }
 
     void CJSContext::CreateGlobalForContext()

@@ -164,6 +164,9 @@ namespace NSJSBase
     void CJSContext::CreateContext()
     {
         m_internal->m_context = v8::Context::New(CV8Worker::GetCurrent(), NULL, m_internal->m_global);
+
+        JSSmart<CJSObject> global_js = GetGlobal();
+        global_js->set("window", global_js.GetPointer());
     }
 
     void CJSContext::CreateGlobalForContext()

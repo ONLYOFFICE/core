@@ -262,7 +262,7 @@ namespace NSDoctRenderer
             }
 
             CDoctRendererConfig::Parse(sConfigDir);
-        }        
+        }
 
     public:
 

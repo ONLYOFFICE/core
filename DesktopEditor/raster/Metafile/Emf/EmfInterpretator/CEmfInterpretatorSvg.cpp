@@ -34,6 +34,11 @@ namespace MetaFile
         void CEmfInterpretatorSvg::HANDLE_EMR_HEADER(const TEmfHeader &oTEmfHeader)
         {
                 //TODO: задаются размеры изображения
+
+                m_oViewport.dWidth      = oTEmfHeader.oDevice.cx;
+                m_oViewport.dHeight     = oTEmfHeader.oDevice.cy;
+
+                m_oXmlWriter.WriteNodeEnd(L"svg", true, false);
         }
 
         void CEmfInterpretatorSvg::HANDLE_EMR_ALPHABLEND(const TEmfAlphaBlend &oTEmfAlphaBlend, CDataStream &oDataStream)
@@ -300,51 +305,63 @@ namespace MetaFile
 
         void CEmfInterpretatorSvg::HANDLE_EMR_ARC(const TEmfRectL &oBox, const TEmfPointL &oStart, const TEmfPointL &oEnd)
         {
+                TRectD oNewRect = TranslateRect(oBox);
+
                 double dStartAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oStart.x, oStart.y);
                 double dSweepAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oEnd.x, oEnd.y) - dStartAngle;
 
+                double dXCenter = (oNewRect.dRight - oNewRect.dLeft) / 2;
+                double dYCenter = (oNewRect.dBottom - oNewRect.dTop) / 2;
+
+//                double dStartX = oNewRect.dLeft + dXCenter + dXCenter  * cos(dStartAngle);
+//                double dStartY = oNewRect.dTop + dYCenter + dYCenter  * sin(dStartAngle);
+
                 std::wstring wsValue = L"M " + std::to_wstring(TranslateX(oStart.x)) + L' ' + std::to_wstring(TranslateY(oStart.y));
 
-                wsValue += L" A " + std::to_wstring(TranslateX((oBox.lRight - oBox.lLeft) / 2)) + L' ' +
-                                    std::to_wstring(TranslateY((oBox.lBottom - oBox.lTop) / 2)) + L' ' +
+                wsValue += L" A " + std::to_wstring(dXCenter) + L' ' +
+                                    std::to_wstring(dYCenter) + L' ' +
                                     std::to_wstring(dStartAngle) + L' ' +
                                     L"0 " +
                                     (((dSweepAngle - dStartAngle) <= 180) ? L"0" : L"1") + L' ' +
                                     std::to_wstring(TranslateX(oEnd.x)) + L' ' +
                                     std::to_wstring(TranslateY(oEnd.y));
 
-                std::wstring wsStroke = L"black";
+                NodeAttributes arAttributes = {{L"d", wsValue},
+                                               {L"fill", L"none"}};
 
-                UpdateStroke(wsStroke);
+                AddStroke(arAttributes);
 
-                WriteNode(L"path" , {{L"d", wsValue},
-                                     {L"fill", L"none"},
-                                     {L"stroke", wsStroke}});
+                UpdateTransform(arAttributes, oNewRect);
+
+                WriteNode(L"path" , arAttributes);
 
         }
 
         void CEmfInterpretatorSvg::HANDLE_EMR_ARCTO(const TEmfRectL &oBox, const TEmfPointL &oStart, const TEmfPointL &oEnd)
-        {
+        {                
+                TRectD oNewRect = TranslateRect(oBox);
+
                 double dStartAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oStart.x, oStart.y);
                 double dSweepAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oEnd.x, oEnd.y) - dStartAngle;
 
                 std::wstring wsValue = L"M " + std::to_wstring(TranslateX(oStart.x)) + L' ' + std::to_wstring(TranslateY(oStart.y));
 
-                wsValue += L" A " + std::to_wstring(TranslateX((oBox.lRight - oBox.lLeft) / 2)) + L' ' +
-                                    std::to_wstring(TranslateY((oBox.lBottom - oBox.lTop) / 2)) + L' ' +
+                wsValue += L" A " + std::to_wstring((oNewRect.dRight - oNewRect.dLeft) / 2) + L' ' +
+                                    std::to_wstring((oNewRect.dBottom - oNewRect.dTop) / 2) + L' ' +
                                     std::to_wstring(dStartAngle) + L' ' +
                                     L"0 " +
                                     (((dSweepAngle - dStartAngle) <= 180) ? L"0" : L"1") + L' ' +
                                     std::to_wstring(TranslateX(oEnd.x)) + L' ' +
                                     std::to_wstring(TranslateY(oEnd.y));
 
-                std::wstring wsStroke = L"black";
+                NodeAttributes arAttributes = {{L"d", wsValue},
+                                               {L"fill", L"none"}};
 
-                UpdateStroke(wsStroke);
+                AddStroke(arAttributes);
 
-                WriteNode(L"path" , {{L"d", wsValue},
-                                     {L"fill", L"none"},
-                                     {L"stroke", wsStroke}});
+                UpdateTransform(arAttributes, oNewRect);
+
+                WriteNode(L"path" , arAttributes);
         }
 
         void CEmfInterpretatorSvg::HANDLE_EMR_CHORD(const TEmfRectL &oBox, const TEmfPointL &oStart, const TEmfPointL &oEnd)
@@ -354,47 +371,46 @@ namespace MetaFile
 
         void CEmfInterpretatorSvg::HANDLE_EMR_ELLIPSE(const TEmfRectL &oBox)
         {
-                std::wstring wsStroke = L"black";
-                std::wstring wsFill   = L"none";
+                TRectD oNewRect = TranslateRect(oBox);
 
-                UpdateStroke(wsStroke);
-                UpdateFill(wsFill);
+                NodeAttributes arAttributes = {{L"cx", std::to_wstring((oNewRect.dLeft   + oNewRect.dRight)  / 2)},
+                                               {L"cy", std::to_wstring((oNewRect.dTop    + oNewRect.dBottom) / 2)},
+                                               {L"rx", std::to_wstring((oNewRect.dRight  - oNewRect.dLeft)   / 2)},
+                                               {L"ry", std::to_wstring((oNewRect.dBottom - oNewRect.dTop)    / 2)}};
+                AddStroke(arAttributes);
+                AddFill(arAttributes);
 
-                WriteNode(L"ellipse", {{L"cx", std::to_wstring(TranslateX((oBox.lLeft + oBox.lRight) / 2))},
-                                       {L"cy", std::to_wstring(TranslateY((oBox.lTop + oBox.lBottom) / 2))},
-                                       {L"rx", std::to_wstring(TranslateX((oBox.lRight - oBox.lLeft) / 2))},
-                                       {L"ry", std::to_wstring(TranslateY((oBox.lBottom - oBox.lTop) / 2))},
-                                       {L"fill",   wsFill},
-                                       {L"stroke", wsStroke}});
+                UpdateTransform(arAttributes, oNewRect);
+
+                WriteNode(L"ellipse", arAttributes);
         }
 
         void CEmfInterpretatorSvg::HANDLE_EMR_EXTTEXTOUTA(const TEmfExtTextoutA &oTEmfExtTextoutA)
-        {
+        {                
                 std::wstring wsText = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)oTEmfExtTextoutA.aEmrText.OutputString, oTEmfExtTextoutA.aEmrText.Chars);
 
-                WriteNode(L"text", {{L"x", std::to_wstring(TranslateX(oTEmfExtTextoutA.aEmrText.Reference.x))},
-                                    {L"y", std::to_wstring(TranslateX(oTEmfExtTextoutA.aEmrText.Reference.y))}}, StringNormalization(wsText));
+                WriteText(wsText, oTEmfExtTextoutA.aEmrText.Reference.x, oTEmfExtTextoutA.aEmrText.Reference.y, oTEmfExtTextoutA.Bounds);
         }
 
         void CEmfInterpretatorSvg::HANDLE_EMR_EXTTEXTOUTW(const TEmfExtTextoutW &oTEmfExtTextoutW)
         {
                 std::wstring wsText = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)oTEmfExtTextoutW.wEmrText.OutputString, oTEmfExtTextoutW.wEmrText.Chars);
 
-                WriteNode(L"text", {{L"x", std::to_wstring(TranslateX(oTEmfExtTextoutW.wEmrText.Reference.x))},
-                                    {L"y", std::to_wstring(TranslateX(oTEmfExtTextoutW.wEmrText.Reference.y))}}, StringNormalization(wsText));
+                WriteText(wsText, oTEmfExtTextoutW.wEmrText.Reference.x, oTEmfExtTextoutW.wEmrText.Reference.y, oTEmfExtTextoutW.Bounds);
         }
 
         void CEmfInterpretatorSvg::HANDLE_EMR_LINETO(const TEmfPointL &oPoint)
         {
-                std::wstring wsStroke = L"black";
+                NodeAttributes arAttributes = {{L"x1", std::to_wstring(TranslateX(m_oParameters.oCurPos.x))},
+                                               {L"y1", std::to_wstring(TranslateY(m_oParameters.oCurPos.y))},
+                                               {L"x2", std::to_wstring(TranslateX(oPoint.x))},
+                                               {L"y2", std::to_wstring(TranslateY(oPoint.y))}};
 
-                UpdateStroke(wsStroke);
+                AddStroke(arAttributes);
 
-                WriteNode(L"line", {{L"x1", std::to_wstring(TranslateX(m_oParameters.oCurPos.x))},
-                                    {L"y1", std::to_wstring(TranslateY(m_oParameters.oCurPos.y))},
-                                    {L"x2", std::to_wstring(TranslateX(oPoint.x))},
-                                    {L"y2", std::to_wstring(TranslateY(oPoint.y))},
-                                    {L"stroke", wsStroke}});
+                UpdateTransform(arAttributes, oPoint.x, oPoint.y);
+
+                WriteNode(L"line", arAttributes);
 
                 m_oParameters.oCurPos = oPoint;
         }
@@ -416,13 +432,14 @@ namespace MetaFile
                                            std::to_wstring(TranslateX(arPoints[unIndex + 1].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex + 1].y)) + L' ' +
                                            std::to_wstring(TranslateX(arPoints[unIndex + 2].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex + 2].y));
 
-                std::wstring wsStroke = L"black";
+                NodeAttributes arAttributes = {{L"d", wsValue},
+                                               {L"fill", L"none"}};
 
-                UpdateStroke(wsStroke);
+                AddStroke(arAttributes);
 
-                WriteNode(L"path", {{L"d", wsValue},
-                                    {L"fill", L"none"},
-                                    {L"stroke", wsStroke}});
+                UpdateTransform(arAttributes, arPoints);
+
+                WriteNode(L"path", arAttributes);
         }
 
         void CEmfInterpretatorSvg::HANDLE_EMR_POLYBEZIER(const TEmfRectL &oBounds, const std::vector<TEmfPointS> &arPoints)
@@ -437,13 +454,14 @@ namespace MetaFile
                                            std::to_wstring(TranslateX(arPoints[unIndex + 1].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex + 1].y)) + L' ' +
                                            std::to_wstring(TranslateX(arPoints[unIndex + 2].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex + 2].y));
 
-                std::wstring wsStroke = L"black";
+                NodeAttributes arAttributes = {{L"d", wsValue},
+                                               {L"fill", L"none"}};
 
-                UpdateStroke(wsStroke);
+                AddStroke(arAttributes);
 
-                WriteNode(L"path", {{L"d", wsValue},
-                                    {L"fill", L"none"},
-                                    {L"stroke", wsStroke}});
+                UpdateTransform(arAttributes, arPoints);
+
+                WriteNode(L"path", arAttributes);
         }
 
         void CEmfInterpretatorSvg::HANDLE_EMR_POLYBEZIERTO(const TEmfRectL &oBounds, const std::vector<TEmfPointL> &arPoints)
@@ -461,13 +479,14 @@ namespace MetaFile
                                            std::to_wstring(TranslateX(arPoints[unIndex + 1].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex + 1].y)) + L' ' +
                                            std::to_wstring(TranslateX(arPoints[unIndex + 2].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex + 2].y));
 
-                std::wstring wsStroke = L"black";
+                NodeAttributes arAttributes = {{L"d", wsValue},
+                                               {L"fill", L"none"}};
 
-                UpdateStroke(wsStroke);
+                AddStroke(arAttributes);
 
-                WriteNode(L"path", {{L"d", wsValue},
-                                    {L"fill", L"none"},
-                                    {L"stroke", wsStroke}});
+                UpdateTransform(arAttributes, arPoints);
+
+                WriteNode(L"path", arAttributes);
         }
 
         void CEmfInterpretatorSvg::HANDLE_EMR_POLYBEZIERTO(const TEmfRectL &oBounds, const std::vector<TEmfPointS> &arPoints)
@@ -482,13 +501,14 @@ namespace MetaFile
                                            std::to_wstring(TranslateX(arPoints[unIndex + 1].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex + 1].y)) + L' ' +
                                            std::to_wstring(TranslateX(arPoints[unIndex + 2].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex + 2].y));
 
-                std::wstring wsStroke = L"black";
+                NodeAttributes arAttributes = {{L"d", wsValue},
+                                               {L"fill", L"none"}};
 
-                UpdateStroke(wsStroke);
+                AddStroke(arAttributes);
 
-                WriteNode(L"path", {{L"d", wsValue},
-                                    {L"fill", L"none"},
-                                    {L"stroke", wsStroke}});
+                UpdateTransform(arAttributes, arPoints);
+
+                WriteNode(L"path", arAttributes);
         }
 
         void CEmfInterpretatorSvg::HANDLE_EMR_POLYDRAW(const TEmfRectL &oBounds, TEmfPointL *arPoints, const unsigned int &unCount, const unsigned char *pAbTypes)
@@ -514,14 +534,14 @@ namespace MetaFile
                                 wsValue += L" M " + std::to_wstring(TranslateX(arPoints[unIndex].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex].y));
                 }
 
+                NodeAttributes arAttributes = {{L"d", wsValue},
+                                               {L"fill", L"none"}};
 
-                std::wstring wsStroke = L"black";
+                AddStroke(arAttributes);
 
-                UpdateStroke(wsStroke);
+                UpdateTransform(arAttributes, arPoints, unCount);
 
-                WriteNode(L"path", {{L"d", wsValue},
-                                    {L"fill", L"none"},
-                                    {L"stroke", wsStroke}});
+                WriteNode(L"path", arAttributes);
         }
 
         void CEmfInterpretatorSvg::HANDLE_EMR_POLYDRAW(const TEmfRectL &oBounds, TEmfPointS *arPoints, const unsigned int &unCount, const unsigned char *pAbTypes)
@@ -547,14 +567,14 @@ namespace MetaFile
                                 wsValue += L" M " + std::to_wstring(TranslateX(arPoints[unIndex].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex].y));
                 }
 
+                NodeAttributes arAttributes = {{L"d", wsValue},
+                                               {L"fill", L"none"}};
 
-                std::wstring wsStroke = L"black";
+                AddStroke(arAttributes);
 
-                UpdateStroke(wsStroke);
+                UpdateTransform(arAttributes, arPoints, unCount);
 
-                WriteNode(L"path", {{L"d", wsValue},
-                                    {L"fill", L"none"},
-                                    {L"stroke", wsStroke}});
+                WriteNode(L"path", arAttributes);
         }
 
         void CEmfInterpretatorSvg::HANDLE_EMR_POLYGON(const TEmfRectL &oBounds, const std::vector<TEmfPointL> &arPoints)
@@ -567,13 +587,14 @@ namespace MetaFile
                 for (const TEmfPointL& oPoint : arPoints)
                         wsValue += std::to_wstring(TranslateX(oPoint.x)) + L',' + std::to_wstring(TranslateY(oPoint.y)) + L' ';
 
-                std::wstring wsStroke = L"black";
+                NodeAttributes arAttributes = {{L"points", wsValue},
+                                               {L"fill", L"none"}};
 
-                UpdateStroke(wsStroke);
+                AddStroke(arAttributes);
 
-                WriteNode(L"polygon", {{L"points", wsValue},
-                                       {L"fill", L"none"},
-                                       {L"stroke", wsStroke}});
+                UpdateTransform(arAttributes, arPoints);
+
+                WriteNode(L"polygon", arAttributes);
         }
 
         void CEmfInterpretatorSvg::HANDLE_EMR_POLYGON(const TEmfRectL &oBounds, const std::vector<TEmfPointS> &arPoints)
@@ -586,13 +607,14 @@ namespace MetaFile
                 for (const TEmfPointS& oPoint : arPoints)
                         wsValue += std::to_wstring(TranslateX(oPoint.x)) + L',' + std::to_wstring(TranslateX(oPoint.y)) + L' ';
 
-                std::wstring wsStroke = L"black";
+                NodeAttributes arAttributes = {{L"points", wsValue},
+                                               {L"fill", L"none"}};
 
-                UpdateStroke(wsStroke);
+                AddStroke(arAttributes);
 
-                WriteNode(L"polygon", {{L"points", wsValue},
-                                       {L"fill", L"none"},
-                                       {L"stroke", wsStroke}});
+                UpdateTransform(arAttributes, arPoints);
+
+                WriteNode(L"polygon", arAttributes);
         }
 
         void CEmfInterpretatorSvg::HANDLE_EMR_POLYLINE(const TEmfRectL &oBounds, const std::vector<TEmfPointL> &arPoints)
@@ -605,13 +627,14 @@ namespace MetaFile
                 for (const TEmfPointL& oPoint : arPoints)
                      wsValue += std::to_wstring(TranslateX(oPoint.x)) + L',' + std::to_wstring(TranslateX(oPoint.y)) + L' ';
 
-                std::wstring wsStroke = L"black";
+                NodeAttributes arAttributes = {{L"points", wsValue},
+                                               {L"fill", L"none"}};
 
-                UpdateStroke(wsStroke);
+                AddStroke(arAttributes);
 
-                WriteNode(L"polyline", {{L"points", wsValue},
-                                        {L"fill", L"none"},
-                                        {L"stroke", wsStroke}});
+                UpdateTransform(arAttributes, arPoints);
+
+                WriteNode(L"polyline", arAttributes);
         }
 
         void CEmfInterpretatorSvg::HANDLE_EMR_POLYLINE(const TEmfRectL &oBounds, const std::vector<TEmfPointS> &arPoints)
@@ -626,13 +649,14 @@ namespace MetaFile
 
                 wsValue.pop_back();
 
-                std::wstring wsStroke = L"black";
+                NodeAttributes arAttributes = {{L"points", wsValue},
+                                               {L"fill", L"none"}};
 
-                UpdateStroke(wsStroke);
+                AddStroke(arAttributes);
 
-                WriteNode(L"polyline", {{L"points", wsValue},
-                                        {L"fill", L"none"},
-                                        {L"stroke", wsStroke}});
+                UpdateTransform(arAttributes, arPoints);
+
+                WriteNode(L"polyline", arAttributes);
         }
 
         void CEmfInterpretatorSvg::HANDLE_EMR_POLYLINETO(const TEmfRectL &oBounds, const std::vector<TEmfPointL> &arPoints)
@@ -645,13 +669,14 @@ namespace MetaFile
                 for (const TEmfPointL& oPoint : arPoints)
                      wsValue += L' ' + std::to_wstring(TranslateX(oPoint.x)) + L',' + std::to_wstring(TranslateY(oPoint.y));
 
-                std::wstring wsStroke = L"black";
+                NodeAttributes arAttributes = {{L"points", wsValue},
+                                               {L"fill", L"none"}};
 
-                UpdateStroke(wsStroke);
+                AddStroke(arAttributes);
 
-                WriteNode(L"polyline", {{L"points", wsValue},
-                                        {L"fill", L"none"},
-                                        {L"stroke", wsStroke}});
+                UpdateTransform(arAttributes, arPoints);
+
+                WriteNode(L"polyline", arAttributes);
         }
 
         void CEmfInterpretatorSvg::HANDLE_EMR_POLYLINETO(const TEmfRectL &oBounds, const std::vector<TEmfPointS> &arPoints)
@@ -664,13 +689,14 @@ namespace MetaFile
                 for (const TEmfPointS& oPoint : arPoints)
                      wsValue += L' ' + std::to_wstring(TranslateX(oPoint.x)) + L',' + std::to_wstring(TranslateY(oPoint.y));
 
-                std::wstring wsStroke = L"black";
+                NodeAttributes arAttributes = {{L"points", wsValue},
+                                               {L"fill", L"none"}};
 
-                UpdateStroke(wsStroke);
+                AddStroke(arAttributes);
 
-                WriteNode(L"polyline", {{L"points", wsValue},
-                                        {L"fill", L"none"},
-                                        {L"stroke", wsStroke}});
+                UpdateTransform(arAttributes, arPoints);
+
+                WriteNode(L"polyline", arAttributes);
         }
 
         void CEmfInterpretatorSvg::HANDLE_EMR_POLYPOLYGON(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointL>> &arPoints)
@@ -699,36 +725,38 @@ namespace MetaFile
 
         void CEmfInterpretatorSvg::HANDLE_EMR_RECTANGLE(const TEmfRectL &oBox)
         {
-                std::wstring wsStroke   = L"black";
-                std::wstring wsFill     = L"none";
+                TRectD oNewRect = TranslateRect(oBox);
 
-                UpdateStroke(wsStroke);
-                UpdateFill(wsFill);
+                NodeAttributes arAttributes = {{L"x", std::to_wstring(oNewRect.dLeft)},
+                                               {L"y", std::to_wstring(oNewRect.dTop)},
+                                               {L"width", std::to_wstring(oNewRect.dRight - oNewRect.dLeft)},
+                                               {L"height", std::to_wstring(oNewRect.dBottom - oNewRect.dTop)}};
 
-                WriteNode(L"rect", {{L"x", std::to_wstring(TranslateX(oBox.lLeft))},
-                                    {L"y", std::to_wstring(TranslateY(oBox.lTop))},
-                                    {L"width", std::to_wstring(TranslateX((oBox.lRight - oBox.lLeft)))},
-                                    {L"height", std::to_wstring(TranslateY((oBox.lBottom - oBox.lTop)))},
-                                    {L"fill", wsFill},
-                                    {L"stroke", wsStroke}});
+                AddStroke(arAttributes);
+                AddFill(arAttributes);
+
+                UpdateTransform(arAttributes, oNewRect);
+
+                WriteNode(L"rect", arAttributes);
         }
 
         void CEmfInterpretatorSvg::HANDLE_EMR_ROUNDRECT(const TEmfRectL &oBox, const TEmfSizeL &oCorner)
         {
-                std::wstring wsStroke   = L"black";
-                std::wstring wsFill     = L"none";
+                TRectD oNewRect = TranslateRect(oBox);
 
-                UpdateStroke(wsStroke);
-                UpdateFill(wsFill);
+                NodeAttributes arAttributes = {{L"x", std::to_wstring(oNewRect.dLeft)},
+                                               {L"y", std::to_wstring(oNewRect.dTop)},
+                                               {L"width", std::to_wstring(oNewRect.dRight - oNewRect.dLeft)},
+                                               {L"height", std::to_wstring(oNewRect.dBottom - oNewRect.dTop)},
+                                               {L"rx", std::to_wstring(TranslateX(oCorner.cx))},
+                                               {L"ry", std::to_wstring(TranslateY(oCorner.cy))}};
 
-                WriteNode(L"rect", {{L"x", std::to_wstring(TranslateX(oBox.lLeft))},
-                                    {L"y", std::to_wstring(TranslateY(oBox.lTop))},
-                                    {L"width", std::to_wstring(TranslateX(oBox.lRight - oBox.lLeft))},
-                                    {L"height", std::to_wstring(TranslateY(oBox.lBottom - oBox.lTop))},
-                                    {L"rx", std::to_wstring(TranslateX(oCorner.cx))},
-                                    {L"ry", std::to_wstring(TranslateY(oCorner.cy))},
-                                    {L"fill", L"none"},
-                                    {L"stroke", L"black"}});
+                AddStroke(arAttributes);
+                AddFill(arAttributes);
+
+                UpdateTransform(arAttributes, oNewRect);
+
+                WriteNode(L"rect", arAttributes);
         }
 
         void CEmfInterpretatorSvg::HANDLE_EMR_SETPIXELV(const TEmfPointL &oPoint, const TEmfColor &oColor)
@@ -766,12 +794,18 @@ namespace MetaFile
                 m_oXmlWriter.WriteNodeBegin(L"svg", true);
                 m_oXmlWriter.WriteAttribute(L"xmlns", L"http://www.w3.org/2000/svg");
                 m_oXmlWriter.WriteAttribute(L"xmlns:xlink", L"http://www.w3.org/1999/xlink");
-                m_oXmlWriter.WriteNodeEnd(L"svg", true, false);
         }
 
         void CEmfInterpretatorSvg::End()
         {
                 m_oXmlWriter.WriteNodeEnd(L"svg", false, false);
+
+                std::wstring wsXml = m_oXmlWriter.GetXmlString();
+
+                wsXml.insert(5, L"viewBox=\"" + std::to_wstring(m_oViewport.dX) + L' ' + std::to_wstring(m_oViewport.dY) + L' ' + std::to_wstring(m_oViewport.dWidth) + L' ' + std::to_wstring(m_oViewport.dHeight) + L"\" ");
+
+                m_oXmlWriter.SetXmlString(wsXml);
+
                 m_oXmlWriter.SaveToFile((!m_wsSvgFilePath.empty()) ? m_wsSvgFilePath : L"temp.svg");
         }
 
@@ -814,11 +848,15 @@ namespace MetaFile
                 NSBase64::Base64Encode(pImageBytes, ulImageSize, ucValue, &nSize);
                 std::wstring wsValue(ucValue, ucValue + nSize);
 
-                WriteNode(L"image", {{L"x", std::to_wstring(dX)},
-                                     {L"y", std::to_wstring(dY)},
-                                     {L"width", std::to_wstring(dW)},
-                                     {L"height", std::to_wstring(dH)},
-                                     {L"xlink:href", L"data:image/png;base64," + wsValue}});
+                NodeAttributes arAttributes = {{L"x", std::to_wstring(dX)},
+                                               {L"y", std::to_wstring(dY)},
+                                               {L"width", std::to_wstring(dW)},
+                                               {L"height", std::to_wstring(dH)},
+                                               {L"xlink:href", L"data:image/png;base64," + wsValue}};;
+
+                UpdateTransform(arAttributes, dX, dY);
+
+                WriteNode(L"image", arAttributes);
 
                 NSFile::CFileBinary::Remove(L"temp.png");
 
@@ -828,11 +866,11 @@ namespace MetaFile
                         delete [] pImageBytes;
         }
 
-        void CEmfInterpretatorSvg::WriteNode(const std::wstring &wsNodeName, const std::vector<std::pair<std::wstring, std::wstring>> &arAttributes, const std::wstring &wsValueNode)
+        void CEmfInterpretatorSvg::WriteNode(const std::wstring &wsNodeName, const NodeAttributes &arAttributes, const std::wstring &wsValueNode)
         {
                 m_oXmlWriter.WriteNodeBegin(wsNodeName, true);
 
-                for (const std::pair<std::wstring, std::wstring>& oAttribute : arAttributes)
+                for (const NodeAttribute& oAttribute : arAttributes)
                         m_oXmlWriter.WriteAttribute(oAttribute.first, oAttribute.second);
 
                 if (wsValueNode.empty())
@@ -849,41 +887,309 @@ namespace MetaFile
                 }
         }
 
-        void CEmfInterpretatorSvg::UpdateStroke(std::wstring &wsStroke)
+        void CEmfInterpretatorSvg::WriteText(const std::wstring &wsText, double dX, double dY, const TEmfRectL& oBounds)
         {
-                if (NULL != m_pParser && NULL != m_pParser->GetPen())
-                        wsStroke = L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetPen()->GetColor()) + L"," + std::to_wstring(m_pParser->GetPen()->GetAlpha()) + L")";
+                NodeAttributes arNodeAttributes;
+
+                std::wstring wsXCoord = std::to_wstring(TranslateX(dX));
+                std::wstring wsYCoord = std::to_wstring(TranslateY(dY));
+
+                if (NULL != m_pParser && NULL != m_pParser->GetFont())
+                {
+                        if (OPAQUE == m_pParser->GetTextBgMode())
+                        {
+                                std::wstring wsFillRect = L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetTextBgColor()) + L", 255)";
+
+                                WriteNode(L"rect", {{L"x",      std::to_wstring((oBounds.lLeft))},
+                                                    {L"y",      std::to_wstring((oBounds.lTop))},
+                                                    {L"width",  std::to_wstring((oBounds.lRight - oBounds.lLeft))},
+                                                    {L"height", std::to_wstring((oBounds.lBottom - oBounds.lTop))},
+                                                    {L"fill", wsFillRect},
+                                                    {L"stroke", L"none"}});
+                        }
+
+                        unsigned int ulTextAlign = m_pParser->GetTextAlign();
+                        if (ulTextAlign & TA_BASELINE)
+                        {
+                                // Ничего не делаем
+                        }
+                        else if (ulTextAlign & TA_BOTTOM)
+                        {
+                                arNodeAttributes.push_back({L"alignment-baseline", L"bottom"});
+                        }
+                        else // if (ulTextAlign & TA_TOP)
+                        {
+                                arNodeAttributes.push_back({L"alignment-baseline", L"top"});
+                        }
+
+                        if (ulTextAlign & TA_CENTER)
+                        {
+                                arNodeAttributes.push_back({L"text-anchor", L"middle"});
+                        }
+                        else if (ulTextAlign & TA_RIGHT)
+                        {
+                                arNodeAttributes.push_back({L"text-anchor", L"end"});
+                        }
+                        else //if (ulTextAlign & TA_LEFT)
+                        {
+                                // Ничего не делаем
+                        }
+
+                        IFont *pFont = m_pParser->GetFont();
+
+                        double dFontHeight = TranslateY(pFont->GetHeight());
+
+			if (dFontHeight < 0)
+				dFontHeight = -dFontHeight;
+			if (dFontHeight < 0.01)
+				dFontHeight = 18;
+
+			arNodeAttributes.push_back({L"font-size", std::to_wstring(dFontHeight)});
+
+			std::wstring wsFaceName = pFont->GetFaceName();
+
+                        if (!wsFaceName.empty())
+                                arNodeAttributes.push_back({L"font-family", wsFaceName});
+
+                        if (pFont->GetWeight() > 550)
+                                arNodeAttributes.push_back({L"font-weight", L"bold"});
+
+                        if (pFont->IsItalic())
+                                arNodeAttributes.push_back({L"font-style", L"italic"});
+
+                        if (pFont->IsUnderline())
+                                arNodeAttributes.push_back({L"text-decoration", L"underline"});
+
+                        if (pFont->IsStrikeOut())
+                                arNodeAttributes.push_back({L"text-decoration", L"line-through"});
+
+                        double dFontCharSpace = TranslateX(pFont->GetCharSet());
+
+                        if (dFontCharSpace > 0)
+                                arNodeAttributes.push_back({L"letter-spacing", std::to_wstring(dFontCharSpace)});
+
+                        if (0 != pFont->GetEscapement())
+                                arNodeAttributes.push_back({L"transform", L"rotate(" + std::to_wstring(pFont->GetEscapement() / -10) + L' ' + wsXCoord + L' ' + wsYCoord + L')'});
+                }
+
+                arNodeAttributes.push_back({L"x", wsXCoord});
+                arNodeAttributes.push_back({L"y", wsYCoord});
+
+//                UpdateTransform(arNodeAttributes, TranslateRect(oBounds));
+                UpdateTransform(arNodeAttributes, TranslateX(dX), TranslateX(dY));
+
+                WriteNode(L"text", arNodeAttributes, StringNormalization(wsText));
         }
 
-        void CEmfInterpretatorSvg::UpdateFill(std::wstring &wsFill)
+        void CEmfInterpretatorSvg::AddStroke(NodeAttributes &arAttributes)
+        {
+                if (NULL != m_pParser && NULL != m_pParser->GetPen())
+                {
+                        arAttributes.push_back({L"stroke", L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetPen()->GetColor()) + L"," + std::to_wstring(m_pParser->GetPen()->GetAlpha()) + L")"});
+
+                        double dStrokeWidth = TranslateY(m_pParser->GetPen()->GetWidth());
+
+			if (dStrokeWidth < 1)
+				dStrokeWidth = 1;
+
+			if (dStrokeWidth > 0)
+				arAttributes.push_back({L"stroke-width", std::to_wstring(dStrokeWidth)});
+
+			unsigned int unMetaPenStyle = m_pParser->GetPen()->GetStyle();
+//			unsigned int ulPenType      = unMetaPenStyle & PS_TYPE_MASK;
+			unsigned int ulPenStartCap  = unMetaPenStyle & PS_STARTCAP_MASK;
+//			unsigned int ulPenEndCap    = unMetaPenStyle & PS_ENDCAP_MASK; // svg не поддерживает разные стили для сторон
+			unsigned int ulPenJoin      = unMetaPenStyle & PS_JOIN_MASK;
+			unsigned int ulPenStyle     = unMetaPenStyle & PS_STYLE_MASK;
+
+			if (PS_STARTCAP_ROUND == ulPenStartCap)
+				arAttributes.push_back({L"stroke-linecap", L"round"});
+			else if (PS_STARTCAP_SQUARE == ulPenStartCap)
+				arAttributes.push_back({L"stroke-linecap", L"square"});
+			else if (PS_STARTCAP_FLAT == ulPenStartCap)
+				arAttributes.push_back({L"stroke-linecap", L"butt"});
+
+			if (PS_JOIN_ROUND == ulPenJoin)
+				arAttributes.push_back({L"stroke-linejoin", L"round"});
+			else if (PS_JOIN_BEVEL == ulPenJoin)
+				arAttributes.push_back({L"stroke-linejoin", L"bevel"});
+			else if (PS_JOIN_MITER == ulPenJoin)
+				arAttributes.push_back({L"stroke-linejoin", L"miter"});
+
+                        if (PS_DASH == ulPenStyle)
+                                arAttributes.push_back({L"stroke-dasharray", std::to_wstring(dStrokeWidth * 4) + L' ' + std::to_wstring(dStrokeWidth * 2)});
+                        else if (PS_DOT == ulPenStyle)
+                                arAttributes.push_back({L"stroke-dasharray", std::to_wstring(dStrokeWidth) + L' ' + std::to_wstring(dStrokeWidth)});
+                        else if (PS_DASHDOT == ulPenStyle)
+                                arAttributes.push_back({L"stroke-dasharray", std::to_wstring(dStrokeWidth * 4) + L' ' + std::to_wstring(dStrokeWidth * 2) + L' ' + std::to_wstring(dStrokeWidth) + L' ' + std::to_wstring(dStrokeWidth * 2)});
+                        else if (PS_DASHDOTDOT == ulPenStyle)
+                                arAttributes.push_back({L"stroke-dasharray", std::to_wstring(dStrokeWidth * 4) + L' ' + std::to_wstring(dStrokeWidth * 2) + L' ' + std::to_wstring(dStrokeWidth) + L' ' + std::to_wstring(dStrokeWidth * 2) + L' ' + std::to_wstring(dStrokeWidth) + L' ' + std::to_wstring(dStrokeWidth * 2)});
+                }
+                else arAttributes.push_back({L"stroke", L"black"});
+        }
+
+        void CEmfInterpretatorSvg::AddFill(NodeAttributes &arAttributes)
         {
                 if (NULL != m_pParser && NULL != m_pParser->GetBrush())
-                        wsFill = L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetBrush()->GetColor()) + L"," + std::to_wstring(m_pParser->GetBrush()->GetAlpha()) + L")";
+                {
+                        if (BS_SOLID == m_pParser->GetBrush()->GetStyle())
+                                arAttributes.push_back({L"fill", L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetBrush()->GetColor()) + L"," + std::to_wstring(m_pParser->GetBrush()->GetAlpha()) + L")"});
+                        else
+                                arAttributes.push_back({L"fill", L"none"});
+                }
+                else arAttributes.push_back({L"fill", L"none"});
+        }
+
+        void CEmfInterpretatorSvg::UpdateTransform(NodeAttributes &arAttributes, double dX, double dY)
+        {
+                if (dX < m_oViewport.dX)
+                        m_oViewport.dX = dX;
+
+                if (dY < m_oViewport.dY)
+                        m_oViewport.dY = dY;
+                return;
+
+                double dShiftX = 0, dShiftY;
+
+                if (dX < 0)
+                        dShiftX = -dX + 1;
+
+                if (dY < 0)
+                        dShiftY = -dY + 1;
+
+                if (0 != dShiftX || 0 != dShiftY)
+                        arAttributes.push_back({L"transform", L"translate(" + std::to_wstring(dShiftX) + L' ' + std::to_wstring(dShiftY) + L')'});
+
+        }
+
+        void CEmfInterpretatorSvg::UpdateTransform(NodeAttributes &arAttributes, const TRectD &oRect)
+        {
+                if (std::min(oRect.dLeft, oRect.dRight) < m_oViewport.dX)
+                        m_oViewport.dX = std::min(oRect.dLeft, oRect.dRight);
+
+                if (std::min(oRect.dBottom, oRect.dTop) < m_oViewport.dY)
+                        m_oViewport.dY = std::min(oRect.dBottom, oRect.dTop);
+
+                return;
+
+                double nMinX = std::min(oRect.dLeft, oRect.dRight);
+
+                if (nMinX < 0)
+                        nMinX = -nMinX + 1;
+                else nMinX = 0;
+
+                if ((oRect.dRight - oRect.dLeft) < 0)
+                        nMinX += oRect.dRight - oRect.dLeft;
+
+                double nMinY = std::min(oRect.dTop, oRect.dBottom);
+
+                if (nMinY < 0)
+                        nMinY = -nMinY + 1;
+                else nMinY = 0;
+
+                if ((oRect.dBottom - oRect.dTop) < 0)
+                        nMinY += oRect.dBottom - oRect.dTop;
+
+                if (0 != nMinX || 0 != nMinY)
+                        arAttributes.push_back({L"transform", L"translate(" + std::to_wstring(nMinX) + L' ' + std::to_wstring(nMinY) + L')'});
+        }
+
+        void CEmfInterpretatorSvg::UpdateTransform(NodeAttributes &arAttributes, const std::vector<TEmfPointL> &arPoints)
+        {
+                double dMinX = 0, dMinY = 0;
+                for (const TEmfPointL& oPoint : arPoints)
+                {
+                        if (oPoint.x < dMinX) dMinX = oPoint.x;
+                        if (oPoint.y < dMinY) dMinY = oPoint.y;
+                }
+
+                if (0 != dMinX || 0 != dMinY)
+                        UpdateTransform(arAttributes, dMinX, dMinY);
+        }
+
+        void CEmfInterpretatorSvg::UpdateTransform(NodeAttributes &arAttributes, const std::vector<TEmfPointS> &arPoints)
+        {
+                short shMinX = 0, shMinY = 0;
+                for (const TEmfPointS& oPoint : arPoints)
+                {
+                        if (oPoint.x < shMinX) shMinX = oPoint.x;
+                        if (oPoint.y < shMinY) shMinY = oPoint.y;
+                }
+
+                if (0 != shMinX || 0 != shMinY)
+                        UpdateTransform(arAttributes, shMinX, shMinY);
+        }
+
+        void CEmfInterpretatorSvg::UpdateTransform(NodeAttributes &arAttributes, TEmfPointL *arPoints, unsigned int unCount)
+        {
+                if (NULL == arPoints || 0 == unCount)
+                        return;
+
+                double dMinX = 0, dMinY = 0;
+                for (unsigned int unIndex = 0; unIndex < unCount; ++unCount)
+                {
+                        if (arPoints[unIndex].x < dMinX) dMinX = arPoints[unIndex].x;
+                        if (arPoints[unIndex].y < dMinY) dMinY = arPoints[unIndex].y;
+                }
+
+                if (0 != dMinX || 0 != dMinY)
+                        UpdateTransform(arAttributes, dMinX, dMinY);
+        }
+
+        void CEmfInterpretatorSvg::UpdateTransform(NodeAttributes &arAttributes, TEmfPointS *arPoints, unsigned int unCount)
+        {
+                if (NULL == arPoints || 0 == unCount)
+                        return;
+
+                short shMinX = 0, shMinY = 0;
+                for (unsigned int unIndex = 0; unIndex < unCount; ++unCount)
+                {
+                        if (arPoints[unIndex].x < shMinX) shMinX = arPoints[unIndex].x;
+                        if (arPoints[unIndex].y < shMinY) shMinY = arPoints[unIndex].y;
+                }
+
+                if (0 != shMinX || 0 != shMinY)
+                        UpdateTransform(arAttributes, shMinX, shMinY);
         }
 
         double CEmfInterpretatorSvg::TranslateX(double dX)
         {
+                if (NULL != m_pParser && NULL != m_pParser->GetTransform())
+                        return dX * m_dScaleX * m_pParser->GetTransform()->M11;
+
                 return  dX * m_dScaleX;
         }
 
         double CEmfInterpretatorSvg::TranslateY(double dY)
         {
+                if (NULL != m_pParser && NULL != m_pParser->GetTransform())
+                        return dY * m_dScaleY * m_pParser->GetTransform()->M22;
+
                 return dY * m_dScaleY;
         }
 
-        TPointD CEmfInterpretatorSvg::TranslatePoint(const TPointD &oPoint)
+        TRectD CEmfInterpretatorSvg::TranslateRect(const TEmfRectL &oRect)
         {
-                return TPointD(TranslateX(oPoint.x), TranslateY(oPoint.y));
-        }
+                TRectD oNewRect;
 
-        TEmfRectL CEmfInterpretatorSvg::TranslateRect(const TEmfRectL &oRect)
-        {
-                TEmfRectL oNewRect;
+                oNewRect.dLeft   = TranslateX(oRect.lLeft);
+                oNewRect.dTop    = TranslateY(oRect.lTop);
+                oNewRect.dRight  = TranslateX(oRect.lRight);
+                oNewRect.dBottom = TranslateY(oRect.lBottom);
 
-                oNewRect.lLeft   = TranslateX(oRect.lLeft);
-                oNewRect.lTop    = TranslateY(oRect.lTop);
-                oNewRect.lRight  = TranslateX(oRect.lRight);
-                oNewRect.lBottom = TranslateY(oRect.lBottom);
+                if (oNewRect.dRight < oNewRect.dLeft)
+                {
+                        double dTempValue = oNewRect.dLeft;
+                        oNewRect.dLeft    = oNewRect.dRight;
+                        oNewRect.dRight   = dTempValue;
+                }
+
+                if (oNewRect.dBottom < oNewRect.dTop)
+                {
+                        double dTempValue = oNewRect.dTop;
+                        oNewRect.dTop     = oNewRect.dBottom;
+                        oNewRect.dBottom  = dTempValue;
+                }
 
                 return oNewRect;
         }

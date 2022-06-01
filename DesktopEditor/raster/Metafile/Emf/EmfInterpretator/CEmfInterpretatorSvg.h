@@ -17,6 +17,19 @@ namespace MetaFile
                 TEmfPointL              oCurPos;
         };
 
+        struct TSvgViewport
+        {
+                double dX;
+                double dY;
+                double dWidth;
+                double dHeight;
+
+                TSvgViewport() : dX(0), dY(0), dWidth(0), dHeight(0) {}
+        };
+
+        typedef std::pair<const std::wstring, std::wstring>   NodeAttribute;
+        typedef std::vector<NodeAttribute>              NodeAttributes;
+
         class CEmfInterpretatorSvg : public CEmfInterpretatorBase
         {
             public:
@@ -144,6 +157,8 @@ namespace MetaFile
 
                 double                  m_dScaleX;
                 double                  m_dScaleY;
+
+                TSvgViewport            m_oViewport;
         public:
                 void Begin() override;
                 void End() override;
@@ -174,16 +189,23 @@ namespace MetaFile
                 void SetTransform(double& dM11, double& dM12, double& dM21, double& dM22, double& dX, double& dY) override {};
                 void GetTransform(double* pdM11, double* pdM12, double* pdM21, double* pdM22, double* pdX, double* pdY) override {};
         private:
-                void WriteNode(const std::wstring& wsNodeName, const std::vector<std::pair<std::wstring, std::wstring>>& arAttributes, const std::wstring& wsValueNode = L"");
+                void WriteNode(const std::wstring& wsNodeName, const NodeAttributes& arAttributes, const std::wstring& wsValueNode = L"");
+                void WriteText(const std::wstring& wsText, double dX, double dY, const TEmfRectL& oBounds);
 
-                void UpdateStroke(std::wstring& wsStroke);
-                void UpdateFill(std::wstring& wsFill);
+                void AddStroke(NodeAttributes &arAttributes);
+                void AddFill(NodeAttributes &arAttributes);
+
+                void UpdateTransform(NodeAttributes &arAttributes, double dX, double dY);
+                void UpdateTransform(NodeAttributes &arAttributes, const TRectD& oRect);
+                void UpdateTransform(NodeAttributes &arAttributes, const std::vector<TEmfPointL>& arPoints);
+                void UpdateTransform(NodeAttributes &arAttributes, const std::vector<TEmfPointS>& arPoints);
+                void UpdateTransform(NodeAttributes &arAttributes, TEmfPointL *arPoints, unsigned int unCount);
+                void UpdateTransform(NodeAttributes &arAttributes, TEmfPointS *arPoints, unsigned int unCount);
 
                 double TranslateX(double nX);
                 double TranslateY(double nY);
 
-                TPointD TranslatePoint(const TPointD& oPoint);
-                TEmfRectL TranslateRect(const TEmfRectL& oRect);
+                TRectD TranslateRect(const TEmfRectL& oRect);
         };
 }
 

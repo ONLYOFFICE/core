@@ -32,15 +32,12 @@
 #ifndef DOC_BUILDER_PRIVATE
 #define DOC_BUILDER_PRIVATE
 
+#include "./config.h"
 #include "docbuilder.h"
 #include "doctrenderer.h"
 
 #include <iostream>
 #include <list>
-
-#include "../xml/include/xmlutils.h"
-#include "../common/File.h"
-#include "../common/Directory.h"
 
 #include "../../Common/OfficeFileFormats.h"
 #include "../../Common/OfficeFileFormatChecker.h"
@@ -174,20 +171,11 @@ namespace NSDoctRenderer
         std::vector<std::wstring> m_arFontDirs;
     };
 
-    class CDocBuilder_Private
+    class CDocBuilder_Private : public CDoctRendererConfig
     {
     public:
-        std::vector<std::wstring> m_arrFiles;
-
-        std::vector<std::wstring> m_arDoctSDK;
-        std::vector<std::wstring> m_arPpttSDK;
-        std::vector<std::wstring> m_arXlstSDK;
-
         std::wstring m_strEditorType;
         std::wstring m_strFilePath;
-
-        std::wstring m_strAllFonts;
-        bool m_bIsNotUseConfigAllFontsDir;
 
         std::wstring m_sTmpFolder;
         std::wstring m_sFileDir;
@@ -212,7 +200,7 @@ namespace NSDoctRenderer
 
         NSDoctRenderer::CDocBuilder* m_pParent;
     public:
-        CDocBuilder_Private() : m_bIsNotUseConfigAllFontsDir(false), m_sTmpFolder(NSFile::CFileBinary::GetTempPath()), m_nFileType(-1),
+        CDocBuilder_Private() : CDoctRendererConfig(), m_sTmpFolder(NSFile::CFileBinary::GetTempPath()), m_nFileType(-1),
             m_pWorker(NULL), m_pAdditionalData(NULL), m_bIsInit(false), m_bIsCacheScript(true), m_bIsServerSafeVersion(false),
             m_sGlobalVariable(""), m_bIsGlobalVariableUse(false), m_pParent(NULL)
         {
@@ -251,57 +239,7 @@ namespace NSDoctRenderer
 
             m_sX2tPath = sWorkDir;
 
-            std::wstring sConfigDir = sWorkDir + L"/";
-            std::wstring sConfigPath = sConfigDir + L"DoctRenderer.config";
-
-            XmlUtils::CXmlNode oNode;
-            if (oNode.FromXmlFile(sConfigPath))
-            {
-                XmlUtils::CXmlNodes oNodes;
-                if (oNode.GetNodes(L"file", oNodes))
-                {
-                    int nCount = oNodes.GetCount();
-                    XmlUtils::CXmlNode _node;
-                    for (int i = 0; i < nCount; ++i)
-                    {
-                        oNodes.GetAt(i, _node);
-                        std::wstring strFilePath = _node.GetText();
-
-                        if (std::wstring::npos != strFilePath.find(L"AllFonts.js"))
-                        {
-                            if (!m_bIsNotUseConfigAllFontsDir)
-                            {
-                                m_strAllFonts = strFilePath;
-
-                                if (!NSFile::CFileBinary::Exists(m_strAllFonts) || NSFile::CFileBinary::Exists(sConfigDir + m_strAllFonts))
-                                    m_strAllFonts = sConfigDir + m_strAllFonts;
-                            }
-                            else
-                            {
-                                m_arrFiles.push_back(m_strAllFonts);
-                                continue;
-                            }
-                        }
-
-                        if (NSFile::CFileBinary::Exists(strFilePath) && !NSFile::CFileBinary::Exists(sConfigDir + strFilePath))
-                            m_arrFiles.push_back(strFilePath);
-                        else
-                            m_arrFiles.push_back(sConfigDir + strFilePath);
-                    }
-                }
-            }
-
-            XmlUtils::CXmlNode oNodeSdk = oNode.ReadNode(L"DoctSdk");
-            if (oNodeSdk.IsValid())
-                LoadSDK_scripts(oNodeSdk, m_arDoctSDK, sConfigDir);
-
-            oNodeSdk = oNode.ReadNode(L"PpttSdk");
-            if (oNodeSdk.IsValid())
-                LoadSDK_scripts(oNodeSdk, m_arPpttSDK, sConfigDir);
-
-            oNodeSdk = oNode.ReadNode(L"XlstSdk");
-            if (oNodeSdk.IsValid())
-                LoadSDK_scripts(oNodeSdk, m_arXlstSDK, sConfigDir);
+            CDoctRendererConfig::Parse(sWorkDir);
 
             CheckFonts(m_oParams.m_bCheckFonts);
 
@@ -313,37 +251,6 @@ namespace NSDoctRenderer
             CloseFile();
 
             RELEASEOBJECT(m_pAdditionalData);
-        }
-
-        void LoadSDK_scripts(XmlUtils::CXmlNode& oNode, std::vector<std::wstring>& _files, const std::wstring& strConfigDir)
-        {
-            XmlUtils::CXmlNodes oNodes;
-            if (oNode.GetNodes(L"file", oNodes))
-            {
-                int nCount = oNodes.GetCount();
-                XmlUtils::CXmlNode _node;
-                for (int i = 0; i < nCount; ++i)
-                {
-                    oNodes.GetAt(i, _node);
-                    std::wstring strFilePath = _node.GetText();
-
-                    if (NSFile::CFileBinary::Exists(strFilePath) &&
-                        !NSFile::CFileBinary::Exists(strConfigDir + strFilePath))
-                        _files.push_back(strFilePath);
-                    else
-                        _files.push_back(strConfigDir + strFilePath);
-                }
-            }
-            else
-            {
-                std::wstring strFilePath = oNode.GetText();
-
-                if (NSFile::CFileBinary::Exists(strFilePath) &&
-                    !NSFile::CFileBinary::Exists(strConfigDir + strFilePath))
-                    _files.push_back(strFilePath);
-                else
-                    _files.push_back(strConfigDir + strFilePath);
-            }
         }
 
         void CheckFonts(bool bIsCheckFonts)

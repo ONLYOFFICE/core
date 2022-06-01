@@ -41,8 +41,7 @@
 #include "embed/GraphicsEmbed.h"
 #include "embed/ZipEmbed.h"
 
-#include "../xml/include/xmlutils.h"
-
+#include "./config.h"
 #include <iostream>
 
 namespace NSDoctRenderer
@@ -235,29 +234,18 @@ namespace NSDoctRenderer
         string_replace(text, L"\"", L"&quot;");
     }
 
-    class CDoctRenderer_Private
+    class CDoctRenderer_Private : public CDoctRendererConfig
     {
     public:
         CExecuteParams m_oParams;
-
-        std::wstring m_strConfigDir;
-        std::wstring m_strConfigPath;
-        std::vector<std::wstring> m_arrFiles;
-
-        std::vector<std::wstring> m_arDoctSDK;
-        std::vector<std::wstring> m_arPpttSDK;
-        std::vector<std::wstring> m_arXlstSDK;
 
         std::wstring m_strEditorType;
         std::wstring m_strFilePath;
 
         std::vector<std::wstring> m_arImagesInChanges;
 
-        std::wstring m_sConsoleLogFile;
-        std::wstring m_sErrorsLogFile;
-
     public:
-        CDoctRenderer_Private(const std::wstring& sAllFontsPath = L"")
+        CDoctRenderer_Private(const std::wstring& sAllFontsPath = L"") : CDoctRendererConfig()
         {
             LoadConfig(NSFile::GetProcessDirectory(), sAllFontsPath);
         }
@@ -267,105 +255,14 @@ namespace NSDoctRenderer
         }
         void LoadConfig(const std::wstring& sConfigDir, const std::wstring& sAllFontsPath = L"")
         {
-            m_arrFiles.clear();
-            m_arDoctSDK.clear();
-            m_arPpttSDK.clear();
-            m_arXlstSDK.clear();
-
-            m_strConfigDir = sConfigDir + L"/";
-            m_strConfigPath = m_strConfigDir + L"DoctRenderer.config";
-
-            XmlUtils::CXmlNode oNode;
-            if (oNode.FromXmlFile(m_strConfigPath))
+            if (sAllFontsPath.empty())
             {
-                XmlUtils::CXmlNodes oNodes;
-                if (oNode.GetNodes(L"file", oNodes))
-                {
-                    int nCount = oNodes.GetCount();
-                    XmlUtils::CXmlNode _node;
-                    for (int i = 0; i < nCount; ++i)
-                    {
-                        oNodes.GetAt(i, _node);
-                        std::wstring strFilePath = _node.GetText();
-
-                        if (!sAllFontsPath.empty())
-                        {
-                            std::wstring::size_type nPos = strFilePath.rfind(L"AllFonts.js");
-                            if (nPos != std::wstring::npos && ((nPos + 11) == strFilePath.length())) // 11 = std::wstring(L"AllFonts.js").length();
-                                strFilePath = sAllFontsPath;
-                        }
-
-                        if (NSFile::CFileBinary::Exists(strFilePath) &&
-                            !NSFile::CFileBinary::Exists(m_strConfigDir + strFilePath))
-                            m_arrFiles.push_back(strFilePath);
-                        else
-                            m_arrFiles.push_back(m_strConfigDir + strFilePath);
-                    }
-                }
+                m_strAllFonts = sAllFontsPath;
+                m_bIsNotUseConfigAllFontsDir = true;
             }
 
-            XmlUtils::CXmlNode oNodeSdk = oNode.ReadNode(L"DoctSdk");
-            if (oNodeSdk.IsValid())
-                LoadSDK_scripts(oNodeSdk, m_arDoctSDK);
-
-            oNodeSdk = oNode.ReadNode(L"PpttSdk");
-            if (oNodeSdk.IsValid())
-                LoadSDK_scripts(oNodeSdk, m_arPpttSDK);
-
-            oNodeSdk = oNode.ReadNode(L"XlstSdk");
-            if (oNodeSdk.IsValid())
-                LoadSDK_scripts(oNodeSdk, m_arXlstSDK);
-
-            m_sConsoleLogFile = L"";
-            m_sErrorsLogFile = L"";
-
-            XmlUtils::CXmlNode oNodeConsoleLogFile = oNode.ReadNode(L"LogFileConsoleLog");
-            if (oNodeConsoleLogFile.IsValid())
-            {
-                m_sConsoleLogFile = oNodeConsoleLogFile.GetText();
-                if (!NSFile::CFileBinary::Exists(m_sConsoleLogFile))
-                    m_sConsoleLogFile = m_strConfigDir + m_sConsoleLogFile;
-            }
-
-            XmlUtils::CXmlNode oNodeErrorsLogFile = oNode.ReadNode(L"LogFileErrors");
-            if (oNodeErrorsLogFile.IsValid())
-            {
-                m_sErrorsLogFile = oNodeErrorsLogFile.GetText();
-                if (!NSFile::CFileBinary::Exists(m_sErrorsLogFile))
-                    m_sErrorsLogFile = m_strConfigDir + m_sErrorsLogFile;
-            }
-        }
-
-        void LoadSDK_scripts(XmlUtils::CXmlNode& oNode, std::vector<std::wstring>& _files)
-        {
-            XmlUtils::CXmlNodes oNodes;
-            if (oNode.GetNodes(L"file", oNodes))
-            {
-                int nCount = oNodes.GetCount();
-                XmlUtils::CXmlNode _node;
-                for (int i = 0; i < nCount; ++i)
-                {
-                    oNodes.GetAt(i, _node);
-                    std::wstring strFilePath = _node.GetText();
-
-                    if (NSFile::CFileBinary::Exists(strFilePath) &&
-                        !NSFile::CFileBinary::Exists(m_strConfigDir + strFilePath))
-                        _files.push_back(strFilePath);
-                    else
-                        _files.push_back(m_strConfigDir + strFilePath);
-                }
-            }
-            else
-            {
-                std::wstring strFilePath = oNode.GetText();
-
-                if (NSFile::CFileBinary::Exists(strFilePath) &&
-                    !NSFile::CFileBinary::Exists(m_strConfigDir + strFilePath))
-                    _files.push_back(strFilePath);
-                else
-                    _files.push_back(m_strConfigDir + strFilePath);
-            }
-        }
+            CDoctRendererConfig::Parse(sConfigDir);
+        }        
 
     public:
 

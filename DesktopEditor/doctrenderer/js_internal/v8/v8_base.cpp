@@ -164,9 +164,6 @@ namespace NSJSBase
     void CJSContext::CreateContext()
     {
         m_internal->m_context = v8::Context::New(CV8Worker::GetCurrent(), NULL, m_internal->m_global);
-
-        JSSmart<CJSObject> global_js = GetGlobal();
-        global_js->set("window", global_js.GetPointer());
     }
 
     void CJSContext::CreateGlobalForContext()
@@ -188,7 +185,12 @@ namespace NSJSBase
 
     CJSContextScope* CJSContext::CreateContextScope()
     {
-        return new CJSContextScopeV8(m_internal->m_context);
+        CJSContextScope* pScope = new CJSContextScopeV8(m_internal->m_context);
+
+        JSSmart<CJSObject> global = GetCurrent()->GetGlobal();
+        global->set("window", global.GetPointer());
+
+        return pScope;
     }
 
     CJSLocalScope* CJSContext::CreateLocalScope()

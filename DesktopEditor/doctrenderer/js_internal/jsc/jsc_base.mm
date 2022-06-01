@@ -139,8 +139,7 @@ namespace NSJSBase
 
     void CJSContext::CreateContext()
     {
-        JSValue* global_js = [m_internal->context globalObject];
-        [global_js setValue:global_js forProperty:[[NSString alloc] initWithUTF8String:"window"]];
+        // NONE
     }
 
     void CJSContext::CreateGlobalForContext()
@@ -171,7 +170,10 @@ namespace NSJSBase
 
     CJSContextScope* CJSContext::CreateContextScope()
     {
-        return new CJSContextScope();
+        CJSContextScope* pScope = new CJSContextScope();
+		JSValue* global_js = [m_internal->context globalObject];
+        [global_js setValue:global_js forProperty:[[NSString alloc] initWithUTF8String:"window"]];
+		return pScope;
     }
 
     CJSLocalScope* CJSContext::CreateLocalScope()

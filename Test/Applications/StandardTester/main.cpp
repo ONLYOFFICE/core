@@ -49,6 +49,8 @@ public:
         m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT, true));
         m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF, true));
         m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT, true));
+        m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF, true));
+        m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM, true));
 
         m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX, true));
         m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX, true));
@@ -88,7 +90,7 @@ public:
         {
             std::wstring sExt = NSFile::GetFileExtention(*iter);
 
-            if (sExt == L"docx" || sExt == L"doc" || sExt == L"odt" || sExt == L"rtf" ||
+            if (sExt == L"docx" || sExt == L"doc" || sExt == L"odt" || sExt == L"rtf" || sExt == L"docxf" || sExt == L"oform" ||
                 sExt == L"pptx" || sExt == L"ppt" || sExt == L"odp" ||
                 sExt == L"xlsx" || sExt == L"xls" || sExt == L"ods")
             {

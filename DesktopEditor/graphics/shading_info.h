@@ -47,9 +47,9 @@ namespace NSStructures
 
         {
             values = std::vector<std::vector<ColorT>>(1, std::vector<ColorT>(RESOLUTION));
-            for (int i = 0; i < RESOLUTION; i++)
+            for (size_t i = 0; i < RESOLUTION; i++)
             {
-                unsigned int value = 255 - (255 * ((float)i / RESOLUTION));
+                unsigned int value = (unsigned int)(255 - (255 * ((float)i / RESOLUTION)));
                 values[0][i] = ColorT(value, value, value);
             }
         }
@@ -57,11 +57,11 @@ namespace NSStructures
         ColorFunction(size_t res, float xmin, float xmax, float ymin, float ymax) : RESOLUTION(res), x_domain_min(xmin), x_domain_max(xmax), y_domain_min(ymin), y_domain_max(ymax)
         {
             values = std::vector<std::vector<ColorT>>(RESOLUTION, std::vector<ColorT>(RESOLUTION));
-            for (int i = 0; i < RESOLUTION; i++)
+            for (size_t i = 0; i < RESOLUTION; i++)
             {
-                for (int j = 0; j < RESOLUTION; j++)
+                for (size_t j = 0; j < RESOLUTION; j++)
                 {
-                    unsigned int value = 255 * sin(i * j * M_PI / RESOLUTION);
+                    unsigned int value = (unsigned int)(255 * sin(i * j * M_PI / RESOLUTION));
                     values[j][i] = ColorT(255, 0, 0, 255);
                 }
             }
@@ -228,7 +228,7 @@ namespace NSStructures
     {
         Point():x(0),y(0){}
         Point(const float& _x, const float& _y):x(_x),y(_y){}
-        Point(const int& _x, const int& _y):x((int)_x),y((int)_y){}
+        Point(const int& _x, const int& _y):x((float)_x),y((float)_y){}
         Point(const double& _x, const double& _y):x((float)_x),y((float)_y){}
         float x, y;
 

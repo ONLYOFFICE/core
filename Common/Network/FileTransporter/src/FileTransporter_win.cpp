@@ -37,6 +37,10 @@
 #pragma comment(lib, "Wininet")
 #pragma comment(lib, "Ole32.lib")
 
+#ifdef GetTempPath
+#undef GetTempPath
+#endif
+
 //------------------------------------------------------------------------------------------------------
 
 // Константа для максимального числа символов в строке
@@ -90,6 +94,13 @@ namespace NSNetwork
                 CoInitialize ( NULL );
                 if ( /*S_OK != _DownloadFile ( m_sFileUrl )*/TRUE )
                 {
+                    if (m_sDownloadFilePath.empty())
+                    {
+                        m_sDownloadFilePath = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"DWD");
+                        if (NSFile::CFileBinary::Exists(m_sDownloadFilePath))
+                            NSFile::CFileBinary::Remove(m_sDownloadFilePath);
+                    }
+
                     HRESULT hrResultAll = DownloadFileAll(m_sDownloadFileUrl, m_sDownloadFilePath);
 
                     if (S_OK != hrResultAll)

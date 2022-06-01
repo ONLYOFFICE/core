@@ -279,6 +279,8 @@ namespace NSCSS
             sSpacingValue += L"w:after=\""  + oStyle.m_pMargin.GetTopSide() + L"\" ";
             sSpacingValue += L"w:before=\"" + oStyle.m_pMargin.GetTopSide() + L"\" ";
         }
+        else if (!oStyle.m_pBorder.Empty())
+                sSpacingValue += L"w:after=\"0\" w:before=\"0\" ";
 
         const std::wstring &sLineHeight = oStyle.m_pFont.GetLineHeight();
         if (!sLineHeight.empty())
@@ -286,6 +288,8 @@ namespace NSCSS
                 sSpacingValue += L"w:line=\"" + sLineHeight + L"\" ";
                 sSpacingValue += L"w:lineRule=\"auto\"";
         }
+//        else if (!oStyle.m_pBorder.Empty())
+//                sSpacingValue += L"w:line=\"240\" w:lineRule=\"auto\" ";
 
         if (!sSpacingValue.empty())
         {
@@ -308,7 +312,7 @@ namespace NSCSS
                 const std::wstring sBorderStyle = oStyle.m_pBorder.GetStyleBottomSide();
                 const std::wstring sBorderWidth = oStyle.m_pBorder.GetWidthBottomSideW();
 
-                const std::wstring sBorder = L" w:color=\"" + sBorderColor + L"\" w:space=\"4\" w:sz=\"" +
+                const std::wstring sBorder = L" w:color=\"" + sBorderColor + L"\" w:space=\"0\" w:sz=\"" +
                         sBorderWidth + L"\" w:val=\"" + sBorderStyle + L"\"";
 
                 oXmlElement.AddPropertiesInP(NSConstValues::NSProperties::ParagraphProperties::P_TopBorder, sBorder);

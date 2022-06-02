@@ -99,7 +99,7 @@ Module.FT_Get_Glyph_Measure_Params = function(face, vector_worker, reader)
 	}
 
 	reader.init(new Uint8Array(data, 0, data.length));
-	g_return_obj_count.count = data.length;
+	g_return_obj_count.count = reader.readInt();
 	g_return_obj_count.error = 0;
 	return g_return_obj_count;
 };

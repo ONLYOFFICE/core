@@ -447,11 +447,15 @@ namespace NSShaper
         WRITE_INT((int)face->face_index);
 
         for (unsigned int i = 0; i < nLen1; ++i)
+        {
             WRITE_INT(face->family_name[i]);
+        }
         WRITE_INT(0);
 
         for (unsigned int i = 0; i < nLen2; ++i)
+        {
             WRITE_INT(face->style_name[i]);
+        }
         WRITE_INT(0);
 
         if (os2)
@@ -500,7 +504,9 @@ namespace NSShaper
         WRITE_INT((int)face->num_fixed_sizes);
 
         for (int i = 0; i < face->num_fixed_sizes; ++i)
+        {
             WRITE_INT((int)face->available_sizes[i].size);
+        }
 
         return true;
     }
@@ -582,7 +588,9 @@ namespace NSShaper
             WRITE_INT(slot->linearVertAdvance);
 
             for (int i = 0; i < nCount; i++)
+            {
                 WRITE_INT(buffer.buffer[i]);
+            }
 
             FT_Decompose_Outline_Buffer_Destroy(&buffer);
         }

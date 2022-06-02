@@ -185,7 +185,12 @@ namespace NSJSBase
 
     CJSContextScope* CJSContext::CreateContextScope()
     {
-        return new CJSContextScopeV8(m_internal->m_context);
+        CJSContextScope* pScope = new CJSContextScopeV8(m_internal->m_context);
+
+        JSSmart<CJSObject> global = GetCurrent()->GetGlobal();
+        global->set("window", global.GetPointer());
+
+        return pScope;
     }
 
     CJSLocalScope* CJSContext::CreateLocalScope()
@@ -218,6 +223,13 @@ namespace NSJSBase
     {
         CJSValueV8* _value = new CJSValueV8();
         _value->value = v8::Integer::New(CV8Worker::GetCurrent(), value);
+        return _value;
+    }
+
+    CJSValue* CJSContext::createUInt(const unsigned int& value)
+    {
+        CJSValueV8* _value = new CJSValueV8();
+        _value->value = v8::Integer::NewFromUnsigned(CV8Worker::GetCurrent(), value);
         return _value;
     }
 

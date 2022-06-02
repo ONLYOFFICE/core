@@ -46,6 +46,8 @@
 
 #include "../include/ASCSVGWriter.h"
 
+#include "../../Common/Network/FileTransporter/include/FileTransporter.h"
+
 void Download_OnComplete(int error)
 {
     int y = error;
@@ -58,7 +60,7 @@ void Download_OnComplete(int error)
 //#define METAFILE_TEST_RASTER
 //#define ONLINE_WORD_TO_PDF
 //#define TO_PDF
-#define TO_HTML_RENDERER
+//#define TO_HTML_RENDERER
 //#define ONLY_TEXT
 //#define DOWNLOADER_TEST
 
@@ -263,7 +265,7 @@ int main(int argc, char *argv[])
 #else
     //std::wstring sFile = L"D:\\ddd\\ZfAvCwDsowJALpClgmE_\\source\\ZfAvCwDsowJALpClgmE_.pdf";
     //std::wstring sFile = L"D:\\2.pdf";
-    std::wstring sFile = L"D:\\PDF 1-7 (756p).pdf";
+    std::wstring sFile = L"D:\\OoPdfFormExample2.pdf";
 #endif
 
 #ifdef WIN32
@@ -278,7 +280,7 @@ int main(int argc, char *argv[])
     //std::wstring sFile = L"/home/oleg/activex/bankomats.xps";
     //std::wstring sDst = L"/home/oleg/activex/1";
 
-    NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NSFonts::NSApplicationFontStream::CreateDefaultGlobalMemoryStorage());
+    //NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NSFonts::NSApplicationFontStream::CreateDefaultGlobalMemoryStorage());
 
     IOfficeDrawingFile* pReader = NULL;
     pReader = new PdfReader::CPdfReader(pFonts);
@@ -288,7 +290,7 @@ int main(int argc, char *argv[])
     pReader->SetTempDirectory(sDst);
     pReader->LoadFromFile(sFile);
 
-    pReader->ConvertToRaster(1, L"D:\\111.png", 4);
+    pReader->ConvertToRaster(0, L"D:\\111.png", 4);
 
 #ifdef TO_HTML_RENDERER
     NSHtmlRenderer::CASCHTMLRenderer3 oRenderer;

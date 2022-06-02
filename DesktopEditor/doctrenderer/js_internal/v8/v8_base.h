@@ -282,6 +282,11 @@ namespace NSJSBase
             return 0;
         }
 
+        virtual unsigned int toUInt32()
+        {
+            return 0;
+        }
+
         virtual double toDouble()
         {
             return 0;
@@ -340,6 +345,11 @@ namespace NSJSBase
         virtual int toInt32()
         {
             return value.IsEmpty() ? 0 : value->Int32Value(V8ContextOneArg).V8ToChecked();
+        }
+
+        virtual unsigned int toUInt32()
+        {
+            return value.IsEmpty() ? 0 : value->Uint32Value(V8ContextOneArg).V8ToChecked();
         }
 
         virtual double toDouble()
@@ -712,6 +722,21 @@ namespace NSJSBase
                 std::string strCode        = _line->toStringA();
                 std::string strException   = _exception->toStringA();
 
+#if 1
+                v8::Local<v8::Value> stack_trace_string;
+                if (try_catch.StackTrace(V8ContextOneArg).ToLocal(&stack_trace_string) &&
+                    stack_trace_string->IsString() &&
+                    v8::Local<v8::String>::Cast(stack_trace_string)->Length() > 0)
+                {
+                    v8::String::Utf8Value data(V8IsolateFirstArg stack_trace_string);
+                    if (NULL != *data)
+                    {
+                        std::string sStack((char*)(*data), data.length());
+                        std::cerr << sStack << std::endl;
+                    }
+                }
+#endif
+
 #ifndef __ANDROID__
                 std::cerr << strException << std::endl;
 #else
@@ -741,6 +766,57 @@ namespace NSJSBase
     public:
         CJSContextPrivate() : m_oWorker(), m_isolate(NULL)
         {
+        }
+    };
+}
+
+namespace NSJSBase
+{
+    class CJSEmbedObjectPrivate : public CJSEmbedObjectPrivateBase
+    {
+    public:
+        v8::Persistent<v8::Object> handle;
+
+        CJSEmbedObjectPrivate(v8::Local<v8::Object> obj)
+        {
+            SetWeak(obj);
+        }
+        virtual ~CJSEmbedObjectPrivate()
+        {
+            ClearWeak();
+        }
+
+    public:
+        void SetWeak(v8::Local<v8::Object> obj)
+        {
+            v8::Handle<v8::External> field = v8::Handle<v8::External>::Cast(obj->GetInternalField(0));
+            CJSEmbedObject* pEmbedObject = (NSJSBase::CJSEmbedObject*)field->Value();
+
+            handle.Reset(CV8Worker::GetCurrent(), obj);
+            handle.SetWeak(pEmbedObject, EmbedObjectWeakCallback, v8::WeakCallbackType::kParameter);
+
+            pEmbedObject->embed_native_internal = this;
+        }
+        void ClearWeak()
+        {
+            if (handle.IsEmpty())
+                return;
+            handle.ClearWeak();
+            handle.Reset();
+        }
+
+        static void EmbedObjectWeakCallback(const v8::WeakCallbackInfo<CJSEmbedObject>& data)
+        {
+            v8::Isolate* isolate = data.GetIsolate();
+            v8::HandleScope scope(isolate);
+            CJSEmbedObject* wrap = data.GetParameter();
+            ((CJSEmbedObjectPrivate*)wrap->embed_native_internal)->handle.Reset();
+            delete wrap;
+        }
+
+        static void CreateWeaker(v8::Local<v8::Object> obj)
+        {
+            new CJSEmbedObjectPrivate(obj);
         }
     };
 }

@@ -3,7 +3,7 @@
 var printErr = undefined;
 var print    = undefined;
 
-var fetch = self.fetch;
+var fetch = ("undefined" !== typeof window) ? window.fetch : (("undefined" !== typeof self) ? self.fetch : null);
 var getBinaryPromise = null;
 
 function internal_isLocal()

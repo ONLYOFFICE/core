@@ -32,24 +32,25 @@
 
 let g_native_engine = CreateNativeTextMeasurer();
 
-Module.CreateLibrary = g_native_engine["FT_Init"];
-Module.FT_Set_TrueType_HintProp = g_native_engine["FT_Set_TrueType_HintProp"];
+let Module = {};
+Module.CreateLibrary = function(library) { return g_native_engine["FT_Init"](library); };
+Module.FT_Set_TrueType_HintProp = function(library, tt_interpreter) { return g_native_engine["FT_Set_TrueType_HintProp"](library, tt_interpreter); };
 
-Module.FT_Load_Glyph = g_native_engine["FT_Load_Glyph"];
-Module.FT_Set_Transform = g_native_engine["FT_Set_Transform"];
-Module.FT_Set_Char_Size = g_native_engine["FT_Set_Char_Size"];
+Module.FT_Load_Glyph = function(face, gid, mode) { return g_native_engine["FT_Load_Glyph"](face, gid, mode); };
+Module.FT_Set_Transform = function(face, xx, yx, xy, yy) { return g_native_engine["FT_Set_Transform"](face, xx, yx, xy, yy); };
+Module.FT_Set_Char_Size = function(face, cw, ch, hres, vres) { return g_native_engine["FT_Set_Char_Size"](face, cw, ch, hres, vres); };
 
-Module.FT_SetCMapForCharCode = g_native_engine["FT_SetCMapForCharCode"];
-Module.FT_GetKerningX = g_native_engine["FT_GetKerningX"];
-Module.FT_GetFaceMaxAdvanceX = g_native_engine["FT_GetFaceMaxAdvanceX"];
+Module.FT_SetCMapForCharCode = function(face, unicode) { return g_native_engine["FT_SetCMapForCharCode"](face, unicode); };
+Module.FT_GetKerningX = function(face, gid1, gid2) { return g_native_engine["FT_GetKerningX"](face, gid1, gid2); };
+Module.FT_GetFaceMaxAdvanceX = function(face) { return g_native_engine["FT_GetFaceMaxAdvanceX"](face); };
 
-Module.FT_Done_Face = function()
+Module.FT_Done_Face = function(face)
 {
-	// GC
+	if (face) g_native_engine["FT_Free"](face);
 };
-Module.HP_FontFree = function()
+Module.HP_FontFree = function(font)
 {
-	// GC
+	if (font) g_native_engine["FT_Free"](font);
 }
 
 Module.CreateNativeStream = function(stream)

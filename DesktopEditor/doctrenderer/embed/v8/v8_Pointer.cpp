@@ -14,7 +14,7 @@ v8::Handle<v8::ObjectTemplate> CreatePointerTemplate(v8::Isolate* isolate)
 JSSmart<CJSValue> CPointerEmbedObject::createObject()
 {
     v8::Isolate* isolate = CV8Worker::GetCurrent();
-    v8::HandleScope scope(isolate);
+    //v8::HandleScope scope(isolate);
 
     v8::Handle<v8::ObjectTemplate> pointerTemplate = v8::ObjectTemplate::New(isolate);
     pointerTemplate->SetInternalFieldCount(1);

@@ -160,7 +160,13 @@ void OOX::Spreadsheet::CXlsb::ReadSheetData()
 {
     for(auto &worksheet : m_arWorksheets)
     {
-        auto dataPosition = m_mapSheetNameSheetData.find(worksheet->GetReadPath().GetPath())->second;
+		_UINT32 dataPosition;
+		auto dataFindPair = m_mapSheetNameSheetData.find(worksheet->GetReadPath().GetPath());
+
+		if(dataFindPair != m_mapSheetNameSheetData.end())
+			dataPosition = dataFindPair->second;
+		else 
+			continue;
 
         NSFile::CFileBinary oFile;
         if (oFile.OpenFile(worksheet->GetReadPath().GetPath()) == false)

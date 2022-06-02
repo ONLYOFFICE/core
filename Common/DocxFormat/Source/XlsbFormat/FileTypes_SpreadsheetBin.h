@@ -58,6 +58,11 @@ namespace OOX
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet",
 												L"worksheets/sheet", true);
 
+			const FileType ChartsheetsBin	(L"chartsheets", L"sheet.bin",
+												L"application/vnd.ms-excel.chartsheet",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chartsheet",
+												L"chartsheets/sheet", true);
+
 			const FileType TableBin			(L"../tables", L"table.bin",
 												L"application/vnd.ms-excel.table",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/table",

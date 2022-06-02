@@ -56,5 +56,11 @@ namespace XLSB
         record >> fLocked >> fObjects;
     }
 
+	void CsProtection::writeFields(XLS::CFRecord& record)
+	{
+		record << protpwd;
+		record << fLocked << fObjects;
+	}
+
 } // namespace XLSB
 

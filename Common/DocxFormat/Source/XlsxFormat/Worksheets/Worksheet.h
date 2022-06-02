@@ -104,9 +104,9 @@ namespace OOX
 			virtual const OOX::FileType type() const
 			{
 				if (dynamic_cast<CXlsb*>(File::m_pMainDocument) && !dynamic_cast<CXlsb*>(File::m_pMainDocument)->IsWriteToXlsx())
-					return OOX::SpreadsheetBin::FileTypes::WorksheetBin;
+					return m_bIsChartSheet ? OOX::SpreadsheetBin::FileTypes::ChartsheetsBin : OOX::SpreadsheetBin::FileTypes::WorksheetBin;
 
-                return m_bIsChartSheet?OOX::Spreadsheet::FileTypes::Chartsheets:OOX::Spreadsheet::FileTypes::Worksheet;
+                return m_bIsChartSheet?OOX::Spreadsheet::FileTypes::Chartsheets : OOX::Spreadsheet::FileTypes::Worksheet;
 			}
 			virtual const CPath DefaultDirectory() const
 			{

@@ -61,5 +61,17 @@ namespace XLSB
         record >> strName;
     }
 
+	void CsProp::writeFields(XLS::CFRecord& record)
+	{
+		_UINT16 flags = 0;
+
+		SETBIT(flags, 0, fPublish)
+
+		record << flags;
+
+		brtcolorTab.writeFields(record);
+		record << strName;
+	}
+
 } // namespace XLSB
 

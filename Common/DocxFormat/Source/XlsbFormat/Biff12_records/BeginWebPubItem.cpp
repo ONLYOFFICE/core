@@ -54,7 +54,7 @@ namespace XLSB
     {
         _UINT32 flags1;
         BYTE    flags2;
-        record >> tws;
+        record >> tws >> flags1;
 
         fAutoRepublish = GETBIT(flags1, 1);
         fMhtml         = GETBIT(flags1, 3);
@@ -65,6 +65,8 @@ namespace XLSB
             record >> rfx;
         else
             record.skipNunBytes(16);
+
+		record >> flags2;
 
         fName          = GETBIT(flags2, 1);
         fTitle         = GETBIT(flags2, 3);
@@ -79,6 +81,39 @@ namespace XLSB
         if(fTitle)
             record >> stTitle;
     }
+
+	void BeginWebPubItem::writeFields(XLS::CFRecord& record)
+	{
+		_UINT32 flags1 = 0;
+		BYTE    flags2 = 0;
+		record << tws;
+
+		SETBIT(flags1, 1, fAutoRepublish)
+		SETBIT(flags1, 3, fMhtml)
+
+    	record << flags1;
+		record << nStyleId;
+
+		if (tws.value().get() == Tws::TWSREF)
+			record << rfx;
+		else
+			record.reserveNunBytes(16);
+
+		SETBIT(flags2, 1, fName)
+		SETBIT(flags2, 3, fTitle)
+
+    	record << flags2;
+
+		record << stBkmk;
+
+		if (fName)
+			record << stBkmk;
+
+		record << stFile;
+
+		if (fTitle)
+			record << stTitle;
+	}
 
 } // namespace XLSB
 

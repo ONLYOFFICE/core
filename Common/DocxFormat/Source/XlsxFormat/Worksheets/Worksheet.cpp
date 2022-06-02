@@ -236,6 +236,71 @@ namespace OOX
 			{
 				if (m_bIsChartSheet)
 				{
+					XLSB::ChartSheetStreamPtr chartSheetStream(new XLSB::ChartSheetStream);					
+
+					if (chartSheetStream != nullptr)
+					{
+						if (m_oPageMargins.IsInit())
+						{
+							m_oPageMargins->toBin(chartSheetStream->m_BrtMargins);
+						}
+						if (m_oHeaderFooter.IsInit())
+						{
+							m_oHeaderFooter->toBin(chartSheetStream->m_HEADERFOOTER);
+						}
+						if (m_oDrawing.IsInit())
+						{
+							m_oDrawing->toBin(chartSheetStream->m_BrtDrawing);
+						}
+						if (m_oLegacyDrawing.IsInit())
+						{
+							m_oLegacyDrawing->toBin(chartSheetStream->m_BrtLegacyDrawing);
+						}
+						if (m_oLegacyDrawingHF.IsInit())
+						{
+							m_oLegacyDrawingHF->toBin(chartSheetStream->m_BrtLegacyDrawingHF);
+						}
+						if (m_oPicture.IsInit())
+						{
+							m_oPicture->toBin(chartSheetStream->m_BrtBkHim);
+						}
+						if (m_oSheetViews.IsInit())
+						{
+							if (chartSheetStream->m_CSVIEWS == nullptr)
+								chartSheetStream->m_CSVIEWS = XLS::BaseObjectPtr(new XLSB::CSVIEWS());
+							m_oSheetViews->toBin(chartSheetStream->m_CSVIEWS);
+						}
+						if (m_oSheetPr.IsInit())
+						{
+							chartSheetStream->m_BrtCsProp = XLS::BaseObjectPtr(new XLSB::CsProp());
+							m_oSheetPr->toBin(chartSheetStream->m_BrtCsProp);
+						}
+						if (m_oPageSetup.IsInit())
+						{
+							if (chartSheetStream->m_BrtCsPageSetup == nullptr)
+								chartSheetStream->m_BrtCsPageSetup = XLS::BaseObjectPtr(new XLSB::CsPageSetup());
+							m_oPageSetup->toBin(chartSheetStream->m_BrtCsPageSetup);
+						}
+						if (m_oSheetProtection.IsInit())
+						{
+							if (m_oSheetProtection->m_oAlgorithmName.IsInit()
+								|| m_oSheetProtection->m_oSpinCount.IsInit()
+								|| m_oSheetProtection->m_oHashValue.IsInit()
+								|| m_oSheetProtection->m_oSaltValue.IsInit())
+							{
+								chartSheetStream->m_BrtCsProtectionIso = XLS::BaseObjectPtr(new XLSB::CsProtectionIso());
+								m_oSheetProtection->toBin(chartSheetStream->m_BrtCsProtectionIso);
+							}
+							//else
+							//{
+							chartSheetStream->m_BrtCsProtection = XLS::BaseObjectPtr(new XLSB::CsProtection());
+							m_oSheetProtection->toBin(chartSheetStream->m_BrtCsProtection);
+							//}
+
+						}
+					}
+
+					xlsb->WriteBin(oPath, chartSheetStream.get());
 				}
 				else
 				{

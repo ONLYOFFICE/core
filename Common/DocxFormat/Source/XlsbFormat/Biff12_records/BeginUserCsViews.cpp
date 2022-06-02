@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new BeginUserCsViews(*this));
     }
 
-    void BeginUserCsViews::readFields(XLS::CFRecord& record)
-    {
-        // No data in this record
-    }
-
 } // namespace XLSB
 

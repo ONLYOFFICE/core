@@ -63,5 +63,20 @@ namespace XLSB
         fZoomToFit  = GETBIT(flags, 2);
     }
 
+	void BeginUserCsView::writeFields(XLS::CFRecord& record)
+	{
+		_GUID_          guid_;
+		_UINT32         flags = 0;
+
+		STR::bstr2guid(guid, guid_);
+
+		SETBITS(flags, 0, 1, hsState)
+		SETBIT(flags, 2, fZoomToFit)
+
+		record << guid_ << iTabId << dwScale << flags;
+
+
+	}
+
 } // namespace XLSB
 

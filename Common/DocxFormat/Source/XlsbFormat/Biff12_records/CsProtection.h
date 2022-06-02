@@ -48,13 +48,14 @@ namespace XLSB
 
             XLS::BaseObjectPtr clone();
 
-            void readFields(XLS::CFRecord& record);
+            void readFields(XLS::CFRecord& record) override;
+			void writeFields(XLS::CFRecord& record) override;
 
             static const XLS::ElementType	type = XLS::typeCsProtection;
 
             _UINT16                     protpwd;
-            XLS::Boolean<unsigned int>  fLocked;
-            XLS::Boolean<unsigned int>  fObjects;
+            XLS::Boolean<_UINT32>		fLocked;
+            XLS::Boolean<_UINT32>		fObjects;
 
     };
 

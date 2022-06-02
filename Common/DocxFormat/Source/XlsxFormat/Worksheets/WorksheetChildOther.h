@@ -788,7 +788,95 @@ namespace OOX
 					auto ptr = static_cast<XLSB::CsPageSetup*>(obj.get());
 					if (ptr != nullptr)
 					{
-						//stub
+						if (m_oBlackAndWhite.Init())
+							ptr->fNoColor = m_oBlackAndWhite->GetValue();
+						else
+							ptr->fNoColor = false;
+
+						if (m_oCellComments.Init())
+						{
+							switch (m_oCellComments->GetValue())
+							{
+							case SimpleTypes::Spreadsheet::ECellComments::cellcommentsAtEnd:
+							{
+								ptr->fNoColor = true;
+								ptr->fNotes = true;
+							}break;
+							case SimpleTypes::Spreadsheet::ECellComments::cellcommentsAsDisplayed:
+							{
+								ptr->fNoColor = true;
+								ptr->fNotes = false;
+							}break;
+							case SimpleTypes::Spreadsheet::ECellComments::cellcommentsNone:
+							{
+								ptr->fNoColor = false;
+								ptr->fNotes = false;
+							}break;
+							}
+						}
+						else
+						{
+							ptr->fNoColor = false;
+							ptr->fNotes = false;
+						}
+
+						if (m_oCopies.Init())
+							ptr->iCopies = m_oCopies->GetValue();
+						else
+							ptr->iCopies = 1;
+
+						if (m_oDraft.Init())
+							ptr->fDraft = m_oDraft->GetValue();
+						else
+							ptr->fDraft = false;
+
+						if (m_oFirstPageNumber.Init())
+							ptr->iPageStart = m_oFirstPageNumber->GetValue();
+						else
+							ptr->iPageStart = 1;
+
+
+						if (m_oHorizontalDpi.Init())
+							ptr->iRes = m_oHorizontalDpi->GetValue();
+						else
+							ptr->iRes = 600;
+
+						if (m_oRId.Init())
+							ptr->szRelID = m_oRId->GetValue();
+						else
+							ptr->szRelID = L"";
+
+						if (m_oOrientation.Init())
+						{
+							switch (m_oOrientation->GetValue())
+							{
+							case SimpleTypes::EPageOrientation::pageorientLandscape:
+							{
+								ptr->fLandscape = true;
+							}break;
+							case SimpleTypes::EPageOrientation::pageorientPortrait:
+							{
+								ptr->fLandscape = false;
+							}break;
+							}
+						}
+						else
+							ptr->fLandscape = false;
+
+						if (m_oPaperSize.Init())
+							ptr->iPaperSize = m_oPaperSize->GetValue();
+						else
+							ptr->iPaperSize = 1;
+
+						if (m_oUseFirstPageNumber.Init())
+							ptr->fUsePage = m_oUseFirstPageNumber->GetValue();
+						else
+							ptr->fUsePage = false;
+
+						if (m_oVerticalDpi.Init())
+							ptr->iVRes = m_oVerticalDpi->GetValue();
+						else
+							ptr->iVRes = 600;
 					}
 				}
 			}
@@ -1570,7 +1658,14 @@ namespace OOX
 				}
 				else if (obj->get_type() == XLS::typeCSVIEW)
 				{
-					
+					auto pCSVIEW = static_cast<XLSB::CSVIEW*>(obj.get());
+					if (pCSVIEW == nullptr)
+						return;
+
+					if (pCSVIEW->m_BrtBeginCsView == nullptr)
+						pCSVIEW->m_BrtBeginCsView = XLS::BaseObjectPtr(new XLSB::BeginCsView());
+
+					WriteAttributes(pCSVIEW->m_BrtBeginCsView);
 				}
 			}			
 
@@ -1928,7 +2023,20 @@ namespace OOX
 				}
 				else if (obj->get_type() == XLS::typeCSVIEWS)
 				{
-					
+					auto oCSVIEWS = static_cast<XLSB::CSVIEWS*>(obj.get());
+					if (oCSVIEWS != nullptr)
+					{
+						oCSVIEWS->m_arCSVIEW.reserve(m_arrItems.size());
+						for (size_t i = 0; i < m_arrItems.size(); ++i)
+						{
+							if (m_arrItems[i])
+							{
+								XLS::BaseObjectPtr item(new XLSB::CSVIEW());
+								m_arrItems[i]->toBin(item);
+								oCSVIEWS->m_arCSVIEW.push_back(item);
+							}
+						}
+					}
 				}
 
 			}
@@ -3485,7 +3593,20 @@ namespace OOX
 					auto ptr = static_cast<XLSB::CsProtection*>(obj.get());
 					if (ptr != nullptr)
 					{
-						//stub
+						if (m_oPassword.IsInit())
+							ptr->protpwd = std::stoi(m_oPassword.get());
+						else
+							ptr->protpwd = 0;						
+
+						if (m_oObjects.IsInit())
+							ptr->fObjects = m_oObjects->GetValue();
+						else
+							ptr->fObjects = false;
+
+						if (m_oSheet.IsInit())
+							ptr->fLocked = m_oSheet->GetValue();
+						else
+							ptr->fLocked = false;
 					}
 				}
 				else if (obj->get_type() == XLS::typeCsProtectionIso)
@@ -3493,7 +3614,41 @@ namespace OOX
 					auto ptr = static_cast<XLSB::CsProtectionIso*>(obj.get());
 					if (ptr != nullptr)
 					{
-						//stub
+						if (m_oAlgorithmName.IsInit())
+							ptr->ipdPasswordData.szAlgName = m_oAlgorithmName->ToString();
+						else
+							ptr->ipdPasswordData.szAlgName = L"";
+
+						if (m_oSpinCount.IsInit())
+							ptr->dwSpinCount = m_oSpinCount->GetValue();
+						else
+							ptr->dwSpinCount = 0;
+
+						if (m_oHashValue.IsInit() && !m_oHashValue.get().empty())
+						{
+							BYTE const* p = reinterpret_cast<BYTE const*>(&m_oHashValue.get()[0]);
+							std::size_t size = m_oHashValue.get().size() * sizeof(m_oHashValue.get().front());
+							ptr->ipdPasswordData.rgbHash.cbLength = size;
+							ptr->ipdPasswordData.rgbHash.rgbData = std::vector<BYTE>(p, p + size);
+						}
+
+						if (m_oSaltValue.IsInit() && !m_oSaltValue.get().empty())
+						{
+							BYTE const* p = reinterpret_cast<BYTE const*>(&m_oSaltValue.get()[0]);
+							std::size_t size = m_oSaltValue.get().size() * sizeof(m_oSaltValue.get().front());
+							ptr->ipdPasswordData.rgbSalt.cbLength = size;
+							ptr->ipdPasswordData.rgbSalt.rgbData = std::vector<BYTE>(p, p + size);
+						}
+
+						if (m_oObjects.IsInit())
+							ptr->fObjects = m_oObjects->GetValue();
+						else
+							ptr->fObjects = false;
+
+						if (m_oSheet.IsInit())
+							ptr->fLocked = m_oSheet->GetValue();
+						else
+							ptr->fLocked = false;
 					}
 				}
 			}

@@ -80,12 +80,24 @@ namespace XLSB
 
         if (proc.optional<EndCsView>())
         {
-            m_BrtEndCsView = elements_.back();
+			m_bBrtEndCsView = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndCsView = false;
 
-        return m_BrtBeginCsView && m_BrtEndCsView;
+        return m_BrtBeginCsView && m_bBrtEndCsView;
     }
+
+	const bool CSVIEW::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginCsView != nullptr)
+			proc.mandatory(*m_BrtBeginCsView);
+		
+		proc.mandatory<EndCsView>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

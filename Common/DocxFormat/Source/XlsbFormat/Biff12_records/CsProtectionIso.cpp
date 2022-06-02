@@ -57,5 +57,12 @@ namespace XLSB
         record >> ipdPasswordData;
     }
 
+	void CsProtectionIso::writeFields(XLS::CFRecord& record)
+	{
+		record << dwSpinCount;
+		record << fLocked << fObjects;
+		record << ipdPasswordData;
+	}
+
 } // namespace XLSB
 

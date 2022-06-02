@@ -72,12 +72,29 @@ namespace XLSB
 
         if (proc.optional<EndWebPubItems>())
         {
-            m_BrtEndWebPubItems = elements_.back();
+            m_bBrtEndWebPubItems = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndWebPubItems = false;
 
-        return m_BrtBeginWebPubItems && !m_arWEBPUBITEM.empty() && m_BrtEndWebPubItems;
+        return m_BrtBeginWebPubItems && !m_arWEBPUBITEM.empty() && m_bBrtEndWebPubItems;
     }
+
+	const bool WEBPUBITEMS::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginWebPubItems != nullptr)
+			proc.mandatory(*m_BrtBeginWebPubItems);
+
+		for (auto &item : m_arWEBPUBITEM)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndWebPubItems>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

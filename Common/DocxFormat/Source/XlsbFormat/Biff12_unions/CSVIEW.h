@@ -45,14 +45,15 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+		const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         static const XLS::ElementType	type = XLS::typeCSVIEW;
 
         //XLS::BaseObjectPtr               m_ACUID;
         XLS::BaseObjectPtr               m_BrtBeginCsView;
         //std::vector<XLS::BaseObjectPtr>  m_arFRT;
-        XLS::BaseObjectPtr               m_BrtEndCsView;
+		bool				             m_bBrtEndCsView;
 
     };
 

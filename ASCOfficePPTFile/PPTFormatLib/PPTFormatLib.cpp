@@ -132,7 +132,9 @@ _UINT32 COfficePPTFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDs
 		PPT_FORMAT::CPPTXWriter oPPTXWriter;
         oPPTXWriter.m_strTempDirectory = sDstPath;
 		
-		
+		oPPTXWriter.m_xmlApp  = ((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_app_xml;
+		oPPTXWriter.m_xmlCore = ((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_core_xml;
+
 		oPPTXWriter.CreateFile(((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_arUsers[0]);	
 		oPPTXWriter.CloseFile();
 	}

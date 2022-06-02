@@ -42,7 +42,7 @@
 #include "../XlsFormat/Logic/MacroSheetSubstream.h"
 
 #include "../XlsFormat/Logic/BinProcessor.h"
-#include "../XlsFormat/Logic/SummaryInformationStream/SummaryInformation.h"
+#include "../XlsFormat/Logic/SummaryInformationStream/PropertySetStream.h"
 
 #include "../XlsFormat/Logic/Biff_unions/FORMATTING.h"
 #include "../XlsFormat/Logic/Biff_unions/THEME.h"
@@ -100,6 +100,8 @@
 
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/raster/BgraFrame.h"
+
+#include <boost/make_shared.hpp>
 
 #if !defined(_WIN32) && !defined(_WIN64)
 
@@ -195,22 +197,23 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 		}
 		else
 		{
-			XLS::CFStreamPtr summary;
-			XLS::CFStreamPtr doc_summary;
+			OLEPS::PropertySetStream summary_info;
+			
+			XLS::CFStreamPtr summary = xls_file->getNamedStream(L"SummaryInformation");
+			XLS::CFStreamPtr doc_summary = xls_file->getNamedStream(L"DocumentSummaryInformation");
 
-			summary		= xls_file->getNamedStream(L"SummaryInformation");
-			doc_summary = xls_file->getNamedStream(L"DocumentSummaryInformation");
+			if (summary)
+				summary_info.read(summary);
+			if (doc_summary)
+				summary_info.read(doc_summary, true);
 
-			if(summary)
 			{
-				OLEPS::SummaryInformation summary_info(summary);
-				workbook_code_page = summary_info.GetCodePage(); //from software last open 
+				workbook_code_page = summary_info.GetCodePage(); 
+				
+				output_document->get_docProps_files().set_app_content(summary_info.GetApp());
+				output_document->get_docProps_files().set_core_content(summary_info.GetCore());				
 			}
-			if(doc_summary)
-			{
-				OLEPS::SummaryInformation doc_summary_info(doc_summary);
-				workbook_code_page = doc_summary_info.GetCodePage(); 
-			}
+
 			if(  0/*error*/ == workbook_code_page)//|| 65001 /*UTF-8*/ == workbook_code_page || 1200/* UTF-16 */ == workbook_code_page
 			{
 				workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;

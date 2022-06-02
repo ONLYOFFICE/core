@@ -82,6 +82,32 @@ office_element_ptr styles_lite_container::find_by_style_name(const std::wstring 
         return office_element_ptr();
     }
 }
+class doc_props_container::Impl
+{
+public:
+	Impl() {}
+
+	std::map<std::wstring, std::wstring> map_user_defineds;
+};
+
+doc_props_container::doc_props_container() : impl_(new doc_props_container::Impl())
+{
+}
+
+doc_props_container::~doc_props_container()
+{
+}
+void doc_props_container::add_user_defined(const std::wstring & name, const std::wstring & value)
+{
+	impl_->map_user_defineds.insert(std::make_pair(name, value));
+}
+std::wstring doc_props_container::get_user_defined(const std::wstring & name)
+{
+	std::map<std::wstring, std::wstring>::iterator pFind = impl_->map_user_defineds.find(name);
+
+	return pFind != impl_->map_user_defineds.end() ? pFind->second : L"";
+}
+
 //----------------------------------------------------------------------------------
 struct settings_value
 {
@@ -100,7 +126,7 @@ struct view_elm : settings_elm
 	boost::unordered_map<std::wstring, int>	map_tables;
 	std::vector<settings_elm>				tables;
 };
-
+//------------------------------------------------------------------------------------
 class settings_container::Impl
 {
 public:
@@ -265,16 +291,6 @@ _CP_OPT(std::wstring) settings_container::find_view_by_name(const std::wstring &
 		}
 	}
 	return value;
-}
-void settings_container::add_user_defined(const std::wstring & name, const std::wstring & value)
-{
-	impl_->map_user_defineds.insert(std::make_pair(name, value));
-}
-std::wstring settings_container::get_user_defined(const std::wstring & name)
-{
-	std::map<std::wstring, std::wstring>::iterator pFind = impl_->map_user_defineds.find(name);
-
-	return pFind != impl_->map_user_defineds.end() ? pFind->second : L"";
 }
 
 }

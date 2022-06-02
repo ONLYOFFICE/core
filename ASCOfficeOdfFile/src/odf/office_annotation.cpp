@@ -43,6 +43,7 @@
 #include "draw_common.h"
 #include "calcs_styles.h"
 #include "../docx/xlsx_utils.h"
+#include "office_meta.h"
 
 namespace cpdoccore { 
 
@@ -50,25 +51,6 @@ namespace cpdoccore {
 
 namespace odf_reader {
 
-// dc:date
-/////////////////////////////////////////////
-const wchar_t * dc_date::ns = L"dc";
-const wchar_t * dc_date::name = L"date";
-
-void dc_date::add_text(const std::wstring & Text)
-{
-	content_ = Text;
-}
-
-// dc:creator
-///////////////////////////////////////////
-const wchar_t * dc_creator::ns = L"dc";
-const wchar_t * dc_creator::name = L"creator";
-
-void dc_creator::add_text(const std::wstring & Text)
-{
-	content_ = Text;
-}
 //-------------------------------------------------------------------------
 void office_annotation_attr::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {

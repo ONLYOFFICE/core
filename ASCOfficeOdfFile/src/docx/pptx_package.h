@@ -259,11 +259,8 @@ public:
     ppt_files					& get_ppt_files()			{ return ppt_files_; }
 
 private:
-    pptx_content_types_file content_type_file_;   
-	ppt_files				ppt_files_;
-    docProps_files			docProps_files_;
-    rels_files				rels_files_;
-
+	ppt_files ppt_files_;
+	pptx_content_types_file content_type_file_; 
 };
 
 }

@@ -1825,7 +1825,7 @@ void text_user_defined::docx_convert(oox::docx_conversion_context & Context)
 
 	odf_reader::odf_read_context & odfContext = Context.root()->odf_context();
 	
-	std::wstring value = odfContext.Settings().get_user_defined(*text_name_);
+	std::wstring value = odfContext.DocProps().get_user_defined(*text_name_);
 	if (!value.empty())
 		text_ = text::create(value) ;
 	

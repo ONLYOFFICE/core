@@ -35,7 +35,7 @@
 #include "../../Common/OfficeFileErrorDescription.h"
 #include "../../Common/MS-LCID.h"
 
-#include "../../ASCOfficeXlsFile2/source/XlsFormat/Logic/SummaryInformationStream/SummaryInformation.h"
+#include "../../ASCOfficeXlsFile2/source/XlsFormat/Logic/SummaryInformationStream/PropertySetStream.h"
 #include "../../ASCOfficeXlsFile2/source/XlsFormat/Binary/CFStream.h"
 
 #include "../../DesktopEditor/common/File.h"
@@ -240,16 +240,19 @@ namespace DocFileFormat
 		}
 
 //------------------------------------------------------------------------------------------------------------------
-		POLE::Stream			* Summary		= NULL;
-		POLE::Stream			* DocSummary	= NULL;
+		POLE::Stream * Summary		= NULL;
+		POLE::Stream * DocSummary	= NULL;
 		
 		m_pStorage->GetStream (L"SummaryInformation",			&Summary);
 		m_pStorage->GetStream (L"DocumentSummaryInformation",	&DocSummary);
 		
+		OLEPS::PropertySetStream summary_info;
+		
 		if ((Summary) && (Summary->size() > 0))
 		{
-			XLS::CFStreamPtr stream = XLS::CFStreamPtr(new XLS::CFStream(Summary));
-			OLEPS::SummaryInformation summary_info(stream);
+			XLS::CFStreamPtr stream = XLS::CFStreamPtr(new XLS::CFStream(Summary));			
+			summary_info.read(stream);
+
 			int document_code_page1 = summary_info.GetCodePage(); //from software last open 
 			
 			if (document_code_page1 > 0)
@@ -261,8 +264,9 @@ namespace DocFileFormat
 		if ((DocSummary) && (DocSummary->size() > 0))
 		{
 			XLS::CFStreamPtr stream = XLS::CFStreamPtr(new XLS::CFStream(DocSummary));
-			OLEPS::SummaryInformation doc_summary_info(stream);
-			int document_code_page2 = doc_summary_info.GetCodePage();
+			summary_info.read(stream);
+
+			int document_code_page2 = summary_info.GetCodePage();
 
 			if (document_code_page2 > 0)
 			{

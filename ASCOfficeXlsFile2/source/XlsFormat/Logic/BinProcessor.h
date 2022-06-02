@@ -33,8 +33,6 @@
 
 #include "BaseObject.h"
 #include "Biff_structures/BiffAttribute.h"
-#include "Biff_structures/BiffStructure.h"
-#include "Biff_structures/BiffStructure.h"
 #include "GlobalWorkbookInfo.h"
 
 namespace XLS

@@ -785,10 +785,10 @@ SOURCES +=  \
     ../XlsFormat/Logic/Biff_unions/SXFORMULA_bu.cpp \
     ../XlsFormat/Logic/Biff_unions/SXOPER.cpp \
     ../XlsFormat/Logic/Biff_unions/SXRANGE.cpp \
-    ../XlsFormat/Logic/SummaryInformationStream/Structures/PropertyFactory.cpp \
-    ../XlsFormat/Logic/SummaryInformationStream/Structures/PropertySet.cpp \
-    ../XlsFormat/Logic/SummaryInformationStream/Structures/PropertySetStream.cpp \
-    ../XlsFormat/Logic/SummaryInformationStream/SummaryInformation.cpp \
+    ../XlsFormat/Logic/SummaryInformationStream/PropertyFactory.cpp \
+    ../XlsFormat/Logic/SummaryInformationStream/PropertySet.cpp \
+    ../XlsFormat/Logic/SummaryInformationStream/PropertySetStream.cpp \
+    ../XlsFormat/Logic/SummaryInformationStream/CodePageOle.cpp \
     ../XlsFormat/Logic/AnyObject.cpp \
     ../XlsFormat/Logic/AnySubstream.cpp \
     ../XlsFormat/Logic/BinProcessor.cpp \
@@ -800,7 +800,6 @@ SOURCES +=  \
     ../XlsFormat/Logic/WorkbookStreamObject.cpp \
     ../XlsFormat/Logic/WorksheetSubstream.cpp \
     ../XlsFormat/Logic/CommonSubstream.cpp \
-    ../XlsFormat/Logic/SummaryInformationStream/Structures/CodePageOle.cpp \
     ../XlsFormat/Logic/Biff_structures/SharedProperty.cpp \
     ../XlsFormat/Logic/Biff_records/FrtWrapper.cpp \
     ../XlsFormat/Logic/Biff_structures/AFDOperBoolErr.cpp \
@@ -1603,11 +1602,10 @@ HEADERS +=  \
     ../XlsFormat/Logic/Biff_unions/UNKNOWNFRT.h \
     ../XlsFormat/Logic/Biff_unions/WINDOW.h \
     ../XlsFormat/Logic/Biff_unions/XFS.h \
-    ../XlsFormat/Logic/SummaryInformationStream/Structures/Property.h \
-    ../XlsFormat/Logic/SummaryInformationStream/Structures/PropertyFactory.h \
-    ../XlsFormat/Logic/SummaryInformationStream/Structures/PropertySet.h \
-    ../XlsFormat/Logic/SummaryInformationStream/Structures/PropertySetStream.h \
-    ../XlsFormat/Logic/SummaryInformationStream/SummaryInformation.h \
+    ../XlsFormat/Logic/SummaryInformationStream/Property.h \
+    ../XlsFormat/Logic/SummaryInformationStream/PropertyFactory.h \
+    ../XlsFormat/Logic/SummaryInformationStream/PropertySet.h \
+    ../XlsFormat/Logic/SummaryInformationStream/PropertySetStream.h \
     ../Common/common.h \
     ../Common/simple_xml_writer.h \
     ../Common/utils.h \

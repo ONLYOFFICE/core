@@ -76,12 +76,12 @@ namespace MetaFile
 		return m_pFontManager;
 	}
 
-	void CMetaFile::ConvertToSvg(const wchar_t *wsFilePath)
+	void CMetaFile::ConvertToSvg(const wchar_t *wsFilePath, unsigned int unWidth, unsigned int unHeight)
 	{
 		if (NULL == wsFilePath)
 			return;
 
-		m_oEmfFile.SetOutputDevice(wsFilePath, InterpretatorType::Svg);
+		m_oEmfFile.SetOutputDevice(wsFilePath, InterpretatorType::Svg, unWidth, unHeight);
 		m_oEmfFile.PlayMetaFile();
 	}
 

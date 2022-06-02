@@ -777,7 +777,7 @@ namespace MetaFile
                 m_pInterpretator = new CEmfInterpretatorRender(pOutput);
         }
 
-        void CEmfParserBase::SetInterpretator(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType)
+        void CEmfParserBase::SetInterpretator(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType, unsigned int unWidth, unsigned int unHeight)
         {
                 if (NULL != m_pInterpretator)
                         delete m_pInterpretator;
@@ -787,7 +787,7 @@ namespace MetaFile
                 else if (oInterpretatorType == InterpretatorType::Emf)
                         m_pInterpretator = new CEmfInterpretator(wsFilePath);
                 else if (oInterpretatorType == InterpretatorType::Svg)
-                        m_pInterpretator = new CEmfInterpretatorSvg(wsFilePath, this);
+                        m_pInterpretator = new CEmfInterpretatorSvg(wsFilePath, this, unWidth, unHeight);
         }
 
         void CEmfParserBase::SetInterpretator(IOutputDevice *pOutput, const wchar_t *wsFilePath)

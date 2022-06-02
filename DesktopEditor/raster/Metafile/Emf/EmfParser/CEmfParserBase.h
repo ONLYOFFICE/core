@@ -71,7 +71,7 @@ namespace MetaFile
                 bool		IsWindowFlippedX()			override;
 
                 void SetInterpretator(IOutputDevice* pOutput);
-                void SetInterpretator(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType);
+                void SetInterpretator(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0);
                 void SetInterpretator(IOutputDevice* pOutput, const wchar_t *wsFilePath);
 
                 //Работа с изображениями

@@ -58,7 +58,7 @@ namespace MetaFile
 		NSFonts::IFontManager* get_FontManager();
 
 		//конвертация в Svg
-		void ConvertToSvg(const wchar_t *wsFilePath);
+		void ConvertToSvg(const wchar_t *wsFilePath, unsigned int unWidth = 0, unsigned int unHeight = 0);
 
 		//Для тестов
 		void ConvertToXml(const wchar_t *wsFilePath);

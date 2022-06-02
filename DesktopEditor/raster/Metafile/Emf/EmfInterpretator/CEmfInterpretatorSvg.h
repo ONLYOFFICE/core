@@ -6,17 +6,6 @@
 
 namespace MetaFile
 {
-        struct SvgTextParameters
-        {
-                TEmfColor oColor;
-        };
-
-        struct SvgParameters
-        {
-                SvgTextParameters       oTextParameters;
-                TEmfPointL              oCurPos;
-        };
-
         struct TSvgViewport
         {
                 double dX;
@@ -33,13 +22,14 @@ namespace MetaFile
         class CEmfInterpretatorSvg : public CEmfInterpretatorBase
         {
             public:
-                CEmfInterpretatorSvg(const wchar_t* wsFilePath, CEmfParserBase* pParser = NULL);
+                CEmfInterpretatorSvg(const wchar_t* wsFilePath, CEmfParserBase* pParser = NULL, unsigned int unWidth = 0, unsigned int unHeight = 0);
                 CEmfInterpretatorSvg(const CEmfInterpretatorSvg& oInterpretator);
                 virtual ~CEmfInterpretatorSvg();
 
                 InterpretatorType   GetType() const override;
 
                 void SetOutputDevice(const wchar_t *wsFilePath);
+                void SetSize(unsigned int unWidth, unsigned int unHeight);
 
                 void HANDLE_EMR_HEADER(const TEmfHeader& oTEmfHeader) override ;
                 void HANDLE_EMR_ALPHABLEND(const TEmfAlphaBlend& oTEmfAlphaBlend, CDataStream &oDataStream) override ;
@@ -151,14 +141,11 @@ namespace MetaFile
                 XmlUtils::CXmlWriter    m_oXmlWriter;
                 std::wstring            m_wsSvgFilePath;
 
-                SvgParameters           m_oParameters;
-
                 CEmfParserBase          *m_pParser;
 
-                double                  m_dScaleX;
-                double                  m_dScaleY;
-
                 TSvgViewport            m_oViewport;
+                TEmfSizeL               m_oSizeWindow;
+                TEmfPointD              m_oExtremePoint;
         public:
                 void Begin() override;
                 void End() override;
@@ -195,17 +182,20 @@ namespace MetaFile
                 void AddStroke(NodeAttributes &arAttributes);
                 void AddFill(NodeAttributes &arAttributes);
 
-                void UpdateTransform(NodeAttributes &arAttributes, double dX, double dY);
-                void UpdateTransform(NodeAttributes &arAttributes, const TRectD& oRect);
-                void UpdateTransform(NodeAttributes &arAttributes, const std::vector<TEmfPointL>& arPoints);
-                void UpdateTransform(NodeAttributes &arAttributes, const std::vector<TEmfPointS>& arPoints);
-                void UpdateTransform(NodeAttributes &arAttributes, TEmfPointL *arPoints, unsigned int unCount);
-                void UpdateTransform(NodeAttributes &arAttributes, TEmfPointS *arPoints, unsigned int unCount);
+                void UpdateTransform(double dX, double dY);
+                void UpdateTransform(const TRectD& oRect);
+                void UpdateTransform(const std::vector<TEmfPointL>& arPoints);
+                void UpdateTransform(const std::vector<TEmfPointS>& arPoints);
+                void UpdateTransform(TEmfPointL *arPoints, unsigned int unCount);
+                void UpdateTransform(TEmfPointS *arPoints, unsigned int unCount);
 
                 double TranslateX(double nX);
                 double TranslateY(double nY);
 
+                TPointD TranslatePoint(const TPointD& oPoint);
                 TRectD TranslateRect(const TEmfRectL& oRect);
+
+                TPointD GetCutPos();
         };
 }
 

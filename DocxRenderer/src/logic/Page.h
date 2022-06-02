@@ -113,9 +113,6 @@ namespace NSDocxRenderer
         void BuildByTypeShapeLine();
         void BuildByTypePlainParagraph();
 
-        //вычисляем примерный тип выравнивания строки
-        void CalculateTextAlignmentType(CParagraph& a_rParagraph);
-
         //Объединяем строки, которые находятся на расстроянии не большем dAffinity
         void Merge(double dAffinity);
 
@@ -123,5 +120,11 @@ namespace NSDocxRenderer
         void Write(NSStringUtils::CStringBuilder& oWriter);
 
         void WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter);
+
+        //Todo
+        double RightBorderCorrection(double dCurrentWidth);
+
+        void CreateSingleLineParagraph(CTextLine *pLine, const double *pRight, const double *pBeforeSpacing);
+        void CreateSingleLineShape(CTextLine *pLine);
     };
 }

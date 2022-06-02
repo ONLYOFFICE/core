@@ -30,31 +30,48 @@
  *
  */
 
-(function(window, undefined) {
-
-	window['AscFonts'] = window['AscFonts'] || {};
+function onLoadFontsModule(window, undefined)
+{
 	var AscFonts = window['AscFonts'];
-
-	if (window["NATIVE_EDITOR_ENJINE"])
-		window.setImmediate = function(fn) { fn(); };
 
 	AscFonts.TT_INTERPRETER_VERSION_35 = 35;
 	AscFonts.TT_INTERPRETER_VERSION_38 = 38;
 	AscFonts.TT_INTERPRETER_VERSION_40 = 40;
 
-	//module
+	AscFonts.CopyStreamToMemory = AscFonts["CopyStreamToMemory"];
 
-	AscFonts.CreateLibrary = Module.CreateLibrary;
-	AscFonts.FT_Set_TrueType_HintProp = Module.FT_Set_TrueType_HintProp;
+	AscFonts.FT_CreateLibrary = AscFonts["FT_CreateLibrary"];
+	AscFonts.FT_Done_Library = AscFonts["FT_Done_Library"];
+	AscFonts.FT_Set_TrueType_HintProp = AscFonts["FT_Set_TrueType_HintProp"];
 
-	// Create stream from typed array
-	// Module.CreateNativeStream(stream);
+	AscFonts.FT_Open_Face2 = AscFonts["FT_Open_Face"];
+	AscFonts.FT_Done_Face = AscFonts["FT_Done_Face"];
+	AscFonts.FT_SetCMapForCharCode = AscFonts["FT_SetCMapForCharCode"];
+	AscFonts.FT_GetKerningX = AscFonts["FT_GetKerningX"];
+	AscFonts.FT_GetFaceMaxAdvanceX = AscFonts["FT_GetFaceMaxAdvanceX"];
+	AscFonts.FT_Set_Transform = AscFonts["FT_Set_Transform"];
+	AscFonts.FT_Set_Char_Size = AscFonts["FT_Set_Char_Size"];
+	AscFonts.FT_GetFaceInfo = AscFonts["FT_GetFaceInfo"];
+
+	AscFonts.FT_Load_Glyph = AscFonts["FT_Load_Glyph"];
+	AscFonts.FT_SetCMapForCharCode = AscFonts["FT_SetCMapForCharCode"];
+	AscFonts.FT_Get_Glyph_Measure_Params = AscFonts["FT_Get_Glyph_Measure_Params"];
+	AscFonts.FT_Get_Glyph_Render_Params = AscFonts["FT_Get_Glyph_Render_Params"];
+	AscFonts.FT_Get_Glyph_Render_Buffer2 = AscFonts["FT_Get_Glyph_Render_Buffer"];
+
+	AscFonts.HB_FontFree = AscFonts["HB_FontFree"];
+	AscFonts.HB_ShapeText = AscFonts["HB_ShapeText"];
+
 	AscFonts.CreateNativeStreamByIndex = function(stream_index)
 	{
 		let stream = AscFonts.g_fonts_streams[stream_index];
 		if (stream && true !== stream.asc_marker)
 		{
-			AscFonts.g_fonts_streams[stream_index] = Module.CreateNativeStream(stream);
+			AscFonts.g_fonts_streams[stream_index] = { 
+				asc_marker: true, 
+				data: AscFonts.CopyStreamToMemory(stream.data, stream.size), 
+				len: stream.size
+			};
 		}
 	};
 
@@ -64,29 +81,29 @@
 		this.pos = (undefined === start) ? 0 : start;
 		this.limit = this.pos + ((undefined === size) ? data.length : size);
 	}
-	CBinaryReader.prototype.init = function(data, start, size)
+	CBinaryReader.prototype.init = CBinaryReader.prototype["init"] = function(data, start, size)
 	{
 		this.data = data;
 		this.pos = (undefined === start) ? 0 : start;
 		this.limit = this.pos + ((undefined === size) ? data.length : size);
 	}
-	CBinaryReader.prototype.readInt = function()
+	CBinaryReader.prototype.readInt = CBinaryReader.prototype["readInt"] = function()
 	{
 		var val = (this.data[this.pos] & 0xFF) | (this.data[this.pos + 1] & 0xFF) << 8 | (this.data[this.pos + 2] & 0xFF) << 16 | (this.data[this.pos + 3] & 0xFF) << 24;
 		this.pos += 4;
 		return val;
 	};
-	CBinaryReader.prototype.readUInt = function()
+	CBinaryReader.prototype.readUInt = CBinaryReader.prototype["readUInt"] = function()
 	{
 		var val = (this.data[this.pos] & 0xFF) | (this.data[this.pos + 1] & 0xFF) << 8 | (this.data[this.pos + 2] & 0xFF) << 16 | (this.data[this.pos + 3] & 0xFF) << 24;
 		this.pos += 4;
 		return (val < 0) ? val + 4294967296 : val;
 	};
-	CBinaryReader.prototype.readByte = function()
+	CBinaryReader.prototype.readByte = CBinaryReader.prototype["readByte"] = function()
 	{
 		return (this.data[this.pos++] & 0xFF);
 	};
-	CBinaryReader.prototype.readPointer64 = function()
+	CBinaryReader.prototype.readPointer64 = CBinaryReader.prototype["readPointer64"] = function()
 	{
 		let i1 = this.readUInt();
 		let i2 = this.readUInt();
@@ -94,7 +111,7 @@
 			return i1;
 		return i2 * 4294967296 + i1;
 	};
-	CBinaryReader.prototype.isValid = function()
+	CBinaryReader.prototype.isValid = CBinaryReader.prototype["isValid"] = function()
 	{
 		return (this.pos < this.limit) ? true : false;
 	};
@@ -144,8 +161,8 @@
 
 	CFaceInfo.prototype.load = function(face)
 	{
-		let errorObj = Module.GetFaceInfo(face, READER);
-		if (errorObj.error)
+		let errorObj = AscFonts.FT_GetFaceInfo(face, READER);
+		if (errorObj["error"])
 			return;
 
 		this.units_per_EM 	= READER.readUInt();
@@ -198,7 +215,7 @@
 		for (var i = 0; i < fixedSizesCount; i++)
 			this.monochromeSizes.push(READER.readInt());
 
-		errorObj.free();
+		errorObj["free"]();
 	};
 
 	function CGlyphMetrics()
@@ -239,13 +256,13 @@
 
 	AscFonts.FT_Open_Face = function(library, stream, face_index)
 	{
-		return Module.FT_Open_Face(library, stream.data, stream.len, face_index);
+		return AscFonts.FT_Open_Face2(library, stream.data, stream.len, face_index);
 	};
 
 	AscFonts.FT_Glyph_Get_Measure = function(face, vector_worker, painter)
 	{
-		let errorObj = Module.FT_Get_Glyph_Measure_Params(face, vector_worker ? 1 : 0, READER);
-		if (errorObj.error)
+		let errorObj = AscFonts.FT_Get_Glyph_Measure_Params(face, vector_worker ? 1 : 0, READER);
+		if (errorObj["error"])
 			return null;
 
 		let len = errorObj.count;
@@ -277,26 +294,31 @@
 			let pos = 15;
 			while (pos < len)
 			{
+				pos++;
 				switch (READER.readInt())
 				{
 					case 0:
 					{
 						painter._move_to(READER.readInt(), READER.readInt(), vector_worker);
+						pos += 2;
 						break;
 					}
 					case 1:
 					{
 						painter._line_to(READER.readInt(), READER.readInt(), vector_worker);
+						pos += 2;
 						break;
 					}
 					case 2:
 					{
 						painter._conic_to(READER.readInt(), READER.readInt(), READER.readInt(), READER.readInt(), vector_worker);
+						pos += 4;
 						break;
 					}
 					case 3:
 					{
 						painter._cubic_to(READER.readInt(), READER.readInt(), READER.readInt(), READER.readInt(), READER.readInt(), READER.readInt(), vector_worker);
+						pos += 6;
 						break;
 					}
 					default:
@@ -307,14 +329,14 @@
 			painter.end(vector_worker);
 		}
 
-		errorObj.free();
+		errorObj["free"]();
 		return info;
 	};
 
 	AscFonts.FT_Glyph_Get_Raster = function(face, render_mode)
 	{
-		let errorObj = Module.FT_Get_Glyph_Render_Params(face, render_mode, READER);
-		if (errorObj.error)
+		let errorObj = AscFonts.FT_Get_Glyph_Render_Params(face, render_mode, READER);
+		if (errorObj["error"])
 			return null;
 
 		var info = new CGlyphBitmapImage();
@@ -325,24 +347,13 @@
 		info.pitch   = READER.readInt();
 		info.mode    = READER.readInt();
 
-		errorObj.free();
+		errorObj["free"]();
 		return info;
 	};
 
-	AscFonts.FT_Load_Glyph = Module.FT_Load_Glyph;
-	AscFonts.FT_Set_Transform = Module.FT_Set_Transform;
-	AscFonts.FT_Set_Char_Size = Module.FT_Set_Char_Size;
-
-	AscFonts.FT_SetCMapForCharCode = Module.FT_SetCMapForCharCode;
-	AscFonts.FT_GetKerningX = Module.FT_GetKerningX;
-	AscFonts.FT_GetFaceMaxAdvanceX = Module.FT_GetFaceMaxAdvanceX;
-
-	AscFonts.FT_Done_Face = Module.FT_Done_Face;
-	AscFonts.HP_FontFree = Module.HP_FontFree;
-
 	AscFonts.FT_Get_Glyph_Render_Buffer = function(face, rasterInfo, isCopyToRasterMemory)
 	{
-		let buffer = Module.FT_Get_Glyph_Render_Buffer(face, rasterInfo);
+		let buffer = AscFonts.FT_Get_Glyph_Render_Buffer2(face, rasterInfo.pitch * rasterInfo.rows);
 
 		if (!isCopyToRasterMemory)
 			return buffer;
@@ -506,8 +517,8 @@
 		if (!STRING_POINTER)
 			return;
 
-		let retObj = Module.HP_ShapeText(fontFile, STRING_POINTER, features, script, direction, language, READER);
-		if (retObj.error)
+		let retObj = AscFonts.HB_ShapeText(fontFile, STRING_POINTER, features, script, direction, language, READER);
+		if (retObj["error"])
 			return;
 
 		CODEPOINTS_CALCULATOR.start();
@@ -545,7 +556,7 @@
 		}
 		textShaper.FlushGrapheme(AscFonts.GetGrapheme(), nWidth, CODEPOINTS_CALCULATOR.getCodePointsCount(CLUSTER_MAX), isLigature);
 
-		retObj.free();
+		retObj["free"]();
 	};
 
 	AscFonts.HB_Shape = function(fontFile, text, features, script, direction, language)
@@ -560,7 +571,7 @@
 		}
 		AscFonts.HB_EndString();
 
-		let retObj = Module.HP_ShapeText(fontFile, STRING_POINTER, features, script, direction, language, READER);
+		let retObj = AscFonts.HB_ShapeText(fontFile, STRING_POINTER, features, script, direction, language, READER);
 		if (retObj.error)
 			return;
 
@@ -614,10 +625,7 @@
 			}
 		}
 
-		retObj.free();
+		retObj["free"]();
 		return glyphs;
 	};
-
-	AscFonts.onLoadModule();
-
-})(window, undefined);
+}

@@ -30,6 +30,13 @@
  *
  */
 
+(function(window, undefined) {
+
+var AscFonts = window['AscFonts'];
+
+if (window["NATIVE_EDITOR_ENJINE"])
+	window.setImmediate = function(fn) { fn(); };
+
 //desktop_fetch
 
 //polyfill
@@ -37,27 +44,6 @@
 //string_utf8
 
 //module
-
-Module.CreateLibrary = Module["_ASC_FT_Init"];
-Module.FT_Set_TrueType_HintProp = Module["_ASC_FT_Set_TrueType_HintProp"];
-
-Module.FT_Load_Glyph = Module["_FT_Load_Glyph"];
-Module.FT_Set_Transform = Module["_ASC_FT_Set_Transform"];
-Module.FT_Set_Char_Size = Module["_FT_Set_Char_Size"];
-
-Module.FT_SetCMapForCharCode = Module["_ASC_FT_SetCMapForCharCode"];
-Module.FT_GetKerningX = Module["_ASC_FT_GetKerningX"];
-Module.FT_GetFaceMaxAdvanceX = Module["_ASC_FT_GetFaceMaxAdvanceX"];
-
-Module.FT_Done_Face = Module["_FT_Done_Face"];
-Module.HP_FontFree = Module["_ASC_HP_FontFree"];
-
-Module.CreateNativeStream = function(stream)
-{
-	var fontStreamPointer = Module["_ASC_FT_Malloc"](stream.size);
-	Module["HEAP8"].set(stream.data, fontStreamPointer);
-	return { asc_marker: true, data: fontStreamPointer, len: stream.size};
-};
 
 function CReturnObject()
 {
@@ -73,7 +59,25 @@ let g_return_obj = new CReturnObject();
 let g_return_obj_count = new CReturnObject();
 g_return_obj_count.count = 0;
 
-Module.GetFaceInfo = function(face, reader)
+AscFonts.CopyStreamToMemory = function(data, size)
+{
+	var fontStreamPointer = Module["_ASC_FT_Malloc"](size);
+	Module["HEAP8"].set(data, fontStreamPointer);
+	return fontStreamPointer;
+};
+
+AscFonts.FT_CreateLibrary = Module["_ASC_FT_Init"];
+AscFonts.FT_Done_Library = Module["_ASC_FT_Done_FreeType"];
+AscFonts.FT_Set_TrueType_HintProp = Module["_ASC_FT_Set_TrueType_HintProp"];
+
+AscFonts.FT_Open_Face = Module["_ASC_FT_Open_Face"];
+AscFonts.FT_Done_Face = Module["_ASC_FT_Done_Face"];
+AscFonts.FT_SetCMapForCharCode = Module["_ASC_FT_SetCMapForCharCode"];
+AscFonts.FT_GetKerningX = Module["_ASC_FT_GetKerningX"];
+AscFonts.FT_GetFaceMaxAdvanceX = Module["_ASC_FT_GetFaceMaxAdvanceX"];
+AscFonts.FT_Set_Transform = Module["_ASC_FT_Set_Transform"];
+AscFonts.FT_Set_Char_Size = Module["_ASC_FT_Set_Char_Size"];
+AscFonts.FT_GetFaceInfo = function(face, reader)
 {
 	let pointer = Module["_ASC_FT_GetFaceInfo"](face);
 	if (!pointer)
@@ -90,12 +94,9 @@ Module.GetFaceInfo = function(face, reader)
 	return g_return_obj;
 };
 
-Module.FT_Open_Face = function(library, memory, len, face_index)
-{
-	return Module["_ASC_FT_Open_Face"](library, memory, len, face_index);
-};
-
-Module.FT_Get_Glyph_Measure_Params = function(face, vector_worker, reader)
+AscFonts.FT_Load_Glyph = Module["_ASC_FT_Load_Glyph"];
+AscFonts.FT_SetCMapForCharCode = Module["_ASC_FT_SetCMapForCharCode"];
+AscFonts.FT_Get_Glyph_Measure_Params = function(face, vector_worker, reader)
 {
 	let pointer = Module["_ASC_FT_Get_Glyph_Measure_Params"](face, vector_worker ? 1 : 0);
 	if (!pointer)
@@ -114,8 +115,7 @@ Module.FT_Get_Glyph_Measure_Params = function(face, vector_worker, reader)
 	g_return_obj_count.error = 0;
 	return g_return_obj_count;
 };
-
-Module.FT_Get_Glyph_Render_Params = function(face, render_mode, reader)
+AscFonts.FT_Get_Glyph_Render_Params = function(face, render_mode, reader)
 {
 	let pointer = Module["_ASC_FT_Get_Glyph_Render_Params"](face, render_mode);
 	if (!pointer)
@@ -130,25 +130,26 @@ Module.FT_Get_Glyph_Render_Params = function(face, render_mode, reader)
 	g_return_obj.error = 0;
 	return g_return_obj;
 };
-
-Module.FT_Get_Glyph_Render_Buffer = function(face, rasterInfo)
+AscFonts.FT_Get_Glyph_Render_Buffer = function(face, size)
 {
 	var pointer = Module["_ASC_FT_Get_Glyph_Render_Buffer"](face);
-	return new Uint8Array(Module["HEAP8"].buffer, pointer, rasterInfo.pitch * rasterInfo.rows);
+	return new Uint8Array(Module["HEAP8"].buffer, pointer, size);
 };
 
-Module.HP_ShapeText = function(fontFile, text, features, script, direction, language, reader)
+let hb_cache_languages = {};
+AscFonts.HB_FontFree = Module["ASC_HB_FontFree"];
+AscFonts.HB_ShapeText = function(fontFile, text, features, script, direction, language, reader)
 {
-	if (!Module.hb_cache_languages[language])
+	if (!hb_cache_languages[language])
 	{
 		let langBuffer = language.toUtf8();
 		var langPointer = Module["_malloc"](langBuffer.length);
 		Module["HEAP8"].set(langBuffer, langBuffer);
-
-		Module.hb_cache_languages[language] = langPointer;
+		hb_cache_languages[language] = Module["_ASC_HB_LanguageFromString"](langPointer);
+		Module["_free"](langPointer);
 	}
 
-	let pointer = Module["_ASC_HP_ShapeText"](fontFile.m_pFace, fontFile.m_pHBFont, text, features, script, direction, AscFonts.hb_cache_languages[language]);
+	let pointer = Module["_ASC_HP_ShapeText"](fontFile["GetFace"](), fontFile["GetHBFont"](), text, features, script, direction, hb_cache_languages[language]);
 	if (!pointer)
 	{
 		g_return_obj_count.error = 1;
@@ -159,7 +160,7 @@ Module.HP_ShapeText = function(fontFile, text, features, script, direction, lang
 	let len = (buffer[pointer + 3] & 0xFF) << 24 | (buffer[pointer + 2] & 0xFF) << 16 | (buffer[pointer + 1] & 0xFF) << 8 | (buffer[pointer] & 0xFF);
 
 	reader.init(buffer, pointer + 4, len - 4);
-	fontFile.m_pHBFont = reader.readPointer64();
+	fontFile["SetHBFont"](reader.readPointer64());
 
 	g_return_obj_count.freeObj = pointer;
 	g_return_obj_count.count = (len - 12) / 26;
@@ -167,5 +168,6 @@ Module.HP_ShapeText = function(fontFile, text, features, script, direction, lang
 	return g_return_obj_count;
 };
 
-// this memory is not freed
-Module.hb_cache_languages = {};
+AscFonts.onLoadModule();
+
+})(window, undefined);

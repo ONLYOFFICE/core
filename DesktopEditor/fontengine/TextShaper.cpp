@@ -189,7 +189,7 @@ namespace NSShaper
     }
     void FT_Library_Destroy(void* library)
     {
-        FT_Library_Destroy(library);
+        ::FT_Done_FreeType((FT_Library)library);
     }
 
     int FT_Set_TrueType_HintProp(void* library, unsigned int interpreter_version)

@@ -6,7 +6,7 @@
 	"run_before": "before.py",
 	"run_after": "after.py",
 	"embed_mem_file": true,
-	"base_js_content": "./fonts_base.js",
+	"base_js_content": "./engine/module_js.js",
 
 	"compiler_flags": [
 		"-O3",
@@ -20,29 +20,31 @@
 	"exported_functions": [
 		"_malloc",
 		"_free",
+
 		"_ASC_FT_Malloc",
 		"_ASC_FT_Free",
 		"_ASC_FT_Init",
+		"_ASC_FT_Done_FreeType",
+		"_ASC_FT_Set_TrueType_HintProp",		
+
 		"_ASC_FT_Open_Face",
+		"_ASC_FT_Done_Face",
 		"_ASC_FT_SetCMapForCharCode",
-		"_FT_Done_FreeType",
-		"_FT_Done_Face",
-		"_FT_Load_Glyph",
-		"_FT_Get_Glyph",
-		"_FT_Set_Transform",
-		"_FT_Set_Char_Size",
 		"_ASC_FT_GetFaceInfo",
 		"_ASC_FT_GetFaceMaxAdvanceX",
 		"_ASC_FT_GetKerningX",
+		"_ASC_FT_Set_Transform",
+		"_ASC_FT_Set_Char_Size",
+
+		"_ASC_FT_Load_Glyph",
 		"_ASC_FT_Glyph_Get_CBox",
 		"_ASC_FT_Get_Glyph_Measure_Params",
 		"_ASC_FT_Get_Glyph_Render_Params",
 		"_ASC_FT_Get_Glyph_Render_Buffer",
-		"_ASC_FT_Set_Transform",
-		"_ASC_FT_Set_TrueType_HintProp",
+		
 		"_ASC_HB_LanguageFromString",
-		"_ASC_HP_ShapeText",
-		"_ASC_HP_FontFree"
+		"_ASC_HB_ShapeText",
+		"_ASC_HB_FontFree"
 	],
 	"include_path": [
 		"./../../graphics/pro/js/freetype-2.10.4/include", 

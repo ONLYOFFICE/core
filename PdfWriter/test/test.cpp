@@ -79,7 +79,7 @@ int main()
     pReader->DrawPageOnRenderer(&pdfWriter, 0, NULL);
     TEST2(&pdfWriter);
     pdfWriter.EndCommand(c_nPageType);
-    pdfWriter.Sign(0, 0, dHeight, 0, dHeight, NULL, 0);
+    pdfWriter.Sign(0, 0, dHeight, 0, 0, L"", "");
     pdfWriter.SaveToFile(sDstFile);
 
     RELEASEOBJECT(pReader);

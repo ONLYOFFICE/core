@@ -444,6 +444,7 @@ namespace PdfWriter
 		}
 
 		void WriteToStream(CStream* pStream, CEncrypt* pEncrypt);
+		void WriteSignatureToStream(CStream* pStream, CEncrypt* pEncrypt);
 		unsigned int GetSize() { return m_mList.size(); }
 		void FromXml(const std::wstring& sXml);
 

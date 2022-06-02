@@ -35,6 +35,7 @@
 #include "Encrypt.h"
 #include "Streams.h"
 #include "Document.h"
+#include "EncryptDictionary.h"
 
 // Если установлен бит OTYPE_DIRECT, значит данный объект принадлежит другому
 // объекту. Если установлен бит OTYPE_INDIRECT, значит объект управляется таблицей xref.
@@ -641,6 +642,34 @@ namespace PdfWriter
 			}
 		}
 	}
+    void CDictObject::WriteSignatureToStream(CStream* pStream, CEncrypt* pEncrypt)
+	{
+		for (auto const &oIter : m_mList)
+		{
+			CObjectBase* pObject = oIter.second;
+			if (!pObject)
+				continue;
+
+			if (pObject->IsHidden())
+			{
+				// ничего не делаем
+			}
+			else
+			{
+				int nBegin, nEnd;
+				pStream->WriteEscapeName(oIter.first.c_str());
+				pStream->WriteChar(' ');
+				nBegin = pStream->Tell();
+				pStream->Write(pObject, pEncrypt);
+				nEnd = pStream->Tell();
+				pStream->WriteStr("\012");
+				if (oIter.first == "Contents")
+					((CSignatureDict*)this)->SetByteRange(nBegin, nEnd);
+				if (oIter.first == "ByteRange")
+					((CSignatureDict*)this)->ByteRangeOffset(nBegin, nEnd);
+			}
+		}
+	}
     void CDictObject::SetStream(CXref* pXref, CStream* pStream)
 	{
 		if (m_pStream)
@@ -833,6 +862,10 @@ namespace PdfWriter
 		pStream->WriteStr("\012startxref\012");
 		pStream->WriteUInt(m_unAddr);
 		pStream->WriteStr("\012%%EOF\012");
+
+		CSignatureDict* pSignature = m_pDocument->GetSignatureDict();
+		if (pSignature)
+			pSignature->WriteToStream(pStream, pStream->Tell());
 	}
     void CXref::WriteToStream(CStream* pStream, CEncrypt* pEncrypt, bool bStream)
 	{

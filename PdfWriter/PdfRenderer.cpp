@@ -2116,9 +2116,11 @@ void CPdfRenderer::PageRotate(int nRotate)
 	if (m_pPage)
 		m_pPage->SetRotate(nRotate);
 }
-void CPdfRenderer::Sign(int nPageIndex, const double& dX, const double& dY, const double& dW, const double& dH, BYTE* pCert, unsigned int nCertLength)
+void CPdfRenderer::Sign(int nPageIndex, const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& sCertFile, const std::string& sCertPassword)
 {
-    m_pDocument->Sign(nPageIndex, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)), pCert, nCertLength);
+    m_pDocument->Sign(nPageIndex,
+                      TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)),
+                      sCertFile, sCertPassword);
 }
 
 NSFonts::IApplicationFonts* CPdfRenderer::GetApplicationFonts()

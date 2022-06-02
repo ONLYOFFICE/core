@@ -34,14 +34,13 @@
 
 #include "Objects.h"
 
-#include "../../DesktopEditor/xmlsec/src/include/XmlCertificate.h"
-#include "../../DesktopEditor/xmlsec/src/src/XmlSigner_openssl.h"
 #include "../../DesktopEditor/xmlsec/src/include/PDFSigner.h"
 
 namespace PdfWriter
 {
 	class CEncrypt;
 	class CInfoDict;
+	class CStream;
 
 	class CEncryptDict : public CDictObject
 	{
@@ -76,9 +75,19 @@ namespace PdfWriter
 		{
 			return dict_type_SIGNATURE;
 		}
-    private:
-        CCertificate_openssl* m_pCert;
-        CPDFSigner* m_oSigner;
+
+		void SetByteRange(int nLen1, int nOffset2);
+		void ByteRangeOffset(int nBegin, int nEnd);
+		void WriteToStream(CStream* pStream, int nFileEnd);
+		void SetCert(const std::wstring& sCertFile, const std::string& sCertPassword);
+	private:
+		CPDFSigner* m_oSigner;
+
+		int m_nLen1;    // Длина  первого интервала сигнатуры
+		int m_nOffset2; // Начало второго интервала сигнатуры
+
+		int m_nByteRangeBegin; // Смещение начала массива ByteRange
+		int m_nByteRangeEnd;   // Смещение конца  массива ByteRange
 	};
 }
 #endif // _PDF_WRITER_SRC_ENCRYPT_DICTIONARY_H

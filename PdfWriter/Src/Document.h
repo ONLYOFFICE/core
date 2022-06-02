@@ -64,6 +64,7 @@ namespace PdfWriter
 	class CInfoDict;
 	class CDictObject;
 	class CEncryptDict;
+	class CSignatureDict;
 	class CStream;
 	class CDestination;
 	class CExtGrState;
@@ -157,7 +158,8 @@ namespace PdfWriter
 		CPage*            AddPage(int nPageIndex);
 		bool              DeletePage(int nPageIndex);
 		bool              AddToFile(const std::wstring& wsPath, const std::wstring& sTrailer, const std::wstring& sInfo);
-		void              Sign(const unsigned int& unPageNum, const TRect& oRect, BYTE* pCert, unsigned int nCertLength);
+		void              Sign(const unsigned int& unPageNum, const TRect& oRect, const std::wstring& sCertFile, const std::string& sCertPassword);
+		CSignatureDict*   GetSignatureDict() { return m_pSignatureDict; }
 	private:		  
 					  
 		char*             GetTTFontTag();
@@ -201,6 +203,7 @@ namespace PdfWriter
 		CDictObject*                       m_pResources;
 		bool                               m_bEncrypt;
 		CEncryptDict*                      m_pEncryptDict;
+		CSignatureDict*                    m_pSignatureDict;
 		unsigned int                       m_unCompressMode;
 		std::vector<CExtGrState*>          m_vExtGrStates;
 		std::vector<CExtGrState*>          m_vStrokeAlpha;

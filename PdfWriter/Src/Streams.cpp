@@ -648,7 +648,10 @@ namespace PdfWriter
 			}
 		}
 
-		pDict->WriteToStream(this, pEncrypt);
+		if (dict_type_SIGNATURE == pDict->GetDictType())
+			pDict->WriteSignatureToStream(this, pEncrypt);
+		else
+			pDict->WriteToStream(this, pEncrypt);
 
 		pDict->Write(this);
 		WriteStr(">>");

@@ -84,6 +84,7 @@ namespace PdfWriter
 		m_pResources        = NULL;
 		m_bEncrypt          = false;
 		m_pEncryptDict      = NULL;
+		m_pSignatureDict    = NULL;
 		m_unCompressMode    = COMP_NONE;
 		m_pJbig2            = NULL;
 		memset((void*)m_sTTFontTag, 0x00, 8);
@@ -185,6 +186,7 @@ namespace PdfWriter
 		m_nCurPageNum       = 0;
 		m_bEncrypt          = false;
 		m_pEncryptDict      = NULL;
+		m_pSignatureDict    = NULL;
 		m_pInfo             = NULL;
 		m_unCompressMode    = COMP_NONE;
 		m_pJbig2            = NULL;
@@ -942,6 +944,7 @@ namespace PdfWriter
 		CSignatureField* pField = new CSignatureField(m_pXref, this);
 		if (!pField)
 			return NULL;
+		m_pSignatureDict = pField->GetSignatureDict();
 
 		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
 		ppFields->Add(pField);
@@ -1279,35 +1282,37 @@ namespace PdfWriter
 		m_pXref = NULL;
 		return true;
 	}
-    void CDocument::Sign(const unsigned int& unPageNum, const TRect& oRect, BYTE* pCert, unsigned int nCertLength)
-    {
-        CSignatureField* pField = CreateSignatureField();
+	void CDocument::Sign(const unsigned int& unPageNum, const TRect& oRect, const std::wstring& sCertFile, const std::string& sCertPassword)
+	{
+		CSignatureField* pField = CreateSignatureField();
+		if (m_pSignatureDict)
+			m_pSignatureDict->SetCert(sCertFile, sCertPassword);
 
-        // TODO DR - Словарь ресурсов, содержащий ресурсы по умолчанию (такие как шрифты, шаблоны или цветовые пространства),
-        // которые должны использоваться потоками внешнего вида полей формы - смотри AP ниже
-        // CResourcesDict* pFieldsResources = GetFieldsResources();
+		// TODO DR - Словарь ресурсов, содержащий ресурсы по умолчанию (такие как шрифты, шаблоны или цветовые пространства),
+		// которые должны использоваться потоками внешнего вида полей формы - смотри AP ниже
+		// CResourcesDict* pFieldsResources = GetFieldsResources();
 
-        // TODO DA - Значение по умолчанию для всего документа для атрибута DA переменных текстовых полей
-        // std::string sDA;
-        // m_pAcroForm->Add("DA", new CStringObject(sDA.c_str()));
+		// TODO DA - Значение по умолчанию для всего документа для атрибута DA переменных текстовых полей
+		// std::string sDA;
+		// m_pAcroForm->Add("DA", new CStringObject(sDA.c_str()));
 
-        // 3 ~ 11, где
-        // первый бит - Если установлено, документ содержит как минимум одно поле для подписи,
-        // второй бит - Если установлено, документ содержит подписи, которые могут быть признаны недействительными,
-        // если файл сохраняется таким образом, что изменяется его предыдущее содержимое, в отличие от инкрементного обновления
-        m_pAcroForm->Add("SigFlags", 3);
+		// 3 ~ 11, где
+		// первый бит - Если установлено, документ содержит как минимум одно поле для подписи,
+		// второй бит - Если установлено, документ содержит подписи, которые могут быть признаны недействительными,
+		// если файл сохраняется таким образом, что изменяется его предыдущее содержимое, в отличие от инкрементного обновления
+		m_pAcroForm->Add("SigFlags", 3);
 
-        CPage* pPage = m_pPageTree->GetPage(unPageNum);
-        if (!pPage)
-            return;
-        pField->AddPageRect(pPage, oRect);
-        // 3 - Печать, печатать аннотацию при печати страницы
-        // 8 - Заблокировано, пользователь не может удалить аннотацию или изменить ее свойства
-        pField->Add("F", 132);
+		CPage* pPage = m_pPageTree->GetPage(unPageNum);
+		if (!pPage)
+		    return;
+		pField->AddPageRect(pPage, oRect);
+		// 3 - Печать, печатать аннотацию при печати страницы
+		// 8 - Заблокировано, пользователь не может удалить аннотацию или изменить ее свойства
+		pField->Add("F", 132);
 
-        // TODO Частичное имя поля 12.7.3.2
-        pField->SetFieldName("Sig1");
+		// TODO Частичное имя поля 12.7.3.2
+		pField->SetFieldName("Sig1");
 
-        // TODO AP - Словарь внешнего вида, указывающий, как аннотация должна быть визуально представлена на странице 12.5.5
-    }
+		// TODO AP - Словарь внешнего вида, указывающий, как аннотация должна быть визуально представлена на странице 12.5.5
+	}
 }

@@ -32,6 +32,7 @@
 #include "EncryptDictionary.h"
 #include "Encrypt.h"
 #include "Info.h"
+#include "Streams.h"
 
 #include <ctime>
 
@@ -301,9 +302,97 @@ namespace PdfWriter
         // Prop_Build - Словарь, который может использоваться обработчиком подписи для записи информации о состоянии компьютерной среды,
         // используемой для подписи, такой как имя обработчика, используемого для создания подписи, дата сборки программного обеспечения,
         // версия, и операционная система. Спецификация словаря PDF Signature Build содержит рекомендации по использованию этого словаря
+
+        m_nLen1 = 0;
+        m_nOffset2 = 0;
+        m_nByteRangeBegin = 0;
+        m_nByteRangeEnd = 0;
+        m_oSigner = NULL;
     }
     CSignatureDict::~CSignatureDict()
     {
+        RELEASEOBJECT(m_oSigner);
+    }
+    void CSignatureDict::SetByteRange(int nLen1, int nOffset2)
+    {
+        m_nLen1 = nLen1;
+        m_nOffset2 = nOffset2;
+    }
+    void CSignatureDict::ByteRangeOffset(int nBegin, int nEnd)
+    {
+        m_nByteRangeBegin = nBegin;
+        m_nByteRangeEnd   = nEnd;
+    }
+    void CSignatureDict::WriteToStream(CStream* pStream, int nFileEnd)
+    {
+        // Запись ByteRange
+        if (m_nByteRangeBegin > 0 && m_nByteRangeEnd > 0 && m_nByteRangeBegin < m_nByteRangeEnd && m_nByteRangeEnd < nFileEnd)
+        {
+            CArrayObject* pByteRange = new CArrayObject();
+            if (!pByteRange)
+                return;
+            if (m_nLen1 > 0 && m_nOffset2 > 0 && m_nLen1 < m_nOffset2 && m_nOffset2 < nFileEnd)
+            {
+                pByteRange->Add(0);
+                pByteRange->Add(m_nLen1);
+                pByteRange->Add(m_nOffset2);
+                pByteRange->Add(nFileEnd - m_nOffset2);
 
+                pStream->Seek(m_nByteRangeBegin, EWhenceMode::SeekSet);
+                pStream->Write(pByteRange, NULL);
+
+                if (pStream->Tell() < m_nByteRangeEnd)
+                {
+                    unsigned int nLength = m_nByteRangeEnd - pStream->Tell();
+                    BYTE* pDifference = new BYTE[nLength];
+                    MemSet(pDifference, ' ', nLength);
+
+                    pStream->Write(pDifference, nLength);
+
+                    RELEASEARRAYOBJECTS(pDifference);
+                }
+            }
+            RELEASEOBJECT(pByteRange);
+        }
+        /*
+        // Запись Contents
+        if (m_oSigner && m_nLen1 > 0 && m_nOffset2 > 0 && m_nLen1 < m_nOffset2 && m_nOffset2 < nFileEnd)
+        {
+            DWORD dwLenDataForSignature = m_nLen1 + nFileEnd - m_nOffset2;
+            BYTE* pDataForSignature = new BYTE[dwLenDataForSignature];
+
+            // TODO Read не читает данные..
+            pStream->Seek(0, EWhenceMode::SeekSet);
+            unsigned int dwLenReadData = m_nLen1;
+            pStream->Read(pDataForSignature, &dwLenReadData);
+            if ((int)dwLenReadData != m_nLen1)
+                return;
+            dwLenReadData = nFileEnd - m_nOffset2;
+            pStream->Read(pDataForSignature + m_nLen1, &dwLenReadData);
+            if ((int)dwLenReadData != nFileEnd - m_nOffset2)
+                return;
+
+            BYTE* pDatatoWrite;
+            DWORD dwLenDatatoWrite;
+            m_oSigner->Sign(pDataForSignature, dwLenDataForSignature, pDatatoWrite, dwLenDatatoWrite);
+            RELEASEARRAYOBJECTS(pDataForSignature);
+            if (!pDatatoWrite)
+                return;
+
+            pStream->Seek(m_nLen1, EWhenceMode::SeekSet);
+            CBinaryObject* pContents = new CBinaryObject(pDatatoWrite, dwLenDatatoWrite);
+            RELEASEARRAYOBJECTS(pDatatoWrite);
+            if (!pContents)
+                return;
+            // TODO: Нужно ли шифровать запись Contents у подписи?
+            pStream->Write(pContents, NULL);
+            RELEASEOBJECT(pContents);
+        }
+        */
+    }
+    void CSignatureDict::SetCert(const std::wstring& sCertFile, const std::string& sCertPassword)
+    {
+        RELEASEOBJECT(m_oSigner);
+        m_oSigner = new CPDFSigner(sCertFile, sCertPassword);
     }
 }

@@ -249,6 +249,7 @@ namespace PdfWriter
 		CSignatureField(CXref* pXref, CDocument* pDocument);
 		virtual void SetFieldName(const std::string& sName, bool isSkipCheck = false);
 		virtual void SetFieldName(const std::wstring& wsName, bool isSkipCheck = false);
+		CSignatureDict* GetSignatureDict () { return m_pSig; }
 
 	private:
 		CSignatureDict* m_pSig; // Словарь сигнатур

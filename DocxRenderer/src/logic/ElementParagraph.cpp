@@ -266,6 +266,8 @@ namespace NSDocxRenderer
         m_dY			= 0;
         m_dWidth		= 0;
         m_dHeight		= 0;
+
+        m_eAlignmentType = Unknown;
     }
     void CTextLine::Clear()
     {
@@ -307,6 +309,8 @@ namespace NSDocxRenderer
         m_dY			= oSrc.m_dY;
         m_dWidth		= oSrc.m_dWidth;
         m_dHeight		= oSrc.m_dHeight;
+
+        m_eAlignmentType = oSrc.m_eAlignmentType;
 
         return *this;
     }
@@ -387,12 +391,9 @@ namespace NSDocxRenderer
             double dDelta = dFirstRight - dCurrLeft;
 
             if (pFirst->m_strPickFontName != pCurrent->m_strPickFontName ||
-                pFirst->m_oFont.Bold != pCurrent->m_oFont.Bold ||
-                pFirst->m_oFont.Italic != pCurrent->m_oFont.Italic ||
+                !pFirst->m_oFont.IsEqual(&pCurrent->m_oFont) ||
                 fabs(dDelta) > c_dTHE_STRING_X_PRECISION_MM)
             {
-                // вообще надо бы все объединить. но пока этот метод на соединение "первых"
-                //break;
                 if (i < nCountConts - 1)
                 {
                     //переходим на
@@ -403,7 +404,6 @@ namespace NSDocxRenderer
 
             // продолжаем слово
             pFirst->m_oText += pCurrent->m_oText;
-            //pFirst->m_dWidth = (dLeft + pCurrent->m_dWidth - pFirst->m_dX);
             pFirst->m_dWidth += pCurrent->m_dWidth + fabs(dDelta);
 
             pFirst->m_dWidthWithoutSpaces < 0.0001 ?
@@ -419,9 +419,7 @@ namespace NSDocxRenderer
 
     void CTextLine::CalculateWidth()
     {
-        m_dWidth = 1; //todo исправить этот хак - по идее должно == 0.
-
-        m_dWidth += m_arConts[0]->m_dWidthWithoutSpaces;
+        m_dWidth = m_arConts[0]->m_dWidthWithoutSpaces;
 
         for (size_t i = 1; i < m_arConts.size(); ++i)
         {
@@ -432,13 +430,90 @@ namespace NSDocxRenderer
 
     void CTextLine::AddSpaceToEnd()
     {
+        if (m_arConts.empty())
+        {
+            return;
+        }
+
         CContText* pCurrent = m_arConts.back();
 
         if (pCurrent->m_oText[pCurrent->m_oText.length()-1] != uint32_t(' '))
         {
             pCurrent->AddSpaceToEnd();
-            this->m_dWidth += pCurrent->m_dSpaceWidthMM;
+            m_dWidth += pCurrent->m_dSpaceWidthMM;
         }
+    }
+
+    void CTextLine::DetermineAssumedTextAlignmentType(double dWidthOfPage)
+    {
+        //рассматриваем строки, которые короче трети ширины страницы
+        double maxTextLineWidth = dWidthOfPage/3; //нужна какая-нибудь отправная точка...
+        double delta = 2 * c_dCENTER_POSITION_ERROR_MM; //координата m_dWidth/2 +- c_dCENTER_POSITION_ERROR_MM
+
+        if (fabs(dWidthOfPage/2 - m_dX - m_dWidth/2) <= delta && //если середины линий по x одинаковы
+                 m_dWidth < maxTextLineWidth )
+        {
+            m_eAlignmentType = ByCenter;
+        }
+        else if ((m_dX + m_dWidth/2) > (dWidthOfPage/2 + c_dCENTER_POSITION_ERROR_MM) && //середина строки правее центра страницы
+                 m_dWidth < maxTextLineWidth)
+        {
+            m_eAlignmentType = ByRightEdge;
+        }
+        else if ((m_dX + m_dWidth/2) < (dWidthOfPage/2 - c_dCENTER_POSITION_ERROR_MM) && //середина строки левее центра страницы
+                 m_dWidth < maxTextLineWidth)
+        {
+            m_eAlignmentType = ByLeftEdge;
+        }
+        else if (fabs(dWidthOfPage/2 - m_dX - m_dWidth/2) <= delta &&
+                 m_dWidth > maxTextLineWidth + maxTextLineWidth/2 )
+        {
+            m_eAlignmentType = ByWidth;
+        }
+        else
+        {
+            m_eAlignmentType = Unknown;
+        }
+    }
+
+    bool CTextLine::AreAlignmentsAppropriate(const CTextLine* oSrc)
+    {
+        if ((m_eAlignmentType == oSrc->m_eAlignmentType && m_eAlignmentType!= ByLeftEdge) ||
+            (m_eAlignmentType == ByWidth && oSrc->m_eAlignmentType == ByLeftEdge) ||
+            (m_eAlignmentType == ByWidth && oSrc->m_eAlignmentType == Unknown) ||
+            (m_eAlignmentType == Unknown && oSrc->m_eAlignmentType == ByWidth))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    bool CTextLine::AreLinesCrossing(const CTextLine* oSrc)
+    {
+        double dCurrentTop = m_dBaselinePos - m_dHeight - m_dBaselineOffset;
+        double dNextTop = oSrc->m_dBaselinePos - oSrc->m_dHeight - oSrc->m_dBaselineOffset;
+
+        if ((oSrc->m_dBaselinePos < m_dBaselinePos && dCurrentTop < oSrc->m_dBaselinePos) ||
+            (oSrc->m_dBaselinePos > m_dBaselinePos && dNextTop < m_dBaselinePos))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    double CTextLine::CalculateBeforeSpacing(const double* pPreviousStringOffset)
+    {
+        return m_dBaselinePos - *pPreviousStringOffset - m_dHeight - m_dBaselineOffset;
+    }
+
+    double CTextLine::CalculateStringOffset()
+    {
+        return m_dBaselinePos - m_dBaselineOffset;
+    }
+
+    double CTextLine::CalculateRightBorder(const double* pPageWidth)
+    {
+        return *pPageWidth - (m_dX + m_dWidth + m_arConts.back()->m_dSpaceWidthMM); //добавляем ширину пробела;
     }
 
     bool CTextLine::IsForceBlock()
@@ -660,7 +735,7 @@ namespace NSDocxRenderer
                 oWriter.WriteString(L"\"");
             }
             if (m_eTextAssociationType == TextAssociationTypePlainParagraph && m_dRight > 0)
-            {
+            { 
                 oWriter.WriteString(L" w:right=\"");
                 oWriter.AddInt((int)(m_dRight * c_dMMToDx));
                 oWriter.WriteString(L"\"");
@@ -690,6 +765,7 @@ namespace NSDocxRenderer
                 case TextAlignmentType_ByLeftEdge:
                     oWriter.WriteString(L"<w:jc w:val=\"begin\"/>");
                     break;
+                case TextAlignmentType_Unknown:
                 default: //по умолчанию выравнивание по левому краю - можно ничего не добавлять
                     break;
                 }

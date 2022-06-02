@@ -7,10 +7,12 @@
 namespace NSDocxRenderer
 {
     const double c_dMMToDx	 = 72 * 20 / 25.4;
-    const double c_dSTANDART_STRING_HEIGHT_MM		= 4.2333333333333334;
+    const double c_dSTANDART_STRING_HEIGHT_MM	   = 4.2333333333333334;
     const double c_dTHE_SAME_STRING_Y_PRECISION_MM = 0.01;
-    const double c_dLINE_DISTANCE_ERROR_MM      = 1.5;
-    const double c_dTHE_STRING_X_PRECISION_MM      = 1.5;
+    const double c_dLINE_DISTANCE_ERROR_MM         = 0.5;
+    const double c_dERROR_OF_RIGHT_BORDERS_MM      = 1.5;
+    const double c_dCENTER_POSITION_ERROR_MM       = 1.5;
+    const double c_dTHE_STRING_X_PRECISION_MM      = 0.5;
 
     // у класса T должен быть метод IsBigger, IsBiggerOrEqual
     template<typename T>
@@ -152,6 +154,15 @@ namespace NSDocxRenderer
     class CTextLine
     {
     public:
+        enum AssumedTextAlignmentType
+        {
+            Unknown,
+            ByLeftEdge,
+            ByCenter,
+            ByRightEdge,
+            ByWidth
+        };
+
         std::vector<CContText*> m_arConts;
 
         double m_dBaselinePos;
@@ -161,6 +172,8 @@ namespace NSDocxRenderer
         double m_dY;
         double m_dWidth;
         double m_dHeight;
+
+        AssumedTextAlignmentType m_eAlignmentType;
 
     public:
         CTextLine();
@@ -178,12 +191,25 @@ namespace NSDocxRenderer
 
         //Объединяем слова из двух строк
         void Merge(CTextLine* pTextLine);
-        //Объединяем подходящие слова в одну строку, если возможно
+        //Объединяем подходящие слова в текущей строке, если возможно
         void Analyze();
         bool IsForceBlock();
         void ToXml(NSStringUtils::CStringBuilder& oWriter, CFontManagerLight* pManagerLight);
+        //Вычисляем ширину сложной строки
         void CalculateWidth();
+        //Добавляем символ пробела в конец строки для связывания строк в параграфе
         void AddSpaceToEnd();
+        //Пытаемся понять тип выравнивания для текущей строки
+        void DetermineAssumedTextAlignmentType(double dWidthOfPage);
+        //Определяем на основании выравнивания подходят ли текущая и следующая строки для добавления в параграф
+        bool AreAlignmentsAppropriate(const CTextLine* oSrc);
+        //Определяем пересекаются ли линии
+        bool AreLinesCrossing(const CTextLine* oSrc);
+
+        //Вычисляем
+        double CalculateBeforeSpacing(const double* pPreviousStringOffset);
+        double CalculateStringOffset();
+        double CalculateRightBorder(const double* pPageWidth);
     };
 
     class CParagraph : public CBaseItem

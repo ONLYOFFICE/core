@@ -36,10 +36,9 @@
 #undef BOOL
 #endif
 
+#include "embed/Default.h"
 #include "embed/NativeControlEmbed.h"
 #include "embed/MemoryStreamEmbed.h"
-#include "embed/GraphicsEmbed.h"
-#include "embed/ZipEmbed.h"
 
 #include "./config.h"
 #include <iostream>
@@ -570,8 +569,7 @@ namespace NSDoctRenderer
                 context->CreateGlobalForContext();
                 CNativeControlEmbed::CreateObjectBuilderInContext("CreateNativeEngine", context);
                 CMemoryStreamEmbed::CreateObjectInContext  ("CreateNativeMemoryStream", context);
-                CGraphicsEmbed::CreateObjectInContext          ("CreateNativeGraphics", context);
-                CZipEmbed::CreateObjectInContext                    ("CreateNativeZip", context);
+                NSJSBase::CreateDefaults(context);
                 context->CreateContext();
 
                 JSSmart<CJSContextScope> context_scope = context->CreateContextScope();

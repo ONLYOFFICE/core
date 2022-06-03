@@ -104,9 +104,9 @@ namespace OLEPS
 	{
 		if (property_sets.empty()) return L"";
 
-		std::wstringstream output;
 		PropertyPtr prop;
 
+		std::wstringstream output;
 		CP_XML_WRITER(output)
 		{
 			CP_XML_NODE(L"Properties")
@@ -122,29 +122,18 @@ namespace OLEPS
 						CP_XML_STREAM() << prop->toString();
 					}
 				}
-				CP_XML_NODE(L"Application")
+				prop = GetProperty(MANAGER);
+				if (prop)
 				{
-					prop = GetProperty(APPNAME);
-					if (prop)
+					CP_XML_NODE(L"Manager")
 					{
 						CP_XML_STREAM() << prop->toString();
 					}
-					else
-					{
-						std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
-						if (sApplication.empty())
-							sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
-						CP_XML_STREAM() << sApplication;
-#if defined(INTVER)
-						std::string s = VALUE2STR(INTVER);
-						CP_XML_STREAM() << L"/" << std::wstring(s.begin(), s.end());
-#endif				
-					}
 				}
-				prop = GetProperty(DOC_SECURITY);
+				prop = GetProperty(COMPANY);
 				if (prop)
 				{
-					CP_XML_NODE(L"DocSecurity")
+					CP_XML_NODE(L"Company")
 					{
 						CP_XML_STREAM() << prop->toString();
 					}
@@ -177,6 +166,163 @@ namespace OLEPS
 				if (prop)
 				{
 					CP_XML_NODE(L"Characters")
+					{
+						CP_XML_STREAM() << prop->toString();
+					}
+				}
+				prop = GetProperty(PRESFORMAT);
+				if (prop)
+				{
+					CP_XML_NODE(L"PresentationFormat")
+					{
+						CP_XML_STREAM() << prop->toString();
+					}
+				}
+				prop = GetProperty(LINECOUNT);
+				if (prop)
+				{
+					CP_XML_NODE(L"Lines")
+					{
+						CP_XML_STREAM() << prop->toString();
+					}
+				}
+				prop = GetProperty(PARACOUNT);
+				if (prop)
+				{
+					CP_XML_NODE(L"Paragraphs")
+					{
+						CP_XML_STREAM() << prop->toString();
+					}
+				}
+				prop = GetProperty(SLIDECOUNT);
+				if (prop)
+				{
+					CP_XML_NODE(L"Slides")
+					{
+						CP_XML_STREAM() << prop->toString();
+					}
+				}
+				prop = GetProperty(NOTECOUNT);
+				if (prop)
+				{
+					CP_XML_NODE(L"Notes")
+					{
+						CP_XML_STREAM() << prop->toString();
+					}
+				}
+				prop = GetProperty(HIDDENCOUNT);
+				if (prop)
+				{
+					CP_XML_NODE(L"HiddenSlides")
+					{
+						CP_XML_STREAM() << prop->toString();
+					}
+				}
+				prop = GetProperty(MMCLIPCOUNT);
+				if (prop)
+				{
+					CP_XML_NODE(L"MMClips")
+					{
+						CP_XML_STREAM() << prop->toString();
+					}
+				}
+				prop = GetProperty(SCALE);
+				if (prop)
+				{
+					CP_XML_NODE(L"ScaleCrop")
+					{
+						CP_XML_STREAM() << prop->toString();
+					}
+				}
+				prop = GetProperty(HEADINGPAIR);
+				if (prop)
+				{
+					CP_XML_NODE(L"HeadingPairs")
+					{
+						CP_XML_STREAM() << prop->toString();
+					}
+				}
+				prop = GetProperty(DOCPARTS);
+				if (prop)
+				{
+					CP_XML_NODE(L"TitlesOfParts")
+					{
+						CP_XML_STREAM() << prop->toString();
+					}
+				}
+				prop = GetProperty(LINKBASE);
+				if (prop)
+				{
+					CP_XML_NODE(L"LinksUpToDate")
+					{
+						CP_XML_STREAM() << prop->toString();
+					}
+				}
+				prop = GetProperty(CCHWITHSPACES);
+				if (prop)
+				{
+					CP_XML_NODE(L"CharactersWithSpaces")
+					{
+						CP_XML_STREAM() << prop->toString();
+					}
+				}
+				prop = GetProperty(SHAREDDOC);
+				if (prop)
+				{
+					CP_XML_NODE(L"SharedDoc")
+					{
+						CP_XML_STREAM() << prop->toString();
+					}
+				}
+				//	LINKBASE = 0x1014,
+				prop = GetProperty(HLINKS);
+				if (prop)
+				{
+					CP_XML_NODE(L"HLinks")
+					{
+						CP_XML_STREAM() << prop->toString();
+					}
+				}
+				prop = GetProperty(HYPERLINKSCHANGED);
+				if (prop)
+				{
+					CP_XML_NODE(L"HyperlinksChanged")
+					{
+						CP_XML_STREAM() << prop->toString();
+					}
+				}
+				//	DIGSIG = 0x1018,
+				CP_XML_NODE(L"Application")
+				{
+					prop = GetProperty(APPNAME);
+					if (prop)
+					{
+						CP_XML_STREAM() << prop->toString();
+					}
+					else
+					{
+						std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
+						if (sApplication.empty())
+							sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
+						CP_XML_STREAM() << sApplication;
+#if defined(INTVER)
+						std::string s = VALUE2STR(INTVER);
+						CP_XML_STREAM() << L"/" << std::wstring(s.begin(), s.end());
+#endif				
+					}
+				}
+				prop = GetProperty(DOCVERSION);
+				if (prop)
+				{
+					CP_XML_NODE(L"AppVersion")
+					{
+						CP_XML_STREAM() << prop->toString();
+					}
+				}
+				prop = GetProperty(DOC_SECURITY);
+				if (prop)
+				{
+					CP_XML_NODE(L"DocSecurity")
 					{
 						CP_XML_STREAM() << prop->toString();
 					}
@@ -242,10 +388,33 @@ namespace OLEPS
 						CP_XML_STREAM() << prop->toString();
 					}
 				}
+				prop = GetProperty(LANGUAGE);
+				if (prop)
+				{
+					CP_XML_NODE(L"dc:language")
+					{
+						CP_XML_STREAM() << prop->toString();
+					}
+				}				prop = GetProperty(VERSION);
+				if (prop)
+				{
+					CP_XML_NODE(L"cp:version")
+					{
+						CP_XML_STREAM() << prop->toString();
+					}
+				}
 				prop = GetProperty(LASTAUTHOR);
 				if (prop)
 				{
 					CP_XML_NODE(L"cp:lastModifiedBy")
+					{
+						CP_XML_STREAM() << prop->toString();
+					}
+				}
+				prop = GetProperty(REVNUMBER);
+				if (prop)
+				{
+					CP_XML_NODE(L"cp:revision")
 					{
 						CP_XML_STREAM() << prop->toString();
 					}
@@ -268,24 +437,25 @@ namespace OLEPS
 						CP_XML_STREAM() << prop->toString();
 					}
 				}
-				//prop = GetProperty(COMMENTS);
-				//if (prop)
-				//{
-				//	CP_XML_NODE(L"dc:language")
-				//	{
-				//		CP_XML_STREAM() << prop->toString();
-				//	}
-				//}
-
-
-				prop = GetProperty(REVNUMBER);
+				prop = GetProperty(CATEGORY);
 				if (prop)
 				{
-					CP_XML_NODE(L"cp:revision")
+					CP_XML_NODE(L"cp:category")
 					{
 						CP_XML_STREAM() << prop->toString();
 					}
 				}
+				prop = GetProperty(CONTENTSTATUS);
+				if (prop)
+				{
+					CP_XML_NODE(L"cp:contentStatus")
+					{
+						CP_XML_STREAM() << prop->toString();
+					}
+				}
+				//	BYTECOUNT = 0x1004,
+				//	LINKSDIRTY = 0x1010,
+				//	CONTENTTYPE = 0x101A,
 			}
 		}
 		return output.str();

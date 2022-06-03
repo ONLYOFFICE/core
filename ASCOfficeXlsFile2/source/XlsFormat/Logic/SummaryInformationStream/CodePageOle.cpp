@@ -35,6 +35,7 @@
 #include "CodePageOle.h"
 #include "../../Binary/CFStream.h"
 #include "../../Auxiliary/HelpFunc.h"
+#include "../../../Common/simple_xml_writer.h"
 
 #include "../../../../../UnicodeConverter/UnicodeConverter.h"
 
@@ -190,7 +191,24 @@ bool PropertyVecString::Read(XLS::CFStreamPtr stream)
 }
 std::wstring PropertyVecString::toString()
 {
-	return L"";
+	std::wstringstream output;
+	CP_XML_WRITER(output)
+	{
+		CP_XML_NODE(L"vt:vector")
+		{
+			CP_XML_ATTR(L"size", values.size());
+			CP_XML_ATTR(L"baseType", L"lpstr");
+
+			for (size_t i = 0; i < values.size(); ++i)
+			{
+				CP_XML_NODE(L"vt:lpstr")
+				{
+					CP_XML_STREAM() << values[i];
+				}
+			}
+		}
+	}
+	return output.str();
 }//-------------------------------------------------------------------
 bool PropertyVecHeadingPair::Read(XLS::CFStreamPtr stream)
 {
@@ -227,7 +245,34 @@ bool PropertyVecHeadingPair::Read(XLS::CFStreamPtr stream)
 }
 std::wstring PropertyVecHeadingPair::toString()
 {
-	return L"";
+	std::wstringstream output;
+	CP_XML_WRITER(output)
+	{
+		CP_XML_NODE(L"vt:vector")
+		{
+			CP_XML_ATTR(L"size", values.size());
+			CP_XML_ATTR(L"baseType", L"variant");
+
+			for (size_t i = 0; i < values.size(); ++i)
+			{
+				CP_XML_NODE(L"vt:variant")
+				{
+					CP_XML_NODE(L"vt:lpstr")
+					{
+						CP_XML_STREAM() << values[i].headingString;
+					}
+				}
+				CP_XML_NODE(L"vt:variant")
+				{
+					CP_XML_NODE(L"vt:i4")
+					{
+						CP_XML_STREAM() << values[i].headerParts;
+					}
+				}
+			}
+		}
+	}
+	return output.str();
 }
 //-------------------------------------------------------------------
 bool PropertyDigSig::Read(XLS::CFStreamPtr stream)
@@ -271,4 +316,9 @@ bool PropertyDigSig::VBASigSerializedCertStore::Read(XLS::CFStreamPtr stream)
 {
 	return true;
 }
+std::wstring PropertyDigSig::toString()
+{ 
+	return L""; 
+}
+
 } // namespace OLEPS

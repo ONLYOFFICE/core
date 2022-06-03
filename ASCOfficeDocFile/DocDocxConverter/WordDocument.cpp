@@ -253,7 +253,7 @@ namespace DocFileFormat
 			XLS::CFStreamPtr stream = XLS::CFStreamPtr(new XLS::CFStream(Summary));			
 			summary_info.read(stream);
 
-			int document_code_page1 = summary_info.GetCodePage(); //from software last open 
+			int document_code_page1 = summary_info.GetCodePage(); 
 			
 			if (document_code_page1 > 0)
 			{
@@ -292,6 +292,8 @@ namespace DocFileFormat
 				nDocumentCodePage = user_codepage;
 			}
 		}
+		m_sXmlApp = summary_info.GetApp();
+		m_sXmlCore = summary_info.GetCore();
 //-------------------------------------------------------------------------------------------------
 		try
 		{

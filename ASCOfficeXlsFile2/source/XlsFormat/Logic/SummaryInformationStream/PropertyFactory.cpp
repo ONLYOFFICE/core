@@ -96,6 +96,10 @@ PropertyPtr PropertyFactory::ReadProperty(const unsigned int prop_id, XLS::CFStr
 		{
 			property_ = PropertyPtr(new PropertyDTM(prop_id, value_type));
 		}
+		else
+		{
+			//skip
+		}
 	}
 	if (property_)
 	{

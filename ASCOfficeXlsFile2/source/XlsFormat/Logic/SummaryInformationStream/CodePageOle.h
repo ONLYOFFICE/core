@@ -233,7 +233,7 @@ public:
 	PropertyDigSig(unsigned int prop_type, const unsigned short value_type) : Property(prop_type, value_type) {}
 
 	virtual bool Read(XLS::CFStreamPtr stream);
-	virtual std::wstring toString() { return L"";  }
+	virtual std::wstring toString();
 
 	DigSigBlob data;
 };

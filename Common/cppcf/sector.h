@@ -32,13 +32,14 @@ public:
     void ReleaseData();
 
     virtual void Dispose(bool disposing=false);
+    std::vector<BYTE> GetData();
 
 public:
     static int MINISECTOR_SIZE;
-    const int FREESECT = 0xFFFFFFFF;
-    const int ENDOFCHAIN = 0xFFFFFFFE;
-    const int FATSECT = 0xFFFFFFFD;
-    const int DIFSECT = 0xFFFFFFFC;
+    const static int FREESECT = 0xFFFFFFFF;
+    const static int ENDOFCHAIN = 0xFFFFFFFE;
+    const static int FATSECT = 0xFFFFFFFD;
+    const static int DIFSECT = 0xFFFFFFFC;
 
     int getSize() const;
 

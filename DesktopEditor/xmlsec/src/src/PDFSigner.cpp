@@ -14,20 +14,24 @@ private:
     std::string m_sCertPassword;
 
 public:
+    // PFX сертификат и закрытый ключ/пароль (публичный ключ встроен в сертификат)
     CPDFSigner_private(const std::wstring& sCertFile, const std::string& sCertPassword)
     {
         m_sCertFile = sCertFile;
         m_sCertPassword = sCertPassword;
     }
+    // CRT сертификат и ключ
     CPDFSigner_private(const std::wstring& keyPath, const std::string& keyPassword, const std::wstring& certPath, const std::string& certPassword)
     {
     }
 
-    void Sign(BYTE* pDataForSignature, DWORD dwLenDataForSignature, BYTE*& pDatatoWrite, DWORD& dwLenDatatoWrite)
+    void Sign(BYTE* pDataForSignature, DWORD dwLenDataForSignature, BYTE*& pDataForWrite, DWORD& dwLenDataForWrite)
     {
         FILE* pfx_file = NSFile::CFileBinary::OpenFileNative(m_sCertFile, L"rb");
         if (!pfx_file)
             return;
+
+        // TODO разобраться, изучить и понять
 
         ERR_load_crypto_strings();
         OpenSSL_add_all_algorithms();
@@ -47,10 +51,10 @@ public:
         }
         PKCS12_free(pkcs12);
 
-        dwLenDatatoWrite = 15000;
-        DWORD signed_len_in_bytes = 0;
-        pDatatoWrite = new BYTE[dwLenDatatoWrite];
-        memset(pDatatoWrite, 0, dwLenDatatoWrite);
+        dwLenDataForWrite = 15000;
+        DWORD dsLenSignedData = 0;
+        pDataForWrite = new BYTE[dwLenDataForWrite];
+        memset(pDataForWrite, 0, dwLenDataForWrite);
 
         BIO* inputbio = BIO_new(BIO_s_mem());
         BIO_write(inputbio, pDataForSignature, dwLenDataForSignature);
@@ -65,8 +69,8 @@ public:
         BIO_get_mem_ptr(outputbio, &mem);
         if (mem && mem->data && mem->length)
         {
-            signed_len_in_bytes = mem->length;
-            memcpy(pDatatoWrite, mem->data, signed_len_in_bytes);
+            dsLenSignedData = mem->length;
+            memcpy(pDataForWrite, mem->data, dsLenSignedData);
         }
         BIO_free(outputbio);
         PKCS7_free(pkcs7);
@@ -90,7 +94,7 @@ CPDFSigner::~CPDFSigner()
     RELEASEOBJECT(m_internal);
 }
 
-void CPDFSigner::Sign(BYTE* pDataForSignature, DWORD dwLenDataForSignature, BYTE*& pDatatoWrite, DWORD& dwLenDatatoWrite)
+void CPDFSigner::Sign(BYTE* pDataForSignature, DWORD dwLenDataForSignature, BYTE*& pDataForWrite, DWORD& dwLenDataForWrite)
 {
-    m_internal->Sign(pDataForSignature, dwLenDataForSignature, pDatatoWrite, dwLenDatatoWrite);
+    m_internal->Sign(pDataForSignature, dwLenDataForSignature, pDataForWrite, dwLenDataForWrite);
 }

@@ -216,7 +216,7 @@ namespace PdfWriter
         pXref->Add(this);
 
         Add("Type", "Sig");
-        Add("Filter", "Adobe.PPKLite"); // Имя предпочтительного обработчика подписи
+        Add("Filter", "Adobe.PPKLite"); // Имя предпочтительного обработчика подписи по умолчанию
         Add("SubFilter", "adbe.pkcs7.detached"); // Кодировка значения подписи, 12.8.3 Совместимость подписи
 
         // Подписи PKCS#1 - adbe.x509.rsa_sha1, в котором используется алгоритм шифрования RSA и метод дайджеста SHA-1.
@@ -240,6 +240,7 @@ namespace PdfWriter
         memset(pDigest, 0, unDigestLength);
         // Значение подписи, дайджест диапазона байтов
         Add("Contents", new CBinaryObject(pDigest, unDigestLength));
+        RELEASEARRAYOBJECTS(pDigest);
         // Для подписей с открытым ключом Contents должен быть либо двоичным объектом данных PKCS#1 в кодировке DER,
         // либо объектом двоичных данных PKCS#7 в кодировке DER
 
@@ -270,7 +271,7 @@ namespace PdfWriter
         // Name - Текстовая строка, Имя лица или органа, подписавшего документ.
         // Значение следует использовать когда невозможно извлечь имя из подписи или сертификата подписавшего.
 
-         // M - Дата, Время подписания
+        // M - Дата, Время подписания
         char sTemp[DATE_TIME_STR_LEN + 1];
         char* pTemp = NULL;
 
@@ -359,17 +360,26 @@ namespace PdfWriter
         {
             DWORD dwLenDataForSignature = m_nLen1 + nFileEnd - m_nOffset2;
             BYTE* pDataForSignature = new BYTE[dwLenDataForSignature];
+            if (!pDataForSignature)
+                return;
 
-            // TODO Read не читает данные..
             pStream->Seek(0, EWhenceMode::SeekSet);
             unsigned int dwLenReadData = m_nLen1;
             pStream->Read(pDataForSignature, &dwLenReadData);
             if ((int)dwLenReadData != m_nLen1)
+            {
+                RELEASEARRAYOBJECTS(pDataForSignature);
                 return;
+            }
+
+            pStream->Seek(m_nOffset2, EWhenceMode::SeekSet);
             dwLenReadData = nFileEnd - m_nOffset2;
             pStream->Read(pDataForSignature + m_nLen1, &dwLenReadData);
             if ((int)dwLenReadData != nFileEnd - m_nOffset2)
+            {
+                RELEASEARRAYOBJECTS(pDataForSignature);
                 return;
+            }
 
             BYTE* pDatatoWrite;
             DWORD dwLenDatatoWrite;
@@ -383,7 +393,7 @@ namespace PdfWriter
             RELEASEARRAYOBJECTS(pDatatoWrite);
             if (!pContents)
                 return;
-            // TODO: Нужно ли шифровать запись Contents у подписи?
+            // TODO шифрование записи Contents, для случая одновремменного запароливания и сертификации pdf
             pStream->Write(pContents, NULL);
             RELEASEOBJECT(pContents);
         }

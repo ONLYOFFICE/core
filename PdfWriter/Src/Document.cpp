@@ -1296,6 +1296,10 @@ namespace PdfWriter
 		if (m_pSignatureDict)
 			m_pSignatureDict->SetCert(sCertFile, sCertPassword);
 
+		// Сейчас подпись невидимая
+		// TODO DR, DA и AP (внешнее отображение подписи) должны заполняться в CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
+		// TODO Необходимо реализовать класс CFormFieldInfo::CSignatureFormPr
+
 		// TODO DR - Словарь ресурсов, содержащий ресурсы по умолчанию (такие как шрифты, шаблоны или цветовые пространства),
 		// которые должны использоваться потоками внешнего вида полей формы - смотри AP ниже
 		// CResourcesDict* pFieldsResources = GetFieldsResources();
@@ -1303,6 +1307,8 @@ namespace PdfWriter
 		// TODO DA - Значение по умолчанию для всего документа для атрибута DA переменных текстовых полей
 		// std::string sDA;
 		// m_pAcroForm->Add("DA", new CStringObject(sDA.c_str()));
+
+		// TODO AP - Словарь внешнего вида, указывающий, как аннотация должна быть визуально представлена на странице
 
 		// 3 ~ 11, где
 		// первый бит - Если установлено, документ содержит как минимум одно поле для подписи,
@@ -1314,13 +1320,12 @@ namespace PdfWriter
 		if (!pPage)
 		    return;
 		pField->AddPageRect(pPage, oRect);
-		// 3 - Печать, печатать аннотацию при печати страницы
-		// 8 - Заблокировано, пользователь не может удалить аннотацию или изменить ее свойства
+		// 3 бит - Печать, печатать аннотацию при печати страницы
+		// 8 бит - Заблокировано, пользователь не может удалить аннотацию или изменить ее свойства
 		pField->Add("F", 132);
 
-		// TODO Частичное имя поля 12.7.3.2
+		// TODO Частичное имя поля
+		// pFieldBase->SetFieldName в CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 		pField->SetFieldName("Sig1");
-
-		// TODO AP - Словарь внешнего вида, указывающий, как аннотация должна быть визуально представлена на странице 12.5.5
 	}
 }

@@ -78,7 +78,7 @@ int main()
     pReader->DrawPageOnRenderer(&pdfWriter, 0, NULL);
     //TEST2(&pdfWriter);
     pdfWriter.EndCommand(c_nPageType);
-    pdfWriter.Sign(0, 0, dHeight, 0, 0, NSFile::GetProcessDirectory() + L"/test.pfx", "test");
+    pdfWriter.Sign(0, 0, dHeight, 0, 0, NSFile::GetProcessDirectory() + L"/test.pfx", "Sveta03011997");
     pdfWriter.SaveToFile(sDstFile);
 
     RELEASEOBJECT(pReader);

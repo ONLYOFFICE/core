@@ -408,7 +408,7 @@ function onLoadFontsModule(window, undefined)
 		}
 	};
 
-	const STRING_MAX_LEN = AscFonts.GRAPHEME_STRING_MAX_LEN;
+	const STRING_MAX_LEN = AscFonts.GRAPHEME_STRING_MAX_LEN || 1024;
 	const COEF           = AscFonts.GRAPHEME_COEF;
 	let   STRING_POINTER = null;
 	let   STRING_LEN     = 0;
@@ -586,6 +586,7 @@ function onLoadFontsModule(window, undefined)
 		if (retObj.error)
 			return;
 
+		let reader = READER;
 		let glyphs = [];
 		let glyphsCount = retObj.count;
 		for (let i = 0; i < glyphsCount; i++)
@@ -615,7 +616,7 @@ function onLoadFontsModule(window, undefined)
 			for (let i = glyphsCount - 1; i >= 0; i--)
 			{
 				if (i === 0)
-					utf8_end = textBuffer.length - 1;
+					utf8_end = CLUSTER_MAX;
 				else
 					utf8_end = glyphs[i - 1].cluster;
 
@@ -628,7 +629,7 @@ function onLoadFontsModule(window, undefined)
 			for (let i = 0; i < glyphsCount; i++)
 			{
 				if (i === (glyphsCount - 1))
-					utf8_end = textBuffer.length - 1;
+					utf8_end = CLUSTER_MAX;
 				else
 					utf8_end = glyphs[i + 1].cluster;
 

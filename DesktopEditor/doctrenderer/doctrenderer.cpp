@@ -254,7 +254,7 @@ namespace NSDoctRenderer
         }
         void LoadConfig(const std::wstring& sConfigDir, const std::wstring& sAllFontsPath = L"")
         {
-            if (sAllFontsPath.empty())
+            if (!sAllFontsPath.empty())
             {
                 m_strAllFonts = sAllFontsPath;
                 m_bIsNotUseConfigAllFontsDir = true;

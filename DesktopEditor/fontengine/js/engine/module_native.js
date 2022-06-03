@@ -54,6 +54,29 @@ AscFonts.CopyStreamToMemory = function(data, size)
 	return data;
 };
 
+function CShapeString(size)
+{
+	this.size = size;
+	this.pointer = new Uint8Array(size);
+}
+CShapeString.prototype.getBuffer = function()
+{
+	return this.pointer;
+};
+CShapeString.prototype.free = function()
+{
+	// GC
+};
+CShapeString.prototype.set = function(index, value)
+{
+	this.pointer[index] = value;
+};
+
+AscFonts.AllocString = function(size)
+{
+	return new CShapeString(size);
+};
+
 AscFonts.FT_CreateLibrary = function(library) 
 { 
 	return g_native_engine["FT_Init"](library); 
@@ -167,7 +190,7 @@ AscFonts.HB_ShapeText = function(fontFile, text, features, script, direction, la
 	if (!fontFile["GetHBFont"]())
 		fontFile["SetHBFont"](g_native_engine["FT_Malloc"](0));
 
-	let data = g_native_engine["HB_ShapeText"](fontFile["GetFace"](), fontFile["GetHBFont"](), text, features, script, direction, hb_cache_languages[language]);
+	let data = g_native_engine["HB_ShapeText"](fontFile["GetFace"](), fontFile["GetHBFont"](), text.pointer, features, script, direction, hb_cache_languages[language]);
 	if (!data)
 	{
 		g_return_obj_count.error = 1;

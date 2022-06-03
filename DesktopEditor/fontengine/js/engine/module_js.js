@@ -66,6 +66,29 @@ AscFonts.CopyStreamToMemory = function(data, size)
 	return fontStreamPointer;
 };
 
+function CShapeString(size)
+{
+	this.size = size;
+	this.pointer = Module["_malloc"](size);
+}
+CShapeString.prototype.getBuffer = function()
+{
+	return new Uint8Array(Module["HEAPU8"].buffer, this.pointer, this.size);
+};
+CShapeString.prototype.free = function()
+{
+	Module["_free"](this.pointer);
+};
+CShapeString.prototype.set = function(index, value)
+{
+	Module["HEAPU8"][this.pointer + index] = value;
+};
+
+AscFonts.AllocString = function(size)
+{
+	return new CShapeString(size);
+};
+
 AscFonts.FT_CreateLibrary = Module["_ASC_FT_Init"];
 AscFonts.FT_Done_Library = Module["_ASC_FT_Done_FreeType"];
 AscFonts.FT_Set_TrueType_HintProp = Module["_ASC_FT_Set_TrueType_HintProp"];
@@ -149,7 +172,7 @@ AscFonts.HB_ShapeText = function(fontFile, text, features, script, direction, la
 		Module["_free"](langPointer);
 	}
 
-	let pointer = Module["_ASC_HP_ShapeText"](fontFile["GetFace"](), fontFile["GetHBFont"](), text, features, script, direction, hb_cache_languages[language]);
+	let pointer = Module["_ASC_HB_ShapeText"](fontFile["GetFace"](), fontFile["GetHBFont"](), text.pointer, features, script, direction, hb_cache_languages[language]);
 	if (!pointer)
 	{
 		g_return_obj_count.error = 1;

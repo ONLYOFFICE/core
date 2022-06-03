@@ -72,5 +72,13 @@ namespace XLSB
         return m_BrtQsi15 != nullptr;
     }
 
+	const bool FRTQSI::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtQsi15 != nullptr)
+			proc.mandatory(*m_BrtQsi15);		
+
+		return true;
+	}
+
 } // namespace XLSB
 

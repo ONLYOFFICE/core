@@ -55,7 +55,8 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         XLS::BaseObjectPtr m_QSI;
 

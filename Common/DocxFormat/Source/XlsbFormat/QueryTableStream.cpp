@@ -82,4 +82,12 @@ const bool QueryTableStream::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool QueryTableStream::saveContent(XLS::BinProcessor & proc)
+{
+	if (m_QSI != nullptr)
+		proc.mandatory(*m_QSI);
+
+	return true;
+}
+
 } // namespace XLSB

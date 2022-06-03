@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new EndQSI(*this));
     }
 
-    void EndQSI::readFields(XLS::CFRecord& record)
-    {
-        // No data in this record
-    }
-
 } // namespace XLSB
 

@@ -55,7 +55,8 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-                        void fromBin(XLS::BaseObjectPtr& obj);
+			void fromBin(XLS::BaseObjectPtr& obj);
+			void toBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_QueryTableField;
@@ -91,7 +92,9 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-                        void fromBin(XLS::BaseObjectPtr& obj);
+			void fromBin(XLS::BaseObjectPtr& obj);
+			void toBin(XLS::BaseObjectPtr& obj);
+
 			virtual EElementType getType () const
 			{
 				return et_x_QueryTableFields;
@@ -117,7 +120,8 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-                        void fromBin(XLS::BaseObjectPtr& obj);
+			void fromBin(XLS::BaseObjectPtr& obj);
+			void toBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_QueryTableDeletedField;
@@ -144,7 +148,8 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-                        void fromBin(XLS::BaseObjectPtr& obj);
+			void fromBin(XLS::BaseObjectPtr& obj);
+			void toBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_QueryTableFields;
@@ -170,13 +175,15 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-                        void fromBin(XLS::BaseObjectPtr& obj);
+			void fromBin(XLS::BaseObjectPtr& obj);
+			void toBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_QueryTableRefresh;
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-                        void ReadAttributes(XLS::BaseObjectPtr& obj);
+			void ReadAttributes(XLS::BaseObjectPtr& obj);
+			void WriteAttributes(XLS::BaseObjectPtr& obj);
 
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oNextId;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oMinimumVersion;			
@@ -212,13 +219,15 @@ namespace OOX
 			}
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-                        void fromBin(XLS::BaseObjectPtr& obj);
+			void fromBin(XLS::BaseObjectPtr& obj);
+			void toBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_QueryTable;
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-                        void ReadAttributes(XLS::BaseObjectPtr& obj);
+			void WriteAttributes(XLS::BaseObjectPtr& obj);
+			void ReadAttributes(XLS::BaseObjectPtr& obj);
 			
 			nullable_bool	m_oAdjustColumnWidth;
 			nullable_bool	m_oApplyAlignmentFormats;
@@ -267,7 +276,8 @@ namespace OOX
 			virtual ~CQueryTableFile()
 			{
 			}
-                        void readBin(const CPath& oPath);
+			void readBin(const CPath& oPath);
+			void writeBin(const CPath& oPath) const;
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)

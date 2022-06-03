@@ -45,12 +45,13 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+		const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         static const XLS::ElementType	type = XLS::typeFRTQSI;
 
         XLS::BaseObjectPtr              m_BrtQsi15;
-        std::vector<XLS::BaseObjectPtr>	m_arFRT;
+        //std::vector<XLS::BaseObjectPtr>	m_arFRT;
     };
 
 } // namespace XLSB

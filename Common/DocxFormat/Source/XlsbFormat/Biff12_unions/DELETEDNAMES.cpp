@@ -72,12 +72,39 @@ namespace XLSB
 
         if (proc.optional<EndDeletedNames>())
         {
-            m_BrtEndDeletedNames = elements_.back();
+			m_bBrtEndDeletedNames = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndDeletedNames = false;
 
-        return m_BrtBeginDeletedNames && m_BrtEndDeletedNames;
+        return m_BrtBeginDeletedNames && m_bBrtEndDeletedNames;
     }
+
+	const bool DELETEDNAMES::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginDeletedNames == nullptr)
+			m_BrtBeginDeletedNames = XLS::BaseObjectPtr(new XLSB::BeginDeletedNames());
+
+		if (m_BrtBeginDeletedNames != nullptr)
+		{
+			auto ptrBrtBeginDeletedNames = static_cast<XLSB::BeginDeletedNames*>(m_BrtBeginDeletedNames.get());
+
+			if (ptrBrtBeginDeletedNames != nullptr)
+				ptrBrtBeginDeletedNames->nCols = m_arDELETEDNAME.size();
+
+			proc.mandatory(*m_BrtBeginDeletedNames);
+		}
+
+		for (auto &item : m_arDELETEDNAME)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndDeletedNames>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

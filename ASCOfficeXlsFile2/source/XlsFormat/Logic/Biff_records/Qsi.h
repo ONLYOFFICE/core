@@ -47,7 +47,8 @@ public:
 
 	BaseObjectPtr clone();
 	
-	void readFields(CFRecord& record);
+	void readFields(CFRecord& record) override;
+	void writeFields(CFRecord& record) override;
 
 	static const ElementType type = typeQsi;
 
@@ -71,13 +72,13 @@ public:
 	bool			fibitAtrPat;
 	bool			fibitAtrProt;
 
-        //biff12
-        _UINT32         dwConnID;
-        bool            fDummyList;
-        bool            fAutoFit;
-        bool            fPreserveFmt;
+    //biff12
+    _UINT32         dwConnID;
+    bool            fDummyList;
+    bool            fAutoFit;
+    bool            fPreserveFmt;
 
-        std::wstring	name;
+    std::wstring	name;
 };
 
 } // namespace XLS

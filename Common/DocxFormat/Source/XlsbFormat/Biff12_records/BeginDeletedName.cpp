@@ -55,5 +55,10 @@ namespace XLSB
         record >> rgb;
     }
 
+	void BeginDeletedName::writeFields(XLS::CFRecord& record)
+	{
+		record << rgb;
+	}
+
 } // namespace XLSB
 

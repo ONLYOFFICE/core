@@ -53,7 +53,7 @@ void Qsif::readFields(CFRecord& record)
 {
     if (record.getGlobalWorkbookInfo()->Version < 0x0800)
     {
-        unsigned short  flags1, flags2;
+        _UINT16  flags1, flags2;
         XLUnicodeString rgbTitle;
 
         record >> frtHeaderOld >> flags1 >> flags2 >> idField;
@@ -93,6 +93,51 @@ void Qsif::readFields(CFRecord& record)
             name    = irstName.value();
         }
     }
+}
+
+void Qsif::writeFields(CFRecord& record)
+{
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		_UINT16			flags1 = 0, flags2 = 0;
+		XLUnicodeString rgbTitle;
+
+		SETBIT(flags1, 0, fUserIns)
+		SETBIT(flags1, 1, fFillDown)
+		SETBIT(flags1, 2, fSortDes)
+		SETBITS(flags1, 3, 10, iSortKey)
+		SETBIT(flags1, 11, fRowNums)
+		SETBIT(flags1, 13, fSorted)
+
+		SETBIT(flags2, 0, fClipped)
+
+		record << frtHeaderOld << flags1 << flags2 << idField << idList;
+
+		rgbTitle = name;
+
+		record << rgbTitle;
+
+	}
+
+	else
+	{
+		_UINT32            flags = 0;
+		XLSB::XLWideString irstName;
+
+		SETBIT(flags, 0, fUserIns)
+		SETBIT(flags, 1, fFillDown)
+		SETBIT(flags, 2, fRowNums)
+		SETBIT(flags, 3, fClipped)
+		SETBIT(flags, 4, fIrstName)
+
+		record << flags << idField << idList;
+
+		if (fIrstName)
+		{
+			irstName = name;
+			record << irstName;
+		}
+	}
 }
 
 } // namespace XLS

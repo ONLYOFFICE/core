@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new EndDeletedName(*this));
     }
 
-    void EndDeletedName::readFields(XLS::CFRecord& record)
-    {
-        // No data in this record
-    }
-
 } // namespace XLSB
 

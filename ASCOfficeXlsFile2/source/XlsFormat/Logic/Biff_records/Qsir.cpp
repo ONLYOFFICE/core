@@ -86,5 +86,40 @@ void Qsir::readFields(CFRecord& record)
     }
 }
 
+void Qsir::writeFields(CFRecord& record)
+{
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		_UINT32 flags = 0;
+
+		SETBIT(flags, 0, fPersist)
+		SETBIT(flags, 1, fPersistSort)
+		SETBIT(flags, 2, fPersistAutoFilter)
+		SETBIT(flags, 20, fSorted)
+		SETBIT(flags, 21, fCaseSensSort)
+		SETBIT(flags, 22, fHdrRowSort)
+		SETBIT(flags, 23, fidWrapped)
+		SETBIT(flags, 25, fTitlesOld)
+		SETBITS(flags, 26, 30, wVerBeforeRefreshAlert)
+
+		record << frtRefHeaderU << cbQsirSaved << cbQsifSaved << flags << iSortCustom << cQsif << cpstDeleted << idFieldNext << ccolExtraLeft << ccolExtraRight;
+		record << idList << rgbTitle;
+	}
+
+	else
+	{
+		_UINT16 flags = 0;
+
+		SETBIT(flags, 0, fPersist)
+		SETBIT(flags, 1, fPersistSort)
+		SETBIT(flags, 2, fPersistAutoFilter)
+		SETBIT(flags, 3, fidWrapped)
+		SETBIT(flags, 4, fTitlesOld)
+		SETBITS(flags, 5, 9, wVerBeforeRefreshAlert)
+
+		record << flags << idFieldNext << ccolExtraLeft << ccolExtraRight;
+	}
+}
+
 } // namespace XLS
 

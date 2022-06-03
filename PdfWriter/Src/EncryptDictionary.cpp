@@ -354,7 +354,6 @@ namespace PdfWriter
             }
             RELEASEOBJECT(pByteRange);
         }
-        /*
         // Запись Contents
         if (m_oSigner && m_nLen1 > 0 && m_nOffset2 > 0 && m_nLen1 < m_nOffset2 && m_nOffset2 < nFileEnd)
         {
@@ -388,7 +387,6 @@ namespace PdfWriter
             pStream->Write(pContents, NULL);
             RELEASEOBJECT(pContents);
         }
-        */
     }
     void CSignatureDict::SetCert(const std::wstring& sCertFile, const std::string& sCertPassword)
     {

@@ -862,10 +862,6 @@ namespace PdfWriter
 		pStream->WriteStr("\012startxref\012");
 		pStream->WriteUInt(m_unAddr);
 		pStream->WriteStr("\012%%EOF\012");
-
-		CSignatureDict* pSignature = m_pDocument->GetSignatureDict();
-		if (pSignature)
-			pSignature->WriteToStream(pStream, pStream->Tell());
 	}
     void CXref::WriteToStream(CStream* pStream, CEncrypt* pEncrypt, bool bStream)
 	{

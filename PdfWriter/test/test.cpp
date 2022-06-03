@@ -70,22 +70,20 @@ int main()
     dWidth  *= 25.4 / dPageDpiX;
     dHeight *= 25.4 / dPageDpiY;
 
-    /*
-    pdfWriter.SetPassword(L"123456");
+    //pdfWriter.SetPassword(L"123456");
     pdfWriter.NewPage();
     pdfWriter.BeginCommand(c_nPageType);
     pdfWriter.put_Width(dWidth);
     pdfWriter.put_Height(dHeight);
     pReader->DrawPageOnRenderer(&pdfWriter, 0, NULL);
-    TEST2(&pdfWriter);
+    //TEST2(&pdfWriter);
     pdfWriter.EndCommand(c_nPageType);
-    pdfWriter.Sign(0, 0, dHeight, 0, 0, L"", "");
+    pdfWriter.Sign(0, 0, dHeight, 0, 0, NSFile::GetProcessDirectory() + L"/test.pfx", "test");
     pdfWriter.SaveToFile(sDstFile);
 
     RELEASEOBJECT(pReader);
     RELEASEINTERFACE(pApplicationFonts);
     return 0;
-    */
     if (bResult && pReader->EditPdf(&pdfWriter, sPassword))
     {
         if (pReader->EditPage(0))

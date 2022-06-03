@@ -221,6 +221,14 @@ namespace PdfWriter
 		SaveToStream((CStream*)pStream);
 		delete pStream;
 
+		if (m_pSignatureDict)
+		{
+			pStream = new CFileStream();
+			if (pStream && pStream->OpenFile(wsPath, false))
+				m_pSignatureDict->WriteToStream(pStream, pStream->Size());
+			RELEASEOBJECT(pStream);
+		}
+
 		return true;
 	}
     void CDocument::SaveToStream(CStream* pStream)

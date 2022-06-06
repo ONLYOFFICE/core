@@ -281,6 +281,16 @@ typedef unsigned char BYTE;
 
 namespace MetaFile
 {
+        enum InterpretatorType
+        {
+                Emf,
+                Wmf,
+                Render,
+                XML,
+                Svg,
+                Array
+        };
+
 	enum EMetaFileBitCount
 	{
 		BI_BITCOUNT_0 = 0x0000,
@@ -344,6 +354,22 @@ namespace MetaFile
 			dBottom *= dValue;
 			return *this;
 		}
+	void Update(bool bFlipedX, double bFlipedY)
+	{
+		if ((dTop > dBottom && !bFlipedY) || (dTop < dBottom && bFlipedY))
+		{
+			double dTemp = dBottom;
+			dBottom = dTop;
+			dTop = dTemp;
+		}
+
+		if ((dLeft > dRight && !bFlipedX) || (dLeft < dRight && bFlipedX))
+		{
+			double dTemp = dRight;
+			dRight = dLeft;
+			dLeft = dTemp;
+		}
+	}
     };
 
 	struct TPointL

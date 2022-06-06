@@ -78,6 +78,11 @@ HEADERS += \
     ../../raster/Metafile/Emf/EmfParser/CEmfParserBase.h \
     ../../raster/Metafile/Emf/EmfParser/CEmfPlusParser.h \
     ../../raster/Metafile/Emf/EmfParser/CEmfxParser.h \
+    ../../raster/Metafile/Wmf/WmfParser/CWmfParser.h \
+    ../../raster/Metafile/Wmf/WmfParser/CWmfParserBase.h \
+    ../../raster/Metafile/Wmf/WmfInterpretator/CWmfInterpretatorBase.h \
+    ../../raster/Metafile/Wmf/WmfInterpretator/CWmfInterpretatorRender.h \
+    ../../raster/Metafile/Wmf/WmfInterpretator/CWmfInterpretator.h \
     ./../config.h \
     \
     ./../Matrix.h \
@@ -129,6 +134,10 @@ SOURCES += \
     ../../raster/Metafile/Emf/EmfParser/CEmfParserBase.cpp \
     ../../raster/Metafile/Emf/EmfParser/CEmfPlusParser.cpp \
     ../../raster/Metafile/Emf/EmfParser/CEmfxParser.cpp \
+    ../../raster/Metafile/Wmf/WmfParser/CWmfParser.cpp \
+    ../../raster/Metafile/Wmf/WmfParser/CWmfParserBase.cpp \
+    ../../raster/Metafile/Wmf/WmfInterpretator/CWmfInterpretatorRender.cpp \
+    ../../raster/Metafile/Wmf/WmfInterpretator/CWmfInterpretator.cpp \
     ./../Matrix.cpp \
     ./../GraphicsPath.cpp \
     ./../../raster/BgraFrame.cpp \

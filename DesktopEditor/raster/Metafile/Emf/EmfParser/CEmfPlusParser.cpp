@@ -1334,18 +1334,17 @@ namespace MetaFile
                 else if (MetafileDataTypeWmf == eMetafileType ||
                         MetafileDataTypeWmfPlaceable ==  eMetafileType)
                 {
+                        CWmfParser oWmfParser;
+                        oWmfParser.SetStream(pBuffer, unSize);
+                        oWmfParser.SetFontManager(GetFontManager());
+                        oWmfParser.Scan();
 
-                        CWmfFile oWmfFile;
-                        oWmfFile.SetStream(pBuffer, unSize);
-                        oWmfFile.SetFontManager(GetFontManager());
-                        oWmfFile.Scan();
-
-                        if (!oWmfFile.CheckError())
+                        if (!oWmfParser.CheckError())
                         {
                                 CGraphicsRenderer oRenderer;
                                 oRenderer.SetFontManager(GetFontManager());
 
-                                TRectD oWmfBounds = oWmfFile.GetBounds();
+                                TRectD oWmfBounds = oWmfParser.GetBounds();
 
                                 int nWidth = fabs(oWmfBounds.dRight - oWmfBounds.dLeft);
                                 int nHeight = fabs(oWmfBounds.dBottom - oWmfBounds.dTop);
@@ -1379,10 +1378,10 @@ namespace MetaFile
 
                                 oRenderer.BeginCommand(c_nImageType);
 
-                                CMetaFileRenderer oWmfOut(&oWmfFile, &oRenderer, 0, 0, dWidth, dHeight);
-                                oWmfFile.SetOutputDevice(&oWmfOut);
+                                CMetaFileRenderer oWmfOut(&oWmfParser, &oRenderer, 0, 0, dWidth, dHeight);
+                                oWmfParser.SetOutputDevice(&oWmfOut);
 
-                                oWmfFile.PlayMetaFile();
+                                oWmfParser.PlayMetaFile();
 
                                 oRenderer.EndCommand(c_nImageType);
 

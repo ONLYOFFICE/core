@@ -8,15 +8,6 @@
 
 namespace MetaFile
 {
-        enum InterpretatorType
-        {
-                Emf,
-                Render,
-                XML,
-                Svg,
-                Array
-        };
-
         class CEmfInterpretatorBase : public IOutputDevice
         {
         public:

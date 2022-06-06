@@ -74,6 +74,9 @@ namespace MetaFile
                 void SetInterpretator(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0);
                 void SetInterpretator(IOutputDevice* pOutput, const wchar_t *wsFilePath);
 
+                CEmfDC*     GetDC();
+                TEmfRectL*  GetBounds();
+        private:
                 //Работа с изображениями
                 void ImageProcessing(const TEmfAlphaBlend       &oTEmfAlphaBlend);
                 void ImageProcessing(const TEmfStretchDIBITS    &oTEmfStretchDIBITS);
@@ -112,9 +115,6 @@ namespace MetaFile
                 void DrawText(std::wstring &wsString, unsigned int unCharsCount, int _nX, int _nY, int *pnDx, int iGraphicsMode, TEmfScale oScale);
                 void DrawTextA(TEmfEmrText &oText, int iGraphicsMode, TEmfScale oScale = TEmfScale(1, 1));
                 void DrawTextW(TEmfEmrText &oText, int iGraphicsMode, TEmfScale oScale = TEmfScale(1, 1));
-
-                CEmfDC*     GetDC();
-                TEmfRectL*  GetBounds();
 
         private:
                 friend class CEmfPlayer;

@@ -32,14 +32,16 @@
 #include "WmfPlayer.h"
 #include "WmfFile.h"
 
+#include "WmfParser/CWmfParserBase.h"
+
 namespace MetaFile
 {
-	CWmfPlayer::CWmfPlayer(CWmfFile* pFile) : m_pFile(pFile)
+	CWmfPlayer::CWmfPlayer(CWmfParserBase* pFile) : m_pParser(pFile)
 	{
 		CWmfDC* pDC = new CWmfDC();
 		if (!pDC)
 		{
-			pFile->SetError();
+			m_pParser->SetError();
 			return;
 		}
 
@@ -82,7 +84,7 @@ namespace MetaFile
 		CWmfDC* pDC = new CWmfDC();
 		if (!pDC)
 		{
-			m_pFile->SetError();
+			m_pParser->SetError();
 			return;
 		}
 
@@ -95,14 +97,14 @@ namespace MetaFile
 	{
 		if (!m_pDC)
 		{
-			m_pFile->SetError();
+			m_pParser->SetError();
 			return NULL;
 		}
 
 		CWmfDC* pNewDC = m_pDC->Copy();
 		if (!pNewDC)
 		{
-			m_pFile->SetError();
+			m_pParser->SetError();
 			return NULL;
 		}
 
@@ -114,7 +116,7 @@ namespace MetaFile
 	{
 		if (m_vDCStack.size() <= 1)
 		{
-			m_pFile->SetError();
+			m_pParser->SetError();
 			return m_pDC;
 		}
 

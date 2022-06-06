@@ -162,7 +162,7 @@ namespace MetaFile
 
                 if (c_lMetaWmf == m_lType)
                 {
-                        CMetaFileRenderer oWmfOut(&m_oWmfFile, pRenderer, dX, dY, dWidth, dHeight);
+                        CMetaFileRenderer oWmfOut(m_oWmfFile.GetWmfParser(), pRenderer, dX, dY, dWidth, dHeight);
                         m_oWmfFile.SetOutputDevice((IOutputDevice*)&oWmfOut);
                         m_oWmfFile.PlayMetaFile();
                 }
@@ -254,7 +254,7 @@ namespace MetaFile
 
 
 		// Сначала пытаемся открыть файл как Wmf
-		if (m_oWmfFile.OpenFromFile(wsFilePath) == true)
+		if (m_oWmfFile.OpenFromWmfFile(wsFilePath) == true)
 		{
 			m_oWmfFile.Scan();
 
@@ -309,7 +309,7 @@ namespace MetaFile
 
 		if (c_lMetaWmf == m_lType)
 		{
-			CMetaFileRenderer oWmfOut(&m_oWmfFile, pRenderer, dX, dY, dWidth, dHeight);
+			CMetaFileRenderer oWmfOut(m_oWmfFile.GetWmfParser(), pRenderer, dX, dY, dWidth, dHeight);
 			m_oWmfFile.SetOutputDevice((IOutputDevice*)&oWmfOut);
 			m_oWmfFile.PlayMetaFile();
 		}

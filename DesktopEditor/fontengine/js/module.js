@@ -417,10 +417,11 @@ function onLoadFontsModule(window, undefined)
 	let   CLUSTER_MAX    = 0;
 	const LIGATURE       = 2;
 
-	function CClusterUtf8Calculator()
+	function CClusterUtf8Calculator(clusterBuffer)
 	{
 		this.currentCluster = 0;
 		this.currentCodePoint = 0;
+		this.buffer = clusterBuffer;
 	}
 	CClusterUtf8Calculator.prototype.start = function()
 	{
@@ -431,7 +432,7 @@ function onLoadFontsModule(window, undefined)
 	{
 		let nCodePointsCount = 0;
 
-		if (cluster > this.currentCluster)
+		if (cluster < this.currentCluster)
 		{
 			// TODO: RTL
 		}
@@ -439,7 +440,7 @@ function onLoadFontsModule(window, undefined)
 		{
 			while (this.currentCluster < cluster)
 			{
-				this.currentCluster += CLUSTER[this.currentCodePoint + nCodePointsCount];
+				this.currentCluster += this.buffer[this.currentCodePoint + nCodePointsCount];
 				nCodePointsCount++;
 			}
 		}
@@ -447,7 +448,7 @@ function onLoadFontsModule(window, undefined)
 		this.currentCodePoint += nCodePointsCount;
 		return nCodePointsCount;
 	}
-	const CODEPOINTS_CALCULATOR = new CClusterUtf8Calculator();
+	const CODEPOINTS_CALCULATOR = new CClusterUtf8Calculator(CLUSTER);
 
 	AscFonts.HB_StartString = function()
 	{

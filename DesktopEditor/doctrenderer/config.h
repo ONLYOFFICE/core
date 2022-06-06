@@ -112,10 +112,10 @@ namespace NSDoctRenderer
                     std::wstring sAllFontsPath = oNode.ReadNodeText(L"allfonts");
                     if (!sAllFontsPath.empty())
                     {
-                        m_strAllFonts = private_GetFile(sConfigDir, sAllFontsPath);
+                        m_strAllFonts = sAllFontsPath;
                     }
                 }
-                m_arrFiles.push_back(m_strAllFonts);
+                m_arrFiles.push_back(private_GetFile(sConfigDir, m_strAllFonts));
             }
 
             std::wstring sSdkPath = oNode.ReadNodeText(L"sdkjs");

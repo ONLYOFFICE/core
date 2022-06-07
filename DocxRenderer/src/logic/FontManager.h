@@ -169,11 +169,11 @@ namespace NSDocxRenderer
             m_pManager->LoadString1(sText, (float)x, (float)y);
 
             TBBox bbox;
-			if (MeasureTypeGlyph == measureType)
+            if (mtGlyph == measureType)
 			{
                 bbox = m_pManager->MeasureString();
 			}
-			else if (MeasureTypePosition == measureType)
+            else if (mtPosition == measureType)
 			{
                 bbox = m_pManager->MeasureString2();
 			}
@@ -204,11 +204,11 @@ namespace NSDocxRenderer
             m_pManager->LoadString1(pGids, count, (float)x, (float)y);
 
             TBBox bbox;
-            if (MeasureTypeGlyph == measureType)
+            if (mtGlyph == measureType)
             {
                 bbox = m_pManager->MeasureString();
             }
-            else if (MeasureTypePosition == measureType)
+            else if (mtPosition == measureType)
             {
                 bbox = m_pManager->MeasureString2();
             }

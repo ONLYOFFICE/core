@@ -156,11 +156,11 @@ namespace NSDocxRenderer
     public:
         enum AssumedTextAlignmentType
         {
-            Unknown,
-            ByLeftEdge,
-            ByCenter,
-            ByRightEdge,
-            ByWidth
+            atatUnknown,
+            atatByLeftEdge,
+            atatByCenter,
+            atatByRightEdge,
+            atatByWidth
         };
 
         std::vector<CContText*> m_arConts;
@@ -217,19 +217,19 @@ namespace NSDocxRenderer
     public:
         enum TextAlignmentType
         {
-            TextAlignmentType_Unknown,
-            TextAlignmentType_ByLeftEdge,
-            TextAlignmentType_ByCenter,
-            TextAlignmentType_ByRightEdge,
-            TextAlignmentType_ByWidth
+            tatUnknown,
+            tatByLeftEdge,
+            tatByCenter,
+            tatByRightEdge,
+            tatByWidth
         };
 
         enum TextConversionType
         {
-            UnknownConversionType,
-            TextToParagraph,
-            TextToFrame,
-            TextToShape
+            tctUnknown,
+            tctTextToParagraph,
+            tctTextToFrame,
+            tctTextToShape
         };
 
         // text frame properties

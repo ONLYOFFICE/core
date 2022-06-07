@@ -245,7 +245,7 @@ namespace NSDocxRenderer
         oWriter.WriteString(L"</w:rPr>");
 
         oWriter.WriteString(L"<w:t xml:space=\"preserve\">");
-        oWriter.WriteString(L" ");
+        oWriter.WriteString(L"X");
         oWriter.WriteString(L"</w:t>");
 
         oWriter.WriteString(L"</w:r>");
@@ -267,7 +267,7 @@ namespace NSDocxRenderer
         m_dWidth		= 0;
         m_dHeight		= 0;
 
-        m_eAlignmentType = Unknown;
+        m_eAlignmentType = atatUnknown;
     }
     void CTextLine::Clear()
     {
@@ -453,35 +453,35 @@ namespace NSDocxRenderer
         if (fabs(dWidthOfPage/2 - m_dX - m_dWidth/2) <= delta && //если середины линий по x одинаковы
                  m_dWidth < maxTextLineWidth )
         {
-            m_eAlignmentType = ByCenter;
+            m_eAlignmentType = atatByCenter;
         }
         else if ((m_dX + m_dWidth/2) > (dWidthOfPage/2 + c_dCENTER_POSITION_ERROR_MM) && //середина строки правее центра страницы
                  m_dWidth < maxTextLineWidth)
         {
-            m_eAlignmentType = ByRightEdge;
+            m_eAlignmentType = atatByRightEdge;
         }
         else if ((m_dX + m_dWidth/2) < (dWidthOfPage/2 - c_dCENTER_POSITION_ERROR_MM) && //середина строки левее центра страницы
                  m_dWidth < maxTextLineWidth)
         {
-            m_eAlignmentType = ByLeftEdge;
+            m_eAlignmentType = atatByLeftEdge;
         }
         else if (fabs(dWidthOfPage/2 - m_dX - m_dWidth/2) <= delta &&
                  m_dWidth > maxTextLineWidth + maxTextLineWidth/2 )
         {
-            m_eAlignmentType = ByWidth;
+            m_eAlignmentType = atatByWidth;
         }
         else
         {
-            m_eAlignmentType = Unknown;
+            m_eAlignmentType = atatUnknown;
         }
     }
 
     bool CTextLine::AreAlignmentsAppropriate(const CTextLine* oSrc)
     {
-        if ((m_eAlignmentType == oSrc->m_eAlignmentType && m_eAlignmentType!= ByLeftEdge) ||
-            (m_eAlignmentType == ByWidth && oSrc->m_eAlignmentType == ByLeftEdge) ||
-            (m_eAlignmentType == ByWidth && oSrc->m_eAlignmentType == Unknown) ||
-            (m_eAlignmentType == Unknown && oSrc->m_eAlignmentType == ByWidth))
+        if ((m_eAlignmentType == oSrc->m_eAlignmentType && m_eAlignmentType!= atatByLeftEdge) ||
+            (m_eAlignmentType == atatByWidth && oSrc->m_eAlignmentType == atatByLeftEdge) ||
+            (m_eAlignmentType == atatByWidth && oSrc->m_eAlignmentType == atatUnknown) ||
+            (m_eAlignmentType == atatUnknown && oSrc->m_eAlignmentType == atatByWidth))
         {
             return true;
         }
@@ -581,10 +581,10 @@ namespace NSDocxRenderer
     {
         m_eType = etParagraph;
 
-        m_eTextConversionType	 = UnknownConversionType;
+        m_eTextConversionType	 = tctUnknown;
         m_bIsNeedFirstLineIndent = false;
         m_bIsAroundTextWrapping  = true; //по умолчанию в word
-        m_eTextAlignmentType     = TextAlignmentType_Unknown;
+        m_eTextAlignmentType     = tatUnknown;
 
         m_dLeft		= 0.0;
         m_dRight    = 0.0;
@@ -672,11 +672,11 @@ namespace NSDocxRenderer
 
         switch (m_eTextConversionType)
         {
-        case TextToFrame:
+        case tctTextToFrame:
         {
             oWriter.WriteString(L"<w:framePr");
 
-            if (m_eTextAssociationType == TextAssociationTypePlainParagraph)
+            if (m_eTextAssociationType == tatPlainParagraph)
             {
                 if (m_bIsAroundTextWrapping)
                 {
@@ -702,18 +702,18 @@ namespace NSDocxRenderer
             oWriter.WriteString(L"/>"); //конец w:framePr
             break;
         }
-        case TextToShape:
-        case TextToParagraph:
+        case tctTextToShape:
+        case tctTextToParagraph:
         {
             oWriter.WriteString(L"<w:spacing");
-            if (m_eTextConversionType == TextToParagraph)
+            if (m_eTextConversionType == tctTextToParagraph)
             {
                 oWriter.WriteString(L" w:before=\"");
                 oWriter.AddInt((int)(m_dSpaceBefore * c_dMMToDx));
                 oWriter.WriteString(L"\"");
             }
 
-            if (m_eTextConversionType == TextToShape)
+            if (m_eTextConversionType == tctTextToShape)
             {
                 oWriter.WriteString(L" w:after=\"");
                 oWriter.AddInt((int)(m_dSpaceAfter * c_dMMToDx));
@@ -734,7 +734,7 @@ namespace NSDocxRenderer
                 oWriter.AddInt((int)(m_dLeft * c_dMMToDx));
                 oWriter.WriteString(L"\"");
             }
-            if (m_eTextAssociationType == TextAssociationTypePlainParagraph && m_dRight > 0)
+            if (m_eTextAssociationType == tatPlainParagraph && m_dRight > 0)
             { 
                 oWriter.WriteString(L" w:right=\"");
                 oWriter.AddInt((int)(m_dRight * c_dMMToDx));
@@ -749,23 +749,23 @@ namespace NSDocxRenderer
             oWriter.WriteString(L"/>"); //конец w:ind
 
 
-            if (m_eTextAssociationType == TextAssociationTypePlainParagraph)
+            if (m_eTextAssociationType == tatPlainParagraph)
             {
                 switch (m_eTextAlignmentType)
                 {
-                case TextAlignmentType_ByCenter:
+                case tatByCenter:
                     oWriter.WriteString(L"<w:jc w:val=\"center\"/>");
                     break;
-                case TextAlignmentType_ByRightEdge:
+                case tatByRightEdge:
                     oWriter.WriteString(L"<w:jc w:val=\"end\"/>");
                     break;
-                case TextAlignmentType_ByWidth:
+                case tatByWidth:
                     oWriter.WriteString(L"<w:jc w:val=\"both\"/>");
                     break;
-                case TextAlignmentType_ByLeftEdge:
+                case tatByLeftEdge:
                     oWriter.WriteString(L"<w:jc w:val=\"begin\"/>");
                     break;
-                case TextAlignmentType_Unknown:
+                case tatUnknown:
                 default: //по умолчанию выравнивание по левому краю - можно ничего не добавлять
                     break;
                 }
@@ -782,7 +782,7 @@ namespace NSDocxRenderer
         for (size_t i = 0; i < nCount; ++i)
         {
             CTextLine* pTextLine = m_arLines[i];
-            if (m_eTextAssociationType != TextAssociationTypePlainParagraph)
+            if (m_eTextAssociationType != tatPlainParagraph)
             {
                 pTextLine->SortConts();
             }

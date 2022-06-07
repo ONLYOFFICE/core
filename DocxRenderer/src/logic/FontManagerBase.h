@@ -379,8 +379,8 @@ namespace NSFontManager
 	public:
 		enum MeasureType
 		{
-			MeasureTypeGlyph	= 0,
-			MeasureTypePosition	= 1
+            mtGlyph	= 0,
+            mtPosition	= 1
 		};
 
 	protected:

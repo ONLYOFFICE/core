@@ -17,7 +17,7 @@ namespace NSDocxRenderer
         m_dHeight		= 0;
 
         m_pCurrentLine	= NULL;
-        m_eTextAssociationType = TextAssociationTypePlainLine;
+        m_eTextAssociationType = tatPlainLine;
 
         m_bIsDeleteTextClipPage = true;
 
@@ -106,7 +106,7 @@ namespace NSDocxRenderer
 
     void CPage::SetCurrentLineByBaseline(const double& dBaseLinePos)
     {
-        if ((NULL == m_pCurrentLine) || (TextAssociationTypeBlockChar == m_eTextAssociationType))
+        if ((NULL == m_pCurrentLine) || (tatBlockChar == m_eTextAssociationType))
         {
             // пустая (в плане текста) страница
 
@@ -351,13 +351,13 @@ namespace NSDocxRenderer
             if (NULL != pGids)
             {
                 m_oManager.SetStringGid(1);
-                m_oManager.MeasureStringGids(pGids, nCount, dTextX, dTextY, _x, _y, _w, _h, CFontManager::MeasureTypePosition);
+                m_oManager.MeasureStringGids(pGids, nCount, dTextX, dTextY, _x, _y, _w, _h, CFontManager::mtPosition);
             }
             else
             {
                 // такого быть не должно (только из xps)
                 m_oManager.SetStringGid(0);
-                m_oManager.MeasureStringGids(pUnicodes, nCount, dTextX, dTextY, _x, _y, _w, _h, CFontManager::MeasureTypePosition);
+                m_oManager.MeasureStringGids(pUnicodes, nCount, dTextX, dTextY, _x, _y, _w, _h, CFontManager::mtPosition);
             }
 
             dTextW = _w;
@@ -459,8 +459,8 @@ namespace NSDocxRenderer
             else if ((dRight < dTextX) && ((dTextX - dRight) < m_oManager.m_dSpaceWidthMM))
             {
                 // продолжаем слово с пробелом
-                if (m_eTextAssociationType != TextAssociationTypePlainParagraph &&
-                    m_eTextAssociationType != TextAssociationTypeShapeLine)
+                if (m_eTextAssociationType != tatPlainParagraph &&
+                    m_eTextAssociationType != tatShapeLine)
                 {
                     pLastCont->m_oText += uint32_t(' ');
                 }
@@ -523,8 +523,8 @@ namespace NSDocxRenderer
                 if (dTextX > dRight && (dTextX - dRight) < 5 && fabs(m_dLastTextX_block - m_dLastTextX) < 0.01)
                 {
                     // продолжаем слово с пробелом
-                    if (m_eTextAssociationType != TextAssociationTypePlainParagraph &&
-                        m_eTextAssociationType != TextAssociationTypeShapeLine)
+                    if (m_eTextAssociationType != tatPlainParagraph &&
+                        m_eTextAssociationType != tatShapeLine)
                     {
                         pLastCont->m_oText += uint32_t(' ');
                     }
@@ -603,19 +603,19 @@ namespace NSDocxRenderer
 
         switch (m_eTextAssociationType)
         {
-        case TextAssociationTypeBlockChar:
+        case tatBlockChar:
             BuildByTypeBlockChar();
             break;
-        case TextAssociationTypeBlockLine:
+        case tatBlockLine:
             BuildByTypeBlockLine();
             break;
-        case TextAssociationTypePlainLine:
+        case tatPlainLine:
             BuildByTypePlainLine();
             break;
-        case TextAssociationTypeShapeLine:
+        case tatShapeLine:
             BuildByTypeShapeLine();
             break;
-        case TextAssociationTypePlainParagraph:
+        case tatPlainParagraph:
             BuildByTypePlainParagraph();
             break;
         default:
@@ -632,7 +632,7 @@ namespace NSDocxRenderer
 
             CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
             pParagraph->m_pManagerLight = &m_oManagerLight;
-            pParagraph->m_eTextConversionType = CParagraph::TextToFrame;
+            pParagraph->m_eTextConversionType = CParagraph::tctTextToFrame;
 
             pParagraph->m_dLeft	= pTextLine->m_dX;
             pParagraph->m_dTop	= pTextLine->m_dBaselinePos - pTextLine->m_dHeight - pTextLine->m_dBaselineOffset;
@@ -649,7 +649,7 @@ namespace NSDocxRenderer
 
         CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
         pParagraph->m_pManagerLight = &m_oManagerLight;
-        pParagraph->m_eTextConversionType = CParagraph::TextToFrame;
+        pParagraph->m_eTextConversionType = CParagraph::tctTextToFrame;
 
         pParagraph->m_dLeft	= pFirstLine->m_dX;
         pParagraph->m_dTop	= pFirstLine->m_dBaselinePos - pFirstLine->m_dHeight - pFirstLine->m_dBaselineOffset;
@@ -665,7 +665,7 @@ namespace NSDocxRenderer
 
             CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
             pParagraph->m_pManagerLight = &m_oManagerLight;
-            pParagraph->m_eTextConversionType = CParagraph::TextToFrame;
+            pParagraph->m_eTextConversionType = CParagraph::tctTextToFrame;
 
             if (((fabs(pTextLine->m_dBaselinePos - pTextLine->m_dHeight - pFirstLine->m_dBaselinePos) > c_dSTANDART_STRING_HEIGHT_MM) && (pTextLine->m_dX == pFirstLine->m_dX)) ||
                     ((pTextLine->m_dX != pFirstLine->m_dX) && (pTextLine->m_dBaselinePos != pFirstLine->m_dBaselinePos)))
@@ -784,17 +784,22 @@ namespace NSDocxRenderer
             {
                 //Пусть обе строки пока будут шейпами
                 CreateSingleLineShape(pCurrLine);
-                dBeforeSpacingWithShapes += pCurrLine->m_dHeight + std::abs(dCurrBeforeSpacing);
-
                 pNextLine = new CTextLine(*pNextLine);
-                dPrevBeforeSpacing = dCurrBeforeSpacing;
-                dCurrBeforeSpacing = pNextLine->CalculateBeforeSpacing(&dPreviousStringOffset);
-                dPreviousStringOffset = pNextLine->CalculateStringOffset();
-
                 CreateSingleLineShape(pNextLine);
-                dBeforeSpacingWithShapes += pNextLine->m_dHeight + std::abs(dCurrBeforeSpacing);
 
-                nIndex++;*/
+                double dCurrentAdditive = pCurrLine->m_dHeight + std::max(dCurrBeforeSpacing, 0.0);
+
+                dNextBeforeSpacing = pNextLine->CalculateBeforeSpacing(&dPreviousStringOffset);
+
+                dCurrentAdditive -= pNextLine->m_dHeight + dNextBeforeSpacing;
+                dBeforeSpacingWithShapes += dCurrentAdditive;
+
+                //СЃРјРµС‰Р°РµРј СЂР°Р±РѕС‡СѓСЋ С‚РѕС‡РєСѓ РЅР° СЃР»РµРґСѓСЋС‰СѓСЋ Р»РёРЅРёСЋ
+                nIndex++;
+                dPrevBeforeSpacing = dCurrBeforeSpacing;
+                dCurrBeforeSpacing = dNextBeforeSpacing;
+                //dPreviousStringOffset = pNextLine->CalculateStringOffset();*/
+
 
                 //Или определим какая из строк будет шейпом
                 /*if (pCurrLine->m_dWidth >= pNextLine->m_dWidth)
@@ -837,7 +842,7 @@ namespace NSDocxRenderer
                 //наверное это сплошной текст
                 pParagraph = new CParagraph(m_eTextAssociationType);
                 pParagraph->m_pManagerLight = &m_oManagerLight;
-                pParagraph->m_eTextConversionType = CParagraph::TextToParagraph;
+                pParagraph->m_eTextConversionType = CParagraph::tctTextToParagraph;
 
                 //делаем абзац в сплошном тексте
                 pParagraph->m_bIsNeedFirstLineIndent = pCurrLine->m_dX > pNextLine->m_dX ? true : false;
@@ -852,13 +857,12 @@ namespace NSDocxRenderer
 
                 if (fabs(dCurrRight - dNextRight) <= c_dERROR_OF_RIGHT_BORDERS_MM) //предположение
                 {
-                    pParagraph->m_eTextAlignmentType = CParagraph::TextAlignmentType_ByWidth;
+                    pParagraph->m_eTextAlignmentType = CParagraph::tatByWidth;
                 }
 
                 //размер строк во всем параграфе
                 pParagraph->m_dHeight = pCurrLine->m_dHeight;
-                pParagraph->m_dSpaceBefore = dBeforeSpacingWithShapes + /*std::max(dBeforeSpacingWithShapes, 0.0) +*/ std::max(dCurrBeforeSpacing, 0.0);
-                dBeforeSpacingWithShapes = 0;
+                pParagraph->m_dSpaceBefore = std::max(dCurrBeforeSpacing, 0.0);
 
                 //Объединим 2 строчки в параграф
                 pParagraph->m_arLines.push_back(pCurrLine);
@@ -933,16 +937,26 @@ namespace NSDocxRenderer
                 pParagraph->m_dRight -= RightBorderCorrection(pParagraph->m_dRight);
                 pParagraph->m_dSpaceBefore = std::abs(pParagraph->m_dSpaceBefore - dCorrectionBeforeSpacing);
 
+                pParagraph->m_dSpaceBefore += std::max(dBeforeSpacingWithShapes, 0.0);
+                dBeforeSpacingWithShapes = 0;
+
                 m_arParagraphs.push_back(pParagraph);
             }
             else
             {
                 //будет отдельной параграфом-строчкой
-                CreateSingleLineParagraph(pCurrLine, &dCurrRight, &dCurrBeforeSpacing);
+                //CreateSingleLineParagraph(pCurrLine, &dCurrRight, &dCurrBeforeSpacing);
 
                 //или будет шейпом для теста - вроде неплохо работает без учета проблем в todo
-                //dBeforeSpacingWithShapes += pCurrLine->m_dHeight + std::max(dCurrBeforeSpacing, 0.0);
-                //CreateSingleLineShape(pCurrLine);
+                CreateSingleLineShape(pCurrLine);
+
+                double dCurrentAdditive = pCurrLine->m_dHeight + std::max(dCurrBeforeSpacing, 0.0);
+                /*if (pNextLine && pCurrLine->AreLinesCrossing(pNextLine))
+                {
+                    dNextBeforeSpacing = pNextLine->CalculateBeforeSpacing(&dPreviousStringOffset);
+                    dCurrentAdditive -= pNextLine->m_dHeight + dNextBeforeSpacing;//std::max(dNextBeforeSpacing, 0.0);
+                }*/
+                dBeforeSpacingWithShapes += dCurrentAdditive;
             }
         }
     }
@@ -959,7 +973,7 @@ namespace NSDocxRenderer
     {
         CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
         pParagraph->m_pManagerLight = &m_oManagerLight;
-        pParagraph->m_eTextConversionType = CParagraph::TextToParagraph;
+        pParagraph->m_eTextConversionType = CParagraph::tctTextToParagraph;
 
         pParagraph->m_dLeft	= pLine->m_dX;
         pParagraph->m_dTop	= pLine->m_dBaselinePos - pLine->m_dHeight - pLine->m_dBaselineOffset;
@@ -986,7 +1000,7 @@ namespace NSDocxRenderer
     {
         CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
         pParagraph->m_pManagerLight = &m_oManagerLight;
-        pParagraph->m_eTextConversionType = CParagraph::TextToShape;
+        pParagraph->m_eTextConversionType = CParagraph::tctTextToShape;
         pParagraph->m_arLines.push_back(pLine);
 
         CShape* pShape = new CShape();

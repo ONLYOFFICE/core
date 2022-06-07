@@ -9,6 +9,15 @@ namespace NSDocxRenderer
     class CVectorGraphics
     {
         public:
+            enum VectorGraphicsType
+            {
+                vgtMove = 0,
+                vgtLine = 1,
+                vgtCurve = 2,
+                vgtClose = 3
+            };
+
+        public:
             double*	m_pData;
             size_t	m_lSize;
 

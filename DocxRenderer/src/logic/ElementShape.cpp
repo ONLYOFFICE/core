@@ -59,7 +59,7 @@ namespace NSDocxRenderer
     void CVectorGraphics::MoveTo(const double &x1, const double &y1)
     {
         AddSize(3);
-        *m_pDataCur = 0;
+        *m_pDataCur = vgtMove;
         ++m_pDataCur;
 
         *m_pDataCur = x1;
@@ -75,7 +75,7 @@ namespace NSDocxRenderer
     void CVectorGraphics::LineTo(const double &x1, const double &y1)
     {
         AddSize(3);
-        *m_pDataCur = 1;
+        *m_pDataCur = vgtLine;
         ++m_pDataCur;
 
         *m_pDataCur = x1;
@@ -93,7 +93,7 @@ namespace NSDocxRenderer
                                   const double &x3, const double &y3)
     {
         AddSize(7);
-        *m_pDataCur = 2;
+        *m_pDataCur = vgtCurve;
         ++m_pDataCur;
 
         *m_pDataCur = x1;
@@ -119,7 +119,7 @@ namespace NSDocxRenderer
     void CVectorGraphics::Close()
     {
         AddSize(1);
-        *m_pDataCur = 3;
+        *m_pDataCur = vgtClose;
         ++m_pDataCur;
 
         m_lSizeCur += 1;
@@ -257,8 +257,11 @@ namespace NSDocxRenderer
         double *pData = pVector->m_pData;
         while (nCount > 0)
         {
-            double dType = *pData++;
-            if (0 == dType)
+            CVectorGraphics::VectorGraphicsType eType = static_cast<CVectorGraphics::VectorGraphicsType>(*pData++);
+
+            switch (eType)
+            {
+            case CVectorGraphics::vgtMove:
             {
                 LONG lX = (LONG)((*pData - m_dLeft) * lCoordSize / m_dWidth);
                 ++pData;
@@ -271,8 +274,9 @@ namespace NSDocxRenderer
                 oWriter.AddInt(lY);
 
                 nCount -= 3;
+                break;
             }
-            else if (1 == dType)
+            case CVectorGraphics::vgtLine:
             {
                 LONG lX = (LONG)((*pData - m_dLeft) * lCoordSize / m_dWidth);
                 ++pData;
@@ -285,8 +289,9 @@ namespace NSDocxRenderer
                 oWriter.AddInt(lY);
 
                 nCount -= 3;
+                break;
             }
-            else if (2 == dType)
+            case CVectorGraphics::vgtCurve:
             {
                 LONG lX1 = (LONG)((*pData - m_dLeft) * lCoordSize / m_dWidth);
                 ++pData;
@@ -317,11 +322,13 @@ namespace NSDocxRenderer
                 oWriter.AddInt(lY3);
 
                 nCount -= 7;
+                break;
             }
-            else
-            {
+            case CVectorGraphics::vgtClose:
+            default:
                 oWriter.AddCharSafe('x');
                 --nCount;
+                break;
             }
         }
 

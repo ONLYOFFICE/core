@@ -567,8 +567,7 @@ namespace NSDoctRenderer
                 JSSmart<CJSLocalScope>   handle_scope  = context->CreateLocalScope();
 
                 context->CreateGlobalForContext();
-                CNativeControlEmbed::CreateObjectBuilderInContext("CreateNativeEngine", context);
-                CMemoryStreamEmbed::CreateObjectInContext  ("CreateNativeMemoryStream", context);
+                CNativeControlEmbed::CreateObjectBuilderInContext("CreateNativeEngine", context);                
                 NSJSBase::CreateDefaults(context);
                 context->CreateContext();
 

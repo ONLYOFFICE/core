@@ -39,15 +39,15 @@ namespace MetaFile
                 virtual void HANDLE_META_INVERTREGION(unsigned short ushRegionIndex) = 0;
                 virtual void HANDLE_META_LINETO(short shY, short shX) = 0;
                 virtual void HANDLE_META_PAINTREGION(unsigned short ushRegionIndex) = 0;
-                virtual void HANDLE_META_PATBLT(unsigned int unRasterOperation, short shX, short shY, short shW, short shH) = 0;
-                virtual void HANDLE_META_PIE(short shXRadial1, short shYRadial1, short shXRadial2, short shYRadial2, short shL, short shT, short shR, short shB) = 0;
+                virtual void HANDLE_META_PATBLT(unsigned int unRasterOperation, short shH, short shW, short shY, short shX) = 0;
+                virtual void HANDLE_META_PIE(short shXRadial1, short shYRadial1, short shXRadial2, short shYRadial2, short shB, short shR, short shT, short shL) = 0;
                 virtual void HANDLE_META_POLYLINE(const std::vector<TWmfPointS>& arPoints) = 0;
                 virtual void HANDLE_META_POLYGON(const std::vector<TWmfPointS>& arPoints) = 0;
                 virtual void HANDLE_META_POLYPOLYGON(const std::vector<std::vector<TWmfPointS>>& arPolygons) = 0;
-                virtual void HANDLE_META_RECTANGLE(short shL, short shT, short shR, short shB) = 0;
-                virtual void HANDLE_META_ROUNDRECT(short shL, short shT, short shR, short shB, short shW, short shH) = 0;
-                virtual void HANDLE_META_SETPIXEL(const TWmfColor& oColor, short shX, short shY) = 0;
-                virtual void HANDLE_META_TEXTOUT(short shStringLength, unsigned char* pString, short shX, short shY) = 0;
+                virtual void HANDLE_META_RECTANGLE(short shB, short shR, short shT, short shL) = 0;
+                virtual void HANDLE_META_ROUNDRECT(short shH, short shW, short shB, short shR, short shT, short shL) = 0;
+                virtual void HANDLE_META_SETPIXEL(const TWmfColor &oColor, short shY, short shX) = 0;
+                virtual void HANDLE_META_TEXTOUT(short shStringLength, unsigned char* pString, short shY, short shX) = 0;
                 //-----------------------------------------------------------
                 // 2.3.4 Object records
                 //-----------------------------------------------------------

@@ -60,6 +60,23 @@ namespace MetaFile
 		}
 	};
 
+        struct TSvgViewport
+        {
+                double dX;
+                double dY;
+                double dWidth;
+                double dHeight;
+
+                TSvgViewport() : dX(0), dY(0), dWidth(0), dHeight(0) {}
+                bool Empty() const
+                {
+                        return 0 == dX == dY == dWidth == dHeight;
+                }
+        };
+
+        typedef std::pair<const std::wstring, std::wstring>     NodeAttribute;
+        typedef std::vector<NodeAttribute>                      NodeAttributes;
+
 	class CDataStream
 	{
 	public:

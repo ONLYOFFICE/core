@@ -42,33 +42,31 @@ namespace MetaFile
         {
                 m_oViewport.dWidth      = oTEmfHeader.oDevice.cx;
                 m_oViewport.dHeight     = oTEmfHeader.oDevice.cy;
-
-                m_oXmlWriter.WriteNodeEnd(L"svg", true, false);
         }
 
         void CEmfInterpretatorSvg::HANDLE_EMR_ALPHABLEND(const TEmfAlphaBlend &oTEmfAlphaBlend, CDataStream &oDataStream)
         {
-                //отрисовка в DrawBitmap
+                //запись реализована в DrawBitmap
         }
 
         void CEmfInterpretatorSvg::HANDLE_EMR_STRETCHDIBITS(const TEmfStretchDIBITS &oTEmfStretchDIBITS, CDataStream &oDataStream)
         {
-                //отрисовка в DrawBitmap
+                //запись реализована в DrawBitmap
         }
 
         void CEmfInterpretatorSvg::HANDLE_EMR_BITBLT(const TEmfBitBlt &oTEmfBitBlt, CDataStream &oDataStream)
         {
-                //отрисовка в DrawBitmap
+                //запись реализована в DrawBitmap
         }
 
         void CEmfInterpretatorSvg::HANDLE_EMR_SETDIBITSTODEVICE(const TEmfSetDiBitsToDevice &oTEmfSetDiBitsToDevice, CDataStream &oDataStream)
         {
-                //отрисовка в DrawBitmap
+                //запись реализована в DrawBitmap
         }
 
         void CEmfInterpretatorSvg::HANDLE_EMR_STRETCHBLT(const TEmfStretchBLT &oTEmfStretchBLT, CDataStream &oDataStream)
         {
-                //отрисовка в DrawBitmap
+                //запись реализована в DrawBitmap
         }
 
         void CEmfInterpretatorSvg::HANDLE_EMR_EOF()
@@ -425,7 +423,7 @@ namespace MetaFile
 
         void CEmfInterpretatorSvg::HANDLE_EMR_CHORD(const TEmfRectL &oBox, const TEmfPointL &oStart, const TEmfPointL &oEnd)
         {
-
+                //TODO:: реализовать
         }
 
         void CEmfInterpretatorSvg::HANDLE_EMR_ELLIPSE(const TEmfRectL &oBox)
@@ -857,6 +855,7 @@ namespace MetaFile
                 m_oXmlWriter.WriteNodeBegin(L"svg", true);
                 m_oXmlWriter.WriteAttribute(L"xmlns", L"http://www.w3.org/2000/svg");
                 m_oXmlWriter.WriteAttribute(L"xmlns:xlink", L"http://www.w3.org/1999/xlink");
+                m_oXmlWriter.WriteNodeEnd(L"svg", true, false);
         }
 
         void CEmfInterpretatorSvg::End()
@@ -893,7 +892,8 @@ namespace MetaFile
                 }
 
 //                if (m_oViewport.dX < 0 || m_oViewport.dY < 0)
-                wsXml.insert(5, L"viewBox=\"" + std::to_wstring(m_oViewport.dX) + L' ' + std::to_wstring(m_oViewport.dY) + L' ' + std::to_wstring(m_oViewport.dWidth) + L' ' + std::to_wstring(m_oViewport.dHeight) + L"\" ");
+                if (!m_oViewport.Empty())
+                        wsXml.insert(5, L"viewBox=\"" + std::to_wstring(m_oViewport.dX) + L' ' + std::to_wstring(m_oViewport.dY) + L' ' + std::to_wstring(m_oViewport.dWidth) + L' ' + std::to_wstring(m_oViewport.dHeight) + L"\" ");
 
                 if (0 != m_oSizeWindow.cx && 0 != m_oSizeWindow.cy)
                         wsXml.insert(5, L"width=\"" + std::to_wstring(m_oSizeWindow.cx) + L"\" height=\"" + std::to_wstring(m_oSizeWindow.cy) + L"\" ");

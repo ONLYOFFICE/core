@@ -81,8 +81,16 @@ namespace MetaFile
 		if (NULL == wsFilePath)
 			return;
 
-		m_oEmfFile.SetOutputDevice(wsFilePath, InterpretatorType::Svg, unWidth, unHeight);
-		m_oEmfFile.PlayMetaFile();
+		if (c_lMetaWmf == m_lType)
+		{
+			m_oWmfFile.SetOutputDevice(wsFilePath, InterpretatorType::Svg, unWidth, unHeight);
+			m_oWmfFile.PlayMetaFile();
+		}
+		else if (c_lMetaEmf == m_lType)
+		{
+			m_oEmfFile.SetOutputDevice(wsFilePath, InterpretatorType::Svg, unWidth, unHeight);
+			m_oEmfFile.PlayMetaFile();
+		}
 	}
 
 	void CMetaFile::ConvertToXml(const wchar_t *wsFilePath)

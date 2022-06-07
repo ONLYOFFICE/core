@@ -137,7 +137,7 @@ namespace MetaFile
                 void HANDLE_META_INVERTREGION(unsigned short ushRegionIndex);
                 void HANDLE_META_LINETO(short shY, short shX);
                 void HANDLE_META_PAINTREGION(unsigned short ushRegionIndex);
-                void HANDLE_META_PATBLT(unsigned int unRasterOperation, short shX, short shY, short shW, short shH);
+                void HANDLE_META_PATBLT(unsigned int unRasterOperation, short shH, short shW, short shY, short shX);
                 void HANDLE_META_PIE(short shXRadial1, short shYRadial1, short shXRadial2, short shYRadial2, short shB, short shR, short shT, short shL);
                 void HANDLE_META_POLYLINE(const std::vector<TWmfPointS>& arPoints);
                 void HANDLE_META_POLYGON(const std::vector<TWmfPointS>& arPoints);

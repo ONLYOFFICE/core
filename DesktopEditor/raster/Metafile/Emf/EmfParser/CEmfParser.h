@@ -6,8 +6,7 @@
 
 namespace MetaFile
 {
-        class
-                        CEmfParser : public CEmfParserBase
+        class CEmfParser : public CEmfParserBase
         {
         public:
                 CEmfParser();

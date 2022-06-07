@@ -1,24 +1,12 @@
 #ifndef CEMFINTERPRETATORSVG_H
 #define CEMFINTERPRETATORSVG_H
 
+#include "../../Common/MetaFileUtils.h"
 #include "CEmfInterpretatorBase.h"
 #include "../EmfParser/CEmfParserBase.h"
 
 namespace MetaFile
 {
-        struct TSvgViewport
-        {
-                double dX;
-                double dY;
-                double dWidth;
-                double dHeight;
-
-                TSvgViewport() : dX(0), dY(0), dWidth(0), dHeight(0) {}
-        };
-
-        typedef std::pair<const std::wstring, std::wstring>   NodeAttribute;
-        typedef std::vector<NodeAttribute>              NodeAttributes;
-
         class CEmfInterpretatorSvg : public CEmfInterpretatorBase
         {
             public:

@@ -45,7 +45,7 @@
 #include "js_internal/js_base.h"
 #include "embed/NativeBuilderEmbed.h"
 #include "embed/NativeControlEmbed.h"
-#include "embed/MemoryStreamEmbed.h"
+#include "embed/GraphicsEmbed.h"
 #include "embed/Default.h"
 #ifdef LINUX
 #include <unistd.h>

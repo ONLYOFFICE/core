@@ -38,7 +38,7 @@
 
 #include "embed/Default.h"
 #include "embed/NativeControlEmbed.h"
-#include "embed/MemoryStreamEmbed.h"
+#include "embed/GraphicsEmbed.h"
 
 #include "./config.h"
 #include <iostream>
@@ -567,7 +567,8 @@ namespace NSDoctRenderer
                 JSSmart<CJSLocalScope>   handle_scope  = context->CreateLocalScope();
 
                 context->CreateGlobalForContext();
-                CNativeControlEmbed::CreateObjectBuilderInContext("CreateNativeEngine", context);                
+                CNativeControlEmbed::CreateObjectBuilderInContext("CreateNativeEngine", context);
+                CGraphicsEmbed::CreateObjectInContext("CreateNativeGraphics", context);
                 NSJSBase::CreateDefaults(context);
                 context->CreateContext();
 

@@ -53,6 +53,7 @@ CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder)
 
     m_context->CreateGlobalForContext();
     CNativeControlEmbed::CreateObjectBuilderInContext("CreateNativeEngine", m_context);
+    CGraphicsEmbed::CreateObjectInContext("CreateNativeGraphics", m_context);
     NSJSBase::CreateDefaults(m_context);
     m_context->CreateContext();
 

@@ -591,6 +591,10 @@ public:
 		LONG         m_lShiftY;
 		std::wstring m_wsPicturePath;
 	};
+	class CSignatureFormPr
+	{
+
+	};
 
 public:
 	CFormFieldInfo()
@@ -781,6 +785,14 @@ public:
 	{
 		return &m_oPicturePr;
 	}
+	CSignatureFormPr* GetSignatureFormPr()
+	{
+		return &m_oSignaturePr;
+	}
+	const CSignatureFormPr* GetSignaturePr() const
+	{
+		return &m_oSignaturePr;
+	}
 
 
 private:
@@ -802,10 +814,11 @@ private:
 	LONG         m_lShdColor;
 	BYTE         m_nJc;
 
-	CTextFormPr     m_oTextPr;
-	CDropDownFormPr m_oDropDownPr;
-	CCheckBoxFormPr m_oCheckBoxPr;
-	CPictureFormPr  m_oPicturePr;
+	CTextFormPr      m_oTextPr;
+	CDropDownFormPr  m_oDropDownPr;
+	CCheckBoxFormPr  m_oCheckBoxPr;
+	CPictureFormPr   m_oPicturePr;
+	CSignatureFormPr m_oSignaturePr;
 
 };
 

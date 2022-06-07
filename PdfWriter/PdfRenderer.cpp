@@ -1967,6 +1967,11 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 
 		pField->SetAppearance(pImage);
 	}
+	else if (oInfo.IsSignature())
+	{
+		const CFormFieldInfo::CSignatureFormPr* pPr = oInfo.GetSignaturePr();
+		// Вычисление полей сигнатуры
+	}
 
 
 	// Выставляем имя в конце, потому что там возможно копирование настроек поля в новое родительское поле, поэтому к текущему моменту

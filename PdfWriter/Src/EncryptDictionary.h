@@ -80,6 +80,11 @@ namespace PdfWriter
 		void ByteRangeOffset(int nBegin, int nEnd);
 		void WriteToStream(CStream* pStream, int nFileEnd);
 		void SetCert(const std::wstring& sCertFile, const std::string& sCertPassword);
+
+		void SetName(const std::string& sName);
+		void SetReason(const std::string& sReason);
+		void SetContacts(const std::string& sContacts);
+		void SetDate();
 	private:
 		CPDFSigner* m_oSigner;
 

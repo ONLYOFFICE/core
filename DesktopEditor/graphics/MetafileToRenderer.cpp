@@ -991,6 +991,11 @@ namespace NSOnlineOfficeBinToPdf
 					if (nFlags & (1 << 22))
 						pPr->SetPicturePath(pCorrector->GetImagePath(ReadString(current, curindex)));
 				}
+				else if (oInfo.IsSignature())
+				{
+					CFormFieldInfo::CSignatureFormPr* pPr = oInfo.GetSignatureFormPr();
+					// Установка полей сигнатуры
+				}
 
 				if (oInfo.IsValid())
 					pRenderer->AddFormField(oInfo);

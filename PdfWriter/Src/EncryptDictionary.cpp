@@ -216,50 +216,23 @@ namespace PdfWriter
         pXref->Add(this);
 
         Add("Type", "Sig");
-        Add("Filter", "Adobe.PPKLite"); // Имя предпочтительного обработчика подписи по умолчанию
-        Add("SubFilter", "adbe.pkcs7.detached"); // Кодировка значения подписи, 12.8.3 Совместимость подписи
+        Add("Filter", "Adobe.PPKLite");
+        Add("SubFilter", "adbe.pkcs7.detached");
 
-        // Подписи PKCS#1 - adbe.x509.rsa_sha1, в котором используется алгоритм шифрования RSA и метод дайджеста SHA-1.
-        // Цепочка сертификатов подписывающей стороны должна храниться в записи Cert
-
-        // Подписи PKCS#7 должен соответствовать синтаксису криптографических сообщений RFC3852
-
-        // adbe.pkcs7.detached - дайджест исходного подписанного сообщения в диапазоне байтов документа,
-        // должен быть включен в качестве обычного поля SignedData PKCS#7.
-        // Никакие данные не должны быть инкапсулированы в поле SignedData PKCS#7
-
-        // adbe.pkcs7.sha1 - дайджест SHA1 диапазона байтов документа
-        // должен быть инкапсулирован в поле SignedData PKCS#7 с ContentInfo типа Data.
-        // Дайджест этих SignedData должен быть включен как обычный дайджест PKCS#7
-
-
-        // Память под дайджест должна быть выделена заранее, т.к. заполнение происходит после записи всего документа
-        // Размер дайджеста должен быть исчерпывающим, а лишняя часть должна быть заполнена нулями
         unsigned int unDigestLength = 15000;
         BYTE* pDigest = new BYTE[unDigestLength];
         memset(pDigest, 0, unDigestLength);
-        // Значение подписи, дайджест диапазона байтов
         Add("Contents", new CBinaryObject(pDigest, unDigestLength));
         RELEASEARRAYOBJECTS(pDigest);
-        // Для подписей с открытым ключом Contents должен быть либо двоичным объектом данных PKCS#1 в кодировке DER,
-        // либо объектом двоичных данных PKCS#7 в кодировке DER
-
 
         CArrayObject* pByteRange = new CArrayObject();
         if (!pByteRange)
             return;
-        // Массив пар целых чисел (начальное смещение в байтах, длина в байтах),
-        // который должен описывать точный диапазон байтов для вычисления дайджеста
         Add("ByteRange", pByteRange);
         pByteRange->Add(0);
         pByteRange->Add(1234567890);
         pByteRange->Add(1234567890);
         pByteRange->Add(1234567890);
-
-        // Диапазоны данных используемые для вычисления Contents - обычно включается всё до < у Contents, и после > у Contents до конца файла
-        // Таким образом ByteRange вычисляется при окончательной записи - 0 положение_на_начало_записи_Contents положение_на_конец_записи_Contents
-        // количество_байт_до_конца_файла...
-
 
         // Reference - Массив справочных словарей сигнатур
 
@@ -267,38 +240,6 @@ namespace PdfWriter
         // количество измененных полей и количество заполненных полей
         // Порядок подписей определяется значением ByteRange. Поскольку каждая подпись приводит к добавочному сохранению,
         // более поздние подписи имеют большее значение длины
-
-        // Name - Текстовая строка, Имя лица или органа, подписавшего документ.
-        // Значение следует использовать когда невозможно извлечь имя из подписи или сертификата подписавшего.
-
-        // M - Дата, Время подписания
-        char sTemp[DATE_TIME_STR_LEN + 1];
-        char* pTemp = NULL;
-
-        MemSet(sTemp, 0, DATE_TIME_STR_LEN + 1);
-        time_t oTime = time(0);
-        struct tm* oNow = gmtime(&oTime);
-
-        pTemp = (char*)MemCpy((BYTE*)sTemp, (BYTE*)"D:", 2);
-        *pTemp++;
-        *pTemp++;
-        pTemp = ItoA2(pTemp, oNow->tm_year + 1900, 5);
-        pTemp = ItoA2(pTemp, oNow->tm_mon + 1, 3);
-        pTemp = ItoA2(pTemp, oNow->tm_mday, 3);
-        pTemp = ItoA2(pTemp, oNow->tm_hour, 3);
-        pTemp = ItoA2(pTemp, oNow->tm_min, 3);
-        pTemp = ItoA2(pTemp, oNow->tm_sec, 3);
-        *pTemp++ = '+';
-        pTemp = ItoA2(pTemp, 0, 3);
-        *pTemp++ = '\'';
-        pTemp = ItoA2(pTemp, 0, 3);
-        *pTemp++ = '\'';
-        *pTemp = 0;
-
-        // Значение следует использовать когда время подписания недоступно в подписи
-        Add("M", new CStringObject(sTemp));
-
-        // Reason - Строка, Причина подписания, например (Я согласен)
 
         // Prop_Build - Словарь, который может использоваться обработчиком подписи для записи информации о состоянии компьютерной среды,
         // используемой для подписи, такой как имя обработчика, используемого для создания подписи, дата сборки программного обеспечения,
@@ -402,5 +343,51 @@ namespace PdfWriter
     {
         RELEASEOBJECT(m_oSigner);
         m_oSigner = new CPDFSigner(sCertFile, sCertPassword);
+    }
+    void CSignatureDict::SetName(const std::string& sName)
+    {
+        // Name - Cтрока, Имя лица или органа, подписавшего документ.
+        // Значение следует использовать когда невозможно извлечь имя из подписи или сертификата подписавшего.
+        Add("Name", new CStringObject(sName.c_str()));
+    }
+    void CSignatureDict::SetReason(const std::string& sReason)
+    {
+        // Reason - Строка, Причина подписания, например (Я согласен)
+        Add("Reason", new CStringObject(sReason.c_str()));
+    }
+    void CSignatureDict::SetContacts(const std::string& sContacts)
+    {
+        // ContactInfo - Строка, Информация, предоставленная подписывающей стороной,
+        // чтобы получатель мог связаться с подписывающей стороной для проверки подписи, например (номер_телефона)
+        Add("ContactInfo", new CStringObject(sContacts.c_str()));
+    }
+    void CSignatureDict::SetDate()
+    {
+        // M - Дата, Время подписания
+        // Значение следует использовать когда время подписания недоступно в подписи
+        char sTemp[DATE_TIME_STR_LEN + 1];
+        char* pTemp = NULL;
+
+        MemSet(sTemp, 0, DATE_TIME_STR_LEN + 1);
+        time_t oTime = time(0);
+        struct tm* oNow = gmtime(&oTime);
+
+        pTemp = (char*)MemCpy((BYTE*)sTemp, (BYTE*)"D:", 2);
+        *pTemp++;
+        *pTemp++;
+        pTemp = ItoA2(pTemp, oNow->tm_year + 1900, 5);
+        pTemp = ItoA2(pTemp, oNow->tm_mon + 1, 3);
+        pTemp = ItoA2(pTemp, oNow->tm_mday, 3);
+        pTemp = ItoA2(pTemp, oNow->tm_hour, 3);
+        pTemp = ItoA2(pTemp, oNow->tm_min, 3);
+        pTemp = ItoA2(pTemp, oNow->tm_sec, 3);
+        *pTemp++ = '+';
+        pTemp = ItoA2(pTemp, 0, 3);
+        *pTemp++ = '\'';
+        pTemp = ItoA2(pTemp, 0, 3);
+        *pTemp++ = '\'';
+        *pTemp = 0;
+
+        Add("M", new CStringObject(sTemp));
     }
 }

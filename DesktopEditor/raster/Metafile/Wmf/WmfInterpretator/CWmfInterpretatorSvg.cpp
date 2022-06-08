@@ -259,7 +259,7 @@ namespace MetaFile
 
                 AddStroke(arAttributes);
 
-                UpdateTransform(arPoints);
+                UpdateTransform(arPoints, arAttributes);
 
                 WriteNode(L"polyline", arAttributes);
         }
@@ -279,7 +279,7 @@ namespace MetaFile
                 AddStroke(arAttributes);
                 AddFill(arAttributes);
 
-                UpdateTransform(arPoints);
+                UpdateTransform(arPoints, arAttributes);
 
                 WriteNode(L"polygon", arAttributes);
         }
@@ -407,7 +407,6 @@ namespace MetaFile
 
         void CWmfInterpretatorSvg::HANDLE_META_CREATEBRUSHINDIRECT(const TWmfLogBrush &oBrush)
         {
-
         }
 
         void CWmfInterpretatorSvg::HANDLE_META_CREATEFONTINDIRECT(const CWmfFont &oFont)
@@ -437,7 +436,6 @@ namespace MetaFile
 
         void CWmfInterpretatorSvg::HANDLE_META_DELETEOBJECT(unsigned short ushIndex)
         {
-
         }
 
         void CWmfInterpretatorSvg::HANDLE_META_DIBCREATEPATTERNBRUSH(unsigned short ushStyle, unsigned short ushColorUsage, const CWmfBrush &oBrush, CDataStream &oDataStream)
@@ -452,7 +450,6 @@ namespace MetaFile
 
         void CWmfInterpretatorSvg::HANDLE_META_SELECTOBJECT(unsigned short ushIndex)
         {
-
         }
 
         void CWmfInterpretatorSvg::HANDLE_META_SELECTPALETTE(unsigned short ushIndex)
@@ -620,16 +617,12 @@ namespace MetaFile
                         {
                                 nFlipX = -1;
                                 bFlipped = true;
-
-                                m_oViewport.dX += m_oViewport.dWidth;
                         }
 
                         if (m_pParser->IsWindowFlippedY())
                         {
                                 nFlipY = -1;
                                 bFlipped = true;
-
-                                m_oViewport.dY += m_oViewport.dHeight;
                         }
 
                         if (nFlipX < 0 || nFlipY < 0 || bFlipped)
@@ -637,7 +630,8 @@ namespace MetaFile
                 }
 
 //                if (m_oViewport.dX < 0 || m_oViewport.dY < 0)
-                wsXml.insert(5, L"viewBox=\"" + std::to_wstring(m_oViewport.dX) + L' ' + std::to_wstring(m_oViewport.dY) + L' ' + std::to_wstring(m_oViewport.dWidth) + L' ' + std::to_wstring(m_oViewport.dHeight) + L"\" ");
+                if (!m_oViewport.Empty())
+                        wsXml.insert(5, L"viewBox=\"" + std::to_wstring(m_oViewport.dLeft) + L' ' + std::to_wstring(m_oViewport.dTop) + L' ' + std::to_wstring(m_oViewport.GetWidth()) + L' ' + std::to_wstring(m_oViewport.GetHeight()) + L"\" ");
 
                 if (0 != m_oSizeWindow.cx && 0 != m_oSizeWindow.cy)
                         wsXml.insert(5, L"width=\"" + std::to_wstring(m_oSizeWindow.cx) + L"\" height=\"" + std::to_wstring(m_oSizeWindow.cy) + L"\" ");
@@ -729,8 +723,8 @@ namespace MetaFile
         {
                 NodeAttributes arNodeAttributes;
 
-                std::wstring wsXCoord = std::to_wstring(TranslateX(dX));
-                std::wstring wsYCoord = std::to_wstring(TranslateY(dY));
+                double dXCoord = TranslateX(dX);
+                double dYCoord = TranslateY(dY);
 
                 if (NULL != m_pParser && NULL != m_pParser->GetFont())
                 {
@@ -745,6 +739,52 @@ namespace MetaFile
                                                     {L"fill", wsFillRect},
                                                     {L"stroke", L"none"}});
                         }
+
+                        TRectD oNewBounds;
+
+                        IFont *pFont = m_pParser->GetFont();
+
+                        double dFontHeight = std::fabs(TranslateY(pFont->GetHeight()));
+
+			if (dFontHeight < 0.01)
+				dFontHeight = 18;
+
+                        if (oBounds.Empty())
+                        {
+                                oNewBounds.dLeft   = dXCoord;
+                                oNewBounds.dTop    = dYCoord - dFontHeight;
+                                oNewBounds.dRight  = dXCoord + dFontHeight * wsText.length();
+                                oNewBounds.dBottom = dYCoord;
+                        }
+                        else
+                                oNewBounds = TranslateRect(oBounds);
+
+			arNodeAttributes.push_back({L"font-size", std::to_wstring(dFontHeight)});
+
+			std::wstring wsFaceName = pFont->GetFaceName();
+
+                        if (!wsFaceName.empty())
+                                arNodeAttributes.push_back({L"font-family", wsFaceName});
+
+                        if (pFont->GetWeight() > 550)
+                                arNodeAttributes.push_back({L"font-weight", L"bold"});
+
+                        if (pFont->IsItalic())
+                                arNodeAttributes.push_back({L"font-style", L"italic"});
+
+
+                        if (pFont->IsUnderline() && pFont->IsStrikeOut())
+                                arNodeAttributes.push_back({L"text-decoration", L"underline line-through"});
+                        else if (pFont->IsUnderline())
+                                arNodeAttributes.push_back({L"text-decoration", L"underline"});
+                        else if (pFont->IsStrikeOut())
+                                arNodeAttributes.push_back({L"text-decoration", L"line-through"});
+
+                        //TODO:: разобраться для корректной работы
+//                        double dFontCharSpace = TranslateX(pFont->GetCharSet());
+
+//                        if (dFontCharSpace > 1)
+//                                arNodeAttributes.push_back({L"letter-spacing", std::to_wstring(dFontCharSpace)});
 
                         unsigned int ulTextAlign = m_pParser->GetTextAlign();
                         if (ulTextAlign & TA_BASELINE)
@@ -773,46 +813,16 @@ namespace MetaFile
                                 // Ничего не делаем
                         }
 
-                        IFont *pFont = m_pParser->GetFont();
-
-                        double dFontHeight = std::fabs(TranslateY(pFont->GetHeight()));
-
-			if (dFontHeight < 0.01)
-				dFontHeight = 18;
-
-			arNodeAttributes.push_back({L"font-size", std::to_wstring(dFontHeight)});
-
-			std::wstring wsFaceName = pFont->GetFaceName();
-
-                        if (!wsFaceName.empty())
-                                arNodeAttributes.push_back({L"font-family", wsFaceName});
-
-                        if (pFont->GetWeight() > 550)
-                                arNodeAttributes.push_back({L"font-weight", L"bold"});
-
-                        if (pFont->IsItalic())
-                                arNodeAttributes.push_back({L"font-style", L"italic"});
-
-                        if (pFont->IsUnderline())
-                                arNodeAttributes.push_back({L"text-decoration", L"underline"});
-
-                        if (pFont->IsStrikeOut())
-                                arNodeAttributes.push_back({L"text-decoration", L"line-through"});
-
-                        //TODO:: разобраться для корректной работы
-//                        double dFontCharSpace = TranslateX(pFont->GetCharSet());
-
-//                        if (dFontCharSpace > 1)
-//                                arNodeAttributes.push_back({L"letter-spacing", std::to_wstring(dFontCharSpace)});
-
                         if (0 != pFont->GetEscapement())
-                                arNodeAttributes.push_back({L"transform", L"rotate(" + std::to_wstring(pFont->GetEscapement() / -10) + L' ' + wsXCoord + L' ' + wsYCoord + L')'});
+                                arNodeAttributes.push_back({L"transform", L"rotate(" + std::to_wstring(pFont->GetEscapement() / -10) + L' ' + std::to_wstring(dXCoord) + L' ' + std::to_wstring(dYCoord) + L')'});
+
+                        UpdateTransform(oNewBounds);
                 }
+                else
+                        UpdateTransform(TranslateX(dX), TranslateX(dY));
 
-                arNodeAttributes.push_back({L"x", wsXCoord});
-                arNodeAttributes.push_back({L"y", wsYCoord});
-
-                UpdateTransform(TranslateX(dX), TranslateX(dY));
+                arNodeAttributes.push_back({L"x", std::to_wstring(dXCoord)});
+                arNodeAttributes.push_back({L"y", std::to_wstring(dYCoord)});
 
                 WriteNode(L"text", arNodeAttributes, StringNormalization(wsText));
         }
@@ -821,9 +831,13 @@ namespace MetaFile
         {
                 if (NULL != m_pParser && NULL != m_pParser->GetPen())
                 {
-                        arAttributes.push_back({L"stroke", L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetPen()->GetColor()) + L"," + std::to_wstring(m_pParser->GetPen()->GetAlpha()) + L")"});
+                        IPen* pPen = m_pParser->GetPen();
+                        if (!pPen)
+                                return;
 
-                        double dStrokeWidth = TranslateY(m_pParser->GetPen()->GetWidth());
+                        arAttributes.push_back({L"stroke", L"rgba(" + INTCOLOR_TO_RGB(pPen->GetColor()) + L"," + std::to_wstring(m_pParser->GetPen()->GetAlpha()) + L")"});
+
+                        double dStrokeWidth = TranslateY(pPen->GetWidth());
 
 			if (dStrokeWidth < 1)
 				dStrokeWidth = 1;
@@ -831,31 +845,33 @@ namespace MetaFile
 			if (dStrokeWidth > 0)
 				arAttributes.push_back({L"stroke-width", std::to_wstring(dStrokeWidth)});
 
-			unsigned int unMetaPenStyle = m_pParser->GetPen()->GetStyle();
+			unsigned int unMetaPenStyle = pPen->GetStyle();
+
 //			unsigned int ulPenType      = unMetaPenStyle & PS_TYPE_MASK;
 			unsigned int ulPenStyle     = unMetaPenStyle & PS_STYLE_MASK;
 
-                        if (PS_DASH == ulPenStyle)
-                                arAttributes.push_back({L"stroke-dasharray", std::to_wstring(dStrokeWidth * 4) + L' ' + std::to_wstring(dStrokeWidth * 2)});
-                        else if (PS_DOT == ulPenStyle)
-                                arAttributes.push_back({L"stroke-dasharray", std::to_wstring(dStrokeWidth) + L' ' + std::to_wstring(dStrokeWidth)});
-                        else if (PS_DASHDOT == ulPenStyle)
-                                arAttributes.push_back({L"stroke-dasharray", std::to_wstring(dStrokeWidth * 4) + L' ' + std::to_wstring(dStrokeWidth * 2) + L' ' + std::to_wstring(dStrokeWidth) + L' ' + std::to_wstring(dStrokeWidth * 2)});
-                        else if (PS_DASHDOTDOT == ulPenStyle)
-                                arAttributes.push_back({L"stroke-dasharray", std::to_wstring(dStrokeWidth * 4) + L' ' + std::to_wstring(dStrokeWidth * 2) + L' ' + std::to_wstring(dStrokeWidth) + L' ' + std::to_wstring(dStrokeWidth * 2) + L' ' + std::to_wstring(dStrokeWidth) + L' ' + std::to_wstring(dStrokeWidth * 2)});
-                        else
+                        if (PS_SOLID == ulPenStyle)
                         {
                                 unsigned int ulPenStartCap  = unMetaPenStyle & PS_STARTCAP_MASK;
                                 unsigned int ulPenEndCap    = unMetaPenStyle & PS_ENDCAP_MASK;
                                 unsigned int ulPenJoin      = unMetaPenStyle & PS_JOIN_MASK;
 
                                 // svg не поддерживает разные стили для сторон линии
-                                if (PS_STARTCAP_FLAT == ulPenStartCap || PS_ENDCAP_FLAT == ulPenEndCap)
-                                        arAttributes.push_back({L"stroke-linecap", L"butt"});
-                                else if (PS_STARTCAP_SQUARE == ulPenStartCap || PS_ENDCAP_SQUARE == ulPenEndCap)
-                                        arAttributes.push_back({L"stroke-linecap", L"square"});
-                                else if (PS_STARTCAP_ROUND == ulPenStartCap || PS_ENDCAP_ROUND == ulPenEndCap)
+                                if (PS_STARTCAP_ROUND == ulPenStartCap)
                                         arAttributes.push_back({L"stroke-linecap", L"round"});
+                                else if (PS_STARTCAP_SQUARE == ulPenStartCap)
+                                        arAttributes.push_back({L"stroke-linecap", L"square"});
+                                else if (PS_STARTCAP_FLAT == ulPenStartCap)
+                                        arAttributes.push_back({L"stroke-linecap", L"butt"});
+                                else
+                                        arAttributes.push_back({L"stroke-linecap", L"round"});
+
+//                                if (PS_STARTCAP_FLAT == ulPenStartCap /*|| PS_ENDCAP_FLAT == ulPenEndCap*/)
+//                                        arAttributes.push_back({L"stroke-linecap", L"butt"});
+//                                else if (PS_STARTCAP_SQUARE == ulPenStartCap /*|| PS_ENDCAP_SQUARE == ulPenEndCap*/)
+//                                        arAttributes.push_back({L"stroke-linecap", L"square"});
+//                                else
+//                                        arAttributes.push_back({L"stroke-linecap", L"round"});
 
                                 if (PS_JOIN_MITER == ulPenJoin)
                                         arAttributes.push_back({L"stroke-linejoin", L"miter"});
@@ -864,6 +880,14 @@ namespace MetaFile
                                 else if (PS_JOIN_ROUND == ulPenJoin)
                                         arAttributes.push_back({L"stroke-linejoin", L"round"});
                         }
+                        else if (PS_DASH == ulPenStyle)
+                                arAttributes.push_back({L"stroke-dasharray", std::to_wstring(dStrokeWidth * 4) + L' ' + std::to_wstring(dStrokeWidth * 2)});
+                        else if (PS_DOT == ulPenStyle)
+                                arAttributes.push_back({L"stroke-dasharray", std::to_wstring(dStrokeWidth) + L' ' + std::to_wstring(dStrokeWidth)});
+                        else if (PS_DASHDOT == ulPenStyle)
+                                arAttributes.push_back({L"stroke-dasharray", std::to_wstring(dStrokeWidth * 4) + L' ' + std::to_wstring(dStrokeWidth * 2) + L' ' + std::to_wstring(dStrokeWidth) + L' ' + std::to_wstring(dStrokeWidth * 2)});
+                        else if (PS_DASHDOTDOT == ulPenStyle)
+                                arAttributes.push_back({L"stroke-dasharray", std::to_wstring(dStrokeWidth * 4) + L' ' + std::to_wstring(dStrokeWidth * 2) + L' ' + std::to_wstring(dStrokeWidth) + L' ' + std::to_wstring(dStrokeWidth * 2) + L' ' + std::to_wstring(dStrokeWidth) + L' ' + std::to_wstring(dStrokeWidth * 2)});
                 }
                 else arAttributes.push_back({L"stroke", L"black"});
         }
@@ -882,17 +906,17 @@ namespace MetaFile
 
         void CWmfInterpretatorSvg::UpdateTransform(double dX, double dY)
         {
-                if (dX < m_oViewport.dX)
-                        m_oViewport.dX = dX;
+                if (dX < m_oViewport.dLeft)
+                        m_oViewport.dLeft = dX;
 
-                if (dX > m_oViewport.dX + m_oViewport.dWidth)
-                        m_oViewport.dWidth = dX - m_oViewport.dX;
+                if (dX > m_oViewport.dRight)
+                        m_oViewport.dRight = dX;
 
-                if (dY < m_oViewport.dY)
-                        m_oViewport.dY = dY;
+                if (dY < m_oViewport.dTop)
+                        m_oViewport.dTop = dY;
 
-                if (dY > m_oViewport.dY + m_oViewport.dHeight)
-                        m_oViewport.dHeight = dY - m_oViewport.dY;
+                if (dY > m_oViewport.dBottom)
+                        m_oViewport.dBottom = dY;
         }
 
         void CWmfInterpretatorSvg::UpdateTransform(const TRectD &oRect)
@@ -901,17 +925,32 @@ namespace MetaFile
                 UpdateTransform(oRect.dRight, oRect.dBottom);
         }
 
-        void CWmfInterpretatorSvg::UpdateTransform(const std::vector<TWmfPointS> &arPoints)
+        void CWmfInterpretatorSvg::UpdateTransform(const std::vector<TWmfPointS> &arPoints, const NodeAttributes& arAttributes)
         {
-                short shMinX = 0, shMinY = 0;
+                short shMinX = SHRT_MAX, shMinY = SHRT_MAX;
+                short shMaxX = SHRT_MIN, shMaxY = SHRT_MIN;
+
                 for (const TWmfPointS& oPoint : arPoints)
                 {
                         if (oPoint.x < shMinX) shMinX = oPoint.x;
+                        if (oPoint.x > shMaxX) shMaxX = oPoint.x;
+
                         if (oPoint.y < shMinY) shMinY = oPoint.y;
+                        if (oPoint.y > shMaxY) shMaxY = oPoint.y;
                 }
 
-                if (0 != shMinX || 0 != shMinY)
-                        UpdateTransform(shMinX, shMinY);
+                double dShift = 0;
+
+                if (!arAttributes.empty())
+                        for (const NodeAttribute& oAttribute : arAttributes)
+                                if (L"stroke-width" == oAttribute.first)
+                                        dShift = std::stod(oAttribute.second) / 2;
+
+                if (SHRT_MAX != shMinX && SHRT_MAX != shMinY)
+                        UpdateTransform(TranslateX(shMinX) - dShift, TranslateY(shMinY) - dShift);
+
+                if (SHRT_MIN != shMaxX && SHRT_MIN != shMaxY)
+                        UpdateTransform(TranslateX(shMaxX) + dShift, TranslateY(shMaxY) + dShift);
         }
 
         double CWmfInterpretatorSvg::TranslateX(double dX)
@@ -940,14 +979,14 @@ namespace MetaFile
                 return oNewPoint;
         }
 
-        TRectD CWmfInterpretatorSvg::TranslateRect(const TEmfRectL &oRect)
+        TRectD CWmfInterpretatorSvg::TranslateRect(const TWmfRect &oRect)
         {
                 TRectD oNewRect;
 
-                oNewRect.dLeft   = TranslateX(oRect.lLeft);
-                oNewRect.dTop    = TranslateY(oRect.lTop);
-                oNewRect.dRight  = TranslateX(oRect.lRight);
-                oNewRect.dBottom = TranslateY(oRect.lBottom);
+                oNewRect.dLeft   = TranslateX(oRect.Left);
+                oNewRect.dTop    = TranslateY(oRect.Top);
+                oNewRect.dRight  = TranslateX(oRect.Right);
+                oNewRect.dBottom = TranslateY(oRect.Bottom);
 
                 if (oNewRect.dRight < oNewRect.dLeft)
                 {
@@ -973,8 +1012,8 @@ namespace MetaFile
 
                 TPointD oCurPos;
 
-                oCurPos.x = m_oViewport.dX;
-                oCurPos.y = m_oViewport.dY;
+                oCurPos.x = m_oViewport.dLeft;
+                oCurPos.y = m_oViewport.dRight;
 
                 return oCurPos;
         }

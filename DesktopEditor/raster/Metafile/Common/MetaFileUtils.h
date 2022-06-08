@@ -59,18 +59,28 @@ namespace MetaFile
 			b = 0;
 		}
 	};
-
-        struct TSvgViewport
+	struct TSvgViewport
         {
-                double dX;
-                double dY;
-                double dWidth;
-                double dHeight;
+                double dLeft;
+                double dTop;
+                double dRight;
+                double dBottom;
 
-                TSvgViewport() : dX(0), dY(0), dWidth(0), dHeight(0) {}
+                TSvgViewport() : dLeft(DBL_MAX), dTop(DBL_MAX), dRight(DBL_MIN), dBottom(DBL_MIN) {}
+
                 bool Empty() const
                 {
-                        return 0 == dX == dY == dWidth == dHeight;
+                        return DBL_MAX == dLeft || DBL_MAX == dTop || DBL_MIN == dRight || DBL_MIN == dBottom || dRight == dLeft || dBottom == dTop;
+                }
+
+                double GetWidth() const
+                {
+                        return (DBL_MAX == dLeft || DBL_MIN == dRight) ? 0 : dRight - dLeft;
+                }
+
+                double GetHeight() const
+                {
+                        return (DBL_MAX == dTop || DBL_MIN == dBottom) ? 0 : dBottom - dTop;
                 }
         };
 

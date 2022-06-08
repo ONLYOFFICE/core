@@ -40,8 +40,8 @@ namespace MetaFile
 
         void CEmfInterpretatorSvg::HANDLE_EMR_HEADER(const TEmfHeader &oTEmfHeader)
         {
-                m_oViewport.dWidth      = oTEmfHeader.oDevice.cx;
-                m_oViewport.dHeight     = oTEmfHeader.oDevice.cy;
+                m_oViewport.dRight      = m_oViewport.dLeft + oTEmfHeader.oDevice.cx;
+                m_oViewport.dBottom     = m_oViewport.dTop  + oTEmfHeader.oDevice.cy;
         }
 
         void CEmfInterpretatorSvg::HANDLE_EMR_ALPHABLEND(const TEmfAlphaBlend &oTEmfAlphaBlend, CDataStream &oDataStream)
@@ -875,16 +875,12 @@ namespace MetaFile
                         {
                                 nFlipX = -1;
                                 bFlipped = true;
-
-                                m_oViewport.dX += m_oViewport.dWidth;
                         }
 
                         if (m_pParser->IsWindowFlippedY())
                         {
                                 nFlipY = -1;
                                 bFlipped = true;
-
-                                m_oViewport.dY += m_oViewport.dHeight;
                         }
 
                         if (nFlipX < 0 || nFlipY < 0 || bFlipped)
@@ -893,7 +889,7 @@ namespace MetaFile
 
 //                if (m_oViewport.dX < 0 || m_oViewport.dY < 0)
                 if (!m_oViewport.Empty())
-                        wsXml.insert(5, L"viewBox=\"" + std::to_wstring(m_oViewport.dX) + L' ' + std::to_wstring(m_oViewport.dY) + L' ' + std::to_wstring(m_oViewport.dWidth) + L' ' + std::to_wstring(m_oViewport.dHeight) + L"\" ");
+                        wsXml.insert(5, L"viewBox=\"" + std::to_wstring(m_oViewport.dLeft) + L' ' + std::to_wstring(m_oViewport.dTop) + L' ' + std::to_wstring(m_oViewport.GetWidth()) + L' ' + std::to_wstring(m_oViewport.GetHeight()) + L"\" ");
 
                 if (0 != m_oSizeWindow.cx && 0 != m_oSizeWindow.cy)
                         wsXml.insert(5, L"width=\"" + std::to_wstring(m_oSizeWindow.cx) + L"\" height=\"" + std::to_wstring(m_oSizeWindow.cy) + L"\" ");
@@ -1138,11 +1134,11 @@ namespace MetaFile
 
         void CEmfInterpretatorSvg::UpdateTransform(double dX, double dY)
         {
-                if (dX < m_oViewport.dX)
-                        m_oViewport.dX = dX;
+                if (dX < m_oViewport.dLeft)
+                        m_oViewport.dLeft = dX;
 
-                if (dY < m_oViewport.dY)
-                        m_oViewport.dY = dY;
+                if (dY < m_oViewport.dTop)
+                        m_oViewport.dTop = dY;
         }
 
         void CEmfInterpretatorSvg::UpdateTransform(const TRectD &oRect)
@@ -1268,8 +1264,8 @@ namespace MetaFile
 
                 TPointD oCurPos;
 
-                oCurPos.x = m_oViewport.dX;
-                oCurPos.y = m_oViewport.dY;
+                oCurPos.x = m_oViewport.dLeft;
+                oCurPos.y = m_oViewport.dTop;
 
                 return oCurPos;
         }

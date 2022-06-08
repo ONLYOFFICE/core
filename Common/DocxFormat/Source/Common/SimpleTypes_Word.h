@@ -5235,7 +5235,8 @@ namespace SimpleTypes
             else if ( (L"numbering") == sValue ) this->m_eValue = styletypeNumbering;
             else if ( (L"paragraph") == sValue ) this->m_eValue = styletypeParagraph;
             else if ( (L"table")     == sValue ) this->m_eValue = styletypeTable;
-            else                                  this->m_eValue = eDefValue;
+			else if ( (L"list")		 == sValue)  this->m_eValue = styletypeNumbering;
+			else                                  this->m_eValue = eDefValue;
 
             return this->m_eValue;
 		}

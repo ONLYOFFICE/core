@@ -1267,7 +1267,11 @@ namespace OOX
 				m_oType.Init();
 				m_oType->SetValueFromByte(pReader->GetUChar());
 			}
-			else if (10 == _at)	m_oVal = pReader->GetDoubleReal();
+			else if (10 == _at)
+			{
+				m_oVal.Init();
+				m_oVal->SetValue(pReader->GetDoubleReal());
+			}
 		}
 		pReader->Seek(end);
 	}
@@ -1284,8 +1288,8 @@ namespace OOX
 			if (m_oRefPtType.IsInit()) pWriter->WriteByte1(7, m_oRefPtType->GetValue());
 			if (m_oRefType.IsInit()) pWriter->WriteByte1(8, m_oRefType->GetValue());
 			if (m_oType.IsInit()) pWriter->WriteByte1(9, m_oType->GetValue());
-			pWriter->WriteDoubleReal2(10, m_oVal);
-		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+			if (m_oVal.IsInit()) pWriter->WriteDoubleReal1(10, m_oVal->GetValue());
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 	}
 	void Diagram::CConstraint::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 	{
@@ -1302,8 +1306,8 @@ namespace OOX
 			pWriter->WriteAttribute(L"refForName", m_oRefForName);
 			if (m_oOp.IsInit()) pWriter->WriteAttribute(L"op", m_oOp->ToString());
 			pWriter->WriteAttribute(L"fact", m_oFact);
-			pWriter->WriteAttribute(L"val", m_oVal);
-		pWriter->EndAttributes();
+			if (m_oVal.IsInit()) pWriter->WriteAttribute(L"val", m_oVal->ToString());
+			pWriter->EndAttributes();
 		pWriter->WriteNodeEnd(L"dgm:constr");
 	}
 	void Diagram::CConstraint::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)

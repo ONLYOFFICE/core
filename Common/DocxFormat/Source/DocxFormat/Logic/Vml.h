@@ -436,7 +436,7 @@ namespace OOX
 			{
 				double                    dValue;
 				SimpleTypes::CColorType<> oColor;
-			};
+			}TIntermediateColor;
 
 			nullable<SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>>			m_oAlignShape;
 			nullable_string														m_sAltHref;

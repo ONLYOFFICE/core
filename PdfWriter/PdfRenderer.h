@@ -260,6 +260,7 @@ private:
 	bool IsPageValid();
 	void SetError();
 	void AddLink(PdfWriter::CPage* pPage, const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const unsigned int& unDestPage);
+	std::wstring GetDownloadFile(const std::wstring& sUrl);
 
 
 private:

@@ -241,7 +241,7 @@ namespace OOX
 			nullable<SimpleTypes::CElementTypes<>> m_oRefPtType;
 			nullable<SimpleTypes::CConstraintType<>> m_oRefType;
 			nullable<SimpleTypes::CConstraintType<>> m_oType;
-			nullable_double m_oVal;
+			nullable<SimpleTypes::CDouble> m_oVal;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 		};

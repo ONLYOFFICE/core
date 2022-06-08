@@ -88,6 +88,7 @@ namespace NSJSBase
         virtual void doNull();
         virtual bool toBool();
         virtual int toInt32();
+        virtual unsigned int toUInt32();
         virtual double toDouble();
         virtual std::string toStringA();
         virtual std::wstring toStringW();

@@ -22,6 +22,7 @@
 extern "C" {
 #endif
 
+// LIBRARY ----------------------------------------------------
 WASM_EXPORT void* ASC_FT_Malloc(unsigned int size)
 {
 	return ft_smalloc((size_t)size);
@@ -39,6 +40,21 @@ WASM_EXPORT FT_Library ASC_FT_Init()
 	FT_Library_SetLcdFilter(library, FT_LCD_FILTER_DEFAULT);
 	return library;
 }
+
+WASM_EXPORT void ASC_FT_Done_FreeType(FT_Library library)
+{
+    FT_Done_FreeType(library);
+}
+
+WASM_EXPORT int ASC_FT_Set_TrueType_HintProp(FT_Library library, unsigned int interpreter_version)
+{
+    FT_UInt _interpreter_version = interpreter_version;
+    return FT_Property_Set(library, "truetype", "interpreter-version", &_interpreter_version);
+}
+
+// ------------------------------------------------------------
+
+// FACE -------------------------------------------------------
 
 WASM_EXPORT FT_Face ASC_FT_Open_Face(FT_Library library, unsigned char* memory, unsigned int size, int face_index)
 {
@@ -69,6 +85,11 @@ WASM_EXPORT FT_Face ASC_FT_Open_Face(FT_Library library, unsigned char* memory, 
 		return NULL;
 	
 	return face;
+}
+
+WASM_EXPORT void ASC_FT_Done_Face(FT_Face face)
+{
+    FT_Done_Face(face);
 }
 
 WASM_EXPORT unsigned int ASC_FT_SetCMapForCharCode(FT_Face face, unsigned int unicode)
@@ -284,6 +305,30 @@ WASM_EXPORT int ASC_FT_GetKerningX(FT_Face face, unsigned int prev_gid, unsigned
     return vec.x;
 }
 
+WASM_EXPORT void ASC_FT_Set_Transform(FT_Face face, int xx, int yx, int xy, int yy)
+{
+    FT_Matrix m;
+    m.xx = xx;
+    m.yx = yx;
+    m.xy = xy;
+    m.yy = yy;
+    FT_Set_Transform(face, &m, NULL);
+}
+
+WASM_EXPORT int ASC_FT_Set_Char_Size(FT_Face face, FT_F26Dot6 char_width, FT_F26Dot6 char_height, FT_UInt horz_resolution, FT_UInt vert_resolution)
+{
+    return FT_Set_Char_Size(face, char_width, char_height, horz_resolution, vert_resolution);
+}
+
+// ------------------------------------------------------------
+
+// GLYPH ------------------------------------------------------
+
+WASM_EXPORT int ASC_FT_Load_Glyph(FT_Face face, FT_UInt glyph_index, FT_Int32 load_flags)
+{
+    return FT_Load_Glyph(face, glyph_index, load_flags);
+}
+
 WASM_EXPORT int* ASC_FT_Glyph_Get_CBox(FT_Glyph glyph, FT_UInt bbox_mode)
 {
     FT_BBox bbox;
@@ -296,7 +341,6 @@ WASM_EXPORT int* ASC_FT_Glyph_Get_CBox(FT_Glyph glyph, FT_UInt bbox_mode)
     return res;
 }
 
-////////////////////////////////////////////////////////////////////////////////
 // outline
 typedef struct  FT_Decompose_Outline_Buffer_
 {
@@ -379,8 +423,6 @@ int GlyphPathCubicTo(const FT_Vector *pFirstControlPoint, const FT_Vector *pSeco
     buffer->buffer[buffer->pos++] = pEndPoint->y;
     return 0;
 }
-
-/////////////////////////////////////////////////////////////////////
 
 WASM_EXPORT int* ASC_FT_Get_Glyph_Measure_Params(FT_Face face, int isVector)
 {
@@ -487,24 +529,9 @@ WASM_EXPORT unsigned char* ASC_FT_Get_Glyph_Render_Buffer(FT_Face face)
     return face->glyph->bitmap.buffer;
 }
 
-WASM_EXPORT void ASC_FT_Set_Transform(FT_Face face, int xx, int yx, int xy, int yy)
-{
-    FT_Matrix m;
-    m.xx = xx;
-    m.yx = yx;
-    m.xy = xy;
-    m.yy = yy;
-    FT_Set_Transform(face, &m, NULL);
-}
+// ------------------------------------------------------------
 
-WASM_EXPORT int ASC_FT_Set_TrueType_HintProp(FT_Library library, unsigned int interpreter_version)
-{
-    FT_UInt _interpreter_version = interpreter_version;
-    return FT_Property_Set(library, "truetype", "interpreter-version", &_interpreter_version);
-}
-
-/////////////////////////////////////////////////////////////////////
-
+// HARFBUZZ
 #include <hb.h>
 #include <hb-ft.h>
 #include <hb-ot.h>
@@ -513,12 +540,12 @@ WASM_EXPORT int ASC_FT_Set_TrueType_HintProp(FT_Library library, unsigned int in
 hb_feature_t g_userfeatures[g_userfeatures_count];
 bool g_userfeatures_init = false;
 
-WASM_EXPORT unsigned char* ASC_HB_LanguageFromString(char* language_bcp_47)
+WASM_EXPORT void* ASC_HB_LanguageFromString(char* language_bcp_47)
 {
-    return (unsigned char*)hb_language_from_string(language_bcp_47, strlen(language_bcp_47));
+    return (void*)hb_language_from_string(language_bcp_47, strlen(language_bcp_47));
 }
 
-WASM_EXPORT unsigned char* ASC_HP_ShapeText(FT_Face pFace, hb_font_t* pFont, char* pText,
+WASM_EXPORT unsigned char* ASC_HB_ShapeText(FT_Face pFace, hb_font_t* pFont, char* pText,
                                               unsigned int nFeatures, unsigned int nScript, unsigned int nDirection, unsigned char* nLanguage)
 {
     // init features
@@ -604,7 +631,7 @@ WASM_EXPORT unsigned char* ASC_HP_ShapeText(FT_Face pFace, hb_font_t* pFont, cha
     return pBuffer;
 }
 
-WASM_EXPORT void ASC_HP_FontFree(hb_font_t* font)
+WASM_EXPORT void ASC_HB_FontFree(hb_font_t* font)
 {
     hb_font_destroy(font);
 }

@@ -1,7 +1,7 @@
 #ifndef _BUILD_NATIVE_ZIP_EMBED_H_
 #define _BUILD_NATIVE_ZIP_EMBED_H_
 
-#include "../../OfficeUtils/src/ZipFolder.h"
+#include "../../../OfficeUtils/src/ZipFolder.h"
 #include "../js_internal/js_base.h"
 
 using namespace NSJSBase;

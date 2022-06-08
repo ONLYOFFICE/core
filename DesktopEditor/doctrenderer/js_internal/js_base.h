@@ -40,6 +40,7 @@ namespace NSJSBase
 
         virtual bool toBool()               = 0;
         virtual int toInt32()               = 0;
+        virtual unsigned int toUInt32()     = 0;
         virtual double toDouble()           = 0;
         virtual std::string toStringA()     = 0;
         virtual std::wstring toStringW()    = 0;
@@ -50,14 +51,27 @@ namespace NSJSBase
         virtual CJSFunction* toFunction()   = 0;
     };
 
+    class CJSEmbedObjectPrivateBase
+    {
+    public:
+        CJSEmbedObjectPrivateBase() {}
+        virtual ~CJSEmbedObjectPrivateBase() {}
+    };
+
     class CJSEmbedObject
     {
     public:
-        CJSEmbedObject() {}
-        virtual ~CJSEmbedObject() {}
+        CJSEmbedObject() { embed_native_internal = NULL; }
+        virtual ~CJSEmbedObject() { RELEASEOBJECT(embed_native_internal); }
 
     public:
         virtual void* getObject() { return NULL; }
+
+    protected:
+        CJSEmbedObjectPrivateBase* embed_native_internal;
+
+        friend class CJSEmbedObjectPrivateBase;
+        friend class CJSEmbedObjectPrivate;
     };
 
     class CJSObject : public CJSValue
@@ -237,6 +251,7 @@ namespace NSJSBase
         static CJSValue* createNull();
         static CJSValue* createBool(const bool& value);
         static CJSValue* createInt(const int& value);
+        static CJSValue* createUInt(const unsigned int& value);
         static CJSValue* createDouble(const double& value);
         static CJSValue* createString(const char* value, const int& length = -1);
         static CJSValue* createString(const std::string& value);

@@ -36,6 +36,7 @@
 #include "../../Auxiliary/HelpFunc.h"
 #include "../../../Common/simple_xml_writer.h"
 #include "../../../../../DesktopEditor/common/SystemUtils.h"
+#include "../../../../../Common/DocxFormat/Source/Base/Base.h"
 
 namespace OLEPS
 {

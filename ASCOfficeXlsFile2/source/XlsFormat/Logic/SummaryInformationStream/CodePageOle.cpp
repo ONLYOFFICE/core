@@ -119,6 +119,7 @@ bool PropertyDTM::Read (XLS::CFStreamPtr stream)
 }
 std::wstring PropertyDTM::toString()
 {
+#ifdef _WIN32
 	boost::winapi::FILETIME_ ft;
 	ft.dwHighDateTime = dwHighDateTime;
 	ft.dwLowDateTime = dwLowDateTime;
@@ -142,6 +143,9 @@ std::wstring PropertyDTM::toString()
 	value +=	(Hour < 10 ? L"0" : L"") + std::to_wstring(Hour) + L":" +
 				(Min < 10 ? L"0" : L"") + std::to_wstring(Min) + L":00Z";
 	return value;
+#else
+    return L"";
+#endif
 }
 //-------------------------------------------------------------------
 bool PropertyInt::Read (XLS::CFStreamPtr stream)

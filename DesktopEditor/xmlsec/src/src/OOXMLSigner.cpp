@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <ctime>
 #include <time.h>
+#include "./../include/CertificateCommon.h"
 
 class COOXMLSigner_private
 {
@@ -60,7 +61,7 @@ public:
 
         m_signed_info.WriteString("<CanonicalizationMethod Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/>");
         m_signed_info.WriteString("<SignatureMethod Algorithm=\"");
-        m_signed_info.WriteString(ICertificate::GetSignatureMethodA(m_certificate->GetHashAlg()));
+        m_signed_info.WriteString(NSCertificate::GetSignatureMethodA(m_certificate->GetHashAlg()));
         m_signed_info.WriteString("\"/>");
     }
 
@@ -72,7 +73,7 @@ public:
     std::wstring GetReference(const std::wstring& file, const std::wstring& content_type)
     {
         std::wstring sXml = L"<Reference URI=\"/" + file + L"?ContentType=" + content_type + L"\">";
-        sXml += (L"<DigestMethod Algorithm=\"" + ICertificate::GetDigestMethod(m_certificate->GetHashAlg()) + L"\"/>");
+        sXml += (L"<DigestMethod Algorithm=\"" + NSCertificate::GetDigestMethod(m_certificate->GetHashAlg()) + L"\"/>");
         sXml += L"<DigestValue>";
         IFolder::CBuffer* buffer = NULL;
         if (m_pFolder->read(file, buffer))
@@ -106,7 +107,7 @@ public:
         if (isCannon)
             sRet = "<Transforms><Transform Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/></Transforms>";
 
-        sRet += ("<DigestMethod Algorithm=\"" + ICertificate::GetDigestMethodA(m_certificate->GetHashAlg()) + "\"/><DigestValue>" + sHash + "</DigestValue>");
+        sRet += ("<DigestMethod Algorithm=\"" + NSCertificate::GetDigestMethodA(m_certificate->GetHashAlg()) + "\"/><DigestValue>" + sHash + "</DigestValue>");
 
         return sRet;
     }
@@ -162,7 +163,7 @@ public:
         builder.WriteString(file);
         builder.WriteString(L"?ContentType=application/vnd.openxmlformats-package.relationships+xml\">");
         builder.WriteString(oRels.GetTransforms());
-        builder.WriteString(L"<DigestMethod Algorithm=\"" + ICertificate::GetDigestMethod(m_certificate->GetHashAlg()) + L"\"/><DigestValue>");
+        builder.WriteString(L"<DigestMethod Algorithm=\"" + NSCertificate::GetDigestMethod(m_certificate->GetHashAlg()) + L"\"/><DigestValue>");
 
         std::wstring sXml = oRels.GetXml();
         std::string sHash = GetHashXml(sXml);
@@ -559,7 +560,7 @@ public:
 <xd:SigningCertificate>\
 <xd:Cert>\
 <xd:CertDigest>\
-<DigestMethod Algorithm=\"" + ICertificate::GetDigestMethod(m_certificate->GetHashAlg()) + L"\"/>\
+<DigestMethod Algorithm=\"" + NSCertificate::GetDigestMethod(m_certificate->GetHashAlg()) + L"\"/>\
 <DigestValue>" + sCertHW + L"</DigestValue>\
 </xd:CertDigest>\
 <xd:IssuerSerial>\
@@ -581,7 +582,7 @@ public:
 
         m_signed_info.WriteString("<Reference Type=\"http://uri.etsi.org/01903#SignedProperties\" URI=\"#idSignedProperties\">");
         m_signed_info.WriteString("<Transforms><Transform Algorithm=\"http://www.w3.org/TR/2001/REC-xml-c14n-20010315\"/></Transforms>");
-        m_signed_info.WriteString("<DigestMethod Algorithm=\"" + ICertificate::GetDigestMethodA(m_certificate->GetHashAlg()) + "\"/><DigestValue>");
+        m_signed_info.WriteString("<DigestMethod Algorithm=\"" + NSCertificate::GetDigestMethodA(m_certificate->GetHashAlg()) + "\"/><DigestValue>");
         m_signed_info.WriteString(m_certificate->GetHash(sXmlTmp, m_certificate->GetHashAlg()));
         m_signed_info.WriteString("</DigestValue></Reference>");
 

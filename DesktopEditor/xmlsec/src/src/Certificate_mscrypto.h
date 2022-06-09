@@ -1,7 +1,7 @@
 #ifndef _XMLSIGNER_MSCRYPTO_H_
 #define _XMLSIGNER_MSCRYPTO_H_
 
-#include "./include/XmlCertificate.h"
+#include "./include/Certificate.h"
 
 #include <stdio.h>
 #include <windows.h>
@@ -147,6 +147,11 @@ public:
 
         if (m_store != NULL)
             CertCloseStore(m_store, 0);
+    }
+
+    virtual int GetType()
+    {
+        return CERTIFICATE_ENGINE_TYPE_MSCRYPTO;
     }
 
 public:
@@ -344,7 +349,7 @@ public:
         return (PCRYPT_KEY_PROV_INFO)pInfoData;
     }
 
-    virtual std::string Sign(const std::string& sXml)
+    virtual std::string Sign(unsigned char* pData, unsigned int nSize)
     {
         BOOL bResult = TRUE;
         DWORD dwKeySpec = 0;
@@ -397,7 +402,7 @@ public:
             }
         }
 
-        bResult = CryptHashData(hHash, (BYTE*)sXml.c_str(), (DWORD)sXml.length(), 0);
+        bResult = CryptHashData(hHash, pData, (DWORD)nSize, 0);
         if (!bResult)
         {
             CryptDestroyHash(hHash);
@@ -445,6 +450,20 @@ public:
         CryptReleaseContext(hCryptProv, 0);
 
         return sReturn;
+    }
+
+    virtual std::string Sign(const std::string& sXml)
+    {
+        return Sign((BYTE*)sXml.c_str(), (unsigned int)sXml.length());
+    }
+
+    virtual bool SignPKCS7(unsigned char* pData, unsigned int nSize,
+                           unsigned char*& pDataDst, unsigned int& nSizeDst)
+    {
+        // TODO:
+        pDataDst = NULL;
+        nSizeDst = 0;
+        return false;
     }
 
     virtual std::string GetHash(unsigned char* pData, unsigned int nSize, int nAlgS)
@@ -676,7 +695,6 @@ public:
         return (int)CryptUIDlgViewContext(CERT_STORE_CERTIFICATE_CONTEXT, m_context, (NULL == parent) ? NULL : (*((HWND*)parent)), NULL, 0, NULL);
     }
 
-public:
     virtual int ShowSelectDialog(void* parent = NULL)
     {
 #ifdef MS_CRYPTO_PRIVATE

@@ -1,4 +1,7 @@
-#include "./XmlSigner_openssl.h"
+#ifndef _XMLSIGNER_OPENSSL_H_
+#define _XMLSIGNER_OPENSSL_H_
+
+#include "./../include/Certificate.h"
 
 #include "../../../common/File.h"
 #include "../../../common/StringExt.h"
@@ -22,34 +25,34 @@
 #include <openssl/conf.h>
 
 const EVP_MD* Get_EVP_MD(int nAlg)
-{
-    switch (nAlg)
     {
-        case OOXML_HASH_ALG_SHA1:
+        switch (nAlg)
         {
-            return EVP_sha1();
+            case OOXML_HASH_ALG_SHA1:
+            {
+                return EVP_sha1();
+            }
+            case OOXML_HASH_ALG_SHA224:
+            {
+                return EVP_sha224();
+            }
+            case OOXML_HASH_ALG_SHA256:
+            {
+                return EVP_sha256();
+            }
+            case OOXML_HASH_ALG_SHA384:
+            {
+                return EVP_sha384();
+            }
+            case OOXML_HASH_ALG_SHA512:
+            {
+                return EVP_sha512();
+            }
+        default:
+            break;
         }
-        case OOXML_HASH_ALG_SHA224:
-        {
-            return EVP_sha224();
-        }
-        case OOXML_HASH_ALG_SHA256:
-        {
-            return EVP_sha256();
-        }
-        case OOXML_HASH_ALG_SHA384:
-        {
-            return EVP_sha384();
-        }
-        case OOXML_HASH_ALG_SHA512:
-        {
-            return EVP_sha512();
-        }
-    default:
-        break;
+        return EVP_sha1();
     }
-    return EVP_sha1();
-}
 
 void BIO_FREE(BIO*& bio)
 {
@@ -76,7 +79,7 @@ void X509_FREE(X509*& cert)
     }
 }
 
-class CCertificate_openssl_private
+class CCertificate_openssl : public ICertificate
 {
     X509*           m_cert;
     EVP_PKEY*       m_key;
@@ -87,24 +90,35 @@ class CCertificate_openssl_private
     int m_alg;
 
 public:
-    ICertificate* m_pBase;
+    static bool g_is_initialize;
 
 public:
-    CCertificate_openssl_private()
+    CCertificate_openssl() : ICertificate()
     {
+        if (!g_is_initialize)
+        {
+            g_is_initialize = true;
+            ERR_load_crypto_strings();
+            OpenSSL_add_all_algorithms();
+        }
+
         m_cert = NULL;
         m_key = NULL;
 
-        m_pBase = NULL;
         m_separator = ";;;;;;;ONLYOFFICE;;;;;;;";
         m_alg = OOXML_HASH_ALG_INVALID;
     }
-    virtual ~CCertificate_openssl_private()
+    virtual ~CCertificate_openssl()
     {
         if (NULL != m_cert)
             X509_FREE(m_cert);
         if (NULL != m_key)
             EVP_PKEY_FREE(m_key);
+    }
+
+    virtual int GetType()
+    {
+        return CERTIFICATE_ENGINE_TYPE_OPENSSL;
     }
 
 protected:
@@ -119,7 +133,7 @@ protected:
     }
 
 public:
-    std::string GetNumber()
+    virtual std::string GetNumber()
     {
         if (NULL == m_cert)
             return "";
@@ -155,7 +169,7 @@ public:
         return sReturn;
     }
 
-    std::wstring GetSignerName()
+    virtual std::wstring GetSignerName()
     {
         if (NULL == m_cert)
             return L"";
@@ -183,12 +197,12 @@ public:
         return sNameW;
     }
 
-    std::wstring GetIssuerName()
+    virtual std::wstring GetIssuerName()
     {
         return GetSignerName();
     }
 
-    std::string GetCertificateBase64()
+    virtual std::string GetCertificateBase64()
     {
         if (NULL == m_cert)
             return "";
@@ -238,7 +252,7 @@ public:
         return sReturn;
     }
 
-    std::string GetCertificateHash()
+    virtual std::string GetCertificateHash()
     {
         std::string sBase64 = GetCertificateBase64();
         BYTE* pData = NULL;
@@ -253,7 +267,7 @@ public:
         return "";
     }
 
-    std::string GetDate()
+    virtual std::string GetDate()
     {
         if (NULL == m_cert)
             return "";
@@ -279,7 +293,7 @@ public:
         return sRet;
     }
 
-    std::string GetId()
+    virtual std::string GetId()
     {
         // TODO: + public key?
         if (!m_id.empty())
@@ -288,22 +302,18 @@ public:
     }
 
 public:
-    std::string Sign(const std::string& sXml)
+    std::string Sign(unsigned char* pData, unsigned int nSize)
     {
         EVP_MD_CTX* pCtx = EVP_MD_CTX_create();
         const EVP_MD* pDigest = Get_EVP_MD(this->GetHashAlg());
 
-        int n1 = EVP_SignInit(pCtx, pDigest);
-        n1 = n1;
-
-        int n2 = EVP_SignUpdate(pCtx, sXml.c_str(), sXml.length());
-        n2 = n2;
+        int nError = EVP_SignInit(pCtx, pDigest);
+        nError = EVP_SignUpdate(pCtx, pData, nSize);
 
         BYTE pSignature[4096];
         unsigned int nSignatureLen = 0;
 
-        int n3 = EVP_SignFinal(pCtx, pSignature, &nSignatureLen, m_key);
-        n3 = n3;
+        nError = EVP_SignFinal(pCtx, pSignature, &nSignatureLen, m_key);
 
         EVP_MD_CTX_destroy(pCtx);
 
@@ -317,7 +327,44 @@ public:
         return sReturn;
     }
 
-    std::string GetHash(unsigned char* pData, unsigned int nSize, int nAlg)
+    virtual std::string Sign(const std::string& sXml)
+    {
+        return Sign((BYTE*)sXml.c_str(), (unsigned int)sXml.length());
+    }
+
+    virtual bool SignPKCS7(unsigned char* pData, unsigned int nSize,
+                           unsigned char*& pDataDst, unsigned int& nSizeDst)
+    {
+        ERR_load_crypto_strings();
+        OpenSSL_add_all_algorithms();
+
+        BIO* inputbio = BIO_new(BIO_s_mem());
+        BIO_write(inputbio, pData, nSize);
+        PKCS7* pkcs7 = PKCS7_sign(m_cert, m_key, NULL, inputbio, PKCS7_DETACHED | PKCS7_BINARY);
+        BIO_free(inputbio);
+        if (!pkcs7)
+            return false;
+
+        BIO* outputbio = BIO_new(BIO_s_mem());
+        i2d_PKCS7_bio(outputbio, pkcs7);
+        BUF_MEM* mem = NULL;
+        BIO_get_mem_ptr(outputbio, &mem);
+        if (mem && mem->data && mem->length)
+        {
+            nSizeDst = mem->length;
+
+            pDataDst = new BYTE[nSizeDst];
+            memcpy(pDataDst, mem->data, nSizeDst);
+        }
+        BIO_free(outputbio);
+        PKCS7_free(pkcs7);
+
+        EVP_cleanup();
+
+        return true;
+    }
+
+    virtual std::string GetHash(unsigned char* pData, unsigned int nSize, int nAlg)
     {
         int nBufLen = 0;
         unsigned char* pBufData = NULL;
@@ -378,12 +425,12 @@ public:
         return sReturn;
     }
 
-    std::string GetHash(const std::string& sXml, int nAlg)
+    virtual std::string GetHash(const std::string& sXml, int nAlg)
     {
         return GetHash((BYTE*)sXml.c_str(), (DWORD)sXml.length(), nAlg);
     }
 
-    std::string GetHash(const std::wstring& sXmlFile, int nAlg)
+    virtual std::string GetHash(const std::wstring& sXmlFile, int nAlg)
     {
         BYTE* pFileData = NULL;
         DWORD dwFileDataLen = 0;
@@ -398,7 +445,7 @@ public:
         return sReturn;
     }
 
-    bool Verify(const std::string& sXml, std::string& sXmlSignature, int nAlg)
+    virtual bool Verify(const std::string& sXml, std::string& sXmlSignature, int nAlg)
     {
         EVP_MD_CTX* pCtx = EVP_MD_CTX_create();
         const EVP_MD* pDigest = Get_EVP_MD(nAlg);
@@ -426,7 +473,7 @@ public:
         return (1 == n3) ? true : false;
     }
 
-    bool LoadFromBase64Data(const std::string& data)
+    virtual bool LoadFromBase64Data(const std::string& data)
     {
         BYTE* pData = NULL;
         int nLen = 0;
@@ -452,7 +499,7 @@ public:
         return false;
     }
 
-    std::vector<int> GetHashAlgs()
+    virtual std::vector<int> GetHashAlgs()
     {
         std::vector<int> algs;
         if (!m_cert)
@@ -496,17 +543,64 @@ public:
 
         return algs;
     }
-    int GetHashAlg()
+    virtual int GetHashAlg()
     {
         if (m_alg == OOXML_HASH_ALG_INVALID)
             GetHashAlgs();
         return m_alg;
     }
 
+    virtual int VerifySelf()
+    {
+        return OPEN_SSL_WARNING_OK;
+
+        if (NULL == m_cert)
+            return OPEN_SSL_WARNING_NOVERIFY;
+
+        X509_STORE_CTX* ctx = X509_STORE_CTX_new();
+        X509_STORE* store = X509_STORE_new();
+
+        X509_STORE_add_cert(store, m_cert);
+        X509_STORE_CTX_init(ctx, store, m_cert, NULL);
+
+        int status = X509_verify_cert(ctx);
+        int nErr = X509_STORE_CTX_get_error(ctx);
+        std::string sErr(X509_verify_cert_error_string(nErr));
+
+        X509_STORE_free(store);
+        X509_STORE_CTX_free(ctx);
+
+        return (1 == status) ? OPEN_SSL_WARNING_OK : OPEN_SSL_WARNING_NOVERIFY;
+    }
+
 public:
-    int ShowSelectDialog()
+    virtual int ShowSelectDialog(void* parent)
     {
         return -1;
+    }
+
+    virtual int ShowCertificate(void* parent)
+    {
+        return -1;
+    }
+
+    virtual std::string Print()
+    {
+        if (NULL == m_cert)
+            return "";
+
+        BIO* bio = BIO_new(BIO_s_mem());
+        X509_print_ex(bio, m_cert, XN_FLAG_COMPAT, X509_FLAG_COMPAT);
+        char *buf = NULL;
+        size_t len = BIO_get_mem_data(bio, &buf);
+        std::string sRet((char*)buf, len);
+        BIO_free (bio);
+        return sRet;
+    }
+
+    virtual bool IsGOST()
+    {
+        return false;
     }
 
     bool FromFiles(const std::wstring& keyPath, const std::string& keyPassword, const std::wstring& certPath, const std::string& certPassword)
@@ -608,48 +702,6 @@ public:
         std::wstring sCertPath = UTF8_TO_U(sCertPathA);
 
         return FromFiles(sKeyPath, sKeyPasswordA, sCertPath, sCertPasswordA);
-    }
-
-    int ShowCertificate()
-    {
-        return -1;
-    }
-
-    std::string Print()
-    {
-        if (NULL == m_cert)
-            return "";
-
-        BIO* bio = BIO_new(BIO_s_mem());
-        X509_print_ex(bio, m_cert, XN_FLAG_COMPAT, X509_FLAG_COMPAT);
-        char *buf = NULL;
-        size_t len = BIO_get_mem_data(bio, &buf);
-        std::string sRet((char*)buf, len);
-        BIO_free (bio);
-        return sRet;
-    }
-
-    int VerifySelf()
-    {
-        return OPEN_SSL_WARNING_OK;
-
-        if (NULL == m_cert)
-            return OPEN_SSL_WARNING_NOVERIFY;
-
-        X509_STORE_CTX* ctx = X509_STORE_CTX_new();
-        X509_STORE* store = X509_STORE_new();
-
-        X509_STORE_add_cert(store, m_cert);
-        X509_STORE_CTX_init(ctx, store, m_cert, NULL);
-
-        int status = X509_verify_cert(ctx);
-        int nErr = X509_STORE_CTX_get_error(ctx);
-        std::string sErr(X509_verify_cert_error_string(nErr));
-
-        X509_STORE_free(store);
-        X509_STORE_CTX_free(ctx);
-
-        return (1 == status) ? OPEN_SSL_WARNING_OK : OPEN_SSL_WARNING_NOVERIFY;
     }
 
 protected:
@@ -915,151 +967,4 @@ end:
     }
 };
 
-// REALIZE
-CCertificate_openssl::CCertificate_openssl() : ICertificate()
-{
-    m_internal = new CCertificate_openssl_private();
-    m_internal->m_pBase = this;
-}
-
-CCertificate_openssl::~CCertificate_openssl()
-{
-    RELEASEOBJECT(m_internal);
-}
-
-std::string CCertificate_openssl::GetNumber()
-{
-    return m_internal->GetNumber();
-}
-
-std::wstring CCertificate_openssl::GetSignerName()
-{
-    return m_internal->GetSignerName();
-}
-
-std::wstring CCertificate_openssl::GetIssuerName()
-{
-    return m_internal->GetIssuerName();
-}
-
-std::string CCertificate_openssl::GetCertificateBase64()
-{
-    return m_internal->GetCertificateBase64();
-}
-
-std::string CCertificate_openssl::GetCertificateHash()
-{
-    return m_internal->GetCertificateHash();
-}
-
-std::string CCertificate_openssl::GetDate()
-{
-    return m_internal->GetDate();
-}
-
-std::string CCertificate_openssl::GetId()
-{
-    return m_internal->GetId();
-}
-
-int CCertificate_openssl::VerifySelf()
-{
-    return m_internal->VerifySelf();
-}
-
-std::string CCertificate_openssl::Sign(const std::string& sXml)
-{
-    return m_internal->Sign(sXml);
-}
-
-std::string CCertificate_openssl::GetHash(unsigned char* pData, unsigned int nSize, int nAlg)
-{
-    return m_internal->GetHash(pData, nSize, nAlg);
-}
-
-std::string CCertificate_openssl::GetHash(const std::string& sXml, int nAlg)
-{
-    return m_internal->GetHash(sXml, nAlg);
-}
-
-std::string CCertificate_openssl::GetHash(const std::wstring& sXmlFile, int nAlg)
-{
-    return m_internal->GetHash(sXmlFile, nAlg);
-}
-
-bool CCertificate_openssl::Verify(const std::string& sXml, std::string& sXmlSignature, int nAlg)
-{
-    return m_internal->Verify(sXml, sXmlSignature, nAlg);
-}
-
-bool CCertificate_openssl::LoadFromBase64Data(const std::string& data)
-{
-    return m_internal->LoadFromBase64Data(data);
-}
-
-int CCertificate_openssl::ShowSelectDialog(void* parent)
-{
-    return m_internal->ShowSelectDialog();
-}
-
-int CCertificate_openssl::ShowCertificate(void* parent)
-{
-    return m_internal->ShowCertificate();
-}
-
-std::string CCertificate_openssl::Print()
-{
-    return m_internal->Print();
-}
-
-bool CCertificate_openssl::FromFiles(const std::wstring& keyPath, const std::string& keyPassword, const std::wstring& certPath, const std::string& certPassword)
-{
-    return m_internal->FromFiles(keyPath, keyPassword, certPath, certPassword);
-}
-
-bool CCertificate_openssl::FromFilesRaw(unsigned char* key, unsigned int keyLen, const std::string& keyPassword,
-                                       unsigned char* cert, unsigned int certLen, const std::string& certPassword)
-{
-    return m_internal->FromFilesRaw(key, keyLen, keyPassword, cert, certLen, certPassword);
-}
-
-bool CCertificate_openssl::FromId(const std::string& id)
-{
-    return m_internal->FromKey(id);
-}
-
-std::vector<int> CCertificate_openssl::GetHashAlgs()
-{
-    return m_internal->GetHashAlgs();
-}
-int CCertificate_openssl::GetHashAlg()
-{
-    return m_internal->GetHashAlg();
-}
-
-bool CCertificate_openssl::IsGOST()
-{
-    return false;
-}
-
-namespace NSOpenSSL
-{
-    int LoadKey(std::wstring file, std::string password)
-    {
-        return CCertificate_openssl_private::LoadKey(file, password, NULL);
-    }
-
-    int LoadCert(std::wstring file, std::string password)
-    {
-        return CCertificate_openssl_private::LoadCert(file, password, NULL);
-    }
-
-    int LoadKeyRaw(unsigned char* data, unsigned int len, std::string password)
-    {
-        return CCertificate_openssl_private::LoadKey(data, (DWORD)len, password, NULL);
-    }
-    int LoadCertRaw(unsigned char* data, unsigned int len, std::string password)
-    {
-        return CCertificate_openssl_private::LoadCert(data, (DWORD)len, password, NULL);
-    }
-}
+#endif // _XMLSIGNER_OPENSSL_H_

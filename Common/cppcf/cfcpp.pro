@@ -18,6 +18,7 @@ SOURCES += \
     compoundfile.cpp \
     header.cpp \
     sector.cpp \
+    sectorcollection.cpp \
     streamrw.cpp
 
 HEADERS += \
@@ -27,6 +28,7 @@ HEADERS += \
     compoundfile.h \
     header.h \
     sector.h \
+    sectorcollection.h \
     streamrw.h
 
 # Default rules for deployment.

@@ -9,9 +9,18 @@
 #include "../js_logger.h"
 #include <iostream>
 
+#ifdef __ANDROID__
+#ifndef DISABLE_MEMORY_LIMITATION
+#define DISABLE_MEMORY_LIMITATION
+#endif
+#endif
+
 #include "v8.h"
 #include "libplatform/libplatform.h"
+
+#ifndef DISABLE_MEMORY_LIMITATION
 #include "src/base/sys-info.h"
+#endif
 
 #ifdef V8_VERSION_89_PLUS
 #define kV8NormalString v8::NewStringType::kNormal
@@ -133,6 +142,7 @@ public:
     #endif
         create_params.array_buffer_allocator = m_pAllocator;
 
+    #ifndef DISABLE_MEMORY_LIMITATION
         int64_t nMaxVirtualMemory = v8::base::SysInfo::AmountOfVirtualMemory();
         if (0 == nMaxVirtualMemory)
             nMaxVirtualMemory = 4000000000; // 4Gb
@@ -140,6 +150,7 @@ public:
         create_params.constraints.ConfigureDefaults(
               v8::base::SysInfo::AmountOfPhysicalMemory(),
               nMaxVirtualMemory);
+    #endif
 
         return v8::Isolate::New(create_params);
     }

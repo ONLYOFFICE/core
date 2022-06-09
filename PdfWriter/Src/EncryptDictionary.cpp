@@ -335,6 +335,11 @@ namespace PdfWriter
             // TODO шифрование записи Contents, для случая одновремменного запароливания и сертификации pdf
             pStream->Write(pContents, NULL);
             RELEASEOBJECT(pContents);
+
+            // Стереть лишний >
+            BYTE cChar = '0';
+            pStream->Seek(pStream->Tell() - 1, EWhenceMode::SeekSet);
+            pStream->Write(&cChar, 1);
         }
     }
     void CSignatureDict::SetCert(ICertificate* pCert)

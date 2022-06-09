@@ -79,14 +79,14 @@ namespace PdfWriter
 		void SetByteRange(int nLen1, int nOffset2);
 		void ByteRangeOffset(int nBegin, int nEnd);
 		void WriteToStream(CStream* pStream, int nFileEnd);
-        void SetCert(ICertificate* pCert);
+		void SetCert(ICertificate* pCert);
 
 		void SetName(const std::string& sName);
 		void SetReason(const std::string& sReason);
 		void SetContacts(const std::string& sContacts);
 		void SetDate();
 	private:
-        ICertificate* m_pCertificate;
+		ICertificate* m_pCertificate;
 
 		int m_nLen1;    // Длина  первого интервала сигнатуры
 		int m_nOffset2; // Начало второго интервала сигнатуры

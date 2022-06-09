@@ -85,7 +85,7 @@ int main()
     {
         std::wstring sCertificateFile = NSFile::GetProcessDirectory() + L"/test.pfx";
         std::wstring sPrivateKeyFile = L"";
-        std::string sCertificateFilePassword = "Sveta03011997";
+        std::string sCertificateFilePassword = "test";
         std::string sPrivateFilePassword = "";
 
         pCertificate = NSCertificate::FromFiles(sPrivateKeyFile, sPrivateFilePassword, sCertificateFile, sCertificateFilePassword);
@@ -100,7 +100,6 @@ int main()
 
     RELEASEOBJECT(pReader);
     RELEASEINTERFACE(pApplicationFonts);
-
     RELEASEOBJECT(pCertificate);
     return 0;
     if (bResult && pReader->EditPdf(&pdfWriter, sPassword))

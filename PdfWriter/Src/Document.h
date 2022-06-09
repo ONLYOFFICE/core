@@ -159,7 +159,7 @@ namespace PdfWriter
 		CPage*            AddPage(int nPageIndex);
 		bool              DeletePage(int nPageIndex);
 		bool              AddToFile(const std::wstring& wsPath, const std::wstring& sTrailer, const std::wstring& sInfo);
-        void              Sign(const unsigned int& unPageNum, const TRect& oRect, ICertificate* pCert);
+		void              Sign(const unsigned int& unPageNum, const TRect& oRect, ICertificate* pCert);
 		CSignatureDict*   GetSignatureDict() { return m_pSignatureDict; }
 	private:		  
 					  

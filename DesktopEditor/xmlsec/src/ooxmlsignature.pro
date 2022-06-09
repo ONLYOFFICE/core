@@ -23,8 +23,7 @@ HEADERS += \
     include/Certificate.h \
 	include/CertificateCommon.h \
     include/OOXMLSigner.h \
-    include/OOXMLVerifier.h \
-    include/PDFSigner.h
+    include/OOXMLVerifier.h
 
 HEADERS += \
     src/XmlCanonicalizator.h \
@@ -35,8 +34,7 @@ SOURCES += \
     src/XmlTransform.cpp \
 	src/CertificateCommon.cpp \
     src/OOXMLSigner.cpp \
-    src/OOXMLVerifier.cpp \
-    src/PDFSigner.cpp
+    src/OOXMLVerifier.cpp
 
 core_windows {
     HEADERS += src/Certificate_mscrypto.h

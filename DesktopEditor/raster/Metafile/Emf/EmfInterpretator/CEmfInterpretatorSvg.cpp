@@ -40,8 +40,10 @@ namespace MetaFile
 
         void CEmfInterpretatorSvg::HANDLE_EMR_HEADER(const TEmfHeader &oTEmfHeader)
         {
-                m_oViewport.dRight      = m_oViewport.dLeft + oTEmfHeader.oDevice.cx;
-                m_oViewport.dBottom     = m_oViewport.dTop  + oTEmfHeader.oDevice.cy;
+                m_oViewport.dLeft   = 0;
+                m_oViewport.dTop    = 0;
+                m_oViewport.dRight  = oTEmfHeader.oDevice.cx;
+                m_oViewport.dBottom =  oTEmfHeader.oDevice.cy;
         }
 
         void CEmfInterpretatorSvg::HANDLE_EMR_ALPHABLEND(const TEmfAlphaBlend &oTEmfAlphaBlend, CDataStream &oDataStream)
@@ -981,8 +983,8 @@ namespace MetaFile
         {
                 NodeAttributes arNodeAttributes;
 
-                std::wstring wsXCoord = std::to_wstring(TranslateX(dX));
-                std::wstring wsYCoord = std::to_wstring(TranslateY(dY));
+                double dXCoord = TranslateX(dX);
+                double dYCoord = TranslateY(dY);
 
                 if (NULL != m_pParser && NULL != m_pParser->GetFont())
                 {
@@ -997,6 +999,46 @@ namespace MetaFile
                                                     {L"fill", wsFillRect},
                                                     {L"stroke", L"none"}});
                         }
+
+
+                        TEmfColor oColor = m_pParser->GetDC()->GetTextColor();
+
+                        if (0 != oColor.r || 0 != oColor.g || 0 != oColor.b)
+                                arNodeAttributes.push_back({L"fill", L"rgba(" + std::to_wstring((int)oColor.r) + L", " + std::to_wstring((int)oColor.g) + L", " + std::to_wstring((int)oColor.b) + L", 255)"});
+
+                        IFont *pFont = m_pParser->GetFont();
+
+                        double dFontHeight = std::fabs(TranslateY(pFont->GetHeight()));
+
+			if (dFontHeight < 0.01)
+				dFontHeight = 18;
+
+			arNodeAttributes.push_back({L"font-size", std::to_wstring(dFontHeight)});
+
+			std::wstring wsFaceName = pFont->GetFaceName();
+
+                        if (!wsFaceName.empty())
+                                arNodeAttributes.push_back({L"font-family", wsFaceName});
+
+                        if (pFont->GetWeight() > 550)
+                                arNodeAttributes.push_back({L"font-weight", L"bold"});
+
+                        if (pFont->IsItalic())
+                                arNodeAttributes.push_back({L"font-style", L"italic"});
+
+
+                        if (pFont->IsUnderline() && pFont->IsStrikeOut())
+                                arNodeAttributes.push_back({L"text-decoration", L"underline line-through"});
+                        else if (pFont->IsUnderline())
+                                arNodeAttributes.push_back({L"text-decoration", L"underline"});
+                        else if (pFont->IsStrikeOut())
+                                arNodeAttributes.push_back({L"text-decoration", L"line-through"});
+
+                        //TODO:: разобраться для корректной работы
+//                        double dFontCharSpace = TranslateX(pFont->GetCharSet());
+
+//                        if (dFontCharSpace > 1)
+//                                arNodeAttributes.push_back({L"letter-spacing", std::to_wstring(dFontCharSpace)});
 
                         unsigned int ulTextAlign = m_pParser->GetTextAlign();
                         if (ulTextAlign & TA_BASELINE)
@@ -1025,46 +1067,16 @@ namespace MetaFile
                                 // Ничего не делаем
                         }
 
-                        IFont *pFont = m_pParser->GetFont();
-
-                        double dFontHeight = std::fabs(TranslateY(pFont->GetHeight()));
-
-			if (dFontHeight < 0.01)
-				dFontHeight = 18;
-
-			arNodeAttributes.push_back({L"font-size", std::to_wstring(dFontHeight)});
-
-			std::wstring wsFaceName = pFont->GetFaceName();
-
-                        if (!wsFaceName.empty())
-                                arNodeAttributes.push_back({L"font-family", wsFaceName});
-
-                        if (pFont->GetWeight() > 550)
-                                arNodeAttributes.push_back({L"font-weight", L"bold"});
-
-                        if (pFont->IsItalic())
-                                arNodeAttributes.push_back({L"font-style", L"italic"});
-
-                        if (pFont->IsUnderline())
-                                arNodeAttributes.push_back({L"text-decoration", L"underline"});
-
-                        if (pFont->IsStrikeOut())
-                                arNodeAttributes.push_back({L"text-decoration", L"line-through"});
-
-                        //TODO:: разобраться для корректной работы
-//                        double dFontCharSpace = TranslateX(pFont->GetCharSet());
-
-//                        if (dFontCharSpace > 1)
-//                                arNodeAttributes.push_back({L"letter-spacing", std::to_wstring(dFontCharSpace)});
-
                         if (0 != pFont->GetEscapement())
-                                arNodeAttributes.push_back({L"transform", L"rotate(" + std::to_wstring(pFont->GetEscapement() / -10) + L' ' + wsXCoord + L' ' + wsYCoord + L')'});
+                                arNodeAttributes.push_back({L"transform", L"rotate(" + std::to_wstring(pFont->GetEscapement() / -10) + L' ' + std::to_wstring(dXCoord) + L' ' + std::to_wstring(dYCoord) + L')'});
+
+                        UpdateTransform(TranslateRect(oBounds));
                 }
+                else
+                        UpdateTransform(TranslateX(dX), TranslateX(dY));
 
-                arNodeAttributes.push_back({L"x", wsXCoord});
-                arNodeAttributes.push_back({L"y", wsYCoord});
-
-                UpdateTransform(TranslateX(dX), TranslateX(dY));
+                arNodeAttributes.push_back({L"x", std::to_wstring(dXCoord)});
+                arNodeAttributes.push_back({L"y", std::to_wstring(dYCoord)});
 
                 WriteNode(L"text", arNodeAttributes, StringNormalization(wsText));
         }
@@ -1137,8 +1149,14 @@ namespace MetaFile
                 if (dX < m_oViewport.dLeft)
                         m_oViewport.dLeft = dX;
 
+                if (dX > m_oViewport.dRight)
+                        m_oViewport.dRight = dX;
+
                 if (dY < m_oViewport.dTop)
                         m_oViewport.dTop = dY;
+
+                if (dY > m_oViewport.dBottom)
+                        m_oViewport.dBottom = dY;
         }
 
         void CEmfInterpretatorSvg::UpdateTransform(const TRectD &oRect)
@@ -1147,30 +1165,60 @@ namespace MetaFile
                 UpdateTransform(oRect.dRight, oRect.dBottom);
         }
 
-        void CEmfInterpretatorSvg::UpdateTransform(const std::vector<TEmfPointL> &arPoints)
+        void CEmfInterpretatorSvg::UpdateTransform(const std::vector<TEmfPointL> &arPoints, const NodeAttributes& arAttributes)
         {
-                double dMinX = 0, dMinY = 0;
+                short shMinX = SHRT_MAX, shMinY = SHRT_MAX;
+                short shMaxX = SHRT_MIN, shMaxY = SHRT_MIN;
+
                 for (const TEmfPointL& oPoint : arPoints)
                 {
-                        if (oPoint.x < dMinX) dMinX = oPoint.x;
-                        if (oPoint.y < dMinY) dMinY = oPoint.y;
+                        if (oPoint.x < shMinX) shMinX = oPoint.x;
+                        if (oPoint.x > shMaxX) shMaxX = oPoint.x;
+
+                        if (oPoint.y < shMinY) shMinY = oPoint.y;
+                        if (oPoint.y > shMaxY) shMaxY = oPoint.y;
                 }
 
-                if (0 != dMinX || 0 != dMinY)
-                        UpdateTransform(dMinX, dMinY);
+                double dShift = 0;
+
+                if (!arAttributes.empty())
+                        for (const NodeAttribute& oAttribute : arAttributes)
+                                if (L"stroke-width" == oAttribute.first)
+                                        dShift = std::stod(oAttribute.second) / 2;
+
+                if (SHRT_MAX != shMinX && SHRT_MAX != shMinY)
+                        UpdateTransform(TranslateX(shMinX) - dShift, TranslateY(shMinY) - dShift);
+
+                if (SHRT_MIN != shMaxX && SHRT_MIN != shMaxY)
+                        UpdateTransform(TranslateX(shMaxX) + dShift, TranslateY(shMaxY) + dShift);
         }
 
-        void CEmfInterpretatorSvg::UpdateTransform(const std::vector<TEmfPointS> &arPoints)
+        void CEmfInterpretatorSvg::UpdateTransform(const std::vector<TEmfPointS> &arPoints, const NodeAttributes& arAttributes)
         {
-                short shMinX = 0, shMinY = 0;
+                short shMinX = SHRT_MAX, shMinY = SHRT_MAX;
+                short shMaxX = SHRT_MIN, shMaxY = SHRT_MIN;
+
                 for (const TEmfPointS& oPoint : arPoints)
                 {
                         if (oPoint.x < shMinX) shMinX = oPoint.x;
+                        if (oPoint.x > shMaxX) shMaxX = oPoint.x;
+
                         if (oPoint.y < shMinY) shMinY = oPoint.y;
+                        if (oPoint.y > shMaxY) shMaxY = oPoint.y;
                 }
 
-                if (0 != shMinX || 0 != shMinY)
-                        UpdateTransform(shMinX, shMinY);
+                double dShift = 0;
+
+                if (!arAttributes.empty())
+                        for (const NodeAttribute& oAttribute : arAttributes)
+                                if (L"stroke-width" == oAttribute.first)
+                                        dShift = std::stod(oAttribute.second) / 2;
+
+                if (SHRT_MAX != shMinX && SHRT_MAX != shMinY)
+                        UpdateTransform(TranslateX(shMinX) - dShift, TranslateY(shMinY) - dShift);
+
+                if (SHRT_MIN != shMaxX && SHRT_MIN != shMaxY)
+                        UpdateTransform(TranslateX(shMaxX) + dShift, TranslateY(shMaxY) + dShift);
         }
 
         void CEmfInterpretatorSvg::UpdateTransform(TEmfPointL *arPoints, unsigned int unCount)

@@ -114,7 +114,6 @@ namespace MetaFile
 
                 TSvgViewport            m_oViewport;
                 TEmfSizeL               m_oSizeWindow;
-                TEmfPointD              m_oExtremePoint;
         public:
                 void Begin() override;
                 void End() override;

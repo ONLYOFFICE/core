@@ -133,7 +133,6 @@ namespace MetaFile
 
                 TSvgViewport            m_oViewport;
                 TEmfSizeL               m_oSizeWindow;
-                TEmfPointD              m_oExtremePoint;
         public:
                 void Begin() override;
                 void End() override;
@@ -172,8 +171,8 @@ namespace MetaFile
 
                 void UpdateTransform(double dX, double dY);
                 void UpdateTransform(const TRectD& oRect);
-                void UpdateTransform(const std::vector<TEmfPointL>& arPoints);
-                void UpdateTransform(const std::vector<TEmfPointS>& arPoints);
+                void UpdateTransform(const std::vector<TEmfPointL>& arPoints, const NodeAttributes& arAttributes = {});
+                void UpdateTransform(const std::vector<TEmfPointS>& arPoints, const NodeAttributes& arAttributes = {});
                 void UpdateTransform(TEmfPointL *arPoints, unsigned int unCount);
                 void UpdateTransform(TEmfPointS *arPoints, unsigned int unCount);
 

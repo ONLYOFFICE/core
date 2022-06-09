@@ -122,6 +122,8 @@ bool CPPTFileReader::ReadPersists()
 void CPPTFileReader::ReadDocument()
 {
 	ReadPictures();
+	ReadDocumentSummary();
+	
 	m_oDocumentInfo.LoadDocument(m_strTmpDirectory);
 }
 
@@ -226,7 +228,7 @@ void CPPTFileReader::ReadDocumentSummary()
 
 	pStream = GetDocumentSummaryStream();
 	if (pStream)
-		summary_info.read(pStream);
+		summary_info.read(pStream, true);
 	
 	m_nPresentationCodePage = summary_info.GetCodePage();
 

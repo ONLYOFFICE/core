@@ -264,7 +264,7 @@ namespace DocFileFormat
 		if ((DocSummary) && (DocSummary->size() > 0))
 		{
 			XLS::CFStreamPtr stream = XLS::CFStreamPtr(new XLS::CFStream(DocSummary));
-			summary_info.read(stream);
+			summary_info.read(stream, true);
 
 			int document_code_page2 = summary_info.GetCodePage();
 

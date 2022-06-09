@@ -96,7 +96,6 @@ _UINT32 COfficePPTFile::OpenFile(const std::wstring & sFileName, const std::wstr
 	}
 
 	//pptReader->ReadEncryptedSummary();
-	//pptReader->ReadDocumentSummary();
 	pptReader->ReadDocument();
 
 	bMacros	= pptReader->m_oDocumentInfo.m_bMacros;

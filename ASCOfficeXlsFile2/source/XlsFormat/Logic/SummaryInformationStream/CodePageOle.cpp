@@ -131,15 +131,16 @@ std::wstring PropertyDTM::toString()
 	short	Month = (short)date_time_.date().month().as_number();
 	int		Year = (short)date_time_.date().year();
 
-	std::wstring value = std::to_wstring(Year) + L"-" + (Month < 10 ? L"0" : L"") + std::to_wstring(Month)
-		+ L"-" + (Day < 10 ? L"0" : L"") + std::to_wstring(Day);
+	std::wstring value = std::to_wstring(Year)
+								+ L"-" + (Month < 10 ? L"0" : L"") + std::to_wstring(Month)	
+								+ L"-" + (Day < 10 ? L"0" : L"") + std::to_wstring(Day);
 
 	int hours = 0, minutes = 0;
 	double sec = 0;
 
 	value += L"T";
 	value +=	(Hour < 10 ? L"0" : L"") + std::to_wstring(Hour) + L":" +
-				(Min < 10 ? L"0" : L"") + std::to_wstring(Min) + L":" +	L":00Z";
+				(Min < 10 ? L"0" : L"") + std::to_wstring(Min) + L":00Z";
 	return value;
 }
 //-------------------------------------------------------------------
@@ -250,7 +251,7 @@ std::wstring PropertyVecHeadingPair::toString()
 	{
 		CP_XML_NODE(L"vt:vector")
 		{
-			CP_XML_ATTR(L"size", values.size());
+			CP_XML_ATTR(L"size", values.size() * 2);
 			CP_XML_ATTR(L"baseType", L"variant");
 
 			for (size_t i = 0; i < values.size(); ++i)

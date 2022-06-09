@@ -1290,11 +1290,11 @@ namespace PdfWriter
 		m_pXref = NULL;
 		return true;
 	}
-	void CDocument::Sign(const unsigned int& unPageNum, const TRect& oRect, const std::wstring& sCertFile, const std::string& sCertPassword)
+    void CDocument::Sign(const unsigned int& unPageNum, const TRect& oRect, ICertificate* pCertificate)
 	{
 		CSignatureField* pField = CreateSignatureField();
 		if (m_pSignatureDict)
-			m_pSignatureDict->SetCert(sCertFile, sCertPassword);
+            m_pSignatureDict->SetCert(pCertificate);
 
 		// Сейчас подпись невидимая
 		// TODO DR, DA и AP (внешнее отображение подписи) должны заполняться в CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)

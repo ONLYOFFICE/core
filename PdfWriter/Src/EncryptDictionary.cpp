@@ -249,11 +249,9 @@ namespace PdfWriter
         m_nOffset2 = 0;
         m_nByteRangeBegin = 0;
         m_nByteRangeEnd = 0;
-        m_oSigner = NULL;
     }
     CSignatureDict::~CSignatureDict()
     {
-        RELEASEOBJECT(m_oSigner);
     }
     void CSignatureDict::SetByteRange(int nLen1, int nOffset2)
     {
@@ -297,7 +295,7 @@ namespace PdfWriter
             RELEASEOBJECT(pByteRange);
         }
         // Запись Contents
-        if (m_oSigner && m_nLen1 > 0 && m_nOffset2 > 0 && m_nLen1 < m_nOffset2 && m_nOffset2 < nFileEnd)
+        if (m_pCertificate && m_nLen1 > 0 && m_nOffset2 > 0 && m_nLen1 < m_nOffset2 && m_nOffset2 < nFileEnd)
         {
             DWORD dwLenDataForSignature = m_nLen1 + nFileEnd - m_nOffset2;
             BYTE* pDataForSignature = new BYTE[dwLenDataForSignature];
@@ -323,8 +321,8 @@ namespace PdfWriter
             }
 
             BYTE* pDatatoWrite;
-            DWORD dwLenDatatoWrite;
-            m_oSigner->Sign(pDataForSignature, dwLenDataForSignature, pDatatoWrite, dwLenDatatoWrite);
+            unsigned int dwLenDatatoWrite;
+            m_pCertificate->SignPKCS7(pDataForSignature, dwLenDataForSignature, pDatatoWrite, dwLenDatatoWrite);
             RELEASEARRAYOBJECTS(pDataForSignature);
             if (!pDatatoWrite)
                 return;
@@ -339,10 +337,9 @@ namespace PdfWriter
             RELEASEOBJECT(pContents);
         }
     }
-    void CSignatureDict::SetCert(const std::wstring& sCertFile, const std::string& sCertPassword)
+    void CSignatureDict::SetCert(ICertificate* pCert)
     {
-        RELEASEOBJECT(m_oSigner);
-        m_oSigner = new CPDFSigner(sCertFile, sCertPassword);
+        m_pCertificate = pCert;
     }
     void CSignatureDict::SetName(const std::string& sName)
     {

@@ -34,7 +34,7 @@
 
 #include "Objects.h"
 
-#include "../../DesktopEditor/xmlsec/src/include/PDFSigner.h"
+#include "../../DesktopEditor/xmlsec/src/include/Certificate.h"
 
 namespace PdfWriter
 {
@@ -79,14 +79,14 @@ namespace PdfWriter
 		void SetByteRange(int nLen1, int nOffset2);
 		void ByteRangeOffset(int nBegin, int nEnd);
 		void WriteToStream(CStream* pStream, int nFileEnd);
-		void SetCert(const std::wstring& sCertFile, const std::string& sCertPassword);
+        void SetCert(ICertificate* pCert);
 
 		void SetName(const std::string& sName);
 		void SetReason(const std::string& sReason);
 		void SetContacts(const std::string& sContacts);
 		void SetDate();
 	private:
-		CPDFSigner* m_oSigner;
+        ICertificate* m_pCertificate;
 
 		int m_nLen1;    // Длина  первого интервала сигнатуры
 		int m_nOffset2; // Начало второго интервала сигнатуры

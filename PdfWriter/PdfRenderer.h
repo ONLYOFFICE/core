@@ -47,6 +47,8 @@
 #define PDFWRITER_DECL_EXPORT Q_DECL_EXPORT
 #endif
 
+#include "../DesktopEditor/xmlsec/src/include/Certificate.h"
+
 namespace PdfWriter
 {
 	class CDocument;
@@ -237,7 +239,7 @@ public:
     bool DeletePage(int nPageIndex);
     bool EditClose(const std::wstring& wsPath, const std::wstring& sTrailer, const std::wstring& sInfo);
     void PageRotate(int nRotate);
-    void Sign(int nPageIndex, const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& sCertFile, const std::string& sCertPassword);
+    void Sign(int nPageIndex, const double& dX, const double& dY, const double& dW, const double& dH, ICertificate* pCertificate);
 
     NSFonts::IApplicationFonts* GetApplicationFonts();
 

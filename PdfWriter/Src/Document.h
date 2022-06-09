@@ -38,6 +38,7 @@
 
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../DesktopEditor/common/File.h"
+#include "../../DesktopEditor/xmlsec/src/include/Certificate.h"
 
 #include <ft2build.h>
 #include FT_OUTLINE_H
@@ -158,7 +159,7 @@ namespace PdfWriter
 		CPage*            AddPage(int nPageIndex);
 		bool              DeletePage(int nPageIndex);
 		bool              AddToFile(const std::wstring& wsPath, const std::wstring& sTrailer, const std::wstring& sInfo);
-		void              Sign(const unsigned int& unPageNum, const TRect& oRect, const std::wstring& sCertFile, const std::string& sCertPassword);
+        void              Sign(const unsigned int& unPageNum, const TRect& oRect, ICertificate* pCert);
 		CSignatureDict*   GetSignatureDict() { return m_pSignatureDict; }
 	private:		  
 					  

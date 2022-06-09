@@ -3,6 +3,7 @@
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/fontengine/ApplicationFontsWorker.h"
+#include "../../DesktopEditor/xmlsec/src/include/CertificateCommon.h"
 
 void TEST(CPdfRenderer* pRenderer)
 {
@@ -78,11 +79,29 @@ int main()
     pReader->DrawPageOnRenderer(&pdfWriter, 0, NULL);
     //TEST2(&pdfWriter);
     pdfWriter.EndCommand(c_nPageType);
-    pdfWriter.Sign(0, 0, dHeight, 0, 0, NSFile::GetProcessDirectory() + L"/test.pfx", "Sveta03011997");
+
+    ICertificate* pCertificate = NULL;
+    if (true)
+    {
+        std::wstring sCertificateFile = NSFile::GetProcessDirectory() + L"/test.pfx";
+        std::wstring sPrivateKeyFile = L"";
+        std::string sCertificateFilePassword = "Sveta03011997";
+        std::string sPrivateFilePassword = "";
+
+        pCertificate = NSCertificate::FromFiles(sPrivateKeyFile, sPrivateFilePassword, sCertificateFile, sCertificateFilePassword);
+    }
+
+    if (pCertificate)
+    {
+        pdfWriter.Sign(0, 0, dHeight, 0, 0, pCertificate);
+    }
+
     pdfWriter.SaveToFile(sDstFile);
 
     RELEASEOBJECT(pReader);
     RELEASEINTERFACE(pApplicationFonts);
+
+    RELEASEOBJECT(pCertificate);
     return 0;
     if (bResult && pReader->EditPdf(&pdfWriter, sPassword))
     {

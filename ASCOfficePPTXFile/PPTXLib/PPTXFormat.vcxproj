@@ -339,6 +339,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">./StdAfx.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="..\PPTXFormat\Logic\UniFill.cpp" />
+    <ClCompile Include="..\PPTXFormat\Presentation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Common\DocxFormat\Source\DocxFormat\Namespaces.h" />

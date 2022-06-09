@@ -52,7 +52,6 @@ namespace DocFileFormat
 
 		_ctx->_docx->RegisterFontTable();
 
-        m_pXmlWriter->WriteNodeBegin( L"?xml version=\"1.0\" encoding=\"UTF-8\"?" );
         m_pXmlWriter->WriteNodeBegin( L"w:fonts", TRUE );
         m_pXmlWriter->WriteAttribute( L"xmlns:w", OpenXmlNamespaces::WordprocessingML );
         m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );

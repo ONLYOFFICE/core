@@ -108,6 +108,8 @@ namespace DocFileFormat
 			std::wstring pathFileName = outputDir + FILE_SEPARATOR_STR + fileName;
 			if (file.CreateFileW(pathFileName))
 			{
+				std::string root = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
+				file.WriteFile((BYTE*)root.c_str(), root.length());
 				file.WriteStringUTF8(XMLContent);
 				file.CloseFile();
 			}
@@ -397,7 +399,6 @@ namespace DocFileFormat
 		{
 			XMLTools::CStringXmlWriter writer;
 
-            writer.WriteNodeBegin( L"?xml version=\"1.0\" encoding=\"UTF-8\"?" );
             writer.WriteNodeBegin( L"Relationships", TRUE );
 
 			//write namespaces
@@ -433,7 +434,6 @@ namespace DocFileFormat
 		XMLTools::CStringXmlWriter writer;
 
 		// write content types
-        writer.WriteNodeBegin( L"?xml version=\"1.0\" encoding=\"UTF-8\"?");
         writer.WriteNodeBegin( L"Types", TRUE );
 
 		//write namespaces

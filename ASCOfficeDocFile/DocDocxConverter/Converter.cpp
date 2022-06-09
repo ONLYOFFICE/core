@@ -91,7 +91,6 @@ namespace DocFileFormat
 			doc->listTable->Convert( &numberingMapping );
 		}
 
-
 	//write the footnotes
 		FootnotesMapping footnotesMapping( &context );
 		doc->Convert( &footnotesMapping );

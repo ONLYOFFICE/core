@@ -56,51 +56,6 @@ public:
 	_CP_OPT(std::wstring) draw_text_style_name_;
 	_CP_OPT(std::wstring) draw_style_name_;
 };
-
-//  dc:date
-class dc_date : public office_element_impl<dc_date>
-{
-public:
-    static const wchar_t * ns;
-    static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeDcDate;
-    CPDOCCORE_DEFINE_VISITABLE();
-	
-	virtual void docx_convert(oox::docx_conversion_context & Context){}
-	virtual void xlsx_convert(oox::xlsx_conversion_context & Context){}
-    virtual void add_text(const std::wstring & Text);
-
-	std::wstring content_;
-private:
-	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ){}
-	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
-
-};
-CP_REGISTER_OFFICE_ELEMENT2(dc_date);
-
-//  dc:creator
-class dc_creator : public office_element_impl<dc_creator>
-{
-public:
-    static const wchar_t * ns;
-    static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeDcCreator;
-    CPDOCCORE_DEFINE_VISITABLE();
-
-	virtual void docx_convert(oox::docx_conversion_context & Context){}
-	virtual void xlsx_convert(oox::xlsx_conversion_context & Context){}
-    virtual void add_text(const std::wstring & Text);
-
-	std::wstring content_;
-
-private:
-	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ){}
-	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
-
-};
-CP_REGISTER_OFFICE_ELEMENT2(dc_creator);
 //-----------------------------------------------------------------------------------------------------------
 //  office:annotation-end 
 class office_annotation_end : public office_element_impl<office_annotation_end>

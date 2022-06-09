@@ -68,3 +68,4 @@
 #include "../../../PPTXFormat/FileFactory.cpp"
 #include "../../../PPTXFormat/FileMap.cpp"
 #include "../../../PPTXFormat/Folder.cpp"
+#include "../../../PPTXFormat/Presentation.cpp"

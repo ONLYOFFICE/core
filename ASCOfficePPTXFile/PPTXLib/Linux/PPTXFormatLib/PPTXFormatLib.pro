@@ -48,7 +48,7 @@ SOURCES += \
     ../../../PPTXFormat/Logic/Colors/SchemeClr.cpp \
     ../../../PPTXFormat/Logic/Fills/Blip.cpp \
     ../../../PPTXFormat/Logic/Fills/BlipFill.cpp \
-     ../../../PPTXFormat/Logic/Table/TableCell.cpp \
+    ../../../PPTXFormat/Logic/Table/TableCell.cpp \
     ../../../PPTXFormat/Logic/Timing/BuildNodeBase.cpp \
     ../../../PPTXFormat/Logic/Timing/TimeNodeBase.cpp \
     ../../../PPTXFormat/Logic/Transitions/TransitionBase.cpp \
@@ -62,7 +62,7 @@ SOURCES += \
     ../../../PPTXFormat/Logic/EffectStyle.cpp \
     ../../../PPTXFormat/Logic/Geometry.cpp \
     ../../../PPTXFormat/Logic/GraphicFrame.cpp \
-	../../../PPTXFormat/Logic/HeadingVariant.cpp \
+    ../../../PPTXFormat/Logic/HeadingVariant.cpp \
     ../../../PPTXFormat/Logic/GrpSpPr.cpp \
     ../../../PPTXFormat/Logic/Hyperlink.cpp \
     ../../../PPTXFormat/Logic/NvGraphicFramePr.cpp \
@@ -79,6 +79,7 @@ SOURCES += \
     ../../../PPTXFormat/Logic/UniEffect.cpp \
     ../../../PPTXFormat/Logic/Runs/MathParaWrapper.cpp \
     ../../../PPTXFormat/Logic/Controls.cpp \
+    ../../../PPTXFormat/Presentation.cpp \
     ../../../PPTXFormat/FileContainer.cpp \
     ../../../PPTXFormat/FileFactory.cpp \
     ../../../PPTXFormat/FileMap.cpp \

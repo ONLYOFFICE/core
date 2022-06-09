@@ -54,7 +54,6 @@ namespace DocFileFormat
 
 				int id = 0;
 
-                m_pXmlWriter->WriteNodeBegin( L"?xml version=\"1.0\" encoding=\"UTF-8\"?" );
                 m_pXmlWriter->WriteNodeBegin( L"w:footnotes", TRUE );
 
 				//write namespaces

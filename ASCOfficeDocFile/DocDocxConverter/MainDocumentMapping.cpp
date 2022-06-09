@@ -51,7 +51,6 @@ namespace DocFileFormat
 		m_document = static_cast<WordDocument*>(visited);
 		
 		// Header
-		m_pXmlWriter->WriteNodeBegin(L"?xml version=\"1.0\" encoding=\"UTF-8\"?");
 		m_pXmlWriter->WriteNodeBegin(L"w:document", TRUE );
 
 		// Namespaces

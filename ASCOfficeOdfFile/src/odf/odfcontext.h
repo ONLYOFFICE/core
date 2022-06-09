@@ -411,6 +411,7 @@ public:
     styles_lite_container&	drawStyles()			{ return draw_style_container_; }
 	styles_lite_container&	Templates()				{ return template_container_; }
 	settings_container&		Settings()				{ return settings_container_; }
+	doc_props_container&	DocProps()				{ return doc_props_container_; }
 
 private:
     styles_container		major_style_container_;
@@ -424,7 +425,7 @@ private:
     styles_lite_container	template_container_;
     
 	settings_container		settings_container_;
-
+	doc_props_container		doc_props_container_;
 };
 
 

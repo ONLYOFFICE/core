@@ -312,8 +312,11 @@ simple_element_ptr simple_element::create(const std::wstring & FileName, const s
     return boost::make_shared<simple_element>(FileName, Content);
 }
 //-----------------------------------------------------------------------------------------------
+docProps_files::docProps_files()
+{
 
-void core_file::write(const std::wstring & RootPath)
+}
+std::wstring docProps_files::create_core()
 {
     std::wstringstream resStream;
 
@@ -321,16 +324,13 @@ void core_file::write(const std::wstring & RootPath)
     L"xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" "
     L"xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" >";
 
-	//resStream << L"<dc:creator>ONLYOFFICE</dc:creator>";
-	//resStream << L"<cp:lastModifiedBy>ONLYOFFICE</cp:lastModifiedBy>";
 	resStream << L"<cp:revision>1</cp:revision>";
     resStream << L"</cp:coreProperties>";
 
-    simple_element elm(L"core.xml", resStream.str());
-    elm.write(RootPath);
+    return resStream.str();
 }
 
-void app_file::write(const std::wstring & RootPath)
+std::wstring docProps_files::create_app()
 {
     std::wstringstream resStream;
 
@@ -348,33 +348,31 @@ void app_file::write(const std::wstring & RootPath)
 #endif	
 	resStream << L"</Application></Properties>";
     
-    simple_element elm(L"app.xml", resStream.str());
-    elm.write(RootPath);
+    return resStream.str();
 }
-
-////////////
-
-docProps_files::docProps_files()
+void docProps_files::set_app(element_ptr Element)
 {
-
+	app_ = Element;
 }
-
+void docProps_files::set_core(element_ptr Element)
+{
+	core_ = Element;
+}
 void docProps_files::write(const std::wstring & RootPath)
 {
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"docProps";
-    NSDirectory::CreateDirectory(path.c_str());
+	NSDirectory::CreateDirectory(path.c_str());
 
-    core_.write(path);
-    app_.write(path);
+	if (!core_)	core_ = simple_element::create(L"core.xml", create_core());
+	if (!app_)	app_ = simple_element::create(L"app.xml", create_app());
+	
+	core_->write(path);
+	app_->write(path);
 }
-
-////////////
-
-
+//---------------------------------------------------------------------------------------------------
 media::media(mediaitems_ptr & _mediaitems, NSFonts::IApplicationFonts *pAppFonts) : mediaItems_(_mediaitems), appFonts_(pAppFonts)
 {    
 }
-
 void media::write(const std::wstring & RootPath)
 {
     std::wstring path = RootPath + FILE_SEPARATOR_STR + L"media";

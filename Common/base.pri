@@ -68,6 +68,10 @@ isEqual(QT_MAJOR_VERSION, 5) {
     equals(DST_ARCH, i386) {
         DST_ARCH=x86
     }
+
+    lessThan(QT_MINOR_VERSION, 15) {
+	    DEFINES += QT_VERSION_LESS_5_15
+	}
 }
 
 greaterThan(QT_MAJOR_VERSION, 5) {

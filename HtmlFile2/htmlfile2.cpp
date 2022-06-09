@@ -1193,6 +1193,8 @@ private:
             }
             else
             {
+                    wsTable.insert(35, oStyle.GetId());
+
                     std::wstring sColorLeftSide     = oStyle.m_pBorder.GetColorLeftSide();
                     std::wstring sSzLeftSide        = oStyle.m_pBorder.GetWidthLeftSideW();
                     std::wstring sStyleLeftSide     = oStyle.m_pBorder.GetStyleLeftSide();

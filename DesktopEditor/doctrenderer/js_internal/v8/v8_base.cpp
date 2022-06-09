@@ -185,7 +185,12 @@ namespace NSJSBase
 
     CJSContextScope* CJSContext::CreateContextScope()
     {
-        return new CJSContextScopeV8(m_internal->m_context);
+        CJSContextScope* pScope = new CJSContextScopeV8(m_internal->m_context);
+
+        JSSmart<CJSObject> global = GetCurrent()->GetGlobal();
+        global->set("window", global.GetPointer());
+
+        return pScope;
     }
 
     CJSLocalScope* CJSContext::CreateLocalScope()
@@ -218,6 +223,13 @@ namespace NSJSBase
     {
         CJSValueV8* _value = new CJSValueV8();
         _value->value = v8::Integer::New(CV8Worker::GetCurrent(), value);
+        return _value;
+    }
+
+    CJSValue* CJSContext::createUInt(const unsigned int& value)
+    {
+        CJSValueV8* _value = new CJSValueV8();
+        _value->value = v8::Integer::NewFromUnsigned(CV8Worker::GetCurrent(), value);
         return _value;
     }
 
@@ -263,9 +275,9 @@ namespace NSJSBase
         return _value;
     }
 
-    CJSTypedArray* CJSContext::createUint8Array(BYTE* data, int count)
+    CJSTypedArray* CJSContext::createUint8Array(BYTE* data, int count, const bool& isExternalize)
     {
-        CJSTypedArrayV8* _value = new CJSTypedArrayV8(data, count);
+        CJSTypedArrayV8* _value = new CJSTypedArrayV8(data, count, isExternalize);
         return _value;
     }
 
@@ -349,5 +361,14 @@ namespace NSJSBase
     bool CJSContext::IsSupportNativeTypedArrays()
     {
         return true;
+    }
+
+    unsigned char* NSAllocator::Alloc(const size_t& size)
+    {
+        return (unsigned char*)CV8Worker::getInitializer()->getAllocator()->AllocateUninitialized(size);
+    }
+    void NSAllocator::Free(unsigned char* data, const size_t& size)
+    {
+        CV8Worker::getInitializer()->getAllocator()->Free(data, size);
     }
 }

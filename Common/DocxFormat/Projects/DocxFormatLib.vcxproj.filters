@@ -877,5 +877,8 @@
     <ClCompile Include="..\Source\XlsxFormat\Pivot\PivotCacheDefinitionExt.cpp">
       <Filter>XlsxFormat\Pivots</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\XlsxFormat\Workbook\Workbook.cpp">
+      <Filter>XlsxFormat\Workbook</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

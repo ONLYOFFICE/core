@@ -43,6 +43,8 @@
 #include "../../ASCOfficePPTXFile/PPTXFormat/Core.h"
 #include "../../ASCOfficePPTXFile/PPTXFormat/Logic/HeadingVariant.h"
 
+#include "../../ASCOfficeXlsFile2/source/VbaFormat/VbaReader.h"
+
 #include "../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
 #include "../../Common/DocxFormat/Source/XlsxFormat/XlsxFlat.h"
 
@@ -2113,6 +2115,16 @@ void BinaryWorkbookTableWriter::WriteWorkbook(OOX::Spreadsheet::CWorkbook& workb
         m_pXlsx->m_pVbaProject->toPPTY(&m_oBcw.m_oStream);
         m_oBcw.m_oStream.EndRecord();
 
+		CVbaReader vbaReader(m_pXlsx->m_pVbaProject->filename().GetPath(), L"");
+		std::wstring sXml = vbaReader.convert();
+
+		if (false == sXml.empty())
+		{
+			m_oBcw.m_oStream.StartRecord(1);
+			m_oBcw.m_oStream.WriteStringW(sXml);
+			m_oBcw.m_oStream.EndRecord();
+		}
+
         m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 //Write JsaProject
@@ -2154,6 +2166,12 @@ void BinaryWorkbookTableWriter::WriteWorkbook(OOX::Spreadsheet::CWorkbook& workb
 		m_oBcw.m_oStream.WriteStringW3(*workbook.m_oAppName);
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}	
+	if (workbook.m_oOleSize.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::OleSize);
+		m_oBcw.m_oStream.WriteStringW3(*workbook.m_oOleSize);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
 }
 void BinaryWorkbookTableWriter::WriteProtection(const OOX::Spreadsheet::CWorkbookProtection& protection)
 {

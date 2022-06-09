@@ -38,6 +38,16 @@
 
 namespace VBA
 {
+	const std::string int2str(const int val, const int radix)
+	{
+		static char num_buf[10] = {};
+#if defined(_WIN32) || defined(_WIN64)
+		_itoa_s(val, num_buf, 9, radix);
+#else
+		sprintf(num_buf, "%d", val);
+#endif
+		return num_buf;
+	}
 	const std::wstring int2wstr(const int val, const int radix)
 	{
 #if defined(_WIN32) || defined(_WIN64)

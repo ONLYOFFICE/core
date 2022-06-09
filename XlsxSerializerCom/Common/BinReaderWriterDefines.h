@@ -228,8 +228,9 @@ namespace BinXlsxRW
 		SlicerCaches = 18,
 		SlicerCachesExt = 19,
 		SlicerCache = 20,
-		Protection = 21
-	};}	
+		Protection = 21,
+		OleSize = 22
+	};}
 	namespace c_oSerWorkbookProtection {enum c_oSerWorkbookProtection{
 		AlgorithmName = 0,
 		SpinCount = 1,

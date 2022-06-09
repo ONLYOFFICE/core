@@ -11,7 +11,9 @@
 
 #include "v8.h"
 #include "libplatform/libplatform.h"
+#ifndef __ANDROID__
 #include "src/base/sys-info.h"
+#endif
 
 #ifdef V8_VERSION_89_PLUS
 #define kV8NormalString v8::NewStringType::kNormal
@@ -131,8 +133,10 @@ public:
     #else
         m_pAllocator = new MallocArrayBufferAllocator();
     #endif
+    #ifdef __ANDROID__
         create_params.array_buffer_allocator = m_pAllocator;
-
+        return v8::Isolate::New(create_params);
+    #else
         int64_t nMaxVirtualMemory = v8::base::SysInfo::AmountOfVirtualMemory();
         if (0 == nMaxVirtualMemory)
             nMaxVirtualMemory = 4000000000; // 4Gb
@@ -142,6 +146,7 @@ public:
               nMaxVirtualMemory);
 
         return v8::Isolate::New(create_params);
+    #endif
     }
 };
 

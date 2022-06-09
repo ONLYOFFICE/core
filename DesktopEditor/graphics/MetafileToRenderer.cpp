@@ -994,7 +994,30 @@ namespace NSOnlineOfficeBinToPdf
 				else if (oInfo.IsSignature())
 				{
 					CFormFieldInfo::CSignatureFormPr* pPr = oInfo.GetSignatureFormPr();
-					// Установка полей сигнатуры
+
+                    // Поля Настройки подписи
+                    // Сведения о подписывающем
+
+                    // Имя
+                    if (nFlags & (1 << 20))
+                        pPr->SetName(ReadString(current, curindex));
+
+                    // Должность 1 << 21 Игнорируется
+
+                    // Адрес электронной почты
+                    if (nFlags & (1 << 22))
+                        pPr->SetContact(ReadString(current, curindex));
+
+                    // Инструкция для подписывающего 1 << 23 Игнорируется
+
+                    // Показывать дату подписи в строке подписи
+                    pPr->SetDate(nFlags & (1 << 24));
+
+                    // TODO Цель подписания документа (причина)
+                    if (nFlags & (1 << 25))
+                        pPr->SetReason(ReadString(current, curindex));
+
+                    // TODO Location Имя хоста ЦП или физическое расположение подписи
 				}
 
 				if (oInfo.IsValid())

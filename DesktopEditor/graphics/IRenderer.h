@@ -594,7 +594,29 @@ public:
 	};
 	class CSignatureFormPr
 	{
+        public:
+            void SetName(const std::wstring& wsValue)
+            {
+                m_wsName = wsValue;
+            }
+            void SetContact(const std::wstring& wsValue)
+            {
+                m_wsContact = wsValue;
+            }
+            void SetReason(const std::wstring& wsValue)
+            {
+                m_wsReason = wsValue;
+            }
+            void SetDate(const bool& bDate)
+            {
+                m_bDate = bDate;
+            }
 
+        private:
+            std::wstring m_wsName;
+            std::wstring m_wsContact;
+            std::wstring m_wsReason;
+            bool         m_bDate;
 	};
 
 public:

@@ -120,11 +120,17 @@ void OfficeArtRGFOPTE::load(XLS::CFRecord& record)
 	}
 //-----complex load 
 
-	for(std::vector<OfficeArtFOPTEPtr>::iterator it = rgfopte.begin(), itEnd = rgfopte.end(); it != itEnd; ++it)
+	for (size_t i = 0; i < rgfopte.size(); ++i)
 	{
-		if((*it)->fComplex && (*it)->op > 0)
+		if (!rgfopte[i]) continue;
+
+		if (rgfopte[i]->fComplex)
 		{
-			(*it)->ReadComplexData(record);
+			if (rgfopte[i]->op < 0)
+			{
+				break;
+			}
+			rgfopte[i]->ReadComplexData(record);
 		}
 	}
 

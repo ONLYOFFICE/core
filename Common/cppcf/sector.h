@@ -1,7 +1,6 @@
 #pragma once
 
-#include <sstream>
-#include <fstream>
+#include "Stream.h"
 #include <memory>
 #include "../../DesktopEditor/common/Types.h"
 #include <vector>
@@ -9,6 +8,7 @@
 
 namespace CFCPP
 {
+
 enum SectorType
 {
     Normal,
@@ -22,7 +22,7 @@ enum SectorType
 class Sector
 {
 public:
-    Sector(int size, std::unique_ptr<std::fstream> stream);
+    Sector(int size, const Stream &stream);
     Sector(int size, const std::vector<BYTE> &data);
     Sector(int size);
 
@@ -46,7 +46,7 @@ public:
 private:
     bool dirtyFlag = false;
     int size = 0;
-    std::unique_ptr<std::fstream> stream;
+    Stream stream;
     SectorType type;
     int id = -1;
     std::vector<BYTE> data;

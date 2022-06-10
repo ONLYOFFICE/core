@@ -4,6 +4,7 @@
 #include <array>
 #include <vector>
 #include "../../DesktopEditor/common/Types.h"
+#include "Stream.h"
 
 
 namespace CFCPP
@@ -11,7 +12,7 @@ namespace CFCPP
 class StreamRW
 {
 public:
-    StreamRW(std::fstream &stream);
+    StreamRW(const Stream &stream);
     T_LONG64 Seek(T_LONG64 offset);
 
     template <class T>
@@ -21,11 +22,13 @@ public:
     void Write(T value);
 
     std::vector<BYTE> ReadArray(int lenght);
+    template<size_t N>
+    std::array<BYTE, N> ReadArray();
     void WriteArray(BYTE *arr, int lenght);
 
 private:
     std::array<BYTE,8> buffer;
-    std::fstream& stream;
+    Stream stream;
 };
 
 }

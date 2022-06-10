@@ -36,7 +36,7 @@ Header::Header(ushort version)
     }
 }
 
-void Header::Write(std::fstream &stream)
+void Header::Write(Stream &stream)
 {
     StreamRW rw(stream);
     rw.WriteArray(headerSignature.data(), headerSignature.size());
@@ -69,7 +69,7 @@ void Header::Write(std::fstream &stream)
     }
 }
 
-void Header::Read(std::fstream &stream)
+void Header::Read(Stream &stream)
 {
     StreamRW rw(stream);
 

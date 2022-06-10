@@ -22,6 +22,7 @@ SOURCES += \
     streamrw.cpp
 
 HEADERS += \
+    Stream.h \
     cfexception.h \
     cfitem.h \
     cfstorage.h \

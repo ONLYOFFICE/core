@@ -7,12 +7,18 @@ SectorCollection::SectorCollection()
 
 }
 
-void SectorCollection::Add(Sector item)
+void SectorCollection::Add(const Sector &item)
 {
     if (DoCheckSizeLimitReached() == false)
         return;
 
     add(item);
+}
+
+void SectorCollection::Clear()
+{
+    largeArraySlices.clear();
+    count = 0;
 }
 
 bool SectorCollection::DoCheckSizeLimitReached()
@@ -25,22 +31,22 @@ bool SectorCollection::DoCheckSizeLimitReached()
     return true;
 }
 
-int SectorCollection::add(Sector item)
+int SectorCollection::add(const Sector &item)
 {
-    int itemIndex = count / SLICE_SIZE;
+    unsigned itemIndex = count / SLICE_SIZE;
 
-                if (itemIndex < largeArraySlices.Count)
-                {
-                    largeArraySlices[itemIndex].Add(item);
-                    count++;
-                }
-                else
-                {
-                    ArrayList ar = new ArrayList(SLICE_SIZE);
-                    ar.Add(item);
-                    largeArraySlices.Add(ar);
-                    count++;
-                }
+    if (itemIndex < largeArraySlices.size())
+    {
+        largeArraySlices[itemIndex]->push_back(item);
+        count++;
+    }
+    else
+    {
+        std::unique_ptr<std::vector<Sector>> ar(new std::vector<Sector>(SLICE_SIZE));
+        ar->emplace_back(item);
+        largeArraySlices.push_back(ar);
+        count++;
+    }
 
-                return count - 1;
+    return count - 1;
 }

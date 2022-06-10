@@ -85,6 +85,7 @@ namespace PdfWriter
 		m_bEncrypt          = false;
 		m_pEncryptDict      = NULL;
 		m_pSignatureDict    = NULL;
+		m_unSignature       = 0;
 		m_unCompressMode    = COMP_NONE;
 		m_pJbig2            = NULL;
 		memset((void*)m_sTTFontTag, 0x00, 8);
@@ -186,6 +187,7 @@ namespace PdfWriter
 		m_nCurPageNum       = 0;
 		m_bEncrypt          = false;
 		m_pEncryptDict      = NULL;
+		m_unSignature       = 0;
 		m_pSignatureDict    = NULL;
 		m_pInfo             = NULL;
 		m_unCompressMode    = COMP_NONE;
@@ -1290,25 +1292,11 @@ namespace PdfWriter
 		m_pXref = NULL;
 		return true;
 	}
-	void CDocument::Sign(const unsigned int& unPageNum, const TRect& oRect, ICertificate* pCertificate)
+	void CDocument::Sign(const TRect& oRect, CImageDict* pImage, ICertificate* pCertificate)
 	{
 		CSignatureField* pField = CreateSignatureField();
 		if (m_pSignatureDict)
 			m_pSignatureDict->SetCert(pCertificate);
-
-		// Сейчас подпись невидимая
-		// TODO DR, DA и AP (внешнее отображение подписи) должны заполняться в CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
-		// TODO Необходимо реализовать класс CFormFieldInfo::CSignatureFormPr
-
-		// TODO DR - Словарь ресурсов, содержащий ресурсы по умолчанию (такие как шрифты, шаблоны или цветовые пространства),
-		// которые должны использоваться потоками внешнего вида полей формы - смотри AP ниже
-		// CResourcesDict* pFieldsResources = GetFieldsResources();
-
-		// TODO DA - Значение по умолчанию для всего документа для атрибута DA переменных текстовых полей
-		// std::string sDA;
-		// m_pAcroForm->Add("DA", new CStringObject(sDA.c_str()));
-
-		// TODO AP - Словарь внешнего вида, указывающий, как аннотация должна быть визуально представлена на странице
 
 		// 3 ~ 11, где
 		// первый бит - Если установлено, документ содержит как минимум одно поле для подписи,
@@ -1316,16 +1304,15 @@ namespace PdfWriter
 		// если файл сохраняется таким образом, что изменяется его предыдущее содержимое, в отличие от инкрементного обновления
 		m_pAcroForm->Add("SigFlags", 3);
 
-		CPage* pPage = m_pPageTree->GetPage(unPageNum);
-		if (!pPage)
-		    return;
-		pField->AddPageRect(pPage, oRect);
+		pField->AddPageRect(m_pCurPage ? m_pCurPage : m_pPageTree->GetPage(0), oRect);
 		// 3 бит - Печать, печатать аннотацию при печати страницы
 		// 8 бит - Заблокировано, пользователь не может удалить аннотацию или изменить ее свойства
 		pField->Add("F", 132);
 
-		// TODO Частичное имя поля
-		// pFieldBase->SetFieldName в CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
-		pField->SetFieldName("Sig1");
+		// Частичное имя поля
+		pField->SetFieldName("Sig" + std::to_string(++m_unSignature));
+
+		// Внешнее отображение подписи
+		pField->SetAppearance(pImage);
 	}
 }

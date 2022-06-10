@@ -159,7 +159,7 @@ namespace PdfWriter
 		CPage*            AddPage(int nPageIndex);
 		bool              DeletePage(int nPageIndex);
 		bool              AddToFile(const std::wstring& wsPath, const std::wstring& sTrailer, const std::wstring& sInfo);
-		void              Sign(const unsigned int& unPageNum, const TRect& oRect, ICertificate* pCert);
+		void              Sign(const TRect& oRect, CImageDict* pImage, ICertificate* pCert);
 		CSignatureDict*   GetSignatureDict() { return m_pSignatureDict; }
 	private:		  
 					  
@@ -205,6 +205,7 @@ namespace PdfWriter
 		bool                               m_bEncrypt;
 		CEncryptDict*                      m_pEncryptDict;
 		CSignatureDict*                    m_pSignatureDict;
+		unsigned int                       m_unSignature;
 		unsigned int                       m_unCompressMode;
 		std::vector<CExtGrState*>          m_vExtGrStates;
 		std::vector<CExtGrState*>          m_vStrokeAlpha;

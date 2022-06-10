@@ -357,7 +357,7 @@ namespace PdfWriter
         // Reason - Строка, Причина подписания, например (Я согласен)
         Add("Reason", new CStringObject(sReason.c_str()));
     }
-    void CSignatureDict::SetContacts(const std::string& sContacts)
+    void CSignatureDict::SetContact(const std::string& sContacts)
     {
         // ContactInfo - Строка, Информация, предоставленная подписывающей стороной,
         // чтобы получатель мог связаться с подписывающей стороной для проверки подписи, например (номер_телефона)

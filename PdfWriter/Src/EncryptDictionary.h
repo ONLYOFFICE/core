@@ -83,7 +83,7 @@ namespace PdfWriter
 
 		void SetName(const std::string& sName);
 		void SetReason(const std::string& sReason);
-		void SetContacts(const std::string& sContacts);
+		void SetContact(const std::string& sContacts);
 		void SetDate();
 	private:
 		ICertificate* m_pCertificate;

@@ -1256,15 +1256,127 @@ namespace PdfWriter
 			return;
 		Add("V", m_pSig);
 	}
-	void CSignatureField::SetFieldName(const std::string& sName, bool isSkipCheck)
+	void CSignatureField::SetName(const std::wstring& wsValue)
 	{
-		std::string _sName = sName + "_sig";
-		CFieldBase::SetFieldName(_sName, isSkipCheck);
+		if (!m_pSig || wsValue.empty())
+			return;
+		m_pSig->SetName(U_TO_UTF8(wsValue));
 	}
-	void CSignatureField::SetFieldName(const std::wstring& wsName, bool isSkipCheck)
+	void CSignatureField::SetReason(const std::wstring &wsValue)
 	{
-		std::string sName = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsName) + "_sig";
-		CFieldBase::SetFieldName(sName, isSkipCheck);
+		if (!m_pSig || wsValue.empty())
+			return;
+		m_pSig->SetReason(U_TO_UTF8(wsValue));
+	}
+	void CSignatureField::SetContact(const std::wstring &wsValue)
+	{
+		if (!m_pSig || wsValue.empty())
+			return;
+		m_pSig->SetContact(U_TO_UTF8(wsValue));
+	}
+	void CSignatureField::SetCert()
+	{
+
+	}
+	void CSignatureField::SetDate(bool bDate)
+	{
+		if (!m_pSig || !bDate)
+			return;
+		m_pSig->SetDate();
+	}
+	void CSignatureField::SetAppearance(CImageDict* pImage)
+	{
+		CAnnotAppearance* pAppearance = new CAnnotAppearance(m_pXref, this);
+		Add("AP", pAppearance);
+
+		CAnnotAppearanceObject* pNormal = pAppearance->GetNormal();
+		CResourcesDict* pFieldsResources = GetResourcesDict();
+
+		std::string sDA = "0.909 0.941 0.992 rg";
+		Add("DA", new CStringObject(sDA.c_str()));
+
+		if (pImage)
+		{
+			TRect oRect = GetRect();
+
+			double dH = fabs(oRect.fTop - oRect.fBottom);
+			double dW = fabs(oRect.fRight - oRect.fLeft);
+
+			double dOriginW = pImage->GetWidth() * 72 / 96.0;
+			double dOriginH = pImage->GetHeight() * 72 / 96.0;
+
+			double dDstW = dOriginW;
+			double dDstH = dOriginH;
+			double dDstX = 0;
+			double dDstY = 0;
+
+			if (HaveBorder())
+			{
+				double dBorderSize = GetBorderSize();
+				dDstX += 2 * dBorderSize;
+				dDstY += 2 * dBorderSize;
+				dH -= 4 * dBorderSize;
+				dW -= 4 * dBorderSize;
+			}
+
+			double dScaleKoef = fmin(dW / dOriginW, dH / dOriginH);
+			dDstW = dScaleKoef * dOriginW;
+			dDstH = dScaleKoef * dOriginH;
+
+			dDstX += (dW - dDstW) * 0.5;
+			dDstY += (dH - dDstH) * 0.5;
+
+			CXObject* pForm = new CXObject();
+			CStream* pStream = new CMemoryStream();
+			pForm->SetStream(m_pXref, pStream);
+
+#ifndef FILTER_FLATE_DECODE_DISABLED
+			if (m_pDocument->GetCompressionMode() & COMP_TEXT)
+				pForm->SetFilter(STREAM_FILTER_FLATE_DECODE);
+#endif
+			CArrayObject* pBBox = new CArrayObject();
+			pForm->Add("BBox", pBBox);
+			pBBox->Add(0);
+			pBBox->Add(0);
+			pBBox->Add(dOriginW);
+			pBBox->Add(dOriginH);
+			pForm->Add("FormType", 1);
+			CArrayObject* pFormMatrix = new CArrayObject();
+			pForm->Add("Matrix", pFormMatrix);
+			pFormMatrix->Add(1);
+			pFormMatrix->Add(0);
+			pFormMatrix->Add(0);
+			pFormMatrix->Add(1);
+			pFormMatrix->Add(0);
+			pFormMatrix->Add(0);
+			pForm->Add("Name", "FRM");
+
+			CDictObject* pFormRes = new CDictObject();
+			CArrayObject* pFormResProcset = new CArrayObject();
+			pFormRes->Add("ProcSet", pFormResProcset);
+			pFormResProcset->Add(new CNameObject("PDF"));
+			pFormResProcset->Add(new CNameObject("ImageC"));
+			CDictObject* pFormResXObject = new CDictObject();
+			pFormRes->Add("XObject", pFormResXObject);
+			pFormResXObject->Add("Img", pImage);
+			pForm->Add("Resources", pFormRes);
+
+			pForm->Add("Subtype", "Form");
+			pForm->Add("Type", "XObject");
+
+			pStream->WriteStr("q\012");
+			pStream->WriteReal(dOriginW);
+			pStream->WriteStr(" 0 0 ");
+			pStream->WriteReal(dOriginH);
+			pStream->WriteStr(" 0 0 cm\012/Img Do\012Q");
+
+			pFieldsResources->AddXObjectWithName("FRM", pForm);
+			pNormal->DrawPicture("FRM", dDstX, dDstY, dDstW / dOriginW, dDstH / dOriginH, true);
+		}
+		else
+		{
+			pNormal->DrawPicture();
+		}
 	}
 	//----------------------------------------------------------------------------------------
 	// CAnnotAppearance

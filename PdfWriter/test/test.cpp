@@ -78,7 +78,6 @@ int main()
     pdfWriter.put_Height(dHeight);
     pReader->DrawPageOnRenderer(&pdfWriter, 0, NULL);
     //TEST2(&pdfWriter);
-    pdfWriter.EndCommand(c_nPageType);
 
     ICertificate* pCertificate = NULL;
     if (true)
@@ -90,12 +89,14 @@ int main()
 
         pCertificate = NSCertificate::FromFiles(sPrivateKeyFile, sPrivateFilePassword, sCertificateFile, sCertificateFilePassword);
     }
-
     if (pCertificate)
     {
-        pdfWriter.Sign(0, 0, dHeight, 0, 0, pCertificate);
+        // Подпись будет на текущей странице
+        pdfWriter.Sign(10, 10, 50, 50, NSFile::GetProcessDirectory() + L"/test.jpg", pCertificate);
+        // pdfWriter.Sign(0, dHeight, 0, 0, L"", pCertificate); Невидимая подпись
     }
 
+    pdfWriter.EndCommand(c_nPageType);
     pdfWriter.SaveToFile(sDstFile);
 
     RELEASEOBJECT(pReader);

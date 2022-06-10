@@ -995,29 +995,40 @@ namespace NSOnlineOfficeBinToPdf
 				{
 					CFormFieldInfo::CSignatureFormPr* pPr = oInfo.GetSignatureFormPr();
 
-                    // Поля Настройки подписи
-                    // Сведения о подписывающем
+					// Поля Настройки подписи
+					// Сведения о подписывающем
 
-                    // Имя
-                    if (nFlags & (1 << 20))
-                        pPr->SetName(ReadString(current, curindex));
+					// Имя
+					if (nFlags & (1 << 20))
+						pPr->SetName(ReadString(current, curindex));
 
-                    // Должность 1 << 21 Игнорируется
+					// Должность Игнорируется
 
-                    // Адрес электронной почты
-                    if (nFlags & (1 << 22))
-                        pPr->SetContact(ReadString(current, curindex));
+					// Адрес электронной почты
+					if (nFlags & (1 << 21))
+						pPr->SetContact(ReadString(current, curindex));
 
-                    // Инструкция для подписывающего 1 << 23 Игнорируется
+					// Инструкция для подписывающего Игнорируется
 
-                    // Показывать дату подписи в строке подписи
-                    pPr->SetDate(nFlags & (1 << 24));
+					// Показывать дату подписи в строке подписи
+					pPr->SetDate(nFlags & (1 << 22));
 
-                    // TODO Цель подписания документа (причина)
-                    if (nFlags & (1 << 25))
-                        pPr->SetReason(ReadString(current, curindex));
+					// Цель подписания документа (причина)
+					if (nFlags & (1 << 23))
+						pPr->SetReason(ReadString(current, curindex));
 
-                    // TODO Location Имя хоста ЦП или физическое расположение подписи
+					// Картинка
+					if (nFlags & (1 << 24))
+						pPr->SetPicturePath(pCorrector->GetImagePath(ReadString(current, curindex)));
+
+					// TODO Необходимо передать сертификат, пароль, ключ, пароль ключа
+					// Если передавать пути, то у PdfWriter будет зависимость от ooxmlsignature
+					// Если передавать сертификат, то у graphics будет зависимость от ooxmlsignature
+					if (nFlags & (1 << 25))
+						pPr->SetCert(ReadString(current, curindex));
+
+					// TODO PDF позволяет подпись с различными правами: 1 подпись, 2 сертификат - запрет любых изменений,
+					// 3 изменение форм, 4 изменение форм и аннотаций
 				}
 
 				if (oInfo.IsValid())

@@ -594,29 +594,64 @@ public:
 	};
 	class CSignatureFormPr
 	{
-        public:
-            void SetName(const std::wstring& wsValue)
-            {
-                m_wsName = wsValue;
-            }
-            void SetContact(const std::wstring& wsValue)
-            {
-                m_wsContact = wsValue;
-            }
-            void SetReason(const std::wstring& wsValue)
-            {
-                m_wsReason = wsValue;
-            }
-            void SetDate(const bool& bDate)
-            {
-                m_bDate = bDate;
-            }
+	public:
+		void SetName(const std::wstring& wsValue)
+		{
+			m_wsName = wsValue;
+		}
+		void SetContact(const std::wstring& wsValue)
+		{
+			m_wsContact = wsValue;
+		}
+		void SetReason(const std::wstring& wsValue)
+		{
+			m_wsReason = wsValue;
+		}
+		void SetPicturePath(const std::wstring& wsPath)
+		{
+			m_wsPicturePath = wsPath;
+		}
+		void SetCert(const std::wstring& wsValue)
+		{
+			m_wsCert = wsValue;
+		}
+		void SetDate(const bool& bDate)
+		{
+			m_bDate = bDate;
+		}
 
-        private:
-            std::wstring m_wsName;
-            std::wstring m_wsContact;
-            std::wstring m_wsReason;
-            bool         m_bDate;
+		const std::wstring& GetName() const
+		{
+			return m_wsName;
+		}
+		const std::wstring& GetContact() const
+		{
+			return m_wsContact;
+		}
+		const std::wstring& GetReason() const
+		{
+			return m_wsReason;
+		}
+		const std::wstring& GetPicturePath() const
+		{
+			return m_wsPicturePath;
+		}
+		const std::wstring& GetCert() const
+		{
+			return m_wsCert;
+		}
+		bool GetDate() const
+		{
+			return m_bDate;
+		}
+
+	private:
+		std::wstring m_wsName;
+		std::wstring m_wsContact;
+		std::wstring m_wsReason;
+		std::wstring m_wsPicturePath;
+		std::wstring m_wsCert;
+		bool         m_bDate;
 	};
 
 public:

@@ -1995,7 +1995,29 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 	else if (oInfo.IsSignature())
 	{
 		const CFormFieldInfo::CSignatureFormPr* pPr = oInfo.GetSignaturePr();
-		// Вычисление полей сигнатуры
+
+		CSignatureField* pField = dynamic_cast<CSignatureField*>(pFieldBase);
+		if (!pField)
+			return S_FALSE;
+
+		pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
+		pField->SetName(pPr->GetName());
+		pField->SetReason(pPr->GetReason());
+		pField->SetContact(pPr->GetContact());
+		pField->SetDate(pPr->GetDate());
+
+		std::wstring wsPath = pPr->GetPicturePath();
+		CImageDict* pImage = NULL;
+		if (!wsPath.empty())
+		{
+			Aggplus::CImage oImage(wsPath);
+			pImage = LoadImage(&oImage, 255);
+		}
+
+		pField->SetAppearance(pImage);
+
+		// TODO
+		pField->SetCert();
 	}
 
 
@@ -2146,11 +2168,17 @@ void CPdfRenderer::PageRotate(int nRotate)
 	if (m_pPage)
 		m_pPage->SetRotate(nRotate);
 }
-void CPdfRenderer::Sign(int nPageIndex, const double& dX, const double& dY, const double& dW, const double& dH, ICertificate* pCertificate)
+void CPdfRenderer::Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate)
 {
-    m_pDocument->Sign(nPageIndex,
-                      TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)),
-                      pCertificate);
+	CImageDict* pImage = NULL;
+	if (!wsPicturePath.empty())
+	{
+		Aggplus::CImage oImage(wsPicturePath);
+		pImage = LoadImage(&oImage, 255);
+	}
+
+	m_pDocument->Sign(TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)),
+		pImage, pCertificate);
 }
 
 NSFonts::IApplicationFonts* CPdfRenderer::GetApplicationFonts()

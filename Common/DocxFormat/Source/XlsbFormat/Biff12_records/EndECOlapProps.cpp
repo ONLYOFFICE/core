@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new EndECOlapProps(*this));
     }
 
-    void EndECOlapProps::readFields(XLS::CFRecord& record)
-    {
-        // No data in this record
-    }
-
 } // namespace XLSB
 

@@ -63,12 +63,25 @@ namespace XLSB
 
         if (proc.optional<EndECOlapProps>())
         {
-            m_BrtEndECOlapProps = elements_.back();
+			m_bBrtEndECOlapProps = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndECOlapProps = false;
 
-        return m_BrtBeginECOlapProps && m_BrtEndECOlapProps;
+        return m_BrtBeginECOlapProps && m_bBrtEndECOlapProps;
     }
+
+	const bool ECOLAPPROPS::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginECOlapProps != nullptr)
+			proc.mandatory(*m_BrtBeginECOlapProps);
+
+		proc.mandatory<EndECOlapProps>();
+
+		return true;
+	}
+
 
 } // namespace XLSB
 

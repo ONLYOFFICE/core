@@ -63,5 +63,17 @@ namespace XLSB
         record >> irstDisplayFolder >> irstMDXFormulaLong;
     }
 
+	void BeginPCDCalcMem14::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+
+		SETBIT(flags, 0, fFlattenHierarchies)
+		SETBIT(flags, 1, fDynamicSet)
+		SETBIT(flags, 2, fHierarchizeDistinct)
+
+		record << FRTheader << flags;
+		record << irstDisplayFolder << irstMDXFormulaLong;
+	}
+
 } // namespace XLSB
 

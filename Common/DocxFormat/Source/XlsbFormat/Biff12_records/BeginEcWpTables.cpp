@@ -55,5 +55,10 @@ namespace XLSB
         record >> cTables;
     }
 
+	void BeginEcWpTables::writeFields(XLS::CFRecord& record)
+	{
+		record << cTables;
+	}
+
 } // namespace XLSB
 

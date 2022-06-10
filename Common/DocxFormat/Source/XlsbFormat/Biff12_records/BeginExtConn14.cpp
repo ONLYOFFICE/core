@@ -55,5 +55,10 @@ namespace XLSB
         record >> FRTheader >> irstCulture >> irstClientCubeUrn;
     }
 
+	void BeginExtConn14::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader << irstCulture << irstClientCubeUrn;
+	}
+
 } // namespace XLSB
 

@@ -66,5 +66,21 @@ namespace XLSB
             record >> irstDisplay;
     }
 
+	void SXTupleSetRowItem::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+
+		SETBIT(flags, 0, fUnique)
+		SETBIT(flags, 1, fDisplay)
+
+		record << FRTheader << flags;
+
+		if (fUnique)
+			record << irstUnique;
+
+		if (fDisplay)
+			record << irstDisplay;
+	}
+
 } // namespace XLSB
 

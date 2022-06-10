@@ -55,5 +55,10 @@ namespace XLSB
         record >> cParams;
     }
 
+	void BeginECParams::writeFields(XLS::CFRecord& record)
+	{
+		record << cParams;
+	}
+
 } // namespace XLSB
 

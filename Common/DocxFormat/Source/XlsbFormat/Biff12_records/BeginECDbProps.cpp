@@ -68,5 +68,23 @@ namespace XLSB
             record >> stCmdSvr;
     }
 
+	void BeginECDbProps::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+
+		SETBIT(flags, 0, fLoadCmdSvr)
+		SETBIT(flags, 1, fLoadCmd)
+
+		record << icmdtype << flags;
+
+		record << stConn;
+
+		if (fLoadCmd)
+			record << stCmd;
+
+		if (fLoadCmdSvr)
+			record << stCmdSvr;
+	}
+
 } // namespace XLSB
 

@@ -55,5 +55,10 @@ namespace XLSB
         record >> FRTheader >> cCalcMems;
     }
 
+	void BeginPCDCalcMemsExt::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader << cCalcMems;
+	}
+
 } // namespace XLSB
 

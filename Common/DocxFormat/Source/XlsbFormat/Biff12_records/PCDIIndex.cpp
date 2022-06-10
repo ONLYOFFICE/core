@@ -55,5 +55,10 @@ namespace XLSB
         record >> iitem;
     }
 
+	void PCDIIndex::writeFields(XLS::CFRecord& record)
+	{
+		record << iitem;
+	}
+
 } // namespace XLSB
 

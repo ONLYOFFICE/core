@@ -66,5 +66,21 @@ namespace XLSB
             record >> irstHier;
     }
 
+	void SXTupleSetHeaderItem::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+		
+		SETBIT(flags, 0, fUnique)
+		SETBIT(flags, 1, fHier)
+
+		record << FRTheader << flags;
+
+		if (fUnique)
+			record << irstUnique;
+
+		if (fHier)
+			record << irstHier;
+	}
+
 } // namespace XLSB
 

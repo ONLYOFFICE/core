@@ -96,5 +96,31 @@ namespace XLSB
 
     }
 
+	void BeginPCDIRun::writeFields(XLS::CFRecord& record)
+	{
+		record << mdSxoper << cItems;
+
+		for (auto& item:rgPCDINumber)
+		{
+			record << item;
+		}
+
+		for (auto& item : rgPCDIString)
+		{
+			record << item;
+		}
+
+		for (auto& item : rgPCDIError)
+		{
+			record << item;
+		}
+
+		for (auto& item : rgPCDIDatetime)
+		{
+			record << item;
+		}
+
+	}
+
 } // namespace XLSB
 

@@ -55,5 +55,10 @@ namespace XLSB
         record >> FRTheader >> irstText;
     }
 
+	void DbCommand15::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader << irstText;
+	}
+
 } // namespace XLSB
 

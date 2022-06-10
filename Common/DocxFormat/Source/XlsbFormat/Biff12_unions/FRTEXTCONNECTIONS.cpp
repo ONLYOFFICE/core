@@ -94,5 +94,23 @@ namespace XLSB
         return m_BrtFRTBegin && m_BrtFRTEnd;
     }
 
+	const bool FRTEXTCONNECTIONS::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtFRTBegin != nullptr)
+			proc.mandatory(*m_BrtFRTBegin);
+		else
+			proc.mandatory<FRTBegin>();
+
+		if (m_EXTCONN14 != nullptr)
+			proc.mandatory(*m_EXTCONN14);
+
+		if (m_EXTCONN15 != nullptr)
+			proc.mandatory(*m_EXTCONN15);
+
+		proc.mandatory<FRTEnd>();
+
+		return true;
+	}
+
 } // namespace XLSB
 

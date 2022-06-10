@@ -55,5 +55,10 @@ namespace XLSB
         record >> FRTheader >> data >> stFile;
     }
 
+	void BeginECTxtWiz15::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader << data << stFile;
+	}
+
 } // namespace XLSB
 

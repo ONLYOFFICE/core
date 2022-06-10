@@ -49,7 +49,8 @@ namespace XLSB
 
             static const XLS::ElementType	type = XLS::typePCDIBoolean;
 
-            void readFields(XLS::CFRecord& record);
+			void readFields(XLS::CFRecord& record) override;
+			void writeFields(XLS::CFRecord& record) override;
 
             XLS::Boolean<unsigned char> f;
     };

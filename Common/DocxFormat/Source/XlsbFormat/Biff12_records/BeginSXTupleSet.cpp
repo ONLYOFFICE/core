@@ -55,5 +55,10 @@ namespace XLSB
         record >> FRTheader >> cRow >> cCol;
     }
 
+	void BeginSXTupleSet::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader << cRow << cCol;
+	}
+
 } // namespace XLSB
 

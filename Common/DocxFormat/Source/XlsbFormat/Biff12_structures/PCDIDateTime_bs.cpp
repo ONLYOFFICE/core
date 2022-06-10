@@ -60,6 +60,11 @@ namespace XLSB
         record >> yr >> mon >> dom >> hr >> min >> sec;
     }
 
+	void PCDIDateTime::save(XLS::CFRecord& record)
+	{
+		record << yr << mon << dom << hr << min << sec;
+	}
+
     std::wstring PCDIDateTime::value()
     {
         if (mon < 1 || mon > 12) mon = 1;

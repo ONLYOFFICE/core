@@ -33,7 +33,6 @@
 
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
-#include "../Biff12_structures/DBType.h"
 #include "../Biff12_structures/XLWideString.h"
 
 namespace XLSB
@@ -49,7 +48,8 @@ namespace XLSB
 
             XLS::BaseObjectPtr clone();
 
-            void readFields(XLS::CFRecord& record);
+            void readFields(XLS::CFRecord& record) override;
+			void writeFields(XLS::CFRecord& record) override;
 
             //static const XLS::ElementType	type = XLS::typeBeginECWebProps;
 

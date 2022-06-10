@@ -288,6 +288,9 @@ namespace OOX
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
 			virtual const OOX::FileType type() const
 			{
+				if (dynamic_cast<CXlsb*>(File::m_pMainDocument) && !dynamic_cast<CXlsb*>(File::m_pMainDocument)->IsWriteToXlsx())
+					return OOX::SpreadsheetBin::FileTypes::QueryTableBin;
+
 				return OOX::Spreadsheet::FileTypes::QueryTable;
 			}
 			virtual const CPath DefaultDirectory() const

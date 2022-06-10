@@ -68,6 +68,15 @@ namespace OOX
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/table",
 												L"tables/table", true, true);
 
+			const FileType QueryTableBin	(L"../queryTables", L"queryTable.bin",
+												L"application/vnd.ms-excel.queryTable",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/queryTable",
+												L"queryTables/queryTable", true, true);
+
+			const FileType ConnectionsBin	(L"", L"connections.bin",
+												L"application/vnd.ms-excel.connections",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/connections");
+
 		} // namespace FileTypes
 	}
 } // namespace OOX

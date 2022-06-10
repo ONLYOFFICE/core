@@ -40,7 +40,7 @@ class CmdType : public XLS::BiffAttributeSimple<unsigned int>
 {
 public:
     XLS::BiffStructurePtr clone();
-
+	CmdType& operator= (const _UINT32& other_val);
 	enum
 	{
             CMDNULL         = 0x00000000,

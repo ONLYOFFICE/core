@@ -55,5 +55,10 @@ namespace XLSB
         record >> FRTheader >> irstSourceName;
     }
 
+	void RangePr15::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader << irstSourceName;
+	}
+
 } // namespace XLSB
 

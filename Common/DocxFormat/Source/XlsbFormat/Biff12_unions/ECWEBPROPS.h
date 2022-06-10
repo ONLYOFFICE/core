@@ -45,13 +45,14 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+		const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         //static const XLS::ElementType	type = XLS::typeFILTERS;
 
         XLS::BaseObjectPtr              m_BrtBeginECWebProps;
-        XLS::BaseObjectPtr      	m_ECWPTABLES;
-        XLS::BaseObjectPtr              m_BrtEndECWebProps;
+        XLS::BaseObjectPtr      		m_ECWPTABLES;
+		bool			                m_bBrtEndECWebProps;
 
     };
 

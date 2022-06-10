@@ -55,5 +55,10 @@ namespace XLSB
         record >> FRTheader >> irstConnection;
     }
 
+	void BeginDataFeedPr15::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader << irstConnection;
+	}
+
 } // namespace XLSB
 

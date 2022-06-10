@@ -55,5 +55,10 @@ namespace XLSB
         record >> cFields;
     }
 
+	void BeginECTWFldInfoLst::writeFields(XLS::CFRecord& record)
+	{
+		record << cFields;
+	}
+
 } // namespace XLSB
 

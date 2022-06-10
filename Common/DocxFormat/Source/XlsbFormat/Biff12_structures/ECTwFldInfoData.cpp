@@ -60,5 +60,10 @@ namespace XLSB
         record >> fieldType >> fieldStart;
     }
 
+	void ECTwFldInfoData::save(XLS::CFRecord& record)
+	{
+		record << fieldType << fieldStart;
+	}
+
 } // namespace XLSB
 

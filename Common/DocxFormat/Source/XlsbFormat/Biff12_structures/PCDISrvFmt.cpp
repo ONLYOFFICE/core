@@ -93,5 +93,34 @@ namespace XLSB
 		}
     }
 
+	void PCDISrvFmt::save(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+
+		SETBIT(flags, 0, fSrvFmtNum)
+		SETBIT(flags, 1, fSrvFmtBack)
+		SETBIT(flags, 2, fSrvFmtFore)
+		SETBIT(flags, 3, fSrvFmtItalic)
+		SETBIT(flags, 4, fSrvFmtUnderline)
+		SETBIT(flags, 5, fSrvFmtBold)
+		SETBIT(flags, 6, fSrvFmtStrikethrough)
+		record << flags;
+
+		if (fSrvFmtNum)
+		{
+			record >> isfci;
+		}
+
+		if (fSrvFmtBack)
+		{
+			record >> cvBack;
+		}
+
+		if (fSrvFmtFore)
+		{
+			record >> cvFore;
+		}
+	}
+
 } // namespace XLSB
 

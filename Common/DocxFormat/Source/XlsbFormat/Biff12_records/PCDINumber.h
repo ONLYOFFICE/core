@@ -51,7 +51,8 @@ namespace XLSB
 
             static const XLS::ElementType	type = XLS::typePCDINumber;
 
-            void readFields(XLS::CFRecord& record);
+			void readFields(XLS::CFRecord& record) override;
+			void writeFields(XLS::CFRecord& record) override;
 
             XLS::Xnum    xnum;
 			boost::shared_ptr<PCDISrvFmt> sxvcellextra;

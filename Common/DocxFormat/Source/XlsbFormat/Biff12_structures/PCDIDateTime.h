@@ -48,7 +48,8 @@ namespace XLSB
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;
 
-        virtual void load(XLS::CFRecord& record);
+        void load(XLS::CFRecord& record) override;
+		void save(XLS::CFRecord& record) override;
 
         unsigned short	yr;
         unsigned short	mon;

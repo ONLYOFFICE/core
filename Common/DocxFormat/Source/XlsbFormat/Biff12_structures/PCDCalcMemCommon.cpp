@@ -76,5 +76,26 @@ namespace XLSB
             record >> stParentUnique;
     }
 
+	void PCDCalcMemCommon::save(XLS::CFRecord& record)
+	{
+		_UINT32 flags = 0;
+
+		SETBIT(flags, 0, fLoadMemberName)
+		SETBIT(flags, 1, fLoadSourceHier)
+		SETBIT(flags, 2, fLoadParentUnique)
+
+		record << flags;
+		record << wSolveOrder << fSet << stName << stMdx;
+
+		if (fLoadMemberName)
+			record << stMemberName;
+
+		if (fLoadSourceHier)
+			record << stSourceHier;
+
+		if (fLoadParentUnique)
+			record << stParentUnique;
+	}
+
 } // namespace XLSB
 

@@ -62,5 +62,16 @@ namespace XLSB
         record >> irstMeasureGroup;
     }
 
+	void PCDCalcMem15::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+
+		SETBIT(flags, 0, fMeasure)
+		SETBIT(flags, 1, iNumberFormat)
+
+		record << FRTheader << flags;
+		record << irstMeasureGroup;
+	}
+
 } // namespace XLSB
 

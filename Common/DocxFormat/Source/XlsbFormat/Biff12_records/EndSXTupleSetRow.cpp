@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new EndSXTupleSetRow(*this));
     }
 
-    void EndSXTupleSetRow::readFields(XLS::CFRecord& record)
-    {
-        // No data in this record
-    }
-
 } // namespace XLSB
 

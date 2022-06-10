@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new BeginSXTupleSetRow(*this));
     }
 
-    void BeginSXTupleSetRow::readFields(XLS::CFRecord& record)
-    {
-
-    }
-
 } // namespace XLSB
 

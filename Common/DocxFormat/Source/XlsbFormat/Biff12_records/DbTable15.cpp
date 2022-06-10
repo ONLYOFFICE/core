@@ -55,5 +55,10 @@ namespace XLSB
         record >> FRTheader >> irstName;
     }
 
+	void DbTable15::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader << irstName;
+	}
+
 } // namespace XLSB
 

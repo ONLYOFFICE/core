@@ -68,12 +68,27 @@ namespace XLSB
         }
         if (proc.optional<EndPCDCalcMem14>())
         {
-            m_BrtEndPCDCalcMem14 = elements_.back();
+            m_bBrtEndPCDCalcMem14 = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndPCDCalcMem14 = false;
 
-        return m_BrtBeginPCDCalcMem14 && m_SXTUPLESET && m_BrtEndPCDCalcMem14;
+        return m_BrtBeginPCDCalcMem14 && m_SXTUPLESET && m_bBrtEndPCDCalcMem14;
     }
+
+	const bool PCDCALCMEM14::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginPCDCalcMem14 != nullptr)
+			proc.mandatory(*m_BrtBeginPCDCalcMem14);
+
+		if (m_SXTUPLESET != nullptr)
+			proc.mandatory(*m_SXTUPLESET);
+
+		proc.mandatory<EndPCDCalcMem14>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

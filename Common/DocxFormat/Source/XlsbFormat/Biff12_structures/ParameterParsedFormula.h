@@ -41,8 +41,11 @@ class ParameterParsedFormula : public XLS::ParsedFormula
     BASE_STRUCTURE_DEFINE_CLASS_NAME(ParameterParsedFormula)
 public:
     ParameterParsedFormula();
+
     XLS::BiffStructurePtr clone();
-	virtual void load(XLS::CFRecord& record);
+
+	void load(XLS::CFRecord& record) override;
+	void save(XLS::CFRecord& record) override;
 
 };
 

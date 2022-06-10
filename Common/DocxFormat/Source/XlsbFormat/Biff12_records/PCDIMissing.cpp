@@ -59,6 +59,11 @@ namespace XLSB
 			record >> *sxvcellextra;
 		}
     }
+	void PCDIMissing::writeFields(XLS::CFRecord& record)
+	{
+		if (sxvcellextra != nullptr)
+			record << *sxvcellextra;
+	}
 
 } // namespace XLSB
 

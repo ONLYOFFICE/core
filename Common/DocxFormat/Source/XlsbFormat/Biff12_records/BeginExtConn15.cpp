@@ -62,5 +62,17 @@ namespace XLSB
         fUsedByAddin            = GETBIT(flags, 4);
     }
 
+	void BeginExtConn15::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+
+		SETBIT(flags, 1, fSandbox)
+		SETBIT(flags, 2, fExcludeFromRefreshAll)
+		SETBIT(flags, 3, fAutoDelete)
+		SETBIT(flags, 4, fUsedByAddin)
+
+		record << FRTheader << flags << irstId;
+	}
+
 } // namespace XLSB
 

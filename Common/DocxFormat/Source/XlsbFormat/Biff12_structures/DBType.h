@@ -40,7 +40,7 @@ class DBType : public XLS::BiffAttributeSimple<unsigned int>
 {
 public:
     XLS::BiffStructurePtr clone();
-
+	DBType& operator= (const _UINT32& other_val);
 	enum
 	{
             DBTODBC         = 0x00000001,

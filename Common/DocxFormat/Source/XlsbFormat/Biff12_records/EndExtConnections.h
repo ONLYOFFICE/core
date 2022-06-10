@@ -45,9 +45,7 @@ namespace XLSB
             EndExtConnections();
             ~EndExtConnections();
 
-            XLS::BaseObjectPtr clone();
-
-            void readFields(XLS::CFRecord& record);
+			XLS::BaseObjectPtr clone();
 
             //static const XLS::ElementType	type = XLS::typeEndExtConnections;
     };

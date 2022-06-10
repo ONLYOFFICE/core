@@ -75,5 +75,25 @@ namespace XLSB
         record >> chCustom >> rowStartAt >> chDecimal >> chThousSep;
     }
 
+	void ECTxtWizData::save(XLS::CFRecord& record)
+	{
+		_UINT32 flags = 0;
+
+		SETBITS(flags, 0, 1, iCpid)
+		SETBITS(flags, 2, 11, iCpidNew)
+		SETBIT(flags, 12, fDelimited)
+		SETBIT(flags, 13, fTab)
+		SETBIT(flags, 14, fSpace)
+		SETBIT(flags, 15, fComma)
+		SETBIT(flags, 16, fSemiColon)
+		SETBIT(flags, 17, fConsecutive)
+		SETBITS(flags, 18, 19, fTextDelim)
+		SETBIT(flags, 21, fPromptForFile)
+		SETBIT(flags, 22, fCustom)
+
+		record << flags;
+		record << chCustom << rowStartAt << chDecimal << chThousSep;
+	}
+
 } // namespace XLSB
 

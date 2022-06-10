@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new BeginDbTables15(*this));
     }
 
-    void BeginDbTables15::readFields(XLS::CFRecord& record)
-    {
-
-    }
-
 } // namespace XLSB
 

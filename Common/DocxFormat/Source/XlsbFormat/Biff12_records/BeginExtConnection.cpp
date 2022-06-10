@@ -89,5 +89,44 @@ namespace XLSB
             record >> stSso;
     }
 
+	void BeginExtConnection::writeFields(XLS::CFRecord& record)
+	{
+		_UINT32 flags = 0;
+
+		record << bVerRefreshed << bVerRefreshableMin << pc;
+
+		record.reserveNunBytes(1);
+
+		SETBIT(flags, 0, fMaintain)
+		SETBIT(flags, 1, fNewQuery)
+		SETBIT(flags, 2, fDeleted)
+		SETBIT(flags, 3, fAlwaysUseConnectionFile)
+		SETBIT(flags, 4, fBackgroundQuery)
+		SETBIT(flags, 5, fRefreshOnLoad)
+		SETBIT(flags, 6, fSaveData)
+		SETBIT(flags, 16, fLoadSourceDataFile)
+		SETBIT(flags, 17, fLoadSourceConnectionFile)
+		SETBIT(flags, 18, fLoadConnectionDesc)
+		SETBIT(flags, 20, fLoadSSOApplicationID)
+
+		record << wInterval << flags;
+
+		record << idbtype << irecontype << dwConnID << iCredMethod;
+
+		if (fLoadSourceDataFile)
+			record << stDataFile;
+
+		if (fLoadSourceConnectionFile)
+			record << stConnectionFile;
+
+		if (fLoadConnectionDesc)
+			record << stConnDesc;
+
+		record << stConnName;
+
+		if (fLoadSSOApplicationID)
+			record << stSso;
+	}
+
 } // namespace XLSB
 

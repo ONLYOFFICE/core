@@ -1399,6 +1399,22 @@ namespace OOX
 						}					
 					}
 				}
+
+				else if (obj->get_type() == XLS::typeFRTEXTCONNECTIONS)
+				{
+					auto ptr = static_cast<XLSB::FRTEXTCONNECTIONS*>(obj.get());
+
+					if (ptr != nullptr)
+					{
+						if (itemExt->m_oConnection.IsInit())
+						{
+							if (ptr->m_EXTCONN15 == nullptr)
+								ptr->m_EXTCONN15 = XLS::BaseObjectPtr(new XLSB::EXTCONN15());
+
+							itemExt->m_oConnection->toBin(ptr->m_EXTCONN15);
+						}
+					}
+				}
 			}
 		}
 	}

@@ -70,5 +70,16 @@ namespace XLSB
         return m_ECTXTWIZ15 != nullptr;
     }
 
+	const bool TEXTPR15::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_ECTXTWIZ15 != nullptr)
+			proc.mandatory(*m_ECTXTWIZ15);
+
+		if (m_BrtTextPr15 != nullptr)
+			proc.mandatory(*m_BrtTextPr15);
+
+		return true;
+	}
+
 } // namespace XLSB
 

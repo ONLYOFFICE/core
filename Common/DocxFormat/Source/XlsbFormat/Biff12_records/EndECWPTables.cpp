@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new EndECWPTables(*this));
     }
 
-    void EndECWPTables::readFields(XLS::CFRecord& record)
-    {
-        // No data in this record
-    }
-
 } // namespace XLSB
 

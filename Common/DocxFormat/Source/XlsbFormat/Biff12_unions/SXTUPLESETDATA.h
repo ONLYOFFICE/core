@@ -45,11 +45,12 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+		const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
-        XLS::BaseObjectPtr               m_BrtBeginSXTupleSetData;
+		bool							 m_bBrtBeginSXTupleSetData;
         std::vector<XLS::BaseObjectPtr>	 m_arSXTUPLESETROW;
-        XLS::BaseObjectPtr               m_BrtEndSXTupleSetData;
+		bool			                 m_bBrtEndSXTupleSetData;
 
     };
 

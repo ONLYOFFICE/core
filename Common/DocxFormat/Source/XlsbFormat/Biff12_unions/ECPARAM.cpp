@@ -63,12 +63,24 @@ namespace XLSB
 
         if (proc.optional<EndECParam>())
         {
-            m_BrtEndECParam = elements_.back();
+			m_bBrtEndECParam = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndECParam = false;
 
-        return m_BrtBeginECParam && m_BrtEndECParam;
+        return m_BrtBeginECParam && m_bBrtEndECParam;
     }
+
+	const bool ECPARAM::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginECParam != nullptr)
+			proc.mandatory(*m_BrtBeginECParam);
+
+		proc.mandatory<EndECParam>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

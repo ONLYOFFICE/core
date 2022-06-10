@@ -31,7 +31,7 @@
  */
 
 #include "office_text.h"
-#include "office_annotation.h"
+#include "office_meta.h"
 
 #include "../../include/xml/xmlchar.h"
 #include "../../include/xml/utils.h"

@@ -24,6 +24,7 @@ core_ios {
     CONFIG += doct_renderer_empty
 }
 core_android {
+    DEFINES += DISABLE_MEMORY_LIMITATION
     CONFIG += doct_renderer_empty
 }
 

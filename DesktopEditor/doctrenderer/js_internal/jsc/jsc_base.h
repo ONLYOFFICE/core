@@ -38,7 +38,9 @@ namespace NSJSBase
 
 static JSContext* _getCurrentContext()
 {
-    return NSJSBase::CJSContextPrivate::g_lockedContext;
+    if (nil != NSJSBase::CJSContextPrivate::g_lockedContext)
+        return NSJSBase::CJSContextPrivate::g_lockedContext;
+    return [JSContext currentContext];
 }
 
 namespace NSJSBase

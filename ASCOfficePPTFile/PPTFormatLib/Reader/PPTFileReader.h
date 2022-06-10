@@ -50,6 +50,7 @@ protected:
 	CFStreamPtr GetPictureStream();
  	CFStreamPtr GetEncryptedSummaryStream();
 	CFStreamPtr GetDocumentSummaryStream();   
+	CFStreamPtr GetSummaryStream();
 	
 	CFStreamPtr GetStreamByName(const std::wstring & name);
 

@@ -231,36 +231,32 @@ private:
     std::string	content_;
 };
 //------------------------------------------------------------------------
-class document : public element
-{
-public:
-    virtual content_types_file & content_type() = 0; 
-};
-
-class core_file : public element
-{
-public:
-    virtual void write(const std::wstring & RootPath);
-};
-
-class app_file : public element
-{
-public:
-    virtual void write(const std::wstring & RootPath);
-};
-
 class docProps_files : public element
 {
 public:
     docProps_files();
 
-public:
-    virtual void write(const std::wstring & RootPath);
+	void set_app_content(const std::wstring & content);
+	void set_core_content(const std::wstring & content);
+
+	virtual void write(const std::wstring & RootPath);
 
 private:
-    core_file	core_;
-    app_file	app_;
+	std::wstring create_app();
+	std::wstring create_core();
 
+	std::wstring core_content_;
+	std::wstring app_content_;
+};
+class document : public element
+{
+public:
+	virtual content_types_file & content_type() = 0;
+	docProps_files	& get_docProps_files() { return docProps_files_; }
+	rels_files & get_rels_files() { return rels_files_; }
+private:
+	docProps_files docProps_files_;
+	rels_files rels_files_;
 };
 
 class media : public element

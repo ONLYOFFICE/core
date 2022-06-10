@@ -275,6 +275,9 @@
     <ClCompile Include="..\PPTXFormat\Logic\HeadingVariant.cpp">
       <Filter>PPTX\Logic</Filter>
     </ClCompile>
+    <ClCompile Include="..\PPTXFormat\Presentation.cpp">
+      <Filter>PPTX\Presentation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Editor\BinaryFileReaderWriter.h">

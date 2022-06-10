@@ -96,7 +96,6 @@ _UINT32 COfficePPTFile::OpenFile(const std::wstring & sFileName, const std::wstr
 	}
 
 	//pptReader->ReadEncryptedSummary();
-	//pptReader->ReadDocumentSummary();
 	pptReader->ReadDocument();
 
 	bMacros	= pptReader->m_oDocumentInfo.m_bMacros;
@@ -132,7 +131,9 @@ _UINT32 COfficePPTFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDs
 		PPT_FORMAT::CPPTXWriter oPPTXWriter;
         oPPTXWriter.m_strTempDirectory = sDstPath;
 		
-		
+		oPPTXWriter.m_xmlApp  = ((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_app_xml;
+		oPPTXWriter.m_xmlCore = ((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_core_xml;
+
 		oPPTXWriter.CreateFile(((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_arUsers[0]);	
 		oPPTXWriter.CloseFile();
 	}

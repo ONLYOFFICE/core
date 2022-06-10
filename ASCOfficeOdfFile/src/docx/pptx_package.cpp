@@ -68,15 +68,15 @@ pptx_document::pptx_document()
     relFile->get_rels().add(relationship(L"rId2", L"http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties",		L"docProps/core.xml"));
     relFile->get_rels().add(relationship(L"rId3", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties",	L"docProps/app.xml"));
    
-	rels_files_.add_rel_file( relFile );
+	get_rels_files().add_rel_file( relFile );
 }
 
 void pptx_document::write(const std::wstring & RootPath)
 {
-    ppt_files_.write		(RootPath);
-    docProps_files_.write	(RootPath);
-    rels_files_.write		(RootPath);
-    content_type_file_.write(RootPath);
+    ppt_files_.write (RootPath);
+	get_docProps_files().write (RootPath);
+	get_rels_files().write (RootPath);
+    content_type_file_.write (RootPath);
 }
 
 ////////////////////////////////////////////

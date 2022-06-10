@@ -824,6 +824,10 @@ TFontCacheSizes CFontFile::CacheGlyph(const int& code, const bool& isRaster, CVe
                 return oSizes;
 
             TFontCacheSizes oSizesCheck = pPickFile->CacheGlyph(code, isRaster, pWorker, true);
+
+            // файл - в кэше. а тут нужно удалить
+            RELEASEINTERFACE(pPickFile);
+
             if (oSizesCheck.eState == glyphstateNormal)
                 return oSizesCheck;
         }

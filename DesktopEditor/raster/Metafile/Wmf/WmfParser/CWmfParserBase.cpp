@@ -436,8 +436,8 @@ namespace MetaFile
 			// TODO: Здесь идет точное повторение кода из CMetaFileRenderer->DrawString
 			//       неплохо бы перенести этот пересчет в базовый класс IMetaFileBase.
 
-			CFontManager* pFontManager = GetFontManager();
-			if (pFont && pFontManager)
+			//CFontManager* pFontManager = GetFontManager(); // CFontManager не желательно использовать, поэтому будем вычислять ширину и высоту на основе шрифта и pDx
+			if (pFont /*&& pFontManager*/)
 			{
 				int lLogicalFontHeight = pFont->GetHeight();
 				if (lLogicalFontHeight < 0)
@@ -447,20 +447,20 @@ namespace MetaFile
 
 				double dFontHeight = lLogicalFontHeight;
 
-				std::wstring wsFaceName = pFont->GetFaceName();
+//				std::wstring wsFaceName = pFont->GetFaceName();
 
-				int lStyle = 0;
-				if (pFont->GetWeight() > 550)
-					lStyle |= 0x01;
-				if (pFont->IsItalic())
-					lStyle |= 0x02;
+//				int lStyle = 0;
+//				if (pFont->GetWeight() > 550)
+//					lStyle |= 0x01;
+//				if (pFont->IsItalic())
+//					lStyle |= 0x02;
 
 				float fL = 0, fT = 0, fW = 0, fH = 0;
-				pFontManager->LoadFontByName(wsFaceName, dFontHeight, lStyle, 72, 72);
-				pFontManager->SetCharSpacing(GetCharSpace());
-				double dFHeight  = pFontManager->m_pFont ? (dFontHeight * pFontManager->m_pFont->GetHeight() / pFontManager->m_pFont->m_lUnits_Per_Em) : 0;
-				double dFDescent = pFontManager->m_pFont ? (dFontHeight * pFontManager->m_pFont->GetDescender() / pFontManager->m_pFont->m_lUnits_Per_Em) : 0;
-				double dFAscent  = dFHeight - std::abs(dFDescent);
+//				pFontManager->LoadFontByName(wsFaceName, dFontHeight, lStyle, 72, 72);
+//				pFontManager->SetCharSpacing(GetCharSpace());
+//				double dFHeight  = pFontManager->m_pFont ? (dFontHeight * pFontManager->m_pFont->GetHeight() / pFontManager->m_pFont->m_lUnits_Per_Em) : 0;
+//				double dFDescent = pFontManager->m_pFont ? (dFontHeight * pFontManager->m_pFont->GetDescender() / pFontManager->m_pFont->m_lUnits_Per_Em) : 0;
+//				double dFAscent  = dFHeight - std::abs(dFDescent);
 
 				if (NULL != pDx && unCharsCount > 1)
 				{
@@ -471,33 +471,36 @@ namespace MetaFile
 						dTempTextW += pDx[unCharIndex];
 					}
 
-                                        std::wstring wsTempText;
-                wsTempText += wsText.at(wsText.length() - 1);
-                //wsTempText += wsText.at(unCharsCount - 1);
+//                                        std::wstring wsTempText;
+//                                        wsTempText += wsText.at(wsText.length() - 1);
+					//wsTempText += wsText.at(unCharsCount - 1);
 
-					pFontManager->LoadString1(wsTempText, 0, 0);
-					TBBox oBox = pFontManager->MeasureString2();
-					dTempTextW += (oBox.fMaxX - oBox.fMinX);
+//					pFontManager->LoadString1(wsTempText, 0, 0);
+//					TBBox oBox = pFontManager->MeasureString2();
+//					dTempTextW += (oBox.fMaxX - oBox.fMinX);
 
-					fL = 0;
+					dTempTextW += dFontHeight * wsText.length();
+
 					fW = (float)dTempTextW;
 				}
 				else
 				{
-					pFontManager->LoadString1(wsText, 0, 0);
-					TBBox oBox = pFontManager->MeasureString2();
-					fL = (float)(oBox.fMinX);
-					fW = (float)(oBox.fMaxX - oBox.fMinX);
+//					pFontManager->LoadString1(wsText, 0, 0);
+//					TBBox oBox = pFontManager->MeasureString2();
+//					fL = (float)(oBox.fMinX);
+//					fW = (float)(oBox.fMaxX - oBox.fMinX);
+					fW = (float)(dFontHeight * wsText.length());
 				}
 
-				pFontManager->LoadString1(wsText, 0, 0);
-				TBBox oBox = pFontManager->MeasureString2();
-				fL = (float)(oBox.fMinX);
-				fW = (float)(oBox.fMaxX - oBox.fMinX);
+//				pFontManager->LoadString1(wsText, 0, 0);
+//				TBBox oBox = pFontManager->MeasureString2();
+//				fL = (float)(oBox.fMinX);
+//				fW = (float)(oBox.fMaxX - oBox.fMinX);
 
-				fT = (float)-dFAscent;
-				fH = (float)dFHeight;
+//				fT = (float)-dFAscent;
+//				fH = (float)dFHeight;
 
+				fH = dFontHeight * 1.2;
 
 				double dTheta = -((((double)pFont->GetEscapement()) / 10) * 3.14159265358979323846 / 180);
 				double dCosTheta = (float)cos(dTheta);

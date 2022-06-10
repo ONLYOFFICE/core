@@ -33,6 +33,5 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
 }
 
 SOURCES += main.cpp
-SOURCES += ../../../../fontengine/ApplicationFontsWorker.cpp
 
 DESTDIR = $$PWD_ROOT_DIR/build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX

@@ -174,7 +174,7 @@ namespace NSDocxRenderer
     const double CShape::SIZE_CORRECTION_FOR_X_MM = 10.0;
     const double CShape::SIZE_CORRECTION_FOR_Y_MM = 5.0;
 
-    CShape::CShape()
+    CShape::CShape() : CBaseItem()
     {
         m_dLeft = 0;
         m_dTop = 0;
@@ -232,6 +232,8 @@ namespace NSDocxRenderer
         m_bIsNoStroke = oSrc.m_bIsNoStroke;
 
         m_lTxId = oSrc.m_lTxId;
+
+        m_bIsNotNecessaryToUse = oSrc.m_bIsNotNecessaryToUse;
 
         return *this;
     }
@@ -383,10 +385,10 @@ namespace NSDocxRenderer
         else
         {
             oWriter.WriteString(L"\" fillcolor=\"#");
-            oWriter.WriteHexInt3((int)ConvertColor(m_oBrush.Color1));
+            oWriter.WriteHexInt3((int)ConvertColorBGRToRGB(m_oBrush.Color1));
         }
         oWriter.WriteString(L"\" strokecolor=\"#");
-        oWriter.WriteHexInt3((int)ConvertColor(m_oPen.Color));
+        oWriter.WriteHexInt3((int)ConvertColorBGRToRGB(m_oPen.Color));
         oWriter.WriteString(L"\" strokeweight=\"");
         oWriter.AddDouble(m_oPen.Size, 2);
         oWriter.WriteString(L"mm\">");

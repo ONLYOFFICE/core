@@ -1,4 +1,6 @@
 #include "ElementParagraph.h"
+#include "src\resources\ColorTable.h"
+#include "src\resources\SingletonTemplate.h"
 
 namespace NSDocxRenderer
 {
@@ -39,11 +41,16 @@ namespace NSDocxRenderer
 
         m_dPosition		= 0;
         m_dSpaceWidthMM	= 0;
+        m_dBaselineOffset = 0;
 
         m_dCalculateWidth = 0;
         m_dSpaceByText = 0;
 
         m_bIsNeedSpaceAtTheEnd = false;
+        m_bIsHighlightPresent = false;
+        m_lHighlightColor = 0; //черный
+
+        m_eUnderlineType = utUnknown;
     }
 
     void CContText::Clear()
@@ -64,17 +71,16 @@ namespace NSDocxRenderer
         m_oFont		= oSrc.m_oFont;
         m_oBrush	= oSrc.m_oBrush;
 
-        m_oText	 = oSrc.m_oText;
-        m_oGidText = oSrc.m_oGidText;
-
         m_strPickFontName	= oSrc.m_strPickFontName;
         m_lPickFontStyle	= oSrc.m_lPickFontStyle;
+
+        m_oText	 = oSrc.m_oText;
+        m_oGidText = oSrc.m_oGidText;
 
         m_dX		= oSrc.m_dX;
         m_dY		= oSrc.m_dY;
         m_dWidth	= oSrc.m_dWidth;
         m_dHeight	= oSrc.m_dHeight;
-
         m_dLastX    = oSrc.m_dLastX;
 
         m_dWidthWithoutSpaces	= oSrc.m_dWidthWithoutSpaces;
@@ -82,11 +88,16 @@ namespace NSDocxRenderer
 
         m_dPosition = oSrc.m_dPosition;
         m_dSpaceWidthMM = oSrc.m_dSpaceWidthMM;
+         m_dBaselineOffset = oSrc.m_dBaselineOffset;
 
         m_dCalculateWidth = oSrc.m_dCalculateWidth;
         m_dSpaceByText = oSrc.m_dSpaceByText;
 
         m_bIsNeedSpaceAtTheEnd = oSrc.m_bIsNeedSpaceAtTheEnd;
+        m_bIsHighlightPresent = oSrc.m_bIsHighlightPresent;
+        m_lHighlightColor = oSrc.m_lHighlightColor;
+
+        m_eUnderlineType = oSrc.m_eUnderlineType;
 
         return *this;
     }
@@ -114,7 +125,8 @@ namespace NSDocxRenderer
                           CFontManagerLight* pManagerLight,
                           bool bIsAddSpace)
     {
-        oWriter.WriteString(L"<w:r><w:rPr>");
+        oWriter.WriteString(L"<w:r>");
+        oWriter.WriteString(L"<w:rPr>");
 
         if (m_dWidth != m_dWidthWithoutSpaces)
         {
@@ -181,8 +193,39 @@ namespace NSDocxRenderer
         oWriter.WriteString(L"\"/>");
 
         oWriter.WriteString(L"<w:color w:val=\"");
-        oWriter.WriteHexInt3(ConvertColor(m_oBrush.Color1));
+        oWriter.WriteHexInt3(ConvertColorBGRToRGB(m_oBrush.Color1));
         oWriter.WriteString(L"\"/>");
+
+        if (m_oFont.Strikeout == TRUE)
+        {
+            oWriter.WriteString(L"<w:strike/>");
+        }
+
+        if (m_oFont.Underline == TRUE)
+        {
+            switch (m_eUnderlineType)
+            {
+            case utThinLine:
+                oWriter.WriteString(L"<w:u w:val=\"single\"/>");
+                break;
+            case utThickLine:
+                oWriter.WriteString(L"<w:u w:val=\"thick\"/>");
+                break;
+            case utDoubleThinLine:
+                oWriter.WriteString(L"<w:u w:val=\"double\"/>");
+                break;
+            default:
+                break;
+            }
+        }
+
+        if (m_bIsHighlightPresent)
+        {
+            oWriter.WriteString(L"<w:highlight w:val=\"");
+            ColorTable& colorTable = SingletonInstance<ColorTable>();
+            oWriter.WriteString(colorTable.ConverColorToString(ConvertColorBGRToRGB(m_lHighlightColor)));
+            oWriter.WriteString(L"\"/>");
+        }
 
         oWriter.WriteString(L"</w:rPr>");
 
@@ -234,7 +277,7 @@ namespace NSDocxRenderer
         oWriter.WriteString(L"\"/>");
 
         oWriter.WriteString(L"<w:color w:val=\"");
-        oWriter.WriteHexInt3(ConvertColor(m_oBrush.Color1));
+        oWriter.WriteHexInt3(ConvertColorBGRToRGB(m_oBrush.Color1));
         oWriter.WriteString(L"\"/>");
 
         LONG lSpacing = (LONG)((dSpacingMM - dSpaceMMSize) * c_dMMToDx);
@@ -245,7 +288,7 @@ namespace NSDocxRenderer
         oWriter.WriteString(L"</w:rPr>");
 
         oWriter.WriteString(L"<w:t xml:space=\"preserve\">");
-        oWriter.WriteString(L"X");
+        oWriter.WriteString(L" ");
         oWriter.WriteString(L"</w:t>");
 
         oWriter.WriteString(L"</w:r>");
@@ -317,8 +360,8 @@ namespace NSDocxRenderer
 
     void CTextLine::AddCont(CContText* pCont, double dBaselineOffset)
     {
-        if (0 == m_arConts.size())
-            m_dBaselineOffset = dBaselineOffset;
+        //if (0 == m_arConts.size())
+            m_dBaselineOffset = fabs(m_dBaselineOffset) > fabs(dBaselineOffset) ? m_dBaselineOffset : dBaselineOffset;
 
         if ( ( pCont->m_dX > 0 ) && ( ( m_dX == 0 ) || ( pCont->m_dX < m_dX ) ) )
             m_dX = pCont->m_dX;
@@ -392,6 +435,9 @@ namespace NSDocxRenderer
 
             if (pFirst->m_strPickFontName != pCurrent->m_strPickFontName ||
                 !pFirst->m_oFont.IsEqual(&pCurrent->m_oFont) ||
+                pFirst->m_eUnderlineType != pCurrent->m_eUnderlineType ||
+                pFirst->m_bIsHighlightPresent != pCurrent->m_bIsHighlightPresent ||
+                pFirst->m_lHighlightColor != pCurrent->m_lHighlightColor ||
                 fabs(dDelta) > c_dTHE_STRING_X_PRECISION_MM)
             {
                 if (i < nCountConts - 1)
@@ -577,7 +623,7 @@ namespace NSDocxRenderer
         pPrev->Write(oWriter, pManagerLight);
     }
 
-    CParagraph::CParagraph(const TextAssociationType& eType) : m_arLines()
+    CParagraph::CParagraph(const TextAssociationType& eType) : CBaseItem(), m_arLines()
     {
         m_eType = etParagraph;
 
@@ -602,7 +648,7 @@ namespace NSDocxRenderer
 
         m_nNumLines  = 0;
     }
-    CParagraph::CParagraph(const CParagraph& oSrc)
+    CParagraph::CParagraph(const CParagraph& oSrc) : CBaseItem()
     {
         *this = oSrc;
     }

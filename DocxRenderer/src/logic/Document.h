@@ -195,5 +195,7 @@ namespace NSDocxRenderer
         bool CreateDocument();
 
         void Close();
+
+        void ClearTextData();
 	};
 }

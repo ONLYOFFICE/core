@@ -53,6 +53,7 @@ namespace NSDocxRenderer
 
     void CPage::Clear()
     {
+        ClearTextData();
         ClearTextLines();
         ClearGraphicItems();
         ClearParagraphs();
@@ -64,6 +65,17 @@ namespace NSDocxRenderer
         m_dLastTextX = -1;
         m_dLastTextY = -1;
         m_dLastTextX_block = m_dLastTextX;
+    }
+
+    void CPage::ClearTextData()
+    {
+        size_t nCount = m_arTextData.size();
+        for (size_t i = 0; i < nCount; ++i)
+        {
+            CContText* pTemp = m_arTextData[i];
+            RELEASEOBJECT(pTemp);
+        }
+        m_arTextData.clear();
     }
 
     void CPage::ClearTextLines()
@@ -308,7 +320,9 @@ namespace NSDocxRenderer
         }
     }
 
-    void CPage::WriteText(unsigned int* pUnicodes, unsigned int* pGids, unsigned int nCount, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, bool bIsPDFAnalyzer)
+    void CPage::CollectTextData(const PUINT pUnicodes, const PUINT pGids, const UINT& nCount,
+                                const double& fX, const double& fY, const double& fWidth, const double& fHeight,
+                                const double& fBaseLineOffset, const bool& bIsPDFAnalyzer)
     {
         double dTextX = fX;
         double dTextY = fY;
@@ -361,56 +375,212 @@ namespace NSDocxRenderer
             }
 
             dTextW = _w;
+            //todo
             //dTextW *= c_dPixToMM;
         }
 
         double dBaseLinePos = dTextY + fBaseLineOffset;
         dTextH = m_oManager.GetFontHeight();
 
+        CContText* pCont = new CContText();
+
+        pCont->m_dX = dTextX;
+        pCont->m_dY = dBaseLinePos;
+        pCont->m_dLastX = dTextX;
+
+        pCont->m_dWidth		= dTextW;
+        pCont->m_dHeight	= dTextH;
+
+        if (IsSpaceUtf32(oText))
+        {
+            pCont->m_dWidthWithoutSpaces	= 0;
+            pCont->m_dLeftWithoutSpaces		= dTextX + dTextW;
+        }
+        else
+        {
+            pCont->m_dWidthWithoutSpaces	= dTextW;
+            pCont->m_dLeftWithoutSpaces		= dTextX;
+        }
+
+        pCont->m_oText = oText;
+
+        pCont->m_oFont		= m_oManager.m_oFont.m_oFont;
+        pCont->m_oBrush		= *m_pBrush;
+
+        if (bIsPath)
+        {
+            pCont->m_strPickFontName	= m_oManager.m_strCurrentPickFont;
+            pCont->m_lPickFontStyle		= m_oManager.m_lCurrentPictFontStyle;
+        }
+
+        pCont->m_dSpaceWidthMM = m_oManager.m_dSpaceWidthMM;
+
+        pCont->m_dBaselineOffset = m_oManager.m_oFont.m_dBaselineOffset;
+
+        m_arTextData.push_back(pCont);
+    }
+
+    void CPage::AnalyzeCollectedData()
+    {
+        for (size_t i = 0; i < m_arGraphicItems.size(); ++i)
+        {
+            CBaseItem* pImage = m_arGraphicItems[i];
+
+            if (pImage->m_eType != CBaseItem::etShape)
+            {
+                continue;
+            }
+
+            //note параллельно для каждой текстовой строки создается шейп, который содержит цвет фона для данного текста.
+
+            if (dynamic_cast<CShape*>(pImage)->m_dHeight > dynamic_cast<CShape*>(pImage)->m_dWidth || //фигуры должны быть похожи на линию
+                dynamic_cast<CShape*>(pImage)->m_oBrush.Color1 == 0xFFFFFF) //и цвет не белый
+                //todo по идее выделение текста должно отличаться от фона всей страницы, но условие пока не работает с черным цветом
+                //m_pBrush->Color1 == dynamic_cast<CShape*>(pImage)->m_oBrush.Color1)
+            {
+                continue;
+            }
+
+            for (size_t j = 0; j < m_arTextData.size(); ++j)
+            {
+                CContText* pCont = m_arTextData[j];
+
+                if (IsLineCrossingText(dynamic_cast<CShape*>(pImage), pCont) ||
+                    IsLineBelowText(dynamic_cast<CShape*>(pImage), pCont) ||
+                    IsItHighlightingBackground(dynamic_cast<CShape*>(pImage), pCont))
+                {
+                    pImage->m_bIsNotNecessaryToUse = true;
+                }
+            }
+        }
+    }
+
+    bool CPage::IsLineCrossingText(const CShape* pShape, CContText* pContText)
+    {
+        double dTopShape = pShape->m_dTop;
+        double dTopContText = pContText->m_dY - pContText->m_dHeight - pContText->m_dBaselineOffset;
+        double dBottomShape = pShape->m_dTop + pShape->m_dHeight;
+        double dBottomContText = pContText->m_dY;
+
+        double dRightShape = pShape->m_dLeft + pShape->m_dWidth;
+        double dRightContText = pContText->m_dX + pContText->m_dWidth;
+
+        //Условие пересечения по вертикали
+        bool bIf1 = dTopShape > dTopContText && dBottomShape < dBottomContText;
+        //Условие пересечения по горизонтали
+        bool bIf2 = fabs(pShape->m_dLeft - pContText->m_dX) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM ||
+                fabs(dRightShape - dRightContText) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM ||
+                (pShape->m_dLeft < pContText->m_dX && dRightShape > dRightContText);
+        //Условие для размеров по высоте
+        bool bIf3 = pShape->m_dHeight < pContText->m_dHeight &&
+                pContText->m_dHeight - pShape->m_dHeight > c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM;
+
+        if (bIf1 && bIf2 && bIf3)
+        {
+            pContText->m_oFont.Strikeout = TRUE;
+
+            return true;
+        }
+
+        return false;
+    }
+
+    bool CPage::IsLineBelowText(const CShape* pShape, CContText* pContText)
+    {
+        double dTopShape = pShape->m_dTop;
+        double dBottomContText = pContText->m_dY;
+
+        double dRightShape = pShape->m_dLeft + pShape->m_dWidth;
+        double dRightContText = pContText->m_dX + pContText->m_dWidth;
+
+        //Условие по вертикали
+        bool bIf1 = fabs(dTopShape - dBottomContText) < pContText->m_dHeight/5;
+        //Условие пересечения по горизонтали
+        bool bIf2 = fabs(pShape->m_dLeft - pContText->m_dX) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM ||
+                fabs(dRightShape - dRightContText) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM ||
+                (pShape->m_dLeft < pContText->m_dX && dRightShape > dRightContText);
+        //Условие для размеров по высоте
+        bool bIf3 = pShape->m_dHeight < pContText->m_dHeight &&
+                pContText->m_dHeight - pShape->m_dHeight > c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM;
+
+        if (bIf1 && bIf2 && bIf3)
+        {
+            pContText->m_oFont.Underline = TRUE;
+            if (pShape->m_dHeight < 0.3)
+            {
+                pContText->m_eUnderlineType = CContText::utThinLine;
+            }
+            else
+            {
+                pContText->m_eUnderlineType = CContText::utThickLine;
+            }
+            //todo добавить логику для определения других типов подчеркиваний
+            return true;
+        }
+
+        return false;
+    }
+
+    bool CPage::IsItHighlightingBackground(const CShape* pShape, CContText* pContText)
+    {
+        double dTopShape = pShape->m_dTop;
+        double dTopContText = pContText->m_dY - pContText->m_dHeight - pContText->m_dBaselineOffset;
+        double dBottomShape = pShape->m_dTop + pShape->m_dHeight;
+        double dBottomContText = pContText->m_dY - pContText->m_dBaselineOffset;
+
+        double dRightShape = pShape->m_dLeft + pShape->m_dWidth;
+        double dRightContText = pContText->m_dX + pContText->m_dWidth;
+
+        //Условие пересечения по вертикали
+        bool bIf1 = fabs(dTopShape - dTopContText) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM &&
+                    fabs(dBottomShape - dBottomContText) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM;
+        //Условие пересечения по горизонтали
+        bool bIf2 = fabs(pShape->m_dLeft - pContText->m_dX) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM ||
+                fabs(dRightShape - dRightContText) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM ||
+                (pShape->m_dLeft < pContText->m_dX && dRightShape > dRightContText);
+        //Условие для размеров по высоте
+        bool bIf3 = fabs(pShape->m_dHeight - pContText->m_dHeight) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM;
+
+        if (bIf1 && bIf2 && bIf3)
+        {
+            pContText->m_bIsHighlightPresent = true;
+            pContText->m_lHighlightColor = pShape->m_oBrush.Color1;
+            return true;
+        }
+
+        return false;
+    }
+
+    void CPage::BuildLines()
+    {
+        for (size_t i = 0; i < m_arTextData.size(); i++)
+        {
+            BuildLines(m_arTextData[i]);
+        }
+    }
+
+    void CPage::BuildLines(const CContText* pContText)
+    {
+        double dTextX       = pContText->m_dX;
+        double dBaseLinePos = pContText->m_dY;
+        double dTextW       = pContText->m_dWidth;
+        NSStringUtils::CStringUTF32 oText(pContText->m_oText);
+
         SetCurrentLineByBaseline(dBaseLinePos);
 
         CContText* pLastCont = NULL;
         size_t nCountConts = m_pCurrentLine->m_arConts.size();
         if (nCountConts != 0)
-            pLastCont = m_pCurrentLine->m_arConts[nCountConts - 1];
+            pLastCont = m_pCurrentLine->m_arConts.back();
 
         if (NULL == pLastCont)
         {
             // первое слово в линии
-            CContText* pCont = new CContText();
+            CContText* pCont = new CContText(*pContText);
 
-            pCont->m_dX = dTextX;
             pCont->m_dLastX = dTextX;
-            pCont->m_dY = dBaseLinePos;
 
-            pCont->m_dWidth		= dTextW;
-            pCont->m_dHeight	= dTextH;
-
-            if (IsSpaceUtf32(oText))
-            {
-                pCont->m_dWidthWithoutSpaces	= 0;
-                pCont->m_dLeftWithoutSpaces		= dTextX + dTextW;
-            }
-            else
-            {
-                pCont->m_dWidthWithoutSpaces	= dTextW;
-                pCont->m_dLeftWithoutSpaces		= dTextX;
-            }
-
-            pCont->m_oText = oText;
-
-            pCont->m_oFont		= m_oManager.m_oFont.m_oFont;
-            pCont->m_oBrush		= *m_pBrush;
-
-            if (bIsPath)
-            {
-                pCont->m_strPickFontName	= m_oManager.m_strCurrentPickFont;
-                pCont->m_lPickFontStyle		= m_oManager.m_lCurrentPictFontStyle;
-            }
-
-            pCont->m_dSpaceWidthMM = m_oManager.m_dSpaceWidthMM;
-
-            m_pCurrentLine->AddCont(pCont, m_oManager.m_oFont.m_dBaselineOffset);
+            m_pCurrentLine->AddCont(pCont, pCont->m_dBaselineOffset);
 
             m_dLastTextX = dTextX;
             m_dLastTextY = dBaseLinePos;
@@ -418,18 +588,12 @@ namespace NSDocxRenderer
             return;
         }
 
-        // продолжение линии
-        //if (m_lCurrentCommand == c_nTextType && pLastCont->m_oFont.IsEqual(&m_oManager.m_oFontOld) && pLastCont->m_oBrush.IsEqual(m_pBrush))
-        //{
-        //	// быстрое отметание вс¤ких проверок
-        //	pLastCont->m_strText += strText;
-        //	pLastCont->m_dWidth	= (dTextX + dTextW - pLastCont->m_dX);
-        //	return;
-        //}
-
         double dRight = pLastCont->m_dX + pLastCont->m_dWidth;
 
-        if (pLastCont->m_oFont.IsEqual(&m_oManager.m_oFont.m_oFont) && pLastCont->m_oBrush.IsEqual(m_pBrush))
+        if (pLastCont->m_eUnderlineType == pContText->m_eUnderlineType &&
+            pLastCont->m_bIsHighlightPresent == pContText->m_bIsHighlightPresent &&
+            pLastCont->m_lHighlightColor == pContText->m_lHighlightColor &&
+            pLastCont->m_oFont.IsEqual(&pContText->m_oFont) && pLastCont->m_oBrush.IsEqual(&pContText->m_oBrush))
         {
             // настройки одинаковые. теперь смотрим, на расположение
             if (fabs(dRight - dTextX) < 0.5)
@@ -456,7 +620,7 @@ namespace NSDocxRenderer
                 pLastCont->m_dLastX = dTextX;
                 return;
             }
-            else if ((dRight < dTextX) && ((dTextX - dRight) < m_oManager.m_dSpaceWidthMM))
+            else if ((dRight < dTextX) && ((dTextX - dRight) < pContText->m_dSpaceWidthMM))
             {
                 // продолжаем слово с пробелом
                 if (m_eTextAssociationType != tatPlainParagraph &&
@@ -554,50 +718,17 @@ namespace NSDocxRenderer
 
         // либо пробел большой между словами, либо новый текст левее, либо настройки не те (шрифт, кисть)
         // либо все вместе... просто добавл¤ем новое слово
-        CContText* pCont = new CContText();
+        CContText* pCont = new CContText(*pContText);
 
-        pCont->m_dX = dTextX;
-        pCont->m_dY = dBaseLinePos;
-        pCont->m_dLastX = dTextX;
-
-        pCont->m_dWidth		= dTextW;
-        pCont->m_dHeight	= dTextH;
-
-        if (IsSpaceUtf32(oText))
-        {
-            pCont->m_dWidthWithoutSpaces	= 0;
-            pCont->m_dLeftWithoutSpaces		= dTextX + dTextW;
-        }
-        else
-        {
-            pCont->m_dWidthWithoutSpaces	= dTextW;
-            pCont->m_dLeftWithoutSpaces		= dTextX;
-        }
-
-        pCont->m_oText = oText;
-
-        pCont->m_oFont		= m_oManager.m_oFont.m_oFont;
-        pCont->m_oBrush		= *m_pBrush;
-
-        if (bIsPath)
-        {
-            pCont->m_strPickFontName	= m_oManager.m_strCurrentPickFont;
-            pCont->m_lPickFontStyle		= m_oManager.m_lCurrentPictFontStyle;
-        }
-
-        pCont->m_dSpaceWidthMM = m_oManager.m_dSpaceWidthMM;
-
-        m_pCurrentLine->AddCont(pCont, m_oManager.m_oFont.m_dBaselineOffset);
+        m_pCurrentLine->AddCont(pCont, pCont->m_dBaselineOffset);
 
         m_dLastTextX = dTextX;
         m_dLastTextY = dBaseLinePos;
         m_dLastTextX_block = m_dLastTextX;
     }
 
-    void CPage::Build()
+    void CPage::BuildByType()
     {
-        DeleteTextClipPage();
-
         if (0 == m_arTextLine.size())
             return;
 
@@ -945,18 +1076,18 @@ namespace NSDocxRenderer
             else
             {
                 //будет отдельной параграфом-строчкой
-                //CreateSingleLineParagraph(pCurrLine, &dCurrRight, &dCurrBeforeSpacing);
+                CreateSingleLineParagraph(pCurrLine, &dCurrRight, &dCurrBeforeSpacing);
 
                 //или будет шейпом для теста - вроде неплохо работает без учета проблем в todo
-                CreateSingleLineShape(pCurrLine);
+                //CreateSingleLineShape(pCurrLine);
 
-                double dCurrentAdditive = pCurrLine->m_dHeight + std::max(dCurrBeforeSpacing, 0.0);
+                //double dCurrentAdditive = pCurrLine->m_dHeight + std::max(dCurrBeforeSpacing, 0.0);
                 /*if (pNextLine && pCurrLine->AreLinesCrossing(pNextLine))
                 {
                     dNextBeforeSpacing = pNextLine->CalculateBeforeSpacing(&dPreviousStringOffset);
                     dCurrentAdditive -= pNextLine->m_dHeight + dNextBeforeSpacing;//std::max(dNextBeforeSpacing, 0.0);
                 }*/
-                dBeforeSpacingWithShapes += dCurrentAdditive;
+                //dBeforeSpacingWithShapes += dCurrentAdditive;
             }
         }
     }
@@ -965,8 +1096,6 @@ namespace NSDocxRenderer
     {
         //вычитаем погонные мм
         return dCurrentWidth / 20.0; //подобранный коэф. 20(кандидат) (еще были 100,50,25,20,19,18(уже плохо),17,15)
-
-        //return (m_dWidth >= m_dHeight) ? 4.0 : 2.0;
     }
 
     void CPage::CreateSingleLineParagraph(CTextLine *pLine, const double *pRight, const double *pBeforeSpacing)
@@ -1054,7 +1183,10 @@ namespace NSDocxRenderer
 
             for (size_t i = 0; i < nCountDrawings; ++i)
             {
-                m_arGraphicItems[i]->ToXml(oWriter);
+                if (!m_arGraphicItems[i]->m_bIsNotNecessaryToUse)
+                {
+                    m_arGraphicItems[i]->ToXml(oWriter);
+                }
             }
 
             oWriter.WriteString(L"</w:p>");
@@ -1062,7 +1194,10 @@ namespace NSDocxRenderer
 
         for (size_t i = 0; i < m_arParagraphs.size(); ++i)
         {
-            m_arParagraphs[i]->ToXml(oWriter);
+            if (!m_arParagraphs[i]->m_bIsNotNecessaryToUse)
+            {
+                m_arParagraphs[i]->ToXml(oWriter);
+            }
         }
     }
 

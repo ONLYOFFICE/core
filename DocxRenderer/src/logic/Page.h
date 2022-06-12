@@ -5,10 +5,6 @@
 
 namespace NSDocxRenderer
 {
-    const double STANDART_LEFT_INDENT_MM = 30;
-    const double STANDART_RIGHT_INDENT_MM = 15;
-    const double STANDART_FIRSTLINE_INDENT_MM = 12.5;
-
     inline bool IsSpaceUtf32(const uint32_t& c)
     {
         return (' ' == c) ? true : false;
@@ -53,6 +49,8 @@ namespace NSDocxRenderer
 
         LONG						m_lCurrentCommand;
 
+        std::vector<CContText*> m_arTextData;
+
         std::vector<CBaseItem*>	m_arGraphicItems;
         std::vector<CParagraph*> m_arParagraphs;
 
@@ -79,6 +77,7 @@ namespace NSDocxRenderer
             NSStructures::CShadow* pShadow, NSStructures::CEdgeText* pEdge, Aggplus::CMatrix* pMatrix, Aggplus::CGraphicsPathSimpleConverter* pSimple);
 
         void Clear();
+        void ClearTextData();
         void ClearTextLines();
         void ClearGraphicItems();
         void ClearParagraphs();
@@ -101,12 +100,19 @@ namespace NSDocxRenderer
         //набивается содержимым вектор m_arGraphicItems
         void DrawPath(LONG lType, LONG lTxId);
 
-        //набивается содержимым вектор m_arTextLine
-        void WriteText(unsigned int* pUnicodes, unsigned int* pGids, unsigned int nCount,
-                       double fX, double fY, double fWidth, double fHeight,
-                       double fBaseLineOffset, bool bIsPDFAnalyzer);
+        //набивается содержимым вектор m_arTextData
+        void CollectTextData(const PUINT pUnicodes, const PUINT pGids, const UINT& nCount,
+                             const double& fX, const double& fY, const double& fWidth, const double& fHeight,
+                             const double& fBaseLineOffset, const bool& bIsPDFAnalyzer);
 
-        void Build();
+        //Собранные для текущей страницы данные нужно проанализировать и сгруппировать, лишнее удалить
+        void AnalyzeCollectedData();
+
+        //набивается содержимым вектор m_arTextLine
+        void BuildLines();
+        void BuildLines(const CContText* pContText);
+
+        void BuildByType();
         void BuildByTypeBlockChar();
         void BuildByTypeBlockLine();
         void BuildByTypePlainLine();
@@ -126,5 +132,9 @@ namespace NSDocxRenderer
 
         void CreateSingleLineParagraph(CTextLine *pLine, const double *pRight, const double *pBeforeSpacing);
         void CreateSingleLineShape(CTextLine *pLine);
+
+        bool IsLineCrossingText(const CShape* pGraphicItem, CContText* pContText);
+        bool IsLineBelowText(const CShape* pGraphicItem, CContText* pContText);
+        bool IsItHighlightingBackground(const CShape* pGraphicItem, CContText* pContText);
     };
 }

@@ -491,7 +491,7 @@ namespace NSDocxRenderer
             return S_OK;
         }
 
-        m_oCurrentPage.WriteText((unsigned int*)pUnicodes, (unsigned int*)pGids, nCount, dX, dY, dW, dH, 0, m_bIsNeedPDFTextAnalyzer);
+        m_oCurrentPage.CollectTextData((unsigned int*)pUnicodes, (unsigned int*)pGids, nCount, dX, dY, dW, dH, 0, m_bIsNeedPDFTextAnalyzer);
         return S_OK;
     }
 
@@ -554,7 +554,10 @@ namespace NSDocxRenderer
         if (c_nPageType == lType)
         {
             // нужно записать страницу в файл
-            m_oCurrentPage.Build();
+            m_oCurrentPage.AnalyzeCollectedData();
+            m_oCurrentPage.BuildLines();
+            m_oCurrentPage.DeleteTextClipPage();
+            m_oCurrentPage.BuildByType();
             m_oCurrentPage.Write(m_oWriter);
         }
         else if (c_nPathType == lType)
@@ -654,6 +657,7 @@ namespace NSDocxRenderer
             double h = 0;
             CImageInfo oInfo = m_oManager.WriteImage(m_oBrush.TexturePath, x, y, w, h);
             lTxId = oInfo.m_nId;
+            //return S_OK;
         }
 
         m_oCurrentPage.DrawPath(nType, lTxId);

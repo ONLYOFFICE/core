@@ -26,6 +26,9 @@ LIBS += -lgdi32 \
 }
 
 HEADERS += \
+    src/resources/ColorTable.h \
+    src/resources/Constants.h \
+    src/resources/SingletonTemplate.h \
     src/resources/resources.h \
     \
     src/logic/Common.h \
@@ -43,6 +46,8 @@ SOURCES += \
     src/logic/Document.cpp \
     src/logic/ElementParagraph.cpp \
     src/logic/ElementShape.cpp \
+    src/logic/FontManager.cpp \
+    src/logic/FontManagerBase.cpp \
     src/logic/Page.cpp \
     src/resources/resources.cpp \
     \

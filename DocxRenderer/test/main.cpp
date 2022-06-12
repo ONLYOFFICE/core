@@ -88,24 +88,10 @@ int main(int argc, char *argv[])
         NSDirectory::CreateDirectory(sTempDirOut);
 
     //Добавляем все файлы из определенного каталога
-    //std::vector<std::wstring> sSourceFiles = NSDirectory::GetFiles(L"C:\\Development\\test");
+    //std::vector<std::wstring> sSourceFiles = NSDirectory::GetFiles(L"C:\\Folder");
     std::vector<std::wstring> sSourceFiles;
     //Или добавляем любой нужный файл
-    sSourceFiles.push_back(L"C:\\Users\\Alexander\\Desktop\\MSF_Lec1.pdf");
-    //sSourceFiles.push_back(L"C:\\Users\\Alexander\\Desktop\\test.pdf");
-    sSourceFiles.push_back(L"C:\\Development\\test\\andersen_skazki_tom_1.pdf");
-    //перестал работать - текста нет
-    ///sSourceFiles.push_back(L"C:\\Development\\test\\08 Правила дорожного движения РФ(108p).pdf");
-    sSourceFiles.push_back(L"C:\\Docs\\Рекомендуемая литература\\Мартин Фаулер - Рефакторинг.pdf");
-    //sSourceFiles.push_back(L"C:\\Development\\test\\(1917) - Das geheimnisvolle Haus.pdf");
-    //sSourceFiles.push_back(L"C:\\Docs\\Рекомендуемая литература\\Embedded_Linux_system_design_and_development_ru.pdf");
-    //sSourceFiles.push_back(L"C:\\Docs\\Рекомендуемая литература\\Алан Купер - Психбольница в руках пациентов.pdf");
-    //очень большой размер файла - текст + картинка
-    ///sSourceFiles.push_back(L"C:\\Docs\\Рекомендуемая литература\\Брюс Эккель - Философия C++.pdf");
-    //очень большой размер файла - текст + картинка
-    ///sSourceFiles.push_back(L"C:\\Docs\\Рекомендуемая литература\\Кент Бек - Экстремальное программирование.pdf");
-    //sSourceFiles.push_back(L"C:\\Docs\\Рекомендуемая литература\\Приёмы объектно-ориентированного проектирования. Паттерны проектирования.pdf");
-    //sSourceFiles.push_back(L"C:\\Docs\\Рекомендуемая литература\\Роберт Мартин - Чистый Код.pdf");
+    //sSourceFiles.push_back(L"C:\\File.pdf");
 
     std::wstring sTextDirOut = NSFile::GetProcessDirectory() + L"/text";
     if (!NSDirectory::Exists(sTextDirOut))
@@ -188,6 +174,7 @@ int main(int argc, char *argv[])
 
         oDocxRenderer.SetTextAssociationType(taType);
         oDocxRenderer.Convert(pReader, sTextDirOut+sDocx);
+        //Если сразу нужен zip-архив
         //oDocxRenderer.Convert(pReader, sPlainParagraphDirOut+sZip);
 #endif
     }

@@ -11,12 +11,13 @@
 #include "../DesktopEditor/common/Directory.h"
 #include "../DesktopEditor/xml/include/xmlutils.h"
 #include "../DesktopEditor/graphics/pro/Graphics.h"
+#include "src/resources/Constants.h"
 #include <algorithm>
 #include <map>
 
 namespace NSDocxRenderer
 {
-    inline LONG ConvertColor(LONG lBGR)
+    inline LONG ConvertColorBGRToRGB(LONG lBGR)
 	{
 		return (0x00FFFFFF & (((lBGR & 0xFF) << 16) | (lBGR & 0x0000FF00) | ((lBGR >> 16) & 0xFF)));
     }
@@ -33,9 +34,12 @@ namespace NSDocxRenderer
 
 		ElemType m_eType;
 
+        bool m_bIsNotNecessaryToUse;
+
 		CBaseItem()
 		{
 			m_eType = etShape;
+            m_bIsNotNecessaryToUse = false;
 		}
         virtual ~CBaseItem() {}
 

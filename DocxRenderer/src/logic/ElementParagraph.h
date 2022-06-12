@@ -6,14 +6,6 @@
 
 namespace NSDocxRenderer
 {
-    const double c_dMMToDx	 = 72 * 20 / 25.4;
-    const double c_dSTANDART_STRING_HEIGHT_MM	   = 4.2333333333333334;
-    const double c_dTHE_SAME_STRING_Y_PRECISION_MM = 0.01;
-    const double c_dLINE_DISTANCE_ERROR_MM         = 0.5;
-    const double c_dERROR_OF_RIGHT_BORDERS_MM      = 1.5;
-    const double c_dCENTER_POSITION_ERROR_MM       = 1.5;
-    const double c_dTHE_STRING_X_PRECISION_MM      = 0.5;
-
     // у класса T должен быть метод IsBigger, IsBiggerOrEqual
     template<typename T>
     void SortElements(std::vector<T*>& oArray)
@@ -98,6 +90,16 @@ namespace NSDocxRenderer
     class CContText
     {
     public:
+        enum UnderlineType
+        {
+            utUnknown,
+            utThinLine,
+            utThickLine,
+            utDoubleThinLine,
+            //todo добавить другие типы
+        };
+
+    public:
         NSStructures::CFont		m_oFont;
         NSStructures::CBrush	m_oBrush;
 
@@ -105,7 +107,7 @@ namespace NSDocxRenderer
         LONG	m_lPickFontStyle;
 
         NSStringUtils::CStringUTF32 m_oText;
-        NSStringUtils::CStringUTF32 m_oGidText; //что это?
+        NSStringUtils::CStringUTF32 m_oGidText;
 
         double m_dX;
         double m_dY;
@@ -118,13 +120,18 @@ namespace NSDocxRenderer
 
         double m_dPosition;
         double m_dSpaceWidthMM;
+        double m_dBaselineOffset;
 
         double m_dCalculateWidth;
         double m_dSpaceByText;
 
         bool   m_bIsNeedSpaceAtTheEnd;
+        bool   m_bIsHighlightPresent;
+        LONG   m_lHighlightColor;
 
-    public:
+        UnderlineType m_eUnderlineType;
+
+        public:
         CContText();
         ~CContText(){}
 

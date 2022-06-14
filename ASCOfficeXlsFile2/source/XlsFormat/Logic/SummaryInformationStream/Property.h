@@ -33,6 +33,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include "../../Binary/BinSmartPointers.h"
+#include <string>
 
 namespace OLEPS
 {

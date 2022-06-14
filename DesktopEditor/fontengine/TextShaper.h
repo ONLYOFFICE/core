@@ -82,6 +82,9 @@ namespace NSShaper
     GRAPHICS_DECL void* HB_LanguageFromString(const std::string language_bcp_47);
     GRAPHICS_DECL void HB_free(void* data);
 
+    GRAPHICS_DECL void HB_ShapeText(void* face, void*& font, char* text,
+                                    unsigned int nFeatures, unsigned int nScript, unsigned int nDirection, void* nLanguage, CExternalPointer* result);
+
     GRAPHICS_DECL void HB_ShapeText(void* face, void*& font, const std::string& text,
                                     unsigned int nFeatures, unsigned int nScript, unsigned int nDirection, void* nLanguage, CExternalPointer* result);
 

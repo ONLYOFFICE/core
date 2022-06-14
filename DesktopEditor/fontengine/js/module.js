@@ -408,8 +408,8 @@ function onLoadFontsModule(window, undefined)
 		}
 	};
 
-	const STRING_MAX_LEN = AscFonts.GRAPHEME_STRING_MAX_LEN || 1024;
-	const COEF           = AscFonts.GRAPHEME_COEF;
+	const STRING_MAX_LEN = 1024;
+	const COEF           = 25.4 / 72 / 64 / 72;
 	let   STRING_POINTER = null;
 	let   STRING_LEN     = 0;
 	const CLUSTER        = new Uint8Array(STRING_MAX_LEN);

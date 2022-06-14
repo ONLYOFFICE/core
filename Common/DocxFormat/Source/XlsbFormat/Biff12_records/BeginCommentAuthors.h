@@ -46,8 +46,6 @@ namespace XLSB
             ~BeginCommentAuthors();
 
             XLS::BaseObjectPtr clone();
-
-            void readFields(XLS::CFRecord& record);
     };
 
 } // namespace XLSB

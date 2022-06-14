@@ -47,11 +47,12 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+		const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
-        XLS::BaseObjectPtr               m_BrtBeginCommentList;
-        std::vector<XLS::BaseObjectPtr>	m_arCOMMENT;
-        XLS::BaseObjectPtr               m_BrtEndCommentList;
+		bool			                 m_bBrtBeginCommentList;
+        std::vector<XLS::BaseObjectPtr>	 m_arCOMMENT;
+		bool			                 m_bBrtEndCommentList;
 
     };
 

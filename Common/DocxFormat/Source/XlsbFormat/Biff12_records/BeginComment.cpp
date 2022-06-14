@@ -57,5 +57,13 @@ namespace XLSB
         guid = STR::guid2bstr(guid_);
     }
 
+	void BeginComment::writeFields(XLS::CFRecord& record)
+	{
+		_GUID_          guid_;
+		STR::bstr2guid(guid, guid_);
+
+		record << iauthor << rfx << guid_;
+	}
+
 } // namespace XLSB
 

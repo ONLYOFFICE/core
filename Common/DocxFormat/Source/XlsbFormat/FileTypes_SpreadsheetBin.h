@@ -77,6 +77,11 @@ namespace OOX
 												L"application/vnd.ms-excel.connections",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/connections");
 
+			const FileType CommentsBin		(L"../", L"comments.bin",
+												L"application/vnd.ms-excel.comments",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments",
+												L"comments", true, true);
+
 		} // namespace FileTypes
 	}
 } // namespace OOX

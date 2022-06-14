@@ -155,6 +155,25 @@ namespace OOX
                     }
                 }
             }
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				if (obj == nullptr)
+					obj = XLS::BaseObjectPtr(new XLSB::COMMENTAUTHORS());
+
+				auto ptr = static_cast<XLSB::COMMENTAUTHORS*>(obj.get());
+				if (ptr != nullptr)
+				{
+					ptr->m_arBrtCommentAuthor.reserve(m_arrItems.size());
+					for (size_t i = 0; i < m_arrItems.size(); ++i)
+					{						
+						XLS::BaseObjectPtr item(new XLSB::CommentAuthor());
+						auto ptrCommentAuthor = static_cast<XLSB::CommentAuthor*>(item.get());
+
+						ptrCommentAuthor->author = m_arrItems[i];
+						ptr->m_arBrtCommentAuthor.push_back(item);
+					}
+				}
+			}
 
 			virtual EElementType getType () const
 			{
@@ -237,11 +256,35 @@ namespace OOX
                     }
                 }
             }
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				if (obj == nullptr)
+					obj = XLS::BaseObjectPtr(new XLSB::COMMENT());
+
+				auto ptr = static_cast<XLSB::COMMENT*>(obj.get());
+				if (ptr != nullptr)
+				{
+					WriteAttributes(ptr->m_BrtBeginComment);
+
+					if (m_oText.IsInit())
+					{
+						ptr->m_BrtCommentText = XLS::BaseObjectPtr(new XLSB::CommentText());
+
+						auto ptrCommentText = static_cast<XLSB::CommentText*>(ptr->m_BrtCommentText.get());
+						if (ptrCommentText != nullptr)
+						{
+							m_oText->toBin(ptrCommentText->text, pMain);
+						}
+					}
+				}
+			}
 
 			virtual EElementType getType () const
 			{
 				return et_x_Comment;
 			}
+
+			OOX::Document* pMain;
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -262,6 +305,30 @@ namespace OOX
                     m_oUid      = ptr->guid;
                 }
             }
+			void WriteAttributes(XLS::BaseObjectPtr& obj)
+			{
+				if (obj == nullptr)
+					obj = XLS::BaseObjectPtr(new XLSB::BeginComment());
+
+				auto ptr = static_cast<XLSB::BeginComment*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if (m_oRef.IsInit())
+						ptr->rfx = m_oRef->GetValue();
+					else
+						ptr->rfx = std::wstring(L"");
+
+					if (m_oAuthorId.IsInit())
+						ptr->iauthor = m_oAuthorId->GetValue();
+					else
+						ptr->iauthor = 0;
+
+					if (m_oUid.IsInit())
+						ptr->guid = m_oUid->ToString();
+					else
+						ptr->guid = L"";
+				}
+			}
 		public:
 			nullable<SimpleTypes::CRelationshipId > m_oRef;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oAuthorId;
@@ -328,12 +395,35 @@ namespace OOX
                     }
                 }
             }
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				if (obj == nullptr)
+					obj = XLS::BaseObjectPtr(new XLSB::COMMENTLIST());
+
+				auto ptr = static_cast<XLSB::COMMENTLIST*>(obj.get());
+				if (ptr != nullptr)
+				{
+					ptr->m_arCOMMENT.reserve(m_arrItems.size());
+					for (size_t i = 0; i < m_arrItems.size(); ++i)
+					{
+						if (m_arrItems[i])
+						{
+							XLS::BaseObjectPtr item(new XLSB::COMMENT());
+							m_arrItems[i]->pMain = pMain;
+							m_arrItems[i]->toBin(item);
+							ptr->m_arCOMMENT.push_back(item);
+						}
+					}
+				}
+			}
 
 			virtual EElementType getType () const
 			{
 				return et_x_CommentList;
 			}
 
+
+			OOX::Document* pMain;
         private:
             void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
             {
@@ -387,10 +477,37 @@ namespace OOX
                                 m_oCommentList = ptr->m_COMMENTLIST;
                         }
                     }
-
-                    //commentsStream.reset();
                 }
             }
+			void writeBin(const CPath& oPath) const
+			{
+				CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+				if (xlsb)
+				{
+					XLSB::CommentsStreamPtr commentsStream(new XLSB::CommentsStream);
+
+					if (commentsStream != nullptr)
+					{
+						commentsStream->m_COMMENTS = XLS::BaseObjectPtr(new XLSB::COMMENTS());
+
+						auto ptr = static_cast<XLSB::COMMENTS*>(commentsStream->m_COMMENTS.get());
+
+						if (m_oAuthors.IsInit())
+						{
+							ptr->m_COMMENTAUTHORS = XLS::BaseObjectPtr(new XLSB::COMMENTAUTHORS());
+							m_oAuthors->toBin(ptr->m_COMMENTAUTHORS);
+						}
+
+						if (m_oCommentList.IsInit())
+						{
+							ptr->m_COMMENTLIST = XLS::BaseObjectPtr(new XLSB::COMMENTLIST());
+							m_oCommentList->pMain = xlsb;
+							m_oCommentList->toBin(ptr->m_COMMENTLIST);
+						}
+					}
+					xlsb->WriteBin(oPath, commentsStream.get());
+				}
+			}
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -438,26 +555,36 @@ namespace OOX
 			}
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 			{
-				NSStringUtils::CStringBuilder sXml;
-				sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
+				if (dynamic_cast<CXlsb*>(File::m_pMainDocument) && !dynamic_cast<CXlsb*>(File::m_pMainDocument)->IsWriteToXlsx())
+				{
+					writeBin(oPath);
+				}
+				else
+				{
+					NSStringUtils::CStringBuilder sXml;
+					sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
 <comments xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" \
 xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
 xmlns:xr=\"http://schemas.microsoft.com/office/spreadsheetml/2014/revision\" \
 mc:Ignorable=\"xr\">");
-				if(m_oAuthors.IsInit())
-					m_oAuthors->toXML(sXml);
-				if(m_oCommentList.IsInit())
-					m_oCommentList->toXML(sXml);
-				sXml.WriteString(L"</comments>");
+					if (m_oAuthors.IsInit())
+						m_oAuthors->toXML(sXml);
+					if (m_oCommentList.IsInit())
+						m_oCommentList->toXML(sXml);
+					sXml.WriteString(L"</comments>");
 
-				std::wstring sPath = oPath.GetPath();
-				NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
+					std::wstring sPath = oPath.GetPath();
+					NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
+				}
 
 				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 				IFileContainer::Write(oPath, oDirectory, oContent);
 			}
 			virtual const OOX::FileType type() const
 			{
+				if (dynamic_cast<CXlsb*>(File::m_pMainDocument) && !dynamic_cast<CXlsb*>(File::m_pMainDocument)->IsWriteToXlsx())
+					return OOX::SpreadsheetBin::FileTypes::CommentsBin;
+
 				return OOX::Spreadsheet::FileTypes::Comments;
 			}
 			virtual const CPath DefaultDirectory() const

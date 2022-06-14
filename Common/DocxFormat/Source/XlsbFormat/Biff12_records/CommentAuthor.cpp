@@ -55,5 +55,10 @@ namespace XLSB
         record >> author;
     }
 
+	void CommentAuthor::writeFields(XLS::CFRecord& record)
+	{
+		record << author;
+	}
+
 } // namespace XLSB
 

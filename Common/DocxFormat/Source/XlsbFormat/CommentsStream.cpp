@@ -82,4 +82,12 @@ const bool CommentsStream::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool CommentsStream::saveContent(XLS::BinProcessor & proc)
+{
+	if (m_COMMENTS != nullptr)
+		proc.mandatory(*m_COMMENTS);
+
+	return true;
+}
+
 } // namespace XLSB

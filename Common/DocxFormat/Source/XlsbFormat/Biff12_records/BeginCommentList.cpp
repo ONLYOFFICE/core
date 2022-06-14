@@ -50,9 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new BeginCommentList(*this));
     }
 
-    void BeginCommentList::readFields(XLS::CFRecord& record)
-    {
-    }
-
 } // namespace XLSB
 

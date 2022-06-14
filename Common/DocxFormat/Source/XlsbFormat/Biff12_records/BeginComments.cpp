@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new BeginComments(*this));
     }
 
-    void BeginComments::readFields(XLS::CFRecord& record)
-    {
-        // No data in this record
-    }
-
 } // namespace XLSB
 

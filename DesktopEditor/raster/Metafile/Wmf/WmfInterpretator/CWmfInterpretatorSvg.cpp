@@ -2,6 +2,8 @@
 
 #include "../Image.h"
 
+#include "../../../BgraFrame.h"
+
 namespace MetaFile
 {
         CWmfInterpretatorSvg::CWmfInterpretatorSvg(const wchar_t *wsFilePath, CWmfParserBase *pParser, unsigned int unWidth, unsigned int unHeight)
@@ -646,56 +648,45 @@ namespace MetaFile
                 if (0 == unWidth || 0 == unHeight)
                         return;
 
-                Aggplus::CImage oImage;
-                BYTE* pBufferPtr = new BYTE[4 * unWidth * unHeight];
-                oImage.Create(pBufferPtr, unWidth, unHeight, 4 * unWidth);
+                CBgraFrame  oFrame;
 
-		for (int nIndex = 0, nSize = 4 * unWidth * unHeight; nIndex < nSize; nIndex += 4)
-		{
-			pBufferPtr[0] = (BYTE)pBuffer[nIndex + 0];
-			pBufferPtr[1] = (BYTE)pBuffer[nIndex + 1];
-			pBufferPtr[2] = (BYTE)pBuffer[nIndex + 2];
-			pBufferPtr[3] = (BYTE)pBuffer[nIndex + 3];
-			pBufferPtr += 4;
-		}
+                oFrame.put_Data(pBuffer);
+                oFrame.put_Width(unWidth);
+                oFrame.put_Height(unHeight);
 
-		oImage.SaveFile(L"temp.png", 4);
+                BYTE* pNewBuffer = NULL;
+                int nNewSize = 0;
 
-		NSFile::CFileBinary oFile;
+                oFrame.Encode(pNewBuffer, nNewSize, 4);
+                oFrame.put_Data(NULL);
 
-                BYTE* pImageBytes = NULL;
-                DWORD ulImageSize;
+                if (0 < nNewSize)
+                {
+                        int nImageSize = NSBase64::Base64EncodeGetRequiredLength(nNewSize);
+                        unsigned char* ucValue = new unsigned char[nImageSize];
 
-                oFile.ReadAllBytes(L"temp.png", &pImageBytes, ulImageSize);
+                        if (NULL == ucValue)
+                                return;
 
-                if (0 == ulImageSize)
-                        return;
+                        NSBase64::Base64Encode(pNewBuffer, nNewSize, ucValue, &nImageSize);
+                        std::wstring wsValue(ucValue, ucValue + nImageSize);
 
-                int nSize = NSBase64::Base64EncodeGetRequiredLength(ulImageSize);
-                unsigned char* ucValue = new unsigned char[nSize];
+                        double dNewX = TranslateX(dX);
+                        double dNewY = TranslateY(dY);
 
-                if (NULL == ucValue)
-                        return;
+                        NodeAttributes arAttributes = {{L"x", std::to_wstring(dNewX)},
+                                                       {L"y", std::to_wstring(dNewY)},
+                                                       {L"width", std::to_wstring(TranslateX(dW))},
+                                                       {L"height", std::to_wstring(TranslateY(dH))},
+                                                       {L"xlink:href", L"data:image/png;base64," + wsValue}};;
 
-                NSBase64::Base64Encode(pImageBytes, ulImageSize, ucValue, &nSize);
-                std::wstring wsValue(ucValue, ucValue + nSize);
+                        UpdateTransform(dNewX, dNewY);
 
-                NodeAttributes arAttributes = {{L"x", std::to_wstring(TranslateX(dX))},
-                                               {L"y", std::to_wstring(TranslateY(dY))},
-                                               {L"width", std::to_wstring(TranslateX(dW))},
-                                               {L"height", std::to_wstring(TranslateY(dH))},
-                                               {L"xlink:href", L"data:image/png;base64," + wsValue}};;
+                        WriteNode(L"image", arAttributes);
+                }
 
-                UpdateTransform(dX, dY);
-
-                WriteNode(L"image", arAttributes);
-
-                NSFile::CFileBinary::Remove(L"temp.png");
-
-                delete [] ucValue;
-
-                if (NULL != pImageBytes)
-                        delete [] pImageBytes;
+                if (NULL != pNewBuffer)
+                        delete [] pNewBuffer;
         }
 
         void CWmfInterpretatorSvg::WriteNode(const std::wstring &wsNodeName, const NodeAttributes &arAttributes, const std::wstring &wsValueNode)

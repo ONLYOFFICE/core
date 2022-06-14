@@ -78,7 +78,7 @@ void Sector::Dispose(bool disposing)
     _disposed = true;
 }
 
-std::vector<BYTE> Sector::GetData()
+std::vector<BYTE> &Sector::GetData()
 {
     if (data.empty())
     {
@@ -89,7 +89,7 @@ std::vector<BYTE> Sector::GetData()
             stream->read(reinterpret_cast<char*>(data.data()), size);
         }
     }
-    // copy
+
     return data;
 }
 

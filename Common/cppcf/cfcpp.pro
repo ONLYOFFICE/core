@@ -19,7 +19,8 @@ SOURCES += \
     header.cpp \
     sector.cpp \
     sectorcollection.cpp \
-    streamrw.cpp
+    streamrw.cpp \
+    streamview.cpp
 
 HEADERS += \
     Stream.h \
@@ -30,7 +31,8 @@ HEADERS += \
     header.h \
     sector.h \
     sectorcollection.h \
-    streamrw.h
+    streamrw.h \
+    streamview.h
 
 # Default rules for deployment.
 unix {

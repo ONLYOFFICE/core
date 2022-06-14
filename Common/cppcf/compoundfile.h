@@ -2,6 +2,9 @@
 
 #include "header.h"
 #include "sectorcollection.h"
+#include <queue>
+
+#define FLAT_WRITE
 
 namespace CFCPP
 {
@@ -39,26 +42,48 @@ enum CFSUpdateMode
 class CompoundFile
 {
 public:
-    CompoundFile();
+    CompoundFile(const std::wstring &fileName, CFSUpdateMode updateMode, CFSConfiguration configParameters);
     CompoundFile(CFSVersion cfsVersion, CFSConfiguration configFlags);
+    CompoundFile(const std::wstring &fileName);
+    CompoundFile(Stream stream);
+    CompoundFile();
     void OnSizeLimitReached();
+    void Commit();
+    void Commit(bool releaseMemory);
 protected:
     int GetSectorSize();
+
+private:
+    void CheckForLockSector();
 
 public:
     CFSConfiguration configuration = Default;
     Header header;
+    Stream sourceStream;
 
 private:
     const int HEADER_DIFAT_ENTRIES_COUNT = 109;
-    const int DIFAT_SECTOR_FAT_ENTRIES_COUNT = 127;
-    const int FAT_SECTOR_ENTRIES_COUNT = 128;
+    int DIFAT_SECTOR_FAT_ENTRIES_COUNT = 127;
+    int FAT_SECTOR_ENTRIES_COUNT = 128;
     const int SIZE_OF_SID = 4;
     bool sectorRecycle = false;
     bool eraseFreeSectors = false;
-    const int FLUSHING_QUEUE_SIZE = 6000;
+    static constexpr int FLUSHING_QUEUE_SIZE = 6000;
     static constexpr int FLUSHING_BUFFER_MAX_SIZE = 1024 * 1024 * 16;
     SectorCollection sectors;
     std::fstream stream;
+    std::wstring fileName;
+
+    bool _transactionLockAdded = false;
+    int _lockSectorId = -1;
+    bool _transactionLockAllocated = false;
+    bool validationExceptionEnabled = true;
+    bool _disposed;//false
+    CFSUpdateMode updateMode;
+
+#if !defined(FLAT_WRITE)
+        std::array<BYTE, FLUSHING_BUFFER_MAX_SIZE> buffer;
+        std::queue<Sector> flushingQueue(); // FLUSHING_QUEUE_SIZE
+#endif
 };
 }

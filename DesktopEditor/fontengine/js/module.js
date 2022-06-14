@@ -408,28 +408,39 @@ function onLoadFontsModule(window, undefined)
 		}
 	};
 
+	const FONTSIZE       = 72;
 	const STRING_MAX_LEN = 1024;
-	const COEF           = 25.4 / 72 / 64 / 72;
+	const COEF           = 25.4 / 72 / 64 / FONTSIZE;
 	let   STRING_POINTER = null;
 	let   STRING_LEN     = 0;
 	const CLUSTER        = new Uint8Array(STRING_MAX_LEN);
 	let   CLUSTER_LEN    = 0;
 	let   CLUSTER_MAX    = 0;
 	const LIGATURE       = 2;
+	const CODEPOINTS     = new Uint32Array(STRING_MAX_LEN);
 
-	function CClusterUtf8Calculator(clusterBuffer)
+	AscFonts.MEASURE_FONTSIZE        = FONTSIZE;
+	AscFonts.GRAPHEME_STRING_MAX_LEN = STRING_MAX_LEN;
+	AscFonts.GRAPHEME_COEF           = COEF;
+
+	function CCodePointsCalculator(codePointsBuffer, clusterBuffer)
+	{
+		this.currentCluster   = 0;
+		this.currentCodePoint = 0;
+		this.clusterBuffer    = clusterBuffer;
+		this.codePoints       = codePointsBuffer;
+		this.codePointsCount  =  0
+	}
+	CCodePointsCalculator.prototype.start = function()
 	{
 		this.currentCluster = 0;
 		this.currentCodePoint = 0;
-		this.buffer = clusterBuffer;
+		this.codePointsCount  = 0;
 	}
-	CClusterUtf8Calculator.prototype.start = function()
+	CCodePointsCalculator.prototype.calculate = function(cluster)
 	{
-		this.currentCluster = 0;
-		this.currentCodePoint = 0;
-	}
-	CClusterUtf8Calculator.prototype.getCodePointsCount = function(cluster)
-	{
+		this.currentCodePoint += this.codePointsCount;
+
 		let nCodePointsCount = 0;
 
 		if (cluster < this.currentCluster)
@@ -440,15 +451,23 @@ function onLoadFontsModule(window, undefined)
 		{
 			while (this.currentCluster < cluster)
 			{
-				this.currentCluster += this.buffer[this.currentCodePoint + nCodePointsCount];
+				this.currentCluster += this.clusterBuffer[this.currentCodePoint + nCodePointsCount];
 				nCodePointsCount++;
 			}
 		}
 
-		this.currentCodePoint += nCodePointsCount;
-		return nCodePointsCount;
+		this.codePointsCount = nCodePointsCount;
 	}
-	const CODEPOINTS_CALCULATOR = new CClusterUtf8Calculator(CLUSTER);
+	CCodePointsCalculator.prototype.getCount = function()
+	{
+		return this.codePointsCount;
+	};
+	CCodePointsCalculator.prototype.get = function(nPos)
+	{
+		return this.codePoints[this.currentCodePoint + nPos];
+	};
+	const CODEPOINTS_CALCULATOR = new CCodePointsCalculator(CODEPOINTS, CLUSTER);
+
 
 	AscFonts.HB_StartString = function()
 	{
@@ -512,7 +531,8 @@ function onLoadFontsModule(window, undefined)
 
 		if (-1 !== nClusterLen)
 		{
-			CLUSTER[CLUSTER_LEN++] = nClusterLen;
+			CODEPOINTS[CLUSTER_LEN] = code;
+			CLUSTER[CLUSTER_LEN++]  = nClusterLen;
 			CLUSTER_MAX += nClusterLen;
 		}
 	};
@@ -534,7 +554,7 @@ function onLoadFontsModule(window, undefined)
 			return;
 
 		CODEPOINTS_CALCULATOR.start();
-		let prevCluster = -1, type, flags, gid, cluster, x_advance, y_advance, x_offset, y_offset;
+		let prevCluster = -1, type, flags, gid, cluster, x_advance, y_advance, x_offset, y_offset, codePoints;
 		let isLigature = false;
 		let nWidth     = 0;
 		let reader = READER;
@@ -552,7 +572,8 @@ function onLoadFontsModule(window, undefined)
 
 			if (cluster !== prevCluster && -1 !== prevCluster)
 			{
-				textShaper.FlushGrapheme(AscFonts.GetGrapheme(), nWidth, CODEPOINTS_CALCULATOR.getCodePointsCount(cluster), isLigature);
+				CODEPOINTS_CALCULATOR.calculate(cluster);
+				textShaper.FlushGrapheme(AscFonts.GetGrapheme(CODEPOINTS_CALCULATOR), nWidth, CODEPOINTS_CALCULATOR.getCount(), isLigature);
 				nWidth = 0;
 			}
 
@@ -566,7 +587,8 @@ function onLoadFontsModule(window, undefined)
 			AscFonts.AddGlyphToGrapheme(gid, x_advance, y_advance, x_offset, y_offset);
 			nWidth += x_advance * COEF;
 		}
-		textShaper.FlushGrapheme(AscFonts.GetGrapheme(), nWidth, CODEPOINTS_CALCULATOR.getCodePointsCount(CLUSTER_MAX), isLigature);
+		CODEPOINTS_CALCULATOR.calculate(CLUSTER_MAX);
+		textShaper.FlushGrapheme(AscFonts.GetGrapheme(CODEPOINTS_CALCULATOR), nWidth, CODEPOINTS_CALCULATOR.getCount(), isLigature);
 
 		retObj["free"]();
 	};

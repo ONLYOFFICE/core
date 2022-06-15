@@ -86,10 +86,102 @@ std::ostream &StreamView::Write(const char *buffer, std::streamsize offset, std:
     }
 }
 
+std::streamsize StreamView::Read(char *buffer, std::streamsize offset, std::streamsize count)
+{
+    int nRead = 0;
+    int nToRead = 0;
+    if (sectorChain.empty() == false && sectorChain.size() > 0)
+    {
+        // First sector
+        int secIndex = (int)(position / (std::streamsize)sectorSize);
+
+        // Bytes to read count is the min between request count
+        // and sector border
+
+        nToRead = std::min((int)sectorChain[0].GetData().size() - ((int)position % sectorSize), (int)count);
+
+        if (secIndex < (int)sectorChain.size())
+        {
+            char* src = reinterpret_cast<char*>(sectorChain[secIndex].GetData().data() + (int)(position % sectorSize));
+            char* dst = buffer + offset;
+            std::copy(src, src + nToRead, dst);
+        }
+
+        nRead += nToRead;
+
+        secIndex++;
+
+        // Central sectors
+        while (nRead < (count - sectorSize))
+        {
+            nToRead = sectorSize;
+            char* src = reinterpret_cast<char*>(sectorChain[secIndex].GetData().data());
+            char* dst = buffer + offset + nToRead;
+            std::copy(src, src + nToRead, dst);
+
+            nRead += nToRead;
+            secIndex++;
+        }
+
+        // Last sector
+        nToRead = count - nRead;
+
+        if (nToRead != 0)
+        {
+            if (secIndex > (int)sectorChain.size()) throw new CFCorruptedFileException("The file is probably corrupted.");
+            char* src = reinterpret_cast<char*>(sectorChain[secIndex].GetData().data());
+            char* dst = buffer + offset + nRead;
+            std::copy(src, src + nToRead, dst);
+
+            nRead += nToRead;
+        }
+
+        position += nRead;
+
+        return nRead;
+
+    }
+    else
+        return 0;
+}
+
+std::streamsize StreamView::Seek(std::streamsize offset, int origin)
+{
+    switch (origin)
+    {
+    case std::ios_base::beg:
+        position = offset;
+        break;
+
+    case std::ios_base::cur:
+        position += offset;
+        break;
+
+    case std::ios_base::end:
+        position = length - offset;
+        break;
+    }
+
+    adjustLength(position);
+
+    return position;
+}
+
+void StreamView::SetLength(std::streamsize value)
+{
+    adjustLength(value);
+}
+
 int StreamView::ReadInt32()
 {
-    std::iostream::read(reinterpret_cast<char*>(buf), 4);
+    std::iostream::read(reinterpret_cast<char*>(&buf), 4);
     return ((buf & 0xFF) << 24) | ((buf & 0x00FF) << 16) | ((buf & 0x0000FF) << 8) | (buf & 0x000000FF);
+}
+
+void StreamView::WriteInt32(int val)
+{
+    buf = ((val & 0xFF) << 24) | ((val & 0x00FF) << 16) | ((val & 0x0000FF) << 8) | (val & 0x000000FF);
+    std::iostream::write(reinterpret_cast<char*>(&buf), 4);
 }
 
 void StreamView::adjustLength(std::streamsize value)

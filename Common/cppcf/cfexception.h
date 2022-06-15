@@ -45,5 +45,13 @@ public:
     virtual ~CFInvalidOperation() throw () {}
 };
 
+class CFCorruptedFileException : public CFException
+{
+public:
+    CFCorruptedFileException() {}
+    CFCorruptedFileException(std::string message) : CFException(message) {}
+    virtual ~CFCorruptedFileException() throw () {}
+};
+
 
 }

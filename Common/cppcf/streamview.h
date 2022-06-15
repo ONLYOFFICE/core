@@ -15,8 +15,12 @@ public:
                std::queue<Sector> &availableSectors, const Stream &stream, bool isFatStream = false);
 
     std::ostream& Write (const char *buffer, std::streamsize offset, std::streamsize count);
+    std::streamsize Read(char *buffer, std::streamsize offset, std::streamsize count);
+    std::streamsize Seek(std::streamsize offset, int origin);
+    void SetLength(std::streamsize value);
 
     int ReadInt32();
+    void WriteInt32(int val);
 
 private:
     void adjustLength(std::streamsize value);

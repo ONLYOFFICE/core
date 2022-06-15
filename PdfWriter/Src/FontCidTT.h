@@ -102,6 +102,7 @@ namespace PdfWriter
 		CFontCidTrueType(CXref* pXref, CDocument* pDocument, const std::wstring& wsFontPath, unsigned int unIndex);
 		~CFontCidTrueType();
 		unsigned char* EncodeString(unsigned int* pUnicodes, unsigned int unLen, const unsigned int* pGids = NULL);
+		unsigned char* EncodeStringGid(unsigned int* pUnicodes, unsigned int unLen, const unsigned int& unGid);
 		unsigned short EncodeChar(const unsigned int& unUnicode);
 		bool           HaveChar(const unsigned int& unUnicode);
 		unsigned int   GetWidth(unsigned short ushCode);
@@ -122,6 +123,7 @@ namespace PdfWriter
 		bool OpenFontFace();
 		void CloseFontFace();
 		unsigned short EncodeUnicodeSymbol(const unsigned int& unUnicode, const unsigned int& unGid = 0x0000, const bool& isGid = false);
+		unsigned short EncodeUnicodeSymbols(unsigned int* unUnicode, unsigned int unLen, const unsigned int& unGid);
 
 	private:
 

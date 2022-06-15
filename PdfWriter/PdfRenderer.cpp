@@ -1141,6 +1141,14 @@ HRESULT CPdfRenderer::CommandDrawTextEx(const std::wstring& wsUnicodeText, const
 
 	return bRes ? S_OK : S_FALSE;
 }
+HRESULT CPdfRenderer::CommandDrawTextCHAR2(unsigned int* unUnicode, const unsigned int& unUnicodeCount, const unsigned int& unGid, const double& dX, const double& dY, const double& dW, const double& dH)
+{
+	if (!IsPageValid())
+		return S_FALSE;
+
+	bool bRes = DrawTextGid(unUnicode, unUnicodeCount, dX, dY, unGid);
+	return bRes ? S_OK : S_FALSE;
+}
 //----------------------------------------------------------------------------------------
 // Маркеры команд
 //----------------------------------------------------------------------------------------
@@ -2178,6 +2186,30 @@ bool CPdfRenderer::DrawText(unsigned int* pUnicodes, unsigned int unLen, const d
 	m_oCommandManager.SetTransform(t.m11, -t.m12, -t.m21, t.m22, MM_2_PT(t.dx + t.m21 * m_dPageHeight), MM_2_PT(m_dPageHeight - m_dPageHeight * t.m22 - t.dy));
 
 	CRendererTextCommand* pText = m_oCommandManager.AddText(pCodes, unLen * 2, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY));
+	pText->SetFont(m_pFont);
+	pText->SetSize(m_oFont.GetSize());
+	pText->SetColor(m_oBrush.GetColor1());
+	pText->SetAlpha((BYTE)m_oBrush.GetAlpha1());
+	pText->SetCharSpace(MM_2_PT(m_oFont.GetCharSpace()));
+	pText->SetNeedDoBold(m_oFont.IsNeedDoBold());
+	pText->SetNeedDoItalic(m_oFont.IsNeedDoItalic());
+
+	return true;
+}
+bool CPdfRenderer::DrawTextGid(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int& unGid)
+{
+	if (m_bNeedUpdateTextFont)
+		UpdateFont();
+
+	if (!m_pFont)
+		return false;
+
+	unsigned char* pCodes = m_pFont->EncodeStringGid(pUnicodes, unLen, unGid);
+
+	CTransform& t = m_oTransform;
+	m_oCommandManager.SetTransform(t.m11, -t.m12, -t.m21, t.m22, MM_2_PT(t.dx + t.m21 * m_dPageHeight), MM_2_PT(m_dPageHeight - m_dPageHeight * t.m22 - t.dy));
+
+	CRendererTextCommand* pText = m_oCommandManager.AddText(pCodes, 2, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY));
 	pText->SetFont(m_pFont);
 	pText->SetSize(m_oFont.GetSize());
 	pText->SetColor(m_oBrush.GetColor1());

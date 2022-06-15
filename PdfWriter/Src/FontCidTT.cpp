@@ -219,6 +219,36 @@ namespace PdfWriter
 		}
 		return pEncodedString;
 	}
+	unsigned char* CFontCidTrueType::EncodeStringGid(unsigned int* pUnicodes, unsigned int unLen, const unsigned int& unGid)
+	{
+		if (!OpenFontFace())
+			return NULL;
+
+		unsigned char* pEncodedString = new unsigned char[2];
+		if (!pEncodedString)
+			return NULL;
+
+		bool bFind = false;
+		unsigned short ushCode;
+
+		for (unsigned short ushCurCode = 0, ushCodesCount = m_vCodeToGid.size(); ushCurCode < ushCodesCount; ushCurCode++)
+		{
+			if (unGid == m_vCodeToGid.at(ushCurCode))
+			{
+				ushCode = ushCurCode;
+				bFind = true;
+				break;
+			}
+		}
+
+		if (!bFind)
+			ushCode = EncodeUnicodeSymbols(pUnicodes, unLen, unGid);
+
+		pEncodedString[0] = (ushCode >> 8) & 0xFF;
+		pEncodedString[1] = ushCode & 0xFF;
+
+		return pEncodedString;
+	}
 	unsigned short CFontCidTrueType::EncodeChar(const unsigned int &unUnicode)
 	{
 		if (!OpenFontFace())
@@ -537,6 +567,55 @@ namespace PdfWriter
 				m_mGlyphs.insert(std::pair<unsigned short, bool>(nSubGID, true));
 			}
 
+			if (0 != m_pFace->units_per_EM)
+			{
+				m_vWidths.push_back((unsigned int)m_pFace->glyph->metrics.horiAdvance * 1000 / m_pFace->units_per_EM);
+				m_vGlypWidths.push_back((unsigned int)(m_pFace->glyph->metrics.width) * 1000 / m_pFace->units_per_EM);
+			}
+			else
+			{
+				m_vWidths.push_back((unsigned int)m_pFace->glyph->metrics.horiAdvance);
+				m_vGlypWidths.push_back((unsigned int)(m_pFace->glyph->metrics.width) * 1000 / m_pFace->units_per_EM);
+			}
+		}
+
+		return ushCode;
+	}
+	unsigned short CFontCidTrueType::EncodeUnicodeSymbols(unsigned int* unUnicode, unsigned int unLen, const unsigned int& unGid)
+	{
+		unsigned short ushCode = m_ushCodesCount;
+		m_ushCodesCount++;
+
+		m_mUnicodeToCode.insert(std::pair<unsigned int, unsigned short>(unUnicode[0], ushCode));
+		m_vUnicodes.push_back(unUnicode[0]);
+
+		m_vCodeToGid.push_back(unGid);
+
+		m_mGlyphs.insert(std::pair<unsigned int, bool>(unGid, true));
+
+		if (unLen > 1 || 0 == FT_Load_Glyph(m_pFace, unGid, FT_LOAD_NO_SCALE | FT_LOAD_NO_RECURSE))
+		{
+			for (int nSubIndex = 0; nSubIndex < m_pFace->glyph->num_subglyphs; nSubIndex++)
+			{
+				FT_Int       nSubGID;
+				FT_UInt      unFlags;
+				FT_Int       nArg1;
+				FT_Int       nArg2;
+				FT_Matrix    oMatrix;
+				FT_Get_SubGlyph_Info(m_pFace->glyph, nSubIndex, &nSubGID, &unFlags, &nArg1, &nArg2, &oMatrix);
+
+				m_mGlyphs.insert(std::pair<unsigned short, bool>(nSubGID, true));
+			}
+
+			for (int i = 1; i < unLen; i++)
+			{
+				int nSubGID = GetGID(m_pFace, unUnicode[i]);
+				if (0 == nSubGID && -1 != m_nSymbolicCmap)
+					nSubGID = GetGID(m_pFace, unUnicode[i] + 0xF000);
+				m_mGlyphs.insert(std::pair<unsigned short, bool>(nSubGID, true));
+			}
+
+			// TODO fix m_vWidths < m_vCodeToGid
 			if (0 != m_pFace->units_per_EM)
 			{
 				m_vWidths.push_back((unsigned int)m_pFace->glyph->metrics.horiAdvance * 1000 / m_pFace->units_per_EM);

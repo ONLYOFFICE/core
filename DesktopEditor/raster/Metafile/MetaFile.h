@@ -33,6 +33,7 @@
 #define _METAFILE_H
 
 #include "../../fontengine/ApplicationFonts.h"
+
 #include "../../graphics/IRenderer.h"
 #include "../../graphics/pro/Image.h"
 
@@ -55,8 +56,8 @@ namespace MetaFile
 		void GetBounds(double* pdX, double* pdY, double* pdW, double* pdH);
 		int GetType();
 		void ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1);
-		NSFonts::IFontManager* get_FontManager();
 
+		NSFonts::IFontManager* get_FontManager();
 		//конвертация в Svg
 		void ConvertToSvg(const wchar_t *wsFilePath, unsigned int unWidth = 0, unsigned int unHeight = 0);
 
@@ -70,8 +71,12 @@ namespace MetaFile
 		void ConvertToEmf(const wchar_t* wsFilePath);
 	private:
 
+		#ifdef METAFILE_SUPPORT_TEXT_ENGINE
+			CFontManager*      m_pFontManager;
+		#endif
+
 		CApplicationFonts* m_pAppFonts;
-		CFontManager*      m_pFontManager;
+
 		CWmfFile           m_oWmfFile;
 		CEmfFile           m_oEmfFile;
 		CSvmFile           m_oSvmFile;

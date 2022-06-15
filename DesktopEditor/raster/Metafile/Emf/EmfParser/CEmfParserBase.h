@@ -10,7 +10,9 @@
 
 #include "../../Common/MetaFile.h"
 
-#include "../../../../fontengine/FontManager.h"
+#ifdef METAFILE_SUPPORT_TEXT_ENGINE
+        #include "../../../../fontengine/FontManager.h"
+#endif
 
 #include "../EmfInterpretator/CEmfInterpretatorBase.h"
 

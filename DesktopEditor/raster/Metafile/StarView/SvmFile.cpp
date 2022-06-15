@@ -783,7 +783,10 @@ void CSvmFile::Read_META_FLOATTRANSPARENT()
 	CSvmFile subMetaFile(m_oStream.GetCurPtr() , m_unRecordSize);
 	
 	subMetaFile.m_bMainStream = false;
-	subMetaFile.SetFontManager(GetFontManager());
+
+	#ifdef METAFILE_SUPPORT_TEXT_ENGINE
+		subMetaFile.SetFontManager(GetFontManager());
+	#endif
 
 	subMetaFile.PlayMetaFile();
 	int skip_size = subMetaFile.m_oStream.Tell();

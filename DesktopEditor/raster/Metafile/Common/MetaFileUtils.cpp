@@ -916,6 +916,10 @@ namespace MetaFile
 	void ProcessRasterOperation(unsigned int unRasterOperation, BYTE** ppBgra, unsigned int unWidth, unsigned int unHeight)
 	{
 		BYTE* pBgra = *ppBgra;
+
+		if (NULL == pBgra)
+			return;
+
 		// Для битовых операций SRCPAINT и SRCAND сделаем, как будто фон чисто белый.
 		if (0x008800C6 == unRasterOperation) // SRCPAINT
 		{

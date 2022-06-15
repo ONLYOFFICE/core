@@ -33,7 +33,10 @@
 #define _METAFILE_WMF_WMFFILE_H
 
 #include "../../../common/StringExt.h"
-#include "../../../fontengine/FontManager.h"
+
+#ifdef METAFILE_SUPPORT_TEXT_ENGINE
+        #include "../../../fontengine/FontManager.h"
+#endif
 
 #include "../Common/IOutputDevice.h"
 #include "../Common/MetaFile.h"
@@ -65,10 +68,14 @@ namespace MetaFile
 		{
 			if (NULL != m_pParser)
 			{
-				CFontManager *pFont = m_pParser->GetFontManager();
+				#ifdef METAFILE_SUPPORT_TEXT_ENGINE
+					CFontManager *pFont = m_pParser->GetFontManager();
+				#endif
 				delete m_pParser;
 				m_pParser = new CWmfParser();
-				m_pParser->SetFontManager(pFont);
+				#ifdef METAFILE_SUPPORT_TEXT_ENGINE
+					m_pParser->SetFontManager(pFont);
+				#endif
 			}
 
 			return m_pParser->OpenFromFile(wsFilePath);
@@ -94,11 +101,12 @@ namespace MetaFile
 			m_pParser->Close();
 		}
 
-		void SetFontManager(CFontManager* pFontManager)
-		{
-			m_pParser->SetFontManager(pFontManager);
-		}
-
+		#ifdef METAFILE_SUPPORT_TEXT_ENGINE
+			void SetFontManager(CFontManager* pFontManager)
+			{
+				m_pParser->SetFontManager(pFontManager);
+			}
+		#endif
 		bool CheckError()
 		{
 			return m_pParser->CheckError();

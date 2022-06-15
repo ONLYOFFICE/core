@@ -1257,13 +1257,18 @@ namespace MetaFile
                 {
                         CEmfParser oEmfParser;
                         oEmfParser.SetStream(pBuffer, unSize);
-                        oEmfParser.SetFontManager(GetFontManager());
+                        #ifdef METAFILE_SUPPORT_TEXT_ENGINE
+                                oEmfParser.SetFontManager(GetFontManager());
+                        #endif
                         oEmfParser.Scan();
 
                         if (!oEmfParser.CheckError())
                         {
                                 CGraphicsRenderer oRenderer;
-                                oRenderer.SetFontManager(GetFontManager());
+
+                                #ifdef METAFILE_SUPPORT_TEXT_ENGINE
+                                        oRenderer.SetFontManager(GetFontManager());
+                                #endif
 
                                 TEmfRectL *pEmfBounds = oEmfParser.GetBounds();
 
@@ -1336,13 +1341,20 @@ namespace MetaFile
                 {
                         CWmfParser oWmfParser;
                         oWmfParser.SetStream(pBuffer, unSize);
-                        oWmfParser.SetFontManager(GetFontManager());
+
+                        #ifdef METAFILE_SUPPORT_TEXT_ENGINE
+                                oWmfParser.SetFontManager(GetFontManager());
+                        #endif
+
                         oWmfParser.Scan();
 
                         if (!oWmfParser.CheckError())
                         {
                                 CGraphicsRenderer oRenderer;
-                                oRenderer.SetFontManager(GetFontManager());
+
+                                #ifdef METAFILE_SUPPORT_TEXT_ENGINE
+                                        oRenderer.SetFontManager(GetFontManager());
+                                #endif
 
                                 TRectD oWmfBounds = oWmfParser.GetBounds();
 

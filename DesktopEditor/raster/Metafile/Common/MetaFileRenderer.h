@@ -306,64 +306,67 @@ namespace MetaFile
 
 			double dFontCharSpace = m_pFile->GetCharSpace() * m_dScaleX * m_pFile->GetPixelWidth();
 			m_pRenderer->put_FontCharSpace(dFontCharSpace);
-			CFontManager* pFontManager = m_pFile->GetFontManager();
-			if (pFontManager)
-			{
-				pFontManager->LoadFontByName(wsFaceName, dFontHeight, lStyle, 72, 72);
-				pFontManager->SetCharSpacing(dFontCharSpace * 72 / 25.4);
 
-				double dMmToPt = 25.4 / 72;
-
-                double dFHeight = dFontHeight;
-                double dFDescent = dFontHeight;
-                if (pFontManager->m_pFont)
-                {
-                    dFHeight  *= pFontManager->m_pFont->GetHeight() / pFontManager->m_pFont->m_lUnits_Per_Em * dMmToPt;
-                    dFDescent *= pFontManager->m_pFont->GetDescender() / pFontManager->m_pFont->m_lUnits_Per_Em * dMmToPt;
-                }
-                double dFAscent  = dFHeight - std::abs(dFDescent);
-
-				if (NULL != pDx && unCharsCount > 1)
+			#ifdef METAFILE_SUPPORT_TEXT_ENGINE
+				CFontManager* pFontManager = m_pFile->GetFontManager();
+				if (pFontManager)
 				{
-					// Тогда мы складываем все pDx кроме последнего символа, последний считаем отдельно
-					double dTempTextW = 0;
-					for (unsigned int unCharIndex = 0; unCharIndex < unCharsCount - 1; unCharIndex++)
+					pFontManager->LoadFontByName(wsFaceName, dFontHeight, lStyle, 72, 72);
+					pFontManager->SetCharSpacing(dFontCharSpace * 72 / 25.4);
+
+					double dMmToPt = 25.4 / 72;
+
+					double dFHeight = dFontHeight;
+					double dFDescent = dFontHeight;
+					if (pFontManager->m_pFont)
 					{
-						dTempTextW += pDx[unCharIndex];
+					    dFHeight  *= pFontManager->m_pFont->GetHeight() / pFontManager->m_pFont->m_lUnits_Per_Em * dMmToPt;
+					    dFDescent *= pFontManager->m_pFont->GetDescender() / pFontManager->m_pFont->m_lUnits_Per_Em * dMmToPt;
 					}
-					dTempTextW *= m_dScaleX;
+					double dFAscent  = dFHeight - std::abs(dFDescent);
 
-					std::wstring wsTempText;
-					wsTempText += wsText.at(wsText.length() - 1);
-					//wsTempText += wsText.at(unCharsCount - 1);
+					if (NULL != pDx && unCharsCount > 1)
+					{
+						// Тогда мы складываем все pDx кроме последнего символа, последний считаем отдельно
+						double dTempTextW = 0;
+						for (unsigned int unCharIndex = 0; unCharIndex < unCharsCount - 1; unCharIndex++)
+						{
+							dTempTextW += pDx[unCharIndex];
+						}
+						dTempTextW *= m_dScaleX;
 
-					pFontManager->LoadString1(wsTempText, 0, 0);
-					TBBox oBox = pFontManager->MeasureString2();
-					dTempTextW += dMmToPt * (oBox.fMaxX - oBox.fMinX);
+						std::wstring wsTempText;
+						wsTempText += wsText.at(wsText.length() - 1);
+						//wsTempText += wsText.at(unCharsCount - 1);
 
-					fL = 0;
-					fW = (float)dTempTextW;
+						pFontManager->LoadString1(wsTempText, 0, 0);
+						TBBox oBox = pFontManager->MeasureString2();
+						dTempTextW += dMmToPt * (oBox.fMaxX - oBox.fMinX);
+
+						fL = 0;
+						fW = (float)dTempTextW;
+					}
+					else
+					{
+						pFontManager->LoadString1(wsText, 0, 0);
+						TBBox oBox = pFontManager->MeasureString2();
+						fL = (float)dMmToPt * (oBox.fMinX);
+						fW = (float)dMmToPt * (oBox.fMaxX - oBox.fMinX);
+					}
+
+					// Просчитаем положение подчеркивания
+					pFontManager->GetUnderline(&fUndX1, &fUndY1, &fUndX2, &fUndY2, &fUndSize);
+					fUndY1   *= (float)dMmToPt;
+					fUndY2   *= (float)dMmToPt;
+					fUndSize *= (float)dMmToPt / 2;
+
+					fUndX1 = fL;
+					fUndX2 = fL + fW;
+
+					fT = (float)-dFAscent;
+					fH = (float)dFHeight;
 				}
-				else
-				{
-					pFontManager->LoadString1(wsText, 0, 0);
-					TBBox oBox = pFontManager->MeasureString2();
-					fL = (float)dMmToPt * (oBox.fMinX);
-					fW = (float)dMmToPt * (oBox.fMaxX - oBox.fMinX);
-				}
-
-				// Просчитаем положение подчеркивания
-				pFontManager->GetUnderline(&fUndX1, &fUndY1, &fUndX2, &fUndY2, &fUndSize);
-				fUndY1   *= (float)dMmToPt;
-				fUndY2   *= (float)dMmToPt;
-				fUndSize *= (float)dMmToPt / 2;
-
-				fUndX1 = fL;
-				fUndX2 = fL + fW;
-
-				fT = (float)-dFAscent;
-				fH = (float)dFHeight;
-			}
+			#endif
 
 			TPointD oTextPoint = TranslatePoint(_dX, _dY);
 			double dX = oTextPoint.x;
@@ -520,7 +523,7 @@ namespace MetaFile
 
 			if (NULL == pDx)
 			{
-                m_pRenderer->CommandDrawText(wsText, dX, dY, 0, 0);
+				m_pRenderer->CommandDrawText(wsText, dX, dY, 0, 0);
 			}
 			else
 			{
@@ -763,6 +766,7 @@ namespace MetaFile
 			TPointD oPoint;
 			oPoint.x = m_dScaleX * dX + m_dX;
 			oPoint.y = m_dScaleY * dY + m_dY;
+
 			return oPoint;
 		}		
 		bool UpdateBrush()

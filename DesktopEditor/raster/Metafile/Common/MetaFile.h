@@ -36,7 +36,10 @@
 #include "MetaFileUtils.h"
 #include "MetaFileObjects.h"
 #include "MetaFileClip.h"
-#include "../../../fontengine/FontManager.h"
+
+#ifdef METAFILE_SUPPORT_TEXT_ENGINE
+	#include "../../../fontengine/FontManager.h"
+#endif
 
 namespace MetaFile
 {
@@ -116,14 +119,16 @@ namespace MetaFile
 
 			this->ClearFile();
 		}
-		CFontManager* GetFontManager()
-		{
-			return m_pFontManager;
-		}
+		#ifdef METAFILE_SUPPORT_TEXT_ENGINE
+			CFontManager* GetFontManager()
+			{
+				return m_pFontManager;
+			}
 		void          SetFontManager(CFontManager* pFontManager)
 		{
 			m_pFontManager = pFontManager;
 		}
+		#endif
 		void          SetOutputDevice(IOutputDevice* pOutput)
 		{
 			m_pOutput = pOutput;
@@ -144,8 +149,11 @@ namespace MetaFile
 
 	private:
 
-		BYTE*          m_pBufferData;		
-		CFontManager*  m_pFontManager;
+		#ifdef METAFILE_SUPPORT_TEXT_ENGINE
+			CFontManager*  m_pFontManager;
+		#endif
+
+		BYTE*          m_pBufferData;
 		bool           m_bError;
 	};
 }

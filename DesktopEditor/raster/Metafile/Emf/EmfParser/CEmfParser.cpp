@@ -1388,7 +1388,9 @@ namespace MetaFile
                         if (NULL == m_pEmfPlusParser)
                         {
                                 m_pEmfPlusParser = new CEmfPlusParser(m_pInterpretator, m_oHeader);
-                                m_pEmfPlusParser->SetFontManager(GetFontManager());
+                                #ifdef METAFILE_SUPPORT_TEXT_ENGINE
+                                        m_pEmfPlusParser->SetFontManager(GetFontManager());
+                                #endif
                         }
 
                         m_pEmfPlusParser->SetStream(m_oStream.GetCurPtr(), m_ulRecordSize - 8);

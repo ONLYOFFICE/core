@@ -48,32 +48,41 @@ namespace MetaFile
 	CMetaFile::CMetaFile(NSFonts::IApplicationFonts *pAppFonts) : MetaFile::IMetaFile(pAppFonts)
 	{
 		m_pAppFonts = (CApplicationFonts*)pAppFonts;
+			// Создаем менеджер шрифтов с собственным кэшем
 
-		// Создаем менеджер шрифтов с собственным кэшем
+		#ifdef METAFILE_SUPPORT_TEXT_ENGINE
+			if (pAppFonts)
+			{
+				m_pFontManager = (CFontManager*)pAppFonts->GenerateFontManager();
 
-		if (pAppFonts)
-		{
-			m_pFontManager = (CFontManager*)pAppFonts->GenerateFontManager();
-			
-			CFontsCache* pMeasurerCache = new CFontsCache();
-			pMeasurerCache->SetStreams(pAppFonts->GetStreams());
-			m_pFontManager->SetOwnerCache(pMeasurerCache);
-		}
-		
-		m_oWmfFile.SetFontManager(m_pFontManager);
-		m_oEmfFile.SetFontManager(m_pFontManager);
-		m_oSvmFile.SetFontManager(m_pFontManager);
+				CFontsCache* pMeasurerCache = new CFontsCache();
+				pMeasurerCache->SetStreams(pAppFonts->GetStreams());
+				m_pFontManager->SetOwnerCache(pMeasurerCache);
+			}
 
+			m_oWmfFile.SetFontManager(m_pFontManager);
+			m_oEmfFile.SetFontManager(m_pFontManager);
+			m_oSvmFile.SetFontManager(m_pFontManager);
+		#endif
 		m_lType  = 0;
 	}
+
+
 	CMetaFile::~CMetaFile()
 	{
 		Close();
-		RELEASEINTERFACE(m_pFontManager);
+		#ifdef METAFILE_SUPPORT_TEXT_ENGINE
+			RELEASEINTERFACE(m_pFontManager);
+		#endif
 	}
+
 	NSFonts::IFontManager* CMetaFile::get_FontManager()
 	{
-		return m_pFontManager;
+		#ifdef METAFILE_SUPPORT_TEXT_ENGINE
+			return m_pFontManager;
+		#else
+			return NULL;
+		#endif
 	}
 
 	void CMetaFile::ConvertToSvg(const wchar_t *wsFilePath, unsigned int unWidth, unsigned int unHeight)
@@ -108,13 +117,17 @@ namespace MetaFile
 			return;
 
                 m_oEmfFile.SetOutputDevice(NULL, wsXmlFilePath);
-                CFontManager *pFontManager = (CFontManager*)m_pAppFonts->GenerateFontManager();
-                CFontsCache* pFontCache = new CFontsCache();
-                pFontCache->SetStreams(m_pAppFonts->GetStreams());
-                pFontManager->SetOwnerCache(pFontCache);
 
                 CGraphicsRenderer oRenderer;
-                oRenderer.SetFontManager(pFontManager);
+
+                #ifdef METAFILE_SUPPORT_TEXT_ENGINE
+                        CFontManager *pFontManager = (CFontManager*)m_pAppFonts->GenerateFontManager();
+                        CFontsCache* pFontCache = new CFontsCache();
+                        pFontCache->SetStreams(m_pAppFonts->GetStreams());
+                        pFontManager->SetOwnerCache(pFontCache);
+
+                        oRenderer.SetFontManager(pFontManager);
+                #endif
 
                 if (-1 == nHeight)
                 {
@@ -158,7 +171,10 @@ namespace MetaFile
                 DrawOnRenderer(wsXmlFilePath, &oRenderer, 0, 0, dWidth, dHeight);
 
                 oFrame.SaveFile(wsOutFilePath, unFileType);
-                RELEASEINTERFACE(pFontManager);
+
+                #ifdef METAFILE_SUPPORT_TEXT_ENGINE
+                        RELEASEINTERFACE(pFontManager);
+                #endif
 	}
 
 	bool CMetaFile::DrawOnRenderer(const wchar_t *wsXmlFilePath, IRenderer *pRenderer, double dX, double dY, double dWidth, double dHeight)
@@ -197,20 +213,22 @@ namespace MetaFile
 
 	bool CMetaFile::LoadFromXmlFile(const wchar_t *wsFilePath)
 	{
-		RELEASEINTERFACE(m_pFontManager);
+		#ifdef METAFILE_SUPPORT_TEXT_ENGINE
+			RELEASEINTERFACE(m_pFontManager);
 
-                if (m_pAppFonts)
-                {
-                        m_pFontManager = (CFontManager*)m_pAppFonts->GenerateFontManager();
-                        CFontsCache* pMeasurerCache = new CFontsCache();
-                        pMeasurerCache->SetStreams(m_pAppFonts->GetStreams());
-                        m_pFontManager->SetOwnerCache(pMeasurerCache);
-                }
+			if (m_pAppFonts)
+			{
+				m_pFontManager = (CFontManager*)m_pAppFonts->GenerateFontManager();
+				CFontsCache* pMeasurerCache = new CFontsCache();
+				pMeasurerCache->SetStreams(m_pAppFonts->GetStreams());
+				m_pFontManager->SetOwnerCache(pMeasurerCache);
+			}
 
-                m_oWmfFile.SetFontManager(m_pFontManager);
-                m_oEmfFile.SetFontManager(m_pFontManager);
-                m_oSvmFile.SetFontManager(m_pFontManager);
-                m_oSvgFile.SetFontManager(m_pFontManager);
+			m_oWmfFile.SetFontManager(m_pFontManager);
+			m_oEmfFile.SetFontManager(m_pFontManager);
+			m_oSvmFile.SetFontManager(m_pFontManager);
+			m_oSvgFile.SetFontManager(m_pFontManager);
+		#endif
 
 		if (m_oEmfFile.OpenFromXmlFile(wsFilePath) == true)
 		{
@@ -240,26 +258,30 @@ namespace MetaFile
 
 	bool CMetaFile::LoadFromFile(const wchar_t *wsFilePath)
 	{
-		// TODO: Сейчас при загрузке каждой новой картинки мы пересоздаем 
-		//       FontManager, потому что сейчас в нем кэш без ограничения.
-		//------------------------------------------------------
-		RELEASEINTERFACE(m_pFontManager);
+		#ifdef METAFILE_SUPPORT_TEXT_ENGINE
 
-		if (m_pAppFonts)
-		{
-			m_pFontManager = (CFontManager*)m_pAppFonts->GenerateFontManager();
-			CFontsCache* pMeasurerCache = new CFontsCache();
-			pMeasurerCache->SetStreams(m_pAppFonts->GetStreams());
-			m_pFontManager->SetOwnerCache(pMeasurerCache);
-		}
+			// TODO: Сейчас при загрузке каждой новой картинки мы пересоздаем
+			//       FontManager, потому что сейчас в нем кэш без ограничения.
+			//------------------------------------------------------
 
-		m_oWmfFile.SetFontManager(m_pFontManager);
-		m_oEmfFile.SetFontManager(m_pFontManager);
-		m_oSvmFile.SetFontManager(m_pFontManager);
-		m_oSvgFile.SetFontManager(m_pFontManager);
+			RELEASEINTERFACE(m_pFontManager);
 
-		//------------------------------------------------------
+			if (m_pAppFonts)
+			{
+				m_pFontManager = (CFontManager*)m_pAppFonts->GenerateFontManager();
+				CFontsCache* pMeasurerCache = new CFontsCache();
+				pMeasurerCache->SetStreams(m_pAppFonts->GetStreams());
+				m_pFontManager->SetOwnerCache(pMeasurerCache);
+			}
 
+			m_oWmfFile.SetFontManager(m_pFontManager);
+			m_oEmfFile.SetFontManager(m_pFontManager);
+			m_oSvmFile.SetFontManager(m_pFontManager);
+			m_oSvgFile.SetFontManager(m_pFontManager);
+
+			//------------------------------------------------------
+
+		#endif
 
 		// Сначала пытаемся открыть файл как Wmf
 		if (m_oWmfFile.OpenFromWmfFile(wsFilePath) == true)
@@ -409,13 +431,16 @@ namespace MetaFile
 
         void CMetaFile::ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight)
         {
-                CFontManager *pFontManager = (CFontManager*)m_pAppFonts->GenerateFontManager();
-                CFontsCache* pFontCache = new CFontsCache();
-                pFontCache->SetStreams(m_pAppFonts->GetStreams());
-                pFontManager->SetOwnerCache(pFontCache);
-
                 CGraphicsRenderer oRenderer;
-                oRenderer.SetFontManager(pFontManager);
+
+                #ifdef METAFILE_SUPPORT_TEXT_ENGINE
+                        CFontManager *pFontManager = (CFontManager*)m_pAppFonts->GenerateFontManager();
+                        CFontsCache* pFontCache = new CFontsCache();
+                        pFontCache->SetStreams(m_pAppFonts->GetStreams());
+                        pFontManager->SetOwnerCache(pFontCache);
+
+                        oRenderer.SetFontManager(pFontManager);
+                #endif
 
                 if (-1 == nHeight)
                 {
@@ -459,6 +484,9 @@ namespace MetaFile
                 DrawOnRenderer(&oRenderer, 0, 0, dWidth, dHeight);
 
                 oFrame.SaveFile(wsOutFilePath, unFileType);
-                RELEASEINTERFACE(pFontManager);
+
+                #ifdef METAFILE_SUPPORT_TEXT_ENGINE
+                        RELEASEINTERFACE(pFontManager);
+                #endif
         }
 }

@@ -230,22 +230,30 @@ namespace NSCSS
                 }
                 CASE(L"line-height"):
                 {
-                    size_t unCoefficient = 1;
+                    double dCoefficient = 1;
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     const size_t unPositionSymbol = pPropertie.second.find_first_of(L"abcdefghijklmnopqrstuvwxyz%");
 
                     if (unPositionSymbol == std::wstring::npos)
-                        unCoefficient = m_pFont.GetSize();
+                        dCoefficient = m_pFont.GetSize();
 
                     if (unPositionImp == std::wstring::npos)
                     {
-                        const float fValue = wcstof(ConvertUnitMeasure(pPropertie.second, m_pFont.GetSize() * 1.2).c_str(), NULL);
-                        m_pFont.SetLineHeight(std::to_wstring(fValue * unCoefficient), unLevel, bHardMode);
+                        float fValue = wcstof(ConvertUnitMeasure(pPropertie.second, m_pFont.GetSize()).c_str(), NULL);
+
+                        if (m_pFont.GetSize() == fValue || bIsThereBorder)
+                                fValue *= 1.2;
+
+                        m_pFont.SetLineHeight(std::to_wstring(fValue * dCoefficient), unLevel, bHardMode);
                     }
                     else if (unPositionImp != 0)
                     {
-                        const float fValue = wcstof(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), m_pFont.GetSize() * 1.2).c_str(), NULL);
-                        m_pFont.SetLineHeight(std::to_wstring(fValue * unCoefficient), unLevel, true);
+                        float fValue = wcstof(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), m_pFont.GetSize()).c_str(), NULL);
+
+                        if (m_pFont.GetSize() == fValue || bIsThereBorder)
+                                fValue *= 1.2;
+
+                        m_pFont.SetLineHeight(std::to_wstring(fValue * dCoefficient), unLevel, true);
                         m_pFont.SetImportantenLineHeight(true);
                     }
                     break;
@@ -368,32 +376,52 @@ namespace NSCSS
                 CASE(L"padding"):
                 CASE(L"mso-padding-alt"):
                 {
-                    if (bIsThereBorder)
-                        break;
+//                    if (bIsThereBorder)
+//                        break;
+
+                    bool bMarginPermission = m_pMargin.GetPermission();
+
+                    m_pMargin.SetPermission(true);
 
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
                     {
                         const std::wstring sValue = ConvertUnitMeasure(pPropertie.second, 540.0f, ScalingDirectionX);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                        {
+                            if (bIsThereBorder)
+                                    m_pMargin.AddMargin(L"0", 0, true);
+
                             m_pMargin.AddMargin(sValue, unLevel, bHardMode);
+                        }
                     }
                     else if (unPositionImp != 0)
                     {
                         const std::wstring sValue = ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), 540.0f, ScalingDirectionX);
                         if (sValue.find_first_not_of(L" 0") != std::wstring::npos)
+                        {
+                            if (bIsThereBorder)
+                                m_pMargin.AddMargin(L"0", 0, true);
+
                             m_pMargin.AddMargin(sValue, unLevel, true);
+                        }
 
                         m_pMargin.SetImportantAll(true);
                     }
+
+                    m_pMargin.SetPermission(bMarginPermission);
 
                     break;
                 }
                 CASE(L"padding-top"):
                 CASE(L"mso-padding-top-alt"):
                 {
-                    if (bIsThereBorder)
-                        break;
+//                    if (bIsThereBorder)
+//                        break;
+
+                    bool bMarginPermission = m_pMargin.GetPermission();
+
+                    m_pMargin.SetPermission(true);
 
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
@@ -411,14 +439,18 @@ namespace NSCSS
                         m_pMargin.SetImportantTopSide(true);
                     }
 
+                    m_pMargin.SetPermission(bMarginPermission);
+
                     break;
                 }
                 CASE(L"padding-right"):
                 CASE(L"mso-padding-right-alt"):
                 {
-                    if (bIsThereBorder)
-                        break;
+//                    if (bIsThereBorder)
+//                        break;
+                    bool bMarginPermission = m_pMargin.GetPermission();
 
+                    m_pMargin.SetPermission(true);
 
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
@@ -436,13 +468,19 @@ namespace NSCSS
                         m_pMargin.SetImportantRightSide(true);
                     }
 
+                    m_pMargin.SetPermission(bMarginPermission);
+
                     break;
                 }
                 CASE(L"padding-bottom"):
                 CASE(L"mso-padding-bottom-alt"):
                 {
-                    if (bIsThereBorder)
-                        break;
+//                    if (bIsThereBorder)
+//                        break;
+
+                    bool bMarginPermission = m_pMargin.GetPermission();
+
+                    m_pMargin.SetPermission(true);
 
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
@@ -460,13 +498,20 @@ namespace NSCSS
                         m_pMargin.SetImportantBottomSide(true);
                     }
 
+                    m_pMargin.SetPermission(bMarginPermission);
+
                     break;
                 }
                 CASE(L"padding-left"):
                 CASE(L"mso-padding-left-alt"):
                 {
-                    if (bIsThereBorder)
-                        break;
+//                    if (bIsThereBorder)
+//                        break;
+
+                    bool bMarginPermission = m_pMargin.GetPermission();
+
+                    m_pMargin.SetPermission(true);
+
 
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
@@ -483,6 +528,8 @@ namespace NSCSS
 
                         m_pMargin.SetImportantLeftSide(true);
                     }
+
+                    m_pMargin.SetPermission(bMarginPermission);
 
                     break;
                 }
@@ -963,6 +1010,22 @@ namespace NSCSS
                             m_pDisplay.SetWidth(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), m_oDeviceWindow.m_ushWidth, ScalingDirectionX), unLevel, true);
                             m_pDisplay.SetImportantWidth(true);
                         }
+
+                        break;
+                }
+                CASE(L"height"):
+                {
+                        const size_t unPositionImp = pPropertie.second.find(L"!i");
+                        if (unPositionImp == std::wstring::npos)
+                        {
+                            m_pDisplay.SetHeight(ConvertUnitMeasure(pPropertie.second, m_oDeviceWindow.m_ushWidth, ScalingDirectionY), unLevel, bHardMode);
+                        }
+                        else if (unPositionImp != 0)
+                        {
+                            m_pDisplay.SetHeight(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), m_oDeviceWindow.m_ushWidth, ScalingDirectionY), unLevel, true);
+                            m_pDisplay.SetImportantHeight(true);
+                        }
+
                         break;
                 }
                 CASE(L"align"):
@@ -989,11 +1052,12 @@ namespace NSCSS
         if (sStyle.empty())
             return;
 
-        const std::vector<std::wstring> arWords = NS_STATIC_FUNCTIONS::GetWordsWithSigns(sStyle, L" :;");
+        const std::vector<std::wstring> arWords = NS_STATIC_FUNCTIONS::GetWordsWithSigns(sStyle, L":;");
 
         std::wstring sProperty, sValue;
 
         for (std::vector<std::wstring>::const_iterator iWord = arWords.begin(); iWord != arWords.end(); ++iWord)
+        {
             if ((*iWord).back() == L':')
             {
                 sProperty = *iWord;
@@ -1002,9 +1066,15 @@ namespace NSCSS
             else
             {
                 sValue += *iWord;
-                if ((*iWord).back() == L';')
+
+                if (L' ' == sValue.front())
+                        sValue.erase(0, 1);
+
+                if (!sValue.empty() && ((*iWord).back() == L';' || iWord == (arWords.end() - 1)))
                 {
-                    sValue.pop_back();
+                    if (sValue.back() == L';')
+                        sValue.pop_back();
+
                     std::transform(sProperty.begin(), sProperty.end(), sProperty.begin(), tolower);
                     std::transform(sValue.begin(), sValue.end(), sValue.begin(), tolower);
                     AddPropSel(sProperty, sValue, unLevel, bHardMode);
@@ -1012,6 +1082,7 @@ namespace NSCSS
                     sValue.clear();
                 }
             }
+        }
 
         if (!sProperty.empty() && !sValue.empty())
             AddPropSel(sProperty, sValue, bHardMode);

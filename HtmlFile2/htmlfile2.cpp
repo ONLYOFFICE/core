@@ -1065,6 +1065,8 @@ private:
                     oXml->WriteString(L"\"/>");
                     j += nColspan - 1;
                 }
+
+                oXml->WriteString(L"<w:hideMark/>");
                 oXml->WriteString(L"</w:tcPr>");
                 size_t nEmpty = oXml->GetCurSize();
                 m_bWasPStyle = false;
@@ -1072,7 +1074,7 @@ private:
                 GetSubClass(oXml, sSelectors);
                 // Читаем th. Ячейка заголовка таблицы. Выравнивание посередине. Выделяется полужирным
                 if(m_oLightReader.GetName() == L"th")
-                {
+                {                            
                     CTextSettings oTSR(oTS);
                     oTSR.sRStyle += L"<w:b/>";
                     readStream(oXml, sSelectors, oTSR);
@@ -1135,6 +1137,38 @@ private:
 
         std::wstring wsWidth = oStyle.m_pDisplay.GetWidthW();
         std::wstring wsAlign = oStyle.m_pDisplay.GetAlign();
+
+        if (wsAlign.empty())
+        {
+                NSCSS::CNode oLastNode = sSelectors.back();
+                sSelectors.pop_back();
+
+                NSCSS::CCompiledStyle oTempSettingsStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors, true);
+
+                wsAlign = oTempSettingsStyle.m_pText.GetAlign();
+
+                if (wsAlign.empty())
+                {
+                        NSCSS::CCompiledStyle oTempStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors, false);
+
+                        wsAlign = oTempStyle.m_pText.GetAlign();
+                }
+
+                sSelectors.push_back(oLastNode);
+        }
+
+        if (!oStyle.m_pMargin.Empty() && (0 < oStyle.m_pMargin.GetTopSide() || 0 < oStyle.m_pMargin.GetBottomSide()))
+        {
+                wsTable += L"<w:tblCellMar>";
+
+                if (0 < oStyle.m_pMargin.GetTopSide())
+                        wsTable += L"<w:top w:w=\"" + std::to_wstring(static_cast<short int>(oStyle.m_pMargin.GetTopSide() * 20 + 0.5f)) + L"\" w:type=\"dxa\"/>";
+
+                if (0 < oStyle.m_pMargin.GetBottomSide())
+                        wsTable += L"<w:bottom w:w=\"" + std::to_wstring(static_cast<short int>(oStyle.m_pMargin.GetBottomSide() * 20 + 0.5f)) + L"\" w:type=\"dxa\"/>";
+
+                wsTable += L"</w:tblCellMar>";
+        }
 
         if (!wsWidth.empty())
                 wsTable += L"<w:tblW w:w=\"" + wsWidth + L"\" w:type=\"pct\"/>";
@@ -1615,7 +1649,9 @@ private:
         size_t i = 0;
         while(i != sSelectors.size())
         {
-            if(rStyle.find(L' ' + sSelectors[i].m_sName + L' ') != std::wstring::npos)
+            if(rStyle.find(L' ' + sSelectors[i].m_sName + L' ') != std::wstring::npos &&
+               sSelectors[i].m_sClass.empty() && sSelectors[i].m_sId.empty() &&
+               sSelectors[i].m_sStyle.empty() && sSelectors[i].m_mAttrs.empty())
             {
                 temporary.push_back(std::make_pair(i, sSelectors[i]));
                 sSelectors.erase(sSelectors.begin() + i);

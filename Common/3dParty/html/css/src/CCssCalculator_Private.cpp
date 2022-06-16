@@ -516,7 +516,8 @@ namespace NSCSS
                     pStyle->AddStyle(arSelectors[i].m_sStyle, i + 1,  true);
                 else if (!bIsSettings)
                     pStyle->AddStyle(arSelectors[i].m_sStyle, i + 1, true);
-            }
+            }else if (bIsSettings)
+                    pStyle->AddStyle(arSelectors[i].m_sStyle, i + 1, true);
         }
 
         if (!bIsSettings)

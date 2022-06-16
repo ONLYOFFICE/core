@@ -139,7 +139,7 @@ namespace PdfWriter
 		if (!(nFlags & 4))
 			UIntChangeBit(nFlags, 2);
 		if (nFlags & 32)
-			UIntChangeBit(nFlags, 5);
+			UIntChangeBit(nFlags, 4);
 
 		pFontDescriptor->Add("Flags", nFlags);
 
@@ -212,14 +212,14 @@ namespace PdfWriter
 			}
 
 			if (!bFind)
-				ushCode = EncodeUnicodeSymbol(pUnicodes[unIndex], pGids ? pGids[unIndex] : 0x0000, pGids ? true : false);
+				ushCode = EncodeUnicodeSymbol(&pUnicodes[unIndex], 1, pGids ? pGids[unIndex] : 0x0000, pGids ? true : false);
 
 			pEncodedString[2 * unIndex + 0] = (ushCode >> 8) & 0xFF;
 			pEncodedString[2 * unIndex + 1] = ushCode & 0xFF;
 		}
 		return pEncodedString;
 	}
-	unsigned char* CFontCidTrueType::EncodeStringGid(unsigned int* pUnicodes, unsigned int unLen, const unsigned int& unGid)
+	unsigned char* CFontCidTrueType::EncodeCharGid(unsigned int* pUnicodes, unsigned int unLen, const unsigned int& unGid)
 	{
 		if (!OpenFontFace())
 			return NULL;
@@ -242,7 +242,7 @@ namespace PdfWriter
 		}
 
 		if (!bFind)
-			ushCode = EncodeUnicodeSymbols(pUnicodes, unLen, unGid);
+			ushCode = EncodeUnicodeSymbol(pUnicodes, unLen, unGid, true);
 
 		pEncodedString[0] = (ushCode >> 8) & 0xFF;
 		pEncodedString[1] = ushCode & 0xFF;
@@ -258,7 +258,8 @@ namespace PdfWriter
 		if (oIter != m_mUnicodeToCode.end())
 			return oIter->second;
 
-		return EncodeUnicodeSymbol(unUnicode);
+		unsigned int nUnicode = unUnicode;
+		return EncodeUnicodeSymbol(&nUnicode, 1);
 	}
 	bool CFontCidTrueType::HaveChar(const unsigned int &unUnicode)
 	{
@@ -440,24 +441,26 @@ namespace PdfWriter
 		pS->WriteStr(" beginbfchar\n");
 		for (unsigned short ushCode = 0; ushCode < m_ushCodesCount; ushCode++)
 		{
-			unsigned int unUnicode = m_vUnicodes[ushCode];
 			pS->WriteChar('<');
 			pS->WriteHex(ushCode, 4);
 			pS->WriteStr("> <");
-
-			if (unUnicode < 0x10000)
+			for (unsigned int i = 0, nLen = m_vUnicodes[ushCode].size(); i < nLen; i++)
 			{
-				pS->WriteHex(unUnicode, 4);
-			}
-			else
-			{
-				unUnicode = unUnicode - 0x10000;
+				unsigned int unUnicode = m_vUnicodes[ushCode][i];
+				if (unUnicode < 0x10000)
+				{
+					pS->WriteHex(unUnicode, 4);
+				}
+				else
+				{
+					unUnicode = unUnicode - 0x10000;
 
-				unsigned short ushLo = 0xDC00 | (unUnicode & 0x3FF);
-				unsigned short ushHi = 0xD800 | (unUnicode >> 10);
+					unsigned short ushLo = 0xDC00 | (unUnicode & 0x3FF);
+					unsigned short ushHi = 0xD800 | (unUnicode >> 10);
 
-				pS->WriteHex(ushHi, 4);
-				pS->WriteHex(ushLo, 4);
+					pS->WriteHex(ushHi, 4);
+					pS->WriteHex(ushLo, 4);
+				}
 			}
 
 			pS->WriteStr(">\n");
@@ -527,24 +530,25 @@ namespace PdfWriter
 
 		return true;
 	}
-	unsigned short CFontCidTrueType::EncodeUnicodeSymbol(const unsigned int &unUnicode, const unsigned int& unGid, const bool& isGid)
+	unsigned short CFontCidTrueType::EncodeUnicodeSymbol(unsigned int* unUnicode, const unsigned int& unLen, const unsigned int& unGid, const bool& isGid)
 	{
 		unsigned short ushCode = m_ushCodesCount;
 		m_ushCodesCount++;
 
-		m_mUnicodeToCode.insert(std::pair<unsigned int, unsigned short>(unUnicode, ushCode));
-		m_vUnicodes.push_back(unUnicode);
-
-		unsigned int unGID;
-		if (!isGid)
+		std::vector<unsigned int> vUnicodes;
+		for (unsigned int i = 0; i < unLen; i++)
 		{
-			unGID = GetGID(m_pFace, unUnicode);
-			if (0 == unGID && -1 != m_nSymbolicCmap)
-				unGID = GetGID(m_pFace, unUnicode + 0xF000);
+			m_mUnicodeToCode.insert(std::pair<unsigned int, unsigned short>(unUnicode[i], ushCode));
+			vUnicodes.push_back(unUnicode[i]);
 		}
-		else
+		m_vUnicodes.push_back(vUnicodes);
+
+		unsigned int unGID = unGid;
+		if (!isGid || 0 != FT_Load_Glyph(m_pFace, unGID, FT_LOAD_NO_SCALE | FT_LOAD_NO_RECURSE))
 		{
-			unGID = unGid;
+			unGID = GetGID(m_pFace, unUnicode[0]);
+			if (0 == unGID && -1 != m_nSymbolicCmap)
+				unGID = GetGID(m_pFace, unUnicode[0] + 0xF000);
 		}
 
 		m_vCodeToGid.push_back(unGID);
@@ -567,55 +571,6 @@ namespace PdfWriter
 				m_mGlyphs.insert(std::pair<unsigned short, bool>(nSubGID, true));
 			}
 
-			if (0 != m_pFace->units_per_EM)
-			{
-				m_vWidths.push_back((unsigned int)m_pFace->glyph->metrics.horiAdvance * 1000 / m_pFace->units_per_EM);
-				m_vGlypWidths.push_back((unsigned int)(m_pFace->glyph->metrics.width) * 1000 / m_pFace->units_per_EM);
-			}
-			else
-			{
-				m_vWidths.push_back((unsigned int)m_pFace->glyph->metrics.horiAdvance);
-				m_vGlypWidths.push_back((unsigned int)(m_pFace->glyph->metrics.width) * 1000 / m_pFace->units_per_EM);
-			}
-		}
-
-		return ushCode;
-	}
-	unsigned short CFontCidTrueType::EncodeUnicodeSymbols(unsigned int* unUnicode, unsigned int unLen, const unsigned int& unGid)
-	{
-		unsigned short ushCode = m_ushCodesCount;
-		m_ushCodesCount++;
-
-		m_mUnicodeToCode.insert(std::pair<unsigned int, unsigned short>(unUnicode[0], ushCode));
-		m_vUnicodes.push_back(unUnicode[0]);
-
-		m_vCodeToGid.push_back(unGid);
-
-		m_mGlyphs.insert(std::pair<unsigned int, bool>(unGid, true));
-
-		if (unLen > 1 || 0 == FT_Load_Glyph(m_pFace, unGid, FT_LOAD_NO_SCALE | FT_LOAD_NO_RECURSE))
-		{
-			for (int nSubIndex = 0; nSubIndex < m_pFace->glyph->num_subglyphs; nSubIndex++)
-			{
-				FT_Int       nSubGID;
-				FT_UInt      unFlags;
-				FT_Int       nArg1;
-				FT_Int       nArg2;
-				FT_Matrix    oMatrix;
-				FT_Get_SubGlyph_Info(m_pFace->glyph, nSubIndex, &nSubGID, &unFlags, &nArg1, &nArg2, &oMatrix);
-
-				m_mGlyphs.insert(std::pair<unsigned short, bool>(nSubGID, true));
-			}
-
-			for (int i = 1; i < unLen; i++)
-			{
-				int nSubGID = GetGID(m_pFace, unUnicode[i]);
-				if (0 == nSubGID && -1 != m_nSymbolicCmap)
-					nSubGID = GetGID(m_pFace, unUnicode[i] + 0xF000);
-				m_mGlyphs.insert(std::pair<unsigned short, bool>(nSubGID, true));
-			}
-
-			// TODO fix m_vWidths < m_vCodeToGid
 			if (0 != m_pFace->units_per_EM)
 			{
 				m_vWidths.push_back((unsigned int)m_pFace->glyph->metrics.horiAdvance * 1000 / m_pFace->units_per_EM);

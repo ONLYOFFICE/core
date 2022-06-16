@@ -234,8 +234,7 @@ private:
 	void OnlineWordToPdfInternal(BYTE* dstArray, LONG lLen, const std::wstring& wsHtmlPlace, std::wstring& wsHypers, int& nCountPages, const std::wstring& wsTempLogo, LONG lReg);
 	PdfWriter::CImageDict* LoadImage(Aggplus::CImage* pImage, const BYTE& nAlpha);
 	bool DrawImage(Aggplus::CImage* pImage, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha);
-	bool DrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int* pGids = NULL);
-	bool DrawTextGid(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int& unGid);
+	bool DrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int* pGids = NULL, const unsigned int& unGidLen = 0);
 	bool PathCommandDrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int* pGids = NULL);
 	void UpdateFont();
 	void GetFontPath(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic, std::wstring& wsFontPath, LONG& lFaceIndex);

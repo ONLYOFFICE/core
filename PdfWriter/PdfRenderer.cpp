@@ -1035,7 +1035,7 @@ HRESULT CPdfRenderer::CommandDrawTextCHAR(const LONG& lUnicode, const double& dX
 		return S_FALSE;
 
 	unsigned int unUnicode = lUnicode;
-	bool bRes = DrawText(&unUnicode, 1, dX, dY, NULL);
+	bool bRes = DrawText(&unUnicode, 1, dX, dY, NULL, 0);
 	return bRes ? S_OK : S_FALSE;
 }
 HRESULT CPdfRenderer::CommandDrawText(const std::wstring& wsUnicodeText, const double& dX, const double& dY, const double& dW, const double& dH)
@@ -1086,7 +1086,7 @@ HRESULT CPdfRenderer::CommandDrawText(const std::wstring& wsUnicodeText, const d
 		return S_OK;
 	}
 
-	bool bRes = DrawText(pUnicodes, unLen, dX, dY, NULL);
+	bool bRes = DrawText(pUnicodes, unLen, dX, dY, NULL, 0);
 	delete[] pUnicodes;
 
 	return bRes ? S_OK : S_FALSE;
@@ -1098,7 +1098,7 @@ HRESULT CPdfRenderer::CommandDrawTextExCHAR(const LONG& lUnicode, const LONG& lG
 
 	unsigned int unUnicode = lUnicode;
 	unsigned int unGid     = lGid;
-	bool bRes = DrawText(&unUnicode, 1, dX, dY, &unGid);
+	bool bRes = DrawText(&unUnicode, 1, dX, dY, &unGid, 1);
 	return bRes ? S_OK : S_FALSE;
 }
 HRESULT CPdfRenderer::CommandDrawTextEx(const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int unGidsCount, const double& dX, const double& dY, const double& dW, const double& dH)
@@ -1136,7 +1136,7 @@ HRESULT CPdfRenderer::CommandDrawTextEx(const std::wstring& wsUnicodeText, const
 			return S_FALSE;
 	}
 
-	bool bRes = DrawText(pUnicodes, unLen, dX, dY, pGids);
+	bool bRes = DrawText(pUnicodes, unLen, dX, dY, pGids, unLen);
 	RELEASEARRAYOBJECTS(pUnicodes);
 
 	return bRes ? S_OK : S_FALSE;
@@ -1146,7 +1146,7 @@ HRESULT CPdfRenderer::CommandDrawTextCHAR2(unsigned int* unUnicode, const unsign
 	if (!IsPageValid())
 		return S_FALSE;
 
-	bool bRes = DrawTextGid(unUnicode, unUnicodeCount, dX, dY, unGid);
+	bool bRes = DrawText(unUnicode, unUnicodeCount, dX, dY, &unGid, 1);
 	return bRes ? S_OK : S_FALSE;
 }
 //----------------------------------------------------------------------------------------
@@ -2172,7 +2172,7 @@ bool CPdfRenderer::DrawImage(Aggplus::CImage* pImage, const double& dX, const do
 	
 	return true;
 }
-bool CPdfRenderer::DrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int* pGids)
+bool CPdfRenderer::DrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int* pGids, const unsigned int& unGidLen)
 {
 	if (m_bNeedUpdateTextFont)
 		UpdateFont();
@@ -2180,36 +2180,24 @@ bool CPdfRenderer::DrawText(unsigned int* pUnicodes, unsigned int unLen, const d
 	if (!m_pFont)
 		return false;
 
-	unsigned char* pCodes = m_pFont->EncodeString(pUnicodes, unLen, pGids);
+	unsigned char* pCodes = NULL;
+	bool bDrawTextGid = false;
+	if (unGidLen && unLen != unGidLen)
+	{
+		if (unGidLen != 1)
+			return false;
+		pCodes = m_pFont->EncodeCharGid(pUnicodes, unLen, pGids[0]);
+		bDrawTextGid = true;
+	}
+	else
+	{
+		pCodes = m_pFont->EncodeString(pUnicodes, unLen, pGids);
+	}
 
 	CTransform& t = m_oTransform;
 	m_oCommandManager.SetTransform(t.m11, -t.m12, -t.m21, t.m22, MM_2_PT(t.dx + t.m21 * m_dPageHeight), MM_2_PT(m_dPageHeight - m_dPageHeight * t.m22 - t.dy));
 
-	CRendererTextCommand* pText = m_oCommandManager.AddText(pCodes, unLen * 2, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY));
-	pText->SetFont(m_pFont);
-	pText->SetSize(m_oFont.GetSize());
-	pText->SetColor(m_oBrush.GetColor1());
-	pText->SetAlpha((BYTE)m_oBrush.GetAlpha1());
-	pText->SetCharSpace(MM_2_PT(m_oFont.GetCharSpace()));
-	pText->SetNeedDoBold(m_oFont.IsNeedDoBold());
-	pText->SetNeedDoItalic(m_oFont.IsNeedDoItalic());
-
-	return true;
-}
-bool CPdfRenderer::DrawTextGid(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int& unGid)
-{
-	if (m_bNeedUpdateTextFont)
-		UpdateFont();
-
-	if (!m_pFont)
-		return false;
-
-	unsigned char* pCodes = m_pFont->EncodeStringGid(pUnicodes, unLen, unGid);
-
-	CTransform& t = m_oTransform;
-	m_oCommandManager.SetTransform(t.m11, -t.m12, -t.m21, t.m22, MM_2_PT(t.dx + t.m21 * m_dPageHeight), MM_2_PT(m_dPageHeight - m_dPageHeight * t.m22 - t.dy));
-
-	CRendererTextCommand* pText = m_oCommandManager.AddText(pCodes, 2, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY));
+	CRendererTextCommand* pText = m_oCommandManager.AddText(pCodes, bDrawTextGid ? 2 : unLen * 2, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY));
 	pText->SetFont(m_pFont);
 	pText->SetSize(m_oFont.GetSize());
 	pText->SetColor(m_oBrush.GetColor1());

@@ -789,6 +789,7 @@ SOURCES +=  \
     ../XlsFormat/Logic/SummaryInformationStream/PropertySet.cpp \
     ../XlsFormat/Logic/SummaryInformationStream/PropertySetStream.cpp \
     ../XlsFormat/Logic/SummaryInformationStream/CodePageOle.cpp \
+    ../XlsFormat/Logic/EncryptionStream.cpp \
     ../XlsFormat/Logic/AnyObject.cpp \
     ../XlsFormat/Logic/AnySubstream.cpp \
     ../XlsFormat/Logic/BinProcessor.cpp \
@@ -1631,6 +1632,7 @@ HEADERS +=  \
     ../XlsXlsxConverter/xlsx_textcontext.h \
     ../XlsXlsxConverter/xlsx_external_context.h \
     ../XlsXlsxConverter/xlsx_activeX_context.h \
+    ../XlsFormat/Logic/EncryptionStream.h \
     ../XlsFormat/Logic/AnyObject.h \
     ../XlsFormat/Logic/AnySubstream.h \
     ../XlsFormat/Logic/BaseObject.h \

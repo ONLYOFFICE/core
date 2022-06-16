@@ -769,6 +769,7 @@
 #include "../XlsFormat/Logic/SummaryInformationStream/PropertySetStream.cpp"
 #include "../XlsFormat/Logic/SummaryInformationStream/CodePageOle.cpp"
 
+#include "../XlsFormat/Logic/EncryptionStream.cpp"
 #include "../XlsFormat/Logic/AnyObject.cpp"
 #include "../XlsFormat/Logic/AnySubstream.cpp"
 #include "../XlsFormat/Logic/BinProcessor.cpp"

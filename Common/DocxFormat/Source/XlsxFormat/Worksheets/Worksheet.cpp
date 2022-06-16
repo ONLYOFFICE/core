@@ -847,7 +847,8 @@ namespace OOX
 							{
 								pCommentItem->m_sAuthor = arAuthors[nAuthorId];
 							}
-							OOX::Spreadsheet::CSi* pSi = pComment->m_oText.GetPointerEmptyNullable();
+							//OOX::Spreadsheet::CSi* pSi = pComment->m_oText.GetPointerEmptyNullable();
+							OOX::Spreadsheet::CSi* pSi = new OOX::Spreadsheet::CSi(*pComment->m_oText.GetPointer());
 							if(NULL != pSi)
 								pCommentItem->m_oText.reset(pSi);
 

@@ -60,6 +60,34 @@ namespace OOX
 			CSi()
 			{
 			}
+			CSi(const CSi& si)
+			{
+				for (size_t i = 0; i < si.m_arrItems.size(); ++i)
+				{
+					OOX::Spreadsheet::WritingElement* we = si.m_arrItems[i];
+
+					if (OOX::et_x_PhoneticPr == we->getType())
+					{
+						CPhonetic* pPhonetic = new CPhonetic(*static_cast<CPhonetic*>(we));
+						this->m_arrItems.push_back(pPhonetic);
+					}
+					else if (OOX::et_x_r == we->getType())
+					{
+						CRun* pRun = new CRun(*static_cast<CRun*>(we));
+						this->m_arrItems.push_back(pRun);
+					}
+					else if (OOX::et_x_rPh == we->getType())
+					{
+						CRPh* pRPh = new CRPh(*static_cast<CRPh*>(we));
+						this->m_arrItems.push_back(pRPh);
+					}					
+					else if (OOX::et_x_t == we->getType())
+					{
+						CText* pText = new CText(*static_cast<CText*>(we));
+						this->m_arrItems.push_back(pText);
+					}
+				}
+			}
 			virtual ~CSi()
 			{
 			}

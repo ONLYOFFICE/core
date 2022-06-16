@@ -50,6 +50,22 @@ namespace OOX
 			CRun()
 			{
 			}
+			CRun(const CRun& run)
+			{
+				if (run.m_oRPr.IsInit())
+					m_oRPr = run.m_oRPr;
+
+				for (size_t i = 0; i < run.m_arrItems.size(); ++i)
+				{
+					OOX::Spreadsheet::WritingElement* we = run.m_arrItems[i];
+
+					if (OOX::et_x_t == we->getType())
+					{
+						CText* pText = new CText(*static_cast<CText*>(we));
+						this->m_arrItems.push_back(pText);
+					}
+				}
+			}
 			virtual ~CRun()
 			{
 			}

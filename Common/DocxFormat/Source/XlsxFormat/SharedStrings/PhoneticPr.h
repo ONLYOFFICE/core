@@ -50,6 +50,17 @@ namespace OOX
 			CPhonetic()
 			{
 			}
+			CPhonetic(const CPhonetic& phonetic)
+			{
+				if (phonetic.m_oAlignment.IsInit())
+					m_oAlignment = phonetic.m_oAlignment;
+
+				if (phonetic.m_oFontId.IsInit())
+					m_oFontId = phonetic.m_oFontId;
+
+				if (phonetic.m_oType.IsInit())
+					m_oType = phonetic.m_oType;
+			}
 			virtual ~CPhonetic()
 			{
 			}
@@ -194,6 +205,25 @@ namespace OOX
 			WritingElement_AdditionConstructors(CRPh)
 			CRPh()
 			{
+			}
+			CRPh(const CRPh& rph)
+			{
+				if(rph.m_oEb.IsInit())
+					m_oEb = rph.m_oEb;
+
+				if(rph.m_oSb.IsInit())
+					m_oSb = rph.m_oSb;
+
+				for (size_t i = 0; i < rph.m_arrItems.size(); ++i)
+				{
+					OOX::Spreadsheet::WritingElement* we = rph.m_arrItems[i];
+
+					if (OOX::et_x_t == we->getType())
+					{
+						CText* pText = new CText(*static_cast<CText*>(we));
+						this->m_arrItems.push_back(pText);
+					}
+				}
 			}
 			virtual ~CRPh()
 			{

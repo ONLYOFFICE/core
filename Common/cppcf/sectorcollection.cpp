@@ -37,13 +37,14 @@ int SectorCollection::add(const Sector &item)
 
     if (itemIndex < largeArraySlices.size())
     {
-        largeArraySlices[itemIndex]->push_back(item);
+        largeArraySlices[itemIndex].push_back(item);
         count++;
     }
     else
     {
-        std::unique_ptr<std::vector<Sector>> ar(new std::vector<Sector>(SLICE_SIZE));
-        ar->emplace_back(item);
+//        std::unique_ptr<std::vector<Sector>> ar(new std::vector<Sector>(SLICE_SIZE));
+        SVector<Sector> ar;
+        ar.push_back(item);
         largeArraySlices.push_back(ar);
         count++;
     }

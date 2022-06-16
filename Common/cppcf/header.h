@@ -11,8 +11,8 @@ class Header
 public:
     Header();
     Header(ushort version);
-    void Write(std::fstream &stream);
-    void Read(std::fstream &stream);
+    void Write(Stream stream);
+    void Read(Stream stream);
 
 private:
     void CheckVersion()const;

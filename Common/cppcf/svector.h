@@ -18,6 +18,7 @@ public:
     inline bool empty() {array.empty();}
     std::shared_ptr<T> operator[](size_t pos)const;
     void push_back(T&& value);
+    void push_back(const T& value);
     inline void pop_back() {array.pop_back();}
     std::shared_ptr<T> back()const;
     std::shared_ptr<T> front()const;

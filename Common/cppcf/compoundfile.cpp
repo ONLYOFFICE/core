@@ -1,5 +1,8 @@
 #include "compoundfile.h"
 #include "cfexception.h"
+#include "streamview.h"
+#include "../../DesktopEditor/common/File.h"
+#include <cmath>
 
 using namespace CFCPP;
 
@@ -245,24 +248,24 @@ void CompoundFile::Commit(bool releaseMemory)
 /// Load compound file from an existing stream.
 /// </summary>
 /// <param name="stream">Stream to load compound file from</param>
-private void Load(Stream stream)
+void CompoundFile::Load(Stream stream)
 {
     try
     {
-        this.header = new Header();
+        this->header = Header();
         this.directoryEntries = new List<IDirectoryEntry>();
 
-        this.sourceStream = stream;
+        this->sourceStream = stream;
 
         header.Read(stream);
 
-        int n_sector = Ceiling(((double)(stream.Length - GetSectorSize()) / (double)GetSectorSize()));
+        int n_sector = std::ceil(((double)(Length(stream) - GetSectorSize()) / (double)GetSectorSize()));
 
-        if (stream.Length > 0x7FFFFF0)
-            this._transactionLockAllocated = true;
+        if (Length(stream) > 0x7FFFFF0)
+            this->_transactionLockAllocated = true;
 
 
-        sectors = new SectorCollection();
+        sectors.Clear();
         //sectors = new ArrayList();
         for (int i = 0; i < n_sector; i++)
         {
@@ -295,11 +298,57 @@ void CompoundFile::CheckForLockSector()
     //If transaction lock has been added and not yet allocated in the FAT...
     if (_transactionLockAdded && !_transactionLockAllocated)
     {
-        StreamView fatStream = new StreamView(GetFatSectorChain(), GetSectorSize(), sourceStream);
+        StreamView fatStream(GetFatSectorChain(), GetSectorSize(), sourceStream);
 
         fatStream.Seek(_lockSectorId * 4, SeekOrigin.Begin);
         fatStream.Write(BitConverter.GetBytes(Sector.ENDOFCHAIN), 0, 4);
 
         _transactionLockAllocated = true;
     }
+}
+
+void CompoundFile::LoadFile(std::wstring fileName)
+{
+    SetFileName(fileName);
+    Stream fs;
+
+    try
+    {
+        NSFile::CFileBinary file;
+        file.OpenFile(fileName);
+        if (updateMode == CFSUpdateMode::ReadOnly)
+        {
+            fs.reset(new std::fstream(this->fileName, std::ios::in | std::ios::out));
+
+        }
+        else
+        {
+            fs.reset(new std::fstream(this->fileName, std::ios::in | std::ios::out));
+        }
+
+        Load(fs);
+
+    }
+    catch(...)
+    {
+        if (fs.get() != nullptr)
+            fs->clear(); // close
+
+        throw;
+    }
+}
+
+void CompoundFile::SetFileName(std::wstring fileName)
+{
+    BYTE* pUtf8 = NULL;
+    LONG lLen = 0;
+    NSFile::CUtf8Converter::GetUtf8StringFromUnicode(fileName.c_str(), fileName.length(), pUtf8, lLen, false);
+    this->fileName = std::string(pUtf8, pUtf8 + lLen);
+    delete [] pUtf8;
+
+}
+
+void CompoundFile::LoadStream(Stream stream)
+{
+
 }

@@ -55,6 +55,10 @@ protected:
 
 private:
     void CheckForLockSector();
+    void LoadFile(std::wstring fileName);
+    void SetFileName(std::wstring fileName);
+    void LoadStream(Stream stream);
+    void Load(Stream stream);
 
 public:
     CFSConfiguration configuration = Default;
@@ -72,7 +76,7 @@ private:
     static constexpr int FLUSHING_BUFFER_MAX_SIZE = 1024 * 1024 * 16;
     SectorCollection sectors;
     std::fstream stream;
-    std::wstring fileName;
+    std::string fileName;
 
     bool _transactionLockAdded = false;
     int _lockSectorId = -1;

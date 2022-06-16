@@ -69,7 +69,7 @@ void Header::Write(Stream &stream)
     }
 }
 
-void Header::Read(Stream &stream)
+void Header::Read(Stream stream)
 {
     StreamRW rw(stream);
 

@@ -2,6 +2,7 @@
 
 #include "sector.h"
 #include <list>
+#include "svector.h"
 
 namespace CFCPP
 {
@@ -9,7 +10,7 @@ namespace CFCPP
 class SectorCollection
 {
 public:
-    std::vector<std::unique_ptr<std::vector<Sector>>> largeArraySlices;
+    std::vector<SVector<Sector>> largeArraySlices;
     SectorCollection();
     void Add(const Sector &item);
     void Clear();

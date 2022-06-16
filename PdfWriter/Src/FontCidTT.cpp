@@ -172,95 +172,6 @@ namespace PdfWriter
 			pFontDescriptor->Add("CIDSet", new CDictObject(m_pXref));
 		}
 	}
-	unsigned char* CFontCidTrueType::EncodeString(unsigned int* pUnicodes, unsigned int unLen, const unsigned int* pGids)
-	{
-		if (!OpenFontFace())
-			return NULL;
-
-		unsigned char* pEncodedString = new unsigned char[unLen * 2];
-		if (!pEncodedString)
-			return NULL;
-
-		// Юникодные значения мы кодируем в наши собственные коды последовательно от 0x0000..0xFFFF
-		// для каждого юникодного значения находим соответствующий Gid в шрифте.
-		// Для каждого кода получаем ширину символа.
-		for (unsigned int unIndex = 0; unIndex < unLen; unIndex++)
-		{
-			bool bFind = false;
-			unsigned short ushCode;
-			if (pGids)
-			{
-				unsigned short ushGid = pGids[unIndex];
-				for (unsigned short ushCurCode = 0, ushCodesCount = m_vCodeToGid.size(); ushCurCode < ushCodesCount; ushCurCode++)
-				{
-					if (ushGid == m_vCodeToGid.at(ushCurCode))
-					{
-						ushCode = ushCurCode;
-						bFind = true;
-						break;
-					}
-				}
-			}
-			else
-			{
-				std::map<unsigned int, unsigned short>::const_iterator oIter = m_mUnicodeToCode.find(pUnicodes[unIndex]);
-				if (oIter != m_mUnicodeToCode.end())
-				{
-					ushCode = oIter->second;
-					bFind = true;
-				}
-			}
-
-			if (!bFind)
-				ushCode = EncodeUnicodeSymbol(&pUnicodes[unIndex], 1, pGids ? pGids[unIndex] : 0x0000, pGids ? true : false);
-
-			pEncodedString[2 * unIndex + 0] = (ushCode >> 8) & 0xFF;
-			pEncodedString[2 * unIndex + 1] = ushCode & 0xFF;
-		}
-		return pEncodedString;
-	}
-	unsigned char* CFontCidTrueType::EncodeCharGid(unsigned int* pUnicodes, unsigned int unLen, const unsigned int& unGid)
-	{
-		if (!OpenFontFace())
-			return NULL;
-
-		unsigned char* pEncodedString = new unsigned char[2];
-		if (!pEncodedString)
-			return NULL;
-
-		bool bFind = false;
-		unsigned short ushCode;
-
-		for (unsigned short ushCurCode = 0, ushCodesCount = m_vCodeToGid.size(); ushCurCode < ushCodesCount; ushCurCode++)
-		{
-			if (unGid == m_vCodeToGid.at(ushCurCode))
-			{
-				ushCode = ushCurCode;
-				bFind = true;
-				break;
-			}
-		}
-
-		if (!bFind)
-			ushCode = EncodeUnicodeSymbol(pUnicodes, unLen, unGid, true);
-
-		pEncodedString[0] = (ushCode >> 8) & 0xFF;
-		pEncodedString[1] = ushCode & 0xFF;
-
-		return pEncodedString;
-	}
-	unsigned short CFontCidTrueType::EncodeChar(const unsigned int &unUnicode)
-	{
-		if (!OpenFontFace())
-			return NULL;
-
-		std::map<unsigned int, unsigned short>::const_iterator oIter = m_mUnicodeToCode.find(unUnicode);
-		if (oIter != m_mUnicodeToCode.end())
-			return oIter->second;
-
-		unsigned int nUnicode = unUnicode;
-		return EncodeUnicodeSymbol(&nUnicode, 1);
-	}
 	bool CFontCidTrueType::HaveChar(const unsigned int &unUnicode)
 	{
 		if (!OpenFontFace())
@@ -530,30 +441,42 @@ namespace PdfWriter
 
 		return true;
 	}
-	unsigned short CFontCidTrueType::EncodeUnicodeSymbol(unsigned int* unUnicode, const unsigned int& unLen, const unsigned int& unGid, const bool& isGid)
+	unsigned short CFontCidTrueType::EncodeUnicode(const unsigned int &unUnicode)
 	{
-		unsigned short ushCode = m_ushCodesCount;
-		m_ushCodesCount++;
+		std::map<unsigned int, unsigned short>::const_iterator oIter = m_mUnicodeToCode.find(unUnicode);
+		if (oIter != m_mUnicodeToCode.end())
+			return oIter->second;
+
+		unsigned int unGID = GetGID(m_pFace, unUnicode);
+		if (0 == unGID && -1 != m_nSymbolicCmap)
+			unGID = GetGID(m_pFace, unUnicode + 0xF000);
+
+		unsigned short ushCode = EncodeGID(unGID, &unUnicode, 1);
+		m_mUnicodeToCode.insert(std::pair<unsigned int, unsigned short>(unUnicode, ushCode));
+		return ushCode;
+	}
+	unsigned short CFontCidTrueType::EncodeGID(const unsigned int& unGID, const unsigned int* pUnicodes, const unsigned int& unCount)
+	{
+		for (unsigned short ushCurCode = 0, ushCodesCount = m_vCodeToGid.size(); ushCurCode < ushCodesCount; ushCurCode++)
+		{
+			if (unGID == m_vCodeToGid.at(ushCurCode))
+				return ushCurCode;
+		}
+
+		if (!OpenFontFace())
+			return 0;
+
+		unsigned short ushCode = m_ushCodesCount++;
 
 		std::vector<unsigned int> vUnicodes;
-		for (unsigned int i = 0; i < unLen; i++)
+		for (unsigned int i = 0; i < unCount; i++)
 		{
-			m_mUnicodeToCode.insert(std::pair<unsigned int, unsigned short>(unUnicode[i], ushCode));
-			vUnicodes.push_back(unUnicode[i]);
+			vUnicodes.push_back(pUnicodes[i]);
 		}
+
 		m_vUnicodes.push_back(vUnicodes);
-
-		unsigned int unGID = unGid;
-		if (!isGid)
-		{
-			unGID = GetGID(m_pFace, unUnicode[0]);
-			if (0 == unGID && -1 != m_nSymbolicCmap)
-				unGID = GetGID(m_pFace, unUnicode[0] + 0xF000);
-		}
-
 		m_vCodeToGid.push_back(unGID);
 
-		// Данный символ используется
 		m_mGlyphs.insert(std::pair<unsigned int, bool>(unGID, true));
 
 		// Если данный символ составной (CompositeGlyf), тогда мы должны учесть все его дочерные символы (subglyfs)

@@ -654,8 +654,7 @@ void TestDocument7()
 	pPage->SetHeight(600);
 	pPage->SetWidth(1000);
 
-	//CFontCidTrueType* pFont = oPdf.CreateCidTrueTypeFont(L"D:/test/_pdf/Test.ttf", 0);
-	CFontCidTrueType* pFont = oPdf.CreateCidTrueTypeFont(L"D:/test/_pdf/cambria.ttc", 1);
+	CFontCidTrueType* pFont = oPdf.CreateCidTrueTypeFont(g_wsOutFolder + L"/cambria.ttc", 1);
 
 	pPage->BeginText();
 
@@ -675,7 +674,16 @@ void TestDocument7()
 
 		pPage->SetFontAndSize(pFont, 10);
 
-		unsigned char* pString = pFont->EncodeString(pRange, rangeLen);
+		unsigned char* pString = new unsigned char[rangeLen * 2];
+		if (!pString)
+			return;
+
+		for (unsigned int unIndex = 0; unIndex < rangeLen; unIndex++)
+		{
+			unsigned short ushCode = pFont->EncodeUnicode(pRange[unIndex]);
+			pString[2 * unIndex + 0] = (ushCode >> 8) & 0xFF;
+			pString[2 * unIndex + 1] = ushCode & 0xFF;
+		}
 		pPage->DrawText(nX, nY, (const BYTE*)pString, rangeLen * 2);
 
 		delete[] pString;
@@ -1006,7 +1014,15 @@ void TestOnlineBin2()
 int main()
 {
 	TestField();
-	//TestDocument6();
+	TestDocument1();
+	TestDocument2();
+	TestDocument3();
+	TestDocument4();
+	TestDocument5();
+	TestDocument6();
+	TestDocument7();
+	TestDocument8();
+	TestDocument9();
 
 	//TestOnlineBin2();
 

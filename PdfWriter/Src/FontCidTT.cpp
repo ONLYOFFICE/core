@@ -544,7 +544,7 @@ namespace PdfWriter
 		m_vUnicodes.push_back(vUnicodes);
 
 		unsigned int unGID = unGid;
-		if (!isGid || 0 != FT_Load_Glyph(m_pFace, unGID, FT_LOAD_NO_SCALE | FT_LOAD_NO_RECURSE))
+		if (!isGid)
 		{
 			unGID = GetGID(m_pFace, unUnicode[0]);
 			if (0 == unGID && -1 != m_nSymbolicCmap)

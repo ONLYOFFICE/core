@@ -96,20 +96,12 @@ class SdtWraper
 public:
 
 	OOX::Logic::CSdt m_oSdt;
-	rPr* m_oEndPr;
-	rPr* m_oRPr;
+	nullable<OOX::Logic::CRunProperty> m_oEndPr;
+	nullable<OOX::Logic::CRunProperty> m_oRPr;
 	int m_nType;
-	SdtWraper(int nType)
-	{
-		m_nType = nType;
-		m_oEndPr = NULL;
-		m_oRPr = NULL;
-	}
-	~SdtWraper()
-	{
-		RELEASEOBJECT(m_oEndPr)
-		RELEASEOBJECT(m_oRPr)
-	}
+	
+	SdtWraper(int nType) : m_nType(nType) {}
+	~SdtWraper() {}
 };
 #define READ1_DEF(stLen, res, fReadFunction, arg) {\
 	long read1defCurPos = 0;\
@@ -195,43 +187,23 @@ public:
     {\
         poResult->UserId = m_oBufferedStream.GetString3(length);\
     }
-
-void InnerColorToOOX(rPr& oRPr, ComplexTypes::Word::CColor& oColor)
-{
-	if (oRPr.bColor)
-	{
-		oColor.m_oVal.Init();
-		oColor.m_oVal->SetValue(SimpleTypes::hexcolorRGB);
-		oColor.m_oVal->Set_R(oRPr.Color.R);
-		oColor.m_oVal->Set_G(oRPr.Color.G);
-		oColor.m_oVal->Set_B(oRPr.Color.B);
-	}
-	if (oRPr.bThemeColor && oRPr.ThemeColor.IsNoEmpty())
-	{
-		if(oRPr.ThemeColor.Auto && !oRPr.bColor)
-		{
-			oColor.m_oVal.Init();
-			oColor.m_oVal->SetValue(SimpleTypes::hexcolorAuto);
-		}
-		if(oRPr.ThemeColor.bColor)
-		{
-			oColor.m_oThemeColor.Init();
-			oColor.m_oThemeColor->SetValue((SimpleTypes::EThemeColor)oRPr.ThemeColor.Color);
-		}
-		if(oRPr.ThemeColor.bTint)
-		{
-			oColor.m_oThemeTint.Init();
-			oColor.m_oThemeTint->SetValue(oRPr.ThemeColor.Tint);
-		}
-		if(oRPr.ThemeColor.bShade)
-		{
-			oColor.m_oThemeShade.Init();
-			oColor.m_oThemeShade->SetValue(oRPr.ThemeColor.Shade);
-		}
-	}
-}
-
-
+#define READ1_TRACKREV_2(type, length, poResult) \
+	if(c_oSerProp_RevisionType::Author == type)\
+	{\
+		poResult->m_sAuthor = m_oBufferedStream.GetString3(length);\
+	}\
+	else if(c_oSerProp_RevisionType::Date == type)\
+	{\
+		poResult->m_oDate.Init(); poResult->m_oDate->SetValue(m_oBufferedStream.GetString3(length));\
+	}\
+	else if(c_oSerProp_RevisionType::Id == type)\
+	{\
+		poResult->m_oId.Init(); poResult->m_oId->SetValue( m_oBufferedStream.GetLong());\
+    }\
+    else if(c_oSerProp_RevisionType::UserId == type)\
+    {\
+        poResult->m_sUserId = m_oBufferedStream.GetString3(length);\
+    }
 
 Binary_CommonReader::Binary_CommonReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream):m_oBufferedStream(poBufferedStream)
 {
@@ -299,6 +271,12 @@ template<typename T> int Binary_CommonReader2::ReadTrackRevision(long length, T*
 	READ1_DEF(length, res, this->ReadTrackRevisionInner, poResult);
 	return res;
 }
+template<typename T> int Binary_CommonReader2::ReadTrackRevision2(long length, T* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	READ1_DEF(length, res, this->ReadTrackRevisionInner2, poResult);
+	return res;
+}
 int Binary_CommonReader2::ReadShdComplexType(BYTE type, long length, void* poResult)
 {
 	if (length < 0)
@@ -354,6 +332,14 @@ template<typename T> int Binary_CommonReader2::ReadTrackRevisionInner(BYTE type,
 	READ1_TRACKREV(type, length, poResult)
 	else
 	 res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+template<typename T> int Binary_CommonReader2::ReadTrackRevisionInner2(BYTE type, long length, T* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	READ1_TRACKREV_2(type, length, poResult)
+	else
+		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
 Binary_HdrFtrTableReader::Binary_HdrFtrTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter)
@@ -448,7 +434,9 @@ int Binary_HdrFtrTableReader::ReadHdrFtrItemContent(BYTE type, long length, void
 }
 
 
-Binary_rPrReader::Binary_rPrReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter) : Binary_CommonReader(poBufferedStream), oBinary_CommonReader2(poBufferedStream), m_oFileWriter(oFileWriter)
+Binary_rPrReader::Binary_rPrReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter)
+	: Binary_CommonReader(poBufferedStream), oBinary_CommonReader2(poBufferedStream), m_oFileWriter(oFileWriter)
+	, m_mapFonts(oFileWriter.get_font_table_writer().m_mapFonts)
 {
 }
 int Binary_rPrReader::Read(long stLen, void* poResult)
@@ -460,246 +448,265 @@ int Binary_rPrReader::Read(long stLen, void* poResult)
 int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	rPr* orPr = static_cast<rPr*>(poResult);
+	OOX::Logic::CRunProperty* pRPr = static_cast<OOX::Logic::CRunProperty*>(poResult);
+	
 	switch(type)
 	{
 		case c_oSerProp_rPrType::Bold:
 		{
-			BYTE Bold = m_oBufferedStream.GetUChar();
-			orPr->bBold = true;
-			orPr->Bold = (0 != Bold);			
+			pRPr->m_oBold.Init();  pRPr->m_oBold->m_oVal.FromBool(0 != m_oBufferedStream.GetUChar());
 		}break;
 		case c_oSerProp_rPrType::Italic:
 		{
-			BYTE Italic = m_oBufferedStream.GetUChar();
-			orPr->bItalic = true;
-			orPr->Italic = (0 != Italic);			
+			pRPr->m_oItalic.Init();  pRPr->m_oItalic->m_oVal.FromBool(0 != m_oBufferedStream.GetUChar());
 		}break;
 		case c_oSerProp_rPrType::Underline:
 		{
-			BYTE Underline = m_oBufferedStream.GetUChar();
-			orPr->bUnderline = true;
-			orPr->Underline = (0 != Underline);			
+			pRPr->m_oU.Init();  pRPr->m_oU->m_oVal.Init();  pRPr->m_oU->m_oVal->SetValueFromByte(m_oBufferedStream.GetUChar());
 		}break;
 		case c_oSerProp_rPrType::Strikeout:
 		{
-			BYTE Strikeout = m_oBufferedStream.GetUChar();
-			orPr->bStrikeout = true;
-			orPr->Strikeout = (0 != Strikeout);			
+			pRPr->m_oStrike.Init(); pRPr->m_oStrike->m_oVal.FromBool(0 != m_oBufferedStream.GetUChar());
 		}break;
 		case c_oSerProp_rPrType::FontAscii:
 		{
-            std::wstring sFontName(m_oBufferedStream.GetString3(length));
-			sFontName = XmlUtils::EncodeXmlString(sFontName);
+			std::wstring sFontName = XmlUtils::EncodeXmlString(m_oBufferedStream.GetString3(length));
             if(!sFontName.empty())
 			{
-				orPr->bFontAscii = true;
-				orPr->FontAscii = sFontName;
-			}			
+				m_mapFonts[sFontName] = 1;
+				if (!pRPr->m_oRFonts.IsInit()) pRPr->m_oRFonts.Init();
+				pRPr->m_oRFonts->m_sAscii = sFontName;
+			}
 		}break;
 		case c_oSerProp_rPrType::FontAsciiTheme:
 		{
-			SimpleTypes::CTheme<> theme;
-			theme.SetValue((SimpleTypes::ETheme)m_oBufferedStream.GetUChar());
-			orPr->FontAsciiTheme = theme.ToString();			
+			if (!pRPr->m_oRFonts.IsInit()) pRPr->m_oRFonts.Init();
+			pRPr->m_oRFonts->m_oAsciiTheme.Init();
+			pRPr->m_oRFonts->m_oAsciiTheme->SetValueFromByte(m_oBufferedStream.GetUChar());
 		}break;
 		case c_oSerProp_rPrType::FontHAnsi:
 		{
-            std::wstring sFontName(m_oBufferedStream.GetString3(length));
-			sFontName = XmlUtils::EncodeXmlString(sFontName);
-            if(!sFontName.empty())
+			std::wstring sFontName = XmlUtils::EncodeXmlString(m_oBufferedStream.GetString3(length));
+			if (!sFontName.empty())
 			{
-				orPr->bFontHAnsi = true;
-				orPr->FontHAnsi = sFontName;
+				m_mapFonts[sFontName] = 1;
+				if (!pRPr->m_oRFonts.IsInit()) pRPr->m_oRFonts.Init();
+				pRPr->m_oRFonts->m_sHAnsi = sFontName;
 			}
-			
 		}break;
 		case c_oSerProp_rPrType::FontHAnsiTheme:
 		{
-			SimpleTypes::CTheme<> theme;
-			theme.SetValue((SimpleTypes::ETheme)m_oBufferedStream.GetUChar());
-			orPr->FontHAnsiTheme = theme.ToString();
-			break;
-		}
+			if (!pRPr->m_oRFonts.IsInit()) pRPr->m_oRFonts.Init();
+			pRPr->m_oRFonts->m_oHAnsiTheme.Init();
+			pRPr->m_oRFonts->m_oHAnsiTheme->SetValueFromByte(m_oBufferedStream.GetUChar());
+		}break;
 		case c_oSerProp_rPrType::FontCS:
 		{
-            std::wstring sFontName(m_oBufferedStream.GetString3(length));
-			sFontName = XmlUtils::EncodeXmlString(sFontName);
-            if(!sFontName.empty())
+			std::wstring sFontName = XmlUtils::EncodeXmlString(m_oBufferedStream.GetString3(length));
+			if (!sFontName.empty())
 			{
-				orPr->bFontCS = true;
-				orPr->FontCS = sFontName;
-			}			
+				m_mapFonts[sFontName] = 1;
+				if (!pRPr->m_oRFonts.IsInit()) pRPr->m_oRFonts.Init();
+				pRPr->m_oRFonts->m_sCs = sFontName;
+			}
 		}break;
 		case c_oSerProp_rPrType::FontCSTheme:
 		{
-			SimpleTypes::CTheme<> theme;
-			theme.SetValue((SimpleTypes::ETheme)m_oBufferedStream.GetUChar());
-			orPr->FontCSTheme = theme.ToString();			
+			if (!pRPr->m_oRFonts.IsInit()) pRPr->m_oRFonts.Init();
+			pRPr->m_oRFonts->m_oCsTheme.Init();
+			pRPr->m_oRFonts->m_oCsTheme->SetValueFromByte(m_oBufferedStream.GetUChar());
 		}break;
 		case c_oSerProp_rPrType::FontAE:
 		{
-            std::wstring sFontName(m_oBufferedStream.GetString3(length));
-			sFontName = XmlUtils::EncodeXmlString(sFontName);
-            if(!sFontName.empty())
+			std::wstring sFontName = XmlUtils::EncodeXmlString(m_oBufferedStream.GetString3(length));
+			if (!sFontName.empty())
 			{
-				orPr->bFontAE = true;
-				orPr->FontAE = sFontName;
-			}			
+				m_mapFonts[sFontName] = 1;
+				if (!pRPr->m_oRFonts.IsInit()) pRPr->m_oRFonts.Init();
+				pRPr->m_oRFonts->m_sEastAsia = sFontName;
+			}
 		}break;
 		case c_oSerProp_rPrType::FontAETheme:
 		{
-			SimpleTypes::CTheme<> theme;
-			theme.SetValue((SimpleTypes::ETheme)m_oBufferedStream.GetUChar());
-			orPr->FontAETheme = theme.ToString();			
+			if (!pRPr->m_oRFonts.IsInit()) pRPr->m_oRFonts.Init();
+			pRPr->m_oRFonts->m_oEastAsiaTheme.Init();
+			pRPr->m_oRFonts->m_oEastAsiaTheme->SetValueFromByte(m_oBufferedStream.GetUChar());
 		}break;
 		case c_oSerProp_rPrType::FontSize:
 		{
-			long nFontSize = m_oBufferedStream.GetLong();
-			orPr->bFontSize = true;
-			orPr->FontSize = nFontSize;			
+			pRPr->m_oSz.Init(); pRPr->m_oSz->m_oVal.Init();
+			pRPr->m_oSz->m_oVal->FromHps(m_oBufferedStream.GetLong());
 		}break;
 		case c_oSerProp_rPrType::Color:
 		{
-			orPr->bColor = true;
-			orPr->Color = oBinary_CommonReader2.ReadColor();			
+			docRGB color = oBinary_CommonReader2.ReadColor();			
+			pRPr->m_oColor.Init(); pRPr->m_oColor->m_oVal.Init(); 
+			pRPr->m_oColor->m_oVal->SetValue(SimpleTypes::hexcolorRGB);
+			pRPr->m_oColor->m_oVal->Set_R(color.R); pRPr->m_oColor->m_oVal->Set_G(color.G); pRPr->m_oColor->m_oVal->Set_B(color.B);
 		}break;
 		case c_oSerProp_rPrType::VertAlign:
 		{
-			BYTE VertAlign = m_oBufferedStream.GetUChar();
-			orPr->bVertAlign = true;
-			orPr->VertAlign = VertAlign;			
+			pRPr->m_oVertAlign.Init();
+			pRPr->m_oVertAlign->m_oVal.Init(); pRPr->m_oVertAlign->m_oVal->SetValueFromByte(m_oBufferedStream.GetUChar());
 		}break;
 		case c_oSerProp_rPrType::HighLight:
 		{
-			orPr->nHighLight = 2; //color set
-			orPr->HighLight = oBinary_CommonReader2.ReadColor();			
+			docRGB H = oBinary_CommonReader2.ReadColor();
+			std::wstring sColor;
+			if (0x00 == H.R && 0x00 == H.G && 0x00 == H.B)
+				sColor = _T("black");
+			else if (0x00 == H.R && 0x00 == H.G && 0xFF == H.B)
+				sColor = _T("blue");
+			else if (0x00 == H.R && 0xFF == H.G && 0xFF == H.B)
+				sColor = _T("cyan");
+			else if (0x00 == H.R && 0x00 == H.G && 0x8B == H.B)
+				sColor = _T("darkBlue");
+			else if (0x00 == H.R && 0x8B == H.G && 0x8B == H.B)
+				sColor = _T("darkCyan");
+			else if (0xA9 == H.R && 0xA9 == H.G && 0xA9 == H.B)
+				sColor = _T("darkGray");
+			else if (0x00 == H.R && 0x64 == H.G && 0x00 == H.B)
+				sColor = _T("darkGreen");
+			else if (0x80 == H.R && 0x00 == H.G && 0x80 == H.B)
+				sColor = _T("darkMagenta");
+			else if (0x8B == H.R && 0x00 == H.G && 0x00 == H.B)
+				sColor = _T("darkRed");
+			else if (0x80 == H.R && 0x80 == H.G && 0x00 == H.B)
+				sColor = _T("darkYellow");
+			else if (0x00 == H.R && 0xFF == H.G && 0x00 == H.B)
+				sColor = _T("green");
+			else if (0xD3 == H.R && 0xD3 == H.G && 0xD3 == H.B)
+				sColor = _T("lightGray");
+			else if (0xFF == H.R && 0x00 == H.G && 0xFF == H.B)
+				sColor = _T("magenta");
+			else if (0xFF == H.R && 0x00 == H.G && 0x00 == H.B)
+				sColor = _T("red");
+			else if (0xFF == H.R && 0xFF == H.G && 0xFF == H.B)
+				sColor = _T("white");
+			else if (0xFF == H.R && 0xFF == H.G && 0x00 == H.B)
+				sColor = _T("yellow");
+
+			pRPr->m_oHighlight.Init(); pRPr->m_oHighlight->m_oVal.Init();
+			pRPr->m_oHighlight->m_oVal->FromString(sColor);
 		}break;
 		case c_oSerProp_rPrType::HighLightTyped:
 		{
-			BYTE byteHighLightTyped = m_oBufferedStream.GetUChar();
-			switch(byteHighLightTyped)
-			{
-				case c_oSer_ColorType::None:orPr->nHighLight = 1; break; //type set
-			}			
+			pRPr->m_oHighlight.Init(); pRPr->m_oHighlight->m_oVal.Init();
+			pRPr->m_oHighlight->m_oVal->SetValueFromByte(m_oBufferedStream.GetUChar());
 		}break;
 		case c_oSerProp_rPrType::Shd:
 		{
-			ComplexTypes::Word::CShading oShd;
-			READ2_DEF(length, res, oBinary_CommonReader2.ReadShdComplexType, &oShd);
-			
-			std::wstring sShd = oShd.ToString();
-			if (false == sShd.empty())
-			{
-				orPr->bShd = true;
-				orPr->Shd = L"<w:shd " + sShd + L"/>";
-			}			
+			pRPr->m_oShd.Init();
+			READ2_DEF(length, res, oBinary_CommonReader2.ReadShdComplexType, pRPr->m_oShd.GetPointer());			
 		}break;
 		case c_oSerProp_rPrType::RStyle:
 		{
-            std::wstring sRStyle(m_oBufferedStream.GetString3(length));
-			orPr->bRStyle = true;
-			orPr->RStyle = sRStyle;
+			pRPr->m_oRStyle.Init();
+			pRPr->m_oRStyle->m_sVal = m_oBufferedStream.GetString3(length);
 		}break;
 		case c_oSerProp_rPrType::Spacing:
 		{
-			orPr->bSpacing = true;
-			orPr->Spacing = SerializeCommon::Round( g_dKoef_mm_to_twips * m_oBufferedStream.GetDouble());
+			pRPr->m_oSpacing.Init();
+			pRPr->m_oSpacing->m_oVal.Init(); pRPr->m_oSpacing->m_oVal->FromTwips(g_dKoef_mm_to_twips * m_oBufferedStream.GetDouble());
 		}break;
 		case c_oSerProp_rPrType::SpacingTwips:
 		{
-			orPr->bSpacing = true;
-			orPr->Spacing = m_oBufferedStream.GetLong();
+			pRPr->m_oSpacing.Init();
+			pRPr->m_oSpacing->m_oVal.Init(); pRPr->m_oSpacing->m_oVal->FromTwips(m_oBufferedStream.GetLong());
 		}break;
 		case c_oSerProp_rPrType::DStrikeout:
 		{
-			orPr->bDStrikeout = true;
-			orPr->DStrikeout = (0 != m_oBufferedStream.GetUChar());
+			pRPr->m_oDStrike.Init();
+			pRPr->m_oDStrike->m_oVal.SetValueFromByte(m_oBufferedStream.GetUChar());
 		}break;
 		case c_oSerProp_rPrType::Caps:
 		{
-			orPr->bCaps = true;
-			orPr->Caps = (0 != m_oBufferedStream.GetUChar());
+			pRPr->m_oCaps.Init();
+			pRPr->m_oCaps->m_oVal.FromBool(0 != m_oBufferedStream.GetUChar());
 		}break;
 		case c_oSerProp_rPrType::SmallCaps:
 		{
-			orPr->bSmallCaps = true;
-			orPr->SmallCaps = (0 != m_oBufferedStream.GetUChar());
+			pRPr->m_oSmallCaps.Init();
+			pRPr->m_oSmallCaps->m_oVal.FromBool(0 != m_oBufferedStream.GetUChar());
 		}break;
 		case c_oSerProp_rPrType::Position:
 		{
-			orPr->bPosition = true;
-			orPr->Position = SerializeCommon::Round( g_dKoef_mm_to_hps * m_oBufferedStream.GetDouble());
+			pRPr->m_oPosition.Init();
+			pRPr->m_oPosition->m_oVal.Init();
+			pRPr->m_oPosition->m_oVal->FromMm(m_oBufferedStream.GetDouble());
 		}break;
 		case c_oSerProp_rPrType::PositionHps:
 		{
-			orPr->bPosition = true;
-			orPr->Position = m_oBufferedStream.GetLong();
+			pRPr->m_oPosition.Init();
+			pRPr->m_oPosition->m_oVal.Init();
+			pRPr->m_oPosition->m_oVal->FromHps(m_oBufferedStream.GetLong());
 		}break;
 		case c_oSerProp_rPrType::FontHint:
 		{
-			orPr->bFontHint = true;
-			orPr->FontHint = m_oBufferedStream.GetUChar();
+			if (!pRPr->m_oRFonts.IsInit()) pRPr->m_oRFonts.Init();
+			pRPr->m_oRFonts->m_oHint.Init();
+			pRPr->m_oRFonts->m_oHint->SetValueFromByte(m_oBufferedStream.GetUChar());
 		}break;
 		case c_oSerProp_rPrType::BoldCs:
 		{
-			orPr->bBoldCs = true;
-			orPr->BoldCs = m_oBufferedStream.GetBool();
+			pRPr->m_oBoldCs.Init();
+			pRPr->m_oBoldCs->m_oVal.FromBool(m_oBufferedStream.GetBool());
 		}break;
 		case c_oSerProp_rPrType::ItalicCs:
 		{
-			orPr->bItalicCs = true;
-			orPr->ItalicCs = m_oBufferedStream.GetBool();
+			pRPr->m_oItalicCs.Init();
+			pRPr->m_oItalicCs->m_oVal.FromBool(m_oBufferedStream.GetBool());
 		}break;
 		case c_oSerProp_rPrType::FontSizeCs:
 		{
-			orPr->bFontSizeCs = true;
-			orPr->FontSizeCs = m_oBufferedStream.GetLong();
+			pRPr->m_oSzCs.Init(); pRPr->m_oSzCs->m_oVal.Init();
+			pRPr->m_oSzCs->m_oVal->FromHps(m_oBufferedStream.GetLong());
 		}break;
 		case c_oSerProp_rPrType::Cs:
 		{
-			orPr->bCs = true;
-			orPr->Cs = m_oBufferedStream.GetBool();
+			pRPr->m_oCs.Init(); 
+			pRPr->m_oCs->m_oVal.FromBool(m_oBufferedStream.GetBool());
 		}break;
 		case c_oSerProp_rPrType::Rtl:
 		{
-			orPr->bRtl = true;
-			orPr->Rtl = m_oBufferedStream.GetBool();
+			pRPr->m_oRtL.Init();
+			pRPr->m_oRtL->m_oVal.FromBool(m_oBufferedStream.GetBool());
 		}break;
 		case c_oSerProp_rPrType::Lang:
 		{
-			orPr->bLang = true;
-			orPr->Lang = m_oBufferedStream.GetString3(length);
+			if (!pRPr->m_oLang.IsInit()) pRPr->m_oLang.Init();
+			pRPr->m_oLang->m_oVal = m_oBufferedStream.GetString3(length);
 		}break;
 		case c_oSerProp_rPrType::LangBidi:
 		{
-			orPr->bLangBidi = true;
-			orPr->LangBidi = m_oBufferedStream.GetString3(length);
+			if (!pRPr->m_oLang.IsInit()) pRPr->m_oLang.Init();
+			pRPr->m_oLang->m_oBidi = m_oBufferedStream.GetString3(length);
 		}break;
 		case c_oSerProp_rPrType::LangEA:
 		{
-			orPr->bLangEA = true;
-			orPr->LangEA = m_oBufferedStream.GetString3(length);
+			if (!pRPr->m_oLang.IsInit()) pRPr->m_oLang.Init();
+			pRPr->m_oLang->m_oEastAsia = m_oBufferedStream.GetString3(length);
 		}break;		
 		case c_oSerProp_rPrType::ColorTheme:
 		{
-			orPr->bThemeColor = true;
-			oBinary_CommonReader2.ReadThemeColor(length, orPr->ThemeColor);
+			if (!pRPr->m_oColor.IsInit()) pRPr->m_oColor.Init();
+			CThemeColor ThemeColor;
+			oBinary_CommonReader2.ReadThemeColor(length, ThemeColor);
+			ThemeColor.ToCThemeColor(pRPr->m_oColor->m_oVal, pRPr->m_oColor->m_oThemeColor, pRPr->m_oColor->m_oThemeTint, pRPr->m_oColor->m_oThemeShade);
 		}break;
 		case c_oSerProp_rPrType::Vanish:
 		{
-			orPr->bVanish = true;
-			orPr->Vanish = m_oBufferedStream.GetBool();
+			pRPr->m_oVanish.Init();
+			pRPr->m_oVanish->m_oVal.FromBool(m_oBufferedStream.GetBool());
 		}break;
 		case c_oSerProp_rPrType::TextOutline:
 		{
 			if (length > 0)
 			{
 				long nCurPos = m_oBufferedStream.GetPos();
-                std::wstring strXml;
-                HRESULT hRes = m_oFileWriter.m_pDrawingConverter->GetRecordXml(nCurPos, length, XMLWRITER_RECORD_TYPE_TEXT_OUTLINE, XMLWRITER_DOC_TYPE_WORDART, strXml);
-                if (S_OK == hRes)
-                    orPr->Outline = strXml;
+				m_oBufferedStream.Skip(1);//skip type
+				pRPr->m_oTextOutline.Init();
+				pRPr->m_oTextOutline->fromPPTY(&m_oBufferedStream);
 				m_oBufferedStream.Seek(nCurPos + length);
 			}
 		}break;
@@ -708,50 +715,120 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 			if (length > 0)
 			{
 				long nCurPos = m_oBufferedStream.GetPos();
-                std::wstring strXml;
-                HRESULT hRes = m_oFileWriter.m_pDrawingConverter->GetRecordXml(nCurPos, length, XMLWRITER_RECORD_TYPE_TEXT_FILL, XMLWRITER_DOC_TYPE_WORDART, strXml);
-                if (S_OK == hRes)
-                    orPr->Fill = L"<w14:textFill>" + strXml + L"</w14:textFill>";
+				m_oBufferedStream.Skip(1);//skip type
+				pRPr->m_oTextFill.fromPPTY(&m_oBufferedStream);
 				m_oBufferedStream.Seek(nCurPos + length);
 			}
 		}break;
+		case c_oSerProp_rPrType::Scene3d:
+		{
+			if (length > 0)
+			{
+				long nCurPos = m_oBufferedStream.GetPos();
+				m_oBufferedStream.Skip(1);//skip type
+				pRPr->m_oScene3d.Init();
+				pRPr->m_oScene3d->fromPPTY(&m_oBufferedStream);
+				m_oBufferedStream.Seek(nCurPos + length);
+			}
+		}break;
+		case c_oSerProp_rPrType::Props3d:
+		{
+			if (length > 0)
+			{
+				long nCurPos = m_oBufferedStream.GetPos();
+				m_oBufferedStream.Skip(1);//skip type
+				pRPr->m_oProps3d.Init();
+				pRPr->m_oProps3d->fromPPTY(&m_oBufferedStream);
+				m_oBufferedStream.Seek(nCurPos + length);
+			}
+		}break;
+		case c_oSerProp_rPrType::ShadowExt:
+		{
+			if (length > 0)
+			{
+				long nCurPos = m_oBufferedStream.GetPos();
+				m_oBufferedStream.Skip(1);//skip type
+				pRPr->m_oShadowExt.Init();
+				pRPr->m_oShadowExt->fromPPTY(&m_oBufferedStream);
+				m_oBufferedStream.Seek(nCurPos + length);
+			}
+		}break;
+		case c_oSerProp_rPrType::Glow:
+		{
+			if (length > 0)
+			{
+				long nCurPos = m_oBufferedStream.GetPos();
+				m_oBufferedStream.Skip(1);//skip type
+				pRPr->m_oGlow.Init();
+				pRPr->m_oGlow->fromPPTY(&m_oBufferedStream);
+				m_oBufferedStream.Seek(nCurPos + length);
+			}
+		}break;
+		case c_oSerProp_rPrType::Reflection:
+		{
+			if (length > 0)
+			{
+				long nCurPos = m_oBufferedStream.GetPos();
+				m_oBufferedStream.Skip(1);//skip type
+				pRPr->m_oReflection.Init();
+				pRPr->m_oReflection->fromPPTY(&m_oBufferedStream);
+				m_oBufferedStream.Seek(nCurPos + length);
+			}
+		}break;
+		case c_oSerProp_rPrType::CntxtAlts:
+		{
+			pRPr->m_oCntxtAlts.Init();
+			pRPr->m_oCntxtAlts->m_oVal.FromBool(m_oBufferedStream.GetBool());
+		}break;	
+		case c_oSerProp_rPrType::NumForm:
+		{
+			pRPr->m_oNumForm.Init(); pRPr->m_oNumForm->m_oVal.Init();
+			pRPr->m_oNumForm->m_oVal->SetValueFromByte(m_oBufferedStream.GetUChar());
+		}break;
+		case c_oSerProp_rPrType::NumSpacing:
+		{
+			pRPr->m_oNumSpacing.Init(); pRPr->m_oNumSpacing->m_oVal.Init();
+			pRPr->m_oNumSpacing->m_oVal->SetValueFromByte(m_oBufferedStream.GetUChar());
+		}break;
+		case c_oSerProp_rPrType::Ligatures:
+		{
+			pRPr->m_oLigatures.Init(); pRPr->m_oLigatures->m_oVal.Init();
+			pRPr->m_oLigatures->m_oVal->SetValueFromByte(m_oBufferedStream.GetUChar());
+		}break;
 		case c_oSerProp_rPrType::Del:
 		{
-			TrackRevision oDel;
-			oBinary_CommonReader2.ReadTrackRevision(length, &oDel);
-			orPr->Del = oDel.ToString(L"w:del");
+			pRPr->m_oDel.Init();
+			oBinary_CommonReader2.ReadTrackRevision2(length, pRPr->m_oDel.GetPointer());
 		}break;
 		case c_oSerProp_rPrType::Ins:
 		{
-			TrackRevision oIns;
-			oBinary_CommonReader2.ReadTrackRevision(length, &oIns);
-			orPr->Ins = oIns.ToString(L"w:ins");
+			pRPr->m_oIns.Init();
+			oBinary_CommonReader2.ReadTrackRevision2(length, pRPr->m_oIns.GetPointer());
 		}break;
 		case c_oSerProp_rPrType::MoveFrom:
 		{
-			TrackRevision oMoveFrom;
-			oBinary_CommonReader2.ReadTrackRevision(length, &oMoveFrom);
-			orPr->MoveFrom = oMoveFrom.ToString(L"w:moveFrom");
+			pRPr->m_oMoveFrom.Init();
+			oBinary_CommonReader2.ReadTrackRevision2(length, pRPr->m_oMoveFrom.GetPointer());
 		}break;
 		case c_oSerProp_rPrType::MoveTo:
 		{
-			TrackRevision oMoveTo;
-			oBinary_CommonReader2.ReadTrackRevision(length, &oMoveTo);
-			orPr->MoveTo = oMoveTo.ToString(L"w:moveTo");
+			pRPr->m_oMoveTo.Init();
+			oBinary_CommonReader2.ReadTrackRevision2(length, pRPr->m_oMoveFrom.GetPointer());
 		}break;
 		case c_oSerProp_rPrType::rPrChange:
 		{
-			TrackRevision oRPrChange;
-			READ1_DEF(length, res, this->ReadrPrChange, &oRPrChange);
-			orPr->rPrChange = oRPrChange.ToString(L"w:rPrChange");
+			pRPr->m_oRPrChange.Init();
+			READ1_DEF(length, res, this->ReadrPrChange2, pRPr->m_oRPrChange.GetPointer());
 		}break;		
 		case c_oSerProp_rPrType::CompressText:
 		{
-			orPr->CompressText = m_oBufferedStream.GetLong();
+			pRPr->m_oW.Init();
+			pRPr->m_oW->m_oVal.Init(); pRPr->m_oW->m_oVal->SetValue(m_oBufferedStream.GetLong());
 		}break;
 		case c_oSerProp_rPrType::SnapToGrid:
 		{
-			orPr->bSnapToGrid = m_oBufferedStream.GetBool();
+			pRPr->m_oSnapToGrid.Init();
+			pRPr->m_oSnapToGrid->m_oVal.FromBool(m_oBufferedStream.GetBool());
 		}break;	
 	default:
 		res = c_oSerConstants::ReadUnknown;
@@ -759,28 +836,30 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 	}
 	return res;
 }
-int Binary_rPrReader::ReadrPrChange(BYTE type, long length, void* poResult)
+
+int Binary_rPrReader::ReadrPrChange2(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	TrackRevision* pTrackRevision = static_cast<TrackRevision*>(poResult);
-	READ1_TRACKREV(type, length, pTrackRevision)
-	else if(c_oSerProp_RevisionType::rPrChange == type)
+	OOX::Logic::CRPrChange* pRPrChange = static_cast<OOX::Logic::CRPrChange*>(poResult);
+
+	READ1_TRACKREV_2(type, length, pRPrChange)
+	else if (c_oSerProp_RevisionType::rPrChange == type)
 	{
-		pTrackRevision->RPr = new rPr(m_oFileWriter.get_font_table_writer().m_mapFonts);
-		res = Read(length, pTrackRevision->RPr);
+		pRPrChange->m_pRunPr.Init(); 
+		pRPrChange->m_pRunPr->m_bRPRChange = true;
+		res = Read(length, pRPrChange->m_pRunPr.GetPointer());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
-	return res;
+		return res;
 };
-
 
 Binary_pPrReader::Binary_pPrReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter)
 	:
 	m_oFontTableWriter(oFileWriter.get_font_table_writer()), 
 	Binary_CommonReader(poBufferedStream), 
 	oBinary_CommonReader2(poBufferedStream), 
-	oBinary_rPrReader(poBufferedStream, oFileWriter), 
+	oBinary_rPrReader(poBufferedStream, oFileWriter),
 	oBinary_HdrFtrTableReader(poBufferedStream, oFileWriter), 
 	m_oFileWriter(oFileWriter)
 {
@@ -997,11 +1076,10 @@ int Binary_pPrReader::ReadContent( BYTE type, long length, void* poResult)
         }break;
 	case c_oSerProp_pPrType::pPr_rPr:
 		{
-			rPr orPr(m_oFontTableWriter.m_mapFonts);
-			res = oBinary_rPrReader.Read(length, &orPr);
-			if(orPr.IsNoEmpty())
-			orPr.Write(pCStringWriter);
-			
+			OOX::Logic::CRunProperty oRPr;
+			res = oBinary_rPrReader.Read(length, &oRPr);
+			if (oRPr.IsNoEmpty())
+				pCStringWriter->WriteString(oRPr.toXML());
 		}break;
 	case c_oSerProp_pPrType::pBdr:
 		{
@@ -1375,7 +1453,7 @@ int Binary_pPrReader::ReadBorder2(BYTE type, long length, void* poResult)
 	{
 		CThemeColor ThemeColor;
 		oBinary_CommonReader2.ReadThemeColor(length, ThemeColor);
-		ThemeColor.ToCThemeColor(pBorder->m_oColor, pBorder->m_oThemeColor, pBorder->m_oThemeShade, pBorder->m_oThemeTint);
+		ThemeColor.ToCThemeColor(pBorder->m_oColor, pBorder->m_oThemeColor, pBorder->m_oThemeTint, pBorder->m_oThemeShade);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -1903,17 +1981,17 @@ int Binary_pPrReader::ReadPageBorders(BYTE type, long length, void* poResult)
 	if( c_oSerPageBorders::Display == type )
 	{
 		pPageBorders->m_oDisplay.Init();
-		pPageBorders->m_oDisplay->SetValue((SimpleTypes::EPageBorderDisplay)m_oBufferedStream.GetChar());
+		pPageBorders->m_oDisplay->SetValueFromByte(m_oBufferedStream.GetChar());
 	}
 	else if( c_oSerPageBorders::OffsetFrom == type )
 	{
 		pPageBorders->m_oOffsetFrom.Init();
-		pPageBorders->m_oOffsetFrom->SetValue((SimpleTypes::EPageBorderOffset)m_oBufferedStream.GetChar());
+		pPageBorders->m_oOffsetFrom->SetValueFromByte(m_oBufferedStream.GetChar());
 	}
 	else if( c_oSerPageBorders::ZOrder == type )
 	{
 		pPageBorders->m_oZOrder.Init();
-		pPageBorders->m_oZOrder->SetValue((SimpleTypes::EPageBorderZOrder)m_oBufferedStream.GetChar());
+		pPageBorders->m_oZOrder->SetValueFromByte(m_oBufferedStream.GetChar());
 	}
 	else if( c_oSerPageBorders::Bottom == type )
 	{
@@ -3046,10 +3124,11 @@ int Binary_NumberingTableReader::ReadLevel(BYTE type, long length, void* poResul
 	else if ( c_oSerNumTypes::lvl_TextPr == type )
 	{
 		odocLvl->bTextPr = true;
-		rPr orPr(m_oFontTableWriter.m_mapFonts);
+		
+		OOX::Logic::CRunProperty orPr;
 		res = oBinary_rPrReader.Read(length, &orPr);
 		if(orPr.IsNoEmpty())
-			orPr.Write(&odocLvl->TextPr);
+			odocLvl->TextPr.WriteString(orPr.toXML());
 	}
 	else if ( c_oSerNumTypes::ILvl == type )
 	{
@@ -3172,11 +3251,14 @@ int BinaryStyleTableReader::ReadStyleTableContent(BYTE type, long length, void* 
 	}
 	else if(c_oSer_st::DefrPr == type)
 	{
-		rPr oNew_rPr(m_oFontTableWriter.m_mapFonts);
-		oNew_rPr.bDoNotWriteNullProp = true;
-		res = oBinary_rPrReader.Read(length, &oNew_rPr);
-		if(oNew_rPr.IsNoEmpty())
-			oNew_rPr.Write(&m_oStylesWriter.m_rPrDefault);
+		//OOX::CDocDefaults docDefault;
+		OOX::Logic::CRunProperty oRunPr;
+		
+		res = oBinary_rPrReader.Read(length, &oRunPr);
+		if (oRunPr.IsNoEmpty())
+		{
+			m_oStylesWriter.m_rPrDefault.WriteString(oRunPr.toXML());
+		}
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -3268,13 +3350,11 @@ int BinaryStyleTableReader::ReadStyleContent(BYTE type, long length, void* poRes
 	}
 	else if(c_oSer_sts::Style_TextPr == type)
 	{
-		rPr oNew_rPr(m_oFontTableWriter.m_mapFonts);
-		res = oBinary_rPrReader.Read(length, &oNew_rPr);
-		if(oNew_rPr.IsNoEmpty())
+		OOX::Logic::CRunProperty newRPr;
+		res = oBinary_rPrReader.Read(length, &newRPr);
+		if(newRPr.IsNoEmpty())
 		{
-			NSStringUtils::CStringBuilder oTempWriter;
-			oNew_rPr.Write(&oTempWriter);
-			odocStyle->TextPr = oTempWriter.GetData();
+			odocStyle->TextPr = newRPr.toXML();
 		}
 	}
 	else if(c_oSer_sts::Style_ParaPr == type)
@@ -3395,11 +3475,12 @@ int BinaryStyleTableReader::ReadTblStyleProperty(BYTE type, long length, void* p
 	}
 	else if(c_oSerProp_tblStylePrType::RunPr == type)
 	{
-		rPr oNew_rPr(m_oFontTableWriter.m_mapFonts);
-		res = oBinary_rPrReader.Read(length, &oNew_rPr);
-		if(oNew_rPr.IsNoEmpty())
+		OOX::Logic::CRunProperty newRPr;
+
+		res = oBinary_rPrReader.Read(length, &newRPr);
+		if(newRPr.IsNoEmpty())
 		{
-			oNew_rPr.Write(&ptblStylePr->Writer);
+			ptblStylePr->Writer.WriteString(newRPr.toXML());
 		}
 	}
 	else if(c_oSerProp_tblStylePrType::ParPr == type)
@@ -3850,10 +3931,10 @@ int Binary_SettingsTableReader::ReadSettings(BYTE type, long length, void* poRes
 	}
 	else if( c_oSer_SettingsType::SdtGlobalColor == type )
 	{
-		rPr oRPr(m_oFileWriter.get_font_table_writer().m_mapFonts);
+		OOX::Logic::CRunProperty oRPr;
 		res = m_oBinary_rPrReader.Read(length, &oRPr);
-		m_pSettingsCustom->m_oSdtGlobalColor.Init();
-		InnerColorToOOX(oRPr, m_pSettingsCustom->m_oSdtGlobalColor.get2());
+		
+		m_pSettingsCustom->m_oSdtGlobalColor = oRPr.m_oColor;
 	}
 	else if( c_oSer_SettingsType::SdtGlobalShowHighlight == type )
 	{
@@ -3862,10 +3943,10 @@ int Binary_SettingsTableReader::ReadSettings(BYTE type, long length, void* poRes
 	}
 	else if( c_oSer_SettingsType::SpecialFormsHighlight == type )
 	{
-		rPr oRPr(m_oFileWriter.get_font_table_writer().m_mapFonts);
+		OOX::Logic::CRunProperty oRPr;
 		res = m_oBinary_rPrReader.Read(length, &oRPr);
-		m_pSettingsCustom->m_oSpecialFormsHighlight.Init();
-		InnerColorToOOX(oRPr, m_pSettingsCustom->m_oSpecialFormsHighlight.get2());
+		
+		m_pSettingsCustom->m_oSpecialFormsHighlight = oRPr.m_oColor;
 	}
 	else if( c_oSer_SettingsType::Compat == type )
 	{
@@ -4593,8 +4674,6 @@ Binary_DocumentTableReader::Binary_DocumentTableReader(NSBinPptxRW::CBinaryFileR
         , oBinary_pPrReader(poBufferedStream, oFileWriter)
         , oBinary_rPrReader(poBufferedStream, oFileWriter)
         , oBinary_tblPrReader(poBufferedStream, oFileWriter)
-        , m_oCur_rPr(m_oFontTableWriter.m_mapFonts)
-        , m_oMath_rPr(m_oFontTableWriter.m_mapFonts)
 {
 	m_bUsedParaIdCounter = false;
 	m_byteLastElemType = c_oSerParType::Content;
@@ -4909,7 +4988,7 @@ int Binary_DocumentTableReader::ReadParagraphContent(BYTE type, long length, voi
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSerParType::Run == type )
 	{
-		m_oCur_rPr.Reset();
+		m_oCur_rPr.Clear();
         GetRunStringWriter().WriteString(std::wstring(_T("<w:r>")));
 		READ1_DEF(length, res, this->ReadRun, NULL);
         GetRunStringWriter().WriteString(std::wstring(_T("</w:r>")));
@@ -6150,10 +6229,11 @@ int Binary_DocumentTableReader::ReadMathCtrlPr(BYTE type, long length, void* poR
 	int res = c_oSerConstants::ReadOk;
 	if ( c_oSerRunType::rPr == type )
 	{
-		m_oMath_rPr.Reset();
+		m_oMath_rPr.Clear();
 		res = oBinary_rPrReader.Read(length, &m_oMath_rPr);
-		if(m_oMath_rPr.IsNoEmpty())
-		m_oMath_rPr.Write(&GetRunStringWriter());
+		
+		if(m_oMath_rPr.IsNoEmpty())		
+			GetRunStringWriter().WriteString(m_oMath_rPr.toXML());
 	}
 	else if ( c_oSerRunType::arPr == type )
 	{
@@ -6168,15 +6248,17 @@ int Binary_DocumentTableReader::ReadMathCtrlPr(BYTE type, long length, void* poR
 	}
 	else if ( c_oSerRunType::del == type )
 	{
-		TrackRevision oRPrChange;
-		READ1_DEF(length, res, this->ReadMathCtrlPrDelIns, &oRPrChange);
-		oRPrChange.Write(&GetRunStringWriter(), _T("w:del"));
+		ComplexTypes::Word::CTrackChange del;
+		
+		READ1_DEF(length, res, this->ReadMathCtrlPrDelIns, &del);
+		GetRunStringWriter().WriteString(del.ValNode(L"w:del"));
 	}
 	else if ( c_oSerRunType::ins == type )
 	{
-		TrackRevision oRPrChange;
-		READ1_DEF(length, res, this->ReadMathCtrlPrDelIns, &oRPrChange);
-		oRPrChange.Write(&GetRunStringWriter(), _T("w:ins"));
+		ComplexTypes::Word::CTrackChange ins;
+
+		READ1_DEF(length, res, this->ReadMathCtrlPrDelIns, &ins);
+		GetRunStringWriter().WriteString(ins.ValNode(L"w:ins"));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6184,7 +6266,7 @@ int Binary_DocumentTableReader::ReadMathCtrlPr(BYTE type, long length, void* poR
 }
 int Binary_DocumentTableReader::ReadMathCtrlPrDelIns(BYTE type, long length, void* poResult)
 {
-	return oBinary_rPrReader.ReadrPrChange(type, length, poResult);
+	return oBinary_rPrReader.ReadrPrChange2(type, length, poResult);
 }
 
 int Binary_DocumentTableReader::ReadMathDelimiter(BYTE type, long length, void* poResult)
@@ -6999,7 +7081,7 @@ int Binary_DocumentTableReader::ReadMathOMathPara(BYTE type, long length, void* 
 	}
 	else if ( c_oSer_OMathContentType::Run == type )
 	{
-		m_oCur_rPr.Reset();
+		m_oCur_rPr.Clear();
         GetRunStringWriter().WriteString(std::wstring(_T("<w:r>")));
 		READ1_DEF(length, res, this->ReadRun, NULL);
         GetRunStringWriter().WriteString(std::wstring(_T("</w:r>")));
@@ -7156,10 +7238,11 @@ int Binary_DocumentTableReader::ReadMathMRun(BYTE type, long length, void* poRes
 	}
 	else if ( c_oSer_OMathContentType::RPr == type )
 	{
-		m_oMath_rPr.Reset();
+		m_oMath_rPr.Clear();
 		res = oBinary_rPrReader.Read(length, &m_oMath_rPr);
-		if(m_oMath_rPr.IsNoEmpty())
-			m_oMath_rPr.Write(&GetRunStringWriter());
+		
+		if (m_oMath_rPr.IsNoEmpty())
+			GetRunStringWriter().WriteString(m_oMath_rPr.toXML());
 	}
 	else if ( c_oSer_OMathContentType::MRPr == type )
 	{
@@ -7814,8 +7897,9 @@ int Binary_DocumentTableReader::ReadRun(BYTE type, long length, void* poResult)
 	if ( c_oSerRunType::rPr == type )
 	{
 		res = oBinary_rPrReader.Read(length, &m_oCur_rPr);
-		if(m_oCur_rPr.IsNoEmpty())
-			m_oCur_rPr.Write(&GetRunStringWriter());
+		
+		if (m_oCur_rPr.IsNoEmpty())
+			GetRunStringWriter().WriteString(m_oCur_rPr.toXML());
 	}
 	else if ( c_oSerRunType::Content == type )
 	{
@@ -7864,15 +7948,15 @@ int Binary_DocumentTableReader::ReadRunContent(BYTE type, long length, void* poR
 	else if (c_oSerRunType::pagenum == type)
 	{
         GetRunStringWriter().WriteString(std::wstring(_T("<w:fldChar w:fldCharType=\"begin\"/></w:r><w:r>")));
-		if(m_oCur_rPr.IsNoEmpty())
-			m_oCur_rPr.Write(&GetRunStringWriter());
+		if (m_oCur_rPr.IsNoEmpty())
+			GetRunStringWriter().WriteString(m_oCur_rPr.toXML());
         GetRunStringWriter().WriteString(std::wstring(_T("<w:instrText xml:space=\"preserve\">PAGE \\* MERGEFORMAT</w:instrText></w:r><w:r>")));
 		if(m_oCur_rPr.IsNoEmpty())
-			m_oCur_rPr.Write(&GetRunStringWriter());
+			GetRunStringWriter().WriteString(m_oCur_rPr.toXML());
         GetRunStringWriter().WriteString(std::wstring(_T("<w:fldChar w:fldCharType=\"separate\"/></w:r><w:r>")));
 		if(m_oCur_rPr.IsNoEmpty())
-			m_oCur_rPr.Write(&GetRunStringWriter());
-        GetRunStringWriter().WriteString(std::wstring(_T("<w:fldChar w:fldCharType=\"end\"/>")));
+			GetRunStringWriter().WriteString(m_oCur_rPr.toXML());
+		GetRunStringWriter().WriteString(std::wstring(_T("<w:fldChar w:fldCharType=\"end\"/>")));
 	}
 	else if (c_oSerRunType::pagebreak == type)
 	{
@@ -7970,13 +8054,13 @@ int Binary_DocumentTableReader::ReadRunContent(BYTE type, long length, void* poR
 		sField = XmlUtils::EncodeXmlString(sField);
         GetRunStringWriter().WriteString(std::wstring(_T("<w:fldChar w:fldCharType=\"begin\"/></w:r><w:r>")));
 		if(m_oCur_rPr.IsNoEmpty())
-			m_oCur_rPr.Write(&GetRunStringWriter());
-        GetRunStringWriter().WriteString(std::wstring(_T("<w:instrText xml:space=\"preserve\">")));
+			GetRunStringWriter().WriteString(m_oCur_rPr.toXML());
+		GetRunStringWriter().WriteString(std::wstring(_T("<w:instrText xml:space=\"preserve\">")));
 		GetRunStringWriter().WriteString(sField);
         GetRunStringWriter().WriteString(std::wstring(_T("</w:instrText></w:r><w:r>")));
 		if(m_oCur_rPr.IsNoEmpty())
-			m_oCur_rPr.Write(&GetRunStringWriter());
-        GetRunStringWriter().WriteString(std::wstring(_T("<w:fldChar w:fldCharType=\"separate\"/>")));
+			GetRunStringWriter().WriteString(m_oCur_rPr.toXML());
+		GetRunStringWriter().WriteString(std::wstring(_T("<w:fldChar w:fldCharType=\"separate\"/>")));
 	}
 	else if(c_oSerRunType::fldend_deprecated == type)
 	{
@@ -9092,8 +9176,8 @@ int Binary_DocumentTableReader::ReadSdt(BYTE type, long length, void* poResult)
 	}
 	else if (c_oSerSdt::EndPr == type)
 	{
-		pSdt->m_oEndPr = new rPr(m_oFontTableWriter.m_mapFonts);
-		res = oBinary_rPrReader.Read(length, pSdt->m_oEndPr);
+		pSdt->m_oEndPr.Init();
+		res = oBinary_rPrReader.Read(length, pSdt->m_oEndPr.GetPointer());
 	}
 	else if (c_oSerSdt::Content == type)
 	{
@@ -9101,16 +9185,16 @@ int Binary_DocumentTableReader::ReadSdt(BYTE type, long length, void* poResult)
 		if ( pSdt->m_oSdt.m_oSdtPr.IsInit() )
 		{
 			m_oDocumentWriter.m_oContent.WriteString(pSdt->m_oSdt.m_oSdtPr->toXMLStart());
-			if (NULL != pSdt->m_oRPr)
+			if (pSdt->m_oRPr.IsInit())
 			{
-				pSdt->m_oRPr->Write(&m_oDocumentWriter.m_oContent);
+				m_oDocumentWriter.m_oContent.WriteString(pSdt->m_oRPr->toXML());
 			}
 			m_oDocumentWriter.m_oContent.WriteString(pSdt->m_oSdt.m_oSdtPr->toXMLEnd());
 		}
-		if (NULL != pSdt->m_oEndPr)
+		if (pSdt->m_oEndPr.IsInit())
 		{
 			m_oDocumentWriter.m_oContent.WriteString(L"<w:sdtEndPr>");
-			pSdt->m_oEndPr->Write(&m_oDocumentWriter.m_oContent);
+			m_oDocumentWriter.m_oContent.WriteString(pSdt->m_oEndPr->toXML());
 			m_oDocumentWriter.m_oContent.WriteString(L"</w:sdtEndPr>");
 		}
 
@@ -9172,10 +9256,9 @@ int Binary_DocumentTableReader::ReadSdtPr(BYTE type, long length, void* poResult
 	}
 	else if (c_oSerSdt::Color == type)
 	{
-		rPr oRPr(m_oFileWriter.get_font_table_writer().m_mapFonts);
+		OOX::Logic::CRunProperty oRPr;
 		res = oBinary_rPrReader.Read(length, &oRPr);
-		pSdtPr->m_oColor.Init();
-		InnerColorToOOX(oRPr, pSdtPr->m_oColor.get2());
+		pSdtPr->m_oColor = oRPr.m_oColor;
 	}
 	else if (c_oSerSdt::DataBinding == type)
 	{
@@ -9225,8 +9308,8 @@ int Binary_DocumentTableReader::ReadSdtPr(BYTE type, long length, void* poResult
 	}
 	else if (c_oSerSdt::RPr == type)
 	{
-		pSdtWraper->m_oRPr = new rPr(m_oFontTableWriter.m_mapFonts);
-		res = oBinary_rPrReader.Read(length, pSdtWraper->m_oRPr);
+		pSdtWraper->m_oRPr.Init();
+		res = oBinary_rPrReader.Read(length, &pSdtWraper->m_oRPr);
 	}
 	else if (c_oSerSdt::ShowingPlcHdr == type)
 	{
@@ -9568,6 +9651,11 @@ int Binary_DocumentTableReader::ReadSdtTextFormPrComb(BYTE type, long length, vo
 	else if (c_oSerSdt::TextFormPrCombFont == type)
 	{
 		pComb->m_oFont = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSerSdt::TextFormPrCombWRule == type)
+	{
+		pComb->m_oWRule.Init();
+		pComb->m_oWRule->SetValueFromByte(m_oBufferedStream.GetChar());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

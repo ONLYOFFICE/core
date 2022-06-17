@@ -342,7 +342,8 @@ public:
 
         if (m_bInP)
             m_oDocXml.WriteString(L"</w:p>");
-        m_oDocXml.WriteString(L"<w:sectPr/></w:body></w:document>");
+
+        m_oDocXml.WriteString(L"<w:sectPr w:rsidR=\"0007083F\" w:rsidRPr=\"0007083F\" w:rsidSect=\"0007612E\"><w:pgSz w:w=\"12240\" w:h=\"15840\"/><w:pgMar w:gutter=\"0\" w:footer=\"720\" w:header=\"720\" w:left=\"720\" w:bottom=\"720\" w:right=\"720\" w:top=\"720\"/><w:cols w:space=\"720\"/><w:docGrid w:linePitch=\"360\"/></w:sectPr></w:body></w:document>");
         NSFile::CFileBinary oDocumentWriter;
         if (oDocumentWriter.CreateFileW(m_sDst + L"/word/document.xml"))
         {
@@ -1045,6 +1046,7 @@ private:
                     it2 = std::find_if(mTable.begin(), mTable.end(), [j]   (const CTc& item){ return item.i == 0 && item.j == j; });
                 }
 
+                GetSubClass(oXml, sSelectors);
                 oXml->WriteString(L"<w:tc><w:tcPr><w:textDirection w:val=\"lrTb\"/><w:noWrap w:val=\"false\"/><w:tcBorders>");
                 oXml->WriteString(!sBorders.empty() ? sBorders : L"<w:left w:val=\"none\" w:color=\"000000\"/><w:top w:val=\"none\" w:color=\"000000\"/><w:right w:val=\"none\" w:color=\"000000\"/><w:bottom w:val=\"none\" w:color=\"000000\"/>");
                 oXml->WriteString(L"</w:tcBorders>");
@@ -1060,18 +1062,33 @@ private:
                 }
                 if(nColspan != 1)
                 {
-                    oXml->WriteString(L"<w:gridSpan w:val=\"");
-                    oXml->WriteString(std::to_wstring(nColspan));
-                    oXml->WriteString(L"\"/>");
-                    j += nColspan - 1;
+                        NSCSS::CCompiledStyle oStyleSetting = m_oStylesCalculator.GetCompiledStyle(sSelectors, true);
+                        NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors, false);
+
+                        NSCSS::CCompiledStyle::StyleEquation(oStyle, oStyleSetting);
+
+                        int nWidth = oStyle.m_pDisplay.GetWidth() * 10;
+
+                        if (nWidth > 0)
+                                oXml->WriteString(L"<w:tcW w:type=\"dxa\" w:w=\"" + std::to_wstring(nWidth) + L"\"/>");
+                        else
+                                oXml->WriteString(L"<w:tcW w:type=\"auto\" w:w=\"0\"/>");
+
+
+                        oXml->WriteString(L"<w:gridSpan w:val=\"");
+                        oXml->WriteString(std::to_wstring(nColspan));
+                        oXml->WriteString(L"\"/><w:hideMark/>");
+
+                        j += nColspan - 1;
                 }
+                else
+                        oXml->WriteString(L"<w:tcW w:type=\"auto\" w:w=\"0\"/>");
 
                 oXml->WriteString(L"<w:hideMark/>");
                 oXml->WriteString(L"</w:tcPr>");
                 size_t nEmpty = oXml->GetCurSize();
                 m_bWasPStyle = false;
 
-                GetSubClass(oXml, sSelectors);
                 // Читаем th. Ячейка заголовка таблицы. Выравнивание посередине. Выделяется полужирным
                 if(m_oLightReader.GetName() == L"th")
                 {                            
@@ -1138,6 +1155,13 @@ private:
         std::wstring wsWidth = oStyle.m_pDisplay.GetWidthW();
         std::wstring wsAlign = oStyle.m_pDisplay.GetAlign();
 
+        if (!wsWidth.empty())
+                wsTable += L"<w:tblW w:w=\"" + wsWidth + L"\" w:type=\"pct\"/>";
+        else if (m_oStylesCalculator.GetSizeDeviceWindow().m_ushWidth != 0)
+                wsTable += L"<w:tblW w:w=\"" + std::to_wstring(m_oStylesCalculator.GetSizeDeviceWindow().m_ushWidth) + L"\" w:type=\"pct\"/>";
+        else
+                wsTable += L"<w:tblW w:w=\"0\" w:type=\"auto\"/>";
+
         if (wsAlign.empty())
         {
                 NSCSS::CNode oLastNode = sSelectors.back();
@@ -1169,13 +1193,6 @@ private:
 
                 wsTable += L"</w:tblCellMar>";
         }
-
-        if (!wsWidth.empty())
-                wsTable += L"<w:tblW w:w=\"" + wsWidth + L"\" w:type=\"pct\"/>";
-        else if (m_oStylesCalculator.GetSizeDeviceWindow().m_ushWidth != 0)
-                wsTable += L"<w:tblW w:w=\"" + std::to_wstring(m_oStylesCalculator.GetSizeDeviceWindow().m_ushWidth) + L"\" w:type=\"pct\"/>";
-        else
-                wsTable += L"<w:tblW w:w=\"0\" w:type=\"auto\"/>";
 
         if (!wsAlign.empty())
                 wsTable += L"<w:jc w:val=\"" + wsAlign + L"\"/>";

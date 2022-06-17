@@ -2883,6 +2883,11 @@ namespace NSCSS
                     return std::to_wstring(nWidth);
                 }
 
+                int GetWidth() const
+                {
+                    return nWidth;
+                }
+
                 std::wstring GetHeightW() const
                 {
                     if (nHeight < 0)

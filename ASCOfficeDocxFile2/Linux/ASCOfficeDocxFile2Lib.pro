@@ -41,6 +41,7 @@ SOURCES += \
     ../../XlsxSerializerCom/Writer/CSVWriter.cpp \
     ../../OfficeCryptReader/source/ECMACryptFile.cpp \
     ../../OfficeCryptReader/source/CryptTransform.cpp \
+    ../BinReader/ReaderClasses.cpp \
     ../BinReader/Readers.cpp \
     ../BinReader/CustomXmlWriter.cpp \
     ../BinReader/FileWriter.cpp

@@ -60,6 +60,7 @@ namespace ComplexTypes
 			XmlMacroReadAttributeBase( oNode, L"w:width", m_oWidth );
 			XmlMacroReadAttributeBase( oNode, L"w:sym", m_oSym );
 			XmlMacroReadAttributeBase( oNode, L"w:font", m_oFont );
+			XmlMacroReadAttributeBase(oNode, L"w:wRule", m_oWRule);
 		}
 		void CComb::FromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -71,27 +72,31 @@ namespace ComplexTypes
 		std::wstring CComb::ToString() const
 		{
 			std::wstring sResult;
-			if(m_oWidth.IsInit())
+			if (m_oWidth.IsInit())
 			{
 				sResult += L"w:width=\"" + std::to_wstring(m_oWidth.get()) + L"\" ";
 			}
-			if(m_oSym.IsInit())
+			if (m_oSym.IsInit())
 			{
 				sResult += L"w:sym=\"" + XmlUtils::EncodeXmlString(m_oSym.get()) + L"\" ";
 			}
-			if(m_oFont.IsInit())
+			if (m_oFont.IsInit())
 			{
 				sResult += L"w:font=\"" + XmlUtils::EncodeXmlString(m_oFont.get()) + L"\" ";
 			}
-
+			if (m_oWRule.IsInit())
+			{
+				sResult += L"w:wRule=\"" + m_oWRule->ToString() + L"\" ";
+			}
 			return sResult;
 		}
 		void CComb::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_Read_if( oReader, L"w:width", m_oWidth )
-			WritingElement_ReadAttributes_Read_else_if( oReader, L"w:sym", m_oSym )
-			WritingElement_ReadAttributes_Read_else_if( oReader, L"w:font", m_oFont )
+				WritingElement_ReadAttributes_Read_if( oReader, L"w:width", m_oWidth )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:sym", m_oSym )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:font", m_oFont )
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"w:wRule", m_oWRule )
 			WritingElement_ReadAttributes_End( oReader )
 		}
 	}

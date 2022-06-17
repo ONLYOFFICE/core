@@ -926,6 +926,7 @@
     <ClInclude Include="..\XlsFormat\Logic\ChartSheetSubstream.h" />
     <ClInclude Include="..\XlsFormat\Logic\CommonSubstream.h" />
     <ClInclude Include="..\XlsFormat\Logic\CompositeObject.h" />
+    <ClInclude Include="..\XlsFormat\Logic\EncryptionStream.h" />
     <ClInclude Include="..\XlsFormat\Logic\GlobalsSubstream.h" />
     <ClInclude Include="..\XlsFormat\Logic\GlobalWorkbookInfo.h" />
     <ClInclude Include="..\XlsFormat\Logic\MacroSheetSubstream.h" />
@@ -1722,6 +1723,7 @@
     <ClCompile Include="..\XlsFormat\Logic\ChartSheetSubstream.cpp" />
     <ClCompile Include="..\XlsFormat\Logic\CommonSubstream.cpp" />
     <ClCompile Include="..\XlsFormat\Logic\CompositeObject.cpp" />
+    <ClCompile Include="..\XlsFormat\Logic\EncryptionStream.cpp" />
     <ClCompile Include="..\XlsFormat\Logic\GlobalsSubstream.cpp" />
     <ClCompile Include="..\XlsFormat\Logic\GlobalWorkbookInfo.cpp" />
     <ClCompile Include="..\XlsFormat\Logic\MacroSheetSubstream.cpp" />

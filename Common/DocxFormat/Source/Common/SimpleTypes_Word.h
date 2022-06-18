@@ -1125,7 +1125,7 @@ namespace SimpleTypes
 			return m_sValue;
 		}
 
-        void    SetValue(std::wstring &sValue)
+        void    SetValue(const std::wstring &sValue)
 		{
 			m_sValue = sValue;
 		}

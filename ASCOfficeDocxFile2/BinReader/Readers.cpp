@@ -591,8 +591,10 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 		}break;
 		case c_oSerProp_rPrType::HighLightTyped:
 		{
+			BYTE byteHighLightTyped = m_oBufferedStream.GetUChar();
+			
 			pRPr->m_oHighlight.Init(); pRPr->m_oHighlight->m_oVal.Init();
-			pRPr->m_oHighlight->m_oVal->SetValueFromByte(m_oBufferedStream.GetUChar());
+			pRPr->m_oHighlight->m_oVal->SetValue(SimpleTypes::highlightcolorNone);
 		}break;
 		case c_oSerProp_rPrType::Shd:
 		{
@@ -9309,7 +9311,7 @@ int Binary_DocumentTableReader::ReadSdtPr(BYTE type, long length, void* poResult
 	else if (c_oSerSdt::RPr == type)
 	{
 		pSdtWraper->m_oRPr.Init();
-		res = oBinary_rPrReader.Read(length, &pSdtWraper->m_oRPr);
+		res = oBinary_rPrReader.Read(length, pSdtWraper->m_oRPr.GetPointer());
 	}
 	else if (c_oSerSdt::ShowingPlcHdr == type)
 	{

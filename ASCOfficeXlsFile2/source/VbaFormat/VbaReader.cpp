@@ -103,6 +103,9 @@ const std::wstring CVbaReader::convert()
 		{
 			for (size_t i = 0; i < DirStreamObject->ModulesRecord->modules.size(); ++i)
 			{
+				if (!DirStreamObject->ModulesRecord->modules[i])
+					continue;
+
 				CP_XML_NODE(L"Module")
 				{
 					if (DirStreamObject->ModulesRecord->modules[i]->StreamNameRecord)
@@ -121,7 +124,10 @@ const std::wstring CVbaReader::convert()
 							DirStreamObject->ModulesRecord->modules[i]->StreamNameRecord->StreamNameUnicode.value);
 
 						_UINT32 offset = DirStreamObject->ModulesRecord->modules[i]->OffsetRecord ?
-							DirStreamObject->ModulesRecord->modules[i]->OffsetRecord->TextOffset : 0;//skip cache
+							DirStreamObject->ModulesRecord->modules[i]->OffsetRecord->TextOffset : 0xffffffff;//skip cache
+
+						if (offset == 0xffffffff) 
+							continue; // error record
 
 						CVbaFileStreamPtr strmModule = vbaProject_file_->getNamedStream(streamName, offset);
 						strmModule->CodePage = code_page_;

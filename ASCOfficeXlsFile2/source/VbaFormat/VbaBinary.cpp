@@ -132,6 +132,11 @@ CVbaFileStream::CVbaFileStream(POLE::Stream* stream, _UINT32 offset)
 		return;
 	}
 	dataSize -= 1;
+
+	if (offset > dataSize)
+	{	
+		return; //error;
+	}
 	
 	stream->seek(stream->tell() + offset);
 	dataSize -= offset;
@@ -140,23 +145,24 @@ CVbaFileStream::CVbaFileStream(POLE::Stream* stream, _UINT32 offset)
 	stream->read(data, dataSize);
 
 	unsigned char *dataCur = data;
-	size_t dataPos = 0;	
 
-	while (dataPos + 2 < dataSize)
+	while (dataCur - data <  dataSize - 2)
 	{
 		std::vector<unsigned char> arrChunk;
 		_UINT16 header = *((_UINT32*)dataCur); dataCur += 2;
 
 		bool bCompressed = ((header & CHUNK_COMPRESSED) != 0);
-		_UINT16 chunkSize = (header & CHUNK_LENMASK);
+		_UINT16 chunkSize = (header & CHUNK_LENMASK) + 1;
 
+		bool bUnknown = false;
 		if ((header & CHUNK_SIGMASK) != CHUNK_SIG)
 		{
 			bCompressed = true;
 			chunkSize = 4094; //по факту
+			bUnknown = true;
 		}
-		POLE::uint64 target = (dataCur - data) + chunkSize;
-		
+		unsigned char *dataNext = dataCur + chunkSize;
+
 		if (bCompressed)
 		{
 			unsigned char nBitCount = 4;
@@ -203,8 +209,7 @@ CVbaFileStream::CVbaFileStream(POLE::Stream* stream, _UINT32 offset)
 					}
 					else
 					{
-						arrChunk.emplace_back();
-						arrChunk.back() = *dataCur; dataCur++;
+						arrChunk.push_back(*dataCur); dataCur++;
 						++chunkPos;
 					}
 				}
@@ -215,7 +220,8 @@ CVbaFileStream::CVbaFileStream(POLE::Stream* stream, _UINT32 offset)
 			arrChunk.resize(chunkSize);
 			memcpy(arrChunk.data(), dataCur, chunkSize); dataCur += chunkSize;
 		}
-		dataPos = target;
+
+		dataCur = dataNext;
 		arrChunks.insert(arrChunks.end(), arrChunk.begin(), arrChunk.end());
 	}
 }

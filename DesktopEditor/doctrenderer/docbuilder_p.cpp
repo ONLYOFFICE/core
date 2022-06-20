@@ -680,7 +680,7 @@ namespace NSDoctRenderer
         }
         else if (sParam == "--all-fonts-path")
         {
-            m_pInternal->SetAllFontsExternal(std::wstring(value))
+            m_pInternal->SetAllFontsExternal(std::wstring(value));
         }
         else if (sParam == "--argument")
         {

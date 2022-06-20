@@ -435,7 +435,7 @@ namespace VBA
 
 		virtual void load(CVbaFileStreamPtr stream);
 
-		_UINT32 TextOffset;
+		_UINT32 TextOffset = 0xffffffff;
 	};
 	typedef boost::shared_ptr<MODULEOFFSET> MODULEOFFSETPtr;
 //-----------------------------------------------------------------------------

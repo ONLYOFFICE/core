@@ -160,7 +160,6 @@ namespace PdfWriter
 		bool              DeletePage(int nPageIndex);
 		bool              AddToFile(const std::wstring& wsPath, const std::wstring& sTrailer, const std::wstring& sInfo);
 		void              Sign(const TRect& oRect, CImageDict* pImage, ICertificate* pCert);
-		CSignatureDict*   GetSignatureDict() { return m_pSignatureDict; }
 	private:		  
 					  
 		char*             GetTTFontTag();
@@ -191,6 +190,21 @@ namespace PdfWriter
 			unsigned int unIndex;
 			CFontDict*   pFont;
 		};
+		struct TSignatureInfo
+		{
+			TSignatureInfo(const TRect& _oRect, CPage* _pPage, CImageDict* _pImage, ICertificate* _pCertificate)
+			{
+				oRect  = _oRect;
+				pPage  = _pPage;
+				pImage = _pImage;
+				pCertificate = _pCertificate;
+			}
+
+			TRect oRect;
+			CPage* pPage;
+			CImageDict* pImage;
+			ICertificate* pCertificate;
+		};
 
 		CCatalog*                          m_pCatalog;
 		COutline*                          m_pOutlines;
@@ -204,8 +218,7 @@ namespace PdfWriter
 		CDictObject*                       m_pResources;
 		bool                               m_bEncrypt;
 		CEncryptDict*                      m_pEncryptDict;
-		CSignatureDict*                    m_pSignatureDict;
-		unsigned int                       m_unSignature;
+		std::vector<TSignatureInfo>        m_vSignatures;
 		unsigned int                       m_unCompressMode;
 		std::vector<CExtGrState*>          m_vExtGrStates;
 		std::vector<CExtGrState*>          m_vStrokeAlpha;

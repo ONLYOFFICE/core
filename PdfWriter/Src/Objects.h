@@ -443,6 +443,7 @@ namespace PdfWriter
 			return dict_type_UNKNOWN;
 		}
 
+		CDictObject* Copy(CDictObject* pOut);
 		void WriteToStream(CStream* pStream, CEncrypt* pEncrypt);
 		void WriteSignatureToStream(CStream* pStream, CEncrypt* pEncrypt);
 		unsigned int GetSize() { return m_mList.size(); }
@@ -483,13 +484,25 @@ namespace PdfWriter
 		{
 			m_unAddr = unAddr;
 		}
+		unsigned int GetPrevAddr() const
+		{
+			return m_unAddr;
+		}
 		int         GetCount() const
 		{
 			return m_arrEntries.size();
 		}
+		unsigned int GetSizeXRef() const
+		{
+			return m_unStartOffset + m_arrEntries.size();
+		}
 		CDictObject*GetTrailer() const
 		{
 			return m_pTrailer;
+		}
+		void        Clear()
+		{
+			m_arrEntries.clear();
 		}
 		bool        IsPDFA() const;
 

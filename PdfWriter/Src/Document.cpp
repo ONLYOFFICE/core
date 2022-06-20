@@ -84,8 +84,6 @@ namespace PdfWriter
 		m_pResources        = NULL;
 		m_bEncrypt          = false;
 		m_pEncryptDict      = NULL;
-		m_pSignatureDict    = NULL;
-		m_unSignature       = 0;
 		m_unCompressMode    = COMP_NONE;
 		m_pJbig2            = NULL;
 		memset((void*)m_sTTFontTag, 0x00, 8);
@@ -187,8 +185,6 @@ namespace PdfWriter
 		m_nCurPageNum       = 0;
 		m_bEncrypt          = false;
 		m_pEncryptDict      = NULL;
-		m_unSignature       = 0;
-		m_pSignatureDict    = NULL;
 		m_pInfo             = NULL;
 		m_unCompressMode    = COMP_NONE;
 		m_pJbig2            = NULL;
@@ -205,6 +201,7 @@ namespace PdfWriter
 		m_vCidTTFonts.clear();
 		m_vTTFonts.clear();
 		m_vFreeTypeFonts.clear();
+		m_vSignatures.clear();
 		if (m_pFreeTypeLibrary)
 		{
 			FT_Done_FreeType(m_pFreeTypeLibrary);
@@ -223,11 +220,64 @@ namespace PdfWriter
 		SaveToStream((CStream*)pStream);
 		delete pStream;
 
-		if (m_pSignatureDict)
+		for (unsigned int i = 0; i < m_vSignatures.size(); i++)
 		{
+			CXref* pXrefBefore = m_pXref;
+			m_pXref = new CXref(this, pXrefBefore->GetSizeXRef());
+			if (!m_pXref)
+			{
+				m_pXref = pXrefBefore;
+				continue;
+			}
+			m_pXref->SetPrevAddr(pXrefBefore->GetPrevAddr());
+
+			CSignatureField* pField = CreateSignatureField();
+			if (pField->GetSignatureDict())
+				pField->GetSignatureDict()->SetCert(m_vSignatures[i].pCertificate);
+
+			m_pAcroForm->Add("SigFlags", 3);
+			pField->AddPageRect(m_vSignatures[i].pPage, m_vSignatures[i].oRect);
+			pField->Add("F", 132);
+			pField->SetFieldName("Sig" + std::to_string(i + 1));
+			if (m_vSignatures[i].pImage)
+				pField->SetAppearance(m_vSignatures[i].pImage);
+
+			pStream = new CFileStream();
+			if (!pStream || !pStream->OpenFile(wsPath, false))
+			{
+				RELEASEOBJECT(m_pXref);
+				m_pXref = pXrefBefore;
+				continue;
+			}
+
+			m_pCatalog->UnSet();
+			CXref* pXrefCatalog = new CXref(this, m_pCatalog->GetObjId());
+			pXrefCatalog->Add(m_pCatalog);
+			pXrefCatalog->SetPrev(m_pXref);
+
+			m_vSignatures[i].pPage->UnSet();
+			CXref* pXrefPage = new CXref(this, m_vSignatures[i].pPage->GetObjId());
+			pXrefPage->Add(m_vSignatures[i].pPage);
+			pXrefPage->SetPrev(pXrefCatalog);
+
+			CDictObject* pTrailer = pXrefPage->GetTrailer();
+			m_pTrailer->Copy(pTrailer);
+
+			CEncrypt* pEncrypt = NULL;
+			if (m_bEncrypt)
+				pEncrypt = m_pEncryptDict->GetEncrypt();
+
+			pXrefPage->WriteToStream(pStream, pEncrypt);
+			pXrefPage->Clear();
+			pXrefCatalog->Clear();
+			RELEASEOBJECT(pStream);
+
 			pStream = new CFileStream();
 			if (pStream && pStream->OpenFile(wsPath, false))
-				m_pSignatureDict->WriteToStream(pStream, pStream->Size());
+				pField->GetSignatureDict()->WriteToStream(pStream, pStream->Size());
+
+			RELEASEOBJECT(pXrefPage);
+			m_pXref = pXrefBefore;
 			RELEASEOBJECT(pStream);
 		}
 
@@ -954,7 +1004,6 @@ namespace PdfWriter
 		CSignatureField* pField = new CSignatureField(m_pXref, this);
 		if (!pField)
 			return NULL;
-		m_pSignatureDict = pField->GetSignatureDict();
 
 		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
 		ppFields->Add(pField);
@@ -1294,25 +1343,6 @@ namespace PdfWriter
 	}
 	void CDocument::Sign(const TRect& oRect, CImageDict* pImage, ICertificate* pCertificate)
 	{
-		CSignatureField* pField = CreateSignatureField();
-		if (m_pSignatureDict)
-			m_pSignatureDict->SetCert(pCertificate);
-
-		// 3 ~ 11, где
-		// первый бит - Если установлено, документ содержит как минимум одно поле для подписи,
-		// второй бит - Если установлено, документ содержит подписи, которые могут быть признаны недействительными,
-		// если файл сохраняется таким образом, что изменяется его предыдущее содержимое, в отличие от инкрементного обновления
-		m_pAcroForm->Add("SigFlags", 3);
-
-		pField->AddPageRect(m_pCurPage ? m_pCurPage : m_pPageTree->GetPage(0), oRect);
-		// 3 бит - Печать, печатать аннотацию при печати страницы
-		// 8 бит - Заблокировано, пользователь не может удалить аннотацию или изменить ее свойства
-		pField->Add("F", 132);
-
-		// Частичное имя поля
-		pField->SetFieldName("Sig" + std::to_string(++m_unSignature));
-
-		// Внешнее отображение подписи
-		pField->SetAppearance(pImage);
+		m_vSignatures.push_back({ oRect, m_pCurPage ? m_pCurPage : m_pPageTree->GetPage(0), pImage, pCertificate });
 	}
 }

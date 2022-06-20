@@ -688,6 +688,20 @@ namespace PdfWriter
 
 		m_pStream = pStream;
 	}
+	CDictObject* CDictObject::Copy(CDictObject* pOut)
+	{
+		CDictObject* pDict = pOut ? pOut : new CDictObject();
+		if (!pDict)
+			return NULL;
+
+		for (auto const &oIter : m_mList)
+		{
+			oIter.second->UnSet();
+			pDict->Add(oIter.first, oIter.second);
+		}
+
+		return pDict;
+	}
 	CObjectBase* CDictObject::Copy() const
 	{
 		CDictObject* pDict = new CDictObject();

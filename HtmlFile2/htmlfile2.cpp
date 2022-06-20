@@ -1060,31 +1060,28 @@ private:
                         for(int k = i + 1; k < i + nRowspan; k++)
                             mTable.push_back({k, j, sColspan});
                 }
+
+                NSCSS::CCompiledStyle oStyleSetting = m_oStylesCalculator.GetCompiledStyle({sSelectors.back()}, true);
+                NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle({sSelectors.back()}, false);
+
+                NSCSS::CCompiledStyle::StyleEquation(oStyle, oStyleSetting);
+
+                int nWidth = oStyle.m_pDisplay.GetWidth();
+
+                if (nWidth > 0)
+                        oXml->WriteString(L"<w:tcW w:w=\"" + std::to_wstring(nWidth) + L"\" w:type=\"pct\"/>");
+                else
+                        oXml->WriteString(L"<w:tcW w:w=\"0\" w:type=\"auto\"/>");
+
                 if(nColspan != 1)
                 {
-                        NSCSS::CCompiledStyle oStyleSetting = m_oStylesCalculator.GetCompiledStyle(sSelectors, true);
-                        NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors, false);
-
-                        NSCSS::CCompiledStyle::StyleEquation(oStyle, oStyleSetting);
-
-                        int nWidth = oStyle.m_pDisplay.GetWidth() * 10;
-
-                        if (nWidth > 0)
-                                oXml->WriteString(L"<w:tcW w:type=\"dxa\" w:w=\"" + std::to_wstring(nWidth) + L"\"/>");
-                        else
-                                oXml->WriteString(L"<w:tcW w:type=\"auto\" w:w=\"0\"/>");
-
-
                         oXml->WriteString(L"<w:gridSpan w:val=\"");
                         oXml->WriteString(std::to_wstring(nColspan));
                         oXml->WriteString(L"\"/><w:hideMark/>");
 
                         j += nColspan - 1;
                 }
-                else
-                        oXml->WriteString(L"<w:tcW w:type=\"auto\" w:w=\"0\"/>");
 
-                oXml->WriteString(L"<w:hideMark/>");
                 oXml->WriteString(L"</w:tcPr>");
                 size_t nEmpty = oXml->GetCurSize();
                 m_bWasPStyle = false;
@@ -1186,10 +1183,16 @@ private:
                 wsTable += L"<w:tblCellMar>";
 
                 if (0 < oStyle.m_pMargin.GetTopSide())
-                        wsTable += L"<w:top w:w=\"" + std::to_wstring(static_cast<short int>(oStyle.m_pMargin.GetTopSide() * 20 + 0.5f)) + L"\" w:type=\"dxa\"/>";
+                        wsTable += L"<w:top w:w=\"" + std::to_wstring(static_cast<short int>(oStyle.m_pMargin.GetTopSide() * 10 + 0.5f)) + L"\" w:type=\"dxa\"/>";
+
+                if (0 < oStyle.m_pMargin.GetLeftSide())
+                        wsTable += L"<w:left w:w=\"" + std::to_wstring(static_cast<short int>(oStyle.m_pMargin.GetLeftSide() * 10 + 0.5f)) + L"\" w:type=\"dxa\"/>";
 
                 if (0 < oStyle.m_pMargin.GetBottomSide())
-                        wsTable += L"<w:bottom w:w=\"" + std::to_wstring(static_cast<short int>(oStyle.m_pMargin.GetBottomSide() * 20 + 0.5f)) + L"\" w:type=\"dxa\"/>";
+                        wsTable += L"<w:bottom w:w=\"" + std::to_wstring(static_cast<short int>(oStyle.m_pMargin.GetBottomSide() * 10 + 0.5f)) + L"\" w:type=\"dxa\"/>";
+
+                if (0 < oStyle.m_pMargin.GetRightSide())
+                        wsTable += L"<w:right w:w=\"" + std::to_wstring(static_cast<short int>(oStyle.m_pMargin.GetRightSide() * 10 + 0.5f)) + L"\" w:type=\"dxa\"/>";
 
                 wsTable += L"</w:tblCellMar>";
         }
@@ -1197,6 +1200,7 @@ private:
         if (!wsAlign.empty())
                 wsTable += L"<w:jc w:val=\"" + wsAlign + L"\"/>";
 
+        wsTable += L"<w:tblLook w:val=\"04A0\" w:noVBand=\"1\" w:noHBand=\"0\" w:lastColumn=\"0\" w:firstColumn=\"1\" w:lastRow=\"0\" w:firstRow=\"1\"/>";
         wsTable += L"</w:tblPr>";
 
         // borders

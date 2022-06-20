@@ -7051,25 +7051,33 @@ namespace SimpleTypes
 		SimpleType_FromString     (EDirVal)
 		SimpleType_Operator_Equal (CDirVal)
 	};
+
+	enum ELigaturesFlags
+	{
+		ligaturesFlagStandard     = (1 << 0),
+		ligaturesFlagContextual   = (1 << 1),
+		ligaturesFlagHistorical   = (1 << 2),
+		ligaturesFlagDiscretional = (1 << 3)
+	};
 	
 	enum ELigatures
 	{
-		ligatureNone = 0,
-		ligatureStandard = 1,
-		ligatureContextual = 2,
-		ligatureHistorical = 3,
-		ligatureDiscretional = 4,
-		ligatureStandardContextual = 5,
-		ligatureStandardHistorical = 6,
-		ligatureContextualHistorical = 7,
-		ligatureStandardDiscretional = 8,
-		ligatureContextualDiscretional = 9,
-		ligatureHistoricalDiscretional = 10,
-		ligatureStandardContextualHistorical = 11,
-		ligatureStandardContextualDiscretional = 12,
-		ligatureStandardHistoricalDiscretional = 13,
-		ligatureContextualHistoricalDiscretional = 14,
-		ligatureAll = 15
+		ligatureNone                             = 0,
+		ligatureStandard                         = ligaturesFlagStandard,
+		ligatureContextual                       = ligaturesFlagContextual,
+		ligatureHistorical                       = ligaturesFlagHistorical,
+		ligatureDiscretional                     = ligaturesFlagDiscretional,
+		ligatureStandardContextual               = ligaturesFlagStandard | ligaturesFlagContextual,
+		ligatureStandardHistorical               = ligaturesFlagStandard | ligaturesFlagHistorical,
+		ligatureContextualHistorical             = ligaturesFlagContextual | ligaturesFlagHistorical,
+		ligatureStandardDiscretional             = ligaturesFlagStandard | ligaturesFlagDiscretional,
+		ligatureContextualDiscretional           = ligaturesFlagContextual | ligaturesFlagDiscretional,
+		ligatureHistoricalDiscretional           = ligaturesFlagHistorical | ligaturesFlagDiscretional,
+		ligatureStandardContextualHistorical     = ligaturesFlagStandard | ligaturesFlagContextual | ligaturesFlagHistorical,
+		ligatureStandardContextualDiscretional   = ligaturesFlagStandard | ligaturesFlagContextual | ligaturesFlagDiscretional,
+		ligatureStandardHistoricalDiscretional   = ligaturesFlagStandard  | ligaturesFlagHistorical | ligaturesFlagDiscretional,
+		ligatureContextualHistoricalDiscretional = ligaturesFlagContextual | ligaturesFlagHistorical | ligaturesFlagDiscretional,
+		ligatureAll                              = ligaturesFlagStandard | ligaturesFlagContextual | ligaturesFlagHistorical | ligaturesFlagDiscretional
 	};
 
 	template<ELigatures eDefValue = ligatureStandard>

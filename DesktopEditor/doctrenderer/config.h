@@ -82,6 +82,12 @@ namespace NSDoctRenderer
 
     public:
 
+        void SetAllFontsExternal(const std::wstring& sFilePath)
+        {
+            m_strAllFonts = private_GetFile(NSFile::GetProcessDirectory() + L"/", sFilePath);
+            m_bIsNotUseConfigAllFontsDir = true;
+        }
+
         void Parse(const std::wstring& sWorkDir)
         {
             m_arrFiles.clear();
@@ -112,7 +118,7 @@ namespace NSDoctRenderer
                     std::wstring sAllFontsPath = oNode.ReadNodeText(L"allfonts");
                     if (!sAllFontsPath.empty())
                     {
-                        m_strAllFonts = sAllFontsPath;
+                        m_strAllFonts = private_GetFile(sConfigDir, sAllFontsPath);
                     }
                 }
                 m_arrFiles.push_back(private_GetFile(sConfigDir, m_strAllFonts));

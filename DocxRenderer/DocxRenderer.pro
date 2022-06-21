@@ -26,9 +26,12 @@ LIBS += -lgdi32 \
 }
 
 HEADERS += \
+    src/logic/ElementOldShape.h \
+    src/logic/ElementShape.h \
     src/resources/ColorTable.h \
     src/resources/Constants.h \
     src/resources/SingletonTemplate.h \
+    src/resources/VectorGraphics.h \
     src/resources/resources.h \
     \
     src/logic/Common.h \
@@ -36,7 +39,6 @@ HEADERS += \
     src/logic/Document.h \
     src/logic/ElementImage.h \
     src/logic/ElementParagraph.h \
-    src/logic/ElementShape.h \
     src/logic/FontManager.h \
     src/logic/FontManagerBase.h \
     \
@@ -44,11 +46,13 @@ HEADERS += \
 
 SOURCES += \
     src/logic/Document.cpp \
+    src/logic/ElementOldShape.cpp \
     src/logic/ElementParagraph.cpp \
     src/logic/ElementShape.cpp \
     src/logic/FontManager.cpp \
     src/logic/FontManagerBase.cpp \
     src/logic/Page.cpp \
+    src/resources/VectorGraphics.cpp \
     src/resources/resources.cpp \
     \
     DocxRenderer.cpp

@@ -594,7 +594,7 @@ namespace NSStructures
 		}
 		CFont &operator=(const CFont &other)
 		{
-			Name = other.Name;
+            Name = other.Name;
 			Path = other.Path;
 			Size = other.Size;
 			Bold = other.Bold;

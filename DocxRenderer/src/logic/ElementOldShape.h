@@ -1,5 +1,5 @@
-#ifndef DOCX_ELEMENT_NEW_SHAPE_H
-#define DOCX_ELEMENT_NEW_SHAPE_H
+﻿#ifndef DOCX_RENDERER_ELEMENT_SHAPE_H
+#define DOCX_RENDERER_ELEMENT_SHAPE_H
 
 #include "Common.h"
 #include "../resources/VectorGraphics.h"
@@ -7,10 +7,17 @@
 
 namespace NSDocxRenderer
 {
-    class CShape : public CBaseItem
+    class COldShape : public CBaseItem
     {
         public:
-            std::wstring            m_strPath;
+            //Подобранные константы
+            static const double POSITION_CORRECTION_FOR_X_MM;
+            static const double POSITION_CORRECTION_FOR_Y_MM;
+            static const double SIZE_CORRECTION_FOR_X_MM;
+            static const double SIZE_CORRECTION_FOR_Y_MM;
+
+        public:
+            std::wstring m_strPath;
             NSStructures::CBrush	m_oBrush;
             NSStructures::CPen		m_oPen;
 
@@ -32,13 +39,12 @@ namespace NSDocxRenderer
             CFontManagerLight* m_pManagerLight;
 
         public:
-            CShape();
-            virtual ~CShape();
+            COldShape();
+            COldShape(const COldShape& oSrc);
+            virtual ~COldShape();
             virtual void Clear();
 
-            CShape(const CShape& oSrc);
-
-            CShape& operator=(const CShape& oSrc);
+            COldShape& operator=(const COldShape& oSrc);
 
             void GetDataFromVector(const CVectorGraphics& oVector, const LONG& lType, const LONG& lCoordSize);
 
@@ -48,4 +54,4 @@ namespace NSDocxRenderer
     };
 };
 
-#endif // DOCX_ELEMENT_NEW_SHAPE_H
+#endif // DOCX_RENDERER_ELEMENT_SHAPE_H

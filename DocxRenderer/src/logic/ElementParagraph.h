@@ -135,7 +135,7 @@ namespace NSDocxRenderer
         CContText();
         ~CContText(){}
 
-        inline void Clear();
+        void Clear();
 
         CContText(const CContText& oSrc);
 
@@ -268,9 +268,9 @@ namespace NSDocxRenderer
     public:
         CParagraph(const TextAssociationType& eType);
         CParagraph(const CParagraph& oSrc);
-        ~CParagraph();
+        virtual ~CParagraph();
+        virtual void Clear();
 
-        void Clear();
         CParagraph& operator=(const CParagraph& oSrc);
 
         virtual void ToXml(NSStringUtils::CStringBuilder& oWriter);

@@ -1,7 +1,10 @@
-﻿#pragma once
-#include "ElementShape.h"
+﻿#ifndef DOCX_PAGE_H
+#define DOCX_PAGE_H
+
+#include "ElementOldShape.h"
 #include "ElementParagraph.h"
 #include "ElementImage.h"
+#include "ElementShape.h"
 
 namespace NSDocxRenderer
 {
@@ -9,11 +12,11 @@ namespace NSDocxRenderer
     {
         return (' ' == c) ? true : false;
     }
-    inline bool IsSpaceUtf32(NSStringUtils::CStringUTF32& oText)
+    inline bool IsSpaceUtf32(const NSStringUtils::CStringUTF32& oText)
     {
         if (1 != oText.length())
             return false;
-        return IsSpaceUtf32(oText[0]);
+        return IsSpaceUtf32(oText.ToStdWString()[0]);
     }
 
     inline bool IsUnicodeSymbol( int symbol )
@@ -62,8 +65,6 @@ namespace NSDocxRenderer
 
         TextAssociationType m_eTextAssociationType;
 
-        NSStringUtils::CStringBuilder m_oWriterVML;
-
         bool m_bIsDeleteTextClipPage;
 
         double m_dLastTextX;
@@ -105,6 +106,8 @@ namespace NSDocxRenderer
                              const double& fX, const double& fY, const double& fWidth, const double& fHeight,
                              const double& fBaseLineOffset, const bool& bIsPDFAnalyzer);
 
+        void AnalyzeCollectedGraphics();
+
         //Собранные для текущей страницы данные нужно проанализировать и сгруппировать, лишнее удалить
         void AnalyzeCollectedData();
 
@@ -131,6 +134,7 @@ namespace NSDocxRenderer
         double RightBorderCorrection(double dCurrentWidth);
 
         void CreateSingleLineParagraph(CTextLine *pLine, const double *pRight, const double *pBeforeSpacing);
+        void CreateSingleLineOldShape(CTextLine *pLine);
         void CreateSingleLineShape(CTextLine *pLine);
 
         bool IsLineCrossingText(const CShape* pGraphicItem, CContText* pContText);
@@ -138,3 +142,5 @@ namespace NSDocxRenderer
         bool IsItHighlightingBackground(const CShape* pGraphicItem, CContText* pContText);
     };
 }
+
+#endif // DOCX_PAGE_H

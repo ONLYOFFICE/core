@@ -11,7 +11,7 @@
 #include "../DesktopEditor/common/Directory.h"
 #include "../DesktopEditor/xml/include/xmlutils.h"
 #include "../DesktopEditor/graphics/pro/Graphics.h"
-#include "src/resources/Constants.h"
+#include "../resources/Constants.h"
 #include <algorithm>
 #include <map>
 
@@ -29,21 +29,34 @@ namespace NSDocxRenderer
 		{
 			etParagraph	= 0,
 			etImage		= 1,
-			etShape		= 2
+            etShape		= 2,
+            etOldShape  = 3,
 		};
 
 		ElemType m_eType;
 
         bool m_bIsNotNecessaryToUse;
 
-		CBaseItem()
-		{
-			m_eType = etShape;
-            m_bIsNotNecessaryToUse = false;
-		}
+    public:
+        CBaseItem(const ElemType& eType):
+            m_eType(eType), m_bIsNotNecessaryToUse(false) {}
         virtual ~CBaseItem() {}
 
+        CBaseItem& operator=(const CBaseItem& oSrc)
+        {
+            if (this == &oSrc)
+            {
+                return *this;
+            }
+
+            m_eType                 = oSrc.m_eType;
+            m_bIsNotNecessaryToUse	= oSrc.m_bIsNotNecessaryToUse;
+
+            return *this;
+        }
+
         virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) = 0;
+        virtual void Clear() = 0;
 	};
 
     class CImageInfo

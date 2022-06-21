@@ -30,7 +30,7 @@ namespace NSDocxRenderer
         return *this;
     }
 
-    CFontManager::CFontManager(NSFonts::IApplicationFonts* pFonts) : m_pFont(NULL), CFontManagerBase(pFonts)
+    CFontManager::CFontManager(NSFonts::IApplicationFonts* pFonts) : CFontManagerBase(pFonts), m_pFont(NULL)
     {
         m_pTransform = NULL;
         m_dSpaceWidthMM = 0;

@@ -9,6 +9,9 @@
     const double c_dPtToMM		= 25.4 / 72.0;
     const double c_dMMToPt		= 72.0 / 25.4;
     const double c_dMMToDx	    = 72 * 20 / 25.4;
+    const double c_dMMToEMU	    = 36000.0;
+    const double c_dInchToEMU	= 914400.0;
+    const double c_dPtToEMU  	= 12700.0;
 
     const double c_dSTANDART_STRING_HEIGHT_MM	    = 4.2333333333333334;
     const double c_dTHE_SAME_STRING_Y_PRECISION_MM  = 0.01;

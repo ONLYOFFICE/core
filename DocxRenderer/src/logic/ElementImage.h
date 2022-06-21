@@ -19,25 +19,32 @@ namespace NSDocxRenderer
 		double m_dRotate;
 
 	public:
-        CImage() : CBaseItem()
+        CImage() : CBaseItem(etImage)
 		{
-			m_eType		= etImage;
             m_strPath	= L"";
 			m_lID		= -1;
 		}
-        CImage(const CImage& oSrc) : CBaseItem()
+        CImage(const CImage& oSrc) : CBaseItem(etImage)
 		{
 			*this = oSrc;
 		}
-        CImage(const CImageInfo& oInfo, const std::wstring& strDstMedia) : CBaseItem()
+        CImage(const CImageInfo& oInfo, const std::wstring& strDstMedia) : CBaseItem(etImage)
 		{
 			m_eType		= etImage;
 			m_strPath	= strDstMedia;
             m_lID		= oInfo.m_nId;
 		}
-		CImage& operator=(const CImage& oSrc)
+        virtual void Clear(){}
+
+        CImage& operator=(const CImage& oSrc)
 		{
-			m_eType		= etImage;
+            if (this == &oSrc)
+            {
+                return *this;
+            }
+
+            CBaseItem::operator=(oSrc);
+
 			m_strPath	= oSrc.m_strPath;
 			m_lID		= oSrc.m_lID;
 

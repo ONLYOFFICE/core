@@ -128,12 +128,6 @@ namespace NSDocxRenderer
         oWriter.WriteString(L"<w:r>");
         oWriter.WriteString(L"<w:rPr>");
 
-        if (m_dWidth != m_dWidthWithoutSpaces)
-        {
-            RemoveSpacesAtBothEnds(m_oText);
-            m_dWidth = m_dWidthWithoutSpaces;
-        }
-
         if (m_strPickFontName.empty())
         {
             if (m_oFont.Bold)
@@ -161,7 +155,7 @@ namespace NSDocxRenderer
             }
 
             // нужно перемерять...
-            double ___dSize = (double)((LONG)(m_oFont.Size * 2)) / 2;
+            double ___dSize = (double)(static_cast<LONG>(m_oFont.Size * 2)) / 2;
             pManagerLight->LoadFont(m_strPickFontName, m_lPickFontStyle, ___dSize, false);
             double dWidth = pManagerLight->MeasureStringWidth(m_oText.ToStdWString());
 
@@ -171,12 +165,12 @@ namespace NSDocxRenderer
                 dSpacing *= c_dMMToDx;
 
                 oWriter.WriteString(L"<w:spacing w:val=\"");
-                oWriter.AddInt((int)dSpacing);
+                oWriter.AddInt(static_cast<int>(dSpacing));
                 oWriter.WriteString(L"\"/>");
             }
         }
 
-        int lSize = (int)(2 * m_oFont.Size);
+        int lSize = static_cast<int>(2 * m_oFont.Size);
         oWriter.WriteString(L"<w:sz w:val=\"");
         oWriter.AddInt(lSize);
         oWriter.WriteString(L"\"/><w:szCs w:val=\"");
@@ -229,7 +223,8 @@ namespace NSDocxRenderer
 
         oWriter.WriteString(L"</w:rPr>");
 
-        oWriter.WriteString(L"<w:t xml:space=\"preserve\">");
+        //oWriter.WriteString(L"<w:t>");
+        oWriter.WriteString(L"<w:t xml:space=\"preserve\">"); //тест
         oWriter.WriteEncodeXmlString(m_oText.ToStdWString());
         oWriter.WriteString(L"</w:t>");
 
@@ -280,9 +275,9 @@ namespace NSDocxRenderer
         oWriter.WriteHexInt3(ConvertColorBGRToRGB(m_oBrush.Color1));
         oWriter.WriteString(L"\"/>");
 
-        LONG lSpacing = (LONG)((dSpacingMM - dSpaceMMSize) * c_dMMToDx);
+        LONG lSpacing = static_cast<LONG>((dSpacingMM - dSpaceMMSize) * c_dMMToDx);
         oWriter.WriteString(L"<w:spacing w:val=\"");
-        oWriter.AddInt((int)lSpacing);
+        oWriter.AddInt(static_cast<int>(lSpacing));
         oWriter.WriteString(L"\"/>");
 
         oWriter.WriteString(L"</w:rPr>");
@@ -314,11 +309,9 @@ namespace NSDocxRenderer
     }
     void CTextLine::Clear()
     {
-        for (std::vector<CContText*>::iterator iter = m_arConts.begin();
-             iter != m_arConts.end(); iter++)
+        for (size_t i = 0; i < m_arConts.size(); i++)
         {
-            CContText* pText = *iter;
-            RELEASEOBJECT(pText);
+            RELEASEOBJECT(m_arConts[i]);
         }
         m_arConts.clear();
     }
@@ -340,9 +333,10 @@ namespace NSDocxRenderer
         }
 
         Clear();
-        for (std::vector<CContText*>::const_iterator iter = oSrc.m_arConts.begin(); iter != oSrc.m_arConts.end(); iter++)
+
+        for (size_t i = 0; i < oSrc.m_arConts.size(); i++)
         {
-            m_arConts.push_back(new CContText(*(*iter)));
+            m_arConts.push_back(new CContText(*oSrc.m_arConts[i]));
         }
 
         m_dBaselinePos	= oSrc.m_dBaselinePos;
@@ -623,10 +617,9 @@ namespace NSDocxRenderer
         pPrev->Write(oWriter, pManagerLight);
     }
 
-    CParagraph::CParagraph(const TextAssociationType& eType) : CBaseItem(), m_arLines()
+    CParagraph::CParagraph(const TextAssociationType& eType):
+        CBaseItem(etParagraph), m_arLines()
     {
-        m_eType = etParagraph;
-
         m_eTextConversionType	 = tctUnknown;
         m_bIsNeedFirstLineIndent = false;
         m_bIsAroundTextWrapping  = true; //по умолчанию в word
@@ -648,7 +641,8 @@ namespace NSDocxRenderer
 
         m_nNumLines  = 0;
     }
-    CParagraph::CParagraph(const CParagraph& oSrc) : CBaseItem()
+    CParagraph::CParagraph(const CParagraph& oSrc):
+        CBaseItem(etParagraph)
     {
         *this = oSrc;
     }
@@ -659,11 +653,9 @@ namespace NSDocxRenderer
 
     void CParagraph::Clear()
     {
-        size_t nCount = m_arLines.size();
-        for (size_t i = 0; i < nCount; ++i)
+        for (size_t i = 0; i < m_arLines.size(); ++i)
         {
-            CTextLine* pText = m_arLines[i];
-            RELEASEOBJECT(pText);
+            RELEASEOBJECT(m_arLines[i]);
         }
         m_arLines.clear();
 
@@ -677,7 +669,7 @@ namespace NSDocxRenderer
             return *this;
         }
 
-        m_eType = etParagraph;
+        CBaseItem::operator=(oSrc);
 
         m_eTextConversionType	 = oSrc.m_eTextConversionType;
         m_bIsNeedFirstLineIndent = oSrc.m_bIsNeedFirstLineIndent;
@@ -738,11 +730,11 @@ namespace NSDocxRenderer
             oWriter.WriteString(L" w:vAnchor=\"page\"");
 
             oWriter.WriteString(L" w:x=\"");
-            oWriter.AddInt((int)(m_dLeft * c_dMMToDx));
+            oWriter.AddInt(static_cast<int>(m_dLeft * c_dMMToDx));
             oWriter.WriteString(L"\"");
 
             oWriter.WriteString(L" w:y=\"");
-            oWriter.AddInt((int)(m_dTop * c_dMMToDx));
+            oWriter.AddInt(static_cast<int>(m_dTop * c_dMMToDx));
             oWriter.WriteString(L"\"");
 
             oWriter.WriteString(L"/>"); //конец w:framePr
@@ -755,41 +747,40 @@ namespace NSDocxRenderer
             if (m_eTextConversionType == tctTextToParagraph)
             {
                 oWriter.WriteString(L" w:before=\"");
-                oWriter.AddInt((int)(m_dSpaceBefore * c_dMMToDx));
+                oWriter.AddInt(static_cast<int>(m_dSpaceBefore * c_dMMToDx));
                 oWriter.WriteString(L"\"");
             }
 
             if (m_eTextConversionType == tctTextToShape)
             {
                 oWriter.WriteString(L" w:after=\"");
-                oWriter.AddInt((int)(m_dSpaceAfter * c_dMMToDx));
+                oWriter.AddInt(static_cast<int>(m_dSpaceAfter * c_dMMToDx));
                 oWriter.WriteString(L"\"");
             }
-            //if (m_eTextConversionType == TextToParagraph)
-            {
-                oWriter.WriteString(L" w:line=\"");
-                oWriter.AddInt((int)(m_dHeight * c_dMMToDx));
-                oWriter.WriteString(L"\" w:lineRule=\"exact\""); // exact - точный размер строки
-            }
+
+            oWriter.WriteString(L" w:line=\"");
+            oWriter.AddInt(static_cast<int>(m_dHeight * c_dMMToDx));
+            oWriter.WriteString(L"\" w:lineRule=\"exact\""); // exact - точный размер строки
+
             oWriter.WriteString(L"/>"); //конец w:spacing
 
             oWriter.WriteString(L"<w:ind");
             if (m_dLeft > 0)
             {
                 oWriter.WriteString(L" w:left=\"");
-                oWriter.AddInt((int)(m_dLeft * c_dMMToDx));
+                oWriter.AddInt(static_cast<int>(m_dLeft * c_dMMToDx));
                 oWriter.WriteString(L"\"");
             }
             if (m_eTextAssociationType == tatPlainParagraph && m_dRight > 0)
             { 
                 oWriter.WriteString(L" w:right=\"");
-                oWriter.AddInt((int)(m_dRight * c_dMMToDx));
+                oWriter.AddInt(static_cast<int>(m_dRight * c_dMMToDx));
                 oWriter.WriteString(L"\"");
             }
             if (m_bIsNeedFirstLineIndent)
             {
                 oWriter.WriteString(L" w:firstLine=\"");
-                oWriter.AddInt((int)(m_dFirstLine * c_dMMToDx));
+                oWriter.AddInt(static_cast<int>(m_dFirstLine * c_dMMToDx));
                 oWriter.WriteString(L"\"");
             }
             oWriter.WriteString(L"/>"); //конец w:ind

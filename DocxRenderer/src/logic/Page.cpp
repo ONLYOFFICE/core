@@ -44,8 +44,6 @@ namespace NSDocxRenderer
 
         m_pCurrentLine = NULL;
 
-        m_oWriterVML.AddSize(1000);
-
         m_dLastTextX = -1;
         m_dLastTextY = -1;
         m_dLastTextX_block = m_dLastTextX;
@@ -60,8 +58,6 @@ namespace NSDocxRenderer
 
         m_pCurrentLine = NULL;
 
-        m_oWriterVML.ClearNoAttack();
-
         m_dLastTextX = -1;
         m_dLastTextY = -1;
         m_dLastTextX_block = m_dLastTextX;
@@ -69,44 +65,36 @@ namespace NSDocxRenderer
 
     void CPage::ClearTextData()
     {
-        size_t nCount = m_arTextData.size();
-        for (size_t i = 0; i < nCount; ++i)
+        for (size_t i = 0; i < m_arTextData.size(); ++i)
         {
-            CContText* pTemp = m_arTextData[i];
-            RELEASEOBJECT(pTemp);
+            RELEASEOBJECT(m_arTextData[i]);
         }
         m_arTextData.clear();
     }
 
     void CPage::ClearTextLines()
     {
-        size_t nCount = m_arTextLine.size();
-        for (size_t i = 0; i < nCount; ++i)
+        for (size_t i = 0; i < m_arTextLine.size(); ++i)
         {
-            CTextLine* pTemp = m_arTextLine[i];
-            RELEASEOBJECT(pTemp);
+            m_arTextLine[i]->Clear();
         }
         m_arTextLine.clear();
     }
 
     void CPage::ClearGraphicItems()
     {
-        size_t nCount = m_arGraphicItems.size();
-        for (size_t i = 0; i < nCount; ++i)
+        for (size_t i = 0; i < m_arGraphicItems.size(); ++i)
         {
-            CBaseItem* pTemp = m_arGraphicItems[i];
-            RELEASEOBJECT(pTemp);
+            m_arGraphicItems[i]->Clear();
         }
         m_arGraphicItems.clear();
     }
 
     void CPage::ClearParagraphs()
     {
-        size_t nCount = m_arParagraphs.size();
-        for (size_t i = 0; i < nCount; ++i)
+        for (size_t i = 0; i < m_arParagraphs.size(); ++i)
         {
-            CParagraph* pTemp = m_arParagraphs[i];
-            RELEASEOBJECT(pTemp);
+            m_arParagraphs[i]->Clear();
         }
         m_arParagraphs.clear();
     }
@@ -131,8 +119,7 @@ namespace NSDocxRenderer
         {
             return;
         }
-        size_t nCount = m_arTextLine.size();
-        for (size_t i = 0; i < nCount; ++i)
+        for (size_t i = 0; i < m_arTextLine.size(); ++i)
         {
             if (fabs(m_arTextLine[i]->m_dBaselinePos - dBaseLinePos) <= c_dTHE_SAME_STRING_Y_PRECISION_MM)
             {
@@ -283,7 +270,6 @@ namespace NSDocxRenderer
     void CPage::End()
     {
         m_oVector.End();
-        m_oWriterVML.ClearNoAttack();
     }
     void CPage::Close()
     {
@@ -301,8 +287,9 @@ namespace NSDocxRenderer
             pShape->m_oBrush	= *m_pBrush;
 
             // нормализуем толщину линии
-            double dScaleTransform = (m_pTransform->sx() + m_pTransform->sy()) / 2.0;
-            pShape->m_oPen.Size *= dScaleTransform;
+            // todo ломает границы - всегда 0
+            //double dScaleTransform = (m_pTransform->sx() + m_pTransform->sy()) / 2.0;
+            //pShape->m_oPen.Size *= dScaleTransform;
 
             if ((lType & 0x01) == 0x00)
             {
@@ -315,7 +302,8 @@ namespace NSDocxRenderer
                 }
             }
 
-            pShape->CreateFromVectorData(&m_oVector, m_oWriterVML, 100000, lType);
+            pShape->GetDataFromVector(m_oVector, lType, 100000);
+
             m_arGraphicItems.push_back(pShape);
         }
     }
@@ -324,6 +312,12 @@ namespace NSDocxRenderer
                                 const double& fX, const double& fY, const double& fWidth, const double& fHeight,
                                 const double& fBaseLineOffset, const bool& bIsPDFAnalyzer)
     {
+        if (pUnicodes != NULL && *pUnicodes == ' ')
+        {
+            //note пробелы не нужны, добавляются при анализе
+            return;
+        }
+
         double dTextX = fX;
         double dTextY = fY;
         double dTextR = fX + fWidth;
@@ -343,7 +337,7 @@ namespace NSDocxRenderer
             {
                 if ( !IsUnicodeSymbol( pUnicodes[i] ) )
                 {
-                    oText[i] = ' ';
+                    oText[i] = ' '; //' '
                 }
             }
         }
@@ -375,8 +369,6 @@ namespace NSDocxRenderer
             }
 
             dTextW = _w;
-            //todo
-            //dTextW *= c_dPixToMM;
         }
 
         double dBaseLinePos = dTextY + fBaseLineOffset;
@@ -420,19 +412,24 @@ namespace NSDocxRenderer
         m_arTextData.push_back(pCont);
     }
 
+    void CPage::AnalyzeCollectedGraphics()
+    {
+        //todo Объеденить контур и заливку одного рисунка в шейпе если m_strPath одинаковые
+    }
+
     void CPage::AnalyzeCollectedData()
     {
         for (size_t i = 0; i < m_arGraphicItems.size(); ++i)
         {
             CBaseItem* pImage = m_arGraphicItems[i];
 
-            if (pImage->m_eType != CBaseItem::etShape)
+            if (pImage->m_eType != CBaseItem::etShape &&
+                pImage->m_eType != CBaseItem::etOldShape )
             {
                 continue;
             }
 
             //note параллельно для каждой текстовой строки создается шейп, который содержит цвет фона для данного текста.
-
             if (dynamic_cast<CShape*>(pImage)->m_dHeight > dynamic_cast<CShape*>(pImage)->m_dWidth || //фигуры должны быть похожи на линию
                 dynamic_cast<CShape*>(pImage)->m_oBrush.Color1 == 0xFFFFFF) //и цвет не белый
                 //todo по идее выделение текста должно отличаться от фона всей страницы, но условие пока не работает с черным цветом
@@ -555,6 +552,7 @@ namespace NSDocxRenderer
     {
         for (size_t i = 0; i < m_arTextData.size(); i++)
         {
+            //note Элементы в m_arTextData в случайных местах страницы
             BuildLines(m_arTextData[i]);
         }
     }
@@ -593,7 +591,8 @@ namespace NSDocxRenderer
         if (pLastCont->m_eUnderlineType == pContText->m_eUnderlineType &&
             pLastCont->m_bIsHighlightPresent == pContText->m_bIsHighlightPresent &&
             pLastCont->m_lHighlightColor == pContText->m_lHighlightColor &&
-            pLastCont->m_oFont.IsEqual(&pContText->m_oFont) && pLastCont->m_oBrush.IsEqual(&pContText->m_oBrush))
+            pLastCont->m_oFont.IsEqual(&pContText->m_oFont) &&
+            pLastCont->m_oBrush.IsEqual(&pContText->m_oBrush))
         {
             // настройки одинаковые. теперь смотрим, на расположение
             if (fabs(dRight - dTextX) < 0.5)
@@ -623,11 +622,7 @@ namespace NSDocxRenderer
             else if ((dRight < dTextX) && ((dTextX - dRight) < pContText->m_dSpaceWidthMM))
             {
                 // продолжаем слово с пробелом
-                if (m_eTextAssociationType != tatPlainParagraph &&
-                    m_eTextAssociationType != tatShapeLine)
-                {
-                    pLastCont->m_oText += uint32_t(' ');
-                }
+                pLastCont->m_oText += uint32_t(' '); //' '
                 pLastCont->m_oText += oText;
                 pLastCont->m_dWidth	= (dTextX + dTextW - pLastCont->m_dX);
 
@@ -687,11 +682,7 @@ namespace NSDocxRenderer
                 if (dTextX > dRight && (dTextX - dRight) < 5 && fabs(m_dLastTextX_block - m_dLastTextX) < 0.01)
                 {
                     // продолжаем слово с пробелом
-                    if (m_eTextAssociationType != tatPlainParagraph &&
-                        m_eTextAssociationType != tatShapeLine)
-                    {
-                        pLastCont->m_oText += uint32_t(' ');
-                    }
+                    pLastCont->m_oText += uint32_t(' '); //' '
                     pLastCont->m_oText += oText;
                     pLastCont->m_dWidth	= (dTextX + dTextW - pLastCont->m_dX);
 
@@ -863,13 +854,14 @@ namespace NSDocxRenderer
 
     void CPage::BuildByTypePlainParagraph()
     {
-        //todo пробелы опять не добавляются
         //todo смещение текста по высоте при использовании шейпов
         //todo не отображается перенос в линии
         //todo если в линии есть перенос нужно обеъдинить строки в один параграф
         //todo сноски не работают - формат сохраняется на всю строку - переделать в шейпы
         //todo шрифты явно получаются шире чем в оригинале(видно по подчеркиваниям и правым границам оригинала) - за счет этого увеличивается ширина строки - временное решение RightBorderCorrection();
         //todo выставить шейпы перед основным текстом, чтобы были доступны дря редактирования
+
+        //todo в зависимости от очередности загрузки файлов проявляется проблема со шрифтами - текст в некоторых конвертированных файлах становится жирным, бывает зачеркнутым. С одним файлом проблем не наблюдалось
 
         //todo добавить различные типы текста для распознавания: обычный-сплошной, списки-содержание и тд
 
@@ -1079,15 +1071,15 @@ namespace NSDocxRenderer
                 CreateSingleLineParagraph(pCurrLine, &dCurrRight, &dCurrBeforeSpacing);
 
                 //или будет шейпом для теста - вроде неплохо работает без учета проблем в todo
-                //CreateSingleLineShape(pCurrLine);
+                /*CreateSingleLineShape(pCurrLine);
 
-                //double dCurrentAdditive = pCurrLine->m_dHeight + std::max(dCurrBeforeSpacing, 0.0);
-                /*if (pNextLine && pCurrLine->AreLinesCrossing(pNextLine))
+                double dCurrentAdditive = pCurrLine->m_dHeight + std::max(dCurrBeforeSpacing, 0.0);
+                if (pNextLine && pCurrLine->AreLinesCrossing(pNextLine))
                 {
                     dNextBeforeSpacing = pNextLine->CalculateBeforeSpacing(&dPreviousStringOffset);
                     dCurrentAdditive -= pNextLine->m_dHeight + dNextBeforeSpacing;//std::max(dNextBeforeSpacing, 0.0);
-                }*/
-                //dBeforeSpacingWithShapes += dCurrentAdditive;
+                }
+                dBeforeSpacingWithShapes += dCurrentAdditive;*/
             }
         }
     }
@@ -1125,6 +1117,27 @@ namespace NSDocxRenderer
         m_arParagraphs.push_back(pParagraph);
     }
 
+    void CPage::CreateSingleLineOldShape(CTextLine *pLine)
+    {
+        CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
+        pParagraph->m_pManagerLight = &m_oManagerLight;
+        pParagraph->m_eTextConversionType = CParagraph::tctTextToShape;
+        pParagraph->m_arLines.push_back(pLine);
+
+        COldShape* pShape = new COldShape();
+        pShape->m_arParagraphs.push_back(pParagraph);
+
+        //todo В итоге Left и Top смещаются на несколько мм. Пока не понял чем это вызвано.
+        pShape->m_dLeft	= pLine->m_dX - COldShape::POSITION_CORRECTION_FOR_X_MM; //подобранная константа
+        pShape->m_dTop	= pLine->m_dBaselinePos - pLine->m_dHeight - pLine->m_dBaselineOffset - COldShape::POSITION_CORRECTION_FOR_Y_MM;//подобранная константа
+        //todo Width и Height маловаты и текст обрезается. разобраться почему
+        pShape->m_dWidth = pLine->m_dWidth + COldShape::SIZE_CORRECTION_FOR_X_MM; //5мм мало для длинной строки
+        pShape->m_dHeight = pLine->m_dHeight + COldShape::SIZE_CORRECTION_FOR_Y_MM;
+        pShape->m_pManagerLight = &m_oManagerLight;
+
+        m_arGraphicItems.push_back(pShape);
+    }
+
     void CPage::CreateSingleLineShape(CTextLine *pLine)
     {
         CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
@@ -1135,13 +1148,14 @@ namespace NSDocxRenderer
         CShape* pShape = new CShape();
         pShape->m_arParagraphs.push_back(pParagraph);
 
-        //todo В итоге Left и Top смещаются на несколько мм. Пока не понял чем это вызвано.
-        pShape->m_dLeft	= pLine->m_dX - CShape::POSITION_CORRECTION_FOR_X_MM; //подобранная константа
-        pShape->m_dTop	= pLine->m_dBaselinePos - pLine->m_dHeight - pLine->m_dBaselineOffset - CShape::POSITION_CORRECTION_FOR_Y_MM;//подобранная константа
-        //todo Width и Height маловаты и текст обрезается. разобраться почему
-        pShape->m_dWidth = pLine->m_dWidth + CShape::SIZE_CORRECTION_FOR_X_MM; //5мм мало для длинной строки
-        pShape->m_dHeight = pLine->m_dHeight + CShape::SIZE_CORRECTION_FOR_Y_MM;
+        pShape->m_dLeft	= pLine->m_dX;
+        pShape->m_dTop	= pLine->m_dBaselinePos - pLine->m_dHeight - pLine->m_dBaselineOffset;
+        pShape->m_dWidth = pLine->m_dWidth + RightBorderCorrection(pLine->m_dWidth);
+        pShape->m_dHeight = pLine->m_dHeight;
         pShape->m_pManagerLight = &m_oManagerLight;
+
+        pShape->m_bIsNoFill = true;
+        pShape->m_bIsNoStroke = true;
 
         m_arGraphicItems.push_back(pShape);
     }
@@ -1179,7 +1193,9 @@ namespace NSDocxRenderer
         size_t nCountDrawings = m_arGraphicItems.size();
         if (0 != nCountDrawings)
         {
-            oWriter.WriteString(L"<w:p><w:pPr><w:spacing w:line=\"1\" w:lineRule=\"exact\"/></w:pPr>");
+            oWriter.WriteString(L"<w:p>");
+            //note при удалении строки откуда-то добавляется <w:p/> в начале страницы (если есть графика и текст), что добавляет дополнительную строку и сдвигает текст
+            oWriter.WriteString(L"<w:pPr><w:spacing w:line=\"1\" w:lineRule=\"exact\"/></w:pPr>");
 
             for (size_t i = 0; i < nCountDrawings; ++i)
             {

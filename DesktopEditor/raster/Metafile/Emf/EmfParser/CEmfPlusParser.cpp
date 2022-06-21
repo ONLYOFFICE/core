@@ -75,6 +75,8 @@
 
 #include "../../Common/CPathConverter.h"
 
+#include "../../../BgraFrame.h"
+
 namespace MetaFile
 {
         static std::map<unsigned short, std::wstring> ActionNamesEmfPlus =
@@ -181,10 +183,17 @@ namespace MetaFile
                         delete[] pIter->second;
         }
 
+        #ifdef  METAFILE_DISABLE_FILESYSTEM
+        bool CEmfPlusParser::ReadFromBuffer(BYTE *pBuffer, unsigned int unSize)
+        {
+                return false;
+        }
+        #else
         bool CEmfPlusParser::OpenFromFile(const wchar_t *wsFilePath)
         {
                 return false;
         }
+        #endif
 
         void CEmfPlusParser::SetStream(BYTE *pBytes, unsigned int unSize)
         {
@@ -1257,8 +1266,9 @@ namespace MetaFile
                 {
                         CEmfParser oEmfParser;
                         oEmfParser.SetStream(pBuffer, unSize);
-                        #ifdef METAFILE_SUPPORT_TEXT_ENGINE
-                                oEmfParser.SetFontManager(GetFontManager());
+                        #ifdef METAFILE_DISABLE_FILESYSTEM
+                        #else
+                        oEmfParser.SetFontManager(GetFontManager());
                         #endif
                         oEmfParser.Scan();
 
@@ -1266,8 +1276,9 @@ namespace MetaFile
                         {
                                 CGraphicsRenderer oRenderer;
 
-                                #ifdef METAFILE_SUPPORT_TEXT_ENGINE
-                                        oRenderer.SetFontManager(GetFontManager());
+                                #ifdef METAFILE_DISABLE_FILESYSTEM
+                                #else
+                                oRenderer.SetFontManager(GetFontManager());
                                 #endif
 
                                 TEmfRectL *pEmfBounds = oEmfParser.GetBounds();
@@ -1342,8 +1353,9 @@ namespace MetaFile
                         CWmfParser oWmfParser;
                         oWmfParser.SetStream(pBuffer, unSize);
 
-                        #ifdef METAFILE_SUPPORT_TEXT_ENGINE
-                                oWmfParser.SetFontManager(GetFontManager());
+                        #ifdef METAFILE_DISABLE_FILESYSTEM
+                        #else
+                        oWmfParser.SetFontManager(GetFontManager());
                         #endif
 
                         oWmfParser.Scan();
@@ -1352,8 +1364,9 @@ namespace MetaFile
                         {
                                 CGraphicsRenderer oRenderer;
 
-                                #ifdef METAFILE_SUPPORT_TEXT_ENGINE
-                                        oRenderer.SetFontManager(GetFontManager());
+                                #ifdef METAFILE_DISABLE_FILESYSTEM
+                                #else
+                                oRenderer.SetFontManager(GetFontManager());
                                 #endif
 
                                 TRectD oWmfBounds = oWmfParser.GetBounds();
@@ -1430,6 +1443,8 @@ namespace MetaFile
                 if (NULL == pBuffer || 0 == unSize)
                         return;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 NSFile::CFileBinary oFile;
 
                 const std::wstring wsFilePath = oFile.GetTempPath() + L"\\temp.tmp";
@@ -1468,6 +1483,7 @@ namespace MetaFile
                         delete [] pNewBuffer;
 
                 oFile.Remove(wsFilePath);
+                #endif
         }
 
         void CEmfPlusParser::Read_EMRPLUS_HEADER(unsigned short unShFlags)
@@ -1836,8 +1852,6 @@ namespace MetaFile
                         m_pDC->RemoveBrush(pEmfPlusPen->Brush);
 
                 m_pDC->RemovePen(pEmfPlusPen);
-
-//                HANDLE_EMFPLUS_DRAWELLIPSE(ExpressValue(unShFlags, 0, 7), oRect);
         }
 
         void CEmfPlusParser::Read_EMFPLUS_DRAWIMAGE(unsigned short unShFlags)

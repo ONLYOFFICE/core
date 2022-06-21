@@ -16,7 +16,11 @@ namespace MetaFile
                 CEmfPlusParser(const CEmfInterpretatorBase *pEmfInterpretator, const TEmfHeader& oHeader);
                 virtual ~CEmfPlusParser();
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                bool            ReadFromBuffer(wchar_t* pBuffer, unsigned int unSize) override;
+                #else
                 bool            OpenFromFile(const wchar_t* wsFilePath)     override;
+                #endif
                 void            PlayFile()                                  override;
                 void            Scan()                                      override;
 

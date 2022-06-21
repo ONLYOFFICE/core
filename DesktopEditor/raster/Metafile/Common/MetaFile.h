@@ -37,7 +37,8 @@
 #include "MetaFileObjects.h"
 #include "MetaFileClip.h"
 
-#ifdef METAFILE_SUPPORT_TEXT_ENGINE
+#ifdef METAFILE_DISABLE_FILESYSTEM
+#endif
 	#include "../../../fontengine/FontManager.h"
 #endif
 
@@ -81,7 +82,18 @@ namespace MetaFile
 		virtual bool         IsWindowFlippedY() = 0;
 		virtual bool         IsWindowFlippedX() = 0;
 
-		bool          OpenFromFile(const wchar_t* wsFilePath)
+		#ifdef METAFILE_DISABLE_FILESYSTEM
+		bool ReadFromBuffer(BYTE* wchar_t, unsigned int unSize)
+		{
+			if (NULL == pBuffer || 0 == unSize)
+				return false
+
+			this->ClearFile();
+
+			m_oStream.SetStream(pBuffer, unSize);
+		}
+		#else
+		bool OpenFromFile(const wchar_t* wsFilePath)
 		{
 			this->Close();
 
@@ -101,9 +113,13 @@ namespace MetaFile
 
 			return true;
 		}
+		#endif
 		void          Close()
 		{
+			#ifdef METAFILE_DISABLE_FILESYSTEM
+			#else
 			RELEASEARRAYOBJECTS(m_pBufferData);
+			#endif
 			m_pOutput = NULL;
 			m_oStream.SetStream(NULL, 0);
 			m_bError = false;
@@ -119,11 +135,12 @@ namespace MetaFile
 
 			this->ClearFile();
 		}
-		#ifdef METAFILE_SUPPORT_TEXT_ENGINE
-			CFontManager* GetFontManager()
-			{
-				return m_pFontManager;
-			}
+		#ifdef METAFILE_DISABLE_FILESYSTEM
+		#else
+		CFontManager* GetFontManager()
+		{
+			return m_pFontManager;
+		}
 		void          SetFontManager(CFontManager* pFontManager)
 		{
 			m_pFontManager = pFontManager;
@@ -149,8 +166,9 @@ namespace MetaFile
 
 	private:
 
-		#ifdef METAFILE_SUPPORT_TEXT_ENGINE
-			CFontManager*  m_pFontManager;
+		#ifdef METAFILE_DISABLE_FILESYSTEM
+		#else
+		CFontManager*  m_pFontManager;
 		#endif
 
 		BYTE*          m_pBufferData;

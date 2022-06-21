@@ -6,14 +6,23 @@ namespace MetaFile
         CEmfInterpretator::CEmfInterpretator(const wchar_t* wsFilepath) :
                 unFileSize(0), unNumberRecords(0), ushNuberDescriptors(0)
         {
-            m_pOutStream = new NSFile::CFileBinary();
-            bool result = m_pOutStream->CreateFileW(wsFilepath);
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
+                m_pOutStream = new NSFile::CFileBinary();
+                bool result = m_pOutStream->CreateFileW(wsFilepath);
+                #endif
         }
 
         CEmfInterpretator::CEmfInterpretator(const CEmfInterpretator& oEmfInterpretator, const bool bIsLite)
-                : m_pOutStream(oEmfInterpretator.m_pOutStream),
-                  unFileSize(0), unNumberRecords(0), ushNuberDescriptors(0)
+                : unFileSize(0), unNumberRecords(0), ushNuberDescriptors(0),
+                  m_pOutStream(NULL)
         {
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                m_wsData = oEmfInterpretator.m_wsData;
+                #else
+                m_pOutStream = oEmfInterpretator.m_pOutStream;
+                #endif
+
                 if (!bIsLite)
                 {
                         unFileSize              = oEmfInterpretator.unFileSize;
@@ -24,8 +33,11 @@ namespace MetaFile
 
         CEmfInterpretator::~CEmfInterpretator()
         {
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->CloseFile();
                 delete m_pOutStream;
+                #endif
         }
 
         InterpretatorType CEmfInterpretator::GetType() const
@@ -41,14 +53,19 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
+                #endif
 
                 WriteRectangle(oTEmfHeader.oBounds);
                 WriteRectangle(oTEmfHeader.oFrame);
 
                 unsigned int unZero = 0;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&oTEmfHeader.ulSignature,        sizeof (unsigned int));
                 m_pOutStream->WriteFile((BYTE*)&oTEmfHeader.ulVersion,          sizeof (unsigned int));
                 m_pOutStream->WriteFile((BYTE*)&oTEmfHeader.ulSize,             sizeof (unsigned int));
@@ -58,6 +75,7 @@ namespace MetaFile
                 m_pOutStream->WriteFile((BYTE*)&unZero,                         sizeof (unsigned int));
                 m_pOutStream->WriteFile((BYTE*)&unZero,                         sizeof (unsigned int));
                 m_pOutStream->WriteFile((BYTE*)&unZero,                         sizeof (unsigned int));
+                #endif
 
                 WriteSize(oTEmfHeader.oDevice);
                 WriteSize(oTEmfHeader.oMillimeters);
@@ -71,11 +89,16 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
+                #endif
 
                 WriteRectangle(oTEmfAlphaBlend.Bounds);
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&oTEmfAlphaBlend.xDest,     sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&oTEmfAlphaBlend.yDest,     sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&oTEmfAlphaBlend.cxDest,    sizeof (int));
@@ -88,10 +111,13 @@ namespace MetaFile
 
                 m_pOutStream->WriteFile((BYTE*)&oTEmfAlphaBlend.xSrc,      sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&oTEmfAlphaBlend.ySrc,      sizeof (int));
+                #endif
 
                 WriteForm(oTEmfAlphaBlend.XformSrc);
                 WriteColor(oTEmfAlphaBlend.BkColor);
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&oTEmfAlphaBlend.UsageSrc,  sizeof (unsigned int));
                 m_pOutStream->WriteFile((BYTE*)&oTEmfAlphaBlend.offBmiSrc, sizeof (unsigned int));
                 m_pOutStream->WriteFile((BYTE*)&oTEmfAlphaBlend.cbBmiSrc,  sizeof (unsigned int));
@@ -106,6 +132,7 @@ namespace MetaFile
 
                 if (oTEmfAlphaBlend.cbBitsSrc > 0)
                         m_pOutStream->WriteFile(oDataStream.GetCurPtr() + oTEmfAlphaBlend.cbBmiSrc, sizeof (BYTE) * oTEmfAlphaBlend.cbBitsSrc);
+                #endif
         }
 
         void CEmfInterpretator::HANDLE_EMR_STRETCHDIBITS(const TEmfStretchDIBITS &oTEmfStretchDIBITS, CDataStream &oDataStream)
@@ -116,11 +143,16 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
+                #endif
 
                 WriteRectangle(oTEmfStretchDIBITS.Bounds);
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&oTEmfStretchDIBITS.xDest,      sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&oTEmfStretchDIBITS.yDest,      sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&oTEmfStretchDIBITS.xSrc,       sizeof (int));
@@ -142,6 +174,8 @@ namespace MetaFile
 
                 if (oTEmfStretchDIBITS.cbBitsSrc > 0)
                         m_pOutStream->WriteFile(oDataStream.GetCurPtr() + oTEmfStretchDIBITS.cbBmiSrc, sizeof (BYTE) * oTEmfStretchDIBITS.cbBitsSrc);
+
+                #endif
         }
 
         void CEmfInterpretator::HANDLE_EMR_BITBLT(const TEmfBitBlt &oTEmfBitBlt, CDataStream &oDataStream)
@@ -152,11 +186,16 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
+                #endif
 
                 WriteRectangle(oTEmfBitBlt.Bounds);
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&oTEmfBitBlt.xDest,     sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&oTEmfBitBlt.yDest,     sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&oTEmfBitBlt.cxDest,    sizeof (int));
@@ -165,10 +204,13 @@ namespace MetaFile
                                             BitBltRasterOperation,  sizeof (unsigned int));
                 m_pOutStream->WriteFile((BYTE*)&oTEmfBitBlt.xSrc,      sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&oTEmfBitBlt.ySrc,      sizeof (int));
+                #endif
 
                 WriteForm(oTEmfBitBlt.XfromSrc);
                 WriteColor(oTEmfBitBlt.BkColorSrc);
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&oTEmfBitBlt.UsageSrc,  sizeof (unsigned int));
                 m_pOutStream->WriteFile((BYTE*)&oTEmfBitBlt.offBmiSrc, sizeof (unsigned int));
                 m_pOutStream->WriteFile((BYTE*)&oTEmfBitBlt.cbBmiSrc,  sizeof (unsigned int));
@@ -180,6 +222,7 @@ namespace MetaFile
 
                 if (oTEmfBitBlt.cbBitsSrc > 0)
                         m_pOutStream->WriteFile(oDataStream.GetCurPtr() + oTEmfBitBlt.cbBmiSrc, sizeof (BYTE) * oTEmfBitBlt.cbBitsSrc);
+                #endif
         }
 
         void CEmfInterpretator::HANDLE_EMR_SETDIBITSTODEVICE(const TEmfSetDiBitsToDevice &oTEmfSetDiBitsToDevice, CDataStream &oDataStream)
@@ -190,11 +233,16 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
+                #endif
 
                 WriteRectangle(oTEmfSetDiBitsToDevice.Bounds);
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&oTEmfSetDiBitsToDevice.xDest,      sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&oTEmfSetDiBitsToDevice.yDest,      sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&oTEmfSetDiBitsToDevice.xSrc,       sizeof (int));
@@ -214,6 +262,7 @@ namespace MetaFile
 
                 if (oTEmfSetDiBitsToDevice.cbBitsSrc > 0)
                         m_pOutStream->WriteFile(oDataStream.GetCurPtr() + oTEmfSetDiBitsToDevice.cbBmiSrc, sizeof (BYTE) * oTEmfSetDiBitsToDevice.cbBitsSrc);
+                #endif
         }
 
         void CEmfInterpretator::HANDLE_EMR_STRETCHBLT(const TEmfStretchBLT &oTEmfStretchBLT, CDataStream &oDataStream)
@@ -224,11 +273,16 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
+                #endif
 
                 WriteRectangle(oTEmfStretchBLT.Bounds);
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&oTEmfStretchBLT.xDest,      sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&oTEmfStretchBLT.yDest,      sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&oTEmfStretchBLT.cxDest,     sizeof (int));
@@ -237,10 +291,13 @@ namespace MetaFile
                                                 BitBltRasterOperation,   sizeof (unsigned int));
                 m_pOutStream->WriteFile((BYTE*)&oTEmfStretchBLT.xSrc,       sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&oTEmfStretchBLT.ySrc,       sizeof (int));
+                #endif
 
                 WriteForm(oTEmfStretchBLT.XformSrc);
                 WriteColor(oTEmfStretchBLT.BkColorSrc);
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&oTEmfStretchBLT.UsageSrc,   sizeof (unsigned int));
                 m_pOutStream->WriteFile((BYTE*)&oTEmfStretchBLT.offBmiSrc,  sizeof (unsigned int));
                 m_pOutStream->WriteFile((BYTE*)&oTEmfStretchBLT.cbBmiSrc,   sizeof (unsigned int));
@@ -255,6 +312,7 @@ namespace MetaFile
 
                 if (oTEmfStretchBLT.cbBitsSrc > 0)
                         m_pOutStream->WriteFile(oDataStream.GetCurPtr() + oTEmfStretchBLT.cbBmiSrc, sizeof (BYTE) * oTEmfStretchBLT.cbBitsSrc);
+                #endif
         }
 
         void CEmfInterpretator::HANDLE_EMR_EOF()
@@ -265,12 +323,17 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
+                #endif
 
                 unsigned int unZero = 0;
                 unsigned int unOffPalEntries = 16;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&unZero,                sizeof (unsigned int));
                 m_pOutStream->WriteFile((BYTE*)&unOffPalEntries,       sizeof (unsigned int));
                 m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (unsigned int));
@@ -281,6 +344,7 @@ namespace MetaFile
                 m_pOutStream->WriteFile((BYTE*)&ushNuberDescriptors,   sizeof (unsigned short));
 
                 m_pOutStream->CloseFile();
+                #endif
         }
 
         void CEmfInterpretator::HANDLE_EMR_SAVEDC()
@@ -291,8 +355,11 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
-                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
+                m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));\
+                #endif
         }
 
         void CEmfInterpretator::HANDLE_EMR_RESTOREDC(const int &nIndexDC)
@@ -303,10 +370,13 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 m_pOutStream->WriteFile((BYTE*)&nIndexDC,              sizeof (int));
+                #endif
         }
 
         void CEmfInterpretator::HANDLE_EMR_MODIFYWORLDTRANSFORM(const TXForm &oXForm, const unsigned int &unMode)
@@ -317,12 +387,18 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
+                #endif
 
                 WriteForm(oXForm);
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&unMode,                sizeof (int));
+                #endif
         }
 
         void CEmfInterpretator::HANDLE_EMR_SETWORLDTRANSFORM(const TXForm &oXForm)
@@ -333,8 +409,11 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
+                #endif
 
                 WriteForm(oXForm);
         }
@@ -348,15 +427,21 @@ namespace MetaFile
                 ++unNumberRecords;
                 ++ushNuberDescriptors;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 m_pOutStream->WriteFile((BYTE*)&unBrushIndex,          sizeof (unsigned int));
                 m_pOutStream->WriteFile((BYTE*)&(pBrush->BrushStyle),  sizeof (unsigned int));
+                #endif
 
                 WriteColor(pBrush->Color);
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&(pBrush->BrushHatch),  sizeof (unsigned int));
+                #endif
         }
 
         void CEmfInterpretator::HANDLE_EMR_SETTEXTCOLOR(const TEmfColor &oColor)
@@ -367,8 +452,11 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
+                #endif
 
                 WriteColor(oColor);
         }
@@ -381,10 +469,13 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 m_pOutStream->WriteFile((BYTE*)&unObjectIndex,  sizeof (unsigned int));
+                #endif
         }
 
         void CEmfInterpretator::HANDLE_EMR_EXTCREATEFONTINDIRECTW(const unsigned int &unIndex, CEmfLogFont *oLogFont)
@@ -401,6 +492,8 @@ namespace MetaFile
                 ++unNumberRecords;
                 ++ushNuberDescriptors;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
@@ -419,6 +512,7 @@ namespace MetaFile
                 m_pOutStream->WriteFile((BYTE*)&oLogFont->LogFontEx.LogFont.ClipPrecision, sizeof (unsigned char));
                 m_pOutStream->WriteFile((BYTE*)&oLogFont->LogFontEx.LogFont.Quality,       sizeof (unsigned char));
                 m_pOutStream->WriteFile((BYTE*)&oLogFont->LogFontEx.LogFont.PitchAndFamily,sizeof (unsigned char));
+                #endif
 
                 WriteString(oLogFont->LogFontEx.LogFont.FaceName,   32);
                 WriteString(oLogFont->LogFontEx.FullName,           64);
@@ -427,11 +521,14 @@ namespace MetaFile
 
                 if (!oLogFont->IsFixedLength())
                 {
+                        #ifdef METAFILE_DISABLE_FILESYSTEM
+                        #else
                         m_pOutStream->WriteFile((BYTE*)&oLogFont->DesignVector.Signature,     sizeof (unsigned int));
                         m_pOutStream->WriteFile((BYTE*)&oLogFont->DesignVector.NumAxes,       sizeof (unsigned int));
 
                         for (unsigned int i = 0; i < oLogFont->DesignVector.NumAxes; ++i)
                                 m_pOutStream->WriteFile((BYTE*)&oLogFont->DesignVector.Values[i], sizeof (int));
+                        #endif
                 }
         }
 
@@ -443,10 +540,13 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 m_pOutStream->WriteFile((BYTE*)&unAlign,               sizeof (unsigned int));
+                #endif
         }
 
         void CEmfInterpretator::HANDLE_EMR_SETBKMODE(const unsigned int &unBgMode)
@@ -457,10 +557,13 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 m_pOutStream->WriteFile((BYTE*)&unBgMode,              sizeof (unsigned int));
+                #endif
         }
 
         void CEmfInterpretator::HANDLE_EMR_DELETEOBJECT(const unsigned int &unObjectIndex)
@@ -471,10 +574,13 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 m_pOutStream->WriteFile((BYTE*)&unObjectIndex,  sizeof (unsigned int));
+                #endif
         }
 
         void CEmfInterpretator::HANDLE_EMR_SETMITERLIMIT(const unsigned int &unMeterLimit)
@@ -485,10 +591,13 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 m_pOutStream->WriteFile((BYTE*)&unMeterLimit,          sizeof (unsigned int));
+                #endif
         }
 
         void CEmfInterpretator::HANDLE_EMR_EXTCREATEPEN(const unsigned int &unPenIndex, CEmfLogPen *pPen, const std::vector<unsigned int>& arUnused)
@@ -503,6 +612,8 @@ namespace MetaFile
                 ++unNumberRecords;
                 ++ushNuberDescriptors;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
@@ -519,9 +630,12 @@ namespace MetaFile
                 m_pOutStream->WriteFile((BYTE*)&pPen->Width,       sizeof (unsigned int));
 
                 m_pOutStream->WriteFile((BYTE*)&arUnused[0],       sizeof (unsigned int)); // BrushStyle
+                #endif
 
                 WriteColor(pPen->Color);
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&arUnused[1],       sizeof (unsigned int)); // BrushHatch
 
                 m_pOutStream->WriteFile((BYTE*)&pPen->NumStyleEntries, sizeof (unsigned int));
@@ -531,6 +645,7 @@ namespace MetaFile
 
                 if (pPen->PenStyle != PS_USERSTYLE)
                         m_pOutStream->WriteFile((BYTE*)&unZero,            sizeof (unsigned int));
+                #endif
         }
 
         void CEmfInterpretator::HANDLE_EMR_CREATEPEN(const unsigned int &unPenIndex, const unsigned int &unWidthX, const CEmfLogPen *pPen)
@@ -547,6 +662,8 @@ namespace MetaFile
                 ++unNumberRecords;
                 ++ushNuberDescriptors;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
@@ -555,6 +672,7 @@ namespace MetaFile
                 m_pOutStream->WriteFile((BYTE*)&pPen->PenStyle,        sizeof (unsigned int));
                 m_pOutStream->WriteFile((BYTE*)&unWidthX,              sizeof (unsigned int));
                 m_pOutStream->WriteFile((BYTE*)&unZero,                sizeof (unsigned int));
+                #endif
 
                 WriteColor(pPen->Color);
         }
@@ -567,10 +685,13 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 m_pOutStream->WriteFile((BYTE*)&unFillMode,            sizeof (unsigned int));
+                #endif
         }
 
         void CEmfInterpretator::HANDLE_EMR_BEGINPATH()
@@ -581,8 +702,11 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
+                #endif
         }
 
         void CEmfInterpretator::HANDLE_EMR_ENDPATH()
@@ -593,8 +717,11 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
+                #endif
         }
 
         void CEmfInterpretator::HANDLE_EMR_CLOSEFIGURE()
@@ -605,8 +732,11 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
+                #endif
         }
 
         void CEmfInterpretator::HANDLE_EMR_FLATTENPATH()
@@ -617,8 +747,11 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
+                #endif
         }
 
         void CEmfInterpretator::HANDLE_EMR_WIDENPATH()
@@ -629,8 +762,11 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
+                #endif
         }
 
         void CEmfInterpretator::HANDLE_EMR_ABORTPATH()
@@ -641,8 +777,11 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
+                #endif
         }
 
         void CEmfInterpretator::HANDLE_EMR_MOVETOEX(const TEmfPointL &oPoint)
@@ -653,8 +792,11 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
+                #endif
 
                 WritePoint(oPoint);
         }
@@ -667,10 +809,13 @@ namespace MetaFile
                 unFileSize += unExplicitRecordSize;
                 ++unNumberRecords;
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                 m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
                 m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
                 m_pOutStream->WriteFile((BYTE*)&unDirection,           sizeof (unsigned int));
+                #endif
         }
 
         void CEmfInterpretator::HANDLE_EMR_FILLPATH(const TEmfRectL &oBounds)

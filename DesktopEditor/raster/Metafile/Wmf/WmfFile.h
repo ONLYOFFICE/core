@@ -34,7 +34,8 @@
 
 #include "../../../common/StringExt.h"
 
-#ifdef METAFILE_SUPPORT_TEXT_ENGINE
+#ifdef METAFILE_DISABLE_FILESYSTEM
+#endif
         #include "../../../fontengine/FontManager.h"
 #endif
 
@@ -68,13 +69,15 @@ namespace MetaFile
 		{
 			if (NULL != m_pParser)
 			{
-				#ifdef METAFILE_SUPPORT_TEXT_ENGINE
-					CFontManager *pFont = m_pParser->GetFontManager();
+				#ifdef METAFILE_DISABLE_FILESYSTEM
+				#else
+				CFontManager *pFont = m_pParser->GetFontManager();
 				#endif
 				delete m_pParser;
 				m_pParser = new CWmfParser();
-				#ifdef METAFILE_SUPPORT_TEXT_ENGINE
-					m_pParser->SetFontManager(pFont);
+				#ifdef METAFILE_DISABLE_FILESYSTEM
+				#else
+				m_pParser->SetFontManager(pFont);
 				#endif
 			}
 
@@ -101,11 +104,12 @@ namespace MetaFile
 			m_pParser->Close();
 		}
 
-		#ifdef METAFILE_SUPPORT_TEXT_ENGINE
-			void SetFontManager(CFontManager* pFontManager)
-			{
-				m_pParser->SetFontManager(pFontManager);
-			}
+		#ifdef METAFILE_DISABLE_FILESYSTEM
+		#else
+		void SetFontManager(CFontManager* pFontManager)
+		{
+			m_pParser->SetFontManager(pFontManager);
+		}
 		#endif
 		bool CheckError()
 		{

@@ -638,9 +638,13 @@ namespace MetaFile
                 if (0 != m_oSizeWindow.cx && 0 != m_oSizeWindow.cy)
                         wsXml.insert(5, L"width=\"" + std::to_wstring(m_oSizeWindow.cx) + L"\" height=\"" + std::to_wstring(m_oSizeWindow.cy) + L"\" ");
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+
+                #else
                 m_oXmlWriter.SetXmlString(wsXml);
 
                 m_oXmlWriter.SaveToFile((!m_wsSvgFilePath.empty()) ? m_wsSvgFilePath : L"temp.svg");
+                #endif
         }
 
         void CWmfInterpretatorSvg::DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight)
@@ -670,6 +674,8 @@ namespace MetaFile
 
                         NSBase64::Base64Encode(pNewBuffer, nNewSize, ucValue, &nImageSize);
                         std::wstring wsValue(ucValue, ucValue + nImageSize);
+
+                        RELEASEARRAYOBJECTS(ucValue);
 
                         double dNewX = TranslateX(dX);
                         double dNewY = TranslateY(dY);

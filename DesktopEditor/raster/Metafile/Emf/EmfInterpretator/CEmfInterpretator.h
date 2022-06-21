@@ -124,7 +124,11 @@ namespace MetaFile
                 void HANDLE_EMFPLUS_DRAWIMAGE(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF& oSrcRect, const TEmfPlusRect& oRectData) override;
                 void HANDLE_EMFPLUS_DRAWIMAGE(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF& oSrcRect, const TEmfPlusRectF& oRectData) override;
         private:
-                NSFile::CFileBinary *m_pOutStream = NULL;
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                std::wstring            m_wsData;
+                #else
+                NSFile::CFileBinary    *m_pOutStream;
+                #endif
 
                 unsigned int    unFileSize;
                 unsigned int    unNumberRecords;

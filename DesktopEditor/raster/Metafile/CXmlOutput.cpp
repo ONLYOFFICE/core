@@ -710,6 +710,11 @@ namespace MetaFile
         return m_pXmlLiteReader->FromFile(wsPathToFile);
     }
 
+    bool CXmlOutput::ReadFromBuffer(wchar_t* pBuffer)
+    {
+        return m_pXmlLiteReader->FromString(pBuffer);
+    }
+
     void CXmlOutput::ReadArguments(unsigned int &unType, unsigned int &unSize)
     {
         while(!IsRecord())

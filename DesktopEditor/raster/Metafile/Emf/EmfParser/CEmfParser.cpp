@@ -19,10 +19,18 @@ namespace MetaFile
                 RELEASEOBJECT(m_pEmfPlusParser);
         }
 
+
+        #ifdef  METAFILE_DISABLE_FILESYSTEM
+        bool CEmfParser::ReadFromBuffer(BYTE *pBuffer, unsigned int unSize)
+        {
+                return IMetaFileBase::ReadFromBuffer(pBuffer, unSize);
+        }
+        #else
         bool CEmfParser::OpenFromFile(const wchar_t *wsFilePath)
         {
                 return IMetaFileBase::OpenFromFile(wsFilePath);
         }
+        #endif
 
         void CEmfParser::PlayFile()
         {

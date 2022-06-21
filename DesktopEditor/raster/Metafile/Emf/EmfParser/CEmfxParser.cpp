@@ -12,10 +12,17 @@ namespace MetaFile
                 delete m_pOutput;
         }
 
+        #ifdef  METAFILE_DISABLE_FILESYSTEM
+        bool CEmfxParser::ReadFromBuffer(wchar_t *pBuffer, unsigned int unSize)
+        {
+                return m_pOutput->ReadFromBuffer(pBuffer);
+        }
+        #else
         bool CEmfxParser::OpenFromFile(const wchar_t *wsFilePath)
         {
                 return m_pOutput->ReadFromFile(wsFilePath);
         }
+        #endif
 
         void CEmfxParser::PlayFile()
         {

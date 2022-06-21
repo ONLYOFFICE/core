@@ -122,6 +122,7 @@ namespace MetaFile
 
     public:
         bool ReadFromFile(const std::wstring &wsPathToFile);
+        bool ReadFromBuffer(wchar_t* pBuffer);
         void ReadArguments(unsigned int &unType,
                            unsigned int &unSize);
         bool ReadNextRecord();

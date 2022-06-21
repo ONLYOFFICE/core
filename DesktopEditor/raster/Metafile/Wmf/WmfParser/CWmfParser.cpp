@@ -12,10 +12,17 @@ namespace MetaFile
                 ClearFile();
         }
 
+        #ifdef  METAFILE_DISABLE_FILESYSTEM
+        bool CWmfParser::ReadFromBuffer(wchar_t *pBuffer, unsigned int unSize)
+        {
+                return IMetaFileBase::ReadFromBuffer(pBuffer, unSize);
+        }
+        #else
         bool CWmfParser::OpenFromFile(const wchar_t *wsFilePath)
         {
                 return IMetaFileBase::OpenFromFile(wsFilePath);
         }
+        #endif
 
         void CWmfParser::PlayFile()
         {

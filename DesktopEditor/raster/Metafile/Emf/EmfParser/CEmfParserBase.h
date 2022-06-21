@@ -10,8 +10,9 @@
 
 #include "../../Common/MetaFile.h"
 
-#ifdef METAFILE_SUPPORT_TEXT_ENGINE
-        #include "../../../../fontengine/FontManager.h"
+#ifdef METAFILE_DISABLE_FILESYSTEM
+#else
+#include "../../../../fontengine/FontManager.h"
 #endif
 
 #include "../EmfInterpretator/CEmfInterpretatorBase.h"
@@ -43,7 +44,11 @@ namespace MetaFile
                 CEmfParserBase();
                 ~CEmfParserBase();
 
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                virtual bool            ReadFromBuffer(wchar_t*, unsigned int)    = 0;
+                #else
                 virtual bool            OpenFromFile(const wchar_t*)    = 0;
+                #endif
                 virtual void            PlayFile()                      = 0;
                 virtual void            Scan()                          = 0;
 

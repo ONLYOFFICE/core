@@ -40,6 +40,16 @@
 
 namespace MetaFile
 {
+	#ifdef METAFILE_DISABLE_FILESYSTEM
+	IMetaFile* Create()
+	{
+		return new CMetaFile();
+	}
+	CMetaFile::CMetaFile())
+	{
+		m_lType  = 0;
+	}
+	#else
 	IMetaFile* Create(NSFonts::IApplicationFonts *pAppFonts)
 	{
 		return new CMetaFile(pAppFonts);
@@ -48,40 +58,38 @@ namespace MetaFile
 	CMetaFile::CMetaFile(NSFonts::IApplicationFonts *pAppFonts) : MetaFile::IMetaFile(pAppFonts)
 	{
 		m_pAppFonts = (CApplicationFonts*)pAppFonts;
-			// Создаем менеджер шрифтов с собственным кэшем
+		// Создаем менеджер шрифтов с собственным кэшем
+		if (pAppFonts)
+		{
+			m_pFontManager = (CFontManager*)pAppFonts->GenerateFontManager();
 
-		#ifdef METAFILE_SUPPORT_TEXT_ENGINE
-			if (pAppFonts)
-			{
-				m_pFontManager = (CFontManager*)pAppFonts->GenerateFontManager();
+			CFontsCache* pMeasurerCache = new CFontsCache();
+			pMeasurerCache->SetStreams(pAppFonts->GetStreams());
+			m_pFontManager->SetOwnerCache(pMeasurerCache);
+		}
 
-				CFontsCache* pMeasurerCache = new CFontsCache();
-				pMeasurerCache->SetStreams(pAppFonts->GetStreams());
-				m_pFontManager->SetOwnerCache(pMeasurerCache);
-			}
-
-			m_oWmfFile.SetFontManager(m_pFontManager);
-			m_oEmfFile.SetFontManager(m_pFontManager);
-			m_oSvmFile.SetFontManager(m_pFontManager);
-		#endif
+		m_oWmfFile.SetFontManager(m_pFontManager);
+		m_oEmfFile.SetFontManager(m_pFontManager);
+		m_oSvmFile.SetFontManager(m_pFontManager);
 		m_lType  = 0;
-	}
-
-
-	CMetaFile::~CMetaFile()
-	{
-		Close();
-		#ifdef METAFILE_SUPPORT_TEXT_ENGINE
-			RELEASEINTERFACE(m_pFontManager);
-		#endif
 	}
 
 	NSFonts::IFontManager* CMetaFile::get_FontManager()
 	{
-		#ifdef METAFILE_SUPPORT_TEXT_ENGINE
-			return m_pFontManager;
-		#else
+		#ifdef METAFILE_DISABLE_FILESYSTEM
 			return NULL;
+		#else
+			return m_pFontManager;
+		#endif
+	}
+	#endif
+
+	CMetaFile::~CMetaFile()
+	{
+		Close();
+		#ifdef METAFILE_DISABLE_FILESYSTEM
+		#else
+		RELEASEINTERFACE(m_pFontManager);
 		#endif
 	}
 
@@ -120,7 +128,8 @@ namespace MetaFile
 
                 CGraphicsRenderer oRenderer;
 
-                #ifdef METAFILE_SUPPORT_TEXT_ENGINE
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                         CFontManager *pFontManager = (CFontManager*)m_pAppFonts->GenerateFontManager();
                         CFontsCache* pFontCache = new CFontsCache();
                         pFontCache->SetStreams(m_pAppFonts->GetStreams());
@@ -172,7 +181,8 @@ namespace MetaFile
 
                 oFrame.SaveFile(wsOutFilePath, unFileType);
 
-                #ifdef METAFILE_SUPPORT_TEXT_ENGINE
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                         RELEASEINTERFACE(pFontManager);
                 #endif
 	}
@@ -213,7 +223,8 @@ namespace MetaFile
 
 	bool CMetaFile::LoadFromXmlFile(const wchar_t *wsFilePath)
 	{
-		#ifdef METAFILE_SUPPORT_TEXT_ENGINE
+		#ifdef METAFILE_DISABLE_FILESYSTEM
+		#else
 			RELEASEINTERFACE(m_pFontManager);
 
 			if (m_pAppFonts)
@@ -258,7 +269,8 @@ namespace MetaFile
 
 	bool CMetaFile::LoadFromFile(const wchar_t *wsFilePath)
 	{
-		#ifdef METAFILE_SUPPORT_TEXT_ENGINE
+		#ifdef METAFILE_DISABLE_FILESYSTEM
+		#else
 
 			// TODO: Сейчас при загрузке каждой новой картинки мы пересоздаем
 			//       FontManager, потому что сейчас в нем кэш без ограничения.
@@ -433,7 +445,8 @@ namespace MetaFile
         {
                 CGraphicsRenderer oRenderer;
 
-                #ifdef METAFILE_SUPPORT_TEXT_ENGINE
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                         CFontManager *pFontManager = (CFontManager*)m_pAppFonts->GenerateFontManager();
                         CFontsCache* pFontCache = new CFontsCache();
                         pFontCache->SetStreams(m_pAppFonts->GetStreams());
@@ -485,7 +498,8 @@ namespace MetaFile
 
                 oFrame.SaveFile(wsOutFilePath, unFileType);
 
-                #ifdef METAFILE_SUPPORT_TEXT_ENGINE
+                #ifdef METAFILE_DISABLE_FILESYSTEM
+                #else
                         RELEASEINTERFACE(pFontManager);
                 #endif
         }

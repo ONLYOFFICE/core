@@ -144,18 +144,16 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
     CStringObject::CStringObject(const char* sValue, bool isUTF16, bool isDictValue)
 	{
-		m_pValue     = NULL;
-		m_unLen      = 0;
-        m_bUTF16     = isUTF16;
-		m_bDictValue = isDictValue;
-		Set(sValue);
+		m_pValue = NULL;
+		m_unLen  = 0;
+		Set(sValue, isUTF16, isDictValue);
 	}
 	CStringObject::~CStringObject()
 	{
 		if (m_pValue)
 			delete[] m_pValue;
 	}
-	void CStringObject::Set(const char* sValue)
+	void CStringObject::Set(const char* sValue, bool isUTF16, bool isDictValue)
 	{
 		if (m_pValue)
 		{
@@ -167,6 +165,8 @@ namespace PdfWriter
 		m_pValue = new BYTE[unLen + 1];
 		StrCpy((char*)m_pValue, (char*)sValue, (char*)(m_pValue + unLen));
 		m_unLen = unLen;
+		m_bUTF16     = isUTF16;
+		m_bDictValue = isDictValue;
 	}
 	//----------------------------------------------------------------------------------------
 	// CBinaryObject
@@ -383,15 +383,15 @@ namespace PdfWriter
 
 		return pArray;
 	}
-	CObjectBase* CArrayObject::Copy() const
+	CObjectBase* CArrayObject::Copy(CObjectBase* pOut) const
 	{
-		CArrayObject* pArray = new CArrayObject();
+		CArrayObject* pArray = pOut && pOut->GetType() == object_type_ARRAY ? (CArrayObject*)pOut : new CArrayObject();
 		if (!pArray)
 			return NULL;
 
 		for (unsigned int unIndex = 0, unCount = GetCount(); unIndex < unCount; ++unIndex)
 		{
-			pArray->Add(Get(unIndex)->Copy());
+			pArray->Add(Get(unIndex, false)->Copy());
 		}
 
 		return pArray;
@@ -660,7 +660,8 @@ namespace PdfWriter
 				pStream->WriteEscapeName(oIter.first.c_str());
 				pStream->WriteChar(' ');
 				nBegin = pStream->Tell();
-				pStream->Write(pObject, pEncrypt);
+				// Цифровая подпись не шифруется
+				pStream->Write(pObject, oIter.first == "Contents" ? NULL : pEncrypt);
 				nEnd = pStream->Tell();
 				pStream->WriteStr("\012");
 				if (oIter.first == "Contents")
@@ -688,27 +689,16 @@ namespace PdfWriter
 
 		m_pStream = pStream;
 	}
-	CDictObject* CDictObject::Copy(CDictObject* pOut)
+    CObjectBase* CDictObject::Copy(CObjectBase* pOut) const
 	{
-		CDictObject* pDict = pOut ? pOut : new CDictObject();
+		CDictObject* pDict = pOut && pOut->GetType() == object_type_DICT ? (CDictObject*)pOut : new CDictObject();
 		if (!pDict)
 			return NULL;
 
 		for (auto const &oIter : m_mList)
 		{
-			oIter.second->UnSet();
-			pDict->Add(oIter.first, oIter.second);
+			pDict->Add(oIter.first, oIter.second->Copy());
 		}
-
-		return pDict;
-	}
-	CObjectBase* CDictObject::Copy() const
-	{
-		CDictObject* pDict = new CDictObject();
-		if (!pDict)
-			return NULL;
-
-		// TODO: Сделать копирование (пока нигде не используется)
 
 		return pDict;
 	}

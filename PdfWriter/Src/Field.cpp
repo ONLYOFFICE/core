@@ -1255,6 +1255,7 @@ namespace PdfWriter
 		if (!m_pSig)
 			return;
 		Add("V", m_pSig);
+		m_pResources = NULL;
 	}
 	void CSignatureField::SetName(const std::wstring& wsValue)
 	{
@@ -1377,6 +1378,13 @@ namespace PdfWriter
 		{
 			pNormal->DrawPicture();
 		}
+	}
+	CResourcesDict* CSignatureField::GetResourcesDict()
+	{
+		if (!m_pResources)
+			m_pResources = new CResourcesDict(m_pXref, false, true);
+
+		return m_pResources;
 	}
 	//----------------------------------------------------------------------------------------
 	// CAnnotAppearance

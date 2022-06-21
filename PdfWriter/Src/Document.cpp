@@ -220,66 +220,7 @@ namespace PdfWriter
 		SaveToStream((CStream*)pStream);
 		delete pStream;
 
-		for (unsigned int i = 0; i < m_vSignatures.size(); i++)
-		{
-			CXref* pXrefBefore = m_pXref;
-			m_pXref = new CXref(this, pXrefBefore->GetSizeXRef());
-			if (!m_pXref)
-			{
-				m_pXref = pXrefBefore;
-				continue;
-			}
-			m_pXref->SetPrevAddr(pXrefBefore->GetPrevAddr());
-
-			CSignatureField* pField = CreateSignatureField();
-			if (pField->GetSignatureDict())
-				pField->GetSignatureDict()->SetCert(m_vSignatures[i].pCertificate);
-
-			m_pAcroForm->Add("SigFlags", 3);
-			pField->AddPageRect(m_vSignatures[i].pPage, m_vSignatures[i].oRect);
-			pField->Add("F", 132);
-			pField->SetFieldName("Sig" + std::to_string(i + 1));
-			if (m_vSignatures[i].pImage)
-				pField->SetAppearance(m_vSignatures[i].pImage);
-
-			pStream = new CFileStream();
-			if (!pStream || !pStream->OpenFile(wsPath, false))
-			{
-				RELEASEOBJECT(m_pXref);
-				m_pXref = pXrefBefore;
-				continue;
-			}
-
-			m_pCatalog->UnSet();
-			CXref* pXrefCatalog = new CXref(this, m_pCatalog->GetObjId());
-			pXrefCatalog->Add(m_pCatalog);
-			pXrefCatalog->SetPrev(m_pXref);
-
-			m_vSignatures[i].pPage->UnSet();
-			CXref* pXrefPage = new CXref(this, m_vSignatures[i].pPage->GetObjId());
-			pXrefPage->Add(m_vSignatures[i].pPage);
-			pXrefPage->SetPrev(pXrefCatalog);
-
-			CDictObject* pTrailer = pXrefPage->GetTrailer();
-			m_pTrailer->Copy(pTrailer);
-
-			CEncrypt* pEncrypt = NULL;
-			if (m_bEncrypt)
-				pEncrypt = m_pEncryptDict->GetEncrypt();
-
-			pXrefPage->WriteToStream(pStream, pEncrypt);
-			pXrefPage->Clear();
-			pXrefCatalog->Clear();
-			RELEASEOBJECT(pStream);
-
-			pStream = new CFileStream();
-			if (pStream && pStream->OpenFile(wsPath, false))
-				pField->GetSignatureDict()->WriteToStream(pStream, pStream->Size());
-
-			RELEASEOBJECT(pXrefPage);
-			m_pXref = pXrefBefore;
-			RELEASEOBJECT(pStream);
-		}
+		Sign(wsPath);
 
 		return true;
 	}
@@ -1136,7 +1077,7 @@ namespace PdfWriter
 
 		if (!m_pAcroForm)
 		{
-			m_pAcroForm = new CAcroForm(m_pXref);
+			m_pAcroForm = new CAcroForm();
 			if (!m_pAcroForm)
 				return false;
 
@@ -1335,14 +1276,90 @@ namespace PdfWriter
 		else
 			m_pLastXref->WriteToStream(pStream, pEncrypt);
 
-		RELEASEOBJECT(m_pEncryptDict);
 		RELEASEOBJECT(pStream);
-		RELEASEOBJECT(m_pLastXref);
-		m_pXref = NULL;
+		m_pXref = m_pLastXref;
+		Sign(wsPath);
+		RELEASEOBJECT(m_pEncryptDict);
+
 		return true;
 	}
 	void CDocument::Sign(const TRect& oRect, CImageDict* pImage, ICertificate* pCertificate)
 	{
 		m_vSignatures.push_back({ oRect, m_pCurPage ? m_pCurPage : m_pPageTree->GetPage(0), pImage, pCertificate });
+	}
+	void CDocument::Sign(const std::wstring& wsPath)
+	{
+		unsigned int nPrevAddr = m_pXref->GetPrevAddr();
+		unsigned int nSizeXRef = m_pXref->GetSizeXRef();
+		std::vector<CXref*> vXRefForWrite;
+		for (unsigned int i = 0; i < m_vSignatures.size(); i++)
+		{
+			CXref* pXrefBefore = m_pXref;
+			m_pXref = new CXref(this, nSizeXRef);
+			if (!m_pXref)
+			{
+				m_pXref = pXrefBefore;
+				continue;
+			}
+			m_pXref->SetPrevAddr(nPrevAddr);
+
+			CSignatureField* pField = CreateSignatureField();
+			if (!pField)
+			{
+				RELEASEOBJECT(m_pXref);
+				m_pXref = pXrefBefore;
+				continue;
+			}
+
+			m_pAcroForm->Add("SigFlags", 3);
+			pField->GetSignatureDict()->SetCert(m_vSignatures[i].pCertificate);
+			pField->AddPageRect(m_vSignatures[i].pPage, m_vSignatures[i].oRect);
+			pField->Add("F", 132);
+			pField->SetFieldName("Sig" + std::to_string(i + 1));
+			if (m_vSignatures[i].pImage)
+				pField->SetAppearance(m_vSignatures[i].pImage);
+
+			CFileStream* pStream = new CFileStream();
+			if (!pStream || !pStream->OpenFile(wsPath, false))
+			{
+				RELEASEOBJECT(m_pXref);
+				m_pXref = pXrefBefore;
+				continue;
+			}
+
+			CXref* pXrefCatalog = new CXref(this, m_pCatalog->GetObjId());
+			pXrefCatalog->Add(m_pCatalog->Copy());
+			pXrefCatalog->SetPrev(m_pXref);
+
+			CXref* pXrefPage = new CXref(this, m_vSignatures[i].pPage->GetObjId());
+			pXrefPage->Add(m_vSignatures[i].pPage->Copy());
+			pXrefPage->SetPrev(pXrefCatalog);
+
+			CXref* pXref = new CXref(this, 0, 65535);
+			pXref->SetPrev(pXrefPage);
+
+			CDictObject* pTrailer = pXref->GetTrailer();
+			m_pTrailer->Copy(pTrailer);
+
+			CEncrypt* pEncrypt = NULL;
+			if (m_bEncrypt)
+				pEncrypt = m_pEncryptDict->GetEncrypt();
+
+			pXref->WriteToStream(pStream, pEncrypt);
+			nPrevAddr = pXref->GetPrevAddr();
+			nSizeXRef = m_pXref->GetSizeXRef();
+			vXRefForWrite.push_back(pXref);
+			RELEASEOBJECT(pStream);
+
+			pStream = new CFileStream();
+			if (pStream && pStream->OpenFile(wsPath, false))
+				pField->GetSignatureDict()->WriteToStream(pStream, pStream->Size());
+
+			m_pXref = pXrefBefore;
+			RELEASEOBJECT(pStream);
+		}
+		for (CXref* XRef : vXRefForWrite)
+			RELEASEOBJECT(XRef);
+		vXRefForWrite.clear();
 	}
 }

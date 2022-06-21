@@ -332,7 +332,7 @@ namespace PdfWriter
             RELEASEARRAYOBJECTS(pDatatoWrite);
             if (!pContents)
                 return;
-            // TODO шифрование записи Contents, для случая одновремменного запароливания и сертификации pdf
+            // Цифровая подпись не шифруется
             pStream->Write(pContents, NULL);
             RELEASEOBJECT(pContents);
 

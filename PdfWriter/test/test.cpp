@@ -71,14 +71,6 @@ int main()
     dWidth  *= 25.4 / dPageDpiX;
     dHeight *= 25.4 / dPageDpiY;
 
-    //pdfWriter.SetPassword(L"123456");
-    pdfWriter.NewPage();
-    pdfWriter.BeginCommand(c_nPageType);
-    pdfWriter.put_Width(dWidth);
-    pdfWriter.put_Height(dHeight);
-    pReader->DrawPageOnRenderer(&pdfWriter, 0, NULL);
-    //TEST2(&pdfWriter);
-
     ICertificate* pCertificate = NULL;
     if (true)
     {
@@ -89,11 +81,22 @@ int main()
 
         pCertificate = NSCertificate::FromFiles(sPrivateKeyFile, sPrivateFilePassword, sCertificateFile, sCertificateFilePassword);
     }
+
+    pdfWriter.SetPassword(L"123456");
+    pdfWriter.NewPage();
+    pdfWriter.BeginCommand(c_nPageType);
+    pdfWriter.put_Width(dWidth);
+    pdfWriter.put_Height(dHeight);
+    pReader->DrawPageOnRenderer(&pdfWriter, 0, NULL);
+    //TEST2(&pdfWriter);
+
     if (pCertificate)
     {
         // Подпись будет на текущей странице
         pdfWriter.Sign(10, 10, 50, 50, NSFile::GetProcessDirectory() + L"/test.jpg", pCertificate);
-        // pdfWriter.Sign(0, dHeight, 0, 0, L"", pCertificate); Невидимая подпись
+        pdfWriter.Sign(10, 70, 50, 50, NSFile::GetProcessDirectory() + L"/test.png", pCertificate);
+        pdfWriter.Sign(10, 130, 50, 50, NSFile::GetProcessDirectory() + L"/test.jpg", pCertificate);
+        pdfWriter.Sign(0, dHeight, 0, 0, L"", pCertificate); // Невидимая подпись
     }
 
     pdfWriter.EndCommand(c_nPageType);
@@ -109,6 +112,8 @@ int main()
         {
             TEST(&pdfWriter);
             pdfWriter.PageRotate(90);
+            if (pCertificate)
+                pdfWriter.Sign(10, 10, 50, 50, NSFile::GetProcessDirectory() + L"/test.jpg", pCertificate);
         }
 
         pReader->DeletePage(1);
@@ -138,5 +143,6 @@ int main()
 
     RELEASEOBJECT(pReader);
     RELEASEINTERFACE(pApplicationFonts);
+    RELEASEOBJECT(pCertificate);
     return 0;
 }

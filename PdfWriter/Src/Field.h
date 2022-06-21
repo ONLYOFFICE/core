@@ -256,9 +256,11 @@ namespace PdfWriter
 		void SetCert(); // TODO
 		void SetDate(bool bDate);
 		void SetAppearance(CImageDict* pImage = NULL);
+		virtual CResourcesDict* GetResourcesDict();
 
 	private:
 		CSignatureDict* m_pSig; // Словарь сигнатур
+		CResourcesDict* m_pResources;
 	};
 
 	class CAnnotAppearance : public CDictObject

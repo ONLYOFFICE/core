@@ -7124,7 +7124,7 @@ namespace SimpleTypes
 				case ligatureStandardContextualDiscretional: return (L"standardContextualDiscretional");
 				case ligatureStandardHistoricalDiscretional: return (L"standardHistoricalDiscretional");
 				case ligatureContextualHistoricalDiscretional: return (L"contextualHistoricalDiscretional");
-				case ligatureAll: return (L"standard");
+				case ligatureAll: return (L"all");
 				default: return (L"standard");
 			}
 		}

@@ -4,7 +4,7 @@
 
 using namespace CFCPP;
 
-StreamView::StreamView(const std::vector<Sector> &sectorChain, int sectorSize, const Stream &stream)
+StreamView::StreamView(const SVector<Sector> &sectorChain, int sectorSize, const Stream &stream)
     : sectorSize(sectorSize), sectorChain(sectorChain), stream(stream)
 {
     //    if (sectorChain == null)
@@ -15,7 +15,7 @@ StreamView::StreamView(const std::vector<Sector> &sectorChain, int sectorSize, c
 }
 
 StreamView::StreamView(const std::vector<Sector> &sectorChain, int sectorSize, std::streamsize length,
-                       std::queue<Sector> &availableSectors, const Stream &stream, bool isFatStream) :
+                       std::queue<Sector> &availableSectors, const Stream stream, bool isFatStream) :
     StreamView(sectorChain, sectorSize, stream)
 {
     this->isFatStream = isFatStream;

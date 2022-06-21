@@ -7,7 +7,7 @@ SectorCollection::SectorCollection()
 
 }
 
-void SectorCollection::Add(const Sector &item)
+void SectorCollection::Add(std::shared_ptr<Sector> item)
 {
     if (DoCheckSizeLimitReached() == false)
         return;
@@ -21,6 +21,20 @@ void SectorCollection::Clear()
     count = 0;
 }
 
+std::shared_ptr<Sector> SectorCollection::operator[](size_t index)
+{
+    size_t globalPos = 0;
+    for (size_t i = 0; i < largeArraySlices.size(); i ++)
+    {
+        size_t sliceSize = largeArraySlices[i].size();
+        globalPos += sliceSize;
+        if (globalPos < index)
+            return largeArraySlices[i][i % sliceSize];
+    }
+
+    return {};
+}
+
 bool SectorCollection::DoCheckSizeLimitReached()
 {
     if (!sizeLimitReached && (count - 1 > MAX_SECTOR_V4_COUNT_LOCK_RANGE))
@@ -31,7 +45,7 @@ bool SectorCollection::DoCheckSizeLimitReached()
     return true;
 }
 
-int SectorCollection::add(const Sector &item)
+int SectorCollection::add(std::shared_ptr<Sector> item)
 {
     unsigned itemIndex = count / SLICE_SIZE;
 

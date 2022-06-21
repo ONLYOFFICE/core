@@ -12,13 +12,14 @@ class SectorCollection
 public:
     std::vector<SVector<Sector>> largeArraySlices;
     SectorCollection();
-    void Add(const Sector &item);
+    void Add(std::shared_ptr<Sector> item);
     void Clear();
     inline int Count()const {return count;}
+    std::shared_ptr<Sector> operator[](size_t index);
 
 private:
     bool DoCheckSizeLimitReached();
-    int add(const Sector &item);
+    int add(std::shared_ptr<Sector> item);
 private:
     const int MAX_SECTOR_V4_COUNT_LOCK_RANGE = 524287; //0x7FFFFF00 for Version 4
     const int SLICE_SIZE = 4096;

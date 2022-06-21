@@ -35,6 +35,13 @@ void SVector<T>::push_back(T &&value)
 }
 
 template<class T>
+void SVector<T>::push_back(std::shared_ptr<T> pValue)
+{
+    isInit = true;
+    array.emplace_back(pValue);
+}
+
+template<class T>
 void SVector<T>::push_back(const T &value)
 {
     isInit = true;

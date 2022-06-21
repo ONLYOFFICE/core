@@ -33,7 +33,6 @@ public:
 
     virtual void Dispose(bool disposing=false);
     std::vector<BYTE> &GetData();
-    inline int Id()const {return id;}
 
 public:
     static int MINISECTOR_SIZE;
@@ -46,11 +45,11 @@ public:
 
     SectorType type;
     bool dirtyFlag = false;
+    int id = -1;
 
 private:
     int size = 0;
     Stream stream;
-    int id = -1;
     std::vector<BYTE> data;
     std::mutex lockObject;
     bool _disposed;//false

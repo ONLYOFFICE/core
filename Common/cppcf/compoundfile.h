@@ -3,6 +3,7 @@
 #include "header.h"
 #include "sectorcollection.h"
 #include <queue>
+#include <unordered_set>
 
 #define FLAT_WRITE
 
@@ -50,6 +51,8 @@ public:
     void OnSizeLimitReached();
     void Commit();
     void Commit(bool releaseMemory);
+
+    void Close();
 protected:
     int GetSectorSize();
 
@@ -59,6 +62,18 @@ private:
     void SetFileName(std::wstring fileName);
     void LoadStream(Stream stream);
     void Load(Stream stream);
+
+    void Save(std::wstring wFileName);
+    void Save(Stream stream);
+
+    SVector<Sector> GetFatSectorChain();
+    SVector<Sector> GetDifatSectorChain();
+    SVector<Sector> GetNormalSectorChain(int secID);
+    SVector<Sector>GetMiniSectorChain(int secID);
+    SVector<Sector> GetSectorChain(int secID, SectorType chainType);
+    void EnsureUniqueSectorIndex(int nextSecID, std::unordered_set<int> &processedSectors);
+    void CommitDirectory();
+    void Close(bool closeStream);
 
 public:
     CFSConfiguration configuration = Default;
@@ -78,6 +93,7 @@ private:
     std::fstream stream;
     std::string fileName;
 
+    bool closeStream = true;
     bool _transactionLockAdded = false;
     int _lockSectorId = -1;
     bool _transactionLockAllocated = false;
@@ -87,7 +103,7 @@ private:
 
 #if !defined(FLAT_WRITE)
         std::array<BYTE, FLUSHING_BUFFER_MAX_SIZE> buffer;
-        std::queue<Sector> flushingQueue(); // FLUSHING_QUEUE_SIZE
+        std::queue<std::shared_ptr<Sector> > flushingQueue;
 #endif
 };
 }

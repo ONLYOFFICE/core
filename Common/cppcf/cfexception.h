@@ -10,6 +10,7 @@ class CFException : virtual public std::exception
 public:
     CFException() {}
     CFException(std::string message) : errorMessage(message) {}
+    CFException(std::string message, std::exception& ex) : std::exception(ex), errorMessage(message) {}
     virtual ~CFException() throw () {}
 
     virtual const char* what() const throw () {

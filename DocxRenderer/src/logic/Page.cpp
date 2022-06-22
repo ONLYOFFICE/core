@@ -109,7 +109,6 @@ namespace NSDocxRenderer
         if ((NULL == m_pCurrentLine) || (tatBlockChar == m_eTextAssociationType))
         {
             // пустая (в плане текста) страница
-
             m_pCurrentLine = new CTextLine();
             m_pCurrentLine->m_dBaselinePos = dBaseLinePos;
             m_arTextLine.push_back(m_pCurrentLine);
@@ -312,7 +311,7 @@ namespace NSDocxRenderer
                                 const double& fX, const double& fY, const double& fWidth, const double& fHeight,
                                 const double& fBaseLineOffset, const bool& bIsPDFAnalyzer)
     {
-        if (pUnicodes != NULL && *pUnicodes == ' ')
+        if (pUnicodes != NULL && nCount == 1 && IsSpaceUtf32(*pUnicodes))
         {
             //note пробелы не нужны, добавляются при анализе
             return;
@@ -337,7 +336,7 @@ namespace NSDocxRenderer
             {
                 if ( !IsUnicodeSymbol( pUnicodes[i] ) )
                 {
-                    oText[i] = ' '; //' '
+                    oText[i] = ' ';
                 }
             }
         }
@@ -578,8 +577,7 @@ namespace NSDocxRenderer
 
             pCont->m_dLastX = dTextX;
 
-            m_pCurrentLine->AddCont(pCont, pCont->m_dBaselineOffset);
-
+            m_pCurrentLine->AddCont(pCont);
             m_dLastTextX = dTextX;
             m_dLastTextY = dBaseLinePos;
             m_dLastTextX_block = m_dLastTextX;
@@ -622,7 +620,7 @@ namespace NSDocxRenderer
             else if ((dRight < dTextX) && ((dTextX - dRight) < pContText->m_dSpaceWidthMM))
             {
                 // продолжаем слово с пробелом
-                pLastCont->m_oText += uint32_t(' '); //' '
+                pLastCont->m_oText += uint32_t(' ');
                 pLastCont->m_oText += oText;
                 pLastCont->m_dWidth	= (dTextX + dTextW - pLastCont->m_dX);
 
@@ -682,7 +680,7 @@ namespace NSDocxRenderer
                 if (dTextX > dRight && (dTextX - dRight) < 5 && fabs(m_dLastTextX_block - m_dLastTextX) < 0.01)
                 {
                     // продолжаем слово с пробелом
-                    pLastCont->m_oText += uint32_t(' '); //' '
+                    pLastCont->m_oText += uint32_t(' ');
                     pLastCont->m_oText += oText;
                     pLastCont->m_dWidth	= (dTextX + dTextW - pLastCont->m_dX);
 
@@ -709,10 +707,7 @@ namespace NSDocxRenderer
 
         // либо пробел большой между словами, либо новый текст левее, либо настройки не те (шрифт, кисть)
         // либо все вместе... просто добавл¤ем новое слово
-        CContText* pCont = new CContText(*pContText);
-
-        m_pCurrentLine->AddCont(pCont, pCont->m_dBaselineOffset);
-
+        m_pCurrentLine->AddCont(new CContText(*pContText));
         m_dLastTextX = dTextX;
         m_dLastTextY = dBaseLinePos;
         m_dLastTextX_block = m_dLastTextX;

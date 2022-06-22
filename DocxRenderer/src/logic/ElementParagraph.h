@@ -107,7 +107,6 @@ namespace NSDocxRenderer
         LONG	m_lPickFontStyle;
 
         NSStringUtils::CStringUTF32 m_oText;
-        NSStringUtils::CStringUTF32 m_oGidText;
 
         double m_dX;
         double m_dY;
@@ -118,12 +117,8 @@ namespace NSDocxRenderer
         double m_dWidthWithoutSpaces;
         double m_dLeftWithoutSpaces;
 
-        double m_dPosition;
         double m_dSpaceWidthMM;
         double m_dBaselineOffset;
-
-        double m_dCalculateWidth;
-        double m_dSpaceByText;
 
         bool   m_bIsNeedSpaceAtTheEnd;
         bool   m_bIsHighlightPresent;
@@ -191,7 +186,7 @@ namespace NSDocxRenderer
         CTextLine(const CTextLine& oSrc);
         CTextLine& operator=(const CTextLine& oSrc);
 
-        void AddCont(CContText* pCont, double dBaselineOffset);
+        void AddCont(CContText* pCont);
         bool IsBigger(const CTextLine* oSrc);
         bool IsBiggerOrEqual(const CTextLine* oSrc);
         void SortConts();

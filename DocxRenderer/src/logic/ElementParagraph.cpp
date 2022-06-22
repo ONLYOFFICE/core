@@ -39,12 +39,8 @@ namespace NSDocxRenderer
         m_dWidthWithoutSpaces	= 0;
         m_dLeftWithoutSpaces	= 0;
 
-        m_dPosition		= 0;
         m_dSpaceWidthMM	= 0;
         m_dBaselineOffset = 0;
-
-        m_dCalculateWidth = 0;
-        m_dSpaceByText = 0;
 
         m_bIsNeedSpaceAtTheEnd = false;
         m_bIsHighlightPresent = false;
@@ -75,7 +71,6 @@ namespace NSDocxRenderer
         m_lPickFontStyle	= oSrc.m_lPickFontStyle;
 
         m_oText	 = oSrc.m_oText;
-        m_oGidText = oSrc.m_oGidText;
 
         m_dX		= oSrc.m_dX;
         m_dY		= oSrc.m_dY;
@@ -86,12 +81,8 @@ namespace NSDocxRenderer
         m_dWidthWithoutSpaces	= oSrc.m_dWidthWithoutSpaces;
         m_dLeftWithoutSpaces	= oSrc.m_dLeftWithoutSpaces;
 
-        m_dPosition = oSrc.m_dPosition;
         m_dSpaceWidthMM = oSrc.m_dSpaceWidthMM;
-         m_dBaselineOffset = oSrc.m_dBaselineOffset;
-
-        m_dCalculateWidth = oSrc.m_dCalculateWidth;
-        m_dSpaceByText = oSrc.m_dSpaceByText;
+        m_dBaselineOffset = oSrc.m_dBaselineOffset;
 
         m_bIsNeedSpaceAtTheEnd = oSrc.m_bIsNeedSpaceAtTheEnd;
         m_bIsHighlightPresent = oSrc.m_bIsHighlightPresent;
@@ -186,9 +177,12 @@ namespace NSDocxRenderer
         oWriter.WriteEncodeXmlString(strFontName);
         oWriter.WriteString(L"\"/>");
 
-        oWriter.WriteString(L"<w:color w:val=\"");
-        oWriter.WriteHexInt3(ConvertColorBGRToRGB(m_oBrush.Color1));
-        oWriter.WriteString(L"\"/>");
+        if (m_oBrush.Color1 != 0)
+        {
+            oWriter.WriteString(L"<w:color w:val=\"");
+            oWriter.WriteHexInt3(ConvertColorBGRToRGB(m_oBrush.Color1));
+            oWriter.WriteString(L"\"/>");
+        }
 
         if (m_oFont.Strikeout == TRUE)
         {
@@ -223,8 +217,7 @@ namespace NSDocxRenderer
 
         oWriter.WriteString(L"</w:rPr>");
 
-        //oWriter.WriteString(L"<w:t>");
-        oWriter.WriteString(L"<w:t xml:space=\"preserve\">"); //тест
+        oWriter.WriteString(L"<w:t xml:space=\"preserve\">");
         oWriter.WriteEncodeXmlString(m_oText.ToStdWString());
         oWriter.WriteString(L"</w:t>");
 
@@ -352,10 +345,10 @@ namespace NSDocxRenderer
         return *this;
     }
 
-    void CTextLine::AddCont(CContText* pCont, double dBaselineOffset)
+    void CTextLine::AddCont(CContText* pCont)
     {
         //if (0 == m_arConts.size())
-            m_dBaselineOffset = fabs(m_dBaselineOffset) > fabs(dBaselineOffset) ? m_dBaselineOffset : dBaselineOffset;
+            m_dBaselineOffset = fabs(m_dBaselineOffset) > fabs(pCont->m_dBaselineOffset) ? m_dBaselineOffset : pCont->m_dBaselineOffset;
 
         if ( ( pCont->m_dX > 0 ) && ( ( m_dX == 0 ) || ( pCont->m_dX < m_dX ) ) )
             m_dX = pCont->m_dX;
@@ -400,11 +393,8 @@ namespace NSDocxRenderer
                 m_dHeight = (pTextLine->m_dBaselinePos - m_dBaselinePos + m_dHeight);
             }
 
-            double dSubPosition = m_dBaselinePos - pTextLine->m_dBaselinePos;
-
             for (size_t i = 0; i < nCount; ++i)
             {
-                pTextLine->m_arConts[i]->m_dPosition = dSubPosition;
                 m_arConts.push_back(pTextLine->m_arConts[i]);
             }
         }

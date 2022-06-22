@@ -1294,7 +1294,9 @@ void XlsConverter::convert(XLS::OBJECTS* objects, XLS::WorksheetSubstream * shee
 		}
 
 //-----------------------------------------------------------------------------
-		if (type_object < 0)	continue;
+		if (type_object < 0) continue;
+		if (group_objects.empty())
+			break; /// что то с объектами не то ! 2006 02.xls
 
 		if (type_object == 0)
 		{

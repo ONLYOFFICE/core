@@ -1001,13 +1001,19 @@ namespace NSCSS
                 CASE(L"width"):
                 {
                         const size_t unPositionImp = pPropertie.second.find(L"!i");
+
+                        int nParentValue = m_pDisplay.GetWidth();
+
+                        if (0 >= nParentValue)
+                                nParentValue =  m_oDeviceWindow.m_ushWidth;
+
                         if (unPositionImp == std::wstring::npos)
                         {
-                            m_pDisplay.SetWidth(ConvertUnitMeasure(pPropertie.second, m_oDeviceWindow.m_ushWidth, ScalingDirectionX), unLevel, bHardMode);
+                            m_pDisplay.SetWidth(ConvertUnitMeasure(pPropertie.second, nParentValue, ScalingDirectionX), unLevel, bHardMode);
                         }
                         else if (unPositionImp != 0)
                         {
-                            m_pDisplay.SetWidth(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), m_oDeviceWindow.m_ushWidth, ScalingDirectionX), unLevel, true);
+                            m_pDisplay.SetWidth(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), nParentValue, ScalingDirectionX), unLevel, true);
                             m_pDisplay.SetImportantWidth(true);
                         }
 

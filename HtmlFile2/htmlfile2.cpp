@@ -26,6 +26,8 @@
 #include "../DesktopEditor/graphics/pro/Graphics.h"
 #include "htmlfile2.h"
 
+#include <regex>
+
 #ifndef VALUE2STR
 #define VALUE_TO_STRING(x) #x
 #define VALUE2STR(x) VALUE_TO_STRING(x)
@@ -103,10 +105,10 @@ public:
 
     CHtmlFile2_Private() : m_nImageId(1), m_nFootnoteId(1), m_nHyperlinkId(1), m_nCrossId(1), m_nNumberingId(1), m_bInP(false), m_bWasPStyle(false)
     {
-            //Установим размер исходного и нового окна для Css калькулятора (должны быть одинаковые единицы измерения (желательно пункты))
-            //Это нужно для масштабирования некоторых значений
-            m_oStylesCalculator.SetSizeSourceWindow(NSCSS::CSizeWindow(5000 * (1366 / (8.26667 * m_oStylesCalculator.GetDpi())), 0));
-            m_oStylesCalculator.SetSizeDeviceWindow(NSCSS::CSizeWindow(5000, 0));
+        //Установим размер исходного и нового окна для Css калькулятора (должны быть одинаковые единицы измерения (желательно пункты))
+        //Это нужно для масштабирования некоторых значений
+        m_oStylesCalculator.SetSizeSourceWindow(NSCSS::CSizeWindow(4940 * (1366 / (8.26667 * m_oStylesCalculator.GetDpi())), 0));
+        m_oStylesCalculator.SetSizeDeviceWindow(NSCSS::CSizeWindow(4940, 0));
     }
 
     ~CHtmlFile2_Private()
@@ -1067,22 +1069,32 @@ private:
                 NSCSS::CCompiledStyle::StyleEquation(oStyle, oStyleSetting);
 
                 int nWidth = oStyle.m_pDisplay.GetWidth();
+                std::wstring wsType = L"dxa";
+
+                //Если ширина указана в %, то используем тип dxa, если же в других ндтнтцах измерения, то в pct
+                std::wregex oWidthRegex(L"((width)+)[//s]*:[//s]*(.+%)");
+
+                if (std::regex_search(sSelectors.back().m_sStyle.data(), oWidthRegex))
+                         wsType = L"pct";
+                else
+                       nWidth *= 10;
+                //-------------------------
 
                 if (nWidth > 0)
-                        oXml->WriteString(L"<w:tcW w:w=\"" + std::to_wstring(nWidth) + L"\" w:type=\"pct\"/>");
+                        oXml->WriteString(L"<w:tcW w:w=\"" + std::to_wstring(nWidth) + L"\" w:type=\"" + wsType + L"\"/>");
                 else
                         oXml->WriteString(L"<w:tcW w:w=\"0\" w:type=\"auto\"/>");
 
                 if(nColspan != 1)
                 {
                         oXml->WriteString(L"<w:gridSpan w:val=\"");
-                        oXml->WriteString(std::to_wstring(nColspan));
-                        oXml->WriteString(L"\"/><w:hideMark/>");
+                        oXml->WriteString(std::to_wstring(nColspan - ((nColspan > 3) ? 1 : 0)));
+                        oXml->WriteString(L"\"/>");
 
                         j += nColspan - 1;
                 }
 
-                oXml->WriteString(L"</w:tcPr>");
+                oXml->WriteString(L"<w:hideMark/></w:tcPr>");
                 size_t nEmpty = oXml->GetCurSize();
                 m_bWasPStyle = false;
 
@@ -1144,16 +1156,16 @@ private:
         NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors, false);
 
         if (oXml->GetSubData(oXml->GetCurSize() - 6) != L"</w:p>")
-            oXml->WriteString(L"<w:p><w:pPr><w:spacing w:line=\"0\"/></w:pPr></w:p>");
+            oXml->WriteString(L"<w:p><w:pPr><w:spacing w:beforeLines=\"0\" w:before=\"0\" w:afterLines=\"0\" w:after=\"0\"/><w:rPr><w:vanish/><w:sz w:val=\"2\"/><w:szCs w:val=\"2\"/></w:rPr></w:pPr></w:p>");
 
         // Начало таблицы
         std::wstring wsTable = L"<w:tbl><w:tblPr>";
 
-        std::wstring wsWidth = oStyle.m_pDisplay.GetWidthW();
+        int nWidth = oStyle.m_pDisplay.GetWidth();
         std::wstring wsAlign = oStyle.m_pDisplay.GetAlign();
 
-        if (!wsWidth.empty())
-                wsTable += L"<w:tblW w:w=\"" + wsWidth + L"\" w:type=\"pct\"/>";
+        if (0 < nWidth)
+                wsTable += L"<w:tblW w:w=\"" + std::to_wstring(nWidth) + L"\" w:type=\"pct\"/>";
         else if (m_oStylesCalculator.GetSizeDeviceWindow().m_ushWidth != 0)
                 wsTable += L"<w:tblW w:w=\"" + std::to_wstring(m_oStylesCalculator.GetSizeDeviceWindow().m_ushWidth) + L"\" w:type=\"pct\"/>";
         else
@@ -1185,14 +1197,14 @@ private:
                 if (0 < oStyle.m_pMargin.GetTopSide())
                         wsTable += L"<w:top w:w=\"" + std::to_wstring(static_cast<short int>(oStyle.m_pMargin.GetTopSide() * 10 + 0.5f)) + L"\" w:type=\"dxa\"/>";
 
-                if (0 < oStyle.m_pMargin.GetLeftSide())
-                        wsTable += L"<w:left w:w=\"" + std::to_wstring(static_cast<short int>(oStyle.m_pMargin.GetLeftSide() * 10 + 0.5f)) + L"\" w:type=\"dxa\"/>";
+//                if (0 < oStyle.m_pMargin.GetLeftSide())
+//                        wsTable += L"<w:left w:w=\"" + std::to_wstring(static_cast<short int>(oStyle.m_pMargin.GetLeftSide() * 10 + 0.5f)) + L"\" w:type=\"dxa\"/>";
 
                 if (0 < oStyle.m_pMargin.GetBottomSide())
                         wsTable += L"<w:bottom w:w=\"" + std::to_wstring(static_cast<short int>(oStyle.m_pMargin.GetBottomSide() * 10 + 0.5f)) + L"\" w:type=\"dxa\"/>";
 
-                if (0 < oStyle.m_pMargin.GetRightSide())
-                        wsTable += L"<w:right w:w=\"" + std::to_wstring(static_cast<short int>(oStyle.m_pMargin.GetRightSide() * 10 + 0.5f)) + L"\" w:type=\"dxa\"/>";
+//                if (0 < oStyle.m_pMargin.GetRightSide())
+//                        wsTable += L"<w:right w:w=\"" + std::to_wstring(static_cast<short int>(oStyle.m_pMargin.GetRightSide() * 10 + 0.5f)) + L"\" w:type=\"dxa\"/>";
 
                 wsTable += L"</w:tblCellMar>";
         }

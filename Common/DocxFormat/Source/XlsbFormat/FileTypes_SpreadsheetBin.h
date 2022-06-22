@@ -82,6 +82,16 @@ namespace OOX
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments",
 												L"comments", true, true);
 
+			const FileType SlicerCacheBin	(L"slicerCaches", L"slicerCache.bin",
+												L"application/vnd.ms-excel.slicerCache",
+												L"http://schemas.microsoft.com/office/2007/relationships/slicerCache",
+												L"slicerCaches/slicerCache", true, true);
+
+			const FileType SlicerBin		(L"../slicers", L"slicer.bin",
+												L"application/vnd.ms-excel.slicer",
+												L"http://schemas.microsoft.com/office/2007/relationships/slicer",
+												L"slicers/slicer", true, true);
+
 		} // namespace FileTypes
 	}
 } // namespace OOX

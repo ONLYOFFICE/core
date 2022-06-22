@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new EndSlicerCacheLevelsData(*this));
     }
 
-    void EndSlicerCacheLevelsData::readFields(XLS::CFRecord& record)
-    {
-        // No data in this record
-    }
-
 } // namespace XLSB
 

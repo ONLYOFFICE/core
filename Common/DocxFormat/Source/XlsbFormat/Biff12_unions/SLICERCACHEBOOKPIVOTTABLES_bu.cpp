@@ -68,14 +68,31 @@ namespace XLSB
             elements_.pop_back();
         }
 
-        if (proc.optional<FRTEnd>())
-        {
-            m_BrtFRTEnd = elements_.back();
-            elements_.pop_back();
-        }
+		if (proc.optional<FRTEnd>())
+		{
+			m_bBrtFRTEnd = true;
+			elements_.pop_back();
+		}
+		else
+			m_bBrtFRTEnd = false;
 
-        return m_BrtSlicerCacheBookPivotTables && m_BrtFRTEnd;
+        return m_BrtSlicerCacheBookPivotTables && m_bBrtFRTEnd;
     }
+
+	const bool SLICERCACHEBOOKPIVOTTABLES::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtFRTBegin != nullptr)		
+			proc.mandatory(*m_BrtFRTBegin);
+		else
+			proc.mandatory<FRTBegin>();
+
+		if (m_BrtSlicerCacheBookPivotTables != nullptr)
+			proc.mandatory(*m_BrtSlicerCacheBookPivotTables);
+
+		proc.mandatory<FRTEnd>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

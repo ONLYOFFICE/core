@@ -58,9 +58,11 @@ namespace XLSB
     {
         if (proc.optional<BeginSlicerCacheSiRanges>())
         {
-            m_BrtBeginSlicerCacheSiRanges = elements_.back();
+			m_bBrtBeginSlicerCacheSiRanges = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginSlicerCacheSiRanges = false;
 
         auto count = proc.repeated<SLICERCACHESIRANGE>(0, 2147483647);
         while(count > 0)
@@ -72,12 +74,28 @@ namespace XLSB
 
         if (proc.optional<EndSlicerCacheSiRanges>())
         {
-            m_BrtEndSlicerCacheSiRanges = elements_.back();
+            m_bBrtEndSlicerCacheSiRanges = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSlicerCacheSiRanges = false;
 
-        return m_BrtBeginSlicerCacheSiRanges && m_BrtEndSlicerCacheSiRanges;
+        return m_bBrtBeginSlicerCacheSiRanges && m_bBrtEndSlicerCacheSiRanges;
     }
+
+	const bool SLICERCACHESIRANGES::saveContent(BinProcessor& proc)
+	{
+		proc.mandatory<BeginSlicerCacheSiRanges>();
+
+		for (auto &item : m_arSLICERCACHESIRANGE)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndSlicerCacheSiRanges>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

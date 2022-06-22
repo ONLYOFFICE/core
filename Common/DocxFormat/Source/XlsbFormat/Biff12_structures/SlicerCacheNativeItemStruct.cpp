@@ -64,5 +64,16 @@ namespace XLSB
         fNoData   = GETBIT(flags, 1);
     }
 
+	void SlicerCacheNativeItemStruct::save(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+
+		SETBIT(flags, 0, fSelected)
+		SETBIT(flags, 1, fNoData)
+
+		record << iCache << flags;
+
+	}
+
 } // namespace XLSB
 

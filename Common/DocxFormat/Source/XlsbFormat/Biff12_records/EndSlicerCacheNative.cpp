@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new EndSlicerCacheNative(*this));
     }
 
-    void EndSlicerCacheNative::readFields(XLS::CFRecord& record)
-    {
-        // No data in this record
-    }
-
 } // namespace XLSB
 

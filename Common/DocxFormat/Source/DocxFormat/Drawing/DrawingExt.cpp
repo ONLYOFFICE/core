@@ -63,6 +63,9 @@
 #include "../../XlsbFormat/Biff12_unions/TABLESLICERSEX.h"
 #include "../../XlsbFormat/Biff12_unions/FRTWORKBOOK.h"
 #include "../../XlsbFormat/Biff12_unions/FRTPIVOTCACHEDEF.h"
+#include "../../XlsbFormat/Biff12_unions/TABLESLICERCACHEIDS.h"
+#include "../../XlsbFormat/Biff12_unions/SLICERCACHEIDS.h"
+#include "../../XlsbFormat/Biff12_unions/DVALS14.h"
 
 namespace OOX
 {
@@ -1318,11 +1321,13 @@ namespace OOX
 					{
 						if(itemExt->m_oSlicerCachesExt.IsInit())
 						{
-							//itemExt->m_oSlicerCachesExt.toBin(ptr->m_TABLESLICERCACHEIDS);
+							ptr->m_TABLESLICERCACHEIDS = XLS::BaseObjectPtr(new XLSB::TABLESLICERCACHEIDS());
+							itemExt->m_oSlicerCachesExt->toBin(ptr->m_TABLESLICERCACHEIDS);
 						}
 						if (itemExt->m_oSlicerCaches.IsInit())
 						{
-							//itemExt->m_oSlicerCaches.toBin(ptr->m_SLICERCACHEIDS);
+							ptr->m_SLICERCACHEIDS = XLS::BaseObjectPtr(new XLSB::SLICERCACHEIDS());
+							itemExt->m_oSlicerCaches->toBin(ptr->m_SLICERCACHEIDS);
 						}						
 					}
 				}
@@ -1349,21 +1354,28 @@ namespace OOX
 						}
 						if (itemExt->m_oDataValidations.IsInit())
 						{
-							//itemExt->m_oDataValidations.toBin(ptr->m_DVALS14);
+							ptr->m_DVALS14 = XLS::BaseObjectPtr(new XLSB::DVALS14());
+							itemExt->m_oDataValidations->toBin(ptr->m_DVALS14);
 						}
 						if (itemExt->m_oSparklineGroups.IsInit())
 						{
-							//itemExt->m_oSparklineGroups.toBin(ptr->m_SPARKLINEGROUPS);
+							itemExt->m_oSparklineGroups->toBin(ptr->m_SPARKLINEGROUPS);
 						}
 
 						if (itemExt->m_oSlicerList.IsInit())
 						{
 							if(itemExt->m_sUri.IsInit())
 							{
-								//if(itemExt->m_sUri == _T("{A8765BA9-456A-4dab-B4F3-ACF838C121DE}"))
-									//itemExt->m_oSlicerList.toBin(ptr->m_TABLESLICERSEX);
-								//else if (itemExt->m_sUri == _T("{A8765BA9-456A-4dab-B4F3-ACF838C121DE}"))
-									//itemExt->m_oSlicerList.toBin(ptr->m_SLICERSEX);
+								if(itemExt->m_sUri == _T("{A8765BA9-456A-4dab-B4F3-ACF838C121DE}"))
+								{
+									ptr->m_TABLESLICERSEX = XLS::BaseObjectPtr(new XLSB::TABLESLICERSEX());
+									itemExt->m_oSlicerList->toBin(ptr->m_TABLESLICERSEX);
+								}
+								else if (itemExt->m_sUri == _T("{A8765BA9-456A-4dab-B4F3-ACF838C121DE}"))
+								{
+									ptr->m_SLICERSEX = XLS::BaseObjectPtr(new XLSB::SLICERSEX());
+									itemExt->m_oSlicerList->toBin(ptr->m_SLICERSEX);
+								}
 							}
 						}
 					}
@@ -1377,11 +1389,15 @@ namespace OOX
 					{
 						if (itemExt->m_oSlicerStyles.IsInit())
 						{
-							//itemExt->m_oSlicerStyles.toBin(ptr->m_STYLESHEET14);
+							itemExt->m_oSlicerStyles->toBin(ptr->m_STYLESHEET14);
 						}
 						if (itemExt->m_oDxfs.IsInit())
 						{
 							itemExt->m_oDxfs->isExt = true;
+
+							if(ptr->m_DXF14S == nullptr)
+								ptr->m_DXF14S = XLS::BaseObjectPtr(new XLSB::DXF14S());
+
 							itemExt->m_oDxfs->toBin(static_cast<XLSB::DXF14S*>(ptr->m_DXF14S.get())->m_arDXF14);
 						}
 					}
@@ -1412,6 +1428,48 @@ namespace OOX
 								ptr->m_EXTCONN15 = XLS::BaseObjectPtr(new XLSB::EXTCONN15());
 
 							itemExt->m_oConnection->toBin(ptr->m_EXTCONN15);
+						}
+					}
+				}
+
+				else if (obj->get_type() == XLS::typeFRTSLICERCACHE)
+				{
+					auto ptr = static_cast<XLSB::FRTSLICERCACHE*>(obj.get());
+
+					if (ptr != nullptr)
+					{
+						if (!itemExt->m_oSlicerCachePivotTables.empty())
+						{
+							ptr->m_SLICERCACHEBOOKPIVOTTABLES = XLS::BaseObjectPtr(new XLSB::SLICERCACHEBOOKPIVOTTABLES());
+							auto pSLICERCACHEBOOKPIVOTTABLES = static_cast<XLSB::SLICERCACHEBOOKPIVOTTABLES*>(ptr->m_SLICERCACHEBOOKPIVOTTABLES.get());
+
+							pSLICERCACHEBOOKPIVOTTABLES->m_BrtSlicerCacheBookPivotTables = XLS::BaseObjectPtr(new XLSB::SlicerCacheBookPivotTables());
+							auto ptrSCPT = static_cast<XLSB::SlicerCacheBookPivotTables*>(pSLICERCACHEBOOKPIVOTTABLES->m_BrtSlicerCacheBookPivotTables.get());
+
+							ptrSCPT->pivotTables.reserve(itemExt->m_oSlicerCachePivotTables.size());
+
+							for (auto& itemSlicerCachePivotTable : itemExt->m_oSlicerCachePivotTables)
+							{
+								XLSB::SlicerCachePivotTable item;
+								itemSlicerCachePivotTable->toBin(item);
+								ptrSCPT->pivotTables.push_back(item);
+							}
+						}
+
+						if (itemExt->m_oTableSlicerCache.IsInit())
+						{
+							ptr->m_TABLESLICERCACHE = XLS::BaseObjectPtr(new XLSB::TABLESLICERCACHE());
+							auto pTABLESLICERCACHE = static_cast<XLSB::TABLESLICERCACHE*>(ptr->m_TABLESLICERCACHE.get());
+
+							itemExt->m_oTableSlicerCache->toBin(pTABLESLICERCACHE->m_BrtBeginTableSlicerCache);
+						}
+						
+						if (itemExt->m_oSlicerCacheHideItemsWithNoData.IsInit())
+						{
+							ptr->m_SLICERCACHECROSSFILTEREXT = XLS::BaseObjectPtr(new XLSB::SLICERCACHECROSSFILTEREXT());
+							auto pSLICERCACHECROSSFILTEREXT = static_cast<XLSB::SLICERCACHECROSSFILTEREXT*>(ptr->m_SLICERCACHECROSSFILTEREXT.get());
+
+							itemExt->m_oSlicerCacheHideItemsWithNoData->toBin(pSLICERCACHECROSSFILTEREXT->m_BrtSlicerCacheHideItemsWithNoData);
 						}
 					}
 				}

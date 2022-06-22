@@ -70,6 +70,21 @@ void CSlicers::fromBin(XLS::BaseObjectPtr& obj)
             m_oSlicer.push_back(CSlicer(slicer));
     }
 }
+void CSlicers::toBin(XLS::BaseObjectPtr& obj)
+{
+	if (obj == nullptr)
+		obj = XLS::BaseObjectPtr(new XLSB::SLICERS());
+
+	auto ptrSLICERS = static_cast<XLSB::SLICERS*>(obj.get());
+	
+	ptrSLICERS->m_arSLICER.reserve(m_oSlicer.size());
+	for (size_t i = 0; i < m_oSlicer.size(); ++i)
+	{
+		XLS::BaseObjectPtr item(new XLSB::SLICER());
+		m_oSlicer[i].toBin(item);
+		ptrSLICERS->m_arSLICER.push_back(item);
+	}
+}
 void CSlicers::toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const
 {
 	writer.StartNode(sName);
@@ -167,6 +182,67 @@ void CSlicer::fromBin(XLS::BaseObjectPtr& obj)
     {
         ReadAttributes(ptr->m_BrtBeginSlicer);
     }
+}
+void CSlicer::toBin(XLS::BaseObjectPtr& obj)
+{
+	auto ptr = static_cast<XLSB::SLICER*>(obj.get());
+
+	ptr->m_BrtBeginSlicer = XLS::BaseObjectPtr(new XLSB::BeginSlicer());
+	auto ptrBeginSlicer = static_cast<XLSB::BeginSlicer*>(ptr->m_BrtBeginSlicer.get());
+
+	if (ptrBeginSlicer != nullptr)
+	{
+		if (m_oName.IsInit())
+			ptrBeginSlicer->stName = m_oName.get();
+		else
+			ptrBeginSlicer->stName = L"";
+
+		if (m_oCache.IsInit())
+			ptrBeginSlicer->stSlicerCacheName = m_oCache.get();
+		else
+			ptrBeginSlicer->stSlicerCacheName = L"";
+
+		if (m_oCaption.IsInit())
+			ptrBeginSlicer->stCaption = m_oCaption.get();
+		else
+			ptrBeginSlicer->stCaption = L"";
+
+		if (m_oStyle.IsInit())
+			ptrBeginSlicer->stStyle = m_oStyle.get();
+		else
+			ptrBeginSlicer->stStyle = L"";
+
+		if (m_oStartItem.IsInit())
+			ptrBeginSlicer->dwStartSlicerItem = m_oStartItem.get();
+		else
+			ptrBeginSlicer->dwStartSlicerItem = 0;
+
+		if (m_oColumnCount.IsInit())
+			ptrBeginSlicer->dwColumnCount = m_oColumnCount.get();
+		else
+			ptrBeginSlicer->dwColumnCount = 0;
+
+		if (m_oShowCaption.IsInit())
+			ptrBeginSlicer->fCaptionVisible = m_oShowCaption.get();
+		else
+			ptrBeginSlicer->fCaptionVisible = false;
+
+		if (m_oLevel.IsInit())
+			ptrBeginSlicer->dwLevel = m_oLevel.get();
+		else
+			ptrBeginSlicer->dwLevel = 0;
+
+		if (m_oLockedPosition.IsInit())
+			ptrBeginSlicer->fLockedPosition = m_oLockedPosition.get();
+		else
+			ptrBeginSlicer->fLockedPosition = false;
+
+		if (m_oRowHeight.IsInit())
+			ptrBeginSlicer->dxRowHeight = m_oRowHeight.get();
+		else
+			ptrBeginSlicer->dxRowHeight = 0;
+
+	}
 }
 void CSlicer::ReadAttributes(XLS::BaseObjectPtr& obj)
 {
@@ -337,10 +413,26 @@ void CSlicerFile::readBin(const CPath& oPath)
             if (slicersStream->m_SLICERS != nullptr)
                 m_oSlicers = slicersStream->m_SLICERS;
         }
-
-        //slicersStream.reset();
-
     }
+}
+
+void CSlicerFile::writeBin(const CPath& oPath) const
+{
+	CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+	if (xlsb)
+	{
+		XLSB::SlicersStreamPtr slicersStream(new XLSB::SlicersStream);
+
+		if (slicersStream != nullptr)
+		{
+			if (m_oSlicers.IsInit())
+			{
+				slicersStream->m_SLICERS = XLS::BaseObjectPtr(new XLSB::SLICERS());
+				m_oSlicers->toBin(slicersStream->m_SLICERS);
+			}
+		}
+		xlsb->WriteBin(oPath, slicersStream.get());
+	}
 }
 
 void CSlicerFile::read(const CPath& oRootPath, const CPath& oPath)
@@ -369,13 +461,20 @@ void CSlicerFile::write(const CPath& oPath, const CPath& oDirectory, CContentTyp
 	if(!m_oSlicers.IsInit())
 		return;
 
-	NSStringUtils::CStringBuilder sXml;
+	if (dynamic_cast<CXlsb*>(File::m_pMainDocument) && !dynamic_cast<CXlsb*>(File::m_pMainDocument)->IsWriteToXlsx())
+	{
+		writeBin(oPath);
+	}
+	else
+	{
+		NSStringUtils::CStringBuilder sXml;
 
-	sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
-	m_oSlicers->toXML(sXml, L"slicers");
+		sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+		m_oSlicers->toXML(sXml, L"slicers");
 
-	std::wstring sPath = oPath.GetPath();
-	NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
+		std::wstring sPath = oPath.GetPath();
+		NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
+	}
 
 	oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 	IFileContainer::Write( oPath, oDirectory, oContent );

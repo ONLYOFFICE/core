@@ -72,12 +72,39 @@ namespace XLSB
 
         if (proc.optional<EndSlicerCacheLevelsData>())
         {
-            m_BrtEndSlicerCacheLevelsData = elements_.back();
+            m_bBrtEndSlicerCacheLevelsData = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSlicerCacheLevelsData = false;
 
-        return m_BrtBeginSlicerCacheLevelsData && m_BrtEndSlicerCacheLevelsData;
+        return m_BrtBeginSlicerCacheLevelsData && m_bBrtEndSlicerCacheLevelsData;
     }
+
+	const bool SLICERCACHELEVELSDATA::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginSlicerCacheLevelsData == nullptr)
+			m_BrtBeginSlicerCacheLevelsData = XLS::BaseObjectPtr(new XLSB::BeginSlicerCacheLevelsData());
+
+		if (m_BrtBeginSlicerCacheLevelsData != nullptr)
+		{
+			auto ptrBrtBeginSlicerCacheLevelsData = static_cast<XLSB::BeginSlicerCacheLevelsData*>(m_BrtBeginSlicerCacheLevelsData.get());
+
+			if (ptrBrtBeginSlicerCacheLevelsData != nullptr)
+				ptrBrtBeginSlicerCacheLevelsData->clevels = m_arSLICERCACHELEVELDATA.size();
+
+			proc.mandatory(*m_BrtBeginSlicerCacheLevelsData);
+		}
+
+		for (auto &item : m_arSLICERCACHELEVELDATA)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndSlicerCacheLevelsData>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

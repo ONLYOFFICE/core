@@ -62,12 +62,30 @@ namespace XLSB
         record >> stName >> stTitle;
 
         XLWideString parent;
-        for(size_t i = 0; i< cparent; ++i)
+        for(size_t i = 0; i < cparent; ++i)
         {
             record >> parent;
             parents.push_back(parent);
         }
     }
+
+	void SlicerCacheOlapItem::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+
+		cparent = parents.size();
+
+		SETBIT(flags, 0, fNoData)
+		SETBITS(flags, 1, 7, cparent)
+
+		record << flags;
+		record << stName << stTitle;
+
+		for (size_t i = 0; i < cparent; ++i)
+		{
+			record << parents[i];
+		}
+	}
 
 } // namespace XLSB
 

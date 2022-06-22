@@ -62,5 +62,17 @@ namespace XLSB
         }
     }
 
+	void SlicerCacheSelection::writeFields(XLS::CFRecord& record)
+	{
+		cparent = parents.size();
+
+		record << cparent << stUniqueName;
+
+		for (size_t i = 0; i< cparent; ++i)
+		{
+			record << parents[i];
+		}
+	}
+
 } // namespace XLSB
 

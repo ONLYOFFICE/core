@@ -62,5 +62,17 @@ namespace XLSB
         }
     }
 
+	void SlicerCacheNativeItem::writeFields(XLS::CFRecord& record)
+	{
+		cItems = rgItems.size();
+
+		record << cItems;
+
+		for (size_t i = 0; i < cItems; ++i)
+		{
+			record << rgItems[i];
+		}
+	}
+
 } // namespace XLSB
 

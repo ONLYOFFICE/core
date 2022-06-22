@@ -77,12 +77,24 @@ namespace XLSB
 
         if (proc.optional<EndSlicer>())
         {
-            m_BrtEndSlicer = elements_.back();
+			m_bBrtEndSlicer = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSlicer = false;
 
-        return m_BrtBeginSlicer && m_BrtEndSlicer;
+        return m_BrtBeginSlicer && m_bBrtEndSlicer;
     }
+
+	const bool SLICER::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginSlicer != nullptr)
+			proc.mandatory(*m_BrtBeginSlicer);
+
+		proc.mandatory<EndSlicer>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

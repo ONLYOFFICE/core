@@ -50,9 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new BeginSlicerCache(*this));
     }
 
-    void BeginSlicerCache::readFields(XLS::CFRecord& record)
-    {
-    }
-
 } // namespace XLSB
 

@@ -60,5 +60,10 @@ namespace XLSB
         record >> iTabId >> stPivotTable;
     }
 
+	void SlicerCachePivotTable::save(XLS::CFRecord& record)
+	{
+		record << iTabId << stPivotTable;
+	}
+
 } // namespace XLSB
 

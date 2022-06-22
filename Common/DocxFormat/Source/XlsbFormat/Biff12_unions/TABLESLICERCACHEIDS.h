@@ -48,6 +48,8 @@ namespace XLSB
 		const bool loadContent(XLS::BinProcessor& proc) override;
 		const bool saveContent(XLS::BinProcessor& proc) override;
 
+		static const XLS::ElementType	type = XLS::typeTABLESLICERCACHEIDS;
+
         XLS::BaseObjectPtr               m_BrtFRTBegin;
 		bool			                 m_bBrtTableSlicerCacheIDs;
         std::vector<XLS::BaseObjectPtr>  m_arTABLESLICERCACHEID;

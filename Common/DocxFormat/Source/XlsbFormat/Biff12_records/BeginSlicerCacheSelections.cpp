@@ -55,5 +55,10 @@ namespace XLSB
         record >> cUniqueNames;
     }
 
+	void BeginSlicerCacheSelections::writeFields(XLS::CFRecord& record)
+	{
+		record << cUniqueNames;
+	}
+
 } // namespace XLSB
 

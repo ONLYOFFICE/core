@@ -87,12 +87,30 @@ namespace XLSB
 
         if (proc.optional<EndSlicerCacheOlapImpl>())
         {
-            m_BrtEndSlicerCacheOlapImpl = elements_.back();
+            m_bBrtEndSlicerCacheOlapImpl = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSlicerCacheOlapImpl = false;
 
-        return m_BrtBeginSlicerCacheOlapImpl && m_SLICERCACHELEVELSDATA && m_SLICERCACHESELECTIONS && m_BrtEndSlicerCacheOlapImpl;
+        return m_BrtBeginSlicerCacheOlapImpl && m_SLICERCACHELEVELSDATA && m_SLICERCACHESELECTIONS && m_bBrtEndSlicerCacheOlapImpl;
     }
+
+	const bool SLICERCACHEOLAPIMPL::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginSlicerCacheOlapImpl != nullptr)
+			proc.mandatory(*m_BrtBeginSlicerCacheOlapImpl);
+
+		if (m_SLICERCACHELEVELSDATA != nullptr)
+			proc.mandatory(*m_SLICERCACHELEVELSDATA);
+
+		if (m_SLICERCACHESELECTIONS != nullptr)
+			proc.mandatory(*m_SLICERCACHESELECTIONS);
+
+		proc.mandatory<EndSlicerCacheOlapImpl>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

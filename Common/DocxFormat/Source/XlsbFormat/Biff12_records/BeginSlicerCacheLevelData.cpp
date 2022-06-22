@@ -62,5 +62,17 @@ namespace XLSB
         record >> stUniqueName >> stSourceCaption;
     }
 
+	void BeginSlicerCacheLevelData::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+
+		SETBITS(flags, 0, 1, fSortOrder)
+		SETBITS(flags, 2, 3, fCrossFilter)
+
+		record << citem << flags;
+
+		record << stUniqueName << stSourceCaption;
+	}
+
 } // namespace XLSB
 

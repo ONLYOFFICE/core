@@ -45,13 +45,14 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+		const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         XLS::BaseObjectPtr               m_BrtFRTBegin;
         XLS::BaseObjectPtr               m_BrtBeginTableSlicerCache;
         //std::vector<XLS::BaseObjectPtr>  m_arFRT;
-        XLS::BaseObjectPtr               m_BrtEndTableSlicerCache;
-        XLS::BaseObjectPtr               m_BrtFRTEnd;
+		bool			                 m_bBrtEndTableSlicerCache;
+		bool			                 m_bBrtFRTEnd;
 
     };
 

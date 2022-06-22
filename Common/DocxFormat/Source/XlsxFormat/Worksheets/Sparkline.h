@@ -41,6 +41,7 @@
 #include "../../XlsbFormat/Biff12_unions/SPARKLINEGROUP.h"
 #include "../../XlsbFormat/Biff12_records/BeginSparklineGroup.h"
 #include "../../XlsbFormat/Biff12_records/Sparkline.h"
+#include "../../XlsbFormat/Biff12_structures/FRTFormula.h"
 
 namespace OOX
 {
@@ -104,6 +105,34 @@ namespace OOX
             {
                 ReadAttributes(obj);
             }
+
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::Sparkline*>(obj.get());
+				if (ptr != nullptr)
+				{
+					ptr->FRTheader.fRef = false;
+					ptr->FRTheader.fSqref = false;
+					ptr->FRTheader.fFormula = false;
+					ptr->FRTheader.fRelID = false;
+
+					if (m_oRef.IsInit())
+					{
+						ptr->FRTheader.fFormula = true;
+						XLSB::FRTFormula fmla;
+						fmla.formula = m_oRef.get();
+						ptr->FRTheader.rgFormulas.array.push_back(fmla);
+					}
+
+					if (m_oSqRef.IsInit())
+					{
+						ptr->FRTheader.fSqref = true;
+						XLSB::FRTSqref sqref;
+						sqref.sqrfx.strValue = m_oSqRef.get();
+						ptr->FRTheader.rgSqrefs.array.push_back(sqref);
+					}
+				}
+			}
 
 			virtual EElementType getType () const
 			{
@@ -193,6 +222,23 @@ namespace OOX
                         m_arrItems.push_back(new CSparkline(sparkline));
                 }
             }
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::SPARKLINEGROUP*>(obj.get());
+				if (ptr != nullptr)
+				{
+					ptr->m_arBrtSparkline.reserve(m_arrItems.size());
+					for (size_t i = 0; i < m_arrItems.size(); ++i)
+					{
+						if (m_arrItems[i])
+						{
+							XLS::BaseObjectPtr item(new XLSB::Sparkline());
+							m_arrItems[i]->toBin(item);
+							ptr->m_arBrtSparkline.push_back(item);
+						}
+					}
+				}
+			}			
 			virtual EElementType getType () const
 			{
 				return et_x_Sparklines;
@@ -420,6 +466,18 @@ namespace OOX
                 }
             }
 
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::SPARKLINEGROUP*>(obj.get());
+				if (ptr != nullptr)
+				{
+					WriteAttributes(ptr->m_BrtBeginSparklineGroup);
+
+					if(m_oSparklines.IsInit())
+						m_oSparklines->toBin(obj);
+				}
+			}
+
 			virtual EElementType getType () const
 			{
 				return et_x_SparklineGroup;
@@ -496,6 +554,176 @@ namespace OOX
 
                 }
             }
+			void WriteAttributes(XLS::BaseObjectPtr& obj)
+			{
+				if (obj == nullptr)
+					obj = XLS::BaseObjectPtr(new XLSB::BeginSparklineGroup());
+
+				auto ptr = static_cast<XLSB::BeginSparklineGroup*>(obj.get());
+				if (ptr != nullptr)
+				{
+					if (m_oManualMax.IsInit())
+						ptr->dManualMax.data.value = m_oManualMax->GetValue();
+					else
+						ptr->dManualMax.data.value = 0;
+
+					if (m_oManualMin.IsInit())
+						ptr->dManualMin.data.value = m_oManualMin->GetValue();
+					else
+						ptr->dManualMin.data.value = 0;
+
+					if (m_oLineWeight.IsInit())
+						ptr->dLineWeight.data.value = m_oLineWeight->GetValue();
+					else
+						ptr->dLineWeight.data.value = 0;
+
+					if (m_oType.IsInit())
+						ptr->isltype = m_oType->GetValue();
+					else
+						ptr->isltype = 0;
+
+					if (m_oDateAxis.IsInit())
+						ptr->fDateAxis = m_oDateAxis->GetValue();
+					else
+						ptr->fDateAxis = false;
+
+					if (m_oDisplayEmptyCellsAs.IsInit())
+						ptr->fShowEmptyCellAsZero = m_oDisplayEmptyCellsAs.get() == OOX::Spreadsheet::ST_DispBlanksAs::st_dispblanksasZERO? 0x01 : 0x00;
+					else
+						ptr->fShowEmptyCellAsZero = 0;
+
+					if (m_oMarkers.IsInit())
+						ptr->fMarkers = m_oMarkers->GetValue();
+					else
+						ptr->fMarkers = false;
+
+					if (m_oHigh.IsInit())
+						ptr->fHigh = m_oHigh->GetValue();
+					else
+						ptr->fHigh = false;
+
+					if (m_oLow.IsInit())
+						ptr->fLow = m_oLow->GetValue();
+					else
+						ptr->fLow = false;
+
+					if (m_oFirst.IsInit())
+						ptr->fFirst = m_oFirst->GetValue();
+					else
+						ptr->fFirst = false;
+
+					if (m_oLast.IsInit())
+						ptr->fLast = m_oLast->GetValue();
+					else
+						ptr->fLast = false;
+
+					if (m_oNegative.IsInit())
+						ptr->fNegative = m_oNegative->GetValue();
+					else
+						ptr->fNegative = false;
+
+					if (m_oDisplayXAxis.IsInit())
+						ptr->fAxis = m_oDisplayXAxis->GetValue();
+					else
+						ptr->fAxis = false;
+
+					if (m_oDisplayHidden.IsInit())
+						ptr->fDisplayHidden = m_oDisplayHidden->GetValue();
+					else
+						ptr->fDisplayHidden = false;
+
+					if (m_oRightToLeft.IsInit())
+						ptr->fRTL = m_oRightToLeft->GetValue();
+					else
+						ptr->fRTL = false;
+
+					if (m_oMaxAxisType.IsInit())
+					{
+						if(m_oMaxAxisType->GetValue() == SimpleTypes::Spreadsheet::ESparklineAxisMinMax::Individual)
+						{
+							ptr->fIndividualAutoMax = true;
+							ptr->fGroupAutoMax = false;
+						}
+						else if (m_oMaxAxisType->GetValue() == SimpleTypes::Spreadsheet::ESparklineAxisMinMax::Group)
+						{
+							ptr->fIndividualAutoMax = false;
+							ptr->fGroupAutoMax = true;
+						}
+						else if (m_oMaxAxisType->GetValue() == SimpleTypes::Spreadsheet::ESparklineAxisMinMax::Custom)
+						{
+							ptr->fIndividualAutoMax = false;
+							ptr->fGroupAutoMax = false;
+						}
+					}
+					else
+					{
+						ptr->fIndividualAutoMax = true;
+						ptr->fGroupAutoMax = false;
+					}
+
+					if (m_oMinAxisType.IsInit())
+					{
+						if (m_oMinAxisType->GetValue() == SimpleTypes::Spreadsheet::ESparklineAxisMinMax::Individual)
+						{
+							ptr->fIndividualAutoMin = true;
+							ptr->fGroupAutoMin = false;
+						}
+						else if (m_oMinAxisType->GetValue() == SimpleTypes::Spreadsheet::ESparklineAxisMinMax::Group)
+						{
+							ptr->fIndividualAutoMin = false;
+							ptr->fGroupAutoMin = true;
+						}
+						else if (m_oMinAxisType->GetValue() == SimpleTypes::Spreadsheet::ESparklineAxisMinMax::Custom)
+						{
+							ptr->fIndividualAutoMin = false;
+							ptr->fGroupAutoMin = false;
+						}
+					}
+					else
+					{
+						ptr->fIndividualAutoMin = true;
+						ptr->fGroupAutoMin = false;
+					}
+
+					if (m_oColorSeries.IsInit())
+						m_oColorSeries->toBin(&ptr->brtcolorSeries);
+
+					if (m_oColorNegative.IsInit())
+						m_oColorNegative->toBin(&ptr->brtcolorNegative);
+
+					if (m_oColorAxis.IsInit())
+						m_oColorAxis->toBin(&ptr->brtcolorAxis);
+
+					if (m_oColorMarkers.IsInit())
+						m_oColorMarkers->toBin(&ptr->brtcolorMarkers);
+
+					if (m_oColorFirst.IsInit())
+						m_oColorFirst->toBin(&ptr->brtcolorFirst);
+
+					if (m_oColorLast.IsInit())
+						m_oColorLast->toBin(&ptr->brtcolorLast);
+
+					if (m_oColorHigh.IsInit())
+						m_oColorHigh->toBin(&ptr->brtcolorHigh);
+
+					if (m_oColorLow.IsInit())
+						m_oColorLow->toBin(&ptr->brtcolorLow);
+
+					ptr->FRTheader.fRef = false;
+					ptr->FRTheader.fSqref = false;
+					ptr->FRTheader.fFormula = false;
+					ptr->FRTheader.fRelID = false;
+
+					if(m_oRef.IsInit())
+					{
+						ptr->FRTheader.fFormula = true;
+						XLSB::FRTFormula fmla;
+						fmla.formula = m_oRef.get();
+						ptr->FRTheader.rgFormulas.array.push_back(fmla);
+					}
+
+				}
+			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// ������ ��������
@@ -621,6 +849,27 @@ namespace OOX
                         m_arrItems.push_back(new CSparklineGroup(sparklineGroup));
                 }
             }
+
+			void toBin(XLS::BaseObjectPtr& obj)
+			{
+				if (obj == nullptr)
+					obj = XLS::BaseObjectPtr(new XLSB::SPARKLINEGROUPS());
+
+				auto pSPARKLINEGROUPS = static_cast<XLSB::SPARKLINEGROUPS*>(obj.get());
+				if (pSPARKLINEGROUPS != nullptr)
+				{
+					pSPARKLINEGROUPS->m_arSPARKLINEGROUP.reserve(m_arrItems.size());
+					for (size_t i = 0; i < m_arrItems.size(); ++i)
+					{
+						if (m_arrItems[i])
+						{
+							XLS::BaseObjectPtr item(new XLSB::SPARKLINEGROUP());
+							m_arrItems[i]->toBin(item);
+							pSPARKLINEGROUPS->m_arSPARKLINEGROUP.push_back(item);
+						}
+					}
+				}
+			}
 
 			virtual EElementType getType () const
 			{

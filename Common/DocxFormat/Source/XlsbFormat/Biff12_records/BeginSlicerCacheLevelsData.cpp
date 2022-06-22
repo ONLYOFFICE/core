@@ -55,5 +55,10 @@ namespace XLSB
         record >> clevels;
     }
 
+	void BeginSlicerCacheLevelsData::writeFields(XLS::CFRecord& record)
+	{
+		record << clevels;
+	}
+
 } // namespace XLSB
 

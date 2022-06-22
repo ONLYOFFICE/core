@@ -60,5 +60,10 @@ namespace XLSB
         record >> cHiddenItems >> stUniqueName;
     }
 
+	void SlicerCacheLevelData::save(XLS::CFRecord& record)
+	{
+		record << cHiddenItems << stUniqueName;
+	}
+
 } // namespace XLSB
 

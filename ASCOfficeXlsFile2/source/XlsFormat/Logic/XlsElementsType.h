@@ -921,6 +921,10 @@ enum ElementType
 	typeBookProtectionIso,
 	typeBeginSortCond,
 	typeBeginSortCond14,
+	typeSLICERCACHEIDS,
+	typeTABLESLICERCACHEIDS,
+	typeSLICERCACHEID,
+	typeTABLESLICERCACHEID,
 };
 
 

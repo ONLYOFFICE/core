@@ -72,12 +72,39 @@ namespace XLSB
 
         if (proc.optional<EndSlicerCacheSiRange>())
         {
-            m_BrtEndSlicerCacheSiRange = elements_.back();
+            m_bBrtEndSlicerCacheSiRange = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSlicerCacheSiRange = false;
 
-        return m_BrtBeginSlicerCacheSiRange && !m_arBrtSlicerCacheOlapItem.empty() && m_BrtEndSlicerCacheSiRange;
+        return m_BrtBeginSlicerCacheSiRange && !m_arBrtSlicerCacheOlapItem.empty() && m_bBrtEndSlicerCacheSiRange;
     }
+
+	const bool SLICERCACHESIRANGE::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtBeginSlicerCacheSiRange == nullptr)
+			m_BrtBeginSlicerCacheSiRange = XLS::BaseObjectPtr(new XLSB::BeginSlicerCacheSiRange());
+
+		if (m_BrtBeginSlicerCacheSiRange != nullptr)
+		{
+			auto ptrBrtBeginSlicerCacheSiRange = static_cast<XLSB::BeginSlicerCacheSiRange*>(m_BrtBeginSlicerCacheSiRange.get());
+
+			if (ptrBrtBeginSlicerCacheSiRange != nullptr)
+				ptrBrtBeginSlicerCacheSiRange->crange = m_arBrtSlicerCacheOlapItem.size();
+
+			proc.mandatory(*m_BrtBeginSlicerCacheSiRange);
+		}
+
+		for (auto &item : m_arBrtSlicerCacheOlapItem)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndSlicerCacheSiRange>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

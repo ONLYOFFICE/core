@@ -63,5 +63,18 @@ namespace XLSB
         fShowAllItems           = GETBIT(flags, 5);
     }
 
+	void BeginSlicerCacheNative::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+		record.reserveNunBytes(4); // reserved
+
+		SETBITS(flags, 0, 1, fSortOrder)
+		SETBITS(flags, 2, 3, fCrossFilter)
+		SETBIT(flags, 4, fSortUsingCustomLists)
+		SETBIT(flags, 5, fShowAllItems)
+
+		record << dwcacheId << flags;
+	}
+
 } // namespace XLSB
 

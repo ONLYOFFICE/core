@@ -45,16 +45,17 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+		const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
-        XLS::BaseObjectPtr               m_BrtBeginSlicerCache;
+		bool							 m_bBrtBeginSlicerCache;
         //XLS::BaseObjectPtr               m_ACUID;
         XLS::BaseObjectPtr               m_BrtBeginSlicerCacheDef;
         XLS::BaseObjectPtr               m_BrtSlicerCachePivotTables;
         XLS::BaseObjectPtr               m_slicerCacheData;
         XLS::BaseObjectPtr               m_FRTSLICERCACHE;
-        XLS::BaseObjectPtr               m_BrtEndSlicerCacheDef;
-        XLS::BaseObjectPtr               m_BrtEndSlicerCache;
+		bool							 m_bBrtEndSlicerCacheDef;
+		bool				             m_bBrtEndSlicerCache;
     };
 
 } // namespace XLSB

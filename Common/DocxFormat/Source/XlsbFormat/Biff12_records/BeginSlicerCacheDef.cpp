@@ -55,5 +55,10 @@ namespace XLSB
         record >> stName >> stHierarchy;
     }
 
+	void BeginSlicerCacheDef::writeFields(XLS::CFRecord& record)
+	{
+		record << stName << stHierarchy;
+	}
+
 } // namespace XLSB
 

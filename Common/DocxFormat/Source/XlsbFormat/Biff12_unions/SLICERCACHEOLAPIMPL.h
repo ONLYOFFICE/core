@@ -45,7 +45,8 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+		const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         static const XLS::ElementType	type = XLS::typeSLICERCACHEOLAPIMPL;
 
@@ -53,7 +54,7 @@ namespace XLSB
         XLS::BaseObjectPtr               m_SLICERCACHELEVELSDATA;
         XLS::BaseObjectPtr               m_SLICERCACHESELECTIONS;
         //std::vector<XLS::BaseObjectPtr>  m_arFRT;
-        XLS::BaseObjectPtr               m_BrtEndSlicerCacheOlapImpl;
+		bool			                 m_bBrtEndSlicerCacheOlapImpl;
 
     };
 

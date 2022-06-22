@@ -81,4 +81,12 @@ const bool SlicersStream::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool SlicersStream::saveContent(XLS::BinProcessor & proc)
+{
+	if (m_SLICERS != nullptr)
+		proc.mandatory(*m_SLICERS);
+
+	return true;
+}
+
 } // namespace XLSB

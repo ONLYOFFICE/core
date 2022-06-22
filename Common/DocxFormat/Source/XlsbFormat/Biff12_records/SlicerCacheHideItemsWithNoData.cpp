@@ -67,5 +67,20 @@ namespace XLSB
         }
     }
 
+	void SlicerCacheHideItemsWithNoData::writeFields(XLS::CFRecord& record)
+	{
+		_UINT32 flags = 0;
+		cHideItemLevelsCount = rgLevels.size();
+
+		SETBIT(flags, 0, fHideItemsWithNoData)
+
+		record << FRTheader << flags << cHideItemLevelsCount;
+
+		for (size_t i = 0; i < cHideItemLevelsCount; ++i)
+		{
+			record << rgLevels[i];
+		}
+	}
+
 } // namespace XLSB
 

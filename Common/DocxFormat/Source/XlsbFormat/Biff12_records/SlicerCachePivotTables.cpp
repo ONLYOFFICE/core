@@ -61,5 +61,17 @@ namespace XLSB
         }
     }
 
+	void SlicerCachePivotTables::writeFields(XLS::CFRecord& record)
+	{
+		cpivotTables = pivotTables.size();
+
+		record << cpivotTables;
+
+		for (size_t i = 0; i < cpivotTables; ++i)
+		{
+			record << pivotTables[i];
+		}
+	}
+
 } // namespace XLSB
 

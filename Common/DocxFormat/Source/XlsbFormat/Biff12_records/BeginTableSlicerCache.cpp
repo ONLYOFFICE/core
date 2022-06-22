@@ -61,5 +61,17 @@ namespace XLSB
         fSortUsingCustomLists   = GETBIT(flags, 4);
     }
 
+	void BeginTableSlicerCache::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+
+		SETBITS(flags, 0, 1, fSortOrder)
+		SETBITS(flags, 2, 3, iCrossFilter)
+		SETBIT(flags, 4, fSortUsingCustomLists)
+
+		record << FRTheader << dwColumn << dwLstd << flags;
+
+	}
+
 } // namespace XLSB
 

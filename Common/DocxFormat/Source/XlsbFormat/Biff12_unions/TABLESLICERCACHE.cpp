@@ -81,18 +81,39 @@ namespace XLSB
 
         if (proc.optional<EndTableSlicerCache>())
         {
-            m_BrtEndTableSlicerCache = elements_.back();
+            m_bBrtEndTableSlicerCache = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndTableSlicerCache = false;
 
-        if (proc.optional<FRTEnd>())
-        {
-            m_BrtFRTEnd = elements_.back();
-            elements_.pop_back();
-        }
+		if (proc.optional<FRTEnd>())
+		{
+			m_bBrtFRTEnd = true;
+			elements_.pop_back();
+		}
+		else
+			m_bBrtFRTEnd = false;
 
-        return m_BrtBeginTableSlicerCache && m_BrtEndTableSlicerCache && m_BrtFRTEnd;
+        return m_BrtBeginTableSlicerCache && m_bBrtEndTableSlicerCache && m_bBrtFRTEnd;
     }
+
+	const bool TABLESLICERCACHE::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtFRTBegin != nullptr)
+			proc.mandatory(*m_BrtFRTBegin);
+		else
+			proc.mandatory<FRTBegin>();
+
+		if (m_BrtBeginTableSlicerCache != nullptr)
+			proc.mandatory(*m_BrtBeginTableSlicerCache);
+
+		proc.mandatory<EndTableSlicerCache>();
+
+		proc.mandatory<FRTEnd>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

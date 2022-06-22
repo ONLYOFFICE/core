@@ -55,5 +55,10 @@ namespace XLSB
         record >> iitemstart >> crange;
     }
 
+	void BeginSlicerCacheSiRange::writeFields(XLS::CFRecord& record)
+	{
+		record << iitemstart << crange;
+	}
+
 } // namespace XLSB
 

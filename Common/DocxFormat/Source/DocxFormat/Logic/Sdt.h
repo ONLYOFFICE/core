@@ -424,10 +424,10 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
-			nullable_int m_oWidth;
-			nullable_string m_oSym;
-			nullable_string m_oFont;
+			nullable<SimpleTypes::CHeightRule<>>	m_oWRule;
+			nullable_int							m_oWidth;
+			nullable_string							m_oSym;
+			nullable_string							m_oFont;
 		};
 	} // Word
 } // ComplexTypes

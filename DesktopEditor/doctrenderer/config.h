@@ -35,6 +35,7 @@
 #include "../xml/include/xmlutils.h"
 #include "../common/File.h"
 #include "../common/Directory.h"
+#include "../common/SystemUtils.h"
 
 namespace NSDoctRenderer
 {
@@ -82,6 +83,12 @@ namespace NSDoctRenderer
 
     public:
 
+        void SetAllFontsExternal(const std::wstring& sFilePath)
+        {
+            m_strAllFonts = private_GetFile(NSFile::GetProcessDirectory() + L"/", sFilePath);
+            m_bIsNotUseConfigAllFontsDir = true;
+        }
+
         void Parse(const std::wstring& sWorkDir)
         {
             m_arrFiles.clear();
@@ -112,7 +119,34 @@ namespace NSDoctRenderer
                     std::wstring sAllFontsPath = oNode.ReadNodeText(L"allfonts");
                     if (!sAllFontsPath.empty())
                     {
-                        m_strAllFonts = sAllFontsPath;
+                        m_strAllFonts = private_GetFile(sConfigDir, sAllFontsPath);
+
+#ifndef _WIN32
+                        // на папку может не быть прав
+                        if (!NSFile::CFileBinary::Exists(m_strAllFonts))
+                        {
+                            FILE* pFileNative = NSFile::CFileBinary::OpenFileNative(m_strAllFonts, L"wb");
+                            if (!pFileNative)
+                            {
+                                std::wstring sHomeDir = NSSystemUtils::GetEnvVariable(L"HOME");
+
+                                if (!sHomeDir.empty())
+                                {
+                                    if (NSDirectory::Exists(sHomeDir + L"/.local/share"))
+                                        sHomeDir = sHomeDir + L"/.local/share";
+                                    else if (NSDirectory::Exists(sHomeDir + L"/.local"))
+                                        sHomeDir = sHomeDir + L"/.local";
+
+                                    if (NSDirectory::CreateDirectory(sHomeDir + L"/.docbuilder"))
+                                        m_strAllFonts = sHomeDir + L"/.docbuilder/AllFonts.js";
+                                }
+                            }
+                            else
+                            {
+                                fclose(pFileNative);
+                            }
+                        }
+#endif
                     }
                 }
                 m_arrFiles.push_back(private_GetFile(sConfigDir, m_strAllFonts));

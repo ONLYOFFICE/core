@@ -256,8 +256,7 @@ namespace NSDoctRenderer
         {
             if (!sAllFontsPath.empty())
             {
-                m_strAllFonts = sAllFontsPath;
-                m_bIsNotUseConfigAllFontsDir = true;
+                SetAllFontsExternal(sAllFontsPath);
             }
 
             CDoctRendererConfig::Parse(sConfigDir);

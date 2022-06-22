@@ -172,6 +172,11 @@ core_windows {
     QMAKE_CXXFLAGS -= -Zc:strictStrings
     QMAKE_CXXFLAGS += /MP
 
+    MSVC_VERSION_DETECT = $$(VisualStudioVersion)
+	greaterThan(MSVC_VERSION_DETECT, 15.0) {
+	    CONFIG += vs2019
+	}
+
     vs2019 {
         QMAKE_CXXFLAGS_RELEASE -= -permissive-
         QMAKE_CXXFLAGS -= -permissive-

@@ -223,6 +223,12 @@ public:
     virtual HRESULT CommandDrawTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h) = 0;
     virtual HRESULT CommandDrawTextEx(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h) = 0;
 
+    virtual HRESULT CommandDrawTextCHAR2(unsigned int* codepoints, const unsigned int& codepointscount, const unsigned int& gid, const double& x, const double& y, const double& w, const double& h)
+    {
+        LONG c = (NULL == codepoints) ? 32 : codepoints[0];
+        return CommandDrawTextExCHAR(c, (LONG)gid, x, y, w, h);
+    }
+
 //-------- Маркеры для команд ---------------------------------------------------------------
 	virtual HRESULT BeginCommand(const DWORD& lType)	= 0;
 	virtual HRESULT EndCommand(const DWORD& lType)		= 0;

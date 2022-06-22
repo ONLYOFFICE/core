@@ -32,6 +32,7 @@ doct_renderer_empty {
 SOURCES += doctrenderer_empty.cpp
 } else {
 HEADERS += \
+    config.h \
     doctrenderer.h \
     docbuilder.h
 

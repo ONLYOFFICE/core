@@ -699,15 +699,32 @@ namespace NSOnlineOfficeBinToPdf
 				int _sLen = 2 * (int)ReadUSHORT(current, curindex);
 				std::wstring wsTempString = ReadString16(current, curindex, _sLen);
 
-				double m1 = ReadInt(current, curindex) / 100000.0;
-				double m2 = ReadInt(current, curindex) / 100000.0;
+                double x = ReadInt(current, curindex) / 100000.0;
+                double y = ReadInt(current, curindex) / 100000.0;
 
                 if (!pPicker)
-                    pRenderer->CommandDrawText(wsTempString, m1, m2, 0, 0);
+                    pRenderer->CommandDrawText(wsTempString, x, y, 0, 0);
                 else
-                    pPicker->FillText(wsTempString, m1, m2, 0, 0);
+                    pPicker->FillText(wsTempString, x, y, 0, 0);
 				break;
 			}
+            case ctDrawTextCodeGid:
+            {
+                unsigned int nGid = (unsigned int)ReadInt(current, curindex);
+                double x = ReadInt(current, curindex) / 100000.0;
+                double y = ReadInt(current, curindex) / 100000.0;
+
+                unsigned int nCountUnicodes = (unsigned int)ReadInt(current, curindex);
+                unsigned int* pCodePoints = (0 != nCountUnicodes) ? new unsigned int[nCountUnicodes] : NULL;
+                for (unsigned int nCodePointIndex = 0; nCodePointIndex < nCountUnicodes; ++nCodePointIndex)
+                    pCodePoints[nCodePointIndex] = ReadInt(current, curindex);
+
+                pRenderer->CommandDrawTextCHAR2(pCodePoints, nCountUnicodes, nGid, x, y, 0, 0);
+
+                if (pCodePoints)
+                    delete [] pCodePoints;
+                break;
+            }
 			case ctBeginCommand:
 			{
 				if (bIsPathOpened)
@@ -1248,6 +1265,14 @@ namespace NSOnlineOfficeBinToPdf
                 SkipString16(current, curindex, nLen);
 
                 SkipInt(current, curindex, 2);
+                break;
+            }
+            case ctDrawTextCodeGid:
+            {
+                SkipInt(current, curindex);
+                SkipDouble(current, curindex, 2);
+                int nCountUnicodes = ReadInt(current, curindex);
+                SkipInt(current, curindex, nCountUnicodes);
                 break;
             }
             case ctBeginCommand:

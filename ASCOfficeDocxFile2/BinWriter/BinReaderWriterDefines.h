@@ -419,7 +419,17 @@ extern int g_nCurFormatVersion;
 		FontAETheme = 42,
 		FontCSTheme = 43,
 		CompressText = 44,
-		SnapToGrid = 45
+		SnapToGrid = 45,
+		Ligatures = 46,
+		NumSpacing = 47,
+		NumForm = 48,
+		StylisticSets = 49,
+		CntxtAlts = 50,
+		ShadowExt = 51,
+		Reflection = 52,
+		Glow = 53,
+		Props3d = 54,
+		Scene3d = 55
 	};}
 	namespace c_oSerProp_rowPrType{enum c_oSerProp_rowPrType
 	{
@@ -1253,7 +1263,8 @@ extern int g_nCurFormatVersion;
 		PictureFormPrShiftX = 64,
 		PictureFormPrShiftY = 65,
 		FormPrBorder = 70,
-		FormPrShd = 71
+		FormPrShd = 71,
+		TextFormPrCombWRule = 72
 	};}
 	namespace c_oSerFFData{enum c_oSerFFData
 	{

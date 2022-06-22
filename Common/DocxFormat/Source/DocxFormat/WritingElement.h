@@ -957,6 +957,7 @@ namespace OOX
 		et_w_docPartCategory,
 		et_w_docPartTypes,
 		et_w_docPartBehaviors,
+		et_w_stylisticSets,
 
 		et_wd_anchorLock, // <wd:anchorLock>
 		et_wd_borderbottom, // <wd:borderbottom>

@@ -2431,6 +2431,9 @@
     <ClInclude Include="..\XlsFormat\Logic\SummaryInformationStream\PropertySetStream.h">
       <Filter>Logic\SummaryInformationStream</Filter>
     </ClInclude>
+    <ClInclude Include="..\XlsFormat\Logic\EncryptionStream.h">
+      <Filter>Logic</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\XlsFormat\Binary\CFRecord.cpp">
@@ -4781,6 +4784,9 @@
     </ClCompile>
     <ClCompile Include="..\XlsFormat\Logic\SummaryInformationStream\PropertySetStream.cpp">
       <Filter>Logic\SummaryInformationStream</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsFormat\Logic\EncryptionStream.cpp">
+      <Filter>Logic</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

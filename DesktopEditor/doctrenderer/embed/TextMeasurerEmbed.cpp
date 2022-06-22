@@ -146,8 +146,15 @@ JSSmart<CJSValue> CTextMeasurerEmbed::HB_ShapeText(JSSmart<CJSValue> face, JSSma
 {
     CPointerEmbedObject* pFont = POINTER_OBJECT(font);
     CExternalPointerJS result;
-    NSShaper::HB_ShapeText(RAW_POINTER(face), pFont->Data, text->toStringA(),
+
+    CJSDataBuffer buffer = text->toTypedArray()->getData();
+    char* pText = (char*)buffer.Data;
+
+    NSShaper::HB_ShapeText(RAW_POINTER(face), pFont->Data, pText,
                            nFeatures->toUInt32(), nScript->toUInt32(), nDirection->toUInt32(), RAW_POINTER(nLanguage), &result);
+
+    if (buffer.IsExternalize)
+        buffer.Free();
 
     if (NULL == result.Data)
         return CJSContext::createNull();

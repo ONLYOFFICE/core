@@ -110,6 +110,4 @@ include($$CORE_ROOT_DIR/Common/3dParty/icu/icu.pri)
 
 ADD_DEPENDENCY(kernel, graphics, UnicodeConverter)
 
-SOURCES += ../../../../fontengine/ApplicationFontsWorker.cpp
-
 DESTDIR = $$PWD_ROOT_DIR/build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX

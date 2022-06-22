@@ -42,6 +42,8 @@ namespace OLEPS
 {
 	void PropertySetStream::read(XLS::CFStreamPtr stream, bool ext)
 	{
+		if (!stream) return;
+
 		unsigned short	ByteOrder = 0;
 		unsigned short	Version = 0;
 		_UINT32			SystemIdentifier = 0;

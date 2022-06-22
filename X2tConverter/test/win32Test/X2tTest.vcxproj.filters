@@ -76,6 +76,9 @@
     <ClCompile Include="..\..\..\ASCOfficeDocxFile2\DocWrapper\FontProcessor.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\ASCOfficeDocxFile2\BinReader\ReaderClasses.cpp">
+      <Filter>Binary Doct\Reader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\DocWrapper\XlsxSerializer.h">

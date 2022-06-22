@@ -40,6 +40,7 @@
 #include "../XlsFormat/Logic/GlobalsSubstream.h"
 #include "../XlsFormat/Logic/ChartSheetSubstream.h"
 #include "../XlsFormat/Logic/MacroSheetSubstream.h"
+#include "../XlsFormat/Logic/EncryptionStream.h"
 
 #include "../XlsFormat/Logic/BinProcessor.h"
 #include "../XlsFormat/Logic/SummaryInformationStream/PropertySetStream.h"
@@ -197,23 +198,16 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 		}
 		else
 		{
-			OLEPS::PropertySetStream summary_info;
+			OLEPS::PropertySetStream summary_stream;
 			
-			XLS::CFStreamPtr summary = xls_file->getNamedStream(L"SummaryInformation");
-			XLS::CFStreamPtr doc_summary = xls_file->getNamedStream(L"DocumentSummaryInformation");
+			summary_stream.read(xls_file->getNamedStream(L"SummaryInformation"));
+			summary_stream.read(xls_file->getNamedStream(L"DocumentSummaryInformation"), true);
 
-			if (summary)
-				summary_info.read(summary);
-			if (doc_summary)
-				summary_info.read(doc_summary, true);
-
-			{
-				workbook_code_page = summary_info.GetCodePage(); 
+			workbook_code_page = summary_stream.GetCodePage();
 				
-				output_document->get_docProps_files().set_app_content(summary_info.GetApp());
-				output_document->get_docProps_files().set_core_content(summary_info.GetCore());				
-			}
-
+			output_document->get_docProps_files().set_app_content(summary_stream.GetApp());
+			output_document->get_docProps_files().set_core_content(summary_stream.GetCore());
+//--------------------------------------------------------------------------------------------------------------------
 			if(  0/*error*/ == workbook_code_page)//|| 65001 /*UTF-8*/ == workbook_code_page || 1200/* UTF-16 */ == workbook_code_page
 			{
 				workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
@@ -225,12 +219,10 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 			xls_global_info->fontsDirectory = fontsPath;
 			xls_global_info->password		= password;
 			xls_global_info->tempDirectory	= tempPath;
-
-			XLS::StreamCacheReaderPtr stream_reader(new XLS::CFStreamCacheReader(xls_file->getWorkbookStream(), xls_global_info));
-
-			xls_document = boost::shared_ptr<XLS::WorkbookStreamObject>(new XLS::WorkbookStreamObject(workbook_code_page));
-		
-			XLS::BinReaderProcessor proc(stream_reader, xls_document.get() , true);
+//--------------------------------------------------------------------------------------------------------------------
+			XLS::StreamCacheReaderPtr workbook_stream(new XLS::CFStreamCacheReader(xls_file->getWorkbookStream(), xls_global_info));
+			xls_document = boost::shared_ptr<XLS::WorkbookStreamObject>(new XLS::WorkbookStreamObject(workbook_code_page));		
+			XLS::BinReaderProcessor proc(workbook_stream, xls_document.get() , true);
 			proc.mandatory(*xls_document.get());
 
 			if (xls_global_info->decryptor)
@@ -238,7 +230,9 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 				is_encrypted = true;
 				if (xls_global_info->decryptor->IsVerify() == false) return;
 			}
-
+//--------------------------------------------------------------------------------------------------------------------
+			XLS::EncryptionSummaryStream encryption_summary(xls_file->getNamedStream(L"encryption"), xls_global_info->decryptor);
+//--------------------------------------------------------------------------------------------------------------------
 			if (xls_file->storage_->isDirectory(L"_SX_DB_CUR"))
 			{
 				std::list<std::wstring> listStream = xls_file->storage_->entries(L"_SX_DB_CUR");
@@ -304,6 +298,10 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 
 				xls_global_info->controls_data = std::make_pair(buffer, size);			
 			}
+			else
+			{
+				xls_global_info->controls_data = encryption_summary.GetStream(L"Ctls");
+			}
 			XLS::CFStreamPtr listdata = xls_file->getNamedStream(L"List Data");
 			if(listdata)
 			{
@@ -313,6 +311,10 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 				listdata->read(buffer.get(), size);
 
 				xls_global_info->listdata_data = std::make_pair(buffer, size);			
+			}
+			else
+			{
+				xls_global_info->listdata_data = encryption_summary.GetStream(L"List Data");
 			}
 			if (xls_file->storage_->isDirectory(L"MsoDataStore"))
 			{
@@ -356,18 +358,7 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 				NSDirectory::CreateDirectory(xl_path.c_str());
 
 				std::wstring sToolbarsFile = xl_path + FILE_SEPARATOR_STR + L"attachedToolbars.bin";
-
-				//POLE::Storage *storageToolbars = new POLE::Storage(sToolbarsFile.c_str());
-
-				//if ((storageToolbars) && (storageToolbars->open(true, true)))
-				//{			
-				//	toolbar_data->copy(L"attachedToolbars", storageToolbars);
-
-				//	storageToolbars->close();
-				//	delete storageToolbars;
-
-				//	output_document->get_xl_files().add_attachedToolbars();
-				//}		
+	
 				NSFile::CFileBinary file;
 				if (file.CreateFileW(sToolbarsFile))
 				{
@@ -2446,7 +2437,7 @@ void XlsConverter::convert(XLS::Obj * obj)
 			if (obj->pictFmla.fmla.bInfoExist)
 				info = obj->pictFmla.fmla.embedInfo.strClass.value();
 		}
-		if (obj->pictFlags.fCtl && obj->pictFlags.fPrstm)//Controls Storage
+		if (obj->pictFlags.fCtl && obj->pictFlags.fPrstm && xls_global_info->controls_data.first)//Controls Storage
 		{
 		//binary data
 			xlsx_context->get_mediaitems().create_activeX_path(xlsx_path);

@@ -512,7 +512,7 @@ void Binary_rPrWriter::Write_rPr(OOX::Logic::CRunProperty* rPr)
 		{
 			m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::Underline);
 			m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-			m_oBcw.m_oStream.WriteBOOL(SimpleTypes::underlineNone != oU.m_oVal.get().GetValue());
+			m_oBcw.m_oStream.WriteBYTE(oU.m_oVal.get().GetValue());
 		}
 	}
 	//Strikeout

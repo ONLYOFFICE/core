@@ -1,8 +1,7 @@
-﻿#ifndef DOCX_RENDERER_FMB_H
-#define DOCX_RENDERER_FMB_H
-
-#include "Common.h"
+﻿#pragma once
+#include "../DesktopEditor/graphics/structures.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"
+#include "../DesktopEditor/common/StringUTF32.h"
 #include <list>
 
 namespace NSFontManager
@@ -154,5 +153,3 @@ namespace NSFontManager
             void CheckFontNamePDF(std::wstring& sName, bool& bBold, bool& bItalic);
     };
 }
-
-#endif // DOCX_RENDERER_FMB_H

@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Page.h"
+#include "../DesktopEditor/common/Directory.h"
 #include "../resources/resources.h"
 
 namespace NSDocxRenderer

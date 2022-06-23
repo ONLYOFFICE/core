@@ -1,7 +1,5 @@
-﻿#ifndef DOCX_RENDERER_ELEMENT_SHAPE_H
-#define DOCX_RENDERER_ELEMENT_SHAPE_H
-
-#include "Common.h"
+﻿#pragma once
+#include "BaseItem.h"
 #include "../resources/VectorGraphics.h"
 #include "ElementParagraph.h"
 
@@ -52,6 +50,4 @@ namespace NSDocxRenderer
 
             virtual void ToXml(NSStringUtils::CStringBuilder& oWriter);
     };
-};
-
-#endif // DOCX_RENDERER_ELEMENT_SHAPE_H
+}

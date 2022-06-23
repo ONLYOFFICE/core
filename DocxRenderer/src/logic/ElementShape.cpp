@@ -1,5 +1,7 @@
 #include "ElementShape.h"
 #include <limits.h>
+#include "../resources/Constants.h"
+#include "../resources/utils.h"
 
 namespace NSDocxRenderer
 {

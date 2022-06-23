@@ -1,7 +1,4 @@
-#ifndef SINGLETONTEMPLATE_H
-#define SINGLETONTEMPLATE_H
-
-#ifdef __cplusplus
+#pragma once
 
 template<class T>
 class SingletonTemplate{
@@ -23,7 +20,3 @@ inline T& SingletonInstance()
 {
    return SingletonTemplate<T>::GetInstance();
 }
-
-#endif /*__cplusplus*/
-
-#endif // SINGLETONTEMPLATE_H

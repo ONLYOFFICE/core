@@ -29,15 +29,12 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _DOCX_RENDERER_H
-#define _DOCX_RENDERER_H
-
+#pragma once
 #include "../DesktopEditor/graphics/IRenderer.h"
 #include "../DesktopEditor/graphics/pro/officedrawingfile.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"
-#include <string>
-#include <vector>
-#include <algorithm>
+
+#include "src/logic/ElementParagraph.h"
 
 #ifndef DOCXRENDERER_USE_DYNAMIC_LIBRARY
 #define DOCXRENDERER_DECL_EXPORT
@@ -45,18 +42,6 @@
 #include "../DesktopEditor/common/base_export.h"
 #define DOCXRENDERER_DECL_EXPORT Q_DECL_EXPORT
 #endif
-
-namespace NSDocxRenderer
-{
-    enum TextAssociationType
-    {
-        tatBlockChar        = 0, // Каждый символ во фрейме
-        tatBlockLine        = 1, // Каждая линия - параграф во фрейме. Линии могут объединяться в рамках одного блока.
-        tatPlainLine        = 2, // Каждая линия - параграф обычный
-        tatShapeLine        = 3, // Каждая линия - параграф в шейпе. Линии могут объединяться в рамках одного блока.
-        tatPlainParagraph   = 4  // Линии объединяются в параграфы
-    };
-}
 
 class CDocxRenderer_Private;
 class DOCXRENDERER_DECL_EXPORT CDocxRenderer : public IRenderer
@@ -208,5 +193,3 @@ class DOCXRENDERER_DECL_EXPORT CDocxRenderer : public IRenderer
     private:
         CDocxRenderer_Private* m_pInternal;
 };
-
-#endif // _DOCX_RENDERER_H

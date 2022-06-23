@@ -31,8 +31,9 @@
  */
 
 #include "DocxRenderer.h"
-#include "src/logic/Document.h"
+#include "../DesktopEditor/common/Directory.h"
 #include "../OfficeUtils/src/OfficeUtils.h"
+#include "src/logic/Document.h"
 
 class CDocxRenderer_Private
 {

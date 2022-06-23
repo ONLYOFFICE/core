@@ -1,7 +1,6 @@
 ﻿#pragma once
-#include "Common.h"
 #include "FontManagerBase.h"
-#include "../../DocxRenderer.h"
+#include "../DesktopEditor/graphics/Matrix.h"
 
 namespace NSDocxRenderer
 {

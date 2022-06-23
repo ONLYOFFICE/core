@@ -1,4 +1,5 @@
 #include "FontManager.h"
+#include "../resources/Constants.h"
 
 namespace NSDocxRenderer
 {
@@ -14,6 +15,7 @@ namespace NSDocxRenderer
     {
         *this = oSrc;
     }
+
     CFontTableEntry& CFontTableEntry::operator =(const CFontTableEntry& oSrc)
     {
         if (this == &oSrc)
@@ -40,6 +42,7 @@ namespace NSDocxRenderer
     {
         m_oFontTable.m_mapTable.clear();
     }
+
     void CFontManager::AddFontToMap()
     {
         if (m_oFontTable.m_mapTable.end() != m_oFontTable.m_mapTable.find(m_oFont.m_strFamilyName))
@@ -146,6 +149,7 @@ namespace NSDocxRenderer
         dBoxWidth	*= c_dPixToMM;
         dBoxHeight	*= c_dPixToMM;
     }
+
     void CFontManager::MeasureStringGids(unsigned int* pGids, unsigned int count, double x, double y, double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType)
     {
         LoadFont();
@@ -233,6 +237,7 @@ namespace NSDocxRenderer
 
         m_pManager = NSFontManager::CreateFontManager(pFonts);
     }
+
     CFontManagerLight::~CFontManagerLight()
     {
         RELEASEINTERFACE(m_pManager);

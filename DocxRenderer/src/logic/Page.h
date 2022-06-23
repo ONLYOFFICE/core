@@ -1,6 +1,5 @@
-﻿#ifndef DOCX_PAGE_H
-#define DOCX_PAGE_H
-
+﻿#pragma once
+#include "../DesktopEditor/graphics/pro/Graphics.h"
 #include "ElementOldShape.h"
 #include "ElementParagraph.h"
 #include "ElementImage.h"
@@ -8,31 +7,6 @@
 
 namespace NSDocxRenderer
 {
-    inline bool IsSpaceUtf32(const uint32_t& c)
-    {
-        return (' ' == c) ? true : false;
-    }
-    inline bool IsSpaceUtf32(const NSStringUtils::CStringUTF32& oText)
-    {
-        if (1 != oText.length())
-            return false;
-        return IsSpaceUtf32(oText.ToStdWString()[0]);
-    }
-
-    inline bool IsUnicodeSymbol( int symbol )
-    {
-        bool result = false;
-
-        if ( ( 0x0009 == symbol ) || ( 0x000A == symbol ) || ( 0x000D == symbol ) ||
-           ( ( 0x0020 <= symbol ) && ( 0xD7FF >= symbol ) ) || ( ( 0xE000 <= symbol ) && ( symbol <= 0xFFFD ) ) ||
-           ( ( 0x10000 <= symbol ) && symbol ) )
-        {
-            result = true;
-        }
-
-        return result;
-    }
-
     class CPage
     {
     public:
@@ -141,5 +115,3 @@ namespace NSDocxRenderer
         bool IsItHighlightingBackground(const CShape* pGraphicItem, CContText* pContText);
     };
 }
-
-#endif // DOCX_PAGE_H

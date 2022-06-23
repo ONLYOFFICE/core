@@ -1,4 +1,7 @@
 #include "FontManagerBase.h"
+#include "../DesktopEditor/common/Directory.h"
+#include "../DesktopEditor/xml/include/xmlutils.h"
+#include "src/resources/Constants.h"
 
 namespace NSFontManager
 {
@@ -291,10 +294,12 @@ namespace NSFontManager
         m_strPickFont	= L"";
         m_lPickStyle	= 0;
     }
+
     CFontPickUp::CFontPickUp(const CFontPickUp& oSrc)
     {
         *this = oSrc;
     }
+
     CFontPickUp& CFontPickUp::operator=(const CFontPickUp& oSrc)
     {
         if (this == &oSrc)
@@ -319,6 +324,7 @@ namespace NSFontManager
 
         ClearPickUps();
     }
+
     CFontManagerBase::~CFontManagerBase()
     {
         RELEASEINTERFACE(m_pManager);
@@ -335,6 +341,7 @@ namespace NSFontManager
     {
         m_strDefaultFont = strName;
     }
+
     std::wstring CFontManagerBase::GetDefaultFont()
     {
         return m_strDefaultFont;
@@ -427,6 +434,7 @@ namespace NSFontManager
     void CFontManagerBase::MeasureString(const std::wstring& sText, double x, double y, double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType)
     {
     }
+
     void CFontManagerBase::CalculateBaselineOffset()
     {
         LoadFont();
@@ -457,6 +465,7 @@ namespace NSFontManager
         sRet += (wchar_t)((c2 < 10) ? ('0' + c2) : ('A' + c2 - 10));
         return sRet;
     }
+
     BYTE CFontManagerBase::FromHexString( wchar_t c1, wchar_t c2 )
     {
         BYTE res = 0;

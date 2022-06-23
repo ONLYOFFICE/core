@@ -1,5 +1,6 @@
-#include "../logic/Common.h"
 #include "VectorGraphics.h"
+#include "../DesktopEditor/common/Types.h"
+#include "../DesktopEditor/graphics/structures.h"
 
 namespace NSDocxRenderer
 {
@@ -169,4 +170,4 @@ namespace NSDocxRenderer
         if (m_dBottom < y)
             m_dBottom = y;
     }
-};
+}

@@ -1,4 +1,5 @@
 #include "ElementOldShape.h"
+#include "../resources/utils.h"
 
 namespace NSDocxRenderer
 {
@@ -292,4 +293,4 @@ namespace NSDocxRenderer
 
         oWriter.WriteString(L"</v:shape></w:pict></w:r>");
     }
-}; // namespace NSDocxRenderer
+} // namespace NSDocxRenderer

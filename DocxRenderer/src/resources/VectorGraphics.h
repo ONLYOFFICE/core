@@ -1,7 +1,4 @@
-#ifndef VECTORGRAPHICS_H
-#define VECTORGRAPHICS_H
-
-#include "../logic/Common.h"
+#pragma once
 
 namespace NSDocxRenderer
 {
@@ -50,6 +47,4 @@ namespace NSDocxRenderer
 
             void CheckPoint(const double& x, const double& y);
     };
-};
-
-#endif // VECTORGRAPHICS_H
+}

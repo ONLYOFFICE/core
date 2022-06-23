@@ -1,4 +1,7 @@
 #include "Page.h"
+#include "../resources/Constants.h"
+#include "../resources/SortElements.h"
+#include "../resources/utils.h"
 
 namespace NSDocxRenderer
 {
@@ -250,11 +253,13 @@ namespace NSDocxRenderer
         m_oVector.MoveTo(dX, dY);
 
     }
+
     void CPage::LineTo(double& dX, double& dY)
     {
         m_pTransform->TransformPoint(dX, dY);
         m_oVector.LineTo(dX, dY);
     }
+
     void CPage::CurveTo(double& x1, double& y1, double& x2, double& y2, double& x3, double& y3)
     {
         m_pTransform->TransformPoint(x1, y1);
@@ -263,17 +268,21 @@ namespace NSDocxRenderer
 
         m_oVector.CurveTo(x1, y1, x2, y2, x3, y3);
     }
+
     void CPage::Start()
     {
     }
+
     void CPage::End()
     {
         m_oVector.End();
     }
+
     void CPage::Close()
     {
         m_oVector.Close();
     }
+
     void CPage::DrawPath(LONG lType, LONG lTxId)
     {
         if ((m_oVector.m_dLeft <= m_oVector.m_dRight) && (m_oVector.m_dTop <= m_oVector.m_dBottom))
@@ -402,7 +411,7 @@ namespace NSDocxRenderer
 
     void CPage::AnalyzeCollectedGraphics()
     {
-        //todo Объеденить контур и заливку одного рисунка в шейпе если m_strPath одинаковые
+        //todo Объединить контур и заливку одного рисунка в шейпе если m_strPath одинаковые
     }
 
     void CPage::AnalyzeCollectedData()
@@ -783,12 +792,12 @@ namespace NSDocxRenderer
         //todo смещение текста по высоте при использовании шейпов
         //todo не отображается перенос в линии
         //todo если в линии есть перенос нужно обеъдинить строки в один параграф
-        //todo сноски не работают - формат сохраняется на всю строку - переделать в шейпы
+        //todo сноски не работают - формат сохраняется на всю строку - переделать в шейпы или в сноски )
         //todo шрифты явно получаются шире чем в оригинале(видно по подчеркиваниям и правым границам оригинала) - за счет этого увеличивается ширина строки - временное решение RightBorderCorrection();
-        //todo ввести для каждого размера шрифта свою поправку. Брать максимальную из возможных.
-        //todo выставить шейпы перед основным текстом, чтобы были доступны дря редактирования
+        //todo RightBorderCorrection() - ввести для каждого размера шрифта свою поправку. Брать максимальную из возможных. Зависимость нелинейная.
+        //todo выставить шейпы перед основным текстом, чтобы были доступны дря редактирования?
 
-        //todo в зависимости от очередности загрузки файлов проявляется проблема со шрифтами - текст в некоторых конвертированных файлах становится жирным, бывает зачеркнутым. С одним файлом проблем не наблюдалось
+        //todo в зависимости от очередности загрузки файлов проявляется проблема со шрифтами - текст в некоторых конвертированных файлах становится жирным, зачеркнутым или курсив. С одним файлом проблем не наблюдалось
 
         //todo добавить различные типы текста для распознавания: обычный-сплошной, списки-содержание и тд
 

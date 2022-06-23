@@ -372,7 +372,7 @@ void XMLConverter::DictToXml(Object *obj, std::wstring &wsXml, bool bBinary)
             char *sKey = obj->dictGetKey(nIndex);
             wsXml += L"<";
             AppendStringToXml(wsXml, sKey);
-            if (strcmp("Resources", sKey) == 0)
+            if (strcmp("Resources", sKey) == 0 || strcmp("AcroForm", sKey) == 0)
                 obj->dictGetVal(nIndex, &oTemp);
             else
                 obj->dictGetValNF(nIndex, &oTemp);

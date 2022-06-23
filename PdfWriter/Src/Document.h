@@ -152,7 +152,7 @@ namespace PdfWriter
 		CSignatureField*  CreateSignatureField();
 		bool              CheckFieldName(CFieldBase* pField, const std::string& sName);
 					  
-		bool              EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm);
+		bool              EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sCatalog, const std::pair<int, int>& pCatalog, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm);
 		bool              CreatePageTree(const std::wstring& sPageTree, const std::pair<int, int>& pPageTree);
 		std::pair<int, int> GetPageRef(int nPageIndex);
 		CPage*            EditPage(const std::wstring& sPage, const std::pair<int, int>& pPage);
@@ -174,7 +174,7 @@ namespace PdfWriter
 		CShading*         CreateRadialShading(double dX0, double dY0, double dR0, double dX1, double dY1, double dR1, unsigned char* pColors, double* pPoints, int nCount);
 		bool              CheckAcroForm();
 		CRadioGroupField* FindRadioGroupField(const std::wstring& wsGroupName);
-		void              Sign(const std::wstring& wsPath);
+		void              Sign(const std::wstring& wsPath, unsigned int nSizeXRef);
 
 	private:
 
@@ -235,7 +235,7 @@ namespace PdfWriter
 		FT_Library                         m_pFreeTypeLibrary;
 		bool                               m_bPDFAConformance;
 		std::wstring				       m_wsDocumentID;
-		CAcroForm*                         m_pAcroForm;
+		CDictObject*                       m_pAcroForm;
 		CResourcesDict*                    m_pFieldsResources;
 		std::vector<CRadioGroupField*>     m_vRadioGroups;
 		std::map<std::string, CFieldBase*> m_mFields;

@@ -220,7 +220,7 @@ namespace PdfWriter
 		SaveToStream((CStream*)pStream);
 		delete pStream;
 
-		Sign(wsPath);
+		Sign(wsPath, m_pXref->GetSizeXRef());
 
 		return true;
 	}
@@ -1077,7 +1077,7 @@ namespace PdfWriter
 
 		if (!m_pAcroForm)
 		{
-			m_pAcroForm = new CAcroForm();
+			m_pAcroForm = new CDictObject();
 			if (!m_pAcroForm)
 				return false;
 
@@ -1087,7 +1087,7 @@ namespace PdfWriter
 
 		return (!!m_pAcroForm);
 	}
-	bool CDocument::EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm)
+	bool CDocument::EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sCatalog, const std::pair<int, int>& pCatalog, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm)
 	{
 		Close();
 
@@ -1102,6 +1102,29 @@ namespace PdfWriter
 			return false;
 
 		SetCompressionMode(COMP_ALL);
+
+		CXref* pXref = new CXref(this, pCatalog.first);
+		if (!pXref)
+			return false;
+		m_pCatalog = new CCatalog(pXref, sCatalog);
+		if (!m_pCatalog)
+			return false;
+		m_pCatalog->SetRef(pCatalog.first, pCatalog.second);
+		pXref->SetPrev(m_pLastXref);
+		m_pLastXref = pXref;
+
+		CObjectBase* pAcroForm = m_pCatalog->Get("AcroForm");
+		if (pAcroForm && pAcroForm->GetType() == object_type_DICT)
+			m_pAcroForm = (CDictObject*)pAcroForm;
+
+		if (m_pAcroForm)
+		{
+			CObjectBase* pFieldsResources = m_pAcroForm->Get("DR");
+			if (pFieldsResources && pFieldsResources->GetType() == object_type_DICT)
+				m_pFieldsResources = (CResourcesDict*)pFieldsResources;
+
+			// TODO заполнить поля m_pFieldsResources
+		}
 
 		if (!sEncrypt.empty())
 		{
@@ -1277,8 +1300,9 @@ namespace PdfWriter
 			m_pLastXref->WriteToStream(pStream, pEncrypt);
 
 		RELEASEOBJECT(pStream);
+		unsigned int nSizeXRef = m_pXref->GetSizeXRef();
 		m_pXref = m_pLastXref;
-		Sign(wsPath);
+		Sign(wsPath, nSizeXRef);
 		RELEASEOBJECT(m_pEncryptDict);
 
 		return true;
@@ -1287,10 +1311,9 @@ namespace PdfWriter
 	{
 		m_vSignatures.push_back({ oRect, m_pCurPage ? m_pCurPage : m_pPageTree->GetPage(0), pImage, pCertificate });
 	}
-	void CDocument::Sign(const std::wstring& wsPath)
+	void CDocument::Sign(const std::wstring& wsPath, unsigned int nSizeXRef)
 	{
 		unsigned int nPrevAddr = m_pXref->GetPrevAddr();
-		unsigned int nSizeXRef = m_pXref->GetSizeXRef();
 		std::vector<CXref*> vXRefForWrite;
 		for (unsigned int i = 0; i < m_vSignatures.size(); i++)
 		{

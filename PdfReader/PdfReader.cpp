@@ -506,6 +506,29 @@ return 0;
         if (!xref)
             return false;
 
+        Object catDict, catRefObj, pagesRefObj;
+        if (!xref->getCatalog(&catDict) || !catDict.isDict() || !catDict.dictLookupNF("Pages", &pagesRefObj))
+        {
+            pagesRefObj.free();
+            catDict.free();
+            return false;
+        }
+        Object* trailer = xref->getTrailerDict();
+        if (!trailer || !trailer->isDict() || !trailer->dictLookupNF("Root", &catRefObj) || !catRefObj.isRef())
+        {
+            pagesRefObj.free();
+            catDict.free();
+            catRefObj.free();
+            return false;
+        }
+
+        std::wstring sCatalog = L"<Catalog";
+        XMLConverter::DictToXml(&catDict, sCatalog);
+        sCatalog += L"</Catalog>";
+        if (sCatalog == L"<Catalog></Catalog>")
+            sCatalog.clear();
+        Ref catRef = catRefObj.getRef();
+
         int nCryptAlgorithm = -1;
         std::wstring sEncrypt = L"<Encrypt";
         if (xref->isEncrypted())
@@ -544,22 +567,13 @@ return 0;
         if (sEncrypt == L"<Encrypt></Encrypt>")
             sEncrypt.clear();
 
-        if (m_pInternal->m_pPdfWriter->EditPdf(xref->getLastXRefPos(), xref->getNumObjects(), sEncrypt, sPassword, nCryptAlgorithm))
-        {
-            Object catDict, pagesRefObj;
-            if (!xref->getCatalog(&catDict) || !catDict.isDict() || !catDict.dictLookupNF("Pages", &pagesRefObj))
-            {
-                pagesRefObj.free();
-                catDict.free();
-                return false;
-            }
-
+        bool bRes = m_pInternal->m_pPdfWriter->EditPdf(xref->getLastXRefPos(), xref->getNumObjects(), sCatalog, std::make_pair(catRef.num, catRef.gen), sEncrypt, sPassword, nCryptAlgorithm);
+        if (bRes)
             m_pInternal->GetPageTree(xref, &pagesRefObj);
-            pagesRefObj.free();
-            catDict.free();
-            return true;
-        }
-        return false;
+        pagesRefObj.free();
+        catDict.free();
+        catRefObj.free();
+        return bRes;
     }
     bool CPdfReader::EditPage(int nPageIndex)
     {

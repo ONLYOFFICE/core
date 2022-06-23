@@ -82,6 +82,7 @@ int main()
         pCertificate = NSCertificate::FromFiles(sPrivateKeyFile, sPrivateFilePassword, sCertificateFile, sCertificateFilePassword);
     }
 
+    /*
     pdfWriter.SetPassword(L"123456");
     pdfWriter.NewPage();
     pdfWriter.BeginCommand(c_nPageType);
@@ -106,6 +107,7 @@ int main()
     RELEASEINTERFACE(pApplicationFonts);
     RELEASEOBJECT(pCertificate);
     return 0;
+    */
     if (bResult && pReader->EditPdf(&pdfWriter, sPassword))
     {
         if (pReader->EditPage(0))

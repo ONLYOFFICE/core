@@ -235,6 +235,8 @@ namespace BinXlsxRW
 		int ReadConnectionTextPr(BYTE type, long length, void* poResult);
 		int ReadConnectionWebPr(BYTE type, long length, void* poResult);
 		int ReadConnectionRangePr(BYTE type, long length, void* poResult);
+		int ReadConnectionTextFields(BYTE type, long length, void* poResult);
+		int ReadConnectionTextField(BYTE type, long length, void* poResult);
 		int ReadSlicerCaches(BYTE type, long length, void* poResult);
 	};
 	class BinaryCommentReader : public Binary_CommonReader
@@ -314,6 +316,8 @@ namespace BinXlsxRW
 		int ReadProtection(BYTE type, long length, void* poResult);
 		int ReadRowColBreaks(BYTE type, long length, void* poResult);
 		int ReadBreak(BYTE type, long length, void* poResult);
+		int ReadCellWatches(BYTE type, long length, void* poResult);
+		int ReadCellWatch(BYTE type, long length, void* poResult);
 		int ReadPrintOptions(BYTE type, long length, void* poResult);
 		int ReadHyperlinks(BYTE type, long length, void* poResult);
 		int ReadHyperlink(BYTE type, long length, void* poResult);

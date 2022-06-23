@@ -59,7 +59,6 @@ namespace OOX
 		class CThreadedComments;
 		class CPersonList;
 //необработанные child:
-		//<cellWatches>
 		//<customProperties>
 		//<extLst>
 		//<phoneticPr>
@@ -162,6 +161,7 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CDataConsolidate>			m_oDataConsolidate;
 			nullable<OOX::Spreadsheet::CSortState>					m_oSortState;
 			nullable<OOX::Spreadsheet::CProtectedRanges>			m_oProtectedRanges;
+			nullable<OOX::Spreadsheet::CCellWatches>				m_oCellWatches;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList>			m_oExtLst;
 

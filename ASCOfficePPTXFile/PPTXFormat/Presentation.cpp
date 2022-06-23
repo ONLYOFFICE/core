@@ -231,18 +231,6 @@ namespace PPTX
 		pWriter->WriteRecord2(9, m_pJsaProject);
 		pWriter->WriteRecord2(10, comments);
 
-		if (m_pVbaProject.IsInit())
-		{
-			CVbaReader vbaReader(m_pVbaProject.smart_dynamic_cast<OOX::Media>()->filename().GetPath(), L"");
-			std::wstring sXml = vbaReader.convert();
-
-			if (false == sXml.empty())
-			{
-				pWriter->StartRecord(11);
-				pWriter->WriteStringW(sXml);
-				pWriter->EndRecord();
-			}
-		}
 		pWriter->EndRecord();
 	}
 	void Presentation::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)

@@ -57,10 +57,13 @@ namespace OOX
 		virtual void Parse(unsigned char* pData, DWORD size) = 0;
 
 		void toFormControlPr(OOX::Spreadsheet::CFormControlPr* pFormControlPr); 
-		std::wstring ReadString(MemoryStream *stream, size_t size, bool bCompressed);
+		
+		std::wstring readString(MemoryStream *stream, size_t size, bool bCompressed);
+		void readTextProps(MemoryStream *stream);
+		std::pair<boost::shared_array<unsigned char>, size_t> readStdPicture(MemoryStream *stream);
 
 		nullable<SimpleTypes::Spreadsheet::CObjectType<>> m_oObjectType;
-
+		
 		nullable_int	m_oForeColor;
 		nullable_int	m_oBackColor;
 		nullable_int	m_oBorderColor;
@@ -80,6 +83,17 @@ namespace OOX
 
 		nullable_int	m_oWidth;
 		nullable_int	m_oHeight;
+
+		nullable_string	m_oFontName;
+		nullable_uint	m_oFontHeight;
+		nullable_bool	m_oFontBold;
+		nullable_bool	m_oFontItalic;
+		nullable_bool	m_oFontUnderline;
+		nullable_bool	m_oFontStrikeout;
+		nullable_bool	m_oFontAutoColor;
+
+		nullable<std::pair<boost::shared_array<unsigned char>, size_t>> m_oPicture;
+		nullable<std::pair<boost::shared_array<unsigned char>, size_t>> m_oMouseIcon;
 	};
 
 	class ActiveXObjectScroll : public ActiveXObject
@@ -140,16 +154,21 @@ namespace OOX
 	public:
 		ActiveXObjectFormControl()
 		{
-			m_oObjectType = SimpleTypes::Spreadsheet::objectDialog;
+			m_oObjectType.Init();
+			m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectDialog);
 		}
 		virtual void Parse(unsigned char* pData, DWORD size);
 	};
 	class ActiveXObjectMorphData : public ActiveXObject
 	{
 	public:
+		ActiveXObjectMorphData()
+		{
+		}
 		ActiveXObjectMorphData(SimpleTypes::Spreadsheet::EObjectType type)
 		{
-			m_oObjectType = type;
+			m_oObjectType.Init();
+			m_oObjectType->SetValue(type);
 		}
 		virtual void Parse(unsigned char* pData, DWORD size);
 	};

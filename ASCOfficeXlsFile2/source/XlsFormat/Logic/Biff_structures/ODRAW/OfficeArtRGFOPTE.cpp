@@ -126,7 +126,11 @@ void OfficeArtRGFOPTE::load(XLS::CFRecord& record)
 
 		if (rgfopte[i]->fComplex)
 		{
-			if (rgfopte[i]->op < 0)
+			if (rgfopte[i]->op == 0)
+			{
+				continue;
+			}
+			else if (rgfopte[i]->op < 0)
 			{
 				break;
 			}

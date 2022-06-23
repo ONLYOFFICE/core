@@ -2802,7 +2802,7 @@ void xlsx_drawing_context::set_sheet_anchor(int colFrom, int xFrom, int rwFrom, 
 {
 	if (current_drawing_states == NULL) return;	
 	
-	if (colTo > 0 && rwTo > 0)
+	if (colTo > 0 || rwTo > 0)
 	{//  0  in comment old versions
 		current_drawing_states->back()->sheet_anchor.colFrom = colFrom;
 		current_drawing_states->back()->sheet_anchor.colTo = colTo;

@@ -36,9 +36,6 @@ namespace NSDocxRenderer
         m_dHeight		= 0;
         m_dLastX        = 0;
 
-        m_dWidthWithoutSpaces	= 0;
-        m_dLeftWithoutSpaces	= 0;
-
         m_dSpaceWidthMM	= 0;
         m_dBaselineOffset = 0;
 
@@ -77,9 +74,6 @@ namespace NSDocxRenderer
         m_dWidth	= oSrc.m_dWidth;
         m_dHeight	= oSrc.m_dHeight;
         m_dLastX    = oSrc.m_dLastX;
-
-        m_dWidthWithoutSpaces	= oSrc.m_dWidthWithoutSpaces;
-        m_dLeftWithoutSpaces	= oSrc.m_dLeftWithoutSpaces;
 
         m_dSpaceWidthMM = oSrc.m_dSpaceWidthMM;
         m_dBaselineOffset = oSrc.m_dBaselineOffset;
@@ -418,10 +412,11 @@ namespace NSDocxRenderer
             double dDelta = dFirstRight - dCurrLeft;
 
             if (pFirst->m_strPickFontName != pCurrent->m_strPickFontName ||
-                !pFirst->m_oFont.IsEqual(&pCurrent->m_oFont) ||
                 pFirst->m_eUnderlineType != pCurrent->m_eUnderlineType ||
                 pFirst->m_bIsHighlightPresent != pCurrent->m_bIsHighlightPresent ||
                 pFirst->m_lHighlightColor != pCurrent->m_lHighlightColor ||
+                !pFirst->m_oFont.IsEqual(&pCurrent->m_oFont) ||
+                !pFirst->m_oBrush.IsEqual(&pCurrent->m_oBrush) ||
                 fabs(dDelta) > c_dTHE_STRING_X_PRECISION_MM)
             {
                 if (i < nCountConts - 1)
@@ -436,11 +431,6 @@ namespace NSDocxRenderer
             pFirst->m_oText += pCurrent->m_oText;
             pFirst->m_dWidth += pCurrent->m_dWidth + fabs(dDelta);
 
-            pFirst->m_dWidthWithoutSpaces < 0.0001 ?
-                        pFirst->m_dLeftWithoutSpaces = pCurrent->m_dLeftWithoutSpaces :
-                    pFirst->m_dWidthWithoutSpaces = pCurrent->m_dLeftWithoutSpaces +
-                    pCurrent->m_dWidthWithoutSpaces - pFirst->m_dLeftWithoutSpaces;
-
             m_arConts.erase(m_arConts.begin() + i);
             --i;
             --nCountConts;
@@ -449,12 +439,12 @@ namespace NSDocxRenderer
 
     void CTextLine::CalculateWidth()
     {
-        m_dWidth = m_arConts[0]->m_dWidthWithoutSpaces;
+        m_dWidth = m_arConts[0]->m_dWidth;
 
         for (size_t i = 1; i < m_arConts.size(); ++i)
         {
-            m_dWidth += m_arConts[i]->m_dLeftWithoutSpaces - (m_arConts[i-1]->m_dLeftWithoutSpaces + m_arConts[i-1]->m_dWidthWithoutSpaces);;
-            m_dWidth += m_arConts[i]->m_dWidthWithoutSpaces;
+            m_dWidth += m_arConts[i]->m_dX - (m_arConts[i-1]->m_dX + m_arConts[i-1]->m_dWidth);
+            m_dWidth += m_arConts[i]->m_dWidth;
         }
     }
 
@@ -541,9 +531,9 @@ namespace NSDocxRenderer
         return m_dBaselinePos - m_dBaselineOffset;
     }
 
-    double CTextLine::CalculateRightBorder(const double* pPageWidth)
+    double CTextLine::CalculateRightBorder(const double& dPageWidth)
     {
-        return *pPageWidth - (m_dX + m_dWidth + m_arConts.back()->m_dSpaceWidthMM); //добавляем ширину пробела;
+        return dPageWidth - (m_dX + m_dWidth);
     }
 
     bool CTextLine::IsForceBlock()
@@ -578,12 +568,10 @@ namespace NSDocxRenderer
         {
             CContText* pCurrent = m_arConts[i];
 
-            if (0 == pCurrent->m_dWidthWithoutSpaces)
-                continue;
+            dDelta = pCurrent->m_dX - (pPrev->m_dX + pPrev->m_dWidth);
 
-            dDelta = pCurrent->m_dLeftWithoutSpaces - (pPrev->m_dLeftWithoutSpaces + pPrev->m_dWidthWithoutSpaces);
-
-            if (dDelta < c_dTHE_STRING_X_PRECISION_MM)
+            if (dDelta < pPrev->m_dSpaceWidthMM) //тест
+            //if (dDelta < c_dTHE_STRING_X_PRECISION_MM)
             {
                 // просто текст на тексте или сменились настройки (font/brush)
                 pPrev->Write(oWriter, pManagerLight);
@@ -761,7 +749,7 @@ namespace NSDocxRenderer
                 oWriter.AddInt(static_cast<int>(m_dLeft * c_dMMToDx));
                 oWriter.WriteString(L"\"");
             }
-            if (m_eTextAssociationType == tatPlainParagraph && m_dRight > 0)
+            if (m_dRight > 0)
             { 
                 oWriter.WriteString(L" w:right=\"");
                 oWriter.AddInt(static_cast<int>(m_dRight * c_dMMToDx));

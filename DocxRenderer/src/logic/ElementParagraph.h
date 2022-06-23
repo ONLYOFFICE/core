@@ -114,9 +114,6 @@ namespace NSDocxRenderer
         double m_dHeight;
         double m_dLastX;
 
-        double m_dWidthWithoutSpaces;
-        double m_dLeftWithoutSpaces;
-
         double m_dSpaceWidthMM;
         double m_dBaselineOffset;
 
@@ -211,7 +208,7 @@ namespace NSDocxRenderer
         //Вычисляем
         double CalculateBeforeSpacing(const double* pPreviousStringOffset);
         double CalculateStringOffset();
-        double CalculateRightBorder(const double* pPageWidth);
+        double CalculateRightBorder(const double& dPageWidth);
     };
 
     class CParagraph : public CBaseItem

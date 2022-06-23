@@ -382,17 +382,6 @@ namespace NSDocxRenderer
         pCont->m_dWidth		= dTextW;
         pCont->m_dHeight	= dTextH;
 
-        if (IsSpaceUtf32(oText))
-        {
-            pCont->m_dWidthWithoutSpaces	= 0;
-            pCont->m_dLeftWithoutSpaces		= dTextX + dTextW;
-        }
-        else
-        {
-            pCont->m_dWidthWithoutSpaces	= dTextW;
-            pCont->m_dLeftWithoutSpaces		= dTextX;
-        }
-
         pCont->m_oText = oText;
 
         pCont->m_oFont		= m_oManager.m_oFont.m_oFont;
@@ -592,30 +581,15 @@ namespace NSDocxRenderer
             pLastCont->m_oFont.IsEqual(&pContText->m_oFont) &&
             pLastCont->m_oBrush.IsEqual(&pContText->m_oBrush))
         {
+            bool bIsConditionPassed = false;
+
             // настройки одинаковые. теперь смотрим, на расположение
             if (fabs(dRight - dTextX) < 0.5)
             {
                 // продолжаем слово
                 pLastCont->m_oText += oText;
                 pLastCont->m_dWidth	= (dTextX + dTextW - pLastCont->m_dX);
-
-                if (!IsSpaceUtf32(oText))
-                {
-                    if (0 == pLastCont->m_dWidthWithoutSpaces)
-                        pLastCont->m_dLeftWithoutSpaces = dTextX;
-
-                    pLastCont->m_dWidthWithoutSpaces = dTextX + dTextW - pLastCont->m_dLeftWithoutSpaces;
-                }
-                else if (0 == pLastCont->m_dWidthWithoutSpaces)
-                {
-                    pLastCont->m_dLeftWithoutSpaces = dTextX + dTextW;
-                }
-
-                m_dLastTextX = dTextX;
-                m_dLastTextY = dBaseLinePos;
-                m_dLastTextX_block = m_dLastTextX;
-                pLastCont->m_dLastX = dTextX;
-                return;
+                bIsConditionPassed = true;
             }
             else if ((dRight < dTextX) && ((dTextX - dRight) < pContText->m_dSpaceWidthMM))
             {
@@ -623,24 +597,7 @@ namespace NSDocxRenderer
                 pLastCont->m_oText += uint32_t(' ');
                 pLastCont->m_oText += oText;
                 pLastCont->m_dWidth	= (dTextX + dTextW - pLastCont->m_dX);
-
-                if (!IsSpaceUtf32(oText))
-                {
-                    if (0 == pLastCont->m_dWidthWithoutSpaces)
-                        pLastCont->m_dLeftWithoutSpaces = dTextX;
-
-                    pLastCont->m_dWidthWithoutSpaces = dTextX + dTextW - pLastCont->m_dLeftWithoutSpaces;
-                }
-                else if (0 == pLastCont->m_dWidthWithoutSpaces)
-                {
-                    pLastCont->m_dLeftWithoutSpaces = dTextX + dTextW;
-                }
-
-                m_dLastTextX = dTextX;
-                m_dLastTextY = dBaseLinePos;
-                m_dLastTextX_block = m_dLastTextX;
-                pLastCont->m_dLastX = dTextX;
-                return;
+                bIsConditionPassed = true;
             }
             else if (fabs(dBaseLinePos - pLastCont->m_dY) < 0.01 &&
                      fabs(m_dLastTextY - pLastCont->m_dY) < 0.01 &&
@@ -655,53 +612,26 @@ namespace NSDocxRenderer
                     double dNewW = (dTextX + dTextW - pLastCont->m_dX);
                     if (pLastCont->m_dWidth < dNewW)
                         pLastCont->m_dWidth = dNewW;
-
-                    if (!IsSpaceUtf32(oText))
-                    {
-                        if (0 == pLastCont->m_dWidthWithoutSpaces)
-                            pLastCont->m_dLeftWithoutSpaces = dTextX;
-
-                        pLastCont->m_dWidthWithoutSpaces = dTextX + dTextW - pLastCont->m_dLeftWithoutSpaces;
-                    }
-                    else if (0 == pLastCont->m_dWidthWithoutSpaces)
-                    {
-                        pLastCont->m_dLeftWithoutSpaces = dTextX + dTextW;
-                    }
-
-                    m_dLastTextX = dTextX;
-                    m_dLastTextY = dBaseLinePos;
-                    m_dLastTextX_block = m_dLastTextX;
-                    pLastCont->m_dLastX = dTextX;
-                    return;
-
+                    bIsConditionPassed = true;
                 }
-
                 // еще одна заглушка на большой пробел - добавляем пробел, потом в линии все разрулится через spacing
-                if (dTextX > dRight && (dTextX - dRight) < 5 && fabs(m_dLastTextX_block - m_dLastTextX) < 0.01)
+                else if (dTextX > dRight && (dTextX - dRight) < 5 && fabs(m_dLastTextX_block - m_dLastTextX) < 0.01)
                 {
                     // продолжаем слово с пробелом
                     pLastCont->m_oText += uint32_t(' ');
                     pLastCont->m_oText += oText;
                     pLastCont->m_dWidth	= (dTextX + dTextW - pLastCont->m_dX);
-
-                    if (!IsSpaceUtf32(oText))
-                    {
-                        if (0 == pLastCont->m_dWidthWithoutSpaces)
-                            pLastCont->m_dLeftWithoutSpaces = dTextX;
-
-                        pLastCont->m_dWidthWithoutSpaces = dTextX + dTextW - pLastCont->m_dLeftWithoutSpaces;
-                    }
-                    else if (0 == pLastCont->m_dWidthWithoutSpaces)
-                    {
-                        pLastCont->m_dLeftWithoutSpaces = dTextX + dTextW;
-                    }
-
-                    m_dLastTextX = dTextX;
-                    m_dLastTextY = dBaseLinePos;
-                    m_dLastTextX_block = m_dLastTextX;
-                    pLastCont->m_dLastX = dTextX;
-                    return;
+                    bIsConditionPassed = true;
                 }
+            }
+
+            if (bIsConditionPassed)
+            {
+                m_dLastTextX = dTextX;
+                m_dLastTextY = dBaseLinePos;
+                m_dLastTextX_block = m_dLastTextX;
+                pLastCont->m_dLastX = dTextX;
+                return;
             }
         }
 
@@ -813,6 +743,7 @@ namespace NSDocxRenderer
             for (std::vector<CTextLine*>::iterator iter = m_arTextLine.begin(); iter != m_arTextLine.end(); ++iter)
             {
                 (*iter)->Analyze();
+                (*iter)->CalculateWidth();
             }
         }
         Merge(c_dSTANDART_STRING_HEIGHT_MM / 3);
@@ -824,7 +755,7 @@ namespace NSDocxRenderer
 
             double dBeforeSpacing = pTextLine->CalculateBeforeSpacing(&previousStringOffset);
             previousStringOffset = pTextLine->CalculateStringOffset();
-            double dRight = pTextLine->CalculateRightBorder(&m_dWidth);
+            double dRight = pTextLine->CalculateRightBorder(m_dWidth);
 
             CreateSingleLineParagraph(pTextLine, &dRight, &dBeforeSpacing);
         }
@@ -854,6 +785,7 @@ namespace NSDocxRenderer
         //todo если в линии есть перенос нужно обеъдинить строки в один параграф
         //todo сноски не работают - формат сохраняется на всю строку - переделать в шейпы
         //todo шрифты явно получаются шире чем в оригинале(видно по подчеркиваниям и правым границам оригинала) - за счет этого увеличивается ширина строки - временное решение RightBorderCorrection();
+        //todo ввести для каждого размера шрифта свою поправку. Брать максимальную из возможных.
         //todo выставить шейпы перед основным текстом, чтобы были доступны дря редактирования
 
         //todo в зависимости от очередности загрузки файлов проявляется проблема со шрифтами - текст в некоторых конвертированных файлах становится жирным, бывает зачеркнутым. С одним файлом проблем не наблюдалось
@@ -890,9 +822,9 @@ namespace NSDocxRenderer
                     pPrevLine = nullptr :
                     pPrevLine = m_arTextLine[nIndex-1];
 
-            dCurrRight = pCurrLine->CalculateRightBorder(&m_dWidth);
+            dCurrRight = pCurrLine->CalculateRightBorder(m_dWidth);
             if (pNextLine)
-                dNextRight = pNextLine->CalculateRightBorder(&m_dWidth);
+                dNextRight = pNextLine->CalculateRightBorder(m_dWidth);
 
             dPrevBeforeSpacing = dCurrBeforeSpacing;
             dCurrBeforeSpacing = pCurrLine->CalculateBeforeSpacing(&dPreviousStringOffset);
@@ -1007,7 +939,7 @@ namespace NSDocxRenderer
                 if (pNextLine)
                 {
                     dNextBeforeSpacing = pNextLine->CalculateBeforeSpacing(&dPreviousStringOffset);
-                    dNextRight = pNextLine->CalculateRightBorder(&m_dWidth);
+                    dNextRight = pNextLine->CalculateRightBorder(m_dWidth);
                 }
 
                 //проверим, подходят ли следующие строчки для текущего pParagraph
@@ -1036,7 +968,7 @@ namespace NSDocxRenderer
                     if (pNextLine)
                     {
                         dNextBeforeSpacing = pNextLine->CalculateBeforeSpacing(&dPreviousStringOffset);
-                        dNextRight = pNextLine->CalculateRightBorder(&m_dWidth);
+                        dNextRight = pNextLine->CalculateRightBorder(m_dWidth);
                     }
 
                     //Объединим 2 параграфа-строчки
@@ -1052,7 +984,7 @@ namespace NSDocxRenderer
 
                 //коррекция
                 pParagraph->m_dHeight += dCorrectionBeforeSpacing;
-                pParagraph->m_dRight -= RightBorderCorrection(pParagraph->m_dRight);
+                pParagraph->m_dRight -= RightBorderCorrection(pCurrLine);
                 pParagraph->m_dSpaceBefore = std::abs(pParagraph->m_dSpaceBefore - dCorrectionBeforeSpacing);
 
                 pParagraph->m_dSpaceBefore += std::max(dBeforeSpacingWithShapes, 0.0);
@@ -1079,10 +1011,37 @@ namespace NSDocxRenderer
         }
     }
 
-    double CPage::RightBorderCorrection(double dCurrentWidth)
+    double CPage::RightBorderCorrection(const CTextLine *pLine)
     {
-        //вычитаем погонные мм
-        return dCurrentWidth / 20.0; //подобранный коэф. 20(кандидат) (еще были 100,50,25,20,19,18(уже плохо),17,15)
+        size_t nIndex = 0;
+        double dHeight = 0;
+        for (size_t i = 0; i < pLine->m_arConts.size(); ++i)
+        {
+            if (dHeight < pLine->m_arConts[i]->m_dHeight)
+            {
+                dHeight = pLine->m_arConts[i]->m_dHeight;
+                nIndex = i;
+            }
+        }
+
+        int lSize = pLine->m_arConts[nIndex]->m_oFont.Size;
+
+        if (lSize <= 16)
+        {
+            return 1.8;
+        }
+        else if (lSize <= 24)
+        {
+            return 2.5;
+        }
+        else if (lSize <= 30)
+        {
+            return 3.5;
+        }
+        else
+        {
+            return 5.0;
+        }
     }
 
     void CPage::CreateSingleLineParagraph(CTextLine *pLine, const double *pRight, const double *pBeforeSpacing)
@@ -1095,8 +1054,8 @@ namespace NSDocxRenderer
         pParagraph->m_dTop	= pLine->m_dBaselinePos - pLine->m_dHeight - pLine->m_dBaselineOffset;
 
         pParagraph->m_dFirstLine = 0;
-        pParagraph->m_dRight = *pRight - RightBorderCorrection(*pRight);
-        pParagraph->m_dWidth = pLine->m_dWidth + pLine->m_arConts.back()->m_dSpaceWidthMM;
+        pParagraph->m_dRight = *pRight - RightBorderCorrection(pLine);
+        pParagraph->m_dWidth = pLine->m_dWidth/* + pLine->m_arConts.back()->m_dSpaceWidthMM*/;
         pParagraph->m_dHeight = pLine->m_dHeight;
         if (*pBeforeSpacing < 0)
         {
@@ -1145,7 +1104,7 @@ namespace NSDocxRenderer
 
         pShape->m_dLeft	= pLine->m_dX;
         pShape->m_dTop	= pLine->m_dBaselinePos - pLine->m_dHeight - pLine->m_dBaselineOffset;
-        pShape->m_dWidth = pLine->m_dWidth + RightBorderCorrection(pLine->m_dWidth);
+        pShape->m_dWidth = pLine->m_dWidth + RightBorderCorrection(pLine);
         pShape->m_dHeight = pLine->m_dHeight;
         pShape->m_pManagerLight = &m_oManagerLight;
 

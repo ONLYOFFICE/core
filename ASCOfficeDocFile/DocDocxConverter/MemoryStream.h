@@ -197,6 +197,9 @@ public:
 
     virtual int Seek (int offset, int origin = 0/*STREAM_SEEK_SET*/)
 	{
+		if (origin == 2) offset = m_Position + offset;
+		if (origin == 1) offset = m_Size - offset;
+
 		if ( (m_Data != NULL) && (offset >= 0) && ((unsigned int)offset < m_Size) )
 			return m_Position = offset;
 

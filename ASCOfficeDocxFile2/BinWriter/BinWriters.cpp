@@ -35,8 +35,6 @@
 #include "../../Common/Base64.h"
 #include "../../Common/OfficeFileFormatChecker.h"
 
-#include "../../ASCOfficeXlsFile2/source/VbaFormat/VbaReader.h"
-
 #include "../../ASCOfficePPTXFile/Editor/FontCutter.h"
 #include "../../ASCOfficePPTXFile/PPTXFormat/App.h"
 #include "../../ASCOfficePPTXFile/PPTXFormat/Core.h"
@@ -9407,15 +9405,6 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 
 			this->WriteTableEnd(nCurPos);
 			
-			CVbaReader vbaReader(pDocx->m_pVbaProject->filename().GetPath(), L"");
-			std::wstring sXml = vbaReader.convert();
-
-			if (false == sXml.empty())
-			{
-				m_oBcw.m_oStream.StartRecord(1);
-				m_oBcw.m_oStream.WriteStringW(sXml);
-				m_oBcw.m_oStream.EndRecord();
-			}
 
 			m_oBcw.WriteItemWithLengthEnd(nCurPos);
 		}

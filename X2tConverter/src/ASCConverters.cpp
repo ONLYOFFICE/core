@@ -321,7 +321,7 @@ namespace NExtractTools
     {
 		_UINT32 nRes = S_OK;
 		std::wstring sToDir = NSDirectory::GetFolderPath(sTo);
-		if (params.needConvertToOrigin(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX))
+		if (params.needConvertToOrigin(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX) && !sDocxFile.empty())
 		{
 			CopyOOXOrigin(sToDir, sFrom, L"origin.docx", sDocxFile);
 		}
@@ -794,7 +794,7 @@ namespace NExtractTools
     {
 		_UINT32 nRes = S_OK;
 		std::wstring sToDir = NSDirectory::GetFolderPath(sTo);
-		if (params.needConvertToOrigin(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX))
+		if (params.needConvertToOrigin(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX) && !sXlsxFile.empty())
 		{
 			CopyOOXOrigin(sToDir, sXlsxDir, L"origin.xlsx", sXlsxFile);
 		}
@@ -1255,7 +1255,7 @@ namespace NExtractTools
     {
 		_UINT32 nRes = 0;
 		std::wstring sToDir = NSDirectory::GetFolderPath(sTo);
-		if (params.needConvertToOrigin(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX))
+		if (params.needConvertToOrigin(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX) && !sPptxFile.empty())
 		{
 			CopyOOXOrigin(sToDir, sFrom, L"origin.pptx", sPptxFile);
 		}
@@ -2878,12 +2878,45 @@ namespace NExtractTools
 			nRes = processEncryptionError(nRes, sFrom, params);
 			if (SUCCEEDED_X2T(nRes))
 			{
-				//???? todooo - xlsx, pptx 
-				BinDocxRW::CDocxSerializer m_oCDocxSerializer;
+				COfficeFileFormatChecker OfficeFileFormatChecker;
 
-				m_oCDocxSerializer.setFontDir(params.getFontPath());
-
-				nRes = m_oCDocxSerializer.saveToFile(sTo, sTempUnpackedOox, params.getXmlOptions(), sTemp) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+				if (OfficeFileFormatChecker.isOOXFormatFile(sTempUnpackedOox, true))
+				{
+					switch (OfficeFileFormatChecker.nFileType)
+					{
+						case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:
+						case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:
+						case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX:
+						case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM:
+						case AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM:
+						case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF:
+						{
+							return docx_dir2doct_bin(sTempUnpackedOox, sTo, sTemp, params, L"");
+						}break;
+						case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX:
+						case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM:
+						case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX:
+						case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM:
+						case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB:
+						{
+							const std::wstring & sXmlOptions = params.getXmlOptions();
+							return xlsx_dir2xlst_bin(sTempUnpackedOox, sTo, params, false, L"");
+						}break;
+						case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX:
+						case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM:
+						case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX:
+						case AVS_OFFICESTUDIO_FILE_PRESENTATION_POTX:
+						case AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM:
+						case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSM:
+						{
+							return pptx_dir2pptt_bin(sTempUnpackedOox, sTo, sTemp, params, L"");
+						}break;
+						default:
+						{
+							nRes = AVS_FILEUTILS_ERROR_CONVERT;
+						}break;
+					}
+				}
 			}
 		}
 		else

@@ -1294,6 +1294,8 @@ namespace OOX
 		et_x_SheetView,
 		et_x_ProtectedRanges,
 		et_x_ProtectedRange,
+		et_x_CellWatches,
+		et_x_CellWatch,
 		et_x_GraphicFrame,
 		et_x_Graphic,
 		et_x_GraphicData,

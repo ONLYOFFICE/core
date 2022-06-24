@@ -1801,7 +1801,7 @@ void XlsConverter::convert_blip(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 						id += 3000;
 					
 					std::wstring rId = xlsx_context->get_mediaitems().find_image(id , target, isIternal);
-					xlsx_context->get_drawing_context().set_fill_texture(target);
+					xlsx_context->get_drawing_context().set_picture(target);
 				}break;
 			case ODRAW::pibName:
 			{

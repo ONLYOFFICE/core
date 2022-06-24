@@ -885,6 +885,9 @@ void xlsx_drawing_context::end_drawing(_drawing_state_ptr & drawing_state)
 	{
 		drawing_state->type = external_items::typeImage;
 
+		if (!drawing_state->fill.picture_target.empty())
+			drawing_state->fill.texture_target = drawing_state->fill.picture_target;
+
 		if (!drawing_state->fill.texture_target.empty())
 		{
 			bool isIternal = false;
@@ -2872,6 +2875,22 @@ void xlsx_drawing_context::set_fill_texture(const std::wstring & str)
 	if (false == current_drawing_states->back()->fill.texture_target.empty()) return;
 
 	current_drawing_states->back()->fill.texture_target = str;
+
+	if (current_drawing_states->back()->fill.type == fillUndefined)
+	{
+		current_drawing_states->back()->fill.type = fillTexture;
+		current_drawing_states->back()->fill.texture_mode = textureStretch;
+	}
+}
+void xlsx_drawing_context::set_picture(const std::wstring & str)
+{
+	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
+
+	if (str.empty()) return;
+	if (false == current_drawing_states->back()->fill.picture_target.empty()) return;
+
+	current_drawing_states->back()->fill.picture_target = str;
 
 	if (current_drawing_states->back()->fill.type == fillUndefined)
 	{

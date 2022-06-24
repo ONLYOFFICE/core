@@ -36,7 +36,6 @@
 #include "../../Auxiliary/HelpFunc.h"
 #include "../../../Common/simple_xml_writer.h"
 #include "../../../../../DesktopEditor/common/SystemUtils.h"
-#include "../../../Common/DocxFormat/Source/XML/Utils.h"
 #include "../../../../../Common/DocxFormat/Source/Base/Base.h"
 
 namespace OLEPS
@@ -366,7 +365,7 @@ namespace OLEPS
 					CP_XML_NODE(L"dc:subject")
 					{
 
-                        auto correctedSubject = prop->toString()));
+                        auto correctedSubject = prop->toString();
                         CP_XML_STREAM() << prop->toString();
 					}
 				}

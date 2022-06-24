@@ -281,6 +281,7 @@ public:
 		double			angle = 0;
 		
 		std::wstring	texture_target;
+		std::wstring	picture_target;
 		double			texture_crop[4];
 		bool			texture_crop_enabled = false;
 		_texture_mode	texture_mode;
@@ -418,6 +419,7 @@ public:
 		void set_picture_contrast	(int val);
 		void set_picture_biLevel	(int val);
 		void set_picture_transparent(int nColor, const std::wstring & sColor);
+		void set_picture			(const std::wstring & str);
 
         void set_rotation			(double val);
 

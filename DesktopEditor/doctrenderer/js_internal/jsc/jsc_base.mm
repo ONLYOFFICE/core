@@ -3,7 +3,8 @@
 
 using namespace NSJSBase;
 
-JSContext* NSJSBase::CJSContextPrivate::g_lockedContext = nil;
+std::vector<std::pair<ASC_THREAD_ID, JSContext*>> NSJSBase::CJSContextPrivate::g_contexts;
+
 bool NSJSBase::CJSContextPrivate::g_oldVersion = false;
 
 template<typename T>
@@ -133,8 +134,7 @@ namespace NSJSBase
     void CJSContext::Dispose()
     {
         m_internal->context = nil;
-        m_internal->g_lockedContext = nil;
-        NSJSBase::CJSContextPrivate::g_lockedContext = nil;
+        CJSContextPrivate::UnregisterContext();
     }
 
     void CJSContext::CreateContext()
@@ -163,17 +163,17 @@ namespace NSJSBase
             NSLog(@"%@", value);
         }];
 #endif
-        
-        m_internal->g_lockedContext = m_internal->context;
+
+        CJSContextPrivate::RegisterContext(m_internal->context);
         return new CJSIsolateScope();
     }
 
     CJSContextScope* CJSContext::CreateContextScope()
     {
         CJSContextScope* pScope = new CJSContextScope();
-		JSValue* global_js = [m_internal->context globalObject];
+        JSValue* global_js = [m_internal->context globalObject];
         [global_js setValue:global_js forProperty:[[NSString alloc] initWithUTF8String:"window"]];
-		return pScope;
+        return pScope;
     }
 
     CJSLocalScope* CJSContext::CreateLocalScope()
@@ -184,7 +184,7 @@ namespace NSJSBase
     CJSValue* CJSContext::createUndefined()
     {
         CJSValueJSC* _value = new CJSValueJSC();
-        _value->context = _getCurrentContext();
+        _value->context = NSJSBase::CJSContextPrivate::GetCurrentContext();
         _value->doUndefined();
         return _value;
     }
@@ -192,7 +192,7 @@ namespace NSJSBase
     CJSValue* CJSContext::createNull()
     {
         CJSValueJSC* _value = new CJSValueJSC();
-        _value->context = _getCurrentContext();
+        _value->context = NSJSBase::CJSContextPrivate::GetCurrentContext();
         _value->doNull();
         return _value;
     }
@@ -200,7 +200,7 @@ namespace NSJSBase
     CJSValue* CJSContext::createBool(const bool& value)
     {
         CJSValueJSC* _value = new CJSValueJSC();
-        _value->context = _getCurrentContext();
+        _value->context = NSJSBase::CJSContextPrivate::GetCurrentContext();
         _value->value = [JSValue valueWithBool:(value ? YES : NO) inContext:_value->context];
         return _value;
     }
@@ -208,7 +208,7 @@ namespace NSJSBase
     CJSValue* CJSContext::createInt(const int& value)
     {
         CJSValueJSC* _value = new CJSValueJSC();
-        _value->context = _getCurrentContext();
+        _value->context = NSJSBase::CJSContextPrivate::GetCurrentContext();
         _value->value = [JSValue valueWithInt32:((int32_t) value) inContext:_value->context];
         return _value;
     }
@@ -216,7 +216,7 @@ namespace NSJSBase
     CJSValue* CJSContext::createUInt(const unsigned int& value)
     {
         CJSValueJSC* _value = new CJSValueJSC();
-        _value->context = _getCurrentContext();
+        _value->context = NSJSBase::CJSContextPrivate::GetCurrentContext();
         _value->value = [JSValue valueWithUInt32:((uint32_t) value) inContext:_value->context];
         return _value;
     }
@@ -224,7 +224,7 @@ namespace NSJSBase
     CJSValue* CJSContext::createDouble(const double& value)
     {
         CJSValueJSC* _value = new CJSValueJSC();
-        _value->context = _getCurrentContext();
+        _value->context = NSJSBase::CJSContextPrivate::GetCurrentContext();
         _value->value = [JSValue valueWithDouble:value inContext:_value->context];
         return _value;
     }
@@ -232,7 +232,7 @@ namespace NSJSBase
     CJSValue* CJSContext::createString(const char* value, const int& len)
     {
         CJSValueJSC* _value = new CJSValueJSC();
-        _value->context = _getCurrentContext();
+        _value->context = NSJSBase::CJSContextPrivate::GetCurrentContext();
         _value->value = [NSString stringWithUtf8Buffer:value length:(size_t)((len == -1) ? strlen(value) : len)];
         return _value;
     }
@@ -240,7 +240,7 @@ namespace NSJSBase
     CJSValue* CJSContext::createString(const std::string& value)
     {
         CJSValueJSC* _value = new CJSValueJSC();
-        _value->context = _getCurrentContext();
+        _value->context = NSJSBase::CJSContextPrivate::GetCurrentContext();
         _value->value = [NSString stringWithAString:value];
         return _value;
     }
@@ -248,7 +248,7 @@ namespace NSJSBase
     CJSValue* CJSContext::createString(const std::wstring& value)
     {
         CJSValueJSC* _value = new CJSValueJSC();
-        _value->context = _getCurrentContext();
+        _value->context = NSJSBase::CJSContextPrivate::GetCurrentContext();
         _value->value = [NSString stringWithWString:value];
         return _value;
     }
@@ -256,7 +256,7 @@ namespace NSJSBase
     CJSObject* CJSContext::createObject()
     {
         CJSObjectJSC* _value = new CJSObjectJSC();
-        _value->context = _getCurrentContext();
+        _value->context = NSJSBase::CJSContextPrivate::GetCurrentContext();
         _value->value = [JSValue valueWithNewObjectInContext:_value->context];
         return _value;
     }
@@ -264,14 +264,14 @@ namespace NSJSBase
     CJSArray* CJSContext::createArray(const int& count)
     {
         CJSArrayJSC* _value = new CJSArrayJSC();
-        _value->context = _getCurrentContext();
+        _value->context = NSJSBase::CJSContextPrivate::GetCurrentContext();
         _value->value = [JSValue valueWithNewArrayInContext:_value->context];
         return _value;
     }
 
     CJSTypedArray* CJSContext::createUint8Array(BYTE* data, int count, const bool& isExternalize)
     {
-        JSContext* _current = _getCurrentContext();
+        JSContext* _current = NSJSBase::CJSContextPrivate::GetCurrentContext();
         CJSTypedArrayJSC* _value = new CJSTypedArrayJSC(_current, data, count, isExternalize);
         return _value;
     }
@@ -283,20 +283,20 @@ namespace NSJSBase
         _value->context = m_internal->context;
         return _value;
     }
-	
-	unsigned char* NSAllocator::Alloc(const size_t& size)
-	{
-		return (unsigned char*)malloc(size);
-	}	
+
+    unsigned char* NSAllocator::Alloc(const size_t& size)
+    {
+        return (unsigned char*)malloc(size);
+    }
     void NSAllocator::Free(unsigned char* data, const size_t& size)
-	{
-		free(data);
-	}
+    {
+        free(data);
+    }
 
     CJSContext* CJSContext::GetCurrent()
     {
         CJSContext* ret = new CJSContext();
-        ret->m_internal->context = _getCurrentContext();
+        ret->m_internal->context = NSJSBase::CJSContextPrivate::GetCurrentContext();
         return ret;
     }
 
@@ -334,7 +334,7 @@ namespace NSJSBase
         JSValue* exc = [context exception];
         if (exc == nil || [exc isNull] || [exc isUndefined])
             return false;
-        
+
         NSString* pExсeption = [[context exception] toString];
         std::cerr << [pExсeption stdstring] << std::endl;
         NSLog(@"%@", pExсeption);

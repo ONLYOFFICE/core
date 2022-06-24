@@ -44,7 +44,7 @@
 JSSmart<CJSValue> CPointerEmbedObject::createObject()
 {
     CJSValueJSC* pRet = new CJSValueJSC();
-    pRet->context = _getCurrentContext();
+    pRet->context = NSJSBase::CJSContextPrivate::GetCurrentContext();
     pRet->value = [JSValue valueWithObject:(id)[[CJSCPointer alloc] initWithPointer:this] inContext:pRet->context];
     return pRet;
 }

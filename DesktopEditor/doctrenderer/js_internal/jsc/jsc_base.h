@@ -9,6 +9,8 @@
 #include <JavaScriptCore/JSValueRef.h>
 
 #import "../../../../DesktopEditor/common/Mac/NSString+StringUtils.h"
+#include <vector>
+#include "../../../../DesktopEditor/graphics/BaseThread.h"
 
 @protocol JSEmbedObjectProtocol
 - (void*) getNative;
@@ -22,7 +24,9 @@ namespace NSJSBase
         JSContext* context;
 
         static bool g_oldVersion;
-        static JSContext* g_lockedContext;
+
+        // считаем, что vector будет небольшим, поэтому он будет быстрее, чем map
+        static std::vector<std::pair<ASC_THREAD_ID, JSContext*>> g_contexts;
 
     public:
         CJSContextPrivate()
@@ -33,14 +37,50 @@ namespace NSJSBase
         {
             context = nil;
         }
-    };
-}
 
-static JSContext* _getCurrentContext()
-{
-    if (nil != NSJSBase::CJSContextPrivate::g_lockedContext)
-        return NSJSBase::CJSContextPrivate::g_lockedContext;
-    return [JSContext currentContext];
+        static void RegisterContext(JSContext* ctx)
+        {
+            ASC_THREAD_ID nCurrentThread = NSThreads::GetCurrentThreadId();
+            bool bIsFound = false;
+            for (std::vector<std::pair<ASC_THREAD_ID, JSContext*>>::const_iterator i = g_contexts.begin(); i != g_contexts.end(); i++)
+            {
+                if (i->first == nCurrentThread)
+                {
+                    bIsFound = true;
+                    break;
+                }
+            }
+
+            if (!bIsFound)
+                g_contexts.push_back(std::pair<ASC_THREAD_ID, JSContext*>(nCurrentThread, ctx));
+        }
+
+        static void UnregisterContext()
+        {
+            ASC_THREAD_ID nCurrentThread = NSThreads::GetCurrentThreadId();
+            for (std::vector<std::pair<ASC_THREAD_ID, JSContext*>>::const_iterator i = g_contexts.begin(); i != g_contexts.end(); i++)
+            {
+                if (i->first == nCurrentThread)
+                {
+                    g_contexts.erase(i);
+                    return;
+                }
+            }
+        }
+
+        static JSContext* GetCurrentContext()
+        {
+            ASC_THREAD_ID nCurrentThread = NSThreads::GetCurrentThreadId();
+            for (std::vector<std::pair<ASC_THREAD_ID, JSContext*>>::const_iterator i = g_contexts.begin(); i != g_contexts.end(); i++)
+            {
+                if (i->first == nCurrentThread)
+                {
+                    return i->second;
+                }
+            }
+            return [JSContext currentContext];
+        }
+    };
 }
 
 namespace NSJSBase
@@ -60,13 +100,13 @@ namespace NSJSBase
         CJSValueJSCTemplate(JSValue* _value)
         {
             value = _value;
-            context = _getCurrentContext();
-            
+            context = NSJSBase::CJSContextPrivate::GetCurrentContext();
+
             if (context == nil) {
                 context = _value.context;
             }
         }
-        
+
     public:
 
         virtual ~CJSValueJSCTemplate()
@@ -305,7 +345,7 @@ namespace NSJSBase
                                                                            kJSTypedArrayTypeUint8Array,
                                                                            (void*)data, (size_t)count,
                                                                            isExternalize ? data_no_destroy_memory : data_destroy_memory,
-																		   nullptr, nullptr);
+                                                                           nullptr, nullptr);
                 if (object)
                 {
                     value = [JSValue valueWithJSValueRef:object inContext:context];
@@ -332,8 +372,8 @@ namespace NSJSBase
         {
             NSJSBase::NSAllocator::Free((unsigned char*)bytes, 0);
         }
-		static void data_no_destroy_memory(void* bytes, void* deallocatorContext)
-        {            
+        static void data_no_destroy_memory(void* bytes, void* deallocatorContext)
+        {
         }
 
         virtual int getCount()
@@ -353,13 +393,13 @@ namespace NSJSBase
 
         virtual CJSDataBuffer getData()
         {
-			CJSDataBuffer buffer;
+            CJSDataBuffer buffer;
             if (!CJSContextPrivate::g_oldVersion)
             {
                 JSObjectRef obj = JSValueToObject(context.JSGlobalContextRef, value.JSValueRef, NULL);
-				buffer.IsExternalize = false;
-				buffer.Data = (BYTE*)JSObjectGetTypedArrayBytesPtr(context.JSGlobalContextRef, obj, NULL);
-				buffer.Len = (size_t)JSObjectGetTypedArrayByteLength(context.JSGlobalContextRef, obj, NULL);
+                buffer.IsExternalize = false;
+                buffer.Data = (BYTE*)JSObjectGetTypedArrayBytesPtr(context.JSGlobalContextRef, obj, NULL);
+                buffer.Len = (size_t)JSObjectGetTypedArrayByteLength(context.JSGlobalContextRef, obj, NULL);
                 return buffer;
             }
 
@@ -402,7 +442,7 @@ namespace NSJSBase
             value = nil;
             context = nil;
         }
-        
+
         virtual CJSValue* Call(CJSValue* recv, int argc, JSSmart<CJSValue> argv[])
         {
             NSMutableArray* arr = [[NSMutableArray alloc] init];

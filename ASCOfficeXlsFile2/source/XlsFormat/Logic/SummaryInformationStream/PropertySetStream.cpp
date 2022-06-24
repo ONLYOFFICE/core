@@ -36,6 +36,7 @@
 #include "../../Auxiliary/HelpFunc.h"
 #include "../../../Common/simple_xml_writer.h"
 #include "../../../../../DesktopEditor/common/SystemUtils.h"
+#include "../../../Common/DocxFormat/Source/XML/Utils.h"
 #include "../../../../../Common/DocxFormat/Source/Base/Base.h"
 
 namespace OLEPS
@@ -97,7 +98,7 @@ namespace OLEPS
 			if (prop)
 				break;
 		}
-		return prop;
+        return prop;
 	}
 	const unsigned short PropertySetStream::GetCodePage()
 	{
@@ -122,7 +123,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"Template")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				prop = GetProperty(MANAGER);
@@ -130,7 +131,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"Manager")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				prop = GetProperty(COMPANY);
@@ -138,7 +139,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"Company")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				prop = GetProperty(PAGECOUNT);
@@ -146,7 +147,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"Pages")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				prop = GetProperty(WORDCOUNT);
@@ -154,7 +155,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"Words")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				//prop = GetProperty(CHARCOUNT);
@@ -162,7 +163,7 @@ namespace OLEPS
 				//{
 				//	CP_XML_NODE(L"CharactersWithSpaces")
 				//	{
-				//		CP_XML_STREAM() << prop->toString();
+                //		CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 				//	}
 				//}
 				prop = GetProperty(CHARCOUNT);
@@ -170,7 +171,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"Characters")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				prop = GetProperty(PRESFORMAT);
@@ -178,7 +179,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"PresentationFormat")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				prop = GetProperty(LINECOUNT);
@@ -186,7 +187,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"Lines")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				prop = GetProperty(PARACOUNT);
@@ -194,7 +195,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"Paragraphs")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				prop = GetProperty(SLIDECOUNT);
@@ -202,7 +203,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"Slides")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				prop = GetProperty(NOTECOUNT);
@@ -210,7 +211,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"Notes")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				prop = GetProperty(HIDDENCOUNT);
@@ -218,7 +219,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"HiddenSlides")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				prop = GetProperty(MMCLIPCOUNT);
@@ -226,7 +227,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"MMClips")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				prop = GetProperty(SCALE);
@@ -234,7 +235,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"ScaleCrop")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				prop = GetProperty(HEADINGPAIR);
@@ -242,7 +243,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"HeadingPairs")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				prop = GetProperty(DOCPARTS);
@@ -250,7 +251,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"TitlesOfParts")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				prop = GetProperty(LINKBASE);
@@ -258,7 +259,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"LinksUpToDate")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				prop = GetProperty(CCHWITHSPACES);
@@ -266,7 +267,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"CharactersWithSpaces")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				prop = GetProperty(SHAREDDOC);
@@ -274,7 +275,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"SharedDoc")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				//	LINKBASE = 0x1014,
@@ -283,7 +284,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"HLinks")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				prop = GetProperty(HYPERLINKSCHANGED);
@@ -291,7 +292,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"HyperlinksChanged")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				//	DIGSIG = 0x1018,
@@ -300,7 +301,7 @@ namespace OLEPS
 					prop = GetProperty(APPNAME);
 					if (prop)
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 					else
 					{
@@ -319,7 +320,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"AppVersion")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				prop = GetProperty(DOC_SECURITY);
@@ -327,7 +328,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"DocSecurity")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 			}
@@ -355,8 +356,8 @@ namespace OLEPS
 				if (prop)
 				{
 					CP_XML_NODE(L"dc:title")
-					{
-						CP_XML_STREAM() << prop->toString();
+                    {
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				prop = GetProperty(SUBJECT);
@@ -364,7 +365,9 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"dc:subject")
 					{
-						CP_XML_STREAM() << prop->toString();
+
+                        auto correctedSubject = XmlUtils::EncodeXmlString(XmlUtils::EncodeXmlString(prop->toString()));
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				prop = GetProperty(AUTHOR);
@@ -372,7 +375,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"dc:creator")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				prop = GetProperty(KEYWORDS);
@@ -380,7 +383,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"cp:keywords")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				prop = GetProperty(COMMENTS);
@@ -388,7 +391,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"dc:description")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				prop = GetProperty(LANGUAGE);
@@ -396,14 +399,14 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"dc:language")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}				prop = GetProperty(VERSION);
 				if (prop)
 				{
 					CP_XML_NODE(L"cp:version")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				prop = GetProperty(LASTAUTHOR);
@@ -411,7 +414,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"cp:lastModifiedBy")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				prop = GetProperty(REVNUMBER);
@@ -419,7 +422,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"cp:revision")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				prop = GetProperty(CREATE_DTM);
@@ -428,7 +431,7 @@ namespace OLEPS
 					CP_XML_NODE(L"dcterms:created")
 					{
 						CP_XML_ATTR(L"xsi:type", L"dcterms:W3CDTF");
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				prop = GetProperty(LASTSAVE_DTM);
@@ -437,7 +440,7 @@ namespace OLEPS
 					CP_XML_NODE(L"dcterms:modified")
 					{
 						CP_XML_ATTR(L"xsi:type", L"dcterms:W3CDTF");
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				prop = GetProperty(CATEGORY);
@@ -445,7 +448,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"cp:category")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				prop = GetProperty(CONTENTSTATUS);
@@ -453,7 +456,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"cp:contentStatus")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << XmlUtils::EncodeXmlString(prop->toString());
 					}
 				}
 				//	BYTECOUNT = 0x1004,

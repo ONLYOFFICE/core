@@ -584,6 +584,19 @@ namespace NSStructures
 			return 4;
 		}
 
+        LONG GetTextFontStyle()
+        {
+            if ((0 == Bold) && (0 == Italic))
+                return 0;
+            if ((1 == Bold) && (0 == Italic))
+                return 1;
+            if ((0 == Bold) && (1 == Italic))
+                return 2;
+            if ((1 == Bold) && (1 == Italic))
+                return 3;
+            return 4;
+        }
+
 		CFont()
 		{
 			SetDefaultParams();

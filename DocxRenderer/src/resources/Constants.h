@@ -1,5 +1,8 @@
 #pragma once
 
+#include "../DesktopEditor/common/Types.h"
+#include <map>
+
 const double c_dDpiX		= 72.0;
 const double c_dDpiY		= 72.0;
 
@@ -24,3 +27,25 @@ const double c_dSTANDART_LEFT_INDENT_MM = 30;
 const double c_dSTANDART_RIGHT_INDENT_MM = 15;
 const double c_dSTANDART_FIRSTLINE_INDENT_MM = 12.5;
 
+const double c_dRightBorderCorrectionSize[][4] =
+{
+//TextFontStyles (N - None, B - Bold, I - Italic)
+//    N    B    I    BI
+    {1.8, 0.0, 0.0, 0.0}, //8pt
+    {1.3, 0.0, 0.8, 0.0}, //9pt
+    {1.2, 0.0, 0.4, 0.0}, //10pt
+    {0.1, 0.0, 0.0, 0.0}, //11pt
+    {2.0, 0.3, 0.2, 1.5}, //12pt
+    {1.6, 0.1, 0.1, 0.0}, //14pt
+    {1.5, 0.2, 0.0, 0.0}, //16pt
+    {1.8, 0.5, 0.0, 0.0}, //18pt
+    {0.0, 0.3, 0.0, 0.0}, //20pt
+    {1.5, 0.0, 0.0, 0.0}, //22pt
+    {0.4, 1.0, 0.0, 0.0}, //24pt
+    {0.0, 0.0, 0.0, 0.0}, //26pt
+    {0.0, 0.0, 0.8, 0.0}, //28pt
+    {2.3, 0.0, 0.0, 0.0}, //36pt
+    {0.0, 0.0, 0.0, 0.0}, //48pt
+    {4.5, 0.0, 0.6, 0.0}, //72pt
+    {0.0, 0.0, 0.0, 0.0}, //>72pt
+};

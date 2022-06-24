@@ -1033,24 +1033,33 @@ namespace NSDocxRenderer
             }
         }
 
-        int lSize = pLine->m_arConts[nIndex]->m_oFont.Size;
+        UINT lSize = static_cast<UINT>(2 * pLine->m_arConts[nIndex]->m_oFont.Size);
+        UINT nType = pLine->m_arConts[nIndex]->m_oFont.GetTextFontStyle();
+        if (nType > 3)
+        {
+            //Error!
+            return 0.0;
+        }
 
-        if (lSize <= 16)
-        {
-            return 1.8;
-        }
-        else if (lSize <= 24)
-        {
-            return 2.5;
-        }
-        else if (lSize <= 30)
-        {
-            return 3.5;
-        }
-        else
-        {
-            return 5.0;
-        }
+        //note нужно корректировать каждый размер отдельно
+        //note для больших форматов возможно нужно добавить промежуточные значения
+        if      (lSize <= 16) return c_dRightBorderCorrectionSize[0][nType]; //8pt
+        else if (lSize <= 18) return c_dRightBorderCorrectionSize[1][nType]; //9pt
+        else if (lSize <= 20) return c_dRightBorderCorrectionSize[2][nType]; //10pt
+        else if (lSize <= 22) return c_dRightBorderCorrectionSize[3][nType]; //11pt
+        else if (lSize <= 24) return c_dRightBorderCorrectionSize[4][nType]; //12pt
+        else if (lSize <= 28) return c_dRightBorderCorrectionSize[5][nType]; //14pt
+        else if (lSize <= 32) return c_dRightBorderCorrectionSize[6][nType]; //16pt
+        else if (lSize <= 36) return c_dRightBorderCorrectionSize[7][nType]; //18pt
+        else if (lSize <= 40) return c_dRightBorderCorrectionSize[8][nType]; //20pt
+        else if (lSize <= 44) return c_dRightBorderCorrectionSize[9][nType]; //22pt
+        else if (lSize <= 48) return c_dRightBorderCorrectionSize[10][nType]; //24pt
+        else if (lSize <= 52) return c_dRightBorderCorrectionSize[11][nType]; //26pt
+        else if (lSize <= 56) return c_dRightBorderCorrectionSize[12][nType]; //28pt
+        else if (lSize <= 72) return c_dRightBorderCorrectionSize[13][nType]; //36pt
+        else if (lSize <= 96) return c_dRightBorderCorrectionSize[14][nType]; //48pt
+        else if (lSize <= 144)return c_dRightBorderCorrectionSize[15][nType]; //72pt
+        else                  return c_dRightBorderCorrectionSize[16][nType];
     }
 
     void CPage::CreateSingleLineParagraph(CTextLine *pLine, const double *pRight, const double *pBeforeSpacing)
@@ -1064,7 +1073,7 @@ namespace NSDocxRenderer
 
         pParagraph->m_dFirstLine = 0;
         pParagraph->m_dRight = *pRight - RightBorderCorrection(pLine);
-        pParagraph->m_dWidth = pLine->m_dWidth/* + pLine->m_arConts.back()->m_dSpaceWidthMM*/;
+        pParagraph->m_dWidth = pLine->m_dWidth;
         pParagraph->m_dHeight = pLine->m_dHeight;
         if (*pBeforeSpacing < 0)
         {

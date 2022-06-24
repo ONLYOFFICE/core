@@ -36,7 +36,7 @@ Header::Header(ushort version)
     }
 }
 
-void Header::Write(Stream &stream)
+void Header::Write(Stream stream)
 {
     StreamRW rw(stream);
     rw.WriteArray(headerSignature.data(), headerSignature.size());

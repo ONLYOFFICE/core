@@ -4,7 +4,7 @@
 
 using namespace CFCPP;
 
-StreamView::StreamView(const SVector<Sector> &sectorChain, int sectorSize, const Stream &stream)
+StreamView::StreamView(const SVector<Sector> &sectorChain, int sectorSize, Stream stream)
     : sectorSize(sectorSize), sectorChain(sectorChain), stream(stream)
 {
     //    if (sectorChain == null)
@@ -14,8 +14,8 @@ StreamView::StreamView(const SVector<Sector> &sectorChain, int sectorSize, const
         throw new CFException("Sector size must be greater than zero");
 }
 
-StreamView::StreamView(const std::vector<Sector> &sectorChain, int sectorSize, std::streamsize length,
-                       std::queue<Sector> &availableSectors, const Stream stream, bool isFatStream) :
+StreamView::StreamView(const SVector<Sector> &sectorChain, int sectorSize, std::streamsize length,
+                       SVector<Sector> &availableSectors, Stream stream, bool isFatStream) :
     StreamView(sectorChain, sectorSize, stream)
 {
     this->isFatStream = isFatStream;
@@ -23,7 +23,7 @@ StreamView::StreamView(const std::vector<Sector> &sectorChain, int sectorSize, s
 
 }
 
-std::ostream &StreamView::Write(const char *buffer, std::streamsize offset, std::streamsize count)
+void StreamView::Write(const char *buffer, std::streamsize offset, std::streamsize count)
 {
     int byteWritten = 0;
     int roundByteWritten = 0;
@@ -42,10 +42,10 @@ std::ostream &StreamView::Write(const char *buffer, std::streamsize offset, std:
 
         if (secOffset < (int)sectorChain.size())
         {
-            char* dst = reinterpret_cast<char*>(sectorChain[secOffset].GetData().data());
+            char* dst = reinterpret_cast<char*>(sectorChain[secOffset]->GetData().data());
             std::copy(buffer+offset, buffer+offset+roundByteWritten, dst + secShift);
 
-            sectorChain[secOffset].dirtyFlag = true;
+            sectorChain[secOffset]->dirtyFlag = true;
         }
 
         byteWritten += roundByteWritten;
@@ -56,10 +56,10 @@ std::ostream &StreamView::Write(const char *buffer, std::streamsize offset, std:
         while (byteWritten < (count - sectorSize))
         {
             roundByteWritten = sectorSize;
-            char* dst = reinterpret_cast<char*>(sectorChain[secOffset].GetData().data());
+            char* dst = reinterpret_cast<char*>(sectorChain[secOffset]->GetData().data());
             std::copy(buffer+offset, buffer+offset+roundByteWritten, dst);
 
-            sectorChain[secOffset].dirtyFlag = true;
+            sectorChain[secOffset]->dirtyFlag = true;
 
             byteWritten += roundByteWritten;
             offset += roundByteWritten;
@@ -72,10 +72,10 @@ std::ostream &StreamView::Write(const char *buffer, std::streamsize offset, std:
         if (roundByteWritten != 0)
         {
 
-            char* dst = reinterpret_cast<char*>(sectorChain[secOffset].GetData().data());
+            char* dst = reinterpret_cast<char*>(sectorChain[secOffset]->GetData().data());
             std::copy(buffer+offset, buffer+offset+roundByteWritten, dst);
 
-            sectorChain[secOffset].dirtyFlag = true;
+            sectorChain[secOffset]->dirtyFlag = true;
 
             offset += roundByteWritten;
             byteWritten += roundByteWritten;
@@ -98,11 +98,11 @@ std::streamsize StreamView::Read(char *buffer, std::streamsize offset, std::stre
         // Bytes to read count is the min between request count
         // and sector border
 
-        nToRead = std::min((int)sectorChain[0].GetData().size() - ((int)position % sectorSize), (int)count);
+        nToRead = std::min((int)sectorChain[0]->GetData().size() - ((int)position % sectorSize), (int)count);
 
         if (secIndex < (int)sectorChain.size())
         {
-            char* src = reinterpret_cast<char*>(sectorChain[secIndex].GetData().data() + (int)(position % sectorSize));
+            char* src = reinterpret_cast<char*>(sectorChain[secIndex]->GetData().data() + (int)(position % sectorSize));
             char* dst = buffer + offset;
             std::copy(src, src + nToRead, dst);
         }
@@ -115,7 +115,7 @@ std::streamsize StreamView::Read(char *buffer, std::streamsize offset, std::stre
         while (nRead < (count - sectorSize))
         {
             nToRead = sectorSize;
-            char* src = reinterpret_cast<char*>(sectorChain[secIndex].GetData().data());
+            char* src = reinterpret_cast<char*>(sectorChain[secIndex]->GetData().data());
             char* dst = buffer + offset + nToRead;
             std::copy(src, src + nToRead, dst);
 
@@ -129,7 +129,7 @@ std::streamsize StreamView::Read(char *buffer, std::streamsize offset, std::stre
         if (nToRead != 0)
         {
             if (secIndex > (int)sectorChain.size()) throw new CFCorruptedFileException("The file is probably corrupted.");
-            char* src = reinterpret_cast<char*>(sectorChain[secIndex].GetData().data());
+            char* src = reinterpret_cast<char*>(sectorChain[secIndex]->GetData().data());
             char* dst = buffer + offset + nRead;
             std::copy(src, src + nToRead, dst);
 
@@ -186,11 +186,11 @@ void StreamView::WriteInt32(int val)
 
 void StreamView::adjustLength(std::streamsize value)
 {
-    std::queue<Sector> q;
+    SVector<Sector> q;
     adjustLength(value, q);
 }
 
-void StreamView::adjustLength(std::streamsize value, std::queue<Sector> &availableSectors)
+void StreamView::adjustLength(std::streamsize value, SVector<Sector> &availableSectors)
 {
     this->length = value;
 
@@ -204,26 +204,25 @@ void StreamView::adjustLength(std::streamsize value, std::queue<Sector> &availab
 
         while (nSec > 0)
         {
-            NSCommon::nullable<Sector> t;
+            std::shared_ptr<Sector> t;
 
             if (availableSectors.empty() || availableSectors.size() == 0)
             {
-                t = new Sector(sectorSize, stream);
+                t.reset(new Sector(sectorSize, stream));
 
                 if (sectorSize == Sector::MINISECTOR_SIZE)
                     t->type = SectorType::Mini;
             }
             else
             {
-                t = availableSectors.front();
-                availableSectors.pop();
+                t = availableSectors.dequeue();
             }
 
             if (isFatStream)
             {
                 t->InitFATData();
             }
-            sectorChain.push_back(std::move(t.get()));
+            sectorChain.push_back(t);
             nSec--;
         }
     }

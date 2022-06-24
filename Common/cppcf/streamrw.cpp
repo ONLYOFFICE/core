@@ -15,7 +15,6 @@ T_LONG64 StreamRW::Seek(T_LONG64 offset)
     return stream->tellg();
 }
 
-
 template<size_t N>
 std::array<BYTE, N> StreamRW::ReadArray()
 {
@@ -30,9 +29,24 @@ std::vector<BYTE> StreamRW::ReadArray(int lenght)
     return arr;
 }
 
-void StreamRW::WriteArray(BYTE *arr, int lenght)
+void StreamRW::ReadArray(char *data, int lenght)
 {
-    stream->write(reinterpret_cast<char*>(arr), lenght);
+    stream->read(data, lenght);
+}
+
+void StreamRW::ReadArray(BYTE* data, int lenght)
+{
+    stream->read(reinterpret_cast<char*>(data), lenght);
+}
+
+void StreamRW::WriteArray(const BYTE *arr, int lenght)
+{
+    stream->write(reinterpret_cast<const char*>(arr), lenght);
+}
+
+void StreamRW::WriteArray(const char *arr, int lenght)
+{
+    stream->write(arr, lenght);
 }
 
 template<class T>

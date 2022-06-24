@@ -4,7 +4,7 @@ using namespace CFCPP;
 
 int Sector::MINISECTOR_SIZE = 64;
 
-Sector::Sector(int size, const Stream &stream) :
+Sector::Sector(int size, const Stream stream) :
     size(size), stream(stream)
 {}
 
@@ -19,7 +19,7 @@ Sector::Sector(int size) :
 
 bool Sector::IsStreamed()
 {
-    if (stream.GetPointer() == nullptr || size == MINISECTOR_SIZE)
+    if (stream == nullptr || size == MINISECTOR_SIZE)
         return false;
 
     auto currentPossition = stream->tellg();

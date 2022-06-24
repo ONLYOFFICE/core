@@ -23,6 +23,7 @@ public:
     inline void pop_back() {array.pop_back();}
     std::shared_ptr<T> back()const;
     std::shared_ptr<T> front()const;
+    std::shared_ptr<T> dequeue();
 
     inline void erase(typename std::vector<std::shared_ptr<T>>::iterator &beg,
                       typename std::vector<std::shared_ptr<T>>::iterator &end) {array.erase(beg, end);}

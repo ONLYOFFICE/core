@@ -65,3 +65,11 @@ std::shared_ptr<T> SVector<T>::front() const
 
     return array.front();
 }
+
+template<class T>
+std::shared_ptr<T> SVector<T>::dequeue()
+{
+    auto pElement = front();
+    array.erase(array.begin());
+    return pElement;
+}

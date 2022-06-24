@@ -11,11 +11,11 @@ namespace CFCPP
 class StreamView : public std::iostream
 {
 public:
-    StreamView(const SVector<Sector> &sectorChain, int sectorSize, const Stream &stream);
+    StreamView(const SVector<Sector> &sectorChain, int sectorSize, Stream stream);
     StreamView(const SVector<Sector> &sectorChain, int sectorSize, std::streamsize length,
-               std::queue<Sector> &availableSectors, const Stream stream, bool isFatStream = false);
+               SVector<Sector> &availableSectors, Stream stream, bool isFatStream = false);
 
-    std::ostream& Write (const char *buffer, std::streamsize offset, std::streamsize count);
+    void Write(const char *buffer, std::streamsize offset, std::streamsize count);
     std::streamsize Read(char *buffer, std::streamsize offset, std::streamsize count);
     std::streamsize Seek(std::streamsize offset, int origin);
     void SetLength(std::streamsize value);
@@ -25,7 +25,7 @@ public:
 
 private:
     void adjustLength(std::streamsize value);
-    void adjustLength(std::streamsize value, std::queue<Sector> &availableSectors);
+    void adjustLength(std::streamsize value, SVector<Sector> &availableSectors);
 private:
     int sectorSize;
     std::streamsize length;

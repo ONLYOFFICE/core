@@ -22,7 +22,7 @@ enum SectorType
 class Sector
 {
 public:
-    Sector(int size, const Stream &stream);
+    Sector(int size, const Stream stream);
     Sector(int size, const std::vector<BYTE> &data);
     Sector(int size);
 

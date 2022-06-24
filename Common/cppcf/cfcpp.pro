@@ -16,6 +16,7 @@ SOURCES += \
     cfitem.cpp \
     cfstorage.cpp \
     compoundfile.cpp \
+    directoryentry.cpp \
     header.cpp \
     sector.cpp \
     sectorcollection.cpp \
@@ -29,7 +30,10 @@ HEADERS += \
     cfitem.h \
     cfstorage.h \
     compoundfile.h \
+    directoryentry.h \
+    guid.h \
     header.h \
+    idirectoryentry.h \
     sector.h \
     sectorcollection.h \
     streamrw.h \

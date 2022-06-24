@@ -119,6 +119,7 @@ namespace NSOnlineOfficeBinToPdf
 		// text
 		ctDrawText						= 80,
 		ctDrawTextEx					= 81,
+        ctDrawTextCodeGid				= 83,
 
 		// pathcommands
 		ctPathCommandMoveTo			    = 91,

@@ -4,6 +4,10 @@
 #include "../js_internal/js_base.h"
 #include "./PointerEmbed.h"
 
+#if defined(__ANDROID__) || defined(_IOS)
+#define SUPPORT_HARFBUZZ_SHAPER
+#endif
+
 using namespace NSJSBase;
 class CTextMeasurerEmbed : public CJSEmbedObject
 {

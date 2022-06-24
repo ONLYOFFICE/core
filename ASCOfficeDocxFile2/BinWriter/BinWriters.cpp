@@ -512,7 +512,7 @@ void Binary_rPrWriter::Write_rPr(OOX::Logic::CRunProperty* rPr)
 		{
 			m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::Underline);
 			m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-			m_oBcw.m_oStream.WriteBOOL(SimpleTypes::underlineNone != oU.m_oVal.get().GetValue());
+			m_oBcw.m_oStream.WriteBYTE(oU.m_oVal.get().GetValue());
 		}
 	}
 	//Strikeout
@@ -743,13 +743,13 @@ void Binary_rPrWriter::Write_rPr(OOX::Logic::CRunProperty* rPr)
 		}
 	}
 	//Vanish
-	if (false != rPr->m_oVanish.IsInit())
+	if (rPr->m_oVanish.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::Vanish);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 		m_oBcw.m_oStream.WriteBOOL(rPr->m_oVanish->m_oVal.ToBool());
 	}
-	if (false != rPr->m_oTextOutline.IsInit())
+	if (rPr->m_oTextOutline.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::TextOutline);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
@@ -818,6 +818,75 @@ void Binary_rPrWriter::Write_rPr(OOX::Logic::CRunProperty* rPr)
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::SnapToGrid);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 		m_oBcw.m_oStream.WriteBOOL(rPr->m_oSnapToGrid->m_oVal.ToBool());
+	}
+	if (rPr->m_oLigatures.IsInit() && rPr->m_oLigatures->m_oVal.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::Ligatures);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBYTE((BYTE)rPr->m_oLigatures->m_oVal->GetValue());
+	}
+	if (rPr->m_oNumSpacing.IsInit() && rPr->m_oNumSpacing->m_oVal.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::NumSpacing);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBYTE((BYTE)rPr->m_oNumSpacing->m_oVal->GetValue());
+	}
+	if (rPr->m_oNumForm.IsInit() && rPr->m_oNumForm->m_oVal.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::NumForm);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBYTE((BYTE)rPr->m_oNumForm->m_oVal->GetValue());
+	}
+	if (rPr->m_oCntxtAlts.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::CntxtAlts);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(rPr->m_oCntxtAlts->m_oVal.ToBool());
+	}	
+	if (rPr->m_oShadowExt.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::ShadowExt);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		int nCurPos = m_oBcw.WriteItemWithLengthStart();
+
+		m_oBcw.m_oStream.WriteRecord1(0, *rPr->m_oShadowExt);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (rPr->m_oReflection.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::Reflection);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		int nCurPos = m_oBcw.WriteItemWithLengthStart();
+
+		m_oBcw.m_oStream.WriteRecord1(0, *rPr->m_oReflection);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (rPr->m_oGlow.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::Glow);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		int nCurPos = m_oBcw.WriteItemWithLengthStart();
+
+		m_oBcw.m_oStream.WriteRecord1(0, *rPr->m_oGlow);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (rPr->m_oProps3d.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::Props3d);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		int nCurPos = m_oBcw.WriteItemWithLengthStart();
+
+		m_oBcw.m_oStream.WriteRecord1(0, *rPr->m_oProps3d);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (rPr->m_oScene3d.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::Scene3d);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		int nCurPos = m_oBcw.WriteItemWithLengthStart();
+
+		m_oBcw.m_oStream.WriteRecord1(0, *rPr->m_oScene3d);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 }
 void Binary_rPrWriter::Write_rPrChange(const OOX::Logic::CRPrChange& rPrChange)
@@ -7978,6 +8047,12 @@ void BinaryDocumentTableWriter::WriteSdtTextFormPrComb(const ComplexTypes::Word:
 		m_oBcw.m_oStream.WriteStringW3(oComb.m_oFont.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if (oComb.m_oWRule.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrCombWRule);
+		m_oBcw.m_oStream.WriteBYTE(oComb.m_oWRule->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 }
 
 
@@ -9329,6 +9404,9 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 			m_oBcw.m_oStream.EndRecord();
 
 			this->WriteTableEnd(nCurPos);
+			
+
+			m_oBcw.WriteItemWithLengthEnd(nCurPos);
 		}
 	}
 

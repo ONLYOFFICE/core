@@ -827,7 +827,7 @@ void CFontManager::CloseFont()
     if (m_pFont)
     {
         m_pFont->ClearCache();
-        m_pFont = NULL;
+        RELEASEINTERFACE(m_pFont);
     }
 }
 

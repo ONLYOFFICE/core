@@ -683,7 +683,6 @@ void odf_document::Impl::parse_settings(office_element *element)
 		}	
 	}
 }
-
 void odf_document::Impl::parse_meta(office_element *element)
 {
 	office_document_base * document = dynamic_cast<office_document_base *>( element );
@@ -699,8 +698,60 @@ void odf_document::Impl::parse_meta(office_element *element)
 
 		if (user_defined->meta_name_.empty()) continue;
 		
-		context_->Settings().add_user_defined(user_defined->meta_name_, user_defined->content_);
+		context_->DocProps().add_user_defined(user_defined->meta_name_, user_defined->content_);
 	}
+
+	dc_creator * dc_creator_ = dynamic_cast<dc_creator*>(meta->dc_creator_.get());
+	if (dc_creator_)
+		context_->DocProps().dc_creator_ = dc_creator_->content_;
+
+	dc_date * dc_date_ = dynamic_cast<dc_date*>(meta->dc_date_.get());
+	if (dc_date_)
+		context_->DocProps().dc_date_ = dc_date_->content_;
+
+	dc_description * dc_description_ = dynamic_cast<dc_description*>(meta->dc_description_.get());
+	if (dc_description_)
+		context_->DocProps().dc_description_ = dc_description_->content_;
+
+	dc_language * dc_language_ = dynamic_cast<dc_language*>(meta->dc_language_.get());
+	if (dc_language_)
+		context_->DocProps().dc_language_ = dc_language_->content_;
+
+		dc_subject * dc_subject_ = dynamic_cast<dc_subject*>(meta->dc_subject_.get());
+	if (dc_subject_)
+		context_->DocProps().dc_subject_ = dc_subject_->content_;
+	
+	dc_title * dc_title_ = dynamic_cast<dc_title*>(meta->dc_title_.get());
+	if (dc_title_)
+		context_->DocProps().dc_title_ = dc_title_->content_;
+	
+	meta_generator * meta_generator_ = dynamic_cast<meta_generator*>(meta->meta_generator_.get());
+	if (meta_generator_)
+		context_->DocProps().application_ = meta_generator_->content_;
+	
+	meta_template * meta_template_ = dynamic_cast<meta_template*>(meta->meta_template_.get());
+	if (meta_template_)
+		context_->DocProps().template_ = meta_generator_->content_;
+
+	meta_creation_date * meta_creation_date_ = dynamic_cast<meta_creation_date*>(meta->meta_creation_date_.get());
+	if (meta_creation_date_)
+		context_->DocProps().creation_date_ = meta_creation_date_->content_;
+	
+	meta_keyword * meta_keyword_ = dynamic_cast<meta_keyword*>(meta->meta_keyword_.get());
+	if (meta_keyword_)
+		context_->DocProps().keyword_ = meta_keyword_->content_;
+	meta_document_statistic * meta_document_statistic_ = dynamic_cast<meta_document_statistic*>(meta->meta_document_statistic_.get());
+	if (meta_document_statistic_)
+	{
+		context_->DocProps().character_count_ = meta_document_statistic_->character_count_;
+		context_->DocProps().page_count_ = meta_document_statistic_->page_count_;
+		context_->DocProps().paragraph_count_ = meta_document_statistic_->paragraph_count_;
+		context_->DocProps().word_count_ = meta_document_statistic_->word_count_;
+		context_->DocProps().non_whitespace_character_count_ = meta_document_statistic_->non_whitespace_character_count_;
+	}
+	meta_editing_cycles * meta_editing_cycles_ = dynamic_cast<meta_editing_cycles*>(meta->meta_editing_cycles_.get());
+	if (meta_editing_cycles_)
+		context_->DocProps().revision_ = XmlUtils::GetInteger(meta_editing_cycles_->content_);
 }
 
 void odf_document::Impl::parse_styles(office_element *element)

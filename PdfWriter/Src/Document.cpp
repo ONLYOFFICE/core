@@ -589,10 +589,8 @@ namespace PdfWriter
 			return NULL;
 
 		// 0 GID всегда используется для .notdef символа, не используем данный код для настоящих символов
-		unsigned int unUnicode = 0, unGid = 0;
-		unsigned char* pString = pFont->EncodeString(&unUnicode, 1, &unGid);
-		if (pString)
-			delete pString;
+		unsigned int unUnicode = 0;
+		pFont->EncodeGID(0, &unUnicode, 1);
 
 		m_vCidTTFonts.push_back(TFontInfo(wsFontPath, unIndex, pFont));
 		return pFont;

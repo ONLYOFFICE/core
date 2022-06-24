@@ -64,26 +64,24 @@ const bool GELFRAME::loadContent(BinProcessor& proc)
 {
 	global_info = proc.getGlobalWorkbookInfo();
 
-	if(!proc.mandatory<GelFrame>())
+	int count = proc.repeated<GelFrame>(1, 2);
+
+	if (elements_.empty()) return false;
+
+	if (count > 0)
 	{
-		return false;
-	}
-	m_GelFrame = elements_.back();
-	elements_.pop_back();
-	
-	if (proc.optional<GelFrame>())
-	{
-		GelFrame * base		= dynamic_cast<GelFrame*>(m_GelFrame.get());
-		GelFrame * addit	= dynamic_cast<GelFrame*>(elements_.back().get());
+		m_GelFrame = elements_.front();
+		GelFrame * base = dynamic_cast<GelFrame*>(m_GelFrame.get());
+		GelFrame * addit = count > 1 ? dynamic_cast<GelFrame*>(elements_.back().get()) : NULL;
 
 		if (base && addit)
 		{
 			base->concatinate(addit);
 		}
-		elements_.pop_back();
+		elements_.clear();
 	}
-	//
-	int count = proc.repeated<Continue>(0, 0);
+
+	count = proc.repeated<Continue>(0, 0);
 
 	if (proc.optional<PICF>())
 	{

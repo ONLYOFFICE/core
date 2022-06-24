@@ -654,8 +654,7 @@ void TestDocument7()
 	pPage->SetHeight(600);
 	pPage->SetWidth(1000);
 
-	//CFontCidTrueType* pFont = oPdf.CreateCidTrueTypeFont(L"D:/test/_pdf/Test.ttf", 0);
-	CFontCidTrueType* pFont = oPdf.CreateCidTrueTypeFont(L"D:/test/_pdf/cambria.ttc", 1);
+	CFontCidTrueType* pFont = oPdf.CreateCidTrueTypeFont(g_wsOutFolder + L"/cambria.ttc", 1);
 
 	pPage->BeginText();
 
@@ -675,7 +674,16 @@ void TestDocument7()
 
 		pPage->SetFontAndSize(pFont, 10);
 
-		unsigned char* pString = pFont->EncodeString(pRange, rangeLen);
+		unsigned char* pString = new unsigned char[rangeLen * 2];
+		if (!pString)
+			return;
+
+		for (unsigned int unIndex = 0; unIndex < rangeLen; unIndex++)
+		{
+			unsigned short ushCode = pFont->EncodeUnicode(pRange[unIndex]);
+			pString[2 * unIndex + 0] = (ushCode >> 8) & 0xFF;
+			pString[2 * unIndex + 1] = ushCode & 0xFF;
+		}
 		pPage->DrawText(nX, nY, (const BYTE*)pString, rangeLen * 2);
 
 		delete[] pString;
@@ -851,7 +859,6 @@ void ConvertFolder(std::wstring wsFolderPath)
 	delete pAppFonts;
 }
 
-/*
 std::vector<std::wstring> GetAllFilesInFolder(std::wstring wsFolder, std::wstring wsExt)
 {
 	std::vector<std::wstring> vwsNames;
@@ -875,70 +882,68 @@ std::vector<std::wstring> GetAllFilesInFolder(std::wstring wsFolder, std::wstrin
 	}
 	return vwsNames;
 }
-*/
-/*
-void ConvertFolder(std::wstring wsFolderPath, const int nType)
-{
-    NSFonts::IApplicationFonts* pFonts = NSFonts::NSApplication::Create();
-    if (!pFonts)
-        return;
 
-    pFonts->Initialize();
-
-    MetaFile::CMetaFile oMetaFile(pFonts);
-    CPdfRenderer oRenderer(pFonts);
-
-    oMetaFile.Close();
-
-    std::wstring sExt;
-
-    switch (nType)
-    {
-        case MetaFile::c_lMetaEmf: sExt = L"emf"; break;
-        case MetaFile::c_lMetaWmf: sExt = L"wmf"; break;
-        case MetaFile::c_lMetaSvm: sExt = L"svm"; break;
-    }
-    double dPx2Mm = 25.4 / 96;
-    std::vector<std::wstring> vFiles = GetAllFilesInFolder(wsFolderPath, sExt);
-    for (int nIndex = 0; nIndex < vFiles.size(); nIndex++)
-    {
-        oRenderer.NewPage();
-
-        std::wstring wsFilePath = wsFolderPath;
-        wsFilePath.append(vFiles.at(nIndex));
-        if (oMetaFile.LoadFromFile(wsFilePath.c_str()))
-        {
-            double dW, dH, dX, dY;
-            oMetaFile.GetBounds(&dX, &dY, &dW, &dH);
-
-            dW *= dPx2Mm;
-            dH *= dPx2Mm;
-            dX *= dPx2Mm;
-            dY *= dPx2Mm;
-
-            double dAspect = dH / dW;
-            dW = 595.27;
-            dH = dAspect * dW;
-
-            oRenderer.put_Width(dW);
-            oRenderer.put_Height(dH);
-            //oMetaFile.DrawOnRenderer(&oRenderer, -dX, -dY, dW, dH);
-            oMetaFile.DrawOnRenderer(&oRenderer, 0, 0, dW, dH);
-            oMetaFile.Close();
-        }
-
-        printf("%d of %d %S\n", nIndex, vFiles.size(), vFiles.at(nIndex).c_str());
-    }
-
-    oRenderer.SaveToFile(wsFolderPath + L"Out.pdf");
-    delete pFonts;
-}
-void TestMetafile()
-{
-    ConvertFolder(L"D://Test Files//Emf//", MetaFile::c_lMetaEmf);
-    //ConvertFolder(L"D://Test Files//Wmf//", MetaFile::c_lMetaWmf);
-}
-*/
+//void ConvertFolder(std::wstring wsFolderPath, const int nType)
+//{
+//	NSFonts::IApplicationFonts* pFonts = NSFonts::NSApplication::Create();
+//	if (!pFonts)
+//		return;
+//
+//	pFonts->Initialize();
+//
+//	MetaFile::CMetaFile oMetaFile(pFonts);
+//	CPdfRenderer oRenderer(pFonts);
+//
+//	oMetaFile.Close();
+//
+//	std::wstring sExt;
+//
+//	switch (nType)
+//	{
+//		case MetaFile::c_lMetaEmf: sExt = L"emf"; break;
+//		case MetaFile::c_lMetaWmf: sExt = L"wmf"; break;
+//		case MetaFile::c_lMetaSvm: sExt = L"svm"; break;
+//	}
+//	double dPx2Mm = 25.4 / 96;
+//	std::vector<std::wstring> vFiles = GetAllFilesInFolder(wsFolderPath, sExt);
+//	for (int nIndex = 0; nIndex < vFiles.size(); nIndex++)
+//	{
+//		oRenderer.NewPage();
+//
+//		std::wstring wsFilePath = wsFolderPath;
+//		wsFilePath.append(vFiles.at(nIndex));
+//		if (oMetaFile.LoadFromFile(wsFilePath.c_str()))
+//		{
+//			double dW, dH, dX, dY;
+//			oMetaFile.GetBounds(&dX, &dY, &dW, &dH);
+//
+//			dW *= dPx2Mm;
+//			dH *= dPx2Mm;
+//			dX *= dPx2Mm;
+//			dY *= dPx2Mm;
+//
+//			double dAspect = dH / dW;
+//			dW = 595.27;
+//			dH = dAspect * dW;
+//
+//			oRenderer.put_Width(dW);
+//			oRenderer.put_Height(dH);
+//			//oMetaFile.DrawOnRenderer(&oRenderer, -dX, -dY, dW, dH);
+//			oMetaFile.DrawOnRenderer(&oRenderer, 0, 0, dW, dH);
+//			oMetaFile.Close();
+//		}
+//
+//		printf("%d of %d %S\n", nIndex, vFiles.size(), vFiles.at(nIndex).c_str());
+//	}
+//
+//	oRenderer.SaveToFile(wsFolderPath + L"Out.pdf");
+//	delete pFonts;
+//}
+//void TestMetafile()
+//{
+//	ConvertFolder(L"D://Test Files//Emf//", MetaFile::c_lMetaEmf);
+//	//ConvertFolder(L"D://Test Files//Wmf//", MetaFile::c_lMetaWmf);
+//}
 void TestOnlineBin()
 {
 	std::wstring wsFolderPath = L"D:/Test/PDF/TextOnline/";
@@ -952,12 +957,9 @@ void TestOnlineBin()
 
 	clock_t oBeginTime = clock();
 	double dPx2Mm = 25.4 / 96;
-
-    std::vector<std::wstring> vFiles = NSDirectory::GetFiles(wsFolderPath); //GetAllFilesInFolder(wsFolderPath, L"txt");
+	std::vector<std::wstring> vFiles = GetAllFilesInFolder(wsFolderPath, L"txt");
 	for (int nIndex = 0; nIndex < vFiles.size(); nIndex++)
 	{
-        if (NSFile::GetFileExtention(vFiles.at(nIndex)) != L"txt")
-            continue;
 		std::wstring wsFilePath = wsFolderPath;
 		wsFilePath.append(vFiles.at(nIndex));
 
@@ -985,7 +987,7 @@ void TestOnlineBin2()
 {
 	std::wstring wsFileName = L"1234";
 	std::wstring wsFolderPath = L"D:/Work/Test/TextOnline/";
-    std::wstring wsTempFolder = NSFile::GetProcessDirectory() + L"/temp"; // L"D:/Work/Test/TextOnline/Temp/";
+	std::wstring wsTempFolder = L"D:/Work/Test/TextOnline/Temp/";
 
 	NSFonts::IApplicationFonts* pFonts = NSFonts::NSApplication::Create();
 	if (!pFonts)
@@ -995,13 +997,12 @@ void TestOnlineBin2()
 
 	clock_t oBeginTime = clock();
 
-    std::wstring wsFilePath = NSFile::GetProcessDirectory() + L"/doct_unpacked/pdf.bin"; // wsFolderPath + wsFileName + L".txt";
-    std::wstring wsOutPath  = NSFile::GetProcessDirectory() + L"/res.pdf"; // wsFolderPath + wsFileName + L".pdf";
+	std::wstring wsFilePath = wsFolderPath + wsFileName + L".txt";
+	std::wstring wsOutPath  = wsFolderPath + wsFileName + L".pdf";
 
-    CPdfRenderer oRenderer(pFonts, false);
+	CPdfRenderer oRenderer(pFonts, true);
 	oRenderer.SetTempFolder(wsTempFolder);
-    // oRenderer.OnlineWordToPdf(wsFilePath, wsOutPath);
-    oRenderer.OnlineWordToPdfFromBinary(wsFilePath, wsOutPath);
+	oRenderer.OnlineWordToPdf(wsFilePath, wsOutPath);
 
 	clock_t oEndTime = clock();
 	double dElapsedSecs = double(oEndTime - oBeginTime) / CLOCKS_PER_SEC;
@@ -1012,10 +1013,18 @@ void TestOnlineBin2()
 
 int main()
 {
-    //TestField();
-	//TestDocument6();
+	TestField();
+	TestDocument1();
+	TestDocument2();
+	TestDocument3();
+	TestDocument4();
+	TestDocument5();
+	TestDocument6();
+	TestDocument7();
+	TestDocument8();
+	TestDocument9();
 
-    TestOnlineBin2();
+	//TestOnlineBin2();
 
     return 0;
 }

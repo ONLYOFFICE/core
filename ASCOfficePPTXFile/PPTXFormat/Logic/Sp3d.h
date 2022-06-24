@@ -46,7 +46,7 @@ namespace PPTX
 		public:
 			WritingElement_AdditionConstructors(Sp3d)
 
-			Sp3d() : m_namespace(L"a") {}
+			Sp3d() {}
 			Sp3d& operator=(const Sp3d& oSrc)
 			{
 				parentFile		= oSrc.parentFile;
@@ -71,7 +71,7 @@ namespace PPTX
 			}	
 			void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
-                m_namespace = XmlUtils::GetNamespace(oReader.GetName());
+                m_name = XmlUtils::GetNameNoNS(oReader.GetName());
 				ReadAttributes( oReader );
 
 				if ( oReader.IsEmptyNode() )
@@ -135,27 +135,39 @@ namespace PPTX
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Start_No_NS(oReader)
 					WritingElement_ReadAttributes_Read_if		( oReader, _T("contourW"), contourW)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("extrusionH"), extrusionH)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("prstMaterial"), prstMaterial)
 					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("z"), z)
 					WritingElement_ReadAttributes_Read_else_if  (oReader, _T("macro"), macro)
-				WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_End_No_NS(oReader)
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				std::wstring name_ = m_namespace + L":sp3d";
+				std::wstring sNodeNamespace, sNodeChildNamespace;
+				std::wstring sAttrNamespace;
+				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
+				{
+					sNodeNamespace = L"w14:";
+					sNodeChildNamespace = sAttrNamespace = sNodeNamespace;
+				}
+				else
+				{
+					sNodeNamespace = m_namespace + L":";
+					sNodeChildNamespace = L"a:";
+				}
 
-				pWriter->StartNode(name_);
+
+				pWriter->StartNode(sNodeNamespace + m_name);
 
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("macro"), macro);
-				pWriter->WriteAttribute(_T("contourW"), contourW);
-				pWriter->WriteAttribute(_T("extrusionH"), extrusionH);
-				pWriter->WriteAttribute(_T("prstMaterial"), prstMaterial);
-				pWriter->WriteAttribute(_T("z"), z);
+				pWriter->WriteAttribute(sAttrNamespace + L"macro", macro);
+				pWriter->WriteAttribute(sAttrNamespace + L"contourW", contourW);
+				pWriter->WriteAttribute(sAttrNamespace + L"extrusionH", extrusionH);
+				pWriter->WriteAttribute(sAttrNamespace + L"prstMaterial", prstMaterial);
+				pWriter->WriteAttribute(sAttrNamespace + L"z", z);
 				pWriter->EndAttributes();
 				
 				pWriter->Write(bevelT);
@@ -163,20 +175,20 @@ namespace PPTX
 
 				if (extrusionClr.is_init())
 				{
-					pWriter->StartNode(_T("a:extrusionClr"));
+					pWriter->StartNode(sNodeChildNamespace + L"extrusionClr");
 					pWriter->EndAttributes();
 					extrusionClr.toXmlWriter(pWriter);
-					pWriter->EndNode(_T("a:extrusionClr"));					
+					pWriter->EndNode(sNodeChildNamespace + L"extrusionClr");
 				}
 				if (contourClr.is_init())
 				{
-					pWriter->StartNode(_T("a:contourClr"));
+					pWriter->StartNode(sNodeChildNamespace + L"contourClr");
 					pWriter->EndAttributes();
 					contourClr.toXmlWriter(pWriter);
-					pWriter->EndNode(_T("a:contourClr"));	
+					pWriter->EndNode(sNodeChildNamespace + L"contourClr");
 				}
 
-				pWriter->EndNode(name_);
+				pWriter->EndNode(sNodeNamespace + m_name);
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
@@ -270,7 +282,8 @@ namespace PPTX
 			UniColor						extrusionClr;
 			UniColor						contourClr;
 
-			std::wstring m_namespace;
+			std::wstring m_name = L"sp3d";
+			std::wstring m_namespace = L"a";
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

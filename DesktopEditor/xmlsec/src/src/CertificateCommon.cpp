@@ -89,7 +89,7 @@ namespace NSCertificate
     #else
 
         CCertificate_openssl* pCertificate = (CCertificate_openssl*)CreateInstance(CERTIFICATE_ENGINE_TYPE_OPENSSL);
-        if (pCertificate->FromId(id))
+        if (pCertificate->FromKey(id))
             return pCertificate;
         delete pCertificate;
 

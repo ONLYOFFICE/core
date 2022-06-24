@@ -43,6 +43,9 @@ public:
     std::wstring					m_strPassword;
 	bool							m_bMacros;
 
+	std::wstring					m_app_xml;
+	std::wstring					m_core_xml;
+
 	CPPTDocumentInfo() : m_oCurrentUser(), m_bMacros(true)
 	{
 	}

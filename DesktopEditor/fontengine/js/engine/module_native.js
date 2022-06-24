@@ -184,7 +184,7 @@ AscFonts.HB_ShapeText = function(fontFile, text, features, script, direction, la
 {
 	if (!hb_cache_languages[language])
 	{
-		hb_cache_languages[language] = g_native_engine["HB_LanguageFromString"];
+		hb_cache_languages[language] = g_native_engine["HB_LanguageFromString"]();
 	}
 
 	if (!fontFile["GetHBFont"]())

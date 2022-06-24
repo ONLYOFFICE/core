@@ -72,6 +72,7 @@ bool PropertyString::Read (XLS::CFStreamPtr stream)
 		for (_INT32 i = size - 1; i >= 0; i--)
 		{
 			if (s[i] == 0) size--;
+			else break;
 		}
 
 		value = size > 0 ? STR::toStdWString(std::string(s, size), code_page) : L"";

@@ -231,7 +231,7 @@ public:
     //----------------------------------------------------------------------------------------
     // Дополнительные функции для дозаписи Pdf
     //----------------------------------------------------------------------------------------
-    bool EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sCatalog, const std::pair<int, int>& pCatalog, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm);
+    bool EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sCatalog, const std::pair<int, int>& pCatalog, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm, int nFormField);
     bool CreatePageTree(const std::wstring& sPageTree, const std::pair<int, int>& pPageTree);
     std::pair<int, int> GetPageRef(int nPageIndex);
     bool EditPage(const std::wstring& sPage, const std::pair<int, int>& pPage);

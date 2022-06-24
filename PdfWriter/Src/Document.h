@@ -152,7 +152,7 @@ namespace PdfWriter
 		CSignatureField*  CreateSignatureField();
 		bool              CheckFieldName(CFieldBase* pField, const std::string& sName);
 					  
-		bool              EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sCatalog, const std::pair<int, int>& pCatalog, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm);
+		bool              EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sCatalog, const std::pair<int, int>& pCatalog, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm, int nFormField);
 		bool              CreatePageTree(const std::wstring& sPageTree, const std::pair<int, int>& pPageTree);
 		std::pair<int, int> GetPageRef(int nPageIndex);
 		CPage*            EditPage(const std::wstring& sPage, const std::pair<int, int>& pPage);
@@ -220,6 +220,7 @@ namespace PdfWriter
 		bool                               m_bEncrypt;
 		CEncryptDict*                      m_pEncryptDict;
 		std::vector<TSignatureInfo>        m_vSignatures;
+		unsigned int                       m_unFormFields;
 		unsigned int                       m_unCompressMode;
 		std::vector<CExtGrState*>          m_vExtGrStates;
 		std::vector<CExtGrState*>          m_vStrokeAlpha;

@@ -110,33 +110,42 @@ int main()
     */
     if (bResult && pReader->EditPdf(&pdfWriter, sPassword))
     {
-        if (pReader->EditPage(0))
+        if (pCertificate)
         {
-            TEST(&pdfWriter);
-            pdfWriter.PageRotate(90);
-            if (pCertificate)
-                pdfWriter.Sign(10, 10, 50, 50, NSFile::GetProcessDirectory() + L"/test.jpg", pCertificate);
+            // Подпись не позволяет вносить иные изменения кроме заполнения форм, подписания и комментирования документы
+            if (pReader->EditPage(0))
+            {
+                pdfWriter.Sign(10, 70, 50, 50, NSFile::GetProcessDirectory() + L"/test.png", pCertificate);
+            }
         }
-
-        pReader->DeletePage(1);
-
-        if (pReader->EditPage(1))
+        else
         {
-            TEST3(&pdfWriter);
-        }
+            if (pReader->EditPage(0))
+            {
+                TEST(&pdfWriter);
+                pdfWriter.PageRotate(90);
+            }
 
-        if (pReader->EditPage(2))
-        {
-            TEST2(&pdfWriter);
-        }
+            pReader->DeletePage(1);
 
-        if (pReader->AddPage(3))
-        {
-            // Новой странице необходимо выставить длину и ширину
-            pdfWriter.put_Width(dWidth);
-            pdfWriter.put_Height(dHeight);
+            if (pReader->EditPage(1))
+            {
+                TEST3(&pdfWriter);
+            }
 
-            TEST(&pdfWriter);
+            if (pReader->EditPage(2))
+            {
+                TEST2(&pdfWriter);
+            }
+
+            if (pReader->AddPage(3))
+            {
+                // Новой странице необходимо выставить длину и ширину
+                pdfWriter.put_Width(dWidth);
+                pdfWriter.put_Height(dHeight);
+
+                TEST(&pdfWriter);
+            }
         }
 
         NSFile::CFileBinary::Copy(sSrcFile, sDstFile);

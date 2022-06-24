@@ -79,6 +79,7 @@ namespace PdfWriter
 		m_pPageTree         = NULL;
 		m_pCurPage          = NULL;
 		m_nCurPageNum       = -1;
+		m_unFormFields      = 0;
 		m_pInfo             = NULL;
 		m_pTrailer          = NULL;
 		m_pResources        = NULL;
@@ -183,6 +184,7 @@ namespace PdfWriter
 		m_pPageTree         = NULL;
 		m_pCurPage          = NULL;
 		m_nCurPageNum       = 0;
+		m_unFormFields      = 0;
 		m_bEncrypt          = false;
 		m_pEncryptDict      = NULL;
 		m_pInfo             = NULL;
@@ -1087,7 +1089,7 @@ namespace PdfWriter
 
 		return (!!m_pAcroForm);
 	}
-	bool CDocument::EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sCatalog, const std::pair<int, int>& pCatalog, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm)
+	bool CDocument::EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sCatalog, const std::pair<int, int>& pCatalog, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm, int nFormField)
 	{
 		Close();
 
@@ -1134,6 +1136,7 @@ namespace PdfWriter
 			m_bEncrypt = true;
 		}
 
+		m_unFormFields = nFormField;
 		return true;
 	}
 	bool CDocument::CreatePageTree(const std::wstring& sPageTree, const std::pair<int, int>& pPageTree)
@@ -1338,7 +1341,7 @@ namespace PdfWriter
 			pField->GetSignatureDict()->SetCert(m_vSignatures[i].pCertificate);
 			pField->AddPageRect(m_vSignatures[i].pPage, m_vSignatures[i].oRect);
 			pField->Add("F", 132);
-			pField->SetFieldName("Sig" + std::to_string(i + 1));
+			pField->SetFieldName("Sig" + std::to_string(i + m_unFormFields + 1));
 			if (m_vSignatures[i].pImage)
 				pField->SetAppearance(m_vSignatures[i].pImage);
 

@@ -53,6 +53,7 @@
 #include "lib/xpdf/SecurityHandler.h"
 #include "lib/xpdf/Lexer.h"
 #include "lib/xpdf/Parser.h"
+#include "lib/xpdf/AcroForm.h"
 #include "Src/RendererOutputDev.h"
 
 #ifdef BUILDING_WASM_MODULE
@@ -529,6 +530,11 @@ return 0;
             sCatalog.clear();
         Ref catRef = catRefObj.getRef();
 
+        unsigned int nFormField = 0;
+        AcroForm* form = m_pInternal->m_pPDFDocument->getCatalog()->getForm();
+        if (form)
+            nFormField = form->getNumFields();
+
         int nCryptAlgorithm = -1;
         std::wstring sEncrypt = L"<Encrypt";
         if (xref->isEncrypted())
@@ -567,7 +573,7 @@ return 0;
         if (sEncrypt == L"<Encrypt></Encrypt>")
             sEncrypt.clear();
 
-        bool bRes = m_pInternal->m_pPdfWriter->EditPdf(xref->getLastXRefPos(), xref->getNumObjects(), sCatalog, std::make_pair(catRef.num, catRef.gen), sEncrypt, sPassword, nCryptAlgorithm);
+        bool bRes = m_pInternal->m_pPdfWriter->EditPdf(xref->getLastXRefPos(), xref->getNumObjects(), sCatalog, std::make_pair(catRef.num, catRef.gen), sEncrypt, sPassword, nCryptAlgorithm, nFormField);
         if (bRes)
             m_pInternal->GetPageTree(xref, &pagesRefObj);
         pagesRefObj.free();

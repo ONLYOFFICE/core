@@ -118,6 +118,7 @@ namespace NSJSBase
     void CJSContext::Initialize()
     {
         m_internal->context = [[JSContext alloc] init];
+        CJSContextPrivate::RegisterContext(m_internal->context);
 
 #ifndef _IOS
         if (@available(macOS 10.12, *))
@@ -135,6 +136,11 @@ namespace NSJSBase
     {
         m_internal->context = nil;
         CJSContextPrivate::UnregisterContext();
+
+        for (std::vector<ASC_THREAD_ID>::const_iterator i = m_internal->m_arThreads.begin(); i != m_internal->m_arThreads.end(); i++)
+        {
+            CJSContextPrivate::UnregisterContextForId(*i);
+        }
     }
 
     void CJSContext::CreateContext()
@@ -164,7 +170,6 @@ namespace NSJSBase
         }];
 #endif
 
-        CJSContextPrivate::RegisterContext(m_internal->context);
         return new CJSIsolateScope();
     }
 
@@ -324,6 +329,14 @@ namespace NSJSBase
         _value->value = [JSValue valueWithJSValueRef:oValueJSRef inContext: m_internal->context];
         _value->context = m_internal->context;
         return _value;
+    }
+
+    void CJSContext::MoveToThread()
+    {
+        if (CJSContextPrivate::RegisterContext(m_internal->context))
+        {
+            m_internal->m_arThreads.push_back(NSThreads::GetCurrentThreadId());
+        }
     }
 }
 

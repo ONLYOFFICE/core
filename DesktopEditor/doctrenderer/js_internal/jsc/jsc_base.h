@@ -22,6 +22,7 @@ namespace NSJSBase
     {
     public:
         JSContext* context;
+        std::vector<ASC_THREAD_ID> m_arThreads;
 
         static bool g_oldVersion;
 
@@ -38,36 +39,6 @@ namespace NSJSBase
             context = nil;
         }
 
-        static void RegisterContext(JSContext* ctx)
-        {
-            ASC_THREAD_ID nCurrentThread = NSThreads::GetCurrentThreadId();
-            bool bIsFound = false;
-            for (std::vector<std::pair<ASC_THREAD_ID, JSContext*>>::const_iterator i = g_contexts.begin(); i != g_contexts.end(); i++)
-            {
-                if (i->first == nCurrentThread)
-                {
-                    bIsFound = true;
-                    break;
-                }
-            }
-
-            if (!bIsFound)
-                g_contexts.push_back(std::pair<ASC_THREAD_ID, JSContext*>(nCurrentThread, ctx));
-        }
-
-        static void UnregisterContext()
-        {
-            ASC_THREAD_ID nCurrentThread = NSThreads::GetCurrentThreadId();
-            for (std::vector<std::pair<ASC_THREAD_ID, JSContext*>>::const_iterator i = g_contexts.begin(); i != g_contexts.end(); i++)
-            {
-                if (i->first == nCurrentThread)
-                {
-                    g_contexts.erase(i);
-                    return;
-                }
-            }
-        }
-
         static JSContext* GetCurrentContext()
         {
             ASC_THREAD_ID nCurrentThread = NSThreads::GetCurrentThreadId();
@@ -80,6 +51,41 @@ namespace NSJSBase
             }
             return [JSContext currentContext];
         }
+
+    private:
+        static bool RegisterContext(JSContext* ctx)
+        {
+            ASC_THREAD_ID nCurrentThread = NSThreads::GetCurrentThreadId();
+            for (std::vector<std::pair<ASC_THREAD_ID, JSContext*>>::const_iterator i = g_contexts.begin(); i != g_contexts.end(); i++)
+            {
+                if (i->first == nCurrentThread)
+                {
+                    return false;
+                }
+            }
+
+            g_contexts.push_back(std::pair<ASC_THREAD_ID, JSContext*>(nCurrentThread, ctx));
+            return true;
+        }
+
+        static void UnregisterContextForId(ASC_THREAD_ID nCurrentThread)
+        {
+            for (std::vector<std::pair<ASC_THREAD_ID, JSContext*>>::const_iterator i = g_contexts.begin(); i != g_contexts.end(); i++)
+            {
+                if (i->first == nCurrentThread)
+                {
+                    g_contexts.erase(i);
+                    return;
+                }
+            }
+        }
+
+        static void UnregisterContext()
+        {
+            UnregisterContextForId(NSThreads::GetCurrentThreadId());
+        }
+
+        friend class CJSContext;
     };
 }
 

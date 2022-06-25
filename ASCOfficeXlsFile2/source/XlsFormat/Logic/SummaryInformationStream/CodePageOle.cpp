@@ -98,7 +98,14 @@ bool PropertyWString::Read(XLS::CFStreamPtr stream)
 		char *s = new char[size];
 		stream->read(s, size);
 
-		value = std::wstring((wchar_t*)s, size / 2);
+		if (sizeof(wchar_t) == 4)
+		{
+			value = convertUtf16ToWString((UTF16*)s, size / 2);
+		}
+		else
+		{
+			value = std::wstring((wchar_t*)s, size / 2);
+		}		
 
 		delete[]s;
 	}

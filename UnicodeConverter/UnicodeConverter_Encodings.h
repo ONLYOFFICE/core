@@ -119,7 +119,7 @@ namespace NSUnicodeConverter
 
         { 50,   12000, "UTF-32LE",         "Unicode (UTF-32)" },
         { 51,   12001, "UTF-32BE",         "Unicode (UTF-32 Big Endian)" },
-        { 52,   950,   "EUC-JP",           "Japanese (EUC-JP)" }
+        { 52,   20932,   "EUC-JP",          "Japanese (EUC-JP)" }
 
     };
 
@@ -163,7 +163,7 @@ namespace NSUnicodeConverter
 		m[1255]		= "windows-1255";
 
 		m[932]		= "Shift_JIS";
-                m[950]		= "EUC-JP";
+        m[950]		= "Big5"; //CN
 
 		m[949]		= "KS_C_5601-1987";
 		m[51949]	= "EUC-KR";
@@ -199,6 +199,7 @@ namespace NSUnicodeConverter
 		m[12001]	= "UTF-32BE";
 
 		m[10000]	= "macintosh";
+        m[20932]    = "EUC-JP";
 		return m;
 	}
     static const std::map<int, std::string> mapEncodingsICU = create_mapEncodingsICU();

@@ -64,5 +64,18 @@ namespace XLSB
 
     }
 
+	void SupTabs::writeFields(XLS::CFRecord& record)
+	{
+		cTab = sheetNames.size();
+		record << cTab;
+
+		for (size_t i = 0; i < cTab; ++i)
+		{
+			record << sheetNames[i];
+			record.getGlobalWorkbookInfo()->external_sheets_info.push_back(sheetNames[i].value());
+		}
+
+	}
+
 } // namespace XLSB
 

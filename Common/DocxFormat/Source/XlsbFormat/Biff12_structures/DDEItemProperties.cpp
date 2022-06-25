@@ -68,5 +68,18 @@ namespace XLSB
         record.skipNunBytes(5);
     }
 
+	void DDEItemProperties::save(XLS::CFRecord& record)
+	{
+		_UINT16 flags = 0;
+
+		SETBIT(flags, 1, fWantAdvise)
+		SETBIT(flags, 2, fWantPict)
+		SETBIT(flags, 3, fOLE)
+
+		record << flags;
+
+		record.reserveNunBytes(5);
+	}
+
 } // namespace XLSB
 

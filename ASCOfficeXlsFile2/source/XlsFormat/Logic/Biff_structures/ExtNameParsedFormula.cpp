@@ -45,6 +45,11 @@ ExtNameParsedFormula::ExtNameParsedFormula() :	ParsedFormula(CellRef())
 {
 }
 
+ExtNameParsedFormula& ExtNameParsedFormula::operator=(const std::wstring& value)
+{
+	ParsedFormula::operator = (value);
+	return *this;
+}
 
 BiffStructurePtr ExtNameParsedFormula::clone()
 {
@@ -100,6 +105,53 @@ void ExtNameParsedFormula::load(CFRecord& record) // Maybe this class shouldn't 
 			record.skipNunBytes(sz);
 			delete []buf;
 		}
+	}
+}
+
+void ExtNameParsedFormula::save(CFRecord& record)
+{
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		_UINT16 size;
+
+		auto saving = [&](BiffStructure& rgceORrgb)
+		{
+			record << size;
+
+			auto rdPtr = record.getRdPtr();
+
+			rgceORrgb.save(record);
+
+			size = record.getRdPtr() - rdPtr;
+
+			record.RollRdPtrBack(size + 4);
+			record << size;
+			record.skipNunBytes(size);
+		};
+
+		saving(rgce);
+	}
+	else
+	{
+		_UINT32 size = 0;
+
+		auto saving = [&](BiffStructure& rgceORrgb)
+		{
+			record << size;
+
+			auto rdPtr = record.getRdPtr();
+
+			rgceORrgb.save(record);
+
+			size = record.getRdPtr() - rdPtr;
+
+			record.RollRdPtrBack(size + 4);
+			record << size;
+			record.skipNunBytes(size);
+		};
+
+		saving(rgce);
+		//saving(rgcb);
 	}
 }
 

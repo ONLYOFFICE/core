@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new EndSupBook(*this));
     }
 
-    void EndSupBook::readFields(XLS::CFRecord& record)
-    {
-        // No data in this record
-    }
-
 } // namespace XLSB
 

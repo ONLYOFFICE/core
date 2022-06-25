@@ -66,4 +66,12 @@ namespace XLSB
         return true;
     }
 
+	const bool DDEOLEITEMVALUE::saveContent(BinProcessor& proc)
+	{
+		if (m_source != nullptr)
+			proc.mandatory(*m_source);
+
+		return true;
+	}
+
 } // namespace XLSB

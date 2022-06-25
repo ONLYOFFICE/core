@@ -84,5 +84,23 @@ namespace XLSB
         return m_BrtSupTabs != nullptr;
     }
 
+	const bool EXTERNALBOOK::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtSupTabs != nullptr)
+			proc.mandatory(*m_BrtSupTabs);
+
+		for (auto &item : m_arEXTERNNAME)
+		{
+			proc.mandatory(*item);
+		}
+
+		for (auto &item : m_arEXTERNTABLE)
+		{
+			proc.mandatory(*item);
+		}
+
+		return true;
+	}
+
 } // namespace XLSB
 

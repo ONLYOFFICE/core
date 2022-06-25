@@ -42,5 +42,11 @@ BiffStructurePtr ExternalReferenceType::clone()
     return BiffStructurePtr(new ExternalReferenceType(*this));
 }
 
+ExternalReferenceType& ExternalReferenceType::operator= (const _UINT16& other_val)
+{
+	BiffAttributeSimple::operator=(other_val);
+	return *this;
+}
+
 } // namespace XLSB
 

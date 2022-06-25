@@ -55,5 +55,10 @@ namespace XLSB
         record >> cRw >> cCol;
     }
 
+	void SupNameValueStart::writeFields(XLS::CFRecord& record)
+	{
+		record << cRw << cCol;
+	}
+
 } // namespace XLSB
 

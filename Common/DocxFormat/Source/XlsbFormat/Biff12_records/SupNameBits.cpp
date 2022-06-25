@@ -72,5 +72,27 @@ namespace XLSB
         }
     }
 
+	void SupNameBits::writeFields(XLS::CFRecord& record)
+	{
+		switch (sbt.value().get())
+		{
+			case ExternalReferenceType::WORKBOOK:
+			{
+				record << contentsExtName;
+				break;
+			}
+			case ExternalReferenceType::DDE:
+			{
+				record << contentsDDE;
+				break;
+			}
+			case ExternalReferenceType::OLE:
+			{
+				record << contentsOLE;
+				break;
+			}
+		}
+	}
+
 } // namespace XLSB
 

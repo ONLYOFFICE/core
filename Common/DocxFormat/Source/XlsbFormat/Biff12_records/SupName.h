@@ -73,11 +73,17 @@ class SupName_T: public SupNameBase, public XLS::BiffRecord
             return XLS::BaseObjectPtr(new SupName_T<T, id>(*this));
         }
 
-        void readFields(XLS::CFRecord& record)
+        void readFields(XLS::CFRecord& record) override
         {
             if(id != rt_SupNameNil)
                 record >> value;
         }
+
+		void writeFields(XLS::CFRecord& record) override
+		{
+			if (id != rt_SupNameNil)
+				record << value;
+		}
 
         T value;
 };

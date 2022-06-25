@@ -76,5 +76,18 @@ namespace XLSB
         return m_BrtExternRowHdr != nullptr;
     }
 
+	const bool EXTERNROW::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtExternRowHdr != nullptr)
+			proc.mandatory(*m_BrtExternRowHdr);
+
+		for (auto &item : m_arEXTERNVALUE)
+		{
+			proc.mandatory(*item);
+		}
+
+		return true;
+	}
+
 } // namespace XLSB
 

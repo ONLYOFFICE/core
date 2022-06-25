@@ -66,5 +66,16 @@ namespace XLSB
         record.skipNunBytes(1);
     }
 
+	void ExternalNameProperties::save(XLS::CFRecord& record)
+	{
+		_UINT16 flags = 0;
+
+		SETBIT(flags, 0, fBuiltIn);
+
+		record << flags << iSheet;
+
+		record.reserveNunBytes(1);
+	}
+
 } // namespace XLSB
 

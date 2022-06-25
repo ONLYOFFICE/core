@@ -59,5 +59,14 @@ namespace XLSB
         fRefreshError = GETBIT(flags, 0);
     }
 
+	void ExternTableStart::writeFields(XLS::CFRecord& record)
+	{
+		BYTE    flags = 0;
+
+		SETBIT(flags, 0, fRefreshError)
+
+		record << iTab << flags;
+	}
+
 } // namespace XLSB
 

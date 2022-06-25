@@ -71,14 +71,31 @@ namespace XLSB
             countDDEOLEITEMVALUE--;
         }
 
-        if (proc.optional<SupNameValueEnd>())
-        {
-            m_BrtSupNameValueEnd = elements_.back();
-            elements_.pop_back();
-        }
+		if (proc.optional<SupNameValueEnd>())
+		{
+			m_bBrtSupNameValueEnd = true;
+			elements_.pop_back();
+		}
+		else
+			m_bBrtSupNameValueEnd = false;
 
-        return m_BrtSupNameValueStart && m_BrtSupNameValueEnd;
+        return m_BrtSupNameValueStart && m_bBrtSupNameValueEnd;
     }
+
+	const bool DDEOLEITEMVALUES::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtSupNameValueStart != nullptr)
+			proc.mandatory(*m_BrtSupNameValueStart);
+
+		for (auto &item : m_arDDEOLEITEMVALUE)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<SupNameValueEnd>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

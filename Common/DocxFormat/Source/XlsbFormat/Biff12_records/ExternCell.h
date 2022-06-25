@@ -68,12 +68,19 @@ class ExternCell_T: public XLS::BiffRecord
             return XLS::BaseObjectPtr(new ExternCell_T<T, id>(*this));
         }
 
-        void readFields(XLS::CFRecord& record)
+        void readFields(XLS::CFRecord& record) override
         {
             record >> col;
             if(id != rt_CellBlank)
                 record >> value;
         }
+
+		void writeFields(XLS::CFRecord& record) override
+		{
+			record << col;
+			if (id != rt_CellBlank)
+				record << value;
+		}
 
         T value;
         XLS::UncheckedCol col;

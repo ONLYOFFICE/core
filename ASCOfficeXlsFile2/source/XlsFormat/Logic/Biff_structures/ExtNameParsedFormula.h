@@ -44,8 +44,10 @@ class ExtNameParsedFormula : public ParsedFormula
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(ExtNameParsedFormula)
 public:
 	ExtNameParsedFormula();
+	ExtNameParsedFormula& operator=(const std::wstring& value) override;
 	BiffStructurePtr clone();
-	void load(CFRecord& record);
+	void load(CFRecord& record) override;
+	void save(CFRecord& record) override;
 
 	PtgPtr val;
 };

@@ -55,5 +55,10 @@ namespace XLSB
         record >> fmla;
     }
 
+	void SupNameFmla::writeFields(XLS::CFRecord& record)
+	{
+		record << fmla;
+	}
+
 } // namespace XLSB
 

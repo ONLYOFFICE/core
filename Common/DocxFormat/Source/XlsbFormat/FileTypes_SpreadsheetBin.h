@@ -92,6 +92,11 @@ namespace OOX
 												L"http://schemas.microsoft.com/office/2007/relationships/slicer",
 												L"slicers/slicer", true, true);
 
+			const FileType ExternalLinksBin(L"externalLinks", L"externalLink.bin",
+												L"application/vnd.ms-excel.externalLink",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLink",
+												L"externalLinks/externalLink", true, true);
+
 		} // namespace FileTypes
 	}
 } // namespace OOX

@@ -67,5 +67,15 @@ namespace XLSB
         return !m_arDDEOLEITEM.empty();
     }
 
+	const bool DDEOLELINK::saveContent(BinProcessor& proc)
+	{
+		for (auto &item : m_arDDEOLEITEM)
+		{
+			proc.mandatory(*item);
+		}
+
+		return true;
+	}
+
 } // namespace XLSB
 

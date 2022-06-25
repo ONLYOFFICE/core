@@ -72,5 +72,16 @@ namespace XLSB
         return m_BrtExternValueMeta || m_EXTERNVALUEDATA;
     }
 
+	const bool EXTERNVALUE::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtExternValueMeta != nullptr)
+			proc.mandatory(*m_BrtExternValueMeta);
+
+		if (m_EXTERNVALUEDATA != nullptr)
+			proc.mandatory(*m_EXTERNVALUEDATA);
+
+		return true;
+	}
+
 } // namespace XLSB
 

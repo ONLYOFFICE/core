@@ -73,12 +73,29 @@ namespace XLSB
 
         if (proc.optional<ExternTableEnd>())
         {
-            m_BrtExternTableEnd = elements_.back();
+            m_bBrtExternTableEnd = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtExternTableEnd = false;
 
-        return m_BrtExternTableStart && m_BrtExternTableEnd;
+        return m_BrtExternTableStart && m_bBrtExternTableEnd;
     }
+
+	const bool EXTERNTABLE::saveContent(BinProcessor& proc)
+	{
+		if (m_BrtExternTableStart != nullptr)
+			proc.mandatory(*m_BrtExternTableStart);
+
+		for (auto &item : m_arEXTERNROW)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<ExternTableEnd>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

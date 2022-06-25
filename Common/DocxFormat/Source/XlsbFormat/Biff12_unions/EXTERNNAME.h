@@ -46,12 +46,13 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+		const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         XLS::BaseObjectPtr	m_BrtSupNameStart;
         XLS::BaseObjectPtr	m_BrtSupNameFmla;
         XLS::BaseObjectPtr	m_BrtSupNameBits;
-        XLS::BaseObjectPtr	m_BrtSupNameEnd;
+		bool				m_bBrtSupNameEnd;
 
         ExternalReferenceType sbt;
     };

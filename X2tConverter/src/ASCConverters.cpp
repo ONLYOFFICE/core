@@ -3861,15 +3861,54 @@ namespace NExtractTools
 		}
 		else if (bIsNeedDoct)
 		{
-			std::wstring sDoctDir = sTemp + FILE_SEPARATOR_STR + _T("doct_unpacked");
-			NSDirectory::CreateDirectory(sDoctDir);
-			std::wstring sTFile = sDoctDir + FILE_SEPARATOR_STR + _T("Editor.bin");
-
-			nRes = docx_dir2doct_bin(sFromWithChanges, sTFile, sTemp, params, sDocxFile);
-
-			if(SUCCEEDED_X2T(nRes))
+			if (params.needConvertToOrigin(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX))
 			{
-				nRes = fromDoctBin(sTFile, sTo, nFormatTo, sTemp, sThemeDir, bPaid, params);
+				std::wstring sToRender = sDocxFile;
+				if (sToRender.empty())
+				{
+					sToRender = sTemp + FILE_SEPARATOR_STR + _T("toRender.docx");
+					nRes = dir2zip(sFromWithChanges, sToRender);
+				}
+				NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT;
+				if(AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB == nFormatTo)
+				{
+					nRes = doct_bin2epub(eFromType, sToRender, sTo, sTemp, sThemeDir, params);
+				}
+				else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_FB2 == nFormatTo)
+				{
+					nRes = doct_bin2fb(eFromType, sToRender, sTo, sTemp, sThemeDir, params);
+				}
+				else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML == nFormatTo)
+				{
+					nRes = doct_bin2html(eFromType, sToRender, sTo, sTemp, bPaid, sThemeDir, params);
+				}
+				else if(AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER == nFormatTo)
+				{
+					nRes = doct_bin2html_zip(eFromType, sToRender, sTo, sTemp, bPaid, sThemeDir, params);
+				}
+				else if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
+				{
+					nRes = doct_bin2pdf(eFromType, sToRender, sTo, sTemp, bPaid, sThemeDir, params);
+				}
+				else if(0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo))
+				{
+					nRes = doct_bin2image(eFromType, sToRender, sTo, sTemp, bPaid, sThemeDir, params);
+				}
+				else
+					nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
+			}
+			else
+			{
+				std::wstring sDoctDir = sTemp + FILE_SEPARATOR_STR + _T("doct_unpacked");
+				NSDirectory::CreateDirectory(sDoctDir);
+				std::wstring sTFile = sDoctDir + FILE_SEPARATOR_STR + _T("Editor.bin");
+
+				nRes = docx_dir2doct_bin(sFromWithChanges, sTFile, sTemp, params, sDocxFile);
+
+				if(SUCCEEDED_X2T(nRes))
+				{
+					nRes = fromDoctBin(sTFile, sTo, nFormatTo, sTemp, sThemeDir, bPaid, params);
+				}
 			}
 		}
 		else
@@ -4106,16 +4145,40 @@ namespace NExtractTools
 						AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo || 
 						AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatTo)
 		{
-			std::wstring sXlstDir = sTemp + FILE_SEPARATOR_STR + _T("xlst_unpacked");
-			NSDirectory::CreateDirectory(sXlstDir);
-			std::wstring sTFile = sXlstDir + FILE_SEPARATOR_STR + _T("Editor.bin");
-			if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatTo)
-				nRes = xlsx_dir2xlst_bin(sFrom, sTFile, params, false, sXlsxFile);
-			else
-				nRes = xlsx_dir2xlst_bin(sFrom, sTFile, params, true, sXlsxFile);
-			if(SUCCEEDED_X2T(nRes))
+			if (params.needConvertToOrigin(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX) &&
+				((0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo)) ||	AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo))
 			{
-				nRes = fromXlstBin(sTFile, sTo, nFormatTo, sTemp, sThemeDir, bPaid, params);
+				std::wstring sToRender = sXlsxFile;
+				if (sToRender.empty())
+				{
+					sToRender = sTemp + FILE_SEPARATOR_STR + _T("toRender.xlsx");
+					nRes = dir2zip(sFrom, sToRender);
+				}
+				NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::XLST;
+				if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
+				{
+					nRes = doct_bin2pdf(eFromType, sToRender, sTo, sTemp, bPaid, sThemeDir, params);
+				}
+				else if(0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo))
+				{
+					nRes = doct_bin2image(eFromType, sToRender, sTo, sTemp, bPaid, sThemeDir, params);
+				}
+				else
+					nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
+			}
+			else
+			{
+				std::wstring sXlstDir = sTemp + FILE_SEPARATOR_STR + _T("xlst_unpacked");
+				NSDirectory::CreateDirectory(sXlstDir);
+				std::wstring sTFile = sXlstDir + FILE_SEPARATOR_STR + _T("Editor.bin");
+				if(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == nFormatTo)
+					nRes = xlsx_dir2xlst_bin(sFrom, sTFile, params, false, sXlsxFile);
+				else
+					nRes = xlsx_dir2xlst_bin(sFrom, sTFile, params, true, sXlsxFile);
+				if(SUCCEEDED_X2T(nRes))
+				{
+					nRes = fromXlstBin(sTFile, sTo, nFormatTo, sTemp, sThemeDir, bPaid, params);
+				}
 			}
 		}
 		else
@@ -4425,14 +4488,37 @@ namespace NExtractTools
 		else if ( (0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo)) ||
 				 AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
 		{
-			std::wstring sPpttDir = sTemp + FILE_SEPARATOR_STR + _T("pptt_unpacked");
-			NSDirectory::CreateDirectory(sPpttDir);
-			std::wstring sTFile = sPpttDir + FILE_SEPARATOR_STR + _T("Editor.bin");
-
-			nRes = pptx_dir2pptt_bin(sFrom, sTFile, sTemp, params, sPptxFile);
-			if(SUCCEEDED_X2T(nRes))
+			if (params.needConvertToOrigin(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX))
 			{
-			   nRes = fromPpttBin(sTFile, sTo, nFormatTo, sTemp, sThemeDir, bPaid, params);
+				std::wstring sToRender = sPptxFile;
+				if (sToRender.empty())
+				{
+					sToRender = sTemp + FILE_SEPARATOR_STR + _T("toRender.pptx");
+					nRes = dir2zip(sFrom, sToRender);
+				}
+				NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::PPTT;
+				if (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
+				{
+					nRes = doct_bin2pdf(eFromType, sToRender, sTo, sTemp, bPaid, sThemeDir, params);
+				}
+				else if(0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo))
+				{
+					nRes = doct_bin2image(eFromType, sToRender, sTo, sTemp, bPaid, sThemeDir, params);
+				}
+				else
+					nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
+			}
+			else
+			{
+				std::wstring sPpttDir = sTemp + FILE_SEPARATOR_STR + _T("pptt_unpacked");
+				NSDirectory::CreateDirectory(sPpttDir);
+				std::wstring sTFile = sPpttDir + FILE_SEPARATOR_STR + _T("Editor.bin");
+
+				nRes = pptx_dir2pptt_bin(sFrom, sTFile, sTemp, params, sPptxFile);
+				if(SUCCEEDED_X2T(nRes))
+				{
+				   nRes = fromPpttBin(sTFile, sTo, nFormatTo, sTemp, sThemeDir, bPaid, params);
+				}
 			}
 		}
 		else

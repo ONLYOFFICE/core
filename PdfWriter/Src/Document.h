@@ -174,7 +174,7 @@ namespace PdfWriter
 		CShading*         CreateRadialShading(double dX0, double dY0, double dR0, double dX1, double dY1, double dR1, unsigned char* pColors, double* pPoints, int nCount);
 		bool              CheckAcroForm();
 		CRadioGroupField* FindRadioGroupField(const std::wstring& wsGroupName);
-		void              Sign(const std::wstring& wsPath, unsigned int nSizeXRef);
+		void              Sign(const std::wstring& wsPath, unsigned int nSizeXRef, bool bNeedStreamXRef = false);
 
 	private:
 

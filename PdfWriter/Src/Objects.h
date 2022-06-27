@@ -374,22 +374,20 @@ namespace PdfWriter
 	class CProxyObject : public CObjectBase
 	{
 	public:
-		CProxyObject(CObjectBase* pObject)
-		{
-			m_pObject = pObject;
-		}
+		CProxyObject(CObjectBase* pObject, bool bClear = false);
+		~CProxyObject();
 		CObjectBase* Get() const
 		{
 			return m_pObject;
 		}
 		virtual CObjectBase* Copy(CObjectBase* pOut = NULL) const
 		{
-			if (pOut && pOut->GetType() == object_type_PROXY)
+			if (pOut && pOut->GetType() == object_type_PROXY && ((CProxyObject*)pOut)->Get())
 			{
 				((CProxyObject*)pOut)->Get()->SetRef(GetObjId(), GetGenNo());
 				return pOut;
 			}
-			CProxyObject* pRes = new CProxyObject(new CObjectBase());
+			CProxyObject* pRes = new CProxyObject(new CObjectBase(), true);
 			pRes->Get()->SetRef(Get()->GetObjId(), Get()->GetGenNo());
 			return pRes;
 		}
@@ -399,6 +397,7 @@ namespace PdfWriter
 		}
 	private:
 		CObjectBase* m_pObject;
+		bool m_bClear;
 	};
 	class CArrayObject : public CObjectBase
 	{

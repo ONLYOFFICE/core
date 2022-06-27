@@ -201,6 +201,19 @@ namespace PdfWriter
 		MemCpy(m_pValue, pValue, unLen);
 	}
 	//----------------------------------------------------------------------------------------
+	// CProxyObject
+	//----------------------------------------------------------------------------------------
+	CProxyObject::CProxyObject(CObjectBase* pObject, bool bClear)
+	{
+		m_pObject = pObject;
+		m_bClear = bClear;
+	}
+	CProxyObject::~CProxyObject()
+	{
+		if (m_bClear)
+			RELEASE_OBJECT(m_pObject);
+	}
+	//----------------------------------------------------------------------------------------
 	// CArrayObject
 	//----------------------------------------------------------------------------------------
     void CArrayObject::Add(CObjectBase* pObject, bool bPushBack)
@@ -407,7 +420,7 @@ namespace PdfWriter
 
 	void ReadDict(XmlUtils::CXmlLiteReader& oCoreReader, CObjectBase* pObject)
 	{
-		int gen;
+		int gen = 0;
 		std::string sType;
 		std::string sName = oCoreReader.GetNameA();
 
@@ -439,7 +452,7 @@ namespace PdfWriter
 				{
 					CObjectBase* pBase = new CObjectBase();
 					pBase->SetRef(std::stoi(sAText), gen);
-					AddToObject(new CProxyObject(pBase));
+					AddToObject(new CProxyObject(pBase, true));
 				}
 				// Cmd игнорируется
 				else if (sType == "Cmd")
@@ -961,6 +974,7 @@ namespace PdfWriter
 			// Записываем поток
 			pXref = out;
 			int nStreamOffset = pStream->Tell();
+			pXref->m_unAddr = nStreamOffset;
 			CStream* pTrailerStream = new CMemoryStream();
 			unsigned int unEntries = 0, unEntriesSize = 0;
 			while (pXref)

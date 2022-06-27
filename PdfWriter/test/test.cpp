@@ -82,37 +82,38 @@ int main()
         pCertificate = NSCertificate::FromFiles(sPrivateKeyFile, sPrivateFilePassword, sCertificateFile, sCertificateFilePassword);
     }
 
-    /*
-    pdfWriter.SetPassword(L"123456");
-    pdfWriter.NewPage();
-    pdfWriter.BeginCommand(c_nPageType);
-    pdfWriter.put_Width(dWidth);
-    pdfWriter.put_Height(dHeight);
-    pReader->DrawPageOnRenderer(&pdfWriter, 0, NULL);
-    //TEST2(&pdfWriter);
-
-    if (pCertificate)
+    if (false && bResult)
     {
-        // Подпись будет на текущей странице
-        pdfWriter.Sign(10, 10, 50, 50, NSFile::GetProcessDirectory() + L"/test.jpg", pCertificate);
-        pdfWriter.Sign(10, 70, 50, 50, NSFile::GetProcessDirectory() + L"/test.png", pCertificate);
-        pdfWriter.Sign(10, 130, 50, 50, NSFile::GetProcessDirectory() + L"/test.jpg", pCertificate);
-        pdfWriter.Sign(0, dHeight, 0, 0, L"", pCertificate); // Невидимая подпись
-    }
+        pdfWriter.SetPassword(L"123456");
+        pdfWriter.NewPage();
+        pdfWriter.BeginCommand(c_nPageType);
+        pdfWriter.put_Width(dWidth);
+        pdfWriter.put_Height(dHeight);
+        pReader->DrawPageOnRenderer(&pdfWriter, 0, NULL);
 
-    pdfWriter.EndCommand(c_nPageType);
-    pdfWriter.SaveToFile(sDstFile);
-
-    RELEASEOBJECT(pReader);
-    RELEASEINTERFACE(pApplicationFonts);
-    RELEASEOBJECT(pCertificate);
-    return 0;
-    */
-    if (bResult && pReader->EditPdf(&pdfWriter, sPassword))
-    {
         if (pCertificate)
         {
-            // Подпись не позволяет вносить иные изменения кроме заполнения форм, подписания и комментирования документы
+            // Подпись будет на текущей странице
+            pdfWriter.Sign(10, 10, 50, 50, NSFile::GetProcessDirectory() + L"/test.jpg", pCertificate);
+            pdfWriter.Sign(10, 70, 50, 50, NSFile::GetProcessDirectory() + L"/test.png", pCertificate);
+            pdfWriter.Sign(10, 130, 50, 50, NSFile::GetProcessDirectory() + L"/test.jpg", pCertificate);
+            pdfWriter.Sign(0, dHeight, 0, 0, L"", pCertificate); // Невидимая подпись
+        }
+
+        pdfWriter.EndCommand(c_nPageType);
+        pdfWriter.SaveToFile(sDstFile);
+
+        RELEASEOBJECT(pReader);
+        RELEASEINTERFACE(pApplicationFonts);
+        RELEASEOBJECT(pCertificate);
+        return 0;
+    }
+
+    if (bResult && pReader->EditPdf(&pdfWriter, sPassword))
+    {
+        if (true && pCertificate)
+        {
+            // Подпись не позволяет вносить иные изменения кроме заполнения форм, подписания и комментирования документа
             if (pReader->EditPage(0))
             {
                 pdfWriter.Sign(10, 70, 50, 50, NSFile::GetProcessDirectory() + L"/test.png", pCertificate);

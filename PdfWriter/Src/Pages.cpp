@@ -317,8 +317,10 @@ namespace PdfWriter
 				m_pContents = (CArrayObject*)pContents;
 			else if (pContents->GetType() == object_type_UNKNOWN)
 			{
+				CProxyObject* pNewContents = new CProxyObject(pContents->Copy(), true);
+				pNewContents->Get()->SetRef(pContents->GetObjId(), pContents->GetGenNo());
 				m_pContents = new CArrayObject();
-				m_pContents->Add(new CProxyObject(pContents));
+				m_pContents->Add(pNewContents);
 				Add("Contents", m_pContents);
 			}
 		}

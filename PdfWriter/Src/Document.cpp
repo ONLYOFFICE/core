@@ -1282,6 +1282,7 @@ namespace PdfWriter
 
 		// Если m_pTrailer поток перекрестных ссылок, то при дозаписи тоже должен быть поток
 		m_pTrailer->Remove("XRefStm");
+		bool bNeedStreamXRef = false;
 		if (m_pTrailer->Get("Type"))
 		{
 			m_pTrailer->Remove("Length");
@@ -1294,8 +1295,9 @@ namespace PdfWriter
 			m_pTrailer->Remove("Type");
 			m_pTrailer->Remove("Index");
 			m_pTrailer->Remove("W");
+			bNeedStreamXRef = true;
 
-			m_pLastXref->WriteToStream(pStream, pEncrypt, true);
+			m_pLastXref->WriteToStream(pStream, pEncrypt, bNeedStreamXRef);
 		}
 		else
 			m_pLastXref->WriteToStream(pStream, pEncrypt);
@@ -1303,7 +1305,7 @@ namespace PdfWriter
 		RELEASEOBJECT(pStream);
 		unsigned int nSizeXRef = m_pXref->GetSizeXRef();
 		m_pXref = m_pLastXref;
-		Sign(wsPath, nSizeXRef);
+		Sign(wsPath, nSizeXRef, bNeedStreamXRef);
 		RELEASEOBJECT(m_pEncryptDict);
 
 		return true;
@@ -1312,7 +1314,7 @@ namespace PdfWriter
 	{
 		m_vSignatures.push_back({ oRect, m_pCurPage ? m_pCurPage : m_pPageTree->GetPage(0), pImage, pCertificate });
 	}
-	void CDocument::Sign(const std::wstring& wsPath, unsigned int nSizeXRef)
+	void CDocument::Sign(const std::wstring& wsPath, unsigned int nSizeXRef, bool bNeedStreamXRef)
 	{
 		unsigned int nPrevAddr = m_pXref->GetPrevAddr();
 		std::vector<CXref*> vXRefForWrite;
@@ -1369,7 +1371,7 @@ namespace PdfWriter
 			if (m_bEncrypt)
 				pEncrypt = m_pEncryptDict->GetEncrypt();
 
-			pXref->WriteToStream(pStream, pEncrypt);
+			pXref->WriteToStream(pStream, pEncrypt, bNeedStreamXRef);
 			nPrevAddr = pXref->GetPrevAddr();
 			nSizeXRef = m_pXref->GetSizeXRef();
 			vXRefForWrite.push_back(pXref);

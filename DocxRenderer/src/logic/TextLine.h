@@ -27,6 +27,8 @@ namespace NSDocxRenderer
 
             AssumedTextAlignmentType m_eAlignmentType;
 
+            const CShape* m_pDominantShape;
+
         public:
             CTextLine();
             void Clear();

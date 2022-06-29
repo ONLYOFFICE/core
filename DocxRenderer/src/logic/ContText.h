@@ -4,6 +4,8 @@
 
 namespace NSDocxRenderer
 {
+    class CShape;
+
     class CContText
     {
         public:
@@ -39,6 +41,8 @@ namespace NSDocxRenderer
             LONG   m_lHighlightColor;
 
             UnderlineType m_eUnderlineType;
+
+            const CShape* m_pShape; //Если не 0, то есть фоновая графика - можно анализировать.
 
         public:
             CContText();

@@ -13,7 +13,7 @@ namespace NSDocxRenderer
         m_bIsNeedFirstLineIndent = false;
         m_bIsAroundTextWrapping  = true; //по умолчанию в word
         m_bIsShadingPresent      = false;
-        m_lColorOfShadingFill    = 0xFFFFFF; //белый
+        m_lColorOfShadingFill    = c_iWhiteColor;
         m_eTextAlignmentType     = tatUnknown;
 
         m_dLeft		= 0.0;
@@ -229,5 +229,27 @@ namespace NSDocxRenderer
         }
 
         oWriter.WriteString(L"</w:p>");
+    }
+
+    void CParagraph::RemoveHighlightColor()
+    {
+        if (!m_bIsShadingPresent)
+        {
+            return;
+        }
+
+        for (size_t i = 0; i < m_arLines.size(); i++)
+        {
+            if (m_arLines[i]->m_pDominantShape)
+            {
+                for (size_t j = 0; j < m_arLines[i]->m_arConts.size(); j++)
+                {
+                    if (m_lColorOfShadingFill == m_arLines[i]->m_arConts[j]->m_lHighlightColor)
+                    {
+                        m_arLines[i]->m_arConts[j]->m_bIsHighlightPresent = false;
+                    }
+                }
+            }
+        }
     }
 }

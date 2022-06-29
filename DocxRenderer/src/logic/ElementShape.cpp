@@ -14,6 +14,7 @@ namespace NSDocxRenderer
 
         m_bIsNoFill = false;
         m_bIsNoStroke = false;
+        m_bIsBehindDoc = true;
 
         m_lCoordSizeX = 100000;
         m_lCoordSizeY = 100000;
@@ -24,6 +25,12 @@ namespace NSDocxRenderer
     CShape::CShape(const CShape &oSrc) : CBaseItem(etShape)
     {
         *this = oSrc;
+    }
+
+    CShape::CShape(const CShape& oSrc1, const CShape& oSrc2) : CBaseItem(etShape)
+    {
+        //todo добавить логику объединения двух похожих шейпов в один новый
+        //todo добавить метод ConverPathToVectorGraphics
     }
 
     CShape::~CShape()
@@ -61,6 +68,7 @@ namespace NSDocxRenderer
 
         m_bIsNoFill = oSrc.m_bIsNoFill;
         m_bIsNoStroke = oSrc.m_bIsNoStroke;
+        m_bIsBehindDoc = oSrc.m_bIsBehindDoc;
 
         m_lTxId = oSrc.m_lTxId;
 
@@ -206,7 +214,7 @@ namespace NSDocxRenderer
         //todo для уменьшения размера каждого шейпа ипользовавать только то, что необходимо - для графики, текста, графика+текст
         //todo добавить все возможные параметры/атрибуты
 
-        //Note Если обрабатывается много документов за раз, то iNumber сохраняется.
+        //note Если обрабатывается много документов за раз, то iNumber сохраняется.
         static UINT iNumber = 1;
         oWriter.WriteString(L"<w:r>");
 
@@ -225,7 +233,9 @@ namespace NSDocxRenderer
             oWriter.WriteString(L" relativeHeight=\""); //Определяет относительное упорядочивание по Z всех объектов DrawingML в этом документе.
             oWriter.AddUInt(static_cast<UINT>(UINT_MAX - iNumber));
             oWriter.WriteString(L"\"");
-            oWriter.WriteString(L" behindDoc=\"1\""); //позади текста - 1, перед текстом - 0
+            oWriter.WriteString(L" behindDoc=\""); //позади текста - 1, перед текстом - 0
+            oWriter.AddUInt(static_cast<UINT>(m_bIsBehindDoc));
+            oWriter.WriteString(L"\"");
             oWriter.WriteString(L" locked=\"0\""); //true/1 Указывает, что местоположение привязки для этого объекта не должно быть изменено во время выполнения, когда приложение редактирует содержимое этого документа.
             oWriter.WriteString(L" layoutInCell=\"0\""); //объект будет позиционирован, как указано, но таблица будет изменена в размерах и/или перемещена в документе, как это необходимо для размещения объекта.
             oWriter.WriteString(L" allowOverlap=\"1\""); //разрешается перекрывать содержимое другого объекта

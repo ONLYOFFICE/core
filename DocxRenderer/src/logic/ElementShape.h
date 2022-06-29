@@ -18,6 +18,7 @@ namespace NSDocxRenderer
 
             bool m_bIsNoFill;
             bool m_bIsNoStroke;
+            bool m_bIsBehindDoc;
 
             LONG m_lCoordSizeX;
             LONG m_lCoordSizeY;
@@ -34,6 +35,7 @@ namespace NSDocxRenderer
             virtual void Clear();
 
             CShape(const CShape& oSrc);
+            CShape(const CShape& oSrc1, const CShape& oSrc2);
 
             CShape& operator=(const CShape& oSrc);
 

@@ -6,15 +6,17 @@ namespace NSDocxRenderer
 {
     CTextLine::CTextLine() : m_arConts()
     {
-        m_dBaselinePos	= 0;
+        m_dBaselinePos    = 0;
         m_dBaselineOffset = 0;
 
-        m_dX			= 0;
-        m_dY			= 0;
-        m_dWidth		= 0;
-        m_dHeight		= 0;
+        m_dX		 	  = 0;
+        m_dY			  = 0;
+        m_dWidth		  = 0;
+        m_dHeight		  = 0;
 
-        m_eAlignmentType = atatUnknown;
+        m_eAlignmentType  = atatUnknown;
+
+        m_pDominantShape  = nullptr;
     }
 
     void CTextLine::Clear()
@@ -50,15 +52,17 @@ namespace NSDocxRenderer
             m_arConts.push_back(new CContText(*oSrc.m_arConts[i]));
         }
 
-        m_dBaselinePos	= oSrc.m_dBaselinePos;
+        m_dBaselinePos	  = oSrc.m_dBaselinePos;
         m_dBaselineOffset = oSrc.m_dBaselineOffset;
 
-        m_dX			= oSrc.m_dX;
-        m_dY			= oSrc.m_dY;
-        m_dWidth		= oSrc.m_dWidth;
-        m_dHeight		= oSrc.m_dHeight;
+        m_dX			  = oSrc.m_dX;
+        m_dY			  = oSrc.m_dY;
+        m_dWidth		  = oSrc.m_dWidth;
+        m_dHeight		  = oSrc.m_dHeight;
 
-        m_eAlignmentType = oSrc.m_eAlignmentType;
+        m_eAlignmentType  = oSrc.m_eAlignmentType;
+
+        m_pDominantShape  = oSrc.m_pDominantShape;
 
         return *this;
     }
@@ -136,12 +140,13 @@ namespace NSDocxRenderer
             double dDelta = dFirstRight - dCurrLeft;
 
             if (pFirst->m_strPickFontName != pCurrent->m_strPickFontName ||
-                    pFirst->m_eUnderlineType != pCurrent->m_eUnderlineType ||
-                    pFirst->m_bIsHighlightPresent != pCurrent->m_bIsHighlightPresent ||
-                    pFirst->m_lHighlightColor != pCurrent->m_lHighlightColor ||
-                    !pFirst->m_oFont.IsEqual(&pCurrent->m_oFont) ||
-                    !pFirst->m_oBrush.IsEqual(&pCurrent->m_oBrush) ||
-                    fabs(dDelta) > c_dTHE_STRING_X_PRECISION_MM)
+                pFirst->m_eUnderlineType != pCurrent->m_eUnderlineType ||
+                pFirst->m_bIsHighlightPresent != pCurrent->m_bIsHighlightPresent ||
+                pFirst->m_lHighlightColor != pCurrent->m_lHighlightColor ||
+                pFirst->m_pShape != pCurrent->m_pShape ||
+                !pFirst->m_oFont.IsEqual(&pCurrent->m_oFont) ||
+                !pFirst->m_oBrush.IsEqual(&pCurrent->m_oBrush) ||
+                fabs(dDelta) > c_dTHE_STRING_X_PRECISION_MM)
             {
                 if (i < nCountConts - 1)
                 {
@@ -294,8 +299,7 @@ namespace NSDocxRenderer
 
             dDelta = pCurrent->m_dX - (pPrev->m_dX + pPrev->m_dWidth);
 
-            if (dDelta < pPrev->m_dSpaceWidthMM) //тест
-                //if (dDelta < c_dTHE_STRING_X_PRECISION_MM)
+            if (dDelta < c_dTHE_STRING_X_PRECISION_MM)
             {
                 // просто текст на тексте или сменились настройки (font/brush)
                 pPrev->Write(oWriter, pManagerLight);

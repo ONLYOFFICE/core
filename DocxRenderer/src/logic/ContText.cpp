@@ -25,6 +25,8 @@ namespace NSDocxRenderer
         m_lHighlightColor = 0; //черный
 
         m_eUnderlineType = utUnknown;
+
+        m_pShape         = nullptr;
     }
 
     void CContText::Clear()
@@ -65,6 +67,8 @@ namespace NSDocxRenderer
         m_lHighlightColor = oSrc.m_lHighlightColor;
 
         m_eUnderlineType = oSrc.m_eUnderlineType;
+
+        m_pShape    = oSrc.m_pShape;
 
         return *this;
     }
@@ -186,9 +190,17 @@ namespace NSDocxRenderer
 
         if (m_bIsHighlightPresent)
         {
-            oWriter.WriteString(L"<w:highlight w:val=\"");
             ColorTable& colorTable = SingletonInstance<ColorTable>();
-            oWriter.WriteString(colorTable.ConverColorToString(ConvertColorBGRToRGB(m_lHighlightColor)));
+            if (colorTable.IsStandardColor(m_lHighlightColor))
+            {
+                oWriter.WriteString(L"<w:highlight w:val=\"");
+                oWriter.WriteString(colorTable.ConverColorToString(ConvertColorBGRToRGB(m_lHighlightColor)));
+            }
+            else
+            {
+                oWriter.WriteString(L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"");
+                oWriter.WriteHexInt3(ConvertColorBGRToRGB(m_lHighlightColor));
+            }
             oWriter.WriteString(L"\"/>");
         }
 
@@ -249,6 +261,53 @@ namespace NSDocxRenderer
         oWriter.WriteString(L"<w:spacing w:val=\"");
         oWriter.AddInt(static_cast<int>(lSpacing));
         oWriter.WriteString(L"\"/>");
+
+        if (m_oBrush.Color1 != 0)
+        {
+            oWriter.WriteString(L"<w:color w:val=\"");
+            oWriter.WriteHexInt3(ConvertColorBGRToRGB(m_oBrush.Color1));
+            oWriter.WriteString(L"\"/>");
+        }
+
+        if (m_oFont.Strikeout == TRUE)
+        {
+            oWriter.WriteString(L"<w:strike/>");
+        }
+
+        if (m_oFont.Underline == TRUE)
+        {
+            switch (m_eUnderlineType)
+            {
+            case utThinLine:
+                oWriter.WriteString(L"<w:u w:val=\"single\"/>");
+                break;
+            case utThickLine:
+                oWriter.WriteString(L"<w:u w:val=\"thick\"/>");
+                break;
+            case utDoubleThinLine:
+                oWriter.WriteString(L"<w:u w:val=\"double\"/>");
+                break;
+            default:
+                break;
+            }
+        }
+
+        if (m_bIsHighlightPresent)
+        {
+            ColorTable& colorTable = SingletonInstance<ColorTable>();
+            if (colorTable.IsStandardColor(m_lHighlightColor))
+            {
+                oWriter.WriteString(L"<w:highlight w:val=\"");
+                oWriter.WriteString(colorTable.ConverColorToString(ConvertColorBGRToRGB(m_lHighlightColor)));
+            }
+            else
+            {
+                oWriter.WriteString(L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"");
+                oWriter.WriteHexInt3(ConvertColorBGRToRGB(m_lHighlightColor));
+            }
+            oWriter.WriteString(L"\"/>");
+        }
+
 
         oWriter.WriteString(L"</w:rPr>");
 

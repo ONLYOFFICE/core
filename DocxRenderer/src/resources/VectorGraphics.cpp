@@ -153,6 +153,7 @@ namespace NSDocxRenderer
     {
         ClearNoAttack();
 
+        //todo
         m_dLeft = 0xFFFFFF;
         m_dTop = 0xFFFFFF;
         m_dRight = -0xFFFFFF;

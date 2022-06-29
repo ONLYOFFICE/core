@@ -13,7 +13,7 @@ class ColorTable
 
         inline std::wstring ConverColorToString(const unsigned int& sKey)
         {
-            std::map<unsigned int, std::wstring>::iterator iter = m_Table.find(sKey);
+            auto iter = m_Table.find(sKey);
             if (iter == m_Table.end())
             {
                 //note если не нашли стандартный цвет, отсылаем что есть
@@ -23,6 +23,12 @@ class ColorTable
             {
                 return iter->second;
             }
+        }
+
+        inline bool IsStandardColor(const unsigned int& sKey)
+        {
+            auto iter = m_Table.find(sKey);
+            return iter == m_Table.end() ? false : true;
         }
 
     private:
@@ -51,5 +57,9 @@ class ColorTable
             m_Table.insert({0xFF0000, L"red" });
             m_Table.insert({0xFFFFFF, L"white" });
             m_Table.insert({0xFFFF00, L"yellow" });
+
+            //note Больше цветов здесь
+            //core\Common\3dParty\html\css\src\ConstValues.h
+            //core\DesktopEditor\agg-2.4\svg\agg_svg_color_parser.cpp
         }
 };

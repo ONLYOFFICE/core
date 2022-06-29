@@ -1,5 +1,7 @@
 #include "Page.h"
+#include "../resources/ColorTable.h"
 #include "../resources/Constants.h"
+#include "../resources/SingletonTemplate.h"
 #include "../resources/SortElements.h"
 #include "../resources/utils.h"
 
@@ -287,17 +289,22 @@ namespace NSDocxRenderer
     {
         if ((m_oVector.m_dLeft <= m_oVector.m_dRight) && (m_oVector.m_dTop <= m_oVector.m_dBottom))
         {
+            //todo зачем это добавляется?
+            if (m_pBrush->Color1 == c_iWhiteColor &&
+                m_oVector.m_dLeft < c_dGRAPHICS_ERROR_MM &&
+                m_oVector.m_dTop < c_dGRAPHICS_ERROR_MM &&
+                fabs(m_oVector.m_dRight - m_dWidth) < c_dGRAPHICS_ERROR_MM &&
+                fabs(m_oVector.m_dBottom - m_dHeight) < c_dGRAPHICS_ERROR_MM)
+            {
+                return;
+            }
+
             CShape* pShape = new CShape();
 
             pShape->m_lTxId		= lTxId;
 
             pShape->m_oPen		= *m_pPen;
             pShape->m_oBrush	= *m_pBrush;
-
-            // нормализуем толщину линии
-            // todo ломает границы - всегда 0
-            //double dScaleTransform = (m_pTransform->sx() + m_pTransform->sy()) / 2.0;
-            //pShape->m_oPen.Size *= dScaleTransform;
 
             if ((lType & 0x01) == 0x00)
             {
@@ -412,6 +419,59 @@ namespace NSDocxRenderer
     void CPage::AnalyzeCollectedGraphics()
     {
         //todo Объединить контур и заливку одного рисунка в шейпе если m_strPath одинаковые
+        //todo Объединить выделения соседних строк
+
+        size_t nGraphicItemsCount = m_arGraphicItems.size();
+
+        for (size_t i = 0; i < nGraphicItemsCount; ++i)
+        {
+            CBaseItem* pCurrImage = m_arGraphicItems[i];
+
+            if (pCurrImage->m_eType != CBaseItem::etShape)
+            {
+                continue;
+            }
+
+            CShape* pCurrShape = dynamic_cast<CShape*>(pCurrImage);
+
+            //note параллельно для каждой текстовой строки создается шейп, который содержит цвет фона для данного текста.
+            if (pCurrShape->m_oBrush.Color1 == c_iWhiteColor &&
+                pCurrShape->m_oPen.Color == c_iWhiteColor)
+            {
+                //заранее отбрасываем некоторые фигуры
+                pCurrShape->m_bIsNotNecessaryToUse = true;
+            }
+
+            if (pCurrShape->m_bIsNotNecessaryToUse)
+            {
+                continue;
+            }
+
+            for (size_t j = i+1; j < nGraphicItemsCount; ++j)
+            {
+                CBaseItem* pNextImage = m_arGraphicItems[j];
+
+                if (pNextImage->m_eType != CBaseItem::etShape ||
+                    pNextImage->m_bIsNotNecessaryToUse)
+                {
+                    continue;
+                }
+
+                CShape* pNextShape = dynamic_cast<CShape*>(pNextImage);
+
+                //Добавить различные условия объединений
+                bool bIf1 = false;
+
+                if (bIf1)
+                {
+                    CShape* pNewShape = new CShape(*pCurrShape, *pNextShape);
+                    pCurrImage->m_bIsNotNecessaryToUse = true;
+                    pNextImage->m_bIsNotNecessaryToUse = true;
+                    m_arGraphicItems.push_back(pNewShape);
+                    nGraphicItemsCount++;
+                }
+            }
+        }
     }
 
     void CPage::AnalyzeCollectedData()
@@ -420,28 +480,21 @@ namespace NSDocxRenderer
         {
             CBaseItem* pImage = m_arGraphicItems[i];
 
-            if (pImage->m_eType != CBaseItem::etShape &&
-                pImage->m_eType != CBaseItem::etOldShape )
+            if (pImage->m_eType != CBaseItem::etShape ||
+                pImage->m_bIsNotNecessaryToUse)
             {
                 continue;
             }
 
-            //note параллельно для каждой текстовой строки создается шейп, который содержит цвет фона для данного текста.
-            if (dynamic_cast<CShape*>(pImage)->m_dHeight > dynamic_cast<CShape*>(pImage)->m_dWidth || //фигуры должны быть похожи на линию
-                dynamic_cast<CShape*>(pImage)->m_oBrush.Color1 == 0xFFFFFF) //и цвет не белый
-                //todo по идее выделение текста должно отличаться от фона всей страницы, но условие пока не работает с черным цветом
-                //m_pBrush->Color1 == dynamic_cast<CShape*>(pImage)->m_oBrush.Color1)
-            {
-                continue;
-            }
+            CShape* pShape = dynamic_cast<CShape*>(pImage);
 
             for (size_t j = 0; j < m_arTextData.size(); ++j)
             {
                 CContText* pCont = m_arTextData[j];
 
-                if (IsLineCrossingText(dynamic_cast<CShape*>(pImage), pCont) ||
-                    IsLineBelowText(dynamic_cast<CShape*>(pImage), pCont) ||
-                    IsItHighlightingBackground(dynamic_cast<CShape*>(pImage), pCont))
+                if (IsLineCrossingText(pShape, pCont) ||
+                    IsLineBelowText(pShape, pCont) ||
+                    IsItHighlightingBackground(pShape, pCont))
                 {
                     pImage->m_bIsNotNecessaryToUse = true;
                 }
@@ -488,7 +541,7 @@ namespace NSDocxRenderer
         double dRightContText = pContText->m_dX + pContText->m_dWidth;
 
         //Условие по вертикали
-        bool bIf1 = fabs(dTopShape - dBottomContText) < pContText->m_dHeight/5;
+        bool bIf1 = fabs(dTopShape - dBottomContText) < pContText->m_dHeight * 0.2;
         //Условие пересечения по горизонтали
         bool bIf2 = fabs(pShape->m_dLeft - pContText->m_dX) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM ||
                 fabs(dRightShape - dRightContText) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM ||
@@ -521,22 +574,31 @@ namespace NSDocxRenderer
         double dTopContText = pContText->m_dY - pContText->m_dHeight - pContText->m_dBaselineOffset;
         double dBottomShape = pShape->m_dTop + pShape->m_dHeight;
         double dBottomContText = pContText->m_dY - pContText->m_dBaselineOffset;
+        double dSomeBaseLine1 = dBottomContText - pContText->m_dHeight * 0.75;
+        double dSomeBaseLine2 = dBottomContText - pContText->m_dHeight * 0.5;
+        double dSomeBaseLine3 = dBottomContText - pContText->m_dHeight * 0.25;
 
         double dRightShape = pShape->m_dLeft + pShape->m_dWidth;
         double dRightContText = pContText->m_dX + pContText->m_dWidth;
 
         //Условие пересечения по вертикали
-        bool bIf1 = fabs(dTopShape - dTopContText) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM &&
-                    fabs(dBottomShape - dBottomContText) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM;
+       /* bool bIf1 = (fabs(dTopShape - dTopContText) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM ||
+                     dTopShape > dTopContText) &&
+                    (fabs(dBottomShape - dBottomContText) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM ||
+                     dBottomShape < dBottomContText);*/
+        bool bIf1 = (dSomeBaseLine1 > dTopShape && dSomeBaseLine1 < dBottomShape &&
+                     dSomeBaseLine2 > dTopShape && dSomeBaseLine2 < dBottomShape &&
+                     dSomeBaseLine3 > dTopShape && dSomeBaseLine3 < dBottomShape);
+
         //Условие пересечения по горизонтали
         bool bIf2 = fabs(pShape->m_dLeft - pContText->m_dX) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM ||
                 fabs(dRightShape - dRightContText) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM ||
                 (pShape->m_dLeft < pContText->m_dX && dRightShape > dRightContText);
-        //Условие для размеров по высоте
-        bool bIf3 = fabs(pShape->m_dHeight - pContText->m_dHeight) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM;
 
-        if (bIf1 && bIf2 && bIf3)
+        if (bIf1 && bIf2)
         {
+            //Удовлетворяет расположением и размером - привязываем указатель на картинку
+            pContText->m_pShape = pShape;
             pContText->m_bIsHighlightPresent = true;
             pContText->m_lHighlightColor = pShape->m_oBrush.Color1;
             return true;
@@ -551,6 +613,53 @@ namespace NSDocxRenderer
         {
             //note Элементы в m_arTextData в случайных местах страницы
             BuildLines(m_arTextData[i]);
+        }
+
+        if (m_eTextAssociationType == tatPlainParagraph ||
+            m_eTextAssociationType == tatShapeLine ||
+            m_eTextAssociationType == tatPlainLine)
+        {
+            DetermineDominantGraphics();
+        }
+    }
+
+    void CPage::DetermineDominantGraphics()
+    {
+        const CShape* pDominantShape = nullptr;
+
+        for (size_t i = 0; i < m_arTextLine.size(); i++)
+        {
+            for (size_t j = 0; j < m_arTextLine[i]->m_arConts.size(); j++)
+            {
+                if (m_arTextLine[i]->m_arConts[j]->m_pShape &&
+                    m_arTextLine[i]->m_arConts[j]->m_pShape != pDominantShape)
+                {
+                    double dLeftShape = m_arTextLine[i]->m_arConts[j]->m_pShape->m_dLeft;
+                    double dLeftCont = m_arTextLine[i]->m_arConts[j]->m_dX;
+                    double dRightShape = dLeftShape + m_arTextLine[i]->m_arConts[j]->m_pShape->m_dWidth;
+                    double dRightCont = dLeftCont + m_arTextLine[i]->m_arConts[j]->m_dWidth;
+
+                    if (dLeftShape < dLeftCont && dRightShape > dRightCont)
+                    {
+                        if (!pDominantShape)
+                        {
+                            pDominantShape = m_arTextLine[i]->m_arConts[j]->m_pShape;
+                        }
+                        else
+                        {
+                            double dLeftDomShape = pDominantShape->m_dLeft;
+                            double dRightDomShape = dLeftDomShape + pDominantShape->m_dWidth;
+                            if (dLeftShape < dLeftDomShape && dRightShape > dRightDomShape)
+                            {
+                                pDominantShape = m_arTextLine[i]->m_arConts[j]->m_pShape;
+                            }
+                        }
+                    }
+                }
+            }
+
+            m_arTextLine[i]->m_pDominantShape = pDominantShape;
+            pDominantShape = nullptr;
         }
     }
 
@@ -587,13 +696,14 @@ namespace NSDocxRenderer
         if (pLastCont->m_eUnderlineType == pContText->m_eUnderlineType &&
             pLastCont->m_bIsHighlightPresent == pContText->m_bIsHighlightPresent &&
             pLastCont->m_lHighlightColor == pContText->m_lHighlightColor &&
+            pLastCont->m_pShape == pContText->m_pShape &&
             pLastCont->m_oFont.IsEqual(&pContText->m_oFont) &&
             pLastCont->m_oBrush.IsEqual(&pContText->m_oBrush))
         {
             bool bIsConditionPassed = false;
 
             // настройки одинаковые. теперь смотрим, на расположение
-            if (fabs(dRight - dTextX) < 0.5)
+            if (fabs(dRight - dTextX) < c_dTHE_STRING_X_PRECISION_MM)
             {
                 // продолжаем слово
                 pLastCont->m_oText += oText;
@@ -932,6 +1042,12 @@ namespace NSDocxRenderer
                 pParagraph->m_arLines.push_back(new CTextLine(*pNextLine));
                 pParagraph->m_nNumLines++;
 
+                if (IsShadingPresent(pCurrLine, pNextLine))
+                {
+                    pParagraph->m_bIsShadingPresent = true;
+                    pParagraph->m_lColorOfShadingFill = pCurrLine->m_pDominantShape->m_oBrush.Color1;
+                }
+
                 //сдвигаем рабочую точку
                 pPrevLine = pCurrLine;
                 pCurrLine = pNextLine;
@@ -961,6 +1077,12 @@ namespace NSDocxRenderer
                       )
                 {
                     nIndex++;
+
+                    if (!IsShadingPresent(pCurrLine, pNextLine))
+                    {
+                        pParagraph->m_bIsShadingPresent = false;
+                        pParagraph->m_lColorOfShadingFill = c_iWhiteColor;
+                    }
 
                     pPrevLine = pCurrLine;
                     pCurrLine = pNextLine;
@@ -998,6 +1120,8 @@ namespace NSDocxRenderer
 
                 pParagraph->m_dSpaceBefore += std::max(dBeforeSpacingWithShapes, 0.0);
                 dBeforeSpacingWithShapes = 0;
+
+                pParagraph->RemoveHighlightColor();
 
                 m_arParagraphs.push_back(pParagraph);
             }
@@ -1062,11 +1186,24 @@ namespace NSDocxRenderer
         else                  return c_dRightBorderCorrectionSize[16][nType];
     }
 
+    bool CPage::IsShadingPresent(const CTextLine *pLine1, const CTextLine *pLine2)
+    {
+        if (pLine1->m_pDominantShape && pLine2->m_pDominantShape &&
+            pLine1->m_pDominantShape->m_oBrush.Color1 == pLine2->m_pDominantShape->m_oBrush.Color1)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     void CPage::CreateSingleLineParagraph(CTextLine *pLine, const double *pRight, const double *pBeforeSpacing)
     {
         CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
         pParagraph->m_pManagerLight = &m_oManagerLight;
         pParagraph->m_eTextConversionType = CParagraph::tctTextToParagraph;
+        pParagraph->m_arLines.push_back(pLine);
+        pParagraph->m_nNumLines++;
 
         pParagraph->m_dLeft	= pLine->m_dX;
         pParagraph->m_dTop	= pLine->m_dBaselinePos - pLine->m_dHeight - pLine->m_dBaselineOffset;
@@ -1083,8 +1220,12 @@ namespace NSDocxRenderer
         pParagraph->m_dSpaceBefore = std::max(*pBeforeSpacing, 0.0);
         pParagraph->m_dBaselinePos = pLine->m_dBaselinePos;
 
-        pParagraph->m_arLines.push_back(pLine);
-        pParagraph->m_nNumLines++;
+        if (pLine->m_pDominantShape)
+        {
+            pParagraph->m_bIsShadingPresent = true;
+            pParagraph->m_lColorOfShadingFill = pLine->m_pDominantShape->m_oBrush.Color1;
+            pParagraph->RemoveHighlightColor();
+        }
 
         m_arParagraphs.push_back(pParagraph);
     }
@@ -1095,6 +1236,14 @@ namespace NSDocxRenderer
         pParagraph->m_pManagerLight = &m_oManagerLight;
         pParagraph->m_eTextConversionType = CParagraph::tctTextToShape;
         pParagraph->m_arLines.push_back(pLine);
+        pParagraph->m_nNumLines++;
+
+        if (pLine->m_pDominantShape)
+        {
+            pParagraph->m_bIsShadingPresent = true;
+            pParagraph->m_lColorOfShadingFill = pLine->m_pDominantShape->m_oBrush.Color1;
+            pParagraph->RemoveHighlightColor();
+        }
 
         COldShape* pShape = new COldShape();
         pShape->m_arParagraphs.push_back(pParagraph);
@@ -1116,6 +1265,14 @@ namespace NSDocxRenderer
         pParagraph->m_pManagerLight = &m_oManagerLight;
         pParagraph->m_eTextConversionType = CParagraph::tctTextToShape;
         pParagraph->m_arLines.push_back(pLine);
+        pParagraph->m_nNumLines++;
+
+        if (pLine->m_pDominantShape)
+        {
+            pParagraph->m_bIsShadingPresent = true;
+            pParagraph->m_lColorOfShadingFill = pLine->m_pDominantShape->m_oBrush.Color1;
+            pParagraph->RemoveHighlightColor();
+        }
 
         CShape* pShape = new CShape();
         pShape->m_arParagraphs.push_back(pParagraph);
@@ -1161,6 +1318,14 @@ namespace NSDocxRenderer
 
     void CPage::Write(NSStringUtils::CStringBuilder& oWriter)
     {
+        for (size_t i = 0; i < m_arParagraphs.size(); ++i)
+        {
+            if (!m_arParagraphs[i]->m_bIsNotNecessaryToUse)
+            {
+                m_arParagraphs[i]->ToXml(oWriter);
+            }
+        }
+
         // drawings
         size_t nCountDrawings = m_arGraphicItems.size();
         if (0 != nCountDrawings)
@@ -1178,14 +1343,6 @@ namespace NSDocxRenderer
             }
 
             oWriter.WriteString(L"</w:p>");
-        }
-
-        for (size_t i = 0; i < m_arParagraphs.size(); ++i)
-        {
-            if (!m_arParagraphs[i]->m_bIsNotNecessaryToUse)
-            {
-                m_arParagraphs[i]->ToXml(oWriter);
-            }
         }
     }
 

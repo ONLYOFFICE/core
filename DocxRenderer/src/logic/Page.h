@@ -113,5 +113,8 @@ namespace NSDocxRenderer
         bool IsLineCrossingText(const CShape* pGraphicItem, CContText* pContText);
         bool IsLineBelowText(const CShape* pGraphicItem, CContText* pContText);
         bool IsItHighlightingBackground(const CShape* pGraphicItem, CContText* pContText);
+
+        void DetermineDominantGraphics();
+        bool IsShadingPresent(const CTextLine *pLine1, const CTextLine *pLine2);
     };
 }

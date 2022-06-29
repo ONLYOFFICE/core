@@ -72,6 +72,6 @@ namespace NSDocxRenderer
 
         virtual void ToXml(NSStringUtils::CStringBuilder& oWriter);
 
-        void CalculateTextAlignmentType();
+        void RemoveHighlightColor();
    };
 }

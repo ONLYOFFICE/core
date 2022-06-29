@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new EndPCDSDTCQueries(*this));
     }
 
-    void EndPCDSDTCQueries::readFields(XLS::CFRecord& record)
-    {
-        // No data in this record
-    }
-
 } // namespace XLSB
 

@@ -55,5 +55,10 @@ namespace XLSB
         record >> csxpis;
     }
 
+	void BeginSXPIs::writeFields(XLS::CFRecord& record)
+	{
+		record << csxpis;
+	}
+
 } // namespace XLSB
 

@@ -55,5 +55,10 @@ namespace XLSB
         record >> FRTheader >> prFilter;
     }
 
+	void BeginPRFilter14::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader << prFilter;
+	}
+
 } // namespace XLSB
 

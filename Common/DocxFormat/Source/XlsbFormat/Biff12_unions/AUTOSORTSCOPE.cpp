@@ -58,22 +58,40 @@ namespace XLSB
     {
         if (proc.optional<BeginAutoSortScope>())
         {
-            m_BrtBeginAutoSortScope = elements_.back();
+            m_bBrtBeginAutoSortScope = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtBeginAutoSortScope = false;
+
         if (proc.optional<PIVOTRULE>())
         {
             m_PIVOTRULE = elements_.back();
             elements_.pop_back();
         }
+
         if (proc.optional<EndAutoSortScope>())
         {
-            m_BrtEndAutoSortScope = elements_.back();
+            m_bBrtEndAutoSortScope = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndAutoSortScope = false;
 
-        return m_BrtBeginAutoSortScope && m_PIVOTRULE && m_BrtEndAutoSortScope;
+        return m_bBrtBeginAutoSortScope && m_PIVOTRULE && m_bBrtEndAutoSortScope;
     }
+
+	const bool AUTOSORTSCOPE::saveContent(XLS::BinProcessor & proc)
+	{
+		proc.mandatory<BeginAutoSortScope>();
+
+		if (m_PIVOTRULE != nullptr)
+			proc.mandatory(*m_PIVOTRULE);
+
+		proc.mandatory<EndAutoSortScope>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

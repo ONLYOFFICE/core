@@ -55,5 +55,10 @@ namespace XLSB
         record >> cKpis;
     }
 
+	void BeginPCDKPIs::writeFields(XLS::CFRecord& record)
+	{
+		record << cKpis;
+	}
+
 } // namespace XLSB
 

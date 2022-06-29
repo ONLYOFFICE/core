@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new EndPCDKPIs(*this));
     }
 
-    void EndPCDKPIs::readFields(XLS::CFRecord& record)
-    {
-        // No data in this record
-    }
-
 } // namespace XLSB
 

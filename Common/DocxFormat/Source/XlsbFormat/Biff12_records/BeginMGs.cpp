@@ -55,5 +55,10 @@ namespace XLSB
         record >> cmgs;
     }
 
+	void BeginMGs::writeFields(XLS::CFRecord& record)
+	{
+		record << cmgs;
+	}
+
 } // namespace XLSB
 

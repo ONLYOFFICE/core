@@ -108,17 +108,17 @@ namespace XLSB
 
 		if (fSrvFmtNum)
 		{
-			record >> isfci;
+			record << isfci;
 		}
 
 		if (fSrvFmtBack)
 		{
-			record >> cvBack;
+			record << cvBack;
 		}
 
 		if (fSrvFmtFore)
 		{
-			record >> cvFore;
+			record << cvFore;
 		}
 	}
 

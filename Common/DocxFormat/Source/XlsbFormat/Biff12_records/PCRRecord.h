@@ -50,7 +50,8 @@ namespace XLSB
 
             static const XLS::ElementType	type = XLS::typePCRRecord;
 
-            void readFields(XLS::CFRecord& record);
+            void readFields(XLS::CFRecord& record) override;
+			void writeFields(XLS::CFRecord& record) override;
 
             std::vector<std::pair<XLS::ElementType, boost::any>>   data;
 

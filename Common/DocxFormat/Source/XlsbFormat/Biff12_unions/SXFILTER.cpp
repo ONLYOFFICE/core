@@ -75,12 +75,30 @@ namespace XLSB
         }
         if (proc.optional<EndSXFilter>())
         {
-            m_BrtEndSXFilter = elements_.back();
+            m_bBrtEndSXFilter = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSXFilter = false;
 
-        return m_BrtBeginSXFilter && m_BrtEndSXFilter;
+        return m_BrtBeginSXFilter && m_bBrtEndSXFilter;
     }
+
+	const bool SXFILTER::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginSXFilter != nullptr)
+			proc.mandatory(*m_BrtBeginSXFilter);
+
+		if (m_AFILTER != nullptr)
+			proc.mandatory(*m_AFILTER);
+
+		if (m_FRTSXFILTER != nullptr)
+			proc.mandatory(*m_FRTSXFILTER);
+
+		proc.mandatory<EndSXFilter>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

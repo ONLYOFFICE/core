@@ -45,13 +45,14 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+		const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         static const XLS::ElementType	type = XLS::typePIVOTRULES;
 
         XLS::BaseObjectPtr               m_BrtBeginSXRules;
         XLS::BaseObjectPtr               m_PIVOTRULE;
-        XLS::BaseObjectPtr               m_BrtEndSXRules;
+		bool			                 m_bBrtEndSXRules;
 
     };
 

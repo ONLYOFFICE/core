@@ -77,12 +77,30 @@ namespace XLSB
 
         if (proc.optional<EndSXEdit>())
         {
-            m_BrtEndSXEdit = elements_.back();
+            m_bBrtEndSXEdit = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSXEdit = false;
 
-        return m_BrtBeginSXEdit && m_BrtSXTupleItems && m_BrtEndSXEdit;
+        return m_BrtBeginSXEdit && m_BrtSXTupleItems && m_bBrtEndSXEdit;
     }
+
+	const bool SXEDIT::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginSXEdit != nullptr)
+			proc.mandatory(*m_BrtBeginSXEdit);
+
+		if (m_BrtSXTupleItems != nullptr)
+			proc.mandatory(*m_BrtSXTupleItems);
+
+		if (m_PIVOTRULE14 != nullptr)
+			proc.mandatory(*m_PIVOTRULE14);
+
+		proc.mandatory<EndSXEdit>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

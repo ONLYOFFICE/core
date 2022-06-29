@@ -59,10 +59,19 @@ namespace XLSB
         {
             record >> value;
             rgifdb.push_back(value);
-        }
-
-
+        }		
     }
+
+	void BeginPCDHFieldsUsage::writeFields(XLS::CFRecord& record)
+	{
+		cItems = rgifdb.size();
+		record << cItems;
+
+		for (auto& item : rgifdb)
+		{
+			record << item;
+		}
+	}
 
 } // namespace XLSB
 

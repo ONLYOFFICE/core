@@ -72,12 +72,39 @@ namespace XLSB
 
         if (proc.optional<EndSXTHs>())
         {
-            m_BrtEndSXTHs = elements_.back();
+            m_bBrtEndSXTHs = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSXTHs = false;
 
-        return m_BrtBeginSXTHs && !m_arSXTH.empty() && m_BrtEndSXTHs;
+        return m_BrtBeginSXTHs && !m_arSXTH.empty() && m_bBrtEndSXTHs;
     }
+
+	const bool SXTHS::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginSXTHs == nullptr)
+			m_BrtBeginSXTHs = XLS::BaseObjectPtr(new XLSB::BeginSXTHs());
+
+		if (m_BrtBeginSXTHs != nullptr)
+		{
+			auto ptrBrtBeginSXTHs = static_cast<XLSB::BeginSXTHs*>(m_BrtBeginSXTHs.get());
+
+			if (ptrBrtBeginSXTHs != nullptr)
+				ptrBrtBeginSXTHs->csxth = m_arSXTH.size();
+
+			proc.mandatory(*m_BrtBeginSXTHs);
+		}
+
+		for (auto &item : m_arSXTH)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndSXTHs>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

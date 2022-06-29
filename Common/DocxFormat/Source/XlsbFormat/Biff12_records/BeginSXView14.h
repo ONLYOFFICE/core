@@ -50,9 +50,8 @@ namespace XLSB
 
             XLS::BaseObjectPtr clone();
 
-            void readFields(XLS::CFRecord& record);
-
-            static const XLS::ElementType	type = XLS::typeBeginSXView14;
+			void readFields(XLS::CFRecord& record) override;
+			void writeFields(XLS::CFRecord& record) override;
 
             FRTBlank                FRTheader;
             bool                    fFillDownLabelsDefault;

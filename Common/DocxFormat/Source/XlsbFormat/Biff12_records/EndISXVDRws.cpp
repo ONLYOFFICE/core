@@ -50,9 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new EndISXVDRws(*this));
     }
 
-    void EndISXVDRws::readFields(XLS::CFRecord& record)
-    {
-    }
-
 } // namespace XLSB
 

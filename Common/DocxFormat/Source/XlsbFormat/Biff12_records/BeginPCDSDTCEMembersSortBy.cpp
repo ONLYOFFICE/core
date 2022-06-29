@@ -55,5 +55,10 @@ namespace XLSB
         record >> cMembers;
     }
 
+	void BeginPCDSDTCEMembersSortBy::writeFields(XLS::CFRecord& record)
+	{
+		record << cMembers;
+	}
+
 } // namespace XLSB
 

@@ -55,5 +55,10 @@ namespace XLSB
         record >> pruleheaderdata;
     }
 
+	void BeginPRule::writeFields(XLS::CFRecord& record)
+	{
+		record << pruleheaderdata;
+	}
+
 } // namespace XLSB
 

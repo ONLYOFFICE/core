@@ -56,6 +56,7 @@ namespace XLSB
         BYTE    ciBlue;
 
         _UINT32 toHex();
+		void fromHex(_UINT32 hexValue);
     };
 
 }   // namespace XLSB

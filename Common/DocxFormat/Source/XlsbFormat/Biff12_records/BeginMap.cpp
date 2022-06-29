@@ -55,5 +55,10 @@ namespace XLSB
         record >> img >> isxdh;
     }
 
+	void BeginMap::writeFields(XLS::CFRecord& record)
+	{
+		record << img << isxdh;
+	}
+
 } // namespace XLSB
 

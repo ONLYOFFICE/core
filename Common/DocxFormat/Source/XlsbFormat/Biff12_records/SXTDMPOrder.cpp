@@ -55,5 +55,10 @@ namespace XLSB
         record >> isxvd;
     }
 
+	void SXTDMPOrder::writeFields(XLS::CFRecord& record)
+	{
+		record << isxvd;
+	}
+
 } // namespace XLSB
 

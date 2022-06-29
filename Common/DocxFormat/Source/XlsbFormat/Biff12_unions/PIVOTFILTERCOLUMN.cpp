@@ -93,5 +93,16 @@ namespace XLSB
         return m_BrtBeginFilterColumn != nullptr;
     }
 
+	const bool PIVOTFILTERCOLUMN::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginFilterColumn != nullptr)
+			proc.mandatory(*m_BrtBeginFilterColumn);
+
+		if (m_source != nullptr)
+			proc.mandatory(*m_source);
+
+		return true;
+	}
+
 } // namespace XLSB
 

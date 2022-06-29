@@ -55,5 +55,10 @@ namespace XLSB
         record >> FRTheader >> _type >> stPpmConnectionName;
     }
 
+	void FieldListActiveItem::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader << _type << stPpmConnectionName;
+	}
+
 } // namespace XLSB
 

@@ -50,9 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new BeginSXChanges(*this));
     }
 
-    void BeginSXChanges::readFields(XLS::CFRecord& record)
-    {
-    }
-
 } // namespace XLSB
 

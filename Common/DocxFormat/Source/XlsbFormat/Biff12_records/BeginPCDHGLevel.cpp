@@ -59,8 +59,17 @@ namespace XLSB
         fGroupLevel = GETBIT(flags, 0);
 
         record >> stUnique >> stLevelName;
-
     }
+
+	void BeginPCDHGLevel::writeFields(XLS::CFRecord& record)
+	{
+		BYTE    flags = 0;
+
+		SETBIT(flags, 0, fGroupLevel)
+
+		record << flags;
+		record << stUnique << stLevelName;
+	}
 
 } // namespace XLSB
 

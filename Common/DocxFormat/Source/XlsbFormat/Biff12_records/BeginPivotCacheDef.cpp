@@ -85,5 +85,43 @@ namespace XLSB
 
     }
 
+	void BeginPivotCacheDef::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags1 = 0, flags2 = 0;
+
+		record << bVerCacheLastRefresh << bVerCacheRefreshableMin << bVerCacheCreated;
+
+		SETBIT(flags1, 0, fSaveData)
+		SETBIT(flags1, 1, fInvalid)
+		SETBIT(flags1, 2, fRefreshOnLoad)
+		SETBIT(flags1, 3, fOptimizeCache)
+		SETBIT(flags1, 4, fEnableRefresh)
+		SETBIT(flags1, 5, fBackgroundQuery)
+		SETBIT(flags1, 6, fUpgradeOnRefresh)
+		SETBIT(flags1, 7, fSheetData)
+
+		record << flags1;
+
+		record << citmGhostMax << xnumRefreshedDate;
+
+		SETBIT(flags2, 0, fLoadRefreshedWho)
+		SETBIT(flags2, 1, fLoadRelIDRecords)
+		SETBIT(flags2, 2, fSupportSubquery)
+		SETBIT(flags2, 3, fSupportAttribDrill)
+
+		record << flags2;
+		record << cRecords;
+
+		if (fLoadRefreshedWho)
+			record << stRefreshedWho;
+
+		if (fLoadRelIDRecords)
+			record << stRelIDRecords;
+
+		if (!fLoadRefreshedWho)
+			record.reserveNunBytes(4);
+
+	}
+
 } // namespace XLSB
 

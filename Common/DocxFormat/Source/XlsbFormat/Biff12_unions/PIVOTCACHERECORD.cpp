@@ -65,5 +65,13 @@ namespace XLSB
         return m_source != nullptr;
     }
 
+	const bool PIVOTCACHERECORD::saveContent(BinProcessor& proc)
+	{
+		if (m_source != nullptr)
+			proc.mandatory(*m_source);
+
+		return true;
+	}
+
 } // namespace XLSB
 

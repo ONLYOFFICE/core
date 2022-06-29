@@ -64,8 +64,22 @@ namespace XLSB
         fCalcMembersInAdvFilters    = GETBIT(flags, 5);
 
         record >> irstAltText >> irstAltTextSummary >> irstWeight;
-
     }
+
+	void BeginSXView14::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+
+		SETBIT(flags, 0, fFillDownLabelsDefault)
+		SETBIT(flags, 1, fVisualTotalsForSets)
+		SETBIT(flags, 2, fEnableWB)
+		SETBIT(flags, 3, fAutoApply)
+		SETBIT(flags, 4, fShowValuesRow)
+		SETBIT(flags, 5, fCalcMembersInAdvFilters)
+
+		record << FRTheader << flags << sxma;
+		record << irstAltText << irstAltTextSummary << irstWeight;
+	}
 
 } // namespace XLSB
 

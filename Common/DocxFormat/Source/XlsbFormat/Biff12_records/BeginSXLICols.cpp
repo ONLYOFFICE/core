@@ -55,5 +55,10 @@ namespace XLSB
         record >> csxlis;
     }
 
+	void BeginSXLICols::writeFields(XLS::CFRecord& record)
+	{
+		record << csxlis;
+	}
+
 } // namespace XLSB
 

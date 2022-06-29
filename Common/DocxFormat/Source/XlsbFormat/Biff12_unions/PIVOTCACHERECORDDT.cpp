@@ -57,9 +57,11 @@ namespace XLSB
     {
         if (proc.optional<PCRRecordDt>())
         {
-            m_BrtPCRRecordDt = elements_.back();
+			m_bBrtPCRRecordDt = true;
             elements_.pop_back();
         }
+        else
+			m_bBrtPCRRecordDt = false;
 
         auto count = proc.repeated<PCDIDT>(0, 0);
         while(count > 0)
@@ -69,8 +71,20 @@ namespace XLSB
             count--;
         }
 
-        return m_BrtPCRRecordDt && !m_arPCDIDT.empty();
+        return m_bBrtPCRRecordDt && !m_arPCDIDT.empty();
     }
+
+	const bool PIVOTCACHERECORDDT::saveContent(BinProcessor& proc)
+	{
+		proc.mandatory<PCRRecordDt>();
+
+		for (auto &item : m_arPCDIDT)
+		{
+			proc.mandatory(*item);
+		}		
+
+		return true;
+	}
 
 } // namespace XLSB
 

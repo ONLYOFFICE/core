@@ -55,5 +55,10 @@ namespace XLSB
         record >> dwChart >> dwFmt >> fSeriesFormatting;
     }
 
+	void BeginSXCrtFormat::writeFields(XLS::CFRecord& record)
+	{
+		record << dwChart << dwFmt << fSeriesFormatting;
+	}
+
 } // namespace XLSB
 

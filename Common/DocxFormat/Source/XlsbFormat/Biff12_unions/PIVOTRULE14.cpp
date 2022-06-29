@@ -80,12 +80,27 @@ namespace XLSB
 
         if (proc.optional<EndPRule14>())
         {
-            m_BrtEndPRule14 = elements_.back();
+            m_bBrtEndPRule14 = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndPRule14 = false;
 
-        return m_BrtBeginPRule14 && m_BrtEndPRule14;
+        return m_BrtBeginPRule14 && m_bBrtEndPRule14;
     }
+
+	const bool PIVOTRULE14::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginPRule14 != nullptr)
+			proc.mandatory(*m_BrtBeginPRule14);
+
+		if (m_PRFILTERS14 != nullptr)
+			proc.mandatory(*m_PRFILTERS14);
+
+		proc.mandatory<EndPRule14>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

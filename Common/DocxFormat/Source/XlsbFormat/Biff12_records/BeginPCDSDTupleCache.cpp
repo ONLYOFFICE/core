@@ -50,9 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new BeginPCDSDTupleCache(*this));
     }
 
-    void BeginPCDSDTupleCache::readFields(XLS::CFRecord& record)
-    {
-    }
-
 } // namespace XLSB
 

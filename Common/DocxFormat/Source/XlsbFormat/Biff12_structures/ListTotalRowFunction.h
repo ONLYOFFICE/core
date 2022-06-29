@@ -36,7 +36,7 @@
 namespace XLSB
 {
 
-class ListTotalRowFunction : public XLS::BiffAttributeSimple<unsigned int>
+class ListTotalRowFunction : public XLS::BiffAttributeSimple<_UINT32>
 {
 public:
         XLS::BiffStructurePtr clone();

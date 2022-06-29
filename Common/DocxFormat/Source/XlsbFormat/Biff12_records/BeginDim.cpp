@@ -59,5 +59,14 @@ namespace XLSB
         fMeasure    = GETBIT(flags, 0);
     }
 
+	void BeginDim::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+
+		SETBIT(flags, 0, fMeasure)
+
+		record << flags << stName << stUnique << stDisplay;
+	}
+
 } // namespace XLSB
 

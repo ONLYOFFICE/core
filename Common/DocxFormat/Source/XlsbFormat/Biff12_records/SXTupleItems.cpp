@@ -62,5 +62,17 @@ namespace XLSB
         }
     }
 
+	void SXTupleItems::writeFields(XLS::CFRecord& record)
+	{
+		cstTuple = rgStTuple.size();
+
+		record << FRTheader << cstTuple;
+
+		for (auto& item : rgStTuple)
+		{
+			record << item;
+		}
+	}
+
 } // namespace XLSB
 

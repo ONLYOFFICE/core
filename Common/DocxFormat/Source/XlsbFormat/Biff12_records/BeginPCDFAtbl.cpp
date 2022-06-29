@@ -87,5 +87,30 @@ namespace XLSB
             record.getGlobalWorkbookInfo()->pivotCacheRecordType[record.getGlobalWorkbookInfo()->currentPivotCacheRecord].push_back(XLS::typePCDIString);
     }
 
+	void BeginPCDFAtbl::writeFields(XLS::CFRecord& record)
+	{
+		_UINT16 flags = 0;
+
+		SETBIT(flags, 0, fTextEtcField)
+		SETBIT(flags, 1, fNonDates)
+		SETBIT(flags, 2, fDateInField)
+		SETBIT(flags, 3, fHasTextItem)
+		SETBIT(flags, 4, fHasBlankItem)
+		SETBIT(flags, 5, fMixedTypesIgnoringBlanks)
+		SETBIT(flags, 6, fNumField)
+		SETBIT(flags, 7, fIntField)
+		SETBIT(flags, 8, fNumMinMaxValid)
+		SETBIT(flags, 9, fHasLongTextItem)
+
+		record << flags;
+		record << citems;
+
+		if (fNumMinMaxValid)
+			record << xnumMin;
+
+		if (fNumMinMaxValid)
+			record << xnumMax;		
+	}
+
 } // namespace XLSB
 

@@ -60,8 +60,19 @@ namespace XLSB
         fSrvSupportSubQueryCalcMem   = GETBIT(flags, 1);
         fSrvSupportSubQueryNonVisual = GETBIT(flags, 2);
         fSrvSupportAddCalcMems       = GETBIT(flags, 3);
-
     }
+
+	void BeginPCD14::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+
+		SETBIT(flags, 0, fSlicerData)
+		SETBIT(flags, 1, fSrvSupportSubQueryCalcMem)
+		SETBIT(flags, 2, fSrvSupportSubQueryNonVisual)
+		SETBIT(flags, 3, fSrvSupportAddCalcMems)
+
+		record << FRTheader << flags << icacheId;
+	}
 
 } // namespace XLSB
 

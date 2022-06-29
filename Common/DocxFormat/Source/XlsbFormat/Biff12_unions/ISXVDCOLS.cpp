@@ -63,12 +63,24 @@ namespace XLSB
 
         if (proc.optional<EndISXVDCols>())
         {
-            m_BrtEndISXVDCols = elements_.back();
+            m_bBrtEndISXVDCols = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndISXVDCols = false;
 
-        return m_BrtBeginISXVDCols && m_BrtEndISXVDCols;
+        return m_BrtBeginISXVDCols && m_bBrtEndISXVDCols;
     }
+
+	const bool ISXVDCOLS::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginISXVDCols != nullptr)
+			proc.mandatory(*m_BrtBeginISXVDCols);
+
+		proc.mandatory<EndISXVDCols>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

@@ -78,5 +78,33 @@ namespace XLSB
         }
     }
 
+	void BeginSXEdit::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader << sxet;
+
+		switch (sxet.value().get())
+		{
+		case SXET::SXET_NUM:
+			record << xnum;
+			break;
+
+		case SXET::SXET_DATETIME:
+			record << datetime;
+			break;
+
+		case SXET::SXET_STRING:
+			record << st;
+			break;
+
+		case SXET::SXET_BOOL:
+			record << f;
+			break;
+
+		case SXET::SXET_ERROR:
+			record << err;
+			break;
+		}
+	}
+
 } // namespace XLSB
 

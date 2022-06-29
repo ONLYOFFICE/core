@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new EndSXEdit(*this));
     }
 
-    void EndSXEdit::readFields(XLS::CFRecord& record)
-    {
-        // No data in this record
-    }
-
 } // namespace XLSB
 

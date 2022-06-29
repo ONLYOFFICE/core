@@ -65,6 +65,18 @@ void CPivotCacheDefinitionExt::fromBin(XLS::BaseObjectPtr& obj)
         }
     }
 }
+void CPivotCacheDefinitionExt::toBin(XLS::BaseObjectPtr& obj)
+{
+	if (obj == nullptr)
+		obj = XLS::BaseObjectPtr(new XLSB::PCD14());
+
+	auto ptr = static_cast<XLSB::PCD14*>(obj.get());
+	if (ptr != nullptr)
+	{
+		WriteAttributes(ptr->m_BrtBeginPCD14);
+	}
+	
+}
 void CPivotCacheDefinitionExt::ReadAttributes(XLS::BaseObjectPtr& obj)
 {
     auto ptr = static_cast<XLSB::BeginPCD14*>(obj.get());
@@ -72,6 +84,18 @@ void CPivotCacheDefinitionExt::ReadAttributes(XLS::BaseObjectPtr& obj)
     {
         m_oPivotCacheId = ptr->icacheId;
     }
+}
+void CPivotCacheDefinitionExt::WriteAttributes(XLS::BaseObjectPtr& obj)
+{
+	if (obj == nullptr)
+		obj = XLS::BaseObjectPtr(new XLSB::BeginPCD14());
+
+	auto ptr = static_cast<XLSB::BeginPCD14*>(obj.get());
+	if (ptr != nullptr)
+	{
+		if (m_oPivotCacheId.IsInit())
+			ptr->icacheId = m_oPivotCacheId.get();
+	}
 }
 void CPivotCacheDefinitionExt::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {

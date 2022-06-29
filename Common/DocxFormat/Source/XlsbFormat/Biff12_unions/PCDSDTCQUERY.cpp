@@ -70,12 +70,27 @@ namespace XLSB
 
         if (proc.optional<EndPCDSDTCQuery>())
         {
-            m_BrtEndPCDSDTCQuery = elements_.back();
+            m_bBrtEndPCDSDTCQuery = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndPCDSDTCQuery = false;
 
-        return m_BrtBeginPCDSDTCQuery && m_BrtEndPCDSDTCQuery;
+        return m_BrtBeginPCDSDTCQuery && m_bBrtEndPCDSDTCQuery;
     }
+
+	const bool PCDSDTCQUERY::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginPCDSDTCQuery != nullptr)
+			proc.mandatory(*m_BrtBeginPCDSDTCQuery);
+
+		if (m_PCDSDTCEMEMBERS != nullptr)
+			proc.mandatory(*m_PCDSDTCEMEMBERS);
+
+		proc.mandatory<EndPCDSDTCQuery>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

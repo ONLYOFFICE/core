@@ -45,15 +45,10 @@ namespace XLSB
     {
     }
 
-    BaseObjectPtr EndSXTH::clone()
-    {
-        return BaseObjectPtr(new EndSXTH(*this));
-    }
-
-    void EndSXTH::readFields(XLS::CFRecord& record)
-    {
-        // No data in this record
-    }
+	BaseObjectPtr EndSXTH::clone()
+	{
+		return BaseObjectPtr(new EndSXTH(*this));
+	}
 
 } // namespace XLSB
 

@@ -59,6 +59,7 @@ namespace XLSB
         unsigned char	sec;
 
         std::wstring value();
+		void fromString(const std::wstring& str);
     };
 
 }   // namespace XLSB

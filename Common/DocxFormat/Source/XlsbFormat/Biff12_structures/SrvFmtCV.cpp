@@ -72,5 +72,12 @@ namespace XLSB
         return ((ciRed & 0xff) << 16) + ((ciGreen & 0xff) << 8) + (ciBlue & 0xff);
     }
 
+	void SrvFmtCV::fromHex(_UINT32 hexValue)
+	{
+		ciRed = ((hexValue >> 16) & 0xFF) / 255.0;  // Extract the RR byte
+		ciGreen = ((hexValue >> 8) & 0xFF) / 255.0;   // Extract the GG byte
+		ciBlue = ((hexValue) & 0xFF) / 255.0;        // Extract the BB byte
+	}
+
 } // namespace XLSB
 

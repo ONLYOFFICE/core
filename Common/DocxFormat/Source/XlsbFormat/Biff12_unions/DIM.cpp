@@ -63,12 +63,24 @@ namespace XLSB
 
         if (proc.optional<EndDim>())
         {
-            m_BrtEndDim = elements_.back();
+            m_bBrtEndDim = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndDim = false;
 
-        return m_BrtBeginDim && m_BrtEndDim;
+        return m_BrtBeginDim && m_bBrtEndDim;
     }
+
+	const bool DIM::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginDim != nullptr)
+			proc.mandatory(*m_BrtBeginDim);
+
+		proc.mandatory<EndDim>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

@@ -59,5 +59,14 @@ namespace XLSB
         fAutoPage = GETBIT(flag, 0);
     }
 
+	void BeginPCDSConsol::writeFields(XLS::CFRecord& record)
+	{
+		_UINT16 flag = 0;
+
+		SETBIT(flag, 0, fAutoPage)
+
+		record << flag;
+	}
+
 } // namespace XLSB
 

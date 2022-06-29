@@ -55,5 +55,10 @@ namespace XLSB
         record >> cItems;
     }
 
+	void BeginPCDCalcItems::writeFields(XLS::CFRecord& record)
+	{
+		record << cItems;
+	}
+
 } // namespace XLSB
 

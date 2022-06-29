@@ -62,5 +62,16 @@ namespace XLSB
         }
     }
 
+	void BeginISXVDRws::writeFields(XLS::CFRecord& record)
+	{
+		cisxvd = rgisxvdrws.size();
+		record << cisxvd;
+
+		for (auto& item : rgisxvdrws)
+		{
+			record << item;
+		}
+	}
+
 } // namespace XLSB
 

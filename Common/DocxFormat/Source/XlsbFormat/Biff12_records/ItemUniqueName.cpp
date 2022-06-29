@@ -55,5 +55,10 @@ namespace XLSB
         record >> FRTheader >> iitem >> stUniqueName;
     }
 
+	void ItemUniqueName::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader << iitem << stUniqueName;
+	}
+
 } // namespace XLSB
 

@@ -61,5 +61,16 @@ namespace XLSB
         record >> irstDef;
     }
 
+	void BeginPCDSDTCSet::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+
+		SETBIT(flags, 0, fQueryFailed)
+		SETBIT(flags, 1, fLoadSortTuple)
+
+		record << cTuples << iRankMax << ssoType << flags;
+		record << irstDef;
+	}
+
 } // namespace XLSB
 

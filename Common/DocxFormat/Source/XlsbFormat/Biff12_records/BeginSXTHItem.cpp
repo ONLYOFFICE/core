@@ -55,5 +55,10 @@ namespace XLSB
         record >> irstItem;
     }
 
+	void BeginSXTHItem::writeFields(XLS::CFRecord& record)
+	{
+		record << irstItem;
+	}
+
 } // namespace XLSB
 

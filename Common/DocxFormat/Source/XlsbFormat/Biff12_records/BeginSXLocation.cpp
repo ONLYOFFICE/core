@@ -58,5 +58,13 @@ namespace XLSB
         colFirstData -=  rfxGeom.columnFirst;
     }
 
+	void BeginSXLocation::writeFields(XLS::CFRecord& record)
+	{
+		rwFirstHead += rfxGeom.rowFirst;
+		rwFirstData += rfxGeom.rowFirst;
+		colFirstData += rfxGeom.columnFirst;
+		record << rfxGeom << rwFirstHead << rwFirstData << colFirstData << crwPage << ccolPage;
+	}
+
 } // namespace XLSB
 

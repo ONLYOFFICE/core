@@ -55,5 +55,10 @@ namespace XLSB
         record >> FRTheader >> csxcondfmts;
     }
 
+	void BeginSXCondFmts14::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader << csxcondfmts;
+	}
+
 } // namespace XLSB
 

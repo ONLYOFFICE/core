@@ -55,5 +55,10 @@ namespace XLSB
         record >> bmbrloc >> ifdbihdb >> iitem;
     }
 
+	void BeginPCDSDTCEMember::writeFields(XLS::CFRecord& record)
+	{
+		record << bmbrloc << ifdbihdb << iitem;
+	}
+
 } // namespace XLSB
 

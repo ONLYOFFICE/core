@@ -55,5 +55,10 @@ namespace XLSB
         record >> FRTheader >> cRw >> cCol >> cacheId;
     }
 
+	void BeginSxvcells::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader << cRw << cCol << cacheId;
+	}
+
 } // namespace XLSB
 

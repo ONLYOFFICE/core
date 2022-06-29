@@ -55,5 +55,10 @@ namespace XLSB
         record >> irstQuery;
     }
 
+	void BeginPCDSDTCQuery::writeFields(XLS::CFRecord& record)
+	{
+		record << irstQuery;
+	}
+
 } // namespace XLSB
 

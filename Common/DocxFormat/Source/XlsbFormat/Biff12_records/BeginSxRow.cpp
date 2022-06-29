@@ -55,5 +55,10 @@ namespace XLSB
         record >> FRTheader >> csxvcells;
     }
 
+	void BeginSxRow::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader << csxvcells;
+	}
+
 } // namespace XLSB
 

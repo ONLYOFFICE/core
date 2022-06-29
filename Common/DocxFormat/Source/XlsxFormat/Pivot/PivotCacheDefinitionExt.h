@@ -60,11 +60,13 @@ namespace OOX
                 virtual void toXML(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const;
                 virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
                 void fromBin(XLS::BaseObjectPtr& obj);
+				void toBin(XLS::BaseObjectPtr& obj);
                 virtual EElementType getType () const
                 {
                     return et_x_PivotCacheDefinitionExt;
                 }
                 void ReadAttributes(XLS::BaseObjectPtr& obj);
+				void WriteAttributes(XLS::BaseObjectPtr& obj);
                 void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
         //----------
                 nullable_bool					m_oSlicerData;

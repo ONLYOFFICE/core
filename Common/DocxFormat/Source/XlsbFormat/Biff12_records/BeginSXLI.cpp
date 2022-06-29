@@ -59,5 +59,14 @@ namespace XLSB
         record >> cisxvis >> iData;
     }
 
+	void BeginSXLI::writeFields(XLS::CFRecord& record)
+	{
+		record << cSic << itmtype;
+
+		record.reserveNunBytes(1);
+
+		record << cisxvis << iData;
+	}
+
 } // namespace XLSB
 

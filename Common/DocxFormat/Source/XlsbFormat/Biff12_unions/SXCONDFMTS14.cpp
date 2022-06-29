@@ -72,12 +72,39 @@ namespace XLSB
 
         if (proc.optional<EndSXCondFmts14>())
         {
-            m_BrtEndSXCondFmts14 = elements_.back();
+            m_bBrtEndSXCondFmts14 = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSXCondFmts14 = false;
 
-        return m_BrtBeginSXCondFmts14 && !m_arSXCONDFMT14.empty() && m_BrtEndSXCondFmts14;
+        return m_BrtBeginSXCondFmts14 && !m_arSXCONDFMT14.empty() && m_bBrtEndSXCondFmts14;
     }
+
+	const bool SXCONDFMTS14::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginSXCondFmts14 == nullptr)
+			m_BrtBeginSXCondFmts14 = XLS::BaseObjectPtr(new XLSB::BeginSXCondFmts14());
+
+		if (m_BrtBeginSXCondFmts14 != nullptr)
+		{
+			auto ptrBrtBeginSXCondFmts14 = static_cast<XLSB::BeginSXCondFmts14*>(m_BrtBeginSXCondFmts14.get());
+
+			if (ptrBrtBeginSXCondFmts14 != nullptr)
+				ptrBrtBeginSXCondFmts14->csxcondfmts = m_arSXCONDFMT14.size();
+
+			proc.mandatory(*m_BrtBeginSXCondFmts14);
+		}
+
+		for (auto &item : m_arSXCONDFMT14)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndSXCondFmts14>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

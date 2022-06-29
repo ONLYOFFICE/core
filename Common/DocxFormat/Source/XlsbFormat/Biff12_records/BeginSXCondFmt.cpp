@@ -55,5 +55,10 @@ namespace XLSB
         record >> sxcondfmtScope >> sxcondfmtType >> ipriority;
     }
 
+	void BeginSXCondFmt::writeFields(XLS::CFRecord& record)
+	{
+		record << sxcondfmtScope << sxcondfmtType << ipriority;
+	}
+
 } // namespace XLSB
 

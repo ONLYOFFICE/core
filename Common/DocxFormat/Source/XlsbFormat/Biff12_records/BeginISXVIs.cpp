@@ -60,5 +60,13 @@ namespace XLSB
         }
     }
 
+	void BeginISXVIs::writeFields(XLS::CFRecord& record)
+	{
+		for (auto& item : rgisxvis)
+		{
+			record << item;
+		}
+	}
+
 } // namespace XLSB
 

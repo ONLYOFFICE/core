@@ -55,5 +55,10 @@ namespace XLSB
         record >> cgroups;
     }
 
+	void BeginPCDHGLGroups::writeFields(XLS::CFRecord& record)
+	{
+		record << cgroups;
+	}
+
 } // namespace XLSB
 

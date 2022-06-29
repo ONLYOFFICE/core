@@ -72,12 +72,29 @@ namespace XLSB
 
         if (proc.optional<EndFilters>())
         {
-            m_BrtEndFilters = elements_.back();
+            m_bBrtEndFilters = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndFilters = false;
 
-        return m_BrtBeginFilters && m_BrtEndFilters;
+        return m_BrtBeginFilters && m_bBrtEndFilters;
     }
+
+	const bool PIVOTFILTERS::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginFilters != nullptr)
+			proc.mandatory(*m_BrtBeginFilters);
+
+		for (auto &item : m_arBrtFilter)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndFilters>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

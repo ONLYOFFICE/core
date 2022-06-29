@@ -55,7 +55,8 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+		const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         //XLS::BaseObjectPtr               m_ACUID;
         XLS::BaseObjectPtr               m_BrtBeginSXView;
@@ -76,7 +77,7 @@ namespace XLSB
         XLS::BaseObjectPtr               m_ISXTHRWS;
         XLS::BaseObjectPtr               m_ISXTHCOLS;
         XLS::BaseObjectPtr               m_FRTSXVIEW;
-        XLS::BaseObjectPtr               m_BrtEndSXView;
+		bool			                 m_bBrtEndSXView;
 
     };
 

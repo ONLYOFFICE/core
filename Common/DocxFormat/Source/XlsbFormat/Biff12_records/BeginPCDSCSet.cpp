@@ -78,5 +78,32 @@ namespace XLSB
             record >> irstName;
     }
 
+	void BeginPCDSCSet::writeFields(XLS::CFRecord& record)
+	{
+		_UINT32 index;
+		BYTE    flags = 0;
+
+		for (auto& item : rgiItem)
+		{
+			record << item;
+		}
+
+		SETBIT(flags, 0, fLoadRelId)
+		SETBIT(flags, 1, fLoadSheet)
+
+		record << fName << fBuiltIn << flags;
+
+		if (fLoadSheet)
+			record << irstSheet;
+
+		if (fLoadRelId)
+			record << irstRelId;
+
+		if (!fName.value().get())
+			record << rfx;
+		else
+			record << irstName;
+	}
+
 } // namespace XLSB
 

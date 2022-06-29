@@ -70,12 +70,27 @@ namespace XLSB
         }       
         if (proc.optional<EndSXLI>())
         {
-            m_BrtEndSXLI = elements_.back();
+            m_bBrtEndSXLI = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSXLI = false;
 
-        return m_BrtBeginSXLI && m_BrtEndSXLI;
+        return m_BrtBeginSXLI && m_bBrtEndSXLI;
     }
+
+	const bool SXLI::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginSXLI != nullptr)
+			proc.mandatory(*m_BrtBeginSXLI);
+
+		if (m_ISXVIS != nullptr)
+			proc.mandatory(*m_ISXVIS);
+
+		proc.mandatory<EndSXLI>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

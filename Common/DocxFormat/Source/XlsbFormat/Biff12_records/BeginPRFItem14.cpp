@@ -55,5 +55,10 @@ namespace XLSB
         record >> FRTheader >> iitem;
     }
 
+	void BeginPRFItem14::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader << iitem;
+	}
+
 } // namespace XLSB
 

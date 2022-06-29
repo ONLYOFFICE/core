@@ -55,5 +55,10 @@ namespace XLSB
         record >> csxcrtformats;
     }
 
+	void BeginSXCrtFormats::writeFields(XLS::CFRecord& record)
+	{
+		record << csxcrtformats;
+	}
+
 } // namespace XLSB
 

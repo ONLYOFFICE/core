@@ -55,5 +55,10 @@ namespace XLSB
         record >> iSrcType >> dwConnID;
     }
 
+	void BeginPCDSource::writeFields(XLS::CFRecord& record)
+	{
+		record << iSrcType << dwConnID;
+	}
+
 } // namespace XLSB
 

@@ -55,5 +55,10 @@ namespace XLSB
         record >> bVerCacheIdSupported >> bVerCacheIdCreated;
     }
 
+	void PivotCacheIdVersion::writeFields(XLS::CFRecord& record)
+	{
+		record << bVerCacheIdSupported << bVerCacheIdCreated;
+	}
+
 } // namespace XLSB
 

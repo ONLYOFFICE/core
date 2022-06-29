@@ -60,8 +60,19 @@ namespace XLSB
         fDates                  = GETBIT(flags, 2);
 
         record >> xnumStart >> xnumBy >> xnumEnd;
-
     }
+
+	void BeginPCDFGRange::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+
+		SETBIT(flags, 0, fAutoStart)
+		SETBIT(flags, 1, fAutoEnd)
+		SETBIT(flags, 2, fDates)
+
+		record << iByType << flags;
+		record << xnumStart << xnumBy << xnumEnd;
+	}
 
 } // namespace XLSB
 

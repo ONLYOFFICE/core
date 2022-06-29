@@ -55,5 +55,10 @@ namespace XLSB
         record >> csxtdmp;
     }
 
+	void BeginSXTDMPs::writeFields(XLS::CFRecord& record)
+	{
+		record << csxtdmp;
+	}
+
 } // namespace XLSB
 

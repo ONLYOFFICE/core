@@ -45,13 +45,14 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+        const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
        // static const XLS::ElementType	type = XLS::typePIVOTROWS15;
 
         XLS::BaseObjectPtr               m_BrtBeginSxRow;
         std::vector<XLS::BaseObjectPtr>	 m_arPIVOTVALUECELL15;
-        XLS::BaseObjectPtr               m_BrtEndSxRow;
+		bool			                 m_bBrtEndSxRow;
 
     };
 

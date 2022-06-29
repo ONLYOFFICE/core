@@ -62,5 +62,16 @@ namespace XLSB
         }
     }
 
+	void BeginISXTHRws::writeFields(XLS::CFRecord& record)
+	{
+		cisxth = rgisxth.size();
+		record << cisxth;
+
+		for (auto& item : rgisxth)
+		{
+			record << item;
+		}
+	}
+
 } // namespace XLSB
 

@@ -57,5 +57,12 @@ namespace XLSB
         record >> sxma >> irstWeight >> xnum;
     }
 
+	void BeginSXChange::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader;
+		record.reserveNunBytes(1);
+		record << sxma << irstWeight << xnum;
+	}
+
 } // namespace XLSB
 

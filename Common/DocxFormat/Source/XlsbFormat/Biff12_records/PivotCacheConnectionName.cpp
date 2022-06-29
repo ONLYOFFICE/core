@@ -55,5 +55,10 @@ namespace XLSB
         record >> FRTheader >> stConnectionName;
     }
 
+	void PivotCacheConnectionName::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader << stConnectionName;
+	}
+
 } // namespace XLSB
 

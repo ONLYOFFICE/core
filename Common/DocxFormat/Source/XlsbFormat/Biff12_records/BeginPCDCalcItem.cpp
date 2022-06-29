@@ -56,5 +56,11 @@ namespace XLSB
         record >> fmla;
     }
 
+	void BeginPCDCalcItem::writeFields(XLS::CFRecord& record)
+	{
+		record.reserveNunBytes(4);
+		record << fmla;
+	}
+
 } // namespace XLSB
 

@@ -50,9 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new BeginAutoSortScope(*this));
     }
 
-    void BeginAutoSortScope::readFields(XLS::CFRecord& record)
-    {
-    }
-
 } // namespace XLSB
 

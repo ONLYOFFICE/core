@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new EndMGMaps(*this));
     }
 
-    void EndMGMaps::readFields(XLS::CFRecord& record)
-    {
-        //empty data
-    }
-
 } // namespace XLSB
 

@@ -55,5 +55,10 @@ namespace XLSB
         record >> cPages;
     }
 
+	void BeginPCDSCPages::writeFields(XLS::CFRecord& record)
+	{
+		record << cPages;
+	}
+
 } // namespace XLSB
 

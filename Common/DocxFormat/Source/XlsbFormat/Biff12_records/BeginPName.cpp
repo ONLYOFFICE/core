@@ -58,5 +58,14 @@ namespace XLSB
         fErrName    = GETBIT(flags, 0);
     }
 
+	void BeginPName::writeFields(XLS::CFRecord& record)
+	{
+		BYTE    flags = 0;
+
+		SETBIT(flags, 0, fErrName)
+
+		record << ifdb << ifn << flags;
+	}
+
 } // namespace XLSB
 

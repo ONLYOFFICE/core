@@ -52,7 +52,8 @@ namespace XLSB
 
             static const XLS::ElementType	type = XLS::typeSxvcellStr;
 
-            void readFields(XLS::CFRecord& record);
+            void readFields(XLS::CFRecord& record) override;
+			void writeFields(XLS::CFRecord& record) override;
 
             FRTBlank     FRTheader;
             XLWideString st;

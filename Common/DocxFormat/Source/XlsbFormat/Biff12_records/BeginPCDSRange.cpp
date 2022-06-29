@@ -75,5 +75,31 @@ namespace XLSB
             record >> range;
     }
 
+	void BeginPCDSRange::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags1 = 0, flags2 = 0, flags3 = 0;
+
+		SETBIT(flags1, 0, fName)
+
+		SETBIT(flags2, 0, fBuiltIn)
+
+		SETBIT(flags3, 0, fLoadRelId)
+		SETBIT(flags3, 1, fLoadSheet)
+
+		record << flags1 << flags2 << flags3;
+
+		if (fLoadSheet)
+			record << sheetName;
+
+		if (fLoadRelId)
+			record << relId;
+
+		if (fName)
+			record << namedRange;
+
+		if (!fName)
+			record << range;
+	}
+
 } // namespace XLSB
 

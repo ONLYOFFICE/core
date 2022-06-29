@@ -63,12 +63,24 @@ namespace XLSB
 
         if (proc.optional<EndMG>())
         {
-            m_BrtEndMG = elements_.back();
+            m_bBrtEndMG = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndMG = false;
 
-        return m_BrtBeginMG && m_BrtEndMG;
+        return m_BrtBeginMG && m_bBrtEndMG;
     }
+
+	const bool MG::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginMG != nullptr)
+			proc.mandatory(*m_BrtBeginMG);
+
+		proc.mandatory<EndMG>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

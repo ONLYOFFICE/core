@@ -58,5 +58,14 @@ namespace XLSB
         fCountDistinct = GETBIT(flags, 0);
     }
 
+	void SXDI15::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+
+		SETBIT(flags, 0, fCountDistinct)
+
+		record << FRTheader << flags;
+	}
+
 } // namespace XLSB
 

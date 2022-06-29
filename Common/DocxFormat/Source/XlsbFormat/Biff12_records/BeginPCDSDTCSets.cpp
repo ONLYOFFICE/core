@@ -55,5 +55,10 @@ namespace XLSB
         record >> cSets;
     }
 
+	void BeginPCDSDTCSets::writeFields(XLS::CFRecord& record)
+	{
+		record << cSets;
+	}
+
 } // namespace XLSB
 

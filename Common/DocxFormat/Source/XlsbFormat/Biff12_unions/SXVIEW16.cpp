@@ -63,12 +63,24 @@ namespace XLSB
 
         if (proc.optional<EndSXView16>())
         {
-            m_BrtEndSXView16 = elements_.back();
+            m_bBrtEndSXView16 = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSXView16 = false;
 
-        return m_BrtBeginSXView16 || m_BrtEndSXView16;
+        return m_BrtBeginSXView16 || m_bBrtEndSXView16;
     }
+
+	const bool SXVIEW16::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginSXView16 != nullptr)
+			proc.mandatory(*m_BrtBeginSXView16);
+
+		proc.mandatory<EndSXView16>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

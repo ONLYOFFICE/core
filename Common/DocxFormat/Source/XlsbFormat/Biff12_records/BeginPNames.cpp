@@ -55,5 +55,10 @@ namespace XLSB
         record >> cnames;
     }
 
+	void BeginPNames::writeFields(XLS::CFRecord& record)
+	{
+		record << cnames;
+	}
+
 } // namespace XLSB
 

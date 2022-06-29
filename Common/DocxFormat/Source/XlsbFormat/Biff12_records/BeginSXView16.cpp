@@ -61,5 +61,16 @@ namespace XLSB
         fInsertBlankRowDefault        = GETBIT(flags, 2);
     }
 
+	void BeginSXView16::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+
+		SETBIT(flags, 0, fEnabledSubtotalsDefault)
+		SETBIT(flags, 1, fSubtotalsOnTopDefault)
+		SETBIT(flags, 2, fInsertBlankRowDefault)
+
+		record << FRTheader << flags;
+	}
+
 } // namespace XLSB
 

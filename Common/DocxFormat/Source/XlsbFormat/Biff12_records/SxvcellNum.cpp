@@ -61,5 +61,14 @@ namespace XLSB
 		}
 	}
 
+	void SxvcellNum::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader << xnum;
+		if (sxvcellextra != nullptr)
+		{
+			record << *sxvcellextra;
+		}
+	}
+
 } // namespace XLSB
 

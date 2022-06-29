@@ -199,9 +199,11 @@ const bool PivotCacheDefStream::loadContent(BinProcessor& proc)
                 {
                     if (proc.optional<EndPivotCacheDef>())
                     {
-                        m_BrtEndPivotCacheDef = elements_.back();
+						m_bBrtEndPivotCacheDef = true;
                         elements_.pop_back();
                     }
+					else
+						m_bBrtEndPivotCacheDef = false;
                 }break;
 
                 default://skip
@@ -210,6 +212,49 @@ const bool PivotCacheDefStream::loadContent(BinProcessor& proc)
                 }break;
             }
 	}
+
+	return true;
+}
+
+const bool PivotCacheDefStream::saveContent(XLS::BinProcessor & proc)
+{
+	if (m_BrtBeginPivotCacheDef != nullptr)
+		proc.mandatory(*m_BrtBeginPivotCacheDef);
+
+	if(m_PCDSOURCE != nullptr)
+		proc.mandatory(*m_PCDSOURCE);
+
+	if (m_PCDFIELDS != nullptr)
+		proc.mandatory(*m_PCDFIELDS);
+
+	if(m_PCDCALCITEMS != nullptr)
+		proc.mandatory(*m_PCDCALCITEMS);
+
+	if (m_PCDHIERARCHIES != nullptr)
+		proc.mandatory(*m_PCDHIERARCHIES);
+
+	if(m_PCDKPIS != nullptr)
+		proc.mandatory(*m_PCDKPIS);
+
+	if(m_PCDCALCMEMS != nullptr)
+		proc.mandatory(*m_PCDCALCMEMS);
+
+	if(m_PCDSDTUPLECACHE != nullptr)
+		proc.mandatory(*m_PCDSDTUPLECACHE);
+
+	if(m_DIMS != nullptr)
+		proc.mandatory(*m_DIMS);
+
+	if(m_MGS != nullptr)
+		proc.mandatory(*m_MGS);
+
+	if(m_MGMAPS != nullptr)
+		proc.mandatory(*m_MGMAPS);
+
+	if(m_FRTPIVOTCACHEDEF != nullptr)
+		proc.mandatory(*m_FRTPIVOTCACHEDEF);
+
+	proc.mandatory<EndPivotCacheDef>();
 
 	return true;
 }

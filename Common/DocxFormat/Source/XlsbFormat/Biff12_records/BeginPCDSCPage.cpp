@@ -55,5 +55,10 @@ namespace XLSB
         record >> citems;
     }
 
+	void BeginPCDSCPage::writeFields(XLS::CFRecord& record)
+	{
+		record << citems;
+	}
+
 } // namespace XLSB
 

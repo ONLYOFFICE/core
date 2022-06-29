@@ -70,5 +70,26 @@ namespace XLSB
         }
     }
 
+	void PCDH14::writeFields(XLS::CFRecord& record)
+	{
+		BYTE    flags = 0;
+
+		SETBIT(flags, 0, fFlattenHierarchies)
+		SETBIT(flags, 1, fMeasureSet)
+		SETBIT(flags, 2, fHierarchizeDistinct)
+		SETBIT(flags, 3, fIgnorable)
+
+		record << FRTheader << flags;
+
+		cihdb = rgihdb.size();
+
+		record << cihdb;
+
+		for (auto& item : rgihdb)
+		{
+			record << item;
+		}
+	}
+
 } // namespace XLSB
 

@@ -55,5 +55,10 @@ namespace XLSB
         record >> cHier;
     }
 
+	void BeginPCDHierarchies::writeFields(XLS::CFRecord& record)
+	{
+		record << cHier;
+	}
+
 } // namespace XLSB
 

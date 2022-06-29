@@ -45,11 +45,12 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+		const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         XLS::BaseObjectPtr               m_BrtFRTBegin;
         XLS::BaseObjectPtr               m_BrtPivotCacheConnectionName;
-        XLS::BaseObjectPtr               m_BrtFRTEnd;
+		bool			                 m_bBrtFRTEnd;
         //std::vector<XLS::BaseObjectPtr>  m_arFRT;
 
     };

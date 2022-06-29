@@ -50,9 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new BeginItemUniqueNames(*this));
     }
 
-    void BeginItemUniqueNames::readFields(XLS::CFRecord& record)
-    {
-    }
-
 } // namespace XLSB
 

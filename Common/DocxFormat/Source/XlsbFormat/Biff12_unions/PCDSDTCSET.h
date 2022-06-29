@@ -45,14 +45,15 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+		const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         //static const XLS::ElementType	type = XLS::typePCDSDTCSET;
 
         XLS::BaseObjectPtr               m_BrtBeginPCDSDTCSet;
         std::vector<XLS::BaseObjectPtr>	 m_arPCDSDTCEMEMBERS;
         XLS::BaseObjectPtr               m_PCDSDTCEMEMBERSSORTBY;
-        XLS::BaseObjectPtr               m_BrtEndPCDSDTCSet;
+		bool				             m_bBrtEndPCDSDTCSet;
 
     };
 

@@ -57,5 +57,12 @@ namespace XLSB
         record >> name >> caption;
     }
 
+	void BeginMG::writeFields(XLS::CFRecord& record)
+	{
+		record.reserveNunBytes(1);
+
+		record << name << caption;
+	}
+
 } // namespace XLSB
 

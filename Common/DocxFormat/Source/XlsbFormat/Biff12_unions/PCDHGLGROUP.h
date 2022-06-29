@@ -45,11 +45,12 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+		const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         XLS::BaseObjectPtr               m_BrtBeginPCDHGLGroup;
         XLS::BaseObjectPtr               m_PCDHGLGMEMBERS;
-        XLS::BaseObjectPtr               m_BrtEndPCDHGLGroup;
+		bool			                 m_bBrtEndPCDHGLGroup;
 
     };
 

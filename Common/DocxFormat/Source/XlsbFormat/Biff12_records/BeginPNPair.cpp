@@ -59,5 +59,15 @@ namespace XLSB
         fRelative    = GETBIT(flags, 1);
     }
 
+	void BeginPNPair::writeFields(XLS::CFRecord& record)
+	{
+		BYTE    flags = 0;
+
+		SETBIT(flags, 0, fPhysical)
+		SETBIT(flags, 1, fRelative)
+
+		record << flags << ifield << iitem;
+	}
+
 } // namespace XLSB
 

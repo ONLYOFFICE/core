@@ -55,5 +55,10 @@ namespace XLSB
         record >> rlType >> dxfid;
     }
 
+	void BeginSXFormat::writeFields(XLS::CFRecord& record)
+	{
+		record << rlType << dxfid;
+	}
+
 } // namespace XLSB
 

@@ -72,12 +72,39 @@ namespace XLSB
 
         if (proc.optional<EndPCDHGLevels>())
         {
-            m_BrtEndPCDHGLevels = elements_.back();
+            m_bBrtEndPCDHGLevels = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndPCDHGLevels = false;
 
-        return m_BrtBeginPCDHGLevels && m_BrtEndPCDHGLevels;
+        return m_BrtBeginPCDHGLevels && m_bBrtEndPCDHGLevels;
     }
+
+	const bool PCDHGLEVELS::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginPCDHGLevels == nullptr)
+			m_BrtBeginPCDHGLevels = XLS::BaseObjectPtr(new XLSB::BeginPCDHGLevels());
+
+		if (m_BrtBeginPCDHGLevels != nullptr)
+		{
+			auto ptrBrtBeginPCDHGLevels = static_cast<XLSB::BeginPCDHGLevels*>(m_BrtBeginPCDHGLevels.get());
+
+			if (ptrBrtBeginPCDHGLevels != nullptr)
+				ptrBrtBeginPCDHGLevels->cLevels = m_arPCDHGLEVEL.size();
+
+			proc.mandatory(*m_BrtBeginPCDHGLevels);
+		}
+
+		for (auto &item : m_arPCDHGLEVEL)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndPCDHGLevels>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

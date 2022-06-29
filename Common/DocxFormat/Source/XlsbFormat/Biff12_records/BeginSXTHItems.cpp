@@ -55,5 +55,10 @@ namespace XLSB
         record >> csz >> iSXTL;
     }
 
+	void BeginSXTHItems::writeFields(XLS::CFRecord& record)
+	{
+		record << csz << iSXTL;
+	}
+
 } // namespace XLSB
 

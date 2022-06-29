@@ -45,12 +45,13 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+		const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         XLS::BaseObjectPtr	m_BrtBeginSXFilter;
         XLS::BaseObjectPtr	m_AFILTER;
         XLS::BaseObjectPtr	m_FRTSXFILTER;
-        XLS::BaseObjectPtr	m_BrtEndSXFilter;
+		bool				m_bBrtEndSXFilter;
 
     };
 

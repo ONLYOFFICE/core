@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new EndMap(*this));
     }
 
-    void EndMap::readFields(XLS::CFRecord& record)
-    {
-        //empty data
-    }
-
 } // namespace XLSB
 

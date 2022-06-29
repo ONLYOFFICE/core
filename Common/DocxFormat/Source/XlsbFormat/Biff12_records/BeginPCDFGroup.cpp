@@ -55,5 +55,10 @@ namespace XLSB
         record >> ifdbParent >> ifdbBase;
     }
 
+	void BeginPCDFGroup::writeFields(XLS::CFRecord& record)
+	{
+		record << ifdbParent << ifdbBase;
+	}
+
 } // namespace XLSB
 

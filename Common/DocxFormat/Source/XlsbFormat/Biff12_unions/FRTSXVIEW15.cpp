@@ -70,5 +70,16 @@ namespace XLSB
         return m_PIVOTVALUECELLS15 || m_PIVOTTABLEUISETTINGS;
     }
 
+	const bool FRTSXVIEW15::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_PIVOTVALUECELLS15 != nullptr)
+			proc.mandatory(*m_PIVOTVALUECELLS15);
+
+		if (m_PIVOTTABLEUISETTINGS != nullptr)
+			proc.mandatory(*m_PIVOTTABLEUISETTINGS);
+
+		return true;
+	}
+
 } // namespace XLSB
 

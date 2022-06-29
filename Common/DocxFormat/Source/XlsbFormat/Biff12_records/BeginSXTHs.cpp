@@ -55,5 +55,10 @@ namespace XLSB
         record >> csxth;
     }
 
+	void BeginSXTHs::writeFields(XLS::CFRecord& record)
+	{
+		record << csxth;
+	}
+
 } // namespace XLSB
 

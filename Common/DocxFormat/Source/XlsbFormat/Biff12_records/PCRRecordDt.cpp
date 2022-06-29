@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new PCRRecordDt(*this));
     }
 
-    void PCRRecordDt::readFields(XLS::CFRecord& record)
-    {
-
-    }
-
 } // namespace XLSB
 

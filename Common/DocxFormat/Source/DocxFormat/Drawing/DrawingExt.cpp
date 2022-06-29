@@ -1473,6 +1473,22 @@ namespace OOX
 						}
 					}
 				}
+
+				else if (obj->get_type() == XLS::typeFRTPIVOTCACHEDEF)
+				{
+					auto ptr = static_cast<XLSB::FRTPIVOTCACHEDEF*>(obj.get());
+
+					if (ptr != nullptr)
+					{
+						if (itemExt->m_oPivotCacheDefinitionExt.IsInit())
+						{
+							//if (ptr->m_PCD14 == nullptr)
+								//ptr->m_PCD14 = XLS::BaseObjectPtr(new XLSB::PCD14());
+
+							itemExt->m_oPivotCacheDefinitionExt->toBin(ptr->m_PCD14);
+						}
+					}
+				}
 			}
 		}
 	}

@@ -86,12 +86,30 @@ namespace XLSB
 
         if (proc.optional<EndPCDCalcItem>())
         {
-            m_BrtEndPCDCalcItem = elements_.back();
+            m_bBrtEndPCDCalcItem = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndPCDCalcItem = false;
 
-        return m_BrtBeginPCDCalcItem && m_BrtEndPCDCalcItem;
+        return m_BrtBeginPCDCalcItem && m_bBrtEndPCDCalcItem;
     }
+
+	const bool PCDCALCITEM::saveContent(XLS::BinProcessor & proc)
+	{		
+		if (m_BrtBeginPCDCalcItem != nullptr)
+			proc.mandatory(*m_BrtBeginPCDCalcItem);
+
+		if (m_PIVOTRULE != nullptr)
+			proc.mandatory(*m_PIVOTRULE);
+
+		if (m_PNAMES != nullptr)
+			proc.mandatory(*m_PNAMES);
+
+		proc.mandatory<EndPCDCalcItem>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

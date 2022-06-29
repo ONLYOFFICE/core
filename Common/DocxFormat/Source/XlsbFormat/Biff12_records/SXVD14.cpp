@@ -55,5 +55,10 @@ namespace XLSB
         record >> FRTheader >> fFillDownLabels >> fIgnorable;
     }
 
+	void SXVD14::writeFields(XLS::CFRecord& record)
+	{
+		record << FRTheader << fFillDownLabels << fIgnorable;
+	}
+
 } // namespace XLSB
 

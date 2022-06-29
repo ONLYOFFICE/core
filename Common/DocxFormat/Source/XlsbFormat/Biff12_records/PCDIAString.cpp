@@ -55,5 +55,10 @@ namespace XLSB
         record >> st >> info;
     }
 
+	void PCDIAString::writeFields(XLS::CFRecord& record)
+	{
+		record << st << info;
+	}
+
 } // namespace XLSB
 

@@ -72,12 +72,39 @@ namespace XLSB
 
         if (proc.optional<EndSxRow>())
         {
-            m_BrtEndSxRow = elements_.back();
+            m_bBrtEndSxRow = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSxRow = false;
 
-        return m_BrtBeginSxRow && m_BrtEndSxRow;
+        return m_BrtBeginSxRow && m_bBrtEndSxRow;
     }
+
+	const bool PIVOTROWS15::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginSxRow == nullptr)
+			m_BrtBeginSxRow = XLS::BaseObjectPtr(new XLSB::BeginSxRow());
+
+		if (m_BrtBeginSxRow != nullptr)
+		{
+			auto ptrBrtBeginSxRow = static_cast<XLSB::BeginSxRow*>(m_BrtBeginSxRow.get());
+
+			if (ptrBrtBeginSxRow != nullptr)
+				ptrBrtBeginSxRow->csxvcells = m_arPIVOTVALUECELL15.size();
+
+			proc.mandatory(*m_BrtBeginSxRow);
+		}
+
+		for (auto &item : m_arPIVOTVALUECELL15)
+		{
+			proc.mandatory(*item);
+		}
+
+		proc.mandatory<EndSxRow>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

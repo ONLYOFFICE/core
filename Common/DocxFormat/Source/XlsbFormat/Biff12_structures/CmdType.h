@@ -36,7 +36,7 @@
 namespace XLSB
 {
 
-class CmdType : public XLS::BiffAttributeSimple<unsigned int>
+class CmdType : public XLS::BiffAttributeSimple<_UINT32>
 {
 public:
     XLS::BiffStructurePtr clone();

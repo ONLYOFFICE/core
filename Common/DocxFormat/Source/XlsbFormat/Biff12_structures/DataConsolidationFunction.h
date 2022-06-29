@@ -40,7 +40,7 @@ class DataConsolidationFunction : public XLS::BiffAttributeSimple<_UINT32>
 {
 public:
         XLS::BiffStructurePtr clone();
-
+		DataConsolidationFunction& operator= (const _UINT32& other_val);
 	enum
 	{
             SUM              = 0x00000000,

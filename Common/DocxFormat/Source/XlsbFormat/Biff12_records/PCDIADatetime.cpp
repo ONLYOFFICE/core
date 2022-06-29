@@ -55,5 +55,10 @@ namespace XLSB
         record >> datetime >> info;
     }
 
+	void PCDIADatetime::writeFields(XLS::CFRecord& record)
+	{
+		record << datetime << info;
+	}
+
 } // namespace XLSB
 

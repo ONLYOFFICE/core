@@ -47,8 +47,6 @@ namespace XLSB
             ~BeginAutoSortScope();
 
             XLS::BaseObjectPtr clone();
-
-            void readFields(XLS::CFRecord& record);
     };
 
 } // namespace XLSB

@@ -76,5 +76,16 @@ namespace XLSB
         return m_source || m_PCDSDTCEMEMBERS;
     }
 
+	const bool PCDSDTCENTRY::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_source != nullptr)
+			proc.mandatory(*m_source);
+
+		if (m_PCDSDTCEMEMBERS != nullptr)
+			proc.mandatory(*m_PCDSDTCEMEMBERS);
+
+		return true;
+	}
+
 } // namespace XLSB
 

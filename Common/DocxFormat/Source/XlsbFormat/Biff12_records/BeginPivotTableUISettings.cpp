@@ -58,5 +58,13 @@ namespace XLSB
         fRelNeededHidden = GETBIT(flags, 2);
     }
 
+	void BeginPivotTableUISettings::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+		SETBIT(flags, 2, fRelNeededHidden)
+
+		record << FRTheader << flags << stPpmConnectionName;
+	}
+
 } // namespace XLSB
 

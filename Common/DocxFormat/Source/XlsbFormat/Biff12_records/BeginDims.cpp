@@ -55,5 +55,10 @@ namespace XLSB
         record >> cDims;
     }
 
+	void BeginDims::writeFields(XLS::CFRecord& record)
+	{
+		record << cDims;
+	}
+
 } // namespace XLSB
 

@@ -55,5 +55,10 @@ namespace XLSB
         record >> cmaps;
     }
 
+	void BeginMGMaps::writeFields(XLS::CFRecord& record)
+	{
+		record << cmaps;
+	}
+
 } // namespace XLSB
 

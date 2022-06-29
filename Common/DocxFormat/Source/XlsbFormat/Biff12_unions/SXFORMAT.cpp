@@ -79,12 +79,27 @@ namespace XLSB
 
         if (proc.optional<EndSXFormat>())
         {
-            m_BrtEndSXFormat = elements_.back();
+            m_bBrtEndSXFormat = true;
             elements_.pop_back();
         }
+		else
+			m_bBrtEndSXFormat = false;
 
-        return m_BrtBeginSXFormat && m_BrtEndSXFormat;
+        return m_BrtBeginSXFormat && m_bBrtEndSXFormat;
     }
+
+	const bool SXFORMAT::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_BrtBeginSXFormat != nullptr)
+			proc.mandatory(*m_BrtBeginSXFormat);
+
+		if (m_PIVOTRULE != nullptr)
+			proc.mandatory(*m_PIVOTRULE);
+
+		proc.mandatory<EndSXFormat>();
+
+		return true;
+	}
 
 } // namespace XLSB
 

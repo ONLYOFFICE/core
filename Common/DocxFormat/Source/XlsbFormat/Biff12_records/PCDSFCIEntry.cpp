@@ -60,5 +60,15 @@ namespace XLSB
             record >> formatString;
     }
 
+	void PCDSFCIEntry::writeFields(XLS::CFRecord& record)
+	{
+		record << fCurrency;
+
+		if (fCurrency.value().get())
+			record << languageTag;
+		else
+			record << formatString;
+	}
+
 } // namespace XLSB
 

@@ -59,5 +59,14 @@ namespace XLSB
         fWholeDay = GETBIT(flags, 0);
     }
 
+	void SxFilter15::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+		
+		SETBIT(flags, 0, fWholeDay)
+
+		record << flags;
+	}
+
 } // namespace XLSB
 

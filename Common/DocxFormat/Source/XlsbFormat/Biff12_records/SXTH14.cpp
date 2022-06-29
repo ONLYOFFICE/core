@@ -55,5 +55,10 @@ namespace XLSB
         record.skipNunBytes(1);
     }
 
+	void SXTH14::writeFields(XLS::CFRecord& record)
+	{
+		record.reserveNunBytes(1);
+	}
+
 } // namespace XLSB
 

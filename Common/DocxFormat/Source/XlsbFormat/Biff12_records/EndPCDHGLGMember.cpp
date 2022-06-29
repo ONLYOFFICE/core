@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new EndPCDHGLGMember(*this));
     }
 
-    void EndPCDHGLGMember::readFields(XLS::CFRecord& record)
-    {
-        // No data in this record
-    }
-
 } // namespace XLSB
 

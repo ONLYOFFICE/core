@@ -59,8 +59,19 @@ namespace XLSB
 
         if(fUniqueClient)
             record >> irstUniqueClient;
-
     }
+
+	void SXDI14::writeFields(XLS::CFRecord& record)
+	{
+		BYTE flags = 0;
+
+		SETBIT(flags, 0, fUniqueClient)
+
+		record << FRTheader << df << isxvd << flags;
+
+		if (fUniqueClient)
+			record << irstUniqueClient;
+	}
 
 } // namespace XLSB
 

@@ -48,5 +48,11 @@ void PivotNumFmt::load(XLS::CFRecord& record)
     record.skipNunBytes(2);
 }
 
+void PivotNumFmt::save(XLS::CFRecord& record)
+{
+	record << ifmt;
+	record.reserveNunBytes(2);
+}
+
 } // namespace XLS
 

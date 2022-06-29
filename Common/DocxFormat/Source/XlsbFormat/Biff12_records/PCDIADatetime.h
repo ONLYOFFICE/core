@@ -51,7 +51,8 @@ namespace XLSB
 
             static const XLS::ElementType	type = XLS::typePCDIADatetime;
 
-            void readFields(XLS::CFRecord& record);
+			void readFields(XLS::CFRecord& record) override;
+			void writeFields(XLS::CFRecord& record) override;
 
             PCDIDateTime datetime;
             PCDIAddlInfo info;

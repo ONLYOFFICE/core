@@ -59,5 +59,14 @@ namespace XLSB
         fDisplayInReport = GETBIT(flags, 0);
     }
 
+	void BeginSXTDMP::writeFields(XLS::CFRecord& record)
+	{
+		_UINT16 flags = 0;
+
+		SETBIT(flags, 0, fDisplayInReport)
+
+		record << cchLevelUnq << ichPropName << isxtl << isxvd << flags << irstProperty;
+	}
+
 } // namespace XLSB
 

@@ -55,5 +55,10 @@ namespace XLSB
         record >> csxvis;
     }
 
+	void BeginSXVIs::writeFields(XLS::CFRecord& record)
+	{
+		record << csxvis;
+	}
+
 } // namespace XLSB
 

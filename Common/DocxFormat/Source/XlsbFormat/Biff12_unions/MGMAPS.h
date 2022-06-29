@@ -45,13 +45,14 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+		const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         //static const XLS::ElementType	type = XLS::typeMGMAPS;
 
         XLS::BaseObjectPtr               m_BrtBeginMGMaps;
         std::vector<XLS::BaseObjectPtr>	 m_arMAP;
-        XLS::BaseObjectPtr               m_BrtEndMGMaps;
+		bool				             m_bBrtEndMGMaps;
 
     };
 

@@ -55,5 +55,10 @@ namespace XLSB
         record >> cpairs;
     }
 
+	void BeginPNPairs::writeFields(XLS::CFRecord& record)
+	{
+		record << cpairs;
+	}
+
 } // namespace XLSB
 

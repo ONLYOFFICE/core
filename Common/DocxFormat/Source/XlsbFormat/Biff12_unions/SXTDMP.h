@@ -45,11 +45,12 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+		const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         XLS::BaseObjectPtr               m_BrtSXTDMPOrder;
         XLS::BaseObjectPtr               m_BrtBeginSXTDMP;
-        XLS::BaseObjectPtr               m_BrtEndSXTDMP;
+		bool			                 m_bBrtEndSXTDMP;
 
     };
 

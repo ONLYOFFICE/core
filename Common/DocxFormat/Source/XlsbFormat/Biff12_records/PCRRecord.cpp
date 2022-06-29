@@ -89,5 +89,34 @@ namespace XLSB
         }
     }
 
+	void PCRRecord::writeFields(XLS::CFRecord& record)
+	{
+		_UINT32 index;
+		Xnum xnum;
+		PCDIDateTime dateTime;
+		XLWideString string;
+
+		for (const auto& item : data)
+			switch (item.first)
+			{
+			case XLS::typePCDIIndex:
+				index = *boost::any_cast<_UINT32>(&item.second);
+				record << index;
+				break;
+			case XLS::typePCDINumber:
+				xnum.data.value = *boost::any_cast<double>(&item.second);
+				record << xnum;
+				break;
+			case XLS::typePCDIDatetime:
+				dateTime.fromString(*boost::any_cast<std::wstring>(&item.second));
+				record << dateTime;
+				break;
+			case XLS::typePCDIString:
+				string = *boost::any_cast<std::wstring>(&item.second);
+				record << string;
+				break;
+			}			
+	}
+
 } // namespace XLSB
 

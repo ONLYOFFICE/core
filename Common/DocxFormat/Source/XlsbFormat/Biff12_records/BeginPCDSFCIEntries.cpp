@@ -55,5 +55,10 @@ namespace XLSB
         record >> centry;
     }
 
+	void BeginPCDSFCIEntries::writeFields(XLS::CFRecord& record)
+	{
+		record << centry;
+	}
+
 } // namespace XLSB
 

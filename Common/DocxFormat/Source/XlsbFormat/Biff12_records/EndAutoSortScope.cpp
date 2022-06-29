@@ -50,10 +50,5 @@ namespace XLSB
         return BaseObjectPtr(new EndAutoSortScope(*this));
     }
 
-    void EndAutoSortScope::readFields(XLS::CFRecord& record)
-    {
-        // No data in this record
-    }
-
 } // namespace XLSB
 

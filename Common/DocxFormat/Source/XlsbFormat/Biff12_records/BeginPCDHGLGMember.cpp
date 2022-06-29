@@ -55,5 +55,10 @@ namespace XLSB
         record >> fGroup >> stUnique;
     }
 
+	void BeginPCDHGLGMember::writeFields(XLS::CFRecord& record)
+	{
+		record << fGroup << stUnique;
+	}
+
 } // namespace XLSB
 

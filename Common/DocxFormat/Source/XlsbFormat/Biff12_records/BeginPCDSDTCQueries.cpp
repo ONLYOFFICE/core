@@ -54,6 +54,10 @@ namespace XLSB
     {
         record >> cQueries;
     }
+	void BeginPCDSDTCQueries::writeFields(XLS::CFRecord& record)
+	{
+		record << cQueries;
+	}
 
 } // namespace XLSB
 

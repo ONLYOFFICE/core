@@ -79,5 +79,30 @@ namespace XLSB
             record >> rfxLoc;
     }
 
+	void PRuleHeaderData::save(XLS::CFRecord& record)
+	{
+		_UINT32 flags = 0;
+
+		SETBITS(flags, 0, 7, isxrtype)
+		SETBIT(flags, 8, fDataOnly)
+		SETBIT(flags, 9, fLabelOnly)
+		SETBIT(flags, 10, fGrandRw)
+		SETBIT(flags, 11, fGrandCol)
+		SETBIT(flags, 12, fCacheBased)
+		SETBIT(flags, 13, fLineMode)
+		SETBIT(flags, 14, fPart)
+		SETBIT(flags, 15, fFuzzy)
+		SETBIT(flags, 16, sxaxis.bRw)
+		SETBIT(flags, 17, sxaxis.bCol)
+		SETBIT(flags, 18, sxaxis.bPage)
+		SETBIT(flags, 19, sxaxis.bData)
+		SETBITS(flags, 20, 27, iDim)
+
+		record << isxvd << flags;
+
+		if (fPart)
+			record << rfxLoc;
+	}
+
 } // namespace XLSB
 

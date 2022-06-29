@@ -55,5 +55,10 @@ namespace XLSB
         record >> cLevels;
     }
 
+	void BeginPCDHGLevels::writeFields(XLS::CFRecord& record)
+	{
+		record << cLevels;
+	}
+
 } // namespace XLSB
 

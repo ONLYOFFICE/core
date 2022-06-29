@@ -79,5 +79,16 @@ namespace XLSB
         return m_FRTPCDFIELD14 || m_FRTPCDFIELD15;
     }
 
+	const bool FRTPCDFIELD::saveContent(XLS::BinProcessor & proc)
+	{
+		if (m_FRTPCDFIELD14 != nullptr)
+			proc.mandatory(*m_FRTPCDFIELD14);
+
+		if (m_FRTPCDFIELD15 != nullptr)
+			proc.mandatory(*m_FRTPCDFIELD15);
+
+		return true;
+	}
+
 } // namespace XLSB
 

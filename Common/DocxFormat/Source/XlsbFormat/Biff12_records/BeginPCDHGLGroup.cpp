@@ -62,8 +62,20 @@ namespace XLSB
 
         if(fLoadParent)
             record >> stParentUniqueName;
-
     }
+
+	void BeginPCDHGLGroup::writeFields(XLS::CFRecord& record)
+	{
+		BYTE    flags = 0;
+
+		SETBIT(flags, 0, fLoadParent)
+
+		record << iGrpNum << flags;
+		record << stName << stUniqueName << stCaption;
+
+		if (fLoadParent)
+			record << stParentUniqueName;
+	}
 
 } // namespace XLSB
 

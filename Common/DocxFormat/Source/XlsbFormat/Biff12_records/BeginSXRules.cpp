@@ -55,5 +55,10 @@ namespace XLSB
         record >> csxrules;
     }
 
+	void BeginSXRules::writeFields(XLS::CFRecord& record)
+	{
+		record << csxrules;
+	}
+
 } // namespace XLSB
 

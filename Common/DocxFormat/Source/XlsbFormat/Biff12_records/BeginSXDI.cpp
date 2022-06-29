@@ -58,5 +58,13 @@ namespace XLSB
             record >> stDisplayName;
     }
 
+	void BeginSXDI::writeFields(XLS::CFRecord& record)
+	{
+		record << isxvdData << iiftab << df << isxvd << isxvi << ifmt << fLoadDisplayName;
+
+		if (fLoadDisplayName)
+			record << stDisplayName;
+	}
+
 } // namespace XLSB
 

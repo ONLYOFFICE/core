@@ -45,12 +45,13 @@ namespace XLSB
 
         XLS::BaseObjectPtr clone();
 
-        virtual const bool loadContent(XLS::BinProcessor& proc);
+		const bool loadContent(XLS::BinProcessor& proc) override;
+		const bool saveContent(XLS::BinProcessor& proc) override;
 
         //static const XLS::ElementType	type = XLS::typeSXVIEW16;
 
         XLS::BaseObjectPtr               m_BrtBeginSXView16;
-        XLS::BaseObjectPtr               m_BrtEndSXView16;
+		bool			                 m_bBrtEndSXView16;
 
     };
 

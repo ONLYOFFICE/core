@@ -40,6 +40,12 @@ PivotParsedFormula::PivotParsedFormula()
 {
 }
 
+PivotParsedFormula& PivotParsedFormula::operator=(const std::wstring& value)
+{
+	ParsedFormula::operator = (value);
+	return *this;
+}
+
 BiffStructurePtr PivotParsedFormula::clone()
 {
 	return BiffStructurePtr(new PivotParsedFormula(*this));
@@ -67,6 +73,51 @@ void PivotParsedFormula::load(CFRecord& record)
         //rgcb.load(record, rgce.getPtgs(), is_part_of_a_revision_);
 
     }
+}
+
+void PivotParsedFormula::save(CFRecord& record)
+{
+	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+	{
+		_UINT16 cce = 0;
+		record << cce;
+
+		auto rdPtr = record.getRdPtr();
+
+		rgce.save(record);
+
+		cce = record.getRdPtr() - rdPtr;
+
+		record.RollRdPtrBack(cce + 4);
+		record << cce;
+		record.skipNunBytes(cce);
+	}
+	else
+	{
+		_UINT32 size = 0;
+
+		auto saving = [&](BiffStructure& rgceORrgb)
+		{
+			record << size;
+
+			auto rdPtr = record.getRdPtr();
+
+			rgceORrgb.save(record);
+
+			size = record.getRdPtr() - rdPtr;
+
+			record.RollRdPtrBack(size + 4);
+			record << size;
+			record.skipNunBytes(size);
+		};
+
+		saving(rgce);
+
+		size = 0;
+		record << size;
+
+		//saving(rgcb);
+	}
 }
 
 } // namespace XLS

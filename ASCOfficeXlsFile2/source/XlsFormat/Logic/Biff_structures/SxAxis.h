@@ -45,7 +45,8 @@ public:
 
 	BiffStructurePtr clone();
 	
-	virtual void load(CFRecord& record);
+	void load(CFRecord& record) override;
+	void save(CFRecord& record) override;
 
 	static const ElementType type = typeSXAxis;
 

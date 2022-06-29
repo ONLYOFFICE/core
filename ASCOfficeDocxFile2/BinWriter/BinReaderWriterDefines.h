@@ -47,10 +47,6 @@ const int heightrule_AtLeast = 0x00;
 const int heightrule_Auto    = 0x01;
 const int heightrule_Exact   = 0x02;
 
-const int vertalign_Baseline    = 0;
-const int vertalign_SuperScript = 1;
-const int vertalign_SubScript   = 2;
-
 const int align_Right   = 0;
 const int align_Left    = 1;
 const int align_Center  = 2;

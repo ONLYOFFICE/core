@@ -586,12 +586,7 @@ void Binary_rPrWriter::Write_rPr(OOX::Logic::CRunProperty* rPr)
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::VertAlign);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-		switch(rPr->m_oVertAlign.get().m_oVal.get().GetValue())
-		{
-		case SimpleTypes::verticalalignrunSuperscript: m_oBcw.m_oStream.WriteBYTE(vertalign_SuperScript);break;
-		case SimpleTypes::verticalalignrunSubscript: m_oBcw.m_oStream.WriteBYTE(vertalign_SubScript);break;
-		default: m_oBcw.m_oStream.WriteBYTE(vertalign_Baseline);break;
-		}
+		m_oBcw.m_oStream.WriteBYTE(rPr->m_oVertAlign.get().m_oVal.get().GetValue());
 	}
 	//HighLight
 	if (false != rPr->m_oHighlight.IsInit() || false != rPr->m_oShd.IsInit())

@@ -245,6 +245,12 @@ namespace PdfWriter
 	}
 	bool CPageTree::InsertPage(int nPageIndex, CPage* pPage)
 	{
+		if (nPageIndex >= m_pCount->Get())
+		{
+			AddPage(pPage);
+			pPage->Add("Parent", this);
+			return true;
+		}
 		int nI = 0;
 		CObjectBase* pObj = GetFromPageTree(nPageIndex, nI, false, true, pPage);
 		if (pObj)

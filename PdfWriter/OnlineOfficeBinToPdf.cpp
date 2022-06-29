@@ -45,13 +45,11 @@ namespace NSOnlineOfficeBinToPdf
     {
     public:
         std::wstring wsHtmlPlace;
-        bool m_bIsUsePageCommands;
 
     public:
         CMetafileToRenderterPDF(IRenderer* pRenderer) : IMetafileToRenderter(pRenderer)
         {
             wsHtmlPlace = L"";
-            m_bIsUsePageCommands = true;
         }
 
     public:
@@ -164,17 +162,11 @@ namespace NSOnlineOfficeBinToPdf
         {
             ((CPdfRenderer*)m_pRenderer)->SetRadialGradient(dX0, dY0, dR0, dX1, dY1, dR1);
         }
-
-        virtual bool IsUsePageCommands()
-        {
-            return m_bIsUsePageCommands;
-        }
     };
 
-    static bool ConvertBufferToPdf(CPdfRenderer* pPdf, BYTE* pBuffer, LONG lBufferLen, const std::wstring& wsHtmlPlace, const bool& bIsUsePicker = false, const bool& bIsUsePageCommands = true)
+    static bool ConvertBufferToPdf(CPdfRenderer* pPdf, BYTE* pBuffer, LONG lBufferLen, const std::wstring& wsHtmlPlace, const bool& bIsUsePicker = false)
     {
         CMetafileToRenderterPDF oCorrector(pPdf);
-        oCorrector.m_bIsUsePageCommands = bIsUsePageCommands;
 
         oCorrector.wsHtmlPlace = wsHtmlPlace;
         if (bIsUsePicker)
@@ -183,7 +175,7 @@ namespace NSOnlineOfficeBinToPdf
 
         return true;
     }
-    bool ConvertBinToPdf(CPdfRenderer* pPdf, const std::wstring& wsSrcFile, const std::wstring& wsDstFile, bool bBinary, const bool& bIsUsePicker, const bool& bIsUsePageCommands)
+    bool ConvertBinToPdf(CPdfRenderer* pPdf, const std::wstring& wsSrcFile, const std::wstring& wsDstFile, bool bBinary, const bool& bIsUsePicker)
 	{
 		NSFile::CFileBinary oFile;
 		if (!oFile.OpenFile(wsSrcFile))
@@ -204,7 +196,7 @@ namespace NSOnlineOfficeBinToPdf
 		std::wstring wsHtmlPlace = NSFile::GetDirectoryName(wsSrcFile);
 		if (bBinary)
 		{
-            ConvertBufferToPdf(pPdf, pFileContent, dwFileSize, wsHtmlPlace, bIsUsePicker, bIsUsePageCommands);
+            ConvertBufferToPdf(pPdf, pFileContent, dwFileSize, wsHtmlPlace, bIsUsePicker);
 		}
 		else
 		{
@@ -218,7 +210,7 @@ namespace NSOnlineOfficeBinToPdf
 
 			if (NSBase64::Base64Decode((const char*)pFileContent, dwFileSize, pBuffer, &nBufferLen))
 			{
-                ConvertBufferToPdf(pPdf, pBuffer, nBufferLen, wsHtmlPlace, bIsUsePicker, bIsUsePageCommands);
+                ConvertBufferToPdf(pPdf, pBuffer, nBufferLen, wsHtmlPlace, bIsUsePicker);
 			}
 			else
 			{

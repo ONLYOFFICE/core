@@ -528,8 +528,10 @@ CPdfRenderer::CPdfRenderer(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA) :
 	m_pDocument->SetCompressionMode(COMP_ALL);
 
 	m_bValid      = true;
-	m_dPageHeight = 297;
-	m_dPageWidth  = 210;
+	m_bEdit       = false;
+	m_bEditPage   = false;
+	m_dPageHeight = 842;
+	m_dPageWidth  = 595;
 	m_pPage       = NULL;
 	m_pFont       = NULL;
 
@@ -632,7 +634,7 @@ HRESULT CPdfRenderer::NewPage()
 {
 	m_oCommandManager.Flush();
 
-	if (!IsValid())
+	if (!IsValid() || m_bEdit)
 		return S_FALSE;
 
 	m_pPage = m_pDocument->AddPage();
@@ -643,8 +645,8 @@ HRESULT CPdfRenderer::NewPage()
 		return S_FALSE;
 	}
 
-	m_pPage->SetWidth(m_dPageWidth);
-	m_pPage->SetHeight(m_dPageHeight);
+	m_pPage->SetWidth(MM_2_PT(m_dPageWidth));
+	m_pPage->SetHeight(MM_2_PT(m_dPageHeight));
 
 	Reset();
 
@@ -660,6 +662,11 @@ HRESULT CPdfRenderer::put_Height(const double& dHeight)
 	if (!IsValid() || !m_pPage)
 		return S_FALSE;
 
+	if (m_bEdit && m_bEditPage)
+	{
+		return S_OK;
+	}
+
 	m_dPageHeight = dHeight;
 	m_pPage->SetHeight(MM_2_PT(dHeight));
 	return S_OK;
@@ -673,6 +680,11 @@ HRESULT CPdfRenderer::put_Width(const double& dWidth)
 {
 	if (!IsValid() || !m_pPage)
 		return S_FALSE;
+
+	if (m_bEdit && m_bEditPage)
+	{
+		return S_OK;
+	}
 
 	m_dPageWidth = dWidth;
 	m_pPage->SetWidth(MM_2_PT(dWidth));
@@ -2103,10 +2115,19 @@ HRESULT CPdfRenderer::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbi
 }
 bool CPdfRenderer::EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sCatalog, const std::pair<int, int>& pCatalog, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm, int nFormField)
 {
-	return m_pDocument->EditPdf(nPosLastXRef, nSizeXRef, sCatalog, pCatalog, sEncrypt, sPassword, nCryptAlgorithm, nFormField);
+	bool bRes = m_pDocument->EditPdf(nPosLastXRef, nSizeXRef, sCatalog, pCatalog, sEncrypt, sPassword, nCryptAlgorithm, nFormField);
+	if (bRes)
+	{
+		m_bEdit = true;
+	}
+	return bRes;
 }
 bool CPdfRenderer::CreatePageTree(const std::wstring& sPageTree, const std::pair<int, int>& pPageTree)
 {
+	if (!m_bEdit)
+	{
+		return false;
+	}
 	return m_pDocument->CreatePageTree(sPageTree, pPageTree);
 }
 std::pair<int, int> CPdfRenderer::GetPageRef(int nPageIndex)
@@ -2115,7 +2136,7 @@ std::pair<int, int> CPdfRenderer::GetPageRef(int nPageIndex)
 }
 bool CPdfRenderer::EditPage(const std::wstring& sPage, const std::pair<int, int>& pPage)
 {
-	if (!IsValid())
+	if (!IsValid() || !m_bEdit)
 		return false;
 	m_oCommandManager.Flush();
 
@@ -2125,13 +2146,14 @@ bool CPdfRenderer::EditPage(const std::wstring& sPage, const std::pair<int, int>
 		m_dPageWidth  = PT_2_MM(m_pPage->GetWidth());
 		m_dPageHeight = PT_2_MM(m_pPage->GetHeight());
 		Reset();
+		m_bEditPage = true;
 		return true;
 	}
 	return false;
 }
 bool CPdfRenderer::AddPage(int nPageIndex)
 {
-	if (!IsValid())
+	if (!IsValid() || !m_bEdit)
 		return false;
 	m_oCommandManager.Flush();
 
@@ -2141,17 +2163,22 @@ bool CPdfRenderer::AddPage(int nPageIndex)
 		m_pPage->SetWidth(MM_2_PT(m_dPageWidth));
 		m_pPage->SetHeight(MM_2_PT(m_dPageHeight));
 		Reset();
+		m_bEditPage = false;
 		return true;
 	}
 	return false;
 }
 bool CPdfRenderer::DeletePage(int nPageIndex)
 {
+	if (!m_bEdit)
+	{
+		return false;
+	}
 	return m_pDocument->DeletePage(nPageIndex);
 }
 bool CPdfRenderer::EditClose(const std::wstring& wsPath, const std::wstring& sTrailer, const std::wstring& sInfo)
 {
-	if (!IsValid())
+	if (!IsValid() || !m_bEdit)
 		return false;
 	m_oCommandManager.Flush();
 
@@ -2168,15 +2195,25 @@ bool CPdfRenderer::EditClose(const std::wstring& wsPath, const std::wstring& sTr
 		}
 	}
 
-	return m_pDocument->AddToFile(wsPath, sTrailer, sInfo);
+	bool bRes = m_pDocument->AddToFile(wsPath, sTrailer, sInfo);
+	if (bRes)
+	{
+        m_bEdit = false;
+        m_bEditPage = false;
+	}
+	return bRes;
 }
 void CPdfRenderer::PageRotate(int nRotate)
 {
-	if (m_pPage)
+	if (m_pPage && m_bEdit)
 		m_pPage->SetRotate(nRotate);
 }
 void CPdfRenderer::Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate)
 {
+	if (!m_bEdit)
+	{
+		return;
+	}
 	CImageDict* pImage = NULL;
 	if (!wsPicturePath.empty())
 	{
@@ -2679,16 +2716,16 @@ void CPdfRenderer::Reset()
 
 	m_lClipDepth = 0;
 }
-HRESULT CPdfRenderer::OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker, const bool& bIsUsePageCommands)
+HRESULT CPdfRenderer::OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker)
 {
-    if (!NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, false, bIsUsePicker, bIsUsePageCommands))
+    if (!NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, false, bIsUsePicker))
 		return S_FALSE;
 
 	return S_OK;
 }
-HRESULT CPdfRenderer::OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker, const bool& bIsUsePageCommands)
+HRESULT CPdfRenderer::OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker)
 {
-    if (!NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, true, bIsUsePicker, bIsUsePageCommands))
+    if (!NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, true, bIsUsePicker))
 		return S_FALSE;
 
 	return S_OK;

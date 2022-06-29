@@ -22,12 +22,12 @@ void TEST(CPdfRenderer* pRenderer)
 
 void TEST2(CPdfRenderer* pRenderer)
 {
-    pRenderer->OnlineWordToPdf(NSFile::GetProcessDirectory() + L"/../example/pdf.bin", L"", true, false);
+    pRenderer->OnlineWordToPdf(NSFile::GetProcessDirectory() + L"/../example/pdf.bin", L"", true);
 }
 
 void TEST3(CPdfRenderer* pRenderer)
 {
-    pRenderer->OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/../example1/pdf.bin", L"", true, false);
+    pRenderer->OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/../example1/1/pdf.bin", L"", true);
 }
 
 int main()
@@ -136,16 +136,29 @@ int main()
 
             if (pReader->EditPage(2))
             {
+                // При редактировании страницы нельзя изменить её пропорции
+                pdfWriter.put_Width(dWidth);
+                pdfWriter.put_Height(dHeight);
+
                 TEST2(&pdfWriter);
             }
 
             if (pReader->AddPage(3))
             {
-                // Новой странице необходимо выставить длину и ширину
+                // Новой странице необходимо выставить длину и ширину, иначе будут значения по умолчанию
                 pdfWriter.put_Width(dWidth);
                 pdfWriter.put_Height(dHeight);
 
                 TEST(&pdfWriter);
+            }
+
+            if (pReader->AddPage(800))
+            {
+                // Новой странице необходимо выставить длину и ширину, иначе будут значения по умолчанию
+                pdfWriter.put_Width(dWidth);
+                pdfWriter.put_Height(dHeight);
+
+                TEST3(&pdfWriter);
             }
         }
 

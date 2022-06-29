@@ -31,7 +31,7 @@ public:
     static const int NOSTREAM = 0xFFFFFFFF;
     static const int ZERO = 0;
 
-    DirectoryEntry(std::wstring name, StgType stgType, IList<IDirectoryEntry> dirRepository);
+    DirectoryEntry(std::wstring name, StgType stgType, std::vector<std::shared_ptr<IDirectoryEntry> > dirRepository);
 
     int getSid() const override;
     void setSid(int newSid) override;
@@ -41,8 +41,24 @@ public:
     int GetHashCode() override;
     void Write(Stream stream) override;
     void Read(Stream stream, CFSVersion ver = CFSVersion::Ver_3) override;
-    std::wstring ToString() const;
+    std::wstring ToString() const override;
     inline std::wstring Name() const {return GetEntryName();}
+
+    RedBlackTree::PIRBNode getLeft() const override;
+    RedBlackTree::PIRBNode getRight() const override;
+    void setLeft(RedBlackTree::PIRBNode pNode) override;
+    void setRight(RedBlackTree::PIRBNode pNode) override;
+    inline void setColor(RedBlackTree::Color clr) override {stgColor = (StgColor)clr;}
+    inline RedBlackTree::Color getColor()const override {return (RedBlackTree::Color)stgColor;}
+
+    int CompareTo(const RedBlackTree::PIRBNode& other) const override;
+    inline ushort getNameLength() const override {return  nameLength;}
+
+    void setParent(RedBlackTree::PIRBNode pParent) override {parent = pParent;}
+    inline RedBlackTree::PIRBNode getParent() const override {return parent.lock();}
+    inline RedBlackTree::PIRBNode Grandparent() const override
+        {return (parent.use_count() ? parent.lock()->getParent() : RedBlackTree::PIRBNode());}
+
 
 public:
     BYTE creationDate[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
@@ -57,13 +73,19 @@ public:
 
 private:
     static ULONG64 fnv_hash(char* buffer, int lenght);
+
+protected:
+    // TODO init
+    std::weak_ptr<IRBNode> thisPtr;
+
 private:
     int sid = -1;
     char entryName[64];
     ushort nameLength;
     StgType stgType = StgType::StgInvalid;
     StgColor stgColor = StgColor::Red;
-
+    std::vector<std::shared_ptr<IDirectoryEntry> > dirRepository;
+    std::weak_ptr<RedBlackTree::IRBNode> parent;
 
 };
 

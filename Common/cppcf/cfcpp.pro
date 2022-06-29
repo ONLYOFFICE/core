@@ -13,6 +13,7 @@ CONFIG += c++11
 include(../3dParty/boost/boost.pri)
 
 SOURCES += \
+    RBTree/rbtree.cpp \
     cfitem.cpp \
     cfstorage.cpp \
     compoundfile.cpp \
@@ -25,6 +26,9 @@ SOURCES += \
     svector.cpp
 
 HEADERS += \
+    RBTree/irbnode.h \
+    RBTree/rbtree.h \
+    RBTree/rbtreeexception.h \
     Stream.h \
     cfexception.h \
     cfitem.h \

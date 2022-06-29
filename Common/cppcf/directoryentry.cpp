@@ -1,13 +1,32 @@
 #include "directoryentry.h"
+#include "cfexception.h"
 #include "streamrw.h"
 
 using namespace CFCPP;
 
-DirectoryEntry::DirectoryEntry()
+
+DirectoryEntry::DirectoryEntry(std::wstring name, StgType stgType, std::vector<std::shared_ptr<IDirectoryEntry> > dirRepository)
 {
+    this->dirRepository = dirRepository;
 
+    this->stgType = stgType;
+
+    if (stgType == StgType::StgStorage)
+    {
+        //        creationDate = BitConverter.GetBytes((DateTime.Now.ToFileTime()));
+        startSetc = ZERO;
+    }
+
+    if (stgType == StgType::StgInvalid)
+    {
+        startSetc = ZERO;
+    }
+
+    if (name.size())
+    {
+        DirectoryEntry::SetEntryName(name);
+    }
 }
-
 
 int DirectoryEntry::getSid() const
 {
@@ -17,6 +36,44 @@ int DirectoryEntry::getSid() const
 void DirectoryEntry::setSid(int newSid)
 {
     sid = newSid;
+}
+
+std::wstring DirectoryEntry::GetEntryName() const
+{
+    if (entryName[0] != '\0' && nameLength > 0)
+    {
+        std::wstring name(entryName, entryName + nameLength);
+        return name;
+    }
+    else
+        return L"";
+}
+
+void DirectoryEntry::SetEntryName(const std::wstring &entryName)
+{
+    if (entryName.empty())
+    {
+        std::fill(this->entryName, this->entryName+64, '\0');
+        this->nameLength = 0;
+    }
+    else
+    {
+        if (
+            entryName.find(L"\\") == std::wstring::npos ||
+            entryName.find(L"/")  == std::wstring::npos ||
+            entryName.find(L":")  == std::wstring::npos ||
+            entryName.find(L"!")  == std::wstring::npos
+            ) throw new CFException("Invalid character in entry: the characters '\\', '/', ':','!' cannot be used in entry name");
+
+        if (entryName.length() > 31)
+            throw new CFException("Entry name MUST NOT exceed 31 characters");
+
+
+        std::copy(entryName.data(), entryName.data() + entryName.length(), this->entryName);
+        reinterpret_cast<wchar_t*>(this->entryName)[entryName.length()] = L'\0';
+
+        this->nameLength = (ushort)entryName.size() + 2;
+    }
 }
 
 int DirectoryEntry::GetHashCode()
@@ -89,6 +146,74 @@ std::wstring DirectoryEntry::ToString() const
     std::wstringstream wss;
     wss << Name() << L" [" << sid << L"]" << (stgType == StgType::StgStream ? L"Stream" : L"Storage");
     return wss.str();
+}
+
+RedBlackTree::PIRBNode DirectoryEntry::getLeft() const
+{
+    if (leftSibling == NOSTREAM)
+        return {};
+
+    return dirRepository[leftSibling];
+}
+
+RedBlackTree::PIRBNode DirectoryEntry::getRight() const
+{
+    if (rightSibling == DirectoryEntry::NOSTREAM)
+        return {};
+
+    return dirRepository[rightSibling];
+}
+
+void DirectoryEntry::setLeft(RedBlackTree::PIRBNode pNode)
+{
+    leftSibling = pNode != nullptr ? static_cast<IDirectoryEntry*>(pNode.get())->getSid() : DirectoryEntry::NOSTREAM;
+
+    if (leftSibling != DirectoryEntry::NOSTREAM)
+        dirRepository[leftSibling]->setParent(thisPtr.lock());
+}
+
+void DirectoryEntry::setRight(RedBlackTree::PIRBNode pNode)
+{
+    rightSibling = pNode != nullptr ? static_cast<IDirectoryEntry*>(pNode.get())->getSid() : DirectoryEntry::NOSTREAM;
+
+    if (rightSibling != DirectoryEntry::NOSTREAM)
+        dirRepository[rightSibling]->setParent(thisPtr.lock());
+}
+
+int DirectoryEntry::CompareTo(const RedBlackTree::PIRBNode &other) const
+{
+    IDirectoryEntry* otherDir = dynamic_cast<IDirectoryEntry*>(other.get());
+
+    if (otherDir == nullptr)
+        throw new CFException("Invalid casting: compared object does not implement IDirectorEntry interface");
+
+    if (this->getNameLength() > otherDir->getNameLength())
+    {
+        return THIS_IS_GREATER;
+    }
+    else if (this->getNameLength() < otherDir->getNameLength())
+    {
+        return OTHER_IS_GREATER;
+    }
+    else
+    {
+        std::wstring thisName = GetEntryName();
+        std::wstring otherName = otherDir->GetEntryName();
+
+        for (int z = 0; z < (int)thisName.size(); z++)
+        {
+            char thisChar = toupper(thisName[z]);
+            char otherChar = toupper(otherName[z]);
+
+            if (thisChar > otherChar)
+                return THIS_IS_GREATER;
+            else if (thisChar < otherChar)
+                return OTHER_IS_GREATER;
+        }
+
+        return 0;
+
+    }
 }
 
 ULONG64 DirectoryEntry::fnv_hash(char *buffer, int lenght)

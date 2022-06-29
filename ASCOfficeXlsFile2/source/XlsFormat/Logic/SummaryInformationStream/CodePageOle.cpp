@@ -216,7 +216,7 @@ std::wstring PropertyVecString::toString()
 			{
 				CP_XML_NODE(L"vt:lpstr")
 				{
-					CP_XML_STREAM() << values[i];
+					CP_XML_CONTENT(values[i]);
 				}
 			}
 		}
@@ -272,7 +272,7 @@ std::wstring PropertyVecHeadingPair::toString()
 				{
 					CP_XML_NODE(L"vt:lpstr")
 					{
-						CP_XML_STREAM() << values[i].headingString;
+						CP_XML_CONTENT(values[i].headingString);
 					}
 				}
 				CP_XML_NODE(L"vt:variant")

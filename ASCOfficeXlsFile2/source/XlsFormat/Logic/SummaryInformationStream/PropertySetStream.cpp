@@ -122,7 +122,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"Template")
 					{
-                        CP_XML_STREAM() << prop->toString();
+						CP_XML_CONTENT(prop->toString());
 					}
 				}
 				prop = GetProperty(MANAGER);
@@ -130,7 +130,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"Manager")
 					{
-                        CP_XML_STREAM() << prop->toString();
+						CP_XML_CONTENT(prop->toString());
 					}
 				}
 				prop = GetProperty(COMPANY);
@@ -138,7 +138,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"Company")
 					{
-                        CP_XML_STREAM() << prop->toString();
+						CP_XML_CONTENT(prop->toString());
 					}
 				}
 				prop = GetProperty(PAGECOUNT);
@@ -297,16 +297,17 @@ namespace OLEPS
 				//	DIGSIG = 0x1018,
 				CP_XML_NODE(L"Application")
 				{
+					std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
+					if (sApplication.empty())
+						sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
+
 					prop = GetProperty(APPNAME);
 					if (prop)
 					{
-                        CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << (prop->toString() + L"/" + sApplication);
 					}
 					else
 					{
-						std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
-						if (sApplication.empty())
-							sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
 						CP_XML_STREAM() << sApplication;
 #if defined(INTVER)
 						std::string s = VALUE2STR(INTVER);
@@ -356,7 +357,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"dc:title")
                     {
-                        CP_XML_STREAM() << prop->toString();
+						CP_XML_CONTENT(prop->toString());
 					}
 				}
 				prop = GetProperty(SUBJECT);
@@ -364,9 +365,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"dc:subject")
 					{
-
-                        auto correctedSubject = prop->toString();
-                        CP_XML_STREAM() << prop->toString();
+						CP_XML_CONTENT(prop->toString());
 					}
 				}
 				prop = GetProperty(AUTHOR);
@@ -374,7 +373,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"dc:creator")
 					{
-                        CP_XML_STREAM() << prop->toString();
+						CP_XML_CONTENT(prop->toString());
 					}
 				}
 				prop = GetProperty(KEYWORDS);
@@ -382,7 +381,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"cp:keywords")
 					{
-                        CP_XML_STREAM() << prop->toString();
+						CP_XML_CONTENT(prop->toString());
 					}
 				}
 				prop = GetProperty(COMMENTS);
@@ -390,7 +389,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"dc:description")
 					{
-                        CP_XML_STREAM() << prop->toString();
+						CP_XML_CONTENT(prop->toString());
 					}
 				}
 				prop = GetProperty(LANGUAGE);
@@ -400,7 +399,8 @@ namespace OLEPS
 					{
                         CP_XML_STREAM() << prop->toString();
 					}
-				}				prop = GetProperty(VERSION);
+				}				
+				prop = GetProperty(VERSION);
 				if (prop)
 				{
 					CP_XML_NODE(L"cp:version")
@@ -413,7 +413,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"cp:lastModifiedBy")
 					{
-                        CP_XML_STREAM() << prop->toString();
+						CP_XML_CONTENT(prop->toString());
 					}
 				}
 				prop = GetProperty(REVNUMBER);
@@ -447,7 +447,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"cp:category")
 					{
-                        CP_XML_STREAM() << prop->toString();
+						CP_XML_CONTENT(prop->toString());
 					}
 				}
 				prop = GetProperty(CONTENTSTATUS);

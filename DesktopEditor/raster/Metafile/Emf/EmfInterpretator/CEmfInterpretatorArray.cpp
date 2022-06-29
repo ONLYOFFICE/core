@@ -1,22 +1,17 @@
 #include "CEmfInterpretatorArray.h"
 
-#include "CEmfInterpretator.h"
-#include "CEmfInterpretatorXml.h"
-#include "CEmfInterpretatorRender.h"
-
 namespace MetaFile
 {
         CEmfInterpretatorArray::CEmfInterpretatorArray(){}
 
         CEmfInterpretatorArray::CEmfInterpretatorArray(const CEmfInterpretatorArray &oInterpretator)
-                : m_arInterpretators(oInterpretator.m_arInterpretators){}
+                : m_arInterpretators(oInterpretator.m_arInterpretators)
+        {}
 
         CEmfInterpretatorArray::~CEmfInterpretatorArray()
         {
                 for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
                         delete pInterpretator;
-
-                m_arInterpretators.clear();
         }
 
         void CEmfInterpretatorArray::AddEmfInterpretator(const wchar_t *wsFilepath)
@@ -49,6 +44,18 @@ namespace MetaFile
         InterpretatorType CEmfInterpretatorArray::GetType() const
         {
                 return InterpretatorType::Array;
+        }
+
+        void CEmfInterpretatorArray::CreateConditional(IMetaFileBase *pFile)
+        {
+                for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+                        pInterpretator->CreateConditional(pFile);
+        }
+
+        void CEmfInterpretatorArray::ChangeConditional()
+        {
+                for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+                        pInterpretator->ChangeConditional();
         }
 
         void CEmfInterpretatorArray::Begin()

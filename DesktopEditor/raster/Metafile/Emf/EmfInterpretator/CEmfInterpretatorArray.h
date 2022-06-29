@@ -1,7 +1,10 @@
 #ifndef CEMFINTERPRETATORARRAY_H
 #define CEMFINTERPRETATORARRAY_H
 
+#include "CEmfInterpretator.h"
+#include "CEmfInterpretatorXml.h"
 #include "CEmfInterpretatorBase.h"
+#include "CEmfInterpretatorRender.h"
 
 namespace MetaFile
 {
@@ -12,11 +15,16 @@ namespace MetaFile
                 CEmfInterpretatorArray(const CEmfInterpretatorArray& oInterpretator);
                 virtual ~CEmfInterpretatorArray();
 
+                CEmfInterpretatorArray& operator=(const CEmfInterpretatorArray& oEmfInterpretatorArray);
+
                 void AddEmfInterpretator(const wchar_t* wsFilepath);
                 void AddXmlInterpretator(const wchar_t* wsFilepath);
                 void AddRenderInterpretator(IOutputDevice* pIOutputDevice);
 
                 InterpretatorType GetType() const override;
+
+                void CreateConditional(IMetaFileBase* pFile) override;
+                void ChangeConditional() override;
 
                 void Begin() override;
                 void End() override;

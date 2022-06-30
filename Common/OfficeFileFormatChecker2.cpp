@@ -760,6 +760,19 @@ bool COfficeFileFormatChecker::isOOXFormatFile(const std::wstring & fileName, bo
 	}
 	return false;
 }
+bool COfficeFileFormatChecker::isXlsFormatFile(const std::wstring & fileName)
+{
+	POLE::Storage storage(fileName.c_str());
+	if (storage.open())
+	{
+		if (isXlsFormatFile(&storage))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS;
+			return true;
+		}
+	}
+	return false;
+}
 bool COfficeFileFormatChecker::isOnlyOfficeFormatFile(const std::wstring & fileName)
 {
 	COfficeUtils OfficeUtils(NULL);

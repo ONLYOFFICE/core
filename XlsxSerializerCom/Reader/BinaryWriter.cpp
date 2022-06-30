@@ -4770,33 +4770,32 @@ void BinaryWorksheetTableWriter::WriteOleObjects(const OOX::Spreadsheet::CWorksh
 					}
 				}
 			}
-
-			if (pImageFileCache == NULL && pOleObject->m_oObjectPr.IsInit() && pOleObject->m_oObjectPr->m_oRid.IsInit())
-			{
-				sIdImageFileCache = pOleObject->m_oObjectPr->m_oRid->GetValue();
-				
-				smart_ptr<OOX::File> pFile = oWorksheet.Find(sIdImageFileCache);
-				if (pFile.IsInit() && (	OOX::FileTypes::Image == pFile->type()))
-				{
-					pImageFileCache = static_cast<OOX::Image*>(pFile.GetPointer());
-				}
-			}
-			if (pImageFileCache)
-			{
-				OOX::CPath pathImage = pImageFileCache->filename();
-
-				if (olePic->oleObject->m_OleObjectFile.IsInit())
-				{
-					olePic->oleObject->m_OleObjectFile->set_filename_cache(pathImage);
-				}
-				
-				olePic->blipFill.blip->embed = new OOX::RId(sIdImageFileCache); //ваще то тут не важно что - приоритет у того что ниже..
-				olePic->blipFill.blip->oleFilepathImage = pathImage.GetPath();
-			}
-
-			oCellAnchor->m_oElement = new PPTX::Logic::SpTreeElem();
-			oCellAnchor->m_oElement->InitElem(olePic);
 		}
+		if (pImageFileCache == NULL && pOleObject->m_oObjectPr.IsInit() && pOleObject->m_oObjectPr->m_oRid.IsInit())
+		{
+			sIdImageFileCache = pOleObject->m_oObjectPr->m_oRid->GetValue();
+
+			smart_ptr<OOX::File> pFile = oWorksheet.Find(sIdImageFileCache);
+			if (pFile.IsInit() && (OOX::FileTypes::Image == pFile->type()))
+			{
+				pImageFileCache = static_cast<OOX::Image*>(pFile.GetPointer());
+			}
+		}
+		if (pImageFileCache)
+		{
+			OOX::CPath pathImage = pImageFileCache->filename();
+
+			if (olePic->oleObject->m_OleObjectFile.IsInit())
+			{
+				olePic->oleObject->m_OleObjectFile->set_filename_cache(pathImage);
+			}
+
+			olePic->blipFill.blip->embed = new OOX::RId(sIdImageFileCache); //ваще то тут не важно что - приоритет у того что ниже..
+			olePic->blipFill.blip->oleFilepathImage = pathImage.GetPath();
+		}
+		
+		oCellAnchor->m_oElement = new PPTX::Logic::SpTreeElem();
+		oCellAnchor->m_oElement->InitElem(olePic);
 //-----------------------------------------------------------------------------------------------------
 		if (oCellAnchor.IsInit())
 		{

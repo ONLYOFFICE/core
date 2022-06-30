@@ -130,10 +130,12 @@ std::wstring external_items::add_embedding(std::wstring & oox_target, const std:
 
 	std::wstring lowerInfo = XmlUtils::GetLower(info);
 
-	std::wstring extension = L".bin";
-
-	if (std::wstring::npos != lowerInfo.find(L"excel"))	extension = L".xls";
-	if (std::wstring::npos != lowerInfo.find(L"word"))	extension = L".doc";
+	std::wstring extension;
+	
+	if ( false == oox_target.empty())							extension = oox_target;
+	else if (std::wstring::npos != lowerInfo.find(L"excel"))	extension = L".xls";
+	else if (std::wstring::npos != lowerInfo.find(L"word"))		extension = L".doc";
+	else extension = L".bin";
 
 	oox_target = std::wstring(L"oleObject") + std::to_wstring(count_embeddings) + extension;
 		

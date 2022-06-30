@@ -2473,6 +2473,10 @@ void XlsConverter::convert(XLS::Obj * obj)
 				xlsx_context->get_mediaitems().create_embeddings_path(xlsx_path);
 				
 				std::wstring target;
+
+				if (xls_file->storage_->exists(object_stream + L"Workbook")) target = L".xls";
+				if (xls_file->storage_->exists(object_stream + L"WordDocument")) target = L".doc";
+
 				std::wstring objectId = xlsx_context->get_mediaitems().add_embedding(target, info);
 
 				POLE::Storage *storageOle = new POLE::Storage((xlsx_context->get_mediaitems().embeddings_path() + target).c_str());

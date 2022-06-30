@@ -559,7 +559,7 @@ namespace NSDocxRenderer
             m_oCurrentPage.BuildLines();
             m_oCurrentPage.DeleteTextClipPage();
             m_oCurrentPage.BuildByType();
-            m_oCurrentPage.Write(m_oWriter);
+            m_oCurrentPage.ToXml(m_oWriter);
         }
         else if (c_nPathType == lType)
         {

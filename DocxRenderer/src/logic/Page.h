@@ -100,7 +100,7 @@ namespace NSDocxRenderer
         void Merge(double dAffinity);
 
         //конвертим m_arGraphicItems, m_arParagraphs в xml-строку
-        void Write(NSStringUtils::CStringBuilder& oWriter);
+        void ToXml(NSStringUtils::CStringBuilder& oWriter);
 
         void WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter);
 

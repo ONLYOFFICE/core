@@ -693,12 +693,7 @@ namespace NSDocxRenderer
 
         double dRight = pLastCont->m_dX + pLastCont->m_dWidth;
 
-        if (pLastCont->m_eUnderlineType == pContText->m_eUnderlineType &&
-            pLastCont->m_bIsHighlightPresent == pContText->m_bIsHighlightPresent &&
-            pLastCont->m_lHighlightColor == pContText->m_lHighlightColor &&
-            pLastCont->m_pShape == pContText->m_pShape &&
-            pLastCont->m_oFont.IsEqual(&pContText->m_oFont) &&
-            pLastCont->m_oBrush.IsEqual(&pContText->m_oBrush))
+        if (pLastCont->IsEqual(pContText))
         {
             bool bIsConditionPassed = false;
 
@@ -1316,7 +1311,7 @@ namespace NSDocxRenderer
         }
     }
 
-    void CPage::Write(NSStringUtils::CStringBuilder& oWriter)
+    void CPage::ToXml(NSStringUtils::CStringBuilder& oWriter)
     {
         for (size_t i = 0; i < m_arParagraphs.size(); ++i)
         {

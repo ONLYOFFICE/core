@@ -139,13 +139,7 @@ namespace NSDocxRenderer
             double dCurrLeft = pCurrent->m_dX;
             double dDelta = dFirstRight - dCurrLeft;
 
-            if (pFirst->m_strPickFontName != pCurrent->m_strPickFontName ||
-                pFirst->m_eUnderlineType != pCurrent->m_eUnderlineType ||
-                pFirst->m_bIsHighlightPresent != pCurrent->m_bIsHighlightPresent ||
-                pFirst->m_lHighlightColor != pCurrent->m_lHighlightColor ||
-                pFirst->m_pShape != pCurrent->m_pShape ||
-                !pFirst->m_oFont.IsEqual(&pCurrent->m_oFont) ||
-                !pFirst->m_oBrush.IsEqual(&pCurrent->m_oBrush) ||
+            if (!pFirst->IsEqual(pCurrent) ||
                 fabs(dDelta) > c_dTHE_STRING_X_PRECISION_MM)
             {
                 if (i < nCountConts - 1)
@@ -302,7 +296,7 @@ namespace NSDocxRenderer
             if (dDelta < c_dTHE_STRING_X_PRECISION_MM)
             {
                 // просто текст на тексте или сменились настройки (font/brush)
-                pPrev->Write(oWriter, pManagerLight);
+                pPrev->ToXml(oWriter, pManagerLight);
                 pPrev  = pCurrent;
             }
             //else if (dDelta < 2 * pPrev->m_dSpaceWidthMM)
@@ -314,12 +308,12 @@ namespace NSDocxRenderer
             else
             {
                 // расстояние слишком большое. нужно сделать большой пробел
-                pPrev->Write(oWriter, pManagerLight);
-                pPrev->WriteTo(dDelta, oWriter, pManagerLight);
+                pPrev->ToXml(oWriter, pManagerLight);
+                pPrev->AddWideSpaceToXml(dDelta, oWriter, pManagerLight);
                 pPrev = pCurrent;
             }
         }
 
-        pPrev->Write(oWriter, pManagerLight);
+        pPrev->ToXml(oWriter, pManagerLight);
     }
 }

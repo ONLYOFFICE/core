@@ -60,14 +60,15 @@ namespace NSDocxRenderer
 
             double GetIntersect(const CContText* oSrc) const;
 
-            void Write(NSStringUtils::CStringBuilder& oWriter,
+            void ToXml(NSStringUtils::CStringBuilder& oWriter,
                        CFontManagerLight* pManagerLight,
                        bool bIsAddSpace = false);
 
-            void WriteTo(double dSpacingMM,
-                         NSStringUtils::CStringBuilder& oWriter,
-                         CFontManagerLight* pManagerLight);
+            void AddWideSpaceToXml(double dSpacingMM,
+                                   NSStringUtils::CStringBuilder& oWriter,
+                                   CFontManagerLight* pManagerLight);
 
             void AddSpaceToEnd();
+            bool IsEqual(const CContText* oSrc);
     };
 }

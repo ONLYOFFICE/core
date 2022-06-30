@@ -93,7 +93,7 @@ namespace NSDocxRenderer
         return 0;
     }
 
-    void CContText::Write(NSStringUtils::CStringBuilder& oWriter,
+    void CContText::ToXml(NSStringUtils::CStringBuilder& oWriter,
                           CFontManagerLight* pManagerLight,
                           bool bIsAddSpace)
     {
@@ -213,9 +213,9 @@ namespace NSDocxRenderer
         oWriter.WriteString(L"</w:r>");
     }
 
-    void CContText::WriteTo(double dSpacingMM,
-                            NSStringUtils::CStringBuilder& oWriter,
-                            CFontManagerLight* pManagerLight)
+    void CContText::AddWideSpaceToXml(double dSpacingMM,
+                                      NSStringUtils::CStringBuilder& oWriter,
+                                      CFontManagerLight* pManagerLight)
     {
         oWriter.WriteString(L"<w:r><w:rPr>");
 
@@ -322,5 +322,20 @@ namespace NSDocxRenderer
     {
         m_bIsNeedSpaceAtTheEnd = true;
         m_dWidth += m_dSpaceWidthMM;
+    }
+
+    bool CContText::IsEqual(const CContText* oSrc)
+    {
+        if( m_strPickFontName == oSrc->m_strPickFontName &&
+            m_eUnderlineType == oSrc->m_eUnderlineType &&
+            m_bIsHighlightPresent == oSrc->m_bIsHighlightPresent &&
+            m_lHighlightColor == oSrc->m_lHighlightColor &&
+            m_pShape == oSrc->m_pShape &&
+            m_oFont.IsEqual(&oSrc->m_oFont) &&
+            m_oBrush.IsEqual(&oSrc->m_oBrush))
+        {
+            return true;
+        }
+        return false;
     }
 }

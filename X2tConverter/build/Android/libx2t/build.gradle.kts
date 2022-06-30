@@ -72,9 +72,10 @@ android {
     }
 
     packagingOptions {
+        jniLibs.useLegacyPackaging = true
         arrayOf("armeabi-v7a", "x86", "arm64-v8a", "x86_64").forEach { abi ->
             val dh = file("${extra.get("PATH_LIB_BUILD_TOOLS")}/$abi")
-            dh.listFiles().forEach {
+            dh.listFiles()?.forEach {
                 if (it.name.contains(".so"))
                     jniLibs.pickFirsts.add("lib/$abi/${it.name}")
             }

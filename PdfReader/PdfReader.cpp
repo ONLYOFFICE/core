@@ -95,9 +95,7 @@ namespace PdfReader
             }
             typeDict.free();
 
-            std::wstring sPageTree = L"<PageTree";
-            XMLConverter::DictToXml(&pagesObj, sPageTree);
-            sPageTree += L"</PageTree>";
+            std::wstring sPageTree = XMLConverter::DictToXml(L"PageTree", &pagesObj);
             Ref topPagesRef = pPagesRefObj->getRef();
 
             m_pPdfWriter->CreatePageTree(sPageTree, std::make_pair(topPagesRef.num, topPagesRef.gen));
@@ -497,6 +495,9 @@ return 0;
 	}
     bool CPdfReader::EditPdf(IRenderer* pPdfWriter, const std::wstring& sPassword)
     {
+        if (!pPdfWriter)
+            return false;
+
         long lRendererType;
         pPdfWriter->get_Type(&lRendererType);
         if (c_nPDFWriter != lRendererType || !m_pInternal->m_pPDFDocument)
@@ -523,11 +524,7 @@ return 0;
             return false;
         }
 
-        std::wstring sCatalog = L"<Catalog";
-        XMLConverter::DictToXml(&catDict, sCatalog);
-        sCatalog += L"</Catalog>";
-        if (sCatalog == L"<Catalog></Catalog>")
-            sCatalog.clear();
+        std::wstring sCatalog = XMLConverter::DictToXml(L"Catalog", &catDict);
         Ref catRef = catRefObj.getRef();
 
         unsigned int nFormField = 0;
@@ -536,7 +533,7 @@ return 0;
             nFormField = form->getNumFields();
 
         int nCryptAlgorithm = -1;
-        std::wstring sEncrypt = L"<Encrypt";
+        std::wstring sEncrypt;
         if (xref->isEncrypted())
         {
             CryptAlgorithm encAlgorithm;
@@ -550,28 +547,15 @@ return 0;
             {
                 Object encrypt, ID, ID1;
                 if (pTrailerDict->dictLookup("Encrypt", &encrypt) && encrypt.isDict())
-                    XMLConverter::DictToXml(&encrypt, sEncrypt, true);
-                else
-                    sEncrypt += L'>';
+                    sEncrypt = XMLConverter::DictToXml(L"Encrypt", &encrypt, true);
                 encrypt.free();
 
                 if (pTrailerDict->dictLookup("ID", &ID) && ID.isArray() && ID.arrayGet(0, &ID1) && ID1.isString())
-                {
-                    sEncrypt += L"<ID";
-                    XMLConverter::DictToXml(&ID1, sEncrypt, true);
-                    sEncrypt += L"</ID>";
-                }
+                    sEncrypt += XMLConverter::DictToXml(L"ID", &ID1, true);
                 ID.free();
                 ID1.free();
             }
-            else
-                sEncrypt += L'>';
         }
-        else
-            sEncrypt += L'>';
-        sEncrypt += L"</Encrypt>";
-        if (sEncrypt == L"<Encrypt></Encrypt>")
-            sEncrypt.clear();
 
         bool bRes = m_pInternal->m_pPdfWriter->EditPdf(xref->getLastXRefPos(), xref->getNumObjects(), sCatalog, std::make_pair(catRef.num, catRef.gen), sEncrypt, sPassword, nCryptAlgorithm, nFormField);
         if (bRes)
@@ -602,9 +586,7 @@ return 0;
             pageRefObj.free();
             return false;
         }
-        std::wstring sPage = L"<Page";
-        XMLConverter::DictToXml(&pageObj, sPage);
-        sPage += L"</Page>";
+        std::wstring sPage = XMLConverter::DictToXml(L"Page", &pageObj);
         pageObj.free();
         pageRefObj.free();
 
@@ -633,21 +615,15 @@ return 0;
             return false;
 
         Object* trailerDict = xref->getTrailerDict();
-        std::wstring sTrailer = L"<Trailer";
+        std::wstring sTrailer;
         if (trailerDict)
-            XMLConverter::DictToXml(trailerDict, sTrailer);
-        else
-            sTrailer += L'>';
-        sTrailer += L"</Trailer>";
+            sTrailer = XMLConverter::DictToXml(L"Trailer", trailerDict);
 
-        std::wstring sInfo = L"<Info";
+        std::wstring sInfo;
         Object info;
         m_pInternal->m_pPDFDocument->getDocInfo(&info);
         if (info.isDict())
-            XMLConverter::DictToXml(&info, sInfo);
-        else
-            sInfo += L'>';
-        sInfo += L"</Info>";
+            sInfo = XMLConverter::DictToXml(L"Info", &info);
         info.free();
 
         return m_pInternal->m_pPdfWriter->EditClose(wsPath, sTrailer, sInfo);

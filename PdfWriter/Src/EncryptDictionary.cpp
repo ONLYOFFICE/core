@@ -281,9 +281,10 @@ namespace PdfWriter
                 pStream->Seek(m_nByteRangeBegin, EWhenceMode::SeekSet);
                 pStream->Write(pByteRange, NULL);
 
-                if (pStream->Tell() < m_nByteRangeEnd)
+                int nEnd = pStream->Tell();
+                if (nEnd < m_nByteRangeEnd)
                 {
-                    unsigned int nLength = m_nByteRangeEnd - pStream->Tell();
+                    unsigned int nLength = m_nByteRangeEnd - nEnd;
                     BYTE* pDifference = new BYTE[nLength];
                     MemSet(pDifference, ' ', nLength);
 

@@ -216,10 +216,7 @@ namespace PdfWriter
 		oDate.nOffHour    = 0;
 		oDate.nOffMinutes = 0;
 
-		if (eType == InfoCreationDate)
-			SetInfo(InfoCreationDate, oDate);
-		else
-			SetInfo(InfoModaDate, oDate);
+		SetInfo(eType == InfoCreationDate ? eType : InfoModaDate, oDate);
 
 		m_oDate = oDate;
 	}

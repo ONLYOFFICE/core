@@ -135,7 +135,7 @@ public:
     static void XRefToXml(XRef &xref, std::wstring &wsXml, bool parse_streams);
     static void StreamDictToXml(Dict *dict, std::wstring &wsXml);
     static void ObjectToXml(Object *obj, std::wstring &wsXml);
-    static void DictToXml(Object *obj, std::wstring &wsXml, bool bBinary = false);
+    static std::wstring DictToXml(const std::wstring& wsName, Object* obj, bool bBinary = false);
 
     static void AppendStringToXml(std::wstring& wsXml, const std::string& sString)
     {

@@ -1248,13 +1248,12 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CSignatureField::CSignatureField(CXref* pXref, CDocument* pDocument) : CFieldBase(pXref, pDocument)
 	{
-		Add("FT", "Sig");
-
 		// Словарь сигнатур
 		m_pSig = new CSignatureDict(pXref);
 		if (!m_pSig)
 			return;
 		Add("V", m_pSig);
+		Add("FT", "Sig");
 		m_pResources = NULL;
 	}
 	void CSignatureField::SetName(const std::wstring& wsValue)

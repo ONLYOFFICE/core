@@ -300,7 +300,7 @@ void XMLConverter::ObjectToXml(Object *obj, std::wstring &wsXml)
     }
 }
 
-void XMLConverter::DictToXml(Object *obj, std::wstring &wsXml, bool bBinary)
+void DictToXmlR(Object* obj, std::wstring& wsXml, bool bBinary)
 {
     Object oTemp;
 
@@ -348,7 +348,7 @@ void XMLConverter::DictToXml(Object *obj, std::wstring &wsXml, bool bBinary)
         break;
     case objName:
         wsXml += L"Name\" num=\"";
-        AppendStringToXml(wsXml, obj->getName());
+        XMLConverter::AppendStringToXml(wsXml, obj->getName());
         wsXml += L"\">";
         break;
     case objNull:
@@ -360,7 +360,7 @@ void XMLConverter::DictToXml(Object *obj, std::wstring &wsXml, bool bBinary)
         {
             wsXml += L"<item";
             obj->arrayGetNF(nIndex, &oTemp);
-            DictToXml(&oTemp, wsXml, bBinary);
+            DictToXmlR(&oTemp, wsXml, bBinary);
             oTemp.free();
             wsXml += L"</item>";
         }
@@ -371,18 +371,15 @@ void XMLConverter::DictToXml(Object *obj, std::wstring &wsXml, bool bBinary)
         {
             char *sKey = obj->dictGetKey(nIndex);
             wsXml += L"<";
-            AppendStringToXml(wsXml, sKey);
+            XMLConverter::AppendStringToXml(wsXml, sKey);
             if (strcmp("Resources", sKey) == 0 || strcmp("AcroForm", sKey) == 0)
                 obj->dictGetVal(nIndex, &oTemp);
             else
                 obj->dictGetValNF(nIndex, &oTemp);
-            if (strcmp("ID", sKey) == 0)
-                DictToXml(&oTemp, wsXml, true);
-            else
-                DictToXml(&oTemp, wsXml, bBinary);
+            DictToXmlR(&oTemp, wsXml, strcmp("ID", sKey) == 0 ? true : bBinary);
             oTemp.free();
             wsXml += L"</";
-            AppendStringToXml(wsXml, sKey);
+            XMLConverter::AppendStringToXml(wsXml, sKey);
             wsXml += L">";
         }
         break;
@@ -398,7 +395,7 @@ void XMLConverter::DictToXml(Object *obj, std::wstring &wsXml, bool bBinary)
         break;
     case objCmd:
         wsXml += L"Cmd\" num=\"";
-        AppendStringToXml(wsXml, obj->getCmd());
+        XMLConverter::AppendStringToXml(wsXml, obj->getCmd());
         wsXml += L"\">";
         break;
     case objError:
@@ -411,6 +408,14 @@ void XMLConverter::DictToXml(Object *obj, std::wstring &wsXml, bool bBinary)
         wsXml += L"None\">";
         break;
     }
+}
+
+std::wstring XMLConverter::DictToXml(const std::wstring& wsName, Object* obj, bool bBinary)
+{
+    std::wstring sRes = L"<" + wsName;
+    DictToXmlR(obj, sRes, bBinary);
+    sRes += (L"</" + wsName + L">");
+    return sRes;
 }
 
 void XMLConverter::StreamDictToXml(Dict *dict, std::wstring &wsXml)

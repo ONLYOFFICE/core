@@ -71,10 +71,6 @@ namespace PdfWriter
 	{
 		return (m_unFlags & FLAG_INDIRECT ? true : false);
 	}
-	bool CObjectBase::IsIt(unsigned int unObjId, unsigned int unGenNo) const
-	{
-		return unObjId == m_unObjId && unGenNo == m_unGenNo;
-	}
 	void CObjectBase::SetDirect()
 	{
 		m_unFlags |= FLAG_DIRECT;

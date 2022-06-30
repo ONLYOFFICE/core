@@ -106,7 +106,6 @@ namespace PdfWriter
 		bool IsHidden() const;
 		bool IsDirect() const;
 		bool IsIndirect() const;
-		bool IsIt(unsigned int unObjId, unsigned int unGenNo) const;
 		void SetDirect();
 		void SetIndirect();
 		void SetHidden();
@@ -122,10 +121,6 @@ namespace PdfWriter
 		unsigned int GetGenNo() const
 		{
 			return m_unGenNo;
-		}
-		void UnSet()
-		{
-			m_unFlags = 0;
 		}
 		void WriteValue(CStream* pStream, CEncrypt* pEncrypt);
 		void Write     (CStream* pStream, CEncrypt* pEncrypt);
@@ -382,13 +377,13 @@ namespace PdfWriter
 		}
 		virtual CObjectBase* Copy(CObjectBase* pOut = NULL) const
 		{
-			if (pOut && pOut->GetType() == object_type_PROXY && ((CProxyObject*)pOut)->Get())
+			if (pOut && pOut->GetType() == object_type_PROXY && ((CProxyObject*)pOut)->m_pObject)
 			{
-				((CProxyObject*)pOut)->Get()->SetRef(GetObjId(), GetGenNo());
+				((CProxyObject*)pOut)->m_pObject->SetRef(m_pObject->GetObjId(), m_pObject->GetGenNo());
 				return pOut;
 			}
 			CProxyObject* pRes = new CProxyObject(new CObjectBase(), true);
-			pRes->Get()->SetRef(Get()->GetObjId(), Get()->GetGenNo());
+			pRes->Get()->SetRef(m_pObject->GetObjId(), m_pObject->GetGenNo());
 			return pRes;
 		}
 		EObjectType GetType() const
@@ -527,13 +522,13 @@ namespace PdfWriter
 		{
 			return m_unAddr;
 		}
-		int         GetCount() const
-		{
-			return m_arrEntries.size();
-		}
 		unsigned int GetSizeXRef() const
 		{
 			return m_unStartOffset + m_arrEntries.size();
+		}
+		int         GetCount() const
+		{
+			return m_arrEntries.size();
 		}
 		CDictObject*GetTrailer() const
 		{

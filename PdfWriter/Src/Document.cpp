@@ -1339,6 +1339,7 @@ namespace PdfWriter
 
 			m_pAcroForm->Add("SigFlags", 3);
 			pField->GetSignatureDict()->SetCert(m_vSignatures[i].pCertificate);
+			pField->GetSignatureDict()->SetDate();
 			pField->AddPageRect(m_vSignatures[i].pPage, m_vSignatures[i].oRect);
 			pField->Add("F", 132);
 			pField->SetFieldName("Sig" + std::to_string(i + m_unFormFields + 1));

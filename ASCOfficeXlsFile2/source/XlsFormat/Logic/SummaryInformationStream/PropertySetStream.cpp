@@ -31,12 +31,14 @@
  */
 
 #include "PropertySetStream.h"
+#include "CodePageOle.h"
 
 #include "../../Binary/CFStream.h"
 #include "../../Auxiliary/HelpFunc.h"
 #include "../../../Common/simple_xml_writer.h"
 #include "../../../../../DesktopEditor/common/SystemUtils.h"
 #include "../../../../../Common/DocxFormat/Source/Base/Base.h"
+#include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace OLEPS
 {
@@ -419,9 +421,10 @@ namespace OLEPS
 				prop = GetProperty(REVNUMBER);
 				if (prop)
 				{
+					unsigned int val = XmlUtils::GetUInteger(prop->toString());
 					CP_XML_NODE(L"cp:revision")
 					{
-                        CP_XML_STREAM() << prop->toString();
+						CP_XML_STREAM() << val;
 					}
 				}
 				prop = GetProperty(CREATE_DTM);

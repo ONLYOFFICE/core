@@ -1,5 +1,6 @@
 #pragma once
 
+#include "svector.h"
 #include "idirectoryentry.h"
 #include "guid.h"
 
@@ -31,34 +32,38 @@ public:
     static const int NOSTREAM = 0xFFFFFFFF;
     static const int ZERO = 0;
 
-    DirectoryEntry(std::wstring name, StgType stgType, std::vector<std::shared_ptr<IDirectoryEntry> > dirRepository);
+    DirectoryEntry(std::wstring name, StgType stgType, SVector<IDirectoryEntry> dirRepository);
+
+    RedBlackTree::PIRBNode getLeft() const override;
+    RedBlackTree::PIRBNode getRight() const override;
+    void setLeft(RedBlackTree::PIRBNode pNode) override;
+    void setRight(RedBlackTree::PIRBNode pNode) override;
+
+    inline void setColor(RedBlackTree::Color clr) override {stgColor = (StgColor)clr;}
+    inline RedBlackTree::Color getColor()const override {return (RedBlackTree::Color)stgColor;}
+
+    void setParent(RedBlackTree::PIRBNode pParent) override {parent = pParent;}
+    inline RedBlackTree::PIRBNode getParent() const override {return parent.lock();}
+    inline RedBlackTree::PIRBNode Grandparent() const override
+        {return (parent.use_count() ? parent.lock()->getParent() : RedBlackTree::PIRBNode());}
+    RedBlackTree::PIRBNode Sibling() const override; // check parent before using
+    RedBlackTree::PIRBNode Uncle() const override;
+    void AssignValueTo(RedBlackTree::PIRBNode other) override;
+
+    int CompareTo(const RedBlackTree::PIRBNode& other) const override;
+    std::wstring ToString() const override;
 
     int getSid() const override;
     void setSid(int newSid) override;
 
     std::wstring GetEntryName() const override;
     void SetEntryName(const std::wstring &entryName) override;
-    int GetHashCode() override;
-    void Write(Stream stream) override;
-    void Read(Stream stream, CFSVersion ver = CFSVersion::Ver_3) override;
-    std::wstring ToString() const override;
-    inline std::wstring Name() const {return GetEntryName();}
-
-    RedBlackTree::PIRBNode getLeft() const override;
-    RedBlackTree::PIRBNode getRight() const override;
-    void setLeft(RedBlackTree::PIRBNode pNode) override;
-    void setRight(RedBlackTree::PIRBNode pNode) override;
-    inline void setColor(RedBlackTree::Color clr) override {stgColor = (StgColor)clr;}
-    inline RedBlackTree::Color getColor()const override {return (RedBlackTree::Color)stgColor;}
-
-    int CompareTo(const RedBlackTree::PIRBNode& other) const override;
     inline ushort getNameLength() const override {return  nameLength;}
+    void Read(Stream stream, CFSVersion ver = CFSVersion::Ver_3) override;
+    void Write(Stream stream) const override;
+    int GetHashCode() const override;
 
-    void setParent(RedBlackTree::PIRBNode pParent) override {parent = pParent;}
-    inline RedBlackTree::PIRBNode getParent() const override {return parent.lock();}
-    inline RedBlackTree::PIRBNode Grandparent() const override
-        {return (parent.use_count() ? parent.lock()->getParent() : RedBlackTree::PIRBNode());}
-
+    inline std::wstring Name() const {return GetEntryName();}
 
 public:
     BYTE creationDate[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
@@ -72,7 +77,7 @@ public:
     int stateBits;
 
 private:
-    static ULONG64 fnv_hash(char* buffer, int lenght);
+    static ULONG64 fnv_hash(const char *buffer, int lenght);
 
 protected:
     // TODO init
@@ -84,7 +89,7 @@ private:
     ushort nameLength;
     StgType stgType = StgType::StgInvalid;
     StgColor stgColor = StgColor::Red;
-    std::vector<std::shared_ptr<IDirectoryEntry> > dirRepository;
+    SVector<IDirectoryEntry> dirRepository;
     std::weak_ptr<RedBlackTree::IRBNode> parent;
 
 };

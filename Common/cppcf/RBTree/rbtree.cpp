@@ -20,7 +20,7 @@ bool RBTree::TryLookup(PIRBNode templ, PIRBNode &val)
 {
     PIRBNode n = LookupNode(templ);
 
-    if (n.IsInit() == false)
+    if (n == nullptr)
     {
         val.reset();
         return false;
@@ -37,7 +37,7 @@ void RBTree::Insert(PIRBNode newNode)
     newNode->setColor(Color::RED);
     PIRBNode insertedNode = newNode;
 
-    if (getRoot().IsInit() == false)
+    if (getRoot() == nullptr)
     {
         setRoot(insertedNode);
     }
@@ -49,13 +49,13 @@ void RBTree::Insert(PIRBNode newNode)
             int compResult = newNode->CompareTo(n);
             if (compResult == 0)
             {
-                throw new RBTreeDuplicatedItemException("RBNode " + newNode->ToString() + " already present in tree");
+                throw new RBTreeDuplicatedItemException(L"RBNode " + newNode->ToString() + L" already present in tree");
                 //n->Value = value;
                 //return;
             }
             else if (compResult < 0)
             {
-                if (n->getLeft().IsInit() == false)
+                if (n->getLeft() == nullptr)
                 {
                     n->setLeft(insertedNode);
 
@@ -69,7 +69,7 @@ void RBTree::Insert(PIRBNode newNode)
             else
             {
                 //assert compResult > 0;
-                if (n->getRight().IsInit() == false)
+                if (n->getRight() == nullptr)
                 {
                     n->setRight(insertedNode);
 
@@ -86,7 +86,7 @@ void RBTree::Insert(PIRBNode newNode)
 
     InsertCase1(insertedNode);
 
-//    if (NodeInserted.IsInit())
+//    if (NodeInserted != nullptr)
 //    {
 //        NodeInserted(insertedNode);
 //    }
@@ -100,9 +100,9 @@ void RBTree::Delete(PIRBNode templ, PIRBNode &deletedAlt)
     deletedAlt.reset();
     PIRBNode n = LookupNode(templ);
     templ = n;
-    if (n.IsInit() == false)
+    if (n == nullptr)
         return;  // Key not found, do nothing
-    if (n->getLeft().IsInit() && n->getRight().IsInit())
+    if (n->getLeft() != nullptr && n->getRight() != nullptr)
     {
         // Copy key/value from predecessor and then delete it instead
         PIRBNode pred = MaximumNode(n->getLeft());
@@ -112,7 +112,7 @@ void RBTree::Delete(PIRBNode templ, PIRBNode &deletedAlt)
     }
 
     //assert n->left == null || n->right == null;
-    PIRBNode child = (n->getRight().IsInit() == false) ? n->getLeft() : n->getRight();
+    PIRBNode child = (n->getRight() == nullptr) ? n->getLeft() : n->getRight();
     if (NodeColor(n) == Color::BLACK)
     {
         n->setColor(NodeColor(child));
@@ -134,18 +134,18 @@ void RBTree::VisitTree(Action<PIRBNode> action)
 {
     PIRBNode walker = getRoot();
 
-    if (walker.IsInit())
+    if (walker != nullptr)
         DoVisitTree(action, walker);
 }
 
 Color RBTree::NodeColor(PIRBNode n)
 {
-    return n.IsInit() == false ? Color::BLACK : n->getColor();
+    return n == nullptr ? Color::BLACK : n->getColor();
 }
 
 PIRBNode RBTree::MaximumNode(PIRBNode n)
 {
-    while (n->getRight().IsInit())
+    while (n->getRight() != nullptr)
     {
         n = n->getRight();
     }
@@ -157,7 +157,7 @@ PIRBNode RBTree::LookupNode(PIRBNode templ)
 {
     PIRBNode n = getRoot();
 
-    while (n.IsInit())
+    while (n != nullptr)
     {
         int compResult = templ->CompareTo(n);
 
@@ -181,7 +181,7 @@ PIRBNode RBTree::LookupNode(PIRBNode templ)
 
 void RBTree::ReplaceNode(PIRBNode oldn, PIRBNode newn)
 {
-    if (oldn->getParent().IsInit() == false)
+    if (oldn->getParent() == nullptr)
     {
         setRoot(newn);
     }
@@ -192,7 +192,7 @@ void RBTree::ReplaceNode(PIRBNode oldn, PIRBNode newn)
         else
             oldn->getParent()->setRight(newn);
     }
-    if (newn.IsInit())
+    if (newn != nullptr)
     {
         newn->setParent(oldn->getParent());
     }
@@ -203,7 +203,7 @@ void RBTree::RotateLeft(PIRBNode n)
     PIRBNode r = n->getRight();
     ReplaceNode(n, r);
     n->setRight(r->getLeft());
-    if (r->getLeft().IsInit())
+    if (r->getLeft() != nullptr)
     {
         r->getLeft()->setParent(n);
     }
@@ -217,7 +217,7 @@ void RBTree::RotateRight(PIRBNode n)
     ReplaceNode(n, l);
     n->setLeft(l->getRight());
 
-    if (l->getRight().IsInit())
+    if (l->getRight() != nullptr)
     {
         l->getRight()->setParent(n);
     }
@@ -228,7 +228,7 @@ void RBTree::RotateRight(PIRBNode n)
 
 void RBTree::InsertCase1(PIRBNode n)
 {
-    if (n->getParent().IsInit() == false)
+    if (n->getParent() == nullptr)
         n->setColor(Color::BLACK);
     else
         InsertCase2(n);
@@ -290,7 +290,7 @@ void RBTree::InsertCase5(PIRBNode n)
 
 void RBTree::DeleteCase1(PIRBNode n)
 {
-    if (n->getParent().IsInit() == false)
+    if (n->getParent() == nullptr)
         return;
     else
         DeleteCase2(n);
@@ -383,7 +383,7 @@ void RBTree::DeleteCase6(PIRBNode n)
 
 void RBTree::DoVisitTree(Action<PIRBNode> action, PIRBNode walker)
 {
-    if (walker->getLeft().IsInit())
+    if (walker->getLeft() != nullptr)
     {
         DoVisitTree(action, walker->getLeft());
     }
@@ -391,7 +391,7 @@ void RBTree::DoVisitTree(Action<PIRBNode> action, PIRBNode walker)
     if (action != nullptr)
         action(walker);
 
-    if (walker->getRight().IsInit())
+    if (walker->getRight() != nullptr)
     {
         DoVisitTree(action, walker->getRight());
     }
@@ -402,13 +402,13 @@ void RBTree::VisitTreeNodes(Action<PIRBNode> action)
     //IN Order visit
     PIRBNode walker = getRoot();
 
-    if (walker.IsInit())
+    if (walker != nullptr)
         DoVisitTreeNodes(action, walker);
 }
 
 void RBTree::DoVisitTreeNodes(Action<PIRBNode> action, PIRBNode walker)
 {
-    if (walker->getLeft().IsInit())
+    if (walker->getLeft() != nullptr)
     {
         DoVisitTreeNodes(action, walker->getLeft());
     }
@@ -416,7 +416,7 @@ void RBTree::DoVisitTreeNodes(Action<PIRBNode> action, PIRBNode walker)
     if (action != nullptr)
         action(walker);
 
-    if (walker->getRight().IsInit())
+    if (walker->getRight() != nullptr)
     {
 
         DoVisitTreeNodes(action, walker->getRight());

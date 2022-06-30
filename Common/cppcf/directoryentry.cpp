@@ -5,7 +5,7 @@
 using namespace CFCPP;
 
 
-DirectoryEntry::DirectoryEntry(std::wstring name, StgType stgType, std::vector<std::shared_ptr<IDirectoryEntry> > dirRepository)
+DirectoryEntry::DirectoryEntry(std::wstring name, StgType stgType, SVector<IDirectoryEntry> dirRepository)
 {
     this->dirRepository = dirRepository;
 
@@ -59,11 +59,11 @@ void DirectoryEntry::SetEntryName(const std::wstring &entryName)
     else
     {
         if (
-            entryName.find(L"\\") == std::wstring::npos ||
-            entryName.find(L"/")  == std::wstring::npos ||
-            entryName.find(L":")  == std::wstring::npos ||
-            entryName.find(L"!")  == std::wstring::npos
-            ) throw new CFException("Invalid character in entry: the characters '\\', '/', ':','!' cannot be used in entry name");
+                entryName.find(L"\\") == std::wstring::npos ||
+                entryName.find(L"/")  == std::wstring::npos ||
+                entryName.find(L":")  == std::wstring::npos ||
+                entryName.find(L"!")  == std::wstring::npos
+                ) throw new CFException("Invalid character in entry: the characters '\\', '/', ':','!' cannot be used in entry name");
 
         if (entryName.length() > 31)
             throw new CFException("Entry name MUST NOT exceed 31 characters");
@@ -76,12 +76,12 @@ void DirectoryEntry::SetEntryName(const std::wstring &entryName)
     }
 }
 
-int DirectoryEntry::GetHashCode()
+int DirectoryEntry::GetHashCode() const
 {
     return (int)fnv_hash(entryName, nameLength);
 }
 
-void DirectoryEntry::Write(Stream stream)
+void DirectoryEntry::Write(Stream stream) const
 {
     StreamRW rw(stream);
     rw.WriteArray(entryName, sizeof (entryName));
@@ -91,7 +91,7 @@ void DirectoryEntry::Write(Stream stream)
     rw.Write(leftSibling);
     rw.Write(rightSibling);
     rw.Write(child);
-    rw.WriteArray(reinterpret_cast<BYTE*>(&storageCLSID), sizeof (storageCLSID));
+    rw.WriteArray(reinterpret_cast<const char*>(&storageCLSID), sizeof (storageCLSID));
     rw.Write(stateBits);
     rw.WriteArray(creationDate, sizeof (creationDate));
     rw.WriteArray(modifyDate, sizeof (modifyDate));
@@ -180,6 +180,39 @@ void DirectoryEntry::setRight(RedBlackTree::PIRBNode pNode)
         dirRepository[rightSibling]->setParent(thisPtr.lock());
 }
 
+RedBlackTree::PIRBNode DirectoryEntry::Sibling() const
+{
+    if (thisPtr.lock() == getParent()->getLeft())
+        return getParent()->getRight();
+    else
+        return getParent()->getLeft();
+}
+
+RedBlackTree::PIRBNode DirectoryEntry::Uncle() const
+{
+    return parent.use_count() != 0 ? getParent()->Sibling() : RedBlackTree::PIRBNode();
+}
+
+void DirectoryEntry::AssignValueTo(RedBlackTree::PIRBNode other)
+{
+    auto d = std::dynamic_pointer_cast<DirectoryEntry>(other); // as
+    if (d == nullptr)
+        return;
+
+
+    d->SetEntryName(this->GetEntryName());
+
+    std::copy(creationDate, creationDate+8, d->creationDate);
+    std::copy(modifyDate, modifyDate+8, d->modifyDate);
+
+    d->size = this->size;
+    d->startSetc = this->startSetc;
+    d->stateBits = this->stateBits;
+    d->stgType = this->stgType;
+    d->storageCLSID = this->storageCLSID;
+    d->child = this->child;
+}
+
 int DirectoryEntry::CompareTo(const RedBlackTree::PIRBNode &other) const
 {
     IDirectoryEntry* otherDir = dynamic_cast<IDirectoryEntry*>(other.get());
@@ -216,7 +249,7 @@ int DirectoryEntry::CompareTo(const RedBlackTree::PIRBNode &other) const
     }
 }
 
-ULONG64 DirectoryEntry::fnv_hash(char *buffer, int lenght)
+ULONG64 DirectoryEntry::fnv_hash(const char *buffer, int lenght)
 {
     ULONG64 h = 2166136261;
     int i;

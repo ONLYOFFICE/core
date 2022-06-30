@@ -13,7 +13,7 @@ public:
     RBTreeException(std::wstring message, std::exception& ex) : std::exception(ex), errorMessage(message) {}
     virtual ~RBTreeException() throw () {}
 
-    virtual const char* what() const throw () {
+    virtual const wchar_t* what_w() const throw () {
         return errorMessage.c_str();
     }
 

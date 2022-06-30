@@ -69,6 +69,7 @@ public:
 	bool isOpenOfficeFormatFile	(const std::wstring & fileName, std::wstring & documentID);
 	bool isOnlyOfficeFormatFile	(const std::wstring & fileName);
 
+	bool isDocFormatFile	(const std::wstring & fileName);
 	bool isXlsFormatFile	(const std::wstring & fileName);
 
 	bool isDocFormatFile	(POLE::Storage *storage);

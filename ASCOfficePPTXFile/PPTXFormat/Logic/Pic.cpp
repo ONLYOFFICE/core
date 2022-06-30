@@ -33,6 +33,7 @@
 #include "Pic.h"
 
 #include "../../../ASCOfficeXlsFile2/source/XlsXlsxConverter/ConvertXls2Xlsx.h"
+#include "../../../ASCOfficeDocFile/DocFormatLib/DocFormatLib.h"
 #include "../../../ASCOfficeDocxFile2/BinWriter/BinEquationWriter.h"
 #include "../../../ASCOfficeDocxFile2/BinWriter/BinWriters.h"
 #include "../../../ASCOfficeDocxFile2/BinReader/Readers.h"
@@ -141,31 +142,46 @@ namespace PPTX
 			//test xls ole_file for convert to xlsx
 
 			COfficeFileFormatChecker checker;
-			if (ole_file.IsInit() && checker.isXlsFormatFile(ole_file->filename().GetPath()))
+			if (ole_file.IsInit() && (checker.isXlsFormatFile(ole_file->filename().GetPath()) ||
+				checker.isDocFormatFile(ole_file->filename().GetPath())))
 			{
 				std::wstring sTemp = ole_file->filename().GetDirectory();
+				
 				std::wstring sResultOoxmlDir = sTemp + FILE_SEPARATOR_STR + _T("ooxml_unpacked");
 				NSDirectory::CreateDirectory(sResultOoxmlDir);
 
 				bool bMacro = true;
-				_UINT32 nRes = ConvertXls2Xlsx(ole_file->filename().GetPath(), sResultOoxmlDir, L"", L"", sTemp, 0, bMacro);
-				
+				_UINT32 nRes = 0;
+				std::wstring ooxml_file;
+
+				if (checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS)
+				{
+					nRes = ConvertXls2Xlsx(ole_file->filename().GetPath(), sResultOoxmlDir, L"", L"", sTemp, 0, bMacro);
+
+					ooxml_file = ole_file->filename().GetPath() + (bMacro ? L".xlsm" : L".xlsx");
+				}
+				else if (checker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC)
+				{
+					COfficeDocFile docFile;
+					docFile.m_sTempFolder = ole_file->filename().GetDirectory();
+
+					nRes = docFile.LoadFromFile(ole_file->filename().GetPath(), sResultOoxmlDir, L"", bMacro);
+
+					ooxml_file = ole_file->filename().GetPath() + (bMacro ? L".docm" : L".docx");
+				}
 				if (0 == nRes)
 				{
-					std::wstring xlsx_file = ole_file->filename().GetPath() + (bMacro ? L".xlsm" : L".xlsx");
-
 					COfficeUtils oCOfficeUtils(NULL);
-					nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultOoxmlDir, xlsx_file)) ? nRes : S_FALSE;
-					
-					if (0 == nRes)
-					{
-						ole_file->set_MsPackage(true);
-						ole_file->set_filename(xlsx_file, false);
-					}
+					nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultOoxmlDir, ooxml_file)) ? nRes : S_FALSE;
 				}
 				NSDirectory::DeleteDirectory(sResultOoxmlDir);
+				
+				if (0 == nRes && false == ooxml_file.empty())
+				{
+					ole_file->set_MsPackage(true);
+					ole_file->set_filename(ooxml_file, false);
+				}
 			}
-	
 
 			if (ole_file.IsInit() && 0 == sProgID.find(L"asc."))
 			{

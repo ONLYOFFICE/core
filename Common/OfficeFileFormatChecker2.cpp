@@ -760,6 +760,19 @@ bool COfficeFileFormatChecker::isOOXFormatFile(const std::wstring & fileName, bo
 	}
 	return false;
 }
+bool COfficeFileFormatChecker::isDocFormatFile(const std::wstring & fileName)
+{
+	POLE::Storage storage(fileName.c_str());
+	if (storage.open())
+	{
+		if (isDocFormatFile(&storage))
+		{
+			//nFileType внутри;
+			return true;
+		}
+	}
+	return false;
+}
 bool COfficeFileFormatChecker::isXlsFormatFile(const std::wstring & fileName)
 {
 	POLE::Storage storage(fileName.c_str());

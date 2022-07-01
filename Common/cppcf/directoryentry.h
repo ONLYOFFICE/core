@@ -22,7 +22,7 @@ enum StgColor : int
     Black = 1
 };
 
-class DirectoryEntry : public IDirectoryEntry
+class DirectoryEntry : public IDirectoryEntry, protected std::enable_shared_from_this<DirectoryEntry>
 {
 public:
 
@@ -59,10 +59,15 @@ public:
     std::wstring GetEntryName() const override;
     void SetEntryName(const std::wstring &entryName) override;
     inline ushort getNameLength() const override {return  nameLength;}
+
+    void setStartSetc(int value) override {startSetc = value;};
+    int getStartSetc() const override {return startSetc;};
+
     void Read(Stream stream, CFSVersion ver = CFSVersion::Ver_3) override;
     void Write(Stream stream) const override;
     int GetHashCode() const override;
 
+    StgType getStgType() const;
     inline std::wstring Name() const {return GetEntryName();}
 
 public:
@@ -75,13 +80,10 @@ public:
     int child = NOSTREAM;
     GUID storageCLSID;
     int stateBits;
+    static std::shared_ptr<IDirectoryEntry> New(std::wstring name, StgType stgType, SVector<IDirectoryEntry> dirRepository);
 
 private:
     static ULONG64 fnv_hash(const char *buffer, int lenght);
-
-protected:
-    // TODO init
-    std::weak_ptr<IRBNode> thisPtr;
 
 private:
     int sid = -1;

@@ -29,7 +29,7 @@ public:
     void WriteArray(const BYTE *arr, int lenght);
     void WriteArray(const char *arr, int lenght);
 
-    inline void Close(){}
+    inline void Close(){return;}
 
 private:
     std::array<BYTE,8> buffer;

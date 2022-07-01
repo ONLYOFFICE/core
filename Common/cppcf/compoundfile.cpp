@@ -39,7 +39,7 @@ CompoundFile::CompoundFile(CFSVersion cfsVersion, CFSConfiguration configFlags) 
     FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
 
     //Root --
-    IDirectoryEntry rootDir = DirectoryEntry.New("Root Entry", StgType.StgRoot, directoryEntries);
+    std::shared_ptr<IDirectoryEntry> rootDir = DirectoryEntry::New("Root Entry", StgType.StgRoot, directoryEntries);
     rootDir.StgColor = StgColor.Black;
     //InsertNewDirectoryEntry(rootDir);
 
@@ -537,6 +537,101 @@ SVector<Sector> CompoundFile::GetDifatSectorChain()
     return result;
 }
 
+SVector<Sector> CompoundFile::GetNormalSectorChain(int secID)
+{
+    SVector<Sector> result;
+
+    int nextSecID = secID;
+
+    SVector<Sector> fatSectors = GetFatSectorChain();
+    std::unordered_set<int> processedSectors;
+
+    SVector<Sector> availableSectors;
+    StreamView fatStream(fatSectors, GetSectorSize(), fatSectors.size() * GetSectorSize(), availableSectors, sourceStream);
+
+    while (true)
+    {
+        if (nextSecID == Sector::ENDOFCHAIN) break;
+
+        if (nextSecID < 0)
+            throw new CFCorruptedFileException("Next Sector ID reference is below zero. NextID : " + std::to_string(nextSecID));
+
+        if (nextSecID >= sectors.Count())
+            throw new CFCorruptedFileException("Next Sector ID reference an out of range sector. NextID : " + std::to_string(nextSecID) +
+                                               " while sector count " + std::to_string(sectors.Count()));
+
+        std::shared_ptr<Sector> s = sectors[nextSecID];
+        if (s == nullptr)
+        {
+            s.reset(new Sector(GetSectorSize(), sourceStream));
+            s->id = nextSecID;
+            s->type = SectorType::Normal;
+            sectors[nextSecID] = s;
+        }
+
+        result.push_back(s);
+
+        fatStream.Seek(nextSecID * 4, std::ios::beg);
+        int next = fatStream.ReadInt32();
+
+        EnsureUniqueSectorIndex(next, processedSectors);
+        nextSecID = next;
+
+    }
+
+
+    return result;
+}
+
+// TODO
+SVector<Sector> CompoundFile::GetMiniSectorChain(int secID)
+{
+    SVector<Sector> result;
+
+    if (secID != Sector::ENDOFCHAIN)
+    {
+        int nextSecID = secID;
+
+        SVector<Sector> miniFAT = GetNormalSectorChain(header.firstMiniFATSectorID);
+        SVector<Sector> miniStream = GetNormalSectorChain(RootEntry()->getStartSetc());
+        SVector<Sector> zeroVector;
+
+        StreamView miniFATView(miniFAT, GetSectorSize(), header.miniFATSectorsNumber * Sector::MINISECTOR_SIZE, zeroVector, sourceStream);
+
+        // TODO here
+        StreamView miniStreamView(miniStream, GetSectorSize(), rootStorage.Size, zeroVector, sourceStream);
+
+        BinaryReader miniFATReader = new BinaryReader(miniFATView);
+
+        nextSecID = secID;
+
+        std::unordered_set<int> processedSectors;
+
+        while (true)
+        {
+            if (nextSecID == Sector::ENDOFCHAIN)
+                break;
+
+            std::shared_ptr<Sector> ms(new Sector(Sector::MINISECTOR_SIZE, sourceStream));
+
+            ms->id = nextSecID;
+            ms->type = SectorType::Mini;
+
+            miniStreamView.Seek(nextSecID * Sector::MINISECTOR_SIZE, std::ios::beg);
+            miniStreamView.Read(reinterpret_cast<char*>(ms->GetData().data()), 0, Sector::MINISECTOR_SIZE);
+
+            result.push_back(ms);
+
+            miniFATView.Seek(nextSecID * 4, std::ios::beg);
+            int next = miniFATReader.ReadInt32();
+
+            nextSecID = next;
+            EnsureUniqueSectorIndex(nextSecID, processedSectors);
+        }
+    }
+    return result;
+}
+
 SVector<Sector> CompoundFile::GetSectorChain(int secID, SectorType chainType)
 {
     switch (chainType)
@@ -625,9 +720,28 @@ void CompoundFile::Close(bool closeStream)
 
 }
 
+std::shared_ptr<IDirectoryEntry> CompoundFile::RootEntry()
+{
+    if (directoryEntries.empty())
+        return {};
+    return directoryEntries[0];
+}
+
+SVector<IDirectoryEntry> CompoundFile::FindDirectoryEntries(std::wstring entryName)
+{
+    SVector<IDirectoryEntry> result;
+
+    for (const auto d : directoryEntries)
+    {
+        if (d->GetEntryName() == entryName && d->getStgType() != StgType::StgInvalid)
+            result.push_back(d);
+    }
+
+    return result;
+}
+
 int CompoundFile::GetSectorSize()
 {
-
     return 2 << (header.sectorShift - 1);
 }
 

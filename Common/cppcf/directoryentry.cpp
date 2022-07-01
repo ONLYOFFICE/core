@@ -1,6 +1,8 @@
 #include "directoryentry.h"
 #include "cfexception.h"
 #include "streamrw.h"
+#include <stdexcept>
+
 
 using namespace CFCPP;
 
@@ -169,7 +171,7 @@ void DirectoryEntry::setLeft(RedBlackTree::PIRBNode pNode)
     leftSibling = pNode != nullptr ? static_cast<IDirectoryEntry*>(pNode.get())->getSid() : DirectoryEntry::NOSTREAM;
 
     if (leftSibling != DirectoryEntry::NOSTREAM)
-        dirRepository[leftSibling]->setParent(thisPtr.lock());
+        dirRepository[leftSibling]->setParent(shared_from_this());
 }
 
 void DirectoryEntry::setRight(RedBlackTree::PIRBNode pNode)
@@ -177,12 +179,12 @@ void DirectoryEntry::setRight(RedBlackTree::PIRBNode pNode)
     rightSibling = pNode != nullptr ? static_cast<IDirectoryEntry*>(pNode.get())->getSid() : DirectoryEntry::NOSTREAM;
 
     if (rightSibling != DirectoryEntry::NOSTREAM)
-        dirRepository[rightSibling]->setParent(thisPtr.lock());
+        dirRepository[rightSibling]->setParent(shared_from_this());
 }
 
 RedBlackTree::PIRBNode DirectoryEntry::Sibling() const
 {
-    if (thisPtr.lock() == getParent()->getLeft())
+    if (shared_from_this() == getParent()->getLeft())
         return getParent()->getRight();
     else
         return getParent()->getLeft();
@@ -258,5 +260,26 @@ ULONG64 DirectoryEntry::fnv_hash(const char *buffer, int lenght)
         h = (h * 16777619) ^ buffer[i];
 
     return h;
+}
+
+StgType DirectoryEntry::getStgType() const
+{
+    return stgType;
+}
+
+std::shared_ptr<IDirectoryEntry> DirectoryEntry::New(std::wstring name, StgType stgType, SVector<IDirectoryEntry> dirRepository)
+{
+    std::shared_ptr<DirectoryEntry> de;
+    if (dirRepository.size())
+    {
+        de.reset(new DirectoryEntry(name, stgType, dirRepository));
+        // No invalid directory entry found
+        dirRepository.push_back(de);
+        de->setSid(dirRepository.size() - 1);
+    }
+    else
+        throw new std::invalid_argument("dirRepository Directory repository cannot be null in New() method");
+
+    return de;
 }
 

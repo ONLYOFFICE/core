@@ -2,6 +2,7 @@
 
 #include "header.h"
 #include "sectorcollection.h"
+#include "directoryentry.h"
 #include <queue>
 #include <unordered_set>
 
@@ -51,6 +52,7 @@ public:
     void OnSizeLimitReached();
     void Commit();
     void Commit(bool releaseMemory);
+    inline bool HasSourceStream() {return sourceStream != nullptr;}
 
     void Close();
 protected:
@@ -69,11 +71,13 @@ private:
     SVector<Sector> GetFatSectorChain();
     SVector<Sector> GetDifatSectorChain();
     SVector<Sector> GetNormalSectorChain(int secID);
-    SVector<Sector>GetMiniSectorChain(int secID);
+    SVector<Sector> GetMiniSectorChain(int secID);
     SVector<Sector> GetSectorChain(int secID, SectorType chainType);
     void EnsureUniqueSectorIndex(int nextSecID, std::unordered_set<int> &processedSectors);
     void CommitDirectory();
     void Close(bool closeStream);
+    std::shared_ptr<IDirectoryEntry> RootEntry();
+    SVector<IDirectoryEntry> FindDirectoryEntries(std::wstring entryName);
 
 public:
     CFSConfiguration configuration = Default;
@@ -100,6 +104,7 @@ private:
     bool validationExceptionEnabled = true;
     bool _disposed;//false
     CFSUpdateMode updateMode;
+    SVector<DirectoryEntry> directoryEntries;
 
 #if !defined(FLAT_WRITE)
         std::array<BYTE, FLUSHING_BUFFER_MAX_SIZE> buffer;

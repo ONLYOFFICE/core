@@ -145,7 +145,7 @@ namespace NSDocxRenderer
                 if (i < nCountConts - 1)
                 {
                     //переходим на
-                    pFirst = m_arConts[i];
+                    pFirst = pCurrent;
                 }
                 continue;
             }
@@ -297,7 +297,7 @@ namespace NSDocxRenderer
             {
                 // просто текст на тексте или сменились настройки (font/brush)
                 pPrev->ToXml(oWriter, pManagerLight);
-                pPrev  = pCurrent;
+                pPrev = pCurrent;
             }
             //else if (dDelta < 2 * pPrev->m_dSpaceWidthMM)
             //{
@@ -309,7 +309,7 @@ namespace NSDocxRenderer
             {
                 // расстояние слишком большое. нужно сделать большой пробел
                 pPrev->ToXml(oWriter, pManagerLight);
-                pPrev->AddWideSpaceToXml(dDelta, oWriter, pManagerLight);
+                pPrev->AddWideSpaceToXml(dDelta, oWriter, pManagerLight, pPrev->IsEqual(pCurrent));
                 pPrev = pCurrent;
             }
         }

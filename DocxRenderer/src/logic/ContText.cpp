@@ -22,7 +22,7 @@ namespace NSDocxRenderer
 
         m_bIsNeedSpaceAtTheEnd = false;
         m_bIsHighlightPresent = false;
-        m_lHighlightColor = 0; //черный
+        m_lHighlightColor = c_iBlackColor;
 
         m_eUnderlineType = utUnknown;
 
@@ -131,13 +131,17 @@ namespace NSDocxRenderer
             pManagerLight->LoadFont(m_strPickFontName, m_lPickFontStyle, ___dSize, false);
             double dWidth = pManagerLight->MeasureStringWidth(m_oText.ToStdWString());
 
-            if (fabs(dWidth - m_dWidth) > 2)
-            {
-                double dSpacing = (m_dWidth - dWidth) / (m_oText.length() + 1);
-                dSpacing *= c_dMMToDx;
+            double dSpacing = (m_dWidth - dWidth) / (m_oText.length() + 1);
+            dSpacing *= c_dMMToDx;
 
+            LONG lSpacing = static_cast<LONG>(dSpacing);
+            //note принудительно уменьшаем spacing чтобы текстовые линии не выходили за правую границу
+            lSpacing -= 1;
+
+            if (lSpacing != 0)
+            {
                 oWriter.WriteString(L"<w:spacing w:val=\"");
-                oWriter.AddInt(static_cast<int>(dSpacing));
+                oWriter.AddInt(lSpacing);
                 oWriter.WriteString(L"\"/>");
             }
         }
@@ -158,7 +162,7 @@ namespace NSDocxRenderer
         oWriter.WriteEncodeXmlString(strFontName);
         oWriter.WriteString(L"\"/>");
 
-        if (m_oBrush.Color1 != 0)
+        if (ConvertColorBGRToRGB(m_oBrush.Color1) != c_iBlackColor)
         {
             oWriter.WriteString(L"<w:color w:val=\"");
             oWriter.WriteHexInt3(ConvertColorBGRToRGB(m_oBrush.Color1));
@@ -215,23 +219,24 @@ namespace NSDocxRenderer
 
     void CContText::AddWideSpaceToXml(double dSpacingMM,
                                       NSStringUtils::CStringBuilder& oWriter,
-                                      CFontManagerLight* pManagerLight)
+                                      CFontManagerLight* pManagerLight,
+                                      bool bIsNeedSaveFormat)
     {
         oWriter.WriteString(L"<w:r><w:rPr>");
 
         double dSpaceMMSize = m_dSpaceWidthMM;
         if (m_strPickFontName.empty())
         {
-            if (m_oFont.Bold)
+            if (m_oFont.Bold && bIsNeedSaveFormat)
                 oWriter.WriteString(L"<w:b w:val=\"true\"/>");
-            if (m_oFont.Italic)
+            if (m_oFont.Italic && bIsNeedSaveFormat)
                 oWriter.WriteString(L"<w:i w:val=\"true\"/>");
         }
         else
         {
-            if (0x01 == (0x01 & m_lPickFontStyle))
+            if (0x01 == (0x01 & m_lPickFontStyle) && bIsNeedSaveFormat)
                 oWriter.WriteString(L"<w:b w:val=\"true\"/>");
-            if (0x02 == (0x02 & m_lPickFontStyle))
+            if (0x02 == (0x02 & m_lPickFontStyle) && bIsNeedSaveFormat)
                 oWriter.WriteString(L"<w:i w:val=\"true\"/>");
 
             dSpaceMMSize = pManagerLight->GetSpaceWidth();
@@ -258,23 +263,28 @@ namespace NSDocxRenderer
         oWriter.WriteString(L"\"/>");
 
         LONG lSpacing = static_cast<LONG>((dSpacingMM - dSpaceMMSize) * c_dMMToDx);
-        oWriter.WriteString(L"<w:spacing w:val=\"");
-        oWriter.AddInt(static_cast<int>(lSpacing));
-        oWriter.WriteString(L"\"/>");
+        //note принудительно уменьшаем spacing чтобы текстовые линии не выходили за правую границу
+        lSpacing -= 1;
+        if (lSpacing != 0)
+        {
+            oWriter.WriteString(L"<w:spacing w:val=\"");
+            oWriter.AddInt(lSpacing);
+            oWriter.WriteString(L"\"/>");
+        }
 
-        if (m_oBrush.Color1 != 0)
+        if (ConvertColorBGRToRGB(m_oBrush.Color1) != c_iBlackColor)
         {
             oWriter.WriteString(L"<w:color w:val=\"");
             oWriter.WriteHexInt3(ConvertColorBGRToRGB(m_oBrush.Color1));
             oWriter.WriteString(L"\"/>");
         }
 
-        if (m_oFont.Strikeout == TRUE)
+        if (m_oFont.Strikeout == TRUE  && bIsNeedSaveFormat)
         {
             oWriter.WriteString(L"<w:strike/>");
         }
 
-        if (m_oFont.Underline == TRUE)
+        if (m_oFont.Underline == TRUE  && bIsNeedSaveFormat)
         {
             switch (m_eUnderlineType)
             {
@@ -292,7 +302,7 @@ namespace NSDocxRenderer
             }
         }
 
-        if (m_bIsHighlightPresent)
+        if (m_bIsHighlightPresent && bIsNeedSaveFormat)
         {
             ColorTable& colorTable = SingletonInstance<ColorTable>();
             if (colorTable.IsStandardColor(m_lHighlightColor))

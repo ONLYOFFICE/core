@@ -66,7 +66,8 @@ namespace NSDocxRenderer
 
             void AddWideSpaceToXml(double dSpacingMM,
                                    NSStringUtils::CStringBuilder& oWriter,
-                                   CFontManagerLight* pManagerLight);
+                                   CFontManagerLight* pManagerLight,
+                                   bool bIsNeedSaveFormat = false);
 
             void AddSpaceToEnd();
             bool IsEqual(const CContText* oSrc);

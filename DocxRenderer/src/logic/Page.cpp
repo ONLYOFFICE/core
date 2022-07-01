@@ -521,8 +521,11 @@ namespace NSDocxRenderer
         //Условие для размеров по высоте
         bool bIf3 = pShape->m_dHeight < pContText->m_dHeight &&
                 pContText->m_dHeight - pShape->m_dHeight > c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM;
+        //Цвета должны быть разными
+        bool bIf4 = pContText->m_oBrush.Color1 != pShape->m_oBrush.Color1 &&
+                pContText->m_oBrush.Color1 != pShape->m_oPen.Color;
 
-        if (bIf1 && bIf2 && bIf3)
+        if (bIf1 && bIf2 && bIf3 && bIf4)
         {
             pContText->m_oFont.Strikeout = TRUE;
 
@@ -595,7 +598,11 @@ namespace NSDocxRenderer
                 fabs(dRightShape - dRightContText) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM ||
                 (pShape->m_dLeft < pContText->m_dX && dRightShape > dRightContText);
 
-        if (bIf1 && bIf2)
+        //Цвета должны быть разными
+        bool bIf3 = pContText->m_oBrush.Color1 != pShape->m_oBrush.Color1 &&
+                pContText->m_oBrush.Color1 != pShape->m_oPen.Color;
+
+        if (bIf1 && bIf2 && bIf3)
         {
             //Удовлетворяет расположением и размером - привязываем указатель на картинку
             pContText->m_pShape = pShape;
@@ -881,7 +888,6 @@ namespace NSDocxRenderer
         for (std::vector<CTextLine*>::iterator iter = m_arTextLine.begin(); iter != m_arTextLine.end(); ++iter)
         {
             (*iter)->SortConts();
-            (*iter)->Analyze();
             (*iter)->CalculateWidth();
         }
 
@@ -907,10 +913,9 @@ namespace NSDocxRenderer
         //todo добавить различные типы текста для распознавания: обычный-сплошной, списки-содержание и тд
 
         SortElements(m_arTextLine);
-        for (std::vector<CTextLine*>::iterator iter = m_arTextLine.begin(); iter != m_arTextLine.end(); ++iter)
+        for (auto iter = m_arTextLine.begin(); iter != m_arTextLine.end(); ++iter)
         {
             (*iter)->SortConts();
-            (*iter)->Analyze();
             (*iter)->CalculateWidth();
             (*iter)->DetermineAssumedTextAlignmentType(m_dWidth);
         }
@@ -1162,23 +1167,25 @@ namespace NSDocxRenderer
 
         //note нужно корректировать каждый размер отдельно
         //note для больших форматов возможно нужно добавить промежуточные значения
-        if      (lSize <= 16) return c_dRightBorderCorrectionSize[0][nType]; //8pt
-        else if (lSize <= 18) return c_dRightBorderCorrectionSize[1][nType]; //9pt
-        else if (lSize <= 20) return c_dRightBorderCorrectionSize[2][nType]; //10pt
-        else if (lSize <= 22) return c_dRightBorderCorrectionSize[3][nType]; //11pt
-        else if (lSize <= 24) return c_dRightBorderCorrectionSize[4][nType]; //12pt
-        else if (lSize <= 28) return c_dRightBorderCorrectionSize[5][nType]; //14pt
-        else if (lSize <= 32) return c_dRightBorderCorrectionSize[6][nType]; //16pt
-        else if (lSize <= 36) return c_dRightBorderCorrectionSize[7][nType]; //18pt
-        else if (lSize <= 40) return c_dRightBorderCorrectionSize[8][nType]; //20pt
-        else if (lSize <= 44) return c_dRightBorderCorrectionSize[9][nType]; //22pt
-        else if (lSize <= 48) return c_dRightBorderCorrectionSize[10][nType]; //24pt
-        else if (lSize <= 52) return c_dRightBorderCorrectionSize[11][nType]; //26pt
-        else if (lSize <= 56) return c_dRightBorderCorrectionSize[12][nType]; //28pt
-        else if (lSize <= 72) return c_dRightBorderCorrectionSize[13][nType]; //36pt
-        else if (lSize <= 96) return c_dRightBorderCorrectionSize[14][nType]; //48pt
-        else if (lSize <= 144)return c_dRightBorderCorrectionSize[15][nType]; //72pt
-        else                  return c_dRightBorderCorrectionSize[16][nType];
+        if      (lSize <= 12) return c_dRightBorderCorrectionSize[0][nType]; //6pt
+        else if (lSize <= 14) return c_dRightBorderCorrectionSize[1][nType]; //7pt
+        else if (lSize <= 16) return c_dRightBorderCorrectionSize[2][nType]; //8pt
+        else if (lSize <= 18) return c_dRightBorderCorrectionSize[3][nType]; //9pt
+        else if (lSize <= 20) return c_dRightBorderCorrectionSize[4][nType]; //10pt
+        else if (lSize <= 22) return c_dRightBorderCorrectionSize[5][nType]; //11pt
+        else if (lSize <= 24) return c_dRightBorderCorrectionSize[6][nType]; //12pt
+        else if (lSize <= 28) return c_dRightBorderCorrectionSize[7][nType]; //14pt
+        else if (lSize <= 32) return c_dRightBorderCorrectionSize[8][nType]; //16pt
+        else if (lSize <= 36) return c_dRightBorderCorrectionSize[9][nType]; //18pt
+        else if (lSize <= 40) return c_dRightBorderCorrectionSize[10][nType]; //20pt
+        else if (lSize <= 44) return c_dRightBorderCorrectionSize[11][nType]; //22pt
+        else if (lSize <= 48) return c_dRightBorderCorrectionSize[12][nType]; //24pt
+        else if (lSize <= 52) return c_dRightBorderCorrectionSize[13][nType]; //26pt
+        else if (lSize <= 56) return c_dRightBorderCorrectionSize[14][nType]; //28pt
+        else if (lSize <= 72) return c_dRightBorderCorrectionSize[15][nType]; //36pt
+        else if (lSize <= 96) return c_dRightBorderCorrectionSize[16][nType]; //48pt
+        else if (lSize <= 144)return c_dRightBorderCorrectionSize[17][nType]; //72pt
+        else                  return c_dRightBorderCorrectionSize[18][nType];
     }
 
     bool CPage::IsShadingPresent(const CTextLine *pLine1, const CTextLine *pLine2)
@@ -1313,14 +1320,6 @@ namespace NSDocxRenderer
 
     void CPage::ToXml(NSStringUtils::CStringBuilder& oWriter)
     {
-        for (size_t i = 0; i < m_arParagraphs.size(); ++i)
-        {
-            if (!m_arParagraphs[i]->m_bIsNotNecessaryToUse)
-            {
-                m_arParagraphs[i]->ToXml(oWriter);
-            }
-        }
-
         // drawings
         size_t nCountDrawings = m_arGraphicItems.size();
         if (0 != nCountDrawings)
@@ -1338,6 +1337,14 @@ namespace NSDocxRenderer
             }
 
             oWriter.WriteString(L"</w:p>");
+        }
+
+        for (size_t i = 0; i < m_arParagraphs.size(); ++i)
+        {
+            if (!m_arParagraphs[i]->m_bIsNotNecessaryToUse)
+            {
+                m_arParagraphs[i]->ToXml(oWriter);
+            }
         }
     }
 

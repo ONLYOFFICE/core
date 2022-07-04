@@ -53,6 +53,17 @@ public:
     int CompareTo(const RedBlackTree::PIRBNode& other) const override;
     std::wstring ToString() const override;
 
+    inline int getChild() const override {return child;}
+    inline void setChild(int value) override {child = value;}
+
+    inline int getLeftSibling() const override {return leftSibling;}
+    inline void setLeftSibling(int value) override {leftSibling = value;}
+    inline int getRightSibling() const override {return rightSibling;}
+    inline void setRightSibling(int value) override {rightSibling = value;}
+
+    std::array<BYTE,8> getCreationDate() const override;
+    void setCreationDate(const std::array<BYTE,8>& date) override;
+
     int getSid() const override;
     void setSid(int newSid) override;
 

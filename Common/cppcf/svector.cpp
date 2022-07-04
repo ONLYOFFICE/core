@@ -73,3 +73,14 @@ std::shared_ptr<T> SVector<T>::dequeue()
     array.erase(array.begin());
     return pElement;
 }
+
+template<class T>
+template<class P>
+SVector<P> SVector<T>::cast() const
+{
+    SVector<P> res(array.size());
+    for (auto& spT : array)
+        res.push_back(std::dynamic_pointer_cast<P> (spT));
+
+    return res;
+}

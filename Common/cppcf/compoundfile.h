@@ -4,7 +4,10 @@
 #include "sectorcollection.h"
 #include "directoryentry.h"
 #include <queue>
+#include <list>
 #include <unordered_set>
+#include "RBTree/rbtree.h"
+#include "idirectoryentry.h"
 
 #define FLAT_WRITE
 
@@ -55,6 +58,9 @@ public:
     inline bool HasSourceStream() {return sourceStream != nullptr;}
 
     void Close();
+
+    std::shared_ptr<RedBlackTree::RBTree> CreateNewTree();
+    std::shared_ptr<RedBlackTree::RBTree> GetChildrenTree(int sid);
 protected:
     int GetSectorSize();
 
@@ -76,8 +82,19 @@ private:
     void EnsureUniqueSectorIndex(int nextSecID, std::unordered_set<int> &processedSectors);
     void CommitDirectory();
     void Close(bool closeStream);
+
     std::shared_ptr<IDirectoryEntry> RootEntry();
     SVector<IDirectoryEntry> FindDirectoryEntries(std::wstring entryName);
+
+    std::shared_ptr<RedBlackTree::RBTree> DoLoadChildrenTrusted(std::shared_ptr<IDirectoryEntry> de);
+    void DoLoadChildren(std::shared_ptr<RedBlackTree::RBTree> bst, std::shared_ptr<IDirectoryEntry> de);
+    void NullifyChildNodes(std::shared_ptr<IDirectoryEntry> de);
+    void LoadSiblings(std::shared_ptr<RedBlackTree::RBTree> bst, std::shared_ptr<IDirectoryEntry> de);
+    void DoLoadSiblings(std::shared_ptr<RedBlackTree::RBTree> bst, std::shared_ptr<IDirectoryEntry> de);
+    bool ValidateSibling(int sid);
+    void LoadDirectories();
+
+    inline CFSVersion getVersion() const {return (CFSVersion)header.majorVersion;}
 
 public:
     CFSConfiguration configuration = Default;
@@ -105,6 +122,7 @@ private:
     bool _disposed;//false
     CFSUpdateMode updateMode;
     SVector<DirectoryEntry> directoryEntries;
+    std::list<int> levelSIDs;
 
 #if !defined(FLAT_WRITE)
         std::array<BYTE, FLUSHING_BUFFER_MAX_SIZE> buffer;

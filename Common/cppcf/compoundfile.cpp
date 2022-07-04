@@ -3,6 +3,8 @@
 #include "streamview.h"
 #include "../../DesktopEditor/common/File.h"
 #include <cmath>
+#include <algorithm>
+
 
 using namespace CFCPP;
 
@@ -252,6 +254,16 @@ void CompoundFile::Close()
     Close(true);
 }
 
+std::shared_ptr<RedBlackTree::RBTree> CompoundFile::CreateNewTree()
+{
+    return std::shared_ptr<RedBlackTree::RBTree>(new RedBlackTree::RBTree);
+}
+
+std::shared_ptr<RedBlackTree::RBTree> CompoundFile::GetChildrenTree(int sid)
+{
+
+}
+
 /// <summary>
 /// Load compound file from an existing stream.
 /// </summary>
@@ -414,7 +426,7 @@ SVector<Sector> CompoundFile::GetFatSectorChain()
         std::unordered_set<int> processedSectors;
         std::streamsize stLength = header.fatSectorsNumber > N_HEADER_FAT_ENTRY ?
                     (header.fatSectorsNumber - N_HEADER_FAT_ENTRY) * 4 : 0;
-        std::queue<Sector> zeroQueue;
+        SVector<Sector> zeroQueue;
 
         std::shared_ptr<StreamView> difatStream(
                     new StreamView
@@ -670,7 +682,7 @@ void CompoundFile::CommitDirectory()
     auto directorySectors
             = GetSectorChain(header.firstDirectorySectorID, SectorType::Normal);
 
-    std::queue<Sector> zeroQueue;
+    SVector<Sector> zeroQueue;
     std::shared_ptr<StreamView> sv(
                 new StreamView(
                     directorySectors,
@@ -681,23 +693,24 @@ void CompoundFile::CommitDirectory()
                     )
                 );
 
-    foreach (IDirectoryEntry di in directoryEntries)
+    for (const auto& di : directoryEntries)
     {
-        di.Write(sv);
+        di->Write(sv);
     }
 
-    int delta = directoryEntries.Count;
+    int delta = directoryEntries.size();
 
     while (delta % (GetSectorSize() / DIRECTORY_SIZE) != 0)
     {
-        IDirectoryEntry dummy = DirectoryEntry.New(String.Empty, StgType.StgInvalid, directoryEntries);
-        dummy.Write(sv);
+        std::shared_ptr<IDirectoryEntry> dummy =
+                DirectoryEntry::New(L"", StgType::StgInvalid, directoryEntries.cast<IDirectoryEntry>());
+        dummy->Write(sv);
         delta++;
     }
 
-    foreach (Sector s in directorySectors)
+    for (auto s : directorySectors)
     {
-        s.Type = SectorType.Directory;
+        s->type = SectorType::Directory;
     }
 
     AllocateSectorChain(directorySectors);
@@ -731,13 +744,162 @@ SVector<IDirectoryEntry> CompoundFile::FindDirectoryEntries(std::wstring entryNa
 {
     SVector<IDirectoryEntry> result;
 
-    for (const auto d : directoryEntries)
+    for (auto d : directoryEntries)
     {
         if (d->GetEntryName() == entryName && d->getStgType() != StgType::StgInvalid)
             result.push_back(d);
     }
 
     return result;
+}
+std::shared_ptr<RedBlackTree::RBTree> CompoundFile::DoLoadChildrenTrusted(std::shared_ptr<IDirectoryEntry> de)
+{
+    std::shared_ptr<RedBlackTree::RBTree> bst;
+
+    if (de->getChild() != DirectoryEntry::NOSTREAM)
+    {
+        bst.reset(new RedBlackTree::RBTree(directoryEntries[de->getChild()]));
+    }
+
+    return bst;
+}
+
+void CompoundFile::DoLoadChildren(std::shared_ptr<RedBlackTree::RBTree> bst, std::shared_ptr<IDirectoryEntry> de)
+{
+    if (de->getChild() != DirectoryEntry::NOSTREAM)
+    {
+        if (directoryEntries[de->getChild()]->getStgType() == StgType::StgInvalid) return;
+
+        LoadSiblings(bst, directoryEntries[de->getChild()]);
+        NullifyChildNodes(std::static_pointer_cast<IDirectoryEntry>(directoryEntries[de->getChild()]));
+        bst->Insert(std::static_pointer_cast<IDirectoryEntry>(directoryEntries[de->getChild()]));
+    }
+}
+
+void CompoundFile::NullifyChildNodes(std::shared_ptr<IDirectoryEntry> de)
+{
+    de->setParent({});
+    de->setParent({});
+    de->setParent({});
+}
+
+void CompoundFile::LoadSiblings(std::shared_ptr<RedBlackTree::RBTree> bst, std::shared_ptr<IDirectoryEntry> de)
+{
+    levelSIDs.clear();
+
+    if (de->getLeftSibling() != DirectoryEntry::NOSTREAM)
+    {
+        // If there're more left siblings load them...
+        DoLoadSiblings(bst, directoryEntries[de->getLeftSibling()]);
+        //NullifyChildNodes(directoryEntries[de.LeftSibling]);
+    }
+
+    if (de->getRightSibling() != DirectoryEntry::NOSTREAM)
+    {
+        levelSIDs.push_back(de->getRightSibling());
+
+        // If there're more right siblings load them...
+        DoLoadSiblings(bst, directoryEntries[de->getRightSibling()]);
+        //NullifyChildNodes(directoryEntries[de.RightSibling]);
+    }
+}
+
+void CompoundFile::DoLoadSiblings(std::shared_ptr<RedBlackTree::RBTree> bst, std::shared_ptr<IDirectoryEntry> de)
+{
+    if (ValidateSibling(de->getLeftSibling()))
+    {
+        levelSIDs.push_back(de->getLeftSibling());
+
+        // If there're more left siblings load them...
+        DoLoadSiblings(bst, directoryEntries[de->getLeftSibling()]);
+    }
+
+    if (ValidateSibling(de->getRightSibling()))
+    {
+        levelSIDs.push_back(de->getRightSibling());
+
+        // If there're more right siblings load them...
+        DoLoadSiblings(bst, directoryEntries[de->getRightSibling()]);
+    }
+
+    NullifyChildNodes(de);
+    bst->Insert(de);
+}
+
+bool CompoundFile::ValidateSibling(int sid)
+{
+    if (sid != DirectoryEntry::NOSTREAM)
+    {
+        // if this siblings id does not overflow current list
+        if (sid >= (int)directoryEntries.size())
+        {
+            if (this->validationExceptionEnabled)
+            {
+                //this.Close();
+                throw new CFCorruptedFileException("A Directory Entry references the non-existent sid number " + std::to_string(sid));
+            }
+            else
+                return false;
+        }
+
+        //if this sibling is valid...
+        if (directoryEntries[sid]->getStgType() == StgType::StgInvalid)
+        {
+            if (this->validationExceptionEnabled)
+            {
+                //this.Close();
+                throw new CFCorruptedFileException("A Directory Entry has a valid reference to an Invalid Storage Type directory [" + std::to_string(sid) + "]");
+            }
+            else
+                return false;
+        }
+
+        int stgtype = directoryEntries[sid]->getStgType();
+        if (false == (stgtype >= 0 && stgtype <= 5))
+        {
+
+            if (this->validationExceptionEnabled)
+            {
+                //this.Close();
+                throw new CFCorruptedFileException("A Directory Entry has an invalid Storage Type");
+            }
+            else
+                return false;
+        }
+
+        if (std::find(levelSIDs.begin(), levelSIDs.end(), sid) != levelSIDs.end())
+            throw new CFCorruptedFileException("Cyclic reference of directory item");
+
+        return true; //No fault condition encountered for sid being validated
+    }
+
+    return false;
+}
+
+void CompoundFile::LoadDirectories()
+{
+    SVector<Sector> directoryChain
+            = GetSectorChain(header.firstDirectorySectorID, SectorType::Normal);
+
+    if (!(directoryChain.size() > 0))
+        throw new CFCorruptedFileException("Directory sector chain MUST contain at least 1 sector");
+
+    if (header.firstDirectorySectorID == Sector::ENDOFCHAIN)
+        header.firstDirectorySectorID = directoryChain[0]->id;
+
+    SVector<Sector> zeroQueue;
+    StreamView dirReader(directoryChain, GetSectorSize(), directoryChain.size() * GetSectorSize(), zeroQueue, sourceStream);
+
+
+    while (dirReader.position < directoryChain.size() * GetSectorSize())
+    {
+        std::shared_ptr<IDirectoryEntry> de
+                = DirectoryEntry::New(L"", StgType::StgInvalid, directoryEntries.cast<IDirectoryEntry>());
+
+        //We are not inserting dirs. Do not use 'InsertNewDirectoryEntry'
+        de->Read(dirReader, getVersion());
+
+    }
 }
 
 int CompoundFile::GetSectorSize()

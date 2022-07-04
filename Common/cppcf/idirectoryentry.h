@@ -10,6 +10,16 @@ class IDirectoryEntry : public RedBlackTree::IRBNode
 {
 public:
 
+    virtual int getChild() const = 0;
+    virtual void setChild(int value) = 0;
+    virtual int getLeftSibling() const = 0;
+    virtual void setLeftSibling(int value) = 0;
+    virtual int getRightSibling() const = 0;
+    virtual void setRightSibling(int value) = 0;
+
+    virtual std::array<BYTE,8> getCreationDate() const = 0;
+    virtual void setCreationDate(const std::array<BYTE,8>& date) = 0;
+
     virtual int getSid() const = 0;
     virtual void setSid(int newSid) = 0;
 

@@ -150,6 +150,18 @@ std::wstring DirectoryEntry::ToString() const
     return wss.str();
 }
 
+std::array<BYTE, 8> DirectoryEntry::getCreationDate() const
+{
+    std::array<BYTE, 8> temp;
+    std::copy(creationDate, creationDate + 8, temp.begin());
+    return temp;
+}
+
+void DirectoryEntry::setCreationDate(const std::array<BYTE, 8> &date)
+{
+    std::copy(date.begin(), date.end(), creationDate);
+}
+
 RedBlackTree::PIRBNode DirectoryEntry::getLeft() const
 {
     if (leftSibling == NOSTREAM)

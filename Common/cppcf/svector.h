@@ -24,6 +24,8 @@ public:
     std::shared_ptr<T> back()const;
     std::shared_ptr<T> front()const;
     std::shared_ptr<T> dequeue();
+    template<class P>
+    SVector<P> cast()const;
 
     inline void erase(typename std::vector<std::shared_ptr<T>>::iterator &beg,
                       typename std::vector<std::shared_ptr<T>>::iterator &end) {array.erase(beg, end);}

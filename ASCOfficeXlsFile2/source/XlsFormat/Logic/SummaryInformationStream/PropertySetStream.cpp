@@ -343,6 +343,7 @@ namespace OLEPS
 
 		std::wstringstream output;
 		PropertyPtr prop;
+		std::wstring value;
 
 		CP_XML_WRITER(output)
 		{
@@ -355,110 +356,123 @@ namespace OLEPS
 				CP_XML_ATTR(L"xmlns:xsi", L"http://www.w3.org/2001/XMLSchema-instance");
 
 				prop = GetProperty(TITLE);
-				if (prop)
+				value = prop ? prop->toString() : L"";
+				if (!value.empty())
 				{
 					CP_XML_NODE(L"dc:title")
                     {
-						CP_XML_CONTENT(prop->toString());
+						CP_XML_CONTENT(value);
 					}
 				}
 				prop = GetProperty(SUBJECT);
-				if (prop)
+				value = prop ? prop->toString() : L"";
+				if (!value.empty())
 				{
 					CP_XML_NODE(L"dc:subject")
 					{
-						CP_XML_CONTENT(prop->toString());
+						CP_XML_CONTENT(value);
 					}
 				}
 				prop = GetProperty(AUTHOR);
-				if (prop)
+				value = prop ? prop->toString() : L"";
+				if (!value.empty())
 				{
 					CP_XML_NODE(L"dc:creator")
 					{
-						CP_XML_CONTENT(prop->toString());
+						CP_XML_CONTENT(value);
 					}
 				}
 				prop = GetProperty(KEYWORDS);
-				if (prop)
+				value = prop ? prop->toString() : L"";
+				if (!value.empty())
 				{
 					CP_XML_NODE(L"cp:keywords")
 					{
-						CP_XML_CONTENT(prop->toString());
+						CP_XML_CONTENT(value);
 					}
 				}
 				prop = GetProperty(COMMENTS);
-				if (prop)
+				value = prop ? prop->toString() : L"";
+				if (!value.empty())
 				{
 					CP_XML_NODE(L"dc:description")
 					{
-						CP_XML_CONTENT(prop->toString());
+						CP_XML_CONTENT(value);
 					}
 				}
 				prop = GetProperty(LANGUAGE);
-				if (prop)
+				value = prop ? prop->toString() : L"";
+				if (!value.empty())
 				{
 					CP_XML_NODE(L"dc:language")
 					{
-                        CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << value;
 					}
 				}				
 				prop = GetProperty(VERSION);
-				if (prop)
+				value = prop ? prop->toString() : L"";
+				if (!value.empty())
 				{
 					CP_XML_NODE(L"cp:version")
 					{
-                        CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << value;
 					}
 				}
 				prop = GetProperty(LASTAUTHOR);
-				if (prop)
+				value = prop ? prop->toString() : L"";
+				if (!value.empty())
 				{
 					CP_XML_NODE(L"cp:lastModifiedBy")
 					{
-						CP_XML_CONTENT(prop->toString());
+						CP_XML_CONTENT(value);
 					}
 				}
 				prop = GetProperty(REVNUMBER);
-				if (prop)
+				value = prop ? prop->toString() : L"";
+				if (!value.empty())
 				{
-					unsigned int val = XmlUtils::GetUInteger(prop->toString());
+					unsigned int val = XmlUtils::GetUInteger(value);
 					CP_XML_NODE(L"cp:revision")
 					{
 						CP_XML_STREAM() << val;
 					}
 				}
 				prop = GetProperty(CREATE_DTM);
-				if (prop)
+				value = prop ? prop->toString() : L"";
+				if (!value.empty())
 				{
 					CP_XML_NODE(L"dcterms:created")
 					{
 						CP_XML_ATTR(L"xsi:type", L"dcterms:W3CDTF");
-                        CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << value;
 					}
 				}
 				prop = GetProperty(LASTSAVE_DTM);
-				if (prop)
+				value = prop ? prop->toString() : L"";
+				if (!value.empty())
 				{
 					CP_XML_NODE(L"dcterms:modified")
 					{
 						CP_XML_ATTR(L"xsi:type", L"dcterms:W3CDTF");
-                        CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << value;
 					}
 				}
 				prop = GetProperty(CATEGORY);
-				if (prop)
+				value = prop ? prop->toString() : L"";
+				if (!value.empty())
 				{
 					CP_XML_NODE(L"cp:category")
 					{
-						CP_XML_CONTENT(prop->toString());
+						CP_XML_CONTENT(value);
 					}
 				}
 				prop = GetProperty(CONTENTSTATUS);
-				if (prop)
+				value = prop ? prop->toString() : L"";
+				if (!value.empty())
 				{
 					CP_XML_NODE(L"cp:contentStatus")
 					{
-                        CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << value;
 					}
 				}
 				//	BYTECOUNT = 0x1004,

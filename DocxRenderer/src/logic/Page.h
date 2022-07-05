@@ -26,12 +26,12 @@ namespace NSDocxRenderer
 
         LONG						m_lCurrentCommand;
 
-        std::vector<CContText*> m_arTextData;
-
-        std::vector<CBaseItem*>	m_arGraphicItems;
+        std::vector<CImage*>     m_arImages;
+        std::vector<CContText*>  m_arTextData;
+        std::vector<CTextLine*>  m_arTextLine;
+        std::vector<CShape*>	 m_arShapes;
         std::vector<CParagraph*> m_arParagraphs;
 
-        std::vector<CTextLine*> m_arTextLine;
         CTextLine* m_pCurrentLine;
 
         CFontManager		m_oManager;
@@ -52,9 +52,10 @@ namespace NSDocxRenderer
             NSStructures::CShadow* pShadow, NSStructures::CEdgeText* pEdge, Aggplus::CMatrix* pMatrix, Aggplus::CGraphicsPathSimpleConverter* pSimple);
 
         void Clear();
+        void ClearImages();
         void ClearTextData();
         void ClearTextLines();
-        void ClearGraphicItems();
+        void ClearShapes();
         void ClearParagraphs();
 
         void SetCurrentLineByBaseline(const double& dBaseLinePos);
@@ -62,7 +63,7 @@ namespace NSDocxRenderer
         void DeleteTextClipPage();
 
         // image commands
-        //набивается содержимым вектор m_arGraphicItems
+        //набивается содержимым вектор m_arImages
         void WriteImage(CImageInfo& oInfo, double& fX, double& fY, double& fWidth, double& fHeight);
 
         // path commands
@@ -72,7 +73,7 @@ namespace NSDocxRenderer
         void Start();
         void End();
         void Close();
-        //набивается содержимым вектор m_arGraphicItems
+        //набивается содержимым вектор m_arShapes
         void DrawPath(LONG lType, LONG lTxId);
 
         //набивается содержимым вектор m_arTextData
@@ -80,7 +81,8 @@ namespace NSDocxRenderer
                              const double& fX, const double& fY, const double& fWidth, const double& fHeight,
                              const double& fBaseLineOffset, const bool& bIsPDFAnalyzer);
 
-        void AnalyzeCollectedGraphics();
+        void AnalyzeCollectedShapes();
+        void DetermineLinesType();
 
         //Собранные для текущей страницы данные нужно проанализировать и сгруппировать, лишнее удалить
         void AnalyzeCollectedData();
@@ -99,7 +101,7 @@ namespace NSDocxRenderer
         //Объединяем строки, которые находятся на расстроянии не большем dAffinity
         void Merge(double dAffinity);
 
-        //конвертим m_arGraphicItems, m_arParagraphs в xml-строку
+        //конвертим m_arImages, m_arShapes, m_arParagraphs в xml-строку
         void ToXml(NSStringUtils::CStringBuilder& oWriter);
 
         void WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter);

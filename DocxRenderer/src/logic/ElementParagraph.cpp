@@ -16,12 +16,8 @@ namespace NSDocxRenderer
         m_lColorOfShadingFill    = c_iWhiteColor;
         m_eTextAlignmentType     = tatUnknown;
 
-        m_dLeft		= 0.0;
-        m_dRight    = 0.0;
-        m_dTop		= 0.0;
-        m_dWidth	= 0.0;
-        m_dHeight	= 0.0;
-        m_dFirstLine= 0.0;
+        m_dRight     = 0.0;
+        m_dFirstLine = 0.0;
 
         m_dSpaceBefore = 0.0;
         m_dSpaceAfter  = 0.0;
@@ -71,12 +67,8 @@ namespace NSDocxRenderer
         m_lColorOfShadingFill    = oSrc.m_lColorOfShadingFill;
         m_eTextAlignmentType     = oSrc.m_eTextAlignmentType;
 
-        m_dLeft		= oSrc.m_dLeft;
-        m_dRight    = oSrc.m_dRight;
-        m_dTop		= oSrc.m_dTop;
-        m_dWidth	= oSrc.m_dWidth;
-        m_dHeight	= oSrc.m_dHeight;
-        m_dFirstLine= oSrc.m_dFirstLine;
+        m_dRight     = oSrc.m_dRight;
+        m_dFirstLine = oSrc.m_dFirstLine;
 
         m_dSpaceBefore	= oSrc.m_dSpaceBefore;
         m_dSpaceAfter   = oSrc.m_dSpaceAfter;

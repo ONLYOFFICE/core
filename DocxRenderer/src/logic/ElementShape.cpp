@@ -7,11 +7,6 @@ namespace NSDocxRenderer
 {
     CShape::CShape() : CBaseItem(etShape)
     {
-        m_dLeft = 0;
-        m_dTop = 0;
-        m_dWidth = 0;
-        m_dHeight = 0;
-
         m_bIsNoFill = false;
         m_bIsNoStroke = false;
         m_bIsBehindDoc = true;
@@ -20,6 +15,10 @@ namespace NSDocxRenderer
         m_lCoordSizeY = 100000;
 
         m_lTxId = -1;
+
+        m_eGraphicsType = gtUnknown;
+        m_eSimpleLineType = sltUnknown;
+        m_eLineType = ltUnknown;
     }
 
     CShape::CShape(const CShape &oSrc) : CBaseItem(etShape)
@@ -61,16 +60,15 @@ namespace NSDocxRenderer
         m_oBrush = oSrc.m_oBrush;
         m_oPen = oSrc.m_oPen;
 
-        m_dLeft = oSrc.m_dLeft;
-        m_dTop = oSrc.m_dTop;
-        m_dWidth = oSrc.m_dWidth;
-        m_dHeight = oSrc.m_dHeight;
-
         m_bIsNoFill = oSrc.m_bIsNoFill;
         m_bIsNoStroke = oSrc.m_bIsNoStroke;
         m_bIsBehindDoc = oSrc.m_bIsBehindDoc;
 
         m_lTxId = oSrc.m_lTxId;
+
+        m_eGraphicsType = oSrc.m_eGraphicsType;
+        m_eSimpleLineType = oSrc.m_eSimpleLineType;
+        m_eLineType = oSrc.m_eLineType;
 
         m_bIsNotNecessaryToUse = oSrc.m_bIsNotNecessaryToUse;
 
@@ -109,16 +107,19 @@ namespace NSDocxRenderer
         size_t nCount = oVector.GetCurSize();
         double *pData = oVector.m_pData;
 
-        double dWidth = (oVector.m_dRight - oVector.m_dLeft) * c_dMMToEMU;
-        double dHeight = (oVector.m_dBottom - oVector.m_dTop) * c_dMMToEMU;
+        double dWidth = oVector.m_dRight - oVector.m_dLeft;
+        double dHeight = oVector.m_dBottom - oVector.m_dTop;
 
         NSStringUtils::CStringBuilder oWriter;
 
         oWriter.WriteString(L"<a:path w=\"");
-        oWriter.AddInt(static_cast<int>(dWidth));
+        oWriter.AddInt(static_cast<int>(dWidth * c_dMMToEMU));
         oWriter.WriteString(L"\" h=\"");
-        oWriter.AddInt(static_cast<int>(dHeight));
+        oWriter.AddInt(static_cast<int>(dHeight * c_dMMToEMU));
         oWriter.WriteString(L"\">");
+
+        size_t nPeacks = 0;
+        size_t nCurves = 0;
 
         while (nCount > 0)
         {
@@ -139,6 +140,7 @@ namespace NSDocxRenderer
                 oWriter.AddInt(static_cast<int>(lY));
                 oWriter.WriteString(L"\"/></a:moveTo>");
 
+                nPeacks++;
                 nCount -= 3;
                 break;
             }
@@ -155,6 +157,7 @@ namespace NSDocxRenderer
                 oWriter.AddInt(static_cast<int>(lY));
                 oWriter.WriteString(L"\"/></a:lnTo>");
 
+                nPeacks++;
                 nCount -= 3;
                 break;
             }
@@ -193,6 +196,7 @@ namespace NSDocxRenderer
 
                 oWriter.WriteString(L"</a:cubicBezTo>");
 
+                nCurves++;
                 nCount -= 7;
                 break;
             }
@@ -206,7 +210,386 @@ namespace NSDocxRenderer
         oWriter.WriteString(L"</a:path>");
 
         m_strPath = oWriter.GetData();
+
+        DetermineGraphicsType(dWidth, dHeight, nPeacks, nCurves);
+
         oWriter.ClearNoAttack();
+    }
+
+    void CShape::DetermineGraphicsType(const double& dWidth, const double& dHeight,const size_t& nPeacks, const size_t& nCurves)
+    {
+        //note параллельно для каждой текстовой строки создается шейп, который содержит цвет фона для данного текста.
+        if (m_oBrush.Color1 == c_iWhiteColor && m_oPen.Color == c_iWhiteColor)
+        {
+            m_eGraphicsType = gtNoGraphics;
+            //заранее отбрасываем некоторые фигуры
+            m_bIsNotNecessaryToUse = true;
+        }
+        else if (nPeacks == 5 && !nCurves) //1 move + 4 Peacks
+        {
+            m_eGraphicsType = gtRectangle;
+
+            //note Довольно сложно определить точку, т.к. для разных шрифтов она может быть чем угодно...
+            if (abs(dWidth - dHeight) < 0.1)
+            {
+                m_eSimpleLineType = sltDot;
+            }
+            else if (dHeight + c_GRAPHICS_ERROR_IN_LINES_MM < dWidth)
+            {
+                m_eSimpleLineType = sltDash;
+            }
+            else
+            {
+                m_eSimpleLineType = sltDot;
+            }
+        }
+        else if (nCurves > 0 &&  nPeacks <= 1) //1 move
+        {
+            m_eGraphicsType = gtCurve;
+            m_eSimpleLineType = sltWave;
+        }
+        else if (nCurves > 0 &&  nPeacks > 1)
+        {
+            m_eGraphicsType = gtComplicatedFigure;
+        }
+    }
+
+    bool CShape::IsItFitLine()
+    {
+        return (m_eGraphicsType == gtRectangle && (m_eSimpleLineType == sltDot || m_eSimpleLineType == sltDash)) ||
+               (m_eGraphicsType == gtCurve &&  m_eSimpleLineType == sltWave);
+    }
+
+    bool CShape::IsCorrelated(const CShape* pShape)
+    {
+        return m_eGraphicsType == pShape->m_eGraphicsType;
+    }
+
+    void CShape::ChangeGeometryOfDesiredShape(CShape* pShape)
+    {
+        if (!pShape)
+        {
+            return;
+        }
+
+        CShape* pModObject;
+        CShape* pDataObject;
+
+        if (pShape->m_bIsNotNecessaryToUse)
+        {
+            pModObject = this;
+            pDataObject = pShape;
+        }
+        else if (m_bIsNotNecessaryToUse)
+        {
+            pModObject = pShape;
+            pDataObject = this;
+        }
+        else
+        {
+            return;
+        }
+
+        double dModRight = pModObject->m_dLeft + pModObject->m_dWidth;
+        double dDataRight = pDataObject->m_dLeft + pDataObject->m_dWidth;
+        double dModBottom = pModObject->m_dTop + pModObject->m_dHeight;
+        double dDataBottom = pDataObject->m_dTop + pDataObject->m_dHeight;
+
+        if (pModObject->m_dTop == pDataObject->m_dTop ||
+            (pModObject->m_dTop < pDataObject->m_dTop && pModObject->m_dHeight > pDataObject->m_dHeight) ||
+            (pModObject->m_dTop > pDataObject->m_dTop && pModObject->m_dHeight < pDataObject->m_dHeight))
+        {
+            pModObject->m_dHeight = std::max(pModObject->m_dHeight, pDataObject->m_dHeight);
+        }
+        else if (pModObject->m_dTop < pDataObject->m_dTop)
+        {
+            pModObject->m_dHeight += pDataObject->m_dHeight + pDataObject->m_dTop - dModBottom;
+        }
+        else
+        {
+            pModObject->m_dHeight += pDataObject->m_dHeight + dDataBottom - pModObject->m_dTop;
+        }
+
+        if (pModObject->m_dLeft == pDataObject->m_dLeft ||
+            (pModObject->m_dLeft < pDataObject->m_dLeft && dModRight > dDataRight) ||
+            (pModObject->m_dLeft > pDataObject->m_dLeft && dModRight < dDataRight))
+        {
+            pModObject->m_dWidth = std::max(pModObject->m_dWidth, pDataObject->m_dWidth);
+        }
+        else if (pModObject->m_dLeft < pDataObject->m_dLeft)
+        {
+            pModObject->m_dWidth += pDataObject->m_dWidth + pDataObject->m_dLeft - dModRight;
+        }
+        else
+        {
+            pModObject->m_dWidth += pDataObject->m_dWidth + dDataRight - pModObject->m_dLeft;
+        }
+
+        pModObject->m_dLeft = std::min(pModObject->m_dLeft, pDataObject->m_dLeft);
+        pModObject->m_dTop = std::min(pModObject->m_dTop, pDataObject->m_dTop);
+    }
+
+    void CShape::DetermineLineType(CShape* pShape)
+    {
+        if (!pShape)
+        {
+            //Если нашелся один шейп в линии
+            if (m_eLineType == ltUnknown && m_eSimpleLineType == sltDash)
+            {
+                if (m_dHeight > 0.3)
+                {
+                    m_eLineType = ltThick;
+                }
+                else
+                {
+                    m_eLineType = ltSingle;
+                }
+            }
+            else if (m_eLineType == ltUnknown && m_eSimpleLineType == sltWave)
+            {
+                if (m_oPen.Size > 0.3)
+                {
+                    m_eLineType = ltWavyHeavy;
+                }
+                else
+                {
+                    m_eLineType = ltWave;
+                }
+            }
+            return;
+        }
+
+        if (!IsItFitLine() || !pShape->IsItFitLine() || !IsCorrelated(pShape) ||
+            std::abs(m_dHeight - pShape->m_dHeight) > c_GRAPHICS_ERROR_IN_LINES_MM) //линия должна быть одного размера по высоте
+        {
+            return;
+        }
+
+
+        //Проверка на двойную линию
+        if (m_eLineType == ltDouble || m_eLineType == ltWavyDouble)
+        {
+            if (m_eLineType == ltDouble)
+            {
+                if (m_dTop < pShape->m_dTop)
+                {
+                    m_eLineType = ltDouble;
+                    pShape->m_bIsNotNecessaryToUse = true;
+                    ChangeGeometryOfDesiredShape(pShape);
+                }
+                else
+                {
+                    pShape->m_eLineType = ltDouble;
+                    m_bIsNotNecessaryToUse = true;
+                    ChangeGeometryOfDesiredShape(pShape);
+                }
+            }
+            else if (m_eLineType == ltWavyDouble)
+            {
+                if (m_dTop < pShape->m_dTop)
+                {
+                    m_eLineType = ltWavyDouble;
+                    pShape->m_bIsNotNecessaryToUse = true;
+                    ChangeGeometryOfDesiredShape(pShape);
+                }
+                else
+                {
+                    pShape->m_eLineType = ltWavyDouble;
+                    m_bIsNotNecessaryToUse = true;
+                    ChangeGeometryOfDesiredShape(pShape);
+                }
+            }
+            return;
+        }
+        else if (std::abs(m_dTop - pShape->m_dTop) < c_GRAPHICS_ERROR_IN_LINES_MM * 5 &&
+            std::abs(m_dWidth - pShape->m_dWidth) < c_GRAPHICS_ERROR_IN_LINES_MM &&
+            std::abs(m_dLeft - pShape->m_dLeft) < c_GRAPHICS_ERROR_IN_LINES_MM)
+        {
+            //Условие первого определения
+            if (m_eSimpleLineType == sltDash && pShape->m_eSimpleLineType == sltDash)
+            {
+                if (m_dTop < pShape->m_dTop)
+                {
+                    m_eLineType = ltDouble;
+                    pShape->m_bIsNotNecessaryToUse = true;
+                    ChangeGeometryOfDesiredShape(pShape);
+                }
+                else
+                {
+                    pShape->m_eLineType = ltDouble;
+                    m_bIsNotNecessaryToUse = true;
+                    ChangeGeometryOfDesiredShape(pShape);
+                }
+            }
+            else if (m_eSimpleLineType == sltWave && pShape->m_eSimpleLineType == sltWave)
+            {
+                if (m_dTop < pShape->m_dTop)
+                {
+                    m_eLineType = ltWavyDouble;
+                    pShape->m_bIsNotNecessaryToUse = true;
+                    ChangeGeometryOfDesiredShape(pShape);
+                }
+                else
+                {
+                    pShape->m_eLineType = ltWavyDouble;
+                    m_bIsNotNecessaryToUse = true;
+                    ChangeGeometryOfDesiredShape(pShape);
+                }
+            }
+            return;
+        }
+        else if (std::abs(m_dTop - pShape->m_dTop) > c_GRAPHICS_ERROR_IN_LINES_MM)
+        {
+           //все должно быть на одной линии
+            return;
+        }
+
+        //Теперь считаем, что графика находится на одной линии
+        if (std::abs(m_dLeft + m_dWidth - pShape->m_dLeft) > c_GRAPHICS_ERROR_IN_LINES_MM * 5)
+        {
+            //расстояние между объектами на одной линии должно быть небольшим
+            return;
+        }
+
+        bool bIsConditionPassed = false;
+
+        switch (m_eSimpleLineType)
+        {
+        case sltDot:
+            if (pShape->m_eSimpleLineType == sltDot)
+            {
+                if ((m_eLineType == ltUnknown || m_eLineType == ltDotted || m_eLineType == ltDottedHeavy) && pShape->m_eLineType == ltUnknown)
+                {
+                    if (m_dHeight > 0.3)
+                    {
+                        m_eLineType = ltDottedHeavy;
+                    }
+                    else
+                    {
+                        m_eLineType = ltDotted;
+                    }
+                    bIsConditionPassed = true;
+                }
+                else if ((m_eLineType == ltDotDash || m_eLineType == ltDashDotHeavy) && pShape->m_eLineType == ltUnknown)
+                {
+                    if (m_dHeight > 0.3)
+                    {
+                        m_eLineType = ltDashDotDotHeavy;
+                    }
+                    else
+                    {
+                        m_eLineType = ltDotDotDash;
+                    }
+                    m_eSimpleLineType = sltDot;
+                    bIsConditionPassed = true;
+                }
+            }
+            else if (pShape->m_eSimpleLineType == sltDash)
+            {
+                if ((m_eLineType == ltDotDash || m_eLineType == ltDashDotHeavy) && pShape->m_eLineType == ltUnknown)
+                {
+                    m_eSimpleLineType = sltDash;
+                    bIsConditionPassed = true;
+                }
+                else if ((m_eLineType == ltDotDotDash || m_eLineType == ltDashDotDotHeavy) && pShape->m_eLineType == ltUnknown)
+                {
+                    m_eSimpleLineType = sltDash;
+                    bIsConditionPassed = true;
+                }
+            }
+
+            if (pShape->m_eLineType == ltUnknown)
+            {
+                //Если не определились с типом, то считаем линией текущего типа
+                bIsConditionPassed = true;
+            }
+            break;
+        case sltDash:
+            if (pShape->m_eSimpleLineType == sltDash)
+            {
+                if ((m_eLineType == ltUnknown || m_eLineType == ltDash || m_eLineType == ltDashLong ||
+                     m_eLineType == ltDashedHeavy || m_eLineType == ltDashLongHeavy) && pShape->m_eLineType == ltUnknown)
+                {
+                    if (pShape->m_dWidth > 2.0)
+                    {
+                        if (m_dHeight > 0.3)
+                        {
+                            m_eLineType = ltDashLongHeavy;
+                        }
+                        else
+                        {
+                            m_eLineType = ltDashLong;
+                        }
+                    }
+                    else
+                    {
+                        if (m_dHeight > 0.3)
+                        {
+                            m_eLineType = ltDashedHeavy;
+                        }
+                        else
+                        {
+                            m_eLineType = ltDash;
+                        }
+                    }
+                    bIsConditionPassed = true;
+                }
+                else if ((m_eLineType == ltDotDash || m_eLineType == ltDashDotHeavy) && pShape->m_eLineType == ltUnknown)
+                {
+                    bIsConditionPassed = true;
+                }
+            }
+            else if (pShape->m_eSimpleLineType == sltDot)
+            {
+                if ((m_eLineType == ltUnknown || m_eLineType == ltDotDash || m_eLineType == ltDashDotHeavy) && pShape->m_eLineType == ltUnknown)
+                {
+                    if (m_dHeight > 0.3)
+                    {
+                        m_eLineType = ltDashDotHeavy;
+                    }
+                    else
+                    {
+                        m_eLineType = ltDotDash;
+                    }
+                    m_eSimpleLineType = sltDot;
+                    bIsConditionPassed = true;
+                }
+                else if ((m_eLineType == ltDotDotDash || m_eLineType == ltDashDotDotHeavy) && pShape->m_eLineType == ltUnknown)
+                {
+                    m_eSimpleLineType = sltDot;
+                    bIsConditionPassed = true;
+                }
+            }
+
+            if (pShape->m_eLineType == ltUnknown)
+            {
+                //Если не определились с типом, то считаем линией текущего типа
+                bIsConditionPassed = true;
+            }
+            break;
+        case sltWave:
+            if ((m_eLineType == ltUnknown || m_eLineType == ltWave || m_eLineType == ltWavyHeavy || m_eLineType == ltWavyDouble) && pShape->m_eLineType == ltUnknown)
+            {
+                if (m_oPen.Size > 0.3)
+                {
+                    m_eLineType = ltWavyHeavy;
+                }
+                else
+                {
+                    m_eLineType = ltWave;
+                }
+                bIsConditionPassed = true;
+            }
+            break;
+        default:
+            break;
+        }
+
+        if (bIsConditionPassed)
+        {
+            pShape->m_bIsNotNecessaryToUse = true;
+            ChangeGeometryOfDesiredShape(pShape);
+        }
     }
 
     void CShape::ToXml(NSStringUtils::CStringBuilder &oWriter)

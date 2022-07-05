@@ -10,12 +10,7 @@ namespace NSDocxRenderer
         std::wstring m_strPath;
         int	m_lID;
 
-		double m_dLeft;
-		double m_dTop;
-		double m_dWidth;
-		double m_dHeight;
-
-		double m_dRotate;
+        double m_dRotate;
 
 	public:
         CImage();

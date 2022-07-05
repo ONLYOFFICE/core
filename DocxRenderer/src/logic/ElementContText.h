@@ -1,23 +1,15 @@
 #pragma once
+#include "BaseItem.h"
 #include "../DesktopEditor/common/StringBuilder.h"
 #include "FontManager.h"
+#include "../resources/LinesTable.h"
 
 namespace NSDocxRenderer
 {
     class CShape;
 
-    class CContText
+    class CContText : public CBaseItem
     {
-        public:
-            enum UnderlineType
-            {
-                utUnknown,
-                utThinLine,
-                utThickLine,
-                utDoubleThinLine,
-                //todo добавить другие типы
-            };
-
         public:
             NSStructures::CFont		m_oFont;
             NSStructures::CBrush	m_oBrush;
@@ -27,20 +19,19 @@ namespace NSDocxRenderer
 
             NSStringUtils::CStringUTF32 m_oText;
 
-            double m_dX;
-            double m_dY;
-            double m_dWidth;
-            double m_dHeight;
+            double m_dBaselinePos;
+            double m_dBaselineOffset;
             double m_dLastX;
 
             double m_dSpaceWidthMM;
-            double m_dBaselineOffset;
 
             bool   m_bIsNeedSpaceAtTheEnd;
+            bool   m_bIsDoubleStrikeout;
             bool   m_bIsHighlightPresent;
             LONG   m_lHighlightColor;
 
-            UnderlineType m_eUnderlineType;
+            eLineType m_eUnderlineType;
+            LONG   m_lUnderlineColor;
 
             const CShape* m_pShape; //Если не 0, то есть фоновая графика - можно анализировать.
 
@@ -55,10 +46,9 @@ namespace NSDocxRenderer
             CContText& operator=(const CContText& oSrc);
             void CopyFormat(const CContText& oSrc);
 
-            bool IsBigger(const CContText* oSrc);
-            bool IsBiggerOrEqual(const CContText* oSrc);
-
             double GetIntersect(const CContText* oSrc) const;
+
+            virtual void ToXml(NSStringUtils::CStringBuilder& oWriter){}
 
             void ToXml(NSStringUtils::CStringBuilder& oWriter,
                        CFontManagerLight* pManagerLight,

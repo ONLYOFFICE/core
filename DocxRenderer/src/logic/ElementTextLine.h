@@ -1,9 +1,9 @@
 #pragma once
-#include "ContText.h"
+#include "ElementContText.h"
 
 namespace NSDocxRenderer
 {
-    class CTextLine
+    class CTextLine : public CBaseItem
     {
         public:
             enum AssumedTextAlignmentType
@@ -20,11 +20,6 @@ namespace NSDocxRenderer
             double m_dBaselinePos;
             double m_dBaselineOffset;
 
-            double m_dX;
-            double m_dY;
-            double m_dWidth;
-            double m_dHeight;
-
             AssumedTextAlignmentType m_eAlignmentType;
 
             const CShape* m_pDominantShape;
@@ -39,8 +34,8 @@ namespace NSDocxRenderer
             CTextLine& operator=(const CTextLine& oSrc);
 
             void AddCont(CContText* pCont);
-            bool IsBigger(const CTextLine* oSrc);
-            bool IsBiggerOrEqual(const CTextLine* oSrc);
+            virtual bool IsBigger(const CBaseItem* oSrc);
+            virtual bool IsBiggerOrEqual(const CBaseItem* oSrc);
             void SortConts();
 
             //Объединяем слова из двух строк
@@ -48,6 +43,7 @@ namespace NSDocxRenderer
             //Объединяем подходящие слова в текущей строке, если возможно
             void Analyze();
             bool IsForceBlock();
+            virtual void ToXml(NSStringUtils::CStringBuilder& oWriter){}
             void ToXml(NSStringUtils::CStringBuilder& oWriter, CFontManagerLight* pManagerLight);
             //Вычисляем ширину сложной строки
             void CalculateWidth();

@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "BaseItem.h"
 #include "FontManager.h"
-#include "TextLine.h"
+#include "ElementTextLine.h"
 
 namespace NSDocxRenderer
 {
@@ -43,11 +43,7 @@ namespace NSDocxRenderer
         TextAlignmentType  m_eTextAlignmentType;
 
         // geometry paragraph
-        double		m_dLeft;  //сдвиг относительно левого края страницы
         double		m_dRight; //сдвиг относительно правого края страницы
-        double		m_dTop;
-        double		m_dWidth;
-        double		m_dHeight; //высота каждой строки
         double		m_dFirstLine; //сдвиг относительно m_dLeft
 
         CFontManagerLight* m_pManagerLight;

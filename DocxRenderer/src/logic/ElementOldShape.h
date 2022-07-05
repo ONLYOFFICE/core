@@ -19,11 +19,6 @@ namespace NSDocxRenderer
             NSStructures::CBrush	m_oBrush;
             NSStructures::CPen		m_oPen;
 
-            double m_dLeft;
-            double m_dTop;
-            double m_dWidth;
-            double m_dHeight;
-
             bool m_bIsNoFill;
             bool m_bIsNoStroke;
 

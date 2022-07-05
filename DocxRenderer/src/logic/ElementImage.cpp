@@ -31,11 +31,6 @@ namespace NSDocxRenderer
             m_strPath	= oSrc.m_strPath;
             m_lID		= oSrc.m_lID;
 
-            m_dLeft		= oSrc.m_dLeft;
-            m_dTop		= oSrc.m_dTop;
-            m_dWidth	= oSrc.m_dWidth;
-            m_dHeight	= oSrc.m_dHeight;
-
             m_dRotate	= oSrc.m_dRotate;
 
             return *this;

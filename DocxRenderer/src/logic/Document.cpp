@@ -554,7 +554,7 @@ namespace NSDocxRenderer
         if (c_nPageType == lType)
         {
             // нужно записать страницу в файл
-            m_oCurrentPage.AnalyzeCollectedGraphics();
+            m_oCurrentPage.AnalyzeCollectedShapes();
             m_oCurrentPage.AnalyzeCollectedData();
             m_oCurrentPage.BuildLines();
             m_oCurrentPage.DeleteTextClipPage();

@@ -10,11 +10,6 @@ namespace NSDocxRenderer
 
     COldShape::COldShape() : CBaseItem(etOldShape)
     {
-        m_dLeft = 0;
-        m_dTop = 0;
-        m_dWidth = 0;
-        m_dHeight = 0;
-
         m_bIsNoFill = false;
         m_bIsNoStroke = false;
 
@@ -56,11 +51,6 @@ namespace NSDocxRenderer
 
         m_oBrush = oSrc.m_oBrush;
         m_oPen = oSrc.m_oPen;
-
-        m_dLeft = oSrc.m_dLeft;
-        m_dTop = oSrc.m_dTop;
-        m_dWidth = oSrc.m_dWidth;
-        m_dHeight = oSrc.m_dHeight;
 
         m_bIsNoFill = oSrc.m_bIsNoFill;
         m_bIsNoStroke = oSrc.m_bIsNoStroke;

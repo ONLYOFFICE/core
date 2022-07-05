@@ -1,4 +1,4 @@
-#include "ContText.h"
+#include "ElementContText.h"
 #include "../resources/ColorTable.h"
 #include "../resources/Constants.h"
 #include "../resources/SingletonTemplate.h"
@@ -6,25 +6,23 @@
 
 namespace NSDocxRenderer
 {
-    CContText::CContText()
+    CContText::CContText(): CBaseItem(etContText)
     {
         m_strPickFontName	= L"";
         m_lPickFontStyle	= 0;
 
-        m_dX			= 0;
-        m_dY			= 0;
-        m_dWidth		= 0;
-        m_dHeight		= 0;
-        m_dLastX        = 0;
-
-        m_dSpaceWidthMM	= 0;
+        m_dBaselinePos  = 0;
         m_dBaselineOffset = 0;
+        m_dLastX        = 0;
+        m_dSpaceWidthMM	= 0;
 
         m_bIsNeedSpaceAtTheEnd = false;
+        m_bIsDoubleStrikeout = false;
         m_bIsHighlightPresent = false;
         m_lHighlightColor = c_iBlackColor;
 
-        m_eUnderlineType = utUnknown;
+        m_eUnderlineType = ltUnknown;
+        m_lUnderlineColor = c_iBlackColor;
 
         m_pShape         = nullptr;
     }
@@ -33,7 +31,7 @@ namespace NSDocxRenderer
     {
     }
 
-    CContText::CContText(const CContText& oSrc)
+    CContText::CContText(const CContText& oSrc): CBaseItem(etContText)
     {
         *this = oSrc;
     }
@@ -45,6 +43,8 @@ namespace NSDocxRenderer
             return *this;
         }
 
+        CBaseItem::operator=(oSrc);
+
         m_oFont		= oSrc.m_oFont;
         m_oBrush	= oSrc.m_oBrush;
 
@@ -53,40 +53,28 @@ namespace NSDocxRenderer
 
         m_oText	 = oSrc.m_oText;
 
-        m_dX		= oSrc.m_dX;
-        m_dY		= oSrc.m_dY;
-        m_dWidth	= oSrc.m_dWidth;
-        m_dHeight	= oSrc.m_dHeight;
-        m_dLastX    = oSrc.m_dLastX;
-
-        m_dSpaceWidthMM = oSrc.m_dSpaceWidthMM;
+        m_dBaselinePos = oSrc.m_dBaselinePos;
         m_dBaselineOffset = oSrc.m_dBaselineOffset;
+        m_dLastX    = oSrc.m_dLastX;
+        m_dSpaceWidthMM = oSrc.m_dSpaceWidthMM;
 
         m_bIsNeedSpaceAtTheEnd = oSrc.m_bIsNeedSpaceAtTheEnd;
+        m_bIsDoubleStrikeout = oSrc.m_bIsDoubleStrikeout;
         m_bIsHighlightPresent = oSrc.m_bIsHighlightPresent;
         m_lHighlightColor = oSrc.m_lHighlightColor;
 
         m_eUnderlineType = oSrc.m_eUnderlineType;
+        m_lUnderlineColor = oSrc.m_lUnderlineColor;
 
         m_pShape    = oSrc.m_pShape;
 
         return *this;
     }
 
-    bool CContText::IsBigger(const CContText* oSrc)
-    {
-        return (m_dX > oSrc->m_dX) ? true : false;
-    }
-
-    bool CContText::IsBiggerOrEqual(const CContText* oSrc)
-    {
-        return (m_dX >= oSrc->m_dX) ? true : false;
-    }
-
     double CContText::GetIntersect(const CContText* oSrc) const
     {
-        double d1 = std::max(m_dX, oSrc->m_dX);
-        double d2 = std::min(m_dX + m_dWidth, oSrc->m_dX + oSrc->m_dWidth);
+        double d1 = std::max(m_dLeft, oSrc->m_dLeft);
+        double d2 = std::min(m_dLeft + m_dWidth, oSrc->m_dLeft + oSrc->m_dWidth);
 
         if (d2 > d1)
             return d2 - d1;
@@ -171,25 +159,28 @@ namespace NSDocxRenderer
 
         if (m_oFont.Strikeout == TRUE)
         {
-            oWriter.WriteString(L"<w:strike/>");
+            if (m_bIsDoubleStrikeout)
+            {
+                oWriter.WriteString(L"<w:dstrike/>");
+            }
+            else
+            {
+                oWriter.WriteString(L"<w:strike/>");
+            }
         }
 
         if (m_oFont.Underline == TRUE)
         {
-            switch (m_eUnderlineType)
+            oWriter.WriteString(L"<w:u w:val=");
+            oWriter.WriteString(SingletonInstance<LinesTable>().ConverLineToString(m_eUnderlineType));
+
+            if (m_lUnderlineColor != m_oBrush.Color1)
             {
-            case utThinLine:
-                oWriter.WriteString(L"<w:u w:val=\"single\"/>");
-                break;
-            case utThickLine:
-                oWriter.WriteString(L"<w:u w:val=\"thick\"/>");
-                break;
-            case utDoubleThinLine:
-                oWriter.WriteString(L"<w:u w:val=\"double\"/>");
-                break;
-            default:
-                break;
+                oWriter.WriteString(L" w:color=\"");
+                oWriter.WriteHexInt3(ConvertColorBGRToRGB(m_lUnderlineColor));
+                oWriter.WriteString(L"\"");
             }
+            oWriter.WriteString(L"/>");
         }
 
         if (m_bIsHighlightPresent)
@@ -286,20 +277,16 @@ namespace NSDocxRenderer
 
         if (m_oFont.Underline == TRUE  && bIsNeedSaveFormat)
         {
-            switch (m_eUnderlineType)
+            oWriter.WriteString(L"<w:u w:val=");
+            oWriter.WriteString(SingletonInstance<LinesTable>().ConverLineToString(m_eUnderlineType));
+
+            if (m_lUnderlineColor != m_oBrush.Color1)
             {
-            case utThinLine:
-                oWriter.WriteString(L"<w:u w:val=\"single\"/>");
-                break;
-            case utThickLine:
-                oWriter.WriteString(L"<w:u w:val=\"thick\"/>");
-                break;
-            case utDoubleThinLine:
-                oWriter.WriteString(L"<w:u w:val=\"double\"/>");
-                break;
-            default:
-                break;
+                oWriter.WriteString(L" w:color=\"");
+                oWriter.WriteHexInt3(ConvertColorBGRToRGB(m_lUnderlineColor));
+                oWriter.WriteString(L"\"");
             }
+            oWriter.WriteString(L"/>");
         }
 
         if (m_bIsHighlightPresent && bIsNeedSaveFormat)
@@ -317,7 +304,6 @@ namespace NSDocxRenderer
             }
             oWriter.WriteString(L"\"/>");
         }
-
 
         oWriter.WriteString(L"</w:rPr>");
 
@@ -338,8 +324,10 @@ namespace NSDocxRenderer
     {
         if( m_strPickFontName == oSrc->m_strPickFontName &&
             m_eUnderlineType == oSrc->m_eUnderlineType &&
+            m_lUnderlineColor == oSrc->m_lUnderlineColor &&
             m_bIsHighlightPresent == oSrc->m_bIsHighlightPresent &&
             m_lHighlightColor == oSrc->m_lHighlightColor &&
+            m_bIsDoubleStrikeout == oSrc->m_bIsDoubleStrikeout &&
             m_pShape == oSrc->m_pShape &&
             m_oFont.IsEqual(&oSrc->m_oFont) &&
             m_oBrush.IsEqual(&oSrc->m_oBrush))

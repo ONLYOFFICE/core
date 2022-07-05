@@ -319,7 +319,16 @@ namespace OOX
 					int nDepthChild = oReader.GetDepth();
 					fromXML(nDepthChild, oReader);
 				}
-
+				else if (L"wx:sect" == sName && !oReader.IsEmptyNode())
+				{
+					int nWxSectDepth = oReader.GetDepth();
+					fromXML(nWxSectDepth, oReader);
+				}
+				else if (L"wx:sub-section" == sName && !oReader.IsEmptyNode())
+				{
+					int nWxSubSectDepth = oReader.GetDepth();
+					fromXML(nWxSubSectDepth, oReader);
+				}
 				if ( pItem )
 				{
 					m_arrItems.push_back( pItem );

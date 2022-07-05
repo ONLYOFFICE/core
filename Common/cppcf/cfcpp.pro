@@ -22,8 +22,7 @@ SOURCES += \
     sector.cpp \
     sectorcollection.cpp \
     streamrw.cpp \
-    streamview.cpp \
-    svector.cpp
+    streamview.cpp
 
 HEADERS += \
     RBTree/irbnode.h \
@@ -40,6 +39,7 @@ HEADERS += \
     idirectoryentry.h \
     sector.h \
     sectorcollection.h \
+    slist.h \
     streamrw.h \
     streamview.h \
     svector.h

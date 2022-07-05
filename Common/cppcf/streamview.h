@@ -3,7 +3,7 @@
 #include <iostream>
 #include <list>
 #include "sector.h"
-#include <queue>
+#include "slist.h"
 #include "svector.h"
 
 namespace CFCPP
@@ -13,7 +13,7 @@ class StreamView : public std::iostream
 public:
     StreamView(const SVector<Sector> &sectorChain, int sectorSize, Stream stream);
     StreamView(const SVector<Sector> &sectorChain, int sectorSize, std::streamsize length,
-               SVector<Sector> &availableSectors, Stream stream, bool isFatStream = false);
+               SList<Sector> &availableSectors, Stream stream, bool isFatStream = false);
 
     void Write(const char *buffer, std::streamsize offset, std::streamsize count);
     std::streamsize Read(char *buffer, std::streamsize offset, std::streamsize count);
@@ -25,7 +25,7 @@ public:
 
 private:
     void adjustLength(std::streamsize value);
-    void adjustLength(std::streamsize value, SVector<Sector> &availableSectors);
+    void adjustLength(std::streamsize value, SList<Sector> &availableSectors);
 private:
     int sectorSize;
     std::streamsize length;
@@ -36,7 +36,7 @@ private:
     int buf = 0;
 
 public:
-    std::list<Sector> freeSectors;
+    SList<Sector> freeSectors;
     std::streamsize position;
 };
 }

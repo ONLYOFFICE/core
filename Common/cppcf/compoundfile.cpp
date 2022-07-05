@@ -426,7 +426,7 @@ SVector<Sector> CompoundFile::GetFatSectorChain()
         std::unordered_set<int> processedSectors;
         std::streamsize stLength = header.fatSectorsNumber > N_HEADER_FAT_ENTRY ?
                     (header.fatSectorsNumber - N_HEADER_FAT_ENTRY) * 4 : 0;
-        SVector<Sector> zeroQueue;
+        SList<Sector> zeroQueue;
 
         std::shared_ptr<StreamView> difatStream(
                     new StreamView
@@ -558,8 +558,8 @@ SVector<Sector> CompoundFile::GetNormalSectorChain(int secID)
     SVector<Sector> fatSectors = GetFatSectorChain();
     std::unordered_set<int> processedSectors;
 
-    SVector<Sector> availableSectors;
-    StreamView fatStream(fatSectors, GetSectorSize(), fatSectors.size() * GetSectorSize(), availableSectors, sourceStream);
+    SList<Sector> zeroQueue;
+    StreamView fatStream(fatSectors, GetSectorSize(), fatSectors.size() * GetSectorSize(), zeroQueue, sourceStream);
 
     while (true)
     {
@@ -606,12 +606,12 @@ SVector<Sector> CompoundFile::GetMiniSectorChain(int secID)
 
         SVector<Sector> miniFAT = GetNormalSectorChain(header.firstMiniFATSectorID);
         SVector<Sector> miniStream = GetNormalSectorChain(RootEntry()->getStartSetc());
-        SVector<Sector> zeroVector;
+        SList<Sector> zeroQueue;
 
-        StreamView miniFATView(miniFAT, GetSectorSize(), header.miniFATSectorsNumber * Sector::MINISECTOR_SIZE, zeroVector, sourceStream);
+        StreamView miniFATView(miniFAT, GetSectorSize(), header.miniFATSectorsNumber * Sector::MINISECTOR_SIZE, zeroQueue, sourceStream);
 
         // TODO here
-        StreamView miniStreamView(miniStream, GetSectorSize(), rootStorage.Size, zeroVector, sourceStream);
+        StreamView miniStreamView(miniStream, GetSectorSize(), rootStorage.Size, zeroQueue, sourceStream);
 
         BinaryReader miniFATReader = new BinaryReader(miniFATView);
 
@@ -682,7 +682,7 @@ void CompoundFile::CommitDirectory()
     auto directorySectors
             = GetSectorChain(header.firstDirectorySectorID, SectorType::Normal);
 
-    SVector<Sector> zeroQueue;
+    SList<Sector> zeroQueue;
     std::shared_ptr<StreamView> sv(
                 new StreamView(
                     directorySectors,
@@ -887,7 +887,7 @@ void CompoundFile::LoadDirectories()
     if (header.firstDirectorySectorID == Sector::ENDOFCHAIN)
         header.firstDirectorySectorID = directoryChain[0]->id;
 
-    SVector<Sector> zeroQueue;
+    SList<Sector> zeroQueue;
     StreamView dirReader(directoryChain, GetSectorSize(), directoryChain.size() * GetSectorSize(), zeroQueue, sourceStream);
 
 

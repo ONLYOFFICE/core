@@ -15,7 +15,7 @@ StreamView::StreamView(const SVector<Sector> &sectorChain, int sectorSize, Strea
 }
 
 StreamView::StreamView(const SVector<Sector> &sectorChain, int sectorSize, std::streamsize length,
-                       SVector<Sector> &availableSectors, Stream stream, bool isFatStream) :
+                       SList<Sector> &availableSectors, Stream stream, bool isFatStream) :
     StreamView(sectorChain, sectorSize, stream)
 {
     this->isFatStream = isFatStream;
@@ -186,11 +186,11 @@ void StreamView::WriteInt32(int val)
 
 void StreamView::adjustLength(std::streamsize value)
 {
-    SVector<Sector> q;
+    SList<Sector> q;
     adjustLength(value, q);
 }
 
-void StreamView::adjustLength(std::streamsize value, SVector<Sector> &availableSectors)
+void StreamView::adjustLength(std::streamsize value, SList<Sector> &availableSectors)
 {
     this->length = value;
 

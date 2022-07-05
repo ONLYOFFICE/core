@@ -440,9 +440,9 @@ namespace PdfWriter
 					AddToObject(new CStringObject(sAText.c_str()))
 				else if (sType == "Name")
 					AddToObject(sAText.c_str())
-				// Null игнорируется
+				// Null  ниже
 				// Array ниже
-				// Dict ниже
+				// Dict  ниже
 				// Stream игнорируется
 				else if (sType == "Ref")
 				{
@@ -464,7 +464,6 @@ namespace PdfWriter
 
 		if (sType == "Array")
 		{
-			// Освобождение pArray происходит в деструкторе pNewXref
 			CArrayObject* pArray = new CArrayObject();
 			AddToObject(pArray);
 
@@ -474,7 +473,6 @@ namespace PdfWriter
 		}
 		else if (sType == "Dict")
 		{
-			// Освобождение pDict происходит в деструкторе pNewXref
 			CDictObject* pDict = new CDictObject();
 			AddToObject(pDict);
 
@@ -484,6 +482,8 @@ namespace PdfWriter
 		}
 		else if (sType == "None")
 			AddToObject("None")
+		else if (sType == "Null")
+			AddToObject(new CNullObject())
 		else if (sType == "Binary")
 		{
 			BYTE* arrId = new BYTE[gen];

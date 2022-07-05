@@ -2198,8 +2198,8 @@ bool CPdfRenderer::EditClose(const std::wstring& wsPath, const std::wstring& sTr
 	bool bRes = m_pDocument->AddToFile(wsPath, sTrailer, sInfo);
 	if (bRes)
 	{
-        m_bEdit = false;
-        m_bEditPage = false;
+		m_bEdit = false;
+		m_bEditPage = false;
 	}
 	return bRes;
 }

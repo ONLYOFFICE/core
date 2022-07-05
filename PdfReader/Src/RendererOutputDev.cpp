@@ -4577,6 +4577,7 @@ namespace PdfReader
     {
         m_bTransparentGroup = true;
         m_bTransparentGroupSoftMask = bForSoftMask;
+        m_arrTransparentGroupSoftMask.push_back(bForSoftMask);
 
         if (m_bTransparentGroupSoftMask)
         {
@@ -4610,7 +4611,7 @@ namespace PdfReader
     }
     void RendererOutputDev::endTransparencyGroup(GfxState *pGState)
     {
-        if (m_bTransparentGroupSoftMask)
+        if (m_bTransparentGroupSoftMask || m_arrTransparentGroupSoftMask.back())
         {
             RELEASEOBJECT(m_pTransparentGroupSoftMask);
             m_pTransparentGroupSoftMask = m_arrTransparency.back();
@@ -4622,11 +4623,75 @@ namespace PdfReader
             m_pRenderer = m_arrRenderer.back();
         }
 
+        m_arrTransparentGroupSoftMask.pop_back();
         m_bTransparentGroup = false;
-        m_bTransparentGroupSoftMask = false;
+        m_bTransparentGroupSoftMask = m_arrTransparentGroupSoftMask.empty() ? false : m_arrTransparentGroupSoftMask.back();
     }
     void RendererOutputDev::paintTransparencyGroup(GfxState *pGState, double *pBBox)
     {
+        if (!m_pTransparentGroupSoftMask)
+            return;
+
+        double xMin, yMin, xMax, yMax, x, y, bw, bh;
+        int tx, ty, w, h;
+
+        pGState->transform(pBBox[0], pBBox[1], &x, &y);
+        xMin = xMax = x;
+        yMin = yMax = y;
+        pGState->transform(pBBox[0], pBBox[3], &x, &y);
+        if (x < xMin)
+            xMin = x;
+        else if (x > xMax)
+            xMax = x;
+        if (y < yMin)
+            yMin = y;
+        else if (y > yMax)
+            yMax = y;
+        pGState->transform(pBBox[2], pBBox[1], &x, &y);
+        if (x < xMin)
+           xMin = x;
+        else if (x > xMax)
+            xMax = x;
+        if (y < yMin)
+            yMin = y;
+        else if (y > yMax)
+            yMax = y;
+        pGState->transform(pBBox[2], pBBox[3], &x, &y);
+        if (x < xMin)
+            xMin = x;
+        else if (x > xMax)
+            xMax = x;
+        if (y < yMin)
+            yMin = y;
+        else if (y > yMax)
+            yMax = y;
+
+        // convert box coords to integers
+        m_pRenderer->get_Width(&bw);
+        m_pRenderer->get_Height(&bh);
+        tx = (int)floor(xMin);
+        if (tx < 0)
+            tx = 0;
+        else if (tx >= bw)
+            tx = bw - 1;
+        ty = (int)floor(yMin);
+        if (ty < 0)
+            ty = 0;
+        else if (ty >= bh)
+            ty = bh - 1;
+        w = (int)ceil(xMax) - tx + 1;
+        // NB bw and tx are both non-negative, so 'bw - tx' can't overflow
+        if (bw - tx < w)
+            w = bw - tx;
+        if (w < 1)
+            w = 1;
+        h = (int)ceil(yMax) - ty + 1;
+        // NB bh and ty are both non-negative, so 'bh - ty' can't overflow
+        if (bh - ty < h)
+            h = bh - ty;
+        if (h < 1)
+            h = 1;
+
         double arrMatrix[6];
         double *pCTM = pGState->getCTM();
         double dPageHeight = pGState->getPageHeight();
@@ -4641,7 +4706,7 @@ namespace PdfReader
         arrMatrix[4] =     pCTM[2] + pCTM[4];
         arrMatrix[5] =  -(pCTM[3] + pCTM[5]) + dPageHeight;
 
-        double dShiftX = 0, dShiftY = 0;
+        double dShiftX = pBBox[0], dShiftY = pBBox[1];
         DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
 
         Aggplus::CImage oImage;

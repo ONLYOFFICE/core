@@ -332,6 +332,7 @@ namespace PdfReader
 
 		bool                          m_bTransparentGroupSoftMask;
 		CBgraFrame*                   m_pTransparentGroupSoftMask;
+		std::vector<bool>             m_arrTransparentGroupSoftMask;
 		std::vector<CBgraFrame*>      m_arrTransparency;
 		std::vector<IRenderer*>       m_arrRenderer;
 

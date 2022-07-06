@@ -716,6 +716,21 @@ namespace PdfWriter
 		XmlUtils::CXmlLiteReader oCoreReader;
 		oCoreReader.FromString(sXml);
 		oCoreReader.ReadNextNode();
+
+		int num = 0, gen = 0;
+		while (oCoreReader.MoveToNextAttribute())
+		{
+			std::wstring sAName = oCoreReader.GetName();
+			std::string sAText = oCoreReader.GetTextA();
+			if (sAName == L"gen")
+				gen = std::stoi(sAText);
+			else if (sAName == L"num")
+				num = std::stoi(sAText);
+		}
+		oCoreReader.MoveToElement();
+		if (num)
+			SetRef(num, gen);
+
 		int nDeath = oCoreReader.GetDepth();
 		while (oCoreReader.ReadNextSiblingNode(nDeath))
 			ReadDict(oCoreReader, this);

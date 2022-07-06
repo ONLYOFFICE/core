@@ -535,8 +535,6 @@ CPdfRenderer::CPdfRenderer(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA) :
 	m_pPage       = NULL;
 	m_pFont       = NULL;
 
-	m_nCounter = 0;
-
 	m_bNeedUpdateTextFont      = true;
 	m_bNeedUpdateTextColor     = true;
 	m_bNeedUpdateTextAlpha     = true;
@@ -2035,7 +2033,7 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 
 		pField->SetAppearance(pImage);
 
-		// TODO
+		// TODO Реализовать, когда появится поддержка CSignatureField
 		pField->SetCert();
 	}
 
@@ -2113,34 +2111,34 @@ HRESULT CPdfRenderer::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbi
 	m_pPage->GrRestore();
 	return S_OK;
 }
-bool CPdfRenderer::EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sCatalog, const std::pair<int, int>& pCatalog, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm, int nFormField)
+bool CPdfRenderer::EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sCatalog, int nCatalog, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm, int nFormField)
 {
-	bool bRes = m_pDocument->EditPdf(nPosLastXRef, nSizeXRef, sCatalog, pCatalog, sEncrypt, sPassword, nCryptAlgorithm, nFormField);
+	bool bRes = m_pDocument->EditPdf(nPosLastXRef, nSizeXRef, sCatalog, nCatalog, sEncrypt, sPassword, nCryptAlgorithm, nFormField);
 	if (bRes)
 	{
 		m_bEdit = true;
 	}
 	return bRes;
 }
-bool CPdfRenderer::CreatePageTree(const std::wstring& sPageTree, const std::pair<int, int>& pPageTree)
+bool CPdfRenderer::CreatePageTree(const std::wstring& sPageTree, int nPageTree)
 {
 	if (!m_bEdit)
 	{
 		return false;
 	}
-	return m_pDocument->CreatePageTree(sPageTree, pPageTree);
+	return m_pDocument->CreatePageTree(sPageTree, nPageTree);
 }
 std::pair<int, int> CPdfRenderer::GetPageRef(int nPageIndex)
 {
 	return m_pDocument->GetPageRef(nPageIndex);
 }
-bool CPdfRenderer::EditPage(const std::wstring& sPage, const std::pair<int, int>& pPage)
+bool CPdfRenderer::EditPage(const std::wstring& sPage, int nPage)
 {
 	if (!IsValid() || !m_bEdit)
 		return false;
 	m_oCommandManager.Flush();
 
-	m_pPage = m_pDocument->EditPage(sPage, pPage);
+	m_pPage = m_pDocument->EditPage(sPage, nPage);
 	if (m_pPage)
 	{
 		m_dPageWidth  = PT_2_MM(m_pPage->GetWidth());

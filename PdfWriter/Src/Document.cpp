@@ -52,7 +52,6 @@
 
 #include "../../DesktopEditor/agg-2.4/include/agg_span_hatch.h"
 #include "../../DesktopEditor/common/SystemUtils.h"
-#include "../../Common/DocxFormat/Source/Base/Base.h"
 
 #ifdef CreateFont
 #undef CreateFont
@@ -1087,7 +1086,7 @@ namespace PdfWriter
 
 		return (!!m_pAcroForm);
 	}
-	bool CDocument::EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sCatalog, const std::pair<int, int>& pCatalog, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm, int nFormField)
+	bool CDocument::EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sCatalog, int nCatalog, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm, int nFormField)
 	{
 		Close();
 
@@ -1103,13 +1102,12 @@ namespace PdfWriter
 
 		SetCompressionMode(COMP_ALL);
 
-		CXref* pXref = new CXref(this, pCatalog.first);
+		CXref* pXref = new CXref(this, nCatalog);
 		if (!pXref)
 			return false;
 		m_pCatalog = new CCatalog(pXref, sCatalog);
 		if (!m_pCatalog)
 			return false;
-		m_pCatalog->SetRef(pCatalog.first, pCatalog.second);
 		pXref->SetPrev(m_pLastXref);
 		m_pLastXref = pXref;
 
@@ -1137,9 +1135,9 @@ namespace PdfWriter
 		m_unFormFields = nFormField;
 		return true;
 	}
-	bool CDocument::CreatePageTree(const std::wstring& sPageTree, const std::pair<int, int>& pPageTree)
+	bool CDocument::CreatePageTree(const std::wstring& sPageTree, int nPageTree)
 	{
-		CXref* pXref = new CXref(this, pPageTree.first);
+		CXref* pXref = new CXref(this, nPageTree);
 		if (!pXref)
 			return false;
 
@@ -1151,8 +1149,6 @@ namespace PdfWriter
 			m_pPageTree = pPageT;
 		else
 			m_pPageTree->Join(pPageT);
-
-		pPageT->SetRef(pPageTree.first, pPageTree.second);
 		pXref->SetPrev(m_pLastXref);
 		m_pLastXref = pXref;
 
@@ -1173,11 +1169,10 @@ namespace PdfWriter
 
 		return pRes;
 	}
-	CPage* CDocument::EditPage(const std::wstring& sPage, const std::pair<int, int>& pPage)
+	CPage* CDocument::EditPage(const std::wstring& sPage, int nPage)
 	{
-		CXref* pXref = new CXref(this, pPage.first);
+		CXref* pXref = new CXref(this, nPage);
 		CPage* pNewPage = new CPage(pXref, this, sPage);
-		pNewPage->SetRef(pPage.first, pPage.second);
 
 		pNewPage->AddContents(m_pXref);
 #ifndef FILTER_FLATE_DECODE_DISABLED

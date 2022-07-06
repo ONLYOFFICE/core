@@ -95,10 +95,10 @@ namespace PdfReader
             }
             typeDict.free();
 
-            std::wstring sPageTree = XMLConverter::DictToXml(L"PageTree", &pagesObj);
             Ref topPagesRef = pPagesRefObj->getRef();
+            std::wstring sPageTree = XMLConverter::DictToXml(L"PageTree", &pagesObj, topPagesRef.num, topPagesRef.gen);
 
-            m_pPdfWriter->CreatePageTree(sPageTree, std::make_pair(topPagesRef.num, topPagesRef.gen));
+            m_pPdfWriter->CreatePageTree(sPageTree, topPagesRef.num);
 
             Object kidsArrObj;
             if (!pagesObj.dictLookup("Kids", &kidsArrObj) || !kidsArrObj.isArray())
@@ -524,13 +524,33 @@ return 0;
             return false;
         }
 
-        std::wstring sCatalog = XMLConverter::DictToXml(L"Catalog", &catDict);
         Ref catRef = catRefObj.getRef();
+        std::wstring sCatalog = XMLConverter::DictToXml(L"Catalog", &catDict, catRef.num, catRef.gen);
 
         unsigned int nFormField = 0;
         AcroForm* form = m_pInternal->m_pPDFDocument->getCatalog()->getForm();
         if (form)
-            nFormField = form->getNumFields();
+        {
+            nFormField = form->getNumFields() + 1;
+            std::wstring sSig = L"Sig" + std::to_wstring(nFormField);
+            int i = 0, nFormFields = form->getNumFields();
+            while (i < nFormFields)
+            {
+                int nLength;
+                Unicode* uName = form->getField(i)->getName(&nLength);
+                std::wstring sName = NSStringExt::CConverter::GetUnicodeFromUTF32(uName, nLength);
+                RELEASEMEM(uName);
+                if (sName == sSig)
+                {
+                    i = 0;
+                    nFormField++;
+                    sSig = L"Sig" + std::to_wstring(nFormField);
+                }
+                else
+                    i++;
+            }
+            nFormField--;
+        }
 
         int nCryptAlgorithm = -1;
         std::wstring sEncrypt;
@@ -557,7 +577,7 @@ return 0;
             }
         }
 
-        bool bRes = m_pInternal->m_pPdfWriter->EditPdf(xref->getLastXRefPos(), xref->getNumObjects(), sCatalog, std::make_pair(catRef.num, catRef.gen), sEncrypt, sPassword, nCryptAlgorithm, nFormField);
+        bool bRes = m_pInternal->m_pPdfWriter->EditPdf(xref->getLastXRefPos(), xref->getNumObjects(), sCatalog, catRef.num, sEncrypt, sPassword, nCryptAlgorithm, nFormField);
         if (bRes)
             m_pInternal->GetPageTree(xref, &pagesRefObj);
         pagesRefObj.free();
@@ -586,11 +606,11 @@ return 0;
             pageRefObj.free();
             return false;
         }
-        std::wstring sPage = XMLConverter::DictToXml(L"Page", &pageObj);
+        std::wstring sPage = XMLConverter::DictToXml(L"Page", &pageObj, pPageRef.first, pPageRef.second);
         pageObj.free();
         pageRefObj.free();
 
-        return m_pInternal->m_pPdfWriter->EditPage(sPage, pPageRef);
+        return m_pInternal->m_pPdfWriter->EditPage(sPage, pPageRef.first);
     }
     bool CPdfReader::DeletePage(int nPageIndex)
     {

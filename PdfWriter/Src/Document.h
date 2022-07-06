@@ -152,10 +152,10 @@ namespace PdfWriter
 		CSignatureField*  CreateSignatureField();
 		bool              CheckFieldName(CFieldBase* pField, const std::string& sName);
 					  
-		bool              EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sCatalog, const std::pair<int, int>& pCatalog, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm, int nFormField);
-		bool              CreatePageTree(const std::wstring& sPageTree, const std::pair<int, int>& pPageTree);
+		bool              EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sCatalog, int nCatalog, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm, int nFormField);
+		bool              CreatePageTree(const std::wstring& sPageTree, int nPageTree);
 		std::pair<int, int> GetPageRef(int nPageIndex);
-		CPage*            EditPage(const std::wstring& sPage, const std::pair<int, int>& pPage);
+		CPage*            EditPage(const std::wstring& sPage, int nPage);
 		CPage*            AddPage(int nPageIndex);
 		bool              DeletePage(int nPageIndex);
 		bool              AddToFile(const std::wstring& wsPath, const std::wstring& sTrailer, const std::wstring& sInfo);

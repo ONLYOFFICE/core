@@ -253,7 +253,7 @@ namespace PdfWriter
 		void SetContact(const std::wstring& wsValue);
 		void SetReason(const std::wstring& wsValue);
 		void SetPicture(const std::wstring& wsPath);
-		void SetCert(); // TODO
+		void SetCert();
 		void SetDate(bool bDate);
 		void SetAppearance(CImageDict* pImage = NULL);
 		virtual CResourcesDict* GetResourcesDict();

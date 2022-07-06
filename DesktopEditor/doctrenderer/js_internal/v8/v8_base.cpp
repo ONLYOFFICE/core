@@ -350,7 +350,7 @@ namespace NSJSBase
         return _value;
     }
 
-    void CJSContext::MoveToThread()
+    void CJSContext::MoveToThread(ASC_THREAD_ID* id)
     {
         // none
     }

@@ -331,11 +331,11 @@ namespace NSJSBase
         return _value;
     }
 
-    void CJSContext::MoveToThread()
+    void CJSContext::MoveToThread(ASC_THREAD_ID* id)
     {
-        if (CJSContextPrivate::RegisterContext(m_internal->context))
+        if (CJSContextPrivate::RegisterContext(m_internal->context, id))
         {
-            m_internal->m_arThreads.push_back(NSThreads::GetCurrentThreadId());
+            m_internal->m_arThreads.push_back((NULL == id) ? NSThreads::GetCurrentThreadId() : *id);
         }
     }
 }

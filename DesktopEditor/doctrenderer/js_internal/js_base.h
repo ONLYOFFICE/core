@@ -4,6 +4,7 @@
 #include "../../common/File.h"
 #include "../../common/Array.h"
 #include "../../../Common/DocxFormat/Source/Base/SmartPtr.h"
+#include "../../graphics/BaseThread.h"
 
 #define JS_VALUE_EXIST(value) (value.is_init() && !value->isNull() && !value->isUndefined())
 #define JS_IS_VALUE_ARRAY(value) (value.is_init() && !value->isNull() && !value->isUndefined() && value->isArray())
@@ -245,7 +246,7 @@ namespace NSJSBase
 
         JSSmart<CJSValue> runScript(const std::string& script, JSSmart<CJSTryCatch> exception = NULL, const std::wstring& scriptPath = std::wstring(L""));
         CJSValue* JSON_Parse(const char* json_content);
-        void MoveToThread();
+        void MoveToThread(ASC_THREAD_ID* id = NULL);
 
     public:
         static CJSValue* createUndefined();

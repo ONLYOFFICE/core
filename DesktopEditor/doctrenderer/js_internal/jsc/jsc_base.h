@@ -10,7 +10,6 @@
 
 #import "../../../../DesktopEditor/common/Mac/NSString+StringUtils.h"
 #include <vector>
-#include "../../../../DesktopEditor/graphics/BaseThread.h"
 
 @protocol JSEmbedObjectProtocol
 - (void*) getNative;
@@ -53,9 +52,9 @@ namespace NSJSBase
         }
 
     private:
-        static bool RegisterContext(JSContext* ctx)
+        static bool RegisterContext(JSContext* ctx, ASC_THREAD_ID* id = NULL)
         {
-            ASC_THREAD_ID nCurrentThread = NSThreads::GetCurrentThreadId();
+            ASC_THREAD_ID nCurrentThread = (id == NULL) ? NSThreads::GetCurrentThreadId() : *id;
             for (std::vector<std::pair<ASC_THREAD_ID, JSContext*>>::const_iterator i = g_contexts.begin(); i != g_contexts.end(); i++)
             {
                 if (i->first == nCurrentThread)

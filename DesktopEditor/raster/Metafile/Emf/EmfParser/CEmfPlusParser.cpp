@@ -162,7 +162,7 @@ namespace MetaFile
                 ClearFile();
 
                 for (EmfPlusObjects::const_iterator pIter = m_mObjects.begin(); pIter != m_mObjects.end(); ++pIter)
-                        delete[] pIter->second;
+                        delete pIter->second;
         }
 
         bool CEmfPlusParser::OpenFromFile(const wchar_t *wsFilePath)

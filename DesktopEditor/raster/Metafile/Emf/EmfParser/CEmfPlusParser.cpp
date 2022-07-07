@@ -1351,13 +1351,23 @@ namespace MetaFile
 
                 NSFile::CFileBinary oFile;
 
-                const std::wstring wsFilePath = oFile.GetTempPath() + L"\\temp.tmp";
+                const std::wstring wsFilePath = oFile.GetTempPath() + L"/temp.tmp";
 
-                oFile.CreateFileW(wsFilePath);
-                oFile.WriteFile(pBuffer, unSize);
+                if (oFile.CreateFileW(wsFilePath))
+                        return;
+
+                if (oFile.WriteFile(pBuffer, unSize))
+                {
+                        oFile.CloseFile();
+                        return;
+                }
+
                 oFile.CloseFile();
 
                 Aggplus::CImage oImage(wsFilePath);
+
+                if (Aggplus::WrongState == oImage.GetLastStatus())
+                        return;
 
                 unsigned int unWidth, unHeight;
 

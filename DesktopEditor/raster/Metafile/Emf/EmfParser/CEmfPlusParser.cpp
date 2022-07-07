@@ -1353,10 +1353,10 @@ namespace MetaFile
 
                 const std::wstring wsFilePath = oFile.GetTempPath() + L"/temp.tmp";
 
-                if (oFile.CreateFileW(wsFilePath))
+                if (!oFile.CreateFileW(wsFilePath))
                         return;
 
-                if (oFile.WriteFile(pBuffer, unSize))
+                if (!oFile.WriteFile(pBuffer, unSize))
                 {
                         oFile.CloseFile();
                         return;

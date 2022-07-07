@@ -1107,7 +1107,10 @@ namespace PdfWriter
 			return false;
 		m_pCatalog = new CCatalog(pXref, sCatalog);
 		if (!m_pCatalog)
+		{
+			RELEASEOBJECT(pXref);
 			return false;
+		}
 		pXref->SetPrev(m_pLastXref);
 		m_pLastXref = pXref;
 
@@ -1143,7 +1146,10 @@ namespace PdfWriter
 
 		CPageTree* pPageT = new CPageTree(pXref, sPageTree);
 		if (!pPageT)
+		{
+			RELEASEOBJECT(pXref);
 			return false;
+		}
 
 		if (!m_pPageTree)
 			m_pPageTree = pPageT;
@@ -1172,17 +1178,25 @@ namespace PdfWriter
 	CPage* CDocument::EditPage(const std::wstring& sPage, int nPage)
 	{
 		CXref* pXref = new CXref(this, nPage);
+		if (!pXref)
+			return NULL;
 		CPage* pNewPage = new CPage(pXref, this, sPage);
+		if (!pNewPage)
+		{
+			RELEASEOBJECT(pXref);
+			return NULL;
+		}
 
 		pNewPage->AddContents(m_pXref);
 #ifndef FILTER_FLATE_DECODE_DISABLED
 		if (m_unCompressMode & COMP_TEXT)
 			pNewPage->SetFilter(STREAM_FILTER_FLATE_DECODE);
 #endif
-		pXref->SetPrev(m_pLastXref);
 
+		pXref->SetPrev(m_pLastXref);
 		m_pLastXref = pXref;
 		m_pCurPage = pNewPage;
+
 		return pNewPage;
 	}
 	CPage* CDocument::AddPage(int nPageIndex)
@@ -1191,6 +1205,8 @@ namespace PdfWriter
 			return NULL;
 
 		CPage* pNewPage = new CPage(m_pXref, NULL, this);
+		if (!pNewPage)
+			return NULL;
 		bool bRes = m_pPageTree->InsertPage(nPageIndex, pNewPage);
 		if (!bRes)
 			return NULL;
@@ -1230,22 +1246,30 @@ namespace PdfWriter
 		// Добавляем первый элемент в таблицу xref
 		// он должен иметь вид 0000000000 65535 f
 		CXref* pXref = new CXref(this, 0, 65535);
+		if (!pXref)
+			return false;
 		m_pTrailer = pXref->GetTrailer();
 		m_pTrailer->FromXml(sTrailer);
 
 		// Обновление Info
 		CObjectBase* pInfo = m_pTrailer->Get("Info");
-		CXref* pInfoXref = new CXref(this, pInfo->GetObjId());
+		CXref* pInfoXref = new CXref(this, pInfo ? pInfo->GetObjId() : 0);
+		if (!pInfoXref)
+			return false;
 		m_pInfo = new CInfoDict(pInfoXref, sInfo);
 		if (!m_pInfo)
+		{
+			RELEASEOBJECT(pInfoXref);
 			return false;
-		m_pInfo->SetRef(pInfo->GetObjId(), pInfo->GetGenNo());
+		}
+		if (pInfo)
+			m_pInfo->SetRef(pInfo->GetObjId(), pInfo->GetGenNo());
 		m_pInfo->SetTime(InfoModaDate);
 
 		std::wstring sCreator = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
 		if (sCreator.empty())
 			sCreator = NSSystemUtils::gc_EnvApplicationNameDefault;
-		std::string sCreatorA = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sCreator);
+		std::string sCreatorA = U_TO_UTF8(sCreator);
 
 #if defined(INTVER)
 		sCreatorA += "/";
@@ -1350,29 +1374,37 @@ namespace PdfWriter
 			}
 
 			CXref* pXrefCatalog = new CXref(this, m_pCatalog->GetObjId());
-			pXrefCatalog->Add(m_pCatalog->Copy());
-			pXrefCatalog->SetPrev(m_pXref);
+			if (pXrefCatalog)
+			{
+				pXrefCatalog->Add(m_pCatalog->Copy());
+				pXrefCatalog->SetPrev(m_pXref);
+			}
 
 			CXref* pXrefPage = new CXref(this, m_vSignatures[i].pPage->GetObjId());
-			pXrefPage->Add(m_vSignatures[i].pPage->Copy());
-			pXrefPage->SetPrev(pXrefCatalog);
+			if (pXrefPage)
+			{
+				pXrefPage->Add(m_vSignatures[i].pPage->Copy());
+				pXrefPage->SetPrev(pXrefCatalog);
+			}
 
 			CXref* pXref = new CXref(this, 0, 65535);
-			pXref->SetPrev(pXrefPage);
+			if (pXref)
+			{
+				pXref->SetPrev(pXrefPage);
+				CDictObject* pTrailer = pXref->GetTrailer();
+				m_pTrailer->Copy(pTrailer);
 
-			CDictObject* pTrailer = pXref->GetTrailer();
-			m_pTrailer->Copy(pTrailer);
+				CEncrypt* pEncrypt = NULL;
+				if (m_bEncrypt && m_pEncryptDict)
+					pEncrypt = m_pEncryptDict->GetEncrypt();
 
-			CEncrypt* pEncrypt = NULL;
-			if (m_bEncrypt)
-				pEncrypt = m_pEncryptDict->GetEncrypt();
+				pXref->WriteToStream(pStream, pEncrypt, bNeedStreamXRef);
+				nPrevAddr = pXref->GetPrevAddr();
+				nSizeXRef = m_pXref->GetSizeXRef();
+				vXRefForWrite.push_back(pXref);
+			}
 
-			pXref->WriteToStream(pStream, pEncrypt, bNeedStreamXRef);
-			nPrevAddr = pXref->GetPrevAddr();
-			nSizeXRef = m_pXref->GetSizeXRef();
-			vXRefForWrite.push_back(pXref);
 			RELEASEOBJECT(pStream);
-
 			pStream = new CFileStream();
 			if (pStream && pStream->OpenFile(wsPath, false))
 				pField->GetSignatureDict()->WriteToStream(pStream, pStream->Size());

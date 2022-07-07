@@ -293,10 +293,12 @@ namespace PdfWriter
 	}
 	bool CPageTree::Join(CPageTree* pPageTree)
 	{
+		unsigned int nObjId = pPageTree->GetObjId();
+		unsigned int nGenNo = pPageTree->GetGenNo();
 		for (int i = 0, count = m_pPages->GetCount(); i < count; ++i)
 		{
 			CObjectBase* pObj = m_pPages->Get(i);
-			if (pObj->GetObjId() == pPageTree->GetObjId() && pObj->GetGenNo() == pPageTree->GetGenNo())
+			if (pObj->GetObjId() == nObjId && pObj->GetGenNo() == nGenNo)
 			{
 				m_pPages->Insert(pObj, pPageTree, true);
 				return true;

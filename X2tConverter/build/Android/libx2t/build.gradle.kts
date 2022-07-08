@@ -71,6 +71,10 @@ android {
         targetCompatibility(JavaVersion.VERSION_11)
     }
 
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+
     packagingOptions {
         jniLibs.useLegacyPackaging = true
         arrayOf("armeabi-v7a", "x86", "arm64-v8a", "x86_64").forEach { abi ->

@@ -261,7 +261,16 @@ std::shared_ptr<RedBlackTree::RBTree> CompoundFile::CreateNewTree()
 
 std::shared_ptr<RedBlackTree::RBTree> CompoundFile::GetChildrenTree(int sid)
 {
+    std::shared_ptr<RedBlackTree::RBTree> bst(new RedBlackTree::RBTree());
 
+    DoLoadChildren(bst, directoryEntries[sid]);
+
+    return bst;
+}
+
+bool CompoundFile::IsClosed() const
+{
+    return _disposed;
 }
 
 /// <summary>

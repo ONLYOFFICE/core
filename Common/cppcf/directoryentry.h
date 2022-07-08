@@ -3,25 +3,10 @@
 #include "svector.h"
 #include "idirectoryentry.h"
 #include "guid.h"
+#include "sector.h"
 
 namespace CFCPP
 {
-enum StgType : int
-{
-    StgInvalid = 0,
-    StgStorage = 1,
-    StgStream = 2,
-    StgLockbytes = 3,
-    StgProperty = 4,
-    StgRoot = 5
-};
-
-enum StgColor : int
-{
-    Red = 0,
-    Black = 1
-};
-
 class DirectoryEntry : public IDirectoryEntry, protected std::enable_shared_from_this<DirectoryEntry>
 {
 public:
@@ -38,6 +23,8 @@ public:
     RedBlackTree::PIRBNode getRight() const override;
     void setLeft(RedBlackTree::PIRBNode pNode) override;
     void setRight(RedBlackTree::PIRBNode pNode) override;
+    std::streamsize getSize() const override {return size;}
+    void setSize(std::streamsize value) override {size = value;}
 
     inline void setColor(RedBlackTree::Color clr) override {stgColor = (StgColor)clr;}
     inline RedBlackTree::Color getColor()const override {return (RedBlackTree::Color)stgColor;}
@@ -76,9 +63,12 @@ public:
 
     void Read(Stream stream, CFSVersion ver = CFSVersion::Ver_3) override;
     void Write(Stream stream) const override;
+    inline StgType getStgType() const override {return stgType;}
+    inline void setStgType(StgType value) override {stgType = value;}
+    inline GUID getStorageCLSID() const override {return storageCLSID;}
+    inline void setStorageCLSID(GUID value) override {storageCLSID = value;}
     int GetHashCode() const override;
 
-    StgType getStgType() const;
     inline std::wstring Name() const {return GetEntryName();}
 
 public:
@@ -89,7 +79,6 @@ public:
     int leftSibling = NOSTREAM;
     int rightSibling = NOSTREAM;
     int child = NOSTREAM;
-    GUID storageCLSID;
     int stateBits;
     static std::shared_ptr<IDirectoryEntry> New(std::wstring name, StgType stgType, SVector<IDirectoryEntry> dirRepository);
 
@@ -104,6 +93,7 @@ private:
     StgColor stgColor = StgColor::Red;
     SVector<IDirectoryEntry> dirRepository;
     std::weak_ptr<RedBlackTree::IRBNode> parent;
+    GUID storageCLSID;
 
 };
 

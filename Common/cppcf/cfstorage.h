@@ -13,7 +13,7 @@ public:
     CFStorage();
 
 
-    RedBlackTree::RBTree getChildren() const;
+    RedBlackTree::RBTree getChildren();
 
 private:
     RedBlackTree::RBTree LoadChildren(int SID);

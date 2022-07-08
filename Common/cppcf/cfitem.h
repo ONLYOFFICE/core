@@ -1,20 +1,49 @@
 #pragma once
 #include "compoundfile.h"
+#include "guid.h"
 
 namespace CFCPP
 {
+struct DataTime
+{
+    // TODO
+    char data[8] = {0,0,0,0,0,0,0,0};
+};
+
 class CFItem
 {
 public:
-    CFItem();
+    int CompareTo(const CFItem& other) const;
+    bool operator==(const CFItem &rightItem) const;
+    bool operator!=(const CFItem &rightItem) const;
+    int GetHashCode() const;
+    std::wstring Name()const;
+    inline std::streamsize size() const {return dirEntry->getSize();}
+    bool IsStorage() const;
+    bool IsStream() const;
+    bool ISRoot() const;
 
-protected:
-    void CheckDisposed()
-    {
-        if (compoudFile.SizeFile() == 0)
-    }
+    inline DataTime getDataTime()const{return DataTime();}
+    inline void setDataTime(const DataTime& value){};
+
+    GUID getStorageCLSID() const;
+    void setStorageCLSID(GUID value);
+
+    int CompareTo(const CFItem& other);
+    std::wstring ToString()const;
 
 public:
-    CompoundFile compoudFile;
+    std::shared_ptr<IDirectoryEntry> dirEntry;
+
+protected:
+    inline CFItem() {};
+    inline CFItem(std::shared_ptr<CompoundFile> compoundFile) : compoundFile(compoundFile) {}
+    inline std::shared_ptr<CompoundFile> getCompoundFile() {return compoundFile;}
+    void CheckDisposed();
+
+protected:
+    std::shared_ptr<CompoundFile> compoundFile;
 };
+
+
 }

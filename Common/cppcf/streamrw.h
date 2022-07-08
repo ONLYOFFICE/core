@@ -3,7 +3,6 @@
 #include <fstream>
 #include <array>
 #include <vector>
-#include "../../DesktopEditor/common/Types.h"
 #include "Stream.h"
 
 

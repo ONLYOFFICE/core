@@ -274,11 +274,6 @@ ULONG64 DirectoryEntry::fnv_hash(const char *buffer, int lenght)
     return h;
 }
 
-StgType DirectoryEntry::getStgType() const
-{
-    return stgType;
-}
-
 std::shared_ptr<IDirectoryEntry> DirectoryEntry::New(std::wstring name, StgType stgType, SVector<IDirectoryEntry> dirRepository)
 {
     std::shared_ptr<DirectoryEntry> de;

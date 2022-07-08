@@ -4,6 +4,7 @@
 #include <sstream>
 #include <fstream>
 #include <memory>
+#include "../../DesktopEditor/common/Types.h"
 
 namespace CFCPP
 {

@@ -1,8 +1,85 @@
 #include "cfitem.h"
+#include "cfexception.h"
 
 using namespace CFCPP;
 
-CFItem::CFItem()
-{
 
+int CFItem::CompareTo(const CFItem &other) const
+{
+    return dirEntry->CompareTo(other.dirEntry);
 }
+
+bool CFItem::operator==(const CFItem &rightItem) const
+{
+    return CompareTo(rightItem) == 0;
+}
+
+bool CFItem::operator!=(const CFItem &rightItem) const
+{
+    return CompareTo(rightItem) != 0;
+}
+
+int CFItem::GetHashCode() const
+{
+    return dirEntry->GetHashCode();
+}
+
+std::wstring CFItem::Name() const
+{
+    auto n = dirEntry->GetEntryName();
+    if (n.empty() == false)
+    {
+        auto remIter = n.find_last_of('\0');
+        if (remIter != std::wstring::npos)
+            n.erase(remIter);
+        return n;
+    }
+    else
+        return L"";
+}
+
+bool CFItem::IsStorage() const
+{
+    return dirEntry->getStgType() == StgType::StgStorage;
+}
+
+bool CFItem::IsStream() const
+{
+    return dirEntry->getStgType() == StgType::StgStream;
+}
+
+bool CFItem::ISRoot() const
+{
+    return dirEntry->getStgType() == StgType::StgRoot;
+}
+
+GUID CFItem::getStorageCLSID() const
+{
+    return dirEntry->getStorageCLSID();
+}
+
+void CFItem::setStorageCLSID(GUID value)
+{
+    dirEntry->setStorageCLSID(value);
+}
+
+int CFItem::CompareTo(const CFItem &other)
+{
+    return dirEntry->CompareTo(other.dirEntry);
+}
+
+std::wstring CFItem::ToString() const
+{
+    if (dirEntry != nullptr)
+        return L"[" + std::to_wstring(dirEntry->getLeftSibling()) + L"," + std::to_wstring(dirEntry->getSid()) + L"," +
+                std::to_wstring(dirEntry->getRightSibling()) + L"] " + dirEntry->GetEntryName();
+    else
+        return L"";
+}
+
+void CFItem::CheckDisposed()
+{
+    if (compoundFile->IsClosed())
+        throw new CFDisposedException("Owner Compound file has been closed and owned items have been invalidated");
+}
+

@@ -23,13 +23,6 @@ enum CFSConfiguration
     LeaveOpen = 16
 };
 
-enum CFSVersion : int
-{
-    /// Compound file version 3 - The default and most common version available. Sector size 512 bytes, 2GB max file size.
-    Ver_3 = 3,
-    /// Compound file version 4 - Sector size is 4096 bytes. Using this version could bring some compatibility problem with existing applications.
-    Ver_4 = 4
-};
 enum CFSUpdateMode
 {
     /// ReadOnly update mode prevents overwriting
@@ -61,6 +54,7 @@ public:
 
     std::shared_ptr<RedBlackTree::RBTree> CreateNewTree();
     std::shared_ptr<RedBlackTree::RBTree> GetChildrenTree(int sid);
+    bool IsClosed()const;
 protected:
     int GetSectorSize();
 

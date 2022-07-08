@@ -1072,7 +1072,7 @@ private:
                 std::wstring wsType = L"dxa";
 
                 //Если ширина указана в %, то используем тип dxa, если же в других ндтнтцах измерения, то в pct
-                std::wregex oWidthRegex(L"((width)+)[//s]*:[//s]*(.+%)");
+                std::wregex oWidthRegex(L"((width)+)[\\s]*:[\\s]*(.+%)");
 
                 if (std::regex_search(sSelectors.back().m_sStyle.data(), oWidthRegex))
                          wsType = L"pct";

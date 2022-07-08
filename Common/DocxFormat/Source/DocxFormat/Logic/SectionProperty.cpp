@@ -318,41 +318,49 @@ namespace OOX
 					m_oVAlign = oReader;
 				else if ( L"w:hdr" == sName )
 				{
-					ComplexTypes::Word::CHdrFtrRef *pHeaderRef = new ComplexTypes::Word::CHdrFtrRef();
-					OOX::CHdrFtr* pHeader = new OOX::CHdrFtr(document);
-					if (pHeaderRef && pHeader)
+					CDocxFlat* docx_flat = dynamic_cast<CDocxFlat*>(document);
+					if (docx_flat)
 					{
-						pHeader->fromXML(oReader);
+						ComplexTypes::Word::CHdrFtrRef *pHeaderRef = new ComplexTypes::Word::CHdrFtrRef();
+						NSCommon::smart_ptr<OOX::CHdrFtr> pHeader = new OOX::CHdrFtr(document);
 
-						pHeaderRef->m_oId	= L"hdrId" + std::to_wstring(m_arrHeaderReference.size() + 1);
-						pHeaderRef->m_oType = pHeader->m_oType;
-
-						m_arrHeaderReference.push_back( pHeaderRef );
-						
-						CDocxFlat* docx_flat = dynamic_cast<CDocxFlat*>(document);
-						if (docx_flat)
+						if (pHeaderRef && pHeader.IsInit())
 						{
-							docx_flat->m_mapHeadersFooters.insert(std::make_pair(pHeaderRef->m_oId->ToString(), pHeader));
+							OOX::IFileContainer* oldContainer = docx_flat->m_currentContainer;
+							docx_flat->m_currentContainer = dynamic_cast<OOX::IFileContainer*>(pHeader.GetPointer());
+								pHeader->fromXML(oReader);
+							docx_flat->m_currentContainer = oldContainer;
+							
+							const OOX::RId rId = docx_flat->m_currentContainer->Add(pHeader.smart_dynamic_cast<OOX::File>());
+
+							pHeaderRef->m_oId = rId.get();
+							pHeaderRef->m_oType = pHeader->m_oType;
+							
+							m_arrHeaderReference.push_back(pHeaderRef);
 						}
 					}
 				}
 				else if ( L"w:ftr" == sName )
 				{
-					ComplexTypes::Word::CHdrFtrRef *pFooterRef = new ComplexTypes::Word::CHdrFtrRef();
-					OOX::CHdrFtr* pFooter = new OOX::CHdrFtr(document);
-					if (pFooter && pFooterRef)
+					CDocxFlat* docx_flat = dynamic_cast<CDocxFlat*>(document);
+					if (docx_flat)
 					{
-						pFooter->fromXML(oReader);
+						ComplexTypes::Word::CHdrFtrRef *pFooterRef = new ComplexTypes::Word::CHdrFtrRef();
+						NSCommon::smart_ptr<OOX::CHdrFtr> pFooter = new OOX::CHdrFtr(document);
 
-						pFooterRef->m_oId	= L"ftrId" + std::to_wstring(m_arrFooterReference.size() + 1);
-						pFooterRef->m_oType = pFooter->m_oType;
-						
-						m_arrFooterReference.push_back( pFooterRef );
-						
-						CDocxFlat* docx_flat = dynamic_cast<CDocxFlat*>(document);
-						if (docx_flat)
+						if (pFooter.IsInit() && pFooterRef)
 						{
-							docx_flat->m_mapHeadersFooters.insert(std::make_pair(pFooterRef->m_oId->ToString(), pFooter));
+							OOX::IFileContainer* oldContainer = docx_flat->m_currentContainer;
+							docx_flat->m_currentContainer = dynamic_cast<OOX::IFileContainer*>(pFooter.GetPointer());
+								pFooter->fromXML(oReader);
+							docx_flat->m_currentContainer = oldContainer;
+
+							const OOX::RId rId = docx_flat->m_currentContainer->Add(pFooter.smart_dynamic_cast<OOX::File>());
+
+							pFooterRef->m_oId = rId.get();
+							pFooterRef->m_oType = pFooter->m_oType;
+							
+							m_arrFooterReference.push_back(pFooterRef);
 						}
 					}
 				}

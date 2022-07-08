@@ -971,6 +971,8 @@ namespace OOX
 		{
 			std::wstring sXml = toXML();
 			CDirectory::SaveToFile( oFilePath.GetPath(), sXml );
+			
+			oContent.Registration(type().OverrideType(), oDirectory, oFilePath.GetFilename());
 		}
 		virtual void fromXML(XmlUtils::CXmlNode& oNode)
 		{

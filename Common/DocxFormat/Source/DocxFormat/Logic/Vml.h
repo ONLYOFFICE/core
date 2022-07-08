@@ -730,16 +730,14 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
-
-			// Attributes
-			std::wstring                                            m_sSrc;
-			SimpleTypes::Vml::CVml_1_65536                     m_oCropLeft;
-			SimpleTypes::Vml::CVml_1_65536                     m_oCropTop;
-			SimpleTypes::Vml::CVml_1_65536                     m_oCropRight;
-			SimpleTypes::Vml::CVml_1_65536                     m_oCropBottom;
-			SimpleTypes::CDouble                               m_oGain;
-			SimpleTypes::CDouble                               m_oBlackLevel;
-			SimpleTypes::CDouble                               m_oGamma;
+			std::wstring					m_sSrc;
+			SimpleTypes::Vml::CVml_1_65536	m_oCropLeft;
+			SimpleTypes::Vml::CVml_1_65536	m_oCropTop;
+			SimpleTypes::Vml::CVml_1_65536	m_oCropRight;
+			SimpleTypes::Vml::CVml_1_65536	m_oCropBottom;
+			SimpleTypes::CDouble			m_oGain;
+			SimpleTypes::CDouble			m_oBlackLevel;
+			SimpleTypes::CDouble			m_oGamma;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse> m_oGrayscale;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse> m_oBiLevel;
 		};
@@ -777,8 +775,6 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
-
-			// Attributes
 			nullable_string										m_sAltHref;
 			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>	m_oBiLevel;
 			SimpleTypes::CDouble								m_oBlackLevel;
@@ -801,7 +797,7 @@ namespace OOX
 			nullable<SimpleTypes::CRelationshipId>				m_rPict;
 			nullable<SimpleTypes::CColorType<>>					m_oRecolorTarget;
 			nullable<SimpleTypes::CRelationshipId>				m_oRelId;
-			std::wstring										m_sSrc;
+			nullable_string										m_sSrc;
 			nullable_string										m_sTitle;
 		};
 		//--------------------------------------------------------------------------------

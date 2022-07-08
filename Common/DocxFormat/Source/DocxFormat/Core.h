@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_CORE_INCLUDE_H_
-#define OOX_CORE_INCLUDE_H_
 
 #include "Docx.h"
 #include "File.h"
@@ -264,22 +262,20 @@ xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
 		PPTX::Core* ToPptxCore();
 		void FromPptxCore(PPTX::Core* pCore);
 
-		nullable<std::wstring> m_sCategory;
-		nullable<std::wstring> m_sContentStatus;
-		nullable<std::wstring> m_sCreated;
-		nullable<std::wstring> m_sCreator;
-		nullable<std::wstring> m_sDescription;
-		nullable<std::wstring> m_sIdentifier;
-		nullable<std::wstring> m_sKeywords;
-		nullable<std::wstring> m_sLanguage;
-		nullable<std::wstring> m_sLastModifiedBy;
-		nullable<std::wstring> m_sLastPrinted;
-		nullable<std::wstring> m_sModified;
-		nullable<std::wstring> m_sRevision;
-		nullable<std::wstring> m_sSubject;
-		nullable<std::wstring> m_sTitle;
-		nullable<std::wstring> m_sVersion;
+		nullable_string m_sCategory;
+		nullable_string m_sContentStatus;
+		nullable_string m_sCreated;
+		nullable_string m_sCreator;
+		nullable_string m_sDescription;
+		nullable_string m_sIdentifier;
+		nullable_string m_sKeywords;
+		nullable_string m_sLanguage;
+		nullable_string m_sLastModifiedBy;
+		nullable_string m_sLastPrinted;
+		nullable_string m_sModified;
+		nullable_string m_sRevision;
+		nullable_string m_sSubject;
+		nullable_string m_sTitle;
+		nullable_string m_sVersion;
 	};
 } // namespace OOX
-
-#endif // OOX_CORE_INCLUDE_H_

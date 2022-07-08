@@ -1581,7 +1581,7 @@ void Binary_pPrWriter::WritePageMargin(OOX::Logic::CSectionProperty* pSectPr)
 void Binary_pPrWriter::WriteHeaderFooter(OOX::Logic::CSectionProperty* pSectPr, std::vector<ComplexTypes::Word::CHdrFtrRef*>& aRefs, bool bHdr)
 {
 	int nCurPos = 0;
-	for(size_t i = 0, length = aRefs.size(); i < length; ++i)
+	for (size_t i = 0, length = aRefs.size(); i < length; ++i)
 	{
 		const ComplexTypes::Word::CHdrFtrRef& oRef = *aRefs[i];
 		if( oRef.m_oType.IsInit() && oRef.m_oId.IsInit())
@@ -1589,25 +1589,12 @@ void Binary_pPrWriter::WriteHeaderFooter(OOX::Logic::CSectionProperty* pSectPr, 
 			int nIndex = 0;
 			OOX::CHdrFtr* pHdrFtr = NULL;
 			
-			OOX::CDocxFlat *docx_flat = dynamic_cast<OOX::CDocxFlat*>(m_oBinaryHeaderFooterTableWriter->m_oParamsWriter.m_pMain);
+			smart_ptr<OOX::File> oFile = m_oBinaryHeaderFooterTableWriter->m_oDocumentRelsWriter->Find(oRef.m_oId->GetValue());
+			if (oFile.IsInit() && (OOX::FileTypes::Header == oFile->type() || OOX::FileTypes::Footer == oFile->type()))
+			{
+				pHdrFtr = (OOX::CHdrFtr*)oFile.GetPointer();
+			}
 
-			if (docx_flat)
-			{
-				std::map<std::wstring, OOX::CHdrFtr*>::iterator pFind = docx_flat->m_mapHeadersFooters.find(oRef.m_oId->GetValue());
-				if (pFind != docx_flat->m_mapHeadersFooters.end())
-				{
-					pHdrFtr = pFind->second;
-				}
-			}
-			else
-			{
-				smart_ptr<OOX::File> oFile = m_oBinaryHeaderFooterTableWriter->m_oDocumentRelsWriter->Find(oRef.m_oId->GetValue());
-				if (oFile.IsInit() && (OOX::FileTypes::Header == oFile->type() || OOX::FileTypes::Footer == oFile->type()))
-				{
-					pHdrFtr = (OOX::CHdrFtr*)oFile.GetPointer();
-				}
-			}
-			
 			if (pHdrFtr)
 			{
 				if(bHdr)
@@ -9251,7 +9238,7 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 		if ((pDocxFlat) && (pDocxFlat->m_pDocument.IsInit()))
 		{
 			pDocument = pDocxFlat->m_pDocument.GetPointer();
-			pComments = &pDocxFlat->m_oComments;
+			pComments = pDocxFlat->m_pComments.GetPointer();
 
 			m_oParamsWriter.m_pSettings = pDocxFlat->m_pSettings.GetPointer();
 			m_oParamsWriter.m_pStyles = pDocxFlat->m_pStyles.GetPointer();
@@ -9378,7 +9365,7 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 		}
 		else if (pDocxFlat)
 		{
-			oBinaryDocumentTableWriter.pBackground = dynamic_cast<OOX::WritingElement*>(pDocxFlat->m_oBgPict.GetPointer());
+			oBinaryDocumentTableWriter.pBackground = dynamic_cast<OOX::WritingElement*>(pDocxFlat->m_pBgPict.GetPointer());
 		}
 
 		// Write content

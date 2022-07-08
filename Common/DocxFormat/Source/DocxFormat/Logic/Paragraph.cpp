@@ -230,9 +230,9 @@ namespace OOX
 							CComment* pComment = dynamic_cast<CComment*>(pItem);
 							if ((pComment) && (pComment->m_oId.IsInit()))
 							{
-								docx_flat->m_oComments.m_mapComments.insert( std::make_pair( pComment->m_oId->GetValue(), docx_flat->m_oComments.m_arrComments.size()));
+								docx_flat->m_pComments->m_mapComments.insert( std::make_pair( pComment->m_oId->GetValue(), docx_flat->m_pComments->m_arrComments.size()));
 							}
-							docx_flat->m_oComments.m_arrComments.push_back( pComment );	
+							docx_flat->m_pComments->m_arrComments.push_back( pComment );	
 
 							pItem = NULL;
 						}

@@ -29,6 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "../DocxFlat.h"
 #include "Vml.h"
 #include "VmlOfficeDrawing.h"
 
@@ -1675,12 +1676,6 @@ namespace OOX
 		}
 		void CImageData::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Выставляем значения по умолчанию
-			m_oBlackLevel.SetValue( 0.0 );
-			m_oGain.SetValue( 1.0 );
-			m_oGamma.SetValue( 1.0 );
-
-			// Читаем атрибуты
 			if ( oReader.GetAttributesCount() <= 0 )
 				return;
 			
@@ -1770,6 +1765,17 @@ namespace OOX
 				wsName = oReader.GetName();
 			}
 			oReader.MoveToElement();
+			
+			CDocxFlat* document = dynamic_cast<CDocxFlat*>(m_pMainDocument);
+			if (document && m_sSrc.IsInit() && !m_oId.IsInit() && !m_rId.IsInit())
+			{
+				std::map<std::wstring, std::wstring>::iterator pFind = document->m_mapImagesId.find(*m_sSrc);
+				if (pFind != document->m_mapImagesId.end())
+				{
+					m_oId = pFind->second;
+					m_rId = pFind->second;
+				}
+			}
 		}
 
 
@@ -1780,8 +1786,8 @@ namespace OOX
 
 			ComplexTypes_WriteAttribute3(L"id=\"", m_oId );
 
-			if ( (L"") !=  m_sSrc )
-				sResult += L"src=\"" + m_sSrc + L"\" ";
+			if (m_sSrc.IsInit())
+				sResult += L"src=\"" + *m_sSrc + L"\" ";
 
 			ComplexTypes_WriteAttribute(L"cropleft=\"",		m_oCropLeft);
 			ComplexTypes_WriteAttribute(L"croptop=\"",		m_oCropTop);

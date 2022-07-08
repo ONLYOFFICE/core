@@ -81,11 +81,7 @@ OOXWriter::OOXWriter( RtfDocument& oDocument, std::wstring sPath ) :
 
 	if (m_poDocPropsApp)
 	{		
-		((OOX::CApp*)m_poDocPropsApp)->SetDocSecurity(0);
-		((OOX::CApp*)m_poDocPropsApp)->SetScaleCrop(false);
-		((OOX::CApp*)m_poDocPropsApp)->SetLinksUpToDate(false);
-		((OOX::CApp*)m_poDocPropsApp)->SetSharedDoc(false);
-		((OOX::CApp*)m_poDocPropsApp)->SetHyperlinksChanged(false);
+		((OOX::CApp*)m_poDocPropsApp)->SetDefaults();
 	}
 	if (m_poDocPropsCore)
 	{
@@ -170,9 +166,9 @@ bool OOXWriter::SaveByItemEnd()
 		std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
 		if (sApplication.empty())
 			sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
-		((OOX::CApp*)m_poDocPropsApp)->SetApplication	( sApplication );
+		((OOX::CApp*)m_poDocPropsApp)->m_sApplication = sApplication;
 #if defined(INTVER)
-        ((OOX::CApp*)m_poDocPropsApp)->SetAppVersion	( VALUE2STR(INTVER) );
+        ((OOX::CApp*)m_poDocPropsApp)->m_sApplication = VALUE2STR(INTVER);
 #endif		
 		((OOX::CApp*)m_poDocPropsApp)->write(pathDocProps + FILE_SEPARATOR_STR + L"app.xml", pathDocProps.GetDirectory(), oContentTypes);
 		

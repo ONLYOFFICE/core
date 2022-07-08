@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_CORE_FILE_INCLUDE_H_
-#define PPTX_CORE_FILE_INCLUDE_H_
 
 #include "WrapperFile.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/WritingElement.h"
@@ -270,5 +268,3 @@ namespace PPTX
 		nullable_string		version;
 	};
 } // namespace PPTX
-
-#endif // PPTX_CORE_FILE_INCLUDE_H_

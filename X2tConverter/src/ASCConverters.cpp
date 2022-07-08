@@ -3053,6 +3053,22 @@ namespace NExtractTools
         }
         return AVS_FILEUTILS_ERROR_CONVERT;
    }
+	// docxflat -> docx
+	_UINT32 docxflat2docx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	{
+		std::wstring sTempUnpackedDOCX = sTemp + FILE_SEPARATOR_STR + L"docx_unpacked";
+		NSDirectory::CreateDirectory(sTempUnpackedDOCX);
+
+		BinDocxRW::CDocxSerializer m_oCDocxSerializer;
+
+		if (m_oCDocxSerializer.convertFlat(sFrom, sTempUnpackedDOCX))
+		{
+			COfficeUtils oCOfficeUtils(NULL);
+			return (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedDOCX, sTo, false)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+
+		}
+		return AVS_FILEUTILS_ERROR_CONVERT;
+	}
 	// docxflat -> odt
 	_UINT32 docxflat2odt(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
 	{
@@ -3997,25 +4013,23 @@ namespace NExtractTools
        {
            if(AVS_OFFICESTUDIO_FILE_CANVAS_WORD == nFormatTo)
            {
-               if(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_FLAT == nFormatFrom)
-                   nRes = docxflat2doct_bin(sFrom, sTo, sTemp, params);
-               else
-                   nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
+				nRes = docxflat2doct_bin(sFrom, sTo, sTemp, params);
            }
-		   //else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT == nFormatTo)
-		   //{
-			  // if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_FLAT == nFormatFrom)
-				 //  nRes = docxflat2odt(sFrom, sTo, sTemp, params);
-			  // else
-				 //  nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
-		   //}
+		   else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT == nFormatTo)
+		   {
+				nRes = docxflat2odt(sFrom, sTo, sTemp, params);
+		   }
+		   else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo)
+		   {
+			   nRes = docxflat2docx(sFrom, sTo, sTemp, params);
+		   }
 		   else
            {
                std::wstring sDoctDir = sTemp + FILE_SEPARATOR_STR + _T("doct_unpacked");
                NSDirectory::CreateDirectory(sDoctDir);
                std::wstring sTFile = sDoctDir + FILE_SEPARATOR_STR + _T("Editor.bin");
                
-               if(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_FLAT == nFormatFrom)
+               if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_FLAT == nFormatFrom)
                    nRes = docxflat2doct_bin(sFrom, sTFile, sTemp, params);
                else
                    nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;

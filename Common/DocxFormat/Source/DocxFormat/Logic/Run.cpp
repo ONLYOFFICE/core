@@ -32,6 +32,10 @@
 #include "../DocxFlat.h"
 #include "../Docx.h"
 #include "../Document.h"
+#include "../Endnote.h"
+#include "../Footnote.h"
+#include "../Comments.h"
+#include "../Settings/Settings.h"
 
 #include "Run.h"
 
@@ -243,19 +247,26 @@ namespace OOX
 			else if ( _T("w:endnote") == sName )
 			{
 				CEndnoteReference *pEndRef = new CEndnoteReference(document);
-				CFtnEdn *pEnd = new CFtnEdn( document );
-				
-				pEnd->fromXML(oReader);
+				CFtnEdn *pEndnote = new CFtnEdn( document );
+				pEndnote->fromXML(oReader);
 				
 				CDocxFlat* docx_flat = dynamic_cast<CDocxFlat*>(document);
 				if (docx_flat)
 				{
-					pEnd->m_oId.Init();
-					pEnd->m_oId->SetValue((int)(docx_flat->m_oEndnotes.m_arrEndnote.size() + 1));
-					pEndRef->m_oId = pEnd->m_oId;
+					pEndnote->m_oId.Init();
+					pEndnote->m_oId->SetValue((int)(docx_flat->m_pEndnotes->m_arrEndnote.size() + 1));
 					
-					docx_flat->m_oEndnotes.m_arrEndnote.push_back(pEnd);
-					docx_flat->m_oEndnotes.m_mapEndnote.insert(std::make_pair(pEnd->m_oId->GetValue(), pEnd));
+					pEndRef->m_oId = pEndnote->m_oId;
+
+					docx_flat->m_pEndnotes->m_arrEndnote.push_back(pEndnote);
+					docx_flat->m_pEndnotes->m_mapEndnote.insert(std::make_pair(pEndnote->m_oId->GetValue(), pEndnote));
+
+					if (!docx_flat->m_pSettings->m_oEndnotePr.Init())
+						docx_flat->m_pSettings->m_oEndnotePr.Init();
+					
+					docx_flat->m_pSettings->m_oEndnotePr->m_arrEndnote.push_back(new CFtnEdnSepRef());
+					docx_flat->m_pSettings->m_oEndnotePr->m_arrEndnote.back()->m_oId = pEndnote->m_oId;
+					docx_flat->m_pSettings->m_oEndnotePr->m_arrEndnote.back()->m_eType = OOX::et_w_endnote;
 				}
 				pItem = pEndRef;
 			}
@@ -268,19 +279,24 @@ namespace OOX
 			else if ( _T("w:footnote") == sName )
 			{
 				CFootnoteReference *pFootRef = new CFootnoteReference(document);
-				CFtnEdn *pFoot = new CFtnEdn( document );
-				
-				pFoot->fromXML(oReader);
+				CFtnEdn *pFootnote = new CFtnEdn( document );
+				pFootnote->m_eType = OOX::et_w_footnote;
+
+				pFootnote->fromXML(oReader);
 				
 				CDocxFlat* docx_flat = dynamic_cast<CDocxFlat*>(document);
 				if (docx_flat)
 				{
-					pFoot->m_oId.Init();
-					pFoot->m_oId->SetValue((int)(docx_flat->m_oFootnotes.m_arrFootnote.size() + 1));
-					pFootRef->m_oId = pFoot->m_oId;
+					pFootnote->m_oId.Init();
+					pFootnote->m_oId->SetValue((int)(docx_flat->m_pFootnotes->m_arrFootnote.size() + 1));
+					pFootRef->m_oId = pFootnote->m_oId;
 
-					docx_flat->m_oFootnotes.m_arrFootnote.push_back(pFoot);
-					docx_flat->m_oFootnotes.m_mapFootnote.insert(std::make_pair(pFoot->m_oId->GetValue(), pFoot));
+					docx_flat->m_pFootnotes->m_arrFootnote.push_back(pFootnote);
+					docx_flat->m_pFootnotes->m_mapFootnote.insert(std::make_pair(pFootnote->m_oId->GetValue(), pFootnote));
+					
+					docx_flat->m_pSettings->m_oFootnotePr->m_arrFootnote.push_back(new CFtnEdnSepRef());
+					docx_flat->m_pSettings->m_oFootnotePr->m_arrFootnote.back()->m_oId = pFootnote->m_oId;
+					docx_flat->m_pSettings->m_oFootnotePr->m_arrFootnote.back()->m_eType = OOX::et_w_footnote;
 				}
 				pItem = pFootRef;
 			}
@@ -362,9 +378,9 @@ namespace OOX
 						CComment* pComment = dynamic_cast<CComment*>(pItem);
 						if ((pComment) && (pComment->m_oId.IsInit()))
 						{
-							docx_flat->m_oComments.m_mapComments.insert( std::make_pair( pComment->m_oId->GetValue(), docx_flat->m_oComments.m_arrComments.size()));
+							docx_flat->m_pComments->m_mapComments.insert( std::make_pair( pComment->m_oId->GetValue(), docx_flat->m_pComments->m_arrComments.size()));
 						}
-						docx_flat->m_oComments.m_arrComments.push_back( pComment );	
+						docx_flat->m_pComments->m_arrComments.push_back( pComment );	
 
 						pItem = NULL;
 					}

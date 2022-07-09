@@ -331,7 +331,8 @@ namespace OOX
 								pHeader->fromXML(oReader);
 							docx_flat->m_currentContainer = oldContainer;
 							
-							const OOX::RId rId = docx_flat->m_currentContainer->Add(pHeader.smart_dynamic_cast<OOX::File>());
+							NSCommon::smart_ptr<OOX::File> file = pHeader.smart_dynamic_cast<OOX::File>();
+							OOX::RId rId = docx_flat->m_currentContainer->Add(file);
 
 							pHeaderRef->m_oId = rId.get();
 							pHeaderRef->m_oType = pHeader->m_oType;
@@ -355,7 +356,8 @@ namespace OOX
 								pFooter->fromXML(oReader);
 							docx_flat->m_currentContainer = oldContainer;
 
-							const OOX::RId rId = docx_flat->m_currentContainer->Add(pFooter.smart_dynamic_cast<OOX::File>());
+							NSCommon::smart_ptr<OOX::File> file = pFooter.smart_dynamic_cast<OOX::File>();
+							OOX::RId rId = docx_flat->m_currentContainer->Add(file);
 
 							pFooterRef->m_oId = rId.get();
 							pFooterRef->m_oType = pFooter->m_oType;

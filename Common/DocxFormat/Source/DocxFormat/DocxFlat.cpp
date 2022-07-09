@@ -123,38 +123,38 @@ namespace OOX
 		}
 		if (m_pStyles.IsInit())
 		{
-			NSCommon::smart_ptr<OOX::CStyles> file = m_pStyles.GetPointer(); file.AddRef();
-			m_pDocument->Add(file.smart_dynamic_cast<OOX::File>());
+			NSCommon::smart_ptr<OOX::File> file = NSCommon::smart_ptr<OOX::File>(m_pStyles.GetPointer()); file.AddRef();
+			m_pDocument->Add(file);
 		}
 		if (m_pFontTable.IsInit())
 		{
-			NSCommon::smart_ptr<OOX::CFontTable> file(m_pFontTable.GetPointer()); file.AddRef();
-			m_pDocument->Add(file.smart_dynamic_cast<OOX::File>());
+			NSCommon::smart_ptr<OOX::File> file = NSCommon::smart_ptr<OOX::File>(m_pFontTable.GetPointer()); file.AddRef();
+			m_pDocument->Add(file);
 		}
 		if (m_pNumbering.IsInit())
 		{
-			NSCommon::smart_ptr<OOX::CNumbering> file(m_pNumbering.GetPointer()); file.AddRef();
-			m_pDocument->Add(file.smart_dynamic_cast<OOX::File>());
+			NSCommon::smart_ptr<OOX::File> file = NSCommon::smart_ptr<OOX::File>(m_pNumbering.GetPointer()); file.AddRef();
+			m_pDocument->Add(file);
 		}
 		if (m_pSettings.IsInit())
 		{
-			NSCommon::smart_ptr<OOX::CSettings> file(m_pSettings.GetPointer()); file.AddRef();
-			m_pDocument->Add(file.smart_dynamic_cast<OOX::File>());
+			NSCommon::smart_ptr<OOX::File> file = NSCommon::smart_ptr<OOX::File>(m_pSettings.GetPointer()); file.AddRef();
+			m_pDocument->Add(file);
 		}
 		if (m_pComments.IsInit())
 		{
-			NSCommon::smart_ptr<OOX::CComments> file(m_pComments.GetPointer()); file.AddRef();
-			m_pDocument->Add(file.smart_dynamic_cast<OOX::File>());
+			NSCommon::smart_ptr<OOX::File> file = NSCommon::smart_ptr<OOX::File>(m_pComments.GetPointer()); file.AddRef();
+			m_pDocument->Add(file);
 		}
 		if (m_pFootnotes.IsInit())
 		{
-			NSCommon::smart_ptr<OOX::CFootnotes> file(m_pFootnotes.GetPointer()); file.AddRef();
-			m_pDocument->Add(file.smart_dynamic_cast<OOX::File>());
+			NSCommon::smart_ptr<OOX::File> file = NSCommon::smart_ptr<OOX::File>(m_pFootnotes.GetPointer()); file.AddRef();
+			m_pDocument->Add(file);
 		}
 		if (m_pEndnotes.IsInit())
 		{
-			NSCommon::smart_ptr<OOX::CEndnotes> file(m_pEndnotes.GetPointer()); file.AddRef();
-			m_pDocument->Add(file.smart_dynamic_cast<OOX::File>());
+			NSCommon::smart_ptr<OOX::File> file = NSCommon::smart_ptr<OOX::File>((m_pEndnotes.GetPointer()); file.AddRef();
+			m_pDocument->Add(file);
 		}
 	}
 	void CDocxFlat::ReadDocumentProperties(XmlUtils::CXmlLiteReader& oReader)

@@ -329,8 +329,11 @@ namespace OOX
 								std::wstring ext = fileChecker.DetectFormatByData(pImageFile->m_Data.data(), dstLen);
 								if (false == ext.empty())
 								{
-									pImageFile->set_filename(OOX::CPath(L"image." + ext), false, true);
-									const OOX::RId rId = docx_flat->m_currentContainer->Add(pImageFile.smart_dynamic_cast<OOX::File>());
+									OOX::CPath filename(L"image." + ext);
+									pImageFile->set_filename(filename, false, true);
+									
+									NSCommon::smart_ptr<OOX::File> file = pImageFile.smart_dynamic_cast<OOX::File>();
+									const OOX::RId rId = docx_flat->m_currentContainer->Add(file);
 
 									if (m_oBinData->m_sName.IsInit())
 									{

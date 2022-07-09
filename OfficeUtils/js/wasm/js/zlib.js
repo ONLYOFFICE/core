@@ -313,12 +313,13 @@
 		this.engine = 0;
 	};
 
-window.nativeZlibEngine = new ZLib();
-window.onZlibEngineInit = function()
-{
-	window.nativeZlibEngine.isModuleInit = true;
-	window["ZLibModule_onLoad"] && window["ZLibModule_onLoad"]();
-};
+	window.AscCommon = window.AscCommon || {};
+	window.AscCommon.CZLibEngineJS = ZLib;
+	window.onZlibEngineInit = function()
+	{
+		ZLib.prototype.isModuleInit = true;
+		window["ZLibModule_onLoad"] && window["ZLibModule_onLoad"]();
+	};
 
 })(window, undefined);
 

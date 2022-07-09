@@ -153,7 +153,7 @@ namespace OOX
 		}
 		if (m_pEndnotes.IsInit())
 		{
-			NSCommon::smart_ptr<OOX::File> file = NSCommon::smart_ptr<OOX::File>((m_pEndnotes.GetPointer()); file.AddRef();
+			NSCommon::smart_ptr<OOX::File> file = NSCommon::smart_ptr<OOX::File>(m_pEndnotes.GetPointer()); file.AddRef();
 			m_pDocument->Add(file);
 		}
 	}

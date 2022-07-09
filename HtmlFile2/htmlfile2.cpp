@@ -26,7 +26,7 @@
 #include "../DesktopEditor/graphics/pro/Graphics.h"
 #include "htmlfile2.h"
 
-#include <regex>
+#include <boost/regex.hpp>
 
 #ifndef VALUE2STR
 #define VALUE_TO_STRING(x) #x
@@ -1072,12 +1072,19 @@ private:
                 std::wstring wsType = L"dxa";
 
                 //Если ширина указана в %, то используем тип dxa, если же в других ндтнтцах измерения, то в pct
+            #if 1
+                // проблема с regex в старом gcc (https://gcc.gnu.org/bugzilla/show_bug.cgi?id=52719)
+                boost::wregex oWidthRegex(L"((width)+)[\\s]*:[\\s]*(.+%)");
+                bool bIsWidthPct = boost::regex_search(sSelectors.back().m_sStyle, oWidthRegex);
+            #else
                 std::wregex oWidthRegex(L"((width)+)[\\s]*:[\\s]*(.+%)");
+                bool bIsWidthPct = std::regex_search(sSelectors.back().m_sStyle.data(), oWidthRegex);
+            #endif
 
-                if (std::regex_search(sSelectors.back().m_sStyle.data(), oWidthRegex))
-                         wsType = L"pct";
+                if (bIsWidthPct)
+                    wsType = L"pct";
                 else
-                       nWidth *= 10;
+                    nWidth *= 10;
                 //-------------------------
 
                 if (nWidth > 0)

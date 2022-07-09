@@ -3,25 +3,9 @@
 namespace NSDocxRenderer
 {
     CDocument::CDocument(IRenderer* pRenderer, NSFonts::IApplicationFonts* pFonts) :
-        m_oCurrentPage(pFonts), m_oWriter()
+        m_pAppFonts(pFonts), m_oCurrentPage(pFonts)
     {
-        m_pAppFonts = pFonts;
         m_oSimpleGraphicsConverter.SetRenderer(pRenderer);
-        m_lCurrentCommandType		= 0;
-
-        m_dWidth	= 0;
-        m_dHeight	= 0;
-
-        m_dDpiX		= 72;
-        m_dDpiY = 72;
-
-        m_strTempDirectory			= L"";
-        m_lPagesCount				= 0;
-
-        m_bIsNeedPDFTextAnalyzer	= false;
-        m_pFontManager = NULL;
-
-        m_bIsDisablePageCommand = false;
     }
     void CDocument::Clear()
     {
@@ -191,7 +175,7 @@ namespace NSDocxRenderer
     }
     HRESULT CDocument::PenDashPattern(double* pPattern, LONG lCount)
     {
-        if (NULL != pPattern)
+        if (nullptr != pPattern)
         {
             m_oPen.SetDashPattern(pPattern, lCount);
         }
@@ -497,7 +481,7 @@ namespace NSDocxRenderer
 
     HRESULT CDocument::CommandDrawTextCHAR(const int& lUnicode, const double& dX, const double& dY, const double& dW, const double& dH)
     {
-        return CommandDrawTextPrivate(&lUnicode, NULL, 1, dX, dY, dW, dH);
+        return CommandDrawTextPrivate(&lUnicode, nullptr, 1, dX, dY, dW, dH);
     }
     HRESULT CDocument::CommandDrawTextExCHAR(const int& lUnicode, const int& lGid, const double& dX, const double& dY, const double& dW, const double& dH)
     {
@@ -509,7 +493,7 @@ namespace NSDocxRenderer
         unsigned int* pUnicodes = NSStringExt::CConverter::GetUtf32FromUnicode(wsUnicodeText, nLen);
         if (nLen == 0)
             return S_OK;
-        CommandDrawTextPrivate((int*)pUnicodes, NULL, nLen, dX, dY, dW, dH);
+        CommandDrawTextPrivate((int*)pUnicodes, nullptr, nLen, dX, dY, dW, dH);
         delete [] pUnicodes;
         return S_OK;
     }
@@ -685,7 +669,7 @@ namespace NSDocxRenderer
     HRESULT CDocument::PathCommandTextCHAR(const int& lUnicode, const double& dX, const double& dY, const double& dW, const double& dH)
     {
         _SetFont();
-        m_oSimpleGraphicsConverter.PathCommandText2(&lUnicode, NULL, 1, m_pFontManager, dX, dY, dW, dH);
+        m_oSimpleGraphicsConverter.PathCommandText2(&lUnicode, nullptr, 1, m_pFontManager, dX, dY, dW, dH);
         return S_OK;
     }
     HRESULT CDocument::PathCommandTextExCHAR(const int& lUnicode, const int& lGid, const double& dX, const double& dY, const double& dW, const double& dH)
@@ -791,7 +775,7 @@ namespace NSDocxRenderer
 
     void CDocument::_SetFont()
     {
-        if (NULL == m_pFontManager)
+        if (nullptr == m_pFontManager)
         {
             m_pFontManager = NSFontManager::CreateFontManager(m_pAppFonts);
         }

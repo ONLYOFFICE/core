@@ -2,20 +2,16 @@
 
 namespace NSDocxRenderer
 {
-        CImage::CImage() : CBaseItem(etImage)
+        CImage::CImage() : CBaseItem(ElemType::etImage)
         {
-            m_strPath	= L"";
-            m_lID		= -1;
         }
-        CImage::CImage(const CImage& oSrc) : CBaseItem(etImage)
+        CImage::CImage(const CImage& oSrc) : CBaseItem(ElemType::etImage)
         {
             *this = oSrc;
         }
-        CImage::CImage(const CImageInfo& oInfo, const std::wstring& strDstMedia) : CBaseItem(etImage)
+        CImage::CImage(const CImageInfo& oInfo, const std::wstring& strDstMedia) : CBaseItem(ElemType::etImage),
+            m_strPath(strDstMedia), m_lID(oInfo.m_nId)
         {
-            m_eType		= etImage;
-            m_strPath	= strDstMedia;
-            m_lID		= oInfo.m_nId;
         }
         void CImage::Clear(){}
 
@@ -25,6 +21,8 @@ namespace NSDocxRenderer
             {
                 return *this;
             }
+
+            Clear();
 
             CBaseItem::operator=(oSrc);
 

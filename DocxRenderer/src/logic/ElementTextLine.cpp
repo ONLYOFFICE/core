@@ -4,25 +4,15 @@
 
 namespace NSDocxRenderer
 {
-    CTextLine::CTextLine() : CBaseItem(etTextLine), m_arConts()
+    CTextLine::CTextLine() : CBaseItem(ElemType::etTextLine)
     {
-        m_dBaselinePos    = 0;
-        m_dBaselineOffset = 0;
-
-        m_dLeft		 	  = 0;
-        m_dWidth		  = 0;
-        m_dHeight		  = 0;
-
-        m_eAlignmentType  = atatUnknown;
-
-        m_pDominantShape  = nullptr;
     }
 
     void CTextLine::Clear()
     {
-        for (size_t i = 0; i < m_arConts.size(); i++)
+        for (auto pCont : m_arConts)
         {
-            RELEASEOBJECT(m_arConts[i]);
+            RELEASEOBJECT(pCont);
         }
         m_arConts.clear();
     }
@@ -32,7 +22,7 @@ namespace NSDocxRenderer
         Clear();
     }
 
-    CTextLine::CTextLine(const CTextLine& oSrc) : CBaseItem(etTextLine), m_arConts()
+    CTextLine::CTextLine(const CTextLine& oSrc) : CBaseItem(ElemType::etTextLine), m_arConts()
     {
         *this = oSrc;
     }
@@ -48,9 +38,9 @@ namespace NSDocxRenderer
 
         CBaseItem::operator=(oSrc);
 
-        for (size_t i = 0; i < oSrc.m_arConts.size(); i++)
+        for (auto pCont : oSrc.m_arConts)
         {
-            m_arConts.push_back(new CContText(*oSrc.m_arConts[i]));
+            m_arConts.push_back(new CContText(*pCont));
         }
 
         m_dBaselinePos	  = oSrc.m_dBaselinePos;
@@ -273,7 +263,7 @@ namespace NSDocxRenderer
         return false;
     }
 
-    void CTextLine::ToXml(NSStringUtils::CStringBuilder& oWriter, CFontManagerLight* pManagerLight)
+    void CTextLine::ToXml(NSStringUtils::CStringBuilder& oWriter)
     {
         size_t nCountConts = m_arConts.size();
 
@@ -292,7 +282,7 @@ namespace NSDocxRenderer
             if (dDelta < c_dTHE_STRING_X_PRECISION_MM)
             {
                 // просто текст на тексте или сменились настройки (font/brush)
-                pPrev->ToXml(oWriter, pManagerLight);
+                pPrev->ToXml(oWriter);
                 pPrev = pCurrent;
             }
             //else if (dDelta < 2 * pPrev->m_dSpaceWidthMM)
@@ -304,12 +294,12 @@ namespace NSDocxRenderer
             else
             {
                 // расстояние слишком большое. нужно сделать большой пробел
-                pPrev->ToXml(oWriter, pManagerLight);
-                pPrev->AddWideSpaceToXml(dDelta, oWriter, pManagerLight, pPrev->IsEqual(pCurrent));
+                pPrev->ToXml(oWriter);
+                pPrev->AddWideSpaceToXml(dDelta, oWriter, pPrev->IsEqual(pCurrent));
                 pPrev = pCurrent;
             }
         }
 
-        pPrev->ToXml(oWriter, pManagerLight);
+        pPrev->ToXml(oWriter);
     }
 }

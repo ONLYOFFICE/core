@@ -15,27 +15,25 @@ namespace NSDocxRenderer
             static const double SIZE_CORRECTION_FOR_Y_MM;
 
         public:
-            std::wstring m_strPath;
+            std::wstring m_strPath {L""};
             NSStructures::CBrush	m_oBrush;
             NSStructures::CPen		m_oPen;
 
-            bool m_bIsNoFill;
-            bool m_bIsNoStroke;
+            bool m_bIsNoFill {false};
+            bool m_bIsNoStroke {false};
 
-            LONG m_lCoordSizeX;
-            LONG m_lCoordSizeY;
+            LONG m_lCoordSizeX {100000};
+            LONG m_lCoordSizeY {100000};
 
-            LONG m_lTxId;
+            LONG m_lTxId {-1};
 
             std::vector<CParagraph*> m_arParagraphs;
-
-            CFontManagerLight* m_pManagerLight;
 
         public:
             COldShape();
             COldShape(const COldShape& oSrc);
             virtual ~COldShape();
-            virtual void Clear();
+            void Clear() override final;
 
             COldShape& operator=(const COldShape& oSrc);
 
@@ -43,6 +41,6 @@ namespace NSDocxRenderer
 
             void WritePath(const CVectorGraphics& oVector, const LONG& lType, const LONG& lCoordSize);
 
-            virtual void ToXml(NSStringUtils::CStringBuilder& oWriter);
+            void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
     };
 }

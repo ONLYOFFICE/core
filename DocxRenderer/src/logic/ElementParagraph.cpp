@@ -1,36 +1,17 @@
 #include "ElementParagraph.h"
 #include "src\resources\ColorTable.h"
-#include "src\resources\Constants.h"
 #include "src\resources\SingletonTemplate.h"
 #include "src\resources\utils.h"
 
 namespace NSDocxRenderer
 {
     CParagraph::CParagraph(const TextAssociationType& eType):
-        CBaseItem(etParagraph), m_arLines()
+        CBaseItem(ElemType::etParagraph), m_eTextAssociationType(eType)
     {
-        m_eTextConversionType	 = tctUnknown;
-        m_bIsNeedFirstLineIndent = false;
-        m_bIsAroundTextWrapping  = true; //по умолчанию в word
-        m_bIsShadingPresent      = false;
-        m_lColorOfShadingFill    = c_iWhiteColor;
-        m_eTextAlignmentType     = tatUnknown;
-
-        m_dRight     = 0.0;
-        m_dFirstLine = 0.0;
-
-        m_dSpaceBefore = 0.0;
-        m_dSpaceAfter  = 0.0;
-        m_dBaselinePos = 0.0;
-
-        m_pManagerLight = NULL;
-        m_eTextAssociationType = eType;
-
-        m_nNumLines  = 0;
     }
 
     CParagraph::CParagraph(const CParagraph& oSrc):
-        CBaseItem(etParagraph)
+        CBaseItem(ElemType::etParagraph)
     {
         *this = oSrc;
     }
@@ -42,13 +23,11 @@ namespace NSDocxRenderer
 
     void CParagraph::Clear()
     {
-        for (size_t i = 0; i < m_arLines.size(); ++i)
+        for (auto pLine : m_arLines)
         {
-            RELEASEOBJECT(m_arLines[i]);
+            RELEASEOBJECT(pLine);
         }
         m_arLines.clear();
-
-        m_pManagerLight = NULL;
     }
 
     CParagraph& CParagraph::operator=(const CParagraph& oSrc)
@@ -57,6 +36,8 @@ namespace NSDocxRenderer
         {
             return *this;
         }
+
+        Clear();
 
         CBaseItem::operator=(oSrc);
 
@@ -76,14 +57,10 @@ namespace NSDocxRenderer
 
         m_eTextAssociationType		= oSrc.m_eTextAssociationType;
 
-        Clear();
-        size_t nCount = oSrc.m_arLines.size();
-        for (size_t i = 0; i < nCount; ++i)
+        for (auto pLine : oSrc.m_arLines)
         {
-            m_arLines.push_back(new CTextLine(*oSrc.m_arLines[i]));
+            m_arLines.push_back(new CTextLine(*pLine));
         }
-
-        m_pManagerLight = oSrc.m_pManagerLight;
 
         m_nNumLines = oSrc.m_nNumLines;
         return *this;
@@ -209,15 +186,13 @@ namespace NSDocxRenderer
 
         oWriter.WriteString(L"</w:pPr>");
 
-        size_t nCount = m_arLines.size();
-        for (size_t i = 0; i < nCount; ++i)
+        for(auto pLine : m_arLines)
         {
-            CTextLine* pTextLine = m_arLines[i];
             if (m_eTextAssociationType != tatPlainParagraph)
             {
-                pTextLine->SortConts();
+                pLine->SortConts();
             }
-            pTextLine->ToXml(oWriter, m_pManagerLight);
+            pLine->ToXml(oWriter);
         }
 
         oWriter.WriteString(L"</w:p>");
@@ -230,15 +205,15 @@ namespace NSDocxRenderer
             return;
         }
 
-        for (size_t i = 0; i < m_arLines.size(); i++)
+        for(auto pLine : m_arLines)
         {
-            if (m_arLines[i]->m_pDominantShape)
+            if (pLine->m_pDominantShape)
             {
-                for (size_t j = 0; j < m_arLines[i]->m_arConts.size(); j++)
+                for (auto pCont : pLine->m_arConts)
                 {
-                    if (m_lColorOfShadingFill == m_arLines[i]->m_arConts[j]->m_lHighlightColor)
+                    if (m_lColorOfShadingFill == pCont->m_lHighlightColor)
                     {
-                        m_arLines[i]->m_arConts[j]->m_bIsHighlightPresent = false;
+                        pCont->m_bIsHighlightPresent = false;
                     }
                 }
             }

@@ -35,38 +35,36 @@ namespace NSDocxRenderer
         };
 
         // text frame properties
-        TextConversionType m_eTextConversionType;
-        bool               m_bIsNeedFirstLineIndent;
-        bool               m_bIsAroundTextWrapping; //по умолчанию обтекание включено, если отсутсвует w:wrap
-        bool               m_bIsShadingPresent;
-        LONG               m_lColorOfShadingFill; //BGR
-        TextAlignmentType  m_eTextAlignmentType;
+        TextConversionType m_eTextConversionType {tctUnknown};
+        bool               m_bIsNeedFirstLineIndent {false};
+        bool               m_bIsAroundTextWrapping {true}; //по умолчанию обтекание включено, если отсутсвует w:wrap
+        bool               m_bIsShadingPresent {false};
+        LONG               m_lColorOfShadingFill {c_iWhiteColor}; //BGR
+        TextAlignmentType  m_eTextAlignmentType {tatUnknown};
 
         // geometry paragraph
-        double		m_dRight; //сдвиг относительно правого края страницы
-        double		m_dFirstLine; //сдвиг относительно m_dLeft
+        double		m_dRight {0.0}; //сдвиг относительно правого края страницы
+        double		m_dFirstLine {0.0}; //сдвиг относительно m_dLeft
 
-        CFontManagerLight* m_pManagerLight;
-
-        double		m_dSpaceBefore; //по умолчанию выставляется 0, если отсутсвует w:before
-        double		m_dSpaceAfter; //в shape по умолчанию выставляется 8pt, если отсутсвует w:after
-        double		m_dBaselinePos;
-        TextAssociationType m_eTextAssociationType;
+        double		m_dSpaceBefore {0.0}; //по умолчанию выставляется 0, если отсутсвует w:before
+        double		m_dSpaceAfter {0.0}; //в shape по умолчанию выставляется 8pt, если отсутсвует w:after
+        double		m_dBaselinePos {0.0};
+        TextAssociationType m_eTextAssociationType {tatPlainParagraph};
 
         std::vector<CTextLine*> m_arLines;
 
         // statistic
-        size_t      m_nNumLines; //число изначально входящих линий
+        size_t      m_nNumLines {0}; //число изначально входящих линий
 
     public:
         CParagraph(const TextAssociationType& eType);
         CParagraph(const CParagraph& oSrc);
         virtual ~CParagraph();
-        virtual void Clear();
+        void Clear() override final;
 
         CParagraph& operator=(const CParagraph& oSrc);
 
-        virtual void ToXml(NSStringUtils::CStringBuilder& oWriter);
+        void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
 
         void RemoveHighlightColor();
    };

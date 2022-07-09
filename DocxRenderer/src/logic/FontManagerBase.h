@@ -16,11 +16,11 @@ namespace NSFontManager
     class CUnicodeRange
     {
         public:
-            BYTE RangeNum;
-            BYTE Range;
+            BYTE RangeNum {0};
+            BYTE Range {0};
 
-            int Start;
-            int End;
+            int Start {0};
+            int End {0};
 
             CUnicodeRange(const int& _start = 0,
                           const int& _end = 0,
@@ -48,22 +48,22 @@ namespace NSFontManager
             NSStructures::CFont m_oFont;
 
             // font metrics
-            double							m_dAscent;
-            double							m_dDescent;
-            double							m_dLineSpacing;
-            double							m_dEmHeight;
+            double							m_dAscent {0.0};
+            double							m_dDescent {0.0};
+            double							m_dLineSpacing {0.0};
+            double							m_dEmHeight {0.0};
 
-            double							m_dBaselineOffset;
+            double							m_dBaselineOffset {0.0};
 
-            double							m_dSpaceWidthMM;
+            double							m_dSpaceWidthMM {0.0};
 
             // font params
-            std::wstring					m_strFamilyName;
-            std::wstring					m_strPANOSE;
-            LONG							m_lStyle;
+            std::wstring					m_strFamilyName {L""};
+            std::wstring					m_strPANOSE {L""};
+            LONG							m_lStyle {0};
             std::vector<UINT>   			m_arSignature;
-            bool							m_bIsFixedWidth;
-            SHORT							m_lAvgWidth;
+            bool							m_bIsFixedWidth {false};
+            SHORT							m_lAvgWidth {-1};
 
         public:
             CFontAdvanced();
@@ -77,10 +77,10 @@ namespace NSFontManager
     {
         public:
             CFontAdvanced	m_oFont;
-            BYTE			m_lRangeNum;
-            BYTE			m_lRange;
-            std::wstring	m_strPickFont;
-            LONG			m_lPickStyle;
+            BYTE			m_lRangeNum {0xFF};
+            BYTE			m_lRange {0xFF};
+            std::wstring	m_strPickFont {L""};
+            LONG			m_lPickStyle  {0};
 
         public:
             CFontPickUp();

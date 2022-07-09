@@ -6,7 +6,7 @@ namespace NSDocxRenderer
 {
     CVectorGraphics::CVectorGraphics()
     {
-        m_pData = NULL;
+        m_pData = nullptr;
         m_lSize = 0;
 
         m_pDataCur = m_pData;
@@ -22,7 +22,7 @@ namespace NSDocxRenderer
 
     void CVectorGraphics::AddSize(size_t nSize)
     {
-        if (NULL == m_pData)
+        if (nullptr == m_pData)
         {
             m_lSize = std::max(nSize, (size_t)500);
             m_pData = (double *)malloc(m_lSize * sizeof(double));
@@ -40,7 +40,7 @@ namespace NSDocxRenderer
             }
 
             double *pRealloc = (double *)realloc(m_pData, m_lSize * sizeof(double));
-            if (NULL != pRealloc)
+            if (nullptr != pRealloc)
             {
                 // реаллок сработал
                 m_pData = pRealloc;
@@ -136,7 +136,7 @@ namespace NSDocxRenderer
     {
         RELEASEMEM(m_pData);
 
-        m_pData = NULL;
+        m_pData = nullptr;
         m_lSize = 0;
 
         m_pDataCur = m_pData;

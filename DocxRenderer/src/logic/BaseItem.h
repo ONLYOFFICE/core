@@ -6,7 +6,7 @@ namespace NSDocxRenderer
     class CBaseItem
     {
     public:
-        enum ElemType
+        enum class ElemType
         {
             etContText	= 0,
             etTextLine  = 1,
@@ -18,17 +18,15 @@ namespace NSDocxRenderer
 
         ElemType m_eType;
 
-        bool m_bIsNotNecessaryToUse;
+        bool m_bIsNotNecessaryToUse {false};
 
-        double m_dLeft;
-        double m_dTop;
-        double m_dWidth;
-        double m_dHeight;
+        double m_dLeft {0.0};
+        double m_dTop {0.0};
+        double m_dWidth {0.0};
+        double m_dHeight {0.0};
 
     public:
-        CBaseItem(const ElemType& eType):
-            m_eType(eType), m_bIsNotNecessaryToUse(false),
-            m_dLeft(0), m_dTop(0), m_dWidth(0), m_dHeight(0) {}
+        CBaseItem(const ElemType& eType): m_eType(eType) {}
         virtual ~CBaseItem() {}
 
         CBaseItem& operator=(const CBaseItem& oSrc)

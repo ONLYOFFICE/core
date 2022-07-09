@@ -10,8 +10,8 @@ public:
    }
 protected:
    SingletonTemplate(){}
-   SingletonTemplate(const SingletonTemplate&);
-   SingletonTemplate& operator=(const SingletonTemplate&);
+   SingletonTemplate(const SingletonTemplate&) = delete;
+   SingletonTemplate& operator=(const SingletonTemplate&) = delete;
    virtual ~SingletonTemplate() {}
 };
 

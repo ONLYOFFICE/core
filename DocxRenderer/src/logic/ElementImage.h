@@ -7,18 +7,17 @@ namespace NSDocxRenderer
     class CImage : public CBaseItem
 	{
 	public:
-        std::wstring m_strPath;
-        int	m_lID;
-
-        double m_dRotate;
+         std::wstring m_strPath {L""};
+         int	m_lID {-1};
+         double m_dRotate {0.0};
 
 	public:
         CImage();
         CImage(const CImage& oSrc);
         CImage(const CImageInfo& oInfo, const std::wstring& strDstMedia);
-        virtual void Clear();
+        void Clear() override final;
 
         CImage& operator=(const CImage& oSrc);
-        virtual void ToXml(NSStringUtils::CStringBuilder& oWriter);
+        void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
 	};
 }

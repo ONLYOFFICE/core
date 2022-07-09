@@ -10,21 +10,21 @@ namespace NSDocxRenderer
     class CPage
     {
     public:
-        NSStructures::CFont*		m_pFont;
-        NSStructures::CPen*			m_pPen;
-        NSStructures::CBrush*		m_pBrush;
-        NSStructures::CShadow*		m_pShadow;
-        NSStructures::CEdgeText*	m_pEdgeText;
+        NSStructures::CFont*		m_pFont {nullptr};
+        NSStructures::CPen*			m_pPen {nullptr};
+        NSStructures::CBrush*		m_pBrush {nullptr};
+        NSStructures::CShadow*		m_pShadow {nullptr};
+        NSStructures::CEdgeText*	m_pEdgeText {nullptr};
 
-        Aggplus::CMatrix*			m_pTransform;
-        Aggplus::CGraphicsPathSimpleConverter* m_pSimpleGraphicsConverter;
+        Aggplus::CMatrix*			m_pTransform {nullptr};
+        Aggplus::CGraphicsPathSimpleConverter* m_pSimpleGraphicsConverter {nullptr};
 
         CVectorGraphics				m_oVector;
 
-        double m_dWidth;
-        double m_dHeight;
+        double m_dWidth {0.0};
+        double m_dHeight {0.0};
 
-        LONG						m_lCurrentCommand;
+        LONG						m_lCurrentCommand {0};
 
         std::vector<CImage*>     m_arImages;
         std::vector<CContText*>  m_arTextData;
@@ -32,18 +32,18 @@ namespace NSDocxRenderer
         std::vector<CShape*>	 m_arShapes;
         std::vector<CParagraph*> m_arParagraphs;
 
-        CTextLine* m_pCurrentLine;
+        CTextLine* m_pCurrentLine {nullptr};
 
         CFontManager		m_oManager;
         CFontManagerLight	m_oManagerLight;
 
-        TextAssociationType m_eTextAssociationType;
+        TextAssociationType m_eTextAssociationType {tatPlainLine};
 
-        bool m_bIsDeleteTextClipPage;
+        bool m_bIsDeleteTextClipPage {true};
 
-        double m_dLastTextX;
-        double m_dLastTextY;
-        double m_dLastTextX_block;
+        double m_dLastTextX {-1};
+        double m_dLastTextY {-1};
+        double m_dLastTextX_block {-1};
 
     public:
         CPage(NSFonts::IApplicationFonts* pFonts);
@@ -82,6 +82,7 @@ namespace NSDocxRenderer
                              const double& fBaseLineOffset, const bool& bIsPDFAnalyzer);
 
         void AnalyzeCollectedShapes();
+        void DetermineContWithMaxSizeFont();
         void DetermineLinesType();
 
         //Собранные для текущей страницы данные нужно проанализировать и сгруппировать, лишнее удалить

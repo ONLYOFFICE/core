@@ -8,18 +8,11 @@ namespace NSDocxRenderer
     const double COldShape::SIZE_CORRECTION_FOR_X_MM = 10.0;
     const double COldShape::SIZE_CORRECTION_FOR_Y_MM = 5.0;
 
-    COldShape::COldShape() : CBaseItem(etOldShape)
+    COldShape::COldShape() : CBaseItem(ElemType::etOldShape)
     {
-        m_bIsNoFill = false;
-        m_bIsNoStroke = false;
-
-        m_lCoordSizeX = 100000;
-        m_lCoordSizeY = 100000;
-
-        m_lTxId = -1;
     }
 
-    COldShape::COldShape(const COldShape &oSrc) : CBaseItem(etOldShape)
+    COldShape::COldShape(const COldShape &oSrc) : CBaseItem(ElemType::etOldShape)
     {
         *this = oSrc;
     }
@@ -31,9 +24,9 @@ namespace NSDocxRenderer
 
     void COldShape::Clear()
     {
-        for (size_t i = 0; i <  m_arParagraphs.size(); ++i)
+        for (auto pParagraph : m_arParagraphs)
         {
-            m_arParagraphs[i]->Clear();
+            pParagraph->Clear();
         }
         m_arParagraphs.clear();
     }
@@ -45,6 +38,8 @@ namespace NSDocxRenderer
             return *this;
         }
 
+        Clear();
+
         CBaseItem::operator=(oSrc);
 
         m_strPath = oSrc.m_strPath;
@@ -55,9 +50,15 @@ namespace NSDocxRenderer
         m_bIsNoFill = oSrc.m_bIsNoFill;
         m_bIsNoStroke = oSrc.m_bIsNoStroke;
 
+        m_lCoordSizeX = oSrc.m_lCoordSizeX;
+        m_lCoordSizeY = oSrc.m_lCoordSizeY;
+
         m_lTxId = oSrc.m_lTxId;
 
-        m_bIsNotNecessaryToUse = oSrc.m_bIsNotNecessaryToUse;
+        for (auto pParagraph : oSrc.m_arParagraphs)
+        {
+            m_arParagraphs.push_back(new CParagraph(*pParagraph));
+        }
 
         return *this;
     }
@@ -273,9 +274,8 @@ namespace NSDocxRenderer
         if (!m_arParagraphs.empty())
         {
             oWriter.WriteString(L"<v:textbox><w:txbxContent>");
-            for (size_t i = 0; i < m_arParagraphs.size(); ++i)
+            for(auto pParagraph : m_arParagraphs)
             {
-                CParagraph* pParagraph = m_arParagraphs[i];
                 pParagraph->ToXml(oWriter);
             }
             oWriter.WriteString(L"</w:txbxContent></v:textbox>");

@@ -3,13 +3,6 @@
 
 namespace NSDocxRenderer
 {
-    CImageManager::CImageManager()
-    {
-        m_strDstMedia	= L"";
-        m_lMaxSizeImage = 1200;
-        m_lNextIDImage	= 0;
-    }
-
     void CImageManager::NewDocument()
     {
         m_strDstMedia	= L"";
@@ -45,13 +38,13 @@ namespace NSDocxRenderer
     void CImageManager::SaveImage(const std::wstring& strFileSrc, CImageInfo& oInfo)
     {
         Aggplus::CImage oFrame(strFileSrc);
-        if (NULL != oFrame.GetData())
+        if (nullptr != oFrame.GetData())
             return SaveImage(&oFrame, oInfo);
     }
 
     void CImageManager::SaveImage(Aggplus::CImage* pImage, CImageInfo& oInfo)
     {
-        if (NULL == pImage)
+        if (nullptr == pImage)
             return;
 
         int w = pImage->GetWidth();
@@ -145,7 +138,7 @@ namespace NSDocxRenderer
 
     void CImageManager::FlipY(Aggplus::CImage* pImage)
     {
-        if (NULL == pImage)
+        if (nullptr == pImage)
             return;
 
         int w = pImage->GetWidth();
@@ -180,7 +173,7 @@ namespace NSDocxRenderer
 
     void CImageManager::FlipX(CBgraFrame* pImage)
     {
-        if (NULL == pImage)
+        if (nullptr == pImage)
             return;
 
         int w = pImage->get_Width();

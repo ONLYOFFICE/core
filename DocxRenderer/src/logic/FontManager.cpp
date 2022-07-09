@@ -3,14 +3,6 @@
 
 namespace NSDocxRenderer
 {
-    CFontTableEntry::CFontTableEntry() : m_arSignature()
-    {
-        m_strFamilyName		= L"";
-        m_strPANOSE			= L"";
-        m_lStyle			= 0;
-        m_bIsFixedWidth		= false;
-    }
-
     CFontTableEntry::CFontTableEntry(const CFontTableEntry& oSrc)
     {
         *this = oSrc;
@@ -32,10 +24,8 @@ namespace NSDocxRenderer
         return *this;
     }
 
-    CFontManager::CFontManager(NSFonts::IApplicationFonts* pFonts) : CFontManagerBase(pFonts), m_pFont(NULL)
+    CFontManager::CFontManager(NSFonts::IApplicationFonts* pFonts) : CFontManagerBase(pFonts)
     {
-        m_pTransform = NULL;
-        m_dSpaceWidthMM = 0;
     }
 
     void CFontManager::Init()
@@ -60,7 +50,7 @@ namespace NSDocxRenderer
 
     void CFontManager::LoadFont(long lFaceIndex, bool bNeedAddToMap)
     {
-        if (NULL == m_pManager)
+        if (nullptr == m_pManager)
             return;
 
         double dSize = m_pFont->Size;
@@ -123,7 +113,7 @@ namespace NSDocxRenderer
         dBoxWidth	= 0;
         dBoxHeight	= 0;
 
-        if (NULL == m_pManager)
+        if (nullptr == m_pManager)
             return;
 
         m_pManager->LoadString1(sText, (float)x, (float)y);
@@ -159,7 +149,7 @@ namespace NSDocxRenderer
         dBoxWidth	= 0;
         dBoxHeight	= 0;
 
-        if (NULL == m_pManager)
+        if (nullptr == m_pManager)
             return;
 
         m_pManager->LoadString1(pGids, count, (float)x, (float)y);
@@ -204,7 +194,7 @@ namespace NSDocxRenderer
 
     void CFontManager::SetStringGid(const LONG& lGid)
     {
-        if (NULL != m_pManager)
+        if (nullptr != m_pManager)
             m_pManager->SetStringGID(lGid);
     }
 
@@ -230,11 +220,6 @@ namespace NSDocxRenderer
 
     CFontManagerLight::CFontManagerLight(NSFonts::IApplicationFonts* pFonts)
     {
-        m_strFontName	= L"";
-        m_lFontStyle	= 0;
-        m_dSize			= 0;
-        m_dSpaceWidth	= 0;
-
         m_pManager = NSFontManager::CreateFontManager(pFonts);
     }
 

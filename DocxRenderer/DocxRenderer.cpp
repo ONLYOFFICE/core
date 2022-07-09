@@ -72,7 +72,7 @@ HRESULT CDocxRenderer::CreateNewFile(const std::wstring& wsPath, bool bIsOutComp
 }
 HRESULT CDocxRenderer::Close()
 {
-    COfficeUtils oCOfficeUtils(NULL);
+    COfficeUtils oCOfficeUtils(nullptr);
     HRESULT hr = oCOfficeUtils.CompressFileOrDirectory(m_pInternal->m_oDocument.m_strTempDirectory, m_pInternal->m_oDocument.m_strDstFilePath, true);
     if (!m_pInternal->m_oDocument.m_strTempDirectory.empty())
         NSDirectory::DeleteDirectory(m_pInternal->m_oDocument.m_strTempDirectory);
@@ -110,7 +110,7 @@ int CDocxRenderer::Convert(IOfficeDrawingFile* pFile, const std::wstring& sDstFi
         put_Width(dWidth);
         put_Height(dHeight);
 
-        pFile->DrawPageOnRenderer(this, i, NULL);
+        pFile->DrawPageOnRenderer(this, i, nullptr);
 
         m_pInternal->m_oDocument.m_bIsDisablePageCommand = false;
         EndCommand(c_nPageType);

@@ -18,34 +18,34 @@ namespace NSDocxRenderer
 
 		NSStructures::CFont				m_oInstalledFont;
 
-        NSFonts::IFontManager*                m_pFontManager;
+        NSFonts::IFontManager*                m_pFontManager {nullptr};
         Aggplus::CGraphicsPathSimpleConverter m_oSimpleGraphicsConverter;
 
         Aggplus::CMatrix				m_oTransform;
 
-		LONG							m_lCurrentCommandType;
+        LONG							m_lCurrentCommandType {0};
 
 		LONG							m_lClipMode;
 		CPage							m_oCurrentPage;
 
         CImageManager					m_oManager;
 
-		double							m_dWidth;
-		double							m_dHeight;
+        double							m_dWidth {0.0};
+        double							m_dHeight {0.0};
 
-		double							m_dDpiX;
-		double							m_dDpiY;
+        double							m_dDpiX {72.0};
+        double							m_dDpiY {72.0};
 
-        std::wstring					m_strTempDirectory;
+        std::wstring					m_strTempDirectory {L""};
         std::wstring                    m_strDstFilePath;
 
         NSFile::CFileBinary				m_oDocumentStream;
-		LONG							m_lPagesCount;
+        LONG							m_lPagesCount {0};
 
         NSStringUtils::CStringBuilder	m_oWriter;
-        bool							m_bIsNeedPDFTextAnalyzer;
+        bool							m_bIsNeedPDFTextAnalyzer {false};
 
-        bool                            m_bIsDisablePageCommand; // disable commands inside draw function
+        bool                            m_bIsDisablePageCommand {false}; // disable commands inside draw function
 
 	public:
         CDocument(IRenderer* pRenderer, NSFonts::IApplicationFonts* pFonts);

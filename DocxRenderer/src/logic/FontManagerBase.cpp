@@ -6,12 +6,9 @@
 namespace NSFontManager
 {
     CUnicodeRange::CUnicodeRange(const int& _start, const int& _end,
-                                 const BYTE& _range, const BYTE& _rangenum)
+                                 const BYTE& _range, const BYTE& _rangenum):
+        RangeNum(_rangenum), Range(_range), Start(_start), End(_end)
     {
-        Range = _range;
-        RangeNum = _rangenum;
-        Start = _start;
-        End = _end;
     }
 
     CUnicodeRanges::CUnicodeRanges()
@@ -236,22 +233,7 @@ namespace NSFontManager
     CFontAdvanced::CFontAdvanced()
     {
         m_oFont.SetDefaultParams();
-
-        m_dAscent			= 0;
-        m_dDescent			= 0;
-        m_dLineSpacing		= 0;
-        m_dEmHeight			= 0;
-
-        m_dBaselineOffset	= 0;
-
-        m_dSpaceWidthMM		= 0;
-
-        m_strFamilyName		= L"";
-        m_strPANOSE			= L"";
-        m_lStyle			= 0;
         m_arSignature.clear();
-        m_bIsFixedWidth		= false;
-        m_lAvgWidth			= -1;
     }
 
     CFontAdvanced::CFontAdvanced(const CFontAdvanced& oSrc)
@@ -289,10 +271,6 @@ namespace NSFontManager
 
     CFontPickUp::CFontPickUp() : m_oFont()
     {
-        m_lRangeNum		= 0xFF;
-        m_lRange		= 0xFF;
-        m_strPickFont	= L"";
-        m_lPickStyle	= 0;
     }
 
     CFontPickUp::CFontPickUp(const CFontPickUp& oSrc)
@@ -316,7 +294,7 @@ namespace NSFontManager
         return *this;
     }
 
-    CFontManagerBase::CFontManagerBase(NSFonts::IApplicationFonts* pFonts) : m_oFont()
+    CFontManagerBase::CFontManagerBase(NSFonts::IApplicationFonts* pFonts)
     {
         m_pManager = NSFontManager::CreateFontManager(pFonts);
 
@@ -478,7 +456,7 @@ namespace NSFontManager
     void CFontManagerBase::LoadFontParams(bool bIsPath)
     {
         // читаем и выставляем все настройки шрифта
-        if (NULL == m_pManager || NULL == m_pManager->GetFile())
+        if (nullptr == m_pManager || nullptr == m_pManager->GetFile())
             return;
 
         m_oFont.m_strFamilyName = m_oFont.m_oFont.Name;

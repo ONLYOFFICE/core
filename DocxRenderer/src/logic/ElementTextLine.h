@@ -17,16 +17,16 @@ namespace NSDocxRenderer
 
             std::vector<CContText*> m_arConts;
 
-            double m_dBaselinePos;
-            double m_dBaselineOffset;
+            double m_dBaselinePos {0.0};
+            double m_dBaselineOffset {0.0};
 
-            AssumedTextAlignmentType m_eAlignmentType;
+            AssumedTextAlignmentType m_eAlignmentType {atatUnknown};
 
-            const CShape* m_pDominantShape;
+            const CShape* m_pDominantShape {nullptr};
 
         public:
             CTextLine();
-            void Clear();
+            void Clear() override final;
 
             ~CTextLine();
 
@@ -34,8 +34,8 @@ namespace NSDocxRenderer
             CTextLine& operator=(const CTextLine& oSrc);
 
             void AddCont(CContText* pCont);
-            virtual bool IsBigger(const CBaseItem* oSrc);
-            virtual bool IsBiggerOrEqual(const CBaseItem* oSrc);
+            bool IsBigger(const CBaseItem* oSrc) override final;
+            bool IsBiggerOrEqual(const CBaseItem* oSrc) override final;
             void SortConts();
 
             //Объединяем слова из двух строк
@@ -43,8 +43,8 @@ namespace NSDocxRenderer
             //Объединяем подходящие слова в текущей строке, если возможно
             void Analyze();
             bool IsForceBlock();
-            virtual void ToXml(NSStringUtils::CStringBuilder& oWriter){}
-            void ToXml(NSStringUtils::CStringBuilder& oWriter, CFontManagerLight* pManagerLight);
+            void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
+
             //Вычисляем ширину сложной строки
             void CalculateWidth();
             //Добавляем символ пробела в конец строки для связывания строк в параграфе

@@ -1,37 +1,20 @@
 #include "ElementContText.h"
 #include "../resources/ColorTable.h"
-#include "../resources/Constants.h"
 #include "../resources/SingletonTemplate.h"
 #include "../resources/utils.h"
 
 namespace NSDocxRenderer
 {
-    CContText::CContText(): CBaseItem(etContText)
+    CContText::CContText(CFontManagerLight& oManagerLight): CBaseItem(ElemType::etContText),
+        m_pManagerLight(&oManagerLight)
     {
-        m_strPickFontName	= L"";
-        m_lPickFontStyle	= 0;
-
-        m_dBaselinePos  = 0;
-        m_dBaselineOffset = 0;
-        m_dLastX        = 0;
-        m_dSpaceWidthMM	= 0;
-
-        m_bIsNeedSpaceAtTheEnd = false;
-        m_bIsDoubleStrikeout = false;
-        m_bIsHighlightPresent = false;
-        m_lHighlightColor = c_iBlackColor;
-
-        m_eUnderlineType = ltUnknown;
-        m_lUnderlineColor = c_iBlackColor;
-
-        m_pShape         = nullptr;
     }
 
     void CContText::Clear()
     {
     }
 
-    CContText::CContText(const CContText& oSrc): CBaseItem(etContText)
+    CContText::CContText(const CContText& oSrc): CBaseItem(ElemType::etContText)
     {
         *this = oSrc;
     }
@@ -58,7 +41,7 @@ namespace NSDocxRenderer
         m_dLastX    = oSrc.m_dLastX;
         m_dSpaceWidthMM = oSrc.m_dSpaceWidthMM;
 
-        m_bIsNeedSpaceAtTheEnd = oSrc.m_bIsNeedSpaceAtTheEnd;
+        m_bIsNeedSpace = oSrc.m_bIsNeedSpace;
         m_bIsDoubleStrikeout = oSrc.m_bIsDoubleStrikeout;
         m_bIsHighlightPresent = oSrc.m_bIsHighlightPresent;
         m_lHighlightColor = oSrc.m_lHighlightColor;
@@ -67,6 +50,7 @@ namespace NSDocxRenderer
         m_lUnderlineColor = oSrc.m_lUnderlineColor;
 
         m_pShape    = oSrc.m_pShape;
+        m_pManagerLight = oSrc.m_pManagerLight;
 
         return *this;
     }
@@ -81,9 +65,7 @@ namespace NSDocxRenderer
         return 0;
     }
 
-    void CContText::ToXml(NSStringUtils::CStringBuilder& oWriter,
-                          CFontManagerLight* pManagerLight,
-                          bool bIsAddSpace)
+    void CContText::ToXml(NSStringUtils::CStringBuilder& oWriter)
     {
         oWriter.WriteString(L"<w:r>");
         oWriter.WriteString(L"<w:rPr>");
@@ -95,7 +77,7 @@ namespace NSDocxRenderer
             if (m_oFont.Italic)
                 oWriter.WriteString(L"<w:i w:val=\"true\"/>");
 
-            if (bIsAddSpace || m_bIsNeedSpaceAtTheEnd)
+            if (m_bIsNeedSpace)
             {
                 m_dWidth += m_dSpaceWidthMM;
                 m_oText += L" ";
@@ -108,16 +90,16 @@ namespace NSDocxRenderer
             if (0x02 == (0x02 & m_lPickFontStyle))
                 oWriter.WriteString(L"<w:i w:val=\"true\"/>");
 
-            if (bIsAddSpace || m_bIsNeedSpaceAtTheEnd)
+            if (m_bIsNeedSpace)
             {
-                m_dWidth  += pManagerLight->GetSpaceWidth();
+                m_dWidth  += m_pManagerLight->GetSpaceWidth();
                 m_oText += L" ";
             }
 
             // нужно перемерять...
             double ___dSize = (double)(static_cast<LONG>(m_oFont.Size * 2)) / 2;
-            pManagerLight->LoadFont(m_strPickFontName, m_lPickFontStyle, ___dSize, false);
-            double dWidth = pManagerLight->MeasureStringWidth(m_oText.ToStdWString());
+            m_pManagerLight->LoadFont(m_strPickFontName, m_lPickFontStyle, ___dSize, false);
+            double dWidth = m_pManagerLight->MeasureStringWidth(m_oText.ToStdWString());
 
             double dSpacing = (m_dWidth - dWidth) / (m_oText.length() + 1);
             dSpacing *= c_dMMToDx;
@@ -210,7 +192,6 @@ namespace NSDocxRenderer
 
     void CContText::AddWideSpaceToXml(double dSpacingMM,
                                       NSStringUtils::CStringBuilder& oWriter,
-                                      CFontManagerLight* pManagerLight,
                                       bool bIsNeedSaveFormat)
     {
         oWriter.WriteString(L"<w:r><w:rPr>");
@@ -230,7 +211,7 @@ namespace NSDocxRenderer
             if (0x02 == (0x02 & m_lPickFontStyle) && bIsNeedSaveFormat)
                 oWriter.WriteString(L"<w:i w:val=\"true\"/>");
 
-            dSpaceMMSize = pManagerLight->GetSpaceWidth();
+            dSpaceMMSize = m_pManagerLight->GetSpaceWidth();
         }
 
         int lSize = (int)(2 * m_oFont.Size);
@@ -316,7 +297,7 @@ namespace NSDocxRenderer
 
     void CContText::AddSpaceToEnd()
     {
-        m_bIsNeedSpaceAtTheEnd = true;
+        m_bIsNeedSpace = true;
         m_dWidth += m_dSpaceWidthMM;
     }
 

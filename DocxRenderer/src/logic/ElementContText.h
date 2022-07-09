@@ -2,7 +2,9 @@
 #include "BaseItem.h"
 #include "../DesktopEditor/common/StringBuilder.h"
 #include "FontManager.h"
+#include "../resources/Constants.h"
 #include "../resources/LinesTable.h"
+
 
 namespace NSDocxRenderer
 {
@@ -14,49 +16,44 @@ namespace NSDocxRenderer
             NSStructures::CFont		m_oFont;
             NSStructures::CBrush	m_oBrush;
 
-            std::wstring m_strPickFontName;
-            LONG	m_lPickFontStyle;
+            std::wstring m_strPickFontName {L""};
+            LONG	m_lPickFontStyle {0};
 
             NSStringUtils::CStringUTF32 m_oText;
 
-            double m_dBaselinePos;
-            double m_dBaselineOffset;
-            double m_dLastX;
+            double m_dBaselinePos {0};
+            double m_dBaselineOffset {0};
+            double m_dLastX {0};
 
-            double m_dSpaceWidthMM;
+            double m_dSpaceWidthMM {0};
 
-            bool   m_bIsNeedSpaceAtTheEnd;
-            bool   m_bIsDoubleStrikeout;
-            bool   m_bIsHighlightPresent;
-            LONG   m_lHighlightColor;
+            bool   m_bIsNeedSpace {false};
+            bool   m_bIsDoubleStrikeout {false};
+            bool   m_bIsHighlightPresent {false};
+            LONG   m_lHighlightColor {c_iBlackColor};
 
-            eLineType m_eUnderlineType;
-            LONG   m_lUnderlineColor;
+            eLineType m_eUnderlineType {eLineType::ltUnknown};
+            LONG   m_lUnderlineColor {c_iBlackColor};
 
-            const CShape* m_pShape; //Если не 0, то есть фоновая графика - можно анализировать.
+            const CShape* m_pShape {nullptr}; //Если не nullptr, то есть фоновая графика - можно анализировать.
+            CFontManagerLight* m_pManagerLight {nullptr};
 
         public:
-            CContText();
+            CContText(CFontManagerLight& oManagerLight);
             ~CContText(){}
 
-            void Clear();
+            void Clear() override final;
 
             CContText(const CContText& oSrc);
 
             CContText& operator=(const CContText& oSrc);
-            void CopyFormat(const CContText& oSrc);
 
             double GetIntersect(const CContText* oSrc) const;
 
-            virtual void ToXml(NSStringUtils::CStringBuilder& oWriter){}
-
-            void ToXml(NSStringUtils::CStringBuilder& oWriter,
-                       CFontManagerLight* pManagerLight,
-                       bool bIsAddSpace = false);
+            void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
 
             void AddWideSpaceToXml(double dSpacingMM,
                                    NSStringUtils::CStringBuilder& oWriter,
-                                   CFontManagerLight* pManagerLight,
                                    bool bIsNeedSaveFormat = false);
 
             void AddSpaceToEnd();

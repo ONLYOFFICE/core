@@ -5,7 +5,7 @@
 
 namespace NSDocxRenderer
 {
-    enum eGraphicsType
+    enum class eGraphicsType
     {
         gtUnknown,
         gtRectangle,
@@ -17,40 +17,40 @@ namespace NSDocxRenderer
     class CShape : public CBaseItem
     {
         public:
-            std::wstring            m_strPath;
+            std::wstring            m_strPath {L""};
             NSStructures::CBrush	m_oBrush;
             NSStructures::CPen		m_oPen;
 
-            bool m_bIsNoFill;
-            bool m_bIsNoStroke;
-            bool m_bIsBehindDoc;
+            bool m_bIsNoFill {false};
+            bool m_bIsNoStroke {false};
+            bool m_bIsBehindDoc {true};
 
-            LONG m_lCoordSizeX;
-            LONG m_lCoordSizeY;
+            LONG m_lCoordSizeX {100000};
+            LONG m_lCoordSizeY {100000};
 
-            LONG m_lTxId;
+            LONG m_lTxId {-1};
 
-            eGraphicsType m_eGraphicsType;
-            eSimpleLineType m_eSimpleLineType;
-            eLineType m_eLineType;
+            eGraphicsType m_eGraphicsType {eGraphicsType::gtUnknown};
+            eSimpleLineType m_eSimpleLineType {eSimpleLineType::sltUnknown};
+            eLineType m_eLineType {eLineType::ltUnknown};
 
             std::vector<CParagraph*> m_arParagraphs;
 
-            CFontManagerLight* m_pManagerLight;
+            const CContText* m_pCont {nullptr};
 
         public:
             CShape();
             virtual ~CShape();
-            virtual void Clear();
+            virtual void Clear() override final;
 
             CShape(const CShape& oSrc);
-            CShape(const CShape& oSrc1, const CShape& oSrc2);
+            //CShape(const CShape& oSrc1, const CShape& oSrc2);
 
             CShape& operator=(const CShape& oSrc);
 
             void GetDataFromVector(const CVectorGraphics& oVector, const LONG& lType, const LONG& lCoordSize);
 
-            void WritePath(const CVectorGraphics& oVector, const LONG& lType, const LONG& lCoordSize);
+            void WritePath(const CVectorGraphics& oVector);
 
             void DetermineGraphicsType(const double& dWidth, const double& dHeight, const size_t& nPeacks, const size_t& nCurves);
 
@@ -60,6 +60,6 @@ namespace NSDocxRenderer
 
             void DetermineLineType(CShape* pShape = nullptr);
 
-            virtual void ToXml(NSStringUtils::CStringBuilder& oWriter);
+            virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
     };
 }

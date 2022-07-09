@@ -7,10 +7,10 @@ const double c_dDpiX		= 72.0;
 const double c_dDpiY		= 72.0;
 
 const double c_dInchToMM	= 25.4;
-const double c_dPixToMM		= 25.4 / 72.0;
-const double c_dPtToMM		= 25.4 / 72.0;
-const double c_dMMToPt		= 72.0 / 25.4;
-const double c_dMMToDx	    = 72 * 20 / 25.4;
+constexpr double c_dPixToMM		= 25.4 / 72.0;
+constexpr double c_dPtToMM		= 25.4 / 72.0;
+constexpr double c_dMMToPt		= 72.0 / 25.4;
+constexpr double c_dMMToDx	    = 72 * 20 / 25.4;
 const double c_dMMToEMU	    = 36000.0;
 const double c_dInchToEMU	= 914400.0;
 const double c_dPtToEMU  	= 12700.0;

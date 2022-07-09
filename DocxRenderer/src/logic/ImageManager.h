@@ -16,10 +16,8 @@ namespace NSDocxRenderer
             };
 
         public:
-            ImageType m_eType;
-            int m_nId;
-
-            CImageInfo(): m_eType(itPNG), m_nId(0) {}
+            ImageType m_eType {itPNG};
+            int m_nId {0};
     };
 
     class CImageManager
@@ -28,16 +26,16 @@ namespace NSDocxRenderer
             std::map<std::wstring, CImageInfo>	m_mapImagesFile;
             std::map<DWORD, CImageInfo>         m_mapImageData;
 
-            std::wstring                        m_strDstMedia;
+            std::wstring                        m_strDstMedia {L""};
 
-            int                                 m_lMaxSizeImage;
-            int                                 m_lNextIDImage;
+            int                                 m_lMaxSizeImage {1200};
+            int                                 m_lNextIDImage {0};
 
             CCalculatorCRC32                    m_oCRC;
 
         public:
 
-            CImageManager();
+            CImageManager(){};
 
             void NewDocument();
 

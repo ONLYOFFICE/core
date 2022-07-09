@@ -9,14 +9,14 @@ namespace NSDocxRenderer
     class CFontTableEntry
     {
         public:
-            std::wstring    	m_strFamilyName;
-            std::wstring		m_strPANOSE;
-            LONG				m_lStyle;
+            std::wstring    	m_strFamilyName {L""};
+            std::wstring		m_strPANOSE {L""};
+            LONG				m_lStyle {0};
             std::vector<UINT>	m_arSignature;
-            bool				m_bIsFixedWidth;
+            bool				m_bIsFixedWidth {false};
 
         public:
-            CFontTableEntry();
+            CFontTableEntry(){}
             virtual ~CFontTableEntry(){}
 
             CFontTableEntry(const CFontTableEntry& oSrc);
@@ -36,9 +36,9 @@ namespace NSDocxRenderer
     class CFontManager : public CFontManagerBase
     {
         public:
-            NSStructures::CFont*	m_pFont;
-            Aggplus::CMatrix*		m_pTransform;
-            double					m_dSpaceWidthMM;
+            NSStructures::CFont*	m_pFont {nullptr};
+            Aggplus::CMatrix*		m_pTransform {nullptr};
+            double					m_dSpaceWidthMM {0.0};
 
         public:
             CFontTable				m_oFontTable;
@@ -73,13 +73,13 @@ namespace NSDocxRenderer
     class CFontManagerLight
     {
         private:
-            std::wstring m_strFontName;
-            LONG	m_lFontStyle;
-            double	m_dSize;
+            std::wstring m_strFontName {L""};
+            LONG	m_lFontStyle {0};
+            double	m_dSize {0.0};
 
-            double	m_dSpaceWidth;
+            double	m_dSpaceWidth {0.0};
 
-            NSFonts::IFontManager*	m_pManager;
+            NSFonts::IFontManager*	m_pManager {nullptr};
 
         public:
             CFontManagerLight(NSFonts::IApplicationFonts* pFonts);

@@ -9,26 +9,6 @@ namespace NSDocxRenderer
 {
     CPage::CPage(NSFonts::IApplicationFonts* pFonts) : m_oManager(pFonts), m_oManagerLight(pFonts)
     {
-        m_pFont			= NULL;
-        m_pBrush		= NULL;
-        m_pPen			= NULL;
-        m_pShadow		= NULL;
-        m_pEdgeText		= NULL;
-
-        m_pTransform	= NULL;
-        m_pSimpleGraphicsConverter	= NULL;
-
-        m_dWidth		= 0;
-        m_dHeight		= 0;
-
-        m_pCurrentLine	= NULL;
-        m_eTextAssociationType = tatPlainLine;
-
-        m_bIsDeleteTextClipPage = true;
-
-        m_dLastTextX = -1;
-        m_dLastTextY = -1;
-        m_dLastTextX_block = m_dLastTextX;
     }
 
     void CPage::Init(NSStructures::CFont* pFont, NSStructures::CPen* pPen, NSStructures::CBrush* pBrush,
@@ -47,7 +27,7 @@ namespace NSDocxRenderer
         m_oManager.m_pFont			= m_pFont;
         m_oManager.m_pTransform		= m_pTransform;
 
-        m_pCurrentLine = NULL;
+        m_pCurrentLine = nullptr;
 
         m_dLastTextX = -1;
         m_dLastTextY = -1;
@@ -62,7 +42,7 @@ namespace NSDocxRenderer
         ClearShapes();
         ClearParagraphs();
 
-        m_pCurrentLine = NULL;
+        m_pCurrentLine = nullptr;
 
         m_dLastTextX = -1;
         m_dLastTextY = -1;
@@ -71,45 +51,45 @@ namespace NSDocxRenderer
 
     void CPage::ClearImages()
     {
-        for (size_t i = 0; i < m_arImages.size(); ++i)
+        for (auto pImage: m_arImages)
         {
-            m_arImages[i]->Clear();
+            pImage->Clear();
         }
         m_arImages.clear();
     }
 
     void CPage::ClearTextData()
     {
-        for (size_t i = 0; i < m_arTextData.size(); ++i)
+        for (auto pCont : m_arTextData)
         {
-            RELEASEOBJECT(m_arTextData[i]);
+            RELEASEOBJECT(pCont);
         }
         m_arTextData.clear();
     }
 
     void CPage::ClearTextLines()
     {
-        for (size_t i = 0; i < m_arTextLine.size(); ++i)
+        for (auto pLine : m_arTextLine)
         {
-            m_arTextLine[i]->Clear();
+            pLine->Clear();
         }
         m_arTextLine.clear();
     }
 
     void CPage::ClearShapes()
     {
-        for (size_t i = 0; i < m_arShapes.size(); ++i)
+        for (auto pShape : m_arShapes)
         {
-            m_arShapes[i]->Clear();
+            pShape->Clear();
         }
         m_arShapes.clear();
     }
 
     void CPage::ClearParagraphs()
     {
-        for (size_t i = 0; i < m_arParagraphs.size(); ++i)
+        for (auto pParagraph : m_arParagraphs)
         {
-            m_arParagraphs[i]->Clear();
+            pParagraph->Clear();
         }
         m_arParagraphs.clear();
     }
@@ -121,7 +101,7 @@ namespace NSDocxRenderer
 
     void CPage::SetCurrentLineByBaseline(const double& dBaseLinePos)
     {
-        if ((NULL == m_pCurrentLine) || (tatBlockChar == m_eTextAssociationType))
+        if ((nullptr == m_pCurrentLine) || (tatBlockChar == m_eTextAssociationType))
         {
             // пустая (в плане текста) страница
             m_pCurrentLine = new CTextLine();
@@ -337,7 +317,7 @@ namespace NSDocxRenderer
                                 const double& fX, const double& fY, const double& fWidth, const double& fHeight,
                                 const double& fBaseLineOffset, const bool& bIsPDFAnalyzer)
     {
-        if (pUnicodes != NULL && nCount == 1 && IsSpaceUtf32(*pUnicodes))
+        if (pUnicodes != nullptr && nCount == 1 && IsSpaceUtf32(*pUnicodes))
         {
             //note пробелы не нужны, добавляются при анализе
             return;
@@ -356,7 +336,7 @@ namespace NSDocxRenderer
 
         NSStringUtils::CStringUTF32 oText((uint32_t*)pUnicodes, nCount);
 
-        if ((pUnicodes != NULL) && (pGids != NULL))
+        if ((pUnicodes != nullptr) && (pGids != nullptr))
         {
             for (unsigned int i = 0; i < nCount; ++i)
             {
@@ -367,7 +347,7 @@ namespace NSDocxRenderer
             }
         }
 
-        bool bIsPath = ((NULL == pGids) && !bIsPDFAnalyzer) ? false : true;
+        bool bIsPath = ((nullptr == pGids) && !bIsPDFAnalyzer) ? false : true;
 
         m_oManager.LoadFont(0, !bIsPath);
 
@@ -381,7 +361,7 @@ namespace NSDocxRenderer
             double _w = 0;
             double _h = 0;
 
-            if (NULL != pGids)
+            if (nullptr != pGids)
             {
                 m_oManager.SetStringGid(1);
                 m_oManager.MeasureStringGids(pGids, nCount, dTextX, dTextY, _x, _y, _w, _h, CFontManager::mtPosition);
@@ -399,7 +379,7 @@ namespace NSDocxRenderer
         double dBaseLinePos = dTextY + fBaseLineOffset;
         dTextH = m_oManager.GetFontHeight();
 
-        CContText* pCont = new CContText();
+        CContText* pCont = new CContText(m_oManagerLight);
 
         pCont->m_dLeft = dTextX;
         pCont->m_dBaselinePos = dBaseLinePos;
@@ -431,6 +411,7 @@ namespace NSDocxRenderer
         //todo Объединить контур и заливку одного рисунка в шейпе если m_strPath одинаковые
         //todo Объединить выделения соседних строк
 
+        DetermineContWithMaxSizeFont();
         DetermineLinesType();
 
         //Добавить различные условия объединений
@@ -446,11 +427,9 @@ namespace NSDocxRenderer
         }*/
     }
 
-    void CPage::DetermineLinesType()
+    void CPage::DetermineContWithMaxSizeFont()
     {
-        size_t nShapesCount = m_arShapes.size();
-
-        for (size_t i = 0; i < nShapesCount; ++i)
+        for (size_t i = 0; i < m_arShapes.size(); ++i)
         {
             if (m_arShapes[i]->m_bIsNotNecessaryToUse)
             {
@@ -461,7 +440,35 @@ namespace NSDocxRenderer
             std::vector<CShape*> arCurrShapes;
             arCurrShapes.push_back(m_arShapes[i]);
 
-            for (size_t j = i+1; j < nShapesCount; ++j)
+            for (size_t j = i+1; j < m_arShapes.size(); ++j)
+            {
+                if (!m_arShapes[j]->m_bIsNotNecessaryToUse &&
+                    m_arShapes[i]->IsCorrelated(m_arShapes[j]) &&
+                    std::abs(m_arShapes[i]->m_dHeight - m_arShapes[j]->m_dHeight) < c_GRAPHICS_ERROR_IN_LINES_MM && //линия должна быть одного размера по высоте
+                    std::abs(m_arShapes[i]->m_dTop - m_arShapes[j]->m_dTop) < c_GRAPHICS_ERROR_IN_LINES_MM * 5) //все должно быть на одной линии
+                {
+                    arCurrShapes.push_back(m_arShapes[j]);
+                }
+            }
+
+
+        }
+    }
+
+    void CPage::DetermineLinesType()
+    {
+        for (size_t i = 0; i < m_arShapes.size(); ++i)
+        {
+            if (m_arShapes[i]->m_bIsNotNecessaryToUse)
+            {
+                continue;
+            }
+
+            //Нужно собрать всю графику, которая находится на одной линии
+            std::vector<CShape*> arCurrShapes;
+            arCurrShapes.push_back(m_arShapes[i]);
+
+            for (size_t j = i+1; j < m_arShapes.size(); ++j)
             {
                 if (!m_arShapes[j]->m_bIsNotNecessaryToUse &&
                     m_arShapes[i]->IsCorrelated(m_arShapes[j]) &&
@@ -511,8 +518,8 @@ namespace NSDocxRenderer
             CShape* pShape = m_arShapes[i];
 
             if (pShape->m_bIsNotNecessaryToUse ||
-                (pShape->m_eGraphicsType != gtRectangle &&
-                pShape->m_eGraphicsType != gtCurve))
+                (pShape->m_eGraphicsType != eGraphicsType::gtRectangle &&
+                pShape->m_eGraphicsType != eGraphicsType::gtCurve))
             {
                 continue;
             }
@@ -542,7 +549,7 @@ namespace NSDocxRenderer
         double dRightContText = pContText->m_dLeft + pContText->m_dWidth;
 
         //Условие пересечения по вертикали
-        bool bIf1 = pShape->m_eGraphicsType == gtRectangle;
+        bool bIf1 = pShape->m_eGraphicsType == eGraphicsType::gtRectangle;
         //Условие пересечения по вертикали
         bool bIf2 = dTopShape > dTopContText && dBottomShape < dBottomContText;
         //Условие пересечения по горизонтали
@@ -556,7 +563,7 @@ namespace NSDocxRenderer
         if (bIf1 && bIf2 && bIf3 && bIf4)
         {
             pContText->m_oFont.Strikeout = TRUE;
-            if (pShape->m_eLineType == ltDouble)
+            if (pShape->m_eLineType == eLineType::ltDouble)
             {
                 pContText->m_bIsDoubleStrikeout = true;
             }
@@ -574,7 +581,7 @@ namespace NSDocxRenderer
         double dRightShape = pShape->m_dLeft + pShape->m_dWidth;
         double dRightContText = pContText->m_dLeft + pContText->m_dWidth;
 
-        bool bIf1 = pShape->m_eGraphicsType == gtRectangle || pShape->m_eGraphicsType == gtCurve;
+        bool bIf1 = pShape->m_eGraphicsType == eGraphicsType::gtRectangle || pShape->m_eGraphicsType == eGraphicsType::gtCurve;
         //Условие по вертикали
         bool bIf2 = fabs(dTopShape - dBottomContText) < pContText->m_dHeight * 0.2;
         //Условие пересечения по горизонтали
@@ -615,7 +622,7 @@ namespace NSDocxRenderer
         double dRightShape = pShape->m_dLeft + pShape->m_dWidth;
         double dRightContText = pContText->m_dLeft + pContText->m_dWidth;
 
-        bool bIf1 = pShape->m_eGraphicsType == gtRectangle;
+        bool bIf1 = pShape->m_eGraphicsType == eGraphicsType::gtRectangle;
         //Условие пересечения по вертикали
         bool bIf2 = (dSomeBaseLine1 > dTopShape && dSomeBaseLine1 < dBottomShape &&
                      dSomeBaseLine2 > dTopShape && dSomeBaseLine2 < dBottomShape &&
@@ -705,12 +712,12 @@ namespace NSDocxRenderer
 
         SetCurrentLineByBaseline(dBaseLinePos);
 
-        CContText* pLastCont = NULL;
+        CContText* pLastCont = nullptr;
         size_t nCountConts = m_pCurrentLine->m_arConts.size();
         if (nCountConts != 0)
             pLastCont = m_pCurrentLine->m_arConts.back();
 
-        if (NULL == pLastCont)
+        if (nullptr == pLastCont)
         {
             // первое слово в линии
             CContText* pCont = new CContText(*pContText);
@@ -819,13 +826,11 @@ namespace NSDocxRenderer
 
     void CPage::BuildByTypeBlockChar()
     {
-        size_t nCount = m_arTextLine.size();
-        for (size_t i = 0; i < nCount; ++i)
+        for (auto pLine : m_arTextLine)
         {
-            CTextLine* pTextLine = new CTextLine(*m_arTextLine[i]);;
+            CTextLine* pTextLine = new CTextLine(*pLine);;
 
             CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
-            pParagraph->m_pManagerLight = &m_oManagerLight;
             pParagraph->m_eTextConversionType = CParagraph::tctTextToFrame;
 
             pParagraph->m_dLeft	= pTextLine->m_dLeft;
@@ -842,7 +847,6 @@ namespace NSDocxRenderer
         CTextLine* pFirstLine = new CTextLine(*m_arTextLine[0]);
 
         CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
-        pParagraph->m_pManagerLight = &m_oManagerLight;
         pParagraph->m_eTextConversionType = CParagraph::tctTextToFrame;
 
         pParagraph->m_dLeft	= pFirstLine->m_dLeft;
@@ -858,7 +862,6 @@ namespace NSDocxRenderer
             CTextLine* pTextLine = new CTextLine(*m_arTextLine[i]);
 
             CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
-            pParagraph->m_pManagerLight = &m_oManagerLight;
             pParagraph->m_eTextConversionType = CParagraph::tctTextToFrame;
 
             if (((fabs(pTextLine->m_dBaselinePos - pTextLine->m_dHeight - pFirstLine->m_dBaselinePos) > c_dSTANDART_STRING_HEIGHT_MM) && (pTextLine->m_dLeft == pFirstLine->m_dLeft)) ||
@@ -1036,7 +1039,6 @@ namespace NSDocxRenderer
 
                 //наверное это сплошной текст
                 pParagraph = new CParagraph(m_eTextAssociationType);
-                pParagraph->m_pManagerLight = &m_oManagerLight;
                 pParagraph->m_eTextConversionType = CParagraph::tctTextToParagraph;
 
                 //делаем абзац в сплошном тексте
@@ -1228,7 +1230,6 @@ namespace NSDocxRenderer
     void CPage::CreateSingleLineParagraph(CTextLine *pLine, const double *pRight, const double *pBeforeSpacing)
     {
         CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
-        pParagraph->m_pManagerLight = &m_oManagerLight;
         pParagraph->m_eTextConversionType = CParagraph::tctTextToParagraph;
         pParagraph->m_arLines.push_back(pLine);
         pParagraph->m_nNumLines++;
@@ -1261,7 +1262,6 @@ namespace NSDocxRenderer
     void CPage::CreateSingleLineOldShape(CTextLine *pLine)
     {
         CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
-        pParagraph->m_pManagerLight = &m_oManagerLight;
         pParagraph->m_eTextConversionType = CParagraph::tctTextToShape;
         pParagraph->m_arLines.push_back(pLine);
         pParagraph->m_nNumLines++;
@@ -1282,7 +1282,6 @@ namespace NSDocxRenderer
         //todo Width и Height маловаты и текст обрезается. разобраться почему
         pShape->m_dWidth = pLine->m_dWidth + COldShape::SIZE_CORRECTION_FOR_X_MM; //5мм мало для длинной строки
         pShape->m_dHeight = pLine->m_dHeight + COldShape::SIZE_CORRECTION_FOR_Y_MM;
-        pShape->m_pManagerLight = &m_oManagerLight;
 
         //m_arGraphicItems.push_back(pShape);
     }
@@ -1290,7 +1289,6 @@ namespace NSDocxRenderer
     void CPage::CreateSingleLineShape(CTextLine *pLine)
     {
         CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
-        pParagraph->m_pManagerLight = &m_oManagerLight;
         pParagraph->m_eTextConversionType = CParagraph::tctTextToShape;
         pParagraph->m_arLines.push_back(pLine);
         pParagraph->m_nNumLines++;
@@ -1309,7 +1307,6 @@ namespace NSDocxRenderer
         pShape->m_dTop	= pLine->m_dBaselinePos - pLine->m_dHeight - pLine->m_dBaselineOffset;
         pShape->m_dWidth = pLine->m_dWidth + RightBorderCorrection(pLine);
         pShape->m_dHeight = pLine->m_dHeight;
-        pShape->m_pManagerLight = &m_oManagerLight;
 
         pShape->m_bIsNoFill = true;
         pShape->m_bIsNoStroke = true;

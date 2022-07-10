@@ -331,7 +331,7 @@ namespace OOX
 				sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
 			m_sApplication = sApplication;
 #if defined(INTVER)
-			m_sApplication = VALUE2STR(INTVER);
+			m_sApplication = std::wstring(VALUE2STR(INTVER));
 #endif
 		}
  

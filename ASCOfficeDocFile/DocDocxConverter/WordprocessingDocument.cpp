@@ -99,7 +99,7 @@ namespace DocFileFormat
 				pApp->m_sApplication = sApplication;
 
 #if defined(INTVER)
-				pApp->m_sApplication = VALUE2STR(INTVER);
+				pApp->m_sApplication = std::wstring(VALUE2STR(INTVER));
 #endif
 				pApp->SetDefaults();
 

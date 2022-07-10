@@ -168,7 +168,7 @@ bool OOXWriter::SaveByItemEnd()
 			sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
 		((OOX::CApp*)m_poDocPropsApp)->m_sApplication = sApplication;
 #if defined(INTVER)
-        ((OOX::CApp*)m_poDocPropsApp)->m_sApplication = VALUE2STR(INTVER);
+        ((OOX::CApp*)m_poDocPropsApp)->m_sApplication = std::wstring(VALUE2STR(INTVER));
 #endif		
 		((OOX::CApp*)m_poDocPropsApp)->write(pathDocProps + FILE_SEPARATOR_STR + L"app.xml", pathDocProps.GetDirectory(), oContentTypes);
 		

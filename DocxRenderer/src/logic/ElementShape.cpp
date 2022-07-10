@@ -119,7 +119,7 @@ namespace NSDocxRenderer
 
         while (nCount > 0)
         {
-            CVectorGraphics::VectorGraphicsType eType = static_cast<CVectorGraphics::VectorGraphicsType>(*pData++);
+            CVectorGraphics::VectorGraphicsType eType = static_cast<CVectorGraphics::VectorGraphicsType>((int)(0.5 + *pData++));
 
             switch (eType)
             {

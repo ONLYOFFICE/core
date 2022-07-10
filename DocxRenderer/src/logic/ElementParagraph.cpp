@@ -1,7 +1,7 @@
 #include "ElementParagraph.h"
-#include "src\resources\ColorTable.h"
-#include "src\resources\SingletonTemplate.h"
-#include "src\resources\utils.h"
+#include "src/resources/ColorTable.h"
+#include "src/resources/SingletonTemplate.h"
+#include "src/resources/utils.h"
 
 namespace NSDocxRenderer
 {

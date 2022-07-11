@@ -325,16 +325,14 @@ namespace PdfReader
 
 		bool                          m_bTiling;
 		bool                          m_bTransparentGroup;
+		bool                          m_bIsolatedTransparentGroup;
+		bool                          m_bTransparentGroupSoftMask;
+		bool                          m_bTransparentGroupSoftMaskEnd;
+		std::vector<bool>             m_arrTransparentGroupSoftMask;
 
 		unsigned char*                m_pSoftMask;
 		int                           m_nSoftMaskWidth;
 		int                           m_nSoftMaskHeight;
-
-		bool                          m_bTransparentGroupSoftMask;
-		CBgraFrame*                   m_pTransparentGroupSoftMask;
-		std::vector<bool>             m_arrTransparentGroupSoftMask;
-		std::vector<CBgraFrame*>      m_arrTransparency;
-		std::vector<IRenderer*>       m_arrRenderer;
 
         bool                          m_bDrawOnlyText; // Special option for html-renderer
 

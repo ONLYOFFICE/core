@@ -527,7 +527,6 @@ namespace PdfReader
 
         m_lRendererType = c_nUnknownRenderer;
         m_pRenderer     = pRenderer;
-        m_arrRenderer.push_back(pRenderer);
 
         if (NULL != m_pRenderer)
         {
@@ -544,8 +543,9 @@ namespace PdfReader
 
         m_pbBreak                   = NULL;
         m_bTransparentGroup         = false;
+        m_bIsolatedTransparentGroup = false;
         m_bTransparentGroupSoftMask = false;
-        m_pTransparentGroupSoftMask = NULL;
+        m_bTransparentGroupSoftMaskEnd = false;
 
         m_pSoftMask = NULL;
 
@@ -644,8 +644,6 @@ namespace PdfReader
 //        if (m_pBufferTextClip) tmpchange
 //            delete m_pBufferTextClip;
 
-        RELEASEOBJECT(m_pTransparentGroupSoftMask);
-
         RELEASEARRAYOBJECTS(m_pSoftMask);
     }
     void RendererOutputDev::startPage(int nPageIndex, GfxState *pGState)
@@ -658,11 +656,9 @@ namespace PdfReader
         m_arrMatrix[4] = 0; m_arrMatrix[5] = 0;
 
         m_bTransparentGroup = false;
+        m_bIsolatedTransparentGroup = false;
         m_bTransparentGroupSoftMask = false;
-
-        if (m_pTransparentGroupSoftMask)
-            delete[]m_pTransparentGroupSoftMask;
-        m_pTransparentGroupSoftMask = NULL;
+        m_bTransparentGroupSoftMaskEnd = false;
 
         if (c_nHtmlRendrerer2 == m_lRendererType)
             m_bDrawOnlyText = (S_OK == m_pRenderer->CommandLong(c_nCommandLongTypeOnlyText, 0)) ? true : false;
@@ -2904,7 +2900,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-        if (m_bTransparentGroupSoftMask)
+        if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
             return;
 
         DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
@@ -2917,7 +2913,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-        if (m_bTransparentGroupSoftMask || m_pSoftMask)
+        if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd || m_pSoftMask)
             return;
 
         DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
@@ -2929,7 +2925,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-        if (m_bTransparentGroupSoftMask)
+        if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
             return;
 
         DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
@@ -2942,7 +2938,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-        if (m_bTransparentGroupSoftMask)
+        if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
             return;
 
         DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
@@ -2955,7 +2951,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-        if (m_bTransparentGroupSoftMask)
+        if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
             return;
 
         DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
@@ -3101,7 +3097,7 @@ namespace PdfReader
 		if (m_bDrawOnlyText)
 			return true;
 
-		if (m_bTransparentGroupSoftMask)
+		if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
 			return true;
 
         DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
@@ -3158,7 +3154,7 @@ namespace PdfReader
 		if (m_bDrawOnlyText)
 			return true;
 
-		if (m_bTransparentGroupSoftMask)
+		if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
 			return true;
 		double x1, x2, y1, y2;
 		double t0, t1;
@@ -3302,7 +3298,7 @@ namespace PdfReader
 		if (m_bDrawOnlyText)
 			return true;
 
-		if (m_bTransparentGroupSoftMask)
+		if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
 			return true;
 
 
@@ -3360,7 +3356,7 @@ namespace PdfReader
 		if (m_bDrawOnlyText)
 			return true;
 
-		if (m_bTransparentGroupSoftMask)
+		if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
 			return true;
 
 		DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
@@ -3405,7 +3401,7 @@ namespace PdfReader
 		if (m_bDrawOnlyText)
 			return true;
 
-		if (m_bTransparentGroupSoftMask)
+		if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
 			return true;
 
 		DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
@@ -3577,7 +3573,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-        if (m_bTransparentGroupSoftMask)
+        if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
             return;
 
         int nClipFlag = bEO ? c_nClipRegionTypeEvenOdd : c_nClipRegionTypeWinding;
@@ -3594,7 +3590,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-        if (m_bTransparentGroupSoftMask)
+        if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
             return;
 
         m_pRenderer->put_FontName(wsFontName);
@@ -3632,7 +3628,7 @@ namespace PdfReader
     }
     void RendererOutputDev::beginStringOp(GfxState *pGState)
     {
-        if (m_bTransparentGroupSoftMask)
+        if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
             return;
 
         m_pRenderer->BeginCommand(c_nTextType);
@@ -3662,7 +3658,7 @@ namespace PdfReader
     }
     void RendererOutputDev::endStringOp(GfxState *pGState)
     {
-        if (m_bTransparentGroupSoftMask)
+        if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
             return;
 
         int nRenderMode = pGState->getRender();
@@ -3688,7 +3684,7 @@ namespace PdfReader
     }
     void RendererOutputDev::drawString(GfxState *pGState, GString *seString)
     {
-        if (m_bTransparentGroupSoftMask)
+        if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
             return;
 
         // Проверяем наличие списка со шрифтами
@@ -3737,7 +3733,7 @@ namespace PdfReader
     }
     void RendererOutputDev::drawChar(GfxState *pGState, double dX, double dY, double dDx, double dDy, double dOriginX, double dOriginY, CharCode nCode, int nBytesCount, Unicode *pUnicode, int nUnicodeLen)
     {
-        if (m_bTransparentGroupSoftMask)
+        if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
             return;
 
         // Проверяем наличие списка со шрифтами
@@ -3958,7 +3954,7 @@ namespace PdfReader
         unsigned char g = colToByte(oRGB.g);
         unsigned char b = colToByte(oRGB.b);
 
-        unsigned char unAlpha = m_bTransparentGroup ? 255.0 * pGState->getFillOpacity() : 255;
+        unsigned char unAlpha = m_bTransparentGroup ? (m_bIsolatedTransparentGroup ? 0 : 255.0 * pGState->getFillOpacity()) : 255;
         unsigned char unPixel = 0;
         int nInvert = (bInvert ? 1 : 0);
         for (int nY = nHeight - 1; nY >= 0; nY--)
@@ -4045,7 +4041,7 @@ namespace PdfReader
         unsigned char g = colToByte(oRGB.g);
         unsigned char b = colToByte(oRGB.b);
 
-        double dAlphaKoef = m_bTransparentGroup ? pGState->getFillOpacity() : 1;
+        double dAlphaKoef = m_bTransparentGroup ? (m_bIsolatedTransparentGroup ? 0 : pGState->getFillOpacity()) : 1;
         int nInvert = (bInvert ? 1 : 0);
         for (int nY = nHeight - 1; nY >= 0; nY--)
         {
@@ -4121,7 +4117,7 @@ namespace PdfReader
         ImageStream *pImageStream = new ImageStream(pStream, nWidth, nComponentsCount, pColorMap->getBits());
         pImageStream->reset();
 
-        unsigned char unAlpha = m_bTransparentGroup ? 255.0 * pGState->getFillOpacity() : 255;
+        unsigned char unAlpha = m_bTransparentGroup ? (m_bIsolatedTransparentGroup ? 0 : 255.0 * pGState->getFillOpacity()) : 255;
 
         int nStride = pImageStream->getVals();
         int nComps = pImageStream->getComps();
@@ -4376,7 +4372,7 @@ namespace PdfReader
         ImageStream *pImageStream = new ImageStream(pStream, nWidth, pColorMap->getNumPixelComps(), pColorMap->getBits());
         pImageStream->reset();
 
-        double dAlphaKoef = m_bTransparentGroup ? pGState->getFillOpacity() : 1;
+        double dAlphaKoef = m_bTransparentGroup ? (m_bIsolatedTransparentGroup ? 0 : pGState->getFillOpacity()) : 1;
         unsigned char unPixel[4] = { 0, 0, 0, 0 };
         for (int nY = nHeight - 1; nY >= 0; nY--)
         {
@@ -4576,9 +4572,11 @@ namespace PdfReader
     void RendererOutputDev::beginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, GBool bIsolated, GBool bKnockout, GBool bForSoftMask)
     {
         m_bTransparentGroup = true;
+        m_bIsolatedTransparentGroup = bIsolated;
         m_bTransparentGroupSoftMask = bForSoftMask;
         m_arrTransparentGroupSoftMask.push_back(bForSoftMask);
 
+        /*
         if (m_bTransparentGroupSoftMask)
         {
             int nWidth  = pBBox[2] - pBBox[0];
@@ -4605,12 +4603,20 @@ namespace PdfReader
             pRenderer->put_Width(nWidth);
             pRenderer->put_Height(nHeight);
 
+            double a, b, c, d, e, f;
+            m_pRenderer->GetTransform(&a, &b, &c, &d, &e, &f);
+            pRenderer->SetTransform(a, b, c, d, e, f);
+
             m_arrRenderer.push_back(pRenderer);
             m_pRenderer = pRenderer;
         }
+        */
     }
     void RendererOutputDev::endTransparencyGroup(GfxState *pGState)
     {
+        if (m_bTransparentGroupSoftMask)
+            m_bTransparentGroupSoftMaskEnd = true;
+        /*
         if (m_bTransparentGroupSoftMask || m_arrTransparentGroupSoftMask.back())
         {
             RELEASEOBJECT(m_pTransparentGroupSoftMask);
@@ -4622,6 +4628,7 @@ namespace PdfReader
             m_arrRenderer.pop_back();
             m_pRenderer = m_arrRenderer.back();
         }
+        */
 
         m_arrTransparentGroupSoftMask.pop_back();
         m_bTransparentGroup = false;
@@ -4629,76 +4636,16 @@ namespace PdfReader
     }
     void RendererOutputDev::paintTransparencyGroup(GfxState *pGState, double *pBBox)
     {
+        m_bIsolatedTransparentGroup = false;
+        m_bTransparentGroupSoftMaskEnd = false;
+        /*
         if (!m_pTransparentGroupSoftMask)
             return;
-
-        double xMin, yMin, xMax, yMax, x, y, bw, bh;
-        int tx, ty, w, h;
-
-        pGState->transform(pBBox[0], pBBox[1], &x, &y);
-        xMin = xMax = x;
-        yMin = yMax = y;
-        pGState->transform(pBBox[0], pBBox[3], &x, &y);
-        if (x < xMin)
-            xMin = x;
-        else if (x > xMax)
-            xMax = x;
-        if (y < yMin)
-            yMin = y;
-        else if (y > yMax)
-            yMax = y;
-        pGState->transform(pBBox[2], pBBox[1], &x, &y);
-        if (x < xMin)
-           xMin = x;
-        else if (x > xMax)
-            xMax = x;
-        if (y < yMin)
-            yMin = y;
-        else if (y > yMax)
-            yMax = y;
-        pGState->transform(pBBox[2], pBBox[3], &x, &y);
-        if (x < xMin)
-            xMin = x;
-        else if (x > xMax)
-            xMax = x;
-        if (y < yMin)
-            yMin = y;
-        else if (y > yMax)
-            yMax = y;
-
-        // convert box coords to integers
-        m_pRenderer->get_Width(&bw);
-        m_pRenderer->get_Height(&bh);
-        tx = (int)floor(xMin);
-        if (tx < 0)
-            tx = 0;
-        else if (tx >= bw)
-            tx = bw - 1;
-        ty = (int)floor(yMin);
-        if (ty < 0)
-            ty = 0;
-        else if (ty >= bh)
-            ty = bh - 1;
-        w = (int)ceil(xMax) - tx + 1;
-        // NB bw and tx are both non-negative, so 'bw - tx' can't overflow
-        if (bw - tx < w)
-            w = bw - tx;
-        if (w < 1)
-            w = 1;
-        h = (int)ceil(yMax) - ty + 1;
-        // NB bh and ty are both non-negative, so 'bh - ty' can't overflow
-        if (bh - ty < h)
-            h = bh - ty;
-        if (h < 1)
-            h = 1;
 
         double arrMatrix[6];
         double *pCTM = pGState->getCTM();
         double dPageHeight = pGState->getPageHeight();
-        //  Исходное предобразование
-        //             |1  0  0|   |pCTM[0] pCTM[1] 0|
-        // arrMatrix = |0 -1  0| * |pCTM[2] pCTM[3] 0|
-        //             |0  1  1|   |pCTM[4] pCTM[5] 1|
+
         arrMatrix[0] =     pCTM[0];
         arrMatrix[1] =  -pCTM[1];
         arrMatrix[2] =    -pCTM[2];
@@ -4716,9 +4663,12 @@ namespace PdfReader
         m_pRenderer->DrawImage(&oImage, 0 + dShiftX, 0 + dShiftY, PDFCoordsToMM(1), PDFCoordsToMM(1));
 
         RELEASEOBJECT(m_pTransparentGroupSoftMask);
+        */
     }
     void RendererOutputDev::setSoftMask(GfxState *pGState, double *pBBox, bool bAlpha, Function *pTransferFunc, GfxColor *pBackdropColor)
     {
+        m_bIsolatedTransparentGroup = false;
+        m_bTransparentGroupSoftMaskEnd = false;
     }
     void RendererOutputDev::clearSoftMask(GfxState *pGState)
     {
@@ -4737,7 +4687,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-        if (m_bTransparentGroupSoftMask)
+        if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
             return;
 
         double arrMatrix[6];
@@ -4789,7 +4739,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-        if (m_bTransparentGroupSoftMask)
+        if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
             return;
 
         if (m_bTiling)

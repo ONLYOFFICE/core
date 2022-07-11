@@ -64,6 +64,9 @@ namespace NSDocxRenderer
         if (m_dHeight < pCont->m_dHeight)
             m_dHeight = pCont->m_dHeight;
 
+        if (m_dTop > pCont->m_dTop || m_dTop == 0.0)
+            m_dTop = pCont->m_dTop;
+
         m_arConts.push_back(pCont);
     }
 
@@ -83,7 +86,7 @@ namespace NSDocxRenderer
         SortElements(m_arConts);
     }
 
-    void CTextLine::Merge(CTextLine* pTextLine)
+    void CTextLine::Merge(const CTextLine* pTextLine)
     {
         size_t nCount = pTextLine->m_arConts.size();
         if (0 != nCount)
@@ -101,10 +104,13 @@ namespace NSDocxRenderer
                 m_dHeight = (pTextLine->m_dBaselinePos - m_dBaselinePos + m_dHeight);
             }
 
-            for (size_t i = 0; i < nCount; ++i)
+            for (auto pCont : pTextLine->m_arConts)
             {
-                m_arConts.push_back(pTextLine->m_arConts[i]);
+                m_arConts.push_back(new CContText(*pCont));
             }
+
+            SortConts();
+            CalculateWidth();
         }
     }
 
@@ -228,6 +234,14 @@ namespace NSDocxRenderer
             return true;
         }
         return false;
+    }
+
+    void CTextLine::SetVertAlignType(const eVertAlignType& oType)
+    {
+        for (auto pCont : m_arConts)
+        {
+            pCont->m_eVertAlignType = oType;
+        }
     }
 
     double CTextLine::CalculateBeforeSpacing(const double* pPreviousStringOffset)

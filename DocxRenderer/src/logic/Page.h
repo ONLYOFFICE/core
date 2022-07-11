@@ -87,10 +87,15 @@ namespace NSDocxRenderer
 
         //Собранные для текущей страницы данные нужно проанализировать и сгруппировать, лишнее удалить
         void AnalyzeCollectedData();
+        bool IsLineCrossingText(const CShape* pGraphicItem, CContText* pContText);
+        bool IsLineBelowText(const CShape* pGraphicItem, CContText* pContText);
+        bool IsItHighlightingBackground(const CShape* pGraphicItem, CContText* pContText);
 
         //набивается содержимым вектор m_arTextLine
         void BuildLines();
         void BuildLines(const CContText* pContText);
+        void DetermineVertAlignType();
+        void DetermineDominantGraphics();
 
         void BuildByType();
         void BuildByTypeBlockChar();
@@ -113,11 +118,6 @@ namespace NSDocxRenderer
         void CreateSingleLineOldShape(CTextLine *pLine);
         void CreateSingleLineShape(CTextLine *pLine);
 
-        bool IsLineCrossingText(const CShape* pGraphicItem, CContText* pContText);
-        bool IsLineBelowText(const CShape* pGraphicItem, CContText* pContText);
-        bool IsItHighlightingBackground(const CShape* pGraphicItem, CContText* pContText);
-
-        void DetermineDominantGraphics();
         bool IsShadingPresent(const CTextLine *pLine1, const CTextLine *pLine2);
     };
 }

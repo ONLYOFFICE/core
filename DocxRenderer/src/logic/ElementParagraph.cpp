@@ -188,10 +188,6 @@ namespace NSDocxRenderer
 
         for(auto pLine : m_arLines)
         {
-            if (m_eTextAssociationType != tatPlainParagraph)
-            {
-                pLine->SortConts();
-            }
             pLine->ToXml(oWriter);
         }
 

@@ -39,7 +39,7 @@ namespace NSDocxRenderer
             void SortConts();
 
             //Объединяем слова из двух строк
-            void Merge(CTextLine* pTextLine);
+            void Merge(const CTextLine* pTextLine);
             //Объединяем подходящие слова в текущей строке, если возможно
             void Analyze();
             bool IsForceBlock();
@@ -55,6 +55,8 @@ namespace NSDocxRenderer
             bool AreAlignmentsAppropriate(const CTextLine* oSrc);
             //Определяем пересекаются ли линии
             bool AreLinesCrossing(const CTextLine* oSrc);
+
+            void SetVertAlignType(const eVertAlignType& oType);
 
             //Вычисляем
             double CalculateBeforeSpacing(const double* pPreviousStringOffset);

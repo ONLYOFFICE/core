@@ -49,6 +49,8 @@ namespace NSDocxRenderer
         m_eUnderlineType = oSrc.m_eUnderlineType;
         m_lUnderlineColor = oSrc.m_lUnderlineColor;
 
+        m_eVertAlignType = oSrc.m_eVertAlignType;
+
         m_pShape    = oSrc.m_pShape;
         m_pManagerLight = oSrc.m_pManagerLight;
 
@@ -96,23 +98,27 @@ namespace NSDocxRenderer
                 m_oText += L" ";
             }
 
-            // нужно перемерять...
-            double ___dSize = (double)(static_cast<LONG>(m_oFont.Size * 2)) / 2;
-            m_pManagerLight->LoadFont(m_strPickFontName, m_lPickFontStyle, ___dSize, false);
-            double dWidth = m_pManagerLight->MeasureStringWidth(m_oText.ToStdWString());
-
-            double dSpacing = (m_dWidth - dWidth) / (m_oText.length() + 1);
-            dSpacing *= c_dMMToDx;
-
-            LONG lSpacing = static_cast<LONG>(dSpacing);
-            //note принудительно уменьшаем spacing чтобы текстовые линии не выходили за правую границу
-            lSpacing -= 1;
-
-            if (lSpacing != 0)
+            if (m_eVertAlignType != eVertAlignType::vatSubscript &&
+                m_eVertAlignType != eVertAlignType::vatSuperscript)
             {
-                oWriter.WriteString(L"<w:spacing w:val=\"");
-                oWriter.AddInt(lSpacing);
-                oWriter.WriteString(L"\"/>");
+                // нужно перемерять...
+                double ___dSize = (double)(static_cast<LONG>(m_oFont.Size * 2)) / 2;
+                m_pManagerLight->LoadFont(m_strPickFontName, m_lPickFontStyle, ___dSize, false);
+                double dWidth = m_pManagerLight->MeasureStringWidth(m_oText.ToStdWString());
+
+                double dSpacing = (m_dWidth - dWidth) / (m_oText.length() + 1);
+                dSpacing *= c_dMMToDx;
+
+                LONG lSpacing = static_cast<LONG>(dSpacing);
+                //note принудительно уменьшаем spacing чтобы текстовые линии не выходили за правую границу
+                lSpacing -= 1;
+
+                if (lSpacing != 0)
+                {
+                    oWriter.WriteString(L"<w:spacing w:val=\"");
+                    oWriter.AddInt(lSpacing);
+                    oWriter.WriteString(L"\"/>");
+                }
             }
         }
 
@@ -131,6 +137,15 @@ namespace NSDocxRenderer
         oWriter.WriteString(L"\" w:cs=\"");
         oWriter.WriteEncodeXmlString(strFontName);
         oWriter.WriteString(L"\"/>");
+
+        if (m_eVertAlignType == eVertAlignType::vatSubscript)
+        {
+            oWriter.WriteString(L"<w:vertAlign w:val=\"subscript\"/>");
+        }
+        else if (m_eVertAlignType == eVertAlignType::vatSuperscript)
+        {
+            oWriter.WriteString(L"<w:vertAlign w:val=\"superscript\"/>");
+        }
 
         if (ConvertColorBGRToRGB(m_oBrush.Color1) != c_iBlackColor)
         {
@@ -309,6 +324,7 @@ namespace NSDocxRenderer
             m_bIsHighlightPresent == oSrc->m_bIsHighlightPresent &&
             m_lHighlightColor == oSrc->m_lHighlightColor &&
             m_bIsDoubleStrikeout == oSrc->m_bIsDoubleStrikeout &&
+            m_eVertAlignType == oSrc->m_eVertAlignType &&
             m_pShape == oSrc->m_pShape &&
             m_oFont.IsEqual(&oSrc->m_oFont) &&
             m_oBrush.IsEqual(&oSrc->m_oBrush))

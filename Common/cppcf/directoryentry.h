@@ -48,8 +48,10 @@ public:
     inline int getRightSibling() const override {return rightSibling;}
     inline void setRightSibling(int value) override {rightSibling = value;}
 
-    std::array<BYTE,8> getCreationDate() const override;
-    void setCreationDate(const std::array<BYTE,8>& date) override;
+    inline UINT64 getCreationDate() const override {return creationDate;}
+    inline void setCreationDate(const UINT64& value) override {creationDate = value;}
+    inline UINT64 getModifyDate() const override {return modifyDate;}
+    inline void setModifyDate(const UINT64& value) override {modifyDate = value;}
 
     int getSid() const override;
     void setSid(int newSid) override;
@@ -63,6 +65,8 @@ public:
 
     void Read(Stream stream, CFSVersion ver = CFSVersion::Ver_3) override;
     void Write(Stream stream) const override;
+    inline StgColor getStgColor() const override {return stgColor;}
+    inline void setStgColor(StgColor value) override {stgColor = value;}
     inline StgType getStgType() const override {return stgType;}
     inline void setStgType(StgType value) override {stgType = value;}
     inline GUID getStorageCLSID() const override {return storageCLSID;}
@@ -72,8 +76,8 @@ public:
     inline std::wstring Name() const {return GetEntryName();}
 
 public:
-    BYTE creationDate[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-    BYTE modifyDate[8] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    UINT64 creationDate = 0;
+    UINT64 modifyDate = 0;
     int startSetc = Sector::ENDOFCHAIN;
     LONG64 size;
     int leftSibling = NOSTREAM;
@@ -81,6 +85,8 @@ public:
     int child = NOSTREAM;
     int stateBits;
     static std::shared_ptr<IDirectoryEntry> New(std::wstring name, StgType stgType, SVector<IDirectoryEntry> dirRepository);
+    static std::shared_ptr<IDirectoryEntry> TryNew(std::wstring name, StgType stgType, SVector<IDirectoryEntry> dirRepository);
+    static std::shared_ptr<IDirectoryEntry> Mock(std::wstring name, StgType stgType);
 
 private:
     static ULONG64 fnv_hash(const char *buffer, int lenght);

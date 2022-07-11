@@ -44,8 +44,10 @@ public:
     virtual std::streamsize getSize() const = 0;
     virtual void setSize(std::streamsize value) = 0;
 
-    virtual std::array<BYTE,8> getCreationDate() const = 0;
-    virtual void setCreationDate(const std::array<BYTE,8>& date) = 0;
+    virtual UINT64 getCreationDate() const = 0;
+    virtual void setCreationDate(const UINT64& value) = 0;
+    virtual UINT64 getModifyDate() const = 0;
+    virtual void setModifyDate(const UINT64& value) = 0;
 
     virtual int getSid() const = 0;
     virtual void setSid(int newSid) = 0;
@@ -59,6 +61,8 @@ public:
 
     virtual void Read(Stream stream, CFSVersion ver = CFSVersion::Ver_3) = 0;
     virtual void Write(Stream stream) const = 0;
+    virtual StgColor getStgColor() const = 0;
+    virtual void setStgColor(StgColor value) = 0;
     virtual StgType getStgType() const = 0;
     virtual void setStgType(StgType value) = 0;
     virtual GUID getStorageCLSID() const = 0;

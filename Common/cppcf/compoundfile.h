@@ -52,9 +52,12 @@ public:
 
     void Close();
 
-    std::shared_ptr<RedBlackTree::RBTree> CreateNewTree();
+    static std::shared_ptr<RedBlackTree::RBTree> CreateNewTree();
     std::shared_ptr<RedBlackTree::RBTree> GetChildrenTree(int sid);
     bool IsClosed()const;
+    SVector<DirectoryEntry> GetDirectories();
+    void ResetDirectoryEntry(int sid);
+
 protected:
     int GetSectorSize();
 

@@ -16,6 +16,7 @@ SOURCES += \
     RBTree/rbtree.cpp \
     cfitem.cpp \
     cfstorage.cpp \
+    cfstream.cpp \
     compoundfile.cpp \
     directoryentry.cpp \
     header.cpp \
@@ -32,6 +33,7 @@ HEADERS += \
     cfexception.h \
     cfitem.h \
     cfstorage.h \
+    cfstream.h \
     compoundfile.h \
     directoryentry.h \
     guid.h \

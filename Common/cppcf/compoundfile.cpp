@@ -911,6 +911,27 @@ void CompoundFile::LoadDirectories()
     }
 }
 
+SVector<DirectoryEntry> CompoundFile::GetDirectories()
+{
+    return directoryEntries;
+}
+
+void CompoundFile::ResetDirectoryEntry(int sid)
+{
+    directoryEntries[sid]->SetEntryName(L"");
+    directoryEntries[sid]->setLeft({});
+    directoryEntries[sid]->setRight({});
+    directoryEntries[sid]->setParent({});
+    directoryEntries[sid]->setStgType(StgType::StgInvalid);
+    directoryEntries[sid]->setStartSetc(DirectoryEntry::ZERO);
+    directoryEntries[sid]->setStorageCLSID(GUID());
+    directoryEntries[sid]->setSize(0);
+    directoryEntries[sid]->stateBits = 0;
+    directoryEntries[sid]->setColor(RedBlackTree::RED);
+    directoryEntries[sid]->setCreationDate(0);
+    directoryEntries[sid]->setModifyDate(0);
+}
+
 int CompoundFile::GetSectorSize()
 {
     return 2 << (header.sectorShift - 1);

@@ -150,18 +150,6 @@ std::wstring DirectoryEntry::ToString() const
     return wss.str();
 }
 
-std::array<BYTE, 8> DirectoryEntry::getCreationDate() const
-{
-    std::array<BYTE, 8> temp;
-    std::copy(creationDate, creationDate + 8, temp.begin());
-    return temp;
-}
-
-void DirectoryEntry::setCreationDate(const std::array<BYTE, 8> &date)
-{
-    std::copy(date.begin(), date.end(), creationDate);
-}
-
 RedBlackTree::PIRBNode DirectoryEntry::getLeft() const
 {
     if (leftSibling == NOSTREAM)
@@ -286,6 +274,40 @@ std::shared_ptr<IDirectoryEntry> DirectoryEntry::New(std::wstring name, StgType 
     }
     else
         throw new std::invalid_argument("dirRepository Directory repository cannot be null in New() method");
+
+    return de;
+}
+
+std::shared_ptr<IDirectoryEntry> DirectoryEntry::TryNew(std::wstring name, StgType stgType, SVector<IDirectoryEntry> dirRepository)
+{
+    std::shared_ptr<DirectoryEntry> de(new DirectoryEntry(name, stgType, dirRepository));
+
+    // If we are not adding an invalid dirEntry as
+    // in a normal loading from file (invalid dirs MAY pad a sector)
+    if (de != nullptr)
+    {
+        // Find first available invalid slot (if any) to reuse it
+        for (int i = 0; i < (int)dirRepository.size(); i++)
+        {
+            if (dirRepository[i]->getStgType() == StgType::StgInvalid)
+            {
+                dirRepository[i] = de;
+                de->sid = i;
+                return de;
+            }
+        }
+    }
+
+    // No invalid directory entry found
+    dirRepository.push_back(de);
+    de->sid = dirRepository.size() - 1;
+
+    return de;
+}
+
+std::shared_ptr<IDirectoryEntry> DirectoryEntry::Mock(std::wstring name, StgType stgType)
+{
+    auto de = std::shared_ptr<IDirectoryEntry>(new DirectoryEntry(name, stgType, {}));
 
     return de;
 }

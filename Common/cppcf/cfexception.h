@@ -55,4 +55,13 @@ public:
 };
 
 
+class CFDuplicatedItemException : public CFException
+{
+public:
+    CFDuplicatedItemException() {}
+    CFDuplicatedItemException(std::wstring message) : CFException(message) {}
+    virtual ~CFDuplicatedItemException() throw () {}
+};
+
+
 }

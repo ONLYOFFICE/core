@@ -166,10 +166,11 @@ bool OOXWriter::SaveByItemEnd()
 		std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
 		if (sApplication.empty())
 			sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
-		((OOX::CApp*)m_poDocPropsApp)->m_sApplication = sApplication;
 #if defined(INTVER)
-        ((OOX::CApp*)m_poDocPropsApp)->m_sApplication = std::wstring(VALUE2STR(INTVER));
+		std::string s = VALUE2STR(INTVER);
+		sApplication += L"/" + std::wstring(s.begin(), s.end());
 #endif		
+		((OOX::CApp*)m_poDocPropsApp)->m_sApplication = sApplication;
 		((OOX::CApp*)m_poDocPropsApp)->write(pathDocProps + FILE_SEPARATOR_STR + L"app.xml", pathDocProps.GetDirectory(), oContentTypes);
 		
 		m_oRels.AddRelationship( L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties", L"docProps/app.xml" );

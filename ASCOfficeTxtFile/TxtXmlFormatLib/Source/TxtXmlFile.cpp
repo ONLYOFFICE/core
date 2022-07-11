@@ -204,10 +204,11 @@ void CTxtXmlFile::CreateDocxEmpty(const std::wstring & _strDirectory, Writers::F
 		std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
 		if (sApplication.empty())
 			sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
-		pApp->m_sApplication = sApplication;
 #if defined(INTVER)
-		pApp->m_sApplication = VALUE2STR(INTVER);
+		std::string s = VALUE2STR(INTVER);
+		sApplication += L"/" + std::wstring(s.begin(), s.end());
 #endif
+		pApp->m_sApplication = sApplication;
 		pApp->SetDefaults();
 		
 		pApp->write(pathDocProps + FILE_SEPARATOR_STR + _T("app.xml"), DocProps, oContentTypes);

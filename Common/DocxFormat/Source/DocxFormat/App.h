@@ -329,10 +329,11 @@ namespace OOX
 			std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
 			if (sApplication.empty())
 				sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
-			m_sApplication = sApplication;
 #if defined(INTVER)
-			m_sApplication = std::wstring(VALUE2STR(INTVER));
+			std::string s = VALUE2STR(INTVER);
+			sApplication += L"/" + std::wstring(s.begin(), s.end());
 #endif
+			m_sApplication = sApplication;
 		}
  
 		PPTX::App* ToPptxApp();

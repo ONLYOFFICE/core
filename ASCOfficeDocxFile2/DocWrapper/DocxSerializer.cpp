@@ -623,19 +623,19 @@ bool BinDocxRW::CDocxSerializer::convertFlat(const std::wstring& sSrcFileName, c
 
 	if (docxflat.m_pDocument.IsInit())
 	{
-		NSCommon::smart_ptr<OOX::CDocument> file = docxflat.m_pDocument.GetPointer(); file.AddRef();
-		docx.Add(file.smart_dynamic_cast<OOX::File>());
+		NSCommon::smart_ptr<OOX::File> file = docxflat.m_pDocument.GetPointer(); file.AddRef();
+		docx.Add(file);
 		docx.m_oMain.document = docxflat.m_pDocument.GetPointer();
 	}
 	if (docxflat.m_pApp.IsInit())
 	{
-		NSCommon::smart_ptr<OOX::CApp> file(docxflat.m_pApp.GetPointer()); file.AddRef();
-		docx.Add(file.smart_dynamic_cast<OOX::File>());
+		NSCommon::smart_ptr<OOX::File> file(docxflat.m_pApp.GetPointer()); file.AddRef();
+		docx.Add(file);
 	}
 	if (docxflat.m_pCore.IsInit())
 	{
-		NSCommon::smart_ptr<OOX::CCore> file(docxflat.m_pCore.GetPointer()); file.AddRef();
-		docx.Add(file.smart_dynamic_cast<OOX::File>());
+		NSCommon::smart_ptr<OOX::File> file(docxflat.m_pCore.GetPointer()); file.AddRef();
+		docx.Add(file);
 	}	
 	//docxflat.m_oBgPict.GetPointer();
 

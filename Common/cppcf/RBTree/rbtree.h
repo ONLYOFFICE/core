@@ -22,6 +22,7 @@ public:
     void Delete(PIRBNode templ, PIRBNode& deletedAlt);
 
     void VisitTree(Action<PIRBNode> action);
+    void VisitTreeNodes(Action<PIRBNode> action);
 
 private:
     static Color NodeColor(PIRBNode n);
@@ -46,8 +47,9 @@ private:
     void DeleteCase6(PIRBNode n);
 
     void DoVisitTree(Action<PIRBNode> action, PIRBNode walker);
-    void VisitTreeNodes(Action<PIRBNode> action);
     void DoVisitTreeNodes(Action<PIRBNode> action, PIRBNode walker);
+
+   // TODO iterators
 
 private:
     PIRBNode root;

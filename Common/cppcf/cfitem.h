@@ -45,5 +45,7 @@ protected:
     std::shared_ptr<CompoundFile> compoundFile;
 };
 
+using PCFItem = std::shared_ptr<CFItem>;
+
 
 }

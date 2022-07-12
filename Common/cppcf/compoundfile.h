@@ -57,6 +57,8 @@ public:
     bool IsClosed()const;
     SVector<DirectoryEntry> GetDirectories();
     void ResetDirectoryEntry(int sid);
+    void InvalidateDirectoryEntry(int sid);
+    void FreeAssociatedData(int sid);
 
 protected:
     int GetSectorSize();
@@ -90,6 +92,9 @@ private:
     void DoLoadSiblings(std::shared_ptr<RedBlackTree::RBTree> bst, std::shared_ptr<IDirectoryEntry> de);
     bool ValidateSibling(int sid);
     void LoadDirectories();
+    // TODO
+    void FreeMiniChain(SVector<Sector>& sectorChain, bool zeroSector);
+    void FreeChain(SVector<Sector>& sectorChain, int nth_sector_to_remove, bool zeroSector);
 
     inline CFSVersion getVersion() const {return (CFSVersion)header.majorVersion;}
 

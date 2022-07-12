@@ -911,6 +911,16 @@ void CompoundFile::LoadDirectories()
     }
 }
 
+void CompoundFile::FreeMiniChain(SVector<Sector> &sectorChain, bool zeroSector)
+{
+
+}
+
+void CompoundFile::FreeChain(SVector<Sector> &sectorChain, int nth_sector_to_remove, bool zeroSector)
+{
+
+}
+
 SVector<DirectoryEntry> CompoundFile::GetDirectories()
 {
     return directoryEntries;
@@ -930,6 +940,34 @@ void CompoundFile::ResetDirectoryEntry(int sid)
     directoryEntries[sid]->setColor(RedBlackTree::RED);
     directoryEntries[sid]->setCreationDate(0);
     directoryEntries[sid]->setModifyDate(0);
+}
+
+void CompoundFile::InvalidateDirectoryEntry(int sid)
+{
+    if (sid >= (int)directoryEntries.size())
+        throw new CFException("Invalid SID of the directory entry to remove");
+
+    ResetDirectoryEntry(sid);
+}
+
+void CompoundFile::FreeAssociatedData(int sid)
+{
+    // Clear the associated stream (or ministream) if required
+    if (directoryEntries[sid]->size > 0) //thanks to Mark Bosold for this !
+    {
+        if (directoryEntries[sid]->size < header.minSizeStandardStream)
+        {
+            SVector<Sector> miniChain
+                    = GetSectorChain(directoryEntries[sid]->startSetc, SectorType::Mini);
+            FreeMiniChain(miniChain, eraseFreeSectors);
+        }
+        else
+        {
+            SVector<Sector> chain
+                    = GetSectorChain(directoryEntries[sid]->startSetc, SectorType::Normal);
+            FreeChain(chain, eraseFreeSectors);
+        }
+    }
 }
 
 int CompoundFile::GetSectorSize()

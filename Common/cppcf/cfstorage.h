@@ -16,8 +16,17 @@ public:
 
 
     std::shared_ptr<RedBlackTree::RBTree> getChildren();
-    std::shared_ptr<CFStream> AddStream(std::wstring streamName);
-    std::shared_ptr<CFStream> GetStream(std::wstring streamName);
+    std::shared_ptr<CFStream> AddStream(const std::wstring& streamName);
+    std::shared_ptr<CFStream> GetStream(const std::wstring& streamName);
+
+    bool TryGetStream(const std::wstring& streamName, std::shared_ptr<CFStream> &cfStream);
+    std::shared_ptr<CFStorage> GetStorage(const std::wstring& storageName);
+    std::shared_ptr<CFStorage> TryGetStorage(const std::wstring& storageName);
+    bool TryGetStorage(const std::wstring& storageName, std::shared_ptr<CFStorage> &cfStorage);
+    std::shared_ptr<CFStorage> AddStorage(const std::wstring& storageName);
+    void VisitEntries(RedBlackTree::Action<PCFItem> action, bool recursive);
+    void Delete(const std::wstring& entryName);
+    void RenameItem(const std::wstring& oldItemName, const std::wstring& newItemName);
 
 private:
     std::shared_ptr<RedBlackTree::RBTree> LoadChildren(int SID);

@@ -68,6 +68,11 @@ namespace NSDocxRenderer
 
     void CParagraph::ToXml(NSStringUtils::CStringBuilder& oWriter)
     {
+        if (m_bIsNotNecessaryToUse)
+        {
+            return;
+        }
+
         //todo использовать паттерн builder
         oWriter.WriteString(L"<w:p>");
         oWriter.WriteString(L"<w:pPr>");
@@ -213,6 +218,42 @@ namespace NSDocxRenderer
                     }
                 }
             }
+        }
+    }
+
+    void CParagraph::MergeLines()
+    {
+        if (m_nNumLines < 2)
+        {
+            return;
+        }
+
+        CTextLine* pLine = m_arLines.front();
+
+        for(size_t i = 1; i < m_arLines.size(); i++)
+        {
+            if (pLine->m_arConts.back()->m_bIsNeedSpace)
+            {
+                pLine->m_arConts.back()->m_oText += L" ";
+                pLine->m_arConts.back()->m_bIsNeedSpace = false;
+            }
+
+            auto pNext = m_arLines[i];
+
+            for (auto pCont : pNext->m_arConts)
+            {
+                if (pLine->m_arConts.back()->IsEqual(pCont))
+                {
+                    pLine->m_arConts.back()->m_oText += pCont->m_oText;
+                }
+                else
+                {
+                    pLine->m_arConts.push_back(new CContText(*pCont));
+                }
+                pCont->m_bIsNotNecessaryToUse = true;
+            }
+
+            pNext->m_bIsNotNecessaryToUse = true;
         }
     }
 }

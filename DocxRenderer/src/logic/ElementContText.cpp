@@ -53,6 +53,7 @@ namespace NSDocxRenderer
 
         m_pShape    = oSrc.m_pShape;
         m_pManagerLight = oSrc.m_pManagerLight;
+        m_pCont = oSrc.m_pCont;
 
         return *this;
     }
@@ -69,6 +70,11 @@ namespace NSDocxRenderer
 
     void CContText::ToXml(NSStringUtils::CStringBuilder& oWriter)
     {
+        if (m_bIsNotNecessaryToUse)
+        {
+            return;
+        }
+
         oWriter.WriteString(L"<w:r>");
         oWriter.WriteString(L"<w:rPr>");
 
@@ -318,16 +324,28 @@ namespace NSDocxRenderer
 
     bool CContText::IsEqual(const CContText* oSrc)
     {
-        if( m_strPickFontName == oSrc->m_strPickFontName &&
+        //todo Скорее всего это временное решение
+        bool bIf1 = true; //m_strPickFontName == oSrc->m_strPickFontName;
+        bool bIf2 = m_eUnderlineType == oSrc->m_eUnderlineType;
+        bool bIf3 = m_lUnderlineColor == oSrc->m_lUnderlineColor;
+        bool bIf4 = m_bIsHighlightPresent == oSrc->m_bIsHighlightPresent;
+        bool bIf5 = m_lHighlightColor == oSrc->m_lHighlightColor;
+        bool bIf6 = m_bIsDoubleStrikeout == oSrc->m_bIsDoubleStrikeout;
+        bool bIf7 = m_pShape == oSrc->m_pShape;
+        bool bIf8 = m_oFont.Name == L"" || oSrc->m_oFont.Name == L"" ? true : m_oFont.IsEqual(&oSrc->m_oFont);
+        bool bIf9 = m_oBrush.IsEqual(&oSrc->m_oBrush);
+
+        if (bIf1 && bIf2 && bIf3 && bIf4 && bIf5 && bIf6 && bIf7 && bIf8 && bIf9)
+        /*if( m_strPickFontName == oSrc->m_strPickFontName &&
             m_eUnderlineType == oSrc->m_eUnderlineType &&
             m_lUnderlineColor == oSrc->m_lUnderlineColor &&
             m_bIsHighlightPresent == oSrc->m_bIsHighlightPresent &&
             m_lHighlightColor == oSrc->m_lHighlightColor &&
             m_bIsDoubleStrikeout == oSrc->m_bIsDoubleStrikeout &&
-            m_eVertAlignType == oSrc->m_eVertAlignType &&
+            //m_eVertAlignType == oSrc->m_eVertAlignType &&
             m_pShape == oSrc->m_pShape &&
             m_oFont.IsEqual(&oSrc->m_oFont) &&
-            m_oBrush.IsEqual(&oSrc->m_oBrush))
+            m_oBrush.IsEqual(&oSrc->m_oBrush))*/
         {
             return true;
         }

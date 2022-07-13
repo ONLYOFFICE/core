@@ -36,6 +36,11 @@ namespace NSDocxRenderer
 
         void CImage::ToXml(NSStringUtils::CStringBuilder& oWriter)
         {
+            if (m_bIsNotNecessaryToUse)
+            {
+                return;
+            }
+
             oWriter.WriteString(L"<w:r><w:pict><v:shape id=\"\" type=\"\" style=\"position:absolute;");
 
             oWriter.WriteString(L"margin-left:");

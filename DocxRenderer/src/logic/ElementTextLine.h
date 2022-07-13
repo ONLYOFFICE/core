@@ -22,6 +22,8 @@ namespace NSDocxRenderer
 
             AssumedTextAlignmentType m_eAlignmentType {atatUnknown};
 
+            eVertAlignType m_eVertAlignType {eVertAlignType::vatUnknown};
+
             const CShape* m_pDominantShape {nullptr};
 
         public:

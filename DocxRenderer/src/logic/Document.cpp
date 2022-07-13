@@ -463,7 +463,7 @@ namespace NSDocxRenderer
                                               const double& dH, const double& dBaseLineOffset)
     {
         double dAngleMatrix = m_oTransform.z_Rotation();
-        if (abs(dAngleMatrix) > 1 || m_oTransform.sx() < 0 || m_oTransform.sy() < 0)
+        if (fabs(dAngleMatrix) > 1 || m_oTransform.sx() < 0 || m_oTransform.sy() < 0)
         {
             _SetFont();
             PathCommandEnd();
@@ -539,7 +539,7 @@ namespace NSDocxRenderer
         {
             // нужно записать страницу в файл
             m_oCurrentPage.AnalyzeCollectedShapes();
-            m_oCurrentPage.AnalyzeCollectedData();
+            m_oCurrentPage.AnalyzeCollectedSymbols();
             m_oCurrentPage.BuildLines();
             m_oCurrentPage.DeleteTextClipPage();
             m_oCurrentPage.BuildByType();

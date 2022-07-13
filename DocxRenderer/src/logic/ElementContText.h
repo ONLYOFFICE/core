@@ -48,6 +48,8 @@ namespace NSDocxRenderer
             const CShape* m_pShape {nullptr}; //Если не nullptr, то есть фоновая графика - можно анализировать.
             CFontManagerLight* m_pManagerLight {nullptr};
 
+            const CContText* m_pCont {nullptr}; //Если не nullptr, то есть привязка к vatSubscript или vatSuperscript;
+
         public:
             CContText(CFontManagerLight& oManagerLight);
             ~CContText(){}

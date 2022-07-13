@@ -222,7 +222,7 @@ namespace NSDocxRenderer
             //заранее отбрасываем некоторые фигуры
             m_bIsNotNecessaryToUse = true;
         }
-        else if (nPeacks == 5 && !nCurves) //1 move + 4 Peacks
+        else if ((nPeacks == 5 || nPeacks == 2) && !nCurves) //1 move + 4 Peacks или 2 Peacks
         {
             m_eGraphicsType = eGraphicsType::gtRectangle;
 
@@ -322,8 +322,8 @@ namespace NSDocxRenderer
         }
 
         //note m_dWidth иногда меняет знак на "-"
-        pModObject->m_dHeight = abs(pModObject->m_dHeight);
-        pModObject->m_dWidth = abs(pModObject->m_dWidth);
+        pModObject->m_dHeight = fabs(pModObject->m_dHeight);
+        pModObject->m_dWidth = fabs(pModObject->m_dWidth);
         pModObject->m_dLeft = std::min(pModObject->m_dLeft, pDataObject->m_dLeft);
         pModObject->m_dTop = std::min(pModObject->m_dTop, pDataObject->m_dTop);
     }
@@ -345,7 +345,7 @@ namespace NSDocxRenderer
         }
 
         if (!IsItFitLine() || !pShape->IsItFitLine() || !IsCorrelated(pShape) ||
-            std::abs(m_dHeight - pShape->m_dHeight) > c_GRAPHICS_ERROR_IN_LINES_MM) //линия должна быть одного размера по высоте
+            fabs(m_dHeight - pShape->m_dHeight) > c_dGRAPHICS_ERROR_IN_LINES_MM) //линия должна быть одного размера по высоте
         {
             return;
         }
@@ -385,9 +385,9 @@ namespace NSDocxRenderer
             }
             return;
         }
-        else if (std::abs(m_dTop - pShape->m_dTop) < c_GRAPHICS_ERROR_IN_LINES_MM * 5 &&
-            std::abs(m_dWidth - pShape->m_dWidth) < c_GRAPHICS_ERROR_IN_LINES_MM &&
-            std::abs(m_dLeft - pShape->m_dLeft) < c_GRAPHICS_ERROR_IN_LINES_MM)
+        else if (fabs(m_dTop - pShape->m_dTop) < c_dGRAPHICS_ERROR_IN_LINES_MM * 5 &&
+            fabs(m_dWidth - pShape->m_dWidth) < c_dGRAPHICS_ERROR_IN_LINES_MM &&
+            fabs(m_dLeft - pShape->m_dLeft) < c_dGRAPHICS_ERROR_IN_LINES_MM)
         {
             //Условие первого определения
             if (m_eSimpleLineType == eSimpleLineType::sltLongDash && pShape->m_eSimpleLineType == eSimpleLineType::sltLongDash)
@@ -422,14 +422,14 @@ namespace NSDocxRenderer
             }
             return;
         }
-        else if (std::abs(m_dTop - pShape->m_dTop) > c_GRAPHICS_ERROR_IN_LINES_MM)
+        else if (fabs(m_dTop - pShape->m_dTop) > c_dGRAPHICS_ERROR_IN_LINES_MM)
         {
            //все должно быть на одной линии
             return;
         }
 
         //Теперь считаем, что графика находится на одной линии
-        if (std::abs(m_dLeft + m_dWidth - pShape->m_dLeft) > c_GRAPHICS_ERROR_IN_LINES_MM * 5)
+        if (fabs(m_dLeft + m_dWidth - pShape->m_dLeft) > c_dGRAPHICS_ERROR_IN_LINES_MM * 5)
         {
             //расстояние между объектами на одной линии должно быть небольшим
             if (m_eLineType == eLineType::ltUnknown && m_eSimpleLineType == eSimpleLineType::sltLongDash)
@@ -442,8 +442,6 @@ namespace NSDocxRenderer
             }
             return;
         }
-
-        bool bIsConditionPassed = false;
 
         if (bIsLast)
         {
@@ -471,7 +469,14 @@ namespace NSDocxRenderer
                     break;
 
                 case eSimpleLineType::sltLongDash:
-                    m_eLineType = m_dHeight > 0.3 ? eLineType::ltDashLongHeavy : eLineType::ltDashLong;
+                    if (fabs(m_dLeft + m_dWidth - pShape->m_dLeft) < 0.7)
+                    {
+                        m_eLineType = m_dHeight > 0.3 ? eLineType::ltThick : eLineType::ltSingle;
+                    }
+                    else
+                    {
+                        m_eLineType = m_dHeight > 0.3 ? eLineType::ltDashLongHeavy : eLineType::ltDashLong;
+                    }
                     break;
 
                 case eSimpleLineType::sltWave:
@@ -489,6 +494,8 @@ namespace NSDocxRenderer
             ChangeGeometryOfDesiredShape(pShape);
             return;
         }
+
+        bool bIsConditionPassed = false;
 
         switch (m_eSimpleLineType)
         {
@@ -560,14 +567,17 @@ namespace NSDocxRenderer
             break;
 
         case eSimpleLineType::sltLongDash:
-            if (pShape->m_eSimpleLineType == eSimpleLineType::sltLongDash)
+            if (fabs(m_dLeft + m_dWidth - pShape->m_dLeft) < 0.7 ||
+                m_eLineType == eLineType::ltThick || m_eLineType == eLineType::ltSingle)
             {
-                if ((m_eLineType == eLineType::ltUnknown || m_eLineType == eLineType::ltDashLong ||
-                     m_eLineType == eLineType::ltDashLongHeavy) && pShape->m_eLineType == eLineType::ltUnknown)
-                {
-                    m_eLineType = m_dHeight > 0.3 ? eLineType::ltDashLongHeavy : eLineType::ltDashLong;
-                    bIsConditionPassed = true;
-                }
+                m_eLineType = m_dHeight > 0.3 ? eLineType::ltThick : eLineType::ltSingle;
+                bIsConditionPassed = true;
+            }
+            else if ((m_eLineType == eLineType::ltUnknown || m_eLineType == eLineType::ltDashLong ||
+                 m_eLineType == eLineType::ltDashLongHeavy) && pShape->m_eLineType == eLineType::ltUnknown)
+            {
+                m_eLineType = m_dHeight > 0.3 ? eLineType::ltDashLongHeavy : eLineType::ltDashLong;
+                bIsConditionPassed = true;
             }
             break;
 
@@ -595,6 +605,11 @@ namespace NSDocxRenderer
     {
         //todo для уменьшения размера каждого шейпа ипользовавать только то, что необходимо - для графики, текста, графика+текст
         //todo добавить все возможные параметры/атрибуты
+
+        if (m_bIsNotNecessaryToUse)
+        {
+            return;
+        }
 
         //note Если обрабатывается много документов за раз, то iNumber сохраняется.
         static UINT iNumber = 1;

@@ -27,7 +27,7 @@ namespace NSDocxRenderer
         LONG						m_lCurrentCommand {0};
 
         std::vector<CImage*>     m_arImages;
-        std::vector<CContText*>  m_arTextData;
+        std::vector<CContText*>  m_arSymbol ;
         std::vector<CTextLine*>  m_arTextLine;
         std::vector<CShape*>	 m_arShapes;
         std::vector<CParagraph*> m_arParagraphs;
@@ -58,7 +58,7 @@ namespace NSDocxRenderer
         void ClearShapes();
         void ClearParagraphs();
 
-        void SetCurrentLineByBaseline(const double& dBaseLinePos);
+        void SetCurrentLineByBaseline(const CContText* pCont);
         //удаляем то, что выходит за границы страницы
         void DeleteTextClipPage();
 
@@ -82,20 +82,22 @@ namespace NSDocxRenderer
                              const double& fBaseLineOffset, const bool& bIsPDFAnalyzer);
 
         void AnalyzeCollectedShapes();
-        void DetermineContWithMaxSizeFont();
+        void CorrelateContWithShape();
         void DetermineLinesType();
 
         //Собранные для текущей страницы данные нужно проанализировать и сгруппировать, лишнее удалить
-        void AnalyzeCollectedData();
-        bool IsLineCrossingText(const CShape* pGraphicItem, CContText* pContText);
-        bool IsLineBelowText(const CShape* pGraphicItem, CContText* pContText);
-        bool IsItHighlightingBackground(const CShape* pGraphicItem, CContText* pContText);
+        void AnalyzeCollectedSymbols();
+        bool IsLineCrossingText(const CShape* pGraphicItem, CContText* pCont);
+        bool IsLineBelowText(const CShape* pGraphicItem, CContText* pCont);
+        bool IsItHighlightingBackground(const CShape* pGraphicItem, CContText* pCont);
+        void DetermineVertAlignTypeBetweenConts();
 
         //набивается содержимым вектор m_arTextLine
         void BuildLines();
-        void BuildLines(const CContText* pContText);
-        void DetermineVertAlignType();
+        void BuildLines(const CContText* pCont);
+        void MergeLinesByVertAlignType();
         void DetermineDominantGraphics();
+        void DetermineVertAlignType();
 
         void BuildByType();
         void BuildByTypeBlockChar();

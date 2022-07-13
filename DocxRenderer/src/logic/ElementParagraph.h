@@ -67,5 +67,7 @@ namespace NSDocxRenderer
         void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
 
         void RemoveHighlightColor();
+
+        void MergeLines();
    };
 }

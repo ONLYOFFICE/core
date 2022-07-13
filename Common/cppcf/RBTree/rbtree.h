@@ -1,11 +1,13 @@
 #pragma once
 #include "irbnode.h"
 #include <iterator>
+#include <functional>
+#include <list>
 
 namespace RedBlackTree
 {
 template <class T>
-using Action = void(*)(T);
+using Action = std::function<void(T)>;
 
 
 class RBTree
@@ -49,7 +51,24 @@ private:
     void DoVisitTree(Action<PIRBNode> action, PIRBNode walker);
     void DoVisitTreeNodes(Action<PIRBNode> action, PIRBNode walker);
 
-   // TODO iterators
+public:
+    // todo this from C# and it's weak realization
+   class iterator : public std::iterator<std::bidirectional_iterator_tag, WPIRBNode, WPIRBNode, PIRBNode, PIRBNode>
+   {
+       std::list<WPIRBNode> heap;
+       std::list<WPIRBNode>::iterator current;
+   public:
+       iterator(RBTree &tree, bool end = false);
+       inline iterator& operator++() {++current; return *this;}
+       inline iterator& operator--() {--current; return *this;}
+       inline bool operator==(iterator other) const {return current == other.current;}
+       inline bool operator!=(iterator other) const {return current != other.current;}
+       inline PIRBNode operator*() {return current->lock();}
+       inline void end() {current = heap.end();}
+   };
+
+   iterator begin() {return iterator(*this);}
+   iterator end()const;
 
 private:
     PIRBNode root;

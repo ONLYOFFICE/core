@@ -212,9 +212,8 @@ void CFStorage::VisitEntries(RedBlackTree::Action<PCFItem> action, bool recursiv
     {
         SVector<RedBlackTree::IRBNode> subStorages;
 
-        // TODO deligate
-        auto internalAction =
-                [subStorages] (RedBlackTree::PIRBNode targetNode)
+        RedBlackTree::Action<RedBlackTree::PIRBNode> internalAction =
+                [&] (RedBlackTree::PIRBNode targetNode)
         {
             auto d = std::dynamic_pointer_cast<IDirectoryEntry>(targetNode);
             if (d->getStgType() == StgType::StgStream)
@@ -266,7 +265,7 @@ void CFStorage::Delete(const std::wstring &entryName)
         for (const auto& de : *(temp->getChildren()))
         {
             auto ded = std::dynamic_pointer_cast<IDirectoryEntry>(de);
-            temp->Delete(ded.Name);
+            temp->Delete(ded->GetEntryName());
         }
 
         // ...then we need to rethread the root of siblings tree...

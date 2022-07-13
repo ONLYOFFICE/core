@@ -7,6 +7,7 @@ namespace RedBlackTree
 {
 class IRBNode;
 using PIRBNode = std::shared_ptr<IRBNode>;
+using WPIRBNode = std::weak_ptr<IRBNode>;
 
 enum Color
 {

@@ -422,3 +422,13 @@ void RBTree::DoVisitTreeNodes(Action<PIRBNode> action, PIRBNode walker)
         DoVisitTreeNodes(action, walker->getRight());
     }
 }
+
+RBTree::iterator::iterator(RBTree &tree, bool end)
+{
+    Action<PIRBNode> inserter = [&] (PIRBNode pNode)
+    {
+        heap.push_back(pNode);
+    };
+    tree.VisitTreeNodes(inserter);
+    current = end ? heap.end() : heap.begin();
+}

@@ -400,7 +400,9 @@ bool OOXShapeReader::ParseVmlChild( ReaderParameter oParam , RtfShapePtr& pOutpu
 			{
 				OOX::Vml::CStroke* stroke = dynamic_cast<OOX::Vml::CStroke*>(m_arrElement->m_arrItems[i]); 
 				if (!stroke) break;
-				pOutput->m_nLineDashing = stroke->m_oDahsStyle.GetValue(); //совпадают значения
+
+				if (stroke->m_oDahsStyle.IsInit())
+					pOutput->m_nLineDashing = stroke->m_oDahsStyle->GetValue(); //совпадают значения
 
 				if (stroke->m_oColor.IsInit())
 					pOutput->m_nLineColor = (stroke->m_oColor->Get_B() << 16) + (stroke->m_oColor->Get_G() << 8) + stroke->m_oColor->Get_R();

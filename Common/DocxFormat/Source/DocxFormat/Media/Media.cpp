@@ -64,6 +64,9 @@ namespace OOX
 
 		if (!CSystemUtility::IsFileExist(newFilePath / newFilename))
 		{
+			std::wstring ext = filename.GetExtention();
+			if (false == ext.empty()) content.AddDefault(ext.substr(1));
+			
 			if (false == m_Data.empty())
 			{
 				NSFile::CFileBinary file;

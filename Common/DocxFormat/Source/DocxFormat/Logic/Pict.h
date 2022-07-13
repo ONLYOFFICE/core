@@ -64,16 +64,16 @@ namespace OOX
 
             virtual std::wstring toXML() const
 			{
-                std::wstring sResult = _T("<w:binData ");
+                std::wstring sResult = L"<w:binData ";
 
-				ComplexTypes_WriteAttribute2( _T("w:name=\""), m_sName );
+				ComplexTypes_WriteAttribute2( L"w:name=\"", m_sName );
 
-				sResult += _T(">");
+				sResult += L">";
 
 				if (m_sData.IsInit())
 				{
 				}
-				sResult += _T("</w:binData>");
+				sResult += L"</w:binData>";
 
 				return sResult;
 			}
@@ -96,7 +96,7 @@ namespace OOX
 				std::wstring wsName = oReader.GetName();
 				while( !wsName.empty() )
 				{
-					if ( _T("w:name") == wsName )
+					if ( L"w:name" == wsName )
 						m_sName = oReader.GetText();
 
 					if ( !oReader.MoveToNextAttribute() )
@@ -126,13 +126,13 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlNode &oNode)
 			{
-				XmlMacroReadAttributeBase( oNode, _T("r:id"),      m_rId  );
-				XmlMacroReadAttributeBase( oNode, _T("w:name"),    m_sName );
-				XmlMacroReadAttributeBase( oNode, _T("w:shapeid"), m_sShapeId );
+				XmlMacroReadAttributeBase( oNode, L"r:id",      m_rId  );
+				XmlMacroReadAttributeBase( oNode, L"w:name",    m_sName );
+				XmlMacroReadAttributeBase( oNode, L"w:shapeid", m_sShapeId );
 
 				if (false == m_rId.IsInit())
 				{
-					XmlMacroReadAttributeBase( oNode, _T("relationships:id"), m_rId );
+					XmlMacroReadAttributeBase( oNode, L"relationships:id", m_rId );
 				}
 			}
 
@@ -146,13 +146,13 @@ namespace OOX
 
             virtual std::wstring toXML() const
 			{
-                std::wstring sResult = _T("<w:control ");
+                std::wstring sResult = L"<w:control";
 
-				ComplexTypes_WriteAttribute ( _T("r:id=\""),      m_rId );
-				ComplexTypes_WriteAttribute2( _T("w:name=\""),    m_sName );
-				ComplexTypes_WriteAttribute2( _T("w:shapeid=\""), m_sShapeId );
+				ComplexTypes_WriteAttribute ( L" r:id=\"",      m_rId );
+				ComplexTypes_WriteAttribute2( L" w:name=\"",    m_sName );
+				ComplexTypes_WriteAttribute2( L" w:shapeid=\"", m_sShapeId );
 
-				sResult += _T("/>");
+				sResult += L"/>";
 
 				return sResult;
 			}
@@ -167,10 +167,10 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("r:id"),				m_rId )
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("relationships:id"),	m_rId )
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:name"),				m_sName )
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:shapeid"),			m_sShapeId )
+					WritingElement_ReadAttributes_Read_if     ( oReader, L"r:id",				m_rId )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"relationships:id",	m_rId )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:name",				m_sName )
+					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:shapeid",			m_sShapeId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -256,8 +256,8 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if		( oReader, _T("w:dxaOrig"), m_oDxaOrig )
-				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("w:dyaOrig"), m_oDyaOrig )
+				WritingElement_ReadAttributes_Read_if		( oReader, L"w:dxaOrig", m_oDxaOrig )
+				WritingElement_ReadAttributes_Read_else_if	( oReader, L"w:dyaOrig", m_oDyaOrig )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		};

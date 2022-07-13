@@ -1111,11 +1111,14 @@ namespace Settings
 					pEndnote->fromXML(oReader);
 
 					pEndnote->m_oId.Init();
-					pEndnote->m_oId->SetValue((int)(docx_flat->m_pEndnotes->m_arrEndnote.size() + 1));
+					pEndnote->m_oId->SetValue((int)docx_flat->m_pEndnotes->m_arrEndnote.size() - 1);
 					
 					docx_flat->m_pSettings->m_oEndnotePr->m_arrEndnote.push_back(new CFtnEdnSepRef());
 					docx_flat->m_pSettings->m_oEndnotePr->m_arrEndnote.back()->m_oId = pEndnote->m_oId;
 					docx_flat->m_pSettings->m_oEndnotePr->m_arrEndnote.back()->m_eType = OOX::et_w_endnote;
+					
+					docx_flat->m_pEndnotes->m_arrEndnote.push_back(pEndnote);
+					docx_flat->m_pEndnotes->m_mapEndnote.insert(std::make_pair(pEndnote->m_oId->GetValue(), pEndnote));
 				}
 				else
 				{
@@ -1189,12 +1192,14 @@ namespace Settings
 					pFootnote->fromXML(oReader);
 
 					pFootnote->m_oId.Init();
-					pFootnote->m_oId->SetValue((int)(docx_flat->m_pEndnotes->m_arrEndnote.size() + 1));
+					pFootnote->m_oId->SetValue((int)docx_flat->m_pFootnotes->m_arrFootnote.size() - 1);
 
 					docx_flat->m_pSettings->m_oFootnotePr->m_arrFootnote.push_back(new CFtnEdnSepRef());
 					docx_flat->m_pSettings->m_oFootnotePr->m_arrFootnote.back()->m_oId = pFootnote->m_oId;
 					docx_flat->m_pSettings->m_oFootnotePr->m_arrFootnote.back()->m_eType = OOX::et_w_footnote;
 
+					docx_flat->m_pFootnotes->m_arrFootnote.push_back(pFootnote);
+					docx_flat->m_pFootnotes->m_mapFootnote.insert(std::make_pair(pFootnote->m_oId->GetValue(), pFootnote));
 				}
 				else
 				{

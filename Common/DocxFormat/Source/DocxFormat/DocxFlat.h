@@ -129,7 +129,7 @@ namespace OOX
 		nullable<CApp>					m_pApp;
 		nullable<CCore>					m_pCore;
 //-----------------------------------------------------------
-		std::map<std::wstring, std::wstring> m_mapImagesId;
+		std::map<std::wstring, NSCommon::smart_ptr<OOX::File>> m_mapImages;
 
 		OOX::IFileContainer *m_currentContainer = NULL;
 	};

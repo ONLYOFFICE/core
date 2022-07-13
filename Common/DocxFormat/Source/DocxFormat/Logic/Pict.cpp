@@ -337,7 +337,7 @@ namespace OOX
 
 									if (m_oBinData->m_sName.IsInit())
 									{
-										docx_flat->m_mapImagesId[*m_oBinData->m_sName] = rId.get();
+										docx_flat->m_mapImages[*m_oBinData->m_sName] = file;
 									}
 								}
 							}

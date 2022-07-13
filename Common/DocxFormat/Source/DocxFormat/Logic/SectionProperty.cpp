@@ -197,7 +197,7 @@ namespace OOX
 			if ( !m_bSectPrChange )
 			{
 				XmlUtils::CXmlNodes oNodes;
-				if ( oNode.GetNodes( (L"w:headerReference"), oNodes ) )
+				if ( oNode.GetNodes( L"w:headerReference", oNodes ) )
 				{
 					XmlUtils::CXmlNode oHeaderNode;
 					for ( int nIndex = 0; nIndex < oNodes.GetCount(); nIndex++ )
@@ -370,185 +370,124 @@ namespace OOX
 		}
 		std::wstring CSectionProperty::toXML() const
 		{
-            std::wstring sResult = (L"<w:sectPr ");
-
-			if ( m_oRsidDel.IsInit() )
-			{
-				sResult += (L"w:rsidDel=\"");
-				sResult += m_oRsidDel->ToString();
-				sResult += (L"\" ");						
-			}
-
-			if ( m_oRsidR.IsInit() )
-			{
-				sResult += (L"w:rsidR=\"");
-				sResult += m_oRsidR->ToString();
-				sResult += (L"\" ");						
-			}
-
-			if ( m_oRsidRPr.IsInit() )
-			{
-				sResult += (L"w:rsidRPr=\"");
-				sResult += m_oRsidRPr->ToString();
-				sResult += (L"\" ");						
-			}
-
-			if ( m_oRsidSect.IsInit() )
-			{
-				sResult += (L"w:rsidSect=\"");
-				sResult += m_oRsidSect->ToString();
-				sResult += (L"\" ");						
-			}
-
-			sResult += (L">");
-
-			if ( m_oBidi.IsInit() )
-			{
-				sResult += (L"<w:bidi ");
-				sResult += m_oBidi->ToString();
-				sResult += (L"/>");
-			}
-
-			if ( m_oCols.IsInit() )
-				sResult += m_oCols->toXML();
-
-			if ( m_oDocGrid.IsInit() )
-			{
-				sResult += (L"<w:docGrid ");
-				sResult += m_oDocGrid->ToString();
-				sResult += (L"/>");
-			}
-
-			if ( m_oEndnotePr.IsInit() )
-				sResult += m_oEndnotePr->toXML();
-
-			if ( !m_bSectPrChange )
-			{
-				for (unsigned int nIndex = 0; nIndex < m_arrFooterReference.size(); nIndex++ )
+			std::wstring sResult = (L"<w:sectPr");
+				if (m_oRsidDel.IsInit())
 				{
-					sResult += (L"<w:footerReference ");
+					sResult += L" w:rsidDel=\"" + m_oRsidDel->ToString() + L"\"";
+				}
+				if (m_oRsidR.IsInit())
+				{
+					sResult += L" w:rsidR=\"" + m_oRsidR->ToString() + L"\"";
+				}
+				if (m_oRsidRPr.IsInit())
+				{
+					sResult += L" w:rsidRPr=\"" + m_oRsidRPr->ToString() + L"\"";
+				}
+				if (m_oRsidSect.IsInit())
+				{
+					sResult += L" w:rsidSect=\"" + m_oRsidSect->ToString() + L"\"";
+				}
+			sResult += L">";
+
+			if (!m_bSectPrChange)
+			{
+				for (size_t nIndex = 0; nIndex < m_arrHeaderReference.size(); nIndex++)
+				{
+					sResult += (L"<w:headerReference");
+					if (m_arrHeaderReference[nIndex])
+						sResult += m_arrHeaderReference[nIndex]->ToString();
+					sResult += (L"/>");
+				}
+				for (size_t nIndex = 0; nIndex < m_arrFooterReference.size(); nIndex++)
+				{
+					sResult += (L"<w:footerReference");
 					if (m_arrFooterReference[nIndex])
 						sResult += m_arrFooterReference[nIndex]->ToString();
 					sResult += (L"/>");
 				}
 			}
-
-			if ( m_oFootnotePr.IsInit() )
+			if (!m_bSectPrChange && m_oSectPrChange.IsInit())
+			{
+				sResult += m_oSectPrChange->toXML();
+			}
+			if (m_oFootnotePr.IsInit())
+			{
 				sResult += m_oFootnotePr->toXML();
-
-			if ( m_oFormProt.IsInit() )
+			}			
+			if (m_oEndnotePr.IsInit())
 			{
-				sResult += (L"<w:formProt ");
-				sResult += m_oFormProt->ToString();
-				sResult += (L"/>");
+				sResult += m_oEndnotePr->toXML();
 			}
-
-			if ( !m_bSectPrChange )
+			if (m_oType.IsInit())
 			{
-				for (unsigned int nIndex = 0; nIndex < m_arrHeaderReference.size(); nIndex++ )
-				{
-					sResult += (L"<w:headerReference ");
-					if (m_arrHeaderReference[nIndex])
-						sResult += m_arrHeaderReference[nIndex]->ToString();
-					sResult += (L"/>");
-				}
+				sResult += L"<w:type " + m_oType->ToString() + L"/>";
 			}
-
-			if ( m_oLnNumType.IsInit() )
+			if (m_oPgSz.IsInit())
 			{
-				sResult += (L"<w:lnNumType ");
-				sResult += m_oLnNumType->ToString();
-				sResult += (L"/>");
+				sResult += L"<w:pgSz " + m_oPgSz->ToString() + L"/>";
 			}
-
-			if ( m_oNoEndnote.IsInit() )
+			if (m_oPgMar.IsInit())
 			{
-				sResult += (L"<w:noEndnote ");
-				sResult += m_oNoEndnote->ToString();
-				sResult += (L"/>");
+				sResult += L"<w:pgMar" + m_oPgMar->ToString() + L"/>";
 			}
-
-			if ( m_oPaperSrc.IsInit() )
+			if (m_oPaperSrc.IsInit())
 			{
-				sResult += (L"<w:paperSrc ");
-				sResult += m_oPaperSrc->ToString();
-				sResult += (L"/>");
+				sResult += L"<w:paperSrc " + m_oPaperSrc->ToString() + L"/>";
 			}
-
-			if ( m_oPgBorders.IsInit() )
+			if (m_oPgBorders.IsInit())
+			{
 				sResult += m_oPgBorders->toXML();
-
-			if ( m_oPgMar.IsInit() )
-			{
-				sResult += (L"<w:pgMar ");
-				sResult += m_oPgMar->ToString();
-				sResult += (L"/>");
 			}
-
-			if ( m_oPgNumType.IsInit() )
+			if (m_oLnNumType.IsInit())
 			{
-				sResult += (L"<w:pgNumType ");
-				sResult += m_oPgNumType->ToString();
-				sResult += (L"/>");
+				sResult += L"<w:lnNumType " + m_oLnNumType->ToString() + L"/>";
 			}
-
-			if ( m_oPgSz.IsInit() )
+			if (m_oPgNumType.IsInit())
 			{
-				sResult += (L"<w:pgSz ");
-				sResult += m_oPgSz->ToString();
-				sResult += (L"/>");
+				sResult += L"<w:pgNumType " + m_oPgNumType->ToString() + L"/>";
 			}
-
+			if (m_oCols.IsInit())
+			{
+				sResult += m_oCols->toXML();
+			}
+			if (m_oFormProt.IsInit())
+			{
+				sResult += L"<w:formProt " + m_oFormProt->ToString() + L"/>";
+			}
+			if (m_oVAlign.IsInit())
+			{
+				sResult += L"<w:vAlign " + m_oVAlign->ToString() + L"/>";
+			}
+			if (m_oNoEndnote.IsInit())
+			{
+				sResult += L"<w:noEndnote " + m_oNoEndnote->ToString() + L"/>";
+			}
+			if (m_oTitlePg.IsInit() && m_oTitlePg->m_oVal.ToBool())
+			{
+				sResult += L"<w:titlePg/>";
+			}
+			if (m_oTextDirection.IsInit())
+			{
+				sResult += L"<w:textDirection " + m_oTextDirection->ToString() + L"/>";
+			}
+			if ( m_oBidi.IsInit() )
+			{
+				sResult += L"<w:bidi " + m_oBidi->ToString() + L"/>";
+			}
+			if (m_oRtlGutter.IsInit())
+			{
+				sResult += m_oRtlGutter->m_oVal.ToBool() ? L"<w:rtlGutter/>" : L"<w:rtlGutter w:val=\"0\"/>";
+			}
+			if ( m_oDocGrid.IsInit() )
+			{
+				sResult += L"<w:docGrid" + m_oDocGrid->ToString() + L"/>";
+			}
 			if ( m_oPrinterSettings.IsInit() )
 			{
-				sResult += (L"<w:printerSettings ");
-				sResult += m_oPrinterSettings->ToString();
-				sResult += (L"/>");
+				sResult += L"<w:printerSettings " + m_oPrinterSettings->ToString() + L"/>";
 			}
-
-			if ( m_oRtlGutter.IsInit() )
-			{
-				sResult += (L"<w:rtlGutter ");
-				sResult += m_oRtlGutter->ToString();
-				sResult += (L"/>");
-			}
-
-			if ( !m_bSectPrChange && m_oSectPrChange.IsInit() )
-				sResult += m_oSectPrChange->toXML();
-
-			if ( m_oTextDirection.IsInit() )
-			{
-				sResult += (L"<w:textDirection ");
-				sResult += m_oTextDirection->ToString();
-				sResult += (L"/>");
-			}
-
-			if ( m_oTitlePg.IsInit() )
-			{
-				sResult += (L"<w:titlePg ");
-				sResult += m_oTitlePg->ToString();
-				sResult += (L"/>");
-			}
-
-			if ( m_oType.IsInit() )
-			{
-				sResult += (L"<w:type ");
-				sResult += m_oType->ToString();
-				sResult += (L"/>");
-			}
-
-			if ( m_oVAlign.IsInit() )
-			{
-				sResult += (L"<w:vAlign ");
-				sResult += m_oVAlign->ToString();
-				sResult += (L"/>");
-			}
-
-			sResult += (L"</w:sectPr>");
-
+			sResult += L"</w:sectPr>";
 			return sResult;
 		}
-
-
 	} // Logic
 } 

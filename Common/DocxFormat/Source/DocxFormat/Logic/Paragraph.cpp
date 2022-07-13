@@ -65,14 +65,14 @@ namespace OOX
 		{
 			m_oParagraphProperty = NULL;
 
-            XmlMacroReadAttributeBase( oNode, _T("w:rsidDel"),      m_oRsidDel );
-            XmlMacroReadAttributeBase( oNode, _T("w:rsidP"),        m_oRsidP );
-            XmlMacroReadAttributeBase( oNode, _T("w:rsidR"),        m_oRsidR );
-            XmlMacroReadAttributeBase( oNode, _T("w:rsidRDefault"), m_oRsidRDefault );
-            XmlMacroReadAttributeBase( oNode, _T("w:rsidRPr"),      m_oRsidRPr );
+            XmlMacroReadAttributeBase( oNode,L"w:rsidDel",      m_oRsidDel );
+            XmlMacroReadAttributeBase( oNode,L"w:rsidP",        m_oRsidP );
+            XmlMacroReadAttributeBase( oNode,L"w:rsidR",        m_oRsidR );
+            XmlMacroReadAttributeBase( oNode,L"w:rsidRDefault", m_oRsidRDefault );
+            XmlMacroReadAttributeBase( oNode,L"w:rsidRPr",      m_oRsidRPr );
 
 			XmlUtils::CXmlNodes oChilds;
-			if ( oNode.GetNodes( _T("*"), oChilds ) )
+			if ( oNode.GetNodes(L"*", oChilds ) )
 			{
 				XmlUtils::CXmlNode oItem;
 				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
@@ -82,65 +82,65 @@ namespace OOX
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
 
-						if ( _T("w:bdo") == sName )
+						if (L"w:bdo" == sName )
 							pItem = new CBdo( oItem );
-						else if ( _T("w:bookmarkEnd") == sName )
+						else if (L"w:bookmarkEnd" == sName )
 							pItem = new CBookmarkEnd( oItem );
-						else if ( _T("w:bookmarkStart") == sName )
+						else if (L"w:bookmarkStart" == sName )
 							pItem = new CBookmarkStart( oItem );
-						else if ( _T("w:commentRangeEnd") == sName )
+						else if (L"w:commentRangeEnd" == sName )
 							pItem = new CCommentRangeEnd( oItem );
-						else if ( _T("w:commentRangeStart") == sName )
+						else if (L"w:commentRangeStart" == sName )
 							pItem = new CCommentRangeStart( oItem );
-						//else if ( _T("w:customXml") == sName )
+						//else if (L"w:customXml" == sName )
 						//	pItem = new CCustomXml( oItem );
-						else if ( _T("w:customXmlDelRangeEnd") == sName )
+						else if (L"w:customXmlDelRangeEnd" == sName )
 							pItem = new CCustomXmlDelRangeEnd( oItem );
-						else if ( _T("w:customXmlDelRangeStart") == sName )
+						else if (L"w:customXmlDelRangeStart" == sName )
 							pItem = new CCustomXmlDelRangeStart( oItem );
-						else if ( _T("w:customXmlInsRangeEnd") == sName )
+						else if (L"w:customXmlInsRangeEnd" == sName )
 							pItem = new CCustomXmlInsRangeEnd( oItem );
-						else if ( _T("w:customXmlInsRangeStart") == sName )
+						else if (L"w:customXmlInsRangeStart" == sName )
 							pItem = new CCustomXmlInsRangeStart( oItem );
-						else if ( _T("w:customXmlMoveFromRangeEnd") == sName ) 
+						else if (L"w:customXmlMoveFromRangeEnd" == sName ) 
 							pItem = new CCustomXmlMoveFromRangeEnd( oItem );
-						else if ( _T("w:customXmlMoveFromRangeStart") == sName )
+						else if (L"w:customXmlMoveFromRangeStart" == sName )
 							pItem = new CCustomXmlMoveFromRangeStart( oItem );
-						else if ( _T("w:customXmlMoveToRangeEnd") == sName ) 
+						else if (L"w:customXmlMoveToRangeEnd" == sName ) 
 							pItem = new CCustomXmlMoveToRangeEnd( oItem );
-						else if ( _T("w:customXmlMoveToRangeStart") == sName )
+						else if (L"w:customXmlMoveToRangeStart" == sName )
 							pItem = new CCustomXmlMoveToRangeStart( oItem );
-						//else if ( _T("w:del") == sName )
+						//else if (L"w:del" == sName )
 						//	pItem = new CDel( oItem );
-						else if ( _T("w:dir") == sName )
+						else if (L"w:dir" == sName )
 							pItem = new CDir( oItem );
-						else if ( _T("w:fldSimple") == sName )
+						else if (L"w:fldSimple" == sName )
 							pItem = new CFldSimple( oItem );
-						else if ( _T("w:hyperlink") == sName )
+						else if (L"w:hyperlink" == sName )
 							pItem = new CHyperlink( oItem );
-						//else if ( _T("w:ins") == sName )
+						//else if (L"w:ins" == sName )
 						//	pItem = new CIns( oItem );
-						//else if ( _T("w:moveFrom") == sName )
+						//else if (L"w:moveFrom" == sName )
 						//	pItem = new CMoveFrom( oItem );
-						else if ( _T("w:moveFromRangeEnd") == sName )
+						else if (L"w:moveFromRangeEnd" == sName )
 							pItem = new CMoveFromRangeEnd( oItem );
-						else if ( _T("w:moveFromRangeStart") == sName )
+						else if (L"w:moveFromRangeStart" == sName )
 							pItem = new CMoveFromRangeStart( oItem );
-						//else if ( _T("w:moveTo") == sName )
+						//else if (L"w:moveTo" == sName )
 						//	pItem = new CMoveTo( oItem );
-						else if ( _T("w:moveToRangeEnd") == sName )
+						else if (L"w:moveToRangeEnd" == sName )
 							pItem = new CMoveToRangeEnd( oItem );
-						else if ( _T("w:moveToRangeStart") == sName )
+						else if (L"w:moveToRangeStart" == sName )
 							pItem = new CMoveToRangeStart( oItem );
-						else if ( _T("m:oMath") == sName )
+						else if (L"m:oMath" == sName )
 							pItem = new COMath( oItem );
-						else if ( _T("m:oMathPara") == sName )
+						else if (L"m:oMathPara" == sName )
 							pItem = new COMathPara( oItem );
-						else if ( _T("w:permEnd") == sName )
+						else if (L"w:permEnd" == sName )
 							pItem = new CPermEnd( oItem );
-						else if ( _T("w:permStart") == sName )
+						else if (L"w:permStart" == sName )
 							pItem = new CPermStart( oItem );
-						else if ( _T("w:pPr") == sName )
+						else if (L"w:pPr" == sName )
 						{
 							if (m_oParagraphProperty)
 							{
@@ -154,15 +154,15 @@ namespace OOX
 								pItem = m_oParagraphProperty = new CParagraphProperty( oItem );
 							}
 						}
-						else if ( _T("w:proofErr") == sName )
+						else if (L"w:proofErr" == sName )
 							pItem = new CProofErr( oItem );
-						else if ( _T("w:r") == sName )
+						else if (L"w:r" == sName )
 							pItem = new CRun( oItem );
-						else if ( _T("w:sdt") == sName )
+						else if (L"w:sdt" == sName )
 							pItem = new CSdt( oItem );
-						else if ( _T("w:smartTag") == sName )
+						else if (L"w:smartTag" == sName )
 							pItem = new CSmartTag( oItem );
-						//else if ( _T("w:subDoc") == sName )
+						//else if (L"w:subDoc" == sName )
 						//	pItem = new CSubDoc( oItem );
 
 						if ( pItem )
@@ -197,15 +197,15 @@ namespace OOX
 				std::wstring sName = oReader.GetName();
 				WritingElement *pItem = NULL;
 
-				if ( _T("w:bdo") == sName )
+				if (L"w:bdo" == sName )
 					pItem = new CBdo( document );
-				else if ( _T("w:bookmarkEnd") == sName )
+				else if (L"w:bookmarkEnd" == sName )
 					pItem = new CBookmarkEnd( document );
-				else if ( _T("w:bookmarkStart") == sName )
+				else if (L"w:bookmarkStart" == sName )
 					pItem = new CBookmarkStart( document );
-				else if ( _T("w:commentRangeEnd") == sName )
+				else if (L"w:commentRangeEnd" == sName )
 					pItem = new CCommentRangeEnd( document );
-				else if ( _T("w:commentRangeStart") == sName )
+				else if (L"w:commentRangeStart" == sName )
 					pItem = new CCommentRangeStart( document );
 				else if ( L"aml:annotation" == sName) //Bookmark 
 				{
@@ -238,55 +238,55 @@ namespace OOX
 						}
 					}
 				}
-				//else if ( _T("w:customXml") == sName )
+				//else if (L"w:customXml" == sName )
 				//	pItem = new CCustomXml( document );
-				else if ( _T("w:customXmlDelRangeEnd") == sName )
+				else if (L"w:customXmlDelRangeEnd" == sName )
 					pItem = new CCustomXmlDelRangeEnd( document );
-				else if ( _T("w:customXmlDelRangeStart") == sName )
+				else if (L"w:customXmlDelRangeStart" == sName )
 					pItem = new CCustomXmlDelRangeStart( document );
-				else if ( _T("w:customXmlInsRangeEnd") == sName )
+				else if (L"w:customXmlInsRangeEnd" == sName )
 					pItem = new CCustomXmlInsRangeEnd( document );
-				else if ( _T("w:customXmlInsRangeStart") == sName )
+				else if (L"w:customXmlInsRangeStart" == sName )
 					pItem = new CCustomXmlInsRangeStart( document );
-				else if ( _T("w:customXmlMoveFromRangeEnd") == sName ) 
+				else if (L"w:customXmlMoveFromRangeEnd" == sName ) 
 					pItem = new CCustomXmlMoveFromRangeEnd( document );
-				else if ( _T("w:customXmlMoveFromRangeStart") == sName )
+				else if (L"w:customXmlMoveFromRangeStart" == sName )
 					pItem = new CCustomXmlMoveFromRangeStart( document );
-				else if ( _T("w:customXmlMoveToRangeEnd") == sName ) 
+				else if (L"w:customXmlMoveToRangeEnd" == sName ) 
 					pItem = new CCustomXmlMoveToRangeEnd( document );
-				else if ( _T("w:customXmlMoveToRangeStart") == sName )
+				else if (L"w:customXmlMoveToRangeStart" == sName )
 					pItem = new CCustomXmlMoveToRangeStart( document );
-				else if ( _T("w:del") == sName )
+				else if (L"w:del" == sName )
 					pItem = new CDel( document );
-				else if ( _T("w:dir") == sName )
+				else if (L"w:dir" == sName )
 					pItem = new CDir( document );
-				else if ( _T("w:fldSimple") == sName )
+				else if (L"w:fldSimple" == sName )
 					pItem = new CFldSimple( document );
-				else if ( _T("w:hyperlink") == sName || _T("w:hlink") == sName )
+				else if (L"w:hyperlink" == sName ||L"w:hlink" == sName )
 					pItem = new CHyperlink( document );
-				else if ( _T("w:ins") == sName )
+				else if (L"w:ins" == sName )
 					pItem = new CIns( document );
-				else if ( _T("w:moveFrom") == sName )
+				else if (L"w:moveFrom" == sName )
 					pItem = new CMoveFrom( document );
-				else if ( _T("w:moveFromRangeEnd") == sName )
+				else if (L"w:moveFromRangeEnd" == sName )
 					pItem = new CMoveFromRangeEnd( document );
-				else if ( _T("w:moveFromRangeStart") == sName )
+				else if (L"w:moveFromRangeStart" == sName )
 					pItem = new CMoveFromRangeStart( document );
-				else if ( _T("w:moveTo") == sName )
+				else if (L"w:moveTo" == sName )
 					pItem = new CMoveTo( document );
-				else if ( _T("w:moveToRangeEnd") == sName )
+				else if (L"w:moveToRangeEnd" == sName )
 					pItem = new CMoveToRangeEnd( document );
-				else if ( _T("w:moveToRangeStart") == sName )
+				else if (L"w:moveToRangeStart" == sName )
 					pItem = new CMoveToRangeStart( document );
-				else if ( _T("m:oMath") == sName )
+				else if (L"m:oMath" == sName )
 					pItem = new COMath( document );
-				else if ( _T("m:oMathPara") == sName )
+				else if (L"m:oMathPara" == sName )
 					pItem = new COMathPara( document );
-				else if ( _T("w:permEnd") == sName )
+				else if (L"w:permEnd" == sName )
 					pItem = new CPermEnd( document );
-				else if ( _T("w:permStart") == sName )
+				else if (L"w:permStart" == sName )
 					pItem = new CPermStart( document );
-				else if ( _T("w:pPr") == sName )
+				else if (L"w:pPr" == sName )
 				{// c копией  .. для быстрого доступа/анализа
 					if (m_oParagraphProperty)
 					{
@@ -304,17 +304,17 @@ namespace OOX
 						pItem = m_oParagraphProperty = new CParagraphProperty( document );
 					}
 				}
-				else if ( _T("w:proofErr") == sName )
+				else if (L"w:proofErr" == sName )
 					pItem = new CProofErr( document );
-				else if ( _T("w:r") == sName )
+				else if (L"w:r" == sName )
 					pItem = new CRun( document );
-				else if ( _T("w:sdt") == sName )
+				else if (L"w:sdt" == sName )
 					pItem = new CSdt( document );
-				else if ( _T("w:smartTag") == sName )
+				else if (L"w:smartTag" == sName )
 					pItem = new CSmartTag( document );
-				//else if ( _T("w:subDoc") == sName )
+				//else if (L"w:subDoc" == sName )
 				//	pItem = new CSubDoc( document );
-				else if (_T("w:sdtContent") == sName)
+				else if (L"w:sdtContent" == sName)
 				{
 					int nDepthChild = oReader.GetDepth();
 					fromXML(nDepthChild, oReader);
@@ -338,17 +338,17 @@ namespace OOX
 		}
 		std::wstring CParagraph::toXML() const
 		{
-			std::wstring sResult = _T("<w:p ");
+			std::wstring sResult = L"<w:p";
 
-			ComplexTypes_WriteAttribute( _T("w:rsidDel=\""),      m_oRsidDel );
-			ComplexTypes_WriteAttribute( _T("w:rsidP=\""),        m_oRsidP );
-			ComplexTypes_WriteAttribute( _T("w:rsidR=\""),        m_oRsidR );
-			ComplexTypes_WriteAttribute( _T("w:rsidRDefault=\""), m_oRsidRDefault );
-			ComplexTypes_WriteAttribute( _T("w:rsidRPr=\""),      m_oRsidRPr );
-			ComplexTypes_WriteAttribute( _T("w14:paraId=\""),     m_oParaId );
-			ComplexTypes_WriteAttribute( _T("w14:textId=\""),     m_oTextId );
+			ComplexTypes_WriteAttribute_(L" w:rsidDel=\"",      m_oRsidDel );
+			ComplexTypes_WriteAttribute_(L" w:rsidP=\"",        m_oRsidP );
+			ComplexTypes_WriteAttribute_(L" w:rsidR=\"",        m_oRsidR );
+			ComplexTypes_WriteAttribute_(L" w:rsidRDefault=\"", m_oRsidRDefault );
+			ComplexTypes_WriteAttribute_(L" w:rsidRPr=\"",      m_oRsidRPr );
+			ComplexTypes_WriteAttribute_(L" w14:paraId=\"",     m_oParaId );
+			ComplexTypes_WriteAttribute_(L" w14:textId=\"",     m_oTextId );
 
-			sResult += _T(">");
+			sResult += L">";
 
 			if (m_oParagraphProperty)
 			{
@@ -365,7 +365,7 @@ namespace OOX
                 }
             }
 
-			sResult += _T("</w:p>");
+			sResult +=L"</w:p>";
 
 			return sResult;
 		}
@@ -374,13 +374,13 @@ namespace OOX
 		{
 			WritingElement_ReadAttributes_Start( oReader )
 
-			WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:rsidDel"),      m_oRsidDel )
-			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:rsidP"),        m_oRsidP )
-			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:rsidR"),        m_oRsidR )
-			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:rsidRDefault"), m_oRsidRDefault )
-			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:rsidRPr"),      m_oRsidRPr )
-			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w14:paraId"),		m_oParaId )
-			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w14:textId"),      m_oTextId )
+			WritingElement_ReadAttributes_Read_if     ( oReader,L"w:rsidDel",		m_oRsidDel )
+			WritingElement_ReadAttributes_Read_else_if( oReader,L"w:rsidP",			m_oRsidP )
+			WritingElement_ReadAttributes_Read_else_if( oReader,L"w:rsidR",			m_oRsidR )
+			WritingElement_ReadAttributes_Read_else_if( oReader,L"w:rsidRDefault",	m_oRsidRDefault )
+			WritingElement_ReadAttributes_Read_else_if( oReader,L"w:rsidRPr",		m_oRsidRPr )
+			WritingElement_ReadAttributes_Read_else_if( oReader,L"w14:paraId",		m_oParaId )
+			WritingElement_ReadAttributes_Read_else_if( oReader,L"w14:textId",      m_oTextId )
 
 			WritingElement_ReadAttributes_End( oReader )
 		}

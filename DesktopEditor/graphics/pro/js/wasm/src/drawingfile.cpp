@@ -267,8 +267,11 @@ int main()
         i += nPathLength;
     }
 
-    std::cout << std::endl;
-    BYTE* pGlyphs = GetGlyphs(test, test_page);
+    if (false)
+    {
+        std::cout << std::endl;
+        BYTE* pGlyphs = GetGlyphs(test, test_page);
+    }
 
     Close(test);
     RELEASEARRAYOBJECTS(pPdfData);

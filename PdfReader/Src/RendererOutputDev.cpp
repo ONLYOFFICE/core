@@ -3955,7 +3955,6 @@ namespace PdfReader
         unsigned char b = colToByte(oRGB.b);
 
         unsigned char unAlpha = m_bTransparentGroup ? (m_bIsolatedTransparentGroup ? 0 : 255.0 * pGState->getFillOpacity()) : 255;
-        unsigned char unPixel = 0;
         int nInvert = (bInvert ? 1 : 0);
         for (int nY = nHeight - 1; nY >= 0; nY--)
         {
@@ -4665,10 +4664,10 @@ namespace PdfReader
         RELEASEOBJECT(m_pTransparentGroupSoftMask);
         */
     }
-    void RendererOutputDev::setSoftMask(GfxState *pGState, double *pBBox, bool bAlpha, Function *pTransferFunc, GfxColor *pBackdropColor)
+    void RendererOutputDev::setSoftMask(GfxState *pGState, double *pBBox, GBool bAlpha, Function *pTransferFunc, GfxColor *pBackdropColor)
     {
         m_bIsolatedTransparentGroup = false;
-        m_bTransparentGroupSoftMaskEnd = false;
+        //m_bTransparentGroupSoftMaskEnd = false;
     }
     void RendererOutputDev::clearSoftMask(GfxState *pGState)
     {

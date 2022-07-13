@@ -289,7 +289,7 @@ namespace PdfReader
 		virtual void beginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, GBool bIsolated, GBool bKnockout, GBool bForSoftMask);
 		virtual void endTransparencyGroup(GfxState *pGState);
 		virtual void paintTransparencyGroup(GfxState *pGState, double *pBBox);
-		virtual void setSoftMask(GfxState *pGState, double *pBBox, bool bAlpha, Function *pTransferFunc, GfxColor *pBackdropColor);
+		virtual void setSoftMask(GfxState *pGState, double *pBBox, GBool bAlpha, Function *pTransferFunc, GfxColor *pBackdropColor);
 		virtual void clearSoftMask(GfxState *pGState);
 		//----- Дополнительные функции для данного устройства
 		void NewPDF(XRef *pXref);

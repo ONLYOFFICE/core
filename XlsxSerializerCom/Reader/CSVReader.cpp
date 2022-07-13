@@ -375,7 +375,8 @@ namespace CSVReader
 					continue;
 				// New Cell
                 std::wstring sCellText(pTemp + nStartCell, nIndex - nStartCell);
-				//AddCell(sCellText, nStartCell, oDeleteChars, *pRow, nIndexRow, nIndexCol++, bIsWrap);
+				
+				AddCell(sCellText, nStartCell, oDeleteChars, *pRow, nIndexRow, nIndexCol++, bIsWrap);
 				oDeleteChars = std::stack<INT>();
                 bIsWrap = false;
 

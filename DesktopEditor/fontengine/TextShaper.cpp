@@ -743,6 +743,8 @@ namespace NSShaper
 
     void HB_FontFree(void* font)
     {
+        if (NULL == font)
+            return;
         hb_font_destroy((hb_font_t*)font);
     }
 }

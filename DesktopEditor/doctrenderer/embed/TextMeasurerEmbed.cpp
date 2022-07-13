@@ -162,9 +162,16 @@ JSSmart<CJSValue> CTextMeasurerEmbed::HB_ShapeText(JSSmart<CJSValue> face, JSSma
     return CJSContext::createUint8Array(result.Data, result.Len, false);
 }
 
+JSSmart<CJSValue> CTextMeasurerEmbed::HB_FontMalloc()
+{
+    CPointerEmbedObject* pObject = new CPointerEmbedObject(NULL, [](void* data) { NSShaper::HB_FontFree(data); });
+    return pObject->createObject();
+}
+
 JSSmart<CJSValue> CTextMeasurerEmbed::HB_FontFree(JSSmart<CJSValue> font)
 {
-    NSShaper::HB_FontFree(RAW_POINTER(font));
+    CPointerEmbedObject* pFont = POINTER_OBJECT(font);
+    pFont->Free();
     return CJSContext::createUndefined();
 }
 #endif

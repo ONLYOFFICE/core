@@ -64,15 +64,16 @@ const bool XLUnicodeRichExtendedString::appendNextContinue(CFRecord& record, con
 
 	RecordType type = (RecordType)cont_recs_.front()->getTypeId();
 	
-	while(!cont_recs_.empty())
+	while (!cont_recs_.empty())
 	{
 		type = (RecordType)cont_recs_.front()->getTypeId();
 
 		if (type == rt_SST || type == rt_Continue)
 		{
-			if(read_high_byte)
+			if (read_high_byte)
 			{
 				fHighByte = (0x01 == cont_recs_.front()->getData()[0]);
+
 				record.appendRawData(cont_recs_.front()->getData() + 1, cont_recs_.front()->getDataSize() - 1);
 			}
 			else
@@ -236,11 +237,7 @@ void XLUnicodeRichExtendedString::load(CFRecord& record)
 	}
 	if (record.getRdPtr() + cRun * 4 > record.getDataSize() && !cont_recs_.empty())
 	{
-		unsigned char flags = 0;
-		(*cont_recs_.front()) >> flags; 
-		fHighByte = (0x01 == flags);
-
-		record.appendRawData(cont_recs_.front()->getData() + 1, cont_recs_.front()->getDataSize() - 1);
+		record.appendRawData(cont_recs_.front());        
 		cont_recs_.pop_front();	
 	}
 	for(size_t i = 0; i < cRun; ++i)
@@ -254,11 +251,7 @@ void XLUnicodeRichExtendedString::load(CFRecord& record)
 	{
 		if (record.getRdPtr() + cbExtRst > record.getDataSize() && !cont_recs_.empty())
 		{
-			unsigned char flags = 0;
-			(*cont_recs_.front()) >> flags;
-			fHighByte = (0x01 == flags);
-
-			record.appendRawData(cont_recs_.front()->getData() + 1, cont_recs_.front()->getDataSize() - 1);
+			record.appendRawData(cont_recs_.front());        
 			cont_recs_.pop_front();
 		}
 		extRst.load(record);

@@ -191,6 +191,18 @@ namespace NSShaper
     {
         ::FT_Done_FreeType((FT_Library)library);
     }
+    void FT_Library_Reference(void* library)
+    {
+        FT_Reference_Library((FT_Library)library);
+    }
+    void FT_Library_UnReference(void* library_)
+    {
+        FT_Library library = (FT_Library)library_;
+        if (library->refcount == 1)
+            ::FT_Done_FreeType(library);
+        else
+            ::FT_Done_Library(library);
+    }
 
     int FT_Set_TrueType_HintProp(void* library, unsigned int interpreter_version)
     {
@@ -232,6 +244,18 @@ namespace NSShaper
     void FT_Done_Face(void* face)
     {
         ::FT_Done_Face((FT_Face)face);
+    }
+
+    void FT_Done_Face_With_Library(void* face)
+    {
+        FT_Face ftface = (FT_Face)face;
+        FT_Library library = ftface->driver->root.library;
+
+        bool bIsNeedUnreferenceLibrary = (1 == ftface->internal->refcount) ? true : false;
+        ::FT_Done_Face(ftface);
+
+        if (bIsNeedUnreferenceLibrary)
+            FT_Library_UnReference(library);
     }
 
     unsigned int FT_SetCMapForCharCode(void* face_pointer, unsigned int unicode)
@@ -639,13 +663,15 @@ namespace NSShaper
     {
         return (void*)hb_language_from_string(language_bcp_47.c_str(), language_bcp_47.length());
     }
-    void HB_free(void* data)
+
+    static void _hb_ft_face_destroy_js(void *data)
     {
-        HB_free(data);
+        FT_Done_Face_With_Library(data);
     }
 
     inline void HB_ShapeTextRaw(void* face, void*& font, char* text_str, const size_t& text_length,
-                                unsigned int nFeatures, unsigned int nScript, unsigned int nDirection, void* nLanguage, CExternalPointer* result)
+                                unsigned int nFeatures, unsigned int nScript, unsigned int nDirection, void* nLanguage,
+                                CExternalPointer* result, bool bIsJSVersion)
     {
         // init features
         if (!g_userfeatures_init)
@@ -671,7 +697,15 @@ namespace NSShaper
         hb_font_t* pFont;
         if (NULL == font)
         {
-            pFont = hb_ft_font_create((FT_Face)face, NULL);
+            if (!bIsJSVersion)
+            {
+                pFont = hb_ft_font_create_referenced((FT_Face)face);
+            }
+            else
+            {
+                FT_Reference_Face((FT_Face)face);
+                pFont = hb_ft_font_create((FT_Face)face, _hb_ft_face_destroy_js);
+            }
             hb_ft_font_set_funcs(pFont);
             font = (void*)pFont;
         }
@@ -730,15 +764,17 @@ namespace NSShaper
     }
 
     void HB_ShapeText(void* face, void*& font, char* text,
-                      unsigned int nFeatures, unsigned int nScript, unsigned int nDirection, void* nLanguage, CExternalPointer* result)
+                      unsigned int nFeatures, unsigned int nScript, unsigned int nDirection, void* nLanguage,
+                      CExternalPointer* result, bool bIsJSVersion)
     {
-        HB_ShapeTextRaw(face, font, text, strlen(text), nFeatures, nScript, nDirection, nLanguage, result);
+        HB_ShapeTextRaw(face, font, text, strlen(text), nFeatures, nScript, nDirection, nLanguage, result, bIsJSVersion);
     }
 
     void HB_ShapeText(void* face, void*& font, const std::string& text,
-                      unsigned int nFeatures, unsigned int nScript, unsigned int nDirection, void* nLanguage, CExternalPointer* result)
+                      unsigned int nFeatures, unsigned int nScript, unsigned int nDirection, void* nLanguage,
+                      CExternalPointer* result, bool bIsJSVersion)
     {
-        HB_ShapeTextRaw(face, font, (char*)text.c_str(), text.length(), nFeatures, nScript, nDirection, nLanguage, result);
+        HB_ShapeTextRaw(face, font, (char*)text.c_str(), text.length(), nFeatures, nScript, nDirection, nLanguage, result, bIsJSVersion);
     }
 
     void HB_FontFree(void* font)

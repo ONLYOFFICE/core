@@ -327,7 +327,8 @@ namespace NSDoctRenderer
                 }
                 else
                 {
-                    NSJSBase::CJSDataBuffer oBuffer = js_result2->toTypedArray()->getData();
+                    JSSmart<CJSTypedArray> typedArray = js_result2->toTypedArray();
+                    NSJSBase::CJSDataBuffer oBuffer = typedArray->getData();
 
                     NSFile::CFileBinary oFile;
                     if (true == oFile.CreateFileW(pParams->m_strDstFilePath))
@@ -464,7 +465,8 @@ namespace NSDoctRenderer
                     }
                     else
                     {
-                        NSJSBase::CJSDataBuffer oBuffer = js_result2->toTypedArray()->getData();
+                        JSSmart<CJSTypedArray> typedArray = js_result2->toTypedArray();
+                        NSJSBase::CJSDataBuffer oBuffer = typedArray->getData();
 
                         NSFile::CFileBinary oFile;
                         if (true == oFile.CreateFileW(pParams->m_strDstFilePath))
@@ -520,7 +522,10 @@ namespace NSDoctRenderer
                         {
                             JSSmart<CJSObject> objNative = js_result2->toObject();
 
-                            NSJSBase::CJSDataBuffer oBuffer = objNative->get("data")->toTypedArray()->getData();
+                            JSSmart<CJSValue> oDataArray = objNative->get("data");
+                            JSSmart<CJSTypedArray> oTypedArray = oDataArray->toTypedArray();
+
+                            NSJSBase::CJSDataBuffer oBuffer = oTypedArray->getData();
                             std::wstring sThemeName = objNative->get("name")->toStringW();
                             int nDataLen = objNative->get("dataLen")->toInt32();
 

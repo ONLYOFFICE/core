@@ -50,6 +50,8 @@ namespace NSJSBase
         virtual CJSArray* toArray()         = 0;
         virtual CJSTypedArray* toTypedArray() = 0;
         virtual CJSFunction* toFunction()   = 0;
+
+        virtual JSSmart<CJSObject> toObjectSmart() { return toObject(); }
     };
 
     class CJSEmbedObjectPrivateBase

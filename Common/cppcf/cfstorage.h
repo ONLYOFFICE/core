@@ -12,7 +12,7 @@ namespace CFCPP
 class CFStorage : public CFItem
 {
 public:
-    CFStorage(std::shared_ptr<CompoundFile> compFile, std::shared_ptr<IDirectoryEntry> dirEntry);
+    CFStorage(std::shared_ptr<const CompoundFile> compFile, std::shared_ptr<IDirectoryEntry> dirEntry);
 
 
     std::shared_ptr<RedBlackTree::RBTree> getChildren();
@@ -27,6 +27,8 @@ public:
     void VisitEntries(RedBlackTree::Action<PCFItem> action, bool recursive);
     void Delete(const std::wstring& entryName);
     void RenameItem(const std::wstring& oldItemName, const std::wstring& newItemName);
+    std::streamsize size() const {return CFItem::size();}
+    std::shared_ptr<IDirectoryEntry> getDirEntry() const {return dirEntry;}
 
 private:
     std::shared_ptr<RedBlackTree::RBTree> LoadChildren(int SID);

@@ -27,4 +27,9 @@ public:
 
         return spEl;
     }
+
+    inline void enqueue(std::shared_ptr<T> el)
+    {
+        this->push_back(el);
+    }
 };

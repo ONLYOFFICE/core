@@ -77,7 +77,7 @@ std::wstring CFItem::ToString() const
         return L"";
 }
 
-void CFItem::CheckDisposed()
+void CFItem::CheckDisposed() const
 {
     if (compoundFile->IsClosed())
         throw new CFDisposedException("Owner Compound file has been closed and owned items have been invalidated");

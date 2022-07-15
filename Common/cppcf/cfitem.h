@@ -18,7 +18,7 @@ public:
     bool operator!=(const CFItem &rightItem) const;
     int GetHashCode() const;
     std::wstring Name()const;
-    inline std::streamsize size() const {return dirEntry->getSize();}
+    virtual inline std::streamsize size() const {return dirEntry->getSize();}
     bool IsStorage() const;
     bool IsStream() const;
     bool ISRoot() const;
@@ -37,12 +37,12 @@ public:
 
 protected:
     inline CFItem() {};
-    inline CFItem(std::shared_ptr<CompoundFile> compoundFile) : compoundFile(compoundFile) {}
-    inline std::shared_ptr<CompoundFile> getCompoundFile() {return compoundFile;}
-    void CheckDisposed();
+    inline CFItem(const std::shared_ptr<const CompoundFile> compoundFile) : compoundFile(compoundFile) {}
+    inline std::shared_ptr<const CompoundFile> getCompoundFile() {return compoundFile;}
+    void CheckDisposed() const;
 
 protected:
-    std::shared_ptr<CompoundFile> compoundFile;
+    std::shared_ptr<const CompoundFile> compoundFile;
 };
 
 using PCFItem = std::shared_ptr<CFItem>;

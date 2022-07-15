@@ -7,7 +7,7 @@ using namespace CFCPP;
 using RedBlackTree::RBTree;
 
 
-CFStorage::CFStorage(std::shared_ptr<CompoundFile> compFile, std::shared_ptr<IDirectoryEntry> dirEntry) :
+CFStorage::CFStorage(std::shared_ptr<const CompoundFile> compFile, std::shared_ptr<IDirectoryEntry> dirEntry) :
     CFItem(compFile)
 {
     if (dirEntry == nullptr || dirEntry->getSid() < 0)

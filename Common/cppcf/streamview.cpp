@@ -227,3 +227,8 @@ void StreamView::adjustLength(std::streamsize value, SList<Sector> &availableSec
         }
     }
 }
+
+std::streamsize StreamView::getLength() const
+{
+    return length;
+}

@@ -19,6 +19,8 @@ public:
     std::streamsize Read(char *buffer, std::streamsize offset, std::streamsize count);
     std::streamsize Seek(std::streamsize offset, int origin);
     void SetLength(std::streamsize value);
+    std::streamsize getLength() const;
+    inline SVector<Sector>& BaseSectorChain() {return sectorChain;}
 
     int ReadInt32();
     void WriteInt32(int val);

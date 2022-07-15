@@ -3,11 +3,12 @@
 #include "header.h"
 #include "sectorcollection.h"
 #include "directoryentry.h"
-#include <queue>
-#include <list>
+#include "slist.h"
 #include <unordered_set>
 #include "RBTree/rbtree.h"
 #include "idirectoryentry.h"
+#include "cfstream.h"
+#include "cfstorage.h"
 
 #define FLAT_WRITE
 
@@ -37,7 +38,7 @@ enum CFSUpdateMode
     Update
 };
 
-class CompoundFile
+class CompoundFile : public std::enable_shared_from_this<CompoundFile>
 {
 public:
     CompoundFile(const std::wstring &fileName, CFSUpdateMode updateMode, CFSConfiguration configParameters);
@@ -59,6 +60,16 @@ public:
     void ResetDirectoryEntry(int sid);
     void InvalidateDirectoryEntry(int sid);
     void FreeAssociatedData(int sid);
+    void FreeData(CFStream* stream);
+    void WriteData(PCFItem cfItem, const std::vector<BYTE>& buffer, std::streamsize position, int offset, int count);
+    void WriteData(PCFItem cfItem, std::streamsize position, const std::vector<BYTE>& buffer);
+    void WriteData(PCFItem cfItem, const std::vector<BYTE>& buffer);
+    void AppendData(PCFItem cfItem, const std::vector<BYTE>& buffer);
+    void SetStreamLength(PCFItem cfItem, std::streamsize length);
+    SList<Sector> FindFreeSectors(SectorType sType);
+    std::vector<BYTE> GetData(CFStream* cFStream);
+    int ReadData(CFStream* cFStream, std::streamsize position, std::vector<BYTE>& buffer, int count);
+    int ReadData(CFStream* cFStream, std::streamsize position, std::vector<BYTE>& buffer, int offset, int count);
 
 protected:
     int GetSectorSize();
@@ -94,7 +105,17 @@ private:
     void LoadDirectories();
     // TODO
     void FreeMiniChain(SVector<Sector>& sectorChain, bool zeroSector);
+    void FreeMiniChain(SVector<Sector>& sectorChain, int nth_sector_to_remove, bool zeroSector);
     void FreeChain(SVector<Sector>& sectorChain, int nth_sector_to_remove, bool zeroSector);
+    void FreeChain(SVector<Sector>& sectorChain, bool zeroSector);
+
+    void AllocateSectorChain(SVector<Sector>& sectorChain);
+    void AllocateFATSectorChain(SVector<Sector>& sectorChain);
+    void AllocateDIFATSectorChain(SVector<Sector>& FATsectorChain);
+    void AllocateMiniSectorChain(SVector<Sector>& sectorChain);
+    void PersistMiniStreamToStream(const SVector<Sector>& miniSectorChain);
+    static int LowSaturation(int i);
+    void SetSectorChain(SVector<Sector> sectorChain);
 
     inline CFSVersion getVersion() const {return (CFSVersion)header.majorVersion;}
 
@@ -115,6 +136,7 @@ private:
     SectorCollection sectors;
     std::fstream stream;
     std::string fileName;
+    std::shared_ptr<CFStorage> rootStorage;
 
     bool closeStream = true;
     bool _transactionLockAdded = false;

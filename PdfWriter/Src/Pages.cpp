@@ -386,8 +386,7 @@ namespace PdfWriter
 			if (pFonts && pFonts->GetType() == object_type_DICT)
 			{
 				m_pFonts = (CDictObject*)pFonts;
-				// TODO: Необходимо вычислить максимальный используемый n у шрифта Fn
-				m_unFontsCount = m_pFonts->GetSize();
+				m_unFontsCount = 0;
 			}
 
 			// Инициализация текущего ExtGStates
@@ -1323,8 +1322,17 @@ namespace PdfWriter
 			char *pPointer = NULL;
 			char *pEndPointer = sFontName + LIMIT_MAX_NAME_LEN;
 
+			++m_unFontsCount;
+			while (m_unFontsCount < LIMIT_MAX_DICT_ELEMENT)
+			{
+				if (m_pFonts->Get("F" + std::to_string(m_unFontsCount)))
+					++m_unFontsCount;
+				else
+					break;
+			}
+
 			pPointer = (char*)StrCpy(sFontName, "F", pEndPointer);
-			ItoA(pPointer, ++m_unFontsCount, pEndPointer);
+			ItoA(pPointer, m_unFontsCount, pEndPointer);
 			m_pFonts->Add(sFontName, pFont);
 			sKey = m_pFonts->GetKey(pFont);
 		}

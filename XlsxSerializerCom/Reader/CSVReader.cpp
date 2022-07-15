@@ -187,7 +187,7 @@ namespace CSVReader
 			oDeleteChars.pop();
 		}
 		// Пустую не пишем
-        if (0 == sText.length())
+		if ((0 == sText.length()) || (sText[0] == L'\0'))
 			return;
 
 		OOX::Spreadsheet::CCell *pCell = new OOX::Spreadsheet::CCell();

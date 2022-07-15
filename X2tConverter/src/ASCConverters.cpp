@@ -4331,7 +4331,8 @@ namespace NExtractTools
            NSDirectory::CreateDirectory(sXlsxDir);
 		   
 		   if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB == nFormatFrom &&
-			   !(AVS_OFFICESTUDIO_FILE_CANVAS & nFormatTo))
+			   !((AVS_OFFICESTUDIO_FILE_CANVAS & nFormatTo) || (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo) ||
+				   (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)))
 		   {
 			   nRes = xlsb2xlsx_dir(sFrom, sXlsxDir, sTemp, params);
 		   }

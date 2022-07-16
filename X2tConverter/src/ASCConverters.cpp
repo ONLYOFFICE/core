@@ -1514,9 +1514,12 @@ namespace NExtractTools
 
 		m_oCXlsxSerializer.setIsNoBase64(params.getIsNoBase64());
         m_oCXlsxSerializer.setFontDir(params.getFontPath());
+		m_oCXlsxSerializer.setTempDir(sTemp);
 
         std::wstring sMediaPath;
         std::wstring sEmbedPath;
+
+		params.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV);
 
         return m_oCXlsxSerializer.loadFromFile (sTempXlstFileEditor, sCSV, params.getXmlOptions(), sMediaPath, sEmbedPath);
     }

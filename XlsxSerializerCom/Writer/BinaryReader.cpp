@@ -7517,8 +7517,14 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 	// Делаем для CSV перебивку пути, иначе создается папка с одинаковым имеем (для rels) и файл не создается.
 			
 			if (BinXlsxRW::c_oFileTypes::CSV == fileType)
-				sDstPath = NSSystemPath::GetDirectoryName(sDstPath);
+			{
+				sDstPath = pOfficeDrawingConverter->GetTempPath();
+				if (sDstPath.empty())
+					sDstPath = NSDirectory::GetTempPath();
 
+				sDstPath = NSDirectory::CreateDirectoryWithUniqueName(sDstPath);
+			}
+			
 			OOX::Spreadsheet::CXlsx oXlsx;
 			
 			std::wstring themePath = sDstPath + FILE_SEPARATOR_STR + OOX::Spreadsheet::FileTypes::Workbook.DefaultDirectory().GetPath() + FILE_SEPARATOR_STR + OOX::FileTypes::Theme.DefaultDirectory().GetPath();

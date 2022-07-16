@@ -193,6 +193,8 @@ namespace CSVReader
 		OOX::Spreadsheet::CCell *pCell = new OOX::Spreadsheet::CCell();
 		pCell->m_oType.Init();
 
+		pCell->m_oCacheValue = sText; // как есть 
+
 		WCHAR *pEndPtr;
         double dValue = wcstod(sText.c_str(), &pEndPtr);
 		if (0 != *pEndPtr)

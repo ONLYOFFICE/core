@@ -4499,7 +4499,7 @@ void BinaryWorksheetTableWriter::WriteCells(const OOX::Spreadsheet::CRow& oRows)
 void BinaryWorksheetTableWriter::WriteCell(const OOX::Spreadsheet::CCell& oCell)
 {
 	int nCurPos;
-	//Ref
+//Ref
 	int nRow = 0;
 	int nCol = 0;
 	if (oCell.isInitRef() && oCell.getRowCol(nRow, nCol))
@@ -4520,7 +4520,7 @@ void BinaryWorksheetTableWriter::WriteCell(const OOX::Spreadsheet::CCell& oCell)
 		m_oBcw.m_oStream.WriteLONG(*oCell.m_oStyle);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	//Type
+//Type
 	if(oCell.m_oType.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerCellTypes::Type);
@@ -4534,8 +4534,8 @@ void BinaryWorksheetTableWriter::WriteCell(const OOX::Spreadsheet::CCell& oCell)
 		WriteFormula(oCell.m_oFormula.get2());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	//Value
-	if(oCell.m_oValue.IsInit() && !oCell.m_oValue->ToString().empty())
+//Value
+	if (oCell.m_oValue.IsInit() && !oCell.m_oValue->ToString().empty())
 	{
 
         double dValue = 0;
@@ -4551,6 +4551,13 @@ void BinaryWorksheetTableWriter::WriteCell(const OOX::Spreadsheet::CCell& oCell)
 		nCurPos = m_oBcw.WriteItemStart(c_oSerCellTypes::Value);
 		m_oBcw.m_oStream.WriteDoubleReal(dValue);
 		m_oBcw.WriteItemEnd(nCurPos);
+	}
+//ValueCache	
+	if (oCell.m_oCacheValue.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerCellTypes::ValueCache);
+		m_oBcw.m_oStream.WriteStringW3(*oCell.m_oCacheValue);
+		m_oBcw.WriteItemEnd(nCurPos);		
 	}
 }
 void BinaryWorksheetTableWriter::WriteFormula(OOX::Spreadsheet::CFormula& oFormula)

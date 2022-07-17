@@ -1463,7 +1463,8 @@ namespace NExtractTools
 		BYTE saveFileType;
 		SerializeCommon::ReadFileType(params.getXmlOptions(), fileType, nCodePage, sDelimiter, saveFileType);
 
-		_UINT32 nRes = CSVReader::ReadFromCsvToXlsx(sFrom, oXlsx, nCodePage, sDelimiter);
+		CSVReader csvReader;
+		_UINT32 nRes = csvReader.Read(sFrom, oXlsx, nCodePage, sDelimiter);
 
 		oXlsx.PrepareToWrite();
 

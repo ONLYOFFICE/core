@@ -7234,8 +7234,10 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 	{
 		case BinXlsxRW::c_oFileTypes::CSV:
 		{
+			CSVReader csvReader;
+
 			pXlsx = new OOX::Spreadsheet::CXlsx();
-			result = CSVReader::ReadFromCsvToXlsx(sInputDir, *pXlsx, nCodePage, sDelimiter);
+			result = csvReader.Read(sInputDir, *pXlsx, nCodePage, sDelimiter);
 		}break;
 		case BinXlsxRW::c_oFileTypes::XLSX:
         case BinXlsxRW::c_oFileTypes::XLSB:

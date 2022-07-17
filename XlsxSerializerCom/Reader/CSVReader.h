@@ -37,8 +37,14 @@
 #include "../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Worksheet.h"
 #include "../../DesktopEditor/common/File.h"
 
-namespace CSVReader
+class CSVReader
 {
-    void AddCell(std::wstring &sText, INT nStartCell, std::stack<INT> &oDeleteChars, OOX::Spreadsheet::CRow &oRow, INT nRow, INT nCol, bool bIsWrap);
-	_UINT32 ReadFromCsvToXlsx(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const std::wstring& wcDelimiter);
-}
+public:
+	CSVReader();
+	~CSVReader();
+	_UINT32 Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const std::wstring& wcDelimiter);
+private:
+	class Impl;
+	boost::shared_ptr<Impl> impl_;
+};
+

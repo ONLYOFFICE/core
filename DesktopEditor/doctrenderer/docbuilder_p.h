@@ -738,6 +738,12 @@ namespace NSDoctRenderer
                 oBuilder.WriteString(sConvertionParams);
             }
 
+            std::wstring sDstTmpDir = NSDirectory::CreateDirectoryWithUniqueName(m_sFileDir);
+
+            oBuilder.WriteString(L"<m_sTempDir>");
+            oBuilder.WriteEncodeXmlString(sDstTmpDir);
+            oBuilder.WriteString(L"</m_sTempDir>");
+
             oBuilder.WriteString(L"</TaskQueueDataConvert>");
 
             std::wstring sXmlConvert = oBuilder.GetData();
@@ -852,6 +858,7 @@ namespace NSDoctRenderer
             }
     #endif
 
+            NSDirectory::DeleteDirectory(sDstTmpDir);
             NSFile::CFileBinary::Remove(sTempFileForParams);
 
             LOGGER_SPEED_LAP("save_convert")

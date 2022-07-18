@@ -99,7 +99,7 @@ std::wstring presentation_class::get_type_ms()
 			//res = L"subTitle";
 			break;
 		case graphic:
-			res = L"dgm";
+			res = L"body";
 			break;
 		case object:
 			res = L"obj";

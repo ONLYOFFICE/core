@@ -243,12 +243,13 @@ private:
 	void UpdateTransform();
 	void UpdatePen();
 	void UpdateBrush();
-    bool IsValid();
-    bool IsPageValid();
-    void SetError();
+	bool IsValid();
+	bool IsPageValid();
+	void SetError();
 	void AddLink(const unsigned int& unPage, const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const unsigned int& unDestPage);
 	unsigned char* EncodeString(const unsigned int* pUnicodes, const unsigned int& unUnicodesCount, const unsigned int* pGIDs = NULL);
 	unsigned char* EncodeGID(const unsigned int& unGID, const unsigned int* pUnicodes, const unsigned int& unUnicodesCount);
+	std::wstring GetDownloadFile(const std::wstring& sUrl);
 
 private:
 

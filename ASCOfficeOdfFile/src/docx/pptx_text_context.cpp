@@ -172,13 +172,13 @@ void pptx_text_context::Impl::start_paragraph(const std::wstring & styleName)
 {
     if (paragraphs_cout_++ > 0)
     {	
-		if (in_list_ == false || in_comment == true)
-		{
-		// конец предыдущего абзаца и начало следующего
-		//text_ << L"&#10;";
-			text_ << L"\n"; 
-		}
-		else/* (paragraph_style_name_ != styleName)*/
+		//if (in_list_ == false || in_comment == true)
+		//{
+		//// конец предыдущего абзаца и начало следующего
+		////text_ << L"&#10;";
+		//	text_ << L"\n"; 
+		//}
+		//else/* (paragraph_style_name_ != styleName)*/
 		{
 			dump_paragraph();
 		}

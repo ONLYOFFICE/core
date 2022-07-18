@@ -18,6 +18,9 @@ namespace MetaFile
 
                 InterpretatorType GetType() const override;
 
+                void CreateConditional(IMetaFileBase* pFile) override {};
+                void ChangeConditional() override {};
+
                 void HANDLE_EMR_HEADER(const TEmfHeader& oTEmfHeader) override ;
                 void HANDLE_EMR_ALPHABLEND(const TEmfAlphaBlend& oTEmfAlphaBlend, CDataStream &oDataStream) override ;
                 void HANDLE_EMR_STRETCHDIBITS(const TEmfStretchDIBITS& oTEmfStretchDIBITS, CDataStream &oDataStream) override ;

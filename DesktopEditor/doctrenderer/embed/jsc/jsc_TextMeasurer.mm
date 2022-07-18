@@ -26,6 +26,7 @@
 #ifdef SUPPORT_HARFBUZZ_SHAPER
 -(JSValue*) HB_LanguageFromString : (JSValue*)lang;
 -(JSValue*) HB_ShapeText : (JSValue*) face : (JSValue*) font : (JSValue*) text : (JSValue*) nFeatures : (JSValue*) nScript : (JSValue*) nDirection : (JSValue*) nLanguage;
+-(JSValue*) HB_FontMalloc;
 -(JSValue*) HB_FontFree : (JSValue*)font;
 #endif
 
@@ -66,6 +67,7 @@ FUNCTION_WRAPPER_JS_1(FT_GetFaceMaxAdvanceX, FT_GetFaceMaxAdvanceX)
 #ifdef SUPPORT_HARFBUZZ_SHAPER
 FUNCTION_WRAPPER_JS_1(HB_LanguageFromString, HB_LanguageFromString)
 FUNCTION_WRAPPER_JS_7(HB_ShapeText, HB_ShapeText)
+FUNCTION_WRAPPER_JS(HB_FontMalloc, HB_FontMalloc)
 FUNCTION_WRAPPER_JS_1(HB_FontFree, HB_FontFree)
 #endif
 

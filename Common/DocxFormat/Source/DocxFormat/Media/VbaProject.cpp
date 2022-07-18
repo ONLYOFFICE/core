@@ -40,6 +40,7 @@
 
 #include "../IFileContainer.h"
 #include "../../XlsxFormat/FileTypes_Spreadsheet.h"
+#include "../../../../../ASCOfficeXlsFile2/source/VbaFormat/VbaReader.h"
 
 namespace OOX
 {
@@ -92,17 +93,25 @@ namespace OOX
 	void VbaProject::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-
-		pWriter->WriteString1(0, m_filename.GetFilename());
-
+			pWriter->WriteString1(0, m_filename.GetFilename());
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 		
 		copy_to(pWriter->m_pCommon->m_pMediaManager->m_strDstMedia);
+
+		CVbaReader vbaReader(m_filename.GetPath(), L"");
+		std::wstring sXml = vbaReader.convert();
+
+		if (false == sXml.empty())
+		{
+			pWriter->StartRecord(0);
+			pWriter->WriteStringW2(sXml);
+			pWriter->EndRecord();
+		}
 	}
 	void VbaProject::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
 		LONG _rec_size = pReader->GetRecordSize();
-		LONG _end_rec = pReader->GetPos() + _rec_size + 4;
+		LONG _end_rec = pReader->GetPos() + _rec_size;
 
 		pReader->Skip(1); // start attributes
 		while (true)
@@ -128,6 +137,24 @@ namespace OOX
 
 				default:
 					break;
+			}
+		}
+		std::wstring sXml;
+		while (pReader->GetPos() < _end_rec)
+		{
+			BYTE rec = pReader->GetUChar();
+
+			switch (rec)
+			{
+				case 0:
+				{
+					_INT32 _len = pReader->GetRecordSize();
+					sXml = pReader->GetString2();
+				}break;
+				default:
+				{
+					pReader->SkipRecord();
+				}
 			}
 		}
 		pReader->Seek(_end_rec);

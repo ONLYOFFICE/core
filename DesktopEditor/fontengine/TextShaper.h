@@ -56,11 +56,14 @@ namespace NSShaper
 
     GRAPHICS_DECL void* FT_Library_Init();
     GRAPHICS_DECL void FT_Library_Destroy(void* library);
+    GRAPHICS_DECL void FT_Library_UnReference(void* library);
+    GRAPHICS_DECL void FT_Library_Reference(void* library);
 
     GRAPHICS_DECL int FT_Set_TrueType_HintProp(void* library, unsigned int interpreter_version);
 
     GRAPHICS_DECL void* FT_Open_Face(void* library, unsigned char* memory, unsigned int size, int face_index);
     GRAPHICS_DECL void FT_Done_Face(void* face);
+    GRAPHICS_DECL void FT_Done_Face_With_Library(void* face);
 
     GRAPHICS_DECL bool FT_GetFaceInfo(void* face, CExternalPointer* result);
     GRAPHICS_DECL bool FT_Get_Glyph_Measure_Params(void* face, bool is_vector, CExternalPointer* result);
@@ -80,13 +83,14 @@ namespace NSShaper
 
 #ifdef SUPPORT_HARFBUZZ_SHAPER
     GRAPHICS_DECL void* HB_LanguageFromString(const std::string language_bcp_47);
-    GRAPHICS_DECL void HB_free(void* data);
 
     GRAPHICS_DECL void HB_ShapeText(void* face, void*& font, char* text,
-                                    unsigned int nFeatures, unsigned int nScript, unsigned int nDirection, void* nLanguage, CExternalPointer* result);
+                                    unsigned int nFeatures, unsigned int nScript, unsigned int nDirection, void* nLanguage,
+                                    CExternalPointer* result, bool bIsJSVersion = false);
 
     GRAPHICS_DECL void HB_ShapeText(void* face, void*& font, const std::string& text,
-                                    unsigned int nFeatures, unsigned int nScript, unsigned int nDirection, void* nLanguage, CExternalPointer* result);
+                                    unsigned int nFeatures, unsigned int nScript, unsigned int nDirection, void* nLanguage,
+                                    CExternalPointer* result, bool bIsJSVersion = false);
 
     GRAPHICS_DECL void HB_FontFree(void* font);
 #endif

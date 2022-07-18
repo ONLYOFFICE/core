@@ -29,6 +29,7 @@ namespace NSMeasurer
 #ifdef SUPPORT_HARFBUZZ_SHAPER
     FUNCTION_WRAPPER_V8_1(_HB_LanguageFromString, HB_LanguageFromString)
     FUNCTION_WRAPPER_V8_7(_HB_ShapeText, HB_ShapeText)
+    FUNCTION_WRAPPER_V8  (_HB_FontMalloc, HB_FontMalloc)
     FUNCTION_WRAPPER_V8_1(_HB_FontFree, HB_FontFree)
 #endif
 
@@ -64,6 +65,7 @@ namespace NSMeasurer
 #ifdef SUPPORT_HARFBUZZ_SHAPER
         NSV8Objects::Template_Set(result, "HB_LanguageFromString",      _HB_LanguageFromString);
         NSV8Objects::Template_Set(result, "HB_ShapeText",               _HB_ShapeText);
+        NSV8Objects::Template_Set(result, "HB_ShapeText",               _HB_FontMalloc);
         NSV8Objects::Template_Set(result, "HB_FontFree",                _HB_FontFree);
 #endif
 

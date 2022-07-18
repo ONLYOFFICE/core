@@ -48,6 +48,8 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/HeaderFooter.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/App.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Core.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Footnote.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Endnote.h"
 
 namespace NSBinPptxRW
 {

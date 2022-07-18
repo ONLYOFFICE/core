@@ -67,10 +67,8 @@ namespace MetaFile
 
     void CXmlOutput::Clear()
     {
-        if (NULL != m_pXmlWriter)
-            delete m_pXmlWriter;
-        else if (NULL != m_pXmlLiteReader)
-            delete m_pXmlLiteReader;
+            RELEASEOBJECT(m_pXmlWriter);
+            RELEASEOBJECT(m_pXmlLiteReader);
     }
 
     bool CXmlOutput::IsWriter() const

@@ -48,6 +48,8 @@
 
 #include "../../Common/DocxFormat/Source/DocxFormat/App.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Core.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Endnote.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Footnote.h"
 
 int BinDocxRW::g_nCurFormatVersion = 0;
 
@@ -609,4 +611,33 @@ bool BinDocxRW::CDocxSerializer::unpackageFile(const std::wstring& sSrcFileName,
 	BinDocxRW::CPackageFile file;
 	
 	return file.unpackage(sSrcFileName, sDstPath);
+}
+bool BinDocxRW::CDocxSerializer::convertFlat(const std::wstring& sSrcFileName, const std::wstring& sDstPath)
+{
+	OOX::CDocxFlat docxflat(sSrcFileName);
+
+	if (false == docxflat.m_pDocument.IsInit())
+		return false;
+
+	OOX::CDocx docx;
+
+	if (docxflat.m_pDocument.IsInit())
+	{
+		NSCommon::smart_ptr<OOX::File> file = docxflat.m_pDocument.GetPointer(); file.AddRef();
+		docx.Add(file);
+		docx.m_oMain.document = docxflat.m_pDocument.GetPointer();
+	}
+	if (docxflat.m_pApp.IsInit())
+	{
+		NSCommon::smart_ptr<OOX::File> file(docxflat.m_pApp.GetPointer()); file.AddRef();
+		docx.Add(file);
+	}
+	if (docxflat.m_pCore.IsInit())
+	{
+		NSCommon::smart_ptr<OOX::File> file(docxflat.m_pCore.GetPointer()); file.AddRef();
+		docx.Add(file);
+	}	
+	//docxflat.m_oBgPict.GetPointer();
+
+	return docx.Write(sDstPath);
 }

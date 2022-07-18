@@ -35,6 +35,8 @@
 #include "../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/DocxFlat.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Document.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Endnote.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Footnote.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/FontTable.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Numbering.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Styles.h"
@@ -1972,7 +1974,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 	}
 	else if (docx_flat_document)
 	{
-		convert(docx_flat_document->m_oBgPict.GetPointer(), 1);
+		convert(docx_flat_document->m_pBgPict.GetPointer(), 1);
 	}
 			//nullable<ComplexTypes::Word::CTextDirection                  > m_oTextDirection;
 			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oRtlGutter;
@@ -4176,7 +4178,7 @@ void DocxConverter::convert_comment(int oox_comm_id)
 	}
 	else if (docx_flat_document)
 	{
-		pComments = &docx_flat_document->m_oComments;
+		pComments = docx_flat_document->m_pComments.GetPointer();
 	}
 
 	if (!pComments) return;
@@ -4221,7 +4223,7 @@ void DocxConverter::convert_footnote(int oox_ref_id)
 	}
 	else if (docx_flat_document)
 	{
-		oox_footnotes = &docx_flat_document->m_oFootnotes;
+		oox_footnotes = docx_flat_document->m_pFootnotes.GetPointer();
 	}
 	if (oox_footnotes == NULL ) return;
 
@@ -4259,7 +4261,7 @@ void DocxConverter::convert_endnote(int oox_ref_id)
 	}
 	else if (docx_flat_document)
 	{
-		oox_endnotes = &docx_flat_document->m_oEndnotes;
+		oox_endnotes = docx_flat_document->m_pEndnotes.GetPointer();
 	}
 	if (oox_endnotes == NULL ) return;
 
@@ -4297,11 +4299,7 @@ void DocxConverter::convert_hdr_ftr(std::wstring sId)
 	}
 	else if (docx_flat_document)
 	{
-		std::map<std::wstring, OOX::CHdrFtr*>::iterator pFind = docx_flat_document->m_mapHeadersFooters.find(sId);
-		if (pFind != docx_flat_document->m_mapHeadersFooters.end())
-		{
-			oox_hdr_ftr = pFind->second;
-		}
+		oox_hdr_ftr = docx_flat_document->GetHeaderOrFooter(sId);
 	}
 	if (oox_hdr_ftr == NULL ) return;
 

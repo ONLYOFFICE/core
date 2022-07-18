@@ -51,6 +51,7 @@ namespace BinXlsxRW {
 	class CXlsxSerializer
 	{
 	private:
+		std::wstring m_sTempDir;
         std::wstring m_sFontDir;
         std::wstring m_sEmbeddedFontsDir;
 		NSBinPptxRW::CDrawingConverter* m_pExternalDrawingConverter;
@@ -65,6 +66,7 @@ namespace BinXlsxRW {
 //------------------------------------------------		
         static void CreateXlsxFolders  (const std::wstring& sXmlOptions, const std::wstring& sDstPath, std::wstring& sMediaPath, std::wstring& sEmbedPath);
 		
+		void setTempDir			(const std::wstring& sTempDir);
         void setFontDir			(const std::wstring& sFontDir);
         void setEmbeddedFontsDir(const std::wstring& sEmbeddedFontsDir);
 		void setDrawingConverter(NSBinPptxRW::CDrawingConverter* pDrawingConverter);

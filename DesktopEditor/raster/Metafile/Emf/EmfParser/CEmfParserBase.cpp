@@ -624,9 +624,7 @@ namespace MetaFile
         }
 
         CEmfParserBase::~CEmfParserBase()
-        {
-                RELEASEOBJECT(m_pInterpretator)
-        }
+        {}
 
         void CEmfParserBase::PlayMetaFile(){}
 
@@ -770,16 +768,14 @@ namespace MetaFile
 
         void CEmfParserBase::SetInterpretator(IOutputDevice *pOutput)
         {
-                if (NULL != m_pInterpretator)
-                        delete m_pInterpretator;
+                RELEASEOBJECT(m_pInterpretator);
 
                 m_pInterpretator = new CEmfInterpretatorRender(pOutput);
         }
 
         void CEmfParserBase::SetInterpretator(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType)
         {
-                if (NULL != m_pInterpretator)
-                        delete m_pInterpretator;
+                RELEASEOBJECT(m_pInterpretator);
 
                 if(oInterpretatorType == InterpretatorType::XML)
                         m_pInterpretator = new CEmfInterpretatorXml(wsFilePath);
@@ -789,8 +785,7 @@ namespace MetaFile
 
         void CEmfParserBase::SetInterpretator(IOutputDevice *pOutput, const wchar_t *wsFilePath)
         {
-                if (NULL != m_pInterpretator)
-                        delete m_pInterpretator;
+                RELEASEOBJECT(m_pInterpretator);
 
                 CEmfInterpretatorArray* pEmfInterpretatorArray = new CEmfInterpretatorArray;
                 pEmfInterpretatorArray->AddRenderInterpretator(pOutput);

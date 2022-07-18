@@ -15,7 +15,7 @@ include(../Common/base.pri)
 
 DEFINES += PDFWRITER_USE_DYNAMIC_LIBRARY
 
-ADD_DEPENDENCY(graphics, kernel, UnicodeConverter)
+ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, kernel_network)
 
 DEFINES += CRYPTOPP_DISABLE_ASM
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib

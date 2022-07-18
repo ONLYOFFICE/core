@@ -3601,7 +3601,14 @@ int Binary_CustomsTableReader::ReadCustom(BYTE type, long length, void* poResult
 		int res = c_oSerConstants::ReadOk;
 		READ1_DEF(length, res, this->ReadCustomContent, &oCustomXmlProps);
 
-		m_oFileWriter.m_oCustomXmlWriter.WriteCustom(oCustomXmlProps.toXML(), oCustomXmlProps.m_oCustomXmlContent, m_oFileWriter.m_bGlossaryMode);
+		if (false == oCustomXmlProps.m_oCustomXmlContentA.empty())
+		{
+			m_oFileWriter.m_oCustomXmlWriter.WriteCustomA(oCustomXmlProps.toXML(), oCustomXmlProps.m_oCustomXmlContentA, m_oFileWriter.m_bGlossaryMode);
+		}
+		else if (false == oCustomXmlProps.m_oCustomXmlContent.empty())
+		{
+			m_oFileWriter.m_oCustomXmlWriter.WriteCustom(oCustomXmlProps.toXML(), oCustomXmlProps.m_oCustomXmlContent, m_oFileWriter.m_bGlossaryMode);
+		}
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

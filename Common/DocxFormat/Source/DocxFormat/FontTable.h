@@ -127,11 +127,13 @@ namespace OOX
 				fromXML(oReader);
 			}
 		}
-		virtual void write(const CPath &oFilePath, const CPath &oDirectoryPath, CContentTypes& content) const
+		virtual void write(const CPath &oFilePath, const CPath &oDirectory, CContentTypes& oContent) const
 		{
 			std::wstring sXml = toXML();
 
 			CDirectory::SaveToFile( oFilePath.GetPath(), sXml );
+			
+			oContent.Registration(type().OverrideType(), oDirectory, oFilePath.GetFilename());
 		}
 		virtual const FileType type() const
 		{

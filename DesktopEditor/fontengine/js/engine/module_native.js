@@ -188,7 +188,7 @@ AscFonts.HB_ShapeText = function(fontFile, text, features, script, direction, la
 	}
 
 	if (!fontFile["GetHBFont"]())
-		fontFile["SetHBFont"](g_native_engine["FT_Malloc"](0));
+		fontFile["SetHBFont"](g_native_engine["HB_FontMalloc"]());
 
 	let data = g_native_engine["HB_ShapeText"](fontFile["GetFace"](), fontFile["GetHBFont"](), text.pointer, features, script, direction, hb_cache_languages[language]);
 	if (!data)

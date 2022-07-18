@@ -371,6 +371,8 @@ namespace OOX
 					m_oDataConsolidate = oReader;
 				else if (_T("sortState") == sName)
 					m_oSortState = oReader;
+				else if (_T("cellWatches") == sName)
+					m_oCellWatches = oReader;
 				else if (L"DataValidation" == sName)
 				{
 					if (false == m_oDataValidations.IsInit())
@@ -781,6 +783,8 @@ namespace OOX
 				m_oRowBreaks->toXML(writer);
 			if(m_oColBreaks.IsInit())
 				m_oColBreaks->toXML(writer);
+			if (m_oCellWatches.IsInit())
+				m_oCellWatches->toXML(writer);
 			if(m_oDrawing.IsInit())
 				m_oDrawing->toXML(writer);
 			if(m_oLegacyDrawing.IsInit())
@@ -814,7 +818,7 @@ namespace OOX
 				toXMLEnd(sXml);
 
                 //NSFile::CFileBinary::SaveToFile(oPath.GetPath(), sXml.GetData());
-                //for memory optimization fro large files
+                //for memory optimization for large files
 
                 wchar_t* pXmlData = sXml.GetBuffer();
                 LONG lwcharLen = (LONG)sXml.GetCurSize();

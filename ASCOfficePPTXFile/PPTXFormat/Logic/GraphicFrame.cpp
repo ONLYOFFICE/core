@@ -457,7 +457,8 @@ namespace PPTX
 		void GraphicFrame::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
 			if (smartArt.is_init() && (	pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
-										pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY))
+										pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY) &&
+				pWriter->m_lGroupIndex == 0)
 			{
 				pWriter->WriteString(L"<a:graphic><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/diagram\">");
 				smartArt->toXmlWriter(pWriter);

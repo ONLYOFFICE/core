@@ -10,9 +10,11 @@ namespace MetaFile
         {
         public:
                 CEmfInterpretatorRender(IOutputDevice* pIOutputDevice);
-                CEmfInterpretatorRender(const CEmfInterpretatorRender& oInterpretator, IMetaFileBase* pFile);
 
                 InterpretatorType   GetType() const override;
+
+                void CreateConditional(IMetaFileBase* pFile) override;
+                void ChangeConditional() override;
 
                 void Begin() override;
                 void End() override;

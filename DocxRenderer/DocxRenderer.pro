@@ -26,20 +26,43 @@ LIBS += -lgdi32 \
 }
 
 HEADERS += \
+    src/logic/BaseItem.h \
+    src/logic/ElementContText.h \
+    src/logic/ElementOldShape.h \
+    src/logic/ElementShape.h \
+    src/logic/ElementTextLine.h \
+    src/logic/ImageManager.h \
+    src/resources/ColorTable.h \
+    src/resources/Constants.h \
+    src/resources/LinesTable.h \
+    src/resources/SingletonTemplate.h \
+    src/resources/SortElements.h \
+    src/resources/VectorGraphics.h \
     src/resources/resources.h \
     \
-    src/logic/Common.h \
     src/logic/Page.h \
     src/logic/Document.h \
     src/logic/ElementImage.h \
     src/logic/ElementParagraph.h \
-    src/logic/ElementShape.h \
     src/logic/FontManager.h \
     src/logic/FontManagerBase.h \
     \
-    DocxRenderer.h
+    DocxRenderer.h \
+    src/resources/utils.h
 
 SOURCES += \
+    src/logic/Document.cpp \
+    src/logic/ElementContText.cpp \
+    src/logic/ElementImage.cpp \
+    src/logic/ElementOldShape.cpp \
+    src/logic/ElementParagraph.cpp \
+    src/logic/ElementShape.cpp \
+    src/logic/ElementTextLine.cpp \
+    src/logic/FontManager.cpp \
+    src/logic/FontManagerBase.cpp \
+    src/logic/ImageManager.cpp \
+    src/logic/Page.cpp \
+    src/resources/VectorGraphics.cpp \
     src/resources/resources.cpp \
     \
     DocxRenderer.cpp

@@ -2345,11 +2345,12 @@ namespace SimpleTypes
 
         virtual EFtnEdn FromString(std::wstring &sValue)
 		{
-            if      ( (L"continuationNotice")    == sValue ) this->m_eValue = ftnednContinuationNotice;
-            else if ( (L"continuationSeparator") == sValue ) this->m_eValue = ftnednContinuationSeparator;
-            else if ( (L"normal")                == sValue ) this->m_eValue = ftnednNormal;
-            else if ( (L"separator")             == sValue ) this->m_eValue = ftnednSeparator;
-            else                                              this->m_eValue = eDefValue;
+            if      (L"continuationNotice"    == sValue ) this->m_eValue = ftnednContinuationNotice;
+            else if (L"continuationSeparator" == sValue ||
+					 L"continuation-separator" == sValue) this->m_eValue = ftnednContinuationSeparator;
+            else if (L"normal"                == sValue ) this->m_eValue = ftnednNormal;
+            else if (L"separator"             == sValue ) this->m_eValue = ftnednSeparator;
+            else                                          this->m_eValue = eDefValue;
 
             return this->m_eValue;
 		}

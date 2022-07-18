@@ -35,8 +35,6 @@
 #include "../../Common/Base64.h"
 #include "../../Common/OfficeFileFormatChecker.h"
 
-#include "../../ASCOfficeXlsFile2/source/VbaFormat/VbaReader.h"
-
 #include "../../ASCOfficePPTXFile/Editor/FontCutter.h"
 #include "../../ASCOfficePPTXFile/PPTXFormat/App.h"
 #include "../../ASCOfficePPTXFile/PPTXFormat/Core.h"
@@ -514,7 +512,7 @@ void Binary_rPrWriter::Write_rPr(OOX::Logic::CRunProperty* rPr)
 		{
 			m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::Underline);
 			m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-			m_oBcw.m_oStream.WriteBOOL(SimpleTypes::underlineNone != oU.m_oVal.get().GetValue());
+			m_oBcw.m_oStream.WriteBYTE(oU.m_oVal.get().GetValue());
 		}
 	}
 	//Strikeout
@@ -588,12 +586,7 @@ void Binary_rPrWriter::Write_rPr(OOX::Logic::CRunProperty* rPr)
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::VertAlign);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-		switch(rPr->m_oVertAlign.get().m_oVal.get().GetValue())
-		{
-		case SimpleTypes::verticalalignrunSuperscript: m_oBcw.m_oStream.WriteBYTE(vertalign_SuperScript);break;
-		case SimpleTypes::verticalalignrunSubscript: m_oBcw.m_oStream.WriteBYTE(vertalign_SubScript);break;
-		default: m_oBcw.m_oStream.WriteBYTE(vertalign_Baseline);break;
-		}
+		m_oBcw.m_oStream.WriteBYTE(rPr->m_oVertAlign.get().m_oVal.get().GetValue());
 	}
 	//HighLight
 	if (false != rPr->m_oHighlight.IsInit() || false != rPr->m_oShd.IsInit())
@@ -1588,7 +1581,7 @@ void Binary_pPrWriter::WritePageMargin(OOX::Logic::CSectionProperty* pSectPr)
 void Binary_pPrWriter::WriteHeaderFooter(OOX::Logic::CSectionProperty* pSectPr, std::vector<ComplexTypes::Word::CHdrFtrRef*>& aRefs, bool bHdr)
 {
 	int nCurPos = 0;
-	for(size_t i = 0, length = aRefs.size(); i < length; ++i)
+	for (size_t i = 0, length = aRefs.size(); i < length; ++i)
 	{
 		const ComplexTypes::Word::CHdrFtrRef& oRef = *aRefs[i];
 		if( oRef.m_oType.IsInit() && oRef.m_oId.IsInit())
@@ -1596,25 +1589,12 @@ void Binary_pPrWriter::WriteHeaderFooter(OOX::Logic::CSectionProperty* pSectPr, 
 			int nIndex = 0;
 			OOX::CHdrFtr* pHdrFtr = NULL;
 			
-			OOX::CDocxFlat *docx_flat = dynamic_cast<OOX::CDocxFlat*>(m_oBinaryHeaderFooterTableWriter->m_oParamsWriter.m_pMain);
+			smart_ptr<OOX::File> oFile = m_oBinaryHeaderFooterTableWriter->m_oDocumentRelsWriter->Find(oRef.m_oId->GetValue());
+			if (oFile.IsInit() && (OOX::FileTypes::Header == oFile->type() || OOX::FileTypes::Footer == oFile->type()))
+			{
+				pHdrFtr = (OOX::CHdrFtr*)oFile.GetPointer();
+			}
 
-			if (docx_flat)
-			{
-				std::map<std::wstring, OOX::CHdrFtr*>::iterator pFind = docx_flat->m_mapHeadersFooters.find(oRef.m_oId->GetValue());
-				if (pFind != docx_flat->m_mapHeadersFooters.end())
-				{
-					pHdrFtr = pFind->second;
-				}
-			}
-			else
-			{
-				smart_ptr<OOX::File> oFile = m_oBinaryHeaderFooterTableWriter->m_oDocumentRelsWriter->Find(oRef.m_oId->GetValue());
-				if (oFile.IsInit() && (OOX::FileTypes::Header == oFile->type() || OOX::FileTypes::Footer == oFile->type()))
-				{
-					pHdrFtr = (OOX::CHdrFtr*)oFile.GetPointer();
-				}
-			}
-			
 			if (pHdrFtr)
 			{
 				if(bHdr)
@@ -9258,7 +9238,7 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 		if ((pDocxFlat) && (pDocxFlat->m_pDocument.IsInit()))
 		{
 			pDocument = pDocxFlat->m_pDocument.GetPointer();
-			pComments = &pDocxFlat->m_oComments;
+			pComments = pDocxFlat->m_pComments.GetPointer();
 
 			m_oParamsWriter.m_pSettings = pDocxFlat->m_pSettings.GetPointer();
 			m_oParamsWriter.m_pStyles = pDocxFlat->m_pStyles.GetPointer();
@@ -9385,7 +9365,7 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 		}
 		else if (pDocxFlat)
 		{
-			oBinaryDocumentTableWriter.pBackground = dynamic_cast<OOX::WritingElement*>(pDocxFlat->m_oBgPict.GetPointer());
+			oBinaryDocumentTableWriter.pBackground = dynamic_cast<OOX::WritingElement*>(pDocxFlat->m_pBgPict.GetPointer());
 		}
 
 		// Write content
@@ -9407,15 +9387,6 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 
 			this->WriteTableEnd(nCurPos);
 			
-			CVbaReader vbaReader(pDocx->m_pVbaProject->filename().GetPath(), L"");
-			std::wstring sXml = vbaReader.convert();
-
-			if (false == sXml.empty())
-			{
-				m_oBcw.m_oStream.StartRecord(1);
-				m_oBcw.m_oStream.WriteStringW(sXml);
-				m_oBcw.m_oStream.EndRecord();
-			}
 
 			m_oBcw.WriteItemWithLengthEnd(nCurPos);
 		}

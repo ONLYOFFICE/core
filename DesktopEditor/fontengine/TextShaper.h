@@ -83,7 +83,6 @@ namespace NSShaper
 
 #ifdef SUPPORT_HARFBUZZ_SHAPER
     GRAPHICS_DECL void* HB_LanguageFromString(const std::string language_bcp_47);
-    GRAPHICS_DECL void HB_free(void* data);
 
     GRAPHICS_DECL void HB_ShapeText(void* face, void*& font, char* text,
                                     unsigned int nFeatures, unsigned int nScript, unsigned int nDirection, void* nLanguage,

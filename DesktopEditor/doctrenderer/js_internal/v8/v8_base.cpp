@@ -350,6 +350,11 @@ namespace NSJSBase
         return _value;
     }
 
+    void CJSContext::MoveToThread(ASC_THREAD_ID* id)
+    {
+        // none
+    }
+
     void CJSContext::ExternalInitialize()
     {
         CV8Worker::SetUseExetralInitialize();

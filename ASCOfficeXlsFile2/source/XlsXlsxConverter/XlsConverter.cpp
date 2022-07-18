@@ -508,9 +508,11 @@ void XlsConverter::convert_common (XLS::CommonSubstream* sheet)
 	
 	xls_global_info->current_sheet = sheet->ws_index_ + 1; 
 		
-	if (sheet->m_GLOBALS)
+	XLS::GLOBALS *globals = dynamic_cast<XLS::GLOBALS *>(sheet->m_GLOBALS.get());
+	
+	if (globals)
 	{
-		sheet->m_GLOBALS->serialize(xlsx_context->current_sheet().sheetFormat());
+		globals->serialize(xlsx_context->current_sheet().sheetFormat());
 	}
 	
 	if (!sheet->m_arWINDOW.empty())
@@ -539,6 +541,17 @@ void XlsConverter::convert_common (XLS::CommonSubstream* sheet)
 	if (sheet->m_PAGESETUP)
 	{
 		sheet->m_PAGESETUP->serialize(xlsx_context->current_sheet().pageProperties());
+	}
+	if (globals)
+	{
+		if (globals->m_HorizontalPageBreaks)
+		{
+			globals->m_HorizontalPageBreaks->serialize(xlsx_context->current_sheet().pageProperties());
+		}
+		if (globals->m_VerticalPageBreaks)
+		{
+			globals->m_VerticalPageBreaks->serialize(xlsx_context->current_sheet().pageProperties());
+		}
 	}
 
 	if (sheet->m_arCUSTOMVIEW.size() > 0)
@@ -2473,6 +2486,10 @@ void XlsConverter::convert(XLS::Obj * obj)
 				xlsx_context->get_mediaitems().create_embeddings_path(xlsx_path);
 				
 				std::wstring target;
+
+				if (xls_file->storage_->exists(object_stream + L"Workbook")) target = L".xls";
+				if (xls_file->storage_->exists(object_stream + L"WordDocument")) target = L".doc";
+
 				std::wstring objectId = xlsx_context->get_mediaitems().add_embedding(target, info);
 
 				POLE::Storage *storageOle = new POLE::Storage((xlsx_context->get_mediaitems().embeddings_path() + target).c_str());

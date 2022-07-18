@@ -2925,40 +2925,6 @@ void CPdfRenderer::SetError()
 {
         m_bValid = false;
 }
-
-std::wstring CPdfRenderer::GetDownloadFile(const std::wstring& sUrl)
-{
-    std::wstring::size_type n1 = sUrl.find(L"www.");
-    std::wstring::size_type n2 = sUrl.find(L"http://");
-    std::wstring::size_type n3 = sUrl.find(L"ftp://");
-    std::wstring::size_type n4 = sUrl.find(L"https://");
-    std::wstring::size_type nMax = 3;
-
-    bool bIsNeedDownload = false;
-    if (n1 != std::wstring::npos && n1 < nMax)
-        bIsNeedDownload = true;
-    else if (n2 != std::wstring::npos && n2 < nMax)
-        bIsNeedDownload = true;
-    else if (n3 != std::wstring::npos && n3 < nMax)
-        bIsNeedDownload = true;
-    else if (n4 != std::wstring::npos && n4 < nMax)
-        bIsNeedDownload = true;
-
-    if (!bIsNeedDownload)
-        return L"";
-
-    std::wstring sTempFile = GetTempFile();
-    NSNetwork::NSFileTransport::CFileDownloader oDownloader(sUrl, false);
-    oDownloader.SetFilePath(sTempFile);
-
-    if (oDownloader.DownloadSync())
-        return sTempFile;
-
-    if (NSFile::CFileBinary::Exists(sTempFile))
-        NSFile::CFileBinary::Remove(sTempFile);
-
-    return L"";
-}
 unsigned char* CPdfRenderer::EncodeString(const unsigned int *pUnicodes, const unsigned int& unCount, const unsigned int *pGIDs)
 {
 	if (m_bNeedUpdateTextFont)
@@ -3001,4 +2967,37 @@ unsigned char* CPdfRenderer::EncodeGID(const unsigned int& unGID, const unsigned
 	pCodes[0] = (ushCode >> 8) & 0xFF;
 	pCodes[1] = ushCode & 0xFF;
 	return pCodes;
+}
+std::wstring CPdfRenderer::GetDownloadFile(const std::wstring& sUrl)
+{
+    std::wstring::size_type n1 = sUrl.find(L"www.");
+    std::wstring::size_type n2 = sUrl.find(L"http://");
+    std::wstring::size_type n3 = sUrl.find(L"ftp://");
+    std::wstring::size_type n4 = sUrl.find(L"https://");
+    std::wstring::size_type nMax = 3;
+
+    bool bIsNeedDownload = false;
+    if (n1 != std::wstring::npos && n1 < nMax)
+        bIsNeedDownload = true;
+    else if (n2 != std::wstring::npos && n2 < nMax)
+        bIsNeedDownload = true;
+    else if (n3 != std::wstring::npos && n3 < nMax)
+        bIsNeedDownload = true;
+    else if (n4 != std::wstring::npos && n4 < nMax)
+        bIsNeedDownload = true;
+
+    if (!bIsNeedDownload)
+        return L"";
+
+    std::wstring sTempFile = GetTempFile();
+    NSNetwork::NSFileTransport::CFileDownloader oDownloader(sUrl, false);
+    oDownloader.SetFilePath(sTempFile);
+
+    if (oDownloader.DownloadSync())
+        return sTempFile;
+
+    if (NSFile::CFileBinary::Exists(sTempFile))
+        NSFile::CFileBinary::Remove(sTempFile);
+
+    return L"";
 }

@@ -1,10 +1,9 @@
 #ifndef CEMFINTERPRETATORBASE_H
 #define CEMFINTERPRETATORBASE_H
 
-#include "../EmfTypes.h"
-#include "../EmfObjects.h"
 #include "../../CXmlOutput.h"
 #include "../../Common/IOutputDevice.h"
+#include "../../Common/MetaFile.h"
 
 namespace MetaFile
 {
@@ -20,6 +19,9 @@ namespace MetaFile
         {
         public:
                 virtual InterpretatorType   GetType() const = 0;
+
+                virtual void CreateConditional(IMetaFileBase*) = 0;
+                virtual void ChangeConditional() = 0;
 
                 virtual void HANDLE_EMR_HEADER(const TEmfHeader&) = 0;
                 virtual void HANDLE_EMR_ALPHABLEND(const TEmfAlphaBlend&, CDataStream&) = 0;

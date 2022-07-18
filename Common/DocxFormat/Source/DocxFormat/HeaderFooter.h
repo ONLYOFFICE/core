@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_HEADER_FOOTER_INCLUDE_H_
-#define OOX_HEADER_FOOTER_INCLUDE_H_
 
 #include "File.h"
 #include "../Base/Nullable.h"
@@ -260,7 +258,7 @@ mc:Ignorable=\"w14 w15 wp14\">");
 
 			CDirectory::SaveToFile( oFilePath.GetPath(), sXml );
 
-			oContent.Registration( type().OverrideType(), oDirectory, oFilePath );
+			oContent.Registration( type().OverrideType(), oDirectory, oFilePath.GetFilename() );
 			IFileContainer::Write( oFilePath, oDirectory, oContent );
 		}
 		virtual const OOX::FileType type() const
@@ -307,5 +305,3 @@ mc:Ignorable=\"w14 w15 wp14\">");
 	};
 
 } // namespace OOX
-
-#endif // OOX_HEADER_FOOTER_INCLUDE_H_

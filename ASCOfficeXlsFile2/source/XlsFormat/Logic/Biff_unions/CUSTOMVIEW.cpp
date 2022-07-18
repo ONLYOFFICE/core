@@ -92,8 +92,16 @@ const bool CUSTOMVIEW::loadContent(BinProcessor& proc)
 		count--;
 	}
 
-	proc.optional<HorizontalPageBreaks>();
-	proc.optional<VerticalPageBreaks>();
+	if (proc.optional<HorizontalPageBreaks>())
+	{
+		m_HorizontalPageBreaks = elements_.back();
+		elements_.pop_back();
+	}
+	if (proc.optional<VerticalPageBreaks>())
+	{
+		m_VerticalPageBreaks = elements_.back();
+		elements_.pop_back();
+	}
 
 	proc.optional<Header>();
 	proc.optional<Footer>();
@@ -187,6 +195,14 @@ int CUSTOMVIEW::serialize(std::wostream & stream)
 			{
 				if (m_arSelection[i] == NULL) continue;
 				m_arSelection[i]->serialize(CP_XML_STREAM());
+			}
+			if (m_HorizontalPageBreaks)
+			{
+				m_HorizontalPageBreaks->serialize(CP_XML_STREAM());
+			}
+			if (m_VerticalPageBreaks)
+			{
+				m_VerticalPageBreaks->serialize(CP_XML_STREAM());
 			}
 			//todooo пока не понятно как там определяется ref
 			//if (m_AUTOFILTER)

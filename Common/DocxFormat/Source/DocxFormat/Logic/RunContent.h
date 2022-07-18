@@ -759,7 +759,7 @@ namespace OOX
 				else
 					sResult = _T("<w:t>");
 
-				sResult += m_sText;
+				sResult += XmlUtils::EncodeXmlString(m_sText);
 				sResult += _T("</w:t>");
 
 				return sResult;

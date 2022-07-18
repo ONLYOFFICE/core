@@ -56,6 +56,8 @@ public:
 	BaseObjectPtr				m_DefaultRowHeight;
 	BaseObjectPtr				m_Guts;
 	BaseObjectPtr				m_WsBool;
+	BaseObjectPtr				m_HorizontalPageBreaks;
+	BaseObjectPtr				m_VerticalPageBreaks;
 
 //--------------------------------------------------------------
 	GlobalWorkbookInfoPtr		global_info_;

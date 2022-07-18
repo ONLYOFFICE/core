@@ -72,6 +72,10 @@ namespace OOX
 		{
 			m_filenameCache = file_path;
 		}
+		void set_MsPackage(bool val)
+		{
+			m_bMsPackage = val;
+		}
 		CPath filename_cache()
 		{
 			return m_filenameCache;

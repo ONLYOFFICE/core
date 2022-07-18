@@ -46,6 +46,7 @@ SOURCES += \
     ../Source/DocxFormat/Logic/TableProperty.cpp \
     ../Source/DocxFormat/Logic/Vml.cpp \
     ../Source/DocxFormat/Logic/DocParts.cpp \
+    ../Source/DocxFormat/Logic/Pict.cpp \
     ../Source/DocxFormat/Media/Media.cpp \
     ../Source/DocxFormat/Media/VbaProject.cpp \
     ../Source/DocxFormat/Media/JsaProject.cpp \

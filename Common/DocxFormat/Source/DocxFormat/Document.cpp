@@ -150,7 +150,7 @@ namespace OOX
 			WritingElement_ReadAttributes_Start(oReader)
 				WritingElement_ReadAttributes_Read_if(oReader, L"w:bgcolor", m_oColor)
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"w:background", m_oBackgroundType)
-				WritingElement_ReadAttributes_End(oReader)
+			WritingElement_ReadAttributes_End(oReader)
 		}
 	}
 //------------------------------------------------------------------------------------------------------------------------
@@ -376,7 +376,7 @@ namespace OOX
 
 		CDirectory::SaveToFile( oPath.GetPath(), sXml );
 
-		oContent.Registration( type().OverrideType(), oDirectory, oPath );
+		oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 		IFileContainer::Write( oPath, oDirectory, oContent );
 	}
 

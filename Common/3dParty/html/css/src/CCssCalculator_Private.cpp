@@ -509,7 +509,7 @@ namespace NSCSS
 
             std::map<StatistickElement, unsigned int>::const_iterator oFindCountStyle = m_mStatictics->find(StatistickElement{StatistickElement::IsStyle, arSelectors[i].m_sStyle});
 
-            if(oFindCountStyle != m_mStatictics->end())
+            if (oFindCountStyle != m_mStatictics->end())
             {
                 if ((bIsSettings && oFindCountStyle->second <  MaxNumberRepetitions) ||
                    (!bIsSettings && oFindCountStyle->second >= MaxNumberRepetitions))
@@ -517,6 +517,8 @@ namespace NSCSS
                 else if (!bIsSettings)
                     pStyle->AddStyle(arSelectors[i].m_sStyle, i + 1, true);
             }
+            else if (bIsSettings)
+                pStyle->AddStyle(arSelectors[i].m_sStyle, i + 1, true);
         }
 
         if (!bIsSettings)

@@ -36,27 +36,24 @@
 
 namespace XLS
 {
+	class VerticalPageBreaks : public BiffRecord
+	{
+		BIFF_RECORD_DEFINE_TYPE_INFO(VerticalPageBreaks)
+		BASE_OBJECT_DEFINE_CLASS_NAME(VerticalPageBreaks)
+	public:
+		VerticalPageBreaks();
+		~VerticalPageBreaks();
 
+		BaseObjectPtr clone();
 
-// Logical representation of VerticalPageBreaks record in BIFF8
-class VerticalPageBreaks: public BiffRecord
-{
-	BIFF_RECORD_DEFINE_TYPE_INFO(VerticalPageBreaks)
-	BASE_OBJECT_DEFINE_CLASS_NAME(VerticalPageBreaks)
-public:
-	VerticalPageBreaks();
-	~VerticalPageBreaks();
+		void readFields(CFRecord& record);
 
-	BaseObjectPtr clone();
-	
-	void readFields(CFRecord& record);
+		static const ElementType	type = typeVerticalPageBreaks;
 
-	static const ElementType	type = typeVerticalPageBreaks;
-
+		virtual int serialize(std::wostream & stream);
 //-----------------------------
-	_UINT16 cbrk;
-	BiffStructurePtrVector rgbrk;
-};
-
+		_UINT16 cbrk;
+		BiffStructurePtrVector rgbrk;
+	};
 } // namespace XLS
 

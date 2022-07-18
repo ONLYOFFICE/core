@@ -30,6 +30,9 @@ namespace MetaFile
 
                 InterpretatorType   GetType() const override;
 
+                void CreateConditional(IMetaFileBase* pFile) override {};
+                void ChangeConditional() override {};
+
                 void SetOutputDevice(const wchar_t *wsFilePath);
 
                 void HANDLE_EMR_HEADER(const TEmfHeader& oTEmfHeader) override ;

@@ -31,12 +31,14 @@
  */
 
 #include "PropertySetStream.h"
+#include "CodePageOle.h"
 
 #include "../../Binary/CFStream.h"
 #include "../../Auxiliary/HelpFunc.h"
 #include "../../../Common/simple_xml_writer.h"
 #include "../../../../../DesktopEditor/common/SystemUtils.h"
 #include "../../../../../Common/DocxFormat/Source/Base/Base.h"
+#include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace OLEPS
 {
@@ -97,7 +99,7 @@ namespace OLEPS
 			if (prop)
 				break;
 		}
-		return prop;
+        return prop;
 	}
 	const unsigned short PropertySetStream::GetCodePage()
 	{
@@ -122,7 +124,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"Template")
 					{
-						CP_XML_STREAM() << prop->toString();
+						CP_XML_CONTENT(prop->toString());
 					}
 				}
 				prop = GetProperty(MANAGER);
@@ -130,7 +132,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"Manager")
 					{
-						CP_XML_STREAM() << prop->toString();
+						CP_XML_CONTENT(prop->toString());
 					}
 				}
 				prop = GetProperty(COMPANY);
@@ -138,7 +140,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"Company")
 					{
-						CP_XML_STREAM() << prop->toString();
+						CP_XML_CONTENT(prop->toString());
 					}
 				}
 				prop = GetProperty(PAGECOUNT);
@@ -146,7 +148,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"Pages")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << prop->toString();
 					}
 				}
 				prop = GetProperty(WORDCOUNT);
@@ -154,7 +156,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"Words")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << prop->toString();
 					}
 				}
 				//prop = GetProperty(CHARCOUNT);
@@ -162,7 +164,7 @@ namespace OLEPS
 				//{
 				//	CP_XML_NODE(L"CharactersWithSpaces")
 				//	{
-				//		CP_XML_STREAM() << prop->toString();
+                //		CP_XML_STREAM() << prop->toString();
 				//	}
 				//}
 				prop = GetProperty(CHARCOUNT);
@@ -170,7 +172,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"Characters")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << prop->toString();
 					}
 				}
 				prop = GetProperty(PRESFORMAT);
@@ -178,7 +180,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"PresentationFormat")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << prop->toString();
 					}
 				}
 				prop = GetProperty(LINECOUNT);
@@ -186,7 +188,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"Lines")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << prop->toString();
 					}
 				}
 				prop = GetProperty(PARACOUNT);
@@ -194,7 +196,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"Paragraphs")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << prop->toString();
 					}
 				}
 				prop = GetProperty(SLIDECOUNT);
@@ -202,7 +204,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"Slides")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << prop->toString();
 					}
 				}
 				prop = GetProperty(NOTECOUNT);
@@ -210,7 +212,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"Notes")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << prop->toString();
 					}
 				}
 				prop = GetProperty(HIDDENCOUNT);
@@ -218,7 +220,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"HiddenSlides")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << prop->toString();
 					}
 				}
 				prop = GetProperty(MMCLIPCOUNT);
@@ -226,7 +228,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"MMClips")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << prop->toString();
 					}
 				}
 				prop = GetProperty(SCALE);
@@ -234,7 +236,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"ScaleCrop")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << prop->toString();
 					}
 				}
 				prop = GetProperty(HEADINGPAIR);
@@ -242,7 +244,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"HeadingPairs")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << prop->toString();
 					}
 				}
 				prop = GetProperty(DOCPARTS);
@@ -250,7 +252,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"TitlesOfParts")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << prop->toString();
 					}
 				}
 				prop = GetProperty(LINKBASE);
@@ -258,7 +260,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"LinksUpToDate")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << prop->toString();
 					}
 				}
 				prop = GetProperty(CCHWITHSPACES);
@@ -266,7 +268,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"CharactersWithSpaces")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << prop->toString();
 					}
 				}
 				prop = GetProperty(SHAREDDOC);
@@ -274,7 +276,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"SharedDoc")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << prop->toString();
 					}
 				}
 				//	LINKBASE = 0x1014,
@@ -283,7 +285,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"HLinks")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << prop->toString();
 					}
 				}
 				prop = GetProperty(HYPERLINKSCHANGED);
@@ -291,22 +293,23 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"HyperlinksChanged")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << prop->toString();
 					}
 				}
 				//	DIGSIG = 0x1018,
 				CP_XML_NODE(L"Application")
 				{
+					std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
+					if (sApplication.empty())
+						sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
+
 					prop = GetProperty(APPNAME);
 					if (prop)
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << (prop->toString() + L"/" + sApplication);
 					}
 					else
 					{
-						std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
-						if (sApplication.empty())
-							sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
 						CP_XML_STREAM() << sApplication;
 #if defined(INTVER)
 						std::string s = VALUE2STR(INTVER);
@@ -319,7 +322,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"AppVersion")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << prop->toString();
 					}
 				}
 				prop = GetProperty(DOC_SECURITY);
@@ -327,7 +330,7 @@ namespace OLEPS
 				{
 					CP_XML_NODE(L"DocSecurity")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << prop->toString();
 					}
 				}
 			}
@@ -340,6 +343,7 @@ namespace OLEPS
 
 		std::wstringstream output;
 		PropertyPtr prop;
+		std::wstring value;
 
 		CP_XML_WRITER(output)
 		{
@@ -352,108 +356,123 @@ namespace OLEPS
 				CP_XML_ATTR(L"xmlns:xsi", L"http://www.w3.org/2001/XMLSchema-instance");
 
 				prop = GetProperty(TITLE);
-				if (prop)
+				value = prop ? prop->toString() : L"";
+				if (!value.empty())
 				{
 					CP_XML_NODE(L"dc:title")
-					{
-						CP_XML_STREAM() << prop->toString();
+                    {
+						CP_XML_CONTENT(value);
 					}
 				}
 				prop = GetProperty(SUBJECT);
-				if (prop)
+				value = prop ? prop->toString() : L"";
+				if (!value.empty())
 				{
 					CP_XML_NODE(L"dc:subject")
 					{
-						CP_XML_STREAM() << prop->toString();
+						CP_XML_CONTENT(value);
 					}
 				}
 				prop = GetProperty(AUTHOR);
-				if (prop)
+				value = prop ? prop->toString() : L"";
+				if (!value.empty())
 				{
 					CP_XML_NODE(L"dc:creator")
 					{
-						CP_XML_STREAM() << prop->toString();
+						CP_XML_CONTENT(value);
 					}
 				}
 				prop = GetProperty(KEYWORDS);
-				if (prop)
+				value = prop ? prop->toString() : L"";
+				if (!value.empty())
 				{
 					CP_XML_NODE(L"cp:keywords")
 					{
-						CP_XML_STREAM() << prop->toString();
+						CP_XML_CONTENT(value);
 					}
 				}
 				prop = GetProperty(COMMENTS);
-				if (prop)
+				value = prop ? prop->toString() : L"";
+				if (!value.empty())
 				{
 					CP_XML_NODE(L"dc:description")
 					{
-						CP_XML_STREAM() << prop->toString();
+						CP_XML_CONTENT(value);
 					}
 				}
 				prop = GetProperty(LANGUAGE);
-				if (prop)
+				value = prop ? prop->toString() : L"";
+				if (!value.empty())
 				{
 					CP_XML_NODE(L"dc:language")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << value;
 					}
-				}				prop = GetProperty(VERSION);
-				if (prop)
+				}				
+				prop = GetProperty(VERSION);
+				value = prop ? prop->toString() : L"";
+				if (!value.empty())
 				{
 					CP_XML_NODE(L"cp:version")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << value;
 					}
 				}
 				prop = GetProperty(LASTAUTHOR);
-				if (prop)
+				value = prop ? prop->toString() : L"";
+				if (!value.empty())
 				{
 					CP_XML_NODE(L"cp:lastModifiedBy")
 					{
-						CP_XML_STREAM() << prop->toString();
+						CP_XML_CONTENT(value);
 					}
 				}
 				prop = GetProperty(REVNUMBER);
-				if (prop)
+				value = prop ? prop->toString() : L"";
+				if (!value.empty())
 				{
+					unsigned int val = XmlUtils::GetUInteger(value);
 					CP_XML_NODE(L"cp:revision")
 					{
-						CP_XML_STREAM() << prop->toString();
+						CP_XML_STREAM() << val;
 					}
 				}
 				prop = GetProperty(CREATE_DTM);
-				if (prop)
+				value = prop ? prop->toString() : L"";
+				if (!value.empty())
 				{
 					CP_XML_NODE(L"dcterms:created")
 					{
 						CP_XML_ATTR(L"xsi:type", L"dcterms:W3CDTF");
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << value;
 					}
 				}
 				prop = GetProperty(LASTSAVE_DTM);
-				if (prop)
+				value = prop ? prop->toString() : L"";
+				if (!value.empty())
 				{
 					CP_XML_NODE(L"dcterms:modified")
 					{
 						CP_XML_ATTR(L"xsi:type", L"dcterms:W3CDTF");
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << value;
 					}
 				}
 				prop = GetProperty(CATEGORY);
-				if (prop)
+				value = prop ? prop->toString() : L"";
+				if (!value.empty())
 				{
 					CP_XML_NODE(L"cp:category")
 					{
-						CP_XML_STREAM() << prop->toString();
+						CP_XML_CONTENT(value);
 					}
 				}
 				prop = GetProperty(CONTENTSTATUS);
-				if (prop)
+				value = prop ? prop->toString() : L"";
+				if (!value.empty())
 				{
 					CP_XML_NODE(L"cp:contentStatus")
 					{
-						CP_XML_STREAM() << prop->toString();
+                        CP_XML_STREAM() << value;
 					}
 				}
 				//	BYTECOUNT = 0x1004,

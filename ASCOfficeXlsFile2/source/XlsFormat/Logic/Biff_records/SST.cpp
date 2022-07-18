@@ -64,9 +64,13 @@ void SST::readFields(CFRecord& record)
 	{
 		XLUnicodeRichExtendedStringPtr element(new XLUnicodeRichExtendedString(recs));
 
-		if (record.getRdPtr() + 3 > record.getDataSize()) // If the break is at the XLUnicodeRichExtendedString boundary
+		if (record.getRdPtr() == record.getDataSize())
 		{
 			element->appendNextContinue(record, false);
+		}
+		else if (record.getRdPtr() + 3 > record.getDataSize()) 
+		{
+			element->appendNextContinue(record, true);
 		}
 
 		if (record.getRdPtr() + 3 > record.getDataSize())

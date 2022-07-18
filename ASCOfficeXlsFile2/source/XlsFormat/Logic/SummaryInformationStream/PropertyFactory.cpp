@@ -51,7 +51,7 @@ PropertyPtr PropertyFactory::ReadProperty(const unsigned int prop_id, XLS::CFStr
 
 	PropertyPtr property_;
 
-	if (prop_id == 0x0001 || prop_id == 0x1001)
+	if (prop_id == CODEPAGE || prop_id == CODEPAGEEXT)
 	{
 		property_ = PropertyPtr(new PropertyCodePage(prop_id, value_type));
 		property_->Read(stream);
@@ -62,37 +62,37 @@ PropertyPtr PropertyFactory::ReadProperty(const unsigned int prop_id, XLS::CFStr
 			code_page = property_CodePage->code_page;
 		}
 	}
-	else if (prop_id == 0x100C)
+	else if (prop_id == HEADINGPAIR)
 	{
 		property_ = PropertyPtr(new PropertyVecHeadingPair(prop_id, value_type, code_page));
 	}
-	else if (prop_id == 0x100D)
+	else if (prop_id == DOCPARTS)
 	{
 		property_ = PropertyPtr(new PropertyVecString(prop_id, value_type, code_page));
 	}
-	else if (prop_id == 0x1018) 
+	else if (prop_id == DIGSIG)
 	{
 		property_ = PropertyPtr(new PropertyDigSig(prop_id, value_type));
 	}
 	else
 	{
-		if (value_type == 0x001E)
+		if (value_type == Property::VT_LPSTR)
 		{
 			property_ = PropertyPtr(new PropertyString(prop_id, value_type, code_page));
 		}
-		else if (value_type == 0x001F)
+		else if (value_type == Property::VT_LPWSTR)
 		{
 			property_ = PropertyPtr(new PropertyWString(prop_id, value_type));
 		}
-		else if (value_type == 0x0003)
+		else if (value_type == Property::VT_I4)
 		{
 			property_ = PropertyPtr(new PropertyInt(prop_id, value_type));
 		}
-		else if (value_type == 0x000b)
+		else if (value_type == Property::VT_BOOL)
 		{
 			property_ = PropertyPtr(new PropertyBool(prop_id, value_type));
 		}
-		else if (value_type == 0x0040)
+		else if (value_type == Property::VT_FILETIME)
 		{
 			property_ = PropertyPtr(new PropertyDTM(prop_id, value_type));
 		}

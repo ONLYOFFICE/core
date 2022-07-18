@@ -49,63 +49,55 @@
 
 namespace XLS
 {
+	PAGESETUP::PAGESETUP() {}
+	PAGESETUP::~PAGESETUP() {}
 
-
-PAGESETUP::PAGESETUP()
-{
-}
-
-
-PAGESETUP::~PAGESETUP()
-{
-}
-
-class Parenthesis_PAGESETUP_1: public ABNFParenthesis
-{
-	BASE_OBJECT_DEFINE_CLASS_NAME(Parenthesis_PAGESETUP_1)
-public:
-	BaseObjectPtr clone()
+	class Parenthesis_PAGESETUP_1 : public ABNFParenthesis
 	{
-		return BaseObjectPtr(new Parenthesis_PAGESETUP_1(*this));
-	}
-
-	const bool loadContent(BinProcessor& proc)
-	{
-		//?????????
-		//if(!proc.mandatory(Pls(proc.getParent())))
-		//{
-			return false;
-		//}
-		//proc.repeated<Continue>(0, 0);
-		return true;
-	};
-};
-
-
-
-BaseObjectPtr PAGESETUP::clone()
-{
-	return BaseObjectPtr(new PAGESETUP(*this));
-}
-
-
-// PAGESETUP = Header Footer HCenter VCenter [LeftMargin] [RightMargin] [TopMargin] [BottomMargin] [Pls *Continue] Setup
-const bool PAGESETUP::loadContent(BinProcessor& proc)
-{
-	while (true)
-	{
-		CFRecordType::TypeId type = proc.getNextRecordType();
-		
-		if (type == rt_NONE)
+		BASE_OBJECT_DEFINE_CLASS_NAME(Parenthesis_PAGESETUP_1)
+	public:
+		BaseObjectPtr clone()
 		{
-			proc.SkipRecord();
-			continue; //file(6).xls
-			//break;
+			return BaseObjectPtr(new Parenthesis_PAGESETUP_1(*this));
 		}
 
-		switch(type)
+		const bool loadContent(BinProcessor& proc)
 		{
-			case rt_Header:			
+			//?????????
+			//if(!proc.mandatory(Pls(proc.getParent())))
+			//{
+			return false;
+			//}
+			//proc.repeated<Continue>(0, 0);
+			return true;
+		};
+	};
+
+
+
+	BaseObjectPtr PAGESETUP::clone()
+	{
+		return BaseObjectPtr(new PAGESETUP(*this));
+	}
+
+
+	// PAGESETUP = Header Footer HCenter VCenter [LeftMargin] [RightMargin] [TopMargin] [BottomMargin] [Pls *Continue] Setup
+	const bool PAGESETUP::loadContent(BinProcessor& proc)
+	{
+		while (true)
+		{
+			CFRecordType::TypeId type = proc.getNextRecordType();
+
+			if (type == rt_NONE)
+			{
+				proc.SkipRecord();
+				continue; //file(6).xls
+				//break;
+			}
+
+			switch (type)
+			{
+			case rt_Header:
 			{
 				if (proc.optional<Header>())
 				{
@@ -120,30 +112,31 @@ const bool PAGESETUP::loadContent(BinProcessor& proc)
 					m_Footer = elements_.back();
 					elements_.pop_back();
 				}
-			}break;			
+			}break;
 			case rt_HCenter:
+			{
+				if (proc.optional<HCenter>())
 				{
-					if (proc.optional<HCenter>())
-					{
-						m_HCenter = elements_.back();
-						elements_.pop_back();
-					}				
-				}break;
+					m_HCenter = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
 			case rt_VCenter:
+			{
+				if (proc.optional<VCenter>())
 				{
-					if (proc.optional<VCenter>())
-					{
-						m_VCenter = elements_.back();
-						elements_.pop_back();
-					}
-				}break;			
+					m_VCenter = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
 			case rt_BottomMargin:	proc.optional<BottomMargin>();		break;
 			case rt_TopMargin:		proc.optional<TopMargin>();			break;
 			case rt_LeftMargin:		proc.optional<LeftMargin>();		break;
 			case rt_RightMargin:	proc.optional<RightMargin>();		break;
+
+			case rt_HorizontalPageBreaks: proc.optional<HorizontalPageBreaks>(); break;
+			case rt_VerticalPageBreaks: proc.optional<VerticalPageBreaks>(); break;
 			
-			case rt_HorizontalPageBreaks: proc.optional<HorizontalPageBreaks>();	break;
-			case rt_VerticalPageBreaks: proc.optional<VerticalPageBreaks>();	break;
 			case rt_Pls:
 				{
 					if (proc.optional<Pls>())
@@ -275,7 +268,6 @@ int PAGESETUP::serialize(std::wostream & stream)
 				}
 			}
 		}
-
 		if (m_Header || m_Footer)
 		{
 			CP_XML_NODE(L"headerFooter")
@@ -300,6 +292,7 @@ int PAGESETUP::serialize(std::wostream & stream)
 					}
 				}
 			}
+
 		}
 	}
 	return 0;

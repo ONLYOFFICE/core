@@ -115,13 +115,13 @@ namespace ComplexTypes
 			{
 			}
 
-			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
+			virtual void FromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, (L"w:charSpace"), m_oCharSpace );
 				XmlMacroReadAttributeBase( oNode, (L"w:linePitch"), m_oLinePitch );
 				XmlMacroReadAttributeBase( oNode, (L"w:type"),      m_oType );
 			}
-			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes(oReader);
 
@@ -132,45 +132,34 @@ namespace ComplexTypes
 			{
                 std::wstring sResult;
 
-				if ( m_oCharSpace.IsInit() )
+				if (m_oType.IsInit())
 				{
-					sResult += (L"w:charSpace=\"");
-					sResult += m_oCharSpace->ToString();
-					sResult += (L"\" ");
+					sResult += L" w:type=\"" + m_oType->ToString() + L"\"";
 				}
-
 				if ( m_oLinePitch.IsInit() )
 				{
-					sResult += (L"w:linePitch=\"");
-					sResult += m_oLinePitch->ToString();
-					sResult += (L"\" ");
-				}
-
-				if ( m_oType.IsInit() )
+					sResult += L" w:linePitch=\"" + m_oLinePitch->ToString() + L"\"";
+				}	
+				if (m_oCharSpace.IsInit())
 				{
-					sResult += (L"w:type=\"");
-					sResult += m_oType->ToString();
-					sResult += (L"\" ");
+					sResult += L" w:charSpace=\"" + m_oCharSpace->ToString() + L"\"";
 				}
-
 				return sResult;
 			}
 		private:
-
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:charSpace"), m_oCharSpace )
 				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:linePitch"), m_oLinePitch )
 				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:type"),      m_oType )
+				WritingElement_ReadAttributes_Read_else_if(oReader, (L"w:line-pitch"), m_oLinePitch)	//2003 xml
 				WritingElement_ReadAttributes_End( oReader )
 			}
-
 		public:
-
-			nullable<SimpleTypes::CDecimalNumber<> > m_oCharSpace;
-			nullable<SimpleTypes::CDecimalNumber<> > m_oLinePitch;
-			nullable<SimpleTypes::CDocGrid<>       > m_oType;
+			nullable<SimpleTypes::CDecimalNumber<>>	m_oCharSpace;
+			nullable<SimpleTypes::CDecimalNumber<>>	m_oLinePitch;
+			nullable<SimpleTypes::CDocGrid<>>		m_oType;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -208,20 +197,14 @@ namespace ComplexTypes
 			{
                 std::wstring sResult;
 
-				if ( m_oId.IsInit() )
-				{
-					sResult += (L"r:id=\"");
-					sResult += m_oId->ToString();
-					sResult += (L"\" ");
-				}
-
 				if ( m_oType.IsInit() )
 				{
-					sResult += (L"w:type=\"");
-					sResult += m_oType->ToString();
-					sResult += (L"\" ");
+					sResult += L" w:type=\"" + m_oType->ToString() + L"\"";
+				}		
+				if ( m_oId.IsInit() )
+				{
+					sResult += L" r:id=\"" + m_oId->ToString() + L"\"";
 				}
-
 				return sResult;
 			}
 		private:
@@ -887,58 +870,37 @@ namespace ComplexTypes
 			{
                 std::wstring sResult;
 
+				if (m_oTop.IsInit())
+				{
+					sResult += L" w:top=\"" + m_oTop->ToString() + L"\"";
+				}
+				if (m_oRight.IsInit())
+				{
+					sResult += L" w:right=\"" + m_oRight->ToString() + L"\"";
+				}
 				if ( m_oBottom.IsInit() )
 				{
-					sResult += (L"w:bottom=\"");
-					sResult += m_oBottom->ToString();
-					sResult += (L"\" ");
+					sResult += L" w:bottom=\"" + m_oBottom->ToString() + L"\"";
 				}
-
+				if (m_oLeft.IsInit())
+				{
+					sResult += L" w:left=\"" + m_oLeft->ToString() + L"\"";
+				}
+				if (m_oHeader.IsInit())
+				{
+					sResult += L" w:header=\"" + m_oHeader->ToString() + L"\"";
+				}
 				if ( m_oFooter.IsInit() )
 				{
-					sResult += (L"w:footer=\"");
-					sResult += m_oFooter->ToString();
-					sResult += (L"\" ");
+					sResult += L" w:footer=\"" + m_oFooter->ToString() + L"\"";
 				}
 				if ( m_oGutter.IsInit() )
 				{
-					sResult += (L"w:gutter=\"");
-					sResult += m_oGutter->ToString();
-					sResult += (L"\" ");
+					sResult += L" w:gutter=\"" + m_oGutter->ToString() + L"\"";
 				}
-
-				if ( m_oHeader.IsInit() )
-				{
-					sResult += (L"w:header=\"");
-					sResult += m_oHeader->ToString();
-					sResult += (L"\" ");
-				}
-
-				if ( m_oLeft.IsInit() )
-				{
-					sResult += (L"w:left=\"");
-					sResult += m_oLeft->ToString();
-					sResult += (L"\" ");
-				}
-
-				if ( m_oRight.IsInit() )
-				{
-					sResult += (L"w:right=\"");
-					sResult += m_oRight->ToString();
-					sResult += (L"\" ");
-				}
-				if ( m_oTop.IsInit() )
-				{
-					sResult += (L"w:top=\"");
-					sResult += m_oTop->ToString();
-					sResult += (L"\" ");
-				}
-
 				return sResult;
 			}
-
 		private:
-
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
@@ -951,16 +913,14 @@ namespace ComplexTypes
 				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:top"),    m_oTop )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-
 		public:
-
-			nullable<SimpleTypes::CSignedTwipsMeasure  > m_oBottom;
-			nullable<SimpleTypes::CTwipsMeasure        > m_oFooter;
-			nullable<SimpleTypes::CTwipsMeasure        > m_oGutter;
-			nullable<SimpleTypes::CTwipsMeasure        > m_oHeader;
-			nullable<SimpleTypes::CTwipsMeasure        > m_oLeft;
-			nullable<SimpleTypes::CTwipsMeasure        > m_oRight;
-			nullable<SimpleTypes::CSignedTwipsMeasure  > m_oTop;
+			nullable<SimpleTypes::CSignedTwipsMeasure> m_oBottom;
+			nullable<SimpleTypes::CTwipsMeasure> m_oFooter;
+			nullable<SimpleTypes::CTwipsMeasure> m_oGutter;
+			nullable<SimpleTypes::CTwipsMeasure> m_oHeader;
+			nullable<SimpleTypes::CTwipsMeasure> m_oLeft;
+			nullable<SimpleTypes::CTwipsMeasure> m_oRight;
+			nullable<SimpleTypes::CSignedTwipsMeasure > m_oTop;
 		};
 
 
@@ -1765,12 +1725,9 @@ namespace OOX
 			{
 				return et_w_sectPr;
 			}
-
 		private:
-
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:rsidDel"),  m_oRsidDel )
 				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:rsidR"),    m_oRsidR )
@@ -1778,40 +1735,36 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:rsidSect"), m_oRsidSect )
 				WritingElement_ReadAttributes_End( oReader )
 			}
-
 		public:
+			bool m_bSectPrChange;
 
-			bool                                                           m_bSectPrChange;
-
-			// Attributes
 			nullable<SimpleTypes::CLongHexNumber<>                       > m_oRsidDel;
 			nullable<SimpleTypes::CLongHexNumber<>                       > m_oRsidR;
 			nullable<SimpleTypes::CLongHexNumber<>                       > m_oRsidRPr;
 			nullable<SimpleTypes::CLongHexNumber<>                       > m_oRsidSect;
 
-			// Child Elements
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oBidi;
-			nullable<OOX::Logic::CColumns                                > m_oCols;
-			nullable<ComplexTypes::Word::CDocGrid                        > m_oDocGrid;
-			nullable<OOX::Logic::CEdnProps                               > m_oEndnotePr;
-			std::vector<ComplexTypes::Word::CHdrFtrRef*                  > m_arrFooterReference;
-			nullable<OOX::Logic::CFtnProps                               > m_oFootnotePr;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oFormProt;
-			std::vector<ComplexTypes::Word::CHdrFtrRef*                  > m_arrHeaderReference;
-			nullable<ComplexTypes::Word::CLineNumber                     > m_oLnNumType;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oNoEndnote;
-			nullable<ComplexTypes::Word::CPaperSource                    > m_oPaperSrc;
-			nullable<OOX::Logic::CPageBorders                            > m_oPgBorders;
-			nullable<ComplexTypes::Word::CPageMar                        > m_oPgMar;
-			nullable<ComplexTypes::Word::CPageNumber                     > m_oPgNumType;
-			nullable<ComplexTypes::Word::CPageSz                         > m_oPgSz;
-			nullable<ComplexTypes::Word::CRel                            > m_oPrinterSettings;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oRtlGutter;
-			nullable<OOX::Logic::CSectPrChange                           > m_oSectPrChange;
-			nullable<ComplexTypes::Word::CTextDirection                  > m_oTextDirection;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oTitlePg;
-			nullable<ComplexTypes::Word::CSectType                       > m_oType;
-			nullable<ComplexTypes::Word::CVerticalJc                     > m_oVAlign;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>		m_oBidi;
+			nullable<OOX::Logic::CColumns>										m_oCols;
+			nullable<ComplexTypes::Word::CDocGrid>								m_oDocGrid;
+			nullable<OOX::Logic::CEdnProps>										m_oEndnotePr;
+			std::vector<ComplexTypes::Word::CHdrFtrRef*>						m_arrFooterReference;
+			nullable<OOX::Logic::CFtnProps>										m_oFootnotePr;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>		m_oFormProt;
+			std::vector<ComplexTypes::Word::CHdrFtrRef*>						m_arrHeaderReference;
+			nullable<ComplexTypes::Word::CLineNumber>							m_oLnNumType;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>		m_oNoEndnote;
+			nullable<ComplexTypes::Word::CPaperSource>							m_oPaperSrc;
+			nullable<OOX::Logic::CPageBorders>									m_oPgBorders;
+			nullable<ComplexTypes::Word::CPageMar>								m_oPgMar;
+			nullable<ComplexTypes::Word::CPageNumber>							m_oPgNumType;
+			nullable<ComplexTypes::Word::CPageSz>								m_oPgSz;
+			nullable<ComplexTypes::Word::CRel>									m_oPrinterSettings;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>		m_oRtlGutter;
+			nullable<OOX::Logic::CSectPrChange>									m_oSectPrChange;
+			nullable<ComplexTypes::Word::CTextDirection>						m_oTextDirection;
+			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> >		m_oTitlePg;
+			nullable<ComplexTypes::Word::CSectType>								m_oType;
+			nullable<ComplexTypes::Word::CVerticalJc>							m_oVAlign;
 		};
 
 	} // namespace Logic

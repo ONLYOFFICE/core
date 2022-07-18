@@ -773,11 +773,11 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const
 			{
-				std::wstring sResult = L"<w:fldChar ";
+				std::wstring sResult = L"<w:fldChar";
 
-				ComplexTypes_WriteAttribute( L"w:dirty=\"",       m_oDirty );
-				ComplexTypes_WriteAttribute( L"w:fldCharType=\"", m_oFldCharType );
-				ComplexTypes_WriteAttribute( L"w:fldLock=\"",     m_oFldLock );
+				ComplexTypes_WriteAttribute( L" w:dirty=\"",       m_oDirty );
+				ComplexTypes_WriteAttribute( L" w:fldCharType=\"", m_oFldCharType );
+				ComplexTypes_WriteAttribute( L" w:fldLock=\"",     m_oFldLock );
 
 				if ( m_oFFData.IsInit() )
 				{

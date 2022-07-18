@@ -70,7 +70,8 @@ JSSmart<CJSValue> CZipEmbed::addFile(JSSmart<CJSValue> filePath, JSSmart<CJSValu
     if (!m_pFolder || !filePath->isString() || !typedArray->isTypedArray())
         return CJSContext::createBool(false);
 
-    CJSDataBuffer buffer = typedArray->toTypedArray()->getData();
+    JSSmart<CJSTypedArray> typedArray2 = typedArray->toTypedArray();
+    CJSDataBuffer buffer = typedArray2->getData();
     m_pFolder->write(filePath->toStringW(), buffer.Data, (DWORD)buffer.Len);
 
     if (buffer.IsExternalize)

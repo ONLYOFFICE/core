@@ -34,32 +34,43 @@
 
 namespace XLS
 {
+	VerticalPageBreaks::VerticalPageBreaks() {}
+	VerticalPageBreaks::~VerticalPageBreaks() {}
 
-VerticalPageBreaks::VerticalPageBreaks()
-{
-}
-
-
-VerticalPageBreaks::~VerticalPageBreaks()
-{
-}
-
-
-BaseObjectPtr VerticalPageBreaks::clone()
-{
-	return BaseObjectPtr(new VerticalPageBreaks(*this));
-}
-
-void VerticalPageBreaks::readFields(CFRecord& record)
-{
-	record >> cbrk;
-	for (int i = 0; i < cbrk ; ++i)
+	BaseObjectPtr VerticalPageBreaks::clone()
 	{
-		VertBrkPtr vb(new VertBrk);
-		record >> *vb;
-		rgbrk.push_back(vb);
+		return BaseObjectPtr(new VerticalPageBreaks(*this));
 	}
-}
 
+	void VerticalPageBreaks::readFields(CFRecord& record)
+	{
+		record >> cbrk;
+		for (int i = 0; i < cbrk; ++i)
+		{
+			VertBrkPtr vb(new VertBrk);
+			record >> *vb;
+			rgbrk.push_back(vb);
+		}
+	}
+	int VerticalPageBreaks::serialize(std::wostream & stream)
+	{
+		if (rgbrk.empty()) return 0;
+
+		CP_XML_WRITER(stream)
+		{
+			CP_XML_NODE(L"colBreaks")
+			{
+				CP_XML_ATTR(L"count", cbrk);
+				CP_XML_ATTR(L"manualBreakCount", cbrk);
+
+				for (size_t i = 0; i < rgbrk.size(); ++i)
+				{
+					if (rgbrk[i])
+						rgbrk[i]->serialize(CP_XML_STREAM());
+				}
+			}
+		}
+		return 0;
+	}
 } // namespace XLS
 

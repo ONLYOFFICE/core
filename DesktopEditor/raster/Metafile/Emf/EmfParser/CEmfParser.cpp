@@ -17,6 +17,7 @@ namespace MetaFile
                 ClearFile();
 
                 RELEASEOBJECT(m_pEmfPlusParser);
+                RELEASEOBJECT(m_pInterpretator);
         }
 
         bool CEmfParser::OpenFromFile(const wchar_t *wsFilePath)
@@ -1392,7 +1393,12 @@ namespace MetaFile
                         }
 
                         m_pEmfPlusParser->SetStream(m_oStream.GetCurPtr(), m_ulRecordSize - 8);
+
+                        m_pInterpretator->ChangeConditional();
+
                         m_pEmfPlusParser->PlayFile();
+
+                        m_pInterpretator->ChangeConditional();
 
                         m_oStream.Skip(m_ulRecordSize - 8);
                 }

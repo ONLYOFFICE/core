@@ -417,11 +417,12 @@ namespace CSVWriter
 		if (pCell->m_oType.IsInit())
 			format_type = (int)pCell->m_oType->GetValue();
 
-		if (pCell->m_oCacheValue.IsInit())
-		{
-			sCellValue = *pCell->m_oCacheValue;
-		}
-		else if (pCell->m_oValue.IsInit())
+		//if (pCell->m_oCacheValue.IsInit())
+		//{
+		//	sCellValue = *pCell->m_oCacheValue;
+		//}
+		//else 
+			if (pCell->m_oValue.IsInit())
 		{
 			sCellValue = pCell->m_oValue->ToString();
 
@@ -445,7 +446,7 @@ namespace CSVWriter
 				OOX::Spreadsheet::CXfs* xfs = m_oXlsx.m_pStyles->m_oCellXfs->m_arrItems[*pCell->m_oStyle];
 				if (xfs)
 				{
-					if ((xfs->m_oApplyNumberFormat.IsInit()) && (xfs->m_oApplyNumberFormat->ToBool()))
+					if ((xfs->m_oApplyNumberFormat.IsInit()) && (xfs->m_oApplyNumberFormat->ToBool()) || !xfs->m_oApplyNumberFormat.IsInit())
 					{
 						if ((xfs->m_oNumFmtId.IsInit()) /*&& (xfs->m_oNumFmtId->GetValue() != 0*/)
 						{
@@ -604,8 +605,6 @@ namespace CSVWriter
 
 		switch (format_type.get_value_or(SimpleTypes::Spreadsheet::celltypeStr))
 		{
-		case SimpleTypes::Spreadsheet::celltypePercentage:	return value + L"%";
-
 		case SimpleTypes::Spreadsheet::celltypeDate:		return convert_date_time(value, format_code, true, false);
 		case SimpleTypes::Spreadsheet::celltypeTime:		return convert_date_time(value, format_code, false, true);
 		case SimpleTypes::Spreadsheet::celltypeDateTime:	return convert_date_time(value, format_code);
@@ -627,6 +626,7 @@ namespace CSVWriter
 				{
 					std::wstring format_code_tmp;
 					double dValue = XmlUtils::GetDouble(value);
+					bool bPercent = false;
 
 					int count_d = 0;
 					bool bFloat = false, bStart = true, bEnd = false;
@@ -673,7 +673,13 @@ namespace CSVWriter
 
 								if ((bStart && count_d < 1) || bEnd)
 								{
-									format_code_tmp += format_code[i];
+									if (format_code[i] == L'%')
+									{
+										dValue *= 100.;
+										bPercent = true;
+									}
+									else
+										format_code_tmp += format_code[i];
 								}
 							}
 						}
@@ -694,7 +700,7 @@ namespace CSVWriter
 					std::wstringstream stream;
 					stream << boost::wformat(format_code_tmp) % dValue;
 
-					return stream.str();
+					return stream.str() + (bPercent ? L"%" : L"");
 				}
 				catch (...)
 				{

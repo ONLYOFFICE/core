@@ -2742,6 +2742,8 @@ void xlsx_drawing_context::serialize_object(std::wostream & stream, _drawing_sta
 			{
 				CP_XML_ATTR(L"defaultSize", 0);
 				//CP_XML_ATTR(L"autoPict", 0);
+				if (!drawing_state->fill.picture_target.empty())
+					drawing_state->fill.texture_target = drawing_state->fill.picture_target;
 				
 				if (!drawing_state->fill.texture_target.empty())
 				{

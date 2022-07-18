@@ -60,7 +60,19 @@
 
 namespace MetaFile
 {
-	class CEmfClip;
+	struct TRenderConditional
+	{
+		IMetaFileBase* m_pFile;
+
+		int            m_lDrawPathType;
+		double         m_dX;      // Координаты левого верхнего угла
+		double         m_dY;      //
+		double         m_dW;      //
+		double         m_dH;      //
+		double         m_dScaleX; // Коэффициенты сжатия/растяжения, чтобы
+		double         m_dScaleY; // результирующая картинка была нужных размеров.
+		bool           m_bStartedPath;
+	};
 
 	class CMetaFileRenderer : public IOutputDevice
 	{
@@ -75,6 +87,7 @@ namespace MetaFile
 			m_dH = dHeight;
 
 			m_pRenderer = NULL;
+			m_pSecondConditional = NULL;
 
 			if (!pRenderer)
 				return;
@@ -103,20 +116,38 @@ namespace MetaFile
 			//m_pRenderer->PathCommandEnd();
 		}
 
-		CMetaFileRenderer(const CMetaFileRenderer &oMetaFileRenderer, IMetaFileBase *pFile)
+		virtual ~CMetaFileRenderer()
 		{
-			m_pFile = pFile;
+			RELEASEOBJECT(m_pSecondConditional)
+		}
 
-			m_dX = oMetaFileRenderer.m_dX;
-			m_dY = oMetaFileRenderer.m_dY;
-			m_dW = oMetaFileRenderer.m_dW;
-			m_dH = oMetaFileRenderer.m_dH;
+		void CreateConditional(IMetaFileBase* pFile)
+		{
+			RELEASEOBJECT(m_pSecondConditional);
 
-			m_pRenderer = oMetaFileRenderer.m_pRenderer;
+			m_pSecondConditional = new TRenderConditional();
 
-			UpdateScale();
+			SaveConditional(*m_pSecondConditional);
 
-			m_bStartedPath = false;
+			m_pSecondConditional->m_pFile = pFile;
+		}
+
+		void ChangeConditional()
+		{
+			if (NULL != m_pSecondConditional)
+			{
+				TRenderConditional oRenderConditional;
+				SaveConditional(oRenderConditional);
+
+				SetConditional(*m_pSecondConditional);
+
+				*m_pSecondConditional = oRenderConditional;
+			}
+		}
+
+		IMetaFileBase* GetFile() const
+		{
+			return m_pFile;
 		}
 
 		void UpdateScale()
@@ -133,10 +164,6 @@ namespace MetaFile
 			m_dScaleX = (nR - nL <= 0) ? 1 : m_dW / (double)(nR - nL);
 			m_dScaleY = (nB - nT <= 0) ? 1 : m_dH / (double)(nB - nT);
 		 }
-
-		~CMetaFileRenderer()
-		{
-		}
 
 		void Begin()
 		{
@@ -736,6 +763,32 @@ namespace MetaFile
 
 	private:
 
+		void SaveConditional(TRenderConditional& oRenderConditional)
+		{
+			oRenderConditional.m_pFile	   = m_pFile;
+			oRenderConditional.m_lDrawPathType = m_lDrawPathType;
+			oRenderConditional.m_dX		   = m_dX;
+			oRenderConditional.m_dY		   = m_dY;
+			oRenderConditional.m_dW		   = m_dW;
+			oRenderConditional.m_dH		   = m_dH;
+			oRenderConditional.m_dScaleX	   = m_dScaleX;
+			oRenderConditional.m_dScaleY	   = m_dScaleY;
+			oRenderConditional.m_bStartedPath  = m_bStartedPath;
+		}
+
+		void SetConditional(const TRenderConditional& oRenderConditional)
+		{
+			m_pFile		= oRenderConditional.m_pFile;
+			m_lDrawPathType = oRenderConditional.m_lDrawPathType;
+			m_dX		= oRenderConditional.m_dX;
+			m_dY		= oRenderConditional.m_dY;
+			m_dW		= oRenderConditional.m_dW;
+			m_dH		= oRenderConditional.m_dH;
+			m_dScaleX	= oRenderConditional.m_dScaleX;
+			m_dScaleY	= oRenderConditional.m_dScaleY;
+			m_bStartedPath  = oRenderConditional.m_bStartedPath;
+		}
+
 		void CheckStartPath(bool bMoveTo)
 		{
 			if (!m_bStartedPath)
@@ -1111,6 +1164,8 @@ namespace MetaFile
 		double         m_dScaleX; // Коэффициенты сжатия/растяжения, чтобы 
 		double         m_dScaleY; // результирующая картинка была нужных размеров.
 		bool           m_bStartedPath;
+
+		TRenderConditional *m_pSecondConditional;
 	};
 }
 #endif // _METAFILE_COMMON_METAFILERENDERER_H

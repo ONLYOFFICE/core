@@ -54,8 +54,7 @@ namespace MetaFile
 
 		~CEmfFile()
 		{
-			if (NULL != m_pParser)
-				delete m_pParser;
+			RELEASEOBJECT(m_pParser);
 		}
 
 		bool OpenFromEmfFile(const wchar_t* wsFilePath)

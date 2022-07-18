@@ -8,8 +8,17 @@ namespace MetaFile
                 m_wsXmlFilePath(wsFilePath){}
 
         CEmfInterpretatorXml::CEmfInterpretatorXml(const CEmfInterpretatorXml &oInterpretator)
-                : m_pOutputXml(oInterpretator.m_pOutputXml),
-                  m_wsXmlFilePath(oInterpretator.m_wsXmlFilePath){}
+                : m_pOutputXml(NULL),
+                  m_wsXmlFilePath(oInterpretator.m_wsXmlFilePath)
+        {
+                if (NULL == oInterpretator.m_pOutputXml)
+                        return;
+
+                if (oInterpretator.m_pOutputXml->IsWriter())
+                        m_pOutputXml = new CXmlOutput(TypeXmlOutput::IsWriter);
+                else
+                        m_pOutputXml = new CXmlOutput(TypeXmlOutput::IsReader);
+        }
 
         CEmfInterpretatorXml::~CEmfInterpretatorXml()
         {

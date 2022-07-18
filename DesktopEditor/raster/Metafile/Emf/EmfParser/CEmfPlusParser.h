@@ -1,8 +1,8 @@
 #ifndef CEMFPLUSPARSER_H
 #define CEMFPLUSPARSER_H
 
-#include "../../Common/MetaFileUtils.h"
-#include "../../Common/MetaFile.h"
+//#include "../../Common/MetaFileUtils.h"
+//#include "../../Common/MetaFile.h"
 #include "../EmfPlusObjects.h"
 #include "CEmfParserBase.h"
 #include "../EmfPlusTypes.h"
@@ -13,7 +13,7 @@ namespace MetaFile
         class CEmfPlusParser : public CEmfParserBase
         {
             public:
-                CEmfPlusParser(const CEmfInterpretatorBase *pEmfInterpretator, const TEmfHeader& oHeader);
+                CEmfPlusParser(CEmfInterpretatorBase *pEmfInterpretator, const TEmfHeader& oHeader);
                 virtual ~CEmfPlusParser();
 
                 bool            OpenFromFile(const wchar_t* wsFilePath)     override;

@@ -1,8 +1,13 @@
 #include "./TextMeasurerEmbed.h"
 #include "./../../fontengine/TextShaper.h"
 
-#define RAW_POINTER(value) ((CPointerEmbedObject*)value->toObject()->getNative())->Data
-#define POINTER_OBJECT(value) ((CPointerEmbedObject*)value->toObject()->getNative())
+#define RAW_POINTER(value) ((CPointerEmbedObject*)value->toObjectSmart()->getNative())->Data
+#define POINTER_OBJECT(value) ((CPointerEmbedObject*)value->toObjectSmart()->getNative())
+
+// в js не хотим следить, чтобы в каждом face была ссылка на library - т.е. чтобы
+// сначала удалились все face, а потом library - поэтому делаем свой счетчик ссылок
+// и следим за library сами. Т.е. используем FT_Library_Reference/FT_Library_UnReference
+
 
 class CExternalPointerJS : public NSShaper::CExternalPointer
 {
@@ -36,7 +41,8 @@ JSSmart<CJSValue> CTextMeasurerEmbed::FT_Malloc(JSSmart<CJSValue> typed_array_or
     }
     else
     {
-        CJSDataBuffer pBuffer = typed_array_or_len->toTypedArray()->getData();
+        JSSmart<CJSTypedArray> typedArray = typed_array_or_len->toTypedArray();
+        CJSDataBuffer pBuffer = typedArray->getData();
         pData = malloc(pBuffer.Len);
         memcpy(pData, pBuffer.Data, pBuffer.Len);
         if (pBuffer.IsExternalize)
@@ -48,14 +54,14 @@ JSSmart<CJSValue> CTextMeasurerEmbed::FT_Malloc(JSSmart<CJSValue> typed_array_or
 }
 JSSmart<CJSValue> CTextMeasurerEmbed::FT_Free(JSSmart<CJSValue> pointer)
 {
-    CPointerEmbedObject* pEmbed = (CPointerEmbedObject*)pointer->toObject()->getNative();
+    CPointerEmbedObject* pEmbed = (CPointerEmbedObject*)pointer->toObjectSmart()->getNative();
     pEmbed->Free();
     return CJSContext::createUndefined();
 }
 
 JSSmart<CJSValue> CTextMeasurerEmbed::FT_Init()
 {
-    CPointerEmbedObject* pointer = new CPointerEmbedObject(NSShaper::FT_Library_Init(), [](void* data) { NSShaper::FT_Library_Destroy(data); });
+    CPointerEmbedObject* pointer = new CPointerEmbedObject(NSShaper::FT_Library_Init(), [](void* data) { NSShaper::FT_Library_UnReference(data); });
     return pointer->createObject();
 }
 JSSmart<CJSValue> CTextMeasurerEmbed::FT_Set_TrueType_HintProp(JSSmart<CJSValue> library, JSSmart<CJSValue> tt_interpreter)
@@ -65,15 +71,22 @@ JSSmart<CJSValue> CTextMeasurerEmbed::FT_Set_TrueType_HintProp(JSSmart<CJSValue>
 
 JSSmart<CJSValue> CTextMeasurerEmbed::FT_Open_Face(JSSmart<CJSValue> library, JSSmart<CJSValue> memory, JSSmart<CJSValue> size, JSSmart<CJSValue> face_index)
 {
-    void* face = NSShaper::FT_Open_Face(RAW_POINTER(library), (unsigned char*)RAW_POINTER(memory), size->toUInt32(), face_index->toInt32());
-    CPointerEmbedObject* pointer = new CPointerEmbedObject(face, [](void* data) { NSShaper::FT_Done_Face(data); });
+    void* ftlibrary = RAW_POINTER(library);
+    void* face = NSShaper::FT_Open_Face(ftlibrary, (unsigned char*)RAW_POINTER(memory), size->toUInt32(), face_index->toInt32());
+    if (NULL != face)
+        NSShaper::FT_Library_Reference(ftlibrary);
+    CPointerEmbedObject* pointer = new CPointerEmbedObject(face, [](void* data) { NSShaper::FT_Done_Face_With_Library(data); });
     return pointer->createObject();
 }
 JSSmart<CJSValue> CTextMeasurerEmbed::FT_Open_Face2(JSSmart<CJSValue> library, JSSmart<CJSValue> array, JSSmart<CJSValue> face_index)
 {
-    CJSDataBuffer buffer = array->toTypedArray()->getData();
-    void* face = NSShaper::FT_Open_Face(RAW_POINTER(library), (unsigned char*)buffer.Data, (unsigned int)buffer.Len, face_index->toInt32());
-    CPointerEmbedObject* pointer = new CPointerEmbedObject(face, NSPointerObjectDeleters::EmptyDeleter);
+    void* ftlibrary = RAW_POINTER(library);
+    JSSmart<CJSTypedArray> typedArray = array->toTypedArray();
+    CJSDataBuffer buffer = typedArray->getData();
+    void* face = NSShaper::FT_Open_Face(ftlibrary, (unsigned char*)buffer.Data, (unsigned int)buffer.Len, face_index->toInt32());
+    if (NULL != face)
+        NSShaper::FT_Library_Reference(ftlibrary);
+    CPointerEmbedObject* pointer = new CPointerEmbedObject(face, [](void* data) { NSShaper::FT_Done_Face_With_Library(data); });
     return pointer->createObject();
 }
 JSSmart<CJSValue> CTextMeasurerEmbed::FT_GetFaceInfo(JSSmart<CJSValue> face)
@@ -137,7 +150,7 @@ JSSmart<CJSValue> CTextMeasurerEmbed::FT_GetFaceMaxAdvanceX(JSSmart<CJSValue> fa
 JSSmart<CJSValue> CTextMeasurerEmbed::HB_LanguageFromString(JSSmart<CJSValue> language_bcp_47)
 {
     void* Data = NSShaper::HB_LanguageFromString(language_bcp_47->toStringA());
-    CPointerEmbedObject* pObject = new CPointerEmbedObject(Data, [](void* data) { NSShaper::HB_free(data); });
+    CPointerEmbedObject* pObject = new CPointerEmbedObject(Data, NSPointerObjectDeleters::EmptyDeleter);
     return pObject->createObject();
 }
 
@@ -147,11 +160,14 @@ JSSmart<CJSValue> CTextMeasurerEmbed::HB_ShapeText(JSSmart<CJSValue> face, JSSma
     CPointerEmbedObject* pFont = POINTER_OBJECT(font);
     CExternalPointerJS result;
 
-    CJSDataBuffer buffer = text->toTypedArray()->getData();
+    JSSmart<CJSTypedArray> typedArray = text->toTypedArray();
+    CJSDataBuffer buffer = typedArray->getData();
+
     char* pText = (char*)buffer.Data;
 
     NSShaper::HB_ShapeText(RAW_POINTER(face), pFont->Data, pText,
-                           nFeatures->toUInt32(), nScript->toUInt32(), nDirection->toUInt32(), RAW_POINTER(nLanguage), &result);
+                           nFeatures->toUInt32(), nScript->toUInt32(), nDirection->toUInt32(), RAW_POINTER(nLanguage),
+                           &result, true);
 
     if (buffer.IsExternalize)
         buffer.Free();
@@ -162,9 +178,16 @@ JSSmart<CJSValue> CTextMeasurerEmbed::HB_ShapeText(JSSmart<CJSValue> face, JSSma
     return CJSContext::createUint8Array(result.Data, result.Len, false);
 }
 
+JSSmart<CJSValue> CTextMeasurerEmbed::HB_FontMalloc()
+{
+    CPointerEmbedObject* pObject = new CPointerEmbedObject(NULL, [](void* data) { NSShaper::HB_FontFree(data); });
+    return pObject->createObject();
+}
+
 JSSmart<CJSValue> CTextMeasurerEmbed::HB_FontFree(JSSmart<CJSValue> font)
 {
-    NSShaper::HB_FontFree(RAW_POINTER(font));
+    CPointerEmbedObject* pFont = POINTER_OBJECT(font);
+    pFont->Free();
     return CJSContext::createUndefined();
 }
 #endif

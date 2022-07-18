@@ -47,6 +47,7 @@ public:
     JSSmart<CJSValue> HB_ShapeText(JSSmart<CJSValue> face, JSSmart<CJSValue> font, JSSmart<CJSValue> text,
                                    JSSmart<CJSValue> nFeatures, JSSmart<CJSValue> nScript, JSSmart<CJSValue> nDirection, JSSmart<CJSValue> nLanguage);
 
+    JSSmart<CJSValue> HB_FontMalloc();
     JSSmart<CJSValue> HB_FontFree(JSSmart<CJSValue> font);
 #endif
 

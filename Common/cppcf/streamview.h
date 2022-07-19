@@ -8,7 +8,7 @@
 
 namespace CFCPP
 {
-class StreamView : public std::iostream
+class StreamView
 {
 public:
     StreamView(const SVector<Sector> &sectorChain, int sectorSize, Stream stream);

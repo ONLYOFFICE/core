@@ -12,7 +12,7 @@ namespace CFCPP
 class CFStorage : public CFItem
 {
 public:
-    CFStorage(std::shared_ptr<const CompoundFile> compFile, std::shared_ptr<IDirectoryEntry> dirEntry);
+    CFStorage(std::shared_ptr<CompoundFile> compFile, std::shared_ptr<IDirectoryEntry> dirEntry);
 
 
     std::shared_ptr<RedBlackTree::RBTree> getChildren();

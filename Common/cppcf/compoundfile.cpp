@@ -33,8 +33,11 @@ CompoundFile::CompoundFile(CFSVersion cfsVersion, CFSConfiguration configFlags) 
     sectorRecycle = configFlags & CFSConfiguration::SectorRecycle;
     bool eraseFreeSectors = configFlags & CFSConfiguration::EraseFreeSectors;
 
-    //    if (cfsVersion == CFSVersion::Ver_4)
-    //        sectors.OnVer3SizeLimitReached += new Ver3SizeLimitReached(OnSizeLimitReached);
+    if (cfsVersion == CFSVersion::Ver_4)
+    {
+        Ver3SizeLimitReached action = std::bind(&CompoundFile::OnSizeLimitReached, this);
+        sectors.OnVer3SizeLimitReached += action;
+    }
 
 
     DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
@@ -70,7 +73,7 @@ CompoundFile::CompoundFile(Stream stream)
 
 void CompoundFile::OnSizeLimitReached()
 {
-    std::shared_ptr<Sector> rangeLockSector( new Sector(GetSectorSize(), sourceStream));
+    std::shared_ptr<Sector> rangeLockSector(new Sector(GetSectorSize(), sourceStream));
 
     rangeLockSector->type = SectorType::RangeLockSector;
 
@@ -79,10 +82,6 @@ void CompoundFile::OnSizeLimitReached()
     sectors.Add(rangeLockSector);
 }
 
-void CompoundFile::Commit()
-{
-    Commit(false);
-}
 
 void CompoundFile::Commit(bool releaseMemory)
 {
@@ -91,12 +90,7 @@ void CompoundFile::Commit(bool releaseMemory)
 
     if (updateMode != CFSUpdateMode::Update)
         throw new CFInvalidOperation("Cannot commit data in Read-Only update mode");
-#if !defined(FLAT_WRITE)
 
-    int sId = -1;
-    int sCount = 0;
-    int bufOffset = 0;
-#endif
     int sSize = GetSectorSize();
 
     if (header.majorVersion != (ushort)CFSVersion::Ver_3)
@@ -115,8 +109,6 @@ void CompoundFile::Commit(bool releaseMemory)
 
     for (int i = 0; i < (int)sectors.largeArraySlices.size(); i++)
     {
-#if defined (FLAT_WRITE)
-
         //Note:
         //Here sectors should not be loaded dynamically because
         //if they are null it means that no change has involved them;
@@ -146,97 +138,14 @@ void CompoundFile::Commit(bool releaseMemory)
             s.reset();
             sectors[i].reset();
         }
-
-
-
-#else
-
-
-        std::shared_ptr<Sector> s = sectors[i];
-
-
-        if (s.get() != nullptr && s->dirtyFlag && flushingQueue.size() < (int)(buffer.Length / sSize))
-        {
-            //First of a block of contiguous sectors, mark id, start enqueuing
-
-            if (gap)
-            {
-                sId = s->id;
-                gap = false;
-            }
-
-            flushingQueue.push(s);
-
-
-        }
-        else
-        {
-            //Found a gap, stop enqueuing, flush a write operation
-
-            gap = true;
-            sCount = flushingQueue.size();
-
-            if (sCount == 0) continue;
-
-            bufOffset = 0;
-            while (flushingQueue.Count > 0)
-            {
-                Sector r = flushingQueue.Dequeue();
-                Buffer.BlockCopy(r.GetData(), 0, buffer, bufOffset, sSize);
-                r.DirtyFlag = false;
-
-                if (releaseMemory)
-                {
-                    r.ReleaseData();
-                }
-
-                bufOffset += sSize;
-            }
-
-            sourceStream.Seek(((long)sSize + (long)sId * (long)sSize), SeekOrigin.Begin);
-            sourceStream.Write(buffer, 0, sCount * sSize);
-
-
-
-            //Console.WriteLine("W - " + (int)(sCount * sSize ));
-
-        }
-#endif
     }
 
-#if !FLAT_WRITE
-    sCount = flushingQueue.Count;
-    bufOffset = 0;
-
-    while (flushingQueue.Count > 0)
-    {
-        Sector r = flushingQueue.Dequeue();
-        Buffer.BlockCopy(r.GetData(), 0, buffer, bufOffset, sSize);
-        r.DirtyFlag = false;
-
-        if (releaseMemory)
-        {
-            r.ReleaseData();
-            r = null;
-        }
-
-        bufOffset += sSize;
-    }
-
-    if (sCount != 0)
-    {
-        sourceStream.Seek((long)sSize + (long)sId * (long)sSize, SeekOrigin.Begin);
-        sourceStream.Write(buffer, 0, sCount * sSize);
-        //Console.WriteLine("W - " + (int)(sCount * sSize));
-    }
-
-#endif
 
     // Seek to beginning position and save header (first 512 or 4096 bytes)
     sourceStream->seekg(0, std::ios::beg);
     header.Write(sourceStream);
 
-    sourceStream-> SetLength((long)(sectors.Count + 1) * sSize);
+    //    sourceStream-> SetLength((long)(sectors.Count + 1) * sSize);
     sourceStream->flush();
 
     if (releaseMemory)
@@ -307,10 +216,12 @@ void CompoundFile::Load(Stream stream)
     }
     catch (...)
     {
-        if (stream.get() != nullptr && closeStream)
-            //            stream->clear(); // close
+        if (std::dynamic_pointer_cast<std::fstream>(stream) != nullptr && stream.get() != nullptr && closeStream)
+        {
+            std::static_pointer_cast<std::fstream>(stream)->close();
+        }
 
-            throw;
+        throw;
     }
 }
 
@@ -620,8 +531,6 @@ SVector<Sector> CompoundFile::GetMiniSectorChain(int secID)
 
         StreamView miniStreamView(miniStream, GetSectorSize(), rootStorage->size(), zeroQueue, sourceStream);
 
-        BinaryReader miniFATReader = new BinaryReader(miniFATView);
-
         nextSecID = secID;
 
         std::unordered_set<int> processedSectors;
@@ -642,7 +551,7 @@ SVector<Sector> CompoundFile::GetMiniSectorChain(int secID)
             result.push_back(ms);
 
             miniFATView.Seek(nextSecID * 4, std::ios::beg);
-            int next = miniFATReader.ReadInt32();
+            int next = miniFATView.ReadInt32();
 
             nextSecID = next;
             EnsureUniqueSectorIndex(nextSecID, processedSectors);
@@ -842,7 +751,7 @@ bool CompoundFile::ValidateSibling(int sid)
         {
             if (this->validationExceptionEnabled)
             {
-                //this.Close();
+                //Close();
                 throw new CFCorruptedFileException("A Directory Entry references the non-existent sid number " + std::to_string(sid));
             }
             else
@@ -854,7 +763,7 @@ bool CompoundFile::ValidateSibling(int sid)
         {
             if (this->validationExceptionEnabled)
             {
-                //this.Close();
+                //Close();
                 throw new CFCorruptedFileException("A Directory Entry has a valid reference to an Invalid Storage Type directory [" + std::to_string(sid) + "]");
             }
             else
@@ -867,7 +776,7 @@ bool CompoundFile::ValidateSibling(int sid)
 
             if (this->validationExceptionEnabled)
             {
-                //this.Close();
+                //Close();
                 throw new CFCorruptedFileException("A Directory Entry has an invalid Storage Type");
             }
             else
@@ -1722,11 +1631,8 @@ std::vector<BYTE> CompoundFile::GetData(CFStream *cFStream)
                             zeroQueue,
                             sourceStream);
 
-        BinaryReader br = new BinaryReader(miniView);
-
-        result = br.ReadBytes((int)de->getSize());
-        br.Close();
-
+        result.reserve(de->getSize());
+        miniView.Read(reinterpret_cast<char*>(result.data()), 0, result.size());
     }
     else
     {
@@ -1795,6 +1701,65 @@ int CompoundFile::ReadData(CFStream *cFStream, std::streamsize position, std::ve
     return result;
 }
 
+std::vector<BYTE> CompoundFile::GetDataBySID(int sid)
+{
+    if (_disposed)
+        throw new CFDisposedException("Compound File closed: cannot access data");
+    if (sid < 0)
+        return {};
+    std::vector<BYTE> result;
+    try
+    {
+        std::shared_ptr<IDirectoryEntry> de = directoryEntries[sid];
+        SList<Sector> zeroQueue;
+        if (de->getSize() < header.minSizeStandardStream)
+        {
+            StreamView miniView(GetSectorChain(de->getStartSetc(), SectorType::Mini), Sector::MINISECTOR_SIZE, de->getSize(), zeroQueue, sourceStream);
+            result.reserve(de->getSize());
+            miniView.Read(reinterpret_cast<char*>(result.data()),0 , result.size());
+        }
+        else
+        {
+            StreamView sView(GetSectorChain(de->getStartSetc(), SectorType::Normal), GetSectorSize(), de->getSize(), zeroQueue, sourceStream);
+            result.reserve(de->getSize());
+            sView.Read(reinterpret_cast<char*>(result.data()),0 , result.size());
+        }
+    }
+    catch (...)
+    {
+        throw CFException("Cannot get data for SID");
+    }
+    return result;
+}
+
+GUID CompoundFile::getGuidBySID(int sid)
+{
+    if (_disposed)
+        throw new CFDisposedException("Compound File closed: cannot access data");
+    if (sid < 0)
+        throw new CFException("Invalid SID");
+    std::shared_ptr<IDirectoryEntry> de = directoryEntries[sid];
+    return de->getStorageCLSID();
+}
+
+GUID CompoundFile::getGuidForStream(int sid)
+{
+    if (_disposed)
+        throw new CFDisposedException("Compound File closed: cannot access data");
+    if (sid < 0)
+        throw new CFException("Invalid SID");
+    GUID g;
+    //find first storage containing a non-zero CLSID before SID in directory structure
+    for (int i = sid - 1; i >= 0; i--)
+    {
+        if (directoryEntries[i]->getStorageCLSID() != g && directoryEntries[i]->getStgType() == StgType::StgStorage)
+        {
+            return directoryEntries[i]->getStorageCLSID();
+        }
+    }
+    return g;
+}
+
 void CompoundFile::WriteData(PCFItem cfItem, const std::vector<BYTE> &buffer, std::streamsize position, int offset, int count)
 {
     if (cfItem->dirEntry == nullptr)
@@ -1835,6 +1800,42 @@ void CompoundFile::WriteData(PCFItem cfItem, const std::vector<BYTE> &buffer, st
 int CompoundFile::GetSectorSize()
 {
     return 2 << (header.sectorShift - 1);
+}
+
+void CompoundFile::Dispose(bool disposing)
+{
+    try
+    {
+        if (!_disposed)
+        {
+            std::lock_guard<std::mutex> lock(lockObject);
+            {
+                if (disposing)
+                {
+                    // Call from user code...
+                    sectors.Clear();
+
+                    rootStorage.reset(); // Some problem releasing resources...
+                    header = Header();
+                    directoryEntries.clear();
+                    fileName.clear();
+                }
+
+                if (std::dynamic_pointer_cast<std::fstream>(sourceStream) != nullptr &&
+                        closeStream && !(configuration & CFSConfiguration::LeaveOpen))
+                {
+                    std::static_pointer_cast<std::fstream>(sourceStream)->close();
+                }
+            }
+        }
+        //finally
+        _disposed = true;
+    }
+    catch(...)
+    {
+        //finally
+        _disposed = true;
+    }
 }
 
 void CompoundFile::CheckForLockSector()

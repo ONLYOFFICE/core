@@ -36,6 +36,7 @@ HEADERS += \
     cfstream.h \
     compoundfile.h \
     directoryentry.h \
+    event.h \
     guid.h \
     header.h \
     idirectoryentry.h \

@@ -37,12 +37,12 @@ public:
 
 protected:
     inline CFItem() {};
-    inline CFItem(const std::shared_ptr<const CompoundFile> compoundFile) : compoundFile(compoundFile) {}
-    inline std::shared_ptr<const CompoundFile> getCompoundFile() {return compoundFile;}
+    inline CFItem(std::shared_ptr<CompoundFile> compoundFile) : compoundFile(compoundFile) {}
+    inline std::shared_ptr<CompoundFile> getCompoundFile() {return compoundFile;}
     void CheckDisposed() const;
 
 protected:
-    std::shared_ptr<const CompoundFile> compoundFile;
+    std::shared_ptr<CompoundFile> compoundFile;
 };
 
 using PCFItem = std::shared_ptr<CFItem>;

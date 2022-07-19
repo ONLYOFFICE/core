@@ -9,8 +9,7 @@
 #include "idirectoryentry.h"
 #include "cfstream.h"
 #include "cfstorage.h"
-
-#define FLAT_WRITE
+#include <mutex>
 
 namespace CFCPP
 {
@@ -46,9 +45,7 @@ public:
     CompoundFile(const std::wstring &fileName);
     CompoundFile(Stream stream);
     CompoundFile();
-    void OnSizeLimitReached();
-    void Commit();
-    void Commit(bool releaseMemory);
+    void Commit(bool releaseMemory = false);
     inline bool HasSourceStream() {return sourceStream != nullptr;}
 
     void Close();
@@ -71,11 +68,17 @@ public:
     int ReadData(CFStream* cFStream, std::streamsize position, std::vector<BYTE>& buffer, int count);
     int ReadData(CFStream* cFStream, std::streamsize position, std::vector<BYTE>& buffer, int offset, int count);
 
+    std::vector<BYTE> GetDataBySID(int sid);
+    GUID getGuidBySID(int sid);
+    GUID getGuidForStream(int sid);
+
 protected:
     int GetSectorSize();
+    void Dispose(bool disposing);
 
 private:
     void CheckForLockSector();
+    void OnSizeLimitReached();
     void LoadFile(std::wstring fileName);
     void SetFileName(std::wstring fileName);
     void LoadStream(Stream stream);
@@ -147,10 +150,7 @@ private:
     CFSUpdateMode updateMode;
     SVector<DirectoryEntry> directoryEntries;
     std::list<int> levelSIDs;
+    std::mutex lockObject;
 
-#if !defined(FLAT_WRITE)
-        std::array<BYTE, FLUSHING_BUFFER_MAX_SIZE> buffer;
-        std::queue<std::shared_ptr<Sector> > flushingQueue;
-#endif
 };
 }

@@ -76,9 +76,6 @@ void StreamView::Write(const char *buffer, std::streamsize offset, std::streamsi
             std::copy(buffer+offset, buffer+offset+roundByteWritten, dst);
 
             sectorChain[secOffset]->dirtyFlag = true;
-
-            offset += roundByteWritten;
-            byteWritten += roundByteWritten;
         }
 
         position += count;
@@ -174,14 +171,14 @@ void StreamView::SetLength(std::streamsize value)
 
 int StreamView::ReadInt32()
 {
-    std::iostream::read(reinterpret_cast<char*>(&buf), 4);
+    Read(reinterpret_cast<char*>(&buf), 0, 4);
     return ((buf & 0xFF) << 24) | ((buf & 0x00FF) << 16) | ((buf & 0x0000FF) << 8) | (buf & 0x000000FF);
 }
 
 void StreamView::WriteInt32(int val)
 {
     buf = ((val & 0xFF) << 24) | ((val & 0x00FF) << 16) | ((val & 0x0000FF) << 8) | (val & 0x000000FF);
-    std::iostream::write(reinterpret_cast<char*>(&buf), 4);
+    Write(reinterpret_cast<char*>(&buf), 0, 4);
 }
 
 void StreamView::adjustLength(std::streamsize value)

@@ -24,5 +24,14 @@ struct GUID
         return *this;
     }
 
+    bool operator!=(const GUID& oth)
+    {
+        for (int i = 0; i < 8; i++)
+            if (Data4[i] != oth.Data4[i])
+                return true;
+
+        return Data1 != oth.Data1 || Data2 != oth.Data2 || Data3 != oth.Data3;
+    }
+
     GUID (){}
 };

@@ -9,8 +9,7 @@ SectorCollection::SectorCollection()
 
 void SectorCollection::Add(std::shared_ptr<Sector> item)
 {
-    if (DoCheckSizeLimitReached() == false)
-        return;
+    OnVer3SizeLimitReached();
 
     add(item);
 }
@@ -35,14 +34,13 @@ std::shared_ptr<Sector> SectorCollection::operator[](size_t index)
     return {};
 }
 
-bool SectorCollection::DoCheckSizeLimitReached()
+void SectorCollection::DoCheckSizeLimitReached()
 {
-    if (!sizeLimitReached && (count - 1 > MAX_SECTOR_V4_COUNT_LOCK_RANGE))
+    if (OnVer3SizeLimitReached.size() && !sizeLimitReached && (count - 1 > MAX_SECTOR_V4_COUNT_LOCK_RANGE))
     {
         sizeLimitReached = true;
-        return false;
+        OnVer3SizeLimitReached();
     }
-    return true;
 }
 
 int SectorCollection::add(std::shared_ptr<Sector> item)

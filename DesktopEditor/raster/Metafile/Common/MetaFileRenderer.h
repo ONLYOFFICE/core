@@ -38,12 +38,12 @@
 #include "../../../raster/ImageFileFormatChecker.h"
 #include "../../../raster/BgraFrame.h"
 #include "../../../graphics/AggPlusEnums.h"
+#include "../../../graphics/GraphicsRenderer.h"
 
 #include "IOutputDevice.h"
 #include "MetaFile.h"
 #include "MetaFileTypes.h"
 #include "MetaFileObjects.h"
-#include "../GraphicsRenderer.h"
 
 #include <cmath>
 

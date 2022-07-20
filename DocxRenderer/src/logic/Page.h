@@ -122,5 +122,8 @@ namespace NSDocxRenderer
         void CreateSingleLineShape(CTextLine *pLine);
 
         bool IsShadingPresent(const CTextLine *pLine1, const CTextLine *pLine2);
+
+    private:
+        CTextLine* GetNextTextLine(size_t& nCurrentIndex);
     };
 }

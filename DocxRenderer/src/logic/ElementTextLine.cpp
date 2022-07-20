@@ -229,14 +229,28 @@ namespace NSDocxRenderer
         return false;
     }
 
-    bool CTextLine::AreLinesCrossing(const CTextLine* oSrc)
+    LineCrossingType CTextLine::GetLinesCrossingType(const CTextLine* oSrc)
     {
-        if ((oSrc->m_dBaselinePos < m_dBaselinePos && m_dTop < oSrc->m_dBaselinePos) ||
-            (oSrc->m_dBaselinePos > m_dBaselinePos && oSrc->m_dTop < m_dBaselinePos))
+        if (m_dTop > oSrc->m_dTop && m_dBaselinePos < oSrc->m_dBaselinePos)
         {
-            return true;
+            return lctCurrentInsideNext;
         }
-        return false;
+        else if (m_dTop < oSrc->m_dTop && m_dBaselinePos > oSrc->m_dBaselinePos)
+        {
+            return lctCurrentOutsideNext;
+        }
+        else if (m_dTop < oSrc->m_dTop && m_dBaselinePos < oSrc->m_dBaselinePos && m_dBaselinePos > oSrc->m_dTop)
+        {
+            return lctCurrentAboveNext;
+        }
+        else if (m_dTop > oSrc->m_dTop && m_dBaselinePos > oSrc->m_dBaselinePos && m_dTop < oSrc->m_dBaselinePos)
+        {
+            return lctCurrentBelowNext;
+        }
+        else
+        {
+            return lctNoCrossing;
+        }
     }
 
     void CTextLine::SetVertAlignType(const eVertAlignType& oType)

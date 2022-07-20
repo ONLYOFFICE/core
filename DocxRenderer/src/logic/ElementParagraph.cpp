@@ -25,7 +25,7 @@ namespace NSDocxRenderer
     {
         for (auto pLine : m_arLines)
         {
-            RELEASEOBJECT(pLine);
+            pLine->Clear();
         }
         m_arLines.clear();
     }

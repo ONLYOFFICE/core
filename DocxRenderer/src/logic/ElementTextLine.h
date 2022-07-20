@@ -3,6 +3,16 @@
 
 namespace NSDocxRenderer
 {
+    enum LineCrossingType
+    {
+        lctUnknown,
+        lctCurrentInsideNext,
+        lctCurrentOutsideNext,
+        lctCurrentAboveNext,
+        lctCurrentBelowNext,
+        lctNoCrossing
+    };
+
     class CTextLine : public CBaseItem
     {
         public:
@@ -56,7 +66,7 @@ namespace NSDocxRenderer
             //Определяем на основании выравнивания подходят ли текущая и следующая строки для добавления в параграф
             bool AreAlignmentsAppropriate(const CTextLine* oSrc);
             //Определяем пересекаются ли линии
-            bool AreLinesCrossing(const CTextLine* oSrc);
+            LineCrossingType GetLinesCrossingType(const CTextLine* oSrc);
 
             void SetVertAlignType(const eVertAlignType& oType);
 

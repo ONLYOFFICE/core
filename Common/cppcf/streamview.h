@@ -33,11 +33,11 @@ private:
     std::streamsize length;
 
     SVector<Sector> sectorChain;
-    Stream stream;
     bool isFatStream = false;
     int buf = 0;
 
 public:
+    Stream stream;
     SList<Sector> freeSectors;
     std::streamsize position;
 };

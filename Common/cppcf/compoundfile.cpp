@@ -48,7 +48,10 @@ CompoundFile::CompoundFile(CFSVersion cfsVersion, CFSConfiguration configFlags) 
     rootDir->setStgColor(StgColor::Black);
     //InsertNewDirectoryEntry(rootDir);
 
-    rootStorage.reset(new CFStorage(shared_from_this(), rootDir));
+    auto pstorage = std::shared_ptr<CFStorage>(new CFStorage);
+    pstorage->compoundFile = shared_from_this();
+    std::static_pointer_cast<CFItem>(pstorage)->setDirEntry(rootDir);
+    rootStorage = pstorage;
 }
 
 CompoundFile::CompoundFile(const std::wstring &fileName)
@@ -212,7 +215,11 @@ void CompoundFile::Load(Stream stream)
 
         LoadDirectories();
 
-        rootStorage.reset(new CFStorage(shared_from_this(), std::static_pointer_cast<IDirectoryEntry>(directoryEntries[0])));
+
+        auto pstorage = std::shared_ptr<CFStorage>(new CFStorage);
+        pstorage->compoundFile = shared_from_this();
+        std::static_pointer_cast<CFItem>(pstorage)->setDirEntry(directoryEntries[0]);
+        rootStorage = pstorage;
     }
     catch (...)
     {
@@ -611,7 +618,7 @@ void CompoundFile::CommitDirectory()
 
     for (const auto& di : directoryEntries)
     {
-        di->Write(sv);
+        di->Write(sv->stream);
     }
 
     int delta = directoryEntries.size();
@@ -620,7 +627,7 @@ void CompoundFile::CommitDirectory()
     {
         std::shared_ptr<IDirectoryEntry> dummy =
                 DirectoryEntry::New(L"", StgType::StgInvalid, directoryEntries.cast<IDirectoryEntry>());
-        dummy->Write(sv);
+        dummy->Write(sv->stream);
         delta++;
     }
 
@@ -807,13 +814,13 @@ void CompoundFile::LoadDirectories()
     StreamView dirReader(directoryChain, GetSectorSize(), directoryChain.size() * GetSectorSize(), zeroQueue, sourceStream);
 
 
-    while (dirReader.position < directoryChain.size() * GetSectorSize())
+    while (dirReader.position < (std::streamsize)directoryChain.size() * GetSectorSize())
     {
         std::shared_ptr<IDirectoryEntry> de
                 = DirectoryEntry::New(L"", StgType::StgInvalid, directoryEntries.cast<IDirectoryEntry>());
 
         //We are not inserting dirs. Do not use 'InsertNewDirectoryEntry'
-        de->Read(dirReader, getVersion());
+        de->Read(dirReader.stream, getVersion());
 
     }
 }

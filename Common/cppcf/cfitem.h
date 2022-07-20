@@ -32,17 +32,18 @@ public:
     int CompareTo(const CFItem& other);
     std::wstring ToString()const;
 
-public:
+    virtual void setDirEntry(const std::shared_ptr<IDirectoryEntry> &newDirEntry);
+
+    friend class CompoundFile;
+    std::weak_ptr<CompoundFile> compoundFile;
+protected:
     std::shared_ptr<IDirectoryEntry> dirEntry;
 
 protected:
-    inline CFItem() {};
-    inline CFItem(std::shared_ptr<CompoundFile> compoundFile) : compoundFile(compoundFile) {}
-    inline std::shared_ptr<CompoundFile> getCompoundFile() {return compoundFile;}
+    CFItem() {};
+    CFItem(std::weak_ptr<CompoundFile> compoundFile) : compoundFile(compoundFile) {}
+    inline std::shared_ptr<CompoundFile> getCompoundFile() {return compoundFile.lock();}
     void CheckDisposed() const;
-
-protected:
-    std::shared_ptr<CompoundFile> compoundFile;
 };
 
 using PCFItem = std::shared_ptr<CFItem>;

@@ -7,13 +7,10 @@ using namespace CFCPP;
 using RedBlackTree::RBTree;
 
 
-CFStorage::CFStorage(std::shared_ptr<CompoundFile> compFile, std::shared_ptr<IDirectoryEntry> dirEntry) :
+CFStorage::CFStorage(const std::weak_ptr<CompoundFile> &compFile, const std::shared_ptr<IDirectoryEntry> &dirEntry) :
     CFItem(compFile)
 {
-    if (dirEntry == nullptr || dirEntry->getSid() < 0)
-        throw new CFException("Attempting to create a CFStorage using an unitialized directory");
-
-    this->dirEntry = dirEntry;
+    setDirEntry(dirEntry);
 }
 
 std::shared_ptr<RBTree> CFStorage::getChildren()
@@ -42,7 +39,7 @@ std::shared_ptr<CFStream> CFStorage::AddStream(const std::wstring& streamName)
 
 
 
-    std::shared_ptr<IDirectoryEntry> dirEntry = DirectoryEntry::TryNew(streamName, StgType::StgStream, compoundFile->GetDirectories().cast<IDirectoryEntry>());
+    std::shared_ptr<IDirectoryEntry> dirEntry = DirectoryEntry::TryNew(streamName, StgType::StgStream, compoundFile.lock()->GetDirectories().cast<IDirectoryEntry>());
 
     // Add new Stream directory entry
     //cfo = new CFStream(this.CompoundFile, streamName);
@@ -57,12 +54,15 @@ std::shared_ptr<CFStream> CFStorage::AddStream(const std::wstring& streamName)
     }
     catch (RedBlackTree::RBTreeException &rbex)
     {
-        compoundFile->ResetDirectoryEntry(dirEntry->getSid());
+        compoundFile.lock()->ResetDirectoryEntry(dirEntry->getSid());
 
         throw new CFDuplicatedItemException(L"An entry with name '" + streamName + L"' is already present in storage '" + Name() + L"' ");
     }
 
-    return std::shared_ptr<CFStream>(new CFStream(compoundFile, dirEntry));
+    auto pstream = std::shared_ptr<CFStream>(new CFStream);
+    std::static_pointer_cast<CFItem>(pstream)->compoundFile = compoundFile;
+    std::static_pointer_cast<CFItem>(pstream)->setDirEntry(dirEntry);
+    return pstream;
 }
 
 std::shared_ptr<CFStream> CFStorage::GetStream(const std::wstring& streamName)
@@ -76,7 +76,10 @@ std::shared_ptr<CFStream> CFStorage::GetStream(const std::wstring& streamName)
     if (children->TryLookup(tmp, outDe) &&
             ((std::static_pointer_cast<IDirectoryEntry>(outDe))->getStgType() == StgType::StgStream))
     {
-        return std::shared_ptr<CFStream>(new CFStream(compoundFile, std::static_pointer_cast<IDirectoryEntry>(outDe)));
+        auto pstream = std::shared_ptr<CFStream>(new CFStream);
+        std::static_pointer_cast<CFItem>(pstream)->compoundFile = compoundFile;
+        std::static_pointer_cast<CFItem>(pstream)->setDirEntry(std::static_pointer_cast<IDirectoryEntry>(outDe));
+        return pstream;
     }
     else
     {
@@ -100,7 +103,10 @@ bool CFStorage::TryGetStream(const std::wstring& streamName, std::shared_ptr<CFS
         if (children->TryLookup(tmp, outDe) &&
                 ((std::static_pointer_cast<IDirectoryEntry>(outDe))->getStgType() == StgType::StgStream))
         {
-            cfStream.reset(new CFStream(compoundFile, std::static_pointer_cast<IDirectoryEntry>(outDe)));
+            auto pstream = std::shared_ptr<CFStream>(new CFStream);
+            std::static_pointer_cast<CFItem>(pstream)->compoundFile = compoundFile;
+            std::static_pointer_cast<CFItem>(pstream)->setDirEntry(std::static_pointer_cast<IDirectoryEntry>(outDe));
+            cfStream = pstream;
             result = true;
         }
     }
@@ -182,7 +188,7 @@ std::shared_ptr<CFStorage> CFStorage::AddStorage(const std::wstring &storageName
 
     // Add new Storage directory entry
     std::shared_ptr<IDirectoryEntry> cfo
-            = DirectoryEntry::New(storageName, StgType::StgStorage, compoundFile->GetDirectories().cast<IDirectoryEntry>());
+            = DirectoryEntry::New(storageName, StgType::StgStorage, compoundFile.lock()->GetDirectories().cast<IDirectoryEntry>());
 
     //this.CompoundFile.InsertNewDirectoryEntry(cfo);
 
@@ -193,7 +199,7 @@ std::shared_ptr<CFStorage> CFStorage::AddStorage(const std::wstring &storageName
     }
     catch (RedBlackTree::RBTreeDuplicatedItemException& ex)
     {
-        compoundFile->ResetDirectoryEntry(cfo->getSid());
+        compoundFile.lock()->ResetDirectoryEntry(cfo->getSid());
         cfo.reset();
         throw new CFDuplicatedItemException(L"An entry with name '" + storageName + L"' is already present in storage '" + Name() + L"' ");
     }
@@ -217,7 +223,12 @@ void CFStorage::VisitEntries(RedBlackTree::Action<PCFItem> action, bool recursiv
         {
             auto d = std::dynamic_pointer_cast<IDirectoryEntry>(targetNode);
             if (d->getStgType() == StgType::StgStream)
-                action(PCFItem(new CFStream(compoundFile, d)));
+            {
+                std::shared_ptr<CFStream> pstream (new CFStream);
+                std::static_pointer_cast<CFItem>(pstream)->compoundFile = compoundFile;
+                std::static_pointer_cast<CFItem>(pstream)->setDirEntry(d);
+                action(std::static_pointer_cast<CFItem>(pstream));
+            }
             else
                 action(PCFItem(new CFStorage(compoundFile, d)));
 
@@ -284,7 +295,7 @@ void CFStorage::Delete(const std::wstring &entryName)
             foundObj = altDel;
         }
 
-        compoundFile->InvalidateDirectoryEntry(std::dynamic_pointer_cast<IDirectoryEntry>(foundObj)->getSid());
+        compoundFile.lock()->InvalidateDirectoryEntry(std::dynamic_pointer_cast<IDirectoryEntry>(foundObj)->getSid());
 
         break;
     }
@@ -292,7 +303,7 @@ void CFStorage::Delete(const std::wstring &entryName)
     case StgType::StgStream:
     {
         // Free directory associated data stream.
-        compoundFile->FreeAssociatedData(std::dynamic_pointer_cast<IDirectoryEntry>(foundObj)->getSid());
+        compoundFile.lock()->FreeAssociatedData(std::dynamic_pointer_cast<IDirectoryEntry>(foundObj)->getSid());
 
         // Remove item from children tree
         children->Delete(foundObj, altDel);
@@ -310,7 +321,7 @@ void CFStorage::Delete(const std::wstring &entryName)
             foundObj = altDel;
         }
 
-        compoundFile->InvalidateDirectoryEntry(std::dynamic_pointer_cast<IDirectoryEntry>(foundObj)->getSid());
+        compoundFile.lock()->InvalidateDirectoryEntry(std::dynamic_pointer_cast<IDirectoryEntry>(foundObj)->getSid());
     }
     default:
         break;
@@ -333,13 +344,13 @@ void CFStorage::RenameItem(const std::wstring &oldItemName, const std::wstring &
 
     if (children == nullptr)
     {
-        children = compoundFile->CreateNewTree();
+        children = compoundFile.lock()->CreateNewTree();
     }
 }
 
 std::shared_ptr<RBTree> CFStorage::LoadChildren(int SID)
 {
-    std::shared_ptr<RBTree> childrenTree = compoundFile->GetChildrenTree(SID);
+    std::shared_ptr<RBTree> childrenTree = compoundFile.lock()->GetChildrenTree(SID);
 
     if (childrenTree->getRoot() != nullptr)
         dirEntry->setChild((std::static_pointer_cast<IDirectoryEntry>(childrenTree->getRoot())->getSid()));

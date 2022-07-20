@@ -77,9 +77,18 @@ std::wstring CFItem::ToString() const
         return L"";
 }
 
+void CFItem::setDirEntry(const std::shared_ptr<IDirectoryEntry> &newDirEntry)
+{
+    if (newDirEntry == nullptr || newDirEntry->getSid() < 0)
+        throw new CFException("Attempting to create a CFStorage using an unitialized directory");
+
+    dirEntry = newDirEntry;
+}
+
+
 void CFItem::CheckDisposed() const
 {
-    if (compoundFile->IsClosed())
+    if (compoundFile.lock()->IsClosed())
         throw new CFDisposedException("Owner Compound file has been closed and owned items have been invalidated");
 }
 

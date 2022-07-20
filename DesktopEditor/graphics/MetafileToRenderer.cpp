@@ -475,8 +475,8 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case ctBrushTexturePath:
 			{
-				int nLen = 2 * ReadUSHORT(current, curindex);
-				std::wstring sTempPath = ReadString16(current, curindex, nLen);
+                int nLen = ReadInt(current, curindex);
+                std::wstring sTempPath = ReadString16(current, curindex, nLen);
 
 				std::wstring sImagePath = pCorrector->GetImagePath(sTempPath);
 				pRenderer->put_BrushTexturePath(sImagePath);
@@ -1133,7 +1133,7 @@ namespace NSOnlineOfficeBinToPdf
             }
             case ctBrushTexturePath:
             {
-                int nLen = 2 * ReadUSHORT(current, curindex);
+                int nLen = ReadInt(current, curindex);
                 SkipString16(current, curindex, nLen);
                 break;
             }

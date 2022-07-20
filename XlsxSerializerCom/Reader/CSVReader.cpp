@@ -31,6 +31,10 @@
  */
 #include "CSVReader.h"
 
+#include "../../Common/DocxFormat/Source/XlsbFormat/Xlsb.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Worksheet.h"
+#include "../../DesktopEditor/common/File.h"
+
 #include <map>
 #include <locale>
 
@@ -47,7 +51,7 @@ class CSVReader::Impl
 {
 public:
 	Impl() {}
-	_UINT32 Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const std::wstring& wcDelimiter);
+	_UINT32 Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, _UINT32 nCodePage, const std::wstring& wcDelimiter);
 private:
 	void AddCell(std::wstring &sText, INT nStartCell, std::stack<INT> &oDeleteChars, OOX::Spreadsheet::CRow &oRow, INT nRow, INT nCol, bool bIsWrap);
 
@@ -287,7 +291,7 @@ void CSVReader::Impl::AddCell(std::wstring &sText, INT nStartCell, std::stack<IN
 	pCell->setRowCol(nRow, nCol);
 	oRow.m_arrItems.push_back(pCell);
 }
-_UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const std::wstring& sDelimiter)
+_UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, _UINT32 nCodePage, const std::wstring& sDelimiter)
 {
 	NSFile::CFileBinary oFile;
 	if (false == oFile.OpenFile(sFileName)) return AVS_FILEUTILS_ERROR_CONVERT;
@@ -566,7 +570,7 @@ CSVReader::CSVReader() : impl_(new CSVReader::Impl())
 CSVReader::~CSVReader()
 {
 }
-_UINT32 CSVReader::Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const std::wstring& sDelimiter)
+_UINT32 CSVReader::Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, _UINT32 nCodePage, const std::wstring& sDelimiter)
 {
 	return impl_->Read(sFileName, oXlsx, nCodePage, sDelimiter);
 }

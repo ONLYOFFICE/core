@@ -31,54 +31,44 @@
  */
 #pragma once
 
-#include "../../DesktopEditor/common/File.h"
-#include "../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
+#include <string>
+#include "../../Common/DocxFormat/Source/Base/Types_32.h"
+
+#include <boost/shared_ptr.hpp>
 
 namespace OOX
 {
 	namespace Spreadsheet
 	{
+		class CXlsx;
+		class CWorksheet;
 		class CRow;
 		class CCell;
 	}
 }
-namespace CSVWriter
+
+class CSVWriter
 {
-	class CCSVWriter
-	{
-	protected:
-		NSFile::CFileBinary m_oFile;
-		OOX::Spreadsheet::CXlsx& m_oXlsx;
-		unsigned int m_nCodePage;
-		const std::wstring& m_sDelimiter;
-		bool m_bJSON;
+public:
+	CSVWriter();
+	~CSVWriter();
+	
+	void Xlsx2Csv(const std::wstring &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, unsigned int nCodePage, const std::wstring& wcDelimiter, bool bJSON);
 
-		wchar_t* m_pWriteBuffer;
-		int m_nCurrentIndex;
-		std::wstring m_sEscape;
-		int m_nRowCurrent;
-		int m_nColCurrent;
-		
-		int m_nColDimension;
+	void Init(OOX::Spreadsheet::CXlsx &oXlsx, unsigned int nCodePage, const std::wstring& wcDelimiter, bool bJSON);
 
-		bool m_bIsWriteCell; // Нужно только для записи JSON-а
-		bool m_bStartRow;
-		bool m_bStartCell;
+	void Start(const std::wstring &sFileDst);
+	void WriteSheetStart(OOX::Spreadsheet::CWorksheet* pWorksheet);
+	void WriteRowStart(OOX::Spreadsheet::CRow *pRow);
+	void WriteCell(OOX::Spreadsheet::CCell *pCell);
+	void WriteRowEnd(OOX::Spreadsheet::CRow* pWorksheet);
+	void WriteSheetEnd(OOX::Spreadsheet::CWorksheet* pWorksheet);
+	void End();
+	void Close();
 
-		void GetDefaultFormatCode(int numFmt, std::wstring & format_code, boost::optional<int> & format_type);
-		std::wstring ConvertValueCellToString(const std::wstring &Value, boost::optional<int> format_type, std::wstring format_code);
-	public:
-		CCSVWriter(OOX::Spreadsheet::CXlsx &oXlsx, unsigned int m_nCodePage, const std::wstring& sDelimiter, bool m_bJSON);
-		~CCSVWriter();
-		void Start(const std::wstring &sFileDst);
-		void WriteSheetStart(OOX::Spreadsheet::CWorksheet* pWorksheet);
-		void WriteRowStart(OOX::Spreadsheet::CRow *pRow);
-		void WriteCell(OOX::Spreadsheet::CCell *pCell);
-		void WriteRowEnd(OOX::Spreadsheet::CRow* pWorksheet);
-		void WriteSheetEnd(OOX::Spreadsheet::CWorksheet* pWorksheet);
-		void End();
-		void Close();
-	};
-	void WriteFromXlsxToCsv(const std::wstring &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, unsigned int nCodePage, const std::wstring& wcDelimiter, bool bJSON);
-}
+private:
+	class Impl;
+	boost::shared_ptr<Impl> impl_;
+};
+
 

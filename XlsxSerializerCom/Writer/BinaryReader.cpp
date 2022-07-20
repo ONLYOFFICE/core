@@ -7554,7 +7554,9 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 			}
 			else
 			{
-				CSVWriter::CCSVWriter oCSVWriter(oXlsx, nCodePage, sDelimiter, false);
+				CSVWriter oCSVWriter;
+				
+				oCSVWriter.Init(oXlsx, nCodePage, sDelimiter, false);
 				oCSVWriter.Start(sDstPathCSV);
 				SaveParams oSaveParams(drawingsPath, embeddingsPath, themePath, pOfficeDrawingConverter->GetContentTypes(), &oCSVWriter);
 				

@@ -32,17 +32,24 @@
 #pragma once
 
 #include <stack>
+#include <string>
+#include "../../Common/DocxFormat/Source/Base/Types_32.h"
 
-#include "../../Common/DocxFormat/Source/XlsbFormat/Xlsb.h"
-#include "../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Worksheet.h"
-#include "../../DesktopEditor/common/File.h"
+#include <boost/shared_ptr.hpp>
 
+namespace OOX
+{
+	namespace Spreadsheet
+	{
+		class CXlsx;
+	}
+}
 class CSVReader
 {
 public:
 	CSVReader();
 	~CSVReader();
-	_UINT32 Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const std::wstring& wcDelimiter);
+	_UINT32 Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, _UINT32 nCodePage, const std::wstring& wcDelimiter);
 private:
 	class Impl;
 	boost::shared_ptr<Impl> impl_;

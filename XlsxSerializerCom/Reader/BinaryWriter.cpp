@@ -7310,8 +7310,10 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 
 	if (BinXlsxRW::c_oFileTypes::JSON == saveFileType)
 	{
-		//todo 46 временно CP_UTF8
-		CSVWriter::WriteFromXlsxToCsv(sFileDst, *pXlsx, 46, std::wstring(L","), true);
+//todo 46 временно CP_UTF8
+		
+		CSVWriter oCSVWriter;
+		oCSVWriter.Xlsx2Csv(sFileDst, *pXlsx, 46, std::wstring(L","), true);
 	}
 	else
 	{

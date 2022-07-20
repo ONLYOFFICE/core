@@ -417,9 +417,22 @@ namespace MetaFile
                 double dWidth  = 25.4 * nWidth / 96;
                 double dHeight = 25.4 * nHeight / 96;
 
-                BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
+                BYTE* pBgraData = (BYTE*)malloc(nWidth * nHeight * 4);
                 if (!pBgraData)
-                        return;
+                {
+                    double dKoef = 2000.0 / (nWidth > nHeight ? nWidth : nHeight);
+
+                    nWidth = (int)(dKoef * nWidth);
+                    nHeight = (int)(dKoef * nHeight);
+
+                    dWidth  = 25.4 * nWidth / 96;
+                    dHeight = 25.4 * nHeight / 96;
+
+                    pBgraData = (BYTE*)malloc(nWidth * nHeight * 4);
+                }
+
+                if (!pBgraData)
+                    return;
 
                 _UINT32 alfa = 0xffffff;
                 //дефолтный тон должен быть прозрачным, а не белым
@@ -442,6 +455,10 @@ namespace MetaFile
                 DrawOnRenderer(&oRenderer, 0, 0, dWidth, dHeight);
 
                 oFrame.SaveFile(wsOutFilePath, unFileType);
+                oFrame.put_Data(NULL);
                 RELEASEINTERFACE(pFontManager);
+
+                if (pBgraData)
+                    free(pBgraData);
         }
 }

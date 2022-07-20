@@ -87,6 +87,7 @@ namespace NSDocxRenderer
 
         //Собранные для текущей страницы данные нужно проанализировать и сгруппировать, лишнее удалить
         void AnalyzeCollectedSymbols();
+        void DetermineIfThereAreShadows();
         bool IsLineCrossingText(const CShape* pGraphicItem, CContText* pCont);
         bool IsLineBelowText(const CShape* pGraphicItem, CContText* pCont);
         bool IsItHighlightingBackground(const CShape* pGraphicItem, CContText* pCont);

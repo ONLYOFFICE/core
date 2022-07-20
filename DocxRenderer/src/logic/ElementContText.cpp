@@ -51,6 +51,8 @@ namespace NSDocxRenderer
 
         m_eVertAlignType = oSrc.m_eVertAlignType;
 
+        m_bIsShadowPresent = oSrc.m_bIsShadowPresent;
+
         m_pShape    = oSrc.m_pShape;
         m_pManagerLight = oSrc.m_pManagerLight;
         m_pCont = oSrc.m_pCont;
@@ -126,6 +128,11 @@ namespace NSDocxRenderer
                     oWriter.WriteString(L"\"/>");
                 }
             }
+        }
+
+        if (m_bIsShadowPresent)
+        {
+            oWriter.WriteString(L"<w:shadow/>");
         }
 
         int lSize = static_cast<int>(2 * m_oFont.Size);
@@ -331,17 +338,19 @@ namespace NSDocxRenderer
         bool bIf4 = m_bIsHighlightPresent == oSrc->m_bIsHighlightPresent;
         bool bIf5 = m_lHighlightColor == oSrc->m_lHighlightColor;
         bool bIf6 = m_bIsDoubleStrikeout == oSrc->m_bIsDoubleStrikeout;
-        bool bIf7 = m_pShape == oSrc->m_pShape;
-        bool bIf8 = m_oFont.Name == L"" || oSrc->m_oFont.Name == L"" ? true : m_oFont.IsEqual(&oSrc->m_oFont);
-        bool bIf9 = m_oBrush.IsEqual(&oSrc->m_oBrush);
+        bool bIf7 = m_bIsShadowPresent == oSrc->m_bIsShadowPresent;
+        bool bIf8 = m_pShape == oSrc->m_pShape;
+        bool bIf9 = m_oFont.Name == L"" || oSrc->m_oFont.Name == L"" ? true : m_oFont.IsEqual(&oSrc->m_oFont);
+        bool bIf10 = m_oBrush.IsEqual(&oSrc->m_oBrush);
 
-        if (bIf1 && bIf2 && bIf3 && bIf4 && bIf5 && bIf6 && bIf7 && bIf8 && bIf9)
+        if (bIf1 && bIf2 && bIf3 && bIf4 && bIf5 && bIf6 && bIf7 && bIf8 && bIf9 && bIf10)
         /*if( m_strPickFontName == oSrc->m_strPickFontName &&
             m_eUnderlineType == oSrc->m_eUnderlineType &&
             m_lUnderlineColor == oSrc->m_lUnderlineColor &&
             m_bIsHighlightPresent == oSrc->m_bIsHighlightPresent &&
             m_lHighlightColor == oSrc->m_lHighlightColor &&
             m_bIsDoubleStrikeout == oSrc->m_bIsDoubleStrikeout &&
+            m_bIsShadowPresent == oSrc->m_bIsShadowPresent &&
             //m_eVertAlignType == oSrc->m_eVertAlignType &&
             m_pShape == oSrc->m_pShape &&
             m_oFont.IsEqual(&oSrc->m_oFont) &&

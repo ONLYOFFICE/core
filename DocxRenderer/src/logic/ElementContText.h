@@ -45,6 +45,8 @@ namespace NSDocxRenderer
 
             eVertAlignType m_eVertAlignType {eVertAlignType::vatUnknown};
 
+            bool   m_bIsShadowPresent {false};
+
             const CShape* m_pShape {nullptr}; //Если не nullptr, то есть фоновая графика - можно анализировать.
             CFontManagerLight* m_pManagerLight {nullptr};
 

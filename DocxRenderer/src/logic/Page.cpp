@@ -501,7 +501,7 @@ namespace NSDocxRenderer
         {
             if (m_arShapes[i]->m_bIsNotNecessaryToUse ||
                 !m_arShapes[i]->m_pCont || //note определяем тип только для зачеркиваний/подчеркиваний/выделений
-                m_arShapes[i]->m_dHeight > c_dMAX_LINE_MM || //рассматриваем только тонкие объекты
+                m_arShapes[i]->m_dHeight > c_dMAX_LINE_HEIGHT_MM || //рассматриваем только тонкие объекты
                 (m_arShapes[i]->m_eGraphicsType != eGraphicsType::gtRectangle &&
                 m_arShapes[i]->m_eGraphicsType != eGraphicsType::gtCurve))
             {
@@ -564,10 +564,11 @@ namespace NSDocxRenderer
 
     void CPage::AnalyzeCollectedSymbols()
     {
+        DetermineIfThereAreShadows();
+
         for (auto pShape : m_arShapes)
         {
-            if (//pShape->m_bIsNotNecessaryToUse ||
-                !pShape->m_pCont || //note если нет указателя, то текст далеко от графики
+            if (!pShape->m_pCont || //note если нет указателя, то текст далеко от графики
                 (pShape->m_eGraphicsType != eGraphicsType::gtRectangle &&
                 pShape->m_eGraphicsType != eGraphicsType::gtCurve &&
                 pShape->m_eLineType != eLineType::ltUnknown))
@@ -587,6 +588,52 @@ namespace NSDocxRenderer
         }
 
         DetermineVertAlignTypeBetweenConts();
+    }
+
+    void CPage::DetermineIfThereAreShadows()
+    {
+        for (size_t i = 0; i < m_arSymbol.size(); i++)
+        {
+            auto pCont = m_arSymbol[i];
+
+            if (pCont->m_bIsNotNecessaryToUse ||
+                    i > m_arSymbol.size() - 2)
+            {
+                continue;
+            }
+
+            auto pNext = m_arSymbol[i+1];
+
+            double dRightCont = pCont->m_dLeft + pCont->m_dWidth;
+            double dRightNext = pNext->m_dLeft + pNext->m_dWidth;
+
+            //Условие пересечения по вертикали
+            bool bIf1 = (pCont->m_dTop < pNext->m_dTop && pCont->m_dBaselinePos < pNext->m_dBaselinePos); //текущий cont выше
+            bool bIf2 = (pCont->m_dTop > pNext->m_dTop && pCont->m_dBaselinePos > pNext->m_dBaselinePos); //текущий cont ниже
+            //Условие пересечения по горизонтали
+            bool bIf3 = pCont->m_dLeft < pNext->m_dLeft && dRightCont > pNext->m_dLeft; //текущий cont левее
+            bool bIf4 = pNext->m_dLeft < pCont->m_dLeft && dRightNext > pCont->m_dLeft; //текущий cont правее
+            //Размеры шрифта и текст должны бать одинаковыми
+            bool bIf5 = pCont->m_oFont.Size == pNext->m_oFont.Size;
+            bool bIf6 = pCont->m_oText == pNext->m_oText;
+            //Цвет тени должен быть серым
+            bool bIf7 = pCont->m_oBrush.Color1 == c_iGreyColor;
+            bool bIf8 = pNext->m_oBrush.Color1 == c_iGreyColor;
+
+            if ((bIf1 || bIf2) && (bIf3 || bIf4) && bIf5 && bIf6 && (bIf7 || bIf8))
+            {
+                if (bIf1 && bIf3 && bIf8)
+                {
+                    pCont->m_bIsShadowPresent = true;
+                    pNext->m_bIsNotNecessaryToUse = true;
+                }
+                else if (bIf2 && bIf4 && bIf7)
+                {
+                    pNext->m_bIsShadowPresent = true;
+                    pCont->m_bIsNotNecessaryToUse = true;
+                }
+            }
+        }
     }
 
     bool CPage::IsLineCrossingText(const CShape* pShape, CContText* pCont)
@@ -711,8 +758,8 @@ namespace NSDocxRenderer
             double dRightNext = pNext->m_dLeft + pNext->m_dWidth;
 
             //Условие пересечения по вертикали
-            bool bIf1 = (pCont->m_dTop < pNext->m_dTop && pCont->m_dBaselinePos < pNext->m_dBaselinePos); //текущая линия ниже
-            bool bIf2 = (pCont->m_dTop > pNext->m_dTop && pCont->m_dBaselinePos > pNext->m_dBaselinePos); //текущая линия выше
+            bool bIf1 = (pCont->m_dTop < pNext->m_dTop && pCont->m_dBaselinePos < pNext->m_dBaselinePos); //текущая линия выше
+            bool bIf2 = (pCont->m_dTop > pNext->m_dTop && pCont->m_dBaselinePos > pNext->m_dBaselinePos); //текущая линия ниже
             //Условие пересечения по горизонтали
             bool bIf3 = fabs(dRightCont - pNext->m_dLeft) < c_dTHE_STRING_X_PRECISION_MM * 3; //текущая линия левее
             bool bIf4 = fabs(pCont->m_dLeft - dRightNext) < c_dTHE_STRING_X_PRECISION_MM * 3; //текущая линия правее
@@ -788,6 +835,11 @@ namespace NSDocxRenderer
 
     void CPage::BuildLines(const CContText* pCont)
     {
+        if (pCont->m_bIsNotNecessaryToUse)
+        {
+            return;
+        }
+
         double dTextX       = pCont->m_dLeft;
         double dTextW       = pCont->m_dWidth;
         NSStringUtils::CStringUTF32 oText(pCont->m_oText);

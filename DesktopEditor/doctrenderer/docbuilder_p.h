@@ -266,6 +266,8 @@ namespace NSDoctRenderer
             oWorker.m_arAdditionalFolders = m_oParams.m_arFontDirs;
             oWorker.m_bIsNeedThumbnails = false;
             oWorker.m_sDirectory = sDirectory;
+            // это не рабочая папка, где только шрифты
+            oWorker.m_bIsCleanDirectory = false;
             NSFonts::IApplicationFonts* pFonts = oWorker.Check();
             if(pFonts)
                 pFonts->Release();

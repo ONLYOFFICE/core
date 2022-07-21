@@ -668,7 +668,12 @@ namespace NSDoctRenderer
         if (sParam == "--use-doctrenderer-scheme")
             m_pInternal->m_oParams.m_bSaveWithDoctrendererMode = true;
         else if (sParam == "--check-fonts")
-            m_pInternal->m_oParams.m_bCheckFonts = true;
+        {
+            if (value && value[0] == '0')
+                m_pInternal->m_oParams.m_bCheckFonts = false;
+            else
+                m_pInternal->m_oParams.m_bCheckFonts = true;
+        }
         else if (sParam == "--work-directory")
             m_pInternal->m_oParams.m_sWorkDir = std::wstring(value);
         else if (sParam == "--cache-scripts")

@@ -306,6 +306,7 @@ std::wstring CSVWriter::Impl::convert_date_time(const std::wstring & sValue, std
 				format_code = format_code.substr(pos + 1);
 			}
 			int CodePage = 0;
+			std::string LCID;
 
 			if (language_code > 0 && language_code != 0xf800 && language_code != 0xf400)
 			{
@@ -314,7 +315,15 @@ std::wstring CSVWriter::Impl::convert_date_time(const std::wstring & sValue, std
 				BYTE NumberType = GETBITS(language_code, 24, 31);
 
 				CodePage = msLCID2DefCodePage(LanguageID);
+				std::wstring wsLCID = msLCID2wstring(LanguageID);
+
+				LCID = std::string(wsLCID.begin(), wsLCID.end());
 			}
+			std::wstring output;
+#if 0
+			NSUnicodeConverter::CUnicodeConverter oConverter;
+			output = oConverter.FormatDateTime(iDate, format_code, LCID);
+#else
 			std::wstring sAferTime;
 			if (std::wstring::npos != format_code.find(L"AM/PM"))
 			{
@@ -326,7 +335,6 @@ std::wstring CSVWriter::Impl::convert_date_time(const std::wstring & sValue, std
 				}
 				else sAferTime += L"AM";
 			}
-			std::wstring output;
 
 			bool bHourOutput = false;// for month or minutes
 			for (size_t i = 0; i < format_code.length(); ++i)
@@ -341,11 +349,11 @@ std::wstring CSVWriter::Impl::convert_date_time(const std::wstring & sValue, std
 				case L'd':
 				case L'D':
 				{
-					if (symbol_size == 3)
-						output += date_.day_of_week().as_short_wstring();
-					else if (symbol_size == 4)
-						output += date_.day_of_week().as_long_wstring();
-					else
+					//if (symbol_size == 3)
+					//	output += date_.day_of_week().as_short_wstring();
+					//else if (symbol_size == 4)
+					//	output += date_.day_of_week().as_long_wstring();
+					//else
 					{
 						unsigned short day = date_.day().as_number();
 						if (symbol_size > 1 && day < 10) output += L"0";
@@ -370,10 +378,10 @@ std::wstring CSVWriter::Impl::convert_date_time(const std::wstring & sValue, std
 					else
 					{
 						unsigned short month = date_.month().as_number();
-						if (symbol_size == 2 && month < 10) output += L"0";
-						if (symbol_size < 3) output += std::to_wstring(month);
-						else if (symbol_size == 3) output += date_.month().as_short_wstring();
-						else output += date_.month().as_long_wstring();
+						if (symbol_size > 2 && month < 10) output += L"0";
+						/*if (symbol_size < 3) */output += std::to_wstring(month);
+						//else if (symbol_size == 3) output += date_.month().as_short_wstring();
+						//else output += date_.month().as_long_wstring();
 					}
 				}break;
 				case L's':
@@ -394,6 +402,7 @@ std::wstring CSVWriter::Impl::convert_date_time(const std::wstring & sValue, std
 				}
 				i += symbol_size - 1; 
 			}
+#endif
 			return output;
 		}
 	}

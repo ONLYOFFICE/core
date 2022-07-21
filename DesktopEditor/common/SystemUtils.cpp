@@ -31,7 +31,17 @@
  */
 #include <stdlib.h>
 #include "SystemUtils.h"
-#include "File.h"
+#include "Directory.h"
+
+#ifdef _WIN32
+#include "ShlObj_core.h"
+#ifdef CreateDirectory
+#undef CreateDirectory
+#endif
+#ifdef CreateFile
+#undef CreateFile
+#endif
+#endif
 
 namespace NSSystemUtils
 {
@@ -61,4 +71,51 @@ namespace NSSystemUtils
 		}
 #endif
 	}
+
+    std::wstring GetAppDataDir()
+    {
+        std::wstring sBranding = GetBuildBranding();
+        std::wstring sAppDataPath;
+
+#ifdef _WIN32
+        wchar_t sAppDataLocal[65535];
+
+        if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, sAppDataLocal)))
+        {
+            sAppDataPath = std::wstring(sAppDataLocal);
+        }
+#else
+        std::wstring sHomeDir = NSSystemUtils::GetEnvVariable(L"HOME");
+
+        if (!sHomeDir.empty())
+        {
+            if (NSDirectory::Exists(sHomeDir + L"/.local/share"))
+                sHomeDir = sHomeDir + L"/.local/share";
+            else if (NSDirectory::Exists(sHomeDir + L"/.local"))
+                sHomeDir = sHomeDir + L"/.local";
+        }
+
+        sAppDataPath = sHomeDir;
+#endif
+
+        if (!NSDirectory::Exists(sAppDataPath))
+            return L"";
+
+        sAppDataPath += (L"/" + sBranding);
+
+        if (!NSDirectory::Exists(sAppDataPath))
+            NSDirectory::CreateDirectory(sAppDataPath);
+
+        return sAppDataPath;
+    }
+
+    std::wstring GetBuildBranding()
+    {
+        std::string sBrandingA = "ONLYOFFICE";
+    #ifdef BUILD_BRANDING_NAME
+        sBrandingA = BUILD_BRANDING_NAME;
+    #endif
+
+        return UTF8_TO_U(sBrandingA);
+    }
 }

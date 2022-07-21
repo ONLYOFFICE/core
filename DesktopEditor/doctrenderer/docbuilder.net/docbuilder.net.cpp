@@ -49,6 +49,74 @@ namespace docbuilder_net
 		return (wchar_t*)System::Runtime::InteropServices::Marshal::StringToHGlobalUni(param).ToPointer();
 	}
 
+	ref class CDocBuilderValue_Private
+	{
+	public:
+		NSDoctRenderer::CDocBuilderValue* m_internal;
+
+	public:
+		CDocBuilderValue_Private()
+		{
+			m_internal = new NSDoctRenderer::CDocBuilderValue();
+		}
+		~CDocBuilderValue_Private()
+		{
+			delete m_internal;
+		}
+	};
+
+	CDocBuilderValue::CDocBuilderValue()
+	{
+		m_internal = gcnew CDocBuilderValue_Private();
+	}
+	CDocBuilderValue::CDocBuilderValue(const CDocBuilderValue% oValue)
+	{
+		m_internal = gcnew CDocBuilderValue_Private();
+		*(m_internal->m_internal) = *(oValue.m_internal->m_internal);
+	}
+	CDocBuilderValue::~CDocBuilderValue()
+	{
+		delete m_internal;
+	}
+
+	bool CDocBuilderValue::IsEmpty()
+	{
+		return m_internal->m_internal->IsEmpty();
+	}
+	void CDocBuilderValue::Clear()
+	{
+		m_internal->m_internal->Clear();
+	}
+	bool CDocBuilderValue::IsNull()
+	{
+		return m_internal->m_internal->IsNull();
+	}
+	bool CDocBuilderValue::IsUndefined()
+	{
+		return m_internal->m_internal->IsUndefined();
+	}
+	int CDocBuilderValue::GetInt()
+	{
+		return m_internal->m_internal->ToInt();
+	}
+	double CDocBuilderValue::GetDouble()
+	{
+		return m_internal->m_internal->ToDouble();
+	}
+	String^ CDocBuilderValue::GetString()
+	{
+		wchar_t* pStr = m_internal->m_internal->ToString();
+		String^ str = gcnew String(pStr);
+		m_internal->m_internal->FreeString(pStr);
+		return str;
+	}
+	CDocBuilderValue CDocBuilderValue::GetProperty(String^ name)
+	{
+		CDocBuilderValue oValue;
+		*(oValue.m_internal->m_internal) = m_internal->m_internal->GetProperty(StringToStdString(name));
+		return oValue;
+	}
+
 	ref class CDocBuilder_Private
 	{
 	public:
@@ -64,54 +132,53 @@ namespace docbuilder_net
 		}
 	};
 
-
 	CDocBuilder::CDocBuilder()
 	{
-		m_pInternal = gcnew CDocBuilder_Private();
+		m_internal = gcnew CDocBuilder_Private();
 	}
 	CDocBuilder::~CDocBuilder()
 	{
-		delete m_pInternal;
+		delete m_internal;
 	}
 
 	bool CDocBuilder::OpenFile(String^ path, String^ params)
 	{		
-		return m_pInternal->m_pBuilder->OpenFile(StringToStdString(path), StringToStdString(params));
+		return m_internal->m_pBuilder->OpenFile(StringToStdString(path), StringToStdString(params));
 	}
 	bool CDocBuilder::CreateFile(int type)
 	{
-		return m_pInternal->m_pBuilder->CreateFile(type);
+		return m_internal->m_pBuilder->CreateFile(type);
 	}
 	void CDocBuilder::SetTmpFolder(String^ folder)
 	{
-		m_pInternal->m_pBuilder->SetTmpFolder(StringToStdString(folder));
+		m_internal->m_pBuilder->SetTmpFolder(StringToStdString(folder));
 	}
 	bool CDocBuilder::SaveFile(int type, String^ path)
 	{
-		return m_pInternal->m_pBuilder->SaveFile(type, StringToStdString(path));
+		return m_internal->m_pBuilder->SaveFile(type, StringToStdString(path));
 	}
 	void CDocBuilder::CloseFile()
 	{
-		m_pInternal->m_pBuilder->CloseFile();
+		m_internal->m_pBuilder->CloseFile();
 	}
 	bool CDocBuilder::ExecuteCommand(String^ command)
 	{
-		return m_pInternal->m_pBuilder->ExecuteCommand(StringToStdString(command));
+		return m_internal->m_pBuilder->ExecuteCommand(StringToStdString(command));
 	}
 
 	bool CDocBuilder::Run(String^ path)
 	{
-		return m_pInternal->m_pBuilder->Run(StringToStdString(path));
+		return m_internal->m_pBuilder->Run(StringToStdString(path));
 	}
 
 	bool CDocBuilder::RunText(String^ text)
 	{
-		return m_pInternal->m_pBuilder->RunTextW(StringToStdString(text));
+		return m_internal->m_pBuilder->RunTextW(StringToStdString(text));
 	}
 
 	void CDocBuilder::SetProperty(String^ key, String^ value)
 	{		
-		m_pInternal->m_pBuilder->SetPropertyW(StringToStdString(key), StringToStdString(value));
+		m_internal->m_pBuilder->SetPropertyW(StringToStdString(key), StringToStdString(value));
 	}
 
 	void CDocBuilder::Initialize()

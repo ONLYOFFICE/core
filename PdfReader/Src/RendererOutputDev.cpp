@@ -547,7 +547,7 @@ namespace PdfReader
         m_bTransparentGroupSoftMask = false;
         m_bTransparentGroupSoftMaskEnd = false;
 
-        m_pSoftMask = NULL;
+        RELEASEARRAYOBJECTS(m_pSoftMask);
 
         m_bDrawOnlyText = false;
         m_bClipChanged = true;
@@ -659,6 +659,7 @@ namespace PdfReader
         m_bIsolatedTransparentGroup = false;
         m_bTransparentGroupSoftMask = false;
         m_bTransparentGroupSoftMaskEnd = false;
+        RELEASEARRAYOBJECTS(m_pSoftMask);
 
         if (c_nHtmlRendrerer2 == m_lRendererType)
             m_bDrawOnlyText = (S_OK == m_pRenderer->CommandLong(c_nCommandLongTypeOnlyText, 0)) ? true : false;
@@ -4574,60 +4575,11 @@ namespace PdfReader
         m_bIsolatedTransparentGroup = bIsolated;
         m_bTransparentGroupSoftMask = bForSoftMask;
         m_arrTransparentGroupSoftMask.push_back(bForSoftMask);
-
-        /*
-        if (m_bTransparentGroupSoftMask)
-        {
-            int nWidth  = pBBox[2] - pBBox[0];
-            int nHeight = pBBox[3] - pBBox[1];
-            BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
-
-            CBgraFrame* pFrame = new CBgraFrame();
-            pFrame->put_Data(pBgraData);
-            pFrame->put_Width(nWidth);
-            pFrame->put_Height(nHeight);
-            pFrame->put_Stride(-4 * nWidth);
-            m_arrTransparency.push_back(pFrame);
-
-            NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
-            pRenderer->SetFontManager(m_pFontManager);
-
-            Aggplus::CDoubleRect oRect;
-            oRect.left		= 0;
-            oRect.top		= 0;
-            oRect.right		= pFrame->get_Width();
-            oRect.bottom	= pFrame->get_Height();
-            pRenderer->Create(pFrame->get_Data(), oRect, pFrame->get_Width(), pFrame->get_Height());
-
-            pRenderer->put_Width(nWidth);
-            pRenderer->put_Height(nHeight);
-
-            double a, b, c, d, e, f;
-            m_pRenderer->GetTransform(&a, &b, &c, &d, &e, &f);
-            pRenderer->SetTransform(a, b, c, d, e, f);
-
-            m_arrRenderer.push_back(pRenderer);
-            m_pRenderer = pRenderer;
-        }
-        */
     }
     void RendererOutputDev::endTransparencyGroup(GfxState *pGState)
     {
         if (m_bTransparentGroupSoftMask)
             m_bTransparentGroupSoftMaskEnd = true;
-        /*
-        if (m_bTransparentGroupSoftMask || m_arrTransparentGroupSoftMask.back())
-        {
-            RELEASEOBJECT(m_pTransparentGroupSoftMask);
-            m_pTransparentGroupSoftMask = m_arrTransparency.back();
-            m_arrTransparency.pop_back();
-
-            IRenderer* pRenderer = m_arrRenderer.back();
-            RELEASEOBJECT(pRenderer);
-            m_arrRenderer.pop_back();
-            m_pRenderer = m_arrRenderer.back();
-        }
-        */
 
         m_arrTransparentGroupSoftMask.pop_back();
         m_bTransparentGroup = false;

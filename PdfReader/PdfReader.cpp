@@ -173,7 +173,12 @@ namespace PdfReader
         RELEASEOBJECT((m_pInternal->m_pPDFDocument));
         RELEASEOBJECT((globalParams));
         RELEASEINTERFACE((m_pInternal->m_pFontManager));
-        m_pInternal->m_pPdfWriter = NULL;
+
+        if (m_pInternal->m_pPdfWriter)
+        {
+            m_pInternal->m_pPdfWriter->Release();
+            m_pInternal->m_pPdfWriter = NULL;
+        }
 	}
     bool CPdfReader::LoadFromFile(const std::wstring& wsSrcPath, const std::wstring& wsOptions,
                                     const std::wstring& wsOwnerPassword, const std::wstring& wsUserPassword)
@@ -504,6 +509,7 @@ return 0;
             return false;
 
         m_pInternal->m_pPdfWriter = (CPdfRenderer*)pPdfWriter;
+        m_pInternal->m_pPdfWriter->AddRef();
         XRef* xref = m_pInternal->m_pPDFDocument->getXRef();
         if (!xref)
             return false;

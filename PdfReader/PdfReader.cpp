@@ -43,14 +43,17 @@
 #include "../DesktopEditor/graphics/IRenderer.h"
 #include "../DesktopEditor/common/Directory.h"
 #include "../DesktopEditor/common/StringExt.h"
+#include "../PdfWriter/PdfRenderer.h"
 
 #include "lib/xpdf/PDFDoc.h"
 #include "lib/xpdf/GlobalParams.h"
 #include "lib/xpdf/ErrorCodes.h"
 #include "lib/xpdf/ImageOutputDev.h"
 #include "lib/xpdf/TextString.h"
+#include "lib/xpdf/SecurityHandler.h"
 #include "lib/xpdf/Lexer.h"
 #include "lib/xpdf/Parser.h"
+#include "lib/xpdf/AcroForm.h"
 #include "Src/RendererOutputDev.h"
 
 #ifdef BUILDING_WASM_MODULE
@@ -73,7 +76,48 @@ namespace PdfReader
         NSFonts::IApplicationFonts* m_pAppFonts;
         NSFonts::IFontManager*      m_pFontManager;
         CFontList*         m_pFontList;
+        CPdfRenderer*      m_pPdfWriter;
         DWORD              m_nFileLength;
+
+        void GetPageTree(XRef* xref, Object* pPagesRefObj)
+        {
+            if (!pPagesRefObj || !xref)
+                return;
+
+            Object typeDict, pagesObj;
+            if (!pPagesRefObj->isRef() || !pPagesRefObj->fetch(xref, &pagesObj)   ||
+                !pagesObj.isDict()     || !pagesObj.dictLookup("Type", &typeDict) ||
+                !typeDict.isName("Pages"))
+            {
+                pagesObj.free();
+                typeDict.free();
+                return;
+            }
+            typeDict.free();
+
+            Ref topPagesRef = pPagesRefObj->getRef();
+            std::wstring sPageTree = XMLConverter::DictToXml(L"PageTree", &pagesObj, topPagesRef.num, topPagesRef.gen);
+
+            m_pPdfWriter->CreatePageTree(sPageTree, topPagesRef.num);
+
+            Object kidsArrObj;
+            if (!pagesObj.dictLookup("Kids", &kidsArrObj) || !kidsArrObj.isArray())
+            {
+                pagesObj.free();
+                kidsArrObj.free();
+                return;
+            }
+            pagesObj.free();
+
+            for (int i = 0, count = kidsArrObj.arrayGetLength(); i < count; ++i)
+            {
+                Object kidRefObj;
+                if (kidsArrObj.arrayGetNF(i, &kidRefObj))
+                    GetPageTree(xref, &kidRefObj);
+                kidRefObj.free();
+            }
+            kidsArrObj.free();
+        }
     };
 
     CPdfReader::CPdfReader(NSFonts::IApplicationFonts* pAppFonts)
@@ -85,6 +129,7 @@ namespace PdfReader
 
         m_pInternal->m_pPDFDocument = NULL;
         m_pInternal->m_pFontManager = NULL;
+        m_pInternal->m_pPdfWriter   = NULL;
         m_pInternal->m_nFileLength  = 0;
 
         globalParams  = new GlobalParamsAdaptor(NULL);
@@ -128,6 +173,12 @@ namespace PdfReader
         RELEASEOBJECT((m_pInternal->m_pPDFDocument));
         RELEASEOBJECT((globalParams));
         RELEASEINTERFACE((m_pInternal->m_pFontManager));
+
+        if (m_pInternal->m_pPdfWriter)
+        {
+            m_pInternal->m_pPdfWriter->Release();
+            m_pInternal->m_pPdfWriter = NULL;
+        }
 	}
     bool CPdfReader::LoadFromFile(const std::wstring& wsSrcPath, const std::wstring& wsOptions,
                                     const std::wstring& wsOwnerPassword, const std::wstring& wsUserPassword)
@@ -447,6 +498,162 @@ return 0;
 //		return wsXml;
         return L"";
 	}
+    bool CPdfReader::EditPdf(IRenderer* pPdfWriter, const std::wstring& sPassword)
+    {
+        if (!pPdfWriter)
+            return false;
+
+        long lRendererType;
+        pPdfWriter->get_Type(&lRendererType);
+        if (c_nPDFWriter != lRendererType || !m_pInternal->m_pPDFDocument)
+            return false;
+
+        m_pInternal->m_pPdfWriter = (CPdfRenderer*)pPdfWriter;
+        m_pInternal->m_pPdfWriter->AddRef();
+        XRef* xref = m_pInternal->m_pPDFDocument->getXRef();
+        if (!xref)
+            return false;
+
+        Object catDict, catRefObj, pagesRefObj;
+        if (!xref->getCatalog(&catDict) || !catDict.isDict() || !catDict.dictLookupNF("Pages", &pagesRefObj))
+        {
+            pagesRefObj.free();
+            catDict.free();
+            return false;
+        }
+        Object* trailer = xref->getTrailerDict();
+        if (!trailer || !trailer->isDict() || !trailer->dictLookupNF("Root", &catRefObj) || !catRefObj.isRef())
+        {
+            pagesRefObj.free();
+            catDict.free();
+            catRefObj.free();
+            return false;
+        }
+
+        Ref catRef = catRefObj.getRef();
+        std::wstring sCatalog = XMLConverter::DictToXml(L"Catalog", &catDict, catRef.num, catRef.gen);
+
+        unsigned int nFormField = 0;
+        AcroForm* form = m_pInternal->m_pPDFDocument->getCatalog()->getForm();
+        if (form)
+        {
+            nFormField = form->getNumFields() + 1;
+            std::wstring sSig = L"Sig" + std::to_wstring(nFormField);
+            int i = 0, nFormFields = form->getNumFields();
+            while (i < nFormFields)
+            {
+                int nLength;
+                Unicode* uName = form->getField(i)->getName(&nLength);
+                std::wstring sName = NSStringExt::CConverter::GetUnicodeFromUTF32(uName, nLength);
+                RELEASEMEM(uName);
+                if (sName == sSig)
+                {
+                    i = 0;
+                    nFormField++;
+                    sSig = L"Sig" + std::to_wstring(nFormField);
+                }
+                else
+                    i++;
+            }
+            nFormField--;
+        }
+
+        int nCryptAlgorithm = -1;
+        std::wstring sEncrypt;
+        if (xref->isEncrypted())
+        {
+            CryptAlgorithm encAlgorithm;
+            GBool ownerPasswordOk;
+            int permFlags, keyLength, encVersion;
+            xref->getEncryption(&permFlags, &ownerPasswordOk, &keyLength, &encVersion, &encAlgorithm);
+            nCryptAlgorithm = encAlgorithm;
+
+            Object* pTrailerDict = xref->getTrailerDict();
+            if (pTrailerDict)
+            {
+                Object encrypt, ID, ID1;
+                if (pTrailerDict->dictLookup("Encrypt", &encrypt) && encrypt.isDict())
+                    sEncrypt = XMLConverter::DictToXml(L"Encrypt", &encrypt, true);
+                encrypt.free();
+
+                if (pTrailerDict->dictLookup("ID", &ID) && ID.isArray() && ID.arrayGet(0, &ID1) && ID1.isString())
+                    sEncrypt += XMLConverter::DictToXml(L"ID", &ID1, true);
+                ID.free();
+                ID1.free();
+            }
+        }
+
+        bool bRes = m_pInternal->m_pPdfWriter->EditPdf(xref->getLastXRefPos(), xref->getNumObjects(), sCatalog, catRef.num, sEncrypt, sPassword, nCryptAlgorithm, nFormField);
+        if (bRes)
+            m_pInternal->GetPageTree(xref, &pagesRefObj);
+        pagesRefObj.free();
+        catDict.free();
+        catRefObj.free();
+        return bRes;
+    }
+    bool CPdfReader::EditPage(int nPageIndex)
+    {
+        if (!m_pInternal->m_pPdfWriter || !m_pInternal->m_pPDFDocument)
+            return false;
+        XRef* xref = m_pInternal->m_pPDFDocument->getXRef();
+        Catalog* pCatalog = m_pInternal->m_pPDFDocument->getCatalog();
+        if (!xref || !pCatalog)
+            return false;
+        std::pair<int, int> pPageRef = m_pInternal->m_pPdfWriter->GetPageRef(nPageIndex);
+        if (pPageRef.first == 0)
+            return false;
+
+        // Получение объекта страницы
+        Object pageRefObj, pageObj;
+        pageRefObj.initRef(pPageRef.first, pPageRef.second);
+        if (!pageRefObj.fetch(xref, &pageObj) || !pageObj.isDict())
+        {
+            pageObj.free();
+            pageRefObj.free();
+            return false;
+        }
+        std::wstring sPage = XMLConverter::DictToXml(L"Page", &pageObj, pPageRef.first, pPageRef.second);
+        pageObj.free();
+        pageRefObj.free();
+
+        return m_pInternal->m_pPdfWriter->EditPage(sPage, pPageRef.first);
+    }
+    bool CPdfReader::DeletePage(int nPageIndex)
+    {
+        if (!m_pInternal->m_pPdfWriter || !m_pInternal->m_pPDFDocument)
+            return false;
+
+        return m_pInternal->m_pPdfWriter->DeletePage(nPageIndex);
+    }
+    bool CPdfReader::AddPage(int nPageIndex)
+    {
+        if (!m_pInternal->m_pPdfWriter || !m_pInternal->m_pPDFDocument)
+            return false;
+
+        return m_pInternal->m_pPdfWriter->AddPage(nPageIndex);
+    }
+    bool CPdfReader::EditClose(const std::wstring& wsPath)
+    {
+        if (!m_pInternal->m_pPdfWriter || !m_pInternal->m_pPDFDocument)
+            return false;
+        XRef* xref = m_pInternal->m_pPDFDocument->getXRef();
+        if (!xref)
+            return false;
+
+        Object* trailerDict = xref->getTrailerDict();
+        std::wstring sTrailer;
+        if (trailerDict)
+            sTrailer = XMLConverter::DictToXml(L"Trailer", trailerDict);
+
+        std::wstring sInfo;
+        Object info;
+        m_pInternal->m_pPDFDocument->getDocInfo(&info);
+        if (info.isDict())
+            sInfo = XMLConverter::DictToXml(L"Info", &info);
+        info.free();
+
+        return m_pInternal->m_pPdfWriter->EditClose(wsPath, sTrailer, sInfo);
+    }
 
 #define DICT_LOOKUP(sName, wsName) \
     if (info.dictLookup(sName, &obj1)->isString())\
@@ -563,7 +770,26 @@ return 0;
 
         sRes += bLinearized ? L"true" : L"false";
         sRes += L",\"Tagged\":";
-        sRes += m_pInternal->m_pPDFDocument->getStructTreeRoot()->isDict() ? L"true" : L"false";
+
+        bool bTagged = false;
+        Object catDict, markInfoObj;
+        if (xref->getCatalog(&catDict) && catDict.isDict() && catDict.dictLookup("MarkInfo", &markInfoObj) && markInfoObj.isDict())
+        {
+            Object marked, suspects;
+            if (markInfoObj.dictLookup("Marked", &marked) && marked.isBool() && marked.getBool())
+            {
+                bTagged = true;
+                // If Suspects is true, the document may not completely conform to Tagged PDF conventions.
+                if (markInfoObj.dictLookup("Suspects", &suspects) && suspects.isBool() && suspects.getBool())
+                    bTagged = false;
+            }
+            marked.free();
+            suspects.free();
+        }
+        markInfoObj.free();
+        catDict.free();
+
+        sRes += bTagged ? L"true" : L"false";
         sRes += L"}";
 
         return sRes;
@@ -594,7 +820,13 @@ return 0;
         }
         else
             pg = pLinkDest->getPageNum();
-        double dy = pdfDoc->getPageCropHeight(pg) - pLinkDest->getTop();
+        if (pg == 0)
+            pg = 1;
+        double dy = 0;
+        double dTop = pLinkDest->getTop();
+        double dHeight = pdfDoc->getPageCropHeight(pg);
+        if (dTop > 0 && dTop < dHeight)
+            dy = dHeight - dTop;
         if (str)
             RELEASEOBJECT(pLinkDest);
 
@@ -653,37 +885,6 @@ return 0;
         NSWasm::CPageLink oLinks;
         double height = m_pInternal->m_pPDFDocument->getPageCropHeight(nPageIndex);
 
-        // Текст-ссылка
-        TextOutputControl textOutControl;
-        textOutControl.mode = textOutReadingOrder;
-        TextOutputDev* pTextOut = new TextOutputDev(NULL, &textOutControl, gFalse);
-        m_pInternal->m_pPDFDocument->displayPage(pTextOut, nPageIndex, 72, 72, 0, gFalse, gTrue, gFalse);
-        m_pInternal->m_pPDFDocument->processLinks(pTextOut, nPageIndex);
-        TextWordList* pWordList = pTextOut->makeWordList();
-        for (int i = 0; i < pWordList->getLength(); i++)
-        {
-            TextWord* pWord = pWordList->get(i);
-            if (!pWord)
-                continue;
-            GString* sLink = pWord->getText();
-            if (!sLink)
-                continue;
-            std::string link(sLink->getCString(), sLink->getLength());
-            size_t find = link.find("http://");
-            if (find == std::string::npos)
-                find = link.find("https://");
-            if (find == std::string::npos)
-                find = link.find("www.");
-            if (find != std::string::npos)
-            {
-                link.erase(0, find);
-                double x1, y1, x2, y2;
-                pWord->getBBox(&x1, &y1, &x2, &y2);
-                oLinks.m_arLinks.push_back({link, 0, x1, y1, x2 - x1, y2 - y1});
-            }
-        }
-        RELEASEOBJECT(pTextOut);
-
         // Гиперссылка
         Links* pLinks = m_pInternal->m_pPDFDocument->getLinks(nPageIndex);
         if (!pLinks)
@@ -733,6 +934,38 @@ return 0;
             RELEASEOBJECT(str);
         }
         RELEASEOBJECT(pLinks);
+
+        // Текст-ссылка
+        TextOutputControl textOutControl;
+        textOutControl.mode = textOutReadingOrder;
+        TextOutputDev* pTextOut = new TextOutputDev(NULL, &textOutControl, gFalse);
+        m_pInternal->m_pPDFDocument->displayPage(pTextOut, nPageIndex, 72, 72, 0, gFalse, gTrue, gFalse);
+        m_pInternal->m_pPDFDocument->processLinks(pTextOut, nPageIndex);
+        TextWordList* pWordList = pTextOut->makeWordList();
+        for (int i = 0; i < pWordList->getLength(); i++)
+        {
+            TextWord* pWord = pWordList->get(i);
+            if (!pWord)
+                continue;
+            GString* sLink = pWord->getText();
+            if (!sLink)
+                continue;
+            std::string link(sLink->getCString(), sLink->getLength());
+            size_t find = link.find("http://");
+            if (find == std::string::npos)
+                find = link.find("https://");
+            if (find == std::string::npos)
+                find = link.find("www.");
+            if (find != std::string::npos)
+            {
+                link.erase(0, find);
+                double x1, y1, x2, y2;
+                pWord->getBBox(&x1, &y1, &x2, &y2);
+                oLinks.m_arLinks.push_back({link, 0, x1, y1, x2 - x1, y2 - y1});
+            }
+        }
+        RELEASEOBJECT(pTextOut);
+
         return oLinks.Serialize();
     }
 #endif

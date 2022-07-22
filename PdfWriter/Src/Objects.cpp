@@ -698,7 +698,7 @@ namespace PdfWriter
 
 		m_pStream = pStream;
 	}
-    CObjectBase* CDictObject::Copy(CObjectBase* pOut) const
+	CObjectBase* CDictObject::Copy(CObjectBase* pOut) const
 	{
 		CDictObject* pDict = pOut && pOut->GetType() == object_type_DICT ? (CDictObject*)pOut : new CDictObject();
 		if (!pDict)

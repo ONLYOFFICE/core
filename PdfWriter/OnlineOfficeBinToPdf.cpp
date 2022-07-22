@@ -195,7 +195,7 @@ namespace NSOnlineOfficeBinToPdf
 		std::wstring wsHtmlPlace = NSFile::GetDirectoryName(wsSrcFile);
 		if (bBinary)
 		{
-            ConvertBufferToPdf(pPdf, pFileContent, dwFileSize, wsHtmlPlace, bIsUsePicker);
+			ConvertBufferToPdf(pPdf, pFileContent, dwFileSize, wsHtmlPlace, bIsUsePicker);
 		}
 		else
 		{
@@ -209,7 +209,7 @@ namespace NSOnlineOfficeBinToPdf
 
 			if (NSBase64::Base64Decode((const char*)pFileContent, dwFileSize, pBuffer, &nBufferLen))
 			{
-                ConvertBufferToPdf(pPdf, pBuffer, nBufferLen, wsHtmlPlace, bIsUsePicker);
+				ConvertBufferToPdf(pPdf, pBuffer, nBufferLen, wsHtmlPlace, bIsUsePicker);
 			}
 			else
 			{
@@ -222,11 +222,11 @@ namespace NSOnlineOfficeBinToPdf
 		}
 		RELEASEARRAYOBJECTS(pFileContent);
 
-        if (!wsDstFile.empty())
-        {
-            if (0 != pPdf->SaveToFile(wsDstFile))
-                return false;
-        }
+		if (!wsDstFile.empty())
+		{
+			if (0 != pPdf->SaveToFile(wsDstFile))
+				return false;
+		}
 
 		return true;
 	}

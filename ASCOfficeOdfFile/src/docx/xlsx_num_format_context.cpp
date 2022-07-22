@@ -118,9 +118,10 @@ std::wstring num_format_context::get_last_time_format() const
 {
     return impl_->last_time_format_;
 }
-void num_format_context::start_complex_format()
+void num_format_context::start_complex_format(std::wstring const & name)
 {
     impl2_->complex_number_format_.reset();
+	impl2_->complex_number_format_.name = name;
 }
 odf_types::office_value_type::type num_format_context::type() const
 {
@@ -138,7 +139,20 @@ void num_format_context::add_format(std::wstring const & cond, std::wstring cons
 void num_format_context::end_complex_format()
 {
     impl_->last_format_ = impl2_->complex_number_format_.result_value();
-}
 
+	mapFormats.insert(std::make_pair(impl2_->complex_number_format_.name, std::make_pair(impl_->type_.get_type(), impl_->last_format_)));
+}
+std::wstring num_format_context::find_complex_format(std::wstring const & name, odf_types::office_value_type::type & type)
+{
+	std::map<std::wstring, std::pair<odf_types::office_value_type::type, std::wstring>>::iterator pFind = mapFormats.find(name);
+
+	if (pFind != mapFormats.end())
+	{
+		type = pFind->second.first;
+		return pFind->second.second;
+	}
+	else
+		return L"";
+}
 }
 }

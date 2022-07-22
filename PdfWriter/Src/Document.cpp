@@ -1242,6 +1242,7 @@ namespace PdfWriter
 		CFileStream* pStream = new CFileStream();
 		if (!pStream || !pStream->OpenFile(wsPath, false))
 			return false;
+		pStream->WriteChar('\n');
 
 		// Добавляем первый элемент в таблицу xref
 		// он должен иметь вид 0000000000 65535 f

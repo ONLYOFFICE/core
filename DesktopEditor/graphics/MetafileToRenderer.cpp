@@ -1027,14 +1027,9 @@ namespace NSOnlineOfficeBinToPdf
 					if (nFlags & (1 << 24))
 						pPr->SetPicturePath(pCorrector->GetImagePath(ReadString(current, curindex)));
 
-					// TODO Необходимо передать сертификат, пароль, ключ, пароль ключа
-					// Если передавать пути, то у PdfWriter будет зависимость от ooxmlsignature
-					// Если передавать сертификат, то у graphics будет зависимость от ooxmlsignature
+					// Необходимо передать сертификат, пароль, ключ, пароль ключа
 					if (nFlags & (1 << 25))
 						pPr->SetCert(ReadString(current, curindex));
-
-					// TODO PDF позволяет подпись с различными правами: 1 подпись, 2 сертификат - запрет любых изменений,
-					// 3 изменение форм, 4 изменение форм и аннотаций
 				}
 
 				if (oInfo.IsValid())

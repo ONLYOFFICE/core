@@ -413,7 +413,7 @@ void DictToXmlR(Object* obj, std::wstring& wsXml, bool bBinary)
 std::wstring XMLConverter::DictToXml(const std::wstring& wsName, Object* obj, int nNum, int nGen, bool bBinary)
 {
     std::wstring sRes = L"<" + wsName;
-    if (nNum)
+    if (nNum > 0)
     {
         sRes += (L" num=\"" + std::to_wstring(nNum) + L"\"");
         sRes += (L" gen=\"" + std::to_wstring(nGen) + L"\"");

@@ -8,10 +8,10 @@ StreamView::StreamView(const SVector<Sector> &sectorChain, int sectorSize, Strea
     : sectorSize(sectorSize), sectorChain(sectorChain), stream(stream)
 {
     //    if (sectorChain == null)
-    //        throw new CFException("Sector Chain cannot be null");
+    //        throw CFException("Sector Chain cannot be null");
 
     if (sectorSize <= 0)
-        throw new CFException("Sector size must be greater than zero");
+        throw CFException("Sector size must be greater than zero");
 }
 
 StreamView::StreamView(const SVector<Sector> &sectorChain, int sectorSize, std::streamsize length,
@@ -125,7 +125,7 @@ std::streamsize StreamView::Read(char *buffer, std::streamsize offset, std::stre
 
         if (nToRead != 0)
         {
-            if (secIndex > (int)sectorChain.size()) throw new CFCorruptedFileException("The file is probably corrupted.");
+            if (secIndex > (int)sectorChain.size()) throw CFCorruptedFileException("The file is probably corrupted.");
             char* src = reinterpret_cast<char*>(sectorChain[secIndex]->GetData().data());
             char* dst = buffer + offset + nRead;
             std::copy(src, src + nToRead, dst);

@@ -65,10 +65,10 @@ void DirectoryEntry::SetEntryName(const std::wstring &entryName)
                 entryName.find(L"/")  == std::wstring::npos ||
                 entryName.find(L":")  == std::wstring::npos ||
                 entryName.find(L"!")  == std::wstring::npos
-                ) throw new CFException("Invalid character in entry: the characters '\\', '/', ':','!' cannot be used in entry name");
+                ) throw CFException("Invalid character in entry: the characters '\\', '/', ':','!' cannot be used in entry name");
 
         if (entryName.length() > 31)
-            throw new CFException("Entry name MUST NOT exceed 31 characters");
+            throw CFException("Entry name MUST NOT exceed 31 characters");
 
 
         std::copy(entryName.data(), entryName.data() + entryName.length(), this->entryName);
@@ -95,8 +95,8 @@ void DirectoryEntry::Write(Stream stream) const
     rw.Write(child);
     rw.WriteArray(reinterpret_cast<const char*>(&storageCLSID), sizeof (storageCLSID));
     rw.Write(stateBits);
-    rw.WriteArray(creationDate, sizeof (creationDate));
-    rw.WriteArray(modifyDate, sizeof (modifyDate));
+    rw.WriteArray(reinterpret_cast<const char*>(&creationDate), sizeof (creationDate));
+    rw.WriteArray(reinterpret_cast<const char*>(&modifyDate), sizeof (modifyDate));
     rw.Write(startSetc);
     rw.Write(size);
 
@@ -125,8 +125,8 @@ void DirectoryEntry::Read(Stream stream, CFSVersion ver)
 
     rw.ReadArray(reinterpret_cast<char*>(&storageCLSID), 16);
     stateBits = rw.Read<decltype (stateBits)>();
-    rw.ReadArray(creationDate, 8);
-    rw.ReadArray(modifyDate, 8);
+    rw.ReadArray(reinterpret_cast<char*>(&creationDate), 8);
+    rw.ReadArray(reinterpret_cast<char*>(&modifyDate), 8);
     startSetc = rw.Read<decltype (startSetc)>();
 
     if (ver == CFSVersion::Ver_3)
@@ -220,7 +220,7 @@ int DirectoryEntry::CompareTo(const RedBlackTree::PIRBNode &other) const
     IDirectoryEntry* otherDir = dynamic_cast<IDirectoryEntry*>(other.get());
 
     if (otherDir == nullptr)
-        throw new CFException("Invalid casting: compared object does not implement IDirectorEntry interface");
+        throw CFException("Invalid casting: compared object does not implement IDirectorEntry interface");
 
     if (this->getNameLength() > otherDir->getNameLength())
     {
@@ -273,7 +273,7 @@ std::shared_ptr<IDirectoryEntry> DirectoryEntry::New(std::wstring name, StgType 
         de->setSid(dirRepository.size() - 1);
     }
     else
-        throw new std::invalid_argument("dirRepository Directory repository cannot be null in New() method");
+        throw std::invalid_argument("dirRepository Directory repository cannot be null in New() method");
 
     return de;
 }

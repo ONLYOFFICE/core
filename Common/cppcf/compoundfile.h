@@ -1,18 +1,20 @@
 #pragma once
 
-#include "header.h"
 #include "sectorcollection.h"
-#include "directoryentry.h"
+#include "cfstorage.h"
 #include "slist.h"
 #include <unordered_set>
 #include "RBTree/rbtree.h"
 #include "idirectoryentry.h"
-#include "cfstream.h"
-#include "cfstorage.h"
 #include <mutex>
+
 
 namespace CFCPP
 {
+
+class Header;
+class DirectoryEntry;
+
 enum CFSConfiguration
 {
 
@@ -37,7 +39,7 @@ enum CFSUpdateMode
     Update
 };
 
-class CompoundFile : public std::enable_shared_from_this<CompoundFile>
+class CompoundFile
 {
 public:
     CompoundFile(const std::wstring &fileName, CFSUpdateMode updateMode, CFSConfiguration configParameters);
@@ -58,13 +60,13 @@ public:
     void InvalidateDirectoryEntry(int sid);
     void FreeAssociatedData(int sid);
     void FreeData(CFStream* stream);
-    void WriteData(PCFItem cfItem, const std::vector<BYTE>& buffer, std::streamsize position, int offset, int count);
-    void WriteData(PCFItem cfItem, std::streamsize position, const std::vector<BYTE>& buffer);
-    void WriteData(PCFItem cfItem, const std::vector<BYTE>& buffer);
-    void AppendData(PCFItem cfItem, const std::vector<BYTE>& buffer);
-    void SetStreamLength(PCFItem cfItem, std::streamsize length);
+    void WriteData(std::shared_ptr<CFItem> cfItem, const std::vector<BYTE>& buffer, std::streamsize position, int offset, int count);
+    void WriteData(std::shared_ptr<CFItem> cfItem, std::streamsize position, const std::vector<BYTE>& buffer);
+    void WriteData(std::shared_ptr<CFItem> cfItem, const std::vector<BYTE>& buffer);
+    void AppendData(std::shared_ptr<CFItem> cfItem, const std::vector<BYTE>& buffer);
+    void SetStreamLength(std::shared_ptr<CFItem> cfItem, std::streamsize length);
     SList<Sector> FindFreeSectors(SectorType sType);
-    std::vector<BYTE> GetData(CFStream* cFStream);
+    std::vector<BYTE> GetData(const CFStream *cFStream);
     int ReadData(CFStream* cFStream, std::streamsize position, std::vector<BYTE>& buffer, int count);
     int ReadData(CFStream* cFStream, std::streamsize position, std::vector<BYTE>& buffer, int offset, int count);
 
@@ -120,11 +122,11 @@ private:
     static int LowSaturation(int i);
     void SetSectorChain(SVector<Sector> sectorChain);
 
-    inline CFSVersion getVersion() const {return (CFSVersion)header.majorVersion;}
+    CFSVersion getVersion() const;
 
 public:
     CFSConfiguration configuration = Default;
-    Header header;
+    std::unique_ptr<Header> header;
     Stream sourceStream;
 
 private:

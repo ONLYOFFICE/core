@@ -1,13 +1,15 @@
 #pragma once
 
+#include "Stream.h"
 #include "cfitem.h"
+#include <vector>
 
 namespace CFCPP
 {
 class CFStream : public CFItem
 {
 public:
-    CFStream(std::weak_ptr<CompoundFile> compFile, std::shared_ptr<IDirectoryEntry> dirEntry);
+    CFStream(CompoundFile* compFile, std::weak_ptr<IDirectoryEntry> dirEntry);
 
     void SetData(const std::vector<BYTE>& data);
     void Write(const std::vector<BYTE>& data, std::streamsize position);

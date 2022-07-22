@@ -25,7 +25,7 @@ Header::Header(ushort version)
         break;
 
     default:
-        throw new CFException("Invalid Compound File Format version");
+        throw CFException("Invalid Compound File Format version");
 
 
     }
@@ -102,7 +102,7 @@ void Header::Read(Stream stream)
 void Header::CheckVersion() const
 {
     if (majorVersion != 3 && majorVersion != 4)
-        throw new CFFileFormatException("Unsupported Binary File Format version: OpenMcdf only supports Compound Files with major version equal to 3 or 4 ");
+        throw CFFileFormatException("Unsupported Binary File Format version: OpenMcdf only supports Compound Files with major version equal to 3 or 4 ");
 }
 
 void Header::CheckSignature() const
@@ -111,6 +111,6 @@ void Header::CheckSignature() const
     for (int i = 0; i < (int)headerSignature.size(); i++)
     {
         if (headerSignature[i] != OLE_CFS_SIGNATURE[i])
-            throw new CFFileFormatException("Invalid OLE structured storage file");
+            throw CFFileFormatException("Invalid OLE structured storage file");
     }
 }

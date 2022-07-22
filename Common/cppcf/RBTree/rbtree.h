@@ -53,7 +53,7 @@ private:
 
 public:
     // todo this from C# and it's weak realization
-   class iterator : public std::iterator<std::bidirectional_iterator_tag, WPIRBNode, WPIRBNode, PIRBNode, PIRBNode>
+   class iterator : public std::iterator<std::bidirectional_iterator_tag, std::ptrdiff_t, IRBNode, IRBNode*, PIRBNode>
    {
        std::list<WPIRBNode> heap;
        std::list<WPIRBNode>::iterator current;
@@ -61,14 +61,14 @@ public:
        iterator(RBTree &tree, bool end = false);
        inline iterator& operator++() {++current; return *this;}
        inline iterator& operator--() {--current; return *this;}
-       inline bool operator==(iterator other) const {return current == other.current;}
-       inline bool operator!=(iterator other) const {return current != other.current;}
+       inline bool operator==(const iterator &other) const {return current == other.current;}
+       inline bool operator!=(const iterator &other) const {return current != other.current;}
        inline PIRBNode operator*() {return current->lock();}
-       inline void end() {current = heap.end();}
+       inline iterator end() {current = heap.end(); return *this;}
    };
 
-   iterator begin() {return iterator(*this);}
-   iterator end()const;
+   iterator&& begin() {return std::move(iterator(*this));}
+   iterator&& end() {return std::move(iterator(*this).end());}
 
 private:
     PIRBNode root;

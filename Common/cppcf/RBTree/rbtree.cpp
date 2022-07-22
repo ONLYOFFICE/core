@@ -49,7 +49,7 @@ void RBTree::Insert(PIRBNode newNode)
             int compResult = newNode->CompareTo(n);
             if (compResult == 0)
             {
-                throw new RBTreeDuplicatedItemException(L"RBNode " + newNode->ToString() + L" already present in tree");
+                throw RBTreeDuplicatedItemException(L"RBNode " + newNode->ToString() + L" already present in tree");
                 //n->Value = value;
                 //return;
             }

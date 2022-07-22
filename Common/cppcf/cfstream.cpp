@@ -1,13 +1,15 @@
 #include "cfstream.h"
 #include "cfexception.h"
+#include "idirectoryentry.h"
+#include "compoundfile.h"
 
 using namespace CFCPP;
 
-CFStream::CFStream(std::weak_ptr<CompoundFile> compFile, std::shared_ptr<IDirectoryEntry> dirEntry) :
+CFStream::CFStream(CompoundFile* compFile, std::weak_ptr<IDirectoryEntry> dirEntry) :
     CFItem(compFile)
 {
-    if (dirEntry == nullptr || dirEntry->getSid() < 0)
-        throw new CFException("Attempting to create a CFStorage using an unitialized directory");
+    if (dirEntry.expired() || dirEntry.lock()->getSid() < 0)
+        throw CFException("Attempting to create a CFStorage using an unitialized directory");
 
     this->dirEntry = dirEntry;
 }
@@ -16,8 +18,8 @@ void CFStream::SetData(const std::vector<BYTE> &data)
 {
     CheckDisposed();
 
-    compoundFile.lock()->FreeData(this);
-    compoundFile.lock()->WriteData(this, data);
+    compoundFile->FreeData(this);
+    compoundFile->WriteData(shared_from_this(), data);
 }
 
 void CFStream::Write(const std::vector<BYTE> &data, std::streamsize position)
@@ -28,7 +30,7 @@ void CFStream::Write(const std::vector<BYTE> &data, std::streamsize position)
 void CFStream::Write(const std::vector<BYTE> &data, std::streamsize position, int offset, int count)
 {
     CheckDisposed();
-    compoundFile.lock()->WriteData(this, data, position, offset, count);
+    compoundFile->WriteData(shared_from_this(), data, position, offset, count);
 }
 
 void CFStream::Append(const std::vector<BYTE> &data)
@@ -36,11 +38,11 @@ void CFStream::Append(const std::vector<BYTE> &data)
     CheckDisposed();
     if (size() > 0)
     {
-        compoundFile.lock()->AppendData(this, data);
+        compoundFile->AppendData(shared_from_this(), data);
     }
     else
     {
-        compoundFile.lock()->WriteData(this, data);
+        compoundFile->WriteData(shared_from_this(), data);
     }
 }
 
@@ -48,19 +50,19 @@ std::vector<BYTE> CFStream::getData() const
 {
     CheckDisposed();
 
-    return compoundFile.lock()->GetData(this);
+    return compoundFile->GetData(this);
 }
 
 int CFStream::Read(std::vector<BYTE> &buffer, std::streamsize position, int count)
 {
     CheckDisposed();
-    return compoundFile.lock()->ReadData(this, position, buffer, 0, count);
+    return compoundFile->ReadData(this, position, buffer, 0, count);
 }
 
 int CFStream::Read(std::vector<BYTE> &buffer, std::streamsize position, int offset, int count)
 {
     CheckDisposed();
-    return compoundFile.lock()->ReadData(this, position, buffer, offset, count);
+    return compoundFile->ReadData(this, position, buffer, offset, count);
 }
 
 void CFStream::CopyFrom(const Stream &input)
@@ -80,5 +82,5 @@ void CFStream::CopyFrom(const Stream &input)
 
 void CFStream::Resize(std::streamsize length)
 {
-    compoundFile.lock()->SetStreamLength(this, length);
+    compoundFile->SetStreamLength(shared_from_this(), length);
 }

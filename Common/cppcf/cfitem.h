@@ -1,24 +1,28 @@
 #pragma once
-#include "compoundfile.h"
 #include "guid.h"
+#include <memory>
+#include <string>
 
 namespace CFCPP
 {
+class CompoundFile;
+class IDirectoryEntry;
+
 struct DataTime
 {
     // TODO
     char data[8] = {0,0,0,0,0,0,0,0};
 };
 
-class CFItem
+class CFItem : protected std::enable_shared_from_this<CFItem>
 {
 public:
     int CompareTo(const CFItem& other) const;
     bool operator==(const CFItem &rightItem) const;
     bool operator!=(const CFItem &rightItem) const;
     int GetHashCode() const;
-    std::wstring Name()const;
-    virtual inline std::streamsize size() const {return dirEntry->getSize();}
+    std::wstring Name() const;
+    std::streamsize size() const;
     bool IsStorage() const;
     bool IsStream() const;
     bool ISRoot() const;
@@ -30,23 +34,20 @@ public:
     void setStorageCLSID(GUID value);
 
     int CompareTo(const CFItem& other);
-    std::wstring ToString()const;
+    std::wstring ToString() const;
 
-    virtual void setDirEntry(const std::shared_ptr<IDirectoryEntry> &newDirEntry);
+    void setDirEntry(const std::weak_ptr<IDirectoryEntry> &newDirEntry);
+    std::shared_ptr<IDirectoryEntry> getDirEntry() const;
 
     friend class CompoundFile;
-    std::weak_ptr<CompoundFile> compoundFile;
 protected:
-    std::shared_ptr<IDirectoryEntry> dirEntry;
+    std::weak_ptr<IDirectoryEntry> dirEntry;
+    CompoundFile* compoundFile;
 
 protected:
     CFItem() {};
-    CFItem(std::weak_ptr<CompoundFile> compoundFile) : compoundFile(compoundFile) {}
-    inline std::shared_ptr<CompoundFile> getCompoundFile() {return compoundFile.lock();}
+    CFItem(CompoundFile* compoundFile) : compoundFile(compoundFile) {}
+    inline CompoundFile* getCompoundFile() {return compoundFile;}
     void CheckDisposed() const;
 };
-
-using PCFItem = std::shared_ptr<CFItem>;
-
-
 }

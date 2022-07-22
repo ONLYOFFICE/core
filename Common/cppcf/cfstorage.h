@@ -1,8 +1,6 @@
 #pragma once
 
-#include "cfitem.h"
 #include "RBTree/rbtree.h"
-#include "compoundfile.h"
 #include "idirectoryentry.h"
 #include "cfstream.h"
 
@@ -12,7 +10,7 @@ namespace CFCPP
 class CFStorage : public CFItem
 {
 public:
-    CFStorage(const std::weak_ptr<CompoundFile> &compFile, const std::shared_ptr<IDirectoryEntry> &dirEntry);
+    CFStorage(CompoundFile* compFile, const std::weak_ptr<IDirectoryEntry> &dirEntry);
 
 
     std::shared_ptr<RedBlackTree::RBTree> getChildren();
@@ -24,11 +22,10 @@ public:
     std::shared_ptr<CFStorage> TryGetStorage(const std::wstring& storageName);
     bool TryGetStorage(const std::wstring& storageName, std::shared_ptr<CFStorage> &cfStorage);
     std::shared_ptr<CFStorage> AddStorage(const std::wstring& storageName);
-    void VisitEntries(RedBlackTree::Action<PCFItem> action, bool recursive);
+    void VisitEntries(RedBlackTree::Action<std::shared_ptr<CFItem>> action, bool recursive);
     void Delete(const std::wstring& entryName);
     void RenameItem(const std::wstring& oldItemName, const std::wstring& newItemName);
     std::streamsize size() const {return CFItem::size();}
-    std::shared_ptr<IDirectoryEntry> getDirEntry() const {return dirEntry;}
 
 private:
     std::shared_ptr<RedBlackTree::RBTree> LoadChildren(int SID);

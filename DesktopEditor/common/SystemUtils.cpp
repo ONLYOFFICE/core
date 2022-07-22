@@ -34,7 +34,7 @@
 #include "Directory.h"
 
 #ifdef _WIN32
-#include "ShlObj_core.h"
+#include "ShlObj.h"
 #ifdef CreateDirectory
 #undef CreateDirectory
 #endif

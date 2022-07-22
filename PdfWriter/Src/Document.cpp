@@ -1302,6 +1302,7 @@ namespace PdfWriter
 		// Если m_pTrailer поток перекрестных ссылок, то при дозаписи тоже должен быть поток
 		m_pTrailer->Remove("XRefStm");
 		bool bNeedStreamXRef = false;
+		pStream->WriteChar('\n');
 		if (m_pTrailer->Get("Type"))
 		{
 			m_pTrailer->Remove("Length");

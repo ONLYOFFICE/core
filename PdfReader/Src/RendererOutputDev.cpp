@@ -1966,11 +1966,8 @@ namespace PdfReader
                                 oDictItem.streamClose();
 
                                 CBase64 oBase64;
-                                unsigned char* tmp_buffer = new unsigned char[sBuffer.length() + 1];
-                                strncpy((char*)tmp_buffer, sBuffer.c_str(), sBuffer.length() + 1);
-                                oBase64.Encode(tmp_buffer, sBuffer.length());
-                                sBuffer = std::string((char*)tmp_buffer);
-                                delete[] tmp_buffer;
+                                oBase64.Encode((unsigned char*)sBuffer.c_str(), sBuffer.length());
+
                                 oXmlWriter.WriteString(AStringToWString(oBase64.GetCString()));
                             }
 
@@ -2264,16 +2261,10 @@ namespace PdfReader
                             oDictItem.streamClose();
 
                             CBase64 oBase64;
-                            unsigned char* tmp_buffer = new unsigned char[sBuffer.length() + 1];
-                            strncpy((char*)tmp_buffer, sBuffer.c_str(), sBuffer.length() + 1);
+                            oBase64.Encode((unsigned char*)sBuffer.c_str(), sBuffer.length());
 
-                            oBase64.Encode(tmp_buffer, sBuffer.length());
-
-                            sBuffer = std::string((char*)tmp_buffer);
                             oXmlWriter.WriteString(AStringToWString(oBase64.GetCString()));
                             oXmlWriter.WriteNodeEnd(L"ToUnicode");
-
-                            delete[] tmp_buffer;
                         }
                         oDictItem.free();
 
@@ -2373,17 +2364,11 @@ namespace PdfReader
                                     oEncItem.streamClose();
 
                                     CBase64 oBase64;
+                                    oBase64.Encode((unsigned char*)sBuffer.c_str(), sBuffer.length());
 
-                                    unsigned char* tmp_buffer = new unsigned char[sBuffer.length() + 1];
-                                    strncpy((char*)tmp_buffer, sBuffer.c_str(), sBuffer.length() + 1);
-
-                                    oBase64.Encode(tmp_buffer, sBuffer.length());
-                                    sBuffer = std::string((char*)tmp_buffer);
                                     oXmlWriter.WriteString(AStringToWString(oBase64.GetCString()));
 
                                     oXmlWriter.WriteNodeEnd(L"UseCMap");
-
-                                    delete[] tmp_buffer;
                                 }
                                 oEncItem.free();
                             }
@@ -2397,20 +2382,14 @@ namespace PdfReader
                                 sBuffer+=(char)nChar;
                             }
                             oDictItem.streamClose();
+
                             CBase64 oBase64;
+                            oBase64.Encode((unsigned char*)sBuffer.c_str(), sBuffer.length());
 
-                            unsigned char* tmp_buffer = new unsigned char[sBuffer.length() + 1];
-                            strncpy((char*)tmp_buffer, sBuffer.c_str(), sBuffer.length() + 1);
-
-                            oBase64.Encode(tmp_buffer, sBuffer.length());
-                            sBuffer = std::string((char*)tmp_buffer);
                             oXmlWriter.WriteString(AStringToWString(oBase64.GetCString()));
-
 
                             oXmlWriter.WriteNodeEnd(L"Stream");
                             oXmlWriter.WriteNodeEnd(L"Encoding");
-
-                            delete[] tmp_buffer;
                         }
                         oDictItem.free();
 
@@ -2817,17 +2796,11 @@ namespace PdfReader
                                             oFontItem.streamClose();
 
                                             CBase64 oBase64;
+                                            oBase64.Encode((unsigned char*)sBuffer.c_str(), sBuffer.length());
 
-                                            unsigned char* tmp_buffer = new unsigned char[sBuffer.length() + 1];
-                                            strncpy((char*)tmp_buffer, sBuffer.c_str(), sBuffer.length() + 1);
-
-                                            oBase64.Encode(tmp_buffer, sBuffer.length());
-                                            sBuffer = std::string((char*)tmp_buffer);
                                             oXmlWriter.WriteString(AStringToWString(oBase64.GetCString()));
 
                                             oXmlWriter.WriteNodeEnd(L"CIDToGIDMap");
-
-                                            delete[] tmp_buffer;
                                         }
                                         oFontItem.free();
 

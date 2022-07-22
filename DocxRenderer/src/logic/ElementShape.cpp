@@ -7,6 +7,7 @@ namespace NSDocxRenderer
 {
     CShape::CShape() : CBaseItem(ElemType::etShape)
     {
+
     }
 
     CShape::CShape(const CShape &oSrc) : CBaseItem(ElemType::etShape)
@@ -221,20 +222,19 @@ namespace NSDocxRenderer
             //заранее отбрасываем некоторые фигуры
             m_bIsNotNecessaryToUse = true;
         }
-        else if (nPeacks == 5 && !nCurves) //1 move + 4 Peacks
+        else if ((nPeacks == 5 || nPeacks == 2) && !nCurves) //1 move + 4 Peacks или 2 Peacks
         {
             m_eGraphicsType = eGraphicsType::gtRectangle;
 
-            //note Довольно сложно определить точку, т.к. для разных шрифтов она может быть чем угодно...
-            if (abs(dWidth - dHeight) < 0.1)
+            if (dWidth > 2.0) //note длинное тире - 2.8mm у times new roman
             {
-                m_eSimpleLineType = eSimpleLineType::sltDot;
+                m_eSimpleLineType = eSimpleLineType::sltLongDash;
             }
-            else if (dHeight + c_GRAPHICS_ERROR_IN_LINES_MM < dWidth)
+            else if (dWidth > 0.7) //минимальное тире - 0.75mm у dotDotDash
             {
                 m_eSimpleLineType = eSimpleLineType::sltDash;
             }
-            else
+            else //максимальна точка - 0.5mm
             {
                 m_eSimpleLineType = eSimpleLineType::sltDot;
             }
@@ -252,7 +252,7 @@ namespace NSDocxRenderer
 
     bool CShape::IsItFitLine()
     {
-        return (m_eGraphicsType == eGraphicsType::gtRectangle && (m_eSimpleLineType == eSimpleLineType::sltDot || m_eSimpleLineType == eSimpleLineType::sltDash)) ||
+        return (m_eGraphicsType == eGraphicsType::gtRectangle && (m_eSimpleLineType == eSimpleLineType::sltDot || m_eSimpleLineType == eSimpleLineType::sltDash || m_eSimpleLineType == eSimpleLineType::sltLongDash)) ||
                (m_eGraphicsType == eGraphicsType::gtCurve &&  m_eSimpleLineType == eSimpleLineType::sltWave);
     }
 
@@ -321,46 +321,34 @@ namespace NSDocxRenderer
             pModObject->m_dWidth += pDataObject->m_dWidth + dDataRight - pModObject->m_dLeft;
         }
 
+        //note m_dWidth иногда меняет знак на "-"
+        pModObject->m_dHeight = fabs(pModObject->m_dHeight);
+        pModObject->m_dWidth = fabs(pModObject->m_dWidth);
         pModObject->m_dLeft = std::min(pModObject->m_dLeft, pDataObject->m_dLeft);
         pModObject->m_dTop = std::min(pModObject->m_dTop, pDataObject->m_dTop);
     }
 
-    void CShape::DetermineLineType(CShape* pShape)
+    void CShape::DetermineLineType(CShape* pShape, bool bIsLast)
     {
         if (!pShape)
         {
             //Если нашелся один шейп в линии
-            if (m_eLineType == eLineType::ltUnknown && m_eSimpleLineType == eSimpleLineType::sltDash)
+            if (m_eLineType == eLineType::ltUnknown && m_eSimpleLineType == eSimpleLineType::sltLongDash)
             {
-                if (m_dHeight > 0.3)
-                {
-                    m_eLineType = eLineType::ltThick;
-                }
-                else
-                {
-                    m_eLineType = eLineType::ltSingle;
-                }
+                m_eLineType = m_dHeight > 0.3 ? eLineType::ltThick : eLineType::ltSingle;
             }
             else if (m_eLineType == eLineType::ltUnknown && m_eSimpleLineType == eSimpleLineType::sltWave)
             {
-                if (m_oPen.Size > 0.3)
-                {
-                    m_eLineType = eLineType::ltWavyHeavy;
-                }
-                else
-                {
-                    m_eLineType = eLineType::ltWave;
-                }
+                m_eLineType = m_oPen.Size > 0.3 ? eLineType::ltWavyHeavy : eLineType::ltWave;
             }
             return;
         }
 
         if (!IsItFitLine() || !pShape->IsItFitLine() || !IsCorrelated(pShape) ||
-            std::abs(m_dHeight - pShape->m_dHeight) > c_GRAPHICS_ERROR_IN_LINES_MM) //линия должна быть одного размера по высоте
+            fabs(m_dHeight - pShape->m_dHeight) > c_dGRAPHICS_ERROR_IN_LINES_MM) //линия должна быть одного размера по высоте
         {
             return;
         }
-
 
         //Проверка на двойную линию
         if (m_eLineType == eLineType::ltDouble || m_eLineType == eLineType::ltWavyDouble)
@@ -397,12 +385,12 @@ namespace NSDocxRenderer
             }
             return;
         }
-        else if (std::abs(m_dTop - pShape->m_dTop) < c_GRAPHICS_ERROR_IN_LINES_MM * 5 &&
-            std::abs(m_dWidth - pShape->m_dWidth) < c_GRAPHICS_ERROR_IN_LINES_MM &&
-            std::abs(m_dLeft - pShape->m_dLeft) < c_GRAPHICS_ERROR_IN_LINES_MM)
+        else if (fabs(m_dTop - pShape->m_dTop) < c_dGRAPHICS_ERROR_IN_LINES_MM * 5 &&
+            fabs(m_dWidth - pShape->m_dWidth) < c_dGRAPHICS_ERROR_IN_LINES_MM &&
+            fabs(m_dLeft - pShape->m_dLeft) < c_dGRAPHICS_ERROR_IN_LINES_MM)
         {
             //Условие первого определения
-            if (m_eSimpleLineType == eSimpleLineType::sltDash && pShape->m_eSimpleLineType == eSimpleLineType::sltDash)
+            if (m_eSimpleLineType == eSimpleLineType::sltLongDash && pShape->m_eSimpleLineType == eSimpleLineType::sltLongDash)
             {
                 if (m_dTop < pShape->m_dTop)
                 {
@@ -434,16 +422,76 @@ namespace NSDocxRenderer
             }
             return;
         }
-        else if (std::abs(m_dTop - pShape->m_dTop) > c_GRAPHICS_ERROR_IN_LINES_MM)
+        else if (fabs(m_dTop - pShape->m_dTop) > c_dGRAPHICS_ERROR_IN_LINES_MM)
         {
            //все должно быть на одной линии
             return;
         }
 
         //Теперь считаем, что графика находится на одной линии
-        if (std::abs(m_dLeft + m_dWidth - pShape->m_dLeft) > c_GRAPHICS_ERROR_IN_LINES_MM * 5)
+        if (fabs(m_dLeft + m_dWidth - pShape->m_dLeft) > c_dGRAPHICS_ERROR_IN_LINES_MM * 5)
         {
             //расстояние между объектами на одной линии должно быть небольшим
+            if (m_eLineType == eLineType::ltUnknown && m_eSimpleLineType == eSimpleLineType::sltLongDash)
+            {
+                m_eLineType = m_dHeight > 0.3 ? eLineType::ltThick : eLineType::ltSingle;
+            }
+            else if (m_eLineType == eLineType::ltUnknown && m_eSimpleLineType == eSimpleLineType::sltWave)
+            {
+                m_eLineType = m_oPen.Size > 0.3 ? eLineType::ltWavyHeavy : eLineType::ltWave;
+            }
+            return;
+        }
+
+        if (bIsLast)
+        {
+            //note Если имеем всего 2 шейпа в линии, то нужно специально определять тип
+            if (m_eLineType == eLineType::ltUnknown)
+            {
+                switch (m_eSimpleLineType)
+                {
+                case eSimpleLineType::sltDot:
+                    if (pShape->m_eSimpleLineType == eSimpleLineType::sltDot)
+                    {
+                        m_eLineType = m_dHeight > 0.3 ? eLineType::ltDottedHeavy : eLineType::ltDotted;
+                    }
+                    break;
+
+                case eSimpleLineType::sltDash:
+                    if (pShape->m_eSimpleLineType == eSimpleLineType::sltDash)
+                    {
+                        m_eLineType = m_dHeight > 0.3 ? eLineType::ltDashedHeavy : eLineType::ltDash;
+                    }
+                    else if (pShape->m_eSimpleLineType == eSimpleLineType::sltDot)
+                    {
+                        m_eLineType = m_dHeight > 0.3 ? eLineType::ltDashDotHeavy : eLineType::ltDotDash;
+                    }
+                    break;
+
+                case eSimpleLineType::sltLongDash:
+                    if (fabs(m_dLeft + m_dWidth - pShape->m_dLeft) < 0.7)
+                    {
+                        m_eLineType = m_dHeight > 0.3 ? eLineType::ltThick : eLineType::ltSingle;
+                    }
+                    else
+                    {
+                        m_eLineType = m_dHeight > 0.3 ? eLineType::ltDashLongHeavy : eLineType::ltDashLong;
+                    }
+                    break;
+
+                case eSimpleLineType::sltWave:
+                    if (pShape->m_eSimpleLineType == eSimpleLineType::sltWave)
+                    {
+                        m_eLineType = m_oPen.Size > 0.3 ? eLineType::ltWavyHeavy : eLineType::ltWave;
+                    }
+                    break;
+                default:
+                    break;
+                }
+            }
+
+            pShape->m_bIsNotNecessaryToUse = true;
+            ChangeGeometryOfDesiredShape(pShape);
             return;
         }
 
@@ -457,27 +505,14 @@ namespace NSDocxRenderer
                 if ((m_eLineType == eLineType::ltUnknown || m_eLineType == eLineType::ltDotted ||
                      m_eLineType == eLineType::ltDottedHeavy) && pShape->m_eLineType == eLineType::ltUnknown)
                 {
-                    if (m_dHeight > 0.3)
-                    {
-                        m_eLineType = eLineType::ltDottedHeavy;
-                    }
-                    else
-                    {
-                        m_eLineType = eLineType::ltDotted;
-                    }
+                    m_eLineType = m_dHeight > 0.3 ? eLineType::ltDottedHeavy : eLineType::ltDotted;
                     bIsConditionPassed = true;
                 }
-                else if ((m_eLineType == eLineType::ltDotDash || m_eLineType == eLineType::ltDashDotHeavy) &&
+                else if ((m_eLineType == eLineType::ltDotDash || m_eLineType == eLineType::ltDashDotHeavy ||
+                          m_eLineType == eLineType::ltDotDotDash || m_eLineType == eLineType::ltDashDotDotHeavy) &&
                          pShape->m_eLineType == eLineType::ltUnknown)
                 {
-                    if (m_dHeight > 0.3)
-                    {
-                        m_eLineType = eLineType::ltDashDotDotHeavy;
-                    }
-                    else
-                    {
-                        m_eLineType = eLineType::ltDotDotDash;
-                    }
+                    m_eLineType = m_dHeight > 0.3 ? eLineType::ltDashDotDotHeavy : eLineType::ltDotDotDash;
                     m_eSimpleLineType = eSimpleLineType::sltDot;
                     bIsConditionPassed = true;
                 }
@@ -497,42 +532,14 @@ namespace NSDocxRenderer
                     bIsConditionPassed = true;
                 }
             }
-
-            if (pShape->m_eLineType == eLineType::ltUnknown)
-            {
-                //Если не определились с типом, то считаем линией текущего типа
-                bIsConditionPassed = true;
-            }
             break;
         case eSimpleLineType::sltDash:
             if (pShape->m_eSimpleLineType == eSimpleLineType::sltDash)
             {
                 if ((m_eLineType == eLineType::ltUnknown || m_eLineType == eLineType::ltDash ||
-                     m_eLineType == eLineType::ltDashLong || m_eLineType == eLineType::ltDashedHeavy ||
-                     m_eLineType == eLineType::ltDashLongHeavy) && pShape->m_eLineType == eLineType::ltUnknown)
+                     m_eLineType == eLineType::ltDashedHeavy) && pShape->m_eLineType == eLineType::ltUnknown)
                 {
-                    if (pShape->m_dWidth > 2.0)
-                    {
-                        if (m_dHeight > 0.3)
-                        {
-                            m_eLineType = eLineType::ltDashLongHeavy;
-                        }
-                        else
-                        {
-                            m_eLineType = eLineType::ltDashLong;
-                        }
-                    }
-                    else
-                    {
-                        if (m_dHeight > 0.3)
-                        {
-                            m_eLineType = eLineType::ltDashedHeavy;
-                        }
-                        else
-                        {
-                            m_eLineType = eLineType::ltDash;
-                        }
-                    }
+                    m_eLineType = m_dHeight > 0.3 ? eLineType::ltDashedHeavy : eLineType::ltDash;
                     bIsConditionPassed = true;
                 }
                 else if ((m_eLineType == eLineType::ltDotDash || m_eLineType == eLineType::ltDashDotHeavy) &&
@@ -546,14 +553,7 @@ namespace NSDocxRenderer
                 if ((m_eLineType == eLineType::ltUnknown || m_eLineType == eLineType::ltDotDash ||
                      m_eLineType == eLineType::ltDashDotHeavy) && pShape->m_eLineType == eLineType::ltUnknown)
                 {
-                    if (m_dHeight > 0.3)
-                    {
-                        m_eLineType = eLineType::ltDashDotHeavy;
-                    }
-                    else
-                    {
-                        m_eLineType = eLineType::ltDotDash;
-                    }
+                    m_eLineType = m_dHeight > 0.3 ? eLineType::ltDashDotHeavy : eLineType::ltDotDash;
                     m_eSimpleLineType = eSimpleLineType::sltDot;
                     bIsConditionPassed = true;
                 }
@@ -564,26 +564,29 @@ namespace NSDocxRenderer
                     bIsConditionPassed = true;
                 }
             }
+            break;
 
-            if (pShape->m_eLineType == eLineType::ltUnknown)
+        case eSimpleLineType::sltLongDash:
+            if (fabs(m_dLeft + m_dWidth - pShape->m_dLeft) < 0.7 ||
+                m_eLineType == eLineType::ltThick || m_eLineType == eLineType::ltSingle)
             {
-                //Если не определились с типом, то считаем линией текущего типа
+                m_eLineType = m_dHeight > 0.3 ? eLineType::ltThick : eLineType::ltSingle;
+                bIsConditionPassed = true;
+            }
+            else if ((m_eLineType == eLineType::ltUnknown || m_eLineType == eLineType::ltDashLong ||
+                 m_eLineType == eLineType::ltDashLongHeavy) && pShape->m_eLineType == eLineType::ltUnknown)
+            {
+                m_eLineType = m_dHeight > 0.3 ? eLineType::ltDashLongHeavy : eLineType::ltDashLong;
                 bIsConditionPassed = true;
             }
             break;
+
         case eSimpleLineType::sltWave:
             if ((m_eLineType == eLineType::ltUnknown || m_eLineType == eLineType::ltWave ||
                  m_eLineType == eLineType::ltWavyHeavy || m_eLineType == eLineType::ltWavyDouble) &&
                     pShape->m_eLineType == eLineType::ltUnknown)
             {
-                if (m_oPen.Size > 0.3)
-                {
-                    m_eLineType = eLineType::ltWavyHeavy;
-                }
-                else
-                {
-                    m_eLineType = eLineType::ltWave;
-                }
+                m_eLineType = m_oPen.Size > 0.3 ? eLineType::ltWavyHeavy : eLineType::ltWave;
                 bIsConditionPassed = true;
             }
             break;
@@ -602,6 +605,11 @@ namespace NSDocxRenderer
     {
         //todo для уменьшения размера каждого шейпа ипользовавать только то, что необходимо - для графики, текста, графика+текст
         //todo добавить все возможные параметры/атрибуты
+
+        if (m_bIsNotNecessaryToUse)
+        {
+            return;
+        }
 
         //note Если обрабатывается много документов за раз, то iNumber сохраняется.
         static UINT iNumber = 1;

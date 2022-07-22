@@ -196,6 +196,11 @@ namespace NSDocxRenderer
 
     void COldShape::ToXml(NSStringUtils::CStringBuilder &oWriter)
     {
+        if (m_bIsNotNecessaryToUse)
+        {
+            return;
+        }
+
         oWriter.WriteString(
                     L"<w:r><w:pict><v:shape id=\"\" o:spid=\"\" style=\"position:absolute;");
 

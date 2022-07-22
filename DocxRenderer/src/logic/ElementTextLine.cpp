@@ -47,6 +47,7 @@ namespace NSDocxRenderer
         m_dBaselineOffset = oSrc.m_dBaselineOffset;
 
         m_eAlignmentType  = oSrc.m_eAlignmentType;
+        m_eVertAlignType  = oSrc.m_eVertAlignType;
 
         m_pDominantShape  = oSrc.m_pDominantShape;
 
@@ -63,6 +64,14 @@ namespace NSDocxRenderer
 
         if (m_dHeight < pCont->m_dHeight)
             m_dHeight = pCont->m_dHeight;
+
+        if (m_dTop > pCont->m_dTop || m_dTop == 0.0)
+            m_dTop = pCont->m_dTop;
+
+        if (pCont->m_pCont && m_eVertAlignType == eVertAlignType::vatUnknown)
+        {
+            m_eVertAlignType = pCont->m_eVertAlignType;
+        }
 
         m_arConts.push_back(pCont);
     }
@@ -83,7 +92,7 @@ namespace NSDocxRenderer
         SortElements(m_arConts);
     }
 
-    void CTextLine::Merge(CTextLine* pTextLine)
+    void CTextLine::Merge(const CTextLine* pTextLine)
     {
         size_t nCount = pTextLine->m_arConts.size();
         if (0 != nCount)
@@ -101,10 +110,13 @@ namespace NSDocxRenderer
                 m_dHeight = (pTextLine->m_dBaselinePos - m_dBaselinePos + m_dHeight);
             }
 
-            for (size_t i = 0; i < nCount; ++i)
+            for (auto pCont : pTextLine->m_arConts)
             {
-                m_arConts.push_back(pTextLine->m_arConts[i]);
+                m_arConts.push_back(new CContText(*pCont));
             }
+
+            SortConts();
+            CalculateWidth();
         }
     }
 
@@ -217,17 +229,36 @@ namespace NSDocxRenderer
         return false;
     }
 
-    bool CTextLine::AreLinesCrossing(const CTextLine* oSrc)
+    LineCrossingType CTextLine::GetLinesCrossingType(const CTextLine* oSrc)
     {
-        double dCurrentTop = m_dBaselinePos - m_dHeight - m_dBaselineOffset;
-        double dNextTop = oSrc->m_dBaselinePos - oSrc->m_dHeight - oSrc->m_dBaselineOffset;
-
-        if ((oSrc->m_dBaselinePos < m_dBaselinePos && dCurrentTop < oSrc->m_dBaselinePos) ||
-                (oSrc->m_dBaselinePos > m_dBaselinePos && dNextTop < m_dBaselinePos))
+        if (m_dTop > oSrc->m_dTop && m_dBaselinePos < oSrc->m_dBaselinePos)
         {
-            return true;
+            return lctCurrentInsideNext;
         }
-        return false;
+        else if (m_dTop < oSrc->m_dTop && m_dBaselinePos > oSrc->m_dBaselinePos)
+        {
+            return lctCurrentOutsideNext;
+        }
+        else if (m_dTop < oSrc->m_dTop && m_dBaselinePos < oSrc->m_dBaselinePos && m_dBaselinePos > oSrc->m_dTop)
+        {
+            return lctCurrentAboveNext;
+        }
+        else if (m_dTop > oSrc->m_dTop && m_dBaselinePos > oSrc->m_dBaselinePos && m_dTop < oSrc->m_dBaselinePos)
+        {
+            return lctCurrentBelowNext;
+        }
+        else
+        {
+            return lctNoCrossing;
+        }
+    }
+
+    void CTextLine::SetVertAlignType(const eVertAlignType& oType)
+    {
+        for (auto pCont : m_arConts)
+        {
+            pCont->m_eVertAlignType = oType;
+        }
     }
 
     double CTextLine::CalculateBeforeSpacing(const double* pPreviousStringOffset)
@@ -265,6 +296,11 @@ namespace NSDocxRenderer
 
     void CTextLine::ToXml(NSStringUtils::CStringBuilder& oWriter)
     {
+        if (m_bIsNotNecessaryToUse)
+        {
+            return;
+        }
+
         size_t nCountConts = m_arConts.size();
 
         if (0 == nCountConts)

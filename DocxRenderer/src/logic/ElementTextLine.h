@@ -3,6 +3,16 @@
 
 namespace NSDocxRenderer
 {
+    enum LineCrossingType
+    {
+        lctUnknown,
+        lctCurrentInsideNext,
+        lctCurrentOutsideNext,
+        lctCurrentAboveNext,
+        lctCurrentBelowNext,
+        lctNoCrossing
+    };
+
     class CTextLine : public CBaseItem
     {
         public:
@@ -22,6 +32,8 @@ namespace NSDocxRenderer
 
             AssumedTextAlignmentType m_eAlignmentType {atatUnknown};
 
+            eVertAlignType m_eVertAlignType {eVertAlignType::vatUnknown};
+
             const CShape* m_pDominantShape {nullptr};
 
         public:
@@ -39,7 +51,7 @@ namespace NSDocxRenderer
             void SortConts();
 
             //Объединяем слова из двух строк
-            void Merge(CTextLine* pTextLine);
+            void Merge(const CTextLine* pTextLine);
             //Объединяем подходящие слова в текущей строке, если возможно
             void Analyze();
             bool IsForceBlock();
@@ -54,7 +66,9 @@ namespace NSDocxRenderer
             //Определяем на основании выравнивания подходят ли текущая и следующая строки для добавления в параграф
             bool AreAlignmentsAppropriate(const CTextLine* oSrc);
             //Определяем пересекаются ли линии
-            bool AreLinesCrossing(const CTextLine* oSrc);
+            LineCrossingType GetLinesCrossingType(const CTextLine* oSrc);
+
+            void SetVertAlignType(const eVertAlignType& oType);
 
             //Вычисляем
             double CalculateBeforeSpacing(const double* pPreviousStringOffset);

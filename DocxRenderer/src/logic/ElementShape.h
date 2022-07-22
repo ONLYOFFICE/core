@@ -36,6 +36,8 @@ namespace NSDocxRenderer
 
             std::vector<CParagraph*> m_arParagraphs;
 
+            //Показывает, что есть отношение графики к тексту (подчеркивания/зачеркивания/выделение).
+            //note Пока сюда записывается указатель на символ с наибольшем размером шрифта.
             const CContText* m_pCont {nullptr};
 
         public:
@@ -58,7 +60,7 @@ namespace NSDocxRenderer
             bool IsCorrelated(const CShape* pShape);
             void ChangeGeometryOfDesiredShape(CShape* pShape);
 
-            void DetermineLineType(CShape* pShape = nullptr);
+            void DetermineLineType(CShape* pShape = nullptr, bool bIsLast = false);
 
             virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
     };

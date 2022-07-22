@@ -8,6 +8,7 @@ enum class eSimpleLineType
     sltUnknown,
     sltDot,
     sltDash,
+    sltLongDash,
     sltWave
 };
 

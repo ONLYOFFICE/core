@@ -49,8 +49,13 @@ namespace NSDocxRenderer
         m_eUnderlineType = oSrc.m_eUnderlineType;
         m_lUnderlineColor = oSrc.m_lUnderlineColor;
 
+        m_eVertAlignType = oSrc.m_eVertAlignType;
+
+        m_bIsShadowPresent = oSrc.m_bIsShadowPresent;
+
         m_pShape    = oSrc.m_pShape;
         m_pManagerLight = oSrc.m_pManagerLight;
+        m_pCont = oSrc.m_pCont;
 
         return *this;
     }
@@ -67,6 +72,11 @@ namespace NSDocxRenderer
 
     void CContText::ToXml(NSStringUtils::CStringBuilder& oWriter)
     {
+        if (m_bIsNotNecessaryToUse)
+        {
+            return;
+        }
+
         oWriter.WriteString(L"<w:r>");
         oWriter.WriteString(L"<w:rPr>");
 
@@ -96,24 +106,33 @@ namespace NSDocxRenderer
                 m_oText += L" ";
             }
 
-            // нужно перемерять...
-            double ___dSize = (double)(static_cast<LONG>(m_oFont.Size * 2)) / 2;
-            m_pManagerLight->LoadFont(m_strPickFontName, m_lPickFontStyle, ___dSize, false);
-            double dWidth = m_pManagerLight->MeasureStringWidth(m_oText.ToStdWString());
-
-            double dSpacing = (m_dWidth - dWidth) / (m_oText.length() + 1);
-            dSpacing *= c_dMMToDx;
-
-            LONG lSpacing = static_cast<LONG>(dSpacing);
-            //note принудительно уменьшаем spacing чтобы текстовые линии не выходили за правую границу
-            lSpacing -= 1;
-
-            if (lSpacing != 0)
+            if (m_eVertAlignType != eVertAlignType::vatSubscript &&
+                m_eVertAlignType != eVertAlignType::vatSuperscript)
             {
-                oWriter.WriteString(L"<w:spacing w:val=\"");
-                oWriter.AddInt(lSpacing);
-                oWriter.WriteString(L"\"/>");
+                // нужно перемерять...
+                double ___dSize = (double)(static_cast<LONG>(m_oFont.Size * 2)) / 2;
+                m_pManagerLight->LoadFont(m_strPickFontName, m_lPickFontStyle, ___dSize, false);
+                double dWidth = m_pManagerLight->MeasureStringWidth(m_oText.ToStdWString());
+
+                double dSpacing = (m_dWidth - dWidth) / (m_oText.length() + 1);
+                dSpacing *= c_dMMToDx;
+
+                LONG lSpacing = static_cast<LONG>(dSpacing);
+                //note принудительно уменьшаем spacing чтобы текстовые линии не выходили за правую границу
+                lSpacing -= 1;
+
+                if (lSpacing != 0)
+                {
+                    oWriter.WriteString(L"<w:spacing w:val=\"");
+                    oWriter.AddInt(lSpacing);
+                    oWriter.WriteString(L"\"/>");
+                }
             }
+        }
+
+        if (m_bIsShadowPresent)
+        {
+            oWriter.WriteString(L"<w:shadow/>");
         }
 
         int lSize = static_cast<int>(2 * m_oFont.Size);
@@ -131,6 +150,15 @@ namespace NSDocxRenderer
         oWriter.WriteString(L"\" w:cs=\"");
         oWriter.WriteEncodeXmlString(strFontName);
         oWriter.WriteString(L"\"/>");
+
+        if (m_eVertAlignType == eVertAlignType::vatSubscript)
+        {
+            oWriter.WriteString(L"<w:vertAlign w:val=\"subscript\"/>");
+        }
+        else if (m_eVertAlignType == eVertAlignType::vatSuperscript)
+        {
+            oWriter.WriteString(L"<w:vertAlign w:val=\"superscript\"/>");
+        }
 
         if (ConvertColorBGRToRGB(m_oBrush.Color1) != c_iBlackColor)
         {
@@ -303,15 +331,30 @@ namespace NSDocxRenderer
 
     bool CContText::IsEqual(const CContText* oSrc)
     {
-        if( m_strPickFontName == oSrc->m_strPickFontName &&
+        //todo Скорее всего это временное решение
+        bool bIf1 = true; //m_strPickFontName == oSrc->m_strPickFontName;
+        bool bIf2 = m_eUnderlineType == oSrc->m_eUnderlineType;
+        bool bIf3 = m_lUnderlineColor == oSrc->m_lUnderlineColor;
+        bool bIf4 = m_bIsHighlightPresent == oSrc->m_bIsHighlightPresent;
+        bool bIf5 = m_lHighlightColor == oSrc->m_lHighlightColor;
+        bool bIf6 = m_bIsDoubleStrikeout == oSrc->m_bIsDoubleStrikeout;
+        bool bIf7 = m_bIsShadowPresent == oSrc->m_bIsShadowPresent;
+        bool bIf8 = m_pShape == oSrc->m_pShape;
+        bool bIf9 = m_oFont.Name == L"" || oSrc->m_oFont.Name == L"" ? true : m_oFont.IsEqual(&oSrc->m_oFont);
+        bool bIf10 = m_oBrush.IsEqual(&oSrc->m_oBrush);
+
+        if (bIf1 && bIf2 && bIf3 && bIf4 && bIf5 && bIf6 && bIf7 && bIf8 && bIf9 && bIf10)
+        /*if( m_strPickFontName == oSrc->m_strPickFontName &&
             m_eUnderlineType == oSrc->m_eUnderlineType &&
             m_lUnderlineColor == oSrc->m_lUnderlineColor &&
             m_bIsHighlightPresent == oSrc->m_bIsHighlightPresent &&
             m_lHighlightColor == oSrc->m_lHighlightColor &&
             m_bIsDoubleStrikeout == oSrc->m_bIsDoubleStrikeout &&
+            m_bIsShadowPresent == oSrc->m_bIsShadowPresent &&
+            //m_eVertAlignType == oSrc->m_eVertAlignType &&
             m_pShape == oSrc->m_pShape &&
             m_oFont.IsEqual(&oSrc->m_oFont) &&
-            m_oBrush.IsEqual(&oSrc->m_oBrush))
+            m_oBrush.IsEqual(&oSrc->m_oBrush))*/
         {
             return true;
         }

@@ -10,6 +10,14 @@ namespace NSDocxRenderer
 {
     class CShape;
 
+    enum class eVertAlignType
+    {
+        vatUnknown,
+        vatBase,
+        vatSubscript,
+        vatSuperscript
+    };
+
     class CContText : public CBaseItem
     {
         public:
@@ -35,8 +43,14 @@ namespace NSDocxRenderer
             eLineType m_eUnderlineType {eLineType::ltUnknown};
             LONG   m_lUnderlineColor {c_iBlackColor};
 
+            eVertAlignType m_eVertAlignType {eVertAlignType::vatUnknown};
+
+            bool   m_bIsShadowPresent {false};
+
             const CShape* m_pShape {nullptr}; //Если не nullptr, то есть фоновая графика - можно анализировать.
             CFontManagerLight* m_pManagerLight {nullptr};
+
+            const CContText* m_pCont {nullptr}; //Если не nullptr, то есть привязка к vatSubscript или vatSuperscript;
 
         public:
             CContText(CFontManagerLight& oManagerLight);

@@ -48,8 +48,7 @@ namespace PdfWriter
 	class CRadioGroupField;
 	class CImageDict;
 	class CFontCidTrueType;
-	class CInfoDict;
-	class CSignatureDict;
+    class CSignatureDict;
 
 	class CFieldBase : public CDictObject
 	{

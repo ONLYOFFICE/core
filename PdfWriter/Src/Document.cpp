@@ -1242,7 +1242,6 @@ namespace PdfWriter
 		CFileStream* pStream = new CFileStream();
 		if (!pStream || !pStream->OpenFile(wsPath, false))
 			return false;
-		pStream->WriteChar('\n');
 
 		// Добавляем первый элемент в таблицу xref
 		// он должен иметь вид 0000000000 65535 f
@@ -1303,6 +1302,7 @@ namespace PdfWriter
 		// Если m_pTrailer поток перекрестных ссылок, то при дозаписи тоже должен быть поток
 		m_pTrailer->Remove("XRefStm");
 		bool bNeedStreamXRef = false;
+		pStream->WriteChar('\n');
 		if (m_pTrailer->Get("Type"))
 		{
 			m_pTrailer->Remove("Length");

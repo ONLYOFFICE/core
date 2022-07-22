@@ -547,7 +547,7 @@ namespace PdfReader
         m_bTransparentGroupSoftMask = false;
         m_bTransparentGroupSoftMaskEnd = false;
 
-        RELEASEARRAYOBJECTS(m_pSoftMask);
+        m_pSoftMask = NULL;
 
         m_bDrawOnlyText = false;
         m_bClipChanged = true;

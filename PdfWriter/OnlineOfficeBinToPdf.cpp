@@ -167,7 +167,6 @@ namespace NSOnlineOfficeBinToPdf
     static bool ConvertBufferToPdf(CPdfRenderer* pPdf, BYTE* pBuffer, LONG lBufferLen, const std::wstring& wsHtmlPlace, const bool& bIsUsePicker = false)
     {
         CMetafileToRenderterPDF oCorrector(pPdf);
-
         oCorrector.wsHtmlPlace = wsHtmlPlace;
         if (bIsUsePicker)
             oCorrector.InitPicker(pPdf->GetApplicationFonts());

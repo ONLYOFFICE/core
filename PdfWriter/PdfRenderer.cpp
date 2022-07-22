@@ -530,8 +530,8 @@ CPdfRenderer::CPdfRenderer(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA) :
 	m_bValid      = true;
 	m_bEdit       = false;
 	m_bEditPage   = false;
-	m_dPageHeight = 842;
-	m_dPageWidth  = 595;
+	m_dPageHeight = 297;
+	m_dPageWidth  = 210;
 	m_pPage       = NULL;
 	m_pFont       = NULL;
 

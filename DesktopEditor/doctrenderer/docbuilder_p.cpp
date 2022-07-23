@@ -302,6 +302,25 @@ bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path,
 
 namespace NSDoctRenderer
 {
+    CString::CString()
+    {
+        m_internal = new CString_Private();
+    }
+    CString::CString(const CString& src)
+    {
+        m_internal = new CString_Private();
+        src.m_internal->Copy(m_internal);
+    }
+    CString& CString::operator=(const CString& src)
+    {
+        src.m_internal->Copy(m_internal);
+        return *this;
+    }
+    wchar_t* CString::c_str() const
+    {
+        return m_internal->m_data;
+    }
+
     CDocBuilderValue::CDocBuilderValue()
     {
         m_internal = new CDocBuilderValue_Private();
@@ -341,6 +360,56 @@ namespace NSDoctRenderer
     {
         return m_internal->m_value->isUndefined();
     }
+    bool CDocBuilderValue::IsBool()
+    {
+        return m_internal->m_value->isBool();
+    }
+    bool CDocBuilderValue::IsInt()
+    {
+        return m_internal->m_value->isNumber();
+    }
+    bool CDocBuilderValue::IsDouble()
+    {
+        return m_internal->m_value->isNumber();
+    }
+    bool CDocBuilderValue::IsString()
+    {
+        return m_internal->m_value->isString();
+    }
+    bool CDocBuilderValue::IsFunction()
+    {
+        return m_internal->m_value->isFunction();
+    }
+    bool CDocBuilderValue::IsArray()
+    {
+        return m_internal->m_value->isArray();
+    }
+    bool CDocBuilderValue::IsTypedArray()
+    {
+        return m_internal->m_value->isTypedArray();
+    }
+
+    unsigned int CDocBuilderValue::GetLength()
+    {
+        if (IsArray())
+        {
+            JSSmart<CJSArray> array = m_internal->m_value->toArray();
+            return (unsigned int)array->getCount();
+        }
+        if (IsTypedArray())
+        {
+            JSSmart<CJSTypedArray> array = m_internal->m_value->toTypedArray();
+            return (unsigned int)array->getCount();
+        }
+        return 0;
+    }
+
+    bool CDocBuilderValue::ToBool()
+    {
+        if (IsEmpty() || !m_internal->m_value->isBool())
+            return 0;
+        return m_internal->m_value->toBool();
+    }
     int CDocBuilderValue::ToInt()
     {
         if (IsEmpty() || !m_internal->m_value->isNumber())
@@ -353,24 +422,23 @@ namespace NSDoctRenderer
             return 0;
         return m_internal->m_value->toDouble();
     }
-    wchar_t* CDocBuilderValue::ToString()
+    CString CDocBuilderValue::ToString()
     {
+        CString ret;
         if (IsEmpty() || !m_internal->m_value->isString())
-            return NULL;
+            return ret;
         std::wstring sValue = m_internal->m_value->toStringW();
         if (sValue.empty())
-            return NULL;
+            return ret;
         size_t len = sValue.length();
         wchar_t* buffer = new wchar_t[len + 1];
         memcpy(buffer, sValue.c_str(), len * sizeof(wchar_t));
         buffer[len] = '\0';
-        return buffer;
+        ret.m_internal->Attach(buffer);
+        return ret;
     }
-    void CDocBuilderValue::FreeString(wchar_t* data)
-    {
-        delete [] data;
-    }
-    CDocBuilderValue CDocBuilderValue::GetProperty(const wchar_t* name)
+
+    CDocBuilderValue CDocBuilderValue::Get(const wchar_t* name)
     {
         CDocBuilderValue ret;
         if (IsEmpty() || !m_internal->m_value->isObject())
@@ -380,9 +448,311 @@ namespace NSDoctRenderer
         std::string sPropA = U_TO_UTF8(sProp);
 
         ret.m_internal->m_context = m_internal->m_context;
-        ret.m_internal->m_value = m_internal->m_value->toObject()->get(sPropA.c_str());
+        ret.m_internal->m_value = m_internal->m_value->toObjectSmart()->get(sPropA.c_str());
 
         return ret;
+    }
+    CDocBuilderValue CDocBuilderValue::GetProperty(const wchar_t* name)
+    {
+        return Get(name);
+    }
+    CDocBuilderValue CDocBuilderValue::operator[](const wchar_t *name)
+    {
+        return Get(name);
+    }
+
+    CDocBuilderValue CDocBuilderValue::Get(const int& index)
+    {
+        CDocBuilderValue ret;
+        if (IsEmpty() || !m_internal->m_value->isArray())
+            return ret;
+
+        ret.m_internal->m_context = m_internal->m_context;
+        JSSmart<CJSArray> array = m_internal->m_value->toArray();
+        ret.m_internal->m_value = array->get(index);
+        return ret;
+    }
+    CDocBuilderValue CDocBuilderValue::operator[](const int &index)
+    {
+        return Get(index);
+    }
+
+    void CDocBuilderValue::Set(const wchar_t* name, CDocBuilderValue value)
+    {
+        if (IsEmpty() || !m_internal->m_value->isObject())
+            return;
+
+        std::wstring sProp(name);
+        std::string sPropA = U_TO_UTF8(sProp);
+
+        value.m_internal->CheckNative();
+        m_internal->m_value->toObjectSmart()->set(sPropA.c_str(), value.m_internal->m_value.GetPointer());
+    }
+    void CDocBuilderValue::SetProperty(const wchar_t* name, CDocBuilderValue value)
+    {
+        Set(name, value);
+    }
+    void CDocBuilderValue::Set(const int& index, CDocBuilderValue value)
+    {
+        if (IsEmpty() || !m_internal->m_value->isArray())
+            return;
+
+        JSSmart<CJSArray> array = m_internal->m_value->toArray();
+        value.m_internal->CheckNative();
+        array->set(index, value.m_internal->m_value.GetPointer());
+    }
+
+    // primitives
+    CDocBuilderValue::CDocBuilderValue(const bool& value)
+    {
+        m_internal = new CDocBuilderValue_Private();
+        m_internal->CreateBool(value);
+    }
+    CDocBuilderValue::CDocBuilderValue(const int& value)
+    {
+        m_internal = new CDocBuilderValue_Private();
+        m_internal->CreateInt(value);
+    }
+    CDocBuilderValue::CDocBuilderValue(const unsigned int& value)
+    {
+        m_internal = new CDocBuilderValue_Private();
+        m_internal->CreateUInt(value);
+    }
+    CDocBuilderValue::CDocBuilderValue(const double& value)
+    {
+        m_internal = new CDocBuilderValue_Private();
+        m_internal->CreateDouble(value);
+    }
+    CDocBuilderValue::CDocBuilderValue(const char* value)
+    {
+
+    }
+    CDocBuilderValue::CDocBuilderValue(const wchar_t* value)
+    {
+        m_internal = new CDocBuilderValue_Private();
+        m_internal->CreateString(value);
+    }
+
+    CDocBuilderValue CDocBuilderValue::CreateUndefined()
+    {
+        CDocBuilderValue ret;
+        ret.m_internal->CreateUndefined();
+        return ret;
+    }
+    CDocBuilderValue CDocBuilderValue::CreateNull()
+    {
+        CDocBuilderValue ret;
+        ret.m_internal->CreateNull();
+        return ret;
+    }
+
+    // Functions
+    CDocBuilderValue CDocBuilderValue::Call(const wchar_t* name)
+    {
+        CDocBuilderValue ret;
+        if (IsEmpty() || !m_internal->m_value->isObject())
+            return ret;
+
+        std::wstring sProp(name);
+        std::string sPropA = U_TO_UTF8(sProp);
+
+        ret.m_internal->m_context = m_internal->m_context;
+        ret.m_internal->m_value = m_internal->m_value->toObjectSmart()->call_func(sPropA.c_str());
+        return ret;
+    }
+    CDocBuilderValue CDocBuilderValue::Call(const wchar_t* name, CDocBuilderValue p1)
+    {
+        CDocBuilderValue ret;
+        if (IsEmpty() || !m_internal->m_value->isObject())
+            return ret;
+
+        std::wstring sProp(name);
+        std::string sPropA = U_TO_UTF8(sProp);
+
+        p1.m_internal->CheckNative();
+        JSSmart<CJSValue> argv[1];
+        argv[0] = p1.m_internal->m_value;
+
+        ret.m_internal->m_context = m_internal->m_context;
+        ret.m_internal->m_value = m_internal->m_value->toObjectSmart()->call_func(sPropA.c_str(), 1, argv);
+        return ret;
+    }
+    CDocBuilderValue CDocBuilderValue::Call(const wchar_t* name, CDocBuilderValue p1, CDocBuilderValue p2)
+    {
+        CDocBuilderValue ret;
+        if (IsEmpty() || !m_internal->m_value->isObject())
+            return ret;
+
+        std::wstring sProp(name);
+        std::string sPropA = U_TO_UTF8(sProp);
+
+        p1.m_internal->CheckNative();
+        p2.m_internal->CheckNative();
+        JSSmart<CJSValue> argv[2];
+        argv[0] = p1.m_internal->m_value;
+        argv[1] = p2.m_internal->m_value;
+
+        ret.m_internal->m_context = m_internal->m_context;
+        ret.m_internal->m_value = m_internal->m_value->toObjectSmart()->call_func(sPropA.c_str(), 2, argv);
+        return ret;
+    }
+    CDocBuilderValue CDocBuilderValue::Call(const wchar_t* name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3)
+    {
+        CDocBuilderValue ret;
+        if (IsEmpty() || !m_internal->m_value->isObject())
+            return ret;
+
+        std::wstring sProp(name);
+        std::string sPropA = U_TO_UTF8(sProp);
+
+        p1.m_internal->CheckNative();
+        p2.m_internal->CheckNative();
+        p3.m_internal->CheckNative();
+        JSSmart<CJSValue> argv[3];
+        argv[0] = p1.m_internal->m_value;
+        argv[1] = p2.m_internal->m_value;
+        argv[2] = p3.m_internal->m_value;
+
+        ret.m_internal->m_context = m_internal->m_context;
+        ret.m_internal->m_value = m_internal->m_value->toObjectSmart()->call_func(sPropA.c_str(), 3, argv);
+        return ret;
+    }
+    CDocBuilderValue CDocBuilderValue::Call(const wchar_t* name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4)
+    {
+        CDocBuilderValue ret;
+        if (IsEmpty() || !m_internal->m_value->isObject())
+            return ret;
+
+        std::wstring sProp(name);
+        std::string sPropA = U_TO_UTF8(sProp);
+
+        p1.m_internal->CheckNative();
+        p2.m_internal->CheckNative();
+        p3.m_internal->CheckNative();
+        p4.m_internal->CheckNative();
+        JSSmart<CJSValue> argv[4];
+        argv[0] = p1.m_internal->m_value;
+        argv[1] = p2.m_internal->m_value;
+        argv[2] = p3.m_internal->m_value;
+        argv[3] = p4.m_internal->m_value;
+
+        ret.m_internal->m_context = m_internal->m_context;
+        ret.m_internal->m_value = m_internal->m_value->toObjectSmart()->call_func(sPropA.c_str(), 4, argv);
+        return ret;
+    }
+    CDocBuilderValue CDocBuilderValue::Call(const wchar_t* name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4, CDocBuilderValue p5)
+    {
+        CDocBuilderValue ret;
+        if (IsEmpty() || !m_internal->m_value->isObject())
+            return ret;
+
+        std::wstring sProp(name);
+        std::string sPropA = U_TO_UTF8(sProp);
+
+        p1.m_internal->CheckNative();
+        p2.m_internal->CheckNative();
+        p3.m_internal->CheckNative();
+        p4.m_internal->CheckNative();
+        p5.m_internal->CheckNative();
+        JSSmart<CJSValue> argv[5];
+        argv[0] = p1.m_internal->m_value;
+        argv[1] = p2.m_internal->m_value;
+        argv[2] = p3.m_internal->m_value;
+        argv[3] = p4.m_internal->m_value;
+        argv[4] = p5.m_internal->m_value;
+
+        ret.m_internal->m_context = m_internal->m_context;
+        ret.m_internal->m_value = m_internal->m_value->toObjectSmart()->call_func(sPropA.c_str(), 5, argv);
+        return ret;
+    }
+    CDocBuilderValue CDocBuilderValue::Call(const wchar_t* name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4, CDocBuilderValue p5, CDocBuilderValue p6)
+    {
+        CDocBuilderValue ret;
+        if (IsEmpty() || !m_internal->m_value->isObject())
+            return ret;
+
+        std::wstring sProp(name);
+        std::string sPropA = U_TO_UTF8(sProp);
+
+        p1.m_internal->CheckNative();
+        p2.m_internal->CheckNative();
+        p3.m_internal->CheckNative();
+        p4.m_internal->CheckNative();
+        p5.m_internal->CheckNative();
+        p6.m_internal->CheckNative();
+        JSSmart<CJSValue> argv[5];
+        argv[0] = p1.m_internal->m_value;
+        argv[1] = p2.m_internal->m_value;
+        argv[2] = p3.m_internal->m_value;
+        argv[3] = p4.m_internal->m_value;
+        argv[4] = p5.m_internal->m_value;
+        argv[5] = p6.m_internal->m_value;
+
+        ret.m_internal->m_context = m_internal->m_context;
+        ret.m_internal->m_value = m_internal->m_value->toObjectSmart()->call_func(sPropA.c_str(), 6, argv);
+        return ret;
+    }
+
+    CDocBuilderContext::CDocBuilderContext()
+    {
+        m_internal = new CDocBuilderContext_Private();
+    }
+    CDocBuilderContext::CDocBuilderContext(const CDocBuilderContext& src)
+    {
+        m_internal = new CDocBuilderContext_Private();
+        m_internal->m_context = src.m_internal->m_context;
+    }
+    CDocBuilderContext& CDocBuilderContext::operator=(const CDocBuilderContext& src)
+    {
+        m_internal->m_context = src.m_internal->m_context;
+        return *this;
+    }
+    CDocBuilderContext::~CDocBuilderContext()
+    {
+        RELEASEOBJECT(m_internal);
+    }
+
+    CDocBuilderValue CDocBuilderContext::CreateUndefined()
+    {
+        CDocBuilderValue ret;
+        ret.m_internal->m_context = m_internal->m_context;
+        ret.m_internal->m_value = NSJSBase::CJSContext::createUndefined();
+        return ret;
+    }
+    CDocBuilderValue CDocBuilderContext::CreateNull()
+    {
+        CDocBuilderValue ret;
+        ret.m_internal->m_context = m_internal->m_context;
+        ret.m_internal->m_value = NSJSBase::CJSContext::createNull();
+        return ret;
+    }
+    CDocBuilderValue CDocBuilderContext::CreateArray(const int& length)
+    {
+        CDocBuilderValue ret;
+        ret.m_internal->m_context = m_internal->m_context;
+        ret.m_internal->m_value = NSJSBase::CJSContext::createArray(length);
+        return ret;
+    }
+    CDocBuilderValue CDocBuilderContext::CreateTypedArray(unsigned char* buffer, const int& length)
+    {
+        CDocBuilderValue ret;
+        ret.m_internal->m_context = m_internal->m_context;
+        ret.m_internal->m_value = NSJSBase::CJSContext::createUint8Array(buffer, length, false);
+        return ret;
+    }
+
+    CDocBuilderValue CDocBuilderContext::GetGlobal()
+    {
+        CDocBuilderValue ret;
+        ret.m_internal->m_context = m_internal->m_context;
+        JSSmart<CJSObject> obj = m_internal->m_context->GetGlobal();
+        ret.m_internal->m_value = obj->toValue();
+        return ret;
+    }
+    bool CDocBuilderContext::IsError()
+    {
+        JSSmart<CJSTryCatch> oTry = m_internal->m_context->GetExceptions();
+        return oTry->Check();
     }
 }
 

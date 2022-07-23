@@ -48,7 +48,6 @@ namespace NSDoctRenderer
 
     bool CDocBuilderValue::IsEmpty() { return true; }
     void CDocBuilderValue::Clear() {}
-    void CDocBuilderValue::FreeString(wchar_t* data) {}
 
     bool IsNull() { return false; }
     bool IsUndefined() { return false; }

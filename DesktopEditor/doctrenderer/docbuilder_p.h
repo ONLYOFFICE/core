@@ -104,16 +104,203 @@ namespace NSDoctRenderer
 
 namespace NSDoctRenderer
 {
+    class CString_Private
+    {
+    public:
+        wchar_t* m_data;
+
+    public:
+        CString_Private()
+        {
+            m_data = NULL;
+        }
+        ~CString_Private()
+        {
+            if (m_data)
+                delete [] m_data;
+        }
+
+        void Attach(wchar_t* data)
+        {
+            m_data = data;
+        }
+
+        void Copy(CString_Private* copy)
+        {
+            if (copy->m_data)
+            {
+                delete [] copy->m_data;
+                copy->m_data = NULL;
+            }
+
+            if (m_data == NULL)
+                return;
+
+            size_t len = wcslen(m_data);
+            copy->m_data = new wchar_t[len + 1];
+            memcpy(copy->m_data, m_data, (len + 1) * sizeof(wchar_t));
+        }
+    };
+}
+
+namespace NSDoctRenderer
+{
+    class CDocBuilderContext_Private
+    {
+    public:
+        JSSmart<CJSContext> m_context;
+
+        CDocBuilderContext_Private() : m_context() {}
+        ~CDocBuilderContext_Private() { m_context.Release(); }
+    };
+}
+
+namespace NSDoctRenderer
+{
     class CDocBuilderValue_Private
     {
     public:
         JSSmart<CJSContext> m_context;
         JSSmart<CJSValue> m_value;
 
+        enum PrimitiveType
+        {
+            ptUndefined     = 0,
+            ptNull          = 1,
+            ptBool          = 2,
+            ptInt           = 3,
+            ptUInt          = 4,
+            ptDouble        = 5,
+            ptString        = 6
+        };
+
+        union PrimitiveValue
+        {
+            bool bValue;
+            int nValue;
+            unsigned int unValue;
+            double dValue;
+            wchar_t* sValue;
+        };
+
+        PrimitiveType m_nativeType;
+        PrimitiveValue m_nativeValue;
+
     public:
-        CDocBuilderValue_Private() : m_context(NULL) {}
-        ~CDocBuilderValue_Private() {}
-        void Clear() { m_value.Release(); }
+        CDocBuilderValue_Private() : m_context(NULL)
+        {
+            m_nativeType = ptUndefined;
+        }
+        ~CDocBuilderValue_Private()
+        {
+
+        }
+        void Clear()
+        {
+            m_value.Release();
+            ClearNative();
+        }
+
+        // native
+        void CreateUndefined()
+        {
+            m_nativeType = ptUndefined;
+        }
+        void CreateNull()
+        {
+            m_nativeType = ptNull;
+        }
+        void CreateBool(const bool& value)
+        {
+            m_nativeType = ptBool;
+            m_nativeValue.bValue = value;
+        }
+        void CreateInt(const int& value)
+        {
+            m_nativeType = ptInt;
+            m_nativeValue.nValue = value;
+        }
+        void CreateUInt(const unsigned int& value)
+        {
+            m_nativeType = ptUInt;
+            m_nativeValue.unValue = value;
+        }
+        void CreateDouble(const double& value)
+        {
+            m_nativeType = ptDouble;
+            m_nativeValue.dValue = value;
+        }
+        void CreateString(const wchar_t*& value)
+        {
+            size_t len = wcslen(value) + 1;
+            m_nativeType = ptString;
+            m_nativeValue.sValue = new wchar_t[len];
+            memcpy(m_nativeValue.sValue, value, len * sizeof(wchar_t));
+        }
+        void CreateString(const char*& value)
+        {
+            std::wstring sValue = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)value, strlen(value));
+            const wchar_t* strTmp = sValue.c_str();
+            CreateString(strTmp);
+        }
+
+        void ClearNative()
+        {
+            if (m_nativeType == ptString)
+            {
+                delete [] m_nativeValue.sValue;
+            }
+            m_nativeType = ptUndefined;
+        }
+
+        void CheckNative()
+        {
+            if (m_value.is_init())
+                return;
+
+            switch (m_nativeType)
+            {
+                case ptUndefined:
+                {
+                    m_value = NSJSBase::CJSContext::createUndefined();
+                    break;
+                }
+                case ptNull:
+                {
+                    m_value = NSJSBase::CJSContext::createNull();
+                    break;
+                }
+                case ptBool:
+                {
+                    m_value = NSJSBase::CJSContext::createBool(m_nativeValue.bValue);
+                    break;
+                }
+                case ptInt:
+                {
+                    m_value = NSJSBase::CJSContext::createInt(m_nativeValue.nValue);
+                    break;
+                }
+                case ptUInt:
+                {
+                    m_value = NSJSBase::CJSContext::createUInt(m_nativeValue.unValue);
+                    break;
+                }
+                case ptDouble:
+                {
+                    m_value = NSJSBase::CJSContext::createDouble(m_nativeValue.dValue);
+                    break;
+                }
+                case ptString:
+                {
+                    m_value = NSJSBase::CJSContext::createString(m_nativeValue.sValue);
+                    break;
+                }
+                default:
+                    break;
+            }
+
+            ClearNative();
+        }
     };
 }
 
@@ -873,13 +1060,8 @@ namespace NSDoctRenderer
             return nReturnCode;
         }
 
-        bool ExecuteCommand(const std::wstring& command, CDocBuilderValue* retValue = NULL)
+        bool CheckWorker()
         {
-            if (command.length() < 7 && !retValue) // minimum command (!!!)
-                return true;
-
-            Init();
-
             if (-1 == m_nFileType)
             {
                 CV8RealTimeWorker::_LOGGING_ERROR_(L"error (command)", L"file not opened!");
@@ -905,8 +1087,31 @@ namespace NSDoctRenderer
                 if (!bOpen)
                     return false;
             }
+            return true;
+        }
+
+        bool ExecuteCommand(const std::wstring& command, CDocBuilderValue* retValue = NULL)
+        {
+            if (command.length() < 7 && !retValue) // minimum command (!!!)
+                return true;
+
+            Init();
+
+            if (!CheckWorker())
+                return false;
 
             return m_pWorker->ExecuteCommand(command, retValue);
+        }
+
+        CDocBuilderContext GetContext()
+        {
+            CDocBuilderContext ctx;
+
+            if (!CheckWorker())
+                return ctx;
+
+            ctx.m_internal->m_context = m_pWorker->m_context;
+            return ctx;
         }
 
         std::string GetScript()

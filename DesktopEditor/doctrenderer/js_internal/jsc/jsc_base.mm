@@ -324,6 +324,12 @@ namespace NSJSBase
         return _value;
     }
 
+    CJSValue* CJSContext::createString(const wchar_t* value, const int& length)
+    {
+        std::string sUtf8 = NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(value, (length != -1) ? (LONG)length : (LONG)wcslen(value));
+        return createString((const char*)sUtf8.c_str(), (int)sUtf8.length());
+    }
+
     CJSValue* CJSContext::createString(const std::string& value)
     {
         CJSValueJSC* _value = new CJSValueJSC();

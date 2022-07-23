@@ -29,39 +29,40 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "docbuilder_p.h"
 
-namespace NSDoctRenderer
+#include "./../common_deploy.h"
+#include "../docbuilder.h"
+#include "../../common/File.h"
+
+using namespace NSDoctRenderer;
+int main(int argc, char *argv[])
 {
-    CDocBuilder::CDocBuilder()
-    {
-        m_pInternal = new CDocBuilder_Private();
-        m_pInternal->m_pParent = this;
-    }
-    CDocBuilder::~CDocBuilder()
-    {
-        RELEASEOBJECT(m_pInternal);
-    }
+    if (argc <= 0)
+        return 0;
 
-    int CDocBuilder::OpenFile(const wchar_t* path, const wchar_t* params)
-    {
-        m_pInternal->m_nFileType = -1;
-        if (!NSDirectory::Exists(m_pInternal->m_sTmpFolder))
-            NSDirectory::CreateDirectory(m_pInternal->m_sTmpFolder);
+    std::wstring sProcessDirectory = NSFile::GetProcessDirectory();
+    // для дебага БЕЗ x2t - подкидываем билдер в папку builder к тестовому примеру
+    std::wstring sWorkDirectory = sProcessDirectory + L"/builder";
 
-        return m_pInternal->OpenFile(path, params);
-    }
-    int CDocBuilder::SaveFile(const int& type, const wchar_t* path, const wchar_t* params)
-    {
-        return m_pInternal->SaveFile(type, path, params);
-    }    
-    bool CDocBuilder::ExecuteCommand(const wchar_t* command, CDocBuilderValue* retValue)
-    {
-        return m_pInternal->ExecuteCommand(command, retValue);
-    }
+    CDocBuilder oBuilder;
+    oBuilder.SetProperty("--work-directory", sWorkDirectory.c_str());
 
-    CDocBuilderContext CDocBuilder::GetContext()
-    {
-        return m_pInternal->GetContext();
-    }
+    oBuilder.CreateFile(OFFICESTUDIO_FILE_DOCUMENT_DOCX);
+
+    CContext oContext = oBuilder.GetContext();
+    CValue oGlobal = oContext.GetGlobal();
+
+    CValue oApi = oGlobal[L"Api"];
+    CValue oDocument = oApi.Call(L"GetDocument");
+    CValue oParagraph = oApi.Call(L"CreateParagraph");
+    oParagraph.Call(L"AddText", "Hello, world!");
+    CValue oContent = oContext.CreateArray(1);
+    oContent.Set(0, oParagraph);
+    oDocument.Call(L"InsertContent", oContent);
+
+    std::wstring sDstPath = sProcessDirectory + L"/result.docx";
+    oBuilder.SaveFile(OFFICESTUDIO_FILE_DOCUMENT_DOCX, sDstPath.c_str());
+
+    NSDoctRenderer::CDocBuilder::Dispose();
+    return 0;
 }

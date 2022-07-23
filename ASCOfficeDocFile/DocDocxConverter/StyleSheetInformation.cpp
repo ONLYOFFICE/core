@@ -66,13 +66,19 @@ namespace DocFileFormat
 			// not all stylesheet contain latent styles
 			if ( size > 20 )
 			{
-				cbLSD							=	FormatUtils::BytesToUInt16 ( bytes, 20, size );
+				cbLSD =	FormatUtils::BytesToUInt16 ( bytes, 20, size );
 
 				for ( int i = 0; i < stiMaxWhenSaved; ++i)
 				{
-					unsigned int iLSD			=	FormatUtils::BytesToUInt32 ( bytes, ( 22 + (i * cbLSD) ), size );
-					LSD lsd						=	*(LSD*)&iLSD;
-
+					_UINT32 iLSD = FormatUtils::BytesToUInt32 ( bytes, ( 22 + (i * cbLSD) ), size );
+					
+					LSD lsd;
+					lsd.fLocked = GETBIT(iLSD, 0);
+					lsd.fSemiHidden = GETBIT(iLSD, 1);
+					lsd.fUnhideWhenUsed = GETBIT(iLSD, 2);
+					lsd.fQFormat = GETBIT(iLSD, 3);
+					lsd.iPriority = GETBITS(iLSD, 4, 15);
+					lsd.fReserved = GETBITS(iLSD, 16, 31);
 					mpstilsd.push_back( lsd );
 				}
 			}

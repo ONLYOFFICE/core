@@ -321,6 +321,35 @@ namespace NSDoctRenderer
         return m_internal->m_data;
     }
 
+    class CDocBuilderContextScope_Private
+    {
+    public:
+        JSSmart<CJSContextScope> m_scope;
+
+    public:
+        CDocBuilderContextScope_Private() : m_scope() {}
+        ~CDocBuilderContextScope_Private() {}
+    };
+
+    CDocBuilderContextScope::CDocBuilderContextScope()
+    {
+        m_internal = new CDocBuilderContextScope_Private();
+    }
+    CDocBuilderContextScope::CDocBuilderContextScope(const CDocBuilderContextScope& src)
+    {
+        m_internal = new CDocBuilderContextScope_Private();
+        m_internal->m_scope = src.m_internal->m_scope;
+    }
+    CDocBuilderContextScope& CDocBuilderContextScope::operator=(const CDocBuilderContextScope& src)
+    {
+        m_internal->m_scope = src.m_internal->m_scope;
+        return *this;
+    }
+    CDocBuilderContextScope::~CDocBuilderContextScope()
+    {
+        RELEASEOBJECT(m_internal);
+    }
+
     CDocBuilderValue::CDocBuilderValue()
     {
         m_internal = new CDocBuilderValue_Private();
@@ -328,10 +357,12 @@ namespace NSDoctRenderer
     CDocBuilderValue::CDocBuilderValue(const CDocBuilderValue& src)
     {
         m_internal = new CDocBuilderValue_Private();
+        m_internal->m_context = src.m_internal->m_context;
         m_internal->m_value = src.m_internal->m_value;
     }
     CDocBuilderValue& CDocBuilderValue::operator=(const CDocBuilderValue& src)
     {
+        m_internal->m_context = src.m_internal->m_context;
         m_internal->m_value = src.m_internal->m_value;
         return *this;
     }
@@ -525,7 +556,8 @@ namespace NSDoctRenderer
     }
     CDocBuilderValue::CDocBuilderValue(const char* value)
     {
-
+        m_internal = new CDocBuilderValue_Private();
+        m_internal->CreateString(value);
     }
     CDocBuilderValue::CDocBuilderValue(const wchar_t* value)
     {
@@ -749,6 +781,14 @@ namespace NSDoctRenderer
         ret.m_internal->m_value = obj->toValue();
         return ret;
     }
+
+    CDocBuilderContextScope CDocBuilderContext::CreateScope()
+    {
+        CDocBuilderContextScope ret;
+        ret.m_internal->m_scope = m_internal->m_context->CreateContextScope();
+        return ret;
+    }
+
     bool CDocBuilderContext::IsError()
     {
         JSSmart<CJSTryCatch> oTry = m_internal->m_context->GetExceptions();

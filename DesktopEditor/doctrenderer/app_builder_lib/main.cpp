@@ -49,19 +49,25 @@ int main(int argc, char *argv[])
 
     oBuilder.CreateFile(OFFICESTUDIO_FILE_DOCUMENT_DOCX);
 
-    CContext oContext = oBuilder.GetContext();
-    CValue oGlobal = oContext.GetGlobal();
+    if (true)
+    {
+        CContext oContext = oBuilder.GetContext();
+        CContextScope oScope = oContext.CreateScope();
 
-    CValue oApi = oGlobal[L"Api"];
-    CValue oDocument = oApi.Call(L"GetDocument");
-    CValue oParagraph = oApi.Call(L"CreateParagraph");
-    oParagraph.Call(L"AddText", "Hello, world!");
-    CValue oContent = oContext.CreateArray(1);
-    oContent.Set(0, oParagraph);
-    oDocument.Call(L"InsertContent", oContent);
+        CValue oGlobal = oContext.GetGlobal();
+
+        CValue oApi = oGlobal[L"Api"];
+        CValue oDocument = oApi.Call(L"GetDocument");
+        CValue oParagraph = oApi.Call(L"CreateParagraph");
+        oParagraph.Call(L"AddText", "Hello, world!");
+        CValue oContent = oContext.CreateArray(1);
+        oContent.Set(0, oParagraph);
+        oDocument.Call(L"InsertContent", oContent);
+    }
 
     std::wstring sDstPath = sProcessDirectory + L"/result.docx";
     oBuilder.SaveFile(OFFICESTUDIO_FILE_DOCUMENT_DOCX, sDstPath.c_str());
+    oBuilder.CloseFile();
 
     NSDoctRenderer::CDocBuilder::Dispose();
     return 0;

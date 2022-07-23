@@ -184,6 +184,24 @@ namespace NSDoctRenderer
     };
 
     /**
+     * Create scope
+     */
+    class CDocBuilderContextScope_Private;
+    class Q_DECL_EXPORT CDocBuilderContextScope
+    {
+    public:
+        CDocBuilderContextScope();
+        CDocBuilderContextScope(const CDocBuilderContextScope& src);
+        CDocBuilderContextScope& operator=(const CDocBuilderContextScope& src);
+        ~CDocBuilderContextScope();
+
+    private:
+        CDocBuilderContextScope_Private* m_internal;
+
+        friend class CDocBuilderContext;
+    };
+
+    /**
      * Class for getting js context for working
      */
     class CDocBuilderContext_Private;
@@ -201,6 +219,7 @@ namespace NSDoctRenderer
         CDocBuilderValue CreateTypedArray(unsigned char* buffer, const int& length);
 
         CDocBuilderValue GetGlobal();
+        CDocBuilderContextScope CreateScope();
         bool IsError();
 
     private:
@@ -438,6 +457,7 @@ namespace NSDoctRenderer
 
     typedef CDocBuilderValue CValue;
     typedef CDocBuilderContext CContext;
+    typedef CDocBuilderContextScope CContextScope;
 }
 
 #endif // DOCBUILDER_H

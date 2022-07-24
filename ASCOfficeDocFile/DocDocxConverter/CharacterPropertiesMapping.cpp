@@ -323,7 +323,14 @@ namespace DocFileFormat
 						{
 							FontFamilyName* ffn = static_cast<FontFamilyName*>(_doc->FontTable->operator [] (nIndex));
 							if (ffn)
-								m_sDefaultFont = ffn->xszFtn;
+							{
+								m_sCsFont = ffn->xszFtn;
+
+								XMLTools::XMLAttribute* cs = new XMLTools::XMLAttribute(L"w:cs");
+								cs->SetValue(FormatUtils::XmlEncode(m_sCsFont, true));
+								rFonts->AppendAttribute(*cs);
+								RELEASEOBJECT(cs);
+							}
 						}
 					}break;
 					case sprmCHpsBi:
@@ -432,7 +439,7 @@ namespace DocFileFormat
 						}break;
 						case 2:
 						{
-							hint.SetValue(L"eastAsia");
+							hint.SetValue(L"cs");
 							rFonts->AppendAttribute(hint);
 						}break;
 						case 0: break;	// default
@@ -482,28 +489,14 @@ namespace DocFileFormat
 				}
 			}
 		}
-
-		if (!m_sDefaultFont.empty() && m_sAsciiFont.empty() && m_sEastAsiaFont.empty() && m_shAnsiFont.empty())
-		{//????
-            XMLTools::XMLAttribute* ascii = new XMLTools::XMLAttribute( L"w:ascii" );
-			ascii->SetValue( FormatUtils::XmlEncode(m_sDefaultFont));
-			//rFonts->AppendAttribute( *ascii );
-			RELEASEOBJECT( ascii );
-		}
-
-		//apend lang
 		if ( lang->GetAttributeCount() > 0 )
 		{
 			parent->AppendChild( *lang );
 		}
-
-		//append fonts
 		if ( rFonts->GetAttributeCount() > 0 )
 		{
 			parent->AppendChild( *rFonts );
 		}
-
-		//append color
         if ( colorVal->GetValue() != L"")
 		{
 			color->AppendAttribute( *colorVal );

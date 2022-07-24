@@ -56,13 +56,14 @@ int main(int argc, char *argv[])
 
         CValue oGlobal = oContext.GetGlobal();
 
-        CValue oApi = oGlobal[L"Api"];
-        CValue oDocument = oApi.Call(L"GetDocument");
-        CValue oParagraph = oApi.Call(L"CreateParagraph");
-        oParagraph.Call(L"AddText", "Hello, world!");
+        CValue oApi = oGlobal["Api"];
+        CValue oDocument = oApi.Call("GetDocument");
+        CValue oParagraph = oApi.Call("CreateParagraph");
+        oParagraph.Call("SetSpacingAfter", 1000, false);
+        oParagraph.Call("AddText", "Hello, world!");
         CValue oContent = oContext.CreateArray(1);
-        oContent.Set(0, oParagraph);
-        oDocument.Call(L"InsertContent", oContent);
+        oContent[0] = oParagraph;
+        oDocument.Call("InsertContent", oContent);
     }
 
     std::wstring sDstPath = sProcessDirectory + L"/result.docx";

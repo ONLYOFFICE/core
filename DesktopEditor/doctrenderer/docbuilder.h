@@ -144,8 +144,11 @@ namespace NSDoctRenderer
          */
         CDocBuilderValue GetProperty(const wchar_t* name);
 
+        CDocBuilderValue Get(const char* name);
         CDocBuilderValue Get(const wchar_t* name);
+        CDocBuilderValue operator[](const char* name);
         CDocBuilderValue operator[](const wchar_t* name);
+
         CDocBuilderValue Get(const int& index);
         CDocBuilderValue operator[](const int& index);
 
@@ -169,6 +172,14 @@ namespace NSDoctRenderer
         static CDocBuilderValue CreateNull();
 
     public:
+        CDocBuilderValue Call(const char* name);
+        CDocBuilderValue Call(const char* name, CDocBuilderValue p1);
+        CDocBuilderValue Call(const char* name, CDocBuilderValue p1, CDocBuilderValue p2);
+        CDocBuilderValue Call(const char* name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3);
+        CDocBuilderValue Call(const char* name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4);
+        CDocBuilderValue Call(const char* name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4, CDocBuilderValue p5);
+        CDocBuilderValue Call(const char* name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4, CDocBuilderValue p5, CDocBuilderValue p6);
+
         CDocBuilderValue Call(const wchar_t* name);
         CDocBuilderValue Call(const wchar_t* name, CDocBuilderValue p1);
         CDocBuilderValue Call(const wchar_t* name, CDocBuilderValue p1, CDocBuilderValue p2);
@@ -215,6 +226,7 @@ namespace NSDoctRenderer
 
         CDocBuilderValue CreateUndefined();
         CDocBuilderValue CreateNull();
+        CDocBuilderValue CreateObject();
         CDocBuilderValue CreateArray(const int& length);
         CDocBuilderValue CreateTypedArray(unsigned char* buffer, const int& length);
 

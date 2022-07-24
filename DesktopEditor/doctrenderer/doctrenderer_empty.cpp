@@ -40,6 +40,11 @@
 
 namespace NSDoctRenderer
 {
+    CString::CString() {}
+    CString::CString(const CString& src) {}
+    CString& CString::operator=(const CString& src) { return *this; }
+    wchar_t* CString::c_str() const { return NULL; }
+
     CDocBuilderValue::CDocBuilderValue() {}
     CDocBuilderValue::CDocBuilderValue(const CDocBuilderValue& src) {}
     CDocBuilderValue& CDocBuilderValue::operator=(const CDocBuilderValue& src) { return *this; }
@@ -49,12 +54,83 @@ namespace NSDoctRenderer
     bool CDocBuilderValue::IsEmpty() { return true; }
     void CDocBuilderValue::Clear() {}
 
-    bool IsNull() { return false; }
-    bool IsUndefined() { return false; }
-    int ToInt() { return 0; }
-    double ToDouble() { return 0; }
-    wchar_t* ToString() { return NULL; }
+    bool CDocBuilderValue::IsNull() { return false; }
+    bool CDocBuilderValue::IsUndefined() { return false; }
+    bool CDocBuilderValue::IsBool() { return false; }
+    bool CDocBuilderValue::IsInt() { return false; }
+    bool CDocBuilderValue::IsDouble() { return false; }
+    bool CDocBuilderValue::IsString() { return false; }
+    bool CDocBuilderValue::IsFunction() { return false; }
+    bool CDocBuilderValue::IsObject() { return false; }
+    bool CDocBuilderValue::IsArray() { return false; }
+    bool CDocBuilderValue::IsTypedArray() { return false; }
+
+    unsigned int CDocBuilderValue::GetLength() { return 0; }
+    bool CDocBuilderValue::ToBool() { return false; }
+    int CDocBuilderValue::ToInt() { return 0; }
+    double CDocBuilderValue::ToDouble() { return 0; }
+    CString CDocBuilderValue::ToString() { return CString(); }
+
     CDocBuilderValue CDocBuilderValue::GetProperty(const wchar_t* name) { CDocBuilderValue ret; return ret; }
+
+    CDocBuilderValue CDocBuilderValue::Get(const char* name) { CDocBuilderValue ret; return ret; }
+    CDocBuilderValue CDocBuilderValue::Get(const wchar_t* name) { CDocBuilderValue ret; return ret; }
+    CDocBuilderValue CDocBuilderValue::operator[](const char* name) { CDocBuilderValue ret; return ret; }
+    CDocBuilderValue CDocBuilderValue::operator[](const wchar_t* name) { CDocBuilderValue ret; return ret; }
+
+    CDocBuilderValue CDocBuilderValue::Get(const int& index) { CDocBuilderValue ret; return ret; }
+    CDocBuilderValue CDocBuilderValue::operator[](const int& index) { CDocBuilderValue ret; return ret; }
+
+    void CDocBuilderValue::SetProperty(const wchar_t* name, CDocBuilderValue value) {}
+    void CDocBuilderValue::Set(const wchar_t* name, CDocBuilderValue value) {}
+    void CDocBuilderValue::Set(const int& index, CDocBuilderValue value) {}
+
+    // primitives
+    CDocBuilderValue::CDocBuilderValue(const bool& value) {}
+    CDocBuilderValue::CDocBuilderValue(const int& value) {}
+    CDocBuilderValue::CDocBuilderValue(const unsigned int& value) {}
+    CDocBuilderValue::CDocBuilderValue(const double& value) {}
+    CDocBuilderValue::CDocBuilderValue(const char* value) {}
+    CDocBuilderValue::CDocBuilderValue(const wchar_t* value) {}
+
+    CDocBuilderValue CDocBuilderValue::CreateUndefined() { CDocBuilderValue ret; return ret; }
+    CDocBuilderValue CDocBuilderValue::CreateNull() { CDocBuilderValue ret; return ret; }
+
+    CDocBuilderValue CDocBuilderValue::Call(const char* name) { CDocBuilderValue ret; return ret; }
+    CDocBuilderValue CDocBuilderValue::Call(const char* name, CDocBuilderValue p1) { CDocBuilderValue ret; return ret; }
+    CDocBuilderValue CDocBuilderValue::Call(const char* name, CDocBuilderValue p1, CDocBuilderValue p2) { CDocBuilderValue ret; return ret; }
+    CDocBuilderValue CDocBuilderValue::Call(const char* name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3) { CDocBuilderValue ret; return ret; }
+    CDocBuilderValue CDocBuilderValue::Call(const char* name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4) { CDocBuilderValue ret; return ret; }
+    CDocBuilderValue CDocBuilderValue::Call(const char* name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4, CDocBuilderValue p5) { CDocBuilderValue ret; return ret; }
+    CDocBuilderValue CDocBuilderValue::Call(const char* name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4, CDocBuilderValue p5, CDocBuilderValue p6) { CDocBuilderValue ret; return ret; }
+
+    CDocBuilderValue CDocBuilderValue::Call(const wchar_t* name) { CDocBuilderValue ret; return ret; }
+    CDocBuilderValue CDocBuilderValue::Call(const wchar_t* name, CDocBuilderValue p1) { CDocBuilderValue ret; return ret; }
+    CDocBuilderValue CDocBuilderValue::Call(const wchar_t* name, CDocBuilderValue p1, CDocBuilderValue p2) { CDocBuilderValue ret; return ret; }
+    CDocBuilderValue CDocBuilderValue::Call(const wchar_t* name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3) { CDocBuilderValue ret; return ret; }
+    CDocBuilderValue CDocBuilderValue::Call(const wchar_t* name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4) { CDocBuilderValue ret; return ret; }
+    CDocBuilderValue CDocBuilderValue::Call(const wchar_t* name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4, CDocBuilderValue p5) { CDocBuilderValue ret; return ret; }
+    CDocBuilderValue CDocBuilderValue::Call(const wchar_t* name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4, CDocBuilderValue p5, CDocBuilderValue p6) { CDocBuilderValue ret; return ret; }
+
+    CDocBuilderContextScope::CDocBuilderContextScope() {}
+    CDocBuilderContextScope::CDocBuilderContextScope(const CDocBuilderContextScope& src) {}
+    CDocBuilderContextScope& CDocBuilderContextScope::operator=(const CDocBuilderContextScope& src) { return *this; }
+    CDocBuilderContextScope::~CDocBuilderContextScope() {}
+
+    CDocBuilderContext::CDocBuilderContext() {}
+    CDocBuilderContext::CDocBuilderContext(const CDocBuilderContext& src) {}
+    CDocBuilderContext& CDocBuilderContext::operator=(const CDocBuilderContext& src) { return *this; }
+    CDocBuilderContext::~CDocBuilderContext() {}
+
+    CDocBuilderValue CDocBuilderContext::CreateUndefined() { CDocBuilderValue ret; return ret; }
+    CDocBuilderValue CDocBuilderContext::CreateNull() { CDocBuilderValue ret; return ret; }
+    CDocBuilderValue CDocBuilderContext::CreateObject() { CDocBuilderValue ret; return ret; }
+    CDocBuilderValue CDocBuilderContext::CreateArray(const int& length) { CDocBuilderValue ret; return ret; }
+    CDocBuilderValue CDocBuilderContext::CreateTypedArray(unsigned char* buffer, const int& length) { CDocBuilderValue ret; return ret; }
+
+    CDocBuilderValue CDocBuilderContext::GetGlobal() { CDocBuilderValue ret; return ret; }
+    CDocBuilderContextScope CDocBuilderContext::CreateScope() { CDocBuilderContextScope ret; return ret; }
+    bool CDocBuilderContext::IsError() { return true; }
 }
 
 namespace NSDoctRenderer
@@ -81,6 +157,11 @@ namespace NSDoctRenderer
     bool CDocBuilder::IsSaveWithDoctrendererMode() { return false; }
 
     char* CDocBuilder::GetVersion() { return "0.0"; }
+
+    CDocBuilderContext CDocBuilder::GetContext()
+    {
+        return CDocBuilderContext();
+    }
 
     void CDocBuilder::Initialize() {}
     void CDocBuilder::Dispose() {}

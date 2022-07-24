@@ -160,8 +160,24 @@ namespace NSDoctRenderer
     class CDocBuilderValue_Private
     {
     public:
+        class CParentValueInfo
+        {
+        public:
+            JSSmart<CJSValue> m_parent;
+            int m_parent_index;
+            std::string m_parent_prop_name;
+
+        public:
+            CParentValueInfo() : m_parent(), m_parent_index(-1), m_parent_prop_name("")
+            {
+            }
+        };
+    public:
         JSSmart<CJSContext> m_context;
         JSSmart<CJSValue> m_value;
+
+        // for operator [index]/["name"] and setter without references
+        JSSmart<CParentValueInfo> m_parent;
 
         enum PrimitiveType
         {

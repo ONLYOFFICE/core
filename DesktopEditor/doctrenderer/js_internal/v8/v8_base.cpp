@@ -9,12 +9,10 @@ v8::Local<v8::String> CreateV8String(v8::Isolate* i, const std::string& str)
     return v8::String::NewFromUtf8(i, str.c_str(), kV8NormalString, (int)str.length()).ToLocalChecked();
 }
 
-CV8Initializer* CV8Worker::m_pInitializer = NULL;
-bool CV8Worker::m_bUseExternalInitialize = false;
+std::wstring CV8Worker::m_sExternalDirectory = L"";
 
 namespace NSJSBase
 {
-
     class CCacheDataScript
     {
     private:
@@ -147,8 +145,7 @@ namespace NSJSBase
 
     void CJSContext::Initialize()
     {
-        CV8Worker::Initialize();
-        m_internal->m_isolate = CV8Worker::getInitializer()->CreateNew();
+        m_internal->m_isolate = CV8Worker::getInitializer().CreateNew();
     }
     void CJSContext::Dispose()
     {
@@ -156,9 +153,7 @@ namespace NSJSBase
         v8_debug::disposeInspector(m_internal->m_context);
 #endif
         m_internal->m_isolate->Dispose();
-        m_internal->m_isolate = NULL;
-        if (!CV8Worker::IsUseExternalInitialize())
-            CV8Worker::Dispose();        
+        m_internal->m_isolate = NULL;        
     }
 
     void CJSContext::CreateContext()
@@ -361,9 +356,9 @@ namespace NSJSBase
         // none
     }
 
-    void CJSContext::ExternalInitialize()
+    void CJSContext::ExternalInitialize(const std::wstring& sDirectory)
     {
-        CV8Worker::SetUseExetralInitialize();
+        CV8Worker::m_sExternalDirectory = sDirectory;
     }
     void CJSContext::ExternalDispose()
     {
@@ -376,10 +371,10 @@ namespace NSJSBase
 
     unsigned char* NSAllocator::Alloc(const size_t& size)
     {
-        return (unsigned char*)CV8Worker::getInitializer()->getAllocator()->AllocateUninitialized(size);
+        return (unsigned char*)CV8Worker::getInitializer().getAllocator()->AllocateUninitialized(size);
     }
     void NSAllocator::Free(unsigned char* data, const size_t& size)
     {
-        CV8Worker::getInitializer()->getAllocator()->Free(data, size);
+        CV8Worker::getInitializer().getAllocator()->Free(data, size);
     }
 }

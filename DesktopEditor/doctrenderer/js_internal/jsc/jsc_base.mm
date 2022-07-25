@@ -388,7 +388,7 @@ namespace NSJSBase
         return ret;
     }
 
-    void CJSContext::ExternalInitialize()
+    void CJSContext::ExternalInitialize(const std::wstring& sDirectory)
     {
     }
     void CJSContext::ExternalDispose()

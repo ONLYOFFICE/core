@@ -349,6 +349,10 @@ namespace NSDoctRenderer
     {
         RELEASEOBJECT(m_internal);
     }
+    void CDocBuilderContextScope::Close()
+    {
+        m_internal->m_scope.Release();
+    }
 
     CDocBuilderValue::CDocBuilderValue()
     {
@@ -1305,9 +1309,13 @@ namespace NSDoctRenderer
         return this->SetProperty(sA.c_str(), value);
     }
 
-    void CDocBuilder::Initialize()
+    void CDocBuilder::Initialize(const wchar_t* directory)
     {
-        CJSContext::ExternalInitialize();
+        std::wstring sDirectory = L"";
+        if (directory)
+            sDirectory = std::wstring(directory);
+
+        CJSContext::ExternalInitialize(sDirectory);
     }
 
     void CDocBuilder::Dispose()

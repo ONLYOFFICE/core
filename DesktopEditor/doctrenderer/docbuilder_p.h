@@ -407,8 +407,6 @@ namespace NSDoctRenderer
             m_pWorker(NULL), m_pAdditionalData(NULL), m_bIsInit(false), m_bIsCacheScript(true), m_bIsServerSafeVersion(false),
             m_sGlobalVariable(""), m_bIsGlobalVariableUse(false), m_pParent(NULL)
         {
-            // Do not forget call СDocBuilder::Dispose() method!!!
-            CJSContext::ExternalInitialize();
         }
 
         void Init()

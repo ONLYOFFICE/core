@@ -18,7 +18,7 @@ include($$CORE_ROOT_DIR/Common/3dParty/icu/icu.pri)
 DESTDIR = $$PWD/build
 ################################################
 
-ADD_DEPENDENCY(graphics, kernel, kernel_network, UnicodeConverter, doctrenderer)
+ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, kernel_network, doctrenderer)
 
 core_linux {
     LIBS += -ldl

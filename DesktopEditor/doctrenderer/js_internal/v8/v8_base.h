@@ -91,9 +91,9 @@ public:
         return m_platform;
 #endif
     }
-    CV8Initializer()
+    CV8Initializer(const std::wstring& sDirectory = L"")
     {
-        std::wstring sPrW = NSFile::GetProcessPath();
+        std::wstring sPrW = sDirectory.empty() ? NSFile::GetProcessPath() : sDirectory;
         std::string sPrA = U_TO_UTF8(sPrW);
 
         m_pAllocator = NULL;
@@ -116,15 +116,33 @@ public:
         v8::V8::InitializeICU();
     #endif
     }
-    ~CV8Initializer()
+
+    void Dispose()
     {
+#ifndef V8_VERSION_89_PLUS
+        if (!m_platform)
+            return;
+#else
+        if (!m_platform.get())
+            return;
+#endif
+
         v8::V8::Dispose();
         v8::V8::ShutdownPlatform();
-        #ifndef V8_VERSION_89_PLUS
-        delete m_platform;
-        #endif
         if (m_pAllocator)
             delete m_pAllocator;
+
+#ifndef V8_VERSION_89_PLUS
+        delete m_platform;
+        m_platform = NULL;
+#else
+        m_platform.reset();
+#endif
+    }
+
+    ~CV8Initializer()
+    {
+        Dispose();
     }
 
     v8::ArrayBuffer::Allocator* getAllocator()
@@ -158,36 +176,21 @@ public:
 
 class CV8Worker
 {
-private:
-    static CV8Initializer* m_pInitializer;
-    static bool m_bUseExternalInitialize;
-
 public:
     CV8Worker() {}
     ~CV8Worker() {}
 
-    static void Initialize()
+    static std::wstring m_sExternalDirectory;
+
+    static CV8Initializer& getInitializer()
     {
-        if (NULL == m_pInitializer)
-            m_pInitializer = new CV8Initializer();
+        static CV8Initializer oInitializer(m_sExternalDirectory);
+        return oInitializer;
     }
 
     static void Dispose()
     {
-        if (NULL != m_pInitializer)
-            delete m_pInitializer;
-        m_pInitializer = NULL;
-        m_bUseExternalInitialize = false;
-    }
-
-    static CV8Initializer* getInitializer()
-    {
-        if (NULL == m_pInitializer)
-        {
-            m_pInitializer = new CV8Initializer();
-        }
-
-        return CV8Worker::m_pInitializer;
+        getInitializer().Dispose();
     }
 
     static v8::Isolate* GetCurrent()
@@ -197,15 +200,6 @@ public:
     static v8::Local<v8::Context> GetCurrentContext()
     {
         return v8::Isolate::GetCurrent()->GetCurrentContext();
-    }
-
-    static void SetUseExetralInitialize()
-    {
-        m_bUseExternalInitialize = true;
-    }
-    static bool IsUseExternalInitialize()
-    {
-        return m_bUseExternalInitialize;
     }
 };
 

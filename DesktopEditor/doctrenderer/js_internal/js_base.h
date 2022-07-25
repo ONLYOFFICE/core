@@ -289,7 +289,7 @@ namespace NSJSBase
         static CJSContext* GetCurrent();
 
     public:
-        static void ExternalInitialize();
+        static void ExternalInitialize(const std::wstring& sDirectory);
         static void ExternalDispose();
         static bool IsSupportNativeTypedArrays();
     };

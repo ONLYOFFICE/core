@@ -116,6 +116,7 @@ namespace NSDoctRenderer
     CDocBuilderContextScope::CDocBuilderContextScope(const CDocBuilderContextScope& src) {}
     CDocBuilderContextScope& CDocBuilderContextScope::operator=(const CDocBuilderContextScope& src) { return *this; }
     CDocBuilderContextScope::~CDocBuilderContextScope() {}
+    void CDocBuilderContextScope::Close() {}
 
     CDocBuilderContext::CDocBuilderContext() {}
     CDocBuilderContext::CDocBuilderContext(const CDocBuilderContext& src) {}

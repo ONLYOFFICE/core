@@ -206,6 +206,8 @@ namespace NSDoctRenderer
         CDocBuilderContextScope& operator=(const CDocBuilderContextScope& src);
         ~CDocBuilderContextScope();
 
+        void Close();
+
     private:
         CDocBuilderContextScope_Private* m_internal;
 
@@ -380,7 +382,7 @@ namespace NSDoctRenderer
         /**
          * Initializing the ONLYOFFICE Document Builder as a library for the application to be able to work with it.
          */
-        static void Initialize();
+        static void Initialize(const wchar_t* directory = 0);
         /**
          * Unloading the ONLYOFFICE Document Builder from the application memory when it is no longer needed.
          */

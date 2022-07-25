@@ -3,7 +3,7 @@
 #include <fstream>
 #include <array>
 #include <vector>
-#include "Stream.h"
+#include "stream.h"
 
 
 namespace CFCPP
@@ -15,10 +15,20 @@ public:
     T_LONG64 Seek(T_LONG64 offset);
 
     template <class T>
-    T Read();
+    T Read()
+    {
+        T value;
+        char* asByteArr = reinterpret_cast<char*>(&value);
+        stream->read(asByteArr, sizeof (T));
+        return value;
+    }
 
     template<class T>
-    void Write(T value);
+    void Write(T value)
+    {
+        char* asByteArr = reinterpret_cast<char*>(&value);
+        stream->write(asByteArr, sizeof (T));
+    }
 
     std::vector<BYTE> ReadArray(int lenght);
     void ReadArray(char* data, int lenght);
@@ -31,7 +41,7 @@ public:
     inline void Close(){return;}
 
 private:
-    std::array<BYTE,8> buffer;
+    std::array<char,8> buffer;
     Stream stream;
 };
 

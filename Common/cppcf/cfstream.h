@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Stream.h"
+#include "stream.h"
 #include "cfitem.h"
 #include <vector>
 

@@ -11,8 +11,8 @@ StreamRW::StreamRW(const Stream &stream)
 
 T_LONG64 StreamRW::Seek(T_LONG64 offset)
 {
-    stream->seekg(offset);
-    return stream->tellg();
+    stream->seekp(offset, std::ios::cur);
+    return stream->tellp();
 }
 
 template<size_t N>
@@ -47,22 +47,4 @@ void StreamRW::WriteArray(const BYTE *arr, int lenght)
 void StreamRW::WriteArray(const char *arr, int lenght)
 {
     stream->write(arr, lenght);
-}
-
-template<class T>
-T StreamRW::Read()
-{
-    T value;
-    char* asByteArr = reinterpret_cast<char*>(&value);
-    stream->read(asByteArr, sizeof (T));
-    std::reverse(asByteArr, asByteArr + sizeof (T));
-    return value;
-}
-
-template<class T>
-void StreamRW::Write(T value)
-{
-    char* asByteArr = reinterpret_cast<char*>(&value);
-    std::reverse(asByteArr, asByteArr + sizeof (T));
-    stream->write(asByteArr, sizeof (T));
 }

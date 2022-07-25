@@ -9,9 +9,6 @@ CONFIG += c++11
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-#BOOST
-include(../3dParty/boost/boost.pri)
-
 SOURCES += \
     RBTree/rbtree.cpp \
     cfitem.cpp \
@@ -22,6 +19,7 @@ SOURCES += \
     header.cpp \
     sector.cpp \
     sectorcollection.cpp \
+    stream.cpp \
     streamrw.cpp \
     streamview.cpp
 
@@ -29,7 +27,6 @@ HEADERS += \
     RBTree/irbnode.h \
     RBTree/rbtree.h \
     RBTree/rbtreeexception.h \
-    Stream.h \
     cfexception.h \
     cfitem.h \
     cfstorage.h \
@@ -43,6 +40,7 @@ HEADERS += \
     sector.h \
     sectorcollection.h \
     slist.h \
+    stream.h \
     streamrw.h \
     streamview.h \
     svector.h

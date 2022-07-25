@@ -1,7 +1,7 @@
 #pragma once
 
 #include <map>
-#include "Stream.h"
+#include "stream.h"
 #include "RBTree/irbnode.h"
 #include "guid.h"
 

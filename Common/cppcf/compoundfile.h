@@ -7,12 +7,10 @@
 #include "RBTree/rbtree.h"
 #include "idirectoryentry.h"
 #include <mutex>
-
+#include "header.h"
 
 namespace CFCPP
 {
-
-class Header;
 class DirectoryEntry;
 
 enum CFSConfiguration

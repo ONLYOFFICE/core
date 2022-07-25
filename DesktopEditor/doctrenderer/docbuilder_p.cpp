@@ -64,6 +64,7 @@ CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder)
 }
 CV8RealTimeWorker::~CV8RealTimeWorker()
 {
+    m_oContextData.Clear();
     m_handle_scope = NULL;
     m_isolate_scope = NULL;
     m_context->Dispose();
@@ -321,16 +322,6 @@ namespace NSDoctRenderer
         return m_internal->m_data;
     }
 
-    class CDocBuilderContextScope_Private
-    {
-    public:
-        JSSmart<CJSContextScope> m_scope;
-
-    public:
-        CDocBuilderContextScope_Private() : m_scope() {}
-        ~CDocBuilderContextScope_Private() {}
-    };
-
     CDocBuilderContextScope::CDocBuilderContextScope()
     {
         m_internal = new CDocBuilderContextScope_Private();
@@ -338,20 +329,27 @@ namespace NSDoctRenderer
     CDocBuilderContextScope::CDocBuilderContextScope(const CDocBuilderContextScope& src)
     {
         m_internal = new CDocBuilderContextScope_Private();
-        m_internal->m_scope = src.m_internal->m_scope;
+        m_internal->m_scope_wrap = src.m_internal->m_scope_wrap;
+        m_internal->m_context_data = src.m_internal->m_context_data;
     }
     CDocBuilderContextScope& CDocBuilderContextScope::operator=(const CDocBuilderContextScope& src)
     {
-        m_internal->m_scope = src.m_internal->m_scope;
+        m_internal->m_scope_wrap = src.m_internal->m_scope_wrap;
+        m_internal->m_context_data = src.m_internal->m_context_data;
         return *this;
     }
     CDocBuilderContextScope::~CDocBuilderContextScope()
     {
+        Close();
         RELEASEOBJECT(m_internal);
     }
     void CDocBuilderContextScope::Close()
     {
-        m_internal->m_scope.Release();
+        if (m_internal->m_scope_wrap.is_init() && 2 == m_internal->m_scope_wrap.GetCountReference())
+        {
+            m_internal->m_context_data->RemoveScope(m_internal->m_scope_wrap);
+            m_internal->m_scope_wrap->Close();
+        }
     }
 
     CDocBuilderValue::CDocBuilderValue()
@@ -917,10 +915,12 @@ namespace NSDoctRenderer
     {
         m_internal = new CDocBuilderContext_Private();
         m_internal->m_context = src.m_internal->m_context;
+        m_internal->m_context_data = src.m_internal->m_context_data;
     }
     CDocBuilderContext& CDocBuilderContext::operator=(const CDocBuilderContext& src)
     {
         m_internal->m_context = src.m_internal->m_context;
+        m_internal->m_context_data = src.m_internal->m_context_data;
         return *this;
     }
     CDocBuilderContext::~CDocBuilderContext()
@@ -976,7 +976,11 @@ namespace NSDoctRenderer
     CDocBuilderContextScope CDocBuilderContext::CreateScope()
     {
         CDocBuilderContextScope ret;
-        ret.m_internal->m_scope = m_internal->m_context->CreateContextScope();
+        ret.m_internal->m_scope_wrap = new CDocBuilderContextScopeWrap();
+        ret.m_internal->m_scope_wrap->m_scope = m_internal->m_context->CreateContextScope();
+        ret.m_internal->m_context_data = m_internal->m_context_data;
+
+        m_internal->m_context_data->AddScope(ret.m_internal->m_scope_wrap);
         return ret;
     }
 

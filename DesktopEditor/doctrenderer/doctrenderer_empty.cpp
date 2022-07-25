@@ -164,7 +164,7 @@ namespace NSDoctRenderer
         return CDocBuilderContext();
     }
 
-    void CDocBuilder::Initialize() {}
+    void CDocBuilder::Initialize(const wchar_t* directory) {}
     void CDocBuilder::Dispose() {}
 }
 

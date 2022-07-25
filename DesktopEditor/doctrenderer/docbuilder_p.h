@@ -143,14 +143,39 @@ namespace NSDoctRenderer
     };
 }
 
+class CJSContextData;
 namespace NSDoctRenderer
 {
+    class CDocBuilderContextScopeWrap
+    {
+    public:
+        JSSmart<CJSContextScope> m_scope;
+
+    public:
+        CDocBuilderContextScopeWrap() : m_scope() {}
+        ~CDocBuilderContextScopeWrap() { Close(); }
+
+        void Close() { m_scope.Release(); }
+    };
+
+    class CDocBuilderContextScope_Private
+    {
+    public:
+        JSSmart<CDocBuilderContextScopeWrap> m_scope_wrap;
+        CJSContextData* m_context_data;
+
+    public:
+        CDocBuilderContextScope_Private() : m_scope_wrap() { m_context_data = NULL; }
+        ~CDocBuilderContextScope_Private() {}
+    };
+
     class CDocBuilderContext_Private
     {
     public:
         JSSmart<CJSContext> m_context;
+        CJSContextData* m_context_data;
 
-        CDocBuilderContext_Private() : m_context() {}
+        CDocBuilderContext_Private() : m_context() { m_context_data = NULL; }
         ~CDocBuilderContext_Private() { m_context.Release(); }
     };
 }
@@ -320,6 +345,49 @@ namespace NSDoctRenderer
     };
 }
 
+class CJSContextData
+{
+private:
+    std::vector<JSSmart<NSDoctRenderer::CDocBuilderContextScopeWrap>> m_scopes;
+
+public:
+    CJSContextData() : m_scopes()
+    {
+    }
+    ~CJSContextData()
+    {
+        Clear();
+    }
+
+    void Clear()
+    {
+        for (std::vector<JSSmart<NSDoctRenderer::CDocBuilderContextScopeWrap>>::iterator iter = m_scopes.begin(); iter != m_scopes.end(); iter++)
+        {
+            (*iter)->Close();
+        }
+        m_scopes.clear();
+    }
+
+    void RemoveScope(JSSmart<NSDoctRenderer::CDocBuilderContextScopeWrap>& scope)
+    {
+        if (!scope.is_init())
+            return;
+        for (std::vector<JSSmart<NSDoctRenderer::CDocBuilderContextScopeWrap>>::iterator iter = m_scopes.begin(); iter != m_scopes.end(); iter++)
+        {
+            if (scope.GetPointer() == iter->GetPointer())
+            {
+                m_scopes.erase(iter);
+                return;
+            }
+        }
+    }
+
+    void AddScope(JSSmart<NSDoctRenderer::CDocBuilderContextScopeWrap>& scope)
+    {
+        m_scopes.push_back(scope);
+    }
+};
+
 class CV8RealTimeWorker
 {
 public:
@@ -330,6 +398,8 @@ public:
     int m_nFileType;
     std::string m_sUtf8ArgumentJSON;
     std::string m_sGlobalVariable;
+
+    CJSContextData m_oContextData;
 
 public:
 
@@ -500,6 +570,8 @@ namespace NSDoctRenderer
             CheckFileDir();
 
             std::wstring sEmptyPath = m_sX2tPath + L"/empty/";
+
+#if 0
             if (type & AVS_OFFICESTUDIO_FILE_DOCUMENT)
             {
                 sEmptyPath = sEmptyPath + L"docx.bin";
@@ -519,6 +591,32 @@ namespace NSDoctRenderer
                 return false;
 
             bool bRet = NSFile::CFileBinary::Copy(sEmptyPath, m_sFileDir + L"/Editor.bin");
+            if (bRet)
+            {
+                NSDirectory::CreateDirectory(m_sFileDir + L"/media");
+                NSDirectory::CreateDirectory(m_sFileDir + L"/changes");
+            }
+#endif
+
+            if (type & AVS_OFFICESTUDIO_FILE_DOCUMENT)
+            {
+                sEmptyPath = sEmptyPath + L"new.docx";
+                m_nFileType = 0;
+            }
+            else if (type & AVS_OFFICESTUDIO_FILE_PRESENTATION)
+            {
+                sEmptyPath = sEmptyPath + L"new.pptx";
+                m_nFileType = 1;
+            }
+            else if (type & AVS_OFFICESTUDIO_FILE_SPREADSHEET)
+            {
+                sEmptyPath = sEmptyPath + L"new.xlsx";
+                m_nFileType = 2;
+            }
+            else
+                return false;
+
+            bool bRet = (0 == ConvertToInternalFormat(m_sFileDir, sEmptyPath, L"")) ? true : false;
             if (bRet)
             {
                 NSDirectory::CreateDirectory(m_sFileDir + L"/media");
@@ -1125,6 +1223,7 @@ namespace NSDoctRenderer
                 return ctx;
 
             ctx.m_internal->m_context = m_pWorker->m_context;
+            ctx.m_internal->m_context_data = &m_pWorker->m_oContextData;
             return ctx;
         }
 

@@ -62,8 +62,6 @@ int main(int argc, char *argv[])
     oContent[0] = oParagraph;
     oDocument.Call("InsertContent", oContent);
 
-    oScope.Close();
-
     std::wstring sDstPath = sProcessDirectory + L"/result.docx";
     oBuilder.SaveFile(OFFICESTUDIO_FILE_DOCUMENT_DOCX, sDstPath.c_str());
     oBuilder.CloseFile();

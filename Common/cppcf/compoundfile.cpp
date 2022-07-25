@@ -1091,13 +1091,13 @@ void CompoundFile::AllocateDIFATSectorChain(SVector<Sector> &FATsectorChain)
             char* src = reinterpret_cast<char *>(&ID);
             char* dst = reinterpret_cast<char *>(difatStream.BaseSectorChain()[i]->GetData().data());
             int offsetDst = GetSectorSize() - sizeof(int);
-            std::copy(src, dst+offsetDst, sizeof(int));
+            std::copy_n(src, sizeof(int), dst+offsetDst);
         }
 
         char* src = const_cast<char*>(reinterpret_cast<const char*>(Sector::ENDOFCHAIN));
         char* dst =  reinterpret_cast<char *>(difatStream.BaseSectorChain()[difatStream.BaseSectorChain().size() - 1]->GetData().data());
         int offsetDst = GetSectorSize() - sizeof(int);
-        std::copy(src, dst+offsetDst, sizeof(int));
+        std::copy_n(src, sizeof(int), dst+offsetDst);
     }
     else
         header->firstDIFATSectorID = Sector::ENDOFCHAIN;

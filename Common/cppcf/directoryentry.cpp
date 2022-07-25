@@ -204,8 +204,8 @@ void DirectoryEntry::AssignValueTo(RedBlackTree::PIRBNode other)
 
     d->SetEntryName(this->GetEntryName());
 
-    std::copy(creationDate, creationDate+8, d->creationDate);
-    std::copy(modifyDate, modifyDate+8, d->modifyDate);
+    d->creationDate = creationDate;
+    d->modifyDate = modifyDate;
 
     d->size = this->size;
     d->startSetc = this->startSetc;

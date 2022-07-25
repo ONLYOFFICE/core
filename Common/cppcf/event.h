@@ -24,7 +24,7 @@ public:
         events.clear();
     }
 
-    inline size_t size() const {events.size();}
+    inline size_t size() const {return events.size();}
 
 protected:
     std::vector<T> events;

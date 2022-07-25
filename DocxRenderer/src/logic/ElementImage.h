@@ -7,8 +7,14 @@ namespace NSDocxRenderer
     class CImage : public CBaseItem
 	{
 	public:
+         CImageInfo m_oImageInfo;
+
          std::wstring m_strPath {L""};
-         int	m_lID {-1};
+
+         bool m_bIsNoFill {true};
+         bool m_bIsNoStroke {true};
+         bool m_bIsBehindDoc {true};
+
          double m_dRotate {0.0};
 
 	public:

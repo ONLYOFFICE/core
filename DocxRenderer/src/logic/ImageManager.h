@@ -17,7 +17,31 @@ namespace NSDocxRenderer
 
         public:
             ImageType m_eType {itPNG};
-            int m_nId {0};
+            UINT m_nId {0};
+            std::wstring m_strFileName {L""};
+
+        public:
+            CImageInfo(){}
+
+            CImageInfo(const CImageInfo &oSrc)
+            {
+                *this = oSrc;
+            }
+
+            CImageInfo& operator=(const CImageInfo &oSrc)
+            {
+                if (this == &oSrc)
+                {
+                    return *this;
+                }
+
+                m_eType = oSrc.m_eType;
+                m_nId = oSrc.m_nId;
+                m_strFileName = oSrc.m_strFileName;
+
+                return *this;
+            }
+
     };
 
     class CImageManager

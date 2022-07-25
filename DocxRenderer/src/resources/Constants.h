@@ -14,6 +14,7 @@ constexpr double c_dMMToDx	= 72 * 20 / 25.4;
 const double c_dMMToEMU	     = 36000.0;
 const double c_dInchToEMU	= 914400.0;
 const double c_dPtToEMU  	= 12700.0;
+const double c_dDegreeToAngle = 60000.0;
 
 const double c_dSTANDART_STRING_HEIGHT_MM	      = 4.2333333333333334;
 const double c_dTHE_SAME_STRING_Y_PRECISION_MM  = 0.01;
@@ -35,6 +36,7 @@ const double c_dSTANDART_LEFT_INDENT_MM = 30;
 const double c_dSTANDART_RIGHT_INDENT_MM = 15;
 const double c_dSTANDART_FIRSTLINE_INDENT_MM = 12.5;
 
+const UINT   c_iStartingIdForImages = 6;
 
 const double c_dRightBorderCorrectionSize[][4] =
 {
@@ -59,11 +61,11 @@ const double c_dRightBorderCorrectionSize[][4] =
     {1.2, 0.0, 0.0, 0.0}, //8pt
     {0.0, 0.0, 0.0, 0.0}, //8.5pt
     {1.4, 0.5, 0.4, 0.0}, //9pt
-    {2.0, 0.2, 0.1, 0.0}, //9.5pt
+    {2.0, 0.2, 0.2, 0.0}, //9.5pt
     {0.7, 0.0, 0.5, 0.0}, //10pt
-    {1.0, 0.0, 0.2, 0.0}, //10.5pt //-0,6
+    {1.0, 0.0, 0.2, 0.1}, //10.5pt //-0,6
     {1.4, 0.0, 0.0, 0.0}, //11pt
-    {1.2, 0.1, 0.0, 0.0}, //11.5pt
+    {1.2, 0.1, 0.2, 0.0}, //11.5pt
     {1.5, 0.5, 0.6, 0.5}, //12pt
     {0.4, 0.0, 0.0, 0.0}, //12.5pt
     {0.0, 0.0, 0.0, 0.0}, //13pt
@@ -142,7 +144,7 @@ const double c_dRightBorderCorrectionSize[][4] =
     {0.0, 0.0, 0.0, 0.0}, //49.5pt
     {0.0, 0.0, 0.0, 0.0}, //50pt
     {0.0, 0.0, 0.0, 0.0}, //50.5pt
-    {0.0, 0.0, 0.0, 0.0}, //51pt
+    {0.2, 0.0, 0.0, 0.0}, //51pt
     {0.0, 0.0, 0.0, 0.0}, //51.5pt
     {0.0, 0.0, 0.0, 0.0}, //52pt
     {0.0, 0.0, 0.0, 0.0}, //52.5pt

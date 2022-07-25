@@ -26,7 +26,7 @@ namespace NSDocxRenderer
 
         LONG						m_lCurrentCommand {0};
 
-        std::vector<CImage*>     m_arImages;
+        std::vector<CShape*>     m_arImages;
         std::vector<CContText*>  m_arSymbol ;
         std::vector<CTextLine*>  m_arTextLine;
         std::vector<CShape*>	 m_arShapes;
@@ -64,7 +64,7 @@ namespace NSDocxRenderer
 
         // image commands
         //набивается содержимым вектор m_arImages
-        void WriteImage(CImageInfo& oInfo, double& fX, double& fY, double& fWidth, double& fHeight);
+        void WriteImage(CImageInfo* pInfo, double& fX, double& fY, double& fWidth, double& fHeight);
 
         // path commands
         void MoveTo(double& dX, double& dY);
@@ -74,7 +74,7 @@ namespace NSDocxRenderer
         void End();
         void Close();
         //набивается содержимым вектор m_arShapes
-        void DrawPath(LONG lType, LONG lTxId);
+        void DrawPath(LONG lType, CImageInfo* pInfo);
 
         //набивается содержимым вектор m_arTextData
         void CollectTextData(const PUINT pUnicodes, const PUINT pGids, const UINT& nCount,

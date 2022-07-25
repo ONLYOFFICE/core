@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,30 +29,44 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _SYSTEMUTILS_H
-#define _SYSTEMUTILS_H
 
-#include <string>
-#include "../../Common/kernel_config.h"
+#include "./../common_deploy.h"
+#include "../docbuilder.h"
+#include "../../common/File.h"
 
-namespace NSSystemUtils
+using namespace NSDoctRenderer;
+int main(int argc, char *argv[])
 {
-	static const wchar_t* gc_EnvApplicationName = L"APPLICATION_NAME";
-	static const wchar_t* gc_EnvApplicationNameDefault = L"ONLYOFFICE";
-	static const wchar_t* gc_EnvCompanyName = L"COMPANY_NAME";
-	static const wchar_t* gc_EnvCompanyNameDefault = L"Ascensio System SIA Copyright (c) 2022";
-	static const wchar_t* gc_EnvMethodEncrypt = L"METHOD_CRYPT";
-	static const wchar_t* gc_EnvMethodEncryptDefault = L"Strong";
-	static const wchar_t* gc_EnvCreator = L"CREATOR";
-	static const wchar_t* gc_EnvCreated = L"CREATED";
-	static const wchar_t* gc_EnvLastModifiedBy = L"LAST_MODIFIED_BY";
-	static const wchar_t* gc_EnvModified = L"MODIFIED";
-	static const wchar_t* gc_EnvMemoryLimit = L"X2T_MEMORY_LIMIT";
-	static const wchar_t* gc_EnvMemoryLimitDefault = L"4GiB";
+    std::wstring sProcessDirectory = NSFile::GetProcessDirectory();
+    // для дебага БЕЗ x2t - подкидываем билдер в папку builder к тестовому примеру
+    std::wstring sWorkDirectory = sProcessDirectory + L"/builder";
 
-    KERNEL_DECL std::string GetEnvVariableA(const std::wstring& strName);
-    KERNEL_DECL std::wstring GetEnvVariable(const std::wstring& strName);
-    KERNEL_DECL std::wstring GetAppDataDir();
-    KERNEL_DECL std::wstring GetBuildBranding();
+    CDocBuilder::Initialize(sWorkDirectory.c_str());
+
+    CDocBuilder oBuilder;
+    oBuilder.SetProperty("--work-directory", sWorkDirectory.c_str());
+
+    oBuilder.CreateFile(OFFICESTUDIO_FILE_DOCUMENT_DOCX);
+
+    CContext oContext = oBuilder.GetContext();
+    CContextScope oScope = oContext.CreateScope();
+
+    CValue oGlobal = oContext.GetGlobal();
+
+    CValue oApi = oGlobal["Api"];
+    CValue oDocument = oApi.Call("GetDocument");
+    CValue oParagraph = oApi.Call("CreateParagraph");
+    oParagraph.Call("SetSpacingAfter", 1000, false);
+    oParagraph.Call("AddText", "Hello, world!");
+    CValue oContent = oContext.CreateArray(1);
+    oContent[0] = oParagraph;
+    oDocument.Call("InsertContent", oContent);
+
+    std::wstring sDstPath = sProcessDirectory + L"/result.docx";
+    oBuilder.SaveFile(OFFICESTUDIO_FILE_DOCUMENT_DOCX, sDstPath.c_str());
+    oBuilder.CloseFile();
+
+    CDocBuilder::Dispose();
+
+    return 0;
 }
-#endif // _SYSTEMUTILS_H

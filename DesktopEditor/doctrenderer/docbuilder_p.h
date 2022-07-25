@@ -104,18 +104,289 @@ namespace NSDoctRenderer
 
 namespace NSDoctRenderer
 {
+    class CString_Private
+    {
+    public:
+        wchar_t* m_data;
+
+    public:
+        CString_Private()
+        {
+            m_data = NULL;
+        }
+        ~CString_Private()
+        {
+            if (m_data)
+                delete [] m_data;
+        }
+
+        void Attach(wchar_t* data)
+        {
+            m_data = data;
+        }
+
+        void Copy(CString_Private* copy)
+        {
+            if (copy->m_data)
+            {
+                delete [] copy->m_data;
+                copy->m_data = NULL;
+            }
+
+            if (m_data == NULL)
+                return;
+
+            size_t len = wcslen(m_data);
+            copy->m_data = new wchar_t[len + 1];
+            memcpy(copy->m_data, m_data, (len + 1) * sizeof(wchar_t));
+        }
+    };
+}
+
+class CJSContextData;
+namespace NSDoctRenderer
+{
+    class CDocBuilderContextScopeWrap
+    {
+    public:
+        JSSmart<CJSContextScope> m_scope;
+
+    public:
+        CDocBuilderContextScopeWrap() : m_scope() {}
+        ~CDocBuilderContextScopeWrap() { Close(); }
+
+        void Close() { m_scope.Release(); }
+    };
+
+    class CDocBuilderContextScope_Private
+    {
+    public:
+        JSSmart<CDocBuilderContextScopeWrap> m_scope_wrap;
+        CJSContextData* m_context_data;
+
+    public:
+        CDocBuilderContextScope_Private() : m_scope_wrap() { m_context_data = NULL; }
+        ~CDocBuilderContextScope_Private() {}
+    };
+
+    class CDocBuilderContext_Private
+    {
+    public:
+        JSSmart<CJSContext> m_context;
+        CJSContextData* m_context_data;
+
+        CDocBuilderContext_Private() : m_context() { m_context_data = NULL; }
+        ~CDocBuilderContext_Private() { m_context.Release(); }
+    };
+}
+
+namespace NSDoctRenderer
+{
     class CDocBuilderValue_Private
     {
+    public:
+        class CParentValueInfo
+        {
+        public:
+            JSSmart<CJSValue> m_parent;
+            int m_parent_index;
+            std::string m_parent_prop_name;
+
+        public:
+            CParentValueInfo() : m_parent(), m_parent_index(-1), m_parent_prop_name("")
+            {
+            }
+        };
     public:
         JSSmart<CJSContext> m_context;
         JSSmart<CJSValue> m_value;
 
+        // for operator [index]/["name"] and setter without references
+        JSSmart<CParentValueInfo> m_parent;
+
+        enum PrimitiveType
+        {
+            ptUndefined     = 0,
+            ptNull          = 1,
+            ptBool          = 2,
+            ptInt           = 3,
+            ptUInt          = 4,
+            ptDouble        = 5,
+            ptString        = 6
+        };
+
+        union PrimitiveValue
+        {
+            bool bValue;
+            int nValue;
+            unsigned int unValue;
+            double dValue;
+            wchar_t* sValue;
+        };
+
+        PrimitiveType m_nativeType;
+        PrimitiveValue m_nativeValue;
+
     public:
-        CDocBuilderValue_Private() : m_context(NULL) {}
-        ~CDocBuilderValue_Private() {}
-        void Clear() { m_value.Release(); }
+        CDocBuilderValue_Private() : m_context(NULL)
+        {
+            m_nativeType = ptUndefined;
+        }
+        ~CDocBuilderValue_Private()
+        {
+
+        }
+        void Clear()
+        {
+            m_value.Release();
+            ClearNative();
+        }
+
+        // native
+        void CreateUndefined()
+        {
+            m_nativeType = ptUndefined;
+        }
+        void CreateNull()
+        {
+            m_nativeType = ptNull;
+        }
+        void CreateBool(const bool& value)
+        {
+            m_nativeType = ptBool;
+            m_nativeValue.bValue = value;
+        }
+        void CreateInt(const int& value)
+        {
+            m_nativeType = ptInt;
+            m_nativeValue.nValue = value;
+        }
+        void CreateUInt(const unsigned int& value)
+        {
+            m_nativeType = ptUInt;
+            m_nativeValue.unValue = value;
+        }
+        void CreateDouble(const double& value)
+        {
+            m_nativeType = ptDouble;
+            m_nativeValue.dValue = value;
+        }
+        void CreateString(const wchar_t*& value)
+        {
+            size_t len = wcslen(value) + 1;
+            m_nativeType = ptString;
+            m_nativeValue.sValue = new wchar_t[len];
+            memcpy(m_nativeValue.sValue, value, len * sizeof(wchar_t));
+        }
+        void CreateString(const char*& value)
+        {
+            std::wstring sValue = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)value, strlen(value));
+            const wchar_t* strTmp = sValue.c_str();
+            CreateString(strTmp);
+        }
+
+        void ClearNative()
+        {
+            if (m_nativeType == ptString)
+            {
+                delete [] m_nativeValue.sValue;
+            }
+            m_nativeType = ptUndefined;
+        }
+
+        void CheckNative()
+        {
+            if (m_value.is_init())
+                return;
+
+            switch (m_nativeType)
+            {
+                case ptUndefined:
+                {
+                    m_value = NSJSBase::CJSContext::createUndefined();
+                    break;
+                }
+                case ptNull:
+                {
+                    m_value = NSJSBase::CJSContext::createNull();
+                    break;
+                }
+                case ptBool:
+                {
+                    m_value = NSJSBase::CJSContext::createBool(m_nativeValue.bValue);
+                    break;
+                }
+                case ptInt:
+                {
+                    m_value = NSJSBase::CJSContext::createInt(m_nativeValue.nValue);
+                    break;
+                }
+                case ptUInt:
+                {
+                    m_value = NSJSBase::CJSContext::createUInt(m_nativeValue.unValue);
+                    break;
+                }
+                case ptDouble:
+                {
+                    m_value = NSJSBase::CJSContext::createDouble(m_nativeValue.dValue);
+                    break;
+                }
+                case ptString:
+                {
+                    m_value = NSJSBase::CJSContext::createString(m_nativeValue.sValue);
+                    break;
+                }
+                default:
+                    break;
+            }
+
+            ClearNative();
+        }
     };
 }
+
+class CJSContextData
+{
+private:
+    std::vector<JSSmart<NSDoctRenderer::CDocBuilderContextScopeWrap>> m_scopes;
+
+public:
+    CJSContextData() : m_scopes()
+    {
+    }
+    ~CJSContextData()
+    {
+        Clear();
+    }
+
+    void Clear()
+    {
+        for (std::vector<JSSmart<NSDoctRenderer::CDocBuilderContextScopeWrap>>::iterator iter = m_scopes.begin(); iter != m_scopes.end(); iter++)
+        {
+            (*iter)->Close();
+        }
+        m_scopes.clear();
+    }
+
+    void RemoveScope(JSSmart<NSDoctRenderer::CDocBuilderContextScopeWrap>& scope)
+    {
+        if (!scope.is_init())
+            return;
+        for (std::vector<JSSmart<NSDoctRenderer::CDocBuilderContextScopeWrap>>::iterator iter = m_scopes.begin(); iter != m_scopes.end(); iter++)
+        {
+            if (scope.GetPointer() == iter->GetPointer())
+            {
+                m_scopes.erase(iter);
+                return;
+            }
+        }
+    }
+
+    void AddScope(JSSmart<NSDoctRenderer::CDocBuilderContextScopeWrap>& scope)
+    {
+        m_scopes.push_back(scope);
+    }
+};
 
 class CV8RealTimeWorker
 {
@@ -127,6 +398,8 @@ public:
     int m_nFileType;
     std::string m_sUtf8ArgumentJSON;
     std::string m_sGlobalVariable;
+
+    CJSContextData m_oContextData;
 
 public:
 
@@ -204,8 +477,6 @@ namespace NSDoctRenderer
             m_pWorker(NULL), m_pAdditionalData(NULL), m_bIsInit(false), m_bIsCacheScript(true), m_bIsServerSafeVersion(false),
             m_sGlobalVariable(""), m_bIsGlobalVariableUse(false), m_pParent(NULL)
         {
-            // Do not forget call СDocBuilder::Dispose() method!!!
-            CJSContext::ExternalInitialize();
         }
 
         void Init()
@@ -299,6 +570,8 @@ namespace NSDoctRenderer
             CheckFileDir();
 
             std::wstring sEmptyPath = m_sX2tPath + L"/empty/";
+
+#if 0
             if (type & AVS_OFFICESTUDIO_FILE_DOCUMENT)
             {
                 sEmptyPath = sEmptyPath + L"docx.bin";
@@ -318,6 +591,32 @@ namespace NSDoctRenderer
                 return false;
 
             bool bRet = NSFile::CFileBinary::Copy(sEmptyPath, m_sFileDir + L"/Editor.bin");
+            if (bRet)
+            {
+                NSDirectory::CreateDirectory(m_sFileDir + L"/media");
+                NSDirectory::CreateDirectory(m_sFileDir + L"/changes");
+            }
+#endif
+
+            if (type & AVS_OFFICESTUDIO_FILE_DOCUMENT)
+            {
+                sEmptyPath = sEmptyPath + L"new.docx";
+                m_nFileType = 0;
+            }
+            else if (type & AVS_OFFICESTUDIO_FILE_PRESENTATION)
+            {
+                sEmptyPath = sEmptyPath + L"new.pptx";
+                m_nFileType = 1;
+            }
+            else if (type & AVS_OFFICESTUDIO_FILE_SPREADSHEET)
+            {
+                sEmptyPath = sEmptyPath + L"new.xlsx";
+                m_nFileType = 2;
+            }
+            else
+                return false;
+
+            bool bRet = (0 == ConvertToInternalFormat(m_sFileDir, sEmptyPath, L"")) ? true : false;
             if (bRet)
             {
                 NSDirectory::CreateDirectory(m_sFileDir + L"/media");
@@ -873,13 +1172,8 @@ namespace NSDoctRenderer
             return nReturnCode;
         }
 
-        bool ExecuteCommand(const std::wstring& command, CDocBuilderValue* retValue = NULL)
+        bool CheckWorker()
         {
-            if (command.length() < 7 && !retValue) // minimum command (!!!)
-                return true;
-
-            Init();
-
             if (-1 == m_nFileType)
             {
                 CV8RealTimeWorker::_LOGGING_ERROR_(L"error (command)", L"file not opened!");
@@ -905,8 +1199,32 @@ namespace NSDoctRenderer
                 if (!bOpen)
                     return false;
             }
+            return true;
+        }
+
+        bool ExecuteCommand(const std::wstring& command, CDocBuilderValue* retValue = NULL)
+        {
+            if (command.length() < 7 && !retValue) // minimum command (!!!)
+                return true;
+
+            Init();
+
+            if (!CheckWorker())
+                return false;
 
             return m_pWorker->ExecuteCommand(command, retValue);
+        }
+
+        CDocBuilderContext GetContext()
+        {
+            CDocBuilderContext ctx;
+
+            if (!CheckWorker())
+                return ctx;
+
+            ctx.m_internal->m_context = m_pWorker->m_context;
+            ctx.m_internal->m_context_data = &m_pWorker->m_oContextData;
+            return ctx;
         }
 
         std::string GetScript()

@@ -45,6 +45,12 @@
 
 namespace NSSystemUtils
 {
+    std::string GetEnvVariableA(const std::wstring& strName)
+    {
+        std::wstring sTmp = GetEnvVariable(strName);
+        return U_TO_UTF8(sTmp);
+    }
+
 	std::wstring GetEnvVariable(const std::wstring& strName)
 	{
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)

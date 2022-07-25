@@ -633,19 +633,18 @@ namespace NSDocxRenderer
     }
     HRESULT CDocument::DrawPath(long nType)
     {
-        LONG lTxId = -1;
+        CImageInfo* pInfo = nullptr;
+
         if ((nType > 0xFF) && (c_BrushTypeTexture == m_oBrush.Type))
         {
             double x = 0;
             double y = 0;
             double w = 0;
             double h = 0;
-            CImageInfo oInfo = m_oManager.WriteImage(m_oBrush.TexturePath, x, y, w, h);
-            lTxId = oInfo.m_nId;
-            return S_OK;
+            pInfo = new CImageInfo(m_oManager.WriteImage(m_oBrush.TexturePath, x, y, w, h));
         }
 
-        m_oCurrentPage.DrawPath(nType, lTxId);
+        m_oCurrentPage.DrawPath(nType, pInfo);
         return S_OK;
     }
     HRESULT CDocument::PathCommandStart()
@@ -703,14 +702,14 @@ namespace NSDocxRenderer
     //-------- Функции для вывода изображений --------------------------------------------------
     HRESULT CDocument::DrawImage(IGrObject* pImage, double fX, double fY, double fWidth, double fHeight)
     {
-        CImageInfo oInfo = m_oManager.WriteImage((Aggplus::CImage*)pImage, fX, fY, fWidth, fHeight);
-        m_oCurrentPage.WriteImage(oInfo, fX, fY, fWidth, fHeight);
+        CImageInfo* pInfo = new CImageInfo(m_oManager.WriteImage((Aggplus::CImage*)pImage, fX, fY, fWidth, fHeight));
+        m_oCurrentPage.WriteImage(pInfo, fX, fY, fWidth, fHeight);
         return S_OK;
     }
     HRESULT CDocument::DrawImageFromFile(const std::wstring& sVal, double fX, double fY, double fWidth, double fHeight)
     {
-        CImageInfo oInfo = m_oManager.WriteImage(sVal, fX, fY, fWidth, fHeight);
-        m_oCurrentPage.WriteImage(oInfo, fX, fY, fWidth, fHeight);
+        CImageInfo* pInfo = new CImageInfo(m_oManager.WriteImage(sVal, fX, fY, fWidth, fHeight));
+        m_oCurrentPage.WriteImage(pInfo, fX, fY, fWidth, fHeight);
         return S_OK;
     }
     //------------------------------------------------------------------------------------------
@@ -885,26 +884,26 @@ namespace NSDocxRenderer
                 <Relationship Id=\"rId4\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable\" Target=\"fontTable.xml\"/>\
                 <Relationship Id=\"rId5\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"theme/theme.xml\"/>");
 
-        for (std::map<DWORD, CImageInfo>::iterator iterImage = m_oManager.m_mapImageData.begin(); iterImage != m_oManager.m_mapImageData.end(); iterImage++)
+        for (auto iterImage : m_oManager.m_mapImageData)
         {
-            CImageInfo& oInfo = iterImage->second;
+            CImageInfo& oInfo = iterImage.second;
 
             oWriter.WriteString(L"<Relationship Id=\"rId");
-            oWriter.AddInt(10 + oInfo.m_nId);
-            oWriter.WriteString(L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/image");
-            oWriter.AddInt(oInfo.m_nId);
-            (oInfo.m_eType == CImageInfo::itPNG) ? oWriter.WriteString(L".png\"/>") : oWriter.WriteString(L".jpg\"/>");
+            oWriter.AddInt(c_iStartingIdForImages + oInfo.m_nId);
+            oWriter.WriteString(L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/");
+            oWriter.WriteString(oInfo.m_strFileName);
+            oWriter.WriteString(L"\"/>");
         }
 
-        for (std::map<std::wstring, CImageInfo>::iterator iterImage = m_oManager.m_mapImagesFile.begin(); iterImage != m_oManager.m_mapImagesFile.end(); iterImage++)
+        for (auto iterImage : m_oManager.m_mapImagesFile)
         {
-            CImageInfo& oInfo = iterImage->second;
+            CImageInfo& oInfo = iterImage.second;
 
             oWriter.WriteString(L"<Relationship Id=\"rId");
-            oWriter.AddInt(10 + oInfo.m_nId);
-            oWriter.WriteString(L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/image");
-            oWriter.AddInt(oInfo.m_nId);
-            (oInfo.m_eType == CImageInfo::itPNG) ? oWriter.WriteString(L".png\"/>") : oWriter.WriteString(L".jpg\"/>");
+            oWriter.AddInt(c_iStartingIdForImages + oInfo.m_nId);
+            oWriter.WriteString(L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/");
+            oWriter.WriteString(oInfo.m_strFileName);
+            oWriter.WriteString(L"\"/>");
         }
 
         oWriter.WriteString(L"</Relationships>");

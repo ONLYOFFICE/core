@@ -247,7 +247,7 @@ namespace NSDocxRenderer
         if (c_BrushTypeTexture == m_oBrush.Type && !m_bIsNoFill)
         {
             oWriter.WriteString(L"<v:imagedata r:id=\"rId");
-            oWriter.AddInt(10 + m_lTxId);
+            oWriter.AddInt(c_iStartingIdForImages + m_lTxId);
             oWriter.WriteString(L"\" o:title=\"\"/>");
 
             if (0xFF != m_oBrush.TextureAlpha)

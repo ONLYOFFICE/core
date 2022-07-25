@@ -165,9 +165,10 @@ namespace NSDocxRenderer
     }
 
     // image commands
-    void CPage::WriteImage(CImageInfo& oInfo, double& fX, double& fY, double& fWidth, double& fHeight)
+    void CPage::WriteImage(CImageInfo* pInfo, double& fX, double& fY, double& fWidth, double& fHeight)
     {
-        CImage* pImage = new CImage(oInfo, L"");
+        CShape* pImage = new CShape(pInfo, L"");
+        pImage->m_eType = CShape::eShapeType::stPicture;
 
         double dRotation = m_pTransform->z_Rotation();
 
@@ -287,26 +288,31 @@ namespace NSDocxRenderer
         m_oVector.Close();
     }
 
-    void CPage::DrawPath(LONG lType, LONG lTxId)
+    void CPage::DrawPath(LONG lType, CImageInfo* pInfo)
     {
         if ((m_oVector.m_dLeft <= m_oVector.m_dRight) && (m_oVector.m_dTop <= m_oVector.m_dBottom))
         {
-            //todo зачем это добавляется?
-            if (m_pBrush->Color1 == c_iWhiteColor &&
-                    m_oVector.m_dLeft < c_dGRAPHICS_ERROR_MM &&
-                    m_oVector.m_dTop < c_dGRAPHICS_ERROR_MM &&
-                    fabs(m_oVector.m_dRight - m_dWidth) < c_dGRAPHICS_ERROR_MM &&
-                    fabs(m_oVector.m_dBottom - m_dHeight) < c_dGRAPHICS_ERROR_MM)
+            //Убираем все белые прямоугольники
+            if (0x00 != (lType >> 8) && m_pBrush->Color1 == c_iWhiteColor)
             {
+                delete pInfo;
                 return;
             }
 
             CShape* pShape = new CShape();
 
-            pShape->m_lTxId		= lTxId;
 
-            pShape->m_oPen		= *m_pPen;
-            pShape->m_oBrush	= *m_pBrush;
+            pShape->m_oPen		 = *m_pPen;
+            pShape->m_oBrush	 = *m_pBrush;
+            if (pInfo)
+            {
+                pShape->m_pImageInfo = pInfo;
+                pShape->m_eType = CShape::eShapeType::stVectorTexture;
+            }
+            else
+            {
+                pShape->m_eType = CShape::eShapeType::stVectorGraphics;
+            }
 
             if ((lType & 0x01) == 0x00)
             {
@@ -319,7 +325,7 @@ namespace NSDocxRenderer
                 }
             }
 
-            pShape->GetDataFromVector(m_oVector, lType, 100000);
+            pShape->GetDataFromVector(m_oVector, lType);
 
             m_arShapes.push_back(pShape);
         }
@@ -421,22 +427,9 @@ namespace NSDocxRenderer
     void CPage::AnalyzeCollectedShapes()
     {
         //todo Объединить контур и заливку одного рисунка в шейпе если m_strPath одинаковые
-        //todo Объединить выделения соседних строк
 
         CorrelateContWithShape();
         DetermineLinesType();
-
-        //Добавить различные условия объединений
-        /*bool bIf1 = false;
-
-        if (bIf1)
-        {
-            CShape* pNewShape = new CShape(*pCurrShape, *pNextShape);
-        pCurrShape->m_bIsNotNecessaryToUse = true;
-        pNextShape->m_bIsNotNecessaryToUse = true;
-        m_arShapes.push_back(pNewShape);
-        nShapesCount++;
-        }*/
     }
 
     void CPage::CorrelateContWithShape()
@@ -1534,14 +1527,11 @@ namespace NSDocxRenderer
 
         CShape* pShape = new CShape();
         pShape->m_arParagraphs.push_back(pParagraph);
-
+        pShape->m_eType = CShape::eShapeType::stTextBox;
         pShape->m_dLeft	= pLine->m_dLeft;
         pShape->m_dTop	= pLine->m_dBaselinePos - pLine->m_dHeight - pLine->m_dBaselineOffset;
         pShape->m_dWidth = pLine->m_dWidth + RightBorderCorrection(pLine);
         pShape->m_dHeight = pLine->m_dHeight;
-
-        pShape->m_bIsNoFill = true;
-        pShape->m_bIsNoStroke = true;
 
         m_arShapes.push_back(pShape);
     }

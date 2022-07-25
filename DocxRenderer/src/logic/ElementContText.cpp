@@ -80,6 +80,8 @@ namespace NSDocxRenderer
         oWriter.WriteString(L"<w:r>");
         oWriter.WriteString(L"<w:rPr>");
 
+        oWriter.WriteString(L"<w:noProof/>"); //отключение проверки орфографии
+
         if (m_strPickFontName.empty())
         {
             if (m_oFont.Bold)

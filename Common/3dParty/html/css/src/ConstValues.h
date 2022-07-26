@@ -1515,7 +1515,7 @@ namespace NSCSS
 
                 void SetAlign(const std::wstring& sAlign, const unsigned int& unLevel, const bool& bHardMode = false)
                 {
-                    if (sAlign.empty() || (bImportants[1] && !bHardMode) || unLevel <= arLevels[1])
+                    if (sAlign.empty() || (bImportants[1] && !bHardMode) || unLevel < arLevels[1])
                         return;
 
                     if (sAlign == L"center")

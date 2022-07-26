@@ -245,6 +245,10 @@ namespace NSUnicodeConverter
                     ucnv_close(conv);
                 }
             }
+			else
+			{//10008 & other 
+				sRes = convert_string(sInput, nInputLen, nCodePage);
+			}
 
             if (!isExact && sRes.empty() && nInputLen > 0)
             {

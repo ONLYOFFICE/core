@@ -248,7 +248,7 @@ bool ReadXmlEncryptionInfo(const std::string & xml_string, _ecmaCryptData & cryp
 						sName = xmlReader.GetName();
 						if (L"p:encryptedKey" == sName)
 						 {
-							_keyEncryptor k={};
+							_keyEncryptor k;
 							 
 							WritingElement_ReadAttributes_Start( xmlReader)
 								WritingElement_ReadAttributes_Read_if     ( xmlReader, "spinCount",			k.spinCount )
@@ -281,37 +281,66 @@ bool ReadXmlEncryptionInfo(const std::string & xml_string, _ecmaCryptData & cryp
 	cryptData.saltSize				 = atoi(keyEncryptors[0].saltSize.c_str());
 	cryptData.keySize				 = atoi(keyEncryptors[0].keyBits.c_str() ) / 8;
 	
-	cryptData.dataSaltValue          = DecodeBase64(keyData.saltValue);
 	cryptData.saltValue              = DecodeBase64(keyEncryptors[0].saltValue);
 	cryptData.encryptedKeyValue      = DecodeBase64(keyEncryptors[0].encryptedKeyValue);
 	cryptData.encryptedVerifierInput = DecodeBase64(keyEncryptors[0].encryptedVerifierHashInput);
 	cryptData.encryptedVerifierValue = DecodeBase64(keyEncryptors[0].encryptedVerifierHashValue);
-	  
-	cryptData.encryptedHmacKey       = DecodeBase64(dataIntegrity.encryptedHmacKey);
-	cryptData.encryptedHmacValue     = DecodeBase64(dataIntegrity.encryptedHmacValue);
+	
+		 if (keyEncryptors[0].hashAlgorithm == "SHA1")		cryptData.hashAlgorithm = CRYPT_METHOD::SHA1;
+	else if (keyEncryptors[0].hashAlgorithm == "SHA224")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA224;
+	else if (keyEncryptors[0].hashAlgorithm == "SHA256")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA256;
+	else if (keyEncryptors[0].hashAlgorithm == "SHA384")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA384;
+	else if (keyEncryptors[0].hashAlgorithm == "SHA512")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA512;
+	else if (keyEncryptors[0].hashAlgorithm == "MD5")		cryptData.hashAlgorithm = CRYPT_METHOD::MD5;
+
+	if (keyEncryptors[0].cipherAlgorithm == "AES")
+	{
+		cryptData.cipherAlgorithm = CRYPT_METHOD::AES_CBC;
+		//if (keyEncryptors[0].cipherChaining == "ChainingModeCBC")	cryptData.cipherAlgorithm = CRYPT_METHOD::AES_CBC;
+		if (keyEncryptors[0].cipherChaining == "ChainingModeCFB")	cryptData.dataCipherAlgorithm = CRYPT_METHOD::AES_CFB;
+	}
+	else if (keyEncryptors[0].cipherAlgorithm == "RC4")
+	{
+		cryptData.dataCipherAlgorithm = CRYPT_METHOD::RC4;
+	}
+	else if (keyEncryptors[0].cipherAlgorithm == "DES")
+	{
+		cryptData.dataCipherAlgorithm = CRYPT_METHOD::DES_CBC;
+		//if (keyEncryptors[0].cipherChaining == "ChainingModeCBC")	cryptData.cipherAlgorithm = CRYPT_METHOD::DES_CBC;
+		if (keyEncryptors[0].cipherChaining == "ChainingModeECB")	cryptData.cipherAlgorithm = CRYPT_METHOD::DES_ECB;
+	}
+//---------------------------------------------------------------------------------------------------------------
+	cryptData.encryptedHmacKey = DecodeBase64(dataIntegrity.encryptedHmacKey);
+	cryptData.encryptedHmacValue = DecodeBase64(dataIntegrity.encryptedHmacValue);
+//---------------------------------------------------------------------------------------------------------------
+	cryptData.dataSaltValue			= DecodeBase64(keyData.saltValue);
+	cryptData.dataBlockSize			= atoi(keyData.blockSize.c_str());
+	cryptData.dataHashSize			= atoi(keyData.hashSize.c_str());
+	cryptData.dataSaltSize			= atoi(keyData.saltSize.c_str());
+	cryptData.dataKeySize			= atoi(keyData.keyBits.c_str()) / 8;
 
 	if (keyData.cipherAlgorithm == "AES")
 	{
 		cryptData.cipherAlgorithm = CRYPT_METHOD::AES_CBC;
 		//if (keyData.cipherChaining == "ChainingModeCBC")	cryptData.cipherAlgorithm = CRYPT_METHOD::AES_CBC;
-		if (keyData.cipherChaining == "ChainingModeCFB")	cryptData.cipherAlgorithm = CRYPT_METHOD::AES_CFB;
+		if (keyData.cipherChaining == "ChainingModeCFB")	cryptData.dataCipherAlgorithm = CRYPT_METHOD::AES_CFB;
 	}
 	else if (keyData.cipherAlgorithm == "RC4")
 	{
-		cryptData.cipherAlgorithm = CRYPT_METHOD::RC4;
+		cryptData.dataCipherAlgorithm = CRYPT_METHOD::RC4;
 	}
 	else if (keyData.cipherAlgorithm == "DES")
 	{
-		cryptData.cipherAlgorithm = CRYPT_METHOD::DES_CBC;
+		cryptData.dataCipherAlgorithm = CRYPT_METHOD::DES_CBC;
 		//if (keyData.cipherChaining == "ChainingModeCBC")	cryptData.cipherAlgorithm = CRYPT_METHOD::DES_CBC;
 		if (keyData.cipherChaining == "ChainingModeECB")	cryptData.cipherAlgorithm = CRYPT_METHOD::DES_ECB;
 	}
-	if		(keyData.hashAlgorithm == "SHA1")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA1;
-	else if (keyData.hashAlgorithm == "SHA224")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA224;
-	else if (keyData.hashAlgorithm == "SHA256")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA256;
-	else if (keyData.hashAlgorithm == "SHA384")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA384;
-	else if (keyData.hashAlgorithm == "SHA512")	cryptData.hashAlgorithm = CRYPT_METHOD::SHA512;
-	else if (keyData.hashAlgorithm == "MD5")	cryptData.hashAlgorithm = CRYPT_METHOD::MD5;
+		 if (keyData.hashAlgorithm == "SHA1")	cryptData.dataHashAlgorithm = CRYPT_METHOD::SHA1;
+	else if (keyData.hashAlgorithm == "SHA224")	cryptData.dataHashAlgorithm = CRYPT_METHOD::SHA224;
+	else if (keyData.hashAlgorithm == "SHA256")	cryptData.dataHashAlgorithm = CRYPT_METHOD::SHA256;
+	else if (keyData.hashAlgorithm == "SHA384")	cryptData.dataHashAlgorithm = CRYPT_METHOD::SHA384;
+	else if (keyData.hashAlgorithm == "SHA512")	cryptData.dataHashAlgorithm = CRYPT_METHOD::SHA512;
+	else if (keyData.hashAlgorithm == "MD5")	cryptData.dataHashAlgorithm = CRYPT_METHOD::MD5;
 
 	return true;
 }
@@ -634,6 +663,12 @@ bool ReadStandartEncryptionInfo(unsigned char* data, int size, _ecmaCryptData & 
 		cryptData.keySize	= 256 /8;	
 		break;
 	}
+	cryptData.dataHashAlgorithm = cryptData.hashAlgorithm;
+	cryptData.dataBlockSize = cryptData.blockSize;
+	cryptData.dataCipherAlgorithm = cryptData.cipherAlgorithm;
+	cryptData.dataHashSize = cryptData.hashSize;
+	cryptData.dataKeySize = cryptData.keySize;
+	cryptData.dataSaltSize = cryptData.saltSize;
 	return true;
 }
 
@@ -664,13 +699,13 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 	//else
 	{
 		cryptData.bAgile			= true;
-		cryptData.cipherAlgorithm	= CRYPT_METHOD::AES_CBC;
-		cryptData.hashAlgorithm		= CRYPT_METHOD::SHA512;
-		cryptData.keySize			= 0x20;
-		cryptData.hashSize			= 0x40;
-		cryptData.blockSize			= 0x10;
-		cryptData.saltSize			= 0x10;
 		cryptData.spinCount			= 100000;
+		cryptData.cipherAlgorithm	= cryptData.dataCipherAlgorithm = CRYPT_METHOD::AES_CBC;
+		cryptData.hashAlgorithm		= cryptData.dataHashAlgorithm	= CRYPT_METHOD::SHA512;
+		cryptData.keySize			= cryptData.dataKeySize			= 0x20;
+		cryptData.hashSize			= cryptData.dataHashSize		= 0x40;
+		cryptData.blockSize			= cryptData.dataBlockSize		= 0x10;
+		cryptData.saltSize			= cryptData.dataSaltSize		= 0x10;
 	}
 	//cryptData.bAgile				= true;
 	//cryptData.cipherAlgorithm		= CRYPT_METHOD::DES_CBC;

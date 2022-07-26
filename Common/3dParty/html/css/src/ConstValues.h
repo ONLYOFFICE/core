@@ -886,7 +886,7 @@ namespace NSCSS
 
                 void SetLineHeight(const std::wstring &sLineHeight, const unsigned int& unLevel, const bool& bHardMode = false)
                 {
-                    if (sLineHeight.empty() || (bImportants[5] && !bHardMode) || unLevel <= arLevels[5])
+                    if (sLineHeight.empty() || (bImportants[5] && !bHardMode) || unLevel < arLevels[5])
                         return;
 
                     if (sLineHeight == L"normal")
@@ -2698,16 +2698,17 @@ namespace NSCSS
                 int nWidth;
                 int nHeight;
                 std::wstring wsAlign;
+                std::wstring wsVerticalAlign;
 
                 std::vector<bool> bImportants;
                 std::vector<unsigned int> arLevels;
 
             public:
-                Display() : wsDisplay(L"inline"), nWidth(-1), nHeight(-1), wsAlign(), bImportants{false, false, false, false}, arLevels{0, 0, 0, 0} {};
+                Display() : wsDisplay(L"inline"), nWidth(-1), nHeight(-1), wsAlign(), bImportants{false, false, false, false, false}, arLevels{0, 0, 0, 0, 0} {};
 
                 void ClearImportants()
                 {
-                    bImportants = {false, false, false, false};
+                    bImportants = {false, false, false, false, false};
                 }
 
                 Display operator+=(const Display& oDisplay)
@@ -2772,21 +2773,35 @@ namespace NSCSS
                         else
                             oSecondDisplay.wsAlign.clear();
                     }
+
+                    if (oFirstDisplay.bImportants[4] && !oSecondDisplay.bImportants[4] && !oFirstDisplay.wsVerticalAlign.empty())
+                        oSecondDisplay.wsVerticalAlign.clear();
+                    else if (oSecondDisplay.bImportants[4] && !oFirstDisplay.bImportants[4] && !oSecondDisplay.wsVerticalAlign.empty())
+                        oFirstDisplay.wsVerticalAlign.clear();
+                    else if (!oSecondDisplay.wsVerticalAlign.empty())
+                    {
+                        if (oFirstDisplay.arLevels[4] < oSecondDisplay.arLevels[4])
+                            oFirstDisplay.wsVerticalAlign.clear();
+                        else
+                            oSecondDisplay.wsVerticalAlign.clear();
+                    }
                 }
 
                 bool operator==(const Display& oDisplay) const
                 {
-                    return wsDisplay == oDisplay.wsDisplay && nWidth == oDisplay.nWidth && nHeight == oDisplay.nHeight && wsAlign == oDisplay.wsAlign;
+                    return wsDisplay == oDisplay.wsDisplay && nWidth == oDisplay.nWidth && nHeight == oDisplay.nHeight &&
+                           wsAlign == oDisplay.wsAlign && wsVerticalAlign == oDisplay.wsVerticalAlign;
                 }
 
                 bool Empty() const
                 {
-                    return (L"inline" == wsDisplay || wsDisplay.empty()) && (nWidth < 0) && (nHeight < 0) && (wsAlign.empty());
+                    return (L"inline" == wsDisplay || wsDisplay.empty()) && (nWidth < 0) && (nHeight < 0) &&
+                           (wsAlign.empty()) && (wsVerticalAlign.empty());
                 }
 
                 void SetImportantAll(const bool &bImportant)
                 {
-                    bImportants = {bImportant, bImportant, bImportant, bImportant};
+                    bImportants = {bImportant, bImportant, bImportant, bImportant, bImportant};
                 }
 
                 void SetImportantDisplay(const bool &bImportant)
@@ -2807,6 +2822,11 @@ namespace NSCSS
                 void SetImportantAlign(const bool& bImportant)
                 {
                     bImportants[3] = bImportant;
+                }
+
+                void SetImportantVerticalAlign(const bool& bImportant)
+                {
+                    bImportants[4] = bImportant;
                 }
 
                 void SetDisplay(const std::wstring& wsNewDisplay, const unsigned int& unLevel, const bool &bHardMode = false)
@@ -2870,6 +2890,28 @@ namespace NSCSS
                     }
                 }
 
+                void SetVerticalAlign(const std::wstring& sVerticalAlign, const unsigned int& unLevel, const bool& bHardMode = false)
+                {
+                    if (sVerticalAlign.empty() || (bImportants[4] && !bHardMode))
+                        return;
+
+                    if (L"top" == sVerticalAlign || L"baseline" == sVerticalAlign || L"text-top" == sVerticalAlign)
+                    {
+                        wsVerticalAlign = L"top";
+                        arLevels[4] = unLevel;
+                    }
+                        else if (L"bottom" == sVerticalAlign || L"text-bottom" == sVerticalAlign)
+                    {
+                        wsVerticalAlign = L"bottom";
+                        arLevels[4] = unLevel;
+                    }
+                    else if (L"middle" == sVerticalAlign)
+                    {
+                        wsVerticalAlign = sVerticalAlign;
+                        arLevels[4] = unLevel;
+                    }
+                }
+
                 std::wstring GetDisplay() const
                 {
                     return wsDisplay;
@@ -2899,6 +2941,11 @@ namespace NSCSS
                 std::wstring GetAlign() const
                 {
                     return wsAlign;
+                }
+
+                std::wstring GetVerticalAlign() const
+                {
+                    return wsVerticalAlign;
                 }
             };
         }

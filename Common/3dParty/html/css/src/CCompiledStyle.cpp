@@ -1049,6 +1049,20 @@ namespace NSCSS
                         }
                         break;
                 }
+                CASE(L"vertical-align"):
+                {
+                        const size_t unPositionImp = pPropertie.second.find(L"!i");
+                        if (unPositionImp == std::wstring::npos)
+                        {
+                            m_pDisplay.SetVerticalAlign(pPropertie.second, unLevel, bHardMode);
+                        }
+                        else if (unPositionImp != 0)
+                        {
+                            m_pDisplay.SetVerticalAlign(pPropertie.second.substr(0, unPositionImp - 1), unLevel, true);
+                            m_pDisplay.SetImportantVerticalAlign(true);
+                        }
+                        break;
+                }
             }
         }
     }

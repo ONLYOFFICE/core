@@ -6,7 +6,7 @@ CONFIG -= app_bundle
 CONFIG += thread
 CONFIG -= qt
 
-LIBS += -L$$PWD/../Debug -lcfcpp
+LIBS += -L$$PWD/../../../build/lib/linux_64/debug -lcfcpp
 INCLUDEPATH += $$PWD/../
 
 HEADERS += \

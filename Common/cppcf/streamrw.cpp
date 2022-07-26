@@ -11,7 +11,7 @@ StreamRW::StreamRW(const Stream &stream)
 
 T_LONG64 StreamRW::Seek(T_LONG64 offset)
 {
-    stream->seekp(offset, std::ios::cur);
+    stream->seekp(offset, std::ios::beg);
     return stream->tellp();
 }
 

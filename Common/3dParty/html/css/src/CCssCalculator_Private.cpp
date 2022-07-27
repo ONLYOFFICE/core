@@ -498,7 +498,7 @@ namespace NSCSS
                 std::sort(arFindElements.rbegin(), arFindElements.rend(),
                           [](CElement* oFirstElement, CElement* oSecondElement)
                           {
-                              return oFirstElement->GetWeight() < oSecondElement->GetWeight();
+                              return oFirstElement->GetWeight() > oSecondElement->GetWeight();
                           });
             }
 

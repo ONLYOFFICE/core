@@ -43,6 +43,7 @@
 #include "../DesktopEditor/graphics/IRenderer.h"
 #include "../DesktopEditor/common/Directory.h"
 #include "../DesktopEditor/common/StringExt.h"
+#include "../DesktopEditor/common/Path.h"
 #include "../PdfWriter/PdfRenderer.h"
 
 #include "lib/xpdf/PDFDoc.h"
@@ -73,6 +74,7 @@ namespace PdfReader
         PDFDoc*            m_pPDFDocument;
         std::wstring       m_wsTempFolder;
         std::wstring       m_wsCMapFolder;
+        std::wstring       m_wsSrcPath;
         NSFonts::IApplicationFonts* m_pAppFonts;
         NSFonts::IFontManager*      m_pFontManager;
         CFontList*         m_pFontList;
@@ -126,6 +128,7 @@ namespace PdfReader
 
         m_pInternal->m_wsTempFolder = L"";
         m_pInternal->m_wsCMapFolder = L"";
+        m_pInternal->m_wsSrcPath    = L"";
 
         m_pInternal->m_pPDFDocument = NULL;
         m_pInternal->m_pFontManager = NULL;
@@ -208,6 +211,7 @@ namespace PdfReader
         GString* user_pswd = NSStrings::CreateString(wsUserPassword);
 
         // конвертим путь в utf8 - под виндой они сконвертят в юникод, а на остальных - так и надо
+        m_pInternal->m_wsSrcPath = wsSrcPath;
         std::string sPathUtf8 = U_TO_UTF8(wsSrcPath);
         m_pInternal->m_pPDFDocument = new PDFDoc((char*)sPathUtf8.c_str(), owner_pswd, user_pswd);
 
@@ -498,7 +502,7 @@ return 0;
 //		return wsXml;
         return L"";
 	}
-    bool CPdfReader::EditPdf(IRenderer* pPdfWriter, const std::wstring& sPassword)
+    bool CPdfReader::EditPdf(IRenderer* pPdfWriter, const std::wstring& wsPath, const std::wstring& sPassword)
     {
         if (!pPdfWriter)
             return false;
@@ -507,6 +511,14 @@ return 0;
         pPdfWriter->get_Type(&lRendererType);
         if (c_nPDFWriter != lRendererType || !m_pInternal->m_pPDFDocument)
             return false;
+
+        std::string sPathUtf8New = U_TO_UTF8(wsPath);
+        std::string sPathUtf8Old = U_TO_UTF8(m_pInternal->m_wsSrcPath);
+        if (sPathUtf8Old == sPathUtf8New || NSSystemPath::NormalizePath(sPathUtf8Old) == NSSystemPath::NormalizePath(sPathUtf8New))
+        {
+            if (!m_pInternal->m_pPDFDocument->makeWritable())
+                return false;
+        }
 
         m_pInternal->m_pPdfWriter = (CPdfRenderer*)pPdfWriter;
         m_pInternal->m_pPdfWriter->AddRef();
@@ -583,7 +595,7 @@ return 0;
             }
         }
 
-        bool bRes = m_pInternal->m_pPdfWriter->EditPdf(xref->getLastXRefPos(), xref->getNumObjects(), sCatalog, catRef.num, sEncrypt, sPassword, nCryptAlgorithm, nFormField);
+        bool bRes = m_pInternal->m_pPdfWriter->EditPdf(wsPath, xref->getLastXRefPos(), xref->getNumObjects(), sCatalog, catRef.num, sEncrypt, sPassword, nCryptAlgorithm, nFormField);
         if (bRes)
             m_pInternal->GetPageTree(xref, &pagesRefObj);
         pagesRefObj.free();
@@ -632,7 +644,7 @@ return 0;
 
         return m_pInternal->m_pPdfWriter->AddPage(nPageIndex);
     }
-    bool CPdfReader::EditClose(const std::wstring& wsPath)
+    bool CPdfReader::EditClose()
     {
         if (!m_pInternal->m_pPdfWriter || !m_pInternal->m_pPDFDocument)
             return false;
@@ -652,7 +664,7 @@ return 0;
             sInfo = XMLConverter::DictToXml(L"Info", &info);
         info.free();
 
-        return m_pInternal->m_pPdfWriter->EditClose(wsPath, sTrailer, sInfo);
+        return m_pInternal->m_pPdfWriter->EditClose(sTrailer, sInfo);
     }
 
 #define DICT_LOOKUP(sName, wsName) \

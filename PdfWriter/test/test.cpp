@@ -109,7 +109,7 @@ int main()
         return 0;
     }
 
-    if (bResult && pReader->EditPdf(&pdfWriter, sPassword))
+    if (bResult && pReader->EditPdf(&pdfWriter, sSrcFile, sPassword))
     {
         if (true && pCertificate)
         {
@@ -162,8 +162,7 @@ int main()
             }
         }
 
-        NSFile::CFileBinary::Copy(sSrcFile, sDstFile);
-        pReader->EditClose(sDstFile);
+        pReader->EditClose();
     }
 
     RELEASEOBJECT(pReader);

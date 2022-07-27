@@ -3791,7 +3791,7 @@ namespace PdfReader
 
         std::wstring wsUnicodeText;
 
-		bool isCIDFont = pFont->isCIDFont();
+        bool isCIDFont = pFont->isCIDFont();
 
         if (NULL != oEntry.pCodeToUnicode && nCode < oEntry.unLenUnicode)
         {
@@ -3800,7 +3800,7 @@ namespace PdfReader
         }
         else
         {
-			if (isCIDFont)
+            if (isCIDFont)
             {
                 // Значит кодировка была Identity-H или Identity-V, что означает, что иходные коды и есть юникодные значения
                 wsUnicodeText = (wchar_t(nCode));
@@ -3821,15 +3821,11 @@ namespace PdfReader
             else
                 unGidsCount = 1;
         }
-		else
-		{
-			bool isIdentity = true;
-			if (!isCIDFont || ((GfxCIDFont*)pFont)->usesIdentityEncoding())
-			{
-				int nCurCode = (0 == nCode ? 65534 : nCode);
-				unGid       = (unsigned int)nCurCode;
-				unGidsCount = 1;
-			}
+        else
+        {
+            int nCurCode = (0 == nCode ? 65534 : nCode);
+            unGid       = (unsigned int)nCurCode;
+            unGidsCount = 1;
         }
 
         float fAscent = pGState->getFontSize();

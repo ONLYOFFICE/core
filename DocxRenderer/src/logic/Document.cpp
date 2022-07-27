@@ -864,8 +864,8 @@ namespace NSDocxRenderer
                     xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
                     mc:Ignorable=\"w14 w15 w16se w16cid w16 w16cex w16sdtdh wp14\">\
                 <w:body>");
-                m_lPagesCount = 0;
-                m_oWriter.Clear();
+        m_lPagesCount = 0;
+        m_oWriter.Clear();
         m_oWriter.AddSize(10000);
 
         return true;

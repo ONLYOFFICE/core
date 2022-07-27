@@ -834,7 +834,14 @@ namespace NSDocxRenderer
     void CShape::BuildGraphicProperties(NSStringUtils::CStringBuilder &oWriter)
     {
         //отвечает за размеры прямоугольного фрейма шейпа
-        oWriter.WriteString(L"<a:xfrm>");
+        oWriter.WriteString(L"<a:xfrm");
+        if (fabs(m_dRotate) > 0.01)
+        {
+            oWriter.WriteString(L" rot=\"");
+            oWriter.AddInt(static_cast<int>(m_dRotate * c_dDegreeToAngle));
+            oWriter.WriteString(L"\"");
+        }
+        oWriter.WriteString(L">");
             oWriter.WriteString(L"<a:off x=\"0\" y=\"0\"/>");
             oWriter.WriteString(L"<a:ext");
             oWriter.WriteString(L" cx=\"");

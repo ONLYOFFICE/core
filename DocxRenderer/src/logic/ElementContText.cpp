@@ -362,4 +362,28 @@ namespace NSDocxRenderer
         }
         return false;
     }
+
+    CrossingType CContText::GetCrossingType(const CContText* oSrc)
+    {
+        if (m_dTop > oSrc->m_dTop && m_dBaselinePos < oSrc->m_dBaselinePos)
+        {
+            return ctCurrentInsideNext;
+        }
+        else if (m_dTop < oSrc->m_dTop && m_dBaselinePos > oSrc->m_dBaselinePos)
+        {
+            return ctCurrentOutsideNext;
+        }
+        else if (m_dTop < oSrc->m_dTop && m_dBaselinePos < oSrc->m_dBaselinePos && m_dBaselinePos > oSrc->m_dTop)
+        {
+            return ctCurrentAboveNext;
+        }
+        else if (m_dTop > oSrc->m_dTop && m_dBaselinePos > oSrc->m_dBaselinePos && m_dTop < oSrc->m_dBaselinePos)
+        {
+            return ctCurrentBelowNext;
+        }
+        else
+        {
+            return ctNoCrossing;
+        }
+    }
 }

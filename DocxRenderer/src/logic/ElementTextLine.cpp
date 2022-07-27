@@ -229,27 +229,27 @@ namespace NSDocxRenderer
         return false;
     }
 
-    LineCrossingType CTextLine::GetLinesCrossingType(const CTextLine* oSrc)
+    CrossingType CTextLine::GetCrossingType(const CTextLine* oSrc)
     {
         if (m_dTop > oSrc->m_dTop && m_dBaselinePos < oSrc->m_dBaselinePos)
         {
-            return lctCurrentInsideNext;
+            return ctCurrentInsideNext;
         }
         else if (m_dTop < oSrc->m_dTop && m_dBaselinePos > oSrc->m_dBaselinePos)
         {
-            return lctCurrentOutsideNext;
+            return ctCurrentOutsideNext;
         }
         else if (m_dTop < oSrc->m_dTop && m_dBaselinePos < oSrc->m_dBaselinePos && m_dBaselinePos > oSrc->m_dTop)
         {
-            return lctCurrentAboveNext;
+            return ctCurrentAboveNext;
         }
         else if (m_dTop > oSrc->m_dTop && m_dBaselinePos > oSrc->m_dBaselinePos && m_dTop < oSrc->m_dBaselinePos)
         {
-            return lctCurrentBelowNext;
+            return ctCurrentBelowNext;
         }
         else
         {
-            return lctNoCrossing;
+            return ctNoCrossing;
         }
     }
 
@@ -294,6 +294,50 @@ namespace NSDocxRenderer
         return false;
     }
 
+    double CTextLine::RightBorderCorrection()
+    {
+        CContText* pSelectedCont = nullptr;
+
+        for (auto pCont : m_arConts)
+        {
+            if (!pSelectedCont || pSelectedCont->m_oFont.Size < pCont->m_oFont.Size)
+            {
+                pSelectedCont = pCont;
+            }
+            else if (pSelectedCont->m_oFont.Size == pCont->m_oFont.Size)
+            {
+                //note считаем что обычный < Italic < Bold < Bold-Italic
+                if (pSelectedCont->m_oFont.GetTextFontStyle() <
+                        pCont->m_oFont.GetTextFontStyle())
+                {
+                    pSelectedCont = pCont;
+                }
+            }
+        }
+
+        if (!pSelectedCont)
+        {
+            return c_dRightBorderCorrectionSize[0][0];
+        }
+
+        UINT lSize = static_cast<UINT>(2 * pSelectedCont->m_oFont.Size);
+        UINT nType = pSelectedCont->m_oFont.GetTextFontStyle();
+
+        if (nType > 3)
+        {
+            //Error!
+            return c_dRightBorderCorrectionSize[0][0];
+        }
+
+        if (lSize > 144)
+        {
+            lSize = 145;
+        }
+
+        //note нужно корректировать каждый размер отдельно
+        return c_dRightBorderCorrectionSize[lSize][nType];
+    }
+
     void CTextLine::ToXml(NSStringUtils::CStringBuilder& oWriter)
     {
         if (m_bIsNotNecessaryToUse)
@@ -321,12 +365,6 @@ namespace NSDocxRenderer
                 pPrev->ToXml(oWriter);
                 pPrev = pCurrent;
             }
-            //else if (dDelta < 2 * pPrev->m_dSpaceWidthMM)
-            //{
-            //	// сменились настройки, но пробел все-таки вставить нужно
-            //	pPrev->Write(oWriter, pManagerLight, true);
-            //	pPrev = pCurrent;
-            //}
             else
             {
                 // расстояние слишком большое. нужно сделать большой пробел

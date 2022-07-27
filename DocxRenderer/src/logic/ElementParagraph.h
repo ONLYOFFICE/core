@@ -68,6 +68,8 @@ namespace NSDocxRenderer
 
         void RemoveHighlightColor();
 
+        void RightBorderCorrection();
+
         void MergeLines();
    };
 }

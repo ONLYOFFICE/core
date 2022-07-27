@@ -30,11 +30,8 @@ public:
         stream->write(asByteArr, sizeof (T));
     }
 
-    std::vector<BYTE> ReadArray(int lenght);
     void ReadArray(char* data, int lenght);
     void ReadArray(BYTE* data, int lenght);
-    template<size_t N>
-    std::array<BYTE, N> ReadArray();
     void WriteArray(const BYTE *arr, int lenght);
     void WriteArray(const char *arr, int lenght);
 

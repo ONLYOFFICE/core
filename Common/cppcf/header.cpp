@@ -39,14 +39,14 @@ Header::Header(ushort version)
 void Header::Write(Stream stream)
 {
     StreamRW rw(stream);
-    rw.WriteArray(headerSignature.data(), headerSignature.size());
-    rw.WriteArray(clsid.data(), clsid.size());
+    rw.WriteArray(headerSignature, sizeof(headerSignature));
+    rw.WriteArray(clsid, sizeof(clsid));
     rw.Write(minorVersion);
     rw.Write(majorVersion);
     rw.Write(byteOrder);
     rw.Write(sectorShift);
     rw.Write(miniSectorShift);
-    rw.WriteArray(unUsed.data(), unUsed.size());
+    rw.WriteArray(unUsed, sizeof(unUsed));
     rw.Write(directorySectorsNumber);
     rw.Write(fatSectorsNumber);
     rw.Write(firstDirectorySectorID);
@@ -73,16 +73,16 @@ void Header::Read(Stream stream)
 {
     StreamRW rw(stream);
 
-    headerSignature = rw.ReadArray<8>();
+    rw.ReadArray(headerSignature, sizeof(headerSignature));
     CheckSignature();
-    clsid = rw.ReadArray<16>();
+    rw.ReadArray(clsid, sizeof(clsid));
     minorVersion = rw.Read<decltype(minorVersion)>();
     majorVersion = rw.Read<decltype(majorVersion)>();
     CheckVersion();
     byteOrder = rw.Read<decltype(majorVersion)>();
     sectorShift = rw.Read<decltype(majorVersion)>();
     miniSectorShift = rw.Read<decltype(majorVersion)>();
-    unUsed = rw.ReadArray<6>();
+    rw.ReadArray(unUsed, sizeof (unUsed));
     directorySectorsNumber = rw.Read<decltype(directorySectorsNumber)>();
     fatSectorsNumber = rw.Read<decltype(fatSectorsNumber)>();
     firstDirectorySectorID = rw.Read<decltype(firstDirectorySectorID)>();
@@ -108,7 +108,7 @@ void Header::CheckVersion() const
 void Header::CheckSignature() const
 {
     std::array<BYTE,8> OLE_CFS_SIGNATURE{ 0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1 };
-    for (int i = 0; i < (int)headerSignature.size(); i++)
+    for (size_t i = 0; i < sizeof(headerSignature); i++)
     {
         if (headerSignature[i] != OLE_CFS_SIGNATURE[i])
             throw CFFileFormatException("Invalid OLE structured storage file");

@@ -1,6 +1,6 @@
-#include "tst_test_stream.h"
-#include "streamrw.h"
-#include <gtest/gtest.h>
+#include "tst_streamrw.h"
+#include "tst_header.h"
+#include "tst_directoryentry.h"
 
 using namespace CFCPP;
 using namespace std;

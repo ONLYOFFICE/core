@@ -19,24 +19,24 @@ private:
     void CheckSignature()const;
 
 public:
-    std::array<BYTE,8> headerSignature = {0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1};
-    std::array<BYTE,16> clsid;
+    BYTE headerSignature[8] = {0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1};
+    BYTE clsid[16];
     USHORT minorVersion = 0x003E;
     USHORT majorVersion = 0x0003;
     USHORT byteOrder = 0xFFFE;
     USHORT sectorShift = 9;
     USHORT miniSectorShift = 6;
-    std::array<BYTE,6> unUsed;
-    int directorySectorsNumber;
-    int fatSectorsNumber;
-    int firstDirectorySectorID = Sector::ENDOFCHAIN;
+    BYTE unUsed[6];
+    INT directorySectorsNumber;
+    INT fatSectorsNumber;
+    INT firstDirectorySectorID = Sector::ENDOFCHAIN;
     uint unUsed2;
     uint minSizeStandardStream = 4096;
-    int firstMiniFATSectorID = 0xFFFFFFFE;
+    INT firstMiniFATSectorID = 0xFFFFFFFE;
     uint miniFATSectorsNumber;
-    int firstDIFATSectorID = Sector::ENDOFCHAIN;
+    INT firstDIFATSectorID = Sector::ENDOFCHAIN;
     uint difatSectorsNumber;
-    std::array<BYTE,109> difat;
+    INT difat[109];
 };
 
 }

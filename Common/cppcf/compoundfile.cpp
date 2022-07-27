@@ -1871,7 +1871,7 @@ void CompoundFile::LoadFile(std::wstring fileName)
         file.OpenFile(fileName);
         if (updateMode == CFSUpdateMode::ReadOnly)
         {
-            fs.reset(new std::fstream(this->fileName, std::ios::in | std::ios::out));
+            fs.reset(new std::fstream(this->fileName, std::ios::out));
 
         }
         else

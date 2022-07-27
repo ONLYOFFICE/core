@@ -2,15 +2,18 @@
 
 struct GUID
 {
-    unsigned long Data1 = 0;
+    unsigned int Data1 = 0;
     unsigned short Data2 = 0;
     unsigned short Data3 = 0;
-    unsigned char Data4[8] = {0,0,0,0,0,0,0,0};
+    unsigned long long Data4 = 0;
+
+    unsigned char* getData4()
+    {
+        return reinterpret_cast<unsigned char*>(&Data4);
+    }
 
     GUID (const GUID& o) : Data1(o.Data1), Data2(o.Data2), Data3(o.Data3)
     {
-        for (unsigned i = 0; i < sizeof(Data4); i++)
-            Data4[i] = o.Data4[i];
     }
 
     GUID& operator=(const GUID& o)
@@ -18,19 +21,19 @@ struct GUID
         Data1 = o.Data1;
         Data2 = o.Data2;
         Data3 = o.Data3;
-        for (unsigned i = 0; i < sizeof(Data4); i++)
-            Data4[i] = o.Data4[i];
+        Data4 = o.Data4;
 
         return *this;
     }
 
-    bool operator!=(const GUID& oth)
+    bool operator!=(const GUID& oth)const
     {
-        for (int i = 0; i < 8; i++)
-            if (Data4[i] != oth.Data4[i])
-                return true;
+        return Data1 != oth.Data1 || Data2 != oth.Data2 || Data3 != oth.Data3 || Data4 != oth.Data4;
+    }
 
-        return Data1 != oth.Data1 || Data2 != oth.Data2 || Data3 != oth.Data3;
+    bool operator==(const GUID& oth)const
+    {
+        return !operator!=(oth);
     }
 
     GUID (){}

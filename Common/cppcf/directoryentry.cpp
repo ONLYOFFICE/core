@@ -44,8 +44,13 @@ std::wstring DirectoryEntry::GetEntryName() const
 {
     if (entryName[0] != '\0' && nameLength > 0)
     {
-        std::wstring name(entryName, entryName + nameLength);
-        return name;
+        wchar_t name[32];
+        for (int i = 0; i < 32; i++)
+        {
+            name[i] = entryName[2*i] + (entryName[2*i+1] << 8);
+        }
+        return std::wstring (name, name + nameLength/2 - 1);
+
     }
     else
         return L"";
@@ -135,7 +140,7 @@ void DirectoryEntry::Read(Stream stream, CFSVersion ver)
         // where most significant bits are not initialized to zero
 
         size = rw.Read<int>();
-        rw.ReadArray<4>(); //discard most significant 4 (possibly) dirty bytes
+        rw.Read<INT>(); //discard most significant 4 (possibly) dirty bytes
     }
     else
     {

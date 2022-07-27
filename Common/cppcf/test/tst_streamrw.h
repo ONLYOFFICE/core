@@ -1,5 +1,4 @@
-#ifndef TST_TEST_STREAM_H
-#define TST_TEST_STREAM_H
+#pragma once
 
 #include <gtest/gtest.h>
 #include <gmock/gmock-matchers.h>
@@ -63,5 +62,3 @@ TEST_F(StreamRWTest, test_stream_rw_array)
 
     remove(filename.c_str());
 }
-
-#endif // TST_TEST_STREAM_H

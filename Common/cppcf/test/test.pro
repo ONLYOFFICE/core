@@ -10,7 +10,9 @@ LIBS += -L$$PWD/../../../build/lib/linux_64/debug -lcfcpp
 INCLUDEPATH += $$PWD/../
 
 HEADERS += \
-        tst_test_stream.h
+    tst_directoryentry.h \
+    tst_header.h \
+    tst_streamrw.h
 
 SOURCES += \
         main.cpp

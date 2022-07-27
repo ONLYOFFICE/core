@@ -2,8 +2,6 @@
 
 #include "svector.h"
 #include "idirectoryentry.h"
-#include "guid.h"
-#include "sector.h"
 
 namespace CFCPP
 {
@@ -78,7 +76,7 @@ public:
 public:
     UINT64 creationDate = 0;
     UINT64 modifyDate = 0;
-    int startSetc = Sector::ENDOFCHAIN;
+    int startSetc = 0xFFFFFFFE;
     LONG64 size;
     int leftSibling = NOSTREAM;
     int rightSibling = NOSTREAM;

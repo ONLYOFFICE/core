@@ -18,6 +18,16 @@ namespace NSDocxRenderer
         vatSuperscript
     };
 
+    enum CrossingType
+    {
+        ctUnknown,
+        ctCurrentInsideNext,
+        ctCurrentOutsideNext,
+        ctCurrentAboveNext,
+        ctCurrentBelowNext,
+        ctNoCrossing
+    };
+
     class CContText : public CBaseItem
     {
         public:
@@ -72,5 +82,6 @@ namespace NSDocxRenderer
 
             void AddSpaceToEnd();
             bool IsEqual(const CContText* oSrc);
+            CrossingType GetCrossingType(const CContText* oSrc);
     };
 }

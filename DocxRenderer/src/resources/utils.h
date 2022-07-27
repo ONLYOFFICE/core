@@ -9,7 +9,10 @@ inline LONG ConvertColorBGRToRGB(LONG lBGR)
 
 inline bool IsSpaceUtf32(const uint32_t& c)
 {
-    return (' ' == c || 0xA0 == c) ? true : false; //note 0xA0 - неразрывный пробел
+    return (0x20 == c ||        //пробел
+            0xA0 == c ||        //неразрывный пробел
+            0x2003 == c         //Em пробел
+            ) ? true : false;
 }
 inline bool IsSpaceUtf32(const NSStringUtils::CStringUTF32& oText)
 {

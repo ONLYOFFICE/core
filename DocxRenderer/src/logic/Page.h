@@ -115,8 +115,6 @@ namespace NSDocxRenderer
 
         void WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter);
 
-        double RightBorderCorrection(const CTextLine *pLine);
-
         void CreateSingleLineParagraph(CTextLine *pLine, const double *pRight, const double *pBeforeSpacing);
         void CreateSingleLineOldShape(CTextLine *pLine);
         void CreateSingleLineShape(CTextLine *pLine);

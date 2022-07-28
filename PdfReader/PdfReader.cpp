@@ -516,8 +516,15 @@ return 0;
         std::string sPathUtf8Old = U_TO_UTF8(m_pInternal->m_wsSrcPath);
         if (sPathUtf8Old == sPathUtf8New || NSSystemPath::NormalizePath(sPathUtf8Old) == NSSystemPath::NormalizePath(sPathUtf8New))
         {
-            if (!m_pInternal->m_pPDFDocument->makeWritable())
+            if (!m_pInternal->m_pPDFDocument->makeWritable(true))
                 return false;
+        }
+        else
+        {
+            NSFile::CFileBinary oFile;
+            if (!oFile.OpenFile(wsPath, true))
+                return false;
+            oFile.CloseFile();
         }
 
         m_pInternal->m_pPdfWriter = (CPdfRenderer*)pPdfWriter;
@@ -585,11 +592,11 @@ return 0;
             {
                 Object encrypt, ID, ID1;
                 if (pTrailerDict->dictLookup("Encrypt", &encrypt) && encrypt.isDict())
-                    sEncrypt = XMLConverter::DictToXml(L"Encrypt", &encrypt, true);
+                    sEncrypt = XMLConverter::DictToXml(L"Encrypt", &encrypt, 0, 0, true);
                 encrypt.free();
 
                 if (pTrailerDict->dictLookup("ID", &ID) && ID.isArray() && ID.arrayGet(0, &ID1) && ID1.isString())
-                    sEncrypt += XMLConverter::DictToXml(L"ID", &ID1, true);
+                    sEncrypt += XMLConverter::DictToXml(L"ID", &ID1, 0, 0, true);
                 ID.free();
                 ID1.free();
             }
@@ -664,7 +671,17 @@ return 0;
             sInfo = XMLConverter::DictToXml(L"Info", &info);
         info.free();
 
-        return m_pInternal->m_pPdfWriter->EditClose(sTrailer, sInfo);
+        bool bRes = m_pInternal->m_pPdfWriter->EditClose(sTrailer, sInfo);
+        bRes &= m_pInternal->m_pPDFDocument->makeWritable(false);
+
+        NSFile::CFileBinary oFile;
+        if (oFile.OpenFile(m_pInternal->m_wsSrcPath))
+        {
+            m_pInternal->m_nFileLength = oFile.GetFileSize();
+            oFile.CloseFile();
+        }
+
+        return bRes;
     }
 
 #define DICT_LOOKUP(sName, wsName) \

@@ -672,7 +672,7 @@ char *PDFDoc::getEmbeddedFileMem(int idx, int *size) {
   return buf;
 }
 
-GBool PDFDoc::makeWritable()
+GBool PDFDoc::makeWritable(bool bWritable)
 {
     if (!str || !file)
         return gFalse;
@@ -680,10 +680,10 @@ GBool PDFDoc::makeWritable()
 
     if (optContent)
         delete optContent;
-  #ifndef DISABLE_OUTLINE
+#ifndef DISABLE_OUTLINE
     if (outline)
         delete outline;
-  #endif
+#endif
     if (catalog)
         delete catalog;
     if (xref)
@@ -715,22 +715,28 @@ GBool PDFDoc::makeWritable()
     // NB: _wfopen is only available in NT
     version.dwOSVersionInfoSize = sizeof(version);
     GetVersionEx(&version);
-    if (version.dwPlatformId == VER_PLATFORM_WIN32_NT)
-    {
-        file = _wfopen(fileNameU, L"rb+");
-    }
-    else
-    {
-        file = fopen(fileName->getCString(), "rb+");
-    }
-#elif defined(VMS)
-    file = fopen(fileName->getCString(), "rb+", "ctx=stm");
-#else
-    file = fopen(fileName->getCString(), "rb+");
 #endif
 
+    if (bWritable)
+    {
+    #if defined(_WIN32)
+        if (version.dwPlatformId == VER_PLATFORM_WIN32_NT)
+        {
+            file = _wfopen(fileNameU, L"rb+");
+        }
+        else
+        {
+            file = fopen(fileName->getCString(), "rb+");
+        }
+    #elif defined(VMS)
+        file = fopen(fileName->getCString(), "rb+", "ctx=stm");
+    #else
+        file = fopen(fileName->getCString(), "rb+");
+    #endif
+    }
+
     GBool bRes = gTrue;
-    if (!file)
+    if (!bWritable || !file)
     {
     #if defined(_WIN32)
         if (version.dwPlatformId == VER_PLATFORM_WIN32_NT)
@@ -753,7 +759,7 @@ GBool PDFDoc::makeWritable()
             errCode = errOpenFile;
             return gFalse;
         }
-        bRes = gFalse;
+        bRes = (!bWritable ? gTrue : gFalse);
     }
 
     Object obj;

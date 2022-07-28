@@ -12,7 +12,7 @@ struct StreamRWTest : testing::Test
 {
     Stream stream;
     shared_ptr<StreamRW> rw;
-    string filename = "../data/types/types.bin";
+    string filename = "../../../data/types/types.bin";
     const char symbol = 'a';
     const int integer = 13;
 

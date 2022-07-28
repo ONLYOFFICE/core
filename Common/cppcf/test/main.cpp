@@ -1,6 +1,7 @@
 #include "tst_streamrw.h"
 #include "tst_header.h"
 #include "tst_directoryentry.h"
+#include "tst_compondfile.h"
 
 using namespace CFCPP;
 using namespace std;

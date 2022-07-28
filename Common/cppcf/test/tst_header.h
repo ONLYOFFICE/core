@@ -13,7 +13,7 @@ struct HeaderTest : testing::Test
 {
     Stream stream;
     Header hd;
-    string filename = "../data/ex.ppt";
+    string filename = "../../../data/ex.ppt";
 
     HeaderTest()
     {
@@ -54,7 +54,7 @@ TEST_F(HeaderTest, test_header_write)
 {
     hd.Read(stream);
 
-    std::string other_filename("../data/types/header.bin");
+    std::string other_filename("../../../data/types/header.bin");
     stream.reset(new std::fstream(other_filename, ios::app | ios::in | ios::out | ios::binary));
     hd.Write(stream);
 

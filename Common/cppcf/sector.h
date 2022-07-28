@@ -1,10 +1,10 @@
 #pragma once
 
-#include "stream.h"
 #include <memory>
-#include "../../DesktopEditor/common/Types.h"
 #include <vector>
 #include <mutex>
+#include "stream.h"
+#include "../../DesktopEditor/common/Types.h"
 
 namespace CFCPP
 {

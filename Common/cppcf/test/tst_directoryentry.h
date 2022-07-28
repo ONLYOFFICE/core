@@ -12,7 +12,7 @@ using namespace CFCPP;
 struct DirEntryTest : testing::Test
 {
     Stream stream;
-    string filename = "../data/ex.ppt";
+    string filename = "../../../data/ex.ppt";
 
     DirEntryTest()
     {
@@ -61,7 +61,7 @@ TEST_F(DirEntryTest, test_directoryentry_write)
     stream->seekg(0x400, std::ios::beg);
     de.Read(stream);
 
-    std::string other_filename("../data/types/direntry.bin");
+    std::string other_filename("../../../data/types/direntry.bin");
     stream.reset(new std::fstream(other_filename, ios::app | ios::in | ios::out | ios::binary));
     de.Write(stream);
     EXPECT_EQ(stream->tellg(), 0x80);

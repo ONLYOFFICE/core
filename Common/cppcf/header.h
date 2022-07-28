@@ -2,7 +2,6 @@
 
 
 #include "sector.h"
-#include <array>
 
 namespace CFCPP
 {

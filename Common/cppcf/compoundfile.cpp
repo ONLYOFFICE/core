@@ -7,6 +7,7 @@
 #include "../../DesktopEditor/common/File.h"
 #include <algorithm>
 #include <cmath>
+#include "sector.h"
 
 
 using namespace CFCPP;
@@ -863,7 +864,8 @@ void CompoundFile::FreeMiniChain(SVector<Sector> &sectorChain, int nth_sector_to
         int currentId = sectorChain[i]->id;
 
         miniFATView.Seek(currentId * 4, std::ios::beg);
-        miniFATView.Write(reinterpret_cast<const char*>(&Sector::FREESECT), 0, 4);
+        const int freesec = Sector::FREESECT;
+        miniFATView.Write(reinterpret_cast<const char*>(&freesec), 0, 4);
     }
 
     // Write End of Chain in MiniFAT ---------------------------------------
@@ -874,7 +876,8 @@ void CompoundFile::FreeMiniChain(SVector<Sector> &sectorChain, int nth_sector_to
     if (nth_sector_to_remove > 0 && sectorChain.size() > 0)
     {
         miniFATView.Seek(sectorChain[nth_sector_to_remove - 1]->id * 4, std::ios::beg);
-        miniFATView.Write(reinterpret_cast<const char*>(&Sector::ENDOFCHAIN), 0, 4);
+        const int endofchain = Sector::ENDOFCHAIN;
+        miniFATView.Write(reinterpret_cast<const char*>(&endofchain), 0, 4);
     }
 
     // Update sector chains           ---------------------------------------
@@ -916,14 +919,16 @@ void CompoundFile::FreeChain(SVector<Sector> &sectorChain, int nth_sector_to_rem
         int currentId = sectorChain[i]->id;
 
         FATView.Seek(currentId * 4, std::ios::beg);
-        FATView.Write(reinterpret_cast<const char*>(&Sector::FREESECT), 0, 4);
+        const int freesec = Sector::FREESECT;
+        FATView.Write(reinterpret_cast<const char*>(&freesec), 0, 4);
     }
 
     // Write new end of chain if partial free ----------
     if (nth_sector_to_remove > 0 && sectorChain.size() > 0)
     {
         FATView.Seek(sectorChain[nth_sector_to_remove - 1]->id * 4, std::ios::beg);
-        FATView.Write(reinterpret_cast<const char*>(&Sector::ENDOFCHAIN), 0, 4);
+        const int endofchain = Sector::ENDOFCHAIN;
+        FATView.Write(reinterpret_cast<const char*>(&endofchain), 0, 4);
     }
 }
 
@@ -973,7 +978,8 @@ void CompoundFile::AllocateFATSectorChain(SVector<Sector> &sectorChain)
     }
 
     fatStream.Seek(sectorChain[sectorChain.size() - 1]->id * 4, std::ios::beg);
-    fatStream.Write(reinterpret_cast<const char*>(&Sector::ENDOFCHAIN), 0, 4);
+    const int endofchain = Sector::ENDOFCHAIN;
+    fatStream.Write(reinterpret_cast<const char*>(&endofchain), 0, 4);
 
     // Merge chain to CFS
     AllocateDIFATSectorChain(fatStream.BaseSectorChain());
@@ -1109,13 +1115,15 @@ void CompoundFile::AllocateDIFATSectorChain(SVector<Sector> &FATsectorChain)
     for (int i = 0; i < (int)header->difatSectorsNumber; i++)
     {
         fatSv.Seek(difatStream.BaseSectorChain()[i]->id * 4, std::ios::beg);
-        fatSv.Write(reinterpret_cast<const char*>(&Sector::DIFSECT), 0, 4);
+        const int difsect = Sector::DIFSECT;
+        fatSv.Write(reinterpret_cast<const char*>(&difsect), 0, 4);
     }
 
     for (int i = 0; i < header->fatSectorsNumber; i++)
     {
         fatSv.Seek(fatSv.BaseSectorChain()[i]->id * 4, std::ios::beg);
-        fatSv.Write(reinterpret_cast<const char*>(&Sector::FATSECT), 0, 4);
+        const int fatsect = Sector::FATSECT;
+        fatSv.Write(reinterpret_cast<const char*>(&fatsect), 0, 4);
     }
 
     //fatSv.Seek(fatSv.BaseSectorChain[fatSv.BaseSectorChain.Count - 1].Id * 4, SeekOrigin.Begin);
@@ -1181,7 +1189,8 @@ void CompoundFile::AllocateMiniSectorChain(SVector<Sector> &sectorChain)
 
     // Write End of Chain in MiniFAT
     miniFATView.Seek(sectorChain[sectorChain.size() - 1]->id * SIZE_OF_SID, std::ios::beg);
-    miniFATView.Write(reinterpret_cast<const char*>(&Sector::ENDOFCHAIN), 0, 4);
+    const int endofchain = Sector::ENDOFCHAIN;
+    miniFATView.Write(reinterpret_cast<const char*>(&endofchain), 0, 4);
 
     // Update sector chains
     AllocateSectorChain(miniStreamView.BaseSectorChain());
@@ -1854,7 +1863,8 @@ void CompoundFile::CheckForLockSector()
         StreamView fatStream(GetFatSectorChain(), GetSectorSize(), sourceStream);
 
         fatStream.Seek(_lockSectorId * 4, std::ios::beg);
-        fatStream.Write(reinterpret_cast<const char*>(&Sector::ENDOFCHAIN), 0, 4);
+        const int endofchain = Sector::ENDOFCHAIN;
+        fatStream.Write(reinterpret_cast<const char*>(&endofchain), 0, 4);
 
         _transactionLockAllocated = true;
     }

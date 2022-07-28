@@ -30,9 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_VBA_PROJECT_INCLUDE_H_
-#define OOX_VBA_PROJECT_INCLUDE_H_
-
 
 #include "Media.h"
 #include "../../../../../ASCOfficePPTXFile/Editor/BinaryFileReaderWriter.h"
@@ -43,6 +40,49 @@
 
 namespace OOX
 {
+	class VbaData : public File
+	{
+	public:
+		VbaData(OOX::Document *pMain) : File(pMain)
+		{
+			m_bDocument = false;
+		}
+		VbaData(OOX::Document *pMain, const CPath& oRootPath, const CPath& filename) : File(pMain)
+		{
+			read(oRootPath, filename);
+		}
+		virtual ~VbaData()
+		{
+
+		}
+		virtual void read(const CPath& oPath)
+		{
+			CPath oRootPath;
+			read(oRootPath, oPath);
+		}
+		virtual void read(const CPath& oRootPath, const CPath& oPath);
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, CContentTypes& content) const;
+
+		virtual const FileType type() const
+		{
+			return OOX::FileTypes::VbaData;
+		}
+		virtual const CPath DefaultDirectory() const
+		{
+			if (m_bDocument) return type().DefaultDirectory();
+			else	return L"../" + type().DefaultDirectory();
+		}
+		virtual const CPath DefaultFileName() const
+		{
+			return type().DefaultFileName();
+		}
+
+		bool				m_bDocument;
+		CPath				m_oReadPath;
+
+		std::wstring		m_sXml;
+	};
+
 	class VbaProject : public Media, public OOX::IFileContainer
 	{
 	public:
@@ -68,4 +108,3 @@ namespace OOX
 	};
 } // namespace OOX
 
-#endif // OOX_VBA_PROJECT_INCLUDE_H_

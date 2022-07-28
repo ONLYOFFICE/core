@@ -371,7 +371,9 @@ bool CPPTShape::LoadFromXMLShapeType(XmlUtils::CXmlNode& oNodeShapeType) // vml 
     std::wstring sId = oNodeShapeType.GetAttribute(_T("o:spt"));
 
     bool bIsNeedRecalc = true;
-    if (false == sId.empty())
+	bool bCustomSet = false;
+
+	if (false == sId.empty())
     {
         int id = XmlUtils::GetInteger(sId);
         if (id > 0)
@@ -379,6 +381,7 @@ bool CPPTShape::LoadFromXMLShapeType(XmlUtils::CXmlNode& oNodeShapeType) // vml 
             SetShapeType((PPTShapes::ShapeType)id);
             //ReCalculate();
             m_eType = (PPTShapes::ShapeType)id;
+			bCustomSet = true;
         }
     }
     std::wstring strAdj = oNodeShapeType.GetAttribute(_T("adj"));
@@ -389,7 +392,8 @@ bool CPPTShape::LoadFromXMLShapeType(XmlUtils::CXmlNode& oNodeShapeType) // vml 
     if (oNodeShapeType.GetNode(_T("v:formulas"), oNodeGuides))
     {
         LoadGuidesList(oNodeGuides.GetXml());
-    }
+		bCustomSet = true;
+	}
 
     XmlUtils::CXmlNode oNodePath;
     if (oNodeShapeType.GetNode(_T("v:path"), oNodePath))
@@ -397,7 +401,8 @@ bool CPPTShape::LoadFromXMLShapeType(XmlUtils::CXmlNode& oNodeShapeType) // vml 
         std::wstring strTextR = oNodePath.GetAttribute(_T("textboxrect"));
         if (false == strTextR.empty())
             LoadTextRect(strTextR);
-    }
+		bCustomSet = true;
+	}
 
     XmlUtils::CXmlNode oNodeAHs;
     if (oNodeShapeType.GetNode(_T("v:handles"), oNodeAHs))
@@ -409,11 +414,13 @@ bool CPPTShape::LoadFromXMLShapeType(XmlUtils::CXmlNode& oNodeShapeType) // vml 
     if (false == strPath.empty())
     {
         LoadPathList(strPath);
-    }
+		bCustomSet = true;
+	}
 
     XmlUtils::CXmlNode oNodeTextPath;
     if (oNodeShapeType.GetNode(_T("v:textpath"), oNodeTextPath))
     {
+		bCustomSet = true;
 		m_textPath.bEnabled = true;
 
         if (m_eType < PPTShapes::ShapeType::sptCTextPlain || m_eType > PPTShapes::ShapeType::sptCTextCanDown)
@@ -474,6 +481,16 @@ bool CPPTShape::LoadFromXMLShapeType(XmlUtils::CXmlNode& oNodeShapeType) // vml 
         m_oSignatureLine = oNodeSignature;
     }
 
-    ReCalculate();
+	XmlUtils::CXmlNode oNodeImagedata;
+	if (!bCustomSet && oNodeShapeType.GetNode(L"v:imagedata", oNodeImagedata))
+	{
+		std::wstring sRid = oNodeImagedata.GetAttribute(L"r:id");
+		std::wstring sRelid = oNodeImagedata.GetAttribute(L"o:relid");
+		std::wstring sPictId = oNodeImagedata.GetAttribute(L"r:pict");
+
+		if (!sRid.empty() || !sRelid.empty() || !sPictId.empty())
+			m_eType = PPTShapes::ShapeType::sptCFrame;
+	}
+	ReCalculate();
     return true;
 }

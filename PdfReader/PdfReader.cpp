@@ -594,9 +594,13 @@ return 0;
                 if (pTrailerDict->dictLookup("Encrypt", &encrypt) && encrypt.isDict())
                     sEncrypt = XMLConverter::DictToXml(L"Encrypt", &encrypt, 0, 0, true);
                 encrypt.free();
+                if (sEncrypt.length() > 10)
+                    sEncrypt.erase(sEncrypt.length() - 10);
 
                 if (pTrailerDict->dictLookup("ID", &ID) && ID.isArray() && ID.arrayGet(0, &ID1) && ID1.isString())
                     sEncrypt += XMLConverter::DictToXml(L"ID", &ID1, 0, 0, true);
+                if (sEncrypt.length() > 10)
+                    sEncrypt += L"</Encrypt>";
                 ID.free();
                 ID1.free();
             }

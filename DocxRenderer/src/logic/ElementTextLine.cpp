@@ -43,21 +43,23 @@ namespace NSDocxRenderer
             m_arConts.push_back(new CContText(*pCont));
         }
 
-        m_dBaselinePos	  = oSrc.m_dBaselinePos;
         m_dBaselineOffset = oSrc.m_dBaselineOffset;
 
         m_eAlignmentType  = oSrc.m_eAlignmentType;
         m_eVertAlignType  = oSrc.m_eVertAlignType;
 
         m_pDominantShape  = oSrc.m_pDominantShape;
-
+#if USING_DELETE_DUPLICATING_CONTS == 0
+        m_pDuplicateLine  = oSrc.m_pDuplicateLine;
+#endif
         return *this;
     }
 
     void CTextLine::AddCont(CContText* pCont)
     {
-        //if (0 == m_arConts.size())
         m_dBaselineOffset = fabs(m_dBaselineOffset) > fabs(pCont->m_dBaselineOffset) ? m_dBaselineOffset : pCont->m_dBaselineOffset;
+
+        m_dBaselinePos = std::max(m_dBaselinePos, pCont->m_dBaselinePos);
 
         if ( ( pCont->m_dLeft > 0 ) && ( ( m_dLeft == 0 ) || ( pCont->m_dLeft < m_dLeft ) ) )
             m_dLeft = pCont->m_dLeft;
@@ -160,6 +162,11 @@ namespace NSDocxRenderer
 
     void CTextLine::CalculateWidth()
     {
+        if (m_arConts.empty())
+        {
+            return;
+        }
+
         m_dWidth = m_arConts[0]->m_dWidth;
 
         for (size_t i = 1; i < m_arConts.size(); ++i)
@@ -167,6 +174,8 @@ namespace NSDocxRenderer
             m_dWidth += m_arConts[i]->m_dLeft - (m_arConts[i-1]->m_dLeft + m_arConts[i-1]->m_dWidth);
             m_dWidth += m_arConts[i]->m_dWidth;
         }
+
+        m_dRight = m_dLeft + m_dWidth;
     }
 
     void CTextLine::AddSpaceToEnd()
@@ -220,37 +229,13 @@ namespace NSDocxRenderer
     bool CTextLine::AreAlignmentsAppropriate(const CTextLine* oSrc)
     {
         if ((m_eAlignmentType == oSrc->m_eAlignmentType && m_eAlignmentType!= atatByLeftEdge) ||
-                (m_eAlignmentType == atatByWidth && oSrc->m_eAlignmentType == atatByLeftEdge) ||
-                (m_eAlignmentType == atatByWidth && oSrc->m_eAlignmentType == atatUnknown) ||
-                (m_eAlignmentType == atatUnknown && oSrc->m_eAlignmentType == atatByWidth))
+            (m_eAlignmentType == atatByWidth && oSrc->m_eAlignmentType == atatByLeftEdge) ||
+            (m_eAlignmentType == atatByWidth && oSrc->m_eAlignmentType == atatUnknown) ||
+            (m_eAlignmentType == atatUnknown && oSrc->m_eAlignmentType == atatByWidth))
         {
             return true;
         }
         return false;
-    }
-
-    CrossingType CTextLine::GetCrossingType(const CTextLine* oSrc)
-    {
-        if (m_dTop > oSrc->m_dTop && m_dBaselinePos < oSrc->m_dBaselinePos)
-        {
-            return ctCurrentInsideNext;
-        }
-        else if (m_dTop < oSrc->m_dTop && m_dBaselinePos > oSrc->m_dBaselinePos)
-        {
-            return ctCurrentOutsideNext;
-        }
-        else if (m_dTop < oSrc->m_dTop && m_dBaselinePos < oSrc->m_dBaselinePos && m_dBaselinePos > oSrc->m_dTop)
-        {
-            return ctCurrentAboveNext;
-        }
-        else if (m_dTop > oSrc->m_dTop && m_dBaselinePos > oSrc->m_dBaselinePos && m_dTop < oSrc->m_dBaselinePos)
-        {
-            return ctCurrentBelowNext;
-        }
-        else
-        {
-            return ctNoCrossing;
-        }
     }
 
     void CTextLine::SetVertAlignType(const eVertAlignType& oType)

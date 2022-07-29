@@ -17,7 +17,6 @@ namespace NSDocxRenderer
 
             std::vector<CContText*> m_arConts;
 
-            double m_dBaselinePos {0.0};
             double m_dBaselineOffset {0.0};
 
             AssumedTextAlignmentType m_eAlignmentType {atatUnknown};
@@ -25,7 +24,9 @@ namespace NSDocxRenderer
             eVertAlignType m_eVertAlignType {eVertAlignType::vatUnknown};
 
             const CShape* m_pDominantShape {nullptr};
-
+#if USING_DELETE_DUPLICATING_CONTS == 0
+            CTextLine* m_pDuplicateLine {nullptr};
+#endif
         public:
             CTextLine();
             void Clear() override final;
@@ -55,8 +56,6 @@ namespace NSDocxRenderer
             void DetermineAssumedTextAlignmentType(double dWidthOfPage);
             //Определяем на основании выравнивания подходят ли текущая и следующая строки для добавления в параграф
             bool AreAlignmentsAppropriate(const CTextLine* oSrc);
-            //Определяем пересекаются ли линии
-            CrossingType GetCrossingType(const CTextLine* oSrc);
 
             void SetVertAlignType(const eVertAlignType& oType);
 

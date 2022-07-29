@@ -99,48 +99,6 @@ namespace NSDocxRenderer
         Clear();
     }
 
-    void CPage::SetCurrentLineByBaseline(const CContText* pCont)
-    {
-        if ((nullptr == m_pCurrentLine) || (tatBlockChar == m_eTextAssociationType))
-        {
-            // пустая (в плане текста) страница
-            m_pCurrentLine = new CTextLine();
-            m_pCurrentLine->m_dBaselinePos = pCont->m_dBaselinePos;
-            m_arTextLine.push_back(m_pCurrentLine);
-            return;
-        }
-        if (fabs(m_pCurrentLine->m_dBaselinePos - pCont->m_dBaselinePos) <= c_dTHE_SAME_STRING_Y_PRECISION_MM)
-        {
-            if (m_pCurrentLine->m_eVertAlignType == eVertAlignType::vatUnknown &&
-                pCont->m_eVertAlignType != eVertAlignType::vatUnknown)
-            {
-                //note считаем, что линия может иметь только один тип
-                m_pCurrentLine->m_eVertAlignType = pCont->m_eVertAlignType;
-            }
-            return;
-        }
-        for (size_t i = 0; i < m_arTextLine.size(); ++i)
-        {
-            if (fabs(m_arTextLine[i]->m_dBaselinePos - pCont->m_dBaselinePos) <= c_dTHE_SAME_STRING_Y_PRECISION_MM)
-            {
-                m_pCurrentLine = m_arTextLine[i];
-                if (m_pCurrentLine->m_eVertAlignType == eVertAlignType::vatUnknown &&
-                    pCont->m_eVertAlignType != eVertAlignType::vatUnknown)
-                {
-                    //note считаем, что линия может иметь только один тип
-                    m_pCurrentLine->m_eVertAlignType = pCont->m_eVertAlignType;
-                }
-                return;
-            }
-        }
-
-        // линия не нашлась - не беда - создадим новую
-        m_pCurrentLine = new CTextLine();
-        m_pCurrentLine->m_dBaselinePos = pCont->m_dBaselinePos;
-        m_arTextLine.push_back(m_pCurrentLine);
-        return;
-    }
-
     void CPage::DeleteTextClipPage()
     {
         if (m_bIsDeleteTextClipPage)
@@ -248,6 +206,9 @@ namespace NSDocxRenderer
             pImage->m_dRotate = dRotation;
         }
 
+        pImage->m_dBaselinePos = pImage->m_dTop + pImage->m_dHeight;
+        pImage->m_dRight = pImage->m_dLeft + pImage->m_dWidth;
+
         m_arImages.push_back(pImage);
     }
 
@@ -256,7 +217,6 @@ namespace NSDocxRenderer
     {
         m_pTransform->TransformPoint(dX, dY);
         m_oVector.MoveTo(dX, dY);
-
     }
 
     void CPage::LineTo(double& dX, double& dY)
@@ -292,7 +252,7 @@ namespace NSDocxRenderer
     {
         if ((m_oVector.m_dLeft <= m_oVector.m_dRight) && (m_oVector.m_dTop <= m_oVector.m_dBottom))
         {
-            //Убираем все белые прямоугольники
+            //Убираем все белые прямоугольники-подложки
             if (0x00 != (lType >> 8) && m_pBrush->Color1 == c_iWhiteColor)
             {
                 delete pInfo;
@@ -407,6 +367,7 @@ namespace NSDocxRenderer
         pCont->m_dTop       = dBaseLinePos - dTextH - m_oManager.m_oFont.m_dBaselineOffset;
         pCont->m_dWidth		= dTextW;
         pCont->m_dHeight	= dTextH;
+        pCont->m_dRight     = dTextX + dTextW;
 
         pCont->m_oText = oText;
 
@@ -427,50 +388,71 @@ namespace NSDocxRenderer
     void CPage::AnalyzeCollectedShapes()
     {
         //todo Объединить контур и заливку одного рисунка в шейпе если m_strPath одинаковые
-
+        RemoveSubstratesUnderPictures();
         CorrelateContWithShape();
         DetermineLinesType();
     }
 
+    void CPage::RemoveSubstratesUnderPictures()
+    {
+        for (auto pImage : m_arImages)
+        {
+            for (auto pShape : m_arShapes)
+            {
+                if (pShape->m_bIsNotNecessaryToUse)
+                {
+                    continue;
+                }
+
+                //Note Картинка может выходить за пределы страницы
+                if ((fabs(pImage->m_dTop - pShape->m_dTop) < c_dGRAPHICS_ERROR_MM ||
+                     (pImage->m_dTop < 0.0 && pShape->m_dTop == 0.0))  &&
+                    (fabs(pImage->m_dLeft - pShape->m_dLeft) < c_dGRAPHICS_ERROR_MM ||
+                     (pImage->m_dLeft < 0.0 && pShape->m_dLeft == 0.0)) &&
+                    (fabs(pImage->m_dBaselinePos - pShape->m_dBaselinePos) < c_dGRAPHICS_ERROR_MM ||
+                     (pImage->m_dBaselinePos > m_dHeight && pShape->m_dLeft == m_dHeight)) &&
+                    (fabs(pImage->m_dRight - pShape->m_dRight) < c_dGRAPHICS_ERROR_MM ||
+                     (pImage->m_dRight > m_dWidth && pShape->m_dRight == m_dWidth)))
+                {
+                    pShape->m_bIsNotNecessaryToUse = true;
+                }
+            }
+        }
+    }
+
     void CPage::CorrelateContWithShape()
     {
-        //
         for (auto pShape : m_arShapes)
         {
             if (pShape->m_bIsNotNecessaryToUse ||
-                (pShape->m_eGraphicsType != eGraphicsType::gtRectangle &&
-                 pShape->m_eGraphicsType != eGraphicsType::gtCurve))
+                    (pShape->m_eGraphicsType != eGraphicsType::gtRectangle &&
+                     pShape->m_eGraphicsType != eGraphicsType::gtCurve))
             {
                 continue;
             }
 
             for (auto pCont : m_arSymbol)
             {
-                double dTopShape = pShape->m_dTop;
-                double dTopCont = pCont->m_dTop;
-                double dBottomShape = pShape->m_dTop + pShape->m_dHeight;
-                double dBottomCont = pCont->m_dBaselinePos - pCont->m_dBaselineOffset;
-                double dRightShape = pShape->m_dLeft + pShape->m_dWidth;
-                double dRightCont = pCont->m_dLeft + pCont->m_dWidth;
+                double dSomeBaseLine1 = pCont->m_dBaselinePos - pCont->m_dHeight * 0.75;
+                double dSomeBaseLine2 = pCont->m_dBaselinePos - pCont->m_dHeight * 0.5;
+                double dSomeBaseLine3 = pCont->m_dBaselinePos - pCont->m_dHeight * 0.25;
 
-                double dSomeBaseLine1 = dBottomCont - pCont->m_dHeight * 0.75;
-                double dSomeBaseLine2 = dBottomCont - pCont->m_dHeight * 0.5;
-                double dSomeBaseLine3 = dBottomCont - pCont->m_dHeight * 0.25;
+                eHorizontalCrossingType eHType = pCont->GetHorizontalCrossingType(pShape);
 
                 //Условие пересечения по вертикали для подчеркиваний/зачеркиваний
-                bool bIf1 = ((fabs(dTopShape - dTopCont) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM ||
-                              dTopShape > dTopCont) &&
-                             (fabs(dBottomShape - dBottomCont) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM ||
-                              dBottomShape < dBottomCont)) ||
-                             (fabs(dTopShape - dBottomCont) < pCont->m_dHeight * 0.15);
+                bool bIf1 = ((fabs(pShape->m_dTop - pCont->m_dTop) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM ||
+                              pShape->m_dTop > pCont->m_dTop) &&
+                             (fabs(pShape->m_dBaselinePos - pCont->m_dBaselinePos) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM ||
+                              pShape->m_dBaselinePos < pCont->m_dBaselinePos)) ||
+                        (fabs(pShape->m_dTop - pCont->m_dBaselinePos) < pCont->m_dHeight * 0.2);
                 //Условие пересечения по вертикали для выделения текста
-                bool bIf2 = (dSomeBaseLine1 > dTopShape && dSomeBaseLine1 < dBottomShape &&
-                             dSomeBaseLine2 > dTopShape && dSomeBaseLine2 < dBottomShape &&
-                             dSomeBaseLine3 > dTopShape && dSomeBaseLine3 < dBottomShape);
+                bool bIf2 = (dSomeBaseLine1 > pShape->m_dTop && dSomeBaseLine1 < pShape->m_dBaselinePos &&
+                             dSomeBaseLine2 > pShape->m_dTop && dSomeBaseLine2 < pShape->m_dBaselinePos &&
+                             dSomeBaseLine3 > pShape->m_dTop && dSomeBaseLine3 < pShape->m_dBaselinePos);
                 //Условие пересечения по горизонтали
-                bool bIf3 = fabs(pShape->m_dLeft - pCont->m_dLeft) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM ||
-                        fabs(dRightShape - dRightCont) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM ||
-                        (pShape->m_dLeft < pCont->m_dLeft && dRightShape > dRightCont);
+                bool bIf3 = eHType != eHorizontalCrossingType::hctUnknown &&
+                            eHType != eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext &&
+                            eHType != eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext;
                 //Условие для размеров по высоте (нужно если только это не выделение)
                 bool bIf4 = bIf2 ||
                         fabs(pCont->m_dHeight - pShape->m_dHeight) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM ||
@@ -493,10 +475,10 @@ namespace NSDocxRenderer
         for (size_t i = 0; i < m_arShapes.size(); ++i)
         {
             if (m_arShapes[i]->m_bIsNotNecessaryToUse ||
-                !m_arShapes[i]->m_pCont || //note определяем тип только для зачеркиваний/подчеркиваний/выделений
-                m_arShapes[i]->m_dHeight > c_dMAX_LINE_HEIGHT_MM || //рассматриваем только тонкие объекты
-                (m_arShapes[i]->m_eGraphicsType != eGraphicsType::gtRectangle &&
-                m_arShapes[i]->m_eGraphicsType != eGraphicsType::gtCurve))
+                    !m_arShapes[i]->m_pCont || //note определяем тип только для зачеркиваний/подчеркиваний/выделений
+                    m_arShapes[i]->m_dHeight > c_dMAX_LINE_HEIGHT_MM || //рассматриваем только тонкие объекты
+                    (m_arShapes[i]->m_eGraphicsType != eGraphicsType::gtRectangle &&
+                     m_arShapes[i]->m_eGraphicsType != eGraphicsType::gtCurve))
             {
                 continue;
             }
@@ -557,14 +539,57 @@ namespace NSDocxRenderer
 
     void CPage::AnalyzeCollectedSymbols()
     {
-        DetermineIfThereAreShadows();
+        for (size_t i = 0; i < m_arSymbol.size(); i++)
+        {
+            auto pCont = m_arSymbol[i];
 
+            if (pCont->m_bIsNotNecessaryToUse ||
+                    m_arSymbol.size() < 2 ||
+                    i >= m_arSymbol.size() - 1)
+            {
+                continue;
+            }
+
+            for (size_t j = i + 1; j < m_arSymbol.size(); j++)
+            {
+                auto pNext = m_arSymbol[j];
+
+                if (pNext->m_bIsNotNecessaryToUse)
+                {
+                    continue;
+                }
+
+                eVerticalCrossingType eVType = pCont->GetVerticalCrossingType(pNext);
+                eHorizontalCrossingType eHType = pCont->GetHorizontalCrossingType(pNext);
+
+                if (pCont->IsThereAreShadows(pNext, eVType, eHType))
+                {
+                    continue;
+                }
+
+                if (pCont->IsVertAlignTypeBetweenConts(pNext, eVType, eHType))
+                {
+                    continue;
+                }
+
+                if (pCont->IsDuplicate(pNext, eVType))
+                {
+                    continue;
+                }
+            }
+        }
+
+        DetermineStrikeoutsUnderlinesHighlights();
+    }
+
+    void CPage::DetermineStrikeoutsUnderlinesHighlights()
+    {
         for (auto pShape : m_arShapes)
         {
             if (!pShape->m_pCont || //note если нет указателя, то текст далеко от графики
                 (pShape->m_eGraphicsType != eGraphicsType::gtRectangle &&
-                pShape->m_eGraphicsType != eGraphicsType::gtCurve &&
-                pShape->m_eLineType != eLineType::ltUnknown))
+                 pShape->m_eGraphicsType != eGraphicsType::gtCurve &&
+                 pShape->m_eLineType != eLineType::ltUnknown))
             {
                 continue;
             }
@@ -579,75 +604,21 @@ namespace NSDocxRenderer
                 }
             }
         }
-
-        DetermineVertAlignTypeBetweenConts();
-    }
-
-    void CPage::DetermineIfThereAreShadows()
-    {
-        for (size_t i = 0; i < m_arSymbol.size(); i++)
-        {
-            auto pCont = m_arSymbol[i];
-
-            if (pCont->m_bIsNotNecessaryToUse ||
-                m_arSymbol.size() < 2 ||
-                i >= m_arSymbol.size() - 1)
-            {
-                continue;
-            }
-
-            auto pNext = m_arSymbol[i+1];
-
-            double dRightCont = pCont->m_dLeft + pCont->m_dWidth;
-            double dRightNext = pNext->m_dLeft + pNext->m_dWidth;
-
-            //Условие пересечения по вертикали
-            bool bIf1 = (pCont->m_dTop < pNext->m_dTop && pCont->m_dBaselinePos < pNext->m_dBaselinePos); //текущий cont выше
-            bool bIf2 = (pCont->m_dTop > pNext->m_dTop && pCont->m_dBaselinePos > pNext->m_dBaselinePos); //текущий cont ниже
-            //Условие пересечения по горизонтали
-            bool bIf3 = pCont->m_dLeft < pNext->m_dLeft && dRightCont > pNext->m_dLeft; //текущий cont левее
-            bool bIf4 = pNext->m_dLeft < pCont->m_dLeft && dRightNext > pCont->m_dLeft; //текущий cont правее
-            //Размеры шрифта и текст должны бать одинаковыми
-            bool bIf5 = pCont->m_oFont.Size == pNext->m_oFont.Size;
-            bool bIf6 = pCont->m_oText == pNext->m_oText;
-            //Цвет тени должен быть серым
-            bool bIf7 = pCont->m_oBrush.Color1 == c_iGreyColor;
-            bool bIf8 = pNext->m_oBrush.Color1 == c_iGreyColor;
-
-            if ((bIf1 || bIf2) && (bIf3 || bIf4) && bIf5 && bIf6 && (bIf7 || bIf8))
-            {
-                if (bIf1 && bIf3 && bIf8)
-                {
-                    pCont->m_bIsShadowPresent = true;
-                    pNext->m_bIsNotNecessaryToUse = true;
-                }
-                else if (bIf2 && bIf4 && bIf7)
-                {
-                    pNext->m_bIsShadowPresent = true;
-                    pCont->m_bIsNotNecessaryToUse = true;
-                }
-            }
-        }
     }
 
     bool CPage::IsLineCrossingText(const CShape* pShape, CContText* pCont)
     {
-        double dTopShape = pShape->m_dTop;
-        double dTopCont = pCont->m_dTop + pCont->m_dHeight/2; //note Height - это максимально возможный размер символа. Больше реального размера.
-        double dBottomShape = pShape->m_dTop + pShape->m_dHeight;
-        double dBottomContText = pCont->m_dBaselinePos;
-
-        double dRightShape = pShape->m_dLeft + pShape->m_dWidth;
-        double dRightContText = pCont->m_dLeft + pCont->m_dWidth;
+        double dTopBorder = pCont->m_dTop + pCont->m_dHeight/3; //note Height - это максимально возможный размер символа. Больше реального размера.
+        eHorizontalCrossingType eHType = pCont->GetHorizontalCrossingType(pShape);
 
         bool bIf1 = pShape->m_eGraphicsType == eGraphicsType::gtRectangle &&
                 pShape->m_eLineType != eLineType::ltUnknown;
         //Условие пересечения по вертикали
-        bool bIf2 = dTopShape > dTopCont && dBottomShape < dBottomContText;
+        bool bIf2 = pShape->m_dTop > dTopBorder && pShape->m_dBaselinePos < pCont->m_dBaselinePos;
         //Условие пересечения по горизонтали
-        bool bIf3 = fabs(pShape->m_dLeft - pCont->m_dLeft) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM ||
-                fabs(dRightShape - dRightContText) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM ||
-                (pShape->m_dLeft < pCont->m_dLeft && dRightShape > dRightContText);
+        bool bIf3 = eHType != eHorizontalCrossingType::hctUnknown &&
+                    eHType != eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext &&
+                    eHType != eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext;
         //Условие для размеров по высоте
         bool bIf4 = pShape->m_dHeight < pCont->m_dHeight &&
                 pCont->m_dHeight - pShape->m_dHeight > c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM;
@@ -667,20 +638,17 @@ namespace NSDocxRenderer
 
     bool CPage::IsLineBelowText(const CShape* pShape, CContText* pCont)
     {
-        double dTopShape = pShape->m_dTop;
-        double dBottomContText = pCont->m_dBaselinePos;
+        eHorizontalCrossingType eHType = pCont->GetHorizontalCrossingType(pShape);
 
-        double dRightShape = pShape->m_dLeft + pShape->m_dWidth;
-        double dRightContText = pCont->m_dLeft + pCont->m_dWidth;
-
-        bool bIf1 = (pShape->m_eGraphicsType == eGraphicsType::gtRectangle || pShape->m_eGraphicsType == eGraphicsType::gtCurve) &&
+        bool bIf1 = (pShape->m_eGraphicsType == eGraphicsType::gtRectangle ||
+                     pShape->m_eGraphicsType == eGraphicsType::gtCurve) &&
                 pShape->m_eLineType != eLineType::ltUnknown;
         //Условие по вертикали
-        bool bIf2 = fabs(dTopShape - dBottomContText) < pCont->m_dHeight * 0.15;
+        bool bIf2 = fabs(pShape->m_dTop - pCont->m_dBaselinePos) < pCont->m_dHeight * 0.15;
         //Условие пересечения по горизонтали
-        bool bIf3 = fabs(pShape->m_dLeft - pCont->m_dLeft) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM ||
-                fabs(dRightShape - dRightContText) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM ||
-                (pShape->m_dLeft < pCont->m_dLeft && dRightShape > dRightContText);
+        bool bIf3 = eHType != eHorizontalCrossingType::hctUnknown &&
+                    eHType != eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext &&
+                    eHType != eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext;
         //Условие для размеров по высоте
         bool bIf4 = pShape->m_dHeight < pCont->m_dHeight &&
                 pCont->m_dHeight - pShape->m_dHeight > c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM;
@@ -698,25 +666,20 @@ namespace NSDocxRenderer
 
     bool CPage::IsItHighlightingBackground(const CShape* pShape, CContText* pCont)
     {
-        double dTopShape = pShape->m_dTop;
-        double dBottomShape = pShape->m_dTop + pShape->m_dHeight;
-        double dBottomContText = pCont->m_dBaselinePos - pCont->m_dBaselineOffset;
-        double dSomeBaseLine1 = dBottomContText - pCont->m_dHeight * 0.75;
-        double dSomeBaseLine2 = dBottomContText - pCont->m_dHeight * 0.5;
-        double dSomeBaseLine3 = dBottomContText - pCont->m_dHeight * 0.25;
-
-        double dRightShape = pShape->m_dLeft + pShape->m_dWidth;
-        double dRightContText = pCont->m_dLeft + pCont->m_dWidth;
+        double dSomeBaseLine1 = pCont->m_dBaselinePos - pCont->m_dHeight * 0.75;
+        double dSomeBaseLine2 = pCont->m_dBaselinePos - pCont->m_dHeight * 0.5;
+        double dSomeBaseLine3 = pCont->m_dBaselinePos - pCont->m_dHeight * 0.25;
+        eHorizontalCrossingType eHType = pCont->GetHorizontalCrossingType(pShape);
 
         bool bIf1 = pShape->m_eGraphicsType == eGraphicsType::gtRectangle;
         //Условие пересечения по вертикали
-        bool bIf2 = (dSomeBaseLine1 > dTopShape && dSomeBaseLine1 < dBottomShape &&
-                     dSomeBaseLine2 > dTopShape && dSomeBaseLine2 < dBottomShape &&
-                     dSomeBaseLine3 > dTopShape && dSomeBaseLine3 < dBottomShape);
+        bool bIf2 = (dSomeBaseLine1 > pShape->m_dTop && dSomeBaseLine1 < pShape->m_dBaselinePos &&
+                     dSomeBaseLine2 > pShape->m_dTop && dSomeBaseLine2 < pShape->m_dBaselinePos &&
+                     dSomeBaseLine3 > pShape->m_dTop && dSomeBaseLine3 < pShape->m_dBaselinePos);
         //Условие пересечения по горизонтали
-        bool bIf3 = fabs(pShape->m_dLeft - pCont->m_dLeft) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM ||
-                fabs(dRightShape - dRightContText) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM ||
-                (pShape->m_dLeft < pCont->m_dLeft && dRightShape > dRightContText);
+        bool bIf3 = eHType != eHorizontalCrossingType::hctUnknown &&
+                    eHType != eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext &&
+                    eHType != eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext;
         //Цвета должны быть разными
         bool bIf4 = pCont->m_oBrush.Color1 != pShape->m_oBrush.Color1;
         bool bIf5 = pShape->m_oBrush.Color1 == c_iBlackColor && pShape->m_oPen.Color == c_iWhiteColor;
@@ -733,76 +696,9 @@ namespace NSDocxRenderer
         return false;
     }
 
-    void CPage::DetermineVertAlignTypeBetweenConts()
+    void CPage::AnalyzeLines()
     {
-        for (size_t i = 0; i < m_arSymbol.size(); i++)
-        {
-            auto pCont = m_arSymbol[i];
-
-            if (pCont->m_bIsNotNecessaryToUse ||
-                m_arSymbol.size() < 2 ||
-                i >= m_arSymbol.size() - 1)
-            {
-                continue;
-            }
-
-            auto pNext = m_arSymbol[i+1];
-
-            double dRightCont = pCont->m_dLeft + pCont->m_dWidth;
-            double dRightNext = pNext->m_dLeft + pNext->m_dWidth;
-            CrossingType eType = pCont->GetCrossingType(pNext);
-
-            //Условие пересечения по вертикали
-            bool bIf1 = eType == ctCurrentAboveNext; //текущая линия выше
-            bool bIf2 = eType == ctCurrentBelowNext; //текущая линия ниже
-            //Условие пересечения по горизонтали
-            bool bIf3 = fabs(dRightCont - pNext->m_dLeft) < c_dTHE_STRING_X_PRECISION_MM * 3; //текущая линия левее
-            bool bIf4 = fabs(pCont->m_dLeft - dRightNext) < c_dTHE_STRING_X_PRECISION_MM * 3; //текущая линия правее
-            //Размеры шрифта должны бать разными
-            bool bIf5 = pCont->m_oFont.Size * 0.7 > pNext->m_oFont.Size;
-            bool bIf6 = pCont->m_oFont.Size < pNext->m_oFont.Size * 0.7;
-
-            if ((bIf1 || bIf2) && (bIf3 || bIf4) && (bIf5 || bIf6))
-             {
-                if (bIf1 && bIf5)
-                {
-                    pNext->m_eVertAlignType = eVertAlignType::vatSubscript;
-                    pNext->m_pCont = pCont;
-                    pCont->m_eVertAlignType = eVertAlignType::vatBase;
-                    pCont->m_pCont = pNext;
-                }
-                else if (bIf2 && bIf5)
-                {
-                    pNext->m_eVertAlignType = eVertAlignType::vatSuperscript;
-                    pNext->m_pCont = pCont;
-                    pCont->m_eVertAlignType = eVertAlignType::vatBase;
-                    pCont->m_pCont = pNext;
-                }
-                else if (bIf1 && bIf6)
-                {
-                    pCont->m_eVertAlignType = eVertAlignType::vatSuperscript;
-                    pCont->m_pCont = pNext;
-                    pNext->m_eVertAlignType = eVertAlignType::vatBase;
-                    pNext->m_pCont = pCont;
-                }
-                else if (bIf2 && bIf6)
-                {
-                    pCont->m_eVertAlignType = eVertAlignType::vatSubscript;
-                    pCont->m_pCont = pNext;
-                    pNext->m_eVertAlignType = eVertAlignType::vatBase;
-                    pNext->m_pCont = pCont;
-                }
-            }
-        }
-    }
-
-    void CPage::BuildLines()
-    {
-        for (auto pCont : m_arSymbol)
-        {
-            //note Элементы в m_arSymbol в случайных местах страницы
-            BuildLines(pCont);
-        }
+        BuildLines();
 
         MergeLinesByVertAlignType();
 
@@ -825,106 +721,232 @@ namespace NSDocxRenderer
         }
     }
 
-    void CPage::BuildLines(const CContText* pCont)
+    void CPage::BuildLines()
     {
-        if (pCont->m_bIsNotNecessaryToUse)
+        //note Элементы в m_arSymbol в случайных местах страницы
+        for (auto pCont : m_arSymbol)
         {
-            return;
-        }
-
-        double dTextX       = pCont->m_dLeft;
-        double dTextW       = pCont->m_dWidth;
-        NSStringUtils::CStringUTF32 oText(pCont->m_oText);
-
-        SetCurrentLineByBaseline(pCont);
-
-        CContText* pLastCont = nullptr;
-        size_t nCountConts = m_pCurrentLine->m_arConts.size();
-        if (nCountConts != 0)
-            pLastCont = m_pCurrentLine->m_arConts.back();
-
-        if (nullptr == pLastCont)
-        {
-            // первое слово в линии
-            CContText* pCurrCont = new CContText(*pCont);
-
-            pCurrCont->m_dLastX = dTextX;
-
-            m_pCurrentLine->AddCont(pCurrCont);
-            m_dLastTextX = dTextX;
-            m_dLastTextY = pCurrCont->m_dBaselinePos;
-            m_dLastTextX_block = m_dLastTextX;
-            return;
-        }
-
-        if (pLastCont->IsEqual(pCont))
-        {
-            bool bIsConditionPassed = false;
-            double dRight = pLastCont->m_dLeft + pLastCont->m_dWidth;
-
-            // настройки одинаковые. теперь смотрим, на расположение
-            if (fabs(dRight - dTextX) < c_dTHE_STRING_X_PRECISION_MM)
+            if (pCont->m_bIsNotNecessaryToUse)
             {
-                // продолжаем слово
-                pLastCont->m_oText += oText;
-                pLastCont->m_dWidth	= (dTextX + dTextW - pLastCont->m_dLeft);
-                bIsConditionPassed = true;
+                continue;
             }
-            else if ((dRight < dTextX) && ((dTextX - dRight) < pCont->m_dSpaceWidthMM))
+
+            SelectCurrentLine(pCont);
+
+            CContText* pLastCont = nullptr;
+            CContText* pNewCont = nullptr;
+            size_t nCountConts = m_pCurrentLine->m_arConts.size();
+            if (nCountConts != 0)
+                pLastCont = m_pCurrentLine->m_arConts.back();
+
+            if (nullptr == pLastCont)
             {
-                // продолжаем слово с пробелом
-                pLastCont->m_oText += uint32_t(' ');
-                pLastCont->m_oText += oText;
-                pLastCont->m_dWidth	= (dTextX + dTextW - pLastCont->m_dLeft);
-                bIsConditionPassed = true;
+                // первое слово в линии
+                pNewCont = new CContText(*pCont);
+
+                pNewCont->m_dLastX = pCont->m_dLeft;
+
+                m_pCurrentLine->AddCont(pNewCont);
+                m_dLastTextX = pNewCont->m_dLeft;
+                m_dLastTextY = pNewCont->m_dBaselinePos;
+                m_dLastTextX_block = m_dLastTextX;
+
+#if USING_DELETE_DUPLICATING_CONTS == 0
+                //Сразу распределим дубликаты по линиям
+                while (pNewCont->m_pDuplicateCont)
+                {
+                    pNewCont = pNewCont->m_pDuplicateCont;
+
+                    CTextLine* pDuplicateLine = m_pCurrentLine->m_pDuplicateLine;
+                    pDuplicateLine->m_dBaselinePos = pNewCont->m_dBaselinePos;
+                    pDuplicateLine->AddCont(new CContText(*pNewCont));
+
+                    //Чтобы дубликат не попал дальше в работу
+                    pNewCont->m_bIsNotNecessaryToUse = true;
+                    m_pCurrentLine = pDuplicateLine;
+                }
+#endif
+                continue;
             }
-            else if (fabs(pCont->m_dBaselinePos - pLastCont->m_dBaselinePos) < 0.01 &&
-                     fabs(m_dLastTextY - pLastCont->m_dBaselinePos) < 0.01 &&
-                     fabs(m_dLastTextX - pLastCont->m_dLastX) < 0.01)
+
+            if (pLastCont->IsEqual(pCont))
             {
-                // идет текст подряд, но с расстояниями что-то не так. смотрим - если новый текст идет после предыдущего, но
-                // просто левее чем предыдущий x + w - то считаем это нормальным. и дописываем слово. корректируя длину
-                if (dTextX < dRight && dTextX > pLastCont->m_dLastX)
+                bool bIsConditionPassed = false;
+
+                // настройки одинаковые. теперь смотрим, на расположение
+                if (fabs(pLastCont->m_dRight - pCont->m_dLeft) < c_dTHE_STRING_X_PRECISION_MM)
                 {
                     // продолжаем слово
-                    pLastCont->m_oText += oText;
-                    double dNewW = (dTextX + dTextW - pLastCont->m_dLeft);
-                    if (pLastCont->m_dWidth < dNewW)
-                        pLastCont->m_dWidth = dNewW;
+                    pLastCont->m_oText += pCont->m_oText;
+                    pLastCont->m_dWidth	= (pCont->m_dRight - pLastCont->m_dLeft);
+                    pLastCont->m_dRight = pLastCont->m_dLeft + pLastCont->m_dWidth;
                     bIsConditionPassed = true;
                 }
-                // еще одна заглушка на большой пробел - добавляем пробел, потом в линии все разрулится через spacing
-                else if (dTextX > dRight && (dTextX - dRight) < 5 && fabs(m_dLastTextX_block - m_dLastTextX) < 0.01)
+                else if ((pLastCont->m_dRight < pCont->m_dLeft) && ((pCont->m_dLeft - pLastCont->m_dRight) < pCont->m_dSpaceWidthMM))
                 {
                     // продолжаем слово с пробелом
                     pLastCont->m_oText += uint32_t(' ');
-                    pLastCont->m_oText += oText;
-                    pLastCont->m_dWidth	= (dTextX + dTextW - pLastCont->m_dLeft);
+                    pLastCont->m_oText += pCont->m_oText;
+                    pLastCont->m_dWidth	= (pCont->m_dRight - pLastCont->m_dLeft);
+                    pLastCont->m_dRight = pLastCont->m_dLeft + pLastCont->m_dWidth;
                     bIsConditionPassed = true;
+                }
+                else if (fabs(pCont->m_dBaselinePos - pLastCont->m_dBaselinePos) < 0.01 &&
+                         fabs(m_dLastTextY - pLastCont->m_dBaselinePos) < 0.01 &&
+                         fabs(m_dLastTextX - pLastCont->m_dLastX) < 0.01)
+                {
+                    // идет текст подряд, но с расстояниями что-то не так. смотрим - если новый текст идет после предыдущего, но
+                    // просто левее чем предыдущий x + w - то считаем это нормальным. и дописываем слово. корректируя длину
+                    if (pCont->m_dLeft < pLastCont->m_dRight && pCont->m_dLeft > pLastCont->m_dLastX)
+                    {
+                        // продолжаем слово
+                        pLastCont->m_oText += pCont->m_oText;
+                        double dNewW = (pCont->m_dRight - pLastCont->m_dLeft);
+                        if (pLastCont->m_dWidth < dNewW)
+                            pLastCont->m_dWidth = dNewW;
+                        pLastCont->m_dRight = pLastCont->m_dLeft + pLastCont->m_dWidth;
+                        bIsConditionPassed = true;
+                    }
+                    // еще одна заглушка на большой пробел - добавляем пробел, потом в линии все разрулится через spacing
+                    else if (pCont->m_dLeft > pLastCont->m_dRight && (pCont->m_dLeft - pLastCont->m_dRight) < 5 && fabs(m_dLastTextX_block - m_dLastTextX) < 0.01)
+                    {
+                        // продолжаем слово с пробелом
+                        pLastCont->m_oText += uint32_t(' ');
+                        pLastCont->m_oText += pCont->m_oText;
+                        pLastCont->m_dWidth	= (pCont->m_dRight - pLastCont->m_dLeft);
+                        pLastCont->m_dRight = pLastCont->m_dLeft + pLastCont->m_dWidth;
+                        bIsConditionPassed = true;
+                    }
+                }
+
+                if (bIsConditionPassed)
+                {
+                    m_dLastTextX = pCont->m_dLeft;
+                    m_dLastTextY = pCont->m_dBaselinePos;
+                    m_dLastTextX_block = m_dLastTextX;
+                    pLastCont->m_dLastX = pCont->m_dLeft;
+                    if (!pLastCont->m_pCont)
+                    {
+                        pLastCont->m_pCont = pCont->m_pCont;
+                        pLastCont->m_eVertAlignType = pCont->m_eVertAlignType;
+                    }
+                    continue;
                 }
             }
 
-            if (bIsConditionPassed)
+            // либо пробел большой между словами, либо новый текст левее, либо настройки не те (шрифт, кисть)
+            // либо все вместе... просто добавл¤ем новое слово
+            pNewCont = pCont;
+            m_pCurrentLine->AddCont(new CContText(*pNewCont));
+            m_dLastTextX = pCont->m_dLeft;
+            m_dLastTextY = pCont->m_dBaselinePos;
+            m_dLastTextX_block = m_dLastTextX;
+
+#if USING_DELETE_DUPLICATING_CONTS == 0
+            while (pNewCont->m_pDuplicateCont)
             {
-                m_dLastTextX = dTextX;
-                m_dLastTextY = pCont->m_dBaselinePos;
-                m_dLastTextX_block = m_dLastTextX;
-                pLastCont->m_dLastX = dTextX;
-                if (!pLastCont->m_pCont)
+                pNewCont = pNewCont->m_pDuplicateCont;
+
+                CTextLine* pDuplicateLine = m_pCurrentLine->m_pDuplicateLine;
+                pDuplicateLine->m_dBaselinePos = pNewCont->m_dBaselinePos;
+                pDuplicateLine->AddCont(new CContText(*pNewCont));
+
+                //Чтобы дубликат не попал дальше в работу
+                pNewCont->m_bIsNotNecessaryToUse = true;
+                m_pCurrentLine = pDuplicateLine;
+            }
+#endif
+        }
+    }
+
+    void CPage::SelectCurrentLine(const CContText* pCont)
+    {
+        if ((nullptr == m_pCurrentLine) || (tatBlockChar == m_eTextAssociationType))
+        {
+            // пустая (в плане текста) страница
+            m_pCurrentLine = new CTextLine();
+            m_pCurrentLine->m_dBaselinePos = pCont->m_dBaselinePos;
+            if (m_pCurrentLine->m_eVertAlignType == eVertAlignType::vatUnknown &&
+                    pCont->m_eVertAlignType != eVertAlignType::vatUnknown)
+            {
+                //note считаем, что линия может иметь только один тип
+                m_pCurrentLine->m_eVertAlignType = pCont->m_eVertAlignType;
+            }
+            m_arTextLine.push_back(m_pCurrentLine);
+
+#if USING_DELETE_DUPLICATING_CONTS == 0
+            const CContText* pCurrCont = pCont;
+            CTextLine* pCurrLine = m_pCurrentLine;
+
+            while (pCurrCont->m_pDuplicateCont)
+            {
+                pCurrCont = pCurrCont->m_pDuplicateCont;
+
+                CTextLine* pLine = new CTextLine();
+                pLine->m_dBaselinePos = pCurrCont->m_dBaselinePos;
+                m_arTextLine.push_back(pLine);
+
+                pCurrLine->m_pDuplicateLine = pLine;
+                pCurrLine = pLine;
+            }
+#endif
+            return;
+        }
+
+        if (fabs(m_pCurrentLine->m_dBaselinePos - pCont->m_dBaselinePos) <= c_dTHE_SAME_STRING_Y_PRECISION_MM)
+        {
+            if (m_pCurrentLine->m_eVertAlignType == eVertAlignType::vatUnknown &&
+                    pCont->m_eVertAlignType != eVertAlignType::vatUnknown)
+            {
+                //note считаем, что линия может иметь только один тип
+                m_pCurrentLine->m_eVertAlignType = pCont->m_eVertAlignType;
+            }
+            return;
+        }
+
+        for (size_t i = 0; i < m_arTextLine.size(); ++i)
+        {
+            if (fabs(m_arTextLine[i]->m_dBaselinePos - pCont->m_dBaselinePos) <= c_dTHE_SAME_STRING_Y_PRECISION_MM)
+            {
+                m_pCurrentLine = m_arTextLine[i];
+                if (m_pCurrentLine->m_eVertAlignType == eVertAlignType::vatUnknown &&
+                        pCont->m_eVertAlignType != eVertAlignType::vatUnknown)
                 {
-                    pLastCont->m_pCont = pCont->m_pCont;
-                    pLastCont->m_eVertAlignType = pCont->m_eVertAlignType;
+                    //note считаем, что линия может иметь только один тип
+                    m_pCurrentLine->m_eVertAlignType = pCont->m_eVertAlignType;
                 }
                 return;
             }
         }
 
-        // либо пробел большой между словами, либо новый текст левее, либо настройки не те (шрифт, кисть)
-        // либо все вместе... просто добавл¤ем новое слово
-        m_pCurrentLine->AddCont(new CContText(*pCont));
-        m_dLastTextX = dTextX;
-        m_dLastTextY = pCont->m_dBaselinePos;
-        m_dLastTextX_block = m_dLastTextX;
+        // линия не нашлась - не беда - создадим новую
+        m_pCurrentLine = new CTextLine();
+        m_pCurrentLine->m_dBaselinePos = pCont->m_dBaselinePos;
+        if (m_pCurrentLine->m_eVertAlignType == eVertAlignType::vatUnknown &&
+                pCont->m_eVertAlignType != eVertAlignType::vatUnknown)
+        {
+            //note считаем, что линия может иметь только один тип
+            m_pCurrentLine->m_eVertAlignType = pCont->m_eVertAlignType;
+        }
+        m_arTextLine.push_back(m_pCurrentLine);
+
+#if USING_DELETE_DUPLICATING_CONTS == 0
+        const CContText* pCurrCont = pCont;
+        CTextLine* pCurrLine = m_pCurrentLine;
+
+        while (pCurrCont->m_pDuplicateCont)
+        {
+            pCurrCont = pCurrCont->m_pDuplicateCont;
+
+            CTextLine* pLine = new CTextLine();
+            pLine->m_dBaselinePos = pCurrCont->m_dBaselinePos;
+            m_arTextLine.push_back(pLine);
+
+            pCurrLine->m_pDuplicateLine = pLine;
+            pCurrLine = pLine;
+        }
+#endif
+        return;
     }
 
     void CPage::MergeLinesByVertAlignType()
@@ -950,7 +972,7 @@ namespace NSDocxRenderer
                 auto pLineNext = GetNextTextLine(i);
 
                 if (pLine->m_eVertAlignType == eVertAlignType::vatSuperscript &&
-                    pLineNext->m_eVertAlignType == eVertAlignType::vatBase)
+                        pLineNext->m_eVertAlignType == eVertAlignType::vatBase)
                 {
                     pLine->m_bIsNotNecessaryToUse = true;
                     for (auto pCont : pLine->m_arConts)
@@ -1003,28 +1025,16 @@ namespace NSDocxRenderer
         {
             for (auto pCont : pLine->m_arConts)
             {
-                if (pCont->m_pShape &&
-                    pCont->m_pShape != pDominantShape)
+                if (pCont->m_pShape && pCont->m_pShape != pDominantShape)
                 {
-                    double dLeftShape = pCont->m_pShape->m_dLeft;
-                    double dLeftCont = pCont->m_dLeft;
-                    double dRightShape = dLeftShape + pCont->m_pShape->m_dWidth;
-                    double dRightCont = dLeftCont + pCont->m_dWidth;
-
-                    if (dLeftShape < dLeftCont && dRightShape > dRightCont)
+                    if (pCont->m_pShape->m_dLeft < pCont->m_dLeft &&
+                        pCont->m_pShape->m_dRight > pCont->m_dRight)
                     {
-                        if (!pDominantShape)
+                        if (!pDominantShape ||
+                            (pCont->m_pShape->m_dLeft < pDominantShape->m_dLeft &&
+                            pCont->m_pShape->m_dRight > pDominantShape->m_dRight))
                         {
                             pDominantShape = pCont->m_pShape;
-                        }
-                        else
-                        {
-                            double dLeftDomShape = pDominantShape->m_dLeft;
-                            double dRightDomShape = dLeftDomShape + pDominantShape->m_dWidth;
-                            if (dLeftShape < dLeftDomShape && dRightShape > dRightDomShape)
-                            {
-                                pDominantShape = pCont->m_pShape;
-                            }
                         }
                     }
                 }
@@ -1152,9 +1162,7 @@ namespace NSDocxRenderer
     {
         //todo не отображается перенос в линии
         //todo если в линии есть перенос нужно обеъдинить строки в один параграф
-
         //todo в зависимости от очередности загрузки файлов проявляется проблема со шрифтами - текст в некоторых конвертированных файлах становится жирным, зачеркнутым или курсив. С одним файлом проблем не наблюдалось
-
         //todo добавить различные типы текста для распознавания: обычный-сплошной, списки-содержание и тд
 
         CTextLine *pCurrLine, *pNextLine;
@@ -1162,7 +1170,7 @@ namespace NSDocxRenderer
         double dCurrBeforeSpacing = 0, dNextBeforeSpacing = 0;
         double dBeforeSpacingWithShapes = 0;
         double dPreviousStringOffset = 0;
-        CrossingType eCrossingType;
+        eVerticalCrossingType eCrossingType;
 
         bool bIf1, bIf2, bIf3, bIf4, bIf5, bIf6, bIf7;
 
@@ -1188,20 +1196,21 @@ namespace NSDocxRenderer
                 dNextRight = pNextLine->CalculateRightBorder(m_dWidth);
                 dNextBeforeSpacing = pNextLine->CalculateBeforeSpacing(&dPreviousStringOffset);
 
-                eCrossingType = pCurrLine->GetLinesCrossingType(pNextLine);
+                eCrossingType = pCurrLine->GetVerticalCrossingType(pNextLine);
                 bool bIsPassed = false;
                 double dCurrentAdditive = 0.0;
 
                 switch (eCrossingType)
                 {
-                case ctCurrentInsideNext:
-                case ctCurrentAboveNext:
+                case eVerticalCrossingType::vctCurrentInsideNext:
+                case eVerticalCrossingType::vctCurrentAboveNext:
                     dCurrentAdditive = dCurrBeforeSpacing + pCurrLine->m_dHeight + pNextLine->m_dBaselinePos - pCurrLine->m_dBaselinePos;
                     dPreviousStringOffset = pNextLine->CalculateStringOffset();
                     bIsPassed = true;
                     break;
-                case ctCurrentOutsideNext:
-                case ctCurrentBelowNext:
+                case eVerticalCrossingType::vctCurrentOutsideNext:
+                case eVerticalCrossingType::vctCurrentBelowNext:
+                case eVerticalCrossingType::vctDublicate:
                     dCurrentAdditive = dCurrBeforeSpacing + pCurrLine->m_dHeight;
                     bIsPassed = true;
                     break;
@@ -1293,14 +1302,16 @@ namespace NSDocxRenderer
                 {
                     dNextBeforeSpacing = pNextLine->CalculateBeforeSpacing(&dPreviousStringOffset);
                     dNextRight = pNextLine->CalculateRightBorder(m_dWidth);
-                    eCrossingType = pCurrLine->GetLinesCrossingType(pNextLine);
+                    eCrossingType = pCurrLine->GetVerticalCrossingType(pNextLine);
                 }
 
                 //проверим, подходят ли следующие строчки для текущего pParagraph
                 while(pNextLine &&
                       fabs(pCurrLine->m_dHeight - pNextLine->m_dHeight) < c_dTHE_SAME_STRING_Y_PRECISION_MM && //высота строк должна быть примерно одинаковой
                       fabs(dCurrBeforeSpacing - dNextBeforeSpacing) < c_dLINE_DISTANCE_ERROR_MM && //расстрояние между строк тоже одинаково
-                      eCrossingType == ctNoCrossing &&
+                      (eCrossingType == eVerticalCrossingType::vctUnknown ||
+                       eCrossingType == eVerticalCrossingType::vctNoCrossingCurrentAboveNext ||
+                       eCrossingType == eVerticalCrossingType::vctNoCrossingCurrentBelowNext) &&
                       ((fabs(pCurrLine->m_dLeft - pNextLine->m_dLeft) < c_dERROR_OF_LEFT_BORDERS_MM && //у последующих строк нет отступа относительно предыдущей непервой строки
                         (fabs(dCurrRight - dNextRight) < c_dERROR_OF_RIGHT_BORDERS_MM || //а следующая строка либо такая же
                          (dCurrRight < dNextRight && fabs(dPrevRight - dCurrRight) <= c_dERROR_OF_RIGHT_BORDERS_MM)))) //либо короче, но предыдущие равны
@@ -1337,11 +1348,13 @@ namespace NSDocxRenderer
                     {
                         dNextBeforeSpacing = pNextLine->CalculateBeforeSpacing(&dPreviousStringOffset);
                         dNextRight = pNextLine->CalculateRightBorder(m_dWidth);
-                        eCrossingType = pCurrLine->GetCrossingType(pNextLine);
+                        eCrossingType = pCurrLine->GetVerticalCrossingType(pNextLine);
                     }
                 }
 
-                if (eCrossingType != ctNoCrossing)
+                if (eCrossingType != eVerticalCrossingType::vctUnknown &&
+                    eCrossingType != eVerticalCrossingType::vctNoCrossingCurrentAboveNext &&
+                    eCrossingType != eVerticalCrossingType::vctNoCrossingCurrentBelowNext)
                 {
                     CreateSingleLineShape(pNextLine);
                     nIndex++;
@@ -1397,9 +1410,9 @@ namespace NSDocxRenderer
     bool CPage::IsShadingPresent(const CTextLine *pLine1, const CTextLine *pLine2)
     {
         if (pLine1->m_pDominantShape && pLine2->m_pDominantShape &&
-            pLine1->m_pDominantShape->m_oBrush.Color1 == pLine2->m_pDominantShape->m_oBrush.Color1 &&
-            fabs(pLine1->m_pDominantShape->m_dLeft - pLine2->m_pDominantShape->m_dLeft) < c_dGRAPHICS_ERROR_IN_LINES_MM &&
-            fabs(pLine1->m_pDominantShape->m_dWidth - pLine2->m_pDominantShape->m_dWidth) < c_dGRAPHICS_ERROR_IN_LINES_MM)
+                pLine1->m_pDominantShape->m_oBrush.Color1 == pLine2->m_pDominantShape->m_oBrush.Color1 &&
+                fabs(pLine1->m_pDominantShape->m_dLeft - pLine2->m_pDominantShape->m_dLeft) < c_dGRAPHICS_ERROR_IN_LINES_MM &&
+                fabs(pLine1->m_pDominantShape->m_dWidth - pLine2->m_pDominantShape->m_dWidth) < c_dGRAPHICS_ERROR_IN_LINES_MM)
         {
             return true;
         }
@@ -1457,10 +1470,9 @@ namespace NSDocxRenderer
         COldShape* pShape = new COldShape();
         pShape->m_arParagraphs.push_back(pParagraph);
 
-        //todo В итоге Left и Top смещаются на несколько мм. Пока не понял чем это вызвано.
+        //todo В итоге Left и Top смещаются на несколько мм. не использовать margin-left и margin-top.
         pShape->m_dLeft	= pLine->m_dLeft - COldShape::POSITION_CORRECTION_FOR_X_MM; //подобранная константа
         pShape->m_dTop	= pLine->m_dBaselinePos - pLine->m_dHeight - pLine->m_dBaselineOffset - COldShape::POSITION_CORRECTION_FOR_Y_MM;//подобранная константа
-        //todo Width и Height маловаты и текст обрезается. разобраться почему
         pShape->m_dWidth = pLine->m_dWidth + COldShape::SIZE_CORRECTION_FOR_X_MM; //5мм мало для длинной строки
         pShape->m_dHeight = pLine->m_dHeight + COldShape::SIZE_CORRECTION_FOR_Y_MM;
 

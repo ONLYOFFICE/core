@@ -465,6 +465,7 @@ namespace NSDocxRenderer
         double dAngleMatrix = m_oTransform.z_Rotation();
         if (fabs(dAngleMatrix) > 1 || m_oTransform.sx() < 0 || m_oTransform.sy() < 0)
         {
+            //note У повернутых символов не приходят координаты.
             _SetFont();
             PathCommandEnd();
             BeginCommand(c_nPathType);
@@ -540,7 +541,7 @@ namespace NSDocxRenderer
             // нужно записать страницу в файл
             m_oCurrentPage.AnalyzeCollectedShapes();
             m_oCurrentPage.AnalyzeCollectedSymbols();
-            m_oCurrentPage.BuildLines();
+            m_oCurrentPage.AnalyzeLines();
             m_oCurrentPage.DeleteTextClipPage();
             m_oCurrentPage.BuildByType();
             m_oCurrentPage.ToXml(m_oWriter);

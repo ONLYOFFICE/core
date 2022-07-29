@@ -58,7 +58,7 @@ namespace NSDocxRenderer
         void ClearShapes();
         void ClearParagraphs();
 
-        void SetCurrentLineByBaseline(const CContText* pCont);
+        void SelectCurrentLine(const CContText* pCont);
         //удаляем то, что выходит за границы страницы
         void DeleteTextClipPage();
 
@@ -82,23 +82,22 @@ namespace NSDocxRenderer
                              const double& fBaseLineOffset, const bool& bIsPDFAnalyzer);
 
         void AnalyzeCollectedShapes();
+        void RemoveSubstratesUnderPictures();
         void CorrelateContWithShape();
         void DetermineLinesType();
 
         //Собранные для текущей страницы данные нужно проанализировать и сгруппировать, лишнее удалить
         void AnalyzeCollectedSymbols();
-        void DetermineIfThereAreShadows();
+        void DetermineStrikeoutsUnderlinesHighlights();
         bool IsLineCrossingText(const CShape* pGraphicItem, CContText* pCont);
         bool IsLineBelowText(const CShape* pGraphicItem, CContText* pCont);
         bool IsItHighlightingBackground(const CShape* pGraphicItem, CContText* pCont);
-        void DetermineVertAlignTypeBetweenConts();
 
         //набивается содержимым вектор m_arTextLine
+        void AnalyzeLines();
         void BuildLines();
-        void BuildLines(const CContText* pCont);
         void MergeLinesByVertAlignType();
         void DetermineDominantGraphics();
-        void DetermineVertAlignType();
 
         void BuildByType();
         void BuildByTypeBlockChar();

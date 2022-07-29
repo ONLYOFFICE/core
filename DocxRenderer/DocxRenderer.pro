@@ -51,6 +51,7 @@ HEADERS += \
     src/resources/utils.h
 
 SOURCES += \
+    src/logic/BaseItem.cpp \
     src/logic/Document.cpp \
     src/logic/ElementContText.cpp \
     src/logic/ElementImage.cpp \

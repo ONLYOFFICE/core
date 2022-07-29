@@ -18,16 +18,6 @@ namespace NSDocxRenderer
         vatSuperscript
     };
 
-    enum CrossingType
-    {
-        ctUnknown,
-        ctCurrentInsideNext,
-        ctCurrentOutsideNext,
-        ctCurrentAboveNext,
-        ctCurrentBelowNext,
-        ctNoCrossing
-    };
-
     class CContText : public CBaseItem
     {
         public:
@@ -39,7 +29,6 @@ namespace NSDocxRenderer
 
             NSStringUtils::CStringUTF32 m_oText;
 
-            double m_dBaselinePos {0};
             double m_dBaselineOffset {0};
             double m_dLastX {0};
 
@@ -59,8 +48,11 @@ namespace NSDocxRenderer
 
             const CShape* m_pShape {nullptr}; //Если не nullptr, то есть фоновая графика - можно анализировать.
             CFontManagerLight* m_pManagerLight {nullptr};
-
             const CContText* m_pCont {nullptr}; //Если не nullptr, то есть привязка к vatSubscript или vatSuperscript;
+
+#if USING_DELETE_DUPLICATING_CONTS == 0
+            CContText* m_pDuplicateCont {nullptr};
+#endif
 
         public:
             CContText(CFontManagerLight& oManagerLight);
@@ -82,6 +74,9 @@ namespace NSDocxRenderer
 
             void AddSpaceToEnd();
             bool IsEqual(const CContText* oSrc);
-            CrossingType GetCrossingType(const CContText* oSrc);
+
+            bool IsDuplicate(CContText* pCont, const eVerticalCrossingType& eVType);
+            bool IsThereAreShadows(CContText* pCont, const eVerticalCrossingType& eVType, const eHorizontalCrossingType& eHType);
+            bool IsVertAlignTypeBetweenConts(CContText* pCont, const eVerticalCrossingType& eVType, const eHorizontalCrossingType& eHType);
     };
 }

@@ -102,7 +102,7 @@ namespace PdfReader
         bool EditPage(int nPageIndex);
         bool DeletePage(int nPageIndex);
         bool AddPage(int nPageIndex);
-        bool EditClose();
+        bool EditClose(const std::wstring& sPassword);
 
     #ifdef BUILDING_WASM_MODULE
         virtual BYTE* GetStructure();

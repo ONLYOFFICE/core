@@ -516,7 +516,12 @@ return 0;
         std::string sPathUtf8Old = U_TO_UTF8(m_pInternal->m_wsSrcPath);
         if (sPathUtf8Old == sPathUtf8New || NSSystemPath::NormalizePath(sPathUtf8Old) == NSSystemPath::NormalizePath(sPathUtf8New))
         {
-            if (!m_pInternal->m_pPDFDocument->makeWritable(true))
+            GString* owner_pswd = NSStrings::CreateString(sPassword);
+            GString* user_pswd  = NSStrings::CreateString(sPassword);
+            bool bRes = m_pInternal->m_pPDFDocument->makeWritable(true, owner_pswd, user_pswd);
+            delete owner_pswd;
+            delete user_pswd;
+            if (!bRes)
                 return false;
         }
         else
@@ -655,7 +660,7 @@ return 0;
 
         return m_pInternal->m_pPdfWriter->AddPage(nPageIndex);
     }
-    bool CPdfReader::EditClose()
+    bool CPdfReader::EditClose(const std::wstring& sPassword)
     {
         if (!m_pInternal->m_pPdfWriter || !m_pInternal->m_pPDFDocument)
             return false;
@@ -676,7 +681,11 @@ return 0;
         info.free();
 
         bool bRes = m_pInternal->m_pPdfWriter->EditClose(sTrailer, sInfo);
-        bRes &= m_pInternal->m_pPDFDocument->makeWritable(false);
+        GString* owner_pswd = NSStrings::CreateString(sPassword);
+        GString* user_pswd  = NSStrings::CreateString(sPassword);
+        bRes &= m_pInternal->m_pPDFDocument->makeWritable(false, owner_pswd, user_pswd);
+        delete owner_pswd;
+        delete user_pswd;
 
         NSFile::CFileBinary oFile;
         if (oFile.OpenFile(m_pInternal->m_wsSrcPath))

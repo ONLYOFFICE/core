@@ -672,7 +672,7 @@ char *PDFDoc::getEmbeddedFileMem(int idx, int *size) {
   return buf;
 }
 
-GBool PDFDoc::makeWritable(bool bWritable)
+GBool PDFDoc::makeWritable(bool bWritable, GString* ownerPassword, GString* userPassword)
 {
     if (!str || !file)
         return gFalse;
@@ -765,7 +765,7 @@ GBool PDFDoc::makeWritable(bool bWritable)
     Object obj;
     obj.initNull();
     str = new FileStream(file, start, gFalse, 0, &obj);
-    ok = setup(NULL, NULL);
+    ok = setup(ownerPassword, userPassword);
 
     return bRes;
 }

@@ -352,6 +352,7 @@ public:
   // CIDToGIDMap.  When this is true for a CID TrueType font, Adobe
   // appears to treat char codes as raw GIDs.
   GBool usesIdentityEncoding() { return identityEnc; }
+  GBool usesIdentityCIDToGID() { return hasIdentityCIDToGID; }
 
   virtual GBool problematicForUnicode();
 

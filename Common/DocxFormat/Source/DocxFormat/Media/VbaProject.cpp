@@ -159,10 +159,10 @@ namespace OOX
 					std::wstring file_name = pReader->GetString2();
 					std::wstring inputPath = pReader->m_strFolder + FILE_SEPARATOR_STR + _T("media")  + FILE_SEPARATOR_STR + file_name;
 
-					NSFile::CFileBinary::Copy(inputPath, (outputPath / type().DefaultFileName()).GetPath());
-
-					set_filename((outputPath / type().DefaultFileName()).GetPath(), false);
+					outputPath = outputPath / type().DefaultFileName();
 					
+					NSFile::CFileBinary::Copy(inputPath, outputPath.GetPath());
+					set_filename(outputPath.GetPath(), false);
 				}break;
 				default:
 					break;
@@ -190,10 +190,14 @@ namespace OOX
 					if (false == oVbaData->m_sXml.empty())
 					{
 						oVbaData->m_bDocument = m_bDocument;
-						//smart_ptr<OOX::File> oFile = oVbaData.smart_dynamic_cast<OOX::File>();
-						//this->Add(oFile);
+						smart_ptr<OOX::File> oFile = oVbaData.smart_dynamic_cast<OOX::File>();
+						this->Add(oFile);
 
-						oVbaData->write(outputPath / oVbaData->type().DefaultFileName(), oVbaData->type().DefaultDirectory(), *(pReader->m_pRels->m_pManager->m_pContentTypes));
+						if (m_bDocument)
+						{
+							CPath oDirectory(L"/word");
+							IFileContainer::Write(outputPath, oDirectory, *(pReader->m_pRels->m_pManager->m_pContentTypes));
+						}
 					}
 				}
 				default:

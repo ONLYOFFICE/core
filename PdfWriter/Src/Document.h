@@ -152,14 +152,15 @@ namespace PdfWriter
 		CSignatureField*  CreateSignatureField();
 		bool              CheckFieldName(CFieldBase* pField, const std::string& sName);
 					  
-		bool              EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sCatalog, int nCatalog, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm, int nFormField);
+		bool              EditPdf(const std::wstring& wsPath, int nPosLastXRef, int nSizeXRef, const std::wstring& sCatalog, int nCatalog, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm, int nFormField);
 		bool              CreatePageTree(const std::wstring& sPageTree, int nPageTree);
 		std::pair<int, int> GetPageRef(int nPageIndex);
 		CPage*            EditPage(const std::wstring& sPage, int nPage);
 		CPage*            AddPage(int nPageIndex);
 		bool              DeletePage(int nPageIndex);
-		bool              AddToFile(const std::wstring& wsPath, const std::wstring& sTrailer, const std::wstring& sInfo);
+		bool              AddToFile(const std::wstring& sTrailer, const std::wstring& sInfo);
 		void              Sign(const TRect& oRect, CImageDict* pImage, ICertificate* pCert);
+		std::wstring      GetEditPdfPath() { return m_wsFilePath; }
 	private:		  
 					  
 		char*             GetTTFontTag();
@@ -235,7 +236,8 @@ namespace PdfWriter
 		std::vector<CFontCidTrueType*>     m_vFreeTypeFonts;
 		FT_Library                         m_pFreeTypeLibrary;
 		bool                               m_bPDFAConformance;
-		std::wstring				       m_wsDocumentID;
+		std::wstring                       m_wsDocumentID;
+		std::wstring                       m_wsFilePath;
 		CDictObject*                       m_pAcroForm;
 		CResourcesDict*                    m_pFieldsResources;
 		std::vector<CRadioGroupField*>     m_vRadioGroups;

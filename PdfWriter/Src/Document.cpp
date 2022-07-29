@@ -92,6 +92,8 @@ namespace PdfWriter
 		m_pAcroForm         = NULL;
 		m_pFieldsResources  = NULL;
 		m_pDefaultCheckBoxFont = NULL;
+		m_wsDocumentID      = L"";
+		m_wsFilePath        = L"";
 
 		m_bPDFAConformance	= false;
 	}
@@ -194,6 +196,8 @@ namespace PdfWriter
 		m_pFieldsResources  = NULL;
 		memset((void*)m_sTTFontTag, 0x00, 8);
 		m_pDefaultCheckBoxFont = NULL;
+		m_wsDocumentID      = L"";
+		m_wsFilePath        = L"";
 
 		m_vExtGrStates.clear();
 		m_vStrokeAlpha.clear();
@@ -1086,7 +1090,7 @@ namespace PdfWriter
 
 		return (!!m_pAcroForm);
 	}
-	bool CDocument::EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sCatalog, int nCatalog, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm, int nFormField)
+	bool CDocument::EditPdf(const std::wstring& wsPath, int nPosLastXRef, int nSizeXRef, const std::wstring& sCatalog, int nCatalog, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm, int nFormField)
 	{
 		Close();
 
@@ -1136,6 +1140,7 @@ namespace PdfWriter
 		}
 
 		m_unFormFields = nFormField;
+		m_wsFilePath = wsPath;
 		return true;
 	}
 	bool CDocument::CreatePageTree(const std::wstring& sPageTree, int nPageTree)
@@ -1237,10 +1242,10 @@ namespace PdfWriter
 		}
 		return false;
 	}
-	bool CDocument::AddToFile(const std::wstring& wsPath, const std::wstring& sTrailer, const std::wstring& sInfo)
+	bool CDocument::AddToFile(const std::wstring& sTrailer, const std::wstring& sInfo)
 	{
 		CFileStream* pStream = new CFileStream();
-		if (!pStream || !pStream->OpenFile(wsPath, false))
+		if (!pStream || m_wsFilePath.empty() || !pStream->OpenFile(m_wsFilePath, false))
 			return false;
 
 		// Добавляем первый элемент в таблицу xref
@@ -1325,7 +1330,7 @@ namespace PdfWriter
 		RELEASEOBJECT(pStream);
 		unsigned int nSizeXRef = m_pXref->GetSizeXRef();
 		m_pXref = m_pLastXref;
-		Sign(wsPath, nSizeXRef, bNeedStreamXRef);
+		Sign(m_wsFilePath, nSizeXRef, bNeedStreamXRef);
 		RELEASEOBJECT(m_pEncryptDict);
 
 		return true;

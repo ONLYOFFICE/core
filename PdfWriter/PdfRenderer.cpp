@@ -2111,9 +2111,9 @@ HRESULT CPdfRenderer::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbi
 	m_pPage->GrRestore();
 	return S_OK;
 }
-bool CPdfRenderer::EditPdf(int nPosLastXRef, int nSizeXRef, const std::wstring& sCatalog, int nCatalog, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm, int nFormField)
+bool CPdfRenderer::EditPdf(const std::wstring& wsPath, int nPosLastXRef, int nSizeXRef, const std::wstring& sCatalog, int nCatalog, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm, int nFormField)
 {
-	bool bRes = m_pDocument->EditPdf(nPosLastXRef, nSizeXRef, sCatalog, nCatalog, sEncrypt, sPassword, nCryptAlgorithm, nFormField);
+	bool bRes = m_pDocument->EditPdf(wsPath, nPosLastXRef, nSizeXRef, sCatalog, nCatalog, sEncrypt, sPassword, nCryptAlgorithm, nFormField);
 	if (bRes)
 	{
 		m_bEdit = true;
@@ -2174,7 +2174,7 @@ bool CPdfRenderer::DeletePage(int nPageIndex)
 	}
 	return m_pDocument->DeletePage(nPageIndex);
 }
-bool CPdfRenderer::EditClose(const std::wstring& wsPath, const std::wstring& sTrailer, const std::wstring& sInfo)
+bool CPdfRenderer::EditClose(const std::wstring& sTrailer, const std::wstring& sInfo)
 {
 	if (!IsValid() || !m_bEdit)
 		return false;
@@ -2193,7 +2193,7 @@ bool CPdfRenderer::EditClose(const std::wstring& wsPath, const std::wstring& sTr
 		}
 	}
 
-	bool bRes = m_pDocument->AddToFile(wsPath, sTrailer, sInfo);
+	bool bRes = m_pDocument->AddToFile(sTrailer, sInfo);
 	if (bRes)
 	{
 		m_bEdit = false;
@@ -2221,6 +2221,14 @@ void CPdfRenderer::Sign(const double& dX, const double& dY, const double& dW, co
 
 	m_pDocument->Sign(TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)),
 		pImage, pCertificate);
+}
+std::wstring CPdfRenderer::GetEditPdfPath()
+{
+	if (!m_bEdit)
+	{
+		return L"";
+	}
+	return m_pDocument->GetEditPdfPath();
 }
 
 NSFonts::IApplicationFonts* CPdfRenderer::GetApplicationFonts()

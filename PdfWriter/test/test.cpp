@@ -162,7 +162,7 @@ int main()
             }
         }
 
-        pReader->EditClose();
+        pReader->EditClose(sPassword);
     }
 
     RELEASEOBJECT(pReader);

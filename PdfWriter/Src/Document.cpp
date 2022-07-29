@@ -196,6 +196,8 @@ namespace PdfWriter
 		m_pFieldsResources  = NULL;
 		memset((void*)m_sTTFontTag, 0x00, 8);
 		m_pDefaultCheckBoxFont = NULL;
+		m_wsDocumentID      = L"";
+		m_wsFilePath        = L"";
 
 		m_vExtGrStates.clear();
 		m_vStrokeAlpha.clear();

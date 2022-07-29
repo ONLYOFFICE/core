@@ -7115,11 +7115,11 @@ void BinaryCustomsTableWriter::Write(OOX::IFileContainer *pContainer)
 	int nStart = m_oBcw.WriteItemWithLengthStart();
 
 	std::vector<smart_ptr<OOX::File>>& container = pContainer->GetContainer();
-	for (size_t i = 0; i < container.size(); ++i)
+	for (size_t k = 0; k < container.size(); ++k)
 	{
-		if (OOX::FileTypes::CustomXml == container[i]->type())
+		if (OOX::FileTypes::CustomXml == container[k]->type())
 		{
-			OOX::CCustomXML* pCustomXml = dynamic_cast<OOX::CCustomXML*>(container[i].GetPointer());
+			OOX::CCustomXML* pCustomXml = dynamic_cast<OOX::CCustomXML*>(container[k].GetPointer());
 			if (pCustomXml->m_bUsed) continue;
 
 			int nCurPos = m_oBcw.WriteItemStart(c_oSerCustoms::Custom);

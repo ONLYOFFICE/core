@@ -496,6 +496,8 @@ namespace NSBinPptxRW
 
 		void WriteSlideComments	(int nComment);
 		void WritePresentationComments	(int nComment);
+
+		void WriteCustoms(int nCount);
 		
 		unsigned int WriteRels (const std::wstring& bsType, const std::wstring& bsTarget, const std::wstring& bsTargetMode);
 		unsigned int WriteHyperlink	(const std::wstring& strLink, const bool& bIsActionInit);		

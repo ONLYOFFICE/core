@@ -65,6 +65,7 @@ namespace NSBinPptxRW
 			VmlDrawing		= 5,
 			TableStyles		= 6,
 			PresProps		= 7,
+			Customs			= 8,
 
 			Themes			= 20,
 			ThemeOverride	= 21,

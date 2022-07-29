@@ -1492,6 +1492,16 @@ namespace NSBinPptxRW
 
 		m_pWriter->WriteString(strRels);
 	}
+	void CRelsGenerator::WriteCustoms(int nCount)
+	{
+		for (int i = 0; i < nCount; ++i)
+		{
+			std::wstring strRels = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
+				L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml\" Target=\"../customXml/item" +
+				std::to_wstring(i + 1) + L".xml\"/>";
+			m_pWriter->WriteString(strRels);
+		}
+	}
 	void CRelsGenerator::EndPresentationRels(bool bIsCommentsAuthors, bool bIsVbaProject, bool bIsJsaProject)
 	{
         std::wstring strRels1 = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +

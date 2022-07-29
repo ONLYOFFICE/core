@@ -160,6 +160,7 @@ namespace PdfWriter
 		bool              DeletePage(int nPageIndex);
 		bool              AddToFile(const std::wstring& sTrailer, const std::wstring& sInfo);
 		void              Sign(const TRect& oRect, CImageDict* pImage, ICertificate* pCert);
+		std::wstring      GetEditPdfPath() { return m_wsFilePath; }
 	private:		  
 					  
 		char*             GetTTFontTag();

@@ -241,6 +241,7 @@ public:
     bool EditClose(const std::wstring& sTrailer, const std::wstring& sInfo);
     void PageRotate(int nRotate);
     void Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate);
+    std::wstring GetEditPdfPath();
 
     NSFonts::IApplicationFonts* GetApplicationFonts();
 

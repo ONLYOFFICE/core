@@ -2874,7 +2874,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-        if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
+        if (m_bTransparentGroupSoftMask)
             return;
 
         DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
@@ -2887,7 +2887,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-        if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd || m_pSoftMask)
+        if (m_bTransparentGroupSoftMask || (!m_arrTransparentGroupSoftMask.empty() && m_bTransparentGroupSoftMaskEnd) || m_pSoftMask)
             return;
 
         DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
@@ -2899,7 +2899,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-        if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
+        if (m_bTransparentGroupSoftMask || (!m_arrTransparentGroupSoftMask.empty() && m_bTransparentGroupSoftMaskEnd))
             return;
 
         DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
@@ -2912,7 +2912,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-        if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
+        if (m_bTransparentGroupSoftMask || (!m_arrTransparentGroupSoftMask.empty() && m_bTransparentGroupSoftMaskEnd))
             return;
 
         DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
@@ -2925,7 +2925,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-        if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
+        if (m_bTransparentGroupSoftMask || (!m_arrTransparentGroupSoftMask.empty() && m_bTransparentGroupSoftMaskEnd))
             return;
 
         DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
@@ -3071,7 +3071,7 @@ namespace PdfReader
 		if (m_bDrawOnlyText)
 			return true;
 
-		if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
+		if (m_bTransparentGroupSoftMask || (!m_arrTransparentGroupSoftMask.empty() && m_bTransparentGroupSoftMaskEnd))
 			return true;
 
         DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
@@ -3128,7 +3128,7 @@ namespace PdfReader
 		if (m_bDrawOnlyText)
 			return true;
 
-		if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
+		if (m_bTransparentGroupSoftMask || (!m_arrTransparentGroupSoftMask.empty() && m_bTransparentGroupSoftMaskEnd))
 			return true;
 		double x1, x2, y1, y2;
 		double t0, t1;
@@ -3272,7 +3272,7 @@ namespace PdfReader
 		if (m_bDrawOnlyText)
 			return true;
 
-		if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
+		if (m_bTransparentGroupSoftMask || (!m_arrTransparentGroupSoftMask.empty() && m_bTransparentGroupSoftMaskEnd))
 			return true;
 
 
@@ -3330,7 +3330,7 @@ namespace PdfReader
 		if (m_bDrawOnlyText)
 			return true;
 
-		if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
+		if (m_bTransparentGroupSoftMask || (!m_arrTransparentGroupSoftMask.empty() && m_bTransparentGroupSoftMaskEnd))
 			return true;
 
 		DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
@@ -3375,7 +3375,7 @@ namespace PdfReader
 		if (m_bDrawOnlyText)
 			return true;
 
-		if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
+		if (m_bTransparentGroupSoftMask || (!m_arrTransparentGroupSoftMask.empty() && m_bTransparentGroupSoftMaskEnd))
 			return true;
 
 		DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
@@ -3547,7 +3547,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-        if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
+        if (m_bTransparentGroupSoftMask)
             return;
 
         int nClipFlag = bEO ? c_nClipRegionTypeEvenOdd : c_nClipRegionTypeWinding;
@@ -3564,7 +3564,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-        if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
+        if (m_bTransparentGroupSoftMask)
             return;
 
         m_pRenderer->put_FontName(wsFontName);
@@ -3602,7 +3602,7 @@ namespace PdfReader
     }
     void RendererOutputDev::beginStringOp(GfxState *pGState)
     {
-        if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
+        if (m_bTransparentGroupSoftMask)
             return;
 
         m_pRenderer->BeginCommand(c_nTextType);
@@ -3632,7 +3632,7 @@ namespace PdfReader
     }
     void RendererOutputDev::endStringOp(GfxState *pGState)
     {
-        if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
+        if (m_bTransparentGroupSoftMask)
             return;
 
         int nRenderMode = pGState->getRender();
@@ -3658,7 +3658,7 @@ namespace PdfReader
     }
     void RendererOutputDev::drawString(GfxState *pGState, GString *seString)
     {
-        if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
+        if (m_bTransparentGroupSoftMask)
             return;
 
         // Проверяем наличие списка со шрифтами
@@ -3707,7 +3707,7 @@ namespace PdfReader
     }
     void RendererOutputDev::drawChar(GfxState *pGState, double dX, double dY, double dDx, double dDy, double dOriginX, double dOriginY, CharCode nCode, int nBytesCount, Unicode *pUnicode, int nUnicodeLen)
     {
-        if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
+        if (m_bTransparentGroupSoftMask)
             return;
 
         // Проверяем наличие списка со шрифтами
@@ -4607,7 +4607,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-        if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
+        if (m_bTransparentGroupSoftMask)
             return;
 
         double arrMatrix[6];
@@ -4659,7 +4659,7 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-        if (m_bTransparentGroupSoftMask || m_bTransparentGroupSoftMaskEnd)
+        if (m_bTransparentGroupSoftMask)
             return;
 
         if (m_bTiling)

@@ -3823,9 +3823,12 @@ namespace PdfReader
         }
         else
         {
-            int nCurCode = (0 == nCode ? 65534 : nCode);
-            unGid       = (unsigned int)nCurCode;
-            unGidsCount = 1;
+            if (!isCIDFont || ((GfxCIDFont*)pFont)->usesIdentityEncoding() || ((GfxCIDFont*)pFont)->usesIdentityCIDToGID())
+            {
+                int nCurCode = (0 == nCode ? 65534 : nCode);
+                unGid       = (unsigned int)nCurCode;
+                unGidsCount = 1;
+            }
         }
 
         float fAscent = pGState->getFontSize();

@@ -44,6 +44,27 @@
 
 namespace OOX
 {
+	void VbaData::read(const CPath& oRootPath, const CPath& oPath)
+	{
+		m_oReadPath = oPath;
+
+		XmlUtils::CXmlLiteReader oReader;
+
+		if (!oReader.FromFile(oPath.GetPath()))
+			return;
+
+		if (!oReader.ReadNextNode())
+			return;
+
+		m_sXml = oReader.GetOuterXml();
+	}
+	void VbaData::write(const OOX::CPath& filename, const OOX::CPath& directory, CContentTypes& content) const
+	{
+		std::wstring sPath = filename.GetPath();
+		NSFile::CFileBinary::SaveToFile(sPath, m_sXml);
+
+		content.Registration(type().OverrideType(), directory, filename.GetFilename());
+	}
 	VbaProject::VbaProject( OOX::Document *pMain ) : Media(pMain), OOX::IFileContainer(pMain)
 	{
 		OOX::CDocx* docx = dynamic_cast<OOX::CDocx*>(pMain);
@@ -107,9 +128,20 @@ namespace OOX
 			pWriter->WriteStringW2(sXml);
 			pWriter->EndRecord();
 		}
+
+		smart_ptr<OOX::File> oFile = this->Find(OOX::FileTypes::VbaData);
+		smart_ptr<OOX::VbaData> oVbaData = oFile.smart_dynamic_cast<OOX::VbaData>();
+		if (oVbaData.IsInit())
+		{
+			pWriter->StartRecord(1);
+			pWriter->WriteStringW2(oVbaData->m_sXml);
+			pWriter->EndRecord();			
+		}
 	}
 	void VbaProject::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
+		OOX::CPath outputPath = pReader->m_pRels->m_pManager->GetDstFolder();
+
 		LONG _rec_size = pReader->GetRecordSize();
 		LONG _end_rec = pReader->GetPos() + _rec_size;
 
@@ -125,16 +157,13 @@ namespace OOX
 				case 0:
 				{
 					std::wstring file_name = pReader->GetString2();
+					std::wstring inputPath = pReader->m_strFolder + FILE_SEPARATOR_STR + _T("media")  + FILE_SEPARATOR_STR + file_name;
 
-					OOX::CPath inputPath = pReader->m_strFolder + FILE_SEPARATOR_STR + _T("media")  + FILE_SEPARATOR_STR + file_name;
-					OOX::CPath outputPath = pReader->m_pRels->m_pManager->GetDstFolder() + FILE_SEPARATOR_STR + _T("vbaProject.bin");
-
-					NSFile::CFileBinary::Copy(inputPath.GetPath(), outputPath.GetPath());
-
-					set_filename(outputPath.GetPath(), false);
+					outputPath = outputPath / type().DefaultFileName();
 					
+					NSFile::CFileBinary::Copy(inputPath, outputPath.GetPath());
+					set_filename(outputPath.GetPath(), false);
 				}break;
-
 				default:
 					break;
 			}
@@ -151,6 +180,26 @@ namespace OOX
 					_INT32 _len = pReader->GetRecordSize();
 					sXml = pReader->GetString2();
 				}break;
+				case 1:
+				{
+					smart_ptr<OOX::VbaData> oVbaData = new OOX::VbaData(File::m_pMainDocument);
+					
+					_INT32 _len = pReader->GetRecordSize();
+					oVbaData->m_sXml = pReader->GetString2();
+
+					if (false == oVbaData->m_sXml.empty())
+					{
+						oVbaData->m_bDocument = m_bDocument;
+						smart_ptr<OOX::File> oFile = oVbaData.smart_dynamic_cast<OOX::File>();
+						this->Add(oFile);
+
+						if (m_bDocument)
+						{
+							CPath oDirectory(L"/word");
+							IFileContainer::Write(outputPath, oDirectory, *(pReader->m_pRels->m_pManager->m_pContentTypes));
+						}
+					}
+				}
 				default:
 				{
 					pReader->SkipRecord();

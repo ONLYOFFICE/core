@@ -181,8 +181,8 @@ namespace OOX
 			return smart_ptr<OOX::File>(new OOX::ActiveX_bin( pMain, oFileName ));
 		else if ( oRelation.Type() == OOX::FileTypes::VbaProject)
 			return smart_ptr<OOX::File>(new OOX::VbaProject( pMain, oRootPath, oFileName ));
-		//else if ( oRelation.Type() == OOX::FileTypes::VbaData)
-		//	return smart_ptr<OOX::File>(new OOX::VbaData( oFileName ));
+		else if ( oRelation.Type() == OOX::FileTypes::VbaData)
+			return smart_ptr<OOX::File>(new OOX::VbaData( pMain, oRootPath, oFileName));
 		else if ( oRelation.Type() == FileTypes::JsaProject)
 			return smart_ptr<OOX::File>(new JsaProject( pMain, oFileName ));
 		else if ( oRelation.Type() == FileTypes::CustomXml)
@@ -313,8 +313,8 @@ namespace OOX
 			return smart_ptr<OOX::File>(new ActiveX_bin( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::VbaProject)
 			return smart_ptr<OOX::File>(new OOX::VbaProject( pMain, oRootPath, oFileName ));
-		//else if ( pRelation->Type() == FileTypes::VbaData)
-		//	return smart_ptr<OOX::File>(new OOX::VbaData( oFileName ));
+		else if ( pRelation->Type() == FileTypes::VbaData)
+			return smart_ptr<OOX::File>(new OOX::VbaData( pMain, oRootPath, oFileName));
 		else if ( pRelation->Type() == FileTypes::JsaProject)
 			return smart_ptr<OOX::File>(new JsaProject( pMain, oFileName ));
 		else if ( pRelation->Type() == FileTypes::CustomXml)

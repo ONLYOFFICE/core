@@ -238,7 +238,7 @@ namespace PdfReader
 
         m_pInternal->m_pFontList->Clear();
 
-        return (errNone == m_eError);
+        return true;
 	}
     bool CPdfReader::LoadFromMemory(BYTE* data, DWORD length, const std::wstring& options,
                                     const std::wstring& owner_password, const std::wstring& user_password)
@@ -280,7 +280,7 @@ namespace PdfReader
 
         m_pInternal->m_pFontList->Clear();
 
-        return (errNone == m_eError);
+        return true;
     }
     void CPdfReader::Close()
 	{

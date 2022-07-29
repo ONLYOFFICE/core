@@ -75,6 +75,9 @@ namespace NSDocxRenderer
         if (m_dHeight < 0.0001)
             m_dHeight = 0.0001;
 
+        m_dBaselinePos = m_dTop + m_dHeight;
+        m_dRight = m_dLeft + m_dWidth;
+
         m_lCoordSizeX = lCoordSize;
         m_lCoordSizeY = lCoordSize;
 

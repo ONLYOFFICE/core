@@ -36,7 +36,6 @@ namespace NSDocxRenderer
 
         m_oText	 = oSrc.m_oText;
 
-        m_dBaselinePos = oSrc.m_dBaselinePos;
         m_dBaselineOffset = oSrc.m_dBaselineOffset;
         m_dLastX    = oSrc.m_dLastX;
         m_dSpaceWidthMM = oSrc.m_dSpaceWidthMM;
@@ -56,6 +55,9 @@ namespace NSDocxRenderer
         m_pShape    = oSrc.m_pShape;
         m_pManagerLight = oSrc.m_pManagerLight;
         m_pCont = oSrc.m_pCont;
+#if USING_DELETE_DUPLICATING_CONTS == 0
+        m_pDuplicateCont = oSrc.m_pDuplicateCont;
+#endif
 
         return *this;
     }
@@ -363,27 +365,107 @@ namespace NSDocxRenderer
         return false;
     }
 
-    CrossingType CContText::GetCrossingType(const CContText* oSrc)
+    bool CContText::IsDuplicate(CContText* pCont, const eVerticalCrossingType& eVType)
     {
-        if (m_dTop > oSrc->m_dTop && m_dBaselinePos < oSrc->m_dBaselinePos)
+        if (eVType == eVerticalCrossingType::vctDublicate &&
+            m_oText == pCont->m_oText)
         {
-            return ctCurrentInsideNext;
+#if USING_DELETE_DUPLICATING_CONTS
+            pCont->m_bIsNotNecessaryToUse = true;
+#else
+            //В итоге собираем список дубликатов
+            if (!m_pDuplicateCont)
+            {
+                m_pDuplicateCont = pCont;
+            }
+            return true;
+#endif
         }
-        else if (m_dTop < oSrc->m_dTop && m_dBaselinePos > oSrc->m_dBaselinePos)
+        return false;
+    }
+
+    bool CContText::IsThereAreShadows(CContText* pCont, const eVerticalCrossingType& eVType, const eHorizontalCrossingType& eHType)
+    {
+        //Условие пересечения по вертикали
+        bool bIf1 = eVType == eVerticalCrossingType::vctCurrentAboveNext; //текущий cont выше
+        bool bIf2 = eVType == eVerticalCrossingType::vctCurrentBelowNext; //текущий cont ниже
+        //Условие пересечения по горизонтали
+        bool bIf3 = eHType == eHorizontalCrossingType::hctCurrentLeftOfNext; //текущий cont левее
+        bool bIf4 = eHType == eHorizontalCrossingType::hctCurrentRightOfNext; //текущий cont правее
+        //Размеры шрифта и текст должны бать одинаковыми
+        bool bIf5 = m_oFont.Size == pCont->m_oFont.Size;
+        bool bIf6 = m_oText == pCont->m_oText;
+        //Цвет тени должен быть серым
+        bool bIf7 = m_oBrush.Color1 == c_iGreyColor;
+        bool bIf8 = pCont->m_oBrush.Color1 == c_iGreyColor;
+
+        if (bIf1 && bIf3 && bIf5 && bIf6 && bIf8)
         {
-            return ctCurrentOutsideNext;
+            m_bIsShadowPresent = true;
+            pCont->m_bIsNotNecessaryToUse = true;
+            return true;
         }
-        else if (m_dTop < oSrc->m_dTop && m_dBaselinePos < oSrc->m_dBaselinePos && m_dBaselinePos > oSrc->m_dTop)
+        else if (bIf2 && bIf4 && bIf5 && bIf6 && bIf7)
         {
-            return ctCurrentAboveNext;
+            pCont->m_bIsShadowPresent = true;
+            m_bIsNotNecessaryToUse = true;
+            return true;
         }
-        else if (m_dTop > oSrc->m_dTop && m_dBaselinePos > oSrc->m_dBaselinePos && m_dTop < oSrc->m_dBaselinePos)
+        return false;
+    }
+
+    bool CContText::IsVertAlignTypeBetweenConts(CContText* pCont, const eVerticalCrossingType& eVType, const eHorizontalCrossingType& eHType)
+    {
+        //Условие пересечения по вертикали
+        bool bIf1 = eVType == eVerticalCrossingType::vctCurrentAboveNext ||
+                    eVType == eVerticalCrossingType::vctCurrentInsideNext;
+        bool bIf2 = eVType == eVerticalCrossingType::vctCurrentBelowNext;
+        //Условие пересечения по горизонтали
+        bool bIf3 = (eHType == eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext ||
+                    eHType == eHorizontalCrossingType::hctCurrentLeftOfNext) &&
+                fabs(m_dRight - pCont->m_dLeft) < c_dTHE_STRING_X_PRECISION_MM * 3;
+        bool bIf4 = (eHType == eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext ||
+                    eHType == eHorizontalCrossingType::hctCurrentRightOfNext) &&
+                fabs(m_dLeft - pCont->m_dRight) < c_dTHE_STRING_X_PRECISION_MM * 3;
+        //Размеры шрифта должны бать разными
+        bool bIf5 = m_oFont.Size * 0.7 > pCont->m_oFont.Size;
+        bool bIf6 = m_oFont.Size < pCont->m_oFont.Size * 0.7;
+
+        if (bIf3 || bIf4)
         {
-            return ctCurrentBelowNext;
+            if (bIf1 && bIf5)
+            {
+                pCont->m_eVertAlignType = eVertAlignType::vatSubscript;
+                pCont->m_pCont = this;
+                m_eVertAlignType = eVertAlignType::vatBase;
+                m_pCont = pCont;
+                return true;
+            }
+            else if (bIf2 && bIf5)
+            {
+                pCont->m_eVertAlignType = eVertAlignType::vatSuperscript;
+                pCont->m_pCont = this;
+                m_eVertAlignType = eVertAlignType::vatBase;
+                m_pCont = pCont;
+                return true;
+            }
+            else if (bIf1 && bIf6)
+            {
+                m_eVertAlignType = eVertAlignType::vatSuperscript;
+                m_pCont = pCont;
+                pCont->m_eVertAlignType = eVertAlignType::vatBase;
+                pCont->m_pCont = this;
+                return true;
+            }
+            else if (bIf2 && bIf6)
+            {
+                m_eVertAlignType = eVertAlignType::vatSubscript;
+                m_pCont = pCont;
+                pCont->m_eVertAlignType = eVertAlignType::vatBase;
+                pCont->m_pCont = this;
+                return true;
+            }
         }
-        else
-        {
-            return ctNoCrossing;
-        }
+        return false;
     }
 }

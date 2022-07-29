@@ -98,6 +98,9 @@ namespace NSDocxRenderer
         if (m_dHeight < 0.0001)
             m_dHeight = 0.0001;
 
+        m_dBaselinePos = m_dTop + m_dHeight;
+        m_dRight = m_dLeft + m_dWidth;
+
         if (0x00 != (lType & 0x01))
         {
             m_bIsNoStroke = false;
@@ -337,6 +340,8 @@ namespace NSDocxRenderer
         pModObject->m_dWidth = fabs(pModObject->m_dWidth);
         pModObject->m_dLeft = std::min(pModObject->m_dLeft, pDataObject->m_dLeft);
         pModObject->m_dTop = std::min(pModObject->m_dTop, pDataObject->m_dTop);
+        pModObject->m_dBaselinePos = pModObject->m_dTop + pModObject->m_dHeight;
+        pModObject->m_dRight = pModObject->m_dLeft + pModObject->m_dWidth;
     }
 
     void CShape::DetermineLineType(CShape* pShape, bool bIsLast)

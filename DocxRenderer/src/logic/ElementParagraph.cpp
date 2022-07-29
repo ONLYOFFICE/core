@@ -48,7 +48,6 @@ namespace NSDocxRenderer
         m_lColorOfShadingFill    = oSrc.m_lColorOfShadingFill;
         m_eTextAlignmentType     = oSrc.m_eTextAlignmentType;
 
-        m_dRight     = oSrc.m_dRight;
         m_dFirstLine = oSrc.m_dFirstLine;
 
         m_dSpaceBefore	= oSrc.m_dSpaceBefore;

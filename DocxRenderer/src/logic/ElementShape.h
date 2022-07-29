@@ -53,7 +53,7 @@ namespace NSDocxRenderer
             const CContText* m_pCont {nullptr};
 
         private:
-            UINT m_nShapeId;
+            UINT m_nShapeId {0};
 
         public:
             CShape();

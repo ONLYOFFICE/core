@@ -22,5 +22,6 @@ struct CompoundFileTest : testing::Test
 
 TEST_F(CompoundFileTest, test_compoundfile_read)
 {
-    EXPECT_TRUE(cf.HasSourceStream());
+    bool suc = cf.HasSourceStream();
+    EXPECT_TRUE(suc);
 }

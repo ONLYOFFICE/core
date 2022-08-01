@@ -137,8 +137,7 @@ private:
     static constexpr int FLUSHING_QUEUE_SIZE = 6000;
     static constexpr int FLUSHING_BUFFER_MAX_SIZE = 1024 * 1024 * 16;
     SectorCollection sectors;
-    std::fstream stream;
-    std::string fileName;
+    std::wstring fileName;
     std::shared_ptr<CFStorage> rootStorage;
 
     bool closeStream = true;

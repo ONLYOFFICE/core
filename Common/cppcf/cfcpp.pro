@@ -25,7 +25,6 @@ SOURCES += \
     header.cpp \
     sector.cpp \
     sectorcollection.cpp \
-    stream.cpp \
     streamrw.cpp \
     streamview.cpp
 

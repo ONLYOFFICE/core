@@ -16,6 +16,7 @@ ADD_DEPENDENCY(UnicodeConverter, kernel, cfcpp)
 INCLUDEPATH += $$PWD/../
 
 HEADERS += \
+    stream_wrapper.h \
     tst_compondfile.h \
     tst_directoryentry.h \
     tst_header.h \

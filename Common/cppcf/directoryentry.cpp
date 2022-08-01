@@ -2,6 +2,7 @@
 #include "cfexception.h"
 #include "streamrw.h"
 #include <stdexcept>
+#include <sstream>
 
 
 using namespace CFCPP;
@@ -91,17 +92,17 @@ int DirectoryEntry::GetHashCode() const
 void DirectoryEntry::Write(Stream stream) const
 {
     StreamRW rw(stream);
-    rw.WriteArray(entryName, sizeof (entryName));
+    rw.WriteArray(reinterpret_cast<const BYTE*>(entryName), sizeof (entryName));
     rw.Write(nameLength);
     rw.Write((BYTE)stgType);
     rw.Write((BYTE)stgColor);
     rw.Write(leftSibling);
     rw.Write(rightSibling);
     rw.Write(child);
-    rw.WriteArray(reinterpret_cast<const char*>(&storageCLSID), sizeof (storageCLSID));
+    rw.WriteArray(reinterpret_cast<const BYTE*>(&storageCLSID), sizeof (storageCLSID));
     rw.Write(stateBits);
-    rw.WriteArray(reinterpret_cast<const char*>(&creationDate), sizeof (creationDate));
-    rw.WriteArray(reinterpret_cast<const char*>(&modifyDate), sizeof (modifyDate));
+    rw.WriteArray(reinterpret_cast<const BYTE*>(&creationDate), sizeof (creationDate));
+    rw.WriteArray(reinterpret_cast<const BYTE*>(&modifyDate), sizeof (modifyDate));
     rw.Write(startSetc);
     rw.Write(size);
 
@@ -112,7 +113,7 @@ void DirectoryEntry::Read(Stream stream, CFSVersion ver)
 {
     StreamRW rw(stream);
 
-    rw.ReadArray(entryName, 64);
+    rw.ReadArray(reinterpret_cast<BYTE*>(entryName), 64);
     nameLength = rw.Read<decltype(nameLength)>();
     stgType = (StgType)rw.Read<BYTE>();
     stgColor = (StgColor)rw.Read<BYTE>();
@@ -128,10 +129,10 @@ void DirectoryEntry::Read(Stream stream, CFSVersion ver)
         child = NOSTREAM;
     }
 
-    rw.ReadArray(reinterpret_cast<char*>(&storageCLSID), 16);
+    rw.ReadArray(reinterpret_cast<BYTE*>(&storageCLSID), 16);
     stateBits = rw.Read<decltype (stateBits)>();
-    rw.ReadArray(reinterpret_cast<char*>(&creationDate), 8);
-    rw.ReadArray(reinterpret_cast<char*>(&modifyDate), 8);
+    rw.ReadArray(reinterpret_cast<BYTE*>(&creationDate), 8);
+    rw.ReadArray(reinterpret_cast<BYTE*>(&modifyDate), 8);
     startSetc = rw.Read<decltype (startSetc)>();
 
     if (ver == CFSVersion::Ver_3)

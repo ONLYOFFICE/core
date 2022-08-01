@@ -69,15 +69,14 @@ void CFStream::CopyFrom(const Stream &input)
 {
     CheckDisposed();
 
-    std::vector<BYTE> buffer(input->SizeFile());
+    std::vector<BYTE> buffer(Length(input));
 
 //    if (input.CanSeek)
     {
-        input->SeekFile(0, SEEK_SET);
+        input->seekg(0, std::ios::beg);
     }
 
-    DWORD bytesWasRead(0);
-    input->ReadFile(buffer.data(), input->SizeFile(), bytesWasRead);
+    input->read(reinterpret_cast<char*>(buffer.data()), Length(input));
     SetData(buffer);
 }
 

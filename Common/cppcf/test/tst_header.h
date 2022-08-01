@@ -3,7 +3,6 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock-matchers.h>
 #include "header.h"
-#include "stream_wrapper.h"
 
 using namespace testing;
 using namespace std;
@@ -12,13 +11,13 @@ using namespace CFCPP;
 
 struct HeaderTest : testing::Test
 {
-    wstring filename = L"../../../data/ex.ppt";
     Stream stream;
     Header hd;
-    bool isOpen = true;
+    string filename = "../../../data/ex.ppt";
 
-    HeaderTest() : stream(getStream(filename))
+    HeaderTest()
     {
+        stream.reset(new std::fstream(filename, ios::app | ios::in | ios::out | ios::binary));
     }
 };
 
@@ -47,7 +46,6 @@ void test_header_state(const Header& hd)
 
 TEST_F(HeaderTest, test_header_read)
 {
-    EXPECT_TRUE(isOpen);
     hd.Read(stream);
     test_header_state(hd);
 }
@@ -56,16 +54,13 @@ TEST_F(HeaderTest, test_header_write)
 {
     hd.Read(stream);
 
-    std::wstring other_filename(L"../../../data/types/header.bin");
-    stream = getStream(other_filename, true);
-
+    std::string other_filename("../../../data/types/header.bin");
+    stream.reset(new std::fstream(other_filename, ios::app | ios::in | ios::out | ios::binary));
     hd.Write(stream);
-    flush(stream);
-    stream->CloseFile();
 
     Header other;
-    seek(stream, 0);
+    stream->seekg(0, std::ios::beg);
     other.Read(stream);
     test_header_state(other);
-    NSFile::CFileBinary::Remove(other_filename);
+    remove(other_filename.c_str());
 }

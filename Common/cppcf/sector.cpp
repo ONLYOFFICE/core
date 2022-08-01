@@ -22,15 +22,15 @@ bool Sector::IsStreamed()
     if (stream == nullptr || size == MINISECTOR_SIZE)
         return false;
 
-    auto currentPossition = stream->TellFile();
+    auto currentPossition = stream->tellg();
 
-    stream->SeekFile(0, SEEK_END);
-    auto endPossition = stream->TellFile();
-    stream->SeekFile(0, SEEK_SET);
-    auto begPossition = stream->TellFile();
+    stream->seekg(std::ios_base::end);
+    auto endPossition = stream->tellg();
+    stream->seekg(std::ios_base::beg);
+    auto begPossition = stream->tellg();
     auto streamSize = endPossition - begPossition;
 
-    stream->SeekFile(currentPossition, SEEK_SET);
+    stream->seekg(currentPossition, std::ios_base::beg);
 
     return  (this->id * size) + size < streamSize;
 }
@@ -85,9 +85,8 @@ std::vector<BYTE> &Sector::GetData()
         data = std::vector<BYTE>(size, 0);
         if (IsStreamed())
         {
-            DWORD bytesWasRead(0);
-            stream->SeekFile(size + id * size, SEEK_SET);
-            stream->ReadFile(data.data(), size, bytesWasRead);
+            stream->seekg(size + id * size, std::ios_base::beg);
+            stream->read(reinterpret_cast<char*>(data.data()), size);
         }
     }
 

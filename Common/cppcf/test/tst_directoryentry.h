@@ -3,7 +3,6 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock-matchers.h>
 #include "directoryentry.h"
-#include "stream_wrapper.h"
 
 using namespace testing;
 using namespace std;
@@ -12,11 +11,12 @@ using namespace CFCPP;
 
 struct DirEntryTest : testing::Test
 {
-    wstring filename = L"../../../data/ex.ppt";
     Stream stream;
+    string filename = "../../../data/ex.ppt";
 
-    DirEntryTest() : stream(getStream(filename))
+    DirEntryTest()
     {
+        stream.reset(new std::fstream(filename, ios::app | ios::in | ios::out | ios::binary));
     }
 };
 
@@ -48,27 +48,27 @@ void test_dirEntry_read(const DirectoryEntry& de)
 TEST_F(DirEntryTest, test_directoryentry_read)
 {
     DirectoryEntry de(L"", StgInvalid, {});
-    seek(stream, 0x400);
+    stream->seekg(0x400, std::ios::beg);
     de.Read(stream);
 
-    EXPECT_EQ(tell(stream), 0x480);
+    EXPECT_EQ(stream->tellg(), 0x480);
     test_dirEntry_read(de);
 }
 
 TEST_F(DirEntryTest, test_directoryentry_write)
 {
     DirectoryEntry de(L"", StgInvalid, {});
-    seek(stream, 0x400);
+    stream->seekg(0x400, std::ios::beg);
     de.Read(stream);
 
-    std::wstring other_filename(L"../../../data/types/direntry.bin");
-    stream = getStream(other_filename, true);
+    std::string other_filename("../../../data/types/direntry.bin");
+    stream.reset(new std::fstream(other_filename, ios::app | ios::in | ios::out | ios::binary));
     de.Write(stream);
-    EXPECT_EQ(tell(stream), 0x80);
-    seek(stream, 0);
+    EXPECT_EQ(stream->tellg(), 0x80);
+    stream->seekp(0, std::ios::beg);
 
     DirectoryEntry other(L"", StgInvalid, {});
     other.Read(stream);
     test_dirEntry_read(other);
-    NSFile::CFileBinary::Remove(other_filename);
+    remove(other_filename.c_str());
 }

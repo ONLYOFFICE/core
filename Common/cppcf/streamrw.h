@@ -1,5 +1,8 @@
 #pragma once
 
+#include <fstream>
+#include <array>
+#include <vector>
 #include "stream.h"
 
 
@@ -14,36 +17,28 @@ public:
     template <class T>
     T Read()
     {
-        DWORD bytesWasRead(0);
         T value;
-        auto asByteArr = reinterpret_cast<BYTE*>(&value);
-        stream->ReadFile(asByteArr, sizeof (T), bytesWasRead);
+        char* asByteArr = reinterpret_cast<char*>(&value);
+        stream->read(asByteArr, sizeof (T));
         return value;
     }
 
     template<class T>
     void Write(T value)
     {
-        auto asByteArr = reinterpret_cast<BYTE*>(&value);
-        stream->WriteFile(asByteArr, sizeof (T));
+        char* asByteArr = reinterpret_cast<char*>(&value);
+        stream->write(asByteArr, sizeof (T));
     }
 
-    inline void ReadArray(BYTE* data, DWORD lenght)
-    {
-        DWORD bytesWasRead;
-        stream->ReadFile(data, lenght, bytesWasRead);
-    }
-    inline void WriteArray(const BYTE *data, DWORD lenght)
-    {
-        stream->WriteFile(data, lenght);
-    }
+    void ReadArray(char* data, int lenght);
+    void ReadArray(BYTE* data, int lenght);
+    void WriteArray(const BYTE *arr, int lenght);
+    void WriteArray(const char *arr, int lenght);
 
-    inline void Close()
-    {
-        stream->CloseFile();
-    }
+    inline void Close(){return;}
 
 private:
+    std::array<char,8> buffer;
     Stream stream;
 };
 

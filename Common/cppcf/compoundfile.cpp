@@ -100,10 +100,10 @@ void CompoundFile::Commit(bool releaseMemory)
     if (header->majorVersion != (ushort)CFSVersion::Ver_3)
         CheckForLockSector();
 
-    sourceStream->SeekFile(0, SEEK_SET);
+    sourceStream->seekp(0, std::ios::beg);
 
-    std::vector<BYTE> zeroArray(sSize, 0);
-    sourceStream->WriteFile(zeroArray.data(), zeroArray.size());
+    std::vector<char> zeroArray(sSize, 0);
+    sourceStream->write(zeroArray.data(), zeroArray.size());
     zeroArray.clear();
 
     CommitDirectory();
@@ -122,10 +122,10 @@ void CompoundFile::Commit(bool releaseMemory)
         if (s.get() != nullptr && s->dirtyFlag)
         {
             if (gap)
-                sourceStream->SeekFile((long)((long)(sSize) + (long)i * (long)sSize), SEEK_SET);
+                sourceStream->seekp((long)((long)(sSize) + (long)i * (long)sSize), std::ios::beg);
 
-            sourceStream->WriteFile(s->GetData().data(), sSize);
-            sourceStream->Flush();
+            sourceStream->write(reinterpret_cast<char*>(s->GetData().data()), sSize);
+            sourceStream->flush();
             s->dirtyFlag = false;
             gap = false;
 
@@ -146,11 +146,11 @@ void CompoundFile::Commit(bool releaseMemory)
 
 
     // Seek to beginning position and save header (first 512 or 4096 bytes)
-    sourceStream->SeekFile(0, SEEK_SET);
+    sourceStream->seekg(0, std::ios::beg);
     header->Write(sourceStream);
 
     //    sourceStream-> SetLength((long)(sectors.Count + 1) * sSize);
-    sourceStream->Flush();
+    sourceStream->flush();
 
 //    if (releaseMemory)
 //        GC.Collect();
@@ -201,9 +201,9 @@ void CompoundFile::Load(Stream stream)
 
         header->Read(stream);
 
-        int n_sector = std::ceil(((double)(stream->SizeFile() - GetSectorSize()) / (double)GetSectorSize()));
+        int n_sector = std::ceil(((double)(Length(stream) - GetSectorSize()) / (double)GetSectorSize()));
 
-        if (stream->SizeFile() > 0x7FFFFF0)
+        if (Length(stream) > 0x7FFFFF0)
             this->_transactionLockAllocated = true;
 
 
@@ -220,9 +220,9 @@ void CompoundFile::Load(Stream stream)
     }
     catch (...)
     {
-        if (stream != nullptr && closeStream)
+        if (std::dynamic_pointer_cast<std::fstream>(stream) != nullptr && stream.get() != nullptr && closeStream)
         {
-            stream->CloseFile();
+            std::static_pointer_cast<std::fstream>(stream)->close();
         }
 
         throw;
@@ -234,8 +234,12 @@ void CompoundFile::Save(std::wstring wFileName)
     if (_disposed)
         throw CFException("Compound File closed: cannot save data");
 
-    Stream fs(new NSFile::CStreamWriter);
-    fs->CreateFileW(wFileName);
+    BYTE* pUtf8 = NULL;
+    LONG lLen = 0;
+    NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wFileName.c_str(), wFileName.length(), pUtf8, lLen, false);
+    std::string utf8FileName = std::string(pUtf8, pUtf8 + lLen);
+    delete [] pUtf8;
+    Stream fs(new std::fstream(utf8FileName, std::ios::out));
 
     try
     {
@@ -243,15 +247,15 @@ void CompoundFile::Save(std::wstring wFileName)
     }
     catch (std::exception& ex)
     {
-        throw CFException(L"Error saving file [" + fileName + L"]", ex);
+        throw CFException("Error saving file [" + fileName + "]", ex);
     }
     //    finally
     {
-        if (fs != nullptr)
-            fs->Flush();
+        if (fs.get() != nullptr)
+            fs->flush();
 
-        if (fs != nullptr)
-            fs->CloseFile();
+        if (fs.get() != nullptr)
+            static_cast<std::fstream*>(fs.get())->close();
 
     }
 }
@@ -269,8 +273,8 @@ void CompoundFile::Save(Stream stream)
 
     try
     {
-        std::vector<BYTE> zeroArray(sSize, 0);
-        stream->WriteFile(zeroArray.data(), zeroArray.size());
+        std::vector<char> zeroArray(sSize, 0);
+        stream->write(zeroArray.data(), zeroArray.size());
         zeroArray.clear();
 
         CommitDirectory();
@@ -293,13 +297,13 @@ void CompoundFile::Save(Stream stream)
             }
 
 
-            stream->WriteFile(s->GetData().data(), sSize);
+            stream->write(reinterpret_cast<char*>(s->GetData().data()), sSize);
 
             //s.ReleaseData();
 
         }
 
-        stream->TellFile();
+        stream->seekp(0, std::ios::beg);
         header->Write(stream);
     }
     catch (std::exception &ex)
@@ -502,7 +506,7 @@ SVector<Sector> CompoundFile::GetNormalSectorChain(int secID)
 
         result.push_back(s);
 
-        fatStream.Seek(nextSecID * 4, SEEK_SET);
+        fatStream.Seek(nextSecID * 4, std::ios::beg);
         int next = fatStream.ReadInt32();
 
         EnsureUniqueSectorIndex(next, processedSectors);
@@ -545,12 +549,12 @@ SVector<Sector> CompoundFile::GetMiniSectorChain(int secID)
             ms->id = nextSecID;
             ms->type = SectorType::Mini;
 
-            miniStreamView.Seek(nextSecID * Sector::MINISECTOR_SIZE, SEEK_SET);
+            miniStreamView.Seek(nextSecID * Sector::MINISECTOR_SIZE, std::ios::beg);
             miniStreamView.Read(reinterpret_cast<char*>(ms->GetData().data()), 0, Sector::MINISECTOR_SIZE);
 
             result.push_back(ms);
 
-            miniFATView.Seek(nextSecID * 4, SEEK_SET);
+            miniFATView.Seek(nextSecID * 4, std::ios::beg);
             int next = miniFATView.ReadInt32();
 
             nextSecID = next;
@@ -583,8 +587,7 @@ SVector<Sector> CompoundFile::GetSectorChain(int secID, SectorType chainType)
 
 void CompoundFile::EnsureUniqueSectorIndex(int nextSecID, std::unordered_set<int>& processedSectors)
 {
-    bool isContain = processedSectors.find(nextSecID) != processedSectors.end();
-    if (isContain && this->validationExceptionEnabled)
+    if (processedSectors.find(nextSecID) != processedSectors.end() && this->validationExceptionEnabled)
     {
         throw CFCorruptedFileException("The file is corrupted.");
     }
@@ -849,7 +852,7 @@ void CompoundFile::FreeMiniChain(SVector<Sector> &sectorChain, int nth_sector_to
             if (s->id != -1)
             {
                 // Overwrite
-                miniStreamView.Seek(Sector::MINISECTOR_SIZE * s->id, SEEK_SET);
+                miniStreamView.Seek(Sector::MINISECTOR_SIZE * s->id, std::ios::beg);
                 miniStreamView.Write(ZEROED_MINI_SECTOR.data(), 0, Sector::MINISECTOR_SIZE);
             }
         }
@@ -860,7 +863,7 @@ void CompoundFile::FreeMiniChain(SVector<Sector> &sectorChain, int nth_sector_to
     {
         int currentId = sectorChain[i]->id;
 
-        miniFATView.Seek(currentId * 4, SEEK_SET);
+        miniFATView.Seek(currentId * 4, std::ios::beg);
         const int freesec = Sector::FREESECT;
         miniFATView.Write(reinterpret_cast<const char*>(&freesec), 0, 4);
     }
@@ -872,7 +875,7 @@ void CompoundFile::FreeMiniChain(SVector<Sector> &sectorChain, int nth_sector_to
     // Write End of Chain in MiniFAT ---------------------------------------
     if (nth_sector_to_remove > 0 && sectorChain.size() > 0)
     {
-        miniFATView.Seek(sectorChain[nth_sector_to_remove - 1]->id * 4, SEEK_SET);
+        miniFATView.Seek(sectorChain[nth_sector_to_remove - 1]->id * 4, std::ios::beg);
         const int endofchain = Sector::ENDOFCHAIN;
         miniFATView.Write(reinterpret_cast<const char*>(&endofchain), 0, 4);
     }
@@ -915,7 +918,7 @@ void CompoundFile::FreeChain(SVector<Sector> &sectorChain, int nth_sector_to_rem
     {
         int currentId = sectorChain[i]->id;
 
-        FATView.Seek(currentId * 4, SEEK_SET);
+        FATView.Seek(currentId * 4, std::ios::beg);
         const int freesec = Sector::FREESECT;
         FATView.Write(reinterpret_cast<const char*>(&freesec), 0, 4);
     }
@@ -923,7 +926,7 @@ void CompoundFile::FreeChain(SVector<Sector> &sectorChain, int nth_sector_to_rem
     // Write new end of chain if partial free ----------
     if (nth_sector_to_remove > 0 && sectorChain.size() > 0)
     {
-        FATView.Seek(sectorChain[nth_sector_to_remove - 1]->id * 4, SEEK_SET);
+        FATView.Seek(sectorChain[nth_sector_to_remove - 1]->id * 4, std::ios::beg);
         const int endofchain = Sector::ENDOFCHAIN;
         FATView.Write(reinterpret_cast<const char*>(&endofchain), 0, 4);
     }
@@ -970,11 +973,11 @@ void CompoundFile::AllocateFATSectorChain(SVector<Sector> &sectorChain)
         auto sN = sectorChain[i + 1];
         auto sC = sectorChain[i];
 
-        fatStream.Seek(sC->id * 4, SEEK_SET);
+        fatStream.Seek(sC->id * 4, std::ios::beg);
         fatStream.Write(reinterpret_cast<const char*>(&(sN->id)), 0, 4);
     }
 
-    fatStream.Seek(sectorChain[sectorChain.size() - 1]->id * 4, SEEK_SET);
+    fatStream.Seek(sectorChain[sectorChain.size() - 1]->id * 4, std::ios::beg);
     const int endofchain = Sector::ENDOFCHAIN;
     fatStream.Write(reinterpret_cast<const char*>(&endofchain), 0, 4);
 
@@ -1111,14 +1114,14 @@ void CompoundFile::AllocateDIFATSectorChain(SVector<Sector> &FATsectorChain)
 
     for (int i = 0; i < (int)header->difatSectorsNumber; i++)
     {
-        fatSv.Seek(difatStream.BaseSectorChain()[i]->id * 4, SEEK_SET);
+        fatSv.Seek(difatStream.BaseSectorChain()[i]->id * 4, std::ios::beg);
         const int difsect = Sector::DIFSECT;
         fatSv.Write(reinterpret_cast<const char*>(&difsect), 0, 4);
     }
 
     for (int i = 0; i < header->fatSectorsNumber; i++)
     {
-        fatSv.Seek(fatSv.BaseSectorChain()[i]->id * 4, SEEK_SET);
+        fatSv.Seek(fatSv.BaseSectorChain()[i]->id * 4, std::ios::beg);
         const int fatsect = Sector::FATSECT;
         fatSv.Write(reinterpret_cast<const char*>(&fatsect), 0, 4);
     }
@@ -1166,7 +1169,7 @@ void CompoundFile::AllocateMiniSectorChain(SVector<Sector> &sectorChain)
             // Allocate, position ministream at the end of already allocated
             // ministream's sectors
 
-            miniStreamView.Seek(rootStorage->size() + Sector::MINISECTOR_SIZE, SEEK_SET);
+            miniStreamView.Seek(rootStorage->size() + Sector::MINISECTOR_SIZE, std::ios::beg);
             //miniStreamView.Write(s.GetData(), 0, Sector.MINISECTOR_SIZE);
             s->id = (int)(miniStreamView.position - Sector::MINISECTOR_SIZE) / Sector::MINISECTOR_SIZE;
 
@@ -1180,12 +1183,12 @@ void CompoundFile::AllocateMiniSectorChain(SVector<Sector> &sectorChain)
         int currentId = sectorChain[i]->id;
         int nextId = sectorChain[i + 1]->id;
 
-        miniFATView.Seek(currentId * 4, SEEK_SET);
+        miniFATView.Seek(currentId * 4, std::ios::beg);
         miniFATView.Write(reinterpret_cast<const char*>(&nextId), 0, 4);
     }
 
     // Write End of Chain in MiniFAT
-    miniFATView.Seek(sectorChain[sectorChain.size() - 1]->id * SIZE_OF_SID, SEEK_SET);
+    miniFATView.Seek(sectorChain[sectorChain.size() - 1]->id * SIZE_OF_SID, std::ios::beg);
     const int endofchain = Sector::ENDOFCHAIN;
     miniFATView.Write(reinterpret_cast<const char*>(&endofchain), 0, 4);
 
@@ -1221,7 +1224,7 @@ void CompoundFile::PersistMiniStreamToStream(const SVector<Sector> &miniSectorCh
             throw CFException("Invalid minisector index");
 
         // Ministream sectors already allocated
-        miniStreamView.Seek(Sector::MINISECTOR_SIZE * s->id, SEEK_SET);
+        miniStreamView.Seek(Sector::MINISECTOR_SIZE * s->id, std::ios::beg);
         miniStreamView.Write(reinterpret_cast<const char*>(s->GetData().data()), 0, Sector::MINISECTOR_SIZE);
     }
 }
@@ -1610,7 +1613,7 @@ SList<Sector> CompoundFile::FindFreeSectors(SectorType sType)
                 ms->id = idx;
                 ms->type = SectorType::Mini;
 
-                miniStreamView.Seek(ms->id * Sector::MINISECTOR_SIZE, SEEK_SET);
+                miniStreamView.Seek(ms->id * Sector::MINISECTOR_SIZE, std::ios::beg);
                 miniStreamView.Read(reinterpret_cast<char*>(ms->GetData().data()), 0, Sector::MINISECTOR_SIZE);
 
                 freeList.enqueue(ms);
@@ -1684,7 +1687,7 @@ int CompoundFile::ReadData(CFStream *cFStream, std::streamsize position, std::ve
     }
 
 
-    sView->Seek(position, SEEK_SET);
+    sView->Seek(position, std::ios::beg);
     int result = sView->Read(reinterpret_cast<char*>(buffer.data()), 0, count);
 
     return result;
@@ -1709,7 +1712,7 @@ int CompoundFile::ReadData(CFStream *cFStream, std::streamsize position, std::ve
     }
 
 
-    sView->Seek(position, SEEK_SET);
+    sView->Seek(position, std::ios::beg);
     int result = sView->Read(reinterpret_cast<char*>(buffer.data()), offset, count);
 
     return result;
@@ -1801,7 +1804,7 @@ void CompoundFile::WriteData(std::shared_ptr<CFItem> cfItem, const std::vector<B
     SList<Sector> zeroQueue;
     StreamView sv(sectorChain, _sectorSize, newLength, zeroQueue, sourceStream);
 
-    sv.Seek(position, SEEK_SET);
+    sv.Seek(position, std::ios::beg);
     sv.Write(reinterpret_cast<const char*>(buffer.data()), offset, count);
 
     if (cfItem->size() < header->minSizeStandardStream)
@@ -1835,9 +1838,10 @@ void CompoundFile::Dispose(bool disposing)
                     fileName.clear();
                 }
 
-                if (closeStream && !(configuration & CFSConfiguration::LeaveOpen))
+                if (std::dynamic_pointer_cast<std::fstream>(sourceStream) != nullptr &&
+                        closeStream && !(configuration & CFSConfiguration::LeaveOpen))
                 {
-                    sourceStream->CloseFile();
+                    std::static_pointer_cast<std::fstream>(sourceStream)->close();
                 }
             }
         }
@@ -1858,7 +1862,7 @@ void CompoundFile::CheckForLockSector()
     {
         StreamView fatStream(GetFatSectorChain(), GetSectorSize(), sourceStream);
 
-        fatStream.Seek(_lockSectorId * 4, SEEK_SET);
+        fatStream.Seek(_lockSectorId * 4, std::ios::beg);
         const int endofchain = Sector::ENDOFCHAIN;
         fatStream.Write(reinterpret_cast<const char*>(&endofchain), 0, 4);
 
@@ -1873,24 +1877,25 @@ void CompoundFile::LoadFile(std::wstring fileName)
 
     try
     {
+        NSFile::CFileBinary file;
+        file.OpenFile(fileName);
         if (updateMode == CFSUpdateMode::ReadOnly)
         {
-            fs.reset(new NSFile::CStreamWriter);
-            fs->OpenFile(this->fileName, false);
+            fs.reset(new std::fstream(this->fileName, std::ios::out));
+
         }
         else
         {
-            fs.reset(new NSFile::CStreamWriter);
-            fs->CreateFileW(this->fileName);
+            fs.reset(new std::fstream(this->fileName, std::ios::in | std::ios::out));
         }
 
-        fs->TellFile();
         Load(fs);
+
     }
     catch(...)
     {
-        if (fs != nullptr)
-            fs->CloseFile(); // close
+        if (fs.get() != nullptr)
+            fs->clear(); // close
 
         throw;
     }
@@ -1898,7 +1903,12 @@ void CompoundFile::LoadFile(std::wstring fileName)
 
 void CompoundFile::SetFileName(std::wstring fileName)
 {
-    this->fileName = fileName;
+    BYTE* pUtf8 = NULL;
+    std::streamsize lLen = 0;
+    NSFile::CUtf8Converter::GetUtf8StringFromUnicode(fileName.c_str(), fileName.length(), pUtf8, lLen, false);
+    this->fileName = std::string(pUtf8, pUtf8 + lLen);
+    delete [] pUtf8;
+
 }
 
 void CompoundFile::LoadStream(Stream stream)
@@ -1910,7 +1920,7 @@ void CompoundFile::LoadStream(Stream stream)
         throw CFException("Cannot load a non-seekable Stream");
 
 
-    stream->TellFile();
+    stream->seekp(0, std::ios::beg);
 
     Load(stream);
 }

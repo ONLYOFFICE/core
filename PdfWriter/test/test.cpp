@@ -82,6 +82,15 @@ int main()
         pCertificate = NSCertificate::FromFiles(sPrivateKeyFile, sPrivateFilePassword, sCertificateFile, sCertificateFilePassword);
     }
 
+    if (false)
+    {
+        pReader->ConvertToRaster(0, NSFile::GetProcessDirectory() + L"/res.png", 4, dWidth * dPageDpiX / 25.4, dHeight * dPageDpiX / 25.4, true, pReader->GetFontManager());
+        RELEASEOBJECT(pReader);
+        RELEASEINTERFACE(pApplicationFonts);
+        RELEASEOBJECT(pCertificate);
+        return 0;
+    }
+
     if (false && bResult)
     {
         pdfWriter.SetPassword(L"123456");

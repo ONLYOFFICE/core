@@ -315,12 +315,8 @@ namespace NSBinPptxRW
 		void WriteBYTEArray	(const BYTE* pBuffer, size_t len);
 		void WriteStringA	(std::string& sBuffer);
 		
-		void WriteStringW	(std::wstring& sBuffer);
 		void WriteStringW	(const std::wstring& sBuffer);
-		
-		void WriteStringW2	(std::wstring& sBuffer);
-		
-		void WriteStringW3	(std::wstring& sBuffer);
+        void WriteStringW2	(const std::wstring& sBuffer);
 		void WriteStringW3	(const std::wstring& sBuffer);
 		
 		void WriteStringW4	(const std::wstring& sBuffer);

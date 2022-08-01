@@ -875,21 +875,13 @@ namespace NSBinPptxRW
 		m_lPosition += lSizeMem;
 		m_pStreamCur += lSizeMem;
 	}
-	void CBinaryFileWriter::WriteStringW(std::wstring& sBuffer)
-	{
-		_WriteStringWithLength(sBuffer.c_str(), (_UINT32)sBuffer.length(), true);
-	}
 	void CBinaryFileWriter::WriteStringW(const std::wstring& sBuffer)
 	{
 		_WriteStringWithLength(sBuffer.c_str(), (_UINT32)sBuffer.length(), true);
 	}
-	void CBinaryFileWriter::WriteStringW2(std::wstring& sBuffer)
+    void CBinaryFileWriter::WriteStringW2(const std::wstring& sBuffer)
 	{
         _WriteStringWithLength(sBuffer.c_str(), (_UINT32)sBuffer.length(), false);
-	}
-    void CBinaryFileWriter::WriteStringW3(std::wstring& sBuffer)
-	{
-		_WriteString(sBuffer.c_str(), (_UINT32)sBuffer.length());
 	}
     void CBinaryFileWriter::WriteStringW3(const std::wstring& sBuffer)
 	{

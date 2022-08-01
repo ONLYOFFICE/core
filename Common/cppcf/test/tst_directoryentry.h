@@ -3,6 +3,8 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock-matchers.h>
 #include "directoryentry.h"
+#include "../../DesktopEditor/common/File.h"
+#include "../../DesktopEditor/common/Path.h"
 
 using namespace testing;
 using namespace std;
@@ -11,12 +13,13 @@ using namespace CFCPP;
 
 struct DirEntryTest : testing::Test
 {
+    string filename;
     Stream stream;
-    string filename = "../../../data/ex.ppt";
 
-    DirEntryTest()
+    DirEntryTest() :
+        filename("../../../data/ex.ppt"),
+        stream(OpenStream(filename))
     {
-        stream.reset(new std::fstream(filename, ios::app | ios::in | ios::out | ios::binary));
     }
 };
 
@@ -62,7 +65,7 @@ TEST_F(DirEntryTest, test_directoryentry_write)
     de.Read(stream);
 
     std::string other_filename("../../../data/types/direntry.bin");
-    stream.reset(new std::fstream(other_filename, ios::app | ios::in | ios::out | ios::binary));
+    stream = OpenStream(other_filename, true);
     de.Write(stream);
     EXPECT_EQ(stream->tellg(), 0x80);
     stream->seekp(0, std::ios::beg);

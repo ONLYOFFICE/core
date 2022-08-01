@@ -1877,17 +1877,7 @@ void CompoundFile::LoadFile(std::wstring fileName)
 
     try
     {
-        NSFile::CFileBinary file;
-        file.OpenFile(fileName);
-        if (updateMode == CFSUpdateMode::ReadOnly)
-        {
-            fs.reset(new std::fstream(this->fileName, std::ios::out));
-
-        }
-        else
-        {
-            fs.reset(new std::fstream(this->fileName, std::ios::in | std::ios::out));
-        }
+        fs = OpenStream(fileName, updateMode != CFSUpdateMode::ReadOnly);
 
         Load(fs);
 

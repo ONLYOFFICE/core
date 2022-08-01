@@ -3,6 +3,8 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock-matchers.h>
 #include "header.h"
+#include "../../DesktopEditor/common/File.h"
+#include "../../DesktopEditor/common/Path.h"
 
 using namespace testing;
 using namespace std;
@@ -11,13 +13,14 @@ using namespace CFCPP;
 
 struct HeaderTest : testing::Test
 {
+    string filename;
     Stream stream;
     Header hd;
-    string filename = "../../../data/ex.ppt";
 
-    HeaderTest()
+    HeaderTest() :
+        filename("../../../data/ex.ppt"),
+        stream(OpenStream(filename, false))
     {
-        stream.reset(new std::fstream(filename, ios::app | ios::in | ios::out | ios::binary));
     }
 };
 
@@ -44,6 +47,11 @@ void test_header_state(const Header& hd)
     ASSERT_FALSE(memcmp(hd.difat, difat, sizeof(difat)));
 }
 
+TEST_F(HeaderTest, test_header_open)
+{
+    EXPECT_TRUE(IsOpen(stream));
+}
+
 TEST_F(HeaderTest, test_header_read)
 {
     hd.Read(stream);
@@ -55,7 +63,7 @@ TEST_F(HeaderTest, test_header_write)
     hd.Read(stream);
 
     std::string other_filename("../../../data/types/header.bin");
-    stream.reset(new std::fstream(other_filename, ios::app | ios::in | ios::out | ios::binary));
+    stream = OpenStream(other_filename, true);
     hd.Write(stream);
 
     Header other;

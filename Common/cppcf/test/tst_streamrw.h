@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock-matchers.h>
 #include "streamrw.h"
+#include "../../DesktopEditor/common/File.h"
 
 using namespace testing;
 using namespace std;
@@ -10,16 +11,17 @@ using namespace CFCPP;
 
 struct StreamRWTest : testing::Test
 {
+    string filename;
     Stream stream;
     shared_ptr<StreamRW> rw;
-    string filename = "../../../data/types/types.bin";
     const char symbol = 'a';
     const int integer = 13;
 
-    StreamRWTest()
+    StreamRWTest() :
+        filename("../../../data/types/types.bin"),
+        stream(OpenStream(filename, true)),
+        rw(new StreamRW(stream))
     {
-        stream.reset(new std::fstream(filename, ios::app | ios::in | ios::out | ios::binary));
-        rw.reset(new StreamRW(stream));
     }
 
     ~StreamRWTest()
@@ -30,7 +32,7 @@ struct StreamRWTest : testing::Test
 
 TEST_F(StreamRWTest, test_stream_open)
 {
-    EXPECT_EQ(static_pointer_cast<fstream>(stream)->is_open(), 1);
+    EXPECT_TRUE(IsOpen(stream));
 }
 
 TEST_F(StreamRWTest, test_stream_write)

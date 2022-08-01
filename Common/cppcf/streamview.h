@@ -39,6 +39,6 @@ private:
 public:
     Stream stream;
     SList<Sector> freeSectors;
-    std::streamsize position;
+    std::streamsize position = 0;
 };
 }

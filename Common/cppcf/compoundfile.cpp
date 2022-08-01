@@ -208,6 +208,7 @@ void CompoundFile::Load(Stream stream)
 
 
         sectors.Clear();
+        auto pos = stream->tellg();
         //sectors = new ArrayList();
         for (int i = 0; i < n_sector; i++)
         {

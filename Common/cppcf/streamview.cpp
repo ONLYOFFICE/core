@@ -10,6 +10,7 @@ StreamView::StreamView(const SVector<Sector> &sectorChain, int sectorSize, Strea
     //    if (sectorChain == null)
     //        throw CFException("Sector Chain cannot be null");
 
+    auto pos = stream->tellg();
     if (sectorSize <= 0)
         throw CFException("Sector size must be greater than zero");
 }
@@ -172,7 +173,7 @@ void StreamView::SetLength(std::streamsize value)
 int StreamView::ReadInt32()
 {
     Read(reinterpret_cast<char*>(&buf), 0, 4);
-    return ((buf & 0xFF) << 24) | ((buf & 0x00FF) << 16) | ((buf & 0x0000FF) << 8) | (buf & 0x000000FF);
+    return buf;
 }
 
 void StreamView::WriteInt32(int val)

@@ -270,7 +270,7 @@ ULONG64 DirectoryEntry::fnv_hash(const char *buffer, int lenght)
 std::shared_ptr<IDirectoryEntry> DirectoryEntry::New(std::wstring name, StgType stgType, SVector<IDirectoryEntry> dirRepository)
 {
     std::shared_ptr<DirectoryEntry> de;
-    if (dirRepository.size())
+    if (/*dirRepository != null*/true)
     {
         de.reset(new DirectoryEntry(name, stgType, dirRepository));
         // No invalid directory entry found

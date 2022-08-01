@@ -22,17 +22,8 @@ bool Sector::IsStreamed()
     if (stream == nullptr || size == MINISECTOR_SIZE)
         return false;
 
-    auto currentPossition = stream->tellg();
-
-    stream->seekg(std::ios_base::end);
-    auto endPossition = stream->tellg();
-    stream->seekg(std::ios_base::beg);
-    auto begPossition = stream->tellg();
-    auto streamSize = endPossition - begPossition;
-
-    stream->seekg(currentPossition, std::ios_base::beg);
-
-    return  (this->id * size) + size < streamSize;
+    auto fileSize = Length(stream);
+    return  (this->id * size) + size < fileSize;
 }
 
 void Sector::ZeroData()

@@ -775,6 +775,55 @@ namespace PdfReader
     }
     void RendererOutputDev::updateBlendMode(GfxState *pGState)
     {
+        // TODO режимы смешивания
+        switch (pGState->getBlendMode())
+        {
+        case gfxBlendNormal:
+            break;
+        case gfxBlendMultiply:
+            // agg::comp_op_multiply
+            break;
+        case gfxBlendScreen:
+            // agg::comp_op_screen
+            break;
+        case gfxBlendOverlay:
+            // agg::comp_op_overlay
+            break;
+        case gfxBlendDarken:
+            // agg::comp_op_darken
+            break;
+        case gfxBlendLighten:
+            // agg::comp_op_lighten
+            break;
+        case gfxBlendColorDodge:
+            // agg::comp_op_color_dodge
+            break;
+        case gfxBlendColorBurn:
+            // agg::comp_op_color_burn
+            break;
+        case gfxBlendHardLight:
+            // agg::comp_op_hard_light
+            break;
+        case gfxBlendSoftLight:
+            // agg::comp_op_soft_light
+            break;
+        case gfxBlendDifference:
+            // agg::comp_op_difference
+            break;
+        case gfxBlendExclusion:
+            // agg::comp_op_exclusion
+            break;
+        case gfxBlendHue:
+            break;
+        case gfxBlendSaturation:
+            break;
+        case gfxBlendColor:
+            break;
+        case gfxBlendLuminosity:
+            break;
+        default:
+            break;
+        }
     }
     void RendererOutputDev::updateFillOpacity(GfxState *pGState)
     {
@@ -3823,7 +3872,8 @@ namespace PdfReader
         }
         else
         {
-            if (!isCIDFont || ((GfxCIDFont*)pFont)->usesIdentityEncoding() || ((GfxCIDFont*)pFont)->usesIdentityCIDToGID())
+            if ((isCIDFont && (((GfxCIDFont*)pFont)->usesIdentityEncoding() || ((GfxCIDFont*)pFont)->usesIdentityCIDToGID()))
+                || (!isCIDFont && wsUnicodeText.empty()))
             {
                 int nCurCode = (0 == nCode ? 65534 : nCode);
                 unGid       = (unsigned int)nCurCode;

@@ -698,7 +698,8 @@ HRESULT CGraphicsRenderer::CommandDrawText(const std::wstring& bsText, const dou
 	if (c_nHyperlinkType == m_lCurrentCommandType)
 		return S_OK;
 	put_BrushType(c_BrushTypeSolid);
-		
+
+    m_oFont.StringGID = FALSE;
 	_SetFont();
 
 	Aggplus::CBrush* pBrush = CreateBrush(&m_oBrush);				

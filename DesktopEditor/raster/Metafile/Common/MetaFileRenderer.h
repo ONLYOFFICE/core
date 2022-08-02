@@ -307,29 +307,30 @@ namespace MetaFile
 			double dFontCharSpace = m_pFile->GetCharSpace() * m_dScaleX * m_pFile->GetPixelWidth();
 			m_pRenderer->put_FontCharSpace(dFontCharSpace);
 
-			#ifdef METAFILE_DISABLE_FILESYSTEM
-			if (NULL != pDx && unCharsCount > 1)
-			{
-				// Тогда мы складываем все pDx кроме последнего символа, последний считаем отдельно
-				double dTempTextW = 0;
-				for (unsigned int unCharIndex = 0; unCharIndex < unCharsCount - 1; unCharIndex++)
-				{
-					dTempTextW += pDx[unCharIndex];
-				}
+            NSFonts::IFontManager* pFontManager = m_pFile->GetFontManager();
+            if (NULL == pFontManager)
+            {
+                if (NULL != pDx && unCharsCount > 1)
+                {
+                    // Тогда мы складываем все pDx кроме последнего символа, последний считаем отдельно
+                    double dTempTextW = 0;
+                    for (unsigned int unCharIndex = 0; unCharIndex < unCharsCount - 1; unCharIndex++)
+                    {
+                        dTempTextW += pDx[unCharIndex];
+                    }
 
-				dTempTextW += dFontHeight * wsText.length();
+                    dTempTextW += dFontHeight * wsText.length();
 
-				fW = (float)dTempTextW;
-			}
-			else
-			{
-				fW = (float)(dFontHeight * wsText.length());
-			}
+                    fW = (float)dTempTextW;
+                }
+                else
+                {
+                    fW = (float)(dFontHeight * wsText.length());
+                }
 
-			fH = dFontHeight * 1.2;
-			#else
-			CFontManager* pFontManager = m_pFile->GetFontManager();
-			if (pFontManager)
+                fH = dFontHeight * 1.2;
+            }
+            else
 			{
 				pFontManager->LoadFontByName(wsFaceName, dFontHeight, lStyle, 72, 72);
 				pFontManager->SetCharSpacing(dFontCharSpace * 72 / 25.4);
@@ -338,10 +339,13 @@ namespace MetaFile
 
 				double dFHeight = dFontHeight;
 				double dFDescent = dFontHeight;
-				if (pFontManager->m_pFont)
+
+                NSFonts::IFontFile* pFontFile = pFontManager->GetFile();
+
+                if (pFontFile)
 				{
-				    dFHeight  *= pFontManager->m_pFont->GetHeight() / pFontManager->m_pFont->m_lUnits_Per_Em * dMmToPt;
-				    dFDescent *= pFontManager->m_pFont->GetDescender() / pFontManager->m_pFont->m_lUnits_Per_Em * dMmToPt;
+                    dFHeight  *= pFontFile->GetHeight() / pFontFile->Units_Per_Em() * dMmToPt;
+                    dFDescent *= pFontFile->GetDescender() / pFontFile->Units_Per_Em() * dMmToPt;
 				}
 				double dFAscent  = dFHeight - std::abs(dFDescent);
 
@@ -386,7 +390,6 @@ namespace MetaFile
 				fT = (float)-dFAscent;
 				fH = (float)dFHeight;
 			}
-			#endif
 
 			TPointD oTextPoint = TranslatePoint(_dX, _dY);
 			double dX = oTextPoint.x;

@@ -714,7 +714,7 @@ namespace NSFonts
         virtual void GetFace(double& d0, double& d1, double& d2) = 0;
         virtual void GetLimitsY(double& dMin, double& dMax) = 0;
 
-
+        virtual int GetUnderline(float *pfStartX, float *pfStartY, float *pfEndX, float *pfEndY, float *pfSize) = 0;
     public:
         static IFontFile* LoadFontFile(CLibrary& library, IFontStream* pStream, int lFaceIndex);
     };

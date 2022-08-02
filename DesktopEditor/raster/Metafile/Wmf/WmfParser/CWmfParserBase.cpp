@@ -5,121 +5,121 @@
 
 namespace MetaFile
 {
-        CWmfParserBase::CWmfParserBase() : m_oPlayer(this), m_pInterpretator(NULL)
-        {
-                m_pDC = m_oPlayer.GetDC();
-        }
+	CWmfParserBase::CWmfParserBase() : m_oPlayer(this), m_pInterpretator(NULL)
+	{
+		m_pDC = m_oPlayer.GetDC();
+	}
 
-        CWmfParserBase::~CWmfParserBase()
-        {
-                ClearFile();
-        }
+	CWmfParserBase::~CWmfParserBase()
+	{
+		ClearFile();
+	}
 
-        void CWmfParserBase::PlayMetaFile()
-        {
+	void CWmfParserBase::PlayMetaFile()
+	{
 
-        }
+	}
 
-        void CWmfParserBase::ClearFile()
-        {
-                m_oPlayer.Clear();
-                m_pDC = m_oPlayer.GetDC();
-        }
+	void CWmfParserBase::ClearFile()
+	{
+		m_oPlayer.Clear();
+		m_pDC = m_oPlayer.GetDC();
+	}
 
-        TRect *CWmfParserBase::GetDCBounds()
-        {
-                TWmfWindow* pViewport = m_pDC->GetViewport();
+	TRect *CWmfParserBase::GetDCBounds()
+	{
+		TWmfWindow* pViewport = m_pDC->GetViewport();
 
 		m_oDCRect.nLeft   = pViewport->x;
 		m_oDCRect.nTop    = pViewport->y;
 		m_oDCRect.nRight  = pViewport->w + pViewport->x;
 		m_oDCRect.nBottom = pViewport->h + pViewport->y;
 
-                return &m_oDCRect;
-        }
+		return &m_oDCRect;
+	}
 
-        double CWmfParserBase::GetPixelHeight()
-        {
-                return m_pDC->GetPixelHeight();
-        }
+	double CWmfParserBase::GetPixelHeight()
+	{
+		return m_pDC->GetPixelHeight();
+	}
 
-        double CWmfParserBase::GetPixelWidth()
-        {
-                return m_pDC->GetPixelWidth();
-        }
+	double CWmfParserBase::GetPixelWidth()
+	{
+		return m_pDC->GetPixelWidth();
+	}
 
-        int CWmfParserBase::GetTextColor()
-        {
-                TWmfColor& oColor = m_pDC->GetTextColor();
-                return METAFILE_RGBA(oColor.r, oColor.g, oColor.b);
-        }
+	int CWmfParserBase::GetTextColor()
+	{
+		TWmfColor& oColor = m_pDC->GetTextColor();
+		return METAFILE_RGBA(oColor.r, oColor.g, oColor.b);
+	}
 
-        IFont *CWmfParserBase::GetFont()
-        {
-                CWmfFont* pFont = m_pDC->GetFont();
-                if (!pFont)
-                        return NULL;
+	IFont *CWmfParserBase::GetFont()
+	{
+		CWmfFont* pFont = m_pDC->GetFont();
+		if (!pFont)
+			return NULL;
 
-                return (IFont*)pFont;
-        }
+		return (IFont*)pFont;
+	}
 
-        IBrush *CWmfParserBase::GetBrush()
-        {
-                CWmfBrush* pBrush = m_pDC->GetBrush();
-                if (!pBrush)
-                        return NULL;
+	IBrush *CWmfParserBase::GetBrush()
+	{
+		CWmfBrush* pBrush = m_pDC->GetBrush();
+		if (!pBrush)
+			return NULL;
 
-                return (IBrush*)pBrush;
-        }
+		return (IBrush*)pBrush;
+	}
 
-        IPen *CWmfParserBase::GetPen()
-        {
-                CWmfPen* pPen = m_pDC->GetPen();
-                if (!pPen)
-                        return NULL;
+	IPen *CWmfParserBase::GetPen()
+	{
+		CWmfPen* pPen = m_pDC->GetPen();
+		if (!pPen)
+			return NULL;
 
-                return (IPen*)pPen;
-        }
+		return (IPen*)pPen;
+	}
 
-        unsigned int CWmfParserBase::GetTextAlign()
-        {
-                return (unsigned int)m_pDC->GetTextAlign();
-        }
+	unsigned int CWmfParserBase::GetTextAlign()
+	{
+		return (unsigned int)m_pDC->GetTextAlign();
+	}
 
-        unsigned int CWmfParserBase::GetTextBgMode()
-        {
-                return (unsigned int)m_pDC->GetTextBgMode();
-        }
+	unsigned int CWmfParserBase::GetTextBgMode()
+	{
+		return (unsigned int)m_pDC->GetTextBgMode();
+	}
 
-        int CWmfParserBase::GetTextBgColor()
-        {
-                TWmfColor& oColor = m_pDC->GetTextBgColor();
-                return METAFILE_RGBA(oColor.r, oColor.g, oColor.b);
-        }
+	int CWmfParserBase::GetTextBgColor()
+	{
+		TWmfColor& oColor = m_pDC->GetTextBgColor();
+		return METAFILE_RGBA(oColor.r, oColor.g, oColor.b);
+	}
 
-        unsigned int CWmfParserBase::GetFillMode()
-        {
-                return (unsigned int)m_pDC->GetPolyFillMode();
-        }
+	unsigned int CWmfParserBase::GetFillMode()
+	{
+		return (unsigned int)m_pDC->GetPolyFillMode();
+	}
 
-        TPointD CWmfParserBase::GetCurPos()
-        {
-                TPointL oPoint = m_pDC->GetCurPos();
-                double dX, dY;
-                TranslatePoint(oPoint.x, oPoint.y, dX, dY);
-                return TPointD(dX, dY);
-        }
+	TPointD CWmfParserBase::GetCurPos()
+	{
+		TPointL oPoint = m_pDC->GetCurPos();
+		double dX, dY;
+		TranslatePoint(oPoint.x, oPoint.y, dX, dY);
+		return TPointD(dX, dY);
+	}
 
-        TXForm *CWmfParserBase::GetInverseTransform()
-        {
-                return m_pDC->GetInverseTransform();
-        }
+	TXForm *CWmfParserBase::GetInverseTransform()
+	{
+		return m_pDC->GetInverseTransform();
+	}
 
-        TXForm *CWmfParserBase::GetTransform(int iGraphicsMode)
-        {
-                TRect* pBounds = GetDCBounds();
-                double dT = pBounds->nTop;
-                double dL = pBounds->nLeft;
+	TXForm *CWmfParserBase::GetTransform(int iGraphicsMode)
+	{
+		TRect* pBounds = GetDCBounds();
+		double dT = pBounds->nTop;
+		double dL = pBounds->nLeft;
 
 		TXForm oShiftXForm(1, 0, 0, 1, -dL, -dT);
 		m_oTransform.Copy(m_pDC->GetFinalTransform(iGraphicsMode));
@@ -127,107 +127,107 @@ namespace MetaFile
 		return &m_oTransform;
 	}
 
-        unsigned int CWmfParserBase::GetMiterLimit()
-        {
-                return m_pDC->GetMiterLimit();
-        }
+	unsigned int CWmfParserBase::GetMiterLimit()
+	{
+		return m_pDC->GetMiterLimit();
+	}
 
-        unsigned int CWmfParserBase::GetRop2Mode()
-        {
-                return (unsigned int)m_pDC->GetRop2Mode();
-        }
+	unsigned int CWmfParserBase::GetRop2Mode()
+	{
+		return (unsigned int)m_pDC->GetRop2Mode();
+	}
 
-        IClip *CWmfParserBase::GetClip()
-        {
-                CWmfClip* pClip = m_pDC->GetClip();
-                if (!pClip)
-                        return NULL;
+	IClip *CWmfParserBase::GetClip()
+	{
+		CWmfClip* pClip = m_pDC->GetClip();
+		if (!pClip)
+			return NULL;
 
-                return (IClip*)pClip;
-        }
+		return (IClip*)pClip;
+	}
 
-        int CWmfParserBase::GetCharSpace()
-        {
-                return m_pDC->GetCharSpacing();
-        }
+	int CWmfParserBase::GetCharSpace()
+	{
+		return m_pDC->GetCharSpacing();
+	}
 
-        bool CWmfParserBase::IsWindowFlippedY()
-        {
-                TWmfWindow* pWindow = m_pDC->GetWindow();
-                return (pWindow->h < 0);
-        }
+	bool CWmfParserBase::IsWindowFlippedY()
+	{
+		TWmfWindow* pWindow = m_pDC->GetWindow();
+		return (pWindow->h < 0);
+	}
 
-        bool CWmfParserBase::IsWindowFlippedX()
-        {
-                TWmfWindow* pWindow = m_pDC->GetWindow();
-                return (pWindow->w < 0);
-        }
+	bool CWmfParserBase::IsWindowFlippedX()
+	{
+		TWmfWindow* pWindow = m_pDC->GetWindow();
+		return (pWindow->w < 0);
+	}
 
-        void CWmfParserBase::SetInterpretator(IOutputDevice *pOutput)
-        {
-                if (NULL != m_pInterpretator)
-                        delete m_pInterpretator;
+	void CWmfParserBase::SetInterpretator(IOutputDevice *pOutput)
+	{
+		if (NULL != m_pInterpretator)
+			delete m_pInterpretator;
 
-                m_pInterpretator = new CWmfInterpretatorRender(pOutput);
-        }
+		m_pInterpretator = new CWmfInterpretatorRender(pOutput);
+	}
 
-        void CWmfParserBase::SetInterpretator(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType, unsigned int unWidth, unsigned int unHeight)
-        {
-                if (NULL != m_pInterpretator)
-                        delete m_pInterpretator;
+	void CWmfParserBase::SetInterpretator(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType, unsigned int unWidth, unsigned int unHeight)
+	{
+		if (NULL != m_pInterpretator)
+			delete m_pInterpretator;
 
-                if (InterpretatorType::Svg == oInterpretatorType)
-                         m_pInterpretator = new CWmfInterpretatorSvg(wsFilePath, this, unWidth, unHeight);
+		if (InterpretatorType::Svg == oInterpretatorType)
+			m_pInterpretator = new CWmfInterpretatorSvg(wsFilePath, this, unWidth, unHeight);
 
-                //TODO:: добавить как появится реализация интерпретаторов
-        }
+		//TODO:: добавить как появится реализация интерпретаторов
+	}
 
-        void CWmfParserBase::SetInterpretator(IOutputDevice *pOutput, const wchar_t *wsFilePath)
-        {
+	void CWmfParserBase::SetInterpretator(IOutputDevice *pOutput, const wchar_t *wsFilePath)
+	{
 
-        }
+	}
 
-        TRectD CWmfParserBase::GetBounds()
-        {
-                TRect  oBoundsBox = GetBoundingBox();
-                TRectD oBounds = oBoundsBox;
-                //TODO: сильно падает качетсво изображения
-    //			if (IsPlaceable())
-    //			{
-    //				double dLogicalToMM = (m_oPlaceable.Inch > 0 ? 25.4 / m_oPlaceable.Inch : 25.4 / 1440);
-    //				oBounds *= dLogicalToMM;
-    //			}
-    //			else
-    //			{
-    //				// TODO:
-    //			}
-                return oBounds;
-        }
+	TRectD CWmfParserBase::GetBounds()
+	{
+		TRect  oBoundsBox = GetBoundingBox();
+		TRectD oBounds = oBoundsBox;
+		//TODO: сильно падает качетсво изображения
+		//			if (IsPlaceable())
+		//			{
+		//				double dLogicalToMM = (m_oPlaceable.Inch > 0 ? 25.4 / m_oPlaceable.Inch : 25.4 / 1440);
+		//				oBounds *= dLogicalToMM;
+		//			}
+		//			else
+		//			{
+		//				// TODO:
+		//			}
+		return oBounds;
+	}
 
-        void CWmfParserBase::SkipVoid()
-        {
-                char chValue;
+	void CWmfParserBase::SkipVoid()
+	{
+		char chValue;
 
 		do
 		{
 			chValue = m_oStream.ReadChar();
 		} while (chValue == 0);
 
-                m_oStream.SeekBack(1);
-        }
+		m_oStream.SeekBack(1);
+	}
 
-        void CWmfParserBase::TranslatePoint(short shX, short shY, double &dX, double &dY)
-        {
-                dX = (double)shX;
-                dY = (double)shY;
-        }
+	void CWmfParserBase::TranslatePoint(short shX, short shY, double &dX, double &dY)
+	{
+		dX = (double)shX;
+		dY = (double)shY;
+	}
 
-        TRect CWmfParserBase::GetBoundingBox()
-        {
-                TRect oBB;
-                if (IsPlaceable())
-                {
-                        oBB = m_oPlaceable.BoundingBox;
+	TRect CWmfParserBase::GetBoundingBox()
+	{
+		TRect oBB;
+		if (IsPlaceable())
+		{
+			oBB = m_oPlaceable.BoundingBox;
 
 			// Иногда m_oPlaceable.BoundingBox задается нулевой ширины и высоты
 			if (abs(oBB.nRight - oBB.nLeft) <= 1)
@@ -250,95 +250,95 @@ namespace MetaFile
 		if (abs(oBB.nBottom - oBB.nTop) <= 1)
 			oBB.nBottom = m_oBoundingBox.nTop + 1024;
 
-                return oBB;
-        }
+		return oBB;
+	}
 
-        bool CWmfParserBase::IsPlaceable()
-        {
-                return (0x9AC6CDD7 == m_oPlaceable.Key);
-        }
+	bool CWmfParserBase::IsPlaceable()
+	{
+		return (0x9AC6CDD7 == m_oPlaceable.Key);
+	}
 
-        int CWmfParserBase::GetRecordRemainingBytesCount()
-        {
-                unsigned int unReadedSize = m_oStream.Tell() - m_unRecordPos;
-                return (m_unRecordSize - unReadedSize);
-        }
+	int CWmfParserBase::GetRecordRemainingBytesCount()
+	{
+		unsigned int unReadedSize = m_oStream.Tell() - m_unRecordPos;
+		return (m_unRecordSize - unReadedSize);
+	}
 
-        double CWmfParserBase::GetSweepAngle(const double &dStartAngle, const double &dEndAngle)
-        {
-                return (dEndAngle - dStartAngle);
-        }
+	double CWmfParserBase::GetSweepAngle(const double &dStartAngle, const double &dEndAngle)
+	{
+		return (dEndAngle - dStartAngle);
+	}
 
-        void CWmfParserBase::MoveTo(short shX, short shY)
-        {
-                if (NULL != m_pInterpretator)
-                {
-                        double dX, dY;
-                        TranslatePoint(shX, shY, dX, dY);
-                        m_pInterpretator->MoveTo(dX, dY);
-                }
-                else
-                {
-                        RegisterPoint(shX, shY);
-                }
+	void CWmfParserBase::MoveTo(short shX, short shY)
+	{
+		if (NULL != m_pInterpretator)
+		{
+			double dX, dY;
+			TranslatePoint(shX, shY, dX, dY);
+			m_pInterpretator->MoveTo(dX, dY);
+		}
+		else
+		{
+			RegisterPoint(shX, shY);
+		}
 
-                m_pDC->SetCurPos(shX, shY);
-        }
+		m_pDC->SetCurPos(shX, shY);
+	}
 
-        void CWmfParserBase::LineTo(short shX, short shY)
-        {
-                if (NULL != m_pInterpretator)
-                {
-                        double dX, dY;
-                        TranslatePoint(shX, shY, dX, dY);
-                        m_pInterpretator->LineTo(dX, dY);
-                }
-                else
-                {
-                        RegisterPoint(shX, shY);
-                }
-                m_pDC->SetCurPos(shX, shY);
-        }
+	void CWmfParserBase::LineTo(short shX, short shY)
+	{
+		if (NULL != m_pInterpretator)
+		{
+			double dX, dY;
+			TranslatePoint(shX, shY, dX, dY);
+			m_pInterpretator->LineTo(dX, dY);
+		}
+		else
+		{
+			RegisterPoint(shX, shY);
+		}
+		m_pDC->SetCurPos(shX, shY);
+	}
 
-        void CWmfParserBase::ArcTo(short shL, short shT, short shR, short shB, double dStart, double dSweep)
-        {
-                // Тут не делаем пересчет текущей точки, т.к. при вызове данной функции не всегда он нужен (например эллипс).
-                // Текущая точка обновляется на том уровне, на котором вызывалась данная функция.
-                if (NULL != m_pInterpretator)
-                {
-                        double dL, dT, dR, dB;
-                        TranslatePoint(shL, shT, dL, dT);
-                        TranslatePoint(shR, shB, dR, dB);
-                        m_pInterpretator->ArcTo(dL, dT, dR, dB, dStart, dSweep);
-                }
-                else
-                {
-                        // TODO: Возможно нужно регистрировать более точно
-                        RegisterPoint(shL, shT);
-                        RegisterPoint(shR, shB);
-                }
-        }
+	void CWmfParserBase::ArcTo(short shL, short shT, short shR, short shB, double dStart, double dSweep)
+	{
+		// Тут не делаем пересчет текущей точки, т.к. при вызове данной функции не всегда он нужен (например эллипс).
+		// Текущая точка обновляется на том уровне, на котором вызывалась данная функция.
+		if (NULL != m_pInterpretator)
+		{
+			double dL, dT, dR, dB;
+			TranslatePoint(shL, shT, dL, dT);
+			TranslatePoint(shR, shB, dR, dB);
+			m_pInterpretator->ArcTo(dL, dT, dR, dB, dStart, dSweep);
+		}
+		else
+		{
+			// TODO: Возможно нужно регистрировать более точно
+			RegisterPoint(shL, shT);
+			RegisterPoint(shR, shB);
+		}
+	}
 
-        void CWmfParserBase::ClosePath()
-        {
-                if (NULL != m_pInterpretator)
-                        m_pInterpretator->ClosePath();
-        }
+	void CWmfParserBase::ClosePath()
+	{
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->ClosePath();
+	}
 
-        void CWmfParserBase::DrawPath(bool bStroke, bool bFill)
-        {
-                if (NULL != m_pInterpretator)
-                {
-                        int lType = (bStroke ? 1 : 0) + (bFill ? 2 : 0);
-                        m_pInterpretator->DrawPath(lType);
-                        m_pInterpretator->EndPath();
-                }
-        }
+	void CWmfParserBase::DrawPath(bool bStroke, bool bFill)
+	{
+		if (NULL != m_pInterpretator)
+		{
+			int lType = (bStroke ? 1 : 0) + (bFill ? 2 : 0);
+			m_pInterpretator->DrawPath(lType);
+			m_pInterpretator->EndPath();
+		}
+	}
 
-        void CWmfParserBase::DrawText(const unsigned char *pString, unsigned int unCharsCount, short _shX, short _shY, short *pDx)
-        {
-                int nX = _shX;
-                int nY = _shY;
+	void CWmfParserBase::DrawText(const unsigned char *pString, unsigned int unCharsCount, short _shX, short _shY, short *pDx)
+	{
+		int nX = _shX;
+		int nY = _shY;
 
 		if (m_pDC->GetTextAlign() & TA_UPDATECP)
 		{
@@ -376,24 +376,24 @@ namespace MetaFile
 
 			switch (pFont->GetCharSet())
 			{
-				default:
-				case DEFAULT_CHARSET:       eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT; break;
-				case SYMBOL_CHARSET:        eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT; break;
-				case ANSI_CHARSET:          eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1252; break;
-				case RUSSIAN_CHARSET:       eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1251; break;
-				case EASTEUROPE_CHARSET:    eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1250; break;
-				case GREEK_CHARSET:         eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1253; break;
-				case TURKISH_CHARSET:       eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1254; break;
-				case BALTIC_CHARSET:        eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1257; break;
-				case HEBREW_CHARSET:        eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1255; break;
-				case ARABIC_CHARSET:        eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1256; break;
-				case SHIFTJIS_CHARSET:      eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP932; break;
-				case HANGEUL_CHARSET:       eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP949; break;
-				case 134/*GB2313_CHARSET*/: eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP936; break;
-				case CHINESEBIG5_CHARSET:   eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP950; break;
-				case THAI_CHARSET:          eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP874; break;
-				case JOHAB_CHARSET:         eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1361; break;
-				case VIETNAMESE_CHARSET:    eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1258; break;
+			default:
+			case DEFAULT_CHARSET:       eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT; break;
+			case SYMBOL_CHARSET:        eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT; break;
+			case ANSI_CHARSET:          eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1252; break;
+			case RUSSIAN_CHARSET:       eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1251; break;
+			case EASTEUROPE_CHARSET:    eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1250; break;
+			case GREEK_CHARSET:         eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1253; break;
+			case TURKISH_CHARSET:       eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1254; break;
+			case BALTIC_CHARSET:        eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1257; break;
+			case HEBREW_CHARSET:        eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1255; break;
+			case ARABIC_CHARSET:        eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1256; break;
+			case SHIFTJIS_CHARSET:      eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP932; break;
+			case HANGEUL_CHARSET:       eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP949; break;
+			case 134/*GB2313_CHARSET*/: eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP936; break;
+			case CHINESEBIG5_CHARSET:   eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP950; break;
+			case THAI_CHARSET:          eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP874; break;
+			case JOHAB_CHARSET:         eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1361; break;
+			case VIETNAMESE_CHARSET:    eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1258; break;
 			}
 		}
 
@@ -433,228 +433,230 @@ namespace MetaFile
 		}
 		else
 		{
-			#ifdef  METAFILE_DISABLE_FILESYSTEM
 			if (pFont)
 			{
-				int lLogicalFontHeight = pFont->GetHeight();
-				if (lLogicalFontHeight < 0)
-					lLogicalFontHeight = -lLogicalFontHeight;
-				if (lLogicalFontHeight < 0.01)
-					lLogicalFontHeight = 18;
-
-				double dFontHeight = lLogicalFontHeight;
-
-				float fL = 0, fT = 0, fW = 0, fH = 0;
-
-				if (NULL != pDx && unCharsCount > 1)
+				// TODO: Здесь идет точное повторение кода из CMetaFileRenderer->DrawString
+				//       неплохо бы перенести этот пересчет в базовый класс IMetaFileBase.
+				NSFonts::IFontManager* pFontManager = GetFontManager();
+				if (pFontManager)
 				{
-					// Тогда мы складываем все pDx кроме последнего символа, последний считаем отдельно
-					double dTempTextW = 0;
-					for (unsigned int unCharIndex = 0; unCharIndex < unCharsCount - 1; unCharIndex++)
+					int lLogicalFontHeight = pFont->GetHeight();
+					if (lLogicalFontHeight < 0)
+						lLogicalFontHeight = -lLogicalFontHeight;
+					if (lLogicalFontHeight < 0.01)
+						lLogicalFontHeight = 18;
+
+					double dFontHeight = lLogicalFontHeight;
+
+					std::wstring wsFaceName = pFont->GetFaceName();
+
+					int lStyle = 0;
+					if (pFont->GetWeight() > 550)
+						lStyle |= 0x01;
+					if (pFont->IsItalic())
+						lStyle |= 0x02;
+
+					float fL = 0, fT = 0, fW = 0, fH = 0;
+					pFontManager->LoadFontByName(wsFaceName, dFontHeight, lStyle, 72, 72);
+					pFontManager->SetCharSpacing(GetCharSpace());
+
+					NSFonts::IFontFile* pFontFile = pFontManager->GetFile();
+					double dFHeight  = pFontFile ? (dFontHeight * pFontFile->GetHeight() / pFontFile->Units_Per_Em()) : 0;
+					double dFDescent = pFontFile ? (dFontHeight * pFontFile->GetDescender() / pFontFile->Units_Per_Em()) : 0;
+					double dFAscent  = dFHeight - std::abs(dFDescent);
+
+					if (NULL != pDx && unCharsCount > 1)
 					{
-						dTempTextW += pDx[unCharIndex];
+						// Тогда мы складываем все pDx кроме последнего символа, последний считаем отдельно
+						double dTempTextW = 0;
+						for (unsigned int unCharIndex = 0; unCharIndex < unCharsCount - 1; unCharIndex++)
+						{
+							dTempTextW += pDx[unCharIndex];
+						}
+
+						std::wstring wsTempText;
+						wsTempText += wsText.at(wsText.length() - 1);
+						//wsTempText += wsText.at(unCharsCount - 1);
+
+						pFontManager->LoadString1(wsTempText, 0, 0);
+						TBBox oBox = pFontManager->MeasureString2();
+						dTempTextW += (oBox.fMaxX - oBox.fMinX);
+
+						fW = (float)dTempTextW;
+					}
+					else
+					{
+						pFontManager->LoadString1(wsText, 0, 0);
+						TBBox oBox = pFontManager->MeasureString2();
+						fL = (float)(oBox.fMinX);
+						fW = (float)(oBox.fMaxX - oBox.fMinX);
 					}
 
-					dTempTextW += dFontHeight * wsText.length();
-
-					fW = (float)dTempTextW;
-				}
-				else
-				{
-					fW = (float)(dFontHeight * wsText.length());
-				}
-
-				fH = dFontHeight * 1.2;
-
-				double dTheta = -((((double)pFont->GetEscapement()) / 10) * 3.14159265358979323846 / 180);
-				double dCosTheta = (float)cos(dTheta);
-				double dSinTheta = (float)sin(dTheta);
-
-				double dX = (double)nX;
-				double dY = (double)nY;
-
-				// Найдем начальную точку текста
-				unsigned int ulTextAlign = GetTextAlign();
-				if (ulTextAlign & TA_BASELINE)
-				{
-					// Ничего не делаем
-				}
-				else if (ulTextAlign & TA_BOTTOM)
-				{
-					float fTemp = -(-fT + fH);
-
-					dX += -fTemp * dSinTheta;
-					dY +=  fTemp * dCosTheta;
-				}
-				else // if (ulTextAlign & TA_TOP)
-				{
-					float fTemp = -fT;
-
-					dX += -fTemp * dSinTheta;
-					dY +=  fTemp * dCosTheta;
-				}
-
-				if (ulTextAlign & TA_CENTER)
-				{
-					dX += -fW / 2 * dCosTheta;
-					dY += -fW / 2 * dSinTheta;
-				}
-				else if (ulTextAlign & TA_RIGHT)
-				{
-					dX += -fW * dCosTheta;
-					dY += -fW * dSinTheta;
-				}
-				else //if (ulTextAlign & TA_LEFT)
-				{
-					// Ничего не делаем
-				}
-
-				double dX0 = dX + fL, dY0 = dY + fT;
-				double dX1 = dX + fL + fW, dY1 = dY + fT;
-				double dX2 = dX + fL + fW, dY2 = dY + fT + fH;
-				double dX3 = dX + fL, dY3 = dY + fT + fH;
-				if (0 != pFont->GetEscapement())
-				{
-					TXForm oForm(dCosTheta, dSinTheta, -dSinTheta, dCosTheta, dX - dX * dCosTheta + dY * dSinTheta, dY - dX * dSinTheta - dY * dCosTheta);
-
-					oForm.Apply(dX0, dY0);
-					oForm.Apply(dX1, dY1);
-					oForm.Apply(dX2, dY2);
-					oForm.Apply(dX3, dY3);
-				}
-
-				RegisterPoint((short)dX0, (short)dY0);
-				RegisterPoint((short)dX1, (short)dY1);
-				RegisterPoint((short)dX2, (short)dY2);
-				RegisterPoint((short)dX3, (short)dY3);
-			}
-			#else
-			// TODO: Здесь идет точное повторение кода из CMetaFileRenderer->DrawString
-			//       неплохо бы перенести этот пересчет в базовый класс IMetaFileBase.
-			CFontManager* pFontManager = GetFontManager();
-			if (pFont && pFontManager)
-			{
-				int lLogicalFontHeight = pFont->GetHeight();
-				if (lLogicalFontHeight < 0)
-					lLogicalFontHeight = -lLogicalFontHeight;
-				if (lLogicalFontHeight < 0.01)
-					lLogicalFontHeight = 18;
-
-				double dFontHeight = lLogicalFontHeight;
-
-				std::wstring wsFaceName = pFont->GetFaceName();
-
-				int lStyle = 0;
-				if (pFont->GetWeight() > 550)
-					lStyle |= 0x01;
-				if (pFont->IsItalic())
-					lStyle |= 0x02;
-
-				float fL = 0, fT = 0, fW = 0, fH = 0;
-				pFontManager->LoadFontByName(wsFaceName, dFontHeight, lStyle, 72, 72);
-				pFontManager->SetCharSpacing(GetCharSpace());
-				double dFHeight  = pFontManager->m_pFont ? (dFontHeight * pFontManager->m_pFont->GetHeight() / pFontManager->m_pFont->m_lUnits_Per_Em) : 0;
-				double dFDescent = pFontManager->m_pFont ? (dFontHeight * pFontManager->m_pFont->GetDescender() / pFontManager->m_pFont->m_lUnits_Per_Em) : 0;
-				double dFAscent  = dFHeight - std::abs(dFDescent);
-
-				if (NULL != pDx && unCharsCount > 1)
-				{
-					// Тогда мы складываем все pDx кроме последнего символа, последний считаем отдельно
-					double dTempTextW = 0;
-					for (unsigned int unCharIndex = 0; unCharIndex < unCharsCount - 1; unCharIndex++)
-					{
-						dTempTextW += pDx[unCharIndex];
-					}
-
-					std::wstring wsTempText;
-					wsTempText += wsText.at(wsText.length() - 1);
-					//wsTempText += wsText.at(unCharsCount - 1);
-
-					pFontManager->LoadString1(wsTempText, 0, 0);
-					TBBox oBox = pFontManager->MeasureString2();
-					dTempTextW += (oBox.fMaxX - oBox.fMinX);
-
-					fW = (float)dTempTextW;
-				}
-				else
-				{
 					pFontManager->LoadString1(wsText, 0, 0);
 					TBBox oBox = pFontManager->MeasureString2();
 					fL = (float)(oBox.fMinX);
 					fW = (float)(oBox.fMaxX - oBox.fMinX);
+
+					fT = (float)-dFAscent;
+					fH = (float)dFHeight;
+
+					double dTheta = -((((double)pFont->GetEscapement()) / 10) * 3.14159265358979323846 / 180);
+					double dCosTheta = (float)cos(dTheta);
+					double dSinTheta = (float)sin(dTheta);
+
+					double dX = (double)nX;
+					double dY = (double)nY;
+
+					// Найдем начальную точку текста
+					unsigned int ulTextAlign = GetTextAlign();
+					if (ulTextAlign & TA_BASELINE)
+					{
+						// Ничего не делаем
+					}
+					else if (ulTextAlign & TA_BOTTOM)
+					{
+						float fTemp = -(-fT + fH);
+
+						dX += -fTemp * dSinTheta;
+						dY +=  fTemp * dCosTheta;
+					}
+					else // if (ulTextAlign & TA_TOP)
+					{
+						float fTemp = -fT;
+
+						dX += -fTemp * dSinTheta;
+						dY +=  fTemp * dCosTheta;
+					}
+
+					if (ulTextAlign & TA_CENTER)
+					{
+						dX += -fW / 2 * dCosTheta;
+						dY += -fW / 2 * dSinTheta;
+					}
+					else if (ulTextAlign & TA_RIGHT)
+					{
+						dX += -fW * dCosTheta;
+						dY += -fW * dSinTheta;
+					}
+					else //if (ulTextAlign & TA_LEFT)
+					{
+						// Ничего не делаем
+					}
+
+					double dX0 = dX + fL, dY0 = dY + fT;
+					double dX1 = dX + fL + fW, dY1 = dY + fT;
+					double dX2 = dX + fL + fW, dY2 = dY + fT + fH;
+					double dX3 = dX + fL, dY3 = dY + fT + fH;
+					if (0 != pFont->GetEscapement())
+					{
+						TXForm oForm(dCosTheta, dSinTheta, -dSinTheta, dCosTheta, dX - dX * dCosTheta + dY * dSinTheta, dY - dX * dSinTheta - dY * dCosTheta);
+
+						oForm.Apply(dX0, dY0);
+						oForm.Apply(dX1, dY1);
+						oForm.Apply(dX2, dY2);
+						oForm.Apply(dX3, dY3);
+					}
+
+					RegisterPoint((short)dX0, (short)dY0);
+					RegisterPoint((short)dX1, (short)dY1);
+					RegisterPoint((short)dX2, (short)dY2);
+					RegisterPoint((short)dX3, (short)dY3);
 				}
-
-				pFontManager->LoadString1(wsText, 0, 0);
-				TBBox oBox = pFontManager->MeasureString2();
-				fL = (float)(oBox.fMinX);
-				fW = (float)(oBox.fMaxX - oBox.fMinX);
-
-				fT = (float)-dFAscent;
-				fH = (float)dFHeight;
-
-				double dTheta = -((((double)pFont->GetEscapement()) / 10) * 3.14159265358979323846 / 180);
-				double dCosTheta = (float)cos(dTheta);
-				double dSinTheta = (float)sin(dTheta);
-
-				double dX = (double)nX;
-				double dY = (double)nY;
-
-				// Найдем начальную точку текста
-				unsigned int ulTextAlign = GetTextAlign();
-				if (ulTextAlign & TA_BASELINE)
+				else
 				{
-					// Ничего не делаем
-				}
-				else if (ulTextAlign & TA_BOTTOM)
-				{
-					float fTemp = -(-fT + fH);
+					int lLogicalFontHeight = pFont->GetHeight();
+					if (lLogicalFontHeight < 0)
+						lLogicalFontHeight = -lLogicalFontHeight;
+					if (lLogicalFontHeight < 0.01)
+						lLogicalFontHeight = 18;
 
-					dX += -fTemp * dSinTheta;
-					dY +=  fTemp * dCosTheta;
-				}
-				else // if (ulTextAlign & TA_TOP)
-				{
-					float fTemp = -fT;
+					double dFontHeight = lLogicalFontHeight;
 
-					dX += -fTemp * dSinTheta;
-					dY +=  fTemp * dCosTheta;
-				}
+					float fL = 0, fT = 0, fW = 0, fH = 0;
 
-				if (ulTextAlign & TA_CENTER)
-				{
-					dX += -fW / 2 * dCosTheta;
-					dY += -fW / 2 * dSinTheta;
-				}
-				else if (ulTextAlign & TA_RIGHT)
-				{
-					dX += -fW * dCosTheta;
-					dY += -fW * dSinTheta;
-				}
-				else //if (ulTextAlign & TA_LEFT)
-				{
-					// Ничего не делаем
-				}
+					if (NULL != pDx && unCharsCount > 1)
+					{
+						// Тогда мы складываем все pDx кроме последнего символа, последний считаем отдельно
+						double dTempTextW = 0;
+						for (unsigned int unCharIndex = 0; unCharIndex < unCharsCount - 1; unCharIndex++)
+						{
+							dTempTextW += pDx[unCharIndex];
+						}
 
-				double dX0 = dX + fL, dY0 = dY + fT;
-				double dX1 = dX + fL + fW, dY1 = dY + fT;
-				double dX2 = dX + fL + fW, dY2 = dY + fT + fH;
-				double dX3 = dX + fL, dY3 = dY + fT + fH;
-				if (0 != pFont->GetEscapement())
-				{
-					TXForm oForm(dCosTheta, dSinTheta, -dSinTheta, dCosTheta, dX - dX * dCosTheta + dY * dSinTheta, dY - dX * dSinTheta - dY * dCosTheta);
+						dTempTextW += dFontHeight * wsText.length();
 
-					oForm.Apply(dX0, dY0);
-					oForm.Apply(dX1, dY1);
-					oForm.Apply(dX2, dY2);
-					oForm.Apply(dX3, dY3);
+						fW = (float)dTempTextW;
+					}
+					else
+					{
+						fW = (float)(dFontHeight * wsText.length());
+					}
+
+					fH = dFontHeight * 1.2;
+
+					double dTheta = -((((double)pFont->GetEscapement()) / 10) * 3.14159265358979323846 / 180);
+					double dCosTheta = (float)cos(dTheta);
+					double dSinTheta = (float)sin(dTheta);
+
+					double dX = (double)nX;
+					double dY = (double)nY;
+
+					// Найдем начальную точку текста
+					unsigned int ulTextAlign = GetTextAlign();
+					if (ulTextAlign & TA_BASELINE)
+					{
+						// Ничего не делаем
+					}
+					else if (ulTextAlign & TA_BOTTOM)
+					{
+						float fTemp = -(-fT + fH);
+
+						dX += -fTemp * dSinTheta;
+						dY +=  fTemp * dCosTheta;
+					}
+					else // if (ulTextAlign & TA_TOP)
+					{
+						float fTemp = -fT;
+
+						dX += -fTemp * dSinTheta;
+						dY +=  fTemp * dCosTheta;
+					}
+
+					if (ulTextAlign & TA_CENTER)
+					{
+						dX += -fW / 2 * dCosTheta;
+						dY += -fW / 2 * dSinTheta;
+					}
+					else if (ulTextAlign & TA_RIGHT)
+					{
+						dX += -fW * dCosTheta;
+						dY += -fW * dSinTheta;
+					}
+					else //if (ulTextAlign & TA_LEFT)
+					{
+						// Ничего не делаем
+					}
+
+					double dX0 = dX + fL, dY0 = dY + fT;
+					double dX1 = dX + fL + fW, dY1 = dY + fT;
+					double dX2 = dX + fL + fW, dY2 = dY + fT + fH;
+					double dX3 = dX + fL, dY3 = dY + fT + fH;
+					if (0 != pFont->GetEscapement())
+					{
+						TXForm oForm(dCosTheta, dSinTheta, -dSinTheta, dCosTheta, dX - dX * dCosTheta + dY * dSinTheta, dY - dX * dSinTheta - dY * dCosTheta);
+
+						oForm.Apply(dX0, dY0);
+						oForm.Apply(dX1, dY1);
+						oForm.Apply(dX2, dY2);
+						oForm.Apply(dX3, dY3);
+					}
+
+					RegisterPoint((short)dX0, (short)dY0);
+					RegisterPoint((short)dX1, (short)dY1);
+					RegisterPoint((short)dX2, (short)dY2);
+					RegisterPoint((short)dX3, (short)dY3);
 				}
-
-				RegisterPoint((short)dX0, (short)dY0);
-				RegisterPoint((short)dX1, (short)dY1);
-				RegisterPoint((short)dX2, (short)dY2);
-				RegisterPoint((short)dX3, (short)dY3);
 			}
-			#endif
 			else
 			{
 				RegisterPoint(nX, nY);
@@ -695,7 +697,7 @@ namespace MetaFile
 				m_oBoundingBox.nTop = shY;
 			else if (shY > m_oBoundingBox.nBottom)
 				m_oBoundingBox.nBottom = shY;
-			}
+		}
 	}
 
 	bool CWmfParserBase::ReadImage(unsigned short ushColorUsage, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight)

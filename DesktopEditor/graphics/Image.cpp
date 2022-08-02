@@ -75,6 +75,25 @@ namespace Aggplus
 
 		oFrame.ClearNoAttack();
 	}
+	void CImage::Decode(BYTE* pBuffer, unsigned int unSize)
+	{
+		Destroy();
+
+		CBgraFrame oFrame;
+		bool bOpen = oFrame.Decode(pBuffer, (int)unSize);
+
+		if (bOpen)
+		{
+			m_pImgData = oFrame.get_Data();
+			m_dwWidth = (DWORD)oFrame.get_Width();
+			m_dwHeight = (DWORD)oFrame.get_Height();
+
+			m_nStride = oFrame.get_Stride();
+			m_Status = Ok;
+		}
+
+		oFrame.ClearNoAttack();
+	}
 	void CImage::Create(BYTE* pImgData, const DWORD& dwWidth, const DWORD& dwHeight, const long& nStride)
 	{
 		m_pImgData = pImgData;

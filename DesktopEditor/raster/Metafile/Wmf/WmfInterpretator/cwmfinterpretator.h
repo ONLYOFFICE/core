@@ -5,12 +5,12 @@
 
 namespace MetaFile
 {
-        class CWmfInterpretator
-        {
-        public:
-                CWmfInterpretator();
-                //TODO:: реализовать
-        };
+	class CWmfInterpretator
+	{
+	public:
+		CWmfInterpretator();
+		//TODO:: реализовать
+	};
 }
 
 

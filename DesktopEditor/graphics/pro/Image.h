@@ -35,14 +35,8 @@
 #include "../../common/Types.h"
 #include "./../IRenderer.h"
 #include "./../Image.h"
+#include "./Fonts.h"
 
-#ifdef METAFILE_DISABLE_FILESYSTEM
-#else
-    #include "./Fonts.h"
-#endif
-
-#ifdef METAFILE_DISABLE_FILESYSTEM
-#else
 namespace NSImages
 {
     class GRAPHICS_DECL ICacheImage : public NSBase::CBaseRefCounter
@@ -112,7 +106,6 @@ namespace NSImages
         void Destroy();
     };
 }
-#endif
 
 namespace MetaFile
 {
@@ -121,18 +114,10 @@ namespace MetaFile
     const int c_lMetaSvg = 0x04;
     const int c_lMetaSvm = 0x05;
 
-    #ifdef METAFILE_DISABLE_FILESYSTEM
-        class GRAPHICS_DECL IMetaFile
-    #else
-        class GRAPHICS_DECL IMetaFile : public NSBase::CBaseRefCounter
-    #endif
+    class GRAPHICS_DECL IMetaFile : public NSBase::CBaseRefCounter
     {
     public:
-        #ifdef METAFILE_DISABLE_FILESYSTEM
-        IMetaFile() {}
-        #else
         IMetaFile(NSFonts::IApplicationFonts *pAppFonts) {}
-        #endif
         virtual ~IMetaFile() {}
 
         virtual bool LoadFromFile(const wchar_t* wsFilePath) = 0;
@@ -141,10 +126,7 @@ namespace MetaFile
         virtual void GetBounds(double* pdX, double* pdY, double* pdW, double* pdH) = 0;
         virtual int GetType() = 0;
         virtual void ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1) = 0;
-        #ifdef METAFILE_DISABLE_FILESYSTEM
-        #else
         virtual NSFonts::IFontManager* get_FontManager() = 0;
-        #endif
 
         virtual void ConvertToSvg(const wchar_t *wsFilePath, unsigned int unWidth = 0, unsigned int unHeight = 0) = 0;
 
@@ -157,11 +139,7 @@ namespace MetaFile
         virtual void ConvertToEmf(const wchar_t *wsFilePath) = 0;
     };
 
-    #ifdef METAFILE_DISABLE_FILESYSTEM
-    GRAPHICS_DECL IMetaFile* Create();
-    #else
     GRAPHICS_DECL IMetaFile* Create(NSFonts::IApplicationFonts *pAppFonts);
-    #endif
 }
 
 #endif // _GRAPHICS_EXPORTS_IMAGE_H_

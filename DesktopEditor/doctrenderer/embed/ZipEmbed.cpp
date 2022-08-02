@@ -1,4 +1,6 @@
 #include "ZipEmbed.h"
+#include "../../raster/BgraFrame.h"
+#include "../../raster/ImageFileFormatChecker.h"
 
 JSSmart<CJSValue> CZipEmbed::open(JSSmart<CJSValue> typedArray)
 {
@@ -91,4 +93,97 @@ JSSmart<CJSValue> CZipEmbed::close()
 {
     RELEASEOBJECT(m_pFolder);
     return CJSContext::createUndefined();
+}
+
+JSSmart<CJSValue> CZipEmbed::decodeImage(JSSmart<CJSValue> typedArray)
+{
+    JSSmart<CJSTypedArray> oArray = typedArray->toTypedArray();
+    NSJSBase::CJSDataBuffer oBuffer = oArray->getData();
+
+    CBgraFrame oFrame;
+    oFrame.put_IsRGBA(true);
+    if (oFrame.Decode(oBuffer.Data, (int)oBuffer.Len))
+        return CJSContext::createUndefined();
+
+    JSSmart<CJSObject> oDecoded = CJSContext::createObject();
+
+    size_t nFileSize = 4 * oFrame.get_Width() * oFrame.get_Height();
+    BYTE* pData = NSAllocator::Alloc(nFileSize);
+    memcpy(pData, oFrame.get_Data(), nFileSize);
+    oDecoded->set("data", CJSContext::createUint8Array(pData, (int)nFileSize, true));
+    oDecoded->set("width", CJSContext::createInt(oFrame.get_Width()));
+    oDecoded->set("height", CJSContext::createInt(oFrame.get_Height()));
+    oDecoded->set("stride", CJSContext::createInt(oFrame.get_Stride()));
+
+    return oDecoded->toValue();
+}
+JSSmart<CJSValue> CZipEmbed::encodeImage(JSSmart<CJSValue> typedArray, JSSmart<CJSValue> type, JSSmart<CJSValue> w, JSSmart<CJSValue> h)
+{
+    JSSmart<CJSTypedArray> oArray = typedArray->toTypedArray();
+    NSJSBase::CJSDataBuffer oBuffer = oArray->getData();
+
+    CBgraFrame oFrame;
+    if (oFrame.Decode(oBuffer.Data, (int)oBuffer.Len))
+        return CJSContext::createUndefined();
+
+    BYTE* pBuffer = NULL;
+    int nEncodedSize = 0;
+
+    if (oFrame.Encode(pBuffer, nEncodedSize, type->toInt32()))
+    {
+        BYTE* pData = NSAllocator::Alloc((size_t)nEncodedSize);
+        memcpy(pData, oFrame.get_Data(), (size_t)nEncodedSize);
+        oFrame.FreeEncodedMemory(pBuffer);
+
+        return CJSContext::createUint8Array(pData, nEncodedSize, false);
+    }
+    return CJSContext::createUndefined();
+}
+JSSmart<CJSValue> CZipEmbed::encodeImageData(JSSmart<CJSValue> typedArray, JSSmart<CJSValue> type, JSSmart<CJSValue> w, JSSmart<CJSValue> h, JSSmart<CJSValue> outW, JSSmart<CJSValue> outH)
+{
+    JSSmart<CJSTypedArray> oArray = typedArray->toTypedArray();
+    NSJSBase::CJSDataBuffer oBuffer = oArray->getData();
+
+    CBgraFrame oFrame;
+    oFrame.put_Data(oBuffer.Data);
+
+    int nOldW = w->toInt32();
+    int nOldH = h->toInt32();
+
+    int nNewW = outW->isNumber() ? w->toInt32() : nOldW;
+    int nNewH = outH->isNumber() ? h->toInt32() : nOldH;
+
+    oFrame.put_Width(nOldW);
+    oFrame.put_Height(nOldH);
+
+    if (nNewW != nOldW || nNewH != nOldH)
+    {
+        oFrame.Resize(nNewW, nNewH);
+    }
+
+    BYTE* pBuffer = NULL;
+    int nEncodedSize = 0;
+
+    if (oFrame.Encode(pBuffer, nEncodedSize, type->toInt32()))
+    {
+        BYTE* pData = NSAllocator::Alloc((size_t)nEncodedSize);
+        memcpy(pData, oFrame.get_Data(), (size_t)nEncodedSize);
+        oFrame.FreeEncodedMemory(pBuffer);
+        oFrame.put_Data(NULL);
+
+        return CJSContext::createUint8Array(pData, nEncodedSize, false);
+    }
+
+    oFrame.put_Data(NULL);
+    return CJSContext::createUndefined();
+}
+JSSmart<CJSValue> CZipEmbed::getImageType(JSSmart<CJSValue> typedArray)
+{
+    JSSmart<CJSTypedArray> oArray = typedArray->toTypedArray();
+    NSJSBase::CJSDataBuffer oBuffer = oArray->getData();
+    CImageFileFormatChecker oChecker;
+    std::wstring sFormat = oChecker.DetectFormatByData(oBuffer.Data, (DWORD)oBuffer.Len);
+    if (oBuffer.IsExternalize)
+        oBuffer.Free();
+    return CJSContext::createString(sFormat);
 }

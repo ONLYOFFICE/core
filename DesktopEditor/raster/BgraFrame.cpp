@@ -526,6 +526,11 @@ bool CBgraFrame::Encode(BYTE*& pBuffer, int& nSize, unsigned int nFileType)
 
     return oCxImage.Encode(pBuffer, nSize, nFileType);
 }
+void CBgraFrame::FreeEncodedMemory(void* pMemory)
+{
+    CxImage oCxImage;
+    oCxImage.FreeMemory(pMemory);
+}
 bool CBgraFrame::Resize(const long& nNewWidth, const long& nNewHeight, bool bDestroyData)
 {
 	CxImage img;

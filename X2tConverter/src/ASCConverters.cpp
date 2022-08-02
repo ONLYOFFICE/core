@@ -4796,7 +4796,9 @@ namespace NExtractTools
            if (pReader)
            {
                pReader->SetTempDirectory(sTemp);
-               pReader->LoadFromFile(sFrom);
+
+               std::wstring sPassword = params.getPassword();
+               pReader->LoadFromFile(sFrom, L"", sPassword, sPassword);
 
                CDocxRenderer oDocxRenderer(pApplicationFonts);
 

@@ -75,9 +75,9 @@ private:
 		wStr.resize(data_size + 1);
 		unsigned int nLength = data_size;
 		
+		ConversionResult eUnicodeConversionResult = conversionOK;
 		if (sizeof(wchar_t) == 2)//utf8 -> utf16
 		{
-			//UTF16 *pStrUtf16 = new UTF16 [nLength + 64];
 			memset ((void *)wStr.data(), 0, sizeof (UTF16) * (nLength + 1));
 
 			UTF8 *pStrUtf8 = (UTF8 *) data;
@@ -85,17 +85,9 @@ private:
 			const UTF8 *pStrUtf8_Conv = pStrUtf8;
 			UTF16 *pStrUtf16_Conv = (UTF16 *)wStr.data();
 
-			ConversionResult eUnicodeConversionResult = ConvertUTF8toUTF16 (&pStrUtf8_Conv,	 &pStrUtf8[nLength]
+			eUnicodeConversionResult = ConvertUTF8toUTF16 (&pStrUtf8_Conv,	 &pStrUtf8[nLength]
 					, &pStrUtf16_Conv, &((UTF16 *)wStr.data())[nLength]
 					, strictConversion);
-
-			if (conversionOK != eUnicodeConversionResult)
-			{
-				//delete [] pStrUtf16;
-			}
-			//std::wstring utf16Str ((wchar_t *) pStrUtf16);
-
-			//delete [] pStrUtf16;
 		}
 		else //utf8 -> utf32
 		{
@@ -106,19 +98,17 @@ private:
 			UTF8 *pStrUtf8 = (UTF8 *) data;
 
 			const UTF8 *pStrUtf8_Conv = pStrUtf8;
-			UTF32 *pStrUtf32_Conv = (UTF32 *)wStr.data();;
+			UTF32 *pStrUtf32_Conv = (UTF32 *)wStr.data();
 
-			ConversionResult eUnicodeConversionResult = ConvertUTF8toUTF32 (&pStrUtf8_Conv, &pStrUtf8[nLength]
+			eUnicodeConversionResult = ConvertUTF8toUTF32 (&pStrUtf8_Conv, &pStrUtf8[nLength]
 					, &pStrUtf32_Conv, &((UTF32 *)wStr.data())[nLength]
 					, strictConversion);
-
-			if (conversionOK != eUnicodeConversionResult)
-			{
-				//delete [] pStrUtf32;
-			}
-			//std::wstring utf32Str ((wchar_t *) pStrUtf32);
-
-			//delete [] pStrUtf32;
+		}
+		if (conversionOK != eUnicodeConversionResult)
+		{
+			wStr.clear();	
+			std::string inp((char*)data, data_size);
+			wStr = std::wstring(inp.begin(), inp.end());
 		}
 	}
 	const std::wstring utf16_2_unicode(const unsigned char* data, DWORD data_size)

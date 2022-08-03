@@ -50,7 +50,7 @@ namespace MetaFile
 	{
 	public:
 		CEmfFile() : m_pParser(new CEmfParser)
-		{};
+        {}
 
 		~CEmfFile()
 		{
@@ -62,14 +62,10 @@ namespace MetaFile
 		{
 			if (NULL != m_pParser && m_pParser->GetType() == EmfParserType::EmfxParser)
 			{
-				#ifdef METAFILE_SUPPORT_TEXT_ENGINE
-					CFontManager *pFont = m_pParser->GetFontManager();
-				#endif
-				delete m_pParser;
+                NSFonts::IFontManager* pFont = m_pParser->GetFontManager();
+                delete m_pParser;
 				m_pParser = new CEmfParser();
-				#ifdef METAFILE_SUPPORT_TEXT_ENGINE
-					m_pParser->SetFontManager(pFont);
-				#endif
+                m_pParser->SetFontManager(pFont);
 			}
 
 			return m_pParser->OpenFromFile(wsFilePath);
@@ -79,14 +75,10 @@ namespace MetaFile
 		{
 			if (NULL != m_pParser && m_pParser->GetType() == EmfParserType::EmfParser)
 			{
-				#ifdef METAFILE_SUPPORT_TEXT_ENGINE
-					CFontManager *pFont = m_pParser->GetFontManager();
-				#endif
+                NSFonts::IFontManager* pFont = m_pParser->GetFontManager();
 				delete m_pParser;
 				m_pParser = new CEmfxParser();
-				#ifdef METAFILE_SUPPORT_TEXT_ENGINE
-					m_pParser->SetFontManager(pFont);
-				#endif
+                m_pParser->SetFontManager(pFont);
 			}
 
 			return m_pParser->OpenFromFile(wsFilePath);
@@ -112,12 +104,10 @@ namespace MetaFile
 			m_pParser->Close();
 		}
 
-		#ifdef METAFILE_SUPPORT_TEXT_ENGINE
-		void SetFontManager(CFontManager* pFontManager)
+        void SetFontManager(NSFonts::IFontManager* pFontManager)
 		{
 			m_pParser->SetFontManager(pFontManager);
 		}
-		#endif
 
 		bool CheckError()
 		{

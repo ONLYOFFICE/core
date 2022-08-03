@@ -2,8 +2,8 @@
 
 namespace MetaFile
 {
-        CWmfInterpretator::CWmfInterpretator()
-        {
+	CWmfInterpretator::CWmfInterpretator()
+	{
 
-        }
+	}
 }

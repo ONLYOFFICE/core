@@ -2,32 +2,29 @@
 
 namespace MetaFile
 {
-        CWmfParser::CWmfParser()
-        {
+	CWmfParser::CWmfParser()
+	{
 
-        }
+	}
 
-        CWmfParser::~CWmfParser()
-        {
-                ClearFile();
-        }
+	CWmfParser::~CWmfParser()
+	{
+		ClearFile();
+	}
 
-        #ifdef  METAFILE_DISABLE_FILESYSTEM
-        bool CWmfParser::ReadFromBuffer(wchar_t *pBuffer, unsigned int unSize)
-        {
-                return IMetaFileBase::ReadFromBuffer(pBuffer, unSize);
-        }
-        #else
-        bool CWmfParser::OpenFromFile(const wchar_t *wsFilePath)
-        {
-                return IMetaFileBase::OpenFromFile(wsFilePath);
-        }
-        #endif
+	bool CWmfParser::ReadFromBuffer(unsigned char* pBuffer, unsigned int unSize)
+	{
+		return IMetaFileBase::ReadFromBuffer(pBuffer, unSize);
+	}
+	bool CWmfParser::OpenFromFile(const wchar_t *wsFilePath)
+	{
+		return IMetaFileBase::OpenFromFile(wsFilePath);
+	}
 
-        void CWmfParser::PlayFile()
-        {
-                if (!m_oStream.IsValid())
-                        SetError();
+	void CWmfParser::PlayFile()
+	{
+		if (!m_oStream.IsValid())
+			SetError();
 
 		unsigned int unSize;
 		unsigned short ushType;
@@ -56,103 +53,103 @@ namespace MetaFile
 
 			switch (ushType)
 			{
-				//-----------------------------------------------------------
-				// 2.3.1 Bitmap records
-				//-----------------------------------------------------------
-				case META_BITBLT: Read_META_BITBLT(); break;
-				case META_DIBBITBLT: Read_META_DIBBITBLT(); break;
-				case META_DIBSTRETCHBLT: Read_META_DIBSTRETCHBLT(); break;
-				case META_SETDIBTODEV: Read_META_SETDIBTODEV(); break;
-				case META_STRETCHBLT: Read_META_STRETCHBLT(); break;
-				case META_STRETCHDIB: Read_META_STRETCHDIB(); break;
+			//-----------------------------------------------------------
+			// 2.3.1 Bitmap records
+			//-----------------------------------------------------------
+			case META_BITBLT: Read_META_BITBLT(); break;
+			case META_DIBBITBLT: Read_META_DIBBITBLT(); break;
+			case META_DIBSTRETCHBLT: Read_META_DIBSTRETCHBLT(); break;
+			case META_SETDIBTODEV: Read_META_SETDIBTODEV(); break;
+			case META_STRETCHBLT: Read_META_STRETCHBLT(); break;
+			case META_STRETCHDIB: Read_META_STRETCHDIB(); break;
 				//-----------------------------------------------------------
 				// 2.3.2 Control records
 				//-----------------------------------------------------------
-				case META_EOF: bEof = true; break;
+			case META_EOF: bEof = true; break;
 				//-----------------------------------------------------------
 				// 2.3.3 Drawing records
 				//-----------------------------------------------------------
-				case META_ARC: Read_META_ARC(); break;
-				case META_CHORD: Read_META_CHORD(); break;
-				case META_ELLIPSE: Read_META_ELLIPSE(); break;
-				case META_EXTFLOODFILL: Read_META_UNKNOWN(); break;
-				case META_EXTTEXTOUT: Read_META_EXTTEXTOUT(); break;
-				case META_FILLREGION: Read_META_FILLREGION(); break;
-				case META_FLOODFILL: Read_META_UNKNOWN(); break;
-				case META_FRAMEREGION: Read_META_FRAMEREGION(); break;
-				case META_INVERTREGION: Read_META_INVERTREGION(); break;
-				case META_LINETO: Read_META_LINETO(); break;
-				case META_PAINTREGION: Read_META_PAINTREGION(); break;
-				case META_PATBLT: Read_META_PATBLT(); break;
-				case META_PIE: Read_META_PIE(); break;
-				case META_POLYLINE: Read_META_POLYLINE(); break;
-				case META_POLYGON: Read_META_POLYGON(); break;
-				case META_POLYPOLYGON: Read_META_POLYPOLYGON(); break;
-				case META_RECTANGLE: Read_META_RECTANGLE(); break;
-				case META_ROUNDRECT: Read_META_ROUNDRECT(); break;
-				case META_SETPIXEL: Read_META_SETPIXEL(); break;
-				case META_TEXTOUT: Read_META_TEXTOUT(); break;
+			case META_ARC: Read_META_ARC(); break;
+			case META_CHORD: Read_META_CHORD(); break;
+			case META_ELLIPSE: Read_META_ELLIPSE(); break;
+			case META_EXTFLOODFILL: Read_META_UNKNOWN(); break;
+			case META_EXTTEXTOUT: Read_META_EXTTEXTOUT(); break;
+			case META_FILLREGION: Read_META_FILLREGION(); break;
+			case META_FLOODFILL: Read_META_UNKNOWN(); break;
+			case META_FRAMEREGION: Read_META_FRAMEREGION(); break;
+			case META_INVERTREGION: Read_META_INVERTREGION(); break;
+			case META_LINETO: Read_META_LINETO(); break;
+			case META_PAINTREGION: Read_META_PAINTREGION(); break;
+			case META_PATBLT: Read_META_PATBLT(); break;
+			case META_PIE: Read_META_PIE(); break;
+			case META_POLYLINE: Read_META_POLYLINE(); break;
+			case META_POLYGON: Read_META_POLYGON(); break;
+			case META_POLYPOLYGON: Read_META_POLYPOLYGON(); break;
+			case META_RECTANGLE: Read_META_RECTANGLE(); break;
+			case META_ROUNDRECT: Read_META_ROUNDRECT(); break;
+			case META_SETPIXEL: Read_META_SETPIXEL(); break;
+			case META_TEXTOUT: Read_META_TEXTOUT(); break;
 				//-----------------------------------------------------------
 				// 2.3.4 Object records
 				//-----------------------------------------------------------
-				case META_CREATEBRUSHINDIRECT: Read_META_CREATEBRUSHINDIRECT(); break;
-				case META_CREATEFONTINDIRECT: Read_META_CREATEFONTINDIRECT(); break;
-				case META_CREATEPALETTE: Read_META_CREATEPALETTE(); break;
-				case META_CREATEPATTERNBRUSH: Read_META_CREATEPATTERNBRUSH(); break;
-				case META_CREATEPENINDIRECT: Read_META_CREATEPENINDIRECT(); break;
-				case META_CREATEREGION: Read_META_CREATEREGION(); break;
-				case META_DELETEOBJECT: Read_META_DELETEOBJECT(); break;
-				case META_DIBCREATEPATTERNBRUSH: Read_META_DIBCREATEPATTERNBRUSH(); break;
-				case META_SELECTCLIPREGION: Read_META_SELECTCLIPREGION(); break;
-				case META_SELECTOBJECT: Read_META_SELECTOBJECT(); break;
-				case META_SELECTPALETTE: Read_META_SELECTPALETTE(); break;
+			case META_CREATEBRUSHINDIRECT: Read_META_CREATEBRUSHINDIRECT(); break;
+			case META_CREATEFONTINDIRECT: Read_META_CREATEFONTINDIRECT(); break;
+			case META_CREATEPALETTE: Read_META_CREATEPALETTE(); break;
+			case META_CREATEPATTERNBRUSH: Read_META_CREATEPATTERNBRUSH(); break;
+			case META_CREATEPENINDIRECT: Read_META_CREATEPENINDIRECT(); break;
+			case META_CREATEREGION: Read_META_CREATEREGION(); break;
+			case META_DELETEOBJECT: Read_META_DELETEOBJECT(); break;
+			case META_DIBCREATEPATTERNBRUSH: Read_META_DIBCREATEPATTERNBRUSH(); break;
+			case META_SELECTCLIPREGION: Read_META_SELECTCLIPREGION(); break;
+			case META_SELECTOBJECT: Read_META_SELECTOBJECT(); break;
+			case META_SELECTPALETTE: Read_META_SELECTPALETTE(); break;
 				//-----------------------------------------------------------
 				// 2.3.5 State records
 				//-----------------------------------------------------------
-				case META_ANIMATEPALETTE: Read_META_UNKNOWN(); break;
-				case META_EXCLUDECLIPRECT: Read_META_EXCLUDECLIPRECT(); break;
-				case META_INTERSECTCLIPRECT: Read_META_INTERSECTCLIPRECT(); break;
-				case META_MOVETO: Read_META_MOVETO(); break;
-				case META_OFFSETCLIPRGN: Read_META_OFFSETCLIPRGN(); break;
-				case META_OFFSETVIEWPORTORG: Read_META_OFFSETVIEWPORTORG(); break;
-				case META_OFFSETWINDOWORG: Read_META_OFFSETWINDOWORG(); break;
-				case META_REALIZEPALETTE: Read_META_UNKNOWN(); break;
-				case META_RESIZEPALETTE: Read_META_UNKNOWN(); break;
-				case META_RESTOREDC: Read_META_RESTOREDC(); break;
-				case META_SAVEDC: Read_META_SAVEDC(); break;
-				case META_SCALEVIEWPORTEXT: Read_META_SCALEVIEWPORTEXT(); break;
-				case META_SCALEWINDOWEXT: Read_META_SCALEWINDOWEXT(); break;
-				case META_SETBKCOLOR: Read_META_SETBKCOLOR(); break;
-				case META_SETBKMODE: Read_META_SETBKMODE(); break;
-				case META_SETLAYOUT: Read_META_SETLAYOUT(); break;
-				case META_SETMAPMODE: Read_META_SETMAPMODE(); break;
-				case META_SETMAPPERFLAGS: Read_META_UNKNOWN(); break;
-				case META_SETPALENTRIES: Read_META_UNKNOWN(); break;
-				case META_SETPOLYFILLMODE: Read_META_SETPOLYFILLMODE(); break;
-				case META_SETRELABS: Read_META_UNKNOWN(); break;
-				case META_SETROP2: Read_META_SETROP2(); break;
-				case META_SETSTRETCHBLTMODE: Read_META_SETSTRETCHBLTMODE(); break;
-				case META_SETTEXTALIGN: Read_META_SETTEXTALIGN(); break;
-				case META_SETTEXTCHAREXTRA: Read_META_SETTEXTCHAREXTRA(); break;
-				case META_SETTEXTCOLOR: Read_META_SETTEXTCOLOR(); break;
-				case META_SETTEXTJUSTIFICATION: Read_META_SETTEXTJUSTIFICATION(); break;
-				case META_SETVIEWPORTEXT: Read_META_SETVIEWPORTEXT(); break;
-				case META_SETVIEWPORTORG: Read_META_SETVIEWPORTORG(); break;
-				case META_SETWINDOWEXT: Read_META_SETWINDOWEXT(); break;
-				case META_SETWINDOWORG: Read_META_SETWINDOWORG(); break;
+			case META_ANIMATEPALETTE: Read_META_UNKNOWN(); break;
+			case META_EXCLUDECLIPRECT: Read_META_EXCLUDECLIPRECT(); break;
+			case META_INTERSECTCLIPRECT: Read_META_INTERSECTCLIPRECT(); break;
+			case META_MOVETO: Read_META_MOVETO(); break;
+			case META_OFFSETCLIPRGN: Read_META_OFFSETCLIPRGN(); break;
+			case META_OFFSETVIEWPORTORG: Read_META_OFFSETVIEWPORTORG(); break;
+			case META_OFFSETWINDOWORG: Read_META_OFFSETWINDOWORG(); break;
+			case META_REALIZEPALETTE: Read_META_UNKNOWN(); break;
+			case META_RESIZEPALETTE: Read_META_UNKNOWN(); break;
+			case META_RESTOREDC: Read_META_RESTOREDC(); break;
+			case META_SAVEDC: Read_META_SAVEDC(); break;
+			case META_SCALEVIEWPORTEXT: Read_META_SCALEVIEWPORTEXT(); break;
+			case META_SCALEWINDOWEXT: Read_META_SCALEWINDOWEXT(); break;
+			case META_SETBKCOLOR: Read_META_SETBKCOLOR(); break;
+			case META_SETBKMODE: Read_META_SETBKMODE(); break;
+			case META_SETLAYOUT: Read_META_SETLAYOUT(); break;
+			case META_SETMAPMODE: Read_META_SETMAPMODE(); break;
+			case META_SETMAPPERFLAGS: Read_META_UNKNOWN(); break;
+			case META_SETPALENTRIES: Read_META_UNKNOWN(); break;
+			case META_SETPOLYFILLMODE: Read_META_SETPOLYFILLMODE(); break;
+			case META_SETRELABS: Read_META_UNKNOWN(); break;
+			case META_SETROP2: Read_META_SETROP2(); break;
+			case META_SETSTRETCHBLTMODE: Read_META_SETSTRETCHBLTMODE(); break;
+			case META_SETTEXTALIGN: Read_META_SETTEXTALIGN(); break;
+			case META_SETTEXTCHAREXTRA: Read_META_SETTEXTCHAREXTRA(); break;
+			case META_SETTEXTCOLOR: Read_META_SETTEXTCOLOR(); break;
+			case META_SETTEXTJUSTIFICATION: Read_META_SETTEXTJUSTIFICATION(); break;
+			case META_SETVIEWPORTEXT: Read_META_SETVIEWPORTEXT(); break;
+			case META_SETVIEWPORTORG: Read_META_SETVIEWPORTORG(); break;
+			case META_SETWINDOWEXT: Read_META_SETWINDOWEXT(); break;
+			case META_SETWINDOWORG: Read_META_SETWINDOWORG(); break;
 				//-----------------------------------------------------------
 				// 2.3.6 State records
 				//-----------------------------------------------------------
-				case META_ESCAPE: Read_META_ESCAPE(); break;
+			case META_ESCAPE: Read_META_ESCAPE(); break;
 				//-----------------------------------------------------------
 				// Неизвестные записи
 				//-----------------------------------------------------------
-				default:
-				{
-					//std::cout << ushType << " ";
-					Read_META_UNKNOWN();
-					break;
-				}
+			default:
+			{
+				//std::cout << ushType << " ";
+				Read_META_UNKNOWN();
+				break;
+			}
 			}
 
 			if (bEof)
@@ -172,35 +169,35 @@ namespace MetaFile
 			m_pInterpretator->End();
 	}
 
-        void CWmfParser::Scan()
-        {
-                CWmfInterpretatorBase *pInterpretator = m_pInterpretator;
-                m_pInterpretator = NULL;
-                PlayFile();
-                m_pInterpretator = pInterpretator;
-                this->ClearFile();
-        }
+	void CWmfParser::Scan()
+	{
+		CWmfInterpretatorBase *pInterpretator = m_pInterpretator;
+		m_pInterpretator = NULL;
+		PlayFile();
+		m_pInterpretator = pInterpretator;
+		this->ClearFile();
+	}
 
-        WmfParserType CWmfParser::GetType()
-        {
-                return WmfParserType::WmfParser;
-        }
+	WmfParserType CWmfParser::GetType()
+	{
+		return WmfParserType::WmfParser;
+	}
 
-        void CWmfParser::SetStream(BYTE *pBuf, unsigned int unSize)
-        {
-                m_oStream.SetStream(pBuf, unSize);
-        }
+	void CWmfParser::SetStream(BYTE *pBuf, unsigned int unSize)
+	{
+		m_oStream.SetStream(pBuf, unSize);
+	}
 
-        void CWmfParser::Read_META_HEADER()
-        {
-                m_oStream >> m_oPlaceable.Key;
-                if (0x9AC6CDD7 == m_oPlaceable.Key)
-                {
-                        m_oStream >> m_oPlaceable.HWmf;
-                        m_oStream >> m_oPlaceable.BoundingBox;
-                        m_oStream >> m_oPlaceable.Inch;
-                        m_oStream >> m_oPlaceable.Reserved;
-                        m_oStream >> m_oPlaceable.Checksum;
+	void CWmfParser::Read_META_HEADER()
+	{
+		m_oStream >> m_oPlaceable.Key;
+		if (0x9AC6CDD7 == m_oPlaceable.Key)
+		{
+			m_oStream >> m_oPlaceable.HWmf;
+			m_oStream >> m_oPlaceable.BoundingBox;
+			m_oStream >> m_oPlaceable.Inch;
+			m_oStream >> m_oPlaceable.Reserved;
+			m_oStream >> m_oPlaceable.Checksum;
 
 			if (m_oPlaceable.Inch != 0)
 			{
@@ -918,6 +915,4 @@ namespace MetaFile
 	{
 
 	}
-
-
 }

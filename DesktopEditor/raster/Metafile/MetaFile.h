@@ -32,11 +32,7 @@
 #ifndef _METAFILE_H
 #define _METAFILE_H
 
-#ifdef METAFILE_DISABLE_FILESYSTEM
-#else
-#include "../../fontengine/ApplicationFonts.h"
-#endif
-
+#include "../../graphics/pro/Fonts.h"
 #include "../../graphics/IRenderer.h"
 #include "../../graphics/pro/Image.h"
 
@@ -50,11 +46,7 @@ namespace MetaFile
 	class CMetaFile : public IMetaFile
 	{
 	public:
-		#ifdef METAFILE_DISABLE_FILESYSTEM
-		CMetaFile();
-		#else
 		CMetaFile(NSFonts::IApplicationFonts *pAppFonts);
-		#endif
 		virtual ~CMetaFile();
 
 		bool LoadFromFile(const wchar_t* wsFilePath);
@@ -64,10 +56,8 @@ namespace MetaFile
 		int GetType();
 		void ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1);
 
-		#ifdef METAFILE_DISABLE_FILESYSTEM
-		#else
 		NSFonts::IFontManager* get_FontManager();
-		#endif
+
 		//конвертация в Svg
 		void ConvertToSvg(const wchar_t *wsFilePath, unsigned int unWidth = 0, unsigned int unHeight = 0);
 
@@ -80,11 +70,8 @@ namespace MetaFile
 
 		void ConvertToEmf(const wchar_t* wsFilePath);
 	private:
-		#ifdef METAFILE_DISABLE_FILESYSTEM
-		#else
-		CApplicationFonts* m_pAppFonts;
-		CFontManager*      m_pFontManager;
-		#endif
+		NSFonts::IApplicationFonts* m_pAppFonts;
+		NSFonts::IFontManager*      m_pFontManager;
 
 		CWmfFile           m_oWmfFile;
 		CEmfFile           m_oEmfFile;

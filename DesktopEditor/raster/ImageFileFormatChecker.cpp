@@ -771,7 +771,7 @@ std::wstring CImageFileFormatChecker::DetectFormatByData(BYTE *Data, int DataSiz
 	else if (isEmfFile(Data,DataSize)) return L"emf";
 	else if (isGifFile(Data,DataSize)) return L"gif";
 	else if (isIcoFile(Data,DataSize)) return L"ico";
-	else if (isJpgFile(Data,DataSize)) return L"jpg";
+	else if (isJpgFile(Data,DataSize)) return L"jpeg";
 	else if (isPcxFile(Data,DataSize)) return L"pcx";
 	else if (isPngFile(Data,DataSize)) return L"png";
 	else if (isRasFile(Data,DataSize)) return L"ras";

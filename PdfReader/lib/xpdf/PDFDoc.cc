@@ -672,3 +672,100 @@ char *PDFDoc::getEmbeddedFileMem(int idx, int *size) {
   return buf;
 }
 
+GBool PDFDoc::makeWritable(bool bWritable, GString* ownerPassword, GString* userPassword)
+{
+    if (!str || !file)
+        return gFalse;
+    GFileOffset start = str->getStart();
+
+    if (optContent)
+        delete optContent;
+#ifndef DISABLE_OUTLINE
+    if (outline)
+        delete outline;
+#endif
+    if (catalog)
+        delete catalog;
+    if (xref)
+        delete xref;
+    delete str;
+    fclose(file);
+
+    init(NULL);
+
+#if defined(_WIN32)
+    wchar_t wPath[MAX_PATH + 1];
+    int i = 0;
+    int j = 0;
+    Unicode u;
+    OSVERSIONINFO version;
+    while (j < MAX_PATH && getUTF8(fileName, &i, &u))
+    {
+        wPath[j++] = (wchar_t)u;
+    }
+    wPath[j] = L'\0';
+    readWindowsShortcut(wPath, MAX_PATH + 1);
+    int wPathLen = (int)wcslen(wPath);
+
+    if (fileNameU)
+        gfree(fileNameU);
+    fileNameU = (wchar_t *)gmallocn(wPathLen + 1, sizeof(wchar_t));
+    memcpy(fileNameU, wPath, (wPathLen + 1) * sizeof(wchar_t));
+
+    // NB: _wfopen is only available in NT
+    version.dwOSVersionInfoSize = sizeof(version);
+    GetVersionEx(&version);
+#endif
+
+    if (bWritable)
+    {
+    #if defined(_WIN32)
+        if (version.dwPlatformId == VER_PLATFORM_WIN32_NT)
+        {
+            file = _wfopen(fileNameU, L"rb+");
+        }
+        else
+        {
+            file = fopen(fileName->getCString(), "rb+");
+        }
+    #elif defined(VMS)
+        file = fopen(fileName->getCString(), "rb+", "ctx=stm");
+    #else
+        file = fopen(fileName->getCString(), "rb+");
+    #endif
+    }
+
+    GBool bRes = gTrue;
+    if (!bWritable || !file)
+    {
+    #if defined(_WIN32)
+        if (version.dwPlatformId == VER_PLATFORM_WIN32_NT)
+        {
+            file = _wfopen(fileNameU, wfopenReadMode);
+        }
+        else
+        {
+            file = fopen(fileName->getCString(), fopenReadMode);
+        }
+    #elif defined(VMS)
+        file = fopen(fileName->getCString(), fopenReadMode, "ctx=stm");
+    #else
+        file = fopen(fileName->getCString(), fopenReadMode);
+    #endif
+
+        if (!file)
+        {
+            error(errIO, -1, "Couldn't open file '{0:t}'", fileName);
+            errCode = errOpenFile;
+            return gFalse;
+        }
+        bRes = (!bWritable ? gTrue : gFalse);
+    }
+
+    Object obj;
+    obj.initNull();
+    str = new FileStream(file, start, gFalse, 0, &obj);
+    ok = setup(ownerPassword, userPassword);
+
+    return bRes;
+}

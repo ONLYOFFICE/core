@@ -29,6 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "../DocxFlat.h"
 #include "Hyperlink.h"
 #include "Paragraph.h"
 #include "Annotations.h"
@@ -155,8 +156,31 @@ namespace OOX
 				}
 			}
 		}
+		void CHyperlink::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, _T("w:anchor"), m_sAnchor)
+				WritingElement_ReadAttributes_Read_if(oReader, _T("w:bookmark"), m_sAnchor) //for Word 2003 XML
+				WritingElement_ReadAttributes_Read_else_if(oReader, _T("w:dest"), m_sDestinition) //for Word 2003 XML
+				WritingElement_ReadAttributes_Read_else_if(oReader, _T("w:docLocation"), m_sDocLocation)
+				WritingElement_ReadAttributes_Read_else_if(oReader, _T("w:history"), m_oHistory)
+				WritingElement_ReadAttributes_Read_else_if(oReader, _T("r:id"), m_oId)
+				WritingElement_ReadAttributes_Read_else_if(oReader, _T("relationships:id"), m_oId)
+				WritingElement_ReadAttributes_Read_else_if(oReader, _T("w:tgtFrame"), m_sTgtFrame)
+				WritingElement_ReadAttributes_Read_else_if(oReader, _T("w:tooltip"), m_sTooltip)
+			WritingElement_ReadAttributes_End(oReader)
 
-
+			if (m_sDestinition.IsInit())
+			{
+				CDocxFlat* docx_flat = dynamic_cast<CDocxFlat*>(m_pMainDocument);
+				if (docx_flat)
+				{
+					smart_ptr<OOX::File> oHyperlinkFile = smart_ptr<OOX::File>(new OOX::HyperLink(m_pMainDocument, OOX::CPath(*m_sDestinition, false)));
+					const OOX::RId rId = docx_flat->m_currentContainer->Add(oHyperlinkFile);
+					m_oId = new SimpleTypes::CRelationshipId(rId.get());
+				}
+			}
+		}
 		void CHyperlink::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes( oReader );
@@ -281,7 +305,7 @@ namespace OOX
 
 				if ( m_sTooltip.IsInit() )
 				{
-					sResult += L" w:tooltip=\"" + (*m_sTooltip) + L"\"";
+					sResult += L" w:tooltip=\"" + XmlUtils::EncodeXmlString(*m_sTooltip) + L"\"";
 				}
 
 				sResult += L">";

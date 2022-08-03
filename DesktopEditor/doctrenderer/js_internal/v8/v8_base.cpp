@@ -9,12 +9,10 @@ v8::Local<v8::String> CreateV8String(v8::Isolate* i, const std::string& str)
     return v8::String::NewFromUtf8(i, str.c_str(), kV8NormalString, (int)str.length()).ToLocalChecked();
 }
 
-CV8Initializer* CV8Worker::m_pInitializer = NULL;
-bool CV8Worker::m_bUseExternalInitialize = false;
+std::wstring CV8Worker::m_sExternalDirectory = L"";
 
 namespace NSJSBase
 {
-
     class CCacheDataScript
     {
     private:
@@ -147,8 +145,7 @@ namespace NSJSBase
 
     void CJSContext::Initialize()
     {
-        CV8Worker::Initialize();
-        m_internal->m_isolate = CV8Worker::getInitializer()->CreateNew();
+        m_internal->m_isolate = CV8Worker::getInitializer().CreateNew();
     }
     void CJSContext::Dispose()
     {
@@ -156,9 +153,7 @@ namespace NSJSBase
         v8_debug::disposeInspector(m_internal->m_context);
 #endif
         m_internal->m_isolate->Dispose();
-        m_internal->m_isolate = NULL;
-        if (!CV8Worker::IsUseExternalInitialize())
-            CV8Worker::Dispose();        
+        m_internal->m_isolate = NULL;        
     }
 
     void CJSContext::CreateContext()
@@ -185,7 +180,12 @@ namespace NSJSBase
 
     CJSContextScope* CJSContext::CreateContextScope()
     {
-        return new CJSContextScopeV8(m_internal->m_context);
+        CJSContextScope* pScope = new CJSContextScopeV8(m_internal->m_context);
+
+        JSSmart<CJSObject> global = GetCurrent()->GetGlobal();
+        global->set("window", global.GetPointer());
+
+        return pScope;
     }
 
     CJSLocalScope* CJSContext::CreateLocalScope()
@@ -221,6 +221,13 @@ namespace NSJSBase
         return _value;
     }
 
+    CJSValue* CJSContext::createUInt(const unsigned int& value)
+    {
+        CJSValueV8* _value = new CJSValueV8();
+        _value->value = v8::Integer::NewFromUnsigned(CV8Worker::GetCurrent(), value);
+        return _value;
+    }
+
     CJSValue* CJSContext::createDouble(const double& value)
     {
         CJSValueV8* _value = new CJSValueV8();
@@ -233,6 +240,12 @@ namespace NSJSBase
         CJSValueV8* _value = new CJSValueV8();
         _value->value = CreateV8String(CV8Worker::GetCurrent(), value, length);
         return _value;
+    }
+
+    CJSValue* CJSContext::createString(const wchar_t* value, const int& length)
+    {
+        std::string sUtf8 = NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(value, (length != -1) ? (LONG)length : (LONG)wcslen(value));
+        return createString((const char*)sUtf8.c_str(), (int)sUtf8.length());
     }
 
     CJSValue* CJSContext::createString(const std::string& value)
@@ -263,9 +276,9 @@ namespace NSJSBase
         return _value;
     }
 
-    CJSTypedArray* CJSContext::createUint8Array(BYTE* data, int count)
+    CJSTypedArray* CJSContext::createUint8Array(BYTE* data, int count, const bool& isExternalize)
     {
-        CJSTypedArrayV8* _value = new CJSTypedArrayV8(data, count);
+        CJSTypedArrayV8* _value = new CJSTypedArrayV8(data, count, isExternalize);
         return _value;
     }
 
@@ -338,9 +351,14 @@ namespace NSJSBase
         return _value;
     }
 
-    void CJSContext::ExternalInitialize()
+    void CJSContext::MoveToThread(ASC_THREAD_ID* id)
     {
-        CV8Worker::SetUseExetralInitialize();
+        // none
+    }
+
+    void CJSContext::ExternalInitialize(const std::wstring& sDirectory)
+    {
+        CV8Worker::m_sExternalDirectory = sDirectory;
     }
     void CJSContext::ExternalDispose()
     {
@@ -349,5 +367,14 @@ namespace NSJSBase
     bool CJSContext::IsSupportNativeTypedArrays()
     {
         return true;
+    }
+
+    unsigned char* NSAllocator::Alloc(const size_t& size)
+    {
+        return (unsigned char*)CV8Worker::getInitializer().getAllocator()->AllocateUninitialized(size);
+    }
+    void NSAllocator::Free(unsigned char* data, const size_t& size)
+    {
+        CV8Worker::getInitializer().getAllocator()->Free(data, size);
     }
 }

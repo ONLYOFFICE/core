@@ -81,8 +81,6 @@ private:
     std::list<std::string>              m_arFiles;
     int m_lCacheSize;
 
-    // обезопасим лок файлов с ограниченным кэшем и режимом без квадратов
-    NSFonts::IFontFile* m_pSafeFont;
     FT_Library m_pLibrary;
     
 public:

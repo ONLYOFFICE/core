@@ -498,20 +498,27 @@ namespace NSCSS
                 std::sort(arFindElements.rbegin(), arFindElements.rend(),
                           [](CElement* oFirstElement, CElement* oSecondElement)
                           {
-                              return oFirstElement->GetWeight() < oSecondElement->GetWeight();
+                              return oFirstElement->GetWeight() > oSecondElement->GetWeight();
                           });
             }
+
+            pStyle->AddStyle(arSelectors[i].m_mAttrs, i + 1);
 
             for (const CElement* oElement : arFindElements)
                 pStyle->AddStyle(oElement->GetStyle(), i + 1);
 
             std::map<StatistickElement, unsigned int>::const_iterator oFindCountStyle = m_mStatictics->find(StatistickElement{StatistickElement::IsStyle, arSelectors[i].m_sStyle});
 
-            if(oFindCountStyle != m_mStatictics->end())
+            if (oFindCountStyle != m_mStatictics->end())
+            {
                 if ((bIsSettings && oFindCountStyle->second <  MaxNumberRepetitions) ||
                    (!bIsSettings && oFindCountStyle->second >= MaxNumberRepetitions))
                     pStyle->AddStyle(arSelectors[i].m_sStyle, i + 1,  true);
-
+                else if (!bIsSettings)
+                    pStyle->AddStyle(arSelectors[i].m_sStyle, i + 1, true);
+            }
+            else if (bIsSettings)
+                pStyle->AddStyle(arSelectors[i].m_sStyle, i + 1, true);
         }
 
         if (!bIsSettings)
@@ -572,6 +579,16 @@ namespace NSCSS
     void CCssCalculator_Private::SetSizeDeviceWindow(const CSizeWindow &oSizeWindow)
     {
             m_oDeviceWindow = oSizeWindow;
+    }
+
+    CSizeWindow CCssCalculator_Private::GetSizeSourceWindow() const
+    {
+            return m_oSourceWindow;
+    }
+
+    CSizeWindow CCssCalculator_Private::GetSizeDeviceWindow() const
+    {
+            return m_oDeviceWindow;
     }
 
     void CCssCalculator_Private::SetUnitMeasure(const UnitMeasure& nType)

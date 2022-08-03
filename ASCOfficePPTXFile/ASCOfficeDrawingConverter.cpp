@@ -1004,6 +1004,10 @@ void CDrawingConverter::SetTempPath(const std::wstring& sPath)
 {
     m_pBinaryWriter->m_pCommon->m_pMediaManager->m_strTempMedia = sPath;
 }
+std::wstring CDrawingConverter::GetTempPath()
+{
+	return ((m_pBinaryWriter) && (m_pBinaryWriter->m_pCommon) && (m_pBinaryWriter->m_pCommon->m_pMediaManager))  ? m_pBinaryWriter->m_pCommon->m_pMediaManager->m_strTempMedia : L"";
+}
 void CDrawingConverter::SetEmbedDstPath(const std::wstring& sPath)
 {
     m_pImageManager->SetDstEmbed(sPath);

@@ -2,10 +2,10 @@
 	"name": "zlib",
 	"res_folder": "./deploy",
 	"wasm": true,
-	"asm": false,
+	"asm": true,
 	"run_before": null,
-	"run_after": "import sys;sys.path.append(\"../../../build_tools/scripts\");import base;base.configure_common_apps();base.replaceInFile(\"./deploy/zlib.js\", \"__ATPOSTRUN__=[];\", \"__ATPOSTRUN__=[function(){self.onEngineInit();}];\");base.replaceInFile(\"./deploy/zlib.js\", \"function getBinaryPromise(){\", \"function getBinaryPromise2(){\");base.copy_file(\"./wasm/js/index.html\", \"./deploy/index.html\");base.copy_file(\"./wasm/js/code.js\", \"./deploy/code.js\")",
-	"base_js_content": "./wasm/js/zlib_new.js",
+	"run_after": "import sys;sys.path.append(\"../../../build_tools/scripts\");import base;base.configure_common_apps();base.replaceInFile(\"./deploy/zlib.js\", \"__ATPOSTRUN__=[];\", \"__ATPOSTRUN__=[function(){self.onZlibEngineInit();}];\");base.replaceInFile(\"./deploy/zlib.js\", \"function getBinaryPromise(){\", \"function getBinaryPromise2(){\");base.replaceInFile(\"./deploy/zlib_ie.js\", \"__ATPOSTRUN__=[];\", \"__ATPOSTRUN__=[function(){self.onZlibEngineInit();}];\");base.replaceInFile(\"./deploy/zlib_ie.js\", \"function getBinaryPromise(){\", \"function getBinaryPromise2(){\");base.copy_file(\"./wasm/js/index.html\", \"./deploy/index.html\");base.copy_file(\"./wasm/js/code.js\", \"./deploy/code.js\")",
+	"base_js_content": "./wasm/js/zlib.js",
 
 	"compiler_flags": [
 		"-O3",
@@ -13,6 +13,7 @@
 		"-Wno-unused-command-line-argument",
 		"-s ALLOW_MEMORY_GROWTH=1",
 		"-s FILESYSTEM=0",
+		"--memory-init-file 0",
 		"-s ENVIRONMENT='web,worker'"
 	],
 	"exported_functions": [

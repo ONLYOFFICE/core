@@ -5,7 +5,7 @@
 
 namespace NSJSBase
 {
-    std::string g_logger_file = U_TO_UTF8(NSSystemUtils::GetEnvVariable(L"js_speed"));
+    std::string g_logger_file = NSSystemUtils::GetEnvVariableA(L"js_speed");
     bool g_logger_enabled = g_logger_file.empty() ? false : true;
     unsigned long g_logger_time = 0;
 

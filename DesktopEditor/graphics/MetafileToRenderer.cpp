@@ -475,8 +475,8 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case ctBrushTexturePath:
 			{
-				int nLen = 2 * ReadUSHORT(current, curindex);
-				std::wstring sTempPath = ReadString16(current, curindex, nLen);
+                int nLen = ReadInt(current, curindex);
+                std::wstring sTempPath = ReadString16(current, curindex, nLen);
 
 				std::wstring sImagePath = pCorrector->GetImagePath(sTempPath);
 				pRenderer->put_BrushTexturePath(sImagePath);
@@ -699,15 +699,32 @@ namespace NSOnlineOfficeBinToPdf
 				int _sLen = 2 * (int)ReadUSHORT(current, curindex);
 				std::wstring wsTempString = ReadString16(current, curindex, _sLen);
 
-				double m1 = ReadInt(current, curindex) / 100000.0;
-				double m2 = ReadInt(current, curindex) / 100000.0;
+                double x = ReadInt(current, curindex) / 100000.0;
+                double y = ReadInt(current, curindex) / 100000.0;
 
                 if (!pPicker)
-                    pRenderer->CommandDrawText(wsTempString, m1, m2, 0, 0);
+                    pRenderer->CommandDrawText(wsTempString, x, y, 0, 0);
                 else
-                    pPicker->FillText(wsTempString, m1, m2, 0, 0);
+                    pPicker->FillText(wsTempString, x, y, 0, 0);
 				break;
 			}
+            case ctDrawTextCodeGid:
+            {
+                unsigned int nGid = (unsigned int)ReadInt(current, curindex);
+                double x = ReadInt(current, curindex) / 100000.0;
+                double y = ReadInt(current, curindex) / 100000.0;
+
+                unsigned int nCountUnicodes = (unsigned int)ReadInt(current, curindex);
+                unsigned int* pCodePoints = (0 != nCountUnicodes) ? new unsigned int[nCountUnicodes] : NULL;
+                for (unsigned int nCodePointIndex = 0; nCodePointIndex < nCountUnicodes; ++nCodePointIndex)
+                    pCodePoints[nCodePointIndex] = ReadInt(current, curindex);
+
+                pRenderer->CommandDrawTextCHAR2(pCodePoints, nCountUnicodes, nGid, x, y, 0, 0);
+
+                if (pCodePoints)
+                    delete [] pCodePoints;
+                break;
+            }
 			case ctBeginCommand:
 			{
 				if (bIsPathOpened)
@@ -980,6 +997,40 @@ namespace NSOnlineOfficeBinToPdf
 					if (nFlags & (1 << 22))
 						pPr->SetPicturePath(pCorrector->GetImagePath(ReadString(current, curindex)));
 				}
+				else if (oInfo.IsSignature())
+				{
+					CFormFieldInfo::CSignatureFormPr* pPr = oInfo.GetSignatureFormPr();
+
+					// Поля Настройки подписи
+					// Сведения о подписывающем
+
+					// Имя
+					if (nFlags & (1 << 20))
+						pPr->SetName(ReadString(current, curindex));
+
+					// Должность Игнорируется
+
+					// Адрес электронной почты
+					if (nFlags & (1 << 21))
+						pPr->SetContact(ReadString(current, curindex));
+
+					// Инструкция для подписывающего Игнорируется
+
+					// Показывать дату подписи в строке подписи
+					pPr->SetDate(nFlags & (1 << 22));
+
+					// Цель подписания документа (причина)
+					if (nFlags & (1 << 23))
+						pPr->SetReason(ReadString(current, curindex));
+
+					// Картинка
+					if (nFlags & (1 << 24))
+						pPr->SetPicturePath(pCorrector->GetImagePath(ReadString(current, curindex)));
+
+					// Необходимо передать сертификат, пароль, ключ, пароль ключа
+					if (nFlags & (1 << 25))
+						pPr->SetCert(ReadString(current, curindex));
+				}
 
 				if (oInfo.IsValid())
 					pRenderer->AddFormField(oInfo);
@@ -1116,7 +1167,7 @@ namespace NSOnlineOfficeBinToPdf
             }
             case ctBrushTexturePath:
             {
-                int nLen = 2 * ReadUSHORT(current, curindex);
+                int nLen = ReadInt(current, curindex);
                 SkipString16(current, curindex, nLen);
                 break;
             }
@@ -1248,6 +1299,14 @@ namespace NSOnlineOfficeBinToPdf
                 SkipString16(current, curindex, nLen);
 
                 SkipInt(current, curindex, 2);
+                break;
+            }
+            case ctDrawTextCodeGid:
+            {
+                SkipInt(current, curindex);
+                SkipDouble(current, curindex, 2);
+                int nCountUnicodes = ReadInt(current, curindex);
+                SkipInt(current, curindex, nCountUnicodes);
                 break;
             }
             case ctBeginCommand:

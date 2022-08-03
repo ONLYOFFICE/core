@@ -337,13 +337,9 @@ public:
 
     virtual content_types_file	& get_content_types_file()	{ return content_type_file_; }
     xl_files					& get_xl_files()			{ return xl_files_; }
-	rels_files					& get_rels_files()			{ return rels_files_; }	
 private:
     xlsx_content_types_file content_type_file_;
     xl_files				xl_files_;
-    docProps_files			docProps_files_;
-    rels_files				rels_files_;
-
 };
 
 

@@ -140,6 +140,9 @@ CFontFile::CFontFile()
 
 CFontFile::~CFontFile()
 {
+    if (m_pFontManager && m_pFontManager->m_pFont == this)
+        m_pFontManager->m_pFont = NULL;
+
 	RELEASEINTERFACE(m_pStream);
 	ClearCache();
 
@@ -821,6 +824,10 @@ TFontCacheSizes CFontFile::CacheGlyph(const int& code, const bool& isRaster, CVe
                 return oSizes;
 
             TFontCacheSizes oSizesCheck = pPickFile->CacheGlyph(code, isRaster, pWorker, true);
+
+            // файл - в кэше. а тут нужно удалить
+            RELEASEINTERFACE(pPickFile);
+
             if (oSizesCheck.eState == glyphstateNormal)
                 return oSizesCheck;
         }

@@ -75,6 +75,7 @@ namespace NSCSS
         NSConstValues::NSCssProperties::Background  m_pBackground;
         NSConstValues::NSCssProperties::Text        m_pText;
         NSConstValues::NSCssProperties::Border      m_pBorder;
+        NSConstValues::NSCssProperties::Display     m_pDisplay;
 
         CCompiledStyle();
         explicit CCompiledStyle(const std::map<std::wstring, std::wstring>& mStyle);

@@ -53,11 +53,7 @@ JSSmart<CJSValue> CBuilderDocumentEmbed::builder_doc_IsValid()
 }
 JSSmart<CJSValue> CBuilderDocumentEmbed::builder_doc_GetBinary()
 {
-    BYTE* pData = NULL;
-    DWORD dwSize = 0;
-    NSFile::CFileBinary::ReadAllBytes(m_sFolder + L"/Editor.bin", &pData, dwSize);
-
-    return 0 == dwSize ? NULL : CJSContext::createUint8Array(pData, (int)dwSize);
+    return CJSContext::createUint8Array(m_sFolder + L"/Editor.bin");
 }
 JSSmart<CJSValue> CBuilderDocumentEmbed::builder_doc_GetFolder()
 {

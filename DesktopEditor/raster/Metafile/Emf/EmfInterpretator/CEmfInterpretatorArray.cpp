@@ -1,9 +1,5 @@
 #include "CEmfInterpretatorArray.h"
 
-#include "CEmfInterpretator.h"
-#include "CEmfInterpretatorXml.h"
-#include "CEmfInterpretatorRender.h"
-
 namespace MetaFile
 {
 	CEmfInterpretatorArray::CEmfInterpretatorArray(){}

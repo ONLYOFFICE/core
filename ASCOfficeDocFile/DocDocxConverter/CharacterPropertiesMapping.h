@@ -88,10 +88,9 @@ namespace DocFileFormat
 		bool _isRunStyleNeeded;
 		bool _isOwnRPr;
 
-		std::wstring m_sDefaultFont;
-
 		std::wstring m_sAsciiFont;
 		std::wstring m_sEastAsiaFont;
 		std::wstring m_shAnsiFont;
+		std::wstring m_sCsFont;
 	};
 }

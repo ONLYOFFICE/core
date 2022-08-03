@@ -1,7 +1,7 @@
 #ifndef _XML_OOXMLVERIFIER_H_
 #define _XML_OOXMLVERIFIER_H_
 
-#include "./XmlCertificate.h"
+#include "./Certificate.h"
 
 #define OOXML_SIGNATURE_VALID           0
 #define OOXML_SIGNATURE_INVALID         1

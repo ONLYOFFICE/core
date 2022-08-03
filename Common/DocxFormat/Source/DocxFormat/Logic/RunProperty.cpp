@@ -51,6 +51,37 @@ namespace OOX
 {
 	namespace Logic
 	{
+		void CStylisticSets::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if (oReader.IsEmptyNode())
+				return;
+
+			int nParentDepth = oReader.GetDepth();
+			while (oReader.ReadNextSiblingNode(nParentDepth))
+			{
+				std::wstring sName = oReader.GetNameNoNS();
+
+				if (L"stylisticSet" == sName)
+				{
+					m_arrItems.push_back(new ComplexTypes::Word::CStylisticSet(oReader));
+				}
+			}
+		}
+		std::wstring CStylisticSets::toXML() const
+		{
+			std::wstring sResult = L"<w14:stylisticSets>";
+
+			for (size_t i = 0; i < m_arrItems.size(); ++i)
+			{
+				if (m_arrItems[i])
+				{
+					sResult += m_arrItems[i]->ValNode(L"w14:stylisticSet");
+				}
+			}
+
+			sResult += L"</w14:stylisticSets>";
+			return sResult;
+		}
 		//--------------------------------------------------------------------------------
 		// RPrChange 
 		//--------------------------------------------------------------------------------	
@@ -114,34 +145,30 @@ namespace OOX
 		{			
 			std::wstring sResult = L"<w:rPrChange ";
 
+			if (m_oId.IsInit())
+			{
+				sResult += L"w:id=\"";
+				sResult += m_oId->ToString();
+				sResult += L"\" ";
+			}
 			if ( m_sAuthor.IsInit() )
 			{
 				sResult += L"w:author=\"";
                 sResult += m_sAuthor.get2();
 				sResult += L"\" ";
 			}
-
 			if ( m_oDate.IsInit() )
 			{
 				sResult += L"w:date=\"";
 				sResult += m_oDate->ToString();
 				sResult += L"\" ";
 			}
-
-			if ( m_oId.IsInit() )
-			{
-				sResult += L"w:id=\"";
-				sResult += m_oId->ToString();
-				sResult += L"\" ";
-			}
-
 			if ( m_sUserId.IsInit() )
 			{
 				sResult += L"oouserid=\"";
                 sResult += m_sUserId.get2();
 				sResult += L"\" ";
 			}
-
 			sResult += L">";
 
 			if ( m_pRunPr.IsInit() )
@@ -157,12 +184,11 @@ namespace OOX
 		}
 		void CRPrChange::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Читаем атрибуты
 			WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_Read_if     ( oReader, L"w:author", m_sAuthor )
-			WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date",   m_oDate )
-			WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",	 m_oId )
-			WritingElement_ReadAttributes_Read_else_if( oReader, L"oouserid", m_sUserId )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:author", m_sAuthor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date",   m_oDate )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",	 m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"oouserid", m_sUserId )
 			WritingElement_ReadAttributes_End( oReader )
 		}
 
@@ -277,8 +303,29 @@ namespace OOX
 					m_oW = oReader;
 				else if ( L"w:webHidden" == sName )
 					FROM_XML_ELEM(m_oWebHidden, oReader, pRun)
+//---ext----------------------------------------------------------------------------------------------------
 				else if (L"w14:textOutline" == sName)
 					m_oTextOutline = oReader;
+				else if (L"w14:ligatures" == sName)
+					m_oLigatures = oReader;
+				else if (L"w14:numSpacing" == sName)
+					m_oNumSpacing = oReader;
+				else if (L"w14:numForm" == sName)
+					m_oNumForm = oReader;
+				else if (L"w14:stylisticSets" == sName)
+					m_oStylisticSets = oReader;
+				else if (L"w14:cntxtAlts" == sName)
+					m_oCntxtAlts = oReader;
+				else if (L"w14:reflection" == sName)
+					m_oReflection = oReader;
+				else if (L"w14:glow" == sName)
+					m_oGlow = oReader;
+				else if (L"w14:shadow" == sName)
+					m_oShadowExt = oReader;
+				else if (L"w14:props3d" == sName)
+					m_oProps3d = oReader;
+				else if (L"w14:scene3d" == sName)
+					m_oScene3d = oReader;
 				else if (L"w14:textFill" == sName)
 				{
 					if ( oReader.IsEmptyNode() )
@@ -451,318 +498,237 @@ namespace OOX
 			if ( oNode.GetNode( L"w:moveTo", oChild ) )
 				m_oMoveTo = oChild;
 		}
+		void CRunProperty::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			if (!pWriter) return;
+			pWriter->WriteString(toXML());
+		}
 
         std::wstring CRunProperty::toXML() const
 		{
             std::wstring sResult = L"<w:rPr>";
 
-			if ( m_oBold.IsInit() )
+			if (m_oDel.IsInit())		sResult += m_oDel->ValNode(L"w:del");
+			if (m_oIns.IsInit())		sResult += m_oIns->ValNode(L"w:ins");
+			if (m_oMoveFrom.IsInit())	sResult += m_oMoveFrom->ValNode(L"w:moveFrom");
+			if (m_oMoveTo.IsInit())		sResult += m_oBold->ValNode(L"w:moveTo");
+//---base----------------------------------------------------------------------------------------
+			if (m_oRStyle.IsInit())		sResult += m_oRStyle->ValNode(L"w:rStyle");
+			if (m_oRFonts.IsInit())		sResult += m_oRFonts->ValNode(L"w:rFonts");
+			if (m_oBold.IsInit())		sResult += m_oBold->ValNode(L"w:b");
+			if (m_oBoldCs.IsInit())	sResult += m_oBoldCs->ValNode(L"w:bCs");
+			if (m_oItalic.IsInit())		sResult += m_oItalic->ValNode(L"w:i");
+			if (m_oItalicCs.IsInit())	sResult += m_oItalicCs->ValNode(L"w:iCs");
+			if (m_oCaps.IsInit())		sResult += m_oCaps->ValNode(L"w:caps");
+			if (m_oSmallCaps.IsInit())	sResult += m_oSmallCaps->ValNode(L"w:smallCaps");
+			if (m_oStrike.IsInit())		sResult += m_oStrike->ValNode(L"w:strike");
+			if ((m_oDStrike.IsInit()) && (m_oDStrike->m_oVal.ToBool()))
+										sResult += m_oDStrike->ValNode(L"w:dstrike");
+			if (m_oOutline.IsInit())		sResult += m_oOutline->ValNode(L"w:outline");
+			if (m_oShadow.IsInit())			sResult += m_oShadow->ValNode(L"w:shadow");
+			if (m_oEmboss.IsInit())			sResult += m_oEmboss->ValNode(L"w:emboss");
+			if (m_oImprint.IsInit())		sResult += m_oImprint->ValNode(L"w:imprint");
+			if (m_oNoProof.IsInit())		sResult += m_oNoProof->ValNode(L"w:noProof");
+			if (m_oSnapToGrid.IsInit())		sResult += m_oSnapToGrid->ValNode(L"w:snapToGrid");
+			if (m_oVanish.IsInit())			sResult += m_oVanish->ValNode(L"w:vanish");
+			if (m_oWebHidden.IsInit())		sResult += m_oWebHidden->ValNode(L"w:webHidden");
+			if (m_oColor.IsInit())			sResult += m_oColor->ValNode(L"w:color");
+			if (m_oSpacing.IsInit())		sResult += m_oSpacing->ValNode(L"w:spacing");
+			if (m_oW.IsInit())				sResult += m_oW->ValNode(L"w:w");
+			if (m_oKern.IsInit())			sResult += m_oKern->ValNode(L"w:kern");
+			if (m_oPosition.IsInit())		sResult += m_oPosition->ValNode(L"w:position");
+			if (m_oSz.IsInit())				sResult += m_oSz->ValNode(L"w:sz");
+			if (m_oSzCs.IsInit())			sResult += m_oSzCs->ValNode(L"w:szCs");
+			if (m_oHighlight.IsInit())		sResult += m_oHighlight->ValNode(L"w:highlight");
+			if (m_oU.IsInit())				sResult += m_oU->ValNode(L"w:u");
+			if (m_oEffect.IsInit())			sResult += m_oEffect->ValNode(L"w:effect");
+			if (m_oBdr.IsInit())			sResult += m_oBdr->ValNode(L"w:bdr");
+			if (m_oShd.IsInit())			sResult += m_oShd->ValNode(L"w:shd");
+			if (m_oFitText.IsInit())		sResult += m_oFitText->ValNode(L"w:fitText");
+			if (m_oVertAlign.IsInit())		sResult += m_oVertAlign->ValNode(L"w:vertAlign");
+			if (m_oRtL.IsInit())			sResult += m_oRtL->ValNode(L"w:rtl");
+			if (m_oCs.IsInit())			sResult += m_oCs->ValNode(L"w:cs");
+			if (m_oEm.IsInit())				sResult += m_oEm->ValNode(L"w:em");
+			if (m_oLang.IsInit())			sResult += m_oLang->ValNode(L"w:lang");
+			if (m_oEastAsianLayout.IsInit())sResult += m_oEastAsianLayout->ValNode(L"w:eastAsianLayout");	
+			if (m_oSpecVanish.IsInit())		sResult += m_oSpecVanish->ValNode(L"w:specVanish");
+			if (m_oMath.IsInit())			sResult += m_oMath->ValNode(L"m:oMath");
+//---ext----------------------------------------------------------------------------------------------------
+			NSBinPptxRW::CXmlWriter xmlWriter;
+			xmlWriter.m_lDocType = XMLWRITER_DOC_TYPE_WORDART;
+			
+			if (m_oGlow.IsInit())
 			{
-				sResult += L"<w:b ";
-				sResult += m_oBold->ToString();
-				sResult += L"/>";
+				m_oGlow->toXmlWriter(&xmlWriter);
 			}
-
-			if ( m_oBoldCs.IsInit() )
+			if (m_oShadowExt.IsInit())
 			{
-				sResult += L"<w:bCs ";
-				sResult += m_oBoldCs->ToString();
-				sResult += L"/>";
+				m_oShadowExt->m_name = L"shadow";
+				m_oShadowExt->toXmlWriter(&xmlWriter);
 			}
-
-			if ( m_oBdr.IsInit() )
+			if (m_oReflection.IsInit())
 			{
-				sResult += L"<w:bdr ";
-				sResult += m_oBdr->ToString();
-				sResult += L"/>";
+				m_oReflection->toXmlWriter(&xmlWriter);
 			}
-
-			if ( m_oCaps.IsInit() )
+			if (m_oTextOutline.IsInit())
 			{
-				sResult += L"<w:caps ";
-				sResult += m_oCaps->ToString();
-				sResult += L"/>";
+				m_oTextOutline->m_name = L"textOutline";
+				m_oTextOutline->toXmlWriter(&xmlWriter);
 			}
-
-			if ( m_oColor.IsInit() )
+			if (m_oTextFill.is_init())
 			{
-				sResult += L"<w:color ";
-				sResult += m_oColor->ToString();
-				sResult += L"/>";
+				xmlWriter.StartNode(L"w14:textFill");
+				xmlWriter.EndAttributes();
+				m_oTextFill.toXmlWriter(&xmlWriter);
+				xmlWriter.EndNode(L"w14:textFill");
 			}
-
-			if ( m_oCs.IsInit() )
+			if (m_oProps3d.IsInit())
 			{
-				sResult += L"<w:cs ";
-				sResult += m_oCs->ToString();
-				sResult += L"/>";
+				m_oProps3d->m_name = L"props3d";
+				m_oProps3d->toXmlWriter(&xmlWriter);
 			}
-
-			if ( m_oDel.IsInit() )
+			if (m_oScene3d.IsInit())
 			{
-				sResult += L"<w:del ";
-				sResult += m_oDel->ToString();
-				sResult += L"/>";
+				m_oScene3d->toXmlWriter(&xmlWriter);
 			}
+			sResult += xmlWriter.GetXmlString();
 
-			if ( (m_oDStrike.IsInit()) && (m_oDStrike->m_oVal.ToBool()) )
-			{
-				sResult += L"<w:dstrike ";
-				sResult += m_oDStrike->ToString();
-				sResult += L"/>";
-			}
+			if (m_oLigatures.IsInit())		sResult += m_oLigatures->ValNode(L"w14:ligatures");
+			if (m_oNumForm.IsInit())		sResult += m_oNumForm->ValNode(L"w14:numForm");
+			if (m_oNumSpacing.IsInit())		sResult += m_oNumSpacing->ValNode(L"w14:numSpacing");
+			if (m_oStylisticSets.IsInit())	sResult += m_oStylisticSets->toXML();
+			if (m_oCntxtAlts.IsInit())		sResult += m_oCntxtAlts->ValNode(L"w14:cntxtAlts");
 
-			if ( m_oEastAsianLayout.IsInit() )
-			{
-				sResult += L"<w:eastAsianLayout ";
-				sResult += m_oEastAsianLayout->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oEffect.IsInit() )
-			{
-				sResult += L"<w:effect ";
-				sResult += m_oEffect->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oEm.IsInit() )
-			{
-				sResult += L"<w:em ";
-				sResult += m_oEm->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oEmboss.IsInit() )
-			{
-				sResult += L"<w:emboss ";
-				sResult += m_oEmboss->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oFitText.IsInit() )
-			{
-				sResult += L"<w:fitText ";
-				sResult += m_oFitText->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oHighlight.IsInit() )
-			{
-				sResult += L"<w:highlight ";
-				sResult += m_oHighlight->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oIns.IsInit() )
-			{
-				sResult += L"<w:ins ";
-				sResult += m_oIns->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oItalic.IsInit() )
-			{
-				sResult += L"<w:i ";
-				sResult += m_oItalic->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oItalicCs.IsInit() )
-			{
-				sResult += L"<w:iCs ";
-				sResult += m_oItalicCs->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oImprint.IsInit() )
-			{
-				sResult += L"<w:imprint ";
-				sResult += m_oImprint->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oKern.IsInit() )
-			{
-				sResult += L"<w:kern ";
-				sResult += m_oKern->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oLang.IsInit() )
-			{
-				sResult += L"<w:lang ";
-				sResult += m_oLang->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oNoProof.IsInit() )
-			{
-				sResult += L"<w:noProof ";
-				sResult += m_oNoProof->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oMath.IsInit() )
-			{
-				sResult += L"<m:oMath ";
-				sResult += m_oMath->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oMoveFrom.IsInit() )
-			{
-				sResult += L"<w:moveFrom ";
-				sResult += m_oMoveFrom->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oMoveTo.IsInit() )
-			{
-				sResult += L"<w:moveTo ";
-				sResult += m_oMoveTo->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oOutline.IsInit() )
-			{
-				sResult += L"<w:outline ";
-				sResult += m_oOutline->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oPosition.IsInit() )
-			{
-				sResult += L"<w:position ";
-				sResult += m_oPosition->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oRFonts.IsInit() )
-			{
-				sResult += L"<w:rFonts ";
-				sResult += m_oRFonts->ToString();
-				sResult += L"/>";
-			}
-
-			if ( !m_bRPRChange && m_oRPrChange.IsInit() )
+			//----------------------------------------------------------------------------------------------------------			
+			if (!m_bRPRChange && m_oRPrChange.IsInit())
 				sResult += m_oRPrChange->toXML();
 
-			if ( m_oRStyle.IsInit() )
-			{
-				sResult += L"<w:rStyle ";
-				sResult += m_oRStyle->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oRtL.IsInit() )
-			{
-				sResult += L"<w:rtl ";
-				sResult += m_oRtL->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oShadow.IsInit() )
-			{
-				sResult += L"<w:shadow ";
-				sResult += m_oShadow->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oShd.IsInit() )
-			{
-				sResult += L"<w:shd ";
-				sResult += m_oShd->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oSmallCaps.IsInit() )
-			{
-				sResult += L"<w:smallCaps ";
-				sResult += m_oSmallCaps->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oSnapToGrid.IsInit() )
-			{
-				sResult += L"<w:snapToGrid ";
-				sResult += m_oSnapToGrid->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oSpacing.IsInit() )
-			{
-				sResult += L"<w:spacing ";
-				sResult += m_oSpacing->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oSpecVanish.IsInit() )
-			{
-				sResult += L"<w:specVanish ";
-				sResult += m_oSpecVanish->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oStrike.IsInit() )
-			{
-				sResult += L"<w:strike ";
-				sResult += m_oStrike->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oSz.IsInit() )
-			{
-				sResult += L"<w:sz ";
-				sResult += m_oSz->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oSzCs.IsInit() )
-			{
-				sResult += L"<w:szCs ";
-				sResult += m_oSzCs->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oU.IsInit() )
-			{
-				sResult += L"<w:u ";
-				sResult += m_oU->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oVanish.IsInit() )
-			{
-				sResult += L"<w:vanish ";
-				sResult += m_oVanish->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oVertAlign.IsInit() )
-			{
-				sResult += L"<w:vertAlign ";
-				sResult += m_oVertAlign->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oW.IsInit() )
-			{
-				sResult += L"<w:vertAlign ";
-				sResult += m_oW->ToString();
-				sResult += L"/>";
-			}
-
-			if ( m_oWebHidden.IsInit() )
-			{
-				sResult += L"<w:webHidden ";
-				sResult += m_oWebHidden->ToString();
-				sResult += L"/>";
-			}
-
 			sResult += L"</w:rPr>";
-
 			return sResult;
+		}
+		void CRunProperty::Clear()
+		{
+			m_oBold.reset();
+			m_oBoldCs.reset();
+			m_oBdr.reset();
+			m_oCaps.reset();
+			m_oColor.reset();
+			m_oCs.reset();
+			m_oDel.reset();
+			m_oDStrike.reset();
+			m_oEastAsianLayout.reset();
+			m_oEffect.reset();
+			m_oEm.reset();
+			m_oEmboss.reset();
+			m_oFitText.reset();
+			m_oHighlight.reset();
+			m_oIns.reset();
+			m_oItalic.reset();
+			m_oItalicCs.reset();
+			m_oImprint.reset();
+			m_oKern.reset();
+			m_oLang.reset();
+			m_oNoProof.reset();
+			m_oMath.reset();
+			m_oMoveFrom.reset();
+			m_oMoveTo.reset();
+			m_oOutline.reset();
+			m_oPosition.reset();
+			m_oRFonts.reset();
+			m_oRPrChange.reset();
+			m_oRStyle.reset();
+			m_oRtL.reset();
+			m_oShadow.reset();
+			m_oShd.reset();
+			m_oSmallCaps.reset();
+			m_oSnapToGrid.reset();
+			m_oSpacing.reset();
+			m_oSpecVanish.reset();
+			m_oStrike.reset();
+			m_oSz.reset();
+			m_oSzCs.reset();
+			m_oU.reset();
+			m_oVanish.reset();
+			m_oVertAlign.reset();
+			m_oW.reset();
+			m_oWebHidden.reset();
+			m_oTextFill.Fill.reset();
+			m_oTextOutline.reset();
+			m_oLigatures.reset();
+			m_oNumSpacing.reset();
+			m_oNumForm.reset();
+			m_oStylisticSets.reset();
+			m_oCntxtAlts.reset();
+			m_oReflection.reset();
+			m_oGlow.reset();
+			m_oShadowExt.reset();
+			m_oProps3d.reset();
+			m_oScene3d.reset();
+		}
+		bool CRunProperty::IsNoEmpty()
+		{
+			return (m_oBold.IsInit() || m_oBoldCs.IsInit() || m_oBdr.IsInit() || m_oCaps.IsInit() ||
+				 m_oColor.IsInit() || m_oCs.IsInit() || m_oDel.IsInit() || m_oDStrike.IsInit() || m_oEastAsianLayout.IsInit() ||
+				 m_oEffect.IsInit() || m_oEm.IsInit() || m_oEmboss.IsInit() || m_oFitText.IsInit() || m_oHighlight.IsInit() ||
+				 m_oIns.IsInit() || m_oItalic.IsInit() || m_oItalicCs.IsInit() || m_oImprint.IsInit() ||
+				 m_oKern.IsInit() || m_oLang.IsInit() || m_oNoProof.IsInit() || m_oMath.IsInit() || m_oMoveFrom.IsInit() ||
+				 m_oMoveTo.IsInit() || m_oOutline.IsInit() || m_oPosition.IsInit() || m_oRFonts.IsInit() ||
+				 m_oRPrChange.IsInit() || m_oRStyle.IsInit() || m_oRtL.IsInit() || m_oShadow.IsInit() || m_oShd.IsInit() ||
+				 m_oSmallCaps.IsInit() || m_oSnapToGrid.IsInit() || m_oSpacing.IsInit() || m_oSpecVanish.IsInit() ||
+				 m_oStrike.IsInit() || m_oSz.IsInit() || m_oSzCs.IsInit() || m_oU.IsInit() || m_oVanish.IsInit() ||
+				 m_oVertAlign.IsInit() || m_oW.IsInit() || m_oWebHidden.IsInit() || m_oTextFill.is_init() ||
+				 m_oTextOutline.IsInit() || m_oLigatures.IsInit() || m_oNumSpacing.IsInit() || m_oNumForm.IsInit() ||
+				 m_oStylisticSets.IsInit() || m_oCntxtAlts.IsInit() || m_oReflection.IsInit() || m_oGlow.IsInit() ||
+				 m_oShadowExt.IsInit() || m_oProps3d.IsInit() || m_oScene3d.IsInit());
+		}
+		const CRunProperty CRunProperty::Merge(const CRunProperty& oPrev, const CRunProperty& oCurrent)
+		{
+			CRunProperty oProperties;
+			oProperties.m_oBold = Merge(oPrev.m_oBold, oCurrent.m_oBold);
+			oProperties.m_oBoldCs = Merge(oPrev.m_oBoldCs, oCurrent.m_oBoldCs);
+			oProperties.m_oBdr = Merge(oPrev.m_oBdr, oCurrent.m_oBdr);
+			oProperties.m_oCaps = Merge(oPrev.m_oCaps, oCurrent.m_oCaps);
+			oProperties.m_oColor = Merge(oPrev.m_oColor, oCurrent.m_oColor);
+			oProperties.m_oCs = Merge(oPrev.m_oCs, oCurrent.m_oCs);
+			oProperties.m_oDel = Merge(oPrev.m_oDel, oCurrent.m_oDel);
+			oProperties.m_oDStrike = Merge(oPrev.m_oDStrike, oCurrent.m_oDStrike);
+			oProperties.m_oEastAsianLayout = Merge(oPrev.m_oEastAsianLayout, oCurrent.m_oEastAsianLayout);
+			oProperties.m_oEffect = Merge(oPrev.m_oEffect, oCurrent.m_oEffect);
+			oProperties.m_oEm = Merge(oPrev.m_oEm, oCurrent.m_oEm);
+			oProperties.m_oEmboss = Merge(oPrev.m_oEmboss, oCurrent.m_oEmboss);
+			oProperties.m_oFitText = Merge(oPrev.m_oFitText, oCurrent.m_oFitText);
+			oProperties.m_oHighlight = Merge(oPrev.m_oHighlight, oCurrent.m_oHighlight);
+			oProperties.m_oIns = Merge(oPrev.m_oIns, oCurrent.m_oIns);
+			oProperties.m_oItalic = Merge(oPrev.m_oItalic, oCurrent.m_oItalic);
+			oProperties.m_oItalicCs = Merge(oPrev.m_oItalicCs, oCurrent.m_oItalicCs);
+			oProperties.m_oImprint = Merge(oPrev.m_oImprint, oCurrent.m_oImprint);
+			oProperties.m_oKern = Merge(oPrev.m_oKern, oCurrent.m_oKern);
+			oProperties.m_oLang = Merge(oPrev.m_oLang, oCurrent.m_oLang);
+			oProperties.m_oNoProof = Merge(oPrev.m_oNoProof, oCurrent.m_oNoProof);
+			oProperties.m_oMath = Merge(oPrev.m_oMath, oCurrent.m_oMath);
+			oProperties.m_oMoveFrom = Merge(oPrev.m_oMoveFrom, oCurrent.m_oMoveFrom);
+			oProperties.m_oMoveTo = Merge(oPrev.m_oMoveTo, oCurrent.m_oMoveTo);
+			oProperties.m_oOutline = Merge(oPrev.m_oOutline, oCurrent.m_oOutline);
+			oProperties.m_oPosition = Merge(oPrev.m_oPosition, oCurrent.m_oPosition);
+			oProperties.m_oRFonts = Merge(oPrev.m_oRFonts, oCurrent.m_oRFonts);
+			oProperties.m_oRStyle = Merge(oPrev.m_oRStyle, oCurrent.m_oRStyle);
+			oProperties.m_oRtL = Merge(oPrev.m_oRtL, oCurrent.m_oRtL);
+			oProperties.m_oShadow = Merge(oPrev.m_oShadow, oCurrent.m_oShadow);
+			oProperties.m_oShd = Merge(oPrev.m_oShd, oCurrent.m_oShd);
+			oProperties.m_oSmallCaps = Merge(oPrev.m_oSmallCaps, oCurrent.m_oSmallCaps);
+			oProperties.m_oSnapToGrid = Merge(oPrev.m_oSnapToGrid, oCurrent.m_oSnapToGrid);
+			oProperties.m_oSpacing = Merge(oPrev.m_oSpacing, oCurrent.m_oSpacing);
+			oProperties.m_oSpecVanish = Merge(oPrev.m_oSpecVanish, oCurrent.m_oSpecVanish);
+			oProperties.m_oStrike = Merge(oPrev.m_oStrike, oCurrent.m_oStrike);
+			oProperties.m_oSz = Merge(oPrev.m_oSz, oCurrent.m_oSz);
+			oProperties.m_oSzCs = Merge(oPrev.m_oSzCs, oCurrent.m_oSzCs);
+			oProperties.m_oU = Merge(oPrev.m_oU, oCurrent.m_oU);
+			oProperties.m_oVanish = Merge(oPrev.m_oVanish, oCurrent.m_oVanish);
+			oProperties.m_oVertAlign = Merge(oPrev.m_oVertAlign, oCurrent.m_oVertAlign);
+			oProperties.m_oW = Merge(oPrev.m_oW, oCurrent.m_oW);
+			oProperties.m_oWebHidden = Merge(oPrev.m_oWebHidden, oCurrent.m_oWebHidden);
+
+			return oProperties;
 		}
 
 

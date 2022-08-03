@@ -32,7 +32,7 @@
 #include "PPTFileReader.h"
 
 #include "../../../ASCOfficeXlsFile2/source/XlsFormat/Crypt/Decryptor.h"
-#include "../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/SummaryInformationStream/SummaryInformation.h"
+#include "../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/SummaryInformationStream/PropertySetStream.h"
 
 #include "../../../DesktopEditor/common/Directory.h"
 #include "../Records/Drawing/ArtBlip.h"
@@ -48,6 +48,7 @@
 
 #define ENCRYPTED_SUMMARY_STREAM	L"EncryptedSummary" 
 #define DOCUMENT_SUMMARY_STREAM		L"DocumentSummaryInformation"
+#define SUMMARY_STREAM				L"SummaryInformation"
 
 CPPTFileReader::CPPTFileReader(POLE::Storage *pStorage, std::wstring strTemp):
 	   m_pStorage(pStorage),  
@@ -121,6 +122,8 @@ bool CPPTFileReader::ReadPersists()
 void CPPTFileReader::ReadDocument()
 {
 	ReadPictures();
+	ReadDocumentSummary();
+	
 	m_oDocumentInfo.LoadDocument(m_strTmpDirectory);
 }
 
@@ -183,7 +186,14 @@ CFStreamPtr CPPTFileReader::GetEncryptedSummaryStream()
 	} 
 	return m_pEncryptedSummaryStream; 
 }
-
+CFStreamPtr CPPTFileReader::GetSummaryStream()
+{
+	if (!m_pDocumentSummaryStream)
+	{
+		m_pDocumentSummaryStream = GetStreamByName(SUMMARY_STREAM);
+	}
+	return m_pDocumentSummaryStream;
+}
 CFStreamPtr CPPTFileReader::GetDocumentSummaryStream()
 { 
 	if (!m_pDocumentSummaryStream) 
@@ -210,15 +220,23 @@ void CPPTFileReader::ReadEncryptedSummary()
 
 void CPPTFileReader::ReadDocumentSummary()
 {
-	CFStreamPtr pStream = GetDocumentSummaryStream();
-	if (!pStream) return;
-
-	OLEPS::SummaryInformation doc_summary_info(pStream);
+	OLEPS::PropertySetStream summary_info;
 	
-	m_nPresentationCodePage = doc_summary_info.GetCodePage(); 
+	CFStreamPtr pStream = GetSummaryStream();
+	if (pStream)
+		summary_info.read(pStream);
+
+	pStream = GetDocumentSummaryStream();
+	if (pStream)
+		summary_info.read(pStream, true);
+	
+	m_nPresentationCodePage = summary_info.GetCodePage();
 
 	if (m_nPresentationCodePage == 0)
 		m_nPresentationCodePage = 1250;
+
+	m_oDocumentInfo.m_app_xml = summary_info.GetApp();
+	m_oDocumentInfo.m_core_xml = summary_info.GetCore();
 }
 
 void CPPTFileReader::ReadPictures()

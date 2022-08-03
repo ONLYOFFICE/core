@@ -36,6 +36,20 @@
 
 namespace NSDoctRenderer
 {
+    class CString_Private;
+    class Q_DECL_EXPORT CString
+    {
+    public:
+        CString();
+        CString(const CString& src);
+        CString& operator=(const CString& src);
+
+        wchar_t* c_str() const;
+
+    private:
+        CString_Private* m_internal;
+        friend class CDocBuilderValue;
+    };
 
     /**
      * Class for getting results of called js commands
@@ -60,10 +74,6 @@ namespace NSDoctRenderer
          * Clear object
          */
         void Clear();
-        /**
-         * Free data returning by the ToString method
-         */
-        void FreeString(wchar_t* data);
 
         /**
          * Returns true if this object is null.
@@ -73,6 +83,49 @@ namespace NSDoctRenderer
          * Returns true if this object is undefined.
          */
         bool IsUndefined();
+        /**
+         * Returns true if this object is boolean.
+         */
+        bool IsBool();
+        /**
+         * Returns true if this object is integer.
+         */
+        bool IsInt();
+        /**
+         * Returns true if this object is double.
+         */
+        bool IsDouble();
+        /**
+         * Returns true if this object is string.
+         */
+        bool IsString();
+        /**
+         * Returns true if this object is function.
+         */
+        bool IsFunction();
+        /**
+         * Returns true if this object is object.
+         */
+        bool IsObject();
+
+        /**
+         * Returns true if this object is array.
+         */
+        bool IsArray();
+        /**
+         * Returns true if this object is array.
+         */
+        bool IsTypedArray();
+
+        /**
+         * Returns length if this object is array/typedarray. Otherwise 0
+         */
+        unsigned int GetLength();
+
+        /**
+         * Convert this object to boolean.
+         */
+        bool ToBool();
         /**
          * Convert this object to integer.
          */
@@ -84,14 +137,110 @@ namespace NSDoctRenderer
         /**
          * Convert this object to string.
          */
-        wchar_t* ToString();
+        CString ToString();
+
         /**
          * Get property of this object.
          */
         CDocBuilderValue GetProperty(const wchar_t* name);
 
+        CDocBuilderValue Get(const char* name);
+        CDocBuilderValue Get(const wchar_t* name);
+        CDocBuilderValue operator[](const char* name);
+        CDocBuilderValue operator[](const wchar_t* name);
+
+        CDocBuilderValue Get(const int& index);
+        CDocBuilderValue operator[](const int& index);
+
+        /**
+         * Set property of this object.
+         */
+        void SetProperty(const wchar_t* name, CDocBuilderValue value);
+        void Set(const wchar_t* name, CDocBuilderValue value);
+        void Set(const int& index, CDocBuilderValue value);
+
+    public:
+        // primitives
+        CDocBuilderValue(const bool& value);
+        CDocBuilderValue(const int& value);
+        CDocBuilderValue(const unsigned int& value);
+        CDocBuilderValue(const double& value);
+        CDocBuilderValue(const char* value);
+        CDocBuilderValue(const wchar_t* value);
+
+        static CDocBuilderValue CreateUndefined();
+        static CDocBuilderValue CreateNull();
+
+    public:
+        CDocBuilderValue Call(const char* name);
+        CDocBuilderValue Call(const char* name, CDocBuilderValue p1);
+        CDocBuilderValue Call(const char* name, CDocBuilderValue p1, CDocBuilderValue p2);
+        CDocBuilderValue Call(const char* name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3);
+        CDocBuilderValue Call(const char* name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4);
+        CDocBuilderValue Call(const char* name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4, CDocBuilderValue p5);
+        CDocBuilderValue Call(const char* name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4, CDocBuilderValue p5, CDocBuilderValue p6);
+
+        CDocBuilderValue Call(const wchar_t* name);
+        CDocBuilderValue Call(const wchar_t* name, CDocBuilderValue p1);
+        CDocBuilderValue Call(const wchar_t* name, CDocBuilderValue p1, CDocBuilderValue p2);
+        CDocBuilderValue Call(const wchar_t* name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3);
+        CDocBuilderValue Call(const wchar_t* name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4);
+        CDocBuilderValue Call(const wchar_t* name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4, CDocBuilderValue p5);
+        CDocBuilderValue Call(const wchar_t* name, CDocBuilderValue p1, CDocBuilderValue p2, CDocBuilderValue p3, CDocBuilderValue p4, CDocBuilderValue p5, CDocBuilderValue p6);
+
     private:
         CDocBuilderValue_Private* m_internal;
+
+        friend class CDocBuilderContext;
+    };
+
+    /**
+     * Create scope
+     */
+    class CDocBuilderContextScope_Private;
+    class Q_DECL_EXPORT CDocBuilderContextScope
+    {
+    public:
+        CDocBuilderContextScope();
+        CDocBuilderContextScope(const CDocBuilderContextScope& src);
+        CDocBuilderContextScope& operator=(const CDocBuilderContextScope& src);
+        ~CDocBuilderContextScope();
+
+        void Close();
+
+    private:
+        CDocBuilderContextScope_Private* m_internal;
+
+        friend class CDocBuilderContext;
+    };
+
+    /**
+     * Class for getting js context for working
+     */
+    class CDocBuilderContext_Private;
+    class Q_DECL_EXPORT CDocBuilderContext
+    {
+    public:
+        CDocBuilderContext();
+        CDocBuilderContext(const CDocBuilderContext& src);
+        CDocBuilderContext& operator=(const CDocBuilderContext& src);
+        ~CDocBuilderContext();
+
+        CDocBuilderValue CreateUndefined();
+        CDocBuilderValue CreateNull();
+        CDocBuilderValue CreateObject();
+        CDocBuilderValue CreateArray(const int& length);
+        CDocBuilderValue CreateTypedArray(unsigned char* buffer, const int& length);
+
+        CDocBuilderValue GetGlobal();
+        CDocBuilderContextScope CreateScope();
+        bool IsError();
+
+    private:
+        CDocBuilderContext_Private* m_internal;
+
+        friend class CDocBuilder_Private;
+        friend class CDocBuilder;
     };
 
     class CDocBuilder_Private;
@@ -223,11 +372,17 @@ namespace NSDoctRenderer
          */
         char* GetVersion();
 
+        /**
+         * GetContext
+         * @return Get the current js context
+         */
+        CDocBuilderContext GetContext();
+
     public:
         /**
          * Initializing the ONLYOFFICE Document Builder as a library for the application to be able to work with it.
          */
-        static void Initialize();
+        static void Initialize(const wchar_t* directory = 0);
         /**
          * Unloading the ONLYOFFICE Document Builder from the application memory when it is no longer needed.
          */
@@ -313,6 +468,10 @@ namespace NSDoctRenderer
      * GetImageMap() : return object-dictionary with key-value imageId -> imagePath (for inserting to document)
      *
      */
+
+    typedef CDocBuilderValue CValue;
+    typedef CDocBuilderContext CContext;
+    typedef CDocBuilderContextScope CContextScope;
 }
 
 #endif // DOCBUILDER_H

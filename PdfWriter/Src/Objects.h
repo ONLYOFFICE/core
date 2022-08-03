@@ -37,6 +37,7 @@
 #include <vector>
 
 #include "Types.h"
+#include "../../DesktopEditor/xml/include/xmlutils.h"
 
 namespace PdfWriter
 {
@@ -78,7 +79,8 @@ namespace PdfWriter
 		dict_type_ENCRYPT      = 0x09,
 		dict_type_EXT_GSTATE   = 0x0A,
 		dict_type_EXT_GSTATE_R = 0x0B,  /* read only object */
-		dict_type_METADATA     = 0x0C
+		dict_type_METADATA     = 0x0C,
+		dict_type_SIGNATURE    = 0x0D
 	} EDictType;
 
 	class CObjectBase
@@ -97,9 +99,9 @@ namespace PdfWriter
 		{
 			return object_type_UNKNOWN;
 		}
-		virtual CObjectBase* Copy() const
+		virtual CObjectBase* Copy(CObjectBase* pOut = NULL) const
 		{
-			return new CObjectBase();
+			return pOut ? pOut : new CObjectBase();
 		}
 		bool IsHidden() const;
 		bool IsDirect() const;
@@ -111,6 +113,14 @@ namespace PdfWriter
 		{
 			m_unObjId = unObjId;
 			m_unGenNo = unGenNo;
+		}
+		unsigned int GetObjId() const
+		{
+			return m_unObjId;
+		}
+		unsigned int GetGenNo() const
+		{
+			return m_unGenNo;
 		}
 		void WriteValue(CStream* pStream, CEncrypt* pEncrypt);
 		void Write     (CStream* pStream, CEncrypt* pEncrypt);
@@ -125,9 +135,9 @@ namespace PdfWriter
 	{
 	public:
 
-		virtual CObjectBase* Copy() const
+		virtual CObjectBase* Copy(CObjectBase* pOut = NULL) const
 		{
-			return new CNullObject();
+			return pOut ? pOut : new CNullObject();
 		}
 
 		EObjectType GetType() const
@@ -143,8 +153,13 @@ namespace PdfWriter
 		{
 			m_bValue = bValue;
 		}
-		virtual CObjectBase* Copy() const
+		virtual CObjectBase* Copy(CObjectBase* pOut = NULL) const
 		{
+			if (pOut && pOut->GetType() == object_type_BOOLEAN)
+			{
+				((CBoolObject*)pOut)->Set(m_bValue);
+				return pOut;
+			}
 			return new CBoolObject(m_bValue);
 		}
 		EObjectType GetType() const
@@ -154,6 +169,10 @@ namespace PdfWriter
 		bool Get() const
 		{
 			return m_bValue;
+		}
+		void Set(const bool& bValue)
+		{
+			m_bValue = bValue;
 		}
 
 	private:
@@ -170,8 +189,13 @@ namespace PdfWriter
 		{
 			m_nValue = nValue;
 		}
-		virtual CObjectBase* Copy() const
+		virtual CObjectBase* Copy(CObjectBase* pOut = NULL) const
 		{
+			if (pOut && pOut->GetType() == object_type_NUMBER)
+			{
+				((CNumberObject*)pOut)->Set(m_nValue);
+				return pOut;
+			}
 			return new CNumberObject(m_nValue);
 		}
 		EObjectType GetType() const
@@ -190,6 +214,10 @@ namespace PdfWriter
 		{
 			m_nValue++;
 		}
+		void operator--(int)
+		{
+			m_nValue--;
+		}
 
 	private:
 		int m_nValue;
@@ -205,8 +233,13 @@ namespace PdfWriter
 		{
 			Set((float)dValue);
 		}
-		virtual CObjectBase* Copy() const
+		virtual CObjectBase* Copy(CObjectBase* pOut = NULL) const
 		{
+			if (pOut && pOut->GetType() == object_type_REAL)
+			{
+				((CRealObject*)pOut)->Set(m_fValue);
+				return pOut;
+			}
 			return new CRealObject(m_fValue);
 		}
 		EObjectType GetType() const
@@ -215,11 +248,11 @@ namespace PdfWriter
 		}
 		void Set(float fValue)
 		{
-            m_fValue = std::min(std::max(fValue, LIMIT_MIN_REAL), LIMIT_MAX_REAL);
+			m_fValue = std::min(std::max(fValue, LIMIT_MIN_REAL), LIMIT_MAX_REAL);
 		}
-        void Set(double dValue)
+		void Set(double dValue)
 		{
-            m_fValue = (float)std::min(std::max((float)dValue, LIMIT_MIN_REAL), LIMIT_MAX_REAL);
+			m_fValue = (float)std::min(std::max((float)dValue, LIMIT_MIN_REAL), LIMIT_MAX_REAL);
 		}
 		float Get() const
 		{
@@ -242,8 +275,13 @@ namespace PdfWriter
 		{
 			return m_sValue;
 		}
-		virtual CObjectBase* Copy() const
+		virtual CObjectBase* Copy(CObjectBase* pOut = NULL) const
 		{
+			if (pOut && pOut->GetType() == object_type_NAME)
+			{
+				((CNameObject*)pOut)->Set(m_sValue);
+				return pOut;
+			}
 			return new CNameObject(m_sValue);
 		}
 		EObjectType GetType() const
@@ -257,9 +295,9 @@ namespace PdfWriter
 	class CStringObject : public CObjectBase
 	{
 	public:
-        CStringObject(const char* sValue, bool isUTF16 = false, bool isDictValue = false);
+		CStringObject(const char* sValue, bool isUTF16 = false, bool isDictValue = false);
 		virtual ~CStringObject();
-		void Set(const char* sValue);
+		void Set(const char* sValue, bool isUTF16, bool isDictValue);
 		const BYTE*  GetString() const
 		{
 			return (const BYTE*)m_pValue;
@@ -268,18 +306,23 @@ namespace PdfWriter
 		{
 			return m_unLen;
 		}
-		virtual CObjectBase* Copy() const
+		virtual CObjectBase* Copy(CObjectBase* pOut = NULL) const
 		{
+			if (pOut && pOut->GetType() == object_type_STRING)
+			{
+				((CStringObject*)pOut)->Set((const char*)m_pValue, m_bUTF16, m_bDictValue);
+				return pOut;
+			}
 			return new CStringObject((const char*)m_pValue, m_bUTF16, m_bDictValue);
 		}
 		EObjectType  GetType() const
 		{
 			return object_type_STRING;
-        }
-        bool         IsUTF16() const
-        {
-            return m_bUTF16;
-        }
+		}
+		bool         IsUTF16() const
+		{
+			return m_bUTF16;
+		}
 		bool         IsDictValue() const
 		{
 			return m_bDictValue;
@@ -288,7 +331,7 @@ namespace PdfWriter
 	private:
 		BYTE*        m_pValue;
 		unsigned int m_unLen;
-        bool         m_bUTF16;
+		bool         m_bUTF16;
 		bool         m_bDictValue;
 	};
 	class CBinaryObject : public CObjectBase
@@ -305,8 +348,13 @@ namespace PdfWriter
 		{
 			return m_unLen;
 		}
-		virtual CObjectBase* Copy() const
+		virtual CObjectBase* Copy(CObjectBase* pOut = NULL) const
 		{
+			if (pOut && pOut->GetType() == object_type_BINARY)
+			{
+				((CBinaryObject*)pOut)->Set(m_pValue, m_unLen);
+				return pOut;
+			}
 			return new CBinaryObject(m_pValue, m_unLen);
 		}
 		EObjectType  GetType() const
@@ -321,17 +369,22 @@ namespace PdfWriter
 	class CProxyObject : public CObjectBase
 	{
 	public:
-		CProxyObject(CObjectBase* pObject)
-		{
-			m_pObject = pObject;
-		}
+		CProxyObject(CObjectBase* pObject, bool bClear = false);
+		~CProxyObject();
 		CObjectBase* Get() const
 		{
 			return m_pObject;
 		}
-		virtual CObjectBase* Copy() const
+		virtual CObjectBase* Copy(CObjectBase* pOut = NULL) const
 		{
-			return new CProxyObject(m_pObject);
+			if (pOut && pOut->GetType() == object_type_PROXY && ((CProxyObject*)pOut)->m_pObject)
+			{
+				((CProxyObject*)pOut)->m_pObject->SetRef(m_pObject->GetObjId(), m_pObject->GetGenNo());
+				return pOut;
+			}
+			CProxyObject* pRes = new CProxyObject(new CObjectBase(), true);
+			pRes->Get()->SetRef(m_pObject->GetObjId(), m_pObject->GetGenNo());
+			return pRes;
 		}
 		EObjectType GetType() const
 		{
@@ -339,6 +392,7 @@ namespace PdfWriter
 		}
 	private:
 		CObjectBase* m_pObject;
+		bool m_bClear;
 	};
 	class CArrayObject : public CObjectBase
 	{
@@ -361,8 +415,9 @@ namespace PdfWriter
 		void         Add(float fValue);
 		void         Add(const char* sValue);
 		void         Add(double dValue);
-		void         Insert(CObjectBase* pTarget, CObjectBase* pObject);
+		void         Insert(CObjectBase* pTarget, CObjectBase* pObject, bool bReplace = false);
 		CObjectBase* Get(unsigned int unIndex, bool bCheckProxy = true) const;
+		CObjectBase* Remove(unsigned int unIndex);
 		void         Clear();
 		EObjectType  GetType() const
 		{
@@ -370,7 +425,8 @@ namespace PdfWriter
 		}
 		static CArrayObject* CreateBox(const TBox& oBox);
 		static CArrayObject* CreateBox(double dL, double dB, double dR, double dT);
-		virtual CObjectBase* Copy() const;
+		virtual CObjectBase* Copy(CObjectBase* pOut = NULL) const;
+		void FromXml(const std::wstring& sXml);
 
 	protected:
 		std::vector<CObjectBase*> m_arrList;
@@ -416,13 +472,16 @@ namespace PdfWriter
 		virtual void      BeforeWrite(){}
 		virtual void      Write(CStream* pStream){}
 		virtual void      AfterWrite(){}
-		virtual CObjectBase* Copy() const;
+		virtual CObjectBase* Copy(CObjectBase* pOut = NULL) const;
 		virtual EDictType GetDictType() const
 		{
 			return dict_type_UNKNOWN;
 		}
 
 		void WriteToStream(CStream* pStream, CEncrypt* pEncrypt);
+		void WriteSignatureToStream(CStream* pStream, CEncrypt* pEncrypt);
+		unsigned int GetSize() { return m_mList.size(); }
+		void FromXml(const std::wstring& sXml);
 
 	private:
 
@@ -443,12 +502,30 @@ namespace PdfWriter
 	public:
 
 		CXref(CDocument* pDocument, unsigned int unOffset);
+		CXref(CDocument* pDocument, unsigned int unRemoveId, unsigned int unRemoveGen);
 		~CXref();
 
 		TXrefEntry* GetEntry(unsigned int unIndex) const;
 		TXrefEntry* GetEntryByObjectId(unsigned int unObjectId) const;
+		CXref*      GetXrefByObjectId(unsigned int unObjectId);
 		void        Add(CObjectBase* pObject);		
-		void        WriteToStream(CStream* pStream, CEncrypt* pEncrypt);
+		void        WriteToStream(CStream* pStream, CEncrypt* pEncrypt, bool bStream = false);
+		void        SetPrev(CXref* pPrev)
+		{
+			m_pPrev = pPrev;
+		}
+		void        SetPrevAddr(unsigned int unAddr)
+		{
+			m_unAddr = unAddr;
+		}
+		unsigned int GetPrevAddr() const
+		{
+			return m_unAddr;
+		}
+		unsigned int GetSizeXRef() const
+		{
+			return m_unStartOffset + m_arrEntries.size();
+		}
 		int         GetCount() const
 		{
 			return m_arrEntries.size();

@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_INCLUDE_H_
-#define PPTX_INCLUDE_H_
 
 #include "Folder.h"
 #include "Presentation.h"
@@ -70,4 +68,4 @@
 #include "Logic/Runs/Br.h"
 #include "Logic/XmlId.h"
 
-#endif // PPTX_INCLUDE_H_
+#include "../../Common/DocxFormat/Source/DocxFormat/CustomXml.h"

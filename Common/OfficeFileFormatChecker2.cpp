@@ -760,6 +760,32 @@ bool COfficeFileFormatChecker::isOOXFormatFile(const std::wstring & fileName, bo
 	}
 	return false;
 }
+bool COfficeFileFormatChecker::isDocFormatFile(const std::wstring & fileName)
+{
+	POLE::Storage storage(fileName.c_str());
+	if (storage.open())
+	{
+		if (isDocFormatFile(&storage))
+		{
+			//nFileType внутри;
+			return true;
+		}
+	}
+	return false;
+}
+bool COfficeFileFormatChecker::isXlsFormatFile(const std::wstring & fileName)
+{
+	POLE::Storage storage(fileName.c_str());
+	if (storage.open())
+	{
+		if (isXlsFormatFile(&storage))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS;
+			return true;
+		}
+	}
+	return false;
+}
 bool COfficeFileFormatChecker::isOnlyOfficeFormatFile(const std::wstring & fileName)
 {
 	COfficeUtils OfficeUtils(NULL);
@@ -1174,8 +1200,35 @@ int COfficeFileFormatChecker::GetFormatByExtension(const std::wstring& sExt)
         return AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
     if (L".djvu" == ext)
         return AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU;
-    if (L".xps" == ext)
+	if (L".xps" == ext || L".oxps" == ext)
         return AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS;
+
+	if (L".jpg" == ext || L".jpeg" == ext || L".jpe" == ext || L".jfif" == ext)
+		return AVS_OFFICESTUDIO_FILE_IMAGE_JPG;
+	if (L".tiff" == ext || L".tif" == ext)
+		return AVS_OFFICESTUDIO_FILE_IMAGE_TIFF;
+	if (L".tga" == ext)
+		return AVS_OFFICESTUDIO_FILE_IMAGE_TGA;
+	if (L".gif" == ext)
+		return AVS_OFFICESTUDIO_FILE_IMAGE_GIF;
+	if (L".png" == ext)
+		return AVS_OFFICESTUDIO_FILE_IMAGE_PNG;
+	if (L".emf" == ext)
+		return AVS_OFFICESTUDIO_FILE_IMAGE_EMF;
+	if (L".wmf" == ext)
+		return AVS_OFFICESTUDIO_FILE_IMAGE_WMF;
+	if (L".bmp" == ext)
+		return AVS_OFFICESTUDIO_FILE_IMAGE_BMP;
+	if (L".cr2" == ext)
+		return AVS_OFFICESTUDIO_FILE_IMAGE_CR2;
+	if (L".pcx" == ext)
+		return AVS_OFFICESTUDIO_FILE_IMAGE_PCX;
+	if (L".ras" == ext)
+		return AVS_OFFICESTUDIO_FILE_IMAGE_RAS;
+	if (L".psd" == ext)
+		return AVS_OFFICESTUDIO_FILE_IMAGE_PSD;
+	if (L".ico" == ext)
+		return AVS_OFFICESTUDIO_FILE_IMAGE_ICO;
 
 	if (L".doct" == ext)
 		return AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY;

@@ -168,6 +168,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\ASCOfficeDocxFile2\BinReader\CustomXmlWriter.cpp" />
     <ClCompile Include="..\..\..\ASCOfficeDocxFile2\BinReader\FileWriter.cpp" />
+    <ClCompile Include="..\..\..\ASCOfficeDocxFile2\BinReader\ReaderClasses.cpp" />
     <ClCompile Include="..\..\..\ASCOfficeDocxFile2\BinReader\Readers.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>

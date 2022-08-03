@@ -9,6 +9,7 @@ namespace NSFile
 }
 namespace MetaFile
 {
+
 	class CEmfInterpretator : public CEmfInterpretatorBase
 	{
 	public:

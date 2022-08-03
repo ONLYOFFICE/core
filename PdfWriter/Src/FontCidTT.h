@@ -101,8 +101,9 @@ namespace PdfWriter
 
 		CFontCidTrueType(CXref* pXref, CDocument* pDocument, const std::wstring& wsFontPath, unsigned int unIndex);
 		~CFontCidTrueType();
-		unsigned char* EncodeString(unsigned int* pUnicodes, unsigned int unLen, const unsigned int* pGids = NULL);
-		unsigned short EncodeChar(const unsigned int& unUnicode);
+		unsigned short EncodeUnicode(const unsigned int& unUnicode);
+		unsigned short EncodeGID(const unsigned int& unGID, const unsigned int* pUnicodes, const unsigned int& unCount);
+
 		bool           HaveChar(const unsigned int& unUnicode);
 		unsigned int   GetWidth(unsigned short ushCode);
 		unsigned int   GetGlyphWidth(unsigned short ushCode);
@@ -121,7 +122,6 @@ namespace PdfWriter
 		void WriteToUnicode();
 		bool OpenFontFace();
 		void CloseFontFace();
-		unsigned short EncodeUnicodeSymbol(const unsigned int& unUnicode, const unsigned int& unGid = 0x0000, const bool& isGid = false);
 
 	private:
 
@@ -137,7 +137,7 @@ namespace PdfWriter
 
 		unsigned short                           m_ushCodesCount;   // Количество закодированных символов
 		std::map<unsigned int, unsigned short>   m_mUnicodeToCode;  // Мап Юникод->код символа
-		std::vector<unsigned int>                m_vUnicodes;       // Обратный мап код символа -> юникод
+		std::vector<std::vector<unsigned int>>   m_vUnicodes;       // Обратный мап код символа -> юникодЫ
 
 		std::vector<unsigned int>                m_vCodeToGid;
 		std::vector<unsigned int>                m_vWidths;     // glyph.advance

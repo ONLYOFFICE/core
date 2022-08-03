@@ -54,6 +54,7 @@ namespace PdfWriter
 	class CTextLine;
 	class CTextWord;
 	class CFieldBase;
+	class CPage;
 	//----------------------------------------------------------------------------------------
 	// CPageTree
 	//----------------------------------------------------------------------------------------
@@ -61,14 +62,27 @@ namespace PdfWriter
 	{
 	public:
 		CPageTree(CXref* pXref);
+		CPageTree(CXref* pXref, const std::wstring& sPageTree);
 		void AddPage(CDictObject* pPage);
+		CObjectBase* GetObj(int nPageIndex);
+		CPage* GetPage(int nPageIndex);
+		CObjectBase* RemovePage(int nPageIndex);
+		bool InsertPage(int nPageIndex, CPage* pPage);
+		bool Join(CPageTree* pPageTree);
+		unsigned int GetCount()
+		{
+			return m_pCount ? m_pCount->Get() : 0;
+		}
 		EDictType GetDictType() const
 		{
 			return dict_type_PAGES;
 		}
 	private:
+		CObjectBase* GetFromPageTree(int nPageIndex, int& nI, bool bRemove = false, bool bInsert = false, CPage* pPage = NULL);
+
 		CNumberObject* m_pCount;
 		CArrayObject*  m_pPages;
+		CXref*         m_pXref;
 	};
 	//----------------------------------------------------------------------------------------
 	// CPage
@@ -76,6 +90,7 @@ namespace PdfWriter
 	class CPage : public CDictObject
 	{
 	public:
+		CPage(CXref* pXref, CDocument* pDocument, const std::wstring& sXml);
 		CPage(CXref* pXref, CPageTree* pParent, CDocument* pDocument);
 		~CPage();
 
@@ -141,8 +156,12 @@ namespace PdfWriter
 		CMatrix*  GetTransform();
 		void      AddGroup(CDictObject* pDict);
 
+		void      AddContents(CXref* pXref);
+		void      SetRotate(int nRotate);
+
 	private:
 
+		void          Init(CXref* pXref, CDocument* pDocument);
 		void          EllipseArc(double dX, double dY, double dXRad, double dYRad, double dAngle1, double dAngle2, bool bClockDirection);
 		CArrayObject* GetMediaBoxItem();
 		CDictObject*  GetResourcesItem();
@@ -169,7 +188,7 @@ namespace PdfWriter
 		CPoint       m_oCurPos;            // Текущая позиция пата
 		CPoint       m_oTextPos;           // Текущая позиция текста
 		CMatrix      m_oTextMatrix;
-		CDictObject* m_pContents;
+		CArrayObject* m_pContents;
 		CStream*     m_pStream;
 		unsigned int m_unCompressionMode;
 		CDictObject* m_pExtGStates;

@@ -588,9 +588,19 @@ namespace DocFileFormat
 					}					
 				}break;
 				case sprmPWHeightAbs:
-                    appendValueAttribute( _framePr, L"w:h", FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );
-					break;
-
+				{
+					unsigned short val = FormatUtils::BytesToUInt16(iter->Arguments, 0, iter->argumentsSize);
+					unsigned short DyaHeightAbs = GETBITS(val, 0, 14);
+					bool fMinHeight = GETBIT(val, 15);
+					if ( DyaHeightAbs > 0)
+						appendValueAttribute(_framePr, L"w:h", DyaHeightAbs);
+					if (fMinHeight)
+						appendValueAttribute(_framePr, L"w:hRule", L"atLeast");
+					else if (DyaHeightAbs == 0)
+						appendValueAttribute(_framePr, L"w:hRule", L"auto");
+					else 
+						appendValueAttribute(_framePr, L"w:hRule", L"exact");
+				}break;
 				case sprmOldPDxaWidth:
 				case sprmPDxaWidth:
                     appendValueAttribute( _framePr, L"w:w", FormatUtils::BytesToInt16( iter->Arguments, 0, iter->argumentsSize ) );

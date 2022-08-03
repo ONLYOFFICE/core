@@ -68,6 +68,10 @@ isEqual(QT_MAJOR_VERSION, 5) {
     equals(DST_ARCH, i386) {
         DST_ARCH=x86
     }
+
+    lessThan(QT_MINOR_VERSION, 15) {
+	    DEFINES += QT_VERSION_LESS_5_15
+	}
 }
 
 greaterThan(QT_MAJOR_VERSION, 5) {
@@ -167,6 +171,11 @@ core_windows {
     QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
     QMAKE_CXXFLAGS -= -Zc:strictStrings
     QMAKE_CXXFLAGS += /MP
+
+    MSVC_VERSION_DETECT = $$(VisualStudioVersion)
+	greaterThan(MSVC_VERSION_DETECT, 15.0) {
+	    CONFIG += vs2019
+	}
 
     vs2019 {
         QMAKE_CXXFLAGS_RELEASE -= -permissive-
@@ -402,6 +411,8 @@ CORE_BUILDS_BINARY_PATH = $$CORE_ROOT_DIR/build/bin/$$CORE_BUILDS_PLATFORM_PREFI
 !isEmpty(OO_BUILD_BRANDING) {
     CORE_BUILDS_LIBRARIES_PATH = $$CORE_ROOT_DIR/build/$$OO_BUILD_BRANDING/lib/$$CORE_BUILDS_PLATFORM_PREFIX
     CORE_BUILDS_BINARY_PATH = $$CORE_ROOT_DIR/build/$$OO_BUILD_BRANDING/bin/$$CORE_BUILDS_PLATFORM_PREFIX
+
+    DEFINES += "BUILD_BRANDING_NAME=\"\\\"$$OO_BUILD_BRANDING\\\"\""
 }
 
 core_debug {

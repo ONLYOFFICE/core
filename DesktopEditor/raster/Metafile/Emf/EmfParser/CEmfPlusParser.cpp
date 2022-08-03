@@ -155,38 +155,25 @@ namespace MetaFile
 
 		if (NULL != pEmfInterpretator)
 		{
-			if (pEmfInterpretator->GetType() == Emf)
-			{
-				m_pInterpretator = new CEmfInterpretator(*(CEmfInterpretator*)pEmfInterpretator);
-			}
-			else if (pEmfInterpretator->GetType() == Render)
-			{
-				m_pInterpretator = new CEmfInterpretatorRender(*(CEmfInterpretatorRender*)pEmfInterpretator, this);
-			}
-			else if (pEmfInterpretator->GetType() == XML)
-			{
-				m_pInterpretator = new CEmfInterpretatorXml(*(CEmfInterpretatorXml*)pEmfInterpretator);
-			}
-			else if (pEmfInterpretator->GetType() == Array)
-			{
-				m_pInterpretator = new CEmfInterpretatorArray(*(CEmfInterpretatorArray*)pEmfInterpretator);
-			}
+			m_pInterpretator = pEmfInterpretator;
+
+			m_pInterpretator->CreateConditional(this);
 		}
 	}
 
 	CEmfPlusParser::~CEmfPlusParser()
 	{
 		ClearFile();
-		RELEASEOBJECT(m_pInterpretator);
 
 		for (EmfPlusObjects::const_iterator pIter = m_mObjects.begin(); pIter != m_mObjects.end(); ++pIter)
-			delete[] pIter->second;
+			delete pIter->second;
 	}
 
 	bool CEmfPlusParser::ReadFromBuffer(BYTE *pBuffer, unsigned int unSize, const bool& bIsExternal)
 	{
 		return false;
 	}
+	
 	bool CEmfPlusParser::OpenFromFile(const wchar_t *wsFilePath)
 	{
 		return false;
@@ -320,7 +307,7 @@ namespace MetaFile
 
 			LOGGING(L"Skip: " << nNeedSkip)
 
-					m_ulRecordSize = 0;
+			m_ulRecordSize = 0;
 		}while(m_oStream.CanRead() > 4);
 
 		if (!CheckError())
@@ -858,7 +845,7 @@ namespace MetaFile
 
 		RELEASEARRAYOBJECTS(pString)
 
-				return pFont;
+		return pFont;
 	}
 
 	CEmfPlusFont *CEmfPlusParser::GetFont(unsigned int unPenIndex)

@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_GLOW_INCLUDE_H_
-#define PPTX_LOGIC_GLOW_INCLUDE_H_
 
 #include "./../../WrapperWritingElement.h"
 #include "./../UniColor.h"
@@ -101,14 +99,24 @@ namespace PPTX
 			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(L"a:glow");
+				std::wstring sNodeNamespace;
+				std::wstring sAttrNamespace;
+				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
+				{
+					sNodeNamespace = L"w14:";
+					sAttrNamespace = sNodeNamespace;
+				}
+				else
+					sNodeNamespace = L"a:";
+
+				pWriter->StartNode(sNodeNamespace + L"glow");
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(L"rad", rad);
+				pWriter->WriteAttribute(sAttrNamespace + L"rad", rad);
 				pWriter->EndAttributes();
 				
 				Color.toXmlWriter(pWriter);
 
-				pWriter->EndNode(L"a:glow");
+				pWriter->EndNode(sNodeNamespace + L"glow");
 			}
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
@@ -173,5 +181,3 @@ namespace PPTX
 		};
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_GLOW_INCLUDE_H_

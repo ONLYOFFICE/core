@@ -51,7 +51,6 @@ public:
 	num_format_context(odf_reader::odf_read_context & odfContext);
     ~num_format_context();
 
-public:
     void start_format(const std::wstring & style_name);
     std::wostream & output();
     void end_format();
@@ -63,16 +62,19 @@ public:
 	odf_types::office_value_type::type type() const;
 	void type(odf_types::office_value_type::type t);
 
-    void start_complex_format();
+    void start_complex_format(std::wstring const & name);
     void add_format(std::wstring const & cond, std::wstring const & format);
     void end_complex_format();
+
+	std::wstring find_complex_format(std::wstring const & name, odf_types::office_value_type::type & type);
 
 	//std::wstring default_data_style(int type);
 	odf_reader::odf_read_context & odf_context_;
 
-
 private:
-    class Impl;
+	std::map<std::wstring, std::pair<odf_types::office_value_type::type, std::wstring>> mapFormats;
+		
+	class Impl;
     _CP_SCOPED_PTR(Impl) impl_;
 
     class Impl2;

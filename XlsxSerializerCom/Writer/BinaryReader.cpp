@@ -2114,6 +2114,14 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 		READ1_DEF(length, res, this->ReadPivotCaches, poResult);
 		m_oWorkbook.m_oPivotCachesXml->append(L"</pivotCaches>");
 	}
+	else if (c_oSerWorkbookTypes::AppName == type)
+	{
+		m_oWorkbook.m_oAppName = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSerWorkbookTypes::OleSize == type)
+	{
+		m_oWorkbook.m_oOleSize = m_oBufferedStream.GetString4(length);
+	}
 	else if(c_oSerWorkbookTypes::VbaProject == type)
 	{
 		m_oBufferedStream.Skip(1); //skip type
@@ -2239,6 +2247,10 @@ int BinaryWorkbookTableReader::ReadConnection(BYTE type, long length, void* poRe
 	{
 		pConnection->m_oId.Init();
 		pConnection->m_oId->SetValue(m_oBufferedStream.GetLong());
+	}
+	else if (c_oSerConnectionsTypes::UId == type)
+	{
+		pConnection->m_oUId = m_oBufferedStream.GetString4(length);
 	}
 	else if(c_oSerConnectionsTypes::Credentials == type)
 	{
@@ -2448,6 +2460,10 @@ int BinaryWorkbookTableReader::ReadConnectionTextPr(BYTE type, long length, void
 	{
 		pTextPr->m_oFirstRow = m_oBufferedStream.GetLong();
 	}
+	else if (c_oSerTextPrTypes::CodePage == type)
+	{
+		pTextPr->m_oCodePage = m_oBufferedStream.GetLong();
+	}
 	else if(c_oSerTextPrTypes::Qualifier == type)
 	{
 		pTextPr->m_oQualifier.Init();
@@ -2485,6 +2501,45 @@ int BinaryWorkbookTableReader::ReadConnectionTextPr(BYTE type, long length, void
 	else if(c_oSerTextPrTypes::Consecutive == type)
 	{
 		pTextPr->m_oConsecutive = m_oBufferedStream.GetBool();
+	}
+	else if (c_oSerTextPrTypes::TextFields == type)
+	{
+		pTextPr->m_oTextFields.Init();
+		READ1_DEF(length, res, this->ReadConnectionTextFields, pTextPr->m_oTextFields.GetPointer());
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorkbookTableReader::ReadConnectionTextFields(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CTextFields* pTextFields = static_cast<OOX::Spreadsheet::CTextFields*>(poResult);
+
+	int res = c_oSerConstants::ReadOk;
+
+	if (c_oSerTextPrTypes::TextField == type)
+	{
+		pTextFields->m_arrItems.push_back(new OOX::Spreadsheet::CTextField());
+		READ1_DEF(length, res, this->ReadConnectionTextField, pTextFields->m_arrItems.back());
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorkbookTableReader::ReadConnectionTextField(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CTextField* pTextField = static_cast<OOX::Spreadsheet::CTextField*>(poResult);
+
+	int res = c_oSerConstants::ReadOk;
+
+	if (c_oSerTextPrTypes::TextFieldType == type)
+	{
+		pTextField->m_oType.Init();
+		pTextField->m_oType->SetValue((SimpleTypes::Spreadsheet::EExternalConnectionType)m_oBufferedStream.GetLong());
+	}
+	else if (c_oSerTextPrTypes::TextFieldPosition == type)
+	{
+		pTextField->m_oPosition = m_oBufferedStream.GetLong();
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -3901,6 +3956,12 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 		oColBreaks.toXML2(oStreamWriter, L"colBreaks");
 	SEEK_TO_POS_END2();
 //-------------------------------------------------------------------------------------------------------------
+	SEEK_TO_POS_START(c_oSerWorksheetsTypes::CellWatches);
+	OOX::Spreadsheet::CCellWatches oCellWatches;
+	READ1_DEF(length, res, this->ReadCellWatches, &oCellWatches);
+	oCellWatches.toXML(oStreamWriter);
+	SEEK_TO_POS_END2();
+//-------------------------------------------------------------------------------------------------------------
 	//important before Drawings
 	SEEK_TO_POS_START(c_oSerWorksheetsTypes::Comments);
 		BinaryCommentReader oBinaryCommentReader(m_oBufferedStream, m_pCurWorksheet.GetPointer());
@@ -5001,6 +5062,31 @@ int BinaryWorksheetsTableReader::ReadHeaderFooter(BYTE type, long length, void* 
 	{
 		pHeaderFooter->m_oOddHeader.Init();
 		pHeaderFooter->m_oOddHeader->m_sText = m_oBufferedStream.GetString4(length);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorksheetsTableReader::ReadCellWatches(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Spreadsheet::CCellWatches* pCellWatches = static_cast<OOX::Spreadsheet::CCellWatches*>(poResult);
+	if (c_oSerWorksheetsTypes::CellWatch == type)
+	{
+		pCellWatches->m_arrItems.push_back(new OOX::Spreadsheet::CCellWatch());
+		READ2_DEF_SPREADSHEET(length, res, this->ReadCellWatch, pCellWatches->m_arrItems.back());
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorksheetsTableReader::ReadCellWatch(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Spreadsheet::CCellWatch* pCellWatch = static_cast<OOX::Spreadsheet::CCellWatch*>(poResult);
+	if (c_oSerWorksheetsTypes::CellWatchR == type)
+	{
+		pCellWatch->m_oR = m_oBufferedStream.GetString4(length);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -7431,8 +7517,14 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 	// Делаем для CSV перебивку пути, иначе создается папка с одинаковым имеем (для rels) и файл не создается.
 			
 			if (BinXlsxRW::c_oFileTypes::CSV == fileType)
-				sDstPath = NSSystemPath::GetDirectoryName(sDstPath);
+			{
+				sDstPath = pOfficeDrawingConverter->GetTempPath();
+				if (sDstPath.empty())
+					sDstPath = NSDirectory::GetTempPath();
 
+				sDstPath = NSDirectory::CreateDirectoryWithUniqueName(sDstPath);
+			}
+			
 			OOX::Spreadsheet::CXlsx oXlsx;
 			
 			std::wstring themePath = sDstPath + FILE_SEPARATOR_STR + OOX::Spreadsheet::FileTypes::Workbook.DefaultDirectory().GetPath() + FILE_SEPARATOR_STR + OOX::FileTypes::Theme.DefaultDirectory().GetPath();
@@ -7462,7 +7554,9 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 			}
 			else
 			{
-				CSVWriter::CCSVWriter oCSVWriter(oXlsx, nCodePage, sDelimiter, false);
+				CSVWriter oCSVWriter;
+				
+				oCSVWriter.Init(oXlsx, nCodePage, sDelimiter, false);
 				oCSVWriter.Start(sDstPathCSV);
 				SaveParams oSaveParams(drawingsPath, embeddingsPath, themePath, pOfficeDrawingConverter->GetContentTypes(), &oCSVWriter);
 				

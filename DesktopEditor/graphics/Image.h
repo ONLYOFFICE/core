@@ -59,8 +59,8 @@ public:
 	Status GetLastStatus() const;
 
 	void Create(const std::wstring& filename);
-	void Decode(BYTE *pBuffer, unsigned int unSize);
-	void Create(BYTE* pImgData, const DWORD& dwWidth, const DWORD& dwHeight, const long& nStride);
+	void Create(BYTE* pImgData, const DWORD& dwWidth, const DWORD& dwHeight, const long& nStride, bool bExternalBuffer = false);
+
 	bool SaveFile(const std::wstring& strFileName, UINT nFileType);
 	void Destroy();
 

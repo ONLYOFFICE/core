@@ -183,6 +183,7 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CPageTree::CPageTree(CXref* pXref)
 	{
+		m_pXref = pXref;
 		pXref->Add(this);
 
 		m_pPages = new CArrayObject();
@@ -192,22 +193,270 @@ namespace PdfWriter
 		Add("Kids", m_pPages);
 		Add("Count", m_pCount);
 	}
+	CPageTree::CPageTree(CXref* pXref, const std::wstring& sPageTree)
+	{
+		m_pXref = pXref;
+		pXref->Add(this);
+
+		FromXml(sPageTree);
+
+		// Инициализация текущего m_pPages
+		CObjectBase* pPages = Get("Kids");
+		if (pPages && pPages->GetType() == object_type_ARRAY)
+			m_pPages = (CArrayObject*)pPages;
+		else
+		{
+			m_pPages = new CArrayObject();
+			Add("Kids", m_pPages);
+		}
+
+		// Инициализация текущего m_pCount
+		CObjectBase* pCount = Get("Count");
+		if (pCount && pCount->GetType() == object_type_NUMBER)
+			m_pCount = (CNumberObject*)pCount;
+		else
+		{
+			m_pCount = new CNumberObject(0);
+			Add("Count", m_pCount);
+		}
+	}
 	void CPageTree::AddPage(CDictObject* pPage)
 	{
 		m_pPages->Add(pPage);
 		(*m_pCount)++;
 	}
+	CObjectBase* CPageTree::GetObj(int nPageIndex)
+	{
+		int nI = 0;
+		return GetFromPageTree(nPageIndex, nI);
+	}
+	CPage* CPageTree::GetPage(int nPageIndex)
+	{
+		int nI = 0;
+		CObjectBase* pObj = GetFromPageTree(nPageIndex, nI);
+		if (pObj && pObj->GetType() == object_type_DICT && ((CDictObject*)pObj)->GetDictType() == dict_type_PAGE)
+			return (CPage*)pObj;
+		return NULL;
+	}
+	CObjectBase* CPageTree::RemovePage(int nPageIndex)
+	{
+		int nI = 0;
+		return GetFromPageTree(nPageIndex, nI, true);
+	}
+	bool CPageTree::InsertPage(int nPageIndex, CPage* pPage)
+	{
+		if (nPageIndex >= m_pCount->Get())
+		{
+			AddPage(pPage);
+			pPage->Add("Parent", this);
+			return true;
+		}
+		int nI = 0;
+		CObjectBase* pObj = GetFromPageTree(nPageIndex, nI, false, true, pPage);
+		if (pObj)
+			return true;
+		return false;
+	}
+	CObjectBase* CPageTree::GetFromPageTree(int nPageIndex, int& nI, bool bRemove, bool bInsert, CPage* pPage)
+	{
+		for (int i = 0, count = m_pPages->GetCount(); i < count; ++i)
+		{
+			CObjectBase* pObj = m_pPages->Get(i);
+			CObjectBase* pRes = NULL;
+			if (pObj->GetType() == object_type_DICT && ((CDictObject*)pObj)->GetDictType() == dict_type_PAGES)
+				pRes = ((CPageTree*)pObj)->GetFromPageTree(nPageIndex, nI, bRemove, bInsert, pPage);
+			else
+			{
+				if (nPageIndex == nI)
+				{
+					pRes = pObj;
+					if (bRemove)
+						pRes = m_pPages->Remove(i);
+					if (bInsert)
+					{
+						m_pPages->Insert(pObj, pPage);
+						pPage->Add("Parent", this);
+					}
+				}
+				nI++;
+			}
+			if (pRes)
+			{
+				if (bRemove)
+					(*m_pCount)--;
+				if (bInsert)
+					(*m_pCount)++;
+				return pRes;
+			}
+		}
+		return NULL;
+	}
+	bool CPageTree::Join(CPageTree* pPageTree)
+	{
+		unsigned int nObjId = pPageTree->GetObjId();
+		unsigned int nGenNo = pPageTree->GetGenNo();
+		for (int i = 0, count = m_pPages->GetCount(); i < count; ++i)
+		{
+			CObjectBase* pObj = m_pPages->Get(i);
+			if (pObj->GetObjId() == nObjId && pObj->GetGenNo() == nGenNo)
+			{
+				m_pPages->Insert(pObj, pPageTree, true);
+				return true;
+			}
+			if (pObj->GetType() == object_type_DICT && ((CDictObject*)pObj)->GetDictType() == dict_type_PAGES && ((CPageTree*)pObj)->Join(pPageTree))
+				return true;
+		}
+		return false;
+	}
 	//----------------------------------------------------------------------------------------
 	// CPage
 	//----------------------------------------------------------------------------------------
+	CPage::CPage(CXref* pXref, CDocument* pDocument, const std::wstring& sXml)
+	{
+		Init(pXref, pDocument);
+
+		FromXml(sXml);
+
+		// Инициализация текущего contents
+		CObjectBase* pContents = Get("Contents");
+		if (pContents)
+		{
+			if (pContents->GetType() == object_type_ARRAY)
+				m_pContents = (CArrayObject*)pContents;
+			else if (pContents->GetType() == object_type_UNKNOWN)
+			{
+				CProxyObject* pNewContents = new CProxyObject(pContents->Copy(), true);
+				pNewContents->Get()->SetRef(pContents->GetObjId(), pContents->GetGenNo());
+				m_pContents = new CArrayObject();
+				m_pContents->Add(pNewContents);
+				Add("Contents", m_pContents);
+			}
+		}
+		else
+		{
+			m_pContents = new CArrayObject();
+			Add("Contents", m_pContents);
+		}
+
+		// Инициализация текущего MediaBox
+		CObjectBase* pMediaBox = Get("MediaBox");
+		if (pMediaBox && pMediaBox->GetType() == object_type_ARRAY)
+		{
+			double dL = 0.0, dB = 0.0, dR = DEF_PAGE_WIDTH, dT = DEF_PAGE_HEIGHT;
+
+			CObjectBase* val = ((CArrayObject*)pMediaBox)->Get(0);
+			if (val && val->GetType() == object_type_NUMBER)
+				dL = ((CNumberObject*)val)->Get();
+			else if (val && val->GetType() == object_type_REAL)
+				dL = ((CRealObject*)val)->Get();
+
+			val = ((CArrayObject*)pMediaBox)->Get(1);
+			if (val && val->GetType() == object_type_NUMBER)
+				dB = ((CNumberObject*)val)->Get();
+			else if (val && val->GetType() == object_type_REAL)
+				dB = ((CRealObject*)val)->Get();
+
+			val = ((CArrayObject*)pMediaBox)->Get(2);
+			if (val && val->GetType() == object_type_NUMBER)
+				dR = ((CNumberObject*)val)->Get();
+			else if (val && val->GetType() == object_type_REAL)
+				dR = ((CRealObject*)val)->Get();
+
+			val = ((CArrayObject*)pMediaBox)->Get(3);
+			if (val && val->GetType() == object_type_NUMBER)
+				dT = ((CNumberObject*)val)->Get();
+			else if (val && val->GetType() == object_type_REAL)
+				dT = ((CRealObject*)val)->Get();
+
+			Add("MediaBox", CArrayObject::CreateBox(dL, dB, dR, dT));
+		}
+		else
+			Add("MediaBox", CArrayObject::CreateBox(0, 0, DEF_PAGE_WIDTH, DEF_PAGE_HEIGHT));
+
+		// Инициализация текущего Rotate
+		CObjectBase* pRotate = GetRotateItem();
+		if (pRotate && pRotate->GetType() == object_type_NUMBER)
+			Add("Rotate", ((CNumberObject*)pRotate)->Get() % 360);
+
+		CDictObject* pResources = GetResourcesItem();
+		if (pResources)
+		{
+			// Инициализация текущего fonts
+			CObjectBase* pFonts = pResources->Get("Font");
+			if (pFonts && pFonts->GetType() == object_type_DICT)
+			{
+				m_pFonts = (CDictObject*)pFonts;
+				m_unFontsCount = 0;
+			}
+
+			// Инициализация текущего ExtGStates
+			CObjectBase* pExtGStates = pResources->Get("ExtGState");
+			if (pExtGStates && pExtGStates->GetType() == object_type_DICT)
+			{
+				m_pExtGStates = (CDictObject*)pExtGStates;
+				m_unExtGStatesCount = m_pExtGStates->GetSize();
+			}
+
+			// Инициализация текущего XObject
+			CObjectBase* pXObject = pResources->Get("XObject");
+			if (pXObject && pXObject->GetType() == object_type_DICT)
+			{
+				m_pXObjects = (CDictObject*)pXObject;
+				m_unXObjectsCount = m_pXObjects->GetSize();
+			}
+
+			// Инициализация текущего Shading
+			CObjectBase* pShading = pResources->Get("Shading");
+			if (pShading && pShading->GetType() == object_type_DICT)
+			{
+				m_pShadings = (CDictObject*)pShading;
+				m_unShadingsCount = m_pShadings->GetSize();
+			}
+
+			// Инициализация текущего Pattern
+			CObjectBase* pPattern = pResources->Get("Pattern");
+			if (pPattern && pPattern->GetType() == object_type_DICT)
+			{
+				m_pPatterns = (CDictObject*)pPattern;
+				m_unPatternsCount = m_pPatterns->GetSize();
+			}
+		}
+		else
+			Add("Resources", new CDictObject());
+
+		m_pStream = NULL;
+	}
 	CPage::CPage(CXref* pXref, CPageTree* pParent, CDocument* pDocument)
+	{
+		Init(pXref, pDocument);
+
+		m_pContents = new CArrayObject();
+		CDictObject* pContent = new CDictObject(pXref);
+		m_pContents->Add(pContent);
+		m_pStream = pContent->GetStream();
+
+		Add("Parent", pParent);
+		Add("MediaBox", CArrayObject::CreateBox(0, 0, DEF_PAGE_WIDTH, DEF_PAGE_HEIGHT));
+		Add("Type", "Page");
+		Add("Contents", m_pContents);
+		AddResource();
+	}
+	CPage::~CPage()
+	{
+		CGrState* pGrState = m_pGrState, *pPrev = NULL;
+		while (pGrState)		
+		{
+			pPrev = m_pGrState->GetPrev();
+			delete pGrState;
+			pGrState = pPrev;
+		}
+	}
+	void CPage::Init(CXref* pXref, CDocument* pDocument)
 	{
 		pXref->Add(this);
 
 		m_pXref     = pXref;
 		m_pDocument = pDocument;
-		m_pContents = new CDictObject(pXref);
-		m_pStream   = m_pContents->GetStream();
 		m_eGrMode   = grmode_PAGE;
 		m_pGrState  = new CGrState(NULL);
 
@@ -222,22 +471,6 @@ namespace PdfWriter
 		m_unShadingsCount   = 0;
 		m_pPatterns         = NULL;
 		m_unPatternsCount   = 0;
-
-		Add("Type", "Page");
-		Add("Parent", pParent);
-		Add("MediaBox", CArrayObject::CreateBox(0, 0, DEF_PAGE_WIDTH, DEF_PAGE_HEIGHT));
-		Add("Contents", m_pContents);		
-		AddResource();
-	}
-	CPage::~CPage()
-	{
-		CGrState* pGrState = m_pGrState, *pPrev = NULL;
-		while (pGrState)		
-		{
-			pPrev = m_pGrState->GetPrev();
-			delete pGrState;
-			pGrState = pPrev;
-		}
 	}
     void CPage::SetWidth(double dValue)
 	{
@@ -880,8 +1113,7 @@ namespace PdfWriter
 			char *pEndPointer = sExtGrStateName + LIMIT_MAX_NAME_LEN;
 
 			pPointer = (char*)StrCpy(sExtGrStateName, "E", pEndPointer);
-			ItoA(pPointer, m_unExtGStatesCount + 1, pEndPointer);
-			m_unExtGStatesCount++;
+			ItoA(pPointer, ++m_unExtGStatesCount, pEndPointer);
 			m_pExtGStates->Add(sExtGrStateName, pState);
 			sKey = m_pExtGStates->GetKey(pState);
 		}
@@ -1090,9 +1322,17 @@ namespace PdfWriter
 			char *pPointer = NULL;
 			char *pEndPointer = sFontName + LIMIT_MAX_NAME_LEN;
 
+			++m_unFontsCount;
+			while (m_unFontsCount < LIMIT_MAX_DICT_ELEMENT)
+			{
+				if (m_pFonts->Get("F" + std::to_string(m_unFontsCount)))
+					++m_unFontsCount;
+				else
+					break;
+			}
+
 			pPointer = (char*)StrCpy(sFontName, "F", pEndPointer);
-			ItoA(pPointer, m_unFontsCount + 1, pEndPointer);
-			m_unFontsCount++;
+			ItoA(pPointer, m_unFontsCount, pEndPointer);
 			m_pFonts->Add(sFontName, pFont);
 			sKey = m_pFonts->GetKey(pFont);
 		}
@@ -1174,8 +1414,7 @@ namespace PdfWriter
 			char *pEndPointer = sXObjName + LIMIT_MAX_NAME_LEN;
 
 			pPointer = (char*)StrCpy(sXObjName, "X", pEndPointer);
-			ItoA(pPointer, m_unXObjectsCount + 1, pEndPointer);
-			m_unXObjectsCount++;
+			ItoA(pPointer, ++m_unXObjectsCount, pEndPointer);
 			m_pXObjects->Add(sXObjName, pObject);
 			sKey = m_pXObjects->GetKey(pObject);
 		}
@@ -1229,8 +1468,7 @@ namespace PdfWriter
 			char *pEndPointer = sShadingName + LIMIT_MAX_NAME_LEN;
 
 			pPointer = (char*)StrCpy(sShadingName, "S", pEndPointer);
-			ItoA(pPointer, m_unShadingsCount + 1, pEndPointer);
-			m_unShadingsCount++;
+			ItoA(pPointer, ++m_unShadingsCount, pEndPointer);
 			m_pShadings->Add(sShadingName, pShading);
 			sKey = m_pShadings->GetKey(pShading);
 		}
@@ -1284,7 +1522,14 @@ namespace PdfWriter
     void CPage::SetFilter(unsigned int unFiler)
 	{
 		if (m_pContents)
-			m_pContents->SetFilter(unFiler);
+		{
+			for (unsigned int unKidIndex = 0, unKidsCount = m_pContents->GetCount(); unKidIndex < unKidsCount; ++unKidIndex)
+			{
+				CObjectBase* pKid = m_pContents->Get(unKidIndex);
+				if (pKid->GetType() == object_type_DICT)
+					((CDictObject*)pKid)->SetFilter(unFiler);
+			}
+		}
 	}
 	CMatrix*      CPage::GetTransform()
 	{
@@ -1293,6 +1538,24 @@ namespace PdfWriter
     void CPage::AddGroup(CDictObject* pDict)
 	{
 		Add("Group", pDict);
+	}
+	void CPage::AddContents(CXref* pXref)
+	{
+		CDictObject* pContent = new CDictObject(pXref);
+		m_pContents->Add(pContent);
+		m_pStream = pContent->GetStream();
+	}
+	void CPage::SetRotate(int nRotate)
+	{
+		// The value shall be a multiple of 90
+		if (nRotate > 0 && nRotate % 90 == 0)
+		{
+			CNumberObject* pRotate = (CNumberObject*)GetRotateItem();
+			if (pRotate)
+				Add("Rotate", (nRotate + pRotate->Get()) % 360);
+			else
+				Add("Rotate", nRotate % 360);
+		}
 	}
 	//----------------------------------------------------------------------------------------
 	// CTextWord

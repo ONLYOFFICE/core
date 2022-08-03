@@ -52,6 +52,7 @@ namespace Writers
 		
 		void WriteCustomSettings(const std::wstring& sUrl, const std::wstring& sXml, bool bGlossaryMode);
 		void WriteCustom(const std::wstring& sCustomXmlPropertiesContent, const std::wstring& sCustomXmlContents, bool bGlossaryMode);
+		void WriteCustomA(const std::wstring& sCustomXmlPropertiesContent, const std::string& sCustomXmlContents, bool bGlossaryMode);
 	};
 }
 

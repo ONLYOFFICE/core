@@ -509,7 +509,7 @@ docx_document::docx_document()
         relationship(L"rId3", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument", L"word/document.xml" ) 
         );
 
-    rels_files_.add_rel_file( relFile );
+	get_rels_files().add_rel_file( relFile );
 
 }
 int docx_document::add_customXml(customXml_content_ptr customXml)
@@ -523,10 +523,10 @@ void docx_document::write(const std::wstring & RootPath)
         content_type_file_.content()->get_override().push_back( override_content_type(L"/word/numbering.xml",
 				L"application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml") );
     }
-    customXml_files_.write	(RootPath);
-    word_files_.write		(RootPath);
-    rels_files_.write		(RootPath);
-    docProps_files_.write	(RootPath);
+    customXml_files_.write (RootPath);
+    word_files_.write (RootPath);
+	get_rels_files().write (RootPath);
+	get_docProps_files().write (RootPath);
     content_type_file_.write(RootPath);
 }
 

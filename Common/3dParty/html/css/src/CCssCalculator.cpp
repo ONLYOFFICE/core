@@ -59,6 +59,16 @@ namespace NSCSS
             m_pInternal->SetSizeDeviceWindow(oSizeWindow);
     }
 
+    CSizeWindow CCssCalculator::GetSizeSourceWindow() const
+    {
+            return m_pInternal->GetSizeSourceWindow();
+    }
+
+    CSizeWindow CCssCalculator::GetSizeDeviceWindow() const
+    {
+            return m_pInternal->GetSizeDeviceWindow();
+    }
+
     UnitMeasure CCssCalculator::GetUnitMeasure() const
     {
         return m_pInternal->GetUnitMeasure();

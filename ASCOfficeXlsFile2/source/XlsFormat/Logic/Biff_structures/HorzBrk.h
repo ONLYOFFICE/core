@@ -36,25 +36,21 @@
 
 namespace XLS
 {
-
-class CFRecord;
-
 class HorzBrk : public BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(HorzBrk)
 public:
 	BiffStructurePtr clone();
 
-	static const ElementType	type = typeHorzBrk;
+	static const ElementType type = typeHorzBrk;
 	
 	virtual void load(CFRecord& record);
-
+	virtual int serialize(std::wostream & stream);
 
 	RwU row;
 	unsigned short colStart;
 	unsigned short colEnd;
 };
-
 typedef boost::shared_ptr<HorzBrk> HorzBrkPtr;
 
 } // namespace XLS

@@ -1,9 +1,9 @@
 #ifndef CEMFPARSERBASE_H
 #define CEMFPARSERBASE_H
 
-#include "../EmfTypes.h"
-#include "../EmfObjects.h"
-#include "../../Common/MetaFileUtils.h"
+//#include "../EmfTypes.h"
+//#include "../EmfObjects.h"
+//#include "../../Common/MetaFileUtils.h"
 
 #include "../EmfPlayer.h"
 #include "../EmfPath.h"

@@ -416,9 +416,6 @@ private:
     xlsx_content_types_file content_type_;
     xl_files				xl_files_;
 	xl_customXml_files		customXml_files_;
-    docProps_files			docProps_files_;
-    rels_files				rels_files_;
-
 };
 
 

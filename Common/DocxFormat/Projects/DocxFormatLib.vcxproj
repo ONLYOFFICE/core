@@ -441,7 +441,7 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="..\Source\DocxFormat\DocxFlat.cpp">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigbj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="..\Source\DocxFormat\Drawing\DrawingExt.cpp" />
@@ -503,6 +503,7 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)</ObjectFileName>
     </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Pict.cpp" />
     <ClCompile Include="..\Source\DocxFormat\Logic\Run.cpp" />
     <ClCompile Include="..\Source\DocxFormat\Logic\RunProperty.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
@@ -601,6 +602,7 @@
     <ClCompile Include="..\Source\XlsxFormat\Slicer\SlicerCacheExt.cpp" />
     <ClCompile Include="..\Source\XlsxFormat\Styles\rPr.cpp" />
     <ClCompile Include="..\Source\XlsxFormat\Table\Tables.cpp" />
+    <ClCompile Include="..\Source\XlsxFormat\Workbook\Workbook.cpp" />
     <ClCompile Include="..\Source\XlsxFormat\Worksheets\ConditionalFormatting.cpp" />
     <ClCompile Include="..\Source\XlsxFormat\Worksheets\DataValidation.cpp" />
     <ClCompile Include="..\Source\XlsxFormat\Worksheets\SheetData.cpp" />

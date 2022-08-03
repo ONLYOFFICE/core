@@ -600,11 +600,15 @@ namespace OOX
 			if ( oReader.IsEmptyNode() )
 				return;
 
-			OOX::Document* document = WritingElement::m_pMainDocument;
-			
 			int nParentDepth = oReader.GetDepth();
+			CreateElements(oReader, nParentDepth);
+		}
+		void CTr::CreateElements(XmlUtils::CXmlLiteReader &oReader, int nDepth)
+		{			
+			OOX::Document* document = WritingElement::m_pMainDocument;
 			int nNumCol = 0;
-			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			
+			while( oReader.ReadNextSiblingNode(nDepth) )
 			{
 				std::wstring sName = oReader.GetName();
 				WritingElement *pItem = NULL;
@@ -697,6 +701,16 @@ namespace OOX
 						m_arrItems.push_back( m_pTableRowProperties );
 					}
 					m_pTableRowProperties->fromXML(oReader);
+				}
+				else if (L"wx:sect" == sName && !oReader.IsEmptyNode())
+				{
+					int nWxSectDepth = oReader.GetDepth();
+					CreateElements(oReader, nWxSectDepth);
+				}
+				else if (L"wx:sub-section" == sName && !oReader.IsEmptyNode())
+				{
+					int nWxSubSectDepth = oReader.GetDepth();
+					CreateElements(oReader, nWxSubSectDepth);
 				}
 
 				if ( pItem )
@@ -845,10 +859,14 @@ namespace OOX
 			if ( oReader.IsEmptyNode() )
 				return;
 
+			int nParentDepth = oReader.GetDepth();
+			CreateElements(oReader, nParentDepth);
+		}
+		void CTc::CreateElements(XmlUtils::CXmlLiteReader &oReader, int nDepth)
+		{
 			OOX::Document* document = WritingElement::m_pMainDocument;
 			
-			int nParentDepth = oReader.GetDepth();
-			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			while( oReader.ReadNextSiblingNode(nDepth) )
 			{
 				std::wstring sName = oReader.GetName();
 				WritingElement *pItem = NULL;
@@ -923,7 +941,16 @@ namespace OOX
 
 					m_pTableCellProperties->fromXML(oReader);
 				}
-
+				else if (L"wx:sect" == sName && !oReader.IsEmptyNode())
+				{
+					int nWxSectDepth = oReader.GetDepth();
+					CreateElements(oReader, nWxSectDepth);
+				}
+				else if (L"wx:sub-section" == sName && !oReader.IsEmptyNode())
+				{
+					int nWxSubSectDepth = oReader.GetDepth();
+					CreateElements(oReader, nWxSubSectDepth);
+				}
 				if ( pItem )
 				{
 					m_arrItems.push_back( pItem );

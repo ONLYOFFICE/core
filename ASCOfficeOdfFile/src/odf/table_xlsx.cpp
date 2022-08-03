@@ -747,19 +747,23 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 	if (false == data_style.empty())
     {
-        office_element_ptr elm			= odfContext.numberStyles().find_by_style_name(data_style);
-		number_style_base *num_style	= dynamic_cast<number_style_base*>(elm.get());
-      
-		if (num_style)
-		{
-            Context.get_num_format_context().start_complex_format();
-				num_style->oox_convert(Context.get_num_format_context());
-            Context.get_num_format_context().end_complex_format();
-            
-			num_format = Context.get_num_format_context().get_last_format();
+		num_format = Context.get_num_format_context().find_complex_format(data_style, num_format_type);
 
-			num_format_type = Context.get_num_format_context().type();
-        }
+		if (num_format.empty())
+		{
+			office_element_ptr elm = odfContext.numberStyles().find_by_style_name(data_style);
+			number_style_base *num_style = dynamic_cast<number_style_base*>(elm.get());
+
+			if (num_style)
+			{
+				Context.get_num_format_context().start_complex_format(data_style);
+				num_style->oox_convert(Context.get_num_format_context());
+				Context.get_num_format_context().end_complex_format();
+
+				num_format = Context.get_num_format_context().get_last_format();
+				num_format_type = Context.get_num_format_context().type();
+			}
+		}
     }
 //------------------------------------------------------------------------
 	std::wstring			number_val;
@@ -1195,17 +1199,22 @@ void table_covered_table_cell::xlsx_convert(oox::xlsx_conversion_context & Conte
 
     if (!data_style.empty())
     {
-        office_element_ptr elm			= odfContext.numberStyles().find_by_style_name(data_style);
-		number_style_base *num_style	= dynamic_cast<number_style_base*>(elm.get());
-      
-		if (num_style)
+		num_format = Context.get_num_format_context().find_complex_format(data_style, odf_value_type);
+		
+		if (num_format.empty())
 		{
-            Context.get_num_format_context().start_complex_format();
+			office_element_ptr elm = odfContext.numberStyles().find_by_style_name(data_style);
+			number_style_base *num_style = dynamic_cast<number_style_base*>(elm.get());
+
+			if (num_style)
+			{
+				Context.get_num_format_context().start_complex_format(data_style);
 				num_style->oox_convert(Context.get_num_format_context());
-            Context.get_num_format_context().end_complex_format();
-            
-			num_format = Context.get_num_format_context().get_last_format();
-        }
+				Context.get_num_format_context().end_complex_format();
+
+				num_format = Context.get_num_format_context().get_last_format();
+			}
+		}
     }
 
     oox::xlsx_cell_format cellFormat;

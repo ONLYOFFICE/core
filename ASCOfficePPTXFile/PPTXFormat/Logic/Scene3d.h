@@ -47,7 +47,7 @@ namespace PPTX
 		{
 		public:
 			WritingElement_AdditionConstructors(Scene3d)
-			Scene3d() : m_namespace(L"a") {}
+			Scene3d() {}
 
 			virtual OOX::EElementType getType() const
 			{
@@ -58,7 +58,7 @@ namespace PPTX
 				if ( oReader.IsEmptyNode() )
 					return;
 
-                m_namespace = XmlUtils::GetNamespace(oReader.GetName());
+				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
 
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
@@ -90,7 +90,7 @@ namespace PPTX
 				oValue.WriteNullable(lightRig);
 				oValue.WriteNullable(backdrop);
 
-				return XmlUtils::CreateNode(m_namespace + L":scene3d", oValue);
+				return XmlUtils::CreateNode(L"a:scene3d", oValue);
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
@@ -147,9 +147,17 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				std::wstring name_ = m_namespace + L":scene3d";
+				std::wstring sNodeNamespace;
+				std::wstring sAttrNamespace;
+				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
+				{
+					sNodeNamespace = L"w14:";
+					sAttrNamespace = sNodeNamespace;
+				}
+				else
+					sNodeNamespace = m_namespace + L":";
 
-				pWriter->StartNode(name_);
+				pWriter->StartNode(sNodeNamespace + L"scene3d");
 				
 				pWriter->StartAttributes();
 				pWriter->EndAttributes();
@@ -158,14 +166,14 @@ namespace PPTX
 				pWriter->Write(lightRig);
 				pWriter->Write(backdrop);
 
-				pWriter->EndNode(name_);
+				pWriter->EndNode(sNodeNamespace + L"scene3d");
 			}
 
 			nullable<Camera>	camera;
 			nullable<LightRig>	lightRig;
 			nullable<Backdrop>	backdrop;
 
-            std::wstring m_namespace;
+            std::wstring m_namespace = L"a";
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

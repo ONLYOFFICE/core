@@ -728,20 +728,20 @@ bool ECMADecryptor::CheckDataIntegrity(unsigned char* data, int  size)
 	_buf secretKey;
 	DecryptCipher( agileKey, pSalt, pKeyValue, secretKey, cryptData.cipherAlgorithm);  
 //----			
-	_buf iv1 = HashAppend(pDataSalt, pBlockHmacKey, cryptData.hashAlgorithm);
-	CorrectHashSize(iv1, cryptData.blockSize, 0x36);
+	_buf iv1 = HashAppend(pDataSalt, pBlockHmacKey, cryptData.dataHashAlgorithm);
+	CorrectHashSize(iv1, cryptData.dataBlockSize, 0x36);
 	
-	_buf iv2 = HashAppend(pDataSalt, pBlockHmacValue, cryptData.hashAlgorithm);
-	CorrectHashSize(iv2, cryptData.blockSize, 0x36);
+	_buf iv2 = HashAppend(pDataSalt, pBlockHmacValue, cryptData.dataHashAlgorithm);
+	CorrectHashSize(iv2, cryptData.dataBlockSize, 0x36);
 
 	_buf pSaltHmac;
-	DecryptCipher(secretKey,  iv1, pEncHmacKey, pSaltHmac, cryptData.cipherAlgorithm);
+	DecryptCipher(secretKey,  iv1, pEncHmacKey, pSaltHmac, cryptData.dataCipherAlgorithm);
 	
 	_buf expected;
-	DecryptCipher(secretKey,  iv2, pEncHmacValue, expected, cryptData.cipherAlgorithm);
+	DecryptCipher(secretKey,  iv2, pEncHmacValue, expected, cryptData.dataCipherAlgorithm);
 
 	std::string sData((char*)data, size);
-	_buf hmac = Hmac(pSaltHmac, cryptData.hashAlgorithm, sData);
+	_buf hmac = Hmac(pSaltHmac, cryptData.dataHashAlgorithm, sData);
 		
 	return (hmac == expected);
 }
@@ -783,9 +783,9 @@ void ECMADecryptor::Decrypt(unsigned char* data_inp, int  size, unsigned char*& 
 				sz = size - pos;
 			
 			_buf pIndex((unsigned char*)&i, 4);
-			iv = HashAppend(pDataSalt, pIndex, cryptData.hashAlgorithm);
+			iv = HashAppend(pDataSalt, pIndex, cryptData.dataHashAlgorithm);
 
-			CorrectHashSize(iv, cryptData.blockSize, 0x36);
+			CorrectHashSize(iv, cryptData.dataBlockSize, 0x36);
 			
 			_buf pInp(data_inp + pos, sz, false);
 			_buf pOut(data_out + pos, sz, false);

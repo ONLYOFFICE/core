@@ -72,11 +72,11 @@ namespace PdfWriter
 	class CInfoDict : public CDictObject
 	{
 	public:
-		CInfoDict(CXref* pXref);
+		CInfoDict(CXref* pXref, const std::wstring& sInfo = L"");
 		void        SetInfo(EInfoType eType, const char* sValue);
 		const char* GetInfo(EInfoType eType);
 		void        SetInfo(EInfoType eType, const TDate& oDate);
-		void        SetCreationTime();
+		void        SetTime(EInfoType eType);
 		TDate       GetDate();
 	private:
 		TDate m_oDate;

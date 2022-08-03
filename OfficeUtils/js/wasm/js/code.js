@@ -35,34 +35,35 @@ window.onload = function()
 		
 		var reader = new FileReader();
 		reader.onload = function(e) {
-			if (!window.nativeZlibEngine.open(e.target.result)) return;
-			var files = window.nativeZlibEngine.files;
+			var jsZlib = new AscCommon.CZLibEngineJS();
+			if (!jsZlib.open(e.target.result)) return;
+			var files = jsZlib.files;
 			var _files = {};
 			for (var _path in files)
 			{
-				_files[_path] = window.nativeZlibEngine.getFile(_path);
+				_files[_path] = jsZlib.getFile(_path);
 				window.writeFile(_path, _files[_path]);
 			}
-			window.nativeZlibEngine.close();
+			jsZlib.close();
 
-			if (!window.nativeZlibEngine.create()) return;
+			if (!jsZlib.create()) return;
 			for (var _path in files)
 			{
-				window.nativeZlibEngine.addFile(_path, _files[_path]);
-				window.nativeZlibEngine.addFile(_path + "new", _files[_path]);
-				window.nativeZlibEngine.removeFile(_path);
+				jsZlib.addFile(_path, _files[_path]);
+				jsZlib.addFile(_path + "new", _files[_path]);
+				jsZlib.removeFile(_path);
 			}
-			var archive = window.nativeZlibEngine.save();
-			window.nativeZlibEngine.close();
+			var archive = jsZlib.save();
+			jsZlib.close();
 			
-			window.nativeZlibEngine.open(archive2);
-			var files3 = window.nativeZlibEngine.files;
-			for (var _path in files3)
+			jsZlib.open(archive);
+			var files2 = jsZlib.files;
+			for (var _path in files2)
 			{
-				window.nativeZlibEngine.getFile(_path);
-				window.writeFile(_path, files3[_path]);
+				jsZlib.getFile(_path);
+				window.writeFile(_path, files2[_path]);
 			}
-			window.nativeZlibEngine.close();
+			jsZlib.close();
 		};
 		reader.readAsArrayBuffer(file);
 	
@@ -74,5 +75,5 @@ window.writeFile = function(path, file)
 {
 	if (!file) return;
 	var dst = document.getElementById("main");
-	dst.innerHTML += path + ' ' + file.length + '\n';
+	dst.innerHTML += ("<p>" + path + ' ' + file.length + "</p>");
 };

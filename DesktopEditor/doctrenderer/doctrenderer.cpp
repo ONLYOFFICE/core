@@ -36,12 +36,11 @@
 #undef BOOL
 #endif
 
+#include "embed/Default.h"
 #include "embed/NativeControlEmbed.h"
-#include "embed/MemoryStreamEmbed.h"
 #include "embed/GraphicsEmbed.h"
 
-#include "../xml/include/xmlutils.h"
-
+#include "./config.h"
 #include <iostream>
 
 namespace NSDoctRenderer
@@ -234,29 +233,18 @@ namespace NSDoctRenderer
         string_replace(text, L"\"", L"&quot;");
     }
 
-    class CDoctRenderer_Private
+    class CDoctRenderer_Private : public CDoctRendererConfig
     {
     public:
         CExecuteParams m_oParams;
-
-        std::wstring m_strConfigDir;
-        std::wstring m_strConfigPath;
-        std::vector<std::wstring> m_arrFiles;
-
-        std::vector<std::wstring> m_arDoctSDK;
-        std::vector<std::wstring> m_arPpttSDK;
-        std::vector<std::wstring> m_arXlstSDK;
 
         std::wstring m_strEditorType;
         std::wstring m_strFilePath;
 
         std::vector<std::wstring> m_arImagesInChanges;
 
-        std::wstring m_sConsoleLogFile;
-        std::wstring m_sErrorsLogFile;
-
     public:
-        CDoctRenderer_Private(const std::wstring& sAllFontsPath = L"")
+        CDoctRenderer_Private(const std::wstring& sAllFontsPath = L"") : CDoctRendererConfig()
         {
             LoadConfig(NSFile::GetProcessDirectory(), sAllFontsPath);
         }
@@ -266,104 +254,12 @@ namespace NSDoctRenderer
         }
         void LoadConfig(const std::wstring& sConfigDir, const std::wstring& sAllFontsPath = L"")
         {
-            m_arrFiles.clear();
-            m_arDoctSDK.clear();
-            m_arPpttSDK.clear();
-            m_arXlstSDK.clear();
-
-            m_strConfigDir = sConfigDir + L"/";
-            m_strConfigPath = m_strConfigDir + L"DoctRenderer.config";
-
-            XmlUtils::CXmlNode oNode;
-            if (oNode.FromXmlFile(m_strConfigPath))
+            if (!sAllFontsPath.empty())
             {
-                XmlUtils::CXmlNodes oNodes;
-                if (oNode.GetNodes(L"file", oNodes))
-                {
-                    int nCount = oNodes.GetCount();
-                    XmlUtils::CXmlNode _node;
-                    for (int i = 0; i < nCount; ++i)
-                    {
-                        oNodes.GetAt(i, _node);
-                        std::wstring strFilePath = _node.GetText();
-
-                        if (!sAllFontsPath.empty())
-                        {
-                            std::wstring::size_type nPos = strFilePath.rfind(L"AllFonts.js");
-                            if (nPos != std::wstring::npos && ((nPos + 11) == strFilePath.length())) // 11 = std::wstring(L"AllFonts.js").length();
-                                strFilePath = sAllFontsPath;
-                        }
-
-                        if (NSFile::CFileBinary::Exists(strFilePath) &&
-                            !NSFile::CFileBinary::Exists(m_strConfigDir + strFilePath))
-                            m_arrFiles.push_back(strFilePath);
-                        else
-                            m_arrFiles.push_back(m_strConfigDir + strFilePath);
-                    }
-                }
+                SetAllFontsExternal(sAllFontsPath);
             }
 
-            XmlUtils::CXmlNode oNodeSdk = oNode.ReadNode(L"DoctSdk");
-            if (oNodeSdk.IsValid())
-                LoadSDK_scripts(oNodeSdk, m_arDoctSDK);
-
-            oNodeSdk = oNode.ReadNode(L"PpttSdk");
-            if (oNodeSdk.IsValid())
-                LoadSDK_scripts(oNodeSdk, m_arPpttSDK);
-
-            oNodeSdk = oNode.ReadNode(L"XlstSdk");
-            if (oNodeSdk.IsValid())
-                LoadSDK_scripts(oNodeSdk, m_arXlstSDK);
-
-            m_sConsoleLogFile = L"";
-            m_sErrorsLogFile = L"";
-
-            XmlUtils::CXmlNode oNodeConsoleLogFile = oNode.ReadNode(L"LogFileConsoleLog");
-            if (oNodeConsoleLogFile.IsValid())
-            {
-                m_sConsoleLogFile = oNodeConsoleLogFile.GetText();
-                if (!NSFile::CFileBinary::Exists(m_sConsoleLogFile))
-                    m_sConsoleLogFile = m_strConfigDir + m_sConsoleLogFile;
-            }
-
-            XmlUtils::CXmlNode oNodeErrorsLogFile = oNode.ReadNode(L"LogFileErrors");
-            if (oNodeErrorsLogFile.IsValid())
-            {
-                m_sErrorsLogFile = oNodeErrorsLogFile.GetText();
-                if (!NSFile::CFileBinary::Exists(m_sErrorsLogFile))
-                    m_sErrorsLogFile = m_strConfigDir + m_sErrorsLogFile;
-            }
-        }
-
-        void LoadSDK_scripts(XmlUtils::CXmlNode& oNode, std::vector<std::wstring>& _files)
-        {
-            XmlUtils::CXmlNodes oNodes;
-            if (oNode.GetNodes(L"file", oNodes))
-            {
-                int nCount = oNodes.GetCount();
-                XmlUtils::CXmlNode _node;
-                for (int i = 0; i < nCount; ++i)
-                {
-                    oNodes.GetAt(i, _node);
-                    std::wstring strFilePath = _node.GetText();
-
-                    if (NSFile::CFileBinary::Exists(strFilePath) &&
-                        !NSFile::CFileBinary::Exists(m_strConfigDir + strFilePath))
-                        _files.push_back(strFilePath);
-                    else
-                        _files.push_back(m_strConfigDir + strFilePath);
-                }
-            }
-            else
-            {
-                std::wstring strFilePath = oNode.GetText();
-
-                if (NSFile::CFileBinary::Exists(strFilePath) &&
-                    !NSFile::CFileBinary::Exists(m_strConfigDir + strFilePath))
-                    _files.push_back(strFilePath);
-                else
-                    _files.push_back(m_strConfigDir + strFilePath);
-            }
+            CDoctRendererConfig::Parse(sConfigDir);
         }
 
     public:
@@ -431,7 +327,8 @@ namespace NSDoctRenderer
                 }
                 else
                 {
-                    const BYTE* pData = js_result2->toTypedArray()->getData();
+                    JSSmart<CJSTypedArray> typedArray = js_result2->toTypedArray();
+                    NSJSBase::CJSDataBuffer oBuffer = typedArray->getData();
 
                     NSFile::CFileBinary oFile;
                     if (true == oFile.CreateFileW(pParams->m_strDstFilePath))
@@ -442,7 +339,7 @@ namespace NSDoctRenderer
 
                             char* pDst64 = NULL;
                             int nDstLen = 0;
-                            NSFile::CBase64Converter::Encode(const_cast<BYTE*>(pData), pNative->m_nSaveBinaryLen, pDst64, nDstLen, NSBase64::B64_BASE64_FLAG_NOCRLF);
+                            NSFile::CBase64Converter::Encode(oBuffer.Data, pNative->m_nSaveBinaryLen, pDst64, nDstLen, NSBase64::B64_BASE64_FLAG_NOCRLF);
 
                             oFile.WriteFile((BYTE*)pDst64, (DWORD)nDstLen);
 
@@ -450,10 +347,13 @@ namespace NSDoctRenderer
                         }
                         else
                         {
-                            oFile.WriteFile(pData, (DWORD)pNative->m_nSaveBinaryLen);
+                            oFile.WriteFile(oBuffer.Data, (DWORD)pNative->m_nSaveBinaryLen);
                         }
                         oFile.CloseFile();
                     }
+
+                    if (oBuffer.IsExternalize)
+                        oBuffer.Free();
                 }
                 break;
             }
@@ -565,20 +465,21 @@ namespace NSDoctRenderer
                     }
                     else
                     {
-                        const BYTE* pData = js_result2->toTypedArray()->getData();
+                        JSSmart<CJSTypedArray> typedArray = js_result2->toTypedArray();
+                        NSJSBase::CJSDataBuffer oBuffer = typedArray->getData();
 
                         NSFile::CFileBinary oFile;
                         if (true == oFile.CreateFileW(pParams->m_strDstFilePath))
                         {
                             if (!bIsPdfBase64)
                             {
-                                oFile.WriteFile(pData, (DWORD)pNative->m_nSaveBinaryLen);
+                                oFile.WriteFile(oBuffer.Data, (DWORD)pNative->m_nSaveBinaryLen);
                             }
                             else
                             {
                                 char* pDataDst = NULL;
                                 int nDataDst = 0;
-                                if (NSFile::CBase64Converter::Encode(const_cast<BYTE*>(pData), pNative->m_nSaveBinaryLen, pDataDst, nDataDst))
+                                if (NSFile::CBase64Converter::Encode(oBuffer.Data, pNative->m_nSaveBinaryLen, pDataDst, nDataDst))
                                 {
                                     oFile.WriteFile((BYTE*)pDataDst, (DWORD)nDataDst);
                                     RELEASEARRAYOBJECTS(pDataDst);
@@ -586,6 +487,9 @@ namespace NSDoctRenderer
                             }
                             oFile.CloseFile();
                         }
+
+                        if (oBuffer.IsExternalize)
+                            oBuffer.Free();
                     }
                 }
                 if (!bIsBreak && DoctRendererFormat::PPTX_THEME_THUMBNAIL == pParams->m_eDstFormat)
@@ -618,7 +522,10 @@ namespace NSDoctRenderer
                         {
                             JSSmart<CJSObject> objNative = js_result2->toObject();
 
-                            const BYTE* pData = objNative->get("data")->toTypedArray()->getData();
+                            JSSmart<CJSValue> oDataArray = objNative->get("data");
+                            JSSmart<CJSTypedArray> oTypedArray = oDataArray->toTypedArray();
+
+                            NSJSBase::CJSDataBuffer oBuffer = oTypedArray->getData();
                             std::wstring sThemeName = objNative->get("name")->toStringW();
                             int nDataLen = objNative->get("dataLen")->toInt32();
 
@@ -628,9 +535,12 @@ namespace NSDoctRenderer
                             NSFile::CFileBinary oFile;
                             if (true == oFile.CreateFileW(pParams->m_strDstFilePath + L"/" + sThemeName + L".theme"))
                             {
-                                oFile.WriteFile(pData, (DWORD)nDataLen);
+                                oFile.WriteFile(oBuffer.Data, (DWORD)nDataLen);
                                 oFile.CloseFile();
                             }
+
+                            if (oBuffer.IsExternalize)
+                                oBuffer.Free();
                         }
                         else
                         {
@@ -662,8 +572,8 @@ namespace NSDoctRenderer
 
                 context->CreateGlobalForContext();
                 CNativeControlEmbed::CreateObjectBuilderInContext("CreateNativeEngine", context);
-                CMemoryStreamEmbed::CreateObjectInContext  ("CreateNativeMemoryStream", context);
-                CGraphicsEmbed::CreateObjectInContext          ("CreateNativeGraphics", context);
+                CGraphicsEmbed::CreateObjectInContext("CreateNativeGraphics", context);
+                NSJSBase::CreateDefaults(context);
                 context->CreateContext();
 
                 JSSmart<CJSContextScope> context_scope = context->CreateContextScope();
@@ -1175,19 +1085,7 @@ namespace NSDoctRenderer
         }
 
         std::wstring strFileName = m_pInternal->m_oParams.m_strSrcFilePath;
-        size_t nFileNameLen = strFileName.length();
-        if (4 < nFileNameLen)
-        {
-            const wchar_t* bufFileName = strFileName.c_str();
-            if (bufFileName[nFileNameLen - 4] != '.' ||
-                bufFileName[nFileNameLen - 3] != 'b' ||
-                bufFileName[nFileNameLen - 2] != 'i' ||
-                bufFileName[nFileNameLen - 1] != 'n')
-            {
-                strFileName += L"/Editor.bin";
-            }
-        }
-        else
+        if (!NSFile::CFileBinary::Exists(strFileName))
         {
             strFileName += L"/Editor.bin";
         }

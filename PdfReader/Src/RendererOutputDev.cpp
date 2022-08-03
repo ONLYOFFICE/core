@@ -3009,6 +3009,25 @@ namespace PdfReader
         double xmin, xmax, ymin, ymax, r;
         double *matrix;
 
+        if (pGState->getStrokeColorSpace() && pGState->getStrokeColorSpace()->getMode() == csPattern)
+        {
+            // TODO градиентная заливка stroke с поддержкой dash и т.п.
+            return true;
+            m_pRenderer->put_BrushColor1(0);
+            m_pRenderer->put_BrushColor2(0);
+
+            pGState->getUserClipBBox(&xmin, &ymin, &xmax, &ymax);
+
+            pGState->moveTo(xmin, ymin);
+            pGState->lineTo(xmin, ymax);
+            pGState->lineTo(xmax, ymax);
+            pGState->lineTo(xmax, ymin);
+            pGState->closePath();
+
+            stroke(pGState);
+            return true;
+        }
+
         int nTriangles = 0, nPatches = 0;
         switch (pShading->getType())
         {

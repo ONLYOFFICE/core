@@ -68,6 +68,13 @@ INCLUDEPATH += \
 HEADERS += \
     ../../raster/Metafile/CXmlOutput.h \
     ../../raster/Metafile/Common/CPathConverter.h \
+	../../raster/Metafile/Common/IOutputDevice.h \
+	../../raster/Metafile/Common/MetaFile.h \
+	../../raster/Metafile/Common/MetaFileClip.h \
+	../../raster/Metafile/Common/MetaFileObjects.h \
+	../../raster/Metafile/Common/MetaFileRenderer.h \
+	../../raster/Metafile/Common/MetaFileTypes.h \
+	../../raster/Metafile/Common/MetaFileUtils.h \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretator.h \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorArray.h \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorBase.h \
@@ -126,6 +133,8 @@ HEADERS += \
 SOURCES += \
     ../../raster/Metafile/CXmlOutput.cpp \
     ../../raster/Metafile/Common/CPathConverter.cpp \
+	./../../raster/Metafile/Common/MetaFileTypes.cpp \
+	./../../raster/Metafile/Common/MetaFileUtils.cpp \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretator.cpp \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorArray.cpp \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorRender.cpp \
@@ -199,8 +208,6 @@ SOURCES += \
     ./../../raster/Jp2/J2kFile.cpp \
     ./../../raster/Jp2/Reader.cpp \
     \
-    ./../../raster/Metafile/Common/MetaFileTypes.cpp \
-    ./../../raster/Metafile/Common/MetaFileUtils.cpp \
     ./../../raster/Metafile/Emf/EmfClip.cpp \
     ./../../raster/Metafile/Emf/EmfObjects.cpp \
     ./../../raster/Metafile/Emf/EmfPath.cpp \

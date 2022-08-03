@@ -624,10 +624,7 @@ namespace MetaFile
 		m_pInterpretator = NULL;
 	}
 
-	CEmfParserBase::~CEmfParserBase()
-	{
-		RELEASEOBJECT(m_pInterpretator)
-	}
+	CEmfParserBase::~CEmfParserBase(){}
 
 	void CEmfParserBase::PlayMetaFile(){}
 

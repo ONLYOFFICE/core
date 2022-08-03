@@ -28,6 +28,9 @@ namespace MetaFile
 		CEmfInterpretatorXml(const CEmfInterpretatorXml& oInterpretator);
 		virtual ~CEmfInterpretatorXml();
 
+		void CreateConditional(IMetaFileBase*) override {} ;
+		void ChangeConditional() override {};
+
 		InterpretatorType   GetType() const override;
 
 		void SetOutputDevice(const wchar_t *wsFilePath);

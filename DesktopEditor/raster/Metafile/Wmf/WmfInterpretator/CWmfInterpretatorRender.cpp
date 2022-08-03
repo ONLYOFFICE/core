@@ -5,9 +5,6 @@ namespace MetaFile
 	CWmfInterpretatorRender::CWmfInterpretatorRender(IOutputDevice* pIOutputDevice) :
 		m_pMetaFileRenderer(static_cast<CMetaFileRenderer*>(pIOutputDevice)){}
 
-	CWmfInterpretatorRender::CWmfInterpretatorRender(const CWmfInterpretatorRender &oInterpretator, IMetaFileBase *pFile)
-		: m_pMetaFileRenderer(new CMetaFileRenderer(*oInterpretator.m_pMetaFileRenderer, pFile)){}
-
 	InterpretatorType CWmfInterpretatorRender::GetType() const
 	{
 		return InterpretatorType::Render;

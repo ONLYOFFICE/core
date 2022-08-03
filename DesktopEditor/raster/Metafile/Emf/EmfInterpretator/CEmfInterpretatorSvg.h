@@ -14,6 +14,9 @@ namespace MetaFile
 		CEmfInterpretatorSvg(const CEmfInterpretatorSvg& oInterpretator);
 		virtual ~CEmfInterpretatorSvg();
 
+		void CreateConditional(IMetaFileBase*) override {} ;
+		void ChangeConditional() override {};
+
 		InterpretatorType   GetType() const override;
 
 		void SetOutputDevice(const wchar_t *wsFilePath);

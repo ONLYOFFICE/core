@@ -2,15 +2,24 @@
 
 namespace MetaFile
 {
-	CEmfInterpretatorRender::CEmfInterpretatorRender(IOutputDevice* pIOutputDevice) :
-		m_pMetaFileRenderer(static_cast<CMetaFileRenderer*>(pIOutputDevice)){}
-
-	CEmfInterpretatorRender::CEmfInterpretatorRender(const CEmfInterpretatorRender &oInterpretator, IMetaFileBase *pFile)
-		: m_pMetaFileRenderer(new CMetaFileRenderer(*oInterpretator.m_pMetaFileRenderer, pFile)){}
+	CEmfInterpretatorRender::CEmfInterpretatorRender(IOutputDevice* pIOutputDevice) 
+		: m_pMetaFileRenderer(static_cast<CMetaFileRenderer*>(pIOutputDevice)){}
 
 	InterpretatorType CEmfInterpretatorRender::GetType() const
 	{
 		return InterpretatorType::Render;
+	}
+	
+	void CEmfInterpretatorRender::CreateConditional(IMetaFileBase* pFile)
+	{
+		if (NULL != m_pMetaFileRenderer)
+			m_pMetaFileRenderer->CreateConditional(pFile);
+	}
+
+	void CEmfInterpretatorRender::ChangeConditional()
+	{
+			if (NULL != m_pMetaFileRenderer)
+				m_pMetaFileRenderer->ChangeConditional();
 	}
 
 	void CEmfInterpretatorRender::Begin()

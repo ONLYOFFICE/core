@@ -9,12 +9,16 @@ namespace NSFile
 }
 namespace MetaFile
 {
+
 	class CEmfInterpretator : public CEmfInterpretatorBase
 	{
 	public:
 		CEmfInterpretator(const wchar_t* wsFilepath);
 		CEmfInterpretator(const CEmfInterpretator& oEmfInterpretator, const bool bIsLite = false);
 		virtual ~CEmfInterpretator();
+
+		void CreateConditional(IMetaFileBase*) override {} ;
+		void ChangeConditional() override {};
 
 		InterpretatorType GetType() const override;
 

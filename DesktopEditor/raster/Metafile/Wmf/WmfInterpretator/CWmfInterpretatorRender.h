@@ -10,7 +10,6 @@ namespace MetaFile
 	{
 	public:
 		CWmfInterpretatorRender(IOutputDevice* pIOutputDevice);
-		CWmfInterpretatorRender(const CWmfInterpretatorRender& oInterpretator, IMetaFileBase* pFile);
 
 		InterpretatorType   GetType() const override;
 

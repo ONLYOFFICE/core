@@ -3,24 +3,22 @@
 
 namespace MetaFile
 {
+
 	CEmfInterpretator::CEmfInterpretator(const wchar_t* wsFilepath) :
 		unFileSize(0), unNumberRecords(0), ushNuberDescriptors(0)
 	{
 		m_pOutStream = new NSFile::CFileBinary();
-		bool result = m_pOutStream->CreateFileW(wsFilepath);
 	}
 
 	CEmfInterpretator::CEmfInterpretator(const CEmfInterpretator& oEmfInterpretator, const bool bIsLite)
-		: unFileSize(0), unNumberRecords(0), ushNuberDescriptors(0),
-		  m_pOutStream(NULL)
+		: m_pOutStream(oEmfInterpretator.m_pOutStream),
+			unFileSize(0), unNumberRecords(0), ushNuberDescriptors(0)
 	{
-		m_pOutStream = oEmfInterpretator.m_pOutStream;
-
 		if (!bIsLite)
 		{
-			unFileSize              = oEmfInterpretator.unFileSize;
-			unNumberRecords         = oEmfInterpretator.unNumberRecords;
-			ushNuberDescriptors     = oEmfInterpretator.ushNuberDescriptors;
+			unFileSize          = oEmfInterpretator.unFileSize;
+			unNumberRecords     = oEmfInterpretator.unNumberRecords;
+			ushNuberDescriptors = oEmfInterpretator.ushNuberDescriptors;
 		}
 	}
 

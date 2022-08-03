@@ -1,9 +1,5 @@
 #include "CEmfInterpretatorArray.h"
 
-#include "CEmfInterpretator.h"
-#include "CEmfInterpretatorXml.h"
-#include "CEmfInterpretatorRender.h"
-
 namespace MetaFile
 {
 	CEmfInterpretatorArray::CEmfInterpretatorArray(){}
@@ -44,6 +40,18 @@ namespace MetaFile
 
 		CEmfInterpretatorRender *pRenderInterpretator = new CEmfInterpretatorRender(pIOutputDevice);
 		m_arInterpretators.push_back(pRenderInterpretator);
+	}
+
+	void CEmfInterpretatorArray::CreateConditional(IMetaFileBase *pMetafileBase)
+	{
+		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+			pInterpretator->CreateConditional(pMetafileBase);
+	}
+
+	void CEmfInterpretatorArray::ChangeConditional()
+	{
+		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+			pInterpretator->ChangeConditional();
 	}
 
 	InterpretatorType CEmfInterpretatorArray::GetType() const

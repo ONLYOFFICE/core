@@ -185,17 +185,7 @@ namespace MetaFile
 			UpdateClip();
 
 			Aggplus::CImage oImage;
-			BYTE* pBufferPtr = new BYTE[4 * unWidth * unHeight];
-			oImage.Create(pBufferPtr, unWidth, unHeight, 4 * unWidth);
-
-			for (int nIndex = 0, nSize = 4 * unWidth * unHeight; nIndex < nSize; nIndex += 4)
-			{
-				pBufferPtr[0] = (BYTE)pBuffer[nIndex + 0];
-				pBufferPtr[1] = (BYTE)pBuffer[nIndex + 1];
-				pBufferPtr[2] = (BYTE)pBuffer[nIndex + 2];
-				pBufferPtr[3] = (BYTE)pBuffer[nIndex + 3];
-				pBufferPtr += 4;
-			}
+			oImage.Create(pBuffer, unWidth, unHeight, 4 * unWidth, true);
 
 			TPointD oTL = TranslatePoint(dX, dY);
 			TPointD oBR = TranslatePoint(dX + dW, dY + dH);

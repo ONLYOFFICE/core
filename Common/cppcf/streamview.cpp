@@ -10,7 +10,7 @@ StreamView::StreamView(const SVector<Sector> &sectorChain, int sectorSize, Strea
     //    if (sectorChain == null)
     //        throw CFException("Sector Chain cannot be null");
 
-    auto pos = stream->tellg();
+    auto pos = stream->tell();
     if (sectorSize <= 0)
         throw CFException("Sector size must be greater than zero");
 }
@@ -24,10 +24,16 @@ StreamView::StreamView(const SVector<Sector> &sectorChain, int sectorSize, std::
 
 }
 
-void StreamView::Write(const char *buffer, std::streamsize offset, std::streamsize count)
+std::streamsize StreamView::tell()
+{
+    return position;
+}
+
+void StreamView::write(const char *buffer, std::streamsize count)
 {
     int byteWritten = 0;
     int roundByteWritten = 0;
+    int offset = 0;
 
     // Assure length
     if ((position + count) > length)
@@ -84,10 +90,17 @@ void StreamView::Write(const char *buffer, std::streamsize offset, std::streamsi
     }
 }
 
-std::streamsize StreamView::Read(char *buffer, std::streamsize offset, std::streamsize count)
+void StreamView::close()
+{
+    if (std::dynamic_pointer_cast<std::iostream>(stream) != nullptr)
+        stream->close();
+}
+
+std::streamsize StreamView::read(char *buffer, std::streamsize len)
 {
     int nRead = 0;
     int nToRead = 0;
+    int offset = 0;
     if (sectorChain.empty() == false && sectorChain.size() > 0)
     {
         // First sector
@@ -96,7 +109,7 @@ std::streamsize StreamView::Read(char *buffer, std::streamsize offset, std::stre
         // Bytes to read count is the min between request count
         // and sector border
 
-        nToRead = std::min((int)sectorChain[0]->GetData().size() - ((int)position % sectorSize), (int)count);
+        nToRead = std::min((int)sectorChain[0]->GetData().size() - ((int)position % sectorSize), (int)len);
 
         if (secIndex < (int)sectorChain.size())
         {
@@ -110,7 +123,7 @@ std::streamsize StreamView::Read(char *buffer, std::streamsize offset, std::stre
         secIndex++;
 
         // Central sectors
-        while (nRead < (count - sectorSize))
+        while (nRead < (len - sectorSize))
         {
             nToRead = sectorSize;
             char* src = reinterpret_cast<char*>(sectorChain[secIndex]->GetData().data());
@@ -122,7 +135,7 @@ std::streamsize StreamView::Read(char *buffer, std::streamsize offset, std::stre
         }
 
         // Last sector
-        nToRead = count - nRead;
+        nToRead = len - nRead;
 
         if (nToRead != 0)
         {
@@ -143,9 +156,9 @@ std::streamsize StreamView::Read(char *buffer, std::streamsize offset, std::stre
         return 0;
 }
 
-std::streamsize StreamView::Seek(std::streamsize offset, int origin)
+std::streamsize StreamView::seek(std::streamsize offset, std::ios_base::seekdir mode)
 {
-    switch (origin)
+    switch (mode)
     {
     case std::ios_base::beg:
         position = offset;
@@ -156,8 +169,8 @@ std::streamsize StreamView::Seek(std::streamsize offset, int origin)
         break;
 
     case std::ios_base::end:
+    default:
         position = length - offset;
-        break;
     }
 
     adjustLength(position);
@@ -172,14 +185,14 @@ void StreamView::SetLength(std::streamsize value)
 
 int StreamView::ReadInt32()
 {
-    Read(reinterpret_cast<char*>(&buf), 0, 4);
+    read(reinterpret_cast<char*>(&buf), 4);
     return buf;
 }
 
 void StreamView::WriteInt32(int val)
 {
     buf = ((val & 0xFF) << 24) | ((val & 0x00FF) << 16) | ((val & 0x0000FF) << 8) | (val & 0x000000FF);
-    Write(reinterpret_cast<char*>(&buf), 0, 4);
+    write(reinterpret_cast<char*>(&buf), 4);
 }
 
 void StreamView::adjustLength(std::streamsize value)

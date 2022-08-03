@@ -38,7 +38,6 @@ public:
     inline void Close(){return;}
 
 private:
-    std::array<char,8> buffer;
     Stream stream;
 };
 

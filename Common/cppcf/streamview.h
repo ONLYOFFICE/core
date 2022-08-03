@@ -8,16 +8,20 @@
 
 namespace CFCPP
 {
-class StreamView
+class StreamView : public IStream
 {
 public:
     StreamView(const SVector<Sector> &sectorChain, int sectorSize, Stream stream);
     StreamView(const SVector<Sector> &sectorChain, int sectorSize, std::streamsize length,
                SList<Sector> &availableSectors, Stream stream, bool isFatStream = false);
 
-    void Write(const char *buffer, std::streamsize offset, std::streamsize count);
-    std::streamsize Read(char *buffer, std::streamsize offset, std::streamsize count);
-    std::streamsize Seek(std::streamsize offset, int origin);
+    std::streamsize tell() override;
+    std::streamsize seek(std::streamsize offset, std::ios_base::seekdir mode = std::ios::beg) override;
+    std::streamsize read(char *buffer, std::streamsize count) override;
+    void write(const char *buffer, std::streamsize count) override;
+    void flush() override {}
+    void close() override;
+
     void SetLength(std::streamsize value);
     std::streamsize getLength() const;
     inline SVector<Sector>& BaseSectorChain() {return sectorChain;}

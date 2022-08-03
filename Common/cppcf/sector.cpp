@@ -76,7 +76,7 @@ std::vector<BYTE> &Sector::GetData()
         data = std::vector<BYTE>(size, 0);
         if (IsStreamed())
         {
-            stream->seekg(size + id * size, std::ios_base::beg);
+            stream->seek(size + id * size, std::ios_base::beg);
             stream->read(reinterpret_cast<char*>(data.data()), size);
         }
     }

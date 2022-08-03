@@ -19,7 +19,7 @@ struct StreamRWTest : testing::Test
 
     StreamRWTest() :
         filename("../../../data/types/types.bin"),
-        stream(OpenStream(filename, true)),
+        stream(OpenFileStream(filename, true)),
         rw(new StreamRW(stream))
     {
     }

@@ -6,13 +6,12 @@ using namespace CFCPP;
 StreamRW::StreamRW(const Stream &stream)
     : stream(stream)
 {
-    buffer.fill(0);
 }
 
 T_LONG64 StreamRW::Seek(T_LONG64 offset)
 {
-    stream->seekp(offset, std::ios::beg);
-    return stream->tellp();
+    stream->seek(offset, std::ios::beg);
+    return stream->tell();
 }
 
 void StreamRW::ReadArray(char *data, int lenght)

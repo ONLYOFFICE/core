@@ -19,7 +19,7 @@ struct HeaderTest : testing::Test
 
     HeaderTest() :
         filename("../../../data/ex.ppt"),
-        stream(OpenStream(filename, false))
+        stream(OpenFileStream(filename, false))
     {
     }
 };
@@ -63,11 +63,11 @@ TEST_F(HeaderTest, test_header_write)
     hd.Read(stream);
 
     std::string other_filename("../../../data/types/header.bin");
-    stream = OpenStream(other_filename, true);
+    stream = OpenFileStream(other_filename, true);
     hd.Write(stream);
 
     Header other;
-    stream->seekg(0, std::ios::beg);
+    stream->seek(0, std::ios::beg);
     other.Read(stream);
     test_header_state(other);
     remove(other_filename.c_str());

@@ -73,7 +73,7 @@ void CFStream::CopyFrom(const Stream &input)
 
 //    if (input.CanSeek)
     {
-        input->seekg(0, std::ios::beg);
+        input->seek(0, std::ios::beg);
     }
 
     input->read(reinterpret_cast<char*>(buffer.data()), Length(input));

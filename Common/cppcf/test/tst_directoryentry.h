@@ -18,7 +18,7 @@ struct DirEntryTest : testing::Test
 
     DirEntryTest() :
         filename("../../../data/ex.ppt"),
-        stream(OpenStream(filename))
+        stream(OpenFileStream(filename))
     {
     }
 };
@@ -51,24 +51,24 @@ void test_dirEntry_read(const DirectoryEntry& de)
 TEST_F(DirEntryTest, test_directoryentry_read)
 {
     DirectoryEntry de(L"", StgInvalid, {});
-    stream->seekg(0x400, std::ios::beg);
+    stream->seek(0x400, std::ios::beg);
     de.Read(stream);
 
-    EXPECT_EQ(stream->tellg(), 0x480);
+    EXPECT_EQ(stream->tell(), 0x480);
     test_dirEntry_read(de);
 }
 
 TEST_F(DirEntryTest, test_directoryentry_write)
 {
     DirectoryEntry de(L"", StgInvalid, {});
-    stream->seekg(0x400, std::ios::beg);
+    stream->seek(0x400, std::ios::beg);
     de.Read(stream);
 
     std::string other_filename("../../../data/types/direntry.bin");
-    stream = OpenStream(other_filename, true);
+    stream = OpenFileStream(other_filename, true);
     de.Write(stream);
-    EXPECT_EQ(stream->tellg(), 0x80);
-    stream->seekp(0, std::ios::beg);
+    EXPECT_EQ(stream->tell(), 0x80);
+    stream->seek(0, std::ios::beg);
 
     DirectoryEntry other(L"", StgInvalid, {});
     other.Read(stream);

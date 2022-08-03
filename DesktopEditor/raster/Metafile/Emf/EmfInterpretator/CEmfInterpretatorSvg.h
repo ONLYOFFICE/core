@@ -1,36 +1,23 @@
-#ifndef CEMFINTERPRETATORXML_H
-#define CEMFINTERPRETATORXML_H
+#ifndef CEMFINTERPRETATORSVG_H
+#define CEMFINTERPRETATORSVG_H
 
+#include "../../Common/MetaFileUtils.h"
 #include "CEmfInterpretatorBase.h"
-
-#include <iostream>
+#include "../EmfParser/CEmfParserBase.h"
 
 namespace MetaFile
 {
-	class CEmfInterpretatorXml : public CEmfInterpretatorBase
+	class CEmfInterpretatorSvg : public CEmfInterpretatorBase
 	{
-		struct RecordData
-		{
-			std::wstring    m_wsName;
-			unsigned int    m_unId;
-			TEmfRectL       m_oBounds;
-
-			RecordData(const std::wstring&  wsName,
-					   const unsigned int&  unId,
-					   const TEmfRectL&     oBounds):
-				m_wsName(wsName),
-				m_unId(unId),
-				m_oBounds(oBounds){}
-		};
-
 	public:
-		CEmfInterpretatorXml(const wchar_t* wsFilePath);
-		CEmfInterpretatorXml(const CEmfInterpretatorXml& oInterpretator);
-		virtual ~CEmfInterpretatorXml();
+		CEmfInterpretatorSvg(const wchar_t* wsFilePath, CEmfParserBase* pParser = NULL, unsigned int unWidth = 0, unsigned int unHeight = 0);
+		CEmfInterpretatorSvg(const CEmfInterpretatorSvg& oInterpretator);
+		virtual ~CEmfInterpretatorSvg();
 
 		InterpretatorType   GetType() const override;
 
 		void SetOutputDevice(const wchar_t *wsFilePath);
+		void SetSize(unsigned int unWidth, unsigned int unHeight);
 
 		void HANDLE_EMR_HEADER(const TEmfHeader& oTEmfHeader) override ;
 		void HANDLE_EMR_ALPHABLEND(const TEmfAlphaBlend& oTEmfAlphaBlend, CDataStream &oDataStream) override ;
@@ -120,36 +107,38 @@ namespace MetaFile
 		void HANDLE_EMR_UNKNOWN(CDataStream &oDataStream) override;
 		void HANDLE_EMR_FILLRGN(const TEmfRectL& oBounds, unsigned int unIhBrush, const TRegionDataHeader& oRegionDataHeader, const std::vector<TEmfRectL>& arRects) override;
 
-		void HANDLE_EMFPLUS_HEADER(bool bIsEmfPlusDual, bool bIsReferenceDevice, unsigned int unDpiX, unsigned int unDpiY) override;
-		void HANDLE_EMFPLUS_CLEAR(TEmfPlusARGB oColor) override;
-		void HANDLE_EMFPLUS_DRAWARC(char chPenId, double dStartAngle, double dSweepAngle, TEmfPlusRect oRect) override;
-		void HANDLE_EMFPLUS_DRAWARC(char chPenId, double dStartAngle, double dSweepAngle, TEmfPlusRectF oRect) override;
-		void HANDLE_EMFPLUS_DRAWBEZIERS(char chPenId, std::vector<TEmfPlusPointR> arPoints) override;
-		void HANDLE_EMFPLUS_DRAWBEZIERS(char chPenId, std::vector<TEmfPlusPointF> arPoints) override;
-		void HANDLE_EMFPLUS_DRAWBEZIERS(char chPenId, std::vector<TEmfPlusPoint> arPoints) override;
-		void HANDLE_EMFPLUS_DRAWCLOSEDCURVE(char chPenId, double dTension, std::vector<TEmfPlusPointR> arPoints) override;
-		void HANDLE_EMFPLUS_DRAWCLOSEDCURVE(char chPenId, double dTension, std::vector<TEmfPlusPointF> arPoints) override;
-		void HANDLE_EMFPLUS_DRAWCLOSEDCURVE(char chPenId, double dTension, std::vector<TEmfPlusPoint> arPoints) override;
-		void HANDLE_EMFPLUS_DRAWCURVE(char chPenId, double dTension, unsigned int unOffset, unsigned int unNumSegments, std::vector<TEmfPlusPoint> arPoints) override;
-		void HANDLE_EMFPLUS_DRAWCURVE(char chPenId, double dTension, unsigned int unOffset, unsigned int unNumSegments, std::vector<TEmfPlusPointF> arPoints) override;
-		void HANDLE_EMFPLUS_DRAWELLIPSE(char chPenId, TEmfPlusRect oRect) override;
-		void HANDLE_EMFPLUS_DRAWELLIPSE(char chPenId, TEmfPlusRectF oRect) override;
-		void HANDLE_EMFPLUS_DRAWDRIVERSTRING(char chFontId, unsigned int unBrushId, unsigned int unDriverStringOptionsFlags, unsigned int unMatrixPresent, const std::wstring& wsString, const std::vector<TEmfPlusPointF>& arGlyphPos) override;
-		void HANDLE_EMFPLUS_DRAWIMAGE(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF& oSrcRect, const TEmfPlusRect& oRectData) override;
-		void HANDLE_EMFPLUS_DRAWIMAGE(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF& oSrcRect, const TEmfPlusRectF& oRectData) override;
-	private:
-		template<typename T> void Save_EMR_POLY_BASE(const RecordData& oRecordData, const std::vector<T>& arPoints);
-		template<typename T> void Save_EMR_POLYPOLY_BASE(const RecordData& oRecordData, const std::vector<std::vector<T>>& arPoints);
-		template<typename T> void Save_EMR_POLYDRAW_BASE(const TEmfRectL& oBounds, T* arPoints, const unsigned int& unCount, const unsigned char* pAbTypes);
+		void HANDLE_EMFPLUS_HEADER(bool bIsEmfPlusDual, bool bIsReferenceDevice, unsigned int unDpiX, unsigned int unDpiY) override {};
+		void HANDLE_EMFPLUS_CLEAR(TEmfPlusARGB oColor) override {};
+		void HANDLE_EMFPLUS_DRAWARC(char chPenId, double dStartAngle, double dSweepAngle, TEmfPlusRect oRect) override {};
+		void HANDLE_EMFPLUS_DRAWARC(char chPenId, double dStartAngle, double dSweepAngle, TEmfPlusRectF oRect) override {};
+		void HANDLE_EMFPLUS_DRAWBEZIERS(char chPenId, std::vector<TEmfPlusPointR> arPoints) override {};
+		void HANDLE_EMFPLUS_DRAWBEZIERS(char chPenId, std::vector<TEmfPlusPointF> arPoints) override {};
+		void HANDLE_EMFPLUS_DRAWBEZIERS(char chPenId, std::vector<TEmfPlusPoint> arPoints) override {};
+		void HANDLE_EMFPLUS_DRAWCLOSEDCURVE(char chPenId, double dTension, std::vector<TEmfPlusPointR> arPoints) override {};
+		void HANDLE_EMFPLUS_DRAWCLOSEDCURVE(char chPenId, double dTension, std::vector<TEmfPlusPointF> arPoints) override {};
+		void HANDLE_EMFPLUS_DRAWCLOSEDCURVE(char chPenId, double dTension, std::vector<TEmfPlusPoint> arPoints) override {};
+		void HANDLE_EMFPLUS_DRAWCURVE(char chPenId, double dTension, unsigned int unOffset, unsigned int unNumSegments, std::vector<TEmfPlusPoint> arPoints) override {};
+		void HANDLE_EMFPLUS_DRAWCURVE(char chPenId, double dTension, unsigned int unOffset, unsigned int unNumSegments, std::vector<TEmfPlusPointF> arPoints) override {};
+		void HANDLE_EMFPLUS_DRAWELLIPSE(char chPenId, TEmfPlusRect oRect) override {};
+		void HANDLE_EMFPLUS_DRAWELLIPSE(char chPenId, TEmfPlusRectF oRect) override {};
+		void HANDLE_EMFPLUS_DRAWDRIVERSTRING(char chFontId, unsigned int unBrushId, unsigned int unDriverStringOptionsFlags, unsigned int unMatrixPresent, const std::wstring& wsString, const std::vector<TEmfPlusPointF>& arGlyphPos) override {};
+		void HANDLE_EMFPLUS_DRAWIMAGE(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF& oSrcRect, const TEmfPlusRect& oRectData) override {};
+		void HANDLE_EMFPLUS_DRAWIMAGE(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF& oSrcRect, const TEmfPlusRectF& oRectData) override {};
 
-		CXmlOutput*     m_pOutputXml;
-		std::wstring    m_wsXmlFilePath;
+	private:
+		XmlUtils::CXmlWriter    m_oXmlWriter;
+		std::wstring            m_wsSvgFilePath;
+
+		CEmfParserBase          *m_pParser;
+
+		TSvgViewport            m_oViewport;
+		TEmfSizeL               m_oSizeWindow;
 	public:
 		void Begin() override;
 		void End() override;
 		//Следующие методы ничего не делают
 
-		void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight) override {};
+		void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight) override;
 
 		void DrawString(std::wstring& wsText, unsigned int unCharsCount, double dX, double dY, double* pDx,
 						int iGraphicsMode = 1, double dXScale = 1, double dYScale = 1) override {};
@@ -173,7 +162,29 @@ namespace MetaFile
 		void UpdateDC() override {};
 		void SetTransform(double& dM11, double& dM12, double& dM21, double& dM22, double& dX, double& dY) override {};
 		void GetTransform(double* pdM11, double* pdM12, double* pdM21, double* pdM22, double* pdX, double* pdY) override {};
+	private:
+		void WriteNode(const std::wstring& wsNodeName, const NodeAttributes& arAttributes, const std::wstring& wsValueNode = L"");
+		void WriteText(const std::wstring& wsText, double dX, double dY, const TEmfRectL& oBounds);
+
+		void AddStroke(NodeAttributes &arAttributes);
+		void AddFill(NodeAttributes &arAttributes);
+
+		void UpdateTransform(double dX, double dY);
+		void UpdateTransform(const TRectD& oRect);
+		void UpdateTransform(const std::vector<TEmfPointL>& arPoints, const NodeAttributes& arAttributes = {});
+		void UpdateTransform(const std::vector<TEmfPointS>& arPoints, const NodeAttributes& arAttributes = {});
+		void UpdateTransform(TEmfPointL *arPoints, unsigned int unCount);
+		void UpdateTransform(TEmfPointS *arPoints, unsigned int unCount);
+
+		double TranslateX(double nX);
+		double TranslateY(double nY);
+
+		TPointD TranslatePoint(const TPointD& oPoint);
+		TRectD TranslateRect(const TEmfRectL& oRect);
+
+		TPointD GetCutPos();
 	};
 }
 
-#endif // CEMFINTERPRETATORXML_H
+
+#endif // CEMFINTERPRETATORSVG_H

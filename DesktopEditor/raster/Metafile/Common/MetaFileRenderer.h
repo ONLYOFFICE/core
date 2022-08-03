@@ -48,14 +48,14 @@
 #include <cmath>
 
 #ifndef M_PI
-	#define M_PI 3.1415926
+#define M_PI 3.1415926
 #endif
 
 #ifdef _DEBUG
-    #include <iostream>
-    #define LOGGING(_value) std::wcout << _value << std::endl;
+#include <iostream>
+#define LOGGING(_value) std::wcout << _value << std::endl;
 #else
-    #define LOGGING(_value)
+#define LOGGING(_value)
 #endif
 
 namespace MetaFile
@@ -163,7 +163,7 @@ namespace MetaFile
 
 			m_dScaleX = (nR - nL <= 0) ? 1 : m_dW / (double)(nR - nL);
 			m_dScaleY = (nB - nT <= 0) ? 1 : m_dH / (double)(nB - nT);
-		 }
+		}
 
 		void Begin()
 		{
@@ -333,22 +333,48 @@ namespace MetaFile
 
 			double dFontCharSpace = m_pFile->GetCharSpace() * m_dScaleX * m_pFile->GetPixelWidth();
 			m_pRenderer->put_FontCharSpace(dFontCharSpace);
-			CFontManager* pFontManager = m_pFile->GetFontManager();
-			if (pFontManager)
+
+			NSFonts::IFontManager* pFontManager = m_pFile->GetFontManager();
+			if (NULL == pFontManager)
+			{
+				if (NULL != pDx && unCharsCount > 1)
+				{
+					// Тогда мы складываем все pDx кроме последнего символа, последний считаем отдельно
+					double dTempTextW = 0;
+					for (unsigned int unCharIndex = 0; unCharIndex < unCharsCount - 1; unCharIndex++)
+					{
+						dTempTextW += pDx[unCharIndex];
+					}
+
+					dTempTextW += dFontHeight * wsText.length();
+
+					fW = (float)dTempTextW;
+				}
+				else
+				{
+					fW = (float)(dFontHeight * wsText.length());
+				}
+
+				fH = dFontHeight * 1.2;
+			}
+			else
 			{
 				pFontManager->LoadFontByName(wsFaceName, dFontHeight, lStyle, 72, 72);
 				pFontManager->SetCharSpacing(dFontCharSpace * 72 / 25.4);
 
 				double dMmToPt = 25.4 / 72;
 
-                double dFHeight = dFontHeight;
-                double dFDescent = dFontHeight;
-                if (pFontManager->m_pFont)
-                {
-                    dFHeight  *= pFontManager->m_pFont->GetHeight() / pFontManager->m_pFont->m_lUnits_Per_Em * dMmToPt;
-                    dFDescent *= pFontManager->m_pFont->GetDescender() / pFontManager->m_pFont->m_lUnits_Per_Em * dMmToPt;
-                }
-                double dFAscent  = dFHeight - std::abs(dFDescent);
+				double dFHeight = dFontHeight;
+				double dFDescent = dFontHeight;
+
+				NSFonts::IFontFile* pFontFile = pFontManager->GetFile();
+
+				if (pFontFile)
+				{
+					dFHeight  *= pFontFile->GetHeight() / pFontFile->Units_Per_Em() * dMmToPt;
+					dFDescent *= pFontFile->GetDescender() / pFontFile->Units_Per_Em() * dMmToPt;
+				}
+				double dFAscent  = dFHeight - std::abs(dFDescent);
 
 				if (NULL != pDx && unCharsCount > 1)
 				{
@@ -498,8 +524,8 @@ namespace MetaFile
 
 				m_pRenderer->ResetTransform();
 				m_pRenderer->SetTransform(dCosTheta * dM11, dSinTheta * dM22,
-							 -dSinTheta * dM11, dCosTheta * dM22,
-							  dRx, dRy);
+										  -dSinTheta * dM11, dCosTheta * dM22,
+										  dRx, dRy);
 
 				bChangeCTM = true;
 			}
@@ -522,7 +548,7 @@ namespace MetaFile
 				m_pRenderer->PathCommandEnd();
 			}
 
-			// Нарисуем подчеркивание 
+			// Нарисуем подчеркивание
 			if (pFont->IsUnderline())
 			{
 				m_pRenderer->put_PenSize((double)fUndSize);
@@ -547,14 +573,14 @@ namespace MetaFile
 
 			if (NULL == pDx)
 			{
-                m_pRenderer->CommandDrawText(wsText, dX, dY, 0, 0);
+				m_pRenderer->CommandDrawText(wsText, dX, dY, 0, 0);
 			}
 			else
 			{
 				unsigned int unUnicodeLen = 0;
 				unsigned int* pUnicode = NSStringExt::CConverter::GetUtf32FromUnicode(wsText, unUnicodeLen);
 				if (pUnicode && unUnicodeLen)
-				{					
+				{
 					double dOffset = 0;
 					double dKoefX = m_dScaleX;
 					for (unsigned int unCharIndex = 0; unCharIndex < unUnicodeLen; unCharIndex++)
@@ -711,11 +737,11 @@ namespace MetaFile
 			unsigned int unClipMode = -1;
 			switch (unMode)
 			{
-				case RGN_AND: unClipMode = c_nClipRegionIntersect; break;
-				case RGN_OR: unClipMode = c_nClipRegionUnion; break;
-				case RGN_XOR: unClipMode = c_nClipRegionXor; break;
-				case RGN_DIFF: unClipMode = c_nClipRegionDiff; break;
-				default: unClipMode = c_nClipRegionIntersect; break;
+			case RGN_AND: unClipMode = c_nClipRegionIntersect; break;
+			case RGN_OR: unClipMode = c_nClipRegionUnion; break;
+			case RGN_XOR: unClipMode = c_nClipRegionXor; break;
+			case RGN_DIFF: unClipMode = c_nClipRegionDiff; break;
+			default: unClipMode = c_nClipRegionIntersect; break;
 			}
 
 			unsigned int unFillMode = -1 == nFillMode ? m_pFile->GetFillMode() : nFillMode;
@@ -740,7 +766,7 @@ namespace MetaFile
 			m_pRenderer->PathCommandEnd();
 
 			m_bStartedPath = false;
-		}		
+		}
 		void SetTransform(double& dM11, double& dM12, double& dM21, double& dM22, double& dX, double& dY)
 		{
 			double dKoefX = m_dScaleX;
@@ -816,8 +842,9 @@ namespace MetaFile
 			TPointD oPoint;
 			oPoint.x = m_dScaleX * dX + m_dX;
 			oPoint.y = m_dScaleY * dY + m_dY;
+
 			return oPoint;
-		}		
+		}
 		bool UpdateBrush()
 		{
 			IBrush* pBrush = m_pFile->GetBrush();
@@ -869,7 +896,7 @@ namespace MetaFile
 			else if (	BS_LINEARGRADIENT	== unBrushStyle ||
 						BS_RECTGRADIENT		== unBrushStyle ||
 						BS_PATHGRADIENT		== unBrushStyle
-					)
+						)
 			{
 				m_pRenderer->put_BrushType(c_BrushTypePathGradient1);
 
@@ -895,8 +922,8 @@ namespace MetaFile
 
 			}
 			else if (	BS_RADIALGRADIENT	== unBrushStyle ||
-						BS_AXIALGRADIENT	== unBrushStyle 
-					)
+						BS_AXIALGRADIENT	== unBrushStyle
+						)
 			{
 				m_pRenderer->put_BrushType(c_BrushTypePathGradient2);
 
@@ -1005,23 +1032,23 @@ namespace MetaFile
 				else if (6 == unSizeDash)
 					ulPenStyle = Aggplus::DashStyleDashDotDot;
 
-//				double dDpiX;
-//				m_pRenderer->get_DpiX(&dDpiX);
-//				double dPixelW = dDpiX > 1 ? 25.4 / dDpiX : 25.4 / 72;
+				//				double dDpiX;
+				//				m_pRenderer->get_DpiX(&dDpiX);
+				//				double dPixelW = dDpiX > 1 ? 25.4 / dDpiX : 25.4 / 72;
 
-//				double *pDashPattern = new double[unSizeDash];
+				//				double *pDashPattern = new double[unSizeDash];
 
-//				if (NULL != pDashPattern)
-//				{
-//					for (unsigned int unIndex = 0; unIndex < unSizeDash; ++unIndex)
-//						pDashPattern[unIndex] = pDataDash[unIndex] * dPixelW;
-//				}
+				//				if (NULL != pDashPattern)
+				//				{
+				//					for (unsigned int unIndex = 0; unIndex < unSizeDash; ++unIndex)
+				//						pDashPattern[unIndex] = pDataDash[unIndex] * dPixelW;
+				//				}
 
-//				m_pRenderer->put_PenDashOffset(pPen->GetDashOffset());
-//				m_pRenderer->PenDashPattern( (NULL != pDashPattern) ? pDashPattern : pDataDash, unSizeDash);
-//				ulPenStyle = Aggplus::DashStyleCustom;
+				//				m_pRenderer->put_PenDashOffset(pPen->GetDashOffset());
+				//				m_pRenderer->PenDashPattern( (NULL != pDashPattern) ? pDashPattern : pDataDash, unSizeDash);
+				//				ulPenStyle = Aggplus::DashStyleCustom;
 
-//				RELEASEARRAYOBJECTS(pDashPattern)
+				//				RELEASEARRAYOBJECTS(pDashPattern)
 
 			}
 
@@ -1130,10 +1157,10 @@ namespace MetaFile
 
 			switch (m_pFile->GetRop2Mode())
 			{
-				case R2_BLACK:   m_pRenderer->put_PenColor(METAFILE_RGBA(0, 0, 0)); break;
-				case R2_NOP:     m_pRenderer->put_PenAlpha(0); break;
-				case R2_COPYPEN: break;
-				case R2_WHITE:   m_pRenderer->put_PenColor(METAFILE_RGBA(255, 255, 255)); break;
+			case R2_BLACK:   m_pRenderer->put_PenColor(METAFILE_RGBA(0, 0, 0)); break;
+			case R2_NOP:     m_pRenderer->put_PenAlpha(0); break;
+			case R2_COPYPEN: break;
+			case R2_WHITE:   m_pRenderer->put_PenColor(METAFILE_RGBA(255, 255, 255)); break;
 			}
 
 			if (PS_NULL == ulPenStyle)
@@ -1142,7 +1169,7 @@ namespace MetaFile
 			return true;
 		}
 		bool UpdateClip()
-		{			
+		{
 			IClip* pClip = m_pFile->GetClip();
 			if (!pClip)
 				return false;
@@ -1159,9 +1186,9 @@ namespace MetaFile
 		int            m_lDrawPathType;
 		double         m_dX;      // Координаты левого верхнего угла
 		double         m_dY;      //
-		double         m_dW;      // 
-		double         m_dH;      // 
-		double         m_dScaleX; // Коэффициенты сжатия/растяжения, чтобы 
+		double         m_dW;      //
+		double         m_dH;      //
+		double         m_dScaleX; // Коэффициенты сжатия/растяжения, чтобы
 		double         m_dScaleY; // результирующая картинка была нужных размеров.
 		bool           m_bStartedPath;
 

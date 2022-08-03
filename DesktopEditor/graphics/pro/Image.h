@@ -33,9 +33,9 @@
 #define _GRAPHICS_EXPORTS_IMAGE_H_
 
 #include "../../common/Types.h"
-#include "./Fonts.h"
 #include "./../IRenderer.h"
 #include "./../Image.h"
+#include "./Fonts.h"
 
 namespace NSImages
 {
@@ -127,6 +127,8 @@ namespace MetaFile
         virtual int GetType() = 0;
         virtual void ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1) = 0;
         virtual NSFonts::IFontManager* get_FontManager() = 0;
+
+        virtual void ConvertToSvg(const wchar_t *wsFilePath, unsigned int unWidth = 0, unsigned int unHeight = 0) = 0;
 
         //Для тестов
         virtual void ConvertToXml(const wchar_t *wsFilePath) = 0;

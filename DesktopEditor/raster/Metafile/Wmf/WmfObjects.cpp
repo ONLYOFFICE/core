@@ -36,6 +36,8 @@
 
 #include "WmfObjects.h"
 
+#include "../../BgraFrame.h"
+
 namespace MetaFile
 {
 	CWmfBrush::CWmfBrush() : Color(255, 255, 255)
@@ -69,28 +71,11 @@ namespace MetaFile
 	}
 	void         CWmfBrush::SetDibPattern(unsigned char* pBuffer, unsigned int ulWidth, unsigned int ulHeight)
 	{
-		DibBuffer = pBuffer;
-		DibWidth  = ulWidth;
-		DibHeigth = ulHeight;
-
-		if (ulWidth <= 0 || ulHeight <= 0)
-			return;
-
-		unsigned int ulBufferSize = 4 * ulWidth * ulHeight;
-		Aggplus::CImage oImage;
-		BYTE* pBufferPtr = new BYTE[ulBufferSize];
-		oImage.Create(pBufferPtr, ulWidth, ulHeight, 4 * ulWidth);
-
-		// Пишем данные в pBufferPtr
-		for (unsigned int ulIndex = 0; ulIndex < ulBufferSize; ulIndex += 4)
-		{
-			pBufferPtr[0] = (unsigned char)pBuffer[ulIndex + 0];
-			pBufferPtr[1] = (unsigned char)pBuffer[ulIndex + 1];
-			pBufferPtr[2] = (unsigned char)pBuffer[ulIndex + 2];
-			pBufferPtr[3] = (unsigned char)pBuffer[ulIndex + 3];
-			pBufferPtr += 4;
-		}
-
+#ifdef METAFILE_DISABLE_FILESYSTEM
+		// без использования файловой системы пока реализовать не получится при конвертации в растр,
+		// так как на данный момент картинку кисти передать в рендер можно только  с помощью использования файловой системы
+		// (CMetaFileRenderer::UpdateBrush()) m_pRenderer->put_BrushTexturePath(pBrush->GetDibPatterPath());
+#else
 		FILE *pTempFile = NULL;
 		std::wstring wsTempFileName;
 		if (!OpenTempFile(&wsTempFileName, &pTempFile, L"wb", L".emf0", NULL))
@@ -98,10 +83,20 @@ namespace MetaFile
 
 		::fclose(pTempFile);
 
-		oImage.SaveFile(wsTempFileName, _CXIMAGE_FORMAT_PNG);
+		CBgraFrame oBgraFrame;
 
-		BrushStyle     = BS_DIBPATTERN;
-		DibPatternPath = wsTempFileName;
+		oBgraFrame.put_Data(pBuffer);
+		oBgraFrame.put_Width(ulWidth);
+		oBgraFrame.put_Height(ulHeight);
+
+		if (oBgraFrame.SaveFile(wsTempFileName, _CXIMAGE_FORMAT_PNG))
+		{
+			BrushStyle     = BS_DIBPATTERN;
+			DibPatternPath = wsTempFileName;
+		}
+
+		oBgraFrame.put_Data(NULL);
+#endif
 	}
 	int          CWmfBrush::GetColor()
 	{

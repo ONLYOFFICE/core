@@ -68,15 +68,29 @@ INCLUDEPATH += \
 HEADERS += \
     ../../raster/Metafile/CXmlOutput.h \
     ../../raster/Metafile/Common/CPathConverter.h \
+    ../../raster/Metafile/Common/IOutputDevice.h \
+    ../../raster/Metafile/Common/MetaFile.h \
+    ../../raster/Metafile/Common/MetaFileClip.h \
+    ../../raster/Metafile/Common/MetaFileObjects.h \
+    ../../raster/Metafile/Common/MetaFileRenderer.h \
+    ../../raster/Metafile/Common/MetaFileTypes.h \
+    ../../raster/Metafile/Common/MetaFileUtils.h \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretator.h \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorArray.h \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorBase.h \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorRender.h \
+    ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorSvg.h \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorXml.h \
     ../../raster/Metafile/Emf/EmfParser/CEmfParser.h \
     ../../raster/Metafile/Emf/EmfParser/CEmfParserBase.h \
     ../../raster/Metafile/Emf/EmfParser/CEmfPlusParser.h \
     ../../raster/Metafile/Emf/EmfParser/CEmfxParser.h \
+    ../../raster/Metafile/Wmf/WmfInterpretator/CWmfInterpretatorSvg.h \
+    ../../raster/Metafile/Wmf/WmfParser/CWmfParser.h \
+    ../../raster/Metafile/Wmf/WmfParser/CWmfParserBase.h \
+    ../../raster/Metafile/Wmf/WmfInterpretator/CWmfInterpretatorBase.h \
+    ../../raster/Metafile/Wmf/WmfInterpretator/CWmfInterpretatorRender.h \
+    ../../raster/Metafile/Wmf/WmfInterpretator/CWmfInterpretator.h \
     ./../config.h \
     \
     ./../Matrix.h \
@@ -119,14 +133,22 @@ HEADERS += \
 SOURCES += \
     ../../raster/Metafile/CXmlOutput.cpp \
     ../../raster/Metafile/Common/CPathConverter.cpp \
+    ./../../raster/Metafile/Common/MetaFileTypes.cpp \
+    ./../../raster/Metafile/Common/MetaFileUtils.cpp \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretator.cpp \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorArray.cpp \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorRender.cpp \
+    ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorSvg.cpp \
     ../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorXml.cpp \
     ../../raster/Metafile/Emf/EmfParser/CEmfParser.cpp \
     ../../raster/Metafile/Emf/EmfParser/CEmfParserBase.cpp \
     ../../raster/Metafile/Emf/EmfParser/CEmfPlusParser.cpp \
     ../../raster/Metafile/Emf/EmfParser/CEmfxParser.cpp \
+    ../../raster/Metafile/Wmf/WmfInterpretator/CWmfInterpretatorSvg.cpp \
+    ../../raster/Metafile/Wmf/WmfParser/CWmfParser.cpp \
+    ../../raster/Metafile/Wmf/WmfParser/CWmfParserBase.cpp \
+    ../../raster/Metafile/Wmf/WmfInterpretator/CWmfInterpretatorRender.cpp \
+    ../../raster/Metafile/Wmf/WmfInterpretator/CWmfInterpretator.cpp \
     ./../Matrix.cpp \
     ./../GraphicsPath.cpp \
     ./../../raster/BgraFrame.cpp \
@@ -186,8 +208,6 @@ SOURCES += \
     ./../../raster/Jp2/J2kFile.cpp \
     ./../../raster/Jp2/Reader.cpp \
     \
-    ./../../raster/Metafile/Common/MetaFileTypes.cpp \
-    ./../../raster/Metafile/Common/MetaFileUtils.cpp \
     ./../../raster/Metafile/Emf/EmfClip.cpp \
     ./../../raster/Metafile/Emf/EmfObjects.cpp \
     ./../../raster/Metafile/Emf/EmfPath.cpp \

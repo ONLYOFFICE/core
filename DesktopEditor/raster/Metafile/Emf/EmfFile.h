@@ -50,7 +50,7 @@ namespace MetaFile
 	{
 	public:
 		CEmfFile() : m_pParser(new CEmfParser)
-		{};
+        {}
 
 		~CEmfFile()
 		{
@@ -61,10 +61,10 @@ namespace MetaFile
 		{
 			if (NULL != m_pParser && m_pParser->GetType() == EmfParserType::EmfxParser)
 			{
-				CFontManager *pFont = m_pParser->GetFontManager();
-				delete m_pParser;
+                NSFonts::IFontManager* pFont = m_pParser->GetFontManager();
+                delete m_pParser;
 				m_pParser = new CEmfParser();
-				m_pParser->SetFontManager(pFont);
+                m_pParser->SetFontManager(pFont);
 			}
 
 			return m_pParser->OpenFromFile(wsFilePath);
@@ -74,10 +74,10 @@ namespace MetaFile
 		{
 			if (NULL != m_pParser && m_pParser->GetType() == EmfParserType::EmfParser)
 			{
-				CFontManager *pFont = m_pParser->GetFontManager();
+                NSFonts::IFontManager* pFont = m_pParser->GetFontManager();
 				delete m_pParser;
 				m_pParser = new CEmfxParser();
-				m_pParser->SetFontManager(pFont);
+                m_pParser->SetFontManager(pFont);
 			}
 
 			return m_pParser->OpenFromFile(wsFilePath);
@@ -103,7 +103,7 @@ namespace MetaFile
 			m_pParser->Close();
 		}
 
-		void SetFontManager(CFontManager* pFontManager)
+        void SetFontManager(NSFonts::IFontManager* pFontManager)
 		{
 			m_pParser->SetFontManager(pFontManager);
 		}
@@ -118,9 +118,9 @@ namespace MetaFile
 			m_pParser->SetInterpretator(pOutput);
 		}
 
-		void SetOutputDevice(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType)
+		void SetOutputDevice(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0)
 		{
-			m_pParser->SetInterpretator(wsFilePath, oInterpretatorType);
+			m_pParser->SetInterpretator(wsFilePath, oInterpretatorType, unWidth, unHeight);
 		}
 
 		void SetOutputDevice(IOutputDevice* pOutput, const wchar_t *wsFilePath)

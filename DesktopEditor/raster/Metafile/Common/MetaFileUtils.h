@@ -59,6 +59,33 @@ namespace MetaFile
 			b = 0;
 		}
 	};
+	struct TSvgViewport
+	{
+		double dLeft;
+		double dTop;
+		double dRight;
+		double dBottom;
+
+		TSvgViewport() : dLeft(DBL_MAX), dTop(DBL_MAX), dRight(DBL_MIN), dBottom(DBL_MIN) {}
+
+		bool Empty() const
+		{
+			return DBL_MAX == dLeft || DBL_MAX == dTop || DBL_MIN == dRight || DBL_MIN == dBottom || dRight == dLeft || dBottom == dTop;
+		}
+
+		double GetWidth() const
+		{
+			return (DBL_MAX == dLeft || DBL_MIN == dRight) ? 0 : dRight - dLeft;
+		}
+
+		double GetHeight() const
+		{
+			return (DBL_MAX == dTop || DBL_MIN == dBottom) ? 0 : dBottom - dTop;
+		}
+	};
+
+	typedef std::pair<const std::wstring, std::wstring>     NodeAttribute;
+	typedef std::vector<NodeAttribute>                      NodeAttributes;
 
 	class CDataStream
 	{
@@ -389,15 +416,15 @@ namespace MetaFile
 		{
 			if (oFont.IsFixedLength())
 			{
-			    *this >> oFont.LogFontEx.LogFont;
-			    ReadBytes(oFont.LogFontEx.FullName, 64);
-			    ReadBytes(oFont.LogFontEx.Style, 32);
-			    ReadBytes(oFont.LogFontEx.Script, 18);
+				*this >> oFont.LogFontEx.LogFont;
+				ReadBytes(oFont.LogFontEx.FullName, 64);
+				ReadBytes(oFont.LogFontEx.Style, 32);
+				ReadBytes(oFont.LogFontEx.Script, 18);
 			}
 			else
 			{
-			    *this >> oFont.LogFontEx;
-			    *this >> oFont.DesignVector;
+				*this >> oFont.LogFontEx;
+				*this >> oFont.DesignVector;
 			}
 
 			return *this;
@@ -771,55 +798,55 @@ namespace MetaFile
 
 			switch (unType)
 			{
-				case RegionNodeDataTypeAnd:
-				{
-					oEmfPlusRegionNode.eType = RegionNodeDataTypeAnd;
-					break;
-				}
-				case RegionNodeDataTypeOr:
-				{
-					oEmfPlusRegionNode.eType = RegionNodeDataTypeOr;
-					break;
-				}
-				case RegionNodeDataTypeXor:
-				{
-					oEmfPlusRegionNode.eType = RegionNodeDataTypeXor;
-					break;
-				}
-				case RegionNodeDataTypeExclude:
-				{
-					oEmfPlusRegionNode.eType = RegionNodeDataTypeExclude;
-					break;
-				}
-				case RegionNodeDataTypeComplement:
-				{
-					oEmfPlusRegionNode.eType = RegionNodeDataTypeComplement;
-					break;
-				}
-				case RegionNodeDataTypeRect:
-				{
-					oEmfPlusRegionNode.pRect = new TEmfPlusRectF;
+			case RegionNodeDataTypeAnd:
+			{
+				oEmfPlusRegionNode.eType = RegionNodeDataTypeAnd;
+				break;
+			}
+			case RegionNodeDataTypeOr:
+			{
+				oEmfPlusRegionNode.eType = RegionNodeDataTypeOr;
+				break;
+			}
+			case RegionNodeDataTypeXor:
+			{
+				oEmfPlusRegionNode.eType = RegionNodeDataTypeXor;
+				break;
+			}
+			case RegionNodeDataTypeExclude:
+			{
+				oEmfPlusRegionNode.eType = RegionNodeDataTypeExclude;
+				break;
+			}
+			case RegionNodeDataTypeComplement:
+			{
+				oEmfPlusRegionNode.eType = RegionNodeDataTypeComplement;
+				break;
+			}
+			case RegionNodeDataTypeRect:
+			{
+				oEmfPlusRegionNode.pRect = new TEmfPlusRectF;
 
-					*this >> *oEmfPlusRegionNode.pRect;
+				*this >> *oEmfPlusRegionNode.pRect;
 
-					oEmfPlusRegionNode.eType = RegionNodeDataTypeRect;
-					break;
-				}
-				case RegionNodeDataTypePath:
-				{
-					oEmfPlusRegionNode.eType = RegionNodeDataTypePath;
-					break;
-				}
-				case RegionNodeDataTypeEmpty:
-				{
-					oEmfPlusRegionNode.eType = RegionNodeDataTypeEmpty;
-					break;
-				}
-				case RegionNodeDataTypeInfinite:
-				{
-					oEmfPlusRegionNode.eType = RegionNodeDataTypeInfinite;
-					break;
-				}
+				oEmfPlusRegionNode.eType = RegionNodeDataTypeRect;
+				break;
+			}
+			case RegionNodeDataTypePath:
+			{
+				oEmfPlusRegionNode.eType = RegionNodeDataTypePath;
+				break;
+			}
+			case RegionNodeDataTypeEmpty:
+			{
+				oEmfPlusRegionNode.eType = RegionNodeDataTypeEmpty;
+				break;
+			}
+			case RegionNodeDataTypeInfinite:
+			{
+				oEmfPlusRegionNode.eType = RegionNodeDataTypeInfinite;
+				break;
+			}
 			}
 
 			return *this;
@@ -1199,7 +1226,7 @@ namespace MetaFile
 
 			// Читаем OutputString
 			const unsigned int unCharsCount = oText.Chars;
-			int nSkip = oText.offString - (unOffset + 40); // 40 - размер структуры TEmfEmrText 
+			int nSkip = oText.offString - (unOffset + 40); // 40 - размер структуры TEmfEmrText
 			Skip(nSkip);
 			T* pString = new T[unCharsCount + 1];
 			if (pString)
@@ -1240,6 +1267,8 @@ namespace MetaFile
 	void ReadImage(BYTE* pImageBuffer, unsigned int unBufferLen, unsigned int unColorUsage, BYTE** ppDstBuffer, unsigned int* punWidth, unsigned int* punHeight);
 	double GetEllipseAngle(int nL, int nT, int nR, int nB, int nX, int nY);
 	void ProcessRasterOperation(unsigned int unRasterOperation, BYTE** ppBgra, unsigned int unWidth, unsigned int unHeight);
-    bool OpenTempFile(std::wstring *pwsName, FILE **ppFile, const wchar_t *wsMode, const wchar_t *wsExt, const wchar_t *wsFolder);
+	bool OpenTempFile(std::wstring *pwsName, FILE **ppFile, const wchar_t *wsMode, const wchar_t *wsExt, const wchar_t *wsFolder);
+
+	std::wstring StringNormalization(std::wstring wsString);
 };
 #endif // _METAFILE_COMMON_METAFILEUTILS_H

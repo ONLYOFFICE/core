@@ -60,6 +60,7 @@ public:
 
 	void Create(const std::wstring& filename);
 	void Create(BYTE* pImgData, const DWORD& dwWidth, const DWORD& dwHeight, const long& nStride, bool bExternalBuffer = false);
+	void Decode(BYTE *pBuffer, unsigned int unSize);
 	bool SaveFile(const std::wstring& strFileName, UINT nFileType);
 	void Destroy();
 

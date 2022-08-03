@@ -1,6 +1,6 @@
 #include "CWmfInterpretatorSvg.h"
 
-#include "../Image.h"
+#include "../../../../graphics/Image.h"
 
 #include "../../../BgraFrame.h"
 

@@ -1,4 +1,5 @@
 #include "CEmfPlusParser.h"
+#include "../../../../graphics/pro/Graphics.h"
 
 #define EMRPLUS_OFFSETCLIP              0x4035
 #define EMRPLUS_RESETCLIP               0x4031
@@ -1255,9 +1256,9 @@ namespace MetaFile
 
 			if (!oEmfParser.CheckError())
 			{
-				CGraphicsRenderer oRenderer;
+				NSGraphics::IGraphicsRenderer* pGrRenderer = NSGraphics::Create();
 
-				oRenderer.SetFontManager(GetFontManager());
+				pGrRenderer->SetFontManager(GetFontManager());
 
 				TEmfRectL *pEmfBounds = oEmfParser.GetBounds();
 
@@ -1286,23 +1287,25 @@ namespace MetaFile
 				oFrame.put_Height(nHeight);
 				oFrame.put_Stride(-4 * nWidth);
 
-				oRenderer.CreateFromBgraFrame(&oFrame);
-				oRenderer.SetSwapRGB(false);
-				oRenderer.put_Width(dWidth);
-				oRenderer.put_Height(dHeight);
+				pGrRenderer->CreateFromBgraFrame(&oFrame);
+				pGrRenderer->SetSwapRGB(false);
+				pGrRenderer->put_Width(dWidth);
+				pGrRenderer->put_Height(dHeight);
 
-				oRenderer.BeginCommand(c_nImageType);
+				pGrRenderer->BeginCommand(c_nImageType);
 
-				CMetaFileRenderer oEmfOut(&oEmfParser, &oRenderer, 0, 0, dWidth, dHeight);
+				CMetaFileRenderer oEmfOut(&oEmfParser, pGrRenderer, 0, 0, dWidth, dHeight);
 				oEmfParser.SetInterpretator(&oEmfOut);
 
 				oEmfParser.PlayFile();
 
-				oRenderer.EndCommand(c_nImageType);
+				pGrRenderer->EndCommand(c_nImageType);
 
-				LONG lWidth, lHeight;
+				LONG lWidth = nWidth, lHeight = nHeight;
 
-				BYTE* pPixels = oRenderer.GetPixels(lWidth, lHeight);
+				BYTE* pPixels = oFrame.get_Data();
+
+				RELEASEINTERFACE(pGrRenderer);
 
 				FlipYImage(pPixels, lWidth, lHeight); //Проверить на примерах, где WrapMode != WrapModeTileFlipXY
 
@@ -1335,8 +1338,8 @@ namespace MetaFile
 
 			if (!oWmfParser.CheckError())
 			{
-				CGraphicsRenderer oRenderer;
-				oRenderer.SetFontManager(GetFontManager());
+				NSGraphics::IGraphicsRenderer* pGrRenderer = NSGraphics::Create();
+				pGrRenderer->SetFontManager(GetFontManager());
 
 				TRectD oWmfBounds = oWmfParser.GetBounds();
 
@@ -1365,23 +1368,23 @@ namespace MetaFile
 				oFrame.put_Height(nHeight);
 				oFrame.put_Stride(-4 * nWidth);
 
-				oRenderer.CreateFromBgraFrame(&oFrame);
-				oRenderer.SetSwapRGB(false);
-				oRenderer.put_Width(dWidth);
-				oRenderer.put_Height(dHeight);
+				pGrRenderer->CreateFromBgraFrame(&oFrame);
+				pGrRenderer->SetSwapRGB(false);
+				pGrRenderer->put_Width(dWidth);
+				pGrRenderer->put_Height(dHeight);
 
-				oRenderer.BeginCommand(c_nImageType);
+				pGrRenderer->BeginCommand(c_nImageType);
 
-				CMetaFileRenderer oWmfOut(&oWmfParser, &oRenderer, 0, 0, dWidth, dHeight);
+				CMetaFileRenderer oWmfOut(&oWmfParser, pGrRenderer, 0, 0, dWidth, dHeight);
 				oWmfParser.SetOutputDevice(&oWmfOut);
 
 				oWmfParser.PlayMetaFile();
 
-				oRenderer.EndCommand(c_nImageType);
+				pGrRenderer->EndCommand(c_nImageType);
 
 				LONG lWidth, lHeight;
 
-				BYTE* pPixels = oRenderer.GetPixels(lWidth, lHeight);
+				BYTE* pPixels = oFrame.get_Data();
 
 				FlipYImage(pPixels, lWidth, lHeight); //Проверить на примерах, где WrapMode != WrapModeTileFlipXY
 

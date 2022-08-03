@@ -31,7 +31,7 @@
  */
 #include <string>
 
-#include "../../../graphics/GraphicsRenderer.h"
+#include "../../../graphics/pro/Graphics.h"
 #include "../Common/MetaFileTypes.h"
 #include "../Common/MetaFileRenderer.h"
 
@@ -44,10 +44,6 @@
 #include "SvmFile.h"
 #include "SvmEnums.h"
 #include "SvmObjects.h"
-
-#if defined(DrawText)
-#undef DrawText
-#endif
 
 #define DEBUG_CSvmParser 0
 

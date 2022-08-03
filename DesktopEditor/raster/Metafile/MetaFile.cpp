@@ -30,13 +30,9 @@
  *
  */
 #include "MetaFile.h"
-
-#include "../../graphics/GraphicsRenderer.h"
 #include "../../raster/BgraFrame.h"
-
-#include "../../../Common/DocxFormat/Source/Base/Types_32.h"
-
 #include "Common/MetaFileRenderer.h"
+#include "../../graphics/pro/Graphics.h"
 
 namespace MetaFile
 {
@@ -47,7 +43,7 @@ namespace MetaFile
 
 	CMetaFile::CMetaFile(NSFonts::IApplicationFonts *pAppFonts) : MetaFile::IMetaFile(pAppFonts)
 	{
-		m_pAppFonts = (CApplicationFonts*)pAppFonts;
+		m_pAppFonts = pAppFonts;
 		// Создаем менеджер шрифтов с собственным кэшем
 		if (pAppFonts)
 		{
@@ -107,14 +103,14 @@ namespace MetaFile
 
 		m_oEmfFile.SetOutputDevice(NULL, wsXmlFilePath);
 
-		CGraphicsRenderer oRenderer;
+		NSGraphics::IGraphicsRenderer* pGrRenderer = NSGraphics::Create();
 
 		NSFonts::IFontManager* pFontManager = m_pAppFonts->GenerateFontManager();
 		NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
 		pFontCache->SetStreams(m_pAppFonts->GetStreams());
 		pFontManager->SetOwnerCache(pFontCache);
 
-		oRenderer.SetFontManager(pFontManager);
+		pGrRenderer->SetFontManager(pFontManager);
 
 		if (-1 == nHeight)
 		{
@@ -150,16 +146,17 @@ namespace MetaFile
 		oFrame.put_Height(nHeight);
 		oFrame.put_Stride(-4 * nWidth);
 
-		oRenderer.CreateFromBgraFrame(&oFrame);
-		oRenderer.SetSwapRGB(false);
-		oRenderer.put_Width(dWidth);
-		oRenderer.put_Height(dHeight);
+		pGrRenderer->CreateFromBgraFrame(&oFrame);
+		pGrRenderer->SetSwapRGB(false);
+		pGrRenderer->put_Width(dWidth);
+		pGrRenderer->put_Height(dHeight);
 
-		DrawOnRenderer(wsXmlFilePath, &oRenderer, 0, 0, dWidth, dHeight);
+		DrawOnRenderer(wsXmlFilePath, pGrRenderer, 0, 0, dWidth, dHeight);
 
 		oFrame.SaveFile(wsOutFilePath, unFileType);
 
 		RELEASEINTERFACE(pFontManager);
+		RELEASEINTERFACE(pGrRenderer);
 	}
 
 	bool CMetaFile::DrawOnRenderer(const wchar_t *wsXmlFilePath, IRenderer *pRenderer, double dX, double dY, double dWidth, double dHeight)
@@ -410,14 +407,14 @@ namespace MetaFile
 
 	void CMetaFile::ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight)
 	{
-		CGraphicsRenderer oRenderer;
+		NSGraphics::IGraphicsRenderer* pGrRenderer = NSGraphics::Create();
 
 		NSFonts::IFontManager* pFontManager = m_pAppFonts->GenerateFontManager();
 		NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
 		pFontCache->SetStreams(m_pAppFonts->GetStreams());
 		pFontManager->SetOwnerCache(pFontCache);
 
-		oRenderer.SetFontManager(pFontManager);
+		pGrRenderer->SetFontManager(pFontManager);
 
 		if (-1 == nHeight)
 		{
@@ -453,15 +450,16 @@ namespace MetaFile
 		oFrame.put_Height(nHeight);
 		oFrame.put_Stride(-4 * nWidth);
 
-		oRenderer.CreateFromBgraFrame(&oFrame);
-		oRenderer.SetSwapRGB(false);
-		oRenderer.put_Width(dWidth);
-		oRenderer.put_Height(dHeight);
+		pGrRenderer->CreateFromBgraFrame(&oFrame);
+		pGrRenderer->SetSwapRGB(false);
+		pGrRenderer->put_Width(dWidth);
+		pGrRenderer->put_Height(dHeight);
 
-		DrawOnRenderer(&oRenderer, 0, 0, dWidth, dHeight);
+		DrawOnRenderer(pGrRenderer, 0, 0, dWidth, dHeight);
 
 		oFrame.SaveFile(wsOutFilePath, unFileType);
 
 		RELEASEINTERFACE(pFontManager);
+		RELEASEINTERFACE(pGrRenderer);
 	}
 }

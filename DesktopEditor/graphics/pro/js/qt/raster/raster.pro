@@ -45,11 +45,16 @@ LIB_GRAPHICS_PRI_PATH = $$PWD/../../../../..
 INCLUDEPATH += \
     $$CORE_ROOT_DIR/OfficeUtils/src/zlib-1.2.11 \
 	$$CORE_ROOT_DIR/OfficeUtils/src \
-	$$LIB_GRAPHICS_PRI_PATH/cximage/jasper/include
+	$$LIB_GRAPHICS_PRI_PATH/cximage/jasper/include \
+	$$LIB_GRAPHICS_PRI_PATH/agg-2.4/include
+
+include($$CORE_ROOT_DIR/DesktopEditor/xml/build/qt/libxml2.pri)
 
 SOURCES += \
     $$CORE_ROOT_DIR/DesktopEditor/common/File.cpp \
-	$$CORE_ROOT_DIR/DesktopEditor/common/Base64.cpp
+	$$CORE_ROOT_DIR/DesktopEditor/common/Base64.cpp \
+	$$CORE_ROOT_DIR/DesktopEditor/common/StringBuilder.cpp \
+	$$CORE_ROOT_DIR/DesktopEditor/common/StringExt.cpp
 
 SOURCES += \
     $$CORE_ROOT_DIR/OfficeUtils/src/zlib_addon.c \
@@ -311,6 +316,71 @@ SOURCES += \
 	$$LIB_GRAPHICS_PRI_PATH/raster/JBig2/source/LeptonLib/skew.cpp
 
 SOURCES += $$CORE_ROOT_DIR/DesktopEditor/graphics/pro/lepton_lib_all.cpp
+
+HEADERS += \
+    $$LIB_GRAPHICS_PRI_PATH/raster/Metafile/CXmlOutput.h \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Common/CPathConverter.h \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Common/IOutputDevice.h \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Common/MetaFile.h \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Common/MetaFileClip.h \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Common/MetaFileObjects.h \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Common/MetaFileRenderer.h \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Common/MetaFileTypes.h \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Common/MetaFileUtils.h \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Emf/EmfInterpretator/CEmfInterpretator.h \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorArray.h \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorBase.h \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorRender.h \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorSvg.h \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorXml.h \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Emf/EmfParser/CEmfParser.h \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Emf/EmfParser/CEmfParserBase.h \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Emf/EmfParser/CEmfPlusParser.h \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Emf/EmfParser/CEmfxParser.h \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Wmf/WmfInterpretator/CWmfInterpretatorSvg.h \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Wmf/WmfParser/CWmfParser.h \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Wmf/WmfParser/CWmfParserBase.h \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Wmf/WmfInterpretator/CWmfInterpretatorBase.h \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Wmf/WmfInterpretator/CWmfInterpretatorRender.h \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Wmf/WmfInterpretator/CWmfInterpretator.h
+
+SOURCES += \
+    $$LIB_GRAPHICS_PRI_PATH/raster/Metafile/CXmlOutput.cpp \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Common/CPathConverter.cpp \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Common/MetaFileTypes.cpp \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Common/MetaFileUtils.cpp \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Emf/EmfInterpretator/CEmfInterpretator.cpp \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorArray.cpp \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorRender.cpp \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorSvg.cpp \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorXml.cpp \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Emf/EmfParser/CEmfParser.cpp \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Emf/EmfParser/CEmfParserBase.cpp \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Emf/EmfParser/CEmfPlusParser.cpp \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Emf/EmfParser/CEmfxParser.cpp \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Wmf/WmfInterpretator/CWmfInterpretatorSvg.cpp \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Wmf/WmfParser/CWmfParser.cpp \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Wmf/WmfParser/CWmfParserBase.cpp \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Wmf/WmfInterpretator/CWmfInterpretatorRender.cpp \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Wmf/WmfInterpretator/CWmfInterpretator.cpp \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/MetaFile.cpp \
+	\
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Emf/EmfClip.cpp \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Emf/EmfObjects.cpp \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Emf/EmfPath.cpp \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Emf/EmfPlayer.cpp \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Emf/EmfFile.cpp \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Wmf/WmfClip.cpp \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Wmf/WmfObjects.cpp \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/Wmf/WmfPlayer.cpp \
+	\
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/StarView/SvmClip.cpp \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/StarView/SvmFile.cpp \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/StarView/SvmObjects.cpp \
+	$$LIB_GRAPHICS_PRI_PATH/raster/Metafile/StarView/SvmPlayer.cpp
+
+SOURCES += \
+    ../../../pro_base.cpp
 
 SOURCES += ./raster.cpp
 HEADERS += ./raster.h

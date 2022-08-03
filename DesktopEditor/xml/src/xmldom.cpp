@@ -1046,6 +1046,7 @@ namespace XmlUtils
 
     std::string NSXmlCanonicalizator::Execute(const std::string& sXml, int mode, bool withComments)
     {
+#ifdef LIBXML_C14N_ENABLED
         xmlDocPtr xmlDoc = xmlParseMemory((char*)sXml.c_str(), (int)sXml.length());
 
         CXmlBuffer bufferC14N;
@@ -1059,6 +1060,9 @@ namespace XmlUtils
         xmlOutputBufferClose(_buffer);
 
         return bufferC14N.builder.GetData();
+#else
+		return "";
+#endif
     }
     std::string NSXmlCanonicalizator::Execute(const std::wstring& sXmlFile, int mode, bool withComments)
     {

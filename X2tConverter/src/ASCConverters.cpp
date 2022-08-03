@@ -4832,12 +4832,13 @@ namespace NExtractTools
 
                std::wstring sTempDirOut = sTemp + L"/output";
                if (!NSDirectory::Exists(sTempDirOut))
-                   NSDirectory::CreateDirectory(sTempDirOut);
+				   NSDirectory::CreateDirectory(sTempDirOut);
 
-               oDocxRenderer.SetTempFolder(sTempDirOut);
-               nRes = oDocxRenderer.Convert(pReader, sTo, AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo);
+			   oDocxRenderer.SetTempFolder(sTempDirOut);
+			   bool bIsOutCompress = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo && !params.hasSavePassword();
+			   nRes = oDocxRenderer.Convert(pReader, sTo, bIsOutCompress);
 
-               if (nRes == S_OK && AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX != nFormatTo)
+			   if (nRes == S_OK && !bIsOutCompress)
 				   nRes = fromDocxDir(sTempDirOut, sTo, nFormatTo, sTemp, sThemeDir, bPaid, params, L"");
            }
            else

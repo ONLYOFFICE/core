@@ -35,7 +35,6 @@
 #include "../Common/MetaFileTypes.h"
 #include "../Common/MetaFileRenderer.h"
 
-#include "../../../../Common/DocxFormat/Source/Base/Types_32.h"
 #include "../../../../OfficeUtils/src/OfficeUtils.h"
 #ifdef _DEBUG
 	#include <iostream>

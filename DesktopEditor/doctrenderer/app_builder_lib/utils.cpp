@@ -223,7 +223,7 @@ namespace NSUtils
 
 	std::wstring GetBuilderDirectory()
 	{
-		#define VALUE_TO_STRING(x) L#x
+		#define VALUE_TO_STRING(x) L###x
 		#define VALUE2STR(x) VALUE_TO_STRING(x)
 
 		std::wstring sDirectory = VALUE2STR(DOCUMENT_BUILDER_INSTALL_PATH);

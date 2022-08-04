@@ -35,9 +35,11 @@
 #include "Image.h"
 #include "TemporaryCS.h"
 #include <map>
-#include "../fontengine/ApplicationFonts.h"
-#include "../raster/Metafile/MetaFile.h"
 #include "../common/File.h"
+
+#ifndef GRAPHICS_DISABLE_METAFILE
+#include "../raster/Metafile/MetaFile.h"
+#endif
 
 #if defined (GetTempPath)
 #undef GetTempPath
@@ -51,41 +53,45 @@ private:
 	Aggplus::CImage m_oImage;
 
 public:
-    CCacheImage(CApplicationFonts* pFonts) : NSImages::ICacheImage(), m_oImage()
+	CCacheImage(NSFonts::IApplicationFonts* pFonts) : NSImages::ICacheImage(), m_oImage()
 	{
 	}
 
-    CCacheImage(CApplicationFonts* pFonts, const std::wstring& strFile) : NSImages::ICacheImage()
+	CCacheImage(NSFonts::IApplicationFonts* pFonts, const std::wstring& strFile) : NSImages::ICacheImage()
 	{
-        if (NULL == pFonts)
-        {
-            m_oImage.Create(strFile);
-        }
-        else
-        {
-            MetaFile::IMetaFile* pMetafile = MetaFile::Create(pFonts);
-            bool bIsMetafile = pMetafile->LoadFromFile(strFile.c_str());
-            if (!bIsMetafile)
-            {
-                m_oImage.Create(strFile);
-            }
-            else
-            {
-                std::wstring sTempFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"AscMetafile_");
-                pMetafile->ConvertToRaster(sTempFile.c_str(), 4, 1000, -1);
-                m_oImage.Create(sTempFile);
+		if (NULL == pFonts)
+		{
+			m_oImage.Create(strFile);
+		}
+		else
+		{
+#ifdef GRAPHICS_DISABLE_METAFILE
+			m_oImage.Create(strFile);
+#else
+			MetaFile::IMetaFile* pMetafile = MetaFile::Create(pFonts);
+			bool bIsMetafile = pMetafile->LoadFromFile(strFile.c_str());
+			if (!bIsMetafile)
+			{
+				m_oImage.Create(strFile);
+			}
+			else
+			{
+				std::wstring sTempFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"AscMetafile_");
+				pMetafile->ConvertToRaster(sTempFile.c_str(), 4, 1000, -1);
+				m_oImage.Create(sTempFile);
 
-                NSFile::CFileBinary::Remove(sTempFile);
-            }
-            RELEASEINTERFACE(pMetafile);
-        }
+				NSFile::CFileBinary::Remove(sTempFile);
+			}
+			RELEASEINTERFACE(pMetafile);
+#endif
+		}
 	}
 
-    virtual ~CCacheImage()
-    {
-    }
+	virtual ~CCacheImage()
+	{
+	}
 
-    virtual Aggplus::CImage* GetImage()
+	virtual Aggplus::CImage* GetImage()
 	{
 		return &m_oImage;
 	}
@@ -97,30 +103,30 @@ private:
 	std::map<std::wstring, CCacheImage*> m_mapImages;
 	LONG m_lMaxCount;
 
-    CApplicationFonts* m_pApplicationFonts;
+	NSFonts::IApplicationFonts* m_pApplicationFonts;
 
 	NSCriticalSection::CRITICAL_SECTION m_oCS;
 
 public:
-    CImageFilesCache(CApplicationFonts* pFonts = NULL) : NSImages::IImageFilesCache()
+	CImageFilesCache(NSFonts::IApplicationFonts* pFonts = NULL) : NSImages::IImageFilesCache()
 	{
-        m_pApplicationFonts = pFonts;
+		m_pApplicationFonts = pFonts;
 		m_lMaxCount = 10;
 
 		m_oCS.InitializeCriticalSection();
 
-        ADDREFINTERFACE(m_pApplicationFonts);
+		ADDREFINTERFACE(m_pApplicationFonts);
 	}
 
-    virtual ~CImageFilesCache()
+	virtual ~CImageFilesCache()
 	{
 		Clear();
 		m_oCS.DeleteCriticalSection();
 
-        RELEASEINTERFACE(m_pApplicationFonts);
+		RELEASEINTERFACE(m_pApplicationFonts);
 	}
 
-    virtual void Clear()
+	virtual void Clear()
 	{
 		CTemporaryCS oCS(&m_oCS);
 
@@ -132,7 +138,7 @@ public:
 		m_mapImages.clear();
 	}
 
-    virtual NSImages::ICacheImage* Lock(const std::wstring& strFile)
+	virtual NSImages::ICacheImage* Lock(const std::wstring& strFile)
 	{
 		CTemporaryCS oCS(&m_oCS);
 
@@ -149,44 +155,44 @@ public:
 		{
 			int nNeedDelete = nCount - m_lMaxCount;
 
-            while (nNeedDelete > 0)
-            {
-                std::map<std::wstring,CCacheImage*>::iterator it2 = m_mapImages.begin();
-                if (it2 != m_mapImages.end())
-                {
-                    it2->second->Release();
-                    m_mapImages.erase(it2);
-                }
-                --nNeedDelete;
-            }
-        }
+			while (nNeedDelete > 0)
+			{
+				std::map<std::wstring,CCacheImage*>::iterator it2 = m_mapImages.begin();
+				if (it2 != m_mapImages.end())
+				{
+					it2->second->Release();
+					m_mapImages.erase(it2);
+				}
+				--nNeedDelete;
+			}
+		}
 
-        CCacheImage* pImage = new CCacheImage(m_pApplicationFonts, strFile);
+		CCacheImage* pImage = new CCacheImage(m_pApplicationFonts, strFile);
 
-        if (pImage->GetImage()->GetLastStatus() != Aggplus::Ok)
-            return pImage;
+		if (pImage->GetImage()->GetLastStatus() != Aggplus::Ok)
+			return pImage;
 
 		m_mapImages[strFile] = pImage;
 		pImage->AddRef();
 		return pImage;
 	}
 
-    virtual bool UnLock(const std::wstring& strFile)
-    {
-        CTemporaryCS oCS(&m_oCS);
+	virtual bool UnLock(const std::wstring& strFile)
+	{
+		CTemporaryCS oCS(&m_oCS);
 
-        std::map<std::wstring,CCacheImage*>::iterator it = m_mapImages.find(strFile);
-        if (it != m_mapImages.end())
-        {
-            it->second->Release();
-            m_mapImages.erase(it);
-            return true;
-        }
+		std::map<std::wstring,CCacheImage*>::iterator it = m_mapImages.find(strFile);
+		if (it != m_mapImages.end())
+		{
+			it->second->Release();
+			m_mapImages.erase(it);
+			return true;
+		}
 
-        return false;
-    }
+		return false;
+	}
 	
-    virtual int Release()
+	virtual int Release()
 	{
 		m_oCS.Enter();
 		--m_lRef;
@@ -201,15 +207,15 @@ public:
 		m_oCS.Leave();
 		return m_lRef;
 	}
-    
-    virtual void SetApplicationFonts(NSFonts::IApplicationFonts* pApplicationFonts)
-    {
-        if (m_pApplicationFonts)
-            m_pApplicationFonts->Release();
-        m_pApplicationFonts = (CApplicationFonts*)pApplicationFonts;
-        if (m_pApplicationFonts)
-            m_pApplicationFonts->AddRef();
-    }
+
+	virtual void SetApplicationFonts(NSFonts::IApplicationFonts* pApplicationFonts)
+	{
+		if (m_pApplicationFonts)
+			m_pApplicationFonts->Release();
+		m_pApplicationFonts = pApplicationFonts;
+		if (m_pApplicationFonts)
+			m_pApplicationFonts->AddRef();
+	}
 };
 
 #endif // _BUILD_IMAGEFILESCACHE_H_

@@ -32,6 +32,7 @@
 #include "./MetafileToGraphicsRenderer.h"
 #include "./MetafileToRendererCheck.h"
 #include "GraphicsRenderer.h"
+#include "../common/StringExt.h"
 
 namespace NSOnlineOfficeBinToPdf
 {
@@ -42,7 +43,7 @@ namespace NSOnlineOfficeBinToPdf
         std::wstring wsThemesPlace;
         std::wstring wsTempDir;
 
-        CApplicationFonts* appFonts;
+		NSFonts::IApplicationFonts* appFonts;
 
         int m_nRasterFormat;
         int m_nSaveType; // 0 = stretch, 1 = aspect (width == maxsize)
@@ -208,8 +209,8 @@ namespace NSOnlineOfficeBinToPdf
         if (m_internal->m_bIsOnlyFirst)
             nPagesCount = 1;
 
-        CFontManager* pFontManager = (CFontManager*)m_internal->appFonts->GenerateFontManager();
-        CFontsCache* pFontsCache = new CFontsCache();
+		NSFonts::IFontManager* pFontManager = m_internal->appFonts->GenerateFontManager();
+		NSFonts::IFontsCache* pFontsCache = NSFonts::NSFontCache::Create();
         pFontsCache->SetStreams(m_internal->appFonts->GetStreams());
         pFontManager->SetOwnerCache(pFontsCache);
 
@@ -366,7 +367,7 @@ namespace NSOnlineOfficeBinToPdf
 
     void CMetafileToRenderterRaster::SetApplication(NSFonts::IApplicationFonts* pFonts)
     {
-        m_internal->appFonts = (CApplicationFonts*)pFonts;
+		m_internal->appFonts = pFonts;
     }
 
     int CMetafileToRenderterRaster::GetRasterFormat()

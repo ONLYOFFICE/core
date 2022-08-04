@@ -107,6 +107,7 @@ namespace NSImages
     };
 }
 
+#ifndef GRAPHICS_DISABLE_METAFILE
 namespace MetaFile
 {
     const int c_lMetaWmf = 0x01;
@@ -141,5 +142,6 @@ namespace MetaFile
 
     GRAPHICS_DECL IMetaFile* Create(NSFonts::IApplicationFonts *pAppFonts);
 }
+#endif
 
 #endif // _GRAPHICS_EXPORTS_IMAGE_H_

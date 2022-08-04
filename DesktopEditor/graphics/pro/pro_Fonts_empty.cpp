@@ -32,49 +32,55 @@
 
 #include "Fonts.h"
 
-namespace NSBase
+namespace NSFonts
 {
-	CBaseRefCounter::CBaseRefCounter()
+	namespace NSFontPath
 	{
-		m_lRef = 1;
+		IFontPath* Create() { return NULL; }
+	}
+}
+
+namespace NSFonts
+{
+	namespace NSStream
+	{
+		IFontStream* Create() { return NULL; }
 	}
 
-	CBaseRefCounter::~CBaseRefCounter()
+	namespace NSApplicationFontStream
 	{
+		IApplicationFontStreams* Create() { return NULL; }
 	}
+}
 
-#ifdef __APPLE__
-	int CBaseRefCounter::AddRef()
+namespace NSFonts
+{
+	namespace NSFontFile
 	{
-		OSAtomicIncrement32(&m_lRef);
-		return m_lRef;
+		IFontFile* Create() { return NULL; }
 	}
-	int CBaseRefCounter::Release()
-	{
-		int32_t ret = OSAtomicDecrement32(&m_lRef);
-		if (0 == m_lRef)
-			delete this;
+}
 
-		return ret;
-	}
-#else
-	int CBaseRefCounter::AddRef()
+namespace NSFonts
+{
+	namespace NSFontCache
 	{
-		++m_lRef;
-		return m_lRef;
+		IFontsCache* Create() { return NULL; }
 	}
+}
 
-	int CBaseRefCounter::Release()
+namespace NSFonts
+{
+	namespace NSFontManager
 	{
-		int ret = --m_lRef;
-		if (0 == m_lRef)
-			delete this;
-		return ret;
+		IFontManager* Create() { return NULL; }
 	}
-#endif
+}
 
-	void Release(CBaseRefCounter* base)
+namespace NSFonts
+{
+	namespace NSApplication
 	{
-		delete base;
+		IApplicationFonts* Create() { return NULL; }
 	}
 }

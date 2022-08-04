@@ -38,8 +38,14 @@
 
 #include "Wmf/WmfFile.h"
 #include "Emf/EmfFile.h"
+
+#ifdef METAFILE_SUPPORT_SVM
 #include "StarView/SvmFile.h"
+#endif
+
+#ifdef METAFILE_SUPPORT_SVG
 #include "svg/SVGTransformer.h"
+#endif
 
 namespace MetaFile
 {
@@ -75,8 +81,14 @@ namespace MetaFile
 
 		CWmfFile           m_oWmfFile;
 		CEmfFile           m_oEmfFile;
+
+	#ifdef METAFILE_SUPPORT_SVM
 		CSvmFile           m_oSvmFile;
+	#endif
+
+	#ifdef METAFILE_SUPPORT_SVG
 		CSVGTransformer    m_oSvgFile;
+	#endif
 
 		int                m_lType;
 	};

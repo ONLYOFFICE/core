@@ -55,7 +55,10 @@ namespace MetaFile
 
 		m_oWmfFile.SetFontManager(m_pFontManager);
 		m_oEmfFile.SetFontManager(m_pFontManager);
+
+	#ifdef METAFILE_SUPPORT_SVM
 		m_oSvmFile.SetFontManager(m_pFontManager);
+	#endif
 		m_lType  = 0;
 	}
 
@@ -180,13 +183,17 @@ namespace MetaFile
 		}
 		else if (c_lMetaSvm == m_lType)
 		{
+		#ifdef METAFILE_SUPPORT_SVM
 			CMetaFileRenderer oSvmOut(&m_oSvmFile, pRenderer, dX, dY, dWidth, dHeight);
 			m_oSvmFile.SetOutputDevice((IOutputDevice*)&oSvmOut);
 			m_oSvmFile.PlayMetaFile();
+		#endif
 		}
 		else if (c_lMetaSvg == m_lType)
 		{
+		#ifdef METAFILE_SUPPORT_SVG
 			m_oSvgFile.Draw(pRenderer, dX, dY, dWidth, dHeight);
+		#endif
 		}
 
 		pRenderer->EndCommand(c_nImageType);
@@ -207,8 +214,14 @@ namespace MetaFile
 
 		m_oWmfFile.SetFontManager(m_pFontManager);
 		m_oEmfFile.SetFontManager(m_pFontManager);
+
+	#ifdef METAFILE_SUPPORT_SVM
 		m_oSvmFile.SetFontManager(m_pFontManager);
+	#endif
+
+	#ifdef METAFILE_SUPPORT_SVG
 		m_oSvgFile.SetFontManager(m_pFontManager);
+	#endif
 
 		if (m_oEmfFile.OpenFromXmlFile(wsFilePath) == true)
 		{
@@ -254,8 +267,14 @@ namespace MetaFile
 
 		m_oWmfFile.SetFontManager(m_pFontManager);
 		m_oEmfFile.SetFontManager(m_pFontManager);
+
+	#ifdef METAFILE_SUPPORT_SVM
 		m_oSvmFile.SetFontManager(m_pFontManager);
+	#endif
+
+	#ifdef METAFILE_SUPPORT_SVG
 		m_oSvgFile.SetFontManager(m_pFontManager);
+	#endif
 
 		//------------------------------------------------------
 
@@ -284,6 +303,7 @@ namespace MetaFile
 			m_oEmfFile.Close();
 		}
 		// Это не Emf
+	#ifdef METAFILE_SUPPORT_SVM
 		if (m_oSvmFile.OpenFromFile(wsFilePath) == true)
 		{
 			m_oSvmFile.Scan();
@@ -296,12 +316,15 @@ namespace MetaFile
 
 			m_oSvmFile.Close();
 		}
+	#endif
 		// Это не svm
+	#ifdef METAFILE_SUPPORT_SVG
 		if (m_oSvgFile.OpenFromFile(wsFilePath) == true)
 		{
 			m_lType = c_lMetaSvg;
 			return true;
 		}
+	#endif
 
 		return false;
 	}
@@ -327,13 +350,17 @@ namespace MetaFile
 		}
 		else if (c_lMetaSvm == m_lType)
 		{
+		#ifdef METAFILE_SUPPORT_SVM
 			CMetaFileRenderer oSvmOut(&m_oSvmFile, pRenderer, dX, dY, dWidth, dHeight);
 			m_oSvmFile.SetOutputDevice((IOutputDevice*)&oSvmOut);
 			m_oSvmFile.PlayMetaFile();
+		#endif
 		}
 		else if (c_lMetaSvg == m_lType)
 		{
+		#ifdef METAFILE_SUPPORT_SVM
 			m_oSvgFile.Draw(pRenderer, dX, dY, dWidth, dHeight);
+		#endif
 		}
 
 		pRenderer->EndCommand(c_nImageType);
@@ -344,8 +371,14 @@ namespace MetaFile
 	{
 		m_oWmfFile.Close();
 		m_oEmfFile.Close();
+
+	#ifdef METAFILE_SUPPORT_SVM
 		m_oSvmFile.Close();
+	#endif
+
+	#ifdef METAFILE_SUPPORT_SVG
 		m_oSvgFile.Close();
+	#endif
 
 		m_lType  = 0;
 	}
@@ -373,6 +406,7 @@ namespace MetaFile
 			*pdW = pRect->lRight - pRect->lLeft;
 			*pdH = pRect->lBottom - pRect->lTop;
 		}
+	#ifdef METAFILE_SUPPORT_SVM
 		else if (c_lMetaSvm == m_lType)
 		{
 			TRect* pRect = m_oSvmFile.GetBounds();
@@ -387,6 +421,8 @@ namespace MetaFile
 				*pdH /= 10;
 			}
 		}
+	#endif
+	#ifdef METAFILE_SUPPORT_SVG
 		else if (c_lMetaSvg == m_lType)
 		{
 			*pdX = 0;
@@ -394,6 +430,7 @@ namespace MetaFile
 			*pdW = m_oSvgFile.get_Width();
 			*pdH = m_oSvgFile.get_Height();
 		}
+	#endif
 		else
 		{
 			*pdX = 0;

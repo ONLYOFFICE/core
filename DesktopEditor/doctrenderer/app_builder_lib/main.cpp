@@ -32,14 +32,14 @@
 
 #include "./../common_deploy.h"
 #include "../docbuilder.h"
-#include "../../common/File.h"
+#include "./utils.cpp"
 
 using namespace NSDoctRenderer;
 int main(int argc, char *argv[])
 {
-    std::wstring sProcessDirectory = NSFile::GetProcessDirectory();
+	std::wstring sProcessDirectory = NSUtils::GetProcessDirectory();
     // для дебага БЕЗ x2t - подкидываем билдер в папку builder к тестовому примеру
-    std::wstring sWorkDirectory = sProcessDirectory + L"/builder";
+	std::wstring sWorkDirectory = NSUtils::GetBuilderDirectory();
 
     CDocBuilder::Initialize(sWorkDirectory.c_str());
 

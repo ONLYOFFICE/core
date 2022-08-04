@@ -18,7 +18,15 @@ include($$CORE_ROOT_DIR/Common/3dParty/icu/icu.pri)
 DESTDIR = $$PWD/build
 ################################################
 
-ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, kernel_network, doctrenderer)
+# Use installation builder path, or set the own path.
+core_windows {
+    DOCUMENT_BUILDER_INSTALL_PATH="C:/Program Files/ONLYOFFICE/DocumentBuilder"
+} else {
+    DOCUMENT_BUILDER_INSTALL_PATH=/opt/onlyoffice/documentbuilder
+}
+
+DEFINES += "DOCUMENT_BUILDER_INSTALL_PATH=\"$$DOCUMENT_BUILDER_INSTALL_PATH\""
+LIBS += -L'$$DOCUMENT_BUILDER_INSTALL_PATH' -ldoctrenderer
 
 core_linux {
     LIBS += -ldl

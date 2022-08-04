@@ -2,6 +2,7 @@
 #define CEMFINTERPRETATORXML_H
 
 #include "CEmfInterpretatorBase.h"
+#include "../../CXmlOutput.h"
 
 #include <iostream>
 

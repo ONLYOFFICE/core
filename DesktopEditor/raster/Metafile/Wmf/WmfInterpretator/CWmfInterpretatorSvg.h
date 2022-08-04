@@ -1,10 +1,9 @@
 #ifndef CWMFINTERPRETATORSVG_H
 #define CWMFINTERPRETATORSVG_H
 
-#include "../../CXmlOutput.h"
-
 #include "../WmfParser/CWmfParserBase.h"
 #include "CWmfInterpretatorBase.h"
+#include "../../../../xml/include/xmlwriter.h"
 
 namespace MetaFile
 {

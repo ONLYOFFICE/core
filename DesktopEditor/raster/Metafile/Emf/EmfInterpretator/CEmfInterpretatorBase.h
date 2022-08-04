@@ -1,7 +1,6 @@
 #ifndef CEMFINTERPRETATORBASE_H
 #define CEMFINTERPRETATORBASE_H
 
-#include "../../CXmlOutput.h"
 #include "../../Common/IOutputDevice.h"
 #include "../../Common/MetaFile.h"
 

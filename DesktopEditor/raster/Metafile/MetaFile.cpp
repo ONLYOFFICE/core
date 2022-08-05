@@ -30,8 +30,9 @@
  *
  */
 #include "MetaFile.h"
-#include "../../raster/BgraFrame.h"
+#include "Common/MetaFileTypes.h"
 #include "Common/MetaFileRenderer.h"
+#include "../../raster/BgraFrame.h"
 #include "../../graphics/pro/Graphics.h"
 
 namespace MetaFile
@@ -53,8 +54,10 @@ namespace MetaFile
 			m_pFontManager->SetOwnerCache(pMeasurerCache);
 		}
 
+	#ifdef METAFILE_SUPPORT_WMF_EMF
 		m_oWmfFile.SetFontManager(m_pFontManager);
 		m_oEmfFile.SetFontManager(m_pFontManager);
+	#endif
 
 	#ifdef METAFILE_SUPPORT_SVM
 		m_oSvmFile.SetFontManager(m_pFontManager);
@@ -78,6 +81,7 @@ namespace MetaFile
 		if (NULL == wsFilePath)
 			return;
 
+	#ifdef METAFILE_SUPPORT_WMF_EMF
 		if (c_lMetaWmf == m_lType)
 		{
 			m_oWmfFile.SetOutputDevice(wsFilePath, InterpretatorType::Svg, unWidth, unHeight);
@@ -88,8 +92,10 @@ namespace MetaFile
 			m_oEmfFile.SetOutputDevice(wsFilePath, InterpretatorType::Svg, unWidth, unHeight);
 			m_oEmfFile.PlayMetaFile();
 		}
+	#endif
 	}
 
+#ifdef METAFILE_SUPPORT_WMF_EMF
 	void CMetaFile::ConvertToXml(const wchar_t *wsFilePath)
 	{
 		if (NULL == wsFilePath)
@@ -169,31 +175,42 @@ namespace MetaFile
 
 		pRenderer->BeginCommand(c_nImageType);
 
-		if (c_lMetaWmf == m_lType)
+		switch (m_lType)
 		{
-			CMetaFileRenderer oWmfOut(m_oWmfFile.GetWmfParser(), pRenderer, dX, dY, dWidth, dHeight);
-			m_oWmfFile.SetOutputDevice((IOutputDevice*)&oWmfOut);
-			m_oWmfFile.PlayMetaFile();
-		}
-		else if (c_lMetaEmf == m_lType)
-		{
-			CMetaFileRenderer oEmfOut(m_oEmfFile.GetEmfParser(), pRenderer, dX, dY, dWidth, dHeight);
-			m_oEmfFile.SetOutputDevice((IOutputDevice*)&oEmfOut, wsXmlFilePath);
-			m_oEmfFile.PlayMetaFile();
-		}
-		else if (c_lMetaSvm == m_lType)
-		{
+		#ifdef METAFILE_SUPPORT_WMF_EMF
+			case c_lMetaWmf:
+			{
+				CMetaFileRenderer oWmfOut(m_oWmfFile.GetWmfParser(), pRenderer, dX, dY, dWidth, dHeight);
+				m_oWmfFile.SetOutputDevice((IOutputDevice*)&oWmfOut);
+				m_oWmfFile.PlayMetaFile();
+				break;
+			}
+			case c_lMetaEmf:
+			{
+				CMetaFileRenderer oEmfOut(m_oEmfFile.GetEmfParser(), pRenderer, dX, dY, dWidth, dHeight);
+				m_oEmfFile.SetOutputDevice((IOutputDevice*)&oEmfOut, wsXmlFilePath);
+				m_oEmfFile.PlayMetaFile();
+				break;
+			}
+		#endif
 		#ifdef METAFILE_SUPPORT_SVM
-			CMetaFileRenderer oSvmOut(&m_oSvmFile, pRenderer, dX, dY, dWidth, dHeight);
-			m_oSvmFile.SetOutputDevice((IOutputDevice*)&oSvmOut);
-			m_oSvmFile.PlayMetaFile();
+			case c_lMetaSvm:
+			{
+				CMetaFileRenderer oSvmOut(&m_oSvmFile, pRenderer, dX, dY, dWidth, dHeight);
+				m_oSvmFile.SetOutputDevice((IOutputDevice*)&oSvmOut);
+				m_oSvmFile.PlayMetaFile();
+				break;
+			}
 		#endif
-		}
-		else if (c_lMetaSvg == m_lType)
-		{
 		#ifdef METAFILE_SUPPORT_SVG
-			m_oSvgFile.Draw(pRenderer, dX, dY, dWidth, dHeight);
+			case c_lMetaSvg:
+			{
+				m_oSvgFile.Draw(pRenderer, dX, dY, dWidth, dHeight);
+				break;
+			}
 		#endif
+			default:
+				break;
 		}
 
 		pRenderer->EndCommand(c_nImageType);
@@ -223,6 +240,7 @@ namespace MetaFile
 		m_oSvgFile.SetFontManager(m_pFontManager);
 	#endif
 
+	#ifdef METAFILE_SUPPORT_WMF_EMF_XML
 		if (m_oEmfFile.OpenFromXmlFile(wsFilePath) == true)
 		{
 			m_oEmfFile.Scan();
@@ -234,6 +252,7 @@ namespace MetaFile
 			}
 			m_oEmfFile.Close();
 		}
+	#endif
 
 		return false;
 	}
@@ -248,6 +267,7 @@ namespace MetaFile
 
 		//TODO:: сохранение в *.emf файл
 	}
+#endif
 
 	bool CMetaFile::LoadFromFile(const wchar_t *wsFilePath)
 	{
@@ -265,8 +285,10 @@ namespace MetaFile
 			m_pFontManager->SetOwnerCache(pMeasurerCache);
 		}
 
+	#ifdef METAFILE_SUPPORT_WMF_EMF
 		m_oWmfFile.SetFontManager(m_pFontManager);
 		m_oEmfFile.SetFontManager(m_pFontManager);
+	#endif
 
 	#ifdef METAFILE_SUPPORT_SVM
 		m_oSvmFile.SetFontManager(m_pFontManager);
@@ -278,6 +300,7 @@ namespace MetaFile
 
 		//------------------------------------------------------
 
+	#ifdef METAFILE_SUPPORT_WMF_EMF
 		// Сначала пытаемся открыть файл как Wmf
 		if (m_oWmfFile.OpenFromWmfFile(wsFilePath) == true)
 		{
@@ -302,6 +325,7 @@ namespace MetaFile
 			}
 			m_oEmfFile.Close();
 		}
+	#endif
 		// Это не Emf
 	#ifdef METAFILE_SUPPORT_SVM
 		if (m_oSvmFile.OpenFromFile(wsFilePath) == true)
@@ -336,31 +360,42 @@ namespace MetaFile
 
 		pRenderer->BeginCommand(c_nImageType);
 
-		if (c_lMetaWmf == m_lType)
+		switch (m_lType)
 		{
-			CMetaFileRenderer oWmfOut(m_oWmfFile.GetWmfParser(), pRenderer, dX, dY, dWidth, dHeight);
-			m_oWmfFile.SetOutputDevice((IOutputDevice*)&oWmfOut);
-			m_oWmfFile.PlayMetaFile();
-		}
-		else if (c_lMetaEmf == m_lType)
-		{
-			CMetaFileRenderer oEmfOut(m_oEmfFile.GetEmfParser(), pRenderer, dX, dY, dWidth, dHeight);
-			m_oEmfFile.SetOutputDevice((IOutputDevice*)&oEmfOut);
-			m_oEmfFile.PlayMetaFile();
-		}
-		else if (c_lMetaSvm == m_lType)
-		{
-		#ifdef METAFILE_SUPPORT_SVM
-			CMetaFileRenderer oSvmOut(&m_oSvmFile, pRenderer, dX, dY, dWidth, dHeight);
-			m_oSvmFile.SetOutputDevice((IOutputDevice*)&oSvmOut);
-			m_oSvmFile.PlayMetaFile();
+		#ifdef METAFILE_SUPPORT_WMF_EMF
+			case c_lMetaWmf:
+			{
+				CMetaFileRenderer oWmfOut(m_oWmfFile.GetWmfParser(), pRenderer, dX, dY, dWidth, dHeight);
+				m_oWmfFile.SetOutputDevice((IOutputDevice*)&oWmfOut);
+				m_oWmfFile.PlayMetaFile();
+				break;
+			}
+			case c_lMetaEmf:
+			{
+				CMetaFileRenderer oEmfOut(m_oEmfFile.GetEmfParser(), pRenderer, dX, dY, dWidth, dHeight);
+				m_oEmfFile.SetOutputDevice((IOutputDevice*)&oEmfOut);
+				m_oEmfFile.PlayMetaFile();
+				break;
+			}
 		#endif
-		}
-		else if (c_lMetaSvg == m_lType)
-		{
 		#ifdef METAFILE_SUPPORT_SVM
-			m_oSvgFile.Draw(pRenderer, dX, dY, dWidth, dHeight);
+			case c_lMetaSvm:
+			{
+				CMetaFileRenderer oSvmOut(&m_oSvmFile, pRenderer, dX, dY, dWidth, dHeight);
+				m_oSvmFile.SetOutputDevice((IOutputDevice*)&oSvmOut);
+				m_oSvmFile.PlayMetaFile();
+				break;
+			}
 		#endif
+		#ifdef METAFILE_SUPPORT_SVG
+			case c_lMetaSvg:
+			{
+				m_oSvgFile.Draw(pRenderer, dX, dY, dWidth, dHeight);
+				break;
+			}
+		#endif
+			default:
+				break;
 		}
 
 		pRenderer->EndCommand(c_nImageType);
@@ -369,8 +404,10 @@ namespace MetaFile
 
 	void CMetaFile::Close()
 	{
+	#ifdef METAFILE_SUPPORT_WMF_EMF
 		m_oWmfFile.Close();
 		m_oEmfFile.Close();
+	#endif
 
 	#ifdef METAFILE_SUPPORT_SVM
 		m_oSvmFile.Close();
@@ -390,54 +427,65 @@ namespace MetaFile
 
 	void CMetaFile::GetBounds(double* pdX, double* pdY, double* pdW, double* pdH)
 	{
-		if (c_lMetaWmf == m_lType)
+		switch (m_lType)
 		{
-			const TRectD& oRect = m_oWmfFile.GetBounds();
-			*pdX = oRect.dLeft;
-			*pdY = oRect.dTop;
-			*pdW = oRect.dRight - oRect.dLeft;
-			*pdH = oRect.dBottom - oRect.dTop;
-		}
-		else if (c_lMetaEmf == m_lType)
-		{
-			TEmfRectL* pRect = m_oEmfFile.GetBounds();
-			*pdX = pRect->lLeft;
-			*pdY = pRect->lTop;
-			*pdW = pRect->lRight - pRect->lLeft;
-			*pdH = pRect->lBottom - pRect->lTop;
-		}
-	#ifdef METAFILE_SUPPORT_SVM
-		else if (c_lMetaSvm == m_lType)
-		{
-			TRect* pRect = m_oSvmFile.GetBounds();
-			*pdX = pRect->nLeft;
-			*pdY = pRect->nTop;
-			*pdW = pRect->nRight - pRect->nLeft;
-			*pdH = pRect->nBottom - pRect->nTop;
-
-			if (*pdW > 10000 || *pdH > 10000)
+		#ifdef METAFILE_SUPPORT_WMF_EMF
+			case c_lMetaWmf:
 			{
-				*pdW /= 10;
-				*pdH /= 10;
+				const TRectD& oRect = m_oWmfFile.GetBounds();
+				*pdX = oRect.dLeft;
+				*pdY = oRect.dTop;
+				*pdW = oRect.dRight - oRect.dLeft;
+				*pdH = oRect.dBottom - oRect.dTop;
+				break;
+			}
+			case c_lMetaEmf:
+			{
+				TEmfRectL* pRect = m_oEmfFile.GetBounds();
+				*pdX = pRect->lLeft;
+				*pdY = pRect->lTop;
+				*pdW = pRect->lRight - pRect->lLeft;
+				*pdH = pRect->lBottom - pRect->lTop;
+				break;
+			}
+		#endif
+		#ifdef METAFILE_SUPPORT_SVM
+			case c_lMetaSvm:
+			{
+				TRect* pRect = m_oSvmFile.GetBounds();
+				*pdX = pRect->nLeft;
+				*pdY = pRect->nTop;
+				*pdW = pRect->nRight - pRect->nLeft;
+				*pdH = pRect->nBottom - pRect->nTop;
+
+				if (*pdW > 10000 || *pdH > 10000)
+				{
+					*pdW /= 10;
+					*pdH /= 10;
+				}
+				break;
+			}
+		#endif
+		#ifdef METAFILE_SUPPORT_SVG
+			case c_lMetaSvg:
+			{
+				*pdX = 0;
+				*pdY = 0;
+				*pdW = m_oSvgFile.get_Width();
+				*pdH = m_oSvgFile.get_Height();
+				break;
+			}
+		#endif
+			default:
+			{
+				*pdX = 0;
+				*pdY = 0;
+				*pdW = 0;
+				*pdH = 0;
+				break;
 			}
 		}
-	#endif
-	#ifdef METAFILE_SUPPORT_SVG
-		else if (c_lMetaSvg == m_lType)
-		{
-			*pdX = 0;
-			*pdY = 0;
-			*pdW = m_oSvgFile.get_Width();
-			*pdH = m_oSvgFile.get_Height();
-		}
-	#endif
-		else
-		{
-			*pdX = 0;
-			*pdY = 0;
-			*pdW = 0;
-			*pdH = 0;
-		}
+
 		if (*pdW < 0) *pdW = -*pdW;
 		if (*pdH < 0) *pdH = -*pdH;
 	}

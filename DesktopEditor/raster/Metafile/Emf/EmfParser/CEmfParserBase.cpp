@@ -2,9 +2,12 @@
 
 #include "../EmfInterpretator/CEmfInterpretatorRender.h"
 #include "../EmfInterpretator/CEmfInterpretatorArray.h"
-#include "../EmfInterpretator/CEmfInterpretatorXml.h"
 #include "../EmfInterpretator/CEmfInterpretatorSvg.h"
 #include "../EmfInterpretator/CEmfInterpretator.h"
+
+#ifdef METAFILE_SUPPORT_WMF_EMF_XML
+#include "../EmfInterpretator/CEmfInterpretatorXml.h"
+#endif
 
 namespace MetaFile
 {
@@ -779,12 +782,14 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			delete m_pInterpretator;
 
-		if(oInterpretatorType == InterpretatorType::XML)
-			m_pInterpretator = new CEmfInterpretatorXml(wsFilePath);
-		else if (oInterpretatorType == InterpretatorType::Emf)
+		if (oInterpretatorType == InterpretatorType::Emf)
 			m_pInterpretator = new CEmfInterpretator(wsFilePath);
 		else if (oInterpretatorType == InterpretatorType::Svg)
 			m_pInterpretator = new CEmfInterpretatorSvg(wsFilePath, this, unWidth, unHeight);
+	#ifdef METAFILE_SUPPORT_WMF_EMF_XML
+		else if(oInterpretatorType == InterpretatorType::XML)
+			m_pInterpretator = new CEmfInterpretatorXml(wsFilePath);
+	#endif
 	}
 
 	void CEmfParserBase::SetInterpretator(IOutputDevice *pOutput, const wchar_t *wsFilePath)
@@ -794,7 +799,10 @@ namespace MetaFile
 
 		CEmfInterpretatorArray* pEmfInterpretatorArray = new CEmfInterpretatorArray;
 		pEmfInterpretatorArray->AddRenderInterpretator(pOutput);
+
+	#ifdef METAFILE_SUPPORT_WMF_EMF_XML
 		pEmfInterpretatorArray->AddXmlInterpretator(wsFilePath);
+	#endif
 
 		m_pInterpretator = pEmfInterpretatorArray;
 	}

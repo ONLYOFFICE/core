@@ -70,9 +70,12 @@
 #include "CEmfParser.h"
 #include "../../Wmf/WmfFile.h"
 #include "../EmfInterpretator/CEmfInterpretator.h"
-#include "../EmfInterpretator/CEmfInterpretatorXml.h"
 #include "../EmfInterpretator/CEmfInterpretatorArray.h"
 #include "../EmfInterpretator/CEmfInterpretatorRender.h"
+
+#ifdef METAFILE_SUPPORT_WMF_EMF_XML
+#include "../EmfInterpretator/CEmfInterpretatorXml.h"
+#endif
 
 #include "../../Common/CPathConverter.h"
 

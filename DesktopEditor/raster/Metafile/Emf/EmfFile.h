@@ -50,7 +50,7 @@ namespace MetaFile
 	{
 	public:
 		CEmfFile() : m_pParser(new CEmfParser)
-        {}
+		{}
 
 		~CEmfFile()
 		{
@@ -61,27 +61,29 @@ namespace MetaFile
 		{
 			if (NULL != m_pParser && m_pParser->GetType() == EmfParserType::EmfxParser)
 			{
-                NSFonts::IFontManager* pFont = m_pParser->GetFontManager();
-                delete m_pParser;
+				NSFonts::IFontManager* pFont = m_pParser->GetFontManager();
+				delete m_pParser;
 				m_pParser = new CEmfParser();
-                m_pParser->SetFontManager(pFont);
+				m_pParser->SetFontManager(pFont);
 			}
 
 			return m_pParser->OpenFromFile(wsFilePath);
 		}
 
+	#ifdef METAFILE_SUPPORT_WMF_EMF_XML
 		bool OpenFromXmlFile(const wchar_t* wsFilePath)
 		{
 			if (NULL != m_pParser && m_pParser->GetType() == EmfParserType::EmfParser)
 			{
-                NSFonts::IFontManager* pFont = m_pParser->GetFontManager();
+				NSFonts::IFontManager* pFont = m_pParser->GetFontManager();
 				delete m_pParser;
 				m_pParser = new CEmfxParser();
-                m_pParser->SetFontManager(pFont);
+				m_pParser->SetFontManager(pFont);
 			}
 
 			return m_pParser->OpenFromFile(wsFilePath);
 		}
+	#endif
 
 		CEmfParserBase* GetEmfParser()
 		{
@@ -103,7 +105,7 @@ namespace MetaFile
 			m_pParser->Close();
 		}
 
-        void SetFontManager(NSFonts::IFontManager* pFontManager)
+		void SetFontManager(NSFonts::IFontManager* pFontManager)
 		{
 			m_pParser->SetFontManager(pFontManager);
 		}

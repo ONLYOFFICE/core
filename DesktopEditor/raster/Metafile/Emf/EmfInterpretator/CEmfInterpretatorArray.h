@@ -18,7 +18,11 @@ namespace MetaFile
 		CEmfInterpretatorArray& operator=(const CEmfInterpretatorArray& oEmfInterpretatorArray);
 
 		void AddEmfInterpretator(const wchar_t* wsFilepath);
+
+#ifdef METAFILE_SUPPORT_WMF_EMF_XML
 		void AddXmlInterpretator(const wchar_t* wsFilepath);
+#endif
+
 		void AddRenderInterpretator(IOutputDevice* pIOutputDevice);
 
 		void CreateConditional(IMetaFileBase* pMetafileBase) override;

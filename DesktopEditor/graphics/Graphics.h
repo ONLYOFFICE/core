@@ -128,9 +128,12 @@ typedef agg::rendering_buffer rendering_buffer_type;
 typedef agg::pixfmt_bgra32 pixformat_type;
 
 typedef agg::blender_rgba< agg::svg::color_type, agg::svg::component_order >						blender_type;
+typedef agg::comp_op_adaptor_rgba< agg::svg::color_type, agg::svg::component_order >				blender_type_comp;
 typedef agg::pixfmt_alpha_blend_rgba< blender_type, agg::rendering_buffer, agg::svg::pixel_type >	pixfmt_type;
+typedef agg::pixfmt_custom_blend_rgba< blender_type_comp, agg::rendering_buffer>					pixfmt_type_comp;
 
 typedef agg::renderer_base<pixfmt_type> base_renderer_type;
+typedef agg::renderer_base<pixfmt_type_comp> comp_renderer_type;
 typedef agg::scanline_u8 scanline_type;
 
 typedef agg::span_interpolator_linear<> interpolator_type_linear;
@@ -304,6 +307,7 @@ public:
     CGraphics_ClipState m_oClipState;
 	
 	int m_nTextRenderMode;
+	unsigned int m_nBlendMode;
 
 public:
 

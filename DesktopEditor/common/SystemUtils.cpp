@@ -86,7 +86,7 @@ namespace NSSystemUtils
 #ifdef _WIN32
         wchar_t sAppDataLocal[65535];
 
-        if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, sAppDataLocal)))
+		if (SUCCEEDED(SHGetFolderPathW(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, sAppDataLocal)))
         {
             sAppDataPath = std::wstring(sAppDataLocal);
         }

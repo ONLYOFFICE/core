@@ -159,7 +159,7 @@ public:
     virtual INT LoadString2C(const int& wsBuffer, const float& fX, const float& fY);
 
     virtual int GetKerning(UINT unPrevGID, UINT unGID);
-    virtual INT GetUnderline(float *pfStartX, float *pfStartY, float *pfEndX, float *pfEndY, float *pfSize);
+    virtual int GetUnderline(float *pfStartX, float *pfStartY, float *pfEndX, float *pfEndY, float *pfSize);
 
     virtual TFontCacheSizes MeasureChar(const LONG& lUnicode);
 

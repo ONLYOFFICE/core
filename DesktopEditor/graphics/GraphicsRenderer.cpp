@@ -31,7 +31,10 @@
  */
 #include "GraphicsRenderer.h"
 #include <algorithm>
+
+#ifndef GRAPHICS_DISABLE_METAFILE
 #include "../raster/Metafile/MetaFile.h"
+#endif
 
 #if 0
 static void LOGGING(char* buffer, ...)

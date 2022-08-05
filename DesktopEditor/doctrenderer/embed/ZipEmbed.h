@@ -31,6 +31,11 @@ public:
     JSSmart<CJSValue> removeFile(JSSmart<CJSValue> filePath);
     JSSmart<CJSValue> close();
 
+    JSSmart<CJSValue> decodeImage(JSSmart<CJSValue> typedArray);
+    JSSmart<CJSValue> encodeImage(JSSmart<CJSValue> typedArray, JSSmart<CJSValue> type, JSSmart<CJSValue> w, JSSmart<CJSValue> h);
+    JSSmart<CJSValue> encodeImageData(JSSmart<CJSValue> typedArray, JSSmart<CJSValue> type, JSSmart<CJSValue> w, JSSmart<CJSValue> h, JSSmart<CJSValue> outW, JSSmart<CJSValue> outH);
+    JSSmart<CJSValue> getImageType(JSSmart<CJSValue> typedArray);
+
     static void CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context);
 };
 

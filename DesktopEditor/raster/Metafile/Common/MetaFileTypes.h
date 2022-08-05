@@ -48,6 +48,7 @@ typedef unsigned char BYTE;
 #endif
 
 #define METAFILE_RGBA(r, g, b) ((unsigned int)( ( (unsigned char)(r) )| ( ( (unsigned char)(g) ) << 8 ) | ( ( (unsigned char)(b) ) << 16 ) | ( (unsigned char)(0) << 24 ) ) )
+#define INTCOLOR_TO_RGB(color) std::to_wstring(color >> 0 & 0xFF) + L", " + std::to_wstring(color >> 8 & 0xFF) + L", " + std::to_wstring(color >> 16 & 0xFF)
 
 #if !defined (_WIN32) && !defined(_WIN64)
 	#define BLACKONWHITE                 1
@@ -280,6 +281,16 @@ typedef unsigned char BYTE;
 
 namespace MetaFile
 {
+        enum InterpretatorType
+        {
+                Emf,
+                Wmf,
+                Render,
+                XML,
+                Svg,
+                Array
+        };
+
 	enum EMetaFileBitCount
 	{
 		BI_BITCOUNT_0 = 0x0000,
@@ -343,6 +354,22 @@ namespace MetaFile
 			dBottom *= dValue;
 			return *this;
 		}
+	void Update(bool bFlipedX, double bFlipedY)
+	{
+		if ((dTop > dBottom && !bFlipedY) || (dTop < dBottom && bFlipedY))
+		{
+			double dTemp = dBottom;
+			dBottom = dTop;
+			dTop = dTemp;
+		}
+
+		if ((dLeft > dRight && !bFlipedX) || (dLeft < dRight && bFlipedX))
+		{
+			double dTemp = dRight;
+			dRight = dLeft;
+			dLeft = dTemp;
+		}
+	}
     };
 
 	struct TPointL

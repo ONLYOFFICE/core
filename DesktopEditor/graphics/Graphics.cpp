@@ -1286,7 +1286,7 @@ namespace Aggplus
 		typedef agg::renderer_scanline_aa_solid<base_renderer_type> solid_renderer_type;
 		solid_renderer_type ren_fine(m_frame_buffer.ren_base());
 		ren_fine.color(dwColor.GetAggColor());
-
+		
 		render_scanlines(ren_fine);
 	}
 

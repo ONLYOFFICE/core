@@ -89,11 +89,11 @@ public:
 
 	bool OpenFile(const std::wstring& strFileName, unsigned int nFileType = 0);	//0 - detect
 
-    bool SaveFile(const std::wstring& strFileName, unsigned int nFileType);
-    bool Decode(BYTE*  pBuffer, int  nSize, unsigned int nFileType = 0);
-    bool Encode(BYTE*& pBuffer, int& nSize, unsigned int nFileType);
-    void FreeEncodedMemory(void* pMemory);
-    
+	bool SaveFile(const std::wstring& strFileName, unsigned int nFileType);
+	bool Decode(BYTE*  pBuffer, int  nSize, unsigned int nFileType = 0);
+	bool Encode(BYTE*& pBuffer, int& nSize, unsigned int nFileType);
+	static void FreeEncodedMemory(void* pMemory);
+
 	bool Resize(const long& nNewWidth, const long& nNewHeight, bool bDestroyData = true);
 
 	bool ReColorPatternImage(const std::wstring& strFileName, unsigned int rgbColorBack, unsigned int rgbColorFore);

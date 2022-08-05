@@ -1,72 +1,92 @@
 #include "raster.h"
+#include "../../../../../raster/BgraFrame.h"
+#include "../../../../../raster/ImageFileFormatChecker.h"
+#include "../../../../../raster/Metafile/MetaFile.h"
 
-void* Raster_Malloc(unsigned int size)
+void* Raster_DecodeFile(unsigned char* buffer, int size, bool isRgba)
 {
-    return ::malloc(size);
+	CBgraFrame* pFrame = new CBgraFrame();
+	pFrame->put_IsRGBA(isRgba);
+	pFrame->Decode(buffer, size);
+	return pFrame;
 }
-void Raster_Free(void* p)
+void* Raster_GetDecodedBuffer(void* frame)
 {
-    if (p) ::free(p);
+	return ((CBgraFrame*)frame)->get_Data();
 }
-CBgraFrame* Raster_Create()
+int Raster_GetWidth (void* frame)
 {
-    return new CBgraFrame();
+	return ((CBgraFrame*)frame)->get_Width();
 }
-CBgraFrame* Raster_Load(unsigned char* buffer, int size)
+int Raster_GetHeight(void* frame)
 {
-    CBgraFrame* oRes = new CBgraFrame();
-    oRes->put_IsRGBA(true);
-    oRes->Decode(buffer, size);
-    return oRes;
+	return ((CBgraFrame*)frame)->get_Height();
 }
-CBgraFrame* Raster_Init(double width_px, double height_px)
+int Raster_GetStride(void* frame)
 {
-    int nRasterW = (int)width_px;
-    int nRasterH = (int)height_px;
-    BYTE* pData = new BYTE[4 * nRasterW * nRasterH];
+	return ((CBgraFrame*)frame)->get_Stride();
+}
+void Raster_Destroy(void* frame)
+{
+	delete ((CBgraFrame*)frame);
+}
 
-    unsigned int back = 0xffffff;
-    unsigned int* pData32 = (unsigned int*)pData;
-    unsigned int* pData32End = pData32 + nRasterW * nRasterH;
-    while (pData32 < pData32End)
-        *pData32++ = back;
+class CEncodedData
+{
+public:
+	BYTE* Data;
+	int Size;
 
-    CBgraFrame* oRes = new CBgraFrame();
-    oRes->put_IsRGBA(true);
-    oRes->put_Data(pData);
-    oRes->put_Width(nRasterW);
-    oRes->put_Height(nRasterH);
-    return oRes;
-}
-void Raster_Destroy(CBgraFrame* p)
+public:
+	CEncodedData()
+	{
+		Data = 0;
+		Size = 0;
+	}
+	~CEncodedData()
+	{
+		if (Data)
+			CBgraFrame::FreeEncodedMemory(Data);
+	}
+};
+
+void* Raster_EncodeFile(unsigned char* buffer, int w, int h, int stride, int format, bool isRgba)
 {
-    if (p) delete p;
+	CBgraFrame oFrame;
+	oFrame.put_Data(buffer);
+	oFrame.put_Width(w);
+	oFrame.put_Height(h);
+	oFrame.put_Stride(stride);
+	oFrame.put_IsRGBA(isRgba);
+	CEncodedData* pEncodedData = new CEncodedData();
+	oFrame.Encode(pEncodedData->Data, pEncodedData->Size, format);
+	oFrame.put_Data(NULL);
+	return pEncodedData;
 }
-int  Raster_GetHeight(CBgraFrame* p)
+int Raster_GetEncodedSize(void* encodedData)
 {
-    if (p) return p->get_Height();
-    return -1;
+	return ((CEncodedData*)encodedData)->Size;
 }
-int  Raster_GetWidth (CBgraFrame* p)
+void* Raster_GetEncodedBuffer(void* encodedData)
 {
-    if (p) return p->get_Width();
-    return -1;
+	return ((CEncodedData*)encodedData)->Data;
 }
-bool Raster_Decode(CBgraFrame* p, unsigned char* buffer, int size)
+void Raster_DestroyEncodedData(void* encodedData)
 {
-    if (p)
-    {
-        p->put_IsRGBA(true);
-        bool bRes = p->Decode(buffer, size);
-        return bRes;
-    }
-    return false;
+	delete ((CEncodedData*)encodedData);
 }
-unsigned char* Raster_GetRGBA(CBgraFrame* p)
+
+void* SVG_DecodeMetafile(unsigned char* buffer, int size)
 {
-    unsigned char* buffer = NULL;
-    if (p) buffer = p->get_Data();
-    return buffer;
+	return NULL;
+}
+
+int Image_GetFormat(unsigned char* buffer, int size)
+{
+	CImageFileFormatChecker oChecker;
+	if (oChecker.isImageFile(buffer, (DWORD)size))
+		return oChecker.eFileType;
+	return 0;
 }
 
 int main()
@@ -84,7 +104,7 @@ int main()
 
 	if (true)
 	{
-		std::wstring sFilePath = L"D:/1.wmf";
+		std::wstring sFilePath = L"D:/1.emf";
 		MetaFile::CMetaFile oFrame(NULL);
 		if (oFrame.LoadFromFile(sFilePath.c_str()))
 		{

@@ -9,26 +9,26 @@
 #endif
 
 #include <malloc.h>
-#include "../../../../../raster/BgraFrame.h"
-#include "../../../../../raster/Metafile/MetaFile.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-RASTER_DECL_EXPORT void* Raster_Malloc(unsigned int size);
-RASTER_DECL_EXPORT void Raster_Free(void* p);
+RASTER_DECL_EXPORT void* Raster_DecodeFile(unsigned char* buffer, int size, bool isRgba = false);
+RASTER_DECL_EXPORT void* Raster_GetDecodedBuffer(void* frame);
+RASTER_DECL_EXPORT int Raster_GetHeight(void* frame);
+RASTER_DECL_EXPORT int Raster_GetWidth(void* frame);
+RASTER_DECL_EXPORT int Raster_GetStride(void* frame);
+RASTER_DECL_EXPORT void Raster_Destroy(void* frame);
 
-RASTER_DECL_EXPORT CBgraFrame* Raster_Create();
-RASTER_DECL_EXPORT CBgraFrame* Raster_Load(unsigned char* buffer, int size);
-RASTER_DECL_EXPORT CBgraFrame* Raster_Init(double width_px, double height_px);
-RASTER_DECL_EXPORT void Raster_Destroy(CBgraFrame* p);
+RASTER_DECL_EXPORT void* Raster_EncodeFile(unsigned char* buffer, int w, int h, int stride, int format, bool isRgba = false);
+RASTER_DECL_EXPORT int Raster_GetEncodedSize(void* encodedData);
+RASTER_DECL_EXPORT void* Raster_GetEncodedBuffer(void* encodedData);
+RASTER_DECL_EXPORT void Raster_DestroyEncodedData(void* encodedData);
 
-RASTER_DECL_EXPORT int Raster_GetHeight(CBgraFrame* p);
-RASTER_DECL_EXPORT int Raster_GetWidth (CBgraFrame* p);
+RASTER_DECL_EXPORT void* SVG_DecodeMetafile(unsigned char* buffer, int size);
 
-RASTER_DECL_EXPORT bool Raster_Decode(CBgraFrame* p, unsigned char* buffer, int size);
-RASTER_DECL_EXPORT unsigned char* Raster_GetRGBA(CBgraFrame* p);
+RASTER_DECL_EXPORT int Image_GetFormat(unsigned char* buffer, int size);
 
 #ifdef __cplusplus
 }

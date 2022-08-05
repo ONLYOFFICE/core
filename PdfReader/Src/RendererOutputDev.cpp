@@ -775,69 +775,6 @@ namespace PdfReader
     }
     void RendererOutputDev::updateBlendMode(GfxState *pGState)
     {
-        NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
-        if (!GRenderer)
-            return;
-
-        switch (pGState->getBlendMode())
-        {
-        case gfxBlendNormal:
-            GRenderer->put_BlendMode(3);
-            // agg::comp_op_src_over
-            break;
-        case gfxBlendMultiply:
-            GRenderer->put_BlendMode(14);
-            // agg::comp_op_multiply
-            break;
-        case gfxBlendScreen:
-            GRenderer->put_BlendMode(15);
-            // agg::comp_op_screen
-            break;
-        case gfxBlendOverlay:
-            GRenderer->put_BlendMode(16);
-            // agg::comp_op_overlay
-            break;
-        case gfxBlendDarken:
-            GRenderer->put_BlendMode(17);
-            // agg::comp_op_darken
-            break;
-        case gfxBlendLighten:
-            GRenderer->put_BlendMode(18);
-            // agg::comp_op_lighten
-            break;
-        case gfxBlendColorDodge:
-            GRenderer->put_BlendMode(19);
-            // agg::comp_op_color_dodge
-            break;
-        case gfxBlendColorBurn:
-            GRenderer->put_BlendMode(20);
-            // agg::comp_op_color_burn
-            break;
-        case gfxBlendHardLight:
-            GRenderer->put_BlendMode(21);
-            // agg::comp_op_hard_light
-            break;
-        case gfxBlendSoftLight:
-            GRenderer->put_BlendMode(22);
-            // agg::comp_op_soft_light
-            break;
-        case gfxBlendDifference:
-            GRenderer->put_BlendMode(23);
-            // agg::comp_op_difference
-            break;
-        case gfxBlendExclusion:
-            GRenderer->put_BlendMode(24);
-            // agg::comp_op_exclusion
-            break;
-        case gfxBlendHue:
-        case gfxBlendSaturation:
-        case gfxBlendColor:
-        case gfxBlendLuminosity:
-        default:
-            GRenderer->put_BlendMode(3);
-            // agg::comp_op_src_over
-            break;
-        }
     }
     void RendererOutputDev::updateFillOpacity(GfxState *pGState)
     {
@@ -3022,25 +2959,6 @@ namespace PdfReader
         double x0, y0, x1, x2, y1, y2, r1, r2;
         double xmin, xmax, ymin, ymax, r;
         double *matrix;
-
-        if (pGState->getStrokeColorSpace() && pGState->getStrokeColorSpace()->getMode() == csPattern)
-        {
-            // TODO градиентная заливка stroke с поддержкой dash и т.п.
-            return true;
-            m_pRenderer->put_BrushColor1(0);
-            m_pRenderer->put_BrushColor2(0);
-
-            pGState->getUserClipBBox(&xmin, &ymin, &xmax, &ymax);
-
-            pGState->moveTo(xmin, ymin);
-            pGState->lineTo(xmin, ymax);
-            pGState->lineTo(xmax, ymax);
-            pGState->lineTo(xmax, ymin);
-            pGState->closePath();
-
-            stroke(pGState);
-            return true;
-        }
 
         int nTriangles = 0, nPatches = 0;
         switch (pShading->getType())

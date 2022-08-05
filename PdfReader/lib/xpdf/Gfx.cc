@@ -4770,7 +4770,6 @@ void Gfx::drawForm(Object *strRef, Dict *resDict,
     strObj.free();
 
     traceBegin(oldBaseMatrix, softMask ? "begin soft mask" : "begin t-group");
-    /*
     if (state->getBlendMode() != gfxBlendNormal) {
       state->setBlendMode(gfxBlendNormal);
       out->updateBlendMode(state);
@@ -4783,7 +4782,6 @@ void Gfx::drawForm(Object *strRef, Dict *resDict,
       state->setStrokeOpacity(1);
       out->updateStrokeOpacity(state);
     }
-    */
     out->clearSoftMask(state);
     out->beginTransparencyGroup(state, bbox, blendingColorSpace,
 				isolated, knockout, softMask);

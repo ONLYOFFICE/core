@@ -1438,10 +1438,3 @@ void CGraphicsRenderer::Restore()
 
     RELEASEOBJECT(pState);
 }
-void CGraphicsRenderer::put_BlendMode(const unsigned int nBlendMode)
-{
-    if (NULL != m_pRenderer)
-    {
-        m_pRenderer->m_nBlendMode = nBlendMode;
-    }
-}

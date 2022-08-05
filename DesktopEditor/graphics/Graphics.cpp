@@ -68,7 +68,6 @@ namespace Aggplus
         m_dDpiTile = -1;
 
         m_nTextRenderMode = FT_RENDER_MODE_NORMAL;
-        m_nBlendMode = agg::comp_op_src_over;
 	}
 
 	CGraphics::CGraphics(int dwWidth, int dwHeight, int stride, BYTE* pBuffer) : m_dwConfigFlags(0)
@@ -102,7 +101,6 @@ namespace Aggplus
         m_dDpiTile = -1;
 		
 		m_nTextRenderMode = FT_RENDER_MODE_NORMAL;
-		m_nBlendMode = agg::comp_op_src_over;
 	}
 
 	CGraphics::CGraphics(CImage* pImage) : m_dwConfigFlags(0)
@@ -141,7 +139,6 @@ namespace Aggplus
         m_dDpiTile = -1;
 		
 		m_nTextRenderMode = FT_RENDER_MODE_NORMAL;
-		m_nBlendMode = agg::comp_op_src_over;
 	}
 
 	CGraphics::~CGraphics()
@@ -1286,29 +1283,11 @@ namespace Aggplus
 
 	void CGraphics::DoFillPathSolid(CColor dwColor)
 	{
-		if (m_nBlendMode != 3)
-		{
-			typedef agg::renderer_scanline_aa_solid<comp_renderer_type> solid_comp_renderer_type;
-			solid_comp_renderer_type ren_solid;
-			comp_renderer_type ren_base;
-			pixfmt_type_comp pixfmt;
+		typedef agg::renderer_scanline_aa_solid<base_renderer_type> solid_renderer_type;
+		solid_renderer_type ren_fine(m_frame_buffer.ren_base());
+		ren_fine.color(dwColor.GetAggColor());
 
-			pixfmt.attach(m_frame_buffer.ren_buf());
-			pixfmt.comp_op(m_nBlendMode);
-			ren_base.attach(pixfmt);
-			ren_solid.attach(ren_base);
-
-			ren_solid.color(dwColor.GetAggColor());
-			render_scanlines(ren_solid);
-		}
-		else
-		{
-			typedef agg::renderer_scanline_aa_solid<base_renderer_type> solid_renderer_type;
-			solid_renderer_type ren_fine(m_frame_buffer.ren_base());
-			ren_fine.color(dwColor.GetAggColor());
-
-			render_scanlines(ren_fine);
-		}
+		render_scanlines(ren_fine);
 	}
 
 	void CGraphics::DoFillPathGradient(CBrushLinearGradient *pBrush)

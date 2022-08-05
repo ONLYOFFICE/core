@@ -3823,7 +3823,8 @@ namespace PdfReader
         }
         else
         {
-            if (!isCIDFont || ((GfxCIDFont*)pFont)->usesIdentityEncoding() || ((GfxCIDFont*)pFont)->usesIdentityCIDToGID())
+            if ((isCIDFont && (((GfxCIDFont*)pFont)->usesIdentityEncoding() || ((GfxCIDFont*)pFont)->usesIdentityCIDToGID()))
+                || (!isCIDFont && wsUnicodeText.empty()))
             {
                 int nCurCode = (0 == nCode ? 65534 : nCode);
                 unGid       = (unsigned int)nCurCode;

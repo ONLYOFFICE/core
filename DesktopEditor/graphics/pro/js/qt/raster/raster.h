@@ -10,6 +10,7 @@
 
 #include <malloc.h>
 #include "../../../../../raster/BgraFrame.h"
+#include "../../../../../raster/Metafile/MetaFile.h"
 
 #ifdef __cplusplus
 extern "C" {

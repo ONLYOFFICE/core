@@ -44,6 +44,7 @@ namespace MetaFile
 
 	CMetaFile::CMetaFile(NSFonts::IApplicationFonts *pAppFonts) : MetaFile::IMetaFile(pAppFonts)
 	{
+		m_pFontManager = NULL;
 		m_pAppFonts = pAppFonts;
 		// Создаем менеджер шрифтов с собственным кэшем
 		if (pAppFonts)

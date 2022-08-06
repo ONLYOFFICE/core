@@ -1,4 +1,4 @@
-#include "CWmfInterpretator.h"
+#include "cwmfinterpretator.h"
 
 namespace MetaFile
 {

@@ -42,6 +42,7 @@
 #include "../Wmf/WmfObjects.h"
 
 #include <algorithm>
+#include <cfloat>
 
 namespace MetaFile
 {

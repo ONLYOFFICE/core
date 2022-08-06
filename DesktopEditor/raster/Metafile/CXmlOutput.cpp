@@ -13,7 +13,7 @@ namespace MetaFile
 
         try
         {
-            return _wtoi(string.c_str());
+			return std::stoi(string);
         }
         catch(...)
         {
@@ -21,7 +21,7 @@ namespace MetaFile
 
         try
         {
-            return static_cast<int>(_wtoi64(string.c_str()));
+			return static_cast<int>(std::stoll(string));
         }
         catch(...)
         {

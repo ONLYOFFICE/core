@@ -33,6 +33,7 @@
 #define DOCBUILDER_H
 
 #include "./common.h"
+#include <stddef.h>
 
 namespace NSDoctRenderer
 {

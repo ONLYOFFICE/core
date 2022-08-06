@@ -51,6 +51,9 @@ namespace NSDocxRenderer
         m_eVertAlignType = oSrc.m_eVertAlignType;
 
         m_bIsShadowPresent = oSrc.m_bIsShadowPresent;
+        m_bIsOutlinePresent = oSrc.m_bIsOutlinePresent;
+        m_bIsEmbossPresent = oSrc.m_bIsEmbossPresent;
+        m_bIsEngravePresent = oSrc.m_bIsEngravePresent;
 
         m_pShape    = oSrc.m_pShape;
         m_pManagerLight = oSrc.m_pManagerLight;
@@ -134,9 +137,24 @@ namespace NSDocxRenderer
             }
         }
 
-        if (m_bIsShadowPresent)
+        if (m_bIsEmbossPresent)
         {
-            oWriter.WriteString(L"<w:shadow/>");
+            oWriter.WriteString(L"<w:emboss/>");
+        }
+        else if (m_bIsEngravePresent)
+        {
+            oWriter.WriteString(L"<w:imprint/>");
+        }
+        else
+        {
+            if (m_bIsOutlinePresent)
+            {
+                oWriter.WriteString(L"<w:outline/>");
+            }
+            if (m_bIsShadowPresent)
+            {
+                oWriter.WriteString(L"<w:shadow/>");
+            }
         }
 
         int lSize = static_cast<int>(2 * m_oFont.Size);
@@ -384,7 +402,7 @@ namespace NSDocxRenderer
         return false;
     }
 
-    bool CContText::IsThereAreShadows(CContText* pCont, const eVerticalCrossingType& eVType, const eHorizontalCrossingType& eHType)
+    bool CContText::IsThereAreFontEffects(CContText* pCont, const eVerticalCrossingType& eVType, const eHorizontalCrossingType& eHType)
     {
         //Условие пересечения по вертикали
         bool bIf1 = eVType == eVerticalCrossingType::vctCurrentAboveNext; //текущий cont выше
@@ -398,18 +416,63 @@ namespace NSDocxRenderer
         //Цвет тени должен быть серым
         bool bIf7 = m_oBrush.Color1 == c_iGreyColor;
         bool bIf8 = pCont->m_oBrush.Color1 == c_iGreyColor;
+        bool bIf9 = m_oBrush.Color1 == c_iBlackColor;
+        bool bIf10 = pCont->m_oBrush.Color1 == c_iBlackColor;
+        bool bIf11 = m_oBrush.Color1 == c_iGreyColor2;
+        bool bIf12 = pCont->m_oBrush.Color1 == c_iGreyColor2;
 
-        if (bIf1 && bIf3 && bIf5 && bIf6 && bIf8)
+        //note Каждый символ с Emboss или Engrave разбиваются на 3 символа с разными цветами
+        //note Логика подобрана для конкретного примера - возможно нужно будет ее обобщить.
+        if (bIf5 && bIf6)
         {
-            m_bIsShadowPresent = true;
-            pCont->m_bIsNotNecessaryToUse = true;
-            return true;
-        }
-        else if (bIf2 && bIf4 && bIf5 && bIf6 && bIf7)
-        {
-            pCont->m_bIsShadowPresent = true;
-            m_bIsNotNecessaryToUse = true;
-            return true;
+            if (m_bIsEmbossPresent && bIf11)
+            {
+                if (bIf2 && bIf4)
+                {
+                    pCont->m_bIsEmbossPresent = true;
+                    m_bIsNotNecessaryToUse = true;
+                    return true;
+                }
+            }
+
+            if (m_bIsEngravePresent && bIf9)
+            {
+                if (bIf2 && bIf4)
+                {
+                    pCont->m_bIsEngravePresent = true;
+                    m_bIsNotNecessaryToUse = true;
+                    return true;
+                }
+            }
+
+            //Shadow
+            if (bIf1 && bIf3 && bIf8)
+            {
+                m_bIsShadowPresent = true;
+                pCont->m_bIsNotNecessaryToUse = true;
+                return true;
+            }
+            else if (bIf2 && bIf4 && bIf7)
+            {
+                pCont->m_bIsShadowPresent = true;
+                m_bIsNotNecessaryToUse = true;
+                return true;
+            }
+
+            //Emboss
+            else if (bIf2 && bIf4 && bIf10)
+            {
+                m_bIsEmbossPresent = true;
+                pCont->m_bIsNotNecessaryToUse = true;
+                return true;
+            }
+            //Engrave
+            else if (bIf2 && bIf4 && bIf12)
+            {
+                m_bIsEngravePresent = true;
+                pCont->m_bIsNotNecessaryToUse = true;
+                return true;
+            }
         }
         return false;
     }

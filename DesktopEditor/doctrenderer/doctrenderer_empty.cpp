@@ -127,7 +127,7 @@ namespace NSDoctRenderer
     CDocBuilderValue CDocBuilderContext::CreateNull() { CDocBuilderValue ret; return ret; }
     CDocBuilderValue CDocBuilderContext::CreateObject() { CDocBuilderValue ret; return ret; }
     CDocBuilderValue CDocBuilderContext::CreateArray(const int& length) { CDocBuilderValue ret; return ret; }
-    CDocBuilderValue CDocBuilderContext::CreateTypedArray(unsigned char* buffer, const int& length) { CDocBuilderValue ret; return ret; }
+	CDocBuilderValue CDocBuilderContext::CreateTypedArray(unsigned char* buffer, const int& length, const bool& externalize) { CDocBuilderValue ret; return ret; }
 
     CDocBuilderValue CDocBuilderContext::GetGlobal() { CDocBuilderValue ret; return ret; }
     CDocBuilderContextScope CDocBuilderContext::CreateScope() { CDocBuilderContextScope ret; return ret; }

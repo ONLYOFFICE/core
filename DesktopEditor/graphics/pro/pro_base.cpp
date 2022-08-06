@@ -32,6 +32,10 @@
 
 #include "Fonts.h"
 
+#ifdef __APPLE__
+#include <libkern/OSAtomic.h>
+#endif
+
 namespace NSBase
 {
 	CBaseRefCounter::CBaseRefCounter()

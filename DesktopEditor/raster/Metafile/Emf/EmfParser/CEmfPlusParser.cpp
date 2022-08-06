@@ -1,5 +1,6 @@
 #include "CEmfPlusParser.h"
 #include "../../../../graphics/pro/Graphics.h"
+#include <typeinfo>
 
 #define EMRPLUS_OFFSETCLIP              0x4035
 #define EMRPLUS_RESETCLIP               0x4031

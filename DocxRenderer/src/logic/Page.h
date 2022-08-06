@@ -89,9 +89,9 @@ namespace NSDocxRenderer
         //Собранные для текущей страницы данные нужно проанализировать и сгруппировать, лишнее удалить
         void AnalyzeCollectedSymbols();
         void DetermineStrikeoutsUnderlinesHighlights();
-        bool IsLineCrossingText(const CShape* pGraphicItem, CContText* pCont);
-        bool IsLineBelowText(const CShape* pGraphicItem, CContText* pCont);
-        bool IsItHighlightingBackground(const CShape* pGraphicItem, CContText* pCont);
+        bool IsLineCrossingText(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
+        bool IsLineBelowText(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
+        bool IsItHighlightingBackground(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
 
         //набивается содержимым вектор m_arTextLine
         void AnalyzeLines();

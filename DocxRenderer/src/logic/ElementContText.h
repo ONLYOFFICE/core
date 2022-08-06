@@ -45,6 +45,9 @@ namespace NSDocxRenderer
             eVertAlignType m_eVertAlignType {eVertAlignType::vatUnknown};
 
             bool   m_bIsShadowPresent {false};
+            bool   m_bIsOutlinePresent {false};
+            bool   m_bIsEmbossPresent {false};
+            bool   m_bIsEngravePresent {false};
 
             const CShape* m_pShape {nullptr}; //Если не nullptr, то есть фоновая графика - можно анализировать.
             CFontManagerLight* m_pManagerLight {nullptr};
@@ -76,7 +79,7 @@ namespace NSDocxRenderer
             bool IsEqual(const CContText* oSrc);
 
             bool IsDuplicate(CContText* pCont, const eVerticalCrossingType& eVType);
-            bool IsThereAreShadows(CContText* pCont, const eVerticalCrossingType& eVType, const eHorizontalCrossingType& eHType);
+            bool IsThereAreFontEffects(CContText* pCont, const eVerticalCrossingType& eVType, const eHorizontalCrossingType& eHType);
             bool IsVertAlignTypeBetweenConts(CContText* pCont, const eVerticalCrossingType& eVType, const eHorizontalCrossingType& eHType);
     };
 }

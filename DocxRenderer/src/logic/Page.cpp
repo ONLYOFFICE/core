@@ -425,8 +425,9 @@ namespace NSDocxRenderer
         for (auto pShape : m_arShapes)
         {
             if (pShape->m_bIsNotNecessaryToUse ||
-                    (pShape->m_eGraphicsType != eGraphicsType::gtRectangle &&
-                     pShape->m_eGraphicsType != eGraphicsType::gtCurve))
+                (pShape->m_eGraphicsType != eGraphicsType::gtRectangle &&
+                 pShape->m_eGraphicsType != eGraphicsType::gtComplicatedFigure &&
+                 pShape->m_eGraphicsType != eGraphicsType::gtCurve))
             {
                 continue;
             }
@@ -562,9 +563,16 @@ namespace NSDocxRenderer
                 eVerticalCrossingType eVType = pCont->GetVerticalCrossingType(pNext);
                 eHorizontalCrossingType eHType = pCont->GetHorizontalCrossingType(pNext);
 
-                if (pCont->IsThereAreShadows(pNext, eVType, eHType))
+                if (pCont->IsThereAreFontEffects(pNext, eVType, eHType))
                 {
-                    continue;
+                    if (pCont->m_bIsNotNecessaryToUse)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        continue;
+                    }
                 }
 
                 if (pCont->IsVertAlignTypeBetweenConts(pNext, eVType, eHType))
@@ -587,29 +595,47 @@ namespace NSDocxRenderer
         for (auto pShape : m_arShapes)
         {
             if (!pShape->m_pCont || //note если нет указателя, то текст далеко от графики
-                (pShape->m_eGraphicsType != eGraphicsType::gtRectangle &&
-                 pShape->m_eGraphicsType != eGraphicsType::gtCurve &&
-                 pShape->m_eLineType != eLineType::ltUnknown))
+                pShape->m_eGraphicsType == eGraphicsType::gtNoGraphics)
             {
                 continue;
             }
 
             for (auto pCont : m_arSymbol)
             {
-                if (IsLineCrossingText(pShape, pCont) ||
-                    IsLineBelowText(pShape, pCont) ||
-                    IsItHighlightingBackground(pShape, pCont))
+                if (pCont->m_bIsNotNecessaryToUse)
                 {
+                    continue;
+                }
+
+                eVerticalCrossingType eVType = pCont->GetVerticalCrossingType(pShape);
+                eHorizontalCrossingType eHType = pCont->GetHorizontalCrossingType(pShape);
+
+                if (pShape->m_eGraphicsType != eGraphicsType::gtComplicatedFigure &&
+                    (IsLineCrossingText(pShape, pCont, eHType) ||
+                     IsLineBelowText(pShape, pCont, eHType) ||
+                     IsItHighlightingBackground(pShape, pCont, eHType)))
+                {
+                    pShape->m_bIsNotNecessaryToUse = true;
+                }
+
+                if (pShape->m_eGraphicsType == eGraphicsType::gtComplicatedFigure &&
+                    pCont->m_oBrush.Color1 == c_iGreyColor &&
+                    eVType == eVerticalCrossingType::vctCurrentOutsideNext &&
+                    (eHType == eHorizontalCrossingType::hctCurrentOutsideNext ||
+                     eHType == eHorizontalCrossingType::hctCurrentRightOfNext))
+                {
+                    pCont->m_bIsShadowPresent = true;
+                    pCont->m_bIsOutlinePresent = true;
+                    pCont->m_oBrush.Color1 = pShape->m_oPen.Color;
                     pShape->m_bIsNotNecessaryToUse = true;
                 }
             }
         }
     }
 
-    bool CPage::IsLineCrossingText(const CShape* pShape, CContText* pCont)
+    bool CPage::IsLineCrossingText(const CShape* pShape, CContText* pCont, const eHorizontalCrossingType& eHType)
     {
         double dTopBorder = pCont->m_dTop + pCont->m_dHeight/3; //note Height - это максимально возможный размер символа. Больше реального размера.
-        eHorizontalCrossingType eHType = pCont->GetHorizontalCrossingType(pShape);
 
         bool bIf1 = pShape->m_eGraphicsType == eGraphicsType::gtRectangle &&
                 pShape->m_eLineType != eLineType::ltUnknown;
@@ -636,10 +662,8 @@ namespace NSDocxRenderer
         return false;
     }
 
-    bool CPage::IsLineBelowText(const CShape* pShape, CContText* pCont)
+    bool CPage::IsLineBelowText(const CShape* pShape, CContText* pCont, const eHorizontalCrossingType& eHType)
     {
-        eHorizontalCrossingType eHType = pCont->GetHorizontalCrossingType(pShape);
-
         bool bIf1 = (pShape->m_eGraphicsType == eGraphicsType::gtRectangle ||
                      pShape->m_eGraphicsType == eGraphicsType::gtCurve) &&
                 pShape->m_eLineType != eLineType::ltUnknown;
@@ -664,12 +688,11 @@ namespace NSDocxRenderer
         return false;
     }
 
-    bool CPage::IsItHighlightingBackground(const CShape* pShape, CContText* pCont)
+    bool CPage::IsItHighlightingBackground(const CShape* pShape, CContText* pCont, const eHorizontalCrossingType& eHType)
     {
         double dSomeBaseLine1 = pCont->m_dBaselinePos - pCont->m_dHeight * 0.75;
         double dSomeBaseLine2 = pCont->m_dBaselinePos - pCont->m_dHeight * 0.5;
         double dSomeBaseLine3 = pCont->m_dBaselinePos - pCont->m_dHeight * 0.25;
-        eHorizontalCrossingType eHType = pCont->GetHorizontalCrossingType(pShape);
 
         bool bIf1 = pShape->m_eGraphicsType == eGraphicsType::gtRectangle;
         //Условие пересечения по вертикали

@@ -59,7 +59,17 @@ namespace ComplexTypes
 		FromXML( (XmlUtils::CXmlLiteReader&)oReader );\
 		return *this;\
 	}
-
+#define ComplexTypes_WriteAttribute_( sStartString, oValue ) \
+	if ( oValue.IsInit() )\
+	{\
+		sResult += sStartString + oValue->ToString() + L"\"";\
+	}
+#define ComplexTypes_WriteAttribute2_( sStartString, oValue ) \
+	if ( oValue.IsInit() )\
+	{\
+		sResult += sStartString + oValue.get2() + L"\"";\
+	}
+//---------------------------------------------------------------------------------------------
 #define ComplexTypes_WriteAttribute( sStartString, oValue ) \
 	if ( oValue.IsInit() )\
 	{\
@@ -2984,9 +2994,7 @@ namespace ComplexTypes
 
 				if (m_oAfterAutospacing.IsInit())
 				{
-					sResult += L"w:afterAutospacing=\"";
-					sResult += m_oAfterAutospacing->ToString();
-					sResult += L"\" ";
+					sResult += L"w:afterAutospacing=\"" + std::wstring(m_oAfterAutospacing->ToBool() ? L"1" : L"0") + L"\" ";
 				}
 
 				if (m_oAfterLines.IsInit())
@@ -3005,9 +3013,7 @@ namespace ComplexTypes
 
 				if (m_oBeforeAutospacing.IsInit())
 				{
-					sResult += L"w:beforeAutospacing=\"";
-					sResult += m_oBeforeAutospacing->ToString();
-					sResult += L"\" ";
+					sResult += L"w:beforeAutospacing=\"" + std::wstring(m_oBeforeAutospacing->ToBool() ? L"1" : L"0") + L"\" ";
 				}
 
 				if (m_oBeforeLines.IsInit())

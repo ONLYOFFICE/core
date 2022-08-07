@@ -30,9 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_IMAGE_INCLUDE_H_
-#define OOX_IMAGE_INCLUDE_H_
-
 #include "Media.h"
 
 namespace OOX
@@ -64,5 +61,3 @@ namespace OOX
 		}
 	};
 } // namespace OOX
-
-#endif // OOX_IMAGE_INCLUDE_H_

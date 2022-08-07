@@ -37,6 +37,28 @@ using namespace System;
 
 namespace docbuilder_net
 {
+	ref class CDocBuilderValue_Private;
+    public ref class CDocBuilderValue
+    {
+    public:
+        CDocBuilderValue();
+		CDocBuilderValue(const CDocBuilderValue% oValue);
+        ~CDocBuilderValue();
+
+    public:
+        bool IsEmpty();
+        void Clear();
+        bool IsNull();
+        bool IsUndefined();
+        int GetInt();
+        double GetDouble();
+        String^ GetString();
+        CDocBuilderValue GetProperty(String^ name);
+
+    private:
+        CDocBuilderValue_Private^ m_internal;
+    };
+
 	ref class CDocBuilder_Private;
 	public ref class CDocBuilder
 	{
@@ -59,6 +81,6 @@ namespace docbuilder_net
 		static void Destroy();
 		
 	private:
-		CDocBuilder_Private^ m_pInternal;
+		CDocBuilder_Private^ m_internal;
 	};
 }

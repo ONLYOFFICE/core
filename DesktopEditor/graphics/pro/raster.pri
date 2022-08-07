@@ -1,6 +1,8 @@
 LIB_GRAPHICS_PRI_PATH=$$PWD/../..
 
-DEFINES += GRAPHICS_NO_USE_DYNAMIC_LIBRARY
+DEFINES -= UNICODE
+DEFINES -= _UNICODE
+
 DEFINES += \
     _QT \
     EXCLUDE_JPG_SUPPORT \
@@ -12,66 +14,34 @@ DEFINES += \
     MNG_ERROR_TELLTALE
 
 core_linux {
-    DEFINES += \
-    HAVE_UNISTD_H
-    QMAKE_CXXFLAGS += -Wno-narrowing
+    DEFINES += HAVE_UNISTD_H HAVE_FCNTL_H
+	QMAKE_CXXFLAGS += -Wno-narrowing
 }
 
 core_mac {
-    DEFINES += \
-    HAVE_UNISTD_H
+    DEFINES += HAVE_UNISTD_H HAVE_FCNTL_H
 }
 
 core_windows {
-    DEFINES += \
-    JAS_WIN_MSVC_BUILD \
-    NOMINMAX
-
-    #DEFINES -= UNICODE
-    #DEFINES -= _UNICODE
-
-    DEFINES += CXIMAGE_ATTACK_NO_UNICODE
-
-    LIBS += -lAdvapi32
-    LIBS += -lShell32
-    LIBS += -lUser32
+    DEFINES += JAS_WIN_MSVC_BUILD NOMINMAX
+	LIBS += -lUser32
 }
 
 INCLUDEPATH += \
-    $$LIB_GRAPHICS_PRI_PATH/agg-2.4/include \
     $$LIB_GRAPHICS_PRI_PATH/cximage/jasper/include \
     $$LIB_GRAPHICS_PRI_PATH/cximage/jpeg \
     $$LIB_GRAPHICS_PRI_PATH/cximage/png \
     $$LIB_GRAPHICS_PRI_PATH/cximage/zlib
 
 HEADERS += \
-    $$PWD/../../raster/BgraFrame.h
+    $$PWD/../../graphics/Image.h \
+	$$PWD/../../raster/BgraFrame.h \
+	$$PWD/../../raster/ImageFileFormatChecker.h
 
 SOURCES += \
+    $$PWD/../../graphics/Image.cpp \
     $$PWD/../../raster/BgraFrame.cpp \
-    $$PWD/../../raster/ImageFileFormatChecker.cpp \
-    $$PWD/../../graphics/Image.cpp
-
-SOURCES += \
-    $$LIB_GRAPHICS_PRI_PATH/agg-2.4/src/agg_arc.cpp \
-    $$LIB_GRAPHICS_PRI_PATH/agg-2.4/src/agg_bezier_arc.cpp \
-    $$LIB_GRAPHICS_PRI_PATH/agg-2.4/src/agg_arrowhead.cpp \
-    $$LIB_GRAPHICS_PRI_PATH/agg-2.4/src/ctrl/agg_cbox_ctrl.cpp \
-    $$LIB_GRAPHICS_PRI_PATH/agg-2.4/src/agg_curves.cpp \
-    $$LIB_GRAPHICS_PRI_PATH/agg-2.4/src/agg_gsv_text.cpp \
-    $$LIB_GRAPHICS_PRI_PATH/agg-2.4/src/agg_image_filters.cpp \
-    $$LIB_GRAPHICS_PRI_PATH/agg-2.4/src/agg_line_aa_basics.cpp \
-    $$LIB_GRAPHICS_PRI_PATH/agg-2.4/src/agg_line_profile_aa.cpp \
-    $$LIB_GRAPHICS_PRI_PATH/agg-2.4/src/agg_rounded_rect.cpp \
-    $$LIB_GRAPHICS_PRI_PATH/agg-2.4/src/agg_sqrt_tables.cpp \
-    $$LIB_GRAPHICS_PRI_PATH/agg-2.4/src/agg_trans_affine.cpp \
-    $$LIB_GRAPHICS_PRI_PATH/agg-2.4/src/agg_bspline.cpp \
-    $$LIB_GRAPHICS_PRI_PATH/agg-2.4/src/agg_vcgen_bspline.cpp \
-    $$LIB_GRAPHICS_PRI_PATH/agg-2.4/src/agg_vcgen_contour.cpp \
-    $$LIB_GRAPHICS_PRI_PATH/agg-2.4/src/agg_vcgen_dash.cpp \
-    $$LIB_GRAPHICS_PRI_PATH/agg-2.4/src/agg_vcgen_markers_term.cpp \
-    $$LIB_GRAPHICS_PRI_PATH/agg-2.4/src/agg_vcgen_smooth_poly1.cpp \
-    $$LIB_GRAPHICS_PRI_PATH/agg-2.4/src/agg_vcgen_stroke.cpp
+	$$PWD/../../raster/ImageFileFormatChecker.cpp
 
 SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/cximage/jasper/base/jas_cm.c \
@@ -201,24 +171,6 @@ SOURCES += \
 SOURCES += $$PWD/libpsd_pri.c
 SOURCES += $$PWD/libpsd_pri2.c
 SOURCES += $$PWD/libpsd_pri3.c
-
-OFFICEUTILS_PATH = $$PWD/../../../OfficeUtils
-INCLUDEPATH += \
-    $$OFFICEUTILS_PATH/src/zlib-1.2.11 \
-    $$OFFICEUTILS_PATH/src
-
-SOURCES += \
-    $$OFFICEUTILS_PATH/src/zlib-1.2.11/crc32.c \
-    $$OFFICEUTILS_PATH/src/zlib-1.2.11/adler32.c \
-    $$OFFICEUTILS_PATH/src/zlib-1.2.11/deflate.c \
-    $$OFFICEUTILS_PATH/src/zlib-1.2.11/inffast.c \
-    $$OFFICEUTILS_PATH/src/zlib-1.2.11/inflate.c \
-    $$OFFICEUTILS_PATH/src/zlib-1.2.11/inftrees.c \
-    $$OFFICEUTILS_PATH/src/zlib-1.2.11/trees.c \
-    $$OFFICEUTILS_PATH/src/zlib-1.2.11/zutil.c \
-    $$OFFICEUTILS_PATH/src/zlib-1.2.11/uncompr.c \
-    $$OFFICEUTILS_PATH/src/zlib-1.2.11/compress.c \
-    $$OFFICEUTILS_PATH/src/zlib_addon.c
 
 SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/cximage/mng/libmng_callback_xs.c \
@@ -367,3 +319,25 @@ SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/raster/Jp2/J2kFile.cpp \
     $$LIB_GRAPHICS_PRI_PATH/raster/Jp2/Reader.cpp \
     $$LIB_GRAPHICS_PRI_PATH/raster/JBig2/source/JBig2File.cpp
+
+!config_zlip_image {
+    OFFICEUTILS_PATH = $$PWD/../../../OfficeUtils
+	INCLUDEPATH += \
+	    $$OFFICEUTILS_PATH/src/zlib-1.2.11 \
+		$$OFFICEUTILS_PATH/src
+
+    SOURCES += \
+	    $$OFFICEUTILS_PATH/src/zlib-1.2.11/crc32.c \
+		$$OFFICEUTILS_PATH/src/zlib-1.2.11/adler32.c \
+		$$OFFICEUTILS_PATH/src/zlib-1.2.11/deflate.c \
+		$$OFFICEUTILS_PATH/src/zlib-1.2.11/inffast.c \
+		$$OFFICEUTILS_PATH/src/zlib-1.2.11/inflate.c \
+		$$OFFICEUTILS_PATH/src/zlib-1.2.11/inftrees.c \
+		$$OFFICEUTILS_PATH/src/zlib-1.2.11/trees.c \
+		$$OFFICEUTILS_PATH/src/zlib-1.2.11/zutil.c \
+		$$OFFICEUTILS_PATH/src/zlib-1.2.11/uncompr.c \
+		$$OFFICEUTILS_PATH/src/zlib-1.2.11/compress.c \
+		$$OFFICEUTILS_PATH/src/zlib_addon.c
+
+    CONFIG += config_zlip_image
+}

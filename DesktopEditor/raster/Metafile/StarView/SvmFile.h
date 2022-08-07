@@ -32,8 +32,11 @@
 #pragma once
 
 #include "SvmPlayer.h"
-
 #include "../Common/MetaFile.h"
+
+#if defined(DrawText)
+#undef DrawText
+#endif
 
 namespace MetaFile
 {

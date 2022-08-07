@@ -72,6 +72,7 @@ bool PropertyString::Read (XLS::CFStreamPtr stream)
 		for (_INT32 i = size - 1; i >= 0; i--)
 		{
 			if (s[i] == 0) size--;
+			else break;
 		}
 
 		value = size > 0 ? STR::toStdWString(std::string(s, size), code_page) : L"";
@@ -97,7 +98,14 @@ bool PropertyWString::Read(XLS::CFStreamPtr stream)
 		char *s = new char[size];
 		stream->read(s, size);
 
-		value = std::wstring((wchar_t*)s, size / 2);
+		if (sizeof(wchar_t) == 4)
+		{
+			value = convertUtf16ToWString((UTF16*)s, size / 2);
+		}
+		else
+		{
+			value = std::wstring((wchar_t*)s, size / 2);
+		}		
 
 		delete[]s;
 	}
@@ -119,12 +127,10 @@ bool PropertyDTM::Read (XLS::CFStreamPtr stream)
 }
 std::wstring PropertyDTM::toString()
 {
-#ifdef _WIN32
-	boost::winapi::FILETIME_ ft;
-	ft.dwHighDateTime = dwHighDateTime;
-	ft.dwLowDateTime = dwLowDateTime;
+	_UINT64 temp = ((_UINT64)dwHighDateTime << 32) + dwLowDateTime;
 
-	boost::posix_time::ptime date_time_ = boost::posix_time::from_ftime<boost::posix_time::ptime>(ft);
+	boost::posix_time::ptime daysFrom1601(boost::gregorian::date(1601, 1, 1));
+	boost::posix_time::ptime date_time_ = daysFrom1601 + boost::posix_time::milliseconds(temp / 10000);
 
 	short	Min = (short)date_time_.time_of_day().minutes();
 	short	Hour = (short)date_time_.time_of_day().hours();
@@ -143,9 +149,6 @@ std::wstring PropertyDTM::toString()
 	value +=	(Hour < 10 ? L"0" : L"") + std::to_wstring(Hour) + L":" +
 				(Min < 10 ? L"0" : L"") + std::to_wstring(Min) + L":00Z";
 	return value;
-#else
-    return L"";
-#endif
 }
 //-------------------------------------------------------------------
 bool PropertyInt::Read (XLS::CFStreamPtr stream)
@@ -208,7 +211,7 @@ std::wstring PropertyVecString::toString()
 			{
 				CP_XML_NODE(L"vt:lpstr")
 				{
-					CP_XML_STREAM() << values[i];
+					CP_XML_CONTENT(values[i]);
 				}
 			}
 		}
@@ -264,7 +267,7 @@ std::wstring PropertyVecHeadingPair::toString()
 				{
 					CP_XML_NODE(L"vt:lpstr")
 					{
-						CP_XML_STREAM() << values[i].headingString;
+						CP_XML_CONTENT(values[i].headingString);
 					}
 				}
 				CP_XML_NODE(L"vt:variant")

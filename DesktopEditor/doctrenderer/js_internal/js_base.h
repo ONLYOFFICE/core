@@ -4,6 +4,7 @@
 #include "../../common/File.h"
 #include "../../common/Array.h"
 #include "../../../Common/DocxFormat/Source/Base/SmartPtr.h"
+#include "../../graphics/BaseThread.h"
 
 #define JS_VALUE_EXIST(value) (value.is_init() && !value->isNull() && !value->isUndefined())
 #define JS_IS_VALUE_ARRAY(value) (value.is_init() && !value->isNull() && !value->isUndefined() && value->isArray())
@@ -49,6 +50,8 @@ namespace NSJSBase
         virtual CJSArray* toArray()         = 0;
         virtual CJSTypedArray* toTypedArray() = 0;
         virtual CJSFunction* toFunction()   = 0;
+
+        virtual JSSmart<CJSObject> toObjectSmart() { return toObject(); }
     };
 
     class CJSEmbedObjectPrivateBase
@@ -244,7 +247,8 @@ namespace NSJSBase
         CJSLocalScope* CreateLocalScope();
 
         JSSmart<CJSValue> runScript(const std::string& script, JSSmart<CJSTryCatch> exception = NULL, const std::wstring& scriptPath = std::wstring(L""));
-        CJSValue* JSON_Parse(const char* json_content);        
+        CJSValue* JSON_Parse(const char* json_content);
+        void MoveToThread(ASC_THREAD_ID* id = NULL);
 
     public:
         static CJSValue* createUndefined();
@@ -254,6 +258,7 @@ namespace NSJSBase
         static CJSValue* createUInt(const unsigned int& value);
         static CJSValue* createDouble(const double& value);
         static CJSValue* createString(const char* value, const int& length = -1);
+        static CJSValue* createString(const wchar_t* value, const int& length = -1);
         static CJSValue* createString(const std::string& value);
         static CJSValue* createString(const std::wstring& value);
 
@@ -284,7 +289,7 @@ namespace NSJSBase
         static CJSContext* GetCurrent();
 
     public:
-        static void ExternalInitialize();
+        static void ExternalInitialize(const std::wstring& sDirectory);
         static void ExternalDispose();
         static bool IsSupportNativeTypedArrays();
     };

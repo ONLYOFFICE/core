@@ -32,9 +32,9 @@
 #pragma once
 
 
-#include "Comments.h"
-#include "Footnote.h"
-#include "Endnote.h"
+#include "IFileContainer.h"
+#include "FileTypes.h"
+#include "../Common/SimpleTypes_Word.h"
 
 namespace OOX
 {
@@ -43,7 +43,13 @@ namespace OOX
 	class CFontTable;
 	class CNumbering;
 	class CStyles;
-	
+	class CEndnotes;
+	class CFootnotes;
+	class CComments;
+	class CSettings;
+	class CApp;
+	class CCore;
+
 	namespace Logic
 	{
 		class CBgPict;
@@ -105,6 +111,8 @@ namespace OOX
 		{
 			return et_w_wordDocument;
 		}
+		OOX::CHdrFtr *GetHeaderOrFooter(const OOX::RId& rId) const;
+		void ReadDocumentProperties(XmlUtils::CXmlLiteReader& oReader);
 //-----------------------------------------------------------------------
 		nullable<SimpleTypes::CXmlSpace<>> m_oSpace;
 
@@ -113,13 +121,17 @@ namespace OOX
 		nullable<CFontTable>			m_pFontTable;
 		nullable<CNumbering>			m_pNumbering;
 		nullable<CSettings>				m_pSettings;
-		nullable<Logic::CBgPict>		m_oBgPict;
+		nullable<Logic::CBgPict>		m_pBgPict;
 
-		CComments						m_oComments;
-		OOX::CFootnotes					m_oFootnotes;
-		OOX::CEndnotes					m_oEndnotes;
-		std::map<std::wstring, OOX::CHdrFtr*> m_mapHeadersFooters;
-	
+		nullable<CComments>				m_pComments;
+		nullable<CFootnotes>			m_pFootnotes;
+		nullable<CEndnotes>				m_pEndnotes;
+		nullable<CApp>					m_pApp;
+		nullable<CCore>					m_pCore;
+//-----------------------------------------------------------
+		std::map<std::wstring, NSCommon::smart_ptr<OOX::File>> m_mapImages;
+
+		OOX::IFileContainer *m_currentContainer = NULL;
 	};
 
 

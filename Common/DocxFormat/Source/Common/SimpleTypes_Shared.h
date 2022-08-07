@@ -197,8 +197,8 @@ namespace SimpleTypes
 		conformanceclassTransitional = 1
 	};
 
-	template<EConformanceClass eDefValue = conformanceclassStrict>
-	class CConformanceClass : public CSimpleType<EConformanceClass, conformanceclassStrict>
+	template<EConformanceClass eDefValue = conformanceclassTransitional>
+	class CConformanceClass : public CSimpleType<EConformanceClass, conformanceclassTransitional>
 	{
 	public:
 		CConformanceClass() {}

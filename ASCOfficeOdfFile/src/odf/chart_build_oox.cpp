@@ -646,34 +646,50 @@ void process_build_object::ApplyChartProperties(std::wstring style, std::vector<
 
 		if (false == data_style_name.empty())
 		{
-			office_element_ptr elm = number_styles_.find_by_style_name(data_style_name);
-			number_style_base *number_style = dynamic_cast<number_style_base*>(elm.get());
-
-			if (number_style)
+			office_value_type::type num_format_type = office_value_type::Custom;
+			std::wstring num_format = num_format_context_.find_complex_format(data_style_name, num_format_type);
+			
+			if (num_format.empty())
 			{
-				num_format_context_.start_complex_format();
-				number_style->oox_convert(num_format_context_);
-				num_format_context_.end_complex_format();
-				
-				std::wstring num_format = num_format_context_.get_last_format();
- 				
-				_property p(L"num_format", num_format); 
-				propertiesOut.push_back(p);		
+				office_element_ptr elm = number_styles_.find_by_style_name(data_style_name);
+				number_style_base *number_style = dynamic_cast<number_style_base*>(elm.get());
+
+				if (number_style)
+				{
+					num_format_context_.start_complex_format(data_style_name);
+					number_style->oox_convert(num_format_context_);
+					num_format_context_.end_complex_format();
+
+					num_format = num_format_context_.get_last_format();
+				}
+			}
+			if (false == num_format.empty())
+			{
+				_property p(L"num_format", num_format);
+				propertiesOut.push_back(p);
 			}
 		}
 		if (false == percentage_data_style_name.empty())
 		{
-			office_element_ptr elm = number_styles_.find_by_style_name(percentage_data_style_name);
-			number_style_base *number_style = dynamic_cast<number_style_base*>(elm.get());
-
-			if (number_style)
+			office_value_type::type num_format_type = office_value_type::Percentage;
+			std::wstring num_format = num_format_context_.find_complex_format(percentage_data_style_name, num_format_type);
+			
+			if (num_format.empty())
 			{
-				num_format_context_.start_complex_format();
-				number_style->oox_convert(num_format_context_);
-				num_format_context_.end_complex_format();
-				
-				std::wstring num_format = num_format_context_.get_last_format();
- 				
+				office_element_ptr elm = number_styles_.find_by_style_name(percentage_data_style_name);
+				number_style_base *number_style = dynamic_cast<number_style_base*>(elm.get());
+
+				if (number_style)
+				{
+					num_format_context_.start_complex_format(percentage_data_style_name);
+					number_style->oox_convert(num_format_context_);
+					num_format_context_.end_complex_format();
+
+					num_format = num_format_context_.get_last_format();
+				}
+			}
+ 			if (false == num_format.empty())
+			{
 				_property p(L"percentage_num_format", num_format); 
 				propertiesOut.push_back(p);		
 			}

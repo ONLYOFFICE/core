@@ -258,6 +258,114 @@ namespace OOX
 				return et_x_ProtectedRanges;
 			}
 		};
+		class CCellWatch : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CCellWatch)
+			WritingElement_XlsbConstructors(CCellWatch)
+			CCellWatch()
+			{
+			}
+			virtual ~CCellWatch()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+			virtual std::wstring toXML() const
+			{
+				return L"";
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString(L"<cellWatch");
+				WritingStringNullableAttrString(L"r", m_oR, m_oR.get());
+				writer.WriteString(L"/>");
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes(oReader);
+
+				if (oReader.IsEmptyNode())
+					return;
+			}
+			void fromBin(XLS::BaseObjectPtr& obj)
+			{
+				ReadAttributes(obj);
+			}
+			virtual EElementType getType() const
+			{
+				return et_x_CellWatch;
+			}
+			void ReadAttributes(XLS::BaseObjectPtr& obj)
+			{
+			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start(oReader)
+					WritingElement_ReadAttributes_Read_if(oReader, (L"r"), m_oR)
+				WritingElement_ReadAttributes_End(oReader)
+			}
+			nullable_string m_oR;
+		};
+		class CCellWatches : public WritingElementWithChilds<CCellWatch>
+		{
+		public:
+			WritingElement_AdditionConstructors(CCellWatches)
+			WritingElement_XlsbVectorConstructors(CCellWatches)
+			CCellWatches()
+			{
+			}
+			virtual ~CCellWatches()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+			virtual std::wstring toXML() const
+			{
+				return (L"");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				if (m_arrItems.empty()) return;
+
+				writer.WriteString((L"<cellWatches>"));
+
+				for (size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					if (m_arrItems[i])
+					{
+						m_arrItems[i]->toXML(writer);
+					}
+				}
+
+				writer.WriteString((L"</cellWatches>"));
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if (oReader.IsEmptyNode())
+					return;
+
+				int nCurDepth = oReader.GetDepth();
+				while (oReader.ReadNextSiblingNode(nCurDepth))
+				{
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+					if (L"cellWatch" == sName)
+						m_arrItems.push_back(new CCellWatch(oReader));
+				}
+			}
+
+			void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
+			{
+			}
+
+			virtual EElementType getType() const
+			{
+				return et_x_CellWatches;
+			}
+		};
 		class CPageMargins : public WritingElement
 		{
 		public:

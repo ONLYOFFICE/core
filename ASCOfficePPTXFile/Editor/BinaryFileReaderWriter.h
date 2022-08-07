@@ -315,12 +315,8 @@ namespace NSBinPptxRW
 		void WriteBYTEArray	(const BYTE* pBuffer, size_t len);
 		void WriteStringA	(std::string& sBuffer);
 		
-		void WriteStringW	(std::wstring& sBuffer);
 		void WriteStringW	(const std::wstring& sBuffer);
-		
-		void WriteStringW2	(std::wstring& sBuffer);
-		
-		void WriteStringW3	(std::wstring& sBuffer);
+        void WriteStringW2	(const std::wstring& sBuffer);
 		void WriteStringW3	(const std::wstring& sBuffer);
 		
 		void WriteStringW4	(const std::wstring& sBuffer);
@@ -496,6 +492,8 @@ namespace NSBinPptxRW
 
 		void WriteSlideComments	(int nComment);
 		void WritePresentationComments	(int nComment);
+
+		void WriteCustoms(int nCount);
 		
 		unsigned int WriteRels (const std::wstring& bsType, const std::wstring& bsTarget, const std::wstring& bsTargetMode);
 		unsigned int WriteHyperlink	(const std::wstring& strLink, const bool& bIsActionInit);		

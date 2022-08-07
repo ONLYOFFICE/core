@@ -110,11 +110,6 @@ namespace OOX
 		void FixAfterRead();
         bool Write(const CPath& oFilePath)
 		{
-
-			// TO DO: Запись надо править. Она НЕ РАБОТАЕТ!!!! Проблемы в IFileContainer.
-
-            //return false;
-
 			// Создаем папку
 			NSDirectory::CreateDirectory(oFilePath.GetPath());
 

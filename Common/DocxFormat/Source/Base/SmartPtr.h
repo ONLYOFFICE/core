@@ -85,6 +85,11 @@ namespace NSCommon
 			*m_pCountRef += 1;
 		}
 
+        inline LONG GetCountReference()
+        {
+            return m_pCountRef ? *m_pCountRef : 0;
+        }
+
 		smart_ptr<Type>& operator=(const Type& oSrc)
 		{
 			Release();

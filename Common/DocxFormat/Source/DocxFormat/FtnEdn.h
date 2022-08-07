@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_FTNEDN_INCLUDE_H_
-#define OOX_FTNEDN_INCLUDE_H_
 
 #include "../Base/Nullable.h"
 
@@ -78,18 +76,18 @@ namespace OOX
 		}
 		virtual void fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			if ( _T("w:footnote") == oNode.GetName() )
+			if ( L"w:footnote" == oNode.GetName() )
 				m_eType = et_w_footnote;
-			else if ( _T("w:endnote") == oNode.GetName() )
+			else if ( L"w:endnote" == oNode.GetName() )
 				m_eType = et_w_endnote;
 			else 
 				return;
 
-			XmlMacroReadAttributeBase( oNode, _T("w:id"),   m_oId   );
-			XmlMacroReadAttributeBase( oNode, _T("w:type"), m_oType );
+			XmlMacroReadAttributeBase( oNode, L"w:id",   m_oId   );
+			XmlMacroReadAttributeBase( oNode, L"w:type", m_oType );
 
 			XmlUtils::CXmlNodes oChilds;
-			if ( oNode.GetNodes( _T("*"), oChilds ) )
+			if ( oNode.GetNodes( L"*", oChilds ) )
 			{
 				XmlUtils::CXmlNode oItem;
 				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
@@ -99,65 +97,65 @@ namespace OOX
 						std::wstring sName = oItem.GetName();
 						WritingElement *pItem = NULL;
 
-						if ( _T("w:altChunk") == sName )
+						if ( L"w:altChunk" == sName )
 							pItem = new Logic::CAltChunk( oItem );
-						else if ( _T("w:bookmarkEnd") == sName )
+						else if ( L"w:bookmarkEnd" == sName )
 							pItem = new Logic::CBookmarkEnd( oItem );
-						else if ( _T("w:bookmarkStart") == sName )
+						else if ( L"w:bookmarkStart" == sName )
 							pItem = new Logic::CBookmarkStart( oItem );
-						else if ( _T("w:commentRangeEnd") == sName )
+						else if ( L"w:commentRangeEnd" == sName )
 							pItem = new Logic::CCommentRangeEnd( oItem );
-						else if ( _T("w:commentRangeStart") == sName )
+						else if ( L"w:commentRangeStart" == sName )
 							pItem = new Logic::CCommentRangeStart( oItem );
-						//else if ( _T("w:customXml") == sName )
+						//else if ( L"w:customXml" == sName )
 						//	pItem = new Logic::CCustomXml( oItem );
-						else if ( _T("w:customXmlDelRangeEnd") == sName )
+						else if ( L"w:customXmlDelRangeEnd" == sName )
 							pItem = new Logic::CCustomXmlDelRangeEnd( oItem );
-						else if ( _T("w:customXmlDelRangeStart") == sName )
+						else if ( L"w:customXmlDelRangeStart" == sName )
 							pItem = new Logic::CCustomXmlDelRangeStart( oItem );
-						else if ( _T("w:customXmlInsRangeEnd") == sName )
+						else if ( L"w:customXmlInsRangeEnd" == sName )
 							pItem = new Logic::CCustomXmlInsRangeEnd( oItem );
-						else if ( _T("w:customXmlInsRangeStart") == sName )
+						else if ( L"w:customXmlInsRangeStart" == sName )
 							pItem = new Logic::CCustomXmlInsRangeStart( oItem );
-						else if ( _T("w:customXmlMoveFromRangeEnd") == sName ) 
+						else if ( L"w:customXmlMoveFromRangeEnd" == sName ) 
 							pItem = new Logic::CCustomXmlMoveFromRangeEnd( oItem );
-						else if ( _T("w:customXmlMoveFromRangeStart") == sName )
+						else if ( L"w:customXmlMoveFromRangeStart" == sName )
 							pItem = new Logic::CCustomXmlMoveFromRangeStart( oItem );
-						else if ( _T("w:customXmlMoveToRangeEnd") == sName ) 
+						else if ( L"w:customXmlMoveToRangeEnd" == sName ) 
 							pItem = new Logic::CCustomXmlMoveToRangeEnd( oItem );
-						else if ( _T("w:customXmlMoveToRangeStart") == sName )
+						else if ( L"w:customXmlMoveToRangeStart" == sName )
 							pItem = new Logic::CCustomXmlMoveToRangeStart( oItem );
-						//else if ( _T("w:del") == sName )
+						//else if ( L"w:del" == sName )
 						//	pItem = new Logic::CDel( oItem );
-						//else if ( _T("w:ins") == sName )
+						//else if ( L"w:ins" == sName )
 						//	pItem = new Logic::CIns( oItem );
-						//else if ( _T("w:moveFrom") == sName )
+						//else if ( L"w:moveFrom" == sName )
 						//	pItem = new Logic::CMoveFrom( oItem );
-						else if ( _T("w:moveFromRangeEnd") == sName )
+						else if ( L"w:moveFromRangeEnd" == sName )
 							pItem = new Logic::CMoveFromRangeEnd( oItem );
-						else if ( _T("w:moveFromRangeStart") == sName )
+						else if ( L"w:moveFromRangeStart" == sName )
 							pItem = new Logic::CMoveFromRangeStart( oItem );
-						//else if ( _T("w:moveTo") == sName )
+						//else if ( L"w:moveTo" == sName )
 						//	pItem = new Logic::CMoveTo( oItem );
-						else if ( _T("w:moveToRangeEnd") == sName )
+						else if ( L"w:moveToRangeEnd" == sName )
 							pItem = new Logic::CMoveToRangeEnd( oItem );
-						else if ( _T("w:moveToRangeStart") == sName )
+						else if ( L"w:moveToRangeStart" == sName )
 							pItem = new Logic::CMoveToRangeStart( oItem );
-						else if ( _T("m:oMath") == sName )
+						else if ( L"m:oMath" == sName )
 							pItem = new Logic::COMath( oItem );
-						else if ( _T("m:oMathPara") == sName )
+						else if ( L"m:oMathPara" == sName )
 							pItem = new Logic::COMathPara( oItem );
-						else if ( _T("w:p") == sName )
+						else if ( L"w:p" == sName )
 							pItem = new Logic::CParagraph( oItem );
-						else if ( _T("w:permEnd") == sName )
+						else if ( L"w:permEnd" == sName )
 							pItem = new Logic::CPermEnd( oItem );
-						else if ( _T("w:permStart") == sName )
+						else if ( L"w:permStart" == sName )
 							pItem = new Logic::CPermStart( oItem );
-						else if ( _T("w:proofErr") == sName )
+						else if ( L"w:proofErr" == sName )
 							pItem = new Logic::CProofErr( oItem );
-						else if ( _T("w:sdt") == sName )
+						else if ( L"w:sdt" == sName )
 							pItem = new Logic::CSdt( oItem );
-						else if ( _T("w:tbl") == sName )
+						else if ( L"w:tbl" == sName )
 							pItem = new Logic::CTbl( oItem );
 
 						if ( pItem )
@@ -169,9 +167,9 @@ namespace OOX
 		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			std::wstring sName = oReader.GetName();
-			if ( _T("w:footnote") == sName )
+			if ( L"w:footnote" == sName )
 				m_eType = et_w_footnote;
-			else if ( _T("w:endnote") == sName )
+			else if ( L"w:endnote" == sName )
 				m_eType = et_w_endnote;
 			else
 				return;
@@ -187,65 +185,65 @@ namespace OOX
 				sName = oReader.GetName();
 				WritingElement *pItem = NULL;
 
-				if ( _T("w:altChunk") == sName )
+				if ( L"w:altChunk" == sName )
 					pItem = new Logic::CAltChunk( oReader );
-				else if ( _T("w:bookmarkEnd") == sName )
+				else if ( L"w:bookmarkEnd" == sName )
 					pItem = new Logic::CBookmarkEnd( oReader );
-				else if ( _T("w:bookmarkStart") == sName )
+				else if ( L"w:bookmarkStart" == sName )
 					pItem = new Logic::CBookmarkStart( oReader );
-				else if ( _T("w:commentRangeEnd") == sName )
+				else if ( L"w:commentRangeEnd" == sName )
 					pItem = new Logic::CCommentRangeEnd( oReader );
-				else if ( _T("w:commentRangeStart") == sName )
+				else if ( L"w:commentRangeStart" == sName )
 					pItem = new Logic::CCommentRangeStart( oReader );
-				//else if ( _T("w:customXml") == sName )
+				//else if ( L"w:customXml" == sName )
 				//	pItem = new Logic::CCustomXml( oReader );
-				else if ( _T("w:customXmlDelRangeEnd") == sName )
+				else if ( L"w:customXmlDelRangeEnd" == sName )
 					pItem = new Logic::CCustomXmlDelRangeEnd( oReader );
-				else if ( _T("w:customXmlDelRangeStart") == sName )
+				else if ( L"w:customXmlDelRangeStart" == sName )
 					pItem = new Logic::CCustomXmlDelRangeStart( oReader );
-				else if ( _T("w:customXmlInsRangeEnd") == sName )
+				else if ( L"w:customXmlInsRangeEnd" == sName )
 					pItem = new Logic::CCustomXmlInsRangeEnd( oReader );
-				else if ( _T("w:customXmlInsRangeStart") == sName )
+				else if ( L"w:customXmlInsRangeStart" == sName )
 					pItem = new Logic::CCustomXmlInsRangeStart( oReader );
-				else if ( _T("w:customXmlMoveFromRangeEnd") == sName )
+				else if ( L"w:customXmlMoveFromRangeEnd" == sName )
 					pItem = new Logic::CCustomXmlMoveFromRangeEnd( oReader );
-				else if ( _T("w:customXmlMoveFromRangeStart") == sName )
+				else if ( L"w:customXmlMoveFromRangeStart" == sName )
 					pItem = new Logic::CCustomXmlMoveFromRangeStart( oReader );
-				else if ( _T("w:customXmlMoveToRangeEnd") == sName )
+				else if ( L"w:customXmlMoveToRangeEnd" == sName )
 					pItem = new Logic::CCustomXmlMoveToRangeEnd( oReader );
-				else if ( _T("w:customXmlMoveToRangeStart") == sName )
+				else if ( L"w:customXmlMoveToRangeStart" == sName )
 					pItem = new Logic::CCustomXmlMoveToRangeStart( oReader );
-				else if ( _T("w:del") == sName )
+				else if ( L"w:del" == sName )
 					pItem = new Logic::CDel( oReader );
-				else if ( _T("w:ins") == sName )
+				else if ( L"w:ins" == sName )
 					pItem = new Logic::CIns( oReader );
-				else if ( _T("w:moveFrom") == sName )
+				else if ( L"w:moveFrom" == sName )
 					pItem = new Logic::CMoveFrom( oReader );
-				else if ( _T("w:moveFromRangeEnd") == sName )
+				else if ( L"w:moveFromRangeEnd" == sName )
 					pItem = new Logic::CMoveFromRangeEnd( oReader );
-				else if ( _T("w:moveFromRangeStart") == sName )
+				else if ( L"w:moveFromRangeStart" == sName )
 					pItem = new Logic::CMoveFromRangeStart( oReader );
-				else if ( _T("w:moveTo") == sName )
+				else if ( L"w:moveTo" == sName )
 					pItem = new Logic::CMoveTo( oReader );
-				else if ( _T("w:moveToRangeEnd") == sName )
+				else if ( L"w:moveToRangeEnd" == sName )
 					pItem = new Logic::CMoveToRangeEnd( oReader );
-				else if ( _T("w:moveToRangeStart") == sName )
+				else if ( L"w:moveToRangeStart" == sName )
 					pItem = new Logic::CMoveToRangeStart( oReader );
-				else if ( _T("m:oMath") == sName )
+				else if ( L"m:oMath" == sName )
 					pItem = new Logic::COMath( oReader );
-				else if ( _T("m:oMathPara") == sName )
+				else if ( L"m:oMathPara" == sName )
 					pItem = new Logic::COMathPara( oReader );
-				else if ( _T("w:p") == sName )
+				else if ( L"w:p" == sName )
 					pItem = new Logic::CParagraph( oReader );
-				else if ( _T("w:permEnd") == sName )
+				else if ( L"w:permEnd" == sName )
 					pItem = new Logic::CPermEnd( oReader );
-				else if ( _T("w:permStart") == sName )
+				else if ( L"w:permStart" == sName )
 					pItem = new Logic::CPermStart( oReader );
-				else if ( _T("w:proofErr") == sName )
+				else if ( L"w:proofErr" == sName )
 					pItem = new Logic::CProofErr( oReader );
-				else if ( _T("w:sdt") == sName )
+				else if ( L"w:sdt" == sName )
 					pItem = new Logic::CSdt( oReader );
-				else if ( _T("w:tbl") == sName )
+				else if ( L"w:tbl" == sName )
 					pItem = new Logic::CTbl( oReader );
 
 				if ( pItem )
@@ -256,8 +254,8 @@ namespace OOX
 		{
 			// Читаем атрибуты
 			WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_Read_if( oReader, _T("w:id"), m_oId )
-			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:type"), m_oType )
+			WritingElement_ReadAttributes_Read_if( oReader, L"w:id", m_oId )
+			WritingElement_ReadAttributes_Read_else_if( oReader, L"w:type", m_oType )
 			WritingElement_ReadAttributes_End( oReader )
 		}
         virtual std::wstring toXML() const
@@ -265,16 +263,16 @@ namespace OOX
 			std::wstring sResult;
 			
 			if ( m_eType == et_w_footnote )
-				sResult = _T("<w:footnote ");
+				sResult = L"<w:footnote";
 			else if ( m_eType == et_w_endnote )
-				sResult = _T("<w:endnote ");
+				sResult = L"<w:endnote";
 			else
-				return _T("");
+				return L"";
 
-			ComplexTypes_WriteAttribute( _T("w:id=\""),   m_oId );
-			ComplexTypes_WriteAttribute( _T("w:type=\""), m_oType );
+			ComplexTypes_WriteAttribute_( L" w:type=\"", m_oType );
+			ComplexTypes_WriteAttribute_( L" w:id=\"",   m_oId );
 
-			sResult += _T(">");
+			sResult += L">";
 
             for ( size_t i = 0; i < m_arrItems.size(); ++i)
             {
@@ -285,9 +283,9 @@ namespace OOX
             }
 
 			if ( m_eType == et_w_footnote )
-				sResult += _T("</w:footnote>");
+				sResult += L"</w:footnote>";
 			else if ( m_eType == et_w_endnote )
-				sResult += _T("</w:endnote>");
+				sResult += L"</w:endnote>";
 
 			return sResult;
 		}
@@ -301,11 +299,8 @@ namespace OOX
 		}
 		OOX::EElementType                        m_eType; // <w:footnote> или <w:endnote>
 
-		// Attributes
 		nullable<SimpleTypes::CDecimalNumber<> > m_oId;
 		nullable<SimpleTypes::CFtnEdn<>        > m_oType;
-
-		// Childs
 	};
 
 	//--------------------------------------------------------------------------------
@@ -331,39 +326,33 @@ namespace OOX
 		virtual ~CFtnEdnSepRef()
 		{
 		}
-	public:
-
 		const CFtnEdnSepRef& operator =(const XmlUtils::CXmlNode& oNode)
 		{
 			fromXML( (XmlUtils::CXmlNode&)oNode );
 			return *this;
 		}
-
 		const CFtnEdnSepRef& operator =(const XmlUtils::CXmlLiteReader& oReader)
 		{
 			fromXML( (XmlUtils::CXmlLiteReader&)oReader );
 			return *this;
 		}
-
-	public:
-
-		virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+		virtual void fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			if ( _T("w:footnote") == oNode.GetName() )
+			if ( L"w:footnote" == oNode.GetName() )
 				m_eType = et_w_footnote;
-			else if ( _T("w:endnote") == oNode.GetName() )
+			else if ( L"w:endnote" == oNode.GetName() )
 				m_eType = et_w_endnote;
 			else 
 				return;
 
-			XmlMacroReadAttributeBase( oNode, _T("w:id"),   m_oId   );
+			XmlMacroReadAttributeBase( oNode, L"w:id",   m_oId   );
 		}
-		virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			std::wstring sName = oReader.GetName();
-			if ( _T("w:footnote") == sName )
+			if ( L"w:footnote" == sName )
 				m_eType = et_w_footnote;
-			else if ( _T("w:endnote") == sName )
+			else if ( L"w:endnote" == sName )
 				m_eType = et_w_endnote;
 			else 
 				return;
@@ -373,20 +362,20 @@ namespace OOX
 			if ( !oReader.IsEmptyNode() )
 				oReader.ReadTillEnd();
 		}
-        virtual std::wstring      toXML() const
+        virtual std::wstring toXML() const
 		{
 			std::wstring sResult;
 			
 			if ( m_eType == et_w_footnote )
-				sResult = _T("<w:footnote ");
+				sResult = L"<w:footnote ";
 			else if ( m_eType == et_w_endnote )
-				sResult = _T("<w:endnote ");
+				sResult = L"<w:endnote ";
 			else
-				return _T("");
+				return L"";
 
-			ComplexTypes_WriteAttribute( _T("w:id=\""),   m_oId );
+			ComplexTypes_WriteAttribute_( L" w:id=\"",   m_oId );
 
-			sResult += _T("/>");
+			sResult += L"/>";
 
 			return sResult;
 		}
@@ -394,9 +383,7 @@ namespace OOX
 		{
 			return m_eType;
 		}
-
 	private:
-
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			if ( oReader.GetAttributesCount() <= 0 )
@@ -408,7 +395,7 @@ namespace OOX
 			std::wstring wsName = oReader.GetName();
 			while( !wsName.empty() )
 			{
-				if ( _T("w:id") == wsName )
+				if ( L"w:id" == wsName )
 					m_oId = oReader.GetText();
 
 				if ( !oReader.MoveToNextAttribute() )
@@ -421,13 +408,9 @@ namespace OOX
 		}
 
 	public:
+		OOX::EElementType m_eType; // <w:footnote> или <w:endnote>
 
-		OOX::EElementType                        m_eType; // <w:footnote> или <w:endnote>
-
-		// Attributes
 		nullable<SimpleTypes::CDecimalNumber<> > m_oId;
 	};
 
 } // namespace OOX
-
-#endif // OOX_FTNEDN_INCLUDE_H_

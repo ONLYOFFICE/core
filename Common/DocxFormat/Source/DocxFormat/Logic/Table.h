@@ -521,13 +521,12 @@ namespace OOX
 			}
 
 		private:
-
+			void CreateElements(XmlUtils::CXmlLiteReader &oReader, int Depth);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
 			int										m_nCountCell;
 
-			// Attributes
 			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidDel;
 			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidR;
 			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidRPr;
@@ -595,14 +594,12 @@ namespace OOX
 			}
 
 		private:
-
+			void CreateElements(XmlUtils::CXmlLiteReader &oReader, int Depth);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
 			int									m_nNumCol; // Номер колонки
-		// Attributes
 			nullable<std::wstring >				m_sId;
-		// Childs
 			OOX::Logic::CTableCellProperties*	m_pTableCellProperties; //todooo - выкинуть из m_arrItems, переделать на nullable<>
 		};
 

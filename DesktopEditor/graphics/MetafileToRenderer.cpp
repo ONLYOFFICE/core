@@ -475,8 +475,8 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case ctBrushTexturePath:
 			{
-				int nLen = 2 * ReadUSHORT(current, curindex);
-				std::wstring sTempPath = ReadString16(current, curindex, nLen);
+                int nLen = ReadInt(current, curindex);
+                std::wstring sTempPath = ReadString16(current, curindex, nLen);
 
 				std::wstring sImagePath = pCorrector->GetImagePath(sTempPath);
 				pRenderer->put_BrushTexturePath(sImagePath);
@@ -997,6 +997,40 @@ namespace NSOnlineOfficeBinToPdf
 					if (nFlags & (1 << 22))
 						pPr->SetPicturePath(pCorrector->GetImagePath(ReadString(current, curindex)));
 				}
+				else if (oInfo.IsSignature())
+				{
+					CFormFieldInfo::CSignatureFormPr* pPr = oInfo.GetSignatureFormPr();
+
+					// Поля Настройки подписи
+					// Сведения о подписывающем
+
+					// Имя
+					if (nFlags & (1 << 20))
+						pPr->SetName(ReadString(current, curindex));
+
+					// Должность Игнорируется
+
+					// Адрес электронной почты
+					if (nFlags & (1 << 21))
+						pPr->SetContact(ReadString(current, curindex));
+
+					// Инструкция для подписывающего Игнорируется
+
+					// Показывать дату подписи в строке подписи
+					pPr->SetDate(nFlags & (1 << 22));
+
+					// Цель подписания документа (причина)
+					if (nFlags & (1 << 23))
+						pPr->SetReason(ReadString(current, curindex));
+
+					// Картинка
+					if (nFlags & (1 << 24))
+						pPr->SetPicturePath(pCorrector->GetImagePath(ReadString(current, curindex)));
+
+					// Необходимо передать сертификат, пароль, ключ, пароль ключа
+					if (nFlags & (1 << 25))
+						pPr->SetCert(ReadString(current, curindex));
+				}
 
 				if (oInfo.IsValid())
 					pRenderer->AddFormField(oInfo);
@@ -1133,7 +1167,7 @@ namespace NSOnlineOfficeBinToPdf
             }
             case ctBrushTexturePath:
             {
-                int nLen = 2 * ReadUSHORT(current, curindex);
+                int nLen = ReadInt(current, curindex);
                 SkipString16(current, curindex, nLen);
                 break;
             }

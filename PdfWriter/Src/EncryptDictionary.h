@@ -34,15 +34,19 @@
 
 #include "Objects.h"
 
+#include "../../DesktopEditor/xmlsec/src/include/Certificate.h"
+
 namespace PdfWriter
 {
 	class CEncrypt;
 	class CInfoDict;
+	class CStream;
 
 	class CEncryptDict : public CDictObject
 	{
 	public:
 		CEncryptDict(CXref* pXref);
+		CEncryptDict(const std::wstring& sEncrypt);
 		~CEncryptDict();
 		EDictType GetDictType() const
 		{
@@ -56,9 +60,39 @@ namespace PdfWriter
 		{
 			return m_pEncrypt;
 		}
+		void UpdateKey(int nCryptAlgorithm);
 	private:
 		CEncrypt* m_pEncrypt;
 		std::string PadOrTrancatePassword(const std::wstring & wsPassword);
+	};
+
+	class CSignatureDict : public CDictObject
+	{
+	public:
+		CSignatureDict(CXref* pXref);
+		~CSignatureDict();
+		EDictType GetDictType() const
+		{
+			return dict_type_SIGNATURE;
+		}
+
+		void SetByteRange(int nLen1, int nOffset2);
+		void ByteRangeOffset(int nBegin, int nEnd);
+		void WriteToStream(CStream* pStream, int nFileEnd);
+		void SetCert(ICertificate* pCert);
+
+		void SetName(const std::string& sName);
+		void SetReason(const std::string& sReason);
+		void SetContact(const std::string& sContacts);
+		void SetDate();
+	private:
+		ICertificate* m_pCertificate;
+
+		int m_nLen1;    // Длина  первого интервала сигнатуры
+		int m_nOffset2; // Начало второго интервала сигнатуры
+
+		int m_nByteRangeBegin; // Смещение начала массива ByteRange
+		int m_nByteRangeEnd;   // Смещение конца  массива ByteRange
 	};
 }
 #endif // _PDF_WRITER_SRC_ENCRYPT_DICTIONARY_H

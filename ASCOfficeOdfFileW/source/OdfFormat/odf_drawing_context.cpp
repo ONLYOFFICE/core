@@ -2215,6 +2215,9 @@ void odf_drawing_context::set_line_width(double pt)
 {
 	if (!impl_->current_graphic_properties) return;
 
+	if (pt < 0.0001)
+		impl_->current_graphic_properties->draw_stroke_ = line_style::None;
+
 	impl_->current_graphic_properties->svg_stroke_width_ = length(length(pt,length::pt).get_value_unit(length::cm), length::cm);
 }
 

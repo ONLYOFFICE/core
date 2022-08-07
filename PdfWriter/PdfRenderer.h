@@ -47,6 +47,8 @@
 #define PDFWRITER_DECL_EXPORT Q_DECL_EXPORT
 #endif
 
+#include "../DesktopEditor/xmlsec/src/include/Certificate.h"
+
 namespace PdfWriter
 {
 	class CDocument;
@@ -227,6 +229,20 @@ public:
     HRESULT OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker = false);
 	HRESULT DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2* pMaskBuffer, const unsigned int& unMaskWidth, const unsigned int& unMaskHeight, const double& dX, const double& dY, const double& dW, const double& dH);
 
+    //----------------------------------------------------------------------------------------
+    // Дополнительные функции для дозаписи Pdf
+    //----------------------------------------------------------------------------------------
+    bool EditPdf(const std::wstring& wsPath, int nPosLastXRef, int nSizeXRef, const std::wstring& sCatalog, int nCatalog, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm, int nFormField);
+    bool CreatePageTree(const std::wstring& sPageTree, int nPageTree);
+    std::pair<int, int> GetPageRef(int nPageIndex);
+    bool EditPage(const std::wstring& sPage, int nPage);
+    bool AddPage(int nPageIndex);
+    bool DeletePage(int nPageIndex);
+    bool EditClose(const std::wstring& sTrailer, const std::wstring& sInfo);
+    void PageRotate(int nRotate);
+    void Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate);
+    std::wstring GetEditPdfPath();
+
     NSFonts::IApplicationFonts* GetApplicationFonts();
 
 private:
@@ -243,12 +259,14 @@ private:
 	void UpdateTransform();
 	void UpdatePen();
 	void UpdateBrush();
-    bool IsValid();
-    bool IsPageValid();
-    void SetError();
-	void AddLink(const unsigned int& unPage, const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const unsigned int& unDestPage);
+	void Reset();
+	bool IsValid();
+	bool IsPageValid();
+	void SetError();
+	void AddLink(PdfWriter::CPage* pPage, const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const unsigned int& unDestPage);
 	unsigned char* EncodeString(const unsigned int* pUnicodes, const unsigned int& unUnicodesCount, const unsigned int* pGIDs = NULL);
 	unsigned char* EncodeGID(const unsigned int& unGID, const unsigned int* pUnicodes, const unsigned int& unUnicodesCount);
+	std::wstring GetDownloadFile(const std::wstring& sUrl);
 
 private:
 
@@ -1541,9 +1559,9 @@ private:
 	};
 	struct TDestinationInfo
 	{
-		TDestinationInfo(const unsigned int& page, const double& x, const double& y, const double& w, const double& h, const double& dx, const double& dy, const unsigned int& undpage)
+		TDestinationInfo(PdfWriter::CPage* page, const double& x, const double& y, const double& w, const double& h, const double& dx, const double& dy, const unsigned int& undpage)
 		{
-			unPage     = page;
+			pPage      = page;
 			dX         = x;
 			dY         = y;
 			dW         = w;
@@ -1553,7 +1571,7 @@ private:
 			unDestPage = undpage;
 		}
 
-		unsigned int unPage;
+		PdfWriter::CPage* pPage;
 		double       dX;
 		double       dY;
 		double       dW;
@@ -1854,9 +1872,8 @@ private:
 	CMultiLineTextManager        m_oLinesManager;
 								 
 	bool                         m_bValid;
-								 
-	int                          m_nPagesCount;
-	int                          m_nCounter; // TODO: для теста, убрать потом
+	bool                         m_bEdit;
+	bool                         m_bEditPage;
 };
 
 #endif // _PDF_WRITER_PDFRENDERER_H

@@ -413,7 +413,7 @@ void format_number_number(
             strm << L"General";
     }
 
-    if (number_decimal_places_)
+    if ((number_decimal_places_) && (*number_decimal_places_ > 0))
     {
         strm << L".";
         strm << std::wstring(*number_decimal_places_, L'0');

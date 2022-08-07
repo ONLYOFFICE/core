@@ -2375,7 +2375,7 @@ namespace OOX
 				}
 			}
 		}
-		void CSheetData::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter)
+		void CSheetData::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter)
 		{
             oStream.XlsbSkipRecord();//XLSB::rt_BeginSheetData
 
@@ -2415,7 +2415,7 @@ namespace OOX
 			}
 			RELEASEOBJECT(pRow);
 		}
-		void CSheetData::fromXLSBToXmlCell (CCell& oCell, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter)
+		void CSheetData::fromXLSBToXmlCell (CCell& oCell, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter)
 		{
 			if (NULL == pCSVWriter)
 			{
@@ -2426,7 +2426,7 @@ namespace OOX
 				pCSVWriter->WriteCell(&oCell);
 			}
 		}
-		void CSheetData::fromXLSBToXmlRowStart (CRow* pRow, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter)
+		void CSheetData::fromXLSBToXmlRowStart (CRow* pRow, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter)
 		{
 			if (NULL == pCSVWriter)
 			{
@@ -2437,7 +2437,7 @@ namespace OOX
 				pCSVWriter->WriteRowStart(pRow);
 			}
 		}
-		void CSheetData::fromXLSBToXmlRowEnd (CRow* pRow, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter)
+		void CSheetData::fromXLSBToXmlRowEnd (CRow* pRow, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter)
 		{
 			if(pRow)
 			{

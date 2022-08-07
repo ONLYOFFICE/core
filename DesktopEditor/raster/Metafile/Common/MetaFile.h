@@ -36,7 +36,8 @@
 #include "MetaFileUtils.h"
 #include "MetaFileObjects.h"
 #include "MetaFileClip.h"
-#include "../../../fontengine/FontManager.h"
+
+#include "../../../graphics/pro/Fonts.h"
 
 namespace MetaFile
 {
@@ -46,6 +47,7 @@ namespace MetaFile
 		IMetaFileBase()
 		{
 			m_pBufferData = NULL;
+			m_bIsExternalBuffer = false;
 			m_bError      = false;
 			m_pOutput     = NULL;
 			m_oStream.SetStream(NULL, 0);
@@ -61,7 +63,7 @@ namespace MetaFile
 		virtual double       GetPixelHeight() = 0;
 		virtual double       GetPixelWidth() = 0;
 		virtual int          GetTextColor() = 0;
- 		virtual IFont*       GetFont() = 0;
+		virtual IFont*       GetFont() = 0;
 		virtual IBrush*      GetBrush() = 0;
 		virtual IPen*        GetPen() = 0;
 		virtual unsigned int GetTextAlign() = 0;
@@ -78,7 +80,18 @@ namespace MetaFile
 		virtual bool         IsWindowFlippedY() = 0;
 		virtual bool         IsWindowFlippedX() = 0;
 
-		bool          OpenFromFile(const wchar_t* wsFilePath)
+		bool ReadFromBuffer(BYTE* pBuffer, unsigned int unSize, const bool& bIsExternal = true)
+		{
+			if (NULL == pBuffer || 0 == unSize)
+				return false;
+
+			this->ClearFile();
+
+			m_pBufferData = pBuffer;
+			m_bIsExternalBuffer = bIsExternal;
+			m_oStream.SetStream(pBuffer, unSize);
+		}
+		bool OpenFromFile(const wchar_t* wsFilePath)
 		{
 			this->Close();
 
@@ -86,6 +99,7 @@ namespace MetaFile
 			oFile.OpenFile(wsFilePath);
 			int lFileSize = oFile.GetFileSize();
 
+			m_bIsExternalBuffer = false;
 			m_pBufferData = new BYTE[lFileSize];
 			if (!m_pBufferData)
 				return false;
@@ -100,7 +114,9 @@ namespace MetaFile
 		}
 		void          Close()
 		{
-			RELEASEARRAYOBJECTS(m_pBufferData);
+			if (!m_bIsExternalBuffer)
+				RELEASEARRAYOBJECTS(m_pBufferData);
+
 			m_pOutput = NULL;
 			m_oStream.SetStream(NULL, 0);
 			m_bError = false;
@@ -116,11 +132,11 @@ namespace MetaFile
 
 			this->ClearFile();
 		}
-		CFontManager* GetFontManager()
+		NSFonts::IFontManager* GetFontManager()
 		{
 			return m_pFontManager;
 		}
-		void          SetFontManager(CFontManager* pFontManager)
+		void          SetFontManager(NSFonts::IFontManager* pFontManager)
 		{
 			m_pFontManager = pFontManager;
 		}
@@ -143,9 +159,10 @@ namespace MetaFile
 		IOutputDevice* m_pOutput;
 
 	private:
+		NSFonts::IFontManager*  m_pFontManager;
 
-		BYTE*          m_pBufferData;		
-		CFontManager*  m_pFontManager;
+		BYTE*          m_pBufferData;
+		bool           m_bIsExternalBuffer;
 		bool           m_bError;
 	};
 }

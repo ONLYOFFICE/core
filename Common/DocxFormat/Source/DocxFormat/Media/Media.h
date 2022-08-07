@@ -54,7 +54,7 @@ namespace OOX
 		virtual void write(const CPath& filename, const CPath& directory, CContentTypes& content) const;
 
 		void set_filename(const std::wstring & file_path, bool bExternal);
-		void set_filename(CPath & file_path, bool bExternal);
+		void set_filename(CPath & file_path, bool bExternal, bool bDefault = false);
 
 		bool IsExist()
 		{
@@ -78,6 +78,7 @@ namespace OOX
 		{
 			return m_filename.GetFilename();
 		}
+		std::vector<BYTE> m_Data;
 	protected:
 		CPath	m_filename;
 		bool	m_bExist;

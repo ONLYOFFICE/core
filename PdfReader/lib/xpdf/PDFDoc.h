@@ -190,6 +190,8 @@ public:
   GBool saveEmbeddedFile(int idx, const wchar_t *path, int pathLen);
 #endif
   char *getEmbeddedFileMem(int idx, int *size);
+  GBool makeWritable(bool bWritable, GString *ownerPassword = NULL,
+                     GString *userPassword = NULL);
 
 
 private:

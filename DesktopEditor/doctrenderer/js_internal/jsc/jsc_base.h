@@ -9,6 +9,7 @@
 #include <JavaScriptCore/JSValueRef.h>
 
 #import "../../../../DesktopEditor/common/Mac/NSString+StringUtils.h"
+#include <vector>
 
 @protocol JSEmbedObjectProtocol
 - (void*) getNative;
@@ -20,9 +21,7 @@ namespace NSJSBase
     {
     public:
         JSContext* context;
-
-        static bool g_oldVersion;
-        static JSContext* g_lockedContext;
+        std::vector<ASC_THREAD_ID> m_arThreads;
 
     public:
         CJSContextPrivate()
@@ -33,14 +32,10 @@ namespace NSJSBase
         {
             context = nil;
         }
-    };
-}
 
-static JSContext* _getCurrentContext()
-{
-    if (nil != NSJSBase::CJSContextPrivate::g_lockedContext)
-        return NSJSBase::CJSContextPrivate::g_lockedContext;
-    return [JSContext currentContext];
+        static JSContext* GetCurrentContext();
+        static bool IsOldVersion();
+    };
 }
 
 namespace NSJSBase
@@ -50,29 +45,21 @@ namespace NSJSBase
     {
     public:
         JSValue* value;
-        JSContext* context;
 
         CJSValueJSCTemplate()
         {
             value = nil;
-            context = nil;
         }
         CJSValueJSCTemplate(JSValue* _value)
         {
             value = _value;
-            context = _getCurrentContext();
-            
-            if (context == nil) {
-                context = _value.context;
-            }
         }
-        
+
     public:
 
         virtual ~CJSValueJSCTemplate()
         {
             value = nil;
-            context = nil;
         }
 
         virtual bool isUndefined();
@@ -99,6 +86,13 @@ namespace NSJSBase
         virtual CJSArray* toArray();
         virtual CJSTypedArray* toTypedArray();
         virtual CJSFunction* toFunction();
+
+        JSContext* getContext()
+        {
+            if (nil == value || nil == value.context)
+                return CJSContextPrivate::GetCurrentContext();
+            return value.context;
+        }
     };
 
     typedef CJSValueJSCTemplate<CJSValue> CJSValueJSC;
@@ -116,14 +110,12 @@ namespace NSJSBase
         virtual ~CJSObjectJSC()
         {
             value = nil;
-            context = nil;
         }
 
         virtual CJSValue* get(const char* name)
         {
             CJSValueJSC* _value = new CJSValueJSC();
             _value->value = [value valueForProperty:[[NSString alloc] initWithUTF8String:name]];
-            _value->context = context;
             return _value;
         }
 
@@ -135,12 +127,12 @@ namespace NSJSBase
 
         virtual void set(const char* name, const int& _value)
         {
-            [value setValue:[JSValue valueWithInt32:_value inContext: context] forProperty:[[NSString alloc] initWithUTF8String:name]];
+            [value setValue:[JSValue valueWithInt32:_value inContext: getContext()] forProperty:[[NSString alloc] initWithUTF8String:name]];
         }
 
         virtual void set(const char* name, const double& _value)
         {
-            [value setValue:[JSValue valueWithDouble:_value inContext: context] forProperty:[[NSString alloc] initWithUTF8String:name]];
+            [value setValue:[JSValue valueWithDouble:_value inContext: getContext()] forProperty:[[NSString alloc] initWithUTF8String:name]];
         }
 
         virtual CJSEmbedObject* getNative()
@@ -168,7 +160,6 @@ namespace NSJSBase
             }
 
             CJSValueJSC* _return = new CJSValueJSC();
-            _return->context = context;
             _return->value = [value invokeMethod: [[NSString alloc] initWithUTF8String:name]
                                     withArguments: arr];
 
@@ -180,7 +171,6 @@ namespace NSJSBase
             CJSValueJSC* _value = new CJSValueJSC();
             _value->value = value;
             //_value->value = [JSValue valueWithJSValueRef:[value JSValueRef] inContext:context];
-            _value->context = context;
             return _value;
         }
     };
@@ -197,7 +187,6 @@ namespace NSJSBase
         virtual ~CJSArrayJSC()
         {
             value = nil;
-            context = nil;
         }
 
         virtual int getCount()
@@ -212,7 +201,6 @@ namespace NSJSBase
         {
             CJSValueJSC* _value = new CJSValueJSC();
             _value->value = [value valueAtIndex:(NSUInteger)index];
-            _value->context = context;
             return _value;
         }
 
@@ -229,22 +217,22 @@ namespace NSJSBase
 
         virtual void set(const int& index, const bool& _value)
         {
-            [value setValue:[JSValue valueWithBool:_value inContext : context] atIndex:index];
+            [value setValue:[JSValue valueWithBool:_value inContext : getContext()] atIndex:index];
         }
 
         virtual void set(const int& index, const int& _value)
         {
-            [value setValue:[JSValue valueWithInt32:_value inContext : context] atIndex:index];
+            [value setValue:[JSValue valueWithInt32:_value inContext : getContext()] atIndex:index];
         }
 
         virtual void set(const int& index, const double& _value)
         {
-            [value setValue:[JSValue valueWithDouble:_value inContext : context] atIndex:index];
+            [value setValue:[JSValue valueWithDouble:_value inContext : getContext()] atIndex:index];
         }
 
         virtual void add_null()
         {
-            [value setValue:[JSValue valueWithNullInContext:context] atIndex:m_count++];
+            [value setValue:[JSValue valueWithNullInContext:getContext()] atIndex:m_count++];
         }
 
         virtual void add_undefined()
@@ -254,22 +242,22 @@ namespace NSJSBase
 
         virtual void add_bool(const bool& _value)
         {
-            [value setValue:[JSValue valueWithBool:_value inContext : context] atIndex:m_count++];
+            [value setValue:[JSValue valueWithBool:_value inContext : getContext()] atIndex:m_count++];
         }
 
         virtual void add_byte(const BYTE& _value)
         {
-            [value setValue:[JSValue valueWithInt32:(int)_value inContext : context] atIndex:m_count++];
+            [value setValue:[JSValue valueWithInt32:(int)_value inContext : getContext()] atIndex:m_count++];
         }
 
         virtual void add_int(const int& _value)
         {
-            [value setValue:[JSValue valueWithInt32:_value inContext : context] atIndex:m_count++];
+            [value setValue:[JSValue valueWithInt32:_value inContext : getContext()] atIndex:m_count++];
         }
 
         virtual void add_double(const double& _value)
         {
-            [value setValue:[JSValue valueWithDouble:_value inContext : context] atIndex:m_count++];
+            [value setValue:[JSValue valueWithDouble:_value inContext : getContext()] atIndex:m_count++];
         }
 
         virtual void add_stringa(const std::string& _value)
@@ -286,7 +274,6 @@ namespace NSJSBase
         {
             CJSValueJSC* _value = new CJSValueJSC();
             _value->value = value;
-            _value->context = context;
             return _value;
         }
     };
@@ -296,19 +283,19 @@ namespace NSJSBase
     public:
         CJSTypedArrayJSC(JSContext* _context, BYTE* data = NULL, int count = 0, const bool& isExternalize = true)
         {
-            context = _context;
             if (0 >= count)
                 return;
-            if (!CJSContextPrivate::g_oldVersion)
+
+            if (!CJSContextPrivate::IsOldVersion())
             {
-                JSObjectRef object = JSObjectMakeTypedArrayWithBytesNoCopy(context.JSGlobalContextRef,
+                JSObjectRef object = JSObjectMakeTypedArrayWithBytesNoCopy(_context.JSGlobalContextRef,
                                                                            kJSTypedArrayTypeUint8Array,
                                                                            (void*)data, (size_t)count,
                                                                            isExternalize ? data_no_destroy_memory : data_destroy_memory,
-																		   nullptr, nullptr);
+                                                                           nullptr, nullptr);
                 if (object)
                 {
-                    value = [JSValue valueWithJSValueRef:object inContext:context];
+                    value = [JSValue valueWithJSValueRef:object inContext:_context];
                 }
             }
             else
@@ -325,22 +312,22 @@ namespace NSJSBase
         virtual ~CJSTypedArrayJSC()
         {
             value = nil;
-            context = nil;
         }
 
         static void data_destroy_memory(void* bytes, void* deallocatorContext)
         {
             NSJSBase::NSAllocator::Free((unsigned char*)bytes, 0);
         }
-		static void data_no_destroy_memory(void* bytes, void* deallocatorContext)
-        {            
+        static void data_no_destroy_memory(void* bytes, void* deallocatorContext)
+        {
         }
 
         virtual int getCount()
         {
             if (nil == value)
                 return 0;
-            if (!CJSContextPrivate::g_oldVersion)
+            JSContext* context = getContext();
+            if (!CJSContextPrivate::IsOldVersion())
             {
                 JSObjectRef obj = JSValueToObject(context.JSGlobalContextRef, value.JSValueRef, NULL);
                 return (int)JSObjectGetTypedArrayByteLength(context.JSGlobalContextRef, obj, NULL);
@@ -353,13 +340,14 @@ namespace NSJSBase
 
         virtual CJSDataBuffer getData()
         {
-			CJSDataBuffer buffer;
-            if (!CJSContextPrivate::g_oldVersion)
+            JSContext* context = getContext();
+            CJSDataBuffer buffer;
+            if (!CJSContextPrivate::IsOldVersion())
             {
                 JSObjectRef obj = JSValueToObject(context.JSGlobalContextRef, value.JSValueRef, NULL);
-				buffer.IsExternalize = false;
-				buffer.Data = (BYTE*)JSObjectGetTypedArrayBytesPtr(context.JSGlobalContextRef, obj, NULL);
-				buffer.Len = (size_t)JSObjectGetTypedArrayByteLength(context.JSGlobalContextRef, obj, NULL);
+                buffer.IsExternalize = false;
+                buffer.Data = (BYTE*)JSObjectGetTypedArrayBytesPtr(context.JSGlobalContextRef, obj, NULL);
+                buffer.Len = (size_t)JSObjectGetTypedArrayByteLength(context.JSGlobalContextRef, obj, NULL);
                 return buffer;
             }
 
@@ -386,7 +374,6 @@ namespace NSJSBase
         {
             CJSValueJSC* _value = new CJSValueJSC();
             _value->value = value;
-            _value->context = context;
             return _value;
         }
     };
@@ -400,9 +387,8 @@ namespace NSJSBase
         virtual ~CJSFunctionJSC()
         {
             value = nil;
-            context = nil;
         }
-        
+
         virtual CJSValue* Call(CJSValue* recv, int argc, JSSmart<CJSValue> argv[])
         {
             NSMutableArray* arr = [[NSMutableArray alloc] init];
@@ -413,7 +399,6 @@ namespace NSJSBase
             }
 
             CJSValueJSC* _return = new CJSValueJSC();
-            _return->context = context;
             _return->value = [value callWithArguments:arr];
 
             return _return;
@@ -425,7 +410,6 @@ namespace NSJSBase
     {
         CJSObjectJSC* _value = new CJSObjectJSC();
         _value->value = value;
-        _value->context = context;
         return _value;
     }
 
@@ -434,16 +418,14 @@ namespace NSJSBase
     {
         CJSArrayJSC* _value = new CJSArrayJSC();
         _value->value = value;
-        _value->context = context;
         return _value;
     }
 
     template<typename T>
     CJSTypedArray* CJSValueJSCTemplate<T>::toTypedArray()
     {
-        CJSTypedArrayJSC* _value = new CJSTypedArrayJSC(context);
+        CJSTypedArrayJSC* _value = new CJSTypedArrayJSC(getContext());
         _value->value = value;
-        _value->context = context;
         return _value;
     }
 
@@ -452,7 +434,6 @@ namespace NSJSBase
     {
         CJSFunctionJSC* _value = new CJSFunctionJSC();
         _value->value = value;
-        _value->context = context;
         return _value;
     }
 }
@@ -464,13 +445,11 @@ namespace NSJSBase
     {
     public:
         JSContext* context;
-        JSSmart<CJSContext> smartContext;
 
     public:
         CJSCTryCatch() : CJSTryCatch()
         {
-            smartContext = CJSContext::GetCurrent();
-            context = smartContext->m_internal->context;
+            context = CJSContextPrivate::GetCurrentContext();
         }
         virtual ~CJSCTryCatch()
         {

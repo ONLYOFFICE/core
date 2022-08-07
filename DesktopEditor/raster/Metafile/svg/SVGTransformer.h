@@ -9,25 +9,25 @@ class CSVGTransformer_private;
 class GRAPHICS_DECL CSVGTransformer
 {
 public:
-    CSVGTransformer();
-    ~CSVGTransformer();
+	CSVGTransformer();
+	~CSVGTransformer();
 
 public:
 
-    bool OpenFromFile(const std::wstring& file);
-    bool Load(const std::wstring& content);
+	bool OpenFromFile(const std::wstring& file);
+	bool Load(const std::wstring& content);
 
-    void Close();
+	void Close();
 
-    void SetFontManager(NSFonts::IFontManager* pFontManager);
+	void SetFontManager(NSFonts::IFontManager* pFontManager);
 
-    bool Draw(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight);
-    int get_Width();
-    int get_Height();
-    int get_Metrics();
+	bool Draw(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight);
+	int get_Width();
+	int get_Height();
+	int get_Metrics();
 
 private:
-    CSVGTransformer_private* m_internal;
+	CSVGTransformer_private* m_internal;
 };
 
 #endif // _BUILD_GRAPHICS_SVG_TRANSFORMER_H_

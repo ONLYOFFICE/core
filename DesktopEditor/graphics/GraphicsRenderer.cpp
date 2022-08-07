@@ -31,7 +31,10 @@
  */
 #include "GraphicsRenderer.h"
 #include <algorithm>
+
+#ifndef GRAPHICS_DISABLE_METAFILE
 #include "../raster/Metafile/MetaFile.h"
+#endif
 
 #if 0
 static void LOGGING(char* buffer, ...)
@@ -698,7 +701,8 @@ HRESULT CGraphicsRenderer::CommandDrawText(const std::wstring& bsText, const dou
 	if (c_nHyperlinkType == m_lCurrentCommandType)
 		return S_OK;
 	put_BrushType(c_BrushTypeSolid);
-		
+
+    m_oFont.StringGID = FALSE;
 	_SetFont();
 
 	Aggplus::CBrush* pBrush = CreateBrush(&m_oBrush);				

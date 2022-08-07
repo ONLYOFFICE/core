@@ -598,6 +598,67 @@ public:
 		LONG         m_lShiftY;
 		std::wstring m_wsPicturePath;
 	};
+	class CSignatureFormPr
+	{
+	public:
+		void SetName(const std::wstring& wsValue)
+		{
+			m_wsName = wsValue;
+		}
+		void SetContact(const std::wstring& wsValue)
+		{
+			m_wsContact = wsValue;
+		}
+		void SetReason(const std::wstring& wsValue)
+		{
+			m_wsReason = wsValue;
+		}
+		void SetPicturePath(const std::wstring& wsPath)
+		{
+			m_wsPicturePath = wsPath;
+		}
+		void SetCert(const std::wstring& wsValue)
+		{
+			m_wsCert = wsValue;
+		}
+		void SetDate(const bool& bDate)
+		{
+			m_bDate = bDate;
+		}
+
+		const std::wstring& GetName() const
+		{
+			return m_wsName;
+		}
+		const std::wstring& GetContact() const
+		{
+			return m_wsContact;
+		}
+		const std::wstring& GetReason() const
+		{
+			return m_wsReason;
+		}
+		const std::wstring& GetPicturePath() const
+		{
+			return m_wsPicturePath;
+		}
+		const std::wstring& GetCert() const
+		{
+			return m_wsCert;
+		}
+		bool GetDate() const
+		{
+			return m_bDate;
+		}
+
+	private:
+		std::wstring m_wsName;
+		std::wstring m_wsContact;
+		std::wstring m_wsReason;
+		std::wstring m_wsPicturePath;
+		std::wstring m_wsCert;
+		bool         m_bDate;
+	};
 
 public:
 	CFormFieldInfo()
@@ -752,6 +813,10 @@ public:
 	{
 		return (m_nType == 4);
 	}
+	bool IsSignature() const
+	{
+		return (m_nType == 5);
+	}
 	CTextFormPr* GetTextFormPr()
 	{
 		return &m_oTextPr;
@@ -784,6 +849,14 @@ public:
 	{
 		return &m_oPicturePr;
 	}
+	CSignatureFormPr* GetSignatureFormPr()
+	{
+		return &m_oSignaturePr;
+	}
+	const CSignatureFormPr* GetSignaturePr() const
+	{
+		return &m_oSignaturePr;
+	}
 
 
 private:
@@ -805,10 +878,11 @@ private:
 	LONG         m_lShdColor;
 	BYTE         m_nJc;
 
-	CTextFormPr     m_oTextPr;
-	CDropDownFormPr m_oDropDownPr;
-	CCheckBoxFormPr m_oCheckBoxPr;
-	CPictureFormPr  m_oPicturePr;
+	CTextFormPr      m_oTextPr;
+	CDropDownFormPr  m_oDropDownPr;
+	CCheckBoxFormPr  m_oCheckBoxPr;
+	CPictureFormPr   m_oPicturePr;
+	CSignatureFormPr m_oSignaturePr;
 
 };
 

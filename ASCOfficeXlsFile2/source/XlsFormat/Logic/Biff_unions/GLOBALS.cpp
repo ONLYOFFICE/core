@@ -125,9 +125,22 @@ const bool GLOBALS::loadContent(BinProcessor& proc)
 				}
 			}break;				
 			
-			case rt_HorizontalPageBreaks:	proc.optional<HorizontalPageBreaks>();	break;
-			case rt_VerticalPageBreaks:		proc.optional<VerticalPageBreaks>();	break;
-
+			case rt_HorizontalPageBreaks:
+			{
+				if (proc.optional<HorizontalPageBreaks>())
+				{
+					m_HorizontalPageBreaks = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
+			case rt_VerticalPageBreaks:
+			{
+				if (proc.optional<VerticalPageBreaks>())
+				{
+					m_VerticalPageBreaks = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
 			default://unknown .... back	upper		
 				return true;
 		}

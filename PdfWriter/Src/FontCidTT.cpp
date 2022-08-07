@@ -505,6 +505,11 @@ namespace PdfWriter
 				m_vGlypWidths.push_back((unsigned int)(m_pFace->glyph->metrics.width) * 1000 / m_pFace->units_per_EM);
 			}
 		}
+		else
+		{
+			m_vWidths.push_back(0);
+			m_vGlypWidths.push_back(0);
+		}
 
 		return ushCode;
 	}

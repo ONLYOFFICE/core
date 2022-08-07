@@ -32,14 +32,22 @@
 #ifndef _METAFILE_H
 #define _METAFILE_H
 
-#include "../../fontengine/ApplicationFonts.h"
+#include "../../graphics/pro/Fonts.h"
 #include "../../graphics/IRenderer.h"
 #include "../../graphics/pro/Image.h"
 
+#ifdef METAFILE_SUPPORT_WMF_EMF
 #include "Wmf/WmfFile.h"
 #include "Emf/EmfFile.h"
+#endif
+
+#ifdef METAFILE_SUPPORT_SVM
 #include "StarView/SvmFile.h"
+#endif
+
+#ifdef METAFILE_SUPPORT_SVG
 #include "svg/SVGTransformer.h"
+#endif
 
 namespace MetaFile
 {
@@ -55,24 +63,38 @@ namespace MetaFile
 		void GetBounds(double* pdX, double* pdY, double* pdW, double* pdH);
 		int GetType();
 		void ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1);
+
 		NSFonts::IFontManager* get_FontManager();
 
+		//конвертация в Svg
+		void ConvertToSvg(const wchar_t *wsFilePath, unsigned int unWidth = 0, unsigned int unHeight = 0);
+
 		//Для тестов
+	#ifdef METAFILE_SUPPORT_WMF_EMF
 		void ConvertToXml(const wchar_t *wsFilePath);
 		void ConvertToXmlAndRaster(const wchar_t *wsXmlFilePath, const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1);
-		bool DrawOnRenderer(const wchar_t *wsXmlFilePath, IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight);
-
 		bool LoadFromXmlFile(const wchar_t* wsFilePath);
-
+		bool DrawOnRenderer(const wchar_t *wsXmlFilePath, IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight);
 		void ConvertToEmf(const wchar_t* wsFilePath);
-	private:
+	#endif
 
-		CApplicationFonts* m_pAppFonts;
-		CFontManager*      m_pFontManager;
+
+	private:
+		NSFonts::IApplicationFonts* m_pAppFonts;
+		NSFonts::IFontManager*      m_pFontManager;
+
+	#ifdef METAFILE_SUPPORT_WMF_EMF
 		CWmfFile           m_oWmfFile;
 		CEmfFile           m_oEmfFile;
+	#endif
+
+	#ifdef METAFILE_SUPPORT_SVM
 		CSvmFile           m_oSvmFile;
+	#endif
+
+	#ifdef METAFILE_SUPPORT_SVG
 		CSVGTransformer    m_oSvgFile;
+	#endif
 
 		int                m_lType;
 	};

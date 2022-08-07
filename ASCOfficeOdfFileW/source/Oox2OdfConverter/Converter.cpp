@@ -56,6 +56,7 @@
 #include "../../../Common/DocxFormat/Source/DocxFormat/Logic/Vml.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramDrawing.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramData.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Math/oMathPara.h"
 
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Shape.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/CxnSp.h"

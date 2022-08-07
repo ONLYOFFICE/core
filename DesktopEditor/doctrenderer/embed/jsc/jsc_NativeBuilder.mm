@@ -97,8 +97,7 @@ JSSmart<CJSValue> CBuilderEmbed::builder_OpenTmpFile(JSSmart<CJSValue> path, JSS
     p->m_internal->m_pBuilder = m_pBuilder;
     p->m_internal->OpenFile(sPath, sParams);
     CJSValueJSC* pRet = new CJSValueJSC();
-    pRet->context = _getCurrentContext();
-    pRet->value = [JSValue valueWithObject:(id)p inContext:pRet->context];
+    pRet->value = [JSValue valueWithObject:(id)p inContext:NSJSBase::CJSContextPrivate::GetCurrentContext()];
     return pRet;
 }
 

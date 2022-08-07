@@ -81,12 +81,12 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-                std::wstring sResult = L"<w:commentRangeEnd ";
+                std::wstring sResult = L"<w:commentRangeEnd";
 
-				ComplexTypes_WriteAttribute( L"w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
-				ComplexTypes_WriteAttribute( L"w:id=\"",                   m_oId );
+				ComplexTypes_WriteAttribute_( L" w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
+				ComplexTypes_WriteAttribute_( L" w:id=\"",                   m_oId );
 
-				sResult += L" />";
+				sResult += L"/>";
 
 				return sResult;
 			}
@@ -143,10 +143,10 @@ namespace OOX
 			{
                 std::wstring sResult = L"<w:commentRangeStart ";
 
-				ComplexTypes_WriteAttribute( L"w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
-				ComplexTypes_WriteAttribute( L"w:id=\"",                   m_oId );
+				ComplexTypes_WriteAttribute_( L" w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
+				ComplexTypes_WriteAttribute_( L" w:id=\"",                   m_oId );
 
-				sResult += L" />";
+				sResult += L"/>";
 
 				return sResult;
 			}
@@ -205,11 +205,11 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-                std::wstring sResult = L"<w:customXmlDelRangeEnd ";
+                std::wstring sResult = L"<w:customXmlDelRangeEnd";
 
-				ComplexTypes_WriteAttribute( L"w:id=\"", m_oId );
+				ComplexTypes_WriteAttribute_( L" w:id=\"", m_oId );
 
-				sResult += L" />";
+				sResult += L"/>";
 
 				return sResult;
 			}
@@ -346,11 +346,11 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-                std::wstring sResult = L"<w:customXmlInsRangeEnd ";
+                std::wstring sResult = L"<w:customXmlInsRangeEnd";
 
-				ComplexTypes_WriteAttribute( L"w:id=\"", m_oId );
+				ComplexTypes_WriteAttribute_( L" w:id=\"", m_oId );
 
-				sResult += L" />";
+				sResult += L"/>";
 
 				return sResult;
 			}
@@ -486,11 +486,11 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-                std::wstring sResult = L"<w:customXmlMoveFromRangeEnd ";
+                std::wstring sResult = L"<w:customXmlMoveFromRangeEnd";
 
-				ComplexTypes_WriteAttribute( L"w:id=\"", m_oId );
+				ComplexTypes_WriteAttribute_( L" w:id=\"", m_oId );
 
-				sResult += L" />";
+				sResult += L"/>";
 
 				return sResult;
 			}
@@ -626,11 +626,11 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-                std::wstring sResult = L"<w:customXmlMoveToRangeEnd ";
+                std::wstring sResult = L"<w:customXmlMoveToRangeEnd";
 
-				ComplexTypes_WriteAttribute( L"w:id=\"", m_oId );
+				ComplexTypes_WriteAttribute_( L" w:id=\"", m_oId );
 
-				sResult += L" />";
+				sResult += L"/>";
 
 				return sResult;
 			}
@@ -768,12 +768,12 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-                std::wstring sResult = L"<w:moveFromRangeEnd ";
+                std::wstring sResult = L"<w:moveFromRangeEnd";
 
-				ComplexTypes_WriteAttribute( L"w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
-				ComplexTypes_WriteAttribute( L"w:id=\"",                   m_oId );
+				ComplexTypes_WriteAttribute_( L" w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
+				ComplexTypes_WriteAttribute_( L" w:id=\"",                   m_oId );
 
-				sResult += L" />";
+				sResult += L"/>";
 
 				return sResult;
 			}
@@ -834,33 +834,33 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-                std::wstring sResult = L"<w:moveFromRangeStart ";
+                std::wstring sResult = L"<w:moveFromRangeStart";
 
 				if ( m_sAuthor.IsInit() )
 				{
-					sResult += L"w:author=\"";
+					sResult += L" w:author=\"";
 					sResult += XmlUtils::EncodeXmlString(m_sAuthor.get2());
-					sResult += L"\" ";
+					sResult += L"\"";
 				}
 
-				ComplexTypes_WriteAttribute( L"w:colFirst=\"",             m_oColFirst );
-				ComplexTypes_WriteAttribute( L"w:colLast=\"",              m_oColLast );
-				ComplexTypes_WriteAttribute( L"w:date=\"",                 m_oDate );
-				ComplexTypes_WriteAttribute( L"w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
-				ComplexTypes_WriteAttribute( L"w:id=\"",                   m_oId );
+				ComplexTypes_WriteAttribute_( L" w:colFirst=\"",             m_oColFirst );
+				ComplexTypes_WriteAttribute_( L" w:colLast=\"",              m_oColLast );
+				ComplexTypes_WriteAttribute_( L" w:date=\"",                 m_oDate );
+				ComplexTypes_WriteAttribute_( L" w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
+				ComplexTypes_WriteAttribute_( L" w:id=\"",                   m_oId );
 
 				if ( m_sName.IsInit() )
 				{
-					sResult += L"w:name=\"";
+					sResult += L" w:name=\"";
 					sResult += XmlUtils::EncodeXmlString(m_sName.get2());
-					sResult += L"\" ";
+					sResult += L"\"";
 				}
 
 				if ( m_sUserId.IsInit() )
 				{
-					sResult += L"oouserid=\"";
+					sResult += L" oouserid=\"";
 					sResult += XmlUtils::EncodeXmlString(m_sUserId.get2());
-					sResult += L"\" ";
+					sResult += L"\"";
 				}
 
 				sResult += L"/>";
@@ -930,12 +930,12 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-                std::wstring sResult = L"<w:moveToRangeEnd ";
+                std::wstring sResult = L"<w:moveToRangeEnd";
 
-				ComplexTypes_WriteAttribute( L"w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
-				ComplexTypes_WriteAttribute( L"w:id=\"",                   m_oId );
+				ComplexTypes_WriteAttribute_( L" w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
+				ComplexTypes_WriteAttribute_( L" w:id=\"",                   m_oId );
 
-				sResult += L" />";
+				sResult += L"/>";
 
 				return sResult;
 			}
@@ -994,33 +994,33 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-                std::wstring sResult = L"<w:moveToRangeStart ";
+                std::wstring sResult = L"<w:moveToRangeStart";
 
 				if ( m_sAuthor.IsInit() )
 				{
-					sResult += L"w:author=\"";
+					sResult += L" w:author=\"";
 					sResult += XmlUtils::EncodeXmlString(m_sAuthor.get2());
 					sResult += L"\" ";
 				}
 
-				ComplexTypes_WriteAttribute( L"w:colFirst=\"",             m_oColFirst );
-				ComplexTypes_WriteAttribute( L"w:colLast=\"",              m_oColLast );
-				ComplexTypes_WriteAttribute( L"w:date=\"",                 m_oDate );
-				ComplexTypes_WriteAttribute( L"w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
-				ComplexTypes_WriteAttribute( L"w:id=\"",                   m_oId );
+				ComplexTypes_WriteAttribute_( L" w:colFirst=\"",             m_oColFirst );
+				ComplexTypes_WriteAttribute_( L" w:colLast=\"",              m_oColLast );
+				ComplexTypes_WriteAttribute_( L" w:date=\"",                 m_oDate );
+				ComplexTypes_WriteAttribute_( L" w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
+				ComplexTypes_WriteAttribute_( L" w:id=\"",                   m_oId );
 
 				if ( m_sName.IsInit() )
 				{
-					sResult += L"w:name=\"";
+					sResult += L" w:name=\"";
 					sResult += XmlUtils::EncodeXmlString(m_sName.get2());
-					sResult += L"\" ";
+					sResult += L"\"";
 				}
 
 				if ( m_sUserId.IsInit() )
 				{
-					sResult += L"oouserid=\"";
+					sResult += L" oouserid=\"";
 					sResult += XmlUtils::EncodeXmlString(m_sUserId.get2());
-					sResult += L"\" ";
+					sResult += L"\"";
 				}
 
 				sResult += L"/>";
@@ -1186,12 +1186,12 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-                std::wstring sResult = L"<w:bookmarkEnd ";
+                std::wstring sResult = L"<w:bookmarkEnd";
 
-				ComplexTypes_WriteAttribute( L"w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
-				ComplexTypes_WriteAttribute( L"w:id=\"",                   m_oId );
+				ComplexTypes_WriteAttribute_( L" w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
+				ComplexTypes_WriteAttribute_( L" w:id=\"",                   m_oId );
 
-				sResult += L" />";
+				sResult += L"/>";
 
 				return sResult;
 			}
@@ -1255,16 +1255,16 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-                std::wstring sResult = L"<w:bookmarkStart ";
+                std::wstring sResult = L"<w:bookmarkStart";
 
-				ComplexTypes_WriteAttribute( L"w:colFirst=\"",             m_oColFirst );
-				ComplexTypes_WriteAttribute( L"w:colLast=\"",              m_oColLast );
-				ComplexTypes_WriteAttribute( L"w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
-				ComplexTypes_WriteAttribute( L"w:id=\"",                   m_oId );
+				ComplexTypes_WriteAttribute_( L" w:colFirst=\"",             m_oColFirst );
+				ComplexTypes_WriteAttribute_( L" w:colLast=\"",              m_oColLast );
+				ComplexTypes_WriteAttribute_( L" w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
+				ComplexTypes_WriteAttribute_( L" w:id=\"",                   m_oId );
 
 				if ( m_sName.IsInit() )
 				{
-					sResult += L"w:name=\"" + XmlUtils::EncodeXmlString(m_sName.get2()) + L"\" ";
+					sResult += L" w:name=\"" + XmlUtils::EncodeXmlString(m_sName.get2()) + L"\"";
 				}
 
 				sResult += L"/>";
@@ -1329,15 +1329,15 @@ namespace OOX
 			}
             virtual std::wstring toXML() const
 			{
-                std::wstring sResult = L"<w:permEnd ";
+                std::wstring sResult = L"<w:permEnd";
 
-				ComplexTypes_WriteAttribute( L"w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
+				ComplexTypes_WriteAttribute_( L" w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
 
 				if ( m_sId.IsInit() )
 				{
-					sResult += L"w:id=\"";
+					sResult += L" w:id=\"";
                     sResult += m_sId.get2();
-					sResult += L"\" ";
+					sResult += L"\"";
 				}
 
 				sResult += L"/>";
@@ -1398,14 +1398,14 @@ namespace OOX
 			}
             virtual std::wstring      toXML() const
 			{
-                std::wstring sResult = L"<w:permStart ";
+                std::wstring sResult = L"<w:permStart";
 
-				ComplexTypes_WriteAttribute( L"w:colFirst=\"",				m_oColFirst );
-				ComplexTypes_WriteAttribute( L"w:colLast=\"",				m_oColLast );
-				ComplexTypes_WriteAttribute( L"w:displacedbyCustomXml=\"",	m_oDisplacedByCustomXml );
-				ComplexTypes_WriteAttribute2(L"w:ed=\"",					m_sEd);
-				ComplexTypes_WriteAttribute( L"w:edGrp=\"",					m_oEdGrp );
-				ComplexTypes_WriteAttribute2(L"w:id=\"",					m_sId);
+				ComplexTypes_WriteAttribute_( L" w:colFirst=\"", m_oColFirst );
+				ComplexTypes_WriteAttribute_( L" w:colLast=\"", m_oColLast );
+				ComplexTypes_WriteAttribute_( L" w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
+				ComplexTypes_WriteAttribute2_(L" w:ed=\"", m_sEd);
+				ComplexTypes_WriteAttribute_( L" w:edGrp=\"", m_oEdGrp );
+				ComplexTypes_WriteAttribute2_(L" w:id=\"", m_sId);
 
 				sResult += L"/>";
 

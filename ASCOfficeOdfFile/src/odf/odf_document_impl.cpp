@@ -734,7 +734,7 @@ void odf_document::Impl::parse_meta(office_element *element)
 		context_->DocProps().template_ = meta_generator_->content_;
 
 	meta_creation_date * meta_creation_date_ = dynamic_cast<meta_creation_date*>(meta->meta_creation_date_.get());
-	if (meta_generator_)
+	if (meta_creation_date_)
 		context_->DocProps().creation_date_ = meta_creation_date_->content_;
 	
 	meta_keyword * meta_keyword_ = dynamic_cast<meta_keyword*>(meta->meta_keyword_.get());
@@ -750,7 +750,7 @@ void odf_document::Impl::parse_meta(office_element *element)
 		context_->DocProps().non_whitespace_character_count_ = meta_document_statistic_->non_whitespace_character_count_;
 	}
 	meta_editing_cycles * meta_editing_cycles_ = dynamic_cast<meta_editing_cycles*>(meta->meta_editing_cycles_.get());
-	if (meta_keyword_)
+	if (meta_editing_cycles_)
 		context_->DocProps().revision_ = XmlUtils::GetInteger(meta_editing_cycles_->content_);
 }
 

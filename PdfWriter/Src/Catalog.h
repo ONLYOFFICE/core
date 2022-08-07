@@ -45,6 +45,7 @@ namespace PdfWriter
 	{
 	public:
 		CCatalog(CXref* pXref);
+		CCatalog(CXref* pXref, const std::wstring& sCatalog);
 		CPageTree*   GetRoot() const;
 		EPageLayout  GetPageLayout() const;
 		void         SetPageLayout(EPageLayout eLayout);

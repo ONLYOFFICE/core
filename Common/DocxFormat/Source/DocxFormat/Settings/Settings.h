@@ -1325,7 +1325,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CEdnDocProps)
-			CEdnDocProps()
+			CEdnDocProps(OOX::Document *pMain = NULL) : OOX::WritingElement(pMain)
 			{
 			}
 			virtual ~CEdnDocProps()
@@ -1363,7 +1363,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CFtnDocProps)
-			CFtnDocProps()
+			CFtnDocProps(OOX::Document *pMain = NULL) : OOX::WritingElement(pMain)
 			{
 			}
 			virtual ~CFtnDocProps()

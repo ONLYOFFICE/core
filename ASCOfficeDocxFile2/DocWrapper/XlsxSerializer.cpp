@@ -94,6 +94,7 @@ namespace BinXlsxRW{
 
 		oDrawingConverter.SetMediaDstPath(sMediaDir);
 		oDrawingConverter.SetEmbedDstPath(sEmbedDir);
+		oDrawingConverter.SetTempPath(m_sTempDir);
 
 		BinXlsxRW::BinaryFileReader oBinaryFileReader;		
 		return oBinaryFileReader.ReadFile(sSrcFileName, sDstPath, &oDrawingConverter, sXMLOptions, m_bIsMacro);
@@ -257,7 +258,11 @@ namespace BinXlsxRW{
 		}
 		return bResult;
 	}
-    void CXlsxSerializer::setFontDir(const std::wstring& sFontDir)
+	void CXlsxSerializer::setTempDir(const std::wstring& sTempDir)
+	{
+		m_sTempDir = sTempDir;
+	}
+	void CXlsxSerializer::setFontDir(const std::wstring& sFontDir)
 	{
 		m_sFontDir = sFontDir;
 	}

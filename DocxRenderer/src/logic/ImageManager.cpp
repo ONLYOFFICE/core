@@ -52,9 +52,11 @@ namespace NSDocxRenderer
 
         oInfo.m_eType = GetImageType(pImage);
 
-        int format = (oInfo.m_eType == CImageInfo::itJPG) ? 3 : 4;
-        std::wstring sSavedFile = m_strDstMedia + L"/image" + std::to_wstring(oInfo.m_nId);
-        sSavedFile += ((oInfo.m_eType == CImageInfo::itJPG) ? L".jpg" : L".png");
+        UINT format = (oInfo.m_eType == CImageInfo::itJPG) ? 3 : 4;
+        oInfo.m_strFileName = L"image" + std::to_wstring(oInfo.m_nId);
+        oInfo.m_strFileName += ((oInfo.m_eType == CImageInfo::itJPG) ? L".jpg" : L".png");
+
+        std::wstring sSavedFile = m_strDstMedia + L"/" + oInfo.m_strFileName;
 
         if (w <= m_lMaxSizeImage && h <= m_lMaxSizeImage)
         {

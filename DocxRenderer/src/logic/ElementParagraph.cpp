@@ -48,7 +48,6 @@ namespace NSDocxRenderer
         m_lColorOfShadingFill    = oSrc.m_lColorOfShadingFill;
         m_eTextAlignmentType     = oSrc.m_eTextAlignmentType;
 
-        m_dRight     = oSrc.m_dRight;
         m_dFirstLine = oSrc.m_dFirstLine;
 
         m_dSpaceBefore	= oSrc.m_dSpaceBefore;
@@ -219,6 +218,48 @@ namespace NSDocxRenderer
                 }
             }
         }
+    }
+
+    void CParagraph::RightBorderCorrection()
+    {
+        CContText* pSelectedCont = nullptr;
+
+        for (auto pLine : m_arLines)
+        {
+            for (auto pCont : pLine->m_arConts)
+            {
+                if (!pSelectedCont || pSelectedCont->m_oFont.Size < pCont->m_oFont.Size)
+                {
+                    pSelectedCont = pCont;
+                }
+                else if (pSelectedCont->m_oFont.Size == pCont->m_oFont.Size)
+                {
+                    //note считаем что обычный < Italic < Bold < Bold-Italic
+                    if (pSelectedCont->m_oFont.GetTextFontStyle() <
+                            pCont->m_oFont.GetTextFontStyle())
+                    {
+                        pSelectedCont = pCont;
+                    }
+                }
+            }
+        }
+
+        UINT lSize = static_cast<UINT>(2 * pSelectedCont->m_oFont.Size);
+        UINT nType = pSelectedCont->m_oFont.GetTextFontStyle();
+
+        if (nType > 3)
+        {
+            //Error!
+            return;
+        }
+
+        if (lSize > 144)
+        {
+            lSize = 145;
+        }
+
+        //note нужно корректировать каждый размер отдельно
+        m_dRight -= c_dRightBorderCorrectionSize[lSize][nType];
     }
 
     void CParagraph::MergeLines()

@@ -75,6 +75,9 @@ namespace NSDocxRenderer
         if (m_dHeight < 0.0001)
             m_dHeight = 0.0001;
 
+        m_dBaselinePos = m_dTop + m_dHeight;
+        m_dRight = m_dLeft + m_dWidth;
+
         m_lCoordSizeX = lCoordSize;
         m_lCoordSizeY = lCoordSize;
 
@@ -247,7 +250,7 @@ namespace NSDocxRenderer
         if (c_BrushTypeTexture == m_oBrush.Type && !m_bIsNoFill)
         {
             oWriter.WriteString(L"<v:imagedata r:id=\"rId");
-            oWriter.AddInt(10 + m_lTxId);
+            oWriter.AddInt(c_iStartingIdForImages + m_lTxId);
             oWriter.WriteString(L"\" o:title=\"\"/>");
 
             if (0xFF != m_oBrush.TextureAlpha)

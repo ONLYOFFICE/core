@@ -7,7 +7,6 @@ namespace NSDocxRenderer
 {
     CShape::CShape() : CBaseItem(ElemType::etShape)
     {
-
     }
 
     CShape::CShape(const CShape &oSrc) : CBaseItem(ElemType::etShape)
@@ -15,11 +14,10 @@ namespace NSDocxRenderer
         *this = oSrc;
     }
 
-    /*CShape::CShape(const CShape& oSrc1, const CShape& oSrc2) : CBaseItem(etShape)
+    CShape::CShape(CImageInfo* pInfo, const std::wstring& strDstMedia) : CBaseItem(ElemType::etShape),
+        m_strPath(strDstMedia), m_pImageInfo(pInfo)
     {
-        //todo добавить логику объединения двух похожих шейпов в один новый
-        //todo добавить метод ConverPathToVectorGraphics
-    }*/
+    }
 
     CShape::~CShape()
     {
@@ -33,6 +31,7 @@ namespace NSDocxRenderer
             pParagraph->Clear();
         }
         m_arParagraphs.clear();
+        delete m_pImageInfo;
         m_pCont = nullptr;
     }
 
@@ -47,16 +46,15 @@ namespace NSDocxRenderer
 
         CBaseItem::operator=(oSrc);
 
+        m_eType = oSrc.m_eType;
         m_strPath = oSrc.m_strPath;
-
         m_oBrush = oSrc.m_oBrush;
         m_oPen = oSrc.m_oPen;
+        m_dRotate = oSrc.m_dRotate;
 
         m_bIsNoFill = oSrc.m_bIsNoFill;
         m_bIsNoStroke = oSrc.m_bIsNoStroke;
         m_bIsBehindDoc = oSrc.m_bIsBehindDoc;
-
-        m_lTxId = oSrc.m_lTxId;
 
         m_eGraphicsType = oSrc.m_eGraphicsType;
         m_eSimpleLineType = oSrc.m_eSimpleLineType;
@@ -67,12 +65,28 @@ namespace NSDocxRenderer
             m_arParagraphs.push_back(new CParagraph(*pParagraph));
         }
 
+        m_pImageInfo = oSrc.m_pImageInfo;
+
         m_pCont = oSrc.m_pCont;
 
         return *this;
     }
 
-    void CShape::GetDataFromVector(const CVectorGraphics& oVector, const LONG& lType, const LONG& lCoordSize)
+    UINT CShape::GenerateShapeId()
+    {
+        static UINT iId = 0;
+        iId++;
+        return iId;
+    }
+
+    UINT CShape::GenerateRelativeHeight()
+    {
+        static UINT RelativeHeight = UINT_MAX;
+        RelativeHeight--;
+        return RelativeHeight;
+    }
+
+    void CShape::GetDataFromVector(const CVectorGraphics& oVector, const LONG& lType)
     {
         m_dLeft = oVector.m_dLeft;
         m_dTop = oVector.m_dTop;
@@ -84,16 +98,16 @@ namespace NSDocxRenderer
         if (m_dHeight < 0.0001)
             m_dHeight = 0.0001;
 
-        m_lCoordSizeX = lCoordSize;
-        m_lCoordSizeY = lCoordSize;
+        m_dBaselinePos = m_dTop + m_dHeight;
+        m_dRight = m_dLeft + m_dWidth;
 
-        if (0x00 == (lType & 0x01))
+        if (0x00 != (lType & 0x01))
         {
-            m_bIsNoStroke = true;
+            m_bIsNoStroke = false;
         }
-        if (0x00 == (lType >> 8))
+        if (0x00 != (lType >> 8))
         {
-            m_bIsNoFill = true;
+            m_bIsNoFill = false;
         }
 
         WritePath(oVector);
@@ -326,6 +340,8 @@ namespace NSDocxRenderer
         pModObject->m_dWidth = fabs(pModObject->m_dWidth);
         pModObject->m_dLeft = std::min(pModObject->m_dLeft, pDataObject->m_dLeft);
         pModObject->m_dTop = std::min(pModObject->m_dTop, pDataObject->m_dTop);
+        pModObject->m_dBaselinePos = pModObject->m_dTop + pModObject->m_dHeight;
+        pModObject->m_dRight = pModObject->m_dLeft + pModObject->m_dWidth;
     }
 
     void CShape::DetermineLineType(CShape* pShape, bool bIsLast)
@@ -610,17 +626,21 @@ namespace NSDocxRenderer
         {
             return;
         }
-
-        //note Если обрабатывается много документов за раз, то iNumber сохраняется.
-        static UINT iNumber = 1;
         oWriter.WriteString(L"<w:r>");
 
         oWriter.WriteString(L"<w:rPr><w:noProof/></w:rPr>"); //отключение проверки орфографии
 
-        oWriter.WriteString(L"<mc:AlternateContent>");
-        oWriter.WriteString(L"<mc:Choice Requires=\"wps\">");
         oWriter.WriteString(L"<w:drawing>");
 
+        BuildGeneralProperties(oWriter);
+
+        oWriter.WriteString(L"</w:drawing>");
+
+        oWriter.WriteString(L"</w:r>");
+    }
+
+    void CShape::BuildGeneralProperties(NSStringUtils::CStringBuilder &oWriter)
+    {
         oWriter.WriteString(L"<wp:anchor");
             oWriter.WriteString(L" distT=\"0\""); //Определяет минимальное расстояние, которое должно сохраняться между краем
             oWriter.WriteString(L" distB=\"0\""); //этого объекта рисования и любым последующим текстом в документе, когда
@@ -628,7 +648,7 @@ namespace NSDocxRenderer
             oWriter.WriteString(L" distR=\"0\"");
             oWriter.WriteString(L" simplePos=\"0\""); //true/1 Указывает, что этот объект должен быть позиционирован с использованием информации о позиционировании в дочернем элементе simplePos
             oWriter.WriteString(L" relativeHeight=\""); //Определяет относительное упорядочивание по Z всех объектов DrawingML в этом документе.
-            oWriter.AddUInt(static_cast<UINT>(UINT_MAX - iNumber));
+            oWriter.AddUInt(GenerateRelativeHeight());
             oWriter.WriteString(L"\"");
             oWriter.WriteString(L" behindDoc=\""); //позади текста - 1, перед текстом - 0
             oWriter.AddUInt(static_cast<UINT>(m_bIsBehindDoc));
@@ -665,118 +685,258 @@ namespace NSDocxRenderer
 
         oWriter.WriteString(L"<wp:wrapNone/>");
 
+        m_nShapeId = GenerateShapeId();
+
         oWriter.WriteString(L"<wp:docPr id=\"");
-        oWriter.AddUInt(iNumber);
-        oWriter.WriteString(L"\" name=\"Freeform: Shape ");
-        oWriter.AddUInt(iNumber);
+        oWriter.AddUInt(m_nShapeId);
+        switch (m_eType)
+        {
+        case eShapeType::stTextBox:
+            oWriter.WriteString(L"\" name=\"Text Box ");
+            break;
+        case eShapeType::stPicture:
+            oWriter.WriteString(L"\" name=\"Picture ");
+            break;
+        case eShapeType::stVectorGraphics:
+            oWriter.WriteString(L"\" name=\"Freeform: Shape ");
+            break;
+        case eShapeType::stVectorTexture:
+            oWriter.WriteString(L"\" name=\"Freeform: Texture ");
+            break;
+        case eShapeType::stCanvas:
+            oWriter.WriteString(L"\" name=\"Canvas ");
+            break;
+        case eShapeType::stGroup:
+            oWriter.WriteString(L"\" name=\"Group ");
+            break;
+        default:
+            oWriter.WriteString(L"\" name=\"Shape ");
+            break;
+        }
+        oWriter.AddUInt(m_nShapeId);
+        //oWriter.WriteString(L" descr=\"Alt Text!\""); //Коммент к картинке
         oWriter.WriteString(L"\"/>");
-        iNumber++;
 
         oWriter.WriteString(L"<wp:cNvGraphicFramePr/>");
 
+        BuildSpecificProperties(oWriter);
+
+        oWriter.WriteString(L"</wp:anchor>");
+    }
+
+    void CShape::BuildSpecificProperties(NSStringUtils::CStringBuilder &oWriter)
+    {
         oWriter.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">");
 
+        switch (m_eType)
+        {
+        case eShapeType::stPicture:
+            BuildPictureProperties(oWriter);
+            break;
+        case eShapeType::stCanvas:
+            BuildCanvasProperties(oWriter);
+            break;
+        case eShapeType::stGroup:
+            BuildGroupProperties(oWriter);
+            break;
+        case eShapeType::stTextBox:
+        case eShapeType::stVectorGraphics:
+        case eShapeType::stVectorTexture:
+        default:
+            BuildShapeProperties(oWriter);
+            break;
+        }
+
+        oWriter.WriteString(L"</a:graphic>");
+    }
+
+    void CShape::BuildShapeProperties(NSStringUtils::CStringBuilder &oWriter)
+    {
         oWriter.WriteString(L"<a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">");
 
         oWriter.WriteString(L"<wps:wsp>");
 
-        oWriter.WriteString(L"<wps:cNvSpPr/>"); //non-visual shape properties. http://officeopenxml.com/drwSp-nvSpPr.php
+            oWriter.WriteString(L"<wps:cNvSpPr/>"); //non-visual shape properties. http://officeopenxml.com/drwSp-nvSpPr.php
 
         oWriter.WriteString(L"<wps:spPr>"); //shape properties. http://officeopenxml.com/drwSp-SpPr.php
-            //отвечает за размеры прямоугольного фрейма шейпа
-            oWriter.WriteString(L"<a:xfrm>");
-                oWriter.WriteString(L"<a:off x=\"0\" y=\"0\"/>");
-                oWriter.WriteString(L"<a:ext");
-                oWriter.WriteString(L" cx=\"");
-                oWriter.AddInt(static_cast<int>(m_dWidth * c_dMMToEMU));
-                oWriter.WriteString(L"\" cy=\"");
-                oWriter.AddInt(static_cast<int>(m_dHeight * c_dMMToEMU));
-                oWriter.WriteString(L"\"/>");
-            oWriter.WriteString(L"</a:xfrm>");
-
-            //Если просто текст без графики
-            if (m_strPath.empty())
-            {
-                oWriter.WriteString(L"<a:prstGeom prst=\"rect\">");
-                    oWriter.WriteString(L"<a:avLst/>");
-                oWriter.WriteString(L"</a:prstGeom>");
-            }
-            else
-            {
-                //Рисуем сложный путь
-                oWriter.WriteString(L"<a:custGeom>");
-                oWriter.WriteString(L"<a:avLst/>");
-                oWriter.WriteString(L"<a:gdLst/>");
-                oWriter.WriteString(L"<a:ahLst/>");
-                oWriter.WriteString(L"<a:cxnLst/>");
-                oWriter.WriteString(L"<a:rect l=\"l\" t=\"t\" r=\"r\" b=\"b\"/>");
-                oWriter.WriteString(L"<a:pathLst>");
-                oWriter.WriteString(m_strPath);
-                oWriter.WriteString(L"</a:pathLst>");
-                oWriter.WriteString(L"</a:custGeom>");
-            }
-
-            if (m_bIsNoFill)
-            {
-                //Нет заливки
-                oWriter.WriteString(L"<a:noFill/>");
-            }
-            else
-            {
-                //Есть заливка
-                oWriter.WriteString(L"<a:solidFill>");
-                oWriter.WriteString(L"<a:srgbClr val=\"");
-                oWriter.WriteHexInt3(static_cast<int>(ConvertColorBGRToRGB(m_oBrush.Color1)));
-                if (0xFF != m_oBrush.TextureAlpha)
-                {
-                    oWriter.WriteString(L"\"><a:alpha val=\"");
-                    oWriter.AddInt(static_cast<int>(m_oPen.Alpha / 255.0 * 100.0));
-                    oWriter.WriteString(L"%\"/></a:srgbClr>");
-                }
-                else
-                {
-                    oWriter.WriteString(L"\"/>");
-                }
-                oWriter.WriteString(L"</a:solidFill>");
-            }
-
-            if (m_bIsNoStroke)
-            {
-                oWriter.WriteString(L"<a:ln>"); // w - width по умолчанию 0.75pt = 9525
-                    oWriter.WriteString(L"<a:noFill/>");
-                oWriter.WriteString(L"</a:ln>");
-            }
-            else
-            {
-                oWriter.WriteString(L"<a:ln w=\"");
-                oWriter.AddInt(static_cast<int>(m_oPen.Size * c_dMMToEMU)); //note можно писать в мм
-                oWriter.WriteString(L"\">");
-
-                oWriter.WriteString(L"<a:solidFill>");
-
-                oWriter.WriteString(L"<a:srgbClr val=\"");
-                oWriter.WriteHexInt3(static_cast<int>(ConvertColorBGRToRGB(m_oPen.Color))); //note можно вместо цвета использовать слова типа "black"
-                if (0xFF != m_oPen.Alpha)
-                {
-                    oWriter.WriteString(L"\"><a:alpha val=\"");
-                    oWriter.AddInt(static_cast<int>(m_oPen.Alpha / 255.0 * 100.0));
-                    oWriter.WriteString(L"%\"/></a:srgbClr>");
-                }
-                else
-                {
-                    oWriter.WriteString(L"\"/>");
-                }
-
-                oWriter.WriteString(L"</a:solidFill>");
-                oWriter.WriteString(L"</a:ln>");
-            }
-
-        oWriter.WriteString(L"</wps:spPr>");
 
         //не работает
         //oWriter.WriteString(L"<wps:style/>"); //shape styles. http://officeopenxml.com/drwSp-styles.php
 
-        if (!m_arParagraphs.empty())
+        BuildGraphicProperties(oWriter);
+
+        oWriter.WriteString(L"</wps:spPr>");
+
+        BuildTextBox(oWriter);
+
+        oWriter.WriteString(L"</wps:wsp>");
+
+        oWriter.WriteString(L"</a:graphicData>");
+    }
+
+    void CShape::BuildPictureProperties(NSStringUtils::CStringBuilder &oWriter)
+    {
+        oWriter.WriteString(L"<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
+
+        oWriter.WriteString(L"<pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
+            oWriter.WriteString(L"<pic:nvPicPr>");
+                oWriter.WriteString(L"<pic:cNvPr id=\"");
+                oWriter.AddUInt(m_pImageInfo->m_nId);
+                oWriter.WriteString(L"\" name=\"Picture ");
+                oWriter.AddUInt(m_pImageInfo->m_nId);
+                oWriter.WriteString(L"\"");
+                //oWriter.WriteString(L" descr=\"Alt Text!\""); //Коммент к картинке
+                oWriter.WriteString(L"/>");
+                oWriter.WriteString(L"<pic:cNvPicPr preferRelativeResize=\"0\">");
+                    oWriter.WriteString(L"<a:picLocks noChangeArrowheads=\"1\"/>");
+                oWriter.WriteString(L"</pic:cNvPicPr>");
+            oWriter.WriteString(L"</pic:nvPicPr>");
+            oWriter.WriteString(L"<pic:blipFill>");
+                oWriter.WriteString(L"<a:blip r:embed=\"rId");
+                oWriter.AddUInt(c_iStartingIdForImages + m_pImageInfo->m_nId);
+                oWriter.WriteString(L"\">");
+                    oWriter.WriteString(L"<a:alphaModFix/>");
+                oWriter.WriteString(L"</a:blip>");
+                oWriter.WriteString(L"<a:srcRect/>");
+                oWriter.WriteString(L"<a:stretch>");
+                    oWriter.WriteString(L"<a:fillRect/>");
+                oWriter.WriteString(L"</a:stretch>");
+            oWriter.WriteString(L"</pic:blipFill>");
+            oWriter.WriteString(L"<pic:spPr bwMode=\"auto\">");
+
+            BuildGraphicProperties(oWriter);
+
+            oWriter.WriteString(L"</pic:spPr>");
+        oWriter.WriteString(L"</pic:pic>");
+
+        oWriter.WriteString(L"</a:graphicData>");
+    }
+
+    void CShape::BuildGroupProperties(NSStringUtils::CStringBuilder &oWriter)
+    {
+        oWriter.WriteString(L"<a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\">");
+            oWriter.WriteString(L"<wpg:wgp>");
+                oWriter.WriteString(L"<wpg:cNvGrpSpPr/>");
+                oWriter.WriteString(L"<wpg:grpSpPr>");
+                    BuildGraphicProperties(oWriter);
+                oWriter.WriteString(L"</wpg:grpSpPr>");
+
+                //todo довабить любое количество элементов в группе
+                BuildPictureProperties(oWriter);
+                BuildShapeProperties(oWriter);
+
+                oWriter.WriteString(L"</wps:wsp>");
+            oWriter.WriteString(L"</wpg:wgp>");
+        oWriter.WriteString(L"</a:graphicData>");
+    }
+
+    void CShape::BuildCanvasProperties(NSStringUtils::CStringBuilder &oWriter)
+    {
+        //todo добавить реализацию
+        oWriter.WriteString(L"<a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\">");
+    }
+
+    void CShape::BuildGraphicProperties(NSStringUtils::CStringBuilder &oWriter)
+    {
+        //отвечает за размеры прямоугольного фрейма шейпа
+        oWriter.WriteString(L"<a:xfrm");
+        if (fabs(m_dRotate) > 0.01)
+        {
+            oWriter.WriteString(L" rot=\"");
+            oWriter.AddInt(static_cast<int>(m_dRotate * c_dDegreeToAngle));
+            oWriter.WriteString(L"\"");
+        }
+        oWriter.WriteString(L">");
+            oWriter.WriteString(L"<a:off x=\"0\" y=\"0\"/>");
+            oWriter.WriteString(L"<a:ext");
+            oWriter.WriteString(L" cx=\"");
+            oWriter.AddInt(static_cast<int>(m_dWidth * c_dMMToEMU));
+            oWriter.WriteString(L"\" cy=\"");
+            oWriter.AddInt(static_cast<int>(m_dHeight * c_dMMToEMU));
+            oWriter.WriteString(L"\"/>");
+        oWriter.WriteString(L"</a:xfrm>");
+
+        //Если просто текст без графики
+        if (m_strPath.empty())
+        {
+            oWriter.WriteString(L"<a:prstGeom prst=\"rect\">");
+                oWriter.WriteString(L"<a:avLst/>");
+            oWriter.WriteString(L"</a:prstGeom>");
+        }
+        else
+        {
+            //Рисуем сложный путь
+            oWriter.WriteString(L"<a:custGeom>");
+            oWriter.WriteString(L"<a:avLst/>");
+            oWriter.WriteString(L"<a:gdLst/>");
+            oWriter.WriteString(L"<a:ahLst/>");
+            oWriter.WriteString(L"<a:cxnLst/>");
+            oWriter.WriteString(L"<a:rect l=\"l\" t=\"t\" r=\"r\" b=\"b\"/>");
+            oWriter.WriteString(L"<a:pathLst>");
+            oWriter.WriteString(m_strPath);
+            oWriter.WriteString(L"</a:pathLst>");
+            oWriter.WriteString(L"</a:custGeom>");
+        }
+
+        if (m_bIsNoFill)
+        {
+            //Нет заливки
+            oWriter.WriteString(L"<a:noFill/>");
+        }
+        else
+        {
+            //Есть заливка
+            oWriter.WriteString(L"<a:solidFill>");
+            oWriter.WriteString(L"<a:srgbClr val=\"");
+            oWriter.WriteHexInt3(static_cast<int>(ConvertColorBGRToRGB(m_oBrush.Color1)));
+            if (0xFF != m_oBrush.TextureAlpha)
+            {
+                oWriter.WriteString(L"\"><a:alpha val=\"");
+                oWriter.AddInt(static_cast<int>(m_oBrush.TextureAlpha / 255.0 * 100.0));
+                oWriter.WriteString(L"%\"/></a:srgbClr>");
+            }
+            else
+            {
+                oWriter.WriteString(L"\"/>");
+            }
+            oWriter.WriteString(L"</a:solidFill>");
+        }
+
+        if (m_bIsNoStroke)
+        {
+            oWriter.WriteString(L"<a:ln>"); // w - width по умолчанию 0.75pt = 9525
+                oWriter.WriteString(L"<a:noFill/>");
+            oWriter.WriteString(L"</a:ln>");
+        }
+        else
+        {
+            oWriter.WriteString(L"<a:ln w=\"");
+            oWriter.AddInt(static_cast<int>(m_oPen.Size * c_dMMToEMU)); //note можно писать в мм
+            oWriter.WriteString(L"\">");
+
+            oWriter.WriteString(L"<a:solidFill>");
+
+            oWriter.WriteString(L"<a:srgbClr val=\"");
+            oWriter.WriteHexInt3(static_cast<int>(ConvertColorBGRToRGB(m_oPen.Color))); //note можно вместо цвета использовать слова типа "black"
+            if (0xFF != m_oPen.Alpha)
+            {
+                oWriter.WriteString(L"\"><a:alpha val=\"");
+                oWriter.AddInt(static_cast<int>(m_oPen.Alpha / 255.0 * 100.0));
+                oWriter.WriteString(L"%\"/></a:srgbClr>");
+            }
+            else
+            {
+                oWriter.WriteString(L"\"/>");
+            }
+
+            oWriter.WriteString(L"</a:solidFill>");
+            oWriter.WriteString(L"</a:ln>");
+        }
+    }
+
+    void CShape::BuildTextBox(NSStringUtils::CStringBuilder &oWriter)
+    {
+        if (m_eType == eShapeType::stTextBox && !m_arParagraphs.empty())
         {
             oWriter.WriteString(L"<wps:txbx>"); //text within the shape. http://officeopenxml.com/drwSp-text.php
             oWriter.WriteString(L"<w:txbxContent>");
@@ -786,50 +946,39 @@ namespace NSDocxRenderer
             }
             oWriter.WriteString(L"</w:txbxContent>");
             oWriter.WriteString(L"</wps:txbx>");
+
+            oWriter.WriteString(L"<wps:bodyPr"); //определяет свойства тела текста внутри фигуры
+                oWriter.WriteString(L" rot=\"0\""); //Определяет поворот, который применяется к тексту в пределах ограничивающей рамки.
+                oWriter.WriteString(L" spcFirstLastPara=\"0\""); //должен ли соблюдаться интервал между абзацами до и после, заданный пользователем.
+                oWriter.WriteString(L" vertOverflow=\"overflow\""); //может ли текст выходить за пределы ограничительной рамки по вертикали
+                oWriter.WriteString(L" horzOverflow=\"overflow\""); //может ли текст выходить за пределы ограничительной рамки по горизонтали.
+                oWriter.WriteString(L" vert=\"horz\"");
+                //oWriter.WriteString(L" wrap=\"none\""); //граница шейпа по ширине текста
+                oWriter.WriteString(L" wrap=\"square\""); //Определяет параметры обертки, которые будут использоваться для данного текстового тела.
+                //на сколько граница текста отступает от границы шейпа
+                oWriter.WriteString(L" lIns=\"0\""); //left   по умолчанию 0.25см = 91440
+                oWriter.WriteString(L" tIns=\"0\""); //top    по умолчанию 0.13см = 45720
+                oWriter.WriteString(L" rIns=\"0\""); //right  по умолчанию 0.25см
+                oWriter.WriteString(L" bIns=\"0\""); //bottom по умолчанию 0.13см
+                oWriter.WriteString(L" numCol=\"1\""); //Определяет количество колонок текста в ограничивающем прямоугольнике.
+                oWriter.WriteString(L" spcCol=\"0\""); //Определяет пространство между колонками текста в текстовой области (только если numCol >1)
+                oWriter.WriteString(L" rtlCol=\"0\""); //используются ли столбцы в порядке справа налево (true) или слева направо (false).
+                oWriter.WriteString(L" fromWordArt=\"0\""); //true/1 текст в этом текстовом поле является преобразованным текстом из объекта WordArt.
+                oWriter.WriteString(L" anchor=\"t\""); //Вертикальное выравнивание текста в шейпе (t - top, b - bottom, ctr - middle) по умолчанию top
+                oWriter.WriteString(L" anchorCtr=\"0\""); //true/1 Определяет центрирование текстового поля.
+                oWriter.WriteString(L" forceAA=\"0\""); //true/1 Заставляет текст отображаться сглаженным независимо от размера шрифта.
+                oWriter.WriteString(L" compatLnSpc=\"1\""); //межстрочный интервал для данного текста определяется упрощенным способом с помощью сцены шрифта.
+            oWriter.WriteString(L">");
+
+            oWriter.WriteString(L"<a:prstTxWarp prst=\"textNoShape\">");
+                oWriter.WriteString(L"<a:avLst/>");
+            oWriter.WriteString(L"</a:prstTxWarp>");
+            oWriter.WriteString(L"<a:noAutofit/>");
+            oWriter.WriteString(L"</wps:bodyPr>");
         }
-
-        oWriter.WriteString(L"<wps:bodyPr"); //определяет свойства тела текста внутри фигуры
-            oWriter.WriteString(L" rot=\"0\""); //Определяет поворот, который применяется к тексту в пределах ограничивающей рамки.
-            oWriter.WriteString(L" spcFirstLastPara=\"0\""); //должен ли соблюдаться интервал между абзацами до и после, заданный пользователем.
-            oWriter.WriteString(L" vertOverflow=\"overflow\""); //может ли текст выходить за пределы ограничительной рамки по вертикали
-            oWriter.WriteString(L" horzOverflow=\"overflow\""); //может ли текст выходить за пределы ограничительной рамки по горизонтали.
-            oWriter.WriteString(L" vert=\"horz\"");
-            //oWriter.WriteString(L" wrap=\"none\""); //граница шейпа по ширине текста
-            oWriter.WriteString(L" wrap=\"square\""); //Определяет параметры обертки, которые будут использоваться для данного текстового тела.
-            //на сколько граница текста отступает от границы шейпа
-            oWriter.WriteString(L" lIns=\"0\""); //left   по умолчанию 0.25см = 91440
-            oWriter.WriteString(L" tIns=\"0\""); //top    по умолчанию 0.13см = 45720
-            oWriter.WriteString(L" rIns=\"0\""); //right  по умолчанию 0.25см
-            oWriter.WriteString(L" bIns=\"0\""); //bottom по умолчанию 0.13см
-            oWriter.WriteString(L" numCol=\"1\""); //Определяет количество колонок текста в ограничивающем прямоугольнике.
-            oWriter.WriteString(L" spcCol=\"0\""); //Определяет пространство между колонками текста в текстовой области (только если numCol >1)
-            oWriter.WriteString(L" rtlCol=\"0\""); //используются ли столбцы в порядке справа налево (true) или слева направо (false).
-            oWriter.WriteString(L" fromWordArt=\"0\""); //true/1 текст в этом текстовом поле является преобразованным текстом из объекта WordArt.
-            oWriter.WriteString(L" anchor=\"t\""); //Вертикальное выравнивание текста в шейпе (t - top, b - bottom, ctr - middle) по умолчанию top
-            oWriter.WriteString(L" anchorCtr=\"0\""); //true/1 Определяет центрирование текстового поля.
-            oWriter.WriteString(L" forceAA=\"0\""); //true/1 Заставляет текст отображаться сглаженным независимо от размера шрифта.
-            oWriter.WriteString(L" compatLnSpc=\"1\""); //межстрочный интервал для данного текста определяется упрощенным способом с помощью сцены шрифта.
-        oWriter.WriteString(L">");
-
-        oWriter.WriteString(L"<a:prstTxWarp prst=\"textNoShape\">");
-            oWriter.WriteString(L"<a:avLst/>");
-        oWriter.WriteString(L"</a:prstTxWarp>");
-        oWriter.WriteString(L"<a:noAutofit/>");
-        oWriter.WriteString(L"</wps:bodyPr>");
-
-        oWriter.WriteString(L"</wps:wsp>");
-        oWriter.WriteString(L"</a:graphicData>");
-        oWriter.WriteString(L"</a:graphic>");
-        oWriter.WriteString(L"</wp:anchor>");
-        oWriter.WriteString(L"</w:drawing>");
-        oWriter.WriteString(L"</mc:Choice>");
-
-        oWriter.WriteString(L"<mc:Fallback/>");
-        //здесь можно вставить COldShape без <w:r>
-        //
-        //oWriter.WriteString(L"</mc:Fallback>");
-
-        oWriter.WriteString(L"</mc:AlternateContent>");
-        oWriter.WriteString(L"</w:r>");
+        else
+        {
+            oWriter.WriteString(L"<wps:bodyPr/>");
+        }
     }
 }; // namespace NSDocxRenderer

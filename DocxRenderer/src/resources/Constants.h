@@ -3,6 +3,8 @@
 #include "../DesktopEditor/common/Types.h"
 #include <map>
 
+#define USING_DELETE_DUPLICATING_CONTS 0 // 0 - все сточки-дубликаты превращаются в shape, 1 - строчки дубликаты удаляются
+
 const double c_dDpiX		= 72.0;
 const double c_dDpiY		= 72.0;
 
@@ -14,6 +16,7 @@ constexpr double c_dMMToDx	= 72 * 20 / 25.4;
 const double c_dMMToEMU	     = 36000.0;
 const double c_dInchToEMU	= 914400.0;
 const double c_dPtToEMU  	= 12700.0;
+const double c_dDegreeToAngle = 60000.0;
 
 const double c_dSTANDART_STRING_HEIGHT_MM	      = 4.2333333333333334;
 const double c_dTHE_SAME_STRING_Y_PRECISION_MM  = 0.01;
@@ -30,11 +33,13 @@ const double c_dMAX_LINE_HEIGHT_MM              = 2.5;
 const UINT   c_iWhiteColor = 0xFFFFFF;
 const UINT   c_iBlackColor = 0x000000;
 const UINT   c_iGreyColor  = 0xC0C0C0;
+const UINT   c_iGreyColor2 = 0x999999;
 
 const double c_dSTANDART_LEFT_INDENT_MM = 30;
 const double c_dSTANDART_RIGHT_INDENT_MM = 15;
 const double c_dSTANDART_FIRSTLINE_INDENT_MM = 12.5;
 
+const UINT   c_iStartingIdForImages = 6;
 
 const double c_dRightBorderCorrectionSize[][4] =
 {
@@ -54,33 +59,33 @@ const double c_dRightBorderCorrectionSize[][4] =
     {0.0, 0.0, 0.0, 0.0}, //5.5pt
     {0.1, 0.0, 0.0, 0.0}, //6pt
     {0.3, 0.1, 0.0, 0.0}, //6.5pt
-    {0.0, 0.0, 0.0, 0.0}, //7pt
-    {0.1, 0.0, 0.0, 0.0}, //7.5pt
-    {1.2, 0.0, 0.0, 0.0}, //8pt
-    {0.0, 0.0, 0.0, 0.0}, //8.5pt
-    {1.4, 0.5, 0.4, 0.0}, //9pt
-    {2.0, 0.2, 0.1, 0.0}, //9.5pt
-    {0.7, 0.0, 0.5, 0.0}, //10pt
-    {1.0, 0.0, 0.2, 0.0}, //10.5pt //-0,6
-    {1.4, 0.0, 0.0, 0.0}, //11pt
-    {1.2, 0.1, 0.0, 0.0}, //11.5pt
-    {1.5, 0.5, 0.6, 0.5}, //12pt
+    {0.2, 0.0, 0.0, 0.0}, //7pt
+    {0.1, 0.7, 0.0, 0.0}, //7.5pt
+    {1.5, 0.1, 0.0, 0.0}, //8pt
+    {0.8, 0.0, 0.0, 0.0}, //8.5pt
+    {1.4, 0.5, 1.6, 0.1}, //9pt
+    {2.0, 0.2, 0.2, 0.0}, //9.5pt
+    {1.6, 1.2, 0.9, 0.0}, //10pt
+    {1.0, 0.0, 0.2, 0.1}, //10.5pt //-0,6
+    {1.4, 0.0, 0.5, 0.0}, //11pt
+    {1.2, 0.1, 0.2, 0.2}, //11.5pt
+    {1.5, 1.0, 0.6, 0.6}, //12pt
     {0.4, 0.0, 0.0, 0.0}, //12.5pt
     {0.0, 0.0, 0.0, 0.0}, //13pt
     {0.1, 0.0, 0.0, 0.0}, //13.5pt
     {1.1, 0.2, 0.5, 0.0}, //14pt
     {0.0, 0.0, 0.0, 0.0}, //14.5pt
-    {1.4, 0.0, 0.0, 0.0}, //15pt
+    {1.4, 2.4, 0.0, 0.0}, //15pt
     {0.0, 0.0, 0.0, 0.0}, //15.5pt
-    {1.3, 0.0, 0.1, 0.0}, //16pt
+    {1.3, 0.0, 3.0, 0.0}, //16pt
     {0.0, 0.0, 0.0, 0.0}, //16.5pt
-    {0.6, 0.0, 0.0, 0.0}, //17pt
+    {0.6, 0.0, 0.0, 0.1}, //17pt
     {0.0, 0.0, 0.0, 0.0}, //17.5pt
     {2.7, 1.5, 1.4, 1.3}, //18pt
     {0.0, 0.0, 0.0, 0.0}, //18.5pt
     {0.0, 0.0, 0.0, 0.0}, //19pt
     {2.1, 0.0, 0.0, 0.0}, //19.5pt
-    {0.5, 0.0, 1.9, 0.0}, //20pt
+    {0.6, 0.0, 1.9, 0.0}, //20pt
     {0.2, 0.0, 0.0, 0.0}, //20.5pt
     {0.0, 0.0, 0.0, 0.0}, //21pt
     {1.4, 0.0, 0.0, 0.0}, //21.5pt
@@ -142,7 +147,7 @@ const double c_dRightBorderCorrectionSize[][4] =
     {0.0, 0.0, 0.0, 0.0}, //49.5pt
     {0.0, 0.0, 0.0, 0.0}, //50pt
     {0.0, 0.0, 0.0, 0.0}, //50.5pt
-    {0.0, 0.0, 0.0, 0.0}, //51pt
+    {0.2, 0.0, 0.0, 0.0}, //51pt
     {0.0, 0.0, 0.0, 0.0}, //51.5pt
     {0.0, 0.0, 0.0, 0.0}, //52pt
     {0.0, 0.0, 0.0, 0.0}, //52.5pt

@@ -392,10 +392,10 @@ void common_xlink_attlist::apply_from(const common_xlink_attlist & Other)
 }
 void common_xlink_attlist::serialize(CP_ATTR_NODE)
 {
-    CP_XML_ATTR_OPT(L"xlink:href",		href_);
-    CP_XML_ATTR_OPT(L"xlink:type",		type_);
-    CP_XML_ATTR_OPT(L"xlink:show",		show_);    
-    CP_XML_ATTR_OPT(L"xlink:actuate",	actuate_);    
+	CP_XML_ATTR_OPT_ENCODE_STRING(L"xlink:href", href_);
+    CP_XML_ATTR_OPT(L"xlink:type", type_);
+    CP_XML_ATTR_OPT(L"xlink:show", show_);    
+    CP_XML_ATTR_OPT(L"xlink:actuate", actuate_);    
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 

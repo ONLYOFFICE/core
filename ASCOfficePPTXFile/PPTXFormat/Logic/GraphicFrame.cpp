@@ -320,6 +320,14 @@ namespace PPTX
 						if (!result && oNode.GetNode(L"mc:Choice", oNodeChoice))
 							result = fromXML3(oNodeChoice);
 
+						if (result)
+						{
+							if ((olePic->blipFill.blip.IsInit()) && (false == olePic->blipFill.blip->embed.IsInit()) 
+								&& (olePic->oleObject.IsInit()) && (false == olePic->oleObject->m_sShapeId.IsInit()))
+							{
+								result = false;
+							}
+						}
 						XmlUtils::CXmlNode oNodeFallback;
 						if (!result && oNode.GetNode(L"mc:Fallback", oNodeFallback))
 							result = fromXML3(oNodeFallback);

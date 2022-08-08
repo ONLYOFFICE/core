@@ -488,7 +488,7 @@ namespace MetaFile
 
 		std::wstring wsValue = L"M " + std::to_wstring(arPoints[0].x) + L' ' + std::to_wstring(arPoints[0].y) + L' ';
 
-		for (unsigned int unIndex = 1; unIndex < arPoints.size(); unIndex += 3)
+		for (unsigned int unIndex = 0; unIndex + 2 < arPoints.size(); unIndex += 3)
 			wsValue += L"C " + std::to_wstring(TranslateX(arPoints[unIndex].x))     + L' ' + std::to_wstring(TranslateY(arPoints[unIndex].y))     + L' ' +
 					std::to_wstring(TranslateX(arPoints[unIndex + 1].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex + 1].y)) + L' ' +
 					std::to_wstring(TranslateX(arPoints[unIndex + 2].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex + 2].y));
@@ -510,7 +510,7 @@ namespace MetaFile
 
 		std::wstring wsValue = L"M " + std::to_wstring(TranslateX(arPoints[0].x)) + L' ' + std::to_wstring(TranslateY(arPoints[0].y)) + L' ';
 
-		for (unsigned int unIndex = 1; unIndex < arPoints.size(); unIndex += 3)
+		for (unsigned int unIndex = 0; unIndex + 2 < arPoints.size(); unIndex += 3)
 			wsValue += L"C " + std::to_wstring(TranslateX(arPoints[unIndex].x))     + L' ' + std::to_wstring(TranslateY(arPoints[unIndex].y))     + L' ' +
 					std::to_wstring(TranslateX(arPoints[unIndex + 1].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex + 1].y)) + L' ' +
 					std::to_wstring(TranslateX(arPoints[unIndex + 2].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex + 2].y));
@@ -535,7 +535,7 @@ namespace MetaFile
 
 		std::wstring wsValue = L"M " + std::to_wstring(TranslateX(arPoints[0].x)) + L' ' + std::to_wstring(TranslateY(arPoints[0].y)) + L' ';
 
-		for (unsigned int unIndex = 1; unIndex < arPoints.size(); unIndex += 3)
+		for (unsigned int unIndex = 0; unIndex + 2 < arPoints.size(); unIndex += 3)
 			wsValue += L"C " + std::to_wstring(TranslateX(arPoints[unIndex].x))     + L' ' + std::to_wstring(TranslateY(arPoints[unIndex].y))     + L' ' +
 					std::to_wstring(TranslateX(arPoints[unIndex + 1].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex + 1].y)) + L' ' +
 					std::to_wstring(TranslateX(arPoints[unIndex + 2].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex + 2].y));
@@ -557,7 +557,7 @@ namespace MetaFile
 
 		std::wstring wsValue = L"M " + std::to_wstring(TranslateX(arPoints[0].x)) + L' ' + std::to_wstring(TranslateY(arPoints[0].y)) + L' ';
 
-		for (unsigned int unIndex = 1; unIndex < arPoints.size(); unIndex += 3)
+		for (unsigned int unIndex = 0; unIndex + 2 < arPoints.size(); unIndex += 3)
 			wsValue += L"C " + std::to_wstring(TranslateX(arPoints[unIndex].x))     + L' ' + std::to_wstring(TranslateY(arPoints[unIndex].y))     + L' ' +
 					std::to_wstring(TranslateX(arPoints[unIndex + 1].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex + 1].y)) + L' ' +
 					std::to_wstring(TranslateX(arPoints[unIndex + 2].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex + 2].y));
@@ -565,7 +565,7 @@ namespace MetaFile
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
 		AddStroke(arAttributes);
-		AddFill(arAttributes);
+		AddNoneFill(arAttributes);
 
 		UpdateTransform(arPoints);
 
@@ -583,7 +583,7 @@ namespace MetaFile
 		{
 			if (0x02 == pAbTypes[unIndex])
 				wsValue += L" L " + std::to_wstring(TranslateX(arPoints[unIndex].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex].y));
-			else if (0x04 == pAbTypes[unIndex] && unIndex + 3 < unCount)
+			else if (0x04 == pAbTypes[unIndex] && unIndex + 2 < unCount)
 			{
 				wsValue += L" C " + std::to_wstring(TranslateX(arPoints[unIndex].x))     + L' ' + std::to_wstring(TranslateY(arPoints[unIndex].y))     + L' ' +
 						std::to_wstring(TranslateX(arPoints[unIndex + 1].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex + 1].y)) + L' ' +
@@ -616,7 +616,7 @@ namespace MetaFile
 		{
 			if (0x02 == pAbTypes[unIndex])
 				wsValue += L" L " + std::to_wstring(TranslateX(arPoints[unIndex].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex].y));
-			else if (0x04 == pAbTypes[unIndex] && unIndex + 3 < unCount)
+			else if (0x04 == pAbTypes[unIndex] && unIndex + 2 < unCount)
 			{
 				wsValue += L" C " + std::to_wstring(TranslateX(arPoints[unIndex].x))     + L' ' + std::to_wstring(TranslateY(arPoints[unIndex].y))     + L' ' +
 						std::to_wstring(TranslateX(arPoints[unIndex + 1].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex + 1].y)) + L' ' +

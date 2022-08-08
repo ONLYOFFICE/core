@@ -1002,6 +1002,9 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_META_POLYLINE(arPoints);
 
+		if (arPoints.empty())
+			return;
+
 		MoveTo(arPoints[0].x, arPoints[0].y);
 
 		for (short shIndex = 1; shIndex < arPoints.size(); shIndex++)
@@ -1014,6 +1017,9 @@ namespace MetaFile
 	{
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_META_POLYGON(arPoints);
+
+		if (arPoints.empty())
+			return;
 
 		MoveTo(arPoints[0].x, arPoints[0].y);
 
@@ -1029,8 +1035,14 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_META_POLYPOLYGON(arPolygons);
 
+		if (arPolygons.empty())
+			return;
+
 		for (unsigned int unPolygonIndex = 0; unPolygonIndex < arPolygons.size(); ++unPolygonIndex)
 		{
+			if (arPolygons[unPolygonIndex].empty())
+				continue;
+
 			MoveTo(arPolygons[unPolygonIndex][0].x, arPolygons[unPolygonIndex][0].y);
 
 			for (unsigned int unPointIndex = 1; unPointIndex < arPolygons[unPolygonIndex].size(); ++unPointIndex)

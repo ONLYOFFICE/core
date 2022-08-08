@@ -496,7 +496,7 @@ namespace MetaFile
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
 		AddStroke(arAttributes);
-		AddFill(arAttributes);
+		AddNoneFill(arAttributes);
 
 		UpdateTransform(arPoints);
 
@@ -518,7 +518,7 @@ namespace MetaFile
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
 		AddStroke(arAttributes);
-		AddFill(arAttributes);
+		AddNoneFill(arAttributes);
 
 		UpdateTransform(arPoints);
 
@@ -543,7 +543,7 @@ namespace MetaFile
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
 		AddStroke(arAttributes);
-		AddFill(arAttributes);
+		AddNoneFill(arAttributes);
 
 		UpdateTransform(arPoints);
 
@@ -598,7 +598,7 @@ namespace MetaFile
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
 		AddStroke(arAttributes);
-		AddFill(arAttributes);
+		AddNoneFill(arAttributes);
 
 		UpdateTransform(arPoints, unCount);
 
@@ -631,7 +631,7 @@ namespace MetaFile
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
 		AddStroke(arAttributes);
-		AddFill(arAttributes);
+		AddNoneFill(arAttributes);
 
 		UpdateTransform(arPoints, unCount);
 
@@ -1136,6 +1136,11 @@ namespace MetaFile
 				arAttributes.push_back({L"fill", L"none"});
 		}
 		else arAttributes.push_back({L"fill", L"none"});
+	}
+
+	void CEmfInterpretatorSvg::AddNoneFill(NodeAttributes &arAttributes)
+	{
+		arAttributes.push_back({L"fill", L"none"});
 	}
 
 	void CEmfInterpretatorSvg::UpdateTransform(double dX, double dY)

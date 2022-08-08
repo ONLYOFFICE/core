@@ -58,6 +58,7 @@ namespace MetaFile
 		virtual ~CMetaFile();
 
 		bool LoadFromFile(const wchar_t* wsFilePath);
+		bool LoadFromBuffer(BYTE* pBuffer, unsigned int unSize);
 		bool DrawOnRenderer(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight);
 		void Close();
 		void GetBounds(double* pdX, double* pdY, double* pdW, double* pdH);
@@ -67,7 +68,7 @@ namespace MetaFile
 		NSFonts::IFontManager* get_FontManager();
 
 		//конвертация в Svg
-		void ConvertToSvg(const wchar_t *wsFilePath, unsigned int unWidth = 0, unsigned int unHeight = 0);
+		void ConvertToSvg(std::wstring& wsSvgData, unsigned int unWidth = 0, unsigned int unHeight = 0);
 
 		//Для тестов
 	#ifdef METAFILE_SUPPORT_WMF_EMF

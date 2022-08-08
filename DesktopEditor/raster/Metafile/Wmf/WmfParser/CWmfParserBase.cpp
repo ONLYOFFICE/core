@@ -173,17 +173,22 @@ namespace MetaFile
 
 	void CWmfParserBase::SetInterpretator(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType, unsigned int unWidth, unsigned int unHeight)
 	{
-		if (NULL != m_pInterpretator)
-			delete m_pInterpretator;
-
-		if (InterpretatorType::Svg == oInterpretatorType)
-			m_pInterpretator = new CWmfInterpretatorSvg(wsFilePath, this, unWidth, unHeight);
+		RELEASEOBJECT(m_pInterpretator);
 
 		//TODO:: добавить как появится реализация интерпретаторов
 	}
 
+	void CWmfParserBase::SetInterpretator(std::wstring &wsData, InterpretatorType oInterpretatorType, unsigned int unWidth, unsigned int unHeight)
+	{
+		RELEASEOBJECT(m_pInterpretator);
+
+		if (InterpretatorType::Svg == oInterpretatorType)
+			m_pInterpretator = new CWmfInterpretatorSvg(wsData, this, unWidth, unHeight);
+	}
+
 	void CWmfParserBase::SetInterpretator(IOutputDevice *pOutput, const wchar_t *wsFilePath)
 	{
+		RELEASEOBJECT(m_pInterpretator);
 
 	}
 

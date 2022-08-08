@@ -59,6 +59,14 @@ namespace MetaFile
 				delete m_pParser;
 		}
 
+		bool ReadFromBuffer(BYTE* pBuffer, unsigned int unSize)
+		{
+			if (NULL != m_pParser)
+				return m_pParser->ReadFromBuffer(pBuffer, unSize);
+
+			return false;
+		}
+
 		bool OpenFromWmfFile(const wchar_t* wsFilePath)
 		{
 			if (NULL != m_pParser)
@@ -111,6 +119,11 @@ namespace MetaFile
 		void SetOutputDevice(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0)
 		{
 			m_pParser->SetInterpretator(wsFilePath, oInterpretatorType, unWidth, unHeight);
+		}
+
+		void SetOutputDevice(std::wstring &wsData, InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0)
+		{
+			m_pParser->SetInterpretator(wsData, oInterpretatorType, unWidth, unHeight);
 		}
 
 		void SetOutputDevice(IOutputDevice* pOutput, const wchar_t *wsFilePath)

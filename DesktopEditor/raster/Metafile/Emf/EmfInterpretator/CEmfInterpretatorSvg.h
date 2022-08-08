@@ -11,7 +11,7 @@ namespace MetaFile
 	class CEmfInterpretatorSvg : public CEmfInterpretatorBase
 	{
 	public:
-		CEmfInterpretatorSvg(const wchar_t* wsFilePath, CEmfParserBase* pParser = NULL, unsigned int unWidth = 0, unsigned int unHeight = 0);
+		CEmfInterpretatorSvg(std::wstring &wsData, CEmfParserBase* pParser = NULL, unsigned int unWidth = 0, unsigned int unHeight = 0);
 		CEmfInterpretatorSvg(const CEmfInterpretatorSvg& oInterpretator);
 		virtual ~CEmfInterpretatorSvg();
 
@@ -20,7 +20,7 @@ namespace MetaFile
 
 		InterpretatorType   GetType() const override;
 
-		void SetOutputDevice(const wchar_t *wsFilePath);
+		void SetOutputDevice(std::wstring& wsData);
 		void SetSize(unsigned int unWidth, unsigned int unHeight);
 
 		void HANDLE_EMR_HEADER(const TEmfHeader& oTEmfHeader) override ;
@@ -131,12 +131,13 @@ namespace MetaFile
 
 	private:
 		XmlUtils::CXmlWriter    m_oXmlWriter;
-		std::wstring            m_wsSvgFilePath;
 
 		CEmfParserBase          *m_pParser;
 
 		TSvgViewport            m_oViewport;
 		TEmfSizeL               m_oSizeWindow;
+
+		std::wstring			&m_wsSvgData;
 	public:
 		void Begin() override;
 		void End() override;
@@ -172,6 +173,7 @@ namespace MetaFile
 
 		void AddStroke(NodeAttributes &arAttributes);
 		void AddFill(NodeAttributes &arAttributes);
+		void AddTransform(NodeAttributes &arAttributes);
 
 		void AddNoneFill(NodeAttributes &arAttributes);
 

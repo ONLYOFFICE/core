@@ -10,13 +10,13 @@ namespace MetaFile
 	class CWmfInterpretatorSvg : public CWmfInterpretatorBase
 	{
 	public:
-		CWmfInterpretatorSvg(const wchar_t* wsFilePath, CWmfParserBase* pParser = NULL, unsigned int unWidth = 0, unsigned int unHeight = 0);
+		CWmfInterpretatorSvg(std::wstring &wsData, CWmfParserBase* pParser = NULL, unsigned int unWidth = 0, unsigned int unHeight = 0);
 		CWmfInterpretatorSvg(const CWmfInterpretatorSvg& oInterpretator);
 		virtual ~CWmfInterpretatorSvg();
 
 		InterpretatorType   GetType() const override;
 
-		void SetOutputDevice(const wchar_t *wsFilePath);
+		void SetOutputDevice(std::wstring &wsData);
 		void SetSize(unsigned int unWidth, unsigned int unHeight);
 
 		void HANDLE_META_HEADER(const TWmfPlaceable& oPlaceable, const TWmfHeader& oHeader) override;
@@ -107,7 +107,7 @@ namespace MetaFile
 
 	private:
 		XmlUtils::CXmlWriter    m_oXmlWriter;
-		std::wstring            m_wsSvgFilePath;
+		std::wstring            &m_wsSvgData;
 
 		CWmfParserBase          *m_pParser;
 

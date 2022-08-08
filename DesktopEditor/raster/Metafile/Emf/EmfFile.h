@@ -57,9 +57,17 @@ namespace MetaFile
 			RELEASEOBJECT(m_pParser);
 		}
 
+		bool ReadFromBuffer(BYTE* pBuffer, unsigned int unSize)
+		{
+			if (NULL == m_pParser || NULL == pBuffer || 0 == unSize)
+				return false;
+
+			return m_pParser->ReadFromBuffer(pBuffer, unSize);
+		}
+
 		bool OpenFromEmfFile(const wchar_t* wsFilePath)
 		{
-			if (NULL != m_pParser && m_pParser->GetType() == EmfParserType::EmfxParser)
+			if (NULL != m_pParser && m_pParser->GetType() != EmfParserType::EmfParser)
 			{
 				NSFonts::IFontManager* pFont = m_pParser->GetFontManager();
 				delete m_pParser;
@@ -128,6 +136,11 @@ namespace MetaFile
 		void SetOutputDevice(IOutputDevice* pOutput, const wchar_t *wsFilePath)
 		{
 			m_pParser->SetInterpretator(pOutput, wsFilePath);
+		}
+
+		void SetOutputDevice(std::wstring &wsData, InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0)
+		{
+			m_pParser->SetInterpretator(wsData, oInterpretatorType, unWidth, unHeight);
 		}
 
 		TEmfRectL* GetBounds()

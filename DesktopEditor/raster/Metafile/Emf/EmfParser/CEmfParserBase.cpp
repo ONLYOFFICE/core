@@ -784,8 +784,6 @@ namespace MetaFile
 
 		if (oInterpretatorType == InterpretatorType::Emf)
 			m_pInterpretator = new CEmfInterpretator(wsFilePath);
-		else if (oInterpretatorType == InterpretatorType::Svg)
-			m_pInterpretator = new CEmfInterpretatorSvg(wsFilePath, this, unWidth, unHeight);
 	#ifdef METAFILE_SUPPORT_WMF_EMF_XML
 		else if(oInterpretatorType == InterpretatorType::XML)
 			m_pInterpretator = new CEmfInterpretatorXml(wsFilePath);
@@ -794,8 +792,7 @@ namespace MetaFile
 
 	void CEmfParserBase::SetInterpretator(IOutputDevice *pOutput, const wchar_t *wsFilePath)
 	{
-		if (NULL != m_pInterpretator)
-			delete m_pInterpretator;
+		RELEASEOBJECT(m_pInterpretator);
 
 		CEmfInterpretatorArray* pEmfInterpretatorArray = new CEmfInterpretatorArray;
 		pEmfInterpretatorArray->AddRenderInterpretator(pOutput);
@@ -805,6 +802,14 @@ namespace MetaFile
 	#endif
 
 		m_pInterpretator = pEmfInterpretatorArray;
+	}
+
+	void CEmfParserBase::SetInterpretator(std::wstring &wsData, InterpretatorType oInterpretatorType, unsigned int unWidth, unsigned int unHeight)
+	{
+		RELEASEOBJECT(m_pInterpretator);
+
+		if (InterpretatorType::Svg == oInterpretatorType)
+			m_pInterpretator = new CEmfInterpretatorSvg(wsData, this, unWidth, unHeight);
 	}
 
 	TEmfRectL* CEmfParserBase::GetBounds()

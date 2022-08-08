@@ -77,20 +77,20 @@ namespace MetaFile
 		RELEASEINTERFACE(m_pFontManager);
 	}
 
-	void CMetaFile::ConvertToSvg(const wchar_t *wsFilePath, unsigned int unWidth, unsigned int unHeight)
+	void CMetaFile::ConvertToSvg(std::wstring &wsSvgData, unsigned int unWidth, unsigned int unHeight)
 	{
-		if (NULL == wsFilePath)
-			return;
+//		if (NULL == wsFilePath)
+//			return;
 
 	#ifdef METAFILE_SUPPORT_WMF_EMF
 		if (c_lMetaWmf == m_lType)
 		{
-			m_oWmfFile.SetOutputDevice(wsFilePath, InterpretatorType::Svg, unWidth, unHeight);
+			m_oWmfFile.SetOutputDevice(wsSvgData, InterpretatorType::Svg, unWidth, unHeight);
 			m_oWmfFile.PlayMetaFile();
 		}
 		else if (c_lMetaEmf == m_lType)
 		{
-			m_oEmfFile.SetOutputDevice(wsFilePath, InterpretatorType::Svg, unWidth, unHeight);
+			m_oEmfFile.SetOutputDevice(wsSvgData, InterpretatorType::Svg, unWidth, unHeight);
 			m_oEmfFile.PlayMetaFile();
 		}
 	#endif
@@ -345,6 +345,93 @@ namespace MetaFile
 		// Это не svm
 	#ifdef METAFILE_SUPPORT_SVG
 		if (m_oSvgFile.OpenFromFile(wsFilePath) == true)
+		{
+			m_lType = c_lMetaSvg;
+			return true;
+		}
+	#endif
+
+		return false;
+	}
+
+	bool CMetaFile::LoadFromBuffer(BYTE *pBuffer, unsigned int unSize)
+	{
+		if (NULL == pBuffer || 0 == unSize)
+			return false;
+
+		// TODO: Сейчас при загрузке каждой новой картинки мы пересоздаем
+		//       FontManager, потому что сейчас в нем кэш без ограничения.
+		//------------------------------------------------------
+
+		RELEASEINTERFACE(m_pFontManager);
+
+		if (m_pAppFonts)
+		{
+			m_pFontManager = m_pAppFonts->GenerateFontManager();
+			NSFonts::IFontsCache* pMeasurerCache = NSFonts::NSFontCache::Create();
+			pMeasurerCache->SetStreams(m_pAppFonts->GetStreams());
+			m_pFontManager->SetOwnerCache(pMeasurerCache);
+		}
+
+	#ifdef METAFILE_SUPPORT_WMF_EMF
+		m_oWmfFile.SetFontManager(m_pFontManager);
+		m_oEmfFile.SetFontManager(m_pFontManager);
+	#endif
+
+	#ifdef METAFILE_SUPPORT_SVM
+		m_oSvmFile.SetFontManager(m_pFontManager);
+	#endif
+
+	#ifdef METAFILE_SUPPORT_SVG
+		m_oSvgFile.SetFontManager(m_pFontManager);
+	#endif
+
+		//------------------------------------------------------
+
+	#ifdef METAFILE_SUPPORT_WMF_EMF
+		// Сначала пытаемся открыть файл как Wmf
+		if (m_oWmfFile.ReadFromBuffer(pBuffer, unSize) == true)
+		{
+			m_oWmfFile.Scan();
+
+			if (!m_oWmfFile.CheckError())
+			{
+				m_lType = c_lMetaWmf;
+				return true;
+			}
+			m_oWmfFile.Close();
+		}
+		// Это не Wmf
+		if (m_oEmfFile.ReadFromBuffer(pBuffer, unSize) == true)
+		{
+			m_oEmfFile.Scan();
+
+			if (!m_oEmfFile.CheckError())
+			{
+				m_lType = c_lMetaEmf;
+				return true;
+			}
+			m_oEmfFile.Close();
+		}
+	#endif
+		// Это не Emf
+	#ifdef METAFILE_SUPPORT_SVM
+		if (m_oSvmFile.ReadFromBuffer(pBuffer, unSize) == true)
+		{
+			m_oSvmFile.Scan();
+
+			if (!m_oSvmFile.CheckError())
+			{
+				m_lType = c_lMetaSvm;
+				return true;
+			}
+
+			m_oSvmFile.Close();
+		}
+	#endif
+		// Это не svm
+	#ifdef METAFILE_SUPPORT_SVG
+		if (m_oSvgFile.ReadFromBuffer(pBuffer, unSize) == true)
 		{
 			m_lType = c_lMetaSvg;
 			return true;

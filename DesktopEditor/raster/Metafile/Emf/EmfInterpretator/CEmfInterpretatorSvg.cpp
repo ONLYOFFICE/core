@@ -8,14 +8,14 @@
 
 namespace MetaFile
 {               
-	CEmfInterpretatorSvg::CEmfInterpretatorSvg(const wchar_t *wsFilePath, CEmfParserBase* pParser, unsigned int unWidth, unsigned int unHeight)
-		: m_wsSvgFilePath(wsFilePath), m_pParser(pParser)
+	CEmfInterpretatorSvg::CEmfInterpretatorSvg(std::wstring &wsData, CEmfParserBase* pParser, unsigned int unWidth, unsigned int unHeight)
+		: m_wsSvgData(wsData), m_pParser(pParser)
 	{
 		SetSize(unWidth, unHeight);
 	}
 
 	CEmfInterpretatorSvg::CEmfInterpretatorSvg(const CEmfInterpretatorSvg &oInterpretator)
-		: m_wsSvgFilePath(oInterpretator.m_wsSvgFilePath), m_pParser(NULL)
+		: m_wsSvgData(oInterpretator.m_wsSvgData), m_pParser(NULL)
 	{
 	}
 
@@ -29,9 +29,9 @@ namespace MetaFile
 		return InterpretatorType::Svg;
 	}
 
-	void CEmfInterpretatorSvg::SetOutputDevice(const wchar_t *wsFilePath)
+	void CEmfInterpretatorSvg::SetOutputDevice(std::wstring &wsData)
 	{
-		m_wsSvgFilePath = wsFilePath;
+		m_wsSvgData = wsData;
 	}
 
 	void CEmfInterpretatorSvg::SetSize(unsigned int unWidth, unsigned int unHeight)
@@ -866,7 +866,7 @@ namespace MetaFile
 	{
 		m_oXmlWriter.WriteNodeEnd(L"svg", false, false);
 
-		std::wstring wsXml = m_oXmlWriter.GetXmlString();
+		m_wsSvgData = m_oXmlWriter.GetXmlString();
 
 		bool bFlipped = false;
 
@@ -888,19 +888,19 @@ namespace MetaFile
 			}
 
 			if (nFlipX < 0 || nFlipY < 0 || bFlipped)
-				wsXml.insert(5, L"transform=\"scale(" + std::to_wstring(nFlipX) + L' ' + std::to_wstring(nFlipY) + L")\" ");
+				m_wsSvgData.insert(5, L"transform=\"scale(" + std::to_wstring(nFlipX) + L' ' + std::to_wstring(nFlipY) + L")\" ");
 		}
 
 		//                if (m_oViewport.dX < 0 || m_oViewport.dY < 0)
 		if (!m_oViewport.Empty())
-			wsXml.insert(5, L"viewBox=\"" + std::to_wstring(m_oViewport.dLeft) + L' ' + std::to_wstring(m_oViewport.dTop) + L' ' + std::to_wstring(m_oViewport.GetWidth()) + L' ' + std::to_wstring(m_oViewport.GetHeight()) + L"\" ");
+			m_wsSvgData.insert(5, L"viewBox=\"" + std::to_wstring(m_oViewport.dLeft) + L' ' + std::to_wstring(m_oViewport.dTop) + L' ' + std::to_wstring(m_oViewport.GetWidth()) + L' ' + std::to_wstring(m_oViewport.GetHeight()) + L"\" ");
 
 		if (0 != m_oSizeWindow.cx && 0 != m_oSizeWindow.cy)
-			wsXml.insert(5, L"width=\"" + std::to_wstring(m_oSizeWindow.cx) + L"\" height=\"" + std::to_wstring(m_oSizeWindow.cy) + L"\" ");
+			m_wsSvgData.insert(5, L"width=\"" + std::to_wstring(m_oSizeWindow.cx) + L"\" height=\"" + std::to_wstring(m_oSizeWindow.cy) + L"\" ");
 
-		m_oXmlWriter.SetXmlString(wsXml);
+//		m_oXmlWriter.SetXmlString(wsXml);
 
-		m_oXmlWriter.SaveToFile((!m_wsSvgFilePath.empty()) ? m_wsSvgFilePath : L"temp.svg");
+//		m_oXmlWriter.SaveToFile((!m_wsSvgFilePath.empty()) ? m_wsSvgFilePath : L"temp.svg");
 	}
 
 	void CEmfInterpretatorSvg::DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight)

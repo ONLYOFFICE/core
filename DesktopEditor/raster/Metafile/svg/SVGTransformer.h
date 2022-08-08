@@ -14,6 +14,7 @@ public:
 
 public:
 
+	bool ReadFromBuffer(BYTE* pBuffer, unsigned int unSize);
 	bool OpenFromFile(const std::wstring& file);
 	bool Load(const std::wstring& content);
 

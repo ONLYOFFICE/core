@@ -804,12 +804,17 @@ namespace MetaFile
 		m_pInterpretator = pEmfInterpretatorArray;
 	}
 
-	void CEmfParserBase::SetInterpretator(std::wstring &wsData, InterpretatorType oInterpretatorType, unsigned int unWidth, unsigned int unHeight)
+	void CEmfParserBase::SetInterpretator(InterpretatorType oInterpretatorType, unsigned int unWidth, unsigned int unHeight)
 	{
 		RELEASEOBJECT(m_pInterpretator);
 
 		if (InterpretatorType::Svg == oInterpretatorType)
-			m_pInterpretator = new CEmfInterpretatorSvg(wsData, this, unWidth, unHeight);
+			m_pInterpretator = new CEmfInterpretatorSvg(this, unWidth, unHeight);
+	}
+
+	CEmfInterpretatorBase* CEmfParserBase::GetInterpretator()
+	{
+		return m_pInterpretator;
 	}
 
 	TEmfRectL* CEmfParserBase::GetBounds()

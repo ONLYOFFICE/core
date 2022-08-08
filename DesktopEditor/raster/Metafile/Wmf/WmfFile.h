@@ -121,9 +121,9 @@ namespace MetaFile
 			m_pParser->SetInterpretator(wsFilePath, oInterpretatorType, unWidth, unHeight);
 		}
 
-		void SetOutputDevice(std::wstring &wsData, InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0)
+		void SetOutputDevice(InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0)
 		{
-			m_pParser->SetInterpretator(wsData, oInterpretatorType, unWidth, unHeight);
+			m_pParser->SetInterpretator(oInterpretatorType, unWidth, unHeight);
 		}
 
 		void SetOutputDevice(IOutputDevice* pOutput, const wchar_t *wsFilePath)

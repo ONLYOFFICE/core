@@ -178,12 +178,12 @@ namespace MetaFile
 		//TODO:: добавить как появится реализация интерпретаторов
 	}
 
-	void CWmfParserBase::SetInterpretator(std::wstring &wsData, InterpretatorType oInterpretatorType, unsigned int unWidth, unsigned int unHeight)
+	void CWmfParserBase::SetInterpretator(InterpretatorType oInterpretatorType, unsigned int unWidth, unsigned int unHeight)
 	{
 		RELEASEOBJECT(m_pInterpretator);
 
 		if (InterpretatorType::Svg == oInterpretatorType)
-			m_pInterpretator = new CWmfInterpretatorSvg(wsData, this, unWidth, unHeight);
+			m_pInterpretator = new CWmfInterpretatorSvg(this, unWidth, unHeight);
 	}
 
 	void CWmfParserBase::SetInterpretator(IOutputDevice *pOutput, const wchar_t *wsFilePath)
@@ -1502,4 +1502,8 @@ namespace MetaFile
 			m_pInterpretator->HANDLE_META_UNKNOWN(oDataStream);
 	}
 
+	CWmfInterpretatorBase* CWmfParserBase::GetInterpretator()
+	{
+		return m_pInterpretator;
+	}
 }

@@ -68,7 +68,7 @@ namespace MetaFile
 		NSFonts::IFontManager* get_FontManager();
 
 		//конвертация в Svg
-		void ConvertToSvg(std::wstring& wsSvgData, unsigned int unWidth = 0, unsigned int unHeight = 0);
+		std::wstring ConvertToSvg(unsigned int unWidth = 0, unsigned int unHeight = 0);
 
 		//Для тестов
 	#ifdef METAFILE_SUPPORT_WMF_EMF

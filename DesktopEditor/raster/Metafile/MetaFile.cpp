@@ -35,6 +35,11 @@
 #include "../../raster/BgraFrame.h"
 #include "../../graphics/pro/Graphics.h"
 
+#ifdef METAFILE_SUPPORT_WMF_EMF
+#include "Wmf/WmfInterpretator/CWmfInterpretatorSvg.h"
+#include "Emf/EmfInterpretator/CEmfInterpretatorSvg.h"
+#endif
+
 namespace MetaFile
 {
 	IMetaFile* Create(NSFonts::IApplicationFonts *pAppFonts)
@@ -77,7 +82,7 @@ namespace MetaFile
 		RELEASEINTERFACE(m_pFontManager);
 	}
 
-	void CMetaFile::ConvertToSvg(std::wstring &wsSvgData, unsigned int unWidth, unsigned int unHeight)
+	std::wstring CMetaFile::ConvertToSvg(unsigned int unWidth, unsigned int unHeight)
 	{
 //		if (NULL == wsFilePath)
 //			return;
@@ -85,13 +90,15 @@ namespace MetaFile
 	#ifdef METAFILE_SUPPORT_WMF_EMF
 		if (c_lMetaWmf == m_lType)
 		{
-			m_oWmfFile.SetOutputDevice(wsSvgData, InterpretatorType::Svg, unWidth, unHeight);
+			m_oWmfFile.SetOutputDevice(InterpretatorType::Svg, unWidth, unHeight);
 			m_oWmfFile.PlayMetaFile();
+			return ((CWmfInterpretatorSvg*)m_oWmfFile.GetWmfParser()->GetInterpretator())->GetFile();
 		}
 		else if (c_lMetaEmf == m_lType)
 		{
-			m_oEmfFile.SetOutputDevice(wsSvgData, InterpretatorType::Svg, unWidth, unHeight);
+			m_oEmfFile.SetOutputDevice(InterpretatorType::Svg, unWidth, unHeight);
 			m_oEmfFile.PlayMetaFile();
+			return ((CEmfInterpretatorSvg*)m_oEmfFile.GetEmfParser()->GetInterpretator())->GetFile();
 		}
 	#endif
 	}

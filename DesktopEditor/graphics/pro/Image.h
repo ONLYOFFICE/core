@@ -130,7 +130,7 @@ namespace MetaFile
 		virtual void ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1) = 0;
 		virtual NSFonts::IFontManager* get_FontManager() = 0;
 
-		virtual void ConvertToSvg(std::wstring &wsSvgData, unsigned int unWidth = 0, unsigned int unHeight = 0) = 0;
+		virtual std::wstring ConvertToSvg(unsigned int unWidth = 0, unsigned int unHeight = 0) = 0;
 
 		//Для тестов
 	#ifdef METAFILE_SUPPORT_WMF_EMF

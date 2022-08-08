@@ -29,9 +29,8 @@ core_windows {
 
 INCLUDEPATH += \
     $$LIB_GRAPHICS_PRI_PATH/cximage/jasper/include \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/jpeg \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/png \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/zlib
+	$$LIB_GRAPHICS_PRI_PATH/cximage/jpeg \
+	$$LIB_GRAPHICS_PRI_PATH/cximage/png
 
 HEADERS += \
     $$PWD/../../graphics/Image.h \

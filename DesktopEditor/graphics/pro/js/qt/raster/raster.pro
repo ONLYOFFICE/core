@@ -97,3 +97,5 @@ SOURCES += $$PWD/pro_Graphics_empty.cpp
 
 SOURCES += ./raster.cpp
 HEADERS += ./raster.h
+
+SOURCES += ./main.cpp

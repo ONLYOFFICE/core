@@ -37,20 +37,28 @@ public:
 	BYTE* Data;
 	int Size;
 
+	bool IsDeleteDeleter;
+
 public:
 	CEncodedData()
 	{
 		Data = 0;
 		Size = 0;
+		IsDeleteDeleter = false;
 	}
 	~CEncodedData()
 	{
 		if (Data)
-			CBgraFrame::FreeEncodedMemory(Data);
+		{
+			if (!IsDeleteDeleter)
+				CBgraFrame::FreeEncodedMemory(Data);
+			else
+				delete [] Data;
+		}
 	}
 };
 
-void* Raster_EncodeFile(unsigned char* buffer, int w, int h, int stride, int format, bool isRgba)
+void* Raster_EncodeImageData(unsigned char* buffer, int w, int h, int stride, int format, bool isRgba)
 {
 	CBgraFrame oFrame;
 	oFrame.put_Data(buffer);
@@ -63,6 +71,57 @@ void* Raster_EncodeFile(unsigned char* buffer, int w, int h, int stride, int for
 	oFrame.put_Data(NULL);
 	return pEncodedData;
 }
+void* Raster_Encode(unsigned char* buffer, int format)
+{
+	CImageFileFormatChecker oChecker;
+	bool bIsImageFile = oChecker.isImageFile(buffer, (DWORD)format);
+
+	if (bIsImageFile)
+	{
+		switch (oChecker.eFileType)
+		{
+		case _CXIMAGE_FORMAT_WMF:
+		case _CXIMAGE_FORMAT_EMF:
+		{
+			if (_CXIMAGE_FORMAT_SVG == format)
+			{
+		#ifndef GRAPHICS_DISABLE_METAFILE
+				MetaFile::IMetaFile* pMetaFile = MetaFile::Create(NULL);
+				//pMetaFile->LoadFromBuffer(oBuffer.Data, (DWORD)oBuffer.Len);
+				//std::string sSvg = pMetaFile->ConvertToSvg();
+				std::string sSvg = "";
+				pMetaFile->Release();
+
+				CEncodedData* pEncodedData = new CEncodedData();
+				pEncodedData->IsDeleteDeleter = true;
+				pEncodedData->Data = new BYTE[sSvg.length()];
+				pEncodedData->Size = (int)sSvg.length();
+
+				memcpy(pEncodedData->Data, sSvg.c_str(), sSvg.length());
+				return pEncodedData;
+		#endif
+			}
+			break;
+		}
+		default:
+			CBgraFrame oFrame;
+			oFrame.Decode(buffer, format);
+
+			BYTE* pBuffer = NULL;
+			int nEncodedSize = 0;
+
+			if (oFrame.Encode(pBuffer, nEncodedSize, format))
+			{
+				CEncodedData* pEncodedData = new CEncodedData();
+				pEncodedData->Data = pBuffer;
+				pEncodedData->Size = nEncodedSize;
+				return pEncodedData;
+			}
+			break;
+		}
+	}
+	return NULL;
+}
 int Raster_GetEncodedSize(void* encodedData)
 {
 	return ((CEncodedData*)encodedData)->Size;
@@ -74,11 +133,6 @@ void* Raster_GetEncodedBuffer(void* encodedData)
 void Raster_DestroyEncodedData(void* encodedData)
 {
 	delete ((CEncodedData*)encodedData);
-}
-
-void* SVG_DecodeMetafile(unsigned char* buffer, int size)
-{
-	return NULL;
 }
 
 int Image_GetFormat(unsigned char* buffer, int size)

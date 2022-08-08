@@ -52,8 +52,11 @@ int main(int argc, char *argv[])
 
     MetaFile::IMetaFile* pMetafile = MetaFile::Create(pFonts);
     pMetafile->LoadFromFile(L"PATH_TO_METAFILE");
-    pMetafile->ConvertToSvg(L"PATH_TO_SVG");
-    pMetafile->Release();
+
+	std::wstring wsData;
+
+	pMetafile->ConvertToSvg(wsData);
+	pMetafile->Release();
 
     pFonts->Release();
     return 0;

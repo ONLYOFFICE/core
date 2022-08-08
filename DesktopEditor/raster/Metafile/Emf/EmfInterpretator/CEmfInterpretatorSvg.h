@@ -11,7 +11,7 @@ namespace MetaFile
 	class CEmfInterpretatorSvg : public CEmfInterpretatorBase
 	{
 	public:
-		CEmfInterpretatorSvg(const wchar_t* wsFilePath, CEmfParserBase* pParser = NULL, unsigned int unWidth = 0, unsigned int unHeight = 0);
+		CEmfInterpretatorSvg(CEmfParserBase* pParser = NULL, unsigned int unWidth = 0, unsigned int unHeight = 0);
 		CEmfInterpretatorSvg(const CEmfInterpretatorSvg& oInterpretator);
 		virtual ~CEmfInterpretatorSvg();
 
@@ -20,7 +20,6 @@ namespace MetaFile
 
 		InterpretatorType   GetType() const override;
 
-		void SetOutputDevice(const wchar_t *wsFilePath);
 		void SetSize(unsigned int unWidth, unsigned int unHeight);
 
 		void HANDLE_EMR_HEADER(const TEmfHeader& oTEmfHeader) override ;
@@ -131,12 +130,13 @@ namespace MetaFile
 
 	private:
 		XmlUtils::CXmlWriter    m_oXmlWriter;
-		std::wstring            m_wsSvgFilePath;
+		std::wstring            m_sOutputData; // по идее это не нужно.
 
 		CEmfParserBase          *m_pParser;
 
 		TSvgViewport            m_oViewport;
 		TEmfSizeL               m_oSizeWindow;
+
 	public:
 		void Begin() override;
 		void End() override;
@@ -166,12 +166,17 @@ namespace MetaFile
 		void UpdateDC() override {};
 		void SetTransform(double& dM11, double& dM12, double& dM21, double& dM22, double& dX, double& dY) override {};
 		void GetTransform(double* pdM11, double* pdM12, double* pdM21, double* pdM22, double* pdX, double* pdY) override {};
+
+		std::wstring GetFile() { return m_sOutputData; }
 	private:
 		void WriteNode(const std::wstring& wsNodeName, const NodeAttributes& arAttributes, const std::wstring& wsValueNode = L"");
 		void WriteText(const std::wstring& wsText, double dX, double dY, const TEmfRectL& oBounds);
 
 		void AddStroke(NodeAttributes &arAttributes);
 		void AddFill(NodeAttributes &arAttributes);
+		void AddTransform(NodeAttributes &arAttributes);
+
+		void AddNoneFill(NodeAttributes &arAttributes);
 
 		void UpdateTransform(double dX, double dY);
 		void UpdateTransform(const TRectD& oRect);

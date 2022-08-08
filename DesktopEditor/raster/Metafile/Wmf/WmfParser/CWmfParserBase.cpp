@@ -173,17 +173,22 @@ namespace MetaFile
 
 	void CWmfParserBase::SetInterpretator(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType, unsigned int unWidth, unsigned int unHeight)
 	{
-		if (NULL != m_pInterpretator)
-			delete m_pInterpretator;
-
-		if (InterpretatorType::Svg == oInterpretatorType)
-			m_pInterpretator = new CWmfInterpretatorSvg(wsFilePath, this, unWidth, unHeight);
+		RELEASEOBJECT(m_pInterpretator);
 
 		//TODO:: добавить как появится реализация интерпретаторов
 	}
 
+	void CWmfParserBase::SetInterpretator(InterpretatorType oInterpretatorType, unsigned int unWidth, unsigned int unHeight)
+	{
+		RELEASEOBJECT(m_pInterpretator);
+
+		if (InterpretatorType::Svg == oInterpretatorType)
+			m_pInterpretator = new CWmfInterpretatorSvg(this, unWidth, unHeight);
+	}
+
 	void CWmfParserBase::SetInterpretator(IOutputDevice *pOutput, const wchar_t *wsFilePath)
 	{
+		RELEASEOBJECT(m_pInterpretator);
 
 	}
 
@@ -1002,6 +1007,9 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_META_POLYLINE(arPoints);
 
+		if (arPoints.empty())
+			return;
+
 		MoveTo(arPoints[0].x, arPoints[0].y);
 
 		for (short shIndex = 1; shIndex < arPoints.size(); shIndex++)
@@ -1014,6 +1022,9 @@ namespace MetaFile
 	{
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_META_POLYGON(arPoints);
+
+		if (arPoints.empty())
+			return;
 
 		MoveTo(arPoints[0].x, arPoints[0].y);
 
@@ -1029,8 +1040,14 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_META_POLYPOLYGON(arPolygons);
 
+		if (arPolygons.empty())
+			return;
+
 		for (unsigned int unPolygonIndex = 0; unPolygonIndex < arPolygons.size(); ++unPolygonIndex)
 		{
+			if (arPolygons[unPolygonIndex].empty())
+				continue;
+
 			MoveTo(arPolygons[unPolygonIndex][0].x, arPolygons[unPolygonIndex][0].y);
 
 			for (unsigned int unPointIndex = 1; unPointIndex < arPolygons[unPolygonIndex].size(); ++unPointIndex)
@@ -1485,4 +1502,8 @@ namespace MetaFile
 			m_pInterpretator->HANDLE_META_UNKNOWN(oDataStream);
 	}
 
+	CWmfInterpretatorBase* CWmfParserBase::GetInterpretator()
+	{
+		return m_pInterpretator;
+	}
 }

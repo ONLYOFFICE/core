@@ -8,14 +8,14 @@
 
 namespace MetaFile
 {               
-	CEmfInterpretatorSvg::CEmfInterpretatorSvg(const wchar_t *wsFilePath, CEmfParserBase* pParser, unsigned int unWidth, unsigned int unHeight)
-		: m_wsSvgFilePath(wsFilePath), m_pParser(pParser)
+	CEmfInterpretatorSvg::CEmfInterpretatorSvg(CEmfParserBase* pParser, unsigned int unWidth, unsigned int unHeight)
+		: m_pParser(pParser)
 	{
 		SetSize(unWidth, unHeight);
 	}
 
 	CEmfInterpretatorSvg::CEmfInterpretatorSvg(const CEmfInterpretatorSvg &oInterpretator)
-		: m_wsSvgFilePath(oInterpretator.m_wsSvgFilePath), m_pParser(NULL)
+		: m_pParser(NULL)
 	{
 	}
 
@@ -27,11 +27,6 @@ namespace MetaFile
 	InterpretatorType CEmfInterpretatorSvg::GetType() const
 	{
 		return InterpretatorType::Svg;
-	}
-
-	void CEmfInterpretatorSvg::SetOutputDevice(const wchar_t *wsFilePath)
-	{
-		m_wsSvgFilePath = wsFilePath;
 	}
 
 	void CEmfInterpretatorSvg::SetSize(unsigned int unWidth, unsigned int unHeight)
@@ -488,7 +483,7 @@ namespace MetaFile
 
 		std::wstring wsValue = L"M " + std::to_wstring(arPoints[0].x) + L' ' + std::to_wstring(arPoints[0].y) + L' ';
 
-		for (unsigned int unIndex = 1; unIndex < arPoints.size(); unIndex += 3)
+		for (unsigned int unIndex = 0; unIndex + 2 < arPoints.size(); unIndex += 3)
 			wsValue += L"C " + std::to_wstring(TranslateX(arPoints[unIndex].x))     + L' ' + std::to_wstring(TranslateY(arPoints[unIndex].y))     + L' ' +
 					std::to_wstring(TranslateX(arPoints[unIndex + 1].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex + 1].y)) + L' ' +
 					std::to_wstring(TranslateX(arPoints[unIndex + 2].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex + 2].y));
@@ -496,7 +491,7 @@ namespace MetaFile
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
 		AddStroke(arAttributes);
-		AddFill(arAttributes);
+		AddNoneFill(arAttributes);
 
 		UpdateTransform(arPoints);
 
@@ -510,7 +505,7 @@ namespace MetaFile
 
 		std::wstring wsValue = L"M " + std::to_wstring(TranslateX(arPoints[0].x)) + L' ' + std::to_wstring(TranslateY(arPoints[0].y)) + L' ';
 
-		for (unsigned int unIndex = 1; unIndex < arPoints.size(); unIndex += 3)
+		for (unsigned int unIndex = 0; unIndex + 2 < arPoints.size(); unIndex += 3)
 			wsValue += L"C " + std::to_wstring(TranslateX(arPoints[unIndex].x))     + L' ' + std::to_wstring(TranslateY(arPoints[unIndex].y))     + L' ' +
 					std::to_wstring(TranslateX(arPoints[unIndex + 1].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex + 1].y)) + L' ' +
 					std::to_wstring(TranslateX(arPoints[unIndex + 2].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex + 2].y));
@@ -518,7 +513,7 @@ namespace MetaFile
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
 		AddStroke(arAttributes);
-		AddFill(arAttributes);
+		AddNoneFill(arAttributes);
 
 		UpdateTransform(arPoints);
 
@@ -535,7 +530,7 @@ namespace MetaFile
 
 		std::wstring wsValue = L"M " + std::to_wstring(TranslateX(arPoints[0].x)) + L' ' + std::to_wstring(TranslateY(arPoints[0].y)) + L' ';
 
-		for (unsigned int unIndex = 1; unIndex < arPoints.size(); unIndex += 3)
+		for (unsigned int unIndex = 0; unIndex + 2 < arPoints.size(); unIndex += 3)
 			wsValue += L"C " + std::to_wstring(TranslateX(arPoints[unIndex].x))     + L' ' + std::to_wstring(TranslateY(arPoints[unIndex].y))     + L' ' +
 					std::to_wstring(TranslateX(arPoints[unIndex + 1].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex + 1].y)) + L' ' +
 					std::to_wstring(TranslateX(arPoints[unIndex + 2].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex + 2].y));
@@ -543,7 +538,7 @@ namespace MetaFile
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
 		AddStroke(arAttributes);
-		AddFill(arAttributes);
+		AddNoneFill(arAttributes);
 
 		UpdateTransform(arPoints);
 
@@ -557,7 +552,7 @@ namespace MetaFile
 
 		std::wstring wsValue = L"M " + std::to_wstring(TranslateX(arPoints[0].x)) + L' ' + std::to_wstring(TranslateY(arPoints[0].y)) + L' ';
 
-		for (unsigned int unIndex = 1; unIndex < arPoints.size(); unIndex += 3)
+		for (unsigned int unIndex = 0; unIndex + 2 < arPoints.size(); unIndex += 3)
 			wsValue += L"C " + std::to_wstring(TranslateX(arPoints[unIndex].x))     + L' ' + std::to_wstring(TranslateY(arPoints[unIndex].y))     + L' ' +
 					std::to_wstring(TranslateX(arPoints[unIndex + 1].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex + 1].y)) + L' ' +
 					std::to_wstring(TranslateX(arPoints[unIndex + 2].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex + 2].y));
@@ -565,7 +560,7 @@ namespace MetaFile
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
 		AddStroke(arAttributes);
-		AddFill(arAttributes);
+		AddNoneFill(arAttributes);
 
 		UpdateTransform(arPoints);
 
@@ -583,7 +578,7 @@ namespace MetaFile
 		{
 			if (0x02 == pAbTypes[unIndex])
 				wsValue += L" L " + std::to_wstring(TranslateX(arPoints[unIndex].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex].y));
-			else if (0x04 == pAbTypes[unIndex] && unIndex + 3 < unCount)
+			else if (0x04 == pAbTypes[unIndex] && unIndex + 2 < unCount)
 			{
 				wsValue += L" C " + std::to_wstring(TranslateX(arPoints[unIndex].x))     + L' ' + std::to_wstring(TranslateY(arPoints[unIndex].y))     + L' ' +
 						std::to_wstring(TranslateX(arPoints[unIndex + 1].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex + 1].y)) + L' ' +
@@ -598,7 +593,7 @@ namespace MetaFile
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
 		AddStroke(arAttributes);
-		AddFill(arAttributes);
+		AddNoneFill(arAttributes);
 
 		UpdateTransform(arPoints, unCount);
 
@@ -616,7 +611,7 @@ namespace MetaFile
 		{
 			if (0x02 == pAbTypes[unIndex])
 				wsValue += L" L " + std::to_wstring(TranslateX(arPoints[unIndex].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex].y));
-			else if (0x04 == pAbTypes[unIndex] && unIndex + 3 < unCount)
+			else if (0x04 == pAbTypes[unIndex] && unIndex + 2 < unCount)
 			{
 				wsValue += L" C " + std::to_wstring(TranslateX(arPoints[unIndex].x))     + L' ' + std::to_wstring(TranslateY(arPoints[unIndex].y))     + L' ' +
 						std::to_wstring(TranslateX(arPoints[unIndex + 1].x)) + L' ' + std::to_wstring(TranslateY(arPoints[unIndex + 1].y)) + L' ' +
@@ -631,7 +626,7 @@ namespace MetaFile
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
 		AddStroke(arAttributes);
-		AddFill(arAttributes);
+		AddNoneFill(arAttributes);
 
 		UpdateTransform(arPoints, unCount);
 
@@ -866,7 +861,7 @@ namespace MetaFile
 	{
 		m_oXmlWriter.WriteNodeEnd(L"svg", false, false);
 
-		std::wstring wsXml = m_oXmlWriter.GetXmlString();
+		m_sOutputData = m_oXmlWriter.GetXmlString();
 
 		bool bFlipped = false;
 
@@ -888,19 +883,19 @@ namespace MetaFile
 			}
 
 			if (nFlipX < 0 || nFlipY < 0 || bFlipped)
-				wsXml.insert(5, L"transform=\"scale(" + std::to_wstring(nFlipX) + L' ' + std::to_wstring(nFlipY) + L")\" ");
+				m_sOutputData.insert(5, L"transform=\"scale(" + std::to_wstring(nFlipX) + L' ' + std::to_wstring(nFlipY) + L")\" ");
 		}
 
 		//                if (m_oViewport.dX < 0 || m_oViewport.dY < 0)
 		if (!m_oViewport.Empty())
-			wsXml.insert(5, L"viewBox=\"" + std::to_wstring(m_oViewport.dLeft) + L' ' + std::to_wstring(m_oViewport.dTop) + L' ' + std::to_wstring(m_oViewport.GetWidth()) + L' ' + std::to_wstring(m_oViewport.GetHeight()) + L"\" ");
+			m_sOutputData.insert(5, L"viewBox=\"" + std::to_wstring(m_oViewport.dLeft) + L' ' + std::to_wstring(m_oViewport.dTop) + L' ' + std::to_wstring(m_oViewport.GetWidth()) + L' ' + std::to_wstring(m_oViewport.GetHeight()) + L"\" ");
 
 		if (0 != m_oSizeWindow.cx && 0 != m_oSizeWindow.cy)
-			wsXml.insert(5, L"width=\"" + std::to_wstring(m_oSizeWindow.cx) + L"\" height=\"" + std::to_wstring(m_oSizeWindow.cy) + L"\" ");
+			m_sOutputData.insert(5, L"width=\"" + std::to_wstring(m_oSizeWindow.cx) + L"\" height=\"" + std::to_wstring(m_oSizeWindow.cy) + L"\" ");
 
-		m_oXmlWriter.SetXmlString(wsXml);
+//		m_oXmlWriter.SetXmlString(wsXml);
 
-		m_oXmlWriter.SaveToFile((!m_wsSvgFilePath.empty()) ? m_wsSvgFilePath : L"temp.svg");
+//		m_oXmlWriter.SaveToFile((!m_wsSvgFilePath.empty()) ? m_wsSvgFilePath : L"temp.svg");
 	}
 
 	void CEmfInterpretatorSvg::DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight)
@@ -1136,6 +1131,11 @@ namespace MetaFile
 				arAttributes.push_back({L"fill", L"none"});
 		}
 		else arAttributes.push_back({L"fill", L"none"});
+	}
+
+	void CEmfInterpretatorSvg::AddNoneFill(NodeAttributes &arAttributes)
+	{
+		arAttributes.push_back({L"fill", L"none"});
 	}
 
 	void CEmfInterpretatorSvg::UpdateTransform(double dX, double dY)

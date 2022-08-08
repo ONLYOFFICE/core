@@ -122,6 +122,7 @@ namespace MetaFile
 		virtual ~IMetaFile() {}
 
 		virtual bool LoadFromFile(const wchar_t* wsFilePath) = 0;
+		virtual bool LoadFromBuffer(BYTE* pBuffer, unsigned int unSize) = 0;
 		virtual bool DrawOnRenderer(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight) = 0;
 		virtual void Close() = 0;
 		virtual void GetBounds(double* pdX, double* pdY, double* pdW, double* pdH) = 0;
@@ -129,7 +130,7 @@ namespace MetaFile
 		virtual void ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1) = 0;
 		virtual NSFonts::IFontManager* get_FontManager() = 0;
 
-		virtual void ConvertToSvg(const wchar_t *wsFilePath, unsigned int unWidth = 0, unsigned int unHeight = 0) = 0;
+		virtual std::wstring ConvertToSvg(unsigned int unWidth = 0, unsigned int unHeight = 0) = 0;
 
 		//Для тестов
 	#ifdef METAFILE_SUPPORT_WMF_EMF

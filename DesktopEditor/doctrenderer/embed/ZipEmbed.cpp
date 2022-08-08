@@ -176,9 +176,9 @@ JSSmart<CJSValue> CZipEmbed::encodeImage(JSSmart<CJSValue> typedArray, JSSmart<C
 			{
 		#ifndef GRAPHICS_DISABLE_METAFILE
 				MetaFile::IMetaFile* pMetaFile = MetaFile::Create(NULL);
-				//pMetaFile->LoadFromBuffer(oBuffer.Data, (DWORD)oBuffer.Len);
-				//std::string sSvg = pMetaFile->ConvertToSvg();
-				std::string sSvg = "";
+				pMetaFile->LoadFromBuffer(oBuffer.Data, (unsigned int)oBuffer.Len);
+				std::wstring wsSvg = pMetaFile->ConvertToSvg();
+				std::string sSvg = U_TO_UTF8(wsSvg);
 				pMetaFile->Release();
 
 				BYTE* pData = NSAllocator::Alloc(sSvg.length());

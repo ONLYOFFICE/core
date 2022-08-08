@@ -71,7 +71,7 @@ void* Raster_EncodeImageData(unsigned char* buffer, int w, int h, int stride, in
 	oFrame.put_Data(NULL);
 	return pEncodedData;
 }
-void* Raster_Encode(unsigned char* buffer, int format)
+void* Raster_Encode(unsigned char* buffer, int size, int format)
 {
 	CImageFileFormatChecker oChecker;
 	bool bIsImageFile = oChecker.isImageFile(buffer, (DWORD)format);
@@ -87,9 +87,9 @@ void* Raster_Encode(unsigned char* buffer, int format)
 			{
 		#ifndef GRAPHICS_DISABLE_METAFILE
 				MetaFile::IMetaFile* pMetaFile = MetaFile::Create(NULL);
-				//pMetaFile->LoadFromBuffer(oBuffer.Data, (DWORD)oBuffer.Len);
-				//std::string sSvg = pMetaFile->ConvertToSvg();
-				std::string sSvg = "";
+				pMetaFile->LoadFromBuffer(buffer, (DWORD)size);
+				std::wstring wsSvg = pMetaFile->ConvertToSvg();
+				std::string sSvg = U_TO_UTF8(wsSvg);
 				pMetaFile->Release();
 
 				CEncodedData* pEncodedData = new CEncodedData();
@@ -105,7 +105,7 @@ void* Raster_Encode(unsigned char* buffer, int format)
 		}
 		default:
 			CBgraFrame oFrame;
-			oFrame.Decode(buffer, format);
+			oFrame.Decode(buffer, size, format);
 
 			BYTE* pBuffer = NULL;
 			int nEncodedSize = 0;

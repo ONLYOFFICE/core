@@ -22,7 +22,9 @@ int main()
 		MetaFile::CMetaFile oFrame(NULL);
 		if (oFrame.LoadFromFile(sFilePath.c_str()))
 		{
-			oFrame.ConvertToSvg(L"D:/1.svg");
+			std::wstring sContentSvg = oFrame.ConvertToSvg();
+			NSFile::CFileBinary::SaveToFile(L"D:/1.svg", sContentSvg, true);
+
 			return 0;
 		}
 	}

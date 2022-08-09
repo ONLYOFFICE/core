@@ -74,7 +74,7 @@ void* Raster_EncodeImageData(unsigned char* buffer, int w, int h, int stride, in
 void* Raster_Encode(unsigned char* buffer, int size, int format)
 {
 	CImageFileFormatChecker oChecker;
-	bool bIsImageFile = oChecker.isImageFile(buffer, (DWORD)format);
+	bool bIsImageFile = oChecker.isImageFile(buffer, (DWORD)size);
 
 	if (bIsImageFile)
 	{

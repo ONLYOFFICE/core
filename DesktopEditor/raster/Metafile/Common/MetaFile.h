@@ -90,6 +90,8 @@ namespace MetaFile
 			m_pBufferData = pBuffer;
 			m_bIsExternalBuffer = bIsExternal;
 			m_oStream.SetStream(pBuffer, unSize);
+
+			return true;
 		}
 		bool OpenFromFile(const wchar_t* wsFilePath)
 		{

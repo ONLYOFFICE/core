@@ -171,7 +171,7 @@ namespace NSDoctRenderer
 		void Set(const int& index, CDocBuilderValue value);
 
 	public:
-		// Primitive data types
+		// Creates an object from primitive types
 		CDocBuilderValue(const bool& value);
 		CDocBuilderValue(const int& value);
 		CDocBuilderValue(const unsigned int& value);

@@ -36,10 +36,10 @@ FUNCTION_WRAPPER_JS_2(addFile, addFile)
 FUNCTION_WRAPPER_JS_1(removeFile, removeFile)
 FUNCTION_WRAPPER_JS(close, close)
 
-FUNCTION_WRAPPER_JS(decodeImage, decodeImage)
-FUNCTION_WRAPPER_JS(encodeImageData, encodeImageData)
-FUNCTION_WRAPPER_JS(encodeImage, encodeImage)
-FUNCTION_WRAPPER_JS(getImageType, getImageType)
+FUNCTION_WRAPPER_JS_2(decodeImage, decodeImage)
+FUNCTION_WRAPPER_JS_6(encodeImageData, encodeImageData)
+FUNCTION_WRAPPER_JS_2(encodeImage, encodeImage)
+FUNCTION_WRAPPER_JS_1(getImageType, getImageType)
 
 @end
 

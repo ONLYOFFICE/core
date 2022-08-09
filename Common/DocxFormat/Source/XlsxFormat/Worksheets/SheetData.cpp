@@ -2622,6 +2622,8 @@ void CWorksheet::ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader)
 	nullable_int xSplit, ySplit;
 
 	nullable_int active_pane_number;
+	nullable_int left_column_visible;
+	nullable_int page_break_zoom;
 	std::map<int, nullable<CPane>> mapPanes;
 
 	nullable_string sDataHeader, sDataFooter;
@@ -2631,8 +2633,10 @@ void CWorksheet::ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader)
 	{
 		std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-		if ( L"PageSetup" == sName )
+		if (L"PageSetup" == sName)
 		{
+			if (false == m_oPageSetup.IsInit()) m_oPageSetup.Init();
+
 			int nDocumentDepth1 = oReader.GetDepth();
 			while (oReader.ReadNextSiblingNode(nDocumentDepth1))
 			{
@@ -2641,7 +2645,7 @@ void CWorksheet::ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader)
 				if (L"Header" == sName1)
 				{
 					if (false == m_oPageMargins.IsInit()) m_oPageMargins.Init();
-					
+
 					WritingElement_ReadAttributes_Start_No_NS(oReader)
 						WritingElement_ReadAttributes_Read_if(oReader, L"Margin", m_oPageMargins->m_oHeader)
 						WritingElement_ReadAttributes_Read_else_if(oReader, L"Data", sDataHeader)
@@ -2650,7 +2654,7 @@ void CWorksheet::ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader)
 				else if (L"Footer" == sName1)
 				{
 					if (false == m_oPageMargins.IsInit()) m_oPageMargins.Init();
-					
+
 					WritingElement_ReadAttributes_Start_No_NS(oReader)
 						WritingElement_ReadAttributes_Read_if(oReader, L"Margin", m_oPageMargins->m_oFooter)
 						WritingElement_ReadAttributes_Read_else_if(oReader, L"Data", sDataFooter)
@@ -2658,11 +2662,14 @@ void CWorksheet::ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader)
 				}
 				else if (L"Layout" == sName1)
 				{
+					WritingElement_ReadAttributes_Start_No_NS(oReader)
+						WritingElement_ReadAttributes_Read_if(oReader, L"x:Orientation", m_oPageSetup->m_oOrientation)
+					WritingElement_ReadAttributes_End_No_NS(oReader)
 				}
 				else if (L"PageMargins" == sName1)
 				{
 					if (false == m_oPageMargins.IsInit()) m_oPageMargins.Init();
-					
+
 					WritingElement_ReadAttributes_Start_No_NS(oReader)
 						WritingElement_ReadAttributes_Read_if(oReader, L"Top", m_oPageMargins->m_oTop)
 						WritingElement_ReadAttributes_Read_else_if(oReader, L"Left", m_oPageMargins->m_oLeft)
@@ -2671,26 +2678,25 @@ void CWorksheet::ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader)
 					WritingElement_ReadAttributes_End_No_NS(oReader)
 				}
 			}
-
 		}
-		else if ( L"Panes" == sName )
+		else if (L"Panes" == sName)
 		{
 			int nDocumentDepth1 = oReader.GetDepth();
-			while ( oReader.ReadNextSiblingNode( nDocumentDepth1 ) )
+			while (oReader.ReadNextSiblingNode(nDocumentDepth1))
 			{
 				std::wstring sName1 = XmlUtils::GetNameNoNS(oReader.GetName());
 
-				if ( L"Pane" == sName1 )
+				if (L"Pane" == sName1)
 				{
 					nullable<CPane> pane; pane.Init();
 					nullable_int number;
 
 					int nDocumentDepth2 = oReader.GetDepth();
 					nullable_int col, row;
-					while ( oReader.ReadNextSiblingNode( nDocumentDepth2 ) )
+					while (oReader.ReadNextSiblingNode(nDocumentDepth2))
 					{
 						std::wstring sName2 = XmlUtils::GetNameNoNS(oReader.GetName());
-						if ( L"Number" == sName2 )
+						if (L"Number" == sName2)
 						{
 							number = oReader.GetText2();
 						}
@@ -2706,12 +2712,12 @@ void CWorksheet::ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader)
 						{
 							r1c1_formula_convert::base_row = xlsx_flat->m_nLastReadRow;
 							r1c1_formula_convert::base_col = xlsx_flat->m_nLastReadCol;
-							
+
 							r1c1_formula_convert convert;
 
 							std::wstring ref = convert.convert(oReader.GetText2());
 
-							m_oSheetViews->m_arrItems.back()->m_arrItems.push_back(new CSelection());							
+							m_oSheetViews->m_arrItems.back()->m_arrItems.push_back(new CSelection());
 							m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oSqref = ref;
 
 							size_t pos_split = ref.find(L":");
@@ -2725,7 +2731,7 @@ void CWorksheet::ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader)
 							m_oSheetViews->m_arrItems.back()->m_arrItems.push_back(new CSelection());
 
 						m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oActiveCell = getCellAddress(*row + 1, *col + 1);
-						
+
 						if (false == m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oSqref.IsInit())
 						{
 							m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oSqref = m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oActiveCell;
@@ -2738,34 +2744,168 @@ void CWorksheet::ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader)
 				}
 			}
 		}
-		else if ( L"SplitHorizontal" == sName )
+		else if (L"SplitHorizontal" == sName)
 		{
 			ySplit = oReader.GetText2();
 		}
-		else if ( L"SplitVertical" == sName )
+		else if (L"SplitVertical" == sName)
 		{
 			xSplit = oReader.GetText2();
 		}
-		else if ( L"DoNotDisplayGridlines" == sName )
+		else if (L"DoNotDisplayGridlines" == sName)
 		{
 			m_oSheetViews->m_arrItems.back()->m_oShowGridLines.Init();
 			m_oSheetViews->m_arrItems.back()->m_oShowGridLines->FromBool(false);
 		}
-		else if ( L"Selected" == sName )
+		else if (L"Selected" == sName)
 		{
 			m_oSheetViews->m_arrItems.back()->m_oTabSelected.Init();
 			m_oSheetViews->m_arrItems.back()->m_oTabSelected->FromBool(true);
 		}
-		else if ( L"FreezePanes" == sName )
+		else if (L"FreezePanes" == sName)
 		{
 			bFreeze = true;
 		}
-		else if ( L"ActivePane" == sName )
+		else if (L"ActivePane" == sName)
 		{
 			active_pane_number = oReader.GetText2();
-		}	
+		}
 		else if (L"Print" == sName)
 		{
+			int nDocumentDepth1 = oReader.GetDepth();
+			while (oReader.ReadNextSiblingNode(nDocumentDepth1))
+			{
+				std::wstring sName1 = XmlUtils::GetNameNoNS(oReader.GetName());
+
+				if (L"FitHeight" == sName1)
+				{
+					m_oPageSetup->m_oFitToHeight = oReader.GetText2();
+				}
+				else if (L"DraftQuality" == sName1)
+				{
+					m_oPageSetup->m_oDraft.Init();
+				}
+				else if (L"Gridlines" == sName1)
+				{
+					if (false == m_oPrintOptions.IsInit()) m_oPrintOptions.Init();
+					m_oPrintOptions->m_oGridLines = true;
+				}
+				else if (L"Scale" == sName1)
+				{
+					m_oPageSetup->m_oScale = oReader.GetText2();
+				}
+				else if (L"HorizontalResolution" == sName1)
+				{
+					m_oPageSetup->m_oHorizontalDpi = oReader.GetText2();
+				}
+				else if (L"VerticalResolution" == sName1)
+				{
+					m_oPageSetup->m_oVerticalDpi = oReader.GetText2();
+				}
+				else if (L"PaperSizeIndex" == sName1)
+				{
+					m_oPageSetup->m_oPaperSize = oReader.GetText2();
+				}
+			}
+		}
+		else if (L"FitToPage" == sName)
+		{
+			if (!m_oSheetPr.IsInit()) m_oSheetPr.Init();
+			if (!m_oSheetPr->m_oPageSetUpPr.IsInit()) m_oSheetPr->m_oPageSetUpPr.Init();
+
+			m_oSheetPr->m_oPageSetUpPr->m_oFitToPage.Init();
+			m_oSheetPr->m_oPageSetUpPr->m_oFitToPage->FromBool(true);
+		}
+		else if (L"ProtectObjects" == sName)
+		{
+
+		}
+		else if (L"ProtectScenarios" == sName)
+		{
+
+		}
+		else if (L"ProtectContents" == sName)
+		{
+
+		}
+		else if (L"LeftColumnVisible" == sName)
+		{
+			left_column_visible = oReader.GetText2();
+		}
+		else if (L"PageBreakZoom" == sName)
+		{
+			page_break_zoom = oReader.GetText2();
+		}
+		else if (L"DoNotDisplayColHeaders" == sName)
+		{
+
+		}
+		else if (L"ViewableRange" == sName)
+		{
+
+		}
+		else if (L"GridlineColor" == sName)
+		{
+
+		}
+		else if (L"Unsynced" == sName)
+		{
+
+		}
+		else if (L"DisplayPageBreak" == sName)
+		{
+
+		}
+		else if (L"ShowPageBreakZoom" == sName)
+		{
+			m_oSheetViews->m_arrItems.back()->m_oView = SimpleTypes::Spreadsheet::sheetviewPageBreakPreview;
+		}
+		else if (L"DefaultRowHeight" == sName)
+		{
+
+		}
+		else if (L"DefaultColumnWidth" == sName)
+		{
+
+		}
+		else if (L"Visible" == sName)
+		{
+
+		}
+		else if (L"DisplayRightToLeft" == sName)
+		{
+
+		}
+		else if (L"DisplayFormulas" == sName)
+		{
+			m_oSheetViews->m_arrItems.back()->m_oShowFormulas = true;
+		}
+		else if (L"ActiveRow" == sName)
+		{
+
+		}
+		else if (L"ActiveColumn" == sName)
+		{
+
+		}
+		else if (L"TabColorIndex" == sName)
+		{
+			if (false == m_oSheetPr.IsInit()) m_oSheetPr.Init();
+			m_oSheetPr->m_oTabColor.Init();  m_oSheetPr->m_oTabColor->m_oIndexed = oReader.GetText2();
+		}
+	}
+
+	if (m_oPageMargins.IsInit())
+	{
+		if (!m_oPageMargins->m_oFooter.IsInit())
+		{
+			m_oPageMargins->m_oFooter.Init();
+			m_oPageMargins->m_oFooter->SetValue(0.5);
+		}
+		if (!m_oPageMargins->m_oHeader.IsInit())
+		{
+			m_oPageMargins->m_oHeader.Init();
+			m_oPageMargins->m_oHeader->SetValue(0.5);
 		}
 	}
 

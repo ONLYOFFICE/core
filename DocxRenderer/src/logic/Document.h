@@ -2,6 +2,8 @@
 #include "Page.h"
 #include "../DesktopEditor/common/Directory.h"
 #include "../resources/resources.h"
+#include "managers/ImageManager.h"
+#include "managers/StyleManager.h"
 
 namespace NSDocxRenderer
 {
@@ -28,7 +30,8 @@ namespace NSDocxRenderer
 		LONG							m_lClipMode;
 		CPage							m_oCurrentPage;
 
-        CImageManager					m_oManager;
+        CImageManager					m_oImageManager;
+        CStyleManager                   m_oStyleManager;
 
         double							m_dWidth {0.0};
         double							m_dHeight {0.0};
@@ -196,7 +199,8 @@ namespace NSDocxRenderer
         bool CreateDocument();
 
         void Close();
-
-        void ClearTextData();
+        void BuildDocumentXmlRels();
+        void BuildFontTableXml();
+        void BuildStylesXml();
 	};
 }

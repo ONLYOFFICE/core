@@ -1,8 +1,8 @@
 #pragma once
-#include "ElementParagraph.h"
-#include "../resources/LinesTable.h"
-#include "../resources/VectorGraphics.h"
-#include "ImageManager.h"
+#include "Paragraph.h"
+#include "../../resources/ImageInfo.h"
+#include "../../resources/LinesTable.h"
+#include "../../resources/VectorGraphics.h"
 
 namespace NSDocxRenderer
 {

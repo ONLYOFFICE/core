@@ -1,5 +1,5 @@
 #include "BaseItem.h"
-#include "../resources/Constants.h"
+#include "../../resources/Constants.h"
 
 namespace NSDocxRenderer
 {

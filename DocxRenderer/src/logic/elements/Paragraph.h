@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "BaseItem.h"
-#include "FontManager.h"
-#include "ElementTextLine.h"
+#include "../managers/FontManager.h"
+#include "TextLine.h"
 
 namespace NSDocxRenderer
 {

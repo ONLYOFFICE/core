@@ -1,4 +1,4 @@
-#include "ElementParagraph.h"
+#include "Paragraph.h"
 #include "src/resources/ColorTable.h"
 #include "src/resources/SingletonTemplate.h"
 #include "src/resources/utils.h"
@@ -213,7 +213,7 @@ namespace NSDocxRenderer
                 {
                     if (m_lColorOfShadingFill == pCont->m_lHighlightColor)
                     {
-                        pCont->m_bIsHighlightPresent = false;
+                        pCont->m_bIsHighlightPresent = true;
                     }
                 }
             }
@@ -228,15 +228,15 @@ namespace NSDocxRenderer
         {
             for (auto pCont : pLine->m_arConts)
             {
-                if (!pSelectedCont || pSelectedCont->m_oFont.Size < pCont->m_oFont.Size)
+                if (!pSelectedCont || pSelectedCont->m_pFontStyle->m_oFont.Size < pCont->m_pFontStyle->m_oFont.Size)
                 {
                     pSelectedCont = pCont;
                 }
-                else if (pSelectedCont->m_oFont.Size == pCont->m_oFont.Size)
+                else if (pSelectedCont->m_pFontStyle->m_oFont.Size == pCont->m_pFontStyle->m_oFont.Size)
                 {
                     //note считаем что обычный < Italic < Bold < Bold-Italic
-                    if (pSelectedCont->m_oFont.GetTextFontStyle() <
-                            pCont->m_oFont.GetTextFontStyle())
+                    if (pSelectedCont->m_pFontStyle->m_oFont.GetTextFontStyle() <
+                            pCont->m_pFontStyle->m_oFont.GetTextFontStyle())
                     {
                         pSelectedCont = pCont;
                     }
@@ -244,8 +244,8 @@ namespace NSDocxRenderer
             }
         }
 
-        UINT lSize = static_cast<UINT>(2 * pSelectedCont->m_oFont.Size);
-        UINT nType = pSelectedCont->m_oFont.GetTextFontStyle();
+        UINT lSize = static_cast<UINT>(2 * pSelectedCont->m_pFontStyle->m_oFont.Size);
+        UINT nType = pSelectedCont->m_pFontStyle->m_oFont.GetTextFontStyle();
 
         if (nType > 3)
         {

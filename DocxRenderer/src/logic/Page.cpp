@@ -7,13 +7,13 @@
 
 namespace NSDocxRenderer
 {
-    CPage::CPage(NSFonts::IApplicationFonts* pFonts) : m_oManager(pFonts), m_oManagerLight(pFonts)
+    CPage::CPage(NSFonts::IApplicationFonts* pFonts) : m_oFontManager(pFonts), m_oFontManagerLight(pFonts)
     {
     }
 
     void CPage::Init(NSStructures::CFont* pFont, NSStructures::CPen* pPen, NSStructures::CBrush* pBrush,
                      NSStructures::CShadow* pShadow, NSStructures::CEdgeText* pEdge, Aggplus::CMatrix* pMatrix,
-                     Aggplus::CGraphicsPathSimpleConverter* pSimple)
+                     Aggplus::CGraphicsPathSimpleConverter* pSimple, CStyleManager* pStyleManager)
     {
         m_pFont		= pFont;
         m_pPen		= pPen;
@@ -24,8 +24,10 @@ namespace NSDocxRenderer
         m_pTransform				= pMatrix;
         m_pSimpleGraphicsConverter	= pSimple;
 
-        m_oManager.m_pFont			= m_pFont;
-        m_oManager.m_pTransform		= m_pTransform;
+        m_pStyleManager = pStyleManager;
+
+        m_oFontManager.m_pFont			= m_pFont;
+        m_oFontManager.m_pTransform		= m_pTransform;
 
         m_pCurrentLine = nullptr;
 
@@ -327,10 +329,10 @@ namespace NSDocxRenderer
 
         bool bIsPath = ((nullptr == pGids) && !bIsPDFAnalyzer) ? false : true;
 
-        m_oManager.LoadFont(0, !bIsPath);
+        m_oFontManager.LoadFont(0, !bIsPath);
 
         if (bIsPath)
-            m_oManager.GenerateFontName2(oText);
+            m_oFontManager.GenerateFontName2(oText);
 
         if (fabs(dTextW) < 0.01 || (dTextW > 10))
         {
@@ -341,46 +343,49 @@ namespace NSDocxRenderer
 
             if (nullptr != pGids)
             {
-                m_oManager.SetStringGid(1);
-                m_oManager.MeasureStringGids(pGids, nCount, dTextX, dTextY, _x, _y, _w, _h, CFontManager::mtPosition);
+                m_oFontManager.SetStringGid(1);
+                m_oFontManager.MeasureStringGids(pGids, nCount, dTextX, dTextY, _x, _y, _w, _h, CFontManager::mtPosition);
             }
             else
             {
                 // такого быть не должно (только из xps)
-                m_oManager.SetStringGid(0);
-                m_oManager.MeasureStringGids(pUnicodes, nCount, dTextX, dTextY, _x, _y, _w, _h, CFontManager::mtPosition);
+                m_oFontManager.SetStringGid(0);
+                m_oFontManager.MeasureStringGids(pUnicodes, nCount, dTextX, dTextY, _x, _y, _w, _h, CFontManager::mtPosition);
             }
 
             dTextW = _w;
         }
 
         double dBaseLinePos = dTextY + fBaseLineOffset;
-        dTextH = m_oManager.GetFontHeight();
+        dTextH = m_oFontManager.GetFontHeight();
 
-        CContText* pCont = new CContText(m_oManagerLight);
+        CContText* pCont = new CContText(&m_oFontManagerLight, m_pStyleManager);
 
         pCont->m_dLeft = dTextX;
         pCont->m_dBaselinePos = dBaseLinePos;
-        pCont->m_dBaselineOffset = m_oManager.m_oFont.m_dBaselineOffset;
+        pCont->m_dBaselineOffset = m_oFontManager.m_oFont.m_dBaselineOffset;
         pCont->m_dLastX = dTextX;
 
-        pCont->m_dTop       = dBaseLinePos - dTextH - m_oManager.m_oFont.m_dBaselineOffset;
+        pCont->m_dTop       = dBaseLinePos - dTextH - m_oFontManager.m_oFont.m_dBaselineOffset;
         pCont->m_dWidth		= dTextW;
         pCont->m_dHeight	= dTextH;
         pCont->m_dRight     = dTextX + dTextW;
 
         pCont->m_oText = oText;
 
-        pCont->m_oFont		= m_oManager.m_oFont.m_oFont;
-        pCont->m_oBrush		= *m_pBrush;
+        //Первичное заполнение стилей
+        m_pStyleManager->m_pCurrentStyle->m_oFont = m_oFontManager.m_oFont.m_oFont;
+        m_pStyleManager->m_pCurrentStyle->m_oBrush = *m_pBrush;
 
         if (bIsPath)
         {
-            pCont->m_strPickFontName	= m_oManager.m_strCurrentPickFont;
-            pCont->m_lPickFontStyle		= m_oManager.m_lCurrentPictFontStyle;
+            m_pStyleManager->m_pCurrentStyle->m_strPickFontName = m_oFontManager.m_strCurrentPickFont;
+            m_pStyleManager->m_pCurrentStyle->m_lPickFontStyle  = m_oFontManager.m_lCurrentPictFontStyle;
         }
 
-        pCont->m_dSpaceWidthMM = m_oManager.m_dSpaceWidthMM;
+        pCont->m_pFontStyle = m_pStyleManager->GetStyle();
+
+        pCont->m_dSpaceWidthMM = m_oFontManager.m_dSpaceWidthMM;
 
         m_arSymbol.push_back(pCont);
     }
@@ -462,7 +467,7 @@ namespace NSDocxRenderer
                 if ((bIf1 || bIf2) && bIf3 && bIf4)
                 {
                     //note Выбираем Cont c максимальным размером шрифта (возможно понадобится для определения толщины линий)
-                    if (!pShape->m_pCont || pShape->m_pCont->m_oFont.Size < pCont->m_oFont.Size)
+                    if (!pShape->m_pCont || pShape->m_pCont->m_pFontStyle->m_oFont.Size < pCont->m_pFontStyle->m_oFont.Size)
                     {
                         pShape->m_pCont = pCont;
                     }
@@ -619,14 +624,19 @@ namespace NSDocxRenderer
                 }
 
                 if (pShape->m_eGraphicsType == eGraphicsType::gtComplicatedFigure &&
-                    pCont->m_oBrush.Color1 == c_iGreyColor &&
+                    pCont->m_pFontStyle->m_oBrush.Color1 == c_iGreyColor &&
                     eVType == eVerticalCrossingType::vctCurrentOutsideNext &&
                     (eHType == eHorizontalCrossingType::hctCurrentOutsideNext ||
                      eHType == eHorizontalCrossingType::hctCurrentRightOfNext))
                 {
+
                     pCont->m_bIsShadowPresent = true;
                     pCont->m_bIsOutlinePresent = true;
-                    pCont->m_oBrush.Color1 = pShape->m_oPen.Color;
+
+                    *m_pStyleManager->m_pCurrentStyle = *pCont->m_pFontStyle;
+                    m_pStyleManager->m_pCurrentStyle->m_oBrush.Color1 = pShape->m_oPen.Color;
+                    pCont->m_pFontStyle = m_pStyleManager->GetStyle();
+
                     pShape->m_bIsNotNecessaryToUse = true;
                 }
             }
@@ -651,7 +661,7 @@ namespace NSDocxRenderer
 
         if (bIf1 && bIf2 && bIf3 && bIf4)
         {
-            pCont->m_oFont.Strikeout = TRUE;
+            pCont->m_bIsStrikeoutPresent = true;;
             if (pShape->m_eLineType == eLineType::ltDouble)
             {
                 pCont->m_bIsDoubleStrikeout = true;
@@ -679,7 +689,7 @@ namespace NSDocxRenderer
 
         if (bIf1 && bIf2 && bIf3 && bIf4)
         {
-            pCont->m_oFont.Underline = TRUE;
+            pCont->m_bIsUnderlinePresent = true;;
             pCont->m_eUnderlineType  = pShape->m_eLineType;
             pCont->m_lUnderlineColor = pShape->m_dHeight > 0.3 ? pShape->m_oBrush.Color1 : pShape->m_oPen.Color;
             return true;
@@ -704,7 +714,7 @@ namespace NSDocxRenderer
                     eHType != eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext &&
                     eHType != eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext;
         //Цвета должны быть разными
-        bool bIf4 = pCont->m_oBrush.Color1 != pShape->m_oBrush.Color1;
+        bool bIf4 = pCont->m_pFontStyle->m_oBrush.Color1 != pShape->m_oBrush.Color1;
         bool bIf5 = pShape->m_oBrush.Color1 == c_iBlackColor && pShape->m_oPen.Color == c_iWhiteColor;
 
         if (bIf1 && bIf2 && bIf3 && bIf4 && !bIf5)
@@ -1004,7 +1014,10 @@ namespace NSDocxRenderer
 
                         if (pCont->m_pCont)
                         {
-                            pCont->m_oFont.Size = pCont->m_pCont->m_oFont.Size;
+                            //pCont->m_pFontStyle->m_oFont.Size = pCont->m_pCont->m_pFontStyle->m_oFont.Size;
+                            *m_pStyleManager->m_pCurrentStyle = *pCont->m_pFontStyle;
+                            m_pStyleManager->m_pCurrentStyle->m_oFont.Size = pCont->m_pCont->m_pFontStyle->m_oFont.Size;
+                            pCont->m_pFontStyle = m_pStyleManager->GetStyle();
                         }
 
                         if (pLineNext->m_dLeft > pCont->m_dLeft)
@@ -1025,7 +1038,10 @@ namespace NSDocxRenderer
 
                         if (pCont->m_pCont)
                         {
-                            pCont->m_oFont.Size = pCont->m_pCont->m_oFont.Size;
+                            //pCont->m_pFontStyle->m_oFont.Size = pCont->m_pCont->m_pFontStyle->m_oFont.Size;
+                            *m_pStyleManager->m_pCurrentStyle = *pCont->m_pFontStyle;
+                            m_pStyleManager->m_pCurrentStyle->m_oFont.Size = pCont->m_pCont->m_pFontStyle->m_oFont.Size;
+                            pCont->m_pFontStyle = m_pStyleManager->GetStyle();
                         }
 
                         if (pLine->m_dLeft > pCont->m_dLeft)

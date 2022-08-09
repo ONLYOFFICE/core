@@ -262,7 +262,7 @@ namespace NSFontManager
         m_strFamilyName		= oSrc.m_strFamilyName;
         m_strPANOSE			= oSrc.m_strPANOSE;
         m_lStyle			= oSrc.m_lStyle;
-        m_arSignature       = m_arSignature;
+        m_arSignature       = oSrc.m_arSignature;
         m_bIsFixedWidth		= oSrc.m_bIsFixedWidth;
         m_lAvgWidth			= oSrc.m_lAvgWidth;
 
@@ -474,6 +474,7 @@ namespace NSFontManager
         // PANOSE
         BYTE pPanose[10];
         m_pManager->GetFile()->GetPanose(pPanose);
+        m_oFont.m_strPANOSE.clear();
         for ( int i = 0; i < 10; i++ )
         {
             m_oFont.m_strPANOSE += ToHexString(pPanose[i]);

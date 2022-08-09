@@ -1,6 +1,6 @@
-#include "ElementImage.h"
-#include "../resources/Constants.h"
-#include "../resources/utils.h"
+#include "Image.h"
+#include "../../resources/Constants.h"
+#include "../../resources/utils.h"
 
 namespace NSDocxRenderer
 {

@@ -1,6 +1,6 @@
-#include "ElementTextLine.h"
-#include "../resources/Constants.h"
-#include "../resources/SortElements.h"
+#include "TextLine.h"
+#include "../../resources/Constants.h"
+#include "../../resources/SortElements.h"
 
 namespace NSDocxRenderer
 {
@@ -285,15 +285,15 @@ namespace NSDocxRenderer
 
         for (auto pCont : m_arConts)
         {
-            if (!pSelectedCont || pSelectedCont->m_oFont.Size < pCont->m_oFont.Size)
+            if (!pSelectedCont || pSelectedCont->m_pFontStyle->m_oFont.Size < pCont->m_pFontStyle->m_oFont.Size)
             {
                 pSelectedCont = pCont;
             }
-            else if (pSelectedCont->m_oFont.Size == pCont->m_oFont.Size)
+            else if (pSelectedCont->m_pFontStyle->m_oFont.Size == pCont->m_pFontStyle->m_oFont.Size)
             {
                 //note считаем что обычный < Italic < Bold < Bold-Italic
-                if (pSelectedCont->m_oFont.GetTextFontStyle() <
-                        pCont->m_oFont.GetTextFontStyle())
+                if (pSelectedCont->m_pFontStyle->m_oFont.GetTextFontStyle() <
+                        pCont->m_pFontStyle->m_oFont.GetTextFontStyle())
                 {
                     pSelectedCont = pCont;
                 }
@@ -305,8 +305,8 @@ namespace NSDocxRenderer
             return c_dRightBorderCorrectionSize[0][0];
         }
 
-        UINT lSize = static_cast<UINT>(2 * pSelectedCont->m_oFont.Size);
-        UINT nType = pSelectedCont->m_oFont.GetTextFontStyle();
+        UINT lSize = static_cast<UINT>(2 * pSelectedCont->m_pFontStyle->m_oFont.Size);
+        UINT nType = pSelectedCont->m_pFontStyle->m_oFont.GetTextFontStyle();
 
         if (nType > 3)
         {

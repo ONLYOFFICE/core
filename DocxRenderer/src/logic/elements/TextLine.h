@@ -1,5 +1,5 @@
 #pragma once
-#include "ElementContText.h"
+#include "ContText.h"
 
 namespace NSDocxRenderer
 {

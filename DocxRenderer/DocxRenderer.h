@@ -34,7 +34,7 @@
 #include "../DesktopEditor/graphics/pro/officedrawingfile.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"
 
-#include "src/logic/ElementParagraph.h"
+#include "src/logic/elements/Paragraph.h"
 
 #ifndef DOCXRENDERER_USE_DYNAMIC_LIBRARY
 #define DOCXRENDERER_DECL_EXPORT

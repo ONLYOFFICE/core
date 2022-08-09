@@ -6,11 +6,23 @@ namespace NSDocxRenderer
         m_pAppFonts(pFonts), m_oCurrentPage(pFonts)
     {
         m_oSimpleGraphicsConverter.SetRenderer(pRenderer);
+        m_oWriter.AddSize(10000);
     }
     void CDocument::Clear()
     {
+        m_oPen.SetDefaultParams();
+        m_oBrush.SetDefaultParams();
+        m_oFont.SetDefaultParams();
+        m_oShadow.SetDefaultParams();
+        m_oEdge.SetDefaultParams();
+
+        m_oTransform.Reset();
+
         m_lClipMode = 0;
-    }
+
+        m_lPagesCount = 0;
+        m_oWriter.Clear();
+   }
 
     CDocument::~CDocument() {
         m_lClipMode = 0;
@@ -642,7 +654,7 @@ namespace NSDocxRenderer
             double y = 0;
             double w = 0;
             double h = 0;
-            pInfo = new CImageInfo(m_oManager.WriteImage(m_oBrush.TexturePath, x, y, w, h));
+            pInfo = new CImageInfo(m_oImageManager.WriteImage(m_oBrush.TexturePath, x, y, w, h));
         }
 
         m_oCurrentPage.DrawPath(nType, pInfo);
@@ -703,13 +715,13 @@ namespace NSDocxRenderer
     //-------- Функции для вывода изображений --------------------------------------------------
     HRESULT CDocument::DrawImage(IGrObject* pImage, double fX, double fY, double fWidth, double fHeight)
     {
-        CImageInfo* pInfo = new CImageInfo(m_oManager.WriteImage((Aggplus::CImage*)pImage, fX, fY, fWidth, fHeight));
+        CImageInfo* pInfo = new CImageInfo(m_oImageManager.WriteImage((Aggplus::CImage*)pImage, fX, fY, fWidth, fHeight));
         m_oCurrentPage.WriteImage(pInfo, fX, fY, fWidth, fHeight);
         return S_OK;
     }
     HRESULT CDocument::DrawImageFromFile(const std::wstring& sVal, double fX, double fY, double fWidth, double fHeight)
     {
-        CImageInfo* pInfo = new CImageInfo(m_oManager.WriteImage(sVal, fX, fY, fWidth, fHeight));
+        CImageInfo* pInfo = new CImageInfo(m_oImageManager.WriteImage(sVal, fX, fY, fWidth, fHeight));
         m_oCurrentPage.WriteImage(pInfo, fX, fY, fWidth, fHeight);
         return S_OK;
     }
@@ -817,14 +829,15 @@ namespace NSDocxRenderer
         Clear();
 
         m_lCurrentCommandType = 0;
-        m_oCurrentPage.Init(&m_oFont, &m_oPen, &m_oBrush, &m_oShadow, &m_oEdge, &m_oTransform, &m_oSimpleGraphicsConverter);
+        m_oCurrentPage.Init(&m_oFont, &m_oPen, &m_oBrush, &m_oShadow, &m_oEdge, &m_oTransform, &m_oSimpleGraphicsConverter, &m_oStyleManager);
 
-        m_oManager.NewDocument();
+        m_oImageManager.NewDocument();
+        m_oStyleManager.NewDocument();
         // media
-        m_oManager.m_strDstMedia = m_strTempDirectory + L"/word/media";
-        NSDirectory::CreateDirectory(m_oManager.m_strDstMedia);
+        m_oImageManager.m_strDstMedia = m_strTempDirectory + L"/word/media";
+        NSDirectory::CreateDirectory(m_oImageManager.m_strDstMedia);
 
-        m_oCurrentPage.m_oManager.m_oFontTable.m_mapTable.clear();
+        m_oCurrentPage.m_oFontManager.Init();
 
         m_oDocumentStream.CloseFile();
         m_oDocumentStream.CreateFileW(m_strTempDirectory + L"/word/document.xml");
@@ -865,14 +878,26 @@ namespace NSDocxRenderer
                     xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
                     mc:Ignorable=\"w14 w15 w16se w16cid w16 w16cex w16sdtdh wp14\">\
                 <w:body>");
-        m_lPagesCount = 0;
-        m_oWriter.Clear();
-        m_oWriter.AddSize(10000);
 
         return true;
     }
 
     void CDocument::Close()
+    {
+        BuildDocumentXmlRels();
+        BuildFontTableXml();
+        BuildStylesXml();
+
+        // document
+        m_oCurrentPage.WriteSectionToFile(true, m_oWriter);
+        m_oWriter.WriteString(L"</w:body></w:document>");
+        m_oDocumentStream.WriteStringUTF8(m_oWriter.GetData());
+        m_oWriter.ClearNoAttack();
+
+        m_oDocumentStream.CloseFile();
+    }
+
+    void CDocument::BuildDocumentXmlRels()
     {
         // сохраним rels (images & docs)
         NSStringUtils::CStringBuilder oWriter;
@@ -885,7 +910,7 @@ namespace NSDocxRenderer
                 <Relationship Id=\"rId4\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable\" Target=\"fontTable.xml\"/>\
                 <Relationship Id=\"rId5\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"theme/theme.xml\"/>");
 
-        for (auto iterImage : m_oManager.m_mapImageData)
+        for (auto iterImage : m_oImageManager.m_mapImageData)
         {
             CImageInfo& oInfo = iterImage.second;
 
@@ -896,7 +921,7 @@ namespace NSDocxRenderer
             oWriter.WriteString(L"\"/>");
         }
 
-        for (auto iterImage : m_oManager.m_mapImagesFile)
+        for (auto iterImage : m_oImageManager.m_mapImagesFile)
         {
             CImageInfo& oInfo = iterImage.second;
 
@@ -911,12 +936,26 @@ namespace NSDocxRenderer
 
         NSFile::CFileBinary::SaveToFile(m_strTempDirectory + L"/word/_rels/document.xml.rels", oWriter.GetData());
         oWriter.ClearNoAttack();
+    }
 
+    void CDocument::BuildFontTableXml()
+    {
+        NSStringUtils::CStringBuilder oWriter;
         // сохраним fontTable
         oWriter.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
-                            <w:fonts xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">");
+            <w:fonts xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+                xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+                xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
+                xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
+                xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" \
+                xmlns:w16cex=\"http://schemas.microsoft.com/office/word/2018/wordml/cex\" \
+                xmlns:w16cid=\"http://schemas.microsoft.com/office/word/2016/wordml/cid\" \
+                xmlns:w16=\"http://schemas.microsoft.com/office/word/2018/wordml\" \
+                xmlns:w16sdtdh=\"http://schemas.microsoft.com/office/word/2020/wordml/sdtdatahash\" \
+                xmlns:w16se=\"http://schemas.microsoft.com/office/word/2015/wordml/symex\" \
+                mc:Ignorable=\"w14 w15 w16se w16cid w16 w16cex w16sdtdh\">");
 
-        CFontTable* pFontTable = &m_oCurrentPage.m_oManager.m_oFontTable;
+        CFontTable* pFontTable = &m_oCurrentPage.m_oFontManager.m_oFontTable;
         for (std::map<std::wstring, CFontTableEntry>::iterator iterFont = pFontTable->m_mapTable.begin(); iterFont != pFontTable->m_mapTable.end(); iterFont++)
         {
             CFontTableEntry& oEntry = iterFont->second;
@@ -955,13 +994,219 @@ namespace NSDocxRenderer
 
         oWriter.WriteString(L"</w:fonts>");
         NSFile::CFileBinary::SaveToFile(m_strTempDirectory + L"/word/fontTable.xml", oWriter.GetData());
+    }
 
-        // document
-        m_oCurrentPage.WriteSectionToFile(true, m_oWriter);
-        m_oWriter.WriteString(L"</w:body></w:document>");
-        m_oDocumentStream.WriteStringUTF8(m_oWriter.GetData());
-        m_oWriter.ClearNoAttack();
+    void CDocument::BuildStylesXml()
+    {
+        NSStringUtils::CStringBuilder oWriter;
 
-        m_oDocumentStream.CloseFile();
+        // сохраним styles
+        oWriter.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
+            <w:styles xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+             xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+             xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
+             xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
+             xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" \
+             xmlns:w16cex=\"http://schemas.microsoft.com/office/word/2018/wordml/cex\" \
+             xmlns:w16cid=\"http://schemas.microsoft.com/office/word/2016/wordml/cid\" \
+             xmlns:w16=\"http://schemas.microsoft.com/office/word/2018/wordml\" \
+             xmlns:w16sdtdh=\"http://schemas.microsoft.com/office/word/2020/wordml/sdtdatahash\" \
+             xmlns:w16se=\"http://schemas.microsoft.com/office/word/2015/wordml/symex\" \
+             mc:Ignorable=\"w14 w15 w16se w16cid w16 w16cex w16sdtdh\">");
+
+        oWriter.WriteString(L"<w:docDefaults>");
+        oWriter.WriteString(L"<w:rPrDefault><w:rPr>");
+        oWriter.WriteString(L"<w:lang w:val=\"en-US\" w:eastAsia=\"en-US\" w:bidi=\"ar-SA\"/><w:rFonts w:eastAsiaTheme=\"minorHAnsi\" w:ascii=\"Times New Roman\" w:hAnsi=\"Times New Roman\" w:cs=\"Times New Roman\"/>");
+        oWriter.WriteString(L"</w:rPr></w:rPrDefault>");
+        oWriter.WriteString(L"<w:pPrDefault><w:pPr/></w:pPrDefault>");
+        oWriter.WriteString(L"</w:docDefaults>");
+
+        oWriter.WriteString(L"<w:latentStyles w:defLockedState=\"false\" w:defUIPriority=\"99\" w:defSemiHidden=\"true\" w:defUnhideWhenUsed=\"true\" w:defQFormat=\"false\" w:count=\"267\">");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Normal\" w:semiHidden=\"false\" w:uiPriority=\"0\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"heading 1\" w:semiHidden=\"false\" w:uiPriority=\"9\" w:unhideWhenUsed=\"false\" w:qFormat=\"true\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"heading 2\" w:uiPriority=\"9\" w:qFormat=\"true\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"heading 3\" w:uiPriority=\"9\" w:qFormat=\"true\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"heading 4\" w:uiPriority=\"9\" w:qFormat=\"true\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"heading 5\" w:uiPriority=\"9\" w:qFormat=\"true\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"heading 6\" w:uiPriority=\"9\" w:qFormat=\"true\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"heading 7\" w:uiPriority=\"9\" w:qFormat=\"true\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"heading 8\" w:uiPriority=\"9\" w:qFormat=\"true\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"heading 9\" w:uiPriority=\"9\" w:qFormat=\"true\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"toc 1\" w:uiPriority=\"39\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"toc 2\" w:uiPriority=\"39\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"toc 3\" w:uiPriority=\"39\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"toc 4\" w:uiPriority=\"39\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"toc 5\" w:uiPriority=\"39\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"toc 6\" w:uiPriority=\"39\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"toc 7\" w:uiPriority=\"39\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"toc 8\" w:uiPriority=\"39\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"toc 9\" w:uiPriority=\"39\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"caption\" w:uiPriority=\"35\" w:qFormat=\"true\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Title\" w:semiHidden=\"false\" w:uiPriority=\"10\" w:unhideWhenUsed=\"false\" w:qFormat=\"true\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Default Paragraph Font\" w:uiPriority=\"1\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Subtitle\" w:semiHidden=\"false\" w:uiPriority=\"11\" w:unhideWhenUsed=\"false\" w:qFormat=\"true\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Strong\" w:semiHidden=\"false\" w:uiPriority=\"22\" w:unhideWhenUsed=\"false\" w:qFormat=\"true\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Emphasis\" w:semiHidden=\"false\" w:uiPriority=\"20\" w:unhideWhenUsed=\"false\" w:qFormat=\"true\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Table Grid\" w:semiHidden=\"false\" w:uiPriority=\"59\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Placeholder Text\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"No Spacing\" w:semiHidden=\"false\" w:uiPriority=\"1\" w:unhideWhenUsed=\"false\" w:qFormat=\"true\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Light Shading\" w:semiHidden=\"false\" w:uiPriority=\"60\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Light List\" w:semiHidden=\"false\" w:uiPriority=\"61\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Light Grid\" w:semiHidden=\"false\" w:uiPriority=\"62\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Shading 1\" w:semiHidden=\"false\" w:uiPriority=\"63\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Shading 2\" w:semiHidden=\"false\" w:uiPriority=\"64\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium List 1\" w:semiHidden=\"false\" w:uiPriority=\"65\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium List 2\" w:semiHidden=\"false\" w:uiPriority=\"66\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Grid 1\" w:semiHidden=\"false\" w:uiPriority=\"67\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Grid 2\" w:semiHidden=\"false\" w:uiPriority=\"68\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Grid 3\" w:semiHidden=\"false\" w:uiPriority=\"69\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Dark List\" w:semiHidden=\"false\" w:uiPriority=\"70\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Colorful Shading\" w:semiHidden=\"false\" w:uiPriority=\"71\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Colorful List\" w:semiHidden=\"false\" w:uiPriority=\"72\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Colorful Grid\" w:semiHidden=\"false\" w:uiPriority=\"73\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Light Shading Accent 1\" w:semiHidden=\"false\" w:uiPriority=\"60\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Light List Accent 1\" w:semiHidden=\"false\" w:uiPriority=\"61\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Light Grid Accent 1\" w:semiHidden=\"false\" w:uiPriority=\"62\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Shading 1 Accent 1\" w:semiHidden=\"false\" w:uiPriority=\"63\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Shading 2 Accent 1\" w:semiHidden=\"false\" w:uiPriority=\"64\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium List 1 Accent 1\" w:semiHidden=\"false\" w:uiPriority=\"65\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Revision\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"List Paragraph\" w:semiHidden=\"false\" w:uiPriority=\"34\" w:unhideWhenUsed=\"false\" w:qFormat=\"true\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Quote\" w:semiHidden=\"false\" w:uiPriority=\"29\" w:unhideWhenUsed=\"false\" w:qFormat=\"true\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Intense Quote\" w:semiHidden=\"false\" w:uiPriority=\"30\" w:unhideWhenUsed=\"false\" w:qFormat=\"true\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium List 2 Accent 1\" w:semiHidden=\"false\" w:uiPriority=\"66\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Grid 1 Accent 1\" w:semiHidden=\"false\" w:uiPriority=\"67\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Grid 2 Accent 1\" w:semiHidden=\"false\" w:uiPriority=\"68\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Grid 3 Accent 1\" w:semiHidden=\"false\" w:uiPriority=\"69\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Dark List Accent 1\" w:semiHidden=\"false\" w:uiPriority=\"70\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Colorful Shading Accent 1\" w:semiHidden=\"false\" w:uiPriority=\"71\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Colorful List Accent 1\" w:semiHidden=\"false\" w:uiPriority=\"72\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Colorful Grid Accent 1\" w:semiHidden=\"false\" w:uiPriority=\"73\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Light Shading Accent 2\" w:semiHidden=\"false\" w:uiPriority=\"60\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Light List Accent 2\" w:semiHidden=\"false\" w:uiPriority=\"61\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Light Grid Accent 2\" w:semiHidden=\"false\" w:uiPriority=\"62\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Shading 1 Accent 2\" w:semiHidden=\"false\" w:uiPriority=\"63\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Shading 2 Accent 2\" w:semiHidden=\"false\" w:uiPriority=\"64\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium List 1 Accent 2\" w:semiHidden=\"false\" w:uiPriority=\"65\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium List 2 Accent 2\" w:semiHidden=\"false\" w:uiPriority=\"66\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Grid 1 Accent 2\" w:semiHidden=\"false\" w:uiPriority=\"67\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Grid 2 Accent 2\" w:semiHidden=\"false\" w:uiPriority=\"68\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Grid 3 Accent 2\" w:semiHidden=\"false\" w:uiPriority=\"69\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Dark List Accent 2\" w:semiHidden=\"false\" w:uiPriority=\"70\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Colorful Shading Accent 2\" w:semiHidden=\"false\" w:uiPriority=\"71\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Colorful List Accent 2\" w:semiHidden=\"false\" w:uiPriority=\"72\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Colorful Grid Accent 2\" w:semiHidden=\"false\" w:uiPriority=\"73\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Light Shading Accent 3\" w:semiHidden=\"false\" w:uiPriority=\"60\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Light List Accent 3\" w:semiHidden=\"false\" w:uiPriority=\"61\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Light Grid Accent 3\" w:semiHidden=\"false\" w:uiPriority=\"62\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Shading 1 Accent 3\" w:semiHidden=\"false\" w:uiPriority=\"63\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Shading 2 Accent 3\" w:semiHidden=\"false\" w:uiPriority=\"64\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium List 1 Accent 3\" w:semiHidden=\"false\" w:uiPriority=\"65\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium List 2 Accent 3\" w:semiHidden=\"false\" w:uiPriority=\"66\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Grid 1 Accent 3\" w:semiHidden=\"false\" w:uiPriority=\"67\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Grid 2 Accent 3\" w:semiHidden=\"false\" w:uiPriority=\"68\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Grid 3 Accent 3\" w:semiHidden=\"false\" w:uiPriority=\"69\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Dark List Accent 3\" w:semiHidden=\"false\" w:uiPriority=\"70\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Colorful Shading Accent 3\" w:semiHidden=\"false\" w:uiPriority=\"71\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Colorful List Accent 3\" w:semiHidden=\"false\" w:uiPriority=\"72\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Colorful Grid Accent 3\" w:semiHidden=\"false\" w:uiPriority=\"73\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Light Shading Accent 4\" w:semiHidden=\"false\" w:uiPriority=\"60\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Light List Accent 4\" w:semiHidden=\"false\" w:uiPriority=\"61\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Light Grid Accent 4\" w:semiHidden=\"false\" w:uiPriority=\"62\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Shading 1 Accent 4\" w:semiHidden=\"false\" w:uiPriority=\"63\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Shading 2 Accent 4\" w:semiHidden=\"false\" w:uiPriority=\"64\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium List 1 Accent 4\" w:semiHidden=\"false\" w:uiPriority=\"65\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium List 2 Accent 4\" w:semiHidden=\"false\" w:uiPriority=\"66\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Grid 1 Accent 4\" w:semiHidden=\"false\" w:uiPriority=\"67\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Grid 2 Accent 4\" w:semiHidden=\"false\" w:uiPriority=\"68\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Grid 3 Accent 4\" w:semiHidden=\"false\" w:uiPriority=\"69\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Dark List Accent 4\" w:semiHidden=\"false\" w:uiPriority=\"70\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Colorful Shading Accent 4\" w:semiHidden=\"false\" w:uiPriority=\"71\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Colorful List Accent 4\" w:semiHidden=\"false\" w:uiPriority=\"72\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Colorful Grid Accent 4\" w:semiHidden=\"false\" w:uiPriority=\"73\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Light Shading Accent 5\" w:semiHidden=\"false\" w:uiPriority=\"60\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Light List Accent 5\" w:semiHidden=\"false\" w:uiPriority=\"61\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Light Grid Accent 5\" w:semiHidden=\"false\" w:uiPriority=\"62\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Shading 1 Accent 5\" w:semiHidden=\"false\" w:uiPriority=\"63\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Shading 2 Accent 5\" w:semiHidden=\"false\" w:uiPriority=\"64\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium List 1 Accent 5\" w:semiHidden=\"false\" w:uiPriority=\"65\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium List 2 Accent 5\" w:semiHidden=\"false\" w:uiPriority=\"66\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Grid 1 Accent 5\" w:semiHidden=\"false\" w:uiPriority=\"67\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Grid 2 Accent 5\" w:semiHidden=\"false\" w:uiPriority=\"68\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Grid 3 Accent 5\" w:semiHidden=\"false\" w:uiPriority=\"69\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Dark List Accent 5\" w:semiHidden=\"false\" w:uiPriority=\"70\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Colorful Shading Accent 5\" w:semiHidden=\"false\" w:uiPriority=\"71\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Colorful List Accent 5\" w:semiHidden=\"false\" w:uiPriority=\"72\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Colorful Grid Accent 5\" w:semiHidden=\"false\" w:uiPriority=\"73\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Light Shading Accent 6\" w:semiHidden=\"false\" w:uiPriority=\"60\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Light List Accent 6\" w:semiHidden=\"false\" w:uiPriority=\"61\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Light Grid Accent 6\" w:semiHidden=\"false\" w:uiPriority=\"62\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Shading 1 Accent 6\" w:semiHidden=\"false\" w:uiPriority=\"63\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Shading 2 Accent 6\" w:semiHidden=\"false\" w:uiPriority=\"64\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium List 1 Accent 6\" w:semiHidden=\"false\" w:uiPriority=\"65\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium List 2 Accent 6\" w:semiHidden=\"false\" w:uiPriority=\"66\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Grid 1 Accent 6\" w:semiHidden=\"false\" w:uiPriority=\"67\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Grid 2 Accent 6\" w:semiHidden=\"false\" w:uiPriority=\"68\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Medium Grid 3 Accent 6\" w:semiHidden=\"false\" w:uiPriority=\"69\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Dark List Accent 6\" w:semiHidden=\"false\" w:uiPriority=\"70\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Colorful Shading Accent 6\" w:semiHidden=\"false\" w:uiPriority=\"71\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Colorful List Accent 6\" w:semiHidden=\"false\" w:uiPriority=\"72\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Colorful Grid Accent 6\" w:semiHidden=\"false\" w:uiPriority=\"73\" w:unhideWhenUsed=\"false\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Subtle Emphasis\" w:semiHidden=\"false\" w:uiPriority=\"19\" w:unhideWhenUsed=\"false\" w:qFormat=\"true\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Intense Emphasis\" w:semiHidden=\"false\" w:uiPriority=\"21\" w:unhideWhenUsed=\"false\" w:qFormat=\"true\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Subtle Reference\" w:semiHidden=\"false\" w:uiPriority=\"31\" w:unhideWhenUsed=\"false\" w:qFormat=\"true\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Intense Reference\" w:semiHidden=\"false\" w:uiPriority=\"32\" w:unhideWhenUsed=\"false\" w:qFormat=\"true\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Book Title\" w:semiHidden=\"false\" w:uiPriority=\"33\" w:unhideWhenUsed=\"false\" w:qFormat=\"true\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"Bibliography\" w:uiPriority=\"37\"/>");
+        oWriter.WriteString(L"<w:lsdException w:name=\"TOC Heading\" w:uiPriority=\"39\" w:qFormat=\"true\"/>");
+        oWriter.WriteString(L"</w:latentStyles>");
+
+        oWriter.WriteString(L"<w:style w:type=\"paragraph\" w:default=\"1\" w:styleId=\"Normal\"><w:name w:val=\"Normal\"/>");
+        oWriter.WriteString(L"</w:style>");
+
+        oWriter.WriteString(L"<w:style w:type=\"character\" w:default=\"1\" w:styleId=\"DefaultParagraphFont\">");
+        oWriter.WriteString(L"<w:name w:val=\"Default Paragraph Font\"/>");
+        oWriter.WriteString(L"<w:uiPriority w:val=\"1\"/>");
+        oWriter.WriteString(L"<w:semiHidden/>");
+        oWriter.WriteString(L"<w:unhideWhenUsed/>");
+        oWriter.WriteString(L"<w:noProof/>"); //отключение проверки орфографии
+        oWriter.WriteString(L"<w:b w:val=\"0\"/>");
+        oWriter.WriteString(L"<w:bCs w:val=\"0\"/>");
+        oWriter.WriteString(L"<w:i w:val=\"0\"/>");
+        oWriter.WriteString(L"<w:iCs w:val=\"0\"/>");
+        oWriter.WriteString(L"<w:color w:val=\"111111\"/>");
+        oWriter.WriteString(L"</w:style>");
+
+        oWriter.WriteString(L"<w:style w:type=\"table\" w:default=\"1\" w:styleId=\"TableNormal\">");
+        oWriter.WriteString(L"<w:name w:val=\"Normal Table\"/>");
+        oWriter.WriteString(L"<w:semiHidden/>");
+        oWriter.WriteString(L"<w:unhideWhenUsed/>");
+        oWriter.WriteString(L"<w:qFormat/>");
+        oWriter.WriteString(L"<w:tblPr>");
+        oWriter.WriteString(L"<w:tblInd w:w=\"0\" w:type=\"dxa\"/>");
+        oWriter.WriteString(L"<w:tblCellMar>");
+        oWriter.WriteString(L"<w:top w:w=\"0\" w:type=\"dxa\"/>");
+        oWriter.WriteString(L"<w:left w:w=\"108\" w:type=\"dxa\"/>");
+        oWriter.WriteString(L"<w:bottom w:w=\"0\" w:type=\"dxa\"/>");
+        oWriter.WriteString(L"<w:right w:w=\"108\" w:type=\"dxa\"/>");
+        oWriter.WriteString(L"</w:tblCellMar>");
+        oWriter.WriteString(L"</w:tblPr>");
+        oWriter.WriteString(L"</w:style>");
+
+        oWriter.WriteString(L"<w:style w:type=\"numbering\" w:default=\"1\" w:styleId=\"NoList\">");
+        oWriter.WriteString(L"<w:name w:val=\"No List\"/>");
+        oWriter.WriteString(L"<w:semiHidden/>");
+        oWriter.WriteString(L"<w:unhideWhenUsed/>");
+        oWriter.WriteString(L"<w:uiPriority w:val=\"99\"/>");
+        oWriter.WriteString(L"</w:style>");
+
+        for (auto pStyle : m_oStyleManager.m_mapStyles)
+        {
+            pStyle.second->ToXml(oWriter);
+        }
+
+        oWriter.WriteString(L"</w:styles>");
+
+        NSFile::CFileBinary::SaveToFile(m_strTempDirectory + L"/word/styles.xml", oWriter.GetData());
     }
 }

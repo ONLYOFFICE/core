@@ -32,6 +32,7 @@ const double c_dMAX_LINE_HEIGHT_MM              = 2.5;
 
 const UINT   c_iWhiteColor = 0xFFFFFF;
 const UINT   c_iBlackColor = 0x000000;
+const UINT   c_iBlackColor2 = 0x111111;
 const UINT   c_iGreyColor  = 0xC0C0C0;
 const UINT   c_iGreyColor2 = 0x999999;
 

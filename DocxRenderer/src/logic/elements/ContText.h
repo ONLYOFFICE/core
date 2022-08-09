@@ -1,9 +1,11 @@
 #pragma once
 #include "BaseItem.h"
 #include "../DesktopEditor/common/StringBuilder.h"
-#include "FontManager.h"
-#include "../resources/Constants.h"
-#include "../resources/LinesTable.h"
+#include "../managers/FontManager.h"
+#include "../managers/StyleManager.h"
+#include "../styles/FontStyle.h"
+#include "../../resources/Constants.h"
+#include "../../resources/LinesTable.h"
 
 
 namespace NSDocxRenderer
@@ -21,36 +23,36 @@ namespace NSDocxRenderer
     class CContText : public CBaseItem
     {
         public:
-            NSStructures::CFont		m_oFont;
-            NSStructures::CBrush	m_oBrush;
+            CFontStyle* m_pFontStyle {nullptr};
 
-            std::wstring m_strPickFontName {L""};
-            LONG	m_lPickFontStyle {0};
-
-            NSStringUtils::CStringUTF32 m_oText;
-
-            double m_dBaselineOffset {0};
-            double m_dLastX {0};
-
-            double m_dSpaceWidthMM {0};
-
-            bool   m_bIsNeedSpace {false};
+            bool   m_bIsStrikeoutPresent {false};
             bool   m_bIsDoubleStrikeout {false};
+
             bool   m_bIsHighlightPresent {false};
             LONG   m_lHighlightColor {c_iBlackColor};
 
+            bool   m_bIsUnderlinePresent {false};
             eLineType m_eUnderlineType {eLineType::ltUnknown};
             LONG   m_lUnderlineColor {c_iBlackColor};
-
-            eVertAlignType m_eVertAlignType {eVertAlignType::vatUnknown};
 
             bool   m_bIsShadowPresent {false};
             bool   m_bIsOutlinePresent {false};
             bool   m_bIsEmbossPresent {false};
             bool   m_bIsEngravePresent {false};
 
+            NSStringUtils::CStringUTF32 m_oText;
+
+            double m_dBaselineOffset {0};
+            double m_dLastX {0};
+            double m_dSpaceWidthMM {0};
+
+            bool   m_bIsNeedSpace {false};
+
+            eVertAlignType m_eVertAlignType {eVertAlignType::vatUnknown};
+
             const CShape* m_pShape {nullptr}; //Если не nullptr, то есть фоновая графика - можно анализировать.
             CFontManagerLight* m_pManagerLight {nullptr};
+            CStyleManager*     m_pStyleManager {nullptr};
             const CContText* m_pCont {nullptr}; //Если не nullptr, то есть привязка к vatSubscript или vatSuperscript;
 
 #if USING_DELETE_DUPLICATING_CONTS == 0
@@ -58,7 +60,7 @@ namespace NSDocxRenderer
 #endif
 
         public:
-            CContText(CFontManagerLight& oManagerLight);
+            CContText(CFontManagerLight* pManagerLight, CStyleManager* pStyleManager);
             ~CContText(){}
 
             void Clear() override final;

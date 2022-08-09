@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "BaseItem.h"
-#include "ImageManager.h"
+#include "../../resources/ImageInfo.h"
 
 namespace NSDocxRenderer
 {

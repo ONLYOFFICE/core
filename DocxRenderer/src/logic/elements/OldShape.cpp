@@ -1,5 +1,5 @@
-#include "ElementOldShape.h"
-#include "../resources/utils.h"
+#include "OldShape.h"
+#include "../../resources/utils.h"
 
 namespace NSDocxRenderer
 {

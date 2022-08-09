@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "BaseItem.h"
-#include "../resources/VectorGraphics.h"
-#include "ElementParagraph.h"
+#include "../../resources/VectorGraphics.h"
+#include "Paragraph.h"
 
 namespace NSDocxRenderer
 {

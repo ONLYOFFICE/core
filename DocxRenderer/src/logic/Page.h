@@ -1,9 +1,10 @@
 ﻿#pragma once
 #include "../DesktopEditor/graphics/pro/Graphics.h"
-#include "ElementOldShape.h"
-#include "ElementParagraph.h"
-#include "ElementImage.h"
-#include "ElementShape.h"
+#include "elements/OldShape.h"
+#include "elements/Paragraph.h"
+#include "elements/Image.h"
+#include "elements/Shape.h"
+#include "managers/StyleManager.h"
 
 namespace NSDocxRenderer
 {
@@ -18,6 +19,8 @@ namespace NSDocxRenderer
 
         Aggplus::CMatrix*			m_pTransform {nullptr};
         Aggplus::CGraphicsPathSimpleConverter* m_pSimpleGraphicsConverter {nullptr};
+
+        CStyleManager*              m_pStyleManager {nullptr};
 
         CVectorGraphics				m_oVector;
 
@@ -34,8 +37,8 @@ namespace NSDocxRenderer
 
         CTextLine* m_pCurrentLine {nullptr};
 
-        CFontManager		m_oManager;
-        CFontManagerLight	m_oManagerLight;
+        CFontManager		m_oFontManager;
+        CFontManagerLight	m_oFontManagerLight;
 
         TextAssociationType m_eTextAssociationType {tatPlainLine};
 
@@ -49,7 +52,8 @@ namespace NSDocxRenderer
         CPage(NSFonts::IApplicationFonts* pFonts);
         ~CPage();
         void Init(NSStructures::CFont* pFont, NSStructures::CPen* pPen, NSStructures::CBrush* pBrush,
-            NSStructures::CShadow* pShadow, NSStructures::CEdgeText* pEdge, Aggplus::CMatrix* pMatrix, Aggplus::CGraphicsPathSimpleConverter* pSimple);
+            NSStructures::CShadow* pShadow, NSStructures::CEdgeText* pEdge, Aggplus::CMatrix* pMatrix,
+            Aggplus::CGraphicsPathSimpleConverter* pSimple, CStyleManager* pStyleManager);
 
         void Clear();
         void ClearImages();

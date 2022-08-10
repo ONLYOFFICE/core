@@ -35,8 +35,10 @@
 #include "ImageFileFormatChecker.h"
 #include "../graphics/Image.h"
 
+#if CXIMAGE_SUPPORT_JP2
 #include "Jp2/J2kFile.h"
 #include "JBig2/source/JBig2File.h"
+#endif
 
 void CxImageToMediaFrame( CxImage& img, CBgraFrame* bgra )
 {
@@ -485,6 +487,7 @@ bool CBgraFrame::SaveFile(const std::wstring& strFileName, unsigned int nFileTyp
 		lBitsPerPixel = lStride / m_lWidth;
 	}
 
+#if CXIMAGE_SUPPORT_JP2
 	if (21/*CXIMAGE_FORMAT_JBIG2*/ == nFileType)
 	{
 		CJBig2File jBig2File;
@@ -493,6 +496,7 @@ bool CBgraFrame::SaveFile(const std::wstring& strFileName, unsigned int nFileTyp
 		return res;
 	}
 	else
+#endif
 	{
 		NSFile::CFileBinary oFile;
 		if (!oFile.CreateFileW(strFileName))

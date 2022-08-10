@@ -43,9 +43,9 @@
 	],
 	"include_path": ["../src/zlib-1.2.11", "../src", "../../DesktopEditor/cximage/jasper/include", 
 		"../../DesktopEditor/cximage/jpeg", "../../DesktopEditor/cximage/png", "../../DesktopEditor/agg-2.4/include"],
-	"define": ["__linux__", "_LINUX", "UNIX", "_QT", "METAFILE_SUPPORT_WMF_EMF", "HAVE_UNISTD_H", "HAVE_FCNTL_H", "_ARM_ALIGN_", 
-		"CXIMAGE_DISABLE_SUPPORT_MNG", "CXIMAGE_DISABLE_SUPPORT_ADDITIONS",
-		"_tcsnicmp=strncmp", "_lseek=lseek", "_getcwd=getcwd", "NO_CONSOLE_IO", "BUILD_ZLIB_AS_SOURCES"],
+	"define": ["__linux__", "_LINUX", "UNIX", "_QT", "EXCLUDE_JPG_SUPPORT", "METAFILE_SUPPORT_WMF_EMF",
+		"MNG_SUPPORT_DISPLAY", "MNG_SUPPORT_READ", "MNG_SUPPORT_WRITE", "MNG_ACCESS_CHUNKS", "MNG_STORE_CHUNKS", "MNG_ERROR_TELLTALE",
+		"HAVE_UNISTD_H", "HAVE_FCNTL_H", "_ARM_ALIGN_", "_tcsnicmp=strncmp", "_lseek=lseek", "_getcwd=getcwd", "NO_CONSOLE_IO", "BUILD_ZLIB_AS_SOURCES"],
 	"compile_files_array": [
 	{
 		"name": "m",
@@ -91,7 +91,37 @@
 		"name": "t",
 		"folder": "../../DesktopEditor/cximage/tiff/",
 		"files": ["tif_close.c", "tif_dir.c", "tif_aux.c", "tif_getimage.c", "tif_strip.c", "tif_open.c", "tif_tile.c", "tif_error.c", "tif_read.c", "tif_flush.c", "tif_dirinfo.c", "tif_compress.c", "tif_warning.c", "tif_swab.c", "tif_color.c", "tif_dirread.c", "tif_write.c", "tif_codec.c", "tif_luv.c", "tif_dirwrite.c", "tif_dumpmode.c", "tif_fax3.c", "tif_ojpeg.c", "tif_jpeg.c", "tif_next.c", "tif_thunder.c", "tif_packbits.c", "tif_lzw.c", "tif_zip.c", "tif_fax3sm.c", "tif_predict.c"]
-	},	
+	},
+	{
+		"name": "ja",
+		"folder": "../../DesktopEditor/cximage/jasper/",
+		"files": ["base/jas_init.c", "base/jas_stream.c", "base/jas_malloc.c", "base/jas_image.c", "base/jas_cm.c", "base/jas_seq.c", "base/jas_string.c", "base/jas_icc.c", "base/jas_debug.c", "base/jas_iccdata.c", "base/jas_tvp.c", "base/jas_version.c", "mif/mif_cod.c", "pnm/pnm_dec.c", "pnm/pnm_enc.c", "pnm/pnm_cod.c", "bmp/bmp_dec.c", "bmp/bmp_enc.c", "bmp/bmp_cod.c", "ras/ras_dec.c", "ras/ras_enc.c", "jp2/jp2_dec.c", "jp2/jp2_enc.c", "jp2/jp2_cod.c", "jpc/jpc_cs.c", "jpc/jpc_enc.c", "jpc/jpc_dec.c", "jpc/jpc_t1cod.c", "jpc/jpc_math.c", "jpc/jpc_util.c", "jpc/jpc_tsfb.c", "jpc/jpc_mct.c", "jpc/jpc_t1enc.c", "jpc/jpc_t1dec.c", "jpc/jpc_bs.c", "jpc/jpc_t2cod.c", "jpc/jpc_t2enc.c", "jpc/jpc_t2dec.c", "jpc/jpc_tagtree.c", "jpc/jpc_mqenc.c", "jpc/jpc_mqdec.c", "jpc/jpc_mqcod.c", "jpc/jpc_qmfb.c", "jpg/jpg_val.c", "jpg/jpg_dummy.c", "pgx/pgx_dec.c", "pgx/pgx_enc.c"]
+	},
+	{
+		"name": "jp",
+		"folder": "../../DesktopEditor/raster/Jp2/",
+		"files": ["J2kFile.cpp", "Reader.cpp"]
+	},
+	{
+		"name": "mn",
+		"folder": "../../DesktopEditor/cximage/mng/",
+		"files": ["libmng_hlapi.c", "libmng_callback_xs.c", "libmng_prop_xs.c", "libmng_object_prc.c", "libmng_zlib.c", "libmng_jpeg.c", "libmng_pixels.c", "libmng_read.c", "libmng_error.c", "libmng_display.c", "libmng_write.c", "libmng_chunk_io.c", "libmng_cms.c", "libmng_filter.c", "libmng_chunk_prc.c", "libmng_chunk_xs.c"]
+	},
+	{
+		"name": "lp",
+		"folder": "../../DesktopEditor/cximage/libpsd/",
+		"files": ["psd.c", "file_header.c", "color_mode.c", "image_resource.c", "blend.c", "layer_mask.c", "image_data.c", "stream.c", "psd_system.c", "color.c", "pattern_fill.c", "color_balance.c", "channel_image.c", "gradient_fill.c", "invert.c", "posterize.c", "brightness_contrast.c", "solid_color.c", "threshold.c", "effects.c", "selective_color.c", "channel_mixer.c", "photo_filter.c", "type_tool.c", "gradient_map.c", "hue_saturation.c", "levels.c", "curves.c", "pattern.c", "psd_zip.c", "descriptor.c", "drop_shadow.c", "inner_shadow.c", "color_overlay.c", "outer_glow.c", "inner_glow.c", "bevel_emboss.c", "satin.c", "gradient_overlay.c", "stroke.c", "pattern_overlay.c"]
+	},
+	{
+		"name": "ra",
+		"folder": "../../DesktopEditor/cximage/raw/",
+		"files": ["libdcr.c"]
+	},
+	{
+		"name": "jb",
+		"folder": "../../DesktopEditor/raster/JBig2/source/",
+		"files": ["JBig2File.cpp", "Encoder/jbig2enc.cpp", "Encoder/jbig2arith.cpp", "Encoder/jbig2sym.cpp", "LeptonLib/pixconv.cpp", "LeptonLib/writefile.cpp", "LeptonLib/scale.cpp", "LeptonLib/pix1.cpp", "LeptonLib/pix2.cpp", "LeptonLib/pix3.cpp", "LeptonLib/pix4.cpp", "LeptonLib/pix5.cpp", "LeptonLib/grayquant.cpp", "LeptonLib/grayquantlow.cpp", "LeptonLib/seedfill.cpp", "LeptonLib/jbclass.cpp", "LeptonLib/pixabasic.cpp", "LeptonLib/numabasic.cpp", "LeptonLib/morphseq.cpp", "LeptonLib/binexpandlow.cpp", "LeptonLib/ptabasic.cpp", "LeptonLib/rop.cpp", "LeptonLib/colormap.cpp", "LeptonLib/pngiostub.cpp", "LeptonLib/lepton_utils.cpp", "LeptonLib/scalelow.cpp", "LeptonLib/enhance.cpp", "LeptonLib/jpegio.cpp", "LeptonLib/jpegiostub.cpp", "LeptonLib/spixio.cpp", "LeptonLib/webpio.cpp", "LeptonLib/webpiostub.cpp", "LeptonLib/psio2.cpp", "LeptonLib/gifio.cpp", "LeptonLib/gifiostub.cpp", "LeptonLib/pnmio.cpp", "LeptonLib/tiffio.cpp", "LeptonLib/tiffiostub.cpp", "LeptonLib/bmpio.cpp", "LeptonLib/binexpand.cpp", "LeptonLib/compare.cpp", "LeptonLib/boxbasic.cpp", "LeptonLib/conncomp.cpp", "LeptonLib/pixafunc1.cpp", "LeptonLib/boxfunc1.cpp", "LeptonLib/ptafunc1.cpp", "LeptonLib/binreduce.cpp", "LeptonLib/seedfilllow.cpp", "LeptonLib/sel1.cpp", "LeptonLib/morphapp.cpp", "LeptonLib/correlscore.cpp", "LeptonLib/sarray.cpp", "LeptonLib/morph.cpp", "LeptonLib/roplow.cpp", "LeptonLib/fpix1.cpp", "LeptonLib/stack.cpp", "LeptonLib/pixacc.cpp", "LeptonLib/pixarith.cpp", "LeptonLib/convolve.cpp", "LeptonLib/binreducelow.cpp", "LeptonLib/convolvelow.cpp", "LeptonLib/arithlow.cpp"]
+	},
 	{
 		"name": "mm",
 		"folder": "../../DesktopEditor/raster/Metafile/",

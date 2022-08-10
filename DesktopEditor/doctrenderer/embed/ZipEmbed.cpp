@@ -3,18 +3,26 @@
 #include "../../graphics/pro/Image.h"
 #include "../../raster/ImageFileFormatChecker.h"
 
-JSSmart<CJSValue> CZipEmbed::open(JSSmart<CJSValue> typedArray)
+JSSmart<CJSValue> CZipEmbed::open(JSSmart<CJSValue> typedArray_or_Folder)
 {
 	RELEASEOBJECT(m_pFolder);
-	if (!typedArray->isTypedArray())
+
+	if (typedArray_or_Folder->isTypedArray())
+	{
+		JSSmart<CJSTypedArray> pArray = typedArray_or_Folder->toTypedArray();
+		CJSDataBuffer buffer = pArray->getData();
+
+		m_pFolder = new CZipFolderMemory(buffer.Data, (DWORD)buffer.Len);
+		if (buffer.IsExternalize)
+			buffer.Free();
+	}
+	else if (typedArray_or_Folder->isString())
+	{
+		m_pFolder = new CFolderSystem(typedArray_or_Folder->toStringW());
+	}
+
+	if (!m_pFolder)
 		return CJSContext::createNull();
-
-	JSSmart<CJSTypedArray> pArray = typedArray->toTypedArray();
-	CJSDataBuffer buffer = pArray->getData();
-
-	m_pFolder = new CZipFolderMemory(buffer.Data, (DWORD)buffer.Len);
-	if (buffer.IsExternalize)
-		buffer.Free();
 
 	std::vector<std::wstring> arFiles = m_pFolder->getFiles(L"", true);
 	if (arFiles.empty())

@@ -18,6 +18,8 @@ DEFINES -= UNICODE _UNICODE
 
 #DEFINES += BUILDING_WASM_MODULE
 
+CONFIG += disable_cximage_mng
+CONFIG += disable_cximage_all
 include(../../../raster.pri)
 
 #CONFIG += graphics_disable_metafile

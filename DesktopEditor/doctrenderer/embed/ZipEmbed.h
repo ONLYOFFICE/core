@@ -8,7 +8,7 @@ using namespace NSJSBase;
 class CZipEmbed : public CJSEmbedObject
 {
 public:
-	CZipFolderMemory* m_pFolder;
+	IFolder* m_pFolder;
 
 public:
 	CZipEmbed()
@@ -23,7 +23,7 @@ public:
 	virtual void* getObject() override { return (void*)m_pFolder; }
 
 public:
-	JSSmart<CJSValue> open(JSSmart<CJSValue> typedArray);
+	JSSmart<CJSValue> open(JSSmart<CJSValue> typedArray_or_Folder);
 	JSSmart<CJSValue> create();
 	JSSmart<CJSValue> save();
 	JSSmart<CJSValue> getFile(JSSmart<CJSValue> filePath);

@@ -372,6 +372,7 @@ namespace OOX
 						for (ULONG i = 0; i < _c; ++i)
 						{
 							pReader->Skip(1); // type
+							pReader->Skip(4); // len
 							CCustomXMLProps::CShemaRef *pItem = new CCustomXMLProps::CShemaRef();
 							pItem->fromPPTY(pReader);
 							

@@ -452,6 +452,10 @@ namespace NSDoctRenderer
 	{
 		return m_internal->m_value->isString();
 	}
+	bool CDocBuilderValue::IsObject()
+	{
+		return m_internal->m_value->isObject();
+	}
 	bool CDocBuilderValue::IsFunction()
 	{
 		return m_internal->m_value->isFunction();

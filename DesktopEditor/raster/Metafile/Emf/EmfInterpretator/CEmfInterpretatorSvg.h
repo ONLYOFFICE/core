@@ -167,14 +167,14 @@ namespace MetaFile
 		void SetTransform(double& dM11, double& dM12, double& dM21, double& dM22, double& dX, double& dY) override {};
 		void GetTransform(double* pdM11, double* pdM12, double* pdM21, double* pdM22, double* pdX, double* pdY) override {};
 
-		std::wstring GetFile() { return m_sOutputData; }
+		std::wstring GetFile() const;
 	private:
 		void WriteNode(const std::wstring& wsNodeName, const NodeAttributes& arAttributes, const std::wstring& wsValueNode = L"");
-		void WriteText(const std::wstring& wsText, double dX, double dY, const TEmfRectL& oBounds);
+		void WriteText(const std::wstring& wsText, double dX, double dY, const TEmfRectL& oBounds, double dXScale, double dYScale);
 
 		void AddStroke(NodeAttributes &arAttributes);
 		void AddFill(NodeAttributes &arAttributes);
-		void AddTransform(NodeAttributes &arAttributes);
+		void AddTransform(NodeAttributes &arAttributes, TXForm* pTransform = NULL);
 
 		void AddNoneFill(NodeAttributes &arAttributes);
 

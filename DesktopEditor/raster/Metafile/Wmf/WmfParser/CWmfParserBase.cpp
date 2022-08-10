@@ -178,6 +178,11 @@ namespace MetaFile
 		//TODO:: добавить как появится реализация интерпретаторов
 	}
 
+	CWmfInterpretatorBase *CWmfParserBase::GetInterpretator() const
+	{
+		return m_pInterpretator;
+	}
+
 	void CWmfParserBase::SetInterpretator(InterpretatorType oInterpretatorType, unsigned int unWidth, unsigned int unHeight)
 	{
 		RELEASEOBJECT(m_pInterpretator);
@@ -1500,10 +1505,5 @@ namespace MetaFile
 	{
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_META_UNKNOWN(oDataStream);
-	}
-
-	CWmfInterpretatorBase* CWmfParserBase::GetInterpretator()
-	{
-		return m_pInterpretator;
 	}
 }

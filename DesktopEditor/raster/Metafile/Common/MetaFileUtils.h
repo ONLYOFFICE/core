@@ -1270,5 +1270,6 @@ namespace MetaFile
 	bool OpenTempFile(std::wstring *pwsName, FILE **ppFile, const wchar_t *wsMode, const wchar_t *wsExt, const wchar_t *wsFolder);
 
 	std::wstring StringNormalization(std::wstring wsString);
+	std::wstring ConvertToWString(double dValue);
 };
 #endif // _METAFILE_COMMON_METAFILEUTILS_H

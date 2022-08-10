@@ -62,10 +62,10 @@ namespace MetaFile
 		void SetInterpretator(IOutputDevice* pOutput, const wchar_t *wsFilePath);
 		void SetInterpretator(InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0);
 
+		CWmfInterpretatorBase* GetInterpretator() const;
+
 		CWmfDC*     GetDC();
 		TRectD  GetBounds();
-
-		CWmfInterpretatorBase* GetInterpretator();
 
 	private:
 		void SkipVoid();

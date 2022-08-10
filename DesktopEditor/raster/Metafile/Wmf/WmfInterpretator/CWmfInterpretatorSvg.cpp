@@ -685,6 +685,11 @@ namespace MetaFile
 			delete [] pNewBuffer;
 	}
 
+	std::wstring CWmfInterpretatorSvg::GetFile() const
+	{
+		return m_sOutputData;
+	}
+
 	void CWmfInterpretatorSvg::WriteNode(const std::wstring &wsNodeName, const NodeAttributes &arAttributes, const std::wstring &wsValueNode)
 	{
 		m_oXmlWriter.WriteNodeBegin(wsNodeName, true);

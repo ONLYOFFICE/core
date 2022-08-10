@@ -36,6 +36,8 @@
 
 #include <time.h>
 #include <math.h>
+#include <sstream>
+#include <iomanip>
 
 #ifndef DIB_RGB_COLORS
     #define DIB_RGB_COLORS  0x00
@@ -1068,5 +1070,14 @@ namespace MetaFile
 
 		    else wsText += wChar;
 		return wsText;
-	    }
+		}
+
+		std::wstring ConvertToWString(double dValue)
+		{
+			std::wstringstream owsStream;
+			owsStream << std::fixed << std::setprecision(2) << dValue;
+
+			return owsStream.str();
+		}
+
 }

@@ -1615,10 +1615,11 @@ namespace NExtractTools
         NSFonts::IApplicationFonts* pApplicationFonts = NSFonts::NSApplication::Create();
         initApplicationFonts(pApplicationFonts, params);
         
-		CPdfRenderer pdfWriter(pApplicationFonts, params.getIsPDFA());
-		
+		CPdfRenderer pdfWriter(pApplicationFonts, params.getIsPDFA());		
 		pdfWriter.SetTempFolder(sTemp);
-		pdfWriter.SetThemesPlace(sThemeDir);
+
+		CConvertFromBinParams oBufferParams;
+		oBufferParams.m_sThemesDirectory = sThemeDir;
 		
 		std::wstring documentID = params.getDocumentID();
 		if (false == documentID.empty())
@@ -1632,11 +1633,11 @@ namespace NExtractTools
         _UINT32 nRet = 0;
 		if (params.getIsNoBase64())
 		{
-            nRet = S_OK == pdfWriter.OnlineWordToPdfFromBinary(sFrom, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+			nRet = S_OK == pdfWriter.OnlineWordToPdfFromBinary(sFrom, sTo, &oBufferParams) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 		}
 		else
 		{
-            nRet = S_OK == pdfWriter.OnlineWordToPdf(sFrom, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+			nRet = S_OK == pdfWriter.OnlineWordToPdf(sFrom, sTo, &oBufferParams) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 		}
         RELEASEOBJECT(pApplicationFonts);
         return nRet;
@@ -1647,9 +1648,9 @@ namespace NExtractTools
         NSFonts::IApplicationFonts* pApplicationFonts = NSFonts::NSApplication::Create();
         initApplicationFonts(pApplicationFonts, params);
 		NSOnlineOfficeBinToPdf::CMetafileToRenderterRaster imageWriter(NULL);
-        imageWriter.SetHtmlPlace(sTFileDir);
-        imageWriter.SetThemesPlace(sThemeDir);
-        imageWriter.SetTempDir(sTemp);
+		imageWriter.SetMediaDirectory(sTFileDir);
+		imageWriter.SetThemesDirectory(sThemeDir);
+		imageWriter.SetTempDirectory(sTemp);
         imageWriter.SetApplication(pApplicationFonts);
 		if(NULL != params.m_oThumbnail)
 		{
@@ -1868,9 +1869,10 @@ namespace NExtractTools
 			initApplicationFonts(pApplicationFonts, params);
 
 			CPdfRenderer pdfWriter(pApplicationFonts, params.getIsPDFA());
-
 			pdfWriter.SetTempFolder(sTemp);
-			pdfWriter.SetThemesPlace(sThemeDir);
+
+			CConvertFromBinParams oBufferParams;
+			oBufferParams.m_sThemesDirectory = sThemeDir;
 			
 			std::wstring documentID = params.getDocumentID();
 			if (false == documentID.empty())
@@ -1881,7 +1883,7 @@ namespace NExtractTools
 				pdfWriter.SetPassword(password);
 
 			int nReg = (bPaid == false) ? 0 : 1;
-			nRes = (S_OK == pdfWriter.OnlineWordToPdfFromBinary(sPdfBinFile, sTo)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+			nRes = (S_OK == pdfWriter.OnlineWordToPdfFromBinary(sPdfBinFile, sTo, &oBufferParams)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
 			RELEASEOBJECT(pApplicationFonts);
 		}
 		//удаляем sPdfBinFile, потому что он не в Temp
@@ -3551,7 +3553,9 @@ namespace NExtractTools
                                initApplicationFonts(pApplicationFonts, params);
 							   CPdfRenderer pdfWriter(pApplicationFonts, params.getIsPDFA());
                                pdfWriter.SetTempFolder(sTemp);
-                               pdfWriter.SetThemesPlace(sThemeDir);
+
+							   CConvertFromBinParams oBufferParams;
+							   oBufferParams.m_sThemesDirectory = sThemeDir;
 
 								std::wstring documentID = params.getDocumentID();
 								if (false == documentID.empty())
@@ -3562,7 +3566,7 @@ namespace NExtractTools
 									pdfWriter.SetPassword(password);
 
                                int nReg = (bPaid == false) ? 0 : 1;
-                               nRes = (S_OK == pdfWriter.OnlineWordToPdfFromBinary(sFilePathIn, sFilePathOut)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+							   nRes = (S_OK == pdfWriter.OnlineWordToPdfFromBinary(sFilePathIn, sFilePathOut, &oBufferParams)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
                                RELEASEOBJECT(pApplicationFonts);
                            }
                            else if (NSDoctRenderer::DoctRendererFormat::FormatFile::HTML == eTypeTo)

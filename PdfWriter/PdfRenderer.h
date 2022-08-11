@@ -69,6 +69,21 @@ namespace Aggplus
 class CRendererCommandBase;
 class CRendererTextCommand;
 
+class CConvertFromBinParams
+{
+public:
+	std::wstring m_sMediaDirectory;
+	std::wstring m_sInternalMediaDirectory;
+	std::wstring m_sThemesDirectory;
+	bool m_bIsUsePicker;
+
+public:
+	CConvertFromBinParams()
+	{
+		m_bIsUsePicker = false;
+	}
+};
+
 class PDFWRITER_DECL_EXPORT CPdfRenderer : public IRenderer
 {
 public:
@@ -78,9 +93,8 @@ public:
 	void         SetPassword(const std::wstring& wsPassword);
 	void		 SetDocumentID(const std::wstring& wsDocumentID);
 	void         SetTempFolder(const std::wstring& wsPath);
-	std::wstring GetTempFile();
-	void         SetThemesPlace(const std::wstring& wsThemesPlace);
-	std::wstring GetThemesPlace();
+	std::wstring GetTempDirectory();
+	std::wstring GetTempFile();	
 	//----------------------------------------------------------------------------------------
 	// Тип рендерера
 	//----------------------------------------------------------------------------------------
@@ -225,8 +239,8 @@ public:
 	HRESULT EnableBrushRect(const LONG& lEnable);
 	HRESULT SetLinearGradient(const double& dX1, const double& dY1, const double& dX2, const double& dY2);
 	HRESULT SetRadialGradient(const double& dX1, const double& dY1, const double& dR1, const double& dX2, const double& dY2, const double& dR2);
-    HRESULT OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker = false);
-    HRESULT OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker = false);
+	HRESULT OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams = NULL);
+	HRESULT OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams = NULL);
 	HRESULT DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2* pMaskBuffer, const unsigned int& unMaskWidth, const unsigned int& unMaskHeight, const double& dX, const double& dY, const double& dW, const double& dH);
 
     //----------------------------------------------------------------------------------------
@@ -246,8 +260,6 @@ public:
     NSFonts::IApplicationFonts* GetApplicationFonts();
 
 private:
-
-	void OnlineWordToPdfInternal(BYTE* dstArray, LONG lLen, const std::wstring& wsHtmlPlace, std::wstring& wsHypers, int& nCountPages, const std::wstring& wsTempLogo, LONG lReg);
 	PdfWriter::CImageDict* LoadImage(Aggplus::CImage* pImage, const BYTE& nAlpha);
 	bool DrawImage(Aggplus::CImage* pImage, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha);
 	bool DrawText(unsigned char* pCodes, const unsigned int& unLen, const double& dX, const double& dY);
@@ -1841,7 +1853,6 @@ private:
 	NSFonts::IApplicationFonts*  m_pAppFonts;
 	NSFonts::IFontManager*       m_pFontManager;
 	std::wstring                 m_wsTempFolder;
-	std::wstring                 m_wsThemesPlace;
 								 
 	PdfWriter::CDocument*        m_pDocument;
 	PdfWriter::CPage*            m_pPage;

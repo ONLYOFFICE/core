@@ -1072,10 +1072,10 @@ namespace MetaFile
 		return wsText;
 		}
 
-		std::wstring ConvertToWString(double dValue)
+		std::wstring ConvertToWString(double dValue, unsigned int unAccuracy)
 		{
 			std::wstringstream owsStream;
-			owsStream << std::fixed << std::setprecision(2) << dValue;
+			owsStream << std::fixed << std::setprecision(unAccuracy) << dValue;
 
 			return owsStream.str();
 		}

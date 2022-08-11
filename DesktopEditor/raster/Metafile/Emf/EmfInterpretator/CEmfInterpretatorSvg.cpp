@@ -1123,11 +1123,11 @@ namespace MetaFile
 			}
 
 			if (0 != pFont->GetEscapement())
-				arNodeAttributes.push_back({L"transform", L"rotate(" + ConvertToWString(pFont->GetEscapement() / -10) + L' ' + ConvertToWString(TranslateX(dXCoord)) + L' ' + ConvertToWString(TranslateY(dYCoord)) + L')'});
+				arNodeAttributes.push_back({L"transform", L"rotate(" + ConvertToWString(pFont->GetEscapement() / 10) + L' ' + ConvertToWString(dXCoord) + L' ' + ConvertToWString(dYCoord) + L')'});
 
-			if (dYScale < -0.00001) //TODO::Тоже нужно и для dYScale
+			if (dYScale < -0.00001) //TODO::Тоже нужно и для dXScale
 			{
-				dYCoord -= fabs(dFontHeight);
+				dYCoord += fabs(dFontHeight);
 
 				if (m_pParser->IsWindowFlippedY())
 				{
@@ -1230,19 +1230,19 @@ namespace MetaFile
 
 		bool bScale = false, bTranslate = false;
 
-		if (m_pParser->GetTransform()->M11 != 1 || m_pParser->GetTransform()->M22 != 1)
+		if (pOldTransform->M11 != 1 || pOldTransform->M22 != 1)
 			bScale = true;
 
-		if (m_pParser->GetTransform()->Dx != 0 || m_pParser->GetTransform()->Dy != 0)
+		if (pOldTransform->Dx != 0 || pOldTransform->Dy != 0)
 			bTranslate = true;
 
-		NodeAttribute *pFoundNode = NULL;
+		NodeAttribute *pFoundTransform = NULL;
 
 		for (NodeAttribute& oNode : arAttributes)
 		{
 			if (L"transform" == oNode.first)
 			{
-				pFoundNode = &oNode;
+				pFoundTransform = &oNode;
 				break;
 			}
 		}
@@ -1265,8 +1265,8 @@ namespace MetaFile
 		}
 		else return;
 
-		if (NULL != pFoundNode)
-			pFoundNode->second += L' ' + wsValue;
+		if (NULL != pFoundTransform)
+			pFoundTransform->second.insert(0, wsValue + L' ');
 		else
 			arAttributes.push_back({L"transform", wsValue});
 	}

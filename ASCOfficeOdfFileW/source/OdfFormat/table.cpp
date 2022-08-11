@@ -50,15 +50,15 @@ using xml::xml_char_wc;
 
 void table_table_attlist::serialize(CP_ATTR_NODE)
 {
-	CP_XML_ATTR_OPT( L"table:name",				table_name_);
-	CP_XML_ATTR_OPT( L"table:style-name",		table_style_name_);
-	CP_XML_ATTR_OPT( L"table:template-name",	table_template_name_);
+	CP_XML_ATTR_OPT_ENCODE_STRING( L"table:name", table_name_);
+	CP_XML_ATTR_OPT( L"table:style-name", table_style_name_);
+	CP_XML_ATTR_OPT( L"table:template-name", table_template_name_);
 
 	if (table_protected_ && table_protected_->get())
 	{
-		CP_XML_ATTR_OPT( L"table:protected",					table_protected_); 
-		CP_XML_ATTR_OPT( L"table:protection-key",				table_protection_key_); 
-		CP_XML_ATTR_OPT( L"table:protection-digest-algorithm",	table_protection_key_digest_algorithm_); 
+		CP_XML_ATTR_OPT( L"table:protected", table_protected_); 
+		CP_XML_ATTR_OPT( L"table:protection-key", table_protection_key_); 
+		CP_XML_ATTR_OPT( L"table:protection-digest-algorithm", table_protection_key_digest_algorithm_); 
 	}	
 
 	CP_XML_ATTR_OPT( L"table:print-ranges", table_print_ranges_);
@@ -998,7 +998,7 @@ void table_content_validation::serialize(std::wostream & _Wostream)
 	{
 		CP_XML_NODE_SIMPLE()
         {
-			CP_XML_ATTR_OPT(L"table:name",				table_name_);
+			CP_XML_ATTR_OPT_ENCODE_STRING(L"table:name", table_name_);
 			CP_XML_ATTR_OPT(L"table:condition",			table_condition_);
 			CP_XML_ATTR_OPT(L"table:display-list",		table_display_list_);
 			CP_XML_ATTR_OPT(L"table:allow-empty-cell",	table_allowempty_cell_);

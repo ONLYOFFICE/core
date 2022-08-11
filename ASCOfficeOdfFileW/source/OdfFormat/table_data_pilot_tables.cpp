@@ -109,7 +109,7 @@ void table_data_pilot_table::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {  
-			CP_XML_ATTR(L"table:name"						, table_name_);
+			CP_XML_ATTR_OPT_ENCODE_STRING(L"table:name"		, table_name_);
 			CP_XML_ATTR(L"table:application-data"			, table_application_data_);
 			CP_XML_ATTR(L"table:buttons"					, table_buttons_);
 			CP_XML_ATTR(L"table:drill-down-on-double-click"	, table_drill_down_ondouble_click_);
@@ -305,7 +305,7 @@ void table_source_service::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			CP_XML_ATTR(L"table:name",		table_name_);
+			CP_XML_ATTR_OPT_ENCODE_STRING(L"table:name", table_name_);
 			CP_XML_ATTR(L"table:object-name", table_object_name_);
 			CP_XML_ATTR(L"table:password",	table_password_);
 			CP_XML_ATTR(L"table:source-name", table_source_name_);
@@ -437,7 +437,7 @@ void table_data_pilot_group::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			CP_XML_ATTR(L"table:name",	table_name_);
+			CP_XML_ATTR_OPT_ENCODE_STRING(L"table:name", table_name_);
 			
 			for (size_t i = 0; i < content_.size(); i++)
 			{
@@ -483,9 +483,9 @@ void table_data_pilot_member::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			CP_XML_ATTR(L"table:display",		table_display_);
-			CP_XML_ATTR(L"table:name",			table_name_);
-			CP_XML_ATTR(L"table:show-details",	table_show_details_);
+			CP_XML_ATTR_OPT_ENCODE_STRING(L"table:name", table_name_);
+			CP_XML_ATTR(L"table:display", table_display_);
+			CP_XML_ATTR(L"table:show-details", table_show_details_);
 		}
 	}
 }
@@ -499,7 +499,7 @@ void table_data_pilot_group_member::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			CP_XML_ATTR(L"table:name", table_name_);
+			CP_XML_ATTR_OPT_ENCODE_STRING(L"table:name", table_name_);
 		}
 	 }
 }

@@ -642,32 +642,32 @@ const std::wstring xti_indexes2sheet_name(const short tabFirst, const short tabL
 	{
 		return L"#REF";
 	}
-	static boost::wregex correct_sheet_name(L"^\\'.+?\\'$");
-    static boost::wregex test_sheet_name(L"[\\s)(\\!\\'&:-]+"); //.??? 6442946.xls
+	static boost::wregex correct_table_name(L"^\\'.+?\\'$");
+    static boost::wregex test_table_name(L"([\\s)(\\!\\'&:-]+)|(^[\\d]+)"); //.??? 6442946.xls 5558608.xls
 	
-	std::wstring sheet_first = prefix + tab2sheet_name(tabFirst, names);
+	std::wstring table_name = tab2sheet_name(tabFirst, names); 
+	std::wstring sheet_first = prefix + table_name;
 	
-	if(!boost::regex_search(sheet_first.begin(), sheet_first.end(), correct_sheet_name))
+	if(!boost::regex_search(table_name.begin(), table_name.end(), correct_table_name))
 	{	
-		if(boost::regex_search(sheet_first.begin(), sheet_first.end(), test_sheet_name) || (!prefix.empty() && prefix[0] == L'[')) // 5558608.xls
+		if(boost::regex_search(table_name.begin(), table_name.end(), test_table_name)) 
 		{
 			sheet_first = boost::algorithm::replace_all_copy(sheet_first, L"'", L"''"); 
 			sheet_first = std::wstring(L"'") + sheet_first + std::wstring(L"'");
 		}
 	}
-
-
 	std::wstring sheet_last;
 	if (tabLast != tabFirst)
 	{
-		sheet_last = std::wstring(L":") + prefix + tab2sheet_name(tabLast, names);
+		table_name = tab2sheet_name(tabLast, names);
+		sheet_last = std::wstring(L":") + prefix + table_name;
 		
-		if(!boost::regex_search(sheet_last.begin(), sheet_last.end(), correct_sheet_name))
+		if(!boost::regex_search(table_name.begin(), table_name.end(), correct_table_name))
 		{	
-			if(boost::regex_search(sheet_last.begin(), sheet_last.end(), test_sheet_name))
+			if(boost::regex_search(table_name.begin(), table_name.end(), test_table_name))
 			{	
 				sheet_last = boost::algorithm::replace_all_copy(sheet_last, L"'", L"''"); 
-				sheet_last = std::wstring(L"\'") + sheet_last + std::wstring(L"\'");
+				sheet_last = std::wstring(L"'") + sheet_last + std::wstring(L"'");
 			}
 		}
 	}

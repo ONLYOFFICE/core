@@ -81,7 +81,7 @@ public:
 
 	virtual const bool getNextSubstreamType(_UINT16& type) = 0;
 	virtual void SeekToEOF() = 0;
-	virtual void SkipRecord() = 0;
+	virtual void SkipRecord(bool log_debug = true) = 0;
     virtual const int GetRecordPosition() = 0;
     virtual void SetRecordPosition(const int position) = 0;
 
@@ -109,7 +109,7 @@ public:
 	const bool					getNextSubstreamType(_UINT16& type);
 	
 	void SeekToEOF();
-	void SkipRecord();
+	void SkipRecord(bool log_debug = true);
     const int GetRecordPosition();
     void SetRecordPosition(const int position);
 

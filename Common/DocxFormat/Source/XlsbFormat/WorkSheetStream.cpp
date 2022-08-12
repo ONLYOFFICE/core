@@ -180,7 +180,7 @@ const bool WorkSheetStream::loadContent(BinProcessor& proc)
                 }*/
                 m_SheetaDataPosition = proc.GetRecordPosition();
                 while(proc.getNextRecordType() != rt_EndSheetData)
-                    proc.SkipRecord();
+                    proc.SkipRecord(false);
             }break;
 
             case rt_BeginUserShViews:

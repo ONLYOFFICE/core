@@ -233,12 +233,14 @@ std::wstring IMetafileToRenderter::GetImagePath(const std::wstring& sPath)
 					oFrame.put_Stride(4 * nSize);
 					oFrame.put_IsRGBA(true);
 					oFrame.SaveFile(sTempFile, 4); // PNG
+					oFrame.put_Data(NULL);
 					sImagePath = sTempFile;
 				}
 
 				m_arTempFiles.push_back(sTempFile);
 			}
 
+			RELEASEARRAYOBJECTS(pImageBuffer);
 			RELEASEARRAYOBJECTS(pBase64Buffer);
 
 			if (sImagePath.empty())

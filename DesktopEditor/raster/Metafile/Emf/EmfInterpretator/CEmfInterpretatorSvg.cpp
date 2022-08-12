@@ -742,26 +742,42 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_POLYPOLYGON(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointL>> &arPoints)
 	{
+		m_oXmlWriter.WriteNodeBegin(L"g");
+
 		for (const std::vector<TEmfPointL>& arPolygonPoints : arPoints)
 			HANDLE_EMR_POLYGON(oBounds, arPolygonPoints);
+
+		m_oXmlWriter.WriteNodeEnd(L"g");
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_POLYPOLYGON(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointS>> &arPoints)
 	{
+		m_oXmlWriter.WriteNodeBegin(L"g");
+
 		for (const std::vector<TEmfPointS>& arPolygonPoints : arPoints)
 			HANDLE_EMR_POLYGON(oBounds, arPolygonPoints);
+
+		m_oXmlWriter.WriteNodeEnd(L"g");
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_POLYPOLYLINE(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointL>> &arPoints)
 	{
+		m_oXmlWriter.WriteNodeBegin(L"g");
+
 		for (const std::vector<TEmfPointL>& arPolygonPoints : arPoints)
 			HANDLE_EMR_POLYLINE(oBounds, arPolygonPoints);
+
+		m_oXmlWriter.WriteNodeEnd(L"g");
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_POLYPOLYLINE(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointS>> &arPoints)
 	{
+		m_oXmlWriter.WriteNodeBegin(L"g");
+
 		for (const std::vector<TEmfPointS>& arPolygonPoints : arPoints)
 			HANDLE_EMR_POLYLINE(oBounds, arPolygonPoints);
+
+		m_oXmlWriter.WriteNodeEnd(L"g");
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_RECTANGLE(const TEmfRectL &oBox)
@@ -825,7 +841,30 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_FILLRGN(const TEmfRectL &oBounds, unsigned int unIhBrush, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
 	{
+		if (0x00000020 != oRegionDataHeader.unSize || 0x00000001 != oRegionDataHeader.unType || arRects.empty())
+			return;
 
+		std::wstring wsValue;
+
+		TRectD oTempRect;
+
+		for (const TEmfRectL& oRect : arRects)
+		{
+			oTempRect = TranslateRect(oRect);
+
+			wsValue +=	L"M "  + ConvertToWString(oTempRect.dLeft)  + L',' + ConvertToWString(oTempRect.dTop) +
+						L" L " + ConvertToWString(oTempRect.dRight) + L',' + ConvertToWString(oTempRect.dTop) + L' ' +
+								 ConvertToWString(oTempRect.dRight) + L',' + ConvertToWString(oTempRect.dBottom) + L' ' +
+								 ConvertToWString(oTempRect.dLeft)	+ L',' + ConvertToWString(oTempRect.dBottom) + L' ' +
+								 ConvertToWString(oTempRect.dLeft)	+ L',' + ConvertToWString(oTempRect.dTop) + L' ';
+		}
+
+		NodeAttributes arAttributes = {{L"d", wsValue}};
+
+		AddFill(arAttributes);
+		AddTransform(arAttributes);
+
+		WriteNode(L"path", arAttributes);
 	}
 
 	void CEmfInterpretatorSvg::Begin()
@@ -932,11 +971,16 @@ namespace MetaFile
 		TXForm oTransform;
 		oTransform.Copy(m_pParser->GetTransform());
 
+		bool bWriteG = false;
+
 		if (NULL != m_pParser && NULL != m_pParser->GetFont())
 		{
 			if (OPAQUE == m_pParser->GetTextBgMode())
 			{
 				std::wstring wsFillRect = L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetTextBgColor()) + L", 255)";
+
+				m_oXmlWriter.WriteNodeBegin(L"g");
+				bWriteG = true;
 
 				WriteNode(L"rect", {{L"x",      ConvertToWString((oBounds.lLeft))},
 									{L"y",      ConvertToWString((oBounds.lTop))},
@@ -1038,6 +1082,9 @@ namespace MetaFile
 		arNodeAttributes.push_back({L"y", ConvertToWString(dYCoord)});
 
 		WriteNode(L"text", arNodeAttributes, StringNormalization(wsText));
+
+		if (bWriteG)
+			m_oXmlWriter.WriteNodeEnd(L"g");
 	}
 
 	void CEmfInterpretatorSvg::AddStroke(NodeAttributes &arAttributes)

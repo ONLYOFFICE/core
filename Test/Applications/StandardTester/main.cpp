@@ -21,9 +21,35 @@
 
 #include <map>
 
+enum CheckResultCode
+{
+	crcEqual     = 0,
+	crcPageCount = 1,
+	crcPageSize  = 2,
+	crcPageDiffs = 4
+};
+
 class CConverter;
 class CInternalWorker
 {
+public:
+	class CFileLog
+	{
+	public:
+		std::wstring File;
+		int Error;
+		int Time;
+		int CheckCode;
+
+		CFileLog(const std::wstring& _file = L"", const int& _error = 0, const int& _time = 0, const int& _check_code = 0)
+		{
+			File = _file;
+			Error = _error;
+			Time = _time;
+			CheckCode = _check_code;
+		}
+	};
+
 public:
 	std::map<int, bool>         m_formats;
 	std::vector<std::wstring>   m_files;
@@ -42,6 +68,10 @@ public:
 
 	NSCriticalSection::CRITICAL_SECTION m_oCS;
 	NSCriticalSection::CRITICAL_SECTION m_oCS_OfficeUtils;
+
+	std::vector<CFileLog> m_arFileLogs;
+	std::vector<CFileLog> m_arFileLogsError;
+	size_t m_nProgressPrevLen;
 
 public:
 	CInternalWorker()
@@ -72,6 +102,8 @@ public:
 
 		m_oCS.InitializeCriticalSection();
 		m_oCS_OfficeUtils.InitializeCriticalSection();
+
+		m_nProgressPrevLen = 0;
 	}
 	~CInternalWorker()
 	{
@@ -80,7 +112,7 @@ public:
 	}
 
 	CConverter* GetNextConverter();
-	void OnConvertFile(CConverter* pConverter, int nCode);
+	void OnConvertFile(CConverter* pConverter, int nCode, int nTime, int nCheckCode);
 	void Start(int nCores);
 	void Cancel();
 
@@ -106,6 +138,132 @@ public:
 	{
 		CTemporaryCS oCS(&m_oCS);
 		return (m_nCurrentComplete < m_nCount);
+	}
+
+	void OnReportFile(const std::wstring& sFile, int nReturnCode, int nTime, int nCheckReport)
+	{
+		if (nReturnCode == 0)
+			m_arFileLogs.push_back(CFileLog(sFile, nReturnCode, nTime, nCheckReport));
+		else
+			m_arFileLogsError.push_back(CFileLog(sFile, nReturnCode, nCheckReport));
+
+		if (m_nProgressPrevLen > 0)
+			std::cout << "\r";
+
+		std::wstring sFileLog = GetFileNameForLog(sFile);
+
+		std::string sFileLogUtf8 = U_TO_UTF8(sFileLog);
+		size_t nDiff = sFileLogUtf8.length() - sFileLog.length();
+
+		std::string message = "[" + std::to_string(m_nCurrentComplete + 1) + "/" + std::to_string(m_nCount) +
+				" (errors: " + std::to_string(m_arFileLogsError.size()) + ")] " + sFileLogUtf8;
+
+		size_t nOldLen = m_nProgressPrevLen + nDiff;
+		size_t nNewLen = message.length();
+		m_nProgressPrevLen = nNewLen;
+
+		while (nNewLen < nOldLen)
+		{
+			message += " ";
+			++nNewLen;
+		}
+
+		std::cout << message;
+	}
+
+	std::wstring GetFileNameForLog(const std::wstring& sFile)
+	{
+		std::wstring::size_type pos = sFile.rfind(L"/documents/");
+
+		if (std::wstring::npos != pos)
+		{
+			return sFile.substr(pos + 11);
+		}
+
+		pos = sFile.rfind(L"/master/");
+		if (std::wstring::npos != pos)
+		{
+			std::wstring sCheckPath = sFile.substr(pos + 8);
+
+			std::wstring sTempDir = NSFile::GetDirectoryName(sCheckPath);
+			std::wstring sTempFile = NSFile::GetFileName(sCheckPath);
+			if (sTempDir == sTempFile)
+				return sTempFile;
+
+			return sCheckPath;
+		}
+
+		return sFile;
+	}
+
+	void WriteReport(const std::wstring& sLogFile, int nTime)
+	{
+		if (NSFile::CFileBinary::Exists(sLogFile))
+			NSFile::CFileBinary::Remove(sLogFile);
+
+		std::wstring sLogContent;
+
+		sLogContent += L"GOOD:\n";
+		for (std::vector<CFileLog>::iterator iter = m_arFileLogs.begin(); iter != m_arFileLogs.end(); iter++)
+		{
+			std::wstring sFileForLog = GetFileNameForLog(iter->File);
+			size_t nFileNameSize = sFileForLog.length();
+
+			sLogContent += sFileForLog;
+			while (nFileNameSize < 100)
+			{
+				sLogContent += L" ";
+				++nFileNameSize;
+			}
+
+			if (iter->CheckCode & ((int)crcPageCount))
+			{
+				sLogContent += L"PAGES_COUNT";
+			}
+			else if (iter->CheckCode & ((int)crcPageSize))
+			{
+				sLogContent += L"PAGES_SIZE ";
+			}
+			else if (iter->CheckCode & ((int)crcPageDiffs))
+			{
+				sLogContent += L"DIFFS      ";
+			}
+			else
+			{
+				sLogContent += L"           ";
+			}
+
+			sLogContent += L"          ";
+
+			sLogContent += std::to_wstring(iter->Time);
+			sLogContent += L"\n";
+		}
+
+		sLogContent += L"\n\n";
+		sLogContent += L"BAD:\n";
+		for (std::vector<CFileLog>::iterator iter = m_arFileLogsError.begin(); iter != m_arFileLogsError.end(); iter++)
+		{
+			std::wstring sFileForLog = GetFileNameForLog(iter->File);
+			size_t nFileNameSize = sFileForLog.length();
+
+			sLogContent += sFileForLog;
+			while (nFileNameSize < 100)
+			{
+				sLogContent += L" ";
+				++nFileNameSize;
+			}
+
+			sLogContent += std::to_wstring(iter->Error);
+			sLogContent += L"\n";
+		}
+
+		sLogContent += L"\n\n";
+
+		sLogContent += L"TIME: ";
+		sLogContent += std::to_wstring(nTime);
+		sLogContent += L"\n";
+
+		NSFile::CFileBinary::SaveToFile(sLogFile, sLogContent, true);
 	}
 };
 
@@ -279,7 +437,7 @@ public:
 		if (!bIsOfficeFile)
 		{
 			m_bRunThread = FALSE;
-			m_pInternal->OnConvertFile(this, -1);
+			m_pInternal->OnConvertFile(this, -1, 0, 0);
 			return 0;
 		}
 
@@ -292,6 +450,8 @@ public:
 			return 0;
 		}
 #endif
+
+		DWORD dwTime1 = NSTimers::GetTickCount();
 
 		std::wstring sProcess = NSFile::GetProcessDirectory();
 
@@ -347,6 +507,8 @@ public:
 
 		NSFile::CFileBinary::Remove(sTempFileForParams);
 
+		DWORD dwTime2 = NSTimers::GetTickCount();
+
 		if (0 == nReturnCode)
 		{
 			CTemporaryCS oCS(&m_pInternal->m_oCS_OfficeUtils);
@@ -355,6 +517,8 @@ public:
 			if (S_OK == oUtils.ExtractToDirectory(sFileDst, sDirectoryDst, NULL, 0))
 				NSFile::CFileBinary::Remove(sFileDst);
 		}
+
+		int checkCode = crcEqual;
 
 		if (!m_pInternal->m_bIsStandard)
 		{
@@ -383,7 +547,7 @@ public:
 				oFile.CreateFileW(sFilePagesDiff);
 				oFile.CloseFile();
 
-				std::cout << "file (page count) : " << U_TO_UTF8(strDiffs) << std::endl;
+				checkCode |= crcPageCount;
 			}
 
 			for (int nPage = 0; nPage < nCountInPages; ++nPage)
@@ -417,7 +581,7 @@ public:
 					oFile.WriteStringUTF8(L"sizes!");
 					oFile.CloseFile();
 
-					std::cout << "file (sizes) : " << U_TO_UTF8(sPageDiff) << ", (" << nW_I << ", " << nH_I << "), (" << nW_O << ", " << nH_O << ")" << std::endl;
+					checkCode |= crcPageSize;
 					continue;
 				}
 
@@ -579,14 +743,14 @@ public:
 						oFrameAll.SaveFile(sPageDiff, 4);
 					}
 
-					std::cout << "file (diffs) : " << U_TO_UTF8(sPageDiff) << std::endl;
+					checkCode |= crcPageDiffs;
 				}
 			}
 		}
 
 		m_bRunThread = FALSE;
 
-		m_pInternal->OnConvertFile(this, nReturnCode);
+		m_pInternal->OnConvertFile(this, nReturnCode, (int)(dwTime2 - dwTime1), checkCode);
 		return 0;
 	}
 
@@ -625,11 +789,11 @@ CConverter* CInternalWorker::GetNextConverter()
 	return pConverter;
 }
 
-void CInternalWorker::OnConvertFile(CConverter* pConverter, int nCode)
+void CInternalWorker::OnConvertFile(CConverter* pConverter, int nCode, int nTime, int nCheckCode)
 {
 	CTemporaryCS oCS(&m_oCS);
 
-	std::cout << "file (complete) : " << U_TO_UTF8(pConverter->m_file) << ", code : " << nCode << std::endl;
+	OnReportFile(pConverter->m_file, nCode, nTime, nCheckCode);
 
 	++m_nCurrentComplete;
 	GetNextConverter();
@@ -815,6 +979,11 @@ int main(int argc, char** argv)
 	}
 #endif
 
+#ifdef _WIN32
+	UINT currConsoleCP = GetConsoleOutputCP();
+	SetConsoleOutputCP(CP_UTF8);
+#endif
+
 	CInternalWorker oWorker;
 	oWorker.OpenDir(strInputFolder);
 	oWorker.m_sOutputFolder = strOutputFolder;
@@ -831,7 +1000,13 @@ int main(int argc, char** argv)
 	DWORD dwTime2 = NSTimers::GetTickCount();
 
 	DWORD dwTimeDelta = (dwTime2 - dwTime1) / 1000;
-	std::cout << "time: " << dwTimeDelta << std::endl;
+	std::cout << std::endl << "time: " << dwTimeDelta << std::endl;
+
+	oWorker.WriteReport(NSFile::GetProcessDirectory() + L"/../report.txt", (int)(dwTime2 - dwTime1));
+
+#ifdef _WIN32
+	SetConsoleOutputCP(currConsoleCP);
+#endif
 
 	return 0;
 }

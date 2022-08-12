@@ -4739,6 +4739,11 @@ void BinaryWorksheetTableWriter::WriteOleObjects(const OOX::Spreadsheet::CWorksh
 		olePic->oleObject->m_oId = pRId;
 		olePic->oleObject->m_OleObjectFile = pFileOleObject;
 
+		if (pOleObject->m_oDvAspect.IsInit())
+		{
+			olePic->oleObject->m_oDrawAspect = (BYTE)pOleObject->m_oDvAspect->GetValue();
+		}
+
 		if (olePic->oleObject->m_OleObjectFile.IsInit())
 		{
 			olePic->blipFill.blip->oleFilepathBin = olePic->oleObject->m_OleObjectFile->filename().GetPath();

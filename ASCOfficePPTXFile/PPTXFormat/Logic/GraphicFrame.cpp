@@ -104,13 +104,15 @@ namespace PPTX
 			if (!olePic.IsInit())				olePic.Init();
 			if (!olePic->oleObject.IsInit())	olePic->oleObject.Init();
 
-			WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, (L"progId"),	olePic->oleObject->m_sProgId)
-				WritingElement_ReadAttributes_Read_else_if( oReader, (L"r:id"),		olePic->oleObject->m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, (L"relationships:id"),	olePic->oleObject->m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, (L"imgW"),		olePic->oleObject->m_oDxaOrig )
-				WritingElement_ReadAttributes_Read_else_if( oReader, (L"imgH"),		olePic->oleObject->m_oDyaOrig )
-			WritingElement_ReadAttributes_End( oReader )
+			WritingElement_ReadAttributes_Start(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, L"progId", olePic->oleObject->m_sProgId)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"r:id", olePic->oleObject->m_oId)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"relationships:id", olePic->oleObject->m_oId)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"imgW", olePic->oleObject->m_oDxaOrig)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"imgH", olePic->oleObject->m_oDyaOrig)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"showAsIcon", olePic->oleObject->m_oShowAsIcon)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"name", olePic->oleObject->m_oName);
+			WritingElement_ReadAttributes_End(oReader)
 
 			if(olePic->oleObject->m_oDxaOrig.IsInit())
 			{
@@ -119,6 +121,10 @@ namespace PPTX
 			if(olePic->oleObject->m_oDyaOrig.IsInit())
 			{
 				olePic->oleObject->m_oDyaOrig = (int)Emu_To_Twips(olePic->oleObject->m_oDyaOrig.get());
+			}
+			if ((olePic->oleObject->m_oShowAsIcon.IsInit()) && (*olePic->oleObject->m_oShowAsIcon))
+			{
+				olePic->oleObject->m_oDrawAspect = (BYTE)1;
 			}
 		}
 		void GraphicFrame::ReadAttributes3(XmlUtils::CXmlLiteReader& oReader)

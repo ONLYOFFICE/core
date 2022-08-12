@@ -219,6 +219,8 @@ namespace PPTX
 		
 			nullable_int						m_oDxaOrig;
 			nullable_int						m_oDyaOrig;
+			nullable_bool						m_oShowAsIcon;
+			nullable_string						m_oName;
 
 			nullable_string						m_sAlternateContenteXml;
 		};

@@ -484,14 +484,14 @@ namespace NSCommon
 			RELEASEOBJECT(m_pPointer);
 
 			if ( NULL != cwsValue )
-				m_pPointer = new unsigned int(XmlUtils::GetInteger(cwsValue));
+				m_pPointer = new unsigned int(XmlUtils::GetUInteger(cwsValue));
 
 			return *this;
 		}
 		void operator=(const std::wstring& value)
 		{
 			RELEASEOBJECT(this->m_pPointer);
-			this->m_pPointer = new unsigned int(XmlUtils::GetInteger(value));
+			this->m_pPointer = new unsigned int(XmlUtils::GetUInteger(value));
 		}
 		void operator=(const unsigned int& value)
 		{

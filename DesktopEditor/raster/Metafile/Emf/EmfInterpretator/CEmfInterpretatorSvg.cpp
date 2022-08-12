@@ -57,46 +57,7 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_BITBLT(const TEmfBitBlt &oTEmfBitBlt, CDataStream &oDataStream)
 	{
-		return;
-		if (0 == oTEmfBitBlt.cbBitsSrc)
-			return;
-
-		int lHeaderOffset         = oTEmfBitBlt.offBmiSrc - 100;
-		unsigned int ulHeaderSize = oTEmfBitBlt.cbBmiSrc;
-		int lBitsOffset           = oTEmfBitBlt.offBitsSrc - oTEmfBitBlt.offBmiSrc - oTEmfBitBlt.cbBmiSrc;
-		unsigned int ulBitsSize   = oTEmfBitBlt.cbBitsSrc;
-
-		int nSize = NSBase64::Base64EncodeGetRequiredLength(ulBitsSize);
-		BYTE* ucValue = new BYTE[nSize];
-
-		NSBase64::Base64Encode(oDataStream.GetCurPtr() + lHeaderOffset + ulHeaderSize + lBitsOffset, ulBitsSize, ucValue, &nSize);
-		std::wstring wsValue(ucValue, ucValue + nSize);
-
-//		std::wfstream in(L"base64.txt", std::ios::in);
-
-//		std::wstring wsLine, wsTempValue;
-
-//		if (in.is_open())
-//		{
-//			while (getline(in, wsLine))
-//			{
-//				wsTempValue += wsLine;
-//			}
-//		}
-
-//		in.close();
-
-		NodeAttributes arAttributes = {{L"x", ConvertToWString(oTEmfBitBlt.xDest)},
-									   {L"y", ConvertToWString(oTEmfBitBlt.yDest)},
-									   {L"width", ConvertToWString(oTEmfBitBlt.cxDest)},
-									   {L"height", ConvertToWString(oTEmfBitBlt.cxDest)},
-									   {L"xlink:href", L"data:image/bmp;base64," + wsValue}};
-
-		AddTransform(arAttributes);
-
-		WriteNode(L"image", arAttributes);
-
-		delete[] ucValue;
+		//запись реализована в DrawBitmap
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_SETDIBITSTODEVICE(const TEmfSetDiBitsToDevice &oTEmfSetDiBitsToDevice, CDataStream &oDataStream)
@@ -365,14 +326,11 @@ namespace MetaFile
 				ConvertToWString(dEndX) + L' ' +
 				ConvertToWString(dEndY);
 
-		NodeAttributes arAttributes = {{L"d", wsValue},
-									   {L"fill", L"none"}};
+		NodeAttributes arAttributes = {{L"d", wsValue}};
 
 		AddStroke(arAttributes);
+		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
-
-		UpdateTransform(dStartX, dStartY);
-		UpdateTransform(dEndX, dEndY);
 
 		WriteNode(L"path" , arAttributes);
 	}
@@ -409,13 +367,11 @@ namespace MetaFile
 				ConvertToWString(dEndX) + L' ' +
 				ConvertToWString(dEndY);
 
-		NodeAttributes arAttributes = {{L"d", wsValue},
-									   {L"fill", L"none"}};
+		NodeAttributes arAttributes = {{L"d", wsValue}};
 
 		AddStroke(arAttributes);
+		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
-
-		UpdateTransform(oNewRect);
 
 		WriteNode(L"path" , arAttributes);
 
@@ -453,13 +409,11 @@ namespace MetaFile
 				ConvertToWString(dEndX) + L' ' +
 				ConvertToWString(dEndY);
 
-		NodeAttributes arAttributes = {{L"d", wsValue},
-									   {L"fill", L"none"}};
+		NodeAttributes arAttributes = {{L"d", wsValue}};
 
 		AddStroke(arAttributes);
+		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
-
-		UpdateTransform(oNewRect);
 
 		WriteNode(L"path" , arAttributes);
 	}
@@ -480,8 +434,6 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
-
-		UpdateTransform(oNewRect);
 
 		WriteNode(L"ellipse", arAttributes);
 	}
@@ -512,8 +464,6 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddTransform(arAttributes);
 
-		UpdateTransform(oPoint.x, oPoint.y);
-
 		WriteNode(L"line", arAttributes);
 	}
 
@@ -540,8 +490,6 @@ namespace MetaFile
 		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
 
-		UpdateTransform(arPoints);
-
 		WriteNode(L"path", arAttributes);
 	}
 
@@ -562,8 +510,6 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
-
-		UpdateTransform(arPoints);
 
 		WriteNode(L"path", arAttributes);
 	}
@@ -586,8 +532,6 @@ namespace MetaFile
 		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
 
-		UpdateTransform(arPoints);
-
 		WriteNode(L"path", arAttributes);
 	}
 
@@ -608,8 +552,6 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
-
-		UpdateTransform(arPoints);
 
 		WriteNode(L"path", arAttributes);
 	}
@@ -643,8 +585,6 @@ namespace MetaFile
 		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
 
-		UpdateTransform(arPoints, unCount);
-
 		WriteNode(L"path", arAttributes);
 	}
 
@@ -677,8 +617,6 @@ namespace MetaFile
 		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
 
-		UpdateTransform(arPoints, unCount);
-
 		WriteNode(L"path", arAttributes);
 	}
 
@@ -697,8 +635,6 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
-
-		UpdateTransform(arPoints);
 
 		WriteNode(L"polygon", arAttributes);
 	}
@@ -719,8 +655,6 @@ namespace MetaFile
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
 
-		UpdateTransform(arPoints);
-
 		WriteNode(L"polygon", arAttributes);
 	}
 
@@ -734,13 +668,11 @@ namespace MetaFile
 		for (const TEmfPointL& oPoint : arPoints)
 			wsValue += ConvertToWString(oPoint.x) + L',' + ConvertToWString(oPoint.y) + L' ';
 
-		NodeAttributes arAttributes = {{L"points", wsValue},
-									   {L"fill", L"none"}};
+		NodeAttributes arAttributes = {{L"points", wsValue}};
 
 		AddStroke(arAttributes);
+		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
-
-		UpdateTransform(arPoints);
 
 		WriteNode(L"polyline", arAttributes);
 	}
@@ -757,13 +689,11 @@ namespace MetaFile
 
 		wsValue.pop_back();
 
-		NodeAttributes arAttributes = {{L"points", wsValue},
-									   {L"fill", L"none"}};
+		NodeAttributes arAttributes = {{L"points", wsValue}};
 
 		AddStroke(arAttributes);
+		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
-
-		UpdateTransform(arPoints);
 
 		WriteNode(L"polyline", arAttributes);
 	}
@@ -780,13 +710,11 @@ namespace MetaFile
 		for (const TEmfPointL& oPoint : arPoints)
 			wsValue += L' ' + ConvertToWString(oPoint.x) + L',' + ConvertToWString(oPoint.y);
 
-		NodeAttributes arAttributes = {{L"points", wsValue},
-									   {L"fill", L"none"}};
+		NodeAttributes arAttributes = {{L"points", wsValue}};
 
 		AddStroke(arAttributes);
+		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
-
-		UpdateTransform(arPoints);
 
 		WriteNode(L"polyline", arAttributes);
 	}
@@ -803,13 +731,11 @@ namespace MetaFile
 		for (const TEmfPointS& oPoint : arPoints)
 			wsValue += L' ' + ConvertToWString(oPoint.x) + L',' + ConvertToWString(oPoint.y);
 
-		NodeAttributes arAttributes = {{L"points", wsValue},
-									   {L"fill", L"none"}};
+		NodeAttributes arAttributes = {{L"points", wsValue}};
 
 		AddStroke(arAttributes);
+		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
-
-		UpdateTransform(arPoints);
 
 		WriteNode(L"polyline", arAttributes);
 	}
@@ -851,8 +777,6 @@ namespace MetaFile
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
 
-		UpdateTransform(oNewRect);
-
 		WriteNode(L"rect", arAttributes);
 	}
 
@@ -870,8 +794,6 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
-
-		UpdateTransform(oNewRect);
 
 		WriteNode(L"rect", arAttributes);
 	}
@@ -920,43 +842,14 @@ namespace MetaFile
 
 		m_sOutputData = m_oXmlWriter.GetXmlString();
 
-		bool bFlipped = false;
-
-//		if (NULL != m_pParser && false)
-//		{
-//			int nFlipX = 1;
-//			int nFlipY = 1;
-
-//			if (m_pParser->IsWindowFlippedX())
-//			{
-//				nFlipX = -1;
-//				bFlipped = true;
-//			}
-
-//			if (m_pParser->IsWindowFlippedY())
-//			{
-//				nFlipY = -1;
-//				bFlipped = true;
-//			}
-
-//			if (nFlipX < 0 || nFlipY < 0 || bFlipped)
-//				m_sOutputData.insert(5, L"transform=\"scale(" + ConvertToWString(nFlipX) + L' ' + ConvertToWString(nFlipY) + L")\" ");
-//		}
-
-		if (!m_oViewport.Empty())
-			m_sOutputData.insert(5, L"viewBox=\"" + ConvertToWString(m_oViewport.dLeft) + L' ' + ConvertToWString(m_oViewport.dTop) + L' ' + ConvertToWString(m_oViewport.GetWidth()) + L' ' + ConvertToWString(m_oViewport.GetHeight()) + L"\" ");
-
-		if (0 != m_oSizeWindow.cx && 0 != m_oSizeWindow.cy)
-			m_sOutputData.insert(5, L"width=\"" + ConvertToWString(m_oSizeWindow.cx) + L"\" height=\"" + ConvertToWString(m_oSizeWindow.cy) + L"\" ");
-
-//		m_oXmlWriter.SetXmlString(wsXml);
-
-//		m_oXmlWriter.SaveToFile((!m_wsSvgFilePath.empty()) ? m_wsSvgFilePath : L"temp.svg");
+		int nSizeW = (m_oSizeWindow.cx == 0) ? ((int)m_oViewport.GetWidth()) : m_oSizeWindow.cx;
+		int nSizeH = (m_oSizeWindow.cy == 0) ? ((int)m_oViewport.GetHeight()) : m_oSizeWindow.cy;
+		m_sOutputData.insert(5, L"width=\"" + std::to_wstring(nSizeW) + L"\" height=\"" + std::to_wstring(nSizeH) + L"\" ");
 	}
 
 	void CEmfInterpretatorSvg::DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight)
 	{
-//		if (NULL == pBuffer || 0 == dW || 0 == dH || 0 == unWidth || 0 == unHeight)
+		if (NULL == pBuffer || 0 == dW || 0 == dH || 0 == unWidth || 0 == unHeight)
 			return;
 
 		CBgraFrame  oFrame;
@@ -993,8 +886,6 @@ namespace MetaFile
 										   {L"xlink:href", L"data:image/png;base64," + sImageDataW}};
 
 			AddTransform(arAttributes);
-
-			UpdateTransform(dNewX, dNewY);
 
 			WriteNode(L"image", arAttributes);
 
@@ -1069,8 +960,6 @@ namespace MetaFile
 
 			arNodeAttributes.push_back({L"font-size", ConvertToWString(dFontHeight)});
 
-//			dYCoord += dFontHeight;
-
 			std::wstring wsFaceName = pFont->GetFaceName();
 
 			if (!wsFaceName.empty())
@@ -1102,11 +991,12 @@ namespace MetaFile
 			}
 			else if (ulTextAlign & TA_BOTTOM)
 			{
-				arNodeAttributes.push_back({L"alignment-baseline", L"bottom"});
+				arNodeAttributes.push_back({L"dominant-baseline", L"Auto"});
 			}
 			else // if (ulTextAlign & TA_TOP)
 			{
-				arNodeAttributes.push_back({L"alignment-baseline", L"top"});
+//				dYCoord += dFontHeight;
+				arNodeAttributes.push_back({L"dominant-baseline", L"hanging"});
 			}
 
 			if (ulTextAlign & TA_CENTER)
@@ -1123,29 +1013,24 @@ namespace MetaFile
 			}
 
 			if (0 != pFont->GetEscapement())
-				arNodeAttributes.push_back({L"transform", L"rotate(" + ConvertToWString(pFont->GetEscapement() / 10) + L' ' + ConvertToWString(dXCoord) + L' ' + ConvertToWString(dYCoord) + L')'});
+			{
+				double dEscapement = pFont->GetEscapement() / -10;
+
+				if (m_pParser->IsWindowFlippedY())
+					dEscapement = -dEscapement;
+
+				arNodeAttributes.push_back({L"transform", L"rotate(" + ConvertToWString(dEscapement) + L' ' + ConvertToWString(dXCoord) + L' ' + ConvertToWString(dYCoord) + L')'});
+			}
 
 			if (dYScale < -0.00001) //TODO::Тоже нужно и для dXScale
 			{
-				dYCoord += fabs(dFontHeight);
+				dYCoord += dFontHeight;
 
-				if (m_pParser->IsWindowFlippedY())
-				{
-					oTransform.Dy += (2 * dYCoord - fabs(dFontHeight)) * oTransform.M22;
-				}
-				else
-				{
-					oTransform.Dy += (2 * dYCoord + fabs(dFontHeight)) * oTransform.M22;
-				}
+				oTransform.Dy += (2 * dYCoord - dFontHeight) * oTransform.M22;
 
 				oTransform.M22 = fabs(oTransform.M22);
-//				dYCoord = oTransform.Dy + (dYCoord / oTransform.M22);
 			}
-
-			UpdateTransform(TranslateRect(oBounds));
 		}
-		else
-			UpdateTransform(dX, dY);
 
 		AddTransform(arNodeAttributes, &oTransform);
 
@@ -1163,8 +1048,8 @@ namespace MetaFile
 
 			double dStrokeWidth = m_pParser->GetPen()->GetWidth();
 
-			if (dStrokeWidth < 1)
-				dStrokeWidth = 1;
+			if (dStrokeWidth <= 1)
+				dStrokeWidth = 1 / m_pParser->GetTransform()->M22;
 
 			if (dStrokeWidth > 0)
 				arAttributes.push_back({L"stroke-width", ConvertToWString(dStrokeWidth)});
@@ -1251,17 +1136,19 @@ namespace MetaFile
 
 		if (bScale && !bTranslate)
 		{
-			wsValue = L"scale(" +	ConvertToWString(pOldTransform->M11/* / std::abs(m_pParser->GetTransform()->M11)*/) + L',' + ConvertToWString(pOldTransform->M22/* / std::abs(m_pParser->GetTransform()->M22)*/) + L')';
+			wsValue = L"scale(" +	std::to_wstring(pOldTransform->M11) + L',' + std::to_wstring(pOldTransform->M22) + L')';
 		}
 		else if (bTranslate && !bScale)
 		{
-			wsValue = L"translate(" + ConvertToWString(-pOldTransform->Dx) + L',' + ConvertToWString(pOldTransform->Dy) + L')';
+			wsValue = L"translate(" + ConvertToWString(pOldTransform->Dx) + L',' + ConvertToWString(pOldTransform->Dy) + L')';
 		}
 		else if (bScale && bTranslate)
 		{
-			wsValue = L"matrix(" +	ConvertToWString(pOldTransform->M11 /*/ std::abs(m_pParser->GetTransform()->M11)*/) + L",0,0," +
-									ConvertToWString(pOldTransform->M22 /*/ std::abs(m_pParser->GetTransform()->M22)*/) + L',' +
-									ConvertToWString(-pOldTransform->Dx) + L',' + ConvertToWString(pOldTransform->Dy) + L')';
+			wsValue = L"matrix(" +	std::to_wstring(pOldTransform->M11) + L',' +
+									std::to_wstring(pOldTransform->M12) + L',' +
+									std::to_wstring(pOldTransform->M21) + L',' +
+									std::to_wstring(pOldTransform->M22) + L',' +
+									ConvertToWString(pOldTransform->Dx) + L',' + ConvertToWString(pOldTransform->Dy) + L')';
 		}
 		else return;
 
@@ -1274,148 +1161,6 @@ namespace MetaFile
 	void CEmfInterpretatorSvg::AddNoneFill(NodeAttributes &arAttributes)
 	{
 		arAttributes.push_back({L"fill", L"none"});
-	}
-
-	void CEmfInterpretatorSvg::UpdateTransform(double dX, double dY)
-	{
-		return;
-		if (NULL != m_pParser && NULL != m_pParser->GetTransform())
-		{
-			dX += m_pParser->GetTransform()->Dx;
-			dY += m_pParser->GetTransform()->Dy;
-		}
-
-		if (dX < m_oViewport.dLeft)
-			m_oViewport.dLeft = dX;
-
-		if (dX > m_oViewport.dRight)
-			m_oViewport.dRight = dX;
-
-		if (dY < m_oViewport.dTop)
-			m_oViewport.dTop = dY;
-
-		if (dY > m_oViewport.dBottom)
-			m_oViewport.dBottom = dY;
-	}
-
-	void CEmfInterpretatorSvg::UpdateTransform(const TRectD &oRect)
-	{
-		UpdateTransform(oRect.dLeft, oRect.dTop);
-		UpdateTransform(oRect.dRight, oRect.dBottom);
-	}
-
-	void CEmfInterpretatorSvg::UpdateTransform(const std::vector<TEmfPointL> &arPoints, const NodeAttributes& arAttributes)
-	{
-		short shMinX = SHRT_MAX, shMinY = SHRT_MAX;
-		short shMaxX = SHRT_MIN, shMaxY = SHRT_MIN;
-
-		for (const TEmfPointL& oPoint : arPoints)
-		{
-			if (oPoint.x < shMinX) shMinX = oPoint.x;
-			if (oPoint.x > shMaxX) shMaxX = oPoint.x;
-
-			if (oPoint.y < shMinY) shMinY = oPoint.y;
-			if (oPoint.y > shMaxY) shMaxY = oPoint.y;
-		}
-
-		double dShift = 0;
-
-		if (!arAttributes.empty())
-			for (const NodeAttribute& oAttribute : arAttributes)
-				if (L"stroke-width" == oAttribute.first)
-					dShift = std::stod(oAttribute.second) / 2;
-
-		if (SHRT_MAX != shMinX && SHRT_MAX != shMinY)
-			UpdateTransform(TranslateX(shMinX) - dShift, TranslateY(shMinY) - dShift);
-
-		if (SHRT_MIN != shMaxX && SHRT_MIN != shMaxY)
-			UpdateTransform(TranslateX(shMaxX) + dShift, TranslateY(shMaxY) + dShift);
-	}
-
-	void CEmfInterpretatorSvg::UpdateTransform(const std::vector<TEmfPointS> &arPoints, const NodeAttributes& arAttributes)
-	{
-		short shMinX = SHRT_MAX, shMinY = SHRT_MAX;
-		short shMaxX = SHRT_MIN, shMaxY = SHRT_MIN;
-
-		for (const TEmfPointS& oPoint : arPoints)
-		{
-			if (oPoint.x < shMinX) shMinX = oPoint.x;
-			if (oPoint.x > shMaxX) shMaxX = oPoint.x;
-
-			if (oPoint.y < shMinY) shMinY = oPoint.y;
-			if (oPoint.y > shMaxY) shMaxY = oPoint.y;
-		}
-
-		double dShift = 0;
-
-		if (!arAttributes.empty())
-			for (const NodeAttribute& oAttribute : arAttributes)
-				if (L"stroke-width" == oAttribute.first)
-					dShift = std::stod(oAttribute.second) / 2;
-
-		if (SHRT_MAX != shMinX && SHRT_MAX != shMinY)
-			UpdateTransform(TranslateX(shMinX) - dShift, TranslateY(shMinY) - dShift);
-
-		if (SHRT_MIN != shMaxX && SHRT_MIN != shMaxY)
-			UpdateTransform(TranslateX(shMaxX) + dShift, TranslateY(shMaxY) + dShift);
-	}
-
-	void CEmfInterpretatorSvg::UpdateTransform(TEmfPointL *arPoints, unsigned int unCount)
-	{
-		if (NULL == arPoints || 0 == unCount)
-			return;
-
-		double dMinX = 0, dMinY = 0;
-		for (unsigned int unIndex = 0; unIndex < unCount; ++unCount)
-		{
-			if (arPoints[unIndex].x < dMinX) dMinX = arPoints[unIndex].x;
-			if (arPoints[unIndex].y < dMinY) dMinY = arPoints[unIndex].y;
-		}
-
-		if (0 != dMinX || 0 != dMinY)
-			UpdateTransform(dMinX, dMinY);
-	}
-
-	void CEmfInterpretatorSvg::UpdateTransform(TEmfPointS *arPoints, unsigned int unCount)
-	{
-		if (NULL == arPoints || 0 == unCount)
-			return;
-
-		short shMinX = 0, shMinY = 0;
-		for (unsigned int unIndex = 0; unIndex < unCount; ++unCount)
-		{
-			if (arPoints[unIndex].x < shMinX) shMinX = arPoints[unIndex].x;
-			if (arPoints[unIndex].y < shMinY) shMinY = arPoints[unIndex].y;
-		}
-
-		if (0 != shMinX || 0 != shMinY)
-			UpdateTransform(shMinX, shMinY);
-	}
-
-	double CEmfInterpretatorSvg::TranslateX(double dX)
-	{
-		if (NULL != m_pParser && NULL != m_pParser->GetTransform())
-			return dX * m_pParser->GetTransform()->M11;
-
-		return  dX;
-	}
-
-	double CEmfInterpretatorSvg::TranslateY(double dY)
-	{
-		if (NULL != m_pParser && NULL != m_pParser->GetTransform())
-			return dY * m_pParser->GetTransform()->M22;
-
-		return dY;
-	}
-
-	TPointD CEmfInterpretatorSvg::TranslatePoint(const TPointD &oPoint)
-	{
-		TPointD oNewPoint;
-
-		oNewPoint.x = TranslateX(oPoint.x);
-		oNewPoint.y = TranslateY(oPoint.y);
-
-		return oNewPoint;
 	}
 
 	TRectD CEmfInterpretatorSvg::TranslateRect(const TEmfRectL &oRect)

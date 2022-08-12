@@ -178,17 +178,6 @@ namespace MetaFile
 
 		void AddNoneFill(NodeAttributes &arAttributes);
 
-		void UpdateTransform(double dX, double dY);
-		void UpdateTransform(const TRectD& oRect);
-		void UpdateTransform(const std::vector<TEmfPointL>& arPoints, const NodeAttributes& arAttributes = {});
-		void UpdateTransform(const std::vector<TEmfPointS>& arPoints, const NodeAttributes& arAttributes = {});
-		void UpdateTransform(TEmfPointL *arPoints, unsigned int unCount);
-		void UpdateTransform(TEmfPointS *arPoints, unsigned int unCount);
-
-		double TranslateX(double nX);
-		double TranslateY(double nY);
-
-		TPointD TranslatePoint(const TPointD& oPoint);
 		TRectD TranslateRect(const TEmfRectL& oRect);
 
 		TPointD GetCutPos();

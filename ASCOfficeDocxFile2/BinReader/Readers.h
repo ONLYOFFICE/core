@@ -500,8 +500,9 @@ private:
 	NSBinPptxRW::CBinaryFileReader& m_oBufferedStream;
 	Writers::FileWriter&			m_oFileWriter;
     std::wstring					m_sFileInDir;
-	bool							m_bMacro;
-public: 
+	bool							m_bMacro = false;
+	bool							m_bMacroRead = false;
+public:
 		BinaryFileReader(std::wstring& sFileInDir, NSBinPptxRW::CBinaryFileReader& oBufferedStream, Writers::FileWriter& oFileWriter, bool bMacro = false);
 		int ReadFile();
 		int ReadMainTable();

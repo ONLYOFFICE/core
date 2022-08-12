@@ -511,7 +511,7 @@ namespace PPTX
 								std::wstring sThemePath = sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl" + FILE_SEPARATOR_STR + L"theme";
 								std::wstring sEmbeddingsPath = sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl" + FILE_SEPARATOR_STR + L"embeddings";
 
-								BinXlsxRW::SaveParams oSaveParams(sDrawingsPath, sEmbeddingsPath, sThemePath, oDrawingConverter.GetContentTypes());
+								BinXlsxRW::SaveParams oSaveParams(sDrawingsPath, sEmbeddingsPath, sThemePath, oDrawingConverter.GetContentTypes(), NULL, true);
 
 								std::wstring sXmlOptions, sMediaPath, sEmbedPath;
 								BinXlsxRW::CXlsxSerializer::CreateXlsxFolders(sXmlOptions, sDstEmbeddedTemp, sMediaPath, sEmbedPath);
@@ -528,7 +528,6 @@ namespace PPTX
 								oDrawingConverter.SetMediaDstPath(sMediaPath);
 								oDrawingConverter.SetEmbedDstPath(sEmbedPath);
 
-								std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(id) + L".xlsx";
 								oEmbeddedReader.ReadMainTable(oXlsx, *oDrawingConverter.m_pReader, pReader->m_strFolder, sDstEmbeddedTemp, oSaveParams, &oDrawingConverter);
 
 								oXlsx.PrepareToWrite();
@@ -536,6 +535,7 @@ namespace PPTX
 								oXlsx.Write(sDstEmbeddedTemp, *oSaveParams.pContentTypes);
 
 								COfficeUtils oOfficeUtils(NULL);
+								std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(id) + (oSaveParams.bMacroEnabled ? L".xlsm" : L".xlsx");
 								oOfficeUtils.CompressFileOrDirectory(sDstEmbeddedTemp, sDstEmbedded + FILE_SEPARATOR_STR + sXlsxFilename, true);
 
 								oXlsx.m_mapEnumeratedGlobal = old_enum_map;
@@ -546,7 +546,7 @@ namespace PPTX
 															//m_oId = pReader->m_pRels->WriteRels(sEmbWorksheetRelType, sEmbWorksheetRelsName, std::wstring());
 								m_OleObjectFile->set_filename(sDstEmbedded + FILE_SEPARATOR_STR + sXlsxFilename, false);
 
-								pReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(L"xlsx");
+								pReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(oSaveParams.bMacroEnabled ? L"xlsm" : L"xlsx");
 							}
 							NSDirectory::DeleteDirectory(sDstEmbeddedTemp);
 						}

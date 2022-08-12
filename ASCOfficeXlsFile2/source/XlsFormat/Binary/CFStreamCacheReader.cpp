@@ -70,16 +70,18 @@ const bool StreamCacheReader::checkNextRecord(const CFRecordType::TypeId desirab
 
 // Seek to the next substream (Read all records till EOF then skip EOF)
 // Doesn't generate EndOfStreamReached if the stream is the last one
-void StreamCacheReader::SkipRecord()
+void StreamCacheReader::SkipRecord(bool log_debug)
 {
 	if (records_cache.begin() != records_cache.end())
 	{
-		CFRecordType::TypeString rec_name = records_cache.front()->getTypeString();
-
-		if (rec_name.empty())
-			Log::warning(L"The extracted record has obsoleted or unknown type(0x" + STR::int2hex_wstr(records_cache.front()->getTypeId(), sizeof(CFRecordType::TypeId)) + L")");
-		else
-			Log::warning("The record has been skipped (" + rec_name + ")");
+		if (log_debug)
+		{
+			CFRecordType::TypeString rec_name = records_cache.front()->getTypeString();
+			if (rec_name.empty())
+				Log::warning(L"The extracted record has obsoleted or unknown type(0x" + STR::int2hex_wstr(records_cache.front()->getTypeId(), sizeof(CFRecordType::TypeId)) + L")");
+			else
+				Log::warning("The record has been skipped (" + rec_name + ")");
+		}
 		records_cache.pop_front(); 
 	}
 

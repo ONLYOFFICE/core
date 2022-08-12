@@ -149,15 +149,10 @@ namespace MetaFile
 
 		void AddStroke(NodeAttributes &arAttributes);
 		void AddFill(NodeAttributes &arAttributes);
+		void AddTransform(NodeAttributes &arAttributes, TXForm* pTransform = NULL);
 
-		void UpdateTransform(double dX, double dY);
-		void UpdateTransform(const TRectD& oRect);
-		void UpdateTransform(const std::vector<TWmfPointS>& arPoints, const NodeAttributes& arAttributes = {});
+		void AddNoneFill(NodeAttributes &arAttributes);
 
-		double TranslateX(double nX);
-		double TranslateY(double nY);
-
-		TPointD TranslatePoint(const TPointD& oPoint);
 		TRectD TranslateRect(const TWmfRect& oRect);
 
 		TPointD GetCutPos();

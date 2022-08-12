@@ -183,6 +183,11 @@ namespace MetaFile
 		return m_pInterpretator;
 	}
 
+	CWmfDC *CWmfParserBase::GetDC()
+	{
+		return m_pDC;
+	}
+
 	void CWmfParserBase::SetInterpretator(InterpretatorType oInterpretatorType, unsigned int unWidth, unsigned int unHeight)
 	{
 		RELEASEOBJECT(m_pInterpretator);

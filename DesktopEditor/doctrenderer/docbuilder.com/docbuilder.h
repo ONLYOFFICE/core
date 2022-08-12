@@ -153,18 +153,16 @@ public:
 	}
 	STDMETHOD(ToString)(BSTR* result)
 	{
-		wchar_t* val = m_oValue.ToString();
+		NSDoctRenderer::CString val = m_oValue.ToString();
 		if (result)
 		{
 			*result = NULL;
-			if (val)
+			if (val.c_str())
 			{
-				CString sValue(val);
+				CString sValue(val.c_str());
 				*result = sValue.AllocSysString();
 			}
 		}
-		if (val)
-			m_oValue.FreeString(val);
 		return S_OK;
 	}
 	STDMETHOD(GetProperty)(BSTR name, IONLYOFFICEDocBuilderValue** result)

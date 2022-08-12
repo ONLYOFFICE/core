@@ -78,7 +78,37 @@ namespace OOX
 			{
 				return OOX::et_ds_schemaRef;
 			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+			{
+				pWriter->StartRecord(0);
+					pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+						pWriter->WriteString1(0, m_sUri);
+					pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+				pWriter->EndRecord();
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				BYTE type = pReader->GetUChar();
 
+				LONG _rec_start = pReader->GetPos();
+				LONG _end_rec = _rec_start + pReader->GetRecordSize() + 4;
+
+				pReader->Skip(1); // start attributes
+
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					if (0 == _at)
+						m_sUri = pReader->GetString2();
+					else
+						break;
+				}
+				pReader->Seek(_end_rec);
+			}
 			std::wstring m_sUri;
 		};
 	//----------------------------------------------------------------------	
@@ -284,7 +314,83 @@ namespace OOX
 			}
 			return L"";
 		}
-		
+		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter)
+		{
+			pWriter->StartRecord(NSBinPptxRW::NSMainTables::Customs);
+
+			std::vector<smart_ptr<OOX::File>>& containerCustom = GetContainer();
+			for (size_t i = 0; i < containerCustom.size(); ++i)
+			{
+				if (OOX::FileTypes::CustomXmlProps == containerCustom[i]->type())
+				{
+					OOX::CCustomXMLProps* pCustomXmlProps = dynamic_cast<OOX::CCustomXMLProps*>(containerCustom[i].GetPointer());
+
+					pWriter->StartRecord(0);
+					pWriter->WriteStringW2(pCustomXmlProps->m_oItemID.ToString());
+					pWriter->EndRecord();
+
+					if (pCustomXmlProps->m_oShemaRefs.IsInit())
+					{
+						pWriter->WriteRecordArrayOfPointers(1, 0, pCustomXmlProps->m_oShemaRefs->m_arrItems);
+					}
+				}
+			}
+
+			pWriter->StartRecord(2);
+			pWriter->WriteStringA(m_sXmlA);
+			pWriter->EndRecord();
+
+			pWriter->EndRecord();
+		}
+		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			BYTE type = pReader->GetUChar();
+
+			LONG _rec_start = pReader->GetPos();
+			LONG _end_rec = _rec_start + pReader->GetRecordSize() + 4;
+
+			smart_ptr<OOX::CCustomXMLProps> pCustomXmlProps = new OOX::CCustomXMLProps(NULL);
+			smart_ptr<OOX::File> pCustomXmlPropsFile = pCustomXmlProps.smart_dynamic_cast<OOX::File>();
+			Add(pCustomXmlPropsFile);
+
+			while (pReader->GetPos() < _end_rec)
+			{
+				BYTE _at = pReader->GetUChar();
+				switch (_at)
+				{
+					case 0:
+					{
+						pReader->Skip(4); // len
+						pCustomXmlProps->m_oItemID = pReader->GetString2();
+					}break;
+					case 1:
+					{
+						pCustomXmlProps->m_oShemaRefs.Init();
+						pReader->Skip(4); // len
+						ULONG _c = pReader->GetULong();
+
+						for (ULONG i = 0; i < _c; ++i)
+						{
+							pReader->Skip(1); // type
+							pReader->Skip(4); // len
+							CCustomXMLProps::CShemaRef *pItem = new CCustomXMLProps::CShemaRef();
+							pItem->fromPPTY(pReader);
+							
+							pCustomXmlProps->m_oShemaRefs->m_arrItems.push_back(pItem);
+						}
+					}break;
+					case 2:
+					{
+						pReader->Skip(4); // len
+						m_sXmlA = pReader->GetString2A();
+					}break;
+				}
+			}
+
+			pReader->Seek(_end_rec);
+		}
+
+
 		std::string m_sXmlA;
 
 		bool m_bUsed = false;

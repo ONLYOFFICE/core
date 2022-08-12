@@ -183,6 +183,16 @@ namespace MetaFile
 		short Top;
 		short Right;
 		short Bottom;
+
+		TWmfRect()
+		{
+			Left = Top = Right = Bottom = 0;
+		}
+
+		bool Empty() const
+		{
+			return (0 == Left) && (0 == Top) && (0 == Right) && (0 == Bottom);
+		}
 	};
 	struct TWmfPlaceable
 	{

@@ -68,7 +68,7 @@ public:
 	virtual const int GetRecordPosition() { return 0; }
     virtual void SetRecordPosition(const int) {}
 
-	void SkipRecord();
+	void SkipRecord(bool log_debug = true);
 	// Seek to the next substream (Read all records till EOF then skip EOF)
 	// Doesn't generate EndOfStreamReached if the stream is the last one
 	const bool SeekToEOF(); 

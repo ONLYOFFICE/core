@@ -1,9 +1,8 @@
 #include "CXmlOutput.h"
 #include "../../common/Base64.h"
-#include "../../../Common/DocxFormat/Source/Base/Base.h"
 
 #ifdef _DEBUG
-    #include <iostream>
+#include <iostream>
 #endif
 
 namespace MetaFile
@@ -14,7 +13,7 @@ namespace MetaFile
 
         try
         {
-            return _wtoi(string.c_str());
+			return std::stoi(string);
         }
         catch(...)
         {
@@ -22,32 +21,12 @@ namespace MetaFile
 
         try
         {
-            return static_cast<int>(_wtoi64(string.c_str()));
+			return static_cast<int>(std::stoll(string));
         }
         catch(...)
         {
             return 0;
         }
-    }
-    std::wstring StringNormalization(std::wstring wsString)
-    {
-        std::wstring wsText;
-        for (wchar_t wChar : wsString)
-            if (wChar == L'<')
-                   wsText += L"&lt;";
-            else if (wChar == L'>')
-                   wsText += L"&gt;";
-            else if (wChar == L'&')
-                   wsText += L"&amp;";
-            else if (wChar == L'\'')
-                   wsText += L"&apos;";
-            else if (wChar == L'"')
-                   wsText += L"&quot;";
-            else if (wChar == 0x00)
-                   return wsText;
-
-            else wsText += wChar;
-        return wsText;
     }
 
     CXmlOutput::CXmlOutput(TypeXmlOutput oTypeXmlOutput) :

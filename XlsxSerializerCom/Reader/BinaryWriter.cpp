@@ -4739,6 +4739,11 @@ void BinaryWorksheetTableWriter::WriteOleObjects(const OOX::Spreadsheet::CWorksh
 		olePic->oleObject->m_oId = pRId;
 		olePic->oleObject->m_OleObjectFile = pFileOleObject;
 
+		if (pOleObject->m_oDvAspect.IsInit())
+		{
+			olePic->oleObject->m_oDrawAspect = (BYTE)pOleObject->m_oDvAspect->GetValue();
+		}
+
 		if (olePic->oleObject->m_OleObjectFile.IsInit())
 		{
 			olePic->blipFill.blip->oleFilepathBin = olePic->oleObject->m_OleObjectFile->filename().GetPath();
@@ -7115,11 +7120,11 @@ void BinaryCustomsTableWriter::Write(OOX::IFileContainer *pContainer)
 	int nStart = m_oBcw.WriteItemWithLengthStart();
 
 	std::vector<smart_ptr<OOX::File>>& container = pContainer->GetContainer();
-	for (size_t i = 0; i < container.size(); ++i)
+	for (size_t k = 0; k < container.size(); ++k)
 	{
-		if (OOX::FileTypes::CustomXml == container[i]->type())
+		if (OOX::FileTypes::CustomXml == container[k]->type())
 		{
-			OOX::CCustomXML* pCustomXml = dynamic_cast<OOX::CCustomXML*>(container[i].GetPointer());
+			OOX::CCustomXML* pCustomXml = dynamic_cast<OOX::CCustomXML*>(container[k].GetPointer());
 			if (pCustomXml->m_bUsed) continue;
 
 			int nCurPos = m_oBcw.WriteItemStart(c_oSerCustoms::Custom);
@@ -7310,8 +7315,10 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 
 	if (BinXlsxRW::c_oFileTypes::JSON == saveFileType)
 	{
-		//todo 46 временно CP_UTF8
-		CSVWriter::WriteFromXlsxToCsv(sFileDst, *pXlsx, 46, std::wstring(L","), true);
+//todo 46 временно CP_UTF8
+		
+		CSVWriter oCSVWriter;
+		oCSVWriter.Xlsx2Csv(sFileDst, *pXlsx, 46, std::wstring(L","), true);
 	}
 	else
 	{

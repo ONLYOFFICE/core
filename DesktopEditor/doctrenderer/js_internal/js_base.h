@@ -258,6 +258,7 @@ namespace NSJSBase
         static CJSValue* createUInt(const unsigned int& value);
         static CJSValue* createDouble(const double& value);
         static CJSValue* createString(const char* value, const int& length = -1);
+        static CJSValue* createString(const wchar_t* value, const int& length = -1);
         static CJSValue* createString(const std::string& value);
         static CJSValue* createString(const std::wstring& value);
 
@@ -288,7 +289,7 @@ namespace NSJSBase
         static CJSContext* GetCurrent();
 
     public:
-        static void ExternalInitialize();
+        static void ExternalInitialize(const std::wstring& sDirectory);
         static void ExternalDispose();
         static bool IsSupportNativeTypedArrays();
     };

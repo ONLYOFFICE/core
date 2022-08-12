@@ -42,12 +42,13 @@ namespace MetaFile
 {
 	class CWmfDC;
 	class CWmfFile;
+	class CWmfParserBase;
 
 	class CWmfPlayer
 	{
 	public:
 
-		CWmfPlayer(CWmfFile* pFile);
+		CWmfPlayer(CWmfParserBase* pFile);
 		~CWmfPlayer();
 		void Clear();
 		CWmfDC* SaveDC();
@@ -65,7 +66,7 @@ namespace MetaFile
 
 		CWmfDC*                     m_pDC;
 		std::vector<CWmfDC*>        m_vDCStack;
-		CWmfFile*                   m_pFile;
+		CWmfParserBase*		    m_pParser;
 		CWmfObjectMap               m_mObjects;
 		unsigned short              m_ushIndex;
 		std::vector<unsigned short> m_vAvailableIndexes;

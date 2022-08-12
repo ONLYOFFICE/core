@@ -511,7 +511,7 @@ namespace PPTX
 								std::wstring sThemePath = sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl" + FILE_SEPARATOR_STR + L"theme";
 								std::wstring sEmbeddingsPath = sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl" + FILE_SEPARATOR_STR + L"embeddings";
 
-								BinXlsxRW::SaveParams oSaveParams(sDrawingsPath, sEmbeddingsPath, sThemePath, oDrawingConverter.GetContentTypes());
+								BinXlsxRW::SaveParams oSaveParams(sDrawingsPath, sEmbeddingsPath, sThemePath, oDrawingConverter.GetContentTypes(), NULL, true);
 
 								std::wstring sXmlOptions, sMediaPath, sEmbedPath;
 								BinXlsxRW::CXlsxSerializer::CreateXlsxFolders(sXmlOptions, sDstEmbeddedTemp, sMediaPath, sEmbedPath);
@@ -528,7 +528,6 @@ namespace PPTX
 								oDrawingConverter.SetMediaDstPath(sMediaPath);
 								oDrawingConverter.SetEmbedDstPath(sEmbedPath);
 
-								std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(id) + L".xlsx";
 								oEmbeddedReader.ReadMainTable(oXlsx, *oDrawingConverter.m_pReader, pReader->m_strFolder, sDstEmbeddedTemp, oSaveParams, &oDrawingConverter);
 
 								oXlsx.PrepareToWrite();
@@ -536,6 +535,7 @@ namespace PPTX
 								oXlsx.Write(sDstEmbeddedTemp, *oSaveParams.pContentTypes);
 
 								COfficeUtils oOfficeUtils(NULL);
+								std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(id) + (oSaveParams.bMacroEnabled ? L".xlsm" : L".xlsx");
 								oOfficeUtils.CompressFileOrDirectory(sDstEmbeddedTemp, sDstEmbedded + FILE_SEPARATOR_STR + sXlsxFilename, true);
 
 								oXlsx.m_mapEnumeratedGlobal = old_enum_map;
@@ -546,7 +546,7 @@ namespace PPTX
 															//m_oId = pReader->m_pRels->WriteRels(sEmbWorksheetRelType, sEmbWorksheetRelsName, std::wstring());
 								m_OleObjectFile->set_filename(sDstEmbedded + FILE_SEPARATOR_STR + sXlsxFilename, false);
 
-								pReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(L"xlsx");
+								pReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(oSaveParams.bMacroEnabled ? L"xlsm" : L"xlsx");
 							}
 							NSDirectory::DeleteDirectory(sDstEmbeddedTemp);
 						}
@@ -890,6 +890,10 @@ namespace PPTX
 					{
 						int nDyaOrig = oleObject->m_oDyaOrig.get();
 						pWriter->WriteAttribute(L"imgH", 635 * nDyaOrig); //twips to emu
+					}
+					if ((oleObject->m_oDrawAspect.IsInit()) && (oleObject->m_oDrawAspect->GetBYTECode() == 1))
+					{
+						pWriter->WriteAttribute(L"showAsIcon", 1); 
 					}
 					pWriter->WriteAttribute2(L"progId", oleObject->m_sProgId);
 					pWriter->EndAttributes();
@@ -1547,13 +1551,19 @@ namespace PPTX
 		{
 			oleObject.Init();
 			
+			XmlMacroReadAttributeBase(node, L"showAsIcon", oleObject->m_oShowAsIcon);
             XmlMacroReadAttributeBase(node, L"progId",	oleObject->m_sProgId);
             XmlMacroReadAttributeBase(node, L"r:id",	oleObject->m_oId);
-			
+			XmlMacroReadAttributeBase(node, L"name", oleObject->m_oName);
+
 			if (false == oleObject->m_oId.IsInit())
 			{
 				XmlMacroReadAttributeBase( node, L"relationships:id", oleObject->m_oId );
-			}			
+			}	
+			if ((oleObject->m_oShowAsIcon.IsInit()) && (*oleObject->m_oShowAsIcon))
+			{
+				oleObject->m_oDrawAspect = (BYTE)1;
+			}
 
 			int imgW = node.GetAttributeInt(std::wstring(L"imgW"), 0);			
 			if(imgW > 0)

@@ -25,7 +25,7 @@ namespace NSDocxRenderer
     {
         for (auto pLine : m_arLines)
         {
-            RELEASEOBJECT(pLine);
+            pLine->Clear();
         }
         m_arLines.clear();
     }
@@ -48,7 +48,6 @@ namespace NSDocxRenderer
         m_lColorOfShadingFill    = oSrc.m_lColorOfShadingFill;
         m_eTextAlignmentType     = oSrc.m_eTextAlignmentType;
 
-        m_dRight     = oSrc.m_dRight;
         m_dFirstLine = oSrc.m_dFirstLine;
 
         m_dSpaceBefore	= oSrc.m_dSpaceBefore;
@@ -68,6 +67,11 @@ namespace NSDocxRenderer
 
     void CParagraph::ToXml(NSStringUtils::CStringBuilder& oWriter)
     {
+        if (m_bIsNotNecessaryToUse)
+        {
+            return;
+        }
+
         //todo использовать паттерн builder
         oWriter.WriteString(L"<w:p>");
         oWriter.WriteString(L"<w:pPr>");
@@ -188,10 +192,6 @@ namespace NSDocxRenderer
 
         for(auto pLine : m_arLines)
         {
-            if (m_eTextAssociationType != tatPlainParagraph)
-            {
-                pLine->SortConts();
-            }
             pLine->ToXml(oWriter);
         }
 
@@ -217,6 +217,84 @@ namespace NSDocxRenderer
                     }
                 }
             }
+        }
+    }
+
+    void CParagraph::RightBorderCorrection()
+    {
+        CContText* pSelectedCont = nullptr;
+
+        for (auto pLine : m_arLines)
+        {
+            for (auto pCont : pLine->m_arConts)
+            {
+                if (!pSelectedCont || pSelectedCont->m_oFont.Size < pCont->m_oFont.Size)
+                {
+                    pSelectedCont = pCont;
+                }
+                else if (pSelectedCont->m_oFont.Size == pCont->m_oFont.Size)
+                {
+                    //note считаем что обычный < Italic < Bold < Bold-Italic
+                    if (pSelectedCont->m_oFont.GetTextFontStyle() <
+                            pCont->m_oFont.GetTextFontStyle())
+                    {
+                        pSelectedCont = pCont;
+                    }
+                }
+            }
+        }
+
+        UINT lSize = static_cast<UINT>(2 * pSelectedCont->m_oFont.Size);
+        UINT nType = pSelectedCont->m_oFont.GetTextFontStyle();
+
+        if (nType > 3)
+        {
+            //Error!
+            return;
+        }
+
+        if (lSize > 144)
+        {
+            lSize = 145;
+        }
+
+        //note нужно корректировать каждый размер отдельно
+        m_dRight -= c_dRightBorderCorrectionSize[lSize][nType];
+    }
+
+    void CParagraph::MergeLines()
+    {
+        if (m_nNumLines < 2)
+        {
+            return;
+        }
+
+        CTextLine* pLine = m_arLines.front();
+
+        for(size_t i = 1; i < m_arLines.size(); i++)
+        {
+            if (pLine->m_arConts.back()->m_bIsNeedSpace)
+            {
+                pLine->m_arConts.back()->m_oText += L" ";
+                pLine->m_arConts.back()->m_bIsNeedSpace = false;
+            }
+
+            auto pNext = m_arLines[i];
+
+            for (auto pCont : pNext->m_arConts)
+            {
+                if (pLine->m_arConts.back()->IsEqual(pCont))
+                {
+                    pLine->m_arConts.back()->m_oText += pCont->m_oText;
+                }
+                else
+                {
+                    pLine->m_arConts.push_back(new CContText(*pCont));
+                }
+                pCont->m_bIsNotNecessaryToUse = true;
+            }
+
+            pNext->m_bIsNotNecessaryToUse = true;
         }
     }
 }

@@ -35,22 +35,15 @@
 
 namespace DocFileFormat
 {
-	/*
-	typedef struct _LatentStyleData
+	struct LSD
 	{
-		unsigned int grflsd;
-		bool fLocked;
-	} LatentStyleData;
-*/
-		struct LSD
-		{
-			unsigned int fLocked			:	1;
-			unsigned int fSemiHidden		:	1;
-			unsigned int fUnhideWhenUsed	:	1;
-			unsigned int fQFormat			:	1;
-			unsigned int iPriority			:	12;
-			unsigned int fReserved			:	16;
-		};
+		bool fLocked = false;
+		bool fSemiHidden = false;
+		bool fUnhideWhenUsed = false;
+		bool fQFormat = false;
+		unsigned short iPriority = 0;
+		unsigned short fReserved = 0;
+	};
 
 
 	class StyleSheetInformation

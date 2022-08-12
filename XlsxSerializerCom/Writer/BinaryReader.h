@@ -199,7 +199,9 @@ namespace BinXlsxRW
 		OOX::Spreadsheet::CWorkbook									& m_oWorkbook;
         boost::unordered_map<long, NSCommon::smart_ptr<OOX::File>>	& m_mapPivotCacheDefinitions;
         const std::wstring											& m_sDestinationDir;
-		NSBinPptxRW::CDrawingConverter								* m_pOfficeDrawingConverter;
+		
+		NSBinPptxRW::CDrawingConverter *m_pOfficeDrawingConverter = NULL;
+		bool m_bMacroRead = false;
 	public:
         BinaryWorkbookTableReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, OOX::Spreadsheet::CWorkbook& oWorkbook, boost::unordered_map<long, NSCommon::smart_ptr<OOX::File>>& mapPivotCacheDefinitions, const std::wstring& sDestinationDir, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter);
 		int Read();

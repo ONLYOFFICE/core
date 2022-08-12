@@ -263,7 +263,7 @@ namespace NSBinPptxRW
 			for (LONG i = 0; i < nCountSlides; ++i)
 				m_arSlides_Notes.push_back(-1);
 
-			// ThemeRels
+	// ThemeRels
 			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::ThemeRels);
 			if (m_mainTables.end() != pPair)
 			{
@@ -278,7 +278,7 @@ namespace NSBinPptxRW
 				}
 			}
 
-			// нужно проставить всем шаблонам мастер.
+	// нужно проставить всем шаблонам мастер.
 			for (LONG i = 0; i < nCountMasters; ++i)
 			{
 				size_t _countL = m_arSlideMasters_Theme[i].m_arLayouts.size();
@@ -293,7 +293,7 @@ namespace NSBinPptxRW
 				}
 			}
 
-			// готово, теперь нужно слайдам проставить шаблоны
+	// готово, теперь нужно слайдам проставить шаблоны
 			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::SlideRels);
 			if (m_mainTables.end() != pPair)
 			{
@@ -347,7 +347,7 @@ namespace NSBinPptxRW
 					m_arNotesMasters_Theme.push_back(m_oReader.GetULong());
 				}
 			}
-			// теперь нужно удалить все themes, которые не ведут на мастерслайды
+	// теперь нужно удалить все themes, которые не ведут на мастерслайды
 			std::vector<LONG> arThemes;
 			std::vector<LONG> arThemesDst;
 			std::vector<bool> arThemesSave;
@@ -383,12 +383,12 @@ namespace NSBinPptxRW
 				arThemesDst[i] = lCurrectTheme;
 				++lCurrectTheme;
 			}
-			// теперь нужно перебить ссылки
+	// теперь нужно перебить ссылки
 			for (LONG i = 0; i < nCountMasters && i < arThemesDst.size(); ++i)
 			{
 				m_arSlideMasters_Theme[i].m_lThemeIndex = arThemesDst[i];
 			}
-			// themes
+	// themes
 			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::Themes);
 			if (m_mainTables.end() != pPair)
 			{
@@ -436,8 +436,7 @@ namespace NSBinPptxRW
 					m_oReader.m_pRels->SaveRels(pathFileRels.GetPath());
 				}
 			}
-
-			// slideMasters
+	// slideMasters
 			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::SlideMasters);
 			if (m_mainTables.end() != pPair)
 			{
@@ -494,8 +493,7 @@ namespace NSBinPptxRW
 					m_oReader.m_pRels->SaveRels(pathFileRels.GetPath());
 				}
 			}
-
-			// slideLayouts
+	// slideLayouts
 			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::SlideLayouts);
 			if (m_mainTables.end() != pPair)
 			{
@@ -537,7 +535,7 @@ namespace NSBinPptxRW
 					m_oReader.m_pRels->SaveRels(pathFileRels.GetPath());
 				}
 			}
-			// notes
+	// notes
 			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::NotesSlides);
 			if (m_mainTables.end() != pPair)
 			{
@@ -592,7 +590,7 @@ namespace NSBinPptxRW
 					}
 				}
 			}
-			// noteMasters
+	// noteMasters
 			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::NotesMasters);
 			if (m_mainTables.end() != pPair)
 			{
@@ -642,7 +640,7 @@ namespace NSBinPptxRW
 					}
 				}
 			}
-			// slides
+	// slides
 			int nComment = 1;
 			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::Slides);
 			if (m_mainTables.end() != pPair)
@@ -705,8 +703,7 @@ namespace NSBinPptxRW
 					m_oReader.m_pRels->SaveRels(pathFileRels.GetPath());
 				}
 			}
-
-			// app
+	// app
 			CreateDefaultApp();
 			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::App);
 			if (m_mainTables.end() != pPair)
@@ -721,8 +718,7 @@ namespace NSBinPptxRW
 				}
 				SetRequiredDefaultsApp();
 			}
-
-			// core
+	// core
 			CreateDefaultCore();
 			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::Core);
 			if (m_mainTables.end() != pPair)
@@ -751,9 +747,36 @@ namespace NSBinPptxRW
 				{
 				}
 			}
+	// customs
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::Customs);
+			if (m_mainTables.end() != pPair)
+			{
+				OOX::CPath pathFolder = m_strDstFolder + FILE_SEPARATOR_STR + _T("customXml");
+				OOX::CPath pathFolderRels = pathFolder + FILE_SEPARATOR_STR + _T("_rels");
+
+				NSDirectory::CreateDirectory(pathFolder.GetPath());
+				NSDirectory::CreateDirectory(pathFolderRels.GetPath());
+
+				m_oReader.Seek(pPair->second);
+				int nCountCustoms = m_oReader.GetLong();
+
+				for (int i = 0; i < nCountCustoms; ++i)
+				{
+					smart_ptr<OOX::CCustomXML> pCustomXml = new OOX::CCustomXML(NULL, false);
+
+					pCustomXml->fromPPTY(&m_oReader);
+					
+					//smart_ptr<OOX::File> pCustomXmlFile = pCustomXml.smart_dynamic_cast<OOX::File>();
+					//m_oPresentation.Add(pCustomXmlFile);
+					OOX::CPath filename(L"item" + std::to_wstring(i + 1) + L".xml");
+					pCustomXml->write(pathFolder / filename, OOX::CPath(m_strDstFolder), *m_oImageManager.m_pContentTypes);
+				}
+				m_oReader.m_pRels->WriteCustoms(nCountCustoms);
+			}
+
 			if (false)
 			{
-				// tableStyles
+	// tableStyles
 				pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::TableStyles);
 				if (m_mainTables.end() != pPair)
 				{
@@ -782,7 +805,7 @@ namespace NSBinPptxRW
 					}
 				}
 
-				// viewProps
+		// viewProps
 				pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::ViewProps);
 				if (m_mainTables.end() != pPair)
 				{
@@ -799,10 +822,10 @@ namespace NSBinPptxRW
 			}
 			else
 			{
-				// create default
+	// create default
 				CreateDefaultViewProps();
 
-				// presProps
+	// presProps
 				pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::PresProps);
 				if (m_mainTables.end() != pPair)
 				{
@@ -838,15 +861,15 @@ namespace NSBinPptxRW
 					CreateDefaultTableStyles();
 				}
 			}
-
-			// app 
+//------------------------------------------------------------------------------------------
+	// app 
 			oXmlWriter.ClearNoAttack();
 			m_oApp.toXmlWriter(&oXmlWriter);
 
 			OOX::CPath pathApp = m_strDstFolder + FILE_SEPARATOR_STR + _T("docProps") + FILE_SEPARATOR_STR + _T("app.xml");
 			oXmlWriter.SaveToFile(pathApp.GetPath());
 
-			// core
+	// core
 			oXmlWriter.ClearNoAttack();
 			m_oCore.toXmlWriter(&oXmlWriter);
 
@@ -964,10 +987,13 @@ namespace NSBinPptxRW
 				m_oReader.m_pRels->EndPresentationRels(m_oPresentation.commentAuthors.is_init(), m_oPresentation.m_pVbaProject.is_init(), m_oPresentation.m_pJsaProject.is_init());
 				m_oReader.m_pRels->CloseRels();
 
+				OOX::CPath pathPresentation = pathFolder / m_oPresentation.DefaultFileName();
+				
+				// todooo втащить все как сделано для Custom
+				//m_oPresentation.write(pathPresentation, m_oPresentation.DefaultDirectory(), *m_oImageManager.m_pContentTypes);
 				oXmlWriter.ClearNoAttack();
 				m_oPresentation.toXmlWriter(&oXmlWriter);
 
-				OOX::CPath pathPresentation = pathFolder + FILE_SEPARATOR_STR + _T("presentation.xml");
 				oXmlWriter.SaveToFile(pathPresentation.GetPath());
 
 				OOX::CPath pathPresentationRels = pathFolderRels + FILE_SEPARATOR_STR + _T("presentation.xml.rels");

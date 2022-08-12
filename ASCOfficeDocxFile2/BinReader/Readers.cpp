@@ -8788,8 +8788,7 @@ int Binary_DocumentTableReader::ReadEmbedded(BYTE type, long length, void* poRes
 
 				int id = m_oFileWriter.m_oChartWriter.nEmbeddedCount++;
 
-				std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(id + 1) + L".xlsx";
-				BinXlsxRW::SaveParams oSaveParams(strDstEmbeddedTempDrawingPath, strDstEmbeddedTempEmbeddingsPath, strDstEmbeddedTempThemePath, m_oFileWriter.m_pDrawingConverter->GetContentTypes());//???
+				BinXlsxRW::SaveParams oSaveParams(strDstEmbeddedTempDrawingPath, strDstEmbeddedTempEmbeddingsPath, strDstEmbeddedTempThemePath, m_oFileWriter.m_pDrawingConverter->GetContentTypes(), NULL, true);
 
 				OOX::Spreadsheet::CXlsx oXlsx;
 
@@ -8800,12 +8799,15 @@ int Binary_DocumentTableReader::ReadEmbedded(BYTE type, long length, void* poRes
 
 				oXlsx.Write(strDstEmbeddedTemp, *oSaveParams.pContentTypes);
 
+				std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(id + 1) + (oSaveParams.bMacroEnabled ? L".xlsm" : L".xlsx");
 				COfficeUtils oOfficeUtils(NULL);
 				oOfficeUtils.CompressFileOrDirectory(strDstEmbeddedTemp, strDstEmbedded + FILE_SEPARATOR_STR + sXlsxFilename, true);
 
 				std::wstring sEmbWorksheetRelsName = L"embeddings/" + sXlsxFilename;
-				std::wstring bstrEmbWorksheetRelType = OOX::FileTypes::MicrosoftOfficeExcelWorksheet.RelationType();
-				m_oFileWriter.m_pDrawingConverter->WriteRels(bstrEmbWorksheetRelType, sEmbWorksheetRelsName, std::wstring(), &pDrawingProperty->nObjectId);
+				std::wstring sEmbWorksheetRelType = oSaveParams.bMacroEnabled ? OOX::FileTypes::MicrosoftOfficeExcelMacro_EnabledWorksheet.RelationType() :
+																				OOX::FileTypes::MicrosoftOfficeExcelWorksheet.RelationType();
+				
+				m_oFileWriter.m_pDrawingConverter->WriteRels(sEmbWorksheetRelType, sEmbWorksheetRelsName, std::wstring(), &pDrawingProperty->nObjectId);
 
 				NSDirectory::DeleteDirectory(strDstEmbeddedTemp);
 			}
@@ -9991,6 +9993,7 @@ int BinaryFileReader::ReadMainTable()
 		}break;
 		case c_oSerTableTypes::VbaProject:
 		{
+			m_bMacroRead = true;
 			m_oBufferedStream.Skip(1); //skip type
 			if (m_bMacro)
 			{

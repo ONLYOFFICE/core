@@ -1121,6 +1121,11 @@ private:
                         j += nColspan - 1;
                 }
 
+                std::wstring wsVerticalAlign = oStyle.m_pDisplay.GetVerticalAlign();
+
+                if (!wsVerticalAlign.empty())
+                        oXml->WriteString(L"<w:vAlign w:val=\"" + wsVerticalAlign + L"\"/>");
+
                 oXml->WriteString(L"<w:hideMark/></w:tcPr>");
                 size_t nEmpty = oXml->GetCurSize();
                 m_bWasPStyle = false;

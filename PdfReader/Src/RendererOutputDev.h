@@ -266,6 +266,7 @@ namespace PdfReader
 		void Type3D1(GfxState *pGState, double dWx, double dWy, double dBLx, double dBLy, double dTRx, double dTRy);
 		//----- Вывод картинок
 		virtual void drawImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate) override;
+		virtual void setSoftMaskFromImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate) override;
 		virtual void drawImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, int *pMaskColors, GBool bInlineImg, GBool interpolate) override;
 		virtual void drawMaskedImage(GfxState *pGState,
 									 Object *pRef,
@@ -285,10 +286,10 @@ namespace PdfReader
 										 GfxImageColorMap *pMaskColorMap,
 										 double *pMatte, GBool interpolate) override;
 		//----- Transparency groups и SMasks
-		virtual void beginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, bool bIsolated, bool bKnockout, bool bForSoftMask);
+		virtual void beginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, GBool bIsolated, GBool bKnockout, GBool bForSoftMask);
 		virtual void endTransparencyGroup(GfxState *pGState);
 		virtual void paintTransparencyGroup(GfxState *pGState, double *pBBox);
-		virtual void setSoftMask(GfxState *pGState, double *pBBox, bool bAlpha, Function *pTransferFunc, GfxColor *pBackdropColor);
+		virtual void setSoftMask(GfxState *pGState, double *pBBox, GBool bAlpha, Function *pTransferFunc, GfxColor *pBackdropColor);
 		virtual void clearSoftMask(GfxState *pGState);
 		//----- Дополнительные функции для данного устройства
 		void NewPDF(XRef *pXref);
@@ -324,9 +325,14 @@ namespace PdfReader
 
 		bool                          m_bTiling;
 		bool                          m_bTransparentGroup;
-
+		bool                          m_bIsolatedTransparentGroup;
 		bool                          m_bTransparentGroupSoftMask;
-		unsigned char*                m_pTransparentGroupSoftMask;
+		bool                          m_bTransparentGroupSoftMaskEnd;
+		std::vector<bool>             m_arrTransparentGroupSoftMask;
+
+		unsigned char*                m_pSoftMask;
+		int                           m_nSoftMaskWidth;
+		int                           m_nSoftMaskHeight;
 
         bool                          m_bDrawOnlyText; // Special option for html-renderer
 

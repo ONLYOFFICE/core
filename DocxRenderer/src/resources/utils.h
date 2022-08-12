@@ -9,7 +9,10 @@ inline LONG ConvertColorBGRToRGB(LONG lBGR)
 
 inline bool IsSpaceUtf32(const uint32_t& c)
 {
-    return (' ' == c) ? true : false;
+    return (0x20 == c ||        //пробел
+            0xA0 == c ||        //неразрывный пробел
+            0x2003 == c         //Em пробел
+            ) ? true : false;
 }
 inline bool IsSpaceUtf32(const NSStringUtils::CStringUTF32& oText)
 {
@@ -18,18 +21,15 @@ inline bool IsSpaceUtf32(const NSStringUtils::CStringUTF32& oText)
     return IsSpaceUtf32(oText.ToStdWString()[0]);
 }
 
-inline bool IsUnicodeSymbol( int symbol )
+inline bool IsUnicodeSymbol(const int& symbol )
 {
-    bool result = false;
-
     if ( ( 0x0009 == symbol ) || ( 0x000A == symbol ) || ( 0x000D == symbol ) ||
        ( ( 0x0020 <= symbol ) && ( 0xD7FF >= symbol ) ) || ( ( 0xE000 <= symbol ) && ( symbol <= 0xFFFD ) ) ||
        ( ( 0x10000 <= symbol ) && symbol ) )
     {
-        result = true;
+        return true;
     }
-
-    return result;
+    return false;
 }
 
 // 2-byte number

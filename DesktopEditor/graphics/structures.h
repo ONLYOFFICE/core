@@ -584,13 +584,13 @@ namespace NSStructures
 			return 4;
 		}
 
-        LONG GetTextFontStyle()
+        LONG GetTextFontStyle() const
         {
             if ((0 == Bold) && (0 == Italic))
                 return 0;
-            if ((1 == Bold) && (0 == Italic))
-                return 1;
             if ((0 == Bold) && (1 == Italic))
+                return 1;
+            if ((1 == Bold) && (0 == Italic))
                 return 2;
             if ((1 == Bold) && (1 == Italic))
                 return 3;

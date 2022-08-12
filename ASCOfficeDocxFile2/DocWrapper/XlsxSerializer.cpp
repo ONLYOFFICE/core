@@ -182,7 +182,7 @@ namespace BinXlsxRW{
 
 		std::wstring sFileName;
 
-		BinXlsxRW::SaveParams			oSaveParams(sDrawingsPath, sEmbedingPath, sThemePath, m_pExternalDrawingConverter->GetContentTypes());
+		BinXlsxRW::SaveParams			oSaveParams(sDrawingsPath, sEmbedingPath, sThemePath, m_pExternalDrawingConverter->GetContentTypes(), NULL, true);
 		BinXlsxRW::BinaryChartReader	oBinaryChartReader(*pReader, oSaveParams, m_pExternalDrawingConverter);
 	
 		bool bResult = false;
@@ -201,19 +201,22 @@ namespace BinXlsxRW{
 			
 			if (bResult && pReader->m_nDocumentType != XMLWRITER_DOC_TYPE_XLSX && !sEmbedingPath.empty() && !bXlsxPresent)
 			{
-				std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(pReader->m_nCountEmbedded) + L".xlsx";
+				std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(pReader->m_nCountEmbedded) + 
+																								(oSaveParams.bMacroEnabled ? L".xlsm" : L".xlsx");
 				std::wstring sXlsxPath = sEmbedingPath + FILE_SEPARATOR_STR + sXlsxFilename;
 
 				pReader->m_nCountEmbedded++;
 
 				if (writeChartXlsx(sXlsxPath, file))
 				{
-					pReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(L"xlsx");
+					pReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(oSaveParams.bMacroEnabled ? L"xlsm" : L"xlsx");
 
 					std::wstring sChartsWorksheetRelsName = L"../embeddings/" + sXlsxFilename;
 					unsigned int rId;
-					std::wstring bstrChartsWorksheetRelType = OOX::FileTypes::MicrosoftOfficeExcelWorksheet.RelationType();
-					m_pExternalDrawingConverter->WriteRels(bstrChartsWorksheetRelType, sChartsWorksheetRelsName, std::wstring(), &rId);
+					std::wstring sChartsWorksheetRelType = oSaveParams.bMacroEnabled ?	OOX::FileTypes::MicrosoftOfficeExcelMacro_EnabledWorksheet.RelationType() :
+																						OOX::FileTypes::MicrosoftOfficeExcelWorksheet.RelationType();
+					
+					m_pExternalDrawingConverter->WriteRels(sChartsWorksheetRelType, sChartsWorksheetRelsName, std::wstring(), &rId);
 
 					chart_file->m_oChartSpace.m_externalData = new OOX::Spreadsheet::CT_ExternalData();
 					chart_file->m_oChartSpace.m_externalData->m_id = new std::wstring();

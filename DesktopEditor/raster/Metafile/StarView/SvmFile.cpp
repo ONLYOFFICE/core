@@ -31,11 +31,10 @@
  */
 #include <string>
 
-#include "../../../graphics/GraphicsRenderer.h"
+#include "../../../graphics/pro/Graphics.h"
 #include "../Common/MetaFileTypes.h"
 #include "../Common/MetaFileRenderer.h"
 
-#include "../../../../Common/DocxFormat/Source/Base/Types_32.h"
 #include "../../../../OfficeUtils/src/OfficeUtils.h"
 #ifdef _DEBUG
 	#include <iostream>
@@ -44,10 +43,6 @@
 #include "SvmFile.h"
 #include "SvmEnums.h"
 #include "SvmObjects.h"
-
-#if defined(DrawText)
-#undef DrawText
-#endif
 
 #define DEBUG_CSvmParser 0
 
@@ -783,7 +778,7 @@ void CSvmFile::Read_META_FLOATTRANSPARENT()
 	CSvmFile subMetaFile(m_oStream.GetCurPtr() , m_unRecordSize);
 	
 	subMetaFile.m_bMainStream = false;
-	subMetaFile.SetFontManager(GetFontManager());
+    subMetaFile.SetFontManager(GetFontManager());
 
 	subMetaFile.PlayMetaFile();
 	int skip_size = subMetaFile.m_oStream.Tell();

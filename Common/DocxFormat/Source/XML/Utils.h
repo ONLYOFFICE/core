@@ -188,7 +188,7 @@ namespace XmlUtils
              return 0;
 		}
     }
-	AVSINLINE static int     GetInteger (const std::wstring& string)
+	AVSINLINE static int GetInteger (const std::wstring& string)
 	{
         if (string.empty()) return 0;
 
@@ -214,19 +214,10 @@ namespace XmlUtils
         if (string.empty()) return 0;
         try
         {
-            return (unsigned int) _wtoi(string.c_str());
-        }
-        catch(...)
-        {
-        }
-
-        try
-        {
             return (unsigned int) _wtoi64(string.c_str());
         }
         catch(...)
         {
-            return 0;
         }
     }
     AVSINLINE static double  GetDouble  (const std::wstring& string)

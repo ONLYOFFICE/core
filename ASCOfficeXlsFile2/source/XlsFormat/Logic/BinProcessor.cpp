@@ -248,10 +248,10 @@ void BinReaderProcessor::SeekToEOF()
 	if (reader_)
 		reader_->SeekToEOF();
 }
-void BinReaderProcessor::SkipRecord()
+void BinReaderProcessor::SkipRecord(bool log_debug)
 {
 	if (reader_)
-		reader_->SkipRecord();
+		reader_->SkipRecord(log_debug);
 }
 const int BinReaderProcessor::GetRecordPosition()
 {

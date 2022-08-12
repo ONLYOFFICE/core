@@ -505,7 +505,7 @@ int CFontManager::GetKerning(UINT unPrevGID, UINT unGID)
 	return m_pFont->GetKerning(unPrevGID, unGID);
 }
 
-INT CFontManager::GetUnderline(float *pfStartX, float *pfStartY, float *pfEndX, float *pfEndY, float *pfSize)
+int CFontManager::GetUnderline(float *pfStartX, float *pfStartY, float *pfEndX, float *pfEndY, float *pfSize)
 {
 	if ( m_oString.GetLength() <= 0 || !m_pFont )
 	{

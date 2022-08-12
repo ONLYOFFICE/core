@@ -2072,6 +2072,9 @@ int BinaryWorkbookTableReader::Read()
 {
 	int res = c_oSerConstants::ReadOk;
 	READ_TABLE_DEF(res, this->ReadWorkbookTableContent, this);
+
+	if (!m_bMacroRead)
+		m_oWorkbook.m_bMacroEnabled = false;
 	return res;
 }
 int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, void* poResult)
@@ -2124,6 +2127,7 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 	}
 	else if(c_oSerWorkbookTypes::VbaProject == type)
 	{
+		m_bMacroRead = true;
 		m_oBufferedStream.Skip(1); //skip type
 
 		if (m_oWorkbook.m_bMacroEnabled)
@@ -7554,7 +7558,9 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 			}
 			else
 			{
-				CSVWriter::CCSVWriter oCSVWriter(oXlsx, nCodePage, sDelimiter, false);
+				CSVWriter oCSVWriter;
+				
+				oCSVWriter.Init(oXlsx, nCodePage, sDelimiter, false);
 				oCSVWriter.Start(sDstPathCSV);
 				SaveParams oSaveParams(drawingsPath, embeddingsPath, themePath, pOfficeDrawingConverter->GetContentTypes(), &oCSVWriter);
 				
@@ -7657,6 +7663,7 @@ int BinaryFileReader::ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, NSBinPptxRW:
 		res = BinaryWorkbookTableReader(oBufferedStream, *oXlsx.m_pWorkbook, m_mapPivotCacheDefinitions, sOutDir, pOfficeDrawingConverter).Read();
 		if(c_oSerConstants::ReadOk != res)
 			return res;
+		oSaveParams.bMacroEnabled = oXlsx.m_pWorkbook->m_bMacroEnabled;
 	}
 	if(-1 != nPersonListOffBits)
 	{

@@ -46,6 +46,12 @@ namespace MetaFile
         virtual int GetType() { return 0; }
         virtual void ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1) {}
         virtual NSFonts::IFontManager* get_FontManager() { return NULL; }
+
+        virtual void ConvertToXml(const wchar_t* wsFilePath) {}
+        virtual void ConvertToXmlAndRaster(const wchar_t *wsXmlFilePath, const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1) {}
+
+        virtual bool LoadFromXmlFile(const wchar_t* wsFilePath) { return false; }
+        virtual void ConvertToEmf(const wchar_t *wsFilePath) {}
     };
 	
 	IMetaFile* Create(NSFonts::IApplicationFonts *pAppFonts)

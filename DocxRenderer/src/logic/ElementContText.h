@@ -10,6 +10,14 @@ namespace NSDocxRenderer
 {
     class CShape;
 
+    enum class eVertAlignType
+    {
+        vatUnknown,
+        vatBase,
+        vatSubscript,
+        vatSuperscript
+    };
+
     class CContText : public CBaseItem
     {
         public:
@@ -21,7 +29,6 @@ namespace NSDocxRenderer
 
             NSStringUtils::CStringUTF32 m_oText;
 
-            double m_dBaselinePos {0};
             double m_dBaselineOffset {0};
             double m_dLastX {0};
 
@@ -35,8 +42,20 @@ namespace NSDocxRenderer
             eLineType m_eUnderlineType {eLineType::ltUnknown};
             LONG   m_lUnderlineColor {c_iBlackColor};
 
+            eVertAlignType m_eVertAlignType {eVertAlignType::vatUnknown};
+
+            bool   m_bIsShadowPresent {false};
+            bool   m_bIsOutlinePresent {false};
+            bool   m_bIsEmbossPresent {false};
+            bool   m_bIsEngravePresent {false};
+
             const CShape* m_pShape {nullptr}; //Если не nullptr, то есть фоновая графика - можно анализировать.
             CFontManagerLight* m_pManagerLight {nullptr};
+            const CContText* m_pCont {nullptr}; //Если не nullptr, то есть привязка к vatSubscript или vatSuperscript;
+
+#if USING_DELETE_DUPLICATING_CONTS == 0
+            CContText* m_pDuplicateCont {nullptr};
+#endif
 
         public:
             CContText(CFontManagerLight& oManagerLight);
@@ -58,5 +77,9 @@ namespace NSDocxRenderer
 
             void AddSpaceToEnd();
             bool IsEqual(const CContText* oSrc);
+
+            bool IsDuplicate(CContText* pCont, const eVerticalCrossingType& eVType);
+            bool IsThereAreFontEffects(CContText* pCont, const eVerticalCrossingType& eVType, const eHorizontalCrossingType& eHType);
+            bool IsVertAlignTypeBetweenConts(CContText* pCont, const eVerticalCrossingType& eVType, const eHorizontalCrossingType& eHType);
     };
 }

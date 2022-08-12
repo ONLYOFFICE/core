@@ -45,6 +45,8 @@ namespace PdfWriter
 		"OneColumn",
 		"TwoColumnLeft",
 		"TwoColumnRight",
+		"TwoPageLeft",
+		"TwoPageRight",
 		NULL
 	};
 	static const char* c_sPageModeNames[] =
@@ -96,6 +98,12 @@ namespace PdfWriter
 #endif
             pRGBProfile->GetStream()->Write((unsigned char*)c_arrICCsRGB, c_nSizeICCsRGB, false);
 		}
+	}
+	CCatalog::CCatalog(CXref* pXref, const std::wstring& sCatalog)
+	{
+		pXref->Add(this);
+
+		FromXml(sCatalog);
 	}
 	CPageTree*   CCatalog::GetRoot() const
 	{

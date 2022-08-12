@@ -686,11 +686,10 @@ void OOXShapeReader::Parse(ReaderParameter oParam, PPTX::Logic::ColorBase *oox_c
 
 	oox_color->SetParentFilePointer(oParam.oDocx->m_pTheme);
 
-	nColor = oox_color->GetARGB(0);
-	BYTE alpha = nColor >> 24;
+	BYTE alpha = oox_color->alpha;
 	if (alpha != 0xff)
 		opacity = alpha;
-	nColor = nColor & 0x00ffffff;
+	nColor = (oox_color->blue << 16) + (oox_color->green << 8) + oox_color->red;
 	//switch( oox_color->m_eType )
 	//{
 	//	case OOX::Drawing::colorSheme:	Parse(oParam, &oox_color->m_oShemeClr,	nColor, opacity);		break;

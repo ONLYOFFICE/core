@@ -17,13 +17,16 @@ namespace NSDocxRenderer
 
             std::vector<CContText*> m_arConts;
 
-            double m_dBaselinePos {0.0};
             double m_dBaselineOffset {0.0};
 
             AssumedTextAlignmentType m_eAlignmentType {atatUnknown};
 
-            const CShape* m_pDominantShape {nullptr};
+            eVertAlignType m_eVertAlignType {eVertAlignType::vatUnknown};
 
+            const CShape* m_pDominantShape {nullptr};
+#if USING_DELETE_DUPLICATING_CONTS == 0
+            CTextLine* m_pDuplicateLine {nullptr};
+#endif
         public:
             CTextLine();
             void Clear() override final;
@@ -39,7 +42,7 @@ namespace NSDocxRenderer
             void SortConts();
 
             //Объединяем слова из двух строк
-            void Merge(CTextLine* pTextLine);
+            void Merge(const CTextLine* pTextLine);
             //Объединяем подходящие слова в текущей строке, если возможно
             void Analyze();
             bool IsForceBlock();
@@ -53,12 +56,13 @@ namespace NSDocxRenderer
             void DetermineAssumedTextAlignmentType(double dWidthOfPage);
             //Определяем на основании выравнивания подходят ли текущая и следующая строки для добавления в параграф
             bool AreAlignmentsAppropriate(const CTextLine* oSrc);
-            //Определяем пересекаются ли линии
-            bool AreLinesCrossing(const CTextLine* oSrc);
+
+            void SetVertAlignType(const eVertAlignType& oType);
 
             //Вычисляем
             double CalculateBeforeSpacing(const double* pPreviousStringOffset);
             double CalculateStringOffset();
             double CalculateRightBorder(const double& dPageWidth);
+            double RightBorderCorrection();
     };
 }

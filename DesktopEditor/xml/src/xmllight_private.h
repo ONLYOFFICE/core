@@ -100,8 +100,21 @@ namespace XmlUtils
             DWORD dwRead = 0;
             oFile.ReadFile(m_pStream, (DWORD)m_lStreamLen, dwRead);
             oFile.CloseFile();
+     //trim left
 
-            reader = xmlReaderForMemory((char*)m_pStream, m_lStreamLen, NULL, NULL, 0);
+            LONG pos_start = 0;
+
+            while(pos_start < m_lStreamLen)
+            {
+                if (((char*)m_pStream)[pos_start]!= 0 &&
+                    ((char*)m_pStream)[pos_start] != '\n' &&
+                    ((char*)m_pStream)[pos_start] != '\t' &&
+                    ((char*)m_pStream)[pos_start] != ' ')
+                    break;
+                pos_start++;
+            }
+
+            reader = xmlReaderForMemory((char*)m_pStream + pos_start, m_lStreamLen - pos_start, NULL, NULL, 0);
 
             return true;
         }
@@ -474,13 +487,13 @@ namespace XmlUtils
         }
         void CheckBufferSize(unsigned int nOffset, unsigned int nRequired, wchar_t*& sBuffer, long& nSize)
         {
-            if(nOffset + nRequired > nSize)
+            if(nOffset + nRequired > (unsigned int)nSize)
             {
                 if(0 == nSize)
                 {
                     nSize = nOffset + nRequired;
                 }
-                while(nOffset + nRequired > nSize)
+                while(nOffset + nRequired > (unsigned int)nSize)
                 {
                     nSize *= 2;
                 }

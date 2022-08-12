@@ -121,32 +121,21 @@ namespace NSDoctRenderer
                     {
                         m_strAllFonts = private_GetFile(sConfigDir, sAllFontsPath);
 
-#ifndef _WIN32
                         // на папку может не быть прав
                         if (!NSFile::CFileBinary::Exists(m_strAllFonts))
                         {
                             FILE* pFileNative = NSFile::CFileBinary::OpenFileNative(m_strAllFonts, L"wb");
                             if (!pFileNative)
                             {
-                                std::wstring sHomeDir = NSSystemUtils::GetEnvVariable(L"HOME");
-
-                                if (!sHomeDir.empty())
-                                {
-                                    if (NSDirectory::Exists(sHomeDir + L"/.local/share"))
-                                        sHomeDir = sHomeDir + L"/.local/share";
-                                    else if (NSDirectory::Exists(sHomeDir + L"/.local"))
-                                        sHomeDir = sHomeDir + L"/.local";
-
-                                    if (NSDirectory::CreateDirectory(sHomeDir + L"/.docbuilder"))
-                                        m_strAllFonts = sHomeDir + L"/.docbuilder/AllFonts.js";
-                                }
+                                std::wstring sAppDir = NSSystemUtils::GetAppDataDir();
+                                if (NSDirectory::CreateDirectory(sAppDir + L"/docbuilder"))
+                                    m_strAllFonts = sAppDir + L"/docbuilder/AllFonts.js";
                             }
                             else
                             {
                                 fclose(pFileNative);
                             }
                         }
-#endif
                     }
                 }
                 m_arrFiles.push_back(private_GetFile(sConfigDir, m_strAllFonts));

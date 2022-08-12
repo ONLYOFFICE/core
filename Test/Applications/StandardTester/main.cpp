@@ -505,6 +505,13 @@ public:
 		std::wstring sExe = sProcess + L"/x2t";
 		int nReturnCode = NSX2T::Convert(sExe, sTempFileForParams);
 
+		if (0 != nReturnCode)
+		{
+			m_bRunThread = FALSE;
+			m_pInternal->OnConvertFile(this, nReturnCode, 0, 0);
+			return 0;
+		}
+
 		NSFile::CFileBinary::Remove(sTempFileForParams);
 
 		DWORD dwTime2 = NSTimers::GetTickCount();

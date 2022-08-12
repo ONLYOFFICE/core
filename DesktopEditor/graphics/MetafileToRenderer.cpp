@@ -191,11 +191,11 @@ std::wstring IMetafileToRenderter::GetImagePath(const std::wstring& sPath)
 				throw;
 
 			bool bIsOnlyOfficeHatch = false;
-			if (std::wstring::npos != sPath.find(L"onlyoffice_hatch", 0, posZ))
+			if (std::wstring::npos != sPath.substr(0, posZ).find(L"onlyoffice_hatch"))
 				bIsOnlyOfficeHatch = true;
 
 			int nBase64Size = (int)(sPath.length() - posZ - 1);
-			const wchar_t* pBase64Data = sPath.c_str();
+			const wchar_t* pBase64Data = sPath.c_str() + posZ + 1;
 
 			char* pBase64Buffer = new char[nBase64Size];
 			for (int i = 0; i < nBase64Size; ++i)

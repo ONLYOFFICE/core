@@ -327,6 +327,30 @@ namespace OOX
 						m_oTableStyles = oReader;
 					else if (L"Style" == sName)
 					{
+						if (m_arrStyles2003.empty())
+						{// add default
+							if (!m_oCellStyles.IsInit()) m_oCellStyles.Init();
+							if (!m_oCellStyleXfs.IsInit()) m_oCellStyleXfs.Init();
+							if (!m_oCellXfs.IsInit()) m_oCellXfs.Init();
+
+							CXfs *pStyleXfs = new CXfs();
+							int iXfs = m_oCellStyleXfs->m_arrItems.size();
+							pStyleXfs->m_oNumFmtId.Init(); pStyleXfs->m_oNumFmtId->SetValue(0);
+							m_oCellStyleXfs->m_arrItems.push_back(pStyleXfs);
+
+							CXfs *pCellXfs = new CXfs();
+							pCellXfs->m_oXfId = iXfs;
+							pCellXfs->m_oNumFmtId.Init(); pCellXfs->m_oNumFmtId->SetValue(0);
+
+							m_oCellXfs->m_arrItems.push_back(pCellXfs);
+
+							CCellStyle *cell_style = new CCellStyle();
+							cell_style->m_oXfId = iXfs;
+							cell_style->m_oName = L"Normal";
+
+							m_oCellStyles->m_arrItems.push_back(cell_style);
+						}
+
 						CStyle2003 *style = new CStyle2003(WritingElement::m_pMainDocument);
 						style->fromXML(oReader);
 
@@ -363,13 +387,14 @@ xmlns:x16r2=\"http://schemas.microsoft.com/office/spreadsheetml/2015/02/main\">"
 			{
 				if (m_arrStyles2003.empty()) return;
 
-				m_oBorders.Init();
-				m_oCellStyles.Init();
-				m_oCellStyleXfs.Init();
-				m_oCellXfs.Init();
-				m_oFills.Init();
-				m_oFonts.Init();
-				m_oNumFmts.Init();
+				if (!m_oCellStyles.IsInit()) m_oCellStyles.Init();
+				if (!m_oCellStyleXfs.IsInit()) m_oCellStyleXfs.Init();
+				if (!m_oCellXfs.IsInit()) m_oCellXfs.Init();
+
+				if (!m_oBorders.IsInit()) m_oBorders.Init();
+				if (!m_oFills.IsInit()) m_oFills.Init();
+				if (!m_oFonts.IsInit()) m_oFonts.Init();
+				if (!m_oNumFmts.IsInit()) m_oNumFmts.Init();
 
 				m_oFills->m_arrItems.push_back(new CFill);
 				m_oFills->m_arrItems.back()->m_oPatternFill.Init();
@@ -380,6 +405,10 @@ xmlns:x16r2=\"http://schemas.microsoft.com/office/spreadsheetml/2015/02/main\">"
 				m_oFills->m_arrItems.back()->m_oPatternFill.Init();
 				m_oFills->m_arrItems.back()->m_oPatternFill->m_oPatternType.Init();
 				m_oFills->m_arrItems.back()->m_oPatternFill->m_oPatternType->SetValue(SimpleTypes::Spreadsheet::patterntypeGray125);
+
+				m_oBorders->m_arrItems.push_back(new CBorder);
+				m_oBorders->m_arrItems.back()->m_oBottom.Init(); m_oBorders->m_arrItems.back()->m_oTop.Init();
+				m_oBorders->m_arrItems.back()->m_oStart.Init(); m_oBorders->m_arrItems.back()->m_oEnd.Init();
 
 				for (size_t i = 0; i < m_arrStyles2003.size(); ++i)
 				{

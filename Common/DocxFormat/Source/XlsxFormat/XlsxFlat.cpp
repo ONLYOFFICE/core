@@ -88,7 +88,7 @@ namespace Spreadsheet
 		int nStylesDepth = oReader.GetDepth();
 		while ( oReader.ReadNextSiblingNode( nStylesDepth ) )
 		{
-			std::wstring sName = oReader.GetName();
+			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"ExcelWorkbook" == sName )
 			{

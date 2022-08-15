@@ -823,7 +823,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 					xlsx_value_type = oox::XlsxCellType::n;    
 
 					if (num_format_type == office_value_type::Currency)
-					{//тип формата данных из стиля не соответствует формату анных ячейки
+					{//тип формата данных из стиля не соответствует формату данных ячейки
 						num_format.clear();
 						num_format_type = office_value_type::Date;
 					}

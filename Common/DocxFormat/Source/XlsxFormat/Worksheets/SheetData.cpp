@@ -58,6 +58,8 @@
 #include "../../XlsbFormat/Biff12_structures/CellRef.h"
 
 #include <boost/regex.hpp>
+#include <boost/date_time/gregorian/gregorian.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 using namespace XLS;
 
@@ -176,7 +178,77 @@ namespace OOX
 			return (bAbsoluteCol ? "$" : "") + getColAddressA(col) + (bAbsoluteRow ? "$" : "") + getRowAddressA(row);
 		}
 //------------------------------------------------------------------------------
+		static bool parseDate(const std::wstring & Date, double & Value)
+		{
+			// for example, "1899-12-31T05:37:46.665696"
+			try
+			{
+				boost::wregex r(L"([\\d]+)-([\\d]+)-([\\d]+)(?:T([\\d]+):([\\d]+):([\\d]+)(?:\\.([\\d]+))?)?");
+				boost::match_results<std::wstring::const_iterator> res;
+				
+				if (boost::regex_match(Date, res, r))
+				{
+					Value = 0;
 
+					int Hours = 0, Minutes = 0, Sec = 0, FSec = 0;
+					int Year, Month, Day;
+
+					Year = boost::lexical_cast<int>(res[1].str());
+					Month = boost::lexical_cast<int>(res[2].str());
+					Day = boost::lexical_cast<int>(res[3].str());
+
+					if (res[4].matched)
+						Hours = boost::lexical_cast<int>(res[4].str());
+
+					if (res[5].matched)
+						Minutes = boost::lexical_cast<int>(res[5].str());
+
+					if (res[6].matched)
+						Sec = boost::lexical_cast<int>(res[6].str());
+
+					if (res[7].matched)
+						FSec = boost::lexical_cast<int>(res[7].str());
+
+					if (Year < 1400 || Year >10000)
+						return -1;
+					if (Month < 1 || Month > 12)
+						return -1;
+					if (Day < 1 || Day > 31)
+						return -1;
+
+					boost::int64_t daysFrom1900 = boost::gregorian::date_duration(boost::gregorian::date(Year, Month, Day) - boost::gregorian::date(1900, 1, 1)).days() + 1;
+
+					if (Year <= 1900 &&
+						Month <= 2 &&
+						Day <= 29)
+					{
+						Value = daysFrom1900;
+					}
+					else
+					{
+						Value = daysFrom1900 + 1;
+					}
+
+					if (Hours > 0 || Sec > 0 || Minutes > 0)
+					{
+						boost::posix_time::time_duration t(Hours, Minutes, 0);
+						t += boost::posix_time::millisec(static_cast<boost::uint32_t>(Sec * 1000));
+						boost::posix_time::time_duration day(24, 0, 0);
+
+						const boost::uint64_t m1 = t.total_milliseconds();
+						const boost::uint64_t m2 = day.total_milliseconds();
+						Value += 1.0 * m1 / m2;						
+					}
+
+					return true;
+				}
+			}
+			catch (...)
+			{
+			}
+			return false;
+		}
+//-----------------------------------------------------------------------------------------------------
 	class r1c1_formula_convert
 	{
 	public:
@@ -1159,6 +1231,15 @@ namespace OOX
 			if(SimpleTypes::Spreadsheet::celltypeStr != m_oType->GetValue())
 			{
 				m_oValue = oReader;
+				if (SimpleTypes::Spreadsheet::celltypeDate == m_oType->GetValue())
+				{
+					double value = 0;
+					if (parseDate(m_oValue->m_sText, value))
+					{
+						m_oValue->m_sText = std::to_wstring(value);
+						m_oType.reset(); // по стилю
+					}
+				}
 				return;
 			}
 			fromXML2(oReader);

@@ -1,7 +1,5 @@
 #include "Page.h"
-#include "../resources/ColorTable.h"
 #include "../resources/Constants.h"
-#include "../resources/SingletonTemplate.h"
 #include "../resources/SortElements.h"
 #include "../resources/utils.h"
 
@@ -653,6 +651,7 @@ namespace NSDocxRenderer
         bool bIf2 = pShape->m_dTop > dTopBorder && pShape->m_dBaselinePos < pCont->m_dBaselinePos;
         //Условие пересечения по горизонтали
         bool bIf3 = eHType != eHorizontalCrossingType::hctUnknown &&
+                    eHType != eHorizontalCrossingType::hctCurrentLeftOfNext &&
                     eHType != eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext &&
                     eHType != eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext;
         //Условие для размеров по высоте
@@ -681,6 +680,7 @@ namespace NSDocxRenderer
         bool bIf2 = fabs(pShape->m_dTop - pCont->m_dBaselinePos) < pCont->m_dHeight * 0.15;
         //Условие пересечения по горизонтали
         bool bIf3 = eHType != eHorizontalCrossingType::hctUnknown &&
+                    eHType != eHorizontalCrossingType::hctCurrentLeftOfNext &&
                     eHType != eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext &&
                     eHType != eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext;
         //Условие для размеров по высоте
@@ -711,6 +711,7 @@ namespace NSDocxRenderer
                      dSomeBaseLine3 > pShape->m_dTop && dSomeBaseLine3 < pShape->m_dBaselinePos);
         //Условие пересечения по горизонтали
         bool bIf3 = eHType != eHorizontalCrossingType::hctUnknown &&
+                    eHType != eHorizontalCrossingType::hctCurrentLeftOfNext &&
                     eHType != eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext &&
                     eHType != eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext;
         //Цвета должны быть разными
@@ -739,11 +740,8 @@ namespace NSDocxRenderer
         {
             pLine->SortConts();
             pLine->CalculateWidth();
-            if (m_eTextAssociationType == tatPlainLine)
-            {
-                pLine->Analyze();
-            }
             pLine->DetermineAssumedTextAlignmentType(m_dWidth);
+            pLine->MergeConts();
         }
 
         if (m_eTextAssociationType == tatPlainParagraph ||
@@ -1315,7 +1313,6 @@ namespace NSDocxRenderer
                 //Объединим 2 строчки в параграф
                 pParagraph->m_arLines.push_back(pCurrLine);
                 pParagraph->m_nNumLines++;
-                pParagraph->m_arLines.back()->AddSpaceToEnd();
                 pParagraph->m_arLines.push_back(pNextLine);
                 pParagraph->m_nNumLines++;
 
@@ -1357,7 +1354,6 @@ namespace NSDocxRenderer
                       )
                 {
                     //Объединим 2 параграфа-строчки
-                    pParagraph->m_arLines.back()->AddSpaceToEnd();
                     pParagraph->m_arLines.push_back(pNextLine);
                     pParagraph->m_nNumLines++;
 
@@ -1409,7 +1405,7 @@ namespace NSDocxRenderer
 
                 pParagraph->RemoveHighlightColor();
                 //todo записать все строки из одного параграфа в одну строчку
-                //pParagraph->MergeLines();
+                pParagraph->MergeLines();
 
                 m_arParagraphs.push_back(pParagraph);
             }

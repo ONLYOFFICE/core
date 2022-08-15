@@ -43,15 +43,12 @@ namespace NSDocxRenderer
 
             //Объединяем слова из двух строк
             void Merge(const CTextLine* pTextLine);
-            //Объединяем подходящие слова в текущей строке, если возможно
-            void Analyze();
             bool IsForceBlock();
             void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
 
+            void MergeConts();
             //Вычисляем ширину сложной строки
             void CalculateWidth();
-            //Добавляем символ пробела в конец строки для связывания строк в параграфе
-            void AddSpaceToEnd();
             //Пытаемся понять тип выравнивания для текущей строки
             void DetermineAssumedTextAlignmentType(double dWidthOfPage);
             //Определяем на основании выравнивания подходят ли текущая и следующая строки для добавления в параграф

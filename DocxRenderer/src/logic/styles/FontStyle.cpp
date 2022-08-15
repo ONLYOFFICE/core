@@ -41,13 +41,33 @@ namespace NSDocxRenderer
 
     bool CFontStyle::IsEqual(const CFontStyle* oSrc)
     {
-        bool bIf1 = m_oFont.Name == L"" || oSrc->m_oFont.Name == L"" ? true : m_oFont.IsEqual(&oSrc->m_oFont);
-        bool bIf2 = m_oBrush.IsEqual(&oSrc->m_oBrush);
+        //note Бывают fonts только с разными path => новый стиль => m_oFont.IsEqual не берем
+        //todo проверить FaceIndex StringGID
+        bool bIf1 = m_oFont.Name == oSrc->m_oFont.Name;
+        bool bIf2 = m_oFont.Size == oSrc->m_oFont.Size;
+        bool bIf3 = m_oFont.Bold == oSrc->m_oFont.Bold;
+        bool bIf4 = m_oFont.Italic == oSrc->m_oFont.Italic;
+        bool bIf5 = m_oFont.Underline == oSrc->m_oFont.Underline;
+        bool bIf6 = m_oFont.Strikeout == oSrc->m_oFont.Strikeout;
 
-        bool bIf3 = m_strPickFontName == oSrc->m_strPickFontName;
-        bool bIf4 = m_lPickFontStyle == oSrc->m_lPickFontStyle;
+        bool bIf7 = m_oBrush.Type == oSrc->m_oBrush.Type;
+        bool bIf8 = m_oBrush.Color1 == oSrc->m_oBrush.Color1;
+        bool bIf9 = m_oBrush.Color2 == oSrc->m_oBrush.Color2;
+        bool bIf10 = m_oBrush.Alpha1 == oSrc->m_oBrush.Alpha1;
+        bool bIf11 = m_oBrush.Alpha2 == oSrc->m_oBrush.Alpha2;
+        bool bIf12 = m_oBrush.LinearAngle == oSrc->m_oBrush.LinearAngle;
 
-        if (bIf1 && bIf2 && bIf3 && bIf4)
+        //todo
+        //        (TexturePath == pBrush->TexturePath) && (TextureAlpha == pBrush->TextureAlpha) && (TextureMode == pBrush->TextureMode) &&
+        //        (Rectable == pBrush->Rectable) && (Rect.Equals(pBrush->Rect)));
+        //bool bIf7 = m_oBrush.IsEqual(&oSrc->m_oBrush);
+
+        bool bIf13 = m_strPickFontName == oSrc->m_strPickFontName;
+        bool bIf14 = m_lPickFontStyle == oSrc->m_lPickFontStyle;
+
+        if (bIf1 && bIf2 && bIf3 && bIf4 && bIf5 && bIf6 &&
+            bIf7 && bIf8 && bIf9 && bIf10 && bIf11 && bIf12 &&
+            bIf13 && bIf14)
         {
             return true;
         }

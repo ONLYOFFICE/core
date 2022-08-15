@@ -45,8 +45,7 @@ namespace NSDocxRenderer
             double m_dBaselineOffset {0};
             double m_dLastX {0};
             double m_dSpaceWidthMM {0};
-
-            bool   m_bIsNeedSpace {false};
+            bool   m_bSpaceIsNotNeeded {false};
 
             eVertAlignType m_eVertAlignType {eVertAlignType::vatUnknown};
 
@@ -77,11 +76,15 @@ namespace NSDocxRenderer
                                    NSStringUtils::CStringBuilder& oWriter,
                                    bool bIsNeedSaveFormat = false);
 
-            void AddSpaceToEnd();
             bool IsEqual(const CContText* oSrc);
+
+            UINT GetNumberOfFeatures();
 
             bool IsDuplicate(CContText* pCont, const eVerticalCrossingType& eVType);
             bool IsThereAreFontEffects(CContText* pCont, const eVerticalCrossingType& eVType, const eHorizontalCrossingType& eHType);
             bool IsVertAlignTypeBetweenConts(CContText* pCont, const eVerticalCrossingType& eVType, const eHorizontalCrossingType& eHType);
+
+            double CalculateWideSpace();
+            double CalculateThinSpace();
     };
 }

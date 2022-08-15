@@ -52,7 +52,7 @@ namespace NSDocxRenderer
         m_dLastX    = oSrc.m_dLastX;
         m_dSpaceWidthMM = oSrc.m_dSpaceWidthMM;
 
-        m_bIsNeedSpace = oSrc.m_bIsNeedSpace;
+        m_bSpaceIsNotNeeded = oSrc.m_bSpaceIsNotNeeded;
 
         m_eVertAlignType = oSrc.m_eVertAlignType;
 
@@ -91,23 +91,10 @@ namespace NSDocxRenderer
         oWriter.WriteString(m_pFontStyle->GetStyleId());
         oWriter.WriteString(L"\"/>");
 
+        LONG lCalculatedSpacing = 0;
 
-        if (m_pFontStyle->m_strPickFontName.empty())
+        if (!m_pFontStyle->m_strPickFontName.empty())
         {
-            if (m_bIsNeedSpace)
-            {
-                m_dWidth += m_dSpaceWidthMM;
-                m_oText += L" ";
-            }
-        }
-        else
-        {
-            if (m_bIsNeedSpace)
-            {
-                m_dWidth  += m_pManagerLight->GetSpaceWidth();
-                m_oText += L" ";
-            }
-
             if (m_eVertAlignType != eVertAlignType::vatSubscript &&
                 m_eVertAlignType != eVertAlignType::vatSuperscript)
             {
@@ -119,17 +106,19 @@ namespace NSDocxRenderer
                 double dSpacing = (m_dWidth - dWidth) / (m_oText.length() + 1);
                 dSpacing *= c_dMMToDx;
 
-                LONG lSpacing = static_cast<LONG>(dSpacing);
-                //note принудительно уменьшаем spacing чтобы текстовые линии не выходили за правую границу
-                lSpacing -= 1;
-
-                if (lSpacing != 0)
-                {
-                    oWriter.WriteString(L"<w:spacing w:val=\"");
-                    oWriter.AddInt(lSpacing);
-                    oWriter.WriteString(L"\"/>");
-                }
+                lCalculatedSpacing = static_cast<LONG>(dSpacing);
             }
+        }
+
+        //note принудительно уменьшаем spacing чтобы текстовые линии не выходили за правую границу
+        //note 1 -> 0.5pt
+        lCalculatedSpacing -= 1;
+
+        if (lCalculatedSpacing != 0)
+        {
+            oWriter.WriteString(L"<w:spacing w:val=\"");
+            oWriter.AddInt(lCalculatedSpacing);
+            oWriter.WriteString(L"\"/>");
         }
 
         if (m_bIsEmbossPresent)
@@ -229,13 +218,13 @@ namespace NSDocxRenderer
             dSpaceMMSize = m_pManagerLight->GetSpaceWidth();
         }
 
-        LONG lSpacing = static_cast<LONG>((dSpacingMM - dSpaceMMSize) * c_dMMToDx);
+        LONG lCalculatedSpacing = static_cast<LONG>((dSpacingMM - dSpaceMMSize) * c_dMMToDx);
         //note принудительно уменьшаем spacing чтобы текстовые линии не выходили за правую границу
-        lSpacing -= 1;
-        if (lSpacing != 0)
+        lCalculatedSpacing -= 1;
+        if (lCalculatedSpacing != 0)
         {
             oWriter.WriteString(L"<w:spacing w:val=\"");
-            oWriter.AddInt(lSpacing);
+            oWriter.AddInt(lCalculatedSpacing);
             oWriter.WriteString(L"\"/>");
         }
 
@@ -311,34 +300,63 @@ namespace NSDocxRenderer
         oWriter.WriteString(L"</w:r>");
     }
 
-    void CContText::AddSpaceToEnd()
-    {
-        m_bIsNeedSpace = true;
-        m_dWidth += m_dSpaceWidthMM;
-    }
-
     bool CContText::IsEqual(const CContText* oSrc)
     {
         bool bIf1 = m_pFontStyle->GetStyleId() == oSrc->m_pFontStyle->GetStyleId();
-        bool bIf2 = m_pShape == oSrc->m_pShape;
-        bool bIf3 = m_bIsStrikeoutPresent == oSrc->m_bIsStrikeoutPresent;
-        bool bIf4 = m_bIsDoubleStrikeout == oSrc->m_bIsDoubleStrikeout;
-        bool bIf5 = m_bIsHighlightPresent == oSrc->m_bIsHighlightPresent;
-        bool bIf6 = m_lHighlightColor == oSrc->m_lHighlightColor;
-        bool bIf7 = m_bIsUnderlinePresent == oSrc->m_bIsUnderlinePresent;
-        bool bIf8 = m_eUnderlineType == oSrc->m_eUnderlineType;
-        bool bIf9 = m_lUnderlineColor == oSrc->m_lUnderlineColor;
-        bool bIf10 = m_bIsShadowPresent == oSrc->m_bIsShadowPresent;
-        bool bIf11 = m_bIsOutlinePresent == oSrc->m_bIsOutlinePresent;
-        bool bIf12 = m_bIsEmbossPresent == oSrc->m_bIsEmbossPresent;
-        bool bIf13 = m_bIsEngravePresent == oSrc->m_bIsEngravePresent;
+        bool bIf2 = m_bIsStrikeoutPresent == oSrc->m_bIsStrikeoutPresent;
+        bool bIf3 = m_bIsDoubleStrikeout == oSrc->m_bIsDoubleStrikeout;
+        bool bIf4 = m_bIsHighlightPresent == oSrc->m_bIsHighlightPresent;
+        bool bIf5 = m_lHighlightColor == oSrc->m_lHighlightColor;
+        bool bIf6 = m_bIsUnderlinePresent == oSrc->m_bIsUnderlinePresent;
+        bool bIf7 = m_eUnderlineType == oSrc->m_eUnderlineType;
+        bool bIf8 = m_lUnderlineColor == oSrc->m_lUnderlineColor;
+        bool bIf9 = m_bIsShadowPresent == oSrc->m_bIsShadowPresent;
+        bool bIf10 = m_bIsOutlinePresent == oSrc->m_bIsOutlinePresent;
+        bool bIf11 = m_bIsEmbossPresent == oSrc->m_bIsEmbossPresent;
+        bool bIf12 = m_bIsEngravePresent == oSrc->m_bIsEngravePresent;
 
-        if (bIf1 && bIf2 && bIf3 && bIf4 && bIf5 && bIf6 && bIf7 && bIf8 &&
-            bIf9 && bIf10 && bIf11 && bIf12 && bIf13)
+        if (bIf1 && bIf2 && bIf3 && bIf4 && bIf5 && bIf6 && bIf7 &&
+            bIf8 && bIf9 && bIf10 && bIf11 && bIf12)
         {
             return true;
         }
         return false;
+    }
+
+    UINT CContText::GetNumberOfFeatures()
+    {
+        UINT ret = 0;
+
+        if (m_pFontStyle->m_oFont.Bold)
+        {
+            ret++;
+        }
+        if (m_pFontStyle->m_oFont.Italic)
+        {
+            ret++;
+        }
+        if (m_bIsStrikeoutPresent)
+        {
+            ret++;
+        }
+        if (m_bIsDoubleStrikeout)
+        {
+            ret++;
+        }
+        if (m_bIsHighlightPresent)
+        {
+            ret++;
+        }
+        if (m_bIsUnderlinePresent)
+        {
+            ret++;
+        }
+        if (m_eVertAlignType != eVertAlignType::vatUnknown)
+        {
+            ret++;
+        }
+
+        return ret;
     }
 
     bool CContText::IsDuplicate(CContText* pCont, const eVerticalCrossingType& eVType)
@@ -488,5 +506,15 @@ namespace NSDocxRenderer
             }
         }
         return false;
+    }
+
+    double CContText::CalculateWideSpace()
+    {
+        return m_dSpaceWidthMM * 5;
+    }
+
+    double CContText::CalculateThinSpace()
+    {
+        return m_dSpaceWidthMM;
     }
 }

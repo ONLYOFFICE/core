@@ -1,6 +1,5 @@
 #include "Paragraph.h"
 #include "src/resources/ColorTable.h"
-#include "src/resources/SingletonTemplate.h"
 #include "src/resources/utils.h"
 
 namespace NSDocxRenderer
@@ -273,25 +272,41 @@ namespace NSDocxRenderer
 
         for(size_t i = 1; i < m_arLines.size(); i++)
         {
-            if (pLine->m_arConts.back()->m_bIsNeedSpace)
+            CContText* pLastCont = pLine->m_arConts.back();
+            size_t iNumConts = pLine->m_arConts.size() - 1;
+
+            while (pLastCont->m_bIsNotNecessaryToUse)
             {
-                pLine->m_arConts.back()->m_oText += L" ";
-                pLine->m_arConts.back()->m_bIsNeedSpace = false;
+                pLastCont = pLine->m_arConts[--iNumConts];
             }
+
+            //Добавляем пробел в конец каждой строки
+            pLastCont->m_oText += L" ";
+            pLastCont->m_bSpaceIsNotNeeded = true;
+            pLastCont->m_dWidth += pLine->m_arConts.back()->m_dSpaceWidthMM;
 
             auto pNext = m_arLines[i];
 
+            auto pCont = pNext->m_arConts.front();
+
+            if (pLastCont->IsEqual(pCont) &&
+                pLastCont->m_eVertAlignType == pCont->m_eVertAlignType)
+            {
+                pLastCont->m_oText += pCont->m_oText;
+                pLastCont->m_dWidth += pCont->m_dWidth;
+                pLastCont->m_dRight = pCont->m_dRight;
+
+                pLastCont->m_bSpaceIsNotNeeded = false;
+
+                pCont->m_bIsNotNecessaryToUse = true;
+            }
+
             for (auto pCont : pNext->m_arConts)
             {
-                if (pLine->m_arConts.back()->IsEqual(pCont))
+                if (!pCont->m_bIsNotNecessaryToUse)
                 {
-                    pLine->m_arConts.back()->m_oText += pCont->m_oText;
+                    pLine->m_arConts.push_back(pCont);
                 }
-                else
-                {
-                    pLine->m_arConts.push_back(new CContText(*pCont));
-                }
-                pCont->m_bIsNotNecessaryToUse = true;
             }
 
             pNext->m_bIsNotNecessaryToUse = true;

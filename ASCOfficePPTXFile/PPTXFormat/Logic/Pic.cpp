@@ -210,7 +210,7 @@ namespace PPTX
 			if (ole_file->isMsPackage())
 			{
 				OOX::CPath oox_file		= ole_file->filename();
-				OOX::CPath oox_unpacked = oox_file.GetDirectory(true) + L"Temp";
+				OOX::CPath oox_unpacked = oox_file.GetDirectory(true) + L"Temp_" + oox_file.GetFilename();
 				
 				if (true == NSDirectory::CreateDirectory(oox_unpacked.GetPath()))
 				{

@@ -2853,6 +2853,9 @@ void CWorksheet::ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader)
 		}
 		else if (L"Print" == sName)
 		{
+			if (false == m_oPageSetup.IsInit()) m_oPageSetup.Init();
+			if (false == m_oPrintOptions.IsInit()) m_oPrintOptions.Init();			
+
 			int nDocumentDepth1 = oReader.GetDepth();
 			while (oReader.ReadNextSiblingNode(nDocumentDepth1))
 			{
@@ -2868,7 +2871,6 @@ void CWorksheet::ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader)
 				}
 				else if (L"Gridlines" == sName1)
 				{
-					if (false == m_oPrintOptions.IsInit()) m_oPrintOptions.Init();
 					m_oPrintOptions->m_oGridLines = true;
 				}
 				else if (L"Scale" == sName1)

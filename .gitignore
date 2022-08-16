@@ -39,4 +39,6 @@ Thumbs.db
 
 *.opendb
 
+.vs
+
 DesktopEditor/fontengine/js/common/freetype-2.10.4

@@ -15,7 +15,7 @@ namespace NSDocxRenderer
         gtNoGraphics,
     };
 
-    class CShape : public CBaseItem
+    class CShape : public CBaseItem, public std::enable_shared_from_this<CShape>
     {
         public:
             enum class eShapeType
@@ -40,17 +40,17 @@ namespace NSDocxRenderer
             bool m_bIsNoStroke {true};
             bool m_bIsBehindDoc {true};
 
-            eGraphicsType m_eGraphicsType {eGraphicsType::gtUnknown};
+            eGraphicsType   m_eGraphicsType {eGraphicsType::gtUnknown};
             eSimpleLineType m_eSimpleLineType {eSimpleLineType::sltUnknown};
-            eLineType m_eLineType {eLineType::ltUnknown};
+            eLineType       m_eLineType {eLineType::ltUnknown};
 
-            std::vector<CParagraph*> m_arParagraphs;
+            std::vector<std::shared_ptr<CParagraph>> m_arParagraphs;
 
-            CImageInfo* m_pImageInfo {nullptr};
+            std::shared_ptr<CImageInfo> m_pImageInfo {nullptr};
 
             //Показывает, что есть отношение графики к тексту (подчеркивания/зачеркивания/выделение).
             //note Пока сюда записывается указатель на символ с наибольшем размером шрифта.
-            const CContText* m_pCont {nullptr};
+            std::shared_ptr<CContText> m_pCont {nullptr};
 
         private:
             UINT m_nShapeId {0};
@@ -60,22 +60,19 @@ namespace NSDocxRenderer
             virtual ~CShape();
             virtual void Clear() override final;
 
-            CShape(const CShape& oSrc);
-            CShape(CImageInfo* pInfo, const std::wstring& strDstMedia);
-
-            CShape& operator=(const CShape& oSrc);
+            CShape(std::shared_ptr<CImageInfo> pInfo, const std::wstring& strDstMedia);
 
             void GetDataFromVector(const CVectorGraphics& oVector, const LONG& lTypee);
 
             void WritePath(const CVectorGraphics& oVector);
 
-            void DetermineGraphicsType(const double& dWidth, const double& dHeight, const size_t& nPeacks, const size_t& nCurves);
+            void DetermineGraphicsType(double dWidth, double dHeight, size_t nPeacks, size_t nCurves);
 
             bool IsItFitLine();
-            bool IsCorrelated(const CShape* pShape);
-            void ChangeGeometryOfDesiredShape(CShape* pShape);
+            bool IsCorrelated(const std::shared_ptr<CShape> pShape);
+            void ChangeGeometryOfDesiredShape(std::shared_ptr<CShape> pShape);
 
-            void DetermineLineType(CShape* pShape = nullptr, bool bIsLast = false);
+            void DetermineLineType(std::shared_ptr<CShape> pShape = nullptr, bool bIsLast = false);
 
             virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
             void BuildGeneralProperties(NSStringUtils::CStringBuilder &oWriter);

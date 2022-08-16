@@ -1,6 +1,5 @@
 #include "FontStyle.h"
-#include "../../resources/ColorTable.h"
-#include "../../resources/SingletonTemplate.h"
+#include "../../resources/Constants.h"
 #include "../../resources/utils.h"
 
 namespace NSDocxRenderer
@@ -39,7 +38,7 @@ namespace NSDocxRenderer
         return *this;
     }
 
-    bool CFontStyle::IsEqual(const CFontStyle* oSrc)
+    bool CFontStyle::IsEqual(std::shared_ptr<CFontStyle> oSrc)
     {
         //note Бывают fonts только с разными path => новый стиль => m_oFont.IsEqual не берем
         //todo проверить FaceIndex StringGID

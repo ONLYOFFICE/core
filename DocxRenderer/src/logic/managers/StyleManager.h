@@ -8,9 +8,9 @@ namespace NSDocxRenderer
     class CStyleManager
     {
         public:
-            std::map<std::wstring, CFontStyle*>	m_mapStyles;
+            std::map<std::wstring, std::shared_ptr<CFontStyle>>	m_mapStyles;
 
-            CFontStyle* m_pCurrentStyle;
+            std::shared_ptr<CFontStyle> m_pCurrentStyle;
 
         public:
             CStyleManager();
@@ -20,7 +20,7 @@ namespace NSDocxRenderer
 
             void NewDocument();
 
-            CFontStyle* GetStyle();
+            std::shared_ptr<CFontStyle> GetStyle();
     };
 }
 

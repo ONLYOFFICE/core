@@ -15,62 +15,10 @@ namespace NSDocxRenderer
         m_pFontStyle = nullptr;
     }
 
-    CContText::CContText(const CContText& oSrc): CBaseItem(ElemType::etContText)
+    double CContText::GetIntersect(const std::shared_ptr<CContText> pCont) const
     {
-        *this = oSrc;
-    }
-
-    CContText& CContText::operator=(const CContText& oSrc)
-    {
-        if (this == &oSrc)
-        {
-            return *this;
-        }
-
-        CBaseItem::operator=(oSrc);
-
-        m_pFontStyle = oSrc.m_pFontStyle;
-
-        m_bIsStrikeoutPresent = oSrc.m_bIsStrikeoutPresent;
-        m_bIsDoubleStrikeout = oSrc.m_bIsDoubleStrikeout;
-
-        m_bIsHighlightPresent = oSrc.m_bIsHighlightPresent;
-        m_lHighlightColor = oSrc.m_lHighlightColor;
-
-        m_bIsUnderlinePresent = oSrc.m_bIsUnderlinePresent;
-        m_eUnderlineType = oSrc.m_eUnderlineType;
-        m_lUnderlineColor = oSrc.m_lUnderlineColor;
-
-        m_bIsShadowPresent = oSrc.m_bIsShadowPresent;
-        m_bIsOutlinePresent = oSrc.m_bIsOutlinePresent;
-        m_bIsEmbossPresent = oSrc.m_bIsEmbossPresent;
-        m_bIsEngravePresent = oSrc.m_bIsEngravePresent;
-
-        m_oText	 = oSrc.m_oText;
-
-        m_dBaselineOffset = oSrc.m_dBaselineOffset;
-        m_dLastX    = oSrc.m_dLastX;
-        m_dSpaceWidthMM = oSrc.m_dSpaceWidthMM;
-
-        m_bSpaceIsNotNeeded = oSrc.m_bSpaceIsNotNeeded;
-
-        m_eVertAlignType = oSrc.m_eVertAlignType;
-
-        m_pShape    = oSrc.m_pShape;
-        m_pManagerLight = oSrc.m_pManagerLight;
-        m_pStyleManager = oSrc.m_pStyleManager;
-        m_pCont = oSrc.m_pCont;
-#if USING_DELETE_DUPLICATING_CONTS == 0
-        m_pDuplicateCont = oSrc.m_pDuplicateCont;
-#endif
-
-        return *this;
-    }
-
-    double CContText::GetIntersect(const CContText* oSrc) const
-    {
-        double d1 = std::max(m_dLeft, oSrc->m_dLeft);
-        double d2 = std::min(m_dLeft + m_dWidth, oSrc->m_dLeft + oSrc->m_dWidth);
+        double d1 = std::max(m_dLeft, pCont->m_dLeft);
+        double d2 = std::min(m_dLeft + m_dWidth, pCont->m_dLeft + pCont->m_dWidth);
 
         if (d2 > d1)
             return d2 - d1;
@@ -300,20 +248,20 @@ namespace NSDocxRenderer
         oWriter.WriteString(L"</w:r>");
     }
 
-    bool CContText::IsEqual(const CContText* oSrc)
+    bool CContText::IsEqual(const std::shared_ptr<CContText> pCont)
     {
-        bool bIf1 = m_pFontStyle->GetStyleId() == oSrc->m_pFontStyle->GetStyleId();
-        bool bIf2 = m_bIsStrikeoutPresent == oSrc->m_bIsStrikeoutPresent;
-        bool bIf3 = m_bIsDoubleStrikeout == oSrc->m_bIsDoubleStrikeout;
-        bool bIf4 = m_bIsHighlightPresent == oSrc->m_bIsHighlightPresent;
-        bool bIf5 = m_lHighlightColor == oSrc->m_lHighlightColor;
-        bool bIf6 = m_bIsUnderlinePresent == oSrc->m_bIsUnderlinePresent;
-        bool bIf7 = m_eUnderlineType == oSrc->m_eUnderlineType;
-        bool bIf8 = m_lUnderlineColor == oSrc->m_lUnderlineColor;
-        bool bIf9 = m_bIsShadowPresent == oSrc->m_bIsShadowPresent;
-        bool bIf10 = m_bIsOutlinePresent == oSrc->m_bIsOutlinePresent;
-        bool bIf11 = m_bIsEmbossPresent == oSrc->m_bIsEmbossPresent;
-        bool bIf12 = m_bIsEngravePresent == oSrc->m_bIsEngravePresent;
+        bool bIf1 = m_pFontStyle->GetStyleId() == pCont->m_pFontStyle->GetStyleId();
+        bool bIf2 = m_bIsStrikeoutPresent == pCont->m_bIsStrikeoutPresent;
+        bool bIf3 = m_bIsDoubleStrikeout == pCont->m_bIsDoubleStrikeout;
+        bool bIf4 = m_bIsHighlightPresent == pCont->m_bIsHighlightPresent;
+        bool bIf5 = m_lHighlightColor == pCont->m_lHighlightColor;
+        bool bIf6 = m_bIsUnderlinePresent == pCont->m_bIsUnderlinePresent;
+        bool bIf7 = m_eUnderlineType == pCont->m_eUnderlineType;
+        bool bIf8 = m_lUnderlineColor == pCont->m_lUnderlineColor;
+        bool bIf9 = m_bIsShadowPresent == pCont->m_bIsShadowPresent;
+        bool bIf10 = m_bIsOutlinePresent == pCont->m_bIsOutlinePresent;
+        bool bIf11 = m_bIsEmbossPresent == pCont->m_bIsEmbossPresent;
+        bool bIf12 = m_bIsEngravePresent == pCont->m_bIsEngravePresent;
 
         if (bIf1 && bIf2 && bIf3 && bIf4 && bIf5 && bIf6 && bIf7 &&
             bIf8 && bIf9 && bIf10 && bIf11 && bIf12)
@@ -359,26 +307,27 @@ namespace NSDocxRenderer
         return ret;
     }
 
-    bool CContText::IsDuplicate(CContText* pCont, const eVerticalCrossingType& eVType)
+    bool CContText::IsDuplicate(std::shared_ptr<CContText> pCont, eVerticalCrossingType eVType)
     {
         if (eVType == eVerticalCrossingType::vctDublicate &&
             m_oText == pCont->m_oText)
         {
-#if USING_DELETE_DUPLICATING_CONTS
-            pCont->m_bIsNotNecessaryToUse = true;
-#else
+#if (USING_DELETE_DUPLICATING_CONTS == 0)
             //В итоге собираем список дубликатов
             if (!m_pDuplicateCont)
             {
                 m_pDuplicateCont = pCont;
             }
             return true;
+
+#else
+            pCont->m_bIsNotNecessaryToUse = true;
 #endif
         }
         return false;
     }
 
-    bool CContText::IsThereAreFontEffects(CContText* pCont, const eVerticalCrossingType& eVType, const eHorizontalCrossingType& eHType)
+    bool CContText::IsThereAreFontEffects(std::shared_ptr<CContText> pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType)
     {
         //Условие пересечения по вертикали
         bool bIf1 = eVType == eVerticalCrossingType::vctCurrentAboveNext; //текущий cont выше
@@ -453,7 +402,7 @@ namespace NSDocxRenderer
         return false;
     }
 
-    bool CContText::IsVertAlignTypeBetweenConts(CContText* pCont, const eVerticalCrossingType& eVType, const eHorizontalCrossingType& eHType)
+    bool CContText::IsVertAlignTypeBetweenConts(std::shared_ptr<CContText> pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType)
     {
         //Условие пересечения по вертикали
         bool bIf1 = eVType == eVerticalCrossingType::vctCurrentAboveNext ||
@@ -475,7 +424,7 @@ namespace NSDocxRenderer
             if (bIf1 && bIf5)
             {
                 pCont->m_eVertAlignType = eVertAlignType::vatSubscript;
-                pCont->m_pCont = this;
+                pCont->m_pCont = shared_from_this();
                 m_eVertAlignType = eVertAlignType::vatBase;
                 m_pCont = pCont;
                 return true;
@@ -483,7 +432,7 @@ namespace NSDocxRenderer
             else if (bIf2 && bIf5)
             {
                 pCont->m_eVertAlignType = eVertAlignType::vatSuperscript;
-                pCont->m_pCont = this;
+                pCont->m_pCont = shared_from_this();
                 m_eVertAlignType = eVertAlignType::vatBase;
                 m_pCont = pCont;
                 return true;
@@ -493,7 +442,7 @@ namespace NSDocxRenderer
                 m_eVertAlignType = eVertAlignType::vatSuperscript;
                 m_pCont = pCont;
                 pCont->m_eVertAlignType = eVertAlignType::vatBase;
-                pCont->m_pCont = this;
+                pCont->m_pCont = shared_from_this();
                 return true;
             }
             else if (bIf2 && bIf6)
@@ -501,7 +450,7 @@ namespace NSDocxRenderer
                 m_eVertAlignType = eVertAlignType::vatSubscript;
                 m_pCont = pCont;
                 pCont->m_eVertAlignType = eVertAlignType::vatBase;
-                pCont->m_pCont = this;
+                pCont->m_pCont = shared_from_this();
                 return true;
             }
         }
@@ -510,7 +459,7 @@ namespace NSDocxRenderer
 
     double CContText::CalculateWideSpace()
     {
-        return m_dSpaceWidthMM * 5;
+        return m_dSpaceWidthMM * 3;
     }
 
     double CContText::CalculateThinSpace()

@@ -19,11 +19,9 @@ namespace NSDocxRenderer
 
 	public:
         CImage();
-        CImage(const CImage& oSrc);
         CImage(const CImageInfo& oInfo, const std::wstring& strDstMedia);
         void Clear() override final;
 
-        CImage& operator=(const CImage& oSrc);
         void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
 	};
 }

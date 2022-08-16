@@ -2,7 +2,6 @@
 #include "../DesktopEditor/graphics/pro/Graphics.h"
 #include "elements/OldShape.h"
 #include "elements/Paragraph.h"
-#include "elements/Image.h"
 #include "elements/Shape.h"
 #include "managers/StyleManager.h"
 
@@ -29,13 +28,13 @@ namespace NSDocxRenderer
 
         LONG						m_lCurrentCommand {0};
 
-        std::vector<CShape*>     m_arImages;
-        std::vector<CContText*>  m_arSymbol ;
-        std::vector<CTextLine*>  m_arTextLine;
-        std::vector<CShape*>	 m_arShapes;
-        std::vector<CParagraph*> m_arParagraphs;
+        std::vector<std::shared_ptr<CShape>>     m_arImages;
+        std::vector<std::shared_ptr<CContText>>  m_arSymbol ;
+        std::vector<std::shared_ptr<CTextLine>>  m_arTextLine;
+        std::vector<std::shared_ptr<CShape>>	 m_arShapes;
+        std::vector<std::shared_ptr<CParagraph>> m_arParagraphs;
 
-        CTextLine* m_pCurrentLine {nullptr};
+        std::shared_ptr<CTextLine> m_pCurrentLine {nullptr};
 
         CFontManager		m_oFontManager;
         CFontManagerLight	m_oFontManagerLight;
@@ -62,13 +61,13 @@ namespace NSDocxRenderer
         void ClearShapes();
         void ClearParagraphs();
 
-        void SelectCurrentLine(const CContText* pCont);
+        void SelectCurrentLine(const std::shared_ptr<CContText> pCont);
         //удаляем то, что выходит за границы страницы
         void DeleteTextClipPage();
 
         // image commands
         //набивается содержимым вектор m_arImages
-        void WriteImage(CImageInfo* pInfo, double& fX, double& fY, double& fWidth, double& fHeight);
+        void WriteImage(const std::shared_ptr<CImageInfo> pInfo, double& fX, double& fY, double& fWidth, double& fHeight);
 
         // path commands
         void MoveTo(double& dX, double& dY);
@@ -78,7 +77,7 @@ namespace NSDocxRenderer
         void End();
         void Close();
         //набивается содержимым вектор m_arShapes
-        void DrawPath(LONG lType, CImageInfo* pInfo);
+        void DrawPath(LONG lType, const std::shared_ptr<CImageInfo> pInfo);
 
         //набивается содержимым вектор m_arTextData
         void CollectTextData(const PUINT pUnicodes, const PUINT pGids, const UINT& nCount,
@@ -93,9 +92,9 @@ namespace NSDocxRenderer
         //Собранные для текущей страницы данные нужно проанализировать и сгруппировать, лишнее удалить
         void AnalyzeCollectedSymbols();
         void DetermineStrikeoutsUnderlinesHighlights();
-        bool IsLineCrossingText(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
-        bool IsLineBelowText(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
-        bool IsItHighlightingBackground(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
+        bool IsLineCrossingText(const std::shared_ptr<CShape> pGraphicItem, std::shared_ptr<CContText> pCont, const eHorizontalCrossingType& eHType);
+        bool IsLineBelowText(const std::shared_ptr<CShape> pGraphicItem, std::shared_ptr<CContText> pCont, const eHorizontalCrossingType& eHType);
+        bool IsItHighlightingBackground(const std::shared_ptr<CShape> pGraphicItem, std::shared_ptr<CContText> pCont, const eHorizontalCrossingType& eHType);
 
         //набивается содержимым вектор m_arTextLine
         void AnalyzeLines();
@@ -118,13 +117,13 @@ namespace NSDocxRenderer
 
         void WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter);
 
-        void CreateSingleLineParagraph(CTextLine *pLine, const double *pRight, const double *pBeforeSpacing);
-        void CreateSingleLineOldShape(CTextLine *pLine);
-        void CreateSingleLineShape(CTextLine *pLine);
+        void CreateSingleLineParagraph(const std::shared_ptr<CTextLine> pLine, const double *pRight, const double *pBeforeSpacing);
+        void CreateSingleLineOldShape(const std::shared_ptr<CTextLine> pLine);
+        void CreateSingleLineShape(const std::shared_ptr<CTextLine> pLine);
 
-        bool IsShadingPresent(const CTextLine *pLine1, const CTextLine *pLine2);
+        bool IsShadingPresent(const std::shared_ptr<CTextLine> pLine1, const std::shared_ptr<CTextLine> pLine2);
 
     private:
-        CTextLine* GetNextTextLine(size_t& nCurrentIndex);
+        std::shared_ptr<CTextLine> GetNextTextLine(size_t& nCurrentIndex);
     };
 }

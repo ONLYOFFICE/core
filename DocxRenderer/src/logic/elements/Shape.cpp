@@ -9,12 +9,7 @@ namespace NSDocxRenderer
     {
     }
 
-    CShape::CShape(const CShape &oSrc) : CBaseItem(ElemType::etShape)
-    {
-        *this = oSrc;
-    }
-
-    CShape::CShape(CImageInfo* pInfo, const std::wstring& strDstMedia) : CBaseItem(ElemType::etShape),
+    CShape::CShape(std::shared_ptr<CImageInfo> pInfo, const std::wstring& strDstMedia) : CBaseItem(ElemType::etShape),
         m_strPath(strDstMedia), m_pImageInfo(pInfo)
     {
     }
@@ -26,50 +21,7 @@ namespace NSDocxRenderer
 
     void CShape::Clear()
     {
-        for(auto pParagraph : m_arParagraphs)
-        {
-            pParagraph->Clear();
-        }
         m_arParagraphs.clear();
-        delete m_pImageInfo;
-        m_pCont = nullptr;
-    }
-
-    CShape& CShape::operator=(const CShape &oSrc)
-    {
-        if (this == &oSrc)
-        {
-            return *this;
-        }
-
-        Clear();
-
-        CBaseItem::operator=(oSrc);
-
-        m_eType = oSrc.m_eType;
-        m_strPath = oSrc.m_strPath;
-        m_oBrush = oSrc.m_oBrush;
-        m_oPen = oSrc.m_oPen;
-        m_dRotate = oSrc.m_dRotate;
-
-        m_bIsNoFill = oSrc.m_bIsNoFill;
-        m_bIsNoStroke = oSrc.m_bIsNoStroke;
-        m_bIsBehindDoc = oSrc.m_bIsBehindDoc;
-
-        m_eGraphicsType = oSrc.m_eGraphicsType;
-        m_eSimpleLineType = oSrc.m_eSimpleLineType;
-        m_eLineType = oSrc.m_eLineType;
-
-        for (auto pParagraph : oSrc.m_arParagraphs)
-        {
-            m_arParagraphs.push_back(new CParagraph(*pParagraph));
-        }
-
-        m_pImageInfo = oSrc.m_pImageInfo;
-
-        m_pCont = oSrc.m_pCont;
-
-        return *this;
     }
 
     UINT CShape::GenerateShapeId()
@@ -227,7 +179,7 @@ namespace NSDocxRenderer
         oWriter.ClearNoAttack();
     }
 
-    void CShape::DetermineGraphicsType(const double& dWidth, const double& dHeight,const size_t& nPeacks, const size_t& nCurves)
+    void CShape::DetermineGraphicsType(double dWidth, double dHeight,size_t nPeacks, size_t nCurves)
     {
         //note параллельно для каждой текстовой строки создается шейп, который содержит цвет фона для данного текста.
         if (m_oBrush.Color1 == c_iWhiteColor && m_oPen.Color == c_iWhiteColor)
@@ -270,30 +222,30 @@ namespace NSDocxRenderer
                (m_eGraphicsType == eGraphicsType::gtCurve &&  m_eSimpleLineType == eSimpleLineType::sltWave);
     }
 
-    bool CShape::IsCorrelated(const CShape* pShape)
+    bool CShape::IsCorrelated(const std::shared_ptr<CShape> pShape)
     {
         return m_eGraphicsType == pShape->m_eGraphicsType;
     }
 
-    void CShape::ChangeGeometryOfDesiredShape(CShape* pShape)
+    void CShape::ChangeGeometryOfDesiredShape(std::shared_ptr<CShape> pShape)
     {
         if (!pShape)
         {
             return;
         }
 
-        CShape* pModObject;
-        CShape* pDataObject;
+        std::shared_ptr<CShape> pModObject;
+        std::shared_ptr<CShape> pDataObject;
 
         if (pShape->m_bIsNotNecessaryToUse)
         {
-            pModObject = this;
+            pModObject = shared_from_this();;
             pDataObject = pShape;
         }
         else if (m_bIsNotNecessaryToUse)
         {
             pModObject = pShape;
-            pDataObject = this;
+            pDataObject = shared_from_this();;
         }
         else
         {
@@ -344,7 +296,7 @@ namespace NSDocxRenderer
         pModObject->m_dRight = pModObject->m_dLeft + pModObject->m_dWidth;
     }
 
-    void CShape::DetermineLineType(CShape* pShape, bool bIsLast)
+    void CShape::DetermineLineType(std::shared_ptr<CShape> pShape, bool bIsLast)
     {
         if (!pShape)
         {
@@ -940,9 +892,9 @@ namespace NSDocxRenderer
         {
             oWriter.WriteString(L"<wps:txbx>"); //text within the shape. http://officeopenxml.com/drwSp-text.php
             oWriter.WriteString(L"<w:txbxContent>");
-            for (auto pParagraph : m_arParagraphs)
+            for (size_t i = 0; i < m_arParagraphs.size(); i++)
             {
-                pParagraph->ToXml(oWriter);
+                m_arParagraphs[i].get()->ToXml(oWriter);
             }
             oWriter.WriteString(L"</w:txbxContent>");
             oWriter.WriteString(L"</wps:txbx>");

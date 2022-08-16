@@ -9,12 +9,6 @@ namespace NSDocxRenderer
     {
     }
 
-    CParagraph::CParagraph(const CParagraph& oSrc):
-        CBaseItem(ElemType::etParagraph)
-    {
-        *this = oSrc;
-    }
-
     CParagraph::~CParagraph()
     {
         Clear();
@@ -22,46 +16,7 @@ namespace NSDocxRenderer
 
     void CParagraph::Clear()
     {
-        for (auto pLine : m_arLines)
-        {
-            pLine->Clear();
-        }
         m_arLines.clear();
-    }
-
-    CParagraph& CParagraph::operator=(const CParagraph& oSrc)
-    {
-        if (this == &oSrc)
-        {
-            return *this;
-        }
-
-        Clear();
-
-        CBaseItem::operator=(oSrc);
-
-        m_eTextConversionType	 = oSrc.m_eTextConversionType;
-        m_bIsNeedFirstLineIndent = oSrc.m_bIsNeedFirstLineIndent;
-        m_bIsAroundTextWrapping  = oSrc.m_bIsAroundTextWrapping;
-        m_bIsShadingPresent      = oSrc.m_bIsShadingPresent;
-        m_lColorOfShadingFill    = oSrc.m_lColorOfShadingFill;
-        m_eTextAlignmentType     = oSrc.m_eTextAlignmentType;
-
-        m_dFirstLine = oSrc.m_dFirstLine;
-
-        m_dSpaceBefore	= oSrc.m_dSpaceBefore;
-        m_dSpaceAfter   = oSrc.m_dSpaceAfter;
-        m_dBaselinePos  = oSrc.m_dBaselinePos;
-
-        m_eTextAssociationType		= oSrc.m_eTextAssociationType;
-
-        for (auto pLine : oSrc.m_arLines)
-        {
-            m_arLines.push_back(new CTextLine(*pLine));
-        }
-
-        m_nNumLines = oSrc.m_nNumLines;
-        return *this;
     }
 
     void CParagraph::ToXml(NSStringUtils::CStringBuilder& oWriter)
@@ -71,7 +26,6 @@ namespace NSDocxRenderer
             return;
         }
 
-        //todo использовать паттерн builder
         oWriter.WriteString(L"<w:p>");
         oWriter.WriteString(L"<w:pPr>");
 
@@ -189,7 +143,7 @@ namespace NSDocxRenderer
 
         oWriter.WriteString(L"</w:pPr>");
 
-        for(auto pLine : m_arLines)
+        for(const auto &pLine : m_arLines)
         {
             pLine->ToXml(oWriter);
         }
@@ -204,11 +158,11 @@ namespace NSDocxRenderer
             return;
         }
 
-        for(auto pLine : m_arLines)
+        for(const auto &pLine : m_arLines)
         {
             if (pLine->m_pDominantShape)
             {
-                for (auto pCont : pLine->m_arConts)
+                for (const auto &pCont : pLine->m_arConts)
                 {
                     if (m_lColorOfShadingFill == pCont->m_lHighlightColor)
                     {
@@ -221,11 +175,11 @@ namespace NSDocxRenderer
 
     void CParagraph::RightBorderCorrection()
     {
-        CContText* pSelectedCont = nullptr;
+        std::shared_ptr<CContText> pSelectedCont = nullptr;
 
-        for (auto pLine : m_arLines)
+        for (const auto &pLine : m_arLines)
         {
-            for (auto pCont : pLine->m_arConts)
+            for (const auto &pCont : pLine->m_arConts)
             {
                 if (!pSelectedCont || pSelectedCont->m_pFontStyle->m_oFont.Size < pCont->m_pFontStyle->m_oFont.Size)
                 {
@@ -263,16 +217,11 @@ namespace NSDocxRenderer
 
     void CParagraph::MergeLines()
     {
-        if (m_nNumLines < 2)
-        {
-            return;
-        }
-
-        CTextLine* pLine = m_arLines.front();
+        std::shared_ptr<CTextLine> pLine = m_arLines.front();
 
         for(size_t i = 1; i < m_arLines.size(); i++)
         {
-            CContText* pLastCont = pLine->m_arConts.back();
+            std::shared_ptr<CContText> pLastCont = pLine->m_arConts.back();
             size_t iNumConts = pLine->m_arConts.size() - 1;
 
             while (pLastCont->m_bIsNotNecessaryToUse)
@@ -301,7 +250,7 @@ namespace NSDocxRenderer
                 pCont->m_bIsNotNecessaryToUse = true;
             }
 
-            for (auto pCont : pNext->m_arConts)
+            for (const auto &pCont : pNext->m_arConts)
             {
                 if (!pCont->m_bIsNotNecessaryToUse)
                 {

@@ -7,7 +7,6 @@
 #include "../../resources/Constants.h"
 #include "../../resources/LinesTable.h"
 
-
 namespace NSDocxRenderer
 {
     class CShape;
@@ -20,10 +19,10 @@ namespace NSDocxRenderer
         vatSuperscript
     };
 
-    class CContText : public CBaseItem
+    class CContText : public CBaseItem, public std::enable_shared_from_this<CContText>
     {
         public:
-            CFontStyle* m_pFontStyle {nullptr};
+            std::shared_ptr<CFontStyle> m_pFontStyle {nullptr};
 
             bool   m_bIsStrikeoutPresent {false};
             bool   m_bIsDoubleStrikeout {false};
@@ -49,13 +48,14 @@ namespace NSDocxRenderer
 
             eVertAlignType m_eVertAlignType {eVertAlignType::vatUnknown};
 
-            const CShape* m_pShape {nullptr}; //Если не nullptr, то есть фоновая графика - можно анализировать.
             CFontManagerLight* m_pManagerLight {nullptr};
             CStyleManager*     m_pStyleManager {nullptr};
-            const CContText* m_pCont {nullptr}; //Если не nullptr, то есть привязка к vatSubscript или vatSuperscript;
 
-#if USING_DELETE_DUPLICATING_CONTS == 0
-            CContText* m_pDuplicateCont {nullptr};
+            std::shared_ptr<CShape>    m_pShape {nullptr}; //Если не nullptr, то есть фоновая графика - можно анализировать.
+            std::shared_ptr<CContText> m_pCont {nullptr}; //Если не nullptr, то есть привязка к vatSubscript или vatSuperscript;
+
+#if (USING_DELETE_DUPLICATING_CONTS == 0)
+            std::shared_ptr<CContText> m_pDuplicateCont {nullptr};
 #endif
 
         public:
@@ -64,11 +64,7 @@ namespace NSDocxRenderer
 
             void Clear() override final;
 
-            CContText(const CContText& oSrc);
-
-            CContText& operator=(const CContText& oSrc);
-
-            double GetIntersect(const CContText* oSrc) const;
+            double GetIntersect(const std::shared_ptr<CContText> oSrc) const;
 
             void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
 
@@ -76,13 +72,13 @@ namespace NSDocxRenderer
                                    NSStringUtils::CStringBuilder& oWriter,
                                    bool bIsNeedSaveFormat = false);
 
-            bool IsEqual(const CContText* oSrc);
+            bool IsEqual(const std::shared_ptr<CContText> pCont);
 
             UINT GetNumberOfFeatures();
 
-            bool IsDuplicate(CContText* pCont, const eVerticalCrossingType& eVType);
-            bool IsThereAreFontEffects(CContText* pCont, const eVerticalCrossingType& eVType, const eHorizontalCrossingType& eHType);
-            bool IsVertAlignTypeBetweenConts(CContText* pCont, const eVerticalCrossingType& eVType, const eHorizontalCrossingType& eHType);
+            bool IsDuplicate(std::shared_ptr<CContText> pCont, eVerticalCrossingType eVType);
+            bool IsThereAreFontEffects(std::shared_ptr<CContText> pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType);
+            bool IsVertAlignTypeBetweenConts(std::shared_ptr<CContText> pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType);
 
             double CalculateWideSpace();
             double CalculateThinSpace();

@@ -5,21 +5,16 @@ namespace NSDocxRenderer
 {
     CStyleManager::CStyleManager()
     {
-        m_pCurrentStyle = new CFontStyle();
+        m_pCurrentStyle = std::make_shared<CFontStyle>();
     }
 
     CStyleManager::~CStyleManager()
     {
         Clear();
-        delete m_pCurrentStyle;
     }
 
     void CStyleManager::Clear()
     {
-        for (auto pStyle : m_mapStyles)
-        {
-            RELEASEOBJECT(pStyle.second);
-        }
         m_mapStyles.clear();
     }
 
@@ -28,9 +23,9 @@ namespace NSDocxRenderer
         Clear();
     }
 
-    CFontStyle* CStyleManager::GetStyle()
+    std::shared_ptr<CFontStyle> CStyleManager::GetStyle()
     {
-        for (auto pStyle : m_mapStyles)
+        for (const auto &pStyle : m_mapStyles)
         {
             if (pStyle.second->IsEqual(m_pCurrentStyle))
             {
@@ -42,7 +37,7 @@ namespace NSDocxRenderer
 
         m_mapStyles.insert(pairStyle);
 
-        m_pCurrentStyle = new CFontStyle();
+        m_pCurrentStyle = std::make_shared<CFontStyle>();
 
         return pairStyle.second;
     }

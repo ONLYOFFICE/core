@@ -2,6 +2,7 @@
 #include "../resources/Constants.h"
 #include "../resources/SortElements.h"
 #include "../resources/utils.h"
+#include <memory>
 
 namespace NSDocxRenderer
 {
@@ -51,46 +52,26 @@ namespace NSDocxRenderer
 
     void CPage::ClearImages()
     {
-        for (auto pImage: m_arImages)
-        {
-            pImage->Clear();
-        }
         m_arImages.clear();
     }
 
     void CPage::ClearTextData()
     {
-        for (auto pCont : m_arSymbol)
-        {
-            RELEASEOBJECT(pCont);
-        }
         m_arSymbol.clear();
     }
 
     void CPage::ClearTextLines()
     {
-        for (auto pLine : m_arTextLine)
-        {
-            pLine->Clear();
-        }
         m_arTextLine.clear();
     }
 
     void CPage::ClearShapes()
     {
-        for (auto pShape : m_arShapes)
-        {
-            pShape->Clear();
-        }
         m_arShapes.clear();
     }
 
     void CPage::ClearParagraphs()
     {
-        for (auto pParagraph : m_arParagraphs)
-        {
-            pParagraph->Clear();
-        }
         m_arParagraphs.clear();
     }
 
@@ -104,28 +85,23 @@ namespace NSDocxRenderer
         if (m_bIsDeleteTextClipPage)
         {
             // удалим все линии, которые выходят за границы страницы
-            size_t nCount = m_arTextLine.size();
-            for (size_t i = 0; i < nCount; ++i)
+            for (const auto &pLine : m_arTextLine)
             {
-                CTextLine* pTextLine = m_arTextLine[i];
-
-                double _top = pTextLine->m_dBaselinePos - pTextLine->m_dHeight;
-                double _bottom = pTextLine->m_dBaselinePos;
+                double _top = pLine->m_dBaselinePos - pLine->m_dHeight;
+                double _bottom = pLine->m_dBaselinePos;
 
                 if (_top >= m_dHeight || _bottom <= 0)
                 {
-                    m_arTextLine.erase(m_arTextLine.begin() + i);
-                    --i;
-                    --nCount;
+                    pLine->m_bIsNotNecessaryToUse = true;
                 }
             }
         }
     }
 
     // image commands
-    void CPage::WriteImage(CImageInfo* pInfo, double& fX, double& fY, double& fWidth, double& fHeight)
+    void CPage::WriteImage(const std::shared_ptr<CImageInfo> pInfo, double& fX, double& fY, double& fWidth, double& fHeight)
     {
-        CShape* pImage = new CShape(pInfo, L"");
+        auto pImage = std::make_shared<CShape>(pInfo, L"");
         pImage->m_eType = CShape::eShapeType::stPicture;
 
         double dRotation = m_pTransform->z_Rotation();
@@ -248,18 +224,17 @@ namespace NSDocxRenderer
         m_oVector.Close();
     }
 
-    void CPage::DrawPath(LONG lType, CImageInfo* pInfo)
+    void CPage::DrawPath(LONG lType, const std::shared_ptr<CImageInfo> pInfo)
     {
         if ((m_oVector.m_dLeft <= m_oVector.m_dRight) && (m_oVector.m_dTop <= m_oVector.m_dBottom))
         {
             //Убираем все белые прямоугольники-подложки
             if (0x00 != (lType >> 8) && m_pBrush->Color1 == c_iWhiteColor)
             {
-                delete pInfo;
                 return;
             }
 
-            CShape* pShape = new CShape();
+            auto pShape = std::make_shared<CShape>();
 
             pShape->m_oPen		 = *m_pPen;
             pShape->m_oBrush	 = *m_pBrush;
@@ -357,7 +332,7 @@ namespace NSDocxRenderer
         double dBaseLinePos = dTextY + fBaseLineOffset;
         dTextH = m_oFontManager.GetFontHeight();
 
-        CContText* pCont = new CContText(&m_oFontManagerLight, m_pStyleManager);
+        auto pCont = std::make_shared<CContText>(&m_oFontManagerLight, m_pStyleManager);
 
         pCont->m_dLeft = dTextX;
         pCont->m_dBaselinePos = dBaseLinePos;
@@ -398,9 +373,9 @@ namespace NSDocxRenderer
 
     void CPage::RemoveSubstratesUnderPictures()
     {
-        for (auto pImage : m_arImages)
+        for (const auto &pImage : m_arImages)
         {
-            for (auto pShape : m_arShapes)
+            for (const auto &pShape : m_arShapes)
             {
                 if (pShape->m_bIsNotNecessaryToUse)
                 {
@@ -425,7 +400,7 @@ namespace NSDocxRenderer
 
     void CPage::CorrelateContWithShape()
     {
-        for (auto pShape : m_arShapes)
+        for (const auto &pShape : m_arShapes)
         {
             if (pShape->m_bIsNotNecessaryToUse ||
                 (pShape->m_eGraphicsType != eGraphicsType::gtRectangle &&
@@ -434,14 +409,13 @@ namespace NSDocxRenderer
             {
                 continue;
             }
-
-            for (auto pCont : m_arSymbol)
+            for (const auto &pCont : m_arSymbol)
             {
                 double dSomeBaseLine1 = pCont->m_dBaselinePos - pCont->m_dHeight * 0.75;
                 double dSomeBaseLine2 = pCont->m_dBaselinePos - pCont->m_dHeight * 0.5;
                 double dSomeBaseLine3 = pCont->m_dBaselinePos - pCont->m_dHeight * 0.25;
 
-                eHorizontalCrossingType eHType = pCont->GetHorizontalCrossingType(pShape);
+                eHorizontalCrossingType eHType = pCont->GetHorizontalCrossingType(pShape.get());
 
                 //Условие пересечения по вертикали для подчеркиваний/зачеркиваний
                 bool bIf1 = ((fabs(pShape->m_dTop - pCont->m_dTop) < c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM ||
@@ -478,38 +452,40 @@ namespace NSDocxRenderer
     {
         for (size_t i = 0; i < m_arShapes.size(); ++i)
         {
-            if (m_arShapes[i]->m_bIsNotNecessaryToUse ||
-                    !m_arShapes[i]->m_pCont || //note определяем тип только для зачеркиваний/подчеркиваний/выделений
-                    m_arShapes[i]->m_dHeight > c_dMAX_LINE_HEIGHT_MM || //рассматриваем только тонкие объекты
-                    (m_arShapes[i]->m_eGraphicsType != eGraphicsType::gtRectangle &&
-                     m_arShapes[i]->m_eGraphicsType != eGraphicsType::gtCurve))
+            auto pCurrShape = m_arShapes[i];
+
+            if (pCurrShape->m_bIsNotNecessaryToUse ||
+               !pCurrShape->m_pCont || //note определяем тип только для зачеркиваний/подчеркиваний/выделений
+                pCurrShape->m_dHeight > c_dMAX_LINE_HEIGHT_MM || //рассматриваем только тонкие объекты
+               (pCurrShape->m_eGraphicsType != eGraphicsType::gtRectangle &&
+                pCurrShape->m_eGraphicsType != eGraphicsType::gtCurve))
             {
                 continue;
             }
 
             //Нужно собрать всю графику, которая находится на одной линии
-            std::vector<CShape*> arCurrShapes;
+            std::vector<std::shared_ptr<CShape>> arCurrShapes;
             arCurrShapes.push_back(m_arShapes[i]);
 
             for (size_t j = i+1; j < m_arShapes.size(); ++j)
             {
-                bool bIf1 = !m_arShapes[j]->m_bIsNotNecessaryToUse;
-                bool bIf2 = m_arShapes[i]->IsCorrelated(m_arShapes[j]);
+                std::shared_ptr<CShape> pNextShape = m_arShapes[j];
+                bool bIf1 = !pNextShape->m_bIsNotNecessaryToUse;
+                bool bIf2 = pCurrShape->IsCorrelated(pNextShape);
                 //note довольно странное поведение - в зависимости от толщины линии информация о графике записывается в разные структуры
-                bool bIf3 = m_arShapes[i]->m_oBrush.IsEqual(&m_arShapes[j]->m_oBrush);
-                bool bIf4 = m_arShapes[i]->m_oPen.IsEqual(&m_arShapes[j]->m_oPen);
+                bool bIf3 = pCurrShape->m_oBrush.IsEqual(&pNextShape->m_oBrush);
+                bool bIf4 = pCurrShape->m_oPen.IsEqual(&pNextShape->m_oPen);
                 //линия должна быть одного размера по высоте
-                bool bIf5 = fabs(m_arShapes[i]->m_dHeight - m_arShapes[j]->m_dHeight) < c_dGRAPHICS_ERROR_IN_LINES_MM;
+                bool bIf5 = fabs(pCurrShape->m_dHeight - pNextShape->m_dHeight) < c_dGRAPHICS_ERROR_IN_LINES_MM;
                 //все должно быть на одной линии
-                bool bIf6 = fabs(m_arShapes[i]->m_dTop - m_arShapes[j]->m_dTop) < c_dGRAPHICS_ERROR_IN_LINES_MM * 5;
+                bool bIf6 = fabs(pCurrShape->m_dTop - pNextShape->m_dTop) < c_dGRAPHICS_ERROR_IN_LINES_MM * 5;
 
                 if (bIf1 && bIf2 && (bIf3 || bIf4) && bIf5 && bIf6) //все должно быть на одной линии
                 {
-                    arCurrShapes.push_back(m_arShapes[j]);
+                    arCurrShapes.push_back(pNextShape);
                 }
             }
 
-            CShape* pCurrShape;
             //Отсортируем собранный массив по x
             size_t nCurrShapesCount = arCurrShapes.size();
             if (nCurrShapesCount > 1)
@@ -520,7 +496,7 @@ namespace NSDocxRenderer
                 //сравнение
                 for (size_t k = 1; k < nCurrShapesCount; ++k)
                 {
-                    CShape* pNextShape = arCurrShapes[k];
+                    std::shared_ptr<CShape> pNextShape = arCurrShapes[k];
 
                     //note логика работатет только если arCurrShapes отсортирован по m_dLeft
                     pCurrShape->DetermineLineType(pNextShape, k == nCurrShapesCount - 1);
@@ -563,8 +539,8 @@ namespace NSDocxRenderer
                     continue;
                 }
 
-                eVerticalCrossingType eVType = pCont->GetVerticalCrossingType(pNext);
-                eHorizontalCrossingType eHType = pCont->GetHorizontalCrossingType(pNext);
+                eVerticalCrossingType eVType = pCont->GetVerticalCrossingType(pNext.get());
+                eHorizontalCrossingType eHType = pCont->GetHorizontalCrossingType(pNext.get());
 
                 if (pCont->IsThereAreFontEffects(pNext, eVType, eHType))
                 {
@@ -595,7 +571,7 @@ namespace NSDocxRenderer
 
     void CPage::DetermineStrikeoutsUnderlinesHighlights()
     {
-        for (auto pShape : m_arShapes)
+        for (const auto &pShape : m_arShapes)
         {
             if (!pShape->m_pCont || //note если нет указателя, то текст далеко от графики
                 pShape->m_eGraphicsType == eGraphicsType::gtNoGraphics)
@@ -603,15 +579,15 @@ namespace NSDocxRenderer
                 continue;
             }
 
-            for (auto pCont : m_arSymbol)
+            for (const auto &pCont : m_arSymbol)
             {
                 if (pCont->m_bIsNotNecessaryToUse)
                 {
                     continue;
                 }
 
-                eVerticalCrossingType eVType = pCont->GetVerticalCrossingType(pShape);
-                eHorizontalCrossingType eHType = pCont->GetHorizontalCrossingType(pShape);
+                eVerticalCrossingType eVType = pCont->GetVerticalCrossingType(pShape.get());
+                eHorizontalCrossingType eHType = pCont->GetHorizontalCrossingType(pShape.get());
 
                 if (pShape->m_eGraphicsType != eGraphicsType::gtComplicatedFigure &&
                     (IsLineCrossingText(pShape, pCont, eHType) ||
@@ -641,7 +617,7 @@ namespace NSDocxRenderer
         }
     }
 
-    bool CPage::IsLineCrossingText(const CShape* pShape, CContText* pCont, const eHorizontalCrossingType& eHType)
+    bool CPage::IsLineCrossingText(const std::shared_ptr<CShape> pShape, std::shared_ptr<CContText> pCont, const eHorizontalCrossingType& eHType)
     {
         double dTopBorder = pCont->m_dTop + pCont->m_dHeight/3; //note Height - это максимально возможный размер символа. Больше реального размера.
 
@@ -671,7 +647,7 @@ namespace NSDocxRenderer
         return false;
     }
 
-    bool CPage::IsLineBelowText(const CShape* pShape, CContText* pCont, const eHorizontalCrossingType& eHType)
+    bool CPage::IsLineBelowText(const std::shared_ptr<CShape> pShape, std::shared_ptr<CContText> pCont, const eHorizontalCrossingType& eHType)
     {
         bool bIf1 = (pShape->m_eGraphicsType == eGraphicsType::gtRectangle ||
                      pShape->m_eGraphicsType == eGraphicsType::gtCurve) &&
@@ -698,7 +674,7 @@ namespace NSDocxRenderer
         return false;
     }
 
-    bool CPage::IsItHighlightingBackground(const CShape* pShape, CContText* pCont, const eHorizontalCrossingType& eHType)
+    bool CPage::IsItHighlightingBackground(const std::shared_ptr<CShape> pShape, std::shared_ptr<CContText> pCont, const eHorizontalCrossingType& eHType)
     {
         double dSomeBaseLine1 = pCont->m_dBaselinePos - pCont->m_dHeight * 0.75;
         double dSomeBaseLine2 = pCont->m_dBaselinePos - pCont->m_dHeight * 0.5;
@@ -734,6 +710,8 @@ namespace NSDocxRenderer
     {
         BuildLines();
 
+        SortElements(m_arTextLine);
+
         MergeLinesByVertAlignType();
 
         for (auto pLine : m_arTextLine)
@@ -755,7 +733,7 @@ namespace NSDocxRenderer
     void CPage::BuildLines()
     {
         //note Элементы в m_arSymbol в случайных местах страницы
-        for (auto pCont : m_arSymbol)
+        for (const auto &pCont : m_arSymbol)
         {
             if (pCont->m_bIsNotNecessaryToUse)
             {
@@ -764,8 +742,8 @@ namespace NSDocxRenderer
 
             SelectCurrentLine(pCont);
 
-            CContText* pLastCont = nullptr;
-            CContText* pNewCont = nullptr;
+            std::shared_ptr<CContText> pLastCont = nullptr;
+            std::shared_ptr<CContText> pNewCont = nullptr;
             size_t nCountConts = m_pCurrentLine->m_arConts.size();
             if (nCountConts != 0)
                 pLastCont = m_pCurrentLine->m_arConts.back();
@@ -773,7 +751,7 @@ namespace NSDocxRenderer
             if (nullptr == pLastCont)
             {
                 // первое слово в линии
-                pNewCont = new CContText(*pCont);
+                auto pNewCont = std::make_shared<CContText>(*pCont.get());
 
                 pNewCont->m_dLastX = pCont->m_dLeft;
 
@@ -782,15 +760,15 @@ namespace NSDocxRenderer
                 m_dLastTextY = pNewCont->m_dBaselinePos;
                 m_dLastTextX_block = m_dLastTextX;
 
-#if USING_DELETE_DUPLICATING_CONTS == 0
+#if (USING_DELETE_DUPLICATING_CONTS == 0)
                 //Сразу распределим дубликаты по линиям
                 while (pNewCont->m_pDuplicateCont)
                 {
                     pNewCont = pNewCont->m_pDuplicateCont;
 
-                    CTextLine* pDuplicateLine = m_pCurrentLine->m_pDuplicateLine;
+                    auto pDuplicateLine = m_pCurrentLine->m_pDuplicateLine;
                     pDuplicateLine->m_dBaselinePos = pNewCont->m_dBaselinePos;
-                    pDuplicateLine->AddCont(new CContText(*pNewCont));
+                    pDuplicateLine->AddCont(std::make_shared<CContText>(*pNewCont.get()));
 
                     //Чтобы дубликат не попал дальше в работу
                     pNewCont->m_bIsNotNecessaryToUse = true;
@@ -868,19 +846,19 @@ namespace NSDocxRenderer
             // либо пробел большой между словами, либо новый текст левее, либо настройки не те (шрифт, кисть)
             // либо все вместе... просто добавл¤ем новое слово
             pNewCont = pCont;
-            m_pCurrentLine->AddCont(new CContText(*pNewCont));
+            m_pCurrentLine->AddCont(std::make_shared<CContText>(*pNewCont.get()));
             m_dLastTextX = pCont->m_dLeft;
             m_dLastTextY = pCont->m_dBaselinePos;
             m_dLastTextX_block = m_dLastTextX;
 
-#if USING_DELETE_DUPLICATING_CONTS == 0
+#if (USING_DELETE_DUPLICATING_CONTS == 0)
             while (pNewCont->m_pDuplicateCont)
             {
                 pNewCont = pNewCont->m_pDuplicateCont;
 
-                CTextLine* pDuplicateLine = m_pCurrentLine->m_pDuplicateLine;
+                auto pDuplicateLine = m_pCurrentLine->m_pDuplicateLine;
                 pDuplicateLine->m_dBaselinePos = pNewCont->m_dBaselinePos;
-                pDuplicateLine->AddCont(new CContText(*pNewCont));
+                pDuplicateLine->AddCont(std::make_shared<CContText>(*pNewCont.get()));
 
                 //Чтобы дубликат не попал дальше в работу
                 pNewCont->m_bIsNotNecessaryToUse = true;
@@ -890,12 +868,13 @@ namespace NSDocxRenderer
         }
     }
 
-    void CPage::SelectCurrentLine(const CContText* pCont)
+    void CPage::SelectCurrentLine(const std::shared_ptr<CContText> pCont)
     {
         if ((nullptr == m_pCurrentLine) || (tatBlockChar == m_eTextAssociationType))
         {
             // пустая (в плане текста) страница
-            m_pCurrentLine = new CTextLine();
+            auto pLine = std::make_shared<CTextLine>();
+            m_pCurrentLine = pLine;
             m_pCurrentLine->m_dBaselinePos = pCont->m_dBaselinePos;
             if (m_pCurrentLine->m_eVertAlignType == eVertAlignType::vatUnknown &&
                     pCont->m_eVertAlignType != eVertAlignType::vatUnknown)
@@ -903,17 +882,17 @@ namespace NSDocxRenderer
                 //note считаем, что линия может иметь только один тип
                 m_pCurrentLine->m_eVertAlignType = pCont->m_eVertAlignType;
             }
-            m_arTextLine.push_back(m_pCurrentLine);
+            m_arTextLine.push_back(pLine);
 
-#if USING_DELETE_DUPLICATING_CONTS == 0
-            const CContText* pCurrCont = pCont;
-            CTextLine* pCurrLine = m_pCurrentLine;
+#if (USING_DELETE_DUPLICATING_CONTS == 0)
+            auto pCurrCont = pCont;
+            auto pCurrLine = m_pCurrentLine;
 
             while (pCurrCont->m_pDuplicateCont)
             {
                 pCurrCont = pCurrCont->m_pDuplicateCont;
 
-                CTextLine* pLine = new CTextLine();
+                auto pLine = std::make_shared<CTextLine>();
                 pLine->m_dBaselinePos = pCurrCont->m_dBaselinePos;
                 m_arTextLine.push_back(pLine);
 
@@ -951,7 +930,8 @@ namespace NSDocxRenderer
         }
 
         // линия не нашлась - не беда - создадим новую
-        m_pCurrentLine = new CTextLine();
+        auto pLine = std::make_shared<CTextLine>();
+        m_pCurrentLine = pLine;
         m_pCurrentLine->m_dBaselinePos = pCont->m_dBaselinePos;
         if (m_pCurrentLine->m_eVertAlignType == eVertAlignType::vatUnknown &&
                 pCont->m_eVertAlignType != eVertAlignType::vatUnknown)
@@ -959,17 +939,17 @@ namespace NSDocxRenderer
             //note считаем, что линия может иметь только один тип
             m_pCurrentLine->m_eVertAlignType = pCont->m_eVertAlignType;
         }
-        m_arTextLine.push_back(m_pCurrentLine);
+        m_arTextLine.push_back(pLine);
 
-#if USING_DELETE_DUPLICATING_CONTS == 0
-        const CContText* pCurrCont = pCont;
-        CTextLine* pCurrLine = m_pCurrentLine;
+#if (USING_DELETE_DUPLICATING_CONTS == 0)
+        auto pCurrCont = pCont;
+        auto pCurrLine = m_pCurrentLine;
 
         while (pCurrCont->m_pDuplicateCont)
         {
             pCurrCont = pCurrCont->m_pDuplicateCont;
 
-            CTextLine* pLine = new CTextLine();
+            auto pLine = std::make_shared<CTextLine>();
             pLine->m_dBaselinePos = pCurrCont->m_dBaselinePos;
             m_arTextLine.push_back(pLine);
 
@@ -982,8 +962,6 @@ namespace NSDocxRenderer
 
     void CPage::MergeLinesByVertAlignType()
     {
-        SortElements(m_arTextLine);
-
         for (size_t i = 0; i < m_arTextLine.size(); i++)
         {
             auto pLine = m_arTextLine[i];
@@ -1006,7 +984,7 @@ namespace NSDocxRenderer
                         pLineNext->m_eVertAlignType == eVertAlignType::vatBase)
                 {
                     pLine->m_bIsNotNecessaryToUse = true;
-                    for (auto pCont : pLine->m_arConts)
+                    for (const auto &pCont : pLine->m_arConts)
                     {
                         pCont->m_eVertAlignType = eVertAlignType::vatSuperscript;
 
@@ -1023,14 +1001,14 @@ namespace NSDocxRenderer
                             pLineNext->m_dLeft = pCont->m_dLeft;
                         }
 
-                        pLineNext->m_arConts.push_back(new CContText(*pCont));
+                        pLineNext->m_arConts.push_back(std::make_shared<CContText>(*pCont));
                     }
                 }
                 else if (pLine->m_eVertAlignType == eVertAlignType::vatBase &&
                          pLineNext->m_eVertAlignType == eVertAlignType::vatSubscript)
                 {
                     pLineNext->m_bIsNotNecessaryToUse = true;
-                    for (auto pCont : pLineNext->m_arConts)
+                    for (const auto &pCont : pLineNext->m_arConts)
                     {
                         pCont->m_eVertAlignType = eVertAlignType::vatSubscript;
 
@@ -1047,7 +1025,7 @@ namespace NSDocxRenderer
                             pLine->m_dLeft = pCont->m_dLeft;
                         }
 
-                        pLine->m_arConts.push_back(new CContText(*pCont));
+                        pLine->m_arConts.push_back(std::make_shared<CContText>(*pCont));
                     }
                 }
             }
@@ -1056,11 +1034,11 @@ namespace NSDocxRenderer
 
     void CPage::DetermineDominantGraphics()
     {
-        const CShape* pDominantShape = nullptr;
+        std::shared_ptr<CShape> pDominantShape = nullptr;
 
-        for (auto pLine : m_arTextLine)
+        for (const auto &pLine : m_arTextLine)
         {
-            for (auto pCont : pLine->m_arConts)
+            for (const auto &pCont : pLine->m_arConts)
             {
                 if (pCont->m_pShape && pCont->m_pShape != pDominantShape)
                 {
@@ -1111,17 +1089,15 @@ namespace NSDocxRenderer
 
     void CPage::BuildByTypeBlockChar()
     {
-        for (auto pLine : m_arTextLine)
+        for (const auto &pLine : m_arTextLine)
         {
-            CTextLine* pTextLine = new CTextLine(*pLine);;
-
-            CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
+            auto pParagraph = std::make_shared<CParagraph>(m_eTextAssociationType);
             pParagraph->m_eTextConversionType = CParagraph::tctTextToFrame;
 
-            pParagraph->m_dLeft = pTextLine->m_dLeft;
-            pParagraph->m_dTop	= pTextLine->m_dBaselinePos - pTextLine->m_dHeight - pTextLine->m_dBaselineOffset;
+            pParagraph->m_dLeft = pLine->m_dLeft;
+            pParagraph->m_dTop	= pLine->m_dBaselinePos - pLine->m_dHeight - pLine->m_dBaselineOffset;
 
-            pParagraph->m_arLines.push_back(pTextLine);
+            pParagraph->m_arLines.push_back(pLine);
 
             m_arParagraphs.push_back(pParagraph);
         }
@@ -1129,9 +1105,9 @@ namespace NSDocxRenderer
 
     void CPage::BuildByTypeBlockLine()
     {
-        CTextLine* pFirstLine = new CTextLine(*m_arTextLine[0]);
+        auto pFirstLine = m_arTextLine[0];
 
-        CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
+        auto pParagraph = std::make_shared<CParagraph>(m_eTextAssociationType);
         pParagraph->m_eTextConversionType = CParagraph::tctTextToFrame;
 
         pParagraph->m_dLeft	= pFirstLine->m_dLeft;
@@ -1141,12 +1117,12 @@ namespace NSDocxRenderer
         pParagraph->m_arLines.push_back(pFirstLine);
 
         m_arParagraphs.push_back(pParagraph);
-        size_t nCount = m_arTextLine.size();
-        for (size_t i = 1; i < nCount; ++i)
-        {
-            CTextLine* pTextLine = new CTextLine(*m_arTextLine[i]);
 
-            CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
+        for (size_t i = 1; i < m_arTextLine.size(); ++i)
+        {
+            auto pTextLine = m_arTextLine[i];
+
+            auto pParagraph = std::make_shared<CParagraph>(m_eTextAssociationType);
             pParagraph->m_eTextConversionType = CParagraph::tctTextToFrame;
 
             if (((fabs(pTextLine->m_dBaselinePos - pTextLine->m_dHeight - pFirstLine->m_dBaselinePos) > c_dSTANDART_STRING_HEIGHT_MM) && (pTextLine->m_dLeft == pFirstLine->m_dLeft)) ||
@@ -1173,25 +1149,22 @@ namespace NSDocxRenderer
     {
         Merge(c_dSTANDART_STRING_HEIGHT_MM / 3);
 
-        double previousStringOffset = 0;
-        for (auto pLine : m_arTextLine)
+        double dPreviousStringOffset = 0;
+        for (const auto &pLine : m_arTextLine)
         {
-            CTextLine* pTextLine = new CTextLine(*pLine);
+            double dBeforeSpacing = pLine->CalculateBeforeSpacing(dPreviousStringOffset);
+            dPreviousStringOffset = pLine->CalculateStringOffset();
+            double dRight = pLine->CalculateRightBorder(m_dWidth);
 
-            double dBeforeSpacing = pTextLine->CalculateBeforeSpacing(&previousStringOffset);
-            previousStringOffset = pTextLine->CalculateStringOffset();
-            double dRight = pTextLine->CalculateRightBorder(m_dWidth);
-
-            CreateSingleLineParagraph(pTextLine, &dRight, &dBeforeSpacing);
+            CreateSingleLineParagraph(pLine, &dRight, &dBeforeSpacing);
         }
     }
 
     void CPage::BuildByTypeShapeLine()
     {
-        for (auto pLine : m_arTextLine)
+        for (const auto &pLine : m_arTextLine)
         {
-            CTextLine* pTextLine = new CTextLine(*pLine);
-            CreateSingleLineShape(pTextLine);
+            CreateSingleLineShape(pLine);
         }
     }
 
@@ -1202,7 +1175,7 @@ namespace NSDocxRenderer
         //todo в зависимости от очередности загрузки файлов проявляется проблема со шрифтами - текст в некоторых конвертированных файлах становится жирным, зачеркнутым или курсив. С одним файлом проблем не наблюдалось
         //todo добавить различные типы текста для распознавания: обычный-сплошной, списки-содержание и тд
 
-        CTextLine *pCurrLine, *pNextLine;
+        std::shared_ptr<CTextLine> pCurrLine, pNextLine;
         double dCurrRight = 0, dNextRight = 0;
         double dCurrBeforeSpacing = 0, dNextBeforeSpacing = 0;
         double dBeforeSpacingWithShapes = 0;
@@ -1222,7 +1195,7 @@ namespace NSDocxRenderer
             pNextLine = GetNextTextLine(nIndex);
 
             dCurrRight = pCurrLine->CalculateRightBorder(m_dWidth);
-            dCurrBeforeSpacing = pCurrLine->CalculateBeforeSpacing(&dPreviousStringOffset);
+            dCurrBeforeSpacing = pCurrLine->CalculateBeforeSpacing(dPreviousStringOffset);
             dPreviousStringOffset = pCurrLine->CalculateStringOffset();
 
             //Это не последняя строка
@@ -1231,9 +1204,9 @@ namespace NSDocxRenderer
             if (bIf1)
             {
                 dNextRight = pNextLine->CalculateRightBorder(m_dWidth);
-                dNextBeforeSpacing = pNextLine->CalculateBeforeSpacing(&dPreviousStringOffset);
+                dNextBeforeSpacing = pNextLine->CalculateBeforeSpacing(dPreviousStringOffset);
 
-                eCrossingType = pCurrLine->GetVerticalCrossingType(pNextLine);
+                eCrossingType = pCurrLine->GetVerticalCrossingType(pNextLine.get());
                 bool bIsPassed = false;
                 double dCurrentAdditive = 0.0;
 
@@ -1287,7 +1260,7 @@ namespace NSDocxRenderer
             if (bIf1 && bIf2 && bIf3 && (bIf4 || bIf5) && bIf6 && bIf7)
             {
                 //наверное это сплошной текст
-                CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
+                auto pParagraph = std::make_shared<CParagraph>(m_eTextAssociationType);
                 pParagraph->m_eTextConversionType = CParagraph::tctTextToParagraph;
 
                 //делаем абзац в сплошном тексте
@@ -1312,9 +1285,7 @@ namespace NSDocxRenderer
 
                 //Объединим 2 строчки в параграф
                 pParagraph->m_arLines.push_back(pCurrLine);
-                pParagraph->m_nNumLines++;
                 pParagraph->m_arLines.push_back(pNextLine);
-                pParagraph->m_nNumLines++;
 
                 if (IsShadingPresent(pCurrLine, pNextLine))
                 {
@@ -1327,7 +1298,7 @@ namespace NSDocxRenderer
                 pCurrLine = pNextLine;
                 pNextLine = GetNextTextLine(nIndex);
 
-                dCurrBeforeSpacing = pCurrLine->CalculateBeforeSpacing(&dPreviousStringOffset);
+                dCurrBeforeSpacing = pCurrLine->CalculateBeforeSpacing(dPreviousStringOffset);
                 dPreviousStringOffset = pCurrLine->CalculateStringOffset();
                 double dCorrectionBeforeSpacing = dCurrBeforeSpacing;
 
@@ -1336,9 +1307,9 @@ namespace NSDocxRenderer
 
                 if (pNextLine)
                 {
-                    dNextBeforeSpacing = pNextLine->CalculateBeforeSpacing(&dPreviousStringOffset);
+                    dNextBeforeSpacing = pNextLine->CalculateBeforeSpacing(dPreviousStringOffset);
                     dNextRight = pNextLine->CalculateRightBorder(m_dWidth);
-                    eCrossingType = pCurrLine->GetVerticalCrossingType(pNextLine);
+                    eCrossingType = pCurrLine->GetVerticalCrossingType(pNextLine.get());
                 }
 
                 //проверим, подходят ли следующие строчки для текущего pParagraph
@@ -1355,7 +1326,6 @@ namespace NSDocxRenderer
                 {
                     //Объединим 2 параграфа-строчки
                     pParagraph->m_arLines.push_back(pNextLine);
-                    pParagraph->m_nNumLines++;
 
                     pParagraph->m_dRight = std::min(pParagraph->m_dRight, dCurrRight);
                     pParagraph->m_dLeft = std::min(pParagraph->m_dLeft, pNextLine->m_dLeft);
@@ -1372,7 +1342,7 @@ namespace NSDocxRenderer
                     pCurrLine = pNextLine;
                     pNextLine = GetNextTextLine(nIndex);
 
-                    dCurrBeforeSpacing = pCurrLine->CalculateBeforeSpacing(&dPreviousStringOffset);
+                    dCurrBeforeSpacing = pCurrLine->CalculateBeforeSpacing(dPreviousStringOffset);
                     dPreviousStringOffset = pCurrLine->CalculateStringOffset();
                     dCorrectionBeforeSpacing = (dCorrectionBeforeSpacing + dCurrBeforeSpacing)/2; //наверное лучше так... текст может быть уже, чем в оригинале
 
@@ -1381,9 +1351,9 @@ namespace NSDocxRenderer
 
                     if (pNextLine)
                     {
-                        dNextBeforeSpacing = pNextLine->CalculateBeforeSpacing(&dPreviousStringOffset);
+                        dNextBeforeSpacing = pNextLine->CalculateBeforeSpacing(dPreviousStringOffset);
                         dNextRight = pNextLine->CalculateRightBorder(m_dWidth);
-                        eCrossingType = pCurrLine->GetVerticalCrossingType(pNextLine);
+                        eCrossingType = pCurrLine->GetVerticalCrossingType(pNextLine.get());
                     }
                 }
 
@@ -1404,7 +1374,6 @@ namespace NSDocxRenderer
                 dBeforeSpacingWithShapes = 0;
 
                 pParagraph->RemoveHighlightColor();
-                //todo записать все строки из одного параграфа в одну строчку
                 pParagraph->MergeLines();
 
                 m_arParagraphs.push_back(pParagraph);
@@ -1420,9 +1389,9 @@ namespace NSDocxRenderer
         }
     }
 
-    CTextLine* CPage::GetNextTextLine(size_t& nCurrentIndex)
+    std::shared_ptr<CTextLine> CPage::GetNextTextLine(size_t& nCurrentIndex)
     {
-        CTextLine* pLine = nullptr;
+        std::shared_ptr<CTextLine> pLine = nullptr;
 
         for (size_t nIndex = nCurrentIndex + 1; nIndex < m_arTextLine.size(); nIndex++)
         {
@@ -1442,12 +1411,12 @@ namespace NSDocxRenderer
         return pLine;
     }
 
-    bool CPage::IsShadingPresent(const CTextLine *pLine1, const CTextLine *pLine2)
+    bool CPage::IsShadingPresent(const std::shared_ptr<CTextLine> pLine1, const std::shared_ptr<CTextLine> pLine2)
     {
         if (pLine1->m_pDominantShape && pLine2->m_pDominantShape &&
-                pLine1->m_pDominantShape->m_oBrush.Color1 == pLine2->m_pDominantShape->m_oBrush.Color1 &&
-                fabs(pLine1->m_pDominantShape->m_dLeft - pLine2->m_pDominantShape->m_dLeft) < c_dGRAPHICS_ERROR_IN_LINES_MM &&
-                fabs(pLine1->m_pDominantShape->m_dWidth - pLine2->m_pDominantShape->m_dWidth) < c_dGRAPHICS_ERROR_IN_LINES_MM)
+            pLine1->m_pDominantShape->m_oBrush.Color1 == pLine2->m_pDominantShape->m_oBrush.Color1 &&
+            fabs(pLine1->m_pDominantShape->m_dLeft - pLine2->m_pDominantShape->m_dLeft) < c_dGRAPHICS_ERROR_IN_LINES_MM &&
+            fabs(pLine1->m_pDominantShape->m_dWidth - pLine2->m_pDominantShape->m_dWidth) < c_dGRAPHICS_ERROR_IN_LINES_MM)
         {
             return true;
         }
@@ -1455,12 +1424,11 @@ namespace NSDocxRenderer
         return false;
     }
 
-    void CPage::CreateSingleLineParagraph(CTextLine *pLine, const double *pRight, const double *pBeforeSpacing)
+    void CPage::CreateSingleLineParagraph(const std::shared_ptr<CTextLine> pLine, const double *pRight, const double *pBeforeSpacing)
     {
-        CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
+        auto pParagraph = std::make_shared<CParagraph>(m_eTextAssociationType);
         pParagraph->m_eTextConversionType = CParagraph::tctTextToParagraph;
         pParagraph->m_arLines.push_back(pLine);
-        pParagraph->m_nNumLines++;
 
         pParagraph->m_dLeft	= pLine->m_dLeft;
         pParagraph->m_dTop	= pLine->m_dTop;
@@ -1488,12 +1456,11 @@ namespace NSDocxRenderer
         m_arParagraphs.push_back(pParagraph);
     }
 
-    void CPage::CreateSingleLineOldShape(CTextLine *pLine)
+    void CPage::CreateSingleLineOldShape(const std::shared_ptr<CTextLine> pLine)
     {
-        CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
+        auto pParagraph = std::make_shared<CParagraph>(m_eTextAssociationType);
         pParagraph->m_eTextConversionType = CParagraph::tctTextToShape;
         pParagraph->m_arLines.push_back(pLine);
-        pParagraph->m_nNumLines++;
 
         if (pLine->m_pDominantShape)
         {
@@ -1502,7 +1469,7 @@ namespace NSDocxRenderer
             pParagraph->RemoveHighlightColor();
         }
 
-        COldShape* pShape = new COldShape();
+        auto pShape = std::make_shared<COldShape>();
         pShape->m_arParagraphs.push_back(pParagraph);
 
         //todo В итоге Left и Top смещаются на несколько мм. не использовать margin-left и margin-top.
@@ -1514,12 +1481,11 @@ namespace NSDocxRenderer
         //m_arGraphicItems.push_back(pShape);
     }
 
-    void CPage::CreateSingleLineShape(CTextLine *pLine)
+    void CPage::CreateSingleLineShape(const std::shared_ptr<CTextLine> pLine)
     {
-        CParagraph* pParagraph = new CParagraph(m_eTextAssociationType);
+        auto pParagraph = std::make_shared<CParagraph>(m_eTextAssociationType);
         pParagraph->m_eTextConversionType = CParagraph::tctTextToShape;
         pParagraph->m_arLines.push_back(pLine);
-        pParagraph->m_nNumLines++;
 
         if (pLine->m_pDominantShape)
         {
@@ -1528,7 +1494,7 @@ namespace NSDocxRenderer
             pParagraph->RemoveHighlightColor();
         }
 
-        CShape* pShape = new CShape();
+        auto pShape = std::make_shared<CShape>();
         pShape->m_arParagraphs.push_back(pParagraph);
         pShape->m_eType = CShape::eShapeType::stTextBox;
         pShape->m_dLeft	= pLine->m_dLeft;
@@ -1544,21 +1510,15 @@ namespace NSDocxRenderer
         size_t nCount = m_arTextLine.size();
         if (1 < nCount)
         {
-            CTextLine* pPrev = m_arTextLine[0];
+            auto pPrev = m_arTextLine[0];
             for (size_t i = 1; i < nCount; ++i)
             {
-                CTextLine* pNext = m_arTextLine[i];
+                auto pNext = m_arTextLine[i];
 
                 if (fabs(pNext->m_dBaselinePos - pPrev->m_dBaselinePos) < dAffinity)
                 {
                     pPrev->Merge(pNext);
-
-                    pNext->m_arConts.clear();
-                    RELEASEOBJECT(pNext);
-
-                    m_arTextLine.erase(m_arTextLine.begin() + i);
-                    --i;
-                    --nCount;
+                    pNext->m_bIsNotNecessaryToUse = true;
                     continue;
                 }
                 pPrev = pNext;
@@ -1574,9 +1534,9 @@ namespace NSDocxRenderer
             //note при удалении строки откуда-то добавляется <w:p/> в начале страницы (если есть графика и текст), что добавляет дополнительную строку и сдвигает текст
             oWriter.WriteString(L"<w:pPr><w:spacing w:line=\"1\" w:lineRule=\"exact\"/></w:pPr>");
 
-            for (auto pImage : m_arImages)
+            for (size_t i = 0; i < m_arImages.size(); i++)
             {
-                pImage->ToXml(oWriter);
+                m_arImages[i]->ToXml(oWriter);
             }
 
             oWriter.WriteString(L"</w:p>");
@@ -1589,17 +1549,17 @@ namespace NSDocxRenderer
             //note при удалении строки откуда-то добавляется <w:p/> в начале страницы (если есть графика и текст), что добавляет дополнительную строку и сдвигает текст
             oWriter.WriteString(L"<w:pPr><w:spacing w:line=\"1\" w:lineRule=\"exact\"/></w:pPr>");
 
-            for (auto pShape : m_arShapes)
+            for (size_t i = 0; i < m_arShapes.size(); i++)
             {
-                pShape->ToXml(oWriter);
+                m_arShapes[i]->ToXml(oWriter);
             }
 
             oWriter.WriteString(L"</w:p>");
         }
 
-        for (auto pParagraph : m_arParagraphs)
+        for (size_t i = 0; i < m_arParagraphs.size(); i++)
         {
-            pParagraph->ToXml(oWriter);
+            m_arParagraphs[i]->ToXml(oWriter);
         }
     }
 

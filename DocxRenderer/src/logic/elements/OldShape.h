@@ -27,15 +27,12 @@ namespace NSDocxRenderer
 
             LONG m_lTxId {-1};
 
-            std::vector<CParagraph*> m_arParagraphs;
+            std::vector<std::shared_ptr<CParagraph>> m_arParagraphs;
 
         public:
             COldShape();
-            COldShape(const COldShape& oSrc);
             virtual ~COldShape();
             void Clear() override final;
-
-            COldShape& operator=(const COldShape& oSrc);
 
             void GetDataFromVector(const CVectorGraphics& oVector, const LONG& lType, const LONG& lCoordSize);
 

@@ -19,40 +19,7 @@ namespace NSDocxRenderer
         Clear();
     }
 
-    CTextLine::CTextLine(const CTextLine& oSrc) : CBaseItem(ElemType::etTextLine), m_arConts()
-    {
-        *this = oSrc;
-    }
-
-    CTextLine& CTextLine::operator=(const CTextLine& oSrc)
-    {
-        if (this == &oSrc)
-        {
-            return *this;
-        }
-
-        Clear();
-
-        CBaseItem::operator=(oSrc);
-
-        for (auto pCont : oSrc.m_arConts)
-        {
-            m_arConts.push_back(new CContText(*pCont));
-        }
-
-        m_dBaselineOffset = oSrc.m_dBaselineOffset;
-
-        m_eAlignmentType  = oSrc.m_eAlignmentType;
-        m_eVertAlignType  = oSrc.m_eVertAlignType;
-
-        m_pDominantShape  = oSrc.m_pDominantShape;
-#if USING_DELETE_DUPLICATING_CONTS == 0
-        m_pDuplicateLine  = oSrc.m_pDuplicateLine;
-#endif
-        return *this;
-    }
-
-    void CTextLine::AddCont(CContText* pCont)
+    void CTextLine::AddCont(const std::shared_ptr<CContText> pCont)
     {
         m_dBaselineOffset = fabs(m_dBaselineOffset) > fabs(pCont->m_dBaselineOffset) ? m_dBaselineOffset : pCont->m_dBaselineOffset;
 
@@ -91,27 +58,27 @@ namespace NSDocxRenderer
         SortElements(m_arConts);
     }
 
-    void CTextLine::Merge(const CTextLine* pTextLine)
+    void CTextLine::Merge(const std::shared_ptr<CTextLine> pLine)
     {
-        size_t nCount = pTextLine->m_arConts.size();
+        size_t nCount = pLine->m_arConts.size();
         if (0 != nCount)
         {
-            if (pTextLine->m_dLeft < m_dLeft)
+            if (pLine->m_dLeft < m_dLeft)
             {
-                m_dLeft = pTextLine->m_dLeft;
+                m_dLeft = pLine->m_dLeft;
             }
-            if (pTextLine->m_dBaselinePos < m_dBaselinePos)
+            if (pLine->m_dBaselinePos < m_dBaselinePos)
             {
-                m_dHeight = (m_dBaselinePos - pTextLine->m_dBaselinePos + pTextLine->m_dHeight);
+                m_dHeight = (m_dBaselinePos - pLine->m_dBaselinePos + pLine->m_dHeight);
             }
             else
             {
-                m_dHeight = (pTextLine->m_dBaselinePos - m_dBaselinePos + m_dHeight);
+                m_dHeight = (pLine->m_dBaselinePos - m_dBaselinePos + m_dHeight);
             }
 
-            for (auto pCont : pTextLine->m_arConts)
+            for (const auto &pCont : pLine->m_arConts)
             {
-                m_arConts.push_back(new CContText(*pCont));
+                m_arConts.push_back(std::make_shared<CContText>(*pCont));
             }
 
             SortConts();
@@ -124,11 +91,11 @@ namespace NSDocxRenderer
         if (m_arConts.empty())
             return;
 
-        CContText* pFirst = m_arConts.front();
+        auto pFirst = m_arConts.front();
 
         for (size_t i = 1; i < m_arConts.size(); ++i)
         {
-            CContText* pCurrent = m_arConts[i];
+            auto pCurrent = m_arConts[i];
 
             if (pCurrent->m_bIsNotNecessaryToUse)
             {
@@ -242,12 +209,12 @@ namespace NSDocxRenderer
         }
     }
 
-    bool CTextLine::AreAlignmentsAppropriate(const CTextLine* oSrc)
+    bool CTextLine::AreAlignmentsAppropriate(const std::shared_ptr<CTextLine> pLine)
     {
-        if ((m_eAlignmentType == oSrc->m_eAlignmentType && m_eAlignmentType!= atatByLeftEdge) ||
-            (m_eAlignmentType == atatByWidth && oSrc->m_eAlignmentType == atatByLeftEdge) ||
-            (m_eAlignmentType == atatByWidth && oSrc->m_eAlignmentType == atatUnknown) ||
-            (m_eAlignmentType == atatUnknown && oSrc->m_eAlignmentType == atatByWidth))
+        if ((m_eAlignmentType == pLine->m_eAlignmentType && m_eAlignmentType!= atatByLeftEdge) ||
+            (m_eAlignmentType == atatByWidth && pLine->m_eAlignmentType == atatByLeftEdge) ||
+            (m_eAlignmentType == atatByWidth && pLine->m_eAlignmentType == atatUnknown) ||
+            (m_eAlignmentType == atatUnknown && pLine->m_eAlignmentType == atatByWidth))
         {
             return true;
         }
@@ -256,15 +223,15 @@ namespace NSDocxRenderer
 
     void CTextLine::SetVertAlignType(const eVertAlignType& oType)
     {
-        for (auto pCont : m_arConts)
+        for (const auto &pCont : m_arConts)
         {
             pCont->m_eVertAlignType = oType;
         }
     }
 
-    double CTextLine::CalculateBeforeSpacing(const double* pPreviousStringOffset)
+    double CTextLine::CalculateBeforeSpacing(double dPreviousStringOffset)
     {
-        return m_dBaselinePos - *pPreviousStringOffset - m_dHeight - m_dBaselineOffset;
+        return m_dBaselinePos - dPreviousStringOffset - m_dHeight - m_dBaselineOffset;
     }
 
     double CTextLine::CalculateStringOffset()
@@ -297,9 +264,9 @@ namespace NSDocxRenderer
 
     double CTextLine::RightBorderCorrection()
     {
-        CContText* pSelectedCont = nullptr;
+        std::shared_ptr<CContText> pSelectedCont = nullptr;
 
-        for (auto pCont : m_arConts)
+        for (const auto &pCont : m_arConts)
         {
             if (!pSelectedCont || pSelectedCont->m_pFontStyle->m_oFont.Size < pCont->m_pFontStyle->m_oFont.Size)
             {
@@ -351,12 +318,12 @@ namespace NSDocxRenderer
         if (0 == nCountConts)
             return;
 
-        CContText* pPrev = m_arConts[0];
+        auto pPrev = m_arConts[0];
         double dDelta = 0;
 
         for (size_t i = 1; i < nCountConts; ++i)
         {
-            CContText* pCurrent = m_arConts[i];
+            auto pCurrent = m_arConts[i];
 
             if (pCurrent->m_bIsNotNecessaryToUse)
             {

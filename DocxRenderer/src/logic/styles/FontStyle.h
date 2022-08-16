@@ -2,8 +2,6 @@
 
 #include "BaseStyle.h"
 #include "../managers/FontManager.h"
-#include "../../resources/Constants.h"
-#include "../../resources/LinesTable.h"
 
 namespace NSDocxRenderer
 {
@@ -27,7 +25,7 @@ namespace NSDocxRenderer
 
             void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
 
-            bool IsEqual(const CFontStyle* oSrc);
+            bool IsEqual(std::shared_ptr<CFontStyle> oSrc);
 
             std::wstring GetStyleId() {return m_strStyleId;}
     };

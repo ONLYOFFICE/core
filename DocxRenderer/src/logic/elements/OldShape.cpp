@@ -12,11 +12,6 @@ namespace NSDocxRenderer
     {
     }
 
-    COldShape::COldShape(const COldShape &oSrc) : CBaseItem(ElemType::etOldShape)
-    {
-        *this = oSrc;
-    }
-
     COldShape::~COldShape()
     {
         Clear();
@@ -24,43 +19,7 @@ namespace NSDocxRenderer
 
     void COldShape::Clear()
     {
-        for (auto pParagraph : m_arParagraphs)
-        {
-            pParagraph->Clear();
-        }
         m_arParagraphs.clear();
-    }
-
-    COldShape &COldShape::operator=(const COldShape &oSrc)
-    {
-        if (this == &oSrc)
-        {
-            return *this;
-        }
-
-        Clear();
-
-        CBaseItem::operator=(oSrc);
-
-        m_strPath = oSrc.m_strPath;
-
-        m_oBrush = oSrc.m_oBrush;
-        m_oPen = oSrc.m_oPen;
-
-        m_bIsNoFill = oSrc.m_bIsNoFill;
-        m_bIsNoStroke = oSrc.m_bIsNoStroke;
-
-        m_lCoordSizeX = oSrc.m_lCoordSizeX;
-        m_lCoordSizeY = oSrc.m_lCoordSizeY;
-
-        m_lTxId = oSrc.m_lTxId;
-
-        for (auto pParagraph : oSrc.m_arParagraphs)
-        {
-            m_arParagraphs.push_back(new CParagraph(*pParagraph));
-        }
-
-        return *this;
     }
 
     void COldShape::GetDataFromVector(const CVectorGraphics& oVector, const LONG& lType, const LONG& lCoordSize)
@@ -282,7 +241,8 @@ namespace NSDocxRenderer
         if (!m_arParagraphs.empty())
         {
             oWriter.WriteString(L"<v:textbox><w:txbxContent>");
-            for(auto pParagraph : m_arParagraphs)
+
+            for (const auto& pParagraph : m_arParagraphs)
             {
                 pParagraph->ToXml(oWriter);
             }

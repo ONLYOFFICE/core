@@ -15,7 +15,7 @@ namespace NSDocxRenderer
                 atatByWidth
             };
 
-            std::vector<CContText*> m_arConts;
+            std::vector<std::shared_ptr<CContText>> m_arConts;
 
             double m_dBaselineOffset {0.0};
 
@@ -23,9 +23,9 @@ namespace NSDocxRenderer
 
             eVertAlignType m_eVertAlignType {eVertAlignType::vatUnknown};
 
-            const CShape* m_pDominantShape {nullptr};
-#if USING_DELETE_DUPLICATING_CONTS == 0
-            CTextLine* m_pDuplicateLine {nullptr};
+            std::shared_ptr<CShape> m_pDominantShape {nullptr};
+#if (USING_DELETE_DUPLICATING_CONTS == 0)
+            std::shared_ptr<CTextLine> m_pDuplicateLine {nullptr};
 #endif
         public:
             CTextLine();
@@ -33,16 +33,13 @@ namespace NSDocxRenderer
 
             ~CTextLine();
 
-            CTextLine(const CTextLine& oSrc);
-            CTextLine& operator=(const CTextLine& oSrc);
-
-            void AddCont(CContText* pCont);
+            void AddCont(const std::shared_ptr<CContText> pCont);
             bool IsBigger(const CBaseItem* oSrc) override final;
             bool IsBiggerOrEqual(const CBaseItem* oSrc) override final;
             void SortConts();
 
             //Объединяем слова из двух строк
-            void Merge(const CTextLine* pTextLine);
+            void Merge(const std::shared_ptr<CTextLine> pLine);
             bool IsForceBlock();
             void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
 
@@ -52,12 +49,12 @@ namespace NSDocxRenderer
             //Пытаемся понять тип выравнивания для текущей строки
             void DetermineAssumedTextAlignmentType(double dWidthOfPage);
             //Определяем на основании выравнивания подходят ли текущая и следующая строки для добавления в параграф
-            bool AreAlignmentsAppropriate(const CTextLine* oSrc);
+            bool AreAlignmentsAppropriate(const std::shared_ptr<CTextLine> pLine);
 
             void SetVertAlignType(const eVertAlignType& oType);
 
             //Вычисляем
-            double CalculateBeforeSpacing(const double* pPreviousStringOffset);
+            double CalculateBeforeSpacing(double dPreviousStringOffset);
             double CalculateStringOffset();
             double CalculateRightBorder(const double& dPageWidth);
             double RightBorderCorrection();

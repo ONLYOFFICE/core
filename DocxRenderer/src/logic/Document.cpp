@@ -646,7 +646,7 @@ namespace NSDocxRenderer
     }
     HRESULT CDocument::DrawPath(long nType)
     {
-        CImageInfo* pInfo = nullptr;
+        std::shared_ptr<CImageInfo> pInfo = nullptr;
 
         if ((nType > 0xFF) && (c_BrushTypeTexture == m_oBrush.Type))
         {
@@ -654,7 +654,7 @@ namespace NSDocxRenderer
             double y = 0;
             double w = 0;
             double h = 0;
-            pInfo = new CImageInfo(m_oImageManager.WriteImage(m_oBrush.TexturePath, x, y, w, h));
+            pInfo = m_oImageManager.WriteImage(m_oBrush.TexturePath, x, y, w, h);
         }
 
         m_oCurrentPage.DrawPath(nType, pInfo);
@@ -715,14 +715,12 @@ namespace NSDocxRenderer
     //-------- Функции для вывода изображений --------------------------------------------------
     HRESULT CDocument::DrawImage(IGrObject* pImage, double fX, double fY, double fWidth, double fHeight)
     {
-        CImageInfo* pInfo = new CImageInfo(m_oImageManager.WriteImage((Aggplus::CImage*)pImage, fX, fY, fWidth, fHeight));
-        m_oCurrentPage.WriteImage(pInfo, fX, fY, fWidth, fHeight);
+        m_oCurrentPage.WriteImage(m_oImageManager.WriteImage((Aggplus::CImage*)pImage, fX, fY, fWidth, fHeight), fX, fY, fWidth, fHeight);
         return S_OK;
     }
     HRESULT CDocument::DrawImageFromFile(const std::wstring& sVal, double fX, double fY, double fWidth, double fHeight)
     {
-        CImageInfo* pInfo = new CImageInfo(m_oImageManager.WriteImage(sVal, fX, fY, fWidth, fHeight));
-        m_oCurrentPage.WriteImage(pInfo, fX, fY, fWidth, fHeight);
+        m_oCurrentPage.WriteImage(m_oImageManager.WriteImage(sVal, fX, fY, fWidth, fHeight), fX, fY, fWidth, fHeight);
         return S_OK;
     }
     //------------------------------------------------------------------------------------------
@@ -910,25 +908,25 @@ namespace NSDocxRenderer
                 <Relationship Id=\"rId4\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable\" Target=\"fontTable.xml\"/>\
                 <Relationship Id=\"rId5\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"theme/theme.xml\"/>");
 
-        for (auto iterImage : m_oImageManager.m_mapImageData)
+        for (const auto& pImage : m_oImageManager.m_mapImageData)
         {
-            CImageInfo& oInfo = iterImage.second;
+            auto pInfo = pImage.second;
 
             oWriter.WriteString(L"<Relationship Id=\"rId");
-            oWriter.AddInt(c_iStartingIdForImages + oInfo.m_nId);
+            oWriter.AddInt(c_iStartingIdForImages + pInfo->m_nId);
             oWriter.WriteString(L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/");
-            oWriter.WriteString(oInfo.m_strFileName);
+            oWriter.WriteString(pInfo->m_strFileName);
             oWriter.WriteString(L"\"/>");
         }
 
-        for (auto iterImage : m_oImageManager.m_mapImagesFile)
+        for (const auto& pImage : m_oImageManager.m_mapImagesFile)
         {
-            CImageInfo& oInfo = iterImage.second;
+            auto pInfo = pImage.second;;
 
             oWriter.WriteString(L"<Relationship Id=\"rId");
-            oWriter.AddInt(c_iStartingIdForImages + oInfo.m_nId);
+            oWriter.AddInt(c_iStartingIdForImages + pInfo->m_nId);
             oWriter.WriteString(L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/");
-            oWriter.WriteString(oInfo.m_strFileName);
+            oWriter.WriteString(pInfo->m_strFileName);
             oWriter.WriteString(L"\"/>");
         }
 
@@ -1200,7 +1198,7 @@ namespace NSDocxRenderer
         oWriter.WriteString(L"<w:uiPriority w:val=\"99\"/>");
         oWriter.WriteString(L"</w:style>");
 
-        for (auto pStyle : m_oStyleManager.m_mapStyles)
+        for (const auto &pStyle : m_oStyleManager.m_mapStyles)
         {
             pStyle.second->ToXml(oWriter);
         }

@@ -282,14 +282,26 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_POLYPOLYGON(const std::vector<std::vector<TWmfPointS>> &arPolygons)
 	{
-		if (arPolygons.size() > 1)
-			m_oXmlWriter.WriteNodeBegin(L"g");
+		std::wstring wsValue;
 
-		for (const std::vector<TWmfPointS>& arPoints : arPolygons)
-			HANDLE_META_POLYGON(arPoints);
+		for (const std::vector<TWmfPointS>& oPolygon : arPolygons)
+		{
+			if (oPolygon.size() < 2)
+				continue;
 
-		if (arPolygons.size() > 1)
-			m_oXmlWriter.WriteNodeEnd(L"g");
+			wsValue += L" M " + ConvertToWString(oPolygon[0].x) + L',' +  ConvertToWString(oPolygon[0].y);
+
+			for (const TWmfPointS& oPoint : oPolygon)
+				wsValue += L" L " + ConvertToWString(oPoint.x) + L',' + ConvertToWString(oPoint.y);
+		}
+
+		NodeAttributes arAttributes = {{L"d", wsValue}};
+
+		AddStroke(arAttributes);
+		AddFill(arAttributes);
+		AddTransform(arAttributes);
+
+		WriteNode(L"path", arAttributes);
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_RECTANGLE(short shB, short shR, short shT, short shL)

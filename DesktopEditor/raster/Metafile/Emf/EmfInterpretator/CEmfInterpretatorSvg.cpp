@@ -858,52 +858,100 @@ namespace MetaFile
 		WriteNode(L"polyline", arAttributes);
 	}
 
-	void CEmfInterpretatorSvg::HANDLE_EMR_POLYPOLYGON(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointL>> &arPoints)
+	void CEmfInterpretatorSvg::HANDLE_EMR_POLYPOLYGON(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointL>> &arPolygons)
 	{
-		if (arPoints.size() > 1)
-			m_oXmlWriter.WriteNodeBegin(L"g");
+		std::wstring wsValue;
 
-		for (const std::vector<TEmfPointL>& arPolygonPoints : arPoints)
-			HANDLE_EMR_POLYGON(oBounds, arPolygonPoints);
+		for (const std::vector<TEmfPointL>& oPolygon : arPolygons)
+		{
+			if (oPolygon.size() < 2)
+				continue;
 
-		if (arPoints.size() > 1)
-			m_oXmlWriter.WriteNodeEnd(L"g");
+			wsValue += L" M " + ConvertToWString(oPolygon[0].x) + L',' +  ConvertToWString(oPolygon[0].y);
+
+			for (const TEmfPointL& oPoint : oPolygon)
+				wsValue += L" L " + ConvertToWString(oPoint.x) + L',' + ConvertToWString(oPoint.y);
+		}
+
+		NodeAttributes arAttributes = {{L"d", wsValue}};
+
+		AddStroke(arAttributes);
+		AddFill(arAttributes);
+		AddTransform(arAttributes);
+
+		WriteNode(L"path", arAttributes);
 	}
 
-	void CEmfInterpretatorSvg::HANDLE_EMR_POLYPOLYGON(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointS>> &arPoints)
+	void CEmfInterpretatorSvg::HANDLE_EMR_POLYPOLYGON(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointS>> &arPolygons)
 	{
-		if (arPoints.size() > 1)
-			m_oXmlWriter.WriteNodeBegin(L"g");
+		std::wstring wsValue;
 
-		for (const std::vector<TEmfPointS>& arPolygonPoints : arPoints)
-			HANDLE_EMR_POLYGON(oBounds, arPolygonPoints);
+		for (const std::vector<TEmfPointS>& oPolygon : arPolygons)
+		{
+			if (oPolygon.size() < 2)
+				continue;
 
-		if (arPoints.size() > 1)
-			m_oXmlWriter.WriteNodeEnd(L"g");
+			wsValue += L" M " + ConvertToWString(oPolygon[0].x) + L',' +  ConvertToWString(oPolygon[0].y);
+
+			for (const TEmfPointS& oPoint : oPolygon)
+				wsValue += L" L " + ConvertToWString(oPoint.x) + L',' + ConvertToWString(oPoint.y);
+		}
+
+		NodeAttributes arAttributes = {{L"d", wsValue}};
+
+		AddStroke(arAttributes);
+		AddFill(arAttributes);
+		AddTransform(arAttributes);
+
+		WriteNode(L"path", arAttributes);
 	}
 
-	void CEmfInterpretatorSvg::HANDLE_EMR_POLYPOLYLINE(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointL>> &arPoints)
+	void CEmfInterpretatorSvg::HANDLE_EMR_POLYPOLYLINE(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointL>> &arPolygons)
 	{
-		if (arPoints.size() > 1)
-			m_oXmlWriter.WriteNodeBegin(L"g");
+		std::wstring wsValue;
 
-		for (const std::vector<TEmfPointL>& arPolygonPoints : arPoints)
-			HANDLE_EMR_POLYLINE(oBounds, arPolygonPoints);
+		for (const std::vector<TEmfPointL>& oPolygon : arPolygons)
+		{
+			if (oPolygon.size() < 2)
+				continue;
 
-		if (arPoints.size() > 1)
-			m_oXmlWriter.WriteNodeEnd(L"g");
+			wsValue += L" M " + ConvertToWString(oPolygon[0].x) + L',' +  ConvertToWString(oPolygon[0].y);
+
+			for (const TEmfPointL& oPoint : oPolygon)
+				wsValue += L" L " + ConvertToWString(oPoint.x) + L',' + ConvertToWString(oPoint.y);
+		}
+
+		NodeAttributes arAttributes = {{L"d", wsValue}};
+
+		AddStroke(arAttributes);
+		AddFill(arAttributes);
+		AddTransform(arAttributes);
+
+		WriteNode(L"path", arAttributes);
 	}
 
-	void CEmfInterpretatorSvg::HANDLE_EMR_POLYPOLYLINE(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointS>> &arPoints)
+	void CEmfInterpretatorSvg::HANDLE_EMR_POLYPOLYLINE(const TEmfRectL &oBounds, const std::vector<std::vector<TEmfPointS>> &arPolygons)
 	{
-		if (arPoints.size() > 1)
-			m_oXmlWriter.WriteNodeBegin(L"g");
+		std::wstring wsValue;
 
-		for (const std::vector<TEmfPointS>& arPolygonPoints : arPoints)
-			HANDLE_EMR_POLYLINE(oBounds, arPolygonPoints);
+		for (const std::vector<TEmfPointS>& oPolygon : arPolygons)
+		{
+			if (oPolygon.size() < 2)
+				continue;
 
-		if (arPoints.size() > 1)
-			m_oXmlWriter.WriteNodeEnd(L"g");
+			wsValue += L" M " + ConvertToWString(oPolygon[0].x) + L',' +  ConvertToWString(oPolygon[0].y);
+
+			for (const TEmfPointS& oPoint : oPolygon)
+				wsValue += L" L " + ConvertToWString(oPoint.x) + L',' + ConvertToWString(oPoint.y);
+		}
+
+		NodeAttributes arAttributes = {{L"d", wsValue}};
+
+		AddStroke(arAttributes);
+		AddFill(arAttributes);
+		AddTransform(arAttributes);
+
+		WriteNode(L"path", arAttributes);
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_RECTANGLE(const TEmfRectL &oBox)

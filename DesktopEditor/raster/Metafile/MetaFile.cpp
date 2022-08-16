@@ -84,8 +84,6 @@ namespace MetaFile
 
 	std::wstring CMetaFile::ConvertToSvg(unsigned int unWidth, unsigned int unHeight)
 	{
-//		if (NULL == wsFilePath)
-//			return;
 
 	#ifdef METAFILE_SUPPORT_WMF_EMF
 		if (c_lMetaWmf == m_lType)
@@ -101,6 +99,7 @@ namespace MetaFile
 			return ((CEmfInterpretatorSvg*)m_oEmfFile.GetEmfParser()->GetInterpretator())->GetFile();
 		}
 	#endif
+        return L"";
 	}
 
 #ifdef METAFILE_SUPPORT_WMF_EMF

@@ -487,9 +487,7 @@ namespace MetaFile
 
 		std::vector<TWmfPointS> arPoints(shNumberOfPoints);
 
-		m_oStream >> arPoints[0];
-
-		for (short shIndex = 1; shIndex < shNumberOfPoints; shIndex++)
+		for (short shIndex = 0; shIndex < shNumberOfPoints; shIndex++)
 			m_oStream >> arPoints[shIndex];
 
 		HANDLE_META_POLYLINE(arPoints);
@@ -504,9 +502,7 @@ namespace MetaFile
 
 		std::vector<TWmfPointS> arPoints(shNumberOfPoints);
 
-		m_oStream >> arPoints[0];
-
-		for (short shIndex = 1; shIndex < shNumberOfPoints; shIndex++)
+		for (short shIndex = 0; shIndex < shNumberOfPoints; shIndex++)
 			m_oStream >> arPoints[shIndex];
 
 		HANDLE_META_POLYGON(arPoints);
@@ -538,9 +534,7 @@ namespace MetaFile
 			if (ushPointsCount <= 0)
 				continue;
 
-			m_oStream >> arPolygons[ushPolygonIndex][0];
-
-			for (unsigned short ushPointIndex = 1; ushPointIndex < ushPointsCount; ushPointIndex++)
+			for (unsigned short ushPointIndex = 0; ushPointIndex < ushPointsCount; ushPointIndex++)
 				m_oStream >> arPolygons[ushPolygonIndex][ushPointIndex];
 		}
 

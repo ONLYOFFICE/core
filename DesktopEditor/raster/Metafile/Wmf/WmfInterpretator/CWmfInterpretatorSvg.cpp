@@ -282,8 +282,14 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_POLYPOLYGON(const std::vector<std::vector<TWmfPointS>> &arPolygons)
 	{
+		if (arPolygons.size() > 1)
+			m_oXmlWriter.WriteNodeBegin(L"g");
+
 		for (const std::vector<TWmfPointS>& arPoints : arPolygons)
 			HANDLE_META_POLYGON(arPoints);
+
+		if (arPolygons.size() > 1)
+			m_oXmlWriter.WriteNodeEnd(L"g");
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_RECTANGLE(short shB, short shR, short shT, short shL)
@@ -882,7 +888,7 @@ namespace MetaFile
 		if (NULL != m_pParser && NULL != m_pParser->GetBrush())
 		{
 			if (BS_SOLID == m_pParser->GetBrush()->GetStyle())
-				arAttributes.push_back({L"fill", L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetBrush()->GetColor()) + L"," + ConvertToWString(m_pParser->GetBrush()->GetAlpha()) + L")"});
+				arAttributes.push_back({L"fill", L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetBrush()->GetColor()) + L"," + ConvertToWString(m_pParser->GetBrush()->GetAlpha(), 0) + L")"});
 			else
 				arAttributes.push_back({L"fill", L"none"});
 		}

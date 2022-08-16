@@ -727,7 +727,7 @@ namespace MetaFile
 		double dT = pBounds->nTop;
 		double dL = pBounds->nLeft;
 
-		TXForm oShiftXForm(1, 0, 0, 1, dL, dT);
+		TXForm oShiftXForm(1, 0, 0, 1, -dL, -dT);
 		m_oTransform.Copy(m_pDC->GetFinalTransform(iGraphicsMode));
 		m_oTransform.Multiply(oShiftXForm, MWT_RIGHTMULTIPLY);
 		return &m_oTransform;

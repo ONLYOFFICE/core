@@ -411,36 +411,43 @@ namespace MetaFile
 			double dX = oTextPoint.x;
 			double dY = oTextPoint.y;
 
+			double dXCoef = dM11 / std::abs(dM11);
+			double dYCoef = dM22 / std::abs(dM22);
+
 			// Найдем начальную точку текста
 			unsigned int ulTextAlign = m_pFile->GetTextAlign();
-			if (ulTextAlign & TA_BASELINE)
+
+			if (dYScale < 0)
+				dY += fabs(fH);
+
+			if (ulTextAlign & 18)
 			{
 				// Ничего не делаем
 			}
 			else if (ulTextAlign & TA_BOTTOM)
 			{
-				float fTemp = -(-fT + fH);
+				float fTemp = -fH;
 
-				dX += -fTemp * dSinTheta;
-				dY +=  fTemp * dCosTheta;
+				dX -= fTemp * dSinTheta * dXCoef;
+				dY += fTemp * dCosTheta * dYCoef;
 			}
 			else // if (ulTextAlign & TA_TOP)
 			{
 				float fTemp = -fT;
 
-				dX += -fTemp * dSinTheta;
-				dY +=  fTemp * dCosTheta;
+				dX -= fTemp * dSinTheta * dXCoef;
+				dY += fTemp * dCosTheta * dYCoef;
 			}
 
 			if (ulTextAlign & TA_CENTER)
 			{
-				dX += -fW / 2 * dCosTheta;
-				dY += -fW / 2 * dSinTheta;
+				dX += -fW / 2 * dCosTheta * dXCoef;
+				dY += -fW / 2 * dSinTheta * dYCoef;
 			}
 			else if (ulTextAlign & TA_RIGHT)
 			{
-				dX += -fW * dCosTheta;
-				dY += -fW * dSinTheta;
+				dX += -fW * dCosTheta * dXCoef;
+				dY += -fW * dSinTheta * dYCoef;
 			}
 			else //if (ulTextAlign & TA_LEFT)
 			{
@@ -463,34 +470,23 @@ namespace MetaFile
 				double dShiftY = 0;
 
 				m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
+
 				if (dXScale < -0.00001)
 				{
-					dX -= fabs(fW);
+					if (dM11 > 0)
+						dX -= fabs(fW);
 
-					if (m_pFile->IsWindowFlippedX())
-					{
-						dShiftX = (2 * dX - fabs(fW)) * dM11;
-					}
-					else
-					{
-						dShiftX = (2 * dX + fabs(fW)) * dM11;
-					}
+					dShiftX = (2 * dX - fabs(fW)) * dM11;
 
 					dM11 = fabs(dM11);
 				}
 
 				if (dYScale < -0.00001)
 				{
-					dY -= fabs(fH);
+					if (dM22 > 0)
+						dY -= fabs(fH);
 
-					if (m_pFile->IsWindowFlippedY())
-					{
-						dShiftY = (2 * dY - fabs(fH)) * dM22;
-					}
-					else
-					{
-						dShiftY = (2 * dY + fabs(fH)) * dM22;
-					}
+					dShiftY = (2 * dY - fabs(fH)) * dM22;
 
 					dM22 = fabs(dM22);
 				}

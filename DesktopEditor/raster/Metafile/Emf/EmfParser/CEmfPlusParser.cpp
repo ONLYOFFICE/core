@@ -1192,6 +1192,8 @@ namespace MetaFile
 
 		BYTE oBuffer[4] = {0, 0, 0, 0};
 
+		LONG lNewHeight = (lHeight - 1) * 4;
+
 		for (ULONG ulPosY = 0; ulPosY < lHeight / 2 * 4; ulPosY += 4)
 		{
 			for (ULONG ulPosX = 0; ulPosX < lWidth * 4; ulPosX += 4)
@@ -1201,15 +1203,15 @@ namespace MetaFile
 				oBuffer[2] = pImageBuffer[ulPosY * lWidth + ulPosX + 2];
 				oBuffer[3] = pImageBuffer[ulPosY * lWidth + ulPosX + 3];
 
-				pImageBuffer[ulPosY * lWidth + ulPosX + 0] = pImageBuffer[((lHeight - 1) * 4 - ulPosY) * lWidth + ulPosX + 0];
-				pImageBuffer[ulPosY * lWidth + ulPosX + 1] = pImageBuffer[((lHeight - 1) * 4 - ulPosY) * lWidth + ulPosX + 1];
-				pImageBuffer[ulPosY * lWidth + ulPosX + 2] = pImageBuffer[((lHeight - 1) * 4 - ulPosY) * lWidth + ulPosX + 2];
-				pImageBuffer[ulPosY * lWidth + ulPosX + 3] = pImageBuffer[((lHeight - 1) * 4 - ulPosY) * lWidth + ulPosX + 3];
+				pImageBuffer[ulPosY * lWidth + ulPosX + 0] = pImageBuffer[(lNewHeight - ulPosY) * lWidth + ulPosX + 0];
+				pImageBuffer[ulPosY * lWidth + ulPosX + 1] = pImageBuffer[(lNewHeight - ulPosY) * lWidth + ulPosX + 1];
+				pImageBuffer[ulPosY * lWidth + ulPosX + 2] = pImageBuffer[(lNewHeight - ulPosY) * lWidth + ulPosX + 2];
+				pImageBuffer[ulPosY * lWidth + ulPosX + 3] = pImageBuffer[(lNewHeight - ulPosY) * lWidth + ulPosX + 3];
 
-				pImageBuffer[((lHeight - 1) * 4 - ulPosY) * lWidth + ulPosX + 0] = oBuffer[0];
-				pImageBuffer[((lHeight - 1) * 4 - ulPosY) * lWidth + ulPosX + 1] = oBuffer[1];
-				pImageBuffer[((lHeight - 1) * 4 - ulPosY) * lWidth + ulPosX + 2] = oBuffer[2];
-				pImageBuffer[((lHeight - 1) * 4 - ulPosY) * lWidth + ulPosX + 3] = oBuffer[3];
+				pImageBuffer[(lNewHeight - ulPosY) * lWidth + ulPosX + 0] = oBuffer[0];
+				pImageBuffer[(lNewHeight - ulPosY) * lWidth + ulPosX + 1] = oBuffer[1];
+				pImageBuffer[(lNewHeight - ulPosY) * lWidth + ulPosX + 2] = oBuffer[2];
+				pImageBuffer[(lNewHeight - ulPosY) * lWidth + ulPosX + 3] = oBuffer[3];
 			}
 		}
 
@@ -1247,7 +1249,6 @@ namespace MetaFile
 	{
 		if (NULL == pBuffer || 0 == unSize || MetafileDataTypeUnknown == eMetafileType)
 			return;
-
 
 		if (MetafileDataTypeEmf == eMetafileType ||
 				MetafileDataTypeEmfPlusOnly == eMetafileType ||
@@ -1328,8 +1329,7 @@ namespace MetaFile
 				m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X, arPoints[2].Y - arPoints[0].Y,
 						(NULL != pNewBuffer) ? pNewBuffer : pPixels, unWidth, unHeight);
 
-				if (NULL != pNewBuffer)
-					delete [] pNewBuffer;
+				RELEASEARRAYOBJECTS(pNewBuffer);
 			}
 		}
 		else if (MetafileDataTypeWmf == eMetafileType ||
@@ -1407,8 +1407,8 @@ namespace MetaFile
 				m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X, arPoints[2].Y - arPoints[0].Y,
 						(NULL != pNewBuffer) ? pNewBuffer : pPixels, unWidth, unHeight);
 
-				if (NULL != pNewBuffer)
-					delete [] pNewBuffer;
+
+				RELEASEARRAYOBJECTS(pNewBuffer);
 			}
 		}
 		//TODO: общую часть в идеале нужно вынести

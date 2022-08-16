@@ -8,6 +8,7 @@ namespace MetaFile
 		unFileSize(0), unNumberRecords(0), ushNuberDescriptors(0)
 	{
 		m_pOutStream = new NSFile::CFileBinary();
+		m_pOutStream->CreateFileW(wsFilepath);
 	}
 
 	CEmfInterpretator::CEmfInterpretator(const CEmfInterpretator& oEmfInterpretator, const bool bIsLite)

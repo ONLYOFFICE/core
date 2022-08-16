@@ -822,6 +822,11 @@ namespace MetaFile
 		return &m_oHeader.oFramePx;
 	}
 
+	CEmfPath *CEmfParserBase::GetPath() const
+	{
+		return m_pPath;
+	}
+
 	TEmfPointL CEmfParserBase::GetStartPointForArc(const TEmfRectL &oBox, double dStartAngle)
 	{
 		TEmfPointL oStartPoint;

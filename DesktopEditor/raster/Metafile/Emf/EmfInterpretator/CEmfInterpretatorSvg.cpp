@@ -183,7 +183,125 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_FILLPATH(const TEmfRectL &oBounds)
 	{
+		if (NULL == m_pParser)
+			return;
 
+		const CEmfPath* pPath = m_pParser->GetPath();
+
+		if (NULL == pPath || pPath->m_pCommands.empty())
+			return;
+
+		std::wstring wsValue;
+		TEmfPointD *pFirstPoint = NULL;
+
+		wsValue += L"M " + ConvertToWString(m_pParser->GetCurPos().x) + L',' + ConvertToWString(m_pParser->GetCurPos().y);
+
+		for (const CEmfPathCommandBase* pCommand : pPath->m_pCommands)
+		{
+			switch (pCommand->GetType())
+			{
+				case EMF_PATHCOMMAND_MOVETO:
+				{
+					CEmfPathMoveTo* pMoveTo = (CEmfPathMoveTo*)pCommand;
+
+					wsValue += L" M " + ConvertToWString(pMoveTo->x) + L',' +  ConvertToWString(pMoveTo->y);
+
+					RELEASEOBJECT(pFirstPoint);
+					pFirstPoint = new TEmfPointD;
+					pFirstPoint->x = pMoveTo->x;
+					pFirstPoint->y = pMoveTo->y;
+
+					break;
+				}
+				case EMF_PATHCOMMAND_LINETO:
+				{
+					CEmfPathLineTo* pLineTo = (CEmfPathLineTo*)pCommand;
+
+					wsValue += L" L " + ConvertToWString(pLineTo->x) + L',' +  ConvertToWString(pLineTo->y);
+
+					if (NULL == pFirstPoint)
+					{
+						pFirstPoint = new TEmfPointD;
+						pFirstPoint->x = pLineTo->x;
+						pFirstPoint->y = pLineTo->y;
+					}
+
+					break;
+				}
+				case EMF_PATHCOMMAND_CURVETO:
+				{
+					CEmfPathCurveTo* pCurveTo = (CEmfPathCurveTo*)pCommand;
+
+					wsValue +=	L" C "  + ConvertToWString(pCurveTo->x1) + L',' + ConvertToWString(pCurveTo->y1) + L' ' +
+										 ConvertToWString(pCurveTo->x2) + L',' + ConvertToWString(pCurveTo->y2) + L' ' +
+										 ConvertToWString(pCurveTo->xE) + L',' + ConvertToWString(pCurveTo->yE);
+
+					if (NULL == pFirstPoint)
+					{
+						pFirstPoint = new TEmfPointD;
+						pFirstPoint->x = pCurveTo->x1;
+						pFirstPoint->y = pCurveTo->y1;
+					}
+
+					break;
+				}
+				case EMF_PATHCOMMAND_ARCTO:
+				{
+					CEmfPathArcTo* pArcTo = (CEmfPathArcTo*)pCommand;
+
+//					if (m_pParser->GetDC()->GetFinalTransform(GM_ADVANCED)->M22 < 0)
+//					{
+//						dStartAngle *= -1;
+//						dSweepAngle *= -1;
+//					}
+
+					double dXRadius = std::fabs((pArcTo->right - pArcTo->left)) / 2;
+					double dYRadius = std::fabs((pArcTo->bottom - pArcTo->top)) / 2;
+
+					double dStartX = (pArcTo->right + pArcTo->left) / 2 + dXRadius  * cos((pArcTo->start) * M_PI / 180);
+					double dStartY = (pArcTo->bottom + pArcTo->top) / 2 + dYRadius  * sin((pArcTo->start) * M_PI / 180);
+
+					double dEndX = (pArcTo->right + pArcTo->left) / 2 + dXRadius  * cos((pArcTo->sweep) * M_PI / 180);
+					double dEndY = (pArcTo->bottom + pArcTo->top) / 2 + dYRadius  * sin((pArcTo->sweep) * M_PI / 180);
+
+					wsValue += L" A " + ConvertToWString(dXRadius) + L' ' +
+							ConvertToWString(dYRadius) + L' ' +
+							L"0 " +
+							((std::fabs(pArcTo->sweep - pArcTo->start) <= 180) ? L"0" : L"1") + L' ' +
+							((std::fabs(pArcTo->sweep - pArcTo->start) <= 180) ? L"1" : L"0") + L' ' +
+							ConvertToWString(dEndX) + L' ' +
+							ConvertToWString(dEndY);
+
+
+					if (NULL == pFirstPoint)
+					{
+						pFirstPoint = new TEmfPointD;
+						pFirstPoint->x = pArcTo->left;
+						pFirstPoint->y = pArcTo->top;
+					}
+
+					break;
+				}
+				case EMF_PATHCOMMAND_CLOSE:
+				{
+					if (NULL != pFirstPoint)
+					{
+						wsValue += L" L " + ConvertToWString(pFirstPoint->x) + L',' + ConvertToWString(pFirstPoint->y);
+						RELEASEOBJECT(pFirstPoint);
+					}
+					break;
+				}
+			}
+		}
+
+		NodeAttributes arAttributes = {{L"d", wsValue}};
+
+		AddFill(arAttributes);
+		AddTransform(arAttributes);
+
+		WriteNode(L"path" , arAttributes);
+
+		RELEASEOBJECT(pFirstPoint);
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_SETMAPMODE(const unsigned int &unMapMode)
@@ -893,7 +1011,8 @@ namespace MetaFile
 		int nSizeH = (m_oSizeWindow.cy == 0) ? ((int)m_oViewport.GetHeight()) : m_oSizeWindow.cy;
 
 		if (0 != nSizeW && 0 != nSizeH)
-			m_sOutputData.insert(5, L"width=\"" + std::to_wstring(nSizeW) + L"\" height=\"" + std::to_wstring(nSizeH) + L"\" ");
+			m_sOutputData.insert(5, L"width=\"" + std::to_wstring(nSizeW + 1) + L"\" height=\"" + std::to_wstring(nSizeH + 1) + L"\" ");
+
 	}
 
 	void CEmfInterpretatorSvg::DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight)

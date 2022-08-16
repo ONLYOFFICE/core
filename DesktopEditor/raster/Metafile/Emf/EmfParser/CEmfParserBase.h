@@ -79,6 +79,7 @@ namespace MetaFile
 
 		CEmfDC*     GetDC();
 		TEmfRectL*  GetBounds();
+		CEmfPath*	GetPath() const;
 	private:
 		//Работа с изображениями
 		void ImageProcessing(const TEmfAlphaBlend       &oTEmfAlphaBlend);

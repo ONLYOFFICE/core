@@ -2,6 +2,7 @@
 
 #include "BaseStyle.h"
 #include "../managers/FontManager.h"
+#include <memory>
 
 namespace NSDocxRenderer
 {

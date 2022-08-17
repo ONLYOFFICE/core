@@ -3,6 +3,7 @@
 #include "../DesktopEditor/raster/BgraFrame.h"
 #include "../../resources/ImageInfo.h"
 #include <map>
+#include <memory>
 
 namespace NSDocxRenderer
 {

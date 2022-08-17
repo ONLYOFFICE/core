@@ -121,19 +121,25 @@ namespace XmlUtils
 
             bool bUtf = true;
             int code_page = 0;
+            std::string encoding;
             if (pos_find_encoding != std::string::npos)
             {
                 pos_find_encoding = start_stream.find("\"", pos_find_encoding);
                 size_t pos_find_encoding_end = start_stream.find("\"", pos_find_encoding + 1);
                 if (pos_find_encoding_end != std::string::npos)
                 {
-                    std::string encoding = start_stream.substr(pos_find_encoding + 1, pos_find_encoding_end - pos_find_encoding - 1);
+                    encoding = start_stream.substr(pos_find_encoding + 1, pos_find_encoding_end - pos_find_encoding - 1);
                     std::transform(encoding.begin(), encoding.end(), encoding.begin(), tolower);
 
                     if ((int)encoding.find("utf") < 0)
                     {
                         bUtf = false;
-                        code_page = boost::lexical_cast<int>(encoding);
+
+                        size_t pos = encoding.find("windows");
+                        if (pos != std::string::npos)
+                        {
+                            code_page = boost::lexical_cast<int>(encoding.substr(pos + 8));
+                        }
                     }
                 }
             }
@@ -141,7 +147,16 @@ namespace XmlUtils
             {
                 std::string input((char*)m_pStream + pos_start, m_lStreamLen - pos_start);
                 NSUnicodeConverter::CUnicodeConverter oConverter;
-                std::wstring output = oConverter.toUnicode(input, code_page);
+                std::wstring output;
+
+                if (code_page > 0)
+                {
+                    output = oConverter.toUnicode(input, code_page);
+                }
+                else
+                {
+                    output = oConverter.toUnicode(input, encoding.c_str());
+                }
 
                 input.clear();
                 BYTE* pData = NULL;
@@ -167,7 +182,7 @@ namespace XmlUtils
                     m_pStream = new BYTE[m_lStreamLen];
 
                     memcpy(m_pStream, start_utf8.c_str(), start_utf8.size());
-                    memcpy(m_pStream + start_utf8.size(), pData + pos_start + 1, lLen - pos_start);
+                    memcpy(m_pStream + start_utf8.size(), pData + pos_start, lLen - pos_start);
 
                     delete []pData;
                     pos_start = 0;

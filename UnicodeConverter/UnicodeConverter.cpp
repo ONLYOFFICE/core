@@ -386,7 +386,7 @@ namespace NSUnicodeConverter
 
 				if (code < 0x80)
 				{
-					*pCodesCur++ = (BYTE)code;
+					*pCodesCur++ = (unsigned char)code;
 				}
 				else if (code < 0x0800)
 				{

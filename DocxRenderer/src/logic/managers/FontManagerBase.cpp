@@ -409,10 +409,6 @@ namespace NSFontManager
         }
     }
 
-    void CFontManagerBase::MeasureString(const std::wstring& sText, double x, double y, double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType)
-    {
-    }
-
     void CFontManagerBase::CalculateBaselineOffset()
     {
         LoadFont();

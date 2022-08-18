@@ -1,7 +1,6 @@
+#include <algorithm>
 #include "VectorGraphics.h"
 #include "../DesktopEditor/common/Types.h"
-#include "../DesktopEditor/graphics/structures.h"
-#include <algorithm>
 
 namespace NSDocxRenderer
 {

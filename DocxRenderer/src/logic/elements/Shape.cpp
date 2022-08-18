@@ -222,30 +222,30 @@ namespace NSDocxRenderer
                (m_eGraphicsType == eGraphicsType::gtCurve &&  m_eSimpleLineType == eSimpleLineType::sltWave);
     }
 
-    bool CShape::IsCorrelated(const std::shared_ptr<CShape> pShape)
+    bool CShape::IsCorrelated(const CShape *pShape)
     {
         return m_eGraphicsType == pShape->m_eGraphicsType;
     }
 
-    void CShape::ChangeGeometryOfDesiredShape(std::shared_ptr<CShape> pShape)
+    void CShape::ChangeGeometryOfDesiredShape(CShape *pShape)
     {
         if (!pShape)
         {
             return;
         }
 
-        std::shared_ptr<CShape> pModObject;
-        std::shared_ptr<CShape> pDataObject;
+        CShape* pModObject;
+        CShape* pDataObject;
 
         if (pShape->m_bIsNotNecessaryToUse)
         {
-            pModObject = shared_from_this();;
+            pModObject = this;
             pDataObject = pShape;
         }
         else if (m_bIsNotNecessaryToUse)
         {
             pModObject = pShape;
-            pDataObject = shared_from_this();;
+            pDataObject = this;
         }
         else
         {
@@ -296,7 +296,7 @@ namespace NSDocxRenderer
         pModObject->m_dRight = pModObject->m_dLeft + pModObject->m_dWidth;
     }
 
-    void CShape::DetermineLineType(std::shared_ptr<CShape> pShape, bool bIsLast)
+    void CShape::DetermineLineType(CShape *pShape, bool bIsLast)
     {
         if (!pShape)
         {
@@ -894,7 +894,7 @@ namespace NSDocxRenderer
             oWriter.WriteString(L"<w:txbxContent>");
             for (size_t i = 0; i < m_arParagraphs.size(); i++)
             {
-                m_arParagraphs[i].get()->ToXml(oWriter);
+                m_arParagraphs[i]->ToXml(oWriter);
             }
             oWriter.WriteString(L"</w:txbxContent>");
             oWriter.WriteString(L"</wps:txbx>");

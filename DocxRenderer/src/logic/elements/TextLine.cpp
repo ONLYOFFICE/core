@@ -19,7 +19,7 @@ namespace NSDocxRenderer
         Clear();
     }
 
-    void CTextLine::AddCont(const std::shared_ptr<CContText> pCont)
+    void CTextLine::AddCont(CContText *pCont)
     {
         m_dBaselineOffset = fabs(m_dBaselineOffset) > fabs(pCont->m_dBaselineOffset) ? m_dBaselineOffset : pCont->m_dBaselineOffset;
 
@@ -58,7 +58,7 @@ namespace NSDocxRenderer
         SortElements(m_arConts);
     }
 
-    void CTextLine::Merge(const std::shared_ptr<CTextLine> pLine)
+    void CTextLine::Merge(CTextLine* pLine)
     {
         size_t nCount = pLine->m_arConts.size();
         if (0 != nCount)
@@ -78,7 +78,7 @@ namespace NSDocxRenderer
 
             for (const auto &pCont : pLine->m_arConts)
             {
-                m_arConts.push_back(std::make_shared<CContText>(*pCont));
+                m_arConts.push_back(new CContText(*pCont));
             }
 
             SortConts();
@@ -209,7 +209,7 @@ namespace NSDocxRenderer
         }
     }
 
-    bool CTextLine::AreAlignmentsAppropriate(const std::shared_ptr<CTextLine> pLine)
+    bool CTextLine::AreAlignmentsAppropriate(const CTextLine *pLine)
     {
         if ((m_eAlignmentType == pLine->m_eAlignmentType && m_eAlignmentType!= atatByLeftEdge) ||
             (m_eAlignmentType == atatByWidth && pLine->m_eAlignmentType == atatByLeftEdge) ||
@@ -264,7 +264,7 @@ namespace NSDocxRenderer
 
     double CTextLine::RightBorderCorrection()
     {
-        std::shared_ptr<CContText> pSelectedCont = nullptr;
+        CContText* pSelectedCont = nullptr;
 
         for (const auto &pCont : m_arConts)
         {

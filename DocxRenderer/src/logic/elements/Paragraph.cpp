@@ -175,7 +175,7 @@ namespace NSDocxRenderer
 
     void CParagraph::RightBorderCorrection()
     {
-        std::shared_ptr<CContText> pSelectedCont = nullptr;
+        CContText* pSelectedCont = nullptr;
 
         for (const auto &pLine : m_arLines)
         {
@@ -217,11 +217,11 @@ namespace NSDocxRenderer
 
     void CParagraph::MergeLines()
     {
-        std::shared_ptr<CTextLine> pLine = m_arLines.front();
+        auto pLine = m_arLines.front();
 
         for(size_t i = 1; i < m_arLines.size(); i++)
         {
-            std::shared_ptr<CContText> pLastCont = pLine->m_arConts.back();
+            auto pLastCont = pLine->m_arConts.back();
             size_t iNumConts = pLine->m_arConts.size() - 1;
 
             while (pLastCont->m_bIsNotNecessaryToUse)

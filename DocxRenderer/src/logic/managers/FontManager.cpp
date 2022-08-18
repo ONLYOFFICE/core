@@ -104,7 +104,7 @@ namespace NSDocxRenderer
             AddFontToMap();
     }
 
-    void CFontManager::MeasureString(std::wstring sText, double x, double y, double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType)
+    void CFontManager::MeasureString(const std::wstring& sText, double x, double y, double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType)
     {
         LoadFont();
 

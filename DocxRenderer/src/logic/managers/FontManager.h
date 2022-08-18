@@ -55,7 +55,7 @@ namespace NSDocxRenderer
         public:
             virtual void LoadFont(long lFaceIndex = 0, bool bNeedAddToMap = true);
 
-            void MeasureString(std::wstring sText, double x, double y, double& dBoxX, double& dBoxY,
+            virtual void MeasureString(const std::wstring& sText, double x, double y, double& dBoxX, double& dBoxY,
                                double& dBoxWidth, double& dBoxHeight, MeasureType measureType);
 
             void MeasureStringGids(unsigned int* pGids, unsigned int count, double x, double y,

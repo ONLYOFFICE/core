@@ -10,12 +10,17 @@ namespace NSDocxRenderer
     {
     }
 
+    CContText::~CContText()
+    {
+        Clear();
+    }
+
     void CContText::Clear()
     {
         m_pFontStyle = nullptr;
     }
 
-    double CContText::GetIntersect(const std::shared_ptr<CContText> pCont) const
+    double CContText::GetIntersect(const CContText* pCont) const
     {
         double d1 = std::max(m_dLeft, pCont->m_dLeft);
         double d2 = std::min(m_dLeft + m_dWidth, pCont->m_dLeft + pCont->m_dWidth);
@@ -51,7 +56,7 @@ namespace NSDocxRenderer
                 m_pManagerLight->LoadFont(m_pFontStyle->m_strPickFontName, m_pFontStyle->m_lPickFontStyle, ___dSize, false);
                 double dWidth = m_pManagerLight->MeasureStringWidth(m_oText.ToStdWString());
 
-                double dSpacing = (m_dWidth - dWidth) / (m_oText.length() + 1);
+                double dSpacing = (m_dWidth - dWidth) / (m_oText.length());
                 dSpacing *= c_dMMToDx;
 
                 lCalculatedSpacing = static_cast<LONG>(dSpacing);
@@ -248,7 +253,7 @@ namespace NSDocxRenderer
         oWriter.WriteString(L"</w:r>");
     }
 
-    bool CContText::IsEqual(const std::shared_ptr<CContText> pCont)
+    bool CContText::IsEqual(const CContText *pCont)
     {
         bool bIf1 = m_pFontStyle->GetStyleId() == pCont->m_pFontStyle->GetStyleId();
         bool bIf2 = m_bIsStrikeoutPresent == pCont->m_bIsStrikeoutPresent;
@@ -307,7 +312,7 @@ namespace NSDocxRenderer
         return ret;
     }
 
-    bool CContText::IsDuplicate(std::shared_ptr<CContText> pCont, eVerticalCrossingType eVType)
+    bool CContText::IsDuplicate(CContText* pCont, eVerticalCrossingType eVType)
     {
         if (eVType == eVerticalCrossingType::vctDublicate &&
             m_oText == pCont->m_oText)
@@ -327,7 +332,7 @@ namespace NSDocxRenderer
         return false;
     }
 
-    bool CContText::IsThereAreFontEffects(std::shared_ptr<CContText> pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType)
+    bool CContText::IsThereAreFontEffects(CContText* pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType)
     {
         //Условие пересечения по вертикали
         bool bIf1 = eVType == eVerticalCrossingType::vctCurrentAboveNext; //текущий cont выше
@@ -402,7 +407,7 @@ namespace NSDocxRenderer
         return false;
     }
 
-    bool CContText::IsVertAlignTypeBetweenConts(std::shared_ptr<CContText> pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType)
+    bool CContText::IsVertAlignTypeBetweenConts(CContText* pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType)
     {
         //Условие пересечения по вертикали
         bool bIf1 = eVType == eVerticalCrossingType::vctCurrentAboveNext ||
@@ -424,7 +429,7 @@ namespace NSDocxRenderer
             if (bIf1 && bIf5)
             {
                 pCont->m_eVertAlignType = eVertAlignType::vatSubscript;
-                pCont->m_pCont = shared_from_this();
+                pCont->m_pCont = this;
                 m_eVertAlignType = eVertAlignType::vatBase;
                 m_pCont = pCont;
                 return true;
@@ -432,7 +437,7 @@ namespace NSDocxRenderer
             else if (bIf2 && bIf5)
             {
                 pCont->m_eVertAlignType = eVertAlignType::vatSuperscript;
-                pCont->m_pCont = shared_from_this();
+                pCont->m_pCont = this;
                 m_eVertAlignType = eVertAlignType::vatBase;
                 m_pCont = pCont;
                 return true;
@@ -442,7 +447,7 @@ namespace NSDocxRenderer
                 m_eVertAlignType = eVertAlignType::vatSuperscript;
                 m_pCont = pCont;
                 pCont->m_eVertAlignType = eVertAlignType::vatBase;
-                pCont->m_pCont = shared_from_this();
+                pCont->m_pCont = this;
                 return true;
             }
             else if (bIf2 && bIf6)
@@ -450,7 +455,7 @@ namespace NSDocxRenderer
                 m_eVertAlignType = eVertAlignType::vatSubscript;
                 m_pCont = pCont;
                 pCont->m_eVertAlignType = eVertAlignType::vatBase;
-                pCont->m_pCont = shared_from_this();
+                pCont->m_pCont = this;
                 return true;
             }
         }
@@ -459,7 +464,7 @@ namespace NSDocxRenderer
 
     double CContText::CalculateWideSpace()
     {
-        return m_dSpaceWidthMM * 3;
+        return m_dSpaceWidthMM * 4;
     }
 
     double CContText::CalculateThinSpace()

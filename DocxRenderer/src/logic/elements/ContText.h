@@ -19,7 +19,7 @@ namespace NSDocxRenderer
         vatSuperscript
     };
 
-    class CContText : public CBaseItem, public std::enable_shared_from_this<CContText>
+    class CContText : public CBaseItem
     {
         public:
             std::shared_ptr<CFontStyle> m_pFontStyle {nullptr};
@@ -51,20 +51,20 @@ namespace NSDocxRenderer
             CFontManagerLight* m_pManagerLight {nullptr};
             CStyleManager*     m_pStyleManager {nullptr};
 
-            std::shared_ptr<CShape>    m_pShape {nullptr}; //Если не nullptr, то есть фоновая графика - можно анализировать.
-            std::shared_ptr<CContText> m_pCont {nullptr}; //Если не nullptr, то есть привязка к vatSubscript или vatSuperscript;
+            CShape*    m_pShape {nullptr}; //Если не nullptr, то есть фоновая графика - можно анализировать.
+            const CContText* m_pCont {nullptr}; //Если не nullptr, то есть привязка к vatSubscript или vatSuperscript;
 
 #if (USING_DELETE_DUPLICATING_CONTS == 0)
-            std::shared_ptr<CContText> m_pDuplicateCont {nullptr};
+            CContText* m_pDuplicateCont {nullptr};
 #endif
 
         public:
             CContText(CFontManagerLight* pManagerLight, CStyleManager* pStyleManager);
-            ~CContText(){}
+            ~CContText();
 
             void Clear() override final;
 
-            double GetIntersect(const std::shared_ptr<CContText> oSrc) const;
+            double GetIntersect(const CContText* pCont) const;
 
             void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
 
@@ -72,13 +72,13 @@ namespace NSDocxRenderer
                                    NSStringUtils::CStringBuilder& oWriter,
                                    bool bIsNeedSaveFormat = false);
 
-            bool IsEqual(const std::shared_ptr<CContText> pCont);
+            bool IsEqual(const CContText* pCont);
 
             UINT GetNumberOfFeatures();
 
-            bool IsDuplicate(std::shared_ptr<CContText> pCont, eVerticalCrossingType eVType);
-            bool IsThereAreFontEffects(std::shared_ptr<CContText> pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType);
-            bool IsVertAlignTypeBetweenConts(std::shared_ptr<CContText> pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType);
+            bool IsDuplicate(CContText *pCont, eVerticalCrossingType eVType);
+            bool IsThereAreFontEffects(CContText *pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType);
+            bool IsVertAlignTypeBetweenConts(CContText* pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType);
 
             double CalculateWideSpace();
             double CalculateThinSpace();

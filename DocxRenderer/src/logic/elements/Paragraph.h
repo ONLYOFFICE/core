@@ -50,7 +50,7 @@ namespace NSDocxRenderer
         double		m_dBaselinePos {0.0};
         TextAssociationType m_eTextAssociationType {tatPlainParagraph};
 
-        std::vector<std::shared_ptr<CTextLine>> m_arLines;
+        std::vector<CTextLine*> m_arLines;
     public:
         CParagraph(const TextAssociationType& eType);
         virtual ~CParagraph();

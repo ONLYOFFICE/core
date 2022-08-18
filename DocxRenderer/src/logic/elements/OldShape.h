@@ -27,7 +27,7 @@ namespace NSDocxRenderer
 
             LONG m_lTxId {-1};
 
-            std::vector<std::shared_ptr<CParagraph>> m_arParagraphs;
+            std::vector<CParagraph*> m_arParagraphs;
 
         public:
             COldShape();

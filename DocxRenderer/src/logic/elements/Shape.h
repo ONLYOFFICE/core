@@ -15,7 +15,7 @@ namespace NSDocxRenderer
         gtNoGraphics,
     };
 
-    class CShape : public CBaseItem, public std::enable_shared_from_this<CShape>
+    class CShape : public CBaseItem
     {
         public:
             enum class eShapeType
@@ -44,13 +44,13 @@ namespace NSDocxRenderer
             eSimpleLineType m_eSimpleLineType {eSimpleLineType::sltUnknown};
             eLineType       m_eLineType {eLineType::ltUnknown};
 
-            std::vector<std::shared_ptr<CParagraph>> m_arParagraphs;
+            std::vector<CParagraph*> m_arParagraphs;
 
             std::shared_ptr<CImageInfo> m_pImageInfo {nullptr};
 
             //Показывает, что есть отношение графики к тексту (подчеркивания/зачеркивания/выделение).
             //note Пока сюда записывается указатель на символ с наибольшем размером шрифта.
-            std::shared_ptr<CContText> m_pCont {nullptr};
+            CContText* m_pCont {nullptr};
 
         private:
             UINT m_nShapeId {0};
@@ -69,10 +69,10 @@ namespace NSDocxRenderer
             void DetermineGraphicsType(double dWidth, double dHeight, size_t nPeacks, size_t nCurves);
 
             bool IsItFitLine();
-            bool IsCorrelated(const std::shared_ptr<CShape> pShape);
-            void ChangeGeometryOfDesiredShape(std::shared_ptr<CShape> pShape);
+            bool IsCorrelated(const CShape* pShape);
+            void ChangeGeometryOfDesiredShape(CShape* pShape);
 
-            void DetermineLineType(std::shared_ptr<CShape> pShape = nullptr, bool bIsLast = false);
+            void DetermineLineType(CShape* pShape = nullptr, bool bIsLast = false);
 
             virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
             void BuildGeneralProperties(NSStringUtils::CStringBuilder &oWriter);

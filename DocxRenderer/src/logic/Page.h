@@ -28,13 +28,13 @@ namespace NSDocxRenderer
 
         LONG						m_lCurrentCommand {0};
 
-        std::vector<std::shared_ptr<CShape>>     m_arImages;
-        std::vector<std::shared_ptr<CContText>>  m_arSymbol ;
-        std::vector<std::shared_ptr<CTextLine>>  m_arTextLine;
-        std::vector<std::shared_ptr<CShape>>	 m_arShapes;
-        std::vector<std::shared_ptr<CParagraph>> m_arParagraphs;
+        std::vector<CShape*>     m_arImages;
+        std::vector<CContText*>  m_arSymbol ;
+        std::vector<CTextLine*>  m_arTextLine;
+        std::vector<CShape*>	 m_arShapes;
+        std::vector<CParagraph*> m_arParagraphs;
 
-        std::shared_ptr<CTextLine> m_pCurrentLine {nullptr};
+        CTextLine* m_pCurrentLine {nullptr};
 
         CFontManager		m_oFontManager;
         CFontManagerLight	m_oFontManagerLight;
@@ -61,7 +61,7 @@ namespace NSDocxRenderer
         void ClearShapes();
         void ClearParagraphs();
 
-        void SelectCurrentLine(const std::shared_ptr<CContText> pCont);
+        void SelectCurrentLine(const CContText* pCont);
         //удаляем то, что выходит за границы страницы
         void DeleteTextClipPage();
 
@@ -92,9 +92,9 @@ namespace NSDocxRenderer
         //Собранные для текущей страницы данные нужно проанализировать и сгруппировать, лишнее удалить
         void AnalyzeCollectedSymbols();
         void DetermineStrikeoutsUnderlinesHighlights();
-        bool IsLineCrossingText(const std::shared_ptr<CShape> pGraphicItem, std::shared_ptr<CContText> pCont, const eHorizontalCrossingType& eHType);
-        bool IsLineBelowText(const std::shared_ptr<CShape> pGraphicItem, std::shared_ptr<CContText> pCont, const eHorizontalCrossingType& eHType);
-        bool IsItHighlightingBackground(const std::shared_ptr<CShape> pGraphicItem, std::shared_ptr<CContText> pCont, const eHorizontalCrossingType& eHType);
+        bool IsLineCrossingText(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
+        bool IsLineBelowText(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
+        bool IsItHighlightingBackground(CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
 
         //набивается содержимым вектор m_arTextLine
         void AnalyzeLines();
@@ -117,13 +117,13 @@ namespace NSDocxRenderer
 
         void WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter);
 
-        void CreateSingleLineParagraph(const std::shared_ptr<CTextLine> pLine, const double *pRight, const double *pBeforeSpacing);
-        void CreateSingleLineOldShape(const std::shared_ptr<CTextLine> pLine);
-        void CreateSingleLineShape(const std::shared_ptr<CTextLine> pLine);
+        void CreateSingleLineParagraph(CTextLine *pLine, const double *pRight, const double *pBeforeSpacing);
+        void CreateSingleLineOldShape(CTextLine *pLine);
+        void CreateSingleLineShape(CTextLine *pLine);
 
-        bool IsShadingPresent(const std::shared_ptr<CTextLine> pLine1, const std::shared_ptr<CTextLine> pLine2);
+        bool IsShadingPresent(const CTextLine* pLine1, const CTextLine* pLine2);
 
     private:
-        std::shared_ptr<CTextLine> GetNextTextLine(size_t& nCurrentIndex);
+        CTextLine* GetNextTextLine(size_t& nCurrentIndex);
     };
 }

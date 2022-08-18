@@ -1,6 +1,5 @@
 #pragma once
 #include <map>
-#include "../DesktopEditor/common/StringBuilder.h"
 #include "../styles/FontStyle.h"
 
 namespace NSDocxRenderer

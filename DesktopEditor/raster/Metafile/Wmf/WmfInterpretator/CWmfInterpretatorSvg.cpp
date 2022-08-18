@@ -709,27 +709,8 @@ namespace MetaFile
 		TXForm oTransform;
 		oTransform.Copy(m_pParser->GetTransform());
 
-		bool bWriteG = false;
-
 		if (NULL != m_pParser && NULL != m_pParser->GetFont())
 		{
-			if (OPAQUE == m_pParser->GetTextBgMode() && false) //отрисовка по bounds не подходит, поэтому необходимо высчитываться фон в ручную
-			{
-				std::wstring wsFillRect = L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetTextBgColor()) + L", 255)";
-
-				TRectD oNewBounds = TranslateRect(oBounds);
-
-				m_oXmlWriter.WriteNodeBegin(L"g");
-				bWriteG = true;
-
-				WriteNode(L"rect", {{L"x",      ConvertToWString(oNewBounds.dLeft)},
-									{L"y",      ConvertToWString(oNewBounds.dTop)},
-									{L"width",  ConvertToWString(oNewBounds.dRight - oNewBounds.dLeft)},
-									{L"height", ConvertToWString(oNewBounds.dBottom - oNewBounds.dTop)},
-									{L"fill",	wsFillRect},
-									{L"stroke", L"none"}});
-			}
-
 			TWmfColor oColor = m_pParser->GetDC()->GetTextColor();
 
 			if (0 != oColor.r || 0 != oColor.g || 0 != oColor.b)
@@ -818,16 +799,13 @@ namespace MetaFile
 			}
 		}
 
-		if (!bWriteG)
-			AddTransform(arNodeAttributes, &oTransform);
+		AddTransform(arNodeAttributes, &oTransform);
 
 		arNodeAttributes.push_back({L"x", ConvertToWString(dXCoord)});
 		arNodeAttributes.push_back({L"y", ConvertToWString(dYCoord)});
 
-		WriteNode(L"text", arNodeAttributes, StringNormalization(wsText));
 
-		if (bWriteG)
-			m_oXmlWriter.WriteNodeEnd(L"g");
+		WriteNode(L"text", arNodeAttributes, StringNormalization(wsText));
 	}
 
 	void CWmfInterpretatorSvg::AddStroke(NodeAttributes &arAttributes)
@@ -843,7 +821,7 @@ namespace MetaFile
 			double dStrokeWidth = pPen->GetWidth();
 
 			if (dStrokeWidth <= 1)
-				dStrokeWidth = 1 / std::abs(m_pParser->GetTransform()->M22);
+				dStrokeWidth = 1 * std::abs(m_pParser->GetTransform()->M22);
 
 			if (dStrokeWidth > 0)
 				arAttributes.push_back({L"stroke-width", ConvertToWString(dStrokeWidth)});

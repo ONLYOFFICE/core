@@ -180,7 +180,9 @@ namespace MetaFile
 
 		TRectD TranslateRect(const TEmfRectL& oRect);
 
-		TPointD GetCutPos();
+		TPointD GetCutPos() const;
+
+		std::wstring CreatePath() const;
 	};
 }
 

@@ -186,113 +186,10 @@ namespace MetaFile
 		if (NULL == m_pParser)
 			return;
 
-		const CEmfPath* pPath = m_pParser->GetPath();
+				std::wstring wsValue = CreatePath();
 
-		if (NULL == pPath || pPath->m_pCommands.empty())
+		if (wsValue.empty())
 			return;
-
-		std::wstring wsValue;
-		TEmfPointD *pFirstPoint = NULL;
-
-		wsValue += L"M " + ConvertToWString(m_pParser->GetCurPos().x) + L',' + ConvertToWString(m_pParser->GetCurPos().y);
-
-		for (const CEmfPathCommandBase* pCommand : pPath->m_pCommands)
-		{
-			switch (pCommand->GetType())
-			{
-				case EMF_PATHCOMMAND_MOVETO:
-				{
-					CEmfPathMoveTo* pMoveTo = (CEmfPathMoveTo*)pCommand;
-
-					wsValue += L" M " + ConvertToWString(pMoveTo->x) + L',' +  ConvertToWString(pMoveTo->y);
-
-					RELEASEOBJECT(pFirstPoint);
-					pFirstPoint = new TEmfPointD;
-					pFirstPoint->x = pMoveTo->x;
-					pFirstPoint->y = pMoveTo->y;
-
-					break;
-				}
-				case EMF_PATHCOMMAND_LINETO:
-				{
-					CEmfPathLineTo* pLineTo = (CEmfPathLineTo*)pCommand;
-
-					wsValue += L" L " + ConvertToWString(pLineTo->x) + L',' +  ConvertToWString(pLineTo->y);
-
-					if (NULL == pFirstPoint)
-					{
-						pFirstPoint = new TEmfPointD;
-						pFirstPoint->x = pLineTo->x;
-						pFirstPoint->y = pLineTo->y;
-					}
-
-					break;
-				}
-				case EMF_PATHCOMMAND_CURVETO:
-				{
-					CEmfPathCurveTo* pCurveTo = (CEmfPathCurveTo*)pCommand;
-
-					wsValue +=	L" C "  + ConvertToWString(pCurveTo->x1) + L',' + ConvertToWString(pCurveTo->y1) + L' ' +
-										 ConvertToWString(pCurveTo->x2) + L',' + ConvertToWString(pCurveTo->y2) + L' ' +
-										 ConvertToWString(pCurveTo->xE) + L',' + ConvertToWString(pCurveTo->yE);
-
-					if (NULL == pFirstPoint)
-					{
-						pFirstPoint = new TEmfPointD;
-						pFirstPoint->x = pCurveTo->x1;
-						pFirstPoint->y = pCurveTo->y1;
-					}
-
-					break;
-				}
-				case EMF_PATHCOMMAND_ARCTO:
-				{
-					CEmfPathArcTo* pArcTo = (CEmfPathArcTo*)pCommand;
-
-//					if (m_pParser->GetDC()->GetFinalTransform(GM_ADVANCED)->M22 < 0)
-//					{
-//						dStartAngle *= -1;
-//						dSweepAngle *= -1;
-//					}
-
-					double dXRadius = std::fabs((pArcTo->right - pArcTo->left)) / 2;
-					double dYRadius = std::fabs((pArcTo->bottom - pArcTo->top)) / 2;
-
-					double dStartX = (pArcTo->right + pArcTo->left) / 2 + dXRadius  * cos((pArcTo->start) * M_PI / 180);
-					double dStartY = (pArcTo->bottom + pArcTo->top) / 2 + dYRadius  * sin((pArcTo->start) * M_PI / 180);
-
-					double dEndX = (pArcTo->right + pArcTo->left) / 2 + dXRadius  * cos((pArcTo->sweep) * M_PI / 180);
-					double dEndY = (pArcTo->bottom + pArcTo->top) / 2 + dYRadius  * sin((pArcTo->sweep) * M_PI / 180);
-
-					wsValue += L" A " + ConvertToWString(dXRadius) + L' ' +
-							ConvertToWString(dYRadius) + L' ' +
-							L"0 " +
-							((std::fabs(pArcTo->sweep - pArcTo->start) <= 180) ? L"0" : L"1") + L' ' +
-							((std::fabs(pArcTo->sweep - pArcTo->start) <= 180) ? L"1" : L"0") + L' ' +
-							ConvertToWString(dEndX) + L' ' +
-							ConvertToWString(dEndY);
-
-
-					if (NULL == pFirstPoint)
-					{
-						pFirstPoint = new TEmfPointD;
-						pFirstPoint->x = pArcTo->left;
-						pFirstPoint->y = pArcTo->top;
-					}
-
-					break;
-				}
-				case EMF_PATHCOMMAND_CLOSE:
-				{
-					if (NULL != pFirstPoint)
-					{
-						wsValue += L" L " + ConvertToWString(pFirstPoint->x) + L',' + ConvertToWString(pFirstPoint->y);
-						RELEASEOBJECT(pFirstPoint);
-					}
-					break;
-				}
-			}
-		}
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
@@ -300,8 +197,6 @@ namespace MetaFile
 		AddTransform(arAttributes);
 
 		WriteNode(L"path" , arAttributes);
-
-		RELEASEOBJECT(pFirstPoint);
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_SETMAPMODE(const unsigned int &unMapMode)
@@ -411,17 +306,6 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_ANGLEARC(const TEmfPointL &oCenter, const unsigned int &unRadius, const double &dStartAngle, const double &dSweepAngle)
 	{
-		ArcTo(oCenter.x - unRadius, oCenter.y - unRadius, oCenter.x + unRadius, oCenter.y + unRadius, dStartAngle, dSweepAngle);
-
-		double dFistAngle = dStartAngle;
-		double dSecondAngle = dSweepAngle;
-
-		if (NULL != m_pParser && m_pParser->GetDC()->GetFinalTransform(GM_ADVANCED)->M22 < 0)
-		{
-			dFistAngle *= -1;
-			dSecondAngle *= -1;
-		}
-
 		double dXRadius = unRadius;
 		double dYRadius = unRadius;
 
@@ -448,7 +332,18 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
-		AddTransform(arAttributes);
+
+		if (AD_COUNTERCLOCKWISE == m_pParser->GetDC()->GetArcDirection())
+		{
+			TXForm oXForm;
+			oXForm.Copy(m_pParser->GetTransform());
+
+			oXForm.M22 = -oXForm.M22;
+
+			AddTransform(arAttributes, &oXForm);
+		}
+		else
+			AddTransform(arAttributes);
 
 		WriteNode(L"path" , arAttributes);
 	}
@@ -469,13 +364,22 @@ namespace MetaFile
 		double dXRadius = std::fabs((oNewRect.dRight - oNewRect.dLeft)) / 2;
 		double dYRadius = std::fabs((oNewRect.dBottom - oNewRect.dTop)) / 2;
 
-		double dStartX = (oNewRect.dRight + oNewRect.dLeft) / 2 + dXRadius  * cos((dStartAngle) * M_PI / 180);
-		double dStartY = (oNewRect.dBottom + oNewRect.dTop) / 2 + dYRadius  * sin((dStartAngle) * M_PI / 180);
-
 		double dEndX = (oNewRect.dRight + oNewRect.dLeft) / 2 + dXRadius  * cos((dSweepAngle) * M_PI / 180);
 		double dEndY = (oNewRect.dBottom + oNewRect.dTop) / 2 + dYRadius  * sin((dSweepAngle) * M_PI / 180);
 
-		std::wstring wsValue = L"M " + ConvertToWString(dStartX) + L' ' + ConvertToWString(dStartY);
+		TEmfPointL oStartPoint;
+
+		dStartAngle *= -M_PI / 180;
+
+		double dWidth  = oBox.lRight  - oBox.lLeft;
+		double dHeight = oBox.lBottom - oBox.lTop;
+
+		double dTan = atan2( sin( dStartAngle ) / dHeight / 2,  cos( dStartAngle ) / dWidth / 2 );
+
+		oStartPoint.x = oBox.lLeft + dWidth / 2.0 + dWidth / 2 * cos(dTan);
+		oStartPoint.y = oBox.lTop + dHeight / 2.0 - dHeight / 2 * sin(dTan);
+
+		std::wstring wsValue = L"M " + ConvertToWString(oStartPoint.x) + L' ' + ConvertToWString(oStartPoint.y);
 
 		wsValue += L" A " + ConvertToWString(dXRadius) + L' ' +
 				ConvertToWString(dYRadius) + L' ' +
@@ -489,7 +393,18 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
-		AddTransform(arAttributes);
+
+		if (AD_COUNTERCLOCKWISE == m_pParser->GetDC()->GetArcDirection())
+		{
+			TXForm oXForm;
+			oXForm.Copy(m_pParser->GetTransform());
+
+			oXForm.M22 = -oXForm.M22;
+
+			AddTransform(arAttributes, &oXForm);
+		}
+		else
+			AddTransform(arAttributes);
 
 		WriteNode(L"path" , arAttributes);
 
@@ -531,7 +446,18 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
-		AddTransform(arAttributes);
+
+		if (AD_COUNTERCLOCKWISE == m_pParser->GetDC()->GetArcDirection())
+		{
+			TXForm oXForm;
+			oXForm.Copy(m_pParser->GetTransform());
+
+			oXForm.M22 = -oXForm.M22;
+
+			AddTransform(arAttributes, &oXForm);
+		}
+		else
+			AddTransform(arAttributes);
 
 		WriteNode(L"path" , arAttributes);
 	}
@@ -1000,12 +926,39 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_STROKEANDFILLPATH(const TEmfRectL &oBounds)
 	{
+		if (NULL == m_pParser)
+			return;
 
+		std::wstring wsValue = CreatePath();
+
+		if (wsValue.empty())
+			return;
+
+		NodeAttributes arAttributes = {{L"d", wsValue}};
+
+		AddStroke(arAttributes);
+		AddFill(arAttributes);
+		AddTransform(arAttributes);
+
+		WriteNode(L"path" , arAttributes);
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_STROKEPATH(const TEmfRectL &oBounds)
 	{
+		if (NULL == m_pParser)
+			return;
 
+		std::wstring wsValue = CreatePath();
+
+		if (wsValue.empty())
+			return;
+
+		NodeAttributes arAttributes = {{L"d", wsValue}};
+
+		AddStroke(arAttributes);
+		AddTransform(arAttributes);
+
+		WriteNode(L"path" , arAttributes);
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_UNKNOWN(CDataStream &oDataStream)
@@ -1269,10 +1222,10 @@ namespace MetaFile
 		{		
 			arAttributes.push_back({L"stroke", L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetPen()->GetColor()) + L"," + ConvertToWString(m_pParser->GetPen()->GetAlpha(), 0) + L")"});
 
-			double dStrokeWidth = m_pParser->GetPen()->GetWidth();
+			double dStrokeWidth = std::abs(m_pParser->GetPen()->GetWidth());
 
 			if (dStrokeWidth <= 1)
-				dStrokeWidth = 1 / std::abs(m_pParser->GetTransform()->M22);
+				dStrokeWidth = 1 * std::abs(m_pParser->GetTransform()->M22);
 
 			if (dStrokeWidth > 0)
 				arAttributes.push_back({L"stroke-width", ConvertToWString(dStrokeWidth)});
@@ -1311,7 +1264,7 @@ namespace MetaFile
 					arAttributes.push_back({L"stroke-linejoin", L"round"});
 			}
 		}
-		else arAttributes.push_back({L"stroke", L"black"});
+		else arAttributes.push_back({L"stroke", L"none"});
 	}
 
 	void CEmfInterpretatorSvg::AddFill(NodeAttributes &arAttributes)
@@ -1412,7 +1365,7 @@ namespace MetaFile
 		return oNewRect;
 	}
 
-	TPointD CEmfInterpretatorSvg::GetCutPos()
+	TPointD CEmfInterpretatorSvg::GetCutPos() const
 	{
 		if (NULL != m_pParser)
 			return m_pParser->GetCurPos();
@@ -1423,6 +1376,124 @@ namespace MetaFile
 		oCurPos.y = m_oViewport.dTop;
 
 		return oCurPos;
+	}
+
+	std::wstring CEmfInterpretatorSvg::CreatePath() const
+	{
+		if (NULL == m_pParser || NULL == m_pParser->GetPath())
+			return std::wstring();
+
+		const CEmfPath* pPath = m_pParser->GetPath();
+
+		if (NULL == pPath || pPath->m_pCommands.empty())
+			return std::wstring();
+
+		std::wstring wsValue;
+		TEmfPointD *pFirstPoint = NULL;
+
+		wsValue += L"M " + ConvertToWString(m_pParser->GetCurPos().x) + L',' + ConvertToWString(m_pParser->GetCurPos().y);
+
+		for (const CEmfPathCommandBase* pCommand : pPath->m_pCommands)
+		{
+			switch (pCommand->GetType())
+			{
+				case EMF_PATHCOMMAND_MOVETO:
+				{
+					CEmfPathMoveTo* pMoveTo = (CEmfPathMoveTo*)pCommand;
+
+					wsValue += L" M " + ConvertToWString(pMoveTo->x) + L',' +  ConvertToWString(pMoveTo->y);
+
+					RELEASEOBJECT(pFirstPoint);
+					pFirstPoint = new TEmfPointD;
+					pFirstPoint->x = pMoveTo->x;
+					pFirstPoint->y = pMoveTo->y;
+
+					break;
+				}
+				case EMF_PATHCOMMAND_LINETO:
+				{
+					CEmfPathLineTo* pLineTo = (CEmfPathLineTo*)pCommand;
+
+					wsValue += L" L " + ConvertToWString(pLineTo->x) + L',' +  ConvertToWString(pLineTo->y);
+
+					if (NULL == pFirstPoint)
+					{
+						pFirstPoint = new TEmfPointD;
+						pFirstPoint->x = pLineTo->x;
+						pFirstPoint->y = pLineTo->y;
+					}
+
+					break;
+				}
+				case EMF_PATHCOMMAND_CURVETO:
+				{
+					CEmfPathCurveTo* pCurveTo = (CEmfPathCurveTo*)pCommand;
+
+					wsValue +=	L" C "  + ConvertToWString(pCurveTo->x1) + L',' + ConvertToWString(pCurveTo->y1) + L' ' +
+										 ConvertToWString(pCurveTo->x2) + L',' + ConvertToWString(pCurveTo->y2) + L' ' +
+										 ConvertToWString(pCurveTo->xE) + L',' + ConvertToWString(pCurveTo->yE);
+
+					if (NULL == pFirstPoint)
+					{
+						pFirstPoint = new TEmfPointD;
+						pFirstPoint->x = pCurveTo->x1;
+						pFirstPoint->y = pCurveTo->y1;
+					}
+
+					break;
+				}
+				case EMF_PATHCOMMAND_ARCTO:
+				{
+					CEmfPathArcTo* pArcTo = (CEmfPathArcTo*)pCommand;
+
+//					if (m_pParser->IsWindowFlippedY())
+//					{
+//						dStartAngle *= -1;
+//						dSweepAngle *= -1;
+//					}
+
+					double dXRadius = std::fabs((pArcTo->right - pArcTo->left)) / 2;
+					double dYRadius = std::fabs((pArcTo->bottom - pArcTo->top)) / 2;
+
+					double dStartX = (pArcTo->right + pArcTo->left) / 2 + dXRadius  * cos((pArcTo->start) * M_PI / 180);
+					double dStartY = (pArcTo->bottom + pArcTo->top) / 2 + dYRadius  * sin((pArcTo->start) * M_PI / 180);
+
+					double dEndX = (pArcTo->right + pArcTo->left) / 2 + dXRadius  * cos((pArcTo->sweep) * M_PI / 180);
+					double dEndY = (pArcTo->bottom + pArcTo->top) / 2 + dYRadius  * sin((pArcTo->sweep) * M_PI / 180);
+
+					wsValue += L" A " + ConvertToWString(dXRadius) + L' ' +
+							ConvertToWString(dYRadius) + L' ' +
+							L"0 " +
+							((std::fabs(pArcTo->sweep - pArcTo->start) <= 180) ? L"0" : L"1") + L' ' +
+							((std::fabs(pArcTo->sweep - pArcTo->start) <= 180) ? L"1" : L"0") + L' ' +
+							ConvertToWString(dEndX) + L' ' +
+							ConvertToWString(dEndY);
+
+
+					if (NULL == pFirstPoint)
+					{
+						pFirstPoint = new TEmfPointD;
+						pFirstPoint->x = pArcTo->left;
+						pFirstPoint->y = pArcTo->top;
+					}
+
+					break;
+				}
+				case EMF_PATHCOMMAND_CLOSE:
+				{
+					if (NULL != pFirstPoint)
+					{
+						wsValue += L" L " + ConvertToWString(pFirstPoint->x) + L',' + ConvertToWString(pFirstPoint->y);
+						RELEASEOBJECT(pFirstPoint);
+					}
+					break;
+				}
+			}
+		}
+
+		RELEASEOBJECT(pFirstPoint);
+
+		return wsValue;
 	}
 }
 

@@ -444,7 +444,7 @@ void common_value_and_type_attlist::serialize(CP_ATTR_NODE)
     CP_XML_ATTR_OPT(L"office:date-value", office_date_value_);
     CP_XML_ATTR_OPT(L"office:time-value", office_time_value_);
     CP_XML_ATTR_OPT(L"office:boolean-value", office_boolean_value_);
-    CP_XML_ATTR_OPT(L"office:string-value", office_string_value_);
+	CP_XML_ATTR_OPT_ENCODE_STRING(L"office:string-value", office_string_value_);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 

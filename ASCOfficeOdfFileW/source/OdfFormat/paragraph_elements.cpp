@@ -954,7 +954,7 @@ void text_toc_mark::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         { 	
-			CP_XML_ATTR_OPT(L"text:string-value", string_value_);
+			CP_XML_ATTR_OPT_ENCODE_STRING(L"text:string-value", string_value_);
 			CP_XML_ATTR_OPT(L"text:outline-level", outline_level_);
 		}
 	}
@@ -972,7 +972,7 @@ void text_alphabetical_index_mark_start::serialize(std::wostream & _Wostream)
 		CP_XML_NODE_SIMPLE()
         { 	
 			CP_XML_ATTR		(L"text:id", id_);
-			CP_XML_ATTR_OPT (L"text:string-value-phonetic", string_value_phonetic_);
+			CP_XML_ATTR_OPT_ENCODE_STRING(L"text:string-value-phonetic", string_value_phonetic_);
 			CP_XML_ATTR_OPT (L"text:key1", key1_);
 			CP_XML_ATTR_OPT (L"text:key1-phonetic", key1_phonetic_);
 			CP_XML_ATTR_OPT (L"text:key2", key2_);
@@ -1009,7 +1009,7 @@ void text_alphabetical_index_mark::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         { 	
-			CP_XML_ATTR_OPT (L"text:string-value-phonetic", string_value_phonetic_);
+			CP_XML_ATTR_OPT_ENCODE_STRING(L"text:string-value-phonetic", string_value_phonetic_);
 			CP_XML_ATTR_OPT (L"text:key1", key1_);
 			CP_XML_ATTR_OPT (L"text:key1-phonetic", key1_phonetic_);
 			CP_XML_ATTR_OPT (L"text:key2", key2_);

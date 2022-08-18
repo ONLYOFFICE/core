@@ -821,6 +821,7 @@ std::wstring oox2odf_converter::Impl::convert_conditional_formula(const std::wst
 	     
 	}
 
+	XmlUtils::replace_all(res, L"&", L"&amp;");
     oox_replace_tmp_back( res);
 
 	replace_vertical(res);

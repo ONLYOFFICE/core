@@ -261,6 +261,8 @@ public:
             algs.push_back(OOXML_HASH_ALG_SHA384);
         else if ("1.2.840.113549.1.1.13" == sAlg)
             algs.push_back(OOXML_HASH_ALG_SHA512);
+        else if ("1.3.101.112" == sAlg)
+            algs.push_back(OOXML_HASH_ALG_ED25519);
         else if ("1.2.643.2.2.3" == sAlg)
         {
             std::string sHashAlg = m_context->pCertInfo->SubjectPublicKeyInfo.Algorithm.pszObjId;
@@ -756,6 +758,8 @@ private:
             return CALG_GR3411_2012_256;
         case OOXML_HASH_ALG_GOST_GR3411_2012_512:
             return CALG_GR3411_2012_512;
+        case OOXML_HASH_ALG_ED25519:
+            return CALG_ECDSA;
         default:
             return CALG_SHA1;
         }

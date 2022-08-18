@@ -8274,7 +8274,12 @@ int Binary_DocumentTableReader::Read_tblGrid(BYTE type, long length, void* poRes
 	}
 	else if( c_oSerDocTableType::tblGrid_ItemTwips == type )
 	{
-		pCStringWriter->WriteString(L"<w:gridCol w:w=\"" + std::to_wstring(m_oBufferedStream.GetLong())+ L"\"/>");
+		int ngridCol = m_oBufferedStream.GetLong();
+
+		if (ngridCol > 0)
+			pCStringWriter->WriteString(L"<w:gridCol w:w=\"" + std::to_wstring(ngridCol)+ L"\"/>");
+		else
+			pCStringWriter->WriteString(L"<w:gridCol/>");
 	}
 	else if( c_oSerDocTableType::tblGridChange == type )
 	{

@@ -3754,6 +3754,11 @@ namespace NExtractTools
 						nRasterWCur = (int)(dWidth * dKoef1 + 0.5);
 						nRasterHCur = (int)(dHeight * dKoef1 + 0.5);
 					}
+					else if (2 == nSaveType)
+					{
+						nRasterWCur = -1;
+						nRasterHCur = -1;
+					}
 					std::wstring sFileTo;
 					if (bIsOnlyFirst)
 					{

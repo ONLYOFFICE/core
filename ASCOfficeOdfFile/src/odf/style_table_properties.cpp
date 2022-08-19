@@ -241,18 +241,25 @@ void style_table_column_properties::docx_convert(oox::docx_conversion_context & 
 		double width = 0.5 + 20.0 * attlist_.style_column_width_->get_value_unit(length::pt) * kf_max_width_ms;
 
 		Context.get_table_context().add_column_width(width);
-        strm << L"<w:gridCol w:w=\"" << (int)(width) << "\"/>";
+		if (width > 0)
+			strm << L"<w:gridCol w:w=\"" << (int)(width) << "\"/>";
+		else
+			strm << L"<w:gridCol/>";
     }
 	else if ((attlist_.style_rel_column_width_) && (attlist_.style_rel_column_width_->get_unit() == length::rel))
 	{
 		double width = 0.5 + 20.0 * page_width * attlist_.style_rel_column_width_->get_value() / 65534.;
 		
 		Context.get_table_context().add_column_width(width);
-        strm << L"<w:gridCol w:w=\"" << (int)(width) << "\"/>";
+		if (width > 0)
+			strm << L"<w:gridCol w:w=\"" << (int)(width) << "\"/>";
+		else
+			strm << L"<w:gridCol/>";
 	}
 	else
 	{
 		Context.get_table_context().add_column_width(0);
+		strm << L"<w:gridCol/>";
 	}
 }
 

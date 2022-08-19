@@ -11,7 +11,6 @@ namespace MetaFile
 	{
 	public:
 		CWmfInterpretatorSvg(CWmfParserBase* pParser = NULL, unsigned int unWidth = 0, unsigned int unHeight = 0);
-		CWmfInterpretatorSvg(const CWmfInterpretatorSvg& oInterpretator);
 		virtual ~CWmfInterpretatorSvg();
 
 		InterpretatorType   GetType() const override;
@@ -106,18 +105,20 @@ namespace MetaFile
 
 	private:
 		XmlUtils::CXmlWriter    m_oXmlWriter;
-		std::wstring            m_sOutputData;
 
 		CWmfParserBase          *m_pParser;
 
 		TSvgViewport            m_oViewport;
 		TEmfSizeL               m_oSizeWindow;
-	public:
-		void Begin() override;
-		void End() override;
-		//Следующие методы ничего не делают
 
+		unsigned int			m_unNumberHatches;
+		std::wstring			m_wsDefs;
+	public:
 		void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight) override;
+
+		//Следующие методы ничего не делают
+		void Begin() override {};
+		void End() override {};
 
 		void DrawString(std::wstring& wsText, unsigned int unCharsCount, double dX, double dY, double* pDx,
 						int iGraphicsMode = 1, double dXScale = 1, double dYScale = 1) override {};
@@ -142,7 +143,7 @@ namespace MetaFile
 		void SetTransform(double& dM11, double& dM12, double& dM21, double& dM22, double& dX, double& dY) override {};
 		void GetTransform(double* pdM11, double* pdM12, double* pdM21, double* pdM22, double* pdX, double* pdY) override {};
 
-		std::wstring GetFile() const;
+		std::wstring GetFile();
 	private:
 		void WriteNode(const std::wstring& wsNodeName, const NodeAttributes& arAttributes, const std::wstring& wsValueNode = L"");
 		void WriteText(const std::wstring& wsText, double dX, double dY, const TWmfRect& oBounds = TWmfRect());
@@ -156,6 +157,8 @@ namespace MetaFile
 		TRectD TranslateRect(const TWmfRect& oRect);
 
 		TPointD GetCutPos();
+
+		std::wstring CreateHatchStyle(unsigned int unHetchStyle);
 	};
 
 }

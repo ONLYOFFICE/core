@@ -317,17 +317,9 @@ namespace NSDocxRenderer
         if (eVType == eVerticalCrossingType::vctDublicate &&
             m_oText == pCont->m_oText)
         {
-#if (USING_DELETE_DUPLICATING_CONTS == 0)
-            //В итоге собираем список дубликатов
-            if (!m_pDuplicateCont)
-            {
-                m_pDuplicateCont = pCont;
-            }
-            return true;
-
-#else
             pCont->m_bIsNotNecessaryToUse = true;
-#endif
+            m_iNumDuplicates++;
+            return true;
         }
         return false;
     }

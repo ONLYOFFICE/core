@@ -54,9 +54,7 @@ namespace NSDocxRenderer
             CShape*    m_pShape {nullptr}; //Если не nullptr, то есть фоновая графика - можно анализировать.
             const CContText* m_pCont {nullptr}; //Если не nullptr, то есть привязка к vatSubscript или vatSuperscript;
 
-#if (USING_DELETE_DUPLICATING_CONTS == 0)
-            CContText* m_pDuplicateCont {nullptr};
-#endif
+            UINT m_iNumDuplicates {0};
 
         public:
             CContText(CFontManagerLight* pManagerLight, CStyleManager* pStyleManager);

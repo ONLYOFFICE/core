@@ -743,7 +743,6 @@ namespace NSDocxRenderer
             SelectCurrentLine(pCont);
 
             CContText* pLastCont = nullptr;
-            CContText* pNewCont = nullptr;
             size_t nCountConts = m_pCurrentLine->m_arConts.size();
             if (nCountConts != 0)
                 pLastCont = m_pCurrentLine->m_arConts.back();
@@ -759,22 +758,7 @@ namespace NSDocxRenderer
                 m_dLastTextX = pNewCont->m_dLeft;
                 m_dLastTextY = pNewCont->m_dBaselinePos;
                 m_dLastTextX_block = m_dLastTextX;
-
-#if (USING_DELETE_DUPLICATING_CONTS == 0)
-                //Сразу распределим дубликаты по линиям
-                while (pNewCont->m_pDuplicateCont)
-                {
-                    pNewCont = pNewCont->m_pDuplicateCont;
-
-                    auto pDuplicateLine = m_pCurrentLine->m_pDuplicateLine;
-                    pDuplicateLine->m_dBaselinePos = pNewCont->m_dBaselinePos;
-                    pDuplicateLine->AddCont(new CContText(*pNewCont));
-
-                    //Чтобы дубликат не попал дальше в работу
-                    pNewCont->m_bIsNotNecessaryToUse = true;
-                    m_pCurrentLine = pDuplicateLine;
-                }
-#endif
+                CollectDublicateLines(pCont);
                 continue;
             }
 
@@ -839,32 +823,18 @@ namespace NSDocxRenderer
                         pLastCont->m_pCont = pCont->m_pCont;
                         pLastCont->m_eVertAlignType = pCont->m_eVertAlignType;
                     }
+                    CollectDublicateLines(pCont);
                     continue;
                 }
             }
 
             // либо пробел большой между словами, либо новый текст левее, либо настройки не те (шрифт, кисть)
             // либо все вместе... просто добавл¤ем новое слово
-            pNewCont = pCont;
-            m_pCurrentLine->AddCont(new CContText(*pNewCont));
+            m_pCurrentLine->AddCont(new CContText(*pCont));
             m_dLastTextX = pCont->m_dLeft;
             m_dLastTextY = pCont->m_dBaselinePos;
             m_dLastTextX_block = m_dLastTextX;
-
-#if (USING_DELETE_DUPLICATING_CONTS == 0)
-            while (pNewCont->m_pDuplicateCont)
-            {
-                pNewCont = pNewCont->m_pDuplicateCont;
-
-                auto pDuplicateLine = m_pCurrentLine->m_pDuplicateLine;
-                pDuplicateLine->m_dBaselinePos = pNewCont->m_dBaselinePos;
-                pDuplicateLine->AddCont(new CContText(*pNewCont));
-
-                //Чтобы дубликат не попал дальше в работу
-                pNewCont->m_bIsNotNecessaryToUse = true;
-                m_pCurrentLine = pDuplicateLine;
-            }
-#endif
+            CollectDublicateLines(pCont);
         }
     }
 
@@ -883,23 +853,6 @@ namespace NSDocxRenderer
                 m_pCurrentLine->m_eVertAlignType = pCont->m_eVertAlignType;
             }
             m_arTextLine.push_back(pLine);
-
-#if (USING_DELETE_DUPLICATING_CONTS == 0)
-            auto pCurrCont = pCont;
-            auto pCurrLine = m_pCurrentLine;
-
-            while (pCurrCont->m_pDuplicateCont)
-            {
-                pCurrCont = pCurrCont->m_pDuplicateCont;
-
-                auto pLine = new CTextLine();
-                pLine->m_dBaselinePos = pCurrCont->m_dBaselinePos;
-                m_arTextLine.push_back(pLine);
-
-                pCurrLine->m_pDuplicateLine = pLine;
-                pCurrLine = pLine;
-            }
-#endif
             return;
         }
 
@@ -940,24 +893,16 @@ namespace NSDocxRenderer
             m_pCurrentLine->m_eVertAlignType = pCont->m_eVertAlignType;
         }
         m_arTextLine.push_back(pLine);
-
-#if (USING_DELETE_DUPLICATING_CONTS == 0)
-        auto pCurrCont = pCont;
-        auto pCurrLine = m_pCurrentLine;
-
-        while (pCurrCont->m_pDuplicateCont)
-        {
-            pCurrCont = pCurrCont->m_pDuplicateCont;
-
-            auto pLine = new CTextLine();
-            pLine->m_dBaselinePos = pCurrCont->m_dBaselinePos;
-            m_arTextLine.push_back(pLine);
-
-            pCurrLine->m_pDuplicateLine = pLine;
-            pCurrLine = pLine;
-        }
-#endif
         return;
+    }
+
+    void CPage::CollectDublicateLines(const CContText *pCont)
+    {
+        if (pCont->m_iNumDuplicates > 0)
+        {
+            //todo обработать случаи когда в одной строке разное количество разных символов-дубликатов
+            m_pCurrentLine->m_iNumDuplicates = std::max(m_pCurrentLine->m_iNumDuplicates, pCont->m_iNumDuplicates);
+        }
     }
 
     void CPage::MergeLinesByVertAlignType()
@@ -1185,6 +1130,8 @@ namespace NSDocxRenderer
 
         bool bIf1, bIf2, bIf3, bIf4, bIf5, bIf6, bIf7;
 
+        size_t nIndexForCheking = c_nAntiZero;
+
         for (size_t nIndex = 0; nIndex < m_arTextLine.size(); ++nIndex)
         {
             pCurrLine = m_arTextLine[nIndex];
@@ -1193,11 +1140,25 @@ namespace NSDocxRenderer
                 continue;
             }
 
-            pNextLine = GetNextTextLine(nIndex);
-
-            dCurrRight = pCurrLine->CalculateRightBorder(m_dWidth);
             dCurrBeforeSpacing = pCurrLine->CalculateBeforeSpacing(dPreviousStringOffset);
             dPreviousStringOffset = pCurrLine->CalculateStringOffset();
+
+            if (pCurrLine->m_iNumDuplicates > 0)
+            {
+                dBeforeSpacingWithShapes += dCurrBeforeSpacing + pCurrLine->m_dHeight;
+
+                auto iNumDuplicates = pCurrLine->m_iNumDuplicates;
+                CreateSingleLineShape(pCurrLine);
+                while (iNumDuplicates > 0)
+                {
+                    CreateSingleLineShape(pCurrLine);
+                    iNumDuplicates--;
+                }
+                continue;
+            }
+
+            dCurrRight = pCurrLine->CalculateRightBorder(m_dWidth);
+            pNextLine = GetNextTextLine(nIndex, &nIndexForCheking);
 
             //Это не последняя строка
             bIf1 = pNextLine ? true : false;
@@ -1297,7 +1258,7 @@ namespace NSDocxRenderer
                 //сдвигаем рабочую точку
                 nIndex++;
                 pCurrLine = pNextLine;
-                pNextLine = GetNextTextLine(nIndex);
+                pNextLine = GetNextTextLine(nIndex, &nIndexForCheking);
 
                 dCurrBeforeSpacing = pCurrLine->CalculateBeforeSpacing(dPreviousStringOffset);
                 dPreviousStringOffset = pCurrLine->CalculateStringOffset();
@@ -1341,7 +1302,7 @@ namespace NSDocxRenderer
                     //сдвигаем рабочую точку
                     nIndex++;
                     pCurrLine = pNextLine;
-                    pNextLine = GetNextTextLine(nIndex);
+                    pNextLine = GetNextTextLine(nIndex, &nIndexForCheking);
 
                     dCurrBeforeSpacing = pCurrLine->CalculateBeforeSpacing(dPreviousStringOffset);
                     dPreviousStringOffset = pCurrLine->CalculateStringOffset();
@@ -1387,19 +1348,35 @@ namespace NSDocxRenderer
 
                 CreateSingleLineParagraph(pCurrLine, &dCurrRight, &dCurrBeforeSpacing);
             }
+
+            if (nIndexForCheking != c_nAntiZero)
+            {
+                nIndex = nIndexForCheking - 1;
+                nIndexForCheking = c_nAntiZero;
+            }
         }
     }
 
-    CTextLine* CPage::GetNextTextLine(size_t& nCurrentIndex)
+    CTextLine* CPage::GetNextTextLine(size_t& nCurrentIndex, size_t* pIndexForCheking)
     {
         CTextLine* pLine = nullptr;
 
         for (size_t nIndex = nCurrentIndex + 1; nIndex < m_arTextLine.size(); nIndex++)
         {
             pLine = m_arTextLine[nIndex];
+            bool bIf1 = pLine->m_bIsNotNecessaryToUse;
+            bool bIf2 = pIndexForCheking && pLine->m_iNumDuplicates > 0;
 
-            if (pLine->m_bIsNotNecessaryToUse)
+            if (bIf1 || bIf2)
             {
+                if (bIf2)
+                {
+                    if (*pIndexForCheking == c_nAntiZero)
+                    {
+                        *pIndexForCheking = nIndex;
+                    }
+                }
+
                 nCurrentIndex++; //note изменяем входной индекс, чтобы не выбирать те же строки
                 pLine = nullptr;
                 continue;

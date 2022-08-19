@@ -24,9 +24,9 @@ namespace NSDocxRenderer
             eVertAlignType m_eVertAlignType {eVertAlignType::vatUnknown};
 
             const CShape* m_pDominantShape {nullptr};
-#if (USING_DELETE_DUPLICATING_CONTS == 0)
-            CTextLine* m_pDuplicateLine {nullptr};
-#endif
+
+            UINT m_iNumDuplicates {0};
+
         public:
             CTextLine();
             void Clear() override final;

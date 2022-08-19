@@ -1,8 +1,6 @@
 #pragma once
 #include "../DesktopEditor/common/Types.h"
 
-#define USING_DELETE_DUPLICATING_CONTS 0 // 0 - все сточки-дубликаты превращаются в shape, 1 - строчки дубликаты удаляются
-
 const double c_dDpiX		= 72.0;
 const double c_dDpiY		= 72.0;
 
@@ -39,6 +37,7 @@ const double c_dSTANDART_RIGHT_INDENT_MM = 15;
 const double c_dSTANDART_FIRSTLINE_INDENT_MM = 12.5;
 
 const UINT   c_iStartingIdForImages = 6;
+constexpr size_t c_nAntiZero = ~0;
 
 const double c_dRightBorderCorrectionSize[][4] =
 {

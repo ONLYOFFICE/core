@@ -99,8 +99,10 @@ namespace NSDocxRenderer
         //набивается содержимым вектор m_arTextLine
         void AnalyzeLines();
         void BuildLines();
+        void CollectDublicateLines(const CContText *pCont);
         void MergeLinesByVertAlignType();
         void DetermineDominantGraphics();
+
 
         void BuildByType();
         void BuildByTypeBlockChar();
@@ -124,6 +126,6 @@ namespace NSDocxRenderer
         bool IsShadingPresent(const CTextLine* pLine1, const CTextLine* pLine2);
 
     private:
-        CTextLine* GetNextTextLine(size_t& nCurrentIndex);
+        CTextLine* GetNextTextLine(size_t& nCurrentIndex, size_t* pIndexForCheking = nullptr);
     };
 }

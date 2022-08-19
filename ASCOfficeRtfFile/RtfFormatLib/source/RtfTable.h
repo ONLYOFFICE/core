@@ -79,7 +79,10 @@ public:
 		
 		for (size_t i = 0; i < (int)m_aTableGrid.size(); i++ )
 		{
-            sResult += L"<w:gridCol w:w=\"" + std::to_wstring(m_aTableGrid[i]) + L"\"/>";
+			if (m_aTableGrid[i] > 0)
+				sResult += L"<w:gridCol w:w=\"" + std::to_wstring(m_aTableGrid[i]) + L"\"/>";
+			else
+				sResult += L"<w:gridCol/>";
 		}
 		sResult += L"</w:tblGrid>";	
 

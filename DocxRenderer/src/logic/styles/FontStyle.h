@@ -23,6 +23,7 @@ namespace NSDocxRenderer
             ~CFontStyle(){}
 
             CFontStyle& operator=(const CFontStyle& oSrc);
+            void CopyFormat(const CFontStyle& oSrc);
 
             void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
 

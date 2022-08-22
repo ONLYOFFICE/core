@@ -336,7 +336,6 @@ namespace NSDocxRenderer
 
         pCont->m_dLeft = dTextX;
         pCont->m_dBaselinePos = dBaseLinePos;
-        pCont->m_dBaselineOffset = m_oFontManager.m_oFont.m_dBaselineOffset;
         pCont->m_dLastX = dTextX;
 
         pCont->m_dTop       = dBaseLinePos - dTextH - m_oFontManager.m_oFont.m_dBaselineOffset;
@@ -369,6 +368,7 @@ namespace NSDocxRenderer
         RemoveSubstratesUnderPictures();
         CorrelateContWithShape();
         DetermineLinesType();
+        DetermineDisplayBehindDocument();
     }
 
     void CPage::RemoveSubstratesUnderPictures()
@@ -517,6 +517,22 @@ namespace NSDocxRenderer
         }
     }
 
+    void CPage::DetermineDisplayBehindDocument()
+    {
+        for (auto &pShape : m_arShapes)
+        {
+            if (pShape->m_bIsNotNecessaryToUse || !pShape->m_pCont)
+            {
+                continue;
+            }
+
+            if (!pShape->m_bIsNoFill && pShape->m_bIsNoStroke)
+            {
+                pShape->m_bIsBehindDoc = true;
+            }
+        }
+    }
+
     void CPage::AnalyzeCollectedSymbols()
     {
         for (size_t i = 0; i < m_arSymbol.size(); i++)
@@ -589,10 +605,12 @@ namespace NSDocxRenderer
                 eVerticalCrossingType eVType = pCont->GetVerticalCrossingType(pShape);
                 eHorizontalCrossingType eHType = pCont->GetHorizontalCrossingType(pShape);
 
-                if (pShape->m_eGraphicsType != eGraphicsType::gtComplicatedFigure &&
-                    (IsLineCrossingText(pShape, pCont, eHType) ||
-                     IsLineBelowText(pShape, pCont, eHType) ||
-                     IsItHighlightingBackground(pShape, pCont, eHType)))
+                bool bIf1 = pShape->m_eGraphicsType != eGraphicsType::gtComplicatedFigure;
+                bool bIf2 = IsLineCrossingText(pShape, pCont, eHType);
+                bool bIf3 = IsLineBelowText(pShape, pCont, eHType);
+                bool bIf4 = IsItHighlightingBackground(pShape, pCont, eHType);
+
+                if (bIf1 && (bIf2 || bIf3 || bIf4))
                 {
                     pShape->m_bIsNotNecessaryToUse = true;
                 }
@@ -607,7 +625,7 @@ namespace NSDocxRenderer
                     pCont->m_bIsShadowPresent = true;
                     pCont->m_bIsOutlinePresent = true;
 
-                    *m_pStyleManager->m_pCurrentStyle = *pCont->m_pFontStyle;
+                    m_pStyleManager->m_pCurrentStyle->CopyFormat(*pCont->m_pFontStyle);
                     m_pStyleManager->m_pCurrentStyle->m_oBrush.Color1 = pShape->m_oPen.Color;
                     pCont->m_pFontStyle = m_pStyleManager->GetStyle();
 
@@ -693,8 +711,10 @@ namespace NSDocxRenderer
         //Цвета должны быть разными
         bool bIf4 = pCont->m_pFontStyle->m_oBrush.Color1 != pShape->m_oBrush.Color1;
         bool bIf5 = pShape->m_oBrush.Color1 == c_iBlackColor && pShape->m_oPen.Color == c_iWhiteColor;
+        bool bIf6 = pShape->m_bIsNoFill == false;
+        bool bIf7 = pShape->m_bIsNoStroke == true;
 
-        if (bIf1 && bIf2 && bIf3 && bIf4 && !bIf5)
+        if (bIf1 && bIf2 && bIf3 && bIf4 && !bIf5 && bIf6 && bIf7)
         {
             //Удовлетворяет расположением и размером - привязываем указатель на картинку
             pCont->m_pShape = pShape;
@@ -936,7 +956,7 @@ namespace NSDocxRenderer
                         if (pCont->m_pCont)
                         {
                             //pCont->m_pFontStyle->m_oFont.Size = pCont->m_pCont->m_pFontStyle->m_oFont.Size;
-                            *m_pStyleManager->m_pCurrentStyle = *pCont->m_pFontStyle;
+                            m_pStyleManager->m_pCurrentStyle->CopyFormat(*pCont->m_pFontStyle);
                             m_pStyleManager->m_pCurrentStyle->m_oFont.Size = pCont->m_pCont->m_pFontStyle->m_oFont.Size;
                             pCont->m_pFontStyle = m_pStyleManager->GetStyle();
                         }
@@ -960,7 +980,7 @@ namespace NSDocxRenderer
                         if (pCont->m_pCont)
                         {
                             //pCont->m_pFontStyle->m_oFont.Size = pCont->m_pCont->m_pFontStyle->m_oFont.Size;
-                            *m_pStyleManager->m_pCurrentStyle = *pCont->m_pFontStyle;
+                            m_pStyleManager->m_pCurrentStyle->CopyFormat(*pCont->m_pFontStyle);
                             m_pStyleManager->m_pCurrentStyle->m_oFont.Size = pCont->m_pCont->m_pFontStyle->m_oFont.Size;
                             pCont->m_pFontStyle = m_pStyleManager->GetStyle();
                         }
@@ -1040,7 +1060,7 @@ namespace NSDocxRenderer
             pParagraph->m_eTextConversionType = CParagraph::tctTextToFrame;
 
             pParagraph->m_dLeft = pLine->m_dLeft;
-            pParagraph->m_dTop	= pLine->m_dBaselinePos - pLine->m_dHeight - pLine->m_dBaselineOffset;
+            pParagraph->m_dTop	= pLine->m_dBaselinePos - pLine->m_dHeight;
 
             pParagraph->m_arLines.push_back(pLine);
 
@@ -1056,7 +1076,7 @@ namespace NSDocxRenderer
         pParagraph->m_eTextConversionType = CParagraph::tctTextToFrame;
 
         pParagraph->m_dLeft	= pFirstLine->m_dLeft;
-        pParagraph->m_dTop	= pFirstLine->m_dBaselinePos - pFirstLine->m_dHeight - pFirstLine->m_dBaselineOffset;
+        pParagraph->m_dTop	= pFirstLine->m_dBaselinePos - pFirstLine->m_dHeight;
         double dCurrentTop = pParagraph->m_dTop;
 
         pParagraph->m_arLines.push_back(pFirstLine);
@@ -1074,7 +1094,7 @@ namespace NSDocxRenderer
                     ((pTextLine->m_dLeft != pFirstLine->m_dLeft) && (pTextLine->m_dBaselinePos != pFirstLine->m_dBaselinePos)))
             {
                 pParagraph->m_dLeft	= pTextLine->m_dLeft;
-                pParagraph->m_dTop	= pTextLine->m_dBaselinePos - pTextLine->m_dHeight - pTextLine->m_dBaselineOffset;
+                pParagraph->m_dTop	= pTextLine->m_dBaselinePos - pTextLine->m_dHeight;
                 dCurrentTop = pParagraph->m_dTop;
             }
             else
@@ -1094,11 +1114,11 @@ namespace NSDocxRenderer
     {
         Merge(c_dSTANDART_STRING_HEIGHT_MM / 3);
 
-        double dPreviousStringOffset = 0;
+        double dPreviousStringBaseline = 0;
         for (const auto &pLine : m_arTextLine)
         {
-            double dBeforeSpacing = pLine->CalculateBeforeSpacing(dPreviousStringOffset);
-            dPreviousStringOffset = pLine->CalculateStringOffset();
+            double dBeforeSpacing = pLine->CalculateBeforeSpacing(dPreviousStringBaseline);
+            dPreviousStringBaseline = pLine->m_dBaselinePos;
             double dRight = pLine->CalculateRightBorder(m_dWidth);
 
             CreateSingleLineParagraph(pLine, &dRight, &dBeforeSpacing);
@@ -1125,7 +1145,8 @@ namespace NSDocxRenderer
         double dCurrRight = 0, dNextRight = 0;
         double dCurrBeforeSpacing = 0, dNextBeforeSpacing = 0;
         double dBeforeSpacingWithShapes = 0;
-        double dPreviousStringOffset = 0;
+        //note Все параграфы были сдвинуты на данное значение от верхнего края страницы
+        double dPreviousStringBaseline = c_dCORRECTION_FOR_FIRST_PARAGRAPH;
         eVerticalCrossingType eCrossingType;
 
         bool bIf1, bIf2, bIf3, bIf4, bIf5, bIf6, bIf7;
@@ -1140,8 +1161,8 @@ namespace NSDocxRenderer
                 continue;
             }
 
-            dCurrBeforeSpacing = pCurrLine->CalculateBeforeSpacing(dPreviousStringOffset);
-            dPreviousStringOffset = pCurrLine->CalculateStringOffset();
+            dCurrBeforeSpacing = pCurrLine->CalculateBeforeSpacing(dPreviousStringBaseline);
+            dPreviousStringBaseline = pCurrLine->m_dBaselinePos;
 
             if (pCurrLine->m_iNumDuplicates > 0)
             {
@@ -1166,7 +1187,7 @@ namespace NSDocxRenderer
             if (bIf1)
             {
                 dNextRight = pNextLine->CalculateRightBorder(m_dWidth);
-                dNextBeforeSpacing = pNextLine->CalculateBeforeSpacing(dPreviousStringOffset);
+                dNextBeforeSpacing = pNextLine->CalculateBeforeSpacing(dPreviousStringBaseline);
 
                 eCrossingType = pCurrLine->GetVerticalCrossingType(pNextLine);
                 bool bIsPassed = false;
@@ -1177,7 +1198,7 @@ namespace NSDocxRenderer
                 case eVerticalCrossingType::vctCurrentInsideNext:
                 case eVerticalCrossingType::vctCurrentAboveNext:
                     dCurrentAdditive = dCurrBeforeSpacing + pCurrLine->m_dHeight + pNextLine->m_dBaselinePos - pCurrLine->m_dBaselinePos;
-                    dPreviousStringOffset = pNextLine->CalculateStringOffset();
+                    dPreviousStringBaseline = pNextLine->m_dBaselinePos;
                     bIsPassed = true;
                     break;
                 case eVerticalCrossingType::vctCurrentOutsideNext:
@@ -1233,7 +1254,7 @@ namespace NSDocxRenderer
                 pParagraph->m_dLeft = std::min(pCurrLine->m_dLeft, pNextLine->m_dLeft);
                 pParagraph->m_dWidth = std::max(pCurrLine->m_dWidth + pCurrLine->m_arConts.back()->m_dSpaceWidthMM,
                                                 pNextLine->m_dWidth + pNextLine->m_arConts.back()->m_dSpaceWidthMM);
-                pParagraph->m_dTop	= pCurrLine->m_dBaselinePos - pCurrLine->m_dHeight - pCurrLine->m_dBaselineOffset;
+                pParagraph->m_dTop	= pCurrLine->m_dBaselinePos - pCurrLine->m_dHeight;
                 pParagraph->m_dBaselinePos = pCurrLine->m_dBaselinePos;
 
                 if (fabs(dCurrRight - dNextRight) <= c_dERROR_OF_RIGHT_BORDERS_MM) //предположение
@@ -1260,8 +1281,8 @@ namespace NSDocxRenderer
                 pCurrLine = pNextLine;
                 pNextLine = GetNextTextLine(nIndex, &nIndexForCheking);
 
-                dCurrBeforeSpacing = pCurrLine->CalculateBeforeSpacing(dPreviousStringOffset);
-                dPreviousStringOffset = pCurrLine->CalculateStringOffset();
+                dCurrBeforeSpacing = pCurrLine->CalculateBeforeSpacing(dPreviousStringBaseline);
+                dPreviousStringBaseline = pCurrLine->m_dBaselinePos;
                 double dCorrectionBeforeSpacing = dCurrBeforeSpacing;
 
                 double dPrevRight = dCurrRight;
@@ -1269,7 +1290,7 @@ namespace NSDocxRenderer
 
                 if (pNextLine)
                 {
-                    dNextBeforeSpacing = pNextLine->CalculateBeforeSpacing(dPreviousStringOffset);
+                    dNextBeforeSpacing = pNextLine->CalculateBeforeSpacing(dPreviousStringBaseline);
                     dNextRight = pNextLine->CalculateRightBorder(m_dWidth);
                     eCrossingType = pCurrLine->GetVerticalCrossingType(pNextLine);
                 }
@@ -1304,8 +1325,8 @@ namespace NSDocxRenderer
                     pCurrLine = pNextLine;
                     pNextLine = GetNextTextLine(nIndex, &nIndexForCheking);
 
-                    dCurrBeforeSpacing = pCurrLine->CalculateBeforeSpacing(dPreviousStringOffset);
-                    dPreviousStringOffset = pCurrLine->CalculateStringOffset();
+                    dCurrBeforeSpacing = pCurrLine->CalculateBeforeSpacing(dPreviousStringBaseline);
+                    dPreviousStringBaseline = pCurrLine->m_dBaselinePos;
                     dCorrectionBeforeSpacing = (dCorrectionBeforeSpacing + dCurrBeforeSpacing)/2; //наверное лучше так... текст может быть уже, чем в оригинале
 
                     dPrevRight = dCurrRight;
@@ -1313,7 +1334,7 @@ namespace NSDocxRenderer
 
                     if (pNextLine)
                     {
-                        dNextBeforeSpacing = pNextLine->CalculateBeforeSpacing(dPreviousStringOffset);
+                        dNextBeforeSpacing = pNextLine->CalculateBeforeSpacing(dPreviousStringBaseline);
                         dNextRight = pNextLine->CalculateRightBorder(m_dWidth);
                         eCrossingType = pCurrLine->GetVerticalCrossingType(pNextLine);
                     }
@@ -1452,7 +1473,7 @@ namespace NSDocxRenderer
 
         //todo В итоге Left и Top смещаются на несколько мм. не использовать margin-left и margin-top.
         pShape->m_dLeft	= pLine->m_dLeft - COldShape::POSITION_CORRECTION_FOR_X_MM; //подобранная константа
-        pShape->m_dTop	= pLine->m_dBaselinePos - pLine->m_dHeight - pLine->m_dBaselineOffset - COldShape::POSITION_CORRECTION_FOR_Y_MM;//подобранная константа
+        pShape->m_dTop	= pLine->m_dBaselinePos - pLine->m_dHeight - COldShape::POSITION_CORRECTION_FOR_Y_MM;//подобранная константа
         pShape->m_dWidth = pLine->m_dWidth + COldShape::SIZE_CORRECTION_FOR_X_MM; //5мм мало для длинной строки
         pShape->m_dHeight = pLine->m_dHeight + COldShape::SIZE_CORRECTION_FOR_Y_MM;
 

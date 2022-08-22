@@ -79,9 +79,12 @@ namespace NSDocxRenderer
                 oWriter.WriteString(L"\"");
             }
 
-            oWriter.WriteString(L" w:line=\"");
-            oWriter.AddInt(static_cast<int>(m_dHeight * c_dMMToDx));
-            oWriter.WriteString(L"\" w:lineRule=\"exact\""); // exact - точный размер строки
+            if (m_dHeight > 0)
+            {
+                oWriter.WriteString(L" w:line=\"");
+                oWriter.AddInt(static_cast<int>(m_dHeight * c_dMMToDx));
+                oWriter.WriteString(L"\" w:lineRule=\"exact\""); // exact - точный размер строки
+            }
 
             oWriter.WriteString(L"/>"); //конец w:spacing
 

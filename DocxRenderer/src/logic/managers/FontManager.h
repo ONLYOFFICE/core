@@ -88,7 +88,7 @@ namespace NSDocxRenderer
             double GetSpaceWidth();
 
         public:
-            void LoadFont(std::wstring& strFontName, LONG& lStyle, double& dSize, const bool& bIsGID);
+            void LoadFont(std::wstring& strFontName, LONG& lStyle, const double &dSize, const bool& bIsGID);
 
             double MeasureStringWidth(const std::wstring& sText);
     };

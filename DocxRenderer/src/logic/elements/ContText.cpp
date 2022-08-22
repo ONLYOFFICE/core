@@ -46,14 +46,13 @@ namespace NSDocxRenderer
 
         LONG lCalculatedSpacing = 0;
 
-        if (!m_pFontStyle->m_strPickFontName.empty())
+        if (!m_pFontStyle->m_strPickFontName.empty() && !m_oText.empty())
         {
             if (m_eVertAlignType != eVertAlignType::vatSubscript &&
                 m_eVertAlignType != eVertAlignType::vatSuperscript)
             {
                 // нужно перемерять...
-                double ___dSize = (double)(static_cast<LONG>(m_pFontStyle->m_oFont.Size * 2)) / 2;
-                m_pManagerLight->LoadFont(m_pFontStyle->m_strPickFontName, m_pFontStyle->m_lPickFontStyle, ___dSize, false);
+                m_pManagerLight->LoadFont(m_pFontStyle->m_strPickFontName, m_pFontStyle->m_lPickFontStyle, m_pFontStyle->m_oFont.Size, false);
                 double dWidth = m_pManagerLight->MeasureStringWidth(m_oText.ToStdWString());
 
                 double dSpacing = (m_dWidth - dWidth) / (m_oText.length());

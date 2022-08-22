@@ -41,7 +41,6 @@ namespace NSDocxRenderer
 
             NSStringUtils::CStringUTF32 m_oText;
 
-            double m_dBaselineOffset {0};
             double m_dLastX {0};
             double m_dSpaceWidthMM {0};
             bool   m_bSpaceIsNotNeeded {false};

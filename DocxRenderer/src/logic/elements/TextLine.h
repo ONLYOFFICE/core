@@ -17,8 +17,6 @@ namespace NSDocxRenderer
 
             std::vector<CContText*> m_arConts;
 
-            double m_dBaselineOffset {0.0};
-
             AssumedTextAlignmentType m_eAlignmentType {atatUnknown};
 
             eVertAlignType m_eVertAlignType {eVertAlignType::vatUnknown};
@@ -54,8 +52,7 @@ namespace NSDocxRenderer
             void SetVertAlignType(const eVertAlignType& oType);
 
             //Вычисляем
-            double CalculateBeforeSpacing(double dPreviousStringOffset);
-            double CalculateStringOffset();
+            double CalculateBeforeSpacing(double dPreviousStringBaseline);
             double CalculateRightBorder(const double& dPageWidth);
             double RightBorderCorrection();
     };

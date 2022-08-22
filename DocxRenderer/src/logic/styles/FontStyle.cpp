@@ -38,6 +38,22 @@ namespace NSDocxRenderer
         return *this;
     }
 
+    void CFontStyle::CopyFormat(const CFontStyle& oSrc)
+    {
+        if (this == &oSrc)
+        {
+            return;
+        }
+
+        CBaseStyle::operator=(oSrc);
+
+        m_oFont		= oSrc.m_oFont;
+        m_oBrush	= oSrc.m_oBrush;
+
+        m_strPickFontName	= oSrc.m_strPickFontName;
+        m_lPickFontStyle	= oSrc.m_lPickFontStyle;
+    }
+
     bool CFontStyle::IsEqual(std::shared_ptr<CFontStyle> oSrc)
     {
         //note Бывают fonts только с разными path => новый стиль => m_oFont.IsEqual не берем

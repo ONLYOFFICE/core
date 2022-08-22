@@ -863,6 +863,7 @@ namespace NSDocxRenderer
         else
         {
             oWriter.WriteString(L"<a:ln w=\"");
+            //todo Некоторые m_oPen.Size приходят увеличенными в 10 раз
             oWriter.AddInt(static_cast<int>(m_oPen.Size * c_dMMToEMU)); //note можно писать в мм
             oWriter.WriteString(L"\">");
 

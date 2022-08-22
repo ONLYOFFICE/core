@@ -233,7 +233,7 @@ namespace NSDocxRenderer
         return m_dSpaceWidth;
     }
 
-    void CFontManagerLight::LoadFont(std::wstring& strFontName, LONG& lStyle, double& dSize, const bool& bIsGID)
+    void CFontManagerLight::LoadFont(std::wstring& strFontName, LONG& lStyle, const double& dSize, const bool& bIsGID)
     {
         if ((strFontName == m_strFontName) && (lStyle == m_lFontStyle) && (dSize == m_dSize))
         {

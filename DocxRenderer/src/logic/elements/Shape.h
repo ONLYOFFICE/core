@@ -38,7 +38,7 @@ namespace NSDocxRenderer
 
             bool m_bIsNoFill {true};
             bool m_bIsNoStroke {true};
-            bool m_bIsBehindDoc {true};
+            bool m_bIsBehindDoc {false};
 
             eGraphicsType   m_eGraphicsType {eGraphicsType::gtUnknown};
             eSimpleLineType m_eSimpleLineType {eSimpleLineType::sltUnknown};

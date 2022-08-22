@@ -21,8 +21,6 @@ namespace NSDocxRenderer
 
     void CTextLine::AddCont(CContText *pCont)
     {
-        m_dBaselineOffset = fabs(m_dBaselineOffset) > fabs(pCont->m_dBaselineOffset) ? m_dBaselineOffset : pCont->m_dBaselineOffset;
-
         m_dBaselinePos = std::max(m_dBaselinePos, pCont->m_dBaselinePos);
 
         if ( ( pCont->m_dLeft > 0 ) && ( ( m_dLeft == 0 ) || ( pCont->m_dLeft < m_dLeft ) ) )
@@ -229,14 +227,9 @@ namespace NSDocxRenderer
         }
     }
 
-    double CTextLine::CalculateBeforeSpacing(double dPreviousStringOffset)
+    double CTextLine::CalculateBeforeSpacing(double dPreviousStringBaseline)
     {
-        return m_dBaselinePos - dPreviousStringOffset - m_dHeight - m_dBaselineOffset;
-    }
-
-    double CTextLine::CalculateStringOffset()
-    {
-        return m_dBaselinePos - m_dBaselineOffset;
+        return m_dBaselinePos - dPreviousStringBaseline - m_dHeight;
     }
 
     double CTextLine::CalculateRightBorder(const double& dPageWidth)

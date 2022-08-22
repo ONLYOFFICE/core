@@ -137,7 +137,7 @@ bool CJSValueJSCTemplate<T>::isArray()
 template<typename T>
 bool CJSValueJSCTemplate<T>::isTypedArray()
 {
-    return (value == nil) ? false : (kJSTypedArrayTypeNone == JSValueGetTypedArrayType(getContext().JSGlobalContextRef, value.JSValueRef, NULL));
+    return (value == nil) ? false : (kJSTypedArrayTypeNone != JSValueGetTypedArrayType(getContext().JSGlobalContextRef, value.JSValueRef, NULL));
 }
 template<typename T>
 bool CJSValueJSCTemplate<T>::isObject()
@@ -430,9 +430,11 @@ namespace NSJSBase
         if (exc == nil || [exc isNull] || [exc isUndefined])
             return false;
 
-        NSString* pExсeption = [[context exception] toString];
+        NSString* pExсeption = [exc toString];
         std::cerr << [pExсeption stdstring] << std::endl;
         NSLog(@"%@", pExсeption);
+
+        exc = nil;
         return true;
     }
 }

@@ -23,6 +23,8 @@ public:
     void setRight(RedBlackTree::PIRBNode pNode) override;
     std::streamsize getSize() const override {return size;}
     void setSize(std::streamsize value) override {size = value;}
+    int getStateBits() const override {return stateBits;}
+    void setStateBits(int value) override {stateBits = value;}
 
     inline void setColor(RedBlackTree::Color clr) override {stgColor = (StgColor)clr;}
     inline RedBlackTree::Color getColor()const override {return (RedBlackTree::Color)stgColor;}
@@ -82,8 +84,8 @@ public:
     int rightSibling = NOSTREAM;
     int child = NOSTREAM;
     int stateBits;
-    static std::shared_ptr<IDirectoryEntry> New(std::wstring name, StgType stgType, SVector<IDirectoryEntry> dirRepository);
-    static std::shared_ptr<IDirectoryEntry> TryNew(std::wstring name, StgType stgType, SVector<IDirectoryEntry> dirRepository);
+    static std::shared_ptr<IDirectoryEntry> New(std::wstring name, StgType stgType, SVector<IDirectoryEntry>& dirRepository);
+    static std::shared_ptr<IDirectoryEntry> TryNew(std::wstring name, StgType stgType, SVector<IDirectoryEntry> &dirRepository);
     static std::shared_ptr<IDirectoryEntry> Mock(std::wstring name, StgType stgType);
 
 private:

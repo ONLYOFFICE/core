@@ -53,7 +53,7 @@ public:
     static std::shared_ptr<RedBlackTree::RBTree> CreateNewTree();
     std::shared_ptr<RedBlackTree::RBTree> GetChildrenTree(int sid);
     bool IsClosed()const;
-    SVector<DirectoryEntry> GetDirectories();
+    SVector<IDirectoryEntry> &GetDirectories();
     void ResetDirectoryEntry(int sid);
     void InvalidateDirectoryEntry(int sid);
     void FreeAssociatedData(int sid);
@@ -148,7 +148,7 @@ private:
     bool validationExceptionEnabled = true;
     bool _disposed;//false
     CFSUpdateMode updateMode;
-    SVector<DirectoryEntry> directoryEntries;
+    SVector<IDirectoryEntry> directoryEntries;
     std::list<int> levelSIDs;
     std::mutex lockObject;
 

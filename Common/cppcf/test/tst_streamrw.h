@@ -18,7 +18,7 @@ struct StreamRWTest : testing::Test
     const int integer = 13;
 
     StreamRWTest() :
-        filename("../../../data/types/types.bin"),
+        filename("../../../data/types.bin"),
         stream(OpenFileStream(filename, true)),
         rw(new StreamRW(stream))
     {

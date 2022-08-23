@@ -43,6 +43,9 @@ public:
     virtual void setRightSibling(int value) = 0;
     virtual std::streamsize getSize() const = 0;
     virtual void setSize(std::streamsize value) = 0;
+    virtual int getStateBits() const = 0;
+    virtual void setStateBits(int value) = 0;
+
 
     virtual UINT64 getCreationDate() const = 0;
     virtual void setCreationDate(const UINT64& value) = 0;

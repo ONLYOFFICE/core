@@ -267,9 +267,9 @@ ULONG64 DirectoryEntry::fnv_hash(const char *buffer, int lenght)
     return h;
 }
 
-std::shared_ptr<IDirectoryEntry> DirectoryEntry::New(std::wstring name, StgType stgType, SVector<IDirectoryEntry> dirRepository)
+std::shared_ptr<IDirectoryEntry> DirectoryEntry::New(std::wstring name, StgType stgType, SVector<IDirectoryEntry>& dirRepository)
 {
-    std::shared_ptr<DirectoryEntry> de;
+    std::shared_ptr<IDirectoryEntry> de;
     if (/*dirRepository != null*/true)
     {
         de.reset(new DirectoryEntry(name, stgType, dirRepository));
@@ -283,7 +283,7 @@ std::shared_ptr<IDirectoryEntry> DirectoryEntry::New(std::wstring name, StgType 
     return de;
 }
 
-std::shared_ptr<IDirectoryEntry> DirectoryEntry::TryNew(std::wstring name, StgType stgType, SVector<IDirectoryEntry> dirRepository)
+std::shared_ptr<IDirectoryEntry> DirectoryEntry::TryNew(std::wstring name, StgType stgType, SVector<IDirectoryEntry>& dirRepository)
 {
     std::shared_ptr<DirectoryEntry> de(new DirectoryEntry(name, stgType, dirRepository));
 

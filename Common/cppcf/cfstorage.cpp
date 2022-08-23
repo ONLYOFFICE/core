@@ -38,7 +38,7 @@ std::shared_ptr<CFStream> CFStorage::AddStream(const std::wstring& streamName)
 
 
 
-    std::shared_ptr<IDirectoryEntry> dirEntry = DirectoryEntry::TryNew(streamName, StgType::StgStream, compoundFile->GetDirectories().cast<IDirectoryEntry>());
+    std::shared_ptr<IDirectoryEntry> dirEntry = DirectoryEntry::TryNew(streamName, StgType::StgStream, compoundFile->GetDirectories());
 
     try
     {
@@ -175,7 +175,7 @@ std::shared_ptr<CFStorage> CFStorage::AddStorage(const std::wstring &storageName
 
     // Add new Storage directory entry
     std::shared_ptr<IDirectoryEntry> cfo
-            = DirectoryEntry::New(storageName, StgType::StgStorage, compoundFile->GetDirectories().cast<IDirectoryEntry>());
+            = DirectoryEntry::New(storageName, StgType::StgStorage, compoundFile->GetDirectories());
 
     //this.CompoundFile.InsertNewDirectoryEntry(cfo);
 

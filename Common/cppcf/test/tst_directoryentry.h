@@ -4,7 +4,6 @@
 #include <gmock/gmock-matchers.h>
 #include "directoryentry.h"
 #include "../../DesktopEditor/common/File.h"
-#include "../../DesktopEditor/common/Path.h"
 
 using namespace testing;
 using namespace std;

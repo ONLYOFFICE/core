@@ -48,7 +48,7 @@ CompoundFile::CompoundFile(CFSVersion cfsVersion, CFSConfiguration configFlags) 
     FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
 
     //Root --
-    std::shared_ptr<IDirectoryEntry> rootDir = DirectoryEntry::New(L"Root Entry", StgType::StgRoot, directoryEntries.cast<IDirectoryEntry>());
+    std::shared_ptr<IDirectoryEntry> rootDir = DirectoryEntry::New(L"Root Entry", StgType::StgRoot, directoryEntries);
     rootDir->setStgColor(StgColor::Black);
     //InsertNewDirectoryEntry(rootDir);
 
@@ -618,7 +618,7 @@ void CompoundFile::CommitDirectory()
     while (delta % (GetSectorSize() / DIRECTORY_SIZE) != 0)
     {
         std::shared_ptr<IDirectoryEntry> dummy =
-                DirectoryEntry::New(L"", StgType::StgInvalid, directoryEntries.cast<IDirectoryEntry>());
+                DirectoryEntry::New(L"", StgType::StgInvalid, directoryEntries);
         dummy->Write(sv->stream);
         delta++;
     }
@@ -803,16 +803,16 @@ void CompoundFile::LoadDirectories()
         header->firstDirectorySectorID = directoryChain[0]->id;
 
     SList<Sector> zeroQueue;
-    StreamView dirReader(directoryChain, GetSectorSize(), directoryChain.size() * GetSectorSize(), zeroQueue, sourceStream);
+    const auto sectorSize = GetSectorSize();
+    Stream dirReader(new StreamView(directoryChain, sectorSize, directoryChain.size() * sectorSize, zeroQueue, sourceStream));
 
 
-    while (dirReader.position < (std::streamsize)directoryChain.size() * GetSectorSize())
+    while (dirReader->tell() < (std::streamsize)directoryChain.size() * sectorSize)
     {
-        std::shared_ptr<IDirectoryEntry> de
-                = DirectoryEntry::New(L"", StgType::StgInvalid, directoryEntries.cast<IDirectoryEntry>());
+        std::shared_ptr<IDirectoryEntry> de(DirectoryEntry::New(L"", StgType::StgInvalid, directoryEntries));
 
         //We are not inserting dirs. Do not use 'InsertNewDirectoryEntry'
-        de->Read(dirReader.stream, getVersion());
+        de->Read(dirReader, getVersion());
 
     }
 }
@@ -1251,7 +1251,7 @@ CFSVersion CompoundFile::getVersion() const
     return (CFSVersion)header->majorVersion;
 }
 
-SVector<DirectoryEntry> CompoundFile::GetDirectories()
+SVector<IDirectoryEntry>& CompoundFile::GetDirectories()
 {
     return directoryEntries;
 }
@@ -1266,7 +1266,7 @@ void CompoundFile::ResetDirectoryEntry(int sid)
     directoryEntries[sid]->setStartSetc(DirectoryEntry::ZERO);
     directoryEntries[sid]->setStorageCLSID(GUID());
     directoryEntries[sid]->setSize(0);
-    directoryEntries[sid]->stateBits = 0;
+    directoryEntries[sid]->setStateBits(0);
     directoryEntries[sid]->setColor(RedBlackTree::RED);
     directoryEntries[sid]->setCreationDate(0);
     directoryEntries[sid]->setModifyDate(0);
@@ -1283,18 +1283,18 @@ void CompoundFile::InvalidateDirectoryEntry(int sid)
 void CompoundFile::FreeAssociatedData(int sid)
 {
     // Clear the associated stream (or ministream) if required
-    if (directoryEntries[sid]->size > 0) //thanks to Mark Bosold for this !
+    if (directoryEntries[sid]->getSize() > 0) //thanks to Mark Bosold for this !
     {
-        if (directoryEntries[sid]->size < header->minSizeStandardStream)
+        if (directoryEntries[sid]->getSize() < header->minSizeStandardStream)
         {
             SVector<Sector> miniChain
-                    = GetSectorChain(directoryEntries[sid]->startSetc, SectorType::Mini);
+                    = GetSectorChain(directoryEntries[sid]->getStartSetc(), SectorType::Mini);
             FreeMiniChain(miniChain, eraseFreeSectors);
         }
         else
         {
             SVector<Sector> chain
-                    = GetSectorChain(directoryEntries[sid]->startSetc, SectorType::Normal);
+                    = GetSectorChain(directoryEntries[sid]->getStartSetc(), SectorType::Normal);
             FreeChain(chain, eraseFreeSectors);
         }
     }

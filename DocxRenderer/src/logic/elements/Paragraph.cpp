@@ -1,6 +1,5 @@
-#include "ElementParagraph.h"
+#include "Paragraph.h"
 #include "src/resources/ColorTable.h"
-#include "src/resources/SingletonTemplate.h"
 #include "src/resources/utils.h"
 
 namespace NSDocxRenderer
@@ -10,12 +9,6 @@ namespace NSDocxRenderer
     {
     }
 
-    CParagraph::CParagraph(const CParagraph& oSrc):
-        CBaseItem(ElemType::etParagraph)
-    {
-        *this = oSrc;
-    }
-
     CParagraph::~CParagraph()
     {
         Clear();
@@ -23,46 +16,7 @@ namespace NSDocxRenderer
 
     void CParagraph::Clear()
     {
-        for (auto pLine : m_arLines)
-        {
-            pLine->Clear();
-        }
         m_arLines.clear();
-    }
-
-    CParagraph& CParagraph::operator=(const CParagraph& oSrc)
-    {
-        if (this == &oSrc)
-        {
-            return *this;
-        }
-
-        Clear();
-
-        CBaseItem::operator=(oSrc);
-
-        m_eTextConversionType	 = oSrc.m_eTextConversionType;
-        m_bIsNeedFirstLineIndent = oSrc.m_bIsNeedFirstLineIndent;
-        m_bIsAroundTextWrapping  = oSrc.m_bIsAroundTextWrapping;
-        m_bIsShadingPresent      = oSrc.m_bIsShadingPresent;
-        m_lColorOfShadingFill    = oSrc.m_lColorOfShadingFill;
-        m_eTextAlignmentType     = oSrc.m_eTextAlignmentType;
-
-        m_dFirstLine = oSrc.m_dFirstLine;
-
-        m_dSpaceBefore	= oSrc.m_dSpaceBefore;
-        m_dSpaceAfter   = oSrc.m_dSpaceAfter;
-        m_dBaselinePos  = oSrc.m_dBaselinePos;
-
-        m_eTextAssociationType		= oSrc.m_eTextAssociationType;
-
-        for (auto pLine : oSrc.m_arLines)
-        {
-            m_arLines.push_back(new CTextLine(*pLine));
-        }
-
-        m_nNumLines = oSrc.m_nNumLines;
-        return *this;
     }
 
     void CParagraph::ToXml(NSStringUtils::CStringBuilder& oWriter)
@@ -72,7 +26,6 @@ namespace NSDocxRenderer
             return;
         }
 
-        //todo использовать паттерн builder
         oWriter.WriteString(L"<w:p>");
         oWriter.WriteString(L"<w:pPr>");
 
@@ -126,9 +79,12 @@ namespace NSDocxRenderer
                 oWriter.WriteString(L"\"");
             }
 
-            oWriter.WriteString(L" w:line=\"");
-            oWriter.AddInt(static_cast<int>(m_dHeight * c_dMMToDx));
-            oWriter.WriteString(L"\" w:lineRule=\"exact\""); // exact - точный размер строки
+            if (m_dHeight > 0)
+            {
+                oWriter.WriteString(L" w:line=\"");
+                oWriter.AddInt(static_cast<int>(m_dHeight * c_dMMToDx));
+                oWriter.WriteString(L"\" w:lineRule=\"exact\""); // exact - точный размер строки
+            }
 
             oWriter.WriteString(L"/>"); //конец w:spacing
 
@@ -190,7 +146,7 @@ namespace NSDocxRenderer
 
         oWriter.WriteString(L"</w:pPr>");
 
-        for(auto pLine : m_arLines)
+        for(const auto &pLine : m_arLines)
         {
             pLine->ToXml(oWriter);
         }
@@ -205,15 +161,15 @@ namespace NSDocxRenderer
             return;
         }
 
-        for(auto pLine : m_arLines)
+        for(const auto &pLine : m_arLines)
         {
             if (pLine->m_pDominantShape)
             {
-                for (auto pCont : pLine->m_arConts)
+                for (const auto &pCont : pLine->m_arConts)
                 {
                     if (m_lColorOfShadingFill == pCont->m_lHighlightColor)
                     {
-                        pCont->m_bIsHighlightPresent = false;
+                        pCont->m_bIsHighlightPresent = true;
                     }
                 }
             }
@@ -224,19 +180,19 @@ namespace NSDocxRenderer
     {
         CContText* pSelectedCont = nullptr;
 
-        for (auto pLine : m_arLines)
+        for (const auto &pLine : m_arLines)
         {
-            for (auto pCont : pLine->m_arConts)
+            for (const auto &pCont : pLine->m_arConts)
             {
-                if (!pSelectedCont || pSelectedCont->m_oFont.Size < pCont->m_oFont.Size)
+                if (!pSelectedCont || pSelectedCont->m_pFontStyle->m_oFont.Size < pCont->m_pFontStyle->m_oFont.Size)
                 {
                     pSelectedCont = pCont;
                 }
-                else if (pSelectedCont->m_oFont.Size == pCont->m_oFont.Size)
+                else if (pSelectedCont->m_pFontStyle->m_oFont.Size == pCont->m_pFontStyle->m_oFont.Size)
                 {
                     //note считаем что обычный < Italic < Bold < Bold-Italic
-                    if (pSelectedCont->m_oFont.GetTextFontStyle() <
-                            pCont->m_oFont.GetTextFontStyle())
+                    if (pSelectedCont->m_pFontStyle->m_oFont.GetTextFontStyle() <
+                            pCont->m_pFontStyle->m_oFont.GetTextFontStyle())
                     {
                         pSelectedCont = pCont;
                     }
@@ -244,8 +200,8 @@ namespace NSDocxRenderer
             }
         }
 
-        UINT lSize = static_cast<UINT>(2 * pSelectedCont->m_oFont.Size);
-        UINT nType = pSelectedCont->m_oFont.GetTextFontStyle();
+        UINT lSize = static_cast<UINT>(2 * pSelectedCont->m_pFontStyle->m_oFont.Size);
+        UINT nType = pSelectedCont->m_pFontStyle->m_oFont.GetTextFontStyle();
 
         if (nType > 3)
         {
@@ -264,34 +220,45 @@ namespace NSDocxRenderer
 
     void CParagraph::MergeLines()
     {
-        if (m_nNumLines < 2)
-        {
-            return;
-        }
-
-        CTextLine* pLine = m_arLines.front();
+        auto pLine = m_arLines.front();
 
         for(size_t i = 1; i < m_arLines.size(); i++)
         {
-            if (pLine->m_arConts.back()->m_bIsNeedSpace)
+            auto pLastCont = pLine->m_arConts.back();
+            size_t iNumConts = pLine->m_arConts.size() - 1;
+
+            while (pLastCont->m_bIsNotNecessaryToUse)
             {
-                pLine->m_arConts.back()->m_oText += L" ";
-                pLine->m_arConts.back()->m_bIsNeedSpace = false;
+                pLastCont = pLine->m_arConts[--iNumConts];
             }
+
+            //Добавляем пробел в конец каждой строки
+            pLastCont->m_oText += L" ";
+            pLastCont->m_bSpaceIsNotNeeded = true;
+            pLastCont->m_dWidth += pLine->m_arConts.back()->m_dSpaceWidthMM;
 
             auto pNext = m_arLines[i];
 
-            for (auto pCont : pNext->m_arConts)
+            auto pCont = pNext->m_arConts.front();
+
+            if (pLastCont->IsEqual(pCont) &&
+                pLastCont->m_eVertAlignType == pCont->m_eVertAlignType)
             {
-                if (pLine->m_arConts.back()->IsEqual(pCont))
-                {
-                    pLine->m_arConts.back()->m_oText += pCont->m_oText;
-                }
-                else
-                {
-                    pLine->m_arConts.push_back(new CContText(*pCont));
-                }
+                pLastCont->m_oText += pCont->m_oText;
+                pLastCont->m_dWidth += pCont->m_dWidth;
+                pLastCont->m_dRight = pCont->m_dRight;
+
+                pLastCont->m_bSpaceIsNotNeeded = false;
+
                 pCont->m_bIsNotNecessaryToUse = true;
+            }
+
+            for (const auto &pCont : pNext->m_arConts)
+            {
+                if (!pCont->m_bIsNotNecessaryToUse)
+                {
+                    pLine->m_arConts.push_back(pCont);
+                }
             }
 
             pNext->m_bIsNotNecessaryToUse = true;

@@ -1,44 +1,16 @@
-#include "ElementImage.h"
-#include "../resources/Constants.h"
-#include "../resources/utils.h"
+#include "Image.h"
+#include "../../resources/Constants.h"
 
 namespace NSDocxRenderer
 {
         CImage::CImage() : CBaseItem(ElemType::etImage)
         {
         }
-        CImage::CImage(const CImage& oSrc) : CBaseItem(ElemType::etImage)
-        {
-            *this = oSrc;
-        }
         CImage::CImage(const CImageInfo& oInfo, const std::wstring& strDstMedia) : CBaseItem(ElemType::etImage),
             m_oImageInfo(oInfo), m_strPath(strDstMedia)
         {
         }
         void CImage::Clear(){}
-
-        CImage& CImage::operator=(const CImage& oSrc)
-        {
-            if (this == &oSrc)
-            {
-                return *this;
-            }
-
-            Clear();
-
-            CBaseItem::operator=(oSrc);
-
-            m_oImageInfo = oSrc.m_oImageInfo;
-            m_strPath = oSrc.m_strPath;
-
-            m_bIsNoFill = oSrc.m_bIsNoFill;
-            m_bIsNoStroke = oSrc.m_bIsNoStroke;
-            m_bIsBehindDoc = oSrc.m_bIsBehindDoc;
-
-            m_dRotate = oSrc.m_dRotate;
-
-            return *this;
-        }
 
         void CImage::ToXml(NSStringUtils::CStringBuilder& oWriter)
         {

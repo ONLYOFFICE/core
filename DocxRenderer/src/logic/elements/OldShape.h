@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "BaseItem.h"
-#include "../resources/VectorGraphics.h"
-#include "ElementParagraph.h"
+#include "../../resources/VectorGraphics.h"
+#include "Paragraph.h"
 
 namespace NSDocxRenderer
 {
@@ -31,11 +31,8 @@ namespace NSDocxRenderer
 
         public:
             COldShape();
-            COldShape(const COldShape& oSrc);
             virtual ~COldShape();
             void Clear() override final;
-
-            COldShape& operator=(const COldShape& oSrc);
 
             void GetDataFromVector(const CVectorGraphics& oVector, const LONG& lType, const LONG& lCoordSize);
 

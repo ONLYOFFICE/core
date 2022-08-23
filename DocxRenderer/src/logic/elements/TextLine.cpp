@@ -1,6 +1,7 @@
-#include "ElementTextLine.h"
-#include "../resources/Constants.h"
-#include "../resources/SortElements.h"
+#include "TextLine.h"
+#include "../../resources/Constants.h"
+#include "../../resources/SortElements.h"
+#include "../../resources/utils.h"
 
 namespace NSDocxRenderer
 {
@@ -10,10 +11,6 @@ namespace NSDocxRenderer
 
     void CTextLine::Clear()
     {
-        for (auto pCont : m_arConts)
-        {
-            RELEASEOBJECT(pCont);
-        }
         m_arConts.clear();
     }
 
@@ -22,43 +19,8 @@ namespace NSDocxRenderer
         Clear();
     }
 
-    CTextLine::CTextLine(const CTextLine& oSrc) : CBaseItem(ElemType::etTextLine), m_arConts()
+    void CTextLine::AddCont(CContText *pCont)
     {
-        *this = oSrc;
-    }
-
-    CTextLine& CTextLine::operator=(const CTextLine& oSrc)
-    {
-        if (this == &oSrc)
-        {
-            return *this;
-        }
-
-        Clear();
-
-        CBaseItem::operator=(oSrc);
-
-        for (auto pCont : oSrc.m_arConts)
-        {
-            m_arConts.push_back(new CContText(*pCont));
-        }
-
-        m_dBaselineOffset = oSrc.m_dBaselineOffset;
-
-        m_eAlignmentType  = oSrc.m_eAlignmentType;
-        m_eVertAlignType  = oSrc.m_eVertAlignType;
-
-        m_pDominantShape  = oSrc.m_pDominantShape;
-#if USING_DELETE_DUPLICATING_CONTS == 0
-        m_pDuplicateLine  = oSrc.m_pDuplicateLine;
-#endif
-        return *this;
-    }
-
-    void CTextLine::AddCont(CContText* pCont)
-    {
-        m_dBaselineOffset = fabs(m_dBaselineOffset) > fabs(pCont->m_dBaselineOffset) ? m_dBaselineOffset : pCont->m_dBaselineOffset;
-
         m_dBaselinePos = std::max(m_dBaselinePos, pCont->m_dBaselinePos);
 
         if ( ( pCont->m_dLeft > 0 ) && ( ( m_dLeft == 0 ) || ( pCont->m_dLeft < m_dLeft ) ) )
@@ -94,25 +56,25 @@ namespace NSDocxRenderer
         SortElements(m_arConts);
     }
 
-    void CTextLine::Merge(const CTextLine* pTextLine)
+    void CTextLine::Merge(CTextLine* pLine)
     {
-        size_t nCount = pTextLine->m_arConts.size();
+        size_t nCount = pLine->m_arConts.size();
         if (0 != nCount)
         {
-            if (pTextLine->m_dLeft < m_dLeft)
+            if (pLine->m_dLeft < m_dLeft)
             {
-                m_dLeft = pTextLine->m_dLeft;
+                m_dLeft = pLine->m_dLeft;
             }
-            if (pTextLine->m_dBaselinePos < m_dBaselinePos)
+            if (pLine->m_dBaselinePos < m_dBaselinePos)
             {
-                m_dHeight = (m_dBaselinePos - pTextLine->m_dBaselinePos + pTextLine->m_dHeight);
+                m_dHeight = (m_dBaselinePos - pLine->m_dBaselinePos + pLine->m_dHeight);
             }
             else
             {
-                m_dHeight = (pTextLine->m_dBaselinePos - m_dBaselinePos + m_dHeight);
+                m_dHeight = (pLine->m_dBaselinePos - m_dBaselinePos + m_dHeight);
             }
 
-            for (auto pCont : pTextLine->m_arConts)
+            for (const auto &pCont : pLine->m_arConts)
             {
                 m_arConts.push_back(new CContText(*pCont));
             }
@@ -122,41 +84,76 @@ namespace NSDocxRenderer
         }
     }
 
-    void CTextLine::Analyze()
+    void CTextLine::MergeConts()
     {
-        size_t nCountConts = m_arConts.size();
-
-        if (0 == nCountConts)
+        if (m_arConts.empty())
             return;
 
-        CContText* pFirst = m_arConts[0];
+        auto pFirst = m_arConts.front();
 
-        for (size_t i = 1; i < nCountConts; ++i)
+        for (size_t i = 1; i < m_arConts.size(); ++i)
         {
-            CContText* pCurrent = m_arConts[i];
+            auto pCurrent = m_arConts[i];
 
-            double dFirstRight = pFirst->m_dLeft + pFirst->m_dLeft;
-            double dCurrLeft = pCurrent->m_dLeft;
-            double dDelta = dFirstRight - dCurrLeft;
-
-            if (!pFirst->IsEqual(pCurrent) ||
-                fabs(dDelta) > c_dTHE_STRING_X_PRECISION_MM)
+            if (pCurrent->m_bIsNotNecessaryToUse)
             {
-                if (i < nCountConts - 1)
-                {
-                    //переходим на
-                    pFirst = pCurrent;
-                }
                 continue;
             }
 
-            // продолжаем слово
-            pFirst->m_oText += pCurrent->m_oText;
-            pFirst->m_dWidth += pCurrent->m_dWidth + fabs(dDelta);
+            bool bIsEqual = pFirst->IsEqual(pCurrent) && pFirst->m_eVertAlignType == pCurrent->m_eVertAlignType;
+            bool bIsBigDelta = fabs(pFirst->m_dRight - pCurrent->m_dLeft) > pFirst->CalculateThinSpace();
+            bool bIsVeryBigDelta = fabs(pFirst->m_dRight - pCurrent->m_dLeft) > pFirst->CalculateWideSpace();
 
-            m_arConts.erase(m_arConts.begin() + i);
-            --i;
-            --nCountConts;
+            if (bIsVeryBigDelta)
+            {
+                pFirst->m_bSpaceIsNotNeeded = false;
+                pFirst = pCurrent;
+
+            }
+            else if (bIsEqual)
+            {
+                if (bIsBigDelta)
+                {
+                    pFirst->m_oText += L" ";
+                    pFirst->m_dWidth += pFirst->m_dSpaceWidthMM;
+                }
+
+                pFirst->m_oText += pCurrent->m_oText;
+                pFirst->m_dWidth += pCurrent->m_dWidth;
+                pFirst->m_dRight = pCurrent->m_dRight;
+
+                pFirst->m_bSpaceIsNotNeeded = true;
+                pCurrent->m_bIsNotNecessaryToUse = true;
+            }
+            else
+            {
+                if (bIsBigDelta)
+                {
+                    if (!IsSpaceUtf32(pFirst->m_oText[pFirst->m_oText.length()-1]) &&
+                        !IsSpaceUtf32(pCurrent->m_oText[0]))
+                    {
+                        if (pFirst->GetNumberOfFeatures() <= pCurrent->GetNumberOfFeatures())
+                        {
+                            pFirst->m_oText += L" ";
+                            pFirst->m_dWidth += pFirst->m_dSpaceWidthMM;
+                        }
+                        else
+                        {
+                            NSStringUtils::CStringUTF32 oNewText = L" ";
+                            oNewText += pCurrent->m_oText;
+                            pCurrent->m_oText = oNewText;
+                            pCurrent->m_dWidth += pCurrent->m_dSpaceWidthMM;
+                        }
+                    }
+
+                    pFirst->m_bSpaceIsNotNeeded = true;
+                }
+                else
+                {
+                    pFirst->m_bSpaceIsNotNeeded = false;
+                }
+                pFirst = pCurrent;
+            }
         }
     }
 
@@ -174,24 +171,7 @@ namespace NSDocxRenderer
             m_dWidth += m_arConts[i]->m_dLeft - (m_arConts[i-1]->m_dLeft + m_arConts[i-1]->m_dWidth);
             m_dWidth += m_arConts[i]->m_dWidth;
         }
-
         m_dRight = m_dLeft + m_dWidth;
-    }
-
-    void CTextLine::AddSpaceToEnd()
-    {
-        if (m_arConts.empty())
-        {
-            return;
-        }
-
-        CContText* pCurrent = m_arConts.back();
-
-        if (pCurrent->m_oText[pCurrent->m_oText.length()-1] != uint32_t(' '))
-        {
-            pCurrent->AddSpaceToEnd();
-            m_dWidth += pCurrent->m_dSpaceWidthMM;
-        }
     }
 
     void CTextLine::DetermineAssumedTextAlignmentType(double dWidthOfPage)
@@ -226,12 +206,12 @@ namespace NSDocxRenderer
         }
     }
 
-    bool CTextLine::AreAlignmentsAppropriate(const CTextLine* oSrc)
+    bool CTextLine::AreAlignmentsAppropriate(const CTextLine *pLine)
     {
-        if ((m_eAlignmentType == oSrc->m_eAlignmentType && m_eAlignmentType!= atatByLeftEdge) ||
-            (m_eAlignmentType == atatByWidth && oSrc->m_eAlignmentType == atatByLeftEdge) ||
-            (m_eAlignmentType == atatByWidth && oSrc->m_eAlignmentType == atatUnknown) ||
-            (m_eAlignmentType == atatUnknown && oSrc->m_eAlignmentType == atatByWidth))
+        if ((m_eAlignmentType == pLine->m_eAlignmentType && m_eAlignmentType!= atatByLeftEdge) ||
+            (m_eAlignmentType == atatByWidth && pLine->m_eAlignmentType == atatByLeftEdge) ||
+            (m_eAlignmentType == atatByWidth && pLine->m_eAlignmentType == atatUnknown) ||
+            (m_eAlignmentType == atatUnknown && pLine->m_eAlignmentType == atatByWidth))
         {
             return true;
         }
@@ -240,20 +220,15 @@ namespace NSDocxRenderer
 
     void CTextLine::SetVertAlignType(const eVertAlignType& oType)
     {
-        for (auto pCont : m_arConts)
+        for (const auto &pCont : m_arConts)
         {
             pCont->m_eVertAlignType = oType;
         }
     }
 
-    double CTextLine::CalculateBeforeSpacing(const double* pPreviousStringOffset)
+    double CTextLine::CalculateBeforeSpacing(double dPreviousStringBaseline)
     {
-        return m_dBaselinePos - *pPreviousStringOffset - m_dHeight - m_dBaselineOffset;
-    }
-
-    double CTextLine::CalculateStringOffset()
-    {
-        return m_dBaselinePos - m_dBaselineOffset;
+        return m_dBaselinePos - dPreviousStringBaseline - m_dHeight;
     }
 
     double CTextLine::CalculateRightBorder(const double& dPageWidth)
@@ -283,17 +258,17 @@ namespace NSDocxRenderer
     {
         CContText* pSelectedCont = nullptr;
 
-        for (auto pCont : m_arConts)
+        for (const auto &pCont : m_arConts)
         {
-            if (!pSelectedCont || pSelectedCont->m_oFont.Size < pCont->m_oFont.Size)
+            if (!pSelectedCont || pSelectedCont->m_pFontStyle->m_oFont.Size < pCont->m_pFontStyle->m_oFont.Size)
             {
                 pSelectedCont = pCont;
             }
-            else if (pSelectedCont->m_oFont.Size == pCont->m_oFont.Size)
+            else if (pSelectedCont->m_pFontStyle->m_oFont.Size == pCont->m_pFontStyle->m_oFont.Size)
             {
                 //note считаем что обычный < Italic < Bold < Bold-Italic
-                if (pSelectedCont->m_oFont.GetTextFontStyle() <
-                        pCont->m_oFont.GetTextFontStyle())
+                if (pSelectedCont->m_pFontStyle->m_oFont.GetTextFontStyle() <
+                        pCont->m_pFontStyle->m_oFont.GetTextFontStyle())
                 {
                     pSelectedCont = pCont;
                 }
@@ -305,8 +280,8 @@ namespace NSDocxRenderer
             return c_dRightBorderCorrectionSize[0][0];
         }
 
-        UINT lSize = static_cast<UINT>(2 * pSelectedCont->m_oFont.Size);
-        UINT nType = pSelectedCont->m_oFont.GetTextFontStyle();
+        UINT lSize = static_cast<UINT>(2 * pSelectedCont->m_pFontStyle->m_oFont.Size);
+        UINT nType = pSelectedCont->m_pFontStyle->m_oFont.GetTextFontStyle();
 
         if (nType > 3)
         {
@@ -335,16 +310,22 @@ namespace NSDocxRenderer
         if (0 == nCountConts)
             return;
 
-        CContText* pPrev = m_arConts[0];
+        auto pPrev = m_arConts[0];
         double dDelta = 0;
 
         for (size_t i = 1; i < nCountConts; ++i)
         {
-            CContText* pCurrent = m_arConts[i];
+            auto pCurrent = m_arConts[i];
 
-            dDelta = pCurrent->m_dLeft - (pPrev->m_dLeft + pPrev->m_dWidth);
+            if (pCurrent->m_bIsNotNecessaryToUse)
+            {
+                continue;
+            }
 
-            if (dDelta < c_dTHE_STRING_X_PRECISION_MM)
+            dDelta = pCurrent->m_dLeft - pPrev->m_dRight;
+
+            if (dDelta < pPrev->CalculateWideSpace() ||
+                pPrev->m_bSpaceIsNotNeeded)
             {
                 // просто текст на тексте или сменились настройки (font/brush)
                 pPrev->ToXml(oWriter);

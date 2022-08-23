@@ -13,7 +13,7 @@ namespace NSDocxRenderer
         m_mapImagesFile.clear();
     }
 
-    CImageInfo CImageManager::WriteImage(Aggplus::CImage* pImage, double& x, double& y, double& width, double& height)
+    std::shared_ptr<CImageInfo> CImageManager::WriteImage(Aggplus::CImage* pImage, double& x, double& y, double& width, double& height)
     {
         if (height < 0)
         {
@@ -25,7 +25,7 @@ namespace NSDocxRenderer
         return GenerateImageID(pImage);
     }
 
-    CImageInfo CImageManager::WriteImage(const std::wstring& strFile, double& x, double& y, double& width, double& height)
+    std::shared_ptr<CImageInfo> CImageManager::WriteImage(const std::wstring& strFile, double& x, double& y, double& width, double& height)
     {
         return GenerateImageID(strFile);
     }
@@ -35,14 +35,14 @@ namespace NSDocxRenderer
         NSFile::CFileBinary::Copy(strFileSrc, strFileDst);
     }
 
-    void CImageManager::SaveImage(const std::wstring& strFileSrc, CImageInfo& oInfo)
+    void CImageManager::SaveImage(const std::wstring& strFileSrc, std::shared_ptr<CImageInfo> pInfo)
     {
         Aggplus::CImage oFrame(strFileSrc);
         if (nullptr != oFrame.GetData())
-            return SaveImage(&oFrame, oInfo);
+            return SaveImage(&oFrame, pInfo);
     }
 
-    void CImageManager::SaveImage(Aggplus::CImage* pImage, CImageInfo& oInfo)
+    void CImageManager::SaveImage(Aggplus::CImage* pImage, std::shared_ptr<CImageInfo> pInfo)
     {
         if (nullptr == pImage)
             return;
@@ -50,13 +50,13 @@ namespace NSDocxRenderer
         int w = pImage->GetWidth();
         int h = pImage->GetHeight();
 
-        oInfo.m_eType = GetImageType(pImage);
+        pInfo->m_eType = GetImageType(pImage);
 
-        UINT format = (oInfo.m_eType == CImageInfo::itJPG) ? 3 : 4;
-        oInfo.m_strFileName = L"image" + std::to_wstring(oInfo.m_nId);
-        oInfo.m_strFileName += ((oInfo.m_eType == CImageInfo::itJPG) ? L".jpg" : L".png");
+        UINT format = (pInfo->m_eType == CImageInfo::itJPG) ? 3 : 4;
+        pInfo->m_strFileName = L"image" + std::to_wstring(pInfo->m_nId);
+        pInfo->m_strFileName += ((pInfo->m_eType == CImageInfo::itJPG) ? L".jpg" : L".png");
 
-        std::wstring sSavedFile = m_strDstMedia + L"/" + oInfo.m_strFileName;
+        std::wstring sSavedFile = m_strDstMedia + L"/" + pInfo->m_strFileName;
 
         if (w <= m_lMaxSizeImage && h <= m_lMaxSizeImage)
         {
@@ -84,7 +84,7 @@ namespace NSDocxRenderer
         }
     }
 
-    CImageInfo CImageManager::GenerateImageID(Aggplus::CImage* pImage)
+    std::shared_ptr<CImageInfo> CImageManager::GenerateImageID(Aggplus::CImage* pImage)
     {
         BYTE* pData = pImage->GetData();
         int nSize = pImage->GetStride() * pImage->GetHeight();
@@ -93,32 +93,32 @@ namespace NSDocxRenderer
 
         DWORD dwSum = m_oCRC.Calc(pData, nSize);
 
-        std::map<DWORD, CImageInfo>::iterator find = m_mapImageData.find(dwSum);
+        auto find = m_mapImageData.find(dwSum);
         if (find != m_mapImageData.end())
             return find->second;
 
         ++m_lNextIDImage;
-        CImageInfo oInfo;
-        oInfo.m_nId = m_lNextIDImage;
-        SaveImage(pImage, oInfo);
-        m_mapImageData.insert(std::pair<DWORD, CImageInfo>(dwSum, oInfo));
+        auto pInfo = std::make_shared<CImageInfo>();
+        pInfo->m_nId = m_lNextIDImage;
+        SaveImage(pImage, pInfo);
+        m_mapImageData.insert(std::pair<DWORD, std::shared_ptr<CImageInfo>>(dwSum, pInfo));
 
-        return oInfo;
+        return pInfo;
     }
 
-    CImageInfo CImageManager::GenerateImageID(const std::wstring& strFileName)
+    std::shared_ptr<CImageInfo> CImageManager::GenerateImageID(const std::wstring& strFileName)
     {
-        std::map<std::wstring, CImageInfo>::iterator find = m_mapImagesFile.find(strFileName);
+        auto find = m_mapImagesFile.find(strFileName);
         if (find != m_mapImagesFile.end())
             return find->second;
 
         ++m_lNextIDImage;
-        CImageInfo oInfo;
-        oInfo.m_nId = m_lNextIDImage;
-        SaveImage(strFileName, oInfo);
-        m_mapImagesFile.insert(std::pair<std::wstring, CImageInfo>(strFileName, oInfo));
+        auto pInfo = std::make_shared<CImageInfo>();
+        pInfo->m_nId = m_lNextIDImage;
+        SaveImage(strFileName, pInfo);
+        m_mapImagesFile.insert(std::pair<std::wstring, std::shared_ptr<CImageInfo>>(strFileName, pInfo));
 
-        return oInfo;
+        return pInfo;
     }
 
     CImageInfo::ImageType CImageManager::GetImageType(Aggplus::CImage* pFrame)

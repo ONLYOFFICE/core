@@ -228,12 +228,6 @@ namespace NSDocxRenderer
     {
         if ((m_oVector.m_dLeft <= m_oVector.m_dRight) && (m_oVector.m_dTop <= m_oVector.m_dBottom))
         {
-            //Убираем все белые прямоугольники-подложки
-            if (0x00 != (lType >> 8) && m_pBrush->Color1 == c_iWhiteColor)
-            {
-                return;
-            }
-
             auto pShape = new CShape();
 
             pShape->m_oPen		 = *m_pPen;
@@ -247,6 +241,13 @@ namespace NSDocxRenderer
             else
             {
                 pShape->m_eType = CShape::eShapeType::stVectorGraphics;
+            }
+
+            //Все белые прямоугольники-подложки на задний фон
+            //todo задать приоритеты отображения шейпов
+            if (0x00 != (lType >> 8) && m_pBrush->Color1 == c_iWhiteColor)
+            {
+                pShape->m_bIsBehindDoc = true;
             }
 
             if ((lType & 0x01) == 0x00)
@@ -590,7 +591,8 @@ namespace NSDocxRenderer
         for (const auto &pShape : m_arShapes)
         {
             if (!pShape->m_pCont || //note если нет указателя, то текст далеко от графики
-                pShape->m_eGraphicsType == eGraphicsType::gtNoGraphics)
+                pShape->m_eGraphicsType == eGraphicsType::gtNoGraphics ||
+                pShape->m_bIsNotNecessaryToUse)
             {
                 continue;
             }
@@ -615,21 +617,28 @@ namespace NSDocxRenderer
                     pShape->m_bIsNotNecessaryToUse = true;
                 }
 
-                if (pShape->m_eGraphicsType == eGraphicsType::gtComplicatedFigure &&
-                    pCont->m_pFontStyle->m_oBrush.Color1 == c_iGreyColor &&
-                    eVType == eVerticalCrossingType::vctCurrentOutsideNext &&
-                    (eHType == eHorizontalCrossingType::hctCurrentOutsideNext ||
-                     eHType == eHorizontalCrossingType::hctCurrentRightOfNext))
+                if (!bIf1)
                 {
+                    bool bIf1 = pCont->m_pFontStyle->m_oBrush.Color1 == c_iGreyColor;
+                    bool bIf2 = pCont->m_bIsShadowPresent && pCont->m_bIsOutlinePresent;
+                    bool bIf3 = eVType == eVerticalCrossingType::vctCurrentOutsideNext;
+                    bool bIf4 = eHType == eHorizontalCrossingType::hctCurrentOutsideNext;
+                    bool bIf5 = eHType == eHorizontalCrossingType::hctCurrentRightOfNext;
 
-                    pCont->m_bIsShadowPresent = true;
-                    pCont->m_bIsOutlinePresent = true;
+                    if ((bIf1 || bIf2) && bIf3 && (bIf4 || bIf5))
+                    {
+                        if (!bIf2)
+                        {
+                            m_pStyleManager->m_pCurrentStyle->CopyFormat(*pCont->m_pFontStyle);
+                            m_pStyleManager->m_pCurrentStyle->m_oBrush.Color1 = pShape->m_oPen.Color;
+                            pCont->m_pFontStyle = m_pStyleManager->GetStyle();
 
-                    m_pStyleManager->m_pCurrentStyle->CopyFormat(*pCont->m_pFontStyle);
-                    m_pStyleManager->m_pCurrentStyle->m_oBrush.Color1 = pShape->m_oPen.Color;
-                    pCont->m_pFontStyle = m_pStyleManager->GetStyle();
+                            pCont->m_bIsShadowPresent = true;
+                            pCont->m_bIsOutlinePresent = true;
+                        }
 
-                    pShape->m_bIsNotNecessaryToUse = true;
+                        pShape->m_bIsNotNecessaryToUse = true;
+                    }
                 }
             }
         }

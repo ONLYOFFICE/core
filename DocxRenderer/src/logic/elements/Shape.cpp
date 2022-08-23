@@ -683,6 +683,7 @@ namespace NSDocxRenderer
         switch (m_eType)
         {
         case eShapeType::stPicture:
+        case eShapeType::stVectorTexture:
             BuildPictureProperties(oWriter);
             break;
         case eShapeType::stCanvas:
@@ -693,7 +694,6 @@ namespace NSDocxRenderer
             break;
         case eShapeType::stTextBox:
         case eShapeType::stVectorGraphics:
-        case eShapeType::stVectorTexture:
         default:
             BuildShapeProperties(oWriter);
             break;

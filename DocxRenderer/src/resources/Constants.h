@@ -1,7 +1,5 @@
 #pragma once
-
 #include "../DesktopEditor/common/Types.h"
-#include <map>
 
 #define USING_DELETE_DUPLICATING_CONTS 0 // 0 - все сточки-дубликаты превращаются в shape, 1 - строчки дубликаты удаляются
 
@@ -18,7 +16,7 @@ const double c_dInchToEMU	= 914400.0;
 const double c_dPtToEMU  	= 12700.0;
 const double c_dDegreeToAngle = 60000.0;
 
-const double c_dSTANDART_STRING_HEIGHT_MM	      = 4.2333333333333334;
+const double c_dSTANDART_STRING_HEIGHT_MM       = 4.2333333333333334;
 const double c_dTHE_SAME_STRING_Y_PRECISION_MM  = 0.01;
 const double c_dLINE_DISTANCE_ERROR_MM          = 0.5;
 const double c_dERROR_OF_RIGHT_BORDERS_MM       = 0.5;
@@ -29,9 +27,11 @@ const double c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM = 0.1;
 const double c_dGRAPHICS_ERROR_MM               = 0.5;
 const double c_dGRAPHICS_ERROR_IN_LINES_MM      = 0.3;
 const double c_dMAX_LINE_HEIGHT_MM              = 2.5;
+const double c_dCORRECTION_FOR_FIRST_PARAGRAPH  = -1.5;
 
 const UINT   c_iWhiteColor = 0xFFFFFF;
 const UINT   c_iBlackColor = 0x000000;
+const UINT   c_iBlackColor2 = 0x111111;
 const UINT   c_iGreyColor  = 0xC0C0C0;
 const UINT   c_iGreyColor2 = 0x999999;
 
@@ -40,6 +40,7 @@ const double c_dSTANDART_RIGHT_INDENT_MM = 15;
 const double c_dSTANDART_FIRSTLINE_INDENT_MM = 12.5;
 
 const UINT   c_iStartingIdForImages = 6;
+constexpr size_t c_nAntiZero = ~0;
 
 const double c_dRightBorderCorrectionSize[][4] =
 {
@@ -73,7 +74,7 @@ const double c_dRightBorderCorrectionSize[][4] =
     {0.4, 0.0, 0.0, 0.0}, //12.5pt
     {0.0, 0.0, 0.0, 0.0}, //13pt
     {0.1, 0.0, 0.0, 0.0}, //13.5pt
-    {1.1, 0.2, 0.5, 0.0}, //14pt
+    {1.3, 0.2, 1.8, 0.0}, //14pt
     {0.0, 0.0, 0.0, 0.0}, //14.5pt
     {1.4, 2.4, 0.0, 0.0}, //15pt
     {0.0, 0.0, 0.0, 0.0}, //15.5pt
@@ -85,7 +86,7 @@ const double c_dRightBorderCorrectionSize[][4] =
     {0.0, 0.0, 0.0, 0.0}, //18.5pt
     {0.0, 0.0, 0.0, 0.0}, //19pt
     {2.1, 0.0, 0.0, 0.0}, //19.5pt
-    {0.6, 0.0, 1.9, 0.0}, //20pt
+    {0.9, 0.0, 1.9, 0.0}, //20pt
     {0.2, 0.0, 0.0, 0.0}, //20.5pt
     {0.0, 0.0, 0.0, 0.0}, //21pt
     {1.4, 0.0, 0.0, 0.0}, //21.5pt

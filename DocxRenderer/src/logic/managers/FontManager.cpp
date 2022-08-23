@@ -1,5 +1,5 @@
 #include "FontManager.h"
-#include "../resources/Constants.h"
+#include "../../resources/Constants.h"
 
 namespace NSDocxRenderer
 {
@@ -35,7 +35,7 @@ namespace NSDocxRenderer
 
     void CFontManager::AddFontToMap()
     {
-        if (m_oFontTable.m_mapTable.end() != m_oFontTable.m_mapTable.find(m_oFont.m_strFamilyName))
+        if (m_oFontTable.m_mapTable.end() == m_oFontTable.m_mapTable.find(m_oFont.m_strFamilyName))
         {
             CFontTableEntry oEntry;
             oEntry.m_strFamilyName	= m_oFont.m_strFamilyName;
@@ -104,7 +104,7 @@ namespace NSDocxRenderer
             AddFontToMap();
     }
 
-    void CFontManager::MeasureString(std::wstring sText, double x, double y, double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType)
+    void CFontManager::MeasureString(const std::wstring& sText, double x, double y, double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType)
     {
         LoadFont();
 
@@ -204,7 +204,7 @@ namespace NSDocxRenderer
 
         if (bIsNeedAddToMap)
         {
-            if (m_oFontTable.m_mapTable.end() != m_oFontTable.m_mapTable.find(m_strCurrentPickFont))
+            if (m_oFontTable.m_mapTable.end() == m_oFontTable.m_mapTable.find(m_strCurrentPickFont))
             {
                 CFontTableEntry oEntry;
                 oEntry.m_strFamilyName	= m_strCurrentPickFont;
@@ -233,7 +233,7 @@ namespace NSDocxRenderer
         return m_dSpaceWidth;
     }
 
-    void CFontManagerLight::LoadFont(std::wstring& strFontName, LONG& lStyle, double& dSize, const bool& bIsGID)
+    void CFontManagerLight::LoadFont(std::wstring& strFontName, LONG& lStyle, const double& dSize, const bool& bIsGID)
     {
         if ((strFontName == m_strFontName) && (lStyle == m_lFontStyle) && (dSize == m_dSize))
         {

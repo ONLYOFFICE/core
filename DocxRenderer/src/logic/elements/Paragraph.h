@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "BaseItem.h"
-#include "FontManager.h"
-#include "ElementTextLine.h"
+#include "TextLine.h"
 
 namespace NSDocxRenderer
 {
@@ -52,17 +51,10 @@ namespace NSDocxRenderer
         TextAssociationType m_eTextAssociationType {tatPlainParagraph};
 
         std::vector<CTextLine*> m_arLines;
-
-        // statistic
-        size_t      m_nNumLines {0}; //число изначально входящих линий
-
     public:
         CParagraph(const TextAssociationType& eType);
-        CParagraph(const CParagraph& oSrc);
         virtual ~CParagraph();
         void Clear() override final;
-
-        CParagraph& operator=(const CParagraph& oSrc);
 
         void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
 

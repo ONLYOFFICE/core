@@ -31,6 +31,8 @@
  */
 #include "docbuilder_p.h"
 
+std::wstring NSDoctRenderer::CDocBuilder_Private::m_sExternalDirectory = L"";
+
 void CV8RealTimeWorker::_LOGGING_ERROR_(const std::wstring& strType, const std::wstring& strError)
 {
 	std::string sT = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strType);
@@ -1337,6 +1339,7 @@ namespace NSDoctRenderer
 		if (directory)
 			sDirectory = std::wstring(directory);
 
+		NSDoctRenderer::CDocBuilder_Private::m_sExternalDirectory = sDirectory;
 		CJSContext::ExternalInitialize(sDirectory);
 	}
 

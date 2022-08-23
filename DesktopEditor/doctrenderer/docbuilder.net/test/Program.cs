@@ -29,7 +29,6 @@ namespace Test
 
             CDocBuilder.Initialize(workDirectory);
             CDocBuilder oBuilder = new CDocBuilder();
-            oBuilder.SetProperty("--work-directory", workDirectory);
             oBuilder.CreateFile(doctype);
 
             CContext oContext = oBuilder.GetContext();

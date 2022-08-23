@@ -105,53 +105,55 @@ namespace MetaFile
                         return ObjectTypeBrush;
                 }
 
-		int GetColor()
+		int GetColor() override
 		{
 			return METAFILE_RGBA(Color.chRed, Color.chGreen, Color.chBlue);
 		}
 
-		int GetColor2()
+		int GetColor2() override
 		{
 			return METAFILE_RGBA(ColorBack.chRed, ColorBack.chGreen, ColorBack.chBlue);
 		}
 
-		unsigned int GetStyle()
+		unsigned int GetStyle() override
 		{
 			return Style;
 		}
 
-		unsigned int GetStyleEx()
+		unsigned int GetStyleEx() override
 		{
 			return Angle;
 		}
 
-		unsigned int GetHatch()
+		unsigned int GetHatch() override
 		{
 			return Hatch;
 		}
 
-		unsigned int GetAlpha()
+		unsigned int GetAlpha() override
 		{
 			return Color.chAlpha;
 		}
 
-		unsigned int GetAlpha2()
+		unsigned int GetAlpha2() override
 		{
 			return ColorBack.chAlpha;
 		}
 
-		std::wstring GetDibPatterPath()
+		std::wstring GetDibPatterPath() override
 		{
 			return std::wstring();
 		}
 
-		void GetBounds(double& left, double& top, double& width, double& height)
+		void GetBounds(double& left, double& top, double& width, double& height) override
 		{
 			left	= RectF.dX;
 			top	= RectF.dY;
 			width	= RectF.dWidth;
 			height	= RectF.dHeight;
 		};
+
+		void GetDibPattern(unsigned char** pBuffer, unsigned int &unWidth, unsigned int &unHeight) override {};
 
 		TEmfPlusARGB		Color;
 		TEmfPlusARGB		ColorBack;

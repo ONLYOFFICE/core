@@ -7,7 +7,7 @@
 namespace MetaFile
 {
 	CWmfInterpretatorSvg::CWmfInterpretatorSvg(CWmfParserBase *pParser, unsigned int unWidth, unsigned int unHeight)
-		: m_pParser(pParser), m_unNumberHatches(0)
+		: m_pParser(pParser), m_unNumberDefs(0)
 	{
 		SetSize(unWidth, unHeight);
 	}
@@ -39,11 +39,16 @@ namespace MetaFile
 		m_oXmlWriter.WriteAttribute(L"xmlns", L"http://www.w3.org/2000/svg");
 		m_oXmlWriter.WriteAttribute(L"xmlns:xlink", L"http://www.w3.org/1999/xlink");
 
+		double dKoef = 1;
+
+		if (oPlaceable.Inch != 0)
+			dKoef = 1440.f / oPlaceable.Inch / (20.f * (72.f / 96.f));
+
 		if (m_oViewport.GetWidth() != 0)
-			m_oXmlWriter.WriteAttribute(L"width", ConvertToWString(m_oViewport.GetWidth()));
+			m_oXmlWriter.WriteAttribute(L"width", ConvertToWString(m_oViewport.GetWidth() * dKoef));
 
 		if (m_oViewport.GetHeight() != 0)
-			m_oXmlWriter.WriteAttribute(L"height", ConvertToWString(m_oViewport.GetHeight()));
+			m_oXmlWriter.WriteAttribute(L"height", ConvertToWString(m_oViewport.GetHeight() * dKoef));
 
 		double dXScale = 1, dYScale = 1, dXTranslate = 0, dYTranslate = 0;
 
@@ -319,10 +324,12 @@ namespace MetaFile
 			if (oPolygon.size() < 2)
 				continue;
 
-			wsValue += L" M " + ConvertToWString(oPolygon[0].x) + L',' +  ConvertToWString(oPolygon[0].y);
+			wsValue += L"M " + ConvertToWString(oPolygon[0].x) + L',' +  ConvertToWString(oPolygon[0].y) + L' ';
 
 			for (const TWmfPointS& oPoint : oPolygon)
-				wsValue += L" L " + ConvertToWString(oPoint.x) + L',' + ConvertToWString(oPoint.y);
+				wsValue += ConvertToWString(oPoint.x) + L',' + ConvertToWString(oPoint.y) + L' ';
+
+			wsValue += ConvertToWString(oPolygon[0].x) + L',' +  ConvertToWString(oPolygon[0].y) + L' ';
 		}
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
@@ -330,6 +337,8 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
+
+		arAttributes.push_back({L"fill-rule", L"evenodd"});
 
 		WriteNode(L"path", arAttributes);
 	}
@@ -827,10 +836,19 @@ namespace MetaFile
 
 			arAttributes.push_back({L"stroke", L"rgba(" + INTCOLOR_TO_RGB(pPen->GetColor()) + L"," + ConvertToWString(pPen->GetAlpha(), 0) + L")"});
 
-			double dStrokeWidth = pPen->GetWidth();
+			double dStrokeWidth = std::abs(m_pParser->GetPen()->GetWidth());
 
-			if (dStrokeWidth <= 1)
-				dStrokeWidth = 1;
+			if (PS_COSMETIC == m_pParser->GetPen())
+			{
+				dStrokeWidth = 1 / std::abs(m_pParser->GetPixelHeight());
+			}
+			else
+			{
+				double dMinStrokeWidth = 1 / std::abs(m_pParser->GetPixelHeight());
+
+				if (dStrokeWidth < dMinStrokeWidth)
+					dStrokeWidth = dMinStrokeWidth;
+			}
 
 			if (dStrokeWidth > 0)
 				arAttributes.push_back({L"stroke-width", ConvertToWString(dStrokeWidth)});
@@ -884,23 +902,46 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::AddFill(NodeAttributes &arAttributes)
 	{
-		if (NULL != m_pParser && NULL != m_pParser->GetBrush() && BS_NULL != m_pParser->GetBrush()->GetStyle())
+		if (NULL != m_pParser && NULL != m_pParser->GetBrush())
 		{
-			if (BS_SOLID == m_pParser->GetBrush()->GetStyle())
-				arAttributes.push_back({L"fill", L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetBrush()->GetColor()) + L"," + ConvertToWString(m_pParser->GetBrush()->GetAlpha(), 0) + L")"});
-			else if (BS_HATCHED == m_pParser->GetBrush()->GetStyle())
-			{
-				std::wstring wsStyleId = CreateHatchStyle(m_pParser->GetBrush()->GetHatch());
+			IBrush *pBrush = m_pParser->GetBrush();
 
-				if (!wsStyleId.empty())
-					arAttributes.push_back({L"fill", L"url(#" + wsStyleId + L")"});
-				else
-					arAttributes.push_back({L"fill", L"none"});
+			switch (pBrush->GetStyle())
+			{
+				case BS_SOLID:
+				{
+					arAttributes.push_back({L"fill", L"rgba(" + INTCOLOR_TO_RGB(pBrush->GetColor()) + L"," + ConvertToWString(pBrush->GetAlpha(), 0) + L")"});
+					return;
+				}
+				case BS_HATCHED:
+				{
+					const std::wstring wsStyleId = CreateHatchStyle(pBrush->GetHatch());
+
+					if (!wsStyleId.empty())
+					{
+						arAttributes.push_back({L"fill", L"url(#" + wsStyleId + L")"});
+						return;
+					}
+
+					break;
+				}
+				case BS_DIBPATTERN:
+				{
+					const std::wstring wsStyleId = CreateDibPatternStyle(pBrush);
+
+					if (!wsStyleId.empty())
+					{
+						arAttributes.push_back({L"fill", L"url(#" + wsStyleId + L")"});
+						return;
+					}
+
+					break;
+				}
+				case BS_NULL: default: break;
 			}
-			else
-				arAttributes.push_back({L"fill", L"none"});
 		}
-		else arAttributes.push_back({L"fill", L"none"});
+
+		arAttributes.push_back({L"fill", L"none"});
 	}
 
 	void CWmfInterpretatorSvg::AddTransform(NodeAttributes &arAttributes, TXForm *pTransform)
@@ -1007,82 +1048,121 @@ namespace MetaFile
 		if (NULL == m_pParser || NULL == m_pParser->GetPen() || NULL == m_pParser->GetBrush())
 			return std::wstring();
 
-		std::wstring wsStrokeColor = L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetPen()->GetColor()) + L"," + ConvertToWString(m_pParser->GetPen()->GetAlpha(), 0) + L")";
+		double dStrokeWidth = std::abs(m_pParser->GetPen()->GetWidth());
 
-		double dStrokeWidth = m_pParser->GetPen()->GetWidth();
+		if (PS_COSMETIC == m_pParser->GetPen())
+		{
+			dStrokeWidth = 1 / std::abs(m_pParser->GetPixelHeight());
+		}
+		else
+		{
+			double dMinStrokeWidth = 1 / std::abs(m_pParser->GetPixelHeight());
 
-		if (dStrokeWidth <= 1)
-			dStrokeWidth = 1 * std::abs(m_pParser->GetTransform()->M22);
+			if (dStrokeWidth < dMinStrokeWidth)
+				dStrokeWidth = dMinStrokeWidth;
+		}
 
 		std::wstring wsStrokeWidth = ConvertToWString(dStrokeWidth);
-		std::wstring wsValue = L"200"; //TODO:: определить как вычисляется данный параметр
+		std::wstring wsValue = ConvertToWString(dStrokeWidth * 10); //TODO:: определить как вычисляется данный параметр
+		std::wstring wsBgColor;
+
+		std::wstring wsStrokeColor = L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetBrush()->GetColor()) + L"," + ConvertToWString(m_pParser->GetPen()->GetAlpha(), 0) + L")";
+
+		if (TRANSPARENT != m_pParser->GetTextBgMode())
+		{
+			wsBgColor = L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetTextBgColor()) + L",255)";
+		}
 
 		switch(unHatchStyle)
 		{
 			case HS_HORIZONTAL:
 			{
-				std::wstring wsId = L"HORIZONTAL_" + ConvertToWString(++m_unNumberHatches, 0);
+				std::wstring wsId = L"HORIZONTAL_" + ConvertToWString(++m_unNumberDefs, 0);
 
 				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
-							L"width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" patternUnits=\"userSpaceOnUse\">" +
-							L"<line  x1=\"0\" y1=\"0\" x2=\"" + wsValue + L"\" y2=\"0\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+							L"width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" patternUnits=\"userSpaceOnUse\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"0\" y1=\"0\" x2=\"" + wsValue + L"\" y2=\"0\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
 							L"</pattern> ";
 
 				return wsId;
 			}
 			case HS_VERTICAL:
 			{
-				std::wstring wsId = L"VERTICAL_" + ConvertToWString(++m_unNumberHatches, 0);
+				std::wstring wsId = L"VERTICAL_" + ConvertToWString(++m_unNumberDefs, 0);
 
 				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
-							L"width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" patternUnits=\"userSpaceOnUse\">" +
-							L"<line  x1=\"0\" y1=\"0\" x2=\"0\" y2=\"" + wsValue + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+							L"width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" patternUnits=\"userSpaceOnUse\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"" + wsValue + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
 							L"</pattern> ";
 
 				return wsId;
 			}
 			case HS_FDIAGONAL:
 			{
-				std::wstring wsId = L"FDIAGONAL_" + ConvertToWString(++m_unNumberHatches, 0);
+				std::wstring wsId = L"FDIAGONAL_" + ConvertToWString(++m_unNumberDefs, 0);
 
 				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
-							L"width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" patternTransform=\"rotate(-45)\" patternUnits=\"userSpaceOnUse\">" +
-							L"<line  x1=\"0\" y1=\"0\" x2=\"0\" y2=\"" + wsValue + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+							L"width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" patternTransform=\"rotate(-45)\" patternUnits=\"userSpaceOnUse\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"" + wsValue + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
 							L"</pattern> ";
 
 				return wsId;
 			}
 			case HS_BDIAGONAL:
 			{
-				std::wstring wsId = L"BDIAGONAL_" + ConvertToWString(++m_unNumberHatches, 0);
+				std::wstring wsId = L"BDIAGONAL_" + ConvertToWString(++m_unNumberDefs, 0);
 
 				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
-							L"width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" patternTransform=\"rotate(45)\" patternUnits=\"userSpaceOnUse\">" +
-							L"<line  x1=\"0\" y1=\"0\" x2=\"0\" y2=\"" + wsValue + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+							L"width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" patternTransform=\"rotate(45)\" patternUnits=\"userSpaceOnUse\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"" + wsValue + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
 							L"</pattern> ";
 
 				return wsId;
 			}
 			case HS_CROSS:
 			{
-				std::wstring wsId = L"CROSS_" + ConvertToWString(++m_unNumberHatches, 0);
+				std::wstring wsId = L"CROSS_" + ConvertToWString(++m_unNumberDefs, 0);
 
 				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
-							L"width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" patternUnits=\"userSpaceOnUse\">" +
-							L"<line  x1=\"0\" y1=\"0\" x2=\"0\" y2=\"" + wsValue + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
-							L"<line  x1=\"0\" y1=\"0\" x2=\"" + wsValue + L"\" y2=\"0\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+							L"width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" patternUnits=\"userSpaceOnUse\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"" + wsValue + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+							L"<line x1=\"0\" y1=\"0\" x2=\"" + wsValue + L"\" y2=\"0\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
 							L"</pattern> ";
 
 				return wsId;
 			}
 			case HS_DIAGCROSS:
 			{
-				std::wstring wsId = L"DIAGCROSS" + ConvertToWString(++m_unNumberHatches, 0);
+				std::wstring wsId = L"DIAGCROSS" + ConvertToWString(++m_unNumberDefs, 0);
 
 				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
-							L"width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" patternTransform=\"rotate(45)\" patternUnits=\"userSpaceOnUse\">" +
-							L"<line  x1=\"0\" y1=\"0\" x2=\"0\" y2=\"" + wsValue + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
-							L"<line  x1=\"0\" y1=\"0\" x2=\"" + wsValue + L"\" y2=\"0\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+							L"width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" patternTransform=\"rotate(45)\" patternUnits=\"userSpaceOnUse\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"" + wsValue + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+							L"<line x1=\"0\" y1=\"0\" x2=\"" + wsValue + L"\" y2=\"0\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
 							L"</pattern> ";
 
 				return wsId;
@@ -1092,5 +1172,58 @@ namespace MetaFile
 		}
 
 		return std::wstring();
+	}
+
+	std::wstring CWmfInterpretatorSvg::CreateDibPatternStyle(IBrush *pBrush)
+	{
+		if (NULL == m_pParser || NULL == pBrush || NULL == m_pParser->GetPen())
+			return std::wstring();
+
+		BYTE* pBuffer = NULL;
+		unsigned int unWidth = 0, unHeight = 0;
+
+		pBrush->GetDibPattern(&pBuffer, unWidth, unHeight);
+
+		if (NULL == pBuffer || 0 == unWidth || 0 == unHeight)
+			return std::wstring();
+
+		char* pImageData = NULL;
+		int nImageSize = 0;
+		std::wstring wsStyleId;
+
+		NSFile::CBase64Converter::Encode(pBuffer, unWidth * 4 * unHeight, pImageData, nImageSize, NSBase64::B64_BASE64_FLAG_NOCRLF);
+
+		if (NULL != pImageData)
+		{
+			wsStyleId += L"DIBPATTERN_" + ConvertToWString(++m_unNumberDefs, 0);
+
+			std::wstring wsImageDataW = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pImageData, (LONG)nImageSize);
+
+			double dStrokeWidth = std::abs(m_pParser->GetPen()->GetWidth());
+
+			if (PS_COSMETIC == m_pParser->GetPen())
+			{
+				dStrokeWidth = 1 / std::abs(m_pParser->GetPixelHeight());
+			}
+			else
+			{
+				double dMinStrokeWidth = 1 / std::abs(m_pParser->GetPixelHeight());
+
+				if (dStrokeWidth < dMinStrokeWidth)
+					dStrokeWidth = dMinStrokeWidth;
+			}
+
+			std::wstring wsWidth  = ConvertToWString(dStrokeWidth * 10 * unHeight / unWidth);
+			std::wstring wsHeight = ConvertToWString(dStrokeWidth * 10 * unWidth  / unHeight);
+
+			m_wsDefs += L"<pattern id=\"" + wsStyleId + L"\" " +
+						L"width=\"" + wsWidth + L"\" height=\"" + wsHeight + L"\" patternUnits=\"userSpaceOnUse\">" +
+						L"<image xlink:href=\"data:image/png;base64," + wsImageDataW + L"\" x=\"0\" y=\"0\" width=\"" + wsWidth + L"\" height=\"" + wsHeight + L"\"/>" +
+						L"</pattern> ";
+
+			delete [] pImageData;
+		}
+
+		return wsStyleId;
 	}
 }

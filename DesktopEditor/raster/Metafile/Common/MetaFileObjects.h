@@ -68,6 +68,8 @@ namespace MetaFile
 		virtual unsigned int GetAlpha2()		= 0;
 		virtual std::wstring GetDibPatterPath() = 0;
 		virtual void GetBounds(double& left, double& top, double& width, double& height) = 0;
+
+		virtual void GetDibPattern(unsigned char** pBuffer, unsigned int &unWidth, unsigned int &unHeight) = 0;
 	};
 	class IPen
 	{

@@ -135,7 +135,7 @@ namespace MetaFile
 		TSvgViewport            m_oViewport;
 		TEmfSizeL               m_oSizeWindow;
 
-		unsigned int			m_unNumberHatches;
+		unsigned int			m_unNumberDefs;
 		std::wstring			m_wsDefs;
 	public:
 		void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight) override;
@@ -184,6 +184,7 @@ namespace MetaFile
 
 		std::wstring CreatePath() const;
 		std::wstring CreateHatchStyle(unsigned int unHatchStyle);
+		std::wstring CreateDibPatternStyle(IBrush *pBrush);
 	};
 }
 

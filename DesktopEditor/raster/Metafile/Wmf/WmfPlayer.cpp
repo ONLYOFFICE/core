@@ -566,8 +566,12 @@ namespace MetaFile
 		TWmfWindow* pWindow   = GetWindow();
 		TWmfWindow* pViewPort = GetViewport();
 
-		TXForm oWindowXForm(1, 0, 0, 1, -pWindow->x, -pWindow->y);
-		TXForm oViewportXForm((double)GetPixelWidth(), 0, 0, (double)GetPixelHeight(), pViewPort->x, pViewPort->y);
+		double dM11 = (pViewPort->w < 0) ? -1 : 1;
+		double dM22 = (pViewPort->h < 0) ? -1 : 1;
+
+		//TODO:: разобраться в вычислениях
+		TEmfXForm oWindowXForm(GetPixelWidth(), 0, 0, GetPixelHeight(), -pWindow->x * GetPixelWidth() * dM11, -pWindow->y * GetPixelHeight() * dM22);
+		TEmfXForm oViewportXForm(dM11, 0, 0, dM22, pViewPort->x / GetPixelWidth(), pViewPort->y / GetPixelHeight());
 
 		m_oFinalTransform.Init();
 		m_oFinalTransform.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);
@@ -576,7 +580,7 @@ namespace MetaFile
 
 		m_oFinalTransform2.Init();
 		m_oFinalTransform2.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);
-		m_oFinalTransform2.Multiply(m_oTransform, MWT_RIGHTMULTIPLY);
+//		m_oFinalTransform2.Multiply(m_oTransform, MWT_RIGHTMULTIPLY);
 		m_oFinalTransform2.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);
 	}
 	void CWmfDC::SetTextColor(TWmfColor& oColor)

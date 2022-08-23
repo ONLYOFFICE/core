@@ -11,7 +11,7 @@
 namespace MetaFile
 {               
 	CEmfInterpretatorSvg::CEmfInterpretatorSvg(CEmfParserBase* pParser, unsigned int unWidth, unsigned int unHeight)
-		: m_pParser(pParser), m_unNumberHatches(0)
+		: m_pParser(pParser), m_unNumberDefs(0)
 	{
 		SetSize(unWidth, unHeight);
 	}
@@ -552,12 +552,12 @@ namespace MetaFile
 		if (arPoints.size() < 4)
 			return;
 
-		std::wstring wsValue = L"M " + ConvertToWString(arPoints[0].x) + L' ' + ConvertToWString(arPoints[0].y) + L' ';
+		std::wstring wsValue = L"M " + ConvertToWString(arPoints[0].x) + L' ' + ConvertToWString(arPoints[0].y) + L" C ";
 
 		for (unsigned int unIndex = 1; unIndex + 2 < arPoints.size(); unIndex += 3)
-			wsValue += L"C " +	ConvertToWString(arPoints[unIndex].x)     + L' ' + ConvertToWString(arPoints[unIndex].y)     + L' ' +
-								ConvertToWString(arPoints[unIndex + 1].x) + L' ' + ConvertToWString(arPoints[unIndex + 1].y) + L' ' +
-								ConvertToWString(arPoints[unIndex + 2].x) + L' ' + ConvertToWString(arPoints[unIndex + 2].y);
+			wsValue +=	ConvertToWString(arPoints[unIndex].x)     + L' ' + ConvertToWString(arPoints[unIndex].y)     + L' ' +
+						ConvertToWString(arPoints[unIndex + 1].x) + L' ' + ConvertToWString(arPoints[unIndex + 1].y) + L' ' +
+						ConvertToWString(arPoints[unIndex + 2].x) + L' ' + ConvertToWString(arPoints[unIndex + 2].y) + L' ';
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
@@ -573,12 +573,12 @@ namespace MetaFile
 		if (arPoints.size() < 4)
 			return;
 
-		std::wstring wsValue = L"M " + ConvertToWString(arPoints[0].x) + L' ' + ConvertToWString(arPoints[0].y) + L' ';
+		std::wstring wsValue = L"M " + ConvertToWString(arPoints[0].x) + L' ' + ConvertToWString(arPoints[0].y) + L" C ";
 
 		for (unsigned int unIndex = 1; unIndex + 2 < arPoints.size(); unIndex += 3)
-			wsValue += L"C " +	ConvertToWString(arPoints[unIndex].x)     + L' ' + ConvertToWString(arPoints[unIndex].y)     + L' ' +
-								ConvertToWString(arPoints[unIndex + 1].x) + L' ' + ConvertToWString(arPoints[unIndex + 1].y) + L' ' +
-								ConvertToWString(arPoints[unIndex + 2].x) + L' ' + ConvertToWString(arPoints[unIndex + 2].y);
+			wsValue +=	ConvertToWString(arPoints[unIndex].x)     + L' ' + ConvertToWString(arPoints[unIndex].y)     + L' ' +
+						ConvertToWString(arPoints[unIndex + 1].x) + L' ' + ConvertToWString(arPoints[unIndex + 1].y) + L' ' +
+						ConvertToWString(arPoints[unIndex + 2].x) + L' ' + ConvertToWString(arPoints[unIndex + 2].y) + L' ';
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
@@ -594,12 +594,12 @@ namespace MetaFile
 		if (arPoints.size() < 4)
 			return;
 
-		std::wstring wsValue = L"M " + ConvertToWString(arPoints[0].x) + L' ' + ConvertToWString(arPoints[0].y) + L' ';
+		std::wstring wsValue = L"M " + ConvertToWString(arPoints[0].x) + L' ' + ConvertToWString(arPoints[0].y) + L" C ";
 
 		for (unsigned int unIndex = 1; unIndex + 2 < arPoints.size(); unIndex += 3)
-			wsValue += L"C " +	ConvertToWString(arPoints[unIndex].x)     + L' ' + ConvertToWString(arPoints[unIndex].y)     + L' ' +
-								ConvertToWString(arPoints[unIndex + 1].x) + L' ' + ConvertToWString(arPoints[unIndex + 1].y) + L' ' +
-								ConvertToWString(arPoints[unIndex + 2].x) + L' ' + ConvertToWString(arPoints[unIndex + 2].y);
+			wsValue +=	ConvertToWString(arPoints[unIndex].x)     + L' ' + ConvertToWString(arPoints[unIndex].y)     + L' ' +
+						ConvertToWString(arPoints[unIndex + 1].x) + L' ' + ConvertToWString(arPoints[unIndex + 1].y) + L' ' +
+						ConvertToWString(arPoints[unIndex + 2].x) + L' ' + ConvertToWString(arPoints[unIndex + 2].y) + L' ';
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
@@ -615,12 +615,12 @@ namespace MetaFile
 		if (arPoints.size() < 4)
 			return;
 
-		std::wstring wsValue = L"M " + ConvertToWString(arPoints[0].x) + L' ' + ConvertToWString(arPoints[0].y) + L' ';
+		std::wstring wsValue = L"M " + ConvertToWString(arPoints[0].x) + L' ' + ConvertToWString(arPoints[0].y) + L" C ";
 
 		for (unsigned int unIndex = 1; unIndex + 2 < arPoints.size(); unIndex += 3)
-			wsValue += L"C " +	ConvertToWString(arPoints[unIndex].x)     + L' ' + ConvertToWString(arPoints[unIndex].y)     + L' ' +
-								ConvertToWString(arPoints[unIndex + 1].x) + L' ' + ConvertToWString(arPoints[unIndex + 1].y) + L' ' +
-								ConvertToWString(arPoints[unIndex + 2].x) + L' ' + ConvertToWString(arPoints[unIndex + 2].y);
+			wsValue +=	ConvertToWString(arPoints[unIndex].x)     + L' ' + ConvertToWString(arPoints[unIndex].y)     + L' ' +
+						ConvertToWString(arPoints[unIndex + 1].x) + L' ' + ConvertToWString(arPoints[unIndex + 1].y) + L' ' +
+						ConvertToWString(arPoints[unIndex + 2].x) + L' ' + ConvertToWString(arPoints[unIndex + 2].y) + L' ';
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
@@ -638,20 +638,37 @@ namespace MetaFile
 
 		std::wstring wsValue;
 
+		BYTE oLastType = 0x00;
+
 		for (unsigned int unIndex = 0; unIndex < unCount; ++unIndex)
 		{
 			if (0x02 == pAbTypes[unIndex])
-				wsValue += L" L " + ConvertToWString(arPoints[unIndex].x) + L' ' + ConvertToWString(arPoints[unIndex].y);
+			{
+				if (oLastType != 0x02)
+				{
+					wsValue += L" L ";
+					oLastType = 0x02;
+				}
+				wsValue += ConvertToWString(arPoints[unIndex].x) + L',' + ConvertToWString(arPoints[unIndex].y) + L' ';
+			}
 			else if (0x04 == pAbTypes[unIndex] && unIndex + 2 < unCount)
 			{
-				wsValue += L" C " + ConvertToWString(arPoints[unIndex].x)     + L' ' + ConvertToWString(arPoints[unIndex].y)     + L' ' +
-									ConvertToWString(arPoints[unIndex + 1].x) + L' ' + ConvertToWString(arPoints[unIndex + 1].y) + L' ' +
-									ConvertToWString(arPoints[unIndex + 2].x) + L' ' + ConvertToWString(arPoints[unIndex + 2].y);
+				if (oLastType != 0x02)
+				{
+					wsValue += L" C ";
+					oLastType = 0x04;
+				}
+				wsValue +=	ConvertToWString(arPoints[unIndex].x)     + L',' + ConvertToWString(arPoints[unIndex].y)     + L' ' +
+							ConvertToWString(arPoints[unIndex + 1].x) + L',' + ConvertToWString(arPoints[unIndex + 1].y) + L' ' +
+							ConvertToWString(arPoints[unIndex + 2].x) + L',' + ConvertToWString(arPoints[unIndex + 2].y) + L' ';
 
 				unIndex += 3;
 			}
 			else if (0x06 == pAbTypes[unIndex]) //MoveTo
-				wsValue += L" M " + ConvertToWString(arPoints[unIndex].x) + L' ' + ConvertToWString(arPoints[unIndex].y);
+			{
+				wsValue += L" M " + ConvertToWString(arPoints[unIndex].x) + L' ' + ConvertToWString(arPoints[unIndex].y) + L' ';
+				oLastType = 0x06;
+			}
 		}
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
@@ -670,20 +687,37 @@ namespace MetaFile
 
 		std::wstring wsValue;
 
+		BYTE oLastType = 0x00;
+
 		for (unsigned int unIndex = 0; unIndex < unCount; ++unIndex)
 		{
 			if (0x02 == pAbTypes[unIndex])
-				wsValue += L" L " + ConvertToWString(arPoints[unIndex].x) + L' ' + ConvertToWString(arPoints[unIndex].y);
+			{
+				if (oLastType != 0x02)
+				{
+					wsValue += L" L ";
+					oLastType = 0x02;
+				}
+				wsValue += ConvertToWString(arPoints[unIndex].x) + L',' + ConvertToWString(arPoints[unIndex].y) + L' ';
+			}
 			else if (0x04 == pAbTypes[unIndex] && unIndex + 2 < unCount)
 			{
-				wsValue += L" C " + ConvertToWString(arPoints[unIndex].x)     + L' ' + ConvertToWString(arPoints[unIndex].y)     + L' ' +
-									ConvertToWString(arPoints[unIndex + 1].x) + L' ' + ConvertToWString(arPoints[unIndex + 1].y) + L' ' +
-									ConvertToWString(arPoints[unIndex + 2].x) + L' ' + ConvertToWString(arPoints[unIndex + 2].y);
+				if (oLastType != 0x02)
+				{
+					wsValue += L" C ";
+					oLastType = 0x04;
+				}
+				wsValue +=	ConvertToWString(arPoints[unIndex].x)     + L',' + ConvertToWString(arPoints[unIndex].y)     + L' ' +
+							ConvertToWString(arPoints[unIndex + 1].x) + L',' + ConvertToWString(arPoints[unIndex + 1].y) + L' ' +
+							ConvertToWString(arPoints[unIndex + 2].x) + L',' + ConvertToWString(arPoints[unIndex + 2].y) + L' ';
 
 				unIndex += 3;
 			}
 			else if (0x06 == pAbTypes[unIndex]) //MoveTo
-				wsValue += L" M " + ConvertToWString(arPoints[unIndex].x) + L' ' + ConvertToWString(arPoints[unIndex].y);
+			{
+				wsValue += L" M " + ConvertToWString(arPoints[unIndex].x) + L' ' + ConvertToWString(arPoints[unIndex].y) + L' ';
+				oLastType = 0x06;
+			}
 		}
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
@@ -824,10 +858,12 @@ namespace MetaFile
 			if (oPolygon.size() < 2)
 				continue;
 
-			wsValue += L" M " + ConvertToWString(oPolygon[0].x) + L',' +  ConvertToWString(oPolygon[0].y);
+			wsValue += L"M " + ConvertToWString(oPolygon[0].x) + L',' +  ConvertToWString(oPolygon[0].y) + L' ';
 
 			for (const TEmfPointL& oPoint : oPolygon)
-				wsValue += L" L " + ConvertToWString(oPoint.x) + L',' + ConvertToWString(oPoint.y);
+				wsValue += ConvertToWString(oPoint.x) + L',' + ConvertToWString(oPoint.y) + L' ';
+
+			wsValue += ConvertToWString(oPolygon[0].x) + L',' +  ConvertToWString(oPolygon[0].y) + L' ';
 		}
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
@@ -835,6 +871,8 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
+
+		arAttributes.push_back({L"fill-rule", L"evenodd"});
 
 		WriteNode(L"path", arAttributes);
 	}
@@ -848,10 +886,12 @@ namespace MetaFile
 			if (oPolygon.size() < 2)
 				continue;
 
-			wsValue += L" M " + ConvertToWString(oPolygon[0].x) + L',' +  ConvertToWString(oPolygon[0].y);
+			wsValue += L"M " + ConvertToWString(oPolygon[0].x) + L',' +  ConvertToWString(oPolygon[0].y) + L' ';
 
 			for (const TEmfPointS& oPoint : oPolygon)
-				wsValue += L" L " + ConvertToWString(oPoint.x) + L',' + ConvertToWString(oPoint.y);
+				wsValue += ConvertToWString(oPoint.x) + L',' + ConvertToWString(oPoint.y) + L' ';
+
+			wsValue += ConvertToWString(oPolygon[0].x) + L',' +  ConvertToWString(oPolygon[0].y) + L' ';
 		}
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
@@ -859,6 +899,8 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
+
+		arAttributes.push_back({L"fill-rule", L"evenodd"});
 
 		WriteNode(L"path", arAttributes);
 	}
@@ -867,15 +909,17 @@ namespace MetaFile
 	{
 		std::wstring wsValue;
 
-		for (const std::vector<TEmfPointL>& oPolygon : arPolygons)
+		for (const std::vector<TEmfPointL>& oPolyline : arPolygons)
 		{
-			if (oPolygon.size() < 2)
+			if (oPolyline.size() < 2)
 				continue;
 
-			wsValue += L" M " + ConvertToWString(oPolygon[0].x) + L',' +  ConvertToWString(oPolygon[0].y);
+			wsValue += L"M " + ConvertToWString(oPolyline[0].x) + L',' +  ConvertToWString(oPolyline[0].y) + L' ';
 
-			for (const TEmfPointL& oPoint : oPolygon)
-				wsValue += L" L " + ConvertToWString(oPoint.x) + L',' + ConvertToWString(oPoint.y);
+			for (const TEmfPointL& oPoint : oPolyline)
+				wsValue += ConvertToWString(oPoint.x) + L',' + ConvertToWString(oPoint.y) + L' ';
+
+			wsValue += ConvertToWString(oPolyline[0].x) + L',' +  ConvertToWString(oPolyline[0].y) + L' ';
 		}
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
@@ -883,6 +927,8 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
+
+		arAttributes.push_back({L"fill-rule", L"evenodd"});
 
 		WriteNode(L"path", arAttributes);
 	}
@@ -891,15 +937,17 @@ namespace MetaFile
 	{
 		std::wstring wsValue;
 
-		for (const std::vector<TEmfPointS>& oPolygon : arPolygons)
+		for (const std::vector<TEmfPointS>& oPolyline : arPolygons)
 		{
-			if (oPolygon.size() < 2)
+			if (oPolyline.size() < 2)
 				continue;
 
-			wsValue += L" M " + ConvertToWString(oPolygon[0].x) + L',' +  ConvertToWString(oPolygon[0].y);
+			wsValue += L"M " + ConvertToWString(oPolyline[0].x) + L',' +  ConvertToWString(oPolyline[0].y) + L' ';
 
-			for (const TEmfPointS& oPoint : oPolygon)
-				wsValue += L" L " + ConvertToWString(oPoint.x) + L',' + ConvertToWString(oPoint.y);
+			for (const TEmfPointS& oPoint : oPolyline)
+				wsValue += ConvertToWString(oPoint.x) + L',' + ConvertToWString(oPoint.y) + L' ';
+
+			wsValue += ConvertToWString(oPolyline[0].x) + L',' +  ConvertToWString(oPolyline[0].y) + L' ';
 		}
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
@@ -907,6 +955,8 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
+
+		arAttributes.push_back({L"fill-rule", L"evenodd"});
 
 		WriteNode(L"path", arAttributes);
 	}
@@ -987,6 +1037,7 @@ namespace MetaFile
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
 		AddStroke(arAttributes);
+		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
 
 		WriteNode(L"path" , arAttributes);
@@ -1141,6 +1192,8 @@ namespace MetaFile
 			if (dFontHeight < 0.01)
 				dFontHeight = 18;
 
+			double dWidth = dFontHeight * wsText.size();
+
 			arNodeAttributes.push_back({L"font-size", ConvertToWString(dFontHeight)});
 
 			std::wstring wsFaceName = pFont->GetFaceName();
@@ -1231,10 +1284,19 @@ namespace MetaFile
 		{		
 			arAttributes.push_back({L"stroke", L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetPen()->GetColor()) + L"," + ConvertToWString(m_pParser->GetPen()->GetAlpha(), 0) + L")"});
 
-			double dStrokeWidth = std::abs(m_pParser->GetPen()->GetWidth());
+			double dStrokeWidth = std::abs(m_pParser->GetPen()->GetWidth() * m_pParser->GetTransform()->M22);
 
-			if (dStrokeWidth <= 1)
-				dStrokeWidth = 1;
+			if (PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK))
+			{
+				dStrokeWidth = 1 / std::abs(m_pParser->GetTransform()->M22);
+			}
+			else
+			{
+				double dMinStrokeWidth = 1 / std::abs(m_pParser->GetTransform()->M22);
+
+				if (dStrokeWidth < dMinStrokeWidth)
+					dStrokeWidth = dMinStrokeWidth;
+			}
 
 			if (dStrokeWidth > 0)
 				arAttributes.push_back({L"stroke-width", ConvertToWString(dStrokeWidth)});
@@ -1280,21 +1342,44 @@ namespace MetaFile
 	{
 		if (NULL != m_pParser && NULL != m_pParser->GetBrush())
 		{
-			if (BS_SOLID == m_pParser->GetBrush()->GetStyle())
-				arAttributes.push_back({L"fill", L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetBrush()->GetColor()) + L"," + ConvertToWString(m_pParser->GetBrush()->GetAlpha(), 0) + L")"});
-			else if (BS_HATCHED == m_pParser->GetBrush()->GetStyle())
-			{
-				std::wstring wsStyleId = CreateHatchStyle(m_pParser->GetBrush()->GetHatch());
+			IBrush *pBrush = m_pParser->GetBrush();
 
-				if (!wsStyleId.empty())
-					arAttributes.push_back({L"fill", L"url(#" + wsStyleId + L")"});
-				else
-					arAttributes.push_back({L"fill", L"none"});
+			switch (pBrush->GetStyle())
+			{
+				case BS_SOLID:
+				{
+					arAttributes.push_back({L"fill", L"rgba(" + INTCOLOR_TO_RGB(pBrush->GetColor()) + L"," + ConvertToWString(pBrush->GetAlpha(), 0) + L")"});
+					return;
+				}
+				case BS_HATCHED:
+				{
+					const std::wstring wsStyleId = CreateHatchStyle(pBrush->GetHatch());
+
+					if (!wsStyleId.empty())
+					{
+						arAttributes.push_back({L"fill", L"url(#" + wsStyleId + L")"});
+						return;
+					}
+
+					break;
+				}
+				case BS_DIBPATTERN:
+				{
+					const std::wstring wsStyleId = CreateDibPatternStyle(pBrush);
+
+					if (!wsStyleId.empty())
+					{
+						arAttributes.push_back({L"fill", L"url(#" + wsStyleId + L")"});
+						return;
+					}
+
+					break;
+				}
+				case BS_NULL: default: break;
 			}
-			else
-				arAttributes.push_back({L"fill", L"none"});
 		}
-		else arAttributes.push_back({L"fill", L"none"});
+
+		arAttributes.push_back({L"fill", L"none"});
 	}
 
 	void CEmfInterpretatorSvg::AddTransform(NodeAttributes &arAttributes, TXForm* pTransform)
@@ -1408,23 +1493,26 @@ namespace MetaFile
 
 		std::wstring wsValue;
 		TEmfPointD *pFirstPoint = NULL;
+		BYTE oLastType = 0x00;
 
-		wsValue += L"M " + ConvertToWString(m_pParser->GetCurPos().x) + L',' + ConvertToWString(m_pParser->GetCurPos().y);
+		wsValue += L"M " + ConvertToWString(m_pParser->GetCurPos().x) + L',' + ConvertToWString(m_pParser->GetCurPos().y) + L' ';
 
 		for (const CEmfPathCommandBase* pCommand : pPath->m_pCommands)
 		{
-			switch (pCommand->GetType())
+			switch ((unsigned int)pCommand->GetType())
 			{
 				case EMF_PATHCOMMAND_MOVETO:
 				{
 					CEmfPathMoveTo* pMoveTo = (CEmfPathMoveTo*)pCommand;
 
-					wsValue += L" M " + ConvertToWString(pMoveTo->x) + L',' +  ConvertToWString(pMoveTo->y);
+					wsValue += L"M " + ConvertToWString(pMoveTo->x) + L',' +  ConvertToWString(pMoveTo->y) + L' ';
 
 					RELEASEOBJECT(pFirstPoint);
 					pFirstPoint = new TEmfPointD;
 					pFirstPoint->x = pMoveTo->x;
 					pFirstPoint->y = pMoveTo->y;
+
+					oLastType = EMF_PATHCOMMAND_MOVETO;
 
 					break;
 				}
@@ -1432,7 +1520,13 @@ namespace MetaFile
 				{
 					CEmfPathLineTo* pLineTo = (CEmfPathLineTo*)pCommand;
 
-					wsValue += L" L " + ConvertToWString(pLineTo->x) + L',' +  ConvertToWString(pLineTo->y);
+					if (EMF_PATHCOMMAND_LINETO != oLastType)
+					{
+						oLastType = EMF_PATHCOMMAND_LINETO;
+						wsValue += L"L ";
+					}
+
+					wsValue += ConvertToWString(pLineTo->x) + L',' +  ConvertToWString(pLineTo->y) + L' ';
 
 					if (NULL == pFirstPoint)
 					{
@@ -1447,9 +1541,15 @@ namespace MetaFile
 				{
 					CEmfPathCurveTo* pCurveTo = (CEmfPathCurveTo*)pCommand;
 
-					wsValue +=	L" C "  + ConvertToWString(pCurveTo->x1) + L',' + ConvertToWString(pCurveTo->y1) + L' ' +
-										 ConvertToWString(pCurveTo->x2) + L',' + ConvertToWString(pCurveTo->y2) + L' ' +
-										 ConvertToWString(pCurveTo->xE) + L',' + ConvertToWString(pCurveTo->yE);
+					if (EMF_PATHCOMMAND_CURVETO != oLastType)
+					{
+						oLastType = EMF_PATHCOMMAND_CURVETO;
+						wsValue += L"C ";
+					}
+
+					wsValue +=	ConvertToWString(pCurveTo->x1) + L',' + ConvertToWString(pCurveTo->y1) + L' ' +
+								ConvertToWString(pCurveTo->x2) + L',' + ConvertToWString(pCurveTo->y2) + L' ' +
+								ConvertToWString(pCurveTo->xE) + L',' + ConvertToWString(pCurveTo->yE) + L' ';
 
 					if (NULL == pFirstPoint)
 					{
@@ -1479,13 +1579,13 @@ namespace MetaFile
 					double dEndX = (pArcTo->right + pArcTo->left) / 2 + dXRadius  * cos((pArcTo->sweep) * M_PI / 180);
 					double dEndY = (pArcTo->bottom + pArcTo->top) / 2 + dYRadius  * sin((pArcTo->sweep) * M_PI / 180);
 
-					wsValue += L" A " + ConvertToWString(dXRadius) + L' ' +
+					wsValue += L"A " + ConvertToWString(dXRadius) + L' ' +
 							ConvertToWString(dYRadius) + L' ' +
 							L"0 " +
 							((std::fabs(pArcTo->sweep - pArcTo->start) <= 180) ? L"0" : L"1") + L' ' +
 							((std::fabs(pArcTo->sweep - pArcTo->start) <= 180) ? L"1" : L"0") + L' ' +
 							ConvertToWString(dEndX) + L' ' +
-							ConvertToWString(dEndY);
+							ConvertToWString(dEndY) + L' ';
 
 
 					if (NULL == pFirstPoint)
@@ -1495,13 +1595,16 @@ namespace MetaFile
 						pFirstPoint->y = pArcTo->top;
 					}
 
+					oLastType = EMF_PATHCOMMAND_ARCTO;
+
 					break;
 				}
 				case EMF_PATHCOMMAND_CLOSE:
 				{
 					if (NULL != pFirstPoint)
 					{
-						wsValue += L" L " + ConvertToWString(pFirstPoint->x) + L',' + ConvertToWString(pFirstPoint->y);
+						wsValue += L"L " + ConvertToWString(pFirstPoint->x) + L',' + ConvertToWString(pFirstPoint->y) + L' ';
+						oLastType = EMF_PATHCOMMAND_CLOSE;
 						RELEASEOBJECT(pFirstPoint);
 					}
 					break;
@@ -1519,82 +1622,121 @@ namespace MetaFile
 		if (NULL == m_pParser || NULL == m_pParser->GetPen() || NULL == m_pParser->GetBrush())
 			return std::wstring();
 
-		std::wstring wsStrokeColor = L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetPen()->GetColor()) + L"," + ConvertToWString(m_pParser->GetPen()->GetAlpha(), 0) + L")";
+		double dStrokeWidth = std::abs(m_pParser->GetPen()->GetWidth());
 
-		double dStrokeWidth = m_pParser->GetPen()->GetWidth();
+		if (PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK))
+		{
+			dStrokeWidth = 1 / std::abs(m_pParser->GetPixelHeight());
+		}
+		else
+		{
+			double dMinStrokeWidth = 1 / std::abs(m_pParser->GetPixelHeight());
 
-		if (dStrokeWidth <= 1)
-			dStrokeWidth = 1;
+			if (dStrokeWidth < dMinStrokeWidth)
+				dStrokeWidth = dMinStrokeWidth;
+		}
 
 		std::wstring wsStrokeWidth = ConvertToWString(dStrokeWidth);
-		std::wstring wsValue = L"200"; //TODO:: определить как вычисляется данный параметр
+		std::wstring wsValue = ConvertToWString(dStrokeWidth * 10); //TODO:: определить как вычисляется данный параметр
+		std::wstring wsBgColor;
+
+		std::wstring wsStrokeColor = L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetBrush()->GetColor()) + L"," + ConvertToWString(m_pParser->GetPen()->GetAlpha(), 0) + L")";
+
+		if (TRANSPARENT != m_pParser->GetTextBgMode())
+		{
+			wsBgColor = L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetTextBgColor()) + L",255)";
+		}
 
 		switch(unHatchStyle)
 		{
 			case HS_HORIZONTAL:
 			{
-				std::wstring wsId = L"HORIZONTAL_" + ConvertToWString(++m_unNumberHatches, 0);
+				std::wstring wsId = L"HORIZONTAL_" + ConvertToWString(++m_unNumberDefs, 0);
 
 				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
-							L"width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" patternUnits=\"userSpaceOnUse\">" +
-							L"<line  x1=\"0\" y1=\"0\" x2=\"" + wsValue + L"\" y2=\"0\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+							L"width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" patternUnits=\"userSpaceOnUse\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"0\" y1=\"0\" x2=\"" + wsValue + L"\" y2=\"0\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
 							L"</pattern> ";
 
 				return wsId;
 			}
 			case HS_VERTICAL:
 			{
-				std::wstring wsId = L"VERTICAL_" + ConvertToWString(++m_unNumberHatches, 0);
+				std::wstring wsId = L"VERTICAL_" + ConvertToWString(++m_unNumberDefs, 0);
 
 				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
-							L"width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" patternUnits=\"userSpaceOnUse\">" +
-							L"<line  x1=\"0\" y1=\"0\" x2=\"0\" y2=\"" + wsValue + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+							L"width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" patternUnits=\"userSpaceOnUse\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"" + wsValue + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
 							L"</pattern> ";
 
 				return wsId;
 			}
 			case HS_FDIAGONAL:
 			{
-				std::wstring wsId = L"FDIAGONAL_" + ConvertToWString(++m_unNumberHatches, 0);
+				std::wstring wsId = L"FDIAGONAL_" + ConvertToWString(++m_unNumberDefs, 0);
 
 				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
-							L"width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" patternTransform=\"rotate(-45)\" patternUnits=\"userSpaceOnUse\">" +
-							L"<line  x1=\"0\" y1=\"0\" x2=\"0\" y2=\"" + wsValue + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+							L"width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" patternTransform=\"rotate(-45)\" patternUnits=\"userSpaceOnUse\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"" + wsValue + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
 							L"</pattern> ";
 
 				return wsId;
 			}
 			case HS_BDIAGONAL:
 			{
-				std::wstring wsId = L"BDIAGONAL_" + ConvertToWString(++m_unNumberHatches, 0);
+				std::wstring wsId = L"BDIAGONAL_" + ConvertToWString(++m_unNumberDefs, 0);
 
 				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
-							L"width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" patternTransform=\"rotate(45)\" patternUnits=\"userSpaceOnUse\">" +
-							L"<line  x1=\"0\" y1=\"0\" x2=\"0\" y2=\"" + wsValue + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+							L"width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" patternTransform=\"rotate(45)\" patternUnits=\"userSpaceOnUse\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"" + wsValue + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
 							L"</pattern> ";
 
 				return wsId;
 			}
 			case HS_CROSS:
 			{
-				std::wstring wsId = L"CROSS_" + ConvertToWString(++m_unNumberHatches, 0);
+				std::wstring wsId = L"CROSS_" + ConvertToWString(++m_unNumberDefs, 0);
 
 				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
-							L"width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" patternUnits=\"userSpaceOnUse\">" +
-							L"<line  x1=\"0\" y1=\"0\" x2=\"0\" y2=\"" + wsValue + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
-							L"<line  x1=\"0\" y1=\"0\" x2=\"" + wsValue + L"\" y2=\"0\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+							L"width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" patternUnits=\"userSpaceOnUse\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"" + wsValue + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+							L"<line x1=\"0\" y1=\"0\" x2=\"" + wsValue + L"\" y2=\"0\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
 							L"</pattern> ";
 
 				return wsId;
 			}
 			case HS_DIAGCROSS:
 			{
-				std::wstring wsId = L"DIAGCROSS" + ConvertToWString(++m_unNumberHatches, 0);
+				std::wstring wsId = L"DIAGCROSS" + ConvertToWString(++m_unNumberDefs, 0);
 
 				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
-							L"width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" patternTransform=\"rotate(45)\" patternUnits=\"userSpaceOnUse\">" +
-							L"<line  x1=\"0\" y1=\"0\" x2=\"0\" y2=\"" + wsValue + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
-							L"<line  x1=\"0\" y1=\"0\" x2=\"" + wsValue + L"\" y2=\"0\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+							L"width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" patternTransform=\"rotate(45)\" patternUnits=\"userSpaceOnUse\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"" + wsValue + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+							L"<line x1=\"0\" y1=\"0\" x2=\"" + wsValue + L"\" y2=\"0\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
 							L"</pattern> ";
 
 				return wsId;
@@ -1604,6 +1746,59 @@ namespace MetaFile
 		}
 
 		return std::wstring();
+	}
+
+	std::wstring CEmfInterpretatorSvg::CreateDibPatternStyle(IBrush *pBrush)
+	{
+		if (NULL == m_pParser || NULL == pBrush || NULL == m_pParser->GetPen())
+			return std::wstring();
+
+		BYTE* pBuffer = NULL;
+		unsigned int unWidth = 0, unHeight = 0;
+
+		pBrush->GetDibPattern(&pBuffer, unWidth, unHeight);
+
+		if (NULL == pBuffer || 0 == unWidth || 0 == unHeight)
+			return std::wstring();
+
+		char* pImageData = NULL;
+		int nImageSize = 0;
+		std::wstring wsStyleId;
+
+		NSFile::CBase64Converter::Encode(pBuffer, unWidth * 4 * unHeight, pImageData, nImageSize, NSBase64::B64_BASE64_FLAG_NOCRLF);
+
+		if (NULL != pImageData)
+		{
+			wsStyleId += L"DIBPATTERN_" + ConvertToWString(++m_unNumberDefs, 0);
+
+			std::wstring wsImageDataW = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pImageData, (LONG)nImageSize);
+
+			double dStrokeWidth = std::abs(m_pParser->GetPen()->GetWidth());
+
+			if (PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK))
+			{
+				dStrokeWidth = 1 / std::abs(m_pParser->GetPixelHeight());
+			}
+			else
+			{
+				double dMinStrokeWidth = 1 / std::abs(m_pParser->GetPixelHeight());
+
+				if (dStrokeWidth < dMinStrokeWidth)
+					dStrokeWidth = dMinStrokeWidth;
+			}
+
+			std::wstring wsWidth  = ConvertToWString(dStrokeWidth * 10 * unHeight / unWidth);
+			std::wstring wsHeight = ConvertToWString(dStrokeWidth * 10 * unWidth  / unHeight);
+
+			m_wsDefs += L"<pattern id=\"" + wsStyleId + L"\" " +
+						L"width=\"" + wsWidth + L"\" height=\"" + wsHeight + L"\" patternUnits=\"userSpaceOnUse\">" +
+						L"<image xlink:href=\"data:image/png;base64," + wsImageDataW + L"\" x=\"0\" y=\"0\" width=\"" + wsWidth + L"\" height=\"" + wsHeight + L"\"/>" +
+						L"</pattern> ";
+
+			delete [] pImageData;
+		}
+
+		return wsStyleId;
 	}
 }
 

@@ -93,6 +93,13 @@ namespace MetaFile
 		std::wstring GetDibPatterPath();
 		void GetBounds(double& left, double& top, double& width, double& height) {}
 
+		void GetDibPattern(unsigned char** pBuffer, unsigned int &unWidth, unsigned int &unHeight)
+		{
+			*pBuffer	= DibBuffer;
+			unWidth		= DibWidth;
+			unHeight	= DibHeigth;
+		}
+
 	public:
 
 		unsigned short BrushStyle;

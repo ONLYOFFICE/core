@@ -1286,7 +1286,7 @@ namespace Aggplus
 
 	void CGraphics::DoFillPathSolid(CColor dwColor)
 	{
-		if (m_nBlendMode != 3)
+		if (m_nBlendMode != agg::comp_op_src_over)
 		{
 			typedef agg::renderer_scanline_aa_solid<comp_renderer_type> solid_comp_renderer_type;
 			solid_comp_renderer_type ren_solid;

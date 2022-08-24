@@ -1,5 +1,6 @@
 #include "BaseItem.h"
 #include "../../resources/Constants.h"
+#include <math.h>
 
 namespace NSDocxRenderer
 {

@@ -1505,6 +1505,9 @@ namespace PPTX
 			pWriter->EndAttributes();
 			pWriter->EndNode(L"v:path");
 
+			pWriter->WriteString(pWriter->m_strNodes);
+			pWriter->m_strNodes.clear();
+			
 			if (blipFill.blip.is_init() && blipFill.blip->embed.is_init())
 			{
 				pWriter->StartNode(L"v:imagedata");

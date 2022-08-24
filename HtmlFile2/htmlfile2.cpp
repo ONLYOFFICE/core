@@ -454,8 +454,7 @@ public:
         std::string xml_string = XmlUtils::GetUtf8FromFileContent(buffer, dwReadBytes);
 
         bool bRes = false;
-        if ((std::string::npos != xml_string.find("Content-Type: multipart/related")) &&
-            (std::string::npos != xml_string.find("Content-Type: text/html")))
+        if (std::string::npos != xml_string.find("Content-Type: multipart/related"))
         {
             BYTE* pData;
             DWORD nLength;
@@ -464,7 +463,15 @@ public:
 
             std::string sFileContent = XmlUtils::GetUtf8FromFileContent(pData, nLength);
             RELEASEARRAYOBJECTS(pData);
-
+            /*
+            std::wstring sRes = mhtToXhtml(sFileContent);
+            NSFile::CFileBinary oWriter;
+            if (oWriter.CreateFileW(m_sTmp + L"/res.html"))
+            {
+                oWriter.WriteStringUTF8(sRes);
+                oWriter.CloseFile();
+            }
+            */
             bRes = m_oLightReader.FromString(mhtToXhtml(sFileContent));
         }
         else

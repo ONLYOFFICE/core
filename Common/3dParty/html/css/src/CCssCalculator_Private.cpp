@@ -435,8 +435,9 @@ namespace NSCSS
                 {
                     std::map<StatistickElement, unsigned int>::const_iterator oFindCountId = m_mStatictics->find(StatistickElement{StatistickElement::IsId, sId});
 
-                    if (((bIsSettings && oFindCountId->second < MaxNumberRepetitions) ||
-                        (!bIsSettings && oFindCountId->second >= MaxNumberRepetitions)))
+					if ((m_mStatictics->end() != oFindCountId) &&
+					   (((bIsSettings && oFindCountId->second < MaxNumberRepetitions) ||
+						 (!bIsSettings && oFindCountId->second >= MaxNumberRepetitions))))
                     {
                         if (!oFindId->second->Empty())
                             arFindElements.push_back(oFindId->second);

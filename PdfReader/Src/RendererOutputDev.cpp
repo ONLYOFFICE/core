@@ -3840,20 +3840,32 @@ namespace PdfReader
 
         if (nRenderMode == 1 || nRenderMode == 2 || nRenderMode == 5 || nRenderMode == 6)
         {
+            double dTfsY = 0, dTfsX = 0, dWidth, dHeight, dDpiX, dDpiY;
+
+            m_pRenderer->get_Width(&dWidth);
+            m_pRenderer->get_Height(&dHeight);
+            m_pRenderer->get_DpiX(&dDpiX);
+            m_pRenderer->get_DpiY(&dDpiY);
+
+            double dPWidth  = dWidth  * dDpiX / 25.4;
+            double dPHeight = dHeight * dDpiY / 25.4;
+
+            double* dFontBBox = pFont->getFontBBox();
+            bool bOriginalSizes = (0.99 < dPWidth  / pGState->getPageWidth())  && (dPWidth  / pGState->getPageWidth()  < 1.01) &&
+                                  (0.99 < dPHeight / pGState->getPageHeight()) && (dPHeight / pGState->getPageHeight() < 1.01);
+            if (dFontBBox && bOriginalSizes && (dFontBBox[0] != 0 || dFontBBox[1] != 0 || dFontBBox[2] != 0 || dFontBBox[3] != 0))
+            {
+                dTfsY = -fabs(dFontBBox[3] - dFontBBox[1]) * 0.6;
+                dTfsX = -fabs(dFontBBox[2] - dFontBBox[0]) * 0.25;
+            }
             m_pRenderer->BeginCommand(c_nStrokeTextType);
 
-            //m_pRenderer->PathCommandEnd();
-            //m_pRenderer->PathCommandText( bsText, PDFCoordsToMM( 0 + dShiftX ), PDFCoordsToMM( /*-fabs(pFont->getFontBBox()[3]) * dTfs*/ + dShiftY ), PDFCoordsToMM( 0 ), PDFCoordsToMM( 0 ), PDFCoordsToMM( 0 ) );
-
-
-            // Временно
-            //m_pRenderer->PathCommandTextEx( bsText, PDFCoordsToMM( 0 + dShiftX ), PDFCoordsToMM( /*-fabs(pFont->getFontBBox()[3]) * dTfs*/ + dShiftY ), PDFCoordsToMM( 0 ), PDFCoordsToMM( 0 ), PDFCoordsToMM( 0 ), 0, bsStringGID );
-            //m_pRenderer->PathCommandTextEx( bsUnicodeText, bsGIDText, bsSrcCodeText, PDFCoordsToMM( 0 + dShiftX ), PDFCoordsToMM( /*-fabs(pFont->getFontBBox()[3]) * dTfs*/0 + dShiftY ), PDFCoordsToMM( dDx ), PDFCoordsToMM( dDy ), PDFCoordsToMM( 0 ), 0 );
-            //-----------
-
-
-            //m_pRenderer->PathCommandText( bsUnicodeText, PDFCoordsToMM( 0 + dShiftX ), PDFCoordsToMM( /*-fabs(pFont->getFontBBox()[3]) * dTfs*/ + dShiftY ), PDFCoordsToMM( dDx ), PDFCoordsToMM( dDy ), PDFCoordsToMM( 0 ) );
-            //m_pRenderer->DrawPath( c_nStroke );
+            m_pRenderer->PathCommandEnd();
+            if (unGid)
+                m_pRenderer->PathCommandTextEx(wsUnicodeText, &unGid, unGidsCount, PDFCoordsToMM(dTfsX + dShiftX), PDFCoordsToMM(dTfsY + dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
+            else
+                m_pRenderer->PathCommandText(wsUnicodeText, PDFCoordsToMM(dTfsX + dShiftX), PDFCoordsToMM(dTfsY + dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
+            m_pRenderer->DrawPath(c_nStroke);
 
             m_pRenderer->EndCommand(c_nStrokeTextType);
         }

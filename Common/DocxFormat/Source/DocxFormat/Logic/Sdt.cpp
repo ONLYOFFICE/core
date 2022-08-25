@@ -437,6 +437,11 @@ namespace OOX
 			WritingElement_ReadNode( oNode, oChild, L"w:maxCharacters", m_oMaxCharacters );
 			WritingElement_ReadNode( oNode, oChild, L"w:combBorder", m_oCombBorder );
 			WritingElement_ReadNode( oNode, oChild, L"w:format", m_oFormat);
+			
+			if (oNode.GetNode(L"w:complexForm", oChild))
+			{//feature
+				m_oComplexForm = true;
+			}
 		}
 		void CTextFormPr::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -457,6 +462,11 @@ namespace OOX
 					m_oCombBorder = oReader;
 				else if (L"w:format" == sName)
 					m_oFormat = oReader;
+				else if (L"w:complexForm" == sName)
+				{
+					//m_oComplexForm = oReader;
+					m_oComplexForm = true;
+				}
 			}
 		}
 		std::wstring CTextFormPr::toXML() const
@@ -475,6 +485,8 @@ namespace OOX
 			WritingElement_WriteNode_1( L"<w:maxCharacters ", m_oMaxCharacters );
 			WritingElement_WriteNode_1( L"<w:combBorder ", m_oCombBorder );
 			WritingElement_WriteNode_1( L"<w:format ", m_oFormat);
+			if (m_oComplexForm.IsInit())
+				sResult += L"<w:complexForm/>";
 
 			sResult += L"</w:textFormPr>";
 

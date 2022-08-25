@@ -231,6 +231,13 @@ namespace MetaFile
 		m_oStream.SetStream(pBuf, unSize);
 	}
 
+	void CEmfParser::SetInterpretator(IOutputDevice* pOutput)
+	{
+		CEmfParserBase::SetInterpretator(pOutput);
+		if (m_pEmfPlusParser)
+			RELEASEOBJECT(m_pEmfPlusParser);
+	}
+
 	bool CEmfParser::ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight)
 	{
 		int lHeaderOffset         = offBmi - ulSkip;

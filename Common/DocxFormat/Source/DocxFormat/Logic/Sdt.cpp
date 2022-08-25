@@ -436,6 +436,7 @@ namespace OOX
 			WritingElement_ReadNode( oNode, oChild, L"w:comb", m_oComb );
 			WritingElement_ReadNode( oNode, oChild, L"w:maxCharacters", m_oMaxCharacters );
 			WritingElement_ReadNode( oNode, oChild, L"w:combBorder", m_oCombBorder );
+			WritingElement_ReadNode( oNode, oChild, L"w:format", m_oFormat);
 		}
 		void CTextFormPr::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -454,6 +455,8 @@ namespace OOX
 					m_oMaxCharacters = oReader;
 				else if ( L"w:combBorder" == sName )
 					m_oCombBorder = oReader;
+				else if (L"w:format" == sName)
+					m_oFormat = oReader;
 			}
 		}
 		std::wstring CTextFormPr::toXML() const
@@ -471,6 +474,7 @@ namespace OOX
 			WritingElement_WriteNode_1( L"<w:comb ", m_oComb );
 			WritingElement_WriteNode_1( L"<w:maxCharacters ", m_oMaxCharacters );
 			WritingElement_WriteNode_1( L"<w:combBorder ", m_oCombBorder );
+			WritingElement_WriteNode_1( L"<w:format ", m_oFormat);
 
 			sResult += L"</w:textFormPr>";
 

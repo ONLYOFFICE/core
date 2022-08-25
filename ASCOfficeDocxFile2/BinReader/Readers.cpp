@@ -1185,7 +1185,7 @@ int Binary_pPrReader::ReadInd(BYTE type, long length, void* poResult)
 			long nIndFirstLine = SerializeCommon::Round(dIndFirstLine * g_dKoef_mm_to_twips);
             std::wstring sIndFirstLine;
 			if(nIndFirstLine >= 0)
-                sIndFirstLine = L" w:firstLine =\"" + std::to_wstring(nIndFirstLine) + L"\"";
+                sIndFirstLine = L" w:firstLine=\"" + std::to_wstring(nIndFirstLine) + L"\"";
 			else
                 sIndFirstLine = L" w:hanging=\"" + std::to_wstring(-nIndFirstLine) + L"\"";
 			pCStringWriter->WriteString(sIndFirstLine);
@@ -1196,7 +1196,7 @@ int Binary_pPrReader::ReadInd(BYTE type, long length, void* poResult)
 			long nIndFirstLine = m_oBufferedStream.GetLong();
 			std::wstring sIndFirstLine;
 			if(nIndFirstLine >= 0)
-				sIndFirstLine = L" w:firstLine =\"" + std::to_wstring(nIndFirstLine) + L"\"";
+				sIndFirstLine = L" w:firstLine=\"" + std::to_wstring(nIndFirstLine) + L"\"";
 			else
 				sIndFirstLine = L" w:hanging=\"" + std::to_wstring(-nIndFirstLine) + L"\"";
 			pCStringWriter->WriteString(sIndFirstLine);

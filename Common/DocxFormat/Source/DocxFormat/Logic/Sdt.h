@@ -429,6 +429,29 @@ namespace ComplexTypes
 			nullable_string							m_oSym;
 			nullable_string							m_oFont;
 		};
+		//Not from specification
+		class CTextFormFormat : public ComplexType
+		{
+		public:
+			ComplexTypes_AdditionConstructors(CTextFormFormat)
+			CTextFormFormat()
+			{
+			}
+			virtual ~CTextFormFormat()
+			{
+			}
+
+			virtual void FromXML(XmlUtils::CXmlNode& oNode);
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring ToString() const;
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
+		public:
+			nullable<SimpleTypes::CTextFormFormatType<>> m_oType;
+			nullable_string m_oFormat;
+		};
 	} // Word
 } // ComplexTypes
 
@@ -486,6 +509,7 @@ namespace OOX
 			nullable<ComplexTypes::Word::CBorder> m_oCombBorder;
 			nullable_bool m_oAutoFit;
 			nullable_bool m_oMultiLine;
+			nullable<ComplexTypes::Word::CTextFormFormat> m_oFormat;
 		};
 		//--------------------------------------------------------------------------------
 		// CSdtComboBox 17.5.2.5 (Part 1)
@@ -590,11 +614,8 @@ namespace OOX
 			}
 
 		public:
+			nullable<std::wstring > m_sLastValue;
 
-			// Attributes
-			nullable<std::wstring >                             m_sLastValue;
-
-			// Nodes
 			std::vector<ComplexTypes::Word::CSdtListItem*> m_arrListItem;
 		};
 

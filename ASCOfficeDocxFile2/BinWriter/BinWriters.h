@@ -503,6 +503,7 @@ namespace BinDocxRW
 		void WriteSdtFormPr(const OOX::Logic::CFormPr& oFormPr);
 		void WriteSdtTextFormPr(const OOX::Logic::CTextFormPr& oTextFormPr);
 		void WriteSdtTextFormPrComb(const ComplexTypes::Word::CComb& oComb);
+		void WriteSdtTextFormPrFormat(const ComplexTypes::Word::CTextFormFormat& oFormat);
 		void WriteSdtPicture(const OOX::Logic::CSdtPicture& oSdtPicture);
 	};
 	class BinaryCustomsTableWriter

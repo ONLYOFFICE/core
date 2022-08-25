@@ -8007,6 +8007,28 @@ void BinaryDocumentTableWriter::WriteSdtTextFormPr(const OOX::Logic::CTextFormPr
 		m_oBcw.m_oStream.WriteBOOL(oTextFormPr.m_oMultiLine.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if (oTextFormPr.m_oFormat.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrMultiLine);
+		WriteSdtTextFormPrFormat(oTextFormPr.m_oFormat.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+}
+void BinaryDocumentTableWriter::WriteSdtTextFormPrFormat(const ComplexTypes::Word::CTextFormFormat& oFormat)
+{
+	int nCurPos = 0;
+	if (oFormat.m_oType.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrFormatString);
+		m_oBcw.m_oStream.WriteBYTE((BYTE)oFormat.m_oType->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oFormat.m_oFormat.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrFormatString);
+		m_oBcw.m_oStream.WriteStringW3(oFormat.m_oFormat.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 }
 void BinaryDocumentTableWriter::WriteSdtTextFormPrComb(const ComplexTypes::Word::CComb& oComb)
 {

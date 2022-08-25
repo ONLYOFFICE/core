@@ -9648,6 +9648,27 @@ int Binary_DocumentTableReader::ReadSdtTextFormPr(BYTE type, long length, void* 
 	{
 		pTextFormPr->m_oMultiLine = m_oBufferedStream.GetBool();
 	}
+	else if (c_oSerSdt::TextFormPrFormat == type)
+	{
+		pTextFormPr->m_oFormat.Init();
+		READ2_DEF(length, res, this->ReadSdtTextFormPrFormat, pTextFormPr->m_oFormat.GetPointer());
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int Binary_DocumentTableReader::ReadSdtTextFormPrFormat(BYTE type, long length, void* poResult)
+{
+	int res = 0;
+	ComplexTypes::Word::CTextFormFormat* pFormat = static_cast<ComplexTypes::Word::CTextFormFormat*>(poResult);
+	if (c_oSerSdt::TextFormPrFormatType == type)
+	{
+		pFormat->m_oType.Init();  pFormat->m_oType->SetValueFromByte(m_oBufferedStream.GetChar());
+	}
+	else if (c_oSerSdt::TextFormPrFormatString == type)
+	{
+		pFormat->m_oFormat = m_oBufferedStream.GetString3(length);
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;

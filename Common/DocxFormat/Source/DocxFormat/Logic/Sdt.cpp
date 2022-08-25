@@ -99,6 +99,39 @@ namespace ComplexTypes
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"w:wRule", m_oWRule )
 			WritingElement_ReadAttributes_End( oReader )
 		}
+//----------------------------------------------------------------------------------------------------
+		void CTextFormFormat::FromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase(oNode, L"w:type", m_oType);
+			XmlMacroReadAttributeBase(oNode, L"w:format", m_oFormat);
+		}
+		void CTextFormFormat::FromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+
+			if (!oReader.IsEmptyNode())
+				oReader.ReadTillEnd();
+		}
+		std::wstring CTextFormFormat::ToString() const
+		{
+			std::wstring sResult;
+			if (m_oType.IsInit())
+			{
+				sResult += L"w:type=\"" + m_oType->ToString() + L"\" ";
+			}
+			if (m_oFormat.IsInit())
+			{
+				sResult += L"w:sym=\"" + XmlUtils::EncodeXmlString(m_oFormat.get()) + L"\" ";
+			}
+			return sResult;
+		}
+		void CTextFormFormat::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, L"w:type", m_oType)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"w:format", m_oFormat)
+			WritingElement_ReadAttributes_End(oReader)
+		}
 	}
 }
 //-----------------------------------------------------------------------------------------------------------------------------

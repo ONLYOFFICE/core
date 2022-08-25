@@ -8013,6 +8013,16 @@ void BinaryDocumentTableWriter::WriteSdtTextFormPr(const OOX::Logic::CTextFormPr
 		WriteSdtTextFormPrFormat(oTextFormPr.m_oFormat.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if (oTextFormPr.m_oFormat.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrComplex);
+		WriteSdtTextFormPrComplex(/*oTextFormPr.m_oComplexForm*/);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}	
+}
+void BinaryDocumentTableWriter::WriteSdtTextFormPrComplex(/*const ComplexTypes::Word::CTextFormComplex& oFormat*/)
+{
+
 }
 void BinaryDocumentTableWriter::WriteSdtTextFormPrFormat(const ComplexTypes::Word::CTextFormFormat& oFormat)
 {

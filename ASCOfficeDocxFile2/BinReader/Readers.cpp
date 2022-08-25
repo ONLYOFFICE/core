@@ -9653,8 +9653,18 @@ int Binary_DocumentTableReader::ReadSdtTextFormPr(BYTE type, long length, void* 
 		pTextFormPr->m_oFormat.Init();
 		READ2_DEF(length, res, this->ReadSdtTextFormPrFormat, pTextFormPr->m_oFormat.GetPointer());
 	}
+	else if (c_oSerSdt::TextFormPrComplex == type)
+	{
+		pTextFormPr->m_oComplexForm = true;
+		READ2_DEF(length, res, this->ReadSdtTextFormPrComplex, pTextFormPr->m_oFormat.GetPointer());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int Binary_DocumentTableReader::ReadSdtTextFormPrComplex(BYTE type, long length, void* poResult)
+{
+	int res = 0;
 	return res;
 }
 int Binary_DocumentTableReader::ReadSdtTextFormPrFormat(BYTE type, long length, void* poResult)

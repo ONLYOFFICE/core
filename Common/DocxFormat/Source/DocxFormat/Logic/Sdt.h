@@ -510,6 +510,7 @@ namespace OOX
 			nullable_bool m_oAutoFit;
 			nullable_bool m_oMultiLine;
 			nullable<ComplexTypes::Word::CTextFormFormat> m_oFormat;
+			nullable_bool m_oComplexForm; //feature 
 		};
 		//--------------------------------------------------------------------------------
 		// CSdtComboBox 17.5.2.5 (Part 1)

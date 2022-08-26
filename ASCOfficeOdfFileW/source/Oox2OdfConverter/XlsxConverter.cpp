@@ -3057,9 +3057,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CControls *oox_controls, OOX::Spre
 			
 			if (oAnchor.m_oFrom.IsInit() && oAnchor.m_oTo.IsInit())
 			{
-				if(oAnchor.m_oMoveWithCells.IsInit() && oAnchor.m_oMoveWithCells->ToBool())
+				if(oAnchor.m_oMoveWithCells.IsInit() && *oAnchor.m_oMoveWithCells)
 					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorOneCell);
-				else if(oAnchor.m_oSizeWithCells.IsInit() && oAnchor.m_oSizeWithCells->ToBool())
+				else if(oAnchor.m_oSizeWithCells.IsInit() && *oAnchor.m_oSizeWithCells)
 					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
 				else
 					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorAbsolute);

@@ -169,53 +169,11 @@ namespace NSDocxRenderer
                 {
                     if (m_lColorOfShadingFill == pCont->m_lHighlightColor)
                     {
-                        pCont->m_bIsHighlightPresent = true;
+                        pCont->m_bIsHighlightPresent = false;
                     }
                 }
             }
         }
-    }
-
-    void CParagraph::RightBorderCorrection()
-    {
-        CContText* pSelectedCont = nullptr;
-
-        for (const auto &pLine : m_arLines)
-        {
-            for (const auto &pCont : pLine->m_arConts)
-            {
-                if (!pSelectedCont || pSelectedCont->m_pFontStyle->m_oFont.Size < pCont->m_pFontStyle->m_oFont.Size)
-                {
-                    pSelectedCont = pCont;
-                }
-                else if (pSelectedCont->m_pFontStyle->m_oFont.Size == pCont->m_pFontStyle->m_oFont.Size)
-                {
-                    //note считаем что обычный < Italic < Bold < Bold-Italic
-                    if (pSelectedCont->m_pFontStyle->m_oFont.GetTextFontStyle() <
-                            pCont->m_pFontStyle->m_oFont.GetTextFontStyle())
-                    {
-                        pSelectedCont = pCont;
-                    }
-                }
-            }
-        }
-
-        UINT lSize = static_cast<UINT>(2 * pSelectedCont->m_pFontStyle->m_oFont.Size);
-        UINT nType = pSelectedCont->m_pFontStyle->m_oFont.GetTextFontStyle();
-
-        if (nType > 3)
-        {
-            //Error!
-            return;
-        }
-
-        if (lSize > 144)
-        {
-            lSize = 145;
-        }
-
-        //note нужно корректировать каждый размер отдельно
-        m_dRight -= c_dRightBorderCorrectionSize[lSize][nType];
     }
 
     void CParagraph::MergeLines()

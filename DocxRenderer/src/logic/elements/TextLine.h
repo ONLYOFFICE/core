@@ -53,6 +53,5 @@ namespace NSDocxRenderer
             //Вычисляем
             double CalculateBeforeSpacing(double dPreviousStringBaseline);
             double CalculateRightBorder(const double& dPageWidth);
-            double RightBorderCorrection();
     };
 }

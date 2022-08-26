@@ -48,10 +48,6 @@ namespace NSDocxRenderer
 
             std::shared_ptr<CImageInfo> m_pImageInfo {nullptr};
 
-            //Показывает, что есть отношение графики к тексту (подчеркивания/зачеркивания/выделение).
-            //note Пока сюда записывается указатель на символ с наибольшем размером шрифта.
-            CContText* m_pCont {nullptr};
-
         private:
             UINT m_nShapeId {0};
 
@@ -62,7 +58,7 @@ namespace NSDocxRenderer
 
             CShape(std::shared_ptr<CImageInfo> pInfo, const std::wstring& strDstMedia);
 
-            void GetDataFromVector(const CVectorGraphics& oVector, const LONG& lTypee);
+            void GetDataFromVector(const CVectorGraphics& oVector);
 
             void WritePath(const CVectorGraphics& oVector);
 

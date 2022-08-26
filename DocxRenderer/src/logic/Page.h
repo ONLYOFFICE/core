@@ -86,9 +86,7 @@ namespace NSDocxRenderer
 
         void AnalyzeCollectedShapes();
         void RemoveSubstratesUnderPictures();
-        void CorrelateContWithShape();
         void DetermineLinesType();
-        void DetermineDisplayBehindDocument();
 
         //Собранные для текущей страницы данные нужно проанализировать и сгруппировать, лишнее удалить
         void AnalyzeCollectedSymbols();

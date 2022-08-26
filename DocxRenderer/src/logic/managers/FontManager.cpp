@@ -31,6 +31,7 @@ namespace NSDocxRenderer
     void CFontManager::Init()
     {
         m_oFontTable.m_mapTable.clear();
+        ClearPickUps();
     }
 
     void CFontManager::AddFontToMap()
@@ -70,8 +71,6 @@ namespace NSDocxRenderer
         m_oFont.m_oFont	= *m_pFont;
         m_pFont->Size = dSize;
 
-        bool bIsPath = false;
-
         if (m_pFont->Path.empty())
         {
             CFontManagerBase::LoadFontByName(m_oFont.m_oFont.Name, m_oFont.m_oFont.Size, m_oFont.m_oFont.GetStyle(), c_dDpiX, c_dDpiY);
@@ -82,8 +81,6 @@ namespace NSDocxRenderer
 
             m_pFont->SetStyle(m_oFont.m_lStyle);
             m_oFont.m_oFont.SetStyle(m_oFont.m_lStyle);
-
-            bIsPath = true;
         }
 
         int bIsGID = m_pManager->GetStringGID();
@@ -245,7 +242,7 @@ namespace NSDocxRenderer
         m_lFontStyle	= lStyle;
         m_dSize			= dSize;
 
-        m_pManager->LoadFontByName(strFontName, (float)m_dSize, m_lFontStyle, c_dDpiX, c_dDpiY);
+        m_pManager->LoadFontByName(strFontName, m_dSize, m_lFontStyle, c_dDpiX, c_dDpiY);
         m_dSpaceWidth = MeasureStringWidth(L" ");
 
         m_pManager->SetStringGID(bIsGID);

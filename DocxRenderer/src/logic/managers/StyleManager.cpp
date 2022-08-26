@@ -15,7 +15,7 @@ namespace NSDocxRenderer
 
     void CStyleManager::Clear()
     {
-        m_mapStyles.clear();
+        m_arStyles.clear();
     }
 
     void CStyleManager::NewDocument()
@@ -25,20 +25,20 @@ namespace NSDocxRenderer
 
     std::shared_ptr<CFontStyle> CStyleManager::GetStyle()
     {
-        for (const auto &pStyle : m_mapStyles)
+        for (const auto &pStyle : m_arStyles)
         {
-            if (pStyle.second->IsEqual(m_pCurrentStyle))
+            if (pStyle->IsEqual(m_pCurrentStyle))
             {
-                return pStyle.second;
+                return pStyle;
             }
         }
 
-        auto pairStyle = std::make_pair(m_pCurrentStyle->GetStyleId(), m_pCurrentStyle);
+        m_arStyles.push_back(m_pCurrentStyle);
 
-        m_mapStyles.insert(pairStyle);
+        auto pStyle = m_pCurrentStyle;
 
         m_pCurrentStyle = std::make_shared<CFontStyle>();
 
-        return pairStyle.second;
+        return pStyle;
     }
 }

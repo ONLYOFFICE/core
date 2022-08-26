@@ -38,7 +38,7 @@ namespace NSDocxRenderer
         return RelativeHeight;
     }
 
-    void CShape::GetDataFromVector(const CVectorGraphics& oVector, const LONG& lType)
+    void CShape::GetDataFromVector(const CVectorGraphics& oVector)
     {
         m_dLeft = oVector.m_dLeft;
         m_dTop = oVector.m_dTop;
@@ -52,15 +52,6 @@ namespace NSDocxRenderer
 
         m_dBaselinePos = m_dTop + m_dHeight;
         m_dRight = m_dLeft + m_dWidth;
-
-        if (0x00 != (lType & 0x01))
-        {
-            m_bIsNoStroke = false;
-        }
-        if (0x00 != (lType >> 8))
-        {
-            m_bIsNoFill = false;
-        }
 
         WritePath(oVector);
     }

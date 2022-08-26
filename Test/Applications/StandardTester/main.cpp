@@ -29,6 +29,8 @@ enum CheckResultCode
 	crcPageDiffs = 4
 };
 
+bool g_save_x2t_xml = false;
+
 class CConverter;
 class CInternalWorker
 {
@@ -517,7 +519,8 @@ public:
 			return 0;
 		}
 
-		NSFile::CFileBinary::Remove(sTempFileForParams);
+		if (g_save_x2t_xml != true)
+			NSFile::CFileBinary::Remove(sTempFileForParams);
 
 		DWORD dwTime2 = NSTimers::GetTickCount();
 
@@ -968,6 +971,10 @@ int main(int argc, char** argv)
 			else if (sKey == L"--additional-params")
 			{
 				strAdditionalParams = sValue;
+			}
+			else if (sKey == L"--x2t-debug")
+			{
+				g_save_x2t_xml = true;
 			}
 		}
 	}

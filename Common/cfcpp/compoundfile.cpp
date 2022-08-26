@@ -1728,13 +1728,13 @@ std::vector<BYTE> CompoundFile::GetDataBySID(int sid)
         if (de->getSize() < header->minSizeStandardStream)
         {
             StreamView miniView(GetSectorChain(de->getStartSetc(), SectorType::Mini), Sector::MINISECTOR_SIZE, de->getSize(), zeroQueue, sourceStream);
-            result.reserve(de->getSize());
+            result.resize(de->getSize());
             miniView.read(reinterpret_cast<char*>(result.data()), result.size());
         }
         else
         {
             StreamView sView(GetSectorChain(de->getStartSetc(), SectorType::Normal), GetSectorSize(), de->getSize(), zeroQueue, sourceStream);
-            result.reserve(de->getSize());
+            result.resize(de->getSize());
             sView.read(reinterpret_cast<char*>(result.data()), result.size());
         }
     }

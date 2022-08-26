@@ -17,7 +17,7 @@ public:
     void Add(std::shared_ptr<Sector> item);
     void Clear();
     inline int Count()const {return count;}
-    std::shared_ptr<Sector> operator[](size_t index);
+    std::shared_ptr<Sector>& operator[](size_t index);
     Event<Ver3SizeLimitReached> OnVer3SizeLimitReached;
 
 private:

@@ -1,4 +1,5 @@
 #include "sectorcollection.h"
+#include "cfexception.h"
 
 using namespace CFCPP;
 
@@ -20,18 +21,22 @@ void SectorCollection::Clear()
     count = 0;
 }
 
-std::shared_ptr<Sector> SectorCollection::operator[](size_t index)
+std::shared_ptr<Sector>& SectorCollection::operator[](size_t index)
 {
-    size_t globalPos = 0;
-    for (size_t i = 0; i < largeArraySlices.size(); i ++)
-    {
-        size_t sliceSize = largeArraySlices[i].size();
-        globalPos += sliceSize;
-        if (globalPos < index)
-            return largeArraySlices[i][i % sliceSize];
-    }
+    //    size_t globalPos = 0;
+    //    for (size_t i = 0; i < largeArraySlices.size(); i ++)
+    //    {
+    //        size_t sliceSize = largeArraySlices[i].size();
+    //        globalPos += sliceSize;
+    //        if (globalPos < index)
+    //            return largeArraySlices[i][i % sliceSize];
+    //    }
 
-    return {};
+    //    return {};
+    int itemIndex = index / SLICE_SIZE;
+    int itemOffset = index % SLICE_SIZE;
+
+    return largeArraySlices[itemIndex][itemOffset];
 }
 
 void SectorCollection::DoCheckSizeLimitReached()
@@ -54,7 +59,7 @@ int SectorCollection::add(std::shared_ptr<Sector> item)
     }
     else
     {
-//        std::unique_ptr<std::vector<Sector>> ar(new std::vector<Sector>(SLICE_SIZE));
+        //        std::unique_ptr<std::vector<Sector>> ar(new std::vector<Sector>(SLICE_SIZE));
         SVector<Sector> ar;
         ar.push_back(item);
         largeArraySlices.push_back(ar);

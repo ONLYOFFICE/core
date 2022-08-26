@@ -4,6 +4,8 @@
 #include <gmock/gmock-matchers.h>
 #include "compoundfile.h"
 #include "../../DesktopEditor/common/File.h"
+#include <iostream>
+#include <iomanip>
 
 using namespace testing;
 using namespace std;
@@ -34,4 +36,21 @@ TEST_F(CompoundFileTest, test_compoundfile_write)
     cf.Save(other_filename);
     EXPECT_EQ(FileLenght(filename), FileLenght(other_filename));
     EXPECT_EQ(FileSimpleHash(filename), FileSimpleHash(other_filename));
+}
+
+TEST_F(CompoundFileTest, test_compoundfile_SID)
+{
+    auto dirs = cf.GetDirectories();
+    for (const auto& dir : dirs)
+    {
+        wcout << left << setw(2) << dir->getSid() << L" "
+              << left << setw(30) << dir->GetEntryName() << L" "
+              << left << setw(3) << dir->getNameLength() << L" "
+              << left << setw(4) << dir->getSize() << L" "
+              << left << setw(4) << dir->getStgType() << L" "
+              << left << setw(4) << dir->getChild()
+              << "\n";
+    }
+    auto PowerPointData = cf.GetDataBySID(1);
+    EXPECT_NE(PowerPointData.size(), 0);
 }

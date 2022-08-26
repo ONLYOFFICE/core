@@ -7817,6 +7817,12 @@ void BinaryDocumentTableWriter::WriteSdtComboBox(const OOX::Logic::CSdtComboBox&
 		m_oBcw.m_oStream.WriteStringW3(oSdtComboBox.m_sLastValue.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if (oSdtComboBox.m_oFormat.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrMultiLine);
+		WriteSdtTextFormPrFormat(oSdtComboBox.m_oFormat.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 	for(size_t i = 0; i < oSdtComboBox.m_arrListItem.size(); ++i)
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::SdtListItem);
@@ -8009,11 +8015,11 @@ void BinaryDocumentTableWriter::WriteSdtTextFormPr(const OOX::Logic::CTextFormPr
 	}
 	if (oTextFormPr.m_oFormat.IsInit())
 	{
-		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrMultiLine);
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrFormat);
 		WriteSdtTextFormPrFormat(oTextFormPr.m_oFormat.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (oTextFormPr.m_oFormat.IsInit())
+	if (oTextFormPr.m_oComplexForm.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrComplex);
 		WriteSdtTextFormPrComplex(/*oTextFormPr.m_oComplexForm*/);

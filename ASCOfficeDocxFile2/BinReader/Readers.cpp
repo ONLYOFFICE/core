@@ -9433,6 +9433,11 @@ int Binary_DocumentTableReader::ReadSdtComboBox(BYTE type, long length, void* po
 		pSdtComboBox->m_sLastValue.Init();
 		pSdtComboBox->m_sLastValue->append(m_oBufferedStream.GetString3(length));
 	}
+	else if (c_oSerSdt::TextFormPrFormat == type)
+	{
+		pSdtComboBox->m_oFormat.Init();
+		READ2_DEF(length, res, this->ReadSdtTextFormPrFormat, pSdtComboBox->m_oFormat.GetPointer());
+	}
 	else if (c_oSerSdt::SdtListItem == type)
 	{
 		ComplexTypes::Word::CSdtListItem* pSdtListItem = new ComplexTypes::Word::CSdtListItem();

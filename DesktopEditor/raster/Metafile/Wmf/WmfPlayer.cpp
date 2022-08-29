@@ -150,12 +150,9 @@ namespace MetaFile
 		}
 
 		CWmfObjectMap::const_iterator oPos = m_mObjects.find(ushIndex);
+
 		if (m_mObjects.end() != oPos)
-		{
-			CWmfObjectBase* pOldObject = oPos->second;
-			delete pOldObject;
-			m_mObjects.erase(ushIndex);
-		}
+			DeleteObject(ushIndex);
 
 		m_mObjects.insert(std::pair<unsigned int, CWmfObjectBase*>(ushIndex, pObject));
 

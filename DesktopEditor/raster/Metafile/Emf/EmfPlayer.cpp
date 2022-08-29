@@ -137,12 +137,9 @@ namespace MetaFile
 	void    CEmfPlayer::RegisterObject(unsigned int ulIndex, CEmfObjectBase* pObject)
 	{
 		CEmfObjectMap::const_iterator oPos = m_mObjects.find(ulIndex);
+
 		if (m_mObjects.end() != oPos)
-		{ 
-			CEmfObjectBase* pOldObject = oPos->second;
-			delete pOldObject;
-			m_mObjects.erase(ulIndex);
-		}
+			DeleteObject(ulIndex);
 
 		m_mObjects.insert(std::pair<unsigned int, CEmfObjectBase*>(ulIndex, pObject));
 	}

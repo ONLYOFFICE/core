@@ -9433,6 +9433,11 @@ int Binary_DocumentTableReader::ReadSdtComboBox(BYTE type, long length, void* po
 		pSdtComboBox->m_sLastValue.Init();
 		pSdtComboBox->m_sLastValue->append(m_oBufferedStream.GetString3(length));
 	}
+	else if (c_oSerSdt::TextFormPrFormat == type)
+	{
+		pSdtComboBox->m_oFormat.Init();
+		READ2_DEF(length, res, this->ReadSdtTextFormPrFormat, pSdtComboBox->m_oFormat.GetPointer());
+	}
 	else if (c_oSerSdt::SdtListItem == type)
 	{
 		ComplexTypes::Word::CSdtListItem* pSdtListItem = new ComplexTypes::Word::CSdtListItem();
@@ -9673,11 +9678,16 @@ int Binary_DocumentTableReader::ReadSdtTextFormPrFormat(BYTE type, long length, 
 	ComplexTypes::Word::CTextFormFormat* pFormat = static_cast<ComplexTypes::Word::CTextFormFormat*>(poResult);
 	if (c_oSerSdt::TextFormPrFormatType == type)
 	{
-		pFormat->m_oType.Init();  pFormat->m_oType->SetValueFromByte(m_oBufferedStream.GetChar());
+		pFormat->m_oType.Init();
+		pFormat->m_oType->SetValueFromByte(m_oBufferedStream.GetChar());
 	}
-	else if (c_oSerSdt::TextFormPrFormatString == type)
+	else if (c_oSerSdt::TextFormPrFormatVal == type)
 	{
-		pFormat->m_oFormat = m_oBufferedStream.GetString3(length);
+		pFormat->m_oVal = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSerSdt::TextFormPrFormatSymbols == type)
+	{
+		pFormat->m_oSymbols = m_oBufferedStream.GetString3(length);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

@@ -7817,6 +7817,12 @@ void BinaryDocumentTableWriter::WriteSdtComboBox(const OOX::Logic::CSdtComboBox&
 		m_oBcw.m_oStream.WriteStringW3(oSdtComboBox.m_sLastValue.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if (oSdtComboBox.m_oFormat.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrMultiLine);
+		WriteSdtTextFormPrFormat(oSdtComboBox.m_oFormat.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 	for(size_t i = 0; i < oSdtComboBox.m_arrListItem.size(); ++i)
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::SdtListItem);
@@ -8009,11 +8015,11 @@ void BinaryDocumentTableWriter::WriteSdtTextFormPr(const OOX::Logic::CTextFormPr
 	}
 	if (oTextFormPr.m_oFormat.IsInit())
 	{
-		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrMultiLine);
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrFormat);
 		WriteSdtTextFormPrFormat(oTextFormPr.m_oFormat.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (oTextFormPr.m_oFormat.IsInit())
+	if (oTextFormPr.m_oComplexForm.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrComplex);
 		WriteSdtTextFormPrComplex(/*oTextFormPr.m_oComplexForm*/);
@@ -8029,14 +8035,20 @@ void BinaryDocumentTableWriter::WriteSdtTextFormPrFormat(const ComplexTypes::Wor
 	int nCurPos = 0;
 	if (oFormat.m_oType.IsInit())
 	{
-		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrFormatString);
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrFormatType);
 		m_oBcw.m_oStream.WriteBYTE((BYTE)oFormat.m_oType->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (oFormat.m_oFormat.IsInit())
+	if (oFormat.m_oVal.IsInit())
 	{
-		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrFormatString);
-		m_oBcw.m_oStream.WriteStringW3(oFormat.m_oFormat.get());
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrFormatVal);
+		m_oBcw.m_oStream.WriteStringW3(oFormat.m_oVal.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oFormat.m_oSymbols.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrFormatSymbols);
+		m_oBcw.m_oStream.WriteStringW3(oFormat.m_oSymbols.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 }

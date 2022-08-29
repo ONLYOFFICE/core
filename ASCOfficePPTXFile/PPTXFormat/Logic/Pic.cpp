@@ -204,7 +204,18 @@ namespace PPTX
 						pWriter->WriteString1(7, L"maskFile." + sExt); //OleObject Binary FileName Extension (bin, xls, doc, ... other stream file)
 				}
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-			
+			if (m_oMoveWithCells.IsInit())
+			{
+				pWriter->StartRecord(5);
+				pWriter->WriteBYTE(*m_oMoveWithCells);
+				pWriter->EndRecord();
+			}
+			if (m_oSizeWithCells.IsInit())
+			{
+				pWriter->StartRecord(6);
+				pWriter->WriteBYTE(*m_oSizeWithCells);
+				pWriter->EndRecord();
+			}
 			if (ole_file.IsInit() == false) return;
 
 			if (ole_file->isMsPackage())
@@ -331,7 +342,6 @@ namespace PPTX
 					oReader.Parse();
 				pWriter->EndRecord();
 			}
-
 		}
 
 		void COLEObject::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
@@ -552,11 +562,20 @@ namespace PPTX
 						}
 						pReader->Seek(_end_embed_data);
 					}break;
-					
+					case 5:
+					{
+						pReader->GetLong(); //skip size
+						m_oMoveWithCells = (0 != pReader->GetUChar());
+					}break;
+					case 6:
+					{
+						pReader->GetLong(); //skip size
+						m_oSizeWithCells = (0 != pReader->GetUChar());
+					}break;
 				}
 			}
 			pReader->Seek(_end_rec);
-		}
+		}  
 		void COLEObject::FillParentPointersForChilds()
 		{
 		}

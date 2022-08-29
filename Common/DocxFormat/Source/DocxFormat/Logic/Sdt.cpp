@@ -103,7 +103,8 @@ namespace ComplexTypes
 		void CTextFormFormat::FromXML(XmlUtils::CXmlNode& oNode)
 		{
 			XmlMacroReadAttributeBase(oNode, L"w:type", m_oType);
-			XmlMacroReadAttributeBase(oNode, L"w:format", m_oFormat);
+			XmlMacroReadAttributeBase(oNode, L"w:val", m_oVal);
+			XmlMacroReadAttributeBase(oNode, L"w:symbols", m_oSymbols);
 		}
 		void CTextFormFormat::FromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -119,9 +120,13 @@ namespace ComplexTypes
 			{
 				sResult += L"w:type=\"" + m_oType->ToString() + L"\" ";
 			}
-			if (m_oFormat.IsInit())
+			if (m_oVal.IsInit())
 			{
-				sResult += L"w:sym=\"" + XmlUtils::EncodeXmlString(m_oFormat.get()) + L"\" ";
+				sResult += L"w:val=\"" + XmlUtils::EncodeXmlString(m_oVal.get()) + L"\" ";
+			}
+			if (m_oSymbols.IsInit())
+			{
+				sResult += L"w:symbols=\"" + XmlUtils::EncodeXmlString(m_oSymbols.get()) + L"\" ";
 			}
 			return sResult;
 		}
@@ -129,7 +134,8 @@ namespace ComplexTypes
 		{
 			WritingElement_ReadAttributes_Start(oReader)
 				WritingElement_ReadAttributes_Read_if(oReader, L"w:type", m_oType)
-				WritingElement_ReadAttributes_Read_else_if(oReader, L"w:format", m_oFormat)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"w:val", m_oVal)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"w:symbols", m_oSymbols)
 			WritingElement_ReadAttributes_End(oReader)
 		}
 	}

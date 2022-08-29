@@ -450,7 +450,8 @@ namespace ComplexTypes
 
 		public:
 			nullable<SimpleTypes::CTextFormFormatType<>> m_oType;
-			nullable_string m_oFormat;
+			nullable_string m_oVal;
+			nullable_string m_oSymbols;
 		};
 	} // Word
 } // ComplexTypes
@@ -534,9 +535,6 @@ namespace OOX
 
 				m_arrListItem.clear();
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, L"w:lastValue", m_sLastValue );
@@ -553,6 +551,11 @@ namespace OOX
 							if (oListItem) m_arrListItem.push_back( oListItem );
 						}
 					}
+				}
+				XmlUtils::CXmlNode oChild;
+				if (oNode.GetNode(L"w:format", oChild))
+				{
+					m_oFormat = oChild;
 				}
 			}
 
@@ -572,6 +575,8 @@ namespace OOX
 						ComplexTypes::Word::CSdtListItem *oListItem = new ComplexTypes::Word::CSdtListItem(oReader);
 						m_arrListItem.push_back( oListItem );
 					}
+					else if (L"w:format" == sName)
+						m_oFormat = oReader;
 				}
 			}
 			virtual std::wstring toXML() const
@@ -587,6 +592,7 @@ namespace OOX
 				else
 					sResult = L"<w:comboBox>";
 
+				WritingElement_WriteNode_1(L"<w:format ", m_oFormat);
 				for (size_t nIndex = 0; nIndex < m_arrListItem.size(); nIndex++ )
 				{
 					sResult += L"<w:listItem ";
@@ -594,7 +600,6 @@ namespace OOX
 						sResult += m_arrListItem[nIndex]->ToString();
 					sResult += L"/>";
 				}
-
 				sResult += L"</w:comboBox>";
 
 				return sResult;
@@ -604,9 +609,7 @@ namespace OOX
 			{
 				return et_w_comboBox;
 			}
-
 		private:
-
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
@@ -615,6 +618,7 @@ namespace OOX
 			}
 
 		public:
+			nullable<ComplexTypes::Word::CTextFormFormat> m_oFormat;
 			nullable<std::wstring > m_sLastValue;
 
 			std::vector<ComplexTypes::Word::CSdtListItem*> m_arrListItem;
@@ -781,8 +785,8 @@ namespace OOX
 			}
 		public:
 
- 			nullable<ComplexTypes::Word::String                       > m_oDocPartCategory;
-			nullable<ComplexTypes::Word::String                       > m_oDocPartGallery;
+ 			nullable<ComplexTypes::Word::String> m_oDocPartCategory;
+			nullable<ComplexTypes::Word::String> m_oDocPartGallery;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oDocPartUnique;
 		};
 

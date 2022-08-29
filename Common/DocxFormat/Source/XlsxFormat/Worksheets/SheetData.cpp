@@ -958,6 +958,8 @@ namespace OOX
 			{
 				m_oSi.Init();
 				m_oSi->SetValue(oStream.GetULong());
+				m_oT.Init();
+				m_oT->SetValue(SimpleTypes::Spreadsheet::cellformulatypeShared);
 			}
 		}
 
@@ -974,6 +976,7 @@ namespace OOX
                         m_sText = formula->formula.getAssembledFormula();
                         //m_oCa.Init();
                         //m_oCa = formula->grbitFlags.fAlwaysCalc;
+						m_oT.reset();
                     }
                     break;
                 case SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeShared:
@@ -1857,9 +1860,13 @@ namespace OOX
                         if(pFMLACELL->m_source != nullptr)
                         {
                             m_oFormula.Init();
-                            if(pFMLACELL->isShared)
-                                m_oFormula->m_oSi = pFMLACELL->m_sharedIndex;
                             m_oFormula->fromBin(pFMLACELL->m_source, SimpleTypes::Spreadsheet::cellformulatypeNormal);
+							if (pFMLACELL->isShared)
+							{
+								m_oFormula->m_oSi = pFMLACELL->m_sharedIndex;
+								m_oFormula->m_oT.Init();
+								m_oFormula->m_oT->SetValue(SimpleTypes::Spreadsheet::cellformulatypeShared);
+							}
                         }
 
                         if(pSHRFMLACELL != nullptr)

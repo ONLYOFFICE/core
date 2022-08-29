@@ -379,7 +379,7 @@ namespace MetaFile
 					wsTempText += wsText.at(wsText.length() - 1);
 					//wsTempText += wsText.at(unCharsCount - 1);
 
-					pFontManager->LoadString1(wsTempText, 0, 0);
+					pFontManager->LoadString2(wsTempText, 0, 0);
 					TBBox oBox = pFontManager->MeasureString2();
 					dTempTextW += dMmToPt * (oBox.fMaxX - oBox.fMinX);
 
@@ -388,7 +388,7 @@ namespace MetaFile
 				}
 				else
 				{
-					pFontManager->LoadString1(wsText, 0, 0);
+					pFontManager->LoadString2(wsText, 0, 0);
 					TBBox oBox = pFontManager->MeasureString2();
 					fL = (float)dMmToPt * (oBox.fMinX);
 					fW = (float)dMmToPt * (oBox.fMaxX - oBox.fMinX);

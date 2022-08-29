@@ -66,10 +66,10 @@ void DirectoryEntry::SetEntryName(const std::wstring &entryName)
     else
     {
         if (
-                entryName.find(L"\\") == std::wstring::npos ||
-                entryName.find(L"/")  == std::wstring::npos ||
-                entryName.find(L":")  == std::wstring::npos ||
-                entryName.find(L"!")  == std::wstring::npos
+                entryName.find(L"\\") != std::wstring::npos ||
+                entryName.find(L"/")  != std::wstring::npos ||
+                entryName.find(L":")  != std::wstring::npos ||
+                entryName.find(L"!")  != std::wstring::npos
                 ) throw CFException("Invalid character in entry: the characters '\\', '/', ':','!' cannot be used in entry name");
 
         if (entryName.length() > 31)
@@ -173,15 +173,15 @@ RedBlackTree::PIRBNode DirectoryEntry::getRight() const
 
 void DirectoryEntry::setLeft(RedBlackTree::PIRBNode pNode)
 {
-    leftSibling = pNode != nullptr ? static_cast<IDirectoryEntry*>(pNode.get())->getSid() : DirectoryEntry::NOSTREAM;
+    leftSibling = pNode != nullptr ? std::static_pointer_cast<IDirectoryEntry>(pNode)->getSid() : DirectoryEntry::NOSTREAM;
 
     if (leftSibling != DirectoryEntry::NOSTREAM)
         dirRepository[leftSibling]->setParent(shared_from_this());
 }
-
+// todo
 void DirectoryEntry::setRight(RedBlackTree::PIRBNode pNode)
 {
-    rightSibling = pNode != nullptr ? static_cast<IDirectoryEntry*>(pNode.get())->getSid() : DirectoryEntry::NOSTREAM;
+    rightSibling = pNode != nullptr ? std::static_pointer_cast<IDirectoryEntry>(pNode)->getSid() : DirectoryEntry::NOSTREAM;
 
     if (rightSibling != DirectoryEntry::NOSTREAM)
         dirRepository[rightSibling]->setParent(shared_from_this());

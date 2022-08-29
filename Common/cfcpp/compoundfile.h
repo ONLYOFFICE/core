@@ -40,7 +40,7 @@ enum CFSUpdateMode
 class CompoundFile
 {
 public:
-    CompoundFile(const std::wstring &fileName, CFSUpdateMode updateMode, CFSConfiguration configParameters);
+    CompoundFile(const std::wstring &fileName, CFSUpdateMode updateMode, CFSConfiguration configParameters = Default);
     CompoundFile(CFSVersion cfsVersion, CFSConfiguration configFlags);
     CompoundFile(const std::wstring &fileName);
     CompoundFile(Stream stream);
@@ -52,6 +52,7 @@ public:
 
     static std::shared_ptr<RedBlackTree::RBTree> CreateNewTree();
     std::shared_ptr<RedBlackTree::RBTree> GetChildrenTree(int sid);
+    std::shared_ptr<CFStorage> RootStorage();
     bool IsClosed()const;
     SVector<IDirectoryEntry> &GetDirectories();
     void ResetDirectoryEntry(int sid);
@@ -106,7 +107,7 @@ private:
     void DoLoadSiblings(std::shared_ptr<RedBlackTree::RBTree> bst, std::shared_ptr<IDirectoryEntry> de);
     bool ValidateSibling(int sid);
     void LoadDirectories();
-    // TODO
+
     void FreeMiniChain(SVector<Sector>& sectorChain, bool zeroSector);
     void FreeMiniChain(SVector<Sector>& sectorChain, int nth_sector_to_remove, bool zeroSector);
     void FreeChain(SVector<Sector>& sectorChain, int nth_sector_to_remove, bool zeroSector);

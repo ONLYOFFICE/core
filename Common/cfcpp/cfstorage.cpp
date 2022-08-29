@@ -182,7 +182,7 @@ std::shared_ptr<CFStorage> CFStorage::AddStorage(const std::wstring &storageName
     try
     {
         // Add object to Siblings tree
-        children->Insert(cfo);
+        getChildren()->Insert(cfo);
     }
     catch (RedBlackTree::RBTreeDuplicatedItemException& ex)
     {

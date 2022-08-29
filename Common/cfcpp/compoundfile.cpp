@@ -514,7 +514,6 @@ SVector<Sector> CompoundFile::GetNormalSectorChain(int secID)
     return result;
 }
 
-// TODO
 SVector<Sector> CompoundFile::GetMiniSectorChain(int secID)
 {
     SVector<Sector> result;
@@ -654,6 +653,11 @@ std::shared_ptr<IDirectoryEntry> CompoundFile::RootEntry()
     if (directoryEntries.empty())
         return {};
     return directoryEntries[0];
+}
+
+std::shared_ptr<CFStorage> CompoundFile::RootStorage()
+{
+    return rootStorage;
 }
 
 SVector<IDirectoryEntry> CompoundFile::FindDirectoryEntries(std::wstring entryName)

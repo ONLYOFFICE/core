@@ -233,7 +233,7 @@ namespace MetaFile
 
 			LOGGING(ActionNamesEmfPlus[unShType] << L"  DataSize = " << m_ulRecordSize)
 
-					switch (unShType)
+			switch (unShType)
 			{
 				//Clipping Record Types (Типы записей отсечения)
 				case EMRPLUS_OFFSETCLIP:    Read_EMRPLUS_OFFSETCLIP();              break;
@@ -258,6 +258,7 @@ namespace MetaFile
 				case EMFPLUS_DRAWCURVE:         Read_EMFPLUS_DRAWCURVE(unShFlags);              break;
 				case EMFPLUS_DRAWDRIVERSTRING:  Read_EMFPLUS_DRAWDRIVERSTRING(unShFlags);       break;
 				case EMFPLUS_DRAWELLIPSE:       Read_EMFPLUS_DRAWELLIPSE(unShFlags);            break;
+				case EMFPLUS_DRAWIMAGE:			Read_EMFPLUS_DRAWIMAGE(unShFlags);				break;
 				case EMFPLUS_DRAWIMAGEPOINTS:   Read_EMFPLUS_DRAWIMAGEPOINTS(unShFlags);        break;
 				case EMFPLUS_DRAWLINES:         Read_EMFPLUS_DRAWLINES(unShFlags);              break;
 				case EMFPLUS_DRAWPATH:          Read_EMFPLUS_DRAWPATH(unShFlags);               break;
@@ -1245,7 +1246,6 @@ namespace MetaFile
 	{
 		if (NULL == pBuffer || 0 == unSize || MetafileDataTypeUnknown == eMetafileType)
 			return;
-
 
 		if (MetafileDataTypeEmf == eMetafileType ||
 				MetafileDataTypeEmfPlusOnly == eMetafileType ||
@@ -2495,7 +2495,7 @@ namespace MetaFile
 		case ObjectTypeImage:
 		{
 			LOGGING(L"Object Image")
-					ReadImage(shObjectIndex, ((unShFlags >>(15)) & 1));
+			ReadImage(shObjectIndex, ((unShFlags >>(15)) & 1));
 			break;
 		}
 		case ObjectTypeFont:

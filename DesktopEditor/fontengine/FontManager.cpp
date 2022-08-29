@@ -232,13 +232,8 @@ NSFonts::IFontFile* CFontsCache::LockFont(NSFonts::CLibrary& library, const std:
 	if (NULL == m_pApplicationFontStreams)
 		return NULL;
 
-	std::string sLock = NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(strFileName.c_str(), strFileName.length(), false);
-	
-	char buffer[50];
-	sprintf(buffer, "%d_%.2lf", lFaceIndex, dSize);
-	std::string s(buffer);
-
-	sLock += s;
+	std::string sLock = U_TO_UTF8(strFileName);
+	sLock += (std::to_string(lFaceIndex) + "_" + std::to_string((int)(100 * dSize + 0.5)));
 
 	CFontFile* pFile = m_mapFiles[sLock];
 

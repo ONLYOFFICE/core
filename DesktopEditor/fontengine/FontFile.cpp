@@ -175,9 +175,6 @@ CFontFile::CFontFile()
 
 CFontFile::~CFontFile()
 {
-	if (m_pFontManager && m_pFontManager->m_pFont == this)
-		m_pFontManager->m_pFont = NULL;
-
 	RELEASEINTERFACE(m_pStream);
 	ClearCache();
 

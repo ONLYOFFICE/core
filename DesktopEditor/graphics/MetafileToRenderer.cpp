@@ -140,6 +140,8 @@ public:
 		m_pRenderer->CommandDrawText(bsText, x, y, w, h);
 		m_pRenderer->put_FontName(sName);
 		m_pRenderer->put_FontStyle(nStyle);
+
+		RELEASEINTERFACE(pFileNew);
 	}
 
 	void SetRenderer(IRenderer* pRenderer)

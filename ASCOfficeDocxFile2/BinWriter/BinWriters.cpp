@@ -8035,14 +8035,20 @@ void BinaryDocumentTableWriter::WriteSdtTextFormPrFormat(const ComplexTypes::Wor
 	int nCurPos = 0;
 	if (oFormat.m_oType.IsInit())
 	{
-		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrFormatString);
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrFormatType);
 		m_oBcw.m_oStream.WriteBYTE((BYTE)oFormat.m_oType->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (oFormat.m_oFormat.IsInit())
+	if (oFormat.m_oVal.IsInit())
 	{
-		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrFormatString);
-		m_oBcw.m_oStream.WriteStringW3(oFormat.m_oFormat.get());
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrFormatVal);
+		m_oBcw.m_oStream.WriteStringW3(oFormat.m_oVal.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oFormat.m_oSymbols.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrFormatSymbols);
+		m_oBcw.m_oStream.WriteStringW3(oFormat.m_oSymbols.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 }

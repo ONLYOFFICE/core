@@ -9678,11 +9678,16 @@ int Binary_DocumentTableReader::ReadSdtTextFormPrFormat(BYTE type, long length, 
 	ComplexTypes::Word::CTextFormFormat* pFormat = static_cast<ComplexTypes::Word::CTextFormFormat*>(poResult);
 	if (c_oSerSdt::TextFormPrFormatType == type)
 	{
-		pFormat->m_oType.Init();  pFormat->m_oType->SetValueFromByte(m_oBufferedStream.GetChar());
+		pFormat->m_oType.Init();
+		pFormat->m_oType->SetValueFromByte(m_oBufferedStream.GetChar());
 	}
-	else if (c_oSerSdt::TextFormPrFormatString == type)
+	else if (c_oSerSdt::TextFormPrFormatVal == type)
 	{
-		pFormat->m_oFormat = m_oBufferedStream.GetString3(length);
+		pFormat->m_oVal = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSerSdt::TextFormPrFormatSymbols == type)
+	{
+		pFormat->m_oSymbols = m_oBufferedStream.GetString3(length);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

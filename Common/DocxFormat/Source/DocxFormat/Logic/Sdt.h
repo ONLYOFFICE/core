@@ -450,7 +450,8 @@ namespace ComplexTypes
 
 		public:
 			nullable<SimpleTypes::CTextFormFormatType<>> m_oType;
-			nullable_string m_oFormat;
+			nullable_string m_oVal;
+			nullable_string m_oSymbols;
 		};
 	} // Word
 } // ComplexTypes

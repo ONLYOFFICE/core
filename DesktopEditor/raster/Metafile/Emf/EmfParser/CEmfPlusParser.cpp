@@ -1138,30 +1138,30 @@ namespace MetaFile
 		oMatrix.Dy  *= m_dUnitKoef;
 	}
 
-	BYTE* GetClipedImage(const BYTE* pBuffer, LONG lWidth, LONG lHeight, TEmfRectL& oNewRect)
+	BYTE* GetClipedImage(const BYTE* pBuffer, LONG lWidth, LONG lHeight, TRect& oNewRect)
 	{
 		if (NULL == pBuffer ||
-				oNewRect.lLeft < 0 || oNewRect.lRight  < 0 ||
-				oNewRect.lTop  < 0 || oNewRect.lBottom < 0)
+				oNewRect.nLeft < 0 || oNewRect.nRight  < 0 ||
+				oNewRect.nTop  < 0 || oNewRect.nBottom < 0)
 			return NULL;
 
-		if (lHeight < (oNewRect.lBottom - oNewRect.lTop))
-			oNewRect.lBottom = oNewRect.lTop + lHeight;
+		if (lHeight < (oNewRect.nBottom - oNewRect.nTop))
+			oNewRect.nBottom = oNewRect.nTop + lHeight;
 
-		if (lWidth < (oNewRect.lRight - oNewRect.lLeft))
-			oNewRect.lRight = oNewRect.lLeft + lWidth;
+		if (lWidth < (oNewRect.nRight - oNewRect.nLeft))
+			oNewRect.nRight = oNewRect.nLeft + lWidth;
 
-		if (lHeight == (oNewRect.lBottom - oNewRect.lTop) &&
-				lWidth  == (oNewRect.lRight  - oNewRect.lLeft))
+		if (lHeight == (oNewRect.nBottom - oNewRect.nTop) &&
+				lWidth  == (oNewRect.nRight  - oNewRect.nLeft))
 			return NULL;
 
 		int nBeginX, nBeginY, nEndX, nEndY;
 
-		nBeginX = (std::min)(oNewRect.lLeft, oNewRect.lRight);
-		nBeginY = (std::min)(oNewRect.lTop,  oNewRect.lBottom);
+		nBeginX = (std::min)(oNewRect.nLeft, oNewRect.nRight);
+		nBeginY = (std::min)(oNewRect.nTop,  oNewRect.nBottom);
 
-		nEndX   = (std::max)(oNewRect.lLeft, oNewRect.lRight);
-		nEndY   = (std::max)(oNewRect.lTop,  oNewRect.lBottom);
+		nEndX   = (std::max)(oNewRect.nLeft, oNewRect.nRight);
+		nEndY   = (std::max)(oNewRect.nTop,  oNewRect.nBottom);
 
 		int nWidth = nEndX - nBeginX;
 		int nHeight = nEndY - nBeginY;
@@ -1309,27 +1309,25 @@ namespace MetaFile
 
 				BYTE* pPixels = oFrame.get_Data();
 
-				RELEASEINTERFACE(pGrRenderer);
-
 				FlipYImage(pPixels, lWidth, lHeight); //Проверить на примерах, где WrapMode != WrapModeTileFlipXY
 
-				TEmfRectL oClipRect;
+				TRect oClipRect;
 
-				oClipRect.lLeft   = oSrcRect.dX;
-				oClipRect.lTop    = oSrcRect.dY;
-				oClipRect.lRight  = oSrcRect.dX + oSrcRect.dWidth;
-				oClipRect.lBottom = oSrcRect.dY + oSrcRect.dHeight;
+				oClipRect.nLeft   = oSrcRect.dX;
+				oClipRect.nTop    = oSrcRect.dY;
+				oClipRect.nRight  = oSrcRect.dX + oSrcRect.dWidth;
+				oClipRect.nBottom = oSrcRect.dY + oSrcRect.dHeight;
 
 				BYTE* pNewBuffer = GetClipedImage(pPixels, lWidth, lHeight, oClipRect);
 
-				unsigned int unWidth  = std::min(((unsigned int)fabs(oClipRect.lRight - oClipRect.lLeft)), ((unsigned int)lWidth ));
-				unsigned int unHeight = std::min(((unsigned int)fabs(oClipRect.lBottom - oClipRect.lTop)), ((unsigned int)lHeight));
+				unsigned int unWidth  = std::min(((unsigned int)fabs(oClipRect.nRight - oClipRect.nLeft)), ((unsigned int)lWidth ));
+				unsigned int unHeight = std::min(((unsigned int)fabs(oClipRect.nBottom - oClipRect.nTop)), ((unsigned int)lHeight));
 
 				m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X, arPoints[2].Y - arPoints[0].Y,
 						(NULL != pNewBuffer) ? pNewBuffer : pPixels, unWidth, unHeight);
 
-				if (NULL != pNewBuffer)
-					delete [] pNewBuffer;
+				RELEASEINTERFACE(pGrRenderer);
+				RELEASEARRAYOBJECTS(pNewBuffer);
 			}
 		}
 		else if (MetafileDataTypeWmf == eMetafileType ||
@@ -1380,35 +1378,34 @@ namespace MetaFile
 				pGrRenderer->BeginCommand(c_nImageType);
 
 				CMetaFileRenderer oWmfOut(&oWmfParser, pGrRenderer, 0, 0, dWidth, dHeight);
-				oWmfParser.SetOutputDevice(&oWmfOut);
-
-				oWmfParser.PlayMetaFile();
+				oWmfParser.SetInterpretator(&oWmfOut);
+				oWmfParser.PlayFile();
 
 				pGrRenderer->EndCommand(c_nImageType);
 
-				LONG lWidth, lHeight;
+				LONG lWidth = nWidth, lHeight = nHeight;
 
 				BYTE* pPixels = oFrame.get_Data();
 
 				FlipYImage(pPixels, lWidth, lHeight); //Проверить на примерах, где WrapMode != WrapModeTileFlipXY
 
-				TEmfRectL oClipRect;
+				TRect oClipRect;
 
-				oClipRect.lLeft   = oSrcRect.dX;
-				oClipRect.lTop    = oSrcRect.dY;
-				oClipRect.lRight  = oSrcRect.dX + oSrcRect.dWidth;
-				oClipRect.lBottom = oSrcRect.dY + oSrcRect.dHeight;
+				oClipRect.nLeft   = oSrcRect.dX;
+				oClipRect.nTop    = oSrcRect.dY;
+				oClipRect.nRight  = oSrcRect.dX + oSrcRect.dWidth;
+				oClipRect.nBottom = oSrcRect.dY + oSrcRect.dHeight;
 
 				BYTE* pNewBuffer = GetClipedImage(pPixels, lWidth, lHeight, oClipRect);
 
-				unsigned int unWidth  = std::min(((unsigned int)fabs(oClipRect.lRight - oClipRect.lLeft)), ((unsigned int)lWidth ));
-				unsigned int unHeight = std::min(((unsigned int)fabs(oClipRect.lBottom - oClipRect.lTop)), ((unsigned int)lHeight));
+				unsigned int unWidth  = std::min(((unsigned int)fabs(oClipRect.nRight - oClipRect.nLeft)), ((unsigned int)lWidth ));
+				unsigned int unHeight = std::min(((unsigned int)fabs(oClipRect.nBottom - oClipRect.nTop)), ((unsigned int)lHeight));
 
 				m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X, arPoints[2].Y - arPoints[0].Y,
-						(NULL != pNewBuffer) ? pNewBuffer : pPixels, unWidth, unHeight);
+											 (NULL != pNewBuffer) ? pNewBuffer : pPixels, unWidth, unHeight);
 
-				if (NULL != pNewBuffer)
-					delete [] pNewBuffer;
+				RELEASEINTERFACE(pGrRenderer);
+				RELEASEARRAYOBJECTS(pNewBuffer);
 			}
 		}
 		//TODO: общую часть в идеале нужно вынести
@@ -1451,20 +1448,19 @@ namespace MetaFile
 
 		FlipYImage(pBytes, unWidth, unHeight); // для оптимизации можно для начала переместить ClipRect, вырезать нужную часть и уже тогда перевернуть её
 
-		TEmfRectL oClipRect;
+		TRect oClipRect;
 
-		oClipRect.lLeft = oSrcRect.dX;
-		oClipRect.lTop = oSrcRect.dY;
-		oClipRect.lRight = (oSrcRect.dX + oSrcRect.dWidth);
-		oClipRect.lBottom = (oSrcRect.dY + oSrcRect.dHeight);
+		oClipRect.nLeft = oSrcRect.dX;
+		oClipRect.nTop = oSrcRect.dY;
+		oClipRect.nRight = (oSrcRect.dX + oSrcRect.dWidth);
+		oClipRect.nBottom = (oSrcRect.dY + oSrcRect.dHeight);
 
 		BYTE* pNewBuffer = GetClipedImage(pBytes, unWidth, unHeight, oClipRect);
 
 		m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X, arPoints[2].Y - arPoints[0].Y,
-				(NULL != pNewBuffer) ? pNewBuffer : pBytes, fabs(oClipRect.lRight - oClipRect.lLeft), fabs(oClipRect.lBottom - oClipRect.lTop));
+				(NULL != pNewBuffer) ? pNewBuffer : pBytes, fabs(oClipRect.nRight - oClipRect.nLeft), fabs(oClipRect.nBottom - oClipRect.nTop));
 
-		if (NULL != pNewBuffer)
-			delete [] pNewBuffer;
+		RELEASEARRAYOBJECTS(pNewBuffer);
 	}
 
 	void CEmfPlusParser::Read_EMRPLUS_HEADER(unsigned short unShFlags)

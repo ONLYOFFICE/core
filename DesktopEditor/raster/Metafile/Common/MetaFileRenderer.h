@@ -314,7 +314,7 @@ namespace MetaFile
 			double dM11, dM12, dM21, dM22, dRx, dRy;
 			m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
 
-			if (dM11 * dM22 > 0)
+			if (dYScale > 0)
 				dSinTheta = -dSinTheta;
 
 			float fL = 0, fT = 0, fW = 0, fH = 0;
@@ -465,7 +465,7 @@ namespace MetaFile
 				m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
 				if (dXScale < -0.00001)
 				{
-					dX -= fabs(fW);
+					dX += fabs(fW);
 
 					if (m_pFile->IsWindowFlippedX())
 					{
@@ -481,16 +481,9 @@ namespace MetaFile
 
 				if (dYScale < -0.00001)
 				{
-					dY -= fabs(fH);
+					dY += fabs(fH);
 
-					if (m_pFile->IsWindowFlippedY())
-					{
-						dShiftY = (2 * dY - fabs(fH)) * dM22;
-					}
-					else
-					{
-						dShiftY = (2 * dY + fabs(fH)) * dM22;
-					}
+					dShiftY = (2 * dY - fabs(fH)) * dM22;
 
 					dM22 = fabs(dM22);
 				}

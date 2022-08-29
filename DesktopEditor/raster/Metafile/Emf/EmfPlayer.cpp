@@ -314,6 +314,7 @@ namespace MetaFile
 		pNewDC->m_oTransform.Copy(&m_oTransform);
 		pNewDC->m_oInverseTransform.Copy(&m_oInverseTransform);
 		pNewDC->m_oFinalTransform.Copy(&m_oFinalTransform);
+		pNewDC->m_oFinalTransform2.Copy(&m_oFinalTransform2);
 		pNewDC->m_oTextColor.Copy(&m_oTextColor);
 		pNewDC->m_oBgColor.Copy(&m_oBgColor);
 		pNewDC->m_ulTextAlign    = m_ulTextAlign;
@@ -618,8 +619,8 @@ namespace MetaFile
 		double dM11 = (pViewPort->ulW >= 0) ? 1 : -1;
 		double dM22 = (pViewPort->ulH >= 0) ? 1 : -1;
 
-		TEmfXForm oWindowXForm(dM11, 0, 0, dM22, -pWindow->lX * dM11 * GetPixelWidth(), -pWindow->lY * dM22 * GetPixelHeight());
-		TEmfXForm oViewportXForm((double)GetPixelWidth(), 0, 0, (double)GetPixelHeight(), -pViewPort->lX, -pViewPort->lY);
+		TEmfXForm oWindowXForm(1, 0, 0, 1, -(pWindow->lX * GetPixelWidth() * dM11), -(pWindow->lY * GetPixelHeight() * dM22));
+		TEmfXForm oViewportXForm(GetPixelWidth() * dM11, 0, 0, GetPixelHeight() * dM22, pViewPort->lX, pViewPort->lY);
 
 		m_oFinalTransform.Init();
 		m_oFinalTransform.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);
@@ -628,7 +629,7 @@ namespace MetaFile
 
 		m_oFinalTransform2.Init();
 		m_oFinalTransform2.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);
-//		m_oFinalTransform2.Multiply(m_oTransform, MWT_RIGHTMULTIPLY);
+		m_oFinalTransform2.Multiply(m_oTransform, MWT_RIGHTMULTIPLY);
 		m_oFinalTransform2.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);
 	}
 	void            CEmfDC::SetRop2Mode(unsigned int& nMode)

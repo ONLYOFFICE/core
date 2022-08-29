@@ -28,6 +28,9 @@ namespace MetaFile
 
 	TRect *CWmfParserBase::GetDCBounds()
 	{
+		m_oDCRect = GetBoundingBox();
+		return &m_oDCRect;
+
 		TWmfWindow* pViewport = m_pDC->GetViewport();
 
 		m_oDCRect.nLeft   = pViewport->x;
@@ -433,8 +436,7 @@ namespace MetaFile
 
 			m_pInterpretator->DrawString(wsText, unCharsCount, dX, dY, pdDx);
 
-			if (pdDx)
-				delete[] pdDx;
+			RELEASEARRAYOBJECTS(pdDx);
 		}
 		else
 		{

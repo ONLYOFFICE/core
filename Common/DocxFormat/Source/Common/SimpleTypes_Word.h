@@ -2551,11 +2551,11 @@ namespace SimpleTypes
 
 	enum ETextFormFormatType
 	{
-		textFormFormatTypeNone = 0,
-		textFormFormatTypeDigit = 2,
-		textFormFormatTypeLetter = 3,
-		textFormFormatTypeMask = 4,
-		textFormFormatTypeRegExp = 5
+		textFormFormatTypeNone   = 0,
+		textFormFormatTypeDigit  = 1,
+		textFormFormatTypeLetter = 2,
+		textFormFormatTypeMask   = 3,
+		textFormFormatTypeRegExp = 4
 	};
 
 	template<ETextFormFormatType eDefValue = textFormFormatTypeNone>

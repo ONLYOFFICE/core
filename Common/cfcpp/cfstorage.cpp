@@ -43,10 +43,10 @@ std::shared_ptr<CFStream> CFStorage::AddStream(const std::wstring& streamName)
     try
     {
         // Add object to Siblings tree
-        children->Insert(dirEntry);
+        getChildren()->Insert(dirEntry);
 
         //... and set the root of the tree as new child of the current item directory entry
-        dirEntry->setChild(std::dynamic_pointer_cast<IDirectoryEntry>(children->getRoot())->getSid());
+        dirEntry->setChild(std::dynamic_pointer_cast<IDirectoryEntry>(getChildren()->getRoot())->getSid());
     }
     catch (RedBlackTree::RBTreeException &rbex)
     {
@@ -66,7 +66,7 @@ std::shared_ptr<CFStream> CFStorage::GetStream(const std::wstring& streamName)
 
     RedBlackTree::PIRBNode outDe;
 
-    if (children->TryLookup(tmp, outDe) &&
+    if (getChildren()->TryLookup(tmp, outDe) &&
             ((std::static_pointer_cast<IDirectoryEntry>(outDe))->getStgType() == StgType::StgStream))
     {
         return std::shared_ptr<CFStream>(new CFStream(compoundFile, std::static_pointer_cast<IDirectoryEntry>(outDe)));
@@ -90,7 +90,7 @@ bool CFStorage::TryGetStream(const std::wstring& streamName, std::shared_ptr<CFS
 
         RedBlackTree::PIRBNode outDe;
 
-        if (children->TryLookup(tmp, outDe) &&
+        if (getChildren()->TryLookup(tmp, outDe) &&
                 ((std::static_pointer_cast<IDirectoryEntry>(outDe))->getStgType() == StgType::StgStream))
         {
             cfStream = std::shared_ptr<CFStream>(new CFStream(compoundFile, std::static_pointer_cast<IDirectoryEntry>(outDe)));
@@ -112,7 +112,7 @@ std::shared_ptr<CFStorage> CFStorage::GetStorage(const std::wstring &storageName
     std::shared_ptr<IDirectoryEntry> templ = DirectoryEntry::Mock(storageName, StgType::StgInvalid);
     RedBlackTree::PIRBNode outDe;
 
-    if (children->TryLookup(templ, outDe) && std::static_pointer_cast<IDirectoryEntry>(outDe)->getStgType() == StgType::StgStorage)
+    if (getChildren()->TryLookup(templ, outDe) && std::static_pointer_cast<IDirectoryEntry>(outDe)->getStgType() == StgType::StgStorage)
     {
         return std::shared_ptr<CFStorage>(new CFStorage(compoundFile, std::dynamic_pointer_cast<IDirectoryEntry>(outDe)));
     }
@@ -129,7 +129,7 @@ std::shared_ptr<CFStorage> CFStorage::TryGetStorage(const std::wstring &storageN
     std::shared_ptr<IDirectoryEntry> templ = DirectoryEntry::Mock(storageName, StgType::StgInvalid);
     RedBlackTree::PIRBNode outDe;
 
-    if (children->TryLookup(templ, outDe) && std::static_pointer_cast<IDirectoryEntry>(outDe)->getStgType() == StgType::StgStorage)
+    if (getChildren()->TryLookup(templ, outDe) && std::static_pointer_cast<IDirectoryEntry>(outDe)->getStgType() == StgType::StgStorage)
     {
         return std::shared_ptr<CFStorage>(new CFStorage(compoundFile, std::dynamic_pointer_cast<IDirectoryEntry>(outDe)));
     }
@@ -151,7 +151,7 @@ bool CFStorage::TryGetStorage(const std::wstring &storageName, std::shared_ptr<C
         std::shared_ptr<IDirectoryEntry> templ = DirectoryEntry::Mock(storageName, StgType::StgInvalid);
         RedBlackTree::PIRBNode outDe;
 
-        if (children->TryLookup(templ, outDe) && std::static_pointer_cast<IDirectoryEntry>(outDe)->getStgType() == StgType::StgStorage)
+        if (getChildren()->TryLookup(templ, outDe) && std::static_pointer_cast<IDirectoryEntry>(outDe)->getStgType() == StgType::StgStorage)
         {
             cfStorage.reset(new CFStorage(compoundFile, std::dynamic_pointer_cast<IDirectoryEntry>(outDe)));
             result = true;
@@ -191,7 +191,7 @@ std::shared_ptr<CFStorage> CFStorage::AddStorage(const std::wstring &storageName
         throw CFDuplicatedItemException(L"An entry with name '" + storageName + L"' is already present in storage '" + Name() + L"' ");
     }
 
-    std::shared_ptr<IDirectoryEntry> childrenRoot = std::dynamic_pointer_cast<IDirectoryEntry>(children->getRoot());
+    std::shared_ptr<IDirectoryEntry> childrenRoot = std::dynamic_pointer_cast<IDirectoryEntry>(getChildren()->getRoot());
     dirEntry.lock()->setChild(childrenRoot->getSid());
 
     return std::shared_ptr<CFStorage>(new CFStorage(compoundFile, cfo));
@@ -224,7 +224,7 @@ void CFStorage::VisitEntries(RedBlackTree::Action<std::shared_ptr<CFItem> > acti
                 subStorages.push_back(targetNode);
         };
 
-        children->VisitTreeNodes(internalAction);
+        getChildren()->VisitTreeNodes(internalAction);
 
         if (recursive && subStorages.size() > 0)
             for (const auto& n : subStorages)
@@ -244,7 +244,7 @@ void CFStorage::Delete(const std::wstring &entryName)
 
     RedBlackTree::PIRBNode foundObj;
 
-    children->TryLookup(tmp, foundObj);
+    getChildren()->TryLookup(tmp, foundObj);
 
     if (foundObj == nullptr)
         throw CFItemNotFound(L"Entry named [" + entryName + L"] was not found");
@@ -268,13 +268,13 @@ void CFStorage::Delete(const std::wstring &entryName)
         }
 
         // ...then we need to rethread the root of siblings tree...
-        if (children->getRoot() != nullptr)
-            dirEntry.lock()->setChild(std::dynamic_pointer_cast<IDirectoryEntry>(children->getRoot())->getSid());
+        if (getChildren()->getRoot() != nullptr)
+            dirEntry.lock()->setChild(std::dynamic_pointer_cast<IDirectoryEntry>(getChildren()->getRoot())->getSid());
         else
             dirEntry.lock()->setChild(DirectoryEntry::NOSTREAM);
 
         // ...and finally Remove storage item from children tree...
-        children->Delete(foundObj, altDel);
+        getChildren()->Delete(foundObj, altDel);
 
         // ...and remove directory (storage) entry
 
@@ -294,11 +294,11 @@ void CFStorage::Delete(const std::wstring &entryName)
         compoundFile->FreeAssociatedData(std::dynamic_pointer_cast<IDirectoryEntry>(foundObj)->getSid());
 
         // Remove item from children tree
-        children->Delete(foundObj, altDel);
+        getChildren()->Delete(foundObj, altDel);
 
         // Rethread the root of siblings tree...
-        if (children->getRoot() != nullptr)
-            dirEntry.lock()->setChild(std::dynamic_pointer_cast<IDirectoryEntry>(children->getRoot())->getSid());
+        if (getChildren()->getRoot() != nullptr)
+            dirEntry.lock()->setChild(std::dynamic_pointer_cast<IDirectoryEntry>(getChildren()->getRoot())->getSid());
         else
             dirEntry.lock()->setChild(DirectoryEntry::NOSTREAM);
 
@@ -321,7 +321,7 @@ void CFStorage::RenameItem(const std::wstring &oldItemName, const std::wstring &
 {
     auto templ = DirectoryEntry::Mock(oldItemName, StgType::StgInvalid);
     RedBlackTree::PIRBNode item;
-    if (children->TryLookup(templ, item))
+    if (getChildren()->TryLookup(templ, item))
     {
         std::dynamic_pointer_cast<DirectoryEntry>(item)->SetEntryName(newItemName);
     }

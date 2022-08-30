@@ -15,7 +15,8 @@ public:
     static const int NOSTREAM = 0xFFFFFFFF;
     static const int ZERO = 0;
 
-    DirectoryEntry(std::wstring name, StgType stgType, SVector<IDirectoryEntry> dirRepository);
+    DirectoryEntry(std::wstring name, StgType stgType, SVector<IDirectoryEntry>& dirRepository);
+    DirectoryEntry(std::wstring name, StgType stgType);
 
     RedBlackTree::PIRBNode getLeft() const override;
     RedBlackTree::PIRBNode getRight() const override;
@@ -97,7 +98,8 @@ private:
     ushort nameLength;
     StgType stgType = StgType::StgInvalid;
     StgColor stgColor = StgColor::Red;
-    SVector<IDirectoryEntry> dirRepository;
+    SVector<IDirectoryEntry> emptyDir;
+    SVector<IDirectoryEntry>& dirRepository;
     std::weak_ptr<RedBlackTree::IRBNode> parent;
     GUID storageCLSID;
 

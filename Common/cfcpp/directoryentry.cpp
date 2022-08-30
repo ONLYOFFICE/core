@@ -7,10 +7,31 @@
 using namespace CFCPP;
 
 
-DirectoryEntry::DirectoryEntry(std::wstring name, StgType stgType, SVector<IDirectoryEntry> dirRepository)
+DirectoryEntry::DirectoryEntry(std::wstring name, StgType stgType, SVector<IDirectoryEntry> &dirRepository) :
+    dirRepository(dirRepository)
 {
-    this->dirRepository = dirRepository;
+    this->stgType = stgType;
 
+    if (stgType == StgType::StgStorage)
+    {
+        //        creationDate = BitConverter.GetBytes((DateTime.Now.ToFileTime()));
+        startSetc = ZERO;
+    }
+
+    if (stgType == StgType::StgInvalid)
+    {
+        startSetc = ZERO;
+    }
+
+    if (name.size())
+    {
+        DirectoryEntry::SetEntryName(name);
+    }
+}
+
+DirectoryEntry::DirectoryEntry(std::wstring name, StgType stgType) :
+    dirRepository(emptyDir)
+{
     this->stgType = stgType;
 
     if (stgType == StgType::StgStorage)
@@ -312,7 +333,7 @@ std::shared_ptr<IDirectoryEntry> DirectoryEntry::TryNew(std::wstring name, StgTy
 
 std::shared_ptr<IDirectoryEntry> DirectoryEntry::Mock(std::wstring name, StgType stgType)
 {
-    auto de = std::shared_ptr<IDirectoryEntry>(new DirectoryEntry(name, stgType, {}));
+    auto de = std::shared_ptr<IDirectoryEntry>(new DirectoryEntry(name, stgType));
 
     return de;
 }

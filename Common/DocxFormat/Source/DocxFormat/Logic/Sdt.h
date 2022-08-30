@@ -511,8 +511,29 @@ namespace OOX
 			nullable_bool m_oAutoFit;
 			nullable_bool m_oMultiLine;
 			nullable<ComplexTypes::Word::CTextFormFormat> m_oFormat;
-			nullable_bool m_oComplexForm; //feature 
 		};
+		//Not from specification
+		class CComplexFormPr : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CComplexFormPr)
+			CComplexFormPr(OOX::Document *pMain = NULL) : WritingElement(pMain)
+			{
+			}
+			virtual ~CComplexFormPr()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
+		public:
+			nullable<SimpleTypes::CComplexFormType<>> m_oType;
+		};
+
 		//--------------------------------------------------------------------------------
 		// CSdtComboBox 17.5.2.5 (Part 1)
 		//--------------------------------------------------------------------------------
@@ -1189,6 +1210,7 @@ namespace OOX
 			nullable<CFormPr> m_oFormPr; //Not from specification
 			nullable<CTextFormPr> m_oTextFormPr; //Not from specification
 			nullable<CSdtPicture> m_oPicture; //Not from specification
+			nullable<CComplexFormPr> m_oComplexFormPr; // Not from specification
 		};
 		//--------------------------------------------------------------------------------
 		// SdtContent 17.5.2.38 (Part 1)

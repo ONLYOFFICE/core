@@ -480,8 +480,8 @@ public:
 	int ReadSdtTextFormPr(BYTE type, long length, void* poResult);
 	int ReadSdtTextFormPrComb(BYTE type, long length, void* poResult);
 	int ReadSdtTextFormPrFormat(BYTE type, long length, void* poResult);
-	int ReadSdtTextFormPrComplex(BYTE type, long length, void* poResult);
 	int ReadSdtPicture(BYTE type, long length, void* poResult);
+	int ReadSdtComplexFormPr(BYTE type, long length, void* poResult);
 };
 class Binary_NotesTableReader : public Binary_CommonReader
 {

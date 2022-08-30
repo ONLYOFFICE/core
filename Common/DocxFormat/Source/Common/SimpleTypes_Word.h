@@ -2590,6 +2590,46 @@ namespace SimpleTypes
 		SimpleType_FromString(ETextFormFormatType)
 		SimpleType_Operator_Equal(CTextFormFormatType)
 	};
+
+	enum EComplexFormType
+	{
+		complexFormTypeCustom    = 0,
+		complexFormTypeTelephone = 1,
+		complexFormTypeEmail     = 2
+	};
+
+	template<EComplexFormType eDefValue = complexFormTypeCustom>
+	class CComplexFormType : public CSimpleType<EComplexFormType, eDefValue>
+	{
+	public:
+		CComplexFormType() {}
+
+		virtual EComplexFormType FromString(std::wstring &sValue)
+		{
+			if (L"custom" == sValue || L"none" == sValue) this->m_eValue = complexFormTypeCustom;
+			else if (L"telephone" == sValue || L"phone" == sValue) this->m_eValue = complexFormTypeTelephone;
+			else if (L"email" == sValue) this->m_eValue = complexFormTypeEmail;
+			else this->m_eValue = eDefValue;
+
+			return this->m_eValue;
+		}
+		virtual std::wstring ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case complexFormTypeCustom: return L"custom";
+			case complexFormTypeTelephone: return L"telephone";
+			case complexFormTypeEmail: return L"email";
+			default: return (L"custom");
+			}
+		}
+		bool IsDefaultValue() const
+		{
+			return (this->m_eValue == eDefValue);
+		}
+		SimpleType_FromString(EComplexFormType)
+		SimpleType_Operator_Equal(CComplexFormType)
+	};
 	//--------------------------------------------------------------------------------
 	// HexColor 17.18.38 (Part 1)
 	//--------------------------------------------------------------------------------		

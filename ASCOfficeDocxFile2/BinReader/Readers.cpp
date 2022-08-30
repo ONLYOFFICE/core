@@ -9374,6 +9374,11 @@ int Binary_DocumentTableReader::ReadSdtPr(BYTE type, long length, void* poResult
 		pSdtPr->m_oPicture.Init();
 		READ1_DEF(length, res, this->ReadSdtPicture, pSdtPr->m_oPicture.GetPointer());
 	}
+	else if (c_oSerSdt::ComplexFormPr == type)
+	{
+		pSdtPr->m_oComplexFormPr.Init();
+		READ1_DEF(length, res, this->ReadSdtComplexFormPr, pSdtPr->m_oComplexFormPr.GetPointer());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -9656,20 +9661,24 @@ int Binary_DocumentTableReader::ReadSdtTextFormPr(BYTE type, long length, void* 
 	else if (c_oSerSdt::TextFormPrFormat == type)
 	{
 		pTextFormPr->m_oFormat.Init();
-		READ2_DEF(length, res, this->ReadSdtTextFormPrFormat, pTextFormPr->m_oFormat.GetPointer());
-	}
-	else if (c_oSerSdt::TextFormPrComplex == type)
-	{
-		pTextFormPr->m_oComplexForm = true;
-		READ2_DEF(length, res, this->ReadSdtTextFormPrComplex, pTextFormPr->m_oFormat.GetPointer());
+		READ1_DEF(length, res, this->ReadSdtTextFormPrFormat, pTextFormPr->m_oFormat.GetPointer());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
-int Binary_DocumentTableReader::ReadSdtTextFormPrComplex(BYTE type, long length, void* poResult)
+int Binary_DocumentTableReader::ReadSdtComplexFormPr(BYTE type, long length, void* poResult)
 {
 	int res = 0;
+	OOX::Logic::CComplexFormPr* pComplexForm = static_cast<OOX::Logic::CComplexFormPr*>(poResult);
+	if (c_oSerSdt::ComplexFormPrType == type)
+	{
+		pComplexForm->m_oType.Init();
+		pComplexForm->m_oType->SetValueFromByte(m_oBufferedStream.GetLong());
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+
 	return res;
 }
 int Binary_DocumentTableReader::ReadSdtTextFormPrFormat(BYTE type, long length, void* poResult)

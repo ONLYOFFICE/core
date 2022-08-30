@@ -1264,8 +1264,9 @@ extern int g_nCurFormatVersion;
 		TextFormPrCombWRule = 72,
 		TextFormPrFormatType    = 80,
 		TextFormPrFormatVal     = 81,
-		TextFormPrFormatSymbols = 82,
-		TextFormPrComplex = 90
+		TextFormPrFormatSymbols = 82,	
+		ComplexFormPr     = 90,
+		ComplexFormPrType = 91
 	};}
 	namespace c_oSerFFData{enum c_oSerFFData
 	{

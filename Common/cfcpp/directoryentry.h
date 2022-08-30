@@ -5,7 +5,7 @@
 
 namespace CFCPP
 {
-class DirectoryEntry : public IDirectoryEntry, protected std::enable_shared_from_this<DirectoryEntry>
+class DirectoryEntry : public IDirectoryEntry
 {
 public:
 

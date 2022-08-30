@@ -9441,13 +9441,14 @@ int Binary_DocumentTableReader::ReadSdtComboBox(BYTE type, long length, void* po
 	else if (c_oSerSdt::TextFormPrFormat == type)
 	{
 		pSdtComboBox->m_oFormat.Init();
-		READ2_DEF(length, res, this->ReadSdtTextFormPrFormat, pSdtComboBox->m_oFormat.GetPointer());
+		READ1_DEF(length, res, this->ReadSdtTextFormPrFormat, pSdtComboBox->m_oFormat.GetPointer());
 	}
 	else if (c_oSerSdt::SdtListItem == type)
 	{
 		ComplexTypes::Word::CSdtListItem* pSdtListItem = new ComplexTypes::Word::CSdtListItem();
 		READ1_DEF(length, res, this->ReadSdtListItem, pSdtListItem);
-		pSdtComboBox->m_arrListItem.push_back(pSdtListItem);		}
+		pSdtComboBox->m_arrListItem.push_back(pSdtListItem);
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;

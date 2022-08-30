@@ -7835,7 +7835,7 @@ void BinaryDocumentTableWriter::WriteSdtComboBox(const OOX::Logic::CSdtComboBox&
 	}
 	if (oSdtComboBox.m_oFormat.IsInit())
 	{
-		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrMultiLine);
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrFormat);
 		WriteSdtTextFormPrFormat(oSdtComboBox.m_oFormat.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}

@@ -2816,6 +2816,12 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 			
 			if (res_text)
 			{
+				pPPTShape->m_bIsStroked = false; // default for textbox
+				if (pPPTShape->m_eType == PPTShapes::sptCNotchedCircularArrow)
+				{
+					pPPTShape->m_eType = PPTShapes::sptCTextBox;
+					bTextBox = true;
+				}
 				XmlUtils::CXmlNode oNodeContent;
 				if (oNodeTextBox.GetNode(L"w:txbxContent", oNodeContent))
 				{

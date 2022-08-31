@@ -104,6 +104,7 @@ public:
 public:
 	TFontCacheSizes()
 	{
+		bBitmap = false;
 		fAdvanceX = 0;
 	}
 	~TFontCacheSizes()

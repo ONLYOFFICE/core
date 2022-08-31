@@ -63,6 +63,7 @@ public:
 	
 	virtual bool Read(XLS::CFStreamPtr stream);
 	virtual std::wstring toString();
+	bool IsEmpty();
 
 	std::wstring value;
 	unsigned short code_page;

@@ -85,6 +85,10 @@ std::wstring PropertyString::toString()
 {
 	return value;
 }
+bool PropertyString::IsEmpty()
+{
+	return value.empty();
+}
 //-------------------------------------------------------------------
 bool PropertyWString::Read(XLS::CFStreamPtr stream)
 {

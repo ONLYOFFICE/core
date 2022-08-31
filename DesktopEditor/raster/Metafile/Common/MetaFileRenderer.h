@@ -268,7 +268,7 @@ namespace MetaFile
 			}
 
 			for (unsigned int unIndex = 0; unIndex < std::min(arPoints.size(), wsString.length()); ++unIndex)
-				m_pRenderer->CommandDrawText(std::wstring(1, wsString[unIndex]), arGlyphPoint[unIndex].x, arGlyphPoint[unIndex].y, 0, 0);
+				m_pRenderer->CommandDrawTextCHAR(wsString[unIndex], arGlyphPoint[unIndex].x, arGlyphPoint[unIndex].y, 0, 0);
 
 		}
 
@@ -379,7 +379,7 @@ namespace MetaFile
 					wsTempText += wsText.at(wsText.length() - 1);
 					//wsTempText += wsText.at(unCharsCount - 1);
 
-					pFontManager->LoadString2(wsTempText, 0, 0);
+					pFontManager->LoadString1(wsTempText, 0, 0);
 					TBBox oBox = pFontManager->MeasureString2();
 					dTempTextW += dMmToPt * (oBox.fMaxX - oBox.fMinX);
 
@@ -388,7 +388,7 @@ namespace MetaFile
 				}
 				else
 				{
-					pFontManager->LoadString2(wsText, 0, 0);
+					pFontManager->LoadString1(wsText, 0, 0);
 					TBBox oBox = pFontManager->MeasureString2();
 					fL = (float)dMmToPt * (oBox.fMinX);
 					fW = (float)dMmToPt * (oBox.fMaxX - oBox.fMinX);
@@ -567,8 +567,7 @@ namespace MetaFile
 					double dKoefX = m_dScaleX;
 					for (unsigned int unCharIndex = 0; unCharIndex < unUnicodeLen; unCharIndex++)
 					{
-						std::wstring wsChar = NSStringExt::CConverter::GetUnicodeFromUTF32(&*(pUnicode + unCharIndex), 1);
-						m_pRenderer->CommandDrawText(wsChar, dX + dOffset, dY, 0, 0);
+						m_pRenderer->CommandDrawTextCHAR(pUnicode[unCharIndex], dX + dOffset, dY, 0, 0);
 						dOffset += (pDx[unCharIndex] * dKoefX);
 					}
 

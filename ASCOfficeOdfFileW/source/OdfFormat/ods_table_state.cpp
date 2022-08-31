@@ -167,7 +167,7 @@ ods_table_state::ods_table_state(odf_conversion_context * Context, office_elemen
 
 void ods_table_state::set_table_name(std::wstring name)
 {
-	office_table_name_ = name;
+	office_table_name_ = XmlUtils::EncodeXmlString(name);
 	table_table* table = dynamic_cast<table_table*>(office_table_.get());
 	if (table == NULL)return;
 
@@ -1667,6 +1667,13 @@ void ods_table_state::start_conditional_rule(int rule_type, _CP_OPT(unsigned int
 				if (col.empty()) col = L".A";
 				if (row.empty()) row = L"1";
 
+				if (std::wstring::npos != table.find(L" "))
+				{
+					if (table[0] != L'\'')
+					{
+						table = L"'" + table + L"'";
+					}
+				}
 				condition->attr_.calcext_base_cell_address_ = table + col + row;
 			}
 			switch(rule_type)

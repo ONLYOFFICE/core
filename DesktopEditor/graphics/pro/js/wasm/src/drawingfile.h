@@ -45,7 +45,11 @@ public:
     {
         nType = _nType;
         if (nType == 0)
+        {
             pReader = new PdfReader::CPdfReader(pApplicationFonts);
+            std::wstring sPath = NSFile::GetProcessDirectory() + L"../../../../../../../../PdfReader/Resources/CMap";
+            ((PdfReader::CPdfReader*)pReader)->SetCMapFolder(sPath.data());
+        }
         else if (nType == 1)
             pReader = new CDjVuFile(pApplicationFonts);
         else if (nType == 2)

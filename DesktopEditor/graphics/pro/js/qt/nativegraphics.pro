@@ -47,17 +47,6 @@ LIBS += -lgdi32 \
 # graphics
 
 HEADERS += \
-    ../../../../raster/Metafile/CXmlOutput.h \
-    ../../../../raster/Metafile/Common/CPathConverter.h \
-    ../../../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretator.h \
-    ../../../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorArray.h \
-    ../../../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorBase.h \
-    ../../../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorRender.h \
-    ../../../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorXml.h \
-    ../../../../raster/Metafile/Emf/EmfParser/CEmfParser.h \
-    ../../../../raster/Metafile/Emf/EmfParser/CEmfParserBase.h \
-    ../../../../raster/Metafile/Emf/EmfParser/CEmfPlusParser.h \
-    ../../../../raster/Metafile/Emf/EmfParser/CEmfxParser.h \
     ../../../config.h \
     \
     ../../../Matrix.h \
@@ -68,6 +57,13 @@ HEADERS += \
     ../../../../raster/BgraFrame.h \
     ../../../../raster/ImageFileFormatChecker.h \
     ../../../../raster/Metafile/Metafile.h \
+    ../../../../raster/Metafile/Common/MetaFile.h \
+    ../../../../raster/Metafile/Common/IOutputDevice.h \
+    ../../../../raster/Metafile/Common/MetaFileTypes.h \
+    ../../../../raster/Metafile/Common/MetaFileClip.h \
+    ../../../../raster/Metafile/Common/MetaFileObjects.h \
+    ../../../../raster/Metafile/Common/MetaFileRenderer.h \
+    ../../../../raster/Metafile/Common/MetaFileUtils.h \
     \
     ../../../ArrowHead.h \
     ../../../Brush.h \
@@ -97,16 +93,6 @@ HEADERS += \
     ../../../../raster/Metafile/svg/SVGTransformer.h
 
 SOURCES += \
-    ../../../../raster/Metafile/CXmlOutput.cpp \
-    ../../../../raster/Metafile/Common/CPathConverter.cpp \
-    ../../../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretator.cpp \
-    ../../../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorArray.cpp \
-    ../../../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorRender.cpp \
-    ../../../../raster/Metafile/Emf/EmfInterpretator/CEmfInterpretatorXml.cpp \
-    ../../../../raster/Metafile/Emf/EmfParser/CEmfParser.cpp \
-    ../../../../raster/Metafile/Emf/EmfParser/CEmfParserBase.cpp \
-    ../../../../raster/Metafile/Emf/EmfParser/CEmfPlusParser.cpp \
-    ../../../../raster/Metafile/Emf/EmfParser/CEmfxParser.cpp \
     ../../../Matrix.cpp \
     ../../../GraphicsPath.cpp \
     ../../../../raster/BgraFrame.cpp \
@@ -155,27 +141,11 @@ SOURCES += \
     ../../../../agg-2.4/src/agg_vcgen_smooth_poly1.cpp \
     ../../../../agg-2.4/src/agg_vcgen_stroke.cpp \
     \
-    #../../../../fontengine/fontconverter/StringExt.cpp \
-    #../../../../fontengine/fontconverter/Hash.cpp \
-    #../../../../fontengine/fontconverter/FontConverter.cpp \
-    #../../../../fontengine/fontconverter/FontFileEncodings.cpp \
-    #../../../../fontengine/fontconverter/FontFileTrueType.cpp \
-    #../../../../fontengine/fontconverter/FontFileType1.cpp \
-    #../../../../fontengine/fontconverter/FontFileType1C.cpp \
-    \
     ../../../../raster/Jp2/J2kFile.cpp \
     ../../../../raster/Jp2/Reader.cpp \
     \
     ../../../../raster/Metafile/Common/MetaFileTypes.cpp \
     ../../../../raster/Metafile/Common/MetaFileUtils.cpp \
-    ../../../../raster/Metafile/Emf/EmfClip.cpp \
-    ../../../../raster/Metafile/Emf/EmfObjects.cpp \
-    ../../../../raster/Metafile/Emf/EmfPath.cpp \
-    ../../../../raster/Metafile/Emf/EmfPlayer.cpp \
-    ../../../../raster/Metafile/Emf/EmfFile.cpp \
-    ../../../../raster/Metafile/Wmf/WmfClip.cpp \
-    ../../../../raster/Metafile/Wmf/WmfObjects.cpp \
-    ../../../../raster/Metafile/Wmf/WmfPlayer.cpp \
     \
     ../../../../raster/JBig2/source/JBig2File.cpp \
     \

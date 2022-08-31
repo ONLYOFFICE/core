@@ -905,7 +905,7 @@ namespace PdfReader
             std::wstring wsTempFileName = L"";
             Ref oEmbRef;
             bool bFontSubstitution = false;
-            std::wstring wsFontBaseName = NSStrings::GetString(pFont->getName());
+            std::wstring wsFontBaseName = NSStrings::GetStringFromUTF32(pFont->getName());
             if (wsFontBaseName.empty())
                 wsFontBaseName = L"Helvetica";
             const unsigned char* pData14 = NULL;
@@ -1266,7 +1266,7 @@ namespace PdfReader
             }
         #endif
             else if (!pFont->locateFont(m_pXref, false) ||
-                (wsFileName = NSStrings::GetString(pFont->locateFont(m_pXref, false)->path)).length() == 0)
+                (wsFileName = NSStrings::GetStringFromUTF32(pFont->locateFont(m_pXref, false)->path)).length() == 0)
             //else if (0)
             {
                 // TODO: Сначала тут мы должны проверить, если ищется один из 14 стандартных шрифтов,

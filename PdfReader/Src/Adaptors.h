@@ -80,6 +80,9 @@ namespace NSStrings
 
     std::wstring GetString(GString* str);
     std::string GetStringA(GString* str);
+
+    std::wstring GetStringFromUTF32(GString* str);
+    std::string GetStringAFromUTF32(GString* str);
 }
 
 namespace PdfReader

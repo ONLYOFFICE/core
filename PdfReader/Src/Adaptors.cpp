@@ -134,6 +134,26 @@ namespace NSStrings
     {
         return std::string(str->getCString(), str->getLength());
     }
+
+    std::wstring GetStringFromUTF32(GString* str)
+    {
+        if (!str)
+            return L"";
+        TextString* s = new TextString(str);
+        std::wstring sValue = NSStringExt::CConverter::GetUnicodeFromUTF32(s->getUnicode(), s->getLength());
+        delete s;
+        return sValue;
+    }
+
+    std::string GetStringAFromUTF32(GString* str)
+    {
+        if (!str)
+            return "";
+        TextString* s = new TextString(str);
+        std::string sValue = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+        delete s;
+        return sValue;
+    }
 }
 
 void AppendStringToXml(std::wstring& wsXml, const std::string& sString)

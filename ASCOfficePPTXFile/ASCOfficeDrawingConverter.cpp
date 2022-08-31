@@ -281,9 +281,8 @@ namespace NS_DWC_Common
 	//	0x00FFFFFF,	0x00000000,	0x00000000,	0x00000000,	
 	//	0x00000000,	0x00000000,	0x00FFFFFF,	0x00FFFFFF
 	//};
-	ODRAW::CColor getColorFromString(const std::wstring& colorStr)
+	bool getColorFromString(const std::wstring& colorStr, ODRAW::CColor & color)
 	{
-		ODRAW::CColor color;
 		bool bSet = false;
 		if (colorStr.find(L"#") != std::wstring::npos)
 		{
@@ -317,13 +316,20 @@ namespace NS_DWC_Common
 			size_t pos = colorStr.find(L"["); //"buttonFace [67]"
 			if (pos != std::wstring::npos)
 			{
-				str = colorStr.substr(pos + 1, colorStr.length() - pos - 2);
-
-				int index = XmlUtils::GetInteger(str);
-				if (index < 64)
+				size_t pos1 = colorStr.find(L"]", pos + 1);
+				if (pos1 != std::wstring::npos)
 				{
-					RGB = shemeDefaultColor[index];
-					bSet = true;
+					str = colorStr.substr(pos + 1, pos1 - pos - 1);
+
+					if (NSStringUtils::IsNumber(str))
+					{
+						int index = XmlUtils::GetInteger(str);
+						if (index < 64)
+						{
+							RGB = shemeDefaultColor[index];
+							bSet = true;
+						}
+					}
 				}
 				//else if (index < 93)
 				//{
@@ -587,7 +593,7 @@ namespace NS_DWC_Common
 				color.A = 0;
 			}
 		}
-		return color;
+		return bSet;
 	}
 }
 namespace PPTX
@@ -2263,18 +2269,21 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 					{
 						eFillType = etSolidFill;
 						
-						ODRAW::CColor color	= NS_DWC_Common::getColorFromString(*sFillColor);
-						PPTX::Logic::SolidFill* pSolid		= new PPTX::Logic::SolidFill();
-						pSolid->m_namespace = L"a";
-						
-						pSolid->Color.Color = new PPTX::Logic::SrgbClr();
-						pSolid->Color.Color->SetRGB(color.R, color.G, color.B);					
-						arColors.push_back(&pSolid->Color);
-						arPos.push_back(0);
+						ODRAW::CColor color;
+						if (NS_DWC_Common::getColorFromString(*sFillColor, color))
+						{
+							PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
+							pSolid->m_namespace = L"a";
 
-						R = color.R;
-						G = color.G;
-						B = color.B;
+							pSolid->Color.Color = new PPTX::Logic::SrgbClr();
+							pSolid->Color.Color->SetRGB(color.R, color.G, color.B);
+							arColors.push_back(&pSolid->Color);
+							arPos.push_back(0);
+
+							R = color.R;
+							G = color.G;
+							B = color.B;
+						}
 					}
 
 					if (eFillType == etNoFill)
@@ -2427,19 +2436,30 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 									color.R = resR;
 									color.G = resG;
 									color.B = resB;
+									
+									PPTX::Logic::UniColor *oColor = new PPTX::Logic::UniColor();
+									oColor->Color = new PPTX::Logic::SrgbClr();
+									oColor->Color->SetRGB(color.R, color.G, color.B);
+
+									if (bOpacity)
+										oColor->Color->Modifiers.push_back(oMod);
+
+									arColors[0] = oColor;
 								}
 								else
 								{
-									color = NS_DWC_Common::getColorFromString(*sColor);
+									if (NS_DWC_Common::getColorFromString(*sColor, color))
+									{
+										PPTX::Logic::UniColor *oColor = new PPTX::Logic::UniColor();
+										oColor->Color = new PPTX::Logic::SrgbClr();
+										oColor->Color->SetRGB(color.R, color.G, color.B);
+
+										if (bOpacity)
+											oColor->Color->Modifiers.push_back(oMod);
+
+										arColors[0] = oColor;
+									}
 								}
-								PPTX::Logic::UniColor *oColor = new PPTX::Logic::UniColor();
-								oColor->Color = new PPTX::Logic::SrgbClr();
-								oColor->Color->SetRGB(color.R, color.G, color.B);
-
-								if (bOpacity)
-									oColor->Color->Modifiers.push_back(oMod);
-
-								arColors[0] = oColor;
 							}
 							if (sOpacity2.is_init())
 							{
@@ -2469,7 +2489,10 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 								}
 								else
 								{
-									color = NS_DWC_Common::getColorFromString(*sColor2);
+									ODRAW::CColor color;
+									if (NS_DWC_Common::getColorFromString(*sColor2, color))
+									{
+									}
 								}
 
 								PPTX::Logic::UniColor *oColor = new PPTX::Logic::UniColor();
@@ -2519,20 +2542,22 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 
 									double pos = XmlUtils::GetDouble(strPos);
 
-									ODRAW::CColor color = NS_DWC_Common::getColorFromString(strColor);
-									PPTX::Logic::UniColor *oColor = new PPTX::Logic::UniColor();
-									oColor->Color = new PPTX::Logic::SrgbClr();
-									oColor->Color->SetRGB(color.R, color.G, color.B);
+									ODRAW::CColor color;
+									if (NS_DWC_Common::getColorFromString(strColor, color))
+									{
+										PPTX::Logic::UniColor *oColor = new PPTX::Logic::UniColor();
+										oColor->Color = new PPTX::Logic::SrgbClr();
+										oColor->Color->SetRGB(color.R, color.G, color.B);
 
-									if (pos <= 1)
-										pos = 100000 * pos;
-									else
-										pos = pos / 65536 * 100000;
-									arColors.push_back(oColor);
-									arPos.push_back((int)pos);
+										if (pos <= 1)
+											pos = 100000 * pos;
+										else
+											pos = pos / 65536 * 100000;
+										arColors.push_back(oColor);
+										arPos.push_back((int)pos);
 
-									arGradMap.insert(std::pair<PPTX::Logic::UniColor*, int>(oColor, (int)pos) );
-
+										arGradMap.insert(std::pair<PPTX::Logic::UniColor*, int>(oColor, (int)pos));
+									}
 								}
 							}
 
@@ -2753,8 +2778,11 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 					}				
 					if (sStrokeColor.is_init())
 					{
-						color = NS_DWC_Common::getColorFromString(*sStrokeColor);
-						pSolid->Color.Color->SetRGB(color.R, color.G, color.B);
+						ODRAW::CColor color;
+						if (NS_DWC_Common::getColorFromString(*sStrokeColor, color))
+						{
+							pSolid->Color.Color->SetRGB(color.R, color.G, color.B);
+						}
 					}
 					else
 						pSolid->Color.Color->SetRGB(0x00, 0x00, 0x00);
@@ -4406,15 +4434,17 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 	
 	if (sFillColor.is_init() && !pPPTShape->IsWordArt())
 	{
-		ODRAW::CColor color = NS_DWC_Common::getColorFromString(*sFillColor);
+		ODRAW::CColor color;
+		if (NS_DWC_Common::getColorFromString(*sFillColor, color))
+		{
+			PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
+			pSolid->m_namespace = L"a";
+			pSolid->Color.Color = new PPTX::Logic::SrgbClr();
+			pSolid->Color.Color->SetRGB(color.R, color.G, color.B);
 
-		PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
-        pSolid->m_namespace = L"a";
-		pSolid->Color.Color = new PPTX::Logic::SrgbClr();
-		pSolid->Color.Color->SetRGB(color.R, color.G, color.B);
-
-		pSpPr->Fill.m_type = PPTX::Logic::UniFill::solidFill;
-        pSpPr->Fill.Fill = pSolid;
+			pSpPr->Fill.m_type = PPTX::Logic::UniFill::solidFill;
+			pSpPr->Fill.Fill = pSolid;
+		}
 	}
     else if (!pPPTShape->IsWordArt())
     {
@@ -4479,18 +4509,20 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
         XmlMacroReadAttributeBase(oNodeFill, L"color", sColor);
 		if (sColor.is_init())
 		{
-			ODRAW::CColor color = NS_DWC_Common::getColorFromString(*sColor);
+			ODRAW::CColor color;
+			if (NS_DWC_Common::getColorFromString(*sColor, color))
+			{
+				PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
+				pSolid->m_namespace = L"a";
+				pSolid->Color.Color = new PPTX::Logic::SrgbClr();
+				pSolid->Color.Color->SetRGB(color.R, color.G, color.B);
 
-			PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
-            pSolid->m_namespace = L"a";
-			pSolid->Color.Color = new PPTX::Logic::SrgbClr();
-			pSolid->Color.Color->SetRGB(color.R, color.G, color.B);
+				pSpPr->Fill.m_type = PPTX::Logic::UniFill::solidFill;
+				pSpPr->Fill.Fill = pSolid;
 
-			pSpPr->Fill.m_type = PPTX::Logic::UniFill::solidFill;
-			pSpPr->Fill.Fill = pSolid;
-
-			if (!sFillColor.is_init()) 
-				sFillColor = sColor;
+				if (!sFillColor.is_init())
+					sFillColor = sColor;
+			}
 		}
 		if (!sColor.is_init()) sColor = sFillColor;
 
@@ -4546,18 +4578,20 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 		
 			if (sColor.is_init())
 			{
-				ODRAW::CColor color = NS_DWC_Common::getColorFromString(*sColor);
+				ODRAW::CColor color;
+				if (NS_DWC_Common::getColorFromString(*sColor, color))
+				{
+					PPTX::Logic::Gs Gs_;
+					Gs_.color.Color = new PPTX::Logic::SrgbClr();
+					Gs_.color.Color->SetRGB(color.R, color.G, color.B);
 
-				PPTX::Logic::Gs Gs_;
-				Gs_.color.Color = new PPTX::Logic::SrgbClr();
-				Gs_.color.Color->SetRGB(color.R, color.G, color.B);
+					Gs_.pos = 0;
+					pGradFill->GsLst.push_back(Gs_);
 
-				Gs_.pos = 0;
-				pGradFill->GsLst.push_back( Gs_ );
-
-                R = color.R;
-                G = color.G;
-                B = color.B;
+					R = color.R;
+					G = color.G;
+					B = color.B;
+				}
 			}
 			if (sColor2.is_init())
 			{
@@ -4576,8 +4610,11 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 				}
 				else
 				{
-					ODRAW::CColor color = NS_DWC_Common::getColorFromString(*sColor2);
-					Gs_.color.Color->SetRGB(color.R, color.G, color.B);
+					ODRAW::CColor color;
+					if (NS_DWC_Common::getColorFromString(*sColor2, color))
+					{
+						Gs_.color.Color->SetRGB(color.R, color.G, color.B);
+					}
 				}
 
 				Gs_.pos = 100 * 1000;
@@ -4794,18 +4831,20 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
     XmlMacroReadAttributeBase(oNode, L"strokecolor", sStrokeColor);
 	if (sStrokeColor.is_init())
 	{
-		ODRAW::CColor color = NS_DWC_Common::getColorFromString(*sStrokeColor);
+		ODRAW::CColor color;
+		if (NS_DWC_Common::getColorFromString(*sStrokeColor, color))
+		{
+			if (!pSpPr->ln.is_init())
+				pSpPr->ln = new PPTX::Logic::Ln();
 
-		if (!pSpPr->ln.is_init())
-			pSpPr->ln = new PPTX::Logic::Ln();
+			PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
+			pSolid->m_namespace = L"a";
+			pSolid->Color.Color = new PPTX::Logic::SrgbClr();
+			pSolid->Color.Color->SetRGB(color.R, color.G, color.B);
 
-		PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
-        pSolid->m_namespace = L"a";
-		pSolid->Color.Color = new PPTX::Logic::SrgbClr();
-		pSolid->Color.Color->SetRGB(color.R, color.G, color.B);
-
-		pSpPr->ln->Fill.m_type = PPTX::Logic::UniFill::solidFill;
-		pSpPr->ln->Fill.Fill = pSolid;
+			pSpPr->ln->Fill.m_type = PPTX::Logic::UniFill::solidFill;
+			pSpPr->ln->Fill.Fill = pSolid;
+		}
 	}
 
 	nullable_string sStrokeWeight;
@@ -4867,18 +4906,20 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
         XmlMacroReadAttributeBase(oNodeStroke, L"strokecolor", sStrokeColor);
 		if (sStrokeColor.is_init())
 		{
-			ODRAW::CColor color = NS_DWC_Common::getColorFromString(*sStrokeColor);
+			ODRAW::CColor color;
+			if (NS_DWC_Common::getColorFromString(*sStrokeColor, color))
+			{
+				if (!pSpPr->ln.is_init())
+					pSpPr->ln = new PPTX::Logic::Ln();
 
-			if (!pSpPr->ln.is_init())
-				pSpPr->ln = new PPTX::Logic::Ln();
+				PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
+				pSolid->m_namespace = L"a";
+				pSolid->Color.Color = new PPTX::Logic::SrgbClr();
+				pSolid->Color.Color->SetRGB(color.R, color.G, color.B);
 
-			PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
-            pSolid->m_namespace = L"a";
-			pSolid->Color.Color = new PPTX::Logic::SrgbClr();
-			pSolid->Color.Color->SetRGB(color.R, color.G, color.B);
-
-			pSpPr->ln->Fill.m_type = PPTX::Logic::UniFill::solidFill;
-			pSpPr->ln->Fill.Fill = pSolid;
+				pSpPr->ln->Fill.m_type = PPTX::Logic::UniFill::solidFill;
+				pSpPr->ln->Fill.Fill = pSolid;
+			}
 		}
 
 		nullable_string sStrokeDashStyle;

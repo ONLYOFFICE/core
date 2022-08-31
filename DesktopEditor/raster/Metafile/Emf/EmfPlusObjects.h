@@ -147,6 +147,18 @@ namespace MetaFile
 		HatchStyleSolidDiamond				= 0x00000034
 	} EEmfPlusHatchStyle;
 
+	typedef enum
+	{
+		BrushDataPath             = 0x00000001,
+		BrushDataTransform        = 0x00000002,
+		BrushDataPresetColors     = 0x00000004,
+		BrushDataBlendFactorsH    = 0x00000008,
+		BrushDataBlendFactorsV    = 0x00000010,
+		BrushDataFocusScales      = 0x00000040,
+		BrushDataIsGammaCorrected = 0x00000080,
+		BrushDataDoNotTransform   = 0x00000100
+	} EEmfPlusBrushDataFlags;
+
 	class CEmfPlusBrush : public CEmfPlusObject, public IBrush
 	{
 	    public:

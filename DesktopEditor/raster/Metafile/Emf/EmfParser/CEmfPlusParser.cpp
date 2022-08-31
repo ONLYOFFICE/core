@@ -513,9 +513,9 @@ namespace MetaFile
 
 			pEmfPlusBrush->Style = BS_PATHGRADIENT;
 
-			unsigned int BrushDataFlags;
+			unsigned int unBrushDataFlags;
 
-			m_oStream >> BrushDataFlags;
+			m_oStream >> unBrushDataFlags;
 
 			m_oStream.Skip(4); //WrapMode
 
@@ -524,6 +524,9 @@ namespace MetaFile
 			m_oStream >> pEmfPlusBrush->RectF.dX;
 			m_oStream >> pEmfPlusBrush->RectF.dY;
 
+			pEmfPlusBrush->RectF.dWidth = 1;
+			pEmfPlusBrush->RectF.dHeight = 1;
+
 			unsigned int unCountColors;
 
 			m_oStream >> unCountColors;
@@ -531,29 +534,86 @@ namespace MetaFile
 			if (unCountColors > 0)
 				m_oStream >> pEmfPlusBrush->ColorBack;
 
-			m_oStream.Skip(--unCountColors * 4);
+			m_oStream.Skip((unCountColors - 1) * 4);
 
 			pEmfPlusBrush->Angle = 45;
 
-			//				if (BrushDataFlags & 0x00000001)
-			//				{
-			//					int nSize;
+//			break; //TODO: всё остальное не используется с текущими возможностями рендера
 
-			//					m_oStream >> nSize;
+			if (BrushDataPath & unBrushDataFlags)
+			{
+				int nSize;
 
-			//					if (nSize > 0)
-			//					{
-			//						CEmfPlusPath *pPath = ReadPath();
+				m_oStream >> nSize;
 
-			//						TRectD oRectD = pPath->ConvertToRect();
+				if (nSize > 0)
+				{
+					CEmfPlusPath* pPath = ReadPath();
 
-			//						double dCos = ((oRectD.dLeft * oRectD.dRight) + (oRectD.dTop * oRectD.dBottom)) / (sqrt(oRectD.dLeft * oRectD.dLeft + oRectD.dTop * oRectD.dTop) * sqrt(oRectD.dRight * oRectD.dRight + oRectD.dBottom * oRectD.dBottom));
+					if (NULL != pPath)
+					{
+						if (pPath->m_pCommands.size() > 2)
+						{
+							if (EMF_PATHCOMMAND_MOVETO == pPath->m_pCommands[0]->GetType())
+							{
+								CEmfPathMoveTo* pMoveTo = (CEmfPathMoveTo*)pPath->m_pCommands[0];
+								pEmfPlusBrush->RectF.dX = pMoveTo->x;
+								pEmfPlusBrush->RectF.dY = pMoveTo->y;
+							}
+							else if (EMF_PATHCOMMAND_LINETO == pPath->m_pCommands[0]->GetType())
+							{
+								CEmfPathLineTo* pLineTo = (CEmfPathLineTo*)pPath->m_pCommands[0];
+								pEmfPlusBrush->RectF.dX = pLineTo->x;
+								pEmfPlusBrush->RectF.dY = pLineTo->y;
+							}
 
-			//						pEmfPlusBrush->Angle = fabs((acos(dCos) * 180 / M_PI) - 45);
+							if (EMF_PATHCOMMAND_MOVETO == pPath->m_pCommands[2]->GetType())
+							{
+								CEmfPathMoveTo* pMoveTo = (CEmfPathMoveTo*)pPath->m_pCommands[2];
+								pEmfPlusBrush->RectF.dWidth  = pMoveTo->x - pEmfPlusBrush->RectF.dX;
+								pEmfPlusBrush->RectF.dHeight = pMoveTo->y - pEmfPlusBrush->RectF.dY;
+							}
+							else if (EMF_PATHCOMMAND_LINETO == pPath->m_pCommands[2]->GetType())
+							{
+								CEmfPathLineTo* pLineTo = (CEmfPathLineTo*)pPath->m_pCommands[2];
+								pEmfPlusBrush->RectF.dWidth  = pLineTo->x - pEmfPlusBrush->RectF.dX;
+								pEmfPlusBrush->RectF.dHeight = pLineTo->y - pEmfPlusBrush->RectF.dY;
+							}
+						}
 
-			//						RELEASEOBJECT(pPath);
-			//					}
-			//				}
+						delete pPath;
+					}
+				}
+			}
+			else
+			{
+				int nCountPoint;
+
+				m_oStream >> nCountPoint;
+
+				std::vector<TEmfPlusPointF> arPoints = ReadPoints<TEmfPlusPointF>(nCountPoint);
+
+				//TODO::реализовать при встрече
+			}
+
+			pEmfPlusBrush->RectF.dX = pEmfPlusBrush->RectF.dY = 0;
+
+			if (BrushDataPresetColors & unBrushDataFlags)
+			{
+				unsigned int unPositionCount;
+
+				m_oStream >> unPositionCount;
+
+				std::vector<double> arBlendPositions(unPositionCount);
+
+				for (unsigned int unIndex = 0; unIndex <  unPositionCount; ++unIndex)
+					m_oStream >> arBlendPositions[unIndex];
+
+				std::vector<TEmfPlusARGB> arBlendColors(unPositionCount);
+
+				for (unsigned int unIndex = 0; unIndex <  unPositionCount; ++unIndex)
+					m_oStream >> arBlendColors[unIndex];
+			}
 
 			break;
 		}
@@ -911,6 +971,11 @@ namespace MetaFile
 				}
 			}
 
+			unsigned int unSkip = 4 - (12 + 5 * unPathPointCount) % 4;
+
+			if (unSkip < 4)
+				m_oStream.Skip(unSkip);
+
 			return pPath;
 		}
 		else
@@ -943,6 +1008,11 @@ namespace MetaFile
 					pPath->Close();
 				}
 			}
+
+			unsigned int unSkip = 4 - (12 + 9 * unPathPointCount) % 4;
+
+			if (unSkip < 4)
+				m_oStream.Skip(unSkip);
 
 			return pPath;
 
@@ -1080,51 +1150,15 @@ namespace MetaFile
 
 	void CEmfPlusParser::CombineClip(TRectD oClip, int nMode)
 	{
-		switch (nMode)
-		{
-		case CombineModeReplace: break;
-		case CombineModeIntersect: m_pDC->GetClip()->Intersect(oClip); break;
-		case CombineModeUnion: break;
-		case CombineModeXOR: break;
-		case CombineModeExclude:
-		{
-			TRectD oBB;
+		CEmfPlusPath oPath;
+		oPath.MoveTo(oClip.dLeft,	oClip.dTop);
+		oPath.LineTo(oClip.dRight,	oClip.dTop);
+		oPath.LineTo(oClip.dRight,	oClip.dBottom);
+		oPath.LineTo(oClip.dLeft,	oClip.dBottom);
+		oPath.Close();
 
-			// Поскольку мы реализовываем данный тип клипа с помощью разницы внешнего ректа и заданного, и
-			// пересечением с полученной областью, то нам надо вычесть границу заданного ректа.
-			if (oClip.dLeft < oClip.dRight)
-			{
-				oClip.dLeft--;
-				oClip.dRight++;
-			}
-			else
-			{
-				oClip.dLeft++;
-				oClip.dRight--;
-			}
-
-			if (oClip.dTop < oClip.dBottom)
-			{
-				oClip.dTop--;
-				oClip.dBottom++;
-			}
-			else
-			{
-				oClip.dTop++;
-				oClip.dBottom--;
-			}
-
-			TRect* pRect = GetDCBounds();
-			TranslatePoint(pRect->nLeft, pRect->nTop, oBB.dLeft, oBB.dTop);
-			TranslatePoint(pRect->nRight, pRect->nBottom, oBB.dRight, oBB.dBottom);
-
-			m_pDC->GetClip()->Exclude(oClip, oBB);
-			UpdateOutputDC();
-
-			break;
-		}
-		case CombineModeComplement: break;
-		}
+		m_pDC->GetClip()->SetPath(&oPath, nMode, GetTransform());
+		UpdateOutputDC();
 	}
 
 	void CEmfPlusParser::UpdateMatrix(TEmfPlusXForm &oMatrix)
@@ -2401,7 +2435,6 @@ namespace MetaFile
 		for (unsigned int unIndex = 0; unIndex < unCount; ++unIndex)
 			m_oStream >> arRects[unIndex];
 
-
 		if ((unShFlags >>(15)) & 1 )//BrushId = Color
 		{
 			CEmfPlusBrush oBrush;
@@ -2458,7 +2491,7 @@ namespace MetaFile
 		{
 			LOGGING(L"Object Brush with index: " << shObjectIndex)
 
-					CEmfPlusBrush *pEmfPlusBrush = ReadBrush();
+			CEmfPlusBrush *pEmfPlusBrush = ReadBrush();
 
 			RegisterObject(pEmfPlusBrush, shObjectIndex);
 
@@ -2468,7 +2501,7 @@ namespace MetaFile
 		{
 			LOGGING(L"Object Pen with index: " << shObjectIndex)
 
-					CEmfPlusPen *pEmfPlusPen = ReadPen();
+			CEmfPlusPen *pEmfPlusPen = ReadPen();
 
 			RegisterObject(pEmfPlusPen, shObjectIndex);
 
@@ -2477,7 +2510,8 @@ namespace MetaFile
 		case ObjectTypePath:
 		{
 			LOGGING(L"Object Path with index: " << shObjectIndex)
-					CEmfPlusPath* pPath = ReadPath();
+
+			CEmfPlusPath* pPath = ReadPath();
 
 			RegisterObject(pPath, shObjectIndex);
 
@@ -2486,7 +2520,8 @@ namespace MetaFile
 		case ObjectTypeRegion:
 		{
 			LOGGING(L"Object Region")
-					CEmfPlusRegion *pEmfPlusRegion = ReadRegion();
+
+			CEmfPlusRegion *pEmfPlusRegion = ReadRegion();
 
 			RegisterObject(pEmfPlusRegion, shObjectIndex);
 
@@ -2501,7 +2536,8 @@ namespace MetaFile
 		case ObjectTypeFont:
 		{
 			LOGGING(L"Object Font with index: " << shObjectIndex)
-					CEmfPlusFont *pFont = ReadFont();
+
+			CEmfPlusFont *pFont = ReadFont();
 
 			RegisterObject(pFont, shObjectIndex);
 
@@ -2510,13 +2546,13 @@ namespace MetaFile
 		case ObjectTypeStringFormat:
 		{
 			LOGGING(L"Object String Format")
-					break;
+			break;
 		}
 		case ObjectTypeImageAttributes:
 		{
 			LOGGING(L"Object Image Attributes")
 
-					CEmfPlusImageAttributes *pImageAttributes = new CEmfPlusImageAttributes();
+			CEmfPlusImageAttributes *pImageAttributes = new CEmfPlusImageAttributes();
 
 			if (NULL != pImageAttributes)
 			{
@@ -2529,7 +2565,7 @@ namespace MetaFile
 		case ObjectTypeCustomLineCap:
 		{
 			LOGGING(L"Object Custom Line Cap")
-					break;
+			break;
 		}
 		default: return;
 		}
@@ -2854,8 +2890,8 @@ namespace MetaFile
 
 		BYTE uchCM = ExpressValue(unShFlags, 8, 11);
 
-		return;// TODO: при добавлении поддержки регионов становится хуже
-		m_pDC->GetClip()->SetPath(pPath, uchCM, m_pDC->GetTransform());
+		m_pDC->GetClip()->Reset();
+		m_pDC->GetClip()->SetPath(pPath, uchCM, GetTransform());
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_SETCLIPRECT(unsigned short unShFlags)
@@ -2867,8 +2903,9 @@ namespace MetaFile
 
 		m_oStream >> oRect;
 
-		return;// TODO: при добавлении поддержки регионов становится хуже
+		m_pDC->GetClip()->Reset();
 		CombineClip(oRect.GetRectD(), shCM);
+		UpdateOutputDC();
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_SETCLIPREGION(unsigned short unShFlags)
@@ -2878,12 +2915,13 @@ namespace MetaFile
 		short shObjectIndex = ExpressValue(unShFlags, 0, 7);
 		short shCM = ExpressValue(unShFlags, 8, 11);
 
-		return; // TODO: при добавлении поддержки регионов становится хуже
 		CEmfPlusRegion *pRegion = GetRegion(shObjectIndex);
 
 		if (NULL != pRegion)
 		{
-			for (CEmfPlusRegionNode oNode : pRegion->arNodes)
+			m_pDC->GetClip()->Reset();
+
+			for (CEmfPlusRegionNode& oNode : pRegion->arNodes)
 			{
 				if (oNode.eType == RegionNodeDataTypeInfinite)
 				{
@@ -2891,14 +2929,12 @@ namespace MetaFile
 					TRectD oBB;
 					TranslatePoint(pRect->nLeft, pRect->nTop, oBB.dLeft, oBB.dTop);
 					TranslatePoint(pRect->nRight, pRect->nBottom, oBB.dRight, oBB.dBottom);
-					CombineClip(oBB, CombineModeIntersect);
+					CombineClip(oBB, shCM);
 				}
-				else if (oNode.eType == RegionNodeDataTypeRect)
+				else /*if (oNode.eType == RegionNodeDataTypeRect)*/
 					CombineClip((*oNode.GetRect()).GetRectD(), shCM);
 			}
 		}
-
-		//TODO: реализовать
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_COMMENT()

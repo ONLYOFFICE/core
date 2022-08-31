@@ -957,6 +957,11 @@ namespace NSDocxRenderer
         {
             CFontTableEntry& oEntry = iterFont->second;
 
+            if (oEntry.m_strFamilyName.empty())
+            {
+                continue;
+            }
+
             oWriter.WriteString(L"<w:font w:name=\"");
             oWriter.WriteEncodeXmlString(oEntry.m_strFamilyName);
             oWriter.WriteString(L"\">");

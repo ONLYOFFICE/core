@@ -46,8 +46,8 @@ namespace docbuilder_net
 	ref class CDocBuilderContext;
 	
 	/// <summary>
-	/// Class for getting results of called js commands.
-	/// Represent the wrapper over js object.
+	/// Class for getting the results of called JS commands.
+	/// It represents a wrapper for a JS object.
 	/// </summary>
 	public ref class CDocBuilderValue
 	{
@@ -72,74 +72,86 @@ namespace docbuilder_net
 		/// <returns> True if this object is undefined. </returns>
 		bool IsUndefined();
 
-		/// <returns> True if this object is integer. </returns>
+		/// <returns> True if this object is an integer. </returns>
 		bool IsInt();
 
-		/// <returns> True if this object is double. </returns>
+		/// <returns> True if this object is a double value. </returns>
 		bool IsDouble();
 
-		/// <returns> True if this object is string. </returns>
+		/// <returns> True if this object is a string. </returns>
 		bool IsString();
 
-		/// <returns> True if this object is function. </returns>
+		/// <returns> True if this object is a function. </returns>
 		bool IsFunction();
 
-		/// <returns> True if this object is object. </returns>
+		/// <returns> True if this object is an object. </returns>
 		bool IsObject();
 
-
-		/// <returns> True if this object is array. </returns>
+		/// <returns> True if this object is an array. </returns>
 		bool IsArray();
 
-		/// <returns> True if this object is typed array. </returns>
+		/// <returns> True if this object is a typed array. </returns>
 		bool IsTypedArray();
 
 
-		/// <returns> length if this object is array/typed array. Otherwise, returns 0 </returns>
+		/// <returns> The length if this object is an array/typed array. Otherwise, returns 0. </returns>
 		unsigned int GetLength();
 
 
-		/// <summary> Convert this object to a boolean value. </summary>
+		/// <summary> Converts this object to a boolean value. </summary>
 		bool ToBool();
 
-		/// <summary> Convert this object to an integer. </summary>
+		/// <summary> Converts this object to an integer. </summary>
 		int ToInt();
 
-		/// <summary> Convert this object to double value. </summary>
+		/// <summary> Converts this object to a double value. </summary>
 		double ToDouble();
 
-		/// <summary> Convert this object to a string. </summary>
+		/// <summary> Converts this object to a string. </summary>
 		String^ ToString() override;
 
 		
 		/// <summary> Returns a property of this object. </summary>
+		/// <param name="name"> The name of the CDocBuilderValue object property. </param>
 		CDocBuilderValue^ GetProperty(String^ name);
 
 		/// <summary> Analogue of the GetProperty method. </summary>
+		/// <param name="name"> The name of the CDocBuilderValue object property. </param>
 		CDocBuilderValue^ Get(String^ name);
 
 		/// <summary> Returns an array value by its index. </summary>
+		/// <param name="index"> The index of the array value. </param>
 		CDocBuilderValue^ Get(int index);
 
 		
 		/// <summary> Sets a property to this object. </summary>
+		/// <param name="name"> The name of the CDocBuilderValue object property. </param>
+		/// <param name="value"> The value of the CDocBuilderValue object property. </param>
 		void SetProperty(String^ name, CDocBuilderValue^ value);
 
-		/// <summary> Analogue of the SetProperty. </summary>
+		/// <summary> Analogue of the SetProperty method. </summary>
+		/// <param name="name"> The name of the CDocBuilderValue object property. </param>
+		/// <param name="value"> The value of the CDocBuilderValue object property. </param>
 		void Set(String^ name, CDocBuilderValue^ value);
 
 		/// <summary> Sets an array value by its index. </summary>
+		/// <param name="index"> The index of the array value. </param>
+		/// <param name="value"> The array value to be set. </param>
 		void Set(int index, CDocBuilderValue^ value);
 
 
-		/// <summary> Get/Set the value by index. </summary>
+		/// <summary> Returns/Sets an array value by its index. </summary>
+		/// <param name="index"> The index of the array value. </param>
+		/// <param name="value"> The array value to be set. </param>
 		property CDocBuilderValue^ default[int]
 		{
 			CDocBuilderValue ^ get(int index) { return Get(index); }
 			void set(int index, CDocBuilderValue ^ value) { Set(index, value); }
 		}
 
-		/// <summary> Indexer analogue of the GetProperty/SetProperty. </summary>
+		/// <summary> The indexer analogue of the GetProperty/SetProperty methods. </summary>
+		/// <param name="name"> The name of the CDocBuilderValue object property. </param>
+		/// <param name="value"> The value of the CDocBuilderValue object property. </param>
 		property CDocBuilderValue^ default[String^]
 		{
 			CDocBuilderValue ^ get(String^ name) { return Get(name); }
@@ -147,6 +159,7 @@ namespace docbuilder_net
 		}
 		
 	public:
+		/// <summary> Creates an object from primitive types. </summary>
 		CDocBuilderValue(bool value);
 		CDocBuilderValue(int value);
 		CDocBuilderValue(unsigned int value);
@@ -161,36 +174,64 @@ namespace docbuilder_net
 
 		/// <summary>
 		/// Please use CDocBuilderContext.CreateUndefined.
-		/// This method gets the current context and call method of it.
+		/// Creates an undefined value. This method returns the current context and calls its CreateUndefined method.
 		/// </summary>
 		static CDocBuilderValue^ CreateUndefined();
 
 		/// <summary>
 		/// Please use CDocBuilderContext.CreateNull.
-		/// This method gets the current context and call method of it.
+		/// Creates a null value. This method returns the current context and calls its CreateNull method.
 		/// </summary>
 		static CDocBuilderValue^ CreateNull();
 
 	public:
-		/// <summary> The object methods for calling functions. </summary>
+		/// <summary> Calls the specified Document Builder method. </summary>
+		/// <param name="name"> The name of the Document Builder method. </param>
 		CDocBuilderValue^ Call(String^ name);
 
-		/// <summary> The object methods for calling functions. </summary>
+		/// <summary> Calls the specified Document Builder method. </summary>
+		/// <param name="name"> The name of the Document Builder method. </param>
+		/// <param name="p1"> The first parameter that the Document Builder method takes as an arguments. </param>
 		CDocBuilderValue^ Call(String^ name, CDocBuilderValue^ p1);
 
-		/// <summary> The object methods for calling functions. </summary>
+		/// <summary> Calls the specified Document Builder method. </summary>
+		/// <param name="name"> The name of the Document Builder method. </param>
+		/// <param name="p1"> The first parameter that the Document Builder method takes as an arguments. </param>
+		/// <param name="p2"> The second parameter that the Document Builder method takes as an arguments. </param>
 		CDocBuilderValue^ Call(String^ name, CDocBuilderValue^ p1, CDocBuilderValue^ p2);
 
-		/// <summary> The object methods for calling functions. </summary>
+		/// <summary> Calls the specified Document Builder method. </summary>
+		/// <param name="name"> The name of the Document Builder method. </param>
+		/// <param name="p1"> The first parameter that the Document Builder method takes as an arguments. </param>
+		/// <param name="p2"> The second parameter that the Document Builder method takes as an arguments. </param>
+		/// <param name="p3"> The third parameter that the Document Builder method takes as an arguments. </param>
 		CDocBuilderValue^ Call(String^ name, CDocBuilderValue^ p1, CDocBuilderValue^ p2, CDocBuilderValue^ p3);
 
-		/// <summary> The object methods for calling functions. </summary>
+		/// <summary> Calls the specified Document Builder method. </summary>
+		/// <param name="name"> The name of the Document Builder method. </param>
+		/// <param name="p1"> The first parameter that the Document Builder method takes as an arguments. </param>
+		/// <param name="p2"> The second parameter that the Document Builder method takes as an arguments. </param>
+		/// <param name="p3"> The third parameter that the Document Builder method takes as an arguments. </param>
+		/// <param name="p4"> The fourth parameter that the Document Builder method takes as an arguments. </param>
 		CDocBuilderValue^ Call(String^ name, CDocBuilderValue^ p1, CDocBuilderValue^ p2, CDocBuilderValue^ p3, CDocBuilderValue^ p4);
 
-		/// <summary> The object methods for calling functions. </summary>
+		/// <summary> Calls the specified Document Builder method. </summary>
+		/// <param name="name"> The name of the Document Builder method. </param>
+		/// <param name="p1"> The first parameter that the Document Builder method takes as an arguments. </param>
+		/// <param name="p2"> The second parameter that the Document Builder method takes as an arguments. </param>
+		/// <param name="p3"> The third parameter that the Document Builder method takes as an arguments. </param>
+		/// <param name="p4"> The fourth parameter that the Document Builder method takes as an arguments. </param>
+		/// <param name="p5"> The fifth parameter that the Document Builder method takes as an arguments. </param>
 		CDocBuilderValue^ Call(String^ name, CDocBuilderValue^ p1, CDocBuilderValue^ p2, CDocBuilderValue^ p3, CDocBuilderValue^ p4, CDocBuilderValue^ p5);
 
-		/// <summary> The object methods for calling functions. </summary>
+		/// <summary> Calls the specified Document Builder method. </summary>
+		/// <param name="name"> The name of the Document Builder method. </param>
+		/// <param name="p1"> The first parameter that the Document Builder method takes as an arguments. </param>
+		/// <param name="p2"> The second parameter that the Document Builder method takes as an arguments. </param>
+		/// <param name="p3"> The third parameter that the Document Builder method takes as an arguments. </param>
+		/// <param name="p4"> The fourth parameter that the Document Builder method takes as an arguments. </param>
+		/// <param name="p5"> The fifth parameter that the Document Builder method takes as an arguments. </param>
+		/// <param name="p6"> The sixth parameter that the Document Builder method takes as an arguments. </param>
 		CDocBuilderValue^ Call(String^ name, CDocBuilderValue^ p1, CDocBuilderValue^ p2, CDocBuilderValue^ p3, CDocBuilderValue^ p4, CDocBuilderValue^ p5, CDocBuilderValue^ p6);
 
 	internal:
@@ -212,8 +253,9 @@ namespace docbuilder_net
 		/// </summary>
 		/// <param name="path"> The path to the file to be opened together with its name and extension. </param>
 		/// <param name="params"> 
-		/// The parameters needed for the correct file opening (most commonly the encoding is used for the txt and csv file types or the delimiter for the csv files,
-		/// for other file types this is just an empty string).The parameters are added in the form of XML tags, where m_nCsvTxtEncoding is used for the text encoding
+		/// The parameters needed for the correct file opening (most commonly, the encoding is used for the txt and csv file types or the delimiter for the csv files,
+		/// for other file types this is just an empty string). The parameters are added in the form of XML tags, where m_nCsvTxtEncoding is used for the text encoding
+		/// and m_nCsvDelimiter is used for the csv delimiter. The supported values for the csv delimiters include: 0 - no delimiter; 1 - tab; 2 - semicolon; 3 - colon; 4 - comma; 5 - space.
 		/// </param>
 		/// <returns> Process x2t return code. </returns>
 		int OpenFile(String^ path, String^ params);
@@ -222,8 +264,8 @@ namespace docbuilder_net
 		/// Creates a new file. The type of the file which will be created needs to be set.
 		/// </summary>
 		/// <param name="type"> 
-		/// The type of the file to be created is specified as a hexadecimal
-		/// integer for the code or docx, xlsx or pptx for the .docbuilder script file (see AVS_OFFICESTUDIO_FILE_XXX values). 
+		/// The type of the file to be created set as a hexadecimal
+		/// integer for the .Net code or docx, xlsx or pptx for the .docbuilder script file (see AVS_OFFICESTUDIO_FILE_XXX values). 
 		/// </param>
 		/// <returns> True if the operation is successful. </returns>
 		bool CreateFile(int type);
@@ -240,8 +282,8 @@ namespace docbuilder_net
 		/// Saves the file after all the changes are made. The type of the file which will be saved needs to be set.
 		/// </summary>
 		/// <param name="type">
-		/// The type of the file to be saved is specified as a hexadecimal integer for the C++ code; for the .docbuilder script file the following values are possible:
-		/// docx, odt, rtf, txt, pptx, xlsx, ods, csv, pdf(see AVS_OFFICESTUDIO_FILE_XXX values).
+		/// The type of the file to be saved set as a hexadecimal integer for the .Net code; for the .docbuilder script file the following values are possible:
+		/// docx, odt, rtf, txt, pptx, xlsx, ods, csv, pdf (see AVS_OFFICESTUDIO_FILE_XXX values).
 		/// </param>
 		/// <param name="path"> The path to the file to be saved together with its name and extension. </param>
 		/// <returns> Process x2t return code. </returns>
@@ -251,22 +293,29 @@ namespace docbuilder_net
 		/// Saves the file after all the changes are made. The type of the file which will be saved needs to be set.
 		/// </summary>
 		/// <param name="type">
-		/// The type of the file to be saved is specified as a hexadecimal integer for the C++ code; for the .docbuilder script file the following values are possible:
-		/// docx, odt, rtf, txt, pptx, xlsx, ods, csv, pdf(see AVS_OFFICESTUDIO_FILE_XXX values).
+		/// The type of the file to be saved set as a hexadecimal integer for the .Net code; for the .docbuilder script file the following values are possible:
+		/// docx, odt, rtf, txt, pptx, xlsx, ods, csv, pdf (see AVS_OFFICESTUDIO_FILE_XXX values).
 		/// </param>
 		/// <param name="path"> The path to the file to be saved together with its name and extension. </param>
 		/// <param name="params">
-		/// The parameters needed for the correct file opening (most commonly the encoding is used for the txt and csv file types or the delimiter for the csv files,
-		/// for other file types this is just an empty string).The parameters are added in the form of XML tags, where m_nCsvTxtEncoding is used for the text encoding
-		/// and m_nCsvDelimiter is used for the csv delimiter.The supported values for the csv delimiters include : 0 - no delimiter; 1 - tab; 2 - semicolon; 3 - colon; 4 - comma; 5 - space.
-		/// When saving into an image file(png or jpg) for creating thumbnails, the additional parameters are used.
+		/// The parameters needed for the correct file opening (most commonly, the encoding is used for the txt and csv file types or the delimiter for the csv files,
+		/// for other file types this is just an empty string). The parameters are added in the form of XML tags, where m_nCsvTxtEncoding is used for the text encoding
+		/// and m_nCsvDelimiter is used for the csv delimiter. The supported values for the csv delimiters include : 0 - no delimiter; 1 - tab; 2 - semicolon; 3 - colon; 4 - comma; 5 - space.
+		/// When saving into an image file (png or jpg) for creating thumbnails, the additional parameters in the form of XML tags are used:
+		/// m_oThumbnail - the core tag showing that the inner nodes will be used to create a thumbnail out of the document file;
+		/// format - the image file format used to create a thumbnail (can be of the following values: 3 - for a JPG file, 4 - for a PNG file);
+		/// aspect - the image aspect when creating a thumbnail from the document file (can be of the following values: 1 - will keep the original aspect, 0 - will stretch the image to fit the width and the height set below;
+		/// first - whether only the first page or all the pages should be converted into a thumbnail (can be of the following values: true - only the first page will be converted, false - all the document pages will be used to create thumbnails, in this case the file will be saved as an archive of images, one for each page);
+		/// width - the image width in pixels;
+		/// height - the image height in pixels.
+		/// For example: oBuilder.SaveFile(OFFICESTUDIO_FILE_IMAGE, L"thumbnail.png", "<m_oThumbnail><format>4</format><aspect>1</aspect><first>false</first><width>1000</width><height>1000</height></m_oThumbnail>");
 		/// </param>
 		/// <returns> Process x2t return code. </returns>
 		bool SaveFile(int type, String^ path, String^ params);
 		
 
 		/// <summary>
-		/// Close the file to stop working with it. You can use a single ONLYOFFICE Document Builder instance
+		/// Closes the file to stop working with it. You can use a single ONLYOFFICE Document Builder instance
 		/// to work with all your files, but you need to close the previous file before you can
 		/// start working with the next one in this case.
 		/// 
@@ -289,21 +338,21 @@ namespace docbuilder_net
 		void CloseFile();
 
 		/// <summary>
-		/// Execute the command which will be used to create the document file (text document, spreadsheet, PDF, etc.).
+		/// Executes the command which will be used to create the document file (text document, spreadsheet, presentation, form document, PDF).
 		/// </summary>
 		/// <param name="command"> 
-		/// The command in the form of JavaScript code which will be used to create the document file (in C++, 
-		/// the escape character must be used when the command contains quotation symbols). 
+		/// The command in the form of JavaScript code which will be used to create the document file
+		/// (in .Net, the escape character must be used when the command contains quotation symbols).
 		/// </param>
 		/// <returns> True if the operation is successful. </returns>
 		bool ExecuteCommand(String^ command);
 
 		/// <summary>
-		/// Execute the command which will be used to create the document file (text document, spreadsheet, PDF, etc.).
+		/// Executes the command which will be used to create the document file (text document, spreadsheet, presentation, form document, PDF).
 		/// </summary>
 		/// <param name="command"> 
-		/// The command in the form of JavaScript code which will be used to create the document file (in C++, 
-		/// the escape character must be used when the command contains quotation symbols). 
+		/// The command in the form of JavaScript code which will be used to create the document file
+		/// (in .Net, the escape character must be used when the command contains quotation symbols).
 		/// </param>
 		/// <param name="retValue"> The command return value. </param>
 		/// <returns> True if the operation is successful. </returns>
@@ -311,10 +360,10 @@ namespace docbuilder_net
 
 
 		/// <summary>
-		/// Runs ONLYOFFICE Document Builder executable.If you do not want to write a C++ application,
-		/// you can simply use the docbuilder.exe executable fileand run it with the.docbuilder file as an argument,
-		/// where all the code for the document file creation will be written.For C++, use the path to the
-		/// executable file from the sPath parameter, create the CDocBuilder objectand call the Run method.
+		/// Runs the ONLYOFFICE Document Builder executable. If you do not want to write a .Net application,
+		/// you can simply use the docbuilder.exe executable file and run it with the.docbuilder file as an argument,
+		/// where all the code for the document file creation will be written. For .Net, create the CDocBuilder object
+		/// and call the Run method with the path to the executable file from the sPath parameter.
 		/// </summary>
 		/// <param name="path"> The path to the ONLYOFFICE Document Builder executable. </param>
 		/// <returns> True if the operation is successful. </returns>
@@ -322,60 +371,63 @@ namespace docbuilder_net
 
 		/// <summary>
 		/// Runs all the commands for the document creation using a single command.
-		/// Compared to ExecuteCommand where only one command at a time is allowed, RunText
+		/// Compared to CDocBuilder.ExecuteCommand where only one command at a time is allowed, CDocBuilder.RunText
 		/// makes it possible to enter all the commands for the document creation at once.
 		/// </summary>
 		/// <param name="commands">
-		/// The commands in Unicode format which will be used to create the document file.
-		/// All the commands containing builder.are line separated, i.e.you cannot write them in one line, each command must start with its own line.
+		/// The commands which will be used to create the document file.
+		/// All the commands containing builder. are line separated, i.e. you cannot write them in one line, each command must start with its own line.
 		/// </param>
 		/// <returns> True if the operation is successful. </returns>
 		bool RunText(String^ commands);
 
 		/// <summary>
 		/// Sets an argument to the builder class which can be trasferred to the program outside the CDocBuilder.ExecuteCommand method,
-		/// i.e.either as an additional property when running ONLYOFFICE Document Builder executable file or as a part of program code, but not included into the document file script.
+		/// i.e. either as an additional property when running ONLYOFFICE Document Builder executable file or as a part of program code, but not included into the document file script.
 		/// </summary>
 		/// <remarks>
-		/// Supported properties :
+		/// Supported properties:
 		/// <para>
-		/// --use - doctrenderer - scheme - Specifies if the doctrenderer mode is used when building a document or getting content from the editor when saving a file(true / false).
-		/// Default : false
+		/// --use-doctrenderer-scheme - Specifies if the doctrenderer mode is used when building a document or getting content from the editor when saving a file (true / false).
+		/// Default: false
 		/// </para>
 		/// <para>
-		/// --check - fonts - Specifies if the system fonts are cached for faster work(true / false).
-		/// Default : true
+		/// --check-fonts - Specifies if the system fonts are cached for faster work (true / false).
+		/// Default: true
 		/// </para>
 		/// <para>
-		/// --work - directory - The path to the temporary directory.
-		/// Default : ""
+		/// --work-directory - The path to the temporary directory.
+		/// Default: ""
 		/// </para>
 		/// <para>
-		/// --cache - scripts - Specifies if the sdkjs scripts are cached(true / false).
-		/// Default : true
+		/// --cache-scripts - Specifies if the sdkjs scripts are cached (true / false).
+		/// Default: true
 		/// </para>
 		/// <para>
-		/// --save - use - only - names - Specifies if the destination paths are used(for server work) (true / false).
+		/// --save-use-only-names - Specifies if the destination paths are used (for server work) (true / false).
 		/// <example>
-		/// For example : / home / user / 1.txt = > / tmp / 1.txt
+		/// For example: /home/user/1.txt = > /tmp/1.txt
 		/// </example>
 		/// Default: false
 		/// </para>
 		/// <para>
-		/// --all - fonts - path - The path to the AllFonts.js script.
-		/// --argument - The JSON argument which is sent to the global parameters of all the opened js context.
-		/// --fonts - system - Specifies if the system fonts are used(true / false).
-		/// Default : true
+		/// --all-fonts-path - The path to the AllFonts.js script.
+		/// --argument - The JSON argument which is sent to the global parameters of all the opened JS context.
+		/// --fonts-system - Specifies if the system fonts are used (true / false).
+		/// Default: true
 		/// </para>
-		/// --fonts - dir - The path to the additional fonts directory(may be many records).
+		/// --fonts-dir - The path to the additional fonts directory (may be many records).
 		/// </remarks>
-		/// <param name="param"> The parameter name in UTF8 format, the value is always --argument. </param>
-		/// <param name="value"> The parameter value in UTF8 format, which will be used in the document. </param>
+		/// <param name="param"> The parameter name, the value is always --argument. </param>
+		/// <param name="value"> The parameter value which will be used in the document. </param>
 		void SetProperty(String^ param, String^ value);
 
 
 		/// <summary>
-		/// Writes data to the file. Used for logs in js code.
+		/// Writes data to the log file. It is used for logs in JS code.
+		/// <param name="path"> The path to the file where all the logs will be written. </param>
+		/// <param name="value"> The data which will be written to the log file. </param>
+		/// <param name="append"> Specifies if the new data will be appended to the already existing log file or a new file will be created. </param>
 		/// </summary>
 		void WriteData(String^ path, String^ value, bool append);
 
@@ -386,33 +438,32 @@ namespace docbuilder_net
 		/// <returns> True if the doctrenderer mode is used on saving. See the --use-doctrenderer-scheme property. </returns>
 		bool IsSaveWithDoctrendererMode();
 
-		/// <returns> The document builder engine version. </returns>
+		/// <returns> The ONLYOFFICE Document Builder engine version. </returns>
 		String^ GetVersion();
 
-		/// <summary>
-		/// Returns the current js context.
-		/// </summary>
+		/// <returns> The current JS context. </returns>
 		CDocBuilderContext^ GetContext();
 
 	public:
 		/// <summary>
 		/// Initializes the ONLYOFFICE Document Builder as a library for the application to be able to work with it.
-		/// This method just sets the directory to the main builder resources(icu files and etc).If this method is not called,
-		/// the builder will find resources from the current process directory.
+		/// This method just sets the directory to the main Document Builder resources (icu files, etc). If this method is not called,
+		/// the Document Builder will find resources from the current process directory.
 		/// </summary>
+		/// <param name="directory"> The path to the main Document Builder resources. </param>
 		static void Initialize(String^ directory);
 
 		/// <summary>
 		/// Initializes the ONLYOFFICE Document Builder as a library for the application to be able to work with it.
-		/// This method just sets the directory to the main builder resources(icu files and etc).If this method is not called,
-		/// the builder will find resources from the current process directory.
+		/// This method just sets the directory to the main Document Builder resources (icu files, etc). If this method is not called,
+		/// the Document Builder will find resources from the current process directory.
 		/// </summary>
 		static void Initialize();
 
 		/// <summary>
 		/// Unloads the ONLYOFFICE Document Builder from the application memory when it is no longer needed.
-		/// Generally, there is no need to dispose js before exiting
-		/// the process, it should happen automatically.It should only be used if the process needs the resources taken up by js.
+		/// Generally, there is no need to dispose JS before exiting
+		/// the process, it should happen automatically. It should only be used if the process needs the resources taken up by JS.
 		/// </summary>
 		static void Destroy();
 		
@@ -421,7 +472,7 @@ namespace docbuilder_net
 	};
 
 	/// <summary>
-	/// Stack-allocated class which sets the execution context for all operations executed within a local scope.
+	/// The stack-allocated class which sets the execution context for all operations executed within a local scope.
 	/// All opened scopes will be closed automatically when the builder CloseFile method is called.
 	/// </summary>
 	public ref class CDocBuilderContextScope
@@ -446,7 +497,7 @@ namespace docbuilder_net
 	};
 
 	/// <summary>
-	/// Class for getting js context for working.
+	/// Class for getting JS context for working.
 	/// </summary>
 	public ref class CDocBuilderContext
 	{
@@ -460,43 +511,44 @@ namespace docbuilder_net
 
 	public:
 		/// <summary>
-		/// Creates an undefined value, an analogue of undefined in js.
+		/// Creates an undefined value, an analogue of undefined in JS.
 		/// </summary>
 		CDocBuilderValue^ CreateUndefined();
 
 		/// <summary>
-		/// Creates a null value, an analogue of null in js.
+		/// Creates a null value, an analogue of null in JS.
 		/// </summary>
 		CDocBuilderValue^ CreateNull();
 
 		/// <summary>
-		/// Creates an empty object, an analogue of {} in js.
+		/// Creates an empty object, an analogue of {} in JS.
 		/// </summary>
 		CDocBuilderValue^ CreateObject();
 
 		/// <summary>
-		/// Creates an array value, an analogue of new Array(length) in js.
+		/// Creates an array value, an analogue of new Array (length) in JS.
 		/// </summary>
+		/// <param name="length"> The array length. </param>
 		CDocBuilderValue^ CreateArray(int length);
 
 		/// <summary>
-		/// Creates a Uint8Array value, an analogue of Uint8Array in js.
+		/// Creates a Uint8Array value, an analogue of Uint8Array in JS.
 		/// </summary>
+		/// <param name="buffer"> The array buffer. </param>
 		CDocBuilderValue^ CreateTypedArray(array<Byte>^ buffer);
 
-		/// <summary>
-		/// Returns the global object for the context.
-		/// </summary>
+		/// <returns>
+		/// The global object for the current context.
+		/// </returns>
 		CDocBuilderValue^ GetGlobal();
 
 		/// <summary>
-		/// Creates a context scope.
+		/// Creates a context scope which sets the execution context for all operations executed within a local scope.
 		/// </summary>
-		/// <returns></returns>
 		CDocBuilderContextScope^ CreateScope();
 
 		/// <summary>
-		/// Checks for errors in js. 
+		/// Checks for errors in JS. 
 		/// The error message and call stack will be written to std::cerr.
 		/// </summary>
 		bool IsError();

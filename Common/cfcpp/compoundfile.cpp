@@ -645,7 +645,8 @@ void CompoundFile::CommitDirectory()
 
 void CompoundFile::Close(bool closeStream)
 {
-
+    this->closeStream = closeStream;
+    Dispose(closeStream);
 }
 
 std::shared_ptr<IDirectoryEntry> CompoundFile::RootEntry()

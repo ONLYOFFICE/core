@@ -147,7 +147,7 @@ private:
     int _lockSectorId = -1;
     bool _transactionLockAllocated = false;
     bool validationExceptionEnabled = true;
-    bool _disposed;//false
+    bool _disposed = false;
     CFSUpdateMode updateMode;
     SVector<IDirectoryEntry> directoryEntries;
     std::list<int> levelSIDs;

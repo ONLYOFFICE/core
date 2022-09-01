@@ -97,10 +97,15 @@ void DirectoryEntry::SetEntryName(const std::wstring &entryName)
             throw CFException("Entry name MUST NOT exceed 31 characters");
 
 
-        std::copy(entryName.data(), entryName.data() + entryName.length(), this->entryName);
-        reinterpret_cast<wchar_t*>(this->entryName)[entryName.length()] = L'\0';
+        std::fill(this->entryName, this->entryName + 64, 0);
+        for (size_t i = 0; i < entryName.size(); i++)
+        {
+            wchar_t sym = entryName[i];
+            this->entryName[i*2+0] = sym % 256;
+            this->entryName[i*2+1] = sym / 256;
+        }
 
-        this->nameLength = (ushort)entryName.size() + 2;
+        this->nameLength = (ushort)entryName.size() * 2 + 2;
     }
 }
 
@@ -199,7 +204,7 @@ void DirectoryEntry::setLeft(RedBlackTree::PIRBNode pNode)
     if (leftSibling != DirectoryEntry::NOSTREAM)
         dirRepository[leftSibling]->setParent(shared_from_this());
 }
-// todo
+
 void DirectoryEntry::setRight(RedBlackTree::PIRBNode pNode)
 {
     rightSibling = pNode != nullptr ? std::static_pointer_cast<IDirectoryEntry>(pNode)->getSid() : DirectoryEntry::NOSTREAM;

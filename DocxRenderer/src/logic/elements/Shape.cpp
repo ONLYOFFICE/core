@@ -5,13 +5,17 @@
 
 namespace NSDocxRenderer
 {
+    UINT CShape::m_gRelativeHeight = c_iStartRelativeHeight;
+
     CShape::CShape() : CBaseItem(ElemType::etShape)
     {
+        m_nRelativeHeight = ++m_gRelativeHeight;
     }
 
     CShape::CShape(std::shared_ptr<CImageInfo> pInfo, const std::wstring& strDstMedia) : CBaseItem(ElemType::etShape),
         m_strPath(strDstMedia), m_pImageInfo(pInfo)
     {
+        m_nRelativeHeight = ++m_gRelativeHeight;
     }
 
     CShape::~CShape()
@@ -31,11 +35,9 @@ namespace NSDocxRenderer
         return iId;
     }
 
-    UINT CShape::GenerateRelativeHeight()
+    void CShape::ResetRelativeHeight()
     {
-        static UINT RelativeHeight = UINT_MAX;
-        RelativeHeight--;
-        return RelativeHeight;
+        m_gRelativeHeight = c_iStartRelativeHeight;
     }
 
     void CShape::GetDataFromVector(const CVectorGraphics& oVector)
@@ -173,7 +175,8 @@ namespace NSDocxRenderer
     void CShape::DetermineGraphicsType(double dWidth, double dHeight,size_t nPeacks, size_t nCurves)
     {
         //note параллельно для каждой текстовой строки создается шейп, который содержит цвет фона для данного текста.
-        if (m_oBrush.Color1 == c_iWhiteColor && m_oPen.Color == c_iWhiteColor)
+        if ((m_bIsNoStroke && m_bIsNoFill) ||
+            (m_oBrush.Color1 == c_iWhiteColor && m_oPen.Color == c_iWhiteColor))
         {
             m_eGraphicsType = eGraphicsType::gtNoGraphics;
             //заранее отбрасываем некоторые фигуры
@@ -591,7 +594,7 @@ namespace NSDocxRenderer
             oWriter.WriteString(L" distR=\"0\"");
             oWriter.WriteString(L" simplePos=\"0\""); //true/1 Указывает, что этот объект должен быть позиционирован с использованием информации о позиционировании в дочернем элементе simplePos
             oWriter.WriteString(L" relativeHeight=\""); //Определяет относительное упорядочивание по Z всех объектов DrawingML в этом документе.
-            oWriter.AddUInt(GenerateRelativeHeight());
+            oWriter.AddUInt(m_nRelativeHeight);
             oWriter.WriteString(L"\"");
             oWriter.WriteString(L" behindDoc=\""); //позади текста - 1, перед текстом - 0
             oWriter.AddUInt(static_cast<UINT>(m_bIsBehindDoc));

@@ -20,7 +20,6 @@ II Этап
    Собрали все объекты для текущей страницы. Начинаем анализ.
    
 1. Анализируем графику - AnalyzeCollectedShapes() 
-  - RemoveSubstratesUnderPictures() - удаляем подложки под картинками, т.е. любой шейп, который совпадает по геометрии (2 вложенных цикла m_arImages - m_arShapes)
   - DetermineLinesType() - превращаем шейпы в горизонтальные линии в зависимости от геометрии, удаляем обработанные шейпы, определяем тип полученной линии на основании типа графики (Rectangle, Curve, ComplicatedFigure, NoGraphics) и подтипа (LongDash, Dash, Dot, Wave). (2 вложенных цикла m_arShapes - m_arShapes с сортировкой вектора)
 
 2. AnalyzeCollectedSymbols() - добавляем свойства каждому символу отдельно

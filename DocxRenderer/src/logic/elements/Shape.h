@@ -38,7 +38,7 @@ namespace NSDocxRenderer
 
             bool m_bIsNoFill {true};
             bool m_bIsNoStroke {true};
-            bool m_bIsBehindDoc {false};
+            bool m_bIsBehindDoc {true};
 
             eGraphicsType   m_eGraphicsType {eGraphicsType::gtUnknown};
             eSimpleLineType m_eSimpleLineType {eSimpleLineType::sltUnknown};
@@ -50,6 +50,9 @@ namespace NSDocxRenderer
 
         private:
             UINT m_nShapeId {0};
+            UINT m_nRelativeHeight {0};
+
+            static UINT m_gRelativeHeight;
 
         public:
             CShape();
@@ -80,8 +83,9 @@ namespace NSDocxRenderer
             void BuildGraphicProperties(NSStringUtils::CStringBuilder &oWriter);
             void BuildTextBox(NSStringUtils::CStringBuilder &oWriter);
 
+            static void ResetRelativeHeight();
+
         private:
             UINT GenerateShapeId();
-            UINT GenerateRelativeHeight();
     };
 }

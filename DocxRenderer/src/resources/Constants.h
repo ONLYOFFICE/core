@@ -41,3 +41,4 @@ const double c_dSTANDART_FIRSTLINE_INDENT_MM = 12.5;
 
 const UINT   c_iStartingIdForImages = 6;
 constexpr size_t c_nAntiZero = ~0;
+const UINT   c_iStartRelativeHeight = 0x0F000000;

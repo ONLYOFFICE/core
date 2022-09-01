@@ -85,7 +85,6 @@ namespace NSDocxRenderer
                              const double& fBaseLineOffset, const bool& bIsPDFAnalyzer);
 
         void AnalyzeCollectedShapes();
-        void RemoveSubstratesUnderPictures();
         void DetermineLinesType();
 
         //Собранные для текущей страницы данные нужно проанализировать и сгруппировать, лишнее удалить

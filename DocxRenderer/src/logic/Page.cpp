@@ -33,6 +33,8 @@ namespace NSDocxRenderer
         m_dLastTextX = -1;
         m_dLastTextY = -1;
         m_dLastTextX_block = m_dLastTextX;
+
+        CShape::ResetRelativeHeight();
     }
 
     void CPage::Clear()
@@ -249,26 +251,22 @@ namespace NSDocxRenderer
                 pShape->m_bIsNoFill = false;
             }
 
-            //Все белые прямоугольники-подложки на задний фон
-            //todo задать приоритеты отображения шейпов
-            if ((!pShape->m_bIsNoFill && pShape->m_bIsNoStroke) ||
-                (pShape->m_bIsNoFill && m_pBrush->Color1 == c_iWhiteColor))
-            {
-                pShape->m_bIsBehindDoc = true;
-            }
-
             if (pShape->m_bIsNoStroke)
             {
                 if ((fabs(m_oVector.m_dLeft - m_oVector.m_dRight) < 0.3) || (fabs(m_oVector.m_dTop - m_oVector.m_dBottom) < 0.3))
                 {
-                    lType = 0x01;
                     pShape->m_oPen.Color = m_pBrush->Color1;
                     pShape->m_oPen.Alpha = m_pBrush->Alpha1;
-                    //pShape->m_oPen.Size	 = max(pShape->m_oPen.Size, 1);
                 }
             }
 
             pShape->GetDataFromVector(m_oVector);
+
+            if (pShape->m_bIsNotNecessaryToUse)
+            {
+                delete pShape;
+                return;
+            }
 
             m_arShapes.push_back(pShape);
         }
@@ -373,36 +371,7 @@ namespace NSDocxRenderer
     void CPage::AnalyzeCollectedShapes()
     {
         //todo Объединить контур и заливку одного рисунка в шейпе если m_strPath одинаковые
-        RemoveSubstratesUnderPictures();
         DetermineLinesType();
-    }
-
-    void CPage::RemoveSubstratesUnderPictures()
-    {
-        for (const auto &pImage : m_arImages)
-        {
-            for (const auto &pShape : m_arShapes)
-            {
-                if (pShape->m_bIsNotNecessaryToUse)
-                {
-                    continue;
-                }
-
-                //Note Картинка может выходить за пределы страницы
-                if ((fabs(pImage->m_dTop - pShape->m_dTop) < c_dGRAPHICS_ERROR_MM ||
-                     (pImage->m_dTop < 0.0 && pShape->m_dTop == 0.0))  &&
-                    (fabs(pImage->m_dLeft - pShape->m_dLeft) < c_dGRAPHICS_ERROR_MM ||
-                     (pImage->m_dLeft < 0.0 && pShape->m_dLeft == 0.0)) &&
-                    (fabs(pImage->m_dBaselinePos - pShape->m_dBaselinePos) < c_dGRAPHICS_ERROR_MM ||
-                     (pImage->m_dBaselinePos > m_dHeight && pShape->m_dLeft == m_dHeight)) &&
-                    (fabs(pImage->m_dRight - pShape->m_dRight) < c_dGRAPHICS_ERROR_MM ||
-                     (pImage->m_dRight > m_dWidth && pShape->m_dRight == m_dWidth)))
-                {
-                    pShape->m_bIsNotNecessaryToUse = true;
-                    break;
-                }
-            }
-        }
     }
 
     void CPage::DetermineLinesType()
@@ -1472,6 +1441,7 @@ namespace NSDocxRenderer
         pShape->m_dTop	= pLine->m_dTop;
         pShape->m_dWidth = pLine->m_dWidth;
         pShape->m_dHeight = pLine->m_dHeight;
+        pShape->m_bIsBehindDoc = false;
 
         m_arShapes.push_back(pShape);
     }

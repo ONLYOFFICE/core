@@ -438,10 +438,10 @@ namespace docbuilder_net
 		/// <returns> True if the doctrenderer mode is used on saving. See the --use-doctrenderer-scheme property. </returns>
 		bool IsSaveWithDoctrendererMode();
 
-		/// <returns> The ONLYOFFICE Document Builder engine version. </returns>
+		/// <summary> Returns the ONLYOFFICE Document Builder engine version. </summary>
 		String^ GetVersion();
 
-		/// <returns> The current JS context. </returns>
+		/// <summary> Returns the current JS context. </summary>
 		CDocBuilderContext^ GetContext();
 
 	public:
@@ -537,9 +537,9 @@ namespace docbuilder_net
 		/// <param name="buffer"> The array buffer. </param>
 		CDocBuilderValue^ CreateTypedArray(array<Byte>^ buffer);
 
-		/// <returns>
-		/// The global object for the current context.
-		/// </returns>
+		/// <summary>
+		/// Returns the global object for the current context.
+		/// </summary>
 		CDocBuilderValue^ GetGlobal();
 
 		/// <summary>

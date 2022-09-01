@@ -196,7 +196,10 @@ namespace NSBinPptxRW
 
         std::wstring GetData()
         {
-			return std::wstring(m_pData, (int)m_lSizeCur);
+			if (m_lSizeCur > 0)
+				return std::wstring(m_pData, m_lSizeCur);
+			else
+				return L"";
         }
 
         AVSINLINE void AddCharNoCheck(const WCHAR& wc)
@@ -258,8 +261,7 @@ namespace NSBinPptxRW
     {
     public:
         CStringWriter m_oWriter;
-
-    public:
+//------------------------------
         BYTE m_lDocType;
 
         LONG m_lFlag;
@@ -268,13 +270,20 @@ namespace NSBinPptxRW
         unsigned int m_lObjectId;
         unsigned int m_lObjectIdVML;
         unsigned int m_lObjectIdOle;
-
+//------------------------------------------------- for vml
         std::wstring m_strStyleMain;
-        std::wstring m_strAttributesMain;
+		std::wstring m_strStyleWrap;
+		std::wstring m_strAttributesMain;
         std::wstring m_strNodes;
+		nullable_int64 m_zIndex;
+
+		double m_dX = 0;
+		double m_dY = 0;
+		double m_dWidth = 0;
+		double m_dHeight = 0;
 
         IRenderer* m_pOOXToVMLRenderer;
-
+//--------------------------------------------------
         bool m_bIsTop;
         bool m_bIsUseOffice2007;
 
@@ -308,7 +317,6 @@ namespace NSBinPptxRW
         {
             return (int)m_oWriter.GetCurSize();
         }
-
         // write value
         AVSINLINE void WriteString(const std::wstring& strValue)
         {

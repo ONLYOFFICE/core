@@ -5260,7 +5260,8 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const std::wstr
 
 				if (bIsNeedConvert2007)
 				{
-					oXmlWriter.WriteString(L"</mc:Choice><mc:Fallback><w:pict>");
+					oXmlWriter.WriteString(L"</mc:Choice><mc:Fallback>");
+					oXmlWriter.WriteString(L"<w:pict>");
 
 					if (oElem.is<PPTX::Logic::SpTree>())
 					{
@@ -5274,7 +5275,8 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const std::wstr
 					{
 						ConvertPicVML(oElem, bsMainProps, oXmlWriter);
 					}
-					oXmlWriter.WriteString(L"</w:pict></mc:Fallback></mc:AlternateContent>");
+					oXmlWriter.WriteString(L"</w:pict>");
+					oXmlWriter.WriteString(L"</mc:Fallback></mc:AlternateContent>");
 				}
 			}
 			--m_nCurrentIndexObject;
@@ -5532,7 +5534,7 @@ void CDrawingConverter::ConvertTextVML(XmlUtils::CXmlNode &nodeTextBox, PPTX::Lo
 		}
 	}
 }
-void CDrawingConverter::ConvertMainPropsToVML(const std::wstring& bsMainProps, NSBinPptxRW::CXmlWriter& pWriter, PPTX::Logic::SpTreeElem& oElem)
+void CDrawingConverter::ConvertMainPropsToVML(const std::wstring& bsMainProps, NSBinPptxRW::CXmlWriter& outWriter, PPTX::Logic::SpTreeElem& oElem)
 {
     if (bsMainProps.empty())
         return;
@@ -5543,23 +5545,27 @@ void CDrawingConverter::ConvertMainPropsToVML(const std::wstring& bsMainProps, N
 
 	NSBinPptxRW::CXmlWriter oWriter;
 
+	nullable_int margT; XmlMacroReadAttributeBase(oNode, L"distT", margT);
+	nullable_int margB; XmlMacroReadAttributeBase(oNode, L"distB", margB);
+	nullable_int margL; XmlMacroReadAttributeBase(oNode, L"distL", margL);
+	nullable_int margR; XmlMacroReadAttributeBase(oNode, L"distR", margR);
+
 	double dKoef = 72.0 / (36000 * 25.4);
-    if (L"wp:inline" == oNode.GetName())
+
+	if (margL.is_init())
+		oWriter.WriteAttributeCSS_double1_pt(L"mso-wrap-distance-left", dKoef * (*margL));
+	if (margT.is_init())
+		oWriter.WriteAttributeCSS_double1_pt(L"mso-wrap-distance-top", dKoef * (*margT));
+	if (margR.is_init())
+		oWriter.WriteAttributeCSS_double1_pt(L"mso-wrap-distance-right", dKoef * (*margR));
+	if (margB.is_init())
+		oWriter.WriteAttributeCSS_double1_pt(L"mso-wrap-distance-bottom", dKoef * (*margB));
+
+	outWriter.m_strStyleWrap = oWriter.GetXmlString();
+	oWriter.ClearNoAttack();
+
+	if (L"wp:inline" == oNode.GetName())
 	{
-        nullable_int margT; XmlMacroReadAttributeBase(oNode, L"distT", margT);
-        nullable_int margB; XmlMacroReadAttributeBase(oNode, L"distB", margB);
-        nullable_int margL; XmlMacroReadAttributeBase(oNode, L"distL", margL);
-        nullable_int margR; XmlMacroReadAttributeBase(oNode, L"distR", margR);
-
-		if (margL.is_init())
-            oWriter.WriteAttributeCSS_double1_pt(L"mso-wrap-distance-left", dKoef * (*margL));
-		if (margT.is_init())
-            oWriter.WriteAttributeCSS_double1_pt(L"mso-wrap-distance-top", dKoef * (*margT));
-		if (margR.is_init())
-            oWriter.WriteAttributeCSS_double1_pt(L"mso-wrap-distance-right", dKoef * (*margR));
-		if (margB.is_init())
-            oWriter.WriteAttributeCSS_double1_pt(L"mso-wrap-distance-bottom", dKoef * (*margB));
-
 		XmlUtils::CXmlNode oNodeS;
         if (oNode.GetNode(L"wp:extent", oNodeS))
 		{
@@ -5572,35 +5578,21 @@ void CDrawingConverter::ConvertMainPropsToVML(const std::wstring& bsMainProps, N
 	}
 	else
 	{
-        oWriter.WriteAttributeCSS(L"position", L"absolute");
-        nullable_int margT; XmlMacroReadAttributeBase(oNode, L"distT", margT);
-        nullable_int margB; XmlMacroReadAttributeBase(oNode, L"distB", margB);
-        nullable_int margL; XmlMacroReadAttributeBase(oNode, L"distL", margL);
-        nullable_int margR; XmlMacroReadAttributeBase(oNode, L"distR", margR);
-
-        nullable_bool behindDoc;	XmlMacroReadAttributeBase(oNode, L"behindDoc", behindDoc);
-        nullable_bool allowOverlap; XmlMacroReadAttributeBase(oNode, L"allowOverlap", allowOverlap);
-        nullable_bool layoutInCell; XmlMacroReadAttributeBase(oNode, L"layoutInCell", layoutInCell);
-
-		if (margL.is_init())
-            oWriter.WriteAttributeCSS_double1_pt(L"mso-wrap-distance-left", dKoef * (*margL));
-		if (margT.is_init())
-            oWriter.WriteAttributeCSS_double1_pt(L"mso-wrap-distance-top", dKoef * (*margT));
-		if (margR.is_init())
-            oWriter.WriteAttributeCSS_double1_pt(L"mso-wrap-distance-right", dKoef * (*margR));
-		if (margB.is_init())
-            oWriter.WriteAttributeCSS_double1_pt(L"mso-wrap-distance-bottom", dKoef * (*margB));
-
-        nullable_int64 zIndex; XmlMacroReadAttributeBase(oNode, L"relativeHeight", zIndex);
-		if (zIndex.is_init())
+		oWriter.WriteAttributeCSS(L"position", L"absolute");
+		nullable_bool behindDoc;	XmlMacroReadAttributeBase(oNode, L"behindDoc", behindDoc);
+		nullable_bool allowOverlap; XmlMacroReadAttributeBase(oNode, L"allowOverlap", allowOverlap);
+		nullable_bool layoutInCell; XmlMacroReadAttributeBase(oNode, L"layoutInCell", layoutInCell);
+		
+		XmlMacroReadAttributeBase(oNode, L"relativeHeight", outWriter.m_zIndex);
+		if (outWriter.m_zIndex.is_init())
         {
-            _INT64 z_index = *zIndex;
+            _INT64 z_index = *outWriter.m_zIndex;
 			
 			if ((behindDoc.IsInit()) && (*behindDoc == true))
 			{
-				z_index = -z_index;
+				outWriter.m_zIndex = -z_index;
 			}
-			oWriter.WriteAttributeCSS(L"z-index", std::to_wstring(z_index));
+			oWriter.WriteAttributeCSS(L"z-index", std::to_wstring(*outWriter.m_zIndex));
 		}
 
 		if (allowOverlap.is_init())
@@ -5638,8 +5630,10 @@ void CDrawingConverter::ConvertMainPropsToVML(const std::wstring& bsMainProps, N
             if (oNodeHorP.GetNode(L"wp:posOffset", oNodeO))
 			{
                 int nPos = oNodeHorP.ReadValueInt(L"wp:posOffset");
-                oWriter.WriteAttributeCSS_double1_pt(L"margin-left", dKoef * nPos);
-                oWriter.WriteAttributeCSS(L"mso-position-horizontal", L"absolute");
+				outWriter.m_dX = dKoef * nPos;
+                
+				oWriter.WriteAttributeCSS_double1_pt(L"margin-left", outWriter.m_dX);
+                oWriter.WriteAttributeCSS(L"mso-position-horizontal", L"absolute");		
 			}
 			else
 			{
@@ -5676,7 +5670,9 @@ void CDrawingConverter::ConvertMainPropsToVML(const std::wstring& bsMainProps, N
             if (oNodeVerP.GetNode(L"wp:posOffset", oNodeO))
 			{
                 int nPos = oNodeVerP.ReadValueInt(L"wp:posOffset");
-                oWriter.WriteAttributeCSS_double1_pt(L"margin-top", dKoef * nPos);
+				outWriter.m_dY = dKoef * nPos;
+				
+				oWriter.WriteAttributeCSS_double1_pt(L"margin-top", outWriter.m_dY);
                 oWriter.WriteAttributeCSS(L"mso-position-vertical", L"absolute");
 			}
 			else
@@ -5695,8 +5691,11 @@ void CDrawingConverter::ConvertMainPropsToVML(const std::wstring& bsMainProps, N
             int _width = oNodeS.ReadAttributeInt(L"cx");
             int _height = oNodeS.ReadAttributeInt(L"cy");
 
-            oWriter.WriteAttributeCSS_double1_pt(L"width", dKoef * _width);
-            oWriter.WriteAttributeCSS_double1_pt(L"height", dKoef * _height);
+			outWriter.m_dWidth = dKoef * _width;
+			outWriter.m_dHeight = dKoef * _height;
+
+            oWriter.WriteAttributeCSS_double1_pt(L"width", outWriter.m_dWidth);
+            oWriter.WriteAttributeCSS_double1_pt(L"height", outWriter.m_dHeight);
 		}
 
         XmlUtils::CXmlNode oNodeWrap = oNode.ReadNode(L"<wp:wrapNone/>");
@@ -5710,21 +5709,21 @@ void CDrawingConverter::ConvertMainPropsToVML(const std::wstring& bsMainProps, N
             oNodeWrap = oNode.ReadNode(L"wp:wrapSquare");
 			if (oNodeWrap.IsValid())
 			{
-                pWriter.m_strNodes += L"<w10:wrap type=\"square\"/>";
+                outWriter.m_strNodes += L"<w10:wrap type=\"square\"/>";
 			}
 			else
 			{
                 oNodeWrap = oNode.ReadNode(L"wp:wrapTopAndBottom");
 				if (oNodeWrap.IsValid())
 				{
-                    pWriter.m_strNodes += L"<w10:wrap type=\"topAndBottom\"/>";
+                    outWriter.m_strNodes += L"<w10:wrap type=\"topAndBottom\"/>";
 				}
 				else
 				{
                     oNodeWrap = oNode.ReadNode(L"wp:wrapTight");
 					if (oNodeWrap.IsValid())
 					{
-                        pWriter.m_strNodes += L"<w10:wrap type=\"tight\"/>";
+                        outWriter.m_strNodes += L"<w10:wrap type=\"tight\"/>";
                         oNodeWrap.GetNode(L"wp:wrapPolygon", oNodeWrapPoints);
 					}
 					else
@@ -5732,7 +5731,7 @@ void CDrawingConverter::ConvertMainPropsToVML(const std::wstring& bsMainProps, N
                         oNodeWrap = oNode.ReadNode(L"wp:wrapThrough");
 						if (oNodeWrap.IsValid())
 						{
-                            pWriter.m_strNodes += L"<w10:wrap type=\"through\"/>";
+                            outWriter.m_strNodes += L"<w10:wrap type=\"through\"/>";
                             oNodeWrap.GetNode(L"wp:wrapPolygon", oNodeWrapPoints);
 						}
 					}
@@ -5783,11 +5782,11 @@ void CDrawingConverter::ConvertMainPropsToVML(const std::wstring& bsMainProps, N
 			}
             strAttr += L"\"";
 
-			pWriter.m_strAttributesMain += strAttr;
+			outWriter.m_strAttributesMain += strAttr;
 		}
 	}
 
-	pWriter.m_strStyleMain = oWriter.GetXmlString();
+	outWriter.m_strStyleMain = oWriter.GetXmlString();
 }
 
 //HRESULT CDrawingConverter::GetTxBodyBinary(const std::wstring& bsXml)

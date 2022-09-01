@@ -159,14 +159,14 @@ namespace PPTX
 			pWriter->StartNode(_T("v:group"));
 			pWriter->StartAttributes();
 
-			std::wstring strId			= L"group " + std::to_wstring(pWriter->m_lObjectIdVML);
-			std::wstring strSpid		= L"_x0000_s"	+ XmlUtils::IntToString(0xFFFF & (pWriter->m_lObjectIdVML >> 16), L"%04d");
+			std::wstring strId = L"group " + std::to_wstring(pWriter->m_lObjectIdVML);
+			std::wstring strSpid = L"_x0000_s" + XmlUtils::IntToString(0xFFFF & (pWriter->m_lObjectIdVML >> 16), L"%04d");
 
 			pWriter->m_lObjectIdVML++;
 
 			if (XMLWRITER_DOC_TYPE_XLSX == pWriter->m_lDocType)
 			{
-				if(NULL == pId)
+				if (NULL == pId)
 				{
 					pWriter->WriteAttribute(L"id", strSpid);
 				}
@@ -178,48 +178,13 @@ namespace PPTX
 			}
 			else
 			{
-				pWriter->WriteAttribute(L"id",		strId);
-				pWriter->WriteAttribute(L"o:spid",	strSpid);
+				pWriter->WriteAttribute(L"id", strId);
+				pWriter->WriteAttribute(L"o:spid", strSpid);
 			}
-		
-			NSBinPptxRW::CXmlWriter oStylesWriter;
-			
-			if (!pWriter->m_strStyleMain.empty())
-			{
-				if (grpSpPr.xfrm.is_init())
-				{
-					if (grpSpPr.xfrm->rot.is_init())
-					{
-						int nRot = (int)((double)(*(grpSpPr.xfrm->rot)) / 60000.0);
-						oStylesWriter.WriteAttributeCSS_int(_T("rotation"), nRot);
-					}
-					bool bIsFH = grpSpPr.xfrm->flipH.get_value_or(false);
-					bool bIsFV = grpSpPr.xfrm->flipV.get_value_or(false);
-					if (bIsFH && bIsFV)
-					{
-						oStylesWriter.WriteAttributeCSS(_T("flip"), _T("xy"));
-					}
-					else if (bIsFH)
-					{
-						oStylesWriter.WriteAttributeCSS(_T("flip"), _T("x"));
-					}
-					else if (bIsFV)
-					{
-						oStylesWriter.WriteAttributeCSS(_T("flip"), _T("y"));
-					}
-				}
 
-				if (oStylesWriter.GetSize() == 0)
-				{
-					pWriter->WriteAttribute(_T("style"), pWriter->m_strStyleMain);
-				}
-				else
-				{
-					pWriter->WriteAttribute(_T("style"), pWriter->m_strStyleMain + oStylesWriter.GetXmlString());
-				}
-				pWriter->m_strStyleMain = _T("");
-			}
-			else
+			NSBinPptxRW::CXmlWriter oStylesWriter;
+
+			if (pWriter->m_strStyleMain.empty())
 			{
 				int dL = 0, dT = 0, dW = 0, dH = 0;
 				if (grpSpPr.xfrm.is_init())
@@ -230,50 +195,52 @@ namespace PPTX
 					if (grpSpPr.xfrm->extY.is_init())	dH = *grpSpPr.xfrm->extY;
 				}
 
-				oStylesWriter.ClearNoAttack();
 				oStylesWriter.WriteAttributeCSS(L"position", L"absolute");
 				if (in_group)
 				{
-					oStylesWriter.WriteAttributeCSS_int(L"left",	dL / 100);
-					oStylesWriter.WriteAttributeCSS_int(L"top",		dT / 100);
-					oStylesWriter.WriteAttributeCSS_int(L"width",	dW / 100);
-					oStylesWriter.WriteAttributeCSS_int(L"height",	dH / 100);
+					oStylesWriter.WriteAttributeCSS_int(L"left", dL / 100);
+					oStylesWriter.WriteAttributeCSS_int(L"top", dT / 100);
+					oStylesWriter.WriteAttributeCSS_int(L"width", dW / 100);
+					oStylesWriter.WriteAttributeCSS_int(L"height", dH / 100);
 				}
 				else
 				{
-					oStylesWriter.WriteAttributeCSS_int_pt(L"left",		dL /  12700);
-					oStylesWriter.WriteAttributeCSS_int_pt(L"top",		dT /  12700);
-					oStylesWriter.WriteAttributeCSS_int_pt(L"width",	dW /  12700);
-					oStylesWriter.WriteAttributeCSS_int_pt(L"height",	dH /  12700);
+					oStylesWriter.WriteAttributeCSS_int_pt(L"left", dL / 12700);
+					oStylesWriter.WriteAttributeCSS_int_pt(L"top", dT / 12700);
+					oStylesWriter.WriteAttributeCSS_int_pt(L"width", dW / 12700);
+					oStylesWriter.WriteAttributeCSS_int_pt(L"height", dH / 12700);
 				}
-
-				if (grpSpPr.xfrm.is_init())
+			}
+	
+			if (grpSpPr.xfrm.is_init())
+			{
+				if (grpSpPr.xfrm->rot.is_init())
 				{
-					if (grpSpPr.xfrm->rot.is_init())
-					{
-						int nRot = (int)((double)(*(grpSpPr.xfrm->rot)) / 60000.0);
-						oStylesWriter.WriteAttributeCSS_int(_T("rotation"), nRot);
-					}
-					bool bIsFH = grpSpPr.xfrm->flipH.get_value_or(false);
-					bool bIsFV = grpSpPr.xfrm->flipV.get_value_or(false);
-					if (bIsFH && bIsFV)
-					{
-						oStylesWriter.WriteAttributeCSS(_T("flip"), _T("xy"));
-					}
-					else if (bIsFH)
-					{
-						oStylesWriter.WriteAttributeCSS(_T("flip"), _T("x"));
-					}
-					else if (bIsFV)
-					{
-						oStylesWriter.WriteAttributeCSS(_T("flip"), _T("y"));
-					}
+					int nRot = (int)((double)(*(grpSpPr.xfrm->rot)) / 60000.0);
+					oStylesWriter.WriteAttributeCSS_int(_T("rotation"), nRot);
 				}
-				
-				pWriter->WriteAttribute(_T("style"), oStylesWriter.GetXmlString());
+				bool bIsFH = grpSpPr.xfrm->flipH.get_value_or(false);
+				bool bIsFV = grpSpPr.xfrm->flipV.get_value_or(false);
+				if (bIsFH && bIsFV)
+				{
+					oStylesWriter.WriteAttributeCSS(_T("flip"), _T("xy"));
+				}
+				else if (bIsFH)
+				{
+					oStylesWriter.WriteAttributeCSS(_T("flip"), _T("x"));
+				}
+				else if (bIsFV)
+				{
+					oStylesWriter.WriteAttributeCSS(_T("flip"), _T("y"));
+				}
 			}
 
-			if (!pWriter->m_strAttributesMain.empty())
+			pWriter->WriteAttribute(_T("style"), pWriter->m_strStyleMain + pWriter->m_strStyleWrap + oStylesWriter.GetXmlString());
+
+			pWriter->m_strStyleMain.clear();
+			pWriter->m_strStyleWrap.clear();
+	
+			if (false == pWriter->m_strAttributesMain.empty())
 			{
 				pWriter->WriteString(pWriter->m_strAttributesMain);
 				pWriter->m_strAttributesMain.clear();

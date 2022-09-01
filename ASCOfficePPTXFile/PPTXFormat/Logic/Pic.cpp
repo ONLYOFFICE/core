@@ -1484,14 +1484,8 @@ namespace PPTX
 				pWriter->WriteAttribute(L"o:spid", strSpid);
 			}
 			pWriter->WriteAttribute(L"type", L"#_x0000_t75");
-			if (oStylesWriter.GetSize() == 0)
-			{
-				pWriter->WriteAttribute(L"style", pWriter->m_strStyleMain);
-			}
-			else
-			{
-				pWriter->WriteAttribute(L"style", pWriter->m_strStyleMain + oStylesWriter.GetXmlString());
-			}
+			
+			pWriter->WriteAttribute(L"style", pWriter->m_strStyleMain + pWriter->m_strStyleWrap + oStylesWriter.GetXmlString());
 
 			if (!pWriter->m_strAttributesMain.empty())
 			{
@@ -1550,8 +1544,9 @@ namespace PPTX
 			pWriter->EndNode(L"v:shape");
 
 			pWriter->m_strStyleMain.clear();
+			pWriter->m_strStyleWrap.clear();
 
-			if(bOle)
+			if (bOle)
 			{
 				oleObject->m_sObjectId = strObjectid;
 				if (XMLWRITER_DOC_TYPE_XLSX == pWriter->m_lDocType)

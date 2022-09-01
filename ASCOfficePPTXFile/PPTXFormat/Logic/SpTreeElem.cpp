@@ -55,13 +55,13 @@ namespace PPTX
 			BYTE g = (BYTE)((ARGB >> 8) & 0xFF);
 			BYTE b = (BYTE)((ARGB & 0xFF));
 
-            std::wstringstream sstream;
-            sstream << boost::wformat( L"%02X%02X%02X" ) % r % g % b;
+			std::wstringstream sstream;
+			sstream << boost::wformat(L"%02X%02X%02X") % r % g % b;
 
-            return L"#" + sstream.str();
+			return L"#" + sstream.str();
 		}
 
-        void CalculateFill(BYTE lDocType, PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, NSCommon::smart_ptr<PPTX::Theme>& oTheme,
+		void CalculateFill(BYTE lDocType, PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, NSCommon::smart_ptr<PPTX::Theme>& oTheme,
 			NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, std::wstring& strAttr, std::wstring& strNode, bool bOle, bool bSignature)
 		{
 			PPTX::Logic::UniFill fill;
@@ -108,7 +108,7 @@ namespace PPTX
 								if (nA > 65536)
 									nA = 65536;
 
-                                fopacity = L" opacity=\"" + std::to_wstring(nA) + L"f\"";
+								fopacity = L" opacity=\"" + std::to_wstring(nA) + L"f\"";
 							}
 							break;
 						}
@@ -135,7 +135,7 @@ namespace PPTX
 						else
 							strNode = L"<v:fill " + strId + L" o:title=\"\" type=\"frame\"" + fopacity + L"/>";
 					}
-				}				
+				}
 			}
 			else if (fill.is<SolidFill>())
 			{
@@ -146,7 +146,7 @@ namespace PPTX
 				if (A != 255)
 				{
 					int fopacity = 100 - (int)(((double)A / 255.0) * 65536);
-                    strNode = L"<v:fill opacity=\"" + std::to_wstring(fopacity) + L"f\" />";
+					strNode = L"<v:fill opacity=\"" + std::to_wstring(fopacity) + L"f\" />";
 				}
 			}
 			else if (fill.is<GradFill>())
@@ -161,7 +161,7 @@ namespace PPTX
 					if (A != 255)
 					{
 						int fopacity = 100 - (int)(((double)A / 255.0) * 65536);
-                        strNode = L"<v:fill opacity=\"" + std::to_wstring(fopacity) + L"f\" />";
+						strNode = L"<v:fill opacity=\"" + std::to_wstring(fopacity) + L"f\" />";
 					}
 				}
 			}
@@ -177,7 +177,7 @@ namespace PPTX
 				if (A != 255)
 				{
 					int fopacity = (int)(((double)A / 255.0) * 65536);
-                    strNode = L"<v:fill opacity=\"" + std::to_wstring(fopacity) + L"f\" />";
+					strNode = L"<v:fill opacity=\"" + std::to_wstring(fopacity) + L"f\" />";
 				}
 			}
 
@@ -185,12 +185,12 @@ namespace PPTX
 			BYTE alpha = (BYTE)((ARGB >> 24) & 0xFF);
 			if (alpha < 255)
 			{
-                std::wstring strA =  = std::to_string( alpha);
+				std::wstring strA =  = std::to_string( alpha);
 				strAttr += _T(" opacity=\"") + strA + _T("\"");
 			}
 			*/
 		}
-        void CalculateLine(BYTE lDocType, PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, NSCommon::smart_ptr<PPTX::Theme>& oTheme,
+		void CalculateLine(BYTE lDocType, PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, NSCommon::smart_ptr<PPTX::Theme>& oTheme,
 			NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, std::wstring& strAttr, std::wstring& strNode, bool bOle)
 		{
 			PPTX::Logic::Ln line;
@@ -215,11 +215,32 @@ namespace PPTX
 			if (line.w.is_init())
 			{
 				double dW = 72.0 * (*line.w) / (25.4 * 36000);
-                std::wstring s = L" strokeweight=\"" + XmlUtils::DoubleToString(dW, L"%.2lf") + L"pt\"";
+				std::wstring s = L" strokeweight=\"" + XmlUtils::DoubleToString(dW, L"%.2lf") + L"pt\"";
 				strAttr += s;
 			}
-		}
 
+			if (line.prstDash.IsInit() && line.prstDash->val.IsInit())
+			{
+				std::wstring value;
+				switch (line.prstDash->val->GetBYTECode())
+				{
+					case 0: value = L"dash"; break;
+					case 1: value = L"dashdot"; break;
+					case 2: value = L"dot"; break;
+					case 3: value = L"longdash"; break;
+					case 4: value = L"longdashdot"; break;
+					case 5: value = L"longdashdotdot"; break;
+					case 6: value = L"solid"; break;
+					case 7: value = L"shortdash"; break;
+					case 8: value = L"shortdashdot"; break;
+					case 9: value = L"shortdashdotdot"; break;
+					case 10: value = L"shortdot"; break;
+					default: value = L"solid"; break;
+				}
+				if (false == value.empty())
+					strNode = L"<v:stroke dashstyle=\"" + value  + L"\"/>";
+			}
+		}
 		SpTreeElem::SpTreeElem()
 		{
 		}

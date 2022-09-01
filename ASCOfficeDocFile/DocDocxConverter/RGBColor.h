@@ -31,9 +31,8 @@
  */
 #pragma once
 
-#include "../../DesktopEditor/common/Types.h"
-
-#include <sstream>
+#include "../../Common/DocxFormat/Source/Base/Types_32.h"
+#include <boost/format.hpp>
 
 namespace DocFileFormat
 {
@@ -55,9 +54,13 @@ namespace DocFileFormat
 		std::wstring SixDigitHexCode;
 		std::wstring EightDigitHexCode;
 
-		RGBColor( int cv, ByteOrder order )
+		RGBColor( _UINT32 cv, ByteOrder order )
 		{
-			unsigned char* bytes = FormatUtils::GetBytes( cv );
+			unsigned char bytes[4];
+			bytes[0] = cv & 0x000000FF;
+			bytes[1] = (cv >> 8) & 0x000000FF;
+			bytes[2] = (cv >> 16) & 0x000000FF;
+			bytes[3] = (cv >> 24) & 0x000000FF;
 
 			std::wstringstream rgbColor6, rgbColor8;
 
@@ -68,8 +71,8 @@ namespace DocFileFormat
 				this->Blue = bytes[2];
                 this->Alpha = bytes[3];
 
-				rgbColor6 << boost::wformat( L"%02x%02x%02x" ) %  /*R*/this->Red % /*G*/this->Green % /*B*/this->Blue;
-				rgbColor8 << boost::wformat( L"%02x%02x%02x%02x" ) % /*R*/this->Red % /*G*/this->Green % /*B*/this->Blue % /*A*/this->Alpha;
+				rgbColor6 << boost::wformat( L"%02x%02x%02x" ) %  Red % Green % Blue;
+				rgbColor8 << boost::wformat( L"%02x%02x%02x%02x" ) % Red % Green % Blue % Alpha;
                 
 				SixDigitHexCode     = rgbColor6.str();
                 EightDigitHexCode   = rgbColor8.str();
@@ -81,14 +84,12 @@ namespace DocFileFormat
 				this->Blue = bytes[0];
                 this->Alpha = bytes[3];
 
-				rgbColor6 << boost::wformat( L"%02x%02x%02x" ) % /*R*/this->Red % /*G*/this->Green % /*B*/this->Blue;
-                rgbColor8 << boost::wformat( L"%02x%02x%02x%02x" ) % /*R*/this->Red % /*G*/this->Green % /*B*/this->Blue % /*A*/this->Alpha;
+				rgbColor6 << boost::wformat( L"%02x%02x%02x" ) % Red % Green % Blue;
+                rgbColor8 << boost::wformat( L"%02x%02x%02x%02x" ) % Red % Green % Blue % Alpha;
  				
 				SixDigitHexCode     = rgbColor6.str();
                 EightDigitHexCode   = rgbColor8.str();
           }
-
-			RELEASEARRAYOBJECTS( bytes );
 		}
 	};
 }

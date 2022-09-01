@@ -31,14 +31,12 @@
  */
 
 #include "WordDocument.h"
-#include "RGBColor.h"
 
 #include "../../Common/OfficeFileErrorDescription.h"
 #include "../../Common/MS-LCID.h"
 
 #include "../../ASCOfficeXlsFile2/source/XlsFormat/Logic/SummaryInformationStream/PropertySetStream.h"
 #include "../../ASCOfficeXlsFile2/source/XlsFormat/Binary/CFStream.h"
-#include "../../ASCOfficeXlsFile2/source/XlsXlsxConverter/xlsx_drawing_context.h"
 
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Directory.h"
@@ -1009,9 +1007,9 @@ namespace DocFileFormat
 	}
 	void WordDocument::CorrectColor(ODRAW::OfficeArtCOLORREF & color)
 	{
+#if 0
 		if (false == color.sColorRGB.empty()) return;
 
-		return;
 		if (color.fSysIndex)
 		{
 			oox::_color sys_color;
@@ -1119,7 +1117,7 @@ namespace DocFileFormat
 		//		color.sColorRGB = it->second;
 		//	}
 		//}
-
+#endif
 	}
 
 }

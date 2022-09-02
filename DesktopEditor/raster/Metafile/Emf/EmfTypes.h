@@ -332,16 +332,16 @@ namespace MetaFile
 			lBottom = oRect.nBottom;
 		}
 
-		void Update(bool bFlipedX, double bFlipedY)
+		void Update(bool bFlipedX, bool bFlipedY)
 		{
-			if ((lTop > lBottom && !bFlipedY) || (lTop < lBottom && bFlipedY))
+			if (lTop > lBottom && bFlipedY)
 			{
 				int nTemp = lBottom;
 				lBottom = lTop;
 				lTop = nTemp;
 			}
 
-			if ((lLeft > lRight && !bFlipedX) || (lLeft < lRight && bFlipedX))
+			if (lLeft < lRight && bFlipedX)
 			{
 				int nTemp = lRight;
 				lRight = lLeft;

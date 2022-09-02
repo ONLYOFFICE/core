@@ -769,6 +769,18 @@ namespace MetaFile
 		return (pWindow->ulW < 0);
 	}
 
+	bool CEmfParserBase::IsViewportFlippedY()
+	{
+		TEmfWindow* pViewport = m_pDC->GetViewport();
+		return (pViewport->ulH < 0);
+	}
+
+	bool CEmfParserBase::IsViewportFlippedX()
+	{
+		TEmfWindow* pViewport = m_pDC->GetViewport();
+		return (pViewport->ulW < 0);
+	}
+
 	void CEmfParserBase::SetInterpretator(IOutputDevice *pOutput)
 	{
 		if (NULL != m_pInterpretator)
@@ -1404,7 +1416,7 @@ namespace MetaFile
 			dSweepAngle = dSweepAngle - 360;
 		}
 
-		oBox.Update((m_pDC->GetFinalTransform(GM_ADVANCED)->M11 < 0), (m_pDC->GetFinalTransform(GM_ADVANCED)->M22 < 0)); // Если ширина отрицательная, то не нарисуется
+		oBox.Update(IsViewportFlippedX(),	IsViewportFlippedY()); // Если ширина отрицательная, то не нарисуется
 
 		TEmfPointL oStartDraw = GetStartPointForArc(oBox, dStartAngle);
 
@@ -1421,7 +1433,7 @@ namespace MetaFile
 		double dStartAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oStart.x, oStart.y);
 		double dSweepAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oEnd.x, oEnd.y) - dStartAngle;
 
-		oBox.Update((m_pDC->GetFinalTransform(GM_ADVANCED)->M11 < 0), (m_pDC->GetFinalTransform(GM_ADVANCED)->M22 < 0)); // Если ширина отрицательная, то не нарисуется
+		oBox.Update(IsViewportFlippedX(),	IsViewportFlippedY()); // Если ширина отрицательная, то не нарисуется
 
 		ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, dStartAngle, dSweepAngle);
 		DrawPath(true, false);
@@ -1448,7 +1460,7 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_ELLIPSE(oBox);
 
-		oBox.Update((m_pDC->GetFinalTransform(GM_ADVANCED)->M11 < 0), (m_pDC->GetFinalTransform(GM_ADVANCED)->M22 < 0)); // Если ширина отрицательная, то не нарисуется
+		oBox.Update(IsViewportFlippedX(),	IsViewportFlippedY()); // Если ширина отрицательная, то не нарисуется
 
 		if (m_pDC->GetArcDirection() == AD_COUNTERCLOCKWISE)
 			ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, 0, 360);

@@ -522,7 +522,7 @@ namespace NSDocxRenderer
             return S_OK;
         }
 
-        CommandDrawTextPrivate((int*)pUnicodes, (int*)pGids, (int)nLen, dX, dY, dW, dH);
+		CommandDrawTextPrivate((int*)pUnicodes, (0 == nGidsCount) ? nullptr : (int*)pGids, (int)nLen, dX, dY, dW, dH);
         delete [] pUnicodes;
         return S_OK;
     }

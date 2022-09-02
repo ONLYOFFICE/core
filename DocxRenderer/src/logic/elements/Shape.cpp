@@ -5,17 +5,19 @@
 
 namespace NSDocxRenderer
 {
-    UINT CShape::m_gRelativeHeight = c_iStartRelativeHeight;
+    UINT CShape::m_gRelativeHeight = c_iStandartRelativeHeight;
 
     CShape::CShape() : CBaseItem(ElemType::etShape)
     {
-        m_nRelativeHeight = ++m_gRelativeHeight;
+        m_nRelativeHeight = m_gRelativeHeight;
+        m_gRelativeHeight += c_iStandartRelativeHeight;
     }
 
     CShape::CShape(std::shared_ptr<CImageInfo> pInfo, const std::wstring& strDstMedia) : CBaseItem(ElemType::etShape),
         m_strPath(strDstMedia), m_pImageInfo(pInfo)
     {
-        m_nRelativeHeight = ++m_gRelativeHeight;
+        m_nRelativeHeight = m_gRelativeHeight;
+        m_gRelativeHeight += c_iStandartRelativeHeight;
     }
 
     CShape::~CShape()
@@ -37,7 +39,7 @@ namespace NSDocxRenderer
 
     void CShape::ResetRelativeHeight()
     {
-        m_gRelativeHeight = c_iStartRelativeHeight;
+        m_gRelativeHeight = c_iStandartRelativeHeight;
     }
 
     void CShape::GetDataFromVector(const CVectorGraphics& oVector)
@@ -179,8 +181,6 @@ namespace NSDocxRenderer
             (m_oBrush.Color1 == c_iWhiteColor && m_oPen.Color == c_iWhiteColor))
         {
             m_eGraphicsType = eGraphicsType::gtNoGraphics;
-            //заранее отбрасываем некоторые фигуры
-            m_bIsNotNecessaryToUse = true;
         }
         else if ((nPeacks == 5 || nPeacks == 2) && !nCurves) //1 move + 4 Peacks или 2 Peacks
         {

@@ -227,10 +227,30 @@ namespace NSDocxRenderer
     {
         if ((m_oVector.m_dLeft <= m_oVector.m_dRight) && (m_oVector.m_dTop <= m_oVector.m_dBottom))
         {
-            auto pShape = new CShape();
+            if (!m_arShapes.empty())
+            {
+                auto pLastShape = m_arShapes.back();
 
-            pShape->m_oPen		 = *m_pPen;
-            pShape->m_oBrush	 = *m_pBrush;
+                if (pLastShape->m_dLeft == m_oVector.m_dLeft &&
+                    pLastShape->m_dTop == m_oVector.m_dTop &&
+                    pLastShape->m_dWidth == m_oVector.m_dRight - m_oVector.m_dLeft &&
+                    pLastShape->m_dHeight == m_oVector.m_dBottom - m_oVector.m_dTop)
+                {
+                    if (0x00 != (lType & 0x01))
+                    {
+                        pLastShape->m_bIsNoStroke = false;
+                        pLastShape->m_oPen		 = *m_pPen;
+                    }
+                    if (0x00 != (lType >> 8))
+                    {
+                        pLastShape->m_bIsNoFill = false;
+                        pLastShape->m_oBrush	= *m_pBrush;
+                    }
+                    return;
+                }
+            }
+
+            auto pShape = new CShape();
 
             if (pInfo)
             {
@@ -245,10 +265,12 @@ namespace NSDocxRenderer
             if (0x00 != (lType & 0x01))
             {
                 pShape->m_bIsNoStroke = false;
+                pShape->m_oPen		 = *m_pPen;
             }
             if (0x00 != (lType >> 8))
             {
                 pShape->m_bIsNoFill = false;
+                pShape->m_oBrush	= *m_pBrush;
             }
 
             if (pShape->m_bIsNoStroke)
@@ -261,12 +283,6 @@ namespace NSDocxRenderer
             }
 
             pShape->GetDataFromVector(m_oVector);
-
-            if (pShape->m_bIsNotNecessaryToUse)
-            {
-                delete pShape;
-                return;
-            }
 
             m_arShapes.push_back(pShape);
         }
@@ -370,7 +386,6 @@ namespace NSDocxRenderer
 
     void CPage::AnalyzeCollectedShapes()
     {
-        //todo Объединить контур и заливку одного рисунка в шейпе если m_strPath одинаковые
         DetermineLinesType();
     }
 

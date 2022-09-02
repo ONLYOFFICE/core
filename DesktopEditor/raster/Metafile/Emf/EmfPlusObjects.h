@@ -579,41 +579,236 @@ namespace MetaFile
           RegionNodeDataTypeInfinite    = 0x10000003
         } EEmfPlusRegionNodeDataType;
 
+		typedef enum
+		{
+			EmfPLusRegionNodeTypeEmpty = 0,
+			EmfPLusRegionNodeTypePath = 1,
+			EmfPLusRegionNodeTypeRectF = 2,
+			EmfPLusRegionNodeTypeChild = 3
+		} EEmfPLusRegionNodeType;
+
         class CEmfPlusRegionNode
         {
             public:
-                CEmfPlusRegionNode() : pRect(NULL){};
-                virtual ~CEmfPlusRegionNode()
-                {
-                        RELEASEOBJECT(pRect);
-                };
+				CEmfPlusRegionNode() {};
+				virtual ~CEmfPlusRegionNode() {};
 
                 EEmfPlusRegionNodeDataType GetType() const
                 {
                         return eType;
                 }
 
-                TEmfPlusRectF* GetRect() const
-                {
-                        return pRect;
-                }
+				EEmfPLusRegionNodeType GetNodeType() const
+				{
+					return EmfPLusRegionNodeTypeEmpty;
+				}
 
                 EEmfPlusRegionNodeDataType      eType;
-                TEmfPlusRectF*                  pRect;
         };
+
+		class CEmfPlusRegionNodePath : public CEmfPlusRegionNode
+		{
+			public:
+				CEmfPlusRegionNodePath() : pPath(NULL) {};
+				virtual ~CEmfPlusRegionNodePath()
+				{
+					RELEASEOBJECT(pPath);
+				}
+
+				EEmfPLusRegionNodeType GetNodeType()
+				{
+					return EmfPLusRegionNodeTypePath;
+				}
+
+				bool Empty() const
+				{
+					return (NULL == pPath);
+				}
+
+				CEmfPlusPath* GetPath() const
+				{
+					return pPath;
+				}
+
+				CEmfPlusPath *pPath;
+		};
+
+		class CEmfPlusRegionNodeRectF : public CEmfPlusRegionNode
+		{
+			public:
+				CEmfPlusRegionNodeRectF() : pRect(NULL) {}
+				virtual ~CEmfPlusRegionNodeRectF()
+				{
+					RELEASEOBJECT(pRect);
+				}
+
+				EEmfPLusRegionNodeType GetNodeType()
+				{
+					return EmfPLusRegionNodeTypeRectF;
+				}
+
+				bool Empty() const
+				{
+					return NULL == pRect;
+				}
+
+				TEmfPlusRectF* GetRect() const
+				{
+					return pRect;
+				}
+
+				TEmfPlusRectF* pRect;
+		};
+
+		class CEmfPlusRegionNodeChild : public CEmfPlusRegionNode
+		{
+			public:
+				CEmfPlusRegionNodeChild() : pLeft(NULL), pRigth(NULL) {};
+				virtual ~CEmfPlusRegionNodeChild()
+				{
+					RELEASEOBJECT(pLeft);
+					RELEASEOBJECT(pRigth);
+				}
+
+				EEmfPLusRegionNodeType GetNodeType()
+				{
+					return EmfPLusRegionNodeTypeChild;
+				}
+
+				void ClipRegionOnRenderer(IOutputDevice* pOutput, TRect* pOutRect = NULL)
+				{
+					if (NULL == pOutput)
+						return;
+
+					unsigned int unType;
+
+					switch (eType)
+					{
+						case RegionNodeDataTypeAnd:
+						case RegionNodeDataTypeExclude:
+						case RegionNodeDataTypeComplement:
+						{
+							unType = RGN_AND;
+							break;
+						}
+						case RegionNodeDataTypeOr:
+						{
+							unType = RGN_OR;
+							break;
+						}
+						case RegionNodeDataTypeXor:
+						{
+							unType = RGN_XOR;
+							break;
+						}
+						default: return;
+					}
+
+					pOutput->StartClipPath(unType, ALTERNATE);
+
+					for (CEmfPlusRegionNode *pNode : std::vector<CEmfPlusRegionNode*>{pLeft, pRigth})
+					{
+						switch (pNode->GetNodeType())
+						{
+							case EmfPLusRegionNodeTypeEmpty:
+							{
+								if (NULL != pOutRect)
+								{
+									pOutput->MoveTo(pOutRect->nLeft,  pOutRect->nTop);
+									pOutput->LineTo(pOutRect->nRight, pOutRect->nTop);
+									pOutput->LineTo(pOutRect->nRight, pOutRect->nBottom);
+									pOutput->LineTo(pOutRect->nLeft,  pOutRect->nBottom);
+									pOutput->ClosePath();
+								}
+								break;
+							}
+							case EmfPLusRegionNodeTypePath:
+							{
+								CEmfPlusRegionNodePath *pRegionNodePath = (CEmfPlusRegionNodePath*)pNode;
+
+								if (!pRegionNodePath->Empty())
+								{
+									for (unsigned int ulIndex = 0; ulIndex < pRegionNodePath->GetPath()->m_pCommands.size(); ulIndex++)
+									{
+										CEmfPathCommandBase* pCommand = pRegionNodePath->GetPath()->m_pCommands.at(ulIndex);
+										switch (pCommand->GetType())
+										{
+											case EMF_PATHCOMMAND_MOVETO:
+											{
+												CEmfPathMoveTo* pMoveTo = (CEmfPathMoveTo*)pCommand;
+												pOutput->MoveTo(pMoveTo->x, pMoveTo->y);
+												break;
+											}
+											case EMF_PATHCOMMAND_LINETO:
+											{
+												CEmfPathLineTo* pLineTo = (CEmfPathLineTo*)pCommand;
+												pOutput->LineTo(pLineTo->x, pLineTo->y);
+												break;
+											}
+											case EMF_PATHCOMMAND_CURVETO:
+											{
+												CEmfPathCurveTo* pCurveTo = (CEmfPathCurveTo*)pCommand;
+												pOutput->CurveTo(pCurveTo->x1, pCurveTo->y1, pCurveTo->x2, pCurveTo->y2, pCurveTo->xE, pCurveTo->yE);
+												break;
+											}
+											case EMF_PATHCOMMAND_ARCTO:
+											{
+												CEmfPathArcTo* pArcTo = (CEmfPathArcTo*)pCommand;
+												pOutput->ArcTo(pArcTo->left, pArcTo->top, pArcTo->right, pArcTo->bottom, pArcTo->start, pArcTo->sweep);
+												break;
+											}
+											case EMF_PATHCOMMAND_CLOSE:
+											{
+												pOutput->ClosePath();
+												break;
+											}
+										}
+									}
+								}
+							}
+							case EmfPLusRegionNodeTypeRectF:
+							{
+								CEmfPlusRegionNodeRectF *pRegionNodeRectF = (CEmfPlusRegionNodeRectF*)pNode;
+
+								if (!pRegionNodeRectF->Empty())
+								{
+									TRectD oRect = pRegionNodeRectF->GetRect()->GetRectD();
+
+									pOutput->MoveTo(oRect.dLeft,  oRect.dTop);
+									pOutput->LineTo(oRect.dRight, oRect.dTop);
+									pOutput->LineTo(oRect.dRight, oRect.dBottom);
+									pOutput->LineTo(oRect.dLeft,  oRect.dBottom);
+									pOutput->ClosePath();
+								}
+							}
+							default: break;
+						}
+					}
+
+					pOutput->EndClipPath(unType);
+				}
+
+				CEmfPlusRegionNode *pLeft, *pRigth;
+		};
 
         class CEmfPlusRegion : public CEmfPlusObject
         {
             public:
                 CEmfPlusRegion() : CEmfPlusObject() {};
-                virtual ~CEmfPlusRegion(){};
+				virtual ~CEmfPlusRegion()
+				{
+					for (CEmfPlusRegionNode* pNode : arNodes)
+						delete pNode;
+
+					arNodes.clear();
+				};
 
                 virtual EEmfPlusObjectType GetObjectType() override
                 {
                         return ObjectTypeRegion;
                 }
 
-                std::vector<CEmfPlusRegionNode> arNodes;
+				std::vector<CEmfPlusRegionNode*> arNodes;
         };
 }
 

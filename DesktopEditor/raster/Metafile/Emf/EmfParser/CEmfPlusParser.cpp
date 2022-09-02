@@ -1033,12 +1033,131 @@ namespace MetaFile
 
 	CEmfPlusRegion *CEmfPlusParser::ReadRegion()
 	{
-		CEmfPlusRegion *pRegion = new CEmfPlusRegion;
+		CEmfPlusRegion *pRegion = new CEmfPlusRegion();
 
-		if (NULL != pRegion)
-			m_oStream >> *pRegion;
+		unsigned int unVersion, unRegionCount;
+
+		m_oStream >> unVersion;
+		m_oStream >> unRegionCount;
+
+		for (unsigned int unIndex = 0; unIndex < unRegionCount; )
+		{
+			CEmfPlusRegionNode *pNode = ReadRegionNode(unIndex);
+
+			if (NULL != pNode)
+				pRegion->arNodes.push_back(pNode);
+		}
 
 		return pRegion;
+	}
+
+	CEmfPlusRegionNode *CEmfPlusParser::ReadRegionNode(unsigned int &unIndex)
+	{
+		unsigned int unType;
+
+		m_oStream >> unType;
+
+		CEmfPlusRegionNode *pNode = NULL;
+
+		switch (unType)
+		{
+			case RegionNodeDataTypeAnd:
+			{
+				pNode = ReadRegionNodeChild(unIndex);
+				pNode->eType = RegionNodeDataTypeAnd;
+				break;
+			}
+			case RegionNodeDataTypeOr:
+			{
+				pNode = ReadRegionNodeChild(unIndex);
+				pNode->eType = RegionNodeDataTypeOr;
+				break;
+			}
+			case RegionNodeDataTypeXor:
+			{
+				pNode = ReadRegionNodeChild(unIndex);
+				pNode->eType = RegionNodeDataTypeXor;
+				break;
+			}
+			case RegionNodeDataTypeExclude:
+			{
+				pNode = ReadRegionNodeChild(unIndex);
+				pNode->eType = RegionNodeDataTypeExclude;
+				break;
+			}
+			case RegionNodeDataTypeComplement:
+			{
+				pNode = ReadRegionNodeChild(unIndex);
+				pNode->eType = RegionNodeDataTypeComplement;
+				break;
+			}
+			case RegionNodeDataTypeRect:
+			{
+				pNode = ReadRegionNodeRectF(unIndex);
+				pNode->eType = RegionNodeDataTypeRect;
+				break;
+			}
+			case RegionNodeDataTypePath:
+			{
+				pNode = ReadRegionNodePath(unIndex);
+				pNode->eType = RegionNodeDataTypePath;
+				break;
+			}
+			case RegionNodeDataTypeEmpty:
+			{
+				pNode = new CEmfPlusRegionNode;
+				pNode->eType = RegionNodeDataTypeEmpty;
+				++unIndex;
+				break;
+			}
+			case RegionNodeDataTypeInfinite:
+			{
+				pNode = new CEmfPlusRegionNode;
+				pNode->eType = RegionNodeDataTypeInfinite;
+				++unIndex;
+				break;
+			}
+		}
+
+		return pNode;
+	}
+
+	CEmfPlusRegionNodePath *CEmfPlusParser::ReadRegionNodePath(unsigned int& unIndex)
+	{
+		CEmfPlusRegionNodePath* pNode = new CEmfPlusRegionNodePath();
+
+		m_oStream.Skip(4); //RegionNodePathLength
+
+		pNode->pPath = ReadPath();
+
+		++unIndex;
+
+		return pNode;
+	}
+
+	CEmfPlusRegionNodeRectF *CEmfPlusParser::ReadRegionNodeRectF(unsigned int& unIndex)
+	{
+		CEmfPlusRegionNodeRectF *pNode = new CEmfPlusRegionNodeRectF();
+
+		TEmfPlusRectF *pRect = new TEmfPlusRectF;
+
+		m_oStream >> *pRect;
+
+		pNode->pRect = pRect;
+
+		++unIndex;
+
+		return pNode;
+	}
+
+	CEmfPlusRegionNodeChild *CEmfPlusParser::ReadRegionNodeChild(unsigned int &unIndex)
+	{
+		CEmfPlusRegionNodeChild* pNode = new CEmfPlusRegionNodeChild();
+
+		pNode->pLeft  = ReadRegionNode(unIndex);
+		pNode->pRigth = ReadRegionNode(unIndex);
+
+		return pNode;
 	}
 
 	CEmfPlusRegion* CEmfPlusParser::GetRegion(unsigned int unRegionIndex)
@@ -2921,18 +3040,41 @@ namespace MetaFile
 		{
 			m_pDC->GetClip()->Reset();
 
-			for (CEmfPlusRegionNode& oNode : pRegion->arNodes)
+			for (const CEmfPlusRegionNode* pNode : pRegion->arNodes)
 			{
-				if (oNode.eType == RegionNodeDataTypeInfinite)
+				switch(pNode->GetNodeType())
 				{
-					TRect* pRect = GetDCBounds();
-					TRectD oBB;
-					TranslatePoint(pRect->nLeft, pRect->nTop, oBB.dLeft, oBB.dTop);
-					TranslatePoint(pRect->nRight, pRect->nBottom, oBB.dRight, oBB.dBottom);
-					CombineClip(oBB, shCM);
+					case EmfPLusRegionNodeTypeEmpty:
+					{
+						break;
+					}
+					case EmfPLusRegionNodeTypePath:
+					{
+						CEmfPlusRegionNodePath* pNodeRegionPath = (CEmfPlusRegionNodePath*)pNode;
+
+						if (!pNodeRegionPath->Empty())
+							m_pDC->GetClip()->SetPath(pNodeRegionPath->GetPath(), shCM, GetTransform());
+
+						break;
+					}
+					case EmfPLusRegionNodeTypeRectF:
+					{
+						CEmfPlusRegionNodeRectF* pNodeRegionRectF = (CEmfPlusRegionNodeRectF*)pNode;
+
+						if (!pNodeRegionRectF->Empty())
+							CombineClip(pNodeRegionRectF->GetRect()->GetRectD(), shCM);
+
+						break;
+					}
+					case EmfPLusRegionNodeTypeChild:
+					{
+						CEmfPlusRegionNodeChild* pNodeRegionChild = (CEmfPlusRegionNodeChild*)pNode;
+
+						pNodeRegionChild->ClipRegionOnRenderer(m_pInterpretator, GetDCBounds());
+
+						break;
+					}
 				}
-				else /*if (oNode.eType == RegionNodeDataTypeRect)*/
-					CombineClip((*oNode.GetRect()).GetRectD(), shCM);
 			}
 		}
 	}

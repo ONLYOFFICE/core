@@ -209,12 +209,11 @@ namespace BinXlsxRW{
 
 				if (writeChartXlsx(sXlsxPath, file))
 				{
-					pReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(oSaveParams.bMacroEnabled ? L"xlsm" : L"xlsx");
+					pReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(L"xlsx");
 
 					std::wstring sChartsWorksheetRelsName = L"../embeddings/" + sXlsxFilename;
 					unsigned int rId;
-					std::wstring sChartsWorksheetRelType = oSaveParams.bMacroEnabled ?	OOX::FileTypes::MicrosoftOfficeExcelMacro_EnabledWorksheet.RelationType() :
-																						OOX::FileTypes::MicrosoftOfficeExcelWorksheet.RelationType();
+					std::wstring sChartsWorksheetRelType = OOX::FileTypes::MicrosoftOfficeExcelWorksheet.RelationType();
 					
 					m_pExternalDrawingConverter->WriteRels(sChartsWorksheetRelType, sChartsWorksheetRelsName, std::wstring(), &rId);
 

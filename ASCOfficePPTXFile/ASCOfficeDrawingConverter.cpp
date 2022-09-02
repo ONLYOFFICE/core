@@ -2370,6 +2370,13 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 								bBold = (oCssStyle.m_arrProperties[pFind->second]->get_Value().eFontWeight >= SimpleTypes::Vml::cssfontweight400);
 							}
 						}
+						else if (L"shadow" == strNameP)
+						{
+							OOX::Vml::CShadow shadow; shadow.fromXML(oNodeP);
+							if (shadow.m_oOn.GetBool())
+							{
+							}
+						}
 						else if (L"fill" == strNameP)
 						{						
 							nullable_string sOpacity;
@@ -2491,7 +2498,6 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 								}
 								else
 								{
-									ODRAW::CColor color;
 									if (NS_DWC_Common::getColorFromString(*sColor2, color))
 									{
 									}
@@ -2844,9 +2850,10 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 			bool			res_text = oNodeShape.GetNode(L"v:textbox", oNodeTextBox);
 			if (!res_text)	res_text = oNodeShape.GetNode(L"w:textbox", oNodeTextBox); // libre 4.0 эту хрень делает
 			
-			if (res_text && !bShapeTypeSet)
+			if (res_text)
 			{
-				pPPTShape->m_bIsStroked = false; // default for textbox easy set
+				if (!bShapeTypeSet) pPPTShape->m_bIsStroked = false; // default for textbox easy set
+
 				if (pPPTShape->m_eType == PPTShapes::sptCNotchedCircularArrow)
 				{
 					pPPTShape->m_eType = PPTShapes::sptCTextBox;

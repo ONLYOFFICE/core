@@ -3918,7 +3918,7 @@ namespace PdfReader
                                   (0.99 < dPHeight / pGState->getPageHeight()) && (dPHeight / pGState->getPageHeight() < 1.01);
             if (dFontBBox && bOriginalSizes && (dFontBBox[0] != 0 || dFontBBox[1] != 0 || dFontBBox[2] != 0 || dFontBBox[3] != 0))
             {
-                dTfsY = -fabs(dFontBBox[3] - dFontBBox[1]) * 0.6;
+                dTfsY = -fabs(dFontBBox[3] - dFontBBox[1]) * 0.4;
                 dTfsX = -fabs(dFontBBox[2] - dFontBBox[0]) * 0.25;
             }
             m_pRenderer->BeginCommand(c_nStrokeTextType);

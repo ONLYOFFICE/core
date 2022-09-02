@@ -699,7 +699,7 @@ INT CFontManager::GetStringPath(NSFonts::ISimpleGraphicsPath* pInterface)
 		pPath->ToMM(m_pFont->m_unHorDpi, m_pFont->m_unVerDpi);
 
 		pPath->Offset(m_oString.m_fX + pCurGlyph->fX * 25.4 / m_pFont->m_unHorDpi,
-						m_oString.m_fY + pCurGlyph->fY + 25.4 / m_pFont->m_unVerDpi);
+						m_oString.m_fY + pCurGlyph->fY * 25.4 / m_pFont->m_unVerDpi);
 
 		pOverallPath->Append(pPath);
 		delete pPath;

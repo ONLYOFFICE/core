@@ -516,13 +516,13 @@ namespace NSDocxRenderer
         unsigned int* pUnicodes = NSStringExt::CConverter::GetUtf32FromUnicode(wsUnicodeText, nLen);
         if (nLen == 0)
             return S_OK;
-        if (nLen != nGidsCount)
+		if (nLen != nGidsCount && 0 != nGidsCount)
         {
             delete [] pUnicodes;
             return S_OK;
         }
 
-        CommandDrawTextPrivate((int*)pUnicodes, (int*)pGids, (int)nLen, dX, dY, dW, dH);
+		CommandDrawTextPrivate((int*)pUnicodes, (0 == nGidsCount) ? nullptr : (int*)pGids, (int)nLen, dX, dY, dW, dH);
         delete [] pUnicodes;
         return S_OK;
     }
@@ -554,7 +554,6 @@ namespace NSDocxRenderer
             m_oCurrentPage.AnalyzeCollectedShapes();
             m_oCurrentPage.AnalyzeCollectedSymbols();
             m_oCurrentPage.AnalyzeLines();
-            m_oCurrentPage.DeleteTextClipPage();
             m_oCurrentPage.BuildByType();
             m_oCurrentPage.ToXml(m_oWriter);
         }
@@ -958,6 +957,11 @@ namespace NSDocxRenderer
         {
             CFontTableEntry& oEntry = iterFont->second;
 
+            if (oEntry.m_strFamilyName.empty())
+            {
+                continue;
+            }
+
             oWriter.WriteString(L"<w:font w:name=\"");
             oWriter.WriteEncodeXmlString(oEntry.m_strFamilyName);
             oWriter.WriteString(L"\">");
@@ -1198,9 +1202,9 @@ namespace NSDocxRenderer
         oWriter.WriteString(L"<w:uiPriority w:val=\"99\"/>");
         oWriter.WriteString(L"</w:style>");
 
-        for (const auto &pStyle : m_oStyleManager.m_mapStyles)
+        for (const auto &pStyle : m_oStyleManager.m_arStyles)
         {
-            pStyle.second->ToXml(oWriter);
+            pStyle->ToXml(oWriter);
         }
 
         oWriter.WriteString(L"</w:styles>");

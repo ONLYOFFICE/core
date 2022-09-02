@@ -70,3 +70,6 @@ SOURCES += \
     src/resources/VectorGraphics.cpp \
     src/resources/resources.cpp \
     DocxRenderer.cpp
+
+DISTFILES += \
+    readme.md

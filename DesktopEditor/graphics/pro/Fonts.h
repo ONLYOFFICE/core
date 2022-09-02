@@ -310,7 +310,7 @@ namespace NSFonts
         {
             Destroy();
         }
-        void CreateDuplicate(CFontSelectFormat& oFormat)
+		void CreateDuplicate(CFontSelectFormat& oFormat) const
         {
             oFormat.Destroy();
 

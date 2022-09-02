@@ -5,13 +5,19 @@
 
 namespace NSDocxRenderer
 {
+    UINT CShape::m_gRelativeHeight = c_iStandartRelativeHeight;
+
     CShape::CShape() : CBaseItem(ElemType::etShape)
     {
+        m_nRelativeHeight = m_gRelativeHeight;
+        m_gRelativeHeight += c_iStandartRelativeHeight;
     }
 
     CShape::CShape(std::shared_ptr<CImageInfo> pInfo, const std::wstring& strDstMedia) : CBaseItem(ElemType::etShape),
         m_strPath(strDstMedia), m_pImageInfo(pInfo)
     {
+        m_nRelativeHeight = m_gRelativeHeight;
+        m_gRelativeHeight += c_iStandartRelativeHeight;
     }
 
     CShape::~CShape()
@@ -31,14 +37,12 @@ namespace NSDocxRenderer
         return iId;
     }
 
-    UINT CShape::GenerateRelativeHeight()
+    void CShape::ResetRelativeHeight()
     {
-        static UINT RelativeHeight = UINT_MAX;
-        RelativeHeight--;
-        return RelativeHeight;
+        m_gRelativeHeight = c_iStandartRelativeHeight;
     }
 
-    void CShape::GetDataFromVector(const CVectorGraphics& oVector, const LONG& lType)
+    void CShape::GetDataFromVector(const CVectorGraphics& oVector)
     {
         m_dLeft = oVector.m_dLeft;
         m_dTop = oVector.m_dTop;
@@ -52,15 +56,6 @@ namespace NSDocxRenderer
 
         m_dBaselinePos = m_dTop + m_dHeight;
         m_dRight = m_dLeft + m_dWidth;
-
-        if (0x00 != (lType & 0x01))
-        {
-            m_bIsNoStroke = false;
-        }
-        if (0x00 != (lType >> 8))
-        {
-            m_bIsNoFill = false;
-        }
 
         WritePath(oVector);
     }
@@ -182,11 +177,10 @@ namespace NSDocxRenderer
     void CShape::DetermineGraphicsType(double dWidth, double dHeight,size_t nPeacks, size_t nCurves)
     {
         //note параллельно для каждой текстовой строки создается шейп, который содержит цвет фона для данного текста.
-        if (m_oBrush.Color1 == c_iWhiteColor && m_oPen.Color == c_iWhiteColor)
+        if ((m_bIsNoStroke && m_bIsNoFill) ||
+            (m_oBrush.Color1 == c_iWhiteColor && m_oPen.Color == c_iWhiteColor))
         {
             m_eGraphicsType = eGraphicsType::gtNoGraphics;
-            //заранее отбрасываем некоторые фигуры
-            m_bIsNotNecessaryToUse = true;
         }
         else if ((nPeacks == 5 || nPeacks == 2) && !nCurves) //1 move + 4 Peacks или 2 Peacks
         {
@@ -600,7 +594,7 @@ namespace NSDocxRenderer
             oWriter.WriteString(L" distR=\"0\"");
             oWriter.WriteString(L" simplePos=\"0\""); //true/1 Указывает, что этот объект должен быть позиционирован с использованием информации о позиционировании в дочернем элементе simplePos
             oWriter.WriteString(L" relativeHeight=\""); //Определяет относительное упорядочивание по Z всех объектов DrawingML в этом документе.
-            oWriter.AddUInt(GenerateRelativeHeight());
+            oWriter.AddUInt(m_nRelativeHeight);
             oWriter.WriteString(L"\"");
             oWriter.WriteString(L" behindDoc=\""); //позади текста - 1, перед текстом - 0
             oWriter.AddUInt(static_cast<UINT>(m_bIsBehindDoc));

@@ -1,5 +1,5 @@
 #pragma once
-#include <map>
+#include <vector>
 #include "../styles/FontStyle.h"
 
 namespace NSDocxRenderer
@@ -7,7 +7,7 @@ namespace NSDocxRenderer
     class CStyleManager
     {
         public:
-            std::map<std::wstring, std::shared_ptr<CFontStyle>>	m_mapStyles;
+            std::vector<std::shared_ptr<CFontStyle>> m_arStyles;
 
             std::shared_ptr<CFontStyle> m_pCurrentStyle;
 

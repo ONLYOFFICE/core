@@ -254,50 +254,6 @@ namespace NSDocxRenderer
         return false;
     }
 
-    double CTextLine::RightBorderCorrection()
-    {
-        CContText* pSelectedCont = nullptr;
-
-        for (const auto &pCont : m_arConts)
-        {
-            if (!pSelectedCont || pSelectedCont->m_pFontStyle->m_oFont.Size < pCont->m_pFontStyle->m_oFont.Size)
-            {
-                pSelectedCont = pCont;
-            }
-            else if (pSelectedCont->m_pFontStyle->m_oFont.Size == pCont->m_pFontStyle->m_oFont.Size)
-            {
-                //note считаем что обычный < Italic < Bold < Bold-Italic
-                if (pSelectedCont->m_pFontStyle->m_oFont.GetTextFontStyle() <
-                        pCont->m_pFontStyle->m_oFont.GetTextFontStyle())
-                {
-                    pSelectedCont = pCont;
-                }
-            }
-        }
-
-        if (!pSelectedCont)
-        {
-            return c_dRightBorderCorrectionSize[0][0];
-        }
-
-        UINT lSize = static_cast<UINT>(2 * pSelectedCont->m_pFontStyle->m_oFont.Size);
-        UINT nType = pSelectedCont->m_pFontStyle->m_oFont.GetTextFontStyle();
-
-        if (nType > 3)
-        {
-            //Error!
-            return c_dRightBorderCorrectionSize[0][0];
-        }
-
-        if (lSize > 144)
-        {
-            lSize = 145;
-        }
-
-        //note нужно корректировать каждый размер отдельно
-        return c_dRightBorderCorrectionSize[lSize][nType];
-    }
-
     void CTextLine::ToXml(NSStringUtils::CStringBuilder& oWriter)
     {
         if (m_bIsNotNecessaryToUse)

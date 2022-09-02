@@ -1868,6 +1868,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 	bool bPicture			= false;
 	bool bStroked			= true;
 	bool bHidden			= false;
+	bool bShapeTypeSet		= false;
 
     std::wstring strStyleAdvenced = L"";
 
@@ -2062,6 +2063,7 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 				base_shape_type->SetToDublicate(pPPTShape);
 
 				pPPTShape->m_eType = ppt_shape_type->m_eType;
+				bShapeTypeSet = true;
 			}
 			else if (std::wstring::npos != strType.find(L"t75"))
 			{
@@ -2842,9 +2844,9 @@ void CDrawingConverter::doc_LoadShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::C
 			bool			res_text = oNodeShape.GetNode(L"v:textbox", oNodeTextBox);
 			if (!res_text)	res_text = oNodeShape.GetNode(L"w:textbox", oNodeTextBox); // libre 4.0 эту хрень делает
 			
-			if (res_text)
+			if (res_text && !bShapeTypeSet)
 			{
-				pPPTShape->m_bIsStroked = false; // default for textbox
+				pPPTShape->m_bIsStroked = false; // default for textbox easy set
 				if (pPPTShape->m_eType == PPTShapes::sptCNotchedCircularArrow)
 				{
 					pPPTShape->m_eType = PPTShapes::sptCTextBox;
@@ -4826,7 +4828,15 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
 
 	if (!pSpPr) return;
 
-	// attributes
+	if (!pPPTShape->m_bIsStroked)
+	{
+		if (!pSpPr->ln.is_init())
+			pSpPr->ln = new PPTX::Logic::Ln();
+
+		pSpPr->ln->Fill.m_type = PPTX::Logic::UniFill::noFill;
+		pSpPr->ln->Fill.Fill = new PPTX::Logic::NoFill();
+	}
+//
 	nullable_string sStrokeColor;
     XmlMacroReadAttributeBase(oNode, L"strokecolor", sStrokeColor);
 	if (sStrokeColor.is_init())
@@ -4834,6 +4844,8 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
 		ODRAW::CColor color;
 		if (NS_DWC_Common::getColorFromString(*sStrokeColor, color))
 		{
+			pPPTShape->m_bIsStroked = true;
+
 			if (!pSpPr->ln.is_init())
 				pSpPr->ln = new PPTX::Logic::Ln();
 
@@ -4851,6 +4863,8 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
     XmlMacroReadAttributeBase(oNode, L"strokeweight", sStrokeWeight);
 	if (sStrokeWeight.is_init())
 	{
+		pPPTShape->m_bIsStroked = true;
+
 		if (!pSpPr->ln.is_init())
 			pSpPr->ln = new PPTX::Logic::Ln();
 
@@ -4866,46 +4880,14 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
 		pPPTShape->m_bIsStroked = true;
 	}
     XmlUtils::CXmlNode oNodeStroke = oNode.ReadNode(L"v:stroke");
-
-	nullable_string sStroked;
-    XmlMacroReadAttributeBase(oNode, L"stroked", sStroked);
-	
-	if (oNodeStroke.IsValid())
-	{
-		nullable_string sStrokeOn;
-        XmlMacroReadAttributeBase(oNodeStroke, L"on", sStrokeOn);
-		if (sStrokeOn.is_init())
-		{
-			sStroked.reset();
-			sStroked = sStrokeOn;
-		}
-	}
-	if (sStroked.is_init())
-	{
-        if (*sStroked == L"false" || *sStroked == L"f")
-		{
-			if (!pSpPr->ln.is_init())
-				pSpPr->ln = new PPTX::Logic::Ln();
-
-			pSpPr->ln->Fill.m_type = PPTX::Logic::UniFill::noFill;
-			pSpPr->ln->Fill.Fill = new PPTX::Logic::NoFill();
-		}
-	}
-	else if (!pPPTShape->m_bIsStroked)
-	{
-		if (!pSpPr->ln.is_init())
-			pSpPr->ln = new PPTX::Logic::Ln();
-
-		pSpPr->ln->Fill.m_type = PPTX::Logic::UniFill::noFill;
-		pSpPr->ln->Fill.Fill = new PPTX::Logic::NoFill();
-	}
-
 	if (oNodeStroke.IsValid())
 	{
 		sStrokeColor.reset();
         XmlMacroReadAttributeBase(oNodeStroke, L"strokecolor", sStrokeColor);
 		if (sStrokeColor.is_init())
 		{
+			pPPTShape->m_bIsStroked = true;
+
 			ODRAW::CColor color;
 			if (NS_DWC_Common::getColorFromString(*sStrokeColor, color))
 			{
@@ -4926,6 +4908,8 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
         XmlMacroReadAttributeBase(oNodeStroke, L"dashstyle", sStrokeDashStyle);
 		if (sStrokeDashStyle.is_init())
 		{
+			pPPTShape->m_bIsStroked = true;
+
 			if (!pSpPr->ln.is_init())
 				pSpPr->ln = new PPTX::Logic::Ln();
 
@@ -5069,7 +5053,32 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
             else if (*sLineJoin == L"round")	pSpPr->ln->Join.type = PPTX::Logic::JoinRound;
 		}		
 	}
+	nullable_string sStroked;
+	XmlMacroReadAttributeBase(oNode, L"stroked", sStroked);
 
+	if (oNodeStroke.IsValid())
+	{
+		nullable_string sStrokeOn;
+		XmlMacroReadAttributeBase(oNodeStroke, L"on", sStrokeOn);
+		if (sStrokeOn.is_init())
+		{
+			sStroked.reset();
+			sStroked = sStrokeOn;
+		}
+	}
+	if (sStroked.is_init())
+	{
+		if (*sStroked == L"false" || *sStroked == L"f")
+		{
+			if (!pSpPr->ln.is_init())
+				pSpPr->ln = new PPTX::Logic::Ln();
+
+			pSpPr->ln->Fill.m_type = PPTX::Logic::UniFill::noFill;
+			pSpPr->ln->Fill.Fill = new PPTX::Logic::NoFill();
+
+			pPPTShape->m_bIsStroked = false;
+		}
+	}
 	// default params
 	if (pShape) // not Picture
 	{

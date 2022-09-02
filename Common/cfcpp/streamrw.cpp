@@ -3,7 +3,7 @@
 
 using namespace CFCPP;
 
-StreamRW::StreamRW(const Stream &stream)
+StreamRW::StreamRW(CFCPP::Stream stream)
     : stream(stream)
 {
 }
@@ -11,6 +11,11 @@ StreamRW::StreamRW(const Stream &stream)
 T_LONG64 StreamRW::Seek(T_LONG64 offset)
 {
     stream->seek(offset, std::ios::beg);
+    return stream->tell();
+}
+
+T_LONG64 CFCPP::StreamRW::Tell()
+{
     return stream->tell();
 }
 

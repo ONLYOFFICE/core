@@ -30,7 +30,7 @@ public:
 
     inline std::streamsize tell() override { return std::fstream::tellg(); }
     inline std::streamsize seek(std::streamsize offset, std::ios_base::seekdir mode = std::ios::beg) override
-            { std::fstream::seekg(offset, mode); return tell();}
+            { std::fstream::seekp(offset, mode); std::fstream::seekg(offset, mode); return tell();}
     inline std::streamsize read(char* buffer, std::streamsize len) override { std::fstream::read(buffer, len); return tell(); }
     inline void write (const char* buffer, std::streamsize len) override { std::fstream::write(buffer, len); }
     inline void flush() override { std::fstream::flush(); }
@@ -39,9 +39,13 @@ public:
 
 std::string CorrectUnixPath(const std::string original);
 
-Stream OpenFileStream(std::wstring filename, bool bRewrite = false);
-Stream OpenFileStream(std::string filename, bool bRewrite = false);
+Stream OpenFileStream(std::wstring filename, bool bRewrite = false, bool trunc = false);
+Stream OpenFileStream(std::string filename, bool bRewrite = false, bool trunc = false);
 
 bool IsOpen(const Stream& st);
 std::streamsize Length(const Stream& st);
+int FileLenght(std::wstring filename);
+
+ULONG64 FileSimpleHash(std::wstring filename, int len = -1, int offset = 0);
+
 }

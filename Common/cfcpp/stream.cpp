@@ -16,7 +16,7 @@ std::streamsize CFCPP::Length(const CFCPP::Stream& st)
     return ssize;
 }
 
-CFCPP::Stream CFCPP::OpenFileStream(std::wstring filename, bool bRewrite)
+CFCPP::Stream CFCPP::OpenFileStream(std::wstring filename, bool bRewrite, bool trunc)
 {
     BYTE* pUtf8 = nullptr;
     std::streamsize lLen = 0;
@@ -24,18 +24,23 @@ CFCPP::Stream CFCPP::OpenFileStream(std::wstring filename, bool bRewrite)
     std::string utf8filename(pUtf8, pUtf8 + lLen);
     delete [] pUtf8;
 
-    return OpenFileStream(utf8filename, bRewrite);
+    return OpenFileStream(utf8filename, bRewrite, trunc);
 }
 
-CFCPP::Stream CFCPP::OpenFileStream(std::string filename, bool bRewrite)
+CFCPP::Stream CFCPP::OpenFileStream(std::string filename, bool bRewrite, bool trunc)
 {
-    filename = CorrectUnixPath(filename);
-
     CFCPP::Stream st;
+
+    // it's not good, but otherwise file doesn't create or if use ios::app, then the seek for writing will be blocked
     if (bRewrite)
-        st.reset(new FStreamWrapper(filename, std::ios::app | std::ios::out | std::ios::binary | std::ios::in));
+        std::fstream create(filename, std::ios::app | std::ios::out);
+
+    if (trunc && bRewrite)
+        st.reset(new FStreamWrapper(filename, std::ios::binary | std::ios::in | std::ios::out | std::ios::trunc));
+    else if (bRewrite)
+        st.reset(new FStreamWrapper(filename, std::ios::binary | std::ios::in | std::ios::out));
     else
-        st.reset(new FStreamWrapper(filename, std::ios::in | std::ios::binary));
+        st.reset(new FStreamWrapper(filename, std::ios::binary | std::ios::in));
 
     return st;
 }
@@ -59,3 +64,43 @@ std::string CFCPP::CorrectUnixPath(const std::string original)
     #endif
 }
 
+int CFCPP::FileLenght(std::wstring filename)
+{
+    auto stream = OpenFileStream(filename);
+    auto lenght = Length(stream);
+    stream->close();
+
+    return lenght;
+}
+
+ULONG64 CFCPP::FileSimpleHash(std::wstring filename, int len, int offset)
+{
+
+    auto stream = OpenFileStream(filename);
+    if (!IsOpen(stream))
+        return 0;
+
+    if (len < 0)
+        len = Length(stream);
+
+    stream->seek(offset);
+
+    ULONG64 h = 2166136261;
+    constexpr int bufLen = 0x2000;
+    char buffer[bufLen];
+    while (len > 0)
+    {
+        memset(buffer, 0, bufLen);
+        int readLen = std::min(bufLen, len);
+        stream->read(buffer, readLen);
+        int i;
+
+        for (i = 0; i < readLen; i++)
+            h = (h * 16777619) ^ buffer[i];
+
+        len -= readLen;
+    }
+
+
+    return h;
+}

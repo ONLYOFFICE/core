@@ -234,7 +234,8 @@ void CompoundFile::Save(std::wstring wFileName)
     if (_disposed)
         throw CFException("Compound File closed: cannot save data");
 
-    Stream fs = OpenFileStream(wFileName, std::ios::out);
+    Stream fs = OpenFileStream(wFileName, true, true);
+    fs->seek(0, std::ios::beg);
 
     try
     {
@@ -298,7 +299,7 @@ void CompoundFile::Save(Stream stream)
 
         }
 
-        stream->seek(0, std::ios::beg);
+        auto writePosition = stream->seek(0, std::ios::beg);
         header->Write(stream);
     }
     catch (std::exception &ex)
@@ -513,7 +514,6 @@ SVector<Sector> CompoundFile::GetNormalSectorChain(int secID)
     return result;
 }
 
-// TODO
 SVector<Sector> CompoundFile::GetMiniSectorChain(int secID)
 {
     SVector<Sector> result;
@@ -610,7 +610,7 @@ void CompoundFile::CommitDirectory()
 
     for (const auto& di : directoryEntries)
     {
-        di->Write(sv->stream);
+        di->Write(sv);
     }
 
     int delta = directoryEntries.size();
@@ -619,7 +619,7 @@ void CompoundFile::CommitDirectory()
     {
         std::shared_ptr<IDirectoryEntry> dummy =
                 DirectoryEntry::New(L"", StgType::StgInvalid, directoryEntries);
-        dummy->Write(sv->stream);
+        dummy->Write(sv);
         delta++;
     }
 
@@ -645,7 +645,8 @@ void CompoundFile::CommitDirectory()
 
 void CompoundFile::Close(bool closeStream)
 {
-
+    this->closeStream = closeStream;
+    Dispose(closeStream);
 }
 
 std::shared_ptr<IDirectoryEntry> CompoundFile::RootEntry()
@@ -653,6 +654,11 @@ std::shared_ptr<IDirectoryEntry> CompoundFile::RootEntry()
     if (directoryEntries.empty())
         return {};
     return directoryEntries[0];
+}
+
+std::shared_ptr<CFStorage> CompoundFile::RootStorage()
+{
+    return rootStorage;
 }
 
 SVector<IDirectoryEntry> CompoundFile::FindDirectoryEntries(std::wstring entryName)
@@ -1727,13 +1733,13 @@ std::vector<BYTE> CompoundFile::GetDataBySID(int sid)
         if (de->getSize() < header->minSizeStandardStream)
         {
             StreamView miniView(GetSectorChain(de->getStartSetc(), SectorType::Mini), Sector::MINISECTOR_SIZE, de->getSize(), zeroQueue, sourceStream);
-            result.reserve(de->getSize());
+            result.resize(de->getSize());
             miniView.read(reinterpret_cast<char*>(result.data()), result.size());
         }
         else
         {
             StreamView sView(GetSectorChain(de->getStartSetc(), SectorType::Normal), GetSectorSize(), de->getSize(), zeroQueue, sourceStream);
-            result.reserve(de->getSize());
+            result.resize(de->getSize());
             sView.read(reinterpret_cast<char*>(result.data()), result.size());
         }
     }

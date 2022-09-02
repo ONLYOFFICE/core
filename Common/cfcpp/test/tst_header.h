@@ -4,6 +4,7 @@
 #include <gmock/gmock-matchers.h>
 #include "header.h"
 #include "../../DesktopEditor/common/File.h"
+#include "streamrw.h"
 
 using namespace testing;
 using namespace std;
@@ -61,7 +62,7 @@ TEST_F(HeaderTest, test_header_write)
 {
     hd.Read(stream);
 
-    std::string other_filename("../../../data/types/header.bin");
+    std::string other_filename("../../../data/header.bin");
     stream = OpenFileStream(other_filename, true);
     hd.Write(stream);
 
@@ -70,4 +71,40 @@ TEST_F(HeaderTest, test_header_write)
     other.Read(stream);
     test_header_state(other);
     remove(other_filename.c_str());
+}
+
+TEST_F(HeaderTest, test_header_seek)
+{
+    hd.Read(stream);
+
+    std::string other_filename("../../../data/sheader.bin");
+    remove(other_filename.c_str());
+    stream = OpenFileStream(other_filename, true);
+
+    std::vector<char> zeroArray(512, 0);
+    stream->write(zeroArray.data(), zeroArray.size());
+    zeroArray.clear();
+
+    EXPECT_EQ(Length(stream), 512);
+
+
+    stream->seek(4);
+    StreamRW rw(stream);
+    auto pos = rw.Tell();
+    EXPECT_EQ(pos, 4);
+
+    hd.Write(stream);
+    EXPECT_EQ(Length(stream), 512+4);
+
+
+    Header other;
+    stream->seek(0);
+    int zeroValue = StreamRW(stream).Read<int>();
+    EXPECT_EQ(zeroValue, 0);
+
+
+    other.Read(stream);
+    test_header_state(other);
+
+
 }

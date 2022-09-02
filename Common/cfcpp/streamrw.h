@@ -11,8 +11,9 @@ namespace CFCPP
 class StreamRW
 {
 public:
-    StreamRW(const Stream &stream);
+    StreamRW(Stream stream);
     T_LONG64 Seek(T_LONG64 offset);
+    T_LONG64 Tell();
 
     template <class T>
     T Read()

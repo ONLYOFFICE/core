@@ -36,7 +36,7 @@ Header::Header(ushort version)
     }
 }
 
-void Header::Write(Stream stream)
+void Header::Write(CFCPP::Stream &stream)
 {
     StreamRW rw(stream);
     rw.WriteArray(headerSignature, sizeof(headerSignature));
@@ -69,7 +69,7 @@ void Header::Write(Stream stream)
     }
 }
 
-void Header::Read(Stream stream)
+void Header::Read(CFCPP::Stream &stream)
 {
     StreamRW rw(stream);
 

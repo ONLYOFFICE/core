@@ -7,10 +7,31 @@
 using namespace CFCPP;
 
 
-DirectoryEntry::DirectoryEntry(std::wstring name, StgType stgType, SVector<IDirectoryEntry> dirRepository)
+DirectoryEntry::DirectoryEntry(std::wstring name, StgType stgType, SVector<IDirectoryEntry> &dirRepository) :
+    dirRepository(dirRepository)
 {
-    this->dirRepository = dirRepository;
+    this->stgType = stgType;
 
+    if (stgType == StgType::StgStorage)
+    {
+        //        creationDate = BitConverter.GetBytes((DateTime.Now.ToFileTime()));
+        startSetc = ZERO;
+    }
+
+    if (stgType == StgType::StgInvalid)
+    {
+        startSetc = ZERO;
+    }
+
+    if (name.size())
+    {
+        DirectoryEntry::SetEntryName(name);
+    }
+}
+
+DirectoryEntry::DirectoryEntry(std::wstring name, StgType stgType) :
+    dirRepository(emptyDir)
+{
     this->stgType = stgType;
 
     if (stgType == StgType::StgStorage)
@@ -66,20 +87,25 @@ void DirectoryEntry::SetEntryName(const std::wstring &entryName)
     else
     {
         if (
-                entryName.find(L"\\") == std::wstring::npos ||
-                entryName.find(L"/")  == std::wstring::npos ||
-                entryName.find(L":")  == std::wstring::npos ||
-                entryName.find(L"!")  == std::wstring::npos
+                entryName.find(L"\\") != std::wstring::npos ||
+                entryName.find(L"/")  != std::wstring::npos ||
+                entryName.find(L":")  != std::wstring::npos ||
+                entryName.find(L"!")  != std::wstring::npos
                 ) throw CFException("Invalid character in entry: the characters '\\', '/', ':','!' cannot be used in entry name");
 
         if (entryName.length() > 31)
             throw CFException("Entry name MUST NOT exceed 31 characters");
 
 
-        std::copy(entryName.data(), entryName.data() + entryName.length(), this->entryName);
-        reinterpret_cast<wchar_t*>(this->entryName)[entryName.length()] = L'\0';
+        std::fill(this->entryName, this->entryName + 64, 0);
+        for (size_t i = 0; i < entryName.size(); i++)
+        {
+            wchar_t sym = entryName[i];
+            this->entryName[i*2+0] = sym % 256;
+            this->entryName[i*2+1] = sym / 256;
+        }
 
-        this->nameLength = (ushort)entryName.size() + 2;
+        this->nameLength = (ushort)entryName.size() * 2 + 2;
     }
 }
 
@@ -173,7 +199,7 @@ RedBlackTree::PIRBNode DirectoryEntry::getRight() const
 
 void DirectoryEntry::setLeft(RedBlackTree::PIRBNode pNode)
 {
-    leftSibling = pNode != nullptr ? static_cast<IDirectoryEntry*>(pNode.get())->getSid() : DirectoryEntry::NOSTREAM;
+    leftSibling = pNode != nullptr ? std::static_pointer_cast<IDirectoryEntry>(pNode)->getSid() : DirectoryEntry::NOSTREAM;
 
     if (leftSibling != DirectoryEntry::NOSTREAM)
         dirRepository[leftSibling]->setParent(shared_from_this());
@@ -181,7 +207,7 @@ void DirectoryEntry::setLeft(RedBlackTree::PIRBNode pNode)
 
 void DirectoryEntry::setRight(RedBlackTree::PIRBNode pNode)
 {
-    rightSibling = pNode != nullptr ? static_cast<IDirectoryEntry*>(pNode.get())->getSid() : DirectoryEntry::NOSTREAM;
+    rightSibling = pNode != nullptr ? std::static_pointer_cast<IDirectoryEntry>(pNode)->getSid() : DirectoryEntry::NOSTREAM;
 
     if (rightSibling != DirectoryEntry::NOSTREAM)
         dirRepository[rightSibling]->setParent(shared_from_this());
@@ -312,7 +338,7 @@ std::shared_ptr<IDirectoryEntry> DirectoryEntry::TryNew(std::wstring name, StgTy
 
 std::shared_ptr<IDirectoryEntry> DirectoryEntry::Mock(std::wstring name, StgType stgType)
 {
-    auto de = std::shared_ptr<IDirectoryEntry>(new DirectoryEntry(name, stgType, {}));
+    auto de = std::shared_ptr<IDirectoryEntry>(new DirectoryEntry(name, stgType));
 
     return de;
 }

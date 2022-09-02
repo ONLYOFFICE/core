@@ -40,7 +40,7 @@ enum CFSUpdateMode
 class CompoundFile
 {
 public:
-    CompoundFile(const std::wstring &fileName, CFSUpdateMode updateMode, CFSConfiguration configParameters);
+    CompoundFile(const std::wstring &fileName, CFSUpdateMode updateMode, CFSConfiguration configParameters = Default);
     CompoundFile(CFSVersion cfsVersion, CFSConfiguration configFlags);
     CompoundFile(const std::wstring &fileName);
     CompoundFile(Stream stream);
@@ -52,6 +52,7 @@ public:
 
     static std::shared_ptr<RedBlackTree::RBTree> CreateNewTree();
     std::shared_ptr<RedBlackTree::RBTree> GetChildrenTree(int sid);
+    std::shared_ptr<CFStorage> RootStorage();
     bool IsClosed()const;
     SVector<IDirectoryEntry> &GetDirectories();
     void ResetDirectoryEntry(int sid);
@@ -72,6 +73,9 @@ public:
     GUID getGuidBySID(int sid);
     GUID getGuidForStream(int sid);
 
+    void Save(std::wstring wFileName);
+    void Save(Stream stream);
+
 protected:
     int GetSectorSize();
     void Dispose(bool disposing);
@@ -83,9 +87,6 @@ private:
     void SetFileName(std::wstring fileName);
     void LoadStream(Stream stream);
     void Load(Stream stream);
-
-    void Save(std::wstring wFileName);
-    void Save(Stream stream);
 
     SVector<Sector> GetFatSectorChain();
     SVector<Sector> GetDifatSectorChain();
@@ -106,7 +107,7 @@ private:
     void DoLoadSiblings(std::shared_ptr<RedBlackTree::RBTree> bst, std::shared_ptr<IDirectoryEntry> de);
     bool ValidateSibling(int sid);
     void LoadDirectories();
-    // TODO
+
     void FreeMiniChain(SVector<Sector>& sectorChain, bool zeroSector);
     void FreeMiniChain(SVector<Sector>& sectorChain, int nth_sector_to_remove, bool zeroSector);
     void FreeChain(SVector<Sector>& sectorChain, int nth_sector_to_remove, bool zeroSector);
@@ -146,7 +147,7 @@ private:
     int _lockSectorId = -1;
     bool _transactionLockAllocated = false;
     bool validationExceptionEnabled = true;
-    bool _disposed;//false
+    bool _disposed = false;
     CFSUpdateMode updateMode;
     SVector<IDirectoryEntry> directoryEntries;
     std::list<int> levelSIDs;

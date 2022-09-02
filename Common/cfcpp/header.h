@@ -10,8 +10,8 @@ class Header
 public:
     Header();
     Header(ushort version);
-    void Write(Stream stream);
-    void Read(Stream stream);
+    void Write(Stream& stream);
+    void Read(Stream& stream);
 
 private:
     void CheckVersion()const;

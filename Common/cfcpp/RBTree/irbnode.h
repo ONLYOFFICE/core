@@ -15,7 +15,7 @@ enum Color
     BLACK = 1
 };
 
-class IRBNode
+class IRBNode : public std::enable_shared_from_this<IRBNode>
 {
 public:
     virtual void setLeft(PIRBNode pNode) = 0;

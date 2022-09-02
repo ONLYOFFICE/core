@@ -49,7 +49,7 @@ void test_dirEntry_read(const DirectoryEntry& de)
 
 TEST_F(DirEntryTest, test_directoryentry_read)
 {
-    DirectoryEntry de(L"", StgInvalid, {});
+    DirectoryEntry de(L"", StgInvalid);
     stream->seek(0x400, std::ios::beg);
     de.Read(stream);
 
@@ -59,17 +59,17 @@ TEST_F(DirEntryTest, test_directoryentry_read)
 
 TEST_F(DirEntryTest, test_directoryentry_write)
 {
-    DirectoryEntry de(L"", StgInvalid, {});
+    DirectoryEntry de(L"", StgInvalid);
     stream->seek(0x400, std::ios::beg);
     de.Read(stream);
 
-    std::string other_filename("../../../data/types/direntry.bin");
+    std::string other_filename("../../../data/direntry.bin");
     stream = OpenFileStream(other_filename, true);
     de.Write(stream);
     EXPECT_EQ(stream->tell(), 0x80);
     stream->seek(0, std::ios::beg);
 
-    DirectoryEntry other(L"", StgInvalid, {});
+    DirectoryEntry other(L"", StgInvalid);
     other.Read(stream);
     test_dirEntry_read(other);
     remove(other_filename.c_str());

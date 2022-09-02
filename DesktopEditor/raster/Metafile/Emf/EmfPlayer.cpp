@@ -560,6 +560,12 @@ namespace MetaFile
 		m_oWindow.ulW = oPoint.cx;
 		m_oWindow.ulH = oPoint.cy;
 
+		if (0 == m_oViewport.ulW || 0 == m_oViewport.ulH)
+		{
+			m_oViewport.ulW = oPoint.cx;
+			m_oViewport.ulH = oPoint.cy;
+		}
+
 		UpdatePixelMetrics();
 		UpdateFinalTransform();
 	}
@@ -578,6 +584,13 @@ namespace MetaFile
 	{
 		m_oViewport.ulW = oPoint.cx;
 		m_oViewport.ulH = oPoint.cy;
+
+		if (0 == m_oWindow.ulW || 0 == m_oWindow.ulH)
+		{
+			m_oWindow.ulW = oPoint.cx;
+			m_oWindow.ulH = oPoint.cy;
+		}
+
 		UpdatePixelMetrics();
 		UpdateFinalTransform();
 	}
@@ -588,17 +601,21 @@ namespace MetaFile
 	bool            CEmfDC::UpdatePixelMetrics()
 	{
 		unsigned int ulMapMode = m_ulMapMode;
+
+		if (0 == m_oWindow.ulW || 0 == m_oViewport.ulW)
+			return false;
+
 		if (MM_ISOTROPIC == ulMapMode)
 		{
-			if (0 == m_oWindow.ulW || 0 == m_oViewport.ulW)
-				return false;
-
 			double dPixel = (double)m_oViewport.ulW / (double)m_oWindow.ulW;
 			SetPixelHeight(dPixel);
 			SetPixelWidth(dPixel);
 		}
 		else if (MM_ANISOTROPIC == ulMapMode)
 		{
+			if (0 == m_oWindow.ulH || 0 == m_oViewport.ulH)
+				return false;
+
 			double dPixelX = (double)m_oViewport.ulW / (double)m_oWindow.ulW;
 			double dPixelY = (double)m_oViewport.ulH / (double)m_oWindow.ulH;
 

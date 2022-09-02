@@ -516,7 +516,7 @@ namespace NSDocxRenderer
         unsigned int* pUnicodes = NSStringExt::CConverter::GetUtf32FromUnicode(wsUnicodeText, nLen);
         if (nLen == 0)
             return S_OK;
-        if (nLen != nGidsCount)
+		if (nLen != nGidsCount && 0 != nGidsCount)
         {
             delete [] pUnicodes;
             return S_OK;

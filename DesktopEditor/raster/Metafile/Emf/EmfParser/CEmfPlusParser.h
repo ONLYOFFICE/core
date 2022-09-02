@@ -53,6 +53,10 @@ namespace MetaFile
 		CEmfPlusPath*   GetPath(unsigned int unPathIndex);
 
 		CEmfPlusRegion* ReadRegion();
+		CEmfPlusRegionNode* ReadRegionNode(unsigned int& unIndex);
+		CEmfPlusRegionNodePath*  ReadRegionNodePath(unsigned int& unIndex);
+		CEmfPlusRegionNodeRectF* ReadRegionNodeRectF(unsigned int& unIndex);
+		CEmfPlusRegionNodeChild* ReadRegionNodeChild(unsigned int& unIndex);
 		CEmfPlusRegion* GetRegion(unsigned int unRegionIndex);
 
 		CEmfPlusImageAttributes* GetImageAttributes(unsigned int unImageAttributesIndex);

@@ -201,8 +201,9 @@ namespace BinXlsxRW{
 			
 			if (bResult && pReader->m_nDocumentType != XMLWRITER_DOC_TYPE_XLSX && !sEmbedingPath.empty() && !bXlsxPresent)
 			{
-				std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(pReader->m_nCountEmbedded) + 
-																								(oSaveParams.bMacroEnabled ? L".xlsm" : L".xlsx");
+				oSaveParams.bMacroEnabled = false;
+
+				std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(pReader->m_nCountEmbedded) + L".xlsx";
 				std::wstring sXlsxPath = sEmbedingPath + FILE_SEPARATOR_STR + sXlsxFilename;
 
 				pReader->m_nCountEmbedded++;

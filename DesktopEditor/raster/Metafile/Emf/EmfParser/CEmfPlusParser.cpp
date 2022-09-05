@@ -429,6 +429,8 @@ namespace MetaFile
 
 		m_oStream >> unMetafileSize;
 
+		unMetafileSize = m_ulRecordSize - 16;
+
 		oImage.SetSizeData(unMetafileSize);
 
 		if (!bReadData) return;

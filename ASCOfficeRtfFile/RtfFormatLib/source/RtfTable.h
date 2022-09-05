@@ -112,6 +112,7 @@ public:
 		std::vector<int> aCellx; // упорядочен по возрастанию
 		int nLastCellx = 0;
 
+		int maxCellxFirstRow = 0;
 
 		//m_aArray - строки
 		for (size_t nCurRow = 0; nCurRow < m_aArray.size(); nCurRow++ ) 
@@ -155,6 +156,8 @@ public:
 				RtfTableCellPtr oCurCell = oCurRow->operator []( nCurCell );
 				
 				int nCellx = nWidthBefore + nDelta + oCurCell->m_oProperty.m_nCellx;
+				if (nCellx > maxCellxFirstRow && maxCellxFirstRow > 0)
+					nCellx = maxCellxFirstRow;
 				AddToArray( aCellx, nCellx );
 				//те свойства, что остались в row не трогаем - они не важны для конвертации в oox
 				nLastCellx = nCellx;
@@ -162,6 +165,8 @@ public:
 			//добавляем widthAfter
 			if(  0 != nWidthAfter)
 				AddToArray( aCellx, nLastCellx + nWidthAfter );
+			
+			if (maxCellxFirstRow == 0) maxCellxFirstRow = nLastCellx + nWidthAfter;
 		}
 		//вычисляем Span
 		for (size_t i = 0; i < m_aArray.size();i++) 
@@ -373,7 +378,7 @@ private:
 		bool bNeedAdd = true;
 		for (size_t k = 0; k < aArray.size(); k++)
 		{
-			if( aArray[k] == nValue )
+			if( std::abs(aArray[k] - nValue) < 3 )
 			{
 				bNeedAdd = false;
 				break;

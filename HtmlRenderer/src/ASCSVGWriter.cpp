@@ -674,8 +674,17 @@ namespace NSHtmlRenderer
 	}
 	HRESULT CASCSVGWriter::DrawPath(const long&  nType)
 	{
-		if (m_pBrush->Type == c_BrushTypeTexture)
-			m_bIsRaster = true;
+		switch (m_pBrush->Type)
+		{
+			case c_BrushTypeTexture:
+			case c_BrushTypeHatch1:
+			{
+				m_bIsRaster = true;
+				break;
+			}
+		default:
+			break;
+		}
 
 		if (m_bIsRaster)
 			return S_OK;

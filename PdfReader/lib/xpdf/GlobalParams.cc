@@ -125,6 +125,13 @@ static const char *displayFontDirs[] = {
 static const char *macSystemFontPath = "/System/Library/Fonts";
 #endif
 
+#ifdef BUILDING_WASM_MODULE
+#include "../../../DesktopEditor/graphics/pro/js/fonts/Adobe-GB1.cidToUnicode.h"
+#include "../../../DesktopEditor/graphics/pro/js/fonts/Adobe-Japan1.cidToUnicode.h"
+#include "../../../DesktopEditor/graphics/pro/js/fonts/Adobe-Korea1.cidToUnicode.h"
+#include "../../../DesktopEditor/graphics/pro/js/fonts/Adobe-KR.cidToUnicode.h"
+#endif
+
 struct Base14FontInfo {
   Base14FontInfo(GString *fileNameA, int fontNumA, double obliqueA) {
     fileName = fileNameA;
@@ -3377,10 +3384,34 @@ CharCodeToUnicode *GlobalParams::getCIDToUnicode(GString *collection) {
 
   lockGlobalParams;
   if (!(ctu = cidToUnicodeCache->getCharCodeToUnicode(collection))) {
+
+#ifdef BUILDING_WASM_MODULE
+    if (collection->cmp("Adobe-GB1") == 0)
+    {
+        ctu = new CharCodeToUnicode(collection->copy(), (Unicode*)c_arrAdobe_GB1, c_nAdobe_GB1, gTrue, NULL, 0, 0);
+        cidToUnicodeCache->add(ctu);
+    }
+    else if (collection->cmp("Adobe-Korea1") == 0)
+    {
+        ctu = new CharCodeToUnicode(collection->copy(), (Unicode*)c_arrAdobe_Korea1, c_nAdobe_Korea1, gTrue, NULL, 0, 0);
+        cidToUnicodeCache->add(ctu);
+    }
+    else if (collection->cmp("Adobe-KR") == 0)
+    {
+        ctu = new CharCodeToUnicode(collection->copy(), (Unicode*)c_arrAdobe_KR, c_nAdobe_KR, gTrue, NULL, 0, 0);
+        cidToUnicodeCache->add(ctu);
+    }
+    else if (collection->cmp("Adobe-Japan1") == 0)
+    {
+        ctu = new CharCodeToUnicode(collection->copy(), (Unicode*)c_arrAdobe_Japan1, c_nAdobe_Japan1, gTrue, NULL, 0, 0);
+        cidToUnicodeCache->add(ctu);
+    }
+#elif
     if ((fileName = (GString *)cidToUnicodes->lookup(collection)) &&
 	(ctu = CharCodeToUnicode::parseCIDToUnicode(fileName, collection))) {
       cidToUnicodeCache->add(ctu);
     }
+#endif
   }
   unlockGlobalParams;
   return ctu;

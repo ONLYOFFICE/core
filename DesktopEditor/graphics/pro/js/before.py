@@ -32,4 +32,20 @@ if not base.is_dir("freetype-2.10.4"):
   common.apply_patch("./freetype-2.10.4/src/sfnt/sfnt.cpp", "./wasm/patches/sfnt.patch")
   common.apply_patch("./freetype-2.10.4/builds/unix/ftsystem.c", "./wasm/patches/ftsystem.patch")
 
+def apply_font_patch(file_name, arr_name):
+  file_content = base.readFile("../../../../PdfReader/Resources/CMap/" + file_name)
+  arr_str_cidToUnicode = file_content.splitlines()
+  arr_int_cidToUnicode = [int(i, 16) for i in arr_str_cidToUnicode]
+  res_content = ("static const unsigned int c_arr" + arr_name + "[]={")
+  res_content += ','.join(map(str, arr_int_cidToUnicode))
+  res_content += ("};\nstatic const unsigned int c_n" + arr_name + "=" + str(len(arr_int_cidToUnicode)) + ";")
+  base.writeFile("./fonts/" + file_name + ".h", res_content)
+
+if not base.is_dir("fonts"):
+  base.create_dir("./fonts")
+  apply_font_patch("Adobe-GB1.cidToUnicode", "Adobe_GB1")
+  apply_font_patch("Adobe-Korea1.cidToUnicode", "Adobe_Korea1")
+  apply_font_patch("Adobe-KR.cidToUnicode", "Adobe_KR")
+  apply_font_patch("Adobe-Japan1.cidToUnicode", "Adobe_Japan1")
+
 base.replaceInFile("../../../../Common/3dParty/icu/icu/source/common/udata.cpp", "\n{\n    UDataMemory tData;", "\n{\n#ifdef BUILDING_WASM_MODULE\nreturn NULL;\n#endif\n    UDataMemory tData;")

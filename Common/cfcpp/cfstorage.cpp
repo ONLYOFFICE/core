@@ -227,7 +227,7 @@ void CFStorage::VisitEntries(RedBlackTree::Action<std::shared_ptr<CFItem> > acti
         getChildren()->VisitTreeNodes(internalAction);
 
         if (recursive && subStorages.size() > 0)
-            for (const auto& n : subStorages)
+            for (const auto& n : *subStorages)
             {
                 auto d = std::dynamic_pointer_cast<IDirectoryEntry>(n);
                 CFStorage(compoundFile, d).VisitEntries(action, recursive);

@@ -608,7 +608,7 @@ void CompoundFile::CommitDirectory()
                     )
                 );
 
-    for (const auto& di : directoryEntries)
+    for (const auto& di : *directoryEntries)
     {
         di->Write(sv);
     }
@@ -623,7 +623,7 @@ void CompoundFile::CommitDirectory()
         delta++;
     }
 
-    for (auto s : directorySectors)
+    for (auto s : *directorySectors)
     {
         s->type = SectorType::Directory;
     }
@@ -665,7 +665,7 @@ SVector<IDirectoryEntry> CompoundFile::FindDirectoryEntries(std::wstring entryNa
 {
     SVector<IDirectoryEntry> result;
 
-    for (auto d : directoryEntries)
+    for (auto d : *directoryEntries)
     {
         if (d->GetEntryName() == entryName && d->getStgType() != StgType::StgInvalid)
             result.push_back(d);
@@ -940,7 +940,7 @@ void CompoundFile::FreeChain(SVector<Sector> &sectorChain, bool zeroSector)
 
 void CompoundFile::AllocateSectorChain(SVector<Sector> &sectorChain)
 {
-    for (auto& s : sectorChain)
+    for (auto& s : *sectorChain)
     {
         if (s->id == -1)
         {
@@ -992,7 +992,7 @@ void CompoundFile::AllocateDIFATSectorChain(SVector<Sector> &FATsectorChain)
     header->fatSectorsNumber = FATsectorChain.size();
 
     // Allocate Sectors
-    for (auto s : FATsectorChain)
+    for (auto s : *FATsectorChain)
     {
         if (s->id == -1)
         {
@@ -1218,7 +1218,7 @@ void CompoundFile::PersistMiniStreamToStream(const SVector<Sector> &miniSectorCh
                 zeroQueue,
                 sourceStream);
 
-    for (auto& s : miniSectorChain)
+    for (auto& s : *miniSectorChain)
     {
 
         if (s->id == -1)

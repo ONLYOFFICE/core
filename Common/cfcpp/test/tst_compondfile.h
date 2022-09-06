@@ -41,7 +41,7 @@ TEST_F(CompoundFileTest, test_compoundfile_write)
 TEST_F(CompoundFileTest, test_compoundfile_SID)
 {
     auto dirs = cf.GetDirectories();
-    for (const auto& dir : dirs)
+    for (const auto& dir : *dirs)
     {
         wcout << left << setw(2) << dir->getSid() << L" "
               << left << setw(30) << dir->GetEntryName() << L" "
@@ -102,7 +102,7 @@ TEST_F(CompoundFileTest, test_compoundfile_add2Stream)
     cf.RootStorage()->AddStream(streamName);
 
     auto dirs = cf.GetDirectories();
-    for (const auto& dir : dirs)
+    for (const auto& dir : *dirs)
     {
         wcout << left << setw(2) << dir->getSid() << L" "
               << left << setw(30) << dir->GetEntryName() << L" "

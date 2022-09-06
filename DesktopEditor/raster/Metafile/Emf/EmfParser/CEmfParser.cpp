@@ -210,6 +210,8 @@ namespace MetaFile
 
 		if (!CheckError())
 			m_oStream.SeekToStart();
+
+		ClearFile();
 	}
 
 	void CEmfParser::Scan()

@@ -167,6 +167,8 @@ namespace MetaFile
 
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->End();
+
+		ClearFile();
 	}
 
 	void CWmfParser::Scan()

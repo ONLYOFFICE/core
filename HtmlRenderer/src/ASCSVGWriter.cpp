@@ -33,6 +33,7 @@
 
 #include "../../DesktopEditor/graphics/GraphicsPath.h"
 #include "VectorGraphicsWriter2.h"
+#include "../../DesktopEditor/graphics/pro/Graphics.h"
 
 namespace NSHtmlRenderer
 {
@@ -677,7 +678,6 @@ namespace NSHtmlRenderer
 		switch (m_pBrush->Type)
 		{
 			case c_BrushTypeTexture:
-			case c_BrushTypeHatch1:
 			{
 				m_bIsRaster = true;
 				break;
@@ -722,7 +722,7 @@ namespace NSHtmlRenderer
         int _c = (int)c;
 
         _SetFont();
-        m_pSimpleGraphicsConverter->PathCommandText2(&_c, NULL, 0, m_pFontManager, x, y, w, h);
+		m_pSimpleGraphicsConverter->PathCommandText2(&_c, NULL, 1, m_pFontManager, x, y, w, h);
         return S_OK;
 	}
 	HRESULT CASCSVGWriter::PathCommandText(const std::wstring& bsText, const double& fX, const double& fY, const double& fWidth, const double& fHeight)

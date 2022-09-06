@@ -130,6 +130,10 @@ namespace NSGraphics
     };
 
     GRAPHICS_DECL IGraphicsRenderer* Create();
+
+	GRAPHICS_DECL std::string GetHatchBase64(const std::wstring& name,
+											 unsigned char r1, unsigned char g1, unsigned char b1, unsigned char a1,
+											 unsigned char r2, unsigned char g2, unsigned char b2, unsigned char a2);
 }
 
 

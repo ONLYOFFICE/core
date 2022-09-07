@@ -62,6 +62,30 @@
 
 const double g_emu_koef	= 25.4 * 36000 / 72.0;
 
+const std::wstring _start_xml_object(L"<main xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
+xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+xmlns:p=\"urn:schemas-microsoft-com:office:powerpoint\" \
+xmlns:v=\"urn:schemas-microsoft-com:vml\" \
+xmlns:x=\"urn:schemas-microsoft-com:office:excel\" \
+xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
+xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
+xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
+xmlns:ve=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
+xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
+xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
+xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
+xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" \
+xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" \
+xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
+xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
+xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
+xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
+xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" \
+xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\" \
+xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\">");
+const std::wstring _end_xml_object(L"</main>");
 
 void DUMP_MESSAGE_TO_FILE(const char* strMessage)
 {
@@ -1482,32 +1506,7 @@ std::wstring CDrawingConverter::ObjectToVML	(const std::wstring& sXml)
 
 HRESULT CDrawingConverter::AddObject(const std::wstring& bsXml, std::wstring** pMainProps)
 {
-    std::wstring sBegin(L"<main xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
-xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
-xmlns:p=\"urn:schemas-microsoft-com:office:powerpoint\" \
-xmlns:v=\"urn:schemas-microsoft-com:vml\" \
-xmlns:x=\"urn:schemas-microsoft-com:office:excel\" \
-xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
-xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
-xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
-xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
-xmlns:ve=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
-xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
-xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
-xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
-xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
-xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" \
-xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" \
-xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
-xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
-xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
-xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
-xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" \
-xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\" \
-xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\">");
-    
-    std::wstring sEnd(L"</main>");
-    std::wstring strXml = sBegin + bsXml + sEnd;
+    std::wstring strXml = _start_xml_object + bsXml + _end_xml_object;
     
     m_pBinaryWriter->m_pCommon->CheckFontPicker();
     
@@ -1517,7 +1516,174 @@ xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\
 
 	return bResult ? S_OK : S_FALSE;
 }
+void CDrawingConverter::ConvertVml(const std::wstring& sXml, std::vector<nullable<PPTX::Logic::SpTreeElem>> &elements)
+{
+	std::wstring strXml = _start_xml_object + sXml + _end_xml_object;
 
+	XmlUtils::CXmlNode oMainNode;
+	if (!oMainNode.FromXmlString(strXml))
+		return;
+
+	XmlUtils::CXmlNodes oNodes;
+	if (!oMainNode.GetNodes(L"*", oNodes))
+		return;
+
+	LONG lCount = oNodes.GetCount();
+	std::wstring* pMainProps = NULL;
+	std::wstring** ppMainProps = &pMainProps;
+
+	for (LONG i = 0; i < lCount; ++i)
+	{
+		XmlUtils::CXmlNode oParseNode;
+		oNodes.GetAt(i, oParseNode);
+
+		std::wstring strFullName = oParseNode.GetName();
+		std::wstring strNS = XmlUtils::GetNamespace(strFullName);
+		std::wstring strName = XmlUtils::GetNameNoNS(strFullName);
+
+		while (true)
+		{
+			if (strName == L"background")
+			{
+				nullable<PPTX::Logic::SpTreeElem> elem;
+				elem.Init();
+
+				ConvertShape(elem.GetPointer(), oParseNode, ppMainProps, false);
+				elements.push_back(elem);
+				break;
+			}
+			else if (strName == L"pict" || strName == L"object")
+			{
+				//сначала shape type
+				XmlUtils::CXmlNode oNodeST;
+				if (oParseNode.GetNode(L"v:shapetype", oNodeST))
+				{
+					AddShapeType(oNodeST);
+				}
+				//binary data
+				XmlUtils::CXmlNode oNodeBinData;
+				oParseNode.GetNode(L"w:binData", oNodeBinData);
+
+				XmlUtils::CXmlNodes oChilds;
+				if (oParseNode.GetNodes(L"*", oChilds))
+				{
+					LONG lChildsCount = oChilds.GetCount();
+					bool bIsFound = false;
+					PPTX::Logic::COLEObject* pOle = NULL;
+					
+					nullable<PPTX::Logic::SpTreeElem> pElem;
+
+					for (LONG k = 0; k < lChildsCount; k++)
+					{
+						XmlUtils::CXmlNode oNodeP;
+						oChilds.GetAt(k, oNodeP);
+
+						std::wstring strNameP = XmlUtils::GetNameNoNS(oNodeP.GetName());
+						if (L"shape" == strNameP ||
+							L"rect" == strNameP ||
+							L"oval" == strNameP ||
+							L"line" == strNameP ||
+							L"background" == strNameP ||
+							L"roundrect" == strNameP ||
+							L"image" == strNameP ||
+							L"polyline" == strNameP)
+						{
+							if (false == pElem.IsInit())
+							{
+								pElem = new PPTX::Logic::SpTreeElem;
+								if (oNodeBinData.IsValid())
+								{
+									pElem->fromXML(oNodeBinData);
+								}
+								ConvertShape(pElem.GetPointer(), oNodeP, ppMainProps, true);
+							}
+						}
+						else if (L"OLEObject" == strNameP || L"objectEmbed" == strNameP)
+						{
+							pOle = new PPTX::Logic::COLEObject();
+							pOle->fromXML(oNodeP);
+						}
+						else if (L"group" == strNameP)
+						{
+							if (false == pElem.IsInit())
+							{
+								pElem = new PPTX::Logic::SpTreeElem;
+								ConvertGroup(pElem.GetPointer(), oNodeP, ppMainProps, true);
+							}
+						}
+						else if (L"drawing" == strNameP)
+						{
+							if (false == pElem.IsInit())
+							{
+								pElem = new PPTX::Logic::SpTreeElem;
+								ConvertDrawing(pElem.GetPointer(), oNodeP, ppMainProps, true);
+							}
+						}
+						else
+						{
+							continue;
+						}
+
+						if (bIsFound)
+							break;
+					}
+					if (pElem.IsInit() && NULL != pOle && pOle->m_sProgId.IsInit() && (pOle->m_oId.IsInit() || pOle->m_OleObjectFile.IsInit()))
+					{
+						PPTX::Logic::Pic* pPicture = dynamic_cast<PPTX::Logic::Pic*>(pElem->GetElem().operator ->());
+						PPTX::Logic::Shape* pShape = dynamic_cast<PPTX::Logic::Shape*>(pElem->GetElem().operator ->());
+
+						if ((!pPicture && pShape) && (pShape->spPr.Fill.is<PPTX::Logic::BlipFill>()))
+						{//convert pptx shape to pptx picture
+							pPicture = new PPTX::Logic::Pic();
+
+							pPicture->nvPicPr.nvPr = pShape->nvSpPr.nvPr;
+							pPicture->nvPicPr.cNvPr = pShape->nvSpPr.cNvPr;
+							pPicture->spPr = pShape->spPr;
+							pPicture->blipFill = pShape->spPr.Fill.as<PPTX::Logic::BlipFill>();
+							pPicture->spPr.Fill = PPTX::Logic::UniFill();
+
+							pShape = NULL;
+							pElem->InitElem(pPicture);
+						}
+						if ((pPicture) && (pPicture->blipFill.blip.IsInit()))
+						{
+							if (pOle->m_OleObjectFile.IsInit())
+							{
+								pPicture->blipFill.blip->oleFilepathBin = pOle->m_OleObjectFile->filename().GetPath();
+							}
+							else if (pOle->m_oId.IsInit())
+							{
+								pPicture->blipFill.blip->oleRid = pOle->m_oId.get().ToString();
+							}
+							if (strName == L"object")
+							{
+								int nDxaOrig = oParseNode.ReadAttributeInt(L"w:dxaOrig");
+								int nDyaOrig = oParseNode.ReadAttributeInt(L"w:dyaOrig");
+								if (nDxaOrig > 0 && nDyaOrig > 0)
+								{
+									pOle->m_oDxaOrig = nDxaOrig;
+									pOle->m_oDyaOrig = nDyaOrig;
+								}
+							}
+							pPicture->oleObject.reset(pOle);
+							pOle = NULL;
+						}
+					}
+					if (pElem.IsInit())
+						elements.push_back(pElem);
+					RELEASEOBJECT(pOle)
+				}
+				break;
+			}
+			else
+			{
+				nullable<PPTX::Logic::SpTreeElem> elem(oParseNode);
+				elements.push_back(elem);
+				break;
+			}
+		}
+	}
+}
 bool CDrawingConverter::ParceObject(const std::wstring& strXml, std::wstring** pMainProps)
 {
 	XmlUtils::CXmlNode oMainNode;

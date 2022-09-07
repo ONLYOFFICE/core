@@ -235,6 +235,8 @@ namespace NSBinPptxRW
 
         HRESULT AddObject           (const std::wstring& sXml, std::wstring** pMainProps);
 
+		void ConvertVml(const std::wstring& sXml, std::vector<nullable<PPTX::Logic::SpTreeElem>> &elements);
+
         HRESULT SaveObject          (long lStart, long lLength, const std::wstring& sMainProps, std::wstring & sXml);
         HRESULT SaveObjectEx        (long lStart, long lLength, const std::wstring& sMainProps, int nDocType, std::wstring & sXml);
 

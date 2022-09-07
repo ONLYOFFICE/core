@@ -589,7 +589,6 @@ namespace PPTX
                 temp += L"</v:object>";
 
 				NSBinPptxRW::CDrawingConverter oDrawingConverter;
-				//oDrawingConverter.SetFontManager(pFontManager);
 
 				RELEASEOBJECT(oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager);
 				oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = pWriter->m_pCommon->m_pMediaManager;
@@ -599,12 +598,17 @@ namespace PPTX
 				oDrawingConverter.SetRels(xml_object_rels);
                 oDrawingConverter.SetAdditionalParam(L"xfrm_override", (BYTE*)xfrm.GetPointer(), sizeof(xfrm));
 
-				HRESULT hRes = oDrawingConverter.AddObject(temp, &main_props);
-				if (hRes == S_OK && oDrawingConverter.m_pBinaryWriter->GetPosition() > 10)
+				std::vector<nullable<PPTX::Logic::SpTreeElem>> elements;
+				oDrawingConverter.ConvertVml(temp, elements);
+				oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = NULL;
+
+				smart_ptr<OOX::IFileContainer> rels_old = pWriter->GetRels();
+				pWriter->SetRels(xml_object_rels);
+				for (size_t i = 0; i < elements.size(); ++i)
 				{
-					pWriter->WriteBYTEArray(oDrawingConverter.m_pBinaryWriter->GetBuffer()+10,oDrawingConverter.m_pBinaryWriter->GetPosition()-10);
+					elements[i]->toPPTY(pWriter);
 				}
-				oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager =  NULL;
+				pWriter->SetRels(rels_old);
 				return;
 			}
 			pWriter->StartRecord(SPTREE_TYPE_GRFRAME);

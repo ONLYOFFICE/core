@@ -1678,7 +1678,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorkbookView *oox_book_views)
 		if (table_id >= 0 && table_id < (int)Workbook->m_oSheets->m_arrItems.size())
 		{
 			ods_context->settings_context()->add_property(L"ActiveTable", L"string", 
-				*Workbook->m_oSheets->m_arrItems[table_id]->m_oName);
+				XmlUtils::EncodeXmlString(*Workbook->m_oSheets->m_arrItems[table_id]->m_oName));
 		}
 	}
 	if (oox_book_views->m_oShowSheetTabs.IsInit())

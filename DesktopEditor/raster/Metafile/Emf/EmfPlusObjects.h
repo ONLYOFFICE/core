@@ -273,6 +273,9 @@ namespace MetaFile
 
 		unsigned int GetAlpha()
 		{
+			if (NULL != Brush)
+				return Brush->Color.chAlpha;
+
 			return 255;
 //			return (unsigned int)Color.chAlpha;
 		}

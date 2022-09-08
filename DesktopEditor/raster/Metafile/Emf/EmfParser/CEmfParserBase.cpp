@@ -769,6 +769,11 @@ namespace MetaFile
 		return (pWindow->ulW < 0);
 	}
 
+	double CEmfParserBase::GetScale()
+	{
+		return 1.f;
+	}
+
 	bool CEmfParserBase::IsViewportFlippedY()
 	{
 		TEmfWindow* pViewport = m_pDC->GetViewport();

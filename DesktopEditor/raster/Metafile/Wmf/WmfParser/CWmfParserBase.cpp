@@ -166,6 +166,14 @@ namespace MetaFile
 		return (pWindow->w < 0);
 	}
 
+	double CWmfParserBase::GetScale()
+	{
+		if (m_oPlaceable.Inch != 0)
+			return 1440.f / m_oPlaceable.Inch / (20.f * (72.f / 96.f));
+
+		return 1.f;
+	}
+
 	void CWmfParserBase::SetInterpretator(IOutputDevice *pOutput)
 	{
 		if (NULL != m_pInterpretator)

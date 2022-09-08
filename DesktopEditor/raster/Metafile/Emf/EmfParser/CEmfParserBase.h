@@ -69,6 +69,7 @@ namespace MetaFile
 		int		GetCharSpace()				override;
 		bool		IsWindowFlippedY()			override;
 		bool		IsWindowFlippedX()			override;
+		double      GetScale() override;
 		bool		IsViewportFlippedY();
 		bool		IsViewportFlippedX();
 

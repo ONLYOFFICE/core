@@ -152,9 +152,9 @@ namespace PdfReader
         m_pInternal->m_pFontManager->SetOwnerCache(pMeasurerCache);
         pMeasurerCache->SetCacheSize(1);
         ((GlobalParamsAdaptor*)globalParams)->SetFontManager(m_pInternal->m_pFontManager);
-    //#ifndef BUILDING_WASM_MODULE
+    #ifndef BUILDING_WASM_MODULE
         globalParams->setupBaseFonts(NULL);
-    //#endif
+    #endif
 
         m_eError = errNone;
 	}

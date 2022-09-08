@@ -1010,10 +1010,20 @@ namespace MetaFile
 
 			// TODO: dWidth зависит еще от флага PS_GEOMETRIC в стиле карандаша
 
-			double dWidth = pPen->GetWidth() * m_dScaleX;
+			double dWidth = pPen->GetWidth();
 
-			if (dWidth == 0)
-				dWidth = 25.4 / 96;
+			if (dWidth == 0 || (dWidth == 1 && PS_COSMETIC == ulPenType))
+			{
+				TRectD oRect(*m_pFile->GetDCBounds());
+
+				double dScale = m_pFile->GetScale();
+
+				oRect *= dScale;
+
+				dWidth = std::fabs(m_dW / (oRect.dRight - oRect.dLeft) / m_pFile->GetPixelWidth());
+			}
+			else
+				dWidth *= m_dScaleX;
 
 			BYTE nStartCapStyle = 0;
 			if (PS_STARTCAP_ROUND == ulPenStartCap)

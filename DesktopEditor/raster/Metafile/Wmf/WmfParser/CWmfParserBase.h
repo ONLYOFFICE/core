@@ -56,6 +56,7 @@ namespace MetaFile
 		int		GetCharSpace()				override;
 		bool		IsWindowFlippedY()			override;
 		bool		IsWindowFlippedX()			override;
+		double      GetScale() override;
 
 		void SetInterpretator(IOutputDevice* pOutput);
 		void SetInterpretator(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0);

@@ -54,6 +54,78 @@ namespace OOX
 		}
 		m_arrOcxPr.clear();
 	}
+	void ActiveX_xml::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+	{
+		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+		pWriter->WriteString2(0, m_oClassId);
+		pWriter->WriteString2(1, m_oLicense);
+		pWriter->WriteString2(2, m_oPersistence);
+		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+		for (size_t i = 0; i < m_arrOcxPr.size(); ++i)
+		{
+			pWriter->WriteRecord2(4, dynamic_cast<OOX::WritingElement*>(m_arrOcxPr[i]));
+		}
+
+		if (false == m_oObjectBinData.empty())
+		{
+			pWriter->StartRecord(5);
+			pWriter->WriteBYTEArray(m_oObjectBinData.data(), m_oObjectBinData.size());
+			pWriter->EndRecord();
+		}
+	}
+	void ActiveX_xml::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+	{
+		LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+		pReader->Skip(1); // attribute start
+		while (true)
+		{
+			BYTE _at = pReader->GetUChar_TypeNode();
+			if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+				break;
+
+			else if (0 == _at)	m_oClassId = pReader->GetString2();
+			else if (1 == _at)	m_oLicense = pReader->GetString2();
+			else if (2 == _at)	m_oPersistence = pReader->GetString2();
+		}
+		while (pReader->GetPos() < end)
+		{
+			BYTE _rec = pReader->GetUChar();
+
+			switch (_rec)
+			{
+			case 4:
+			{
+				m_arrOcxPr.push_back(new COcxPr());
+				m_arrOcxPr.back()->fromPPTY(pReader);
+			}break;
+			case 5:
+			{
+				size_t size = pReader->GetRecordSize();
+				m_oObjectBinData.resize(size);
+
+				pReader->GetArray(m_oObjectBinData.data(), size);
+			}break;
+			default:
+			{
+				pReader->SkipRecord();
+			}break;
+			}
+		}
+		pReader->Seek(end);
+//-----------------------------------------------------
+		if (false == m_oObjectBinData.empty())
+		{
+			smart_ptr<ActiveX_bin> activeX_bin(new ActiveX_bin(File::m_pMainDocument));
+
+			activeX_bin->m_Data = m_oObjectBinData;
+
+			smart_ptr<OOX::File> file = activeX_bin.smart_dynamic_cast<OOX::File>();
+			OOX::RId rId = Add(file);
+			m_oId = rId.get();
+		}
+	}
 	void ActiveX_xml::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start(oReader)
@@ -119,19 +191,18 @@ namespace OOX
 
 		DWORD size_stream = file.GetFileSize();
 
-		unsigned char* data_stream = new unsigned char[size_stream];
-		if (data_stream)
+		m_oObjectBinData.resize(size_stream);
+
+		if (false == m_oObjectBinData.empty())
 		{
-			file.ReadFile(data_stream, size_stream, size_stream);
+			file.ReadFile(m_oObjectBinData.data(), size_stream, size_stream);
 
 			m_oObject = ActiveXObject::Create(*m_oClassId);
 			
 			if (m_oObject.IsInit())
 			{
-				m_oObject->Parse(data_stream, size_stream);
+				m_oObject->Parse(m_oObjectBinData.data(), size_stream);
 			}
-
-			RELEASEARRAYOBJECTS(data_stream);
 		}
 		file.CloseFile();
 	}

@@ -132,7 +132,7 @@ void table_named_expression::serialize(std::wostream & _Wostream)
         {
 			CP_XML_ATTR_OPT_ENCODE_STRING(L"table:name", table_name_);
 			CP_XML_ATTR_OPT(L"table:base-cell-address", table_base_cell_address_);
-			CP_XML_ATTR_OPT(L"table:expression", table_expression_);
+			CP_XML_ATTR_OPT_ENCODE_STRING(L"table:expression", table_expression_);
 		}
 	}
 }

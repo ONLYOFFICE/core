@@ -481,6 +481,11 @@ return 0;
         if (globalParams)
 			((GlobalParamsAdaptor*)globalParams)->SetCMapFolder(m_pInternal->m_wsCMapFolder.c_str());
 	}
+	void CPdfReader::SetCMapMemory()
+	{
+		if (globalParams)
+			((GlobalParamsAdaptor*)globalParams)->SetCMapMemory();
+	}
     NSFonts::IFontManager* CPdfReader::GetFontManager()
 	{
         return m_pInternal->m_pFontManager;

@@ -38,7 +38,8 @@ public:
         m_wsTempFolder = folder;
     }
 
-	void SetCMapFolder(const std::wstring &wsFolder);
+    void SetCMapFolder(const std::wstring &wsFolder);
+    void SetCMapMemory();
 private:
 
 	void AddNameToUnicode(const char* sFile);

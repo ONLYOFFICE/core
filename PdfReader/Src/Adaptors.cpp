@@ -47,6 +47,13 @@ void GlobalParamsAdaptor::SetCMapFolder(const std::wstring &wsFolder)
 
 	toUnicodeDirs->append(sFolder->copy()->append("/CMap"));
 }
+void GlobalParamsAdaptor::SetCMapMemory()
+{
+	cidToUnicodes->add(new GString("Adobe-GB1"), new GString());
+	cidToUnicodes->add(new GString("Adobe-Korea1"), new GString());
+	cidToUnicodes->add(new GString("Adobe-KR"), new GString());
+	cidToUnicodes->add(new GString("Adobe-Japan1"), new GString());
+}
 void GlobalParamsAdaptor::AddNameToUnicode(const char* sFile)
 {
 	char *tok1, *tok2;

@@ -63,7 +63,7 @@ public:
 	
 	virtual bool Read(XLS::CFStreamPtr stream);
 	virtual std::wstring toString();
-	bool IsEmpty();
+	virtual bool IsEmpty();
 
 	std::wstring value;
 	unsigned short code_page;
@@ -90,7 +90,8 @@ public:
     PropertyDTM(unsigned int prop_type, const unsigned short value_type) : Property(prop_type, value_type)
 	{
 	}
-	
+	virtual bool IsEmpty();
+
 	virtual std::wstring toString();
 	virtual bool Read(XLS::CFStreamPtr stream);
 	

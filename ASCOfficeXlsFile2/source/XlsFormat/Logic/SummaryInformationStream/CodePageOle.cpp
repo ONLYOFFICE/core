@@ -129,6 +129,11 @@ bool PropertyDTM::Read (XLS::CFStreamPtr stream)
 	}
 	return true;
 }
+bool PropertyDTM::IsEmpty()
+{
+	std::wstring value = toString();
+	return value.empty();
+}
 std::wstring PropertyDTM::toString()
 {
 	_UINT64 temp = ((_UINT64)dwHighDateTime << 32) + dwLowDateTime;

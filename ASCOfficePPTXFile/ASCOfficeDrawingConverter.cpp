@@ -2034,7 +2034,7 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 	bool bPicture			= false;
 	bool bStroked			= true;
 	bool bHidden			= false;
-	bool bShapeTypeSet		= false;
+	bool bShapeTypeSet		= true;
 
     std::wstring strStyleAdvenced = L"";
 
@@ -2214,7 +2214,8 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 	}
     else if (L"v:shape" == strNameNode)
 	{
-        std::wstring strType = oNodeShape.GetAttribute(L"type");
+		bShapeTypeSet = false;
+		std::wstring strType = oNodeShape.GetAttribute(L"type");
         if (strType.length() > 2 && strType[0] == (wchar_t)('#'))
 		{
 			strType = strType.substr(1);

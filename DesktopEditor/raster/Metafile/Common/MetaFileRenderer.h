@@ -968,8 +968,8 @@ namespace MetaFile
 				m_pRenderer->put_BrushAlpha2(pBrush->GetAlpha2());
 
 				long Colors[2];
-				Colors[0] = (pBrush->GetColor()<<8) + pBrush->GetAlpha();
-				Colors[1] = (pBrush->GetColor2()<<8) + pBrush->GetAlpha2();
+				Colors[0] = pBrush->GetColor()  + (pBrush->GetAlpha()  << 24);
+				Colors[1] = pBrush->GetColor2() + (pBrush->GetAlpha2() << 24);
 				double Position[2] = {0, 1};
 				
 				m_pRenderer->put_BrushGradientColors(Colors,Position,2);

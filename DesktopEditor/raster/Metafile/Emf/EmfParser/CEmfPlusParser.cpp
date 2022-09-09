@@ -512,9 +512,9 @@ namespace MetaFile
 		}
 		case BrushTypePathGradient:
 		{
-			//TODO: реализовать
-
-			pEmfPlusBrush->Style = BS_PATHGRADIENT;
+//			pEmfPlusBrush->Style = BS_PATHGRADIENT;
+			//TODO: пока что данная кисть будет радиальной, но в дальнейшем необходимо реализовать все возможности данной кисти
+			pEmfPlusBrush->Style = BS_RADIALGRADIENT;
 
 			unsigned int unBrushDataFlags;
 
@@ -524,11 +524,7 @@ namespace MetaFile
 
 			m_oStream >> pEmfPlusBrush->Color;
 
-			m_oStream >> pEmfPlusBrush->RectF.dX;
-			m_oStream >> pEmfPlusBrush->RectF.dY;
-
-			pEmfPlusBrush->RectF.dWidth = 1;
-			pEmfPlusBrush->RectF.dHeight = 1;
+			m_oStream.Skip(8);
 
 			unsigned int unCountColors;
 
@@ -538,10 +534,6 @@ namespace MetaFile
 				m_oStream >> pEmfPlusBrush->ColorBack;
 
 			m_oStream.Skip((unCountColors - 1) * 4);
-
-			pEmfPlusBrush->Angle = 45;
-
-//			break; //TODO: всё остальное не используется с текущими возможностями рендера
 
 			if (BrushDataPath & unBrushDataFlags)
 			{
@@ -555,34 +547,12 @@ namespace MetaFile
 
 					if (NULL != pPath)
 					{
-						if (pPath->m_pCommands.size() > 2)
-						{
-							if (EMF_PATHCOMMAND_MOVETO == pPath->m_pCommands[0]->GetType())
-							{
-								CEmfPathMoveTo* pMoveTo = (CEmfPathMoveTo*)pPath->m_pCommands[0];
-								pEmfPlusBrush->RectF.dX = pMoveTo->x;
-								pEmfPlusBrush->RectF.dY = pMoveTo->y;
-							}
-							else if (EMF_PATHCOMMAND_LINETO == pPath->m_pCommands[0]->GetType())
-							{
-								CEmfPathLineTo* pLineTo = (CEmfPathLineTo*)pPath->m_pCommands[0];
-								pEmfPlusBrush->RectF.dX = pLineTo->x;
-								pEmfPlusBrush->RectF.dY = pLineTo->y;
-							}
+						TRectD oRect = pPath->ConvertToRect();
 
-							if (EMF_PATHCOMMAND_MOVETO == pPath->m_pCommands[2]->GetType())
-							{
-								CEmfPathMoveTo* pMoveTo = (CEmfPathMoveTo*)pPath->m_pCommands[2];
-								pEmfPlusBrush->RectF.dWidth  = pMoveTo->x - pEmfPlusBrush->RectF.dX;
-								pEmfPlusBrush->RectF.dHeight = pMoveTo->y - pEmfPlusBrush->RectF.dY;
-							}
-							else if (EMF_PATHCOMMAND_LINETO == pPath->m_pCommands[2]->GetType())
-							{
-								CEmfPathLineTo* pLineTo = (CEmfPathLineTo*)pPath->m_pCommands[2];
-								pEmfPlusBrush->RectF.dWidth  = pLineTo->x - pEmfPlusBrush->RectF.dX;
-								pEmfPlusBrush->RectF.dHeight = pLineTo->y - pEmfPlusBrush->RectF.dY;
-							}
-						}
+						pEmfPlusBrush->RectF.dX      = oRect.dLeft;
+						pEmfPlusBrush->RectF.dY      = oRect.dTop;
+						pEmfPlusBrush->RectF.dWidth  = oRect.dRight - oRect.dLeft;
+						pEmfPlusBrush->RectF.dHeight = oRect.dBottom - oRect.dTop;
 
 						delete pPath;
 					}
@@ -599,8 +569,6 @@ namespace MetaFile
 				//TODO::реализовать при встрече
 			}
 
-			pEmfPlusBrush->RectF.dX = pEmfPlusBrush->RectF.dY = 0;
-
 			if (BrushDataPresetColors & unBrushDataFlags)
 			{
 				unsigned int unPositionCount;
@@ -616,6 +584,9 @@ namespace MetaFile
 
 				for (unsigned int unIndex = 0; unIndex <  unPositionCount; ++unIndex)
 					m_oStream >> arBlendColors[unIndex];
+
+				if (0 != unPositionCount)
+					pEmfPlusBrush->ColorBack = arBlendColors[0];
 			}
 
 			break;

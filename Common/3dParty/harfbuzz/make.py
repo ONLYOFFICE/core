@@ -89,3 +89,6 @@ if not base.is_dir("harfbuzz"):
 
   with open("./harfbuzz.pri", "w") as file:
     file.write("\n".join(qmake_content_lines))
+
+  base.delete_file("./harfbuzz/src/hb-ft.cc")
+  base.copy_file("./patch/hb-ft.cc", "./harfbuzz/src/hb-ft.cc")

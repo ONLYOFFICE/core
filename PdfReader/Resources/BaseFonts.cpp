@@ -107,10 +107,12 @@ bool PdfReader::GetBaseCidToUnicode(const char* sName, const unsigned int*& pDat
 {
     if (g_base_cidToUnicode.empty())
     {
+    #ifdef BUILDING_WASM_MODULE
         g_base_cidToUnicode.insert(std::pair<std::wstring, TCidToUnicodeData>(L"Adobe-GB1",    { c_arrAdobe_GB1,    c_nAdobe_GB1    }));
         g_base_cidToUnicode.insert(std::pair<std::wstring, TCidToUnicodeData>(L"Adobe-Korea1", { c_arrAdobe_Korea1, c_nAdobe_Korea1 }));
         g_base_cidToUnicode.insert(std::pair<std::wstring, TCidToUnicodeData>(L"Adobe-KR",     { c_arrAdobe_KR,     c_nAdobe_KR     }));
         g_base_cidToUnicode.insert(std::pair<std::wstring, TCidToUnicodeData>(L"Adobe-Japan1", { c_arrAdobe_Japan1, c_nAdobe_Japan1 }));
+    #endif
     }
 
     std::string strName = std::string(sName);

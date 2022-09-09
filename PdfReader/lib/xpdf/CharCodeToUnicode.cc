@@ -23,6 +23,10 @@
 #include "PSTokenizer.h"
 #include "CharCodeToUnicode.h"
 
+#ifdef BUILDING_WASM_MODULE
+#include "../../Resources/BaseFonts.h"
+#endif
+
 //------------------------------------------------------------------------
 
 #define maxUnicodeString 8

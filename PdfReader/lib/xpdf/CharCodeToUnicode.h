@@ -23,10 +23,6 @@
 #include "GMutex.h"
 #endif
 
-#ifdef BUILDING_WASM_MODULE
-#include "../../Resources/BaseFonts.h"
-#endif
-
 struct CharCodeToUnicodeString;
 
 //------------------------------------------------------------------------

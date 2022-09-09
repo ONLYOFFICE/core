@@ -23,17 +23,16 @@
 #include "GMutex.h"
 #endif
 
+#ifdef BUILDING_WASM_MODULE
+#include "../../Resources/BaseFonts.h"
+#endif
+
 struct CharCodeToUnicodeString;
 
 //------------------------------------------------------------------------
 
 class CharCodeToUnicode {
 public:
-
-  CharCodeToUnicode(GString *tagA, Unicode *mapA,
-            CharCode mapLenA, GBool copyMap,
-            CharCodeToUnicodeString *sMapA,
-            int sMapLenA, int sMapSizeA);
 
   // Create an identity mapping (Unicode = CharCode).
   static CharCodeToUnicode *makeIdentityMapping();
@@ -89,6 +88,10 @@ private:
   void addMappingInt(CharCode code, Unicode u);
   CharCodeToUnicode();
   CharCodeToUnicode(GString *tagA);
+  CharCodeToUnicode(GString *tagA, Unicode *mapA,
+		    CharCode mapLenA, GBool copyMap,
+		    CharCodeToUnicodeString *sMapA,
+		    int sMapLenA, int sMapSizeA);
 
   GString *tag;
   Unicode *map;

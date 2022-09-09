@@ -104,6 +104,19 @@ CharCodeToUnicode *CharCodeToUnicode::parseCIDToUnicode(GString *fileName,
   Unicode u;
   CharCodeToUnicode *ctu;
 
+#ifdef BUILDING_WASM_MODULE
+  const unsigned int* pDataCid = NULL;
+  unsigned int nSizeCid = 0;
+  if (PdfReader::GetBaseCidToUnicode(collection->getCString(),
+    pDataCid, nSizeCid)) {
+    ctu = new CharCodeToUnicode(collection->copy(),
+      (Unicode*)pDataCid, nSizeCid, gTrue, NULL, 0, 0);
+    return ctu;
+  } else {
+    return NULL;
+  }
+#endif
+
   if (!(f = openFile(fileName->getCString(), "r"))) {
     error(errSyntaxError, -1, "Couldn't open cidToUnicode file '{0:t}'",
 	  fileName);

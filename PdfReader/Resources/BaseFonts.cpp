@@ -31,6 +31,7 @@
  */
 
 #include "./BaseFonts.h"
+#include "../../DesktopEditor/common/File.h"
 
 #include "../Resources/Fontn022003l.h"
 #include "../Resources/Fontn022004l.h"
@@ -46,6 +47,13 @@
 #include "../Resources/Fontn021023l.h"
 #include "../Resources/Fontn021003l.h"
 #include "../Resources/Fontd050000l.h"
+
+#ifdef BUILDING_WASM_MODULE
+#include "../../DesktopEditor/graphics/pro/js/fonts/Adobe-GB1.cidToUnicode.h"
+#include "../../DesktopEditor/graphics/pro/js/fonts/Adobe-Japan1.cidToUnicode.h"
+#include "../../DesktopEditor/graphics/pro/js/fonts/Adobe-Korea1.cidToUnicode.h"
+#include "../../DesktopEditor/graphics/pro/js/fonts/Adobe-KR.cidToUnicode.h"
+#endif
 
 #include <map>
 
@@ -79,6 +87,36 @@ bool PdfReader::GetBaseFont(const std::wstring& sName, const unsigned char*& pDa
 
     std::map<std::wstring, TFontData>::const_iterator find = g_base_fonts.find(sName);
     if (find != g_base_fonts.end())
+    {
+        pData = find->second.Data;
+        nSize = find->second.Size;
+        return true;
+    }
+    return false;
+}
+
+struct TCidToUnicodeData
+{
+    const unsigned int* Data;
+    unsigned int Size;
+};
+
+std::map<std::wstring, TCidToUnicodeData> g_base_cidToUnicode;
+
+bool PdfReader::GetBaseCidToUnicode(const char* sName, const unsigned int*& pData, unsigned int& nSize)
+{
+    if (g_base_cidToUnicode.empty())
+    {
+        g_base_cidToUnicode.insert(std::pair<std::wstring, TCidToUnicodeData>(L"Adobe-GB1",    { c_arrAdobe_GB1,    c_nAdobe_GB1    }));
+        g_base_cidToUnicode.insert(std::pair<std::wstring, TCidToUnicodeData>(L"Adobe-Korea1", { c_arrAdobe_Korea1, c_nAdobe_Korea1 }));
+        g_base_cidToUnicode.insert(std::pair<std::wstring, TCidToUnicodeData>(L"Adobe-KR",     { c_arrAdobe_KR,     c_nAdobe_KR     }));
+        g_base_cidToUnicode.insert(std::pair<std::wstring, TCidToUnicodeData>(L"Adobe-Japan1", { c_arrAdobe_Japan1, c_nAdobe_Japan1 }));
+    }
+
+    std::string strName = std::string(sName);
+    std::wstring wsName = UTF8_TO_U(strName);
+    std::map<std::wstring, TCidToUnicodeData>::const_iterator find = g_base_cidToUnicode.find(wsName);
+    if (find != g_base_cidToUnicode.end())
     {
         pData = find->second.Data;
         nSize = find->second.Size;

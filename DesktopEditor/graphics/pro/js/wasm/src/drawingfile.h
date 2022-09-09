@@ -45,7 +45,10 @@ public:
     {
         nType = _nType;
         if (nType == 0)
+        {
             pReader = new PdfReader::CPdfReader(pApplicationFonts);
+            ((PdfReader::CPdfReader*)pReader)->SetCMapFolder(L" ");
+        }
         else if (nType == 1)
             pReader = new CDjVuFile(pApplicationFonts);
         else if (nType == 2)

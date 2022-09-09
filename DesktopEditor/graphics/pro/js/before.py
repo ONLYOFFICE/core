@@ -39,9 +39,9 @@ def apply_font_patch(file_name, arr_name):
   file_content = base.readFile("../../../../PdfReader/Resources/CMap/" + file_name)
   arr_str_cidToUnicode = file_content.splitlines()
   arr_int_cidToUnicode = [int(i, 16) for i in arr_str_cidToUnicode]
-  res_content = ("static const unsigned int c_arr" + arr_name + "[]={")
+  res_content = ("#ifndef _PDF_READER_RESOURCE_FONT_" + arr_name + "\n#define _PDF_READER_RESOURCE_FONT_" + arr_name + "\nnamespace PdfReader\n{\nstatic const unsigned int c_arr" + arr_name + "[]={")
   res_content += ','.join(map(str, arr_int_cidToUnicode))
-  res_content += ("};\nstatic const unsigned int c_n" + arr_name + "=" + str(len(arr_int_cidToUnicode)) + ";")
+  res_content += ("};\nstatic const unsigned int c_n" + arr_name + "=" + str(len(arr_int_cidToUnicode)) + ";\n}\n#endif //_PDF_READER_RESOURCE_FONT_" + arr_name + "\n")
   base.writeFile("./fonts/" + file_name + ".h", res_content)
 
 if not base.is_dir("fonts"):

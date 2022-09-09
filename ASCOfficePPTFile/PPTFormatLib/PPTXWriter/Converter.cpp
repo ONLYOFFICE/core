@@ -136,7 +136,7 @@ void PPT_FORMAT::CPPTXWriter::CreateFile(CPPTUserInfo* pUserInfo)
 
     // core
     oFile.CreateFileW(m_strTempDirectory + FILE_SEPARATOR_STR + _T("docProps") + FILE_SEPARATOR_STR + _T("core.xml"));
-	if (m_xmlCore.empty())
+//	if (m_xmlCore.empty()) bug 58841. todo correct <dc:title> contain
 		m_xmlCore = NSPPTXWriterConst::g_string_core;
     oFile.WriteStringUTF8(m_xmlCore);
     oFile.CloseFile();

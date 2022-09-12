@@ -1729,6 +1729,21 @@ namespace PdfReader
                 }
                 case fontCIDType0COT:
                 {
+                    GfxCIDFont* pFontCID = dynamic_cast<GfxCIDFont*>(pFont);
+                    if (!bFontSubstitution && pFontCID && pFontCID->getCIDToGID())
+                    {
+                        nLen = pFontCID->getCIDToGIDLen();
+                        if (!nLen)
+                            break;
+                        pCodeToGID = (int*)MemUtilsMallocArray(nLen, sizeof(int));
+                        if (!pCodeToGID)
+                        {
+                            nLen = 0;
+                            break;
+                        }
+                        memcpy(pCodeToGID, ((GfxCIDFont*)pFont)->getCIDToGID(), nLen * sizeof(int));
+                        break;
+                    }
                 #ifdef FONTS_USE_ONLY_MEMORY_STREAMS
                     pTTFontFile = FoFiTrueType::make((char*)oMemoryFontStream.m_pData, oMemoryFontStream.m_nSize, 0);
                 #else

@@ -678,6 +678,8 @@ namespace NSHtmlRenderer
 		switch (m_pBrush->Type)
 		{
 			case c_BrushTypeTexture:
+			case c_BrushTypePathGradient1:
+			case c_BrushTypePathGradient2:
 			{
 				m_bIsRaster = true;
 				break;

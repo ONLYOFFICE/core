@@ -326,7 +326,7 @@ namespace NSDocxRenderer
 
         m_oFontManager.LoadFont(0, !bIsPath);
 
-        if (bIsPath)
+        if (!bIsPath)
             m_oFontManager.GenerateFontName2(oText);
 
         if (fabs(dTextW) < 0.01 || (dTextW > 10))
@@ -371,7 +371,7 @@ namespace NSDocxRenderer
         m_pStyleManager->m_pCurrentStyle->m_oFont = m_oFontManager.m_oFont.m_oFont;
         m_pStyleManager->m_pCurrentStyle->m_oBrush = *m_pBrush;
 
-        if (bIsPath)
+        if (!bIsPath)
         {
             m_pStyleManager->m_pCurrentStyle->m_strPickFontName = m_oFontManager.m_strCurrentPickFont;
             m_pStyleManager->m_pCurrentStyle->m_lPickFontStyle  = m_oFontManager.m_lCurrentPictFontStyle;

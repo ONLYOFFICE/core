@@ -31,7 +31,6 @@
  */
 
 #include "./BaseFonts.h"
-#include "../../DesktopEditor/common/File.h"
 
 #include "../Resources/Fontn022003l.h"
 #include "../Resources/Fontn022004l.h"
@@ -47,13 +46,6 @@
 #include "../Resources/Fontn021023l.h"
 #include "../Resources/Fontn021003l.h"
 #include "../Resources/Fontd050000l.h"
-
-#ifdef BUILDING_WASM_MODULE
-#include "../../DesktopEditor/graphics/pro/js/fonts/Adobe-GB1.cidToUnicode.h"
-#include "../../DesktopEditor/graphics/pro/js/fonts/Adobe-Japan1.cidToUnicode.h"
-#include "../../DesktopEditor/graphics/pro/js/fonts/Adobe-Korea1.cidToUnicode.h"
-#include "../../DesktopEditor/graphics/pro/js/fonts/Adobe-KR.cidToUnicode.h"
-#endif
 
 #include <map>
 

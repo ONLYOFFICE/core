@@ -33,4 +33,4 @@ HEADERS += \
 
 HEADERS += \
     $$PWD/../../include/xmlutils.h \
-	$$PWD/../../include/xmlwriter.h
+    $$PWD/../../include/xmlwriter.h

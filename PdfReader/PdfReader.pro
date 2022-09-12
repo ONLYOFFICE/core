@@ -114,6 +114,6 @@ build_viewer_module {
 
 use_cmap_memory {
     DEFINES += CMAP_USE_MEMORY
-	HEADERS += Resources/CMapMemory/cmap_memory.h
-	SOURCES += Resources/CMapMemory/cmap_memory.cpp
+    HEADERS += Resources/CMapMemory/cmap_memory.h
+    SOURCES += Resources/CMapMemory/cmap_memory.cpp
 }

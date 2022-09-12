@@ -45,7 +45,6 @@
 #endif
 
 #include "../include/xmlutils.h"
-#include <boost/lexical_cast.hpp>
 
 namespace XmlUtils
 {
@@ -138,7 +137,7 @@ namespace XmlUtils
                         size_t pos = encoding.find("windows");
                         if (pos != std::string::npos)
                         {
-                            code_page = boost::lexical_cast<int>(encoding.substr(pos + 8));
+                            code_page = std::stoi(encoding.substr(pos + 8));
                         }
                     }
                 }

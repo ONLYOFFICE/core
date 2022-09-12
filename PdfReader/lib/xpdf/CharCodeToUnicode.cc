@@ -23,7 +23,7 @@
 #include "PSTokenizer.h"
 #include "CharCodeToUnicode.h"
 
-#ifdef BUILDING_WASM_MODULE
+#ifdef CMAP_USE_MEMORY
 #include "../../Resources/BaseFonts.h"
 #endif
 
@@ -108,11 +108,10 @@ CharCodeToUnicode *CharCodeToUnicode::parseCIDToUnicode(GString *fileName,
   Unicode u;
   CharCodeToUnicode *ctu;
 
-#ifdef BUILDING_WASM_MODULE
+#ifdef CMAP_USE_MEMORY
   const unsigned int* pDataCid = NULL;
   unsigned int nSizeCid = 0;
-  if (PdfReader::GetBaseCidToUnicode(collection->getCString(),
-    pDataCid, nSizeCid)) {
+  if (PdfReader::GetBaseCidToUnicode(collection->getCString(), pDataCid, nSizeCid)) {
     ctu = new CharCodeToUnicode(collection->copy(),
       (Unicode*)pDataCid, nSizeCid, gTrue, NULL, 0, 0);
     return ctu;

@@ -95,34 +95,15 @@ bool PdfReader::GetBaseFont(const std::wstring& sName, const unsigned char*& pDa
     return false;
 }
 
-struct TCidToUnicodeData
-{
-    const unsigned int* Data;
-    unsigned int Size;
-};
-
-std::map<std::wstring, TCidToUnicodeData> g_base_cidToUnicode;
+#ifdef CMAP_USE_MEMORY
+#include "./Resources/CMapMemory/cmap_memory.h"
+#endif
 
 bool PdfReader::GetBaseCidToUnicode(const char* sName, const unsigned int*& pData, unsigned int& nSize)
 {
-    if (g_base_cidToUnicode.empty())
-    {
-    #ifdef BUILDING_WASM_MODULE
-        g_base_cidToUnicode.insert(std::pair<std::wstring, TCidToUnicodeData>(L"Adobe-GB1",    { c_arrAdobe_GB1,    c_nAdobe_GB1    }));
-        g_base_cidToUnicode.insert(std::pair<std::wstring, TCidToUnicodeData>(L"Adobe-Korea1", { c_arrAdobe_Korea1, c_nAdobe_Korea1 }));
-        g_base_cidToUnicode.insert(std::pair<std::wstring, TCidToUnicodeData>(L"Adobe-KR",     { c_arrAdobe_KR,     c_nAdobe_KR     }));
-        g_base_cidToUnicode.insert(std::pair<std::wstring, TCidToUnicodeData>(L"Adobe-Japan1", { c_arrAdobe_Japan1, c_nAdobe_Japan1 }));
-    #endif
-    }
-
-    std::string strName = std::string(sName);
-    std::wstring wsName = UTF8_TO_U(strName);
-    std::map<std::wstring, TCidToUnicodeData>::const_iterator find = g_base_cidToUnicode.find(wsName);
-    if (find != g_base_cidToUnicode.end())
-    {
-        pData = find->second.Data;
-        nSize = find->second.Size;
-        return true;
-    }
-    return false;
+#ifdef CMAP_USE_MEMORY
+	return GetCidToUnicodeMemoryMap(sName, pData, nSize);
+#else
+	return false;
+#endif
 }

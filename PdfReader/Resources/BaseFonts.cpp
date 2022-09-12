@@ -88,7 +88,7 @@ bool PdfReader::GetBaseFont(const std::wstring& sName, const unsigned char*& pDa
 }
 
 #ifdef CMAP_USE_MEMORY
-#include "./Resources/CMapMemory/cmap_memory.h"
+#include "./CMapMemory/cmap_memory.h"
 #endif
 
 bool PdfReader::GetBaseCidToUnicode(const char* sName, const unsigned int*& pData, unsigned int& nSize)

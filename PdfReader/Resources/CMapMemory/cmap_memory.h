@@ -29,14 +29,14 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _PDF_READER_BASE_FONTS_H
-#define _PDF_READER_BASE_FONTS_H
+#ifndef _PDF_READER_USE_CMAP_MEMORY_H
+#define _PDF_READER_USE_CMAP_MEMORY_H
 
 #include <string>
+
 namespace PdfReader
 {
-    // эту память не удалять!!! просто использовать
-    bool GetBaseFont(const std::wstring& sName, const unsigned char*& pData, unsigned int& nSize);
-    bool GetBaseCidToUnicode(const char* sName, const unsigned  int*& pData, unsigned int& nSize);
+	bool GetCidToUnicodeMemoryMap(const char* name, const unsigned int*& data, unsigned int& size);
 }
-#endif //_PDF_READER_BASE_FONTS_H
+
+#endif //_PDF_READER_USE_CMAP_MEMORY_H

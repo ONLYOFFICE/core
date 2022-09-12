@@ -47,6 +47,13 @@ void GlobalParamsAdaptor::SetCMapFolder(const std::wstring &wsFolder)
 
 	toUnicodeDirs->append(sFolder->copy()->append("/CMap"));
 }
+void GlobalParamsAdaptor::SetCMapMemory()
+{
+	cidToUnicodes->add(new GString("Adobe-GB1"), new GString());
+	cidToUnicodes->add(new GString("Adobe-Korea1"), new GString());
+	cidToUnicodes->add(new GString("Adobe-KR"), new GString());
+	cidToUnicodes->add(new GString("Adobe-Japan1"), new GString());
+}
 void GlobalParamsAdaptor::AddNameToUnicode(const char* sFile)
 {
 	char *tok1, *tok2;
@@ -133,6 +140,26 @@ namespace NSStrings
     std::string GetStringA(GString *str)
     {
         return std::string(str->getCString(), str->getLength());
+    }
+
+    std::wstring GetStringFromUTF32(GString* str)
+    {
+        if (!str)
+            return L"";
+        TextString* s = new TextString(str);
+        std::wstring sValue = NSStringExt::CConverter::GetUnicodeFromUTF32(s->getUnicode(), s->getLength());
+        delete s;
+        return sValue;
+    }
+
+    std::string GetStringAFromUTF32(GString* str)
+    {
+        if (!str)
+            return "";
+        TextString* s = new TextString(str);
+        std::string sValue = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+        delete s;
+        return sValue;
     }
 }
 

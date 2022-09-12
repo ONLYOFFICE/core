@@ -156,6 +156,10 @@ namespace PdfReader
         globalParams->setupBaseFonts(NULL);
     #endif
 
+#ifdef CMAP_USE_MEMORY
+		SetCMapMemory();
+#endif
+
         m_eError = errNone;
 	}
 	CPdfReader::~CPdfReader()
@@ -480,6 +484,11 @@ return 0;
 
         if (globalParams)
 			((GlobalParamsAdaptor*)globalParams)->SetCMapFolder(m_pInternal->m_wsCMapFolder.c_str());
+	}
+	void CPdfReader::SetCMapMemory()
+	{
+		if (globalParams)
+			((GlobalParamsAdaptor*)globalParams)->SetCMapMemory();
 	}
     NSFonts::IFontManager* CPdfReader::GetFontManager()
 	{

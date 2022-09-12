@@ -19,9 +19,6 @@ CORE_ROOT_DIR = $$PWD/..
 PWD_ROOT_DIR = $$PWD
 include(../Common/base.pri)
 
-#BOOST
-include(3dParty/boost/boost.pri)
-
 CONFIG += build_all_zlib build_zlib_as_sources
 include(../OfficeUtils/OfficeUtils.pri)
 

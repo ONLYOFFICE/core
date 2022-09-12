@@ -38,7 +38,8 @@ public:
         m_wsTempFolder = folder;
     }
 
-	void SetCMapFolder(const std::wstring &wsFolder);
+    void SetCMapFolder(const std::wstring &wsFolder);
+    void SetCMapMemory();
 private:
 
 	void AddNameToUnicode(const char* sFile);
@@ -80,6 +81,9 @@ namespace NSStrings
 
     std::wstring GetString(GString* str);
     std::string GetStringA(GString* str);
+
+    std::wstring GetStringFromUTF32(GString* str);
+    std::string GetStringAFromUTF32(GString* str);
 }
 
 namespace PdfReader

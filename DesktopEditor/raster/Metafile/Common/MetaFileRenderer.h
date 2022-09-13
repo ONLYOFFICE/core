@@ -1054,9 +1054,6 @@ namespace MetaFile
 
 			double dMiterLimit = (0 != pPen->GetMiterLimit()) ? pPen->GetMiterLimit() : m_pFile->GetMiterLimit() * m_dScaleX;
 
-			// TODO: Реализовать PS_USERSTYLE
-			BYTE nDashStyle = Aggplus::DashStyleSolid;
-
 			double *pDataDash;
 			unsigned int unSizeDash;
 
@@ -1076,118 +1073,115 @@ namespace MetaFile
 					ulPenStyle = Aggplus::DashStyleDashDot;
 				else if (6 == unSizeDash)
 					ulPenStyle = Aggplus::DashStyleDashDotDot;
-
-				//				double dDpiX;
-				//				m_pRenderer->get_DpiX(&dDpiX);
-				//				double dPixelW = dDpiX > 1 ? 25.4 / dDpiX : 25.4 / 72;
-
-				//				double *pDashPattern = new double[unSizeDash];
-
-				//				if (NULL != pDashPattern)
-				//				{
-				//					for (unsigned int unIndex = 0; unIndex < unSizeDash; ++unIndex)
-				//						pDashPattern[unIndex] = pDataDash[unIndex] * dPixelW;
-				//				}
-
-				//				m_pRenderer->put_PenDashOffset(pPen->GetDashOffset());
-				//				m_pRenderer->PenDashPattern( (NULL != pDashPattern) ? pDashPattern : pDataDash, unSizeDash);
-				//				ulPenStyle = Aggplus::DashStyleCustom;
-
-				//				RELEASEARRAYOBJECTS(pDashPattern)
-
 			}
 
-			// В WinGDI все карандаши толщиной больше 1px рисуются в стиле PS_SOLID
-			if (1 >= pPen->GetWidth() && PS_SOLID != ulPenStyle && false)
+			if (PS_SOLID != ulPenStyle)
 			{
-				// TODO: Ранее здесь специально ставилась толщина 0, что любой рендерер должен
-				//       воспринимать как толщину в 1px. Но сейчас это не работает в графическом ренедерере,
-				//       поэтому временно это убрано.
-				//       Толщиной в 1px - именно так рисуется в винде любая пунктирная линия в метафайле.
-
-				//dWidth = 0; // Специальное значение для 1pх карандаша
-
-				double dDpiX;
-				m_pRenderer->get_DpiX(&dDpiX);
-				double dPixelW = dDpiX > 1 ? 25.4 / dDpiX : 25.4 / 72;
-
 				double dDashOff = 0;
 				double* pDashPattern = NULL;
 				int nDashLen = 0;
 
-				switch (ulPenStyle)
+				double dKoef;
+
+				if (pPen->GetWidth() == 0 || (pPen->GetWidth() == 1 && PS_COSMETIC == ulPenType))
+					dKoef = dWidth;
+				else
+					dKoef = pPen->GetWidth() / 3 * m_dScaleX;
+
+				double *pDashData = NULL;
+				unsigned int unLengthData = 0;
+
+				pPen->GetDashData(pDashData, unLengthData);
+
+				if (NULL != pDashData && 0 != unLengthData)
 				{
-				case PS_DASH:
-				{
-					dDashOff = 0 * dPixelW;
-					nDashLen = 2;
-					pDashPattern = new double[2];
+					pDashPattern = new double[unLengthData];
+
 					if (pDashPattern)
 					{
-						pDashPattern[0] = 18 * dPixelW;
-						pDashPattern[1] = 3 * dPixelW;
+						for (unsigned int unIndex = 0; unIndex < unLengthData; ++unIndex)
+							pDashPattern[unIndex] = pDashData[unIndex] * dWidth;
+
+						nDashLen = unLengthData;
 					}
-					break;
 				}
-				case PS_DOT:
+				else
 				{
-					dDashOff = 4 * dPixelW;
-					nDashLen = 2;
-					pDashPattern = new double[2];
-					if (pDashPattern)
+					switch (ulPenStyle)
 					{
-						pDashPattern[0] = 3 * dPixelW;
-						pDashPattern[1] = 3 * dPixelW;
+						case PS_DASH:
+						{
+							dDashOff = 0;
+							nDashLen = 2;
+							pDashPattern = new double[2];
+							if (pDashPattern)
+							{
+								pDashPattern[0] = 18 * dKoef;
+								pDashPattern[1] = 6 * dKoef;
+							}
+							break;
+						}
+						case PS_DOT:
+						{
+							dDashOff = 0;
+							nDashLen = 2;
+							pDashPattern = new double[2];
+							if (pDashPattern)
+							{
+								pDashPattern[0] = 3 * dKoef;
+								pDashPattern[1] = 3 * dKoef;
+							}
+							break;
+						}
+						case PS_DASHDOT:
+						{
+							dDashOff = 0;
+							nDashLen = 4;
+							pDashPattern = new double[4];
+							if (pDashPattern)
+							{
+								pDashPattern[0] = 9 * dKoef;
+								pDashPattern[1] = 3 * dKoef;
+								pDashPattern[2] = 3 * dKoef;
+								pDashPattern[3] = 3 * dKoef;
+							}
+							break;
+						}
+						case PS_DASHDOTDOT:
+						{
+							dDashOff = 0;
+							nDashLen = 6;
+							pDashPattern = new double[6];
+							if (pDashPattern)
+							{
+								pDashPattern[0] = 9 * dKoef;
+								pDashPattern[1] = 3 * dKoef;
+								pDashPattern[2] = 3 * dKoef;
+								pDashPattern[3] = 3 * dKoef;
+								pDashPattern[4] = 3 * dKoef;
+								pDashPattern[5] = 3 * dKoef;
+							}
+							break;
+						}
 					}
-					break;
-				}
-				case PS_DASHDOT:
-				{
-					dDashOff = 22 * dPixelW;
-					nDashLen = 4;
-					pDashPattern = new double[4];
-					if (pDashPattern)
-					{
-						pDashPattern[0] = 9 * dPixelW;
-						pDashPattern[1] = 6 * dPixelW;
-						pDashPattern[2] = 3 * dPixelW;
-						pDashPattern[3] = 6 * dPixelW;
-					}
-					break;
-				}
-				case PS_DASHDOTDOT:
-				{
-					dDashOff = 22 * dPixelW;
-					nDashLen = 6;
-					pDashPattern = new double[6];
-					if (pDashPattern)
-					{
-						pDashPattern[0] = 9 * dPixelW;
-						pDashPattern[1] = 3 * dPixelW;
-						pDashPattern[2] = 3 * dPixelW;
-						pDashPattern[3] = 3 * dPixelW;
-						pDashPattern[4] = 3 * dPixelW;
-						pDashPattern[5] = 3 * dPixelW;
-					}
-					break;
-				}
 				}
 
 				if (NULL != pDashPattern)
 				{
 					m_pRenderer->put_PenDashOffset(dDashOff);
 					m_pRenderer->PenDashPattern(pDashPattern, nDashLen);
-					nDashStyle = Aggplus::DashStyleCustom;
+					m_pRenderer->put_PenDashStyle(Aggplus::DashStyleCustom);
 					delete[] pDashPattern;
 				}
 			}
+			else
+				m_pRenderer->put_PenDashStyle(ulPenStyle);
 
 			if (1 <= pPen->GetWidth() && PS_SOLID != ulPenStyle)
 			{
 				nStartCapStyle = Aggplus::LineCapFlat;
 			}
 
-			m_pRenderer->put_PenDashStyle(ulPenStyle);
 			m_pRenderer->put_PenLineJoin(nJoinStyle);
 			m_pRenderer->put_PenLineStartCap(nStartCapStyle);
 			m_pRenderer->put_PenLineEndCap(nEndCapStyle);

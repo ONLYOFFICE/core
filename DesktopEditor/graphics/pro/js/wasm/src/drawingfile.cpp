@@ -176,6 +176,14 @@ int main()
     }
     oFile.CloseFile();
 
+    BYTE* pBinData = NULL;
+    DWORD nBinBytesCount;
+    oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/font64_selection.bin", &pBinData, nBinBytesCount);
+    oFile.CloseFile();
+    InitializeFontsBase64(pBinData, nBinBytesCount);
+    //InitializeFontsBin(pBinData, nBinBytesCount);
+    RELEASEARRAYOBJECTS(pBinData);
+
     CGraphicsFileDrawing* test = Open(pPdfData, nPdfBytesCount, "");
     int nError = GetErrorCode(test);
     if (nError != 0)

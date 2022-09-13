@@ -3914,6 +3914,47 @@ namespace PdfReader
         if (nRenderMode == 0 || nRenderMode == 2 || nRenderMode == 4 || nRenderMode == 6)
         {
             m_pRenderer->CommandDrawTextEx(wsUnicodeText, &unGid, unGidsCount, PDFCoordsToMM(0 + dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
+            std::wstring sName = m_pFontManager->GetApplication()->GetFontBySymbol(nCode);
+            if (!sName.empty())
+            {
+                std::wstring wsFileName = L"";
+                CMemoryFontStream oMemoryFontStream;
+            #if defined(BUILDING_WASM_MODULE) && !defined(TEST_AS_EXECUTABLE)
+                BYTE nStatus = 0;
+                NSWasm::CData oRes;
+                oRes.SkipLen();
+                std::string sNameA = U_TO_UTF8(sName);
+                oRes.WriteString((unsigned char*)sNameA.c_str(), (unsigned int)sNameA.length());
+                oRes.AddInt(0);
+                oRes.AddInt(0);
+                oRes.WriteLen();
+                char* pFontId = js_get_stream_id(oRes.GetBuffer(), &nStatus);
+                if (!nStatus)
+                {
+                    // шрифт не загружен.
+                    m_pFontList->Remove(*pFont->getID());
+                    js_free_id((unsigned char*)pFontId);
+                    return;
+                }
+                else
+                {
+                    std::string wsFileNameA(pFontId);
+                    wsFileName = UTF8_TO_U(wsFileNameA);
+                    oMemoryFontStream.fromStream(wsFileName);
+                }
+                js_free_id((unsigned char*)pFontId);
+            #else
+            #ifdef FONTS_USE_ONLY_MEMORY_STREAMS
+                // пока заглушка - тут надо прочитать в стрим, чтобы дальше правильно сработать с кодировками
+                DWORD dwSize = 0;
+                NSFile::CFileBinary::ReadAllBytes(wsFileName, &oMemoryFontStream.m_pData, dwSize);
+                oMemoryFontStream.m_nSize = (int)dwSize;
+                NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
+            #endif
+            #endif
+                m_pRenderer->put_FontPath(wsFileName);
+                m_pRenderer->CommandDrawTextEx(wsUnicodeText, &unGid, unGidsCount, PDFCoordsToMM(0 + dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
+            }
         }
 
         if (nRenderMode == 1 || nRenderMode == 2 || nRenderMode == 5 || nRenderMode == 6)

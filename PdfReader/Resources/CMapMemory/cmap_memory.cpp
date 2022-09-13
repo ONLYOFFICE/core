@@ -12,6 +12,13 @@ struct TCidToUnicodeData
   const unsigned int* Data;
   unsigned int Size;
 };
+const char c_arr90ms_RKSJ_H[] = "\n/CIDInit /ProcSet findresource begin\n\n12 dict begin\n\nbegincmap\n\n/CIDSystemInfo 3 dict dup begin\n  /Registry (Adobe) def\n  /Ordering (Japan1) def\n  /Supplement 2 def\nend def\n\n/CMapName /90ms-RKSJ-H def\n/CMapVersion 11.006 def\n/CMapType 1 def\n\n/UIDOffset 950 def\n/XUID [1 10 25343] def\n\n/WMode 0 def\n\n4 begincodespacerange\n  <00>   <80>\n  <8140> <9FFC>\n  <A0>   <DF>\n  <E040> <FCFC>\nendcodespacerange\n\n1 beginnotdefrange\n<00> <1f> 231\nendnotdefrange\n\n100 begincidrange\n<20> <7d>      231\n<7e> <7e>      631\n<8140> <817e>  633\n<8180> <81ac>  696\n<81b8> <81bf>  741\n<81c8> <81ce>  749\n<81da> <81e8>  756\n<81f0> <81f7>  771\n<81fc> <81fc>  779\n<824f> <8258>  780\n<8260> <8279>  790\n<8281> <829a>  816\n<829f> <82f1>  842\n<8340> <837e>  925\n<8380> <8396>  988\n<839f> <83b6> 1011\n<83bf> <83d6> 1035\n<8440> <8460> 1059\n<8470> <847e> 1092\n<8480> <8491> 1107\n<849f> <849f> 7479\n<84a0> <84a0> 7481\n<84a1> <84a1> 7491\n<84a2> <84a2> 7495\n<84a3> <84a3> 7503\n<84a4> <84a4> 7499\n<84a5> <84a5> 7507\n<84a6> <84a6> 7523\n<84a7> <84a7> 7515\n<84a8> <84a8> 7531\n<84a9> <84a9> 7539\n<84aa> <84aa> 7480\n<84ab> <84ab> 7482\n<84ac> <84ac> 7494\n<84ad> <84ad> 7498\n<84ae> <84ae> 7506\n<84af> <84af> 7502\n<84b0> <84b0> 7514\n<84b1> <84b1> 7530\n<84b2> <84b2> 7522\n<84b3> <84b3> 7538\n<84b4> <84b4> 7554\n<84b5> <84b5> 7511\n<84b6> <84b6> 7526\n<84b7> <84b7> 7519\n<84b8> <84b8> 7534\n<84b9> <84b9> 7542\n<84ba> <84ba> 7508\n<84bb> <84bb> 7527\n<84bc> <84bc> 7516\n<84bd> <84bd> 7535\n<84be> <84be> 7545\n<8740> <875d> 7555\n<875f> <8760> 7585\n<8761> <8761> 8038\n<8762> <8762> 7588\n<8763> <8763> 8040\n<8764> <8764> 7590\n<8765> <8765> 8042\n<8766> <8767> 7592\n<8768> <8768> 8044\n<8769> <876a> 7595\n<876b> <876b> 8043\n<876c> <876d> 7598\n<876e> <876e> 8047\n<876f> <8775> 7601\n<877e> <877e> 8323\n<8780> <8783> 7608\n<8784> <8784> 8055\n<8785> <878f> 7613\n<8790> <8790>  762\n<8791> <8791>  761\n<8792> <8792>  769\n<8793> <8799> 7624\n<879a> <879a>  768\n<879b> <879c> 7631\n<889f> <88fc> 1125\n<8940> <897e> 1219\n<8980> <89fc> 1282\n<8a40> <8a7e> 1407\n<8a80> <8afc> 1470\n<8b40> <8b7e> 1595\n<8b80> <8bfc> 1658\n<8c40> <8c7e> 1783\n<8c80> <8cfc> 1846\n<8d40> <8d7e> 1971\n<8d80> <8dfc> 2034\n<8e40> <8e7e> 2159\n<8e80> <8efc> 2222\n<8f40> <8f7e> 2347\n<8f80> <8ffc> 2410\n<9040> <907e> 2535\n<9080> <90fc> 2598\n<9140> <917e> 2723\n<9180> <91fc> 2786\n<9240> <927e> 2911\n<9280> <92fc> 2974\n<9340> <937e> 3099\n<9380> <93fc> 3162\n<9440> <947e> 3287\nendcidrange\n\n71 begincidrange\n<9480> <94fc> 3350\n<9540> <957e> 3475\n<9580> <95fc> 3538\n<9640> <967e> 3663\n<9680> <96fc> 3726\n<9740> <977e> 3851\n<9780> <97fc> 3914\n<9840> <9872> 4039\n<989f> <98fc> 4090\n<9940> <997e> 4184\n<9980> <99fc> 4247\n<9a40> <9a7e> 4372\n<9a80> <9afc> 4435\n<9b40> <9b7e> 4560\n<9b80> <9bfc> 4623\n<9c40> <9c7e> 4748\n<9c80> <9cfc> 4811\n<9d40> <9d7e> 4936\n<9d80> <9dfc> 4999\n<9e40> <9e7e> 5124\n<9e80> <9efc> 5187\n<9f40> <9f7e> 5312\n<9f80> <9ffc> 5375\n<a0> <df>      326\n<e040> <e07e> 5500\n<e080> <e0fc> 5563\n<e140> <e17e> 5688\n<e180> <e1fc> 5751\n<e240> <e27e> 5876\n<e280> <e2fc> 5939\n<e340> <e37e> 6064\n<e380> <e3fc> 6127\n<e440> <e47e> 6252\n<e480> <e4fc> 6315\n<e540> <e57e> 6440\n<e580> <e5fc> 6503\n<e640> <e67e> 6628\n<e680> <e6fc> 6691\n<e740> <e77e> 6816\n<e780> <e7fc> 6879\n<e840> <e87e> 7004\n<e880> <e8fc> 7067\n<e940> <e97e> 7192\n<e980> <e9fc> 7255\n<ea40> <ea7e> 7380\n<ea80> <eaa2> 7443\n<eaa3> <eaa4> 8284\n<ed40> <ed7e> 8359\n<ed80> <edb3> 8422\n<edb4> <edb4> 1993\n<edb5> <edfc> 8474\n<ee40> <ee7e> 8546\n<ee80> <eeec> 8609\n<eeef> <eef8> 8092\n<eef9> <eef9>  751\n<eefa> <eefc> 8005\n<fa40> <fa49> 8092\n<fa4a> <fa53> 7575\n<fa54> <fa54>  751\n<fa55> <fa57> 8005\n<fa58> <fa58> 7618\n<fa59> <fa59> 7610\n<fa5a> <fa5a> 8055\n<fa5b> <fa5b>  768\n<fa5c> <fa7e> 8359\n<fa80> <facf> 8394\n<fad0> <fad0> 1993\n<fad1> <fafc> 8474\n<fb40> <fb7e> 8518\n<fb80> <fbfc> 8581\n<fc40> <fc4b> 8706\nendcidrange\nendcmap\nCMapName currentdict /CMap defineresource pop\nend\nend\n";
+const char c_arr90ms_RKSJ_V[] = "\n/CIDInit /ProcSet findresource begin\n\n12 dict begin\n\nbegincmap\n\n/90ms-RKSJ-H usecmap\n\n/CIDSystemInfo 3 dict dup begin\n  /Registry (Adobe) def\n  /Ordering (Japan1) def\n  /Supplement 2 def\nend def\n\n/CMapName /90ms-RKSJ-V def\n/CMapVersion 11.006 def\n/CMapType 1 def\n\n/UIDOffset 1020 def\n/XUID [1 10 25344] def\n\n/WMode 1 def\n\n78 begincidrange\n<8141> <8142> 7887\n<8143> <8143> 8268\n<8144> <8144> 8274\n<8150> <8151> 7889\n<815b> <815d> 7891\n<8160> <8164> 7894\n<8169> <817a> 7899\n<8181> <8181> 7917\n<81a8> <81a8>  739\n<81a9> <81a9>  738\n<81aa> <81ab>  736\n<81ac> <81ac> 8270\n<829f> <829f> 7918\n<82a1> <82a1> 7919\n<82a3> <82a3> 7920\n<82a5> <82a5> 7921\n<82a7> <82a7> 7922\n<82c1> <82c1> 7923\n<82e1> <82e1> 7924\n<82e3> <82e3> 7925\n<82e5> <82e5> 7926\n<82ec> <82ec> 7927\n<8340> <8340> 7928\n<8342> <8342> 7929\n<8344> <8344> 7930\n<8346> <8346> 7931\n<8348> <8348> 7932\n<8362> <8362> 7933\n<8383> <8383> 7934\n<8385> <8385> 7935\n<8387> <8387> 7936\n<838e> <838e> 7937\n<8395> <8396> 7938\n<849f> <849f> 7481\n<84a0> <84a0> 7479\n<84a1> <84a1> 7495\n<84a2> <84a2> 7503\n<84a3> <84a3> 7499\n<84a4> <84a4> 7491\n<84a5> <84a5> 7523\n<84a6> <84a6> 7515\n<84a7> <84a7> 7531\n<84a8> <84a8> 7507\n<84a9> <84a9> 7539\n<84aa> <84aa> 7482\n<84ab> <84ab> 7480\n<84ac> <84ac> 7498\n<84ad> <84ad> 7506\n<84ae> <84ae> 7502\n<84af> <84af> 7494\n<84b0> <84b0> 7530\n<84b1> <84b1> 7522\n<84b2> <84b2> 7538\n<84b3> <84b3> 7514\n<84b4> <84b4> 7554\n<84b5> <84b5> 7526\n<84b6> <84b6> 7519\n<84b7> <84b7> 7534\n<84b8> <84b8> 7511\n<84b9> <84b9> 7545\n<84ba> <84ba> 7527\n<84bb> <84bb> 7516\n<84bc> <84bc> 7535\n<84bd> <84bd> 7508\n<84be> <84be> 7542\n<875f> <8760> 7940\n<8761> <8761> 8329\n<8762> <8762> 7943\n<8763> <8763> 8339\n<8764> <8764> 7945\n<8765> <8765> 8338\n<8766> <8767> 7947\n<8768> <8768> 8344\n<8769> <876a> 7950\n<876b> <876b> 8348\n<876c> <876d> 7953\n<876e> <876e> 8349\n<8780> <8781> 7956\nendcidrange\nendcmap\nCMapName currentdict /CMap defineresource pop\nend\nend\n";
+struct TCMapData
+{
+  const char* Data;
+  unsigned int Size;
+};
 
 std::map<std::string, TCidToUnicodeData> g_memory_cid_to_unicode;
 bool PdfReader::GetCidToUnicodeMemoryMap(const char* name, const unsigned int*& data, unsigned int& size)
@@ -25,6 +32,26 @@ bool PdfReader::GetCidToUnicodeMemoryMap(const char* name, const unsigned int*& 
   }
   std::map<std::string, TCidToUnicodeData>::const_iterator iter = g_memory_cid_to_unicode.find(name);
   if (iter != g_memory_cid_to_unicode.end())
+  {
+    data = iter->second.Data;
+    size = iter->second.Size;
+    return true;
+  }
+  data = NULL;
+  size = 0;
+  return false;
+}
+
+std::map<std::string, TCMapData> g_memory_cmap;
+bool PdfReader::GetMemoryCMap(const char* name, const char*& data, unsigned int& size)
+{
+  if (g_memory_cmap.empty())
+  {
+    g_memory_cmap.insert(std::pair<std::string, TCMapData>("90ms-RKSJ-H", { c_arr90ms_RKSJ_H, (unsigned int)strlen(c_arr90ms_RKSJ_H) }));
+    g_memory_cmap.insert(std::pair<std::string, TCMapData>("90ms-RKSJ-V", { c_arr90ms_RKSJ_V, (unsigned int)strlen(c_arr90ms_RKSJ_V) }));
+  }
+  std::map<std::string, TCMapData>::const_iterator iter = g_memory_cmap.find(name);
+  if (iter != g_memory_cmap.end())
   {
     data = iter->second.Data;
     size = iter->second.Size;

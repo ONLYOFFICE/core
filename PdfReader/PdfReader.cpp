@@ -156,9 +156,9 @@ namespace PdfReader
         globalParams->setupBaseFonts(NULL);
     #endif
 
-#ifdef CMAP_USE_MEMORY
+    #ifdef CMAP_USE_MEMORY
 		SetCMapMemory();
-#endif
+    #endif
 
         m_eError = errNone;
 	}

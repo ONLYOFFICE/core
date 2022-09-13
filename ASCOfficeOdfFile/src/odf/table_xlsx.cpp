@@ -461,11 +461,7 @@ double pixToSize(double pixels, double maxDigitSize)
 
 	return (int(( pixels /*/ 0.75*/ - 5)/ maxDigitSize * 100. + 0.5)) /100. * 0.9; // * 9525. * 72.0 / (360000.0 * 2.54);
 }
-double cmToChars (double cm)
-{
-	double pt = cm * 28.34467120181406;
-	return pt * 48. /(12.75 * 8.43 *2.);
-}
+
 }
 
 void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
@@ -552,8 +548,6 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
                                 const double pixDpi = in_width * 96.;                
                                 width = pixToSize(pixDpi, Context.getMaxDigitSize().first); 
 
-								//const double width = cmToChars(prop->attlist_.style_column_width_->get_value_unit(length::cm));
-                              
 								// see ECMA-376 page 1768
                                 if (in_width > 0)
 									CP_XML_ATTR(L"width", *width);

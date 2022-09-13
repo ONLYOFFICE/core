@@ -7318,9 +7318,12 @@ BinaryFileReader::BinaryFileReader()
 }
 int BinaryFileReader::Xml2Xlsx(const std::wstring& sSrcFileName, std::wstring sDstPath, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const std::wstring& sXMLOptions, bool bMacro)
 {
-	OOX::Spreadsheet::CXlsxFlat *pXlsxFlat = new OOX::Spreadsheet::CXlsxFlat(OOX::CPath(sSrcFileName));
-
+	OOX::Spreadsheet::CXlsxFlat *pXlsxFlat = new OOX::Spreadsheet::CXlsxFlat();
 	if (!pXlsxFlat) return AVS_FILEUTILS_ERROR_CONVERT;
+	
+	pXlsxFlat->m_strFontDirectory = pOfficeDrawingConverter->m_strFontDirectory;
+	
+	pXlsxFlat->read(OOX::CPath(sSrcFileName));
 	if (pXlsxFlat->m_arWorksheets.empty())
 	{
 		delete pXlsxFlat;

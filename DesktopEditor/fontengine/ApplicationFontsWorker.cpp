@@ -1130,6 +1130,23 @@ public:
                 NSFonts::CFontListToBufferSerializer oSerializer(L"", false, nVersion);
                 applicationFonts->GetList()->ToBuffer(&pData, &lLen, oSerializer);
 
+                if (pRangeBuilder)
+                {
+                    size_t nPosCur = pRangeBuilder->GetCurSize();
+                    pRangeBuilder->SetCurSize(0);
+                    pRangeBuilder->WriteInt(nRangeBuilderCount);
+                    pRangeBuilder->SetCurSize(nPosCur);
+
+                    LONG lBigLen = lLen + pRangeBuilder->GetCurSize();
+                    BYTE* pBigData = new BYTE[lBigLen];
+                    memcpy(pBigData, pData, lLen);
+                    memcpy(pBigData + lLen, pRangeBuilder->GetData(), pRangeBuilder->GetCurSize());
+
+                    RELEASEARRAYOBJECTS(pData);
+                    pData = pBigData;
+                    lLen = lBigLen;
+                }
+
                 char* cData64 = NULL;
                 int nData64Dst = 0;
                 NSFile::CBase64Converter::Encode(pData, (int)lLen, cData64, nData64Dst, NSBase64::B64_BASE64_FLAG_NOCRLF);

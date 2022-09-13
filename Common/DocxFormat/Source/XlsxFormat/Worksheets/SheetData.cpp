@@ -1535,6 +1535,8 @@ namespace OOX
 							sheet->m_oSheetData->m_arrItems.back()->m_arrItems.push_back(pCell);
 						}
 					}
+					else
+						xlsx_flat->m_nLastReadCol += iAcross.get_value_or(0);
 				}
 				else
 					xlsx_flat->m_nLastReadCol += iAcross.get_value_or(0);
@@ -2419,49 +2421,52 @@ namespace OOX
 						}
 					}
 				}
-				if (xlsx_flat)
-				{
-					CWorksheet* pWorksheet = xlsx_flat->m_arWorksheets.back();
-					pWorksheet->m_oSheetFormatPr.Init();
-					
-					if (m_dDefaultColumnWidth.IsInit())
-					{
-						double pixDpi = *m_dDefaultColumnWidth / 72.0 * 96.; if (pixDpi < 5) pixDpi = 7; // ~
-						double maxDigitSize = 4.1;
-
-						m_dDefaultColumnWidth = (int((pixDpi /*/ 0.75*/ - 5) / maxDigitSize * 100. + 0.5)) / 100. * 0.9;
-					}
-
-					pWorksheet->m_oSheetFormatPr->m_oDefaultColWidth = m_dDefaultColumnWidth;
-					pWorksheet->m_oSheetFormatPr->m_oDefaultRowHeight = m_dDefaultRowHeight;
-
-					if (false == pWorksheet->m_oCols.IsInit() && m_dDefaultColumnWidth.IsInit())
-					{
-						pWorksheet->m_oCols.Init();
-						
-						CCol *pColumn = new CCol(m_pMainDocument);
-
-						pColumn->m_oMin = 1;
-						pColumn->m_oMax = 16384;
-
-						pColumn->m_oWidth.Init();
-						pColumn->m_oWidth->SetValue(*m_dDefaultColumnWidth);
-
-						pWorksheet->m_oCols->m_arrItems.push_back(pColumn);
-					}
-					for (std::map<int, std::map<int, unsigned int>>::iterator it = m_mapStyleMerges2003.begin(); it != m_mapStyleMerges2003.end(); ++it)
-					{
-						xlsx_flat->m_nLastReadRow = it->first;
-
-						CRow *pRow = new CRow(m_pMainDocument);
-						pRow->m_oR = xlsx_flat->m_nLastReadRow;
-
-						pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
-						StyleFromMapStyleMerges2003(it->second);
-					}
-					m_mapStyleMerges2003.clear();
-				}
 			}
+		}
+		void CSheetData::AfterRead()
+		{
+			CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(m_pMainDocument);
+			if (!xlsx_flat) return;
+			
+			CWorksheet* pWorksheet = xlsx_flat->m_arWorksheets.back();
+			pWorksheet->m_oSheetFormatPr.Init();
+
+			if (m_dDefaultColumnWidth.IsInit())
+			{
+				double pixDpi = *m_dDefaultColumnWidth / 72.0 * 96.; if (pixDpi < 5) pixDpi = 7; // ~
+				double maxDigitSize = xlsx_flat->getMaxDigitSize().first;
+
+				m_dDefaultColumnWidth = ((int)((pixDpi + 5) / maxDigitSize * 100. + 0.5)) / 100.;
+			}
+
+			pWorksheet->m_oSheetFormatPr->m_oDefaultColWidth = m_dDefaultColumnWidth;
+			pWorksheet->m_oSheetFormatPr->m_oDefaultRowHeight = m_dDefaultRowHeight;
+
+			if (false == pWorksheet->m_oCols.IsInit() && m_dDefaultColumnWidth.IsInit())
+			{
+				pWorksheet->m_oCols.Init();
+
+				CCol *pColumn = new CCol(m_pMainDocument);
+
+				pColumn->m_oMin = 1;
+				pColumn->m_oMax = 16384;
+
+				pColumn->m_oWidth.Init();
+				pColumn->m_oWidth->SetValue(*m_dDefaultColumnWidth);
+
+				pWorksheet->m_oCols->m_arrItems.push_back(pColumn);
+			}
+			for (std::map<int, std::map<int, unsigned int>>::iterator it = m_mapStyleMerges2003.begin(); it != m_mapStyleMerges2003.end(); ++it)
+			{
+				xlsx_flat->m_nLastReadRow = it->first;
+
+				CRow *pRow = new CRow(m_pMainDocument);
+				pRow->m_oR = xlsx_flat->m_nLastReadRow;
+
+				pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
+				StyleFromMapStyleMerges2003(it->second);
+			}
+			m_mapStyleMerges2003.clear();
 		}
 		void CSheetData::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter)
 		{

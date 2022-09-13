@@ -148,7 +148,8 @@ namespace BinXlsxRW{
 
 		oDrawingConverter.SetDstPath(sDstPath + FILE_SEPARATOR_STR + L"xl");
 		oDrawingConverter.SetSrcPath(strFileInDir, 2);
-
+		oDrawingConverter.SetFontDir(m_sFontDir);
+		
 		BinXlsxRW::BinaryFileReader oBinaryFileReader;
 		return oBinaryFileReader.Xml2Xlsx(sSrcFileName, sDstPath, &oDrawingConverter, sXMLOptions, m_bIsMacro);
 	}

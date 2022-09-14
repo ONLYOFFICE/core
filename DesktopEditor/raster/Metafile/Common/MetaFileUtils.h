@@ -1190,7 +1190,7 @@ namespace MetaFile
 	void ReadImage(BYTE* pImageBuffer, unsigned int unBufferLen, unsigned int unColorUsage, BYTE** ppDstBuffer, unsigned int* punWidth, unsigned int* punHeight);
 	double GetEllipseAngle(int nL, int nT, int nR, int nB, int nX, int nY);
 	void ProcessRasterOperation(unsigned int unRasterOperation, BYTE** ppBgra, unsigned int unWidth, unsigned int unHeight);
-	bool OpenTempFile(std::wstring *pwsName, FILE **ppFile, const wchar_t *wsMode, const wchar_t *wsExt, const wchar_t *wsFolder);
+	std::wstring GetTempFilename(const std::wstring& sFolder = L"");
 
 	std::wstring StringNormalization(std::wstring wsString);
 };

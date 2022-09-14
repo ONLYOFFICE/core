@@ -167,8 +167,8 @@ public:
     bool m_bUseKerning;
 
     double m_dSize;			// Размер шрифта
-    UINT m_unHorDpi;		// Горизонтальное разрешение
-    UINT m_unVerDpi;		// Вертикальное разрешение
+    double m_unHorDpi;		// Горизонтальное разрешение
+    double m_unVerDpi;		// Вертикальное разрешение
 
     INT m_bNeedDoItalic;
     INT m_bNeedDoBold;
@@ -232,7 +232,7 @@ public:
     void UpdateMatrix1();
     void UpdateMatrix2();
 	
-	void SetSizeAndDpi(double dSize, UINT unHorDpi, UINT unVerDpi);
+	void SetSizeAndDpi(double dSize, double unHorDpi, double unVerDpi);
 	
 	void ClearCache();
 	void ClearCacheNoAttack(bool bIsFree = false);

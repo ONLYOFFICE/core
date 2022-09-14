@@ -380,7 +380,7 @@ void CFontFile::UpdateMatrix2()
 	FT_Set_Transform( m_pFace, &m_oFontMatrix, NULL );
 }
 
-void CFontFile::SetSizeAndDpi(double dSize, UINT unHorDpi, UINT unVerDpi)
+void CFontFile::SetSizeAndDpi(double dSize, double unHorDpi, double unVerDpi)
 {
 	if (m_pDefaultFont)
 		m_pDefaultFont->SetSizeAndDpi(dSize, unHorDpi, unVerDpi);

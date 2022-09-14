@@ -779,7 +779,7 @@ INT CFontManager::LoadFontFromFile(const std::wstring& sPath, const int& lFaceIn
         return FALSE;
 
 	m_pFont->m_pFontManager = this;
-	m_pFont->SetSizeAndDpi(dSize, (UINT)dDpiX, (UINT)dDpiY);
+	m_pFont->SetSizeAndDpi(dSize, dDpiX, dDpiY);
 
     m_sName = L"";
     if (m_pFont->m_pFace)
@@ -805,7 +805,7 @@ INT CFontManager::LoadFontFromFile2(NSFonts::IFontsCache* pCache, const std::wst
 		return FALSE;
 
 	m_pFont->m_pFontManager = this;
-	m_pFont->SetSizeAndDpi(dSize, (UINT)dDpiX, (UINT)dDpiY);
+	m_pFont->SetSizeAndDpi(dSize, dDpiX, dDpiY);
 
     m_sName = L"";
     if (m_pFont->m_pFace)

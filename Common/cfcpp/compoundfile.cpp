@@ -700,8 +700,8 @@ void CompoundFile::DoLoadChildren(std::shared_ptr<RedBlackTree::RBTree> bst, std
 void CompoundFile::NullifyChildNodes(std::shared_ptr<IDirectoryEntry> de)
 {
     de->setParent({});
-    de->setParent({});
-    de->setParent({});
+    de->setLeft({});
+    de->setRight({});
 }
 
 void CompoundFile::LoadSiblings(std::shared_ptr<RedBlackTree::RBTree> bst, std::shared_ptr<IDirectoryEntry> de)

@@ -33,7 +33,7 @@
 
 #include <string>
 #include <boost/cstdint.hpp>
-
+#include "../../include/CPOptional.h"
 #include "xlsx_cell_format.h"
 
 namespace cpdoccore {
@@ -57,9 +57,7 @@ bool parseBoolVal(const std::wstring & str);
 
 std::wstring cellType2Str(XlsxCellType::type type);
 
-
-
-bool parseDate(const std::wstring & Date, int & Year, int & Month, int & Day);
+bool parseDateTime(const std::wstring & DateTime, int & Y, int & M, int & D, _CP_OPT(int) & H, _CP_OPT(int) & Min, _CP_OPT(int) & S);
 bool parseTime(const std::wstring & Time, int & Hours, int & Minutes, double & seconds);
 boost::int64_t convertDate(int Year, int Month, int Day);
 double convertTime(int hours, int minutes, double sec);

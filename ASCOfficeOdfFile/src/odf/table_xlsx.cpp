@@ -808,12 +808,25 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
         if (attr.office_date_value_)
         {
             int y, m, d;
-            if (oox::parseDate(attr.office_date_value_.get(), y, m, d))
+			_CP_OPT(int) h, min, sec;
+            if (oox::parseDateTime(attr.office_date_value_.get(), y, m, d, h, min, sec))
             {
 				boost::int64_t intDate = oox::convertDate(y, m, d);
+				_CP_OPT(double) dTime;
+				if (h && min)
+				{
+					dTime = oox::convertTime(*h, *min, sec.get_value_or(0));
+				}
 				if (intDate > 0)
 				{
-					number_val = boost::lexical_cast<std::wstring>(intDate);
+					if (dTime)
+					{
+						number_val = XmlUtils::DoubleToString(*dTime + intDate);
+					}
+					else
+					{
+						number_val = boost::lexical_cast<std::wstring>(intDate);
+					}
 					xlsx_value_type = oox::XlsxCellType::n;    
 
 					if (num_format_type == office_value_type::Currency)
@@ -1149,12 +1162,26 @@ void table_covered_table_cell::xlsx_convert(oox::xlsx_conversion_context & Conte
         if (attr.office_date_value_)
         {
             int y, m, d;
-            if (oox::parseDate(attr.office_date_value_.get(), y, m, d))
+			_CP_OPT(int) h, min, s;
+            if (oox::parseDateTime(attr.office_date_value_.get(), y, m, d, h, min, s))
             {
 				boost::int64_t intDate = oox::convertDate(y, m, d);
+				_CP_OPT(double) dTime;
+
+				if (h && min)
+				{
+					dTime = oox::convertTime(*h, *min,  s.get_value_or(0));
+				}
 				if (intDate > 0)
 				{
-					number_val = boost::lexical_cast<std::wstring>(intDate);
+					if (dTime)
+					{
+						number_val = XmlUtils::DoubleToString(*dTime + intDate);
+					}
+					else
+					{
+						number_val = std::to_wstring(intDate);
+					}
 				}
 				else
 				{

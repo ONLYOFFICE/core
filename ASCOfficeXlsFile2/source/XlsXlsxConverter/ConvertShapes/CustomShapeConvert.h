@@ -1021,7 +1021,7 @@ namespace NSCustomShapesConvert
 			}
 
 			//min max 1го параметра
-			if (oHnd.bMinExist.x)
+			if (oHnd.bMinExist.x && (oHnd.bRefExist.x || oHnd.bRefExist.y))
 			{
 				m_oHandleRes.WriteString(_T(" minX=\""));
 				GetValue(oHnd.Min.x, oHnd.MinType.x, false, m_oHandleRes);

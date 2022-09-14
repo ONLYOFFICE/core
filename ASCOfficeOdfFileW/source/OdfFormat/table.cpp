@@ -81,7 +81,7 @@ void table_table_cell_attlist::serialize(CP_ATTR_NODE)
 	}
     CP_XML_ATTR_OPT(L"table:style-name", table_style_name_);
     CP_XML_ATTR_OPT(L"table:content-validation-name", table_content_validation_name_);
-    CP_XML_ATTR_OPT(L"table:formula", table_formula_);
+	CP_XML_ATTR_OPT_ENCODE_STRING(L"table:formula", table_formula_);
 
 	if (common_value_and_type_attlist_)
 		common_value_and_type_attlist_->serialize(CP_GET_XML_NODE());

@@ -807,6 +807,7 @@ namespace MetaFile
 			*this >> oAttributes.nObjectClamp;
 
 			Skip(4); //Reserved 2 (4 bytes)
+			return *this;
 		}
 		CDataStream& operator>>(TEmfPlusCustomLineCapArrowData& oLineCapData)
 		{

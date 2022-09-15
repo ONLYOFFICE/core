@@ -80,7 +80,7 @@ public:
     UINT64 creationDate = 0;
     UINT64 modifyDate = 0;
     int startSetc = 0xFFFFFFFE;
-    LONG64 size;
+    LONG64 size = 0;
     int leftSibling = NOSTREAM;
     int rightSibling = NOSTREAM;
     int child = NOSTREAM;

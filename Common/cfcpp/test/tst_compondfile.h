@@ -68,28 +68,40 @@ TEST_F(CompoundFileTest, test_compoundfile_addEmptyStorage)
 
     CompoundFile cf2(other_filename);
 //    EXPECT_EQ(cf2.GetDirectories().size(), countEntris + 1); // it has some empty nodes
-    EXPECT_TRUE(cf2.RootStorage()->GetStorage(storageName).get() != nullptr);
+    EXPECT_TRUE(cf2.RootStorage()->GetStorage(storageName) != nullptr);
     EXPECT_EQ(cf2.RootStorage()->GetStorage(storageName)->Name(), storageName);
 }
 
 
 TEST_F(CompoundFileTest, test_compoundfile_addEmptyStream)
 {
-    wstring storageName = L"storage1";
     wstring streamName = L"stream1";
     const auto countEntris = cf.GetDirectories().size();
-    cf.RootStorage()->AddStorage(storageName);
+    cf.RootStorage()->AddStream(streamName);
 
     wstring other_filename = L"../../../data/ex4.ppt";
     NSFile::CFileBinary::Remove(other_filename);
     cf.Save(other_filename);
+
+    auto dirs = cf.GetDirectories();
+    for (const auto& dir : *dirs)
+    {
+        if (dir == nullptr)
+            continue;
+
+        wcout << left << setw(3) << dir->getSid()
+              << left << setw(6) << (dir->getColor() ? L"Black" : L"Red")
+              << left << setw(3) << dir->getLeftSibling()
+              << left << setw(3) << dir->getRightSibling()
+              << left << setw(3) << dir->getChild()
+              << left << dir->GetEntryName()
+              << endl;
+    }
+
     cf.Close();
 
     CompoundFile cf2(other_filename);
-//    EXPECT_EQ(cf2.GetDirectories().size(), countEntris + 2); // it has some empty nodes
-    auto addedStorage = cf2.RootStorage()->GetStorage(storageName);
-    EXPECT_TRUE(addedStorage.get() != nullptr);
-    EXPECT_TRUE(addedStorage->GetStream(streamName).get() != nullptr);
+    EXPECT_TRUE(cf2.RootStorage()->GetStream(streamName) != nullptr);
 }
 
 TEST_F(CompoundFileTest, test_compoundfile_add2Stream)
@@ -97,26 +109,33 @@ TEST_F(CompoundFileTest, test_compoundfile_add2Stream)
     wstring storageName = L"storage1";
     wstring streamName = L"stream";
 
-    const auto countEntris = cf.GetDirectories().size();
     cf.RootStorage()->AddStorage(storageName)->AddStream(streamName);
     cf.RootStorage()->AddStream(streamName);
 
     auto dirs = cf.GetDirectories();
     for (const auto& dir : *dirs)
     {
-        wcout << left << setw(2) << dir->getSid() << L" "
-              << left << setw(30) << dir->GetEntryName() << L" "
-              << left << setw(3) << dir->getNameLength() << L" "
-              << left << setw(4) << dir->getSize() << L" "
-              << left << setw(4) << dir->getStgType() << L" "
-              << left << setw(4) << dir->getChild()
-              << "\n";
+        if (dir == nullptr)
+            continue;
+
+        wcout << left << setw(3) << dir->getSid()
+              << left << setw(6) << (dir->getColor() ? L"Black" : L"Red")
+              << left << setw(3) << dir->getLeftSibling()
+              << left << setw(3) << dir->getRightSibling()
+              << left << setw(3) << dir->getChild()
+              << left << dir->GetEntryName()
+              << endl;
     }
+
     wstring other_filename = L"../../../data/ex5.ppt";
     NSFile::CFileBinary::Remove(other_filename);
     cf.Save(other_filename);
     cf.Close();
 
     CompoundFile cf2(other_filename);
-//    EXPECT_EQ(cf2.GetDirectories().size(), countEntris + 3); // it has some empty nodes
+    EXPECT_TRUE(cf2.RootStorage()->GetStream(streamName) != nullptr);
+
+    auto storage = cf2.RootStorage()->GetStorage(storageName);
+    EXPECT_TRUE(storage != nullptr);
+    EXPECT_TRUE(storage->GetStream(streamName) != nullptr);
 }

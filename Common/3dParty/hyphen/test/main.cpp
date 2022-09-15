@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
 	std::string result_filename = PRO_DIR;
 
 	// set your filenames here
-	dict_filename += "hyph_ru_RU.dic";
+	dict_filename += "hyph_en_US.dic";
 	words_filename += "words.txt";
 	result_filename += "result.txt";
 
@@ -50,27 +50,27 @@ int main(int argc, char *argv[])
 		 * @brief
 		 * input data:
 		 *
-		 * word:					input word
-		 * word_size:				byte length of the input word
-		 * hyphens:					allocated character buffer (size = word_size + 5)
-		 * hyphenated_word:			allocated character buffer (size ~ word_size * 2) or NULL
-		 * rep, pos, cut:			pointers (point to the allocated and _zeroed_ buffers
-		 *							(size=word_size) or with NULL value) or NULL
+		 * word: input word
+		 * word_size: byte length of the input word
+		 * hyphens: allocated character buffer (size = word_size + 5)
+		 * hyphenated_word: allocated character buffer (size ~ word_size * 2) or NULL
+		 * rep, pos, cut: pointers (point to the allocated and _zeroed_ buffers
+		 *	(size=word_size) or with NULL value) or NULL
 		 *
 		 * output data:
 		 *
-		 * hyphens:					hyphenation vector (hyphenation points signed with odd numbers).
-		 * hyphenated_word:			hyphenated input word (hyphens signed with `=').
-		 *							optional (NULL input).
-		 * rep:						NULL (only standard hyph.), or replacements (hyphenation points
-		 *							signed with `=' in replacements).
-		 * pos:						NULL, or difference of the actual position and the beginning
-		 *							positions of the change in input words.
-		 * cut:						NULL, or counts of the removed characters of the original words
-		 *							at hyphenation.
+		 * hyphens: hyphenation vector (hyphenation points signed with odd numbers).
+		 * hyphenated_word: hyphenated input word (hyphens signed with `=').
+		 *	optional (NULL input).
+		 * rep: NULL (only standard hyph.), or replacements (hyphenation points
+		 *	signed with `=' in replacements).
+		 * pos: NULL, or difference of the actual position and the beginning
+		 *	positions of the change in input words.
+		 * cut:	NULL, or counts of the removed characters of the original words
+		 *	at hyphenation.
 		 *
 		 * Note: rep, pos, cut are complementary arrays to the hyphens, indexed with the
-		 * character positions of the input word.
+		 *	character positions of the input word.
 		 */
 		hnj_hyphen_hyphenate2(dict, word.c_str(), n, hyphens, hword, &rep, &pos, &cut);
 

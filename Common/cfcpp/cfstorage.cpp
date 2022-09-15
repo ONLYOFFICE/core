@@ -46,7 +46,7 @@ std::shared_ptr<CFStream> CFStorage::AddStream(const std::wstring& streamName)
         getChildren()->Insert(dirEntry);
 
         //... and set the root of the tree as new child of the current item directory entry
-        dirEntry->setChild(std::dynamic_pointer_cast<IDirectoryEntry>(getChildren()->getRoot())->getSid());
+        this->dirEntry.lock()->setChild(std::dynamic_pointer_cast<IDirectoryEntry>(getChildren()->getRoot())->getSid());
     }
     catch (RedBlackTree::RBTreeException &rbex)
     {

@@ -293,7 +293,6 @@
     <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\WedgeRoundedRectCalloutType.h" />
     <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\PathShape.h" />
     <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\PresetShapesHeader.h" />
-    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\ShapeUtils.h" />
     <ClInclude Include="..\XlsXlsxConverter\ConvertXls2Xlsx.h" />
     <ClInclude Include="..\XlsXlsxConverter\external_items.h" />
     <ClInclude Include="..\XlsXlsxConverter\namespaces.h" />

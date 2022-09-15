@@ -51,12 +51,22 @@ function hyphenate(word)
     Module._hyphenate(pword, phyphens, phword)
 
     var hword = Module.UTF8ToString(phword);
-    
+    var hyphens = Module.UTF8ToString(phyphens);
+
+    var positions = [];
+    for(var i = 0; i < hyphens.length; i++) {
+        // hyphenation vector has odd number in positions where hyphen is needed
+        if(Number(hyphens[i]) % 2 == 1) {
+            positions.push(i);
+        }
+    }
+    console.log(hword);
+
     freeMemory(Module, pword);
     freeMemory(Module, phyphens);
     freeMemory(Module, phword);
 
-    return hword;
+    return positions;
 }
 
 form.onsubmit = function(event) {
@@ -65,7 +75,7 @@ form.onsubmit = function(event) {
     Module._load_dictionary();
 
     for(var i = 0; i < text.length; i++) {
-        console.log(hyphenate(text[i]));
+        console.log(hyphenate(text[i].toLowerCase()));
     }
     Module._free_dictionary();
 }

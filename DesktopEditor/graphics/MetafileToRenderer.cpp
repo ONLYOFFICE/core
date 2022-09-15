@@ -475,6 +475,9 @@ namespace NSOnlineOfficeBinToPdf
 		LONG lRendererType = 0;
 		pRenderer->get_Type(&lRendererType);
 
+		// из команд js - точные имена
+		pRenderer->CommandLong(c_nUseDictionaryFonts, 0);
+
 		CommandType eCommand = ctError;
 
 		bool bIsPathOpened = false;

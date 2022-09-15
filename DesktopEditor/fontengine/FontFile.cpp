@@ -872,8 +872,16 @@ TFontCacheSizes CFontFile::CacheGlyph(const int& code, const bool& isRaster, CVe
 	if ( FT_Get_Glyph( m_pFace->glyph, &pGlyph ) )
 		return oSizes;
 
+	TT_OS2* pOS2 = (TT_OS2*)FT_Get_Sfnt_Table(m_pFace, ft_sfnt_os2);
+
+	bool bIsNeedBold = (m_bNeedDoBold == TRUE) ? true : false;
+	if (bIsNeedBold && pOS2 && pOS2->version != 0xFFFF && pOS2->usWeightClass >= 800)
+		bIsNeedBold = false;
+
 	if (pWorker)
 	{
+		if (bIsNeedBold)
+			FT_Outline_EmboldenXY(&((FT_OutlineGlyph)pGlyph)->outline, (m_unHorDpi * 64 / 25.4) / 3, 0);
 		FT_Outline_Decompose( &((FT_OutlineGlyph)pGlyph)->outline, pWorker->func_interface, pWorker->user );
 		return oSizes;
 	}
@@ -882,12 +890,6 @@ TFontCacheSizes CFontFile::CacheGlyph(const int& code, const bool& isRaster, CVe
 
 	FT_Glyph_Get_CBox(pGlyph, 1, &oBBox);
 	FT_Done_Glyph(pGlyph);
-
-	TT_OS2* pOS2 = (TT_OS2*)FT_Get_Sfnt_Table(m_pFace, ft_sfnt_os2);
-
-	bool bIsNeedBold = (m_bNeedDoBold == TRUE) ? true : false;
-	if (bIsNeedBold && pOS2 && pOS2->version != 0xFFFF && pOS2->usWeightClass >= 800)
-		bIsNeedBold = false;
 
 	FT_GlyphSlot pGlyphSlot = m_pFace->glyph;
 

@@ -340,6 +340,8 @@ CFontManager::CFontManager() : NSFonts::IFontManager()
     m_lAscender = 0;
     m_lDescender = 0;
     m_lLineHeight = 0;
+
+	m_bCorrectFontByName = true;
 }
 
 CFontManager::~CFontManager()
@@ -743,7 +745,7 @@ INT CFontManager::LoadFontByName(const std::wstring& sName, const double& dSize,
 	if (lStyle & 0x02)
 		*oFormat.bItalic = TRUE;
 
-    NSFonts::CFontInfo* pInfo = m_pApplication->GetList()->GetByParams(oFormat);
+	NSFonts::CFontInfo* pInfo = m_pApplication->GetList()->GetByParams(oFormat, m_bCorrectFontByName);
     if (NULL == pInfo)
         return FALSE;
 
@@ -751,7 +753,7 @@ INT CFontManager::LoadFontByName(const std::wstring& sName, const double& dSize,
 
     if (bLoad == TRUE)
     {
-        bool bIsNeedBold = false;
+		bool bIsNeedBold = false;
         if (NULL != oFormat.bBold && (*oFormat.bBold) == TRUE && pInfo->m_bBold == FALSE)
             bIsNeedBold = true;
         bool bIsNeedItalic = false;
@@ -894,6 +896,11 @@ void CFontManager::GetLimitsY(double& dMin, double& dMax)
         dMin = ttface->header.yMin;
         dMax = ttface->header.yMax;
     }
+}
+
+void CFontManager::SetUseCorrentFontByName(const bool& use)
+{
+	m_bCorrectFontByName = use;
 }
 
 CFontFile* CFontManager::GetFontFileBySymbol(CFontFile* pFile, int code)

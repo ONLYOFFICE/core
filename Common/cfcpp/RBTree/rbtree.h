@@ -52,23 +52,21 @@ private:
     void DoVisitTreeNodes(Action<PIRBNode> action, PIRBNode walker);
 
 public:
-    // todo this from C# and it's weak realization
-   class iterator : public std::iterator<std::bidirectional_iterator_tag, std::ptrdiff_t, IRBNode, IRBNode*, PIRBNode>
+
+   class iterator : public std::iterator<std::output_iterator_tag, std::ptrdiff_t, IRBNode, IRBNode*, PIRBNode>
    {
-       std::list<WPIRBNode> heap;
-       std::list<WPIRBNode>::iterator current;
+       PIRBNode current;
+       RBTree* tree;
    public:
-       iterator(RBTree &tree, bool end = false);
-       inline iterator& operator++() {++current; return *this;}
-       inline iterator& operator--() {--current; return *this;}
+       iterator(RBTree *tree);
+       iterator& operator++();
        inline bool operator==(const iterator &other) const {return current == other.current;}
        inline bool operator!=(const iterator &other) const {return current != other.current;}
-       inline PIRBNode operator*() {return current->lock();}
-       inline iterator end() {current = heap.end(); return *this;}
+       inline PIRBNode operator*() {return current;}
    };
 
-   iterator&& begin() {return std::move(iterator(*this));}
-   iterator&& end() {return std::move(iterator(*this).end());}
+   iterator begin() {return iterator(this);}
+   iterator end() {return iterator(nullptr);}
 
 private:
     PIRBNode root;

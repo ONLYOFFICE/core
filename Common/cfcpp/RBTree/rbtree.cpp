@@ -423,12 +423,40 @@ void RBTree::DoVisitTreeNodes(Action<PIRBNode> action, PIRBNode walker)
     }
 }
 
-RBTree::iterator::iterator(RBTree &tree, bool end)
+RBTree::iterator::iterator(RBTree *tree) : tree(tree)
 {
-    Action<PIRBNode> inserter = [&] (PIRBNode pNode)
+    if (tree == nullptr)
+        return;
+
+    auto walker = tree->getRoot();
+    while (walker != nullptr)
     {
-        heap.push_back(pNode);
-    };
-    tree.VisitTreeNodes(inserter);
-    current = end ? heap.end() : heap.begin();
+        current = walker;
+        walker = walker->getLeft();
+    }
+}
+
+RBTree::iterator &RBTree::iterator::operator++()
+{
+    if (current->getRight())
+    {
+        current = current->getRight();
+        auto walker = tree->getRoot();
+        while (walker != nullptr)
+        {
+            current = walker;
+            walker = walker->getLeft();
+        }
+    }
+    else if (current->getParent())
+    {
+        current = current->getParent();
+        return *this;
+    }
+    else
+    {
+        current.reset();
+    }
+
+    return *this;
 }

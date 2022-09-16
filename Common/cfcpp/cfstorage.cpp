@@ -261,8 +261,10 @@ void CFStorage::Delete(const std::wstring &entryName)
         std::shared_ptr<CFStorage> temp(new CFStorage(compoundFile, std::dynamic_pointer_cast<IDirectoryEntry>(foundObj)));
 
         // This is a storage. we have to remove children items first
-        for (const auto& de : *(temp->getChildren()))
+        auto storageChild = temp->getChildren();
+        for (auto iter = storageChild->begin(); iter != storageChild->end(); ++iter)
         {
+            auto de = *iter;
             auto ded = std::dynamic_pointer_cast<IDirectoryEntry>(de);
             temp->Delete(ded->GetEntryName());
         }

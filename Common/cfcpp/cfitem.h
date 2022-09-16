@@ -1,5 +1,6 @@
 #pragma once
 #include "guid.h"
+#include "cfexception.h" // Used by heirs
 #include <memory>
 #include <string>
 

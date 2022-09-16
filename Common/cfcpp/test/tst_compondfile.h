@@ -21,6 +21,23 @@ struct CompoundFileTest : testing::Test
     {
 
     }
+
+    void printDirs()
+    {
+        for (const auto& dir : *cf.GetDirectories())
+        {
+            if (dir == nullptr)
+                continue;
+
+            wcout << left << setw(3) << dir->getSid()
+                  << left << setw(6) << (dir->getColor() ? L"Black" : L"Red")
+                  << left << setw(3) << dir->getLeftSibling()
+                  << left << setw(3) << dir->getRightSibling()
+                  << left << setw(3) << dir->getChild()
+                  << left << dir->GetEntryName()
+                  << endl;
+        }
+    }
 };
 
 TEST_F(CompoundFileTest, test_compoundfile_read)
@@ -40,17 +57,6 @@ TEST_F(CompoundFileTest, test_compoundfile_write)
 
 TEST_F(CompoundFileTest, test_compoundfile_SID)
 {
-    auto dirs = cf.GetDirectories();
-    for (const auto& dir : *dirs)
-    {
-        wcout << left << setw(2) << dir->getSid() << L" "
-              << left << setw(30) << dir->GetEntryName() << L" "
-              << left << setw(3) << dir->getNameLength() << L" "
-              << left << setw(4) << dir->getSize() << L" "
-              << left << setw(4) << dir->getStgType() << L" "
-              << left << setw(4) << dir->getChild()
-              << "\n";
-    }
     auto PowerPointData = cf.GetDataBySID(1);
     EXPECT_NE(PowerPointData.size(), 0);
 }
@@ -83,21 +89,6 @@ TEST_F(CompoundFileTest, test_compoundfile_addEmptyStream)
     NSFile::CFileBinary::Remove(other_filename);
     cf.Save(other_filename);
 
-    auto dirs = cf.GetDirectories();
-    for (const auto& dir : *dirs)
-    {
-        if (dir == nullptr)
-            continue;
-
-        wcout << left << setw(3) << dir->getSid()
-              << left << setw(6) << (dir->getColor() ? L"Black" : L"Red")
-              << left << setw(3) << dir->getLeftSibling()
-              << left << setw(3) << dir->getRightSibling()
-              << left << setw(3) << dir->getChild()
-              << left << dir->GetEntryName()
-              << endl;
-    }
-
     cf.Close();
 
     CompoundFile cf2(other_filename);
@@ -112,20 +103,7 @@ TEST_F(CompoundFileTest, test_compoundfile_add2Stream)
     cf.RootStorage()->AddStorage(storageName)->AddStream(streamName);
     cf.RootStorage()->AddStream(streamName);
 
-    auto dirs = cf.GetDirectories();
-    for (const auto& dir : *dirs)
-    {
-        if (dir == nullptr)
-            continue;
-
-        wcout << left << setw(3) << dir->getSid()
-              << left << setw(6) << (dir->getColor() ? L"Black" : L"Red")
-              << left << setw(3) << dir->getLeftSibling()
-              << left << setw(3) << dir->getRightSibling()
-              << left << setw(3) << dir->getChild()
-              << left << dir->GetEntryName()
-              << endl;
-    }
+    printDirs();
 
     wstring other_filename = L"../../../data/ex5.ppt";
     NSFile::CFileBinary::Remove(other_filename);
@@ -138,4 +116,40 @@ TEST_F(CompoundFileTest, test_compoundfile_add2Stream)
     auto storage = cf2.RootStorage()->GetStorage(storageName);
     EXPECT_TRUE(storage != nullptr);
     EXPECT_TRUE(storage->GetStream(streamName) != nullptr);
+}
+
+TEST_F(CompoundFileTest, test_compoundfile_deleteStream)
+{
+    const std::wstring streamName = L"PowerPoint Document";
+    EXPECT_TRUE(cf.RootStorage()->GetStream(streamName));
+    cf.RootStorage()->Delete(streamName);
+    EXPECT_THROW(cf.RootStorage()->GetStream(streamName), CFItemNotFound);
+}
+
+TEST_F(CompoundFileTest, test_compoundfile_deleteStreamWithSave)
+{
+    const std::wstring streamName = L"PowerPoint Document";
+    cf.RootStorage()->Delete(L"PowerPoint Document");
+
+    const wstring other_filename = L"../../../data/ex6.ppt";
+    NSFile::CFileBinary::Remove(other_filename);
+    cf.Save(other_filename);
+    cf.Close();
+
+    CompoundFile cf2(other_filename);
+    EXPECT_THROW(cf2.RootStorage()->GetStream(streamName), CFItemNotFound);
+    EXPECT_TRUE(cf2.RootStorage()->GetStream(L"Current User"));
+}
+
+TEST_F(CompoundFileTest, test_compoundfile_deleteStorage)
+{
+    std::vector<BYTE> data = {0x28, 0xFF, 0x28, 0x1D, 0x4C, 0xFA, 0x00, 0x79, 0x40, 0x01};
+    auto storage1 = cf.RootStorage()->AddStorage(L"sto1");
+    auto storage2 = storage1->AddStorage(L"sto2");
+//    storage1->AddStream(L"str1")->Write(data,0);
+//    storage2->AddStream(L"str2")->Write(data,0);
+
+    printDirs();
+    cf.RootStorage()->Delete(L"sto1");
+    printDirs();
 }

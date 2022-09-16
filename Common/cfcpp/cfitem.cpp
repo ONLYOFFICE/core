@@ -1,7 +1,6 @@
 #include "cfitem.h"
 #include "idirectoryentry.h"
 #include "compoundfile.h"
-#include "cfexception.h"
 
 using namespace CFCPP;
 

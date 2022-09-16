@@ -34,20 +34,20 @@ namespace NSDocxRenderer
         };
 
         // text frame properties
-        TextConversionType m_eTextConversionType {tctUnknown};
-        bool               m_bIsNeedFirstLineIndent {false};
-        bool               m_bIsAroundTextWrapping {true}; //по умолчанию обтекание включено, если отсутсвует w:wrap
-        bool               m_bIsShadingPresent {false};
-        LONG               m_lColorOfShadingFill {c_iWhiteColor}; //BGR
-        TextAlignmentType  m_eTextAlignmentType {tatUnknown};
+        TextConversionType  m_eTextConversionType {tctUnknown};
+        bool                m_bIsNeedFirstLineIndent {false};
+        bool                m_bIsAroundTextWrapping {true}; //по умолчанию обтекание включено, если отсутсвует w:wrap
+        bool                m_bIsShadingPresent {false};
+        LONG                m_lColorOfShadingFill {c_iWhiteColor}; //BGR
+        TextAlignmentType   m_eTextAlignmentType {tatUnknown};
 
         // geometry paragraph
-        double		m_dRight {0.0}; //сдвиг относительно правого края страницы
-        double		m_dFirstLine {0.0}; //сдвиг относительно m_dLeft
+        double              m_dRight {0.0}; //сдвиг относительно правого края страницы
+        double              m_dFirstLine {0.0}; //сдвиг относительно m_dLeft
 
-        double		m_dSpaceBefore {0.0}; //по умолчанию выставляется 0, если отсутсвует w:before
-        double		m_dSpaceAfter {0.0}; //в shape по умолчанию выставляется 8pt, если отсутсвует w:after
-        double		m_dBaselinePos {0.0};
+        double              m_dSpaceBefore {0.0}; //по умолчанию выставляется 0, если отсутсвует w:before
+        double              m_dSpaceAfter {0.0}; //в shape по умолчанию выставляется 8pt, если отсутсвует w:after
+        double              m_dBaselinePos {0.0};
         TextAssociationType m_eTextAssociationType {tatPlainParagraph};
 
         std::vector<CTextLine*> m_arLines;
@@ -61,5 +61,8 @@ namespace NSDocxRenderer
         void RemoveHighlightColor();
 
         void MergeLines();
+
+        static TextAlignmentType DetermineTextAlignmentType(CTextLine* pCurrentLine, CTextLine* pNextLine, CTextLine* pNextNextLine,
+                                                            double dPageWidth, bool &bIsUseNextNextLine, bool &bIsSingleLineParagraph);
    };
 }

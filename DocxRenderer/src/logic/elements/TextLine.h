@@ -43,8 +43,6 @@ namespace NSDocxRenderer
             void MergeConts();
             //Вычисляем ширину сложной строки
             void CalculateWidth();
-            //Пытаемся понять тип выравнивания для текущей строки
-            void DetermineAssumedTextAlignmentType(double dWidthOfPage);
             //Определяем на основании выравнивания подходят ли текущая и следующая строки для добавления в параграф
             bool AreAlignmentsAppropriate(const CTextLine* pLine);
 

@@ -174,38 +174,6 @@ namespace NSDocxRenderer
         m_dRight = m_dLeft + m_dWidth;
     }
 
-    void CTextLine::DetermineAssumedTextAlignmentType(double dWidthOfPage)
-    {
-        //рассматриваем строки, которые короче трети ширины страницы
-        double maxTextLineWidth = dWidthOfPage/3; //нужна какая-нибудь отправная точка...
-        double delta = 2 * c_dCENTER_POSITION_ERROR_MM; //координата m_dWidth/2 +- c_dCENTER_POSITION_ERROR_MM
-
-        if (fabs(dWidthOfPage/2 - m_dLeft - m_dWidth/2) <= delta && //если середины линий по x одинаковы
-                m_dWidth < maxTextLineWidth )
-        {
-            m_eAlignmentType = atatByCenter;
-        }
-        else if ((m_dLeft + m_dWidth/2) > (dWidthOfPage/2 + c_dCENTER_POSITION_ERROR_MM) && //середина строки правее центра страницы
-                 m_dWidth < maxTextLineWidth)
-        {
-            m_eAlignmentType = atatByRightEdge;
-        }
-        else if ((m_dLeft + m_dWidth/2) < (dWidthOfPage/2 - c_dCENTER_POSITION_ERROR_MM) && //середина строки левее центра страницы
-                 m_dWidth < maxTextLineWidth)
-        {
-            m_eAlignmentType = atatByLeftEdge;
-        }
-        else if (fabs(dWidthOfPage/2 - m_dLeft - m_dWidth/2) <= delta &&
-                 m_dWidth > maxTextLineWidth + maxTextLineWidth/2 )
-        {
-            m_eAlignmentType = atatByWidth;
-        }
-        else
-        {
-            m_eAlignmentType = atatUnknown;
-        }
-    }
-
     bool CTextLine::AreAlignmentsAppropriate(const CTextLine *pLine)
     {
         if ((m_eAlignmentType == pLine->m_eAlignmentType && m_eAlignmentType!= atatByLeftEdge) ||

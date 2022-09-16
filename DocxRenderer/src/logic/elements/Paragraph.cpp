@@ -96,7 +96,7 @@ namespace NSDocxRenderer
                 oWriter.WriteString(L"\"");
             }
             if (m_dRight > 0)
-            { 
+            {
                 oWriter.WriteString(L" w:right=\"");
                 oWriter.AddInt(static_cast<int>(m_dRight * c_dMMToDx));
                 oWriter.WriteString(L"\"");
@@ -221,5 +221,118 @@ namespace NSDocxRenderer
 
             pNext->m_bIsNotNecessaryToUse = true;
         }
+    }
+
+    CParagraph::TextAlignmentType CParagraph::DetermineTextAlignmentType(CTextLine* pCurrentLine, CTextLine* pNextLine, CTextLine* pNextNextLine, double dPageWidth, bool &bIsUseNextNextLine, bool &bIsSingleLineParagraph)
+    {
+        if (!pCurrentLine || !pNextLine)
+        {
+            return tatUnknown;
+        }
+
+        double dCurrLeft = pCurrentLine->m_dLeft;
+        double dNextLeft = pNextLine->m_dLeft;
+        double dNextNextLeft = pNextNextLine ? pNextNextLine->m_dLeft : 0;
+
+        double dCurrRight = pCurrentLine->CalculateRightBorder(dPageWidth);
+        double dNextRight = pNextLine->CalculateRightBorder(dPageWidth);
+        double dNextNextRight = pNextNextLine ? pNextNextLine->CalculateRightBorder(dPageWidth) : 0;
+
+        bool bIf1 = fabs(dCurrLeft - dNextLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
+        bool bIf2 = pNextNextLine && fabs(dNextLeft - dNextNextLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
+        bool bIf3 = dCurrLeft != dNextLeft && dCurrLeft > dNextLeft;
+
+        bool bIf4 = fabs(dCurrRight - dNextRight) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
+        bool bIf5 = fabs(dNextRight - dNextNextRight) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
+
+        if (pNextNextLine)
+        {
+            if (bIf1 && bIf2)
+            {
+                if (bIf4)
+                {
+                    return tatByWidth;
+                }
+                else
+                {
+                    return tatByLeftEdge;
+                }
+            }
+            else if (bIf3 && bIf2)
+            {
+                if (bIf4)
+                {
+                    return tatByWidth;
+                }
+                else
+                {
+                    return tatByLeftEdge;
+                }
+            }
+            else if (bIf4 && bIf5 && !(bIf1 && !bIf2 && dNextLeft > dNextNextLeft))
+            {
+                return tatByRightEdge;
+            }
+            else if (!bIf1 && !bIf2 && bIf3 && dNextLeft < dNextNextLeft && (bIf4 || dCurrRight < dNextRight))
+            {
+                bIsUseNextNextLine = false;
+                return tatByWidth;
+            }
+            else if (bIf1 && !bIf2 && dNextLeft > dNextNextLeft && (bIf4 || dCurrRight > dNextRight))
+            {
+                bIsSingleLineParagraph = true;
+                return tatByWidth;
+            }
+            else if (!bIf1 && !bIf2 && !bIf4 && !bIf5)
+            {
+                return tatByCenter;
+            }
+            else
+            {
+                return tatByWidth;
+            }
+        }
+        else
+        {
+            if (bIf4)
+            {
+                if (bIf1)
+                {
+                    return tatByWidth;
+                }
+                else if (bIf3 && dCurrLeft < dNextLeft)
+                {
+                    return tatByRightEdge;
+                }
+                else
+                {
+                    return tatByWidth;
+                }
+            }
+            else if (dCurrRight < dNextRight)
+            {
+                if (bIf1 || bIf3)
+                {
+                    return tatByWidth;
+                }
+                else
+                {
+                    return tatByCenter;
+                }
+            }
+            else if (dCurrRight > dNextRight)
+            {
+                if (bIf1)
+                {
+                    return tatByLeftEdge;
+                }
+                else if (bIf3)
+                {
+                    return tatByCenter;
+                }
+            }
+        }
+
+        return tatUnknown;
     }
 }

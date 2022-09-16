@@ -1978,8 +1978,15 @@ void xlsx_drawing_context::clear_fill()
 {
 	if (!current_drawing_states) return;
 	if (current_drawing_states->empty()) return;
-	
+
 	current_drawing_states->back()->clear_fill();
+}
+int xlsx_drawing_context::get_fill_type()
+{
+	if (!current_drawing_states) return 0;
+	if (current_drawing_states->empty()) return 0;
+
+	return current_drawing_states->back()->fill.type;
 }
 void xlsx_drawing_context::serialize_fill(std::wostream & stream)
 {
@@ -2592,6 +2599,8 @@ void xlsx_drawing_context::serialize_control(std::wostream & strm, _drawing_stat
 				{
 					CP_XML_ATTR(L"listFillRange", drawing_state->object.fmlaRange);
 				}				
+				if (!drawing_state->fill.picture_target.empty())
+					drawing_state->fill.texture_target = drawing_state->fill.picture_target;
 				if (!drawing_state->fill.texture_target.empty())
 				{
 					bool isIternal = false;

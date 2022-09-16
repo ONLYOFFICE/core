@@ -59,6 +59,8 @@ namespace MetaFile
 		CEmfPlusRegionNodeChild* ReadRegionNodeChild(unsigned int& unIndex);
 		CEmfPlusRegion* GetRegion(unsigned int unRegionIndex);
 
+		CEmfPlusStringFormat* GetStringFormat(unsigned int unStringFormatIndex);
+
 		CEmfPlusImageAttributes* GetImageAttributes(unsigned int unImageAttributesIndex);
 
 		//                std::vector<TEmfPlusPointF> ReadPointsF(unsigned int unPointCount);
@@ -94,7 +96,7 @@ namespace MetaFile
 
 		void Read_EMFPLUS_ENDOFFILE();
 		void Read_EMFPLUS_GETDC();
-		void Read_EMRPLUS_HEADER(unsigned short unShFlags);
+		void Read_EMFPLUS_HEADER(unsigned short unShFlags);
 
 		void Read_EMFPLUS_CLEAR();
 		void Read_EMFPLUS_DRAWARC(unsigned short unShFlags);

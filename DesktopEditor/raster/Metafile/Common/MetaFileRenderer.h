@@ -317,267 +317,355 @@ namespace MetaFile
 			if (dYScale > 0)
 				dSinTheta = -dSinTheta;
 
-			float fL = 0, fT = 0, fW = 0, fH = 0;
-			float fUndX1 = 0, fUndY1 = 0, fUndX2 = 0, fUndY2 = 0, fUndSize = 1;
-
 			double dFontCharSpace = m_pFile->GetCharSpace() * m_dScaleX * m_pFile->GetPixelWidth();
 			m_pRenderer->put_FontCharSpace(dFontCharSpace);
 
+			float fL = 0, fT = 0, fW = 0, fH = 0;
+			float fUndX1 = 0, fUndY1 = 0, fUndX2 = 0, fUndY2 = 0, fUndSize = 1;
+
 			NSFonts::IFontManager* pFontManager = m_pFile->GetFontManager();
-			if (NULL == pFontManager)
+
+			std::vector<std::wstring> arSplitString;
+
+			if (wsText.find(L"\n") != std::wstring::npos)
 			{
-				if (NULL != pDx && unCharsCount > 1)
+				size_t unStart;
+				size_t unEnd = 0;
+
+				while ((unStart = wsText.find_first_not_of(L"\n", unEnd)) != std::wstring::npos)
 				{
-					// Тогда мы складываем все pDx кроме последнего символа, последний считаем отдельно
-					double dTempTextW = 0;
-					for (unsigned int unCharIndex = 0; unCharIndex < unCharsCount - 1; unCharIndex++)
-					{
-						dTempTextW += pDx[unCharIndex];
-					}
-
-					dTempTextW += dFontHeight * wsText.length();
-
-					fW = (float)dTempTextW;
+					unEnd = wsText.find(L"\n", unStart);
+					arSplitString.push_back(wsText.substr(unStart, unEnd - unStart));
 				}
-				else
-				{
-					fW = (float)(dFontHeight * wsText.length());
-				}
-
-				fH = dFontHeight * 1.2;
 			}
 			else
+				arSplitString = {wsText};
+
+			double dSkipY = 0;
+
+			for (const std::wstring& wsString : arSplitString)
 			{
-				pFontManager->LoadFontByName(wsFaceName, dFontHeight, lStyle, 72, 72);
-				pFontManager->SetCharSpacing(dFontCharSpace * 72 / 25.4);
-
-				double dMmToPt = 25.4 / 72;
-
-				double dFHeight = dFontHeight;
-				double dFDescent = dFontHeight;
-
-				NSFonts::IFontFile* pFontFile = pFontManager->GetFile();
-
-				if (pFontFile)
+				if (NULL == pFontManager)
 				{
-					dFHeight  *= pFontFile->GetHeight() / pFontFile->Units_Per_Em() * dMmToPt;
-					dFDescent *= pFontFile->GetDescender() / pFontFile->Units_Per_Em() * dMmToPt;
-				}
-				double dFAscent  = dFHeight - std::abs(dFDescent);
-
-				if (NULL != pDx && unCharsCount > 1)
-				{
-					// Тогда мы складываем все pDx кроме последнего символа, последний считаем отдельно
-					double dTempTextW = 0;
-					for (unsigned int unCharIndex = 0; unCharIndex < unCharsCount - 1; unCharIndex++)
+					if (NULL != pDx && wsString.length())
 					{
-						dTempTextW += pDx[unCharIndex];
-					}
-					dTempTextW *= m_dScaleX;
+						// Тогда мы складываем все pDx кроме последнего символа, последний считаем отдельно
+						double dTempTextW = 0;
+						for (unsigned int unCharIndex = 0; unCharIndex < wsString.length() - 1; unCharIndex++)
+						{
+							dTempTextW += pDx[unCharIndex];
+						}
 
-					std::wstring wsTempText;
-					wsTempText += wsText.at(wsText.length() - 1);
-					//wsTempText += wsText.at(unCharsCount - 1);
+						dTempTextW += dFontHeight * wsString.length();
 
-					pFontManager->LoadString1(wsTempText, 0, 0);
-					TBBox oBox = pFontManager->MeasureString2();
-					dTempTextW += dMmToPt * (oBox.fMaxX - oBox.fMinX);
-
-					fL = 0;
-					fW = (float)dTempTextW;
-				}
-				else
-				{
-					pFontManager->LoadString1(wsText, 0, 0);
-					TBBox oBox = pFontManager->MeasureString2();
-					fL = (float)dMmToPt * (oBox.fMinX);
-					fW = (float)dMmToPt * (oBox.fMaxX - oBox.fMinX);
-				}
-
-				// Просчитаем положение подчеркивания
-				pFontManager->GetUnderline(&fUndX1, &fUndY1, &fUndX2, &fUndY2, &fUndSize);
-				fUndY1   *= (float)dMmToPt;
-				fUndY2   *= (float)dMmToPt;
-				fUndSize *= (float)dMmToPt / 2;
-
-				fUndX1 = fL;
-				fUndX2 = fL + fW;
-
-				fT = (float)-dFAscent;
-				fH = (float)dFHeight;
-			}
-
-			TPointD oTextPoint = TranslatePoint(_dX, _dY);
-			double dX = oTextPoint.x;
-			double dY = oTextPoint.y;
-
-			// Найдем начальную точку текста
-			unsigned int ulTextAlign = m_pFile->GetTextAlign();
-			if (ulTextAlign & TA_BASELINE)
-			{
-				// Ничего не делаем
-			}
-			else if (ulTextAlign & TA_BOTTOM)
-			{
-				float fTemp = -(-fT + fH);
-
-				dX += -fTemp * dSinTheta;
-				dY +=  fTemp * dCosTheta;
-			}
-			else // if (ulTextAlign & TA_TOP)
-			{
-				float fTemp = -fT;
-
-				dX += -fTemp * dSinTheta;
-				dY +=  fTemp * dCosTheta;
-			}
-
-			if (ulTextAlign & TA_CENTER)
-			{
-				dX += -fW / 2 * dCosTheta;
-				dY += -fW / 2 * dSinTheta;
-			}
-			else if (ulTextAlign & TA_RIGHT)
-			{
-				dX += -fW * dCosTheta;
-				dY += -fW * dSinTheta;
-			}
-			else //if (ulTextAlign & TA_LEFT)
-			{
-				// Ничего не делаем
-			}
-
-			if (pFont->IsUnderline())
-			{
-				fUndX1 += (float)dX;
-				fUndX2 += (float)dX;
-				fUndY1 += (float)dY;
-				fUndY2 += (float)dY;
-			}
-
-			bool bChangeCTM = false;
-
-			if (iGraphicsMode == GM_COMPATIBLE)
-			{
-				double dShiftX = 0;
-				double dShiftY = 0;
-
-				m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
-				if (dXScale < -0.00001)
-				{
-					dX += fabs(fW);
-
-					if (m_pFile->IsWindowFlippedX())
-					{
-						dShiftX = (2 * dX - fabs(fW)) * dM11;
+						fW = (float)dTempTextW;
 					}
 					else
 					{
-						dShiftX = (2 * dX + fabs(fW)) * dM11;
+						fW = (float)(dFontHeight * wsString.length());
 					}
 
-					dM11 = fabs(dM11);
+					fH = dFontHeight * 1.2;
 				}
-
-				if (dYScale < -0.00001)
+				else
 				{
-					dY += fabs(fH);
+					pFontManager->LoadFontByName(wsFaceName, dFontHeight, lStyle, 72, 72);
+					pFontManager->SetCharSpacing(dFontCharSpace * 72 / 25.4);
 
-					dShiftY = (2 * dY - fabs(fH)) * dM22;
+					double dMmToPt = 25.4 / 72;
 
-					dM22 = fabs(dM22);
-				}
+					double dFHeight = dFontHeight;
+					double dFDescent = dFontHeight;
 
-				m_pRenderer->ResetTransform();
-				m_pRenderer->SetTransform(dM11, dM12, dM21, dM22, dShiftX + dRx, dShiftY + dRy);
+					NSFonts::IFontFile* pFontFile = pFontManager->GetFile();
 
-				bChangeCTM = true;
-			}
-
-			if (0 != pFont->GetEscapement())
-			{
-				// TODO: тут реализован только параметр shEscapement, еще нужно реализовать параметр Orientation
-				m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
-
-				double dOldX = dX;
-
-				dX = dX * dCosTheta + dY * dSinTheta;
-				dY = dY * dCosTheta - dOldX * dSinTheta;
-
-				m_pRenderer->ResetTransform();
-				m_pRenderer->SetTransform(dCosTheta * dM11, dSinTheta * dM22,
-										  -dSinTheta * dM11, dCosTheta * dM22,
-										  dRx, dRy);
-
-				bChangeCTM = true;
-			}
-
-			// Для начала нарисуем фон текста
-			if (OPAQUE == m_pFile->GetTextBgMode())
-			{
-				m_pRenderer->put_BrushType(c_BrushTypeSolid);
-				m_pRenderer->put_BrushAlpha1(255);
-				m_pRenderer->put_BrushColor1(m_pFile->GetTextBgColor());
-
-				m_pRenderer->BeginCommand(c_nPathType);
-				m_pRenderer->PathCommandStart();
-				m_pRenderer->PathCommandMoveTo(dX + fL, dY + fT);
-				m_pRenderer->PathCommandLineTo(dX + fL + fW, dY + fT);
-				m_pRenderer->PathCommandLineTo(dX + fL + fW, dY + fT + fH);
-				m_pRenderer->PathCommandLineTo(dX + fL, dY + fT + fH);
-				m_pRenderer->DrawPath(c_nWindingFillMode);
-				m_pRenderer->EndCommand(c_nPathType);
-				m_pRenderer->PathCommandEnd();
-			}
-
-			// Нарисуем подчеркивание
-			if (pFont->IsUnderline())
-			{
-				m_pRenderer->put_PenSize((double)fUndSize);
-				m_pRenderer->put_PenLineEndCap(0);
-				m_pRenderer->put_PenLineStartCap(0);
-
-				m_pRenderer->BeginCommand(c_nPathType);
-				m_pRenderer->PathCommandStart();
-				m_pRenderer->PathCommandMoveTo(fUndX1, fUndY1);
-				m_pRenderer->PathCommandLineTo(fUndX2, fUndY2);
-				m_pRenderer->DrawPath(c_nStroke);
-				m_pRenderer->EndCommand(c_nPathType);
-				m_pRenderer->PathCommandEnd();
-			}
-
-			// Установим цвет текста
-			m_pRenderer->put_BrushType(c_BrushTypeSolid);
-			m_pRenderer->put_BrushColor1(m_pFile->GetTextColor());
-			m_pRenderer->put_BrushAlpha1(255);
-
-			// Рисуем сам текст
-
-			if (NULL == pDx)
-			{
-				m_pRenderer->CommandDrawText(wsText, dX, dY, 0, 0);
-			}
-			else
-			{
-				unsigned int unUnicodeLen = 0;
-				unsigned int* pUnicode = NSStringExt::CConverter::GetUtf32FromUnicode(wsText, unUnicodeLen);
-				if (pUnicode && unUnicodeLen)
-				{
-					double dOffset = 0;
-					double dKoefX = m_dScaleX;
-					for (unsigned int unCharIndex = 0; unCharIndex < unUnicodeLen; unCharIndex++)
+					if (pFontFile)
 					{
-						m_pRenderer->CommandDrawTextCHAR(pUnicode[unCharIndex], dX + dOffset, dY, 0, 0);
-						dOffset += (pDx[unCharIndex] * dKoefX);
+						dFHeight  *= pFontFile->GetHeight() / pFontFile->Units_Per_Em() * dMmToPt;
+						dFDescent *= pFontFile->GetDescender() / pFontFile->Units_Per_Em() * dMmToPt;
+					}
+					double dFAscent  = dFHeight - std::abs(dFDescent);
+
+					if (NULL != pDx && unCharsCount > 1)
+					{
+						// Тогда мы складываем все pDx кроме последнего символа, последний считаем отдельно
+						double dTempTextW = 0;
+						for (unsigned int unCharIndex = 0; unCharIndex < unCharsCount - 1; unCharIndex++)
+						{
+							dTempTextW += pDx[unCharIndex];
+						}
+						dTempTextW *= m_dScaleX;
+
+						std::wstring wsTempText;
+						wsTempText += wsString.at(wsString.length() - 1);
+						//wsTempText += wsText.at(unCharsCount - 1);
+
+						pFontManager->LoadString1(wsTempText, 0, 0);
+						TBBox oBox = pFontManager->MeasureString2();
+						dTempTextW += dMmToPt * (oBox.fMaxX - oBox.fMinX);
+
+						fL = 0;
+						fW = (float)dTempTextW;
+					}
+					else
+					{
+						pFontManager->LoadString1(wsString, 0, 0);
+						TBBox oBox = pFontManager->MeasureString2();
+						fL = (float)dMmToPt * (oBox.fMinX);
+						fW = (float)dMmToPt * (oBox.fMaxX - oBox.fMinX);
 					}
 
-					delete[] pUnicode;
-				}
-			}
-			
+					// Просчитаем положение подчеркивания
+					pFontManager->GetUnderline(&fUndX1, &fUndY1, &fUndX2, &fUndY2, &fUndSize);
+					fUndY1   *= (float)dMmToPt;
+					fUndY2   *= (float)dMmToPt;
+					fUndSize *= (float)dMmToPt / 2;
 
-			if (bChangeCTM)
-				m_pRenderer->ResetTransform();
+					fUndX1 = fL;
+					fUndX2 = fL + fW;
+
+					fT = (float)-dFAscent;
+					fH = (float)dFHeight;
+				}
+
+				TPointD oTextPoint = TranslatePoint(_dX, _dY);
+				double dX = oTextPoint.x;
+				double dY = oTextPoint.y + dSkipY;
+
+				dSkipY += fH + lLogicalFontHeight * 1.2;
+
+				// Найдем начальную точку текста
+				unsigned int ulTextAlign = m_pFile->GetTextAlign() & TA_MASK;
+
+				unsigned int ulVTextAlign = m_pFile->GetTextAlign() >> 8;
+
+				if (ulTextAlign & TA_BASELINE)
+				{
+					ulTextAlign -= TA_BASELINE;
+					// Ничего не делаем
+				}
+				else if (ulTextAlign & TA_BOTTOM || ulVTextAlign == VTA_BOTTOM)
+				{
+					float fTemp = -(fH + fT / 2);
+
+					dX += -fTemp * dSinTheta;
+					dY +=  fTemp * dCosTheta;
+
+					if (ulVTextAlign != VTA_BOTTOM)
+						ulTextAlign -= TA_BOTTOM;
+				}
+				else if (ulVTextAlign == VTA_CENTER)
+				{
+					float fTemp = (fH + fT / 2) / 2;
+
+					dX += -fTemp * dSinTheta;
+					dY +=  fTemp * dCosTheta;
+				}
+				else // if (ulTextAlign & TA_TOP)
+				{
+					float fTemp = -fT;
+
+					dX += -fTemp * dSinTheta;
+					dY +=  fTemp * dCosTheta;
+				}
+
+				if (ulTextAlign == TA_RIGHT)
+				{
+					dX += -fW * dCosTheta;
+					dY += -fW * dSinTheta;
+				}
+				else if (ulTextAlign == TA_CENTER)
+				{
+					dX += -fW / 2 * dCosTheta;
+					dY += -fW / 2 * dSinTheta;
+				}
+				else //if (ulTextAlign & TA_LEFT)
+				{
+					// Ничего не делаем
+				}
+
+
+	//			unsigned int ulTextAlign = m_pFile->GetTextAlign() & TA_MASK;
+	//			unsigned int ulVTextAlign = m_pFile->GetTextAlign() >> 8;
+
+	//			if (ulVTextAlign == VTA_CENTER)
+	//			{
+	//				float fTemp = (fH) / 2;
+
+	//				dX += -fTemp * dSinTheta;
+	//				dY +=  fTemp * dCosTheta;
+	//			}
+	//			else if (ulVTextAlign == VTA_BOTTOM)
+	//			{
+	//				float fTemp = -(-fT + fH);
+
+	//				dX += -fTemp * dSinTheta;
+	//				dY +=  fTemp * dCosTheta;
+	//			}
+
+	//			if (ulTextAlign & TA_BASELINE)
+	//				ulTextAlign -= TA_BASELINE;
+	//			else if (ulVTextAlign == VTA_TOP)
+	//			{
+	//				float fTemp = -fT;
+
+	//				dX += -fTemp * dSinTheta;
+	//				dY +=  fTemp * dCosTheta;
+	//			}
+
+	//			if (ulTextAlign == TA_CENTER)
+	//			{
+	//				dX += -fW / 2 * dCosTheta;
+	//				dY += -fW / 2 * dSinTheta;
+	//			}
+	//			else if (ulTextAlign == TA_RIGHT)
+	//			{
+	//				dX += -fW * dCosTheta;
+	//				dY += -fW * dSinTheta;
+	//			}
+	//			else if (ulTextAlign == TA_BOTTOM && ulVTextAlign != VTA_BOTTOM)
+	//			{
+	//				float fTemp = -(-fT + fH);
+
+	//				dX += -fTemp * dSinTheta;
+	//				dY +=  fTemp * dCosTheta;
+	//			}
+	//			else //if (ulTextAlign & TA_LEFT)
+	//			{
+	//				// Ничего не делаем
+	//			}
+
+				if (pFont->IsUnderline())
+				{
+					fUndX1 += (float)dX;
+					fUndX2 += (float)dX;
+					fUndY1 += (float)dY;
+					fUndY2 += (float)dY;
+				}
+
+				bool bChangeCTM = false;
+
+				if (iGraphicsMode == GM_COMPATIBLE)
+				{
+					double dShiftX = 0;
+					double dShiftY = 0;
+
+					m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
+					if (dXScale < -0.00001)
+					{
+						dX += fabs(fW);
+
+						if (m_pFile->IsWindowFlippedX())
+						{
+							dShiftX = (2 * dX - fabs(fW)) * dM11;
+						}
+						else
+						{
+							dShiftX = (2 * dX + fabs(fW)) * dM11;
+						}
+
+						dM11 = fabs(dM11);
+					}
+
+					if (dYScale < -0.00001)
+					{
+						dY += fabs(fH);
+
+						dShiftY = (2 * dY - fabs(fH)) * dM22;
+
+						dM22 = fabs(dM22);
+					}
+
+					m_pRenderer->ResetTransform();
+					m_pRenderer->SetTransform(dM11, dM12, dM21, dM22, dShiftX + dRx, dShiftY + dRy);
+
+					bChangeCTM = true;
+				}
+
+				if (0 != pFont->GetEscapement())
+				{
+					// TODO: тут реализован только параметр shEscapement, еще нужно реализовать параметр Orientation
+					m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
+
+					double dOldX = dX;
+
+					dX = dX * dCosTheta + dY * dSinTheta;
+					dY = dY * dCosTheta - dOldX * dSinTheta;
+
+					m_pRenderer->ResetTransform();
+					m_pRenderer->SetTransform(dCosTheta * dM11, dSinTheta * dM22,
+											  -dSinTheta * dM11, dCosTheta * dM22,
+											  dRx, dRy);
+
+					bChangeCTM = true;
+				}
+
+				// Для начала нарисуем фон текста
+				if (OPAQUE == m_pFile->GetTextBgMode())
+				{
+					m_pRenderer->put_BrushType(c_BrushTypeSolid);
+					m_pRenderer->put_BrushAlpha1(255);
+					m_pRenderer->put_BrushColor1(m_pFile->GetTextBgColor());
+
+					m_pRenderer->BeginCommand(c_nPathType);
+					m_pRenderer->PathCommandStart();
+					m_pRenderer->PathCommandMoveTo(dX + fL, dY + fT);
+					m_pRenderer->PathCommandLineTo(dX + fL + fW, dY + fT);
+					m_pRenderer->PathCommandLineTo(dX + fL + fW, dY + fT + fH);
+					m_pRenderer->PathCommandLineTo(dX + fL, dY + fT + fH);
+					m_pRenderer->DrawPath(c_nWindingFillMode);
+					m_pRenderer->EndCommand(c_nPathType);
+					m_pRenderer->PathCommandEnd();
+				}
+
+				// Нарисуем подчеркивание
+				if (pFont->IsUnderline())
+				{
+					m_pRenderer->put_PenSize((double)fUndSize);
+					m_pRenderer->put_PenLineEndCap(0);
+					m_pRenderer->put_PenLineStartCap(0);
+
+					m_pRenderer->BeginCommand(c_nPathType);
+					m_pRenderer->PathCommandStart();
+					m_pRenderer->PathCommandMoveTo(fUndX1, fUndY1);
+					m_pRenderer->PathCommandLineTo(fUndX2, fUndY2);
+					m_pRenderer->DrawPath(c_nStroke);
+					m_pRenderer->EndCommand(c_nPathType);
+					m_pRenderer->PathCommandEnd();
+				}
+
+				// Установим цвет текста
+				m_pRenderer->put_BrushType(c_BrushTypeSolid);
+				m_pRenderer->put_BrushColor1(m_pFile->GetTextColor());
+				m_pRenderer->put_BrushAlpha1(255);
+
+				// Рисуем сам текст
+
+				if (NULL == pDx)
+				{
+					m_pRenderer->CommandDrawText(wsString, dX, dY, 0, 0);
+				}
+				else
+				{
+					unsigned int unUnicodeLen = 0;
+					unsigned int* pUnicode = NSStringExt::CConverter::GetUtf32FromUnicode(wsString, unUnicodeLen);
+					if (pUnicode && unUnicodeLen)
+					{
+						double dOffset = 0;
+						double dKoefX = m_dScaleX;
+						for (unsigned int unCharIndex = 0; unCharIndex < unUnicodeLen; unCharIndex++)
+						{
+							m_pRenderer->CommandDrawTextCHAR(pUnicode[unCharIndex], dX + dOffset, dY, 0, 0);
+							dOffset += (pDx[unCharIndex] * dKoefX);
+						}
+
+						delete[] pUnicode;
+					}
+				}
+
+				if (bChangeCTM)
+					m_pRenderer->ResetTransform();
+			}
 		}
 		void StartPath()
 		{

@@ -442,7 +442,7 @@ namespace MetaFile
 				}
 			}
 
-			m_pInterpretator->DrawString(wsText, unCharsCount, dX, dY, pdDx);
+			m_pInterpretator->DrawString(wsText, unCharsCount, dX, dY, pdDx, 1, GetPixelWidth(), GetPixelHeight());
 
 			RELEASEARRAYOBJECTS(pdDx);
 		}
@@ -779,16 +779,16 @@ namespace MetaFile
 
 		// Если у нас не задан Output, значит мы считаем, что идет сканирование метафайла.
 		// Во время сканирования мы регистрируем все точки и вычисляем BoundingBox
-		if (NULL != m_pInterpretator)
-		{
-			m_oRect = GetBoundingBox();
-			m_pDC->SetWindowOff(m_oRect.nLeft, m_oRect.nTop);
-			m_pDC->SetWindowExt(m_oRect.nRight - m_oRect.nLeft, m_oRect.nBottom - m_oRect.nTop);
-		}
-		else
-		{
+//		if (NULL != m_pInterpretator)
+//		{
+//			m_oRect = GetBoundingBox();
+//			m_pDC->SetWindowOff(m_oRect.nLeft, m_oRect.nTop);
+//			m_pDC->SetWindowExt(m_oRect.nRight - m_oRect.nLeft, m_oRect.nBottom - m_oRect.nTop);
+////		}
+//		else
+//		{
 			m_bFirstPoint = true;
-		}
+//		}
 	}
 
 	void CWmfParserBase::HANDLE_META_BITBLT(const TWmfBitBlt &oWmfBitBlt, CDataStream &oDataStream)

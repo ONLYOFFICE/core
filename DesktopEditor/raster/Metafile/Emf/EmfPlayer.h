@@ -55,8 +55,8 @@ namespace MetaFile
 		CEmfPlayer(CEmfParserBase* pParser);
 		~CEmfPlayer();
 		void Clear();
-		CEmfDC* SaveDC();
-		CEmfDC* RestoreDC();
+		CEmfDC* SaveDC(int nIndex = -1);
+		CEmfDC* RestoreDC(int nIndex);
 		CEmfDC* GetDC();
 		void RegisterObject(unsigned int ulIndex, CEmfObjectBase* pObject);
 		void SelectObject(unsigned int ulIndex);
@@ -72,9 +72,10 @@ namespace MetaFile
 	private:
 
 		typedef std::map < unsigned int, CEmfObjectBase* > CEmfObjectMap;
+		typedef std::map < int, CEmfDC* > EmfDCsMap;
 
 		CEmfDC*              m_pDC;
-		std::vector<CEmfDC*> m_vDCStack;
+		EmfDCsMap            m_mDCs;
 		CEmfParserBase*	     m_pParser;
 		CEmfObjectMap        m_mObjects;
 	};

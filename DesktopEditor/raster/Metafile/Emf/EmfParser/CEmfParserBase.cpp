@@ -944,10 +944,11 @@ namespace MetaFile
 
 	void CEmfParserBase::HANDLE_EMR_SAVEDC()
 	{
-		m_pDC = m_oPlayer.SaveDC();
-
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_SAVEDC();
+
+		m_pDC = m_oPlayer.SaveDC();
+		UpdateOutputDC();
 	}
 
 	void CEmfParserBase::HANDLE_EMR_RESTOREDC(int &nIndexDC)
@@ -961,11 +962,8 @@ namespace MetaFile
 			return;
 		}
 
-		int lCount = -nIndexDC;
-		for (int lIndex = 0; lIndex < lCount; lIndex++)
-			m_oPlayer.RestoreDC();
+		m_pDC = m_oPlayer.RestoreDC(nIndexDC);
 
-		m_pDC = m_oPlayer.GetDC();
 		UpdateOutputDC();
 	}
 

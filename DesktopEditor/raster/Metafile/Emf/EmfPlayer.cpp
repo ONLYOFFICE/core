@@ -45,41 +45,41 @@ namespace MetaFile
 
 		m_pParser = pParser;
 		m_pDC = pDC;
-		m_vDCStack.push_back(pDC);
+		m_mDCs.insert(std::pair<int, CEmfDC*>(-1, m_pDC));
 
 		InitStockObjects();
 	};
 	CEmfPlayer::~CEmfPlayer()
 	{
-		for (int nIndex = 0; nIndex < m_vDCStack.size(); nIndex++)
-		{
-			CEmfDC* pDC = m_vDCStack.at(nIndex);
-			delete pDC;
-		}
-		m_vDCStack.clear();
-
 		for (CEmfObjectMap::iterator oIterator = m_mObjects.begin(); oIterator != m_mObjects.end(); oIterator++)
 		{
 			CEmfObjectBase* pOldObject = oIterator->second;
 			delete pOldObject;
 		}
 		m_mObjects.clear();
+
+		for (EmfDCsMap::iterator oIterator = m_mDCs.begin();  oIterator != m_mDCs.end(); ++oIterator)
+		{
+			CEmfDC* pDC = oIterator->second;
+			delete pDC;
+		}
+		m_mDCs.clear();
 	}
 	void    CEmfPlayer::Clear()
 	{
-		for (int nIndex = 0; nIndex < m_vDCStack.size(); nIndex++)
-		{
-			CEmfDC* pDC = m_vDCStack.at(nIndex);
-			delete pDC;
-		}
-		m_vDCStack.clear();
-
 		for (CEmfObjectMap::iterator oIterator = m_mObjects.begin(); oIterator != m_mObjects.end(); oIterator++)
 		{
 			CEmfObjectBase* pOldObject = oIterator->second;
 			delete pOldObject;
 		}
 		m_mObjects.clear();
+
+		for (EmfDCsMap::iterator oIterator = m_mDCs.begin();  oIterator != m_mDCs.end(); ++oIterator)
+		{
+			CEmfDC* pDC = oIterator->second;
+			delete pDC;
+		}
+		m_mDCs.clear();
 
 		CEmfDC* pDC = new CEmfDC(this);
 		if (!pDC)
@@ -89,13 +89,14 @@ namespace MetaFile
 		}
 
 		m_pDC = pDC;
-		m_vDCStack.push_back(pDC);
+		m_mDCs.insert(std::pair<int, CEmfDC*>(-1, m_pDC));
 		InitStockObjects();
 
 		SelectObject(0x80000007); // BLACK_PEN
 		SelectObject(0x80000000); // WHITE_BRUSH
 	}
-	CEmfDC* CEmfPlayer::SaveDC()
+
+	CEmfDC* CEmfPlayer::SaveDC(int nIndex)
 	{
 		if (!m_pDC)
 		{
@@ -107,29 +108,68 @@ namespace MetaFile
 		if (!pNewDC)
 		{
 			m_pParser->SetError();
-			return NULL;
+			return m_pDC;
 		}
 
-		m_vDCStack.push_back(pNewDC);
-		m_pDC = pNewDC;
-		return pNewDC;
+		if (nIndex < 0)
+		{
+			if (m_mDCs.empty() || m_mDCs.begin()->first >= 0)
+				m_mDCs.insert(std::pair<int, CEmfDC*>(-1, pNewDC));
+			else
+				m_mDCs.insert(std::pair<int, CEmfDC*>(m_mDCs.begin()->first - 1, pNewDC));
+
+			m_pDC = pNewDC;
+		}
+		else
+		{
+			EmfDCsMap::iterator oFound = m_mDCs.find(nIndex);
+
+			if (m_mDCs.end() != oFound)
+			{
+				delete oFound->second;
+				oFound->second = pNewDC;
+			}
+			else
+				m_mDCs.insert(std::pair<int, CEmfDC*>(nIndex, pNewDC));
+		}
+
+		return m_pDC;
 	}
-	CEmfDC* CEmfPlayer::RestoreDC()
+
+	CEmfDC *CEmfPlayer::RestoreDC(int nIndex)
 	{
-		if (m_vDCStack.size() <= 1)
+		if (nIndex < 0)
+		{
+			if (m_mDCs.empty() || m_mDCs.begin()->first > nIndex)
+			{
+				m_pParser->SetError();
+				return m_pDC;
+			}
+
+			for (int nDeleteIndex = 0; nDeleteIndex > nIndex; --nDeleteIndex)
+			{
+				delete m_mDCs.begin()->second;
+				m_mDCs.erase(m_mDCs.begin());
+			}
+
+			m_pDC = m_mDCs.begin()->second;
+			return m_pDC;
+		}
+
+		EmfDCsMap::iterator oFound = m_mDCs.find(nIndex);
+
+		if (m_mDCs.end() != oFound)
+		{
+			m_pDC = oFound->second;
+			return m_pDC;
+		}
+		else
 		{
 			m_pParser->SetError();
 			return m_pDC;
 		}
-
-		CEmfDC* pDC = m_vDCStack.at(m_vDCStack.size() - 1);
-		m_vDCStack.pop_back();
-		delete pDC;
-
-		pDC = m_vDCStack.at(m_vDCStack.size() - 1);
-		m_pDC = pDC;
-		return m_pDC;
 	}
+
 	CEmfDC* CEmfPlayer::GetDC()
 	{
 		return m_pDC;
@@ -181,15 +221,15 @@ namespace MetaFile
 		{
 			CEmfObjectBase* pObject = oPos->second;
 
-			for (int nIndex = 0; nIndex < m_vDCStack.size(); nIndex++)
+			for (std::pair<int, CEmfDC*> oElement : m_mDCs)
 			{
-				CEmfDC* pDC = m_vDCStack.at(nIndex);
+				CEmfDC* pDC = oElement.second;
 
 				switch (pObject->GetType())
 				{
-				case EMF_OBJECT_BRUSH: pDC->RemoveBrush((CEmfLogBrushEx*)pObject); break;
-				case EMF_OBJECT_FONT: pDC->RemoveFont((CEmfLogFont*)pObject); break;
-				case EMF_OBJECT_PEN: pDC->RemovePen((CEmfLogPen*)pObject); break;
+					case EMF_OBJECT_BRUSH: pDC->RemoveBrush((CEmfLogBrushEx*)pObject); break;
+					case EMF_OBJECT_FONT: pDC->RemoveFont((CEmfLogFont*)pObject); break;
+					case EMF_OBJECT_PEN: pDC->RemovePen((CEmfLogPen*)pObject); break;
 				}
 			}
 

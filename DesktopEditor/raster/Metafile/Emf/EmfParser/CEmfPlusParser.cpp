@@ -248,7 +248,7 @@ namespace MetaFile
 					//Control Record Types (Типы управляющих записей)
 				case EMFPLUS_ENDOFFILE: Read_EMFPLUS_ENDOFFILE();       break; break;
 				case EMFPLUS_GETDC:     Read_EMFPLUS_GETDC();           break;
-				case EMFPLUS_HEADER:    Read_EMRPLUS_HEADER(unShFlags); break;
+				case EMFPLUS_HEADER:    Read_EMFPLUS_HEADER(unShFlags); break;
 
 					//Drawing Record Types (Типы записей чертежа)
 				case EMFPLUS_CLEAR:             Read_EMFPLUS_CLEAR();                           break;
@@ -314,7 +314,7 @@ namespace MetaFile
 			LOGGING(L"Skip: " << nNeedSkip)
 
 			m_ulRecordSize = 0;
-		}while(m_oStream.CanRead() > 4);
+		}while(m_oStream.CanRead() > 12);
 
 		if (!CheckError())
 			m_oStream.SeekToStart();
@@ -1014,7 +1014,7 @@ namespace MetaFile
 		m_oStream >> unVersion;
 		m_oStream >> unRegionCount;
 
-		for (unsigned int unIndex = 0; unIndex < unRegionCount; )
+		for (unsigned int unIndex = 0; unIndex < unRegionCount + 1; )
 		{
 			CEmfPlusRegionNode *pNode = ReadRegionNode(unIndex);
 
@@ -1140,6 +1140,16 @@ namespace MetaFile
 
 		if (m_mObjects.end() != oFoundElement && oFoundElement->second->GetObjectType() == ObjectTypeRegion)
 			return (CEmfPlusRegion*)oFoundElement->second;
+
+		return NULL;
+	}
+
+	CEmfPlusStringFormat *CEmfPlusParser::GetStringFormat(unsigned int unStringFormatIndex)
+	{
+		EmfPlusObjects::const_iterator oFoundElement = m_mObjects.find(unStringFormatIndex);
+
+		if (m_mObjects.end() != oFoundElement && oFoundElement->second->GetObjectType() == ObjectTypeStringFormat)
+			return (CEmfPlusStringFormat*)oFoundElement->second;
 
 		return NULL;
 	}
@@ -1588,7 +1598,7 @@ namespace MetaFile
 		RELEASEARRAYOBJECTS(pNewBuffer);
 	}
 
-	void CEmfPlusParser::Read_EMRPLUS_HEADER(unsigned short unShFlags)
+	void CEmfPlusParser::Read_EMFPLUS_HEADER(unsigned short unShFlags)
 	{
 		m_oStream.Skip(4); //Version
 
@@ -1846,7 +1856,7 @@ namespace MetaFile
 
 		RELEASEARRAYOBJECTS(pString)
 
-				std::vector<TEmfPlusPointF> arGlyphPos = ReadPoints<TEmfPlusPointF>(unGlyphCount);
+		std::vector<TEmfPlusPointF> arGlyphPos = ReadPoints<TEmfPlusPointF>(unGlyphCount);
 
 		if (0x00000001 == unMatrixPresent)
 		{
@@ -2213,9 +2223,8 @@ namespace MetaFile
 
 		RELEASEARRAYOBJECTS(pString)
 
-				//----------
-				if (NULL == m_pInterpretator)
-				return;
+		if (NULL == m_pInterpretator)
+			return;
 
 		CEmfPlusFont *pFont = GetFont(shOgjectIndex);
 
@@ -2223,6 +2232,42 @@ namespace MetaFile
 			return;
 
 		m_pDC->SetFont(pFont);
+
+		CEmfPlusStringFormat *pStringFormat = GetStringFormat(unFormatID);
+
+		unsigned int unOldTextAlign = m_pDC->GetTextAlign();
+
+		double dX = oRect.dX;
+		double dY = oRect.dY;
+
+		if (NULL != pStringFormat)
+		{
+			unsigned int unNewTextAlign = 0;
+
+			if (StringAlignmentCenter == pStringFormat->unStringAlignment)
+			{
+				unNewTextAlign |= TA_CENTER;
+				dX += oRect.dWidth / 2;
+			}
+			else if (StringAlignmentFar == pStringFormat->unStringAlignment)
+			{
+				unNewTextAlign |= TA_RIGHT;
+				dX += oRect.dWidth;
+			}
+
+			if (StringAlignmentCenter == pStringFormat->unLineAlign)
+			{
+				unNewTextAlign |= VTA_CENTER << 8;
+				dY += oRect.dHeight / 4;
+			}
+			else if (StringAlignmentFar == pStringFormat->unLineAlign)
+			{
+				unNewTextAlign |= VTA_BOTTOM << 8;
+				dY += oRect.dHeight;
+			}
+
+			m_pDC->SetTextAlign(unNewTextAlign);
+		}
 
 		if ((unShFlags >>(15)) & 1 )//BrushId = Color
 		{
@@ -2237,7 +2282,7 @@ namespace MetaFile
 
 			m_pDC->SetTextColor(oColor);
 
-			m_pInterpretator->DrawString(wsString, wsString.length(), oRect.dX, oRect.dY, NULL, GM_ADVANCED, 1, 1);
+			m_pInterpretator->DrawString(wsString, wsString.length(), dX, dY, NULL, GM_ADVANCED);
 
 			m_pDC->SetTextColor(oTextColor);
 		}
@@ -2258,10 +2303,12 @@ namespace MetaFile
 
 			m_pDC->SetTextColor(oColor);
 
-			m_pInterpretator->DrawString(wsString, wsString.length(), oRect.dX, oRect.dY, NULL, GM_ADVANCED, 1, 1);
+			m_pInterpretator->DrawString(wsString, wsString.length(), dX, dY, NULL, GM_ADVANCED);
 
 			m_pDC->SetTextColor(oTextColor);
 		}
+
+		m_pDC->SetTextAlign(unOldTextAlign);
 
 		m_pDC->RemoveFont(pFont);
 	}
@@ -2639,6 +2686,13 @@ namespace MetaFile
 		case ObjectTypeStringFormat:
 		{
 			LOGGING(L"Object String Format")
+
+			CEmfPlusStringFormat *pStringFormat = new CEmfPlusStringFormat;
+
+			m_oStream >> *pStringFormat;
+
+			RegisterObject(pStringFormat, shObjectIndex);
+
 			break;
 		}
 		case ObjectTypeImageAttributes:
@@ -2770,9 +2824,7 @@ namespace MetaFile
 
 		m_oStream >> unStackIndex;
 
-		//                m_pDC = m_oPlayer.SaveDC();
-
-		//TODO: реализовать
+		m_pDC = m_oPlayer.RestoreDC(unStackIndex);
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_SAVE()
@@ -2781,9 +2833,8 @@ namespace MetaFile
 
 		m_oStream >> unStackIndex;
 
-		//                m_pDC = m_oPlayer.RestoreDC();
-
-		//TODO: реализовать
+		m_pDC = m_oPlayer.SaveDC(unStackIndex);
+		UpdateOutputDC();
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_SETTSCLIP(unsigned short unShFlags)
@@ -2834,13 +2885,10 @@ namespace MetaFile
 
 	void CEmfPlusParser::Read_EMFPLUS_MULTIPLYWORLDTRANSFORM(unsigned short unShFlags)
 	{
-		m_bBanEmfProcessing = true;
-
 		TEmfPlusXForm oMatrix;
 
 		m_oStream >> oMatrix;
 
-		//TODO: проверить правильность действий
 		UpdateMatrix(oMatrix);
 		m_pDC->MultiplyTransform(oMatrix, (((unShFlags >>(14)) & 1 )) ? MWT_RIGHTMULTIPLY : MWT_LEFTMULTIPLY);
 		UpdateOutputDC();
@@ -2848,16 +2896,12 @@ namespace MetaFile
 
 	void CEmfPlusParser::Read_EMFPLUS_RESETWORLDTRANSFORM()
 	{
-		m_bBanEmfProcessing = true;
-
 		m_pDC->ResetTransform();
 		UpdateOutputDC();
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_ROTATEWORLDTRANSFORM(unsigned short unShFlags)
 	{
-		m_bBanEmfProcessing = true;
-
 		double dAngle;
 
 		m_oStream >> dAngle;
@@ -2871,8 +2915,6 @@ namespace MetaFile
 
 	void CEmfPlusParser::Read_EMFPLUS_SCALEWORLDTRANSFORM(unsigned short unShFlags)
 	{
-		m_bBanEmfProcessing = true;
-
 		double dSx, dSy;
 
 		m_oStream >> dSx;
@@ -2887,8 +2929,6 @@ namespace MetaFile
 
 	void CEmfPlusParser::Read_EMFPLUS_SETPAGETRANSFORM(unsigned short unShFlags)
 	{
-		m_bBanEmfProcessing = true;
-
 		short shPageUnit = ExpressValue(unShFlags, 0, 7);
 
 		if (shPageUnit == UnitTypeDisplay || shPageUnit == UnitTypeWorld)
@@ -2911,8 +2951,6 @@ namespace MetaFile
 
 	void CEmfPlusParser::Read_EMFPLUS_SETWORLDTRANSFORM()
 	{
-		m_bBanEmfProcessing = true;
-
 		TEmfPlusXForm oMatrix;
 
 		m_oStream >> oMatrix;
@@ -2924,8 +2962,6 @@ namespace MetaFile
 
 	void CEmfPlusParser::Read_EMFPLUS_TRANSLATEWORLDTRANSFORM(unsigned short unShFlags)
 	{
-		m_bBanEmfProcessing = true;
-
 		double dX, dY;
 
 		m_oStream >> dX;
@@ -2944,7 +2980,6 @@ namespace MetaFile
 			m_pInterpretator->End();
 
 		m_bBanEmfProcessing = false;
-		//TODO: реализовать
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_GETDC()

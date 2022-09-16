@@ -309,14 +309,6 @@ namespace MetaFile
 		CLineCapData	*LineEndCapData;
 	};
 
-        typedef  enum
-        {
-                FontStyleBold           = 0x00000001,
-                FontStyleItalic         = 0x00000002,
-                FontStyleUnderline      = 0x00000004,
-                FontStyleStrikeout      = 0x00000008
-        } EEmfPlusFontStyle;
-
 	class CEmfPlusFont : public CEmfPlusObject, public IFont
 	{
 	    public:
@@ -330,10 +322,10 @@ namespace MetaFile
 			return EMF_OBJECT_FONT;
 		}
 
-                virtual EEmfPlusObjectType GetObjectType() override
-                {
-                        return ObjectTypeFont;
-                }
+		virtual EEmfPlusObjectType GetObjectType() override
+		{
+			return ObjectTypeFont;
+		}
 
 		double	GetHeight()
 		{
@@ -813,6 +805,50 @@ namespace MetaFile
 
 				std::vector<CEmfPlusRegionNode*> arNodes;
         };
+
+		typedef  enum
+		{
+				FontStyleBold           = 0x00000001,
+				FontStyleItalic         = 0x00000002,
+				FontStyleUnderline      = 0x00000004,
+				FontStyleStrikeout      = 0x00000008
+		} EEmfPlusFontStyle;
+
+		typedef  enum
+		{
+			StringAlignmentNear   = 0x00000000,
+			StringAlignmentCenter = 0x00000001,
+			StringAlignmentFar   = 0x00000002
+		} EmfPlusStringAlignment;
+
+		typedef  enum
+		{
+			StringTrimmingNone              = 0x00000000,
+			StringTrimmingCharacter         = 0x00000001,
+			StringTrimmingWord              = 0x00000002,
+			StringTrimmingEllipsisCharacter = 0x00000003,
+			StringTrimmingEllipsisWord      = 0x00000004,
+			StringTrimmingEllipsisPath      = 0x00000005
+		} EmfPlusStringTrimming;
+
+		class CEmfPlusStringFormat : public CEmfPlusObject
+		{
+			public:
+				CEmfPlusStringFormat() : CEmfPlusObject() {};
+				virtual EEmfPlusObjectType GetObjectType() override
+				{
+						return ObjectTypeStringFormat;
+				}
+
+				unsigned int unStringFormatFlags;
+				unsigned int unStringAlignment;
+				unsigned int unLineAlign;
+				double dFirstTabOffset;
+				double dLeadingMargin;
+				double dTrailingMargin;
+				double dTracking;
+				unsigned int unTrimming;
+		};
 }
 
 #endif // _METAFILE_EMF_EMFPLUSOBJECTS_H

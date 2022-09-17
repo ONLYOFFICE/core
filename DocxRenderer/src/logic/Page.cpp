@@ -14,19 +14,19 @@ namespace NSDocxRenderer
                      NSStructures::CShadow* pShadow, NSStructures::CEdgeText* pEdge, Aggplus::CMatrix* pMatrix,
                      Aggplus::CGraphicsPathSimpleConverter* pSimple, CStyleManager* pStyleManager)
     {
-        m_pFont		= pFont;
-        m_pPen		= pPen;
-        m_pBrush	= pBrush;
-        m_pShadow	= pShadow;
-        m_pEdgeText	= pEdge;
+        m_pFont     = pFont;
+        m_pPen      = pPen;
+        m_pBrush    = pBrush;
+        m_pShadow   = pShadow;
+        m_pEdgeText = pEdge;
 
-        m_pTransform				= pMatrix;
-        m_pSimpleGraphicsConverter	= pSimple;
+        m_pTransform               = pMatrix;
+        m_pSimpleGraphicsConverter = pSimple;
 
         m_pStyleManager = pStyleManager;
 
-        m_oFontManager.m_pFont			= m_pFont;
-        m_oFontManager.m_pTransform		= m_pTransform;
+        m_oFontManager.m_pFont      = m_pFont;
+        m_oFontManager.m_pTransform = m_pTransform;
 
         m_pCurrentLine = nullptr;
 
@@ -678,6 +678,7 @@ namespace NSDocxRenderer
         }
 
         if (m_eTextAssociationType == tatPlainParagraph ||
+            m_eTextAssociationType == tatParagraphToShape ||
             m_eTextAssociationType == tatShapeLine ||
             m_eTextAssociationType == tatPlainLine)
         {
@@ -882,11 +883,23 @@ namespace NSDocxRenderer
                 }
 
                 auto pLineNext = GetNextTextLine(i);
+                double dFontSize = 0;;
 
                 if (pLine->m_eVertAlignType == eVertAlignType::vatSuperscript &&
                     pLineNext->m_eVertAlignType == eVertAlignType::vatBase)
                 {
                     pLine->m_bIsNotNecessaryToUse = true;
+                    for (const auto &pCont : pLine->m_arConts)
+                    {
+                        if (pCont->m_bIsNotNecessaryToUse || !pCont->m_pCont)
+                        {
+                            continue;
+                        }
+
+                        dFontSize = pCont->m_pCont->m_pFontStyle->m_oFont.Size;
+                        break;
+                    }
+
                     for (const auto &pCont : pLine->m_arConts)
                     {
                         if (pCont->m_bIsNotNecessaryToUse)
@@ -896,16 +909,17 @@ namespace NSDocxRenderer
 
                         pCont->m_eVertAlignType = eVertAlignType::vatSuperscript;
 
-                        if (pCont->m_pCont)
-                        {
-                            m_pStyleManager->m_pCurrentStyle->CopyFormat(*pCont->m_pFontStyle);
-                            m_pStyleManager->m_pCurrentStyle->m_oFont.Size = pCont->m_pCont->m_pFontStyle->m_oFont.Size;
-                            pCont->m_pFontStyle = m_pStyleManager->GetStyle();
-                        }
+                        m_pStyleManager->m_pCurrentStyle->CopyFormat(*pCont->m_pFontStyle);
+                        m_pStyleManager->m_pCurrentStyle->m_oFont.Size = dFontSize;
+                        pCont->m_pFontStyle = m_pStyleManager->GetStyle();
 
                         if (pLineNext->m_dLeft > pCont->m_dLeft)
                         {
                             pLineNext->m_dLeft = pCont->m_dLeft;
+                        }
+                        if (pLineNext->m_dRight < pCont->m_dRight)
+                        {
+                            pLineNext->m_dRight = pCont->m_dRight;
                         }
 
                         pLineNext->m_arConts.push_back(new CContText(*pCont));
@@ -917,6 +931,17 @@ namespace NSDocxRenderer
                     pLineNext->m_bIsNotNecessaryToUse = true;
                     for (const auto &pCont : pLineNext->m_arConts)
                     {
+                        if (pCont->m_bIsNotNecessaryToUse || !pCont->m_pCont)
+                        {
+                            continue;
+                        }
+
+                        dFontSize = pCont->m_pCont->m_pFontStyle->m_oFont.Size;
+                        break;
+                    }
+
+                    for (const auto &pCont : pLineNext->m_arConts)
+                    {
                         if (pCont->m_bIsNotNecessaryToUse)
                         {
                             continue;
@@ -924,16 +949,17 @@ namespace NSDocxRenderer
 
                         pCont->m_eVertAlignType = eVertAlignType::vatSubscript;
 
-                        if (pCont->m_pCont)
-                        {
-                            m_pStyleManager->m_pCurrentStyle->CopyFormat(*pCont->m_pFontStyle);
-                            m_pStyleManager->m_pCurrentStyle->m_oFont.Size = pCont->m_pCont->m_pFontStyle->m_oFont.Size;
-                            pCont->m_pFontStyle = m_pStyleManager->GetStyle();
-                        }
+                        m_pStyleManager->m_pCurrentStyle->CopyFormat(*pCont->m_pFontStyle);
+                        m_pStyleManager->m_pCurrentStyle->m_oFont.Size = dFontSize;
+                        pCont->m_pFontStyle = m_pStyleManager->GetStyle();
 
                         if (pLine->m_dLeft > pCont->m_dLeft)
                         {
                             pLine->m_dLeft = pCont->m_dLeft;
+                        }
+                        if (pLine->m_dRight < pCont->m_dRight)
+                        {
+                            pLine->m_dRight = pCont->m_dRight;
                         }
 
                         pLine->m_arConts.push_back(new CContText(*pCont));
@@ -1001,6 +1027,7 @@ namespace NSDocxRenderer
             BuildByTypeShapeLine();
             break;
         case tatPlainParagraph:
+        case tatParagraphToShape:
             BuildByTypePlainParagraph();
             break;
         default:
@@ -1091,9 +1118,9 @@ namespace NSDocxRenderer
 
     void CPage::BuildByTypePlainParagraph()
     {
-        CTextLine* pCurrLine, *pNextLine, *pNextNextLine;
+        CTextLine* pCurrLine, *pNextLine, *pNextNextLine, *pPrevLine;
         double dCurrRight = 0, dNextRight = 0;
-        double dCurrBeforeSpacing = 0, dNextBeforeSpacing = 0;
+        double dCurrBeforeSpacing = 0, dNextBeforeSpacing = 0, dPrevBeforeSpacing = 0;
         double dBeforeSpacingWithShapes = 0;
         //note Все параграфы были сдвинуты на данное значение от верхнего края страницы
         double dPreviousStringBaseline = c_dCORRECTION_FOR_FIRST_PARAGRAPH;
@@ -1111,6 +1138,7 @@ namespace NSDocxRenderer
                 continue;
             }
 
+            dPrevBeforeSpacing = dCurrBeforeSpacing;
             dCurrBeforeSpacing = pCurrLine->CalculateBeforeSpacing(dPreviousStringBaseline);
             dPreviousStringBaseline = pCurrLine->m_dBaselinePos;
 
@@ -1130,6 +1158,10 @@ namespace NSDocxRenderer
 
             dCurrRight = pCurrLine->CalculateRightBorder(m_dWidth);
             pNextLine = GetNextTextLine(nIndex, &nIndexForCheking);
+            if (m_eTextAssociationType == tatParagraphToShape)
+            {
+                pPrevLine = GetPrevTextLine(nIndex);
+            }
 
             //Это не последняя строка
             bIf1 = pNextLine ? true : false;
@@ -1169,6 +1201,9 @@ namespace NSDocxRenderer
                     continue;
                 }
             }
+
+            dCurrBeforeSpacing += dBeforeSpacingWithShapes;
+            dBeforeSpacingWithShapes = 0;
 
             bool bIsSingleLineParagraph = false;
 
@@ -1235,31 +1270,49 @@ namespace NSDocxRenderer
             CParagraph::TextAlignmentType eTextAlignmentType = CParagraph::DetermineTextAlignmentType(
                         pCurrLine, pNextLine, pNextNextLine, m_dWidth, bIsUseNextNextLine, bIsSingleLineParagraph);
 
-            if (bIf1 && !bIsSingleLineParagraph && bIf2 && (bIf3 || bIf4) && (bIf5 || bIf6 || bIf7) && bIf8)
+            auto pParagraph = new CParagraph(m_eTextAssociationType);
+            pParagraph->m_eTextAlignmentType = eTextAlignmentType;
+            if (m_eTextAssociationType == tatPlainParagraph)
             {
-                //наверное это сплошной текст
-                auto pParagraph = new CParagraph(m_eTextAssociationType);
                 pParagraph->m_eTextConversionType = CParagraph::tctTextToParagraph;
-                pParagraph->m_eTextAlignmentType = eTextAlignmentType;
+            }
+            else
+            {
+                pParagraph->m_eTextConversionType = CParagraph::tctTextToShape;
+            }
 
-                //делаем абзац в сплошном тексте
-                pParagraph->m_bIsNeedFirstLineIndent = pCurrLine->m_dLeft > pNextLine->m_dLeft ? true : false;
-
-                pParagraph->m_dFirstLine = pCurrLine->m_dLeft - pNextLine->m_dLeft;
-                pParagraph->m_dRight = std::min(dCurrRight, dNextRight);
+            if (!bIsSingleLineParagraph && bIf2 && (bIf3 || bIf4) && bIf1)
+            {
                 pParagraph->m_dLeft = std::min(pCurrLine->m_dLeft, pNextLine->m_dLeft);
+                pParagraph->m_dRight = std::min(dCurrRight, dNextRight);
                 pParagraph->m_dWidth = std::max(pCurrLine->m_dWidth + pCurrLine->m_arConts.back()->m_dSpaceWidthMM,
                                                 pNextLine->m_dWidth + pNextLine->m_arConts.back()->m_dSpaceWidthMM);
-                pParagraph->m_dTop = pCurrLine->m_dBaselinePos - pCurrLine->m_dHeight;
-                pParagraph->m_dBaselinePos = pCurrLine->m_dBaselinePos;
+                if (pParagraph->m_eTextAlignmentType != CParagraph::tatByCenter)
+                {
+                    pParagraph->m_bIsNeedFirstLineIndent = pCurrLine->m_dLeft > pNextLine->m_dLeft ? true : false;
+                    pParagraph->m_dFirstLine = pCurrLine->m_dLeft - pNextLine->m_dLeft;
+                }
+            }
+            else
+            {
+                pParagraph->m_dLeft = pCurrLine->m_dLeft;
+                pParagraph->m_dRight = dCurrRight;
+                pParagraph->m_dWidth = pCurrLine->m_dWidth;
+            }
 
-                //размер строк во всем параграфе
-                pParagraph->m_dHeight = pCurrLine->m_dHeight;
-                pParagraph->m_dSpaceBefore = std::max(dCurrBeforeSpacing, 0.0);
+            pParagraph->m_dTop = pCurrLine->m_dBaselinePos - pCurrLine->m_dHeight;
 
-                //Объединим 2 строчки в параграф
-                pParagraph->m_arLines.push_back(pCurrLine);
+            //размер строк во всем параграфе
+            pParagraph->m_dHeight = pCurrLine->m_dHeight;
+            pParagraph->m_dSpaceBefore = std::max(dCurrBeforeSpacing, 0.0);
+
+            pParagraph->m_arLines.push_back(pCurrLine);
+            pParagraph->m_nNumLines++;
+
+            if (bIf1 && !bIsSingleLineParagraph && bIf2 && (bIf3 || bIf4) && (bIf5 || bIf6 || bIf7) && bIf8)
+            {
                 pParagraph->m_arLines.push_back(pNextLine);
+                pParagraph->m_nNumLines++;
 
                 if (IsShadingPresent(pCurrLine, pNextLine))
                 {
@@ -1272,6 +1325,7 @@ namespace NSDocxRenderer
                 pCurrLine = pNextLine;
                 pNextLine = GetNextTextLine(nIndex, &nIndexForCheking);
 
+                dPrevBeforeSpacing = dCurrBeforeSpacing;
                 dCurrBeforeSpacing = pCurrLine->CalculateBeforeSpacing(dPreviousStringBaseline);
                 dPreviousStringBaseline = pCurrLine->m_dBaselinePos;
                 double dCorrectionBeforeSpacing = dCurrBeforeSpacing;
@@ -1300,8 +1354,8 @@ namespace NSDocxRenderer
                     //проверим, подходят ли следующие строчки для текущего pParagraph
                     while(pNextLine &&  bIf2 && bIf3 && bIf4 && bIf5 && bIf6)
                     {
-                        //Объединим 2 параграфа-строчки
                         pParagraph->m_arLines.push_back(pNextLine);
+                        pParagraph->m_nNumLines++;
 
                         pParagraph->m_dRight = std::min(pParagraph->m_dRight, dNextRight);
                         pParagraph->m_dLeft = std::min(pParagraph->m_dLeft, pNextLine->m_dLeft);
@@ -1318,6 +1372,7 @@ namespace NSDocxRenderer
                         pCurrLine = pNextLine;
                         pNextLine = GetNextTextLine(nIndex, &nIndexForCheking);
 
+                        dPrevBeforeSpacing = dCurrBeforeSpacing;
                         dCurrBeforeSpacing = pCurrLine->CalculateBeforeSpacing(dPreviousStringBaseline);
                         dPreviousStringBaseline = pCurrLine->m_dBaselinePos;
                         dCorrectionBeforeSpacing = (dCorrectionBeforeSpacing + dCurrBeforeSpacing)/2; //наверное лучше так... текст может быть уже, чем в оригинале
@@ -1344,8 +1399,8 @@ namespace NSDocxRenderer
                 }
 
                 if (eCrossingType != eVerticalCrossingType::vctUnknown &&
-                        eCrossingType != eVerticalCrossingType::vctNoCrossingCurrentAboveNext &&
-                        eCrossingType != eVerticalCrossingType::vctNoCrossingCurrentBelowNext)
+                    eCrossingType != eVerticalCrossingType::vctNoCrossingCurrentAboveNext &&
+                    eCrossingType != eVerticalCrossingType::vctNoCrossingCurrentBelowNext)
                 {
                     CreateSingleLineShape(pNextLine);
                     nIndex++;
@@ -1354,26 +1409,31 @@ namespace NSDocxRenderer
                 //коррекция
                 pParagraph->m_dHeight += dCorrectionBeforeSpacing;
                 pParagraph->m_dSpaceBefore = fabs(pParagraph->m_dSpaceBefore - dCorrectionBeforeSpacing);
-                if (pParagraph->m_eTextAlignmentType == CParagraph::tatByCenter)
-                {
-                    pParagraph->m_dFirstLine = 0;
-                }
-
-                pParagraph->m_dSpaceBefore += dBeforeSpacingWithShapes;
-                dBeforeSpacingWithShapes = 0;
 
                 pParagraph->RemoveHighlightColor();
                 pParagraph->MergeLines();
-
-                m_arParagraphs.push_back(pParagraph);
             }
             else
             {
-                //будет отдельной параграфом-строчкой
-                dCurrBeforeSpacing += dBeforeSpacingWithShapes;
-                dBeforeSpacingWithShapes = 0;
+                if (pCurrLine->m_pDominantShape)
+                {
+                    pParagraph->m_bIsShadingPresent = true;
+                    pParagraph->m_lColorOfShadingFill = pCurrLine->m_pDominantShape->m_oBrush.Color1;
+                    pParagraph->RemoveHighlightColor();
+                }
+            }
 
-                CreateSingleLineParagraph(pCurrLine, &dCurrRight, &dCurrBeforeSpacing);
+            if (m_eTextAssociationType == tatParagraphToShape)
+            {
+                bool bIsSameTypeText = (pPrevLine &&
+                    fabs(pPrevLine->m_dHeight - pCurrLine->m_dHeight) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
+                    fabs(dPrevBeforeSpacing - dCurrBeforeSpacing) < c_dLINE_DISTANCE_ERROR_MM);
+
+                CreateShapeFormParagraphs(pParagraph, bIsSameTypeText);
+            }
+            else
+            {
+                m_arParagraphs.push_back(pParagraph);
             }
 
             if (nIndexForCheking != c_nAntiZero)
@@ -1381,6 +1441,11 @@ namespace NSDocxRenderer
                 nIndex = nIndexForCheking - 1;
                 nIndexForCheking = c_nAntiZero;
             }
+        }
+
+        if (m_eTextAssociationType == tatParagraphToShape)
+        {
+            CorrectionParagraphsInShapes();
         }
     }
 
@@ -1411,6 +1476,30 @@ namespace NSDocxRenderer
             else
             {
                 break;
+            }
+        }
+        return pLine;
+    }
+
+    CTextLine* CPage::GetPrevTextLine(size_t nCurrentIndex)
+    {
+        CTextLine* pLine = nullptr;
+
+        if (nCurrentIndex)
+        {
+            for (size_t nIndex = nCurrentIndex - 1; nIndex > 0; nIndex--)
+            {
+                pLine = m_arTextLine[nIndex];
+
+                if (pLine->m_bIsNotNecessaryToUse)
+                {
+                    pLine = nullptr;
+                    continue;
+                }
+                else
+                {
+                    break;
+                }
             }
         }
         return pLine;
@@ -1447,7 +1536,6 @@ namespace NSDocxRenderer
         }
 
         pParagraph->m_dSpaceBefore = std::max(*pBeforeSpacing, 0.0);
-        pParagraph->m_dBaselinePos = pLine->m_dBaselinePos;
 
         if (pLine->m_pDominantShape)
         {
@@ -1500,13 +1588,99 @@ namespace NSDocxRenderer
         auto pShape = new CShape();
         pShape->m_arParagraphs.push_back(pParagraph);
         pShape->m_eType = CShape::eShapeType::stTextBox;
-        pShape->m_dLeft	= pLine->m_dLeft;
-        pShape->m_dTop	= pLine->m_dTop;
+        pShape->m_dLeft = pLine->m_dLeft;
+        pShape->m_dTop = pLine->m_dTop;
         pShape->m_dWidth = pLine->m_dWidth;
         pShape->m_dHeight = pLine->m_dHeight;
         pShape->m_bIsBehindDoc = false;
 
         m_arShapes.push_back(pShape);
+    }
+
+    void CPage::CreateShapeFormParagraphs(CParagraph* pParagraph, bool bIsSameTypeText)
+    {
+       if (!pParagraph)
+       {
+           return;
+       }
+
+       CShape* pShape;
+
+       if (bIsSameTypeText && !m_arShapes.empty())
+       {
+           pShape = m_arShapes.back();
+           pShape->m_dHeight += pParagraph->m_dHeight * pParagraph->m_nNumLines + pParagraph->m_dSpaceBefore;
+       }
+       else
+       {
+           pShape = new CShape();
+           pParagraph->m_dSpaceBefore = 0;
+           pShape->m_dHeight += pParagraph->m_dHeight * pParagraph->m_nNumLines;
+       }
+
+       if (pShape->m_dLeft > 0)
+       {
+           pShape->m_dLeft = std::min(pShape->m_dLeft, pParagraph->m_dLeft);
+       }
+       else
+       {
+           pShape->m_dLeft = pParagraph->m_dLeft;
+       }
+
+       if (pShape->m_dTop > 0)
+       {
+           pShape->m_dTop = std::min(pShape->m_dTop, pParagraph->m_dTop);
+       }
+       else
+       {
+           pShape->m_dTop = pParagraph->m_dTop;
+       }
+
+       if (pShape->m_dRight > 0)
+       {
+           pShape->m_dRight = std::min(pShape->m_dRight, pParagraph->m_dRight);
+       }
+       else
+       {
+           pShape->m_dRight = pParagraph->m_dRight;
+       }
+
+       pShape->m_dWidth = m_dWidth - pShape->m_dLeft - pShape->m_dRight;
+
+       pShape->m_arParagraphs.push_back(pParagraph);
+       pShape->m_eType = CShape::eShapeType::stTextBox;
+       pShape->m_bIsBehindDoc = false;
+
+       if (!bIsSameTypeText)
+       {
+           m_arShapes.push_back(pShape);
+       }
+    }
+
+    void CPage::CorrectionParagraphsInShapes()
+    {
+        for (auto pShape : m_arShapes)
+        {
+            if (pShape->m_bIsNotNecessaryToUse ||
+                pShape->m_eType != CShape::eShapeType::stTextBox ||
+                pShape->m_arParagraphs.empty())
+            {
+                continue;
+            }
+
+            for (auto pParagraph : pShape->m_arParagraphs)
+            {
+                if (pParagraph->m_dLeft > pShape->m_dLeft && pParagraph->m_nNumLines == 1)
+                {
+                    pParagraph->m_bIsNeedFirstLineIndent = true;
+                    pParagraph->m_dFirstLine = pParagraph->m_dLeft - pShape->m_dLeft;
+                    pParagraph->m_dLeft = 0;
+                }
+
+                pParagraph->m_dLeft = pParagraph->m_dLeft > pShape->m_dLeft ? pParagraph->m_dLeft - pShape->m_dLeft : 0 ;
+                pParagraph->m_dRight = pParagraph->m_dRight - pShape->m_dRight;
+            }
+        }
     }
 
     void CPage::Merge(double dAffinity)

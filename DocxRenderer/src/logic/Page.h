@@ -119,10 +119,13 @@ namespace NSDocxRenderer
         void CreateSingleLineParagraph(CTextLine *pLine, const double *pRight, const double *pBeforeSpacing);
         void CreateSingleLineOldShape(CTextLine *pLine);
         void CreateSingleLineShape(CTextLine *pLine);
+        void CreateShapeFormParagraphs(CParagraph* pParagraph, bool bIsSameTypeText);
+        void CorrectionParagraphsInShapes();
 
         bool IsShadingPresent(const CTextLine* pLine1, const CTextLine* pLine2);
 
     private:
         CTextLine* GetNextTextLine(size_t& nCurrentIndex, size_t* pIndexForCheking = nullptr);
+        CTextLine* GetPrevTextLine(size_t nCurrentIndex);
     };
 }

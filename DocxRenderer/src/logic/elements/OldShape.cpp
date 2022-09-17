@@ -156,7 +156,7 @@ namespace NSDocxRenderer
         oWriter.ClearNoAttack();
     }
 
-    void COldShape::ToXml(NSStringUtils::CStringBuilder &oWriter)
+    void COldShape::ToXml(NSStringUtils::CStringBuilder& oWriter)
     {
         if (m_bIsNotNecessaryToUse)
         {

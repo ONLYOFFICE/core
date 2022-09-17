@@ -10,7 +10,8 @@ namespace NSDocxRenderer
             tatBlockLine        = 1, // Каждая линия - параграф во фрейме. Линии могут объединяться в рамках одного блока.
             tatPlainLine        = 2, // Каждая линия - параграф обычный
             tatShapeLine        = 3, // Каждая линия - параграф в шейпе. Линии могут объединяться в рамках одного блока.
-            tatPlainParagraph   = 4  // Линии объединяются в параграфы
+            tatPlainParagraph   = 4, // Линии объединяются в параграфы
+            tatParagraphToShape = 5  // Параграфы записываем в шейпы
     };
 
     class CParagraph : public CBaseItem
@@ -47,10 +48,13 @@ namespace NSDocxRenderer
 
         double              m_dSpaceBefore {0.0}; //по умолчанию выставляется 0, если отсутсвует w:before
         double              m_dSpaceAfter {0.0}; //в shape по умолчанию выставляется 8pt, если отсутсвует w:after
-        double              m_dBaselinePos {0.0};
+
         TextAssociationType m_eTextAssociationType {tatPlainParagraph};
 
         std::vector<CTextLine*> m_arLines;
+
+        size_t              m_nNumLines {0};
+
     public:
         CParagraph(const TextAssociationType& eType);
         virtual ~CParagraph();

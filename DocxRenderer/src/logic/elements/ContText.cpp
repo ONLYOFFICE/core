@@ -266,9 +266,12 @@ namespace NSDocxRenderer
         bool bIf10 = m_bIsOutlinePresent == pCont->m_bIsOutlinePresent;
         bool bIf11 = m_bIsEmbossPresent == pCont->m_bIsEmbossPresent;
         bool bIf12 = m_bIsEngravePresent == pCont->m_bIsEngravePresent;
+        bool bIf13 = m_eVertAlignType == pCont->m_eVertAlignType;
+        bool bIf14 = m_eVertAlignType == eVertAlignType::vatUnknown && pCont->m_eVertAlignType == eVertAlignType::vatBase;
+        bool bIf15 = m_eVertAlignType == eVertAlignType::vatBase && pCont->m_eVertAlignType == eVertAlignType::vatUnknown;
 
         if (bIf1 && bIf2 && bIf3 && bIf4 && bIf5 && bIf6 && bIf7 &&
-            bIf8 && bIf9 && bIf10 && bIf11 && bIf12)
+            bIf8 && bIf9 && bIf10 && bIf11 && bIf12 && (bIf13 || bIf14 || bIf15))
         {
             return true;
         }

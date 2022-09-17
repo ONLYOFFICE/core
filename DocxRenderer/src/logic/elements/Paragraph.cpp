@@ -35,7 +35,8 @@ namespace NSDocxRenderer
         {
             oWriter.WriteString(L"<w:framePr");
 
-            if (m_eTextAssociationType == tatPlainParagraph)
+            if (m_eTextAssociationType == tatPlainParagraph ||
+                m_eTextAssociationType == tatParagraphToShape)
             {
                 if (m_bIsAroundTextWrapping)
                 {
@@ -65,14 +66,14 @@ namespace NSDocxRenderer
         case tctTextToParagraph:
         {
             oWriter.WriteString(L"<w:spacing");
-            if (m_eTextConversionType == tctTextToParagraph)
+            if (m_dSpaceBefore > 0)
             {
                 oWriter.WriteString(L" w:before=\"");
                 oWriter.AddInt(static_cast<int>(m_dSpaceBefore * c_dMMToDx));
                 oWriter.WriteString(L"\"");
             }
 
-            if (m_eTextConversionType == tctTextToShape)
+            if (m_dSpaceAfter > 0)
             {
                 oWriter.WriteString(L" w:after=\"");
                 oWriter.AddInt(static_cast<int>(m_dSpaceAfter * c_dMMToDx));
@@ -110,7 +111,8 @@ namespace NSDocxRenderer
             oWriter.WriteString(L"/>"); //конец w:ind
 
 
-            if (m_eTextAssociationType == tatPlainParagraph)
+            if (m_eTextAssociationType == tatPlainParagraph ||
+                m_eTextAssociationType == tatParagraphToShape)
             {
                 switch (m_eTextAlignmentType)
                 {
@@ -199,8 +201,7 @@ namespace NSDocxRenderer
 
             auto pCont = pNext->m_arConts.front();
 
-            if (pLastCont->IsEqual(pCont) &&
-                pLastCont->m_eVertAlignType == pCont->m_eVertAlignType)
+            if (pLastCont->IsEqual(pCont))
             {
                 pLastCont->m_oText += pCont->m_oText;
                 pLastCont->m_dWidth += pCont->m_dWidth;
@@ -245,6 +246,9 @@ namespace NSDocxRenderer
         bool bIf4 = fabs(dCurrRight - dNextRight) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
         bool bIf5 = fabs(dNextRight - dNextNextRight) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
 
+        bool bIf6 = fabs(dCurrLeft + pCurrentLine->m_dWidth/2 - dNextLeft - pNextLine->m_dWidth/2) < 0.5;
+        bool bIf7 = pNextNextLine && fabs(dNextLeft + pNextLine->m_dWidth/2 - dNextNextLeft - pNextNextLine->m_dWidth/2) < 0.5;
+
         if (pNextNextLine)
         {
             if (bIf1 && bIf2)
@@ -283,7 +287,7 @@ namespace NSDocxRenderer
                 bIsSingleLineParagraph = true;
                 return tatByWidth;
             }
-            else if (!bIf1 && !bIf2 && !bIf4 && !bIf5)
+            else if (!bIf1 && !bIf2 && !bIf4 && !bIf5 && bIf6 && bIf7)
             {
                 return tatByCenter;
             }
@@ -326,7 +330,7 @@ namespace NSDocxRenderer
                 {
                     return tatByLeftEdge;
                 }
-                else if (bIf3)
+                else if (bIf3 && bIf6)
                 {
                     return tatByCenter;
                 }

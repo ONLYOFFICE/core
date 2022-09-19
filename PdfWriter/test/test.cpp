@@ -22,12 +22,12 @@ void TEST(CPdfRenderer* pRenderer)
 
 void TEST2(CPdfRenderer* pRenderer)
 {
-    pRenderer->OnlineWordToPdf(NSFile::GetProcessDirectory() + L"/../example/pdf.bin", L"", true);
+    pRenderer->OnlineWordToPdf(NSFile::GetProcessDirectory() + L"/../example/pdf.bin", L"");
 }
 
 void TEST3(CPdfRenderer* pRenderer)
 {
-    pRenderer->OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/../example1/1/pdf.bin", L"", true);
+    pRenderer->OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/../example1/1/pdf.bin", L"");
 }
 
 int main()
@@ -118,7 +118,7 @@ int main()
         return 0;
     }
 
-    bool bNewDstFile = false;
+    bool bNewDstFile = true;
     if (bNewDstFile)
         NSFile::CFileBinary::Copy(sSrcFile, sDstFile);
     if (bResult && pReader->EditPdf(&pdfWriter, bNewDstFile ? sDstFile : sSrcFile, sPassword))

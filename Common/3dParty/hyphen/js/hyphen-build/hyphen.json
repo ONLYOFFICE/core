@@ -1,0 +1,35 @@
+{
+	"name": "hyphen",
+	"res_folder": "../deploy",
+	"wasm": true,
+	"asm": true,
+	"embed_mem_file": true,
+	"run_before": "",
+	"run_after": "",
+	"base_js_content": "../module.js",
+
+	"compiler_flags": [
+		"-O3",
+		"-fno-exceptions",
+		"-fno-rtti",
+		"-Wno-unused-command-line-argument",
+		"-sALLOW_MEMORY_GROWTH",
+		"-sERROR_ON_UNDEFINED_SYMBOLS=0"
+	],
+	"exported_functions": [
+		"_malloc",
+		"_free",
+        "_load_dictionary",
+        "_free_dictionary",
+		"_hyphenate"
+	],
+	"include_path": ["../src"],
+	"define": [],
+	"compile_files_array": [
+	{
+		"name": "s",
+		"folder": "../src",
+		"files": ["exported_functions.cpp", "HyphenUtils.cpp", "../../hyphen/hyphen.c", "../../hyphen/hnjalloc.c"]
+	}
+	]
+}

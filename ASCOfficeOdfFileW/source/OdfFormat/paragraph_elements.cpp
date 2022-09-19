@@ -80,7 +80,7 @@ std::wostream & text_text::text_to_stream(std::wostream & _Wostream) const
 
 void text_text::serialize(std::wostream & _Wostream)
 {
-    _Wostream << xml::utils::replace_text_to_xml( text_ );
+    _Wostream << xml::utils::replace_text_to_xml( text_ , true);
 }
 
 void text_text::add_text(const std::wstring & Text) 

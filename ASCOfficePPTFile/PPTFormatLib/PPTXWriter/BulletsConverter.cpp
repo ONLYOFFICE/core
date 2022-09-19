@@ -191,8 +191,8 @@ void BulletsConverter::ConvertAllBullets(PPTX::Logic::TextParagraphPr &oPPr, CTe
 
         if ( pPF->bulletFontProperties->PitchFamily > 0)
             pBuFont->pitchFamily = std::to_wstring(pPF->bulletFontProperties->PitchFamily);
-        if ( pPF->bulletFontProperties->Charset > 0)
-            pBuFont->charset = std::to_wstring(pPF->bulletFontProperties->Charset);
+        if ( pPF->bulletFontProperties->Charset > 0 && (int)pPF->bulletFontProperties->Charset != 128)
+            pBuFont->charset = std::to_wstring((int)pPF->bulletFontProperties->Charset);
 
         oPPr.buTypeface.m_Typeface.reset(pBuFont);
     }

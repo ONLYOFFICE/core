@@ -36,6 +36,19 @@ function setMemory(module, data, ptr) {
 var textarea = document.getElementById("textarea");
 var form = document.querySelector("form");
 
+var control = document.getElementById("dictionary-file");
+control.addEventListener("change", function(event) {
+    
+    var file = control.files[0];
+    var reader = new FileReader();
+    reader.readAsText(file);
+
+    reader.onload = function() {
+        
+    };
+ 
+}, false);
+
 function hyphenate(word)
 {
     var len = word.length;

@@ -1,6 +1,7 @@
-#include <fstream>
+#ifndef EXPORTED_FUNCTIONS_H
+#define EXPORTED_FUNCTIONS_H
 
-#include "./../../hyphen/hyphen.h"
+#include <fstream>
 
 #ifdef __cplusplus
 extern "C"
@@ -14,3 +15,5 @@ void hyphenate(const char *word, char *hyphens, char *hword);
 #ifdef __cplusplus
 }
 #endif // __cplusplus
+
+#endif // EXPORTED_FUNCTIONS_H

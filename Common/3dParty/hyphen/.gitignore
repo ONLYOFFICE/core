@@ -6,3 +6,4 @@ build-test-*
 *.wasm
 hyphen.js
 hyphen.data
+.vscode

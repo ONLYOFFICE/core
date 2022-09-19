@@ -84,7 +84,7 @@ void settings_config_item_set::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			CP_XML_ATTR( L"config:name", config_name_);
+			CP_XML_ATTR( L"config:name", XmlUtils::EncodeXmlString(config_name_));
 
 			for (size_t i = 0; i < content_.size(); i++)
 			{
@@ -114,10 +114,10 @@ void settings_config_item::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			CP_XML_ATTR( L"config:name", config_name_);
+			CP_XML_ATTR( L"config:name", XmlUtils::EncodeXmlString(config_name_));
 			CP_XML_ATTR( L"config:type", config_type_);
 
-			CP_XML_STREAM() << content_;
+			CP_XML_STREAM() << XmlUtils::EncodeXmlString(content_);
 		}
 	}
 }
@@ -141,7 +141,7 @@ void settings_config_item_map_indexed::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			CP_XML_ATTR_OPT( L"config:name", config_name_);
+			CP_XML_ATTR_OPT_ENCODE_STRING( L"config:name", config_name_);
 
 			for (size_t i = 0; i < content_.size(); i++)
 			{
@@ -170,7 +170,7 @@ void settings_config_item_map_named::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			CP_XML_ATTR_OPT( L"config:name", config_name_);
+			CP_XML_ATTR_OPT_ENCODE_STRING( L"config:name", config_name_);
 
 			for (size_t i = 0; i < content_.size(); i++)
 			{
@@ -199,7 +199,7 @@ void settings_config_item_map_entry::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			CP_XML_ATTR_OPT( L"config:name", config_name_);
+			CP_XML_ATTR_OPT_ENCODE_STRING( L"config:name", config_name_);
 
 			for (size_t i = 0; i < content_.size(); i++)
 			{

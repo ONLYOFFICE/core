@@ -167,7 +167,7 @@ ods_table_state::ods_table_state(odf_conversion_context * Context, office_elemen
 
 void ods_table_state::set_table_name(std::wstring name)
 {
-	office_table_name_ = XmlUtils::EncodeXmlString(name);
+	office_table_name_ = name;
 	table_table* table = dynamic_cast<table_table*>(office_table_.get());
 	if (table == NULL)return;
 

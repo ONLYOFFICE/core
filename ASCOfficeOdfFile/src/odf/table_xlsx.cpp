@@ -1012,7 +1012,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 									CP_XML_ATTR(L"t", L"array");
 									CP_XML_ATTR(L"aca", false);
 								}
-                                CP_XML_CONTENT(xlsxFormula);
+                                CP_XML_CONTENT(XmlUtils::EncodeXmlString(xlsxFormula));
                             }
                         }
                     }

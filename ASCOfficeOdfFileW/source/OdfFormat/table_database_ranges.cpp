@@ -102,7 +102,7 @@ void table_database_range::serialize(std::wostream & _Wostream)
 		CP_XML_NODE_SIMPLE()
         {
 			CP_XML_ATTR_OPT_ENCODE_STRING(L"table:name", table_name_);
-			CP_XML_ATTR_OPT(L"table:target-range-address", table_target_range_address_);
+			CP_XML_ATTR_OPT_ENCODE_STRING(L"table:target-range-address", table_target_range_address_);
 			CP_XML_ATTR_OPT(L"table:display-filter-buttons", table_display_filter_buttons_);
 		}
 	}

@@ -233,7 +233,6 @@ public:
 					else if ((pos + 8 <= size) && (expr.substr(pos, 8) == L"APERSAND"))
 					{
 						result += L"&"; pos += 8;
-						result += expr[pos++];
 					}
 					else
 					{

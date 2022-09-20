@@ -112,7 +112,6 @@ namespace OOX
 	}
 	void ActiveX_xml::read_bin(const CPath& oPath)
 	{
-		return;
 		NSFile::CFileBinary file;
 
 		if (false == m_oClassId.IsInit()) return;
@@ -186,9 +185,9 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 		else if (class_id == L"{4C599241-6926-101B-9992-00000B65C6F9}") return new ActiveXObjectImage();
 		else if (class_id == L"{8BD21D60-EC42-11CE-9E0D-00AA006002F3}")	return new ActiveXObjectMorphData(SimpleTypes::Spreadsheet::objectButton); //Toggle
 		else
-			return NULL;
+			return new ActiveXObjectMorphData(); //from DisplayStyle
 	}
-	std::wstring ActiveXObject::ReadString(MemoryStream *stream, size_t size, bool bCompressed)
+	std::wstring ActiveXObject::readString(MemoryStream *stream, size_t size, bool bCompressed)
 	{
 		if (!stream) return L"";
 		if (stream->GetPosition() + size > stream->GetSize())
@@ -214,6 +213,96 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 		}
 
 		return result;
+	}
+	void ActiveXObject::readTextProps(MemoryStream *stream)
+	{
+		if (!stream) return;
+
+		int sizeFontName = 0;
+		bool bCaptionCompressed, bGroupNameCompressed, bValueCompressed, bFontNameCompressed;
+
+		int nFontCharSet = 0, nFontPitch = 0, nFontFamily = 0, nParagraphAlign = 0;
+
+		unsigned char MinorVersionText = stream->ReadByte();
+		unsigned char MajorVersionText = stream->ReadByte();
+
+		unsigned short cbTextProps = stream->ReadUInt16();
+
+		_UINT32 PropMask = stream->ReadUInt32();
+
+		bool fFontName = GETBIT(PropMask, 0);
+		bool fFontEffects = GETBIT(PropMask, 1);
+		bool fFontHeight = GETBIT(PropMask, 3);
+		bool fFontCharSet = GETBIT(PropMask, 5);
+		bool fFontPitchAndFamily = GETBIT(PropMask, 6);
+		bool fParagraphAlign = GETBIT(PropMask, 7);
+		bool fFontWeight = GETBIT(PropMask, 8);
+
+		if (fFontName)
+		{
+			sizeFontName = stream->ReadUInt32();
+
+			bFontNameCompressed = GETBIT(sizeFontName, 31);
+			sizeFontName = GETBITS(sizeFontName, 0, 30);
+		}
+		if (fFontEffects)
+		{
+			_UINT32 nFontEffects = stream->ReadUInt32();
+			bool bEnabled = !GETBIT(PropMask, 13);
+			m_oFontBold = GETBIT(PropMask, 0);
+			m_oFontItalic = GETBIT(PropMask, 1);
+			m_oFontUnderline = GETBIT(PropMask, 3);
+			m_oFontStrikeout = GETBIT(PropMask, 4);
+			m_oFontAutoColor = GETBIT(PropMask, 30);
+		}
+		if (fFontHeight)
+		{
+			m_oFontHeight = stream->ReadUInt32() / 20; //twips to pt
+		}
+		int count_padding = 4;
+		if (fFontCharSet)
+		{
+			nFontCharSet = stream->ReadByte(); count_padding--;
+		}
+		if (fFontPitchAndFamily)
+		{
+			_UINT32 nFontPitchAndFamily = stream->ReadByte(); count_padding--;
+			nFontPitch = GETBITS(nFontPitchAndFamily, 0, 3);
+			nFontFamily = GETBITS(nFontPitchAndFamily, 4, 7);
+		}
+		if (fParagraphAlign)
+		{
+			nParagraphAlign = stream->ReadByte(); count_padding--;
+		}
+		if (count_padding > 0 && count_padding < 4)
+			stream->Seek(count_padding, 2);
+
+		if (fFontWeight)
+		{
+			_UINT32 nFontWeight = stream->ReadByte();
+			/*Padding4 =*/ stream->ReadUInt16();
+		}
+		if (sizeFontName > 0)
+		{
+			_UINT16 nX1= stream->ReadUInt16();
+			_UINT16 nX3 = stream->ReadUInt16();
+			m_oFontName = readString(stream, sizeFontName, bFontNameCompressed);
+		}
+	}
+	std::pair<boost::shared_array<unsigned char>, size_t> ActiveXObject::readStdPicture(MemoryStream *stream)
+	{
+		boost::shared_array<unsigned char> empty;
+		if (!stream) return std::make_pair(empty, 0);
+
+		_UINT32 Preamble = stream->ReadUInt32();
+
+		if (Preamble != 0x0000746C) return std::make_pair(empty, 0);
+
+		size_t Size = stream->ReadUInt32();
+
+		boost::shared_array<unsigned char> buf(stream->ReadBytes(Size, true));
+
+		return std::make_pair(buf, Size);
 	}
 	void ActiveXObject::toFormControlPr(OOX::Spreadsheet::CFormControlPr* pFormControlPr)
 	{
@@ -322,7 +411,12 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 			m_oHeight = mem_stream.ReadUInt32();
 		}
 		int stream_size = mem_stream.GetSize() - mem_stream.GetPosition(); 
-		//MouseIcon
+		
+		if (fMouseIcon)
+		{
+			mem_stream.Seek(16, 2);//guid
+			m_oMouseIcon = readStdPicture(&mem_stream);
+		}
 	}
 	void ActiveXObjectSpin::Parse(unsigned char* pData, DWORD size)
 	{
@@ -381,7 +475,12 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 			m_oHeight = mem_stream.ReadUInt32();
 		}
 		int stream_size = mem_stream.GetSize() - mem_stream.GetPosition(); 
-		//MouseIcon
+		
+		if (fMouseIcon)
+		{
+			mem_stream.Seek(16, 2);//guid
+			m_oMouseIcon = readStdPicture(&mem_stream);
+		}
 	}
 	void ActiveXObjectButton::Parse(unsigned char* pData, DWORD size)
 	{
@@ -432,7 +531,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 		}
  		if (fPicture)
 		{
-			/*m_oPicture = */ mem_stream.ReadUInt16();
+			 mem_stream.ReadUInt16(); //0 or 0xffff
 			/*Padding4 =*/ mem_stream.ReadUInt16();
 		}
  		if (fAccelerator)
@@ -442,12 +541,12 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 		}
 		if (fMouseIcon)	
 		{
-			/*m_oMouseIcon =*/ mem_stream.ReadUInt16();
+			mem_stream.ReadUInt16(); //0 or oxffff
 			/*Padding3 =*/ mem_stream.ReadUInt16();
 		}
 		if (sizeCaption > 0)
 		{
-			m_oCaption = ReadString(&mem_stream, sizeCaption, bCaptionCompressed);
+			m_oCaption = readString(&mem_stream, sizeCaption, bCaptionCompressed);
 		}
 		if (fSize)
 		{
@@ -455,7 +554,18 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 			m_oHeight = mem_stream.ReadUInt32();
 		}
 		int stream_size = mem_stream.GetSize() - mem_stream.GetPosition(); 
-		//MouseIcon
+
+		if (fMouseIcon)
+		{
+			mem_stream.Seek(16, 2);//guid
+			m_oMouseIcon = readStdPicture(&mem_stream);
+		}
+		if (fPicture)
+		{
+			mem_stream.Seek(16, 2);//guid
+			m_oPicture = readStdPicture(&mem_stream);
+		}
+		readTextProps(&mem_stream);
 	}
 	void ActiveXObjectImage::Parse(unsigned char* pData, DWORD size)
 	{
@@ -616,7 +726,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 		}
 		if (sizeCaption > 0)
 		{
-			m_oCaption = ReadString(&mem_stream, sizeCaption, bCaptionCompressed);
+			m_oCaption = readString(&mem_stream, sizeCaption, bCaptionCompressed);
 		}
 		if (fSize)
 		{
@@ -624,7 +734,18 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 			m_oHeight = mem_stream.ReadUInt32();
 		}
 		int stream_size = mem_stream.GetSize() - mem_stream.GetPosition(); 
-		//MouseIcon
+		
+		if (fMouseIcon)
+		{
+			mem_stream.Seek(16, 2);//guid
+			m_oMouseIcon = readStdPicture(&mem_stream);
+		}
+		if (fPicture)
+		{
+			mem_stream.Seek(16, 2);//guid
+			m_oPicture = readStdPicture(&mem_stream);
+		}
+		readTextProps(&mem_stream);
 	}
 	void ActiveXObjectFormControl::Parse(unsigned char* pData, DWORD size)
 	{
@@ -637,9 +758,26 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 		unsigned short cb = mem_stream.ReadUInt16();
 
 		_UINT32 PropMask = mem_stream.ReadUInt32();
+
+		//if (fMouseIcon)
+		//{
+		//	mem_stream.Seek(16, 2);//guid
+		//	m_oMouseIcon = readStdPicture(&mem_stream);
+		//}
+		//if (fGuidAndFont)
+		//{
+		//	mem_stream.Seek(16, 2);//guid
+		//	m_oFont = readFont(&mem_stream);		
+		//}
+		//if (fPicture)
+		//{
+		//	mem_stream.Seek(16, 2);//guid
+		//	m_oPicture = readStdPicture(&mem_stream);
+		//}
 	}
 	void ActiveXObjectMorphData::Parse(unsigned char* pData, DWORD size)
-	{
+	{ 
+//CheckBox, ComboBox, ListBox, OptionButton, TextBox, and ToggleButton
 		MemoryStream mem_stream(pData, size, false);
 		mem_stream.Seek(16);
 
@@ -683,7 +821,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 			bool fPicture				= GETBIT(PropMask, 28);
 			bool fAccelerator			= GETBIT(PropMask, 29);
 			bool fGroupName				= GETBIT(PropMask2, 0);
-
+//MorphData-DataBlock
 			int MaxLength = 0;
 			if (fVariousPropertyBits)	/*VariousPropertyBits =*/ mem_stream.ReadUInt32(); 
 			if (fForeColor)				m_oForeColor = mem_stream.ReadUInt32();
@@ -701,14 +839,27 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 			}
 			if (fDisplayStyle)
 			{
- 				/*m_oDisplayStyle =*/ mem_stream.ReadByte(); count_padding--;
+				if (false == m_oObjectType.IsInit()) m_oObjectType.Init();
+				
+				int nDisplayStyle = mem_stream.ReadByte(); count_padding--;
+
+				switch (nDisplayStyle)
+				{
+					case 0x01: m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectEditBox); break;
+					case 0x02: m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectList); break;
+					case 0x03: m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectDrop); break;
+					case 0x04: m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectCheckBox); break;
+					case 0x05: m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectRadio); break;
+					case 0x06: m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectButton);	break; // toggle
+					case 0x07: m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectList); break;
+				}
 			}
 			if (fMousePointer)
 			{
  				/*m_oMousePointer =*/ mem_stream.ReadByte(); count_padding--;
 			}
 			if (count_padding > 0 && count_padding < 4)
-				mem_stream.Seek(mem_stream.GetPosition() + count_padding);
+				mem_stream.Seek(count_padding, 2);
 			if (fPasswordChar)	
 			{
 				m_oPasswordEdit = true;
@@ -786,12 +937,12 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 			if (fSpecialEffect)		/*m_oEffect =*/ mem_stream.ReadUInt32();
 			if (fMouseIcon)	
 			{
-				/*m_oMouseIcon =*/ mem_stream.ReadUInt16();
+				mem_stream.ReadUInt16(); //0 or 0xFFFF
 				/*Padding3 =*/ mem_stream.ReadUInt16();
 			}
  			if (fPicture)
 			{
-				/*m_oPicture = */ mem_stream.ReadUInt16();
+				 mem_stream.ReadUInt16();//0 or 0xFFFF
 				/*Padding4 =*/ mem_stream.ReadUInt16();
 			}
  			if (fAccelerator)
@@ -806,6 +957,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 				bGroupNameCompressed = GETBIT(sizeGroupName, 31);
 				sizeGroupName = GETBITS(sizeGroupName, 0, 30);
 			}
+//MorphData-ExtraDataBlock
 			if (fSize)
 			{
 				m_oWidth = mem_stream.ReadUInt32();
@@ -813,19 +965,31 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 			}
 			if (sizeValue > 0)
 			{
-				m_oValue = ReadString(&mem_stream, sizeValue, bValueCompressed);
+				m_oValue = readString(&mem_stream, sizeValue, bValueCompressed);
 			}
 			if (sizeCaption > 0)
 			{
-				m_oCaption = ReadString(&mem_stream, sizeCaption, bCaptionCompressed);
+				m_oCaption = readString(&mem_stream, sizeCaption, bCaptionCompressed);
 			}
 			std::wstring oGroupName;
 			if (sizeGroupName > 0 && sizeGroupName < 0xfff0)
 			{
-				oGroupName = ReadString(&mem_stream, sizeGroupName, bGroupNameCompressed);
+				oGroupName = readString(&mem_stream, sizeGroupName, bGroupNameCompressed);
 			}
+//MorphData-StreamData
 			int stream_size = mem_stream.GetSize() - mem_stream.GetPosition(); 
-			//MouseIcon
+
+			if (fMouseIcon)
+			{
+				mem_stream.Seek(16, 2);//guid
+				m_oMouseIcon = readStdPicture(&mem_stream);
+			}
+			if (fPicture)
+			{
+				mem_stream.Seek(16, 2);//guid
+				m_oPicture = readStdPicture(&mem_stream);
+			}
+			readTextProps(&mem_stream);
 		}
 		else
 		{

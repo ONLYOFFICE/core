@@ -23,9 +23,6 @@
     <Filter Include="Logic\SummaryInformationStream">
       <UniqueIdentifier>{f9665263-03ec-48bf-ba83-ea6231f129fa}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Logic\SummaryInformationStream\Structures">
-      <UniqueIdentifier>{71eaddd1-b6ec-4839-b142-bb18a9b7315a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Auxiliary">
       <UniqueIdentifier>{79b675c6-723b-4624-b21f-c996458b2097}</UniqueIdentifier>
     </Filter>
@@ -2374,24 +2371,6 @@
     <ClInclude Include="..\XlsFormat\Logic\Biff_unions\XFS.h">
       <Filter>Logic\Biff_unions</Filter>
     </ClInclude>
-    <ClInclude Include="..\XlsFormat\Logic\SummaryInformationStream\SummaryInformation.h">
-      <Filter>Logic\SummaryInformationStream</Filter>
-    </ClInclude>
-    <ClInclude Include="..\XlsFormat\Logic\SummaryInformationStream\Structures\CodePageOle.h">
-      <Filter>Logic\SummaryInformationStream\Structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\XlsFormat\Logic\SummaryInformationStream\Structures\Property.h">
-      <Filter>Logic\SummaryInformationStream\Structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\XlsFormat\Logic\SummaryInformationStream\Structures\PropertyFactory.h">
-      <Filter>Logic\SummaryInformationStream\Structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\XlsFormat\Logic\SummaryInformationStream\Structures\PropertySet.h">
-      <Filter>Logic\SummaryInformationStream\Structures</Filter>
-    </ClInclude>
-    <ClInclude Include="..\XlsFormat\Logic\SummaryInformationStream\Structures\PropertySetStream.h">
-      <Filter>Logic\SummaryInformationStream\Structures</Filter>
-    </ClInclude>
     <ClInclude Include="..\XlsFormat\Auxiliary\HelpFunc.h">
       <Filter>Auxiliary</Filter>
     </ClInclude>
@@ -2436,6 +2415,24 @@
     </ClInclude>
     <ClInclude Include="..\XlsFormat\Logic\Biff_structures\PtgExtraList.h">
       <Filter>Logic\Biff_structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsFormat\Logic\SummaryInformationStream\CodePageOle.h">
+      <Filter>Logic\SummaryInformationStream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsFormat\Logic\SummaryInformationStream\Property.h">
+      <Filter>Logic\SummaryInformationStream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsFormat\Logic\SummaryInformationStream\PropertyFactory.h">
+      <Filter>Logic\SummaryInformationStream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsFormat\Logic\SummaryInformationStream\PropertySet.h">
+      <Filter>Logic\SummaryInformationStream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsFormat\Logic\SummaryInformationStream\PropertySetStream.h">
+      <Filter>Logic\SummaryInformationStream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsFormat\Logic\EncryptionStream.h">
+      <Filter>Logic</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -4734,21 +4731,6 @@
     <ClCompile Include="..\XlsFormat\Logic\Biff_unions\XFS.cpp">
       <Filter>Logic\Biff_unions</Filter>
     </ClCompile>
-    <ClCompile Include="..\XlsFormat\Logic\SummaryInformationStream\SummaryInformation.cpp">
-      <Filter>Logic\SummaryInformationStream</Filter>
-    </ClCompile>
-    <ClCompile Include="..\XlsFormat\Logic\SummaryInformationStream\Structures\CodePageOle.cpp">
-      <Filter>Logic\SummaryInformationStream\Structures</Filter>
-    </ClCompile>
-    <ClCompile Include="..\XlsFormat\Logic\SummaryInformationStream\Structures\PropertyFactory.cpp">
-      <Filter>Logic\SummaryInformationStream\Structures</Filter>
-    </ClCompile>
-    <ClCompile Include="..\XlsFormat\Logic\SummaryInformationStream\Structures\PropertySet.cpp">
-      <Filter>Logic\SummaryInformationStream\Structures</Filter>
-    </ClCompile>
-    <ClCompile Include="..\XlsFormat\Logic\SummaryInformationStream\Structures\PropertySetStream.cpp">
-      <Filter>Logic\SummaryInformationStream\Structures</Filter>
-    </ClCompile>
     <ClCompile Include="..\XlsFormat\Auxiliary\HelpFunc.cpp">
       <Filter>Auxiliary</Filter>
     </ClCompile>
@@ -4790,6 +4772,21 @@
     </ClCompile>
     <ClCompile Include="..\XlsFormat\Logic\Biff_structures\PtgExtraList.cpp">
       <Filter>Logic\Biff_structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsFormat\Logic\SummaryInformationStream\CodePageOle.cpp">
+      <Filter>Logic\SummaryInformationStream</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsFormat\Logic\SummaryInformationStream\PropertyFactory.cpp">
+      <Filter>Logic\SummaryInformationStream</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsFormat\Logic\SummaryInformationStream\PropertySet.cpp">
+      <Filter>Logic\SummaryInformationStream</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsFormat\Logic\SummaryInformationStream\PropertySetStream.cpp">
+      <Filter>Logic\SummaryInformationStream</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsFormat\Logic\EncryptionStream.cpp">
+      <Filter>Logic</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

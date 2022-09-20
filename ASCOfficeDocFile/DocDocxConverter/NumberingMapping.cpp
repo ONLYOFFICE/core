@@ -63,7 +63,6 @@ namespace DocFileFormat
 			m_xmldocument->RegisterNumbering();
 
 			//start the document
-            m_pXmlWriter->WriteNodeBegin( L"?xml version=\"1.0\" encoding=\"UTF-8\"?" );
             m_pXmlWriter->WriteNodeBegin( L"w:numbering", TRUE );
 
 			//write namespaces

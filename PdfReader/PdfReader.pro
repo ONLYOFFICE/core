@@ -16,7 +16,9 @@ include(../Common/base.pri)
 
 DEFINES += PDFREADER_USE_DYNAMIC_LIBRARY
 
-ADD_DEPENDENCY(graphics, kernel, UnicodeConverter)
+CONFIG += use_cmap_memory
+
+ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, PdfWriter)
 
 core_windows {
 LIBS += -lgdi32 \
@@ -108,4 +110,10 @@ build_viewer_module {
 
     HEADERS += $$CORE_ROOT_DIR/HtmlRenderer/include/HTMLRendererText.h
     SOURCES += $$CORE_ROOT_DIR/HtmlRenderer/src/HTMLRendererText.cpp
+}
+
+use_cmap_memory {
+    DEFINES += CMAP_USE_MEMORY
+    HEADERS += Resources/CMapMemory/cmap_memory.h
+    SOURCES += Resources/CMapMemory/cmap_memory.cpp
 }

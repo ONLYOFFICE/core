@@ -60,9 +60,11 @@ public:
 	void ReadThemeColor(int length, CThemeColor& oCThemeColor);
 	int ReadThemeColorContent(BYTE type, long length, void* poResult);
 	template<typename T> int ReadTrackRevision(long length, T* poResult);
+	template<typename T> int ReadTrackRevision2(long length, T* poResult);
 	int ReadShdComplexType(BYTE type, long length, void* poResult);
 private:
 	template<typename T> int ReadTrackRevisionInner(BYTE type, long length, T* poResult);
+	template<typename T> int ReadTrackRevisionInner2(BYTE type, long length, T* poResult);
 };
 class Binary_HdrFtrTableReader : public Binary_CommonReader
 {
@@ -85,11 +87,12 @@ class Binary_rPrReader : public Binary_CommonReader
 protected:
 	Binary_CommonReader2 oBinary_CommonReader2;
 	Writers::FileWriter& m_oFileWriter;
+	boost::unordered_map<std::wstring, char>& m_mapFonts;
 public:
 	Binary_rPrReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter);
 	int Read(long stLen, void* poResult);
 	int ReadContent(BYTE type, long length, void* poResult);
-	int ReadrPrChange(BYTE type, long length, void* poResult);
+	int ReadrPrChange2(BYTE type, long length, void* poResult);
 };
 class Binary_pPrReader : public Binary_CommonReader
 {
@@ -283,8 +286,8 @@ private:
     Binary_rPrReader                oBinary_rPrReader;
     Binary_tblPrReader              oBinary_tblPrReader;
 	NSStringUtils::CStringBuilder*	m_pCurWriter;
-    rPr                             m_oCur_rPr;
-    rPr                             m_oMath_rPr;
+    OOX::Logic::CRunProperty		m_oCur_rPr;
+	OOX::Logic::CRunProperty		m_oMath_rPr;
 	NSStringUtils::CStringBuilder	m_oCur_pPr;
     BYTE                            m_byteLastElemType;
 public:
@@ -476,7 +479,9 @@ public:
 	int ReadSdtFormPr(BYTE type, long length, void* poResult);
 	int ReadSdtTextFormPr(BYTE type, long length, void* poResult);
 	int ReadSdtTextFormPrComb(BYTE type, long length, void* poResult);
+	int ReadSdtTextFormPrFormat(BYTE type, long length, void* poResult);
 	int ReadSdtPicture(BYTE type, long length, void* poResult);
+	int ReadSdtComplexFormPr(BYTE type, long length, void* poResult);
 };
 class Binary_NotesTableReader : public Binary_CommonReader
 {
@@ -497,8 +502,9 @@ private:
 	NSBinPptxRW::CBinaryFileReader& m_oBufferedStream;
 	Writers::FileWriter&			m_oFileWriter;
     std::wstring					m_sFileInDir;
-	bool							m_bMacro;
-public: 
+	bool							m_bMacro = false;
+	bool							m_bMacroRead = false;
+public:
 		BinaryFileReader(std::wstring& sFileInDir, NSBinPptxRW::CBinaryFileReader& oBufferedStream, Writers::FileWriter& oFileWriter, bool bMacro = false);
 		int ReadFile();
 		int ReadMainTable();

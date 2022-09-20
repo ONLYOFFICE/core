@@ -371,6 +371,8 @@ namespace OOX
 					m_oDataConsolidate = oReader;
 				else if (_T("sortState") == sName)
 					m_oSortState = oReader;
+				else if (_T("cellWatches") == sName)
+					m_oCellWatches = oReader;
 				else if (L"DataValidation" == sName)
 				{
 					if (false == m_oDataValidations.IsInit())
@@ -401,6 +403,11 @@ namespace OOX
 						}
 					}
 				}
+			}
+
+			if (m_oSheetData.IsInit())
+			{
+				m_oSheetData->AfterRead();
 			}
 		}
 
@@ -781,6 +788,8 @@ namespace OOX
 				m_oRowBreaks->toXML(writer);
 			if(m_oColBreaks.IsInit())
 				m_oColBreaks->toXML(writer);
+			if (m_oCellWatches.IsInit())
+				m_oCellWatches->toXML(writer);
 			if(m_oDrawing.IsInit())
 				m_oDrawing->toXML(writer);
 			if(m_oLegacyDrawing.IsInit())
@@ -814,7 +823,7 @@ namespace OOX
 				toXMLEnd(sXml);
 
                 //NSFile::CFileBinary::SaveToFile(oPath.GetPath(), sXml.GetData());
-                //for memory optimization fro large files
+                //for memory optimization for large files
 
                 wchar_t* pXmlData = sXml.GetBuffer();
                 LONG lwcharLen = (LONG)sXml.GetCurSize();
@@ -956,12 +965,13 @@ mc:Ignorable=\"x14ac\">");
 				WritingElement_ReadAttributes_Read_else_if(oReader, _T("ss:StyleID"), sStyleID)
 				WritingElement_ReadAttributes_End(oReader)
 
-				if (ptWidth.IsInit())
+				if (ptWidth.IsInit() && xlsx_flat)
 				{
 					m_oWidth.Init();
 					double pixDpi = *ptWidth / 72.0 * 96.; if (pixDpi < 5) pixDpi = 7; // ~
-					double maxDigitSize = 4.25;
-					m_oWidth->SetValue((int((pixDpi /*/ 0.75*/ - 5) / maxDigitSize * 100. + 0.5)) / 100. * 0.9);
+					double maxDigitSize = xlsx_flat->getMaxDigitSize().first;
+
+					m_oWidth->SetValue(((int)((pixDpi + 5) / maxDigitSize * 100. + 0.5)) / 100.);
 
 					m_oCustomWidth.Init();
 					m_oCustomWidth->FromBool(true);

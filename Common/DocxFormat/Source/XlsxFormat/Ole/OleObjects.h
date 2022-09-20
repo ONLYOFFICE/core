@@ -63,8 +63,8 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 			{
 				writer.WriteString(L"<anchor");
-				WritingStringNullableAttrBool(L"moveWithCells", m_oMoveWithCells);
-				WritingStringNullableAttrBool(L"sizeWithCells", m_oSizeWithCells);
+				WritingStringNullableAttrBool2(L"moveWithCells", m_oMoveWithCells);
+				WritingStringNullableAttrBool2(L"sizeWithCells", m_oSizeWithCells);
 				WritingStringNullableAttrInt(L"z-order", m_oZOrder, m_oZOrder->GetValue());
 				writer.WriteString(L">");
 				if (m_oFrom.IsInit())
@@ -77,7 +77,7 @@ namespace OOX
 				}
 				writer.WriteString(L"</anchor>");
 			}
-			virtual void		 fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				ReadAttributes( oReader );
 
@@ -108,22 +108,19 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if	 ( oReader, (L"moveWithCells"),	  m_oMoveWithCells )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, (L"sizeWithCells"),	  m_oSizeWithCells )
-					WritingElement_ReadAttributes_Read_else_if	 ( oReader, (L"z-order"),	  m_oZOrder )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if( oReader, (L"moveWithCells"), m_oMoveWithCells )
+					WritingElement_ReadAttributes_Read_else_if( oReader, (L"sizeWithCells"), m_oSizeWithCells )
+					WritingElement_ReadAttributes_Read_else_if( oReader, (L"z-order"), m_oZOrder )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::COnOff<> > m_oMoveWithCells;
-			nullable<SimpleTypes::COnOff<> > m_oSizeWithCells;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oZOrder;
+			nullable_bool m_oMoveWithCells;
+			nullable_bool m_oSizeWithCells;
+			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oZOrder;
 
-			nullable<CFromTo > m_oFrom;
-			nullable<CFromTo > m_oTo;
+			nullable<CFromTo> m_oFrom;
+			nullable<CFromTo> m_oTo;
 		};
 
 		class COleObjectPr : public WritingElement

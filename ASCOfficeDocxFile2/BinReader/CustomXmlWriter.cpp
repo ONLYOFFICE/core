@@ -69,6 +69,41 @@ namespace Writers
 
 		arItems.push_back(std::make_pair(sCustomXmlFilename, bGlossaryMode));
 	}
+	void CustomXmlWriter::WriteCustomA(const std::wstring& sCustomXmlPropertiesContent, const std::string& sCustomXmlContent, bool bGlossaryMode)
+	{
+		m_nCount++;
+
+		std::wstring sCustomXmlDir = m_sDir + FILE_SEPARATOR_STR;
+		sCustomXmlDir += OOX::FileTypes::CustomXml.DefaultDirectory().GetPath();
+
+		std::wstring sCustomXmlRelsDir = sCustomXmlDir + FILE_SEPARATOR_STR + L"_rels";
+
+		std::wstring  sCustomXMLPropsFilename = OOX::FileTypes::CustomXmlProps.DefaultFileName().GetBasename();
+		sCustomXMLPropsFilename += std::to_wstring(m_nCount) + OOX::FileTypes::CustomXmlProps.DefaultFileName().GetExtention();
+
+		NSFile::CFileBinary::SaveToFile(sCustomXmlDir + FILE_SEPARATOR_STR + sCustomXMLPropsFilename, sCustomXmlPropertiesContent);
+		OOX::CContentTypes& oContentTypes = *m_pDrawingConverter->GetContentTypes();
+		oContentTypes.Registration(OOX::FileTypes::CustomXmlProps.OverrideType(), OOX::FileTypes::CustomXml.DefaultDirectory(), sCustomXMLPropsFilename);
+
+		std::wstring sCustomXmlFilename;
+		sCustomXmlFilename = OOX::FileTypes::CustomXml.DefaultFileName().GetBasename() + std::to_wstring(m_nCount);
+		sCustomXmlFilename += OOX::FileTypes::CustomXml.DefaultFileName().GetExtention();
+
+		NSFile::CFileBinary oFile;
+		if (true == oFile.CreateFileW(sCustomXmlDir + FILE_SEPARATOR_STR + sCustomXmlFilename))
+		{
+			if (false == sCustomXmlContent.empty())
+				oFile.WriteFile((BYTE*)sCustomXmlContent.c_str(), sCustomXmlContent.length());
+			oFile.CloseFile();
+		}
+
+		m_pDrawingConverter->SetDstContentRels();
+		unsigned int lId;
+		m_pDrawingConverter->WriteRels(OOX::FileTypes::CustomXmlProps.RelationType(), sCustomXMLPropsFilename, L"", &lId);
+		m_pDrawingConverter->SaveDstContentRels(sCustomXmlRelsDir + FILE_SEPARATOR_STR + sCustomXmlFilename + L".rels");
+
+		arItems.push_back(std::make_pair(sCustomXmlFilename, bGlossaryMode));
+	}
 	void CustomXmlWriter::WriteCustomSettings(const std::wstring& sUrl, const std::wstring& sXml, bool bGlossaryMode)
 	{
 		m_nCount++;

@@ -35,27 +35,23 @@
 namespace XLS
 {
 
-PicF::PicF()
-{
-}
+	PicF::PicF() {}
+	PicF::~PicF() {}
 
+	BaseObjectPtr PicF::clone()
+	{
+		return BaseObjectPtr(new PicF(*this));
+	}
 
-PicF::~PicF()
-{
-}
-
-
-BaseObjectPtr PicF::clone()
-{
-	return BaseObjectPtr(new PicF(*this));
-}
-
-
-void PicF::readFields(CFRecord& record)
-{
-	Log::error("PicF record is not implemented.");
-	record.skipNunBytes(record.getDataSize() - record.getRdPtr());
-}
+	void PicF::readFields(CFRecord& record)
+	{
+		unsigned short unused, flags;
+		record >> ptyp >> unused >> flags >> numScale;
+		
+		fTopBottom = GETBIT(flags, 9);
+		fBackFront = GETBIT(flags, 10);
+		fSide = GETBIT(flags, 11);
+	}
 
 } // namespace XLS
 

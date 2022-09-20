@@ -42,6 +42,7 @@ namespace PdfWriter
 	class CAcroForm : public CDictObject
 	{
 	public:
+		CAcroForm();
 		CAcroForm(CXref* pXref);
 	private:
 

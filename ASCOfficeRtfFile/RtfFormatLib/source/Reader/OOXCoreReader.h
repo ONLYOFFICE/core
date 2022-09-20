@@ -49,23 +49,23 @@ public:
 
 		if (m_ooxCore->m_sTitle.IsInit())
 		{
-			oParam.oRtf->m_oInformation.m_sTitle = m_ooxCore->m_sTitle.get2();
+			oParam.oRtf->m_oInformation.m_sTitle = m_ooxCore->m_sTitle.get();
 		}
 		if (m_ooxCore->m_sSubject.IsInit())
 		{
-			oParam.oRtf->m_oInformation.m_sSubject = m_ooxCore->m_sSubject.get2();
+			oParam.oRtf->m_oInformation.m_sSubject = m_ooxCore->m_sSubject.get();
 		}
 		if (m_ooxCore->m_sCreator.IsInit())
 		{
-			oParam.oRtf->m_oInformation.m_sAuthor = m_ooxCore->m_sCreator.get2();
+			oParam.oRtf->m_oInformation.m_sAuthor = m_ooxCore->m_sCreator.get();
 		}
 		if (m_ooxCore->m_sDescription.IsInit())
 		{
-			oParam.oRtf->m_oInformation.m_sComment = m_ooxCore->m_sDescription.get2();
+			oParam.oRtf->m_oInformation.m_sComment = m_ooxCore->m_sDescription.get();
 		}
 		if (m_ooxCore->m_sKeywords.IsInit())
 		{
-			oParam.oRtf->m_oInformation.m_sKeywords = m_ooxCore->m_sKeywords.get2();
+			oParam.oRtf->m_oInformation.m_sKeywords = m_ooxCore->m_sKeywords.get();
 		}
 		return true;
 	}

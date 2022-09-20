@@ -11,6 +11,7 @@ CONFIG -= app_bundle
 DEFINES += TEST_AS_EXECUTABLE \
     GRAPHICS_NO_USE_DYNAMIC_LIBRARY \
     BUILDING_WASM_MODULE \
+    CMAP_USE_MEMORY \
     _QT
 
 CORE_ROOT_DIR = $$PWD/../../../../..
@@ -57,6 +58,13 @@ HEADERS += \
     ../../../../raster/BgraFrame.h \
     ../../../../raster/ImageFileFormatChecker.h \
     ../../../../raster/Metafile/Metafile.h \
+    ../../../../raster/Metafile/Common/MetaFile.h \
+    ../../../../raster/Metafile/Common/IOutputDevice.h \
+    ../../../../raster/Metafile/Common/MetaFileTypes.h \
+    ../../../../raster/Metafile/Common/MetaFileClip.h \
+    ../../../../raster/Metafile/Common/MetaFileObjects.h \
+    ../../../../raster/Metafile/Common/MetaFileRenderer.h \
+    ../../../../raster/Metafile/Common/MetaFileUtils.h \
     \
     ../../../ArrowHead.h \
     ../../../Brush.h \
@@ -134,27 +142,11 @@ SOURCES += \
     ../../../../agg-2.4/src/agg_vcgen_smooth_poly1.cpp \
     ../../../../agg-2.4/src/agg_vcgen_stroke.cpp \
     \
-    #../../../../fontengine/fontconverter/StringExt.cpp \
-    #../../../../fontengine/fontconverter/Hash.cpp \
-    #../../../../fontengine/fontconverter/FontConverter.cpp \
-    #../../../../fontengine/fontconverter/FontFileEncodings.cpp \
-    #../../../../fontengine/fontconverter/FontFileTrueType.cpp \
-    #../../../../fontengine/fontconverter/FontFileType1.cpp \
-    #../../../../fontengine/fontconverter/FontFileType1C.cpp \
-    \
     ../../../../raster/Jp2/J2kFile.cpp \
     ../../../../raster/Jp2/Reader.cpp \
     \
     ../../../../raster/Metafile/Common/MetaFileTypes.cpp \
     ../../../../raster/Metafile/Common/MetaFileUtils.cpp \
-    ../../../../raster/Metafile/Emf/EmfClip.cpp \
-    ../../../../raster/Metafile/Emf/EmfObjects.cpp \
-    ../../../../raster/Metafile/Emf/EmfPath.cpp \
-    ../../../../raster/Metafile/Emf/EmfPlayer.cpp \
-    ../../../../raster/Metafile/Emf/EmfFile.cpp \
-    ../../../../raster/Metafile/Wmf/WmfClip.cpp \
-    ../../../../raster/Metafile/Wmf/WmfObjects.cpp \
-    ../../../../raster/Metafile/Wmf/WmfPlayer.cpp \
     \
     ../../../../raster/JBig2/source/JBig2File.cpp \
     \
@@ -631,6 +623,7 @@ SOURCES += \
     $$PDF_ROOT_DIR/Src/Adaptors.cpp \
     $$PDF_ROOT_DIR/Src/GfxClip.cpp \
     $$PDF_ROOT_DIR/Resources/BaseFonts.cpp \
+    $$PDF_ROOT_DIR/Resources/CMapMemory/cmap_memory.cpp \
     $$PDF_ROOT_DIR/PdfReader.cpp
 
 HEADERS +=\
@@ -649,6 +642,7 @@ HEADERS +=\
     $$PDF_ROOT_DIR/Resources/Fontn022024l.h \
     $$PDF_ROOT_DIR/Resources/Fonts050000l.h \
     $$PDF_ROOT_DIR/Resources/BaseFonts.h \
+    $$PDF_ROOT_DIR/Resources/CMapMemory/cmap_memory.h \
     $$PDF_ROOT_DIR/Src/RendererOutputDev.h \
     $$PDF_ROOT_DIR/Src/Adaptors.h \
     $$PDF_ROOT_DIR/Src/MemoryUtils.h \

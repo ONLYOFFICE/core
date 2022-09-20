@@ -56,6 +56,36 @@ private:
 
 };
 
+class doc_props_container
+{
+public:
+	doc_props_container();
+	~doc_props_container();
+
+	void add_user_defined(const std::wstring & name, const std::wstring & value);
+	std::wstring get_user_defined(const std::wstring & name);
+	
+	std::wstring dc_creator_;
+	std::wstring dc_date_;
+	std::wstring dc_description_;
+	std::wstring dc_language_;
+	std::wstring dc_subject_;
+	std::wstring dc_title_;
+	std::wstring application_;
+	std::wstring creation_date_;
+	std::wstring keyword_;
+	std::wstring template_;
+	_CP_OPT(int) revision_;
+
+	_CP_OPT(int) page_count_;
+	_CP_OPT(int) paragraph_count_;
+	_CP_OPT(int) word_count_;
+	_CP_OPT(int) character_count_;
+	_CP_OPT(int) non_whitespace_character_count_; 
+private:
+	class Impl;
+	_CP_SCOPED_PTR(Impl) impl_;
+};
 class settings_container
 {
 public:
@@ -80,8 +110,6 @@ public:
 	
 	void add_view (const std::wstring & name, const std::wstring & value);
 
-	void add_user_defined(const std::wstring & name, const std::wstring & value);
-	std::wstring get_user_defined(const std::wstring & name);
 private:
     class Impl;
     _CP_SCOPED_PTR(Impl) impl_;

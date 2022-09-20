@@ -34,32 +34,43 @@
 
 namespace XLS
 {
+	HorizontalPageBreaks::HorizontalPageBreaks() {}
+	HorizontalPageBreaks::~HorizontalPageBreaks() {}
 
-HorizontalPageBreaks::HorizontalPageBreaks()
-{
-}
-
-
-HorizontalPageBreaks::~HorizontalPageBreaks()
-{
-}
-
-
-BaseObjectPtr HorizontalPageBreaks::clone()
-{
-	return BaseObjectPtr(new HorizontalPageBreaks(*this));
-}
-
-void HorizontalPageBreaks::readFields(CFRecord& record)
-{
-	record >> cbrk;
-	for (int i = 0; i < cbrk ; i++)
+	BaseObjectPtr HorizontalPageBreaks::clone()
 	{
-		HorzBrkPtr hb(new HorzBrk);
-		record >> *hb;
-		rgbrk.push_back(hb);
+		return BaseObjectPtr(new HorizontalPageBreaks(*this));
 	}
-}
 
+	void HorizontalPageBreaks::readFields(CFRecord& record)
+	{
+		record >> cbrk;
+		for (int i = 0; i < cbrk; i++)
+		{
+			HorzBrkPtr hb(new HorzBrk);
+			record >> *hb;
+			rgbrk.push_back(hb);
+		}
+	}
+	int HorizontalPageBreaks::serialize(std::wostream & stream)
+	{
+		if (rgbrk.empty()) return 0;
+
+		CP_XML_WRITER(stream)
+		{
+			CP_XML_NODE(L"rowBreaks")
+			{
+				CP_XML_ATTR(L"count", cbrk);
+				CP_XML_ATTR(L"manualBreakCount", cbrk);
+
+				for (size_t i = 0; i < rgbrk.size(); ++i)
+				{
+					if (rgbrk[i])
+						rgbrk[i]->serialize(CP_XML_STREAM());
+				}
+			}
+		}
+		return 0;
+	}
 } // namespace XLS
 

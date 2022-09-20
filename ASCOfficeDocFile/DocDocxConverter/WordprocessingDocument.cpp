@@ -72,7 +72,6 @@ namespace DocFileFormat
 
 				RegisterDocumentMacros();
 				RegisterVbaProject();	
-				//output_document->get_xl_files().add_vba_project();
 			}
 			else bMacros = false;
 		}
@@ -84,54 +83,66 @@ namespace DocFileFormat
 			RegisterDocument();
 		}
 		OOX::CContentTypes oContentTypes;
-		OOX::CPath pathDocProps = m_strOutputPath + FILE_SEPARATOR_STR + _T("docProps");
+		OOX::CPath pathDocProps = m_strOutputPath + FILE_SEPARATOR_STR + L"docProps";
 		NSDirectory::CreateDirectory(pathDocProps.GetPath());
 		
-		OOX::CPath DocProps = std::wstring(_T("docProps"));
+		OOX::CPath DocProps = std::wstring(L"docProps");
 
-		OOX::CApp* pApp = new OOX::CApp(NULL);
-		if (pApp)
+		if (docFile->m_sXmlApp.empty())
 		{
-			std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
-			if (sApplication.empty())
-				sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
-			pApp->SetApplication(sApplication);
-	#if defined(INTVER)
-			pApp->SetAppVersion(VALUE2STR(INTVER));
-	#endif
-			pApp->SetDocSecurity(0);
-			pApp->SetScaleCrop(false);
-			pApp->SetLinksUpToDate(false);
-			pApp->SetSharedDoc(false);
-			pApp->SetHyperlinksChanged(false);
-			
-			pApp->write(pathDocProps + FILE_SEPARATOR_STR + _T("app.xml"), DocProps, oContentTypes);
-			delete pApp;
-		}				
-		OOX::CCore* pCore = new OOX::CCore(NULL);
-		if (pCore)
+			OOX::CApp* pApp = new OOX::CApp(NULL);
+			if (pApp)
+			{
+				std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
+				if (sApplication.empty())
+					sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
+
+#if defined(INTVER)
+				std::string s = VALUE2STR(INTVER);
+				sApplication += L"/" + std::wstring(s.begin(), s.end());
+#endif
+				pApp->m_sApplication = sApplication;
+				pApp->SetDefaults();
+
+				pApp->write(pathDocProps + FILE_SEPARATOR_STR + L"app.xml", DocProps, oContentTypes);
+				delete pApp;
+			}
+		}
+		else
 		{
-			pCore->SetCreator(_T(""));
-			pCore->SetLastModifiedBy(_T(""));
-			pCore->write(pathDocProps + FILE_SEPARATOR_STR + _T("core.xml"), DocProps, oContentTypes);
-			delete pCore;
-		} 
+			SaveToFile(pathDocProps.GetPath(), L"app.xml", docFile->m_sXmlApp);
+		}
+		if (docFile->m_sXmlCore.empty())
+		{
+			OOX::CCore* pCore = new OOX::CCore(NULL);
+			if (pCore)
+			{
+				pCore->SetCreator(L"");
+				pCore->SetLastModifiedBy(L"");
+				pCore->write(pathDocProps + FILE_SEPARATOR_STR + L"core.xml", DocProps, oContentTypes);
+				delete pCore;
+			}
+		}
+		else
+		{
+			SaveToFile(pathDocProps.GetPath(), L"core.xml", docFile->m_sXmlCore);
+		}
 		RegisterDocPr();
 
 		WritePackage();
 
 		//Write main content. (word directory)
 
-        SaveToFile(pathWord, std::wstring( L"document.xml" ),		DocumentXML );
-        SaveToFile(pathWord, std::wstring( L"fontTable.xml" ),      FontTableXML );
-        SaveToFile(pathWord, std::wstring( L"styles.xml" ),         StyleSheetXML );
-        SaveToFile(pathWord, std::wstring( L"footnotes.xml" ),      FootnotesXML );
-        SaveToFile(pathWord, std::wstring( L"endnotes.xml" ),		EndnotesXML );
-        SaveToFile(pathWord, std::wstring( L"numbering.xml" ),      NumberingXML );
-        SaveToFile(pathWord, std::wstring( L"comments.xml" ),		CommentsXML );
-		SaveToFile(pathWord, std::wstring( L"commentsExtended.xml"),CommentsExtendedXML );
-        SaveToFile(pathWord, std::wstring( L"settings.xml" ),		SettingsXML );
-        SaveToFile(pathWord, std::wstring( L"customizations.xml" ), CommandTableXML );
+        SaveToFile(pathWord, L"document.xml",			DocumentXML );
+        SaveToFile(pathWord, L"fontTable.xml",			FontTableXML );
+        SaveToFile(pathWord, L"styles.xml",				StyleSheetXML );
+        SaveToFile(pathWord, L"footnotes.xml",			FootnotesXML );
+        SaveToFile(pathWord, L"endnotes.xml",			EndnotesXML );
+        SaveToFile(pathWord, L"numbering.xml",			NumberingXML );
+        SaveToFile(pathWord, L"comments.xml",			CommentsXML );
+		SaveToFile(pathWord, L"commentsExtended.xml",	CommentsExtendedXML );
+        SaveToFile(pathWord, L"settings.xml",			SettingsXML );
+        SaveToFile(pathWord, L"customizations.xml",		CommandTableXML );
 
 		if (!ImagesList.empty())
 		{
@@ -173,12 +184,12 @@ namespace DocFileFormat
 
 		for (std::list<std::wstring>::iterator iter = HeaderXMLList.begin(); iter != HeaderXMLList.end(); ++iter)
 		{
-            SaveToFile(pathWord, ( std::wstring( L"header" ) + FormatUtils::IntToWideString(++headersCount) + std::wstring( L".xml" ) ), *iter);
+            SaveToFile(pathWord, ( L"header" + FormatUtils::IntToWideString(++headersCount) + L".xml"), *iter);
 		}
 
 		for (std::list<std::wstring>::iterator iter = FooterXMLList.begin(); iter != FooterXMLList.end(); ++iter)
 		{
-            SaveToFile(pathWord, ( std::wstring( L"footer" ) + FormatUtils::IntToWideString(++footersCount) + std::wstring( L".xml" ) ), *iter);
+            SaveToFile(pathWord, ( L"footer" + FormatUtils::IntToWideString(++footersCount) + L".xml" ), *iter);
 		}
 		return 0;
 	}

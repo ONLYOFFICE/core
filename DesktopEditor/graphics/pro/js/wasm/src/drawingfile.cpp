@@ -183,7 +183,7 @@ int main()
         Close(test);
         if (nError == 4)
         {
-            std::string sPassword = "Test123";
+            std::string sPassword = "123456";
             test = Open(pPdfData, nPdfBytesCount, sPassword.c_str());
         }
         else
@@ -267,8 +267,11 @@ int main()
         i += nPathLength;
     }
 
-    std::cout << std::endl;
-    BYTE* pGlyphs = GetGlyphs(test, test_page);
+    if (false)
+    {
+        std::cout << std::endl;
+        BYTE* pGlyphs = GetGlyphs(test, test_page);
+    }
 
     Close(test);
     RELEASEARRAYOBJECTS(pPdfData);

@@ -43,6 +43,7 @@ SOURCES += \
 # KERNEL
 SOURCES += \
     $$CORE_ROOT_DIR/DesktopEditor/common/StringBuilder.cpp \
+    $$CORE_ROOT_DIR/DesktopEditor/common/StringExt.cpp \
     $$CORE_ROOT_DIR/DesktopEditor/common/Base64.cpp \
     $$CORE_ROOT_DIR/DesktopEditor/common/Path.cpp \
     $$CORE_ROOT_DIR/DesktopEditor/common/File.cpp \
@@ -53,12 +54,14 @@ DEFINES += BUILD_ZLIB_AS_SOURCES
 
 INCLUDEPATH += \
     $$CORE_ROOT_DIR/OfficeUtils/src/zlib-1.2.11/contrib/minizip \
-    $$CORE_ROOT_DIR/OfficeUtils/src/zlib-1.2.11
+    $$CORE_ROOT_DIR/OfficeUtils/src/zlib-1.2.11 \
+    $$CORE_ROOT_DIR/OfficeUtils/src
 
 SOURCES +=  \
     $$CORE_ROOT_DIR/OfficeUtils/src/OfficeUtils.cpp \
     $$CORE_ROOT_DIR/OfficeUtils/src/ZipBuffer.cpp \
     $$CORE_ROOT_DIR/OfficeUtils/src/ZipUtilsCP.cpp \
+    $$CORE_ROOT_DIR/OfficeUtils/src/zlib_addon.c \
     $$CORE_ROOT_DIR/OfficeUtils/src/zlib-1.2.11/contrib/minizip/ioapi.c \
     $$CORE_ROOT_DIR/OfficeUtils/src/zlib-1.2.11/contrib/minizip/miniunz.c \
     $$CORE_ROOT_DIR/OfficeUtils/src/zlib-1.2.11/contrib/minizip/minizip.c \

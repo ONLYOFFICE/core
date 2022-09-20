@@ -803,6 +803,7 @@ namespace OOX
 		et_w_comboBox, // <w:comboBox>
 		et_w_textFormPr, // <w:textFormPr> custom!
 		et_w_formPr,// <w:formPr> custom!
+		et_w_complexFormPr, // <w:complexFormPr> custom!
 		et_w_comment, // <w:comment>
 		et_w_commentRangeEnd, // <w:commentRangeEnd>
 		et_w_commentRangeStart, // <w:commentRangeStart>
@@ -957,6 +958,7 @@ namespace OOX
 		et_w_docPartCategory,
 		et_w_docPartTypes,
 		et_w_docPartBehaviors,
+		et_w_stylisticSets,
 
 		et_wd_anchorLock, // <wd:anchorLock>
 		et_wd_borderbottom, // <wd:borderbottom>
@@ -1293,6 +1295,8 @@ namespace OOX
 		et_x_SheetView,
 		et_x_ProtectedRanges,
 		et_x_ProtectedRange,
+		et_x_CellWatches,
+		et_x_CellWatch,
 		et_x_GraphicFrame,
 		et_x_Graphic,
 		et_x_GraphicData,

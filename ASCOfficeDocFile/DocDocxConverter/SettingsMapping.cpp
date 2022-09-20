@@ -76,7 +76,6 @@ namespace DocFileFormat
 		_ctx->_docx->RegisterSettings();
 
 		//start w:settings
-		m_oXmlWriter.WriteNodeBegin( L"?xml version=\"1.0\" encoding=\"UTF-8\"?"  );
 		m_oXmlWriter.WriteNodeBegin( L"w:settings",  TRUE );
 		//write namespaces
 		m_oXmlWriter.WriteAttribute( L"xmlns:w",  OpenXmlNamespaces::WordprocessingML );

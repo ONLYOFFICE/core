@@ -105,17 +105,27 @@ namespace PPTX
 			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(_T("a:camera"));
+				std::wstring sNodeNamespace;
+				std::wstring sAttrNamespace;
+				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
+				{
+					sNodeNamespace = L"w14:";
+					sAttrNamespace = sNodeNamespace;
+				}
+				else
+					sNodeNamespace = L"a:";
+
+				pWriter->StartNode(sNodeNamespace + L"camera");
 
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("prst"), prst.get());
-				pWriter->WriteAttribute(_T("fov"), fov);
-				pWriter->WriteAttribute(_T("zoom"), zoom);
+				pWriter->WriteAttribute(sAttrNamespace + L"prst", prst.get());
+				pWriter->WriteAttribute(sAttrNamespace + L"fov", fov);
+				pWriter->WriteAttribute(sAttrNamespace + L"zoom", zoom);
 				pWriter->EndAttributes();
 
 				pWriter->Write(rot);
 
-				pWriter->EndNode(_T("a:camera"));
+				pWriter->EndNode(sNodeNamespace + L"camera");
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const

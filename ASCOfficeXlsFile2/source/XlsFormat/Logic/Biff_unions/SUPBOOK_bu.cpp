@@ -224,6 +224,8 @@ int SUPBOOK::serialize_book(std::wostream & strm)
 			CP_XML_ATTR(L"r:id", L"rId1"); 
 			
             sExternPathLink = book->virtPath.back();
+
+			XmlUtils::replace_all(sExternPathLink, L" ", L"%20");
 			
 			if (!m_arXCT.empty() && !book->rgst.empty())
 			{	

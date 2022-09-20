@@ -71,6 +71,8 @@ namespace PPTX
 			}	
 			void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
+				m_name = XmlUtils::GetNameNoNS(oReader.GetName());
+
 				ReadAttributes( oReader );
 				
 				if ( oReader.IsEmptyNode() )
@@ -91,7 +93,7 @@ namespace PPTX
 					WritingElement_ReadAttributes_Read_if     ( oReader, _T("blurRad"), blurRad)
 					WritingElement_ReadAttributes_Read_else_if( oReader, _T("dir"), dir)
 					WritingElement_ReadAttributes_Read_else_if( oReader, _T("dist"), dist)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("algnt"), algn)
+					WritingElement_ReadAttributes_Read_else_if( oReader, _T("algn"), algn)
 					WritingElement_ReadAttributes_Read_else_if( oReader, _T("kx"), kx)
 					WritingElement_ReadAttributes_Read_else_if( oReader, _T("ky"), ky)
 					WritingElement_ReadAttributes_Read_else_if( oReader, _T("rotWithShape"), rotWithShape)
@@ -123,8 +125,8 @@ namespace PPTX
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(_T("blurRad"), blurRad);
-				oAttr.Write(_T("dir"), dir);
 				oAttr.Write(_T("dist"), dist);
+				oAttr.Write(_T("dir"), dir);
 				oAttr.Write(_T("sx"), sx);
 				oAttr.Write(_T("sy"), sy);
 				oAttr.Write(_T("kx"), kx);
@@ -139,22 +141,32 @@ namespace PPTX
 			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(L"a:outerShdw");
+				std::wstring sNodeNamespace;
+				std::wstring sAttrNamespace;
+				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
+				{
+					sNodeNamespace = L"w14:";
+					sAttrNamespace = sNodeNamespace;
+				}
+				else
+					sNodeNamespace = L"a:";
+
+				pWriter->StartNode(sNodeNamespace + m_name);
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(L"blurRad", blurRad);
-				pWriter->WriteAttribute(L"dist", dist);
-				pWriter->WriteAttribute(L"dir", dir);
-				pWriter->WriteAttribute(L"kx", kx);
-				pWriter->WriteAttribute(L"ky", ky);
-				pWriter->WriteAttribute(L"sx", sx);
-				pWriter->WriteAttribute(L"sy", sy);
-				pWriter->WriteAttribute(L"rotWithShape", rotWithShape);
-				pWriter->WriteAttribute(L"algn", algn);
+				pWriter->WriteAttribute(sAttrNamespace + L"blurRad", blurRad);
+				pWriter->WriteAttribute(sAttrNamespace + L"dist", dist);
+				pWriter->WriteAttribute(sAttrNamespace + L"dir", dir);
+				pWriter->WriteAttribute(sAttrNamespace + L"sx", sx);
+				pWriter->WriteAttribute(sAttrNamespace + L"sy", sy);
+				pWriter->WriteAttribute(sAttrNamespace + L"kx", kx);
+				pWriter->WriteAttribute(sAttrNamespace + L"ky", ky);
+				pWriter->WriteAttribute(sAttrNamespace + L"algn", algn);
+				pWriter->WriteAttribute(sAttrNamespace + L"rotWithShape", rotWithShape);
 				pWriter->EndAttributes();
 				
 				Color.toXmlWriter(pWriter);
 
-				pWriter->EndNode(L"a:outerShdw");
+				pWriter->EndNode(sNodeNamespace + m_name);
 			}
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
@@ -232,6 +244,8 @@ namespace PPTX
 			nullable_bool						rotWithShape;
 			nullable_int						sx;
 			nullable_int						sy;
+
+			std::wstring						m_name = L"outerShdw";
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

@@ -38,6 +38,7 @@
 
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../DesktopEditor/common/File.h"
+#include "../../DesktopEditor/xmlsec/src/include/Certificate.h"
 
 #include <ft2build.h>
 #include FT_OUTLINE_H
@@ -64,6 +65,7 @@ namespace PdfWriter
 	class CInfoDict;
 	class CDictObject;
 	class CEncryptDict;
+	class CSignatureDict;
 	class CStream;
 	class CDestination;
 	class CExtGrState;
@@ -84,6 +86,7 @@ namespace PdfWriter
 	class CCheckBoxField;
 	class CRadioGroupField;
 	class CPictureField;
+	class CSignatureField;
 	class CFieldBase;
 	//----------------------------------------------------------------------------------------
 	// CDocument
@@ -97,7 +100,7 @@ namespace PdfWriter
 
 		bool              CreateNew();
 		void              Close();
-		bool              SaveToFile(const std::wstring& wsPath);
+		bool              SaveToFile(const std::wstring& wsPath, bool bAdd = true);
 			              
         void              SetPasswords(const std::wstring & wsOwnerPassword, const std::wstring & wsUserPassword);
 		void              SetPermission(unsigned int unPermission);
@@ -146,8 +149,18 @@ namespace PdfWriter
 		CCheckBoxField*   CreateCheckBoxField();
 		CRadioGroupField* GetRadioGroupField(const std::wstring& wsGroupName);
 		CPictureField*    CreatePictureField();
+		CSignatureField*  CreateSignatureField();
 		bool              CheckFieldName(CFieldBase* pField, const std::string& sName);
 					  
+		bool              EditPdf(const std::wstring& wsPath, int nPosLastXRef, int nSizeXRef, const std::wstring& sCatalog, int nCatalog, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm, int nFormField);
+		bool              CreatePageTree(const std::wstring& sPageTree, int nPageTree);
+		std::pair<int, int> GetPageRef(int nPageIndex);
+		CPage*            EditPage(const std::wstring& sPage, int nPage);
+		CPage*            AddPage(int nPageIndex);
+		bool              DeletePage(int nPageIndex);
+		bool              AddToFile(const std::wstring& sTrailer, const std::wstring& sInfo);
+		void              Sign(const TRect& oRect, CImageDict* pImage, ICertificate* pCert);
+		std::wstring      GetEditPdfPath() { return m_wsFilePath; }
 	private:		  
 					  
 		char*             GetTTFontTag();
@@ -162,6 +175,7 @@ namespace PdfWriter
 		CShading*         CreateRadialShading(double dX0, double dY0, double dR0, double dX1, double dY1, double dR1, unsigned char* pColors, double* pPoints, int nCount);
 		bool              CheckAcroForm();
 		CRadioGroupField* FindRadioGroupField(const std::wstring& wsGroupName);
+		void              Sign(const std::wstring& wsPath, unsigned int nSizeXRef, bool bNeedStreamXRef = false);
 
 	private:
 
@@ -178,10 +192,26 @@ namespace PdfWriter
 			unsigned int unIndex;
 			CFontDict*   pFont;
 		};
+		struct TSignatureInfo
+		{
+			TSignatureInfo(const TRect& _oRect, CPage* _pPage, CImageDict* _pImage, ICertificate* _pCertificate)
+			{
+				oRect  = _oRect;
+				pPage  = _pPage;
+				pImage = _pImage;
+				pCertificate = _pCertificate;
+			}
+
+			TRect oRect;
+			CPage* pPage;
+			CImageDict* pImage;
+			ICertificate* pCertificate;
+		};
 
 		CCatalog*                          m_pCatalog;
 		COutline*                          m_pOutlines;
 		CXref*                             m_pXref;
+		CXref*                             m_pLastXref;
 		CPageTree*                         m_pPageTree;
 		CPage*                             m_pCurPage;
 		int                                m_nCurPageNum;
@@ -190,8 +220,9 @@ namespace PdfWriter
 		CDictObject*                       m_pResources;
 		bool                               m_bEncrypt;
 		CEncryptDict*                      m_pEncryptDict;
+		std::vector<TSignatureInfo>        m_vSignatures;
+		unsigned int                       m_unFormFields;
 		unsigned int                       m_unCompressMode;
-		std::vector<CPage*>                m_vPages;
 		std::vector<CExtGrState*>          m_vExtGrStates;
 		std::vector<CExtGrState*>          m_vStrokeAlpha;
 		std::vector<CExtGrState*>          m_vFillAlpha;
@@ -205,8 +236,9 @@ namespace PdfWriter
 		std::vector<CFontCidTrueType*>     m_vFreeTypeFonts;
 		FT_Library                         m_pFreeTypeLibrary;
 		bool                               m_bPDFAConformance;
-		std::wstring				       m_wsDocumentID;
-		CAcroForm*                         m_pAcroForm;
+		std::wstring                       m_wsDocumentID;
+		std::wstring                       m_wsFilePath;
+		CDictObject*                       m_pAcroForm;
 		CResourcesDict*                    m_pFieldsResources;
 		std::vector<CRadioGroupField*>     m_vRadioGroups;
 		std::map<std::string, CFieldBase*> m_mFields;

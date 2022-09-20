@@ -810,7 +810,7 @@ const wchar_t * table_content_validation::name = L"content-validation";
 
 void table_content_validation::add_attributes(xml::attributes_wc_ptr const & Attributes)
 {
-    CP_APPLY_ATTR(L"table:name",				table_name_);
+	CP_APPLY_ATTR(L"table:name",				table_name_);
     CP_APPLY_ATTR(L"table:condition",			table_condition_);
 	CP_APPLY_ATTR(L"table:display-list",		table_display_list_);
 	CP_APPLY_ATTR(L"table:allowempty-cell",		table_allowempty_cell_);

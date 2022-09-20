@@ -168,19 +168,12 @@ namespace PPTX
 				pWriter->EndNode(_T("p:controls"));
 			}
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const 
-			{
-				for (size_t i = 0; i <arrControls.size(); i++)
-					arrControls[i].toPPTY(pWriter);
-			}	
-			void AddObjectsTo (const std::vector<PPTX::Logic::SpTreeElem> *spTreeElements, NSShapeImageGen::CMediaManager* pMediaManager) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 		public:
-			std::vector<Control>	arrControls;
+			std::vector<Control> arrControls;
 
 		protected:
 			virtual void FillParentPointersForChilds()

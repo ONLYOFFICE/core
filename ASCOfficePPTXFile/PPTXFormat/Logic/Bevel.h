@@ -46,7 +46,7 @@ namespace PPTX
 		public:
 			WritingElement_AdditionConstructors(Bevel)
 			
-			Bevel(const std::wstring name = L"bevel")
+			Bevel(const std::wstring name = L"a:bevel")
 			{
 				m_name = name;
 			}	
@@ -82,27 +82,45 @@ namespace PPTX
 
 			virtual std::wstring toXML() const
 			{
+				std::wstring namespace_ = XmlUtils::GetNamespace(m_name);
+				if (namespace_ == L"w14")
+				{
+					namespace_ + L"w14:";
+				}
+				else namespace_.clear();
+
 				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("w"), w);
-				oAttr.Write(_T("h"), h);
-				oAttr.WriteLimitNullable(_T("prst"), prst);
+				oAttr.Write(namespace_ + L"w", w);
+				oAttr.Write(namespace_ + L"h", h);
+				oAttr.WriteLimitNullable(namespace_ + L"prst", prst);
 				
-				return XmlUtils::CreateNode(L"a:" + m_name, oAttr);
+				return XmlUtils::CreateNode(m_name, oAttr);
 			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(L"a:" + m_name);
+				std::wstring sNodeNamespace;
+				std::wstring sAttrNamespace;
+				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
+				{
+					sNodeNamespace = _T("w14:");
+					sAttrNamespace = sNodeNamespace;
+				}
+				else
+					sNodeNamespace = _T("a:");
+
+
+				pWriter->StartNode(sNodeNamespace + m_name);
 
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(L"w", w);
-				pWriter->WriteAttribute(L"h", h);
+				pWriter->WriteAttribute(sAttrNamespace + L"w", w);
+				pWriter->WriteAttribute(sAttrNamespace + L"h", h);
 				if (prst.IsInit())
 				{
-					pWriter->WriteAttribute(L"prst", prst->get());
+					pWriter->WriteAttribute(sAttrNamespace + L"prst", prst->get());
 				}
 				pWriter->EndAttributes();
 				
-				pWriter->EndNode(L"a:" + m_name);
+				pWriter->EndNode(sNodeNamespace + m_name);
 			}
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{

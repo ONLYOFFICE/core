@@ -365,6 +365,16 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context, _CP_OPT(std
 	}
   	for (size_t i = index; i < content_.size(); i++)
 	{
+		if (content_[i]->get_type() == typeTextP)
+		{//параграф в параграфе .... оО
+			p *para_inside = dynamic_cast<p*>(content_[i].get());
+			
+			for (size_t j = 0; (para_inside) && (j < para_inside->paragraph_.content_.size()); ++j)
+			{
+				para_inside->paragraph_.content_[j]->docx_convert(Context);
+			}
+			continue;
+		}
 		if (Context.get_page_break())
 		{
 			if (Context.process_headers_footers_ == false) 

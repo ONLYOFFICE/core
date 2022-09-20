@@ -24,5 +24,13 @@ SOURCES += $$PWD/libxml2_all.c
 SOURCES += $$PWD/libxml2_all2.c
 
 SOURCES +=  \
+    $$PWD/../../src/xmlwriter.cpp \
     $$PWD/../../src/xmllight.cpp \
     $$PWD/../../src/xmldom.cpp
+
+HEADERS += \
+    $$PWD/../../src/xmllight_private.h
+
+HEADERS += \
+    $$PWD/../../include/xmlutils.h \
+    $$PWD/../../include/xmlwriter.h

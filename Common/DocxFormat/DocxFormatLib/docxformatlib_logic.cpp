@@ -48,6 +48,7 @@
 #include "../Source/DocxFormat/Logic/Table.cpp"
 #include "../Source/DocxFormat/Logic/TableProperty.cpp"
 #include "../Source/DocxFormat/Logic/Vml.cpp"
+#include "../Source/DocxFormat/Logic/Pict.cpp"
 #include "../Source/DocxFormat/Math/oMath.cpp"
 #include "../Source/DocxFormat/Math/oMathContent.cpp"
 #include "../Source/DocxFormat/Math/oMathPara.cpp"

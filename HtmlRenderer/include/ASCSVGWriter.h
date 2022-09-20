@@ -191,7 +191,6 @@ namespace NSHtmlRenderer
 
 		Aggplus::CGraphicsPathSimpleConverter*	m_pSimpleGraphicsConverter;		// конвертер сложных гафических путей в простые
 		NSFonts::IFontManager*		m_pFontManager;					// менеджер шрифтов
-		bool						m_bDeleteFontManager;	
 
 		Aggplus::CMatrix*			m_pBaseTransform;	// матрица перерасчета координатных осей (здесь: миллиметры -> пикселы)
 		Aggplus::CMatrix*			m_pTransform;		// текущая матрица преобразований рендерера

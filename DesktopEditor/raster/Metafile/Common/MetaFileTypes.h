@@ -48,6 +48,7 @@ typedef unsigned char BYTE;
 #endif
 
 #define METAFILE_RGBA(r, g, b) ((unsigned int)( ( (unsigned char)(r) )| ( ( (unsigned char)(g) ) << 8 ) | ( ( (unsigned char)(b) ) << 16 ) | ( (unsigned char)(0) << 24 ) ) )
+#define INTCOLOR_TO_RGB(color) std::to_wstring(color >> 0 & 0xFF) + L", " + std::to_wstring(color >> 8 & 0xFF) + L", " + std::to_wstring(color >> 16 & 0xFF)
 
 #if !defined (_WIN32) && !defined(_WIN64)
 	#define BLACKONWHITE                 1
@@ -278,8 +279,71 @@ typedef unsigned char BYTE;
 #define GM_COMPATIBLE       1
 #define GM_ADVANCED         2
 
+// BRUSH STYLES
+#define HS_05Percent        6
+#define HS_10Percent        7
+#define HS_20Percent        8
+#define HS_25Percent        9
+#define HS_30Percent        10
+#define HS_40Percent        11
+#define HS_50Percent        12
+#define HS_60Percent        13
+#define HS_70Percent        14
+#define HS_75Percent        15
+#define HS_80Percent        16
+#define HS_90Percent        17
+
+#define HS_LTDOWNWARDDIAG   18
+#define HS_LTUPWARDDIAG     19
+#define HS_DNDOWNWARDDIAG   20
+#define HS_DNUPWARDDIAG     21
+#define HS_WDOWNWARDDIAG    22
+#define HS_WUPWARDDIAG      23
+
+#define HS_LTVERTICAL       24
+#define HS_LTHORIZONTAL     25
+#define HS_NVERTICAL        26
+#define HS_NHORIZONTAL      27
+#define HS_DNVERTICAL       28
+#define HS_DNHORIZONTAL     29
+
+#define HS_DASHDOWNWARDDIAG 30
+#define HS_DASHUPWARDDIAG   31
+#define HS_DASHHORIZONTAL   32
+#define HS_DASHVERTICAL     33
+
+#define HS_SMALLCONFETTI    34
+#define HS_LARGECONFETTI    35
+#define HS_ZIGZAG           36
+#define HS_WAVE             37
+#define HS_DIAGBRICK        38
+#define HS_HORIZBRICK       39
+#define HS_WEAVE            40
+#define HS_PLAID            41
+#define HS_DIVOT            42
+#define HS_DOTGRID          43
+#define HS_DOTDIAMOND       44
+#define HS_SHINGLE          45
+#define HS_TRELLIS          46
+#define HS_SPHERE           47
+#define HS_SGRID            48
+#define HS_SCHECHERBOARD    49
+#define HS_LCHECHERBOARD    50
+#define HS_OUTLINEDDIAMOND  51
+#define HS_SOLIDDIAMOND     52
+
 namespace MetaFile
 {
+        enum InterpretatorType
+        {
+                Emf,
+                Wmf,
+                Render,
+                XML,
+                Svg,
+                Array
+        };
+
 	enum EMetaFileBitCount
 	{
 		BI_BITCOUNT_0 = 0x0000,
@@ -343,6 +407,22 @@ namespace MetaFile
 			dBottom *= dValue;
 			return *this;
 		}
+	void Update(bool bFlipedX, double bFlipedY)
+	{
+		if ((dTop > dBottom && !bFlipedY) || (dTop < dBottom && bFlipedY))
+		{
+			double dTemp = dBottom;
+			dBottom = dTop;
+			dTop = dTemp;
+		}
+
+		if ((dLeft > dRight && !bFlipedX) || (dLeft < dRight && bFlipedX))
+		{
+			double dTemp = dRight;
+			dRight = dLeft;
+			dLeft = dTemp;
+		}
+	}
     };
 
 	struct TPointL

@@ -87,40 +87,55 @@ int main(int argc, char *argv[])
     if (!NSDirectory::Exists(sTempDirOut))
         NSDirectory::CreateDirectory(sTempDirOut);
 
-    std::wstring sSourceFile = L"PATH_TO_TEST_FILE";
-    std::wstring sDestFile = NSFile::GetProcessDirectory() + L"/output.docx";
+    //Добавляем все файлы из определенного каталога
+    //std::vector<std::wstring> sSourceFiles = NSDirectory::GetFiles(L"C:\\Folder");
+    std::vector<std::wstring> sSourceFiles;
+    //Или добавляем любой нужный файл
+    //sSourceFiles.push_back(L"C:\\File.pdf");
+
+    std::wstring sTextDirOut = NSFile::GetProcessDirectory() + L"/text";
+    if (!NSDirectory::Exists(sTextDirOut))
+        NSDirectory::CreateDirectory(sTextDirOut);
 
     IOfficeDrawingFile* pReader = NULL;
 
     COfficeFileFormatChecker oChecker;
-    if (oChecker.isOfficeFile(sSourceFile))
+    int	                	 nFileType = 0;
+
+    CDocxRenderer oDocxRenderer(pFonts);
+    oDocxRenderer.SetTempFolder(sTempDirOut);
+
+    for (size_t nIndex = 0; nIndex < sSourceFiles.size(); nIndex++)
     {
-        switch (oChecker.nFileType)
+        if (oChecker.isOfficeFile(sSourceFiles[nIndex]))
         {
-        case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF:
-            pReader = new PdfReader::CPdfReader(pFonts);
-            break;
-        case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS:
-            pReader = new CXpsFile(pFonts);
-            break;
-        case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU:
-            pReader = new CDjVuFile(pFonts);
-            break;
-        default:
-            break;
+            nFileType = oChecker.nFileType;
+            switch (nFileType)
+            {
+            case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF:
+                pReader = new PdfReader::CPdfReader(pFonts);
+                break;
+            case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS:
+                pReader = new CXpsFile(pFonts);
+                break;
+            case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU:
+                pReader = new CDjVuFile(pFonts);
+                break;
+            default:
+                break;
+            }
         }
-    }
 
-    if (!pReader)
-    {
-        pFonts->Release();
-        return 0;
-    }
+        if (!pReader)
+        {
+            pFonts->Release();
+            return 0;
+        }
 
-    pReader->SetTempDirectory(sTempDir);
+        pReader->SetTempDirectory(sTempDir);
 
 #ifndef LOAD_FILE_AS_BINARY
-    pReader->LoadFromFile(sSourceFile);
+        pReader->LoadFromFile(sSourceFiles[nIndex]);
 #else
     BYTE* pFileBinary = NULL;
     DWORD nFileBinaryLen = 0;
@@ -142,21 +157,29 @@ int main(int argc, char *argv[])
         }
     }
 #else
-    CDocxRenderer oDocxRenderer(pFonts);
 
-    // проверить все режимы
-    NSDocxRenderer::TextAssociationType taType;
-    //taType = NSDocxRenderer::TextAssociationTypeBlockChar;
-    //taType = NSDocxRenderer::TextAssociationTypeBlockLine;
-    taType = NSDocxRenderer::TextAssociationTypePlainLine;
-    //taType = NSDocxRenderer::TextAssociationTypePlainParagraph;
-    oDocxRenderer.SetTextAssociationType(taType);
+        std::wstring sExtention = NSFile::GetFileExtention(sSourceFiles[nIndex]);
+        std::wstring sFileNameWithExtention = NSFile::GetFileName(sSourceFiles[nIndex]);
+        std::wstring sFileName = sFileNameWithExtention.substr(0, sFileNameWithExtention.size() - 1 - sExtention.size());
+        std::wstring sDocx = L"/" + sFileName + L".docx";
+        std::wstring sZip = L"/" + sFileName + L".zip";
 
-    oDocxRenderer.SetTempFolder(sTempDirOut);
-    oDocxRenderer.Convert(pReader, sDestFile);
+        // проверить все режимы
+        NSDocxRenderer::TextAssociationType taType;
+        //taType = NSDocxRenderer::tatBlockChar;
+        //taType = NSDocxRenderer::tatBlockLine;
+        //taType = NSDocxRenderer::tatPlainLine;
+        //taType = NSDocxRenderer::tatShapeLine;
+        taType = NSDocxRenderer::tatPlainParagraph;
+
+        oDocxRenderer.SetTextAssociationType(taType);
+        oDocxRenderer.Convert(pReader, sTextDirOut+sDocx);
+        //Если сразу нужен zip-архив
+        //oDocxRenderer.Convert(pReader, sPlainParagraphDirOut+sZip);
 #endif
+        delete pReader;
+    }
 
-    delete pReader;
     pFonts->Release();
 
 #ifdef LOAD_FILE_AS_BINARY

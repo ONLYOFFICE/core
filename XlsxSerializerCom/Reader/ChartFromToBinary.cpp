@@ -47,7 +47,7 @@ using namespace OOX::Spreadsheet;
 
 namespace BinXlsxRW
 {
-	SaveParams::SaveParams(const std::wstring& _sDrawingsPath, const std::wstring& _sEmbeddingsPath, const std::wstring& _sThemePath, OOX::CContentTypes* _pContentTypes, CSVWriter::CCSVWriter* _pCSVWriter, bool bMacro)
+	SaveParams::SaveParams(const std::wstring& _sDrawingsPath, const std::wstring& _sEmbeddingsPath, const std::wstring& _sThemePath, OOX::CContentTypes* _pContentTypes, CSVWriter* _pCSVWriter, bool bMacro)
 	{
 		bMacroEnabled = bMacro;
 		pContentTypes = _pContentTypes;
@@ -1243,11 +1243,11 @@ namespace BinXlsxRW
 				m_pOfficeDrawingConverter->SaveDstContentRels(pathDrawingsRels.GetPath());
 								
 				NSCommon::smart_ptr<OOX::File> pFile = pXlsxFile.smart_dynamic_cast<OOX::File>();
-				pChart->Add(pFile);
+				pChart->AddNoWrite(pFile, L"../embeddings");
 
 				unsigned int rId = 0;
 				m_pOfficeDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package", L"../embeddings/" + pXlsxFile->m_sOutputFilename, std::wstring(), &rId);
-				m_pOfficeDrawingConverter->m_pImageManager->m_pContentTypes->AddDefault(L"xlsx");
+				m_pOfficeDrawingConverter->m_pImageManager->m_pContentTypes->AddDefault(pXlsxFile->filename().GetExtention());
 
 				if (!pChart->m_oChartSpace.m_externalData)
 					pChart->m_oChartSpace.m_externalData = new CT_ExternalData;
@@ -1312,7 +1312,7 @@ namespace BinXlsxRW
 			std::wstring sThemePath = sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl" + FILE_SEPARATOR_STR + L"theme";
 			std::wstring sEmbeddingsPath = sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl" + FILE_SEPARATOR_STR + L"embeddings";
 
-			BinXlsxRW::SaveParams oSaveParams(sDrawingsPath, sEmbeddingsPath, sThemePath, oDrawingConverter.GetContentTypes());
+			BinXlsxRW::SaveParams oSaveParams(sDrawingsPath, sEmbeddingsPath, sThemePath, oDrawingConverter.GetContentTypes(), NULL, true);
 
 			std::wstring sXmlOptions, sMediaPath, sEmbedPath;
 			BinXlsxRW::CXlsxSerializer::CreateXlsxFolders(sXmlOptions, sDstEmbeddedTemp, sMediaPath, sEmbedPath);
@@ -1329,13 +1329,13 @@ namespace BinXlsxRW
 			oDrawingConverter.SetMediaDstPath(sMediaPath);
 			oDrawingConverter.SetEmbedDstPath(sEmbedPath);
 
-			std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(id) + L".xlsx";
 			oEmbeddedReader.ReadMainTable(oXlsx, *oDrawingConverter.m_pReader, m_pOfficeDrawingConverter->m_pReader->m_strFolder, sDstEmbeddedTemp, oSaveParams, &oDrawingConverter);
 
 			oXlsx.PrepareToWrite();
 
 			oXlsx.Write(sDstEmbeddedTemp, *oSaveParams.pContentTypes);
 
+			std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(id) + (oSaveParams.bMacroEnabled ? L".xlsm" : L".xlsx");
 			COfficeUtils oOfficeUtils(NULL);
 			oOfficeUtils.CompressFileOrDirectory(sDstEmbeddedTemp, sDstEmbedded + FILE_SEPARATOR_STR + sXlsxFilename, true);
 
@@ -1343,7 +1343,7 @@ namespace BinXlsxRW
 
 			file->set_filename(sDstEmbedded + FILE_SEPARATOR_STR + sXlsxFilename, false);
 
-			m_pOfficeDrawingConverter->m_pReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(L"xlsx");
+			m_pOfficeDrawingConverter->m_pReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(oSaveParams.bMacroEnabled ? L"xlsm" : L"xlsx");
 		
 			NSDirectory::DeleteDirectory(sDstEmbeddedTemp);
 		}
@@ -6690,11 +6690,11 @@ namespace BinXlsxRW
 				m_pOfficeDrawingConverter->SaveDstContentRels(pathDrawingsRels.GetPath());
 
 				NSCommon::smart_ptr<OOX::File> pFile = pXlsxFile.smart_dynamic_cast<OOX::File>();
-				pChart->Add(pFile);
+				pChart->AddNoWrite(pFile, L"../embeddings");
 
 				unsigned int rId = 0;
 				m_pOfficeDrawingConverter->WriteRels(L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package", L"../embeddings/" + pXlsxFile->m_sOutputFilename, std::wstring(), &rId);
-				m_pOfficeDrawingConverter->m_pImageManager->m_pContentTypes->AddDefault(L"xlsx");
+				m_pOfficeDrawingConverter->m_pImageManager->m_pContentTypes->AddDefault(pXlsxFile->filename().GetExtention());
 
 				if (false == pChart->m_oChartSpace.m_chartData.m_externalData.IsInit())
 					pChart->m_oChartSpace.m_chartData.m_externalData.Init();

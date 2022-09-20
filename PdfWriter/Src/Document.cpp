@@ -74,9 +74,11 @@ namespace PdfWriter
 		m_pCatalog          = NULL;
 		m_pOutlines         = NULL;
 		m_pXref             = NULL;
+		m_pLastXref         = NULL;
 		m_pPageTree         = NULL;
 		m_pCurPage          = NULL;
 		m_nCurPageNum       = -1;
+		m_unFormFields      = 0;
 		m_pInfo             = NULL;
 		m_pTrailer          = NULL;
 		m_pResources        = NULL;
@@ -90,6 +92,8 @@ namespace PdfWriter
 		m_pAcroForm         = NULL;
 		m_pFieldsResources  = NULL;
 		m_pDefaultCheckBoxFont = NULL;
+		m_wsDocumentID      = L"";
+		m_wsFilePath        = L"";
 
 		m_bPDFAConformance	= false;
 	}
@@ -124,15 +128,17 @@ namespace PdfWriter
 		if (!m_pInfo)
 			return false;
 
-		m_pInfo->SetCreationTime();
+		m_pInfo->SetTime(InfoCreationDate);
+		m_pInfo->SetTime(InfoModaDate);
+
 		std::wstring sCreator = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
 		if (sCreator.empty())
 			sCreator = NSSystemUtils::gc_EnvApplicationNameDefault;
 		std::string sCreatorA = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sCreator);
 
 #if defined(INTVER)
-        std::string sVersion = VALUE2STR(INTVER);
-        sCreatorA += ("/" + sVersion);
+		std::string sVersion = VALUE2STR(INTVER);
+		sCreatorA += ("/" + sVersion);
 #endif
 
 		m_pInfo->SetInfo(InfoProducer, sCreatorA.c_str());
@@ -157,7 +163,6 @@ namespace PdfWriter
 
 		m_nCurPageNum = -1;
 
-		m_vPages.clear();
 		m_vExtGrStates.clear();
 		m_vFillAlpha.clear();
 		m_vStrokeAlpha.clear();
@@ -172,6 +177,7 @@ namespace PdfWriter
 		// Все объекты удаляются внутри CXref
 		RELEASEOBJECT(m_pXref);
 
+		m_pLastXref         = NULL;
 		m_pTrailer          = NULL;
 		m_pResources        = NULL;
 		m_pCatalog          = NULL;
@@ -179,6 +185,7 @@ namespace PdfWriter
 		m_pPageTree         = NULL;
 		m_pCurPage          = NULL;
 		m_nCurPageNum       = 0;
+		m_unFormFields      = 0;
 		m_bEncrypt          = false;
 		m_pEncryptDict      = NULL;
 		m_pInfo             = NULL;
@@ -189,8 +196,9 @@ namespace PdfWriter
 		m_pFieldsResources  = NULL;
 		memset((void*)m_sTTFontTag, 0x00, 8);
 		m_pDefaultCheckBoxFont = NULL;
+		m_wsDocumentID      = L"";
+		m_wsFilePath        = L"";
 
-		m_vPages.clear();
 		m_vExtGrStates.clear();
 		m_vStrokeAlpha.clear();
 		m_vFillAlpha.clear();
@@ -198,16 +206,17 @@ namespace PdfWriter
 		m_vCidTTFonts.clear();
 		m_vTTFonts.clear();
 		m_vFreeTypeFonts.clear();
+		m_vSignatures.clear();
 		if (m_pFreeTypeLibrary)
 		{
 			FT_Done_FreeType(m_pFreeTypeLibrary);
 			m_pFreeTypeLibrary = NULL;
 		}
 	}
-    bool CDocument::SaveToFile(const std::wstring& wsPath)
+    bool CDocument::SaveToFile(const std::wstring& wsPath, bool bAdd)
 	{
 		CFileStream* pStream = new CFileStream();
-		if (!pStream || !pStream->OpenFile(wsPath, true))
+		if (!pStream || !pStream->OpenFile(wsPath, bAdd))
 			return false;
 
 		if (m_pJbig2)
@@ -215,6 +224,8 @@ namespace PdfWriter
 
 		SaveToStream((CStream*)pStream);
 		delete pStream;
+
+		Sign(wsPath, m_pXref->GetSizeXRef());
 
 		return true;
 	}
@@ -289,8 +300,6 @@ namespace PdfWriter
 		CPage* pPage = new CPage(m_pXref, m_pPageTree, this);
 		m_pPageTree->AddPage(pPage);
 		m_pCurPage = pPage;
-		m_vPages.push_back(pPage);
-
 
 #ifndef FILTER_FLATE_DECODE_DISABLED
 		if (m_unCompressMode & COMP_TEXT)
@@ -302,14 +311,14 @@ namespace PdfWriter
 	}
 	CPage* CDocument::GetPage(const unsigned int &unPage)
 	{
-		if (unPage >= m_vPages.size())
+		if (unPage >= m_pPageTree->GetCount())
 			return NULL;
 
-		return m_vPages.at(unPage);
+		return m_pPageTree->GetPage(unPage);
 	}
 	unsigned int CDocument::GetPagesCount() const
 	{
-		return m_vPages.size();
+		return m_pPageTree->GetCount();
 	}
 	void CDocument::SetDocumentID(const std::wstring & documentID)
 	{
@@ -400,11 +409,13 @@ namespace PdfWriter
 	}
     CDestination* CDocument::CreateDestination(unsigned int unPageIndex)
 	{
-		if (unPageIndex >= m_vPages.size())
+		if (unPageIndex >= m_pPageTree->GetCount())
 			return NULL;
 
-		CPage* pPage = m_vPages.at(unPageIndex);
-		return new CDestination(pPage, m_pXref);
+		CPage* pPage = m_pPageTree->GetPage(unPageIndex);
+		if (pPage)
+			return new CDestination(pPage, m_pXref);
+		return NULL;
 	}
     CExtGrState* CDocument::FindExtGrState(double dAlphaStroke, double dAlphaFill, EBlendMode eMode, int nStrokeAdjustment)
 	{
@@ -511,8 +522,9 @@ namespace PdfWriter
 		CAnnotation* pAnnot = new CTextAnnotation(m_pXref, oRect, sText);
 		if (pAnnot)
 		{
-			CPage* pPage = m_vPages.at(unPageNum);
-			pPage->AddAnnotation(pAnnot);
+			CPage* pPage = m_pPageTree->GetPage(unPageNum);
+			if (pPage)
+				pPage->AddAnnotation(pAnnot);
 		}
 
 	    return pAnnot;
@@ -523,8 +535,9 @@ namespace PdfWriter
 	    
 		if (pAnnot)
 		{
-			CPage* pPage = m_vPages.at(unPageNum);
-			pPage->AddAnnotation(pAnnot);
+			CPage* pPage = m_pPageTree->GetPage(unPageNum);
+			if (pPage)
+				pPage->AddAnnotation(pAnnot);
 		}
 	
 	    return pAnnot;
@@ -544,8 +557,9 @@ namespace PdfWriter
 	
 		if (pAnnot)
 		{
-			CPage* pPage = m_vPages.at(unPageNum);
-			pPage->AddAnnotation(pAnnot);
+			CPage* pPage = m_pPageTree->GetPage(unPageNum);
+			if (pPage)
+				pPage->AddAnnotation(pAnnot);
 		}
 
 		return pAnnot;
@@ -578,10 +592,8 @@ namespace PdfWriter
 			return NULL;
 
 		// 0 GID всегда используется для .notdef символа, не используем данный код для настоящих символов
-		unsigned int unUnicode = 0, unGid = 0;
-		unsigned char* pString = pFont->EncodeString(&unUnicode, 1, &unGid);
-		if (pString)
-			delete pString;
+		unsigned int unUnicode = 0;
+		pFont->EncodeGID(0, &unUnicode, 1);
 
 		m_vCidTTFonts.push_back(TFontInfo(wsFontPath, unIndex, pFont));
 		return pFont;
@@ -928,6 +940,20 @@ namespace PdfWriter
 
 		return pField;
 	}
+	CSignatureField* CDocument::CreateSignatureField()
+	{
+		if (!CheckAcroForm())
+			return NULL;
+
+		CSignatureField* pField = new CSignatureField(m_pXref, this);
+		if (!pField)
+			return NULL;
+
+		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
+		ppFields->Add(pField);
+
+		return pField;
+	}
 	CCheckBoxField* CDocument::CreateCheckBoxField()
 	{
 		if (!CheckAcroForm())
@@ -1054,7 +1080,7 @@ namespace PdfWriter
 
 		if (!m_pAcroForm)
 		{
-			m_pAcroForm = new CAcroForm(m_pXref);
+			m_pAcroForm = new CDictObject();
 			if (!m_pAcroForm)
 				return false;
 
@@ -1063,5 +1089,337 @@ namespace PdfWriter
 		}
 
 		return (!!m_pAcroForm);
+	}
+	bool CDocument::EditPdf(const std::wstring& wsPath, int nPosLastXRef, int nSizeXRef, const std::wstring& sCatalog, int nCatalog, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm, int nFormField)
+	{
+		Close();
+
+		m_pXref = new CXref(this, nSizeXRef);
+		if (!m_pXref)
+			return false;
+		m_pXref->SetPrevAddr(nPosLastXRef);
+		m_pLastXref = m_pXref;
+
+		m_pTrailer = m_pXref->GetTrailer();
+		if (!m_pTrailer)
+			return false;
+
+		SetCompressionMode(COMP_ALL);
+
+		CXref* pXref = new CXref(this, nCatalog);
+		if (!pXref)
+			return false;
+		m_pCatalog = new CCatalog(pXref, sCatalog);
+		if (!m_pCatalog)
+		{
+			RELEASEOBJECT(pXref);
+			return false;
+		}
+		pXref->SetPrev(m_pLastXref);
+		m_pLastXref = pXref;
+
+		CObjectBase* pAcroForm = m_pCatalog->Get("AcroForm");
+		if (pAcroForm && pAcroForm->GetType() == object_type_DICT)
+			m_pAcroForm = (CDictObject*)pAcroForm;
+
+		if (m_pAcroForm)
+		{
+			CObjectBase* pFieldsResources = m_pAcroForm->Get("DR");
+			if (pFieldsResources && pFieldsResources->GetType() == object_type_DICT)
+				m_pFieldsResources = (CResourcesDict*)pFieldsResources;
+
+			// TODO заполнить поля m_pFieldsResources
+		}
+
+		if (!sEncrypt.empty())
+		{
+			m_pEncryptDict = new CEncryptDict(sEncrypt);
+			m_pEncryptDict->SetPasswords(sPassword, sPassword);
+			m_pEncryptDict->UpdateKey(nCryptAlgorithm);
+			m_bEncrypt = true;
+		}
+
+		m_unFormFields = nFormField;
+		m_wsFilePath = wsPath;
+		return true;
+	}
+	bool CDocument::CreatePageTree(const std::wstring& sPageTree, int nPageTree)
+	{
+		CXref* pXref = new CXref(this, nPageTree);
+		if (!pXref)
+			return false;
+
+		CPageTree* pPageT = new CPageTree(pXref, sPageTree);
+		if (!pPageT)
+		{
+			RELEASEOBJECT(pXref);
+			return false;
+		}
+
+		if (!m_pPageTree)
+			m_pPageTree = pPageT;
+		else
+			m_pPageTree->Join(pPageT);
+		pXref->SetPrev(m_pLastXref);
+		m_pLastXref = pXref;
+
+		return true;
+	}
+	std::pair<int, int> CDocument::GetPageRef(int nPageIndex)
+	{
+		std::pair<int, int> pRes = std::make_pair(0, 0);
+		if (!m_pPageTree)
+			return pRes;
+
+		CObjectBase* pObj = m_pPageTree->GetObj(nPageIndex);
+		if (pObj)
+		{
+			pRes.first  = pObj->GetObjId();
+			pRes.second = pObj->GetGenNo();
+		}
+
+		return pRes;
+	}
+	CPage* CDocument::EditPage(const std::wstring& sPage, int nPage)
+	{
+		CXref* pXref = new CXref(this, nPage);
+		if (!pXref)
+			return NULL;
+		CPage* pNewPage = new CPage(pXref, this, sPage);
+		if (!pNewPage)
+		{
+			RELEASEOBJECT(pXref);
+			return NULL;
+		}
+
+		pNewPage->AddContents(m_pXref);
+#ifndef FILTER_FLATE_DECODE_DISABLED
+		if (m_unCompressMode & COMP_TEXT)
+			pNewPage->SetFilter(STREAM_FILTER_FLATE_DECODE);
+#endif
+
+		pXref->SetPrev(m_pLastXref);
+		m_pLastXref = pXref;
+		m_pCurPage = pNewPage;
+
+		return pNewPage;
+	}
+	CPage* CDocument::AddPage(int nPageIndex)
+	{
+		if (!m_pPageTree)
+			return NULL;
+
+		CPage* pNewPage = new CPage(m_pXref, NULL, this);
+		if (!pNewPage)
+			return NULL;
+		bool bRes = m_pPageTree->InsertPage(nPageIndex, pNewPage);
+		if (!bRes)
+			return NULL;
+
+#ifndef FILTER_FLATE_DECODE_DISABLED
+		if (m_unCompressMode & COMP_TEXT)
+			pNewPage->SetFilter(STREAM_FILTER_FLATE_DECODE);
+#endif
+		m_pCurPage = pNewPage;
+		return pNewPage;
+	}
+	bool CDocument::DeletePage(int nPageIndex)
+	{
+		if (!m_pPageTree)
+			return false;
+
+		CObjectBase* pObj = m_pPageTree->RemovePage(nPageIndex);
+		if (pObj)
+		{
+			CXref* pXref = new CXref(this, pObj->GetObjId(), pObj->GetGenNo());
+			delete pObj;
+			if (!pXref)
+				return false;
+
+			pXref->SetPrev(m_pLastXref);
+			m_pLastXref = pXref;
+			return true;
+		}
+		return false;
+	}
+	bool CDocument::AddToFile(const std::wstring& sTrailer, const std::wstring& sInfo)
+	{
+		CFileStream* pStream = new CFileStream();
+		if (!pStream || m_wsFilePath.empty() || !pStream->OpenFile(m_wsFilePath, false))
+			return false;
+
+		// Добавляем первый элемент в таблицу xref
+		// он должен иметь вид 0000000000 65535 f
+		CXref* pXref = new CXref(this, 0, 65535);
+		if (!pXref)
+			return false;
+		m_pTrailer = pXref->GetTrailer();
+		m_pTrailer->FromXml(sTrailer);
+
+		// Обновление Info
+		CObjectBase* pInfo = m_pTrailer->Get("Info");
+		CXref* pInfoXref = new CXref(this, pInfo ? pInfo->GetObjId() : 0);
+		if (!pInfoXref)
+			return false;
+		m_pInfo = new CInfoDict(pInfoXref, sInfo);
+		if (!m_pInfo)
+		{
+			RELEASEOBJECT(pInfoXref);
+			return false;
+		}
+		if (pInfo)
+			m_pInfo->SetRef(pInfo->GetObjId(), pInfo->GetGenNo());
+		m_pInfo->SetTime(InfoModaDate);
+
+		std::wstring sCreator = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
+		if (sCreator.empty())
+			sCreator = NSSystemUtils::gc_EnvApplicationNameDefault;
+		std::string sCreatorA = U_TO_UTF8(sCreator);
+
+#if defined(INTVER)
+		sCreatorA += "/";
+		sCreatorA += VALUE2STR(INTVER);
+#endif
+
+		const char* cCreator = m_pInfo->GetInfo(InfoProducer);
+		m_pInfo->SetInfo(InfoCreator, cCreator ? cCreator : sCreatorA.c_str());
+		m_pInfo->SetInfo(InfoProducer, sCreatorA.c_str());
+
+		pInfoXref->SetPrev(m_pLastXref);
+		pXref->SetPrev(pInfoXref);
+		m_pLastXref = pXref;
+
+		// Вторая часть идентификатора должна обновляться
+		CObjectBase* pID = m_pTrailer->Get("ID");
+		if (pID && pID->GetType() == object_type_ARRAY)
+		{
+			BYTE arrId[16];
+			CEncryptDict::CreateId(m_pInfo, m_pXref, (BYTE*)arrId);
+
+			CObjectBase* pObject = ((CArrayObject*)pID)->Get(1, false);
+			((CArrayObject*)pID)->Insert(pObject, new CBinaryObject(arrId, 16), true);
+		}
+
+		CEncrypt* pEncrypt = NULL;
+		if (m_bEncrypt)
+			pEncrypt = m_pEncryptDict->GetEncrypt();
+
+		// Если m_pTrailer поток перекрестных ссылок, то при дозаписи тоже должен быть поток
+		m_pTrailer->Remove("XRefStm");
+		bool bNeedStreamXRef = false;
+		pStream->WriteChar('\n');
+		if (m_pTrailer->Get("Type"))
+		{
+			m_pTrailer->Remove("Length");
+			m_pTrailer->Remove("Filter");
+			m_pTrailer->Remove("DecodeParms");
+			m_pTrailer->Remove("F");
+			m_pTrailer->Remove("FFilter");
+			m_pTrailer->Remove("FDecodeParms");
+			m_pTrailer->Remove("DL");
+			m_pTrailer->Remove("Type");
+			m_pTrailer->Remove("Index");
+			m_pTrailer->Remove("W");
+			bNeedStreamXRef = true;
+
+			m_pLastXref->WriteToStream(pStream, pEncrypt, bNeedStreamXRef);
+		}
+		else
+			m_pLastXref->WriteToStream(pStream, pEncrypt);
+
+		RELEASEOBJECT(pStream);
+		unsigned int nSizeXRef = m_pXref->GetSizeXRef();
+		m_pXref = m_pLastXref;
+		Sign(m_wsFilePath, nSizeXRef, bNeedStreamXRef);
+		RELEASEOBJECT(m_pEncryptDict);
+
+		return true;
+	}
+	void CDocument::Sign(const TRect& oRect, CImageDict* pImage, ICertificate* pCertificate)
+	{
+		m_vSignatures.push_back({ oRect, m_pCurPage ? m_pCurPage : m_pPageTree->GetPage(0), pImage, pCertificate });
+	}
+	void CDocument::Sign(const std::wstring& wsPath, unsigned int nSizeXRef, bool bNeedStreamXRef)
+	{
+		unsigned int nPrevAddr = m_pXref->GetPrevAddr();
+		std::vector<CXref*> vXRefForWrite;
+		for (unsigned int i = 0; i < m_vSignatures.size(); i++)
+		{
+			CXref* pXrefBefore = m_pXref;
+			m_pXref = new CXref(this, nSizeXRef);
+			if (!m_pXref)
+			{
+				m_pXref = pXrefBefore;
+				continue;
+			}
+			m_pXref->SetPrevAddr(nPrevAddr);
+
+			CSignatureField* pField = CreateSignatureField();
+			if (!pField)
+			{
+				RELEASEOBJECT(m_pXref);
+				m_pXref = pXrefBefore;
+				continue;
+			}
+
+			m_pAcroForm->Add("SigFlags", 3);
+			pField->GetSignatureDict()->SetCert(m_vSignatures[i].pCertificate);
+			pField->GetSignatureDict()->SetDate();
+			pField->AddPageRect(m_vSignatures[i].pPage, m_vSignatures[i].oRect);
+			pField->Add("F", 132);
+			pField->SetFieldName("Sig" + std::to_string(i + m_unFormFields + 1));
+			if (m_vSignatures[i].pImage)
+				pField->SetAppearance(m_vSignatures[i].pImage);
+
+			CFileStream* pStream = new CFileStream();
+			if (!pStream || !pStream->OpenFile(wsPath, false))
+			{
+				RELEASEOBJECT(m_pXref);
+				m_pXref = pXrefBefore;
+				continue;
+			}
+
+			CXref* pXrefCatalog = new CXref(this, m_pCatalog->GetObjId());
+			if (pXrefCatalog)
+			{
+				pXrefCatalog->Add(m_pCatalog->Copy());
+				pXrefCatalog->SetPrev(m_pXref);
+			}
+
+			CXref* pXrefPage = new CXref(this, m_vSignatures[i].pPage->GetObjId());
+			if (pXrefPage)
+			{
+				pXrefPage->Add(m_vSignatures[i].pPage->Copy());
+				pXrefPage->SetPrev(pXrefCatalog);
+			}
+
+			CXref* pXref = new CXref(this, 0, 65535);
+			if (pXref)
+			{
+				pXref->SetPrev(pXrefPage);
+				CDictObject* pTrailer = pXref->GetTrailer();
+				m_pTrailer->Copy(pTrailer);
+
+				CEncrypt* pEncrypt = NULL;
+				if (m_bEncrypt && m_pEncryptDict)
+					pEncrypt = m_pEncryptDict->GetEncrypt();
+
+				pXref->WriteToStream(pStream, pEncrypt, bNeedStreamXRef);
+				nPrevAddr = pXref->GetPrevAddr();
+				nSizeXRef = m_pXref->GetSizeXRef();
+				vXRefForWrite.push_back(pXref);
+			}
+
+			RELEASEOBJECT(pStream);
+			pStream = new CFileStream();
+			if (pStream && pStream->OpenFile(wsPath, false))
+				pField->GetSignatureDict()->WriteToStream(pStream, pStream->Size());
+
+			m_pXref = pXrefBefore;
+			RELEASEOBJECT(pStream);
+		}
+		for (CXref* XRef : vXRefForWrite)
+			RELEASEOBJECT(XRef);
+		vXRefForWrite.clear();
 	}
 }

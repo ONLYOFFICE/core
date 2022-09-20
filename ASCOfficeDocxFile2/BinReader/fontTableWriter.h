@@ -43,11 +43,11 @@ namespace Writers
 	class FontTableWriter
 	{
 		NSStringUtils::CStringBuilder	m_oWriter;
-        std::wstring            m_sDir;
-        NSFonts::IApplicationFonts* m_pApplicationFonts;
-        NSFonts::IFontManager*      m_pFontManager;
+        std::wstring					m_sDir;
+        NSFonts::IApplicationFonts*		m_pApplicationFonts;
+        NSFonts::IFontManager*			m_pFontManager;
 	public:
-        boost::unordered_map<std::wstring, int> m_mapFonts;
+        boost::unordered_map<std::wstring, char> m_mapFonts;
 
 		FontTableWriter(std::wstring sDir, std::wstring sFontDir, bool bNoFontDir) : m_sDir(sDir)
 		{
@@ -72,11 +72,11 @@ namespace Writers
 		{
 			m_oWriter.WriteString(g_string_ft_Start);
 
-			//Те шрифты которые всегда пишем в FontTable
+	//Те шрифты которые всегда пишем в FontTable
 			bool bCalibri = false;
 			bool bTimes = false;
 			bool bCambria = false;
-            for (boost::unordered_map<std::wstring, int>::const_iterator it = m_mapFonts.begin(); it != m_mapFonts.end(); ++it)
+            for (boost::unordered_map<std::wstring, char>::const_iterator it = m_mapFonts.begin(); it != m_mapFonts.end(); ++it)
 			{
                 const std::wstring& sFontName = it->first;
 				if(_T("Calibri") == sFontName)

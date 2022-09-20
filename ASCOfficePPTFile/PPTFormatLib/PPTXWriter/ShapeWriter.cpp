@@ -2053,8 +2053,11 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertImage()
         m_oWriter.WriteString(L"><a:lum");
         if (pImageElement->m_lpictureBrightness != 0)
         {
-            std::wstring bright = std::to_wstring((UINT)(pImageElement->m_lpictureBrightness * 3.051705)); // 0 - min, backgrpund. 50000 - usually. 100000 - max,white
-            m_oWriter.WriteString(L" bright=\"" + bright + L"\"");
+            int bright = std::round(3.051705 * pImageElement->m_lpictureBrightness); // -100000 - min, backgrpund. 50000 - usually. 100000 - max,white
+            if (bright < -100000 || bright > 100000)
+                bright = 50000;
+
+            m_oWriter.WriteString(L" bright=\"" + std::to_wstring(bright) + L"\"");
         }
         if (pImageElement->m_lpictureContrast != 0x10000)
         {

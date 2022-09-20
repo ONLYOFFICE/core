@@ -218,6 +218,8 @@ namespace PPTX
 
 	void FileContainer::write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content) const
 	{
+		return IFileContainer::Write(filename, directory, content);
+		
 		OOX::CRels rels;
 		OOX::CPath current = filename.GetDirectory();
 		write(rels, current, directory, content);

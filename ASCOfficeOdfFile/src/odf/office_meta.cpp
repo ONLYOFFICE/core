@@ -62,34 +62,108 @@ void office_meta::add_child_element( xml::sax * Reader, const std::wstring & Ns,
 	{
 		CP_CREATE_ELEMENT(meta_user_defined_);
 	}
+	else if (Ns == L"meta" && Name == L"creation-date")
+	{
+		CP_CREATE_ELEMENT(meta_creation_date_);
+	}
+	else if (Ns == L"meta" && Name == L"initial-creator")
+	{
+		CP_CREATE_ELEMENT(meta_initial_creator_);
+	}
+	else if (Ns == L"meta" && Name == L"template")
+	{
+		CP_CREATE_ELEMENT(meta_template_);
+	}
+	else if (Ns == L"dc" && Name == L"date")
+	{
+		CP_CREATE_ELEMENT(dc_date_);
+	}
+	else if (Ns == L"dc" && Name == L"creator")
+	{
+		CP_CREATE_ELEMENT(dc_creator_);
+	}
+	else if (Ns == L"dc" && Name == L"description")
+	{
+		CP_CREATE_ELEMENT(dc_description_);
+	}
+	else if (Ns == L"dc" && Name == L"language")
+	{
+		CP_CREATE_ELEMENT(dc_language_);
+	}
+	else if (Ns == L"dc" && Name == L"title")
+	{
+		CP_CREATE_ELEMENT(dc_title_);
+	}
+	else if (Ns == L"dc" && Name == L"subject")
+	{
+		CP_CREATE_ELEMENT(dc_subject_);
+	}
 	else
 	{
 	}
 }
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-const wchar_t * meta_generator::ns = L"meta";
-const wchar_t * meta_generator::name = L"generator";
-	
-void meta_generator::add_text(const std::wstring & text)
+//-----------------------------------------------------------------------------------
+const wchar_t * meta_common::ns = L"meta";
+const wchar_t * meta_common::name = L"common";
+void meta_common::add_text(const std::wstring & text)
 {
 	content_ = text;
 }
+const wchar_t * meta_generator::ns = L"meta";
+const wchar_t * meta_generator::name = L"generator";
 
-// config_item
-//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * meta_initial_creator::ns = L"meta";
+const wchar_t * meta_initial_creator::name = L"initial-creator";
+
+const wchar_t * meta_creation_date::ns = L"meta";
+const wchar_t * meta_creation_date::name = L"creation-date";
+
+const wchar_t * meta_template::ns = L"meta";
+const wchar_t * meta_template::name = L"template";
+
+const wchar_t * meta_keyword::ns = L"meta";
+const wchar_t * meta_keyword::name = L"keyword";
+
+const wchar_t * meta_editing_cycles::ns = L"meta";
+const wchar_t * meta_editing_cycles::name = L"editing-cycles";
+
+const wchar_t * dc_creator::ns = L"dc";
+const wchar_t * dc_creator::name = L"creator";
+
+const wchar_t * dc_description::ns = L"dc";
+const wchar_t * dc_description::name = L"description";
+
+const wchar_t * dc_language::ns = L"dc";
+const wchar_t * dc_language::name = L"language";
+
+const wchar_t * dc_date::ns = L"dc";
+const wchar_t * dc_date::name = L"date";
+
+const wchar_t * dc_title::ns = L"dc";
+const wchar_t * dc_title::name = L"title";
+
+const wchar_t * dc_subject::ns = L"dc";
+const wchar_t * dc_subject::name = L"subject";
+//------------------------------------------------------------------------------------
 const wchar_t * meta_document_statistic::ns = L"meta";
 const wchar_t * meta_document_statistic::name = L"document-statistic";
 
 void meta_document_statistic::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-	CP_APPLY_ATTR(L"meta:table-count",		meta_table_count_);
-	CP_APPLY_ATTR(L"meta:image-count",		meta_image_count_);
-	CP_APPLY_ATTR(L"meta:object-count",		meta_object_count_);
-	CP_APPLY_ATTR(L"meta:page-count",		meta_page_count_);
-	CP_APPLY_ATTR(L"meta:paragraph-count",	meta_paragraph_count_);
-	CP_APPLY_ATTR(L"meta:word-count",		meta_word_count_);
-	CP_APPLY_ATTR(L"meta:character-count",	meta_character_count_);
+	CP_APPLY_ATTR(L"meta:table-count",		table_count_);
+	CP_APPLY_ATTR(L"meta:image-count",		image_count_);
+	CP_APPLY_ATTR(L"meta:object-count",		object_count_);
+	CP_APPLY_ATTR(L"meta:page-count",		page_count_);
+	CP_APPLY_ATTR(L"meta:paragraph-count",	paragraph_count_);
+	CP_APPLY_ATTR(L"meta:word-count",		word_count_);
+	CP_APPLY_ATTR(L"meta:character-count",	character_count_);
+	CP_APPLY_ATTR(L"meta:ole-object-count", ole_object_count_);
+	CP_APPLY_ATTR(L"meta:frame-count", frame_count_);
+	CP_APPLY_ATTR(L"meta:row-count", row_count_);
+	CP_APPLY_ATTR(L"meta:cell-count", cell_count_);
+	CP_APPLY_ATTR(L"meta:non-whitespace-character-count", non_whitespace_character_count_);
+	CP_APPLY_ATTR(L"meta:sentence-count", sentence_count_);
+	CP_APPLY_ATTR(L"meta:syllable-count", syllable_count_);
 }
 
 // meta_user_defined

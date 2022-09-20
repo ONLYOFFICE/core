@@ -199,7 +199,9 @@ namespace BinXlsxRW
 		OOX::Spreadsheet::CWorkbook									& m_oWorkbook;
         boost::unordered_map<long, NSCommon::smart_ptr<OOX::File>>	& m_mapPivotCacheDefinitions;
         const std::wstring											& m_sDestinationDir;
-		NSBinPptxRW::CDrawingConverter								* m_pOfficeDrawingConverter;
+		
+		NSBinPptxRW::CDrawingConverter *m_pOfficeDrawingConverter = NULL;
+		bool m_bMacroRead = false;
 	public:
         BinaryWorkbookTableReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, OOX::Spreadsheet::CWorkbook& oWorkbook, boost::unordered_map<long, NSCommon::smart_ptr<OOX::File>>& mapPivotCacheDefinitions, const std::wstring& sDestinationDir, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter);
 		int Read();
@@ -235,6 +237,8 @@ namespace BinXlsxRW
 		int ReadConnectionTextPr(BYTE type, long length, void* poResult);
 		int ReadConnectionWebPr(BYTE type, long length, void* poResult);
 		int ReadConnectionRangePr(BYTE type, long length, void* poResult);
+		int ReadConnectionTextFields(BYTE type, long length, void* poResult);
+		int ReadConnectionTextField(BYTE type, long length, void* poResult);
 		int ReadSlicerCaches(BYTE type, long length, void* poResult);
 	};
 	class BinaryCommentReader : public Binary_CommonReader
@@ -314,6 +318,8 @@ namespace BinXlsxRW
 		int ReadProtection(BYTE type, long length, void* poResult);
 		int ReadRowColBreaks(BYTE type, long length, void* poResult);
 		int ReadBreak(BYTE type, long length, void* poResult);
+		int ReadCellWatches(BYTE type, long length, void* poResult);
+		int ReadCellWatch(BYTE type, long length, void* poResult);
 		int ReadPrintOptions(BYTE type, long length, void* poResult);
 		int ReadHyperlinks(BYTE type, long length, void* poResult);
 		int ReadHyperlink(BYTE type, long length, void* poResult);

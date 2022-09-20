@@ -116,6 +116,7 @@ enum ElementType
 	typeDcDescription,
 	typeDcSubject,
 	typeDcTitle,
+	typeDcLanguage,
 
 	typeDrawA,
 
@@ -449,6 +450,9 @@ enum ElementType
 	typeOfficeMetaKeyword,
 	typeOfficeMetaEditingCycles,
 	typeOfficeMetaEditingDuration,
+	typeOfficeMetaCommon,
+	typeOfficeMetaInitialCreator,
+	typeOfficeMetaTemplate,
 
 	typeDrawBase,
  	typeDrawG,

@@ -41,15 +41,12 @@ namespace NSBinPptxRW
 	class CBinaryFileReader;
 	class CXlsbBinaryWriter;
 }
-namespace CSVWriter
-{
-	class CCSVWriter;
-}
 namespace NSFile
 {
 	class CStreamWriter;
 }
-
+class CSVWriter;
+//--------------------------------------------------------------------------------------------
 namespace OOX
 {
 	namespace Spreadsheet
@@ -521,7 +518,7 @@ namespace OOX
 				writer.WriteString(_T("</sheetData>"));
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
+			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
 
             void fromBin(XLS::BaseObjectPtr& obj);
 
@@ -534,10 +531,11 @@ namespace OOX
 		
 			std::map<int, std::map<int, unsigned int>>	m_mapStyleMerges2003; // map(row, map(col, style))
 			void StyleFromMapStyleMerges2003(std::map<int, unsigned int> &mapStyleMerges);
+			void AfterRead();
 		private:
-			void fromXLSBToXmlCell (CCell& pCell, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
-			void fromXLSBToXmlRowStart (CRow* pRow, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
-			void fromXLSBToXmlRowEnd (CRow* pRow, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
+			void fromXLSBToXmlCell (CCell& pCell, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
+			void fromXLSBToXmlRowStart (CRow* pRow, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
+			void fromXLSBToXmlRowEnd (CRow* pRow, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 

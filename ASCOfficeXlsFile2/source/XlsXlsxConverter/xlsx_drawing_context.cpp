@@ -885,6 +885,9 @@ void xlsx_drawing_context::end_drawing(_drawing_state_ptr & drawing_state)
 	{
 		drawing_state->type = external_items::typeImage;
 
+		if (!drawing_state->fill.picture_target.empty())
+			drawing_state->fill.texture_target = drawing_state->fill.picture_target;
+
 		if (!drawing_state->fill.texture_target.empty())
 		{
 			bool isIternal = false;
@@ -2088,6 +2091,9 @@ void xlsx_drawing_context::serialize_anchor (std::wostream & stream, _drawing_st
 	{
 		if (drawing_state->type_anchor == 1)
 		{
+			if (drawing_state->sheet_anchor.colFrom < 0) drawing_state->sheet_anchor.colFrom = 0;
+			if (drawing_state->sheet_anchor.rwFrom < 0) drawing_state->sheet_anchor.rwFrom = 0;
+
 			CP_XML_NODE(ns + L"from")
 			{ 
 				CP_XML_NODE(L"xdr:col")		{ CP_XML_CONTENT (drawing_state->sheet_anchor.colFrom);	}
@@ -2739,6 +2745,8 @@ void xlsx_drawing_context::serialize_object(std::wostream & stream, _drawing_sta
 			{
 				CP_XML_ATTR(L"defaultSize", 0);
 				//CP_XML_ATTR(L"autoPict", 0);
+				if (!drawing_state->fill.picture_target.empty())
+					drawing_state->fill.texture_target = drawing_state->fill.picture_target;
 				
 				if (!drawing_state->fill.texture_target.empty())
 				{
@@ -2802,7 +2810,7 @@ void xlsx_drawing_context::set_sheet_anchor(int colFrom, int xFrom, int rwFrom, 
 {
 	if (current_drawing_states == NULL) return;	
 	
-	if (colTo > 0 && rwTo > 0)
+	if (colTo > 0 || xTo > 0 || rwTo > 0 || yTo > 0)
 	{//  0  in comment old versions
 		current_drawing_states->back()->sheet_anchor.colFrom = colFrom;
 		current_drawing_states->back()->sheet_anchor.colTo = colTo;
@@ -2872,6 +2880,22 @@ void xlsx_drawing_context::set_fill_texture(const std::wstring & str)
 	if (false == current_drawing_states->back()->fill.texture_target.empty()) return;
 
 	current_drawing_states->back()->fill.texture_target = str;
+
+	if (current_drawing_states->back()->fill.type == fillUndefined)
+	{
+		current_drawing_states->back()->fill.type = fillTexture;
+		current_drawing_states->back()->fill.texture_mode = textureStretch;
+	}
+}
+void xlsx_drawing_context::set_picture(const std::wstring & str)
+{
+	if (current_drawing_states == NULL) return;
+	if (current_drawing_states->empty()) return;
+
+	if (str.empty()) return;
+	if (false == current_drawing_states->back()->fill.picture_target.empty()) return;
+
+	current_drawing_states->back()->fill.picture_target = str;
 
 	if (current_drawing_states->back()->fill.type == fillUndefined)
 	{

@@ -795,7 +795,10 @@ public:
 	_rels_type_place get_type_place();
 	
 	void dump_bibliography();
+	
 	std::wstring  dump_settings_document();
+	std::wstring  dump_settings_app();
+	std::wstring  dump_settings_core();
 
  	bool next_dump_page_properties_;
 	bool next_dump_section_;
@@ -998,7 +1001,7 @@ private:
 		std::vector< const odf_reader::style_text_properties*> text_properties_stack_;
 	}state_;
 	std::vector<_context_state> keep_state_;
-	
+//---------------------------------------------------------	
 	std::wstringstream		document_xml_;
     std::wstringstream		styles_xml_;
     std::wstringstream		fontTable_xml_;
@@ -1010,7 +1013,7 @@ private:
     std::wstringstream		header_xml_;
     std::wstringstream		settings_xml_;
     std::wstringstream		meta_xml_;
-
+//--------------------------------------------------------------
 	xlsx_drawing_context_handle_ptr chart_drawing_handle_; 
 
 	styles_context			styles_context_;

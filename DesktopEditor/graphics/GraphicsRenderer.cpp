@@ -31,7 +31,10 @@
  */
 #include "GraphicsRenderer.h"
 #include <algorithm>
+
+#ifndef GRAPHICS_DISABLE_METAFILE
 #include "../raster/Metafile/MetaFile.h"
+#endif
 
 #if 0
 static void LOGGING(char* buffer, ...)
@@ -698,7 +701,8 @@ HRESULT CGraphicsRenderer::CommandDrawText(const std::wstring& bsText, const dou
 	if (c_nHyperlinkType == m_lCurrentCommandType)
 		return S_OK;
 	put_BrushType(c_BrushTypeSolid);
-		
+
+    m_oFont.StringGID = FALSE;
 	_SetFont();
 
 	Aggplus::CBrush* pBrush = CreateBrush(&m_oBrush);				
@@ -1152,6 +1156,8 @@ HRESULT CGraphicsRenderer::CommandLong(const LONG& lType, const LONG& lCommand)
 {
     if (c_nDarkMode == lType && m_pRenderer)
         m_pRenderer->m_bIsDarkMode = (1 == lCommand);
+	if (c_nUseDictionaryFonts == lType && m_pFontManager)
+		m_pFontManager->SetUseCorrentFontByName((1 == lCommand) ? true : false);
 	return S_OK;
 }
 HRESULT CGraphicsRenderer::CommandDouble(const LONG& lType, const double& dCommand)
@@ -1437,4 +1443,11 @@ void CGraphicsRenderer::Restore()
     }
 
     RELEASEOBJECT(pState);
+}
+void CGraphicsRenderer::put_BlendMode(const unsigned int nBlendMode)
+{
+    if (NULL != m_pRenderer)
+    {
+        m_pRenderer->m_nBlendMode = nBlendMode;
+    }
 }

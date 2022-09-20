@@ -57,7 +57,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				XmlMacroReadAttributeBase( oNode, _T("w:w"), m_oW );
+				XmlMacroReadAttributeBase( oNode, L"w:w", m_oW );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -72,9 +72,9 @@ namespace ComplexTypes
 
 				if ( m_oW.IsInit() )
 				{
-					sResult += _T("w:w=\"");
+					sResult += L"w:w=\"";
 					sResult += m_oW->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				return sResult;
@@ -85,7 +85,7 @@ namespace ComplexTypes
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:w"), m_oW )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"w:w", m_oW )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -179,11 +179,11 @@ namespace OOX
 			{
 				XmlUtils::CXmlNode oChild;
 
-				if ( !m_bTblGridChange && oNode.GetNode( _T("w:tblGridChange"), oChild ) )
+				if ( !m_bTblGridChange && oNode.GetNode( L"w:tblGridChange", oChild ) )
 					m_oTblGridChange = oChild;
 
 				XmlUtils::CXmlNodes oGridColNodes;
-				if ( oNode.GetNodes( _T("w:gridCol"), oGridColNodes ) )
+				if ( oNode.GetNodes( L"w:gridCol", oGridColNodes ) )
 				{
 					XmlUtils::CXmlNode oGridColNode;
 					for ( int nIndex = 0; nIndex < oGridColNodes.GetCount(); nIndex++ )
@@ -205,9 +205,9 @@ namespace OOX
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
 					std::wstring sName = oReader.GetName();
-					if ( !m_bTblGridChange && _T("w:tblGridChange") == sName )
+					if ( !m_bTblGridChange && L"w:tblGridChange" == sName )
 						m_oTblGridChange = oReader;
-					else if ( _T("w:gridCol") == sName )
+					else if ( L"w:gridCol" == sName )
 					{
 						ComplexTypes::Word::CTblGridCol *oGridCol = new ComplexTypes::Word::CTblGridCol(oReader);
 						if (oGridCol) m_arrGridCol.push_back( oGridCol );
@@ -216,20 +216,20 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const
 			{
-				std::wstring sResult = _T("<w:tblGrid>");
+				std::wstring sResult = L"<w:tblGrid>";
 
 				if ( !m_bTblGridChange && m_oTblGridChange.IsInit() )
 					sResult += m_oTblGridChange->toXML();
 
 				for (unsigned  int nIndex = 0; nIndex < m_arrGridCol.size(); nIndex++ )
 				{
-					sResult += _T("<w:gridCol ");
+					sResult += L"<w:gridCol ";
 					if (m_arrGridCol[nIndex])
 						sResult += m_arrGridCol[nIndex]->ToString();
-					sResult += _T("/>");
+					sResult += L"/>";
 				}
 
-				sResult += _T("</w:tblGrid>");
+				sResult += L"</w:tblGrid>";
 
 				return sResult;
 			}
@@ -320,19 +320,19 @@ namespace OOX
 			{
 				XmlUtils::CXmlNode oChild;
 
-				WritingElement_ReadNode( oNode, oChild, _T("w:jc"),             m_oJc );
-				WritingElement_ReadNode( oNode, oChild, _T("w:shd"),            m_oShd );
-				WritingElement_ReadNode( oNode, oChild, _T("w:tblBorders"),     m_oTblBorders );
-				WritingElement_ReadNode( oNode, oChild, _T("w:tblCellMar"),     m_oTblCellMar );
-				WritingElement_ReadNode( oNode, oChild, _T("w:tblCellSpacing"), m_oTblCellSpacing );
-				WritingElement_ReadNode( oNode, oChild, _T("w:tblInd"),         m_oTblInd );
-				WritingElement_ReadNode( oNode, oChild, _T("w:tblLayout"),      m_oTblLayout );
-				WritingElement_ReadNode( oNode, oChild, _T("w:tblLook"),        m_oTblLook );
+				WritingElement_ReadNode( oNode, oChild, L"w:jc",             m_oJc );
+				WritingElement_ReadNode( oNode, oChild, L"w:shd",            m_oShd );
+				WritingElement_ReadNode( oNode, oChild, L"w:tblBorders",     m_oTblBorders );
+				WritingElement_ReadNode( oNode, oChild, L"w:tblCellMar",     m_oTblCellMar );
+				WritingElement_ReadNode( oNode, oChild, L"w:tblCellSpacing", m_oTblCellSpacing );
+				WritingElement_ReadNode( oNode, oChild, L"w:tblInd",         m_oTblInd );
+				WritingElement_ReadNode( oNode, oChild, L"w:tblLayout",      m_oTblLayout );
+				WritingElement_ReadNode( oNode, oChild, L"w:tblLook",        m_oTblLook );
 
-				if ( !m_bTblPrExChange && oNode.GetNode( _T("w:tblPrExChange"), oChild ) )
+				if ( !m_bTblPrExChange && oNode.GetNode( L"w:tblPrExChange", oChild ) )
 					m_oTblPrExChange = oChild;
 
-				WritingElement_ReadNode( oNode, oChild, _T("w:tblW"),           m_oTblW );
+				WritingElement_ReadNode( oNode, oChild, L"w:tblW",           m_oTblW );
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -344,37 +344,37 @@ namespace OOX
 				{
 					std::wstring sName = oReader.GetName();
 
-					if      ( _T("w:jc")             == sName ) m_oJc = oReader;
-					else if ( _T("w:shd")            == sName ) m_oShd = oReader;
-					else if ( _T("w:tblBorders")     == sName ) m_oTblBorders = oReader;
-					else if ( _T("w:tblCellMar")     == sName ) m_oTblCellMar = oReader;
-					else if ( _T("w:tblCellSpacing") == sName ) m_oTblCellSpacing = oReader;
-					else if ( _T("w:tblInd")         == sName ) m_oTblInd = oReader;
-					else if ( _T("w:tblLayout")      == sName ) m_oTblLayout = oReader;
-					else if ( _T("w:tblLook")        == sName ) m_oTblLook = oReader;
-					else if ( !m_bTblPrExChange && _T("w:tblPrExChange") == sName ) m_oTblPrExChange = oReader;
-					else if ( _T("w:tblW")           == sName ) m_oTblW = oReader;
+					if      ( L"w:jc"				== sName ) m_oJc = oReader;
+					else if ( L"w:shd"				== sName ) m_oShd = oReader;
+					else if ( L"w:tblBorders"		== sName ) m_oTblBorders = oReader;
+					else if ( L"w:tblCellMar"		== sName ) m_oTblCellMar = oReader;
+					else if ( L"w:tblCellSpacing"	== sName ) m_oTblCellSpacing = oReader;
+					else if ( L"w:tblInd"			== sName ) m_oTblInd = oReader;
+					else if ( L"w:tblLayout"		== sName ) m_oTblLayout = oReader;
+					else if ( L"w:tblLook"			== sName ) m_oTblLook = oReader;
+					else if ( !m_bTblPrExChange && L"w:tblPrExChange" == sName ) m_oTblPrExChange = oReader;
+					else if ( L"w:tblW"				== sName ) m_oTblW = oReader;
 				}
 			}
 			virtual std::wstring      toXML() const
 			{
-				std::wstring sResult = _T("<w:tblPrEx>");
+				std::wstring sResult = L"<w:tblPrEx>";
 
-				WritingElement_WriteNode_1( _T("<w:jc "),             m_oJc );
-				WritingElement_WriteNode_1( _T("<w:shd "),            m_oShd );
+				WritingElement_WriteNode_1( L"<w:jc ",             m_oJc );
+				WritingElement_WriteNode_1( L"<w:shd ",            m_oShd );
 				WritingElement_WriteNode_2( m_oTblBorders );
 				WritingElement_WriteNode_2( m_oTblCellMar );
-				WritingElement_WriteNode_1( _T("<w:tblCellSpacing "), m_oTblCellSpacing );
-				WritingElement_WriteNode_1( _T("<w:tblInd "),         m_oTblInd );
-				WritingElement_WriteNode_1( _T("<w:tblLayout "),      m_oTblLayout );
-				WritingElement_WriteNode_1( _T("<w:tblLook "),        m_oTblLook );
+				WritingElement_WriteNode_1( L"<w:tblCellSpacing ", m_oTblCellSpacing );
+				WritingElement_WriteNode_1( L"<w:tblInd ",         m_oTblInd );
+				WritingElement_WriteNode_1( L"<w:tblLayout ",      m_oTblLayout );
+				WritingElement_WriteNode_1( L"<w:tblLook ",        m_oTblLook );
 
 				if ( !m_bTblPrExChange && m_oTblPrExChange.IsInit() )
 					sResult += m_oTblPrExChange->toXML();
 
-				WritingElement_WriteNode_1( _T("<w:tblW "),           m_oTblW );
+				WritingElement_WriteNode_1( L"<w:tblW ",           m_oTblW );
 
-				sResult += _T("</w:tblPrEx>");
+				sResult += L"</w:tblPrEx>";
 
 				return sResult;
 			}
@@ -521,13 +521,12 @@ namespace OOX
 			}
 
 		private:
-
+			void CreateElements(XmlUtils::CXmlLiteReader &oReader, int Depth);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
 			int										m_nCountCell;
 
-			// Attributes
 			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidDel;
 			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidR;
 			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidRPr;
@@ -595,14 +594,12 @@ namespace OOX
 			}
 
 		private:
-
+			void CreateElements(XmlUtils::CXmlLiteReader &oReader, int Depth);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
 			int									m_nNumCol; // Номер колонки
-		// Attributes
 			nullable<std::wstring >				m_sId;
-		// Childs
 			OOX::Logic::CTableCellProperties*	m_pTableCellProperties; //todooo - выкинуть из m_arrItems, переделать на nullable<>
 		};
 

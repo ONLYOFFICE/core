@@ -31,6 +31,7 @@
  */
 
 #include "PropertiesMapping.h"
+#include "RGBColor.h"
 
 namespace DocFileFormat
 {

@@ -435,8 +435,9 @@ namespace NSCSS
                 {
                     std::map<StatistickElement, unsigned int>::const_iterator oFindCountId = m_mStatictics->find(StatistickElement{StatistickElement::IsId, sId});
 
-                    if (((bIsSettings && oFindCountId->second < MaxNumberRepetitions) ||
-                        (!bIsSettings && oFindCountId->second >= MaxNumberRepetitions)))
+					if ((m_mStatictics->end() != oFindCountId) &&
+					   (((bIsSettings && oFindCountId->second < MaxNumberRepetitions) ||
+						 (!bIsSettings && oFindCountId->second >= MaxNumberRepetitions))))
                     {
                         if (!oFindId->second->Empty())
                             arFindElements.push_back(oFindId->second);
@@ -498,7 +499,7 @@ namespace NSCSS
                 std::sort(arFindElements.rbegin(), arFindElements.rend(),
                           [](CElement* oFirstElement, CElement* oSecondElement)
                           {
-                              return oFirstElement->GetWeight() < oSecondElement->GetWeight();
+                              return oFirstElement->GetWeight() > oSecondElement->GetWeight();
                           });
             }
 
@@ -509,11 +510,16 @@ namespace NSCSS
 
             std::map<StatistickElement, unsigned int>::const_iterator oFindCountStyle = m_mStatictics->find(StatistickElement{StatistickElement::IsStyle, arSelectors[i].m_sStyle});
 
-            if(oFindCountStyle != m_mStatictics->end())
+            if (oFindCountStyle != m_mStatictics->end())
+            {
                 if ((bIsSettings && oFindCountStyle->second <  MaxNumberRepetitions) ||
                    (!bIsSettings && oFindCountStyle->second >= MaxNumberRepetitions))
                     pStyle->AddStyle(arSelectors[i].m_sStyle, i + 1,  true);
-
+                else if (!bIsSettings)
+                    pStyle->AddStyle(arSelectors[i].m_sStyle, i + 1, true);
+            }
+            else if (bIsSettings)
+                pStyle->AddStyle(arSelectors[i].m_sStyle, i + 1, true);
         }
 
         if (!bIsSettings)

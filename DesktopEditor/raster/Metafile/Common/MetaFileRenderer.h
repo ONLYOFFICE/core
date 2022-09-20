@@ -43,24 +43,35 @@
 #include "MetaFile.h"
 #include "MetaFileTypes.h"
 #include "MetaFileObjects.h"
-#include "../GraphicsRenderer.h"
 
 #include <cmath>
 
 #ifndef M_PI
-	#define M_PI 3.1415926
+#define M_PI 3.1415926
 #endif
 
 #ifdef _DEBUG
-    #include <iostream>
-    #define LOGGING(_value) std::wcout << _value << std::endl;
+#include <iostream>
+#define LOGGING(_value) std::wcout << _value << std::endl;
 #else
-    #define LOGGING(_value)
+#define LOGGING(_value)
 #endif
 
 namespace MetaFile
 {
-	class CEmfClip;
+	struct TRenderConditional
+	{
+		IMetaFileBase* m_pFile;
+
+		int            m_lDrawPathType;
+		double         m_dX;      // Координаты левого верхнего угла
+		double         m_dY;      //
+		double         m_dW;      //
+		double         m_dH;      //
+		double         m_dScaleX; // Коэффициенты сжатия/растяжения, чтобы
+		double         m_dScaleY; // результирующая картинка была нужных размеров.
+		bool           m_bStartedPath;
+	};
 
 	class CMetaFileRenderer : public IOutputDevice
 	{
@@ -75,6 +86,7 @@ namespace MetaFile
 			m_dH = dHeight;
 
 			m_pRenderer = NULL;
+			m_pSecondConditional = NULL;
 
 			if (!pRenderer)
 				return;
@@ -103,20 +115,38 @@ namespace MetaFile
 			//m_pRenderer->PathCommandEnd();
 		}
 
-		CMetaFileRenderer(const CMetaFileRenderer &oMetaFileRenderer, IMetaFileBase *pFile)
+		virtual ~CMetaFileRenderer()
 		{
-			m_pFile = pFile;
+			RELEASEOBJECT(m_pSecondConditional)
+		}
 
-			m_dX = oMetaFileRenderer.m_dX;
-			m_dY = oMetaFileRenderer.m_dY;
-			m_dW = oMetaFileRenderer.m_dW;
-			m_dH = oMetaFileRenderer.m_dH;
+		void CreateConditional(IMetaFileBase* pFile)
+		{
+			RELEASEOBJECT(m_pSecondConditional);
 
-			m_pRenderer = oMetaFileRenderer.m_pRenderer;
+			m_pSecondConditional = new TRenderConditional();
 
-			UpdateScale();
+			SaveConditional(*m_pSecondConditional);
 
-			m_bStartedPath = false;
+			m_pSecondConditional->m_pFile = pFile;
+		}
+
+		void ChangeConditional()
+		{
+			if (NULL != m_pSecondConditional)
+			{
+				TRenderConditional oRenderConditional;
+				SaveConditional(oRenderConditional);
+
+				SetConditional(*m_pSecondConditional);
+
+				*m_pSecondConditional = oRenderConditional;
+			}
+		}
+
+		IMetaFileBase* GetFile() const
+		{
+			return m_pFile;
 		}
 
 		void UpdateScale()
@@ -132,10 +162,6 @@ namespace MetaFile
 
 			m_dScaleX = (nR - nL <= 0) ? 1 : m_dW / (double)(nR - nL);
 			m_dScaleY = (nB - nT <= 0) ? 1 : m_dH / (double)(nB - nT);
-		 }
-
-		~CMetaFileRenderer()
-		{
 		}
 
 		void Begin()
@@ -158,17 +184,7 @@ namespace MetaFile
 			UpdateClip();
 
 			Aggplus::CImage oImage;
-			BYTE* pBufferPtr = new BYTE[4 * unWidth * unHeight];
-			oImage.Create(pBufferPtr, unWidth, unHeight, 4 * unWidth);
-
-			for (int nIndex = 0, nSize = 4 * unWidth * unHeight; nIndex < nSize; nIndex += 4)
-			{
-				pBufferPtr[0] = (BYTE)pBuffer[nIndex + 0];
-				pBufferPtr[1] = (BYTE)pBuffer[nIndex + 1];
-				pBufferPtr[2] = (BYTE)pBuffer[nIndex + 2];
-				pBufferPtr[3] = (BYTE)pBuffer[nIndex + 3];
-				pBufferPtr += 4;
-			}
+			oImage.Create(pBuffer, unWidth, unHeight, 4 * unWidth, true);
 
 			TPointD oTL = TranslatePoint(dX, dY);
 			TPointD oBR = TranslatePoint(dX + dW, dY + dH);
@@ -252,7 +268,7 @@ namespace MetaFile
 			}
 
 			for (unsigned int unIndex = 0; unIndex < std::min(arPoints.size(), wsString.length()); ++unIndex)
-				m_pRenderer->CommandDrawText(std::wstring(1, wsString[unIndex]), arGlyphPoint[unIndex].x, arGlyphPoint[unIndex].y, 0, 0);
+				m_pRenderer->CommandDrawTextCHAR(wsString[unIndex], arGlyphPoint[unIndex].x, arGlyphPoint[unIndex].y, 0, 0);
 
 		}
 
@@ -298,7 +314,7 @@ namespace MetaFile
 			double dM11, dM12, dM21, dM22, dRx, dRy;
 			m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
 
-			if (dM11 * dM22 > 0)
+			if (dYScale > 0)
 				dSinTheta = -dSinTheta;
 
 			float fL = 0, fT = 0, fW = 0, fH = 0;
@@ -306,22 +322,48 @@ namespace MetaFile
 
 			double dFontCharSpace = m_pFile->GetCharSpace() * m_dScaleX * m_pFile->GetPixelWidth();
 			m_pRenderer->put_FontCharSpace(dFontCharSpace);
-			CFontManager* pFontManager = m_pFile->GetFontManager();
-			if (pFontManager)
+
+			NSFonts::IFontManager* pFontManager = m_pFile->GetFontManager();
+			if (NULL == pFontManager)
+			{
+				if (NULL != pDx && unCharsCount > 1)
+				{
+					// Тогда мы складываем все pDx кроме последнего символа, последний считаем отдельно
+					double dTempTextW = 0;
+					for (unsigned int unCharIndex = 0; unCharIndex < unCharsCount - 1; unCharIndex++)
+					{
+						dTempTextW += pDx[unCharIndex];
+					}
+
+					dTempTextW += dFontHeight * wsText.length();
+
+					fW = (float)dTempTextW;
+				}
+				else
+				{
+					fW = (float)(dFontHeight * wsText.length());
+				}
+
+				fH = dFontHeight * 1.2;
+			}
+			else
 			{
 				pFontManager->LoadFontByName(wsFaceName, dFontHeight, lStyle, 72, 72);
 				pFontManager->SetCharSpacing(dFontCharSpace * 72 / 25.4);
 
 				double dMmToPt = 25.4 / 72;
 
-                double dFHeight = dFontHeight;
-                double dFDescent = dFontHeight;
-                if (pFontManager->m_pFont)
-                {
-                    dFHeight  *= pFontManager->m_pFont->GetHeight() / pFontManager->m_pFont->m_lUnits_Per_Em * dMmToPt;
-                    dFDescent *= pFontManager->m_pFont->GetDescender() / pFontManager->m_pFont->m_lUnits_Per_Em * dMmToPt;
-                }
-                double dFAscent  = dFHeight - std::abs(dFDescent);
+				double dFHeight = dFontHeight;
+				double dFDescent = dFontHeight;
+
+				NSFonts::IFontFile* pFontFile = pFontManager->GetFile();
+
+				if (pFontFile)
+				{
+					dFHeight  *= pFontFile->GetHeight() / pFontFile->Units_Per_Em() * dMmToPt;
+					dFDescent *= pFontFile->GetDescender() / pFontFile->Units_Per_Em() * dMmToPt;
+				}
+				double dFAscent  = dFHeight - std::abs(dFDescent);
 
 				if (NULL != pDx && unCharsCount > 1)
 				{
@@ -423,7 +465,7 @@ namespace MetaFile
 				m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
 				if (dXScale < -0.00001)
 				{
-					dX -= fabs(fW);
+					dX += fabs(fW);
 
 					if (m_pFile->IsWindowFlippedX())
 					{
@@ -439,16 +481,9 @@ namespace MetaFile
 
 				if (dYScale < -0.00001)
 				{
-					dY -= fabs(fH);
+					dY += fabs(fH);
 
-					if (m_pFile->IsWindowFlippedY())
-					{
-						dShiftY = (2 * dY - fabs(fH)) * dM22;
-					}
-					else
-					{
-						dShiftY = (2 * dY + fabs(fH)) * dM22;
-					}
+					dShiftY = (2 * dY - fabs(fH)) * dM22;
 
 					dM22 = fabs(dM22);
 				}
@@ -471,8 +506,8 @@ namespace MetaFile
 
 				m_pRenderer->ResetTransform();
 				m_pRenderer->SetTransform(dCosTheta * dM11, dSinTheta * dM22,
-							 -dSinTheta * dM11, dCosTheta * dM22,
-							  dRx, dRy);
+										  -dSinTheta * dM11, dCosTheta * dM22,
+										  dRx, dRy);
 
 				bChangeCTM = true;
 			}
@@ -495,7 +530,7 @@ namespace MetaFile
 				m_pRenderer->PathCommandEnd();
 			}
 
-			// Нарисуем подчеркивание 
+			// Нарисуем подчеркивание
 			if (pFont->IsUnderline())
 			{
 				m_pRenderer->put_PenSize((double)fUndSize);
@@ -520,20 +555,19 @@ namespace MetaFile
 
 			if (NULL == pDx)
 			{
-                m_pRenderer->CommandDrawText(wsText, dX, dY, 0, 0);
+				m_pRenderer->CommandDrawText(wsText, dX, dY, 0, 0);
 			}
 			else
 			{
 				unsigned int unUnicodeLen = 0;
 				unsigned int* pUnicode = NSStringExt::CConverter::GetUtf32FromUnicode(wsText, unUnicodeLen);
 				if (pUnicode && unUnicodeLen)
-				{					
+				{
 					double dOffset = 0;
 					double dKoefX = m_dScaleX;
 					for (unsigned int unCharIndex = 0; unCharIndex < unUnicodeLen; unCharIndex++)
 					{
-						std::wstring wsChar = NSStringExt::CConverter::GetUnicodeFromUTF32(&*(pUnicode + unCharIndex), 1);
-						m_pRenderer->CommandDrawText(wsChar, dX + dOffset, dY, 0, 0);
+						m_pRenderer->CommandDrawTextCHAR(pUnicode[unCharIndex], dX + dOffset, dY, 0, 0);
 						dOffset += (pDx[unCharIndex] * dKoefX);
 					}
 
@@ -684,11 +718,11 @@ namespace MetaFile
 			unsigned int unClipMode = -1;
 			switch (unMode)
 			{
-				case RGN_AND: unClipMode = c_nClipRegionIntersect; break;
-				case RGN_OR: unClipMode = c_nClipRegionUnion; break;
-				case RGN_XOR: unClipMode = c_nClipRegionXor; break;
-				case RGN_DIFF: unClipMode = c_nClipRegionDiff; break;
-				default: unClipMode = c_nClipRegionIntersect; break;
+			case RGN_AND: unClipMode = c_nClipRegionIntersect; break;
+			case RGN_OR: unClipMode = c_nClipRegionUnion; break;
+			case RGN_XOR: unClipMode = c_nClipRegionXor; break;
+			case RGN_DIFF: unClipMode = c_nClipRegionDiff; break;
+			default: unClipMode = c_nClipRegionIntersect; break;
 			}
 
 			unsigned int unFillMode = -1 == nFillMode ? m_pFile->GetFillMode() : nFillMode;
@@ -713,7 +747,7 @@ namespace MetaFile
 			m_pRenderer->PathCommandEnd();
 
 			m_bStartedPath = false;
-		}		
+		}
 		void SetTransform(double& dM11, double& dM12, double& dM21, double& dM22, double& dX, double& dY)
 		{
 			double dKoefX = m_dScaleX;
@@ -735,6 +769,32 @@ namespace MetaFile
 		}
 
 	private:
+
+		void SaveConditional(TRenderConditional& oRenderConditional)
+		{
+			oRenderConditional.m_pFile	   = m_pFile;
+			oRenderConditional.m_lDrawPathType = m_lDrawPathType;
+			oRenderConditional.m_dX		   = m_dX;
+			oRenderConditional.m_dY		   = m_dY;
+			oRenderConditional.m_dW		   = m_dW;
+			oRenderConditional.m_dH		   = m_dH;
+			oRenderConditional.m_dScaleX	   = m_dScaleX;
+			oRenderConditional.m_dScaleY	   = m_dScaleY;
+			oRenderConditional.m_bStartedPath  = m_bStartedPath;
+		}
+
+		void SetConditional(const TRenderConditional& oRenderConditional)
+		{
+			m_pFile		= oRenderConditional.m_pFile;
+			m_lDrawPathType = oRenderConditional.m_lDrawPathType;
+			m_dX		= oRenderConditional.m_dX;
+			m_dY		= oRenderConditional.m_dY;
+			m_dW		= oRenderConditional.m_dW;
+			m_dH		= oRenderConditional.m_dH;
+			m_dScaleX	= oRenderConditional.m_dScaleX;
+			m_dScaleY	= oRenderConditional.m_dScaleY;
+			m_bStartedPath  = oRenderConditional.m_bStartedPath;
+		}
 
 		void CheckStartPath(bool bMoveTo)
 		{
@@ -763,8 +823,9 @@ namespace MetaFile
 			TPointD oPoint;
 			oPoint.x = m_dScaleX * dX + m_dX;
 			oPoint.y = m_dScaleY * dY + m_dY;
+
 			return oPoint;
-		}		
+		}
 		bool UpdateBrush()
 		{
 			IBrush* pBrush = m_pFile->GetBrush();
@@ -787,12 +848,66 @@ namespace MetaFile
 
 				switch (pBrush->GetHatch())
 				{
-				case HS_HORIZONTAL: wsBrushType = L"horz"; break;
-				case HS_VERTICAL:   wsBrushType = L"vert"; break;
-				case HS_FDIAGONAL:  wsBrushType = L"dnDiag"; break;
-				case HS_BDIAGONAL:  wsBrushType = L"upDiag"; break;
-				case HS_CROSS:      wsBrushType = L"cross"; break;
-				case HS_DIAGCROSS:  wsBrushType = L"diagCross"; break;
+					case HS_HORIZONTAL: wsBrushType = L"horz"; break;
+					case HS_VERTICAL:   wsBrushType = L"vert"; break;
+					case HS_FDIAGONAL:  wsBrushType = L"dnDiag"; break;
+					case HS_BDIAGONAL:  wsBrushType = L"upDiag"; break;
+					case HS_CROSS:      wsBrushType = L"cross"; break;
+					case HS_DIAGCROSS:  wsBrushType = L"diagCross"; break;
+
+					case HS_05Percent:	wsBrushType = L"pct5"; break;
+					case HS_10Percent:	wsBrushType = L"pct10"; break;
+					case HS_20Percent:	wsBrushType = L"pct20"; break;
+					case HS_25Percent:	wsBrushType = L"pct25"; break;
+					case HS_30Percent:	wsBrushType = L"pct30"; break;
+					case HS_40Percent:	wsBrushType = L"pct40"; break;
+					case HS_50Percent:	wsBrushType = L"pct50"; break;
+					case HS_60Percent:	wsBrushType = L"pct60"; break;
+					case HS_70Percent:	wsBrushType = L"pct70"; break;
+					case HS_75Percent:	wsBrushType = L"pct75"; break;
+					case HS_80Percent:	wsBrushType = L"pct80"; break;
+					case HS_90Percent:	wsBrushType = L"pct90"; break;
+
+					case HS_LTDOWNWARDDIAG:	wsBrushType = L"ltDnDiag"; break;
+					case HS_LTUPWARDDIAG:	wsBrushType = L"ltUpDiag"; break;
+					case HS_DNDOWNWARDDIAG:	wsBrushType = L"dkDnDiag"; break;
+					case HS_DNUPWARDDIAG:	wsBrushType = L"dkUpDiag"; break;
+					case HS_WDOWNWARDDIAG:	wsBrushType = L"wdDnDiag"; break;
+					case HS_WUPWARDDIAG:	wsBrushType = L"wdUpDiag"; break;
+
+					case HS_LTVERTICAL:		wsBrushType = L"ltVert"; break;
+					case HS_LTHORIZONTAL:	wsBrushType = L"ltHorz"; break;
+					case HS_NVERTICAL:		wsBrushType = L"narVert"; break;
+					case HS_NHORIZONTAL:	wsBrushType = L"narHorz"; break;
+					case HS_DNVERTICAL:		wsBrushType = L"dkVert"; break;
+					case HS_DNHORIZONTAL:	wsBrushType = L"dkHorz"; break;
+
+					case HS_DASHDOWNWARDDIAG:	wsBrushType = L"dashDnDiag"; break;
+					case HS_DASHUPWARDDIAG:		wsBrushType = L"dashUpDiag"; break;
+					case HS_DASHHORIZONTAL:		wsBrushType = L"dashHorz"; break;
+					case HS_DASHVERTICAL:		wsBrushType = L"dashVert"; break;
+
+					case HS_SMALLCONFETTI:		wsBrushType = L"smConfetti"; break;
+					case HS_LARGECONFETTI:		wsBrushType = L"lgConfetti"; break;
+					case HS_ZIGZAG:				wsBrushType = L"zigZag"; break;
+					case HS_WAVE:				wsBrushType = L"wave"; break;
+					case HS_DIAGBRICK:			wsBrushType = L"diagBrick"; break;
+					case HS_HORIZBRICK:			wsBrushType = L"horzBrick"; break;
+					case HS_WEAVE:				wsBrushType = L"weave"; break;
+					case HS_PLAID:				wsBrushType = L"plaid"; break;
+					case HS_DIVOT:				wsBrushType = L"divot"; break;
+					case HS_DOTGRID:			wsBrushType = L"dotGrid"; break;
+					case HS_DOTDIAMOND:			wsBrushType = L"dotDmnd"; break;
+					case HS_SHINGLE:			wsBrushType = L"shingle"; break;
+					case HS_TRELLIS:			wsBrushType = L"trellis"; break;
+					case HS_SPHERE:				wsBrushType = L"sphere"; break;
+					case HS_SGRID:				wsBrushType = L"smGrid"; break;
+					case HS_SCHECHERBOARD:		wsBrushType = L"smCheck"; break;
+					case HS_LCHECHERBOARD:		wsBrushType = L"lgCheck"; break;
+					case HS_OUTLINEDDIAMOND:	wsBrushType = L"openDmnd"; break;
+					case HS_SOLIDDIAMOND:		wsBrushType = L"solidDmnd"; break;
+
+					default: break;
 				}
 
 				// TODO: Непонятно почему, но в Hatch все цвета идут не как RGB, а как BGR
@@ -816,7 +931,7 @@ namespace MetaFile
 			else if (	BS_LINEARGRADIENT	== unBrushStyle ||
 						BS_RECTGRADIENT		== unBrushStyle ||
 						BS_PATHGRADIENT		== unBrushStyle
-					)
+						)
 			{
 				m_pRenderer->put_BrushType(c_BrushTypePathGradient1);
 
@@ -842,8 +957,8 @@ namespace MetaFile
 
 			}
 			else if (	BS_RADIALGRADIENT	== unBrushStyle ||
-						BS_AXIALGRADIENT	== unBrushStyle 
-					)
+						BS_AXIALGRADIENT	== unBrushStyle
+						)
 			{
 				m_pRenderer->put_BrushType(c_BrushTypePathGradient2);
 
@@ -853,8 +968,8 @@ namespace MetaFile
 				m_pRenderer->put_BrushAlpha2(pBrush->GetAlpha2());
 
 				long Colors[2];
-				Colors[0] = (pBrush->GetColor()<<8) + pBrush->GetAlpha();
-				Colors[1] = (pBrush->GetColor2()<<8) + pBrush->GetAlpha2();
+				Colors[0] = pBrush->GetColor()  + (pBrush->GetAlpha()  << 24);
+				Colors[1] = pBrush->GetColor2() + (pBrush->GetAlpha2() << 24);
 				double Position[2] = {0, 1};
 				
 				m_pRenderer->put_BrushGradientColors(Colors,Position,2);
@@ -895,10 +1010,20 @@ namespace MetaFile
 
 			// TODO: dWidth зависит еще от флага PS_GEOMETRIC в стиле карандаша
 
-			double dWidth = pPen->GetWidth() * m_dScaleX;
+			double dWidth = pPen->GetWidth();
 
-			if (dWidth == 0)
-				dWidth = 25.4 / 96;
+			if (dWidth == 0 || (dWidth == 1 && PS_COSMETIC == ulPenType))
+			{
+				TRectD oRect(*m_pFile->GetDCBounds());
+
+				double dScale = m_pFile->GetScale();
+
+				oRect *= dScale;
+
+				dWidth = std::fabs(m_dW / (oRect.dRight - oRect.dLeft) / m_pFile->GetPixelWidth());
+			}
+			else
+				dWidth *= m_dScaleX;
 
 			BYTE nStartCapStyle = 0;
 			if (PS_STARTCAP_ROUND == ulPenStartCap)
@@ -952,23 +1077,23 @@ namespace MetaFile
 				else if (6 == unSizeDash)
 					ulPenStyle = Aggplus::DashStyleDashDotDot;
 
-//				double dDpiX;
-//				m_pRenderer->get_DpiX(&dDpiX);
-//				double dPixelW = dDpiX > 1 ? 25.4 / dDpiX : 25.4 / 72;
+				//				double dDpiX;
+				//				m_pRenderer->get_DpiX(&dDpiX);
+				//				double dPixelW = dDpiX > 1 ? 25.4 / dDpiX : 25.4 / 72;
 
-//				double *pDashPattern = new double[unSizeDash];
+				//				double *pDashPattern = new double[unSizeDash];
 
-//				if (NULL != pDashPattern)
-//				{
-//					for (unsigned int unIndex = 0; unIndex < unSizeDash; ++unIndex)
-//						pDashPattern[unIndex] = pDataDash[unIndex] * dPixelW;
-//				}
+				//				if (NULL != pDashPattern)
+				//				{
+				//					for (unsigned int unIndex = 0; unIndex < unSizeDash; ++unIndex)
+				//						pDashPattern[unIndex] = pDataDash[unIndex] * dPixelW;
+				//				}
 
-//				m_pRenderer->put_PenDashOffset(pPen->GetDashOffset());
-//				m_pRenderer->PenDashPattern( (NULL != pDashPattern) ? pDashPattern : pDataDash, unSizeDash);
-//				ulPenStyle = Aggplus::DashStyleCustom;
+				//				m_pRenderer->put_PenDashOffset(pPen->GetDashOffset());
+				//				m_pRenderer->PenDashPattern( (NULL != pDashPattern) ? pDashPattern : pDataDash, unSizeDash);
+				//				ulPenStyle = Aggplus::DashStyleCustom;
 
-//				RELEASEARRAYOBJECTS(pDashPattern)
+				//				RELEASEARRAYOBJECTS(pDashPattern)
 
 			}
 
@@ -1077,10 +1202,10 @@ namespace MetaFile
 
 			switch (m_pFile->GetRop2Mode())
 			{
-				case R2_BLACK:   m_pRenderer->put_PenColor(METAFILE_RGBA(0, 0, 0)); break;
-				case R2_NOP:     m_pRenderer->put_PenAlpha(0); break;
-				case R2_COPYPEN: break;
-				case R2_WHITE:   m_pRenderer->put_PenColor(METAFILE_RGBA(255, 255, 255)); break;
+			case R2_BLACK:   m_pRenderer->put_PenColor(METAFILE_RGBA(0, 0, 0)); break;
+			case R2_NOP:     m_pRenderer->put_PenAlpha(0); break;
+			case R2_COPYPEN: break;
+			case R2_WHITE:   m_pRenderer->put_PenColor(METAFILE_RGBA(255, 255, 255)); break;
 			}
 
 			if (PS_NULL == ulPenStyle)
@@ -1089,7 +1214,7 @@ namespace MetaFile
 			return true;
 		}
 		bool UpdateClip()
-		{			
+		{
 			IClip* pClip = m_pFile->GetClip();
 			if (!pClip)
 				return false;
@@ -1106,11 +1231,13 @@ namespace MetaFile
 		int            m_lDrawPathType;
 		double         m_dX;      // Координаты левого верхнего угла
 		double         m_dY;      //
-		double         m_dW;      // 
-		double         m_dH;      // 
-		double         m_dScaleX; // Коэффициенты сжатия/растяжения, чтобы 
+		double         m_dW;      //
+		double         m_dH;      //
+		double         m_dScaleX; // Коэффициенты сжатия/растяжения, чтобы
 		double         m_dScaleY; // результирующая картинка была нужных размеров.
 		bool           m_bStartedPath;
+
+		TRenderConditional *m_pSecondConditional;
 	};
 }
 #endif // _METAFILE_COMMON_METAFILERENDERER_H

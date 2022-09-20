@@ -158,6 +158,12 @@ namespace PdfWriter
 			Write((const BYTE*)c_pHexStrings[(unsigned char)(nValue >> 8)], 2);
 			Write((const BYTE*)c_pHexStrings[(unsigned char)nValue], 2);
 		}
+		else if (6 == nLen)
+		{
+			Write((const BYTE*)c_pHexStrings[(unsigned char)(nValue >> 16)], 2);
+			Write((const BYTE*)c_pHexStrings[(unsigned char)(nValue >> 8)], 2);
+			Write((const BYTE*)c_pHexStrings[(unsigned char)nValue], 2);
+		}
 	}
     void CStream::WriteReal(float fValue)
 	{
@@ -642,7 +648,10 @@ namespace PdfWriter
 			}
 		}
 
-		pDict->WriteToStream(this, pEncrypt);
+		if (dict_type_SIGNATURE == pDict->GetDictType())
+			pDict->WriteSignatureToStream(this, pEncrypt);
+		else
+			pDict->WriteToStream(this, pEncrypt);
 
 		pDict->Write(this);
 		WriteStr(">>");
@@ -844,8 +853,9 @@ namespace PdfWriter
 
 		if (!bWrite)
 		{
-			if (!m_oFile.OpenFile(wsFilePath))
+			if (!m_oFile.OpenFile(wsFilePath, true))
 				return false;	
+			m_oFile.SeekFile(m_oFile.SizeFile(), SEEK_SET);
 		}
 		else
 		{

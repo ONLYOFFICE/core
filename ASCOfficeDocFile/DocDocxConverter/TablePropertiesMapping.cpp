@@ -426,8 +426,11 @@ void TablePropertiesMapping::Apply(IVisitable* visited)
 	for (size_t i = 0; i < _grid->size(); i++)
 	{
 		XMLTools::XMLElement gridCol(L"w:gridCol");
-		XMLTools::XMLAttribute gridColW(L"w:w", FormatUtils::IntToWideString(_grid->at(i)));
-		gridCol.AppendAttribute(gridColW);
+		if (_grid->at(i) > 0)
+		{
+			XMLTools::XMLAttribute gridColW(L"w:w", FormatUtils::IntToWideString(_grid->at(i)));
+			gridCol.AppendAttribute(gridColW);
+		}
 		_tblGrid->AppendChild(gridCol);
 	}
 

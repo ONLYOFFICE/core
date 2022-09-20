@@ -2752,6 +2752,15 @@ bool RtfParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfRead
 			oReader.m_oState->m_oRowProperty.AddItem( oReader.m_oState->m_oCellProperty );
 			oReader.m_oState->m_oCellProperty.SetDefaultRtf();
 		}
+		//else
+		//{
+		//	if (oReader.m_oState->m_oRowProperty.GetCount() > 0)
+		//	{			
+		//		oReader.m_oState->m_oCellProperty.m_nCellx = oReader.m_oState->m_oRowProperty[oReader.m_oState->m_oRowProperty.GetCount() - 1].m_nCellx;
+		//		oReader.m_oState->m_oRowProperty.AddItem(oReader.m_oState->m_oCellProperty);
+		//		oReader.m_oState->m_oCellProperty.SetDefaultRtf();
+		//	}
+		//}
 	}
     else if ( "nonesttables" == sCommand )
 	{

@@ -50,6 +50,8 @@ public:
     // добавить условный формат числа
     void add_format(std::wstring const & condition, std::wstring const & format);
 
+	std::wstring name;
+
 private:
     class Impl;
     _CP_SCOPED_PTR(Impl) impl_;

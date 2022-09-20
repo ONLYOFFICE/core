@@ -461,11 +461,7 @@ double pixToSize(double pixels, double maxDigitSize)
 
 	return (int(( pixels /*/ 0.75*/ - 5)/ maxDigitSize * 100. + 0.5)) /100. * 0.9; // * 9525. * 72.0 / (360000.0 * 2.54);
 }
-double cmToChars (double cm)
-{
-	double pt = cm * 28.34467120181406;
-	return pt * 48. /(12.75 * 8.43 *2.);
-}
+
 }
 
 void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
@@ -552,8 +548,6 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
                                 const double pixDpi = in_width * 96.;                
                                 width = pixToSize(pixDpi, Context.getMaxDigitSize().first); 
 
-								//const double width = cmToChars(prop->attlist_.style_column_width_->get_value_unit(length::cm));
-                              
 								// see ECMA-376 page 1768
                                 if (in_width > 0)
 									CP_XML_ATTR(L"width", *width);
@@ -747,19 +741,23 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 	if (false == data_style.empty())
     {
-        office_element_ptr elm			= odfContext.numberStyles().find_by_style_name(data_style);
-		number_style_base *num_style	= dynamic_cast<number_style_base*>(elm.get());
-      
-		if (num_style)
-		{
-            Context.get_num_format_context().start_complex_format();
-				num_style->oox_convert(Context.get_num_format_context());
-            Context.get_num_format_context().end_complex_format();
-            
-			num_format = Context.get_num_format_context().get_last_format();
+		num_format = Context.get_num_format_context().find_complex_format(data_style, num_format_type);
 
-			num_format_type = Context.get_num_format_context().type();
-        }
+		if (num_format.empty())
+		{
+			office_element_ptr elm = odfContext.numberStyles().find_by_style_name(data_style);
+			number_style_base *num_style = dynamic_cast<number_style_base*>(elm.get());
+
+			if (num_style)
+			{
+				Context.get_num_format_context().start_complex_format(data_style);
+				num_style->oox_convert(Context.get_num_format_context());
+				Context.get_num_format_context().end_complex_format();
+
+				num_format = Context.get_num_format_context().get_last_format();
+				num_format_type = Context.get_num_format_context().type();
+			}
+		}
     }
 //------------------------------------------------------------------------
 	std::wstring			number_val;
@@ -810,16 +808,29 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
         if (attr.office_date_value_)
         {
             int y, m, d;
-            if (oox::parseDate(attr.office_date_value_.get(), y, m, d))
+			_CP_OPT(int) h, min, sec;
+            if (oox::parseDateTime(attr.office_date_value_.get(), y, m, d, h, min, sec))
             {
 				boost::int64_t intDate = oox::convertDate(y, m, d);
+				_CP_OPT(double) dTime;
+				if (h && min)
+				{
+					dTime = oox::convertTime(*h, *min, sec.get_value_or(0));
+				}
 				if (intDate > 0)
 				{
-					number_val = boost::lexical_cast<std::wstring>(intDate);
+					if (dTime)
+					{
+						number_val = XmlUtils::DoubleToString(*dTime + intDate);
+					}
+					else
+					{
+						number_val = boost::lexical_cast<std::wstring>(intDate);
+					}
 					xlsx_value_type = oox::XlsxCellType::n;    
 
 					if (num_format_type == office_value_type::Currency)
-					{//тип формата данных из стиля не соответствует формату анных ячейки
+					{//тип формата данных из стиля не соответствует формату данных ячейки
 						num_format.clear();
 						num_format_type = office_value_type::Date;
 					}
@@ -1001,7 +1012,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 									CP_XML_ATTR(L"t", L"array");
 									CP_XML_ATTR(L"aca", false);
 								}
-                                CP_XML_CONTENT(xlsxFormula);
+                                CP_XML_CONTENT(XmlUtils::EncodeXmlString(xlsxFormula));
                             }
                         }
                     }
@@ -1151,12 +1162,26 @@ void table_covered_table_cell::xlsx_convert(oox::xlsx_conversion_context & Conte
         if (attr.office_date_value_)
         {
             int y, m, d;
-            if (oox::parseDate(attr.office_date_value_.get(), y, m, d))
+			_CP_OPT(int) h, min, s;
+            if (oox::parseDateTime(attr.office_date_value_.get(), y, m, d, h, min, s))
             {
 				boost::int64_t intDate = oox::convertDate(y, m, d);
+				_CP_OPT(double) dTime;
+
+				if (h && min)
+				{
+					dTime = oox::convertTime(*h, *min,  s.get_value_or(0));
+				}
 				if (intDate > 0)
 				{
-					number_val = boost::lexical_cast<std::wstring>(intDate);
+					if (dTime)
+					{
+						number_val = XmlUtils::DoubleToString(*dTime + intDate);
+					}
+					else
+					{
+						number_val = std::to_wstring(intDate);
+					}
 				}
 				else
 				{
@@ -1195,17 +1220,22 @@ void table_covered_table_cell::xlsx_convert(oox::xlsx_conversion_context & Conte
 
     if (!data_style.empty())
     {
-        office_element_ptr elm			= odfContext.numberStyles().find_by_style_name(data_style);
-		number_style_base *num_style	= dynamic_cast<number_style_base*>(elm.get());
-      
-		if (num_style)
+		num_format = Context.get_num_format_context().find_complex_format(data_style, odf_value_type);
+		
+		if (num_format.empty())
 		{
-            Context.get_num_format_context().start_complex_format();
+			office_element_ptr elm = odfContext.numberStyles().find_by_style_name(data_style);
+			number_style_base *num_style = dynamic_cast<number_style_base*>(elm.get());
+
+			if (num_style)
+			{
+				Context.get_num_format_context().start_complex_format(data_style);
 				num_style->oox_convert(Context.get_num_format_context());
-            Context.get_num_format_context().end_complex_format();
-            
-			num_format = Context.get_num_format_context().get_last_format();
-        }
+				Context.get_num_format_context().end_complex_format();
+
+				num_format = Context.get_num_format_context().get_last_format();
+			}
+		}
     }
 
     oox::xlsx_cell_format cellFormat;

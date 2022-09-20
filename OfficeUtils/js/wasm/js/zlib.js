@@ -152,6 +152,24 @@
 	};
 
 	/**
+	 * Get all file paths in archive
+	 * @returns {Array}
+	 */
+	ZLib.prototype.getPaths = function()
+	{
+		var retFiles = [];
+		if (!this.files)
+			return retFiles;
+
+		for (var path in this.files) 
+		{
+			if (this.files.hasOwnProperty(path))
+				retFiles.push(path);
+		}
+		return retFiles;
+	};
+
+	/**
 	 * Get uncomressed file from archive
 	 * @param {string} path
 	 * @returns {Uint8Array | null} bytes of uncompressed data, or null if error
@@ -295,12 +313,82 @@
 		this.engine = 0;
 	};
 
-window.nativeZlibEngine = new ZLib();
-window.onZlibEngineInit = function()
-{
-	window.nativeZlibEngine.isModuleInit = true;
-	window["ZLibModule_onLoad"] && window["ZLibModule_onLoad"]();
-};
+	/**
+	 * Get image type
+	 * @returns {Number}
+	 */
+	ZLib.prototype.getImageType = function(path)
+	{
+		let fileData = this.getFile(path);
+		return Module["_Image_GetFormat"](this.files[path].p + 4, fileData.length);
+	};
+
+	/**
+	 * Get image in needed format
+	 * @returns {Uint8Array}
+	 */
+	ZLib.prototype.getImageAsFormat = function(path, format)
+	{
+		let fileData = this.getFile(path);
+		let encodedData = Module["_Raster_Encode"](this.files[path].p + 4, fileData.length, format);
+		let encodedSize = Module["_Raster_GetEncodedSize"](encodedData);
+		let encodedBuffer = Module["_Raster_GetEncodedBuffer"](encodedData);
+
+		let copyData = new Uint8Array(encodedSize);
+		copyData.set(new Uint8Array(Module["HEAP8"].buffer, encodedBuffer, encodedSize));
+
+		Module["_Raster_DestroyEncodedData"](encodedData);
+
+		return copyData;
+	};
+	/**
+	 * Get image as svg (for simple test)
+	 * @returns {string}
+	 */
+	ZLib.prototype.getImageAsSvg = function(path)
+	{
+		let fileData = this.getFile(path);
+		let encodedData = Module["_Raster_Encode"](this.files[path].p + 4, fileData.length, 24);
+		let encodedSize = Module["_Raster_GetEncodedSize"](encodedData);
+		let encodedBuffer = Module["_Raster_GetEncodedBuffer"](encodedData);
+
+		let string = String.prototype.fromUtf8(new Uint8Array(Module["HEAP8"].buffer, encodedBuffer, encodedSize));
+
+		Module["_Raster_DestroyEncodedData"](encodedData);
+
+		return string;
+	};
+	/**
+	 * Get image blob for browser
+	 * @returns {Blob}
+	 */
+	ZLib.prototype.getImageBlob = function(path)
+	{
+		let imageType = this.getImageType(path);
+		if (imageType != 10 && imageType != 21)
+		{
+			return new Blob([this.getFile(path)], {type:AscCommon.openXml.GetMimeType(AscCommon.GetFileExtension(path))});
+		}
+
+		let fileData = this.getFile(path);
+		let encodedData = Module["_Raster_Encode"](this.files[path].p + 4, fileData.length, 24);
+		let encodedSize = Module["_Raster_GetEncodedSize"](encodedData);
+		let encodedBuffer = Module["_Raster_GetEncodedBuffer"](encodedData);
+
+		let blob = new Blob([new Uint8Array(Module["HEAP8"].buffer, encodedBuffer, encodedSize)], {type : AscCommon.openXml.GetMimeType("svg")});
+
+		Module["_Raster_DestroyEncodedData"](encodedData);
+
+		return blob;
+	};
+
+	window.AscCommon = window.AscCommon || {};
+	window.AscCommon.CZLibEngineJS = ZLib;
+	window.onZlibEngineInit = function()
+	{
+		ZLib.prototype.isModuleInit = true;
+		window["ZLibModule_onLoad"] && window["ZLibModule_onLoad"]();
+	};
 
 })(window, undefined);
 

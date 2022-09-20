@@ -102,11 +102,11 @@ namespace OOX
 
 		const FileType Header			(L"", L"header.xml",
 												L"application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/header");
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/header", L"header", true);
 
 		const FileType Footer			(L"", L"footer.xml", 
 												L"application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer");
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer", L"footer", true);
 
 		const FileType Numbering		(L"", L"numbering.xml", 
 												L"application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml",
@@ -172,19 +172,19 @@ namespace OOX
 
 		const FileType Image			(L"media", L"image", 
 												L"", 
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image");
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image", L"image", true, true);
 
 		const FileType Audio			(L"media", L"audio", 
 												L"", 
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio");
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio", L"audio", true, true);
 
 		const FileType Video			(L"media", L"video", 
 												L"", 
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/video");
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/video", L"video", true, true);
 
 		const FileType Media			(L"media", L"media", 
 												L"", 
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/media");
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/media", L"media", true, true);
 
 		const FileType DiagramData		(L"diagrams", L"data.xml",
 												L"application/vnd.openxmlformats-officedocument.drawingml.diagramData+xml",

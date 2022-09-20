@@ -2824,7 +2824,9 @@ namespace MetaFile
 
 		m_oStream >> unStackIndex;
 
-		m_pDC = m_oPlayer.RestoreDC(unStackIndex);
+		m_oPlayer.RestoreDC(unStackIndex);
+		m_pDC = m_oPlayer.GetDC();
+		UpdateOutputDC();
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_SAVE()
@@ -2833,7 +2835,7 @@ namespace MetaFile
 
 		m_oStream >> unStackIndex;
 
-		m_pDC = m_oPlayer.SaveDC(unStackIndex);
+		m_oPlayer.SaveDC(unStackIndex);
 		UpdateOutputDC();
 	}
 

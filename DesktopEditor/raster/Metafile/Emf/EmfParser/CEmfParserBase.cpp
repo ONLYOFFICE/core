@@ -947,7 +947,7 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_SAVEDC();
 
-		m_pDC = m_oPlayer.SaveDC();
+		m_oPlayer.SaveDC();
 		UpdateOutputDC();
 	}
 
@@ -962,8 +962,8 @@ namespace MetaFile
 			return;
 		}
 
-		m_pDC = m_oPlayer.RestoreDC(nIndexDC);
-
+		m_oPlayer.RestoreDC(nIndexDC);
+		m_pDC = m_oPlayer.GetDC();
 		UpdateOutputDC();
 	}
 

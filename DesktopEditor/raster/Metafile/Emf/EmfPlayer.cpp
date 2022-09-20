@@ -36,16 +36,14 @@ namespace MetaFile
 {
 	CEmfPlayer::CEmfPlayer(CEmfParserBase* pParser)
 	{
-		CEmfDC* pDC = new CEmfDC(this);
-		if (!pDC)
+		m_pDC = new CEmfDC(this);
+		if (!m_pDC)
 		{
 			pParser->SetError();
 			return;
 		}
 
 		m_pParser = pParser;
-		m_pDC = pDC;
-		m_mDCs.insert(std::pair<int, CEmfDC*>(-1, m_pDC));
 
 		InitStockObjects();
 	};
@@ -61,9 +59,11 @@ namespace MetaFile
 		for (EmfDCsMap::iterator oIterator = m_mDCs.begin();  oIterator != m_mDCs.end(); ++oIterator)
 		{
 			CEmfDC* pDC = oIterator->second;
-			delete pDC;
+			RELEASEOBJECT(pDC);
 		}
 		m_mDCs.clear();
+
+		RELEASEOBJECT(m_pDC);
 	}
 	void    CEmfPlayer::Clear()
 	{
@@ -77,38 +77,38 @@ namespace MetaFile
 		for (EmfDCsMap::iterator oIterator = m_mDCs.begin();  oIterator != m_mDCs.end(); ++oIterator)
 		{
 			CEmfDC* pDC = oIterator->second;
-			delete pDC;
+			RELEASEOBJECT(pDC);
 		}
 		m_mDCs.clear();
 
-		CEmfDC* pDC = new CEmfDC(this);
-		if (!pDC)
+		RELEASEOBJECT(m_pDC);
+
+		m_pDC = new CEmfDC(this);
+		if (!m_pDC)
 		{
 			m_pParser->SetError();
 			return;
 		}
 
-		m_pDC = pDC;
-		m_mDCs.insert(std::pair<int, CEmfDC*>(-1, m_pDC));
 		InitStockObjects();
 
 		SelectObject(0x80000007); // BLACK_PEN
 		SelectObject(0x80000000); // WHITE_BRUSH
 	}
 
-	CEmfDC* CEmfPlayer::SaveDC(int nIndex)
+	void CEmfPlayer::SaveDC(int nIndex)
 	{
 		if (!m_pDC)
 		{
 			m_pParser->SetError();
-			return NULL;
+			return;
 		}
 
 		CEmfDC* pNewDC = m_pDC->Copy();
 		if (!pNewDC)
 		{
 			m_pParser->SetError();
-			return m_pDC;
+			return;
 		}
 
 		if (nIndex < 0)
@@ -117,8 +117,37 @@ namespace MetaFile
 				m_mDCs.insert(std::pair<int, CEmfDC*>(-1, pNewDC));
 			else
 				m_mDCs.insert(std::pair<int, CEmfDC*>(m_mDCs.begin()->first - 1, pNewDC));
+		}
+		else
+		{
+			EmfDCsMap::iterator oFound = m_mDCs.find(nIndex);
 
-			m_pDC = pNewDC;
+			if (m_mDCs.end() != oFound)
+			{				
+				delete oFound->second;
+				oFound->second = pNewDC;
+			}
+			else
+				m_mDCs.insert(std::pair<int, CEmfDC*>(nIndex, pNewDC));
+		}
+	}
+
+	void CEmfPlayer::RestoreDC(int nIndex)
+	{
+		if (nIndex < 0)
+		{
+			if (m_mDCs.empty() || m_mDCs.begin()->first > nIndex)
+			{
+				m_pParser->SetError();
+				return;
+			}
+
+			for (int nDeleteIndex = 0; nDeleteIndex > nIndex; --nDeleteIndex)
+			{
+				delete m_pDC;
+				m_pDC = m_mDCs.begin()->second;
+				m_mDCs.erase(m_mDCs.begin());
+			}
 		}
 		else
 		{
@@ -126,47 +155,12 @@ namespace MetaFile
 
 			if (m_mDCs.end() != oFound)
 			{
-				delete oFound->second;
-				oFound->second = pNewDC;
+				delete m_pDC;
+				m_pDC = oFound->second;
+				m_mDCs.erase(oFound);
 			}
 			else
-				m_mDCs.insert(std::pair<int, CEmfDC*>(nIndex, pNewDC));
-		}
-
-		return m_pDC;
-	}
-
-	CEmfDC *CEmfPlayer::RestoreDC(int nIndex)
-	{
-		if (nIndex < 0)
-		{
-			if (m_mDCs.empty() || m_mDCs.begin()->first > nIndex)
-			{
 				m_pParser->SetError();
-				return m_pDC;
-			}
-
-			for (int nDeleteIndex = 0; nDeleteIndex > nIndex; --nDeleteIndex)
-			{
-				delete m_mDCs.begin()->second;
-				m_mDCs.erase(m_mDCs.begin());
-			}
-
-			m_pDC = m_mDCs.begin()->second;
-			return m_pDC;
-		}
-
-		EmfDCsMap::iterator oFound = m_mDCs.find(nIndex);
-
-		if (m_mDCs.end() != oFound)
-		{
-			m_pDC = oFound->second;
-			return m_pDC;
-		}
-		else
-		{
-			m_pParser->SetError();
-			return m_pDC;
 		}
 	}
 

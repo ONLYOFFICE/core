@@ -55,8 +55,8 @@ namespace MetaFile
 		CEmfPlayer(CEmfParserBase* pParser);
 		~CEmfPlayer();
 		void Clear();
-		CEmfDC* SaveDC(int nIndex = -1);
-		CEmfDC* RestoreDC(int nIndex);
+		void SaveDC(int nIndex = -1);
+		void RestoreDC(int nIndex);
 		CEmfDC* GetDC();
 		void RegisterObject(unsigned int ulIndex, CEmfObjectBase* pObject);
 		void SelectObject(unsigned int ulIndex);

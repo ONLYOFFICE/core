@@ -34,6 +34,7 @@
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/TextParagraphPr.h"
 #include "../../../ASCOfficePPTXFile/Editor/Drawing/TextStructures.h"
 #include "ImageManager.h"
+#include <unordered_set>
 
 namespace PPT_FORMAT
 {
@@ -49,8 +50,10 @@ private:
     void FillBuChar(PPTX::Logic::Bullet& oBullet, WCHAR symbol, CTextPFRun *pPF = nullptr);
     void ConvertAllBullets(PPTX::Logic::TextParagraphPr &oPPr, CTextPFRun *pPF);
     void FillBuClr(PPTX::Logic::BulletColor& oBuClr, CColor& oColor);
+    bool IsValidCharset(BYTE charset) const;
 
 private:
     CRelsGenerator* m_pRels;
+    const std::unordered_set<BYTE> BLCharset = {128, 136};
 };
 }

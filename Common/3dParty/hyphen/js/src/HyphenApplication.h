@@ -4,6 +4,7 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <sstream>
 
 #include "./../../hyphen/hyphen.h"
 
@@ -13,12 +14,15 @@ public:
 	CHyphenApplication();
 	~CHyphenApplication();
 
-	char* hyphenWord(const char *word, size_t size, const char *lang);
-	void loadDictionary(const char *dict, size_t size, const char* lang);
+	char* hyphenWord(const char *word, const char *lang);
+	void loadDictionary(const char *src, const char *lang);
 
 private:
 	std::map<std::string, HyphenDict*> m_mapDicts;
+	size_t m_nMaxDictsCount;
+
 	char* m_pHyphenVector;
+	size_t m_nHyphenVectorSize;
 
 };
 

@@ -1,8 +1,8 @@
 //desktop_fetch
 
-// polyfill
+//polyfill
 
-// module
+//module
 
 /**
  * @param {Module} module
@@ -29,73 +29,133 @@ function freeMemory(module, ptr) {
  * @param {Module} module
  * @param {Uint8Array} data
  * @param {Number} ptr
- * @return {void}
  * Fill memory
  */
 function setMemory(module, data, ptr) {
     module.HEAP8.set(data, ptr);
 }
+/**
+ * 
+ * @param {Module} module 
+ * @return {Number}
+ * Returns pointer
+ */
+function createHyphenApplication(module){
+    return module._createHyphenApplication();
+}
+/**
+ * 
+ * @param {Module} module 
+ * @param {Number} app 
+ */
+function destroyHyphenApplication(module, app){
+    module._destroyHyphenApplication(app);
+}
+/**
+ * 
+ * @param {Module} module 
+ * @param {Number} app 
+ * @param {String} src 
+ * @param {String} lang 
+ */
+function loadDictionary(module, app, src, lang){
+
+    var src_size = 4 * src.length + 1;
+    var lang_size = 4 * lang.length + 1;
+    
+
+    var _src = allocateMemory(module, src_size);
+    var _lang = allocateMemory(module, lang_size);
+
+    module.stringToUTF8(src, _src, src_size);
+    module.stringToUTF8(lang, _lang, lang_size);
+
+    module._loadDictionary(app, _src, _lang);
+
+    freeMemory(module, _src);
+    freeMemory(module, _lang);
+}
 
 /**
- * @type {HTMLTextAreaElement}
+ * 
+ * @param {Module} module 
+ * @param {Number} app
+ * @param {String} word 
+ * @param {String} lang 
+ * @returns {Uint8ClampedArray}
+ * Returns hyphen vector of word
  */
-var textarea = document.getElementById("textarea");
-var form = document.querySelector("form");
+function hyphenWord(module, app, word, lang){
 
-var control = document.getElementById("dictionary-file");
-control.addEventListener("change", function(event) {
+    var word_size = 4 * word.length + 1;
+    var lang_size = 4 * lang.length + 1;
+
+    var _word = allocateMemory(module, word_size);
+    var _lang = allocateMemory(module, lang_size);
+
+    module.stringToUTF8(word, _word, word_size);
+    module.stringToUTF8(lang, _lang, lang_size);
+
+    var hyphens = module._hyphenWord(app, _word, _lang);
+
+    freeMemory(module, _word);
+    freeMemory(module, _lang);
+
+    return hyphens;
+}
+
+(function (window, undefined){
+    var textarea = document.getElementById("textarea");
+    var form = document.querySelector("form");
+
+    var control = document.getElementById("dictionary-file");
+
+    var application = undefined;
+    var lang = undefined;
+
+    control.addEventListener("change", function(event) {
+        var file = control.files[0];
+        lang = file.name;
+        var reader = new FileReader();
+        reader.readAsText(file);
     
-    var file = control.files[0];
-    var reader = new FileReader();
-    reader.readAsText(file);
-
-    reader.onload = function() {
-        
-    };
- 
-}, false);
-
-function hyphenate(word)
-{
-    var len = word.length;
-    var word_size = 4 * len + 1;
-    var hyphen_size = word_size + 5;
-    var hword_size = word_size * 2;
+        if(application == undefined) {
+            application = createHyphenApplication(Module);
+        }
     
-    var pword = allocateMemory(Module, word_size);
-    var phyphens = allocateMemory(Module, hyphen_size);
-    var phword = allocateMemory(Module, hword_size);
-
-    Module.stringToUTF8(word, pword, word_size);
-    Module._hyphenate(pword, phyphens, phword)
-
-    var hword = Module.UTF8ToString(phword);
-    var hyphens = Module.UTF8ToString(phyphens);
-
-    var positions = [];
-    for(var i = 0; i < hyphens.length; i++) {
-        // hyphenation vector has odd number in positions where hyphen is needed
-        if(Number(hyphens[i]) % 2 == 1) {
-            positions.push(i);
+        reader.onload = function() {
+            loadDictionary(Module, application, reader.result, lang);
+        };
+     
+    }, false);
+    
+    form.onsubmit = function(event) {
+        event.preventDefault();
+        var text = textarea.value.split("\n").join(" ").split(" ");
+    
+        if(application == undefined) {
+            application = createHyphenApplication(Module);
+        }
+    
+        for(var i = 0; i < text.length; i++) {
+            const ptr = hyphenWord(Module, application, text[i].toLowerCase(), lang);
+            var vector = new Uint8ClampedArray(Module.HEAP8.buffer, ptr, 4 * text[i].length + 6);
+    
+            // calc actual size of vector
+            var size = 0;
+            for(var j = 0; j < vector.length && vector[j] != 0; j++){
+                size++;
+            }
+    
+            // size of one symbol
+            var symbol = size / text[i].length;
+    
+            for(var j = 0; j < vector.length; j++) {
+                if(vector[j] % 2 == 1) {
+                    console.log((j + 1) / symbol);
+                }
+            }
         }
     }
-    console.log(hword);
-
-    freeMemory(Module, pword);
-    freeMemory(Module, phyphens);
-    freeMemory(Module, phword);
-
-    return positions;
-}
-
-form.onsubmit = function(event) {
-    event.preventDefault();
-    var text = textarea.value.split("\n").join(" ").split(" ");
-    Module._load_dictionary();
-
-    for(var i = 0; i < text.length; i++) {
-        console.log(hyphenate(text[i].toLowerCase()));
-    }
-    Module._free_dictionary();
-}
+})(self, undefined);
 

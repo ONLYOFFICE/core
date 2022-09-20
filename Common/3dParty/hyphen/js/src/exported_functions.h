@@ -1,16 +1,18 @@
 #ifndef EXPORTED_FUNCTIONS_H
 #define EXPORTED_FUNCTIONS_H
 
-#include <fstream>
+#include "HyphenApplication.h"
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif // __cplusplus
 
-void load_dictionary();
-void free_dictionary();
-void hyphenate(const char *word, char *hyphens, char *hword);
+CHyphenApplication* createHyphenApplication();
+void destroyHyphenApplication(CHyphenApplication *app);
+
+void loadDictionary(CHyphenApplication *app, const char *src, const char* lang);
+char* hyphenWord(CHyphenApplication *app, const char *word, const char* lang);
 
 #ifdef __cplusplus
 }

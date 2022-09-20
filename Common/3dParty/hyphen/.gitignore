@@ -5,5 +5,6 @@ msvc_make.bat
 build-test-*
 *.wasm
 hyphen.js
+hyphen_ie.js
 hyphen.data
 .vscode

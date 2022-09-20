@@ -1,6 +1,11 @@
 #include <iostream>
+#include <cstring>
 
+extern "C"
+{
 #include "../../hyphen/hyphen.c"
+#include "../../hyphen/hnjalloc.h"
+}
 
 HyphenDict * hnj_hyphen_load_stream (std::istream &in)
 {
@@ -63,8 +68,11 @@ HyphenDict * hnj_hyphen_load_stream (std::istream &in)
 
 	if (k == 0 || nextlevel) 
 	{
-		while (in >> buf) 
+		while (in.getline(buf, sizeof(buf), '\n')) 
 		{
+			if(strlen(buf) < sizeof(buf))
+				strcat(buf, "\n");
+
 			/* discard lines that don't fit in buffer */
 			if (!in.eof() && strchr(buf, '\n') == NULL) 
 			{

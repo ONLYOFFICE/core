@@ -10,18 +10,19 @@
 
 	"compiler_flags": [
 		"-O3",
-		"-fno-exceptions",
+		"-sASSERTIONS",
 		"-fno-rtti",
 		"-Wno-unused-command-line-argument",
 		"-sALLOW_MEMORY_GROWTH",
-		"-sERROR_ON_UNDEFINED_SYMBOLS=0"
+		"-sEXPORTED_RUNTIME_METHODS='stringToUTF8','UTF8ToString'"
 	],
 	"exported_functions": [
 		"_malloc",
 		"_free",
-        "_load_dictionary",
-        "_free_dictionary",
-		"_hyphenate"
+        "_createHyphenApplication",
+        "_destroyHyphenApplication",
+		"_loadDictionary",
+		"_hyphenWord"
 	],
 	"include_path": ["../src"],
 	"define": [],
@@ -29,7 +30,7 @@
 	{
 		"name": "s",
 		"folder": "../src",
-		"files": ["exported_functions.cpp", "HyphenUtils.cpp", "../../hyphen/hyphen.c", "../../hyphen/hnjalloc.c"]
+		"files": ["exported_functions.cpp", "HyphenApplication.cpp", "../../hyphen/hnjalloc.c"]
 	}
 	]
 }

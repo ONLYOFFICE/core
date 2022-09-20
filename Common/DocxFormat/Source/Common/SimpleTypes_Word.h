@@ -2545,8 +2545,91 @@ namespace SimpleTypes
 		SimpleType_FromString     (EHeightRule)
 		SimpleType_Operator_Equal (CHeightRule)
 	};
+	//--------------------------------------------------------------------------------
+	// TextFormFormatType 
+	//--------------------------------------------------------------------------------		
 
+	enum ETextFormFormatType
+	{
+		textFormFormatTypeNone   = 0,
+		textFormFormatTypeDigit  = 1,
+		textFormFormatTypeLetter = 2,
+		textFormFormatTypeMask   = 3,
+		textFormFormatTypeRegExp = 4
+	};
 
+	template<ETextFormFormatType eDefValue = textFormFormatTypeNone>
+	class CTextFormFormatType : public CSimpleType<ETextFormFormatType, eDefValue>
+	{
+	public:
+		CTextFormFormatType() {}
+
+		virtual ETextFormFormatType FromString(std::wstring &sValue)
+		{
+			if (L"none" == sValue) this->m_eValue = textFormFormatTypeNone;
+			else if (L"digit" == sValue) this->m_eValue = textFormFormatTypeDigit;
+			else if (L"letter" == sValue) this->m_eValue = textFormFormatTypeLetter;
+			else if (L"mask" == sValue) this->m_eValue = textFormFormatTypeMask;
+			else if (L"regExp" == sValue) this->m_eValue = textFormFormatTypeRegExp;
+			else this->m_eValue = eDefValue;
+
+			return this->m_eValue;
+		}
+		virtual std::wstring ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case textFormFormatTypeNone: return L"none";
+			case textFormFormatTypeDigit: return L"digit";
+			case textFormFormatTypeLetter: return L"letter";
+			case textFormFormatTypeMask: return L"mask";
+			case textFormFormatTypeRegExp: return L"regExp";
+			default: return (L"none");
+			}
+		}
+		SimpleType_FromString(ETextFormFormatType)
+		SimpleType_Operator_Equal(CTextFormFormatType)
+	};
+
+	enum EComplexFormType
+	{
+		complexFormTypeCustom    = 0,
+		complexFormTypeTelephone = 1,
+		complexFormTypeEmail     = 2
+	};
+
+	template<EComplexFormType eDefValue = complexFormTypeCustom>
+	class CComplexFormType : public CSimpleType<EComplexFormType, eDefValue>
+	{
+	public:
+		CComplexFormType() {}
+
+		virtual EComplexFormType FromString(std::wstring &sValue)
+		{
+			if (L"custom" == sValue || L"none" == sValue) this->m_eValue = complexFormTypeCustom;
+			else if (L"telephone" == sValue || L"phone" == sValue) this->m_eValue = complexFormTypeTelephone;
+			else if (L"email" == sValue) this->m_eValue = complexFormTypeEmail;
+			else this->m_eValue = eDefValue;
+
+			return this->m_eValue;
+		}
+		virtual std::wstring ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case complexFormTypeCustom: return L"custom";
+			case complexFormTypeTelephone: return L"telephone";
+			case complexFormTypeEmail: return L"email";
+			default: return (L"custom");
+			}
+		}
+		bool IsDefaultValue() const
+		{
+			return (this->m_eValue == eDefValue);
+		}
+		SimpleType_FromString(EComplexFormType)
+		SimpleType_Operator_Equal(CComplexFormType)
+	};
 	//--------------------------------------------------------------------------------
 	// HexColor 17.18.38 (Part 1)
 	//--------------------------------------------------------------------------------		

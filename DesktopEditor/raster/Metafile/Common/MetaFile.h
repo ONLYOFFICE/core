@@ -79,6 +79,7 @@ namespace MetaFile
 		virtual int          GetCharSpace() = 0;
 		virtual bool         IsWindowFlippedY() = 0;
 		virtual bool         IsWindowFlippedX() = 0;
+		virtual double       GetScale() = 0;
 
 		bool ReadFromBuffer(BYTE* pBuffer, unsigned int unSize, const bool& bIsExternal = true)
 		{

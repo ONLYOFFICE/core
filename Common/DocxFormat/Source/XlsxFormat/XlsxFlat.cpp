@@ -48,11 +48,15 @@ namespace Spreadsheet
 	{
 		m_nLastReadRow = 0;
 		m_nLastReadCol = -1;
+		
+		m_maxDigitSize = std::make_pair(0, 0);
 	}
 	CXlsxFlat::CXlsxFlat(const CPath& oFilePath) : File(this)
 	{
 		m_nLastReadRow = 0;
 		m_nLastReadCol = -1;
+		
+		m_maxDigitSize = std::make_pair(0, 0);
 		
 		read( oFilePath );
 	}
@@ -88,7 +92,7 @@ namespace Spreadsheet
 		int nStylesDepth = oReader.GetDepth();
 		while ( oReader.ReadNextSiblingNode( nStylesDepth ) )
 		{
-			std::wstring sName = oReader.GetName();
+			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"ExcelWorkbook" == sName )
 			{
@@ -113,6 +117,95 @@ namespace Spreadsheet
 			}
 		}
 	}
+	std::pair<double, double> CXlsxFlat::getMaxDigitSize()
+	{
+		if (m_maxDigitSize.first <= 0.1)
+		{
+			COfficeFontPicker* pFontPicker = new COfficeFontPicker();
+			pFontPicker->Init(m_strFontDirectory);
+			NSFonts::IFontManager* pFontManager = pFontPicker->get_FontManager();
+
+			std::wstring fontName = L"Arial";
+			double fontSize = 10;
+			int fontStyle = 0;
+			//-----------------------------------------------------------
+			if ((m_pStyles.IsInit()) && (m_pStyles->m_oFonts.IsInit()) && (false == m_pStyles->m_oFonts->m_arrItems.empty()))
+			{
+				fontSize = m_pStyles->m_oFonts->m_arrItems[0]->m_oSz->m_oVal->GetValue();
+				fontName = *m_pStyles->m_oFonts->m_arrItems[0]->m_oRFont->m_sVal;
+			}
+			//-----------------------------------------------------------
+			int hr = FALSE;
+
+			double dpi = 96;
+			if (FALSE == (hr = pFontManager->LoadFontByName(fontName, fontSize, fontStyle, dpi, dpi)))
+			{
+				if (FALSE == (hr = pFontManager->LoadFontByName(L"Arial", fontSize, fontStyle, dpi, dpi)))
+				{
+					delete pFontPicker;
+					m_maxDigitSize = std::pair<double, double>(7, 8);
+					return m_maxDigitSize;
+				}
+			}
+
+			double maxWidth = 0;
+			double maxHeight = 0;
+
+			double minWidth = 0xffffffff;
+			double minHeight = 0xfffffff;
+
+			// for (int i = 0; i <= 9; ++i)
+			//{
+				//if (FALSE == (hr = pFontManager->LoadString2( std::to_wstring(i), 0, 0)))
+				//	return std::pair<float, float>(7,8);
+				//TBBox box;
+				//try
+				//{
+				//	box = pFontManager->MeasureString();
+				//}
+			//}
+			if (FALSE == (hr = pFontManager->LoadString2(L"0123456789", 0, 0)))//
+			{
+				m_maxDigitSize = std::pair<double, double>(7., 8.);
+				return m_maxDigitSize;
+			}
+
+			TBBox box;
+			try
+			{
+				box = pFontManager->MeasureString();
+			}
+			catch (...)
+			{
+				m_maxDigitSize = std::pair<double, double>(7., 8.);
+				return m_maxDigitSize;
+			}
+
+			if (box.fMaxX < -0xffff + 1 || box.fMaxY < -0xffff + 1 ||
+				box.fMinX > 0xffff - 1 || box.fMinY > 0xffff - 1)
+			{
+				m_maxDigitSize = std::pair<double, double>(7., 8.);
+				return m_maxDigitSize;
+			}
+
+			if (box.fMaxX - box.fMinX > maxWidth)   maxWidth = box.fMaxX - box.fMinX;
+			if (box.fMaxY - box.fMinY > maxHeight)  maxHeight = box.fMaxY - box.fMinY;
+
+			if (box.fMaxX - box.fMinX < minWidth)   minWidth = box.fMaxX - box.fMinX;
+			if (box.fMaxY - box.fMinY < minHeight)  minHeight = box.fMaxY - box.fMinY;
+
+			double width = (minWidth + 2 * maxWidth) / 10. / 3.;
+
+			if (width > 0.01 && maxHeight > 0.01)
+				m_maxDigitSize = std::pair<double, double>(width, maxHeight);
+			else
+				m_maxDigitSize = std::pair<double, double>(7., 8.);
+			
+			delete pFontPicker;
+		}
+		return m_maxDigitSize;
+	}
+
 }
 
 }

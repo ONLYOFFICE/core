@@ -107,7 +107,7 @@ public:
     {
         //Установим размер исходного и нового окна для Css калькулятора (должны быть одинаковые единицы измерения (желательно пункты))
         //Это нужно для масштабирования некоторых значений
-        m_oStylesCalculator.SetSizeSourceWindow(NSCSS::CSizeWindow(4940 * (1366 / (8.26667 * m_oStylesCalculator.GetDpi())), 0));
+		m_oStylesCalculator.SetSizeSourceWindow(NSCSS::CSizeWindow(4940 * (1366 * (25.4 / m_oStylesCalculator.GetDpi())), 0));
         m_oStylesCalculator.SetSizeDeviceWindow(NSCSS::CSizeWindow(4940, 0));
     }
 
@@ -454,8 +454,7 @@ public:
         std::string xml_string = XmlUtils::GetUtf8FromFileContent(buffer, dwReadBytes);
 
         bool bRes = false;
-        if ((std::string::npos != xml_string.find("Content-Type: multipart/related")) &&
-            (std::string::npos != xml_string.find("Content-Type: text/html")))
+        if (std::string::npos != xml_string.find("Content-Type: multipart/related"))
         {
             BYTE* pData;
             DWORD nLength;
@@ -464,7 +463,15 @@ public:
 
             std::string sFileContent = XmlUtils::GetUtf8FromFileContent(pData, nLength);
             RELEASEARRAYOBJECTS(pData);
-
+            /*
+            std::wstring sRes = mhtToXhtml(sFileContent);
+            NSFile::CFileBinary oWriter;
+            if (oWriter.CreateFileW(m_sTmp + L"/res.html"))
+            {
+                oWriter.WriteStringUTF8(sRes);
+                oWriter.CloseFile();
+            }
+            */
             bRes = m_oLightReader.FromString(mhtToXhtml(sFileContent));
         }
         else

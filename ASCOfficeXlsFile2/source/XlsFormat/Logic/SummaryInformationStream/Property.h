@@ -98,6 +98,8 @@ namespace OLEPS
 		virtual bool Read(XLS::CFStreamPtr stream) = 0;
 		virtual std::wstring toString() = 0;
 
+		virtual bool IsEmpty() { return false; }
+
 		unsigned int	prop_type;
 		unsigned short	value_type;
 

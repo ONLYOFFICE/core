@@ -27,6 +27,7 @@
 -(JSValue*) ZipClose;
 -(JSValue*) GetImageUrl : (JSValue*)url;
 -(JSValue*) GetImagesPath;
+-(JSValue*) GetImageOriginalSize : (JSValue*)url;
 
 @end
 
@@ -66,6 +67,7 @@ FUNCTION_WRAPPER_JS_1(ZipFileAsBinary, zipGetFileAsBinary)
 FUNCTION_WRAPPER_JS(ZipClose, zipCloseFile);
 FUNCTION_WRAPPER_JS_1(GetImageUrl, GetImageUrl);
 FUNCTION_WRAPPER_JS(GetImagesPath, GetImagesPath)
+FUNCTION_WRAPPER_JS_1(GetImageOriginalSize, GetImageOriginalSize);
 
 @end
 

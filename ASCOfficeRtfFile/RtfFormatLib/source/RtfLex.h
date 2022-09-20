@@ -31,10 +31,6 @@
  */
 #pragma once
 
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <ctype.h>
-
 #include "RtfToken.h"
 #include "Utils.h"
 #include "Basic.h"
@@ -45,7 +41,6 @@ private:
     LONG64 m_nSizeAbs;//размер файла
     LONG64 m_nPosAbs;//позиция в файле
 
-    //std::string m_sBuffer;
 	unsigned char* m_aBuffer;
 public:
 	StringStream()
@@ -316,16 +311,13 @@ private:
 			m_oStream.ungetc();
 		}
 
-		//Se asigna la palabra clave leida
 		token.Type = RtfToken::Keyword;
 		token.Key = palabraClave;
 
-		//Se comprueba si la palabra clave tiene parбmetro
 		if (RtfUtility::IsDigit(c) || c == '-')
 		{
 			token.HasParameter = true;
 
-			//Se comprubea si el parбmetro es negativo
 			if (c == '-')
 			{
 				negativo = true;
@@ -338,29 +330,38 @@ private:
 			while (RtfUtility::IsDigit(c))
 			{
 				m_oStream.getc();
-                parametroStr += c;
+				parametroStr += c;
 
 				c = m_oStream.getc();
 				m_oStream.ungetc();
 			}
-            try
-            {
-                parametroInt = _wtoi(parametroStr.c_str());
-            }catch(...)
-            {
-                try
-                {
-                    parametroInt = (int)_wtoi64(parametroStr.c_str());
-                }catch(...)
-                {
-                }
-            }
+			try
+			{
+				parametroInt = _wtoi(parametroStr.c_str());
+			}
+			catch (...)
+			{
+				try
+				{
+					parametroInt = (int)_wtoi64(parametroStr.c_str());
+				}
+				catch (...)
+				{
+				}
+			}
 
 			if (negativo)
 				parametroInt = -parametroInt;
 
-			//Se asigna el parбmetro de la palabra clave
-			token.Parameter = parametroInt;
+			//if (c == ' ' || c == '\\' || c == '}' || c == '{' || c == '\"' || c == ';')
+			{
+				token.Parameter = parametroInt;
+			}
+			//else
+			//{
+			//	token.HasParameter = false;
+			//	//token.Parameter = 0;
+			//}
 		}
 
 		if (c == ' ')

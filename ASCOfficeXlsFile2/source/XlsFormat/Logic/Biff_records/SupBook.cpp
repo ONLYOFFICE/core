@@ -173,8 +173,9 @@ void SupBook::readFields(CFRecord& record)
 		{
 			if (bPath)
 			{
-				if (sResult.empty())
+				if (virtPath.empty())
 					virtPath.push_back(L"");
+
 				virtPath.back() += L"/" + sResult;
 			}
 			else

@@ -221,6 +221,8 @@ namespace PPTX
 			nullable_int						m_oDyaOrig;
 			nullable_bool						m_oShowAsIcon;
 			nullable_string						m_oName;
+			nullable_bool						m_oMoveWithCells;
+			nullable_bool						m_oSizeWithCells;
 
 			nullable_string						m_sAlternateContenteXml;
 		};

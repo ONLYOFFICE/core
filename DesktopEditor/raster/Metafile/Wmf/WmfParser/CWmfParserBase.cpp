@@ -28,6 +28,9 @@ namespace MetaFile
 
 	TRect *CWmfParserBase::GetDCBounds()
 	{
+		m_oDCRect = GetBoundingBox();
+		return &m_oDCRect;
+
 		TWmfWindow* pViewport = m_pDC->GetViewport();
 
 		m_oDCRect.nLeft   = pViewport->x;
@@ -161,6 +164,14 @@ namespace MetaFile
 	{
 		TWmfWindow* pWindow = m_pDC->GetWindow();
 		return (pWindow->w < 0);
+	}
+
+	double CWmfParserBase::GetScale()
+	{
+		if (m_oPlaceable.Inch != 0)
+			return 1440.f / m_oPlaceable.Inch / (20.f * (72.f / 96.f));
+
+		return 1.f;
 	}
 
 	void CWmfParserBase::SetInterpretator(IOutputDevice *pOutput)
@@ -433,8 +444,7 @@ namespace MetaFile
 
 			m_pInterpretator->DrawString(wsText, unCharsCount, dX, dY, pdDx);
 
-			if (pdDx)
-				delete[] pdDx;
+			RELEASEARRAYOBJECTS(pdDx);
 		}
 		else
 		{

@@ -29,6 +29,8 @@ enum CheckResultCode
 	crcPageDiffs = 4
 };
 
+bool g_save_x2t_xml = false;
+
 class CConverter;
 class CInternalWorker
 {
@@ -94,6 +96,10 @@ public:
 		m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS, true));
 		m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV, true));
 
+		m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF, true));
+		m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS, true));
+		m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU, true));
+
 		m_nCount = 0;
 		m_nCurrent = 0;
 		m_nCurrentComplete = 0;
@@ -125,8 +131,9 @@ public:
 			std::wstring sExt = NSFile::GetFileExtention(*iter);
 
 			if (sExt == L"docx" || sExt == L"doc" || sExt == L"odt" || sExt == L"rtf" || sExt == L"docxf" || sExt == L"oform" ||
-					sExt == L"pptx" || sExt == L"ppt" || sExt == L"odp" ||
-					sExt == L"xlsx" || sExt == L"xls" || sExt == L"ods")
+				sExt == L"pptx" || sExt == L"ppt" || sExt == L"odp" ||
+				sExt == L"xlsx" || sExt == L"xls" || sExt == L"ods" ||
+				sExt == L"pdf" || sExt == L"xps" || sExt == L"djvu")
 			{
 				m_files.push_back(*iter);
 			}
@@ -512,7 +519,8 @@ public:
 			return 0;
 		}
 
-		NSFile::CFileBinary::Remove(sTempFileForParams);
+		if (g_save_x2t_xml != true)
+			NSFile::CFileBinary::Remove(sTempFileForParams);
 
 		DWORD dwTime2 = NSTimers::GetTickCount();
 
@@ -963,6 +971,10 @@ int main(int argc, char** argv)
 			else if (sKey == L"--additional-params")
 			{
 				strAdditionalParams = sValue;
+			}
+			else if (sKey == L"--x2t-debug")
+			{
+				g_save_x2t_xml = true;
 			}
 		}
 	}

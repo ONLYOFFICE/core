@@ -32,12 +32,12 @@ namespace MetaFile
 
 		bool bEof = false;
 
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Begin();
+
 		Read_META_HEADER();
 
 		unsigned int unRecordIndex = 1;
-
-		if (NULL != m_pInterpretator)
-			m_pInterpretator->Begin();
 
 		do
 		{
@@ -65,7 +65,7 @@ namespace MetaFile
 				//-----------------------------------------------------------
 				// 2.3.2 Control records
 				//-----------------------------------------------------------
-			case META_EOF: bEof = true; break;
+			case META_EOF: Read_META_EOF(); bEof = true; break;
 				//-----------------------------------------------------------
 				// 2.3.3 Drawing records
 				//-----------------------------------------------------------
@@ -167,6 +167,8 @@ namespace MetaFile
 
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->End();
+
+		ClearFile();
 	}
 
 	void CWmfParser::Scan()
@@ -201,9 +203,13 @@ namespace MetaFile
 
 			if (m_oPlaceable.Inch != 0)
 			{
-				m_pDC->SetViewportOrg(m_oPlaceable.BoundingBox.Left, m_oPlaceable.BoundingBox.Top);
-				m_pDC->SetViewportExt(m_oPlaceable.BoundingBox.Right - m_oPlaceable.BoundingBox.Left, m_oPlaceable.BoundingBox.Bottom - m_oPlaceable.BoundingBox.Top);
+				double dKoef = 1440.f / m_oPlaceable.Inch / (20.f * (72.f / 96.f));
+
+				m_pDC->SetViewportOrg(m_oPlaceable.BoundingBox.Left,  m_oPlaceable.BoundingBox.Top);
+				m_pDC->SetViewportExt((m_oPlaceable.BoundingBox.Right - m_oPlaceable.BoundingBox.Left), (m_oPlaceable.BoundingBox.Bottom - m_oPlaceable.BoundingBox.Top));
+				m_pDC->SetWindowScale(dKoef, dKoef);
 			}
+
 			SkipVoid();
 		}
 		else
@@ -411,11 +417,8 @@ namespace MetaFile
 
 		HANDLE_META_EXTTEXTOUT(shY, shX, shStringLength, ushFwOptions, oRectangle, pString, pDx);
 
-		if (pString)
-			delete [] pString;
-
-		if (pDx)
-			delete [] pDx;
+		RELEASEARRAYOBJECTS(pString);
+		RELEASEARRAYOBJECTS(pDx);
 	}
 
 	void CWmfParser::Read_META_FILLREGION()
@@ -720,7 +723,7 @@ namespace MetaFile
 		short shLeft, shTop, shRight, shBottom;
 		m_oStream >> shBottom >> shRight >> shTop >> shLeft;
 
-		HANDLE_META_INTERSECTCLIPRECT(shBottom, shRight, shTop, shLeft);
+		HANDLE_META_INTERSECTCLIPRECT(shLeft, shTop, shRight, shBottom);
 	}
 
 	void CWmfParser::Read_META_MOVETO()

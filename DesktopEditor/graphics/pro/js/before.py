@@ -11,6 +11,7 @@ if not base.is_dir("xml"):
   base.replaceInFile("./xml/libxml2/libxml.h", "xmlNop(void)", "xmlNop(void* context, char* buffer, int len)")
   base.replaceInFile("./xml/libxml2/xmlIO.c", "xmlNop(void)", "xmlNop(void* context, char* buffer, int len)")
   base.replaceInFile("./xml/src/xmllight_private.h", "#include \"../../common/", "#include \"../../../../../common/")
+  base.replaceInFile("./xml/src/xmllight_private.h", "#include \"../../../UnicodeConverter/", "#include \"../../../../../../UnicodeConverter/")
   base.replaceInFile("./xml/include/xmlutils.h", "#include \"../../common/", "#include \"../../../../../common/")
 
 if not base.is_dir("freetype-2.10.4"):

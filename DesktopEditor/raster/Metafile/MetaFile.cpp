@@ -84,8 +84,6 @@ namespace MetaFile
 
 	std::wstring CMetaFile::ConvertToSvg(unsigned int unWidth, unsigned int unHeight)
 	{
-//		if (NULL == wsFilePath)
-//			return;
 
 	#ifdef METAFILE_SUPPORT_WMF_EMF
 		if (c_lMetaWmf == m_lType)
@@ -101,6 +99,7 @@ namespace MetaFile
 			return ((CEmfInterpretatorSvg*)m_oEmfFile.GetEmfParser()->GetInterpretator())->GetFile();
 		}
 	#endif
+        return L"";
 	}
 
 #ifdef METAFILE_SUPPORT_WMF_EMF
@@ -613,7 +612,20 @@ namespace MetaFile
 		double dWidth  = 25.4 * nWidth / 96;
 		double dHeight = 25.4 * nHeight / 96;
 
-		BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
+		BYTE* pBgraData = (BYTE*)malloc(nWidth * nHeight * 4);
+		if (!pBgraData)
+		{
+			double dKoef = 2000.0 / (nWidth > nHeight ? nWidth : nHeight);
+
+			nWidth = (int)(dKoef * nWidth);
+			nHeight = (int)(dKoef * nHeight);
+
+			dWidth  = 25.4 * nWidth / 96;
+			dHeight = 25.4 * nHeight / 96;
+
+			pBgraData = (BYTE*)malloc(nWidth * nHeight * 4);
+		}
+
 		if (!pBgraData)
 			return;
 
@@ -638,8 +650,11 @@ namespace MetaFile
 		DrawOnRenderer(pGrRenderer, 0, 0, dWidth, dHeight);
 
 		oFrame.SaveFile(wsOutFilePath, unFileType);
-
+		oFrame.put_Data(NULL);
 		RELEASEINTERFACE(pFontManager);
 		RELEASEINTERFACE(pGrRenderer);
+
+		if (pBgraData)
+			free(pBgraData);
 	}
 }

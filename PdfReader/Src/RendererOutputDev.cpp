@@ -775,6 +775,69 @@ namespace PdfReader
     }
     void RendererOutputDev::updateBlendMode(GfxState *pGState)
     {
+        NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
+        if (!GRenderer)
+            return;
+
+        switch (pGState->getBlendMode())
+        {
+        case gfxBlendNormal:
+            GRenderer->put_BlendMode(3);
+            // agg::comp_op_src_over
+            break;
+        case gfxBlendMultiply:
+            GRenderer->put_BlendMode(14);
+            // agg::comp_op_multiply
+            break;
+        case gfxBlendScreen:
+            GRenderer->put_BlendMode(15);
+            // agg::comp_op_screen
+            break;
+        case gfxBlendOverlay:
+            GRenderer->put_BlendMode(16);
+            // agg::comp_op_overlay
+            break;
+        case gfxBlendDarken:
+            GRenderer->put_BlendMode(17);
+            // agg::comp_op_darken
+            break;
+        case gfxBlendLighten:
+            GRenderer->put_BlendMode(18);
+            // agg::comp_op_lighten
+            break;
+        case gfxBlendColorDodge:
+            GRenderer->put_BlendMode(19);
+            // agg::comp_op_color_dodge
+            break;
+        case gfxBlendColorBurn:
+            GRenderer->put_BlendMode(20);
+            // agg::comp_op_color_burn
+            break;
+        case gfxBlendHardLight:
+            GRenderer->put_BlendMode(21);
+            // agg::comp_op_hard_light
+            break;
+        case gfxBlendSoftLight:
+            GRenderer->put_BlendMode(22);
+            // agg::comp_op_soft_light
+            break;
+        case gfxBlendDifference:
+            GRenderer->put_BlendMode(23);
+            // agg::comp_op_difference
+            break;
+        case gfxBlendExclusion:
+            GRenderer->put_BlendMode(24);
+            // agg::comp_op_exclusion
+            break;
+        case gfxBlendHue:
+        case gfxBlendSaturation:
+        case gfxBlendColor:
+        case gfxBlendLuminosity:
+        default:
+            GRenderer->put_BlendMode(3);
+            // agg::comp_op_src_over
+            break;
+        }
     }
     void RendererOutputDev::updateFillOpacity(GfxState *pGState)
     {
@@ -842,7 +905,7 @@ namespace PdfReader
             std::wstring wsTempFileName = L"";
             Ref oEmbRef;
             bool bFontSubstitution = false;
-            std::wstring wsFontBaseName = NSStrings::GetString(pFont->getName());
+            std::wstring wsFontBaseName = NSStrings::GetStringFromUTF32(pFont->getName());
             if (wsFontBaseName.empty())
                 wsFontBaseName = L"Helvetica";
             const unsigned char* pData14 = NULL;
@@ -1203,7 +1266,7 @@ namespace PdfReader
             }
         #endif
             else if (!pFont->locateFont(m_pXref, false) ||
-                (wsFileName = NSStrings::GetString(pFont->locateFont(m_pXref, false)->path)).length() == 0)
+                (wsFileName = NSStrings::GetStringFromUTF32(pFont->locateFont(m_pXref, false)->path)).length() == 0)
             //else if (0)
             {
                 // TODO: Сначала тут мы должны проверить, если ищется один из 14 стандартных шрифтов,
@@ -1666,6 +1729,21 @@ namespace PdfReader
                 }
                 case fontCIDType0COT:
                 {
+                    GfxCIDFont* pFontCID = dynamic_cast<GfxCIDFont*>(pFont);
+                    if (!bFontSubstitution && pFontCID && pFontCID->getCIDToGID())
+                    {
+                        nLen = pFontCID->getCIDToGIDLen();
+                        if (!nLen)
+                            break;
+                        pCodeToGID = (int*)MemUtilsMallocArray(nLen, sizeof(int));
+                        if (!pCodeToGID)
+                        {
+                            nLen = 0;
+                            break;
+                        }
+                        memcpy(pCodeToGID, ((GfxCIDFont*)pFont)->getCIDToGID(), nLen * sizeof(int));
+                        break;
+                    }
                 #ifdef FONTS_USE_ONLY_MEMORY_STREAMS
                     pTTFontFile = FoFiTrueType::make((char*)oMemoryFontStream.m_pData, oMemoryFontStream.m_nSize, 0);
                 #else
@@ -3842,18 +3920,12 @@ namespace PdfReader
         {
             m_pRenderer->BeginCommand(c_nStrokeTextType);
 
-            //m_pRenderer->PathCommandEnd();
-            //m_pRenderer->PathCommandText( bsText, PDFCoordsToMM( 0 + dShiftX ), PDFCoordsToMM( /*-fabs(pFont->getFontBBox()[3]) * dTfs*/ + dShiftY ), PDFCoordsToMM( 0 ), PDFCoordsToMM( 0 ), PDFCoordsToMM( 0 ) );
-
-
-            // Временно
-            //m_pRenderer->PathCommandTextEx( bsText, PDFCoordsToMM( 0 + dShiftX ), PDFCoordsToMM( /*-fabs(pFont->getFontBBox()[3]) * dTfs*/ + dShiftY ), PDFCoordsToMM( 0 ), PDFCoordsToMM( 0 ), PDFCoordsToMM( 0 ), 0, bsStringGID );
-            //m_pRenderer->PathCommandTextEx( bsUnicodeText, bsGIDText, bsSrcCodeText, PDFCoordsToMM( 0 + dShiftX ), PDFCoordsToMM( /*-fabs(pFont->getFontBBox()[3]) * dTfs*/0 + dShiftY ), PDFCoordsToMM( dDx ), PDFCoordsToMM( dDy ), PDFCoordsToMM( 0 ), 0 );
-            //-----------
-
-
-            //m_pRenderer->PathCommandText( bsUnicodeText, PDFCoordsToMM( 0 + dShiftX ), PDFCoordsToMM( /*-fabs(pFont->getFontBBox()[3]) * dTfs*/ + dShiftY ), PDFCoordsToMM( dDx ), PDFCoordsToMM( dDy ), PDFCoordsToMM( 0 ) );
-            //m_pRenderer->DrawPath( c_nStroke );
+            m_pRenderer->PathCommandEnd();
+            if (unGid)
+                m_pRenderer->PathCommandTextEx(wsUnicodeText, &unGid, unGidsCount, PDFCoordsToMM(dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
+            else
+                m_pRenderer->PathCommandText(wsUnicodeText, PDFCoordsToMM(dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
+            m_pRenderer->DrawPath(c_nStroke);
 
             m_pRenderer->EndCommand(c_nStrokeTextType);
         }

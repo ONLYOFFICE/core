@@ -177,9 +177,9 @@ int main(int argc, char *argv[])
         //Если сразу нужен zip-архив
         //oDocxRenderer.Convert(pReader, sPlainParagraphDirOut+sZip);
 #endif
+        delete pReader;
     }
 
-    delete pReader;
     pFonts->Release();
 
 #ifdef LOAD_FILE_AS_BINARY

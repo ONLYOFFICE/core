@@ -101,12 +101,13 @@ namespace NSOnlineOfficeBinToPdf
 		ctBrushColor2					= 23,
 		ctBrushAlpha1					= 24,
 		ctBrushAlpha2					= 25,
-		ctBrushTexturePath				= 26,
+		ctBrushTexturePathOld			= 26, // для совместимости
 		ctBrushTextureAlpha			    = 27,
 		ctBrushTextureMode				= 28,
 		ctBrushRectable				    = 29,
 		ctBrushRectableEnabled 		    = 30,
 		ctBrushGradient                 = 31,
+		ctBrushTexturePath              = 32,
 
 		// font
 		ctFontXML						= 40,

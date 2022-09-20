@@ -124,7 +124,9 @@ namespace utils
 
 		std::reverse(a.begin(), a.end());
 		XmlUtils::replace_all( a, L"$", L"");
-        XmlUtils::GetUpper(a);
+		XmlUtils::replace_all( a, L"[", L"");
+		XmlUtils::replace_all( a, L"]", L"");
+		XmlUtils::GetUpper(a);
 		
         for (size_t i = 0; i < a.length(); i++)
 		{

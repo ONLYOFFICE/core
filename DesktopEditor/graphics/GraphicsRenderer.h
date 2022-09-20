@@ -274,6 +274,7 @@ public:
 	{
 		_SetFont();
 	}
+	virtual void put_BlendMode(const unsigned int nBlendMode) override;
 
 public:
     virtual void CloseFont()

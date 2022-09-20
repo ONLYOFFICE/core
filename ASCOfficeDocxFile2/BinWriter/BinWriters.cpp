@@ -7726,7 +7726,13 @@ void BinaryDocumentTableWriter::WriteSdtPr(const OOX::Logic::CSdtPr& oStdPr)
 		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::PictureFormPr);
 		WriteSdtPicture(oStdPr.m_oPicture.get());
 		m_oBcw.WriteItemEnd(nCurPos);
-	}	
+	}
+	if (oStdPr.m_oComplexFormPr.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::ComplexFormPr);
+		WriteSdtComplexFormPr(oStdPr.m_oComplexFormPr.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 }
 void BinaryDocumentTableWriter::WriteSdtPicture(const OOX::Logic::CSdtPicture& oSdtPicture)
 {
@@ -7759,6 +7765,16 @@ void BinaryDocumentTableWriter::WriteSdtPicture(const OOX::Logic::CSdtPicture& o
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::PictureFormPrShiftY);
 		m_oBcw.m_oStream.WriteDoubleReal(*oSdtPicture.m_oShiftY);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+}
+void BinaryDocumentTableWriter::WriteSdtComplexFormPr(const OOX::Logic::CComplexFormPr& oComplexFormPr)
+{
+	int nCurPos = 0;
+	if (oComplexFormPr.m_oType.IsInit() && !oComplexFormPr.m_oType->IsDefaultValue())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::ComplexFormPrType);
+		m_oBcw.m_oStream.WriteLONG(oComplexFormPr.m_oType->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 }
@@ -7815,6 +7831,12 @@ void BinaryDocumentTableWriter::WriteSdtComboBox(const OOX::Logic::CSdtComboBox&
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::LastValue);
 		m_oBcw.m_oStream.WriteStringW3(oSdtComboBox.m_sLastValue.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oSdtComboBox.m_oFormat.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrFormat);
+		WriteSdtTextFormPrFormat(oSdtComboBox.m_oFormat.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	for(size_t i = 0; i < oSdtComboBox.m_arrListItem.size(); ++i)
@@ -8005,6 +8027,34 @@ void BinaryDocumentTableWriter::WriteSdtTextFormPr(const OOX::Logic::CTextFormPr
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrMultiLine);
 		m_oBcw.m_oStream.WriteBOOL(oTextFormPr.m_oMultiLine.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oTextFormPr.m_oFormat.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrFormat);
+		WriteSdtTextFormPrFormat(oTextFormPr.m_oFormat.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}	
+}
+void BinaryDocumentTableWriter::WriteSdtTextFormPrFormat(const ComplexTypes::Word::CTextFormFormat& oFormat)
+{
+	int nCurPos = 0;
+	if (oFormat.m_oType.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrFormatType);
+		m_oBcw.m_oStream.WriteBYTE((BYTE)oFormat.m_oType->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oFormat.m_oVal.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrFormatVal);
+		m_oBcw.m_oStream.WriteStringW3(oFormat.m_oVal.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oFormat.m_oSymbols.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::TextFormPrFormatSymbols);
+		m_oBcw.m_oStream.WriteStringW3(oFormat.m_oSymbols.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 }

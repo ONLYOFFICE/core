@@ -192,7 +192,7 @@ void xlsx_conversion_context::end_document()
         {
             CP_XML_NODE(L"sheet")
             {
-                CP_XML_ATTR(L"name",	sheet->name()); // office 2010 ! ограничение на длину имени !!!
+                CP_XML_ATTR(L"name",	XmlUtils::EncodeXmlString(sheet->name())); // office 2010 ! ограничение на длину имени !!!
                 CP_XML_ATTR(L"sheetId", i + 1);
 				CP_XML_ATTR(L"state",	sheet->hidden() ? L"hidden" : L"visible");
                 CP_XML_ATTR(L"r:id",	id);            

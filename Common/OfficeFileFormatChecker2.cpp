@@ -983,6 +983,19 @@ bool COfficeFileFormatChecker::isOOXFlatFormatFile(unsigned char* pBuffer, int d
 		std::wstring xml_wstring = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pBuffer, dwBytes / 2);
 		xml_string = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(xml_wstring);
 	}
+	else if (pBuffer[0] == 0xfe && pBuffer[1] == 0xff)
+	{//utf-16- big
+	 //swap bytes
+		DWORD file_size_round = (dwBytes / 2) * 2;
+		for (long i = 0; i < file_size_round; i += 2)
+		{
+			char v = pBuffer[i];
+			pBuffer[i] = pBuffer[i + 1];
+			pBuffer[i + 1] = v;
+		}		
+		std::wstring xml_wstring = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pBuffer, dwBytes / 2);
+		xml_string = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(xml_wstring);
+	}
 	else
 		xml_string = std::string((char*)pBuffer, dwBytes);
 	

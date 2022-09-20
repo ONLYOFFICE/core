@@ -94,10 +94,11 @@ namespace PdfReader
         bool         ExtractAllImages(const wchar_t* wsDstPath, const wchar_t* wsPrefix = 0);
         int          GetImagesCount();
 
-		void         SetCMapFolder(const wchar_t* wsCMapFolder);
+        void         SetCMapFolder(const wchar_t* wsCMapFolder);
+        void         SetCMapMemory();
         NSFonts::IFontManager* GetFontManager();
 
-        std::wstring ToXml(const std::wstring& wsXmlPath);
+		std::wstring ToXml(const std::wstring& wsXmlPath, bool isPrintStreams = false);
         bool EditPdf(IRenderer* pPdfWriter, const std::wstring& wsPath, const std::wstring& sPassword = L"");
         bool EditPage(int nPageIndex);
         bool DeletePage(int nPageIndex);

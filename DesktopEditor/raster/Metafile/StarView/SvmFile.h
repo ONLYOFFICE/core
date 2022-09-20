@@ -197,6 +197,11 @@ class CSvmFile : virtual public IMetaFileBase
 		return false;
 	}
 
+	double GetScale()
+	{
+		return 1.f;
+	}
+
  private:
 	TSvmPoint			m_oCurrnetOffset;
 	BYTE*				m_pBufferData;

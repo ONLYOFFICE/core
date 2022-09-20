@@ -92,10 +92,10 @@ void BulletsConverter::ConvertPFRun(PPTX::Logic::TextParagraphPr &oPPr, CTextPFR
         LONG val = pPF->spaceAfter.get();
         auto pSpcAft = new PPTX::Logic::TextSpacing;
         pSpcAft->m_name = L"a:spcAft";
-        if (val > 0)
+        if (val > 0)                        // Spacing Points
             pSpcAft->spcPts = round(12.5 * pPF->spaceAfter.get());
-        else if (val < 0 && val > -13200)
-            pSpcAft->spcPts = val * -1000;
+        else if (val < 0 && val > -13200)   // Spacing Percent
+            pSpcAft->spcPct = val * -1000;
 
         oPPr.spcAft = pSpcAft;
     }

@@ -189,10 +189,10 @@ void BulletsConverter::ConvertAllBullets(PPTX::Logic::TextParagraphPr &oPPr, CTe
         pBuFont->m_name = L"a:buFont";
         pBuFont->typeface = pPF->bulletFontProperties->Name;
 
-        if ( pPF->bulletFontProperties->PitchFamily > 0)
+        if ( CFontProperty::IsValidPitchFamily(pPF->bulletFontProperties->PitchFamily))
             pBuFont->pitchFamily = std::to_wstring(pPF->bulletFontProperties->PitchFamily);
-        if ( IsValidCharset(pPF->bulletFontProperties->Charset))
-            pBuFont->charset = std::to_wstring((int)pPF->bulletFontProperties->Charset);
+        if ( CFontProperty::IsValidCharset(pPF->bulletFontProperties->Charset))
+            pBuFont->charset = std::to_wstring(pPF->bulletFontProperties->Charset);
 
         oPPr.buTypeface.m_Typeface.reset(pBuFont);
     }
@@ -235,9 +235,4 @@ void BulletsConverter::FillBuClr(PPTX::Logic::BulletColor &oBuClr, CColor &oColo
     auto pBuClr = new PPTX::Logic::BuClr;
     pBuClr->Color.SetRGBColor(oColor.GetR(), oColor.GetG(), oColor.GetB());
     oBuClr.m_Color.reset(pBuClr);
-}
-
-bool BulletsConverter::IsValidCharset(BYTE charset) const
-{
-    return BLCharset.find(charset) == BLCharset.end();
 }

@@ -804,9 +804,18 @@ namespace MetaFile
 
 		unsigned int unRecordSizeDword = m_unRecordSize >> 1;
 		unsigned int unValue = (META_DIBBITBLT >> 8) + 3;
-		if (unRecordSizeDword == unValue)
+		if (unRecordSizeDword == unValue) // похоже на META_PATBLT
 		{
-			m_oStream.Skip(2); // Reserved
+			short shSkip;
+
+			m_oStream >> shSkip;
+
+			MoveTo(oWmfBitBlt.YSrc + shSkip, oWmfBitBlt.XDest);
+			LineTo(oWmfBitBlt.YDest + shSkip, oWmfBitBlt.XDest);
+			LineTo(oWmfBitBlt.YDest + shSkip, oWmfBitBlt.XDest + oWmfBitBlt.Width);
+			LineTo(oWmfBitBlt.YSrc + shSkip, oWmfBitBlt.XDest + oWmfBitBlt.Width);
+			ClosePath();
+			DrawPath(false, true);
 		}
 		else
 		{

@@ -8,10 +8,10 @@ extern "C"
 {
 #endif // __cplusplus
 
-CHyphenApplication* createHyphenApplication();
-void destroyHyphenApplication(CHyphenApplication *app);
+CHyphenApplication* hyphenCreateApplication();
+void hyphenDestroyApplication(CHyphenApplication *app);
 
-void loadDictionary(CHyphenApplication *app, const char *src, const char* lang);
+void hyphenLoadDictionary(CHyphenApplication *app, const char *src, const char* lang);
 char* hyphenWord(CHyphenApplication *app, const char *word, const char* lang);
 
 #ifdef __cplusplus

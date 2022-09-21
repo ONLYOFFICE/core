@@ -19,9 +19,9 @@
 	"exported_functions": [
 		"_malloc",
 		"_free",
-        "_createHyphenApplication",
-        "_destroyHyphenApplication",
-		"_loadDictionary",
+        "_hyphenCreateApplication",
+        "_hyphenDestroyApplication",
+		"_hyphenLoadDictionary",
 		"_hyphenWord"
 	],
 	"include_path": ["../src"],

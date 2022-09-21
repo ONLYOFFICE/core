@@ -1,15 +1,15 @@
 #include "ExportedFunctions.h"
 
-CHyphenApplication* createHyphenApplication()
+CHyphenApplication* hyphenCreateApplication()
 {
 	return new CHyphenApplication();
 }
-void destroyHyphenApplication(CHyphenApplication *app)
+void hyphenDestroyApplication(CHyphenApplication *app)
 {
 	delete app;
 }
 
-void loadDictionary(CHyphenApplication *app, const char *src, const char* lang)
+void hyphenLoadDictionary(CHyphenApplication *app, const char *src, const char* lang)
 {
 	app->loadDictionary(src, lang);
 }

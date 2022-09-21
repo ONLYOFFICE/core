@@ -40,16 +40,16 @@ function hyphenSetMemory(module, data, ptr) {
  * @return {Number}
  * Returns pointer
  */
-function hyphenCreateHyphenApplication(module){
-    return module._createHyphenApplication();
+function hyphenCreateApplication(module){
+    return module._hyphenCreateApplication();
 }
 /**
  * 
  * @param {Module} module 
  * @param {Number} app 
  */
-function hyphenDestroyHyphenApplication(module, app){
-    module._destroyHyphenApplication(app);
+function hyphenDestroyApplication(module, app){
+    module._hyphenDestroyApplication(app);
 }
 /**
  * 
@@ -69,7 +69,7 @@ function hyphenLoadDictionary(module, app, src, lang){
     module.stringToUTF8(src, _src, src_size);
     module.stringToUTF8(lang, _lang, lang_size);
 
-    module._loadDictionary(app, _src, _lang);
+    module._hyphenLoadDictionary(app, _src, _lang);
 
     hyphenFreeMemory(module, _src);
     hyphenFreeMemory(module, _lang);

@@ -14,7 +14,7 @@
         reader.readAsText(file);
     
         if(application == undefined) {
-            application = hyphenCreateHyphenApplication(Module);
+            application = hyphenCreateApplication(Module);
         }
     
         reader.onload = function() {
@@ -28,7 +28,7 @@
         var text = textarea.value.split("\n").join(" ").split(" ");
     
         if(application == undefined) {
-            application = hyphenCreateHyphenApplication(Module);
+            application = hyphenCreateApplication(Module);
         }
     
         for(var i = 0; i < text.length; i++) {

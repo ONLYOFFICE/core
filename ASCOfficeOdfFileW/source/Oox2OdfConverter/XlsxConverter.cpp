@@ -164,6 +164,8 @@ bool XlsxConverter::convertDocument()
 	if (xlsx_flat_document) delete xlsx_flat_document;	xlsx_flat_document = NULL;
 
 	ods_context->end_document();
+	
+	if (ods_context) delete ods_context; ods_context = NULL;
 
 	return true;
 }

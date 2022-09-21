@@ -126,10 +126,10 @@ namespace odf_writer
 		private:
 			bool bXmlRootNodeWrite = true;
 		public:
-			void set_content(content_content_ptr & c, bool bRootNode = true) { content = c; bXmlRootNodeWrite = bRootNode; }
+			void set_content(content_content_ptr & c, bool bRootNode = true) { content_ = c; bXmlRootNodeWrite = bRootNode; }
 			virtual void write(const std::wstring & RootPath, bool add_padding = false);
 			
-			content_content_ptr content;
+			content_content_ptr content_;
 		};
 
 		class styles_file : public element

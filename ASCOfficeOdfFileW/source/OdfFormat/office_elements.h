@@ -32,16 +32,11 @@
 #pragma once
 
 #include <vector>
-#include <boost/algorithm/string/replace.hpp>
-
+#include <CPOptional.h>
 #include <CPSharedPtr.h>
-#include <CPWeakPtr.h>
-#include <xml/xmlelement.h>
-#include <xml/attributes.h>
-
+#include <logging.h>
+#include <boost/noncopyable.hpp>
 #include <odf/odf_elements_type.h>
-
-#include "visitor.h"
 
 namespace cpdoccore {
 namespace odf_writer {
@@ -51,16 +46,17 @@ class odf_conversion_context;
 class office_element;
 
 typedef shared_ptr<office_element>::Type office_element_ptr;
-typedef weak_ptr<office_element>::Type office_element_weak_ptr;
 typedef std::vector<office_element_ptr> office_element_ptr_array;
 
-class office_element : public xml::element<wchar_t>, public base_visitable, boost::noncopyable 
+class office_element : boost::noncopyable 
 {    
 public:
     office_element() : context_(NULL) {}
-
-    virtual ElementType get_type() const = 0;
     virtual ~office_element() = 0;
+
+	virtual const wchar_t * get_ns() const = 0;
+	virtual const wchar_t * get_name() const = 0;
+	virtual ElementType get_type() const = 0;
 
 	virtual void serialize(std::wostream & _Wostream) = 0 ;
 
@@ -77,62 +73,39 @@ public:
 ////////////////////////
     virtual std::wostream & serialize(std::wostream & _Wostream) const
     {
-        _CP_LOG << L"[warning] use base text_to_stream\n";
+        _CP_LOG << L"[warning] use base serialize\n";
         return _Wostream;
     }
-
-    virtual std::wostream & xml_to_stream(std::wostream & _Wostream) const
-    {
-        _CP_LOG << L"[warning] use base xml_to_stream\n";
-        return _Wostream;
-    }
+	virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const
+	{
+		_CP_LOG << L"[warning] use base text_to_stream\n";
+		return _Wostream;
+	}
 private:
     bool is_root_;	
 	odf_conversion_context * context_;
 };
 
-
-
-#define CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_ public:\
-    virtual const wchar_t * get_ns() const { return ns; }\
-    virtual const wchar_t * get_name() const { return name; }\
-    virtual xml::NodeType get_xml_type() const { return xml_type; }\
-    virtual ElementType get_type() const { return type; }
-
-
-
 inline office_element::~office_element()
 {
 }
 
-/// \class  office_element_impl
 template <class Element>
 class office_element_impl : public virtual office_element
 {
-// xml::element impl
 public:
     virtual const wchar_t * get_ns() const
     { 
         return Element::ns;
-    }
-    
+    }    
     virtual const wchar_t * get_name() const
     { 
         return Element::name;
-    }
-
-    virtual xml::NodeType get_xml_type() const
-    { 
-        return Element::xml_type;
     }
     virtual void add_child_element( const office_element_ptr & child)
     {
         _CP_LOG << L"Non add child in " << Element::ns << L":" << Element::name << std::endl;
     }
-private:
-
-// office_element impl
-public:
     virtual ElementType get_type() const
     { 
         return Element::type;

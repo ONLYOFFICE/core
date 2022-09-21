@@ -49,11 +49,165 @@ namespace odf_writer
 {
 	namespace package 
 	{
+		std::string GetUtf8StringFromUnicode_4bytes(const wchar_t* pUnicodes, size_t lCount)
+		{
+			std::string res;
+			res.resize(6 * lCount + 1);
+
+			BYTE* pData = (BYTE*)res.c_str();
+			BYTE* pCodesCur = pData;
+
+			const wchar_t* pEnd = pUnicodes + lCount;
+			const wchar_t* pCur = pUnicodes;
+
+			while (pCur < pEnd)
+			{
+				unsigned int code = (unsigned int)*pCur++;
+
+				if (code < 0x80)
+				{
+					*pCodesCur++ = (BYTE)code;
+				}
+				else if (code < 0x0800)
+				{
+					*pCodesCur++ = 0xC0 | (code >> 6);
+					*pCodesCur++ = 0x80 | (code & 0x3F);
+				}
+				else if (code < 0x10000)
+				{
+					*pCodesCur++ = 0xE0 | (code >> 12);
+					*pCodesCur++ = 0x80 | (code >> 6 & 0x3F);
+					*pCodesCur++ = 0x80 | (code & 0x3F);
+				}
+				else if (code < 0x1FFFFF)
+				{
+					*pCodesCur++ = 0xF0 | (code >> 18);
+					*pCodesCur++ = 0x80 | (code >> 12 & 0x3F);
+					*pCodesCur++ = 0x80 | (code >> 6 & 0x3F);
+					*pCodesCur++ = 0x80 | (code & 0x3F);
+				}
+				else if (code < 0x3FFFFFF)
+				{
+					*pCodesCur++ = 0xF8 | (code >> 24);
+					*pCodesCur++ = 0x80 | (code >> 18 & 0x3F);
+					*pCodesCur++ = 0x80 | (code >> 12 & 0x3F);
+					*pCodesCur++ = 0x80 | (code >> 6 & 0x3F);
+					*pCodesCur++ = 0x80 | (code & 0x3F);
+				}
+				else if (code < 0x7FFFFFFF)
+				{
+					*pCodesCur++ = 0xFC | (code >> 30);
+					*pCodesCur++ = 0x80 | (code >> 24 & 0x3F);
+					*pCodesCur++ = 0x80 | (code >> 18 & 0x3F);
+					*pCodesCur++ = 0x80 | (code >> 12 & 0x3F);
+					*pCodesCur++ = 0x80 | (code >> 6 & 0x3F);
+					*pCodesCur++ = 0x80 | (code & 0x3F);
+				}
+			}
+			*pCodesCur++ = 0;
+			res.resize(pCodesCur - pData);
+
+			return res;
+		}
+
+		std::string GetUtf8StringFromUnicode_2bytes(const wchar_t* pUnicodes, size_t lCount)
+		{
+			std::string res;
+			res.resize(6 * lCount + 1);
+
+			BYTE* pData = (BYTE*)res.c_str();
+			BYTE* pCodesCur = pData;
+
+			const wchar_t* pEnd = pUnicodes + lCount;
+			const wchar_t* pCur = pUnicodes;
+
+			while (pCur < pEnd)
+			{
+				unsigned int code = (unsigned int)*pCur++;
+				if (code >= 0xD800 && code <= 0xDFFF && pCur < pEnd)
+				{
+					code = 0x10000 + (((code & 0x3FF) << 10) | (0x03FF & *pCur++));
+				}
+
+				if (code < 0x80)
+				{
+					*pCodesCur++ = (BYTE)code;
+				}
+				else if (code < 0x0800)
+				{
+					*pCodesCur++ = 0xC0 | (code >> 6);
+					*pCodesCur++ = 0x80 | (code & 0x3F);
+				}
+				else if (code < 0x10000)
+				{
+					*pCodesCur++ = 0xE0 | (code >> 12);
+					*pCodesCur++ = 0x80 | ((code >> 6) & 0x3F);
+					*pCodesCur++ = 0x80 | (code & 0x3F);
+				}
+				else if (code < 0x1FFFFF)
+				{
+					*pCodesCur++ = 0xF0 | (code >> 18);
+					*pCodesCur++ = 0x80 | ((code >> 12) & 0x3F);
+					*pCodesCur++ = 0x80 | ((code >> 6) & 0x3F);
+					*pCodesCur++ = 0x80 | (code & 0x3F);
+				}
+				else if (code < 0x3FFFFFF)
+				{
+					*pCodesCur++ = 0xF8 | (code >> 24);
+					*pCodesCur++ = 0x80 | ((code >> 18) & 0x3F);
+					*pCodesCur++ = 0x80 | ((code >> 12) & 0x3F);
+					*pCodesCur++ = 0x80 | ((code >> 6) & 0x3F);
+					*pCodesCur++ = 0x80 | (code & 0x3F);
+				}
+				else if (code < 0x7FFFFFFF)
+				{
+					*pCodesCur++ = 0xFC | (code >> 30);
+					*pCodesCur++ = 0x80 | ((code >> 24) & 0x3F);
+					*pCodesCur++ = 0x80 | ((code >> 18) & 0x3F);
+					*pCodesCur++ = 0x80 | ((code >> 12) & 0x3F);
+					*pCodesCur++ = 0x80 | ((code >> 6) & 0x3F);
+					*pCodesCur++ = 0x80 | (code & 0x3F);
+				}
+			}
+			*pCodesCur++ = 0;
+			res.resize(pCodesCur - pData);
+			
+			return res;
+		}
+
+		std::string GetUtf8StringFromUnicode(const wchar_t* pUnicodes, size_t lCount)
+		{
+			if (sizeof(WCHAR) == 2)
+			{
+				return GetUtf8StringFromUnicode_2bytes(pUnicodes, lCount);
+			}
+			else
+			{
+				return GetUtf8StringFromUnicode_4bytes(pUnicodes, lCount);
+			}
+		}
 		simple_element::simple_element(const std::wstring & FileName, const std::wstring & Content, bool utf8) : file_name_(FileName), utf8_(utf8)
 		{
 			if (utf8_)
 			{
-				content_utf8_ = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(Content);
+				if (Content.length() > 10 * 1024 * 1024)
+				{
+					size_t pos = 0;
+					while (pos < Content.length())
+					{
+						size_t sz = 2 * 1024 * 1024;
+						if (sz + pos > Content.length())
+							sz = Content.length() - pos;
+						if (sz < 1)
+							break;
+
+						content_utf8_ += GetUtf8StringFromUnicode(Content.c_str() + pos, sz);
+
+						pos += sz;
+					}
+				}
+				else 
+					content_utf8_ = GetUtf8StringFromUnicode(Content.c_str(), Content.length());
 			}else
 				content_utf8_ = std::string( Content.begin(), Content.end());
 		}
@@ -361,9 +515,11 @@ namespace odf_writer
 		{
 			if (false == bXmlRootNodeWrite)
 			{
-				if (content)
+				if (content_)
 				{
-					simple_element elm(L"content.xml", content->content_str());
+					simple_element elm(L"content.xml", content_->content_str());
+					content_.reset();
+
 					elm.write(RootPath, add_padding);
 				}
 			}
@@ -457,19 +613,21 @@ namespace odf_writer
 						CP_XML_ATTR(L"office:version", L"1.2");
 
 
-						if (content)
+						if (content_)
 						{
-							CP_XML_STREAM() << content->styles_str();
+							CP_XML_STREAM() << content_->styles_str();
 						}
 						CP_XML_NODE(L"office:body")
 						{
-							if (content)
+							if (content_)
 							{
-								CP_XML_STREAM() << content->content_str();
+								CP_XML_STREAM() << content_->content_str();
 							}
 						}
 					}
 				}
+				content_.reset();
+
 				simple_element elm(L"content.xml", resStream.str());
 				elm.write(RootPath, add_padding);
 			}
@@ -530,7 +688,8 @@ namespace odf_writer
 					
 				}
 			}
-		    
+			content_.reset();
+
 			simple_element elm(L"styles.xml", resStream.str());
 			elm.write(RootPath, add_padding);
 		}
@@ -554,7 +713,8 @@ namespace odf_writer
 					
 				}
 			}
-		    
+			content_.reset();
+
 			simple_element elm(L"settings.xml", resStream.str());
 			elm.write(RootPath, add_padding);
 		}

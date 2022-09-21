@@ -41,9 +41,9 @@ class abstract_xml : public office_element_impl<abstract_xml>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = type_AbstractXml;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 public:
     abstract_xml() {}

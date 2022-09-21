@@ -49,10 +49,10 @@ class table_database_ranges : public office_element_impl<table_database_ranges>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableDatabaseRanges;
 
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -71,10 +71,10 @@ class table_database_range: public office_element_impl<table_database_range>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableDatabaseRange;
 
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}

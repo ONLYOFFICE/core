@@ -46,9 +46,9 @@ class office_scripts : public office_element_impl<office_scripts>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeOfficeScripts;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -68,9 +68,9 @@ class office_script : public office_element_impl<office_script>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeOfficeScript;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);

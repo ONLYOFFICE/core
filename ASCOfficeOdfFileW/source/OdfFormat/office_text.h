@@ -58,9 +58,9 @@ class office_text : public office_element_impl<office_text>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeOfficeText;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -94,9 +94,9 @@ class office_change_info : public office_element_impl<office_change_info>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeOfficeChangeInfo;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);

@@ -10,7 +10,6 @@ StreamView::StreamView(const SVector<Sector> &sectorChain, int sectorSize, Strea
     //    if (sectorChain == null)
     //        throw CFException("Sector Chain cannot be null");
 
-    auto pos = stream->tell();
     if (sectorSize <= 0)
         throw CFException("Sector size must be greater than zero");
 }

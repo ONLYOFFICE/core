@@ -26,15 +26,15 @@ public:
     USHORT sectorShift = 9;
     USHORT miniSectorShift = 6;
     BYTE unUsed[6];
-    INT directorySectorsNumber;
-    INT fatSectorsNumber;
+    INT directorySectorsNumber = 0;
+    INT fatSectorsNumber = 0;
     INT firstDirectorySectorID = Sector::ENDOFCHAIN;
     uint unUsed2;
     uint minSizeStandardStream = 4096;
     INT firstMiniFATSectorID = 0xFFFFFFFE;
-    uint miniFATSectorsNumber;
+    uint miniFATSectorsNumber = 0;
     INT firstDIFATSectorID = Sector::ENDOFCHAIN;
-    uint difatSectorsNumber;
+    uint difatSectorsNumber = 0;
     INT difat[109];
 };
 

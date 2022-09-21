@@ -623,7 +623,7 @@ void CompoundFile::CommitDirectory()
         delta++;
     }
 
-    for (auto s : *directorySectors)
+    for (auto& s : *directorySectors)
     {
         s->type = SectorType::Directory;
     }

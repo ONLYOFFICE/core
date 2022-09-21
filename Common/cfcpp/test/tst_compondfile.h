@@ -163,8 +163,48 @@ TEST_F(CompoundFileTest, test_compoundfile_writeStream)
     stream1->Write(data,0);
 
     EXPECT_TRUE(cf.RootStorage()->GetStream(L"str1"));
+    EXPECT_EQ(stream1->size(), data.size());
     stream1->Read(read, 0, data.size());
-    EXPECT_EQ(data.size(), read.size());
+    EXPECT_EQ(data, read);
 
     printDirs();
 }
+
+TEST(test_compoundfile, foreign_languages)
+{
+    vector<wstring> names =
+    {
+        L"file",        // Englang
+        L"fil",         // Danish
+        L"文件",         // Chinese
+        L"Datei",       // German
+        L"Datei",       // German
+        L"ファイル",     // Japanese
+        L"soubor",      // Czech
+        L"dosya",       // Turkish
+        L"Файл",        // Russian
+        L"dossier",     // Franch
+        L"expediente"   // Spanish
+    };
+
+    std::vector<BYTE> data = {0x28, 0xFF, 0x28, 0x1D, 0x4C, 0xFA, 0x00, 0x79, 0x40, 0x01};
+    for (const auto& name : names)
+    {
+        try {
+            wstring path = L"../../../data/" + name + L".cfb";
+            NSFile::CFileBinary::Remove(path);
+
+            CompoundFile cf;
+//            auto stream1 = cf.RootStorage()->AddStream(L"stream1");
+//            stream1->Write(data, 0);
+
+            cf.Save(path);
+            cf.Close();
+        } catch (...) {
+            FAIL();
+        }
+
+    }
+    SUCCEED();
+}
+

@@ -1004,17 +1004,12 @@ namespace MetaFile
 				else
 				{
 					m_pRenderer->put_BrushAlpha2(255);
-
-					TColor oBgColor(m_pFile->GetTextBgColor());
-					oBgColor.SwapRGBtoBGR();
-					m_pRenderer->put_BrushColor2(oBgColor.ToInt());
+					m_pRenderer->put_BrushColor2(m_pFile->GetTextBgColor());
 				}
 
-				TColor oFgColor(pBrush->GetColor());
-				oFgColor.SwapRGBtoBGR();
 				m_pRenderer->put_BrushTexturePath(wsBrushType);
 				m_pRenderer->put_BrushAlpha1(255);
-				m_pRenderer->put_BrushColor1(oFgColor.ToInt());
+				m_pRenderer->put_BrushColor1(pBrush->GetColor());
 			}
 			else if (	BS_LINEARGRADIENT	== unBrushStyle ||
 						BS_RECTGRADIENT		== unBrushStyle ||

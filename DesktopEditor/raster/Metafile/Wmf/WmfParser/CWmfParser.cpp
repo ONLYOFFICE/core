@@ -507,9 +507,7 @@ namespace MetaFile
 
 		std::vector<TWmfPointS> arPoints(shNumberOfPoints);
 
-		m_oStream >> arPoints[0];
-
-		for (short shIndex = 1; shIndex < shNumberOfPoints; shIndex++)
+		for (short shIndex = 0; shIndex < shNumberOfPoints; shIndex++)
 			m_oStream >> arPoints[shIndex];
 
 		HANDLE_META_POLYGON(arPoints);

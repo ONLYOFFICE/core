@@ -11,9 +11,7 @@ namespace MetaFile
 	}
 
 	CWmfParserBase::~CWmfParserBase()
-	{
-		ClearFile();
-	}
+	{}
 
 	void CWmfParserBase::PlayMetaFile()
 	{
@@ -222,12 +220,9 @@ namespace MetaFile
 
 	void CWmfParserBase::SkipVoid()
 	{
-		char chValue;
-
 		do
 		{
-			chValue = m_oStream.ReadChar();
-		} while (chValue == 0);
+		} while (m_oStream.ReadChar() == 0);
 
 		m_oStream.SeekBack(1);
 	}
@@ -1142,6 +1137,12 @@ namespace MetaFile
 		CWmfBrush* pBrush = new CWmfBrush(oBrush);
 		if (!pBrush)
 			return SetError();
+
+		if (BS_PATTERN  == pBrush->BrushStyle || BS_DIBPATTERNPT == pBrush->BrushStyle)
+		{
+			pBrush->BrushStyle = BS_SOLID;
+			pBrush->Color.Init();
+		}
 
 		m_oPlayer.RegisterObject((CWmfObjectBase*)pBrush);
 	}

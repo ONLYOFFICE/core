@@ -351,6 +351,8 @@ int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 	bool bLine = false;
 	if ((line) && (line->fAuto == false)) bLine = true;
 
+	bool bMarkerEx = false;
+
 	CP_XML_WRITER(_stream)    
 	{
 		if (series_data_format == NULL) continue;
@@ -385,6 +387,9 @@ int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 						}
 					}
 				}
+				else 
+					bMarkerEx = true;
+				
 				if (m_LineFormat/* && bLine*/)
 				{
 					m_LineFormat->serialize(CP_XML_STREAM());
@@ -429,7 +434,7 @@ int SS::serialize(std::wostream & _stream, int series_type, int indPt)
 								series_type != CHART_TYPE_Bar		&&	
 								series_type != CHART_TYPE_BopPop )
 		{
-			marker_format->serialize(_stream, ind);
+			marker_format->serialize(_stream, ind, bMarkerEx ? m_GELFRAME : BaseObjectPtr());
 		}
 		else if (/*series_type == CHART_TYPE_Line ||*/ series_type == CHART_TYPE_Scatter)
 		{

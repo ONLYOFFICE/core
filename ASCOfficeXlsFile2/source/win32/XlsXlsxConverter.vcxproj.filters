@@ -111,9 +111,6 @@
     <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\PresetShapesHeader.h">
       <Filter>shape converter</Filter>
     </ClInclude>
-    <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\ShapeUtils.h">
-      <Filter>shape converter</Filter>
-    </ClInclude>
     <ClInclude Include="..\XlsXlsxConverter\ConvertShapes\oldAutoShapes\accentbordercallout1type.h">
       <Filter>shape converter\autoshapes</Filter>
     </ClInclude>

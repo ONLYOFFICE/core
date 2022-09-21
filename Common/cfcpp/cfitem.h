@@ -15,7 +15,7 @@ struct DataTime
     char data[8] = {0,0,0,0,0,0,0,0};
 };
 
-class CFItem : protected std::enable_shared_from_this<CFItem>
+class CFItem : public std::enable_shared_from_this<CFItem>
 {
 public:
     int CompareTo(const CFItem& other) const;

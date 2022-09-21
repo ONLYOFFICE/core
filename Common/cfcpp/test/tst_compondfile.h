@@ -37,6 +37,7 @@ struct CompoundFileTest : testing::Test
                   << left << dir->GetEntryName()
                   << endl;
         }
+        wcout << endl;
     }
 };
 
@@ -143,13 +144,27 @@ TEST_F(CompoundFileTest, test_compoundfile_deleteStreamWithSave)
 
 TEST_F(CompoundFileTest, test_compoundfile_deleteStorage)
 {
-    std::vector<BYTE> data = {0x28, 0xFF, 0x28, 0x1D, 0x4C, 0xFA, 0x00, 0x79, 0x40, 0x01};
     auto storage1 = cf.RootStorage()->AddStorage(L"sto1");
     auto storage2 = storage1->AddStorage(L"sto2");
-//    storage1->AddStream(L"str1")->Write(data,0);
-//    storage2->AddStream(L"str2")->Write(data,0);
+    auto stream1 = storage2->AddStream(L"str1");
 
     printDirs();
+    EXPECT_TRUE(cf.RootStorage()->GetStorage(L"sto1"));
     cf.RootStorage()->Delete(L"sto1");
+    EXPECT_THROW(cf.RootStorage()->GetStorage(L"sto1"), CFItemNotFound);
+    printDirs();
+}
+
+TEST_F(CompoundFileTest, test_compoundfile_writeStream)
+{
+    std::vector<BYTE> data = {0x28, 0xFF, 0x28, 0x1D, 0x4C, 0xFA, 0x00, 0x79, 0x40, 0x01};
+    std::vector<BYTE> read(data.size());
+    auto stream1 = cf.RootStorage()->AddStream(L"str1");
+    stream1->Write(data,0);
+
+    EXPECT_TRUE(cf.RootStorage()->GetStream(L"str1"));
+    stream1->Read(read, 0, data.size());
+    EXPECT_EQ(data.size(), read.size());
+
     printDirs();
 }

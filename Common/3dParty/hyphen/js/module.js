@@ -10,7 +10,7 @@
  * @return {Number}
  * Allocate memory for wasm, returns pointer
  */
-function allocateMemory(module, length) {
+function hyphenAllocateMemory(module, length) {
     const ptr = module._malloc(length);
     return ptr;
 }
@@ -21,7 +21,7 @@ function allocateMemory(module, length) {
  * @return {void}
  * Free memory
  */
-function freeMemory(module, ptr) {
+function hyphenFreeMemory(module, ptr) {
     module._free(ptr);
 }
 
@@ -31,7 +31,7 @@ function freeMemory(module, ptr) {
  * @param {Number} ptr
  * Fill memory
  */
-function setMemory(module, data, ptr) {
+function hyphenSetMemory(module, data, ptr) {
     module.HEAP8.set(data, ptr);
 }
 /**
@@ -40,7 +40,7 @@ function setMemory(module, data, ptr) {
  * @return {Number}
  * Returns pointer
  */
-function createHyphenApplication(module){
+function hyphenCreateHyphenApplication(module){
     return module._createHyphenApplication();
 }
 /**
@@ -48,7 +48,7 @@ function createHyphenApplication(module){
  * @param {Module} module 
  * @param {Number} app 
  */
-function destroyHyphenApplication(module, app){
+function hyphenDestroyHyphenApplication(module, app){
     module._destroyHyphenApplication(app);
 }
 /**
@@ -58,22 +58,21 @@ function destroyHyphenApplication(module, app){
  * @param {String} src 
  * @param {String} lang 
  */
-function loadDictionary(module, app, src, lang){
+function hyphenLoadDictionary(module, app, src, lang){
 
     var src_size = 4 * src.length + 1;
     var lang_size = 4 * lang.length + 1;
     
-
-    var _src = allocateMemory(module, src_size);
-    var _lang = allocateMemory(module, lang_size);
+    var _src = hyphenAllocateMemory(module, src_size);
+    var _lang = hyphenAllocateMemory(module, lang_size);
 
     module.stringToUTF8(src, _src, src_size);
     module.stringToUTF8(lang, _lang, lang_size);
 
     module._loadDictionary(app, _src, _lang);
 
-    freeMemory(module, _src);
-    freeMemory(module, _lang);
+    hyphenFreeMemory(module, _src);
+    hyphenFreeMemory(module, _lang);
 }
 
 /**
@@ -90,72 +89,34 @@ function hyphenWord(module, app, word, lang){
     var word_size = 4 * word.length + 1;
     var lang_size = 4 * lang.length + 1;
 
-    var _word = allocateMemory(module, word_size);
-    var _lang = allocateMemory(module, lang_size);
+    var _word = hyphenAllocateMemory(module, word_size);
+    var _lang = hyphenAllocateMemory(module, lang_size);
 
     module.stringToUTF8(word, _word, word_size);
     module.stringToUTF8(lang, _lang, lang_size);
 
-    var hyphens = module._hyphenWord(app, _word, _lang);
+    const ptr = module._hyphenWord(app, _word, _lang);
 
-    freeMemory(module, _word);
-    freeMemory(module, _lang);
+    hyphenFreeMemory(module, _word);
+    hyphenFreeMemory(module, _lang);
 
-    return hyphens;
-}
+    var hyphens = [];
+    var vector = new Uint8ClampedArray(module.HEAP8.buffer, ptr, 4 * word.length + 6);
 
-(function (window, undefined){
-    var textarea = document.getElementById("textarea");
-    var form = document.querySelector("form");
+    // calc actual size of vector
+    var size = 0;
+    for(var i = 0; i < vector.length && vector[i] != 0; i++) {
+        size++;
+    }
 
-    var control = document.getElementById("dictionary-file");
+    // size of one symbol
+    var symbol = size / word.length;
 
-    var application = undefined;
-    var lang = undefined;
-
-    control.addEventListener("change", function(event) {
-        var file = control.files[0];
-        lang = file.name;
-        var reader = new FileReader();
-        reader.readAsText(file);
-    
-        if(application == undefined) {
-            application = createHyphenApplication(Module);
-        }
-    
-        reader.onload = function() {
-            loadDictionary(Module, application, reader.result, lang);
-        };
-     
-    }, false);
-    
-    form.onsubmit = function(event) {
-        event.preventDefault();
-        var text = textarea.value.split("\n").join(" ").split(" ");
-    
-        if(application == undefined) {
-            application = createHyphenApplication(Module);
-        }
-    
-        for(var i = 0; i < text.length; i++) {
-            const ptr = hyphenWord(Module, application, text[i].toLowerCase(), lang);
-            var vector = new Uint8ClampedArray(Module.HEAP8.buffer, ptr, 4 * text[i].length + 6);
-    
-            // calc actual size of vector
-            var size = 0;
-            for(var j = 0; j < vector.length && vector[j] != 0; j++){
-                size++;
-            }
-    
-            // size of one symbol
-            var symbol = size / text[i].length;
-    
-            for(var j = 0; j < vector.length; j++) {
-                if(vector[j] % 2 == 1) {
-                    console.log((j + 1) / symbol);
-                }
-            }
+    for(var i = 0; i < vector.length; i++) {
+        if(vector[i] % 2 == 1) {
+            hyphens.push((i + 1) / symbol);
         }
     }
-})(self, undefined);
+    return hyphens;
+}
 

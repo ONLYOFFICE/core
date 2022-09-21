@@ -1,4 +1,4 @@
-#include "exported_functions.h"
+#include "ExportedFunctions.h"
 
 CHyphenApplication* createHyphenApplication()
 {

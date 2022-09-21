@@ -34,11 +34,9 @@ char* CHyphenApplication::hyphenWord(const char *word, const char *lang)
 	char **rep = NULL;
 	int *pos = NULL;
 	int *cut = NULL;
-	char *hword = new char[n * 2];
 
-	hnj_hyphen_hyphenate2(dict, word, n, m_pHyphenVector, hword, &rep, &pos, &cut);
+	hnj_hyphen_hyphenate2(dict, word, n, m_pHyphenVector, NULL, &rep, &pos, &cut);
 
-	delete[] hword;
 	return m_pHyphenVector;
 }
 void CHyphenApplication::loadDictionary(const char *src, const char* lang)
@@ -50,7 +48,11 @@ void CHyphenApplication::loadDictionary(const char *src, const char* lang)
 		return;
 
 	if(m_mapDicts.size() > m_nMaxDictsCount)
-		m_mapDicts.erase(m_mapDicts.begin());
+	{
+		auto it = m_mapDicts.begin();
+		hnj_hyphen_free(it->second);
+		m_mapDicts.erase(it);
+	}
 
 	std::stringstream ss(src);
 	dict = hnj_hyphen_load_stream(ss);

@@ -30,7 +30,7 @@
 	{
 		"name": "s",
 		"folder": "../src",
-		"files": ["exported_functions.cpp", "HyphenApplication.cpp", "../../hyphen/hnjalloc.c"]
+		"files": ["ExportedFunctions.cpp", "HyphenApplication.cpp", "../../hyphen/hnjalloc.c"]
 	}
 	]
 }

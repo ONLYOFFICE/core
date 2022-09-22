@@ -46,7 +46,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(LegacyDrawingHF)
         public:
             LegacyDrawingHF();
-            virtual ~LegacyDrawingHF();
+            ~LegacyDrawingHF();
 
             XLS::BaseObjectPtr clone();
 

@@ -133,7 +133,7 @@ namespace MetaFile
 		}
 
 		// IFont
-		int GetHeight()
+		double GetHeight()
 		{
 			return LogFontEx.LogFont.Height;
 		}
@@ -207,9 +207,26 @@ namespace MetaFile
 		{
 			return PenStyle;
 		}
-		unsigned int GetWidth()
+		double GetWidth()
 		{
-			return Width;
+			return (double)Width;
+		}
+		unsigned int GetAlpha()
+		{
+			return 255;
+		}
+		double GetMiterLimit()
+		{
+			return 0;
+		}
+		double GetDashOffset()
+		{
+			return 0;
+		}
+		void GetDashData(double*& arDatas, unsigned int& unSize)
+		{
+			arDatas = NULL;
+			unSize  = 0;
 		}
 
 	public:

@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(FRTWORKBOOK)
     public:
         FRTWORKBOOK();
-        virtual ~FRTWORKBOOK();
+        ~FRTWORKBOOK();
 
         XLS::BaseObjectPtr clone();
 

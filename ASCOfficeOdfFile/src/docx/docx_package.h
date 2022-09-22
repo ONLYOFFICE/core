@@ -134,7 +134,7 @@ public:
     void set_fontTable	(element_ptr Element);
     void set_numbering	(element_ptr Element);
     void set_settings	(element_ptr Element);
-    bool has_numbering	();
+	bool has_numbering	();
     void set_media			(mediaitems_ptr		& mediaitems_);
     void set_headers_footers(headers_footers	& HeadersFooters);
     void set_notes			(notes_context		& notesContext);
@@ -183,8 +183,6 @@ private:
     docx_content_types_file	content_type_file_;
     word_files				word_files_;
 	customXml_files			customXml_files_;
-    rels_files				rels_files_;
-    docProps_files			docProps_files_;
 };
 
 }

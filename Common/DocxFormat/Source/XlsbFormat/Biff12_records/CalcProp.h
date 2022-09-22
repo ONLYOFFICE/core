@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(CalcProp)
         public:
             CalcProp();
-            virtual ~CalcProp();
+            ~CalcProp();
 
             XLS::BaseObjectPtr clone();
 

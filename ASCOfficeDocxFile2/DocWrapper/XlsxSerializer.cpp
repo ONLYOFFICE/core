@@ -94,6 +94,7 @@ namespace BinXlsxRW{
 
 		oDrawingConverter.SetMediaDstPath(sMediaDir);
 		oDrawingConverter.SetEmbedDstPath(sEmbedDir);
+		oDrawingConverter.SetTempPath(m_sTempDir);
 
 		BinXlsxRW::BinaryFileReader oBinaryFileReader;		
 		return oBinaryFileReader.ReadFile(sSrcFileName, sDstPath, &oDrawingConverter, sXMLOptions, m_bIsMacro);
@@ -147,7 +148,8 @@ namespace BinXlsxRW{
 
 		oDrawingConverter.SetDstPath(sDstPath + FILE_SEPARATOR_STR + L"xl");
 		oDrawingConverter.SetSrcPath(strFileInDir, 2);
-
+		oDrawingConverter.SetFontDir(m_sFontDir);
+		
 		BinXlsxRW::BinaryFileReader oBinaryFileReader;
 		return oBinaryFileReader.Xml2Xlsx(sSrcFileName, sDstPath, &oDrawingConverter, sXMLOptions, m_bIsMacro);
 	}
@@ -181,7 +183,7 @@ namespace BinXlsxRW{
 
 		std::wstring sFileName;
 
-		BinXlsxRW::SaveParams			oSaveParams(sDrawingsPath, sEmbedingPath, sThemePath, m_pExternalDrawingConverter->GetContentTypes());
+		BinXlsxRW::SaveParams			oSaveParams(sDrawingsPath, sEmbedingPath, sThemePath, m_pExternalDrawingConverter->GetContentTypes(), NULL, true);
 		BinXlsxRW::BinaryChartReader	oBinaryChartReader(*pReader, oSaveParams, m_pExternalDrawingConverter);
 	
 		bool bResult = false;
@@ -200,6 +202,8 @@ namespace BinXlsxRW{
 			
 			if (bResult && pReader->m_nDocumentType != XMLWRITER_DOC_TYPE_XLSX && !sEmbedingPath.empty() && !bXlsxPresent)
 			{
+				oSaveParams.bMacroEnabled = false;
+
 				std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(pReader->m_nCountEmbedded) + L".xlsx";
 				std::wstring sXlsxPath = sEmbedingPath + FILE_SEPARATOR_STR + sXlsxFilename;
 
@@ -211,8 +215,9 @@ namespace BinXlsxRW{
 
 					std::wstring sChartsWorksheetRelsName = L"../embeddings/" + sXlsxFilename;
 					unsigned int rId;
-					std::wstring bstrChartsWorksheetRelType = OOX::FileTypes::MicrosoftOfficeExcelWorksheet.RelationType();
-					m_pExternalDrawingConverter->WriteRels(bstrChartsWorksheetRelType, sChartsWorksheetRelsName, std::wstring(), &rId);
+					std::wstring sChartsWorksheetRelType = OOX::FileTypes::MicrosoftOfficeExcelWorksheet.RelationType();
+					
+					m_pExternalDrawingConverter->WriteRels(sChartsWorksheetRelType, sChartsWorksheetRelsName, std::wstring(), &rId);
 
 					chart_file->m_oChartSpace.m_externalData = new OOX::Spreadsheet::CT_ExternalData();
 					chart_file->m_oChartSpace.m_externalData->m_id = new std::wstring();
@@ -257,7 +262,11 @@ namespace BinXlsxRW{
 		}
 		return bResult;
 	}
-    void CXlsxSerializer::setFontDir(const std::wstring& sFontDir)
+	void CXlsxSerializer::setTempDir(const std::wstring& sTempDir)
+	{
+		m_sTempDir = sTempDir;
+	}
+	void CXlsxSerializer::setFontDir(const std::wstring& sFontDir)
 	{
 		m_sFontDir = sFontDir;
 	}

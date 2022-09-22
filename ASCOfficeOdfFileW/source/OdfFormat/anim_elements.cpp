@@ -132,7 +132,7 @@ void anim_transition_filter_attlist::serialize(CP_ATTR_NODE)
 }
 void anim_audio_attlist::serialize(CP_ATTR_NODE)
 {
-	CP_XML_ATTR_OPT(L"xlink:href",		xlink_href_);
+	CP_XML_ATTR_OPT_ENCODE_STRING(L"xlink:href",		xlink_href_);
 	CP_XML_ATTR_OPT(L"anim:audio-level",anim_audio_level_);
 }
 const wchar_t * anim_transitionFilter::ns	= L"anim";

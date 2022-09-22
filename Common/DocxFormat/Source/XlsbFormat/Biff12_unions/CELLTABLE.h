@@ -42,27 +42,39 @@ namespace XLSB
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(CELLTABLE)
     public:
-        CELLTABLE(std::vector<XLS::CellRangeRef>& shared_formulas_locations_ref);
-        virtual ~CELLTABLE();
+        CELLTABLE();
+        ~CELLTABLE();
 
         XLS::BaseObjectPtr clone();
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        struct _data
-        {
-            XLS::BaseObjectPtr               m_ACCELLTABLE;
-            XLS::BaseObjectPtr               m_BrtRowHdr;
-            std::vector<XLS::BaseObjectPtr>  m_arCELL;
-        };
-
-
         XLS::BaseObjectPtr                   m_BrtBeginSheetData;
-        std::vector<_data>                   m_arParenthesis_CELLTABLE;
+        std::vector<XLS::BaseObjectPtr>      m_arParenthesis_CELLTABLE;
         XLS::BaseObjectPtr                   m_BrtEndSheetData;
 
-        std::vector<XLS::CellRangeRef>&      shared_formulas_locations_ref_;
+        std::vector<XLS::CellRangeRef>      shared_formulas_locations_ref_;
 
+    };
+
+    class Parenthesis_CELLTABLE: public XLS::CompositeObject
+    {
+        BASE_OBJECT_DEFINE_CLASS_NAME(Parenthesis_CELLTABLE)
+    public:
+
+        Parenthesis_CELLTABLE(std::vector<XLS::CellRangeRef>& shared_formulas_locations_ref);
+        ~Parenthesis_CELLTABLE();
+
+        XLS::BaseObjectPtr clone();
+
+        virtual const bool loadContent(XLS::BinProcessor& proc);
+
+        XLS::BaseObjectPtr                    m_ACCELLTABLE;
+        XLS::BaseObjectPtr                    m_BrtRowHdr;
+        std::vector<XLS::BaseObjectPtr>       m_arCELL;
+        //std::vector<XLS::BaseObjectPtr>   m_arFRT;
+
+        std::vector<XLS::CellRangeRef>& shared_formulas_locations_ref_;
     };
 
 } // namespace XLSB

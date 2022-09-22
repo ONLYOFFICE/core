@@ -29,7 +29,10 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "../DocxFlat.h"
 #include "Settings.h"
+#include "../Endnote.h"
+#include "../Footnote.h"
 
 namespace OOX
 {
@@ -1101,8 +1104,27 @@ namespace Settings
 				m_oPos = oReader;
 			else if ( L"w:endnote" == sName )
 			{
-				OOX::CFtnEdnSepRef *oFE = new OOX::CFtnEdnSepRef(oReader);
-				if (oFE) m_arrEndnote.push_back( oFE );
+				CDocxFlat* docx_flat = dynamic_cast<CDocxFlat*>(WritingElement::m_pMainDocument);
+				if (docx_flat)
+				{
+					CFtnEdn *pEndnote = new CFtnEdn(WritingElement::m_pMainDocument);
+					pEndnote->fromXML(oReader);
+
+					pEndnote->m_oId.Init();
+					pEndnote->m_oId->SetValue((int)docx_flat->m_pEndnotes->m_arrEndnote.size() - 1);
+					
+					docx_flat->m_pSettings->m_oEndnotePr->m_arrEndnote.push_back(new CFtnEdnSepRef());
+					docx_flat->m_pSettings->m_oEndnotePr->m_arrEndnote.back()->m_oId = pEndnote->m_oId;
+					docx_flat->m_pSettings->m_oEndnotePr->m_arrEndnote.back()->m_eType = OOX::et_w_endnote;
+					
+					docx_flat->m_pEndnotes->m_arrEndnote.push_back(pEndnote);
+					docx_flat->m_pEndnotes->m_mapEndnote.insert(std::make_pair(pEndnote->m_oId->GetValue(), pEndnote));
+				}
+				else
+				{
+					OOX::CFtnEdnSepRef *oFE = new OOX::CFtnEdnSepRef(oReader);
+					if (oFE) m_arrEndnote.push_back(oFE);
+				}
 			}
 		}
 	}
@@ -1163,8 +1185,27 @@ namespace Settings
 				m_oPos = oReader;
 			else if ( L"w:footnote" == sName )
 			{
-				OOX::CFtnEdnSepRef *oFE = new OOX::CFtnEdnSepRef(oReader);
-				if (oFE) m_arrFootnote.push_back( oFE );
+				CDocxFlat* docx_flat = dynamic_cast<CDocxFlat*>(WritingElement::m_pMainDocument);
+				if (docx_flat)
+				{
+					CFtnEdn *pFootnote = new CFtnEdn(WritingElement::m_pMainDocument);
+					pFootnote->fromXML(oReader);
+
+					pFootnote->m_oId.Init();
+					pFootnote->m_oId->SetValue((int)docx_flat->m_pFootnotes->m_arrFootnote.size() - 1);
+
+					docx_flat->m_pSettings->m_oFootnotePr->m_arrFootnote.push_back(new CFtnEdnSepRef());
+					docx_flat->m_pSettings->m_oFootnotePr->m_arrFootnote.back()->m_oId = pFootnote->m_oId;
+					docx_flat->m_pSettings->m_oFootnotePr->m_arrFootnote.back()->m_eType = OOX::et_w_footnote;
+
+					docx_flat->m_pFootnotes->m_arrFootnote.push_back(pFootnote);
+					docx_flat->m_pFootnotes->m_mapFootnote.insert(std::make_pair(pFootnote->m_oId->GetValue(), pFootnote));
+				}
+				else
+				{
+					OOX::CFtnEdnSepRef *oFE = new OOX::CFtnEdnSepRef(oReader);
+					if (oFE) m_arrFootnote.push_back(oFE);
+				}
 			}
 		}
 	}
@@ -1346,11 +1387,19 @@ namespace Settings
 				case 'e':
 					if      ( L"w:embedSystemFonts"           == sName ) m_oEmbedSystemFonts           = oReader;
 					else if ( L"w:embedTrueTypeFonts"         == sName ) m_oEmbedTrueTypeFonts         = oReader;
-					else if ( L"w:endnotePr"                  == sName ) m_oEndnotePr                  = oReader;
+					else if (L"w:endnotePr" == sName)
+					{
+						m_oEndnotePr = new Settings::CEdnDocProps(WritingElement::m_pMainDocument);
+						m_oEndnotePr->fromXML(oReader);
+					}
 					else if ( L"w:evenAndOddHeaders"          == sName ) m_oEvenAndOddHeaders          = oReader;
 					break;
 				case 'f':
-					if      ( L"w:footnotePr"                 == sName ) m_oFootnotePr                 = oReader;
+					if (L"w:footnotePr" == sName)
+					{
+						m_oFootnotePr = new Settings::CFtnDocProps(WritingElement::m_pMainDocument);
+						m_oFootnotePr->fromXML(oReader);
+					}
 					else if ( L"w:forceUpgrade"               == sName ) m_oForceUpgrade               = oReader;
 					else if ( L"w:formsDesign"                == sName ) m_oFormsDesign                = oReader;
 					break;
@@ -1452,7 +1501,7 @@ namespace Settings
 		sXml += toXML();
 
 		CDirectory::SaveToFile( oFilePath.GetPath(), sXml );
-		oContent.Registration( type().OverrideType(), oDirectory, oFilePath );
+		oContent.Registration( type().OverrideType(), oDirectory, oFilePath.GetFilename() );
 	}
 	std::wstring CSettings::toXML() const
 	{

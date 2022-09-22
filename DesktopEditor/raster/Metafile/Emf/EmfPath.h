@@ -58,7 +58,7 @@ namespace MetaFile
 		virtual ~CEmfPathCommandBase()
 		{
 		}
-		virtual EEmfPathCommandType GetType() = 0;
+		virtual EEmfPathCommandType GetType() const = 0;
 	};
 	class CEmfPathMoveTo : public CEmfPathCommandBase
 	{
@@ -71,7 +71,7 @@ namespace MetaFile
 		virtual ~CEmfPathMoveTo()
 		{
 		}
-		virtual EEmfPathCommandType GetType()
+		virtual EEmfPathCommandType GetType() const override
 		{
 			return EMF_PATHCOMMAND_MOVETO;
 		}
@@ -92,7 +92,7 @@ namespace MetaFile
 		virtual ~CEmfPathLineTo()
 		{
 		}
-		virtual EEmfPathCommandType GetType()
+		virtual EEmfPathCommandType GetType() const override
 		{
 			return EMF_PATHCOMMAND_LINETO;
 		}
@@ -117,7 +117,7 @@ namespace MetaFile
 		virtual ~CEmfPathCurveTo()
 		{
 		}
-		virtual EEmfPathCommandType GetType()
+		virtual EEmfPathCommandType GetType() const override
 		{
 			return EMF_PATHCOMMAND_CURVETO;
 		}
@@ -146,7 +146,7 @@ namespace MetaFile
 		virtual ~CEmfPathArcTo()
 		{
 		}
-		virtual EEmfPathCommandType GetType()
+		virtual EEmfPathCommandType GetType() const override
 		{
 			return EMF_PATHCOMMAND_ARCTO;
 		}
@@ -169,7 +169,7 @@ namespace MetaFile
 		virtual ~CEmfPathClose()
 		{
 		}
-		virtual EEmfPathCommandType GetType()
+		virtual EEmfPathCommandType GetType() const override
 		{
 			return EMF_PATHCOMMAND_CLOSE;
 		}
@@ -191,8 +191,8 @@ namespace MetaFile
 		bool ArcTo(double dL, double dT, double dR, double dB, double dStart, double dSweep);
 		bool Close();
 		void Draw(IOutputDevice* pOutput, bool bStroke, bool bFill, unsigned int unClipMode = -1);
-
-	private:
+		void DrawWithoutClean(IOutputDevice* pOutput, bool bStroke, bool bFill);
+	protected:
 
 		void Clear();
 

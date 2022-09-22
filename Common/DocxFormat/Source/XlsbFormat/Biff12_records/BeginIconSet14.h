@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginIconSet14)
         public:
             BeginIconSet14();
-            virtual ~BeginIconSet14();
+            ~BeginIconSet14();
 
             XLS::BaseObjectPtr clone();
 

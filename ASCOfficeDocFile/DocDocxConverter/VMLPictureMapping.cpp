@@ -354,29 +354,37 @@ namespace DocFileFormat
 			case ODRAW::borderBottomColor:
 				if (!pict->brcBottom)
 				{
-					RGBColor bottomColor((int)iter->op, RedFirst);
-					m_pXmlWriter->WriteAttribute(L"o:borderbottomcolor", L"#" + bottomColor.SixDigitHexCode);
+					ODRAW::OfficeArtCOLORREF bottomColor((_UINT32)iter->op);
+					m_context->_doc->CorrectColor(bottomColor);
+					if (false == bottomColor.sColorRGB.empty())
+						m_pXmlWriter->WriteAttribute(L"o:borderbottomcolor", L"#" + bottomColor.sColorRGB);
 				}
 				break;
 			case ODRAW::borderLeftColor:
 				if (!pict->brcLeft)
 				{
-					RGBColor leftColor((int)iter->op, RedFirst);
-					m_pXmlWriter->WriteAttribute(L"o:borderleftcolor", L"#" + leftColor.SixDigitHexCode);
+					ODRAW::OfficeArtCOLORREF leftColor((_UINT32)iter->op);
+					m_context->_doc->CorrectColor(leftColor);
+					if (false == leftColor.sColorRGB.empty())
+						m_pXmlWriter->WriteAttribute(L"o:borderleftcolor", L"#" + leftColor.sColorRGB);
 				}
 				break;
 			case ODRAW::borderRightColor:
 				if (!pict->brcRight)
 				{
-					RGBColor rightColor((int)iter->op, RedFirst);
-					m_pXmlWriter->WriteAttribute(L"o:borderrightcolor", L"#" + rightColor.SixDigitHexCode);
+					ODRAW::OfficeArtCOLORREF rightColor((_UINT32)iter->op);
+					m_context->_doc->CorrectColor(rightColor);
+					if (false == rightColor.sColorRGB.empty())
+						m_pXmlWriter->WriteAttribute(L"o:borderrightcolor", L"#" + rightColor.sColorRGB);
 				}
 				break;
 			case ODRAW::borderTopColor:
 				if (!pict->brcTop)
 				{
-					RGBColor topColor((int)iter->op, RedFirst);
-					m_pXmlWriter->WriteAttribute(L"o:bordertopcolor", L"#" + topColor.SixDigitHexCode);
+					ODRAW::OfficeArtCOLORREF topColor((_UINT32)iter->op);
+					m_context->_doc->CorrectColor(topColor);
+					if (false == topColor.sColorRGB.empty())
+						m_pXmlWriter->WriteAttribute(L"o:bordertopcolor", L"#" + topColor.sColorRGB);
 				}
 				break;
 				//CROPPING

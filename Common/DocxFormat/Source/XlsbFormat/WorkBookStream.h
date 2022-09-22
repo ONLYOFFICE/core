@@ -48,14 +48,14 @@ namespace XLSB
     class StreamCacheReader;
 
     class WorkBookStream;
-    typedef std::shared_ptr<WorkBookStream>		WorkBookStreamPtr;
+    typedef boost::shared_ptr<WorkBookStream>		WorkBookStreamPtr;
 
     class WorkBookStream: public XLS::CompositeObject
     {
         BASE_OBJECT_DEFINE_CLASS_NAME(WorkBookStream)
     public:
         WorkBookStream();
-        virtual ~WorkBookStream();
+        ~WorkBookStream();
 
         XLS::BaseObjectPtr clone();
 
@@ -77,6 +77,7 @@ namespace XLSB
         XLS::BaseObjectPtr               m_EXTERNALS;
         XLS::BaseObjectPtr               m_BrtCalcProp;
         XLS::BaseObjectPtr               m_BrtOleSize;
+        XLS::BaseObjectPtr               m_PIVOTCACHEIDS;
         XLS::BaseObjectPtr               m_BrtWebOpt;
         XLS::BaseObjectPtr               m_BrtEndBook;
         XLS::BaseObjectPtr               m_FRTWORKBOOK;

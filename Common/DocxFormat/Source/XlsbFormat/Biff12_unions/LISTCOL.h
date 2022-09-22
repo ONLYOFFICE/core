@@ -41,18 +41,18 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(LISTCOL)
     public:
         LISTCOL();
-        virtual ~LISTCOL();
+        ~LISTCOL();
 
         XLS::BaseObjectPtr clone();
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        XLS::BaseObjectPtr               m_ACUID;
+        //XLS::BaseObjectPtr               m_ACUID;
         XLS::BaseObjectPtr               m_BrtBeginListCol;
         XLS::BaseObjectPtr               m_BrtListCCFmla;
         XLS::BaseObjectPtr               m_BrtListTrFmla;
         XLS::BaseObjectPtr               m_LISTXMLCPR;
-        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        //std::vector<XLS::BaseObjectPtr>  m_arFRT;
         XLS::BaseObjectPtr               m_BrtEndListCol;
 
         _UINT32                          indexList;

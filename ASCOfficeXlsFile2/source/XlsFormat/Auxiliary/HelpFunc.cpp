@@ -514,7 +514,28 @@ const size_t hex_str2int(const std::wstring::const_iterator& it_begin, const std
 //}
 std::wstring toStdWString(std::string ansi_string, const _UINT32 code_page)
 {
-    std::string sCodePage;
+//#if defined (_WIN32) || defined (_WIN64)
+//	std::wstring sResult;
+//
+//	int outsize_with_0 = MultiByteToWideChar(code_page, 0, ansi_string.c_str(), -1, NULL, NULL);
+//	
+//	sResult.resize(outsize_with_0);
+//	if (MultiByteToWideChar(code_page, 0, ansi_string.c_str(), -1, (LPWSTR)sResult.c_str(), outsize_with_0) > 0)
+//	{
+//		sResult.erase(outsize_with_0 - 1);
+//	}
+//	else
+//	{
+//		std::locale loc("");
+//		std::ctype<wchar_t> const &facet = std::use_facet<std::ctype<wchar_t> >(loc);
+//
+//		sResult.resize(ansi_string.size());
+//
+//		facet.widen(ansi_string.c_str(), ansi_string.c_str() + ansi_string.size(), &sResult[0]);
+//	}
+//	return sResult;
+//#else
+	std::string sCodePage;
 	std::map<int, std::string>::const_iterator pFind = NSUnicodeConverter::mapEncodingsICU.find(code_page);
 	if (pFind != NSUnicodeConverter::mapEncodingsICU.end())
 	{
@@ -543,6 +564,7 @@ std::wstring toStdWString(std::string ansi_string, const _UINT32 code_page)
 
 		return result;
 	}
+//#endif
 }
 std::wstring	toStdWString(char* ansi, int size, const _UINT32 code_page)
 {
@@ -620,32 +642,32 @@ const std::wstring xti_indexes2sheet_name(const short tabFirst, const short tabL
 	{
 		return L"#REF";
 	}
-	static boost::wregex correct_sheet_name(L"^\\'.+?\\'$");
-    static boost::wregex test_sheet_name(L"[\\s)(\\!\\'&:-]+"); //.??? 6442946.xls
+	static boost::wregex correct_table_name(L"^\\'.+?\\'$");
+    static boost::wregex test_table_name(L"([\\s)(\\!\\'&:-]+)|(^[\\d]+)"); //.??? 6442946.xls 5558608.xls
 	
-	std::wstring sheet_first = prefix + tab2sheet_name(tabFirst, names);
+	std::wstring table_name = tab2sheet_name(tabFirst, names); 
+	std::wstring sheet_first = prefix + table_name;
 	
-	if(!boost::regex_search(sheet_first.begin(), sheet_first.end(), correct_sheet_name))
+	if(!boost::regex_search(table_name.begin(), table_name.end(), correct_table_name))
 	{	
-		if(boost::regex_search(sheet_first.begin(), sheet_first.end(), test_sheet_name) || (!prefix.empty() && prefix[0] == L'[')) // 5558608.xls
+		if(boost::regex_search(table_name.begin(), table_name.end(), test_table_name)) 
 		{
 			sheet_first = boost::algorithm::replace_all_copy(sheet_first, L"'", L"''"); 
 			sheet_first = std::wstring(L"'") + sheet_first + std::wstring(L"'");
 		}
 	}
-
-
 	std::wstring sheet_last;
 	if (tabLast != tabFirst)
 	{
-		sheet_last = std::wstring(L":") + prefix + tab2sheet_name(tabLast, names);
+		table_name = tab2sheet_name(tabLast, names);
+		sheet_last = std::wstring(L":") + prefix + table_name;
 		
-		if(!boost::regex_search(sheet_last.begin(), sheet_last.end(), correct_sheet_name))
+		if(!boost::regex_search(table_name.begin(), table_name.end(), correct_table_name))
 		{	
-			if(boost::regex_search(sheet_last.begin(), sheet_last.end(), test_sheet_name))
+			if(boost::regex_search(table_name.begin(), table_name.end(), test_table_name))
 			{	
 				sheet_last = boost::algorithm::replace_all_copy(sheet_last, L"'", L"''"); 
-				sheet_last = std::wstring(L"\'") + sheet_last + std::wstring(L"\'");
+				sheet_last = std::wstring(L"'") + sheet_last + std::wstring(L"'");
 			}
 		}
 	}

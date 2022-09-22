@@ -314,19 +314,23 @@ namespace PdfWriter
 		pagelayout_OneColumn      = 1,
 		pagelayout_TwoColumnLeft  = 2,
 		pagelayout_TwoCoulmnRight = 3,
+		pagelayout_TwoPageLeft    = 4,
+		pagelayout_TwoPageRight   = 5,
 
 		pagelayout_Min            = 0,
-		pagelayout_Max            = 3
+		pagelayout_Max            = 5
 	};
 	enum EPageMode
 	{
-		pagemode_UseNone    = 0,
-		pagemode_UseOutline = 1,
-		pagemode_UseThumbs  = 2,
-		pagemode_FullScreen = 3,
+		pagemode_UseNone        = 0,
+		pagemode_UseOutline     = 1,
+		pagemode_UseThumbs      = 2,
+		pagemode_FullScreen     = 3,
+		pagemode_UseOC          = 4,
+		pagemode_UseAttachments = 5,
 
 		pagemode_Min        = 0,
-		pagemode_Max        = 3
+		pagemode_Max        = 5
 	};
 	enum EPageNumStyle
 	{

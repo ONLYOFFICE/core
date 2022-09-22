@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginRwBrk)
         public:
             BeginRwBrk();
-            virtual ~BeginRwBrk();
+            ~BeginRwBrk();
 
             XLS::BaseObjectPtr clone();
 

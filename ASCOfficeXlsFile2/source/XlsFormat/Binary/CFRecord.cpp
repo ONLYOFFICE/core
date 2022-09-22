@@ -54,7 +54,7 @@ CFRecord::CFRecord(CFStreamPtr stream, GlobalWorkbookInfoPtr global_info)
 	unsigned long rec_data_pos = stream->getStreamPointer();
 
 	stream->read(data_, size_);
-	if(global_info->decryptor && 0 != size_)
+	if((global_info) && (global_info->decryptor) && (0 != size_))
 	{
 		size_t block_size = global_info->Version == 0x0500 ? 16 : 1024;
 
@@ -161,6 +161,7 @@ CFRecord::CFRecord(NSBinPptxRW::CBinaryFileReader &reader, GlobalWorkbookInfoPtr
     }
 
     file_ptr += lenght;
+    sizeOfRecordTypeRecordLength = lenght;
        /* auto lambdaDetectBusyByteCount = [] (int val) -> {
             for (int i = 0; i < 4; ++i)
             {
@@ -252,6 +253,10 @@ const size_t CFRecord::getDataSize() const
 	return size_;
 }
 
+const BYTE CFRecord::getSizeOfRecordTypeRecordLength() const
+{
+    return sizeOfRecordTypeRecordLength;
+}
 
 const size_t CFRecord::getMaxRecordSize() const
 {

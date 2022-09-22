@@ -3749,7 +3749,7 @@
     <xsd:attribute name="val" type="ST_FontFamily" use="required"/>
   </xsd:complexType>
   <xsd:simpleType name="ST_FontFamily">
-    <xsd:restriction base="xsd:integer">
+    <xsd:restriction base="xsd:int">
       <xsd:minInclusive value="0"/>
       <xsd:maxInclusive value="14"/>
     </xsd:restriction>

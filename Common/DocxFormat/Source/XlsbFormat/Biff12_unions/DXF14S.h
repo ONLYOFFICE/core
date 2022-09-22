@@ -43,7 +43,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(DXF14S)
     public:
         DXF14S();
-        virtual ~DXF14S();
+        ~DXF14S();
 
         XLS::BaseObjectPtr clone();
 

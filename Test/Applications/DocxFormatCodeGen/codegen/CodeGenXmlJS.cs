@@ -80,8 +80,32 @@ namespace codegen
         //string gc_sTargetNamespace = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
 
         string gc_sXsd = "wml.xsd";
-        string[] gc_aTargetTypes = new string[] { "CT_Document" };
+        string[] gc_aTargetTypes = new string[] { "CT_Comments" };
         string gc_sTargetNamespace = "http://purl.oclc.org/ooxml/wordprocessingml/main";
+
+        //string gc_sXsd = "dml-chart.xsd";
+        //string[] gc_aTargetTypes = new string[] { "CT_ChartSpace" };
+        //string gc_sTargetNamespace = "http://purl.oclc.org/ooxml/drawingml/chart";
+
+        //string gc_sXsd = "xlsx-ext/5.15.xsd";
+        //string[] gc_aTargetTypes = new string[] { "CT_ChartStyle", "CT_ColorStyle" };
+        //string gc_sTargetNamespace = "http://schemas.microsoft.com/office/drawing/2012/chartStyle";
+
+        //string gc_sXsd = "shared-math.xsd";
+        //string[] gc_aTargetTypes = new string[] { "CT_OMathPara" };
+        //string gc_sTargetNamespace = "http://purl.oclc.org/ooxml/officeDocument/math";
+
+        //string gc_sXsd = "docx-ext/5.2.xsd";
+        //string[] gc_aTargetTypes = new string[] { "CT_CommentsEx", "CT_People" };
+        //string gc_sTargetNamespace = "http://schemas.microsoft.com/office/word/2012/wordml";
+
+        //string gc_sXsd = "docx-ext/5.4.xsd";
+        //string[] gc_aTargetTypes = new string[] { "CT_CommentsIds" };
+        //string gc_sTargetNamespace = "http://schemas.microsoft.com/office/word/2016/wordml/cid";
+
+        //string gc_sXsd = "docx-ext/5.6.xsd";
+        //string[] gc_aTargetTypes = new string[] { "CT_CommentsExtensible" };
+        //string gc_sTargetNamespace = "http://schemas.microsoft.com/office/word/2018/wordml/cex";
 
 
         public void Start(string sDirIn, string sDirCppXmlOut, string sDirCppBinOut, string sDirJsBinOut, ValidationEventHandler oValidationEventHandler)

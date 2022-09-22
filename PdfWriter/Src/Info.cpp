@@ -97,9 +97,12 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CInfoDict
 	//----------------------------------------------------------------------------------------
-	CInfoDict::CInfoDict(CXref* pXref)
+	CInfoDict::CInfoDict(CXref* pXref, const std::wstring& sInfo)
 	{
 		pXref->Add(this);
+
+		if (!sInfo.empty())
+			FromXml(sInfo);
 	}
 	void        CInfoDict::SetInfo(EInfoType eType, const char* sValue)
 	{
@@ -113,12 +116,15 @@ namespace PdfWriter
 	const char* CInfoDict::GetInfo(EInfoType eType)
 	{
 		const char* sName = InfoTypeToName(eType);
-		CStringObject* pString = (CStringObject*)Get(std::string(sName));
+		CObjectBase* pString = Get(std::string(sName));
 
-		if (!pString || object_type_STRING != pString->GetType())
+		if (!pString)
 			return NULL;
 
-		return (const char*)pString->GetString();
+		if (object_type_STRING == pString->GetType())
+			return (const char*)((CStringObject*)pString)->GetString();
+
+		return NULL;
 	}
 	void CInfoDict::SetInfo(EInfoType eType, const TDate& oDate)
 	{
@@ -191,8 +197,11 @@ namespace PdfWriter
 
 		Add(sName, new CStringObject(sTemp));
 	}
-	void CInfoDict::SetCreationTime()
+	void CInfoDict::SetTime(EInfoType eType)
 	{
+		if (eType > InfoModaDate)
+			return;
+
 		time_t oTime = time(0);
 		struct tm* oNow = gmtime(&oTime);
 
@@ -207,8 +216,7 @@ namespace PdfWriter
 		oDate.nOffHour    = 0;
 		oDate.nOffMinutes = 0;
 
-		SetInfo(InfoCreationDate, oDate);
-		SetInfo(InfoModaDate, oDate);
+		SetInfo(eType == InfoCreationDate ? eType : InfoModaDate, oDate);
 
 		m_oDate = oDate;
 	}

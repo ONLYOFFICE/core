@@ -59,7 +59,8 @@ public:
 	}
 	
 	bool isOfficeFile(const std::wstring & fileName);	
-	
+	bool isVbaProjectFile(const std::wstring & fileName);
+
 	std::wstring GetFormatExtension(const std::wstring & fileName);
 	std::wstring GetExtensionByType(int type);
 	static int GetFormatByExtension(const std::wstring& ext);
@@ -68,11 +69,15 @@ public:
 	bool isOpenOfficeFormatFile	(const std::wstring & fileName, std::wstring & documentID);
 	bool isOnlyOfficeFormatFile	(const std::wstring & fileName);
 
+	bool isDocFormatFile	(const std::wstring & fileName);
+	bool isXlsFormatFile	(const std::wstring & fileName);
+
 	bool isDocFormatFile	(POLE::Storage *storage);
 	bool isXlsFormatFile	(POLE::Storage *storage);
 	bool isPptFormatFile	(POLE::Storage *storage);
     bool isMS_OFFICECRYPTOFormatFile(POLE::Storage * storage, std::wstring & documentID);
 	bool isMS_MITCRYPTOFormatFile(POLE::Storage * storage, std::wstring & documentID);
+	bool isVbaProjectFile(POLE::Storage * storage);
 	bool isMS_OFFCRYPTOFormatFile	(const std::wstring & fileName, std::wstring & documentID);
 
     std::wstring getDocumentID		(const std::wstring & fileName);

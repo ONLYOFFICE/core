@@ -875,21 +875,13 @@ namespace NSBinPptxRW
 		m_lPosition += lSizeMem;
 		m_pStreamCur += lSizeMem;
 	}
-	void CBinaryFileWriter::WriteStringW(std::wstring& sBuffer)
-	{
-		_WriteStringWithLength(sBuffer.c_str(), (_UINT32)sBuffer.length(), true);
-	}
 	void CBinaryFileWriter::WriteStringW(const std::wstring& sBuffer)
 	{
 		_WriteStringWithLength(sBuffer.c_str(), (_UINT32)sBuffer.length(), true);
 	}
-	void CBinaryFileWriter::WriteStringW2(std::wstring& sBuffer)
+    void CBinaryFileWriter::WriteStringW2(const std::wstring& sBuffer)
 	{
         _WriteStringWithLength(sBuffer.c_str(), (_UINT32)sBuffer.length(), false);
-	}
-    void CBinaryFileWriter::WriteStringW3(std::wstring& sBuffer)
-	{
-		_WriteString(sBuffer.c_str(), (_UINT32)sBuffer.length());
 	}
     void CBinaryFileWriter::WriteStringW3(const std::wstring& sBuffer)
 	{
@@ -1491,6 +1483,16 @@ namespace NSBinPptxRW
 			std::to_wstring(nComment) + L".xml\"/>";
 
 		m_pWriter->WriteString(strRels);
+	}
+	void CRelsGenerator::WriteCustoms(int nCount)
+	{
+		for (int i = 0; i < nCount; ++i)
+		{
+			std::wstring strRels = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
+				L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml\" Target=\"../customXml/item" +
+				std::to_wstring(i + 1) + L".xml\"/>";
+			m_pWriter->WriteString(strRels);
+		}
 	}
 	void CRelsGenerator::EndPresentationRels(bool bIsCommentsAuthors, bool bIsVbaProject, bool bIsJsaProject)
 	{
@@ -2097,9 +2099,9 @@ namespace NSBinPptxRW
 	}
 
 	LONG CBinaryFileReader::GetPos()
-	{
+    {
 		return m_lPos;
-	}
+    }
 
 	LONG CBinaryFileReader::GetSize()
 	{

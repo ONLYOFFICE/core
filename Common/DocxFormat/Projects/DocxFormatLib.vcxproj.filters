@@ -55,9 +55,6 @@
     <Filter Include="Logic\Paragraph and Runs\Run">
       <UniqueIdentifier>{cbb6ec77-d12a-43d6-b00a-2fda08d2fddf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Logic\Paragraph and Runs\Run\Pict">
-      <UniqueIdentifier>{8c368f54-4b99-4d0d-941a-5bfe81569746}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Logic\Annotations">
       <UniqueIdentifier>{1614473a-b1cf-48ef-a43e-ff606ee27c9d}</UniqueIdentifier>
     </Filter>
@@ -679,6 +676,9 @@
     <ClInclude Include="..\Source\Common\Unit.h">
       <Filter>Logic\Common</Filter>
     </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Pivot\PivotCacheDefinitionExt.h">
+      <Filter>XlsxFormat\Pivots</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\DocxFormat\Logic\Table.cpp">
@@ -870,6 +870,15 @@
     </ClCompile>
     <ClCompile Include="..\Source\DocxFormat\Media\Media.cpp">
       <Filter>Media</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsxFormat\Pivot\PivotCacheDefinitionExt.cpp">
+      <Filter>XlsxFormat\Pivots</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsxFormat\Workbook\Workbook.cpp">
+      <Filter>XlsxFormat\Workbook</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Pict.cpp">
+      <Filter>Logic\Drawing</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

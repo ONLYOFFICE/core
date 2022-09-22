@@ -38,11 +38,19 @@
 
 #include <unistd.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <regex>
+#include <atomic>
+
+#ifdef _MAC
+#include <signal.h>
+#endif
 
 namespace NSNetwork
 {
     namespace NSFileTransport
-    {
+    {        
         std::string wget_url_validate(const std::string& url)
         {
             std::string::size_type pos = 0;
@@ -55,10 +63,10 @@ namespace NSNetwork
             return url.substr(pos);
         }
 
-        int download_external(const std::wstring& sUrl, const std::wstring& sOutput)
+        int download_external(const std::wstring& sUrl, const std::wstring& sOutput, std::function<void(int)> func_onProgress = nullptr, std::function<bool(void)> func_checkAborted = nullptr)
         {
+            pid_t pid;
             int nReturnCode = -1;
-
             std::string sUrlA = U_TO_UTF8(sUrl);
             //sUrlA =("\"" + sUrlA + "\"");
             std::string sOutputA = U_TO_UTF8(sOutput);
@@ -66,7 +74,11 @@ namespace NSNetwork
 
             if (0 != nReturnCode && NSFile::CFileBinary::Exists(L"/usr/bin/curl"))
             {
-                pid_t pid = fork(); // create child process
+                int pipefd[2];
+                if(func_onProgress)
+                    pipe(pipefd);
+
+                pid = fork(); // create child process
                 int status;
 
                 switch (pid)
@@ -82,7 +94,7 @@ namespace NSNetwork
                     nargs[2] = sUrlA.c_str();
                     nargs[3] = "--output";
                     nargs[4] = sOutputA.c_str();
-                    nargs[5] = "--silent";
+                    func_onProgress == NULL ? nargs[5] = "--silent" : nargs[5] = "--progress-bar";
                     nargs[6] = "-L";
                     nargs[7] = "--connect-timeout";
                     nargs[8] = "10";
@@ -93,17 +105,86 @@ namespace NSNetwork
                     nenv[1] = "LD_LIBRARY_PATH=";
                     nenv[2] = NULL;
 
+                    if(func_onProgress)
+                    {
+                        close(pipefd[0]);    // close reading end in the child
+
+                        dup2(pipefd[1], 1);  // send stdout to the pipe
+                        dup2(pipefd[1], 2);  // send stderr to the pipe
+
+                        close(pipefd[1]);    // this descriptor is no longer needed
+                    }
+
                     execve("/usr/bin/curl", (char * const *)nargs, (char * const *)nenv);
                     exit(EXIT_SUCCESS);
                     break;
                 }
                 default: // parent process, pid now contains the child pid
-                    while (-1 == waitpid(pid, &status, 0)); // wait for child to complete
-                    if (WIFEXITED(status))
+                    if(func_onProgress)
                     {
-                        nReturnCode =  WEXITSTATUS(status);
+                        close(pipefd[1]);
+                        // close the write end of the pipe in the parent
+                        size_t size = 81;
+                        char buffer[size];
+                        std::string str;
+                        ssize_t res = 1;
+                        std::regex r(R"(\d+(?:\.\d+)?%)");
+                        std::smatch sm;
+                        std::string percentFull;
+                        std::string percent;
+                        int percentInt;
+
+                        while (1)
+                        {
+                            if(func_checkAborted && func_checkAborted())
+                            {
+                                kill(pid, SIGTERM);
+                                //while (-1 == waitpid(pid, &status, 0)); // wait for child to complete
+                                return nReturnCode;
+                            }
+
+                            str.clear();
+                            res = read(pipefd[0], buffer, sizeof(buffer));
+
+                            if(res == 0)
+                                break;
+
+                            str.append(buffer);
+
+                            if(regex_search(str, sm, r))
+                            {
+                                percentFull     = sm.str();
+                                percent         = percentFull.substr(0, percentFull.find("."));
+                                percentInt      = std::stoi(percent);
+
+                                if(percentInt >= 0 && percentInt <= 100)
+                                    func_onProgress(percentInt);
+                            }
+
+                            if(str.find("100.0%") != std::string::npos)
+                                break;
+
+                        }
                     }
-                    break;
+                    else {
+                        int waitres;
+                        while (1) // wait for child to complete
+                        {
+                            if(func_checkAborted && func_checkAborted())
+                            {
+                                kill(pid, SIGTERM);
+                                return nReturnCode;
+                            }
+                            else if((waitres = waitpid(pid, &status, WNOHANG)) > 0)
+                            {
+                                if (WIFEXITED(status))
+                                {
+                                    nReturnCode =  WEXITSTATUS(status);
+                                }
+                                break;
+                            }
+                        }
+                    }
                 }
             }
 
@@ -111,7 +192,7 @@ namespace NSNetwork
             {
                 std::string sUrlValidateA = wget_url_validate(sUrlA);
 
-                pid_t pid = fork(); // create child process
+                pid = fork(); // create child process
                 int status;
 
                 switch (pid)
@@ -140,12 +221,23 @@ namespace NSNetwork
                     break;
                 }
                 default: // parent process, pid now contains the child pid
-                    while (-1 == waitpid(pid, &status, 0)); // wait for child to complete
-                    if (WIFEXITED(status))
+                    int waitres;
+                    while (1) // wait for child to complete
                     {
-                        nReturnCode =  WEXITSTATUS(status);
+                        if(func_checkAborted && func_checkAborted())
+                        {
+                            kill(pid, SIGTERM);
+                            return nReturnCode;
+                        }
+                        else if((waitres = waitpid(pid, &status, WNOHANG)) > 0)
+                        {
+                            if (WIFEXITED(status))
+                            {
+                                nReturnCode =  WEXITSTATUS(status);
+                            }
+                            break;
+                        }
                     }
-                    break;
                 }
             }
 

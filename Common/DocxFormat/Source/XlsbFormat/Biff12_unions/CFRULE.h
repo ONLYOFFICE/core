@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(CFRULE)
     public:
         CFRULE(const XLS::CellRef& cell_base_ref);
-        virtual ~CFRULE();
+        ~CFRULE();
 
         XLS::BaseObjectPtr clone();
 

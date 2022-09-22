@@ -48,6 +48,7 @@ namespace XLSB
     {
        public:
             FmlaBase(bool flag) : formula(flag) {}
+            virtual ~FmlaBase(){}
             Cell               cell;
             GrbitFmla          grbitFlags;
 			XLS::CellParsedFormula  formula;
@@ -79,7 +80,7 @@ namespace XLSB
             {                
             }
 
-            virtual ~Fmla_T()
+            ~Fmla_T()
             {
             }
 

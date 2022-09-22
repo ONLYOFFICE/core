@@ -32,7 +32,6 @@
 
 #include "FileTransporter_private.h"
 
-
 #include <wininet.h>
 #pragma comment(lib, "Wininet")
 #pragma comment(lib, "Ole32.lib")
@@ -65,19 +64,16 @@ namespace NSNetwork
             CFileTransporterBaseWin(const std::wstring &sDownloadFileUrl, bool bDelete = true) :
                 CFileTransporterBase(sDownloadFileUrl, bDelete)
             {
-                m_pFile     = NULL;
             }
 
             CFileTransporterBaseWin(const std::wstring &sUploadUrl, const unsigned char* cData, const int nSize) :
                 CFileTransporterBase(sUploadUrl, cData, nSize)
             {
-                m_pFile     = NULL;
             }
 
             CFileTransporterBaseWin(const std::wstring &sUploadUrl, const std::wstring &sUploadFilePath) :
                 CFileTransporterBase(sUploadUrl, sUploadFilePath)
             {
-                m_pFile     = NULL;
             }
 
             virtual ~CFileTransporterBaseWin()
@@ -103,6 +99,12 @@ namespace NSNetwork
 
                     HRESULT hrResultAll = DownloadFileAll(m_sDownloadFileUrl, m_sDownloadFilePath);
 
+                    if(E_ABORT == hrResultAll /*&& m_bIsExit->load()*/)
+                    {
+                        //DeleteUrlCacheEntry(m_sDownloadFileUrl.c_str());
+                        CoUninitialize ();
+                        return hrResultAll;
+                    }
                     if (S_OK != hrResultAll)
                     {
                         hrResultAll = (true == DownloadFilePS(m_sDownloadFileUrl, m_sDownloadFilePath)) ? S_OK : S_FALSE;
@@ -129,7 +131,7 @@ namespace NSNetwork
             }
 
         protected:
-            FILE			*m_pFile;           // Хэндл на временный файл
+            FILE * m_pFile = nullptr;           // Хэндл на временный файл
             unsigned int _DownloadFile(std::wstring sFileUrl)
             {
                 // Проверяем состояние соединения
@@ -379,9 +381,66 @@ namespace NSNetwork
                     ::fclose( m_pFile );
                     m_pFile = NULL;
                 }
-                // Скачиваем файл
-                return URLDownloadToFileW (NULL, sFileURL.c_str(), strFileOutput.c_str(), NULL, NULL);
-            }
+
+                DownloadProgress progress;
+                progress.func_checkAborted = m_check_aborted;
+                progress.func_onProgress = m_func_onProgress;
+                // Скачиваем файл с возвратом процентов состояния
+                return URLDownloadToFileW (NULL, sFileURL.c_str(), strFileOutput.c_str(), NULL, static_cast<IBindStatusCallback*>(&progress));
+            }            
+
+            class DownloadProgress : public IBindStatusCallback {
+            public:
+                HRESULT __stdcall QueryInterface(const IID &,void **) {
+                    return E_NOINTERFACE;
+                }
+                ULONG STDMETHODCALLTYPE AddRef(void) {
+                    return 1;
+                }
+                ULONG STDMETHODCALLTYPE Release(void) {
+                    return 1;
+                }
+                HRESULT STDMETHODCALLTYPE OnStartBinding(DWORD dwReserved, IBinding *pib) {
+                    return E_NOTIMPL;
+                }
+                virtual HRESULT STDMETHODCALLTYPE GetPriority(LONG *pnPriority) {
+                    return E_NOTIMPL;
+                }
+                virtual HRESULT STDMETHODCALLTYPE OnLowResource(DWORD reserved) {
+                    return S_OK;
+                }
+                virtual HRESULT STDMETHODCALLTYPE OnStopBinding(HRESULT hresult, LPCWSTR szError) {
+                    return E_NOTIMPL;
+                }
+                virtual HRESULT STDMETHODCALLTYPE GetBindInfo(DWORD *grfBINDF, BINDINFO *pbindinfo) {
+                    return E_NOTIMPL;
+                }
+                virtual HRESULT STDMETHODCALLTYPE OnDataAvailable(DWORD grfBSCF, DWORD dwSize, FORMATETC *pformatetc, STGMEDIUM *pstgmed) {
+                    return E_NOTIMPL;
+                }
+                virtual HRESULT STDMETHODCALLTYPE OnObjectAvailable(REFIID riid, IUnknown *punk) {
+                    return E_NOTIMPL;
+                }
+
+                virtual HRESULT __stdcall OnProgress(ULONG ulProgress, ULONG ulProgressMax, ULONG ulStatusCode, LPCWSTR szStatusText)
+                {
+                    if(func_checkAborted && func_checkAborted())
+                    {
+                        return E_ABORT;
+                    }
+                    if(ulProgressMax != 0)
+                    {
+                        int percent = static_cast<int>((100.0 * ulProgress) / ulProgressMax);
+                        if(func_onProgress)
+                            func_onProgress(percent);
+                    }
+                    return S_OK;
+                }
+
+                std::function<bool(void)> func_checkAborted = nullptr;
+                std::function<void(int)> func_onProgress = nullptr;
+            };
+
 
             bool DownloadFilePS(const std::wstring& sFileURL, const std::wstring& strFileOutput)
             {
@@ -435,18 +494,21 @@ namespace NSNetwork
         };
 
         CFileTransporter_private::CFileTransporter_private(const std::wstring &sDownloadFileUrl, bool bDelete)
+            : m_pInternal(new CFileTransporterBaseWin(sDownloadFileUrl, bDelete))
         {
-            m_pInternal = new CFileTransporterBaseWin(sDownloadFileUrl, bDelete);
+            m_pInternal->m_check_aborted = std::bind(&CBaseThread::isAborted, this);
         }
 
         CFileTransporter_private::CFileTransporter_private(const std::wstring &sUploadUrl, const unsigned char* cData, const int nSize)
+            : m_pInternal(new CFileTransporterBaseWin(sUploadUrl, cData, nSize))
         {
-            m_pInternal = new CFileTransporterBaseWin(sUploadUrl, cData, nSize);
+            m_pInternal->m_check_aborted = std::bind(&CBaseThread::isAborted, this);
         }
 
         CFileTransporter_private::CFileTransporter_private(const std::wstring &sUploadUrl, const std::wstring &sUploadFilePath)
+            : m_pInternal(new CFileTransporterBaseWin(sUploadUrl, sUploadFilePath))
         {
-            m_pInternal = new CFileTransporterBaseWin(sUploadUrl, sUploadFilePath);
+            m_pInternal->m_check_aborted = std::bind(&CBaseThread::isAborted, this);
         }
     }
 }

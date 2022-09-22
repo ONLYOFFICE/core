@@ -55,7 +55,7 @@
     <xsd:restriction base="xsd:unsignedLong"/>
   </xsd:simpleType>
   <xsd:simpleType name="ST_TwipsMeasure">
-    <xsd:union memberTypes="ST_UnsignedDecimalNumber ST_PositiveUniversalMeasure"/>
+    <xsd:union memberTypes="xsd:unsignedLong ST_PositiveUniversalMeasure"/>
   </xsd:simpleType>
   <xsd:simpleType name="ST_VerticalAlignRun">
     <xsd:restriction base="xsd:string">

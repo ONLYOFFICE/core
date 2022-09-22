@@ -43,7 +43,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(CELLMETA)
     public:
         CELLMETA();
-        virtual ~CELLMETA();
+        ~CELLMETA();
 
         XLS::BaseObjectPtr clone();
 

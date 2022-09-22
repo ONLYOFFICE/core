@@ -36,7 +36,7 @@ static void replace_all(std::string& s, const std::string& s1, const std::string
 
 static std::wstring htmlToXhtml(std::string& sFileContent, bool bNeedConvert)
 {
-    // Распознование кодировк
+    // Распознование кодировки
     if (bNeedConvert)
     {
         size_t posEncoding = sFileContent.find("charset=");

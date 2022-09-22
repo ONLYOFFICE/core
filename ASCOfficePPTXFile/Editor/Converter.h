@@ -236,6 +236,7 @@ namespace PPTX2EditorAdvanced
 			oBinaryWriter.m_pCommon->m_oNote_Rels.push_back(nMasterIndex);
 		}
 
+//---------------------------------------------------------------------------------------------------------------------
 		if (bIsNoBase64)
 		{
 			std::wstring strPrefix = L"PPTY;v"+std::to_wstring(NSBinPptxRW::g_nFormatVersionNoBase64)+L";0;";
@@ -247,12 +248,12 @@ namespace PPTX2EditorAdvanced
 		// число таблиц - заранее известно (сделаем 30. если потом не будет хватать - новая версия формата)
 		oBinaryWriter.WriteReserved(5 * 30);
 
-		// Main
+// Main
 		oBinaryWriter.StartMainRecord(NSBinPptxRW::NSMainTables::Main);
 		oBinaryWriter.WriteULONG(NSBinPptxRW::NSSerFormat::Signature);
 		oBinaryWriter.WriteULONG(0);
 		
-		// App
+// App
 		smart_ptr<PPTX::App> app = oFolder.Get(OOX::FileTypes::App).smart_dynamic_cast<PPTX::App>();
 		if (app.is_init())
 		{
@@ -260,7 +261,7 @@ namespace PPTX2EditorAdvanced
 			app->toPPTY(&oBinaryWriter);
 		}
 
-		// Core
+// Core
 		smart_ptr<PPTX::Core> core = oFolder.Get(OOX::FileTypes::Core).smart_dynamic_cast<PPTX::Core>();
 		if (core.is_init())
 		{
@@ -268,7 +269,7 @@ namespace PPTX2EditorAdvanced
 			core->toPPTY(&oBinaryWriter);
 		}
 
-		// CustomProperties
+// CustomProperties
 		smart_ptr<PPTX::CustomProperties> customProperties = oFolder.Get(OOX::FileTypes::CustomProperties).smart_dynamic_cast<PPTX::CustomProperties>();
 		if (customProperties.is_init())
 		{
@@ -276,7 +277,7 @@ namespace PPTX2EditorAdvanced
 			customProperties->toPPTY(&oBinaryWriter);
 		}
 
-		// PresProps
+// PresProps
 		smart_ptr<PPTX::PresProps> presProps = presentation->Get(OOX::Presentation::FileTypes::PresProps).smart_dynamic_cast<PPTX::PresProps>();
 		if (presProps.is_init())
 		{
@@ -284,7 +285,7 @@ namespace PPTX2EditorAdvanced
 			presProps->toPPTY(&oBinaryWriter);
 		}
 
-		// ViewProps
+// ViewProps
 		smart_ptr<PPTX::ViewProps> viewProps = presentation->Get(OOX::Presentation::FileTypes::ViewProps).smart_dynamic_cast<PPTX::ViewProps>();
 		if (viewProps.is_init())
 		{
@@ -292,19 +293,41 @@ namespace PPTX2EditorAdvanced
 			viewProps->toPPTY(&oBinaryWriter);
 		}
 
-		// TableStyles
+// TableStyles
 		smart_ptr<PPTX::TableStyles> tablestyles = presentation->Get(OOX::Presentation::FileTypes::TableStyles).smart_dynamic_cast<PPTX::TableStyles>();
 		if (tablestyles.is_init())
 		{
 			oBinaryWriter.StartMainRecord(NSBinPptxRW::NSMainTables::TableStyles);
 			tablestyles->toPPTY(&oBinaryWriter);
 		}
+// Customs
+		std::vector<OOX::CCustomXML*> customs;
+		std::vector<smart_ptr<OOX::File>>& container = presentation->GetContainer();
+		for (size_t i = 0; i < container.size(); ++i)
+		{
+			if (OOX::FileTypes::CustomXml == container[i]->type())
+			{
+				OOX::CCustomXML* pCustomXml = dynamic_cast<OOX::CCustomXML*>(container[i].GetPointer());
+				if (pCustomXml->m_bUsed) continue;
+				customs.push_back(pCustomXml);
+			}
+		}
+		if (false == customs.empty())
+		{
+			oBinaryWriter.StartMainRecord(NSBinPptxRW::NSMainTables::Customs);
+			oBinaryWriter.WriteULONG(customs.size());
 
-	// Presentation
+			for (size_t k = 0; k < customs.size(); ++k)
+			{
+				customs[k]->toPPTY(&oBinaryWriter);
+				customs[k]->m_bUsed = true;
+			}
+		}
+// Presentation
 		oBinaryWriter.StartMainRecord(NSBinPptxRW::NSMainTables::Presentation);
 		presentation->toPPTY(&oBinaryWriter);
 
-	// themes
+// themes
 		oBinaryWriter.StartMainRecord(NSBinPptxRW::NSMainTables::Themes);
 		
 		ULONG nCountThemes = 0;
@@ -319,8 +342,7 @@ namespace PPTX2EditorAdvanced
 			if (_themes[i].IsInit() == false) continue;
 			_themes[i]->toPPTY(&oBinaryWriter);
 		}
-
-	// slidemasters
+// slidemasters
 		oBinaryWriter.StartMainRecord(NSBinPptxRW::NSMainTables::SlideMasters);
 		
 		ULONG nCountSM = 0;
@@ -336,8 +358,7 @@ namespace PPTX2EditorAdvanced
 			
 			_slideMasters[i]->toPPTY(&oBinaryWriter);
 		}
-
-	// slidelayouts
+// slidelayouts
 		oBinaryWriter.StartMainRecord(NSBinPptxRW::NSMainTables::SlideLayouts);
        
 		ULONG nCountL = 0;
@@ -353,8 +374,7 @@ namespace PPTX2EditorAdvanced
 
 			_layouts[i]->toPPTY(&oBinaryWriter);
 		}
-
-	// slides
+// slides
 		oBinaryWriter.StartMainRecord(NSBinPptxRW::NSMainTables::Slides);
 		
 		ULONG nCountS = 0;
@@ -370,8 +390,7 @@ namespace PPTX2EditorAdvanced
 
 			_slides[i]->toPPTY(&oBinaryWriter);
 		}
-
-		// notes
+// notes
 		oBinaryWriter.StartMainRecord(NSBinPptxRW::NSMainTables::NotesSlides);
 		ULONG nCountN = (ULONG)_notes.size();
 		oBinaryWriter.WriteULONG(nCountN);
@@ -380,7 +399,7 @@ namespace PPTX2EditorAdvanced
 			_notes[i]->toPPTY(&oBinaryWriter);
 		}
 
-		// notesmasters
+// notesmasters
 		oBinaryWriter.StartMainRecord(NSBinPptxRW::NSMainTables::NotesMasters);
 		ULONG nCountNM = (ULONG)_notesMasters.size();
 		oBinaryWriter.WriteULONG(nCountNM);
@@ -388,8 +407,7 @@ namespace PPTX2EditorAdvanced
 		{
 			_notesMasters[i]->toPPTY(&oBinaryWriter);
 		}
-
-		// ImageMap ---------------------------------------
+// ImageMap ---------------------------------------
 		oBinaryWriter.StartMainRecord(NSBinPptxRW::NSMainTables::ImageMap);
 		oBinaryWriter.StartRecord(NSBinPptxRW::NSMainTables::ImageMap);
 		oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
@@ -406,10 +424,7 @@ namespace PPTX2EditorAdvanced
 
 		oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 		oBinaryWriter.EndRecord();
-
-		// ------------------------------------------------
-
-		// FontMap ----------------------------------------
+// FontMap ----------------------------------------
 		oBinaryWriter.StartMainRecord(NSBinPptxRW::NSMainTables::FontMap);
 		oBinaryWriter.StartRecord(NSBinPptxRW::NSMainTables::FontMap);
 		oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
@@ -425,120 +440,102 @@ namespace PPTX2EditorAdvanced
 
 		oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 		oBinaryWriter.EndRecord();
+// SlideRels --------------------------------------
+		oBinaryWriter.StartMainRecord(NSBinPptxRW::NSMainTables::SlideRels);
+		oBinaryWriter.StartRecord(NSBinPptxRW::NSMainTables::SlideRels);
+		oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 
-		// ------------------------------------------------
-
-		if (TRUE)
+		size_t _s_rels = oBinaryWriter.m_pCommon->m_oSlide_Layout_Rels.size();
+		for (size_t i = 0; i < _s_rels; ++i)
 		{
-			// SlideRels --------------------------------------
-			oBinaryWriter.StartMainRecord(NSBinPptxRW::NSMainTables::SlideRels);
-			oBinaryWriter.StartRecord(NSBinPptxRW::NSMainTables::SlideRels);
+			oBinaryWriter.WriteInt1(0, oBinaryWriter.m_pCommon->m_oSlide_Layout_Rels[i]);
+		}
+
+		oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+		oBinaryWriter.EndRecord();
+// SlideNotesRels --------------------------------------
+		oBinaryWriter.StartMainRecord(NSBinPptxRW::NSMainTables::SlideNotesRels);
+		oBinaryWriter.StartRecord(NSBinPptxRW::NSMainTables::SlideNotesRels);
+		oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+
+		_s_rels = oBinaryWriter.m_pCommon->m_oSlide_Notes_Rels.size();
+		for (size_t i = 0; i < _s_rels; ++i)
+		{
+			oBinaryWriter.WriteInt1(0, oBinaryWriter.m_pCommon->m_oSlide_Notes_Rels[i]);
+		}
+
+		oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+		oBinaryWriter.EndRecord();
+// ThemeRels --------------------------------------
+		oBinaryWriter.StartMainRecord(NSBinPptxRW::NSMainTables::ThemeRels);
+		oBinaryWriter.StartRecord(NSBinPptxRW::NSMainTables::ThemeRels);
+
+		std::vector <NSBinPptxRW::_masterSlideInfo>& th_rels = oBinaryWriter.m_pCommon->m_oRels;
+		oBinaryWriter.WriteULONG((ULONG)th_rels.size());
+
+		for (size_t i = 0; i < th_rels.size(); i++)
+		{
+			NSBinPptxRW::_masterSlideInfo& oTh = th_rels[i];
+
+			oBinaryWriter.StartRecord(0);
+
 			oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-
-			size_t _s_rels = oBinaryWriter.m_pCommon->m_oSlide_Layout_Rels.size();
-			for (size_t i = 0; i < _s_rels; ++i)
-			{
-				oBinaryWriter.WriteInt1(0, oBinaryWriter.m_pCommon->m_oSlide_Layout_Rels[i]);
-			}
-			
+			oBinaryWriter.WriteInt1(0, oTh.m_lThemeIndex);
+			//oBinaryWriter.WriteBYTE(1);
+			//oBinaryWriter.WriteStringA(oTh.m_strImageBase64);
 			oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-			oBinaryWriter.EndRecord();
-			// ------------------------------------------------
 
-			// SlideNotesRels --------------------------------------
-			oBinaryWriter.StartMainRecord(NSBinPptxRW::NSMainTables::SlideNotesRels);
-			oBinaryWriter.StartRecord(NSBinPptxRW::NSMainTables::SlideNotesRels);
-			oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+			ULONG lay_count = (ULONG)oTh.m_arLayoutIndexes.size();
+			oBinaryWriter.WriteULONG(lay_count);
 
-			_s_rels = oBinaryWriter.m_pCommon->m_oSlide_Notes_Rels.size();
-			for (size_t i = 0; i < _s_rels; ++i)
+			for (ULONG j = 0; j < lay_count; ++j)
 			{
-				oBinaryWriter.WriteInt1(0, oBinaryWriter.m_pCommon->m_oSlide_Notes_Rels[i]);
-			}
-
-			oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-			oBinaryWriter.EndRecord();
-			// ------------------------------------------------
-
-			// ThemeRels --------------------------------------
-			oBinaryWriter.StartMainRecord(NSBinPptxRW::NSMainTables::ThemeRels);
-			oBinaryWriter.StartRecord(NSBinPptxRW::NSMainTables::ThemeRels);
-			
-			std::vector <NSBinPptxRW::_masterSlideInfo>& th_rels = oBinaryWriter.m_pCommon->m_oRels;
-			oBinaryWriter.WriteULONG((ULONG)th_rels.size());
-
-			for (size_t i = 0; i < th_rels.size(); i++)
-			{
-				NSBinPptxRW::_masterSlideInfo& oTh = th_rels [i];
-
 				oBinaryWriter.StartRecord(0);
 
 				oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				oBinaryWriter.WriteInt1(0, oTh.m_lThemeIndex);
+				oBinaryWriter.WriteInt1(0, oTh.m_arLayoutIndexes[j]);
 				//oBinaryWriter.WriteBYTE(1);
-				//oBinaryWriter.WriteStringA(oTh.m_strImageBase64);
+				//oBinaryWriter.WriteStringA(oTh.m_arLayoutImagesBase64[j]);
 				oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-				
-				ULONG lay_count = (ULONG)oTh.m_arLayoutIndexes.size();
-				oBinaryWriter.WriteULONG(lay_count);
-
-				for (ULONG j = 0; j < lay_count; ++j)
-				{
-					oBinaryWriter.StartRecord(0);
-
-					oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-					oBinaryWriter.WriteInt1(0, oTh.m_arLayoutIndexes[j]);
-					//oBinaryWriter.WriteBYTE(1);
-					//oBinaryWriter.WriteStringA(oTh.m_arLayoutImagesBase64[j]);
-					oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-					
-					oBinaryWriter.EndRecord();
-				}
 
 				oBinaryWriter.EndRecord();
-			}		
-			// ------------------------------------------------
-
-			// NoteRels --------------------------------------
-			oBinaryWriter.StartMainRecord(NSBinPptxRW::NSMainTables::NotesRels);
-			oBinaryWriter.StartRecord(NSBinPptxRW::NSMainTables::NotesRels);
-			oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-
-			_s_rels = oBinaryWriter.m_pCommon->m_oNote_Rels.size();
-			for (size_t i = 0; i < _s_rels; ++i)
-			{
-				oBinaryWriter.WriteInt1(0, oBinaryWriter.m_pCommon->m_oNote_Rels[i]);
 			}
-
-			oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-			oBinaryWriter.EndRecord();
-			// ------------------------------------------------
-
-			// NoteRels --------------------------------------
-			oBinaryWriter.StartMainRecord(NSBinPptxRW::NSMainTables::NotesMastersRels);
-			oBinaryWriter.StartRecord(NSBinPptxRW::NSMainTables::NotesMastersRels);
-			oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-
-			_s_rels = oBinaryWriter.m_pCommon->m_oNotesMasters_Rels.size();
-			for (size_t i = 0; i < _s_rels; ++i)
-			{
-				oBinaryWriter.WriteInt1(0, oBinaryWriter.m_pCommon->m_oNotesMasters_Rels[i]);
-			}
-
-			oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-			oBinaryWriter.EndRecord();
-			// ------------------------------------------------
-
 
 			oBinaryWriter.EndRecord();
 		}
+// NoteRels --------------------------------------
+		oBinaryWriter.StartMainRecord(NSBinPptxRW::NSMainTables::NotesRels);
+		oBinaryWriter.StartRecord(NSBinPptxRW::NSMainTables::NotesRels);
+		oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 
-		// ------------------------------------------------
+		_s_rels = oBinaryWriter.m_pCommon->m_oNote_Rels.size();
+		for (size_t i = 0; i < _s_rels; ++i)
+		{
+			oBinaryWriter.WriteInt1(0, oBinaryWriter.m_pCommon->m_oNote_Rels[i]);
+		}
 
+		oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+		oBinaryWriter.EndRecord();
+// NoteMastersRels --------------------------------------
+		oBinaryWriter.StartMainRecord(NSBinPptxRW::NSMainTables::NotesMastersRels);
+		oBinaryWriter.StartRecord(NSBinPptxRW::NSMainTables::NotesMastersRels);
+		oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+
+		_s_rels = oBinaryWriter.m_pCommon->m_oNotesMasters_Rels.size();
+		for (size_t i = 0; i < _s_rels; ++i)
+		{
+			oBinaryWriter.WriteInt1(0, oBinaryWriter.m_pCommon->m_oNotesMasters_Rels[i]);
+		}
+
+		oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+		oBinaryWriter.EndRecord();
+
+		oBinaryWriter.EndRecord();
+// ------------------------------------------------
 		oBinaryWriter.WriteEmbeddedFonts();
 		oBinaryWriter.WriteMainPart(nStartPos);
 
-		// все записалось нормально. осталось скинуть на диск
+// все записалось нормально. осталось скинуть на диск
 		BYTE* pbBinBuffer = oBinaryWriter.GetBuffer();
 		int nBinBufferLen = (int)oBinaryWriter.GetPosition();
 		if (bIsNoBase64)

@@ -449,6 +449,9 @@ namespace DocFileFormat
 		/// A StyleSheetDescription can have a TAPX.
 		/// If the style doesn't modify table properties, tapx is null.
 		TablePropertyExceptions* tapx;
+		bool fQFormat;
+		bool fUnhideWhenUsed;
+		unsigned int uiPriority;
 
 		/// Creates an empty STD object
 		StyleSheetDescription();

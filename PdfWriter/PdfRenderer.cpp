@@ -528,13 +528,12 @@ CPdfRenderer::CPdfRenderer(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA) :
 	m_pDocument->SetCompressionMode(COMP_ALL);
 
 	m_bValid      = true;
+	m_bEdit       = false;
+	m_bEditPage   = false;
 	m_dPageHeight = 297;
 	m_dPageWidth  = 210;
 	m_pPage       = NULL;
 	m_pFont       = NULL;
-
-	m_nCounter = 0;
-	m_nPagesCount = 0;
 
 	m_bNeedUpdateTextFont      = true;
 	m_bNeedUpdateTextColor     = true;
@@ -610,13 +609,9 @@ std::wstring CPdfRenderer::GetTempFile()
 {
 	return NSFile::CFileBinary::CreateTempFileWithUniqueName(m_wsTempFolder, L"PDF");
 }
-void         CPdfRenderer::SetThemesPlace(const std::wstring& wsThemesPlace)
+std::wstring CPdfRenderer::GetTempDirectory()
 {
-	m_wsThemesPlace = wsThemesPlace;
-}
-std::wstring CPdfRenderer::GetThemesPlace()
-{
-	return m_wsThemesPlace;
+	return m_wsTempFolder;
 }
 //----------------------------------------------------------------------------------------
 // Тип рендерера
@@ -633,7 +628,7 @@ HRESULT CPdfRenderer::NewPage()
 {
 	m_oCommandManager.Flush();
 
-	if (!IsValid())
+	if (!IsValid() || m_bEdit)
 		return S_FALSE;
 
 	m_pPage = m_pDocument->AddPage();
@@ -644,22 +639,10 @@ HRESULT CPdfRenderer::NewPage()
 		return S_FALSE;
 	}
 
-	m_pPage->SetWidth(m_dPageWidth);
-	m_pPage->SetHeight(m_dPageHeight);
+	m_pPage->SetWidth(MM_2_PT(m_dPageWidth));
+	m_pPage->SetHeight(MM_2_PT(m_dPageHeight));
 
-	m_oPen.Reset();
-	m_oBrush.Reset();
-	m_oFont.Reset();
-	m_oPath.Clear();
-
-    // clear font!!!
-    m_oFont.SetName(L"");
-    m_oFont.SetSize(-1);
-    m_oFont.SetStyle(1 << 5);
-
-	m_lClipDepth = 0;
-
-    m_nPagesCount++;//printf("Page %d\n", m_nPagesCount++);
+	Reset();
 
 	return S_OK;
 }
@@ -672,6 +655,11 @@ HRESULT CPdfRenderer::put_Height(const double& dHeight)
 {
 	if (!IsValid() || !m_pPage)
 		return S_FALSE;
+
+	if (m_bEdit && m_bEditPage)
+	{
+		return S_OK;
+	}
 
 	m_dPageHeight = dHeight;
 	m_pPage->SetHeight(MM_2_PT(dHeight));
@@ -686,6 +674,11 @@ HRESULT CPdfRenderer::put_Width(const double& dWidth)
 {
 	if (!IsValid() || !m_pPage)
 		return S_FALSE;
+
+	if (m_bEdit && m_bEditPage)
+	{
+		return S_OK;
+	}
 
 	m_dPageWidth = dWidth;
 	m_pPage->SetWidth(MM_2_PT(dWidth));
@@ -1036,8 +1029,8 @@ HRESULT CPdfRenderer::CommandDrawTextCHAR(const LONG& lUnicode, const double& dX
 		return S_FALSE;
 
 	unsigned int unUnicode = lUnicode;
-	bool bRes = DrawText(&unUnicode, 1, dX, dY, NULL);
-	return bRes ? S_OK : S_FALSE;
+	unsigned char* pCodes = EncodeString(&unUnicode, 1);
+	return DrawText(pCodes, 2, dX, dY) ? S_OK : S_FALSE;
 }
 HRESULT CPdfRenderer::CommandDrawText(const std::wstring& wsUnicodeText, const double& dX, const double& dY, const double& dW, const double& dH)
 {
@@ -1047,6 +1040,12 @@ HRESULT CPdfRenderer::CommandDrawText(const std::wstring& wsUnicodeText, const d
 	unsigned int unLen;
 	unsigned int* pUnicodes = WStringToUtf32(wsUnicodeText, unLen);
 	if (!pUnicodes)
+		return S_FALSE;
+
+	unsigned char* pCodes = EncodeString(pUnicodes, unLen);
+	delete[] pUnicodes;
+
+	if (!pCodes)
 		return S_FALSE;
 
 	// Специальный случай для текста из Djvu, нам не нужно, чтобы он рисовался
@@ -1062,9 +1061,6 @@ HRESULT CPdfRenderer::CommandDrawText(const std::wstring& wsUnicodeText, const d
 		}
 
 		double dFontSize = MM_2_PT(dH);
-		unsigned char* pCodes = m_pFont->EncodeString(pUnicodes, unLen);
-		delete[] pUnicodes;
-
 		double dStringWidth = 0;
 		for (unsigned int unIndex = 0; unIndex < unLen; unIndex++)
 		{
@@ -1087,10 +1083,7 @@ HRESULT CPdfRenderer::CommandDrawText(const std::wstring& wsUnicodeText, const d
 		return S_OK;
 	}
 
-	bool bRes = DrawText(pUnicodes, unLen, dX, dY, NULL);
-	delete[] pUnicodes;
-
-	return bRes ? S_OK : S_FALSE;
+	return DrawText(pCodes, unLen * 2, dX, dY) ? S_OK : S_FALSE;
 }
 HRESULT CPdfRenderer::CommandDrawTextExCHAR(const LONG& lUnicode, const LONG& lGid, const double& dX, const double& dY, const double& dW, const double& dH)
 {
@@ -1098,9 +1091,9 @@ HRESULT CPdfRenderer::CommandDrawTextExCHAR(const LONG& lUnicode, const LONG& lG
 		return S_FALSE;
 
 	unsigned int unUnicode = lUnicode;
-	unsigned int unGid     = lGid;
-	bool bRes = DrawText(&unUnicode, 1, dX, dY, &unGid);
-	return bRes ? S_OK : S_FALSE;
+	unsigned int unGID     = lGid;
+	unsigned char* pCodes = EncodeGID(unGID, &unUnicode, 1);
+	return DrawText(pCodes, 2, dX, dY) ? S_OK : S_FALSE;
 }
 HRESULT CPdfRenderer::CommandDrawTextEx(const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int unGidsCount, const double& dX, const double& dY, const double& dW, const double& dH)
 {
@@ -1137,10 +1130,17 @@ HRESULT CPdfRenderer::CommandDrawTextEx(const std::wstring& wsUnicodeText, const
 			return S_FALSE;
 	}
 
-	bool bRes = DrawText(pUnicodes, unLen, dX, dY, pGids);
+	unsigned char* pCodes = EncodeString(pUnicodes,  unLen, pGids);
 	RELEASEARRAYOBJECTS(pUnicodes);
+	return DrawText(pCodes, unLen * 2, dX, dY) ? S_OK : S_FALSE;
+}
+HRESULT CPdfRenderer::CommandDrawTextCHAR2(unsigned int* pUnicodes, const unsigned int& unUnicodeCount, const unsigned int& unGid, const double& dX, const double& dY, const double& dW, const double& dH)
+{
+	if (!IsPageValid())
+		return S_FALSE;
 
-	return bRes ? S_OK : S_FALSE;
+	unsigned char* pCodes = EncodeGID(unGid, pUnicodes, unUnicodeCount);
+	return DrawText(pCodes, 2, dX, dY) ? S_OK : S_FALSE;
 }
 //----------------------------------------------------------------------------------------
 // Маркеры команд
@@ -1182,9 +1182,9 @@ HRESULT CPdfRenderer::EndCommand(const DWORD& dwType)
 		for (int nIndex = 0, nCount = m_vDestinations.size(); nIndex < nCount; ++nIndex)
 		{
 			TDestinationInfo& oInfo = m_vDestinations.at(nIndex);
-			if (m_nPagesCount > oInfo.unDestPage && m_nPagesCount > oInfo.unPage)
+			if (m_pDocument->GetPagesCount() > oInfo.unDestPage)
 			{
-				AddLink(oInfo.unPage, oInfo.dX, oInfo.dY, oInfo.dW, oInfo.dH, oInfo.dDestX, oInfo.dDestY, oInfo.unDestPage);
+				AddLink(oInfo.pPage, oInfo.dX, oInfo.dY, oInfo.dW, oInfo.dH, oInfo.dDestX, oInfo.dDestY, oInfo.unDestPage);
 				m_vDestinations.erase(m_vDestinations.begin() + nIndex);
 				nIndex--;
 				nCount--;
@@ -1533,13 +1533,14 @@ HRESULT CPdfRenderer::AddLink(const double& dX, const double& dY, const double& 
 	if (unPagesCount == 0)
 		return S_OK;
 
-	if (!m_pDocument->GetPage(nPage))
+	CPage* pPage = m_pDocument->GetPage(nPage);
+	if (!pPage)
 	{
-		m_vDestinations.push_back(TDestinationInfo(unPagesCount - 1, dX, dY, dW, dH, dDestX, dDestY, nPage));
+		m_vDestinations.push_back(TDestinationInfo(m_pPage, dX, dY, dW, dH, dDestX, dDestY, nPage));
 	}
 	else
 	{
-		AddLink(unPagesCount - 1, dX, dY, dW, dH, dDestX, dDestY, nPage);
+		AddLink(m_pPage, dX, dY, dW, dH, dDestX, dDestY, nPage);
 	}
 
 	return S_OK;
@@ -1600,6 +1601,11 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 	else if (oInfo.IsPicture())
 	{
 		CPictureField* pField = m_pDocument->CreatePictureField();
+		pFieldBase = static_cast<CFieldBase*>(pField);
+	}
+	else if (oInfo.IsSignature())
+	{
+		CSignatureField* pField = m_pDocument->CreateSignatureField();
 		pFieldBase = static_cast<CFieldBase*>(pField);
 	}
 
@@ -1674,13 +1680,13 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 				CFontCidTrueType* pTempFont = GetFont(wsFontFamily, isBold, isItalic);
 				if (pTempFont)
 				{
-					pCodes[unIndex]  = pTempFont->EncodeChar(unUnicode);
+					pCodes[unIndex]  = pTempFont->EncodeUnicode(unUnicode);
 					ppFonts[unIndex] = pTempFont;
 					continue;
 				}
 			}
 
-			pCodes[unIndex]  = m_pFont->EncodeChar(unUnicode);
+			pCodes[unIndex]  = m_pFont->EncodeUnicode(unUnicode);
 			ppFonts[unIndex] = m_pFont;
 		}
 
@@ -1884,12 +1890,12 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 				CFontCidTrueType* pTempFont = GetFont(wsFontFamily, isBold, isItalic);
 				if (pTempFont)
 				{
-					pCodes[unIndex]  = pTempFont->EncodeChar(unUnicode);
+					pCodes[unIndex]  = pTempFont->EncodeUnicode(unUnicode);
 					ppFonts[unIndex] = pTempFont;
 					continue;
 				}
 			}
-			pCodes[unIndex]  = m_pFont->EncodeChar(unUnicode);
+			pCodes[unIndex]  = m_pFont->EncodeUnicode(unUnicode);
 			ppFonts[unIndex] = m_pFont;
 		}
 
@@ -1972,8 +1978,8 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 		unsigned int unCheckedSymbol   = pPr->GetCheckedSymbol();
 		unsigned int unUncheckedSymbol = pPr->GetUncheckedSymbol();
 
-		unsigned short ushCheckedCode   = pCheckedFont->EncodeChar(unCheckedSymbol);
-		unsigned short ushUncheckedCode = pUncheckedFont->EncodeChar(unUncheckedSymbol);
+		unsigned short ushCheckedCode   = pCheckedFont->EncodeUnicode(unCheckedSymbol);
+		unsigned short ushUncheckedCode = pUncheckedFont->EncodeUnicode(unUncheckedSymbol);
 
 		TColor oColor = m_oBrush.GetTColor1();
 		pField->SetAppearance(L"", &ushCheckedCode, 1, pCheckedFont, L"", &ushUncheckedCode, 1, pUncheckedFont, TRgb(oColor.r, oColor.g, oColor.b), 1, m_oFont.GetSize(), 0, MM_2_PT(dH - oInfo.GetBaseLineOffset()));
@@ -1998,6 +2004,33 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 		}
 
 		pField->SetAppearance(pImage);
+	}
+	else if (oInfo.IsSignature())
+	{
+		const CFormFieldInfo::CSignatureFormPr* pPr = oInfo.GetSignaturePr();
+
+		CSignatureField* pField = dynamic_cast<CSignatureField*>(pFieldBase);
+		if (!pField)
+			return S_FALSE;
+
+		pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
+		pField->SetName(pPr->GetName());
+		pField->SetReason(pPr->GetReason());
+		pField->SetContact(pPr->GetContact());
+		pField->SetDate(pPr->GetDate());
+
+		std::wstring wsPath = pPr->GetPicturePath();
+		CImageDict* pImage = NULL;
+		if (!wsPath.empty())
+		{
+			Aggplus::CImage oImage(wsPath);
+			pImage = LoadImage(&oImage, 255);
+		}
+
+		pField->SetAppearance(pImage);
+
+		// TODO Реализовать, когда появится поддержка CSignatureField
+		pField->SetCert();
 	}
 
 
@@ -2073,6 +2106,125 @@ HRESULT CPdfRenderer::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbi
 	m_pPage->DrawImage(pPdfImage, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY - dH), MM_2_PT(dW), MM_2_PT(dH));
 	m_pPage->GrRestore();
 	return S_OK;
+}
+bool CPdfRenderer::EditPdf(const std::wstring& wsPath, int nPosLastXRef, int nSizeXRef, const std::wstring& sCatalog, int nCatalog, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm, int nFormField)
+{
+	bool bRes = m_pDocument->EditPdf(wsPath, nPosLastXRef, nSizeXRef, sCatalog, nCatalog, sEncrypt, sPassword, nCryptAlgorithm, nFormField);
+	if (bRes)
+	{
+		m_bEdit = true;
+	}
+	return bRes;
+}
+bool CPdfRenderer::CreatePageTree(const std::wstring& sPageTree, int nPageTree)
+{
+	if (!m_bEdit)
+	{
+		return false;
+	}
+	return m_pDocument->CreatePageTree(sPageTree, nPageTree);
+}
+std::pair<int, int> CPdfRenderer::GetPageRef(int nPageIndex)
+{
+	return m_pDocument->GetPageRef(nPageIndex);
+}
+bool CPdfRenderer::EditPage(const std::wstring& sPage, int nPage)
+{
+	if (!IsValid() || !m_bEdit)
+		return false;
+	m_oCommandManager.Flush();
+
+	m_pPage = m_pDocument->EditPage(sPage, nPage);
+	if (m_pPage)
+	{
+		m_dPageWidth  = PT_2_MM(m_pPage->GetWidth());
+		m_dPageHeight = PT_2_MM(m_pPage->GetHeight());
+		Reset();
+		m_bEditPage = true;
+		return true;
+	}
+	return false;
+}
+bool CPdfRenderer::AddPage(int nPageIndex)
+{
+	if (!IsValid() || !m_bEdit)
+		return false;
+	m_oCommandManager.Flush();
+
+	m_pPage = m_pDocument->AddPage(nPageIndex);
+	if (m_pPage)
+	{
+		m_pPage->SetWidth(MM_2_PT(m_dPageWidth));
+		m_pPage->SetHeight(MM_2_PT(m_dPageHeight));
+		Reset();
+		m_bEditPage = false;
+		return true;
+	}
+	return false;
+}
+bool CPdfRenderer::DeletePage(int nPageIndex)
+{
+	if (!m_bEdit)
+	{
+		return false;
+	}
+	return m_pDocument->DeletePage(nPageIndex);
+}
+bool CPdfRenderer::EditClose(const std::wstring& sTrailer, const std::wstring& sInfo)
+{
+	if (!IsValid() || !m_bEdit)
+		return false;
+	m_oCommandManager.Flush();
+
+	unsigned int nPagesCount = m_pDocument->GetPagesCount();
+	for (int nIndex = 0, nCount = m_vDestinations.size(); nIndex < nCount; ++nIndex)
+	{
+		TDestinationInfo& oInfo = m_vDestinations.at(nIndex);
+		if (nPagesCount > oInfo.unDestPage)
+		{
+			AddLink(oInfo.pPage, oInfo.dX, oInfo.dY, oInfo.dW, oInfo.dH, oInfo.dDestX, oInfo.dDestY, oInfo.unDestPage);
+			m_vDestinations.erase(m_vDestinations.begin() + nIndex);
+			nIndex--;
+			nCount--;
+		}
+	}
+
+	bool bRes = m_pDocument->AddToFile(sTrailer, sInfo);
+	if (bRes)
+	{
+		m_bEdit = false;
+		m_bEditPage = false;
+	}
+	return bRes;
+}
+void CPdfRenderer::PageRotate(int nRotate)
+{
+	if (m_pPage && m_bEdit)
+		m_pPage->SetRotate(nRotate);
+}
+void CPdfRenderer::Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate)
+{
+	if (!m_bEdit)
+	{
+		return;
+	}
+	CImageDict* pImage = NULL;
+	if (!wsPicturePath.empty())
+	{
+		Aggplus::CImage oImage(wsPicturePath);
+		pImage = LoadImage(&oImage, 255);
+	}
+
+	m_pDocument->Sign(TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)),
+		pImage, pCertificate);
+}
+std::wstring CPdfRenderer::GetEditPdfPath()
+{
+	if (!m_bEdit)
+	{
+		return L"";
+	}
+	return m_pDocument->GetEditPdfPath();
 }
 
 NSFonts::IApplicationFonts* CPdfRenderer::GetApplicationFonts()
@@ -2189,20 +2341,15 @@ bool CPdfRenderer::DrawImage(Aggplus::CImage* pImage, const double& dX, const do
 	
 	return true;
 }
-bool CPdfRenderer::DrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int* pGids)
+bool CPdfRenderer::DrawText(unsigned char* pCodes, const unsigned int& unLen, const double& dX, const double& dY)
 {
-	if (m_bNeedUpdateTextFont)
-		UpdateFont();
-
-	if (!m_pFont)
+	if (!pCodes || !unLen)
 		return false;
-
-	unsigned char* pCodes = m_pFont->EncodeString(pUnicodes, unLen, pGids);
 
 	CTransform& t = m_oTransform;
 	m_oCommandManager.SetTransform(t.m11, -t.m12, -t.m21, t.m22, MM_2_PT(t.dx + t.m21 * m_dPageHeight), MM_2_PT(m_dPageHeight - m_dPageHeight * t.m22 - t.dy));
 
-	CRendererTextCommand* pText = m_oCommandManager.AddText(pCodes, unLen * 2, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY));
+	CRendererTextCommand* pText = m_oCommandManager.AddText(pCodes, unLen, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY));
 	pText->SetFont(m_pFont);
 	pText->SetSize(m_oFont.GetSize());
 	pText->SetColor(m_oBrush.GetColor1());
@@ -2215,13 +2362,10 @@ bool CPdfRenderer::DrawText(unsigned int* pUnicodes, unsigned int unLen, const d
 }
 bool CPdfRenderer::PathCommandDrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int* pGids)
 {
-	if (m_bNeedUpdateTextFont)
-		UpdateFont();
-
-	if (!m_pFont)
+	unsigned char* pCodes = EncodeString(pUnicodes, unLen, pGids);
+	if (!pCodes)
 		return false;
 
-	unsigned char* pCodes = m_pFont->EncodeString(pUnicodes, unLen, pGids);
 	m_oPath.AddText(m_pFont, pCodes, unLen * 2, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY), m_oFont.GetSize(), MM_2_PT(m_oFont.GetCharSpace()));
 	return true;
 }
@@ -2560,16 +2704,30 @@ void CPdfRenderer::UpdateBrush()
 		m_pPage->SetFillAlpha((unsigned char)m_oBrush.GetAlpha1());
 	}
 }
-HRESULT CPdfRenderer::OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker)
+void CPdfRenderer::Reset()
 {
-    if (!NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, false, bIsUsePicker))
+	m_oPen.Reset();
+	m_oBrush.Reset();
+	m_oFont.Reset();
+	m_oPath.Clear();
+
+	// clear font!!!
+	m_oFont.SetName(L"");
+	m_oFont.SetSize(-1);
+	m_oFont.SetStyle(1 << 5);
+
+	m_lClipDepth = 0;
+}
+HRESULT CPdfRenderer::OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams)
+{
+	if (!NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, false, pParams))
 		return S_FALSE;
 
 	return S_OK;
 }
-HRESULT CPdfRenderer::OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker)
+HRESULT CPdfRenderer::OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams)
 {
-    if (!NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, true, bIsUsePicker))
+	if (!NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, true, pParams))
 		return S_FALSE;
 
 	return S_OK;
@@ -2741,9 +2899,9 @@ void CPdfRenderer::CBrushState::Reset()
 	m_pShadingPoints      = NULL;
 	m_lShadingPointsCount = 0;
 }
-void CPdfRenderer::AddLink(const unsigned int& unPage, const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const unsigned int& unDestPage)
+void CPdfRenderer::AddLink(PdfWriter::CPage* pPage, const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const unsigned int& unDestPage)
 {
-	CPage* pCurPage  = m_pDocument->GetPage(unPage);
+	CPage* pCurPage  = pPage;
 	CPage* pDestPage = m_pDocument->GetPage(unDestPage);
 	if (!pCurPage || !pDestPage)
 		return;
@@ -2756,7 +2914,6 @@ void CPdfRenderer::AddLink(const unsigned int& unPage, const double& dX, const d
 	CAnnotation* pAnnot = m_pDocument->CreateLinkAnnot(pCurPage, TRect(MM_2_PT(dX), pCurPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)), pDestination);
 	pAnnot->SetBorderStyle(EBorderSubtype::border_subtype_Solid, 0);
 }
-
 bool CPdfRenderer::IsValid()
 {
         return m_bValid;
@@ -2772,7 +2929,49 @@ void CPdfRenderer::SetError()
 {
         m_bValid = false;
 }
+unsigned char* CPdfRenderer::EncodeString(const unsigned int *pUnicodes, const unsigned int& unCount, const unsigned int *pGIDs)
+{
+	if (m_bNeedUpdateTextFont)
+		UpdateFont();
 
+	if (!m_pFont)
+		return NULL;
+
+	unsigned char* pCodes = new unsigned char[unCount * 2];
+	if (!pCodes)
+		return NULL;
+
+	for (unsigned int unIndex = 0; unIndex < unCount; unIndex++)
+	{
+		unsigned short ushCode;
+		if (pGIDs)
+			ushCode = m_pFont->EncodeGID(pGIDs[unIndex], &pUnicodes[unIndex], 1);
+		else
+			ushCode = m_pFont->EncodeUnicode(pUnicodes[unIndex]);
+
+		pCodes[2 * unIndex + 0] = (ushCode >> 8) & 0xFF;
+		pCodes[2 * unIndex + 1] = ushCode & 0xFF;
+	}
+
+	return pCodes;
+}
+unsigned char* CPdfRenderer::EncodeGID(const unsigned int& unGID, const unsigned int* pUnicodes, const unsigned int& unUnicodesCount)
+{
+	if (m_bNeedUpdateTextFont)
+		UpdateFont();
+
+	if (!m_pFont)
+		return NULL;
+
+	unsigned char* pCodes = new unsigned char[2];
+	if (!pCodes)
+		return NULL;
+
+	unsigned short ushCode = m_pFont->EncodeGID(unGID, pUnicodes, unUnicodesCount);
+	pCodes[0] = (ushCode >> 8) & 0xFF;
+	pCodes[1] = ushCode & 0xFF;
+	return pCodes;
+}
 std::wstring CPdfRenderer::GetDownloadFile(const std::wstring& sUrl)
 {
     std::wstring::size_type n1 = sUrl.find(L"www.");

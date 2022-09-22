@@ -1125,7 +1125,7 @@ namespace SimpleTypes
 			return m_sValue;
 		}
 
-        void    SetValue(std::wstring &sValue)
+        void    SetValue(const std::wstring &sValue)
 		{
 			m_sValue = sValue;
 		}
@@ -2345,11 +2345,12 @@ namespace SimpleTypes
 
         virtual EFtnEdn FromString(std::wstring &sValue)
 		{
-            if      ( (L"continuationNotice")    == sValue ) this->m_eValue = ftnednContinuationNotice;
-            else if ( (L"continuationSeparator") == sValue ) this->m_eValue = ftnednContinuationSeparator;
-            else if ( (L"normal")                == sValue ) this->m_eValue = ftnednNormal;
-            else if ( (L"separator")             == sValue ) this->m_eValue = ftnednSeparator;
-            else                                              this->m_eValue = eDefValue;
+            if      (L"continuationNotice"    == sValue ) this->m_eValue = ftnednContinuationNotice;
+            else if (L"continuationSeparator" == sValue ||
+					 L"continuation-separator" == sValue) this->m_eValue = ftnednContinuationSeparator;
+            else if (L"normal"                == sValue ) this->m_eValue = ftnednNormal;
+            else if (L"separator"             == sValue ) this->m_eValue = ftnednSeparator;
+            else                                          this->m_eValue = eDefValue;
 
             return this->m_eValue;
 		}
@@ -2544,8 +2545,91 @@ namespace SimpleTypes
 		SimpleType_FromString     (EHeightRule)
 		SimpleType_Operator_Equal (CHeightRule)
 	};
+	//--------------------------------------------------------------------------------
+	// TextFormFormatType 
+	//--------------------------------------------------------------------------------		
 
+	enum ETextFormFormatType
+	{
+		textFormFormatTypeNone   = 0,
+		textFormFormatTypeDigit  = 1,
+		textFormFormatTypeLetter = 2,
+		textFormFormatTypeMask   = 3,
+		textFormFormatTypeRegExp = 4
+	};
 
+	template<ETextFormFormatType eDefValue = textFormFormatTypeNone>
+	class CTextFormFormatType : public CSimpleType<ETextFormFormatType, eDefValue>
+	{
+	public:
+		CTextFormFormatType() {}
+
+		virtual ETextFormFormatType FromString(std::wstring &sValue)
+		{
+			if (L"none" == sValue) this->m_eValue = textFormFormatTypeNone;
+			else if (L"digit" == sValue) this->m_eValue = textFormFormatTypeDigit;
+			else if (L"letter" == sValue) this->m_eValue = textFormFormatTypeLetter;
+			else if (L"mask" == sValue) this->m_eValue = textFormFormatTypeMask;
+			else if (L"regExp" == sValue) this->m_eValue = textFormFormatTypeRegExp;
+			else this->m_eValue = eDefValue;
+
+			return this->m_eValue;
+		}
+		virtual std::wstring ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case textFormFormatTypeNone: return L"none";
+			case textFormFormatTypeDigit: return L"digit";
+			case textFormFormatTypeLetter: return L"letter";
+			case textFormFormatTypeMask: return L"mask";
+			case textFormFormatTypeRegExp: return L"regExp";
+			default: return (L"none");
+			}
+		}
+		SimpleType_FromString(ETextFormFormatType)
+		SimpleType_Operator_Equal(CTextFormFormatType)
+	};
+
+	enum EComplexFormType
+	{
+		complexFormTypeCustom    = 0,
+		complexFormTypeTelephone = 1,
+		complexFormTypeEmail     = 2
+	};
+
+	template<EComplexFormType eDefValue = complexFormTypeCustom>
+	class CComplexFormType : public CSimpleType<EComplexFormType, eDefValue>
+	{
+	public:
+		CComplexFormType() {}
+
+		virtual EComplexFormType FromString(std::wstring &sValue)
+		{
+			if (L"custom" == sValue || L"none" == sValue) this->m_eValue = complexFormTypeCustom;
+			else if (L"telephone" == sValue || L"phone" == sValue) this->m_eValue = complexFormTypeTelephone;
+			else if (L"email" == sValue) this->m_eValue = complexFormTypeEmail;
+			else this->m_eValue = eDefValue;
+
+			return this->m_eValue;
+		}
+		virtual std::wstring ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case complexFormTypeCustom: return L"custom";
+			case complexFormTypeTelephone: return L"telephone";
+			case complexFormTypeEmail: return L"email";
+			default: return (L"custom");
+			}
+		}
+		bool IsDefaultValue() const
+		{
+			return (this->m_eValue == eDefValue);
+		}
+		SimpleType_FromString(EComplexFormType)
+		SimpleType_Operator_Equal(CComplexFormType)
+	};
 	//--------------------------------------------------------------------------------
 	// HexColor 17.18.38 (Part 1)
 	//--------------------------------------------------------------------------------		
@@ -5086,9 +5170,16 @@ namespace SimpleTypes
 			m_bUnit = false;
 			m_dValue = dValue;
 		}
-        virtual std::wstring ToString  () const
+        virtual std::wstring ToString () const
 		{
-			return boost::lexical_cast<std::wstring>(m_dValue) + L"pt";
+			std::wstring sResult;
+
+			if (m_bUnit)
+				sResult = boost::lexical_cast<std::wstring>(m_dValue) + L"pt";
+			else
+				sResult = std::to_wstring((int)(m_dValue * 2));
+
+			return sResult;
 		}
 
 		SimpleType_FromString          (double)
@@ -6705,7 +6796,6 @@ namespace SimpleTypes
 		xmlspaceDefault  = 0,
 		xmlspacePreserve = 1
 	};
-
 	template<EXmlSpace eDefValue = xmlspaceDefault>
 	class CXmlSpace : public CSimpleType<EXmlSpace, eDefValue>
 	{
@@ -6739,20 +6829,17 @@ namespace SimpleTypes
 		SimpleType_FromString     (EXmlSpace)
 		SimpleType_Operator_Equal (CXmlSpace)
 	};
-
 //---------------------------------------------------------------------------------------------
 	enum ECryptAlgClass
 	{
 		AlgClassCustom = 0,
 		AlgClassHash = 1
 	};
-
 	template<ECryptAlgClass eDefValue = AlgClassCustom>
 	class CCryptAlgClass : public CSimpleType<ECryptAlgClass, eDefValue>
 	{
 	public:
 		CCryptAlgClass() {}
-
 		virtual ECryptAlgClass FromString(std::wstring &sValue)
 		{
 			if (L"custom" == sValue) this->m_eValue = AlgClassCustom;
@@ -6787,7 +6874,6 @@ namespace SimpleTypes
 		AlgTypeCustom = 0,
 		AlgTypeTypeAny = 1
 	};
-
 	template<ECryptAlgType eDefValue = AlgTypeCustom>
 	class CCryptAlgType : public CSimpleType<ECryptAlgType, eDefValue>
 	{
@@ -6829,13 +6915,11 @@ namespace SimpleTypes
 		CryptProvRsaAES = 1,
 		CryptProvRsaFull = 2
 	};
-
 	template<ECryptProv eDefValue = CryptProvCustom>
 	class CCryptProv : public CSimpleType<ECryptProv, eDefValue>
 	{
 	public:
 		CCryptProv() {}
-
 		virtual ECryptProv FromString(std::wstring &sValue)
 		{
 			if (L"custom" == sValue) this->m_eValue = CryptProvCustom;
@@ -6854,7 +6938,6 @@ namespace SimpleTypes
 
 			return this->m_eValue;
 		}
-
 		virtual std::wstring ToString() const
 		{
 			switch (this->m_eValue)
@@ -6865,7 +6948,6 @@ namespace SimpleTypes
 			default: return (L"custom");
 			}
 		}
-
 		SimpleType_FromString(ECryptProv)
 		SimpleType_Operator_Equal(CCryptProv)
 	};
@@ -6886,7 +6968,6 @@ namespace SimpleTypes
 		cryptalgoritmnameSHA512     = 9,
 		cryptalgoritmnameWHIRLPOOL  = 10,
 	};
-
 	template<ECryptAlgoritmName eDefValue = cryptalgoritmnameUnknown>
 	class CCryptAlgoritmName : public CSimpleType<ECryptAlgoritmName, eDefValue>
 	{
@@ -6910,7 +6991,6 @@ namespace SimpleTypes
 
             return this->m_eValue;
 		}
-
         virtual std::wstring ToString() const
 		{
             switch(this->m_eValue)
@@ -6931,7 +7011,6 @@ namespace SimpleTypes
 		SimpleType_FromString     (ECryptAlgoritmName)
 		SimpleType_Operator_Equal (CCryptAlgoritmName)
 	};
-
 
 	//--------------------------------------------------------------------------------
 	// PitchFamily
@@ -6984,8 +7063,7 @@ namespace SimpleTypes
 
             return this->m_eValue;
 		}
-
-        virtual std::wstring      ToString  () const
+        virtual std::wstring ToString  () const
 		{
             switch(this->m_eValue)
 			{
@@ -7010,7 +7088,6 @@ namespace SimpleTypes
 			default               : return (L"00");
 			}
 		}
-
 		SimpleType_FromString     (EPitchFamily)
 		SimpleType_Operator_Equal (CPitchFamily)
 
@@ -7033,23 +7110,20 @@ namespace SimpleTypes
 		dirLtr    = 0,
 		dirRtl    = 1
 	};
-
 	template<EDirVal eDefValue = dirLtr>
 	class CDirVal : public CSimpleType<EDirVal, eDefValue>
 	{
 	public:
 		CDirVal() {}
-
         virtual EDirVal FromString(std::wstring &sValue)
 		{
-            if       ( (L"ltr")        == sValue ) this->m_eValue = dirLtr;
-            else if  ( (L"rtl")        == sValue ) this->m_eValue = dirRtl;
-            else                                    this->m_eValue = eDefValue;
+            if       ( (L"ltr") == sValue ) this->m_eValue = dirLtr;
+            else if  ( (L"rtl") == sValue ) this->m_eValue = dirRtl;
+            else							this->m_eValue = eDefValue;
 
             return this->m_eValue;
 		}
-
-        virtual std::wstring            ToString  () const
+        virtual std::wstring ToString  () const
 		{
             switch(this->m_eValue)
 			{
@@ -7058,9 +7132,153 @@ namespace SimpleTypes
 			default                         : return (L"ltr");
 			}
 		}
-
 		SimpleType_FromString     (EDirVal)
 		SimpleType_Operator_Equal (CDirVal)
 	};
 
+	enum ELigaturesFlags
+	{
+		ligaturesFlagStandard     = (1 << 0),
+		ligaturesFlagContextual   = (1 << 1),
+		ligaturesFlagHistorical   = (1 << 2),
+		ligaturesFlagDiscretional = (1 << 3)
+	};
+	
+	enum ELigatures
+	{
+		ligatureNone                             = 0,
+		ligatureStandard                         = ligaturesFlagStandard,
+		ligatureContextual                       = ligaturesFlagContextual,
+		ligatureHistorical                       = ligaturesFlagHistorical,
+		ligatureDiscretional                     = ligaturesFlagDiscretional,
+		ligatureStandardContextual               = ligaturesFlagStandard | ligaturesFlagContextual,
+		ligatureStandardHistorical               = ligaturesFlagStandard | ligaturesFlagHistorical,
+		ligatureContextualHistorical             = ligaturesFlagContextual | ligaturesFlagHistorical,
+		ligatureStandardDiscretional             = ligaturesFlagStandard | ligaturesFlagDiscretional,
+		ligatureContextualDiscretional           = ligaturesFlagContextual | ligaturesFlagDiscretional,
+		ligatureHistoricalDiscretional           = ligaturesFlagHistorical | ligaturesFlagDiscretional,
+		ligatureStandardContextualHistorical     = ligaturesFlagStandard | ligaturesFlagContextual | ligaturesFlagHistorical,
+		ligatureStandardContextualDiscretional   = ligaturesFlagStandard | ligaturesFlagContextual | ligaturesFlagDiscretional,
+		ligatureStandardHistoricalDiscretional   = ligaturesFlagStandard  | ligaturesFlagHistorical | ligaturesFlagDiscretional,
+		ligatureContextualHistoricalDiscretional = ligaturesFlagContextual | ligaturesFlagHistorical | ligaturesFlagDiscretional,
+		ligatureAll                              = ligaturesFlagStandard | ligaturesFlagContextual | ligaturesFlagHistorical | ligaturesFlagDiscretional
+	};
+
+	template<ELigatures eDefValue = ligatureStandard>
+	class CLigatures : public CSimpleType<ELigatures, eDefValue>
+	{
+	public:
+		CLigatures() {}
+		virtual ELigatures FromString(std::wstring &sValue)
+		{
+			if (L"none" == sValue)									this->m_eValue = ligatureNone;
+			else if (L"standard" == sValue)							this->m_eValue = ligatureStandard;
+			else if (L"contextual" == sValue)						this->m_eValue = ligatureContextual;
+			else if (L"historical" == sValue)						this->m_eValue = ligatureHistorical;
+			else if (L"discretional" == sValue)						this->m_eValue = ligatureDiscretional;
+			else if (L"standardContextual" == sValue)				this->m_eValue = ligatureStandardContextual;
+			else if (L"standardHistorical" == sValue)				this->m_eValue = ligatureStandardHistorical;
+			else if (L"contextualHistorical" == sValue)				this->m_eValue = ligatureContextualHistorical;
+			else if (L"standardDiscretional" == sValue)				this->m_eValue = ligatureStandardDiscretional;
+			else if (L"contextualDiscretional" == sValue)			this->m_eValue = ligatureContextualDiscretional;
+			else if (L"historicalDiscretional" == sValue)			this->m_eValue = ligatureHistoricalDiscretional;
+			else if (L"standardContextualHistorical" == sValue)		this->m_eValue = ligatureStandardContextualHistorical;
+			else if (L"standardContextualDiscretional" == sValue)	this->m_eValue = ligatureStandardContextualDiscretional;
+			else if (L"standardHistoricalDiscretional" == sValue)	this->m_eValue = ligatureStandardHistoricalDiscretional;
+			else if (L"contextualHistoricalDiscretional" == sValue)	this->m_eValue = ligatureContextualHistoricalDiscretional;
+			else if (L"all" == sValue)								this->m_eValue = ligatureAll;
+			return this->m_eValue;
+		}
+		virtual std::wstring ToString() const
+		{
+			switch (this->m_eValue)
+			{
+				case ligatureNone: return (L"none");
+				case ligatureStandard: return (L"standard");
+				case ligatureContextual: return (L"contextual");
+				case ligatureHistorical: return (L"historical");
+				case ligatureDiscretional: return (L"discretional");
+				case ligatureStandardContextual: return (L"standardContextual");
+				case ligatureStandardHistorical: return (L"standardHistorical");
+				case ligatureContextualHistorical: return (L"contextualHistorical");
+				case ligatureStandardDiscretional: return (L"standardDiscretional");
+				case ligatureContextualDiscretional: return (L"contextualDiscretional");
+				case ligatureHistoricalDiscretional: return (L"historicalDiscretional");
+				case ligatureStandardContextualHistorical: return (L"standardContextualHistorical");
+				case ligatureStandardContextualDiscretional: return (L"standardContextualDiscretional");
+				case ligatureStandardHistoricalDiscretional: return (L"standardHistoricalDiscretional");
+				case ligatureContextualHistoricalDiscretional: return (L"contextualHistoricalDiscretional");
+				case ligatureAll: return (L"all");
+				default: return (L"standard");
+			}
+		}
+		SimpleType_FromString(ELigatures)
+		SimpleType_Operator_Equal(CLigatures)
+	};
+	enum ENumForm
+	{
+		numFormDefault = 0,
+		numFormLining = 1,
+		numFormOldStyle = 2
+	};
+	template<ENumForm eDefValue = numFormDefault>
+	class CNumForm : public CSimpleType<ENumForm, eDefValue>
+	{
+	public:
+		CNumForm() {}
+		virtual ENumForm FromString(std::wstring &sValue)
+		{
+			if (L"default" == sValue)		this->m_eValue = numFormDefault;
+			else if (L"lining" == sValue)	this->m_eValue = numFormLining;
+			else if (L"oldStyle" == sValue) this->m_eValue = numFormOldStyle;
+			else							this->m_eValue = eDefValue;
+
+			return this->m_eValue;
+		}
+		virtual std::wstring ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case numFormLining:		return L"lining";
+			case numFormOldStyle:	return L"oldStyle";
+			case numFormDefault:
+			default:				return L"default";
+			}
+		}
+		SimpleType_FromString(ENumForm)
+		SimpleType_Operator_Equal(CNumForm)
+	};
+	enum ENumSpacing
+	{
+		numSpacingDefault = 0,
+		numSpacingProportional = 1,
+		numSpacingTabular = 2
+	};
+	template<ENumSpacing eDefValue = numSpacingDefault>
+	class CNumSpacing : public CSimpleType<ENumSpacing, eDefValue>
+	{
+	public:
+		CNumSpacing() {}
+		virtual ENumSpacing FromString(std::wstring &sValue)
+		{
+			if (L"default" == sValue) this->m_eValue = numSpacingDefault;
+			else if (L"proportional" == sValue) this->m_eValue = numSpacingProportional;
+			else if (L"tabular" == sValue) this->m_eValue = numSpacingTabular;
+			else							this->m_eValue = eDefValue;
+
+			return this->m_eValue;
+		}
+		virtual std::wstring ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case numSpacingProportional:	return L"proportional";
+			case numSpacingTabular:			return L"tabular";
+			case numSpacingDefault:
+			default:						return L"default";
+			}
+		}
+		SimpleType_FromString(ENumSpacing)
+		SimpleType_Operator_Equal(CNumSpacing)
+	};
 } // SimpleTypes

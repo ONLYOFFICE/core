@@ -72,7 +72,7 @@ namespace XLSB
 
             while (proc.optional<FRT>())
             {
-                m_arFRT.push_back(elements_.back());
+                //m_arFRT.push_back(elements_.back());
                 elements_.pop_back();
             }
         }

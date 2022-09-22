@@ -291,6 +291,8 @@ namespace NSCSS
         {
                 sSpacingValue += L" w:line=\"" + std::to_wstring(static_cast<short int>(oStyle.m_pFont.GetSize() * 12 + 0.5f)) + L"\" w:lineRule=\"auto\"";
         }
+        else if (!oStyle.m_pBorder.Empty())
+                sSpacingValue += L"w:line=\"240\" w:lineRule=\"auto\" ";
 
         if (!sSpacingValue.empty())
         {

@@ -35,7 +35,7 @@
 #include "../../Common/OfficeFileErrorDescription.h"
 #include "../../Common/MS-LCID.h"
 
-#include "../../ASCOfficeXlsFile2/source/XlsFormat/Logic/SummaryInformationStream/SummaryInformation.h"
+#include "../../ASCOfficeXlsFile2/source/XlsFormat/Logic/SummaryInformationStream/PropertySetStream.h"
 #include "../../ASCOfficeXlsFile2/source/XlsFormat/Binary/CFStream.h"
 
 #include "../../DesktopEditor/common/File.h"
@@ -240,17 +240,20 @@ namespace DocFileFormat
 		}
 
 //------------------------------------------------------------------------------------------------------------------
-		POLE::Stream			* Summary		= NULL;
-		POLE::Stream			* DocSummary	= NULL;
+		POLE::Stream * Summary		= NULL;
+		POLE::Stream * DocSummary	= NULL;
 		
 		m_pStorage->GetStream (L"SummaryInformation",			&Summary);
 		m_pStorage->GetStream (L"DocumentSummaryInformation",	&DocSummary);
 		
+		OLEPS::PropertySetStream summary_info;
+		
 		if ((Summary) && (Summary->size() > 0))
 		{
-			XLS::CFStreamPtr stream = XLS::CFStreamPtr(new XLS::CFStream(Summary));
-			OLEPS::SummaryInformation summary_info(stream);
-			int document_code_page1 = summary_info.GetCodePage(); //from software last open 
+			XLS::CFStreamPtr stream = XLS::CFStreamPtr(new XLS::CFStream(Summary));			
+			summary_info.read(stream);
+
+			int document_code_page1 = summary_info.GetCodePage(); 
 			
 			if (document_code_page1 > 0)
 			{
@@ -261,8 +264,9 @@ namespace DocFileFormat
 		if ((DocSummary) && (DocSummary->size() > 0))
 		{
 			XLS::CFStreamPtr stream = XLS::CFStreamPtr(new XLS::CFStream(DocSummary));
-			OLEPS::SummaryInformation doc_summary_info(stream);
-			int document_code_page2 = doc_summary_info.GetCodePage();
+			summary_info.read(stream, true);
+
+			int document_code_page2 = summary_info.GetCodePage();
 
 			if (document_code_page2 > 0)
 			{
@@ -288,6 +292,8 @@ namespace DocFileFormat
 				nDocumentCodePage = user_codepage;
 			}
 		}
+		m_sXmlApp = summary_info.GetApp();
+		m_sXmlCore = summary_info.GetCore();
 //-------------------------------------------------------------------------------------------------
 		try
 		{
@@ -998,6 +1004,120 @@ namespace DocFileFormat
 
 			return encodingChars;
 		}
+	}
+	void WordDocument::CorrectColor(ODRAW::OfficeArtCOLORREF & color)
+	{
+#if 0
+		if (false == color.sColorRGB.empty()) return;
+
+		if (color.fSysIndex)
+		{
+			oox::_color sys_color;
+			_UINT32 nColorCode = color.index;
+
+			unsigned short nParameter = (unsigned short)((nColorCode >> 16) & 0x00ff);  // the HiByte of nParameter is not zero, an exclusive AND is helping :o
+			unsigned short nFunctionBits = (unsigned short)((nColorCode & 0x00000f00) >> 8);
+			unsigned short nAdditionalFlags = (unsigned short)((nColorCode & 0x0000f000) >> 8);
+			unsigned short nColorIndex = (unsigned short)(nColorCode & 0x00ff);
+			unsigned short nPropColor = 0;
+
+			_UINT32 systemColors[25] = 
+			{
+				0xc0c0c0, 0x008080, 0x000080, 0x808080, 0xc0c0c0, 0xffffff, 0x000000,
+				0x000000, 0x000000, 0xffffff, 0xc0c0c0, 0xc0c0c0, 0x808080, 0x000080,
+				0xffffff, 0xc0c0c0, 0x808080, 0x808080, 0x000000, 0xc0c0c0, 0xffffff,
+				0x000000, 0xc0c0c0, 0x000000, 0xffffc0
+			};
+
+			if (nColorIndex < 25)
+			{
+				sys_color.SetRGB((unsigned char)(systemColors[nColorIndex]>>16), (unsigned char)(systemColors[nColorIndex]>>8), (unsigned char)(systemColors[nColorIndex]));
+			}
+			else return;
+
+			if (nAdditionalFlags & 0x80)   // make color gray
+			{
+				BYTE nZwi = 0x7f;//= aColor.GetLuminance();
+				sys_color.SetRGB(nZwi, nZwi, nZwi);
+			}
+			switch (nFunctionBits)
+			{
+			case 0x01:     // darken color by parameter
+			{
+				BYTE R = static_cast<BYTE>	((nParameter * sys_color.GetR()) >> 8);
+				BYTE G = static_cast<BYTE>	((nParameter * sys_color.GetG()) >> 8);
+				BYTE B = static_cast<BYTE> ((nParameter * sys_color.GetB()) >> 8);
+
+				sys_color.SetRGB(R, G, B);
+			}
+			break;
+			case 0x02:     // lighten color by parameter
+			{
+				unsigned short nInvParameter = (0x00ff - nParameter) * 0xff;
+				BYTE R = static_cast<BYTE>((nInvParameter + (nParameter * sys_color.GetR())) >> 8);
+				BYTE G = static_cast<BYTE>((nInvParameter + (nParameter * sys_color.GetG())) >> 8);
+				BYTE B = static_cast<BYTE>((nInvParameter + (nParameter * sys_color.GetB())) >> 8);
+
+				sys_color.SetRGB(R, G, B);
+			}break;			
+			case 0x03:     // add grey level RGB(p,p,p)
+			{
+				short nR = (short)sys_color.GetR() + (short)nParameter;
+				short nG = (short)sys_color.GetG() + (short)nParameter;
+				short nB = (short)sys_color.GetB() + (short)nParameter;
+
+				if (nR > 0x00ff)	nR = 0x00ff;
+				if (nG > 0x00ff)	nG = 0x00ff;
+				if (nB > 0x00ff)	nB = 0x00ff;
+
+				sys_color.SetRGB((BYTE)nR, (BYTE)nG, (BYTE)nB);
+			}break;		
+			case 0x04:     // substract grey level RGB(p,p,p)
+			{
+				short nR = (short)sys_color.GetR() - (short)nParameter;
+				short nG = (short)sys_color.GetG() - (short)nParameter;
+				short nB = (short)sys_color.GetB() - (short)nParameter;
+				if (nR < 0) nR = 0;
+				if (nG < 0) nG = 0;
+				if (nB < 0) nB = 0;
+				sys_color.SetRGB((BYTE)nR, (BYTE)nG, (BYTE)nB);
+			}	break;		
+			case 0x05:     // substract from gray level RGB(p,p,p)
+			{
+				short nR = (short)nParameter - (short)sys_color.GetR();
+				short nG = (short)nParameter - (short)sys_color.GetG();
+				short nB = (short)nParameter - (short)sys_color.GetB();
+				if (nR < 0) nR = 0;
+				if (nG < 0) nG = 0;
+				if (nB < 0) nB = 0;
+				sys_color.SetRGB((BYTE)nR, (BYTE)nG, (BYTE)nB);
+			}break;			
+			case 0x06:     // per component: black if < p, white if >= p
+			{
+				BYTE R = sys_color.GetR() < nParameter ? 0x00 : 0xff;
+				BYTE G = sys_color.GetG() < nParameter ? 0x00 : 0xff;
+				BYTE B = sys_color.GetB() < nParameter ? 0x00 : 0xff;
+
+				sys_color.SetRGB(R, G, B);
+			}break;			
+			}
+			if (nAdditionalFlags & 0x40)                  // top-bit invert
+				sys_color.SetRGB(sys_color.GetR() ^ 0x80, sys_color.GetG() ^ 0x80, sys_color.GetB() ^ 0x80);
+
+			if (nAdditionalFlags & 0x20)                  // invert color
+				sys_color.SetRGB(0xff - sys_color.GetR(), 0xff - sys_color.GetG(), 0xff - sys_color.GetB());
+
+			color.sColorRGB = sys_color.sRGB;
+		}
+		//else if (color.fPaletteIndex)
+		//{
+		//	std::map<int, std::wstring>::iterator it = colors_palette.find(color.index);
+		//	if (it != colors_palette.end())
+		//	{
+		//		color.sColorRGB = it->second;
+		//	}
+		//}
+#endif
 	}
 
 }

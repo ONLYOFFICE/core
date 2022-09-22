@@ -47,7 +47,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BookProtectionIso)
         public:
             BookProtectionIso();
-            virtual ~BookProtectionIso();
+            ~BookProtectionIso();
 
             XLS::BaseObjectPtr clone();
 

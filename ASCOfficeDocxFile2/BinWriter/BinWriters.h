@@ -48,6 +48,8 @@
 #include "../../Common/DocxFormat/Source/DocxFormat/HeaderFooter.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/App.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Core.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Footnote.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Endnote.h"
 
 namespace NSBinPptxRW
 {
@@ -501,7 +503,9 @@ namespace BinDocxRW
 		void WriteSdtFormPr(const OOX::Logic::CFormPr& oFormPr);
 		void WriteSdtTextFormPr(const OOX::Logic::CTextFormPr& oTextFormPr);
 		void WriteSdtTextFormPrComb(const ComplexTypes::Word::CComb& oComb);
+		void WriteSdtTextFormPrFormat(const ComplexTypes::Word::CTextFormFormat& oFormat);
 		void WriteSdtPicture(const OOX::Logic::CSdtPicture& oSdtPicture);
+		void WriteSdtComplexFormPr(const OOX::Logic::CComplexFormPr& oComplexFormPr);
 	};
 	class BinaryCustomsTableWriter
 	{

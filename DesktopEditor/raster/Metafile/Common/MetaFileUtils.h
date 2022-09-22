@@ -35,11 +35,14 @@
 #include "MetaFileTypes.h"
 
 #include "../Emf/EmfTypes.h"
+#include "../Emf/EmfPlusTypes.h"
 #include "../Wmf/WmfTypes.h"
 #include "../Emf/EmfObjects.h"
+#include "../Emf/EmfPlusObjects.h"
 #include "../Wmf/WmfObjects.h"
 
 #include <algorithm>
+#include <cfloat>
 
 namespace MetaFile
 {
@@ -56,6 +59,33 @@ namespace MetaFile
 			b = 0;
 		}
 	};
+	struct TSvgViewport
+	{
+		double dLeft;
+		double dTop;
+		double dRight;
+		double dBottom;
+
+		TSvgViewport() : dLeft(DBL_MAX), dTop(DBL_MAX), dRight(DBL_MIN), dBottom(DBL_MIN) {}
+
+		bool Empty() const
+		{
+			return DBL_MAX == dLeft || DBL_MAX == dTop || DBL_MIN == dRight || DBL_MIN == dBottom || dRight == dLeft || dBottom == dTop;
+		}
+
+		double GetWidth() const
+		{
+			return (DBL_MAX == dLeft || DBL_MIN == dRight) ? 0 : dRight - dLeft;
+		}
+
+		double GetHeight() const
+		{
+			return (DBL_MAX == dTop || DBL_MIN == dBottom) ? 0 : dBottom - dTop;
+		}
+	};
+
+	typedef std::pair<const std::wstring, std::wstring>     NodeAttribute;
+	typedef std::vector<NodeAttribute>                      NodeAttributes;
 
 	class CDataStream
 	{
@@ -230,6 +260,15 @@ namespace MetaFile
 			nValue = ReadLong();
 			return *this;
 		}
+		CDataStream& operator>>(TRectD& oRect)
+		{
+			*this >> oRect.dLeft;
+			*this >> oRect.dTop;
+			*this >> oRect.dRight;
+			*this >> oRect.dBottom;
+
+			return *this;
+		}
 		CDataStream& operator>>(TEmfRect& oRect)
 		{
 			*this >> oRect.shLeft;
@@ -280,6 +319,13 @@ namespace MetaFile
 			return *this;
 		}
 		CDataStream& operator>>(TEmfPointS& oPoint)
+		{
+			*this >> oPoint.x;
+			*this >> oPoint.y;
+
+			return *this;
+		}
+		CDataStream& operator>>(TEmfPointD& oPoint)
 		{
 			*this >> oPoint.x;
 			*this >> oPoint.y;
@@ -370,15 +416,15 @@ namespace MetaFile
 		{
 			if (oFont.IsFixedLength())
 			{
-			    *this >> oFont.LogFontEx.LogFont;
-			    ReadBytes(oFont.LogFontEx.FullName, 64);
-			    ReadBytes(oFont.LogFontEx.Style, 32);
-			    ReadBytes(oFont.LogFontEx.Script, 18);
+				*this >> oFont.LogFontEx.LogFont;
+				ReadBytes(oFont.LogFontEx.FullName, 64);
+				ReadBytes(oFont.LogFontEx.Style, 32);
+				ReadBytes(oFont.LogFontEx.Script, 18);
 			}
 			else
 			{
-			    *this >> oFont.LogFontEx;
-			    *this >> oFont.DesignVector;
+				*this >> oFont.LogFontEx;
+				*this >> oFont.DesignVector;
 			}
 
 			return *this;
@@ -491,6 +537,16 @@ namespace MetaFile
 			*this >> oEntry.Blue;
 			*this >> oEntry.Green;
 			*this >> oEntry.Red;
+			return *this;
+		}
+		CDataStream& operator>>(TRegionDataHeader& oRegionDataHeader)
+		{
+			*this >> oRegionDataHeader.unSize;
+			*this >> oRegionDataHeader.unType;
+			*this >> oRegionDataHeader.unCountRects;
+			*this >> oRegionDataHeader.unRgnSize;
+			*this >> oRegionDataHeader.oBounds;
+
 			return *this;
 		}
 		CDataStream& operator>>(CEmfLogPalette& oPalette)
@@ -661,6 +717,134 @@ namespace MetaFile
 
 			return *this;
 		}
+		CDataStream& operator>>(TEmfPlusRect& oRect)
+		{
+			*this >> oRect.shX;
+			*this >> oRect.shY;
+			*this >> oRect.shWidth;
+			*this >> oRect.shHeight;
+
+			return *this;
+		}
+		CDataStream& operator>>(TEmfPlusRectF& oRect)
+		{
+			*this >> oRect.dX;
+			*this >> oRect.dY;
+			*this >> oRect.dWidth;
+			*this >> oRect.dHeight;
+
+			return *this;
+		}
+		CDataStream& operator>>(TEmfPlusARGB &oARGB)
+		{
+			*this >> oARGB.chBlue;
+			*this >> oARGB.chGreen;
+			*this >> oARGB.chRed;
+			*this >> oARGB.chAlpha;
+
+			return *this;
+		}
+		CDataStream& operator>>(TEmfPlusPointR &oPoint)
+		{
+			//TODO: реализовать
+			return *this;
+		}
+		CDataStream& operator>>(TEmfPlusPointF &oPoint)
+		{
+			*this >> oPoint.X;
+			*this >> oPoint.Y;
+
+			return *this;
+		}
+		CDataStream& operator>>(TEmfPlusRectR &oTEmfPlusRectR)
+		{
+			*this >> oTEmfPlusRectR.chX;
+			*this >> oTEmfPlusRectR.chY;
+			*this >> oTEmfPlusRectR.chWidth;
+			*this >> oTEmfPlusRectR.chHeight;
+
+			return *this;
+		}
+		CDataStream& operator>>(TGUID& oTGUID)
+		{
+			*this >> oTGUID.nData1;
+			*this >> oTGUID.shData2;
+			*this >> oTGUID.shData3;
+
+			BYTE *arBytes = new BYTE[8];
+
+			ReadBytes(arBytes, 8);
+
+			long long int llnValue;
+
+			*((unsigned char*)(&llnValue) + 0) = pCur[0];
+			*((unsigned char*)(&llnValue) + 1) = pCur[1];
+			*((unsigned char*)(&llnValue) + 2) = pCur[2];
+			*((unsigned char*)(&llnValue) + 3) = pCur[3];
+			*((unsigned char*)(&llnValue) + 4) = pCur[4];
+			*((unsigned char*)(&llnValue) + 5) = pCur[5];
+			*((unsigned char*)(&llnValue) + 6) = pCur[6];
+			*((unsigned char*)(&llnValue) + 7) = pCur[7];
+
+			oTGUID.llnData4 = llnValue;
+
+			return *this;
+		}
+		CDataStream& operator>>(CEmfPlusImageAttributes& oAttributes)
+		{
+			Skip(8); //Version, Reserved 1 (4 bytes)
+
+			unsigned int unWrapMode;
+
+			*this >> unWrapMode;
+
+			if (unWrapMode < WrapModeTile || unWrapMode > WrapModeClamp)
+				return *this;
+
+			oAttributes.eWrapMode = static_cast<EEmfPlusWrapMode>(unWrapMode);
+
+			*this >> oAttributes.oClampColor;
+			*this >> oAttributes.nObjectClamp;
+
+			Skip(4); //Reserved 2 (4 bytes)
+			return *this;
+		}
+		CDataStream& operator>>(TEmfPlusCustomLineCapArrowData& oLineCapData)
+		{
+			*this >> oLineCapData.dWidth;
+			*this >> oLineCapData.dHeight;
+			*this >> oLineCapData.dMiddleInset;
+
+			unsigned int unTempValue;
+			*this >> unTempValue;
+
+			oLineCapData.bFillState = ((1 == unTempValue) ? true : false);
+
+			*this >> oLineCapData.unLineStartCap;
+			*this >> oLineCapData.unLineEndCap;
+			*this >> oLineCapData.unLineJoin;
+			*this >> oLineCapData.dLineMiterLimit;
+			*this >> oLineCapData.dWidthScale;
+			*this >> oLineCapData.oFillHotSpot;
+			*this >> oLineCapData.oLineHotSpot;
+
+			return *this;
+		}
+		CDataStream& operator>>(TEmfPlusCustomLineCapData& oLineCapData)
+		{
+			*this >> oLineCapData.unCustomLineCapDataFlags;
+			*this >> oLineCapData.unBaseCap;
+			*this >> oLineCapData.dBaseInset;
+			*this >> oLineCapData.unStrokeStartCap;
+			*this >> oLineCapData.unStrokeEndCap;
+			*this >> oLineCapData.unStrokeJoin;
+			*this >> oLineCapData.dStrokeMiterLimit;
+			*this >> oLineCapData.dWidthScale;
+			*this >> oLineCapData.oFillHotSpot;
+			*this >> oLineCapData.oStrokeHotSpot;
+
+			return *this;
+		}
 		CDataStream& operator>>(TWmfRect& oRect)
 		{
 			*this >> oRect.Left;
@@ -780,7 +964,7 @@ namespace MetaFile
 			*this >> oScan.Top;
 			*this >> oScan.Bottom;
 
-			if (oScan.Count > 0 && oScan.Count & 1) // Должно делиться на 2
+			if (oScan.Count > 0 && !(oScan.Count & 1)) // Должно делиться на 2
 			{
 				unsigned short ushCount = oScan.Count >> 1;
 				oScan.ScanLines = new TWmfScanLine[ushCount];
@@ -809,6 +993,11 @@ namespace MetaFile
 		{
 			*this >> pRegion->nextInChain;
 			*this >> pRegion->ObjectType;
+
+			if (0x0006 != pRegion->ObjectType)
+				return *this;
+
+			*this >> pRegion->ObjectCount;
 			*this >> pRegion->RegionSize;
 			*this >> pRegion->ScanCount;
 			*this >> pRegion->MaxScan;
@@ -961,7 +1150,7 @@ namespace MetaFile
 
 			// Читаем OutputString
 			const unsigned int unCharsCount = oText.Chars;
-			int nSkip = oText.offString - (unOffset + 40); // 40 - размер структуры TEmfEmrText 
+			int nSkip = oText.offString - (unOffset + 40); // 40 - размер структуры TEmfEmrText
 			Skip(nSkip);
 			T* pString = new T[unCharsCount + 1];
 			if (pString)
@@ -1002,6 +1191,8 @@ namespace MetaFile
 	void ReadImage(BYTE* pImageBuffer, unsigned int unBufferLen, unsigned int unColorUsage, BYTE** ppDstBuffer, unsigned int* punWidth, unsigned int* punHeight);
 	double GetEllipseAngle(int nL, int nT, int nR, int nB, int nX, int nY);
 	void ProcessRasterOperation(unsigned int unRasterOperation, BYTE** ppBgra, unsigned int unWidth, unsigned int unHeight);
-    bool OpenTempFile(std::wstring *pwsName, FILE **ppFile, const wchar_t *wsMode, const wchar_t *wsExt, const wchar_t *wsFolder);
+	std::wstring GetTempFilename(const std::wstring& sFolder = L"");
+
+	std::wstring StringNormalization(std::wstring wsString);
 };
 #endif // _METAFILE_COMMON_METAFILEUTILS_H

@@ -4287,8 +4287,8 @@ namespace SimpleTypes
 				{
 					case axisCol:		return L"axisCol";
 					case axisPage:		return L"axisPage";
-					case axisRow:		return L"countNums";
-					case axisValues:	return L"axisRow";
+                                        case axisRow:		return L"axisRow";
+                                        case axisValues:	return L"countNums";
 					default :			return L"";
 				}
 			}
@@ -4647,17 +4647,17 @@ namespace SimpleTypes
 		};
 		enum EObjectType 
 		{
-			objectButton	=  0,
-			objectCheckBox	=  1,
-			objectDrop		=  2,
-			objectGBox		=  3,
-			objectLabel		=  4,
-			objectList		=  5,
-			objectRadio		=  6,
-			objectScroll	=  7,
-			objectSpin		=  8,
-			objectEditBox	=  9,
-			objectDialog	=  10
+			objectButton	= 0,
+			objectCheckBox	= 1,
+			objectDrop		= 2,
+			objectGBox		= 3,
+			objectLabel		= 4,
+			objectList		= 5,
+			objectRadio		= 6,
+			objectScroll	= 7,
+			objectSpin		= 8,
+			objectEditBox	= 9,
+			objectDialog	= 10
 		};
 		template<EObjectType eDefValue = objectButton>
 		class CObjectType : public CSimpleType<EObjectType, eDefValue>
@@ -4757,10 +4757,10 @@ namespace SimpleTypes
 
 			virtual EDropStyle FromString(std::wstring &sValue)
 			{
-				if      ( L"combo" ==  sValue )	this->m_eValue = valCombo;
+				if ( L"combo" ==  sValue )	this->m_eValue = valCombo;
 				else if ( L"comboedit" == sValue ) this->m_eValue = valComboedit;
 				else if ( L"simple" ==  sValue ) this->m_eValue = valSimple;
-				else									this->m_eValue = eDefValue;
+				else this->m_eValue = eDefValue;
 				return this->m_eValue;
 			}
 

@@ -59,6 +59,7 @@ namespace DocFileFormat
 		virtual ~StyleSheetMapping();
 
 	private:
+		std::map<std::wstring, char> mapCheckReservedNames;
 		void writeRunDefaults( StyleSheet* sheet );
 		void writeParagraphDefaults( StyleSheet* sheet );
 		/// Chooses the correct style name.

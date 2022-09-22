@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(SXTupleSetRowItem)
         public:
             SXTupleSetRowItem();
-            virtual ~SXTupleSetRowItem();
+            ~SXTupleSetRowItem();
 
             XLS::BaseObjectPtr clone();
 

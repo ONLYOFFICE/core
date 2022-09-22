@@ -1752,7 +1752,7 @@ void CSlicerCacheFile::readBin(const CPath& oPath)
     CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
     if (xlsb)
     {
-        XLSB::SlicerCachesStreamPtr slicerCachesStream = std::make_shared<XLSB::SlicerCachesStream>();
+        XLSB::SlicerCachesStreamPtr slicerCachesStream(new XLSB::SlicerCachesStream);
 
         xlsb->ReadBin(oPath, slicerCachesStream.get());
 
@@ -1761,6 +1761,8 @@ void CSlicerCacheFile::readBin(const CPath& oPath)
             if (slicerCachesStream->m_SLICERCACHE != nullptr)
                 m_oSlicerCacheDefinition = slicerCachesStream->m_SLICERCACHE;
         }
+
+        //slicerCachesStream.reset();
     }
 }
 

@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_APP_INCLUDE_H_
-#define OOX_APP_INCLUDE_H_
 
 #include "Docx.h"
 #include "File.h"
@@ -70,112 +68,64 @@ namespace OOX
 					m_sAppVersion = oItem.GetText();
 
 				if ( oProperties.GetNode( _T("Characters"), oItem ) )
-				{
-                    SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
-					m_nCharacters = oNum.GetValue();
-				}
+					m_nCharacters = oItem.GetText();
 
 				if ( oProperties.GetNode( _T("CharactersWithSpaces"), oItem ) )
-				{
-                    SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
-					m_nCharactersWithSpaces = oNum.GetValue();
-				}
+					m_nCharactersWithSpaces = oItem.GetText();
 
 				if ( oProperties.GetNode( _T("Company"), oItem ) )
 					m_sCompany = oItem.GetText();
 
 				if ( oProperties.GetNode( _T("DocSecurity"), oItem ) )
-				{
-                    SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
-					m_nDocSecurity = oNum.GetValue();
-				}
+					m_nDocSecurity = oItem.GetText();
 
 				if ( oProperties.GetNode( _T("HiddenSlides"), oItem ) )
-				{
-                    SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
-					m_nHiddenSlides = oNum.GetValue();
-				}
+					m_nHiddenSlides = oItem.GetText();
 
 				if ( oProperties.GetNode( _T("HyperlinkBase"), oItem ) )
 					m_sHyperlinkBase = oItem.GetText();
 
 				if ( oProperties.GetNode( _T("HyperlinksChanged"), oItem ) )
-				{
-                    SimpleTypes::COnOff<> oBool = oItem.GetText();
-					m_bHyperlinksChanged = (oBool.GetValue() == SimpleTypes::onoffTrue);
-				}
+					m_bHyperlinksChanged = oItem.GetText();
 
 				if ( oProperties.GetNode( _T("Lines"), oItem ) )
-				{
-                    SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
-					m_nLines = oNum.GetValue();
-				}
+					m_nLines = oItem.GetText();
 
 				if ( oProperties.GetNode( _T("LinksUpToDate"), oItem ) )
-				{
-                    SimpleTypes::COnOff<> oBool = oItem.GetText();
-					m_bLinksUpToDate = (oBool.GetValue() == SimpleTypes::onoffTrue);
-				}
+					m_bLinksUpToDate = oItem.GetText();
 
 				if ( oProperties.GetNode( _T("Manager"), oItem ) )
 					m_sManager = oItem.GetText();
 
 				if ( oProperties.GetNode( _T("MMClips"), oItem ) )
-				{
-                    SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
-					m_nMMClips = oNum.GetValue();
-				}
+					m_nMMClips = oItem.GetText();
 
 				if ( oProperties.GetNode( _T("Notes"), oItem ) )
-				{
-                    SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
-					m_nNotes = oNum.GetValue();
-				}
+					m_nNotes = oItem.GetText();
 
 				if ( oProperties.GetNode( _T("Pages"), oItem ) )
-				{
-                    SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
-					m_nPages = oNum.GetValue();
-				}
+					m_nPages = oItem.GetText();
 
 				if ( oProperties.GetNode( _T("Paragraphs"), oItem ) )
-				{
-                    SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
-					m_nParagraphs = oNum.GetValue();
-				}
+					m_nParagraphs = oItem.GetText();
 
                 if ( oProperties.GetNode( _T("ScaleCrop"), oItem ) )
-				{
-                    SimpleTypes::COnOff<> oBool = oItem.GetText();
-					m_bScaleCrop = (oBool.GetValue() == SimpleTypes::onoffTrue);
-				}
+					m_bScaleCrop = oItem.GetText();
 
 				if ( oProperties.GetNode( _T("SharedDoc"), oItem ) )
-				{
-                    SimpleTypes::COnOff<> oBool = oItem.GetText();
-					m_bSharedDoc = (oBool.GetValue() == SimpleTypes::onoffTrue);
-				}
+					m_bSharedDoc = oItem.GetText();
 
 				if ( oProperties.GetNode( _T("Slides"), oItem ) )
-				{
-                    SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
-					m_nSlides = oNum.GetValue();
-				}
+					m_nSlides = oItem.GetText();
 
 				if ( oProperties.GetNode( _T("Template"), oItem ) )
 					m_sTemplate = oItem.GetText();
-
+				
 				if ( oProperties.GetNode( _T("TotalTime"), oItem ) )
-				{
-                    SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
-					m_nTotalTime = oNum.GetValue();
-				}
+					m_nTotalTime = oItem.GetText();
 
 				if ( oProperties.GetNode( _T("Words"), oItem ) )
-				{
-                    SimpleTypes::CDecimalNumber<> oNum = oItem.GetText();
-					m_nWords = oNum.GetValue();
-				}
+					m_nWords = oItem.GetText();				
 			}
 		}
 		virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
@@ -204,21 +154,15 @@ namespace OOX
 
 			if ( m_nCharacters.IsInit() )
 			{
-				SimpleTypes::CDecimalNumber<> oNum;
-				oNum.SetValue( m_nCharacters.get() );
-
 				sXml += _T("<Characters>");
-				sXml += oNum.ToString();
+				sXml += std::to_wstring(*m_nCharacters);
 				sXml += _T("</Characters>");
 			}
 
 			if ( m_nCharactersWithSpaces.IsInit() )
 			{
-				SimpleTypes::CDecimalNumber<> oNum;
-				oNum.SetValue( m_nCharactersWithSpaces.get() );
-
 				sXml += _T("<CharactersWithSpaces>");
-				sXml += oNum.ToString();
+				sXml += std::to_wstring(*m_nCharactersWithSpaces);
 				sXml += _T("</CharactersWithSpaces>");
 			}
 
@@ -231,21 +175,15 @@ namespace OOX
 
 			if ( m_nDocSecurity.IsInit() )
 			{
-				SimpleTypes::CDecimalNumber<> oNum;
-				oNum.SetValue( m_nDocSecurity.get() );
-
 				sXml += _T("<DocSecurity>");
-				sXml += oNum.ToString();
+				sXml += std::to_wstring(*m_nDocSecurity);
 				sXml += _T("</DocSecurity>");
 			}
 
 			if ( m_nHiddenSlides.IsInit() )
 			{
-				SimpleTypes::CDecimalNumber<> oNum;
-				oNum.SetValue( m_nHiddenSlides.get() );
-
 				sXml += _T("<HiddenSlides>");
-				sXml += oNum.ToString();
+				sXml += std::to_wstring(*m_nHiddenSlides);
 				sXml += _T("</HiddenSlides>");
 			}
 
@@ -258,31 +196,22 @@ namespace OOX
 
 			if ( m_bHyperlinksChanged.IsInit() )
 			{
-				SimpleTypes::COnOff<> oBool;
-				oBool.SetValue( m_bHyperlinksChanged.get() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse );
-
 				sXml += _T("<HyperlinksChanged>");
-				sXml += oBool.ToString();
+				sXml += *m_bHyperlinksChanged ? L"true" : L"false";
 				sXml += _T("</HyperlinksChanged>");
 			}
 
 			if ( m_nLines.IsInit() )
 			{
-				SimpleTypes::CDecimalNumber<> oNum;
-				oNum.SetValue( m_nLines.get() );
-
 				sXml += _T("<Lines>");
-				sXml += oNum.ToString();
+				sXml += std::to_wstring(*m_nLines);
 				sXml += _T("</Lines>");
 			}
 
 			if ( m_bLinksUpToDate.IsInit() )
 			{
-				SimpleTypes::COnOff<> oBool;
-				oBool.SetValue( m_bLinksUpToDate.get() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse );
-
 				sXml += _T("<LinksUpToDate>");
-				sXml += oBool.ToString();
+				sXml += *m_bLinksUpToDate ? L"true" : L"false";;
 				sXml += _T("</LinksUpToDate>");
 			}
 
@@ -295,61 +224,43 @@ namespace OOX
 
 			if ( m_nMMClips.IsInit() )
 			{
-				SimpleTypes::CDecimalNumber<> oNum;
-				oNum.SetValue( m_nMMClips.get() );
-
 				sXml += _T("<MMClips>");
-				sXml += oNum.ToString();
+				sXml += std::to_wstring(*m_nMMClips);
 				sXml += _T("</MMClips>");
 			}
 
 			if ( m_nNotes.IsInit() )
 			{
-				SimpleTypes::CDecimalNumber<> oNum;
-				oNum.SetValue( m_nNotes.get() );
-
 				sXml += _T("<Notes>");
-				sXml += oNum.ToString();
+				sXml += std::to_wstring(*m_nNotes);
 				sXml += _T("</Notes>");
 			}
 
 			if ( m_nPages.IsInit() )
 			{
-				SimpleTypes::CDecimalNumber<> oNum;
-				oNum.SetValue( m_nPages.get() );
-
 				sXml += _T("<Pages>");
-				sXml += oNum.ToString();
+				sXml += std::to_wstring(*m_nPages);
 				sXml += _T("</Pages>");
 			}
 
 			if ( m_nParagraphs.IsInit() )
 			{
-				SimpleTypes::CDecimalNumber<> oNum;
-				oNum.SetValue( m_nParagraphs.get() );
-
 				sXml += _T("<Paragraphs>");
-				sXml += oNum.ToString();
+				sXml += std::to_wstring(*m_nParagraphs);
 				sXml += _T("</Paragraphs>");
 			}
 
 			if ( m_bScaleCrop.IsInit() )
 			{
-				SimpleTypes::COnOff<> oBool;
-				oBool.SetValue( m_bScaleCrop.get() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse );
-
 				sXml += _T("<ScaleCrop>");
-				sXml += oBool.ToString();
+				sXml += *m_bScaleCrop ? L"true" : L"false";;
 				sXml += _T("</ScaleCrop>");
 			}
 
 			if ( m_bSharedDoc.IsInit() )
 			{
-				SimpleTypes::COnOff<> oBool;
-				oBool.SetValue( m_bSharedDoc.get() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse );
-
 				sXml += _T("<SharedDoc>");
-				sXml += oBool.ToString();
+				sXml += *m_bSharedDoc ? L"true" : L"false";;
 				sXml += _T("</SharedDoc>");
 			}
 
@@ -359,7 +270,7 @@ namespace OOX
 				oNum.SetValue( m_nSlides.get() );
 
 				sXml += _T("<Slides>");
-				sXml += oNum.ToString();
+				sXml += std::to_wstring(*m_nSlides);
 				sXml += _T("</Slides>");
 			}
 
@@ -372,21 +283,15 @@ namespace OOX
 
 			if ( m_nTotalTime.IsInit() )
 			{
-				SimpleTypes::CDecimalNumber<> oNum;
-				oNum.SetValue( m_nTotalTime.get() );
-
 				sXml += _T("<TotalTime>");
-				sXml += oNum.ToString();
+				sXml += std::to_wstring(*m_nTotalTime);
 				sXml += _T("</TotalTime>");
 			}
 
 			if ( m_nWords.IsInit() )
 			{
-				SimpleTypes::CDecimalNumber<> oNum;
-				oNum.SetValue( m_nWords.get() );
-
 				sXml += _T("<Words>");
-				sXml += oNum.ToString();
+				sXml += std::to_wstring(*m_nWords);
 				sXml += _T("</Words>");
 			}
 
@@ -411,11 +316,12 @@ namespace OOX
 		void SetDefaults()
 		{
 			SetRequiredDefaults();
-			SetDocSecurity(0);
-			SetScaleCrop(false);
-			SetLinksUpToDate(false);
-			SetSharedDoc(false);
-			SetHyperlinksChanged(false);
+			
+			m_nDocSecurity = 0;
+			m_bScaleCrop = false;
+			m_bLinksUpToDate = false;
+			m_bSharedDoc = false;
+			m_bHyperlinksChanged = false;
 		}
 		void SetRequiredDefaults()
 		{
@@ -423,47 +329,13 @@ namespace OOX
 			std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
 			if (sApplication.empty())
 				sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
-			SetApplication(sApplication);
 #if defined(INTVER)
-			SetAppVersion(VALUE2STR(INTVER));
+			std::string s = VALUE2STR(INTVER);
+			sApplication += L"/" + std::wstring(s.begin(), s.end());
 #endif
+			m_sApplication = sApplication;
 		}
-        void SetApplication(const std::wstring& sVal)
-		{
-			m_sApplication = sVal;
-		}
-        void SetAppVersion(const std::wstring& sVal)
-		{
-			m_sAppVersion = sVal;
-		}
-        void SetAppVersion(const std::string& sVal)
-        {
-            m_sAppVersion = std::wstring(sVal.begin(), sVal.end());
-        }
-        void SetDocSecurity(int nVal)
-		{
-			m_nDocSecurity = nVal;
-		}
-		void SetScaleCrop(bool bVal)
-		{
-			m_bScaleCrop = bVal;
-		}
-        void SetCompany(std::wstring sVal)
-		{
-			m_sCompany = sVal;
-		}
-		void SetLinksUpToDate(bool bVal)
-		{
-			m_bLinksUpToDate = bVal;
-		}
-		void SetSharedDoc(bool bVal)
-		{
-			m_bSharedDoc = bVal;
-		}
-		void SetHyperlinksChanged(bool bVal)
-		{
-			m_bHyperlinksChanged = bVal;
-		}
+ 
 		PPTX::App* ToPptxApp();
 		void FromPptxApp(PPTX::App* pApp);
 
@@ -472,30 +344,29 @@ namespace OOX
 		//        HLinks
 		//        TitlesOfParts
 
-        nullable<std::wstring>	m_sApplication;
-        nullable<std::wstring>	m_sAppVersion;
-		nullable<int>			m_nCharacters;
-		nullable<int>			m_nCharactersWithSpaces;
-        nullable<std::wstring>	m_sCompany;
-		nullable<int>			m_nDocSecurity;
-		nullable<int>			m_nHiddenSlides;
-        nullable<std::wstring>	m_sHyperlinkBase;
-		nullable<bool>			m_bHyperlinksChanged;
-		nullable<int>			m_nLines;
-		nullable<bool>			m_bLinksUpToDate;
-        nullable<std::wstring>	m_sManager;
-		nullable<int>			m_nMMClips;
-		nullable<int>			m_nNotes;
-		nullable<int>			m_nPages;
-		nullable<int>			m_nParagraphs;
-        nullable<std::wstring>	m_sPresentationForm;
-		nullable<bool>			m_bScaleCrop;
-		nullable<bool>			m_bSharedDoc;
-		nullable<int>			m_nSlides;
-        nullable<std::wstring>	m_sTemplate;
-		nullable<int>			m_nTotalTime;
-		nullable<int>			m_nWords;
+        nullable_string	m_sApplication;
+		nullable_string	m_sAppVersion;
+		nullable_int	m_nCharacters;
+		nullable_int	m_nCharactersWithSpaces;
+        nullable_string	m_sCompany;
+		nullable_int	m_nDocSecurity;
+		nullable_int	m_nHiddenSlides;
+        nullable_string	m_sHyperlinkBase;
+		nullable_bool	m_bHyperlinksChanged;
+		nullable_int	m_nLines;
+		nullable_bool	m_bLinksUpToDate;
+        nullable_string	m_sManager;
+		nullable_int	m_nMMClips;
+		nullable_int	m_nNotes;
+		nullable_int	m_nPages;
+		nullable_int	m_nParagraphs;
+        nullable_string	m_sPresentationForm;
+		nullable_bool	m_bScaleCrop;
+		nullable_bool	m_bSharedDoc;
+		nullable_int	m_nSlides;
+        nullable_string	m_sTemplate;
+		nullable_int	m_nTotalTime;
+		nullable_int	m_nWords;
 	};
 } // namespace OOX
 
-#endif // OOX_APP_INCLUDE_H_

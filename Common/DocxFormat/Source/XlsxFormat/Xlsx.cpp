@@ -124,7 +124,7 @@ bool OOX::Spreadsheet::CXlsx::Read(const CPath& oFilePath)
 }
 bool OOX::Spreadsheet::CXlsx::WriteNative(const CPath& oDirPath, OOX::CContentTypes &oContentTypes)
 {
-	if (NULL == m_pWorkbook || m_arWorksheets.empty())
+    if (NULL == m_pWorkbook)
 		return false;
 
 	IFileContainer::Write(oDirPath / L"", OOX::CPath(_T("")), oContentTypes);

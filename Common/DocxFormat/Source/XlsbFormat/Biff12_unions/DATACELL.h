@@ -33,24 +33,24 @@
 
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-
-
 namespace XLSB
 {
 
     class DATACELL: public XLS::CompositeObject
     {
-        BASE_OBJECT_DEFINE_CLASS_NAME(TABLECELL)
+        BASE_OBJECT_DEFINE_CLASS_NAME(DATACELL)
     public:
         DATACELL();
-        virtual ~DATACELL();
+        ~DATACELL();
 
         XLS::BaseObjectPtr clone();
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
+        static const XLS::ElementType	type = XLS::typeDATACELL;
+
         XLS::BaseObjectPtr   m_source;
-        _INT32          m_Col;
+        _INT32               m_Col;
 
     };
 

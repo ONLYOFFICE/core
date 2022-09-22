@@ -31,20 +31,32 @@
  */
 
 #include "VertBrk.h"
+#include "../../../Common/simple_xml_writer.h"
 
 namespace XLS
 {
-
-
-BiffStructurePtr VertBrk::clone()
-{
-	return BiffStructurePtr(new VertBrk(*this));
-}
-
-void VertBrk::load(CFRecord& record)
-{
-	record >> col >> rowStart >> rowEnd;
-}
-
+	BiffStructurePtr VertBrk::clone()
+	{
+		return BiffStructurePtr(new VertBrk(*this));
+	}
+	void VertBrk::load(CFRecord& record)
+	{
+		record >> col >> rowStart >> rowEnd;
+	}
+	int VertBrk::serialize(std::wostream & stream)
+	{
+		CP_XML_WRITER(stream)
+		{
+			CP_XML_NODE(L"brk")
+			{
+				CP_XML_ATTR(L"id", col);
+				CP_XML_ATTR(L"max", rowEnd);
+				CP_XML_ATTR(L"man", 1);
+				if (rowStart > 0)
+					CP_XML_ATTR(L"min", rowStart);
+			}
+		}
+		return 0;
+	}
 } // namespace XLS
 

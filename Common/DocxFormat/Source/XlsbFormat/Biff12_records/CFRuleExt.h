@@ -46,7 +46,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(CFRuleExt)
         public:
             CFRuleExt();
-            virtual ~CFRuleExt();
+            ~CFRuleExt();
 
             XLS::BaseObjectPtr clone();
 

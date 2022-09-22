@@ -50,4 +50,5 @@
 #include "../Source/XlsxFormat/Slicer/SlicerCacheExt.cpp"
 #include "../Source/XlsxFormat/Slicer/Slicer.cpp"
 #include "../Source/XlsxFormat/NamedSheetViews/NamedSheetViews.cpp"
-
+#include "../Source/XlsxFormat/Pivot/PivotCacheDefinitionExt.cpp"
+#include "../Source/XlsxFormat/Workbook/Workbook.cpp"

@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndCustomRichFilters)
         public:
             EndCustomRichFilters();
-            virtual ~EndCustomRichFilters();
+            ~EndCustomRichFilters();
 
             XLS::BaseObjectPtr clone();
 

@@ -139,7 +139,7 @@ namespace PdfWriter
 		if (!(nFlags & 4))
 			UIntChangeBit(nFlags, 2);
 		if (nFlags & 32)
-			UIntChangeBit(nFlags, 5);
+			UIntChangeBit(nFlags, 4);
 
 		pFontDescriptor->Add("Flags", nFlags);
 
@@ -171,64 +171,6 @@ namespace PdfWriter
 		{
 			pFontDescriptor->Add("CIDSet", new CDictObject(m_pXref));
 		}
-	}
-	unsigned char* CFontCidTrueType::EncodeString(unsigned int* pUnicodes, unsigned int unLen, const unsigned int* pGids)
-	{
-		if (!OpenFontFace())
-			return NULL;
-
-		unsigned char* pEncodedString = new unsigned char[unLen * 2];
-		if (!pEncodedString)
-			return NULL;
-
-		// Юникодные значения мы кодируем в наши собственные коды последовательно от 0x0000..0xFFFF
-		// для каждого юникодного значения находим соответствующий Gid в шрифте.
-		// Для каждого кода получаем ширину символа.
-		for (unsigned int unIndex = 0; unIndex < unLen; unIndex++)
-		{
-			bool bFind = false;
-			unsigned short ushCode;
-			if (pGids)
-			{
-				unsigned short ushGid = pGids[unIndex];
-				for (unsigned short ushCurCode = 0, ushCodesCount = m_vCodeToGid.size(); ushCurCode < ushCodesCount; ushCurCode++)
-				{
-					if (ushGid == m_vCodeToGid.at(ushCurCode))
-					{
-						ushCode = ushCurCode;
-						bFind = true;
-						break;
-					}
-				}
-			}
-			else
-			{
-				std::map<unsigned int, unsigned short>::const_iterator oIter = m_mUnicodeToCode.find(pUnicodes[unIndex]);
-				if (oIter != m_mUnicodeToCode.end())
-				{
-					ushCode = oIter->second;
-					bFind = true;
-				}
-			}
-
-			if (!bFind)
-				ushCode = EncodeUnicodeSymbol(pUnicodes[unIndex], pGids ? pGids[unIndex] : 0x0000, pGids ? true : false);
-
-			pEncodedString[2 * unIndex + 0] = (ushCode >> 8) & 0xFF;
-			pEncodedString[2 * unIndex + 1] = ushCode & 0xFF;
-		}
-		return pEncodedString;
-	}
-	unsigned short CFontCidTrueType::EncodeChar(const unsigned int &unUnicode)
-	{
-		if (!OpenFontFace())
-			return NULL;
-
-		std::map<unsigned int, unsigned short>::const_iterator oIter = m_mUnicodeToCode.find(unUnicode);
-		if (oIter != m_mUnicodeToCode.end())
-			return oIter->second;
-
-		return EncodeUnicodeSymbol(unUnicode);
 	}
 	bool CFontCidTrueType::HaveChar(const unsigned int &unUnicode)
 	{
@@ -410,24 +352,26 @@ namespace PdfWriter
 		pS->WriteStr(" beginbfchar\n");
 		for (unsigned short ushCode = 0; ushCode < m_ushCodesCount; ushCode++)
 		{
-			unsigned int unUnicode = m_vUnicodes[ushCode];
 			pS->WriteChar('<');
 			pS->WriteHex(ushCode, 4);
 			pS->WriteStr("> <");
-
-			if (unUnicode < 0x10000)
+			for (unsigned int i = 0, nLen = m_vUnicodes[ushCode].size(); i < nLen; i++)
 			{
-				pS->WriteHex(unUnicode, 4);
-			}
-			else
-			{
-				unUnicode = unUnicode - 0x10000;
+				unsigned int unUnicode = m_vUnicodes[ushCode][i];
+				if (unUnicode < 0x10000)
+				{
+					pS->WriteHex(unUnicode, 4);
+				}
+				else
+				{
+					unUnicode = unUnicode - 0x10000;
 
-				unsigned short ushLo = 0xDC00 | (unUnicode & 0x3FF);
-				unsigned short ushHi = 0xD800 | (unUnicode >> 10);
+					unsigned short ushLo = 0xDC00 | (unUnicode & 0x3FF);
+					unsigned short ushHi = 0xD800 | (unUnicode >> 10);
 
-				pS->WriteHex(ushHi, 4);
-				pS->WriteHex(ushLo, 4);
+					pS->WriteHex(ushHi, 4);
+					pS->WriteHex(ushLo, 4);
+				}
 			}
 
 			pS->WriteStr(">\n");
@@ -497,29 +441,42 @@ namespace PdfWriter
 
 		return true;
 	}
-	unsigned short CFontCidTrueType::EncodeUnicodeSymbol(const unsigned int &unUnicode, const unsigned int& unGid, const bool& isGid)
+	unsigned short CFontCidTrueType::EncodeUnicode(const unsigned int &unUnicode)
 	{
-		unsigned short ushCode = m_ushCodesCount;
-		m_ushCodesCount++;
+		std::map<unsigned int, unsigned short>::const_iterator oIter = m_mUnicodeToCode.find(unUnicode);
+		if (oIter != m_mUnicodeToCode.end())
+			return oIter->second;
 
+		unsigned int unGID = GetGID(m_pFace, unUnicode);
+		if (0 == unGID && -1 != m_nSymbolicCmap)
+			unGID = GetGID(m_pFace, unUnicode + 0xF000);
+
+		unsigned short ushCode = EncodeGID(unGID, &unUnicode, 1);
 		m_mUnicodeToCode.insert(std::pair<unsigned int, unsigned short>(unUnicode, ushCode));
-		m_vUnicodes.push_back(unUnicode);
-
-		unsigned int unGID;
-		if (!isGid)
+		return ushCode;
+	}
+	unsigned short CFontCidTrueType::EncodeGID(const unsigned int& unGID, const unsigned int* pUnicodes, const unsigned int& unCount)
+	{
+		for (unsigned short ushCurCode = 0, ushCodesCount = m_vCodeToGid.size(); ushCurCode < ushCodesCount; ushCurCode++)
 		{
-			unGID = GetGID(m_pFace, unUnicode);
-			if (0 == unGID && -1 != m_nSymbolicCmap)
-				unGID = GetGID(m_pFace, unUnicode + 0xF000);
-		}
-		else
-		{
-			unGID = unGid;
+			if (unGID == m_vCodeToGid.at(ushCurCode))
+				return ushCurCode;
 		}
 
+		if (!OpenFontFace())
+			return 0;
+
+		unsigned short ushCode = m_ushCodesCount++;
+
+		std::vector<unsigned int> vUnicodes;
+		for (unsigned int i = 0; i < unCount; i++)
+		{
+			vUnicodes.push_back(pUnicodes[i]);
+		}
+
+		m_vUnicodes.push_back(vUnicodes);
 		m_vCodeToGid.push_back(unGID);
 
-		// Данный символ используется
 		m_mGlyphs.insert(std::pair<unsigned int, bool>(unGID, true));
 
 		// Если данный символ составной (CompositeGlyf), тогда мы должны учесть все его дочерные символы (subglyfs)
@@ -547,6 +504,11 @@ namespace PdfWriter
 				m_vWidths.push_back((unsigned int)m_pFace->glyph->metrics.horiAdvance);
 				m_vGlypWidths.push_back((unsigned int)(m_pFace->glyph->metrics.width) * 1000 / m_pFace->units_per_EM);
 			}
+		}
+		else
+		{
+			m_vWidths.push_back(0);
+			m_vGlypWidths.push_back(0);
 		}
 
 		return ushCode;

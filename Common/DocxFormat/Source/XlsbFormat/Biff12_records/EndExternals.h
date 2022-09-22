@@ -46,7 +46,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndExternals)
         public:
             EndExternals();
-            virtual ~EndExternals();
+            ~EndExternals();
 
             XLS::BaseObjectPtr clone();
 

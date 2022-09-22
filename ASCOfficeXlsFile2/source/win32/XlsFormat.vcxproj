@@ -79,6 +79,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
+    <IncludePath>..\..\..\Common\3dParty\boost\build\win_32\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>..\..\..\Common\3dParty\boost\build\win_32\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
@@ -88,7 +90,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -119,11 +121,12 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <AdditionalIncludeDirectories>..\XlsFormat; ..\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -926,15 +929,15 @@
     <ClInclude Include="..\XlsFormat\Logic\ChartSheetSubstream.h" />
     <ClInclude Include="..\XlsFormat\Logic\CommonSubstream.h" />
     <ClInclude Include="..\XlsFormat\Logic\CompositeObject.h" />
+    <ClInclude Include="..\XlsFormat\Logic\EncryptionStream.h" />
     <ClInclude Include="..\XlsFormat\Logic\GlobalsSubstream.h" />
     <ClInclude Include="..\XlsFormat\Logic\GlobalWorkbookInfo.h" />
     <ClInclude Include="..\XlsFormat\Logic\MacroSheetSubstream.h" />
-    <ClInclude Include="..\XlsFormat\Logic\SummaryInformationStream\Structures\CodePageOle.h" />
-    <ClInclude Include="..\XlsFormat\Logic\SummaryInformationStream\Structures\Property.h" />
-    <ClInclude Include="..\XlsFormat\Logic\SummaryInformationStream\Structures\PropertyFactory.h" />
-    <ClInclude Include="..\XlsFormat\Logic\SummaryInformationStream\Structures\PropertySet.h" />
-    <ClInclude Include="..\XlsFormat\Logic\SummaryInformationStream\Structures\PropertySetStream.h" />
-    <ClInclude Include="..\XlsFormat\Logic\SummaryInformationStream\SummaryInformation.h" />
+    <ClInclude Include="..\XlsFormat\Logic\SummaryInformationStream\CodePageOle.h" />
+    <ClInclude Include="..\XlsFormat\Logic\SummaryInformationStream\Property.h" />
+    <ClInclude Include="..\XlsFormat\Logic\SummaryInformationStream\PropertyFactory.h" />
+    <ClInclude Include="..\XlsFormat\Logic\SummaryInformationStream\PropertySet.h" />
+    <ClInclude Include="..\XlsFormat\Logic\SummaryInformationStream\PropertySetStream.h" />
     <ClInclude Include="..\XlsFormat\Logic\WorkbookStreamObject.h" />
     <ClInclude Include="..\XlsFormat\Logic\WorksheetSubstream.h" />
     <ClInclude Include="..\XlsFormat\Logic\XlsElementsType.h" />
@@ -1723,14 +1726,14 @@
     <ClCompile Include="..\XlsFormat\Logic\ChartSheetSubstream.cpp" />
     <ClCompile Include="..\XlsFormat\Logic\CommonSubstream.cpp" />
     <ClCompile Include="..\XlsFormat\Logic\CompositeObject.cpp" />
+    <ClCompile Include="..\XlsFormat\Logic\EncryptionStream.cpp" />
     <ClCompile Include="..\XlsFormat\Logic\GlobalsSubstream.cpp" />
     <ClCompile Include="..\XlsFormat\Logic\GlobalWorkbookInfo.cpp" />
     <ClCompile Include="..\XlsFormat\Logic\MacroSheetSubstream.cpp" />
-    <ClCompile Include="..\XlsFormat\Logic\SummaryInformationStream\Structures\CodePageOle.cpp" />
-    <ClCompile Include="..\XlsFormat\Logic\SummaryInformationStream\Structures\PropertyFactory.cpp" />
-    <ClCompile Include="..\XlsFormat\Logic\SummaryInformationStream\Structures\PropertySet.cpp" />
-    <ClCompile Include="..\XlsFormat\Logic\SummaryInformationStream\Structures\PropertySetStream.cpp" />
-    <ClCompile Include="..\XlsFormat\Logic\SummaryInformationStream\SummaryInformation.cpp" />
+    <ClCompile Include="..\XlsFormat\Logic\SummaryInformationStream\CodePageOle.cpp" />
+    <ClCompile Include="..\XlsFormat\Logic\SummaryInformationStream\PropertyFactory.cpp" />
+    <ClCompile Include="..\XlsFormat\Logic\SummaryInformationStream\PropertySet.cpp" />
+    <ClCompile Include="..\XlsFormat\Logic\SummaryInformationStream\PropertySetStream.cpp" />
     <ClCompile Include="..\XlsFormat\Logic\WorkbookStreamObject.cpp" />
     <ClCompile Include="..\XlsFormat\Logic\WorksheetSubstream.cpp" />
   </ItemGroup>

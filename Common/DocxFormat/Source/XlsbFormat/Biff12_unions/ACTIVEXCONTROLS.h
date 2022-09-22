@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(ACTIVEXCONTROLS)
     public:
         ACTIVEXCONTROLS();
-        virtual ~ACTIVEXCONTROLS();
+        ~ACTIVEXCONTROLS();
 
         XLS::BaseObjectPtr clone();
 

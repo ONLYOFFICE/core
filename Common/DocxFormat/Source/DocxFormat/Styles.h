@@ -813,6 +813,8 @@ namespace OOX
 			sXml  += toXML();
 
 			CDirectory::SaveToFile( oFilePath.GetPath(), sXml );
+			
+			oContent.Registration(type().OverrideType(), oDirectory, oFilePath.GetFilename());
 		}
 		virtual const OOX::FileType type() const
 		{

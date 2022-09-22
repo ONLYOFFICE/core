@@ -59,7 +59,6 @@ namespace OOX
 		class CThreadedComments;
 		class CPersonList;
 //необработанные child:
-		//<cellWatches>
 		//<customProperties>
 		//<extLst>
 		//<phoneticPr>
@@ -131,6 +130,7 @@ namespace OOX
 			bool	m_bPrepareForBinaryWriter;
 			bool	m_bWriteDirectlyToFile;
             bool    m_bIsChartSheet;
+            mutable bool bIsWritten;
 
 			nullable<OOX::Spreadsheet::CCols>						m_oCols;
 			nullable<OOX::Spreadsheet::CDimension>					m_oDimension;
@@ -161,6 +161,7 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CDataConsolidate>			m_oDataConsolidate;
 			nullable<OOX::Spreadsheet::CSortState>					m_oSortState;
 			nullable<OOX::Spreadsheet::CProtectedRanges>			m_oProtectedRanges;
+			nullable<OOX::Spreadsheet::CCellWatches>				m_oCellWatches;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList>			m_oExtLst;
 

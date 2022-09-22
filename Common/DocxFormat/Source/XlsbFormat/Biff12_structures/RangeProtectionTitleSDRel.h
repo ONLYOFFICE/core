@@ -45,7 +45,7 @@ namespace XLSB
     public:
         RangeProtectionTitleSDRel();
         RangeProtectionTitleSDRel(XLS::CFRecord& record);
-        virtual ~RangeProtectionTitleSDRel();
+        ~RangeProtectionTitleSDRel();
         XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;

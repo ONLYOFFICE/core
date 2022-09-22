@@ -38,7 +38,7 @@
 #include <math.h>
 
 #ifndef DIB_RGB_COLORS
-    #define DIB_RGB_COLORS  0x00
+#define DIB_RGB_COLORS  0x00
 #endif
 
 namespace MetaFile
@@ -136,13 +136,16 @@ namespace MetaFile
 			if (BI_JPEG != unCompression || BI_PNG != unCompression)
 				return false;
 
-			std::wstring wsTempFileName;
-			FILE* pTempFile = NULL;
-			if (!OpenTempFile(&wsTempFileName, &pTempFile, L"wb", L".wmf0", NULL))
+			std::wstring wsTempFileName = GetTempFilename();
+			if (wsTempFileName.empty())
 				return false;
 
-			::fwrite(pBuffer, 1, unImageSize, pTempFile);
-			::fclose(pTempFile);
+			NSFile::CFileBinary oFile;
+			if (!oFile.CreateFileW(wsTempFileName))
+				return false;
+
+			oFile.WriteFile(pBuffer, (DWORD)unImageSize);
+			oFile.CloseFile();
 
 			CBgraFrame oFrame;
 			oFrame.OpenFile(wsTempFileName);
@@ -157,7 +160,14 @@ namespace MetaFile
 			TRgbQuad oColor1, oColor2;
 
 			if (oHeaderStream.CanRead() >= 8)
+			{
 				oHeaderStream >> oColor1 >> oColor2;
+			}
+			else
+			{
+				oColor1.r = oColor1.g = oColor1.b = 0;
+				oColor2.r = oColor2.g = oColor2.b = 255;
+			}
 
 			// Считываем саму картинку
 			int lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);
@@ -638,8 +648,6 @@ namespace MetaFile
 				nAdd++;
 			}
 
-			int nSize = nWidth * nHeight * 4;
-
 			pBgraBuffer = new BYTE[nWidth * abs(nHeight) * 4 * sizeof(BYTE)];
 			if (NULL == pBgraBuffer)
 				return false;
@@ -688,9 +696,6 @@ namespace MetaFile
 		else if (BI_BITCOUNT_6 == ushBitCount)
 		{
 			unsigned int ulMaskR  = 0xff000000, ulMaskB = 0x00ff0000, ulMaskG = 0x0000ff00;
-			unsigned int ulShiftR = 24, ulShiftB = 16, ulShiftG = 8;
-			double dKoefR = 1.0, dKoefB = 1.0, dKoefG = 1.0;
-			bool bMask = false;
 
 			if (BI_RGB == unCompression)
 			{
@@ -704,21 +709,6 @@ namespace MetaFile
 				oHeaderStream >> ulMaskB;
 				oHeaderStream >> ulMaskG;
 				oHeaderStream >> ulMaskR;
-
-				ulShiftR = GetLowestBit(ulMaskR);
-				ulShiftB = GetLowestBit(ulMaskB);
-				ulShiftG = GetLowestBit(ulMaskG);
-
-				dKoefR = 255.0 / (ulMaskR >> ulShiftR);
-				dKoefG = 255.0 / (ulMaskG >> ulShiftG);
-				dKoefB = 255.0 / (ulMaskB >> ulShiftB);
-
-				if ((ulMaskR >> ulShiftR) == 255 && (ulMaskG >> ulShiftG) == 255 && (ulMaskB >> ulShiftB) == 255)
-				{
-					bMask = false; // Proper_Attire_CALT2.odt
-				}
-				else
-					bMask = true;
 			}
 			else
 				return false;
@@ -736,8 +726,6 @@ namespace MetaFile
 				nAdd++;
 			}
 
-			int nSize = nWidth * nHeight * 4;
-
 			pBgraBuffer = new BYTE[(nWidth + nAdd) * abs(nHeight) * 4 * sizeof(BYTE)];
 			if (NULL == pBgraBuffer)
 				return false;
@@ -753,26 +741,10 @@ namespace MetaFile
 					{
 						int nIndex = 4 * ((nWidth + nAdd) * nY + nX);
 
-						if (bMask)
-						{
-							unsigned int unValue = ((pBuffer[3] << 24) | (pBuffer[2] << 16) | (pBuffer[1] << 8) | pBuffer[0]) & 0xFFFFFFFF; pBuffer += 4; lBufLen -= 4;
-
-							unsigned char unR = (unValue & ulMaskR) >> ulShiftR;
-							unsigned char unG = (unValue & ulMaskG) >> ulShiftG;
-							unsigned char unB = (unValue & ulMaskB) >> ulShiftB;
-
-							pBgraBuffer[nIndex + 0] = (unsigned char)(unR * dKoefR);
-							pBgraBuffer[nIndex + 1] = (unsigned char)(unG * dKoefG);
-							pBgraBuffer[nIndex + 2] = (unsigned char)(unB * dKoefB);
-							pBgraBuffer[nIndex + 3] = pBuffer[3];
-						}
-						else
-						{
-							pBgraBuffer[nIndex + 0] = pBuffer[0]; pBuffer++; lBufLen--;
-							pBgraBuffer[nIndex + 1] = pBuffer[0]; pBuffer++; lBufLen--;
-							pBgraBuffer[nIndex + 2] = pBuffer[0]; pBuffer++; lBufLen--;
-							pBgraBuffer[nIndex + 3] = 255; pBuffer++; lBufLen--; // Если брать значение из картинки, тогда она получается всегда прозрачной
-						}
+						pBgraBuffer[nIndex + 0] = pBuffer[0]; pBuffer++; lBufLen--;
+						pBgraBuffer[nIndex + 1] = pBuffer[0]; pBuffer++; lBufLen--;
+						pBgraBuffer[nIndex + 2] = pBuffer[0]; pBuffer++; lBufLen--;
+						pBgraBuffer[nIndex + 3] = pBuffer[0]; pBuffer++; lBufLen--; // Если брать значение из картинки, тогда она получается всегда прозрачной
 					}
 					for (int nX = nWidth; nX < nWidth + nAdd; nX++)
 					{
@@ -792,26 +764,11 @@ namespace MetaFile
 					for (int nX = 0; nX < nWidth; nX++)
 					{
 						int nIndex = 4 * ((nWidth + nAdd) * nY + nX);
-						if (bMask)
-						{
-							unsigned int unValue = ((pBuffer[3] << 24) | (pBuffer[2] << 16) | (pBuffer[1] << 8) | pBuffer[0]) & 0xFFFFFFFF; pBuffer += 4; lBufLen -= 4;
 
-							unsigned char unR = (unValue & ulMaskR) >> ulShiftR;
-							unsigned char unG = (unValue & ulMaskG) >> ulShiftG;
-							unsigned char unB = (unValue & ulMaskB) >> ulShiftB;
-
-							pBgraBuffer[nIndex + 0] = (unsigned char)(unR * dKoefR);
-							pBgraBuffer[nIndex + 1] = (unsigned char)(unG * dKoefG);
-							pBgraBuffer[nIndex + 2] = (unsigned char)(unB * dKoefB);
-							pBgraBuffer[nIndex + 3] = pBuffer[3];
-						}
-						else
-						{
-							pBgraBuffer[nIndex + 0] = pBuffer[0]; pBuffer++; lBufLen--;
-							pBgraBuffer[nIndex + 1] = pBuffer[0]; pBuffer++; lBufLen--;
-							pBgraBuffer[nIndex + 2] = pBuffer[0]; pBuffer++; lBufLen--;
-							pBgraBuffer[nIndex + 3] = 255; pBuffer++; lBufLen--; // Если брать значение из картинки, тогда она получается всегда прозрачной
-						}
+						pBgraBuffer[nIndex + 0] = pBuffer[0]; pBuffer++; lBufLen--;
+						pBgraBuffer[nIndex + 1] = pBuffer[0]; pBuffer++; lBufLen--;
+						pBgraBuffer[nIndex + 2] = pBuffer[0]; pBuffer++; lBufLen--;
+						pBgraBuffer[nIndex + 3] = pBuffer[0]; pBuffer++; lBufLen--; // Если брать значение из картинки, тогда она получается всегда прозрачной
 					}
 
 					for (int nX = nWidth; nX < nWidth + nAdd; nX++)
@@ -952,9 +909,9 @@ namespace MetaFile
 		double dAngle = dRadAngle * 180 / 3.14159265358979323846;
 		switch (nQuarter)
 		{
-			case 1: dAngle = 180 - dAngle; break;
-			case 2: dAngle = 180 + dAngle; break;
-			case 3: dAngle = 360 - dAngle; break;
+		case 1: dAngle = 180 - dAngle; break;
+		case 2: dAngle = 180 + dAngle; break;
+		case 3: dAngle = 360 - dAngle; break;
 		}
 
 		return dAngle;
@@ -962,6 +919,10 @@ namespace MetaFile
 	void ProcessRasterOperation(unsigned int unRasterOperation, BYTE** ppBgra, unsigned int unWidth, unsigned int unHeight)
 	{
 		BYTE* pBgra = *ppBgra;
+
+		if (NULL == pBgra)
+			return;
+
 		// Для битовых операций SRCPAINT и SRCAND сделаем, как будто фон чисто белый.
 		if (0x008800C6 == unRasterOperation) // SRCPAINT
 		{
@@ -991,6 +952,12 @@ namespace MetaFile
 				}
 			}
 		}
+		//Точная копия картинки, поэтому делаем alpha канал = 0xff, чтобы нейтрализовать его
+		else if (0x00CC0020 == unRasterOperation) //SRCCOPY
+		{
+			for (unsigned int unIndex = 3; unIndex < unWidth * 4 * unHeight; unIndex += 4)
+				pBgra[unIndex] = 0xff;
+		}
 	}
 
 	std::wstring ascii_to_unicode(const char *src)
@@ -1016,72 +983,37 @@ namespace MetaFile
 		return sRes;
 	}
 
-    bool OpenTempFile(std::wstring *pwsName, FILE **ppFile, const wchar_t *wsMode, const wchar_t *wsExt, const wchar_t *wsFolder)
+	std::wstring GetTempFilename(const std::wstring& sFolder)
 	{
-		std::wstring wsTemp, wsFileName;
-		FILE *pTempFile = NULL;
-#if defined(_WIN32) || defined (_WIN64)
-		wchar_t *wsTempDir;
-		if ((wsTempDir = _wgetenv(L"TEMP")) && (wsFolder == NULL))
-		{
-			wsTemp = std::wstring(wsTempDir);
-#else
-		char *wsTempDirA;
-		if ((wsTempDirA = getenv("TEMP")) && (wsFolder == NULL))
-		{
-			std::wstring wsTempDir = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)wsTempDirA, strlen(wsTempDirA));
-			wsTemp = wsTempDir.c_str();
-#endif
-			wsTemp.append(L"/");
-		}
-		else if (wsFolder != NULL)
-		{
-			wsTemp = std::wstring(wsFolder);
-			wsTemp.append(L"/");
-		}
-		else
-		{
-			wsTemp = L"";
-		}
-		wsTemp.append(L"x");
-		int nTime = (int)time(NULL);
-		for (int nIndex = 0; nIndex < 1000; ++nIndex)
-		{
-			wsFileName = wsTemp;
-#if defined(_WIN32) || defined (_WIN64)
-			wchar_t buff[32] ={};
-			_itow(nTime + nIndex, buff, 10);
-			wsFileName.append(buff, wcslen(buff));
-#else
-			wsFileName.append(std::to_wstring(nTime + nIndex));
-#endif
-			if (wsExt)
-			{
-				wsFileName.append(wsExt);
-			}
-#if defined (_WIN32) || defined (_WIN64)
-			if (!(pTempFile = _wfopen(wsFileName.c_str(), L"r")))
-			{
-				if (!(pTempFile = _wfopen(wsFileName.c_str(), wsMode)))
-#else
-			std::string sFileName = U_TO_UTF8(wsFileName);
-			if (!(pTempFile = fopen(sFileName.c_str(), "r")))
-			{
-				std::wstring strMode(wsMode);
-				std::string sMode = U_TO_UTF8(strMode);
-				if (!(pTempFile = fopen(sFileName.c_str(), sMode.c_str())))
-#endif
-				{
-					return FALSE;
-				}
-				*pwsName = wsFileName;
-				*ppFile = pTempFile;
-				return TRUE;
-			}
+		std::wstring sTmpFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(sFolder.empty() ? NSFile::CFileBinary::GetTempPath() : sFolder, L"wmf");
+		if (sTmpFile.empty())
+			return sTmpFile;
 
-			fclose(pTempFile);
-			}
+		if (NSFile::CFileBinary::Exists(sTmpFile))
+			NSFile::CFileBinary::Remove(sTmpFile);
 
-		return FALSE;
+		return sTmpFile;
+	}
+
+	std::wstring StringNormalization(std::wstring wsString)
+	{
+		std::wstring wsText;
+		for (wchar_t wChar : wsString)
+		{
+			if (wChar == L'<')
+				wsText += L"&lt;";
+			else if (wChar == L'>')
+				wsText += L"&gt;";
+			else if (wChar == L'&')
+				wsText += L"&amp;";
+			else if (wChar == L'\'')
+				wsText += L"&apos;";
+			else if (wChar == L'"')
+				wsText += L"&quot;";
+			else if (wChar == 0x00)
+				return wsText;
+			else wsText += wChar;
 		}
-		}
+		return wsText;
+	}
+}

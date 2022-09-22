@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(Top10Filter)
         public:
             Top10Filter();
-            virtual ~Top10Filter();
+            ~Top10Filter();
 
             XLS::BaseObjectPtr clone();
 

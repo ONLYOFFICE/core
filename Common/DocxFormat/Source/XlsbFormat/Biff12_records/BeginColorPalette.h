@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginColorPalette)
         public:
             BeginColorPalette();
-            virtual ~BeginColorPalette();
+            ~BeginColorPalette();
 
             XLS::BaseObjectPtr clone();
 

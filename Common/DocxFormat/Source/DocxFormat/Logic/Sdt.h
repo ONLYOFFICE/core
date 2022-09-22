@@ -424,10 +424,34 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
+			nullable<SimpleTypes::CHeightRule<>>	m_oWRule;
+			nullable_int							m_oWidth;
+			nullable_string							m_oSym;
+			nullable_string							m_oFont;
+		};
+		//Not from specification
+		class CTextFormFormat : public ComplexType
+		{
+		public:
+			ComplexTypes_AdditionConstructors(CTextFormFormat)
+			CTextFormFormat()
+			{
+			}
+			virtual ~CTextFormFormat()
+			{
+			}
 
-			nullable_int m_oWidth;
-			nullable_string m_oSym;
-			nullable_string m_oFont;
+			virtual void FromXML(XmlUtils::CXmlNode& oNode);
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring ToString() const;
+		private:
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
+		public:
+			nullable<SimpleTypes::CTextFormFormatType<>> m_oType;
+			nullable_string m_oVal;
+			nullable_string m_oSymbols;
 		};
 	} // Word
 } // ComplexTypes
@@ -486,7 +510,30 @@ namespace OOX
 			nullable<ComplexTypes::Word::CBorder> m_oCombBorder;
 			nullable_bool m_oAutoFit;
 			nullable_bool m_oMultiLine;
+			nullable<ComplexTypes::Word::CTextFormFormat> m_oFormat;
 		};
+		//Not from specification
+		class CComplexFormPr : public WritingElement
+		{
+		public:
+			WritingElement_AdditionConstructors(CComplexFormPr)
+			CComplexFormPr(OOX::Document *pMain = NULL) : WritingElement(pMain)
+			{
+			}
+			virtual ~CComplexFormPr()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
+		public:
+			nullable<SimpleTypes::CComplexFormType<>> m_oType;
+		};
+
 		//--------------------------------------------------------------------------------
 		// CSdtComboBox 17.5.2.5 (Part 1)
 		//--------------------------------------------------------------------------------
@@ -509,9 +556,6 @@ namespace OOX
 
 				m_arrListItem.clear();
 			}
-
-		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlMacroReadAttributeBase( oNode, L"w:lastValue", m_sLastValue );
@@ -528,6 +572,11 @@ namespace OOX
 							if (oListItem) m_arrListItem.push_back( oListItem );
 						}
 					}
+				}
+				XmlUtils::CXmlNode oChild;
+				if (oNode.GetNode(L"w:format", oChild))
+				{
+					m_oFormat = oChild;
 				}
 			}
 
@@ -547,6 +596,8 @@ namespace OOX
 						ComplexTypes::Word::CSdtListItem *oListItem = new ComplexTypes::Word::CSdtListItem(oReader);
 						m_arrListItem.push_back( oListItem );
 					}
+					else if (L"w:format" == sName)
+						m_oFormat = oReader;
 				}
 			}
 			virtual std::wstring toXML() const
@@ -562,6 +613,7 @@ namespace OOX
 				else
 					sResult = L"<w:comboBox>";
 
+				WritingElement_WriteNode_1(L"<w:format ", m_oFormat);
 				for (size_t nIndex = 0; nIndex < m_arrListItem.size(); nIndex++ )
 				{
 					sResult += L"<w:listItem ";
@@ -569,7 +621,6 @@ namespace OOX
 						sResult += m_arrListItem[nIndex]->ToString();
 					sResult += L"/>";
 				}
-
 				sResult += L"</w:comboBox>";
 
 				return sResult;
@@ -579,9 +630,7 @@ namespace OOX
 			{
 				return et_w_comboBox;
 			}
-
 		private:
-
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
@@ -590,11 +639,9 @@ namespace OOX
 			}
 
 		public:
+			nullable<ComplexTypes::Word::CTextFormFormat> m_oFormat;
+			nullable<std::wstring > m_sLastValue;
 
-			// Attributes
-			nullable<std::wstring >                             m_sLastValue;
-
-			// Nodes
 			std::vector<ComplexTypes::Word::CSdtListItem*> m_arrListItem;
 		};
 
@@ -759,8 +806,8 @@ namespace OOX
 			}
 		public:
 
- 			nullable<ComplexTypes::Word::String                       > m_oDocPartCategory;
-			nullable<ComplexTypes::Word::String                       > m_oDocPartGallery;
+ 			nullable<ComplexTypes::Word::String> m_oDocPartCategory;
+			nullable<ComplexTypes::Word::String> m_oDocPartGallery;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oDocPartUnique;
 		};
 
@@ -1163,6 +1210,7 @@ namespace OOX
 			nullable<CFormPr> m_oFormPr; //Not from specification
 			nullable<CTextFormPr> m_oTextFormPr; //Not from specification
 			nullable<CSdtPicture> m_oPicture; //Not from specification
+			nullable<CComplexFormPr> m_oComplexFormPr; // Not from specification
 		};
 		//--------------------------------------------------------------------------------
 		// SdtContent 17.5.2.38 (Part 1)

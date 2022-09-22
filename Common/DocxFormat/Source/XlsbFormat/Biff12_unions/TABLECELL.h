@@ -33,8 +33,6 @@
 
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-
-
 namespace XLSB
 {
 
@@ -43,16 +41,18 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(TABLECELL)
     public:
         TABLECELL();
-        virtual ~TABLECELL();
+        ~TABLECELL();
 
         XLS::BaseObjectPtr clone();
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
-		XLS::BaseObjectPtr   m_BrtTable;
-		XLS::BaseObjectPtr   m_CELLMETA;
-		XLS::BaseObjectPtr   m_source;
-        _INT32          m_Col;
+        static const XLS::ElementType	type = XLS::typeTABLECELL;
+
+        XLS::BaseObjectPtr   m_BrtTable;
+        XLS::BaseObjectPtr   m_CELLMETA;
+        XLS::BaseObjectPtr   m_source;
+        _INT32               m_Col;
 
     };
 

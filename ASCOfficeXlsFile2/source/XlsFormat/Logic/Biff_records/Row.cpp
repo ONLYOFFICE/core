@@ -110,8 +110,8 @@ void Row::readFields(CFRecord& record)
     {
         record >> rw >> ixfe_val >> miyRw;
 
-        unsigned short flags;
-        unsigned char  flags2;
+        _UINT16 flags;
+        BYTE  flags2;
 
         record >> flags >> flags2 >> ccolspan;
 

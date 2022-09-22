@@ -34,6 +34,32 @@
 #define OOX_EXTERNALLINKS_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
+#include "../../XlsbFormat/Xlsb.h"
+#include "../../XlsbFormat/ExternalLinkStream.h"
+#include "../SharedStrings/Text.h"
+
+#include "../../XlsbFormat/Biff12_unions/EXTERNALLINK.h"
+#include "../../XlsbFormat/Biff12_records/BeginSupBook.h"
+#include "../../XlsbFormat/Biff12_unions/EXTERNALBOOK.h"
+#include "../../XlsbFormat/Biff12_unions/DDEOLELINK.h"
+#include "../../XlsbFormat/Biff12_records/SupTabs.h"
+#include "../../XlsbFormat/Biff12_unions/EXTERNNAME.h"
+#include "../../XlsbFormat/Biff12_records/SupNameStart.h"
+#include "../../XlsbFormat/Biff12_records/SupNameFmla.h"
+#include "../../XlsbFormat/Biff12_records/SupNameBits.h"
+#include "../../XlsbFormat/Biff12_unions/EXTERNTABLE.h"
+#include "../../XlsbFormat/Biff12_records/ExternTableStart.h"
+#include "../../XlsbFormat/Biff12_unions/EXTERNROW.h"
+#include "../../XlsbFormat/Biff12_records/ExternRowHdr.h"
+#include "../../XlsbFormat/Biff12_unions/EXTERNVALUE.h"
+#include "../../XlsbFormat/Biff12_records/ExternValueMeta.h"
+#include "../../XlsbFormat/Biff12_unions/EXTERNVALUEDATA.h"
+#include "../../XlsbFormat/Biff12_records/ExternCell.h"
+#include "../../XlsbFormat/Biff12_unions/DDEOLEITEM.h"
+#include "../../XlsbFormat/Biff12_unions/DDEOLEITEMVALUES.h"
+#include "../../XlsbFormat/Biff12_unions/DDEOLEITEMVALUE.h"
+#include "../../XlsbFormat/Biff12_records/SupNameValueStart.h"
+#include "../../XlsbFormat/Biff12_records/SupName.h"
 
 namespace OOX
 {
@@ -43,6 +69,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CExternalSheetNames)
+            WritingElement_XlsbConstructors(CExternalSheetNames)
 			CExternalSheetNames()
 			{
 			}
@@ -91,6 +118,19 @@ namespace OOX
 				toXML(writer);
 				return writer.GetData().c_str();
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::SupTabs*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    for(auto &item : ptr->sheetNames)
+                    {
+                        auto str = new ComplexTypes::Spreadsheet::String;
+                        str->m_sVal = item.value();
+                        m_arrItems.push_back(str);
+                    }
+                }
+            }
 			virtual EElementType getType() const
 			{
 				return et_x_ExternalSheetNames;
@@ -101,6 +141,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CExternalDefinedName)
+            WritingElement_XlsbConstructors(CExternalDefinedName)
 			CExternalDefinedName()
 			{
 			}
@@ -135,10 +176,42 @@ namespace OOX
 				toXML(writer);
 				return writer.GetData().c_str();
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 			virtual EElementType getType() const
 			{
 				return et_x_ExternalDefinedName;
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::EXTERNNAME*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    auto ptrSupNameStart = static_cast<XLSB::SupNameStart*>(ptr->m_BrtSupNameStart.get());
+                    if(ptrSupNameStart != nullptr)
+                    {
+                        if(!ptrSupNameStart->name.value().empty())
+                            m_oName = ptrSupNameStart->name.value();
+                    }
+
+                    auto ptrSupNameFmla = static_cast<XLSB::SupNameFmla*>(ptr->m_BrtSupNameFmla.get());
+                    if(ptrSupNameFmla != nullptr)
+                    {
+                        auto ref = ptrSupNameFmla->fmla.getAssembledFormula();
+                        if(!ref.empty())
+                            m_oRefersTo = ref;
+                    }
+
+                    auto ptrSupNameBits = static_cast<XLSB::SupNameBits*>(ptr->m_BrtSupNameBits.get());
+                    if(ptrSupNameBits != nullptr)
+                    {
+                        m_oSheetId = ptrSupNameBits->contentsExtName.iSheet;
+                    }
+
+                }
+            }
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
@@ -157,6 +230,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CExternalDefinedNames)
+            WritingElement_XlsbVectorConstructors(CExternalDefinedNames)
 			CExternalDefinedNames()
 			{
 			}
@@ -203,6 +277,13 @@ namespace OOX
 				toXML(writer);
 				return writer.GetData().c_str();
 			}
+            void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
+            {
+                for(auto &item : obj)
+                {
+                    m_arrItems.push_back(new CExternalDefinedName(item));
+                }
+            }
 			virtual EElementType getType() const
 			{
 				return et_x_ExternalDefinedNames;
@@ -213,6 +294,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CExternalCell)
+            WritingElement_XlsbConstructors(CExternalCell)
 			CExternalCell()
 			{
 			}
@@ -260,10 +342,92 @@ namespace OOX
 				toXML(writer);
 				return writer.GetData().c_str();
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 			virtual EElementType getType() const
 			{
 				return et_x_ExternalCell;
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::EXTERNVALUE*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    auto ptrExternValueMeta = static_cast<XLSB::ExternValueMeta*>(ptr->m_BrtExternValueMeta.get());
+                    if(ptrExternValueMeta != nullptr)
+                    {
+                        m_oValueMetadata = ptrExternValueMeta->ivmb;
+                    }
+
+                    auto ptrEXTERNVALUEDATA = static_cast<XLSB::EXTERNVALUEDATA*>(ptr->m_EXTERNVALUEDATA.get());
+                    if(ptrEXTERNVALUEDATA != nullptr)
+                    {
+                        if(!ptrEXTERNVALUEDATA->m_Ref.empty())
+                            m_oRef = ptrEXTERNVALUEDATA->m_Ref;
+
+                        if(ptrEXTERNVALUEDATA->m_source != nullptr)
+                        {
+                            auto pSource = static_cast<XLS::BiffRecord*>(ptrEXTERNVALUEDATA->m_source.get());
+                            auto nType = pSource->getTypeId();
+                            switch (nType)
+                            {
+                                case XLSB::rt_ExternCellBlank:
+                                    break;
+                                case XLSB::rt_ExternCellReal:
+                                    {
+                                        auto pRealNum = reinterpret_cast<XLSB::ExternCellReal*>(pSource)->value.data.value;
+                                        m_oType.Init();
+                                        m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeDate);
+                                        m_oValue.Init();
+                                        m_oValue->m_sText = OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(pRealNum);
+                                    }
+                                    break;
+                                case XLSB::rt_ExternCellBool:
+                                    {
+                                        auto pBool = reinterpret_cast<XLSB::ExternCellBool*>(pSource)->value;
+                                        m_oType.Init();
+                                        m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeBool);
+                                        m_oValue.Init();
+                                        m_oValue->m_sText = pBool ? L"1" : L"0";
+                                    }
+                                   break;
+                                case XLSB::rt_ExternCellError:
+                                    {
+                                        auto pError = reinterpret_cast<XLSB::ExternCellError*>(pSource)->value;
+                                        m_oType.Init();
+                                        m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeError);
+                                        m_oValue.Init();
+                                        switch(pError)
+                                        {
+                                            case 0x00: m_oValue->m_sText = L"#NULL!"; break;
+                                            case 0x07: m_oValue->m_sText = L"#DIV/0!"; break;
+                                            case 0x0F: m_oValue->m_sText = L"#VALUE!"; break;
+                                            case 0x17: m_oValue->m_sText = L"#REF!"; break;
+                                            case 0x1D: m_oValue->m_sText = L"#NAME?"; break;
+                                            case 0x24: m_oValue->m_sText = L"#NUM!"; break;
+                                            case 0x2A: m_oValue->m_sText = L"#N/A"; break;
+                                            case 0x2B: m_oValue->m_sText = L"#GETTING_DATA"; break;
+                                        }
+                                    }
+                                   break;
+                                case XLSB::rt_ExternCellString:
+                                    {
+                                        auto pSt = reinterpret_cast<XLSB::ExternCellString*>(pSource)->value.value();
+                                        m_oType.Init();
+                                        m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeInlineStr);
+                                        m_oValue.Init();
+                                        m_oValue->m_sText = pSt;
+                                    }
+                                   break;
+                            }
+                        }
+
+                    }
+
+                }               
+            }
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
@@ -284,6 +448,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CExternalRow)
+            WritingElement_XlsbConstructors(CExternalRow)
 			CExternalRow()
 			{
 			}
@@ -336,10 +501,29 @@ namespace OOX
 				toXML(writer);
 				return writer.GetData().c_str();
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 			virtual EElementType getType() const
 			{
 				return et_x_ExternalRow;
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::EXTERNROW*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    auto ptrExternRowHdr = static_cast<XLSB::ExternRowHdr*>(ptr->m_BrtExternRowHdr.get());
+                    if(ptrExternRowHdr != nullptr)
+                    {
+                        m_oR = ptrExternRowHdr->rw;
+                    }
+
+                    for(auto &item : ptr->m_arEXTERNVALUE)
+                        m_arrItems.push_back(new CExternalCell(item));
+                }
+            }
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
@@ -354,6 +538,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CExternalSheetData)
+            WritingElement_XlsbConstructors(CExternalSheetData)
 			CExternalSheetData()
 			{
 			}
@@ -407,10 +592,30 @@ namespace OOX
 				toXML(writer);
 				return writer.GetData().c_str();
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 			virtual EElementType getType() const
 			{
 				return et_x_ExternalSheetData;
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::EXTERNTABLE*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    auto ptrExternTableStart = static_cast<XLSB::ExternTableStart*>(ptr->m_BrtExternTableStart.get());
+                    if(ptrExternTableStart != nullptr)
+                    {
+                        m_oSheetId = ptrExternTableStart->iTab;
+                        m_oRefreshError = ptrExternTableStart->fRefreshError;
+                    }
+
+                    for(auto &item : ptr->m_arEXTERNROW)
+                        m_arrItems.push_back(new CExternalRow(item));
+                }
+            }
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
@@ -427,6 +632,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CExternalSheetDataSet)
+            WritingElement_XlsbVectorConstructors(CExternalSheetDataSet)
 			CExternalSheetDataSet()
 			{
 			}
@@ -473,6 +679,13 @@ namespace OOX
 				toXML(writer);
 				return writer.GetData().c_str();
 			}
+            void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
+            {
+                for(auto &item : obj)
+                {
+                    m_arrItems.push_back(new CExternalSheetData(item));
+                }
+            }
 			virtual EElementType getType() const
 			{
 				return et_x_ExternalSheetDataSet;
@@ -483,6 +696,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CExternalBook)
+            WritingElement_XlsbConstructors(CExternalBook)
 			CExternalBook()
 			{
 			}
@@ -552,10 +766,38 @@ namespace OOX
 				toXML(writer);
 				return writer.GetData().c_str();
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::EXTERNALLINK*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    ReadAttributes(ptr->m_BrtBeginSupBook);
+
+                    auto ptr1 = static_cast<XLSB::EXTERNALBOOK*>(ptr->m_EXTERNALBOOK.get());
+                    if(ptr1 != nullptr)
+                    {
+                        if(ptr1->m_BrtSupTabs != nullptr)
+                            m_oSheetNames = ptr1->m_BrtSupTabs;
+                        if(!ptr1->m_arEXTERNNAME.empty())
+                            m_oDefinedNames = ptr1->m_arEXTERNNAME;
+                        if(!ptr1->m_arEXTERNTABLE.empty())
+                            m_oSheetDataSet = ptr1->m_arEXTERNTABLE;
+                    }
+                }
+            }
 			virtual EElementType getType() const
 			{
 				return et_x_ExternalBook;
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::BeginSupBook*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    if(!ptr->string1.empty())
+                        m_oRid = ptr->string1;
+                }
+            }
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start_No_NS( oReader )
@@ -575,6 +817,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDdeValue)
+            WritingElement_XlsbConstructors(CDdeValue)
 			CDdeValue()
 			{
 			}
@@ -624,10 +867,94 @@ namespace OOX
 				toXML(writer);
 				return writer.GetData().c_str();
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 			virtual EElementType getType() const
 			{
 				return et_x_DdeValue;
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::DDEOLEITEMVALUE*>(obj.get());
+                if(ptr != nullptr)
+                {
+
+                    if(ptr->m_source != nullptr)
+                    {
+                        auto pSource = static_cast<XLS::BiffRecord*>(ptr->m_source.get());
+                        auto nType = pSource->getTypeId();
+                        switch (nType)
+                        {
+                            case XLSB::rt_SupNameNum:
+                                {
+                                    auto pRealNum = reinterpret_cast<XLSB::SupNameNum*>(pSource)->value.data.value;
+                                    m_oType.Init();
+                                    m_oType->SetValue(SimpleTypes::Spreadsheet::EDdeValueType::ddevaluetypeN);
+
+                                    auto text = new CText();
+                                    std::wstring val = OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(pRealNum);
+                                    text->fromBin(val);
+                                    m_arrItems.push_back(text);
+                                }
+                                break;
+                            case XLSB::rt_SupNameBool:
+                                {
+                                    auto pBool = reinterpret_cast<XLSB::SupNameBool*>(pSource)->value;
+                                    m_oType.Init();
+                                    m_oType->SetValue(SimpleTypes::Spreadsheet::EDdeValueType::ddevaluetypeB);
+
+                                    auto text = new CText();
+                                    std::wstring val = pBool ? L"1" : L"0";
+                                    text->fromBin(val);
+                                    m_arrItems.push_back(text);
+                                }
+                               break;
+                            case XLSB::rt_SupNameErr:
+                                {
+                                    auto pError = reinterpret_cast<XLSB::SupNameErr*>(pSource)->value;
+                                    m_oType.Init();
+                                    m_oType->SetValue(SimpleTypes::Spreadsheet::EDdeValueType::ddevaluetypeE);
+
+                                    auto text = new CText();
+                                    std::wstring val;
+                                    switch(pError)
+                                    {
+                                        case 0x00: val = L"#NULL!"; break;
+                                        case 0x07: val = L"#DIV/0!"; break;
+                                        case 0x0F: val = L"#VALUE!"; break;
+                                        case 0x17: val = L"#REF!"; break;
+                                        case 0x1D: val = L"#NAME?"; break;
+                                        case 0x24: val = L"#NUM!"; break;
+                                        case 0x2A: val = L"#N/A"; break;
+                                        case 0x2B: val = L"#GETTING_DATA"; break;
+                                    }
+                                    text->fromBin(val);
+                                    m_arrItems.push_back(text);
+                                }
+                               break;
+                            case XLSB::rt_SupNameSt:
+                                {
+                                    auto pSt = reinterpret_cast<XLSB::SupNameSt*>(pSource)->value.value();
+                                    m_oType.Init();
+                                    m_oType->SetValue(SimpleTypes::Spreadsheet::EDdeValueType::ddevaluetypeStr);
+
+                                    auto text = new CText();
+                                    text->fromBin(pSt);
+                                    m_arrItems.push_back(text);
+                                }
+                               break;
+                            case XLSB::rt_SupNameNil:
+                                {
+                                    m_oType.Init();
+                                    m_oType->SetValue(SimpleTypes::Spreadsheet::EDdeValueType::ddevaluetypeNil);;
+                                }
+                               break;
+                        }
+                    }
+                }
+            }
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
@@ -642,6 +969,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDdeValues)
+            WritingElement_XlsbConstructors(CDdeValues)
 			CDdeValues()
 			{
 			}
@@ -695,10 +1023,30 @@ namespace OOX
 				toXML(writer);
 				return writer.GetData().c_str();
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::DDEOLEITEMVALUES*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    ReadAttributes(ptr->m_BrtSupNameValueStart);
+
+                    for(auto &item : ptr->m_arDDEOLEITEMVALUE)
+                        m_arrItems.push_back(new CDdeValue(item));
+                }
+            }
 			virtual EElementType getType() const
 			{
 				return et_x_DdeValues;
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::SupNameValueStart*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    m_oRows = ptr->cRw;
+                    m_oCols = ptr->cCol;
+                }
+            }
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
@@ -715,6 +1063,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDdeItem)
+            WritingElement_XlsbConstructors(CDdeItem)
 			CDdeItem()
 			{
 			}
@@ -766,10 +1115,38 @@ namespace OOX
 				toXML(writer);
 				return writer.GetData().c_str();
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 			virtual EElementType getType() const
 			{
 				return et_x_OleItem;
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::DDEOLEITEM*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    if(ptr->m_DDEOLEITEMVALUES != nullptr)
+                        m_oDdeValues = ptr->m_DDEOLEITEMVALUES;
+
+                    auto ptrSupNameStart = static_cast<XLSB::SupNameStart*>(ptr->m_BrtSupNameStart.get());
+                    if(ptrSupNameStart != nullptr)
+                    {
+                        if(!ptrSupNameStart->name.value().empty())
+                            m_oName = ptrSupNameStart->name.value();
+                    }
+
+                    auto ptrSupNameBits = static_cast<XLSB::SupNameBits*>(ptr->m_BrtSupNameBits.get());
+                    if(ptrSupNameBits != nullptr)
+                    {
+                        m_oOle       = ptrSupNameBits->contentsDDE.fOLE;
+                        m_oAdvise    = ptrSupNameBits->contentsDDE.fWantAdvise;
+                        m_oPreferPic = ptrSupNameBits->contentsDDE.fWantPict;
+                    }
+                }
+            }
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
@@ -792,6 +1169,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDdeItems)
+            WritingElement_XlsbConstructors(CDdeItems)
 			CDdeItems()
 			{
 			}
@@ -836,6 +1214,15 @@ namespace OOX
 				toXML(writer);
 				return writer.GetData().c_str();
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::DDEOLELINK*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    for(auto &item : ptr->m_arDDEOLEITEM)
+                        m_arrItems.push_back(new CDdeItem(item));
+                }
+            }
 			virtual EElementType getType() const
 			{
 				return et_x_DdeItems;
@@ -846,6 +1233,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDdeLink)
+            WritingElement_XlsbConstructors(CDdeLink)
 			CDdeLink()
 			{
 			}
@@ -894,11 +1282,33 @@ namespace OOX
 				NSStringUtils::CStringBuilder writer;
 				toXML(writer);
 				return writer.GetData().c_str();
-			}
+            }
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::EXTERNALLINK*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    ReadAttributes(ptr->m_BrtBeginSupBook);
+
+                    if(ptr->m_DDEOLELINK != nullptr)
+                        m_oDdeItems = ptr->m_DDEOLELINK;
+                }
+            }
 			virtual EElementType getType() const
 			{
 				return et_x_DdeLink;
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::BeginSupBook*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    if(!ptr->string1.empty())
+                        m_oDdeService = ptr->string1;
+                    if(!ptr->string2.empty())
+                        m_oDdeTopic   = ptr->string2;
+                }
+            }
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
@@ -918,6 +1328,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(COleItem)
+            WritingElement_XlsbConstructors(COleItem)
 			COleItem()
 			{
 			}
@@ -953,10 +1364,35 @@ namespace OOX
 				toXML(writer);
 				return writer.GetData().c_str();
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                ReadAttributes(obj);
+            }
 			virtual EElementType getType() const
 			{
 				return et_x_OleItem;
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::DDEOLEITEM*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    auto ptrSupNameStart = static_cast<XLSB::SupNameStart*>(ptr->m_BrtSupNameStart.get());
+                    if(ptrSupNameStart != nullptr)
+                    {
+                        if(!ptrSupNameStart->name.value().empty())
+                            m_oName = ptrSupNameStart->name.value();
+                    }
+
+                    auto ptrSupNameBits = static_cast<XLSB::SupNameBits*>(ptr->m_BrtSupNameBits.get());
+                    if(ptrSupNameBits != nullptr)
+                    {
+                        m_oIcon      = ptrSupNameBits->contentsOLE.fIcon;
+                        m_oAdvise    = ptrSupNameBits->contentsOLE.fWantAdvise;
+                        m_oPreferPic = ptrSupNameBits->contentsOLE.fWantPict;
+                    }
+                }
+            }
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
@@ -977,6 +1413,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(COleItems)
+            WritingElement_XlsbConstructors(COleItems)
 			COleItems()
 			{
 			}
@@ -1024,6 +1461,15 @@ namespace OOX
 				toXML(writer);
 				return writer.GetData().c_str();
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::DDEOLELINK*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    for(auto &item : ptr->m_arDDEOLEITEM)
+                        m_arrItems.push_back(new COleItem(item));
+                }
+            }
 			virtual EElementType getType() const
 			{
 				return et_x_OleItems;
@@ -1034,6 +1480,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(COleLink)
+            WritingElement_XlsbConstructors(COleLink)
 			COleLink()
 			{
 			}
@@ -1083,10 +1530,32 @@ namespace OOX
 				toXML(writer);
 				return writer.GetData().c_str();
 			}
+            void fromBin(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::EXTERNALLINK*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    ReadAttributes(ptr->m_BrtBeginSupBook);
+
+                    if(ptr->m_DDEOLELINK != nullptr)
+                        m_oOleItems = ptr->m_DDEOLELINK;
+                }
+            }
 			virtual EElementType getType() const
 			{
 				return et_x_OleLink;
 			}
+            void ReadAttributes(XLS::BaseObjectPtr& obj)
+            {
+                auto ptr = static_cast<XLSB::BeginSupBook*>(obj.get());
+                if(ptr != nullptr)
+                {
+                    if(!ptr->string1.empty())
+                        m_oRid = ptr->string1;
+                    if(!ptr->string2.empty())
+                        m_oProgId = ptr->string2;
+                }
+            }
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
@@ -1109,14 +1578,56 @@ namespace OOX
 			{
 				m_bSpreadsheets = true;
 			}
-			CExternalLink(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
+            CExternalLink(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath, const std::wstring & rId) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
+                m_rId = rId;
 				read( oRootPath, oPath );
 			}
 			virtual ~CExternalLink()
 			{
 			}
+            void readBin(const CPath& oPath)
+            {
+                CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+                if (xlsb)
+                {
+                    XLSB::ExternalLinkStreamPtr externalLinkStreamStream(new XLSB::ExternalLinkStream);
+
+                    xlsb->ReadBin(oPath, externalLinkStreamStream.get());
+
+                    externalLinkStreamStream->UpdateXti(xlsb->GetGlobalinfo(), m_rId);
+
+                    if (externalLinkStreamStream != nullptr)
+                    {
+                        if (externalLinkStreamStream->m_EXTERNALLINK != nullptr)
+                        {
+                            auto ptr = static_cast<XLSB::EXTERNALLINK*>(externalLinkStreamStream->m_EXTERNALLINK.get());
+                            if(ptr != nullptr)
+                            {
+                                auto ptr1 = static_cast<XLSB::BeginSupBook*>(ptr->m_BrtBeginSupBook.get());
+                                if(ptr1 != nullptr)
+                                {
+                                    switch (ptr1->sbt.value().get())
+                                    {
+                                        case XLSB::ExternalReferenceType::WORKBOOK:
+                                            m_oExternalBook = externalLinkStreamStream->m_EXTERNALLINK;
+                                            break;
+                                        case XLSB::ExternalReferenceType::DDE:
+                                            m_oDdeLink = externalLinkStreamStream->m_EXTERNALLINK;
+                                            break;
+                                        case XLSB::ExternalReferenceType::OLE:
+                                            m_oOleLink = externalLinkStreamStream->m_EXTERNALLINK;
+                                            break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    //externalLinkStreamStream.reset();
+                }
+            }
 			virtual void read(const CPath& oPath)
 			{
 				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
@@ -1127,6 +1638,12 @@ namespace OOX
 			{
 				m_oReadPath = oPath;
 				IFileContainer::Read( oRootPath, oPath );
+
+                if( m_oReadPath.GetExtention() == _T(".bin"))
+                {
+                    readBin(m_oReadPath);
+                    return;
+                }
 
 				XmlUtils::CXmlLiteReader oReader;
 
@@ -1219,6 +1736,7 @@ namespace OOX
 			nullable<CDdeLink>						m_oDdeLink;
 		private:
 			CPath									m_oReadPath;
+            std::wstring                            m_rId;
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}

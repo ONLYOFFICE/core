@@ -1667,6 +1667,13 @@ void ods_table_state::start_conditional_rule(int rule_type, _CP_OPT(unsigned int
 				if (col.empty()) col = L".A";
 				if (row.empty()) row = L"1";
 
+				if (std::wstring::npos != table.find(L" "))
+				{
+					if (table[0] != L'\'')
+					{
+						table = L"'" + table + L"'";
+					}
+				}
 				condition->attr_.calcext_base_cell_address_ = table + col + row;
 			}
 			switch(rule_type)

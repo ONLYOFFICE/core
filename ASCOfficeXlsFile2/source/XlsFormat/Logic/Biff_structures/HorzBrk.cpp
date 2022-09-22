@@ -31,21 +31,33 @@
  */
 
 #include "HorzBrk.h"
+#include "../../../Common/simple_xml_writer.h"
 
 namespace XLS
 {
+	BiffStructurePtr HorzBrk::clone()
+	{
+		return BiffStructurePtr(new HorzBrk(*this));
+	}
 
-
-BiffStructurePtr HorzBrk::clone()
-{
-	return BiffStructurePtr(new HorzBrk(*this));
-}
-
-void HorzBrk::load(CFRecord& record)
-{
-	record >> row >> colStart >> colEnd;
-}
-
-
+	void HorzBrk::load(CFRecord& record)
+	{
+		record >> row >> colStart >> colEnd;
+	}
+	int HorzBrk::serialize(std::wostream & stream)
+	{
+		CP_XML_WRITER(stream)
+		{
+			CP_XML_NODE(L"brk")
+			{
+				CP_XML_ATTR(L"id", row);
+				CP_XML_ATTR(L"max", colEnd);
+				CP_XML_ATTR(L"man", 1);
+				if (colStart > 0 )
+					CP_XML_ATTR(L"min", colStart);
+			}
+		}
+		return 0;
+	}
 } // namespace XLS
 

@@ -43,6 +43,7 @@
 #include "draw_common.h"
 #include "calcs_styles.h"
 #include "../docx/xlsx_utils.h"
+#include "office_meta.h"
 
 namespace cpdoccore { 
 
@@ -50,25 +51,6 @@ namespace cpdoccore {
 
 namespace odf_reader {
 
-// dc:date
-/////////////////////////////////////////////
-const wchar_t * dc_date::ns = L"dc";
-const wchar_t * dc_date::name = L"date";
-
-void dc_date::add_text(const std::wstring & Text)
-{
-	content_ = Text;
-}
-
-// dc:creator
-///////////////////////////////////////////
-const wchar_t * dc_creator::ns = L"dc";
-const wchar_t * dc_creator::name = L"creator";
-
-void dc_creator::add_text(const std::wstring & Text)
-{
-	content_ = Text;
-}
 //-------------------------------------------------------------------------
 void office_annotation_attr::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -193,7 +175,7 @@ void office_annotation::xlsx_convert(oox::xlsx_conversion_context & Context)
 	{
 		author = xml::utils::replace_text_to_xml(dynamic_cast<dc_creator * >(dc_creator_.get())->content_);
 	}
-	int col = Context.current_table_column() + 1;	if (col < 0) col = 0;
+	int col = Context.current_table_column();		if (col < 0) col = 0;
 	int row = Context.current_table_row();			if (row < 0) row = 0;
 
 	std::wstring  ref = oox::getCellAddress(col, row); 

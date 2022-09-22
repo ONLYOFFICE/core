@@ -76,7 +76,6 @@ namespace OOX
 				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
 				return *this;
 			}
-
 			virtual void ClearItems()
 			{
 				m_sAnchor.reset();
@@ -97,26 +96,9 @@ namespace OOX
 			{
 				return et_w_hyperlink;
 			}
-
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:anchor"),		m_sAnchor )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:bookmark"),		m_sAnchor ) //for Word 2003 XML
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:dest"),			m_sDestinition ) //for Word 2003 XML
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:docLocation"),	m_sDocLocation )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:history"),		m_oHistory )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("r:id"),			m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("relationships:id"),m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:tgtFrame"),		m_sTgtFrame )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:tooltip"),		m_sTooltip )
-				WritingElement_ReadAttributes_End( oReader )
-			}
-
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
-
 			nullable_string											m_sAnchor;
 			nullable_string											m_sDestinition;
 			nullable_string											m_sDocLocation;

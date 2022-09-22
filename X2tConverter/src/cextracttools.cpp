@@ -87,7 +87,6 @@ namespace NExtractTools
 			}
 			else
 			{
-				// zip -> dir
 				return TCD_UNZIPDIR;
 			}
 		}
@@ -347,12 +346,16 @@ namespace NExtractTools
                                  0 == sExt2.compare(_T(".xlsm")) ||
                                  0 == sExt2.compare(_T(".pptm")))		res = TCD_ODF_FLAT2OOX;
                     }break;
+				case AVS_OFFICESTUDIO_FILE_OTHER_MS_VBAPROJECT:
+					{
+						res = TCD_VBAPROJECT2XML;
+					}break;
 				case AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO:
 					{
-							 if (0 == sExt2.compare(_T(".doct")))		res = TCD_MSCRYPT2DOCT;
-                        else if (0 == sExt2.compare(_T(".xlst")))		res = TCD_MSCRYPT2XLST;
-                        else if (0 == sExt2.compare(_T(".pptt")))		res = TCD_MSCRYPT2PPTT;
- 						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_MSCRYPT2BIN;
+						if (0 == sExt2.compare(_T(".doct")))			res = TCD_MSCRYPT2DOCT;
+						else if (0 == sExt2.compare(_T(".xlst")))		res = TCD_MSCRYPT2XLST;
+						else if (0 == sExt2.compare(_T(".pptt")))		res = TCD_MSCRYPT2PPTT;
+						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_MSCRYPT2BIN;
 					}break;
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER:
 					{
@@ -479,7 +482,9 @@ namespace NExtractTools
 		std::wstring sChangesDir = sBinDir + FILE_SEPARATOR_STR + _T("changes");
         if (NSDirectory::Exists(sChangesDir))
         {
-			sBinTo = sBinDir + FILE_SEPARATOR_STR + _T("EditorWithChanges.bin");
+			std::wstring sBinFromFileName = NSFile::GetFileName(sBinFrom);
+			std::wstring sBinFromExt = NSFile::GetFileExtention(sBinFromFileName);
+			sBinTo = sBinDir + FILE_SEPARATOR_STR + sBinFromFileName.substr(0, sBinFromFileName.length() - sBinFromExt.length() - 1) + _T("WithChanges.") + sBinFromExt;
 			std::wstring sImagesDirectory = sBinDir + FILE_SEPARATOR_STR + _T("media");
            
 			NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : _T(""));

@@ -30,20 +30,20 @@
  *
  */
 #include "EmfPlayer.h"
-#include "EmfFile.h"
+#include "EmfParser/CEmfParserBase.h"
 
 namespace MetaFile
 {
-	CEmfPlayer::CEmfPlayer(CEmfFile* pFile)
+	CEmfPlayer::CEmfPlayer(CEmfParserBase* pParser)
 	{
 		CEmfDC* pDC = new CEmfDC(this);
 		if (!pDC)
 		{
-			pFile->SetError();
+			pParser->SetError();
 			return;
 		}
 
-		m_pEmfFile = pFile;
+		m_pParser = pParser;
 		m_pDC = pDC;
 		m_vDCStack.push_back(pDC);
 
@@ -84,7 +84,7 @@ namespace MetaFile
 		CEmfDC* pDC = new CEmfDC(this);
 		if (!pDC)
 		{
-			m_pEmfFile->SetError();
+			m_pParser->SetError();
 			return;
 		}
 
@@ -99,14 +99,14 @@ namespace MetaFile
 	{
 		if (!m_pDC)
 		{
-			m_pEmfFile->SetError();
+			m_pParser->SetError();
 			return NULL;
 		}
 
 		CEmfDC* pNewDC = m_pDC->Copy();
 		if (!pNewDC)
 		{
-			m_pEmfFile->SetError();
+			m_pParser->SetError();
 			return NULL;
 		}
 
@@ -118,7 +118,7 @@ namespace MetaFile
 	{
 		if (m_vDCStack.size() <= 1)
 		{
-			m_pEmfFile->SetError();
+			m_pParser->SetError();
 			return m_pDC;
 		}
 
@@ -137,12 +137,9 @@ namespace MetaFile
 	void    CEmfPlayer::RegisterObject(unsigned int ulIndex, CEmfObjectBase* pObject)
 	{
 		CEmfObjectMap::const_iterator oPos = m_mObjects.find(ulIndex);
+
 		if (m_mObjects.end() != oPos)
-		{ 
-			CEmfObjectBase* pOldObject = oPos->second;
-			delete pOldObject;
-			m_mObjects.erase(ulIndex);
-		}
+			DeleteObject(ulIndex);
 
 		m_mObjects.insert(std::pair<unsigned int, CEmfObjectBase*>(ulIndex, pObject));
 	}
@@ -259,7 +256,7 @@ namespace MetaFile
 		m_oInverseTransform.Init();
 		m_oTextColor.Init();
 		m_oFinalTransform.Init();
-		m_oBgColor.Init();
+		m_oBgColor.InitWhite();
 		m_ulTextAlign   = TA_TOP | TA_LEFT | TA_NOUPDATECP;
 		m_ulBgMode      = TRANSPARENT;
 		m_ulMiterLimit  = 0;
@@ -272,6 +269,30 @@ namespace MetaFile
 		m_oCurPos.x = 0;
 		m_oCurPos.y = 0;
 		m_unArcDirection = AD_COUNTERCLOCKWISE;
+
+		m_oDefaultFont.LogFontEx.LogFont.FaceName[0] = 'A';
+		m_oDefaultFont.LogFontEx.LogFont.FaceName[1] = 'r';
+		m_oDefaultFont.LogFontEx.LogFont.FaceName[2] = 'i';
+		m_oDefaultFont.LogFontEx.LogFont.FaceName[3] = 'a';
+		m_oDefaultFont.LogFontEx.LogFont.FaceName[4] = 'l';
+		m_oDefaultFont.LogFontEx.LogFont.FaceName[5] = '\0';
+
+		m_oDefaultFont.LogFontEx.LogFont.CharSet = 1;
+		m_oDefaultFont.LogFontEx.LogFont.ClipPrecision = 0;
+		m_oDefaultFont.LogFontEx.LogFont.Escapement = 0;
+		m_oDefaultFont.LogFontEx.LogFont.Height = -18;
+		m_oDefaultFont.LogFontEx.LogFont.Italic = 0;
+		m_oDefaultFont.LogFontEx.LogFont.Orientation = 0;
+		m_oDefaultFont.LogFontEx.LogFont.OutPrecision = 4;
+		m_oDefaultFont.LogFontEx.LogFont.PitchAndFamily = 2;
+		m_oDefaultFont.LogFontEx.LogFont.Quality = 0;
+		m_oDefaultFont.LogFontEx.LogFont.StrikeOut = 0;
+		m_oDefaultFont.LogFontEx.LogFont.Underline = 0;
+		m_oDefaultFont.LogFontEx.LogFont.Weight = 400;
+		m_oDefaultFont.LogFontEx.LogFont.Width = 0;
+
+		m_oDefaultFont.DesignVector.Values = NULL;
+		m_oDefaultFont.DesignVector.NumAxes = 0;
 	}
 	CEmfDC::~CEmfDC()
 	{
@@ -290,6 +311,7 @@ namespace MetaFile
 		pNewDC->m_oTransform.Copy(&m_oTransform);
 		pNewDC->m_oInverseTransform.Copy(&m_oInverseTransform);
 		pNewDC->m_oFinalTransform.Copy(&m_oFinalTransform);
+		pNewDC->m_oFinalTransform2.Copy(&m_oFinalTransform2);
 		pNewDC->m_oTextColor.Copy(&m_oTextColor);
 		pNewDC->m_oBgColor.Copy(&m_oBgColor);
 		pNewDC->m_ulTextAlign    = m_ulTextAlign;
@@ -368,6 +390,12 @@ namespace MetaFile
 	{
 		return m_ulMapMode;
 	}
+
+	void CEmfDC::ResetTransform()
+	{
+		m_oTransform.Init();
+		UpdateFinalTransform();
+	}
 	TEmfXForm*      CEmfDC::GetTransform()
 	{
 		return &m_oTransform;
@@ -417,31 +445,31 @@ namespace MetaFile
 	{
 		return m_oTextColor;
 	}
-	void            CEmfDC::SetBrush(CEmfLogBrushEx* pBrush)
+	void CEmfDC::SetBrush(IBrush *pBrush)
 	{
 		m_pBrush = pBrush;
 	}
-	void            CEmfDC::RemoveBrush(CEmfLogBrushEx* pBrush)
+	void            CEmfDC::RemoveBrush(IBrush* pBrush)
 	{
 		if (pBrush == m_pBrush)
 			m_pBrush = NULL;
 	}
-	CEmfLogBrushEx* CEmfDC::GetBrush()
+	IBrush* CEmfDC::GetBrush()
 	{
 		return m_pBrush;
 	}
-	void            CEmfDC::SetFont(CEmfLogFont* pFont)
+	void            CEmfDC::SetFont(IFont* pFont)
 	{
 		m_pFont = pFont;
 	}
-	void            CEmfDC::RemoveFont(CEmfLogFont* pFont)
+	void            CEmfDC::RemoveFont(IFont* pFont)
 	{
 		if (pFont == m_pFont)
 			m_pFont = NULL;
 	}
-	CEmfLogFont*    CEmfDC::GetFont()
+	IFont*    CEmfDC::GetFont()
 	{
-		return m_pFont;
+		return (NULL != m_pFont) ? m_pFont : &m_oDefaultFont;
 	}
 	void            CEmfDC::SetTextAlign(unsigned int ulAlign)
 	{
@@ -483,16 +511,16 @@ namespace MetaFile
 	{
 		return m_ulFillMode;
 	}
-	void            CEmfDC::SetPen(CEmfLogPen* pPen)
+	void            CEmfDC::SetPen(IPen* pPen)
 	{
 		m_pPen = pPen;
 	}
-	void            CEmfDC::RemovePen(CEmfLogPen* pPen)
+	void            CEmfDC::RemovePen(IPen* pPen)
 	{
 		if (pPen == m_pPen)
 			m_pPen = NULL;
 	}
-	CEmfLogPen*     CEmfDC::GetPen()
+	IPen*     CEmfDC::GetPen()
 	{
 		return m_pPen;
 	}
@@ -532,6 +560,12 @@ namespace MetaFile
 		m_oWindow.ulW = oPoint.cx;
 		m_oWindow.ulH = oPoint.cy;
 
+		if (0 == m_oViewport.ulW || 0 == m_oViewport.ulH)
+		{
+			m_oViewport.ulW = oPoint.cx;
+			m_oViewport.ulH = oPoint.cy;
+		}
+
 		UpdatePixelMetrics();
 		UpdateFinalTransform();
 	}
@@ -550,6 +584,13 @@ namespace MetaFile
 	{
 		m_oViewport.ulW = oPoint.cx;
 		m_oViewport.ulH = oPoint.cy;
+
+		if (0 == m_oWindow.ulW || 0 == m_oWindow.ulH)
+		{
+			m_oWindow.ulW = oPoint.cx;
+			m_oWindow.ulH = oPoint.cy;
+		}
+
 		UpdatePixelMetrics();
 		UpdateFinalTransform();
 	}
@@ -560,17 +601,21 @@ namespace MetaFile
 	bool            CEmfDC::UpdatePixelMetrics()
 	{
 		unsigned int ulMapMode = m_ulMapMode;
+
+		if (0 == m_oWindow.ulW || 0 == m_oViewport.ulW)
+			return false;
+
 		if (MM_ISOTROPIC == ulMapMode)
 		{
-			if (0 == m_oWindow.ulW || 0 == m_oViewport.ulW)
-				return false;
-
 			double dPixel = (double)m_oViewport.ulW / (double)m_oWindow.ulW;
 			SetPixelHeight(dPixel);
 			SetPixelWidth(dPixel);
 		}
 		else if (MM_ANISOTROPIC == ulMapMode)
 		{
+			if (0 == m_oWindow.ulH || 0 == m_oViewport.ulH)
+				return false;
+
 			double dPixelX = (double)m_oViewport.ulW / (double)m_oWindow.ulW;
 			double dPixelY = (double)m_oViewport.ulH / (double)m_oWindow.ulH;
 
@@ -585,17 +630,21 @@ namespace MetaFile
 		TEmfWindow* pWindow   = GetWindow();
 		TEmfWindow* pViewPort = GetViewport();
 
-		TEmfXForm oWindowXForm(1, 0, 0, 1, -pWindow->lX, -pWindow->lY);
-		TEmfXForm oViewportXForm((double)GetPixelWidth(), 0, 0, (double)GetPixelHeight(), pViewPort->lX, pViewPort->lY);
+		double dM11 = (pViewPort->ulW >= 0) ? 1 : -1;
+		double dM22 = (pViewPort->ulH >= 0) ? 1 : -1;
+
+		TEmfXForm oWindowXForm(1, 0, 0, 1, -(pWindow->lX * GetPixelWidth() * dM11), -(pWindow->lY * GetPixelHeight() * dM22));
+		TEmfXForm oViewportXForm(GetPixelWidth() * dM11, 0, 0, GetPixelHeight() * dM22, pViewPort->lX, pViewPort->lY);
 
 		m_oFinalTransform.Init();
-		m_oFinalTransform.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);
-		m_oFinalTransform.Multiply(m_oTransform, MWT_RIGHTMULTIPLY);
 		m_oFinalTransform.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);
+		m_oFinalTransform.Multiply(m_oTransform, MWT_RIGHTMULTIPLY);
+		m_oFinalTransform.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);
 
 		m_oFinalTransform2.Init();
-		m_oFinalTransform2.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);
 		m_oFinalTransform2.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);
+		m_oFinalTransform2.Multiply(m_oTransform, MWT_RIGHTMULTIPLY);
+		m_oFinalTransform2.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);
 	}
 	void            CEmfDC::SetRop2Mode(unsigned int& nMode)
 	{

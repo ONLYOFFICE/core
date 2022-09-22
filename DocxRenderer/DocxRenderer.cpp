@@ -31,23 +31,24 @@
  */
 
 #include "DocxRenderer.h"
-#include "src/logic/Document.h"
+#include "../DesktopEditor/common/Directory.h"
 #include "../OfficeUtils/src/OfficeUtils.h"
+#include "src/logic/Document.h"
 
 class CDocxRenderer_Private
 {
-public:
-    NSDocxRenderer::CDocument m_oDocument;
-    std::wstring m_sTempDirectory;
+    public:
+        NSDocxRenderer::CDocument m_oDocument;
+        std::wstring m_sTempDirectory;
 
-public:
-    CDocxRenderer_Private(NSFonts::IApplicationFonts* pFonts, IRenderer* pRenderer) : m_oDocument(pRenderer, pFonts)
-    {
-    }
-    ~CDocxRenderer_Private()
-    {
+    public:
+        CDocxRenderer_Private(NSFonts::IApplicationFonts* pFonts, IRenderer* pRenderer) : m_oDocument(pRenderer, pFonts)
+        {
+        }
+        ~CDocxRenderer_Private()
+        {
 
-    }
+        }
 };
 
 CDocxRenderer::CDocxRenderer(NSFonts::IApplicationFonts* pAppFonts)
@@ -71,7 +72,7 @@ HRESULT CDocxRenderer::CreateNewFile(const std::wstring& wsPath, bool bIsOutComp
 }
 HRESULT CDocxRenderer::Close()
 {
-    COfficeUtils oCOfficeUtils(NULL);
+    COfficeUtils oCOfficeUtils(nullptr);
     HRESULT hr = oCOfficeUtils.CompressFileOrDirectory(m_pInternal->m_oDocument.m_strTempDirectory, m_pInternal->m_oDocument.m_strDstFilePath, true);
     if (!m_pInternal->m_oDocument.m_strTempDirectory.empty())
         NSDirectory::DeleteDirectory(m_pInternal->m_oDocument.m_strTempDirectory);
@@ -95,8 +96,9 @@ int CDocxRenderer::Convert(IOfficeDrawingFile* pFile, const std::wstring& sDstFi
     int nPagesCount = pFile->GetPagesCount();
     for (int i = 0; i < nPagesCount; ++i)
     {
+        //std::cout << "Page " << i + 1 << "/" << nPagesCount << std::endl;
         NewPage();
-        BeginCommand(c_nPageType);        
+        BeginCommand(c_nPageType);
         m_pInternal->m_oDocument.m_bIsDisablePageCommand = true;
 
         double dPageDpiX, dPageDpiY;
@@ -109,7 +111,7 @@ int CDocxRenderer::Convert(IOfficeDrawingFile* pFile, const std::wstring& sDstFi
         put_Width(dWidth);
         put_Height(dHeight);
 
-        pFile->DrawPageOnRenderer(this, i, NULL);
+        pFile->DrawPageOnRenderer(this, i, nullptr);
 
         m_pInternal->m_oDocument.m_bIsDisablePageCommand = false;
         EndCommand(c_nPageType);

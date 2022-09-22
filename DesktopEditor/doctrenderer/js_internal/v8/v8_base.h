@@ -9,9 +9,18 @@
 #include "../js_logger.h"
 #include <iostream>
 
+#ifdef __ANDROID__
+#ifndef DISABLE_MEMORY_LIMITATION
+#define DISABLE_MEMORY_LIMITATION
+#endif
+#endif
+
 #include "v8.h"
 #include "libplatform/libplatform.h"
+
+#ifndef DISABLE_MEMORY_LIMITATION
 #include "src/base/sys-info.h"
+#endif
 
 #ifdef V8_VERSION_89_PLUS
 #define kV8NormalString v8::NewStringType::kNormal
@@ -82,9 +91,9 @@ public:
         return m_platform;
 #endif
     }
-    CV8Initializer()
+    CV8Initializer(const std::wstring& sDirectory = L"")
     {
-        std::wstring sPrW = NSFile::GetProcessPath();
+        std::wstring sPrW = sDirectory.empty() ? NSFile::GetProcessPath() : sDirectory;
         std::string sPrA = U_TO_UTF8(sPrW);
 
         m_pAllocator = NULL;
@@ -107,15 +116,33 @@ public:
         v8::V8::InitializeICU();
     #endif
     }
-    ~CV8Initializer()
+
+    void Dispose()
     {
+#ifndef V8_VERSION_89_PLUS
+        if (!m_platform)
+            return;
+#else
+        if (!m_platform.get())
+            return;
+#endif
+
         v8::V8::Dispose();
         v8::V8::ShutdownPlatform();
-        #ifndef V8_VERSION_89_PLUS
-        delete m_platform;
-        #endif
         if (m_pAllocator)
             delete m_pAllocator;
+
+#ifndef V8_VERSION_89_PLUS
+        delete m_platform;
+        m_platform = NULL;
+#else
+        m_platform.reset();
+#endif
+    }
+
+    ~CV8Initializer()
+    {
+        Dispose();
     }
 
     v8::ArrayBuffer::Allocator* getAllocator()
@@ -133,6 +160,7 @@ public:
     #endif
         create_params.array_buffer_allocator = m_pAllocator;
 
+    #ifndef DISABLE_MEMORY_LIMITATION
         int64_t nMaxVirtualMemory = v8::base::SysInfo::AmountOfVirtualMemory();
         if (0 == nMaxVirtualMemory)
             nMaxVirtualMemory = 4000000000; // 4Gb
@@ -140,6 +168,7 @@ public:
         create_params.constraints.ConfigureDefaults(
               v8::base::SysInfo::AmountOfPhysicalMemory(),
               nMaxVirtualMemory);
+    #endif
 
         return v8::Isolate::New(create_params);
     }
@@ -147,36 +176,21 @@ public:
 
 class CV8Worker
 {
-private:
-    static CV8Initializer* m_pInitializer;
-    static bool m_bUseExternalInitialize;
-
 public:
     CV8Worker() {}
     ~CV8Worker() {}
 
-    static void Initialize()
+    static std::wstring m_sExternalDirectory;
+
+    static CV8Initializer& getInitializer()
     {
-        if (NULL == m_pInitializer)
-            m_pInitializer = new CV8Initializer();
+        static CV8Initializer oInitializer(m_sExternalDirectory);
+        return oInitializer;
     }
 
     static void Dispose()
     {
-        if (NULL != m_pInitializer)
-            delete m_pInitializer;
-        m_pInitializer = NULL;
-        m_bUseExternalInitialize = false;
-    }
-
-    static CV8Initializer* getInitializer()
-    {
-        if (NULL == m_pInitializer)
-        {
-            m_pInitializer = new CV8Initializer();
-        }
-
-        return CV8Worker::m_pInitializer;
+        getInitializer().Dispose();
     }
 
     static v8::Isolate* GetCurrent()
@@ -186,15 +200,6 @@ public:
     static v8::Local<v8::Context> GetCurrentContext()
     {
         return v8::Isolate::GetCurrent()->GetCurrentContext();
-    }
-
-    static void SetUseExetralInitialize()
-    {
-        m_bUseExternalInitialize = true;
-    }
-    static bool IsUseExternalInitialize()
-    {
-        return m_bUseExternalInitialize;
     }
 };
 
@@ -282,6 +287,11 @@ namespace NSJSBase
             return 0;
         }
 
+        virtual unsigned int toUInt32()
+        {
+            return 0;
+        }
+
         virtual double toDouble()
         {
             return 0;
@@ -340,6 +350,11 @@ namespace NSJSBase
         virtual int toInt32()
         {
             return value.IsEmpty() ? 0 : value->Int32Value(V8ContextOneArg).V8ToChecked();
+        }
+
+        virtual unsigned int toUInt32()
+        {
+            return value.IsEmpty() ? 0 : value->Uint32Value(V8ContextOneArg).V8ToChecked();
         }
 
         virtual double toDouble()
@@ -576,11 +591,12 @@ namespace NSJSBase
     class CJSTypedArrayV8 : public CJSValueV8Template<v8::Uint8Array, CJSTypedArray>
     {
     public:
-        CJSTypedArrayV8(BYTE* data = NULL, int count = 0)
+        CJSTypedArrayV8(BYTE* data = NULL, int count = 0, const bool& isExternalize = true)
         {
             if (0 < count)
             {
-                v8::Local<v8::ArrayBuffer> _buffer = v8::ArrayBuffer::New(CV8Worker::GetCurrent(), (void*)data, (size_t)count);
+                v8::Local<v8::ArrayBuffer> _buffer = v8::ArrayBuffer::New(CV8Worker::GetCurrent(), (void*)data, (size_t)count,
+                        isExternalize ? v8::ArrayBufferCreationMode::kExternalized : v8::ArrayBufferCreationMode::kInternalized);
                 value = v8::Uint8Array::New(_buffer, 0, (size_t)count);
             }
         }
@@ -594,9 +610,14 @@ namespace NSJSBase
             return (int)value->ByteLength();
         }
 
-        virtual const BYTE* getData()
+        virtual CJSDataBuffer getData()
         {
-            return (BYTE*)value->Buffer()->Externalize().Data();
+            v8::ArrayBuffer::Contents contents = value->Buffer()->GetContents();
+            CJSDataBuffer buffer;
+            buffer.Data = (BYTE*)contents.Data();
+            buffer.Len = contents.ByteLength();
+            buffer.IsExternalize = false;
+            return buffer;
         }
 
         virtual JSSmart<CJSValue> toValue()
@@ -706,6 +727,21 @@ namespace NSJSBase
                 std::string strCode        = _line->toStringA();
                 std::string strException   = _exception->toStringA();
 
+#if 1
+                v8::Local<v8::Value> stack_trace_string;
+                if (try_catch.StackTrace(V8ContextOneArg).ToLocal(&stack_trace_string) &&
+                    stack_trace_string->IsString() &&
+                    v8::Local<v8::String>::Cast(stack_trace_string)->Length() > 0)
+                {
+                    v8::String::Utf8Value data(V8IsolateFirstArg stack_trace_string);
+                    if (NULL != *data)
+                    {
+                        std::string sStack((char*)(*data), data.length());
+                        std::cerr << sStack << std::endl;
+                    }
+                }
+#endif
+
 #ifndef __ANDROID__
                 std::cerr << strException << std::endl;
 #else
@@ -735,6 +771,57 @@ namespace NSJSBase
     public:
         CJSContextPrivate() : m_oWorker(), m_isolate(NULL)
         {
+        }
+    };
+}
+
+namespace NSJSBase
+{
+    class CJSEmbedObjectPrivate : public CJSEmbedObjectPrivateBase
+    {
+    public:
+        v8::Persistent<v8::Object> handle;
+
+        CJSEmbedObjectPrivate(v8::Local<v8::Object> obj)
+        {
+            SetWeak(obj);
+        }
+        virtual ~CJSEmbedObjectPrivate()
+        {
+            ClearWeak();
+        }
+
+    public:
+        void SetWeak(v8::Local<v8::Object> obj)
+        {
+            v8::Handle<v8::External> field = v8::Handle<v8::External>::Cast(obj->GetInternalField(0));
+            CJSEmbedObject* pEmbedObject = (NSJSBase::CJSEmbedObject*)field->Value();
+
+            handle.Reset(CV8Worker::GetCurrent(), obj);
+            handle.SetWeak(pEmbedObject, EmbedObjectWeakCallback, v8::WeakCallbackType::kParameter);
+
+            pEmbedObject->embed_native_internal = this;
+        }
+        void ClearWeak()
+        {
+            if (handle.IsEmpty())
+                return;
+            handle.ClearWeak();
+            handle.Reset();
+        }
+
+        static void EmbedObjectWeakCallback(const v8::WeakCallbackInfo<CJSEmbedObject>& data)
+        {
+            v8::Isolate* isolate = data.GetIsolate();
+            v8::HandleScope scope(isolate);
+            CJSEmbedObject* wrap = data.GetParameter();
+            ((CJSEmbedObjectPrivate*)wrap->embed_native_internal)->handle.Reset();
+            delete wrap;
+        }
+
+        static void CreateWeaker(v8::Local<v8::Object> obj)
+        {
+            new CJSEmbedObjectPrivate(obj);
         }
     };
 }

@@ -120,7 +120,9 @@ GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page, XlsConver
 	bMacrosExist			= false;
 	bWorkbookProtectExist	= false;
 
-	idPivotCache			= 0;
+	idPivotCache = 0;	
+	currentPivotCacheRecord = 0;
+
 
 	mapDefaultFormatCode.insert(std::make_pair(L"0", 1));
 	mapDefaultFormatCode.insert(std::make_pair(L"0.00", 2));

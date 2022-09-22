@@ -62,19 +62,19 @@ const int BinProcessor::repeated(BaseObject& object, const int fromN, const int 
 	bool at_least_one_read = false;
 
 	for(int i = 0; i < fromN; ++i)
-	{
-		mandatory(*object.clone());
+    {
+        mandatory(*object.clone());
 		count++;
-		at_least_one_read = true;
+        at_least_one_read = true;
 	}
 	for(int j = fromN; j < toN || !toN/*infinity*/; ++j)
-	{
-		if(!optional(*object.clone()))
+    {
+        if(!optional(*object.clone()))
 		{
 			break;
 		}
 		count++;
-		at_least_one_read = true;
+        at_least_one_read = true;
 	}
 	return count;
 }
@@ -248,12 +248,21 @@ void BinReaderProcessor::SeekToEOF()
 	if (reader_)
 		reader_->SeekToEOF();
 }
-void BinReaderProcessor::SkipRecord()
+void BinReaderProcessor::SkipRecord(bool log_debug)
 {
 	if (reader_)
-		reader_->SkipRecord();
+		reader_->SkipRecord(log_debug);
 }
-
+const int BinReaderProcessor::GetRecordPosition()
+{
+ if (reader_)
+     return reader_->GetRecordPosition();
+}
+void BinReaderProcessor::SetRecordPosition(const int position)
+{
+  if (reader_)
+      reader_->SetRecordPosition(position);
+}
 
 
 } // namespace XLS

@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(WEBPUBITEM)
     public:
         WEBPUBITEM();
-        virtual ~WEBPUBITEM();
+        ~WEBPUBITEM();
 
         XLS::BaseObjectPtr clone();
 

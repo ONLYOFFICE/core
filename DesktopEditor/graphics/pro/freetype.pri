@@ -2,27 +2,33 @@ DEFINES += FT_CONFIG_OPTION_SYSTEM_ZLIB
 DEFINES += FT2_BUILD_LIBRARY
 FREETYPE_VERSION=2.10.4
 
-OFFICEUTILS_PATH = $$PWD/../../../OfficeUtils
 FREETYPE_PATH = $$PWD/../../freetype-$$FREETYPE_VERSION
 
 INCLUDEPATH += \
-	$$OFFICEUTILS_PATH/src/zlib-1.2.11 \
-	$$OFFICEUTILS_PATH/src \
 	$$FREETYPE_PATH/include \
     $$FREETYPE_PATH/include/freetype
-	
-SOURCES += \
-    $$OFFICEUTILS_PATH/src/zlib-1.2.11/crc32.c \
-    $$OFFICEUTILS_PATH/src/zlib-1.2.11/adler32.c \
-    $$OFFICEUTILS_PATH/src/zlib-1.2.11/deflate.c \
-    $$OFFICEUTILS_PATH/src/zlib-1.2.11/inffast.c \
-    $$OFFICEUTILS_PATH/src/zlib-1.2.11/inflate.c \
-    $$OFFICEUTILS_PATH/src/zlib-1.2.11/inftrees.c \
-    $$OFFICEUTILS_PATH/src/zlib-1.2.11/trees.c \
-    $$OFFICEUTILS_PATH/src/zlib-1.2.11/zutil.c \
-    $$OFFICEUTILS_PATH/src/zlib-1.2.11/uncompr.c \
-    $$OFFICEUTILS_PATH/src/zlib-1.2.11/compress.c \
-    $$OFFICEUTILS_PATH/src/zlib_addon.c
+
+!config_zlip_image {
+    OFFICEUTILS_PATH = $$PWD/../../../OfficeUtils
+	INCLUDEPATH += \
+	    $$OFFICEUTILS_PATH/src/zlib-1.2.11 \
+		$$OFFICEUTILS_PATH/src
+
+    SOURCES += \
+	    $$OFFICEUTILS_PATH/src/zlib-1.2.11/crc32.c \
+		$$OFFICEUTILS_PATH/src/zlib-1.2.11/adler32.c \
+		$$OFFICEUTILS_PATH/src/zlib-1.2.11/deflate.c \
+		$$OFFICEUTILS_PATH/src/zlib-1.2.11/inffast.c \
+		$$OFFICEUTILS_PATH/src/zlib-1.2.11/inflate.c \
+		$$OFFICEUTILS_PATH/src/zlib-1.2.11/inftrees.c \
+		$$OFFICEUTILS_PATH/src/zlib-1.2.11/trees.c \
+		$$OFFICEUTILS_PATH/src/zlib-1.2.11/zutil.c \
+		$$OFFICEUTILS_PATH/src/zlib-1.2.11/uncompr.c \
+		$$OFFICEUTILS_PATH/src/zlib-1.2.11/compress.c \
+		$$OFFICEUTILS_PATH/src/zlib_addon.c
+
+    CONFIG += config_zlip_image
+}
 
 SOURCES += \
     $$FREETYPE_PATH/src/autofit/autofit.c \

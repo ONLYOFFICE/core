@@ -46,11 +46,27 @@ BiffStructurePtr PivotParsedFormula::clone()
 }
 
 void PivotParsedFormula::load(CFRecord& record)
-{
-	unsigned short cce;
+{	
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        unsigned short cce;
 
-	record >> cce >> cSxName;	
-	rgce.load(record, cce);
+        record >> cce >> cSxName;
+        rgce.load(record, cce);
+    }
+    else
+    {
+        _UINT32 cce;
+        record >> cce;
+
+        rgce.load(record, cce);
+
+        _UINT32 cb;
+        record >> cb;
+
+        //rgcb.load(record, rgce.getPtgs(), is_part_of_a_revision_);
+
+    }
 }
 
 } // namespace XLS

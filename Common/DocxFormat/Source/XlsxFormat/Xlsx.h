@@ -31,7 +31,6 @@
  */
 #pragma once
 
-#include "../Base/SmartPtr.h"
 #include "../DocxFormat/IFileContainer.h"
 
 #include "../../../../DesktopEditor/common/Directory.h"

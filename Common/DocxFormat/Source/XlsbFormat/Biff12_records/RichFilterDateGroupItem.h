@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(RichFilterDateGroupItem)
         public:
             RichFilterDateGroupItem();
-            virtual ~RichFilterDateGroupItem();
+            ~RichFilterDateGroupItem();
 
             XLS::BaseObjectPtr clone();
 

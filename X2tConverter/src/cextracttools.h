@@ -49,7 +49,7 @@
 #include <iostream>
 #include <fstream>
 
-#define SUCCEEDED_X2T(nRes) (0 == (nRes))
+#define SUCCEEDED_X2T(nRes) (0 == (nRes) || AVS_FILEUTILS_ERROR_CONVERT_ROWLIMITS == (nRes))
 
 namespace NExtractTools
 {
@@ -195,6 +195,8 @@ namespace NExtractTools
 		TCD_2MSCRYPT_RAW,
 
 		TCD_MITCRYPT2,
+
+		TCD_VBAPROJECT2XML,
 
 //
 		TCD_HTML2DOCX,
@@ -927,7 +929,9 @@ namespace NExtractTools
 					eRes = TCD_MITCRYPT2;
                 else if(AVS_OFFICESTUDIO_FILE_OTHER_ZIP == nFormatFrom && AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatTo)
                     eRes = TCD_UNZIPDIR;
-                else if(AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatFrom && AVS_OFFICESTUDIO_FILE_OTHER_ZIP == nFormatTo)
+				else if (AVS_OFFICESTUDIO_FILE_OTHER_MS_VBAPROJECT == nFormatFrom && AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatTo)
+					eRes = TCD_VBAPROJECT2XML;
+				else if(AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatFrom && AVS_OFFICESTUDIO_FILE_OTHER_ZIP == nFormatTo)
                     eRes = TCD_ZIPDIR;
             }
 			else
@@ -1165,6 +1169,16 @@ namespace NExtractTools
             return NULL != m_bDontSaveAdditional && *m_bDontSaveAdditional;
         }
 		bool checkInputLimits();
+		bool getFromChanges()
+		{
+			return (NULL != m_bFromChanges) ? (*m_bFromChanges) : false;
+
+		}
+		void setFromChanges(bool bVal)
+		{
+			RELEASEOBJECT(m_bFromChanges);
+			m_bFromChanges = new bool(bVal);
+		}
 	};
 
     static std::wstring string_replaceAll(std::wstring str, const std::wstring& from, const std::wstring& to)

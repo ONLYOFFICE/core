@@ -42,6 +42,9 @@ namespace DocFileFormat
 	{
 		_ctx = ctx;
 		m_document = _ctx->_doc;
+
+		for (size_t i = 0; i < 157; ++i)
+			mapCheckReservedNames.insert(std::make_pair(StyleIdentifierMap[i], 0));
 	}
 
 	/*========================================================================================================*/
@@ -60,7 +63,6 @@ namespace DocFileFormat
 		this->_ctx->_docx->RegisterStyleSheet();
 
 		//start the document
-        m_pXmlWriter->WriteNodeBegin( L"?xml version=\"1.0\" encoding=\"UTF-8\"?" );
         m_pXmlWriter->WriteNodeBegin( L"w:styles", TRUE );
 
 		//write namespaces
@@ -84,7 +86,7 @@ namespace DocFileFormat
 		{
 			if ( *iter != NULL )
 			{
-                m_pXmlWriter->WriteNodeBegin( L"w:style", TRUE );
+                m_pXmlWriter->WriteNodeBegin( L"w:style", true);
 
                 m_pXmlWriter->WriteAttribute( L"w:type", FormatUtils::MapValueToWideString( (*iter)->stk, &StyleKindMap[0][0], 5, 10 ));
 
@@ -96,70 +98,90 @@ namespace DocFileFormat
 				}*/
 
                 m_pXmlWriter->WriteAttribute( L"w:styleId", FormatUtils::XmlEncode(MakeStyleId( *iter )));
-                m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );
+                m_pXmlWriter->WriteNodeEnd( L"", true, false );
 
 	// <w:name val="" />
 				std::wstring sName = FormatUtils::XmlEncode(getStyleName(*iter), true);
-                m_pXmlWriter->WriteNodeBegin( L"w:name", TRUE );
+                m_pXmlWriter->WriteNodeBegin( L"w:name", true);
 				if ((*iter)->sti == StyleIdentifier::Normal)
 					m_pXmlWriter->WriteAttribute(L"w:val", L"Normal");
 				else
 					m_pXmlWriter->WriteAttribute(L"w:val", sName);
-				m_pXmlWriter->WriteNodeEnd( L"", TRUE );
+				m_pXmlWriter->WriteNodeEnd( L"", true);
 
 				if ((*iter)->sti == StyleIdentifier::Normal) // ??? < sti < 159
 				{
-					m_pXmlWriter->WriteNodeBegin(L"w:aliases", TRUE);
+					m_pXmlWriter->WriteNodeBegin(L"w:aliases", true);
 					m_pXmlWriter->WriteAttribute(L"w:val", sName);
-					m_pXmlWriter->WriteNodeEnd(L"", TRUE);
+					m_pXmlWriter->WriteNodeEnd(L"", true);
 				}
 
 	// <w:basedOn val="" />
 				if ( ( (*iter)->istdBase != 4095 ) && ( (*iter)->istdBase < sheet->Styles->size() ) )
 				{
-                    m_pXmlWriter->WriteNodeBegin( L"w:basedOn", TRUE );
+                    m_pXmlWriter->WriteNodeBegin( L"w:basedOn", true);
                     m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::XmlEncode(MakeStyleId( sheet->Styles->at( (*iter)->istdBase ) )));
-                    m_pXmlWriter->WriteNodeEnd( L"", TRUE );
+                    m_pXmlWriter->WriteNodeEnd( L"", true);
 				}
 
 	// <w:next val="" />
 				if ( (*iter)->istdNext < sheet->Styles->size() )
 				{
-                    m_pXmlWriter->WriteNodeBegin( L"w:next", TRUE );
+                    m_pXmlWriter->WriteNodeBegin( L"w:next", true);
                     m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::XmlEncode(MakeStyleId( sheet->Styles->at( (*iter)->istdNext ) )));
-                    m_pXmlWriter->WriteNodeEnd( L"", TRUE );
+                    m_pXmlWriter->WriteNodeEnd( L"", true);
 				}
 
 	// <w:link val="" />
 				if ( (*iter)->istdLink < sheet->Styles->size() )
 				{
-                    m_pXmlWriter->WriteNodeBegin( L"w:link", TRUE );
+                    m_pXmlWriter->WriteNodeBegin( L"w:link", true);
                     m_pXmlWriter->WriteAttribute( L"w:val", FormatUtils::XmlEncode(MakeStyleId( sheet->Styles->at( (*iter)->istdLink ) )));
-                    m_pXmlWriter->WriteNodeEnd( L"", TRUE );
-				}
-
-				// <w:locked/>
-				if ( (*iter)->fLocked )
+                    m_pXmlWriter->WriteNodeEnd( L"", true);
+				}				
+				if ((*iter)->fAutoRedef)
 				{
-                    m_pXmlWriter->WriteNodeBegin( L"w:locked" );
-                    m_pXmlWriter->WriteNodeEnd( L"w:locked" );
+					m_pXmlWriter->WriteNodeBegin(L"w:autoRedefine", true);
+					m_pXmlWriter->WriteNodeEnd(L"", true);
 				}
-
-				// <w:hidden/>
 				if ( (*iter)->fHidden )
 				{
-                    m_pXmlWriter->WriteNodeBegin( L"w:hidden" );
-                    m_pXmlWriter->WriteNodeEnd( L"w:hidden" );
+                    m_pXmlWriter->WriteNodeBegin( L"w:hidden", true);
+					m_pXmlWriter->WriteNodeEnd(L"", true);
 				}
-
-				// <w:semiHidden/>
+				if ((*iter)->uiPriority > 0)
+				{
+					m_pXmlWriter->WriteNodeBegin(L"w:uiPriority", true);
+					m_pXmlWriter->WriteAttribute(L"w:val", std::to_wstring((*iter)->uiPriority));
+					m_pXmlWriter->WriteNodeEnd(L"", true);				
+				}
+				if ((*iter)->fQFormat)
+				{
+					m_pXmlWriter->WriteNodeBegin(L"w:qFormat", true);
+					m_pXmlWriter->WriteNodeEnd(L"", true);
+				}
 				if ( (*iter)->fSemiHidden )
 				{
-                    m_pXmlWriter->WriteNodeBegin( L"w:semiHidden" );
-                    m_pXmlWriter->WriteNodeEnd( L"w:semiHidden" );
+                    m_pXmlWriter->WriteNodeBegin( L"w:semiHidden", true);
+					m_pXmlWriter->WriteNodeEnd(L"", true);
 				}
-
-				//write paragraph properties
+				if ((*iter)->fUnhideWhenUsed)
+				{
+					m_pXmlWriter->WriteNodeBegin(L"w:unhideWhenUsed", true);
+					m_pXmlWriter->WriteNodeEnd(L"", true);
+				}
+				if ((*iter)->fLocked)
+				{
+					m_pXmlWriter->WriteNodeBegin(L"w:locked", true);
+					m_pXmlWriter->WriteNodeEnd(L"", true);
+				}
+				if ((*iter)->rsid > 0)
+				{
+					m_pXmlWriter->WriteNodeBegin(L"w:rsid", true);
+					m_pXmlWriter->WriteAttribute(L"w:val", FormatUtils::IntToFormattedWideString((*iter)->rsid, L"%08X"));
+					m_pXmlWriter->WriteNodeEnd(L"", true);
+				}
+		//write paragraph properties
 				if ( (*iter)->papx != NULL )
 				{
 					bool isBidi = false;
@@ -168,7 +190,7 @@ namespace DocFileFormat
 					RELEASEOBJECT( ppMappingnew );
 				}
 
-				//write character properties
+		//write character properties
 				if ( (*iter)->chpx != NULL )
 				{
 					RevisionData rev;
@@ -177,8 +199,7 @@ namespace DocFileFormat
 					(*iter)->chpx->Convert( cpMapping );
 					RELEASEOBJECT( cpMapping );
 				}
-
-				//write table properties
+		//write table properties
 				if ( (*iter)->tapx != NULL )
 				{
 					std::vector<short> tableGrid;
@@ -186,7 +207,6 @@ namespace DocFileFormat
 					(*iter)->tapx->Convert( tpMapping );
 					RELEASEOBJECT( tpMapping );
 				}
-
                 m_pXmlWriter->WriteNodeEnd( L"w:style" );
 			}
 		}
@@ -323,11 +343,14 @@ namespace DocFileFormat
 			}
 			else
 			{
-				//if no identifier is set, use the unique id.
 				std::map<std::wstring, std::wstring>::const_iterator findResult = m_mapStyleId.find(name);
+				if (mapCheckReservedNames.find(name) != mapCheckReservedNames.end())
+				{
+					name += L"1";
+				}
 				if( findResult != m_mapStyleId.end() )
 				{
-					id		= findResult->second;
+					id = findResult->second;
 				}
 				else
 				{

@@ -43,7 +43,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(CELLXFS)
     public:
         CELLXFS();
-        virtual ~CELLXFS();
+        ~CELLXFS();
 
         XLS::BaseObjectPtr clone();
 
@@ -51,7 +51,7 @@ namespace XLSB
 
         XLS::BaseObjectPtr               m_BrtBeginCellXFs;
         std::vector<XLS::BaseObjectPtr>	m_arBrtXF;
-        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        //std::vector<XLS::BaseObjectPtr>  m_arFRT;
         XLS::BaseObjectPtr               m_BrtEndCellXFs;
 
     };

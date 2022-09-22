@@ -66,18 +66,20 @@ namespace XLSB
 
         int countSstItem = proc.repeated<SSTItem>(0, 0);
 
-        while(countSstItem > 0)
-        {
-            m_arBrtSSTItem.insert(m_arBrtSSTItem.begin(), elements_.back());
-            elements_.pop_back();
-            countSstItem--;
-        }
+        //while(countSstItem > 0)
+        //{
+        //    m_arBrtSSTItem.insert(m_arBrtSSTItem.begin(), elements_.back());
+        //    elements_.pop_back();
+        //    countSstItem--;
+        //}
+		m_arBrtSSTItem.reserve(countSstItem);
+		std::move(std::begin(elements_), std::end(elements_), std::back_inserter(m_arBrtSSTItem));
 
         int count = proc.repeated<FRT>(0, 0);
 
         while(count > 0)
         {
-            m_arFRT.insert(m_arFRT.begin(), elements_.back());
+            //m_arFRT.insert(m_arFRT.begin(), elements_.back());
             elements_.pop_back();
             count--;
         }

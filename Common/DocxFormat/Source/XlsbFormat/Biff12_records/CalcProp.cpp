@@ -52,7 +52,7 @@ namespace XLSB
 
     void CalcProp::readFields(XLS::CFRecord& record)
     {
-        unsigned int flags;
+        _UINT16 flags;
         record >> recalcID >> fAutoRecalc >> cCalcCount >> xnumDelta >> cUserThreadCount;
         record >> flags;
 

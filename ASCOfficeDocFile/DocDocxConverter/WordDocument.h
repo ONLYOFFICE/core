@@ -88,7 +88,7 @@ namespace DocFileFormat
 		friend class OpenXmlPackage;
 		friend class TextboxMapping;
 		friend class SettingsMapping;
-
+		friend class WordprocessingDocument;
 	public:
 
 		WordDocument (const std::wstring & tempFolder, const int userLCID);
@@ -153,6 +153,8 @@ namespace DocFileFormat
 		std::wstring			m_sTempFolder;
 		std::wstring			m_sTempDecryptFileName;
 		int						m_nUserLCID;
+		std::wstring			m_sXmlApp;
+		std::wstring			m_sXmlCore;
 
 		POLE::Stream			* WordDocumentStream;	// The stream "WordDocument"		
 		POLE::Stream			* TableStream;			// The stream "0Table" or "1Table"	
@@ -234,6 +236,7 @@ namespace DocFileFormat
 		Plex<EmptyStructure>				*AutoTextPlex;		
 		
 		AnnotationReferenceExDescriptors	*AnnotationsReferencesEx;
-		
+//------------------------------------------------------------------------------
+		void CorrectColor(ODRAW::OfficeArtCOLORREF & color);
 	};
 }

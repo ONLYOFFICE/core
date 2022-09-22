@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(RICHFILTERCONTENT)
     public:
         RICHFILTERCONTENT();
-        virtual ~RICHFILTERCONTENT();
+        ~RICHFILTERCONTENT();
 
         XLS::BaseObjectPtr clone();
 
@@ -51,7 +51,7 @@ namespace XLSB
 
         XLS::BaseObjectPtr               m_BrtBeginRichFilterColumn;
         XLS::BaseObjectPtr               m_source;
-        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        //std::vector<XLS::BaseObjectPtr>  m_arFRT;
         XLS::BaseObjectPtr               m_BrtEndRichFilterColumn;
 
     };

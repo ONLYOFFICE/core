@@ -108,7 +108,7 @@ PPT_FORMAT::CPPTXWriter::~CPPTXWriter()
     RELEASEOBJECT(m_pShapeWriter);
 }
 
-void PPT_FORMAT::CPPTXWriter::CreateFile(CPPTUserInfo* pUserInfo	)
+void PPT_FORMAT::CPPTXWriter::CreateFile(CPPTUserInfo* pUserInfo)
 {
     m_pUserInfo = pUserInfo;
 
@@ -136,8 +136,9 @@ void PPT_FORMAT::CPPTXWriter::CreateFile(CPPTUserInfo* pUserInfo	)
 
     // core
     oFile.CreateFileW(m_strTempDirectory + FILE_SEPARATOR_STR + _T("docProps") + FILE_SEPARATOR_STR + _T("core.xml"));
-    strMemory = NSPPTXWriterConst::g_string_core;
-    oFile.WriteStringUTF8(strMemory);
+	if (m_xmlCore.empty())
+		m_xmlCore = NSPPTXWriterConst::g_string_core;
+    oFile.WriteStringUTF8(m_xmlCore);
     oFile.CloseFile();
 
     // app
@@ -299,142 +300,147 @@ void PPT_FORMAT::CPPTXWriter::WriteContentTypes()
 
 void PPT_FORMAT::CPPTXWriter::WriteApp(NSFile::CFileBinary& oFile)
 {
-    std::wstringstream strm;
+	if (m_xmlApp.empty())
+	{
+		std::wstringstream strm;
 
-    CP_XML_WRITER(strm)
-    {
-        CP_XML_NODE(L"Properties")
-        {
-            CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties");
-            CP_XML_ATTR(L"xmlns:vt", L"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes");
+		CP_XML_WRITER(strm)
+		{
+			CP_XML_NODE(L"Properties")
+			{
+				CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties");
+				CP_XML_ATTR(L"xmlns:vt", L"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes");
 
-            CP_XML_NODE(L"TotalTime")
-            {
-                CP_XML_STREAM() << 0;
-            }
-            CP_XML_NODE(L"Words")
-            {
-                CP_XML_STREAM() << 0;
-            }
-            std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
-            if (sApplication.empty())
-                sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
+				CP_XML_NODE(L"TotalTime")
+				{
+					CP_XML_STREAM() << 0;
+				}
+				CP_XML_NODE(L"Words")
+				{
+					CP_XML_STREAM() << 0;
+				}
+				std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
+				if (sApplication.empty())
+					sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
 #if defined(INTVER)
-            std::string s = VALUE2STR(INTVER);
-            sApplication += L"/" + std::wstring(s.begin(), s.end());
+				std::string s = VALUE2STR(INTVER);
+				sApplication += L"/" + std::wstring(s.begin(), s.end());
 #endif
-            CP_XML_NODE(L"Application")
-            {
-                CP_XML_STREAM() << sApplication;
-            }
-            //CP_XML_NODE(L"AppVersion")
-            //{
-            //	CP_XML_STREAM() << L"1.0";
-            //}
-            CP_XML_NODE(L"Paragraphs")
-            {
-                CP_XML_STREAM() << 0;
-            }
-            CP_XML_NODE(L"PresentationFormat")
-            {
-                CP_XML_STREAM() << L"On-screen Show (4:3)";
-            }
-            CP_XML_NODE(L"Slides")
-            {
-                CP_XML_STREAM() << m_pDocument->m_arSlides.size();
-            }
-            CP_XML_NODE(L"Notes")
-            {
-                CP_XML_STREAM() << m_pDocument->m_arNotes.size();
-            }
-            CP_XML_NODE(L"HiddenSlides")
-            {
-                CP_XML_STREAM() << 0;
-            }
-            CP_XML_NODE(L"MMClips")
-            {
-                CP_XML_STREAM() << 0;
-            }
-            CP_XML_NODE(L"ScaleCrop")
-            {
-                CP_XML_STREAM() << L"false";
-            }
-            CP_XML_NODE(L"HeadingPairs")
-            {
-                CP_XML_NODE(L"vt:vector")
-                {
-                    CP_XML_ATTR(L"size", 4);
-                    CP_XML_ATTR(L"baseType", L"variant");
+				CP_XML_NODE(L"Application")
+				{
+					CP_XML_STREAM() << sApplication;
+				}
+				//CP_XML_NODE(L"AppVersion")
+				//{
+				//	CP_XML_STREAM() << L"1.0";
+				//}
+				CP_XML_NODE(L"Paragraphs")
+				{
+					CP_XML_STREAM() << 0;
+				}
+				CP_XML_NODE(L"PresentationFormat")
+				{
+					CP_XML_STREAM() << L"On-screen Show (4:3)";
+				}
+				CP_XML_NODE(L"Slides")
+				{
+					CP_XML_STREAM() << m_pDocument->m_arSlides.size();
+				}
+				CP_XML_NODE(L"Notes")
+				{
+					CP_XML_STREAM() << m_pDocument->m_arNotes.size();
+				}
+				CP_XML_NODE(L"HiddenSlides")
+				{
+					CP_XML_STREAM() << 0;
+				}
+				CP_XML_NODE(L"MMClips")
+				{
+					CP_XML_STREAM() << 0;
+				}
+				CP_XML_NODE(L"ScaleCrop")
+				{
+					CP_XML_STREAM() << L"false";
+				}
+				CP_XML_NODE(L"HeadingPairs")
+				{
+					CP_XML_NODE(L"vt:vector")
+					{
+						CP_XML_ATTR(L"size", 4);
+						CP_XML_ATTR(L"baseType", L"variant");
 
-                    CP_XML_NODE(L"vt:variant")
-                    {
-                        CP_XML_NODE(L"vt:lpstr")
-                        {
-                            CP_XML_STREAM() << L"Theme";
-                        }
-                    }
-                    CP_XML_NODE(L"vt:variant")
-                    {
-                        CP_XML_NODE(L"vt:i4")
-                        {
-                            CP_XML_STREAM() << m_pDocument->m_arThemes.size();
-                        }
-                    }
-                    CP_XML_NODE(L"vt:variant")
-                    {
-                        CP_XML_NODE(L"vt:lpstr")
-                        {
-                            CP_XML_STREAM() << L"Slide Titles";
-                        }
-                    }
-                    CP_XML_NODE(L"vt:variant")
-                    {
-                        CP_XML_NODE(L"vt:i4")
-                                CP_XML_STREAM() << m_pDocument->m_arSlides.size();
-                    }
-                }
-            }
-            CP_XML_NODE(L"TitlesOfParts")
-            {
-                CP_XML_NODE(L"vt:vector")
-                {
-                    CP_XML_ATTR(L"size", m_pDocument->m_arSlides.size() + m_pDocument->m_arThemes.size());
-                    CP_XML_ATTR(L"baseType", L"lpstr");
+						CP_XML_NODE(L"vt:variant")
+						{
+							CP_XML_NODE(L"vt:lpstr")
+							{
+								CP_XML_STREAM() << L"Theme";
+							}
+						}
+						CP_XML_NODE(L"vt:variant")
+						{
+							CP_XML_NODE(L"vt:i4")
+							{
+								CP_XML_STREAM() << m_pDocument->m_arThemes.size();
+							}
+						}
+						CP_XML_NODE(L"vt:variant")
+						{
+							CP_XML_NODE(L"vt:lpstr")
+							{
+								CP_XML_STREAM() << L"Slide Titles";
+							}
+						}
+						CP_XML_NODE(L"vt:variant")
+						{
+							CP_XML_NODE(L"vt:i4")
+								CP_XML_STREAM() << m_pDocument->m_arSlides.size();
+						}
+					}
+				}
+				CP_XML_NODE(L"TitlesOfParts")
+				{
+					CP_XML_NODE(L"vt:vector")
+					{
+						CP_XML_ATTR(L"size", m_pDocument->m_arSlides.size() + m_pDocument->m_arThemes.size());
+						CP_XML_ATTR(L"baseType", L"lpstr");
 
-                    for (size_t i = 1; i <= m_pDocument->m_arThemes.size(); ++i)
-                    {
-                        CP_XML_NODE(L"vt:lpstr")
-                        {
-                            CP_XML_STREAM() <<  L"Theme " << i;
-                        }
-                    }
-                    for (size_t i = 1; i <= m_pDocument->m_arSlides.size(); ++i)
-                    {
-                        CP_XML_NODE(L"vt:lpstr")
-                        {
-                            CP_XML_STREAM() <<  L"Slide " << i;
-                        }
-                    }
-                }
-            }
+						for (size_t i = 1; i <= m_pDocument->m_arThemes.size(); ++i)
+						{
+							CP_XML_NODE(L"vt:lpstr")
+							{
+								CP_XML_STREAM() << L"Theme " << i;
+							}
+						}
+						for (size_t i = 1; i <= m_pDocument->m_arSlides.size(); ++i)
+						{
+							CP_XML_NODE(L"vt:lpstr")
+							{
+								CP_XML_STREAM() << L"Slide " << i;
+							}
+						}
+					}
+				}
 
-            //CP_XML_NODE(L"Company");
-            CP_XML_NODE(L"LinksUpToDate")
-            {
-                CP_XML_STREAM() <<  L"false";
-            }
-            CP_XML_NODE(L"SharedDoc")
-            {
-                CP_XML_STREAM() <<  L"false";
-            }
-            CP_XML_NODE(L"HyperlinksChanged")
-            {
-                CP_XML_STREAM() <<  L"false";
-            }
-        }
-    }
+				//CP_XML_NODE(L"Company");
+				CP_XML_NODE(L"LinksUpToDate")
+				{
+					CP_XML_STREAM() << L"false";
+				}
+				CP_XML_NODE(L"SharedDoc")
+				{
+					CP_XML_STREAM() << L"false";
+				}
+				CP_XML_NODE(L"HyperlinksChanged")
+				{
+					CP_XML_STREAM() << L"false";
+				}
+			}
+		}
+
+		m_xmlApp = strm.str();
+	}
     oFile.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
-    oFile.WriteStringUTF8(strm.str());
+    oFile.WriteStringUTF8(m_xmlApp);
 }
 
 void PPT_FORMAT::CPPTXWriter::WritePresInfo()

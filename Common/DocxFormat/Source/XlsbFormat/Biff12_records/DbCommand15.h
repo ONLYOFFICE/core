@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(DbCommand15)
         public:
             DbCommand15();
-            virtual ~DbCommand15();
+            ~DbCommand15();
 
             XLS::BaseObjectPtr clone();
 

@@ -86,15 +86,16 @@ void Window1::readFields(CFRecord& record)
 
     else
     {
-        record >> xWn >> yWn >> dxWn >> dyWn >> wTabRatio >> itabFirst >> itabCur >> flags;
+        BYTE flags1;
+        record >> xWn >> yWn >> dxWn >> dyWn >> wTabRatio >> itabFirst >> itabCur >> flags1;
 
-        fHidden			= GETBIT(flags, 0);
-        fVeryHidden		= GETBIT(flags, 1);
-        fIconic 		= GETBIT(flags, 2);
-        fDspHScroll		= GETBIT(flags, 3);
-        fDspVScroll		= GETBIT(flags, 4);
-        fBotAdornment	= GETBIT(flags, 5);
-        fNoAFDateGroup	= GETBIT(flags, 6);
+        fHidden			= GETBIT(flags1, 0);
+        fVeryHidden		= GETBIT(flags1, 1);
+        fIconic 		= GETBIT(flags1, 2);
+        fDspHScroll		= GETBIT(flags1, 3);
+        fDspVScroll		= GETBIT(flags1, 4);
+        fBotAdornment	= GETBIT(flags1, 5);
+        fNoAFDateGroup	= GETBIT(flags1, 6);
     }
 }
 

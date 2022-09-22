@@ -53,8 +53,17 @@ BiffStructurePtr ExtNameParsedFormula::clone()
 
 void ExtNameParsedFormula::load(CFRecord& record) // Maybe this class shouldn't be a ParsedFormulas's derived?
 {
-	unsigned short cb;
-	record >> cb;
+    _UINT32 cb;
+    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
+    {
+        unsigned short cb_2b;
+        record >> cb_2b;
+        cb = cb_2b;
+    }
+    else
+    {
+        record >> cb;
+    }
 	if(cb && record.getDataSize() > record.getRdPtr())
 	{
 		unsigned char extPtg;

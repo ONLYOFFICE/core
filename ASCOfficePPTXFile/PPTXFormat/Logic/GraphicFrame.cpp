@@ -104,13 +104,15 @@ namespace PPTX
 			if (!olePic.IsInit())				olePic.Init();
 			if (!olePic->oleObject.IsInit())	olePic->oleObject.Init();
 
-			WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, (L"progId"),	olePic->oleObject->m_sProgId)
-				WritingElement_ReadAttributes_Read_else_if( oReader, (L"r:id"),		olePic->oleObject->m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, (L"relationships:id"),	olePic->oleObject->m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, (L"imgW"),		olePic->oleObject->m_oDxaOrig )
-				WritingElement_ReadAttributes_Read_else_if( oReader, (L"imgH"),		olePic->oleObject->m_oDyaOrig )
-			WritingElement_ReadAttributes_End( oReader )
+			WritingElement_ReadAttributes_Start(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, L"progId", olePic->oleObject->m_sProgId)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"r:id", olePic->oleObject->m_oId)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"relationships:id", olePic->oleObject->m_oId)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"imgW", olePic->oleObject->m_oDxaOrig)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"imgH", olePic->oleObject->m_oDyaOrig)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"showAsIcon", olePic->oleObject->m_oShowAsIcon)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"name", olePic->oleObject->m_oName);
+			WritingElement_ReadAttributes_End(oReader)
 
 			if(olePic->oleObject->m_oDxaOrig.IsInit())
 			{
@@ -119,6 +121,10 @@ namespace PPTX
 			if(olePic->oleObject->m_oDyaOrig.IsInit())
 			{
 				olePic->oleObject->m_oDyaOrig = (int)Emu_To_Twips(olePic->oleObject->m_oDyaOrig.get());
+			}
+			if ((olePic->oleObject->m_oShowAsIcon.IsInit()) && (*olePic->oleObject->m_oShowAsIcon))
+			{
+				olePic->oleObject->m_oDrawAspect = (BYTE)1;
 			}
 		}
 		void GraphicFrame::ReadAttributes3(XmlUtils::CXmlLiteReader& oReader)
@@ -320,6 +326,14 @@ namespace PPTX
 						if (!result && oNode.GetNode(L"mc:Choice", oNodeChoice))
 							result = fromXML3(oNodeChoice);
 
+						if (result)
+						{
+							if ((olePic->blipFill.blip.IsInit()) && (false == olePic->blipFill.blip->embed.IsInit()) 
+								&& (olePic->oleObject.IsInit()) && (false == olePic->oleObject->m_sShapeId.IsInit()))
+							{
+								result = false;
+							}
+						}
 						XmlUtils::CXmlNode oNodeFallback;
 						if (!result && oNode.GetNode(L"mc:Fallback", oNodeFallback))
 							result = fromXML3(oNodeFallback);
@@ -575,7 +589,6 @@ namespace PPTX
                 temp += L"</v:object>";
 
 				NSBinPptxRW::CDrawingConverter oDrawingConverter;
-				//oDrawingConverter.SetFontManager(pFontManager);
 
 				RELEASEOBJECT(oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager);
 				oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = pWriter->m_pCommon->m_pMediaManager;
@@ -585,12 +598,17 @@ namespace PPTX
 				oDrawingConverter.SetRels(xml_object_rels);
                 oDrawingConverter.SetAdditionalParam(L"xfrm_override", (BYTE*)xfrm.GetPointer(), sizeof(xfrm));
 
-				HRESULT hRes = oDrawingConverter.AddObject(temp, &main_props);
-				if (hRes == S_OK && oDrawingConverter.m_pBinaryWriter->GetPosition() > 10)
+				std::vector<nullable<PPTX::Logic::SpTreeElem>> elements;
+				oDrawingConverter.ConvertVml(temp, elements);
+				oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = NULL;
+
+				smart_ptr<OOX::IFileContainer> rels_old = pWriter->GetRels();
+				pWriter->SetRels(xml_object_rels);
+				for (size_t i = 0; i < elements.size(); ++i)
 				{
-					pWriter->WriteBYTEArray(oDrawingConverter.m_pBinaryWriter->GetBuffer()+10,oDrawingConverter.m_pBinaryWriter->GetPosition()-10);
+					elements[i]->toPPTY(pWriter);
 				}
-				oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager =  NULL;
+				pWriter->SetRels(rels_old);
 				return;
 			}
 			pWriter->StartRecord(SPTREE_TYPE_GRFRAME);

@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(SLICERCACHESIRANGE)
     public:
         SLICERCACHESIRANGE();
-        virtual ~SLICERCACHESIRANGE();
+        ~SLICERCACHESIRANGE();
 
         XLS::BaseObjectPtr clone();
 

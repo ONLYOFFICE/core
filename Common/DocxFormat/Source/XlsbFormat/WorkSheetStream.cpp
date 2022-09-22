@@ -79,7 +79,6 @@ WorkSheetStream::~WorkSheetStream()
 {
 }
 
-
 BaseObjectPtr WorkSheetStream::clone()
 {
         return BaseObjectPtr(new WorkSheetStream(*this));
@@ -173,12 +172,21 @@ const bool WorkSheetStream::loadContent(BinProcessor& proc)
 
             case rt_BeginSheetData:
             {
-                CELLTABLE cell_table_temlate(shared_formulas_locations);
+                /*CELLTABLE cell_table_temlate(shared_formulas_locations);
                 if (proc.optional(cell_table_temlate))
                 {
                     m_CELLTABLE = elements_.back();
                     elements_.pop_back();
-                }
+                }*/
+                m_SheetaDataPosition = proc.GetRecordPosition();
+                while(proc.getNextRecordType() != rt_EndSheetData)
+                    proc.SkipRecord(false);
+            }break;
+
+            case rt_BeginUserShViews:
+            {
+                while(proc.getNextRecordType() != rt_EndUserShViews)
+                    proc.SkipRecord();
             }break;
 
             case rt_WsFmtInfo:
@@ -388,10 +396,33 @@ const bool WorkSheetStream::loadContent(BinProcessor& proc)
 
             case rt_FRTBegin:
             {
-                if (proc.optional<FRTWORKSHEET>())
+                FRTWORKSHEET oFRTWORKSHEET;
+                if (proc.optional(oFRTWORKSHEET))
                 {
-                    m_FRTWORKSHEET = elements_.back();
-                    elements_.pop_back();
+                    if(m_FRTWORKSHEET != nullptr)
+                    {
+                        if(oFRTWORKSHEET.m_CONDITIONALFORMATTINGS != nullptr)
+                            boost::dynamic_pointer_cast<FRTWORKSHEET>(m_FRTWORKSHEET)->m_CONDITIONALFORMATTINGS = oFRTWORKSHEET.m_CONDITIONALFORMATTINGS;
+
+                        if(oFRTWORKSHEET.m_DVALS14 != nullptr)
+                            boost::dynamic_pointer_cast<FRTWORKSHEET>(m_FRTWORKSHEET)->m_DVALS14 = oFRTWORKSHEET.m_DVALS14;
+
+                        if(oFRTWORKSHEET.m_SPARKLINEGROUPS != nullptr)
+                            boost::dynamic_pointer_cast<FRTWORKSHEET>(m_FRTWORKSHEET)->m_SPARKLINEGROUPS = oFRTWORKSHEET.m_SPARKLINEGROUPS;
+
+                        if(oFRTWORKSHEET.m_SLICERSEX != nullptr)
+                            boost::dynamic_pointer_cast<FRTWORKSHEET>(m_FRTWORKSHEET)->m_SLICERSEX = oFRTWORKSHEET.m_SLICERSEX;
+
+                        if(oFRTWORKSHEET.m_TABLESLICERSEX != nullptr)
+                            boost::dynamic_pointer_cast<FRTWORKSHEET>(m_FRTWORKSHEET)->m_TABLESLICERSEX = oFRTWORKSHEET.m_TABLESLICERSEX;
+
+                        elements_.pop_back();
+                    }
+                    else
+                    {
+                        m_FRTWORKSHEET = elements_.back();
+                        elements_.pop_back();
+                    }
                 }
             }break;
 

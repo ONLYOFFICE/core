@@ -126,31 +126,41 @@ namespace PPTX
 			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(L"a:backdrop");
+				std::wstring sNodeNamespace;
+				std::wstring sAttrNamespace;
+				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
+				{
+					sNodeNamespace = L"w14:";
+					sAttrNamespace = sNodeNamespace;
+				}
+				else
+					sNodeNamespace = L"a:";
+
+				pWriter->StartNode(sNodeNamespace + L"backdrop");
 				pWriter->EndAttributes();
 
-					pWriter->StartNode(L"a:anchor");
+					pWriter->StartNode(sNodeNamespace + L"anchor");
 						pWriter->StartAttributes();
-						pWriter->WriteAttribute(L"x", anchorX);
-						pWriter->WriteAttribute(L"y", anchorY);
-						pWriter->WriteAttribute(L"z", anchorZ);
+						pWriter->WriteAttribute(sAttrNamespace + L"x", anchorX);
+						pWriter->WriteAttribute(sAttrNamespace + L"y", anchorY);
+						pWriter->WriteAttribute(sAttrNamespace + L"z", anchorZ);
 						pWriter->EndAttributes();
-					pWriter->EndNode(L"a:anchor");
-					pWriter->StartNode(L"a:norm");
+					pWriter->EndNode(sNodeNamespace + L"anchor");
+					pWriter->StartNode(sNodeNamespace + L"norm");
 						pWriter->StartAttributes();
-						pWriter->WriteAttribute(L"dx", normX);
-						pWriter->WriteAttribute(L"dy", normY);
-						pWriter->WriteAttribute(L"dz", normZ);
+						pWriter->WriteAttribute(sAttrNamespace + L"dx", normX);
+						pWriter->WriteAttribute(sAttrNamespace + L"dy", normY);
+						pWriter->WriteAttribute(sAttrNamespace + L"dz", normZ);
 						pWriter->EndAttributes();
-					pWriter->EndNode(L"a:norm");
-					pWriter->StartNode(L"a:up");
+					pWriter->EndNode(sNodeNamespace + L"norm");
+					pWriter->StartNode(sNodeNamespace + L"up");
 						pWriter->StartAttributes();
-						pWriter->WriteAttribute(L"dx", upX);
-						pWriter->WriteAttribute(L"dy", upY);
-						pWriter->WriteAttribute(L"dz", upZ);
+						pWriter->WriteAttribute(sAttrNamespace + L"dx", upX);
+						pWriter->WriteAttribute(sAttrNamespace + L"dy", upY);
+						pWriter->WriteAttribute(sAttrNamespace + L"dz", upZ);
 						pWriter->EndAttributes();
-					pWriter->EndNode(L"a:up");
-				pWriter->EndNode(L"a:backdrop");
+					pWriter->EndNode(sNodeNamespace + L"up");
+				pWriter->EndNode(sNodeNamespace + L"backdrop");
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const

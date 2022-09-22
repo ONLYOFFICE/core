@@ -55,7 +55,7 @@ class BaseObject
 {
 public:
 	BaseObject(){}
-	~BaseObject(){}
+    virtual ~BaseObject(){}
 
 	virtual boost::shared_ptr<BaseObject> clone() = 0;
 

@@ -195,7 +195,8 @@ namespace BinXlsxRW
 	namespace c_oSerNumFmtTypes{enum c_oSerNumFmtTypes
 	{
 		FormatCode = 0,
-		NumFmtId = 1
+		NumFmtId = 1,
+		FormatCode16 = 2
 	};}
 	namespace c_oSerSharedStringTypes{enum c_oSerSharedStringTypes
 	{
@@ -227,8 +228,9 @@ namespace BinXlsxRW
 		SlicerCaches = 18,
 		SlicerCachesExt = 19,
 		SlicerCache = 20,
-		Protection = 21
-	};}	
+		Protection = 21,
+		OleSize = 22
+	};}
 	namespace c_oSerWorkbookProtection {enum c_oSerWorkbookProtection{
 		AlgorithmName = 0,
 		SpinCount = 1,
@@ -262,7 +264,11 @@ namespace BinXlsxRW
 		Comma = 12,
 		Semicolon = 13,
 		Consecutive = 14,
-		TextFields = 15
+		TextFields = 15,
+		CodePage = 16,
+		TextField = 17,
+		TextFieldType = 18,
+		TextFieldPosition = 19
 	};}
 	namespace c_oSerOlapPrTypes{enum c_oSerOlapPrTypes
 	{
@@ -323,7 +329,8 @@ namespace BinXlsxRW
 		TextPr = 23,
 		WebPr = 24,
 		RangePr = 25,
-		IdExt = 26
+		IdExt = 26,
+		UId = 27
 	};}
 	namespace c_oSerWorkbookVbaProjectTypes{enum c_oSerWorkbookVbaProjectTypes
 	{
@@ -409,7 +416,10 @@ namespace BinXlsxRW
 		NamedSheetView = 40,
 		Protection = 41,
 		ProtectedRanges = 42,
-		ProtectedRange = 43
+		ProtectedRange = 43,
+		CellWatches = 44,
+		CellWatch = 45,
+		CellWatchR = 46
 	};}
 	namespace c_oSerWorksheetProtection {enum c_oSerWorksheetPropTypes
 	{

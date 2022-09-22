@@ -35,26 +35,22 @@
 
 namespace XLS
 {
+	class VertBrk : public BiffStructure
+	{
+		BASE_STRUCTURE_DEFINE_CLASS_NAME(VertBrk)
+	public:
+		BiffStructurePtr clone();
 
-class CFRecord;
+		static const ElementType type = typeVertBrk;
 
-class VertBrk : public BiffStructure
-{
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(VertBrk)
-public:
-	BiffStructurePtr clone();
+		virtual void load(CFRecord& record);
+		virtual int serialize(std::wostream & stream);
 
-	static const ElementType	type = typeVertBrk;
-	
-	virtual void load(CFRecord& record);
-
-
-	ColU col;
-	RwU rowStart;
-	RwU rowEnd;
-};
-
-typedef boost::shared_ptr<VertBrk> VertBrkPtr;
+		ColU col;
+		RwU rowStart;
+		RwU rowEnd;
+	};
+	typedef boost::shared_ptr<VertBrk> VertBrkPtr;
 
 } // namespace XLS
 

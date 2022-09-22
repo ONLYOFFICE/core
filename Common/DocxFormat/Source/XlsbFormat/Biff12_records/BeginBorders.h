@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginBorders)
         public:
             BeginBorders();
-            virtual ~BeginBorders();
+            ~BeginBorders();
 
             XLS::BaseObjectPtr clone();
 

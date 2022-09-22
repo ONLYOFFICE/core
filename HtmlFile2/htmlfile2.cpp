@@ -107,7 +107,7 @@ public:
     {
         //Установим размер исходного и нового окна для Css калькулятора (должны быть одинаковые единицы измерения (желательно пункты))
         //Это нужно для масштабирования некоторых значений
-        m_oStylesCalculator.SetSizeSourceWindow(NSCSS::CSizeWindow(4940 * (1366 / (8.26667 * m_oStylesCalculator.GetDpi())), 0));
+		m_oStylesCalculator.SetSizeSourceWindow(NSCSS::CSizeWindow(4940 * (1366 * (25.4 / m_oStylesCalculator.GetDpi())), 0));
         m_oStylesCalculator.SetSizeDeviceWindow(NSCSS::CSizeWindow(4940, 0));
     }
 
@@ -344,7 +344,6 @@ public:
 
         if (m_bInP)
             m_oDocXml.WriteString(L"</w:p>");
-
         m_oDocXml.WriteString(L"<w:sectPr w:rsidR=\"0007083F\" w:rsidRPr=\"0007083F\" w:rsidSect=\"0007612E\"><w:pgSz w:w=\"12240\" w:h=\"15840\"/><w:pgMar w:gutter=\"0\" w:footer=\"720\" w:header=\"720\" w:left=\"720\" w:bottom=\"720\" w:right=\"720\" w:top=\"720\"/><w:cols w:space=\"720\"/><w:docGrid w:linePitch=\"360\"/></w:sectPr></w:body></w:document>");
         NSFile::CFileBinary oDocumentWriter;
         if (oDocumentWriter.CreateFileW(m_sDst + L"/word/document.xml"))
@@ -438,8 +437,24 @@ public:
     // Конвертирует mht в xhtml
     bool mhtXhtml(const std::wstring& sSrc)
     {
-        std::wstring sExtention = NSFile::GetFileExtention(sSrc);
-        if(sExtention == L"mht" || sExtention == L"mhtml")
+        NSFile::CFileBinary file;
+        if (!file.OpenFile(sSrc))
+            return false;
+
+        unsigned char* buffer = new unsigned char[4096];
+        if (!buffer)
+        {
+            file.CloseFile();
+            return false;
+        }
+
+        DWORD dwReadBytes = 0;
+        file.ReadFile(buffer, 4096, dwReadBytes);
+        file.CloseFile();
+        std::string xml_string = XmlUtils::GetUtf8FromFileContent(buffer, dwReadBytes);
+
+        bool bRes = false;
+        if (std::string::npos != xml_string.find("Content-Type: multipart/related"))
         {
             BYTE* pData;
             DWORD nLength;
@@ -448,10 +463,22 @@ public:
 
             std::string sFileContent = XmlUtils::GetUtf8FromFileContent(pData, nLength);
             RELEASEARRAYOBJECTS(pData);
-
-            return m_oLightReader.FromString(mhtToXhtml(sFileContent));
+            /*
+            std::wstring sRes = mhtToXhtml(sFileContent);
+            NSFile::CFileBinary oWriter;
+            if (oWriter.CreateFileW(m_sTmp + L"/res.html"))
+            {
+                oWriter.WriteStringUTF8(sRes);
+                oWriter.CloseFile();
+            }
+            */
+            bRes = m_oLightReader.FromString(mhtToXhtml(sFileContent));
         }
-        return htmlXhtml(sSrc);
+        else
+            bRes = htmlXhtml(sSrc);
+
+        RELEASEARRAYOBJECTS(buffer);
+        return bRes;
     }
 
     // Читает стили
@@ -1101,6 +1128,11 @@ private:
                         j += nColspan - 1;
                 }
 
+                std::wstring wsVerticalAlign = oStyle.m_pDisplay.GetVerticalAlign();
+
+                if (!wsVerticalAlign.empty())
+                        oXml->WriteString(L"<w:vAlign w:val=\"" + wsVerticalAlign + L"\"/>");
+
                 oXml->WriteString(L"<w:hideMark/></w:tcPr>");
                 size_t nEmpty = oXml->GetCurSize();
                 m_bWasPStyle = false;
@@ -1246,6 +1278,8 @@ private:
             }
             else
             {
+                    wsTable.insert(35, oStyle.GetId());
+
                     std::wstring sColorLeftSide     = oStyle.m_pBorder.GetColorLeftSide();
                     std::wstring sSzLeftSide        = oStyle.m_pBorder.GetWidthLeftSideW();
                     std::wstring sStyleLeftSide     = oStyle.m_pBorder.GetStyleLeftSide();

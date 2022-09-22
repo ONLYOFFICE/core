@@ -14,6 +14,9 @@
 #include "../../DesktopEditor/common/Directory.h"
 #include <string>
 
+#include "../lib/goo/GList.h"
+#include "../lib/goo/GHash.h"
+
 #define GrClipEOFlag 0x01
 
 class GlobalParamsAdaptor : public GlobalParams
@@ -35,11 +38,12 @@ public:
         m_wsTempFolder = folder;
     }
 
-    void SetCMapFolder(const std::wstring &folder) {
-        m_wsCMapFolder = folder;
-    }
+    void SetCMapFolder(const std::wstring &wsFolder);
+    void SetCMapMemory();
+private:
 
-
+	void AddNameToUnicode(const char* sFile);
+	void AddCMapFolder(const char* sCollection, GString* sFolder);
 };
 
 #ifndef CORE_REF_OPERATORS
@@ -77,6 +81,9 @@ namespace NSStrings
 
     std::wstring GetString(GString* str);
     std::string GetStringA(GString* str);
+
+    std::wstring GetStringFromUTF32(GString* str);
+    std::string GetStringAFromUTF32(GString* str);
 }
 
 namespace PdfReader
@@ -127,16 +134,43 @@ namespace PdfReader
     }
 }
 
-class XMLConverter {
+class XMLConverter
+{
 public:
-    static void XRefToXml(XRef &xref, std::wstring &wsXml, bool parse_streams);
-    static void StreamDictToXml(Dict *dict, std::wstring &wsXml);
-    static void ObjectToXml(Object *obj, std::wstring &wsXml);
+	XMLConverter(XRef* xref, bool isParseStreams = false);
+	const std::wstring& GetXml() const {return m_wsXml;};
 
-    static void AppendStringToXml(std::wstring& wsXml, const std::string& sString)
-    {
-        std::wstring wsTmp(sString.begin(), sString.end());
-        wsXml += wsTmp;
-    }
+	static void XRefToXml(XRef* xref, std::wstring &wsXml, bool parse_streams);
+    static std::wstring DictToXml(const std::wstring& wsName, Object* obj, int nNum = 0, int nGen = 0, bool bBinary = false);
+
+private:
+
+	void ParseDicts();
+	void PdfToXml();
+	void ObjectToXml(Object* pObject, bool isSkipCheck = false);
+	void StreamDictToXml(Dict* pStreamDict, bool isSkipCheck = false);
+	void DictToXml(Dict* pDict);
+	bool CheckDict(Dict* pDict);
+	void Append(const char* sString)
+	{
+		std::string s(sString);
+		std::wstring wsTmp(s.begin(), s.end());
+		m_wsXml += wsTmp;
+	}
+	void Append(GString* pString)
+	{
+		for (int nPos = 0, nLen = pString->getLength(); nPos < nLen; ++nPos)
+		{
+			m_wsXml.push_back(std::btowc(pString->getChar(nPos)));
+		}
+	}
+
+private:
+
+	XRef*                m_pXRef;
+	bool                 m_bParseStreams;
+	std::map<Dict*, int> m_mDict;
+	std::wstring         m_wsXml;
+	int                  m_nNumMax;
 };
 #endif //CORE_ADAPTORS_H

@@ -188,7 +188,7 @@ namespace XmlUtils
              return 0;
 		}
     }
-	AVSINLINE static int     GetInteger (const std::wstring& string)
+	AVSINLINE static int GetInteger (const std::wstring& string)
 	{
         if (string.empty()) return 0;
 
@@ -214,19 +214,10 @@ namespace XmlUtils
         if (string.empty()) return 0;
         try
         {
-            return (unsigned int) _wtoi(string.c_str());
-        }
-        catch(...)
-        {
-        }
-
-        try
-        {
             return (unsigned int) _wtoi64(string.c_str());
         }
         catch(...)
         {
-            return 0;
         }
     }
     AVSINLINE static double  GetDouble  (const std::wstring& string)
@@ -617,7 +608,14 @@ namespace XmlUtils
 			{
 				while ((m_lSizeCur + nSize) > m_lSize)
 				{
-					m_lSize *= 2;
+					if (m_lSize > 10485760/*10 * 1024 * 1024*/)
+					{
+						m_lSize += (std::max)((int)nSize * 10, 1048576/*1024 * 1024*/);
+					}
+					else
+					{
+						m_lSize *= 2;
+					}
 				}
 
 				wchar_t* pRealloc = (wchar_t*)realloc(m_pData, m_lSize * sizeof(wchar_t));

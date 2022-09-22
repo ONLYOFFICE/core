@@ -46,6 +46,7 @@ SOURCES += \
     ../Source/DocxFormat/Logic/TableProperty.cpp \
     ../Source/DocxFormat/Logic/Vml.cpp \
     ../Source/DocxFormat/Logic/DocParts.cpp \
+    ../Source/DocxFormat/Logic/Pict.cpp \
     ../Source/DocxFormat/Media/Media.cpp \
     ../Source/DocxFormat/Media/VbaProject.cpp \
     ../Source/DocxFormat/Media/JsaProject.cpp \
@@ -94,6 +95,8 @@ SOURCES += \
     ../Source/XlsxFormat/Slicer/SlicerCacheExt.cpp \
     ../Source/XlsxFormat/Slicer/Slicer.cpp \
     ../Source/XlsxFormat/NamedSheetViews/NamedSheetViews.cpp \
+    ../Source/XlsxFormat/Pivot/PivotCacheDefinitionExt.cpp \
+    ../Source/XlsxFormat/Workbook/Workbook.cpp
 }
 
 
@@ -270,6 +273,7 @@ HEADERS += docxformatlib.h \
     ../Source/DocxFormat/Diagram/DiagramQuickStyle.h \
     ../Source/XlsxFormat/Pivot/PivotTable.h \
     ../Source/XlsxFormat/Pivot/PivotCacheDefinition.h \
+    ../Source/XlsxFormat/Pivot/PivotCacheDefinitionExt.h \
     ../Source/XlsxFormat/Pivot/PivotCacheRecords.h \
     ../Source/XlsxFormat/Slicer/SlicerCache.h \
     ../Source/XlsxFormat/Slicer/SlicerCacheExt.h \

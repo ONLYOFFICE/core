@@ -183,6 +183,11 @@ namespace SimpleTypes
 		{
 			return (unsigned long)Pt_To_Dx(m_dValue);
 		}
+		virtual double FromHps(double dValue)
+		{
+			m_dValue = (dValue / 2);
+			return m_dValue;
+		}
 		virtual double FromPoints(double dValue)
 		{
 			m_dValue = dValue;
@@ -274,8 +279,8 @@ namespace SimpleTypes
 
 	protected:
 
-		bool   m_bUnit;  
-		double m_dValue; // Значение в пунктах
+		bool   m_bUnit = false;;
+		double m_dValue = 0; // Значение в пунктах
 	};
 
 	class CUniversalMeasureOrPercent : public CUniversalMeasure

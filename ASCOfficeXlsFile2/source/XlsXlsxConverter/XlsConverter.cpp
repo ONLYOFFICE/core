@@ -40,9 +40,10 @@
 #include "../XlsFormat/Logic/GlobalsSubstream.h"
 #include "../XlsFormat/Logic/ChartSheetSubstream.h"
 #include "../XlsFormat/Logic/MacroSheetSubstream.h"
+#include "../XlsFormat/Logic/EncryptionStream.h"
 
 #include "../XlsFormat/Logic/BinProcessor.h"
-#include "../XlsFormat/Logic/SummaryInformationStream/SummaryInformation.h"
+#include "../XlsFormat/Logic/SummaryInformationStream/PropertySetStream.h"
 
 #include "../XlsFormat/Logic/Biff_unions/FORMATTING.h"
 #include "../XlsFormat/Logic/Biff_unions/THEME.h"
@@ -100,6 +101,8 @@
 
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/raster/BgraFrame.h"
+
+#include <boost/make_shared.hpp>
 
 #if !defined(_WIN32) && !defined(_WIN64)
 
@@ -195,22 +198,16 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 		}
 		else
 		{
-			XLS::CFStreamPtr summary;
-			XLS::CFStreamPtr doc_summary;
+			OLEPS::PropertySetStream summary_stream;
+			
+			summary_stream.read(xls_file->getNamedStream(L"SummaryInformation"));
+			summary_stream.read(xls_file->getNamedStream(L"DocumentSummaryInformation"), true);
 
-			summary		= xls_file->getNamedStream(L"SummaryInformation");
-			doc_summary = xls_file->getNamedStream(L"DocumentSummaryInformation");
-
-			if(summary)
-			{
-				OLEPS::SummaryInformation summary_info(summary);
-				workbook_code_page = summary_info.GetCodePage(); //from software last open 
-			}
-			if(doc_summary)
-			{
-				OLEPS::SummaryInformation doc_summary_info(doc_summary);
-				workbook_code_page = doc_summary_info.GetCodePage(); 
-			}
+			workbook_code_page = summary_stream.GetCodePage();
+				
+			output_document->get_docProps_files().set_app_content(summary_stream.GetApp());
+			output_document->get_docProps_files().set_core_content(summary_stream.GetCore());
+//--------------------------------------------------------------------------------------------------------------------
 			if(  0/*error*/ == workbook_code_page)//|| 65001 /*UTF-8*/ == workbook_code_page || 1200/* UTF-16 */ == workbook_code_page
 			{
 				workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
@@ -222,12 +219,10 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 			xls_global_info->fontsDirectory = fontsPath;
 			xls_global_info->password		= password;
 			xls_global_info->tempDirectory	= tempPath;
-
-			XLS::StreamCacheReaderPtr stream_reader(new XLS::CFStreamCacheReader(xls_file->getWorkbookStream(), xls_global_info));
-
-			xls_document = boost::shared_ptr<XLS::WorkbookStreamObject>(new XLS::WorkbookStreamObject(workbook_code_page));
-		
-			XLS::BinReaderProcessor proc(stream_reader, xls_document.get() , true);
+//--------------------------------------------------------------------------------------------------------------------
+			XLS::StreamCacheReaderPtr workbook_stream(new XLS::CFStreamCacheReader(xls_file->getWorkbookStream(), xls_global_info));
+			xls_document = boost::shared_ptr<XLS::WorkbookStreamObject>(new XLS::WorkbookStreamObject(workbook_code_page));		
+			XLS::BinReaderProcessor proc(workbook_stream, xls_document.get() , true);
 			proc.mandatory(*xls_document.get());
 
 			if (xls_global_info->decryptor)
@@ -235,7 +230,9 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 				is_encrypted = true;
 				if (xls_global_info->decryptor->IsVerify() == false) return;
 			}
-
+//--------------------------------------------------------------------------------------------------------------------
+			XLS::EncryptionSummaryStream encryption_summary(xls_file->getNamedStream(L"encryption"), xls_global_info->decryptor);
+//--------------------------------------------------------------------------------------------------------------------
 			if (xls_file->storage_->isDirectory(L"_SX_DB_CUR"))
 			{
 				std::list<std::wstring> listStream = xls_file->storage_->entries(L"_SX_DB_CUR");
@@ -301,6 +298,10 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 
 				xls_global_info->controls_data = std::make_pair(buffer, size);			
 			}
+			else
+			{
+				xls_global_info->controls_data = encryption_summary.GetStream(L"Ctls");
+			}
 			XLS::CFStreamPtr listdata = xls_file->getNamedStream(L"List Data");
 			if(listdata)
 			{
@@ -310,6 +311,10 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 				listdata->read(buffer.get(), size);
 
 				xls_global_info->listdata_data = std::make_pair(buffer, size);			
+			}
+			else
+			{
+				xls_global_info->listdata_data = encryption_summary.GetStream(L"List Data");
 			}
 			if (xls_file->storage_->isDirectory(L"MsoDataStore"))
 			{
@@ -353,18 +358,7 @@ XlsConverter::XlsConverter(const std::wstring & xlsFileName, const std::wstring 
 				NSDirectory::CreateDirectory(xl_path.c_str());
 
 				std::wstring sToolbarsFile = xl_path + FILE_SEPARATOR_STR + L"attachedToolbars.bin";
-
-				//POLE::Storage *storageToolbars = new POLE::Storage(sToolbarsFile.c_str());
-
-				//if ((storageToolbars) && (storageToolbars->open(true, true)))
-				//{			
-				//	toolbar_data->copy(L"attachedToolbars", storageToolbars);
-
-				//	storageToolbars->close();
-				//	delete storageToolbars;
-
-				//	output_document->get_xl_files().add_attachedToolbars();
-				//}		
+	
 				NSFile::CFileBinary file;
 				if (file.CreateFileW(sToolbarsFile))
 				{
@@ -514,9 +508,11 @@ void XlsConverter::convert_common (XLS::CommonSubstream* sheet)
 	
 	xls_global_info->current_sheet = sheet->ws_index_ + 1; 
 		
-	if (sheet->m_GLOBALS)
+	XLS::GLOBALS *globals = dynamic_cast<XLS::GLOBALS *>(sheet->m_GLOBALS.get());
+	
+	if (globals)
 	{
-		sheet->m_GLOBALS->serialize(xlsx_context->current_sheet().sheetFormat());
+		globals->serialize(xlsx_context->current_sheet().sheetFormat());
 	}
 	
 	if (!sheet->m_arWINDOW.empty())
@@ -545,6 +541,17 @@ void XlsConverter::convert_common (XLS::CommonSubstream* sheet)
 	if (sheet->m_PAGESETUP)
 	{
 		sheet->m_PAGESETUP->serialize(xlsx_context->current_sheet().pageProperties());
+	}
+	if (globals)
+	{
+		if (globals->m_HorizontalPageBreaks)
+		{
+			globals->m_HorizontalPageBreaks->serialize(xlsx_context->current_sheet().pageProperties());
+		}
+		if (globals->m_VerticalPageBreaks)
+		{
+			globals->m_VerticalPageBreaks->serialize(xlsx_context->current_sheet().pageProperties());
+		}
 	}
 
 	if (sheet->m_arCUSTOMVIEW.size() > 0)
@@ -1300,7 +1307,9 @@ void XlsConverter::convert(XLS::OBJECTS* objects, XLS::WorksheetSubstream * shee
 		}
 
 //-----------------------------------------------------------------------------
-		if (type_object < 0)	continue;
+		if (type_object < 0) continue;
+		if (group_objects.empty())
+			break; /// что то с объектами не то ! 2006 02.xls
 
 		if (type_object == 0)
 		{
@@ -1805,7 +1814,7 @@ void XlsConverter::convert_blip(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 						id += 3000;
 					
 					std::wstring rId = xlsx_context->get_mediaitems().find_image(id , target, isIternal);
-					xlsx_context->get_drawing_context().set_fill_texture(target);
+					xlsx_context->get_drawing_context().set_picture(target);
 				}break;
 			case ODRAW::pibName:
 			{
@@ -2443,7 +2452,7 @@ void XlsConverter::convert(XLS::Obj * obj)
 			if (obj->pictFmla.fmla.bInfoExist)
 				info = obj->pictFmla.fmla.embedInfo.strClass.value();
 		}
-		if (obj->pictFlags.fCtl && obj->pictFlags.fPrstm)//Controls Storage
+		if (obj->pictFlags.fCtl && obj->pictFlags.fPrstm && xls_global_info->controls_data.first)//Controls Storage
 		{
 		//binary data
 			xlsx_context->get_mediaitems().create_activeX_path(xlsx_path);
@@ -2477,6 +2486,10 @@ void XlsConverter::convert(XLS::Obj * obj)
 				xlsx_context->get_mediaitems().create_embeddings_path(xlsx_path);
 				
 				std::wstring target;
+
+				if (xls_file->storage_->exists(object_stream + L"Workbook")) target = L".xls";
+				if (xls_file->storage_->exists(object_stream + L"WordDocument")) target = L".doc";
+
 				std::wstring objectId = xlsx_context->get_mediaitems().add_embedding(target, info);
 
 				POLE::Storage *storageOle = new POLE::Storage((xlsx_context->get_mediaitems().embeddings_path() + target).c_str());

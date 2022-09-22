@@ -170,6 +170,8 @@ namespace BinXlsxRW
 		void WriteConnectionDbPr(const OOX::Spreadsheet::CDbPr& dbPr);
 		void WriteConnectionOlapPr(const OOX::Spreadsheet::COlapPr& olapPr);
 		void WriteConnectionTextPr(const OOX::Spreadsheet::CTextPr& textPr);
+		void WriteConnectionTextFields(const OOX::Spreadsheet::CTextFields& textFields);
+		void WriteConnectionTextField(const OOX::Spreadsheet::CTextField& textField);
 		void WriteConnectionWebPr(const OOX::Spreadsheet::CWebPr& webPr);
 		void WriteConnectionRangePr(const OOX::Spreadsheet::CRangePr& rangePr);
 		void WriteExternalReferences(const OOX::Spreadsheet::CExternalReferences& externalReferences, OOX::Spreadsheet::CWorkbook& workbook);
@@ -217,6 +219,8 @@ namespace BinXlsxRW
 	
 		void WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet, OOX::Spreadsheet::CWorksheet& oWorksheet);
 		
+		void WriteCellWatches(const OOX::Spreadsheet::CCellWatches& cellWatches);
+		void WriteCellWatch(const OOX::Spreadsheet::CCellWatch& cellWatch);
 		void WriteWorksheetProp(OOX::Spreadsheet::CSheet& oSheet);
 		void WriteProtection(const OOX::Spreadsheet::CSheetProtection& protection);
 		void WriteProtectedRanges(const OOX::Spreadsheet::CProtectedRanges& protectedRanges);

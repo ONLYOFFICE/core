@@ -192,8 +192,8 @@ namespace OOX
 
                 for(auto &COLINFOS : obj)
                 {
-                    auto ptr = static_cast<XLSB::COLINFOS*>(COLINFOS.get())->m_arBrtColInfo;
-                    for(auto &col : ptr)
+                    auto ptr = static_cast<XLSB::COLINFOS*>(COLINFOS.get());
+                    for(auto &col : ptr->m_arBrtColInfo)
                     {
                         CCol *pCol = new CCol(m_pMainDocument);
                         pCol->fromBin(col);

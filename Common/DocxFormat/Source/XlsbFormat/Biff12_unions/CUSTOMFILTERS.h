@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(CUSTOMFILTERS)
     public:
         CUSTOMFILTERS();
-        virtual ~CUSTOMFILTERS();
+        ~CUSTOMFILTERS();
 
         XLS::BaseObjectPtr clone();
 

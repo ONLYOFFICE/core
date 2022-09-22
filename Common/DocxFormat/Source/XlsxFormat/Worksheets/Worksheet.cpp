@@ -59,6 +59,7 @@ namespace OOX
 			m_pComments = NULL;
 			m_pThreadedComments = NULL;
             m_bIsChartSheet = false;
+            bIsWritten = false;
 
 			CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
 			if (xlsx)
@@ -78,6 +79,7 @@ namespace OOX
 			m_pComments = NULL;
 			m_pThreadedComments = NULL;
             m_bIsChartSheet = isChartSheet;
+            bIsWritten = false;
 
 			CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
 			if (xlsx)
@@ -104,7 +106,7 @@ namespace OOX
             {
                 if(m_bIsChartSheet)
                 {
-                    XLSB::ChartSheetStreamPtr chartSheetStream = std::make_shared<XLSB::ChartSheetStream>();
+                    XLSB::ChartSheetStreamPtr chartSheetStream(new XLSB::ChartSheetStream);
 
                     xlsb->ReadBin(oPath, chartSheetStream.get());
 
@@ -135,12 +137,16 @@ namespace OOX
                             m_oSheetProtection = chartSheetStream->m_BrtCsProtection;
 
                     }
+
+                    //chartSheetStream.reset();
                 }
                 else
                 {
-                    XLSB::WorkSheetStreamPtr workSheetStream = std::make_shared<XLSB::WorkSheetStream>();
+                    XLSB::WorkSheetStreamPtr workSheetStream(new XLSB::WorkSheetStream);
 
                     xlsb->ReadBin(oPath, workSheetStream.get());
+
+                    xlsb->m_mapSheetNameSheetData.insert({oPath.GetPath(), workSheetStream->m_SheetaDataPosition});
 
 					if (workSheetStream != nullptr)
 					{
@@ -158,11 +164,11 @@ namespace OOX
 							m_oHyperlinks = static_cast<XLSB::HLINKS*>(workSheetStream->m_HLINKS.get())->m_arHlinks;
 						if (workSheetStream->m_MERGECELLS != nullptr)
 							m_oMergeCells = static_cast<XLSB::MERGECELLS*>(workSheetStream->m_MERGECELLS.get())->m_arBrtMergeCell;
-						if (workSheetStream->m_CELLTABLE != nullptr)
-						{
-							m_oSheetData = new CSheetData(File::m_pMainDocument);
-							m_oSheetData->fromBin(workSheetStream->m_CELLTABLE);
-						}
+                        //if (workSheetStream->m_CELLTABLE != nullptr)
+                        //{
+                        m_oSheetData = new CSheetData(File::m_pMainDocument);
+                        //m_oSheetData->fromBin(workSheetStream->m_CELLTABLE);
+                        //}
                         if (workSheetStream->m_BrtWsFmtInfo != nullptr)
                             m_oSheetFormatPr = workSheetStream->m_BrtWsFmtInfo;
                         if (workSheetStream->m_WSVIEWS2 != nullptr)
@@ -216,6 +222,8 @@ namespace OOX
                         if (workSheetStream->m_FRTWORKSHEET != nullptr)
                             m_oExtLst = workSheetStream->m_FRTWORKSHEET;
                     }
+
+                    //workSheetStream.reset();
 
                 }
 
@@ -363,6 +371,8 @@ namespace OOX
 					m_oDataConsolidate = oReader;
 				else if (_T("sortState") == sName)
 					m_oSortState = oReader;
+				else if (_T("cellWatches") == sName)
+					m_oCellWatches = oReader;
 				else if (L"DataValidation" == sName)
 				{
 					if (false == m_oDataValidations.IsInit())
@@ -393,6 +403,11 @@ namespace OOX
 						}
 					}
 				}
+			}
+
+			if (m_oSheetData.IsInit())
+			{
+				m_oSheetData->AfterRead();
 			}
 		}
 
@@ -773,6 +788,8 @@ namespace OOX
 				m_oRowBreaks->toXML(writer);
 			if(m_oColBreaks.IsInit())
 				m_oColBreaks->toXML(writer);
+			if (m_oCellWatches.IsInit())
+				m_oCellWatches->toXML(writer);
 			if(m_oDrawing.IsInit())
 				m_oDrawing->toXML(writer);
 			if(m_oLegacyDrawing.IsInit())
@@ -793,7 +810,10 @@ namespace OOX
 			}
 		}
 		void CWorksheet::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
-		{
+        {
+            if (bIsWritten) return;
+
+            bIsWritten = true;
 			if (!m_bWriteDirectlyToFile)
 			{
 				NSStringUtils::CStringBuilder sXml;
@@ -802,7 +822,40 @@ namespace OOX
 					toXML(sXml);
 				toXMLEnd(sXml);
 
-				NSFile::CFileBinary::SaveToFile(oPath.GetPath(), sXml.GetData());
+                //NSFile::CFileBinary::SaveToFile(oPath.GetPath(), sXml.GetData());
+                //for memory optimization for large files
+
+                wchar_t* pXmlData = sXml.GetBuffer();
+                LONG lwcharLen = (LONG)sXml.GetCurSize();
+                const LONG lcurrentLen = 10485760; //10 Mbyte
+                LONG nCycles = lwcharLen / lcurrentLen;
+
+                LONG lLen = 0;
+                BYTE* pData = NULL;
+                NSFile::CFileBinary oFile;
+                oFile.CreateFileW(oPath.GetPath());
+
+                while(nCycles--)
+                {
+                    NSFile::CUtf8Converter::GetUtf8StringFromUnicode(pXmlData, lcurrentLen, pData, lLen);
+
+                    oFile.WriteFile(pData, lLen);
+
+                    pXmlData += lcurrentLen;
+
+                    RELEASEARRAYOBJECTS(pData);
+                }
+
+                if(lwcharLen % lcurrentLen > 0)
+                {
+                    NSFile::CUtf8Converter::GetUtf8StringFromUnicode(pXmlData, lwcharLen % lcurrentLen, pData, lLen);
+
+                    oFile.WriteFile(pData, lLen);
+
+                    RELEASEARRAYOBJECTS(pData);
+                }
+
+                oFile.CloseFile();
 
 				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 				IFileContainer::Write( oPath, oDirectory, oContent );
@@ -912,12 +965,13 @@ mc:Ignorable=\"x14ac\">");
 				WritingElement_ReadAttributes_Read_else_if(oReader, _T("ss:StyleID"), sStyleID)
 				WritingElement_ReadAttributes_End(oReader)
 
-				if (ptWidth.IsInit())
+				if (ptWidth.IsInit() && xlsx_flat)
 				{
 					m_oWidth.Init();
 					double pixDpi = *ptWidth / 72.0 * 96.; if (pixDpi < 5) pixDpi = 7; // ~
-					double maxDigitSize = 4.25;
-					m_oWidth->SetValue((int((pixDpi /*/ 0.75*/ - 5) / maxDigitSize * 100. + 0.5)) / 100. * 0.9);
+					double maxDigitSize = xlsx_flat->getMaxDigitSize().first;
+
+					m_oWidth->SetValue(((int)((pixDpi + 5) / maxDigitSize * 100. + 0.5)) / 100.);
 
 					m_oCustomWidth.Init();
 					m_oCustomWidth->FromBool(true);

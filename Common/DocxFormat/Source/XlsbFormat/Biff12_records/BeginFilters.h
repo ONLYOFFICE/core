@@ -43,13 +43,13 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginFilters)
         public:
             BeginFilters();
-            virtual ~BeginFilters();
+            ~BeginFilters();
 
             XLS::BaseObjectPtr clone();
 
             void readFields(XLS::CFRecord& record);
 
-            XLS::Boolean<unsigned int>    fBlank;
+            XLS::Boolean<_UINT32>    fBlank;
     };
 
 } // namespace XLSB

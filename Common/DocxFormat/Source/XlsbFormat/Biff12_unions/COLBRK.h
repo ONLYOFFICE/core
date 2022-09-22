@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(COLBRK)
     public:
         COLBRK();
-        virtual ~COLBRK();
+        ~COLBRK();
 
         XLS::BaseObjectPtr clone();
 

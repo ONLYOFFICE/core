@@ -35,22 +35,18 @@
 
 #include "../SharedStrings/Si.h"
 #include "Cols.h"
-#include "../../XlsbFormat/Biff12_unions/CELLTABLE.h"
 
 namespace NSBinPptxRW
 {
 	class CBinaryFileReader;
 	class CXlsbBinaryWriter;
 }
-namespace CSVWriter
-{
-	class CCSVWriter;
-}
 namespace NSFile
 {
 	class CStreamWriter;
 }
-
+class CSVWriter;
+//--------------------------------------------------------------------------------------------
 namespace OOX
 {
 	namespace Spreadsheet
@@ -455,7 +451,7 @@ namespace OOX
 			void fromXMLToXLSB(XmlUtils::CXmlLiteReader& oReader, NSBinPptxRW::CXlsbBinaryWriter& oStream, CCellXLSB& oCell);
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType);
 			void toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const;            
-            void fromBin(XLSB::CELLTABLE::_data& obj);
+                        void fromBin(XLS::BaseObjectPtr& obj);
 
 			virtual EElementType getType () const
 			{
@@ -465,7 +461,7 @@ namespace OOX
 		private:
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-            void ReadAttributes(XLSB::CELLTABLE::_data& obj);
+                        void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void CheckIndex();
 
 		public:
@@ -487,7 +483,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CSheetData)
-            WritingElement_XlsbConstructors(CSheetData)
+            //WritingElement_XlsbConstructors(CSheetData)
 			CSheetData(OOX::Document *pMain = NULL) : WritingElementWithChilds<CRow>(pMain)
 			{
 			}
@@ -522,7 +518,7 @@ namespace OOX
 				writer.WriteString(_T("</sheetData>"));
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
+			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
 
             void fromBin(XLS::BaseObjectPtr& obj);
 
@@ -535,14 +531,13 @@ namespace OOX
 		
 			std::map<int, std::map<int, unsigned int>>	m_mapStyleMerges2003; // map(row, map(col, style))
 			void StyleFromMapStyleMerges2003(std::map<int, unsigned int> &mapStyleMerges);
+			void AfterRead();
 		private:
-			void fromXLSBToXmlCell (CCell& pCell, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
-			void fromXLSBToXmlRowStart (CRow* pRow, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
-			void fromXLSBToXmlRowEnd (CRow* pRow, CSVWriter::CCSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
+			void fromXLSBToXmlCell (CCell& pCell, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
+			void fromXLSBToXmlRowStart (CRow* pRow, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
+			void fromXLSBToXmlRowEnd (CRow* pRow, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-
-            void ReadAttributes(XLS::BaseObjectPtr& obj);
 
 	// spreadsheets 2003
 

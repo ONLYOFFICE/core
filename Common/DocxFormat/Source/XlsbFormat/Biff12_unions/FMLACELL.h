@@ -33,8 +33,6 @@
 
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
 
-
-
 namespace XLSB
 {
 
@@ -43,11 +41,13 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(FMLACELL)
     public:
         FMLACELL(_INT32 row, std::vector<XLS::CellRangeRef>& shared_formulas_locations_ref);
-        virtual ~FMLACELL();
+        ~FMLACELL();
 
         XLS::BaseObjectPtr clone();
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
+
+        static const XLS::ElementType	type = XLS::typeFMLACELL;
 
         XLS::BaseObjectPtr                  m_source;
         _INT32                              m_Col;

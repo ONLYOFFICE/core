@@ -32,7 +32,7 @@
 #pragma once
 
 #include "CompositeObject.h"
-#include "SummaryInformationStream/Structures/CodePageOle.h"
+#include "SummaryInformationStream/CodePageOle.h"
 #include "GlobalWorkbookInfo.h"
 
 namespace XLS

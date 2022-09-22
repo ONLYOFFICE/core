@@ -43,14 +43,14 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginSlicerCacheNative)
         public:
             BeginSlicerCacheNative();
-            virtual ~BeginSlicerCacheNative();
+            ~BeginSlicerCacheNative();
 
             XLS::BaseObjectPtr clone();
 
             void readFields(XLS::CFRecord& record);
 
             //static const XLS::ElementType	type = XLS::typeBeginSlicerCacheNative;
-            _INT32      dwcacheId;
+            _UINT32     dwcacheId;
             BYTE        fSortOrder;
             BYTE        fCrossFilter;
             bool        fSortUsingCustomLists;

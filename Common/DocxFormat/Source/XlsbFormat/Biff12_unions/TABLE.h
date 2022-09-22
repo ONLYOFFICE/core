@@ -41,13 +41,13 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(TABLE)
     public:
         TABLE();
-        virtual ~TABLE();
+        ~TABLE();
 
         XLS::BaseObjectPtr clone();
 
         virtual const bool loadContent(XLS::BinProcessor& proc);
 
-        XLS::BaseObjectPtr               m_ACUID;
+        //XLS::BaseObjectPtr               m_ACUID;
         XLS::BaseObjectPtr               m_BrtBeginList;
         XLS::BaseObjectPtr               m_AUTOFILTER;
         XLS::BaseObjectPtr               m_SORTSTATE;

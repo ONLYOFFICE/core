@@ -43,7 +43,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(STYLES)
     public:
         STYLES();
-        virtual ~STYLES();
+        ~STYLES();
 
         XLS::BaseObjectPtr clone();
 
@@ -52,7 +52,7 @@ namespace XLSB
 		XLS::BaseObjectPtr               m_BrtBeginStyles;
         std::vector<XLS::BaseObjectPtr>  m_arACUID;
         std::vector<XLS::BaseObjectPtr>	 m_arBrtStyle;
-        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        //std::vector<XLS::BaseObjectPtr>  m_arFRT;
 		XLS::BaseObjectPtr               m_BrtEndStyles;
 
     };

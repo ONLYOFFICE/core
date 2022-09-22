@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndDatabar)
         public:
             EndDatabar();
-            virtual ~EndDatabar();
+            ~EndDatabar();
 
             XLS::BaseObjectPtr clone();
 

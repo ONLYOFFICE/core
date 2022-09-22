@@ -43,7 +43,7 @@ namespace XLSB
     public:
         SrvFmtCV();
         SrvFmtCV(XLS::CFRecord& record);
-        virtual ~SrvFmtCV();
+        ~SrvFmtCV();
         XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;
@@ -53,6 +53,8 @@ namespace XLSB
         BYTE    ciRed;
         BYTE    ciGreen;
         BYTE    ciBlue;
+
+        _UINT32 toHex();
     };
 
 }   // namespace XLSB

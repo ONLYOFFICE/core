@@ -46,8 +46,8 @@ namespace DocFileFormat
 													fNoHtmlExport(false),
 													fSemiHidden(false),
 													fLocked(false),
-													fInternalUse(false),
-													stk(paragraph_style),
+													fInternalUse(false), fUnhideWhenUsed(false),
+													stk(paragraph_style), uiPriority(0), fQFormat(false),
 													istdBase(0xffffff), cupx (0), istdNext(0xffffff), bchUpe(0)
 	{
 
@@ -74,16 +74,14 @@ namespace DocFileFormat
 													fSemiHidden(false),
 													fLocked(false),
 													fInternalUse(false),
-													stk(paragraph_style),
+													stk(paragraph_style), uiPriority(0), fQFormat(false),
 													istdBase(0xffffff), cupx (0), istdNext(0xffffff), bchUpe(0)
 	{
-		//parsing the base (fix part)
+//parsing the base (fix part)
 
 		if ( cbStdBase >= 2 )
 		{
-			//sti
 			sti						=	(StyleIdentifier)FormatUtils::GetUIntFromBytesBits( bytes, size, 0, 12 );
-			//flags
 			fScratch				=	FormatUtils::GetBitFromBytes( bytes, size, 12 );
 			fInvalHeight			=	FormatUtils::GetBitFromBytes( bytes, size, 13 );
 			fHasUpe					=	FormatUtils::GetBitFromBytes( bytes, size, 14 );
@@ -92,29 +90,20 @@ namespace DocFileFormat
 
 		if ( cbStdBase >= 4 )
 		{
-			//stk
 			stk						=	(StyleKind)FormatUtils::GetUIntFromBytesBits( bytes, size, 16, 4 );
-			//istdBase	
 			istdBase				=	FormatUtils::GetUIntFromBytesBits( bytes, size, 20, 12 );
 		}
-
 		if ( cbStdBase >= 6 )
 		{
-			//cupx
 			cupx					=	(unsigned short)FormatUtils::GetUIntFromBytesBits( bytes, size, 32, 4 );
-			//istdNext
 			istdNext				=	FormatUtils::GetUIntFromBytesBits( bytes, size, 36, 12 );
 		}
-
 		if ( cbStdBase >= 8 )
 		{
-			//bchUpe
 			bchUpe					=	(unsigned short)FormatUtils::GetUIntFromBytesBits( bytes, size, 48, 16 );
 		}
-
 		if ( cbStdBase >= 10 )
 		{
-			//flags
 			fAutoRedef				=	FormatUtils::GetBitFromBytes( bytes, size, 64 );
 			fHidden					=	FormatUtils::GetBitFromBytes( bytes, size, 65 );
 			f97LidsSet				=	FormatUtils::GetBitFromBytes( bytes, size, 66 );
@@ -126,21 +115,20 @@ namespace DocFileFormat
 			fSemiHidden				=	FormatUtils::GetBitFromBytes( bytes, size, 72 );
 			fLocked					=	FormatUtils::GetBitFromBytes( bytes, size, 73 );
 			fInternalUse			=	FormatUtils::GetBitFromBytes( bytes, size, 74 );
+			fUnhideWhenUsed			=	FormatUtils::GetBitFromBytes(bytes, size, 75);
+			fQFormat				=	FormatUtils::GetBitFromBytes(bytes, size, 76);
+			//fReserved 3 bits
+		}
+		if ( cbStdBase == 0x0012)
+		{//StdfPost2000
+			istdLink =	FormatUtils::GetUIntFromBytesBits( bytes, size, 80, 12 );
+			fHasOriginalStyle =	FormatUtils::GetBitFromBytes( bytes, size, 92 );
+			short fSpare = FormatUtils::GetUIntFromBytesBits(bytes, size, 93, 3); //ignored
+			rsid =	FormatUtils::GetUIntFromBytesBits( bytes, size, 96, 32 );
+			iftcHtml = FormatUtils::GetUIntFromBytesBits(bytes, size, 128, 3);
+			uiPriority = FormatUtils::GetUIntFromBytesBits(bytes, size, 132, 12);
 		}
 
-		if ( cbStdBase >= 12 )
-		{
-			//istdLink
-			istdLink				=	FormatUtils::GetUIntFromBytesBits( bytes, size, 80, 12 );
-			//fHasOriginalStyle
-			fHasOriginalStyle		=	FormatUtils::GetBitFromBytes( bytes, size, 92 );
-		}
-
-		if ( cbStdBase >= 16 )
-		{
-			//rsid
-			rsid					=	FormatUtils::GetUIntFromBytesBits( bytes, size, 96, 32 );
-		}
 //parsing the variable part
 		unsigned char	*name = NULL;
 		unsigned char	characterCount = bytes[cbStdBase];

@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndCellXFs)
         public:
             EndCellXFs();
-            virtual ~EndCellXFs();
+            ~EndCellXFs();
 
             XLS::BaseObjectPtr clone();
 

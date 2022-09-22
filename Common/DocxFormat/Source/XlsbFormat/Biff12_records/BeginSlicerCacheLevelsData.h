@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginSlicerCacheLevelsData)
         public:
             BeginSlicerCacheLevelsData();
-            virtual ~BeginSlicerCacheLevelsData();
+            ~BeginSlicerCacheLevelsData();
 
             XLS::BaseObjectPtr clone();
 

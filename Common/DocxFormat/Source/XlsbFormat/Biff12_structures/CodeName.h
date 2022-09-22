@@ -45,7 +45,7 @@ namespace XLSB
     public:
         CodeName();
         CodeName(XLS::CFRecord& record);
-        virtual ~CodeName();
+        ~CodeName();
        XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;

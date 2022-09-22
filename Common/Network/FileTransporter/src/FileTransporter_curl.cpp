@@ -84,6 +84,18 @@ namespace NSNetwork
                 return written;
             }
 
+            /*int progress_func(void* ptr, double TotalToDownload, double NowDownloaded, double TotalToUpload, double NowUploaded)
+            {
+                // It's here you will write the code for the progress message or bar
+                int percent = static_cast<int>((100.0 * NowDownloaded) / TotalToDownload);
+
+                if(CFileTransporterBase::m_func_onProgress)
+                    CFileTransporterBase::m_func_onProgress(percent);
+                return 0;
+            }
+            */
+
+
             static size_t write_data_to_string(char *contents, size_t size, size_t nmemb, void *userp)
             {
                 ((std::string*)userp)->append((char*)contents, size * nmemb);
@@ -105,6 +117,9 @@ namespace NSNetwork
                    curl_easy_setopt(curl, CURLOPT_URL, url);
                    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
                    curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+                   //curl_easy_setopt(curl, CURLOPT_NOPROGRESS, FALSE);
+                   // Install the callback function
+                   //curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, progress_func);
         #if defined(__linux__)
                    //в linux нет встроенных в систему корневых сертификатов, поэтому отключаем проверку
                    //http://curl.haxx.se/docs/sslcerts.html
@@ -226,7 +241,7 @@ namespace NSNetwork
                     if (NSFile::CFileBinary::Exists(m_sDownloadFilePath))
                         NSFile::CFileBinary::Remove(m_sDownloadFilePath);
                 }
-                return download_external(m_sDownloadFileUrl, m_sDownloadFilePath);
+                return download_external(m_sDownloadFileUrl, m_sDownloadFilePath, m_func_onProgress, m_check_aborted);
             }
             virtual int UploadData() override
             {
@@ -249,18 +264,22 @@ namespace NSNetwork
         };
 
         CFileTransporter_private::CFileTransporter_private(const std::wstring &sDownloadFileUrl, bool bDelete)
+            : m_pInternal(new CFileTransporterBaseCURL(sDownloadFileUrl, bDelete))
+
         {
-            m_pInternal = new CFileTransporterBaseCURL(sDownloadFileUrl, bDelete);
+            m_pInternal->m_check_aborted = std::bind(&CBaseThread::isAborted, this);
         }
 
         CFileTransporter_private::CFileTransporter_private(const std::wstring &sUploadUrl, const unsigned char* cData, const int nSize)
+            : m_pInternal(new CFileTransporterBaseCURL(sUploadUrl, cData, nSize))
         {
-            m_pInternal = new CFileTransporterBaseCURL(sUploadUrl, cData, nSize);
+            m_pInternal->m_check_aborted = std::bind(&CBaseThread::isAborted, this);
         }
 
         CFileTransporter_private::CFileTransporter_private(const std::wstring &sUploadUrl, const std::wstring &sUploadFilePath)
+            : m_pInternal(new CFileTransporterBaseCURL(sUploadUrl, sUploadFilePath))
         {
-            m_pInternal = new CFileTransporterBaseCURL(sUploadUrl, sUploadFilePath);
+            m_pInternal->m_check_aborted = std::bind(&CBaseThread::isAborted, this);
         }
     }
 }

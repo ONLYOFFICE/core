@@ -46,7 +46,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(List14)
         public:
             List14();
-            virtual ~List14();
+            ~List14();
 
             XLS::BaseObjectPtr clone();
 

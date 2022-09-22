@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(FONTS)
     public:
         FONTS();
-        virtual ~FONTS();
+        ~FONTS();
 
         XLS::BaseObjectPtr clone();
 

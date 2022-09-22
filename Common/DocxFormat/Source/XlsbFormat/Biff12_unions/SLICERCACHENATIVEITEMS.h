@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(SLICERCACHENATIVEITEMS)
     public:
         SLICERCACHENATIVEITEMS();
-        virtual ~SLICERCACHENATIVEITEMS();
+        ~SLICERCACHENATIVEITEMS();
 
         XLS::BaseObjectPtr clone();
 
@@ -51,7 +51,7 @@ namespace XLSB
 
         XLS::BaseObjectPtr               m_BrtBeginSlicerCacheNative;
         XLS::BaseObjectPtr               m_BrtSlicerCacheNativeItem;
-        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        //std::vector<XLS::BaseObjectPtr>  m_arFRT;
         XLS::BaseObjectPtr               m_BrtEndSlicerCacheNative;
 
     };

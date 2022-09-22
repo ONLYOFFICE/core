@@ -70,6 +70,8 @@ namespace PPT_FORMAT
 		void Write()
 		{
 		}
+		std::wstring    m_xmlApp;
+		std::wstring    m_xmlCore;
 
 	protected:
 		void WriteApp			(NSFile::CFileBinary& oFile);

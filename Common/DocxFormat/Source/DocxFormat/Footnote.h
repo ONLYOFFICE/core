@@ -132,7 +132,7 @@ namespace OOX
 			sXml += _T("</w:footnotes>");
 			CDirectory::SaveToFile( oPath.GetPath(), sXml );
 
-			oContent.Registration( type().OverrideType(), oDirectory, oPath );
+			oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 			IFileContainer::Write( oPath, oDirectory, oContent );
 		}
 		virtual const OOX::FileType type() const

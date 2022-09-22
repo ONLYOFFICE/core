@@ -183,6 +183,16 @@ namespace MetaFile
 		short Top;
 		short Right;
 		short Bottom;
+
+		TWmfRect()
+		{
+			Left = Top = Right = Bottom = 0;
+		}
+
+		bool Empty() const
+		{
+			return (0 == Left) && (0 == Top) && (0 == Right) && (0 == Bottom);
+		}
 	};
 	struct TWmfPlaceable
 	{
@@ -223,12 +233,15 @@ namespace MetaFile
 		short w;
 		short h;
 
+		bool bUnchangedExt = true;
+		bool bUnchangedOrg = true;
+
 		void Init()
 		{
 			x = 0;
 			y = 0;
-			w = 1;
-			h = 1;
+			w = 1024;
+			h = 1024;
 		}
 
 		void Copy(TWmfWindow& oOther)
@@ -237,6 +250,9 @@ namespace MetaFile
 			y = oOther.y;
 			w = oOther.w;
 			h = oOther.h;
+
+			bUnchangedExt = oOther.bUnchangedExt;
+			bUnchangedOrg = oOther.bUnchangedOrg;
 		}
 	};
 	struct TWmfLogBrush

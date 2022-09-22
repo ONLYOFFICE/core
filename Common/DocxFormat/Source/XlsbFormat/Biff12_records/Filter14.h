@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(Filter14)
         public:
             Filter14();
-            virtual ~Filter14();
+            ~Filter14();
 
             XLS::BaseObjectPtr clone();
 

@@ -45,7 +45,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(Qsi15)
         public:
             Qsi15();
-            virtual ~Qsi15();
+            ~Qsi15();
 
             XLS::BaseObjectPtr clone();
 

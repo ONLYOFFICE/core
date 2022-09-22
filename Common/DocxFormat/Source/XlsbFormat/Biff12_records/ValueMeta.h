@@ -34,8 +34,6 @@
 #include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 
-
-
 namespace XLSB
 {
     // Logical representation of BrtValueMeta record in BIFF12
@@ -45,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(ValueMeta)
         public:
             ValueMeta();
-            virtual ~ValueMeta();
+            ~ValueMeta();
 
             XLS::BaseObjectPtr clone();
 

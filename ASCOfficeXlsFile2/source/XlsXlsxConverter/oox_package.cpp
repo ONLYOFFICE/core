@@ -64,7 +64,7 @@ static std::wstring get_mime_type(const std::wstring & extension)
 	else if (L"bin" == extension)	return  L"application/vnd.openxmlformats-officedocument.oleObject";
 	else if (L"xlsx" == extension)	return  L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 	else if (L"xls" == extension)	return  L"application/vnd.ms-excel";
-	else if (L"doc" == extension)	return  L"application/vnd.ms-word";
+	else if (L"doc" == extension)	return  L"application/msword";
 	else if (L"vsd" == extension)	return  L"application/vnd.visio";
 	else if (L"vsdx" == extension)	return  L"application/vnd.ms-visio.drawing";
 	else if (L"pict" == extension)	return  L"image/pict";
@@ -232,30 +232,33 @@ _CP_PTR(chart_content) chart_content::create()
     return boost::make_shared<chart_content>();
 }
 //----------------------------------------------------------------------------------------
-void core_file::write(const std::wstring & RootPath)
+docProps_files::docProps_files()
 {
-    std::wstringstream resStream;
 
-    resStream << L"<cp:coreProperties xmlns:cp=\"http://schemas.openxmlformats.org/package/2006/metadata/core-properties\" "
-    L"xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" "
-    L"xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" >";
+}
+std::wstring docProps_files::create_core()
+{
+	std::wstringstream resStream;
+
+	resStream << L"<cp:coreProperties xmlns:cp=\"http://schemas.openxmlformats.org/package/2006/metadata/core-properties\" "
+		L"xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" "
+		L"xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" >";
 
 	//resStream << L"<dc:creator>ONLYOFFICE</dc:creator>";
 	//resStream << L"<cp:lastModifiedBy>ONLYOFFICE</cp:lastModifiedBy>";
 	resStream << L"<cp:revision>1</cp:revision>";
-    resStream << L"</cp:coreProperties>";
+	resStream << L"</cp:coreProperties>";
 
-    simple_element elm(L"core.xml", resStream.str());
-    elm.write(RootPath);
+	return resStream.str();
 }
 
-void app_file::write(const std::wstring & RootPath)
+std::wstring docProps_files::create_app()
 {
-    std::wstringstream resStream;
+	std::wstringstream resStream;
 
-    resStream << L"<Properties xmlns=\"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties\" "
-        L"xmlns:vt=\"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes\" >";
-   
+	resStream << L"<Properties xmlns=\"http://schemas.openxmlformats.org/officeDocument/2006/extended-properties\" "
+		L"xmlns:vt=\"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes\" >";
+
 	resStream << L"<Application>";
 	std::wstring sApplication = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
 	if (sApplication.empty())
@@ -264,32 +267,31 @@ void app_file::write(const std::wstring & RootPath)
 #if defined(INTVER)
 	std::string s = VALUE2STR(INTVER);
 	resStream << L"/" << std::wstring(s.begin(), s.end());
-#endif	    
+#endif	
 	resStream << L"</Application></Properties>";
-    
-    simple_element elm(L"app.xml", resStream.str());
-    elm.write(RootPath);
+
+	return resStream.str();
 }
-
-////////////
-
-docProps_files::docProps_files()
+void docProps_files::set_app_content(const std::wstring & content)
 {
-
+	app_content_ = content;
 }
-
+void docProps_files::set_core_content(const std::wstring & content)
+{
+	core_content_ = content;
+}
 void docProps_files::write(const std::wstring & RootPath)
 {
 	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"docProps";
-    NSDirectory::CreateDirectory(path.c_str());
+	NSDirectory::CreateDirectory(path.c_str());
 
-    core_.write(path);
-    app_.write(path);
+	simple_element_ptr core = simple_element::create(L"core.xml", core_content_.empty() ? create_core() : core_content_);
+	simple_element_ptr app = simple_element::create(L"app.xml", app_content_.empty() ? create_app() : app_content_);
+
+	core->write(path);
+	app->write(path);
 }
-
-////////////
-
-
+//----------------------------------------------------------------------------------------------------------------
 media::media(external_items & _items) : items_(_items)
 {    
 }

@@ -41,7 +41,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(AUTOFILTER)
     public:
         AUTOFILTER();
-        virtual ~AUTOFILTER();
+        ~AUTOFILTER();
 
         XLS::BaseObjectPtr clone();
 
@@ -49,11 +49,11 @@ namespace XLSB
 
         static const XLS::ElementType	type = XLS::typeAUTOFILTER;
 
-        XLS::BaseObjectPtr               m_ACUID;
+        //XLS::BaseObjectPtr               m_ACUID;
         XLS::BaseObjectPtr               m_BrtBeginAFilter;
         std::vector<XLS::BaseObjectPtr>  m_arFILTERCOLUMN;
         XLS::BaseObjectPtr               m_SORTSTATE;
-        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        //std::vector<XLS::BaseObjectPtr>  m_arFRT;
         XLS::BaseObjectPtr               m_BrtEndAFilter;
 
     };

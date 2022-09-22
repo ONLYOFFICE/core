@@ -458,7 +458,7 @@ void text_format_properties_content::drawing_serialize(std::wostream & strm, std
 			
 			if ((fo_letter_spacing_) && (fo_letter_spacing_->get_type() != letter_spacing::Normal))
 			{
-				CP_XML_ATTR(L"spc",(int)(20.0 * fo_letter_spacing_->get_length().get_value_unit(length::pt)));
+				CP_XML_ATTR(L"spc",(int)(100. * fo_letter_spacing_->get_length().get_value_unit(length::pt)));
 			}
 		
 			if (style_text_position_)

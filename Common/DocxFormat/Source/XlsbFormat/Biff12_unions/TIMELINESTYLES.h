@@ -43,7 +43,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(TIMELINESTYLES)
     public:
         TIMELINESTYLES();
-        virtual ~TIMELINESTYLES();
+        ~TIMELINESTYLES();
 
         XLS::BaseObjectPtr clone();
 

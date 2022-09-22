@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndDeletedNames)
         public:
             EndDeletedNames();
-            virtual ~EndDeletedNames();
+            ~EndDeletedNames();
 
             XLS::BaseObjectPtr clone();
 

@@ -43,7 +43,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(ACFMT)
     public:
         ACFMT();
-        virtual ~ACFMT();
+        ~ACFMT();
 
         XLS::BaseObjectPtr clone();
 

@@ -31,13 +31,10 @@
  */
 #pragma once
 
-#include "BiffRecord.h"
+#include "../Biff_structures/Xnum.h"
 
 namespace XLS
 {
-
-
-// Logical representation of PicF record in BIFF8
 class PicF: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(PicF)
@@ -45,13 +42,20 @@ class PicF: public BiffRecord
 public:
 	PicF();
 	~PicF();
-
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typePicF;
+	static const ElementType type = typePicF;
+
+	unsigned short ptyp;
+
+	bool fTopBottom;
+	bool fBackFront;
+	bool fSide;
+
+	Xnum numScale;
+
 };
 
 } // namespace XLS

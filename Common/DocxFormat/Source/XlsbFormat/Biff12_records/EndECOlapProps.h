@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(EndECOlapProps)
         public:
             EndECOlapProps();
-            virtual ~EndECOlapProps();
+            ~EndECOlapProps();
 
             XLS::BaseObjectPtr clone();
 

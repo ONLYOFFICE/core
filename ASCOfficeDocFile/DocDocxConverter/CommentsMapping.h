@@ -55,7 +55,6 @@ namespace DocFileFormat
 			{
 				m_context->_docx->RegisterComments();
 
-                m_pXmlWriter->WriteNodeBegin( L"?xml version=\"1.0\" encoding=\"UTF-8\"?");
                 m_pXmlWriter->WriteNodeBegin( L"w:comments", TRUE );
 
                 m_pXmlWriter->WriteAttribute( L"xmlns:w", OpenXmlNamespaces::WordprocessingML );
@@ -148,7 +147,6 @@ namespace DocFileFormat
 				{
 					m_context->_docx->RegisterCommentsExtended();
 
-					m_pXmlWriter->WriteNodeBegin( L"?xml version=\"1.0\" encoding=\"UTF-8\"?");
 					m_pXmlWriter->WriteNodeBegin( L"w15:commentsEx", TRUE );
 
 					m_pXmlWriter->WriteAttribute( L"xmlns:w", OpenXmlNamespaces::WordprocessingML );

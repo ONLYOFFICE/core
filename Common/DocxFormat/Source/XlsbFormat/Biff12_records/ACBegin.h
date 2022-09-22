@@ -43,7 +43,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(ACBegin)
         public:
             ACBegin();
-            virtual ~ACBegin();
+            ~ACBegin();
 
             XLS::BaseObjectPtr clone();
 

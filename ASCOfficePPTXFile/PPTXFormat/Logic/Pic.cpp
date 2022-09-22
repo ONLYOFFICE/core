@@ -32,6 +32,8 @@
 
 #include "Pic.h"
 
+#include "../../../ASCOfficeXlsFile2/source/XlsXlsxConverter/ConvertXls2Xlsx.h"
+#include "../../../ASCOfficeDocFile/DocFormatLib/DocFormatLib.h"
 #include "../../../ASCOfficeDocxFile2/BinWriter/BinEquationWriter.h"
 #include "../../../ASCOfficeDocxFile2/BinWriter/BinWriters.h"
 #include "../../../ASCOfficeDocxFile2/BinReader/Readers.h"
@@ -127,15 +129,59 @@ namespace PPTX
 		void COLEObject::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
 			smart_ptr<OOX::OleObject> ole_file = m_OleObjectFile;
-			
-			if(m_oId.IsInit() && ole_file.IsInit() == false) 
+
+			if (m_oId.IsInit() && ole_file.IsInit() == false)
 			{
 				OOX::IFileContainer* pRels = pWriter->GetRels().GetPointer();
 
 				ole_file = GetOleObject(m_oId.get(), pRels);
-			}			
+			}
 			std::wstring sData;
 			std::wstring sProgID = m_sProgId.get_value_or(L"");
+
+			//test xls ole_file for convert to xlsx
+
+			COfficeFileFormatChecker checker;
+			if (ole_file.IsInit() && (checker.isXlsFormatFile(ole_file->filename().GetPath()) ||
+				checker.isDocFormatFile(ole_file->filename().GetPath())))
+			{
+				std::wstring sTemp = ole_file->filename().GetDirectory();
+				
+				std::wstring sResultOoxmlDir = sTemp + FILE_SEPARATOR_STR + _T("ooxml_unpacked");
+				NSDirectory::CreateDirectory(sResultOoxmlDir);
+
+				bool bMacro = true;
+				_UINT32 nRes = 0;
+				std::wstring ooxml_file;
+
+				if (checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS)
+				{
+					nRes = ConvertXls2Xlsx(ole_file->filename().GetPath(), sResultOoxmlDir, L"", L"", sTemp, 0, bMacro);
+
+					ooxml_file = ole_file->filename().GetPath() + (bMacro ? L".xlsm" : L".xlsx");
+				}
+				else if (checker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC)
+				{
+					COfficeDocFile docFile;
+					docFile.m_sTempFolder = ole_file->filename().GetDirectory();
+
+					nRes = docFile.LoadFromFile(ole_file->filename().GetPath(), sResultOoxmlDir, L"", bMacro);
+
+					ooxml_file = ole_file->filename().GetPath() + (bMacro ? L".docm" : L".docx");
+				}
+				if (0 == nRes)
+				{
+					COfficeUtils oCOfficeUtils(NULL);
+					nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sResultOoxmlDir, ooxml_file)) ? nRes : S_FALSE;
+				}
+				NSDirectory::DeleteDirectory(sResultOoxmlDir);
+				
+				if (0 == nRes && false == ooxml_file.empty())
+				{
+					ole_file->set_MsPackage(true);
+					ole_file->set_filename(ooxml_file, false);
+				}
+			}
 
 			if (ole_file.IsInit() && 0 == sProgID.find(L"asc."))
 			{
@@ -149,7 +195,8 @@ namespace PPTX
 				pWriter->WriteInt2	(3, m_oDyaOrig);
 				pWriter->WriteLimit2(4, m_oDrawAspect);
 				pWriter->WriteLimit2(5, m_oType);
-				pWriter->WriteLimit2(6, m_oUpdateMode);
+				pWriter->WriteLimit2(6, m_oUpdateMode);				
+				
 				if (ole_file.IsInit() && ole_file->isMsPackage() == false)
 				{
 					std::wstring sExt = ole_file->filename().GetExtention(false);
@@ -157,13 +204,24 @@ namespace PPTX
 						pWriter->WriteString1(7, L"maskFile." + sExt); //OleObject Binary FileName Extension (bin, xls, doc, ... other stream file)
 				}
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-			
+			if (m_oMoveWithCells.IsInit())
+			{
+				pWriter->StartRecord(5);
+				pWriter->WriteBYTE(*m_oMoveWithCells);
+				pWriter->EndRecord();
+			}
+			if (m_oSizeWithCells.IsInit())
+			{
+				pWriter->StartRecord(6);
+				pWriter->WriteBYTE(*m_oSizeWithCells);
+				pWriter->EndRecord();
+			}
 			if (ole_file.IsInit() == false) return;
 
 			if (ole_file->isMsPackage())
 			{
 				OOX::CPath oox_file		= ole_file->filename();
-				OOX::CPath oox_unpacked = oox_file.GetDirectory(true) + L"Temp";
+				OOX::CPath oox_unpacked = oox_file.GetDirectory(true) + L"Temp_" + oox_file.GetFilename();
 				
 				if (true == NSDirectory::CreateDirectory(oox_unpacked.GetPath()))
 				{
@@ -226,6 +284,12 @@ namespace PPTX
 
 						unsigned int nXlsbWriterEndPos = oXlsbWriter.GetPositionAbsolute();
 
+						if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB)
+						{
+							dynamic_cast<OOX::Spreadsheet::CXlsb*>(pXlsxEmbedded)->PrepareSi();
+							dynamic_cast<OOX::Spreadsheet::CXlsb*>(pXlsxEmbedded)->PrepareTableFormula();
+                            dynamic_cast<OOX::Spreadsheet::CXlsb*>(pXlsxEmbedded)->ReadSheetData();
+						}
 						xlsxBinaryWriter.WriteMainTableStart(*oDrawingConverter.m_pBinaryWriter);
 						
 						if (nXlsbWriterEndPos  > nXlsbWriterStartPos)
@@ -278,7 +342,6 @@ namespace PPTX
 					oReader.Parse();
 				pWriter->EndRecord();
 			}
-
 		}
 
 		void COLEObject::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
@@ -458,7 +521,7 @@ namespace PPTX
 								std::wstring sThemePath = sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl" + FILE_SEPARATOR_STR + L"theme";
 								std::wstring sEmbeddingsPath = sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl" + FILE_SEPARATOR_STR + L"embeddings";
 
-								BinXlsxRW::SaveParams oSaveParams(sDrawingsPath, sEmbeddingsPath, sThemePath, oDrawingConverter.GetContentTypes());
+								BinXlsxRW::SaveParams oSaveParams(sDrawingsPath, sEmbeddingsPath, sThemePath, oDrawingConverter.GetContentTypes(), NULL, true);
 
 								std::wstring sXmlOptions, sMediaPath, sEmbedPath;
 								BinXlsxRW::CXlsxSerializer::CreateXlsxFolders(sXmlOptions, sDstEmbeddedTemp, sMediaPath, sEmbedPath);
@@ -475,7 +538,6 @@ namespace PPTX
 								oDrawingConverter.SetMediaDstPath(sMediaPath);
 								oDrawingConverter.SetEmbedDstPath(sEmbedPath);
 
-								std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(id) + L".xlsx";
 								oEmbeddedReader.ReadMainTable(oXlsx, *oDrawingConverter.m_pReader, pReader->m_strFolder, sDstEmbeddedTemp, oSaveParams, &oDrawingConverter);
 
 								oXlsx.PrepareToWrite();
@@ -483,6 +545,7 @@ namespace PPTX
 								oXlsx.Write(sDstEmbeddedTemp, *oSaveParams.pContentTypes);
 
 								COfficeUtils oOfficeUtils(NULL);
+								std::wstring sXlsxFilename = L"Microsoft_Excel_Worksheet" + std::to_wstring(id) + (oSaveParams.bMacroEnabled ? L".xlsm" : L".xlsx");
 								oOfficeUtils.CompressFileOrDirectory(sDstEmbeddedTemp, sDstEmbedded + FILE_SEPARATOR_STR + sXlsxFilename, true);
 
 								oXlsx.m_mapEnumeratedGlobal = old_enum_map;
@@ -493,17 +556,26 @@ namespace PPTX
 															//m_oId = pReader->m_pRels->WriteRels(sEmbWorksheetRelType, sEmbWorksheetRelsName, std::wstring());
 								m_OleObjectFile->set_filename(sDstEmbedded + FILE_SEPARATOR_STR + sXlsxFilename, false);
 
-								pReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(L"xlsx");
+								pReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(oSaveParams.bMacroEnabled ? L"xlsm" : L"xlsx");
 							}
 							NSDirectory::DeleteDirectory(sDstEmbeddedTemp);
 						}
 						pReader->Seek(_end_embed_data);
 					}break;
-					
+					case 5:
+					{
+						pReader->GetLong(); //skip size
+						m_oMoveWithCells = (0 != pReader->GetUChar());
+					}break;
+					case 6:
+					{
+						pReader->GetLong(); //skip size
+						m_oSizeWithCells = (0 != pReader->GetUChar());
+					}break;
 				}
 			}
 			pReader->Seek(_end_rec);
-		}
+		}  
 		void COLEObject::FillParentPointersForChilds()
 		{
 		}
@@ -837,6 +909,10 @@ namespace PPTX
 					{
 						int nDyaOrig = oleObject->m_oDyaOrig.get();
 						pWriter->WriteAttribute(L"imgH", 635 * nDyaOrig); //twips to emu
+					}
+					if ((oleObject->m_oDrawAspect.IsInit()) && (oleObject->m_oDrawAspect->GetBYTECode() == 1))
+					{
+						pWriter->WriteAttribute(L"showAsIcon", 1); 
 					}
 					pWriter->WriteAttribute2(L"progId", oleObject->m_sProgId);
 					pWriter->EndAttributes();
@@ -1408,14 +1484,8 @@ namespace PPTX
 				pWriter->WriteAttribute(L"o:spid", strSpid);
 			}
 			pWriter->WriteAttribute(L"type", L"#_x0000_t75");
-			if (oStylesWriter.GetSize() == 0)
-			{
-				pWriter->WriteAttribute(L"style", pWriter->m_strStyleMain);
-			}
-			else
-			{
-				pWriter->WriteAttribute(L"style", pWriter->m_strStyleMain + oStylesWriter.GetXmlString());
-			}
+			
+			pWriter->WriteAttribute(L"style", pWriter->m_strStyleMain + pWriter->m_strStyleWrap + oStylesWriter.GetXmlString());
 
 			if (!pWriter->m_strAttributesMain.empty())
 			{
@@ -1448,6 +1518,9 @@ namespace PPTX
 			pWriter->EndAttributes();
 			pWriter->EndNode(L"v:path");
 
+			pWriter->WriteString(pWriter->m_strNodes);
+			pWriter->m_strNodes.clear();
+			
 			if (blipFill.blip.is_init() && blipFill.blip->embed.is_init())
 			{
 				pWriter->StartNode(L"v:imagedata");
@@ -1471,8 +1544,9 @@ namespace PPTX
 			pWriter->EndNode(L"v:shape");
 
 			pWriter->m_strStyleMain.clear();
+			pWriter->m_strStyleWrap.clear();
 
-			if(bOle)
+			if (bOle)
 			{
 				oleObject->m_sObjectId = strObjectid;
 				if (XMLWRITER_DOC_TYPE_XLSX == pWriter->m_lDocType)
@@ -1494,13 +1568,19 @@ namespace PPTX
 		{
 			oleObject.Init();
 			
+			XmlMacroReadAttributeBase(node, L"showAsIcon", oleObject->m_oShowAsIcon);
             XmlMacroReadAttributeBase(node, L"progId",	oleObject->m_sProgId);
             XmlMacroReadAttributeBase(node, L"r:id",	oleObject->m_oId);
-			
+			XmlMacroReadAttributeBase(node, L"name", oleObject->m_oName);
+
 			if (false == oleObject->m_oId.IsInit())
 			{
 				XmlMacroReadAttributeBase( node, L"relationships:id", oleObject->m_oId );
-			}			
+			}	
+			if ((oleObject->m_oShowAsIcon.IsInit()) && (*oleObject->m_oShowAsIcon))
+			{
+				oleObject->m_oDrawAspect = (BYTE)1;
+			}
 
 			int imgW = node.GetAttributeInt(std::wstring(L"imgW"), 0);			
 			if(imgW > 0)

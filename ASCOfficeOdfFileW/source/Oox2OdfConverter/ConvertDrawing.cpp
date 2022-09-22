@@ -1937,7 +1937,7 @@ void OoxConverter::convert(PPTX::Logic::Paragraph *oox_paragraph, PPTX::Logic::T
 			odf_context()->drawing_context()->set_paragraph_properties(paragraph_properties);
 	}	
 
-	if (oox_paragraph->RunElems.empty() && list_present) list_present = false; // ms не обозначает присутствие списка, libra - показывает значек
+	//if (oox_paragraph->RunElems.empty() && list_present) list_present = false; // ms не обозначает присутствие списка, libra - показывает значек
 	
 	while ((int)odf_context()->text_context()->list_state_.levels.size() > list_level)
 	{

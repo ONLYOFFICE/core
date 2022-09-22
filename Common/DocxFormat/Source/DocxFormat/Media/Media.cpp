@@ -37,7 +37,7 @@ namespace OOX
 {
 	Media::Media(OOX::Document *pMain, bool bDocument) : File(pMain)
 	{
-		m_bExist	= false;
+		m_bExist = false;
 		m_bExternal = false;
 		m_bDocument = bDocument;
 	}
@@ -45,8 +45,8 @@ namespace OOX
 	{
 		m_bExist = false;
 		m_bDocument = (NULL != dynamic_cast<OOX::CDocument*>(pMain));
-		m_bExternal	= bExternal;
-			
+		m_bExternal = bExternal;
+
 		read(filename);
 	}
 	void Media::read(const CPath& filename)
@@ -60,11 +60,26 @@ namespace OOX
 
 		std::wstring newFilename = filename.GetFilename();
 		CPath newFilePath = filename.GetDirectory();
-
 		XmlUtils::replace_all(newFilename, L" ", L"_");
-		if (CSystemUtility::IsFileExist(m_filename) && !CSystemUtility::IsFileExist(newFilePath / newFilename))
+
+		if (!CSystemUtility::IsFileExist(newFilePath / newFilename))
 		{
-			copy_to(newFilePath);
+			std::wstring ext = filename.GetExtention();
+			if (false == ext.empty()) content.AddDefault(ext.substr(1));
+			
+			if (false == m_Data.empty())
+			{
+				NSFile::CFileBinary file;
+				if (file.CreateFileW((newFilePath / newFilename).GetPath()))
+				{
+					file.WriteFile(m_Data.data(), m_Data.size());
+					file.CloseFile();
+				}
+			}
+			else if (CSystemUtility::IsFileExist(m_filename))
+			{
+				copy_to(newFilePath);
+			}
 		}
 	}
 	void Media::set_filename(const std::wstring & file_path, bool bExternal)
@@ -74,11 +89,13 @@ namespace OOX
 		m_bExternal			= bExternal;
 		m_sOutputFilename	= m_filename.GetFilename();
 	}
-	void Media::set_filename(CPath & file_path, bool bExternal)
+	void Media::set_filename(CPath & file_path, bool bExternal, bool bDefault)
 	{
-		m_bExternal			= bExternal;
-		m_filename			= file_path;
-		m_sOutputFilename	= file_path.GetFilename();
+		m_bExternal = bExternal;
+		m_filename = file_path;
+		
+		if (!bDefault) m_sOutputFilename = m_filename.GetFilename();
+		
 		m_bExist = NSFile::CFileBinary::Exists(m_filename.GetPath());
 	}
 	void Media::copy_to(const CPath& path) const

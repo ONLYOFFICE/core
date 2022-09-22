@@ -221,9 +221,16 @@ void math_mmultiscripts::oox_convert(oox::math_context & Context)
 {//1* elements
 	std::wostream & strm = Context.output_stream();
 
-	strm << L"<m:sPre>";	
+	strm << L"<m:sPre>";
+		strm << L"<m:sub>";
+		for (size_t i = 0; i < pre_content_.size() / 2; i++)
+		{
+			office_math_element* math_element = dynamic_cast<office_math_element*>(pre_content_[i].get());
+			math_element->oox_convert(Context);
+		}
+		strm << L"</m:sub>";
 		strm << L"<m:sup>";
-			for (size_t i = 0; i < pre_content_.size(); i++)
+			for (size_t i = pre_content_.size() / 2; i < pre_content_.size(); i++)
 			{
 				office_math_element* math_element = dynamic_cast<office_math_element*>(pre_content_[i].get());
 				math_element->oox_convert(Context);

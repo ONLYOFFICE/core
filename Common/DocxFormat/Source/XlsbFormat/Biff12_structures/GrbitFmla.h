@@ -44,7 +44,7 @@ namespace XLSB
     public:
         GrbitFmla();
         GrbitFmla(XLS::CFRecord& record);
-        virtual ~GrbitFmla();
+        ~GrbitFmla();
         XLS::BiffStructurePtr clone();
 
         static const XLS::ElementType	type = XLS::typeBiffStructure;

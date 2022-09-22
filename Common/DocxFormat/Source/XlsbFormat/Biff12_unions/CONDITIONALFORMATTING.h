@@ -43,7 +43,7 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(CONDITIONALFORMATTING)
     public:
         CONDITIONALFORMATTING();
-        virtual ~CONDITIONALFORMATTING();
+        ~CONDITIONALFORMATTING();
 
         XLS::BaseObjectPtr clone();
 
@@ -53,7 +53,7 @@ namespace XLSB
 
         XLS::BaseObjectPtr               m_BrtBeginConditionalFormatting;
         std::vector<XLS::BaseObjectPtr>  m_arCFRULE;
-        std::vector<XLS::BaseObjectPtr>  m_arFRT;
+        //std::vector<XLS::BaseObjectPtr>  m_arFRT;
         XLS::BaseObjectPtr               m_BrtEndConditionalFormatting;
 
     };

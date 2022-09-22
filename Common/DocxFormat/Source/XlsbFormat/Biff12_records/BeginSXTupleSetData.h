@@ -44,7 +44,7 @@ namespace XLSB
             BASE_OBJECT_DEFINE_CLASS_NAME(BeginSXTupleSetData)
         public:
             BeginSXTupleSetData();
-            virtual ~BeginSXTupleSetData();
+            ~BeginSXTupleSetData();
 
             XLS::BaseObjectPtr clone();
 

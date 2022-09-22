@@ -764,12 +764,12 @@
 #include "../XlsFormat/Logic/Biff_unions/SXOPER.cpp"
 #include "../XlsFormat/Logic/Biff_unions/SXRANGE.cpp"
 
-#include "../XlsFormat/Logic/SummaryInformationStream/Structures/PropertyFactory.cpp"
-#include "../XlsFormat/Logic/SummaryInformationStream/Structures/PropertySet.cpp"
-#include "../XlsFormat/Logic/SummaryInformationStream/Structures/PropertySetStream.cpp"
-#include "../XlsFormat/Logic/SummaryInformationStream/Structures/CodePageOle.cpp"
-#include "../XlsFormat/Logic/SummaryInformationStream/SummaryInformation.cpp"
+#include "../XlsFormat/Logic/SummaryInformationStream/PropertyFactory.cpp"
+#include "../XlsFormat/Logic/SummaryInformationStream/PropertySet.cpp"
+#include "../XlsFormat/Logic/SummaryInformationStream/PropertySetStream.cpp"
+#include "../XlsFormat/Logic/SummaryInformationStream/CodePageOle.cpp"
 
+#include "../XlsFormat/Logic/EncryptionStream.cpp"
 #include "../XlsFormat/Logic/AnyObject.cpp"
 #include "../XlsFormat/Logic/AnySubstream.cpp"
 #include "../XlsFormat/Logic/BinProcessor.cpp"

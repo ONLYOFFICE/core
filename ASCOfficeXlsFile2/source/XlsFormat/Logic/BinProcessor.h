@@ -33,8 +33,6 @@
 
 #include "BaseObject.h"
 #include "Biff_structures/BiffAttribute.h"
-#include "Biff_structures/BiffStructure.h"
-#include "Biff_structures/BiffStructure.h"
 #include "GlobalWorkbookInfo.h"
 
 namespace XLS
@@ -83,7 +81,9 @@ public:
 
 	virtual const bool getNextSubstreamType(_UINT16& type) = 0;
 	virtual void SeekToEOF() = 0;
-	virtual void SkipRecord() = 0;
+	virtual void SkipRecord(bool log_debug = true) = 0;
+    virtual const int GetRecordPosition() = 0;
+    virtual void SetRecordPosition(const int position) = 0;
 
 	bool isBOF(CFRecordType::TypeId type);
 
@@ -109,7 +109,9 @@ public:
 	const bool					getNextSubstreamType(_UINT16& type);
 	
 	void SeekToEOF();
-	void SkipRecord();
+	void SkipRecord(bool log_debug = true);
+    const int GetRecordPosition();
+    void SetRecordPosition(const int position);
 
 private:
 	const bool readChild(BaseObject& object, const bool is_mandatory);

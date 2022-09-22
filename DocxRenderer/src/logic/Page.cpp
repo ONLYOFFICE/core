@@ -28,6 +28,7 @@ namespace NSDocxRenderer
         m_oFontManager.m_pFont      = m_pFont;
         m_oFontManager.m_pTransform = m_pTransform;
 
+        m_pGeneralTextShape = nullptr;
         m_pCurrentLine = nullptr;
 
         m_dLastTextX = -1;
@@ -45,6 +46,7 @@ namespace NSDocxRenderer
         ClearShapes();
         ClearImages();
 
+        m_pGeneralTextShape = nullptr;
         m_pCurrentLine = nullptr;
 
         m_dLastTextX = -1;
@@ -1425,11 +1427,13 @@ namespace NSDocxRenderer
 
             if (m_eTextAssociationType == tatParagraphToShape)
             {
-                bool bIsSameTypeText = (pPrevLine &&
+                /*bool bIsSameTypeText = (pPrevLine &&
                     fabs(pPrevLine->m_dHeight - pCurrLine->m_dHeight) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
                     fabs(dPrevBeforeSpacing - dCurrBeforeSpacing) < c_dLINE_DISTANCE_ERROR_MM);
 
-                CreateShapeFormParagraphs(pParagraph, bIsSameTypeText);
+                CreateShapeFormParagraphs(pParagraph, bIsSameTypeText);*/
+
+                AddParagraphToGeneralTextShape(pParagraph);
             }
             else
             {
@@ -1655,6 +1659,61 @@ namespace NSDocxRenderer
        {
            m_arShapes.push_back(pShape);
        }
+    }
+
+    void CPage::AddParagraphToGeneralTextShape(CParagraph* pParagraph)
+    {
+        if (!pParagraph)
+        {
+            return;
+        }
+
+        if (!m_pGeneralTextShape)
+        {
+            m_pGeneralTextShape = new CShape();
+
+            pParagraph->m_dSpaceBefore = 0;
+            m_pGeneralTextShape->m_dHeight += pParagraph->m_dHeight * pParagraph->m_nNumLines;
+            m_pGeneralTextShape->m_eType = CShape::eShapeType::stTextBox;
+            m_pGeneralTextShape->m_bIsBehindDoc = false;
+
+            m_arShapes.push_back(m_pGeneralTextShape);
+        }
+        else
+        {
+            m_pGeneralTextShape->m_dHeight += pParagraph->m_dHeight * pParagraph->m_nNumLines + pParagraph->m_dSpaceBefore;
+        }
+
+        m_pGeneralTextShape->m_arParagraphs.push_back(pParagraph);
+
+        if (m_pGeneralTextShape->m_dLeft > 0)
+        {
+            m_pGeneralTextShape->m_dLeft = std::min(m_pGeneralTextShape->m_dLeft, pParagraph->m_dLeft);
+        }
+        else
+        {
+            m_pGeneralTextShape->m_dLeft = pParagraph->m_dLeft;
+        }
+
+        if (m_pGeneralTextShape->m_dTop > 0)
+        {
+            m_pGeneralTextShape->m_dTop = std::min(m_pGeneralTextShape->m_dTop, pParagraph->m_dTop);
+        }
+        else
+        {
+            m_pGeneralTextShape->m_dTop = pParagraph->m_dTop;
+        }
+
+        if (m_pGeneralTextShape->m_dRight > 0)
+        {
+            m_pGeneralTextShape->m_dRight = std::min(m_pGeneralTextShape->m_dRight, pParagraph->m_dRight);
+        }
+        else
+        {
+            m_pGeneralTextShape->m_dRight = pParagraph->m_dRight;
+        }
+
+        m_pGeneralTextShape->m_dWidth = m_dWidth - m_pGeneralTextShape->m_dLeft - m_pGeneralTextShape->m_dRight;
     }
 
     void CPage::CorrectionParagraphsInShapes()

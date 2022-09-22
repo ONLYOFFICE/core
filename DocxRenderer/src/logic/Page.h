@@ -34,6 +34,8 @@ namespace NSDocxRenderer
         std::vector<CShape*>	 m_arShapes;
         std::vector<CParagraph*> m_arParagraphs;
 
+        CShape*                  m_pGeneralTextShape{nullptr};
+
         CTextLine* m_pCurrentLine {nullptr};
 
         CFontManager		m_oFontManager;
@@ -120,6 +122,7 @@ namespace NSDocxRenderer
         void CreateSingleLineOldShape(CTextLine *pLine);
         void CreateSingleLineShape(CTextLine *pLine);
         void CreateShapeFormParagraphs(CParagraph* pParagraph, bool bIsSameTypeText);
+        void AddParagraphToGeneralTextShape(CParagraph* pParagraph);
         void CorrectionParagraphsInShapes();
 
         bool IsShadingPresent(const CTextLine* pLine1, const CTextLine* pLine2);

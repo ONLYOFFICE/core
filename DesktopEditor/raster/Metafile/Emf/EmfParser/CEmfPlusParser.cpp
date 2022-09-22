@@ -1280,7 +1280,9 @@ namespace MetaFile
 	{
 		if (NULL == pBuffer ||
 				oNewRect.nLeft < 0 || oNewRect.nRight  < 0 ||
-				oNewRect.nTop  < 0 || oNewRect.nBottom < 0)
+				oNewRect.nTop  < 0 || oNewRect.nBottom < 0 ||
+				oNewRect.nRight - oNewRect.nLeft == lWidth ||
+				oNewRect.nBottom - oNewRect.nLeft == lHeight)
 			return NULL;
 
 		if (lHeight < (oNewRect.nBottom - oNewRect.nTop))
@@ -1550,7 +1552,7 @@ namespace MetaFile
 
 	void CEmfPlusParser::DrawBitmap(BYTE *pBuffer, unsigned int unSize, const TEmfPlusRectF& oSrcRect, const std::vector<TEmfPlusPointF>& arPoints)
 	{
-		if (NULL == pBuffer || 0 == unSize || true)
+		if (NULL == pBuffer || 0 == unSize)
 			return;
 
 		Aggplus::CImage oImage;
@@ -1568,8 +1570,6 @@ namespace MetaFile
 			return;
 
 		BYTE* pBytes = oImage.GetData();
-
-		FlipYImage(pBytes, unWidth, unHeight); // для оптимизации можно для начала переместить ClipRect, вырезать нужную часть и уже тогда перевернуть её
 
 		TRect oClipRect;
 
@@ -2246,7 +2246,7 @@ namespace MetaFile
 			if (StringAlignmentCenter == pStringFormat->unLineAlign)
 			{
 				unNewTextAlign |= VTA_CENTER << 8;
-				dY += oRect.dHeight / 4;
+				dY += oRect.dHeight / 2;
 			}
 			else if (StringAlignmentFar == pStringFormat->unLineAlign)
 			{
@@ -2869,7 +2869,6 @@ namespace MetaFile
 		m_oStream >> unChPixelOffset;
 		m_oStream >> oMatrix;
 
-		UpdateMatrix(oMatrix);
 		//TODO: реализовать
 	}
 
@@ -2879,8 +2878,7 @@ namespace MetaFile
 
 		m_oStream >> oMatrix;
 
-		UpdateMatrix(oMatrix);
-		m_pDC->MultiplyTransform(oMatrix, (((unShFlags >>(14)) & 1 )) ? MWT_RIGHTMULTIPLY : MWT_LEFTMULTIPLY);
+		m_pDC->MultiplyTransform(oMatrix, (unShFlags & 0x2000) ? MWT_RIGHTMULTIPLY : MWT_LEFTMULTIPLY);
 		UpdateOutputDC();
 	}
 
@@ -2896,10 +2894,14 @@ namespace MetaFile
 
 		m_oStream >> dAngle;
 
-		TEmfPlusXForm oMatrix(sinf(dAngle), cosf(dAngle), cosf(dAngle), -sinf(dAngle), 0, 0);
+		dAngle *= M_PI / 180;
 
-		UpdateMatrix(oMatrix);
-		m_pDC->MultiplyTransform(oMatrix, MWT_RIGHTMULTIPLY);
+		double dCosTheta = std::cosf(dAngle);
+		double dSinTheta = std::sinf(dAngle);
+
+		TEmfPlusXForm oMatrix(dCosTheta, dSinTheta, -dSinTheta, dCosTheta, 0, 0);
+
+		m_pDC->MultiplyTransform(oMatrix, (unShFlags & 0x2000) ? MWT_RIGHTMULTIPLY : MWT_LEFTMULTIPLY);
 		UpdateOutputDC();
 	}
 
@@ -2912,8 +2914,7 @@ namespace MetaFile
 
 		TEmfPlusXForm oMatrix(dSx, 0, 0, dSy, 0, 0);
 
-		UpdateMatrix(oMatrix);
-		m_pDC->MultiplyTransform(oMatrix, MWT_RIGHTMULTIPLY);
+		m_pDC->MultiplyTransform(oMatrix, (unShFlags & 0x2000) ? MWT_RIGHTMULTIPLY : MWT_LEFTMULTIPLY);
 		UpdateOutputDC();
 	}
 
@@ -2921,21 +2922,23 @@ namespace MetaFile
 	{
 		short shPageUnit = ExpressValue(unShFlags, 0, 7);
 
-		if (shPageUnit == UnitTypeDisplay || shPageUnit == UnitTypeWorld)
-			return;
-
 		m_oStream >> m_dUnitKoef;
 
 		switch (shPageUnit)
 		{
-		case UnitTypePixel: break;
-		case UnitTypeInch: m_dUnitKoef = m_dUnitKoef / m_pDC->GetFinalTransform(GM_ADVANCED)->M11 * m_unLogicalDpiX; break;
-		default: break;
+			case UnitTypePixel:
+			case UnitTypeWorld:
+			case UnitTypeDisplay:
+			default: break;
+			case UnitTypePoint:      m_dUnitKoef *= m_unLogicalDpiX * 72.f;  break;
+			case UnitTypeInch:       m_dUnitKoef *= m_unLogicalDpiX;         break;
+			case UnitTypeDocument:   m_dUnitKoef *= m_unLogicalDpiX / 300.f; break;
+			case UnitTypeMillimeter: m_dUnitKoef *= m_unLogicalDpiX / 25.4f; break;
 		}
 
 		TXForm oMatrix(m_dUnitKoef, 0, 0, m_dUnitKoef, 0, 0);
 
-		m_pDC->MultiplyTransform(oMatrix, MWT_RIGHTMULTIPLY);
+		m_pDC->MultiplyTransform(oMatrix, MWT_LEFTMULTIPLY);
 		UpdateOutputDC();
 	}
 
@@ -2945,7 +2948,6 @@ namespace MetaFile
 
 		m_oStream >> oMatrix;
 
-		UpdateMatrix(oMatrix);
 		m_pDC->MultiplyTransform(oMatrix, MWT_SET);
 		UpdateOutputDC();
 	}
@@ -2959,8 +2961,7 @@ namespace MetaFile
 
 		TEmfPlusXForm oMatrix(1, 0, 0, 1, dX, dY);
 
-		UpdateMatrix(oMatrix);
-		m_pDC->MultiplyTransform(oMatrix, MWT_RIGHTMULTIPLY);
+		m_pDC->MultiplyTransform(oMatrix, (unShFlags & 0x2000) ? MWT_RIGHTMULTIPLY : MWT_LEFTMULTIPLY);
 		UpdateOutputDC();
 	}
 

@@ -282,13 +282,13 @@ namespace MetaFile
 			UpdateTransform(iGraphicsMode);
 			UpdateClip();
 
-			int lLogicalFontHeight = pFont->GetHeight();
-			if (lLogicalFontHeight < 0)
-				lLogicalFontHeight = -lLogicalFontHeight;
-			if (lLogicalFontHeight < 0.01)
-				lLogicalFontHeight = 18;
+			double dLogicalFontHeight = pFont->GetHeight();
+			if (dLogicalFontHeight < 0)
+				dLogicalFontHeight = -dLogicalFontHeight;
+			if (dLogicalFontHeight < 0.01)
+				dLogicalFontHeight = 18;
 
-			double dFontHeight = fabs(lLogicalFontHeight * m_dScaleY / 25.4 * 72);
+			double dFontHeight = fabs(dLogicalFontHeight * m_dScaleY / 25.4 * 72);
 
 			std::wstring wsFaceName = pFont->GetFaceName();
 			m_pRenderer->put_FontName(wsFaceName);
@@ -432,7 +432,7 @@ namespace MetaFile
 				double dX = oTextPoint.x;
 				double dY = oTextPoint.y + dSkipY;
 
-				dSkipY += fH + lLogicalFontHeight * 1.2;
+				dSkipY += fH + dLogicalFontHeight * 1.2;
 
 				// Найдем начальную точку текста
 				unsigned int ulTextAlign = m_pFile->GetTextAlign() & TA_MASK;

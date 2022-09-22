@@ -37,12 +37,8 @@ void test_dirEntry_read(const DirectoryEntry& de)
     storageCLSID.Data2 = 0x4F9B;
     storageCLSID.Data3 = 0x11CF;
     storageCLSID.Data4 = 0xE829B900AA00EA86;
-//    EXPECT_EQ(de.getStorageCLSID(), storageCLSID);
 
     EXPECT_EQ(de.stateBits, 0);
-    // todo
-    //EXPECT_EQ(de.creationDate, 0);
-//    EXPECT_EQ(de.modifyDate, 0xC0F1C03A18A1D801);
     EXPECT_EQ(de.startSetc, 3);
     EXPECT_EQ(de.size, 5632);
 }

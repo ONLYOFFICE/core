@@ -11,8 +11,10 @@ class IDirectoryEntry;
 
 struct DataTime
 {
-    // TODO
+    DataTime(unsigned long long time);
+    unsigned long long getUINT64()const;
     char data[8] = {0,0,0,0,0,0,0,0};
+
 };
 
 class CFItem : public std::enable_shared_from_this<CFItem>
@@ -28,8 +30,8 @@ public:
     bool IsStream() const;
     bool ISRoot() const;
 
-    inline DataTime getDataTime()const{return DataTime();}
-    inline void setDataTime(const DataTime& value){};
+    DataTime getDataTime()const;
+    void setDataTime(const DataTime& value);
 
     GUID getStorageCLSID() const;
     void setStorageCLSID(GUID value);

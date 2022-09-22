@@ -1,6 +1,7 @@
 #include "cfitem.h"
 #include "idirectoryentry.h"
 #include "compoundfile.h"
+#include <cstring>
 
 using namespace CFCPP;
 
@@ -59,6 +60,19 @@ bool CFItem::ISRoot() const
     return dirEntry.lock()->getStgType() == StgType::StgRoot;
 }
 
+DataTime CFItem::getDataTime() const
+{
+    if (!dirEntry.use_count())
+        return DataTime(0);
+
+    return DataTime(dirEntry.lock()->getCreationDate());
+}
+
+void CFItem::setDataTime(const DataTime &value)
+{
+
+}
+
 GUID CFItem::getStorageCLSID() const
 {
     return dirEntry.lock()->getStorageCLSID();
@@ -98,3 +112,16 @@ void CFItem::CheckDisposed() const
         throw CFDisposedException("Owner Compound file has been closed and owned items have been invalidated");
 }
 
+
+DataTime::DataTime(unsigned long long time)
+{
+    memcpy(data, reinterpret_cast<char*>(&time), 8);
+}
+
+unsigned long long DataTime::getUINT64()const
+{
+    unsigned long long t(0);
+    memcpy(reinterpret_cast<char*>(&t), data, 8);
+
+    return t;
+}

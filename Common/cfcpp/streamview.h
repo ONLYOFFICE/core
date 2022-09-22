@@ -36,8 +36,7 @@ private:
     int sectorSize;
     std::streamsize length;
 
-    // todo
-    SVector<Sector>/*&*/ sectorChain;
+    SVector<Sector> sectorChain;
     bool isFatStream = false;
     int buf = 0;
 

@@ -41,6 +41,20 @@ struct CompoundFileTest : testing::Test
     }
 };
 
+static vector<wstring> names =
+{
+    L"file",        // Englang
+    L"fil",         // Danish
+    L"文件",         // Chinese
+    L"Datei",       // German
+    L"ファイル",     // Japanese
+    L"soubor",      // Czech
+    L"dosya",       // Turkish
+    L"Файл",        // Russian
+    L"dossier",     // Franch
+    L"expediente"   // Spanish
+};
+
 TEST_F(CompoundFileTest, test_compoundfile_read)
 {
     EXPECT_TRUE(cf.HasSourceStream());
@@ -66,7 +80,8 @@ TEST_F(CompoundFileTest, test_compoundfile_addEmptyStorage)
 {
     wstring storageName = L"storage1";
     const auto countEntris = cf.GetDirectories().size();
-    cf.RootStorage()->AddStorage(storageName);
+    auto storage1 = cf.RootStorage()->AddStorage(storageName);
+    EXPECT_TRUE(storage1->getDataTime().getUINT64() > 116444736000000000ULL);
 
     wstring other_filename = L"../../../data/ex3.ppt";
     NSFile::CFileBinary::Remove(other_filename);
@@ -76,7 +91,7 @@ TEST_F(CompoundFileTest, test_compoundfile_addEmptyStorage)
     CompoundFile cf2(other_filename);
 //    EXPECT_EQ(cf2.GetDirectories().size(), countEntris + 1); // it has some empty nodes
     EXPECT_TRUE(cf2.RootStorage()->GetStorage(storageName) != nullptr);
-    EXPECT_EQ(cf2.RootStorage()->GetStorage(storageName)->Name(), storageName);
+    EXPECT_NO_THROW(cf2.RootStorage()->GetStorage(storageName));
 }
 
 
@@ -164,29 +179,34 @@ TEST_F(CompoundFileTest, test_compoundfile_writeStream)
 
     EXPECT_TRUE(cf.RootStorage()->GetStream(L"str1"));
     EXPECT_EQ(stream1->size(), data.size());
-    stream1->Read(read, 0, data.size());
+    EXPECT_NO_THROW(stream1->Read(read, 0, data.size()));
     EXPECT_EQ(data, read);
+
+    printDirs();
+}
+
+TEST_F(CompoundFileTest, test_compoundfile_writeStreams)
+{
+    std::vector<BYTE> data = {0x28, 0xFF, 0x28, 0x1D, 0x4C, 0xFA, 0x00, 0x79, 0x40, 0x01};
+    for (const auto& name : names)
+    {
+        std::vector<BYTE> read(data.size());
+        auto stream1 = cf.RootStorage()->AddStream(name);
+        EXPECT_TRUE(stream1);
+
+        EXPECT_NO_THROW(stream1->Write(data, 0));
+        EXPECT_NO_THROW(cf.RootStorage()->GetStream(name));
+
+        EXPECT_EQ(stream1->size(), data.size());
+        EXPECT_NO_THROW(stream1->Read(read, 0, data.size()));
+        EXPECT_EQ(data, read);
+    }
 
     printDirs();
 }
 
 TEST(test_compoundfile, foreign_languages)
 {
-    vector<wstring> names =
-    {
-        L"file",        // Englang
-        L"fil",         // Danish
-        L"文件",         // Chinese
-        L"Datei",       // German
-        L"Datei",       // German
-        L"ファイル",     // Japanese
-        L"soubor",      // Czech
-        L"dosya",       // Turkish
-        L"Файл",        // Russian
-        L"dossier",     // Franch
-        L"expediente"   // Spanish
-    };
-
     std::vector<BYTE> data = {0x28, 0xFF, 0x28, 0x1D, 0x4C, 0xFA, 0x00, 0x79, 0x40, 0x01};
     for (const auto& name : names)
     {

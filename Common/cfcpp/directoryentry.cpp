@@ -14,7 +14,7 @@ DirectoryEntry::DirectoryEntry(std::wstring name, StgType stgType, SVector<IDire
 
     if (stgType == StgType::StgStorage)
     {
-        //        creationDate = BitConverter.GetBytes((DateTime.Now.ToFileTime()));
+        creationDate = 10000000ULL * time(NULL) + 116444736000000000ULL;
         startSetc = ZERO;
     }
 
@@ -36,7 +36,8 @@ DirectoryEntry::DirectoryEntry(std::wstring name, StgType stgType) :
 
     if (stgType == StgType::StgStorage)
     {
-        //        creationDate = BitConverter.GetBytes((DateTime.Now.ToFileTime()));
+        // file timestamp
+        creationDate = 10000000ULL * time(NULL) + 116444736000000000ULL;
         startSetc = ZERO;
     }
 

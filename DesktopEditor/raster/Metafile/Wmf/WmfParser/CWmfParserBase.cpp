@@ -801,16 +801,21 @@ namespace MetaFile
 		unsigned int unValue = (META_DIBBITBLT >> 8) + 3;
 		if (unRecordSizeDword == unValue) // похоже на META_PATBLT
 		{
-			short shSkip;
+			if (0x00F00021 == oWmfBitBlt.RasterOperation)
+			{
+				short shSkip;
 
-			m_oStream >> shSkip;
+				m_oStream >> shSkip;
 
-			MoveTo(oWmfBitBlt.YSrc + shSkip, oWmfBitBlt.XDest);
-			LineTo(oWmfBitBlt.YDest + shSkip, oWmfBitBlt.XDest);
-			LineTo(oWmfBitBlt.YDest + shSkip, oWmfBitBlt.XDest + oWmfBitBlt.Width);
-			LineTo(oWmfBitBlt.YSrc + shSkip, oWmfBitBlt.XDest + oWmfBitBlt.Width);
-			ClosePath();
-			DrawPath(false, true);
+				MoveTo(oWmfBitBlt.YSrc + shSkip, oWmfBitBlt.XDest);
+				LineTo(oWmfBitBlt.YDest + shSkip, oWmfBitBlt.XDest);
+				LineTo(oWmfBitBlt.YDest + shSkip, oWmfBitBlt.XDest + oWmfBitBlt.Width);
+				LineTo(oWmfBitBlt.YSrc + shSkip, oWmfBitBlt.XDest + oWmfBitBlt.Width);
+				ClosePath();
+				DrawPath(false, true);
+			}
+			else
+				m_oStream.Skip(2);
 		}
 		else
 		{

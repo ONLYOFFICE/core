@@ -1100,11 +1100,13 @@ namespace MetaFile
 	{
 		CEmfPlusRegionNodePath* pNode = new CEmfPlusRegionNodePath();
 
-		m_oStream.Skip(4); //RegionNodePathLength
+		int nRegionNodePathLength;
+
+		m_oStream >> nRegionNodePathLength;
 
 		pNode->pPath = ReadPath();
 
-		++unIndex;
+		unIndex += nRegionNodePathLength;
 
 		return pNode;
 	}
@@ -1119,7 +1121,7 @@ namespace MetaFile
 
 		pNode->pRect = pRect;
 
-		++unIndex;
+		unIndex += 4;
 
 		return pNode;
 	}
@@ -1548,25 +1550,11 @@ namespace MetaFile
 
 	void CEmfPlusParser::DrawBitmap(BYTE *pBuffer, unsigned int unSize, const TEmfPlusRectF& oSrcRect, const std::vector<TEmfPlusPointF>& arPoints)
 	{
-		if (NULL == pBuffer || 0 == unSize)
+		if (NULL == pBuffer || 0 == unSize || true)
 			return;
 
-		NSFile::CFileBinary oFile;
-
-		const std::wstring wsFilePath = oFile.GetTempPath() + L"/temp.tmp";
-
-		if (!oFile.CreateFileW(wsFilePath))
-			return;
-
-		if (!oFile.WriteFile(pBuffer, unSize))
-		{
-			oFile.CloseFile();
-			return;
-		}
-
-		oFile.CloseFile();
-
-		Aggplus::CImage oImage(wsFilePath);
+		Aggplus::CImage oImage;
+		oImage.Create(pBuffer, oSrcRect.dWidth, oSrcRect.dHeight, 4 * oSrcRect.dWidth, true);
 
 		if (Aggplus::WrongState == oImage.GetLastStatus())
 			return;

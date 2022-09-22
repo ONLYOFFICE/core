@@ -774,92 +774,56 @@ namespace NSBinPptxRW
 				m_oReader.m_pRels->WriteCustoms(nCountCustoms);
 			}
 
-			if (false)
+	// presProps
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::PresProps);
+			if (m_mainTables.end() != pPair)
 			{
-	// tableStyles
-				pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::TableStyles);
-				if (m_mainTables.end() != pPair)
+				m_oReader.Seek(pPair->second);
+				try
 				{
-					m_oReader.Seek(pPair->second);
-					try
-					{
-						m_oTableStyles.fromPPTY(&m_oReader);
-					}
-					catch (...)
-					{
-					}
+					m_oPresProps.fromPPTY(&m_oReader);
 				}
-
-				// presProps
-				pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::PresProps);
-				if (m_mainTables.end() != pPair)
+				catch (...)
 				{
-					m_oReader.Seek(pPair->second);
-					try
-					{
-						m_oPresProps.fromPPTY(&m_oReader);
-					}
-					catch (...)
-					{
-						//todooo сделать в отдельный лог
-					}
 				}
-
-		// viewProps
-				pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::ViewProps);
-				if (m_mainTables.end() != pPair)
-				{
-					m_oReader.Seek(pPair->second);
-					try
-					{
-						m_oViewProps.fromPPTY(&m_oReader);
-					}
-					catch (...)
-					{
-					}
-				}
-
 			}
 			else
 			{
-	// create default
+				CreateDefaultPresProps();
+			}
+	// viewProps
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::ViewProps);
+			if (m_mainTables.end() != pPair)
+			{
+				m_oReader.Seek(pPair->second);
+				try
+				{
+					m_oViewProps.fromPPTY(&m_oReader);
+				}
+				catch (...)
+				{
+				}
+			}
+			else
+			{
 				CreateDefaultViewProps();
-
-	// presProps
-				pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::PresProps);
-				if (m_mainTables.end() != pPair)
+			}
+	// tableStyles
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::TableStyles);
+			if (m_mainTables.end() != pPair)
+			{
+				m_oReader.Seek(pPair->second);
+				try
 				{
-					m_oReader.Seek(pPair->second);
-					try
-					{
-						m_oPresProps.fromPPTY(&m_oReader);
-					}
-					catch (...)
-					{
-					}
+					m_oTableStyles.fromPPTY(&m_oReader);
 				}
-				else
+				catch (...)
 				{
-					CreateDefaultPresProps();
 				}
-
-				pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::TableStyles);
-				if (m_mainTables.end() != pPair)
-				{
-					m_oReader.Seek(pPair->second);
-					try
-					{
-						m_oTableStyles.fromPPTY(&m_oReader);
-					}
-					catch (...)
-					{
-					}
-				}
-
-				if (m_oTableStyles.Styles.empty())
-				{
-					CreateDefaultTableStyles();
-				}
+			}
+			if (m_oTableStyles.Styles.empty())
+			{
+				CreateDefaultTableStyles();
 			}
 //------------------------------------------------------------------------------------------
 	// app 
@@ -886,14 +850,14 @@ namespace NSBinPptxRW
 				oXmlWriter.SaveToFile(pathCore.GetPath());
 			}
 
-			// presProps
+	// presProps
 			oXmlWriter.ClearNoAttack();
 			m_oPresProps.toXmlWriter(&oXmlWriter);
 
 			OOX::CPath pathPresProps = m_strDstFolder + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("presProps.xml");
 			oXmlWriter.SaveToFile(pathPresProps.GetPath());
 
-			// viewProps
+	// viewProps
 			oXmlWriter.ClearNoAttack();
 			m_oViewProps.toXmlWriter(&oXmlWriter);
 
@@ -903,14 +867,14 @@ namespace NSBinPptxRW
 			m_oReader.m_pRels->Clear();
 			m_oReader.m_pRels->StartRels();
 
-			// tablestyles
+	// tablestyles
 			oXmlWriter.ClearNoAttack();
 			m_oTableStyles.toXmlWriter(&oXmlWriter);
 
 			OOX::CPath pathTableStyles = m_strDstFolder + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("tableStyles.xml");
 			oXmlWriter.SaveToFile(pathTableStyles.GetPath());
 
-			// presentation
+	// presentation
 			bool bIsAuthors = false;
 			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::Presentation);
 			if (m_mainTables.end() != pPair)
@@ -1015,7 +979,7 @@ namespace NSBinPptxRW
 				RELEASEARRAYOBJECTS(pDstBuffer);
 			}
 
-			// content types
+	// content types
 			OOX::CContentTypes *pContentTypes = m_oImageManager.m_pContentTypes;
 
 			pContentTypes->Registration(m_oPresentation.type().OverrideType(),
@@ -1040,47 +1004,47 @@ namespace NSBinPptxRW
 				pContentTypes->Registration(OOX::FileTypes::CustomProperties.OverrideType(), L"/docProps", OOX::FileTypes::CustomProperties.DefaultFileName().GetPath());
 			}
 
-			// themes
+	// themes
 			for (size_t i = 0; i < m_arThemes.size(); ++i)
 			{
 				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.theme+xml", L"/ppt/theme", L"theme" + std::to_wstring((int)i + 1) + L".xml");
 			}
-			// notes master
+	// notes master
 			if (!m_arNotesMasters.empty())
 			{
 				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.notesMaster+xml", L"/ppt/notesMasters", L"notesMaster1.xml");
 			}
 
-			// masters
+	// masters
 			for (LONG i = 0; i < nCountMasters; ++i)
 			{
 				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml", L"/ppt/slideMasters", L"slideMaster" + std::to_wstring(i + 1) + L".xml");
 			}
 
-			// layouts
+	// layouts
 			for (LONG i = 0; i < nCountLayouts; ++i)
 			{
 				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml", L"/ppt/slideLayouts", L"slideLayout" + std::to_wstring((int)i + 1) + L".xml");
 			}
 
-			// slides
+	// slides
 			for (size_t i = 0; i < m_arSlides.size(); ++i)
 			{
 				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.slide+xml", L"/ppt/slides", L"slide" + std::to_wstring((int)i + 1) + L".xml");
 			}
 
-			// notes
+	// notes
 			for (size_t i = 0; i < m_arNotesSlides.size(); ++i)
 			{
 				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.notesSlide+xml", L"/ppt/notesSlides", L"notesSlide" + std::to_wstring((int)i + 1) + L".xml");
 			}
 
-			// slideComments
+	// slideComments
 			for (int i = 1; i < nComment; ++i)
 			{
 				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.comments+xml", L"/ppt/comments", L"comment" + std::to_wstring(i) + L".xml");
 			}
-			// comment authors
+	// comment authors
 			if (bIsAuthors)
 			{
 				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.commentAuthors+xml", L"/ppt", L"commentAuthors.xml");

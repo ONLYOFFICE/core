@@ -2614,10 +2614,19 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 			}
 			else	
 			{
-				//oProps.X выставлять не надо, они учтены в pMainProps
 				pSpPr->xfrm = new PPTX::Logic::Xfrm();
-				pSpPr->xfrm->offX = 0;
-				pSpPr->xfrm->offY = 0;
+
+				if (*pMainProps)
+				{//oProps.X выставлять не надо, они учтены в pMainProps
+
+					pSpPr->xfrm->offX = 0;
+					pSpPr->xfrm->offY = 0;
+				}
+				else
+				{
+					pSpPr->xfrm->offX = oProps.X;
+					pSpPr->xfrm->offY = oProps.Y;
+				}
 				pSpPr->xfrm->extX = oProps.Width;
 				pSpPr->xfrm->extY = oProps.Height;
 			}
@@ -4515,8 +4524,11 @@ std::wstring CDrawingConverter::GetVMLShapeXml(CPPTShape* pPPTShape)
 
 void CDrawingConverter::SendMainProps(const std::wstring& strMainProps, std::wstring**& pMainProps)
 {
-	*pMainProps = new std::wstring();
-	**pMainProps = strMainProps;
+	if (((m_pBinaryWriter) && (m_pBinaryWriter->m_pMainDocument)) || !m_pBinaryWriter)
+	{
+		*pMainProps = new std::wstring();
+		**pMainProps = strMainProps;
+	}
 }
 void CDrawingConverter::CheckBorderShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape)
 {

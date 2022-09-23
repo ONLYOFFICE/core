@@ -179,12 +179,8 @@ namespace OOX
 	{
 	public:
 		WritingElement_AdditionConstructors(COcxPr)
-		COcxPr()
-		{
-		}
-		virtual ~COcxPr()
-		{
-		}
+		COcxPr() {}
+		virtual ~COcxPr() {}
 		virtual void fromXML(XmlUtils::CXmlNode& node)
 		{
 		}
@@ -194,7 +190,7 @@ namespace OOX
 		}
 		virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 		{
-			writer.WriteString(L"<ocxPr");
+			writer.WriteString(L"<ax:ocxPr");
 			if (m_oName.IsInit())
 				writer.WriteString(L" ax:name=\"" + *m_oName + L"\"");
 			if (m_oValue.IsInit())
@@ -217,12 +213,34 @@ namespace OOX
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_Start(oReader)
-
-			WritingElement_ReadAttributes_Read_if		(oReader, L"ax:name", m_oName)
-			WritingElement_ReadAttributes_Read_else_if	(oReader, L"ax:value", m_oValue)
-
+				WritingElement_ReadAttributes_Read_if		(oReader, L"ax:name", m_oName)
+				WritingElement_ReadAttributes_Read_else_if	(oReader, L"ax:value", m_oValue)
 			WritingElement_ReadAttributes_End(oReader)
 		}
+		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+			pReader->Skip(1); // attribute start
+			while (true)
+			{
+				BYTE _at = pReader->GetUChar_TypeNode();
+				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+					break;
+
+				else if (0 == _at)	m_oName = pReader->GetString2();
+				else if (1 == _at)	m_oValue = pReader->GetString2();
+			}
+			pReader->Seek(end);
+		}
+		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+				pWriter->WriteString2(0, m_oName);
+				pWriter->WriteString2(1, m_oValue);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+		}
+
 		nullable_string m_oName;
 		nullable_string m_oValue;
 
@@ -267,6 +285,8 @@ namespace OOX
 		{
 			return type().DefaultFileName();
 		}
+		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
 		bool									m_bDocument;
 		CPath									m_oReadPath;
@@ -277,7 +297,9 @@ namespace OOX
 		nullable<SimpleTypes::CRelationshipId >	m_oId;
 		std::vector<OOX::COcxPr*>				m_arrOcxPr;
 //---------bin
-		nullable<ActiveXObject>					m_oObject;
+
+		std::vector<BYTE>		m_oObjectBinData;
+		nullable<ActiveXObject>	m_oObject;
 	};
 
 	class ActiveX_bin : public Media
@@ -305,7 +327,7 @@ namespace OOX
 		}
 		virtual const CPath DefaultFileName() const
 		{
-			return m_filename.GetFilename();
+			return type().DefaultFileName();
 		}
 		void set_filename_cache(const std::wstring & file_path)
 		{

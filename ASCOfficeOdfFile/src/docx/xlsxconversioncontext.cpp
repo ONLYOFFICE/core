@@ -252,7 +252,7 @@ void xlsx_conversion_context::end_document()
 
                 CP_XML_NODE(L"sheets")
                 {
-                    CP_XML_STREAM() << workbook_content.str();
+                    CP_XML_STREAM() << workbook_content.rdbuf();
                 }
 				if (false == mapExternalLink_.empty())
 				{

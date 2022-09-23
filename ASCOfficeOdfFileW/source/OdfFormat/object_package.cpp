@@ -169,7 +169,7 @@ namespace odf_writer
 					*pCodesCur++ = 0x80 | (code & 0x3F);
 				}
 			}
-			*pCodesCur++ = 0;
+			*pCodesCur = 0;
 			res.resize(pCodesCur - pData);
 			
 			return res;
@@ -210,6 +210,38 @@ namespace odf_writer
 					content_utf8_ = GetUtf8StringFromUnicode(Content.c_str(), Content.length());
 			}else
 				content_utf8_ = std::string( Content.begin(), Content.end());
+		}
+		simple_element::simple_element(const std::wstring & FileName, wchar_t* Content, size_t Size, bool utf8)
+		{
+			if (utf8_)
+			{
+				if (Size > 10 * 1024 * 1024)
+				{
+					size_t pos = 0;
+					while (pos < Size)
+					{
+						size_t sz = 2 * 1024 * 1024;
+						if (sz + pos > Size)
+							sz = Size - pos;
+						if (sz < 1)
+							break;
+
+						content_utf8_ += GetUtf8StringFromUnicode(Content + pos, sz);
+
+						pos += sz;
+					}
+				}
+				else
+					content_utf8_ = GetUtf8StringFromUnicode(Content, Size);
+			}
+			else
+			{
+				std::wstring str(Content, Size);
+				content_utf8_ = std::string(str.begin(), str.end());
+			}
+		}
+		simple_element::simple_element(const std::wstring & FileName, std::basic_stringbuf<wchar_t, std::char_traits<wchar_t>, std::allocator<wchar_t>> & streambuf, size_t Size, bool utf8)
+		{
 		}
 		simple_element::simple_element(const std::wstring & FileName, const std::string & Content) : file_name_(FileName), utf8_(false), content_utf8_(Content)
 		{
@@ -531,46 +563,6 @@ namespace odf_writer
 				{
 					CP_XML_NODE(L"office:document-content")
 					{
-						//CP_XML_ATTR(L"xmlns:office",		L"urn:oasis:names:tc:opendocument:xmlns:office:1.0" );
-						//CP_XML_ATTR(L"xmlns:style",			L"urn:oasis:names:tc:opendocument:xmlns:style:1.0" );
-						//CP_XML_ATTR(L"xmlns:text",			L"urn:oasis:names:tc:opendocument:xmlns:text:1.0" );
-						//CP_XML_ATTR(L"xmlns:table",			L"urn:oasis:names:tc:opendocument:xmlns:table:1.0" );
-						//CP_XML_ATTR(L"xmlns:draw",			L"urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" );
-						//CP_XML_ATTR(L"xmlns:fo",			L"urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" );
-						//CP_XML_ATTR(L"xmlns:xlink",			L"http://www.w3.org/1999/xlink" );
-						//CP_XML_ATTR(L"xmlns:dc",			L"http://purl.org/dc/elements/1.1/" );
-						//CP_XML_ATTR(L"xmlns:meta",			L"urn:oasis:names:tc:opendocument:xmlns:meta:1.0" );
-						//CP_XML_ATTR(L"xmlns:number",		L"urn:oasis:names:tc:opendocument:xmlns:datastyle:1.0" );
-						//CP_XML_ATTR(L"xmlns:presentation",	L"urn:oasis:names:tc:opendocument:xmlns:presentation:1.0" );
-						//CP_XML_ATTR(L"xmlns:svg",			L"urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0"); 
-						//CP_XML_ATTR(L"xmlns:chart",			L"urn:oasis:names:tc:opendocument:xmlns:chart:1.0" );
-						//CP_XML_ATTR(L"xmlns:dr3d",			L"urn:oasis:names:tc:opendocument:xmlns:dr3d:1.0" );
-						//CP_XML_ATTR(L"xmlns:math",			L"http://www.w3.org/1998/Math/MathML" );
-						//CP_XML_ATTR(L"xmlns:form",			L"urn:oasis:names:tc:opendocument:xmlns:form:1.0" );
-						//CP_XML_ATTR(L"xmlns:script",		L"urn:oasis:names:tc:opendocument:xmlns:script:1.0" );
-						//CP_XML_ATTR(L"xmlns:ooo",			L"http://openoffice.org/2004/office" );
-						//CP_XML_ATTR(L"xmlns:ooow",			L"http://openoffice.org/2004/writer" );
-						//CP_XML_ATTR(L"xmlns:oooc",			L"http://openoffice.org/2004/calc" );
-						//CP_XML_ATTR(L"xmlns:dom",			L"http://www.w3.org/2001/xml-events" );
-						//CP_XML_ATTR(L"xmlns:xforms",		L"http://www.w3.org/2002/xforms");
-						//CP_XML_ATTR(L"xmlns:xsd",			L"http://www.w3.org/2001/XMLSchema" );
-						//CP_XML_ATTR(L"xmlns:xsi",			L"http://www.w3.org/2001/XMLSchema-instance" );
-						//CP_XML_ATTR(L"xmlns:rpt",			L"http://openoffice.org/2005/report" );
-						//CP_XML_ATTR(L"xmlns:of",			L"urn:oasis:names:tc:opendocument:xmlns:of:1.2" );
-						//CP_XML_ATTR(L"xmlns:xhtml",			L"http://www.w3.org/1999/xhtml" );
-						//CP_XML_ATTR(L"xmlns:grddl",			L"http://www.w3.org/2003/g/data-view#" );
-						//CP_XML_ATTR(L"xmlns:officeooo",		L"http://openoffice.org/2009/office" );
-						//CP_XML_ATTR(L"xmlns:textooo",		L"http://openoffice.org/2013/office" ); 
-						//CP_XML_ATTR(L"xmlns:tableooo",		L"http://openoffice.org/2009/table" );
-						//CP_XML_ATTR(L"xmlns:drawooo",		L"http://openoffice.org/2010/draw" );
-						//CP_XML_ATTR(L"xmlns:chartooo",		L"http://openoffice.org/2010/chart" );
-						//CP_XML_ATTR(L"xmlns:smil",			L"urn:oasis:names:tc:opendocument:xmlns:smil-compatible:1.0");
-						//CP_XML_ATTR(L"xmlns:anim",			L"urn:oasis:names:tc:opendocument:xmlns:animation:1.0" );
-						//CP_XML_ATTR(L"xmlns:calcext",		L"urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0" );
-						//CP_XML_ATTR(L"xmlns:field",			L"urn:openoffice:names:experimental:ooo-ms-interop:xmlns:field:1.0" );
-						//CP_XML_ATTR(L"xmlns:formx",			L"urn:openoffice:names:experimental:ooxml-odf-interop:xmlns:form:1.0" );
-						//CP_XML_ATTR(L"xmlns:loext",			L"urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0" ); 
-						//CP_XML_ATTR(L"xmlns:css3t",			L"http://www.w3.org/TR/css3-text/" );
 						CP_XML_ATTR(L"xmlns:meta", L"urn:oasis:names:tc:opendocument:xmlns:meta:1.0");
 						CP_XML_ATTR(L"xmlns:office", L"urn:oasis:names:tc:opendocument:xmlns:office:1.0");
 						CP_XML_ATTR(L"xmlns:draw", L"urn:oasis:names:tc:opendocument:xmlns:drawing:1.0");
@@ -615,19 +607,23 @@ namespace odf_writer
 
 						if (content_)
 						{
-							CP_XML_STREAM() << content_->styles_str();
+							content_->styles_.flush();
+							CP_XML_STREAM() << content_->styles_.rdbuf();
+							content_->styles_.clear();
 						}
 						CP_XML_NODE(L"office:body")
 						{
 							if (content_)
 							{
-								CP_XML_STREAM() << content_->content_str();
+								content_->content_.flush();
+								CP_XML_STREAM() << content_->content_.rdbuf();
+								content_->content_.clear();
 							}
 						}
 					}
 				}
-				content_.reset();
-
+				resStream.flush();
+				
 				simple_element elm(L"content.xml", resStream.str());
 				elm.write(RootPath, add_padding);
 			}
@@ -683,7 +679,7 @@ namespace odf_writer
 					
 					if (content_)
 					{
-						CP_XML_STREAM() << content_->str();
+						CP_XML_STREAM() << content_->content().rdbuf();
 					}
 					
 				}
@@ -708,7 +704,7 @@ namespace odf_writer
 					
 					if (content_)
 					{
-						CP_XML_STREAM() << content_->str();
+						CP_XML_STREAM() << content_->content().rdbuf();
 					}
 					
 				}

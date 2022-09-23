@@ -23,16 +23,6 @@ void SectorCollection::Clear()
 
 std::shared_ptr<Sector>& SectorCollection::operator[](size_t index)
 {
-    //    size_t globalPos = 0;
-    //    for (size_t i = 0; i < largeArraySlices.size(); i ++)
-    //    {
-    //        size_t sliceSize = largeArraySlices[i].size();
-    //        globalPos += sliceSize;
-    //        if (globalPos < index)
-    //            return largeArraySlices[i][i % sliceSize];
-    //    }
-
-    //    return {};
     int itemIndex = index / SLICE_SIZE;
     int itemOffset = index % SLICE_SIZE;
 
@@ -59,8 +49,7 @@ int SectorCollection::add(std::shared_ptr<Sector> item)
     }
     else
     {
-        //        std::unique_ptr<std::vector<Sector>> ar(new std::vector<Sector>(SLICE_SIZE));
-        SVector<Sector> ar;
+        SVector<Sector> ar/*(SLICE_SIZE)*/;
         ar.push_back(item);
         largeArraySlices.push_back(ar);
         count++;

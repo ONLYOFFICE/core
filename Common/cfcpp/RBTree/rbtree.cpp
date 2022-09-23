@@ -91,8 +91,6 @@ void RBTree::Insert(PIRBNode newNode)
 //        NodeInserted(insertedNode);
 //    }
 
-    //Trace.WriteLine(" ");
-    //Print();
 }
 
 void RBTree::Delete(PIRBNode templ, PIRBNode &deletedAlt)
@@ -169,9 +167,8 @@ PIRBNode RBTree::LookupNode(PIRBNode templ)
         {
             n = n->getLeft();
         }
-        else
+        else // compResult > 0;
         {
-            //assert compResult > 0;
             n = n->getRight();
         }
     }
@@ -283,7 +280,7 @@ void RBTree::InsertCase5(PIRBNode n)
     }
     else
     {
-        //assert n == n->getParent().right && n->getParent() == n->grandparent().right;
+        // assert n == n->getParent()->getRight() && n->getParent() == n->Grandparent()->getRight();
         RotateLeft(n->Grandparent());
     }
 }
@@ -369,13 +366,13 @@ void RBTree::DeleteCase6(PIRBNode n)
     n->getParent()->setColor(Color::BLACK);
     if (n == n->getParent()->getLeft())
     {
-        //assert nodeColor(n->sibling().right) == Color::RED;
+        //assert nodeColor(n->Sibling()->getRight()) == Color::RED;
         n->Sibling()->getRight()->setColor(Color::BLACK);
         RotateLeft(n->getParent());
     }
     else
     {
-        //assert nodeColor(n->sibling().left) == Color::RED;
+        //assert nodeColor(n->Sibling()->getLeft()) == Color::RED;
         n->Sibling()->getLeft()->setColor(Color::BLACK);
         RotateRight(n->getParent());
     }

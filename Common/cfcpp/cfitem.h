@@ -9,13 +9,14 @@ namespace CFCPP
 class CompoundFile;
 class IDirectoryEntry;
 
+
 struct DataTime
 {
     DataTime(unsigned long long time);
     unsigned long long getUINT64()const;
     char data[8] = {0,0,0,0,0,0,0,0};
-
 };
+
 
 class CFItem : public std::enable_shared_from_this<CFItem>
 {
@@ -43,6 +44,7 @@ public:
     std::shared_ptr<IDirectoryEntry> getDirEntry() const;
 
     friend class CompoundFile;
+
 protected:
     std::weak_ptr<IDirectoryEntry> dirEntry;
     CompoundFile* compoundFile;

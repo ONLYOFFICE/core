@@ -52,7 +52,7 @@ private:
     Stream stream;
     std::vector<BYTE> data;
     std::mutex lockObject;
-    bool _disposed;//false
+    bool _disposed = false;
 };
 
 }

@@ -70,7 +70,13 @@ DataTime CFItem::getDataTime() const
 
 void CFItem::setDataTime(const DataTime &value)
 {
+    if (!dirEntry.use_count())
+        return;
 
+    if (dirEntry.lock()->getStgType() != StgStream && dirEntry.lock()->getStgType() != StgRoot)
+        dirEntry.lock()->setModifyDate(value.getUINT64());
+    else
+        throw CFException(L"Modify Date can only be set on storage entries");
 }
 
 GUID CFItem::getStorageCLSID() const

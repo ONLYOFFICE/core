@@ -15,6 +15,7 @@ public:
     StreamView(const SVector<Sector> &sectorChain, int sectorSize, std::streamsize length,
                SList<Sector> &availableSectors, Stream stream, bool isFatStream = false);
 
+
     std::streamsize tell() override;
     std::streamsize seek(std::streamsize offset, std::ios_base::seekdir mode = std::ios::beg) override;
     std::streamsize read(char *buffer, std::streamsize count) override;
@@ -22,9 +23,11 @@ public:
     void flush() override {}
     void close() override;
 
+
+    std::streamsize getPosition() const;
     void SetLength(std::streamsize value);
     std::streamsize getLength() const;
-    inline SVector<Sector>& BaseSectorChain() {return sectorChain;}
+    SVector<Sector>& BaseSectorChain();
 
     int ReadInt32();
     void WriteInt32(int val);
@@ -32,6 +35,7 @@ public:
 private:
     void adjustLength(std::streamsize value);
     void adjustLength(std::streamsize value, SList<Sector> &availableSectors);
+
 private:
     int sectorSize;
     std::streamsize length;
@@ -40,9 +44,8 @@ private:
     bool isFatStream = false;
     int buf = 0;
 
-public:
     Stream stream;
-    SList<Sector> freeSectors;
     std::streamsize position = 0;
+    SList<Sector> freeSectors;
 };
 }

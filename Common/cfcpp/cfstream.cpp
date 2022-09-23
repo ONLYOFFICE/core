@@ -71,7 +71,7 @@ void CFStream::CopyFrom(const Stream &input)
 
     std::vector<BYTE> buffer(Length(input));
 
-//    if (input.CanSeek)
+//    if (CanSeek? )
     {
         input->seek(0, std::ios::beg);
     }

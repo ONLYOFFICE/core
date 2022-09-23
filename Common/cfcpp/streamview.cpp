@@ -7,8 +7,8 @@ using namespace CFCPP;
 StreamView::StreamView(const SVector<Sector> &sectorChain, int sectorSize, Stream stream)
     : sectorSize(sectorSize), sectorChain(sectorChain), stream(stream)
 {
-    //    if (sectorChain == null)
-    //        throw CFException("Sector Chain cannot be null");
+    if (sectorChain == nullptr)
+        throw CFException("Sector Chain cannot be null");
 
     if (sectorSize <= 0)
         throw CFException("Sector size must be greater than zero");
@@ -238,7 +238,17 @@ void StreamView::adjustLength(std::streamsize value, SList<Sector> &availableSec
     }
 }
 
+std::streamsize StreamView::getPosition() const
+{
+    return position;
+}
+
 std::streamsize StreamView::getLength() const
 {
     return length;
+}
+
+SVector<Sector> &StreamView::BaseSectorChain()
+{
+    return sectorChain;
 }

@@ -15,25 +15,16 @@ class DirectoryEntry;
 
 enum CFSConfiguration
 {
-
-    Default = 1,
-    SectorRecycle = 2,
-    EraseFreeSectors = 4,
-    NoValidationException = 8,
-    LeaveOpen = 16
+    Default = 1,                // No other flags
+    SectorRecycle = 2,          // Rewrite unused sectors
+    EraseFreeSectors = 4,       // Free sectors are erased to avoid information leakage
+    NoValidationException = 8,  // Ignore some file reading errors to read broken files
+    LeaveOpen = 16              // file will not be closed
 };
 
 enum CFSUpdateMode
 {
-    /// ReadOnly update mode prevents overwriting
-    /// of the opened file.
-    /// Data changes are allowed but they have to be
-    /// persisted on a different file when required
     ReadOnly,
-
-    /// Update mode allows subsequent data changing operations
-    /// to be persisted directly on the opened file or stream
-    /// method when required. Warning: this option may cause existing data loss if misused.
     Update
 };
 
@@ -45,15 +36,28 @@ public:
     CompoundFile(const std::wstring &fileName);
     CompoundFile(Stream stream);
     CompoundFile();
-    void Commit(bool releaseMemory = false);
-    inline bool HasSourceStream() {return sourceStream != nullptr;}
 
+
+    // Main methods
+    std::shared_ptr<CFStorage> RootStorage();
+
+    void Save(std::wstring wFileName);
+    void Save(Stream stream);
+
+
+    void Commit(bool releaseMemory = false);
+    bool HasSourceStream() const;
+    bool ValidationExceptionEnabled() const;
+    bool IsClosed()const;
     void Close();
 
+    std::vector<BYTE> GetDataBySID(int sid);
+    GUID getGuidBySID(int sid);
+    GUID getGuidForStream(int sid);
+
+    // internal methods
     static std::shared_ptr<RedBlackTree::RBTree> CreateNewTree();
     std::shared_ptr<RedBlackTree::RBTree> GetChildrenTree(int sid);
-    std::shared_ptr<CFStorage> RootStorage();
-    bool IsClosed()const;
     SVector<IDirectoryEntry> &GetDirectories();
     void ResetDirectoryEntry(int sid);
     void InvalidateDirectoryEntry(int sid);
@@ -68,13 +72,6 @@ public:
     std::vector<BYTE> GetData(const CFStream *cFStream);
     int ReadData(CFStream* cFStream, std::streamsize position, std::vector<BYTE>& buffer, int count);
     int ReadData(CFStream* cFStream, std::streamsize position, std::vector<BYTE>& buffer, int offset, int count);
-
-    std::vector<BYTE> GetDataBySID(int sid);
-    GUID getGuidBySID(int sid);
-    GUID getGuidForStream(int sid);
-
-    void Save(std::wstring wFileName);
-    void Save(Stream stream);
 
 protected:
     int GetSectorSize();
@@ -137,6 +134,8 @@ private:
     bool eraseFreeSectors = false;
     static constexpr int FLUSHING_QUEUE_SIZE = 6000;
     static constexpr int FLUSHING_BUFFER_MAX_SIZE = 1024 * 1024 * 16;
+
+
     SectorCollection sectors;
     std::fstream stream;
     std::string fileName;
@@ -148,10 +147,10 @@ private:
     bool _transactionLockAllocated = false;
     bool validationExceptionEnabled = true;
     bool _disposed = false;
+
     CFSUpdateMode updateMode;
     SVector<IDirectoryEntry> directoryEntries;
     std::list<int> levelSIDs;
     std::mutex lockObject;
-
 };
 }

@@ -177,8 +177,6 @@ std::shared_ptr<CFStorage> CFStorage::AddStorage(const std::wstring &storageName
     std::shared_ptr<IDirectoryEntry> cfo
             = DirectoryEntry::New(storageName, StgType::StgStorage, compoundFile->GetDirectories());
 
-    //this.CompoundFile.InsertNewDirectoryEntry(cfo);
-
     try
     {
         // Add object to Siblings tree

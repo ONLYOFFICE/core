@@ -102,7 +102,6 @@ private:
     SVector<IDirectoryEntry>& dirRepository;
     std::weak_ptr<RedBlackTree::IRBNode> parent;
     GUID storageCLSID;
-
 };
 
 }

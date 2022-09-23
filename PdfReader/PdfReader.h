@@ -41,6 +41,8 @@
 #include "../DesktopEditor/graphics/pro/officedrawingfile.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"
 
+#include "lib/xpdf/PDFDoc.h"
+
 namespace PdfReader
 {
     typedef enum
@@ -98,11 +100,8 @@ namespace PdfReader
         NSFonts::IFontManager* GetFontManager();
 
         std::wstring ToXml(const std::wstring& wsXmlPath);
-        bool EditPdf(IRenderer* pPdfWriter, const std::wstring& wsPath, const std::wstring& sPassword = L"");
-        bool EditPage(int nPageIndex);
-        bool DeletePage(int nPageIndex);
-        bool AddPage(int nPageIndex);
-        bool EditClose(const std::wstring& sPassword);
+        PDFDoc* GetPDFDocument();
+        void ChangeLength(DWORD nLength);
 
     #ifdef BUILDING_WASM_MODULE
         virtual BYTE* GetStructure();
@@ -111,7 +110,7 @@ namespace PdfReader
 
     private:
         CPdfReader_Private* m_pInternal;
-        int              m_eError;
+        int                 m_eError;
     };
 }
 

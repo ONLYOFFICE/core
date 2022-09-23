@@ -78,48 +78,7 @@ namespace PdfReader
         NSFonts::IApplicationFonts* m_pAppFonts;
         NSFonts::IFontManager*      m_pFontManager;
         CFontList*         m_pFontList;
-        CPdfRenderer*      m_pPdfWriter;
         DWORD              m_nFileLength;
-
-        void GetPageTree(XRef* xref, Object* pPagesRefObj)
-        {
-            if (!pPagesRefObj || !xref)
-                return;
-
-            Object typeDict, pagesObj;
-            if (!pPagesRefObj->isRef() || !pPagesRefObj->fetch(xref, &pagesObj)   ||
-                !pagesObj.isDict()     || !pagesObj.dictLookup("Type", &typeDict) ||
-                !typeDict.isName("Pages"))
-            {
-                pagesObj.free();
-                typeDict.free();
-                return;
-            }
-            typeDict.free();
-
-            Ref topPagesRef = pPagesRefObj->getRef();
-            std::wstring sPageTree = XMLConverter::DictToXml(L"PageTree", &pagesObj, topPagesRef.num, topPagesRef.gen);
-
-            m_pPdfWriter->CreatePageTree(sPageTree, topPagesRef.num);
-
-            Object kidsArrObj;
-            if (!pagesObj.dictLookup("Kids", &kidsArrObj) || !kidsArrObj.isArray())
-            {
-                pagesObj.free();
-                kidsArrObj.free();
-                return;
-            }
-            pagesObj.free();
-
-            for (int i = 0, count = kidsArrObj.arrayGetLength(); i < count; ++i)
-            {
-                Object kidRefObj;
-                if (kidsArrObj.arrayGetNF(i, &kidRefObj))
-                    GetPageTree(xref, &kidRefObj);
-                kidRefObj.free();
-            }
-            kidsArrObj.free();
-        }
     };
 
     CPdfReader::CPdfReader(NSFonts::IApplicationFonts* pAppFonts)
@@ -132,7 +91,6 @@ namespace PdfReader
 
         m_pInternal->m_pPDFDocument = NULL;
         m_pInternal->m_pFontManager = NULL;
-        m_pInternal->m_pPdfWriter   = NULL;
         m_pInternal->m_nFileLength  = 0;
 
         globalParams  = new GlobalParamsAdaptor(NULL);
@@ -176,12 +134,6 @@ namespace PdfReader
         RELEASEOBJECT((m_pInternal->m_pPDFDocument));
         RELEASEOBJECT((globalParams));
         RELEASEINTERFACE((m_pInternal->m_pFontManager));
-
-        if (m_pInternal->m_pPdfWriter)
-        {
-            m_pInternal->m_pPdfWriter->Release();
-            m_pInternal->m_pPdfWriter = NULL;
-        }
 	}
     bool CPdfReader::LoadFromFile(const std::wstring& wsSrcPath, const std::wstring& wsOptions,
                                     const std::wstring& wsOwnerPassword, const std::wstring& wsUserPassword)
@@ -502,206 +454,13 @@ return 0;
 //		return wsXml;
         return L"";
 	}
-    bool CPdfReader::EditPdf(IRenderer* pPdfWriter, const std::wstring& wsPath, const std::wstring& sPassword)
+    PDFDoc* CPdfReader::GetPDFDocument()
     {
-        if (!pPdfWriter)
-            return false;
-
-        long lRendererType;
-        pPdfWriter->get_Type(&lRendererType);
-        if (c_nPDFWriter != lRendererType || !m_pInternal->m_pPDFDocument)
-            return false;
-
-        std::string sPathUtf8New = U_TO_UTF8(wsPath);
-        std::string sPathUtf8Old = U_TO_UTF8(m_pInternal->m_wsSrcPath);
-        if (sPathUtf8Old == sPathUtf8New || NSSystemPath::NormalizePath(sPathUtf8Old) == NSSystemPath::NormalizePath(sPathUtf8New))
-        {
-            GString* owner_pswd = NSStrings::CreateString(sPassword);
-            GString* user_pswd  = NSStrings::CreateString(sPassword);
-            bool bRes = m_pInternal->m_pPDFDocument->makeWritable(true, owner_pswd, user_pswd);
-            delete owner_pswd;
-            delete user_pswd;
-            if (!bRes)
-                return false;
-        }
-        else
-        {
-            NSFile::CFileBinary oFile;
-            if (!oFile.OpenFile(wsPath, true))
-                return false;
-            oFile.CloseFile();
-        }
-
-        m_pInternal->m_pPdfWriter = (CPdfRenderer*)pPdfWriter;
-        m_pInternal->m_pPdfWriter->AddRef();
-        XRef* xref = m_pInternal->m_pPDFDocument->getXRef();
-        if (!xref)
-            return false;
-
-        Object catDict, catRefObj, pagesRefObj;
-        if (!xref->getCatalog(&catDict) || !catDict.isDict() || !catDict.dictLookupNF("Pages", &pagesRefObj))
-        {
-            pagesRefObj.free();
-            catDict.free();
-            return false;
-        }
-        Object* trailer = xref->getTrailerDict();
-        if (!trailer || !trailer->isDict() || !trailer->dictLookupNF("Root", &catRefObj) || !catRefObj.isRef())
-        {
-            pagesRefObj.free();
-            catDict.free();
-            catRefObj.free();
-            return false;
-        }
-
-        Ref catRef = catRefObj.getRef();
-        std::wstring sCatalog = XMLConverter::DictToXml(L"Catalog", &catDict, catRef.num, catRef.gen);
-
-        unsigned int nFormField = 0;
-        AcroForm* form = m_pInternal->m_pPDFDocument->getCatalog()->getForm();
-        if (form)
-        {
-            nFormField = form->getNumFields() + 1;
-            std::wstring sSig = L"Sig" + std::to_wstring(nFormField);
-            int i = 0, nFormFields = form->getNumFields();
-            while (i < nFormFields)
-            {
-                int nLength;
-                Unicode* uName = form->getField(i)->getName(&nLength);
-                std::wstring sName = NSStringExt::CConverter::GetUnicodeFromUTF32(uName, nLength);
-                RELEASEMEM(uName);
-                if (sName == sSig)
-                {
-                    i = 0;
-                    nFormField++;
-                    sSig = L"Sig" + std::to_wstring(nFormField);
-                }
-                else
-                    i++;
-            }
-            nFormField--;
-        }
-
-        int nCryptAlgorithm = -1;
-        std::wstring sEncrypt;
-        if (xref->isEncrypted())
-        {
-            CryptAlgorithm encAlgorithm;
-            GBool ownerPasswordOk;
-            int permFlags, keyLength, encVersion;
-            xref->getEncryption(&permFlags, &ownerPasswordOk, &keyLength, &encVersion, &encAlgorithm);
-            nCryptAlgorithm = encAlgorithm;
-
-            Object* pTrailerDict = xref->getTrailerDict();
-            if (pTrailerDict)
-            {
-                Object encrypt, ID, ID1;
-                if (pTrailerDict->dictLookup("Encrypt", &encrypt) && encrypt.isDict())
-                    sEncrypt = XMLConverter::DictToXml(L"Encrypt", &encrypt, 0, 0, true);
-                encrypt.free();
-                if (sEncrypt.length() > 10)
-                    sEncrypt.erase(sEncrypt.length() - 10);
-
-                if (pTrailerDict->dictLookup("ID", &ID) && ID.isArray() && ID.arrayGet(0, &ID1) && ID1.isString())
-                    sEncrypt += XMLConverter::DictToXml(L"ID", &ID1, 0, 0, true);
-                if (sEncrypt.length() > 10)
-                    sEncrypt += L"</Encrypt>";
-                ID.free();
-                ID1.free();
-            }
-        }
-
-        bool bRes = m_pInternal->m_pPdfWriter->EditPdf(wsPath, xref->getLastXRefPos(), xref->getNumObjects(), sCatalog, catRef.num, sEncrypt, sPassword, nCryptAlgorithm, nFormField);
-        if (bRes)
-            m_pInternal->GetPageTree(xref, &pagesRefObj);
-        pagesRefObj.free();
-        catDict.free();
-        catRefObj.free();
-        return bRes;
+        return m_pInternal->m_pPDFDocument;
     }
-    bool CPdfReader::EditPage(int nPageIndex)
+    void CPdfReader::ChangeLength(DWORD nLength)
     {
-        if (!m_pInternal->m_pPdfWriter || !m_pInternal->m_pPDFDocument)
-            return false;
-        XRef* xref = m_pInternal->m_pPDFDocument->getXRef();
-        Catalog* pCatalog = m_pInternal->m_pPDFDocument->getCatalog();
-        if (!xref || !pCatalog)
-            return false;
-        std::pair<int, int> pPageRef = m_pInternal->m_pPdfWriter->GetPageRef(nPageIndex);
-        if (pPageRef.first == 0)
-            return false;
-
-        // Получение объекта страницы
-        Object pageRefObj, pageObj;
-        pageRefObj.initRef(pPageRef.first, pPageRef.second);
-        if (!pageRefObj.fetch(xref, &pageObj) || !pageObj.isDict())
-        {
-            pageObj.free();
-            pageRefObj.free();
-            return false;
-        }
-        std::wstring sPage = XMLConverter::DictToXml(L"Page", &pageObj, pPageRef.first, pPageRef.second);
-        pageObj.free();
-        pageRefObj.free();
-
-        return m_pInternal->m_pPdfWriter->EditPage(sPage, pPageRef.first);
-    }
-    bool CPdfReader::DeletePage(int nPageIndex)
-    {
-        if (!m_pInternal->m_pPdfWriter || !m_pInternal->m_pPDFDocument)
-            return false;
-
-        return m_pInternal->m_pPdfWriter->DeletePage(nPageIndex);
-    }
-    bool CPdfReader::AddPage(int nPageIndex)
-    {
-        if (!m_pInternal->m_pPdfWriter || !m_pInternal->m_pPDFDocument)
-            return false;
-
-        return m_pInternal->m_pPdfWriter->AddPage(nPageIndex);
-    }
-    bool CPdfReader::EditClose(const std::wstring& sPassword)
-    {
-        if (!m_pInternal->m_pPdfWriter || !m_pInternal->m_pPDFDocument)
-            return false;
-        XRef* xref = m_pInternal->m_pPDFDocument->getXRef();
-        if (!xref)
-            return false;
-
-        Object* trailerDict = xref->getTrailerDict();
-        std::wstring sTrailer;
-        if (trailerDict)
-            sTrailer = XMLConverter::DictToXml(L"Trailer", trailerDict);
-
-        std::wstring sInfo;
-        Object info;
-        m_pInternal->m_pPDFDocument->getDocInfo(&info);
-        if (info.isDict())
-            sInfo = XMLConverter::DictToXml(L"Info", &info);
-        info.free();
-
-        std::wstring wsPath = m_pInternal->m_pPdfWriter->GetEditPdfPath();
-        bool bRes = m_pInternal->m_pPdfWriter->EditClose(sTrailer, sInfo);
-
-        std::string sPathUtf8New = U_TO_UTF8(wsPath);
-        std::string sPathUtf8Old = U_TO_UTF8(m_pInternal->m_wsSrcPath);
-        if (sPathUtf8Old == sPathUtf8New || NSSystemPath::NormalizePath(sPathUtf8Old) == NSSystemPath::NormalizePath(sPathUtf8New))
-        {
-            GString* owner_pswd = NSStrings::CreateString(sPassword);
-            GString* user_pswd  = NSStrings::CreateString(sPassword);
-            bRes &= m_pInternal->m_pPDFDocument->makeWritable(false, owner_pswd, user_pswd);
-            delete owner_pswd;
-            delete user_pswd;
-
-            NSFile::CFileBinary oFile;
-            if (oFile.OpenFile(m_pInternal->m_wsSrcPath))
-            {
-                m_pInternal->m_nFileLength = oFile.GetFileSize();
-                oFile.CloseFile();
-            }
-        }
-
-        return bRes;
+        m_pInternal->m_nFileLength = nLength;
     }
 
 #define DICT_LOOKUP(sName, wsName) \

@@ -7,6 +7,7 @@ extern "C"
 #include "../../hyphen/hnjalloc.h"
 }
 
+// function from hyphen.c using std::ifstream
 HyphenDict * hnj_hyphen_load_stream (std::istream &in)
 {
 	HyphenDict *dict[2];

@@ -79,18 +79,19 @@
 			return;
 		}
 
-		var src_size = 4 * src.length + 1;
+		var dict = new Uint8ClampedArray(src);
+		var dict_size = dict.length;
 		var lang_size = 4 * lang.length + 1;
 		
-		var _src = hyphenAllocateMemory(src_size);
+		var _dict = hyphenAllocateMemory(dict_size);
 		var _lang = hyphenAllocateMemory(lang_size);
 
-		Module.stringToUTF8(src, _src, src_size);
+		hyphenSetMemory(dict, _dict);
 		Module.stringToUTF8(lang, _lang, lang_size);
 
-		Module._hyphenLoadDictionary(app, _src, _lang);
+		Module._hyphenLoadDictionary(app, _dict, _lang);
 
-		hyphenFreeMemory(_src);
+		hyphenFreeMemory(_dict);
 		hyphenFreeMemory(_lang);
 	}
 

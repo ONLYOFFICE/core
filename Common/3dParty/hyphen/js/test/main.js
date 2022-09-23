@@ -23,11 +23,19 @@
 	 
 		var request = new XMLHttpRequest();
 		var path = '../../../../../../dictionaries/' + lang + '/' + 'hyph_' + lang  + '.dic';
+
+		request.responseType = 'arraybuffer';
+
+		if (request.overrideMimeType) {
+			request.overrideMimeType('text/plain; charset=x-user-defined');
+		} else {
+			request.setRequestHeader('Accept-Charset', 'x-user-defined');
+		}
 		request.open('GET', path, true);
 		request.send(null);
 
 		request.onload = function () {
-			var dict = request.responseText;
+			var dict = request.response;
 			window.hyphen.hyphenLoadDictionary(application, dict, lang);
 
 			for(var i = 0; i < text.length; i++) {

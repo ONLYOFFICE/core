@@ -1,4 +1,6 @@
-(function (window, undefined){
+(function (window, undefined) {
+
+    window.hyphen.loadModule();
 
     var textarea = document.getElementById("textarea");
     var form = document.querySelector("form");
@@ -13,7 +15,7 @@
         }
 
         if(application == undefined) {
-            application = hyphenCreateApplication(Module);
+            application = window.hyphen.hyphenCreateApplication();
         }
 
         var lang = combobox.value;
@@ -26,13 +28,13 @@
 
         request.onload = function () {
             var dict = request.responseText;
-            hyphenLoadDictionary(Module, application, dict, lang);
+            window.hyphen.hyphenLoadDictionary(application, dict, lang);
 
             for(var i = 0; i < text.length; i++) {
-                var hyphens = hyphenWord(Module, application, text[i].toLowerCase(), lang);
+                var hyphens = window.hyphen.hyphenWord(application, text[i].toLowerCase(), lang);
                 console.log(hyphens);
             }
         }
-        event.preventDefault();
+       event.preventDefault();
     }
-})(self, undefined);
+})(self);

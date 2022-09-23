@@ -1,11 +1,11 @@
 {
 	"name": "hyphen",
-	"res_folder": "../deploy",
+	"res_folder": "../deploy/engine",
 	"wasm": true,
 	"asm": true,
 	"embed_mem_file": true,
 	"run_before": "",
-	"run_after": "",
+	"run_after": "after.py",
 	"base_js_content": "../module.js",
 
 	"compiler_flags": [

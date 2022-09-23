@@ -3,9 +3,11 @@
 #include "../WmfInterpretator/CWmfInterpretatorRender.h"
 #include "../WmfInterpretator/CWmfInterpretatorSvg.h"
 
+#include "../../Emf/EmfParser/CEmfParser.h"
+
 namespace MetaFile
 {
-	CWmfParserBase::CWmfParserBase() : m_oPlayer(this), m_pInterpretator(NULL)
+	CWmfParserBase::CWmfParserBase() : m_oPlayer(this), m_pInterpretator(NULL), m_bEof(false)
 	{
 		m_pDC = m_oPlayer.GetDC();
 	}
@@ -22,6 +24,7 @@ namespace MetaFile
 	{
 		m_oPlayer.Clear();
 		m_pDC = m_oPlayer.GetDC();
+		m_bEof = false;
 	}
 
 	TRect *CWmfParserBase::GetDCBounds()
@@ -868,6 +871,8 @@ namespace MetaFile
 	{
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_META_EOF();
+
+		m_bEof = true;
 	}
 
 	void CWmfParserBase::HANDLE_META_ARC(short shYEndArc, short shXEndArc, short shYStartArc, short shXStartArc, short shBottom, short shRight, short shTop, short shLeft)
@@ -1516,8 +1521,66 @@ namespace MetaFile
 	void CWmfParserBase::HANDLE_META_ESCAPE(unsigned short ushEscapeFunction, unsigned short ushByteCount)
 	{
 		if (NULL != m_pInterpretator)
+		{
 			m_pInterpretator->HANDLE_META_ESCAPE(ushEscapeFunction, ushByteCount);
 
+			if (WMF_META_ESCAPE_ENHANCED_METAFILE == ushEscapeFunction)
+			{
+				if (ushByteCount < 34)
+					return;
+
+				unsigned int unCommentIdentifier, unCommentType, unVersion;
+
+				m_oStream >> unCommentIdentifier;
+				m_oStream >> unCommentType;
+				m_oStream >> unVersion;
+
+				if (0x43464D57 != unCommentIdentifier || 0x00000001 != unCommentType || 0x00010000 != unVersion)
+					return;
+
+				unsigned short ushChecksum;
+				unsigned int unFlags;
+
+				m_oStream >> ushChecksum;
+				m_oStream >> unFlags;
+
+				if (0x00000000 != unFlags)
+					return;
+
+				unsigned int unCommentRecordCount, unCurrentRecordSize, unRemainingBytes, unEnhancedMetafileDataSize;
+
+				m_oStream >> unCommentRecordCount;
+				m_oStream >> unCurrentRecordSize;
+				m_oStream >> unRemainingBytes;
+				m_oStream >> unEnhancedMetafileDataSize;
+
+				if (m_oEscapeBuffer.Empty())
+					m_oEscapeBuffer.SetSize(unEnhancedMetafileDataSize);
+
+				m_oStream.ReadBytes(m_oEscapeBuffer.GetCurPtr(), unCurrentRecordSize);
+
+				m_oEscapeBuffer.IncreasePosition(unCurrentRecordSize);
+
+				if (0 == unRemainingBytes)
+				{
+					CEmfParser oEmfParser;
+
+					oEmfParser.SetFontManager(GetFontManager());
+					oEmfParser.SetStream(m_oEscapeBuffer.GetBuffer(), m_oEscapeBuffer.GetSize());
+
+					if (InterpretatorType::Render == m_pInterpretator->GetType())
+					{
+						CMetaFileRenderer oEmfOut(&oEmfParser, ((CWmfInterpretatorRender*)m_pInterpretator)->GetRenderer());
+						oEmfParser.SetInterpretator(&oEmfOut);
+
+						oEmfParser.PlayFile();
+
+						if (!oEmfParser.CheckError())
+							m_bEof = true;
+					}
+				}
+			}
+		}
 		// TODO: Реализовать
 	}
 

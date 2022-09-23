@@ -114,6 +114,9 @@ namespace MetaFile
 
 		CWmfInterpretatorBase   *m_pInterpretator;
 
+		CWmfEscapeBuffer	m_oEscapeBuffer;
+
+		bool           m_bEof;
 	private:
 		//                virtual bool ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight) = 0;
 

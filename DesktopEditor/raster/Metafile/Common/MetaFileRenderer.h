@@ -115,6 +115,45 @@ namespace MetaFile
 			//m_pRenderer->PathCommandEnd();
 		}
 
+		CMetaFileRenderer(IMetaFileBase *pFile, CMetaFileRenderer* pMetaFileRenderer)
+		{
+			m_pFile = pFile;
+
+			if (!pMetaFileRenderer)
+				return;
+
+			m_dX = pMetaFileRenderer->m_dX;
+			m_dY = pMetaFileRenderer->m_dY;
+			m_dW = pMetaFileRenderer->m_dW;
+			m_dH = pMetaFileRenderer->m_dH;
+
+			m_pRenderer = NULL;
+			m_pSecondConditional = NULL;
+
+			m_pRenderer = pMetaFileRenderer->m_pRenderer;
+
+			UpdateScale();
+
+			m_bStartedPath = false;
+
+			//int alpha = 0xff;
+			//m_pRenderer->put_BrushAlpha1(alpha);
+			//m_pRenderer->put_BrushType(c_BrushTypeSolid);
+			//m_pRenderer->put_BrushColor1(0xffffff);
+
+			//m_pRenderer->BeginCommand(c_nPathType);
+			//m_pRenderer->PathCommandStart();
+			//m_pRenderer->PathCommandMoveTo(pBounds->nLeft	, pBounds->nTop);
+			//m_pRenderer->PathCommandLineTo(pBounds->nRight	, pBounds->nTop);
+			//m_pRenderer->PathCommandLineTo(pBounds->nRight	, pBounds->nBottom);
+			//m_pRenderer->PathCommandLineTo(pBounds->nLeft	, pBounds->nBottom);
+			//m_pRenderer->PathCommandLineTo(pBounds->nLeft	, pBounds->nTop);
+			//m_pRenderer->PathCommandClose();
+			//m_pRenderer->DrawPath(c_nWindingFillMode);
+			//m_pRenderer->EndCommand(c_nPathType);
+			//m_pRenderer->PathCommandEnd();
+		}
+
 		virtual ~CMetaFileRenderer()
 		{
 			RELEASEOBJECT(m_pSecondConditional)
@@ -285,8 +324,6 @@ namespace MetaFile
 			double dLogicalFontHeight = pFont->GetHeight();
 			if (dLogicalFontHeight < 0)
 				dLogicalFontHeight = -dLogicalFontHeight;
-			if (dLogicalFontHeight < 0.01)
-				dLogicalFontHeight = 18;
 
 			double dFontHeight = fabs(dLogicalFontHeight * m_dScaleY / 25.4 * 72);
 

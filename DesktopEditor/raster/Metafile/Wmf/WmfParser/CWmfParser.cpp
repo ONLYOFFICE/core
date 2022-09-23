@@ -30,8 +30,6 @@ namespace MetaFile
 		unsigned short ushType;
 		unsigned int ulNumber = 0;
 
-		bool bEof = false;
-
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->Begin();
 
@@ -65,7 +63,7 @@ namespace MetaFile
 				//-----------------------------------------------------------
 				// 2.3.2 Control records
 				//-----------------------------------------------------------
-			case META_EOF: Read_META_EOF(); bEof = true; break;
+			case META_EOF: Read_META_EOF(); break;
 				//-----------------------------------------------------------
 				// 2.3.3 Drawing records
 				//-----------------------------------------------------------
@@ -152,7 +150,7 @@ namespace MetaFile
 			}
 			}
 
-			if (bEof)
+			if (m_bEof)
 				break;
 
 			unRecordIndex++;

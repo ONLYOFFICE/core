@@ -19,8 +19,8 @@
 	"exported_functions": [
 		"_malloc",
 		"_free",
-        "_hyphenCreateApplication",
-        "_hyphenDestroyApplication",
+		"_hyphenCreateApplication",
+		"_hyphenDestroyApplication",
 		"_hyphenLoadDictionary",
 		"_hyphenWord"
 	],

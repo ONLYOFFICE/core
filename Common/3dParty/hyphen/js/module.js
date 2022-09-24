@@ -1,4 +1,4 @@
-(function(window, undefined) {
+(function(window) {
 
 	var isModuleLoaded = false;
 
@@ -14,7 +14,8 @@
 		}
 	};
 
-	// getBinaryPromise fix?
+	// getBinaryPromise fix? dekstop_fetch included
+	/*
 	var fetch = self.fetch;
 	var getBinaryPromise = null;
 	if (self.AscDesktopEditor && document.currentScript && 0 == document.currentScript.src.indexOf("file:///")) {
@@ -46,6 +47,7 @@
 			return getBinaryPromise2();
 		}
 	}
+	*/
 
 	//desktop_fetch
 

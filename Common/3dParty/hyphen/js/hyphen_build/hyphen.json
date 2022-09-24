@@ -10,7 +10,7 @@
 
 	"compiler_flags": [
 		"-O3",
-		"-sASSERTIONS",
+		"-fno-exceptions",
 		"-fno-rtti",
 		"-Wno-unused-command-line-argument",
 		"-sALLOW_MEMORY_GROWTH",

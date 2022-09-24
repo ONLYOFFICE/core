@@ -1,4 +1,4 @@
-(function(window, undefined) {
+(function(window) {
 
 	window.hyphen = window.hyphen || {};
 	window.hyphen.isReady = false;

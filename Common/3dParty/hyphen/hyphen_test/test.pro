@@ -19,7 +19,13 @@ DEFINES += PRO_DIR=\\\"$$PWD/\\\"
 HEADERS += $$PWD_ROOT_DIR/../hyphen/hyphen.h
 HEADERS += $$PWD_ROOT_DIR/../hyphen/hnjalloc.h
 
-SOURCES += $$PWD_ROOT_DIR/../hyphen/hyphen.c
+#SOURCES += $$PWD_ROOT_DIR/../hyphen/hyphen.c
 SOURCES += $$PWD_ROOT_DIR/../hyphen/hnjalloc.c
 
+SOURCES += \
+    ../js/src/ExportedFunctions.cpp \
+	../js/src/HyphenApplication.cpp
+
 SOURCES += main.cpp
+
+DESTDIR = $$PWD/build

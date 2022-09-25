@@ -12,6 +12,11 @@ CHyphenApplication::CHyphenApplication() :
 }
 CHyphenApplication::~CHyphenApplication()
 {
+	for (std::map<std::string, HyphenDict*>::iterator iter = m_mapDicts.begin(); iter != m_mapDicts.end(); iter++)
+	{
+		hnj_hyphen_free(iter->second);
+	}
+	m_mapDicts.clear();
 	delete[] m_pHyphenVector;
 }
 
@@ -39,13 +44,13 @@ char* CHyphenApplication::hyphenWord(const char *word, const char *lang)
 
 	return m_pHyphenVector;
 }
-void CHyphenApplication::loadDictionary(const char *src, const char* lang)
+int CHyphenApplication::loadDictionary(const char *dict_memory, const unsigned int dict_size, const char *lang)
 {
 	std::string s_lang(lang);
 	HyphenDict *dict;
 
 	if(m_mapDicts[s_lang] != nullptr)
-		return;
+		return 0;
 
 	if(m_mapDicts.size() > m_nMaxDictsCount)
 	{
@@ -54,8 +59,10 @@ void CHyphenApplication::loadDictionary(const char *src, const char* lang)
 		m_mapDicts.erase(it);
 	}
 
-	std::stringstream ss(src);
-	dict = hnj_hyphen_load_stream(ss);
+	std::stringstream ss;
+	ss.write(dict_memory, dict_size);
 
-	m_mapDicts[s_lang] = dict;
+	m_mapDicts[s_lang] = hnj_hyphen_load_stream(ss);
+
+	return 1;
 }

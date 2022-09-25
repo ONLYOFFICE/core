@@ -7,17 +7,15 @@
 		console.log('Module is not ready');
 	}
 
-	window.hyphen.hyphenCreateApplication = not_ready;
-	window.hyphen.hyphenDestroyApplication = not_ready;
-	window.hyphen.hyphenLoadDictionary = not_ready;
+	window.hyphen.destroyApplication = not_ready;
+	window.hyphen.loadDictionary = not_ready;
 	window.hyphen.hyphenWord = not_ready;
 
 	window.hyphen.onLoadModule = function(exports) {
 		window.hyphen.isReady = true;
 
-		window.hyphen.hyphenCreateApplication = exports.hyphenCreateApplication;
-		window.hyphen.hyphenDestroyApplication = exports.hyphenDestroyApplication;
-		window.hyphen.hyphenLoadDictionary = exports.hyphenLoadDictionary;
+		window.hyphen.destroyApplication = exports.destroyApplication;
+		window.hyphen.loadDictionary = exports.loadDictionary;
 		window.hyphen.hyphenWord = exports.hyphenWord;
 	};
 

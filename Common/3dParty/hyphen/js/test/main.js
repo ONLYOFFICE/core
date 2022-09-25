@@ -6,16 +6,16 @@
 	var form = document.querySelector("form");
 	var combobox = document.getElementById("combobox");
 
-	var application = undefined;
-	
+	if (true)
+	{
+		combobox.value = "en_US";
+		textarea.value = "expedition";
+	}
+
 	form.onsubmit = function(event) {
 
 		if(combobox.value == "") {
 			return;
-		}
-
-		if(application == undefined) {
-			application = window.hyphen.hyphenCreateApplication();
 		}
 
 		var lang = combobox.value;
@@ -36,10 +36,10 @@
 
 		request.onload = function () {
 			var dict = request.response;
-			window.hyphen.hyphenLoadDictionary(application, dict, lang);
+			window.hyphen.loadDictionary(dict, lang);
 
 			for(var i = 0; i < text.length; i++) {
-				var hyphens = window.hyphen.hyphenWord(application, text[i].toLowerCase(), lang);
+				var hyphens = window.hyphen.hyphenWord(text[i].toLowerCase(), lang);
 				console.log(hyphens);
 			}
 		}

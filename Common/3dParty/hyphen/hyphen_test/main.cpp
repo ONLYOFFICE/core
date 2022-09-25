@@ -1,7 +1,7 @@
 #include <fstream>
 #include <iostream>
 
-#include "./../hyphen/hyphen.h"
+#include "./../js/src/ExportedFunctions.h"
 
 int main(int argc, char *argv[])
 {
@@ -10,9 +10,10 @@ int main(int argc, char *argv[])
 	std::string dict_filename = PRO_DIR;
 	std::string words_filename = PRO_DIR;
 	std::string result_filename = PRO_DIR;
+	std::string dict_name = "en_US";
 
 	// set your filenames here
-	dict_filename += "hyph_en_US.dic";
+	dict_filename += ("../../../../../dictionaries/" + dict_name + "/hyph_" + dict_name + ".dic");
 	words_filename += "words.txt";
 	result_filename += "result.txt";
 
@@ -81,6 +82,29 @@ int main(int argc, char *argv[])
 	}
 	fin.close();
 	fout.close();
+
+#if 1
+
+	CHyphenApplication* pApplication = hyphenCreateApplication();
+
+	FILE* fDictionary = fopen(dict_filename.c_str(), "rb");
+	fseek(fDictionary, 0, SEEK_END);
+	long lDictSize = ftell(fDictionary);
+	fseek(fDictionary, 0, SEEK_SET);  /* same as rewind(f); */
+
+	char* pDictData = (char*)malloc(lDictSize);
+	fread(pDictData, (size_t)lDictSize, 1, fDictionary);
+	fclose(fDictionary);
+
+	int nResult = hyphenLoadDictionary(pApplication, pDictData, (unsigned int)lDictSize, dict_name.c_str());
+
+	free(pDictData);
+
+	char* pHyphenVector = hyphenWord(pApplication, "expedition", dict_name.c_str());
+
+	hyphenDestroyApplication(pApplication);
+
+#endif
 }
 
 

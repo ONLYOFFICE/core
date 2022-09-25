@@ -117,4 +117,24 @@
 		return new Uint8Array(tmpStrings, 0, outputIndex);
 	};
 
+	function StringPointer(pointer)
+	{
+		this.ptr = pointer;
+	}
+	StringPointer.prototype.free = function()
+	{
+		if (0 !== this.ptr)
+			Module["_free"](this.ptr);
+	};
+
+	String.prototype.toUtf8Pointer = function(isNoEndNull) {
+		var tmp = this.toUtf8(isNoEndNull);
+		var pointer = Module["_malloc"](tmp.length);
+		if (0 == pointer)
+			return null;
+
+		Module["HEAP8"].set(tmp, pointer);
+		return new StringPointer(pointer);		
+	};
+
 })();

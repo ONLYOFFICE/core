@@ -9,9 +9,9 @@ void hyphenDestroyApplication(CHyphenApplication *app)
 	delete app;
 }
 
-void hyphenLoadDictionary(CHyphenApplication *app, const char *src, const char* lang)
+int hyphenLoadDictionary(CHyphenApplication *app, const char *dict, const unsigned int dict_size, const char* lang)
 {
-	app->loadDictionary(src, lang);
+	return app->loadDictionary(dict, dict_size, lang);
 }
 char* hyphenWord(CHyphenApplication *app, const char *word, const char* lang)
 {

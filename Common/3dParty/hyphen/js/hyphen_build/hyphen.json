@@ -13,8 +13,7 @@
 		"-fno-exceptions",
 		"-fno-rtti",
 		"-Wno-unused-command-line-argument",
-		"-sALLOW_MEMORY_GROWTH",
-		"-sEXPORTED_RUNTIME_METHODS='stringToUTF8','UTF8ToString'"
+		"-sALLOW_MEMORY_GROWTH"
 	],
 	"exported_functions": [
 		"_malloc",

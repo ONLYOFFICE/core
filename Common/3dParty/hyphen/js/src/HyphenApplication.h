@@ -15,7 +15,7 @@ public:
 	~CHyphenApplication();
 
 	char* hyphenWord(const char *word, const char *lang);
-	void loadDictionary(const char *src, const char *lang);
+	int loadDictionary(const char *dict, const unsigned int dict_size, const char *lang);
 
 private:
 	std::map<std::string, HyphenDict*> m_mapDicts;

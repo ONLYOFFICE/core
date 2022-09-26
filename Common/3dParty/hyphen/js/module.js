@@ -33,7 +33,7 @@
 	 * @returns {Boolean} isSuccess
 	 */
 	function hyphenLoadDictionary(dict, lang) {
-		if(!isModuleLoaded) {
+		if (!isModuleLoaded) {
 			return;
 		}
 
@@ -55,7 +55,7 @@
 	 * 
 	 * @param {String} word 
 	 * @param {String} lang 
-	 * @returns {Uint8ClampedArray}
+	 * @returns {Array}
 	 * Returns hyphen vector of word
 	 */
 	function hyphenWord(word, lang) {
@@ -70,14 +70,14 @@
 		if (wordPointer && langPointer) {
 			const ptr = Module._hyphenWord(application, wordPointer.ptr, langPointer.ptr);
 
+			let vector = new Uint8ClampedArray(Module.HEAP8.buffer, ptr, wordPointer.length + 5);
+
 			wordPointer.free();
 			langPointer.free();
 
-			var vector = new Uint8ClampedArray(Module.HEAP8.buffer, ptr, 4 * word.length + 6);
-			for(var i = 0; i < vector.length && vector[i] != 0; i++) {
-				if(vector[i] % 2 == 1) {
+			for (let i = 0; vector[i] != 0; i++) {
+				if (1 == (vector[i] & 1))
 					hyphens.push((i + 1));
-				}
 			}
 		}
 		return hyphens;

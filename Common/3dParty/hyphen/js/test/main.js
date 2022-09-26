@@ -38,21 +38,22 @@
 
 			for(var i = 0; i < text.length; i++) {
 				var hyphens = window.hyphen.hyphenWord(text[i].toLowerCase(), lang);
-				console.log("In bytes: " + hyphens);
 
-				// size of 1 symbol (1-4 bytes)
-				var sizeOfSym = new Blob([text[i]]).size / text[i].length;
-				var hword = "";
+				let itemUtf8 = text[i].toUtf8(true);
+				let start = 0;
+				let hword = "";
 
-				var lpos = 0;
-				for(var j = 0; j < hyphens.length; j++) {
-					var pos = hyphens[j] / sizeOfSym;
-					pos = pos | 0;
-					hword += text[i].substr(lpos, pos - lpos);
-					hword += '=';
-					lpos = pos;
+				for(let j = 0, len = hyphens.length; j < len; j++) {
+					hword += "".fromUtf8(itemUtf8, start, hyphens[j] - start);
+					hword += "=";
+					start = hyphens[j];
 				}
-				hword += text[i].substr(lpos, text[i].length - lpos);
+
+				if (start < itemUtf8.length) {
+					hword += "".fromUtf8(itemUtf8, start);
+					hword += "=";
+				}
+
 				console.log(hword);
 			}
 		}

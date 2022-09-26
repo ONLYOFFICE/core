@@ -15,7 +15,7 @@
 		if (undefined === start)
 			start = 0;
 		if (undefined === len)
-			len = buffer.length;
+			len = buffer.length - start;
 
 		var result = "";
 		var index  = start;
@@ -117,9 +117,10 @@
 		return new Uint8Array(tmpStrings, 0, outputIndex);
 	};
 
-	function StringPointer(pointer)
+	function StringPointer(pointer, len)
 	{
 		this.ptr = pointer;
+		this.length = len;
 	}
 	StringPointer.prototype.free = function()
 	{
@@ -134,7 +135,7 @@
 			return null;
 
 		Module["HEAP8"].set(tmp, pointer);
-		return new StringPointer(pointer);		
+		return new StringPointer(pointer, tmp.length);		
 	};
 
 })();

@@ -47,7 +47,7 @@
 
 		langPointer.free();
 		Module._free(dictPointer);
-
+		
 		return (result === 1) ? true : false;
 	}
 
@@ -74,20 +74,9 @@
 			langPointer.free();
 
 			var vector = new Uint8ClampedArray(Module.HEAP8.buffer, ptr, 4 * word.length + 6);
-
-			// calc actual size of vector
-			var size = 0;
 			for(var i = 0; i < vector.length && vector[i] != 0; i++) {
-				size++;
-			}
-
-			// size of one symbol
-			var symbol = size / word.length;
-
-			// if word is "broken", can returns floats
-			for(var i = 0; i < vector.length; i++) {
 				if(vector[i] % 2 == 1) {
-					hyphens.push((i + 1) / symbol);
+					hyphens.push((i + 1));
 				}
 			}
 		}

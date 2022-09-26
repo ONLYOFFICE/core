@@ -6,11 +6,9 @@
 	var form = document.querySelector("form");
 	var combobox = document.getElementById("combobox");
 
-	if (true)
-	{
-		combobox.value = "en_US";
-		textarea.value = "expedition";
-	}
+	combobox.value = "en_US";
+	textarea.value = "expedition";
+
 
 	form.onsubmit = function(event) {
 
@@ -40,7 +38,22 @@
 
 			for(var i = 0; i < text.length; i++) {
 				var hyphens = window.hyphen.hyphenWord(text[i].toLowerCase(), lang);
-				console.log(hyphens);
+				console.log("In bytes: " + hyphens);
+
+				// size of 1 symbol (1-4 bytes)
+				var sizeOfSym = new Blob([text[i]]).size / text[i].length;
+				var hword = "";
+
+				var lpos = 0;
+				for(var j = 0; j < hyphens.length; j++) {
+					var pos = hyphens[j] / sizeOfSym;
+					pos = pos | 0;
+					hword += text[i].substr(lpos, pos - lpos);
+					hword += '=';
+					lpos = pos;
+				}
+				hword += text[i].substr(lpos, text[i].length - lpos);
+				console.log(hword);
 			}
 		}
 	   event.preventDefault();

@@ -11,8 +11,9 @@ namespace NSDocxRenderer
         vctCurrentAboveNext,
         vctCurrentBelowNext,
         vctDublicate,
-        vctTopBordersMatch,
-        vctBottomBordersMatch,
+        vctTopAndBottomBordersMatch,
+        vctTopBorderMatch,
+        vctBottomBorderMatch,
         vctNoCrossingCurrentAboveNext,
         vctNoCrossingCurrentBelowNext
     };
@@ -25,8 +26,9 @@ namespace NSDocxRenderer
         hctCurrentLeftOfNext,
         hctCurrentRightOfNext,
         hctDublicate,
-        hctLeftBordersMatch,
-        hctRightBordersMatch,
+        hctLeftAndRightBordersMatch,
+        hctLeftBorderMatch,
+        hctRightBorderMatch,
         hctNoCrossingCurrentLeftOfNext,
         hctNoCrossingCurrentRightOfNext
     };
@@ -36,11 +38,11 @@ namespace NSDocxRenderer
     public:
         enum class ElemType
         {
-            etContText	= 0,
+            etContText  = 0,
             etTextLine  = 1,
-            etParagraph	= 2,
-            etImage		= 3,
-            etShape		= 4,
+            etParagraph = 2,
+            etImage     = 3,
+            etShape     = 4,
             etOldShape  = 5,
         };
 

@@ -46,24 +46,29 @@ namespace NSDocxRenderer
             }
             else if (m_dTop < oSrc->m_dTop && m_dBaselinePos < oSrc->m_dBaselinePos && m_dBaselinePos > oSrc->m_dTop)
             {
-                return  eVerticalCrossingType::vctCurrentAboveNext;
+                return  eVerticalCrossingType::vctCurrentBelowNext;
             }
             else if (m_dTop > oSrc->m_dTop && m_dBaselinePos > oSrc->m_dBaselinePos && m_dTop < oSrc->m_dBaselinePos)
             {
-                return  eVerticalCrossingType::vctCurrentBelowNext;
+                return  eVerticalCrossingType::vctCurrentAboveNext;
             }
             else if (m_dTop == oSrc->m_dTop && m_dBaselinePos == oSrc->m_dBaselinePos &&
                      m_dLeft == oSrc->m_dLeft && m_dRight == oSrc->m_dRight)
             {
                 return  eVerticalCrossingType::vctDublicate;
             }
+            else if (fabs(m_dTop - oSrc->m_dTop) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
+                     fabs(m_dBaselinePos - oSrc->m_dBaselinePos) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
+            {
+                return  eVerticalCrossingType::vctTopAndBottomBordersMatch;
+            }
             else if (fabs(m_dTop - oSrc->m_dTop) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
             {
-                return  eVerticalCrossingType::vctTopBordersMatch;
+                return  eVerticalCrossingType::vctTopBorderMatch;
             }
             else if (fabs(m_dBaselinePos - oSrc->m_dBaselinePos) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
             {
-                return  eVerticalCrossingType::vctBottomBordersMatch;
+                return  eVerticalCrossingType::vctBottomBorderMatch;
             }
             else if (m_dBaselinePos < oSrc->m_dTop)
             {
@@ -89,11 +94,11 @@ namespace NSDocxRenderer
             {
                 return  eHorizontalCrossingType::hctCurrentOutsideNext;
             }
-            else if (m_dLeft < oSrc->m_dLeft && m_dRight < oSrc->m_dRight && m_dRight > oSrc->m_dLeft)
+            else if (m_dLeft < oSrc->m_dLeft && m_dRight < oSrc->m_dRight && m_dRight >= oSrc->m_dLeft)
             {
                 return  eHorizontalCrossingType::hctCurrentLeftOfNext;
             }
-            else if (m_dLeft > oSrc->m_dLeft && m_dRight > oSrc->m_dRight && m_dLeft < oSrc->m_dRight)
+            else if (m_dLeft > oSrc->m_dLeft && m_dRight > oSrc->m_dRight && m_dLeft <= oSrc->m_dRight)
             {
                 return  eHorizontalCrossingType::hctCurrentRightOfNext;
             }
@@ -102,13 +107,18 @@ namespace NSDocxRenderer
             {
                 return  eHorizontalCrossingType::hctDublicate;
             }
+            else if (fabs(m_dLeft - oSrc->m_dLeft) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
+                     fabs(m_dRight - oSrc->m_dRight) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
+            {
+                return  eHorizontalCrossingType::hctLeftAndRightBordersMatch;
+            }
             else if (fabs(m_dLeft - oSrc->m_dLeft) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
             {
-                return  eHorizontalCrossingType::hctLeftBordersMatch;
+                return  eHorizontalCrossingType::hctLeftBorderMatch;
             }
             else if (fabs(m_dRight - oSrc->m_dRight) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
             {
-                return  eHorizontalCrossingType::hctRightBordersMatch;
+                return  eHorizontalCrossingType::hctRightBorderMatch;
             }
             else if (m_dRight < oSrc->m_dLeft)
             {

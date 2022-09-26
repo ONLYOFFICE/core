@@ -32,6 +32,16 @@ inline bool IsUnicodeSymbol(const int& symbol )
     return false;
 }
 
+
+inline bool IsDiacriticalMark(const int& symbol )
+{
+    if ( 0x0300 <= symbol && 0x036F >= symbol )
+    {
+        return true;
+    }
+    return false;
+}
+
 // 2-byte number
 inline short little_endian_2_big_endian( short s )
 {

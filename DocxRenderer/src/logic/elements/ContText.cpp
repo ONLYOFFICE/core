@@ -329,8 +329,8 @@ namespace NSDocxRenderer
     bool CContText::IsThereAreFontEffects(CContText* pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType)
     {
         //Условие пересечения по вертикали
-        bool bIf1 = eVType == eVerticalCrossingType::vctCurrentAboveNext; //текущий cont выше
-        bool bIf2 = eVType == eVerticalCrossingType::vctCurrentBelowNext; //текущий cont ниже
+        bool bIf1 = eVType == eVerticalCrossingType::vctCurrentBelowNext; //текущий cont ниже
+        bool bIf2 = eVType == eVerticalCrossingType::vctCurrentAboveNext; //текущий cont выше
         //Условие пересечения по горизонтали
         bool bIf3 = eHType == eHorizontalCrossingType::hctCurrentLeftOfNext; //текущий cont левее
         bool bIf4 = eHType == eHorizontalCrossingType::hctCurrentRightOfNext; //текущий cont правее
@@ -404,9 +404,9 @@ namespace NSDocxRenderer
     bool CContText::IsVertAlignTypeBetweenConts(CContText* pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType)
     {
         //Условие пересечения по вертикали
-        bool bIf1 = eVType == eVerticalCrossingType::vctCurrentAboveNext ||
+        bool bIf1 = eVType == eVerticalCrossingType::vctCurrentBelowNext ||
                     eVType == eVerticalCrossingType::vctCurrentInsideNext;
-        bool bIf2 = eVType == eVerticalCrossingType::vctCurrentBelowNext;
+        bool bIf2 = eVType == eVerticalCrossingType::vctCurrentAboveNext;
         //Условие пересечения по горизонтали
         bool bIf3 = (eHType == eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext ||
                     eHType == eHorizontalCrossingType::hctCurrentLeftOfNext) &&

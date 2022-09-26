@@ -10,36 +10,34 @@ namespace NSDocxRenderer
     class CPage
     {
     public:
-        NSStructures::CFont*		m_pFont {nullptr};
-        NSStructures::CPen*			m_pPen {nullptr};
-        NSStructures::CBrush*		m_pBrush {nullptr};
-        NSStructures::CShadow*		m_pShadow {nullptr};
-        NSStructures::CEdgeText*	m_pEdgeText {nullptr};
+        NSStructures::CFont*        m_pFont {nullptr};
+        NSStructures::CPen*         m_pPen {nullptr};
+        NSStructures::CBrush*       m_pBrush {nullptr};
+        NSStructures::CShadow*      m_pShadow {nullptr};
+        NSStructures::CEdgeText*    m_pEdgeText {nullptr};
 
-        Aggplus::CMatrix*			m_pTransform {nullptr};
+        Aggplus::CMatrix*           m_pTransform {nullptr};
         Aggplus::CGraphicsPathSimpleConverter* m_pSimpleGraphicsConverter {nullptr};
 
         CStyleManager*              m_pStyleManager {nullptr};
-
-        CVectorGraphics				m_oVector;
+        CVectorGraphics             m_oVector;
 
         double m_dWidth {0.0};
         double m_dHeight {0.0};
 
-        LONG						m_lCurrentCommand {0};
+        LONG                     m_lCurrentCommand {0};
 
         std::vector<CShape*>     m_arImages;
-        std::vector<CContText*>  m_arSymbol ;
+        std::vector<CContText*>  m_arSymbol;
+        std::vector<CContText*>  m_arDiacriticalSymbol;
         std::vector<CTextLine*>  m_arTextLine;
-        std::vector<CShape*>	 m_arShapes;
+        std::vector<CShape*>     m_arShapes;
         std::vector<CParagraph*> m_arParagraphs;
 
-        CShape*                  m_pGeneralTextShape{nullptr};
+        CTextLine*               m_pCurrentLine {nullptr};
 
-        CTextLine* m_pCurrentLine {nullptr};
-
-        CFontManager		m_oFontManager;
-        CFontManagerLight	m_oFontManagerLight;
+        CFontManager             m_oFontManager;
+        CFontManagerLight        m_oFontManagerLight;
 
         TextAssociationType m_eTextAssociationType {tatPlainLine};
 
@@ -63,7 +61,6 @@ namespace NSDocxRenderer
         void ClearShapes();
         void ClearParagraphs();
 
-        void SelectCurrentLine(const CContText* pCont);
         //удаляем то, что выходит за границы страницы
         void DeleteTextClipPage();
 
@@ -99,6 +96,8 @@ namespace NSDocxRenderer
         //набивается содержимым вектор m_arTextLine
         void AnalyzeLines();
         void BuildLines();
+        void AddDiacriticalSymbols(CContText* pCont);
+        void SelectCurrentLine(const CContText* pCont);
         void CollectDublicateLines(const CContText *pCont);
         void MergeLinesByVertAlignType();
         void DetermineDominantGraphics();
@@ -122,7 +121,6 @@ namespace NSDocxRenderer
         void CreateSingleLineOldShape(CTextLine *pLine);
         void CreateSingleLineShape(CTextLine *pLine);
         void CreateShapeFormParagraphs(CParagraph* pParagraph, bool bIsSameTypeText);
-        void AddParagraphToGeneralTextShape(CParagraph* pParagraph);
         void CorrectionParagraphsInShapes();
 
         bool IsShadingPresent(const CTextLine* pLine1, const CTextLine* pLine2);

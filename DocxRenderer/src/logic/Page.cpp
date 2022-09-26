@@ -27,8 +27,6 @@ namespace NSDocxRenderer
 
         m_oFontManager.m_pFont      = m_pFont;
         m_oFontManager.m_pTransform = m_pTransform;
-
-        m_pGeneralTextShape = nullptr;
         m_pCurrentLine = nullptr;
 
         m_dLastTextX = -1;
@@ -46,7 +44,6 @@ namespace NSDocxRenderer
         ClearShapes();
         ClearImages();
 
-        m_pGeneralTextShape = nullptr;
         m_pCurrentLine = nullptr;
 
         m_dLastTextX = -1;
@@ -62,6 +59,7 @@ namespace NSDocxRenderer
     void CPage::ClearTextData()
     {
         m_arSymbol.clear();
+        m_arDiacriticalSymbol.clear();
     }
 
     void CPage::ClearTextLines()
@@ -363,8 +361,8 @@ namespace NSDocxRenderer
         pCont->m_dLastX = dTextX;
 
         pCont->m_dTop       = dBaseLinePos - dTextH - m_oFontManager.m_oFont.m_dBaselineOffset;
-        pCont->m_dWidth		= dTextW;
-        pCont->m_dHeight	= dTextH;
+        pCont->m_dWidth     = dTextW;
+        pCont->m_dHeight    = dTextH;
         pCont->m_dRight     = dTextX + dTextW;
 
         pCont->m_oText = oText;
@@ -383,7 +381,14 @@ namespace NSDocxRenderer
 
         pCont->m_dSpaceWidthMM = m_oFontManager.m_dSpaceWidthMM;
 
-        m_arSymbol.push_back(pCont);
+        if (nCount == 1 && IsDiacriticalMark(*pUnicodes))
+        {
+            m_arDiacriticalSymbol.push_back(pCont);
+        }
+        else
+        {
+            m_arSymbol.push_back(pCont);
+        }
     }
 
     void CPage::AnalyzeCollectedShapes()
@@ -701,6 +706,7 @@ namespace NSDocxRenderer
             }
 
             SelectCurrentLine(pCont);
+            AddDiacriticalSymbols(pCont);
 
             CContText* pLastCont = nullptr;
             size_t nCountConts = m_pCurrentLine->m_arConts.size();
@@ -855,6 +861,53 @@ namespace NSDocxRenderer
         }
         m_arTextLine.push_back(pLine);
         return;
+    }
+
+    void CPage::AddDiacriticalSymbols(CContText *pCont)
+    {
+        if (!m_arDiacriticalSymbol.empty())
+        {
+            for (auto pDiacriticalCont : m_arDiacriticalSymbol)
+            {
+                if (pDiacriticalCont->m_bIsNotNecessaryToUse)
+                {
+                    continue;
+                }
+
+                eVerticalCrossingType eVType = pCont->GetVerticalCrossingType(pDiacriticalCont);
+                eHorizontalCrossingType eHType = pCont->GetHorizontalCrossingType(pDiacriticalCont);
+
+                if (eVType != eVerticalCrossingType::vctNoCrossingCurrentAboveNext &&
+                    eVType != eVerticalCrossingType::vctNoCrossingCurrentBelowNext &&
+                    eHType != eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext &&
+                    eHType != eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext)
+                {
+                    bool bIf1 = eHType == eHorizontalCrossingType::hctCurrentOutsideNext;
+                    bool bIf2 = eHType == eHorizontalCrossingType::hctCurrentLeftOfNext;
+                    bool bIf3 = eHType == eHorizontalCrossingType::hctCurrentRightOfNext;
+                    bool bIf4 = eHType == eHorizontalCrossingType::hctDublicate;
+                    bool bIf5 = eHType == eHorizontalCrossingType::hctRightBorderMatch;
+
+                    bool bIf6 = eVType == eVerticalCrossingType::vctCurrentBelowNext ||
+                                eVType == eVerticalCrossingType::vctCurrentAboveNext;
+                    bool bIf7 = eVType == eVerticalCrossingType::vctTopAndBottomBordersMatch;
+                    bool bIf8 = eVType == eVerticalCrossingType::vctDublicate;
+
+                    if ((bIf1 && bIf6) || (bIf2 && bIf7) || (bIf4 && bIf8) || (bIf5 && bIf7))
+                    {
+                        pCont->m_oText += pDiacriticalCont->m_oText;
+                        pDiacriticalCont->m_bIsNotNecessaryToUse = true;
+                    }
+                    else if (bIf3 && bIf7)
+                    {
+                        NSStringUtils::CStringUTF32 oText(pDiacriticalCont->m_oText);
+                        oText += pCont->m_oText;
+                        pCont->m_oText = oText;
+                        pDiacriticalCont->m_bIsNotNecessaryToUse = true;
+                    }
+                }
+            }
+        }
     }
 
     void CPage::CollectDublicateLines(const CContText *pCont)
@@ -1128,7 +1181,7 @@ namespace NSDocxRenderer
         double dPreviousStringBaseline = c_dCORRECTION_FOR_FIRST_PARAGRAPH;
         eVerticalCrossingType eCrossingType;
 
-        bool bIf1, bIf2, bIf3, bIf4, bIf5, bIf6, bIf7, bIf8;
+        bool bIf1, bIf2, bIf3, bIf4, bIf5, bIf6, bIf7;
 
         size_t nIndexForCheking = c_nAntiZero;
 
@@ -1165,10 +1218,7 @@ namespace NSDocxRenderer
                 pPrevLine = GetPrevTextLine(nIndex);
             }
 
-            //Это не последняя строка
-            bIf1 = pNextLine ? true : false;
-
-            if (bIf1)
+            if (pNextLine)
             {
                 eCrossingType = pCurrLine->GetVerticalCrossingType(pNextLine);
                 bool bIsPassed = false;
@@ -1177,13 +1227,13 @@ namespace NSDocxRenderer
                 switch (eCrossingType)
                 {
                 case eVerticalCrossingType::vctCurrentInsideNext:
-                case eVerticalCrossingType::vctCurrentAboveNext:
+                case eVerticalCrossingType::vctCurrentBelowNext:
                     dCurrentAdditive = dCurrBeforeSpacing + pCurrLine->m_dHeight + pNextLine->m_dBaselinePos - pCurrLine->m_dBaselinePos;
                     dPreviousStringBaseline = pNextLine->m_dBaselinePos;
                     bIsPassed = true;
                     break;
                 case eVerticalCrossingType::vctCurrentOutsideNext:
-                case eVerticalCrossingType::vctCurrentBelowNext:
+                case eVerticalCrossingType::vctCurrentAboveNext:
                 case eVerticalCrossingType::vctDublicate:
                     dCurrentAdditive = dCurrBeforeSpacing + pCurrLine->m_dHeight;
                     bIsPassed = true;
@@ -1209,35 +1259,35 @@ namespace NSDocxRenderer
 
             bool bIsSingleLineParagraph = false;
 
-            if (bIf1)
+            if (pNextLine)
             {
                 dNextRight = pNextLine->CalculateRightBorder(m_dWidth);
                 dNextBeforeSpacing = pNextLine->CalculateBeforeSpacing(dPreviousStringBaseline);
 
                 //Высота строк должна быть примерно одинаковой
-                bIf2 = fabs(pCurrLine->m_dHeight - pNextLine->m_dHeight) < c_dTHE_SAME_STRING_Y_PRECISION_MM;
+                bIf1 = fabs(pCurrLine->m_dHeight - pNextLine->m_dHeight) < c_dTHE_SAME_STRING_Y_PRECISION_MM;
                 //расстрояние между строк тоже одинаково
-                bIf3 = fabs(dCurrBeforeSpacing - dNextBeforeSpacing) < c_dLINE_DISTANCE_ERROR_MM;
+                bIf2 = fabs(dCurrBeforeSpacing - dNextBeforeSpacing) < c_dLINE_DISTANCE_ERROR_MM;
                 //или
-                bIf4 = dCurrBeforeSpacing > dNextBeforeSpacing;
+                bIf3 = dCurrBeforeSpacing > dNextBeforeSpacing;
                 //нет отступа
-                bIf5 = fabs(pCurrLine->m_dLeft - pNextLine->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
+                bIf4 = fabs(pCurrLine->m_dLeft - pNextLine->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
                 //есть отступ
-                bIf6 = pCurrLine->m_dLeft > pNextLine->m_dLeft;
+                bIf5 = pCurrLine->m_dLeft > pNextLine->m_dLeft;
                 //совпадают правые границы
-                bIf7 = fabs(dCurrRight - dNextRight) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
+                bIf6 = fabs(dCurrRight - dNextRight) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
 
                 size_t nNextIndex = nIndex+1;
                 pNextNextLine = GetNextTextLine(nNextIndex);
 
-                bIf8 = (pCurrLine->m_dWidth > pNextLine->m_dWidth * c_dCOEFFICIENT_LENGTHS_LINES_IN_PARAGRAPH) &&
+                bIf7 = (pCurrLine->m_dWidth > pNextLine->m_dWidth * c_dCOEFFICIENT_LENGTHS_LINES_IN_PARAGRAPH) &&
                         (pNextNextLine ? pCurrLine->m_dWidth > pNextNextLine->m_dWidth * c_dCOEFFICIENT_LENGTHS_LINES_IN_PARAGRAPH : true);
 
                 if (pNextNextLine)
                 {
                     double dNextNextBeforeSpacing = pNextNextLine->CalculateBeforeSpacing(pNextLine->m_dBaselinePos);
 
-                    if (bIf2 && (bIf3 || bIf4))
+                    if (bIf1 && (bIf2 || bIf3))
                     {
                         if (fabs(dNextBeforeSpacing - dNextNextBeforeSpacing) < c_dLINE_DISTANCE_ERROR_MM)
                         {
@@ -1283,7 +1333,7 @@ namespace NSDocxRenderer
                 pParagraph->m_eTextConversionType = CParagraph::tctTextToShape;
             }
 
-            if (!bIsSingleLineParagraph && bIf2 && (bIf3 || bIf4) && bIf1)
+            if (pNextLine && !bIsSingleLineParagraph && bIf1 && (bIf2 || bIf3))
             {
                 pParagraph->m_dLeft = std::min(pCurrLine->m_dLeft, pNextLine->m_dLeft);
                 pParagraph->m_dRight = std::min(dCurrRight, dNextRight);
@@ -1311,7 +1361,7 @@ namespace NSDocxRenderer
             pParagraph->m_arLines.push_back(pCurrLine);
             pParagraph->m_nNumLines++;
 
-            if (bIf1 && !bIsSingleLineParagraph && bIf2 && (bIf3 || bIf4) && (bIf5 || bIf6 || bIf7) && bIf8)
+            if (pNextLine && !bIsSingleLineParagraph && bIf1 && (bIf2 || bIf3) && (bIf4 || bIf5 || bIf6) && bIf7)
             {
                 pParagraph->m_arLines.push_back(pNextLine);
                 pParagraph->m_nNumLines++;
@@ -1341,20 +1391,20 @@ namespace NSDocxRenderer
                         dNextRight = pNextLine->CalculateRightBorder(m_dWidth);
                         eCrossingType = pCurrLine->GetVerticalCrossingType(pNextLine);
 
-                        bIf2 = fabs(pCurrLine->m_dHeight - pNextLine->m_dHeight) < c_dTHE_SAME_STRING_Y_PRECISION_MM; //высота строк должна быть примерно одинаковой
-                        bIf3 = fabs(dCurrBeforeSpacing - dNextBeforeSpacing) < c_dLINE_DISTANCE_ERROR_MM; //расстрояние между строк тоже одинаково
-                        bIf4 = (eCrossingType == eVerticalCrossingType::vctUnknown ||
+                        bIf1 = fabs(pCurrLine->m_dHeight - pNextLine->m_dHeight) < c_dTHE_SAME_STRING_Y_PRECISION_MM; //высота строк должна быть примерно одинаковой
+                        bIf2 = fabs(dCurrBeforeSpacing - dNextBeforeSpacing) < c_dLINE_DISTANCE_ERROR_MM; //расстрояние между строк тоже одинаково
+                        bIf3 = (eCrossingType == eVerticalCrossingType::vctUnknown ||
                                 eCrossingType == eVerticalCrossingType::vctNoCrossingCurrentAboveNext ||
                                 eCrossingType == eVerticalCrossingType::vctNoCrossingCurrentBelowNext);
-                        bIf5 = ((pParagraph->m_eTextAlignmentType == CParagraph::tatByLeftEdge && fabs(pCurrLine->m_dLeft - pNextLine->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM) ||
+                        bIf4 = ((pParagraph->m_eTextAlignmentType == CParagraph::tatByLeftEdge && fabs(pCurrLine->m_dLeft - pNextLine->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM) ||
                                 (pParagraph->m_eTextAlignmentType == CParagraph::tatByWidth && fabs(pCurrLine->m_dLeft - pNextLine->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM && (fabs(dCurrRight - dNextRight) < c_dERROR_OF_PARAGRAPH_BORDERS_MM || dCurrRight < dNextRight)) ||
                                 (pParagraph->m_eTextAlignmentType == CParagraph::tatByRightEdge && fabs(dCurrRight - dNextRight) < c_dERROR_OF_PARAGRAPH_BORDERS_MM) ||
                                 (pParagraph->m_eTextAlignmentType == CParagraph::tatByCenter));
-                        bIf6 = (pCurrLine->m_dWidth > pNextLine->m_dWidth * c_dCOEFFICIENT_LENGTHS_LINES_IN_PARAGRAPH);
+                        bIf5 = (pCurrLine->m_dWidth > pNextLine->m_dWidth * c_dCOEFFICIENT_LENGTHS_LINES_IN_PARAGRAPH);
                     }
 
                     //проверим, подходят ли следующие строчки для текущего pParagraph
-                    while(pNextLine &&  bIf2 && bIf3 && bIf4 && bIf5 && bIf6)
+                    while(pNextLine &&  bIf1 && bIf2 && bIf3 && bIf4 && bIf5)
                     {
                         pParagraph->m_arLines.push_back(pNextLine);
                         pParagraph->m_nNumLines++;
@@ -1386,16 +1436,16 @@ namespace NSDocxRenderer
                             dNextRight = pNextLine->CalculateRightBorder(m_dWidth);
                             eCrossingType = pCurrLine->GetVerticalCrossingType(pNextLine);
 
-                            bIf2 = fabs(pCurrLine->m_dHeight - pNextLine->m_dHeight) < c_dTHE_SAME_STRING_Y_PRECISION_MM; //высота строк должна быть примерно одинаковой
-                            bIf3 = fabs(dCurrBeforeSpacing - dNextBeforeSpacing) < c_dLINE_DISTANCE_ERROR_MM; //расстрояние между строк тоже одинаково
-                            bIf4 = (eCrossingType == eVerticalCrossingType::vctUnknown ||
+                            bIf1 = fabs(pCurrLine->m_dHeight - pNextLine->m_dHeight) < c_dTHE_SAME_STRING_Y_PRECISION_MM; //высота строк должна быть примерно одинаковой
+                            bIf2 = fabs(dCurrBeforeSpacing - dNextBeforeSpacing) < c_dLINE_DISTANCE_ERROR_MM; //расстрояние между строк тоже одинаково
+                            bIf3 = (eCrossingType == eVerticalCrossingType::vctUnknown ||
                                     eCrossingType == eVerticalCrossingType::vctNoCrossingCurrentAboveNext ||
                                     eCrossingType == eVerticalCrossingType::vctNoCrossingCurrentBelowNext);
-                            bIf5 = ((pParagraph->m_eTextAlignmentType == CParagraph::tatByLeftEdge && fabs(pCurrLine->m_dLeft - pNextLine->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM) ||
+                            bIf4 = ((pParagraph->m_eTextAlignmentType == CParagraph::tatByLeftEdge && fabs(pCurrLine->m_dLeft - pNextLine->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM) ||
                                     (pParagraph->m_eTextAlignmentType == CParagraph::tatByWidth && fabs(pCurrLine->m_dLeft - pNextLine->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM && (fabs(dCurrRight - dNextRight) < c_dERROR_OF_PARAGRAPH_BORDERS_MM || dCurrRight < dNextRight)) ||
                                     (pParagraph->m_eTextAlignmentType == CParagraph::tatByRightEdge && fabs(dCurrRight - dNextRight) < c_dERROR_OF_PARAGRAPH_BORDERS_MM) ||
                                     (pParagraph->m_eTextAlignmentType == CParagraph::tatByCenter));
-                            bIf6 = (pCurrLine->m_dWidth > pNextLine->m_dWidth * c_dCOEFFICIENT_LENGTHS_LINES_IN_PARAGRAPH);
+                            bIf5 = (pCurrLine->m_dWidth > pNextLine->m_dWidth * c_dCOEFFICIENT_LENGTHS_LINES_IN_PARAGRAPH);
                         }
                     }
                 }
@@ -1427,13 +1477,8 @@ namespace NSDocxRenderer
 
             if (m_eTextAssociationType == tatParagraphToShape)
             {
-                /*bool bIsSameTypeText = (pPrevLine &&
-                    fabs(pPrevLine->m_dHeight - pCurrLine->m_dHeight) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
-                    fabs(dPrevBeforeSpacing - dCurrBeforeSpacing) < c_dLINE_DISTANCE_ERROR_MM);
-
-                CreateShapeFormParagraphs(pParagraph, bIsSameTypeText);*/
-
-                AddParagraphToGeneralTextShape(pParagraph);
+                bool bIsSameTypeText = pPrevLine && fabs(dPrevBeforeSpacing - dCurrBeforeSpacing) < c_dLINE_DISTANCE_ERROR_MM;
+                CreateShapeFormParagraphs(pParagraph, bIsSameTypeText);
             }
             else
             {
@@ -1659,61 +1704,6 @@ namespace NSDocxRenderer
        {
            m_arShapes.push_back(pShape);
        }
-    }
-
-    void CPage::AddParagraphToGeneralTextShape(CParagraph* pParagraph)
-    {
-        if (!pParagraph)
-        {
-            return;
-        }
-
-        if (!m_pGeneralTextShape)
-        {
-            m_pGeneralTextShape = new CShape();
-
-            pParagraph->m_dSpaceBefore = 0;
-            m_pGeneralTextShape->m_dHeight += pParagraph->m_dHeight * pParagraph->m_nNumLines;
-            m_pGeneralTextShape->m_eType = CShape::eShapeType::stTextBox;
-            m_pGeneralTextShape->m_bIsBehindDoc = false;
-
-            m_arShapes.push_back(m_pGeneralTextShape);
-        }
-        else
-        {
-            m_pGeneralTextShape->m_dHeight += pParagraph->m_dHeight * pParagraph->m_nNumLines + pParagraph->m_dSpaceBefore;
-        }
-
-        m_pGeneralTextShape->m_arParagraphs.push_back(pParagraph);
-
-        if (m_pGeneralTextShape->m_dLeft > 0)
-        {
-            m_pGeneralTextShape->m_dLeft = std::min(m_pGeneralTextShape->m_dLeft, pParagraph->m_dLeft);
-        }
-        else
-        {
-            m_pGeneralTextShape->m_dLeft = pParagraph->m_dLeft;
-        }
-
-        if (m_pGeneralTextShape->m_dTop > 0)
-        {
-            m_pGeneralTextShape->m_dTop = std::min(m_pGeneralTextShape->m_dTop, pParagraph->m_dTop);
-        }
-        else
-        {
-            m_pGeneralTextShape->m_dTop = pParagraph->m_dTop;
-        }
-
-        if (m_pGeneralTextShape->m_dRight > 0)
-        {
-            m_pGeneralTextShape->m_dRight = std::min(m_pGeneralTextShape->m_dRight, pParagraph->m_dRight);
-        }
-        else
-        {
-            m_pGeneralTextShape->m_dRight = pParagraph->m_dRight;
-        }
-
-        m_pGeneralTextShape->m_dWidth = m_dWidth - m_pGeneralTextShape->m_dLeft - m_pGeneralTextShape->m_dRight;
     }
 
     void CPage::CorrectionParagraphsInShapes()

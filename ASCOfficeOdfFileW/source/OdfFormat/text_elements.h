@@ -88,9 +88,9 @@ class text_h : public office_element_impl<text_h>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTextH;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -121,9 +121,9 @@ class text_p : public office_element_impl<text_p>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTextP;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -144,9 +144,9 @@ class text_list : public office_element_impl<text_list>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTextList;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 public:
 
@@ -173,9 +173,9 @@ class text_soft_page_break : public office_element_impl<text_soft_page_break>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTextSoftPageBreak;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
@@ -204,9 +204,9 @@ class text_section : public office_element_impl<text_section>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextSection;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -241,9 +241,9 @@ class text_section_source : public office_element_impl<text_section_source>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextSectionSource;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child_element){}
@@ -260,10 +260,10 @@ class text_table_of_content : public office_element_impl<text_table_of_content>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextTableOfContent;
     
-	CPDOCCORE_DEFINE_VISITABLE()
+	
     
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -284,9 +284,9 @@ class text_index_body : public office_element_impl<text_index_body>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTextIndexBody;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
     
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -305,9 +305,9 @@ class text_index_title : public office_element_impl<text_index_title>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTextIndexTitle;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
   	
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -326,10 +326,10 @@ class text_unknown_change : public office_element_impl<text_unknown_change>
 public:
 	static const wchar_t * ns;
     static const wchar_t * name;   	
-	static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextUnknownChange;
 
-    CPDOCCORE_DEFINE_VISITABLE()
+    
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element		( const office_element_ptr & child_element);
@@ -347,7 +347,7 @@ class text_insertion : public text_unknown_change
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextInsertion;
 
     virtual void serialize(std::wostream & _Wostream);
@@ -361,7 +361,7 @@ class text_deletion : public text_unknown_change
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextDeletion;
   
 	virtual void serialize(std::wostream & _Wostream);
@@ -375,7 +375,7 @@ class text_format_change : public text_unknown_change
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextFormatChange;
 
 	virtual void serialize(std::wostream & _Wostream);
@@ -391,9 +391,9 @@ class text_tracked_changes : public office_element_impl<text_tracked_changes>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextTrackedChanges;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element		( const office_element_ptr & child_element);
@@ -411,9 +411,9 @@ class text_changed_region : public office_element_impl<text_changed_region>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextChangedRegion;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element		( const office_element_ptr & child_element);
@@ -432,10 +432,10 @@ public:
  	static const wchar_t * ns;
     static const wchar_t * name;   	
 
-	static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextChange;
    
-	CPDOCCORE_DEFINE_VISITABLE()
+	
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element		( const office_element_ptr & child_element)			{}
@@ -451,7 +451,7 @@ class text_change : public text_add_change
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextChange;  
    
 	virtual void serialize(std::wostream & _Wostream);
@@ -464,7 +464,7 @@ class text_change_start : public text_add_change
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextChangeStart;
 
 	virtual void serialize(std::wostream & _Wostream);
@@ -477,7 +477,7 @@ class text_change_end : public text_add_change
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextChangeEnd;
   
 	virtual void serialize(std::wostream & _Wostream);
@@ -491,10 +491,10 @@ class text_table_index : public office_element_impl<text_table_index>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType	xml_type	= xml::typeElement;
+
     static const ElementType	type		= typeTextTableIndex;
     
-	CPDOCCORE_DEFINE_VISITABLE();
+	
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element		( const office_element_ptr & child_element);
@@ -515,10 +515,10 @@ class text_illustration_index : public office_element_impl<text_illustration_ind
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType	xml_type	= xml::typeElement;
+
     static const ElementType	type		= typeTextIllustrationIndex;
     
-	CPDOCCORE_DEFINE_VISITABLE();
+	
   
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element		( const office_element_ptr & child_element);
@@ -539,10 +539,10 @@ class text_alphabetical_index : public office_element_impl<text_alphabetical_ind
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType	xml_type	= xml::typeElement;
+
     static const ElementType	type		= typeTextAlphabeticalIndex;
     
-	CPDOCCORE_DEFINE_VISITABLE();
+	
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element		( const office_element_ptr & child_element);
@@ -563,10 +563,10 @@ class text_user_index : public office_element_impl<text_user_index>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType	xml_type	= xml::typeElement;
+
     static const ElementType	type		= typeTextUserIndex;
     
-	CPDOCCORE_DEFINE_VISITABLE();
+	
   
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element		( const office_element_ptr & child_element);
@@ -587,10 +587,10 @@ class text_bibliography : public office_element_impl<text_bibliography>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType	xml_type	= xml::typeElement;
+
     static const ElementType	type		= typeTextBibliography;
     
-	CPDOCCORE_DEFINE_VISITABLE();
+	
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element		( const office_element_ptr & child_element);
@@ -610,9 +610,9 @@ class text_bibliography_source: public office_element_impl<text_bibliography_sou
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextBibliographySource;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element		( const office_element_ptr & child_element);
@@ -629,9 +629,9 @@ class common_entry_template : public office_element_impl<common_entry_template>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextCommonEntryTemplate;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element		( const office_element_ptr & child_element);
@@ -650,9 +650,9 @@ class text_bibliography_entry_template: public common_entry_template
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextBibliographyEntryTemplate;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
     
     virtual void serialize(std::wostream & _Wostream);
 
@@ -665,9 +665,9 @@ class text_index_title_template : public office_element_impl<text_index_title_te
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTextIndexTitleTemplate;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
   	
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element		( const office_element_ptr & child_element){}
@@ -686,9 +686,9 @@ class text_sequence_decl : public office_element_impl<text_sequence_decl>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextSequenceDecl;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element		( const office_element_ptr & child_element){}
@@ -708,9 +708,9 @@ class text_sequence_decls : public office_element_impl<text_sequence_decls>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextSequenceDecls;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element		( const office_element_ptr & child_element);
@@ -728,9 +728,9 @@ class text_table_of_content_source: public office_element_impl<text_table_of_con
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextTableOfContentSource;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element		( const office_element_ptr & child_element);
@@ -758,9 +758,9 @@ class text_table_of_content_entry_template : public common_entry_template
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextTableOfContentEntryTemplate;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_table_of_content_entry_template);
 //---------------------------------------------------------------------------------------------------
@@ -771,9 +771,9 @@ class text_index_entry_bibliography: public office_element_impl<text_index_entry
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextIndexEntryBibliography;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element		( const office_element_ptr & child_element){}
@@ -792,9 +792,9 @@ class text_index_entry_chapter: public office_element_impl<text_index_entry_chap
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextIndexEntryChapter;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element		( const office_element_ptr & child_element){}
@@ -810,9 +810,9 @@ class text_index_entry_link_end: public office_element_impl<text_index_entry_lin
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextIndexEntryLinkEnd;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element		( const office_element_ptr & child_element){}
@@ -828,9 +828,9 @@ class text_index_entry_link_start: public office_element_impl<text_index_entry_l
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextIndexEntryLinkStart;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element		( const office_element_ptr & child_element){}
@@ -846,9 +846,9 @@ class text_index_entry_page_number: public office_element_impl<text_index_entry_
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextIndexEntryPageNumber;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element		( const office_element_ptr & child_element){}
@@ -864,9 +864,9 @@ class text_index_entry_span: public office_element_impl<text_index_entry_span>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextIndexEntrySpan;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element		( const office_element_ptr & child_element){}
@@ -882,9 +882,9 @@ class text_index_entry_tab_stop: public office_element_impl<text_index_entry_tab
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextIndexEntryTabStop;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element		( const office_element_ptr & child_element){}
@@ -900,9 +900,9 @@ class text_index_entry_text: public office_element_impl<text_index_entry_text>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextIndexEntryText;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element		( const office_element_ptr & child_element){}
@@ -918,9 +918,9 @@ class text_illustration_index_source: public office_element_impl<text_illustrati
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextIllustrationIndexSource;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element		( const office_element_ptr & child_element);
@@ -946,9 +946,9 @@ class text_illustration_index_entry_template : public common_entry_template
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextIllustrationIndexEntryTemplate;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_illustration_index_entry_template);
 //---------------------------------------------------------------------------------------------------
@@ -959,9 +959,9 @@ class text_user_index_source: public office_element_impl<text_user_index_source>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextUserIndexSource;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element		( const office_element_ptr & child_element);
@@ -994,9 +994,9 @@ class text_user_index_entry_template : public common_entry_template
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextUserIndexEntryTemplate;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_user_index_entry_template);
 //---------------------------------------------------------------------------------------------------
@@ -1007,9 +1007,9 @@ class alphabetical_index_source : public office_element_impl<alphabetical_index_
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextAlphabeticalIndexSource;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element		( const office_element_ptr & child_element);
@@ -1046,9 +1046,9 @@ class text_alphabetical_index_entry_template : public common_entry_template
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextAlphabeticalIndexEntryTemplate;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_alphabetical_index_entry_template);
 //---------------------------------------------------------------------------------------------------
@@ -1059,9 +1059,9 @@ class text_table_index_source: public office_element_impl<text_table_index_sourc
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextTableIndexSource;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
     
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element		( const office_element_ptr & child_element);
@@ -1087,9 +1087,9 @@ class text_table_index_entry_template : public common_entry_template
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeTextTableIndexEntryTemplate;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 };
 CP_REGISTER_OFFICE_ELEMENT2(text_table_index_entry_template);
 }

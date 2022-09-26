@@ -80,10 +80,10 @@ class style_tab_stop : public office_element_impl<style_tab_stop>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeStyleTabStop;
 
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child){}
@@ -111,10 +111,10 @@ class style_tab_stops : public office_element_impl<style_tab_stops>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeStyleTabStops;
 
-    CPDOCCORE_DEFINE_VISITABLE()
+    
     
     size_t size() const { return style_tab_stops_.size(); }
 
@@ -134,10 +134,10 @@ class style_drop_cap : public office_element_impl<style_drop_cap>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeStyleDropCap;
 
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child){}
@@ -159,10 +159,10 @@ class style_background_image : public office_element_impl<style_background_image
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeStyleBackgroundImage;
 
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child){}
@@ -264,10 +264,10 @@ class style_paragraph_properties : public office_element_impl<style_paragraph_pr
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeStyleParagraphProperties;
 
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child);

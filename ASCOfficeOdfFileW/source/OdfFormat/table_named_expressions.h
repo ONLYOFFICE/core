@@ -47,10 +47,10 @@ class table_named_expressions : public office_element_impl<table_named_expressio
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableNamedExpressions;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -70,10 +70,10 @@ class table_named_range : public office_element_impl<table_named_range>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableNamedRange;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
@@ -97,10 +97,10 @@ class table_named_expression : public office_element_impl<table_named_expression
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableNamedExpression;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}

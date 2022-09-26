@@ -165,7 +165,7 @@ private:
 
 	odf_element_state temporary_;
 
-	std::vector<_object>		objects_;//"0" = root
+	std::vector<_object*>		objects_;//"0" = root
 
 	odf_chart_context			chart_context_;
 	odf_page_layout_context		page_layout_context_;	

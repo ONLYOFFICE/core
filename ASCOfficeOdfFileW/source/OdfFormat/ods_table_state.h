@@ -495,7 +495,6 @@ private:
 	std::vector<office_element_ptr> current_level_;//постоянно меняющийся список уровней ("0-й элемент - сама таблица)
 	
 	std::vector<ods_cell_state>	cells_;
-	long						cells_size_;
 	
 	std::vector<ods_hyperlink_state> hyperlinks_;
 	std::map<unsigned int, ods_shared_formula_state> shared_formulas_;

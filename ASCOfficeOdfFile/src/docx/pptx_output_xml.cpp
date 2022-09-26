@@ -99,14 +99,14 @@ void pptx_xml_slide::write_to(std::wostream & strm)
             {
    				CP_XML_ATTR(L"name", name());   
 				
-				CP_XML_STREAM() << strmBackground_.str();
+				CP_XML_STREAM() << strmBackground_.rdbuf();
 
 				CP_XML_NODE(L"p:spTree")
 				{
-					CP_XML_STREAM() << strmData_.str();
+					CP_XML_STREAM() << strmData_.rdbuf();
 				}
             }
-			CP_XML_STREAM() << strmTiming_.str();
+			CP_XML_STREAM() << strmTiming_.rdbuf();
 			CP_XML_NODE(L"p:clrMapOvr")
 			{
 				CP_XML_NODE(L"a:masterClrMapping");
@@ -165,7 +165,7 @@ void pptx_xml_slideLayout::write_to(std::wostream & strm)
             {
 				CP_XML_NODE(L"p:spTree")
 				{
-					CP_XML_STREAM() << strmData_.str();
+					CP_XML_STREAM() << strmData_.rdbuf();
 
 //в slideLayoutData_
 //contentPart (Content Part) §19.3.1.14
@@ -258,11 +258,11 @@ void pptx_xml_slideMaster::write_to(std::wostream & strm)
            
 			CP_XML_NODE(L"p:cSld")
             {
-				CP_XML_STREAM() << strmBackground_.str();
+				CP_XML_STREAM() << strmBackground_.rdbuf();
 
 				CP_XML_NODE(L"p:spTree")
 				{
-					CP_XML_STREAM() << strmData_.str();
+					CP_XML_STREAM() << strmData_.rdbuf();
 				}
             }
 			CP_XML_NODE(L"p:clrMap")
@@ -291,7 +291,7 @@ void pptx_xml_slideMaster::write_to(std::wostream & strm)
 					}
 				}
 			}
-			CP_XML_STREAM() << strmDataExtra_.str();
+			CP_XML_STREAM() << strmDataExtra_.rdbuf();
 			CP_XML_NODE(L"p:txStyles")
 			{
 				CP_XML_NODE(L"p:titleStyle");
@@ -324,17 +324,17 @@ void pptx_xml_theme::write_to(std::wostream & strm)
 				CP_XML_NODE(L"a:clrScheme")
 				{
 					CP_XML_ATTR(L"name", name_);
-					CP_XML_STREAM() << clrSchemeData_.str();
+					CP_XML_STREAM() << clrSchemeData_.rdbuf();
 				}
  				CP_XML_NODE(L"a:fontScheme")
 				{
 					CP_XML_ATTR(L"name", name_);
-					CP_XML_STREAM() << fontSchemeData_.str();
+					CP_XML_STREAM() << fontSchemeData_.rdbuf();
 				}
 				CP_XML_NODE(L"a:fmtScheme")
 				{
 					CP_XML_ATTR(L"name", name_);
-					CP_XML_STREAM() << fmtSchemeData_.str();
+					CP_XML_STREAM() << fmtSchemeData_.rdbuf();
 				}
 			}
 		}
@@ -417,7 +417,7 @@ void pptx_xml_presentation::write_to(std::wostream & strm)
 
             CP_XML_NODE(L"p:sldMasterIdLst")
             {
-                CP_XML_STREAM() << slideMastersData_.str();
+                CP_XML_STREAM() << slideMastersData_.rdbuf();
             }       
 			std::wstring notesMaster = slideNotesMastersData_.str();
 			if (notesMaster.empty() == false)
@@ -429,11 +429,11 @@ void pptx_xml_presentation::write_to(std::wostream & strm)
 			}
 			CP_XML_NODE(L"p:sldIdLst")
             {
-                CP_XML_STREAM() << slidesData_.str();
+                CP_XML_STREAM() << slidesData_.rdbuf();
             }
-			CP_XML_STREAM() << slidesProperties_.str();
+			CP_XML_STREAM() << slidesProperties_.rdbuf();
 
-			CP_XML_STREAM() << slidesNotesProperties_.str();
+			CP_XML_STREAM() << slidesNotesProperties_.rdbuf();
 
 			CP_XML_NODE(L"p:defaultTextStyle")//??
 			{
@@ -491,11 +491,11 @@ void pptx_xml_slideNotes::write_to(std::wostream & strm)
            
 			CP_XML_NODE(L"p:cSld")
             {
-				CP_XML_STREAM() << strmBackground_.str();
+				CP_XML_STREAM() << strmBackground_.rdbuf();
 
 				CP_XML_NODE(L"p:spTree")
 				{
-					CP_XML_STREAM() << strmData_.str();
+					CP_XML_STREAM() << strmData_.rdbuf();
 				}
             }
 			CP_XML_NODE(L"p:clrMapOvr")
@@ -563,11 +563,11 @@ void pptx_xml_slideNotesMaster::write_to(std::wostream & strm)
            
 			CP_XML_NODE(L"p:cSld")
             {
-				CP_XML_STREAM() << strmBackground_.str();
+				CP_XML_STREAM() << strmBackground_.rdbuf();
 
 				CP_XML_NODE(L"p:spTree")
 				{
-					CP_XML_STREAM() << strmData_.str();
+					CP_XML_STREAM() << strmData_.rdbuf();
 				}
             }
 			CP_XML_NODE(L"p:clrMap")

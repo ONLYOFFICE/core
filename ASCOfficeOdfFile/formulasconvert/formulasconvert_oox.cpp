@@ -790,7 +790,6 @@ std::wstring oox2odf_converter::Impl::convert_formula(const std::wstring & expr)
 			boost::match_default | boost::format_all);
 	}
 
-	XmlUtils::replace_all(res, L"&", L"&amp;");
 	oox_replace_tmp_back(res);
 
 	replace_vertical(res);   

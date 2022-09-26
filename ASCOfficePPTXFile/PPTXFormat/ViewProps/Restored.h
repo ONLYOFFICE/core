@@ -30,9 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_VIEWPROPS_RESTORED_INCLUDE_H_
-#define PPTX_VIEWPROPS_RESTORED_INCLUDE_H_
-
 #include "./../WrapperWritingElement.h"
 
 namespace PPTX
@@ -65,11 +62,38 @@ namespace PPTX
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteINT(sz);
-				pWriter->WriteBool2(0, autoAdjust);
+				pWriter->WriteInt1(0, sz);
+				pWriter->WriteBool2(1, autoAdjust);
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
+				pReader->Skip(1); // start attributes
+
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					switch (_at)
+					{
+						case 0:
+						{
+							sz = pReader->GetLong();
+						}break;
+						case 1:
+						{
+							autoAdjust = pReader->GetBool();
+						}break;
+						default:
+							break;
+					}
+				}
+				pReader->Seek(_end_rec);
+			}
 			int				sz;
 			nullable_bool	autoAdjust;
 
@@ -86,4 +110,3 @@ namespace PPTX
 	} // namespace nsViewProps
 } // namespace PPTX
 
-#endif // PPTX_VIEWPROPS_RESTORED_INCLUDE_H_

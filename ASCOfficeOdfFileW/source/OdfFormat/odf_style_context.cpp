@@ -425,7 +425,7 @@ office_element_ptr & odf_style_context::add_or_find(std::wstring name, style_fam
 				if (oox_id >= 0 && style_state_list_[i]->style_oox_id_ == oox_id)			
 					return style_state_list_[i]->get_office_element();
 				
-				if ((name.length() >=0 && style_state_list_[i]->odf_style_->get_name() == name)
+				if ((name.length() >= 0 && style_state_list_[i]->odf_style_->get_name() == name)
 					&& style_state_list_[i]->root_ == root)	return style_state_list_[i]->get_office_element();
 				//во избежания имена генерим уникальные (в принципе для root и остальных - можно одинаковые)
 			}

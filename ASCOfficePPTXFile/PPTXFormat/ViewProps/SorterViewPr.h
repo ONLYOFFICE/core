@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_VIEWPROPS_SORTER_VIEW_PROPERTIES_INCLUDE_H_
-#define PPTX_VIEWPROPS_SORTER_VIEW_PROPERTIES_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "CViewPr.h"
@@ -45,7 +43,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(SorterViewPr)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
                 XmlMacroReadAttributeBase(node, L"showFormatting", attrShowFormatting);
@@ -72,6 +69,46 @@ namespace PPTX
 
 				pWriter->WriteRecord1(0, CViewPr);
 			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+				pReader->Skip(1); // start attributes
+
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					switch (_at)
+					{
+						case 0:
+						{
+							attrShowFormatting = pReader->GetBool();
+						}break;
+						default:
+							break;
+					}
+				}
+
+				while (pReader->GetPos() < _end_rec)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+						case 0:
+						{
+							CViewPr.fromPPTY(pReader);
+						}break;
+						default:
+						{
+							pReader->SkipRecord();
+						}break;
+					}
+				}
+				pReader->Seek(_end_rec);
+			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				pWriter->StartNode(_T("p:sorterViewPr"));
@@ -85,7 +122,6 @@ namespace PPTX
 				pWriter->EndNode(_T("p:sorterViewPr"));
 			}
 
-		public:
 			nsViewProps::CViewPr	CViewPr;
 			nullable_bool			attrShowFormatting;
 		protected:
@@ -97,4 +133,3 @@ namespace PPTX
 	} // namespace nsViewProps
 } // namespace PPTX
 
-#endif // PPTX_VIEWPROPS_SORTER_VIEW_PROPERTIES_INCLUDE_H_

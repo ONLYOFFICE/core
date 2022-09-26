@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_SLIDES_SLIDE_INCLUDE_H_
-#define PPTX_SLIDES_SLIDE_INCLUDE_H_
 
 #include "WrapperFile.h"
 #include "FileContainer.h"
@@ -251,7 +249,7 @@ namespace PPTX
 				{
 					case 0:
 					{
-						cSld = new Logic::CSld();
+						cSld = new Logic::CSld(WrapperFile::m_pMainDocument);
 						cSld->fromPPTY(pReader);
 						break;
 					}
@@ -345,5 +343,3 @@ namespace PPTX
 		}
 	};
 } // namespace PPTX
-
-#endif // PPTX_SLIDES_SLIDE_INCLUDE_H_

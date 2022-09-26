@@ -237,7 +237,7 @@ bool CPdfFile::EditClose()
     {
         GString* owner_pswd = NSStrings::CreateString(m_pInternal->wsPassword);
         GString* user_pswd  = NSStrings::CreateString(m_pInternal->wsPassword);
-        bRes &= pPDFDocument->makeWritable(false, owner_pswd, user_pswd);
+        bRes &= (pPDFDocument->makeWritable(false, owner_pswd, user_pswd) != 0);
         delete owner_pswd;
         delete user_pswd;
 
@@ -329,5 +329,13 @@ void CPdfFile::TEST(int i)
         m_pInternal->pWriter->put_PenSize(1);
         m_pInternal->pWriter->DrawPath(c_nStroke | c_nWindingFillMode);
         m_pInternal->pWriter->PathCommandEnd();
+    }
+    else if (i == 2)
+    {
+        m_pInternal->pWriter->OnlineWordToPdf(NSFile::GetProcessDirectory() + L"/../example/pdf.bin", L"");
+    }
+    else if (i == 3)
+    {
+        m_pInternal->pWriter->OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/../example1/1/pdf.bin", L"");
     }
 }

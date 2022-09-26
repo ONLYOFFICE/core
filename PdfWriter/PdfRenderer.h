@@ -256,6 +256,7 @@ public:
     void PageRotate(int nRotate);
     void Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate);
     std::wstring GetEditPdfPath();
+    PdfWriter::CDocument* GetPDFDocument() { return m_pDocument; }
 
     NSFonts::IApplicationFonts* GetApplicationFonts();
 

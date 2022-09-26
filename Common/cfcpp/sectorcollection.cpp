@@ -10,7 +10,7 @@ SectorCollection::SectorCollection()
 
 void SectorCollection::Add(std::shared_ptr<Sector> item)
 {
-    OnVer3SizeLimitReached();
+    DoCheckSizeLimitReached();
 
     add(item);
 }

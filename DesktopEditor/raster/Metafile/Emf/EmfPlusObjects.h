@@ -471,11 +471,11 @@ namespace MetaFile
             public:
                 CEmfPlusImage() : CEmfPlusObject(), m_pImageBuffer(NULL), m_ulPosition(0),
                                   m_ulFullSize(0), m_eImageDataType(ImageDataTypeUnknown),
-                                  m_eMetafileDataType(MetafileDataTypeUnknown){};
+								  m_eMetafileDataType(MetafileDataTypeUnknown),
+								  m_unWidth(0), m_unHeight(0){};
                 virtual ~CEmfPlusImage()
                 {
-                        if (NULL != m_pImageBuffer)
-                                delete [] m_pImageBuffer;
+						RELEASEARRAYOBJECTS(m_pImageBuffer);
                 };
 
                 virtual EEmfPlusObjectType GetObjectType() override
@@ -524,6 +524,18 @@ namespace MetaFile
                         m_ulFullSize = unSize;
                 }
 
+				void SetImageSize(unsigned int unWidth, unsigned int unHeight)
+				{
+					m_unWidth  = unWidth;
+					m_unHeight = unHeight;
+				}
+
+				void GetImageSize(unsigned int &unWidth, unsigned int &unHeight)
+				{
+					unWidth  = m_unWidth;
+					unHeight = m_unHeight;
+				}
+
                 unsigned int GetUnreadSize() const
                 {
                         return (m_ulFullSize - m_ulPosition);
@@ -559,6 +571,9 @@ namespace MetaFile
 
                 EEmfPlusImageDataType    m_eImageDataType;
                 EEmfPlusMetafileDataType m_eMetafileDataType;
+
+				unsigned int m_unWidth;
+				unsigned int m_unHeight;
         };
 
         typedef  enum

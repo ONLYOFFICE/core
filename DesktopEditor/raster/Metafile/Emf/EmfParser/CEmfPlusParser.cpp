@@ -217,10 +217,10 @@ namespace MetaFile
 
 		do
 		{
-			if (m_oStream.IsEof())
+			if (m_bEof)
 				break;
 
-			if (m_oStream.CanRead() < 12)
+			if (m_oStream.IsEof())
 				break;
 
 			m_oStream >> unShType;
@@ -246,7 +246,7 @@ namespace MetaFile
 				case EMFPLUS_COMMENT: Read_EMFPLUS_COMMENT(); break;
 
 					//Control Record Types (Типы управляющих записей)
-				case EMFPLUS_ENDOFFILE: Read_EMFPLUS_ENDOFFILE();       break; break;
+				case EMFPLUS_ENDOFFILE: Read_EMFPLUS_ENDOFFILE();       break;
 				case EMFPLUS_GETDC:     Read_EMFPLUS_GETDC();           break;
 				case EMFPLUS_HEADER:    Read_EMFPLUS_HEADER(unShFlags); break;
 
@@ -461,6 +461,9 @@ namespace MetaFile
 		BYTE* pBuffer = new BYTE[m_ulRecordSize - 28];
 
 		m_oStream.ReadBytes(pBuffer, m_ulRecordSize - 28);
+
+		if (BitmapDataTypePixel == unType)
+			oImage.SetImageSize(nWidth, nHeight);
 
 		oImage.AddData(pBuffer, m_ulRecordSize - 28);
 	}
@@ -1279,10 +1282,8 @@ namespace MetaFile
 	BYTE* GetClipedImage(const BYTE* pBuffer, LONG lWidth, LONG lHeight, TRect& oNewRect)
 	{
 		if (NULL == pBuffer ||
-				oNewRect.nLeft < 0 || oNewRect.nRight  < 0 ||
-				oNewRect.nTop  < 0 || oNewRect.nBottom < 0 ||
-				oNewRect.nRight - oNewRect.nLeft == lWidth ||
-				oNewRect.nBottom - oNewRect.nLeft == lHeight)
+			oNewRect.nLeft < 0 || oNewRect.nRight  < 0 ||
+			oNewRect.nTop  < 0 || oNewRect.nBottom < 0)
 			return NULL;
 
 		if (lHeight < (oNewRect.nBottom - oNewRect.nTop))
@@ -1292,7 +1293,7 @@ namespace MetaFile
 			oNewRect.nRight = oNewRect.nLeft + lWidth;
 
 		if (lHeight == (oNewRect.nBottom - oNewRect.nTop) &&
-				lWidth  == (oNewRect.nRight  - oNewRect.nLeft))
+			lWidth  == (oNewRect.nRight  - oNewRect.nLeft))
 			return NULL;
 
 		int nBeginX, nBeginY, nEndX, nEndY;
@@ -1378,7 +1379,13 @@ namespace MetaFile
 			return;
 
 		if (ImageDataTypeBitmap == pImage->GetImageDataType())
-			DrawBitmap(pBuffer, unSizeBuffer, oSrcRect, arPoints);
+		{
+			unsigned int unWidth, unHeigth;
+
+			pImage->GetImageSize(unWidth, unHeigth);
+
+			DrawBitmap(pBuffer, unSizeBuffer, unWidth, unHeigth, oSrcRect, arPoints);
+		}
 		else if (ImageDataTypeMetafile == pImage->GetImageDataType())
 			DrawMetafile(pBuffer, unSizeBuffer, oSrcRect, arPoints, pImage->GetMetafileType());
 	}
@@ -1550,38 +1557,49 @@ namespace MetaFile
 		//TODO: общую часть в идеале нужно вынести
 	}
 
-	void CEmfPlusParser::DrawBitmap(BYTE *pBuffer, unsigned int unSize, const TEmfPlusRectF& oSrcRect, const std::vector<TEmfPlusPointF>& arPoints)
+	void CEmfPlusParser::DrawBitmap(BYTE *pBuffer, unsigned int unSize, unsigned int unWidth, unsigned int unHeight, const TEmfPlusRectF& oSrcRect, const std::vector<TEmfPlusPointF>& arPoints)
 	{
 		if (NULL == pBuffer || 0 == unSize)
 			return;
 
-		Aggplus::CImage oImage;
-		oImage.Create(pBuffer, oSrcRect.dWidth, oSrcRect.dHeight, 4 * oSrcRect.dWidth, true);
+		BYTE* pBytes = NULL;
+		bool bExternalBuffer = false;
 
-		if (Aggplus::WrongState == oImage.GetLastStatus())
-			return;
+		if (unWidth != 0 && unHeight != 0)
+		{
+			pBytes = pBuffer;
+			bExternalBuffer = true;
+		}
+		else
+		{
+			CBgraFrame oBgraFrame;
 
-		unsigned int unWidth, unHeight;
+			if (!oBgraFrame.Decode(pBuffer, unSize))
+				return;
 
-		unWidth  = oImage.GetWidth();
-		unHeight = oImage.GetHeight();
+			unWidth  = oBgraFrame.get_Width();
+			unHeight = oBgraFrame.get_Height();
+			pBytes   = oBgraFrame.get_Data();
 
-		if (0 == unWidth || 0 == unHeight)
-			return;
+			oBgraFrame.put_Data(NULL);
 
-		BYTE* pBytes = oImage.GetData();
+			FlipYImage(pBytes, unWidth, unHeight);
+		}
 
 		TRect oClipRect;
 
-		oClipRect.nLeft = oSrcRect.dX;
-		oClipRect.nTop = oSrcRect.dY;
-		oClipRect.nRight = (oSrcRect.dX + oSrcRect.dWidth);
+		oClipRect.nLeft   = oSrcRect.dX;
+		oClipRect.nTop    = oSrcRect.dY;
+		oClipRect.nRight  = (oSrcRect.dX + oSrcRect.dWidth);
 		oClipRect.nBottom = (oSrcRect.dY + oSrcRect.dHeight);
 
 		BYTE* pNewBuffer = GetClipedImage(pBytes, unWidth, unHeight, oClipRect);
 
 		m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X, arPoints[2].Y - arPoints[0].Y,
 				(NULL != pNewBuffer) ? pNewBuffer : pBytes, fabs(oClipRect.nRight - oClipRect.nLeft), fabs(oClipRect.nBottom - oClipRect.nTop));
+
+		if (!bExternalBuffer)
+			RELEASEARRAYOBJECTS(pBytes);
 
 		RELEASEARRAYOBJECTS(pNewBuffer);
 	}
@@ -2880,12 +2898,16 @@ namespace MetaFile
 
 		m_pDC->MultiplyTransform(oMatrix, (unShFlags & 0x2000) ? MWT_RIGHTMULTIPLY : MWT_LEFTMULTIPLY);
 		UpdateOutputDC();
+
+		m_bBanEmfProcessing = true;
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_RESETWORLDTRANSFORM()
 	{
 		m_pDC->ResetTransform();
 		UpdateOutputDC();
+
+		m_bBanEmfProcessing = true;
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_ROTATEWORLDTRANSFORM(unsigned short unShFlags)
@@ -2903,6 +2925,8 @@ namespace MetaFile
 
 		m_pDC->MultiplyTransform(oMatrix, (unShFlags & 0x2000) ? MWT_RIGHTMULTIPLY : MWT_LEFTMULTIPLY);
 		UpdateOutputDC();
+
+		m_bBanEmfProcessing = true;
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_SCALEWORLDTRANSFORM(unsigned short unShFlags)
@@ -2916,6 +2940,8 @@ namespace MetaFile
 
 		m_pDC->MultiplyTransform(oMatrix, (unShFlags & 0x2000) ? MWT_RIGHTMULTIPLY : MWT_LEFTMULTIPLY);
 		UpdateOutputDC();
+
+		m_bBanEmfProcessing = true;
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_SETPAGETRANSFORM(unsigned short unShFlags)
@@ -2940,6 +2966,8 @@ namespace MetaFile
 
 		m_pDC->MultiplyTransform(oMatrix, MWT_LEFTMULTIPLY);
 		UpdateOutputDC();
+
+		m_bBanEmfProcessing = true;
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_SETWORLDTRANSFORM()
@@ -2950,6 +2978,8 @@ namespace MetaFile
 
 		m_pDC->MultiplyTransform(oMatrix, MWT_SET);
 		UpdateOutputDC();
+
+		m_bBanEmfProcessing = true;
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_TRANSLATEWORLDTRANSFORM(unsigned short unShFlags)
@@ -2963,6 +2993,8 @@ namespace MetaFile
 
 		m_pDC->MultiplyTransform(oMatrix, (unShFlags & 0x2000) ? MWT_RIGHTMULTIPLY : MWT_LEFTMULTIPLY);
 		UpdateOutputDC();
+
+		m_bBanEmfProcessing = true;
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_ENDOFFILE()
@@ -2970,6 +3002,7 @@ namespace MetaFile
 		if(NULL != m_pInterpretator)
 			m_pInterpretator->End();
 
+		m_bEof = true;
 		m_bBanEmfProcessing = false;
 	}
 

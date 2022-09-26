@@ -39,7 +39,7 @@ namespace MetaFile
 
 		unsigned int ulSize, ulType;
 
-		bool bEof = false;
+		unsigned int ulSize, ulType;
 
 		unsigned int ulRecordIndex	= 0;
 		unsigned int m_ulRecordPos	= 0;
@@ -94,7 +94,7 @@ namespace MetaFile
 				// 2.3.4 Control
 				//-----------------------------------------------------------
 			case EMR_HEADER:    Read_EMR_HEADER(); break;
-			case EMR_EOF:       Read_EMR_EOF(); bEof = true; break;
+			case EMR_EOF:       Read_EMR_EOF(); break;
 				//-----------------------------------------------------------
 				// 2.3.5 Drawing
 				//-----------------------------------------------------------
@@ -199,7 +199,7 @@ namespace MetaFile
 			}
 			}
 
-			if (bEof)
+			if (m_bEof)
 				break;
 
 			int need_skip = m_ulRecordSize - (m_oStream.Tell() - m_ulRecordPos);
@@ -220,7 +220,6 @@ namespace MetaFile
 		m_pInterpretator = NULL;
 		PlayFile();
 		m_pInterpretator = pInterpretator;
-		this->ClearFile();
 	}
 
 	EmfParserType CEmfParser::GetType()

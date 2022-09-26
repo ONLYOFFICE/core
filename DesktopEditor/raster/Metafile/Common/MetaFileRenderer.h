@@ -321,9 +321,7 @@ namespace MetaFile
 			UpdateTransform(iGraphicsMode);
 			UpdateClip();
 
-			double dLogicalFontHeight = pFont->GetHeight();
-			if (dLogicalFontHeight < 0)
-				dLogicalFontHeight = -dLogicalFontHeight;
+			double dLogicalFontHeight = std::fabs(pFont->GetHeight());
 
 			double dFontHeight = fabs(dLogicalFontHeight * m_dScaleY / 25.4 * 72);
 
@@ -469,7 +467,7 @@ namespace MetaFile
 				double dX = oTextPoint.x;
 				double dY = oTextPoint.y + dSkipY;
 
-				dSkipY += fH + dLogicalFontHeight * 1.2;
+				dSkipY += fH + dLogicalFontHeight;
 
 				// Найдем начальную точку текста
 				unsigned int ulTextAlign = m_pFile->GetTextAlign() & TA_MASK;
@@ -520,57 +518,6 @@ namespace MetaFile
 				{
 					// Ничего не делаем
 				}
-
-
-	//			unsigned int ulTextAlign = m_pFile->GetTextAlign() & TA_MASK;
-	//			unsigned int ulVTextAlign = m_pFile->GetTextAlign() >> 8;
-
-	//			if (ulVTextAlign == VTA_CENTER)
-	//			{
-	//				float fTemp = (fH) / 2;
-
-	//				dX += -fTemp * dSinTheta;
-	//				dY +=  fTemp * dCosTheta;
-	//			}
-	//			else if (ulVTextAlign == VTA_BOTTOM)
-	//			{
-	//				float fTemp = -(-fT + fH);
-
-	//				dX += -fTemp * dSinTheta;
-	//				dY +=  fTemp * dCosTheta;
-	//			}
-
-	//			if (ulTextAlign & TA_BASELINE)
-	//				ulTextAlign -= TA_BASELINE;
-	//			else if (ulVTextAlign == VTA_TOP)
-	//			{
-	//				float fTemp = -fT;
-
-	//				dX += -fTemp * dSinTheta;
-	//				dY +=  fTemp * dCosTheta;
-	//			}
-
-	//			if (ulTextAlign == TA_CENTER)
-	//			{
-	//				dX += -fW / 2 * dCosTheta;
-	//				dY += -fW / 2 * dSinTheta;
-	//			}
-	//			else if (ulTextAlign == TA_RIGHT)
-	//			{
-	//				dX += -fW * dCosTheta;
-	//				dY += -fW * dSinTheta;
-	//			}
-	//			else if (ulTextAlign == TA_BOTTOM && ulVTextAlign != VTA_BOTTOM)
-	//			{
-	//				float fTemp = -(-fT + fH);
-
-	//				dX += -fTemp * dSinTheta;
-	//				dY +=  fTemp * dCosTheta;
-	//			}
-	//			else //if (ulTextAlign & TA_LEFT)
-	//			{
-	//				// Ничего не делаем
-	//			}
 
 				if (pFont->IsUnderline())
 				{

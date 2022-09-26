@@ -215,6 +215,13 @@ namespace MetaFile
 		{
 			CEmfObjectBase* pObject = oPos->second;
 
+			switch (pObject->GetType())
+			{
+				case EMF_OBJECT_BRUSH: m_pDC->RemoveBrush((CEmfLogBrushEx*)pObject); break;
+				case EMF_OBJECT_FONT: m_pDC->RemoveFont((CEmfLogFont*)pObject); break;
+				case EMF_OBJECT_PEN: m_pDC->RemovePen((CEmfLogPen*)pObject); break;
+			}
+
 			for (std::pair<int, CEmfDC*> oElement : m_mDCs)
 			{
 				CEmfDC* pDC = oElement.second;

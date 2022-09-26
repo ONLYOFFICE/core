@@ -625,6 +625,7 @@ namespace MetaFile
 		m_pPath = NULL;
 		m_pDC   = m_oPlayer.GetDC();
 		m_pInterpretator = NULL;
+		m_bEof = false;
 	}
 
 	CEmfParserBase::~CEmfParserBase(){}
@@ -636,6 +637,7 @@ namespace MetaFile
 		RELEASEOBJECT(m_pPath);
 		m_oPlayer.Clear();
 		m_pDC = m_oPlayer.GetDC();
+		m_bEof = false;
 	}
 
 	TRect *CEmfParserBase::GetDCBounds()
@@ -940,6 +942,8 @@ namespace MetaFile
 			m_pInterpretator->HANDLE_EMR_EOF();
 			m_pInterpretator->End();
 		}
+
+		m_bEof = true;
 	}
 
 	void CEmfParserBase::HANDLE_EMR_SAVEDC()

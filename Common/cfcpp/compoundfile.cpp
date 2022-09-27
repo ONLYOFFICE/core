@@ -1086,7 +1086,7 @@ void CompoundFile::AllocateDIFATSectorChain(SVector<Sector> &FATsectorChain)
             std::copy_n(src, sizeof(int), dst+offsetDst);
         }
 
-        char* src = const_cast<char*>(reinterpret_cast<const char*>(Sector::ENDOFCHAIN));
+        char* src = const_cast<char*>(reinterpret_cast<const char*>(&Sector::ENDOFCHAIN));
         char* dst =  reinterpret_cast<char *>(difatStream.BaseSectorChain()[difatStream.BaseSectorChain().size() - 1]->GetData().data());
         int offsetDst = GetSectorSize() - sizeof(int);
         std::copy_n(src, sizeof(int), dst+offsetDst);

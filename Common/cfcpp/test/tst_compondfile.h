@@ -6,6 +6,9 @@
 #include "../../DesktopEditor/common/File.h"
 #include <iostream>
 #include <iomanip>
+#include <time.h>
+
+#include <chrono>
 
 using namespace testing;
 using namespace std;
@@ -60,12 +63,24 @@ TEST_F(CompoundFileTest, test_compoundfile_read)
     EXPECT_TRUE(cf.HasSourceStream());
 }
 
-
 TEST_F(CompoundFileTest, test_compoundfile_write)
 {
     wstring other_filename = L"../../../data/ex2.ppt";
     NSFile::CFileBinary::Remove(other_filename);
     cf.Save(other_filename);
+    EXPECT_EQ(FileLenght(filename), FileLenght(other_filename));
+    EXPECT_EQ(FileSimpleHash(filename), FileSimpleHash(other_filename));
+}
+
+TEST(test_compoundfile, largeFileCopy)
+{
+    wstring filename = L"../../../data/2.ppt";
+    CompoundFile cf(L"../../../data/2.ppt", CFSUpdateMode::ReadOnly);
+
+    wstring other_filename = L"../../../data/3.ppt";
+    NSFile::CFileBinary::Remove(other_filename);
+    EXPECT_NO_THROW(cf.Save(other_filename));
+
     EXPECT_EQ(FileLenght(filename), FileLenght(other_filename));
     EXPECT_EQ(FileSimpleHash(filename), FileSimpleHash(other_filename));
 }
@@ -230,7 +245,7 @@ TEST(test_compoundfile, foreign_languages)
 
 TEST(test_compoundfile, largeStream_v3_v4)
 {
-    constexpr LONG64 streamLen = 1024*128;
+    constexpr LONG64 streamLen = 1024*256;
     std::vector<BYTE> data = {0x28, 0xFF, 0x28, 0x1D, 0x4C, 0xFA, 0x00, 0x79};
 
     wstring path1 = L"../../../data/large_v3.cfb";
@@ -247,11 +262,14 @@ TEST(test_compoundfile, largeStream_v3_v4)
     for (LONG64 i = 0; i < streamLen; i += data.size())
     {
         EXPECT_NO_THROW(stream1->Write(data, i));
-        EXPECT_NO_THROW(stream2->Write(data, i));
+//        EXPECT_NO_THROW(stream2->Write(data, i));
     }
 
     EXPECT_NO_THROW(cf1.Save(path1));
-    EXPECT_NO_THROW(cf2.Save(path2));
+//    EXPECT_NO_THROW(cf2.Save(path2));
     cf1.Close();
     cf2.Close();
+
+    EXPECT_GT(FileLenght(path1), streamLen);
+//    EXPECT_GT(FileLenght(path2), streamLen);
 }

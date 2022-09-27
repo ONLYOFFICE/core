@@ -72,6 +72,9 @@ public:
     void clear()
     {
         canUse();
+        for (auto& pEl : *(SVectorBasePtr<T>::get()))
+            pEl.reset();
+
         SVectorBasePtr<T>::get()->clear();
     }
 };

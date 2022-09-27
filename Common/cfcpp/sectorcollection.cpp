@@ -17,7 +17,10 @@ void SectorCollection::Add(std::shared_ptr<Sector> item)
 
 void SectorCollection::Clear()
 {
-    largeArraySlices.clear();
+    for (auto& slice : largeArraySlices)
+        if (slice.isInit())
+            slice->clear();
+
     count = 0;
 }
 
@@ -49,7 +52,7 @@ int SectorCollection::add(std::shared_ptr<Sector> item)
     }
     else
     {
-        SVector<Sector> ar/*(SLICE_SIZE)*/;
+        SVector<Sector> ar;
         ar.push_back(item);
         largeArraySlices.push_back(ar);
         count++;

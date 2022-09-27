@@ -164,8 +164,8 @@ namespace PPTX
 			oAttr.Write(L"name", name);
 
 			if (rId.IsInit())	oAttr.Write(L"r:id", rId->ToString());
-			if (width.IsInit())	oAttr.Write(L"imgW", *width);
-			if (height.IsInit())oAttr.Write(L"imgH", *height);
+			if (width.IsInit())	oAttr.Write(L"imgW", std::to_wstring(*width));
+			if (height.IsInit())oAttr.Write(L"imgH", std::to_wstring(*height));
 
 			oAttr.Write(L"spid", spid);
 
@@ -318,7 +318,7 @@ namespace PPTX
 						
 						NSDirectory::CreateDirectory(sActiveXPath.GetPath());
 						
-						OOX::CPath oActiveXRegPath = L"/ppt/activeX/";
+						OOX::CPath oActiveXRegPath = std::wstring(L"/ppt/activeX/");
 						pActiveX_xml->write(sActiveXPath + FILE_SEPARATOR_STR + sActiveXFileName, oActiveXRegPath, *pReader->m_pRels->m_pManager->m_pContentTypes);
 
 						std::wstring sActiveXRelsPath = L"../activeX/" + sActiveXFileName;

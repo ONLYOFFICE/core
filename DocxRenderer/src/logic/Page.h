@@ -20,6 +20,7 @@ namespace NSDocxRenderer
         Aggplus::CGraphicsPathSimpleConverter* m_pSimpleGraphicsConverter {nullptr};
 
         CStyleManager*              m_pStyleManager {nullptr};
+        CFontManager*               m_pFontManager {nullptr};
         CVectorGraphics             m_oVector;
 
         double m_dWidth {0.0};
@@ -28,7 +29,6 @@ namespace NSDocxRenderer
         LONG                     m_lCurrentCommand {0};
 
         std::vector<CShape*>     m_arImages;
-        std::vector<CContText*>  m_arSymbol;
         std::vector<CContText*>  m_arDiacriticalSymbol;
         std::vector<CTextLine*>  m_arTextLine;
         std::vector<CShape*>     m_arShapes;
@@ -36,23 +36,18 @@ namespace NSDocxRenderer
 
         CTextLine*               m_pCurrentLine {nullptr};
 
-        CFontManager             m_oFontManager;
         CFontManagerLight        m_oFontManagerLight;
 
         TextAssociationType m_eTextAssociationType {tatPlainLine};
 
         bool m_bIsDeleteTextClipPage {true};
 
-        double m_dLastTextX {-1};
-        double m_dLastTextY {-1};
-        double m_dLastTextX_block {-1};
-
     public:
         CPage(NSFonts::IApplicationFonts* pFonts);
         ~CPage();
         void Init(NSStructures::CFont* pFont, NSStructures::CPen* pPen, NSStructures::CBrush* pBrush,
             NSStructures::CShadow* pShadow, NSStructures::CEdgeText* pEdge, Aggplus::CMatrix* pMatrix,
-            Aggplus::CGraphicsPathSimpleConverter* pSimple, CStyleManager* pStyleManager);
+            Aggplus::CGraphicsPathSimpleConverter* pSimple, CStyleManager* pStyleManager, CFontManager* pFontManager);
 
         void Clear();
         void ClearImages();
@@ -82,23 +77,26 @@ namespace NSDocxRenderer
         void CollectTextData(const PUINT pUnicodes, const PUINT pGids, const UINT& nCount,
                              const double& fX, const double& fY, const double& fWidth, const double& fHeight,
                              const double& fBaseLineOffset, const bool& bIsPDFAnalyzer);
+        void AddContToTextLine(CContText *pCont);
+
+        void ProcessingAndRecordingOfPageData(NSStringUtils::CStringBuilder& oWriter, LONG lPagesCount, LONG lNumberPages);
 
         void AnalyzeCollectedShapes();
         void DetermineLinesType();
 
         //Собранные для текущей страницы данные нужно проанализировать и сгруппировать, лишнее удалить
-        void AnalyzeCollectedSymbols();
+        void AnalyzeCollectedTextLines();
+        void AnalyzeCollectedConts();
         void DetermineStrikeoutsUnderlinesHighlights();
         bool IsLineCrossingText(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
         bool IsLineBelowText(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
         bool IsItHighlightingBackground(CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
+        void AddDiacriticalSymbols();
 
         //набивается содержимым вектор m_arTextLine
         void AnalyzeLines();
         void BuildLines();
         void AddDiacriticalSymbols(CContText* pCont);
-        void SelectCurrentLine(const CContText* pCont);
-        void CollectDublicateLines(const CContText *pCont);
         void MergeLinesByVertAlignType();
         void DetermineDominantGraphics();
 

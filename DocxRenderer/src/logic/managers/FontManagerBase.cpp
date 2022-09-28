@@ -471,7 +471,7 @@ namespace NSFontManager
         BYTE pPanose[10];
         m_pManager->GetFile()->GetPanose(pPanose);
         m_oFont.m_strPANOSE.clear();
-        for ( int i = 0; i < 10; i++ )
+        for ( int i = 0; i < 10; ++i )
         {
             m_oFont.m_strPANOSE += ToHexString(pPanose[i]);
         }
@@ -482,11 +482,11 @@ namespace NSFontManager
         // Signature
         m_oFont.m_arSignature.clear();
 
-        for ( unsigned int i = 0; i < 6; i++ )
+        for ( unsigned int i = 0; i < 6; ++i )
         {
             DWORD value = 0;
 
-            for ( unsigned long bit = 0; bit < 32; bit++ )
+            for ( unsigned long bit = 0; bit < 32; ++bit )
             {
                 if (m_pManager->GetFile()->IsUnicodeRangeAvailable(bit, i))
                 {
@@ -662,7 +662,7 @@ namespace NSFontManager
         if (sName.length() > 7 && sName.at(6) == '+')
         {
             bool bIsRemove = true;
-            for (int nIndex = 0; nIndex < 6; nIndex++)
+            for (int nIndex = 0; nIndex < 6; ++nIndex)
             {
                 wchar_t nChar = sName.at(nIndex);
                 if (nChar < 'A' || nChar > 'Z')

@@ -21,24 +21,26 @@ namespace NSDocxRenderer
 
             eVertAlignType m_eVertAlignType {eVertAlignType::vatUnknown};
 
-            const CShape* m_pDominantShape {nullptr};
+            CTextLine* m_pLine {nullptr};
+            CShape* m_pDominantShape {nullptr};
 
             UINT m_iNumDuplicates {0};
         public:
             CTextLine();
-            void Clear() override final;
+            virtual ~CTextLine();
+            virtual void Clear() override final;
+            virtual bool IsBigger(const CBaseItem* oSrc) override final;
+            virtual bool IsBiggerOrEqual(const CBaseItem* oSrc) override final;
+            virtual void AddContent(CBaseItem* pObj) override final;
+            virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
 
-            ~CTextLine();
-
-            void AddCont(CContText *pCont);
-            bool IsBigger(const CBaseItem* oSrc) override final;
-            bool IsBiggerOrEqual(const CBaseItem* oSrc) override final;
             void SortConts();
+
+            void CheckLineToNecessaryToUse();
 
             //Объединяем слова из двух строк
             void Merge(CTextLine* pLine);
             bool IsForceBlock();
-            void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
 
             void MergeConts();
             //Вычисляем ширину сложной строки

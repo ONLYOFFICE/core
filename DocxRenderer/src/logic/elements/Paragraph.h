@@ -58,9 +58,10 @@ namespace NSDocxRenderer
     public:
         CParagraph(const TextAssociationType& eType);
         virtual ~CParagraph();
-        void Clear() override final;
+        virtual void Clear() override final;
 
-        void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
+        virtual void AddContent(CBaseItem* pObj) override final{};
+        virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
 
         void RemoveHighlightColor();
 

@@ -8,55 +8,56 @@
 namespace NSDocxRenderer
 {
     class CDocument
-	{
-	public:
+    {
+    public:
         NSFonts::IApplicationFonts* m_pAppFonts;
 
-		NSStructures::CPen				m_oPen;
-		NSStructures::CBrush			m_oBrush;
-		NSStructures::CFont				m_oFont;
-		NSStructures::CShadow			m_oShadow;
-		NSStructures::CEdgeText			m_oEdge;
+        NSStructures::CPen              m_oPen;
+        NSStructures::CBrush            m_oBrush;
+        NSStructures::CFont             m_oFont;
+        NSStructures::CShadow           m_oShadow;
+        NSStructures::CEdgeText         m_oEdge;
 
-		NSStructures::CFont				m_oInstalledFont;
+        NSStructures::CFont             m_oInstalledFont;
 
         NSFonts::IFontManager*                m_pFontManager {nullptr};
         Aggplus::CGraphicsPathSimpleConverter m_oSimpleGraphicsConverter;
 
-        Aggplus::CMatrix				m_oTransform;
+        Aggplus::CMatrix                m_oTransform;
 
-        LONG							m_lCurrentCommandType {0};
+        LONG                            m_lCurrentCommandType {0};
 
-		LONG							m_lClipMode;
-		CPage							m_oCurrentPage;
+        LONG                            m_lClipMode;
+        CPage                           m_oCurrentPage;
 
-        CImageManager					m_oImageManager;
+        CImageManager                   m_oImageManager;
         CStyleManager                   m_oStyleManager;
+        CFontManager                    m_oFontManager;
 
-        double							m_dWidth {0.0};
-        double							m_dHeight {0.0};
+        double                          m_dWidth {0.0};
+        double                          m_dHeight {0.0};
 
-        double							m_dDpiX {72.0};
-        double							m_dDpiY {72.0};
+        double                          m_dDpiX {72.0};
+        double                          m_dDpiY {72.0};
 
-        std::wstring					m_strTempDirectory {L""};
+        std::wstring                    m_strTempDirectory {L""};
         std::wstring                    m_strDstFilePath;
 
-        NSFile::CFileBinary				m_oDocumentStream;
-        LONG							m_lPagesCount {0};
+        LONG                            m_lPagesCount {0};
+        LONG                            m_lNumberPages{0};
 
-        NSStringUtils::CStringBuilder	m_oWriter;
-        bool							m_bIsNeedPDFTextAnalyzer {false};
+        bool                            m_bIsNeedPDFTextAnalyzer {false};
 
         bool                            m_bIsDisablePageCommand {false}; // disable commands inside draw function
 
-	public:
+        std::map<LONG, NSStringUtils::CStringBuilder*> m_mapXmlString;
+    public:
         CDocument(IRenderer* pRenderer, NSFonts::IApplicationFonts* pFonts);
         void Clear();
 
         ~CDocument();
 
-	public:
+    public:
 
         HRESULT NewPage();
         HRESULT get_Height(double* dHeight);
@@ -65,8 +66,8 @@ namespace NSDocxRenderer
         HRESULT put_Width(double dWidth);
         HRESULT get_DpiX(double* dDpiX);
         HRESULT get_DpiY(double* dDpiY);
-		//-------- Функции для задания настроек текста ----------------------------------------------
-		// pen --------------------------------------------------------------------------------------
+        //-------- Функции для задания настроек текста ----------------------------------------------
+        // pen --------------------------------------------------------------------------------------
         HRESULT get_PenColor(LONG* lColor);
         HRESULT put_PenColor(LONG lColor);
         HRESULT get_PenAlpha(LONG* lAlpha);
@@ -88,7 +89,7 @@ namespace NSDocxRenderer
         HRESULT get_PenMiterLimit(double* val);
         HRESULT put_PenMiterLimit(double val);
         HRESULT PenDashPattern(double* pPattern, LONG lCount);
-		// brush ------------------------------------------------------------------------------------
+        // brush ------------------------------------------------------------------------------------
         HRESULT get_BrushType(LONG* lType);
         HRESULT put_BrushType(LONG lType);
         HRESULT get_BrushColor1(LONG* lColor);
@@ -108,7 +109,7 @@ namespace NSDocxRenderer
         HRESULT get_BrushLinearAngle(double* dAngle);
         HRESULT put_BrushLinearAngle(double dAngle);
         HRESULT BrushRect(bool val, double left, double top, double width, double height);
-		// font -------------------------------------------------------------------------------------
+        // font -------------------------------------------------------------------------------------
         HRESULT get_FontName(std::wstring* sName);
         HRESULT put_FontName(std::wstring sName);
         HRESULT get_FontPath(std::wstring* sPath);
@@ -123,7 +124,7 @@ namespace NSDocxRenderer
         HRESULT put_FontCharSpace(double dSpace);
         HRESULT get_FontFaceIndex(int* lFaceIndex);
         HRESULT put_FontFaceIndex(const int& lFaceIndex);
-		// shadow -----------------------------------------------------------------------------------
+        // shadow -----------------------------------------------------------------------------------
         HRESULT get_ShadowDistanceX(double* val);
         HRESULT put_ShadowDistanceX(double val);
         HRESULT get_ShadowDistanceY(double* val);
@@ -136,7 +137,7 @@ namespace NSDocxRenderer
         HRESULT put_ShadowAlpha(LONG val);
         HRESULT get_ShadowVisible(INT* val);
         HRESULT put_ShadowVisible(INT val);
-		// edge -------------------------------------------------------------------------------------
+        // edge -------------------------------------------------------------------------------------
         HRESULT get_EdgeVisible(LONG* val);
         HRESULT put_EdgeVisible(LONG val);
         HRESULT get_EdgeColor(LONG* val);
@@ -145,7 +146,7 @@ namespace NSDocxRenderer
         HRESULT put_EdgeAlpha(LONG val);
         HRESULT get_EdgeDist(double* val);
         HRESULT put_EdgeDist(double val);
-		//-------- Функции для вывода текста --------------------------------------------------------
+        //-------- Функции для вывода текста --------------------------------------------------------
         HRESULT CommandDrawTextPrivate(const int* pUnicodes, const int* pGids, int nCount,
                                        const double& dX, const double& dY, const double& dW,
                                        const double& dH, const double& dBaseLineOffset = 0);
@@ -155,10 +156,10 @@ namespace NSDocxRenderer
         virtual HRESULT CommandDrawTextEx(const std::wstring& wsUnicodeText, const unsigned int* pGids,
                                           const unsigned int nGidsCount, const double& dX, const double& dY,
                                           const double& dW, const double& dH);
-		//-------- Маркеры для команд ---------------------------------------------------------------
+        //-------- Маркеры для команд ---------------------------------------------------------------
         HRESULT BeginCommand(DWORD lType);
         HRESULT EndCommand(DWORD lType);
-		//-------- Функции для работы с Graphics Path -----------------------------------------------
+        //-------- Функции для работы с Graphics Path -----------------------------------------------
         HRESULT PathCommandMoveTo(double fX, double fY);
         HRESULT PathCommandLineTo(double fX, double fY);
         HRESULT PathCommandLinesTo(double* pPoints, LONG lCount);
@@ -178,27 +179,28 @@ namespace NSDocxRenderer
 
         HRESULT GetCommandParams(double* dAngle, double* dLeft, double* dTop, double* dWidth, double* dHeight, DWORD* lFlags);
         HRESULT SetCommandParams(double dAngle, double dLeft, double dTop, double dWidth, double dHeight, DWORD lFlags);
-		//-------- Функции для вывода изображений --------------------------------------------------
+        //-------- Функции для вывода изображений --------------------------------------------------
         HRESULT DrawImage(IGrObject* pImage, double fX, double fY, double fWidth, double fHeight);
         HRESULT DrawImageFromFile(const std::wstring& sVal, double fX, double fY, double fWidth, double fHeight);
-		//------------------------------------------------------------------------------------------
+        //------------------------------------------------------------------------------------------
         HRESULT SetTransform(double dA, double dB, double dC, double dD, double dE, double dF);
         HRESULT GetTransform(double *pdA, double *pdB, double *pdC, double *pdD, double *pdE, double *pdF);
         HRESULT ResetTransform(void);
         HRESULT get_ClipMode(LONG* plMode);
         HRESULT put_ClipMode(LONG lMode);
 
-	protected:
+    protected:
         void ApplyTransform(double d1, double d2, double d3, double d4, double d5, double d6);
 
         void ApplyTransform2(double dAngle, double dLeft, double dTop, double dWidth, double dHeight, DWORD lFlags);
 
         void _SetFont();
-	public:
-		
+    public:
+
         bool CreateDocument();
 
         void Close();
+        void BuildDocumentXml();
         void BuildDocumentXmlRels();
         void BuildFontTableXml();
         void BuildStylesXml();

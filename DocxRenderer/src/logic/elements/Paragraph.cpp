@@ -148,9 +148,9 @@ namespace NSDocxRenderer
 
         oWriter.WriteString(L"</w:pPr>");
 
-        for(const auto &pLine : m_arLines)
+        for(size_t i = 0; i < m_arLines.size(); ++i)
         {
-            pLine->ToXml(oWriter);
+            m_arLines[i]->ToXml(oWriter);
         }
 
         oWriter.WriteString(L"</w:p>");
@@ -163,12 +163,15 @@ namespace NSDocxRenderer
             return;
         }
 
-        for(const auto &pLine : m_arLines)
+
+        for(size_t i = 0; i < m_arLines.size(); ++i)
         {
+            auto pLine = m_arLines[i];
             if (pLine->m_pDominantShape)
             {
-                for (const auto &pCont : pLine->m_arConts)
+                for (size_t j = 0; j < pLine->m_arConts.size(); ++j)
                 {
+                    auto pCont = pLine->m_arConts[j];
                     if (m_lColorOfShadingFill == pCont->m_lHighlightColor)
                     {
                         pCont->m_bIsHighlightPresent = false;
@@ -182,7 +185,7 @@ namespace NSDocxRenderer
     {
         auto pLine = m_arLines.front();
 
-        for(size_t i = 1; i < m_arLines.size(); i++)
+        for(size_t i = 1; i < m_arLines.size(); ++i)
         {
             auto pLastCont = pLine->m_arConts.back();
             size_t iNumConts = pLine->m_arConts.size() - 1;
@@ -212,8 +215,9 @@ namespace NSDocxRenderer
                 pCont->m_bIsNotNecessaryToUse = true;
             }
 
-            for (const auto &pCont : pNext->m_arConts)
+            for (size_t j = 0; j < pNext->m_arConts.size(); ++j)
             {
+                auto pCont = pNext->m_arConts[j];
                 if (!pCont->m_bIsNotNecessaryToUse)
                 {
                     pLine->m_arConts.push_back(pCont);

@@ -242,9 +242,9 @@ namespace NSDocxRenderer
         {
             oWriter.WriteString(L"<v:textbox><w:txbxContent>");
 
-            for (const auto& pParagraph : m_arParagraphs)
+            for (size_t i = 0; i < m_arParagraphs.size(); ++i)
             {
-                pParagraph->ToXml(oWriter);
+                m_arParagraphs[i]->ToXml(oWriter);
             }
             oWriter.WriteString(L"</w:txbxContent></v:textbox>");
         }

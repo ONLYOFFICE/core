@@ -36,12 +36,12 @@ namespace NSDocxRenderer
     class CFontManager : public CFontManagerBase
     {
         public:
-            NSStructures::CFont*	m_pFont {nullptr};
-            Aggplus::CMatrix*		m_pTransform {nullptr};
-            double					m_dSpaceWidthMM {0.0};
+            NSStructures::CFont*    m_pFont {nullptr};
+            Aggplus::CMatrix*       m_pTransform {nullptr};
+            double                  m_dSpaceWidthMM {0.0};
 
         public:
-            CFontTable				m_oFontTable;
+            CFontTable              m_oFontTable;
 
         public:
             CFontManager(NSFonts::IApplicationFonts* pFonts);

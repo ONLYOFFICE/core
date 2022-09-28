@@ -32,12 +32,13 @@ namespace NSDocxRenderer
         public:
             COldShape();
             virtual ~COldShape();
-            void Clear() override final;
+            virtual void Clear() override final;
+
+            virtual void AddContent(CBaseItem* pObj) override final{};
+            virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
 
             void GetDataFromVector(const CVectorGraphics& oVector, const LONG& lType, const LONG& lCoordSize);
 
             void WritePath(const CVectorGraphics& oVector, const LONG& lType, const LONG& lCoordSize);
-
-            void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
     };
 }

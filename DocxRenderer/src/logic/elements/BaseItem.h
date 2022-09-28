@@ -63,6 +63,7 @@ namespace NSDocxRenderer
     public:
         CBaseItem(const ElemType& eType): m_eType(eType) {}
         virtual ~CBaseItem() {}
+        virtual void Clear() = 0;
 
         CBaseItem& operator=(const CBaseItem& oSrc);
 
@@ -84,10 +85,12 @@ namespace NSDocxRenderer
         virtual bool IsBigger(const CBaseItem* oSrc);
         virtual bool IsBiggerOrEqual(const CBaseItem* oSrc);
 
+        virtual void AddContent(CBaseItem* pObj);
         virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) = 0;
-        virtual void Clear() = 0;
 
         eVerticalCrossingType GetVerticalCrossingType(const CBaseItem* oSrc);
         eHorizontalCrossingType GetHorizontalCrossingType(const CBaseItem* oSrc);
+
+        bool AreObjectsNoCrossing(const CBaseItem* oSrc);
     };
 }

@@ -44,7 +44,6 @@ HEADERS += \
     src/resources/ImageInfo.h \
     src/resources/LinesTable.h \
     src/resources/SingletonTemplate.h \
-    src/resources/SortElements.h \
     src/resources/VectorGraphics.h \
     src/resources/resources.h \
     src/resources/utils.h \

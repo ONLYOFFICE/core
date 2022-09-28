@@ -30,6 +30,50 @@ namespace NSDocxRenderer
         return 0;
     }
 
+    CContText& CContText::operator= (const CContText& rCont)
+    {
+        if (this == &rCont)
+        {
+            return *this;
+        }
+
+        CBaseItem::operator=(rCont);
+
+        m_pFontStyle = rCont.m_pFontStyle;
+
+        m_bIsStrikeoutPresent = rCont.m_bIsStrikeoutPresent;
+        m_bIsDoubleStrikeout = rCont.m_bIsDoubleStrikeout;
+
+        m_bIsHighlightPresent = rCont.m_bIsHighlightPresent;
+        m_lHighlightColor = rCont.m_lHighlightColor;
+
+        m_bIsUnderlinePresent = rCont.m_bIsUnderlinePresent;
+        m_eUnderlineType = rCont.m_eUnderlineType;
+        m_lUnderlineColor = rCont.m_lUnderlineColor;
+
+        m_bIsShadowPresent = rCont.m_bIsShadowPresent;
+        m_bIsOutlinePresent = rCont.m_bIsOutlinePresent;
+        m_bIsEmbossPresent = rCont.m_bIsEmbossPresent;
+        m_bIsEngravePresent = rCont.m_bIsEngravePresent;
+
+        m_oText =rCont.m_oText;
+
+        m_dSpaceWidthMM = rCont.m_dSpaceWidthMM;
+        m_bSpaceIsNotNeeded = rCont.m_bSpaceIsNotNeeded;
+
+        m_eVertAlignType = rCont.m_eVertAlignType;
+
+        m_pManagerLight = rCont.m_pManagerLight;
+        m_pStyleManager = rCont.m_pStyleManager;
+
+        m_pShape = rCont.m_pShape;
+        m_pCont = rCont.m_pCont;
+
+        m_iNumDuplicates = rCont.m_iNumDuplicates;
+
+        return *this;
+    }
+
     void CContText::ToXml(NSStringUtils::CStringBuilder& oWriter)
     {
         if (m_bIsNotNecessaryToUse)
@@ -49,7 +93,7 @@ namespace NSDocxRenderer
         if (!m_pFontStyle->m_strPickFontName.empty() && !m_oText.empty())
         {
             if (m_eVertAlignType != eVertAlignType::vatSubscript &&
-                m_eVertAlignType != eVertAlignType::vatSuperscript)
+                    m_eVertAlignType != eVertAlignType::vatSuperscript)
             {
                 // нужно перемерять...
                 m_pManagerLight->LoadFont(m_pFontStyle->m_strPickFontName, m_pFontStyle->m_lPickFontStyle, m_pFontStyle->m_oFont.Size, false);
@@ -271,7 +315,7 @@ namespace NSDocxRenderer
         bool bIf15 = m_eVertAlignType == eVertAlignType::vatBase && pCont->m_eVertAlignType == eVertAlignType::vatUnknown;
 
         if (bIf1 && bIf2 && bIf3 && bIf4 && bIf5 && bIf6 && bIf7 &&
-            bIf8 && bIf9 && bIf10 && bIf11 && bIf12 && (bIf13 || bIf14 || bIf15))
+                bIf8 && bIf9 && bIf10 && bIf11 && bIf12 && (bIf13 || bIf14 || bIf15))
         {
             return true;
         }
@@ -317,7 +361,7 @@ namespace NSDocxRenderer
     bool CContText::IsDuplicate(CContText* pCont, eVerticalCrossingType eVType)
     {
         if (eVType == eVerticalCrossingType::vctDublicate &&
-            m_oText == pCont->m_oText)
+                m_oText == pCont->m_oText)
         {
             pCont->m_bIsNotNecessaryToUse = true;
             m_iNumDuplicates++;
@@ -329,8 +373,8 @@ namespace NSDocxRenderer
     bool CContText::IsThereAreFontEffects(CContText* pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType)
     {
         //Условие пересечения по вертикали
-        bool bIf1 = eVType == eVerticalCrossingType::vctCurrentBelowNext; //текущий cont ниже
-        bool bIf2 = eVType == eVerticalCrossingType::vctCurrentAboveNext; //текущий cont выше
+        bool bIf1 = eVType == eVerticalCrossingType::vctCurrentAboveNext; //текущий cont выше
+        bool bIf2 = eVType == eVerticalCrossingType::vctCurrentBelowNext; //текущий cont ниже
         //Условие пересечения по горизонтали
         bool bIf3 = eHType == eHorizontalCrossingType::hctCurrentLeftOfNext; //текущий cont левее
         bool bIf4 = eHType == eHorizontalCrossingType::hctCurrentRightOfNext; //текущий cont правее
@@ -349,22 +393,22 @@ namespace NSDocxRenderer
         //note Логика подобрана для конкретного примера - возможно нужно будет ее обобщить.
         if (bIf5 && bIf6)
         {
-            if (m_bIsEmbossPresent && bIf11)
+            if (m_bIsEmbossPresent && bIf12)
             {
-                if (bIf2 && bIf4)
+                if (bIf1 && bIf3)
                 {
-                    pCont->m_bIsEmbossPresent = true;
-                    m_bIsNotNecessaryToUse = true;
+                    m_bIsEmbossPresent = true;
+                    pCont->m_bIsNotNecessaryToUse = true;
                     return true;
                 }
             }
 
-            if (m_bIsEngravePresent && bIf9)
+            if (m_bIsEngravePresent && bIf10)
             {
-                if (bIf2 && bIf4)
+                if (bIf1 && bIf3)
                 {
-                    pCont->m_bIsEngravePresent = true;
-                    m_bIsNotNecessaryToUse = true;
+                    m_bIsEngravePresent = true;
+                    pCont->m_bIsNotNecessaryToUse = true;
                     return true;
                 }
             }
@@ -384,17 +428,19 @@ namespace NSDocxRenderer
             }
 
             //Emboss
-            else if (bIf2 && bIf4 && bIf10)
+            //Первый проход
+            //c_iBlackColor -> c_iBlackColor -> c_iGreyColor2
+            else if (bIf1 && bIf3 && bIf9)
             {
-                m_bIsEmbossPresent = true;
-                pCont->m_bIsNotNecessaryToUse = true;
+                pCont->m_bIsEmbossPresent = true;
+                m_bIsNotNecessaryToUse = true;
                 return true;
             }
             //Engrave
-            else if (bIf2 && bIf4 && bIf12)
+            else if (bIf1 && bIf3 && bIf11)
             {
-                m_bIsEngravePresent = true;
-                pCont->m_bIsNotNecessaryToUse = true;
+                pCont->m_bIsEngravePresent = true;
+                m_bIsNotNecessaryToUse = true;
                 return true;
             }
         }
@@ -404,9 +450,9 @@ namespace NSDocxRenderer
     bool CContText::IsVertAlignTypeBetweenConts(CContText* pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType)
     {
         //Условие пересечения по вертикали
-        bool bIf1 = eVType == eVerticalCrossingType::vctCurrentBelowNext ||
+        bool bIf1 = eVType == eVerticalCrossingType::vctCurrentAboveNext ||
                     eVType == eVerticalCrossingType::vctCurrentInsideNext;
-        bool bIf2 = eVType == eVerticalCrossingType::vctCurrentAboveNext;
+        bool bIf2 = eVType == eVerticalCrossingType::vctCurrentBelowNext;
         //Условие пересечения по горизонтали
         bool bIf3 = (eHType == eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext ||
                     eHType == eHorizontalCrossingType::hctCurrentLeftOfNext) &&
@@ -463,6 +509,6 @@ namespace NSDocxRenderer
 
     double CContText::CalculateThinSpace()
     {
-        return m_dSpaceWidthMM;
+        return m_dSpaceWidthMM * 0.7;
     }
 }

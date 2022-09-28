@@ -25,11 +25,11 @@ namespace NSDocxRenderer
 
     std::shared_ptr<CFontStyle> CStyleManager::GetStyle()
     {
-        for (const auto &pStyle : m_arStyles)
+        for (size_t i = 0; i < m_arStyles.size(); ++i)
         {
-            if (pStyle->IsEqual(m_pCurrentStyle))
+            if (m_arStyles[i]->IsEqual(m_pCurrentStyle))
             {
-                return pStyle;
+                return m_arStyles[i];
             }
         }
 

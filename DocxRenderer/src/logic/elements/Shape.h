@@ -32,8 +32,8 @@ namespace NSDocxRenderer
         public:
             eShapeType              m_eType {eShapeType::stUnknown};
             std::wstring            m_strPath {L""};
-            NSStructures::CBrush	m_oBrush;
-            NSStructures::CPen		m_oPen;
+            NSStructures::CBrush    m_oBrush;
+            NSStructures::CPen      m_oPen;
             double                  m_dRotate {0.0};
 
             bool m_bIsNoFill {true};
@@ -56,24 +56,21 @@ namespace NSDocxRenderer
 
         public:
             CShape();
+            CShape(std::shared_ptr<CImageInfo> pInfo, const std::wstring& strDstMedia);
             virtual ~CShape();
             virtual void Clear() override final;
 
-            CShape(std::shared_ptr<CImageInfo> pInfo, const std::wstring& strDstMedia);
+            virtual void AddContent(CBaseItem* pObj) override final{};
+            virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
 
             void GetDataFromVector(const CVectorGraphics& oVector);
-
             void WritePath(const CVectorGraphics& oVector);
-
             void DetermineGraphicsType(double dWidth, double dHeight, size_t nPeacks, size_t nCurves);
-
             bool IsItFitLine();
             bool IsCorrelated(const CShape* pShape);
             void ChangeGeometryOfDesiredShape(CShape* pShape);
-
             void DetermineLineType(CShape* pShape = nullptr, bool bIsLast = false);
 
-            virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
             void BuildGeneralProperties(NSStringUtils::CStringBuilder &oWriter);
             void BuildSpecificProperties(NSStringUtils::CStringBuilder &oWriter);
             void BuildShapeProperties(NSStringUtils::CStringBuilder &oWriter);

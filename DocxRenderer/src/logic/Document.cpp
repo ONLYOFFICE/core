@@ -3,10 +3,12 @@
 namespace NSDocxRenderer
 {
     CDocument::CDocument(IRenderer* pRenderer, NSFonts::IApplicationFonts* pFonts) :
-        m_pAppFonts(pFonts), m_oCurrentPage(pFonts)
+        m_pAppFonts(pFonts), m_oCurrentPage(pFonts), m_oFontManager(pFonts)
     {
         m_oSimpleGraphicsConverter.SetRenderer(pRenderer);
-        m_oWriter.AddSize(10000);
+
+        m_oFontManager.m_pFont      = &m_oFont;
+        m_oFontManager.m_pTransform = &m_oTransform;
     }
     void CDocument::Clear()
     {
@@ -21,23 +23,17 @@ namespace NSDocxRenderer
         m_lClipMode = 0;
 
         m_lPagesCount = 0;
-        m_oWriter.Clear();
+        m_mapXmlString.clear();
    }
 
     CDocument::~CDocument() {
         m_lClipMode = 0;
         RELEASEINTERFACE(m_pFontManager);
+        m_mapXmlString.clear();
     }
 
     HRESULT CDocument::NewPage()
     {
-        if (0 != m_lPagesCount)
-        {
-            m_oCurrentPage.WriteSectionToFile(false, m_oWriter);
-            m_oDocumentStream.WriteStringUTF8(m_oWriter.GetData());
-            m_oWriter.ClearNoAttack();
-        }
-
         m_oPen.SetDefaultParams();
         m_oBrush.SetDefaultParams();
         m_oFont.SetDefaultParams();
@@ -46,7 +42,6 @@ namespace NSDocxRenderer
 
         m_oTransform.Reset();
 
-        ++m_lPagesCount;
         m_oCurrentPage.Clear();
 
         return S_OK;
@@ -58,8 +53,8 @@ namespace NSDocxRenderer
     }
     HRESULT CDocument::put_Height(double dHeight)
     {
-        m_dHeight					= dHeight;
-        m_oCurrentPage.m_dHeight	= dHeight;
+        m_dHeight                = dHeight;
+        m_oCurrentPage.m_dHeight = dHeight;
         return S_OK;
     }
     HRESULT CDocument::get_Width(double* dWidth)
@@ -69,8 +64,8 @@ namespace NSDocxRenderer
     }
     HRESULT CDocument::put_Width(double dWidth)
     {
-        m_dWidth					= dWidth;
-        m_oCurrentPage.m_dWidth		= dWidth;
+        m_dWidth                = dWidth;
+        m_oCurrentPage.m_dWidth = dWidth;
         return S_OK;
     }
     HRESULT CDocument::get_DpiX(double* dDpiX)
@@ -516,7 +511,7 @@ namespace NSDocxRenderer
         unsigned int* pUnicodes = NSStringExt::CConverter::GetUtf32FromUnicode(wsUnicodeText, nLen);
         if (nLen == 0)
             return S_OK;
-		if (nLen != nGidsCount && 0 != nGidsCount)
+        if (nLen != nGidsCount && 0 != nGidsCount)
         {
             delete [] pUnicodes;
             return S_OK;
@@ -535,9 +530,6 @@ namespace NSDocxRenderer
         m_lCurrentCommandType = (LONG)lType;
         m_oCurrentPage.m_lCurrentCommand	= m_lCurrentCommandType;
 
-        if (c_nTextType == lType)
-            m_oCurrentPage.m_dLastTextX_block = -1;
-
         return S_OK;
     }
     HRESULT CDocument::EndCommand(DWORD lType)
@@ -550,20 +542,15 @@ namespace NSDocxRenderer
 
         if (c_nPageType == lType)
         {
-            // нужно записать страницу в файл
-            m_oCurrentPage.AnalyzeCollectedShapes();
-            m_oCurrentPage.AnalyzeCollectedSymbols();
-            m_oCurrentPage.AnalyzeLines();
-            m_oCurrentPage.BuildByType();
-            m_oCurrentPage.ToXml(m_oWriter);
+            auto pWriter = new NSStringUtils::CStringBuilder();
+            pWriter->AddSize(100000);
+            m_oCurrentPage.ProcessingAndRecordingOfPageData(*pWriter, m_lPagesCount, m_lNumberPages);
+            m_mapXmlString[m_lPagesCount] = std::move(pWriter);
         }
         else if (c_nPathType == lType)
         {
             m_oCurrentPage.End();
         }
-
-        if (c_nTextType == lType)
-            m_oCurrentPage.m_dLastTextX_block = -1;
 
         return S_OK;
     }
@@ -826,19 +813,33 @@ namespace NSDocxRenderer
         Clear();
 
         m_lCurrentCommandType = 0;
-        m_oCurrentPage.Init(&m_oFont, &m_oPen, &m_oBrush, &m_oShadow, &m_oEdge, &m_oTransform, &m_oSimpleGraphicsConverter, &m_oStyleManager);
+        m_oCurrentPage.Init(&m_oFont, &m_oPen, &m_oBrush, &m_oShadow, &m_oEdge, &m_oTransform, &m_oSimpleGraphicsConverter, &m_oStyleManager, &m_oFontManager);
 
         m_oImageManager.NewDocument();
         m_oStyleManager.NewDocument();
+        m_oFontManager.Init();
+
         // media
         m_oImageManager.m_strDstMedia = m_strTempDirectory + L"/word/media";
         NSDirectory::CreateDirectory(m_oImageManager.m_strDstMedia);
 
-        m_oCurrentPage.m_oFontManager.Init();
+        return true;
+    }
 
-        m_oDocumentStream.CloseFile();
-        m_oDocumentStream.CreateFileW(m_strTempDirectory + L"/word/document.xml");
-        m_oDocumentStream.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
+    void CDocument::Close()
+    {
+        BuildDocumentXml();
+        BuildDocumentXmlRels();
+        BuildFontTableXml();
+        BuildStylesXml();
+    }
+
+    void CDocument::BuildDocumentXml()
+    {
+        NSFile::CFileBinary oDocumentStream;
+
+        oDocumentStream.CreateFileW(m_strTempDirectory + L"/word/document.xml");
+        oDocumentStream.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
         <w:document xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
                     xmlns:cx=\"http://schemas.microsoft.com/office/drawing/2014/chartex\" \
                     xmlns:cx1=\"http://schemas.microsoft.com/office/drawing/2015/9/8/chartex\" \
@@ -876,22 +877,14 @@ namespace NSDocxRenderer
                     mc:Ignorable=\"w14 w15 w16se w16cid w16 w16cex w16sdtdh wp14\">\
                 <w:body>");
 
-        return true;
-    }
+        for (size_t i = 0; i < m_mapXmlString.size(); ++i)
+        {
+            oDocumentStream.WriteStringUTF8(m_mapXmlString[i]->GetData());
+        }
 
-    void CDocument::Close()
-    {
-        BuildDocumentXmlRels();
-        BuildFontTableXml();
-        BuildStylesXml();
+        oDocumentStream.WriteStringUTF8(L"</w:body></w:document>");
 
-        // document
-        m_oCurrentPage.WriteSectionToFile(true, m_oWriter);
-        m_oWriter.WriteString(L"</w:body></w:document>");
-        m_oDocumentStream.WriteStringUTF8(m_oWriter.GetData());
-        m_oWriter.ClearNoAttack();
-
-        m_oDocumentStream.CloseFile();
+        oDocumentStream.CloseFile();
     }
 
     void CDocument::BuildDocumentXmlRels()
@@ -952,8 +945,8 @@ namespace NSDocxRenderer
                 xmlns:w16se=\"http://schemas.microsoft.com/office/word/2015/wordml/symex\" \
                 mc:Ignorable=\"w14 w15 w16se w16cid w16 w16cex w16sdtdh\">");
 
-        CFontTable* pFontTable = &m_oCurrentPage.m_oFontManager.m_oFontTable;
-        for (std::map<std::wstring, CFontTableEntry>::iterator iterFont = pFontTable->m_mapTable.begin(); iterFont != pFontTable->m_mapTable.end(); iterFont++)
+        CFontTable* pFontTable = &m_oFontManager.m_oFontTable;
+        for (std::map<std::wstring, CFontTableEntry>::iterator iterFont = pFontTable->m_mapTable.begin(); iterFont != pFontTable->m_mapTable.end(); ++iterFont)
         {
             CFontTableEntry& oEntry = iterFont->second;
 
@@ -1202,9 +1195,9 @@ namespace NSDocxRenderer
         oWriter.WriteString(L"<w:uiPriority w:val=\"99\"/>");
         oWriter.WriteString(L"</w:style>");
 
-        for (const auto &pStyle : m_oStyleManager.m_arStyles)
+        for (size_t i = 0; i < m_oStyleManager.m_arStyles.size(); ++i)
         {
-            pStyle->ToXml(oWriter);
+            m_oStyleManager.m_arStyles[i]->ToXml(oWriter);
         }
 
         oWriter.WriteString(L"</w:styles>");

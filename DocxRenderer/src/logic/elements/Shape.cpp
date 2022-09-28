@@ -887,7 +887,7 @@ namespace NSDocxRenderer
         {
             oWriter.WriteString(L"<wps:txbx>"); //text within the shape. http://officeopenxml.com/drwSp-text.php
             oWriter.WriteString(L"<w:txbxContent>");
-            for (size_t i = 0; i < m_arParagraphs.size(); i++)
+            for (size_t i = 0; i < m_arParagraphs.size(); ++i)
             {
                 m_arParagraphs[i]->ToXml(oWriter);
             }

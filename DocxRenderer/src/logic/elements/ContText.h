@@ -41,7 +41,6 @@ namespace NSDocxRenderer
 
             NSStringUtils::CStringUTF32 m_oText;
 
-            double m_dLastX {0};
             double m_dSpaceWidthMM {0};
             bool   m_bSpaceIsNotNeeded {false};
 
@@ -57,22 +56,21 @@ namespace NSDocxRenderer
 
         public:
             CContText(CFontManagerLight* pManagerLight, CStyleManager* pStyleManager);
-            ~CContText();
+            virtual ~CContText();
+            virtual void Clear() override final;
+            virtual void AddContent(CBaseItem* pObj) override final {};
+            virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
 
-            void Clear() override final;
+            CContText& operator= (const CContText& rCont);
 
             double GetIntersect(const CContText* pCont) const;
-
-            void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
 
             void AddWideSpaceToXml(double dSpacingMM,
                                    NSStringUtils::CStringBuilder& oWriter,
                                    bool bIsNeedSaveFormat = false);
 
             bool IsEqual(const CContText* pCont);
-
             UINT GetNumberOfFeatures();
-
             bool IsDuplicate(CContText *pCont, eVerticalCrossingType eVType);
             bool IsThereAreFontEffects(CContText *pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType);
             bool IsVertAlignTypeBetweenConts(CContText* pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType);

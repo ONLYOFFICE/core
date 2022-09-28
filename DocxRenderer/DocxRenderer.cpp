@@ -94,12 +94,15 @@ int CDocxRenderer::Convert(IOfficeDrawingFile* pFile, const std::wstring& sDstFi
         m_pInternal->m_oDocument.m_bIsNeedPDFTextAnalyzer = true;
 
     int nPagesCount = pFile->GetPagesCount();
+    m_pInternal->m_oDocument.m_lNumberPages = nPagesCount;
+
     for (int i = 0; i < nPagesCount; ++i)
     {
         //std::cout << "Page " << i + 1 << "/" << nPagesCount << std::endl;
         NewPage();
         BeginCommand(c_nPageType);
         m_pInternal->m_oDocument.m_bIsDisablePageCommand = true;
+        m_pInternal->m_oDocument.m_lPagesCount = i;
 
         double dPageDpiX, dPageDpiY;
         double dWidth, dHeight;

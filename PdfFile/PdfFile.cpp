@@ -1,11 +1,10 @@
 #include "PdfFile.h"
-#include "../PdfWriter/PdfRenderer.h"
-#include "../PdfReader/PdfReader.h"
 #include "../PdfReader/Src/Adaptors.h"
 #include "../DesktopEditor/common/File.h"
 #include "../DesktopEditor/common/Path.h"
 #include "../DesktopEditor/common/StringExt.h"
 
+#include "../PdfReader/lib/xpdf/PDFDoc.h"
 #include "../PdfReader/lib/xpdf/AcroForm.h"
 
 class CPdfFile_Private
@@ -72,6 +71,16 @@ CPdfFile::~CPdfFile()
     RELEASEOBJECT(m_pInternal->pReader);
 }
 
+PdfReader::CPdfReader* CPdfFile::GetReader()
+{
+    return m_pInternal->pReader;
+}
+
+CPdfRenderer* CPdfFile::GetWriter()
+{
+    return m_pInternal->pWriter;
+}
+
 void CPdfFile::SetTempDirectory(const std::wstring& wsPath)
 {
     m_pInternal->pWriter->SetTempFolder   (wsPath);
@@ -84,6 +93,40 @@ bool CPdfFile::LoadFromFile(const std::wstring& wsSrcFile, const std::wstring& w
     m_pInternal->wsPassword = wsPassword;
     return m_pInternal->pReader->LoadFromFile(wsSrcFile, L"", wsPassword, wsPassword) &&
           (m_pInternal->pReader->GetError() == 0);
+}
+
+bool CPdfFile::LoadFromMemory(BYTE* pData, DWORD nLength, const std::wstring& wsPassword)
+{
+    m_pInternal->wsSrcFile  = L"";
+    m_pInternal->wsPassword = wsPassword;
+    return m_pInternal->pReader->LoadFromMemory(pData, nLength, L"", wsPassword, wsPassword) &&
+          (m_pInternal->pReader->GetError() == 0);
+}
+
+int CPdfFile::GetPagesCount()
+{
+    return m_pInternal->pReader->GetPagesCount();
+}
+
+void CPdfFile::GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY)
+{
+    m_pInternal->pReader->GetPageInfo(nPageIndex, pdWidth, pdHeight, pdDpiX, pdDpiY);
+}
+
+void CPdfFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak)
+{
+    m_pInternal->pReader->DrawPageOnRenderer(pRenderer, nPageIndex, pBreak);
+}
+
+int CPdfFile::GetError()
+{
+    return m_pInternal->pReader->GetError();
+}
+
+void CPdfFile::ConvertToRaster(int nPageIndex, const std::wstring& path, int nImageType, const int nRasterW, const int nRasterH,
+                               bool bIsFlip, NSFonts::IFontManager* pFonts, int nBackgroundColor, bool bIsDarkMode)
+{
+    m_pInternal->pReader->ConvertToRaster(nPageIndex, path, nImageType, nRasterW, nRasterH, bIsFlip, pFonts, nBackgroundColor, bIsDarkMode);
 }
 
 bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
@@ -313,6 +356,48 @@ void CPdfFile::Sign(const double& dX, const double& dY, const double& dW, const 
 void CPdfFile::PageRotate(int nRotate)
 {
     m_pInternal->pWriter->PageRotate(nRotate);
+}
+
+HRESULT CPdfFile::OnlineWordToPdf(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams, bool bBinary)
+{
+    if (bBinary)
+        return m_pInternal->pWriter->OnlineWordToPdfFromBinary(wsSrcFile, wsDstFile, pParams);
+    return m_pInternal->pWriter->OnlineWordToPdf(wsSrcFile, wsDstFile, pParams);
+}
+
+void CPdfFile::SetPassword(const std::wstring& wsPassword)
+{
+    m_pInternal->pWriter->SetPassword(wsPassword);
+}
+
+void CPdfFile::SetDocumentID(const std::wstring& wsDocumentID)
+{
+    m_pInternal->pWriter->SetPassword(wsDocumentID);
+}
+
+int  CPdfFile::SaveToFile(const std::wstring& wsPath)
+{
+    int nPagesCount = m_pInternal->pReader->GetPagesCount();
+    for (int i = 0; i < nPagesCount; ++i)
+    {
+        m_pInternal->pWriter->NewPage();
+        m_pInternal->pWriter->BeginCommand(c_nPageType);
+
+        double dPageDpiX, dPageDpiY;
+        double dWidth, dHeight;
+        m_pInternal->pReader->GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+
+        dWidth  *= 25.4 / dPageDpiX;
+        dHeight *= 25.4 / dPageDpiY;
+
+        m_pInternal->pWriter->put_Width(dWidth);
+        m_pInternal->pWriter->put_Height(dHeight);
+
+        m_pInternal->pReader->DrawPageOnRenderer(m_pInternal->pWriter, i, NULL);
+
+        m_pInternal->pWriter->EndCommand(c_nPageType);
+    }
+    return m_pInternal->pWriter->SaveToFile(wsPath);
 }
 
 void CPdfFile::TEST(int i)

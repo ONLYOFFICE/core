@@ -16,7 +16,7 @@ include(../Common/base.pri)
 
 DEFINES += PDFREADER_USE_DYNAMIC_LIBRARY
 
-ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, PdfWriter)
+ADD_DEPENDENCY(graphics, kernel, UnicodeConverter)
 
 core_windows {
 LIBS += -lgdi32 \

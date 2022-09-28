@@ -41,8 +41,7 @@
 #include "../DesktopEditor/graphics/pro/officedrawingfile.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"
 
-#include "lib/xpdf/PDFDoc.h"
-
+class PDFDoc;
 namespace PdfReader
 {
     typedef enum

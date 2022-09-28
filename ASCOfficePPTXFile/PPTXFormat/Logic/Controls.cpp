@@ -180,8 +180,8 @@ namespace PPTX
 			pWriter->WriteAttribute(L"spid", spid);
 
 			if (rId.IsInit())  pWriter->WriteAttribute(L"r:id", rId->ToString());
-			if (width.IsInit())pWriter->WriteAttribute(L"imgW", *width);
-			if (height.IsInit())pWriter->WriteAttribute(L"imgH", *height);
+			if (width.IsInit())pWriter->WriteAttribute(L"imgW", std::to_wstring(*width));
+			if (height.IsInit())pWriter->WriteAttribute(L"imgH", std::to_wstring(*height));
 			pWriter->WriteAttribute(L"showAsIcon", showAsIcon);
 			pWriter->EndAttributes();
 

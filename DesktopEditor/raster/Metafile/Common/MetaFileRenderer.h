@@ -199,8 +199,8 @@ namespace MetaFile
 			int nT = pBounds->nTop;
 			int nB = pBounds->nBottom;
 
-			m_dScaleX = (nR - nL <= 0) ? 1 : m_dW / (double)(nR - nL);
-			m_dScaleY = (nB - nT <= 0) ? 1 : m_dH / (double)(nB - nT);
+			m_dScaleX = m_dW / std::fabs((double)(nR - nL));
+			m_dScaleY = m_dH / std::fabs((double)(nB - nT));
 		}
 
 		void Begin()

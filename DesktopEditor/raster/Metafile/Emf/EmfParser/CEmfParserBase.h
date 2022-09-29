@@ -31,6 +31,16 @@ namespace MetaFile
 		EmfxParser
 	};
 
+	typedef  enum
+	{
+		EMR_COMMENT_WINDOWS_METAFILE = 0x80000001,
+		EMR_COMMENT_BEGINGROUP       = 0x00000002,
+		EMR_COMMENT_ENDGROUP         = 0x00000003,
+		EMR_COMMENT_MULTIFORMATS     = 0x40000004,
+		EMR_COMMENT_UNICODE_STRING   = 0x00000040,
+		EMR_COMMENT_UNICODE_END      = 0x00000080
+	} EmrComment;
+
 	class CEmfPlayer;
 
 	class  CEmfParserBase : public virtual IMetaFileBase
@@ -286,6 +296,9 @@ namespace MetaFile
 		void HANDLE_EMR_POLYGON(TEmfRectL& oBounds, std::vector<TEmfPointS>& arPoints);
 		template<typename T> void HANDLE_EMR_POLYGON_BASE(TEmfRectL& oBounds, std::vector<T>& arPoints)
 		{
+			if (arPoints.empty())
+				return;
+
 			MoveTo(arPoints[0]);
 
 			for (unsigned int unIndex = 1; unIndex < arPoints.size(); ++unIndex)

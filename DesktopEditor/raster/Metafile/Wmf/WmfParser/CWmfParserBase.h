@@ -109,6 +109,7 @@ namespace MetaFile
 
 		TRect          m_oBoundingBox;
 		bool           m_bFirstPoint;
+		bool           m_bBanRegPoint;
 
 		TXForm         m_oTransform;
 

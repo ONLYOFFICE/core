@@ -9,6 +9,8 @@
 #include "../EmfInterpretator/CEmfInterpretatorXml.h"
 #endif
 
+#include "../../Wmf/WmfParser/CWmfParser.h"
+
 namespace MetaFile
 {
 	CEmfParser::CEmfParser() :
@@ -1396,11 +1398,10 @@ namespace MetaFile
 		m_oStream.Skip(4);
 
 		std::string sType = std::string((char*)m_oStream.GetCurPtr(), 4);
+		m_oStream.Skip(4);
 
 		if (sType == "EMF+" && NULL != m_pInterpretator)
 		{
-			m_oStream.Skip(4);
-
 			if (NULL == m_pEmfPlusParser)
 			{
 				m_pEmfPlusParser = new CEmfPlusParser(m_pInterpretator, m_oHeader);
@@ -1416,6 +1417,46 @@ namespace MetaFile
 			m_pInterpretator->ChangeConditional();
 
 			m_oStream.Skip(m_ulRecordSize - 8);
+		}
+		else if (sType == "GDIC")
+		{
+			unsigned int unPublicCommentIdentifier;
+
+			m_oStream >> unPublicCommentIdentifier;
+
+			if (EMR_COMMENT_WINDOWS_METAFILE == unPublicCommentIdentifier)
+			{
+				m_oStream.Skip(12); // Version, Reserved, Checksum, Flags
+
+				unsigned int unWinMetafileSize;
+
+				m_oStream >> unWinMetafileSize;
+
+				if (0 == unWinMetafileSize)
+					return;
+
+				CWmfParser oWmfParser;
+
+				oWmfParser.SetFontManager(GetFontManager());
+				oWmfParser.SetStream(m_oStream.GetCurPtr(), unWinMetafileSize);
+				oWmfParser.Scan();
+
+				if (!oWmfParser.CheckError())
+				{
+					if (NULL != m_pInterpretator && InterpretatorType::Render == m_pInterpretator->GetType())
+					{
+						CMetaFileRenderer oWmfOut(&oWmfParser, ((CEmfInterpretatorRender*)m_pInterpretator)->GetRenderer());
+						oWmfParser.SetInterpretator(&oWmfOut);
+
+						oWmfParser.PlayFile();
+
+						m_bEof = true;
+					}
+				}
+
+
+				m_oStream.Skip(unWinMetafileSize);
+			}
 		}
 	}
 

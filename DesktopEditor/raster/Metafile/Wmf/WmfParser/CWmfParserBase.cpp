@@ -31,15 +31,6 @@ namespace MetaFile
 	{
 		m_oDCRect = GetBoundingBox();
 		return &m_oDCRect;
-
-		TWmfWindow* pViewport = m_pDC->GetViewport();
-
-		m_oDCRect.nLeft   = pViewport->x;
-		m_oDCRect.nTop    = pViewport->y;
-		m_oDCRect.nRight  = pViewport->w + pViewport->x;
-		m_oDCRect.nBottom = pViewport->h + pViewport->y;
-
-		return &m_oDCRect;
 	}
 
 	double CWmfParserBase::GetPixelHeight()
@@ -170,9 +161,9 @@ namespace MetaFile
 	double CWmfParserBase::GetScale()
 	{
 		if (m_oPlaceable.Inch != 0)
-			return 1440.f / m_oPlaceable.Inch / (20.f * (72.f / 96.f));
+			return m_oPlaceable.Inch / 1440.f;
 
-		return 1.f;
+		return 96.f / 1440.f;
 	}
 
 	void CWmfParserBase::SetInterpretator(IOutputDevice *pOutput)
@@ -207,17 +198,7 @@ namespace MetaFile
 	TRectD CWmfParserBase::GetBounds()
 	{
 		TRect  oBoundsBox = GetBoundingBox();
-		TRectD oBounds = oBoundsBox;
-		//TODO: сильно падает качетсво изображения
-		//			if (IsPlaceable())
-		//			{
-		//				double dLogicalToMM = (m_oPlaceable.Inch > 0 ? 25.4 / m_oPlaceable.Inch : 25.4 / 1440);
-		//				oBounds *= dLogicalToMM;
-		//			}
-		//			else
-		//			{
-		//				// TODO:
-		//			}
+		TRectD oBounds(oBoundsBox);
 		return oBounds;
 	}
 
@@ -238,9 +219,10 @@ namespace MetaFile
 
 	TRect CWmfParserBase::GetBoundingBox()
 	{
-		TRect oBB;
 		if (IsPlaceable())
 		{
+			TRect oBB;
+
 			oBB = m_oPlaceable.BoundingBox;
 
 			// Иногда m_oPlaceable.BoundingBox задается нулевой ширины и высоты
@@ -254,17 +236,11 @@ namespace MetaFile
 				oBB.nTop    = m_oBoundingBox.nTop;
 				oBB.nBottom = m_oBoundingBox.nBottom;
 			}
+
+			return oBB;
 		}
 		else
-			oBB = m_oBoundingBox;
-
-		if (abs(oBB.nRight - oBB.nLeft) <= 1)
-			oBB.nRight = oBB.nLeft + 1024;
-
-		if (abs(oBB.nBottom - oBB.nTop) <= 1)
-			oBB.nBottom = m_oBoundingBox.nTop + 1024;
-
-		return oBB;
+			return m_oBoundingBox;
 	}
 
 	bool CWmfParserBase::IsPlaceable()
@@ -691,6 +667,9 @@ namespace MetaFile
 
 	void CWmfParserBase::RegisterPoint(short shX, short shY)
 	{
+		if (m_bBanRegPoint)
+			return;
+
 		if (m_bFirstPoint)
 		{
 			m_oBoundingBox.nLeft   = shX;
@@ -757,6 +736,18 @@ namespace MetaFile
 
 	void CWmfParserBase::UpdateOutputDC()
 	{
+		TWmfWindow *pWindow = m_pDC->GetWindow();
+
+		if (!pWindow->bUnchangedOrg && !pWindow->bUnchangedExt)
+		{
+			m_oBoundingBox.nLeft   = pWindow->x;
+			m_oBoundingBox.nTop    = pWindow->y;
+			m_oBoundingBox.nRight  = pWindow->x + pWindow->w;
+			m_oBoundingBox.nBottom = pWindow->y + pWindow->h;
+
+			m_bBanRegPoint = true;
+		}
+
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->UpdateDC();
 	}
@@ -777,16 +768,17 @@ namespace MetaFile
 
 		// Если у нас не задан Output, значит мы считаем, что идет сканирование метафайла.
 		// Во время сканирования мы регистрируем все точки и вычисляем BoundingBox
-//		if (NULL != m_pInterpretator)
-//		{
-//			m_oRect = GetBoundingBox();
-//			m_pDC->SetWindowOff(m_oRect.nLeft, m_oRect.nTop);
-//			m_pDC->SetWindowExt(m_oRect.nRight - m_oRect.nLeft, m_oRect.nBottom - m_oRect.nTop);
-////		}
-//		else
-//		{
+		if (m_oPlaceable.Inch == 0 && NULL != m_pInterpretator)
+		{
+			m_oRect = GetBoundingBox();
+			m_pDC->SetWindowOff(m_oRect.nLeft, m_oRect.nTop);
+			m_pDC->SetWindowExt(m_oRect.nRight - m_oRect.nLeft, m_oRect.nBottom - m_oRect.nTop);
+		}
+		else
+		{
 			m_bFirstPoint = true;
-//		}
+			m_bBanRegPoint = false;
+		}
 	}
 
 	void CWmfParserBase::HANDLE_META_BITBLT(const TWmfBitBlt &oWmfBitBlt, CDataStream &oDataStream)
@@ -1567,16 +1559,16 @@ namespace MetaFile
 
 					oEmfParser.SetFontManager(GetFontManager());
 					oEmfParser.SetStream(m_oEscapeBuffer.GetBuffer(), m_oEscapeBuffer.GetSize());
+					oEmfParser.Scan();
 
-					if (InterpretatorType::Render == m_pInterpretator->GetType())
+					if (!oEmfParser.CheckError() && InterpretatorType::Render == m_pInterpretator->GetType())
 					{
 						CMetaFileRenderer oEmfOut(&oEmfParser, ((CWmfInterpretatorRender*)m_pInterpretator)->GetRenderer());
 						oEmfParser.SetInterpretator(&oEmfOut);
 
 						oEmfParser.PlayFile();
 
-						if (!oEmfParser.CheckError())
-							m_bEof = true;
+						m_bEof = true;
 					}
 				}
 			}

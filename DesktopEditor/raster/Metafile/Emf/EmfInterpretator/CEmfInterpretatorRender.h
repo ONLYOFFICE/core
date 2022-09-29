@@ -44,6 +44,8 @@ namespace MetaFile
 		void SetTransform(double& dM11, double& dM12, double& dM21, double& dM22, double& dX, double& dY) override;
 		void GetTransform(double* pdM11, double* pdM12, double* pdM21, double* pdM22, double* pdX, double* pdY) override;
 
+		CMetaFileRenderer* GetRenderer() const;
+
 	private:
 		CMetaFileRenderer *m_pMetaFileRenderer;
 

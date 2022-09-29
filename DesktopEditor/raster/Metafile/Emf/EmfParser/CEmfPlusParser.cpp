@@ -647,9 +647,6 @@ namespace MetaFile
 		m_oStream >> unUnitType;
 		m_oStream >> pEmfPlusPen->Width;
 
-		pEmfPlusPen->Style |= (PS_STARTCAP_MASK & PS_STARTCAP_FLAT) |
-				(PS_ENDCAP_MASK & PS_ENDCAP_FLAT);
-
 		if (unFlags & PEN_DATA_TRANSFORM)
 			m_oStream.Skip(24); // TransformMatrix (24 bytes) - EmfPlusTransformMatrix object
 		if (unFlags & PEN_DATA_STARTCAP)

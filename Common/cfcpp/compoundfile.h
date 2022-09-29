@@ -63,6 +63,7 @@ public:
     void InvalidateDirectoryEntry(int sid);
     void FreeAssociatedData(int sid);
     void FreeData(CFStream* stream);
+    void WriteData(std::shared_ptr<CFItem> cfItem, const char* data, std::streamsize position, int count);
     void WriteData(std::shared_ptr<CFItem> cfItem, const std::vector<BYTE>& buffer, std::streamsize position, int offset, int count);
     void WriteData(std::shared_ptr<CFItem> cfItem, std::streamsize position, const std::vector<BYTE>& buffer);
     void WriteData(std::shared_ptr<CFItem> cfItem, const std::vector<BYTE>& buffer);

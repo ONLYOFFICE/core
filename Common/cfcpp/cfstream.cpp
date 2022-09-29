@@ -33,6 +33,12 @@ void CFStream::Write(const std::vector<BYTE> &data, std::streamsize position, in
     compoundFile->WriteData(shared_from_this(), data, position, offset, count);
 }
 
+void CFStream::Write(const char *data, std::streamsize position, int count)
+{
+    CheckDisposed();
+    compoundFile->WriteData(shared_from_this(), data, position, count);
+}
+
 void CFStream::Append(const std::vector<BYTE> &data)
 {
     CheckDisposed();

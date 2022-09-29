@@ -318,7 +318,7 @@ SVector<Sector> CompoundFile::GetFatSectorChain()
     while (idx < header->fatSectorsNumber && idx < N_HEADER_FAT_ENTRY)
     {
         nextSecID = header->difat[idx];
-        auto s = sectors[nextSecID];
+        auto& s = sectors[nextSecID];
 
         if (s.get() == nullptr)
         {
@@ -363,9 +363,9 @@ SVector<Sector> CompoundFile::GetFatSectorChain()
 
             EnsureUniqueSectorIndex(nextSecID, processedSectors);
 
-            auto s = sectors[nextSecID];
+            auto& s = sectors[nextSecID];
 
-            if (s.get() == nullptr)
+            if (s == nullptr)
             {
                 s.reset(new Sector(GetSectorSize(), sourceStream));
                 s->type = SectorType::FAT;
@@ -419,7 +419,7 @@ SVector<Sector> CompoundFile::GetDifatSectorChain()
 
         result.push_back(s);
 
-        while (validationCount >= 0)
+        while (true)
         {
             int startPos = GetSectorSize() - 4;
             nextSecID = *reinterpret_cast<int*>(s->GetData().data() + startPos);
@@ -481,7 +481,7 @@ SVector<Sector> CompoundFile::GetNormalSectorChain(int secID)
             throw CFCorruptedFileException("Next Sector ID reference an out of range sector. NextID : " + std::to_string(nextSecID) +
                                                " while sector count " + std::to_string(sectors.Count()));
 
-        std::shared_ptr<Sector> s = sectors[nextSecID];
+        auto& s = sectors[nextSecID];
         if (s == nullptr)
         {
             s.reset(new Sector(GetSectorSize(), sourceStream));
@@ -819,7 +819,7 @@ void CompoundFile::FreeMiniChain(SVector<Sector> &sectorChain, bool zeroSector)
 
 void CompoundFile::FreeMiniChain(SVector<Sector> &sectorChain, int nth_sector_to_remove, bool zeroSector)
 {
-    std::vector<char> ZEROED_MINI_SECTOR(Sector::MINISECTOR_SIZE);
+    std::vector<char> ZEROED_MINI_SECTOR(Sector::MINISECTOR_SIZE, 0);
 
     SVector<Sector> miniFAT
             = GetSectorChain(header->firstMiniFATSectorID, SectorType::Normal);
@@ -837,7 +837,7 @@ void CompoundFile::FreeMiniChain(SVector<Sector> &sectorChain, int nth_sector_to
     {
         for (int i = nth_sector_to_remove; i < (int)sectorChain.size(); i++)
         {
-            auto s = sectorChain[i];
+            auto& s = sectorChain[i];
 
             if (s->id != -1)
             {
@@ -881,9 +881,6 @@ void CompoundFile::FreeMiniChain(SVector<Sector> &sectorChain, int nth_sector_to
 
 void CompoundFile::FreeChain(SVector<Sector> &sectorChain, int nth_sector_to_remove, bool zeroSector)
 {
-    // Dummy zero buffer
-    std::vector<char> ZEROED_SECTOR;
-
     SVector<Sector> FAT = GetSectorChain(-1, SectorType::FAT);
 
     SList<Sector> zeroQueue;
@@ -894,7 +891,7 @@ void CompoundFile::FreeChain(SVector<Sector> &sectorChain, int nth_sector_to_rem
     {
         for (int i = nth_sector_to_remove; i < (int)sectorChain.size(); i++)
         {
-            auto s = sectorChain[i];
+            auto& s = sectorChain[i];
             s->ZeroData();
         }
     }
@@ -925,7 +922,7 @@ void CompoundFile::FreeChain(SVector<Sector> &sectorChain, bool zeroSector)
 
 void CompoundFile::AllocateSectorChain(SVector<Sector> &sectorChain)
 {
-    for (auto& s : *sectorChain)
+    for (auto& s : *sectorChain) // todo check
     {
         if (s->id == -1)
         {
@@ -977,7 +974,7 @@ void CompoundFile::AllocateDIFATSectorChain(SVector<Sector> &FATsectorChain)
     header->fatSectorsNumber = FATsectorChain.size();
 
     // Allocate Sectors
-    for (auto& s : *FATsectorChain)
+    for (auto& s : *FATsectorChain) // todo check
     {
         if (s->id == -1)
         {
@@ -1046,7 +1043,8 @@ void CompoundFile::AllocateDIFATSectorChain(SVector<Sector> &FATsectorChain)
             // room for DIFAT chaining at the end of any DIFAT sector (4 bytes)
             if (i != HEADER_DIFAT_ENTRIES_COUNT && (i - HEADER_DIFAT_ENTRIES_COUNT) % DIFAT_SECTOR_FAT_ENTRIES_COUNT == 0)
             {
-                difatStream.write(reinterpret_cast<const char*>(0L), sizeof(int));
+                int zero = 0;
+                difatStream.write(reinterpret_cast<const char*>(&zero), sizeof(int));
             }
 
             difatStream.write(reinterpret_cast<const char*>(&FATsectorChain[i]->id), sizeof(int));
@@ -1069,7 +1067,7 @@ void CompoundFile::AllocateDIFATSectorChain(SVector<Sector> &FATsectorChain)
 
 
     // Chain first sector
-    if (difatStream.BaseSectorChain().size() && difatStream.BaseSectorChain().size() > 0)
+    if (difatStream.BaseSectorChain() != nullptr && difatStream.BaseSectorChain().size() > 0)
     {
         header->firstDIFATSectorID = difatStream.BaseSectorChain()[0]->id;
 
@@ -1086,7 +1084,8 @@ void CompoundFile::AllocateDIFATSectorChain(SVector<Sector> &FATsectorChain)
             std::copy_n(src, sizeof(int), dst+offsetDst);
         }
 
-        char* src = const_cast<char*>(reinterpret_cast<const char*>(&Sector::ENDOFCHAIN));
+        auto eoc = Sector::ENDOFCHAIN;
+        char* src = reinterpret_cast<char*>(&eoc);
         char* dst =  reinterpret_cast<char *>(difatStream.BaseSectorChain()[difatStream.BaseSectorChain().size() - 1]->GetData().data());
         int offsetDst = GetSectorSize() - sizeof(int);
         std::copy_n(src, sizeof(int), dst+offsetDst);
@@ -1145,7 +1144,7 @@ void CompoundFile::AllocateMiniSectorChain(SVector<Sector> &sectorChain)
     // We are writing data in a NORMAL Sector chain.
     for (int i = 0; i < (int)sectorChain.size(); i++)
     {
-        std::shared_ptr<Sector> s = sectorChain[i];
+        std::shared_ptr<Sector>& s = sectorChain[i];
 
         if (s->id == -1)
         {
@@ -1219,7 +1218,7 @@ int CompoundFile::LowSaturation(int i)
 
 void CompoundFile::SetSectorChain(SVector<Sector> sectorChain)
 {
-    if (sectorChain.size() == 0)
+    if (sectorChain != nullptr && sectorChain.size() == 0)
         return;
 
     SectorType _st = sectorChain[0]->type;
@@ -1361,7 +1360,7 @@ void CompoundFile::SetStreamLength(std::shared_ptr<CFItem> cfItem, std::streamsi
 
     bool transitionToMini = false;
     bool transitionToNormal = false;
-    SVector<Sector> oldChain;
+    SVector<Sector> oldChain(nullptr);
 
     if (cfItem->dirEntry.lock()->getStartSetc() != Sector::ENDOFCHAIN)
     {
@@ -1752,12 +1751,15 @@ GUID CompoundFile::getGuidForStream(int sid)
     return g;
 }
 
-void CompoundFile::WriteData(std::shared_ptr<CFItem> cfItem, const std::vector<BYTE> &buffer, std::streamsize position, int offset, int count)
+void CompoundFile::WriteData(std::shared_ptr<CFItem> cfItem, const char* data, std::streamsize position, int count)
 {
+    if (data == nullptr)
+        throw CFInvalidOperation("Parameter [data] cannot be null");
+
     if (cfItem->dirEntry.expired())
         throw CFException("Internal error [cfItem->dirEntry] cannot be null");
 
-    if (buffer.size() == 0) return;
+    if (count == 0) return;
 
     // Get delta size induced by client
     std::streamsize delta = (position + count) - cfItem->size() < 0 ? 0 : (position + count) - cfItem->size();
@@ -1780,12 +1782,17 @@ void CompoundFile::WriteData(std::shared_ptr<CFItem> cfItem, const std::vector<B
     StreamView sv(sectorChain, _sectorSize, newLength, zeroQueue, sourceStream);
 
     sv.seek(position, std::ios::beg);
-    sv.write(reinterpret_cast<const char*>(buffer.data() + offset), count);
+    sv.write(data, count);
 
     if (cfItem->size() < header->minSizeStandardStream)
     {
         PersistMiniStreamToStream(sv.BaseSectorChain());
     }
+}
+
+void CompoundFile::WriteData(std::shared_ptr<CFItem> cfItem, const std::vector<BYTE> &buffer, std::streamsize position, int offset, int count)
+{
+    WriteData(cfItem, reinterpret_cast<const char*>(buffer.data() + offset), position, count);
 }
 
 int CompoundFile::GetSectorSize()

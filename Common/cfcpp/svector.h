@@ -21,6 +21,9 @@ public:
             init(res);
     }
 
+    SVector(const SVectorBasePtr<T>& oth) : SVectorBasePtr<T>(oth)
+    {}
+
     void init(size_t res = 0)
     {
             SVectorBasePtr<T>::reset(new SVectorBase<T>(res));

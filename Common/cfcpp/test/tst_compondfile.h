@@ -75,7 +75,7 @@ TEST_F(CompoundFileTest, test_compoundfile_write)
 TEST(test_compoundfile, largeFileCopy)
 {
     wstring filename = L"../../../data/2.ppt";
-    CompoundFile cf(L"../../../data/2.ppt", CFSUpdateMode::ReadOnly);
+    CompoundFile cf(filename, CFSUpdateMode::ReadOnly);
 
     wstring other_filename = L"../../../data/3.ppt";
     NSFile::CFileBinary::Remove(other_filename);
@@ -261,7 +261,8 @@ TEST(test_compoundfile, largeStream_v3_v4)
 
     for (LONG64 i = 0; i < streamLen; i += data.size())
     {
-        EXPECT_NO_THROW(stream1->Write(data, i));
+
+        EXPECT_NO_THROW(stream1->Write(reinterpret_cast<char*>(&i), i, sizeof(i)));
 //        EXPECT_NO_THROW(stream2->Write(data, i));
     }
 

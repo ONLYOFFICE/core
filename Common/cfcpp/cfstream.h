@@ -14,6 +14,7 @@ public:
     void Append(const std::vector<BYTE>& data);
     void Write(const std::vector<BYTE>& data, std::streamsize position);
     void Write(const std::vector<BYTE>& data, std::streamsize position, int offset, int count);
+    void Write(const char *data, std::streamsize position, int count);
 
     int Read(std::vector<BYTE>& buffer, std::streamsize position, int count);
     int Read(std::vector<BYTE>& buffer, std::streamsize position, int offset, int count);

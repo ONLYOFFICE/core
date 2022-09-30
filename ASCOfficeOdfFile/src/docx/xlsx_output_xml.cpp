@@ -219,44 +219,47 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
             CP_XML_ATTR(L"mc:Ignorable",L"x14ac");
             CP_XML_ATTR(L"xmlns:x14ac", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac");
 
-			CP_XML_STREAM() << impl_->sheetFormat_.rdbuf();
+			CP_XML_STREAM() << impl_->sheetFormat_.str();
 
-            CP_XML_STREAM() << impl_->cols_.rdbuf();
+            CP_XML_STREAM() << impl_->cols_.str();
 
             CP_XML_NODE(L"sheetData")
             {
 				impl_->sheetData_.flush();
                 CP_XML_STREAM() << impl_->sheetData_.rdbuf();
             }
-			if (!impl_->protection_.str().empty())
+			std::wstring protect = impl_->protection_.str();
+			if (false == protect.empty())
             {
-				CP_XML_STREAM() << impl_->protection_.rdbuf();
+				CP_XML_STREAM() << protect;
 			}
 			//оказывается порядок нахождения элементов важен !!! (для office 2010)
 			//объединенные ячейки раньше чем гиперлинки !!!
 			
-			CP_XML_STREAM() << impl_->autofilter_.rdbuf(); //автофильтры перед merge !!!
+			CP_XML_STREAM() << impl_->autofilter_.str(); //автофильтры перед merge !!!
 			
-			CP_XML_STREAM() << impl_->mergeCells_.rdbuf();
+			CP_XML_STREAM() << impl_->mergeCells_.str();
 			
-			CP_XML_STREAM() << impl_->sort_.rdbuf();
+			CP_XML_STREAM() << impl_->sort_.str();
 
-			CP_XML_STREAM() << impl_->conditionalFormatting_.rdbuf();
+			CP_XML_STREAM() << impl_->conditionalFormatting_.str();
 
-			CP_XML_STREAM() << impl_->dataValidations_.rdbuf();
-			if (!impl_->hyperlinks_.str().empty())
+			CP_XML_STREAM() << impl_->dataValidations_.str();
+			
+			std::wstring hyperlinks = impl_->hyperlinks_.str();
+			if (false == hyperlinks.empty())
             {
                 CP_XML_NODE(L"hyperlinks")
                 {
-                    CP_XML_STREAM() << impl_->hyperlinks_.rdbuf();
+                    CP_XML_STREAM() << hyperlinks;
                 }
             }
-			CP_XML_STREAM() << impl_->page_props_.rdbuf();
+			CP_XML_STREAM() << impl_->page_props_.str();
 			//props выше legacyDrawing !!
 
-			CP_XML_STREAM() << impl_->header_footer_.rdbuf();
+			CP_XML_STREAM() << impl_->header_footer_.str();
 			
-			CP_XML_STREAM() << impl_->breaks_.rdbuf();
+			CP_XML_STREAM() << impl_->breaks_.str();
 			
 			if (false == impl_->drawingId_.empty())
 			{
@@ -272,30 +275,34 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 					CP_XML_ATTR(L"r:id", impl_->vml_drawingId_);
 				}
 			}
-			if (false == impl_->ole_objects_.str().empty())
+			std::wstring oleObjects = impl_->ole_objects_.str();
+			if (false == oleObjects.empty())
             {
                 CP_XML_NODE(L"oleObjects")
                 {
-					CP_XML_STREAM() << impl_->ole_objects_.rdbuf();
+					CP_XML_STREAM() << oleObjects;
                 }
             }
+			std::wstring controls = impl_->controls_.str();
 			if (false == impl_->controls_.str().empty())
             {
                 CP_XML_NODE(L"controls")
                 {
-					CP_XML_STREAM() << impl_->controls_.rdbuf();
+					CP_XML_STREAM() << controls;
                 }
             }
-			if (false == impl_->tableParts_.str().empty())
+			std::wstring tableParts = impl_->tableParts_.str();
+			if (false == tableParts.empty())
             {
                 CP_XML_NODE(L"tableParts")
                 {
-					CP_XML_STREAM() << impl_->tableParts_.rdbuf();
+					CP_XML_STREAM() << tableParts;
 				}
 			}
 			CP_XML_STREAM() << impl_->picture_background_.str();
 
-			if (false == impl_->dataValidationsX14_.str().empty())
+			std::wstring dataValidations14 = impl_->dataValidationsX14_.str();
+			if (false == dataValidations14.empty())
 			{
 				CP_XML_NODE(L"extLst")
 				{
@@ -304,7 +311,7 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 						CP_XML_ATTR(L"uri", L"{CCE6A557-97BC-4b89-ADB6-D9C93CAAB3DF}");
 						CP_XML_ATTR(L"xmlns:x14", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
 
-						CP_XML_STREAM() << impl_->dataValidationsX14_.rdbuf();
+						CP_XML_STREAM() << dataValidations14;
 					}
 				}
 			}

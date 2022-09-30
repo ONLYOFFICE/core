@@ -231,12 +231,12 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
             CP_XML_ATTR(L"mc:Ignorable", L"x14ac");
             CP_XML_ATTR(L"xmlns:x14ac", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac");
 
-			CP_XML_STREAM() << impl_->sheetPr_.rdbuf();
-			CP_XML_STREAM() << impl_->dimension_.rdbuf();
-			CP_XML_STREAM() << impl_->sheetViews_.rdbuf();
-			CP_XML_STREAM() << impl_->sheetFormatPr_.rdbuf();
+			CP_XML_STREAM() << impl_->sheetPr_.str();
+			CP_XML_STREAM() << impl_->dimension_.str();
+			CP_XML_STREAM() << impl_->sheetViews_.str();
+			CP_XML_STREAM() << impl_->sheetFormatPr_.str();
 
-            CP_XML_STREAM() << impl_->cols_.rdbuf();
+            CP_XML_STREAM() << impl_->cols_.str();
 
             CP_XML_NODE(L"sheetData")
             {
@@ -250,21 +250,21 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 			//оказывается порядок нахождения элементов важен !!! (для office 2010)
 			//объединенные ячейки раньше чем гиперлинки !!!
 
-			CP_XML_STREAM() << impl_->sortAndFilters_.rdbuf();
+			CP_XML_STREAM() << impl_->sortAndFilters_.str();
            
-			CP_XML_STREAM() << impl_->customViews_.rdbuf();
+			CP_XML_STREAM() << impl_->customViews_.str();
 			
-			CP_XML_STREAM() << impl_->mergeCells_.rdbuf();
+			CP_XML_STREAM() << impl_->mergeCells_.str();
 			
-			CP_XML_STREAM() << impl_->conditionalFormatting_.rdbuf();
+			CP_XML_STREAM() << impl_->conditionalFormatting_.str();
 
-			CP_XML_STREAM() << impl_->dataValidations_.rdbuf();
+			CP_XML_STREAM() << impl_->dataValidations_.str();
 
-			CP_XML_STREAM() << impl_->hyperlinks_.rdbuf();
+			CP_XML_STREAM() << impl_->hyperlinks_.str();
   	
-			CP_XML_STREAM() << impl_->pageProperties_.rdbuf();
+			CP_XML_STREAM() << impl_->pageProperties_.str();
 
-            CP_XML_STREAM() << impl_->drawing_.rdbuf();
+            CP_XML_STREAM() << impl_->drawing_.str();
 		
 			if (!impl_->vml_drawingId_.empty())
 			{
@@ -284,17 +284,17 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
             {
                 CP_XML_NODE(L"oleObjects")
                 {
-					CP_XML_STREAM() << impl_->ole_objects_.rdbuf();
+					CP_XML_STREAM() << impl_->ole_objects_.str();
                 }
             }	
 			
-			CP_XML_STREAM() << impl_->picture_background_.rdbuf();
+			CP_XML_STREAM() << impl_->picture_background_.str();
 			
 			if (!impl_->activeXs_.str().empty())
 			{
                 CP_XML_NODE(L"controls")
                 {
-					CP_XML_STREAM() << impl_->activeXs_.rdbuf();
+					CP_XML_STREAM() << impl_->activeXs_.str();
                 }
 			}
 
@@ -302,7 +302,7 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 			{
                 CP_XML_NODE(L"tableParts")
                 {
-					CP_XML_STREAM() << impl_->tableParts_.rdbuf();
+					CP_XML_STREAM() << impl_->tableParts_.str();
                 }
 			}
 

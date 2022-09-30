@@ -621,9 +621,7 @@ namespace odf_writer
 							}
 						}
 					}
-				}
-				resStream.flush();
-				
+				}				
 				simple_element elm(L"content.xml", resStream.str());
 				elm.write(RootPath, add_padding);
 			}
@@ -679,6 +677,7 @@ namespace odf_writer
 					
 					if (content_)
 					{
+						content_->content().flush();
 						CP_XML_STREAM() << content_->content().rdbuf();
 					}
 					
@@ -704,6 +703,7 @@ namespace odf_writer
 					
 					if (content_)
 					{
+						content_->content().flush();
 						CP_XML_STREAM() << content_->content().rdbuf();
 					}
 					

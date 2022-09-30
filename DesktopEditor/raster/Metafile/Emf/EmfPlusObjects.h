@@ -163,7 +163,12 @@ namespace MetaFile
 	{
 	    public:
 		CEmfPlusBrush() : CEmfPlusObject(), Style(BS_SOLID), Hatch(0), Angle(0) {};
-		virtual ~CEmfPlusBrush() {};
+		virtual ~CEmfPlusBrush()
+		{
+			if (!DibPatterPath.empty() && NSFile::CFileBinary::Exists(DibPatterPath))
+				NSFile::CFileBinary::Remove(DibPatterPath);
+
+		};
 		virtual EEmfObjectType GetType() override
 		{
 			return EMF_OBJECT_BRUSH;

@@ -81,6 +81,11 @@ CPdfRenderer* CPdfFile::GetWriter()
     return m_pInternal->pWriter;
 }
 
+NSFonts::IFontManager* CPdfFile::GetFontManager()
+{
+    return m_pInternal->pReader->GetFontManager();
+}
+
 void CPdfFile::SetTempDirectory(const std::wstring& wsPath)
 {
     m_pInternal->pWriter->SetTempFolder   (wsPath);

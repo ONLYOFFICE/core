@@ -22,6 +22,7 @@ public:
 
     PdfReader::CPdfReader* GetReader();
     CPdfRenderer*          GetWriter();
+    NSFonts::IFontManager* GetFontManager();
 
     void SetTempDirectory(const std::wstring& wsPath);
     bool LoadFromFile(const std::wstring& wsSrcFile, const std::wstring& wsPassword = L"");

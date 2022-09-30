@@ -15,11 +15,15 @@ int main()
 
     NSFonts::IApplicationFonts* pApplicationFonts = oWorker.Check();
 
-    CPdfFile pdfFile(pApplicationFonts);
-    pdfFile.SetTempDirectory(NSFile::GetProcessDirectory() + L"/pdftemp");
-
     std::wstring wsSrcFile = NSFile::GetProcessDirectory() + L"/test.pdf";
     std::wstring wsDstFile = NSFile::GetProcessDirectory() + L"/test2.pdf";
+    std::wstring wsTempDir = NSFile::GetProcessDirectory() + L"/pdftemp";
+
+    if (!NSDirectory::Exists(wsTempDir))
+        NSDirectory::CreateDirectory(wsTempDir);
+
+    CPdfFile pdfFile(pApplicationFonts);
+    pdfFile.SetTempDirectory(wsTempDir);
 
     std::wstring wsPassword;
     bool bResult = pdfFile.LoadFromFile(wsSrcFile);
@@ -38,6 +42,30 @@ int main()
         std::string sPrivateFilePassword = "";
 
         pCertificate = NSCertificate::FromFiles(wsPrivateKeyFile, sPrivateFilePassword, wsCertificateFile, sCertificateFilePassword);
+    }
+
+    if (false)
+    {
+        double dPageDpiX, dPageDpiY, dWidth, dHeight;
+        pdfFile.GetPageInfo(0, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+        pdfFile.ConvertToRaster(0, NSFile::GetProcessDirectory() + L"/res.png", 4, dWidth * dPageDpiX / 25.4, dHeight * dPageDpiY / 25.4, true, pdfFile.GetFontManager());
+
+        RELEASEINTERFACE(pApplicationFonts);
+        RELEASEOBJECT(pCertificate);
+        return 0;
+    }
+
+    if (false)
+    {
+        for (int i = 0; i < pdfFile.GetPagesCount(); i++)
+        {
+            pdfFile.DrawPageOnRenderer(pdfFile.GetWriter(), i, NULL);
+        }
+        pdfFile.SaveToFile(wsDstFile);
+
+        RELEASEINTERFACE(pApplicationFonts);
+        RELEASEOBJECT(pCertificate);
+        return 0;
     }
 
     if (bResult && pdfFile.EditPdf(wsDstFile))

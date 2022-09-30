@@ -165,8 +165,6 @@ bool XlsxConverter::convertDocument()
 
 	ods_context->end_document();
 	
-	if (ods_context) delete ods_context; ods_context = NULL;
-
 	return true;
 }
 

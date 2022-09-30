@@ -841,6 +841,12 @@ namespace MetaFile
 				m_pRenderer->put_BrushTextureMode(c_BrushTextureModeTile);
 				m_pRenderer->put_BrushTexturePath(pBrush->GetDibPatterPath());
 			}
+			else if (BS_PATTERN == unBrushStyle)
+			{
+				m_pRenderer->put_BrushType(c_BrushTypePattern);
+				m_pRenderer->put_BrushTextureMode(c_BrushTextureModeTileCenter);
+				m_pRenderer->put_BrushTexturePath(pBrush->GetDibPatterPath());
+			}
 			else if (BS_HATCHED == unBrushStyle)
 			{
 				m_pRenderer->put_BrushType(c_BrushTypeHatch1);

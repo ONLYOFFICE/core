@@ -211,7 +211,7 @@ namespace MetaFile
 
 		std::wstring GetDibPatterPath()
 		{
-			return std::wstring();
+			return DibPatterPath;
 		}
 
 		void GetBounds(double& left, double& top, double& width, double& height)
@@ -228,6 +228,7 @@ namespace MetaFile
 		unsigned int		Hatch;
 		TEmfPlusRectF		RectF;
 		unsigned int		Angle;
+		std::wstring        DibPatterPath;
 	};
 
 	class CEmfPlusPen: public CEmfPlusObject, public IPen

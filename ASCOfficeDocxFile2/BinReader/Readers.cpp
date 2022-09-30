@@ -815,7 +815,7 @@ int Binary_rPrReader::ReadContent(BYTE type, long length, void* poResult)
 		case c_oSerProp_rPrType::MoveTo:
 		{
 			pRPr->m_oMoveTo.Init();
-			oBinary_CommonReader2.ReadTrackRevision2(length, pRPr->m_oMoveFrom.GetPointer());
+			oBinary_CommonReader2.ReadTrackRevision2(length, pRPr->m_oMoveTo.GetPointer());
 		}break;
 		case c_oSerProp_rPrType::rPrChange:
 		{

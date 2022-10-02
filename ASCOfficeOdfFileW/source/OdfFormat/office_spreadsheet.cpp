@@ -46,6 +46,16 @@ namespace odf_writer {
 const wchar_t * office_spreadsheet::ns = L"office";
 const wchar_t * office_spreadsheet::name = L"spreadsheet";
 
+office_spreadsheet::~office_spreadsheet()
+{
+	named_expressions_.reset();
+	database_ranges_.reset();
+	data_pilot_tables_.reset();
+	content_validations_.reset();
+	forms_.reset();
+
+	content_.clear();
+}
 void office_spreadsheet::create_child_element(const std::wstring & Ns, const std::wstring & Name)
 {
  	if CP_CHECK_NAME(L"office", L"forms") 

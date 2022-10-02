@@ -71,9 +71,9 @@ class dc_date : public office_element_impl<dc_date>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeDcDate;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 	
 	virtual void create_child_element	( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element		( const office_element_ptr & child_element){}
@@ -92,9 +92,9 @@ class dc_creator : public office_element_impl<dc_creator>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeDcCreator;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
@@ -113,9 +113,9 @@ class office_annotation : public office_element_impl<office_annotation>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeOfficeAnnotation;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child_element);
@@ -139,9 +139,9 @@ class office_annotation_end : public office_element_impl<office_annotation_end>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeOfficeAnnotationEnd;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
@@ -166,9 +166,9 @@ class officeooo_annotation : public office_element_impl<officeooo_annotation>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeOfficeAnnotation;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child_element);

@@ -301,7 +301,8 @@ public:
 		memset(fill.texture_crop, 0, 4 * sizeof(double));
 		fill.texture_crop_enabled = false;
 		fill.colorsPosition.clear();
-
+		fill.picture_target.clear();
+		fill.texture_target.clear();
 		fill.contrast = fill.brightness = fill.grayscale = boost::none;
 	}
 	struct _arrow
@@ -433,6 +434,7 @@ public:
 		void add_fill_colors		(double position, int index, int type);		
 		void set_fill_focus			(int val);
 
+		int get_fill_type			();
 		void clear_fill				();
 
 		void set_line_color			(int nColor, const std::wstring & color);

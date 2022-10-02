@@ -58,10 +58,8 @@ namespace odf_writer
 		{
 		public:
 			content_simple(){}
-			std::wostream & content() { return content_; }
-			std::wstring str() { return content_.str(); }
 			static _CP_PTR(content_simple) create();
-
+			std::wstringstream & content() { return content_;}
 		private:
 			std::wstringstream content_;
 		};
@@ -72,6 +70,8 @@ namespace odf_writer
 		class content_content : noncopyable
 		{
 		public:
+			friend class content_file;
+
 			content_content(){}
 			std::wostream & content() { return content_; }
 			std::wostream & styles() { return styles_; }
@@ -103,6 +103,10 @@ namespace odf_writer
 			simple_element(const std::wstring & FileName, const std::string & Content);
 			simple_element(const std::wstring & FileName, const std::wstring & Content, bool utf8 = true);
 			
+			simple_element(const std::wstring & FileName, wchar_t* Content, size_t Size, bool utf8 = true);
+
+			simple_element(const std::wstring & FileName, std::basic_stringbuf<wchar_t, std::char_traits<wchar_t>, std::allocator<wchar_t>> & streambuf, size_t Size, bool utf8 = true);
+
 			static element_ptr create(const std::wstring & FileName, const std::wstring & Content, bool utf8 = true);
 			static element_ptr create(const std::wstring & FileName, const std::string & Content);
 
@@ -126,10 +130,10 @@ namespace odf_writer
 		private:
 			bool bXmlRootNodeWrite = true;
 		public:
-			void set_content(content_content_ptr & c, bool bRootNode = true) { content = c; bXmlRootNodeWrite = bRootNode; }
+			void set_content(content_content_ptr & c, bool bRootNode = true) { content_ = c; bXmlRootNodeWrite = bRootNode; }
 			virtual void write(const std::wstring & RootPath, bool add_padding = false);
 			
-			content_content_ptr content;
+			content_content_ptr content_;
 		};
 
 		class styles_file : public element

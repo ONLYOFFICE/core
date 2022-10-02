@@ -511,12 +511,12 @@ namespace OOX
 			if (m_oDel.IsInit())		sResult += m_oDel->ValNode(L"w:del");
 			if (m_oIns.IsInit())		sResult += m_oIns->ValNode(L"w:ins");
 			if (m_oMoveFrom.IsInit())	sResult += m_oMoveFrom->ValNode(L"w:moveFrom");
-			if (m_oMoveTo.IsInit())		sResult += m_oBold->ValNode(L"w:moveTo");
+			if (m_oMoveTo.IsInit())		sResult += m_oMoveTo->ValNode(L"w:moveTo");
 //---base----------------------------------------------------------------------------------------
 			if (m_oRStyle.IsInit())		sResult += m_oRStyle->ValNode(L"w:rStyle");
 			if (m_oRFonts.IsInit())		sResult += m_oRFonts->ValNode(L"w:rFonts");
 			if (m_oBold.IsInit())		sResult += m_oBold->ValNode(L"w:b");
-			if (m_oBoldCs.IsInit())	sResult += m_oBoldCs->ValNode(L"w:bCs");
+			if (m_oBoldCs.IsInit())		sResult += m_oBoldCs->ValNode(L"w:bCs");
 			if (m_oItalic.IsInit())		sResult += m_oItalic->ValNode(L"w:i");
 			if (m_oItalicCs.IsInit())	sResult += m_oItalicCs->ValNode(L"w:iCs");
 			if (m_oCaps.IsInit())		sResult += m_oCaps->ValNode(L"w:caps");

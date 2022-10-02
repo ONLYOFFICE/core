@@ -57,13 +57,11 @@ class sheet_content : noncopyable
 {
 public:
     sheet_content();
-    std::wostream & content() { return content_; }
+    std::wstringstream & content() { return content_; }
     void add_rel(relationship const & r);
 	void add_rels(rels & r);
     rels_file_ptr get_rel_file() { return rels_; }
-    std::wstring str() { return content_.str(); }
     static _CP_PTR(sheet_content) create();
-
 private:
     std::wstringstream content_;
     rels_file_ptr rels_;
@@ -79,13 +77,10 @@ public:
     pivot_cache_content();
     static _CP_PTR(pivot_cache_content) create();
 
-    std::wostream	& definitions() { return definitions_; }
-	std::wostream	& records()		{ return records_; }
+    std::wstringstream	& definitions() { return definitions_; }
+	std::wstringstream	& records()		{ return records_; }
 	rels			& get_rels()	{ return definitions_rels_file_->get_rels(); }
 
-    std::wstring	str_d() { return definitions_.str(); }
-    std::wstring	str_r() { return records_.str(); }
-	
 	friend class	xl_pivot_cache_files;
 private:
     std::wstringstream	records_;

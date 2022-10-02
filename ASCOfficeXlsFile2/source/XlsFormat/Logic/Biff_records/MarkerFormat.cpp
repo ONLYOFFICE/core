@@ -31,6 +31,8 @@
  */
 
 #include "MarkerFormat.h"
+#include "../../../XlsXlsxConverter/XlsConverter.h"
+#include "../../../XlsXlsxConverter/xlsx_conversion_context.h"
 
 namespace XLS
 {
@@ -69,6 +71,8 @@ BaseObjectPtr MarkerFormat::clone()
 
 void MarkerFormat::readFields(CFRecord& record)
 {
+	global_info = record.getGlobalWorkbookInfo();
+
 	unsigned short flags;
 	record >> rgbFore >> rgbBack >> imk >> flags >> icvFore >> icvBack >> miSize;
 	
@@ -78,17 +82,26 @@ void MarkerFormat::readFields(CFRecord& record)
 }
 int MarkerFormat::serialize(std::wostream & _stream)
 {
-	return serialize(_stream, -1);
+	return serialize(_stream, -1, BaseObjectPtr());
 }
-int MarkerFormat::serialize(std::wostream & _stream, int index)
+int MarkerFormat::serialize(std::wostream & _stream, int index, BaseObjectPtr _GELFRAME)
 {
-	CP_XML_WRITER(_stream)    
+	std::wstring strSymbol;
+	std::wstringstream strm_fill;
+	int marker_fill_type = 0;
+	
+	if (_GELFRAME)
+	{
+		_GELFRAME->serialize(strm_fill);
+		marker_fill_type = global_info->xls_converter->xlsx_context->get_drawing_context().get_fill_type();
+	}
+
+	CP_XML_WRITER(_stream)
 	{
 		CP_XML_NODE(L"c:marker")
 		{
 			CP_XML_NODE(L"c:symbol")
 			{
-				std::wstring strSymbol;
 				switch (imk)
 				{
 				case 0x0000:	strSymbol = L"none";	break;//				No marker.
@@ -102,6 +115,9 @@ int MarkerFormat::serialize(std::wostream & _stream, int index)
 				case 0x0008:	strSymbol = L"circle";	break;//				Circular markers.
 				case 0x0009:	strSymbol = L"plus";	break;//				Square markers with a plus sign.
 				}
+
+				if (marker_fill_type == 3) strSymbol = L"picture";
+				
 				CP_XML_ATTR(L"val",  strSymbol);	
 			}
 			if (imk > 0)
@@ -112,11 +128,18 @@ int MarkerFormat::serialize(std::wostream & _stream, int index)
 				}
 				CP_XML_NODE(L"c:spPr")
 				{
-					CP_XML_NODE(L"a:solidFill")
+					if (_GELFRAME)
 					{
-						CP_XML_NODE(L"a:srgbClr")
+						CP_XML_STREAM() << strm_fill.str();
+					}
+					else
+					{
+						CP_XML_NODE(L"a:solidFill")
 						{
-							CP_XML_ATTR(L"val",  (false == fAuto || index < 0) ? rgbBack.strRGB : default_marker_color[index]);		
+							CP_XML_NODE(L"a:srgbClr")
+							{
+								CP_XML_ATTR(L"val", (false == fAuto || index < 0) ? rgbBack.strRGB : default_marker_color[index]);
+							}
 						}
 					}
 					CP_XML_NODE(L"a:ln")
@@ -125,11 +148,10 @@ int MarkerFormat::serialize(std::wostream & _stream, int index)
 						{
 							CP_XML_NODE(L"a:srgbClr")
 							{
-								CP_XML_ATTR(L"val",  (false == fAuto || index < 0) ? rgbFore.strRGB : default_marker_color[index]);		
+								CP_XML_ATTR(L"val", (false == fAuto || index < 0) ? rgbFore.strRGB : default_marker_color[index]);
 							}
 						}
-						CP_XML_NODE(L"a:prstDash") { CP_XML_ATTR(L"val",  L"solid"); }
-
+						CP_XML_NODE(L"a:prstDash") { CP_XML_ATTR(L"val", L"solid"); }
 					}
 				}
 			}

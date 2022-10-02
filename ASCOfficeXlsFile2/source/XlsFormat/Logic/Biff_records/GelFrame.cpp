@@ -52,6 +52,12 @@ BaseObjectPtr GelFrame::clone()
 
 void GelFrame::readFields(CFRecord& record)
 {
+	std::list<CFRecordPtr>& recs = continue_records[rt_Continue];
+	while (!recs.empty())
+	{
+		record.appendRawData(recs.front());
+		recs.pop_front();
+	}
 	record >> OPT1 >> OPT2;
 }
 

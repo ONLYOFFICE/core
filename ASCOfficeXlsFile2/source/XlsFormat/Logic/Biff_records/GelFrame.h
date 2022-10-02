@@ -31,16 +31,15 @@
  */
 #pragma once
 
-#include "BiffRecord.h"
+#include "BiffRecordContinued.h"
+
 #include "../Biff_structures/ODRAW/OfficeArtFOPT.h"
 #include "../Biff_structures/ODRAW/OfficeArtTertiaryFOPT.h"
 
 namespace XLS
 {
 
-
-// Logical representation of GelFrame record in BIFF8
-class GelFrame: public BiffRecord
+class GelFrame : public BiffRecordContinued
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(GelFrame)
 	BASE_OBJECT_DEFINE_CLASS_NAME(GelFrame)
@@ -49,7 +48,6 @@ public:
 	~GelFrame();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields	(CFRecord& record);
 

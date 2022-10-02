@@ -56,9 +56,9 @@ class table_data_pilot_tables : public office_element_impl<table_data_pilot_tabl
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableDataPilotTables;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
    
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child_element);
@@ -76,9 +76,9 @@ class table_data_pilot_table : public office_element_impl<table_data_pilot_table
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableDataPilotTable;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
    
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child_element);
@@ -108,9 +108,9 @@ class table_data_pilot_field : public office_element_impl<table_data_pilot_field
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableDataPilotField;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
    
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child_element);
@@ -139,9 +139,9 @@ class table_data_pilot_grand_total : public office_element_impl<table_data_pilot
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableDataPilotGrandTotal;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
    
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
@@ -160,9 +160,9 @@ class table_data_pilot_field_reference : public office_element_impl<table_data_p
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableDataPilotFieldReference;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
    
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
@@ -183,9 +183,9 @@ class table_database_source_table : public office_element_impl<table_database_so
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableDatabaseSourceTable;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
    
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
@@ -204,9 +204,9 @@ class table_database_source_query : public office_element_impl<table_database_so
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableDatabaseSourceQuery;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
    
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
@@ -225,9 +225,9 @@ class table_database_source_sql : public office_element_impl<table_database_sour
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableDatabaseSourceSql;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
    
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
@@ -247,9 +247,9 @@ class table_source_cell_range : public office_element_impl<table_source_cell_ran
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableSourceCellRange;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
    
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child_element);
@@ -267,9 +267,9 @@ class table_source_cell_ranges : public office_element_impl<table_source_cell_ra
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableSourceCellRanges;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
    
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
@@ -287,9 +287,9 @@ class table_source_service : public office_element_impl<table_source_service>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableSourceService;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
    
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
@@ -311,9 +311,9 @@ class table_data_pilot_level : public office_element_impl<table_data_pilot_level
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableDataPilotLevel;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
    
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child_element);
@@ -337,9 +337,9 @@ class table_data_pilot_groups : public office_element_impl<table_data_pilot_grou
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableDataPilotGroups;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
    
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child_element);
@@ -364,9 +364,9 @@ class table_data_pilot_group : public office_element_impl<table_data_pilot_group
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableDataPilotGroup;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
    
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child_element);
@@ -385,9 +385,9 @@ class table_data_pilot_members : public office_element_impl<table_data_pilot_mem
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableDataPilotMembers;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
    
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child_element);
@@ -405,9 +405,9 @@ class table_data_pilot_member : public office_element_impl<table_data_pilot_memb
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableDataPilotMember;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
    
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
@@ -426,9 +426,9 @@ class table_data_pilot_group_member : public office_element_impl<table_data_pilo
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableDataPilotGroupMember;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
    
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
@@ -445,9 +445,9 @@ class table_data_pilot_subtotals : public office_element_impl<table_data_pilot_s
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableDataPilotSubtotals;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
    
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child_element);
@@ -465,9 +465,9 @@ class table_data_pilot_subtotal : public office_element_impl<table_data_pilot_su
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableDataPilotSubtotal;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
    
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
@@ -485,9 +485,9 @@ class table_data_pilot_layout_info : public office_element_impl<table_data_pilot
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableDataLayoutInfo;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
    
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
@@ -505,9 +505,9 @@ class table_data_pilot_sort_info : public office_element_impl<table_data_pilot_s
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableDataSortInfo;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
    
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
@@ -526,9 +526,9 @@ class table_data_pilot_display_info : public office_element_impl<table_data_pilo
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableDataDisplayInfo;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
    
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}

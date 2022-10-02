@@ -46,7 +46,7 @@ public:
     static const wchar_t * name;
    
 	static const ElementType type = typeDrawShape;
-	static const xml::NodeType xml_type = xml::typeElement;
+
 
     virtual void serialize(std::wostream & _Wostream);
     virtual void serialize_attlist(CP_ATTR_NODE);
@@ -56,7 +56,7 @@ public:
 	_CP_OPT(std::wstring)		draw_id_;//используется для анимашек
   
 
-	CPDOCCORE_DEFINE_VISITABLE();
+	
 
 	int sub_type_;
 
@@ -79,7 +79,7 @@ public:
     static const wchar_t * name;
    
 	static const ElementType type = typeDrawRect;
-	static const xml::NodeType xml_type = xml::typeElement;
+
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -104,7 +104,7 @@ public:
     static const wchar_t * name;
 	
 	static const ElementType type = typeDrawEllipse;
-	static const xml::NodeType xml_type = xml::typeElement;
+
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -120,7 +120,7 @@ public:
     static const wchar_t * name;
 	
 	static const ElementType type = typeDrawCircle;
-	static const xml::NodeType xml_type = xml::typeElement;
+
 
     virtual void serialize(std::wostream & _Wostream);
 };
@@ -146,7 +146,7 @@ public:
     static const wchar_t * name;
 	
 	static const ElementType type = typeDrawLine;
-	static const xml::NodeType xml_type = xml::typeElement;
+
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -172,7 +172,7 @@ public:
     static const wchar_t * name;
 	
 	static const ElementType type = typeDrawPath;
-	static const xml::NodeType xml_type = xml::typeElement;
+
 
     virtual void serialize(std::wostream & _Wostream);
     
@@ -199,7 +199,7 @@ public:
     static const wchar_t * name;
 	
 	static const ElementType type = typeDrawPolygon;
-	static const xml::NodeType xml_type = xml::typeElement;
+
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -219,7 +219,7 @@ public:
     static const wchar_t * name;
 	
 	static const ElementType type = typeDrawCustomShape;
-	static const xml::NodeType xml_type = xml::typeElement;
+
 
     virtual void serialize(std::wostream & _Wostream);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -248,8 +248,8 @@ public:
     static const wchar_t * name;
 	
 	static const ElementType type = typeDrawEquation;
-	static const xml::NodeType xml_type = xml::typeElement;
-    CPDOCCORE_DEFINE_VISITABLE();
+
+    
 	
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
@@ -294,8 +294,8 @@ public:
     static const wchar_t * name;
 	
 	static const ElementType type = typeDrawHandle;
-	static const xml::NodeType xml_type = xml::typeElement;
-	CPDOCCORE_DEFINE_VISITABLE();
+
+	
 		
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
@@ -340,7 +340,7 @@ public:
     static const wchar_t * name;
 	
 	static const ElementType type = typeDrawEnhancedGeometry;
-	static const xml::NodeType xml_type = xml::typeElement;
+
 	
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -361,7 +361,7 @@ public:
 	
 	static int parsing(_CP_OPT(std::wstring) val);//todoooo наоборот
 
-	CPDOCCORE_DEFINE_VISITABLE();
+	
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_enhanced_geometry);
@@ -375,7 +375,7 @@ public:
     static const wchar_t * name;
 	
 	static const ElementType type = typeDrawCaption;
-	static const xml::NodeType xml_type = xml::typeElement;
+
 
 	virtual void serialize(std::wostream & _Wostream);
 };
@@ -399,7 +399,7 @@ public:
     static const wchar_t * name;
 	
 	static const ElementType type = typeDrawConnector;
-	static const xml::NodeType xml_type = xml::typeElement;
+
 
 	virtual void serialize(std::wostream & _Wostream);
 
@@ -418,7 +418,7 @@ public:
     static const wchar_t * name;
 	
 	static const ElementType type = typeDrawControl;
-	static const xml::NodeType xml_type = xml::typeElement;
+
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -442,7 +442,7 @@ public:
     static const wchar_t * name;
 	
 	static const ElementType type = typeDr3dScene;
-	static const xml::NodeType xml_type = xml::typeElement;
+
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -462,7 +462,7 @@ public:
     static const wchar_t * name;
 	
 	static const ElementType type = typeDr3dExtrude;
-	static const xml::NodeType xml_type = xml::typeElement;
+
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
@@ -479,7 +479,7 @@ public:
     static const wchar_t * name;
 	
 	static const ElementType type = typeDr3dRotate;
-	static const xml::NodeType xml_type = xml::typeElement;
+
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
@@ -494,9 +494,9 @@ class dr3d_light : public office_element_impl<dr3d_light>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeDr3dLight;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
@@ -519,7 +519,7 @@ public:
     static const wchar_t * name;
 	
 	static const ElementType type = typeDr3dCube;
-	static const xml::NodeType xml_type = xml::typeElement;
+
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
@@ -541,7 +541,7 @@ public:
     static const wchar_t * name;
 	
 	static const ElementType type = typeDr3dSphere;
-	static const xml::NodeType xml_type = xml::typeElement;
+
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
@@ -564,8 +564,8 @@ public:
     static const wchar_t * name;
    
 	static const ElementType type = typeDrawA;
-	static const xml::NodeType xml_type = xml::typeElement;
-	CPDOCCORE_DEFINE_VISITABLE();
+
+	
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child_element);

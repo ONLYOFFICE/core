@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_VIEWPROPS_OUTLINE_VIEW_PROPERTIES_INCLUDE_H_
-#define PPTX_VIEWPROPS_OUTLINE_VIEW_PROPERTIES_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "CViewPr.h"
@@ -56,15 +54,13 @@ namespace PPTX
 
 				return *this;
 			}
-
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				CViewPr = node.ReadNode(_T("p:cViewPr"));
+				CViewPr = node.ReadNode(L"p:cViewPr");
 				SldLst.clear();
 
-                XmlUtils::CXmlNode nodeLst = node.ReadNode(_T("p:sldLst"));
-                XmlMacroLoadArray(node, _T("p:sld"), SldLst, nsViewProps::Sld);
+                XmlUtils::CXmlNode nodeLst = node.ReadNode(L"p:sldLst");
+                XmlMacroLoadArray(node, L"p:sld", SldLst, nsViewProps::Sld);
 			}
 			virtual std::wstring toXML() const
 			{
@@ -72,39 +68,59 @@ namespace PPTX
 				oValue.Write(CViewPr);
 
 				if (0 < SldLst.size())
-					oValue.WriteArray(_T("p:sldLst"), SldLst);
+					oValue.WriteArray(L"p:sldLst", SldLst);
 
-				return XmlUtils::CreateNode(_T("p:outlineViewPr"), oValue);
+				return XmlUtils::CreateNode(L"p:outlineViewPr", oValue);
 			}
-
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				pWriter->WriteRecord1(0, CViewPr);
-
-				pWriter->StartRecord(1);
-				ULONG len = (ULONG)SldLst.size();
-				pWriter->WriteULONG(len);
-				for (ULONG i = 0; i < len; i++)
-				{
-					pWriter->WriteRecord1(2, SldLst[i]);
-				}
-				pWriter->EndRecord();
+				pWriter->WriteRecordArray(1, 2, SldLst);
 			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
+				while (pReader->GetPos() < _end_rec)
+				{
+					BYTE _at = pReader->GetUChar();
+					switch (_at)
+					{
+						case 0:
+						{
+							CViewPr.fromPPTY(pReader);						
+						}break;
+						case 1:
+						{
+							pReader->Skip(4);
+							ULONG _c = pReader->GetULong();
+							for (ULONG i = 0; i < _c; ++i)
+							{
+								pReader->Skip(1); // type
+								SldLst.push_back(nsViewProps::Sld());
+								SldLst.back().fromPPTY(pReader);
+							}						
+						}break;
+						default:
+						{
+							break;
+						}
+					}
+				}
+				pReader->Seek(_end_rec);
+			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(_T("p:outlineViewPr"));
+				pWriter->StartNode(L"p:outlineViewPr");
 				pWriter->EndAttributes();
 
 				CViewPr.toXmlWriter(pWriter);
-				pWriter->WriteArray(_T("p:sldLst"), SldLst);
+				pWriter->WriteArray(L"p:sldLst", SldLst);
 				
-				pWriter->EndNode(_T("p:outlineViewPr"));
+				pWriter->EndNode(L"p:outlineViewPr");
 			}
-
-		public:
-			nsViewProps::CViewPr			CViewPr;
-			std::vector<nsViewProps::Sld>		SldLst;
+			nsViewProps::CViewPr CViewPr;
+			std::vector<nsViewProps::Sld> SldLst;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
@@ -118,4 +134,3 @@ namespace PPTX
 	} // namespace nsViewProps
 } // namespace PPTX
 
-#endif // PPTX_VIEWPROPS_OUTLINE_VIEW_PROPERTIES_INCLUDE_H_

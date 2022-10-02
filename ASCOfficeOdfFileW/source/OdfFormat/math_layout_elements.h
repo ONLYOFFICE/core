@@ -49,13 +49,13 @@ namespace cpdoccore {
 		public:
 			static const wchar_t * ns;
 			static const wchar_t * name;
-			static const xml::NodeType xml_type = xml::typeElement;
+		
 			static const ElementType type = typeMRow;
 
 			math_mrow();
 
-            CPDOCCORE_DEFINE_VISITABLE();
-            CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+            
+        
 
 		private:
 			virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -73,11 +73,11 @@ namespace cpdoccore {
 		public:
 			static const wchar_t * ns;
 			static const wchar_t * name;
-			static const xml::NodeType xml_type = xml::typeElement;
+		
 			static const ElementType type = typeMFrac;
 
-            CPDOCCORE_DEFINE_VISITABLE();
-            CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+            
+        
 
             _CP_OPT(Bool)				bevelled;
 		private:
@@ -99,11 +99,11 @@ namespace cpdoccore {
 		public:
 			static const wchar_t * ns;
 			static const wchar_t * name;
-			static const xml::NodeType xml_type = xml::typeElement;
+		
 			static const ElementType type = typeMSqrt;
 
-            CPDOCCORE_DEFINE_VISITABLE();
-            CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+            
+        
 
 		private:
 			virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -120,11 +120,11 @@ namespace cpdoccore {
 		public:
 			static const wchar_t * ns;
 			static const wchar_t * name;
-			static const xml::NodeType xml_type = xml::typeElement;
+		
 			static const ElementType type = typeMRoot;
 
-            CPDOCCORE_DEFINE_VISITABLE();
-            CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+            
+        
 
 		private:
 			virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -141,11 +141,11 @@ namespace cpdoccore {
 		public:
 			static const wchar_t * ns;
 			static const wchar_t * name;
-			static const xml::NodeType xml_type = xml::typeElement;
+		
 			static const ElementType type = typeMStyle;
 
-            CPDOCCORE_DEFINE_VISITABLE();
-            CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+            
+        
 
 			_CP_OPT(color)				color_;
 
@@ -169,10 +169,10 @@ namespace cpdoccore {
 		public:
 			static const wchar_t * ns;
 			static const wchar_t * name;
-			static const xml::NodeType xml_type = xml::typeElement;
+		
 			static const ElementType type = typeMEnClose;
 
-            CPDOCCORE_DEFINE_VISITABLE();
+            
 
 		private:
 			virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -189,11 +189,11 @@ namespace cpdoccore {
 		public:
 			static const wchar_t * ns;
 			static const wchar_t * name;
-			static const xml::NodeType xml_type = xml::typeElement;
+		
 			static const ElementType type = typeMFenced;
 
-            CPDOCCORE_DEFINE_VISITABLE();
-            CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+            
+        
 
 		private:
 			virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -210,11 +210,11 @@ namespace cpdoccore {
 		public:
 			static const wchar_t * ns;
 			static const wchar_t * name;
-			static const xml::NodeType xml_type = xml::typeElement;
+		
 			static const ElementType type = typeMPadded;
 
-            CPDOCCORE_DEFINE_VISITABLE();
-            CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+            
+        
 
 		private:
 			virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);

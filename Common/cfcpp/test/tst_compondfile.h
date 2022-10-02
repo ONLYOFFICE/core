@@ -58,6 +58,39 @@ static vector<wstring> names =
     L"expediente"   // Spanish
 };
 
+
+TEST(test_compoundfile, largeStream_v3_v4)
+{
+    constexpr LONG64 streamLen = 1024*256;
+    std::vector<BYTE> data = {0x28, 0xFF, 0x28, 0x1D, 0x4C, 0xFA, 0x00, 0x79};
+
+    wstring path1 = L"../../../data/large_v3.cfb";
+    wstring path2 = L"../../../data/large_v4.cfb";
+    NSFile::CFileBinary::Remove(path1);
+    NSFile::CFileBinary::Remove(path2);
+
+    CompoundFile cf1(CFCPP::Ver_3, CFCPP::Default);
+    CompoundFile cf2(CFCPP::Ver_4, CFCPP::Default);
+
+    auto stream1 = cf1.RootStorage()->AddStream(L"stream1");
+    auto stream2 = cf2.RootStorage()->AddStream(L"stream2");
+
+    for (LONG64 i = 0; i < streamLen; i += data.size())
+    {
+        EXPECT_NO_THROW(stream1->Write(reinterpret_cast<char*>(&i), i, sizeof(i)));
+        EXPECT_NO_THROW(stream2->Write(reinterpret_cast<char*>(&i), i, sizeof(i)));
+    }
+
+    EXPECT_NO_THROW(cf1.Save(path1));
+    EXPECT_NO_THROW(cf2.Save(path2));
+    cf1.Close();
+    cf2.Close();
+
+    EXPECT_GT(FileLenght(path1), streamLen);
+    EXPECT_GT(FileLenght(path2), streamLen);
+}
+
+
 TEST_F(CompoundFileTest, test_compoundfile_read)
 {
     EXPECT_TRUE(cf.HasSourceStream());
@@ -241,36 +274,4 @@ TEST(test_compoundfile, foreign_languages)
 
     }
     SUCCEED();
-}
-
-TEST(test_compoundfile, largeStream_v3_v4)
-{
-    constexpr LONG64 streamLen = 1024*256;
-    std::vector<BYTE> data = {0x28, 0xFF, 0x28, 0x1D, 0x4C, 0xFA, 0x00, 0x79};
-
-    wstring path1 = L"../../../data/large_v3.cfb";
-    wstring path2 = L"../../../data/large_v4.cfb";
-    NSFile::CFileBinary::Remove(path1);
-    NSFile::CFileBinary::Remove(path2);
-
-    CompoundFile cf1(CFCPP::Ver_3, CFCPP::Default);
-    CompoundFile cf2(CFCPP::Ver_4, CFCPP::Default);
-
-    auto stream1 = cf1.RootStorage()->AddStream(L"stream1");
-    auto stream2 = cf2.RootStorage()->AddStream(L"stream2");
-
-    for (LONG64 i = 0; i < streamLen; i += data.size())
-    {
-
-        EXPECT_NO_THROW(stream1->Write(reinterpret_cast<char*>(&i), i, sizeof(i)));
-//        EXPECT_NO_THROW(stream2->Write(data, i));
-    }
-
-    EXPECT_NO_THROW(cf1.Save(path1));
-//    EXPECT_NO_THROW(cf2.Save(path2));
-    cf1.Close();
-    cf2.Close();
-
-    EXPECT_GT(FileLenght(path1), streamLen);
-//    EXPECT_GT(FileLenght(path2), streamLen);
 }

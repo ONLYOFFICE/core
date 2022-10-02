@@ -52,7 +52,7 @@ int SectorCollection::add(std::shared_ptr<Sector> item)
     }
     else
     {
-        SVector<Sector> ar;
+        SVector<Sector> ar(SLICE_SIZE);
         ar.push_back(item);
         largeArraySlices.push_back(ar);
         count++;

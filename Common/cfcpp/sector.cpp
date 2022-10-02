@@ -34,6 +34,8 @@ void Sector::ZeroData()
 
 void Sector::InitFATData()
 {
+    data.clear();
+    data.resize(size);
     std::fill(data.begin(), data.end(), 0xff);
     dirtyFlag = true;
 }

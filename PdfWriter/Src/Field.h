@@ -36,6 +36,7 @@
 #include "Objects.h"
 #include "Types.h"
 #include "Annotation.h"
+#include "../DesktopEditor/graphics/IRenderer.h"
 
 namespace PdfWriter
 {
@@ -100,11 +101,15 @@ namespace PdfWriter
 		const std::wstring& GetPlaceHolderText();
 		const TRgb& GetNormalColor();
 		const TRgb& GetPlaceHolderColor();
+		void SetFormat(const CFormFieldInfo::CTextFormFormat* pFormat);
+
 
 	protected:
 
 		virtual void SetPlaceHolderText(const std::vector<std::wstring>& vPlaceHolders, const std::vector<TRgb>& vNormalColors, const std::vector<TRgb>& vPlaceHolderColors);
 		void SetFlag(bool isFlag, int nBitPosition);
+		CDictObject* GetAA();
+		void AddScriptToAA(const std::string& sKey, const std::string& sScript, CDictObject* pAA = NULL);
 
 	protected:
 

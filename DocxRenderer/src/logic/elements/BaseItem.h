@@ -1,5 +1,6 @@
 #pragma once
 #include "../DesktopEditor/common/StringBuilder.h"
+#include <vector>
 
 namespace NSDocxRenderer
 {
@@ -43,7 +44,9 @@ namespace NSDocxRenderer
             etParagraph = 2,
             etImage     = 3,
             etShape     = 4,
-            etOldShape  = 5,
+            etCell      = 5,
+            etRow       = 6,
+            etTable     = 7,
         };
 
         ElemType m_eType;
@@ -67,30 +70,35 @@ namespace NSDocxRenderer
 
         CBaseItem& operator=(const CBaseItem& oSrc);
 
-        friend bool operator == (const CBaseItem& lh, const CBaseItem& rh)
-        {
-            return (lh.m_dLeft == rh.m_dLeft) ? true : false;
-        }
-
-        friend bool operator < (const CBaseItem& lh, const CBaseItem& rh)
-        {
-            return (lh.m_dLeft < rh.m_dLeft) ? true : false;
-        }
-
-        friend bool operator > (const CBaseItem& lh, const CBaseItem& rh)
-        {
-            return (lh.m_dLeft > rh.m_dLeft) ? true : false;
-        }
-
-        virtual bool IsBigger(const CBaseItem* oSrc);
-        virtual bool IsBiggerOrEqual(const CBaseItem* oSrc);
-
         virtual void AddContent(CBaseItem* pObj);
         virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) = 0;
 
         eVerticalCrossingType GetVerticalCrossingType(const CBaseItem* oSrc);
         eHorizontalCrossingType GetHorizontalCrossingType(const CBaseItem* oSrc);
 
-        bool AreObjectsNoCrossing(const CBaseItem* oSrc);
+        bool AreObjectsNoCrossingByVertically(const CBaseItem* pObj);
+        bool AreObjectsNoCrossingByHorizontally(const CBaseItem* pObj);
+
+        double CalculateBeforeSpacing(double dPreviousBaseline);
+
+        template<typename T>
+        static void SortByLeft(std::vector<T*>& oArray)
+        {
+            std::sort(oArray.begin(), oArray.end(), [](T* a, T* b) {
+                return a->IsCurrentLeftOfNext(a);
+            });
+        }
+
+        template<typename T>
+        static void SortByBaseline(std::vector<T*>& oArray)
+        {
+            std::sort(oArray.begin(), oArray.end(), [](T* a, T* b) {
+                return a->IsCurrentAboveOfNext(b);
+            });
+        }
+
+    private:
+        bool IsCurrentLeftOfNext(const CBaseItem* oSrc);
+        bool IsCurrentAboveOfNext(const CBaseItem* oSrc);
     };
 }

@@ -1,8 +1,6 @@
 #pragma once
 #include "../DesktopEditor/common/Types.h"
 #include "../DesktopEditor/common/StringUTF32.h"
-#include <vector>
-#include <algorithm>
 
 inline LONG ConvertColorBGRToRGB(LONG lBGR)
 {
@@ -56,13 +54,4 @@ inline short little_endian_2_big_endian( short s )
 inline int little_endian_2_big_endian( int i )
 {
     return ( ( i & 0xff ) << 24 ) + ( ( i & 0xff00 ) << 8 ) + ( ( i & 0xff0000 ) >> 8 ) + ( ( i >> 24 ) & 0xff );
-}
-
-// у класса T должен быть метод IsBigger
-template<typename T>
-void SortElements(std::vector<T*>& oArray)
-{
-    std::sort(oArray.begin(), oArray.end(), [](T* a, T* b) {
-        return b->IsBigger(a);
-    });
 }

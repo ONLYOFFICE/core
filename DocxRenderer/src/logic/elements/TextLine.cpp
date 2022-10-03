@@ -1,6 +1,7 @@
 #include "TextLine.h"
 #include "../../resources/Constants.h"
 #include "../../resources/utils.h"
+#include "src/logic/elements/Shape.h"
 
 namespace NSDocxRenderer
 {
@@ -30,22 +31,6 @@ namespace NSDocxRenderer
         m_arConts.push_back(dynamic_cast<CContText*>(pObj));
     }
 
-    bool CTextLine::IsBigger(const CBaseItem* oSrc)
-    {
-        return (m_dBaselinePos > dynamic_cast<const CTextLine*>(oSrc)->m_dBaselinePos) ? true : false;
-    }
-
-    bool CTextLine::IsBiggerOrEqual(const CBaseItem* oSrc)
-    {
-        return (m_dBaselinePos >= dynamic_cast<const CTextLine*>(oSrc)->m_dBaselinePos) ? true : false;
-    }
-
-    void CTextLine::SortConts()
-    {
-        // сортировка непрерывных слов по m_dX
-        SortElements(m_arConts);
-    }
-
     void CTextLine::CheckLineToNecessaryToUse()
     {
         for (size_t i = 0; i < m_arConts.size(); ++i)
@@ -56,34 +41,6 @@ namespace NSDocxRenderer
             }
         }
         m_bIsNotNecessaryToUse = true;
-    }
-
-    void CTextLine::Merge(CTextLine* pLine)
-    {
-        size_t nCount = pLine->m_arConts.size();
-        if (0 != nCount)
-        {
-            if (pLine->m_dLeft < m_dLeft)
-            {
-                m_dLeft = pLine->m_dLeft;
-            }
-            if (pLine->m_dBaselinePos < m_dBaselinePos)
-            {
-                m_dHeight = (m_dBaselinePos - pLine->m_dBaselinePos + pLine->m_dHeight);
-            }
-            else
-            {
-                m_dHeight = (pLine->m_dBaselinePos - m_dBaselinePos + m_dHeight);
-            }
-
-            for (size_t i = 0; i < pLine->m_arConts.size(); ++i)
-            {
-                m_arConts.push_back(new CContText(*m_arConts[i]));
-            }
-
-            SortConts();
-            CalculateWidth();
-        }
     }
 
     void CTextLine::MergeConts()
@@ -102,6 +59,7 @@ namespace NSDocxRenderer
                 continue;
             }
 
+            //todo возможно стоит доработать логику
             bool bIsEqual = pFirst->IsEqual(pCurrent);
             bool bIsBigDelta = ((pFirst->m_dRight < pCurrent->m_dLeft) && ((pCurrent->m_dLeft - pFirst->m_dRight) < pCurrent->m_dSpaceWidthMM)) ||
                                fabs(pFirst->m_dRight - pCurrent->m_dLeft) > pCurrent->CalculateThinSpace();
@@ -169,35 +127,6 @@ namespace NSDocxRenderer
         }
     }
 
-    void CTextLine::CalculateWidth()
-    {
-        if (m_arConts.empty())
-        {
-            return;
-        }
-
-        m_dWidth = m_arConts[0]->m_dWidth;
-
-        for (size_t i = 1; i < m_arConts.size(); ++i)
-        {
-            m_dWidth += m_arConts[i]->m_dLeft - (m_arConts[i-1]->m_dLeft + m_arConts[i-1]->m_dWidth);
-            m_dWidth += m_arConts[i]->m_dWidth;
-        }
-        m_dRight = m_dLeft + m_dWidth;
-    }
-
-    bool CTextLine::AreAlignmentsAppropriate(const CTextLine *pLine)
-    {
-        if ((m_eAlignmentType == pLine->m_eAlignmentType && m_eAlignmentType!= atatByLeftEdge) ||
-            (m_eAlignmentType == atatByWidth && pLine->m_eAlignmentType == atatByLeftEdge) ||
-            (m_eAlignmentType == atatByWidth && pLine->m_eAlignmentType == atatUnknown) ||
-            (m_eAlignmentType == atatUnknown && pLine->m_eAlignmentType == atatByWidth))
-        {
-            return true;
-        }
-        return false;
-    }
-
     void CTextLine::SetVertAlignType(const eVertAlignType& oType)
     {
         m_eVertAlignType = oType;
@@ -207,31 +136,16 @@ namespace NSDocxRenderer
         }
     }
 
-    double CTextLine::CalculateBeforeSpacing(double dPreviousStringBaseline)
+    bool CTextLine::IsShadingPresent(const CTextLine *pLine)
     {
-        return m_dBaselinePos - dPreviousStringBaseline - m_dHeight;
-    }
-
-    double CTextLine::CalculateRightBorder(const double& dPageWidth)
-    {
-        return dPageWidth - (m_dLeft + m_dWidth);
-    }
-
-    bool CTextLine::IsForceBlock()
-    {
-        // линия отсортирована, так что сравниваем только соседние conts
-        size_t nCount = m_arConts.size();
-        if (nCount <= 1)
-            return false;
-
-        for (size_t i = 0; i < nCount; ++i)
+        if (m_pDominantShape && pLine->m_pDominantShape &&
+            m_pDominantShape->m_oBrush.Color1 == pLine->m_pDominantShape->m_oBrush.Color1 &&
+            fabs(m_pDominantShape->m_dLeft - pLine->m_pDominantShape->m_dLeft) < c_dGRAPHICS_ERROR_IN_LINES_MM &&
+            fabs(m_pDominantShape->m_dWidth - pLine->m_pDominantShape->m_dWidth) < c_dGRAPHICS_ERROR_IN_LINES_MM)
         {
-            for (size_t j = i + 1; j < nCount; ++j)
-            {
-                if (m_arConts[i]->GetIntersect(m_arConts[j]) > 10)
-                    return true;
-            }
+            return true;
         }
+
         return false;
     }
 

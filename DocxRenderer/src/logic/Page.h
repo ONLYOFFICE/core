@@ -1,9 +1,10 @@
 ﻿#pragma once
 #include "../DesktopEditor/graphics/pro/Graphics.h"
-#include "elements/OldShape.h"
 #include "elements/Paragraph.h"
 #include "elements/Shape.h"
+#include "elements/Table.h"
 #include "managers/StyleManager.h"
+
 
 namespace NSDocxRenderer
 {
@@ -32,13 +33,20 @@ namespace NSDocxRenderer
         std::vector<CContText*>  m_arDiacriticalSymbol;
         std::vector<CTextLine*>  m_arTextLine;
         std::vector<CShape*>     m_arShapes;
-        std::vector<CParagraph*> m_arParagraphs;
+
+        std::vector<CBaseItem*>  m_arOutputObjects;
+
+        std::vector<CPeak*>      m_arPeaks;
+        std::vector<CCell*>      m_arCells;
+        std::vector<CRow*>       m_arRows;
+        std::vector<CTable*>     m_arTables;
 
         CTextLine*               m_pCurrentLine {nullptr};
+        CRow*                    m_pCurrentRow {nullptr};
 
         CFontManagerLight        m_oFontManagerLight;
 
-        TextAssociationType m_eTextAssociationType {tatPlainLine};
+        eTextAssociationType     m_eTextAssociationType {eTextAssociationType::tatPlainParagraph};
 
         bool m_bIsDeleteTextClipPage {true};
 
@@ -54,7 +62,9 @@ namespace NSDocxRenderer
         void ClearTextData();
         void ClearTextLines();
         void ClearShapes();
-        void ClearParagraphs();
+        void ClearOutputObjects();
+
+        void ClearTables();
 
         //удаляем то, что выходит за границы страницы
         void DeleteTextClipPage();
@@ -82,6 +92,11 @@ namespace NSDocxRenderer
         void ProcessingAndRecordingOfPageData(NSStringUtils::CStringBuilder& oWriter, LONG lPagesCount, LONG lNumberPages);
 
         void AnalyzeCollectedShapes();
+        void BuildTables();
+        void CollectPeaks();
+        void CreatCells();
+        void BuildRows();
+        void SelectCurrentRow(const CCell *pCell);
         void DetermineLinesType();
 
         //Собранные для текущей страницы данные нужно проанализировать и сгруппировать, лишнее удалить
@@ -92,39 +107,13 @@ namespace NSDocxRenderer
         bool IsLineBelowText(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
         bool IsItHighlightingBackground(CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
         void AddDiacriticalSymbols();
-
-        //набивается содержимым вектор m_arTextLine
-        void AnalyzeLines();
-        void BuildLines();
-        void AddDiacriticalSymbols(CContText* pCont);
         void MergeLinesByVertAlignType();
+        void DetermineTextColumns();
         void DetermineDominantGraphics();
-
-        void BuildByType();
-        void BuildByTypeBlockChar();
-        void BuildByTypeBlockLine();
-        void BuildByTypePlainLine();
-        void BuildByTypeShapeLine();
-        void BuildByTypePlainParagraph();
-
-        //Объединяем строки, которые находятся на расстроянии не большем dAffinity
-        void Merge(double dAffinity);
 
         //конвертим m_arImages, m_arShapes, m_arParagraphs в xml-строку
         void ToXml(NSStringUtils::CStringBuilder& oWriter);
 
         void WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter);
-
-        void CreateSingleLineParagraph(CTextLine *pLine, const double *pRight, const double *pBeforeSpacing);
-        void CreateSingleLineOldShape(CTextLine *pLine);
-        void CreateSingleLineShape(CTextLine *pLine);
-        void CreateShapeFormParagraphs(CParagraph* pParagraph, bool bIsSameTypeText);
-        void CorrectionParagraphsInShapes();
-
-        bool IsShadingPresent(const CTextLine* pLine1, const CTextLine* pLine2);
-
-    private:
-        CTextLine* GetNextTextLine(size_t& nCurrentIndex, size_t* pIndexForCheking = nullptr);
-        CTextLine* GetPrevTextLine(size_t nCurrentIndex);
     };
 }

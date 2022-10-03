@@ -1195,6 +1195,21 @@ namespace NSDocxRenderer
         oWriter.WriteString(L"<w:uiPriority w:val=\"99\"/>");
         oWriter.WriteString(L"</w:style>");
 
+        oWriter.WriteString(L"<w:style w:type=\"table\" w:styleId=\"TableGrid\">");
+        oWriter.WriteString(L"<w:name w:val=\"Table Grid\"/>");
+        oWriter.WriteString(L"<w:basedOn w:val=\"TableNormal\"/>");
+        oWriter.WriteString(L"<w:tblPr>");
+            oWriter.WriteString(L"<w:tblBorders>");
+                oWriter.WriteString(L"<w:top w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"auto\"/>");
+                oWriter.WriteString(L"<w:left w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"auto\"/>");
+                oWriter.WriteString(L"<w:bottom w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"auto\"/>");
+                oWriter.WriteString(L"<w:right w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"auto\"/>");
+                oWriter.WriteString(L"<w:insideH w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"auto\"/>");
+                oWriter.WriteString(L"<w:insideV w:val=\"single\" w:sz=\"4\" w:space=\"0\" w:color=\"auto\"/>");
+            oWriter.WriteString(L"</w:tblBorders>");
+        oWriter.WriteString(L"</w:tblPr>");
+        oWriter.WriteString(L"</w:style>");
+
         for (size_t i = 0; i < m_oStyleManager.m_arStyles.size(); ++i)
         {
             m_oStyleManager.m_arStyles[i]->ToXml(oWriter);

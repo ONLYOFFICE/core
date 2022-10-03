@@ -165,12 +165,11 @@ int main(int argc, char *argv[])
         std::wstring sZip = L"/" + sFileName + L".zip";
 
         // проверить все режимы
-        NSDocxRenderer::TextAssociationType taType;
-        //taType = NSDocxRenderer::tatBlockChar;
-        //taType = NSDocxRenderer::tatBlockLine;
-        //taType = NSDocxRenderer::tatPlainLine;
-        //taType = NSDocxRenderer::tatShapeLine;
-        taType = NSDocxRenderer::tatPlainParagraph;
+        NSDocxRenderer::eTextAssociationType taType;
+        //taType = NSDocxRenderer::eTextAssociationType::tatPlainLine;
+        //taType = NSDocxRenderer::eTextAssociationType::tatShapeLine;
+        //taType = NSDocxRenderer::eTextAssociationType::tatPlainParagraph;
+        taType = NSDocxRenderer::eTextAssociationType::tatParagraphToShape;
 
         oDocxRenderer.SetTextAssociationType(taType);
         oDocxRenderer.Convert(pReader, sTextDirOut+sDocx);

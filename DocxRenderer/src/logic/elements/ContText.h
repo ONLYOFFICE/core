@@ -56,6 +56,7 @@ namespace NSDocxRenderer
 
         public:
             CContText(CFontManagerLight* pManagerLight, CStyleManager* pStyleManager);
+            CContText(const CContText& rCont);
             virtual ~CContText();
             virtual void Clear() override final;
             virtual void AddContent(CBaseItem* pObj) override final {};
@@ -63,12 +64,9 @@ namespace NSDocxRenderer
 
             CContText& operator= (const CContText& rCont);
 
-            double GetIntersect(const CContText* pCont) const;
-
             void AddWideSpaceToXml(double dSpacingMM,
                                    NSStringUtils::CStringBuilder& oWriter,
                                    bool bIsNeedSaveFormat = false);
-
             bool IsEqual(const CContText* pCont);
             UINT GetNumberOfFeatures();
             bool IsDuplicate(CContText *pCont, eVerticalCrossingType eVType);

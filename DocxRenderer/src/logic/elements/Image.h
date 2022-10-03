@@ -21,6 +21,7 @@ namespace NSDocxRenderer
         CImage();
         CImage(const CImageInfo& oInfo, const std::wstring& strDstMedia);
         void Clear() override final;
+        void AddContent(CBaseItem* pObj) override final{};
 
         void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
 	};

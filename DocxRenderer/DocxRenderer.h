@@ -187,7 +187,7 @@ class DOCXRENDERER_DECL_EXPORT CDocxRenderer : public IRenderer
         virtual HRESULT CommandString(const LONG& lType, const std::wstring& sCommand);
 
         // методы, которыми будет пользоваться конвертер
-        HRESULT SetTextAssociationType(const NSDocxRenderer::TextAssociationType& eType);
+        HRESULT SetTextAssociationType(const NSDocxRenderer::eTextAssociationType& eType);
         int Convert(IOfficeDrawingFile* pFile, const std::wstring& sDstFile, bool bIsOutCompress = true);
 
     private:

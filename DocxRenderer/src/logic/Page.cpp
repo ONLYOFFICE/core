@@ -1,5 +1,7 @@
 #include "Page.h"
+#include "elements/Converter.h"
 #include "../resources/Constants.h"
+#include "../resources/SingletonTemplate.h"
 #include "../resources/utils.h"
 #include <memory>
 
@@ -26,6 +28,7 @@ namespace NSDocxRenderer
         m_pFontManager = pFontManager;
 
         m_pCurrentLine = nullptr;
+        m_pCurrentRow = nullptr;
 
         CShape::ResetRelativeHeight();
     }
@@ -34,11 +37,14 @@ namespace NSDocxRenderer
     {
         ClearTextData();
         ClearTextLines();
-        ClearParagraphs();
+        ClearOutputObjects();
         ClearShapes();
         ClearImages();
 
+        ClearTables();
+
         m_pCurrentLine = nullptr;
+        m_pCurrentRow = nullptr;
     }
 
     void CPage::ClearImages()
@@ -61,9 +67,37 @@ namespace NSDocxRenderer
         m_arShapes.clear();
     }
 
-    void CPage::ClearParagraphs()
+    void CPage::ClearOutputObjects()
     {
-        m_arParagraphs.clear();
+        for (size_t i = 0; i < m_arOutputObjects.size(); ++i)
+        {
+            auto pObj = m_arOutputObjects[i];
+
+            switch(pObj->m_eType)
+            {
+            case CBaseItem::ElemType::etParagraph:
+                dynamic_cast<CParagraph*>(pObj)->Clear();
+                break;
+            case CBaseItem::ElemType::etTable:
+                dynamic_cast<CTable*>(pObj)->Clear();
+                break;
+            case CBaseItem::ElemType::etShape:
+                dynamic_cast<CShape*>(pObj)->Clear();
+                break;
+            default:
+                pObj->Clear();
+                break;
+            }
+        }
+        m_arOutputObjects.clear();
+    }
+
+    void CPage::ClearTables()
+    {
+        m_arPeaks.clear();
+        m_arCells.clear();
+        m_arRows.clear();
+        m_arTables.clear();
     }
 
     CPage::~CPage()
@@ -367,16 +401,20 @@ namespace NSDocxRenderer
             m_pStyleManager->m_pCurrentStyle->m_lPickFontStyle  = m_pFontManager->m_lCurrentPictFontStyle;
         }
 
+        //первичное получение стиля для текущего символа
+        //при дальнейшем анализе может измениться
         pCont->m_pFontStyle = m_pStyleManager->GetStyle();
 
         pCont->m_dSpaceWidthMM = m_pFontManager->m_dSpaceWidthMM;
 
         if (nCount == 1 && IsDiacriticalMark(*pUnicodes))
         {
+            //собираем отдельно, т.к. такие символы не имею размера m_dWidth
             m_arDiacriticalSymbol.push_back(pCont);
         }
         else
         {
+            //остальные символы сразу добавляем в текстовые линии
             AddContToTextLine(pCont);
         }
     }
@@ -418,18 +456,389 @@ namespace NSDocxRenderer
     {
         AnalyzeCollectedShapes();
         AnalyzeCollectedTextLines();
-        BuildByType();
         ToXml(oWriter);
         WriteSectionToFile(lPagesCount >= lNumberPages - 1, oWriter);
     }
 
     void CPage::AnalyzeCollectedShapes()
     {
+        //BuildTables();
         DetermineLinesType();
+    }
+
+    void CPage::BuildTables()
+    {
+        //Графика таблиц парсится в условные 2 типа:
+        //1 - С выделение отдельных узлов (peak) в местах пересечения линий
+        //При этом графический шейп доходит до peak и прерывается. Каждая шейп-линия является стороной 1 ячейки
+        //2 - Без выделения узлов - каждая линия тамблицы захватывает несколько ячеек
+
+        //Текущая логика постороения таблиц реализовывает парсинг таблиц 1-го типа
+        //Для реализации 2го - нужно сначала создать peak в местах пересечения линий
+        //Основная причина почему так - нужно удалять все шейпы после парсинга
+
+        //todo пока плохо работает для таблиц с неполными ячейками. причина - не заполнены все основные параметры (m_dTop, m_dLeft...)
+        //todo реализовать парсинг таблиц 2-го типа
+        //todo необходимо в созданные cells добавить содержимое из m_arTextLine по геометрическому признаку (буквы должны находится внутри ячеек)
+        //todo зетем собрать TextLine и Paragraph для каждой ячейки
+        //todo написать функцию и логику для добавления таблицы в шейп - нужно для режима tatParagraphToShape
+
+        CollectPeaks();
+        CreatCells();
+        BuildRows();
+
+        CTable* pCurrTable = nullptr;
+        CRow* pFirstRow = nullptr;
+
+        if (!m_arRows.empty())
+        {
+            pCurrTable = new CTable();
+            m_arTables.push_back(pCurrTable);
+
+            pFirstRow = m_arRows.front();
+            pCurrTable->AddContent(pFirstRow);
+        }
+
+        for (size_t i = 1; i < m_arRows.size(); ++i)
+        {
+            auto pCurrRow = m_arRows[i];
+
+            eVerticalCrossingType eVType = pFirstRow->GetVerticalCrossingType(pCurrRow);
+            eHorizontalCrossingType eHType = pFirstRow->GetHorizontalCrossingType(pCurrRow);
+
+            bool bIf1 = eVType == eVerticalCrossingType::vctCurrentAboveNext;
+            bool bIf2 = eHType == eHorizontalCrossingType::hctLeftAndRightBordersMatch;
+
+            if (bIf1 && bIf2)
+            {
+                pCurrTable->AddContent(pCurrRow);
+                pFirstRow = pCurrRow;
+            }
+            else
+            {
+                pCurrTable = new CTable();
+                m_arTables.push_back(pCurrTable);
+
+                pFirstRow = pCurrRow;
+                pCurrTable->AddContent(pFirstRow);
+            }
+        }
+
+        for (size_t i = 0; i < m_arTables.size(); ++i)
+        {
+            m_arTables[i]->CalculateColumnWidth();
+        }
+    }
+
+    void CPage::CollectPeaks()
+    {
+        for (size_t i = 0; i< m_arShapes.size(); ++i)
+        {
+            auto pCurrShape = m_arShapes[i];
+
+            if (pCurrShape->m_bIsNotNecessaryToUse)
+            {
+                continue;
+            }
+
+            //нашли вершину
+            if (pCurrShape->IsPeak())
+            {
+                CPeak* pCurrPeak = nullptr;
+
+                //ищем стороны
+                for (size_t j = 0; j < m_arShapes.size(); ++j)
+                {
+                    auto pNextShape = m_arShapes[j];
+
+                    if (pNextShape->m_bIsNotNecessaryToUse || !pNextShape->IsSide())
+                    {
+                        continue;
+                    }
+
+                    eVerticalCrossingType eVType = pCurrShape->GetVerticalCrossingType(pNextShape);
+                    eHorizontalCrossingType eHType = pCurrShape->GetHorizontalCrossingType(pNextShape);
+
+                    //проверяем, подходит ли сторона
+                    bool bIf1 = eVType == eVerticalCrossingType::vctTopAndBottomBordersMatch &&
+                            (eHType == eHorizontalCrossingType::hctCurrentLeftOfNext || eHType == eHorizontalCrossingType::hctCurrentRightOfNext);
+                    bool bIf2 = eHType == eHorizontalCrossingType::hctLeftAndRightBordersMatch &&
+                            (eVType == eVerticalCrossingType::vctCurrentAboveNext || eVType == eVerticalCrossingType::vctCurrentBelowNext);
+
+                    if (bIf1 || bIf2)
+                    {
+                        if (!pCurrPeak)
+                        {
+                            pCurrPeak = new CPeak(pCurrShape);
+                            pCurrShape->m_bIsNotNecessaryToUse = true;
+                            pCurrShape->m_bIsUseInTable = true;
+                            m_arPeaks.push_back(pCurrPeak);
+                        }
+
+                        if (eVType == eVerticalCrossingType::vctTopAndBottomBordersMatch)
+                        {
+                            if (eHType == eHorizontalCrossingType::hctCurrentLeftOfNext)
+                            {
+                                pCurrPeak->m_pLines[CPeak::dI] = pNextShape;
+                                pNextShape->m_bIsUseInTable = true;
+                            }
+                            else if (eHType == eHorizontalCrossingType::hctCurrentRightOfNext)
+                            {
+                                pCurrPeak->m_pLines[CPeak::dIII] = pNextShape;
+                                pNextShape->m_bIsUseInTable = true;
+                            }
+                        }
+                        if (eHType == eHorizontalCrossingType::hctLeftAndRightBordersMatch)
+                        {
+                            if (eVType == eVerticalCrossingType::vctCurrentAboveNext)
+                            {
+                                pCurrPeak->m_pLines[CPeak::dIV] = pNextShape;
+                                pNextShape->m_bIsUseInTable = true;
+                            }
+                            else if (eVType == eVerticalCrossingType::vctCurrentBelowNext)
+                            {
+                                pCurrPeak->m_pLines[CPeak::dII] = pNextShape;
+                                pNextShape->m_bIsUseInTable = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    void CPage::CreatCells()
+    {
+        //Cells
+        // II   |   I
+        //      |
+        //-----Peak---
+        //      |
+        // III  |   IV
+        //У каждого peak может быть до 4 углов, образованных выходящими линиями - обозначения согласно рисунку
+        CCell *pCellI, *pCellII, *pCellIII, *pCellIV;
+
+        for (size_t i = 0; i < m_arPeaks.size(); ++i)
+        {
+            CPeak* pPeak = m_arPeaks[i];
+            pCellI = nullptr; pCellII = nullptr; pCellIII = nullptr; pCellIV = nullptr;
+            //Lines from peak
+            // VI     II      V
+            //         |
+            // III <- Peak -> I
+            //         |
+            // VII     IV     VIII
+
+            //Corners
+            //Обозначение углов в ячейке
+            // IV------III
+            // |        |
+            // |  Cell  |
+            // |        |
+            // I--------II
+
+            bool bIsI   = pPeak->m_pLines[CPeak::dI]; //если true, то в направлении I есть линия
+            bool bIsII  = pPeak->m_pLines[CPeak::dII];
+            bool bIsIII = pPeak->m_pLines[CPeak::dIII];
+            bool bIsIV  = pPeak->m_pLines[CPeak::dIV];
+
+            //Если ячейки уже есть
+            //todo если ячейка неполная - могут отсутсвовать некоторые основные параметры (m_dLeft...)
+            //Скорее всего что в такой ячейке не все peak присутствуют в m_pPeaks и параметры не устанавливаются
+            //Добавить на это проверку и просто вычислить отсутсвующие параметры из известных
+            for (size_t j = 0; j < m_arCells.size(); ++j)
+            {
+                auto pSaveCell = m_arCells[j];
+                for (size_t k = 0; k < CCell::cNumCorners; ++k)
+                {
+                    auto pSavePeak = pSaveCell->m_pPeaks[k];
+                    if (pSavePeak)
+                    {
+                        if (pPeak->m_pLines[CPeak::dI] &&
+                            pSavePeak->m_pLines[CPeak::dIII] &&
+                            pPeak->m_pLines[CPeak::dI] == pSavePeak->m_pLines[CPeak::dIII])
+                        {
+                            if (k == CCell::cII)
+                            {
+                                pCellI = pSaveCell;
+                                pCellI->SetParameters(pPeak, CCell::cI);
+                            }
+                            else if (k == CCell::cIII)
+                            {
+                                pCellIV = pSaveCell;
+                                pCellIV->SetParameters(pPeak, CCell::cIV);
+                            }
+                        }
+
+                        if (pPeak->m_pLines[CPeak::dII] &&
+                            pSavePeak->m_pLines[CPeak::dIV] &&
+                            pPeak->m_pLines[CPeak::dII] == pSavePeak->m_pLines[CPeak::dIV])
+                        {
+                            if (k == CCell::cIII)
+                            {
+                                pCellII = pSaveCell;
+                                pCellII->SetParameters(pPeak, CCell::cII);
+                            }
+                            else if (k == CCell::cIV)
+                            {
+                                pCellI = pSaveCell;
+                                pCellI->SetParameters(pPeak, CCell::cI);
+                            }
+                        }
+
+                        if (pPeak->m_pLines[CPeak::dIII] &&
+                            pSavePeak->m_pLines[CPeak::dI] &&
+                            pPeak->m_pLines[CPeak::dIII] == pSavePeak->m_pLines[CPeak::dI])
+                        {
+                            if (k == CCell::cI)
+                            {
+                                pCellII = pSaveCell;
+                                pCellII->SetParameters(pPeak, CCell::cII);
+                            }
+                            else if (k == CCell::cIV)
+                            {
+                                pCellIII = pSaveCell;
+                                pCellIII->SetParameters(pPeak, CCell::cIII);
+                            }
+                        }
+
+                        if (pPeak->m_pLines[CPeak::dIV] &&
+                            pSavePeak->m_pLines[CPeak::dII] &&
+                            pPeak->m_pLines[CPeak::dIV] == pSavePeak->m_pLines[CPeak::dII])
+                        {
+                            if (k == CCell::cI)
+                            {
+                                pCellIV = pSaveCell;
+                                pCellIV->SetParameters(pPeak, CCell::cIV);
+                            }
+                            else if (k == CCell::cII)
+                            {
+                                pCellIII = pSaveCell;
+                                pCellIII->SetParameters(pPeak, CCell::cIII);
+                            }
+                        }
+                    }
+                }
+            }
+
+            //Если ячейка еще не построена по заданным углам - создаем ячейку
+            if (bIsI && bIsII)
+            {
+                if (!pCellI)
+                {
+                    pCellI = new CCell();
+                    pCellI->SetParameters(pPeak, CCell::cI);
+                    m_arCells.push_back(pCellI);
+                }
+            }
+            if (bIsII && bIsIII)
+            {
+                if (!pCellII)
+                {
+                    pCellII = new CCell();
+                    pCellII->SetParameters(pPeak, CCell::cII);
+                    m_arCells.push_back(pCellII);
+                }
+            }
+            if (bIsIII && bIsIV)
+            {
+                if (!pCellIII)
+                {
+                    pCellIII = new CCell();
+                    pCellIII->SetParameters(pPeak, CCell::cIII);
+                    m_arCells.push_back(pCellIII);
+                }
+            }
+            if (bIsIV && bIsI)
+            {
+                if (!pCellIV)
+                {
+                    pCellIV = new CCell();
+                    pCellIV->SetParameters(pPeak, CCell::cIV);
+                    m_arCells.push_back(pCellIV);
+                }
+            }
+        }
+
+        //удаляем использованные шейпы
+        for (size_t i = 0; i < m_arShapes.size(); ++i)
+        {
+            if (m_arShapes[i]->m_bIsUseInTable)
+            {
+                m_arShapes[i]->m_bIsNotNecessaryToUse = true;
+            }
+        }
+    }
+
+    void CPage::BuildRows()
+    {
+        //когда созданы все ячейки, собираем их в ряды
+        for (size_t i = 0; i < m_arCells.size(); ++i)
+        {
+            auto pCell = m_arCells[i];
+
+            if (pCell->m_bIsNotNecessaryToUse)
+            {
+                continue;
+            }
+
+            SelectCurrentRow(pCell);
+            m_pCurrentRow->AddContent(pCell);
+        }
+
+        CBaseItem::SortByBaseline(m_arRows);
+        for (size_t i = 0; i < m_arRows.size(); ++i)
+        {
+            CBaseItem::SortByLeft(m_arRows[i]->m_arCells);
+        }
+    }
+
+    void CPage::SelectCurrentRow(const CCell *pCell)
+    {
+        //логика аналогична AddContToTextLine
+        //todo c_dTHE_SAME_STRING_Y_PRECISION_MM - возможно слишком мала
+        if (nullptr == m_pCurrentRow)
+        {
+            auto pRow = new CRow();
+            m_pCurrentRow = pRow;
+            m_pCurrentRow->m_dBaselinePos = pCell->m_dBaselinePos;
+            m_arRows.push_back(pRow);
+            return;
+        }
+
+        if (fabs(m_pCurrentRow->m_dBaselinePos - pCell->m_dBaselinePos) <= c_dTHE_SAME_STRING_Y_PRECISION_MM)
+        {
+            return;
+        }
+
+        for (size_t i = 0; i < m_arRows.size(); ++i)
+        {
+            if (fabs(m_arRows[i]->m_dBaselinePos - pCell->m_dBaselinePos) <= c_dTHE_SAME_STRING_Y_PRECISION_MM)
+            {
+                m_pCurrentRow = m_arRows[i];
+                return;
+            }
+        }
+
+        auto pRow = new CRow();
+        m_pCurrentRow = pRow;
+        m_pCurrentRow->m_dBaselinePos = pCell->m_dBaselinePos;
+        m_arRows.push_back(pRow);
+        return;
     }
 
     void CPage::DetermineLinesType()
     {
+        //определяются типы только горизонтальных линий.
+        //Входные данные представляют собой набор прямоугольников на одной линии
+        //При определении типа линии используется крайний левый шейп, который
+        //увеличивается в размере на ширину последующих за ним шейпов.
+        //Последующие шейпы помечаются как m_bIsNotNecessaryToUse
+
+        //todo добавить аналогичное определение для вертикальных линий
+        //нужно для определения границ таблицы
+        //note определение типов линий нужно сделать до распознования таблиц, когда линия несплошная
+
         for (size_t i = 0; i < m_arShapes.size(); ++i)
         {
             auto pCurrShape = m_arShapes[i];
@@ -449,7 +858,7 @@ namespace NSDocxRenderer
             for (size_t j = i+1; j < m_arShapes.size(); ++j)
             {
                 auto pNextShape = m_arShapes[j];
-                if (pNextShape->m_bIsNotNecessaryToUse || pCurrShape->AreObjectsNoCrossing(pNextShape))
+                if (pNextShape->m_bIsNotNecessaryToUse || pCurrShape->AreObjectsNoCrossingByVertically(pNextShape)) //note значительно ускоряет работу
                 {
                     continue;
                 }
@@ -468,20 +877,19 @@ namespace NSDocxRenderer
                 }
             }
 
-            //Отсортируем собранный массив по x
-            size_t nCurrShapesCount = arCurrShapes.size();
-            if (nCurrShapesCount > 1)
+            if (arCurrShapes.size() > 1)
             {
-                SortElements(arCurrShapes);
+                //Отсортируем собранный массив по x
+                CBaseItem::SortByLeft(arCurrShapes);
                 pCurrShape = arCurrShapes[0];
 
                 //сравнение
-                for (size_t k = 1; k < nCurrShapesCount; ++k)
+                for (size_t k = 1; k < arCurrShapes.size(); ++k)
                 {
                     auto pNextShape = arCurrShapes[k];
 
                     //note логика работатет только если arCurrShapes отсортирован по m_dLeft
-                    pCurrShape->DetermineLineType(pNextShape, k == nCurrShapesCount - 1);
+                    pCurrShape->DetermineLineType(pNextShape, k == arCurrShapes.size() - 1);
 
                     if (pCurrShape->m_bIsNotNecessaryToUse)
                     {
@@ -490,7 +898,7 @@ namespace NSDocxRenderer
                     }
                 }
             }
-            else if (nCurrShapesCount == 1)
+            else if (arCurrShapes.size() == 1)
             {
                 arCurrShapes[0]->DetermineLineType();
             }
@@ -501,10 +909,12 @@ namespace NSDocxRenderer
 
     void CPage::AnalyzeCollectedTextLines()
     {
-        SortElements(m_arTextLine);
+        //вся логика основана на отсортированных списках объектов
+        //todo для увеличения производительности можно попробовать использовать другие контейнеры
+        CBaseItem::SortByBaseline(m_arTextLine);
         for (size_t i = 0; i < m_arTextLine.size(); ++i)
         {
-            m_arTextLine[i]->SortConts();
+            CBaseItem::SortByLeft(m_arTextLine[i]->m_arConts);
         }
 
         AnalyzeCollectedConts();
@@ -515,15 +925,19 @@ namespace NSDocxRenderer
 
         MergeLinesByVertAlignType();
 
-        BuildLines();
-
-        DetermineDominantGraphics();
-
         DeleteTextClipPage();
+
+        //DetermineTextColumns();
+
+        SingletonInstance<CConverter>().BuildLines(m_arTextLine);
+        SingletonInstance<CConverter>().BuildParagraphes(m_dWidth, m_eTextAssociationType,
+                                                         CBaseItem::ElemType::etParagraph,
+                                                         m_arTextLine, m_arTables, m_arOutputObjects);
     }
 
     void CPage::AnalyzeCollectedConts()
     {
+        //определение различных эффектов на основании взаимного расположения символов
         for (size_t uCurrLineIndex = 0; uCurrLineIndex < m_arTextLine.size(); ++uCurrLineIndex)
         {
             auto pCurrLine = m_arTextLine[uCurrLineIndex];
@@ -547,7 +961,7 @@ namespace NSDocxRenderer
                 {
                     auto pNextLine = m_arTextLine[uNextLineIndex];
 
-                    if (pNextLine->m_bIsNotNecessaryToUse || pCurrLine->AreObjectsNoCrossing(pNextLine))
+                    if (pNextLine->m_bIsNotNecessaryToUse || pCurrLine->AreObjectsNoCrossingByVertically(pNextLine)) //note значительно ускоряет работу
                     {
                         continue;
                     }
@@ -599,6 +1013,7 @@ namespace NSDocxRenderer
 
     void CPage::DetermineStrikeoutsUnderlinesHighlights()
     {
+        //определение различных эффектов на основании взаимного расположения символов и шейпов
         for (size_t i = 0; i < m_arShapes.size(); ++i)
         {
             auto pShape = m_arShapes[i];
@@ -614,7 +1029,7 @@ namespace NSDocxRenderer
                 auto pCurrLine = m_arTextLine[j];
 
                 if (pCurrLine->m_bIsNotNecessaryToUse ||
-                    (pCurrLine->AreObjectsNoCrossing(pShape) &&
+                    (pCurrLine->AreObjectsNoCrossingByVertically(pShape) &&
                      (pCurrLine->m_dTop > pShape->m_dBaselinePos ||
                       pCurrLine->m_dBaselinePos + pCurrLine->m_dHeight < pShape->m_dTop)))
                 {
@@ -703,6 +1118,7 @@ namespace NSDocxRenderer
 
     bool CPage::IsLineBelowText(const CShape *pShape, CContText *pCont, const eHorizontalCrossingType& eHType)
     {
+        //todo распознавание работает не для всех размеров шрифтов - возможно 0.15 мало или улучшить логику
         bool bIf1 = (pShape->m_eGraphicsType == eGraphicsType::gtRectangle ||
                      pShape->m_eGraphicsType == eGraphicsType::gtCurve) &&
                 pShape->m_eLineType != eLineType::ltUnknown;
@@ -784,7 +1200,7 @@ namespace NSDocxRenderer
                 auto pCurrLine = m_arTextLine[j];
 
                 if (pCurrLine->m_bIsNotNecessaryToUse ||
-                    pCurrLine->AreObjectsNoCrossing(pDiacriticalCont))
+                    pCurrLine->AreObjectsNoCrossingByVertically(pDiacriticalCont))
                 {
                     continue;
                 }
@@ -892,7 +1308,7 @@ namespace NSDocxRenderer
 
                         pBaseLine->m_arConts.push_back(std::move(pCont));
                     }
-                    SortElements(pBaseLine->m_arConts);
+                    CBaseItem::SortByLeft(pBaseLine->m_arConts);
                     pCurrLine->m_bIsNotNecessaryToUse = true;
                 }
             }
@@ -934,810 +1350,288 @@ namespace NSDocxRenderer
 
                         pCurrLine->m_arConts.push_back(std::move(pCont));
                     }
-                    SortElements(pCurrLine->m_arConts);
+                    CBaseItem::SortByLeft(pCurrLine->m_arConts);
                     pSubLine->m_bIsNotNecessaryToUse = true;
                 }
             }
         }
     }
 
-    void CPage::BuildLines()
+    void CPage::DetermineTextColumns()
     {
-        for (size_t i = 0; i < m_arTextLine.size(); ++i)
+        std::vector<size_t> keys;
+        std::vector<CContText*> arConts;
+        CTable* pTable = nullptr;
+
+        //Сначала определяем, подходят ли несколько текущих строк для распределения в таблицу
+        //Выбирается первая строка и относительно нее проверяются все последующие строки -
+        //сравнивается взаимное расположение символов. Если у них совпадает левая граница и таких совпадений больше 1,
+        //то добавляем uFirstContIndex в keys.
+        //Todo улучшить локигу определения keys
+        for (size_t uFirstLineIndex = 0; uFirstLineIndex < m_arTextLine.size(); ++uFirstLineIndex)
         {
-            auto pCurrLine = m_arTextLine[i];
-            if (pCurrLine->m_bIsNotNecessaryToUse)
+            auto pFirstLine = m_arTextLine[uFirstLineIndex];
+
+            if (pFirstLine->m_bIsNotNecessaryToUse || uFirstLineIndex == m_arTextLine.size() - 1)
             {
                 continue;
             }
 
-            for (size_t j = 0; j < pCurrLine->m_arConts.size(); ++j)
+            CTextLine* pFlagLine = nullptr;
+
+            //первоначальное определение индексов pFirstLine, где могут присутствовать колонки
+            for (size_t uFirstContIndex = 0; uFirstContIndex < pFirstLine->m_arConts.size(); ++uFirstContIndex)
             {
-                auto pCurrCont = pCurrLine->m_arConts[j];
-                if (pCurrCont->m_bIsNotNecessaryToUse)
+                auto pFirtsCont = pFirstLine->m_arConts[uFirstContIndex];
+
+                if (pFirtsCont->m_bIsNotNecessaryToUse)
                 {
                     continue;
                 }
 
-                if (pCurrCont->m_iNumDuplicates > 0)
+                for (size_t uCurrLineIndex = uFirstLineIndex + 1 ; uCurrLineIndex < m_arTextLine.size(); ++uCurrLineIndex)
                 {
-                    pCurrLine->m_iNumDuplicates = std::max(pCurrLine->m_iNumDuplicates, pCurrCont->m_iNumDuplicates);
-                }
-            }
+                    auto pCurrLine = m_arTextLine[uCurrLineIndex];
 
-            pCurrLine->MergeConts();
-        }
-    }
-
-    void CPage::DetermineDominantGraphics()
-    {
-        CShape* pDominantShape = nullptr;
-
-        for (size_t i = 0; i < m_arTextLine.size(); ++i)
-        {
-            auto pLine = m_arTextLine[i];
-            if (pLine->m_bIsNotNecessaryToUse)
-            {
-                continue;
-            }
-
-            for (size_t j = 0; j < pLine->m_arConts.size(); ++j)
-            {
-                auto pCont = pLine->m_arConts[j];
-                if (pCont->m_bIsNotNecessaryToUse)
-                {
-                    continue;
-                }
-
-                if (pCont->m_pShape && pCont->m_pShape != pDominantShape)
-                {
-                    if (pCont->m_pShape->m_dLeft < pCont->m_dLeft &&
-                        pCont->m_pShape->m_dRight > pCont->m_dRight)
+                    if (pCurrLine->m_bIsNotNecessaryToUse)
                     {
-                        if (!pDominantShape ||
-                            (pCont->m_pShape->m_dLeft < pDominantShape->m_dLeft &&
-                             pCont->m_pShape->m_dRight > pDominantShape->m_dRight))
+                        continue;
+                    }
+
+                    auto pPrevLine = m_arTextLine[uCurrLineIndex-1];
+
+                    if (pPrevLine->m_dBaselinePos + pPrevLine->m_dHeight < pCurrLine->m_dTop)
+                    {
+                        //Нашли линию, до которой будет таблица/ряд
+                        pFlagLine = pCurrLine;
+                        break;
+                    }
+
+                    size_t numConts = arConts.size();
+
+                    for (size_t uCurrContIndex = 0; uCurrContIndex < pCurrLine->m_arConts.size(); ++uCurrContIndex)
+                    {
+                        auto pCurrCont = pCurrLine->m_arConts[uCurrContIndex];
+
+                        if (pCurrCont->m_bIsNotNecessaryToUse)
                         {
-                            pDominantShape = pCont->m_pShape;
+                            continue;
+                        }
+
+                        eHorizontalCrossingType eHType = pFirtsCont->GetHorizontalCrossingType(pCurrCont);
+
+                        if (eHType == eHorizontalCrossingType::hctLeftAndRightBordersMatch ||
+                            eHType == eHorizontalCrossingType::hctLeftBorderMatch)
+                        {
+                            //Добавили Cont-ориентир
+                            arConts.push_back(pCurrCont);
+                            break;
                         }
                     }
-                }
-            }
 
-            pLine->m_pDominantShape = pDominantShape;
-            pDominantShape = nullptr;
-        }
-    }
-
-    void CPage::BuildByType()
-    {
-        if (m_arTextLine.empty())
-            return;
-
-        switch (m_eTextAssociationType)
-        {
-        case tatBlockChar:
-            BuildByTypeBlockChar();
-            break;
-        case tatBlockLine:
-            BuildByTypeBlockLine();
-            break;
-        case tatPlainLine:
-            BuildByTypePlainLine();
-            break;
-        case tatShapeLine:
-            BuildByTypeShapeLine();
-            break;
-        case tatPlainParagraph:
-        case tatParagraphToShape:
-            BuildByTypePlainParagraph();
-            break;
-        default:
-            break;
-        }
-    }
-
-    void CPage::BuildByTypeBlockChar()
-    {
-        for (size_t i = 0; i < m_arTextLine.size(); ++i)
-        {
-            auto pLine = m_arTextLine[i];
-            auto pParagraph = new CParagraph(m_eTextAssociationType);
-            pParagraph->m_eTextConversionType = CParagraph::tctTextToFrame;
-
-            pParagraph->m_dLeft = pLine->m_dLeft;
-            pParagraph->m_dTop	= pLine->m_dBaselinePos - pLine->m_dHeight;
-
-            pParagraph->m_arLines.push_back(pLine);
-
-            m_arParagraphs.push_back(pParagraph);
-        }
-    }
-
-    void CPage::BuildByTypeBlockLine()
-    {
-        auto pFirstLine = m_arTextLine[0];
-
-        auto pParagraph = new CParagraph(m_eTextAssociationType);
-        pParagraph->m_eTextConversionType = CParagraph::tctTextToFrame;
-
-        pParagraph->m_dLeft	= pFirstLine->m_dLeft;
-        pParagraph->m_dTop	= pFirstLine->m_dBaselinePos - pFirstLine->m_dHeight;
-        double dCurrentTop = pParagraph->m_dTop;
-
-        pParagraph->m_arLines.push_back(pFirstLine);
-
-        m_arParagraphs.push_back(pParagraph);
-
-        for (size_t i = 1; i < m_arTextLine.size(); ++i)
-        {
-            auto pTextLine = m_arTextLine[i];
-
-            auto pParagraph = new CParagraph(m_eTextAssociationType);
-            pParagraph->m_eTextConversionType = CParagraph::tctTextToFrame;
-
-            if (((fabs(pTextLine->m_dBaselinePos - pTextLine->m_dHeight - pFirstLine->m_dBaselinePos) > c_dSTANDART_STRING_HEIGHT_MM) && (pTextLine->m_dLeft == pFirstLine->m_dLeft)) ||
-                ((pTextLine->m_dLeft != pFirstLine->m_dLeft) && (pTextLine->m_dBaselinePos != pFirstLine->m_dBaselinePos)))
-            {
-                pParagraph->m_dLeft	= pTextLine->m_dLeft;
-                pParagraph->m_dTop	= pTextLine->m_dBaselinePos - pTextLine->m_dHeight;
-                dCurrentTop = pParagraph->m_dTop;
-            }
-            else
-            {
-                pParagraph->m_dLeft	= pFirstLine->m_dLeft;
-                pParagraph->m_dTop	= dCurrentTop;
-            }
-
-            pFirstLine = pTextLine;
-
-            pParagraph->m_arLines.push_back(pTextLine);
-            m_arParagraphs.push_back(pParagraph);
-        }
-    }
-
-    void CPage::BuildByTypePlainLine()
-    {
-        Merge(c_dSTANDART_STRING_HEIGHT_MM / 3);
-
-        double dPreviousStringBaseline = 0;
-        for (size_t i = 0; i < m_arTextLine.size(); ++i)
-        {
-            auto pLine = m_arTextLine[i];
-            double dBeforeSpacing = pLine->CalculateBeforeSpacing(dPreviousStringBaseline);
-            dPreviousStringBaseline = pLine->m_dBaselinePos;
-            double dRight = pLine->CalculateRightBorder(m_dWidth);
-
-            CreateSingleLineParagraph(pLine, &dRight, &dBeforeSpacing);
-        }
-    }
-
-    void CPage::BuildByTypeShapeLine()
-    {
-        for (size_t i = 0; i < m_arTextLine.size(); ++i)
-        {
-            CreateSingleLineShape(m_arTextLine[i]);
-        }
-    }
-
-    void CPage::BuildByTypePlainParagraph()
-    {
-        CTextLine* pCurrLine, *pNextLine, *pNextNextLine, *pPrevLine;
-        double dCurrRight = 0, dNextRight = 0;
-        double dCurrBeforeSpacing = 0, dNextBeforeSpacing = 0, dPrevBeforeSpacing = 0;
-        double dBeforeSpacingWithShapes = 0;
-        //note Все параграфы были сдвинуты на данное значение от верхнего края страницы
-        double dPreviousStringBaseline = c_dCORRECTION_FOR_FIRST_PARAGRAPH;
-        eVerticalCrossingType eCrossingType;
-
-        bool bIf1, bIf2, bIf3, bIf4, bIf5, bIf6, bIf7;
-
-        size_t nIndexForCheking = c_nAntiZero;
-
-        for (size_t nIndex = 0; nIndex < m_arTextLine.size(); ++nIndex)
-        {
-            pCurrLine = m_arTextLine[nIndex];
-            if (pCurrLine->m_bIsNotNecessaryToUse)
-            {
-                continue;
-            }
-
-            dPrevBeforeSpacing = dCurrBeforeSpacing;
-            dCurrBeforeSpacing = pCurrLine->CalculateBeforeSpacing(dPreviousStringBaseline);
-            dPreviousStringBaseline = pCurrLine->m_dBaselinePos;
-
-            if (pCurrLine->m_iNumDuplicates > 0)
-            {
-                dBeforeSpacingWithShapes += dCurrBeforeSpacing + pCurrLine->m_dHeight;
-
-                auto iNumDuplicates = pCurrLine->m_iNumDuplicates;
-                CreateSingleLineShape(pCurrLine);
-                while (iNumDuplicates > 0)
-                {
-                    CreateSingleLineShape(pCurrLine);
-                    iNumDuplicates--;
-                }
-                continue;
-            }
-
-            dCurrRight = pCurrLine->CalculateRightBorder(m_dWidth);
-            pNextLine = GetNextTextLine(nIndex, &nIndexForCheking);
-            if (m_eTextAssociationType == tatParagraphToShape)
-            {
-                pPrevLine = GetPrevTextLine(nIndex);
-            }
-
-            if (pNextLine)
-            {
-                eCrossingType = pCurrLine->GetVerticalCrossingType(pNextLine);
-                bool bIsPassed = false;
-                double dCurrentAdditive = 0.0;
-
-                switch (eCrossingType)
-                {
-                case eVerticalCrossingType::vctCurrentInsideNext:
-                case eVerticalCrossingType::vctCurrentBelowNext:
-                    dCurrentAdditive = dCurrBeforeSpacing + pCurrLine->m_dHeight + pNextLine->m_dBaselinePos - pCurrLine->m_dBaselinePos;
-                    dPreviousStringBaseline = pNextLine->m_dBaselinePos;
-                    bIsPassed = true;
-                    break;
-                case eVerticalCrossingType::vctCurrentOutsideNext:
-                case eVerticalCrossingType::vctCurrentAboveNext:
-                case eVerticalCrossingType::vctDublicate:
-                    dCurrentAdditive = dCurrBeforeSpacing + pCurrLine->m_dHeight;
-                    bIsPassed = true;
-                    break;
-                default:
-                    break;
-                }
-
-                if (bIsPassed)
-                {
-                    CreateSingleLineShape(pCurrLine);
-                    CreateSingleLineShape(pNextLine);
-
-                    dBeforeSpacingWithShapes += dCurrentAdditive;
-
-                    nIndex++;
-                    continue;
-                }
-            }
-
-            dCurrBeforeSpacing += dBeforeSpacingWithShapes;
-            dBeforeSpacingWithShapes = 0;
-
-            bool bIsSingleLineParagraph = false;
-
-            if (pNextLine)
-            {
-                dNextRight = pNextLine->CalculateRightBorder(m_dWidth);
-                dNextBeforeSpacing = pNextLine->CalculateBeforeSpacing(dPreviousStringBaseline);
-
-                //Высота строк должна быть примерно одинаковой
-                bIf1 = fabs(pCurrLine->m_dHeight - pNextLine->m_dHeight) < c_dTHE_SAME_STRING_Y_PRECISION_MM;
-                //расстрояние между строк тоже одинаково
-                bIf2 = fabs(dCurrBeforeSpacing - dNextBeforeSpacing) < c_dLINE_DISTANCE_ERROR_MM;
-                //или
-                bIf3 = dCurrBeforeSpacing > dNextBeforeSpacing;
-                //нет отступа
-                bIf4 = fabs(pCurrLine->m_dLeft - pNextLine->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
-                //есть отступ
-                bIf5 = pCurrLine->m_dLeft > pNextLine->m_dLeft;
-                //совпадают правые границы
-                bIf6 = fabs(dCurrRight - dNextRight) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
-
-                size_t nNextIndex = nIndex+1;
-                pNextNextLine = GetNextTextLine(nNextIndex);
-
-                bIf7 = (pCurrLine->m_dWidth > pNextLine->m_dWidth * c_dCOEFFICIENT_LENGTHS_LINES_IN_PARAGRAPH) &&
-                        (pNextNextLine ? pCurrLine->m_dWidth > pNextNextLine->m_dWidth * c_dCOEFFICIENT_LENGTHS_LINES_IN_PARAGRAPH : true);
-
-                if (pNextNextLine)
-                {
-                    double dNextNextBeforeSpacing = pNextNextLine->CalculateBeforeSpacing(pNextLine->m_dBaselinePos);
-
-                    if (bIf1 && (bIf2 || bIf3))
+                    if (numConts == arConts.size())
                     {
-                        if (fabs(dNextBeforeSpacing - dNextNextBeforeSpacing) < c_dLINE_DISTANCE_ERROR_MM)
+                        //не было добавления Cont, значит дальше можно не проверять
+                        break;
+                    }
+                }
+
+                if (arConts.size() > 2 && uFirstContIndex < pFirstLine->m_arConts.size() - 1 )
+                {
+                    keys.push_back(uFirstContIndex);
+                    arConts.clear();
+                }
+            }
+
+            size_t uLastLineIndexInCell = 0;
+
+            //Если добавленных индексов достаточно, т.е. это похоже на 2 и более колонок, то
+            //начинаем распределять символы из всех строк до pFlagLine по высоте и
+            //левее символа с индексом из keys[i+1] по ширине. Все отобранные символы удаляем из линий (m_bIsNotNecessaryToUse)
+            //Повторяем это действие, пока не пробежимся по всем keys
+            if (keys.size() > 1)
+            {
+                auto pRow = new CRow();
+
+                for (size_t i = 0; i < keys.size(); ++i)
+                {
+                    auto pCell = new CCell();
+
+                    for (size_t uLineIndex = uFirstLineIndex; uLineIndex < m_arTextLine.size(); ++uLineIndex)
+                    {
+                        auto pCurrLine = m_arTextLine[uLineIndex];
+
+                        if (pCurrLine->m_bIsNotNecessaryToUse)
                         {
-                            if (fabs(pNextLine->m_dHeight - pNextNextLine->m_dHeight) >= c_dTHE_SAME_STRING_Y_PRECISION_MM)
-                            {
-                                pNextNextLine = nullptr;
-                            }
+                            continue;
                         }
-                        else
+
+                        if (pFlagLine == pCurrLine)
                         {
-                            if (fabs(pNextLine->m_dHeight - pNextNextLine->m_dHeight) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
+                            uLastLineIndexInCell = std::max(uLineIndex-1, uLastLineIndexInCell);
+                            break;
+                        }
+
+                        CTextLine* pCellLine = nullptr;
+                        CContText* pFlagCont = nullptr;
+                        CContText* pFirstCont = m_arTextLine[uFirstLineIndex]->m_arConts[keys[i]];
+
+                        if (i < keys.size() - 1)
+                        {
+                            pFlagCont = m_arTextLine[uFirstLineIndex]->m_arConts[keys[i+1]];
+                        }
+
+                        for (size_t uCurrContIndex = 0; uCurrContIndex < pCurrLine->m_arConts.size(); ++uCurrContIndex)
+                        {
+                            auto pCurrCont = pCurrLine->m_arConts[uCurrContIndex];
+
+                            if (pCurrCont->m_bIsNotNecessaryToUse)
                             {
-                                if (dNextBeforeSpacing < dNextNextBeforeSpacing)
+                                continue;
+                            }
+
+                            eHorizontalCrossingType eHTypeFirst = pFirstCont->GetHorizontalCrossingType(pCurrCont);
+
+                            if (pFlagCont)
+                            {
+                                eHorizontalCrossingType eHTypeLast = pFlagCont->GetHorizontalCrossingType(pCurrCont);
+                                if (eHTypeLast == eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext &&
+                                    eHTypeFirst != eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext)
                                 {
-                                    pNextNextLine = nullptr;
+                                    if (!pCellLine)
+                                    {
+                                        pCellLine = new CTextLine();
+                                    }
+                                    pCellLine->AddContent(new CContText(*pCurrCont));
+                                    pCurrCont->m_bIsNotNecessaryToUse = true;
                                 }
                                 else
                                 {
-                                    bIsSingleLineParagraph = true;
+                                    break;
                                 }
                             }
                             else
                             {
-                                pNextNextLine = nullptr;
+                                if (eHTypeFirst != eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext)
+                                {
+                                    if (!pCellLine)
+                                    {
+                                        pCellLine = new CTextLine();
+                                    }
+                                    pCellLine->AddContent(new CContText(*pCurrCont));
+                                    pCurrCont->m_bIsNotNecessaryToUse = true;
+                                }
                             }
                         }
-                    }
-                }
-            }
 
-            bool bIsUseNextNextLine = true;
-            CParagraph::TextAlignmentType eTextAlignmentType = CParagraph::DetermineTextAlignmentType(
-                        pCurrLine, pNextLine, pNextNextLine, m_dWidth, bIsUseNextNextLine, bIsSingleLineParagraph);
-
-            auto pParagraph = new CParagraph(m_eTextAssociationType);
-            pParagraph->m_eTextAlignmentType = eTextAlignmentType;
-            if (m_eTextAssociationType == tatPlainParagraph)
-            {
-                pParagraph->m_eTextConversionType = CParagraph::tctTextToParagraph;
-            }
-            else
-            {
-                pParagraph->m_eTextConversionType = CParagraph::tctTextToShape;
-            }
-
-            if (pNextLine && !bIsSingleLineParagraph && bIf1 && (bIf2 || bIf3))
-            {
-                pParagraph->m_dLeft = std::min(pCurrLine->m_dLeft, pNextLine->m_dLeft);
-                pParagraph->m_dRight = std::min(dCurrRight, dNextRight);
-                pParagraph->m_dWidth = std::max(pCurrLine->m_dWidth + pCurrLine->m_arConts.back()->m_dSpaceWidthMM,
-                                                pNextLine->m_dWidth + pNextLine->m_arConts.back()->m_dSpaceWidthMM);
-                if (pParagraph->m_eTextAlignmentType != CParagraph::tatByCenter)
-                {
-                    pParagraph->m_bIsNeedFirstLineIndent = pCurrLine->m_dLeft > pNextLine->m_dLeft ? true : false;
-                    pParagraph->m_dFirstLine = pCurrLine->m_dLeft - pNextLine->m_dLeft;
-                }
-            }
-            else
-            {
-                pParagraph->m_dLeft = pCurrLine->m_dLeft;
-                pParagraph->m_dRight = dCurrRight;
-                pParagraph->m_dWidth = pCurrLine->m_dWidth;
-            }
-
-            pParagraph->m_dTop = pCurrLine->m_dBaselinePos - pCurrLine->m_dHeight;
-
-            //размер строк во всем параграфе
-            pParagraph->m_dHeight = pCurrLine->m_dHeight;
-            pParagraph->m_dSpaceBefore = std::max(dCurrBeforeSpacing, 0.0);
-
-            pParagraph->m_arLines.push_back(pCurrLine);
-            pParagraph->m_nNumLines++;
-
-            if (pNextLine && !bIsSingleLineParagraph && bIf1 && (bIf2 || bIf3) && (bIf4 || bIf5 || bIf6) && bIf7)
-            {
-                pParagraph->m_arLines.push_back(pNextLine);
-                pParagraph->m_nNumLines++;
-
-                if (IsShadingPresent(pCurrLine, pNextLine))
-                {
-                    pParagraph->m_bIsShadingPresent = true;
-                    pParagraph->m_lColorOfShadingFill = pCurrLine->m_pDominantShape->m_oBrush.Color1;
-                }
-
-                //сдвигаем рабочую точку
-                nIndex++;
-                pCurrLine = pNextLine;
-                pNextLine = GetNextTextLine(nIndex, &nIndexForCheking);
-
-                dPrevBeforeSpacing = dCurrBeforeSpacing;
-                dCurrBeforeSpacing = pCurrLine->CalculateBeforeSpacing(dPreviousStringBaseline);
-                dPreviousStringBaseline = pCurrLine->m_dBaselinePos;
-                double dCorrectionBeforeSpacing = dCurrBeforeSpacing;
-                dCurrRight = dNextRight;
-
-                if (bIsUseNextNextLine)
-                {
-                    if (pNextLine)
-                    {
-                        dNextBeforeSpacing = pNextLine->CalculateBeforeSpacing(dPreviousStringBaseline);
-                        dNextRight = pNextLine->CalculateRightBorder(m_dWidth);
-                        eCrossingType = pCurrLine->GetVerticalCrossingType(pNextLine);
-
-                        bIf1 = fabs(pCurrLine->m_dHeight - pNextLine->m_dHeight) < c_dTHE_SAME_STRING_Y_PRECISION_MM; //высота строк должна быть примерно одинаковой
-                        bIf2 = fabs(dCurrBeforeSpacing - dNextBeforeSpacing) < c_dLINE_DISTANCE_ERROR_MM; //расстрояние между строк тоже одинаково
-                        bIf3 = (eCrossingType == eVerticalCrossingType::vctUnknown ||
-                                eCrossingType == eVerticalCrossingType::vctNoCrossingCurrentAboveNext ||
-                                eCrossingType == eVerticalCrossingType::vctNoCrossingCurrentBelowNext);
-                        bIf4 = ((pParagraph->m_eTextAlignmentType == CParagraph::tatByLeftEdge && fabs(pCurrLine->m_dLeft - pNextLine->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM) ||
-                                (pParagraph->m_eTextAlignmentType == CParagraph::tatByWidth && fabs(pCurrLine->m_dLeft - pNextLine->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM && (fabs(dCurrRight - dNextRight) < c_dERROR_OF_PARAGRAPH_BORDERS_MM || dCurrRight < dNextRight)) ||
-                                (pParagraph->m_eTextAlignmentType == CParagraph::tatByRightEdge && fabs(dCurrRight - dNextRight) < c_dERROR_OF_PARAGRAPH_BORDERS_MM) ||
-                                (pParagraph->m_eTextAlignmentType == CParagraph::tatByCenter));
-                        bIf5 = (pCurrLine->m_dWidth > pNextLine->m_dWidth * c_dCOEFFICIENT_LENGTHS_LINES_IN_PARAGRAPH);
-                    }
-
-                    //проверим, подходят ли следующие строчки для текущего pParagraph
-                    while(pNextLine &&  bIf1 && bIf2 && bIf3 && bIf4 && bIf5)
-                    {
-                        pParagraph->m_arLines.push_back(pNextLine);
-                        pParagraph->m_nNumLines++;
-
-                        pParagraph->m_dRight = std::min(pParagraph->m_dRight, dNextRight);
-                        pParagraph->m_dLeft = std::min(pParagraph->m_dLeft, pNextLine->m_dLeft);
-                        pParagraph->m_dWidth = std::max(pParagraph->m_dWidth, pNextLine->m_dWidth + pNextLine->m_arConts.back()->m_dSpaceWidthMM);
-
-                        if (!IsShadingPresent(pCurrLine, pNextLine))
+                        if (pCellLine)
                         {
-                            pParagraph->m_bIsShadingPresent = false;
-                            pParagraph->m_lColorOfShadingFill = c_iWhiteColor;
+                            pCell->AddContent(pCellLine);
                         }
 
-                        //сдвигаем рабочую точку
-                        nIndex++;
-                        pCurrLine = pNextLine;
-                        pNextLine = GetNextTextLine(nIndex, &nIndexForCheking);
-
-                        dPrevBeforeSpacing = dCurrBeforeSpacing;
-                        dCurrBeforeSpacing = pCurrLine->CalculateBeforeSpacing(dPreviousStringBaseline);
-                        dPreviousStringBaseline = pCurrLine->m_dBaselinePos;
-                        dCorrectionBeforeSpacing = (dCorrectionBeforeSpacing + dCurrBeforeSpacing)/2; //наверное лучше так... текст может быть уже, чем в оригинале
-                        dCurrRight = dNextRight;
-
-                        if (pNextLine)
+                        if (i >= keys.size() - 1)
                         {
-                            dNextBeforeSpacing = pNextLine->CalculateBeforeSpacing(dPreviousStringBaseline);
-                            dNextRight = pNextLine->CalculateRightBorder(m_dWidth);
-                            eCrossingType = pCurrLine->GetVerticalCrossingType(pNextLine);
-
-                            bIf1 = fabs(pCurrLine->m_dHeight - pNextLine->m_dHeight) < c_dTHE_SAME_STRING_Y_PRECISION_MM; //высота строк должна быть примерно одинаковой
-                            bIf2 = fabs(dCurrBeforeSpacing - dNextBeforeSpacing) < c_dLINE_DISTANCE_ERROR_MM; //расстрояние между строк тоже одинаково
-                            bIf3 = (eCrossingType == eVerticalCrossingType::vctUnknown ||
-                                    eCrossingType == eVerticalCrossingType::vctNoCrossingCurrentAboveNext ||
-                                    eCrossingType == eVerticalCrossingType::vctNoCrossingCurrentBelowNext);
-                            bIf4 = ((pParagraph->m_eTextAlignmentType == CParagraph::tatByLeftEdge && fabs(pCurrLine->m_dLeft - pNextLine->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM) ||
-                                    (pParagraph->m_eTextAlignmentType == CParagraph::tatByWidth && fabs(pCurrLine->m_dLeft - pNextLine->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM && (fabs(dCurrRight - dNextRight) < c_dERROR_OF_PARAGRAPH_BORDERS_MM || dCurrRight < dNextRight)) ||
-                                    (pParagraph->m_eTextAlignmentType == CParagraph::tatByRightEdge && fabs(dCurrRight - dNextRight) < c_dERROR_OF_PARAGRAPH_BORDERS_MM) ||
-                                    (pParagraph->m_eTextAlignmentType == CParagraph::tatByCenter));
-                            bIf5 = (pCurrLine->m_dWidth > pNextLine->m_dWidth * c_dCOEFFICIENT_LENGTHS_LINES_IN_PARAGRAPH);
+                            pCurrLine->CheckLineToNecessaryToUse();
                         }
                     }
+
+                    SingletonInstance<CConverter>().BuildLines(pCell->m_arTextLine);
+                    SingletonInstance<CConverter>().BuildParagraphes(m_dWidth, m_eTextAssociationType, CBaseItem::ElemType::etCell,
+                                                                     pCell->m_arTextLine, pCell->m_arOutputObjects);
+
+                    pRow->AddContent(pCell);
                 }
 
-                if (eCrossingType != eVerticalCrossingType::vctUnknown &&
-                    eCrossingType != eVerticalCrossingType::vctNoCrossingCurrentAboveNext &&
-                    eCrossingType != eVerticalCrossingType::vctNoCrossingCurrentBelowNext)
+                if (pFlagLine)
                 {
-                    CreateSingleLineShape(pNextLine);
-                    nIndex++;
+                    uFirstLineIndex = uLastLineIndexInCell;
                 }
 
-                //коррекция
-                pParagraph->m_dHeight += dCorrectionBeforeSpacing;
-                pParagraph->m_dSpaceBefore = fabs(pParagraph->m_dSpaceBefore - dCorrectionBeforeSpacing);
-
-                pParagraph->RemoveHighlightColor();
-                pParagraph->MergeLines();
-            }
-            else
-            {
-                if (pCurrLine->m_pDominantShape)
+                //todo пока добавляется в одну таблицу - добавить логику разделения на разные таблицы
+                if (!pTable)
                 {
-                    pParagraph->m_bIsShadingPresent = true;
-                    pParagraph->m_lColorOfShadingFill = pCurrLine->m_pDominantShape->m_oBrush.Color1;
-                    pParagraph->RemoveHighlightColor();
-                }
-            }
-
-            if (m_eTextAssociationType == tatParagraphToShape)
-            {
-                bool bIsSameTypeText = pPrevLine && fabs(dPrevBeforeSpacing - dCurrBeforeSpacing) < c_dLINE_DISTANCE_ERROR_MM;
-                CreateShapeFormParagraphs(pParagraph, bIsSameTypeText);
-            }
-            else
-            {
-                m_arParagraphs.push_back(pParagraph);
-            }
-
-            if (nIndexForCheking != c_nAntiZero)
-            {
-                nIndex = nIndexForCheking - 1;
-                nIndexForCheking = c_nAntiZero;
-            }
-        }
-
-        if (m_eTextAssociationType == tatParagraphToShape)
-        {
-            CorrectionParagraphsInShapes();
-        }
-    }
-
-    CTextLine* CPage::GetNextTextLine(size_t& nCurrentIndex, size_t* pIndexForCheking)
-    {
-        CTextLine* pLine = nullptr;
-
-        for (size_t nIndex = nCurrentIndex + 1; nIndex < m_arTextLine.size(); ++nIndex)
-        {
-            pLine = m_arTextLine[nIndex];
-            bool bIf1 = pLine->m_bIsNotNecessaryToUse;
-            bool bIf2 = pIndexForCheking && pLine->m_iNumDuplicates > 0;
-
-            if (bIf1 || bIf2)
-            {
-                if (bIf2)
-                {
-                    if (*pIndexForCheking == c_nAntiZero)
-                    {
-                        *pIndexForCheking = nIndex;
-                    }
+                    pTable = new CTable();
+                    m_arTables.push_back(pTable);
                 }
 
-                nCurrentIndex++; //note изменяем входной индекс, чтобы не выбирать те же строки
-                pLine = nullptr;
-                continue;
-            }
-            else
-            {
-                break;
-            }
-        }
-        return pLine;
-    }
-
-    CTextLine* CPage::GetPrevTextLine(size_t nCurrentIndex)
-    {
-        CTextLine* pLine = nullptr;
-
-        if (nCurrentIndex)
-        {
-            for (size_t nIndex = nCurrentIndex - 1; nIndex > 0; --nIndex)
-            {
-                pLine = m_arTextLine[nIndex];
-
-                if (pLine->m_bIsNotNecessaryToUse)
-                {
-                    pLine = nullptr;
-                    continue;
-                }
-                else
-                {
-                    break;
-                }
-            }
-        }
-        return pLine;
-    }
-
-    bool CPage::IsShadingPresent(const CTextLine *pLine1, const CTextLine *pLine2)
-    {
-        if (pLine1->m_pDominantShape && pLine2->m_pDominantShape &&
-            pLine1->m_pDominantShape->m_oBrush.Color1 == pLine2->m_pDominantShape->m_oBrush.Color1 &&
-            fabs(pLine1->m_pDominantShape->m_dLeft - pLine2->m_pDominantShape->m_dLeft) < c_dGRAPHICS_ERROR_IN_LINES_MM &&
-            fabs(pLine1->m_pDominantShape->m_dWidth - pLine2->m_pDominantShape->m_dWidth) < c_dGRAPHICS_ERROR_IN_LINES_MM)
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    void CPage::CreateSingleLineParagraph(CTextLine *pLine, const double *pRight, const double *pBeforeSpacing)
-    {
-        auto pParagraph = new CParagraph(m_eTextAssociationType);
-        pParagraph->m_eTextConversionType = CParagraph::tctTextToParagraph;
-        pParagraph->m_arLines.push_back(pLine);
-
-        pParagraph->m_dLeft	= pLine->m_dLeft;
-        pParagraph->m_dTop	= pLine->m_dTop;
-        pParagraph->m_dFirstLine = 0;
-        pParagraph->m_dRight = *pRight;
-        pParagraph->m_dWidth = pLine->m_dWidth;
-        pParagraph->m_dHeight = pLine->m_dHeight;
-        if (*pBeforeSpacing < 0)
-        {
-            pParagraph->m_dHeight += *pBeforeSpacing;
-        }
-
-        pParagraph->m_dSpaceBefore = std::max(*pBeforeSpacing, 0.0);
-
-        if (pLine->m_pDominantShape)
-        {
-            pParagraph->m_bIsShadingPresent = true;
-            pParagraph->m_lColorOfShadingFill = pLine->m_pDominantShape->m_oBrush.Color1;
-            pParagraph->RemoveHighlightColor();
-        }
-
-        m_arParagraphs.push_back(pParagraph);
-    }
-
-    void CPage::CreateSingleLineOldShape(CTextLine *pLine)
-    {
-        auto pParagraph = new CParagraph(m_eTextAssociationType);
-        pParagraph->m_eTextConversionType = CParagraph::tctTextToShape;
-        pParagraph->m_arLines.push_back(pLine);
-
-        if (pLine->m_pDominantShape)
-        {
-            pParagraph->m_bIsShadingPresent = true;
-            pParagraph->m_lColorOfShadingFill = pLine->m_pDominantShape->m_oBrush.Color1;
-            pParagraph->RemoveHighlightColor();
-        }
-
-        auto pShape = std::make_shared<COldShape>();
-        pShape->m_arParagraphs.push_back(pParagraph);
-
-        //todo В итоге Left и Top смещаются на несколько мм. не использовать margin-left и margin-top.
-        pShape->m_dLeft	= pLine->m_dLeft - COldShape::POSITION_CORRECTION_FOR_X_MM; //подобранная константа
-        pShape->m_dTop	= pLine->m_dBaselinePos - pLine->m_dHeight - COldShape::POSITION_CORRECTION_FOR_Y_MM;//подобранная константа
-        pShape->m_dWidth = pLine->m_dWidth + COldShape::SIZE_CORRECTION_FOR_X_MM; //5мм мало для длинной строки
-        pShape->m_dHeight = pLine->m_dHeight + COldShape::SIZE_CORRECTION_FOR_Y_MM;
-
-        //m_arGraphicItems.push_back(pShape);
-    }
-
-    void CPage::CreateSingleLineShape(CTextLine *pLine)
-    {
-        auto pParagraph = new CParagraph(m_eTextAssociationType);
-        pParagraph->m_eTextConversionType = CParagraph::tctTextToShape;
-        pParagraph->m_arLines.push_back(pLine);
-
-        if (pLine->m_pDominantShape)
-        {
-            pParagraph->m_bIsShadingPresent = true;
-            pParagraph->m_lColorOfShadingFill = pLine->m_pDominantShape->m_oBrush.Color1;
-            pParagraph->RemoveHighlightColor();
-        }
-
-        auto pShape = new CShape();
-        pShape->m_arParagraphs.push_back(pParagraph);
-        pShape->m_eType = CShape::eShapeType::stTextBox;
-        pShape->m_dLeft = pLine->m_dLeft;
-        pShape->m_dTop = pLine->m_dTop;
-        pShape->m_dWidth = pLine->m_dWidth;
-        pShape->m_dHeight = pLine->m_dHeight;
-        pShape->m_bIsBehindDoc = false;
-
-        m_arShapes.push_back(pShape);
-    }
-
-    void CPage::CreateShapeFormParagraphs(CParagraph* pParagraph, bool bIsSameTypeText)
-    {
-       if (!pParagraph)
-       {
-           return;
-       }
-
-       CShape* pShape;
-
-       if (bIsSameTypeText && !m_arShapes.empty())
-       {
-           pShape = m_arShapes.back();
-           pShape->m_dHeight += pParagraph->m_dHeight * pParagraph->m_nNumLines + pParagraph->m_dSpaceBefore;
-       }
-       else
-       {
-           pShape = new CShape();
-           pParagraph->m_dSpaceBefore = 0;
-           pShape->m_dHeight += pParagraph->m_dHeight * pParagraph->m_nNumLines;
-       }
-
-       if (pShape->m_dLeft > 0)
-       {
-           pShape->m_dLeft = std::min(pShape->m_dLeft, pParagraph->m_dLeft);
-       }
-       else
-       {
-           pShape->m_dLeft = pParagraph->m_dLeft;
-       }
-
-       if (pShape->m_dTop > 0)
-       {
-           pShape->m_dTop = std::min(pShape->m_dTop, pParagraph->m_dTop);
-       }
-       else
-       {
-           pShape->m_dTop = pParagraph->m_dTop;
-       }
-
-       if (pShape->m_dRight > 0)
-       {
-           pShape->m_dRight = std::min(pShape->m_dRight, pParagraph->m_dRight);
-       }
-       else
-       {
-           pShape->m_dRight = pParagraph->m_dRight;
-       }
-
-       pShape->m_dWidth = m_dWidth - pShape->m_dLeft - pShape->m_dRight;
-
-       pShape->m_arParagraphs.push_back(pParagraph);
-       pShape->m_eType = CShape::eShapeType::stTextBox;
-       pShape->m_bIsBehindDoc = false;
-
-       if (!bIsSameTypeText)
-       {
-           m_arShapes.push_back(pShape);
-       }
-    }
-
-    void CPage::CorrectionParagraphsInShapes()
-    {
-        for (size_t i = 0; i <  m_arShapes.size(); ++i)
-        {
-            auto pShape = m_arShapes[i];
-            if (pShape->m_bIsNotNecessaryToUse ||
-                pShape->m_eType != CShape::eShapeType::stTextBox ||
-                pShape->m_arParagraphs.empty())
-            {
-                continue;
+                pTable->AddContent(pRow);
+                pTable->CalculateColumnWidth();
             }
 
-            for (size_t j = 0; j < pShape->m_arParagraphs.size(); ++j)
-            {
-                auto pParagraph = pShape->m_arParagraphs[j];
-                if (pParagraph->m_dLeft > pShape->m_dLeft && pParagraph->m_nNumLines == 1)
-                {
-                    pParagraph->m_bIsNeedFirstLineIndent = true;
-                    pParagraph->m_dFirstLine = pParagraph->m_dLeft - pShape->m_dLeft;
-                    pParagraph->m_dLeft = 0;
-                }
-
-                pParagraph->m_dLeft = pParagraph->m_dLeft > pShape->m_dLeft ? pParagraph->m_dLeft - pShape->m_dLeft : 0 ;
-                pParagraph->m_dRight = pParagraph->m_dRight - pShape->m_dRight;
-            }
-        }
-    }
-
-    void CPage::Merge(double dAffinity)
-    {
-        size_t nCount = m_arTextLine.size();
-        if (1 < nCount)
-        {
-            auto pPrev = m_arTextLine[0];
-            for (size_t i = 1; i < nCount; ++i)
-            {
-                auto pNext = m_arTextLine[i];
-
-                if (fabs(pNext->m_dBaselinePos - pPrev->m_dBaselinePos) < dAffinity)
-                {
-                    pPrev->Merge(pNext);
-                    pNext->m_bIsNotNecessaryToUse = true;
-                    continue;
-                }
-                pPrev = pNext;
-            }
+            keys.clear();
+            arConts.clear();
         }
     }
 
     void CPage::ToXml(NSStringUtils::CStringBuilder& oWriter)
     {
-        if (!m_arImages.empty())
+        bool bIsTextShapePresent = false;
+
+        for (size_t i = 0; i < m_arOutputObjects.size(); ++i)
+        {
+            if (m_arOutputObjects[i]->m_eType == CBaseItem::ElemType::etShape)
+            {
+                bIsTextShapePresent = true;
+                break;
+            }
+        }
+
+        bool bIsNeedWP = bIsTextShapePresent || !m_arImages.empty() || !m_arShapes.empty();
+
+        if (bIsNeedWP)
         {
             oWriter.WriteString(L"<w:p>");
             //note при удалении строки откуда-то добавляется <w:p/> в начале страницы (если есть графика и текст), что добавляет дополнительную строку и сдвигает текст
             oWriter.WriteString(L"<w:pPr><w:spacing w:line=\"1\" w:lineRule=\"exact\"/></w:pPr>");
+        }
 
-            for (size_t i = 0; i < m_arImages.size(); ++i)
+        for (size_t i = 0; i < m_arImages.size(); ++i)
+        {
+            m_arImages[i]->ToXml(oWriter);
+        }
+
+        for (size_t i = 0; i < m_arShapes.size(); ++i)
+        {
+            m_arShapes[i]->ToXml(oWriter);
+        }
+
+        if (bIsTextShapePresent)
+        {
+            for (size_t i = 0; i < m_arOutputObjects.size(); ++i)
             {
-                m_arImages[i]->ToXml(oWriter);
-            }
+                auto pObj = m_arOutputObjects[i];
 
+                switch(pObj->m_eType)
+                {
+                case CBaseItem::ElemType::etShape:
+                    dynamic_cast<CShape*>(pObj)->ToXml(oWriter);
+                    break;
+                default:
+                    break;
+                }
+            }
+        }
+
+        if (bIsNeedWP)
+        {
             oWriter.WriteString(L"</w:p>");
         }
 
-        // drawings
-        if (!m_arShapes.empty())
+        for (size_t i = 0; i < m_arOutputObjects.size(); ++i)
         {
-            oWriter.WriteString(L"<w:p>");
-            //note при удалении строки откуда-то добавляется <w:p/> в начале страницы (если есть графика и текст), что добавляет дополнительную строку и сдвигает текст
-            oWriter.WriteString(L"<w:pPr><w:spacing w:line=\"1\" w:lineRule=\"exact\"/></w:pPr>");
+            auto pObj = m_arOutputObjects[i];
 
-            for (size_t i = 0; i < m_arShapes.size(); ++i)
+            switch(pObj->m_eType)
             {
-                m_arShapes[i]->ToXml(oWriter);
+            case CBaseItem::ElemType::etParagraph:
+                dynamic_cast<CParagraph*>(pObj)->ToXml(oWriter);
+                break;
+            case CBaseItem::ElemType::etTable:
+                dynamic_cast<CTable*>(pObj)->ToXml(oWriter);
+                break;
+            default:
+                break;
             }
-
-            oWriter.WriteString(L"</w:p>");
-        }
-
-        for (size_t i = 0; i < m_arParagraphs.size(); ++i)
-        {
-            m_arParagraphs[i]->ToXml(oWriter);
         }
     }
 

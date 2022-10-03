@@ -6,10 +6,14 @@
 enum class eSimpleLineType
 {
     sltUnknown,
-    sltDot,
-    sltDash,
-    sltLongDash,
-    sltWave
+    sltHDot, //Horizontal
+    sltVDot, //Vertical
+    sltHDash,
+    sltVDash,
+    sltHLongDash,
+    sltVLongDash,
+    sltHWave,
+    sltVWave
 };
 
 enum class eLineType

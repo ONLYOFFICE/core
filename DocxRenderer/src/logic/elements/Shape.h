@@ -40,11 +40,13 @@ namespace NSDocxRenderer
             bool m_bIsNoStroke {true};
             bool m_bIsBehindDoc {true};
 
+            bool m_bIsUseInTable {false};
+
             eGraphicsType   m_eGraphicsType {eGraphicsType::gtUnknown};
             eSimpleLineType m_eSimpleLineType {eSimpleLineType::sltUnknown};
             eLineType       m_eLineType {eLineType::ltUnknown};
 
-            std::vector<CParagraph*> m_arParagraphs;
+            std::vector<CBaseItem*> m_arOutputObjects;
 
             std::shared_ptr<CImageInfo> m_pImageInfo {nullptr};
 
@@ -59,7 +61,6 @@ namespace NSDocxRenderer
             CShape(std::shared_ptr<CImageInfo> pInfo, const std::wstring& strDstMedia);
             virtual ~CShape();
             virtual void Clear() override final;
-
             virtual void AddContent(CBaseItem* pObj) override final{};
             virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
 
@@ -69,6 +70,9 @@ namespace NSDocxRenderer
             bool IsItFitLine();
             bool IsCorrelated(const CShape* pShape);
             void ChangeGeometryOfDesiredShape(CShape* pShape);
+
+            bool IsPeak();
+            bool IsSide();
             void DetermineLineType(CShape* pShape = nullptr, bool bIsLast = false);
 
             void BuildGeneralProperties(NSStringUtils::CStringBuilder &oWriter);

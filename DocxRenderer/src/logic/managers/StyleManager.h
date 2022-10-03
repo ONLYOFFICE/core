@@ -1,5 +1,4 @@
 #pragma once
-#include <vector>
 #include "../styles/FontStyle.h"
 
 namespace NSDocxRenderer

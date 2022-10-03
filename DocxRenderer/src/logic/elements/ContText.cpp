@@ -10,6 +10,12 @@ namespace NSDocxRenderer
     {
     }
 
+    CContText::CContText(const CContText& rCont):
+        CBaseItem(ElemType::etContText)
+    {
+        *this = rCont;
+    }
+
     CContText::~CContText()
     {
         Clear();
@@ -18,16 +24,6 @@ namespace NSDocxRenderer
     void CContText::Clear()
     {
         m_pFontStyle = nullptr;
-    }
-
-    double CContText::GetIntersect(const CContText* pCont) const
-    {
-        double d1 = std::max(m_dLeft, pCont->m_dLeft);
-        double d2 = std::min(m_dLeft + m_dWidth, pCont->m_dLeft + pCont->m_dWidth);
-
-        if (d2 > d1)
-            return d2 - d1;
-        return 0;
     }
 
     CContText& CContText::operator= (const CContText& rCont)
@@ -391,6 +387,7 @@ namespace NSDocxRenderer
 
         //note Каждый символ с Emboss или Engrave разбиваются на 3 символа с разными цветами
         //note Логика подобрана для конкретного примера - возможно нужно будет ее обобщить.
+        //todo существует проблема неправильного определением FontEffects с физически пересекаемыми строчками - файл generaltest.pdf p.14
         if (bIf5 && bIf6)
         {
             if (m_bIsEmbossPresent && bIf12)
@@ -504,11 +501,13 @@ namespace NSDocxRenderer
 
     double CContText::CalculateWideSpace()
     {
+        //note подобранное условие - не везде хорошо работает
         return m_dSpaceWidthMM * 4;
     }
 
     double CContText::CalculateThinSpace()
     {
+        //note подобранное условие - не везде хорошо работает
         return m_dSpaceWidthMM * 0.7;
     }
 }

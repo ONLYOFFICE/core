@@ -4,8 +4,7 @@
 
 namespace NSDocxRenderer
 {
-    CParagraph::CParagraph(const TextAssociationType& eType):
-        CBaseItem(ElemType::etParagraph), m_eTextAssociationType(eType)
+    CParagraph::CParagraph(): CBaseItem(ElemType::etParagraph)
     {
     }
 
@@ -29,42 +28,6 @@ namespace NSDocxRenderer
         oWriter.WriteString(L"<w:p>");
         oWriter.WriteString(L"<w:pPr>");
 
-        switch (m_eTextConversionType)
-        {
-        case tctTextToFrame:
-        {
-            oWriter.WriteString(L"<w:framePr");
-
-            if (m_eTextAssociationType == tatPlainParagraph ||
-                m_eTextAssociationType == tatParagraphToShape)
-            {
-                if (m_bIsAroundTextWrapping)
-                {
-                    oWriter.WriteString(L" w:wrap=\"around\"");
-                }
-                else
-                {
-                    oWriter.WriteString(L" w:wrap=\"notBeside\"");
-                }
-            }
-
-            oWriter.WriteString(L" w:hAnchor=\"page\"");
-            oWriter.WriteString(L" w:vAnchor=\"page\"");
-
-            oWriter.WriteString(L" w:x=\"");
-            oWriter.AddInt(static_cast<int>(m_dLeft * c_dMMToDx));
-            oWriter.WriteString(L"\"");
-
-            oWriter.WriteString(L" w:y=\"");
-            oWriter.AddInt(static_cast<int>(m_dTop * c_dMMToDx));
-            oWriter.WriteString(L"\"");
-
-            oWriter.WriteString(L"/>"); //конец w:framePr
-            break;
-        }
-        case tctTextToShape:
-        case tctTextToParagraph:
-        {
             oWriter.WriteString(L"<w:spacing");
             if (m_dSpaceBefore > 0)
             {
@@ -80,26 +43,26 @@ namespace NSDocxRenderer
                 oWriter.WriteString(L"\"");
             }
 
-            if (m_dHeight > 0)
+            if (m_dLineHeight > 0)
             {
                 oWriter.WriteString(L" w:line=\"");
-                oWriter.AddInt(static_cast<int>(m_dHeight * c_dMMToDx));
+                oWriter.AddInt(static_cast<int>(m_dLineHeight * c_dMMToDx));
                 oWriter.WriteString(L"\" w:lineRule=\"exact\""); // exact - точный размер строки
             }
 
             oWriter.WriteString(L"/>"); //конец w:spacing
 
             oWriter.WriteString(L"<w:ind");
-            if (m_dLeft > 0)
+            if (m_dLeftBorder > 0)
             {
                 oWriter.WriteString(L" w:left=\"");
-                oWriter.AddInt(static_cast<int>(m_dLeft * c_dMMToDx));
+                oWriter.AddInt(static_cast<int>(m_dLeftBorder * c_dMMToDx));
                 oWriter.WriteString(L"\"");
             }
-            if (m_dRight > 0)
+            if (m_dRightBorder > 0)
             {
                 oWriter.WriteString(L" w:right=\"");
-                oWriter.AddInt(static_cast<int>(m_dRight * c_dMMToDx));
+                oWriter.AddInt(static_cast<int>(m_dRightBorder * c_dMMToDx)); //здесь m_dRight - расстояние от правого края
                 oWriter.WriteString(L"\"");
             }
             if (m_bIsNeedFirstLineIndent)
@@ -110,28 +73,23 @@ namespace NSDocxRenderer
             }
             oWriter.WriteString(L"/>"); //конец w:ind
 
-
-            if (m_eTextAssociationType == tatPlainParagraph ||
-                m_eTextAssociationType == tatParagraphToShape)
+            switch (m_eTextAlignmentType)
             {
-                switch (m_eTextAlignmentType)
-                {
-                case tatByCenter:
-                    oWriter.WriteString(L"<w:jc w:val=\"center\"/>");
-                    break;
-                case tatByRightEdge:
-                    oWriter.WriteString(L"<w:jc w:val=\"end\"/>");
-                    break;
-                case tatByWidth:
-                    oWriter.WriteString(L"<w:jc w:val=\"both\"/>");
-                    break;
-                case tatByLeftEdge:
-                    oWriter.WriteString(L"<w:jc w:val=\"begin\"/>");
-                    break;
-                case tatUnknown:
-                default: //по умолчанию выравнивание по левому краю - можно ничего не добавлять
-                    break;
-                }
+            case tatByCenter:
+                oWriter.WriteString(L"<w:jc w:val=\"center\"/>");
+                break;
+            case tatByRightEdge:
+                oWriter.WriteString(L"<w:jc w:val=\"end\"/>");
+                break;
+            case tatByWidth:
+                oWriter.WriteString(L"<w:jc w:val=\"both\"/>");
+                break;
+            case tatByLeftEdge:
+                oWriter.WriteString(L"<w:jc w:val=\"begin\"/>");
+                break;
+            case tatUnknown:
+            default: //по умолчанию выравнивание по левому краю - можно ничего не добавлять
+                break;
             }
 
             if (m_bIsShadingPresent)
@@ -140,11 +98,6 @@ namespace NSDocxRenderer
                 oWriter.WriteHexInt3(ConvertColorBGRToRGB(m_lColorOfShadingFill));
                 oWriter.WriteString(L"\"/>");
             }
-            break;
-        }
-        default:
-            break;
-        }
 
         oWriter.WriteString(L"</w:pPr>");
 
@@ -239,9 +192,9 @@ namespace NSDocxRenderer
         double dNextLeft = pNextLine->m_dLeft;
         double dNextNextLeft = pNextNextLine ? pNextNextLine->m_dLeft : 0;
 
-        double dCurrRight = pCurrentLine->CalculateRightBorder(dPageWidth);
-        double dNextRight = pNextLine->CalculateRightBorder(dPageWidth);
-        double dNextNextRight = pNextNextLine ? pNextNextLine->CalculateRightBorder(dPageWidth) : 0;
+        double dCurrRight = pCurrentLine->m_dRight;
+        double dNextRight = pNextLine->m_dRight;
+        double dNextNextRight = pNextNextLine ? pNextNextLine->m_dRight : 0;
 
         bool bIf1 = fabs(dCurrLeft - dNextLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
         bool bIf2 = pNextNextLine && fabs(dNextLeft - dNextNextLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
@@ -281,12 +234,12 @@ namespace NSDocxRenderer
             {
                 return tatByRightEdge;
             }
-            else if (!bIf1 && !bIf2 && bIf3 && dNextLeft < dNextNextLeft && (bIf4 || dCurrRight < dNextRight))
+            else if (!bIf1 && !bIf2 && bIf3 && dNextLeft < dNextNextLeft && (bIf4 || dCurrRight > dNextRight))
             {
                 bIsUseNextNextLine = false;
                 return tatByWidth;
             }
-            else if (bIf1 && !bIf2 && dNextLeft > dNextNextLeft && (bIf4 || dCurrRight > dNextRight))
+            else if (bIf1 && !bIf2 && dNextLeft > dNextNextLeft && (bIf4 || dCurrRight < dNextRight))
             {
                 bIsSingleLineParagraph = true;
                 return tatByWidth;
@@ -317,7 +270,7 @@ namespace NSDocxRenderer
                     return tatByWidth;
                 }
             }
-            else if (dCurrRight < dNextRight)
+            else if (dCurrRight > dNextRight)
             {
                 if (bIf1 || bIf3)
                 {
@@ -328,7 +281,7 @@ namespace NSDocxRenderer
                     return tatByCenter;
                 }
             }
-            else if (dCurrRight > dNextRight)
+            else if (dCurrRight < dNextRight)
             {
                 if (bIf1)
                 {

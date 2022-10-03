@@ -126,6 +126,8 @@ namespace MetaFile
 
 		void Read_EMR_COMMENT();
 		void Read_EMR_FILLRGN();
+		void Read_EMR_PAINTRGN();
+		void Read_EMR_FRAMERGN();
 	};
 }
 

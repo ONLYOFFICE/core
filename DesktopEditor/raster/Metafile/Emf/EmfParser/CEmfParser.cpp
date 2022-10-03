@@ -132,6 +132,9 @@ namespace MetaFile
 			case EMR_SMALLTEXTOUT:      Read_EMR_SMALLTEXTOUT(); break;
 			case EMR_STROKEANDFILLPATH: Read_EMR_STROKEANDFILLPATH(); break;
 			case EMR_STROKEPATH:        Read_EMR_STROKEPATH(); break;
+			case EMR_PAINTRGN:			Read_EMR_PAINTRGN(); break;
+			case EMR_FILLRGN:           Read_EMR_FILLRGN(); break;
+			case EMR_FRAMERGN:          Read_EMR_FRAMERGN(); break;
 				//-----------------------------------------------------------
 				// 2.3.7 Object Creation
 				//-----------------------------------------------------------
@@ -188,7 +191,6 @@ namespace MetaFile
 			case EMR_MODIFYWORLDTRANSFORM:	Read_EMR_MODIFYWORLDTRANSFORM(); break;
 
 			case EMR_GDICOMMENT: Read_EMR_COMMENT(); break;
-			case EMR_FILLRGN: Read_EMR_FILLRGN(); break;
 				//-----------------------------------------------------------
 				// Неизвестные записи
 				//-----------------------------------------------------------
@@ -1484,5 +1486,64 @@ namespace MetaFile
 
 		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
 			HANDLE_EMR_FILLRGN(oBounds, unIhBrush, oRegionDataHeader, arRects);
+	}
+
+	void CEmfParser::Read_EMR_PAINTRGN()
+	{
+		TEmfRectL oBounds;
+		unsigned int unRgnDataSize;
+
+		m_oStream >> oBounds;
+		m_oStream >> unRgnDataSize;
+
+		if (unRgnDataSize <= 32)
+			return;
+
+		TRegionDataHeader oRegionDataHeader;
+
+		m_oStream >> oRegionDataHeader;
+
+		if (0x00000020 != oRegionDataHeader.unSize || 0x00000001 != oRegionDataHeader.unType || 0 == oRegionDataHeader.unCountRects)
+			return;
+
+		std::vector<TEmfRectL> arRects(oRegionDataHeader.unCountRects);
+
+		for (TEmfRectL &oRect : arRects)
+			m_oStream >> oRect;
+
+		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+			HANDLE_EMR_PAINTRGN(oBounds, oRegionDataHeader, arRects);
+	}
+
+	void CEmfParser::Read_EMR_FRAMERGN()
+	{
+		TEmfRectL oBounds;
+		unsigned int unRgnDataSize, unIhBrush;
+		int nWidth, nHeight;
+
+		m_oStream >> oBounds;
+		m_oStream >> unRgnDataSize;
+
+		if (unRgnDataSize <= 32)
+			return;
+
+		m_oStream >> unIhBrush;
+		m_oStream >> nWidth;
+		m_oStream >> nHeight;
+
+		TRegionDataHeader oRegionDataHeader;
+
+		m_oStream >> oRegionDataHeader;
+
+		if (0x00000020 != oRegionDataHeader.unSize || 0x00000001 != oRegionDataHeader.unType || 0 == oRegionDataHeader.unCountRects)
+			return;
+
+		std::vector<TEmfRectL> arRects(oRegionDataHeader.unCountRects);
+
+		for (TEmfRectL &oRect : arRects)
+			m_oStream >> oRect;
+
+		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+			HANDLE_EMR_FRAMERGN(oBounds, unIhBrush, nWidth, nHeight, oRegionDataHeader, arRects);
 	}
 }

@@ -1666,22 +1666,45 @@ namespace MetaFile
 	void CEmfParserBase::HANDLE_EMR_FILLRGN(const TEmfRectL &oBounds, unsigned int unIhBrush, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL>& arRects)
 	{
 		if (NULL != m_pInterpretator)
-		{
 			m_pInterpretator->HANDLE_EMR_FILLRGN(oBounds, unIhBrush, oRegionDataHeader, arRects);
 
-			for (const TEmfRectL &oRect : arRects)
-			{
-				MoveTo(oRect.lLeft,  oRect.lTop);
-				LineTo(oRect.lRight, oRect.lTop);
-				LineTo(oRect.lRight, oRect.lBottom);
-				LineTo(oRect.lLeft,  oRect.lBottom);
-			}
-
-			ClosePath();
-			m_oPlayer.SelectObject(unIhBrush);
-
-			DrawPath(false, true);
+		for (const TEmfRectL &oRect : arRects)
+		{
+			MoveTo(oRect.lLeft,  oRect.lTop);
+			LineTo(oRect.lRight, oRect.lTop);
+			LineTo(oRect.lRight, oRect.lBottom);
+			LineTo(oRect.lLeft,  oRect.lBottom);
 		}
+
+		ClosePath();
+		m_oPlayer.SelectObject(unIhBrush);
+
+		DrawPath(false, true);
+	}
+
+	void CEmfParserBase::HANDLE_EMR_PAINTRGN(const TEmfRectL &oBounds, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
+	{
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMR_PAINTRGN(oBounds, oRegionDataHeader, arRects);
+
+		for (const TEmfRectL &oRect : arRects)
+		{
+			MoveTo(oRect.lLeft,  oRect.lTop);
+			LineTo(oRect.lRight, oRect.lTop);
+			LineTo(oRect.lRight, oRect.lBottom);
+			LineTo(oRect.lLeft,  oRect.lBottom);
+		}
+
+		ClosePath();
+		DrawPath(false, true);
+	}
+
+	void CEmfParserBase::HANDLE_EMR_FRAMERGN(const TEmfRectL &oBounds, unsigned int unIhBrush, int nWidth, int nHeight, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
+	{
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMR_FRAMERGN(oBounds, unIhBrush, nWidth, nHeight, oRegionDataHeader, arRects);
+
+		//TODO: реализовать
 	}
 
 	void CEmfParserBase::HANDLE_EMR_POLYBEZIER(TEmfRectL &oBounds, std::vector<TEmfPointL> &arPoints)

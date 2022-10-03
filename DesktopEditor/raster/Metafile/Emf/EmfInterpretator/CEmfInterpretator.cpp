@@ -1763,6 +1763,53 @@ namespace MetaFile
 			WriteRectangle(oRect);
 	}
 
+	void CEmfInterpretator::HANDLE_EMR_PAINTRGN(const TEmfRectL &oBounds, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
+	{
+		int unRgnDataSize           = 32 + arRects.size() * 16;
+		int unExplicitRecordSize    = 28 + unRgnDataSize;
+		int unType                  = EMR_PAINTRGN;
+
+		unFileSize += unExplicitRecordSize;
+		++unNumberRecords;
+
+		m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+		m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
+
+		WriteRectangle(oBounds);
+
+		m_pOutStream->WriteFile((BYTE*)&unRgnDataSize,          sizeof (int));
+
+		WriteRegionDataHeader(oRegionDataHeader);
+
+		for (const TEmfRectL &oRect : arRects)
+			WriteRectangle(oRect);
+	}
+
+	void CEmfInterpretator::HANDLE_EMR_FRAMERGN(const TEmfRectL &oBounds, unsigned int unIhBrush, int nWidth, int nHeight, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
+	{
+		int unRgnDataSize           = 40 + arRects.size() * 16;
+		int unExplicitRecordSize    = 28 + unRgnDataSize;
+		int unType                  = EMR_FRAMERGN;
+
+		unFileSize += unExplicitRecordSize;
+		++unNumberRecords;
+
+		m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+		m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
+
+		WriteRectangle(oBounds);
+
+		m_pOutStream->WriteFile((BYTE*)&unRgnDataSize, sizeof (int));
+		m_pOutStream->WriteFile((BYTE*)&unIhBrush,     sizeof (int));
+		m_pOutStream->WriteFile((BYTE*)&nWidth,       sizeof (int));
+		m_pOutStream->WriteFile((BYTE*)&nHeight,      sizeof (int));
+
+		WriteRegionDataHeader(oRegionDataHeader);
+
+		for (const TEmfRectL &oRect : arRects)
+			WriteRectangle(oRect);
+	}
+
 	void CEmfInterpretator::HANDLE_EMFPLUS_HEADER(bool bIsEmfPlusDual, bool bIsReferenceDevice, unsigned int unDpiX, unsigned int unDpiY)
 	{
 		short shType = 0x4001;

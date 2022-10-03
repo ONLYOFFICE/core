@@ -692,6 +692,18 @@ namespace MetaFile
 			pInterpretator->HANDLE_EMR_FILLRGN(oBounds, unIhBrush, oRegionDataHeader, arRects);
 	}
 
+	void CEmfInterpretatorArray::HANDLE_EMR_PAINTRGN(const TEmfRectL &oBounds, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
+	{
+		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+			pInterpretator->HANDLE_EMR_PAINTRGN(oBounds, oRegionDataHeader, arRects);
+	}
+
+	void CEmfInterpretatorArray::HANDLE_EMR_FRAMERGN(const TEmfRectL &oBounds, unsigned int unIhBrush, int nWidth, int nHeight, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
+	{
+		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+			pInterpretator->HANDLE_EMR_FRAMERGN(oBounds, unIhBrush, nWidth, nHeight, oRegionDataHeader, arRects);
+	}
+
 	void CEmfInterpretatorArray::HANDLE_EMFPLUS_HEADER(bool bIsEmfPlusDual, bool bIsReferenceDevice, unsigned int unDpiX, unsigned int unDpiY)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)

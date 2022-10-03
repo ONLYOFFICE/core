@@ -123,6 +123,8 @@ namespace MetaFile
 
 		void HANDLE_EMR_UNKNOWN(CDataStream &oDataStream) override;
 		void HANDLE_EMR_FILLRGN(const TEmfRectL& oBounds, unsigned int unIhBrush, const TRegionDataHeader& oRegionDataHeader, const std::vector<TEmfRectL>& arRects) override;
+		void HANDLE_EMR_PAINTRGN(const TEmfRectL& oBounds, const TRegionDataHeader& oRegionDataHeader, const std::vector<TEmfRectL>& arRects) override;
+		void HANDLE_EMR_FRAMERGN(const TEmfRectL& oBounds, unsigned int unIhBrush, int nWidth, int nHeight, const TRegionDataHeader& oRegionDataHeader, const std::vector<TEmfRectL>& arRects) override;
 
 		void HANDLE_EMFPLUS_HEADER(bool bIsEmfPlusDual, bool bIsReferenceDevice, unsigned int unDpiX, unsigned int unDpiY) override;
 		void HANDLE_EMFPLUS_CLEAR(TEmfPlusARGB oColor) override;

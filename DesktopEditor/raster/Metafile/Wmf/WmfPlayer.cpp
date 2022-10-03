@@ -450,7 +450,6 @@ namespace MetaFile
 		{
 			m_oViewport.x = shX;
 			m_oViewport.y = shY;
-			m_oViewport.bUnchangedOrg = false;
 		}
 
 		UpdatePixelMetrics();
@@ -464,9 +463,8 @@ namespace MetaFile
 
 		if (m_oViewport.bUnchangedExt)
 		{
-			m_oViewport.w = shW;
-			m_oViewport.h = shH;
-			m_oViewport.bUnchangedExt = false;
+			m_oViewport.w = std::abs(shW);
+			m_oViewport.h = std::abs(shH);
 		}
 
 		UpdatePixelMetrics();
@@ -500,7 +498,6 @@ namespace MetaFile
 		{
 			m_oWindow.x = shX;
 			m_oWindow.y = shY;
-			m_oWindow.bUnchangedOrg = false;
 		}
 
 		UpdatePixelMetrics();
@@ -516,7 +513,6 @@ namespace MetaFile
 		{
 			m_oWindow.w = shW;
 			m_oWindow.h = shH;
-			m_oWindow.bUnchangedExt = false;
 		}
 
 		UpdatePixelMetrics();

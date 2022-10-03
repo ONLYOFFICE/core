@@ -161,9 +161,9 @@ namespace MetaFile
 	double CWmfParserBase::GetScale()
 	{
 		if (m_oPlaceable.Inch != 0)
-			return m_oPlaceable.Inch / 1440.f;
+			return 1440.f / m_oPlaceable.Inch / (20.f * (72.f / 96.f));;
 
-		return 96.f / 1440.f;
+		return 192.f / 1440.f;
 	}
 
 	void CWmfParserBase::SetInterpretator(IOutputDevice *pOutput)
@@ -921,7 +921,29 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_META_FILLREGION(ushRegionIndex, ushBrushIndex);
 
-		//TODO:: реализовать
+		m_oPlayer.SelectObject(ushRegionIndex);
+
+		CWmfRegion *pRegion = m_pDC->GetRegion();
+
+		if (NULL != pRegion)
+		{
+			for (unsigned int unScanIndex = 0; unScanIndex < pRegion->ScanCount; ++unScanIndex)
+			{
+				TWmfScanObject *pScanObject = &pRegion->aScans[unScanIndex];
+
+				if (pScanObject->Count == 0) continue;
+
+				for (unsigned int unIndex = 0; unIndex < pScanObject->Count >> 1; ++unIndex)
+				{
+					MoveTo(pScanObject->ScanLines[unIndex].Left,  pScanObject->Top);
+					LineTo(pScanObject->ScanLines[unIndex].Right, pScanObject->Top);
+					LineTo(pScanObject->ScanLines[unIndex].Right, pScanObject->Bottom);
+					LineTo(pScanObject->ScanLines[unIndex].Left,  pScanObject->Bottom);
+					LineTo(pScanObject->ScanLines[unIndex].Left,  pScanObject->Top);
+				}
+			}
+			DrawPath(false, true);
+		}
 	}
 
 	void CWmfParserBase::HANDLE_META_FRAMEREGION(unsigned short ushRegionIndex, unsigned short ushBrushIndex, short shHeight, short shWidth)
@@ -929,7 +951,29 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_META_FRAMEREGION(ushRegionIndex, ushBrushIndex, shHeight, shWidth);
 
-		//TODO:: реализовать
+		m_oPlayer.SelectObject(ushRegionIndex);
+
+		CWmfRegion *pRegion = m_pDC->GetRegion();
+
+		if (NULL != pRegion)
+		{
+			for (unsigned int unScanIndex = 0; unScanIndex < pRegion->ScanCount; ++unScanIndex)
+			{
+				TWmfScanObject *pScanObject = &pRegion->aScans[unScanIndex];
+
+				if (pScanObject->Count == 0) continue;
+
+				for (unsigned int unIndex = 0; unIndex < pScanObject->Count >> 1; ++unIndex)
+				{
+					MoveTo(pScanObject->ScanLines[unIndex].Left,  pScanObject->Top);
+					LineTo(pScanObject->ScanLines[unIndex].Right, pScanObject->Top);
+					LineTo(pScanObject->ScanLines[unIndex].Right, pScanObject->Bottom);
+					LineTo(pScanObject->ScanLines[unIndex].Left,  pScanObject->Bottom);
+					LineTo(pScanObject->ScanLines[unIndex].Left,  pScanObject->Top);
+				}
+			}
+			DrawPath(true, false);
+		}
 	}
 
 	void CWmfParserBase::HANDLE_META_INVERTREGION(unsigned short ushRegionIndex)

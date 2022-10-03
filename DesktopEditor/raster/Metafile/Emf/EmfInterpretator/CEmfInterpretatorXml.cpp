@@ -711,6 +711,25 @@ namespace MetaFile
 		m_pOutputXml->WriteNodeEnd(L"EMR_FILLRGN");
 	}
 
+	void CEmfInterpretatorXml::HANDLE_EMR_PAINTRGN(const TEmfRectL &oBounds, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
+	{
+		m_pOutputXml->WriteNodeBegin(L"EMR_PAINTRGN");
+		m_pOutputXml->WriteNode(L"Bounds",  oBounds);
+		m_pOutputXml->WriteNode(L"RgnData", oRegionDataHeader, arRects);
+		m_pOutputXml->WriteNodeEnd(L"EMR_PAINTRGN");
+	}
+
+	void CEmfInterpretatorXml::HANDLE_EMR_FRAMERGN(const TEmfRectL &oBounds, unsigned int unIhBrush, int nWidth, int nHeight, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
+	{
+		m_pOutputXml->WriteNodeBegin(L"EMR_FRAMERGN");
+		m_pOutputXml->WriteNode(L"Bounds",  oBounds);
+		m_pOutputXml->WriteNode(L"ihBrush", unIhBrush);
+		m_pOutputXml->WriteNode(L"Width",   nWidth);
+		m_pOutputXml->WriteNode(L"Height",  nHeight);
+		m_pOutputXml->WriteNode(L"RgnData", oRegionDataHeader, arRects);
+		m_pOutputXml->WriteNodeEnd(L"EMR_FRAMERGN");
+	}
+
 	void CEmfInterpretatorXml::HANDLE_EMFPLUS_HEADER(bool bIsEmfPlusDual, bool bIsReferenceDevice, unsigned int unDpiX, unsigned int unDpiY)
 	{
 		m_pOutputXml->WriteNodeBegin(L"EMFPLUS_HEADER");

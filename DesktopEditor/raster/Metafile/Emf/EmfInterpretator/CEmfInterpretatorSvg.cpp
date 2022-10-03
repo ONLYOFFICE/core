@@ -849,6 +849,16 @@ namespace MetaFile
 
 	}
 
+	void CEmfInterpretatorSvg::HANDLE_EMR_PAINTRGN(const TEmfRectL &oBounds, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
+	{
+
+	}
+
+	void CEmfInterpretatorSvg::HANDLE_EMR_FRAMERGN(const TEmfRectL &oBounds, unsigned int unIhBrush, int nWidth, int nHeight, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
+	{
+
+	}
+
 	void CEmfInterpretatorSvg::Begin()
 	{
 		m_oXmlWriter.WriteNodeBegin(L"svg", true);

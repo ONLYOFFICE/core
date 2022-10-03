@@ -41,8 +41,6 @@ namespace MetaFile
 
 		unsigned int ulSize, ulType;
 
-		unsigned int ulSize, ulType;
-
 		unsigned int ulRecordIndex	= 0;
 		unsigned int m_ulRecordPos	= 0;
 

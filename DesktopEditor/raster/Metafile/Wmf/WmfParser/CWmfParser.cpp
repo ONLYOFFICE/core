@@ -49,9 +49,6 @@ namespace MetaFile
 
 			m_unRecordSize = unSize * 2; // Размер указан в WORD
 
-//			if (NULL != m_pInterpretator)
-				std::wcout << mTypes[ushType] << std::endl;
-
 			switch (ushType)
 			{
 				//-----------------------------------------------------------

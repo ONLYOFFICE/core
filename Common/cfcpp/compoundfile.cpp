@@ -922,9 +922,9 @@ void CompoundFile::FreeChain(SVector<Sector> &sectorChain, bool zeroSector)
 
 void CompoundFile::AllocateSectorChain(SVector<Sector> &sectorChain)
 {
-    for (int i = sectorChain.size() - 1; i > -1; i--) // auto& s : *sectorChain
+    for (auto& s : *sectorChain) // todo check auto& s : *sectorChain or int i = sectorChain.size() - 1; i > -1; i--
     {
-        auto& s = (*sectorChain)[i];
+//        auto& s = (*sectorChain)[i];
         if (s->id == -1)
         {
             sectors.Add(s);

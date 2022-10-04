@@ -43,7 +43,7 @@ public:
 
     int getSize() const;
 
-    SectorType type;
+    SectorType type = Normal;
     bool dirtyFlag = false;
     int id = -1;
 

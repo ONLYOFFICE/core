@@ -59,6 +59,27 @@ static vector<wstring> names =
 };
 
 
+TEST(test_compoundfile, largeStream_v3)
+{
+    constexpr LONG64 streamLen = 1024*1024*30;
+    std::vector<BYTE> data(streamLen, 0xac);
+
+    wstring path1 = L"../../../data/largeStream.cfb";
+    NSFile::CFileBinary::Remove(path1);
+
+    CompoundFile cf1(CFCPP::Ver_3, CFCPP::Default);
+
+    auto stream1 = cf1.RootStorage()->AddStream(L"stream1");
+
+    EXPECT_NO_THROW(stream1->Write(data, 0));
+
+
+    EXPECT_NO_THROW(cf1.Save(path1));
+    cf1.Close();
+
+    EXPECT_GT(FileLenght(path1), streamLen);
+}
+
 TEST(test_compoundfile, largeStream_v3_v4)
 {
     constexpr LONG64 streamLen = 1024*256;

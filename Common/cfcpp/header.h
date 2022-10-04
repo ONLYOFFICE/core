@@ -25,11 +25,11 @@ public:
     USHORT byteOrder = 0xFFFE;
     USHORT sectorShift = 9;
     USHORT miniSectorShift = 6;
-    BYTE unUsed[6];
+    BYTE unUsed[6] = {0,0,0,0,0,0};
     INT directorySectorsNumber = 0;
     INT fatSectorsNumber = 0;
     INT firstDirectorySectorID = Sector::ENDOFCHAIN;
-    uint unUsed2;
+    uint unUsed2 = 0;
     uint minSizeStandardStream = 4096;
     INT firstMiniFATSectorID = 0xFFFFFFFE;
     uint miniFATSectorsNumber = 0;

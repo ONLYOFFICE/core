@@ -47,7 +47,7 @@ public:
 
 protected:
     std::weak_ptr<IDirectoryEntry> dirEntry;
-    CompoundFile* compoundFile;
+    CompoundFile* compoundFile = nullptr;
 
 protected:
     CFItem() {};

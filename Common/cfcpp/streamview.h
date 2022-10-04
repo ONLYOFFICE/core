@@ -37,7 +37,7 @@ private:
     void adjustLength(std::streamsize value, SList<Sector> &availableSectors);
 
 private:
-    int sectorSize;
+    int sectorSize = 0;
     std::streamsize length = 0;
 
     SVector<Sector> sectorChain;

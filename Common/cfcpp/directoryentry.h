@@ -84,7 +84,7 @@ public:
     int leftSibling = NOSTREAM;
     int rightSibling = NOSTREAM;
     int child = NOSTREAM;
-    int stateBits;
+    int stateBits = 0;
     static std::shared_ptr<IDirectoryEntry> New(std::wstring name, StgType stgType, SVector<IDirectoryEntry>& dirRepository);
     static std::shared_ptr<IDirectoryEntry> TryNew(std::wstring name, StgType stgType, SVector<IDirectoryEntry> &dirRepository);
     static std::shared_ptr<IDirectoryEntry> Mock(std::wstring name, StgType stgType);
@@ -94,8 +94,8 @@ private:
 
 private:
     int sid = -1;
-    char entryName[64];
-    ushort nameLength;
+    char entryName[64] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    ushort nameLength = 0;
     StgType stgType = StgType::StgInvalid;
     StgColor stgColor = StgColor::Red;
     SVector<IDirectoryEntry> emptyDir;

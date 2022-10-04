@@ -10,7 +10,9 @@ $$PWD/../../../../core/Common/OfficeFileFormatChecker2.cpp \
     $$PWD/../../../../core/Common/3dParty/pole/pole.cpp \
     $$PWD/../../../../core/Common/DocxFormat/Source/Base/unicode_util.cpp
 
-SOURCES += main.cpp
+
+HEADERS += x2tTester.h
+SOURCES += main.cpp x2tTester.cpp
 
 CORE_ROOT_DIR = $$PWD/../../../../core
 PWD_ROOT_DIR = $$PWD

@@ -1,17 +1,4 @@
-#include <iostream>
-
-#include "../../../Common/OfficeFileFormats.h"
-#include "../../../Common/OfficeFileFormatChecker.h"
-
-#include "../../../DesktopEditor/graphics/Timer.h"
-#include "../../../DesktopEditor/graphics/TemporaryCS.h"
-#include "../../../DesktopEditor/common/File.h"
-#include "../../../DesktopEditor/common/Directory.h"
-#include "../../../DesktopEditor/common/StringBuilder.h"
-#include "../../../DesktopEditor/raster/BgraFrame.h"
-#include "../../../DesktopEditor/fontengine/ApplicationFontsWorker.h"
-
-#include "../../../OfficeUtils/src/OfficeUtils.h"
+#include "x2tTester.h"
 
 #ifdef LINUX
 #include <unistd.h>
@@ -25,57 +12,16 @@ int wmain(int argc, wchar_t** argv)
 int main(int argc, char** argv)
 #endif
 {
-	// creating temporary xml file with params
-	NSStringUtils::CStringBuilder builder;
-	builder.WriteString(L"<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+	std::wstring config_path;
 
-	builder.WriteString(L"<Root>");
+	if(argc < 2) config_path = L"./config.xml";
+	else config_path = std::wstring(argv[1]);
 
-	builder.WriteString(L"<m_sFileFrom>");
-	builder.WriteString(L"");
-	builder.WriteString(L"</m_sFileFrom>");
-
-	builder.WriteString(L"<m_sFileTo>");
-	builder.WriteString(L"");
-	builder.WriteString(L"</m_sFileTo>");
-
-	builder.WriteString(L"</Root>");
-
-	std::wstring xml_params = builder.GetData();
-	std::wstring xml_params_file = L"";
-	NSFile::CFileBinary::SaveToFile(xml_params_file, xml_params, true);
-
-	std::wstring x2t_path = L"";
-	std::wstring command = x2t_path + L' ' + xml_params_file;
-	wchar_t *ptr_command = new wchar_t[command.size() + 1];
-	memcpy(ptr_command, command.c_str(), command.length() * sizeof(wchar_t));
-	ptr_command[command.size()] = L'\0';
-
-	PROCESS_INFORMATION processinfo;
-	STARTUPINFO sturtupinfo;
-	ZeroMemory(&processinfo,sizeof(PROCESS_INFORMATION));
-	ZeroMemory(&sturtupinfo,sizeof(STARTUPINFO));
-	sturtupinfo.cb = sizeof(sturtupinfo);
-
-	BOOL bool_result = CreateProcessW(NULL, ptr_command,
-								  NULL, NULL, TRUE, CREATE_NO_WINDOW, NULL, NULL, &sturtupinfo, &processinfo);
-
-	WaitForSingleObject(processinfo.hProcess, INFINITE);
-	RELEASEARRAYOBJECTS(ptr_command);
-
-	DWORD exit_code = 0;
-	GetExitCodeProcess(processinfo.hProcess, &exit_code);
-	std::cout << exit_code << std::endl;
-
-	// NSFile::CFileBinary::Remove(xml_params_file);
+	Cx2tTester tester = Cx2tTester(config_path);
+	tester.Start();
 
 	return 0;
 }
-
-// minimal test
-// normal paths
-// configuration
-// csv report
 // linux support
 // multitask
 // etc..

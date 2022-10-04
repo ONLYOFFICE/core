@@ -3,12 +3,25 @@ CONFIGURATION
 
 You need to create an xml configuration file. It must contain:
 
-	<settings>			# root of xml
-	<reportPath>		# report.csv path
-	<inputFolder>		# folder with test documents
-	<outputFolder>		# results folder
-	<x2tPath>			# path to x2t
-	<*>					# input format with output formats
+	# root of xml
+	<settings> </settings>
+
+	# report.csv path
+	<reportPath> </reportPath>
+
+	# folder with test documents
+	<inputFolder> </inputFolder>
+
+	# results folder
+	<outputFolder> </outputFolder>
+
+	# path to x2t
+	<x2tPath> </x2tPath>
+
+	# input format with output formats
+	<*>
+		<item> </item>
+	</*>
 	
 
 You can use the following template:

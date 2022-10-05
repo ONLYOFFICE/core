@@ -34,13 +34,11 @@ void StreamView::write(const char *buffer, std::streamsize count)
     int roundByteWritten = 0;
     int offset = 0;
 
-    // Assure length
     if ((position + count) > length)
         adjustLength((position + count));
 
     if (sectorChain.empty() == false)
     {
-        // First sector
         int secOffset = (int)(position / (std::streamsize)sectorSize);
         int secShift = (int)(position % sectorSize);
 
@@ -58,7 +56,6 @@ void StreamView::write(const char *buffer, std::streamsize count)
         offset += roundByteWritten;
         secOffset++;
 
-        // Central sectors
         while (byteWritten < (count - sectorSize))
         {
             roundByteWritten = sectorSize;
@@ -72,7 +69,6 @@ void StreamView::write(const char *buffer, std::streamsize count)
             secOffset++;
         }
 
-        // Last sector
         roundByteWritten = count - byteWritten;
 
         if (roundByteWritten != 0)
@@ -102,11 +98,7 @@ std::streamsize StreamView::read(char *buffer, std::streamsize len)
     int offset = 0;
     if (sectorChain.empty() == false && sectorChain.size() > 0)
     {
-        // First sector
         int secIndex = (int)(position / (std::streamsize)sectorSize);
-
-        // Bytes to read count is the min between request count
-        // and sector border
 
         nToRead = std::min((int)sectorChain[0]->GetData().size() - ((int)position % sectorSize), (int)len);
 
@@ -121,7 +113,6 @@ std::streamsize StreamView::read(char *buffer, std::streamsize len)
 
         secIndex++;
 
-        // Central sectors
         while (nRead < (len - sectorSize))
         {
             nToRead = sectorSize;
@@ -133,7 +124,6 @@ std::streamsize StreamView::read(char *buffer, std::streamsize len)
             secIndex++;
         }
 
-        // Last sector
         nToRead = len - nRead;
 
         if (nToRead != 0)
@@ -208,8 +198,6 @@ void StreamView::adjustLength(std::streamsize value, SList<Sector> &availableSec
 
     if (delta > 0)
     {
-        // enlargment required
-
         int nSec = (int)std::ceil(((double)delta / sectorSize));
 
         while (nSec > 0)

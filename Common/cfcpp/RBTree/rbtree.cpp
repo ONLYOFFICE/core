@@ -50,8 +50,6 @@ void RBTree::Insert(PIRBNode newNode)
             if (compResult == 0)
             {
                 throw RBTreeDuplicatedItemException(L"RBNode " + newNode->ToString() + L" already present in tree");
-                //n->Value = value;
-                //return;
             }
             else if (compResult < 0)
             {
@@ -68,7 +66,6 @@ void RBTree::Insert(PIRBNode newNode)
             }
             else
             {
-                //assert compResult > 0;
                 if (n->getRight() == nullptr)
                 {
                     n->setRight(insertedNode);
@@ -85,12 +82,6 @@ void RBTree::Insert(PIRBNode newNode)
     }
 
     InsertCase1(insertedNode);
-
-//    if (NodeInserted != nullptr)
-//    {
-//        NodeInserted(insertedNode);
-//    }
-
 }
 
 void RBTree::Delete(PIRBNode templ, PIRBNode &deletedAlt)
@@ -99,17 +90,15 @@ void RBTree::Delete(PIRBNode templ, PIRBNode &deletedAlt)
     PIRBNode n = LookupNode(templ);
     templ = n;
     if (n == nullptr)
-        return;  // Key not found, do nothing
+        return;  // Key not found
     if (n->getLeft() != nullptr && n->getRight() != nullptr)
     {
-        // Copy key/value from predecessor and then delete it instead
         PIRBNode pred = MaximumNode(n->getLeft());
         pred->AssignValueTo(n);
         n = pred;
         deletedAlt = pred;
     }
 
-    //assert n->left == null || n->right == null;
     PIRBNode child = (n->getRight() == nullptr) ? n->getLeft() : n->getRight();
     if (NodeColor(n) == Color::BLACK)
     {
@@ -234,7 +223,7 @@ void RBTree::InsertCase1(PIRBNode n)
 void RBTree::InsertCase2(PIRBNode n)
 {
     if (NodeColor(n->getParent()) == Color::BLACK)
-        return; // Tree is still valid
+        return;
     else
         InsertCase3(n);
 }
@@ -280,7 +269,6 @@ void RBTree::InsertCase5(PIRBNode n)
     }
     else
     {
-        // assert n == n->getParent()->getRight() && n->getParent() == n->Grandparent()->getRight();
         RotateLeft(n->Grandparent());
     }
 }
@@ -366,13 +354,11 @@ void RBTree::DeleteCase6(PIRBNode n)
     n->getParent()->setColor(Color::BLACK);
     if (n == n->getParent()->getLeft())
     {
-        //assert nodeColor(n->Sibling()->getRight()) == Color::RED;
         n->Sibling()->getRight()->setColor(Color::BLACK);
         RotateLeft(n->getParent());
     }
     else
     {
-        //assert nodeColor(n->Sibling()->getLeft()) == Color::RED;
         n->Sibling()->getLeft()->setColor(Color::BLACK);
         RotateRight(n->getParent());
     }
@@ -396,7 +382,6 @@ void RBTree::DoVisitTree(Action<PIRBNode> action, PIRBNode walker)
 
 void RBTree::VisitTreeNodes(Action<PIRBNode> action)
 {
-    //IN Order visit
     PIRBNode walker = getRoot();
 
     if (walker != nullptr)

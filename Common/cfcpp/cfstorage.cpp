@@ -42,10 +42,8 @@ std::shared_ptr<CFStream> CFStorage::AddStream(const std::wstring& streamName)
 
     try
     {
-        // Add object to Siblings tree
         getChildren()->Insert(dirEntry);
 
-        //... and set the root of the tree as new child of the current item directory entry
         this->dirEntry.lock()->setChild(std::dynamic_pointer_cast<IDirectoryEntry>(getChildren()->getRoot())->getSid());
     }
     catch (RedBlackTree::RBTreeException &rbex)
@@ -173,13 +171,11 @@ std::shared_ptr<CFStorage> CFStorage::AddStorage(const std::wstring &storageName
     if (storageName.empty())
         throw CFException("Stream name cannot be null or empty");
 
-    // Add new Storage directory entry
     std::shared_ptr<IDirectoryEntry> cfo
             = DirectoryEntry::New(storageName, StgType::StgStorage, compoundFile->GetDirectories());
 
     try
     {
-        // Add object to Siblings tree
         getChildren()->Insert(cfo);
     }
     catch (RedBlackTree::RBTreeDuplicatedItemException& ex)
@@ -237,7 +233,6 @@ void CFStorage::Delete(const std::wstring &entryName)
 {
     CheckDisposed();
 
-    // Find entry to delete
     auto tmp = DirectoryEntry::Mock(entryName, StgType::StgInvalid);
 
     RedBlackTree::PIRBNode foundObj;
@@ -258,7 +253,6 @@ void CFStorage::Delete(const std::wstring &entryName)
     {
         std::shared_ptr<CFStorage> temp(new CFStorage(compoundFile, std::dynamic_pointer_cast<IDirectoryEntry>(foundObj)));
 
-        // This is a storage. we have to remove children items first
         auto storageChild = temp->getChildren();
         for (auto iter = storageChild->begin(); iter != storageChild->end(); ++iter)
         {
@@ -267,16 +261,12 @@ void CFStorage::Delete(const std::wstring &entryName)
             temp->Delete(ded->GetEntryName());
         }
 
-        // ...then we need to rethread the root of siblings tree...
         if (getChildren()->getRoot() != nullptr)
             dirEntry.lock()->setChild(std::dynamic_pointer_cast<IDirectoryEntry>(getChildren()->getRoot())->getSid());
         else
             dirEntry.lock()->setChild(DirectoryEntry::NOSTREAM);
 
-        // ...and finally Remove storage item from children tree...
         getChildren()->Delete(foundObj, altDel);
-
-        // ...and remove directory (storage) entry
 
         if (altDel != nullptr)
         {
@@ -290,20 +280,15 @@ void CFStorage::Delete(const std::wstring &entryName)
 
     case StgType::StgStream:
     {
-        // Free directory associated data stream.
         compoundFile->FreeAssociatedData(std::dynamic_pointer_cast<IDirectoryEntry>(foundObj)->getSid());
 
-        // Remove item from children tree
         getChildren()->Delete(foundObj, altDel);
 
-        // Rethread the root of siblings tree...
         if (getChildren()->getRoot() != nullptr)
             dirEntry.lock()->setChild(std::dynamic_pointer_cast<IDirectoryEntry>(getChildren()->getRoot())->getSid());
         else
             dirEntry.lock()->setChild(DirectoryEntry::NOSTREAM);
 
-        // Delete operation could possibly have cloned a directory, changing its SID.
-        // Invalidate the ACTUALLY deleted directory.
         if (altDel != nullptr)
         {
             foundObj = altDel;
@@ -328,7 +313,7 @@ void CFStorage::RenameItem(const std::wstring &oldItemName, const std::wstring &
     else throw CFItemNotFound(L"Item " + oldItemName + L" not found in Storage");
 
     children.reset();
-    children = LoadChildren(dirEntry.lock()->getSid()); //Rethread
+    children = LoadChildren(dirEntry.lock()->getSid());
 
     if (children == nullptr)
     {

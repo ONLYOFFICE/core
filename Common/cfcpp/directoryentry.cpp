@@ -147,7 +147,6 @@ void DirectoryEntry::Read(Stream stream, CFSVersion ver)
     rightSibling = rw.Read<decltype(rightSibling)>();
     child = rw.Read<decltype(child)>();
 
-    // Thanks to bugaccount (BugTrack id 3519554)
     if (stgType == StgType::StgInvalid)
     {
         leftSibling = NOSTREAM;
@@ -163,11 +162,8 @@ void DirectoryEntry::Read(Stream stream, CFSVersion ver)
 
     if (ver == CFSVersion::Ver_3)
     {
-        // avoid dirty read for version 3 files (max size: 32bit integer)
-        // where most significant bits are not initialized to zero
-
         size = rw.Read<int>();
-        rw.Read<INT>(); //discard most significant 4 (possibly) dirty bytes
+        rw.Read<INT>();
     }
     else
     {
@@ -229,7 +225,7 @@ RedBlackTree::PIRBNode DirectoryEntry::Uncle() const
 
 void DirectoryEntry::AssignValueTo(RedBlackTree::PIRBNode other)
 {
-    auto d = std::dynamic_pointer_cast<DirectoryEntry>(other); // as
+    auto d = std::dynamic_pointer_cast<DirectoryEntry>(other);
     if (d == nullptr)
         return;
 
@@ -300,7 +296,6 @@ std::shared_ptr<IDirectoryEntry> DirectoryEntry::New(std::wstring name, StgType 
     if (dirRepository)
     {
         de.reset(new DirectoryEntry(name, stgType, dirRepository));
-        // No invalid directory entry found
         dirRepository.push_back(de);
         de->setSid(dirRepository.size() - 1);
     }
@@ -314,11 +309,8 @@ std::shared_ptr<IDirectoryEntry> DirectoryEntry::TryNew(std::wstring name, StgTy
 {
     std::shared_ptr<DirectoryEntry> de(new DirectoryEntry(name, stgType, dirRepository));
 
-    // If we are not adding an invalid dirEntry as
-    // in a normal loading from file (invalid dirs MAY pad a sector)
     if (de != nullptr)
     {
-        // Find first available invalid slot (if any) to reuse it
         for (int i = 0; i < (int)dirRepository.size(); i++)
         {
             if (dirRepository[i]->getStgType() == StgType::StgInvalid)
@@ -330,7 +322,6 @@ std::shared_ptr<IDirectoryEntry> DirectoryEntry::TryNew(std::wstring name, StgTy
         }
     }
 
-    // No invalid directory entry found
     dirRepository.push_back(de);
     de->sid = dirRepository.size() - 1;
 

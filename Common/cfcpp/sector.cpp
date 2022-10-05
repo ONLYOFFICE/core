@@ -52,18 +52,10 @@ void Sector::Dispose(bool disposing)
         if (!_disposed)
         {
             std::lock_guard<std::mutex> lock(lockObject);
-            if (disposing)
-            {
-                // Call from user code...
-
-
-            }
-
             data.clear();
             dirtyFlag = false;
             id = ENDOFCHAIN;
             size = 0;
-
         }
     }
     catch(...)

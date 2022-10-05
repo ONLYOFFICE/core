@@ -25,9 +25,9 @@ enum StgColor : int
 
 enum CFSVersion : int
 {
-    /// Compound file version 3 - The default and most common version available. Sector size 512 bytes, 2GB max file size.
+    // Sector size 512 - default and very common
     Ver_3 = 3,
-    /// Compound file version 4 - Sector size is 4096 bytes. Using this version could bring some compatibility problem with existing applications.
+    // Sector size 4096 - faster and large, but rary
     Ver_4 = 4
 };
 

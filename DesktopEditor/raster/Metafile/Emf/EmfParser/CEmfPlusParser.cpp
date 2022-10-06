@@ -194,6 +194,11 @@ namespace MetaFile
 		return m_bBanEmfProcessing;
 	}
 
+	double CEmfPlusParser::GetScale()
+	{
+		return (double)m_unLogicalDpiX / 96.;
+	}
+
 	void CEmfPlusParser::RegisterObject(CEmfPlusObject *pObject, unsigned int unIndex)
 	{
 		if (NULL == pObject) return;

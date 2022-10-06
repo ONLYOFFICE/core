@@ -158,12 +158,17 @@ namespace MetaFile
 		return (pWindow->w < 0);
 	}
 
+	unsigned int CWmfParserBase::GetMapMode()
+	{
+		return m_pDC->GetMapMode();
+	}
+
 	double CWmfParserBase::GetScale()
 	{
 		if (m_oPlaceable.Inch != 0)
-			return 1440.f / m_oPlaceable.Inch / (20.f * (72.f / 96.f));;
+			return 1440. / m_oPlaceable.Inch / GetPixelWidth();
 
-		return 192.f / 1440.f;
+		return 20. / GetPixelWidth(); // 1440. / 72. //units are in 1/8th of a point (1 point is 1/72th of an inch)
 	}
 
 	void CWmfParserBase::SetInterpretator(IOutputDevice *pOutput)

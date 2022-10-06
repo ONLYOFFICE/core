@@ -771,9 +771,15 @@ namespace MetaFile
 		return (pWindow->ulW < 0);
 	}
 
+	unsigned int CEmfParserBase::GetMapMode()
+	{
+		return m_pDC->GetMapMode();
+	}
+
 	double CEmfParserBase::GetScale()
 	{
-		return 1.f;
+		return (double)m_oHeader.oDevice.cx / (double)m_oHeader.oMillimeters.cx *
+			   (double)m_pDC->GetWindow()->ulW / (double)m_pDC->GetViewport()->ulW;
 	}
 
 	bool CEmfParserBase::IsViewportFlippedY()
@@ -1197,6 +1203,7 @@ namespace MetaFile
 			m_pInterpretator->HANDLE_EMR_SETWINDOWORGEX(oOrigin);
 
 		m_pDC->SetWindowOrigin(oOrigin);
+		UpdateOutputDC();
 	}
 
 	void CEmfParserBase::HANDLE_EMR_SETWINDOWEXTEX(TEmfSizeL &oExtent)
@@ -1205,6 +1212,7 @@ namespace MetaFile
 			m_pInterpretator->HANDLE_EMR_SETWINDOWEXTEX(oExtent);
 
 		m_pDC->SetWindowExtents(oExtent);
+		UpdateOutputDC();
 	}
 
 	void CEmfParserBase::HANDLE_EMR_SETVIEWPORTORGEX(TEmfPointL &oOrigin)
@@ -1213,6 +1221,7 @@ namespace MetaFile
 			m_pInterpretator->HANDLE_EMR_SETVIEWPORTORGEX(oOrigin);
 
 		m_pDC->SetViewportOrigin(oOrigin);
+		UpdateOutputDC();
 	}
 
 	void CEmfParserBase::HANDLE_EMR_SETVIEWPORTEXTEX(TEmfSizeL &oExtent)
@@ -1221,6 +1230,7 @@ namespace MetaFile
 			m_pInterpretator->HANDLE_EMR_SETVIEWPORTEXTEX(oExtent);
 
 		m_pDC->SetViewportExtents(oExtent);
+		UpdateOutputDC();
 	}
 
 	void CEmfParserBase::HANDLE_EMR_SETSTRETCHBLTMODE(unsigned int &unStretchMode)

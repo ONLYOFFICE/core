@@ -1081,13 +1081,10 @@ namespace MetaFile
 
 			if (dWidth == 0 || (dWidth == 1 && PS_COSMETIC == ulPenType))
 			{
-				TRectD oRect(*m_pFile->GetDCBounds());
+				dWidth = std::fabs(25.4 / 96 * m_dScaleX); //m_dScaleX = 96 / текущий dpiX
 
-				double dScale = m_pFile->GetScale();
-
-				oRect *= dScale;
-
-				dWidth = std::fabs(m_dW / (oRect.dRight - oRect.dLeft) / m_pFile->GetPixelWidth());
+				if (MM_ANISOTROPIC == m_pFile->GetMapMode() || MM_ISOTROPIC == m_pFile->GetMapMode())
+					dWidth *= m_pFile->GetScale();
 			}
 			else
 				dWidth *= m_dScaleX;

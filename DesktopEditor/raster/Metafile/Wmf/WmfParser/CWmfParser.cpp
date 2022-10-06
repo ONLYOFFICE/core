@@ -204,7 +204,7 @@ namespace MetaFile
 
 			if (m_oPlaceable.Inch != 0)
 			{
-				double dKoef = 1440.f / m_oPlaceable.Inch / (20.f * (72.f / 96.f));
+				double dKoef = 1440.f / m_oPlaceable.Inch;
 
 				m_pDC->SetViewportOrg(m_oPlaceable.BoundingBox.Left,  m_oPlaceable.BoundingBox.Top);
 				m_pDC->SetViewportExt((m_oPlaceable.BoundingBox.Right - m_oPlaceable.BoundingBox.Left), (m_oPlaceable.BoundingBox.Bottom - m_oPlaceable.BoundingBox.Top));

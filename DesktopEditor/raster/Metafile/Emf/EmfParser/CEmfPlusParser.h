@@ -24,8 +24,9 @@ namespace MetaFile
 
 		EmfParserType   GetType()				    override;
 
-		void SetStream(BYTE *pBytes, unsigned int unSize);
-		bool GetBanEMFProcesses();
+		void   SetStream(BYTE *pBytes, unsigned int unSize);
+		bool   GetBanEMFProcesses();
+		double GetScale() override;
 
 	private:
 		void RegisterObject(CEmfPlusObject* pObject, unsigned int unIndex);

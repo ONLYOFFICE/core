@@ -82,7 +82,7 @@ TEST(test_compoundfile, largeStream_v3)
 
 TEST(test_compoundfile, largeStream_v3_v4)
 {
-    constexpr LONG64 streamLen = 1024*256;
+    constexpr LONG64 streamLen = 1024*32;
     std::vector<BYTE> data = {0x28, 0xFF, 0x28, 0x1D, 0x4C, 0xFA, 0x00, 0x79};
 
     wstring path1 = L"../../../data/large_v3.cfb";

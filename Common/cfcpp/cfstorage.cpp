@@ -60,14 +60,14 @@ std::shared_ptr<CFStream> CFStorage::GetStream(const std::wstring& streamName)
 {
     CheckDisposed();
 
-    std::shared_ptr<IDirectoryEntry> tmp = DirectoryEntry::Mock(streamName, StgType::StgStream);
+    std::shared_ptr<IDirectoryEntry> temp = DirectoryEntry::Mock(streamName, StgType::StgStream);
 
-    RedBlackTree::PIRBNode outDe;
+    RedBlackTree::PIRBNode outDirEntry;
 
-    if (getChildren()->TryLookup(tmp, outDe) &&
-            ((std::static_pointer_cast<IDirectoryEntry>(outDe))->getStgType() == StgType::StgStream))
+    if (getChildren()->TryLookup(temp, outDirEntry) &&
+            ((std::static_pointer_cast<IDirectoryEntry>(outDirEntry))->getStgType() == StgType::StgStream))
     {
-        return std::shared_ptr<CFStream>(new CFStream(compoundFile, std::static_pointer_cast<IDirectoryEntry>(outDe)));
+        return std::shared_ptr<CFStream>(new CFStream(compoundFile, std::static_pointer_cast<IDirectoryEntry>(outDirEntry)));
     }
     else
     {
@@ -86,12 +86,12 @@ bool CFStorage::TryGetStream(const std::wstring& streamName, std::shared_ptr<CFS
 
         std::shared_ptr<IDirectoryEntry> tmp = DirectoryEntry::Mock(streamName, StgType::StgStream);
 
-        RedBlackTree::PIRBNode outDe;
+        RedBlackTree::PIRBNode outDirEntry;
 
-        if (getChildren()->TryLookup(tmp, outDe) &&
-                ((std::static_pointer_cast<IDirectoryEntry>(outDe))->getStgType() == StgType::StgStream))
+        if (getChildren()->TryLookup(tmp, outDirEntry) &&
+                ((std::static_pointer_cast<IDirectoryEntry>(outDirEntry))->getStgType() == StgType::StgStream))
         {
-            cfStream = std::shared_ptr<CFStream>(new CFStream(compoundFile, std::static_pointer_cast<IDirectoryEntry>(outDe)));
+            cfStream = std::shared_ptr<CFStream>(new CFStream(compoundFile, std::static_pointer_cast<IDirectoryEntry>(outDirEntry)));
             result = true;
         }
     }
@@ -107,10 +107,10 @@ std::shared_ptr<CFStorage> CFStorage::GetStorage(const std::wstring &storageName
 {
     CheckDisposed();
 
-    std::shared_ptr<IDirectoryEntry> templ = DirectoryEntry::Mock(storageName, StgType::StgInvalid);
+    std::shared_ptr<IDirectoryEntry> pattern = DirectoryEntry::Mock(storageName, StgType::StgInvalid);
     RedBlackTree::PIRBNode outDe;
 
-    if (getChildren()->TryLookup(templ, outDe) && std::static_pointer_cast<IDirectoryEntry>(outDe)->getStgType() == StgType::StgStorage)
+    if (getChildren()->TryLookup(pattern, outDe) && std::static_pointer_cast<IDirectoryEntry>(outDe)->getStgType() == StgType::StgStorage)
     {
         return std::shared_ptr<CFStorage>(new CFStorage(compoundFile, std::dynamic_pointer_cast<IDirectoryEntry>(outDe)));
     }
@@ -124,10 +124,10 @@ std::shared_ptr<CFStorage> CFStorage::TryGetStorage(const std::wstring &storageN
 {
     CheckDisposed();
 
-    std::shared_ptr<IDirectoryEntry> templ = DirectoryEntry::Mock(storageName, StgType::StgInvalid);
+    std::shared_ptr<IDirectoryEntry> pattern = DirectoryEntry::Mock(storageName, StgType::StgInvalid);
     RedBlackTree::PIRBNode outDe;
 
-    if (getChildren()->TryLookup(templ, outDe) && std::static_pointer_cast<IDirectoryEntry>(outDe)->getStgType() == StgType::StgStorage)
+    if (getChildren()->TryLookup(pattern, outDe) && std::static_pointer_cast<IDirectoryEntry>(outDe)->getStgType() == StgType::StgStorage)
     {
         return std::shared_ptr<CFStorage>(new CFStorage(compoundFile, std::dynamic_pointer_cast<IDirectoryEntry>(outDe)));
     }
@@ -146,12 +146,12 @@ bool CFStorage::TryGetStorage(const std::wstring &storageName, std::shared_ptr<C
     {
         CheckDisposed();
 
-        std::shared_ptr<IDirectoryEntry> templ = DirectoryEntry::Mock(storageName, StgType::StgInvalid);
-        RedBlackTree::PIRBNode outDe;
+        std::shared_ptr<IDirectoryEntry> pattern = DirectoryEntry::Mock(storageName, StgType::StgInvalid);
+        RedBlackTree::PIRBNode outDirEntry;
 
-        if (getChildren()->TryLookup(templ, outDe) && std::static_pointer_cast<IDirectoryEntry>(outDe)->getStgType() == StgType::StgStorage)
+        if (getChildren()->TryLookup(pattern, outDirEntry) && std::static_pointer_cast<IDirectoryEntry>(outDirEntry)->getStgType() == StgType::StgStorage)
         {
-            cfStorage.reset(new CFStorage(compoundFile, std::dynamic_pointer_cast<IDirectoryEntry>(outDe)));
+            cfStorage.reset(new CFStorage(compoundFile, std::dynamic_pointer_cast<IDirectoryEntry>(outDirEntry)));
             result = true;
         }
 
@@ -221,11 +221,13 @@ void CFStorage::VisitEntries(RedBlackTree::Action<std::shared_ptr<CFItem> > acti
         getChildren()->VisitTreeNodes(internalAction);
 
         if (recursive && subStorages.size() > 0)
-            for (const auto& n : *subStorages)
+        {
+            for (const auto& node : *subStorages)
             {
-                auto d = std::dynamic_pointer_cast<IDirectoryEntry>(n);
-                CFStorage(compoundFile, d).VisitEntries(action, recursive);
+                auto dirEntry = std::dynamic_pointer_cast<IDirectoryEntry>(node);
+                CFStorage(compoundFile, dirEntry).VisitEntries(action, recursive);
             }
+        }
     }
 }
 
@@ -233,11 +235,11 @@ void CFStorage::Delete(const std::wstring &entryName)
 {
     CheckDisposed();
 
-    auto tmp = DirectoryEntry::Mock(entryName, StgType::StgInvalid);
+    auto temp = DirectoryEntry::Mock(entryName, StgType::StgInvalid);
 
     RedBlackTree::PIRBNode foundObj;
 
-    getChildren()->TryLookup(tmp, foundObj);
+    getChildren()->TryLookup(temp, foundObj);
 
     if (foundObj == nullptr)
         throw CFItemNotFound(L"Entry named [" + entryName + L"] was not found");
@@ -262,9 +264,13 @@ void CFStorage::Delete(const std::wstring &entryName)
         }
 
         if (getChildren()->getRoot() != nullptr)
+        {
             dirEntry.lock()->setChild(std::dynamic_pointer_cast<IDirectoryEntry>(getChildren()->getRoot())->getSid());
+        }
         else
+        {
             dirEntry.lock()->setChild(DirectoryEntry::NOSTREAM);
+        }
 
         getChildren()->Delete(foundObj, altDel);
 
@@ -285,9 +291,13 @@ void CFStorage::Delete(const std::wstring &entryName)
         getChildren()->Delete(foundObj, altDel);
 
         if (getChildren()->getRoot() != nullptr)
+        {
             dirEntry.lock()->setChild(std::dynamic_pointer_cast<IDirectoryEntry>(getChildren()->getRoot())->getSid());
+        }
         else
+        {
             dirEntry.lock()->setChild(DirectoryEntry::NOSTREAM);
+        }
 
         if (altDel != nullptr)
         {
@@ -304,13 +314,16 @@ void CFStorage::Delete(const std::wstring &entryName)
 
 void CFStorage::RenameItem(const std::wstring &oldItemName, const std::wstring &newItemName)
 {
-    auto templ = DirectoryEntry::Mock(oldItemName, StgType::StgInvalid);
+    auto pattern = DirectoryEntry::Mock(oldItemName, StgType::StgInvalid);
     RedBlackTree::PIRBNode item;
-    if (getChildren()->TryLookup(templ, item))
+    if (getChildren()->TryLookup(pattern, item))
     {
         std::dynamic_pointer_cast<DirectoryEntry>(item)->SetEntryName(newItemName);
     }
-    else throw CFItemNotFound(L"Item " + oldItemName + L" not found in Storage");
+    else
+    {
+        throw CFItemNotFound(L"Item " + oldItemName + L" not found in Storage");
+    }
 
     children.reset();
     children = LoadChildren(dirEntry.lock()->getSid());
@@ -326,9 +339,13 @@ std::shared_ptr<RBTree> CFStorage::LoadChildren(int SID)
     std::shared_ptr<RBTree> childrenTree = compoundFile->GetChildrenTree(SID);
 
     if (childrenTree->getRoot() != nullptr)
+    {
         dirEntry.lock()->setChild((std::static_pointer_cast<IDirectoryEntry>(childrenTree->getRoot())->getSid()));
+    }
     else
+    {
         dirEntry.lock()->setChild(DirectoryEntry::NOSTREAM);
+    }
 
     return childrenTree;
 }

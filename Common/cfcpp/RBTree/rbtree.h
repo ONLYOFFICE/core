@@ -6,7 +6,7 @@
 
 namespace RedBlackTree
 {
-template <class T>
+template  <class T>
 using Action = std::function<void(T)>;
 
 
@@ -19,34 +19,34 @@ public:
     const PIRBNode getRoot() const;
     void setRoot(const PIRBNode &newRoot);
 
-    bool TryLookup(PIRBNode templ, PIRBNode& val);
+    bool TryLookup(PIRBNode pattern, PIRBNode& val);
     void Insert(PIRBNode newNode);
-    void Delete(PIRBNode templ, PIRBNode& deletedAlt);
+    void Delete(PIRBNode pattern, PIRBNode& deletedAlt);
 
     void VisitTree(Action<PIRBNode> action);
     void VisitTreeNodes(Action<PIRBNode> action);
 
 private:
     static Color NodeColor(PIRBNode n);
-    static PIRBNode MaximumNode(PIRBNode n);
+    static PIRBNode MaximumNode(PIRBNode node);
 
-    PIRBNode LookupNode(PIRBNode templ);
+    PIRBNode LookupNode(PIRBNode pattern);
     void ReplaceNode(PIRBNode oldn, PIRBNode newn);
-    void RotateLeft(PIRBNode n);
-    void RotateRight(PIRBNode n);
+    void RotateLeft(PIRBNode node);
+    void RotateRight(PIRBNode node);
 
-    void InsertCase1(PIRBNode n);
-    void InsertCase2(PIRBNode n);
-    void InsertCase3(PIRBNode n);
-    void InsertCase4(PIRBNode n);
-    void InsertCase5(PIRBNode n);
+    void InsertCase1(PIRBNode node);
+    void InsertCase2(PIRBNode node);
+    void InsertCase3(PIRBNode node);
+    void InsertCase4(PIRBNode node);
+    void InsertCase5(PIRBNode node);
 
-    void DeleteCase1(PIRBNode n);
-    void DeleteCase2(PIRBNode n);
-    void DeleteCase3(PIRBNode n);
-    void DeleteCase4(PIRBNode n);
-    void DeleteCase5(PIRBNode n);
-    void DeleteCase6(PIRBNode n);
+    void DeleteCase1(PIRBNode node);
+    void DeleteCase2(PIRBNode node);
+    void DeleteCase3(PIRBNode node);
+    void DeleteCase4(PIRBNode node);
+    void DeleteCase5(PIRBNode node);
+    void DeleteCase6(PIRBNode node);
 
     void DoVisitTree(Action<PIRBNode> action, PIRBNode walker);
     void DoVisitTreeNodes(Action<PIRBNode> action, PIRBNode walker);

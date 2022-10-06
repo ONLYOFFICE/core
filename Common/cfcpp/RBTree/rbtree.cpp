@@ -16,18 +16,18 @@ void RBTree::setRoot(const PIRBNode &newRoot)
     root = newRoot;
 }
 
-bool RBTree::TryLookup(PIRBNode templ, PIRBNode &val)
+bool RBTree::TryLookup(PIRBNode pattern, PIRBNode &val)
 {
-    PIRBNode n = LookupNode(templ);
+    PIRBNode node = LookupNode(pattern);
 
-    if (n == nullptr)
+    if (node == nullptr)
     {
         val.reset();
         return false;
     }
     else
     {
-        val = n;
+        val = node;
         return true;
     }
 }
@@ -43,70 +43,70 @@ void RBTree::Insert(PIRBNode newNode)
     }
     else
     {
-        PIRBNode n = getRoot();
+        PIRBNode node = getRoot();
         while (true)
         {
-            int compResult = newNode->CompareTo(n);
+            int compResult = newNode->CompareTo(node);
             if (compResult == 0)
             {
                 throw RBTreeDuplicatedItemException(L"RBNode " + newNode->ToString() + L" already present in tree");
             }
             else if (compResult < 0)
             {
-                if (n->getLeft() == nullptr)
+                if (node->getLeft() == nullptr)
                 {
-                    n->setLeft(insertedNode);
+                    node->setLeft(insertedNode);
 
                     break;
                 }
                 else
                 {
-                    n = n->getLeft();
+                    node = node->getLeft();
                 }
             }
             else
             {
-                if (n->getRight() == nullptr)
+                if (node->getRight() == nullptr)
                 {
-                    n->setRight(insertedNode);
+                    node->setRight(insertedNode);
 
                     break;
                 }
                 else
                 {
-                    n = n->getRight();
+                    node = node->getRight();
                 }
             }
         }
-        insertedNode->setParent(n);
+        insertedNode->setParent(node);
     }
 
     InsertCase1(insertedNode);
 }
 
-void RBTree::Delete(PIRBNode templ, PIRBNode &deletedAlt)
+void RBTree::Delete(PIRBNode pattern, PIRBNode &deletedAlt)
 {
     deletedAlt.reset();
-    PIRBNode n = LookupNode(templ);
-    templ = n;
-    if (n == nullptr)
+    PIRBNode node = LookupNode(pattern);
+    pattern = node;
+    if (node == nullptr)
         return;  // Key not found
-    if (n->getLeft() != nullptr && n->getRight() != nullptr)
+    if (node->getLeft() != nullptr && node->getRight() != nullptr)
     {
-        PIRBNode pred = MaximumNode(n->getLeft());
-        pred->AssignValueTo(n);
-        n = pred;
+        PIRBNode pred = MaximumNode(node->getLeft());
+        pred->AssignValueTo(node);
+        node = pred;
         deletedAlt = pred;
     }
 
-    PIRBNode child = (n->getRight() == nullptr) ? n->getLeft() : n->getRight();
-    if (NodeColor(n) == Color::BLACK)
+    PIRBNode child = (node->getRight() == nullptr) ? node->getLeft() : node->getRight();
+    if (NodeColor(node) == Color::BLACK)
     {
-        n->setColor(NodeColor(child));
-        DeleteCase1(n);
+        node->setColor(NodeColor(child));
+        DeleteCase1(node);
     }
 
-    ReplaceNode(n, child);
+    ReplaceNode(node, child);
 
     if (NodeColor(getRoot()) == Color::RED)
     {
@@ -125,242 +125,242 @@ void RBTree::VisitTree(Action<PIRBNode> action)
         DoVisitTree(action, walker);
 }
 
-Color RBTree::NodeColor(PIRBNode n)
+Color RBTree::NodeColor(PIRBNode node)
 {
-    return n == nullptr ? Color::BLACK : n->getColor();
+    return node == nullptr ? Color::BLACK : node->getColor();
 }
 
-PIRBNode RBTree::MaximumNode(PIRBNode n)
+PIRBNode RBTree::MaximumNode(PIRBNode node)
 {
-    while (n->getRight() != nullptr)
+    while (node->getRight() != nullptr)
     {
-        n = n->getRight();
+        node = node->getRight();
     }
 
-    return n;
+    return node;
 }
 
-PIRBNode RBTree::LookupNode(PIRBNode templ)
+PIRBNode RBTree::LookupNode(PIRBNode pattern)
 {
-    PIRBNode n = getRoot();
+    PIRBNode node = getRoot();
 
-    while (n != nullptr)
+    while (node != nullptr)
     {
-        int compResult = templ->CompareTo(n);
+        int compResult = pattern->CompareTo(node);
 
         if (compResult == 0)
         {
-            return n;
+            return node;
         }
         else if (compResult < 0)
         {
-            n = n->getLeft();
+            node = node->getLeft();
         }
         else // compResult > 0;
         {
-            n = n->getRight();
+            node = node->getRight();
         }
     }
 
-    return n;
+    return node;
 }
 
-void RBTree::ReplaceNode(PIRBNode oldn, PIRBNode newn)
+void RBTree::ReplaceNode(PIRBNode oldNode, PIRBNode newNode)
 {
-    if (oldn->getParent() == nullptr)
+    if (oldNode->getParent() == nullptr)
     {
-        setRoot(newn);
+        setRoot(newNode);
     }
     else
     {
-        if (oldn == oldn->getParent()->getLeft())
-            oldn->getParent()->setLeft(newn);
+        if (oldNode == oldNode->getParent()->getLeft())
+            oldNode->getParent()->setLeft(newNode);
         else
-            oldn->getParent()->setRight(newn);
+            oldNode->getParent()->setRight(newNode);
     }
-    if (newn != nullptr)
+    if (newNode != nullptr)
     {
-        newn->setParent(oldn->getParent());
+        newNode->setParent(oldNode->getParent());
     }
 }
 
-void RBTree::RotateLeft(PIRBNode n)
+void RBTree::RotateLeft(PIRBNode node)
 {
-    PIRBNode r = n->getRight();
-    ReplaceNode(n, r);
-    n->setRight(r->getLeft());
-    if (r->getLeft() != nullptr)
+    PIRBNode right = node->getRight();
+    ReplaceNode(node, right);
+    node->setRight(right->getLeft());
+    if (right->getLeft() != nullptr)
     {
-        r->getLeft()->setParent(n);
+        right->getLeft()->setParent(node);
     }
-    r->setLeft(n);
-    n->setParent(r);
+    right->setLeft(node);
+    node->setParent(right);
 }
 
-void RBTree::RotateRight(PIRBNode n)
+void RBTree::RotateRight(PIRBNode node)
 {
-    PIRBNode l = n->getLeft();
-    ReplaceNode(n, l);
-    n->setLeft(l->getRight());
+    PIRBNode left = node->getLeft();
+    ReplaceNode(node, left);
+    node->setLeft(left->getRight());
 
-    if (l->getRight() != nullptr)
+    if (left->getRight() != nullptr)
     {
-        l->getRight()->setParent(n);
+        left->getRight()->setParent(node);
     }
 
-    l->setRight(n);
-    n->setParent(l);
+    left->setRight(node);
+    node->setParent(left);
 }
 
-void RBTree::InsertCase1(PIRBNode n)
+void RBTree::InsertCase1(PIRBNode node)
 {
-    if (n->getParent() == nullptr)
-        n->setColor(Color::BLACK);
+    if (node->getParent() == nullptr)
+        node->setColor(Color::BLACK);
     else
-        InsertCase2(n);
+        InsertCase2(node);
 }
 
-void RBTree::InsertCase2(PIRBNode n)
+void RBTree::InsertCase2(PIRBNode node)
 {
-    if (NodeColor(n->getParent()) == Color::BLACK)
+    if (NodeColor(node->getParent()) == Color::BLACK)
         return;
     else
-        InsertCase3(n);
+        InsertCase3(node);
 }
 
-void RBTree::InsertCase3(PIRBNode n)
+void RBTree::InsertCase3(PIRBNode node)
 {
-    if (NodeColor(n->Uncle()) == Color::RED)
+    if (NodeColor(node->Uncle()) == Color::RED)
     {
-        n->getParent()->setColor(Color::BLACK);
-        n->Uncle()->setColor(Color::BLACK);
-        n->Grandparent()->setColor(Color::RED);
-        InsertCase1(n->Grandparent());
+        node->getParent()->setColor(Color::BLACK);
+        node->Uncle()->setColor(Color::BLACK);
+        node->Grandparent()->setColor(Color::RED);
+        InsertCase1(node->Grandparent());
     }
     else
     {
-        InsertCase4(n);
+        InsertCase4(node);
     }
 }
 
-void RBTree::InsertCase4(PIRBNode n)
+void RBTree::InsertCase4(PIRBNode node)
 {
-    if (n == n->getParent()->getRight() && n->getParent() == n->Grandparent()->getLeft())
+    if (node == node->getParent()->getRight() && node->getParent() == node->Grandparent()->getLeft())
     {
-        RotateLeft(n->getParent());
-        n = n->getLeft();
+        RotateLeft(node->getParent());
+        node = node->getLeft();
     }
-    else if (n == n->getParent()->getLeft() && n->getParent() == n->Grandparent()->getRight())
+    else if (node == node->getParent()->getLeft() && node->getParent() == node->Grandparent()->getRight())
     {
-        RotateRight(n->getParent());
-        n = n->getRight();
+        RotateRight(node->getParent());
+        node = node->getRight();
     }
 
-    InsertCase5(n);
+    InsertCase5(node);
 }
 
-void RBTree::InsertCase5(PIRBNode n)
+void RBTree::InsertCase5(PIRBNode node)
 {
-    n->getParent()->setColor(Color::BLACK);
-    n->Grandparent()->setColor(Color::RED);
-    if (n == n->getParent()->getLeft() && n->getParent() == n->Grandparent()->getLeft())
+    node->getParent()->setColor(Color::BLACK);
+    node->Grandparent()->setColor(Color::RED);
+    if (node == node->getParent()->getLeft() && node->getParent() == node->Grandparent()->getLeft())
     {
-        RotateRight(n->Grandparent());
+        RotateRight(node->Grandparent());
     }
     else
     {
-        RotateLeft(n->Grandparent());
+        RotateLeft(node->Grandparent());
     }
 }
 
-void RBTree::DeleteCase1(PIRBNode n)
+void RBTree::DeleteCase1(PIRBNode node)
 {
-    if (n->getParent() == nullptr)
+    if (node->getParent() == nullptr)
         return;
     else
-        DeleteCase2(n);
+        DeleteCase2(node);
 }
 
-void RBTree::DeleteCase2(PIRBNode n)
+void RBTree::DeleteCase2(PIRBNode node)
 {
-    if (NodeColor(n->Sibling()) == Color::RED)
+    if (NodeColor(node->Sibling()) == Color::RED)
     {
-        n->getParent()->setColor(Color::RED);
-        n->Sibling()->setColor(Color::BLACK);
-        if (n == n->getParent()->getLeft())
-            RotateLeft(n->getParent());
+        node->getParent()->setColor(Color::RED);
+        node->Sibling()->setColor(Color::BLACK);
+        if (node == node->getParent()->getLeft())
+            RotateLeft(node->getParent());
         else
-            RotateRight(n->getParent());
+            RotateRight(node->getParent());
     }
 
-    DeleteCase3(n);
+    DeleteCase3(node);
 }
 
-void RBTree::DeleteCase3(PIRBNode n)
+void RBTree::DeleteCase3(PIRBNode node)
 {
-    if (NodeColor(n->getParent()) == Color::BLACK &&
-            NodeColor(n->Sibling()) == Color::BLACK &&
-            NodeColor(n->Sibling()->getLeft()) == Color::BLACK &&
-            NodeColor(n->Sibling()->getRight()) == Color::BLACK)
+    if (NodeColor(node->getParent()) == Color::BLACK &&
+            NodeColor(node->Sibling()) == Color::BLACK &&
+            NodeColor(node->Sibling()->getLeft()) == Color::BLACK &&
+            NodeColor(node->Sibling()->getRight()) == Color::BLACK)
     {
-        n->Sibling()->setColor(Color::RED);
-        DeleteCase1(n->getParent());
+        node->Sibling()->setColor(Color::RED);
+        DeleteCase1(node->getParent());
     }
     else
-        DeleteCase4(n);
+        DeleteCase4(node);
 }
 
-void RBTree::DeleteCase4(PIRBNode n)
+void RBTree::DeleteCase4(PIRBNode node)
 {
-    if (NodeColor(n->getParent()) == Color::RED &&
-            NodeColor(n->Sibling()) == Color::BLACK &&
-            NodeColor(n->Sibling()->getLeft()) == Color::BLACK &&
-            NodeColor(n->Sibling()->getRight()) == Color::BLACK)
+    if (NodeColor(node->getParent()) == Color::RED &&
+            NodeColor(node->Sibling()) == Color::BLACK &&
+            NodeColor(node->Sibling()->getLeft()) == Color::BLACK &&
+            NodeColor(node->Sibling()->getRight()) == Color::BLACK)
     {
-        n->Sibling()->setColor(Color::RED);
-        n->getParent()->setColor(Color::BLACK);
+        node->Sibling()->setColor(Color::RED);
+        node->getParent()->setColor(Color::BLACK);
     }
     else
-        DeleteCase5(n);
+        DeleteCase5(node);
 }
 
-void RBTree::DeleteCase5(PIRBNode n)
+void RBTree::DeleteCase5(PIRBNode node)
 {
-    if (n == n->getParent()->getLeft() &&
-            NodeColor(n->Sibling()) == Color::BLACK &&
-            NodeColor(n->Sibling()->getLeft()) == Color::RED &&
-            NodeColor(n->Sibling()->getRight()) == Color::BLACK)
+    if (node == node->getParent()->getLeft() &&
+            NodeColor(node->Sibling()) == Color::BLACK &&
+            NodeColor(node->Sibling()->getLeft()) == Color::RED &&
+            NodeColor(node->Sibling()->getRight()) == Color::BLACK)
     {
-        n->Sibling()->setColor(Color::RED);
-        n->Sibling()->getLeft()->setColor(Color::BLACK);
-        RotateRight(n->Sibling());
+        node->Sibling()->setColor(Color::RED);
+        node->Sibling()->getLeft()->setColor(Color::BLACK);
+        RotateRight(node->Sibling());
     }
-    else if (n == n->getParent()->getRight() &&
-             NodeColor(n->Sibling()) == Color::BLACK &&
-             NodeColor(n->Sibling()->getRight()) == Color::RED &&
-             NodeColor(n->Sibling()->getLeft()) == Color::BLACK)
+    else if (node == node->getParent()->getRight() &&
+             NodeColor(node->Sibling()) == Color::BLACK &&
+             NodeColor(node->Sibling()->getRight()) == Color::RED &&
+             NodeColor(node->Sibling()->getLeft()) == Color::BLACK)
     {
-        n->Sibling()->setColor(Color::RED);
-        n->Sibling()->getRight()->setColor(Color::BLACK);
-        RotateLeft(n->Sibling());
+        node->Sibling()->setColor(Color::RED);
+        node->Sibling()->getRight()->setColor(Color::BLACK);
+        RotateLeft(node->Sibling());
     }
 
-    DeleteCase6(n);
+    DeleteCase6(node);
 }
 
-void RBTree::DeleteCase6(PIRBNode n)
+void RBTree::DeleteCase6(PIRBNode node)
 {
-    n->Sibling()->setColor(NodeColor(n->getParent()));
-    n->getParent()->setColor(Color::BLACK);
-    if (n == n->getParent()->getLeft())
+    node->Sibling()->setColor(NodeColor(node->getParent()));
+    node->getParent()->setColor(Color::BLACK);
+    if (node == node->getParent()->getLeft())
     {
-        n->Sibling()->getRight()->setColor(Color::BLACK);
-        RotateLeft(n->getParent());
+        node->Sibling()->getRight()->setColor(Color::BLACK);
+        RotateLeft(node->getParent());
     }
     else
     {
-        n->Sibling()->getLeft()->setColor(Color::BLACK);
-        RotateRight(n->getParent());
+        node->Sibling()->getLeft()->setColor(Color::BLACK);
+        RotateRight(node->getParent());
     }
 }
 

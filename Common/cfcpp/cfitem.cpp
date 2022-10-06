@@ -28,13 +28,13 @@ int CFItem::GetHashCode() const
 
 std::wstring CFItem::Name() const
 {
-    auto n = dirEntry.lock()->GetEntryName();
-    if (n.empty() == false)
+    auto name = dirEntry.lock()->GetEntryName();
+    if (name.empty() == false)
     {
-        auto remIter = n.find_last_of('\0');
-        if (remIter != std::wstring::npos)
-            n.erase(remIter);
-        return n;
+        auto removeIter = name.find_last_of('\0');
+        if (removeIter != std::wstring::npos)
+            name.erase(removeIter);
+        return name;
     }
     else
         return L"";
@@ -126,8 +126,8 @@ DataTime::DataTime(unsigned long long time)
 
 unsigned long long DataTime::getUINT64()const
 {
-    unsigned long long t(0);
-    memcpy(reinterpret_cast<char*>(&t), data, 8);
+    unsigned long long timeStamp(0);
+    memcpy(reinterpret_cast<char*>(&timeStamp), data, 8);
 
-    return t;
+    return timeStamp;
 }

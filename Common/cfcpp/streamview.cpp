@@ -39,34 +39,34 @@ void StreamView::write(const char *buffer, std::streamsize count)
 
     if (sectorChain.empty() == false)
     {
-        int secOffset = (int)(position / (std::streamsize)sectorSize);
-        int secShift = (int)(position % sectorSize);
+        int sectorOffset = (int)(position / (std::streamsize)sectorSize);
+        int sectorShift = (int)(position % sectorSize);
 
         roundByteWritten = (int)std::min(sectorSize - (position % (std::streamsize)sectorSize), count);
 
-        if (secOffset < (int)sectorChain.size())
+        if (sectorOffset < (int)sectorChain.size())
         {
-            char* dst = reinterpret_cast<char*>(sectorChain[secOffset]->GetData().data());
-            std::copy(buffer+offset, buffer+offset+roundByteWritten, dst + secShift);
+            char* dst = reinterpret_cast<char*>(sectorChain[sectorOffset]->GetData().data());
+            std::copy(buffer+offset, buffer+offset+roundByteWritten, dst + sectorShift);
 
-            sectorChain[secOffset]->dirtyFlag = true;
+            sectorChain[sectorOffset]->dirtyFlag = true;
         }
 
         byteWritten += roundByteWritten;
         offset += roundByteWritten;
-        secOffset++;
+        sectorOffset++;
 
         while (byteWritten < (count - sectorSize))
         {
             roundByteWritten = sectorSize;
-            char* dst = reinterpret_cast<char*>(sectorChain[secOffset]->GetData().data());
+            char* dst = reinterpret_cast<char*>(sectorChain[sectorOffset]->GetData().data());
             std::copy(buffer+offset, buffer+offset+roundByteWritten, dst);
 
-            sectorChain[secOffset]->dirtyFlag = true;
+            sectorChain[sectorOffset]->dirtyFlag = true;
 
             byteWritten += roundByteWritten;
             offset += roundByteWritten;
-            secOffset++;
+            sectorOffset++;
         }
 
         roundByteWritten = count - byteWritten;
@@ -74,10 +74,10 @@ void StreamView::write(const char *buffer, std::streamsize count)
         if (roundByteWritten != 0)
         {
 
-            char* dst = reinterpret_cast<char*>(sectorChain[secOffset]->GetData().data());
+            char* dst = reinterpret_cast<char*>(sectorChain[sectorOffset]->GetData().data());
             std::copy(buffer+offset, buffer+offset+roundByteWritten, dst);
 
-            sectorChain[secOffset]->dirtyFlag = true;
+            sectorChain[sectorOffset]->dirtyFlag = true;
         }
 
         position += count;
@@ -98,38 +98,38 @@ std::streamsize StreamView::read(char *buffer, std::streamsize len)
     int offset = 0;
     if (sectorChain.empty() == false && sectorChain.size() > 0)
     {
-        int secIndex = (int)(position / (std::streamsize)sectorSize);
+        int sectorIndex = (int)(position / (std::streamsize)sectorSize);
 
         nToRead = std::min((int)sectorChain[0]->GetData().size() - ((int)position % sectorSize), (int)len);
 
-        if (secIndex < (int)sectorChain.size())
+        if (sectorIndex < (int)sectorChain.size())
         {
-            char* src = reinterpret_cast<char*>(sectorChain[secIndex]->GetData().data() + (int)(position % sectorSize));
+            char* src = reinterpret_cast<char*>(sectorChain[sectorIndex]->GetData().data() + (int)(position % sectorSize));
             char* dst = buffer + offset;
             std::copy(src, src + nToRead, dst);
         }
 
         nRead += nToRead;
 
-        secIndex++;
+        sectorIndex++;
 
         while (nRead < (len - sectorSize))
         {
             nToRead = sectorSize;
-            char* src = reinterpret_cast<char*>(sectorChain[secIndex]->GetData().data());
+            char* src = reinterpret_cast<char*>(sectorChain[sectorIndex]->GetData().data());
             char* dst = buffer + offset + nToRead;
             std::copy(src, src + nToRead, dst);
 
             nRead += nToRead;
-            secIndex++;
+            sectorIndex++;
         }
 
         nToRead = len - nRead;
 
         if (nToRead != 0)
         {
-            if (secIndex > (int)sectorChain.size()) throw CFCorruptedFileException("The file is probably corrupted.");
-            char* src = reinterpret_cast<char*>(sectorChain[secIndex]->GetData().data());
+            if (sectorIndex > (int)sectorChain.size()) throw CFCorruptedFileException("The file is probably corrupted.");
+            char* src = reinterpret_cast<char*>(sectorChain[sectorIndex]->GetData().data());
             char* dst = buffer + offset + nRead;
             std::copy(src, src + nToRead, dst);
 
@@ -198,30 +198,30 @@ void StreamView::adjustLength(std::streamsize value, SList<Sector> &availableSec
 
     if (delta > 0)
     {
-        int nSec = (int)std::ceil(((double)delta / sectorSize));
+        int numberSector = (int)std::ceil(((double)delta / sectorSize));
 
-        while (nSec > 0)
+        while (numberSector > 0)
         {
-            std::shared_ptr<Sector> t;
+            std::shared_ptr<Sector> newSector;
 
             if (availableSectors.empty() || availableSectors.size() == 0)
             {
-                t.reset(new Sector(sectorSize, stream));
+                newSector.reset(new Sector(sectorSize, stream));
 
                 if (sectorSize == Sector::MINISECTOR_SIZE)
-                    t->type = SectorType::Mini;
+                    newSector->type = SectorType::Mini;
             }
             else
             {
-                t = availableSectors.dequeue();
+                newSector = availableSectors.dequeue();
             }
 
             if (isFatStream)
             {
-                t->InitFATData();
+                newSector->InitFATData();
             }
-            sectorChain.push_back(t);
-            nSec--;
+            sectorChain.push_back(newSector);
+            numberSector--;
         }
     }
 }

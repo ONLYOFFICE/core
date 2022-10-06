@@ -88,10 +88,10 @@ private:
 
     SVector<Sector> GetFatSectorChain();
     SVector<Sector> GetDifatSectorChain();
-    SVector<Sector> GetNormalSectorChain(int secID);
-    SVector<Sector> GetMiniSectorChain(int secID);
-    SVector<Sector> GetSectorChain(int secID, SectorType chainType);
-    void EnsureUniqueSectorIndex(int nextSecID, std::unordered_set<int> &processedSectors);
+    SVector<Sector> GetNormalSectorChain(int sectorID);
+    SVector<Sector> GetMiniSectorChain(int sectorID);
+    SVector<Sector> GetSectorChain(int sectorID, SectorType chainType);
+    void EnsureUniqueSectorIndex(int nextsectorID, std::unordered_set<int> &processedSectors);
     void CommitDirectory();
     void Close(bool closeStream);
 
@@ -116,7 +116,7 @@ private:
     void AllocateDIFATSectorChain(SVector<Sector>& FATsectorChain);
     void AllocateMiniSectorChain(SVector<Sector>& sectorChain);
     void PersistMiniStreamToStream(const SVector<Sector>& miniSectorChain);
-    static int LowSaturation(int i);
+    static int LowSaturation(int x);
     void SetSectorChain(SVector<Sector> sectorChain);
 
     CFSVersion getVersion() const;
@@ -143,11 +143,11 @@ private:
     std::shared_ptr<CFStorage> rootStorage;
 
     bool closeStream = true;
-    bool _transactionLockAdded = false;
-    int _lockSectorId = -1;
-    bool _transactionLockAllocated = false;
-    bool validationExceptionEnabled = true;
-    bool _disposed = false;
+    bool transactionLockAdded = false;
+    int lockSectorId = -1;
+    bool isTransactionLockAllocated = false;
+    bool isValidationExceptionEnabled = true;
+    bool isDisposed = false;
 
     CFSUpdateMode updateMode;
     SVector<IDirectoryEntry> directoryEntries;

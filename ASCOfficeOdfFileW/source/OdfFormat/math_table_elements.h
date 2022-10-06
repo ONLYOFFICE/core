@@ -41,11 +41,11 @@ class math_mtable : public office_math_element
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeMTable;
 
-    CPDOCCORE_DEFINE_VISITABLE();
-    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+    
+
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -64,11 +64,11 @@ class math_malignmark : public office_math_element
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeMAlignMark;
 
-    CPDOCCORE_DEFINE_VISITABLE();
-    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+    
+
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -87,11 +87,11 @@ class math_maligngroup : public office_math_element
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeMAlignGroup;
 
-    CPDOCCORE_DEFINE_VISITABLE();
-    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+    
+
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -110,11 +110,11 @@ class math_mtd : public office_math_element
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeMTd;
 
-    CPDOCCORE_DEFINE_VISITABLE();
-    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+    
+
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -133,11 +133,11 @@ class math_mlabeledtr : public office_math_element
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeMLabelEdTr;
 
-    CPDOCCORE_DEFINE_VISITABLE();
-    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+    
+
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -156,11 +156,11 @@ class math_mtr : public office_math_element
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeMTr;
 
-    CPDOCCORE_DEFINE_VISITABLE();
-    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+    
+
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);

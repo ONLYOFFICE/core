@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_VIEWPROPS_COMMON_SLIDE_VIEW_PROPERTIES_INCLUDE_H_
-#define PPTX_VIEWPROPS_COMMON_SLIDE_VIEW_PROPERTIES_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "CViewPr.h"
@@ -60,16 +58,14 @@ namespace PPTX
 
 				return *this;
 			}
-
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				GuideLst.clear();
 
-				CViewPr = node.ReadNode(_T("p:cViewPr"));
+				CViewPr = node.ReadNode(L"p:cViewPr");
 
-                XmlUtils::CXmlNode oNodeLst = node.ReadNode(_T("p:guideLst"));
-                XmlMacroLoadArray(oNodeLst, _T("p:guide"), GuideLst, Guide);
+                XmlUtils::CXmlNode oNodeLst = node.ReadNode(L"p:guideLst");
+                XmlMacroLoadArray(oNodeLst, L"p:guide", GuideLst, Guide);
 
                 XmlMacroReadAttributeBase(node, L"showGuides", attrShowGuides);
                 XmlMacroReadAttributeBase(node, L"snapToGrid", attrSnapToGrid);
@@ -80,15 +76,15 @@ namespace PPTX
 			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("showGuides"), attrShowGuides);
-				oAttr.Write(_T("snapToGrid"), attrSnapToGrid);
-				oAttr.Write(_T("snapToObjects"), attrSnapToObjects);
+				oAttr.Write(L"showGuides", attrShowGuides);
+				oAttr.Write(L"snapToGrid", attrSnapToGrid);
+				oAttr.Write(L"snapToObjects", attrSnapToObjects);
 
 				XmlUtils::CNodeValue oValue;
 				oValue.Write(CViewPr);
-				oValue.WriteArray(_T("p:guideLst"), GuideLst);
+				oValue.WriteArray(L"p:guideLst", GuideLst);
 
-				return XmlUtils::CreateNode(_T("p:cSldViewPr"), oAttr, oValue);
+				return XmlUtils::CreateNode(L"p:cSldViewPr", oAttr, oValue);
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
@@ -100,35 +96,84 @@ namespace PPTX
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 				pWriter->WriteRecord1(0, CViewPr);
+				pWriter->WriteRecordArray(1, 2, GuideLst);
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
-				pWriter->StartRecord(1);
-				ULONG len = (ULONG)GuideLst.size();
-				pWriter->WriteULONG(len);
-				for (ULONG i = 0; i < len; i++)
+				pReader->Skip(1); // start attributes
+
+				while (true)
 				{
-					pWriter->WriteRecord1(2, GuideLst[i]);
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					switch (_at)
+					{
+						case 0:
+						{
+							attrShowGuides = pReader->GetBool();
+						}break;
+						case 1:
+						{
+							attrSnapToGrid = pReader->GetBool();
+						}break;
+						case 2:
+						{
+							attrSnapToObjects = pReader->GetBool();
+						}break;
+						default:
+							break;
+					}
 				}
-				pWriter->EndRecord();
+				while (pReader->GetPos() < _end_rec)
+				{
+					BYTE _at = pReader->GetUChar();
+					switch (_at)
+					{
+						case 0:
+						{
+							CViewPr.fromPPTY(pReader);
+						}break;
+						case 1:
+						{
+							pReader->Skip(4);
+							ULONG _c = pReader->GetULong();
+							for (ULONG i = 0; i < _c; ++i)
+							{
+								pReader->Skip(1); // type
+								GuideLst.push_back(Guide());
+								GuideLst.back().fromPPTY(pReader);
+							}
+						}break;
+						default:
+						{
+							break;
+						}
+					}
+				}
+				pReader->Seek(_end_rec);
 			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(_T("p:cSldViewPr"));
+				pWriter->StartNode(L"p:cSldViewPr");
 
 				pWriter->StartAttributes();
 
-				pWriter->WriteAttribute(_T("showGuides"), attrShowGuides);
-				pWriter->WriteAttribute(_T("snapToGrid"), attrSnapToGrid);
-				pWriter->WriteAttribute(_T("snapToObjects"), attrSnapToObjects);
+				pWriter->WriteAttribute(L"showGuides", attrShowGuides);
+				pWriter->WriteAttribute(L"snapToGrid", attrSnapToGrid);
+				pWriter->WriteAttribute(L"snapToObjects", attrSnapToObjects);
 
 				pWriter->EndAttributes();
 
 				CViewPr.toXmlWriter(pWriter);
-				pWriter->WriteArray(_T("p:guideLst"), GuideLst);	
+				pWriter->WriteArray(L"p:guideLst", GuideLst);	
 
-				pWriter->EndNode(_T("p:cSldViewPr"));
+				pWriter->EndNode(L"p:cSldViewPr");
 			}
 
-		public:
 			nsViewProps::CViewPr	CViewPr;
 			std::vector<Guide>		GuideLst;
 
@@ -147,5 +192,3 @@ namespace PPTX
 		};
 	} // namespace nsViewProps
 } // namespace PPTX
-
-#endif // PPTX_VIEWPROPS_COMMON_SLIDE_VIEW_PROPERTIES_INCLUDE_H_

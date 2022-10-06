@@ -46,11 +46,13 @@ namespace odf_writer {
 class office_spreadsheet : public office_element_impl<office_spreadsheet>
 {
 public:
+	office_spreadsheet() {}
+	virtual ~office_spreadsheet();
+
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeOfficeSpreadsheet;
-    CPDOCCORE_DEFINE_VISITABLE()
+
+    static const ElementType type = typeOfficeSpreadsheet;    
 
 	office_element_ptr_array & getContent(){return content_;}
 

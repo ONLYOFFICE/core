@@ -187,7 +187,7 @@ namespace PPTX
 
 				pReader->Seek(_end_rec);
 			}
-		public:
+
 			Limit::TextShapeType prst;
 			std::vector<Gd>		 avLst;
 		protected:

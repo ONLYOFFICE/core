@@ -417,8 +417,8 @@ void table_columns::serialize(std::wostream & strm)
 // table-columns-no-group
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-//const wchar_t * table_columns_no_group::ns = L"table";
-//const wchar_t * table_columns_no_group::name = L"table-columns";
+const wchar_t * table_columns_no_group::ns = L"table";
+const wchar_t * table_columns_no_group::name = L"table-columns";
 table_columns_no_group::table_columns_no_group(odf_conversion_context * _Context) : was_header_(false) 
 {
 	Context = _Context;

@@ -43,12 +43,13 @@
 namespace cpdoccore { 
 namespace odf_writer {
 
-class number_style_base : public office_element
+class number_style_base : public office_element_impl<number_style_base>
 {
 public:
-   
-    CPDOCCORE_DEFINE_VISITABLE()
-    
+	static const wchar_t * ns;
+	static const wchar_t * name;
+	static const ElementType type = typeNumberBaseStyle;
+
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child);
 	
@@ -71,10 +72,10 @@ class number_number_style : public number_style_base
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeNumberNumberStyle;
-    CPDOCCORE_DEFINE_VISITABLE()
-    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+    
+
 	
 	virtual void serialize(std::wostream & strm);
 
@@ -87,10 +88,10 @@ class number_currency_style : public number_style_base
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeNumberCurrencyStyle;
-    CPDOCCORE_DEFINE_VISITABLE()
-    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+    
+
 
 	virtual void serialize(std::wostream & strm);
 };
@@ -102,10 +103,10 @@ class number_text_style : public number_style_base
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeNumberTextStyle;
-    CPDOCCORE_DEFINE_VISITABLE()
-    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+    
+
 
 	virtual void serialize(std::wostream & strm);
 };
@@ -117,10 +118,10 @@ class number_date_style : public number_style_base
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeNumberDataStyle;
-    CPDOCCORE_DEFINE_VISITABLE()
-    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+    
+
 
 	virtual void serialize(std::wostream & strm);
 
@@ -134,10 +135,8 @@ class number_percentage_style : public number_style_base
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeNumberPercentageStyle;
-    CPDOCCORE_DEFINE_VISITABLE()
-    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 
 	virtual void serialize(std::wostream & strm);
 };
@@ -149,11 +148,9 @@ class number_time_style : public number_style_base
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeNumberTimeStyle;
-    CPDOCCORE_DEFINE_VISITABLE()
-    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
 
+    static const ElementType type = typeNumberTimeStyle;
+ 
 	_CP_OPT(bool) number_automatic_order_;
 
 	virtual void serialize(std::wostream & strm);
@@ -166,9 +163,9 @@ class number_text : public office_element_impl<number_text>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeNumberText;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 
@@ -187,9 +184,9 @@ class number_number : public office_element_impl<number_number>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeNumberNumber;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child);
@@ -215,9 +212,9 @@ class number_embedded_text : public office_element_impl<number_embedded_text>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeNumberEmbeddedText;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void serialize(std::wostream & strm);
@@ -236,9 +233,9 @@ class number_scientific_number : public office_element_impl<number_scientific_nu
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeNumberScientificNumber;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void serialize(std::wostream & strm);
@@ -263,9 +260,9 @@ class number_currency_symbol : public office_element_impl<number_currency_symbol
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeNumberCurrencySymbol;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void serialize(std::wostream & strm);
@@ -286,9 +283,9 @@ class number_text_content : public office_element_impl<number_text_content>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeNumberTextContent;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 
@@ -306,9 +303,9 @@ class number_day_of_week : public office_element_impl<number_day_of_week>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeNumberDayOfWeek;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void serialize(std::wostream & strm);
@@ -324,9 +321,9 @@ class number_quarter : public office_element_impl<number_quarter>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeNumberQuarter;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void serialize(std::wostream & strm);
@@ -342,9 +339,9 @@ class number_day : public office_element_impl<number_day>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeNumberDay;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void serialize(std::wostream & strm);
@@ -361,9 +358,9 @@ class number_month : public office_element_impl<number_month>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeNumberMonth;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void serialize(std::wostream & strm);
@@ -381,9 +378,9 @@ class number_year : public office_element_impl<number_year>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeNumberYear;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void serialize(std::wostream & strm);
@@ -399,9 +396,9 @@ class number_hours : public office_element_impl<number_hours>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeNumberHours;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void serialize(std::wostream & strm);
@@ -417,9 +414,9 @@ class number_minutes : public office_element_impl<number_minutes>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeNumberMinutes;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void serialize(std::wostream & strm);
@@ -435,9 +432,9 @@ class number_seconds : public office_element_impl<number_seconds>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeNumberSeconds;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void serialize(std::wostream & strm);
@@ -454,9 +451,9 @@ class number_am_pm : public office_element_impl<number_am_pm>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeNumberAmPm;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void serialize(std::wostream & strm);
@@ -469,9 +466,9 @@ class number_fraction : public office_element_impl<number_fraction>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeNumberFraction;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void serialize(std::wostream & strm);

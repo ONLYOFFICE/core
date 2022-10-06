@@ -270,8 +270,6 @@ namespace PPTX
 
 				pWriter->EndRecord();
 			}
-
-		public:
 			std::vector<Gd>			avLst;
 			std::vector<Gd>			gdLst;
 			std::vector<AhBase>		ahLst;

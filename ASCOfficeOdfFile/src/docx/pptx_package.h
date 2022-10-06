@@ -69,11 +69,11 @@ class slide_content : noncopyable
 {
 public:
     slide_content();
-    std::wostream & content() { return content_; }
+    std::wstringstream & content() { return content_; }
     void			add_rel(relationship const & r);
 	void			add_rels(rels & r);
     rels_file_ptr	get_rel_file() { return rels_; }
-    std::wstring	str() { return content_.str(); }
+	std::wstring	str() { return content_.str(); }
     
 	static _CP_PTR(slide_content) create();
 

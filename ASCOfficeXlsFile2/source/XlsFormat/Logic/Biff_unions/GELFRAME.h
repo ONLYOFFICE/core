@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of GELFRAME union of records 
 class GELFRAME: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(GELFRAME)
@@ -49,7 +47,7 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	static const ElementType	type = typeGELFRAME;
+	static const ElementType type = typeGELFRAME;
 
 	int serialize(std::wostream & stream_);
 

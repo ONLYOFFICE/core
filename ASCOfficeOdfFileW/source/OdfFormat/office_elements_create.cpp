@@ -32,7 +32,7 @@
 
 #include "office_elements_create.h"
 
-#include <iostream>
+#include <sstream>
 #include "logging.h"
 
 namespace cpdoccore { 
@@ -111,13 +111,12 @@ void not_applicable_element(const std::wstring & Current,const std::wstring & Ns
 #endif
     
 }
-
 void not_applicable_element(const office_element * CurrentElm, const std::wstring & Ns, const std::wstring & Name)
 {
-    std::wstringstream ss;
-    if (CurrentElm)
-        ss << CurrentElm->get_ns() << L":" << CurrentElm->get_name();
-    not_applicable_element(ss.str(), Ns, Name);
+	std::wstringstream ss;
+	if (CurrentElm)
+		ss << CurrentElm->get_ns() << L":" << CurrentElm->get_name();
+	not_applicable_element(ss.str(), Ns, Name);
 }
 
 bool create_element(const std::wstring & Ns,

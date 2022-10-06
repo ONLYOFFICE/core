@@ -49,6 +49,9 @@ namespace cpdoccore {
 	using namespace odf_types;
 
 namespace odf_writer {
+	
+const wchar_t * number_style_base::ns = L"number";
+const wchar_t * number_style_base::name = L"base-style";
 
 std::wstring number_style_base::get_style_name() const
 {

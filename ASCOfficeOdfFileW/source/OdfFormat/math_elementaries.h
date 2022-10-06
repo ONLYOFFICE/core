@@ -41,10 +41,10 @@ class math_mstack : public office_math_element
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeMStack;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 
 private:
@@ -65,10 +65,10 @@ class math_msrow : public office_math_element
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeMSRow;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -88,10 +88,10 @@ class math_msline : public office_math_element
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeMSLine;
 
-	CPDOCCORE_DEFINE_VISITABLE();
+	
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -111,10 +111,10 @@ class math_mlongdiv : public office_math_element
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeMSLongDiv;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -134,10 +134,10 @@ class math_mscarries : public office_math_element
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeMSCarries;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -156,10 +156,10 @@ class math_msgroup : public office_math_element
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeMSGroup;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 private:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -179,11 +179,11 @@ class math_mscarry : public office_math_element
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeMSCarry;
 
-    CPDOCCORE_DEFINE_VISITABLE();
-    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+    
+
 private:
     virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element(const office_element_ptr & child_element);

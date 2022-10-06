@@ -45,9 +45,9 @@ class text_number : public office_element_impl<text_number>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTextNumber;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 public:
     text_number() {}
@@ -74,9 +74,9 @@ class text_list_item : public office_element_impl<text_list_item>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTextListItem;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -110,9 +110,9 @@ class text_list_header : public office_element_impl<text_list_header>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTextListHeader;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);

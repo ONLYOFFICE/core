@@ -68,9 +68,9 @@ class draw_page : public office_element_impl<draw_page>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeDrawPage;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -91,9 +91,9 @@ class presentation_footer_decl : public office_element_impl<presentation_footer_
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typePresentationFooterDecl;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
     virtual void add_child_element( const office_element_ptr & child_element){}
@@ -112,9 +112,9 @@ class presentation_date_time_decl : public office_element_impl<presentation_date
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typePresentationDateTimeDecl;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	_CP_OPT(std::wstring)	presentation_name_;
 	_CP_OPT(std::wstring)	presentation_source_;
@@ -134,9 +134,9 @@ class presentation_notes : public office_element_impl<presentation_notes>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typePresentationNotes;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);

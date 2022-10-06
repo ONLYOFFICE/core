@@ -48,9 +48,9 @@ class style_map : public office_element_impl<style_map>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeStyleMap;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
 	virtual void serialize(std::wostream & strm){}

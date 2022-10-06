@@ -258,7 +258,8 @@ namespace OOX
 		
 		const FileType ActiveX_bin			(L"", L"activeX.bin",
 												L"application/vnd.ms-office.activeX",
-												L"http://schemas.microsoft.com/office/2006/relationships/activeXControlBinary");
+												L"http://schemas.microsoft.com/office/2006/relationships/activeXControlBinary",
+												L"activeX/activeX_bin", true, true);
 
 		const FileType VbaProject			(L"", L"vbaProject.bin",
 												L"application/vnd.ms-office.vbaProject",

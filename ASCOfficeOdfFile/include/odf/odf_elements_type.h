@@ -569,7 +569,8 @@ enum ElementType
 
 	typeScriptEventListener,
 
-    typeNumberNumberStyle,
+	typeNumberBaseStyle,
+	typeNumberNumberStyle,
     typeNumberDataStyle,
     typeNumberText,
     typeNumberNumber,

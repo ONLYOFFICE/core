@@ -54,9 +54,9 @@ class office_forms : public office_element_impl<office_forms>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeOfficeForms;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -76,9 +76,9 @@ class form_form : public office_element_impl<form_form>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeFormForm;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -124,9 +124,9 @@ class form_properties : public office_element_impl<form_properties>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeFormProperties;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -143,9 +143,9 @@ class form_property : public office_element_impl<form_property>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeFormProperty;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
@@ -163,9 +163,9 @@ class form_list_property : public office_element_impl<form_list_property>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeFormListProperty;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child_element);
@@ -185,9 +185,9 @@ class form_list_value : public office_element_impl<form_list_value>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeFormListValue;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
@@ -205,7 +205,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
     
-	static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeFormElement;
 
  	form_element() {}
@@ -245,9 +245,9 @@ class form_button : public form_element
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeFormButton;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -272,9 +272,9 @@ class form_image_frame : public form_element
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeFormImageFrame;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -288,9 +288,9 @@ class form_text : public form_element
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeFormText;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -308,9 +308,9 @@ class form_textarea : public form_element
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeFormTextarea;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -327,9 +327,9 @@ class form_fixed_text  : public form_element
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeFormFixedText;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
     virtual void serialize(std::wostream & _Wostream);
 };
@@ -341,9 +341,9 @@ class form_checkbox : public form_text
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeFormCheckbox;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	form_checkbox() : current_state_(false), image_position_(L"center") {}
     virtual void serialize(std::wostream & _Wostream);
@@ -362,9 +362,9 @@ class form_radio : public form_checkbox
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeFormRadio;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
     virtual void serialize(std::wostream & _Wostream);
 };
@@ -376,9 +376,9 @@ class form_combobox : public form_text
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeFormCombobox;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child_element);
@@ -402,9 +402,9 @@ class form_listbox : public form_element
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeFormListbox;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child_element);
@@ -434,9 +434,9 @@ class form_date : public form_element
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeFormDate;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
     virtual void serialize(std::wostream & _Wostream);
 };
@@ -450,9 +450,9 @@ public:
    
 	static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeFormValueRange;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -471,9 +471,9 @@ class form_frame : public form_element
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeFormFrame;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
     virtual void serialize(std::wostream & _Wostream);
 };
@@ -485,9 +485,9 @@ class form_item : public office_element_impl<form_item>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeFormItem;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}

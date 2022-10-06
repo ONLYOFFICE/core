@@ -123,7 +123,7 @@ void content_types_file::write(const std::wstring & RootPath)
 	content_type_content_.xml_to_stream(resStream);
     std::wstring res = resStream.str(); 
 
-    simple_element elm(filename_, resStream.str());
+    simple_element elm(filename_, res);
     elm.write(RootPath);
 }
 

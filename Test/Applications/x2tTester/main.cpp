@@ -17,7 +17,7 @@ int main(int argc, char** argv)
 	if(argc < 2) config_path = L"./config.xml";
 	else config_path = std::wstring(argv[1]);
 
-	Cx2tTester tester = Cx2tTester(config_path);
+	Cx2tTester tester(config_path);
 	tester.Start();
 
 	return 0;

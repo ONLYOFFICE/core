@@ -1,10 +1,12 @@
 #include "x2tTester.h"
+#include "../../../X2tConverter/src/run.h"
 
 Cx2tTester::Cx2tTester(std::wstring configPath)
 {
+	m_bIsUseSystemFonts = true;
 	setConfig(configPath);
 
-	m_xmlParams = m_outputFolder + L'\\' + L"params.xml";
+	m_xmlParams = m_outputFolder + L"/params.xml";
 
 	// todo check
 	m_reportStream.open(m_reportPath);
@@ -23,6 +25,22 @@ Cx2tTester::~Cx2tTester()
 
 void Cx2tTester::Start()
 {
+	// check fonts
+	std::wstring sFontsDirectory = NSFile::GetProcessDirectory() + L"/fonts";
+	CApplicationFontsWorker oWorker;
+	oWorker.m_sDirectory = sFontsDirectory;
+	if (!NSDirectory::Exists(oWorker.m_sDirectory))
+		NSDirectory::CreateDirectory(oWorker.m_sDirectory);
+
+	oWorker.m_bIsUseSystemFonts = m_bIsUseSystemFonts;
+
+	for (std::vector<std::wstring>::iterator i = m_arAdditionalFontsDirs.begin(); i != m_arAdditionalFontsDirs.end(); i++)
+		oWorker.m_arAdditionalFolders.push_back(*i);
+
+	oWorker.m_bIsNeedThumbnails = false;
+	NSFonts::IApplicationFonts* pFonts = oWorker.Check();
+	RELEASEINTERFACE(pFonts);
+
 	// setup & clear output folder
 	if(NSDirectory::Exists(m_outputFolder))
 		NSDirectory::DeleteDirectory(m_outputFolder);
@@ -35,10 +53,8 @@ void Cx2tTester::Start()
 
 	for(std::wstring& file : files)
 	{
-
 		// setup folder for output files
-		std::wstring output_files_folder = m_outputFolder +
-				L'\\' + NSFile::GetFileName(file);
+		std::wstring output_files_folder = m_outputFolder + L'/' + NSFile::GetFileName(file);
 
 		if(NSDirectory::Exists(output_files_folder))
 			NSDirectory::DeleteDirectory(output_files_folder);
@@ -52,7 +68,7 @@ void Cx2tTester::Start()
 		for(int& output_format : m_formats[input_format])
 		{
 			std::wstring output_file_path = output_files_folder
-					+ L'\\' + NSFile::GetFileName(file) + checker.GetExtensionByType(output_format);
+					+ L"/" + NSFile::GetFileName(file) + checker.GetExtensionByType(output_format);
 
 			// creating temporary xml file with params
 			NSStringUtils::CStringBuilder builder;
@@ -61,11 +77,11 @@ void Cx2tTester::Start()
 			builder.WriteString(L"<Root>");
 
 			builder.WriteString(L"<m_sFileFrom>");
-			builder.WriteString(file);
+			builder.WriteEncodeXmlString(file);
 			builder.WriteString(L"</m_sFileFrom>");
 
 			builder.WriteString(L"<m_sFileTo>");
-			builder.WriteString(output_file_path);
+			builder.WriteEncodeXmlString(output_file_path);
 			builder.WriteString(L"</m_sFileTo>");
 
 
@@ -80,13 +96,13 @@ void Cx2tTester::Start()
 
 			builder.WriteString(L"<m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
 
-//			builder.WriteString(L"<m_sAllFontsPath>");
-//			builder.WriteString(process + L"/fonts/AllFonts.js");
-//			builder.WriteString(L"</m_sAllFontsPath>");
+			builder.WriteString(L"<m_sAllFontsPath>");
+			builder.WriteEncodeXmlString(sFontsDirectory + L"/AllFonts.js");
+			builder.WriteString(L"</m_sAllFontsPath>");
 
-//			builder.WriteString(L"<m_sFontDir>");
-//			builder.WriteString(process + L"/fonts");
-//			builder.WriteString(L"</m_sFontDir>");
+			builder.WriteString(L"<m_sFontDir>");
+			builder.WriteEncodeXmlString(sFontsDirectory);
+			builder.WriteString(L"</m_sFontDir>");
 
 			std::wcout << process << std::endl;
 
@@ -98,7 +114,7 @@ void Cx2tTester::Start()
 			NSFile::CFileBinary::SaveToFile(m_xmlParams, xml_params, true);
 
 			std::wcout << file << L" to " << output_file_path << L"... ";
-			int exit_code = convert(file, output_file_path);
+			int exit_code = convert();
 
 			if(!exit_code)
 				std::wcout << "OK" << std::endl;
@@ -125,18 +141,29 @@ void Cx2tTester::setConfig(const std::wstring& configPath)
 	XmlUtils::CXmlNode root;
 	XmlUtils::CXmlNodes nodes;
 	if(root.FromXmlFile(configPath) && root.GetChilds(nodes))
+	{
 		for(int i = 0; i < nodes.GetCount(); i++)
 		{
 			XmlUtils::CXmlNode node;
 			nodes.GetAt(i, node);
-			std::wstring name = node.GetName();\
+			std::wstring name = node.GetName();
 
 			// key-value
 			if(name == L"reportPath") m_reportPath = node.GetText();
 			else if(name == L"inputFolder") m_inputFolder = node.GetText();
 			else if(name == L"outputFolder") m_outputFolder = node.GetText();
 			else if(name == L"x2tPath") m_x2tPath = node.GetText();
-
+			else if (name == L"fonts")
+			{
+				m_bIsUseSystemFonts = (1 == node.ReadValueInt(L"system", 1)) ? true : false;
+				XmlUtils::CXmlNodes oNodeFontDirs = node.ReadNodesNoNS(L"directories");
+				for (int nIndex = 0, nCount = oNodeFontDirs.GetCount(); nIndex < nCount; ++nIndex)
+				{
+					XmlUtils::CXmlNode oNodeDir;
+					oNodeFontDirs.GetAt(nIndex, oNodeDir);
+					m_arAdditionalFontsDirs.push_back(oNodeDir.GetText());
+				}
+			}
 			// arrays
 			else
 			{
@@ -165,6 +192,7 @@ void Cx2tTester::setConfig(const std::wstring& configPath)
 				}
 			}
 		}
+	}
 	// else err
 }
 void Cx2tTester::setReportHeader()
@@ -183,26 +211,7 @@ void Cx2tTester::writeReport(const Report& report)
 	m_reportStream << report.outputExt << L"\t";
 	m_reportStream << report.exitCode << L"\n";
 }
-int Cx2tTester::convert(const std::wstring& inputPath, const std::wstring& outputPath)
+int Cx2tTester::convert()
 {
-	std::wstring command = m_x2tPath + L' ' + m_xmlParams;
-	wchar_t *ptr_command = new wchar_t[command.size() + 1];
-	memcpy(ptr_command, command.c_str(), command.length() * sizeof(wchar_t));
-	ptr_command[command.size()] = L'\0';
-
-	PROCESS_INFORMATION processinfo;
-	STARTUPINFO sturtupinfo;
-	ZeroMemory(&processinfo,sizeof(PROCESS_INFORMATION));
-	ZeroMemory(&sturtupinfo,sizeof(STARTUPINFO));
-	sturtupinfo.cb = sizeof(sturtupinfo);
-
-	BOOL bool_result = CreateProcessW(NULL, ptr_command,
-								  NULL, NULL, TRUE, CREATE_NO_WINDOW, NULL, NULL, &sturtupinfo, &processinfo);
-
-	WaitForSingleObject(processinfo.hProcess, INFINITE);
-	RELEASEARRAYOBJECTS(ptr_command);
-
-	DWORD exit_code = 0;
-	GetExitCodeProcess(processinfo.hProcess, &exit_code);
-	return exit_code;
+	return NSX2T::Convert(NSFile::GetDirectoryName(m_x2tPath), m_xmlParams);
 }

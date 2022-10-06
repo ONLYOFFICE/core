@@ -42,12 +42,16 @@ private:
 	void setReportHeader();
 
 	void writeReport(const Report& report);
-	int convert(const std::wstring& inputPath, const std::wstring& outputPath);
+	int convert();
 
 	std::wstring m_reportPath;
 	std::wstring m_inputFolder;
 	std::wstring m_outputFolder;
 	std::wstring m_x2tPath;
+
+	// fonts
+	bool m_bIsUseSystemFonts;
+	std::vector<std::wstring> m_arAdditionalFontsDirs;
 
 	std::wstring m_xmlParams;
 

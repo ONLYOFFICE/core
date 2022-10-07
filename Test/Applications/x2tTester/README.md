@@ -17,11 +17,6 @@ You need to create an xml configuration file. It must contain:
 
 	# path to x2t
 	<x2tPath> </x2tPath>
-
-	# input format with output formats
-	<*>
-		<item> </item>
-	</*>
 	
 
 You can use the following template:
@@ -32,10 +27,6 @@ You can use the following template:
 	<inputFolder> </inputFolder>
 	<outputFolder> </outputFolder>
 	<x2tPath> </x2tPath>
-	<docx>
-		<item>txt</item>
-		<item>odt</item>
-	</docx>
 	</settings>
 
 USAGE

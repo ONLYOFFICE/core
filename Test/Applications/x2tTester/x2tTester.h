@@ -5,6 +5,7 @@
 #include <map>
 #include <vector>
 #include <fstream>
+#include <algorithm>
 
 #include "../../../Common/OfficeFileFormats.h"
 #include "../../../Common/OfficeFileFormatChecker.h"

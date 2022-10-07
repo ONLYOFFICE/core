@@ -126,7 +126,7 @@ namespace PPT_FORMAT
             if (value <= 0 || value > 255)
                 return false;
 
-            std::set<int> BLCharset = {128, 136};
+            std::set<int> BLCharset = {128, 136, 129};
             return BLCharset.find(value) == BLCharset.end();
         }
 

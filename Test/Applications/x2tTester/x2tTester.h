@@ -4,7 +4,6 @@
 #include <iostream>
 #include <map>
 #include <vector>
-#include <fstream>
 #include <algorithm>
 
 #include "../../../Common/OfficeFileFormats.h"
@@ -20,16 +19,31 @@
 
 #include "../../../OfficeUtils/src/OfficeUtils.h"
 
+struct FormatsList
+{
+public:
+	std::vector<int> documents;
+	std::vector<int> presentations;
+	std::vector<int> spreadsheets;
+	std::vector<int> crossplatform;
+	std::vector<int> images;
 
+	FormatsList();
+
+	bool isDocoment(int format);
+	bool isPresentation(int format);
+	bool isSpreadsheet(int format);
+	bool isCrossplatform(int format);
+	bool isImage(int format);
+
+	void SetDefault();
+};
+
+
+// setups folders, parse xml config, takes formats, create CConverters
 class Cx2tTester
 {
 public:
-	Cx2tTester(std::wstring configPath);
-	~Cx2tTester();
-
-	void Start();
-
-private:
 	struct Report
 	{
 		std::wstring inputFile;
@@ -39,28 +53,72 @@ private:
 		int exitCode;
 	};
 
+	Cx2tTester(const std::wstring& configPath);
+	~Cx2tTester();
+
 	void setConfig(const std::wstring& configPath);
-	void setReportHeader();
+	void Start();
 
 	void writeReport(const Report& report);
-	int convert();
+	void writeReports(const std::vector<Report>& reports);
 
-	std::wstring m_reportPath;
-	std::wstring m_inputFolder;
-	std::wstring m_outputFolder;
+	bool isAllBusy();
+	bool isAllFree();
+
+	NSCriticalSection::CRITICAL_SECTION m_coresCS;
+	NSCriticalSection::CRITICAL_SECTION m_reportCS;
+	NSCriticalSection::CRITICAL_SECTION m_outputCS;
+
+	int m_currentProc;
+	int m_maxProc;
+
+private:
+	void setReportHeader();
+
+	// takes from config
+	std::wstring m_reportFile;
+	std::wstring m_inputDirectory;
+	std::wstring m_outputDirectory;
 	std::wstring m_x2tPath;
 
 	// fonts
 	bool m_bIsUseSystemFonts;
 	std::vector<std::wstring> m_arAdditionalFontsDirs;
 
-	std::wstring m_xmlParams;
+	NSFile::CFileBinary m_reportStream;
+};
 
-	std::wofstream m_reportStream;
+// generates temp xml, convert, calls m_internal->writeReport
+class CConverter : public NSThreads::CBaseThread
+{
+public:
+	CConverter(Cx2tTester* internal);
+	virtual ~CConverter();
 
-	// from 1 to N formats
-	std::map<int, std::vector<int>> m_formats;
+	void SetInputFile(const std::wstring& inputFile);
+	void SetInputFormat(int inputFormat);
 
+	void SetOutputFilesDirectory(const std::wstring& outputFilesDirectory);
+	void SetOutputFormats(const std::vector<int> outputFormats);
+
+	void SetFontsDirectory(const std::wstring& fontsDirectory);
+	void SetX2tPath (const std::wstring& x2tPath);
+
+	virtual DWORD ThreadProc();
+
+private:
+	Cx2tTester* m_internal;
+
+	std::wstring m_inputFile;
+	int m_inputFormat;
+
+	std::wstring m_outputFilesDirectory;
+	std::vector<int> m_outputFormats;
+
+	std::wstring m_fontsDirectory;
+	COfficeFileFormatChecker checker;
+
+	std::wstring m_x2tPath;
 };
 
 #endif // X2T_TESTER_H

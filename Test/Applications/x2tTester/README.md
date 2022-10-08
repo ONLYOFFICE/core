@@ -9,14 +9,17 @@ You need to create an xml configuration file. It must contain:
 	# report.csv path
 	<reportPath> </reportPath>
 
-	# folder with test documents
-	<inputFolder> </inputFolder>
+	# directory with test documents
+	<inputDirectory> </inputDirectory>
 
-	# results folder
-	<outputFolder> </outputFolder>
+	# results directory
+	<outputDirectory> </outputDirectory>
 
 	# path to x2t
 	<x2tPath> </x2tPath>
+
+	# num cores to use
+	<cores> </cores>
 	
 
 You can use the following template:
@@ -24,9 +27,10 @@ You can use the following template:
 	<?xml version="1.0" encoding="utf-8"?>
 	<settings>
 	<reportPath> </reportPath>
-	<inputFolder> </inputFolder>
-	<outputFolder> </outputFolder>
+	<inputDirectory> </inputDirectory>
+	<outputDirectory> </outputDirectory>
 	<x2tPath> </x2tPath>
+	<cores> </cores>
 	</settings>
 
 USAGE

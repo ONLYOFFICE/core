@@ -261,7 +261,7 @@ private:
     PPTX::Logic::BldP   *m_currentBldP;
 
     int m_nextRID; // it needs for audio maybe video for compisation id number;
-    bool m_isPPT10Broken = false;
+    bool m_isPPT10Broken = true;
 };
 
 }

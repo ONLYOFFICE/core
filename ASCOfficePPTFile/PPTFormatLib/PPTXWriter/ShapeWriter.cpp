@@ -676,7 +676,7 @@ void PPT_FORMAT::CShapeWriter::WriteGroupInfo()
     if (!pGroupElement->m_sDescription.empty())
     {
         m_oWriter.WriteString(std::wstring(L" descr=\""));
-        m_oWriter.WriteStringXML(pGroupElement->m_sDescription);
+        m_oWriter.WriteStringXML(XmlUtils::EncodeXmlStringExtend(pGroupElement->m_sDescription));
         m_oWriter.WriteString(std::wstring(L"\""));
     }
     m_oWriter.WriteString(std::wstring(L">"));
@@ -729,7 +729,7 @@ void PPT_FORMAT::CShapeWriter::WriteTableInfo()
     if (!pGroupElement->m_sDescription.empty())
     {
         m_oWriter.WriteString(std::wstring(L" descr=\""));
-        m_oWriter.WriteStringXML(pGroupElement->m_sDescription);
+        m_oWriter.WriteStringXML(XmlUtils::EncodeXmlStringExtend(pGroupElement->m_sDescription));
         m_oWriter.WriteString(std::wstring(L"\""));
     }
     m_oWriter.WriteString(std::wstring(L">"));
@@ -782,7 +782,7 @@ void PPT_FORMAT::CShapeWriter::WriteShapeInfo()
     if (!pShapeElement->m_sDescription.empty())
     {
         m_oWriter.WriteString(std::wstring(L" descr=\""));
-        m_oWriter.WriteStringXML(pShapeElement->m_sDescription);
+        m_oWriter.WriteStringXML(XmlUtils::EncodeXmlStringExtend(pShapeElement->m_sDescription, true));
         m_oWriter.WriteString(std::wstring(L"\""));
     }
     m_oWriter.WriteString(std::wstring(L">"));

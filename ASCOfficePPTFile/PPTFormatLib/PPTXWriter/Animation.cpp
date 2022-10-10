@@ -52,6 +52,7 @@ void Animation::Convert(PPTX::Logic::Timing &oTiming)
 {
     if (m_pPPT10)
     {
+        m_isPPT10Broken = false;
         // It must be first to write some reference from ExtTimeNodeContainer
         if (m_pPPT10->m_haveBuildList && !m_pPPT10->m_pBuildListContainer->n_arrRgChildRec.empty())
         {
@@ -66,7 +67,7 @@ void Animation::Convert(PPTX::Logic::Timing &oTiming)
             FillTnLst(m_pPPT10->m_pExtTimeNodeContainer, *(oTiming.tnLst));
         }
     }
-    if (!m_arrOldAnim.empty() || m_isPPT10Broken)
+    if (!m_arrOldAnim.empty() && m_isPPT10Broken)
     {
         oTiming = PPTX::Logic::Timing();
         InitTimingTags(oTiming);

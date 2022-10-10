@@ -8,6 +8,8 @@
 namespace MetaFile
 {
 	CWmfParserBase::CWmfParserBase() : m_oPlayer(this), m_pInterpretator(NULL), m_bEof(false)
+	CWmfParserBase::CWmfParserBase(IMetaFileBase *pParent)
+		: m_oPlayer(this), m_pInterpretator(NULL), m_bEof(false), m_pParent(pParent)
 	{
 		m_pDC = m_oPlayer.GetDC();
 	}
@@ -163,12 +165,15 @@ namespace MetaFile
 		return m_pDC->GetMapMode();
 	}
 
-	double CWmfParserBase::GetScale()
+	double CWmfParserBase::GetPixWidth(double dScaleX)
 	{
-		if (m_oPlaceable.Inch != 0)
-			return 1440. / m_oPlaceable.Inch / GetPixelWidth();
+		if (NULL != m_pParent)
+			return m_pParent->GetPixWidth(dScaleX);
 
-		return 20. / GetPixelWidth(); // 1440. / 72. //units are in 1/8th of a point (1 point is 1/72th of an inch)
+		if (0 != m_oPlaceable.Inch && MM_TEXT != m_pDC->GetMapMode())
+			return dScaleX * (1440. / (((m_oPlaceable.Inch <= 1440) ? m_oPlaceable.Inch : 96) * m_pDC->GetPixelWidth()));
+
+		return dScaleX / m_pDC->GetPixelWidth();
 	}
 
 	void CWmfParserBase::SetInterpretator(IOutputDevice *pOutput)
@@ -421,7 +426,7 @@ namespace MetaFile
 				}
 			}
 
-			m_pInterpretator->DrawString(wsText, unCharsCount, dX, dY, pdDx, 1, GetPixelWidth(), GetPixelHeight());
+			m_pInterpretator->DrawString(wsText, unCharsCount, dX, dY, pdDx, 1, GetTransform()->M11, GetTransform()->M22);
 
 			RELEASEARRAYOBJECTS(pdDx);
 		}
@@ -776,8 +781,12 @@ namespace MetaFile
 		if (m_oPlaceable.Inch == 0 && NULL != m_pInterpretator)
 		{
 			m_oRect = GetBoundingBox();
+			m_pDC->SetViewportOff(m_oRect.nLeft, m_oRect.nTop);
+			m_pDC->SetViewportExt(m_oRect.nRight - m_oRect.nLeft, m_oRect.nBottom - m_oRect.nTop);
 			m_pDC->SetWindowOff(m_oRect.nLeft, m_oRect.nTop);
 			m_pDC->SetWindowExt(m_oRect.nRight - m_oRect.nLeft, m_oRect.nBottom - m_oRect.nTop);
+
+			UpdateOutputDC();
 		}
 		else
 		{
@@ -1604,7 +1613,7 @@ namespace MetaFile
 
 				if (0 == unRemainingBytes)
 				{
-					CEmfParser oEmfParser;
+					CEmfParser oEmfParser(this);
 
 					oEmfParser.SetFontManager(GetFontManager());
 					oEmfParser.SetStream(m_oEscapeBuffer.GetBuffer(), m_oEscapeBuffer.GetSize());

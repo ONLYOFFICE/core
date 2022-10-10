@@ -2,7 +2,8 @@
 
 namespace MetaFile
 {
-	CWmfParser::CWmfParser()
+	CWmfParser::CWmfParser(IMetaFileBase *pParent)
+		: CWmfParserBase(pParent)
 	{
 
 	}
@@ -208,6 +209,9 @@ namespace MetaFile
 
 				m_pDC->SetViewportOrg(m_oPlaceable.BoundingBox.Left,  m_oPlaceable.BoundingBox.Top);
 				m_pDC->SetViewportExt((m_oPlaceable.BoundingBox.Right - m_oPlaceable.BoundingBox.Left), (m_oPlaceable.BoundingBox.Bottom - m_oPlaceable.BoundingBox.Top));
+
+				m_pDC->SetWindowOrg(m_oPlaceable.BoundingBox.Left,  m_oPlaceable.BoundingBox.Top);
+				m_pDC->SetWindowExt((m_oPlaceable.BoundingBox.Right - m_oPlaceable.BoundingBox.Left), (m_oPlaceable.BoundingBox.Bottom - m_oPlaceable.BoundingBox.Top));
 				m_pDC->SetWindowScale(dKoef, dKoef);
 			}
 

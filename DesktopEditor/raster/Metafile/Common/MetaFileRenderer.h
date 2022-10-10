@@ -1080,12 +1080,7 @@ namespace MetaFile
 			double dWidth = pPen->GetWidth();
 
 			if (dWidth == 0 || (dWidth == 1 && PS_COSMETIC == ulPenType))
-			{
-				dWidth = std::fabs(25.4 / 96 * m_dScaleX); //m_dScaleX = 96 / текущий dpiX
-
-				if (MM_ANISOTROPIC == m_pFile->GetMapMode() || MM_ISOTROPIC == m_pFile->GetMapMode())
-					dWidth *= m_pFile->GetScale();
-			}
+				dWidth = m_pFile->GetPixWidth(m_dScaleX);
 			else
 				dWidth *= m_dScaleX;
 

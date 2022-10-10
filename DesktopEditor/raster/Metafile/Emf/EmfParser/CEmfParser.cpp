@@ -13,8 +13,8 @@
 
 namespace MetaFile
 {
-	CEmfParser::CEmfParser() :
-		m_pEmfPlusParser(NULL)
+	CEmfParser::CEmfParser(IMetaFileBase *pParent)
+		: CEmfParserBase(pParent), m_pEmfPlusParser(NULL)
 	{}
 
 	CEmfParser::~CEmfParser()
@@ -1435,7 +1435,7 @@ namespace MetaFile
 				if (0 == unWinMetafileSize)
 					return;
 
-				CWmfParser oWmfParser;
+				CWmfParser oWmfParser(this);
 
 				oWmfParser.SetFontManager(GetFontManager());
 				oWmfParser.SetStream(m_oStream.GetCurPtr(), unWinMetafileSize);

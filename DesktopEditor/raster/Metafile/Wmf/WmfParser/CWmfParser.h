@@ -8,7 +8,7 @@ namespace MetaFile
 	class CWmfParser : public CWmfParserBase
 	{
 	public:
-		CWmfParser();
+		CWmfParser(IMetaFileBase *pParent = NULL);
 		virtual ~CWmfParser();
 
 		bool            ReadFromBuffer(unsigned char* pBuffer, unsigned int unSize) override;

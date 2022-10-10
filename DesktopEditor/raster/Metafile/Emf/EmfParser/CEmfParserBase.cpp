@@ -620,7 +620,8 @@ namespace MetaFile
 		return m_pDC;
 	}
 
-	CEmfParserBase::CEmfParserBase() : m_oPlayer(this)
+	CEmfParserBase::CEmfParserBase(IMetaFileBase *pParent)
+		: m_oPlayer(this), m_pParent(pParent)
 	{
 		m_pPath = NULL;
 		m_pDC   = m_oPlayer.GetDC();
@@ -776,10 +777,14 @@ namespace MetaFile
 		return m_pDC->GetMapMode();
 	}
 
-	double CEmfParserBase::GetScale()
+	double CEmfParserBase::GetPixWidth(double dScaleX)
 	{
-		return (double)m_oHeader.oDevice.cx / (double)m_oHeader.oMillimeters.cx *
-			   (double)m_pDC->GetWindow()->ulW / (double)m_pDC->GetViewport()->ulW;
+		if (NULL != m_pParent)
+			return m_pParent->GetPixWidth(dScaleX);
+
+		double dScaleW = std::fabs((double)(m_oHeader.oBounds.lRight - m_oHeader.oBounds.lLeft) / (double)(m_oHeader.oFrame.lRight - m_oHeader.oFrame.lLeft));
+
+		return dScaleX / dScaleW;
 	}
 
 	bool CEmfParserBase::IsViewportFlippedY()

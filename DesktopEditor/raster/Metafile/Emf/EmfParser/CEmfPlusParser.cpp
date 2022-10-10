@@ -194,11 +194,6 @@ namespace MetaFile
 		return m_bBanEmfProcessing;
 	}
 
-	double CEmfPlusParser::GetScale()
-	{
-		return (double)m_unLogicalDpiX / 96.;
-	}
-
 	void CEmfPlusParser::RegisterObject(CEmfPlusObject *pObject, unsigned int unIndex)
 	{
 		if (NULL == pObject) return;
@@ -334,6 +329,11 @@ namespace MetaFile
 		PlayFile();
 		m_pInterpretator = pInterpretator;
 		this->ClearFile();
+	}
+
+	double CEmfPlusParser::GetPixWidth(double dScaleX)
+	{
+		return (double)m_unLogicalDpiX / 96. * dScaleX;
 	}
 
 	EmfParserType CEmfPlusParser::GetType()

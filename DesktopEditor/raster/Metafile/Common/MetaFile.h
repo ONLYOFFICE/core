@@ -80,7 +80,7 @@ namespace MetaFile
 		virtual bool         IsWindowFlippedY() = 0;
 		virtual bool         IsWindowFlippedX() = 0;
 		virtual unsigned int GetMapMode() = 0;
-		virtual double       GetScale() = 0;
+		virtual double       GetPixWidth(double dScaleX) = 0;
 
 		bool ReadFromBuffer(BYTE* pBuffer, unsigned int unSize, const bool& bIsExternal = true)
 		{

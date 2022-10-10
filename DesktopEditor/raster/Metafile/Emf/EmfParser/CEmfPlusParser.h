@@ -21,12 +21,12 @@ namespace MetaFile
 
 		void            PlayFile()                                  override;
 		void            Scan()                                      override;
+		double          GetPixWidth(double dScaleX) override;
 
 		EmfParserType   GetType()				    override;
 
 		void   SetStream(BYTE *pBytes, unsigned int unSize);
 		bool   GetBanEMFProcesses();
-		double GetScale() override;
 
 	private:
 		void RegisterObject(CEmfPlusObject* pObject, unsigned int unIndex);

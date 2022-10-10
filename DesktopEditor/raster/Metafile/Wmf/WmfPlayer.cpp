@@ -361,9 +361,6 @@ namespace MetaFile
 	{
 		m_ushMapMode = ushMapMode;
 
-		UpdatePixelMetrics();
-		return;
-
 		switch (m_ushMapMode)
 		{
 			case MM_TEXT: // 1 unit = 1pt
@@ -467,6 +464,9 @@ namespace MetaFile
 			m_oViewport.h = std::abs(shH);
 		}
 
+		if (MM_ISOTROPIC == m_ushMapMode)
+			FixIsotropic();
+
 		UpdatePixelMetrics();
 		UpdateFinalTransform();
 	}
@@ -515,6 +515,9 @@ namespace MetaFile
 			m_oWindow.h = shH;
 		}
 
+		if (MM_ISOTROPIC == m_ushMapMode)
+			FixIsotropic();
+
 		UpdatePixelMetrics();
 		UpdateFinalTransform();
 	}
@@ -544,7 +547,7 @@ namespace MetaFile
 			SetPixelHeight(dPixel);
 			SetPixelWidth(dPixel);
 		}
-		else// if (MM_ANISOTROPIC == ushMapMode)
+		else if (MM_ANISOTROPIC == ushMapMode)
 		{
 			double dPixelX = (double)m_oViewport.w / (double)m_oWindow.w;
 			double dPixelY = (double)m_oViewport.h / (double)m_oWindow.h;
@@ -575,6 +578,25 @@ namespace MetaFile
 		m_oFinalTransform2.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);
 		m_oFinalTransform2.Multiply(m_oTransform, MWT_RIGHTMULTIPLY);
 		m_oFinalTransform2.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);
+	}
+
+	void CWmfDC::FixIsotropic()
+	{
+		double dXDim = std::fabs((double)m_oViewport.w / m_oWindow.w);
+		double dYDim = std::fabs((double)m_oViewport.h / m_oWindow.h);
+
+		if (dXDim > dYDim)
+		{
+			int nMinCx = (m_oViewport.w >= 0) ? 1 : -1;
+			m_oViewport.w = std::floor(m_oViewport.w * dYDim / dXDim + 0.5);
+			if (!m_oViewport.w) m_oViewport.w = nMinCx;
+		}
+		else
+		{
+			int nMinCy = (m_oViewport.h >= 0) ? 1 : -1;
+			m_oViewport.h = std::floor(m_oViewport.h * dXDim / dYDim + 0.5);
+			if (!m_oViewport.h) m_oViewport.h = nMinCy;
+		}
 	}
 	void CWmfDC::SetTextColor(TWmfColor& oColor)
 	{

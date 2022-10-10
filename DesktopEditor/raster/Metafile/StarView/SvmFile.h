@@ -202,9 +202,9 @@ class CSvmFile : virtual public IMetaFileBase
 		return MM_ANISOTROPIC;
 	}
 
-	double GetScale()
+	double GetPixWidth(double dScaleX)
 	{
-		return 1.f;
+		return 1.;
 	}
 
  private:

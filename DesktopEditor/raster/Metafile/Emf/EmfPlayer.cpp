@@ -607,6 +607,9 @@ namespace MetaFile
 			m_oViewport.ulH = oPoint.cy;
 		}
 
+		if (MM_ISOTROPIC == m_ulMapMode)
+			FixIsotropic();
+
 		UpdatePixelMetrics();
 		UpdateFinalTransform();
 	}
@@ -631,6 +634,9 @@ namespace MetaFile
 			m_oWindow.ulW = oPoint.cx;
 			m_oWindow.ulH = oPoint.cy;
 		}
+
+		if (MM_ISOTROPIC == m_ulMapMode)
+			FixIsotropic();
 
 		UpdatePixelMetrics();
 		UpdateFinalTransform();
@@ -686,6 +692,25 @@ namespace MetaFile
 		m_oFinalTransform2.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);
 		m_oFinalTransform2.Multiply(m_oTransform, MWT_RIGHTMULTIPLY);
 		m_oFinalTransform2.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);
+	}
+
+	void CEmfDC::FixIsotropic()
+	{
+		double dXDim = std::fabs((double)m_oViewport.ulW / m_oWindow.ulW);
+		double dYDim = std::fabs((double)m_oViewport.ulH / m_oWindow.ulH);
+
+		if (dXDim > dYDim)
+		{
+			int nMinCx = (m_oViewport.ulW >= 0) ? 1 : -1;
+			m_oViewport.ulW = std::floor(m_oViewport.ulW * dYDim / dXDim + 0.5);
+			if (!m_oViewport.ulW) m_oViewport.ulW = nMinCx;
+		}
+		else
+		{
+			int nMinCy = (m_oViewport.ulH >= 0) ? 1 : -1;
+			m_oViewport.ulH = std::floor(m_oViewport.ulH * dXDim / dYDim + 0.5);
+			if (!m_oViewport.ulH) m_oViewport.ulH = nMinCy;
+		}
 	}
 	void            CEmfDC::SetRop2Mode(unsigned int& nMode)
 	{

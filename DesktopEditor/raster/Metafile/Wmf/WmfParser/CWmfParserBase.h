@@ -23,7 +23,7 @@ namespace MetaFile
 	class  CWmfParserBase : public IMetaFileBase
 	{
 	public:
-		CWmfParserBase();
+		CWmfParserBase(IMetaFileBase *pParent = NULL);
 		~CWmfParserBase();
 
 		virtual bool            ReadFromBuffer(unsigned char*, unsigned int)    = 0;
@@ -57,7 +57,7 @@ namespace MetaFile
 		bool		IsWindowFlippedY()			override;
 		bool		IsWindowFlippedX()			override;
 		unsigned int GetMapMode() override;
-		double      GetScale() override;
+		double      GetPixWidth(double dScaleX) override;
 
 		void SetInterpretator(IOutputDevice* pOutput);
 		void SetInterpretator(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0);
@@ -119,6 +119,8 @@ namespace MetaFile
 		CWmfEscapeBuffer	m_oEscapeBuffer;
 
 		bool           m_bEof;
+
+		IMetaFileBase *m_pParent;
 	private:
 		//                virtual bool ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight) = 0;
 

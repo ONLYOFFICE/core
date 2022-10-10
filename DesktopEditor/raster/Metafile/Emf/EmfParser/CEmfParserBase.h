@@ -46,7 +46,7 @@ namespace MetaFile
 	class  CEmfParserBase : public virtual IMetaFileBase
 	{
 	public:
-		CEmfParserBase();
+		CEmfParserBase(IMetaFileBase *pParent = NULL);
 		~CEmfParserBase();
 
 		virtual bool            ReadFromBuffer(BYTE* pBuffer, unsigned int unSize, const bool& bIsExternal = true) = 0;
@@ -80,7 +80,7 @@ namespace MetaFile
 		bool		IsWindowFlippedY()			override;
 		bool		IsWindowFlippedX()			override;
 		unsigned int GetMapMode() override;
-		double      GetScale() override;
+		double      GetPixWidth(double dScaleX) override;
 		bool		IsViewportFlippedY();
 		bool		IsViewportFlippedX();
 
@@ -151,6 +151,8 @@ namespace MetaFile
 		CEmfInterpretatorBase   *m_pInterpretator;
 
 		bool              m_bEof;
+
+		IMetaFileBase *m_pParent;
 	private:
 		virtual bool ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight) = 0;
 

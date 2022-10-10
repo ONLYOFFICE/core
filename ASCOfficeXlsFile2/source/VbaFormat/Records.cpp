@@ -29,12 +29,17 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-
 #include "Records.h"
+
+#include "../../../DesktopEditor/common/File.h"
+#include "../../../UnicodeConverter/UnicodeConverter.h"
+
 #include <boost/make_shared.hpp>
 #include <map>
 #include <locale>
-#include "../../../UnicodeConverter/UnicodeConverter.h"
+
+#define GETBITS(from, numL, numH) ((from & (((1 << (numH - numL + 1)) - 1) << numL)) >> numL)
+#define GETBIT(from, num) ((from & (1 << num)) != 0)
 
 namespace VBA
 {
@@ -124,7 +129,259 @@ namespace VBA
 			return result;
 		}
 	}
+	std::wstring readString(unsigned char *pData, _UINT32 & size)
+	{
+		if (!pData) return L"";
 
+		bool fCompressed = GETBIT(size, 31);
+		size = GETBITS(size, 0, 30);
+
+		std::wstring result;
+
+		if (fCompressed)
+			result = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(pData, size);
+		else
+			result = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pData, size / 2);
+
+		return result;
+	}
+	std::wstring readStringPadding(CVbaFileStreamPtr stream, _UINT32 & size)
+	{
+		if (!stream) return L"";
+
+		std::wstring result = readString(stream->getDataCurrent(), size);
+
+		_INT32 count_padding = 4 - (size % 4);
+		stream->skipBytes(size + ((count_padding > 0 && count_padding < 4) ? count_padding : 0));
+
+		return result;
+	}
+	std::pair<boost::shared_array<unsigned char>, _UINT32> readStdPicture(CVbaFileStreamPtr stream)
+	{
+		boost::shared_array<unsigned char> empty;
+		if (!stream) return std::make_pair(empty, 0);
+
+		_UINT32 Preamble;
+		*stream >> Preamble;
+
+		if (Preamble != 0x0000746C) return std::make_pair(empty, 0);
+
+		_UINT32 size;
+		*stream >> size;
+
+		unsigned char* buf = new unsigned char[size];
+		stream->read(buf, size);
+
+		boost::shared_array<unsigned char> _array(buf);
+
+		return std::make_pair(_array, size);
+	}
+//------------------------------------------------------------------------------------------
+	DX_MODE::DX_MODE(_UINT32 flag)
+	{
+		fInheritDesign = GETBIT(flag, 0);
+		fDesign = GETBIT(flag, 1);
+		fInheritShowToolbox = GETBIT(flag, 2);
+		fShowToolbox = GETBIT(flag, 3);
+		fInheritShowGrid = GETBIT(flag, 4);
+		fShowGrid = GETBIT(flag, 5);
+		fInheritSnapToGrid = GETBIT(flag, 6);
+		fSnapToGrid = GETBIT(flag, 7);
+		fInheritGridX = GETBIT(flag, 8);
+		fInheritGridY = GETBIT(flag, 9);
+		fInheritClickControl = GETBIT(flag, 10);
+		fInheritDblClickControl = GETBIT(flag, 11);
+		fInheritShowInvisible = GETBIT(flag, 12);
+		fInheritShowTooltips = GETBIT(flag, 13);
+		fShowTooltips = GETBIT(flag, 14);
+		fInheritLayoutImmediate = GETBIT(flag, 15);
+		fLayoutImmediate = GETBIT(flag, 16);
+	}
+	SITE_FLAG::SITE_FLAG(_UINT32 flag)
+	{
+		fTabStop = GETBIT(flag, 0);
+		fVisible = GETBIT(flag, 1);
+		fDefault = GETBIT(flag, 2);
+		fCancel = GETBIT(flag, 3);
+		fStreamed = GETBIT(flag, 4);
+		fAutoSize = GETBIT(flag, 5);
+		fPreserveHeight = GETBIT(flag, 8);
+		fFitToParent = GETBIT(flag, 9);
+		fSelectChild = GETBIT(flag, 13);
+		fPromoteControls = GETBIT(flag, 18);
+	}
+	TextPropsPropMask::TextPropsPropMask(_UINT32 mask)
+	{
+		fFontName = GETBIT(mask, 0);
+		fFontEffects = GETBIT(mask, 1);
+		fFontHeight = GETBIT(mask, 2);
+		fFontCharSet = GETBIT(mask, 4);
+		fFontPitchAndFamily = GETBIT(mask, 5);
+		fParagraphAlign = GETBIT(mask, 6);
+		fFontWeight = GETBIT(mask, 7);
+	}
+	FormPropMask::FormPropMask(_UINT32 mask)
+	{
+		fBackColor = GETBIT(mask, 1);
+		fForeColor = GETBIT(mask, 2);
+		fNextAvailableID = GETBIT(mask, 3);
+		fBooleanProperties = GETBIT(mask, 6);
+		fBorderStyle = GETBIT(mask, 7);
+		fMousePointer = GETBIT(mask, 8);
+		fScrollBars = GETBIT(mask, 9);
+		fDisplayedSize = GETBIT(mask, 10);
+		fLogicalSize = GETBIT(mask, 11);
+		fScrollPosition = GETBIT(mask, 12);
+		fGroupCnt = GETBIT(mask, 13);
+		Reserved = GETBIT(mask, 14);
+		fMouseIcon = GETBIT(mask, 15);
+		fCycle = GETBIT(mask, 16);
+		fSpecialEffect = GETBIT(mask, 17);
+		fBorderColor = GETBIT(mask, 18);
+		fCaption = GETBIT(mask, 19);
+		fFont = GETBIT(mask, 20);
+		fPicture = GETBIT(mask, 21);
+		fZoom = GETBIT(mask, 22);
+		fPictureAlignment = GETBIT(mask, 23);
+		fPictureTiling = GETBIT(mask, 24);
+		fPictureSizeMode = GETBIT(mask, 25);
+		fShapeCookie = GETBIT(mask, 26);
+		fDrawBuffer = GETBIT(mask, 27);
+	}
+	ClassInfoPropMask::ClassInfoPropMask(_UINT32 mask)
+	{
+		fClsID = GETBIT(mask, 0);
+		fDispEvent = GETBIT(mask, 1);
+		fDefaultProg = GETBIT(mask, 3);
+		fClassFlags = GETBIT(mask, 4);
+		fCountOfMethods = GETBIT(mask, 5);
+		fDispidBind = GETBIT(mask, 6);
+		fGetBindIndex = GETBIT(mask, 7);
+		fPutBindIndex = GETBIT(mask, 8);
+		fBindType = GETBIT(mask, 9);
+		fGetValueIndex = GETBIT(mask, 10);
+		fPutValueIndex = GETBIT(mask, 11);
+		fValueType = GETBIT(mask, 12);
+		fDispidRowset = GETBIT(mask, 13);
+		fSetRowset = GETBIT(mask, 14);
+	}
+	SitePropMask::SitePropMask(_UINT32 mask)
+	{
+		fName = GETBIT(mask, 0);
+		fTag = GETBIT(mask, 1);
+		fID = GETBIT(mask, 2);
+		fHelpContextID = GETBIT(mask, 3);
+		fBitFlags = GETBIT(mask, 4);
+		fObjectStreamSize = GETBIT(mask, 5);
+		fTabIndex = GETBIT(mask, 6);
+		fClsidCacheIndex = GETBIT(mask, 7);
+		fPosition = GETBIT(mask, 8);
+		fGroupID = GETBIT(mask, 9);
+		fControlTipText = GETBIT(mask, 11);
+		fRuntimeLicKey = GETBIT(mask, 12);
+		fControlSource = GETBIT(mask, 13);
+		fRowSource = GETBIT(mask, 14);
+	}
+	DesignExtenderPropMask::DesignExtenderPropMask(_UINT32 mask)
+	{
+		fBitFlags = GETBIT(mask, 0);
+		fGridX = GETBIT(mask, 1);
+		fGridY = GETBIT(mask, 2);
+		fClickControlMode = GETBIT(mask, 2);
+		fDblClickControlMode = GETBIT(mask, 2);
+	};
+
+//------------------------------------------------------------------------------------------
+	StdFont::StdFont(CVbaFileStreamPtr stream) { load(stream); }
+	BaseRecordPtr StdFont::clone()
+	{
+		return BaseRecordPtr(new StdFont(*this));
+	}
+	void StdFont::load(CVbaFileStreamPtr stream)
+	{
+		unsigned char Version = 0;
+		unsigned char bFlags = 0;
+		unsigned char bFaceLen = 0;
+
+		unsigned short sCharset = 0;
+		*stream >> Version >> sCharset >> bFlags >> FontWeight >> FontHeight >> bFaceLen;
+
+		FontCharSet = sCharset;
+
+		bFontBold = GETBIT(bFlags, 0);
+		bFontItalic = GETBIT(bFlags, 1);
+		bFontUnderline = GETBIT(bFlags, 2);
+		bFontStrikeout = GETBIT(bFlags, 3);
+
+		if (bFaceLen > 0)
+		{
+			char *buf = new char[bFaceLen];
+			if (buf)
+			{
+				stream->read(buf, bFaceLen);
+				sFontName = convert_string_icu(buf, bFaceLen, stream->CodePage);
+				delete []buf;
+			}
+		}
+	}
+//------------------------------------------------------------------------------------------
+	TextProps::TextProps(CVbaFileStreamPtr stream) { load(stream); }
+	BaseRecordPtr TextProps::clone()
+	{
+		return BaseRecordPtr(new TextProps(*this));
+	}
+	void TextProps::load(CVbaFileStreamPtr stream)
+	{
+		unsigned char MinorVersion, MajorVersion;
+		_UINT16 cbTextProps;
+		_UINT32 flag2, flag3;
+
+		*stream >> MinorVersion >> MajorVersion >> cbTextProps;
+		
+		_UINT32 pos = stream->GetDataPos();
+		*stream >> flag2;
+		TextPropsPropMask propMask(flag2);
+
+		_UINT32 FontNameSize = 0;
+
+		if (propMask.fFontName)
+			*stream >> FontNameSize;
+		if (propMask.fFontEffects)
+		{
+			*stream >> flag3;
+			bFontBold = GETBIT(flag3, 0);
+			bFontItalic = GETBIT(flag3, 1);
+			bFontUnderline = GETBIT(flag3, 2);
+			bFontStrikeout = GETBIT(flag3, 3);
+			bFontAutoColor = GETBIT(flag3, 30);
+		}
+		if (propMask.fFontHeight)
+			*stream >> FontHeight;
+		
+		if (propMask.fFontCharSet)
+		{
+			*stream >> FontCharSet;
+		} 
+		if (propMask.fFontPitchAndFamily)
+		{
+			*stream >> FontPitchAndFamily;
+		}
+		if (propMask.fParagraphAlign)
+		{
+			*stream >> FontPitchAndFamily;
+		}
+		if (propMask.fFontWeight)
+		{
+			*stream >> FontWeight;
+		}
+
+		stream->Align(4);
+
+		if (FontNameSize > 0)
+		{
+			sFontName = readStringPadding(stream, FontNameSize);
+		}
+	}
 //------------------------------------------------------------------------------------------
 	AnsiString::AnsiString(CVbaFileStreamPtr stream) { load(stream); }
 	BaseRecordPtr AnsiString::clone()
@@ -143,6 +400,7 @@ namespace VBA
 			{
 				stream->read(buf, sizeOf);
 				value = convert_string_icu(buf, sizeOf, stream->CodePage);
+				delete[]buf;
 			}
 		}
 	}
@@ -170,7 +428,8 @@ namespace VBA
 				else
 				{
 					value = convertUtf16ToWString(buf, sizeOf / 2);
-				}				
+				}	
+				delete[]buf;
 			}
 		}
 	}
@@ -603,7 +862,6 @@ namespace VBA
 	{
 		return BaseRecordPtr(new PROJECTINFORMATION(*this));
 	}
-
 	void PROJECTINFORMATION::load(CVbaFileStreamPtr stream)
 	{
 		while (stream->checkFitRead(6))
@@ -684,7 +942,6 @@ namespace VBA
 	{
 		return BaseRecordPtr(new PROJECTREFERENCES(*this));
 	}
-
 	void PROJECTREFERENCES::load(CVbaFileStreamPtr stream)
 	{
 		while (stream->checkFitRead(6))
@@ -715,7 +972,6 @@ namespace VBA
 	{
 		return BaseRecordPtr(new REFERENCE(*this));
 	}
-
 	void REFERENCE::load(CVbaFileStreamPtr stream)
 	{
 		while (stream->checkFitRead(6))
@@ -746,8 +1002,6 @@ namespace VBA
 			}
 		}
 	}
-//---------------------------------------------------------------------------------------		
-
 //-------------------------------------------------------------------------------
 	//PROJECTMODULES::PROJECTMODULES() {}
 	//PROJECTMODULES::~PROJECTMODULES() {}
@@ -774,5 +1028,409 @@ namespace VBA
 	//		modules.push_back(BaseObjectPtr(m));
 	//	}
 	//}
-} // namespace VBA
+	BaseRecordPtr FormControl::clone()
+	{
+		return BaseRecordPtr(new FormControl(*this));
+	}
+	void FormControl::load(CVbaFileStreamPtr stream)
+	{
+		_UINT32 flag;
+		*stream >> flag;
+		FormPropMask propMask(flag);
+
+		if (propMask.fBackColor) *stream >> BackColor;
+		if (propMask.fForeColor) *stream >> ForeColor;
+		if (propMask.fNextAvailableID) *stream >> NextAvailableID;
+
+		if (propMask.fBooleanProperties)
+		{
+			*stream >> flag;
+			BooleanProperties = _BooleanProperties();
+			BooleanProperties->FORM_FLAG_ENABLED = GETBIT(flag, 2);
+			BooleanProperties->FORM_FLAG_DESINKPERSISTED = GETBIT(flag, 14);
+			BooleanProperties->FORM_FLAG_DONTSAVECLASSTABLE = GETBIT(flag, 15);
+		}
+		if (propMask.fBorderStyle) *stream >> BorderStyle;
+		if (propMask.fMousePointer) *stream >> MousePointer;
+		if (propMask.fScrollBars) *stream >> ScrollBars;
+		if (propMask.fGroupCnt) *stream >> GroupCnt;
+		if (propMask.fMouseIcon)
+		{
+			_UINT16 MouseIcon;
+			*stream >> MouseIcon; // == 0xFFFF
+		}
+		if (propMask.fCycle) *stream >> Cycle;
+		if (propMask.fSpecialEffect) *stream >> SpecialEffect;
+		if (propMask.fBorderColor)
+		{
+			stream->Align(4);
+			*stream >> BorderColor;
+		}
+
+		_UINT32 LengthAndCompression = 0;
+		if (propMask.fCaption)
+		{
+			stream->Align(4);
+			*stream >> LengthAndCompression;
+		}
+		if (propMask.fFont)
+		{
+			_UINT16 Font;
+			*stream >> Font; // == 0xFFFF
+		}		
+		if (propMask.fPicture)
+		{
+			_UINT16 Picture;
+			*stream >> Picture; // == 0xFFFF
+		}
+		stream->Align(4);
+		if (propMask.fZoom) *stream >> Zoom;
+		if (propMask.fPictureAlignment) *stream >> PictureAlignment;
+		if (propMask.fPictureSizeMode) *stream >> PictureSizeMode;
+		if (propMask.fShapeCookie) *stream >> ShapeCookie;
+		if (propMask.fDrawBuffer) *stream >> DrawBuffer;
+//- FormExtraDataBlock		
+		if (propMask.fDisplayedSize)
+		{
+			*stream >> DisplayedSize;
+		}
+		if (propMask.fLogicalSize)
+		{
+			*stream >> LogicalSize;
+		}
+		if (propMask.fScrollPosition)
+		{
+			*stream >> ScrollPosition;
+		}
+		if (propMask.fCaption && LengthAndCompression > 0)
+		{
+			Caption = readStringPadding(stream, LengthAndCompression);
+		}
+//- FormStreamData
+		if (propMask.fMouseIcon)
+		{
+			*stream >> MouseIconGUID;
+			MouseIcon = readStdPicture(stream);
+		}
+
+		if (propMask.fFont)
+		{
+			*stream >> FontGUID;
+			if (FontGUID->Data1 == 0x0BE35203 && FontGUID->Data2 == 0x8F91 && FontGUID->Data3 == 0x11CE)
+				Font = BaseRecordPtr(new StdFont(stream));
+			else if (FontGUID->Data1 == 0xAFC20920 && FontGUID->Data2 == 0xDA4E && FontGUID->Data3 == 0x11CE)
+				Font = BaseRecordPtr(new TextProps(stream));
+		}		
+		if (propMask.fPicture)
+		{
+			*stream >> PictureGUID;
+			Picture = readStdPicture(stream);
+		}
+	}
+//------------------------------------------------------------------------------------------
+	SiteClassInfo::SiteClassInfo(CVbaFileStreamPtr stream) { load(stream); }
+	BaseRecordPtr SiteClassInfo::clone()
+	{
+		return BaseRecordPtr(new SiteClassInfo(*this));
+	}
+	void SiteClassInfo::load(CVbaFileStreamPtr stream)
+	{
+		_UINT16 Version, cbClassTable;
+		_UINT32 flag;
+		*stream >> Version >> cbClassTable >> flag;
+
+		ClassInfoPropMask propMask(flag);
+//ClassInfoDataBlock
+		_UINT16 flag2 = 0, flag3 = 0, GetBindIndex = 0, PutBindIndex = 0, BindType = 0, GetValueIndex = 0, PutValueIndex = 0, ValueType = 0, SetRowset = 0;
+		_UINT32 CountOfMethods = 0, DispidBind = 0xFFFFFFFF, DispidRowset = 0xFFFFFFFF;
+
+		if (propMask.fClassFlags)
+		{
+			*stream >> flag2 >> flag3;
+			//ClassTableFlags tableFlags(flag2);
+			//VarFlags varFlags(flag3);
+		}
+		if (propMask.fCountOfMethods)
+		{
+			*stream >> CountOfMethods;
+		}
+		if (propMask.fDispidBind)
+		{
+			*stream >> DispidBind;
+		}
+		int count_padding = 0;
+		if (propMask.fGetBindIndex)
+		{
+			*stream >> GetBindIndex;
+			count_padding += 2;
+		}
+		if (propMask.fPutBindIndex)
+		{
+			*stream >> PutBindIndex;
+			count_padding += 2;
+		}
+		if (propMask.fBindType)
+		{
+			*stream >> BindType;
+			count_padding += 2;
+		}
+		if (propMask.fGetValueIndex)
+		{
+			*stream >> GetValueIndex;
+			count_padding += 2;
+		}
+		if (propMask.fPutValueIndex)
+		{
+			*stream >> PutValueIndex;
+			count_padding += 2;
+		}
+		if (propMask.fValueType)
+		{
+			*stream >> ValueType;
+			count_padding += 2;
+		}
+		count_padding = 4 - (count_padding % 4);
+
+		if (count_padding > 0 && count_padding < 4)
+			stream->skipBytes(count_padding);
+		
+		if (propMask.fDispidRowset)
+		{
+			*stream >> DispidRowset;
+		}
+		count_padding = 4;
+		if (propMask.fSetRowset)
+		{
+			*stream >> SetRowset;
+			count_padding -= 2;
+		}
+		if (count_padding > 0 && count_padding < 4)
+			stream->skipBytes(count_padding);
+		
+//ClassInfoExtraDataBlock
+		if (propMask.fClsID)
+		{
+			*stream >> guidClsID;
+		}
+		if (propMask.fDispEvent)
+		{
+			*stream >> guidDispEvent;
+		}
+		if (propMask.fDefaultProg)
+		{
+			*stream >> guidDefaultProg;
+		}
+	}
+//------------------------------------------------------------------------------------------
+	FormObjectDepthTypeCount::FormObjectDepthTypeCount(CVbaFileStreamPtr stream) { load(stream); }
+	BaseRecordPtr FormObjectDepthTypeCount::clone()
+	{
+		return BaseRecordPtr(new FormObjectDepthTypeCount(*this));
+	}
+	void FormObjectDepthTypeCount::load(CVbaFileStreamPtr stream)
+	{
+		unsigned char flag;
+		*stream >> Depth >> flag;
+		
+		TypeOrCount = GETBITS(flag, 0, 6);
+		fCount = GETBIT(flag, 7);
+	}
+//------------------------------------------------------------------------------------------
+	OleSiteConcreteControl::OleSiteConcreteControl(CVbaFileStreamPtr stream) { load(stream); }
+	BaseRecordPtr OleSiteConcreteControl::clone()
+	{
+		return BaseRecordPtr(new OleSiteConcreteControl(*this));
+	}
+	void OleSiteConcreteControl::load(CVbaFileStreamPtr stream)
+	{
+		_UINT16 Version, cbSite;
+		_UINT32 flag;
+		*stream >> Version >> cbSite >> flag;
+
+		SitePropMask propMask(flag);
+//SiteDataBlock
+
+		_UINT32 NameLengthAndCompression = 0, TagLengthAndCompression = 0, ControlTipTextLengthAndCompression = 0,
+			RuntimeLicKeyLengthAndCompression = 0, ControlSourceLengthAndCompression = 0, RowSourceLengthAndCompression = 0;
+		if (propMask.fName)
+		{
+			*stream >> NameLengthAndCompression;
+		}
+		if (propMask.fTag)
+		{
+			*stream >> TagLengthAndCompression;
+		}
+		if (propMask.fID)
+		{
+			*stream >> ID;
+		}
+		if (propMask.fHelpContextID)
+		{
+			*stream >> HelpContextID;
+		}
+		if (propMask.fBitFlags)
+		{
+			*stream >> flag;
+			BitFlags = SITE_FLAG(flag);
+		}
+		if (propMask.fObjectStreamSize)
+		{
+			*stream >> ObjectStreamSize;
+		}
+		_UINT32 pos1 = stream->GetDataPos();
+		if (propMask.fTabIndex)
+		{
+			*stream >> TabIndex;
+		}
+		if (propMask.fClsidCacheIndex)
+		{
+			*stream >> ClsidCacheIndex;
+		}
+		if (propMask.fGroupID)
+		{
+			*stream >> GroupID;
+		}
+		_UINT32 pos2 = stream->GetDataPos();
+		int count_padding = 4 - ((pos2 - pos1) % 4);
+
+		if (count_padding > 0 && count_padding < 4)
+			stream->skipBytes(count_padding);
+
+		if (propMask.fControlTipText)
+		{
+			*stream >> ControlTipTextLengthAndCompression;
+		}
+		if (propMask.fRuntimeLicKey)
+		{
+			*stream >> RuntimeLicKeyLengthAndCompression;
+		}
+		if (propMask.fControlSource)
+		{
+			*stream >> ControlSourceLengthAndCompression;
+		}
+		if (propMask.fRowSource)
+		{
+			*stream >> RowSourceLengthAndCompression;
+		}
+//SiteExtraDataBlock
+		if (propMask.fName && NameLengthAndCompression > 0)
+		{
+			Name = readStringPadding(stream, NameLengthAndCompression);
+		}
+		if (propMask.fTag && TagLengthAndCompression > 0)
+		{
+			Tag = readStringPadding(stream, TagLengthAndCompression);
+		}
+		if (propMask.fPosition)
+		{
+			*stream >> SitePosition;
+		}
+		if (propMask.fControlTipText && ControlTipTextLengthAndCompression > 0)
+		{
+			ControlTipText = readStringPadding(stream, ControlTipTextLengthAndCompression);
+		}
+		if (propMask.fRuntimeLicKey && RuntimeLicKeyLengthAndCompression > 0)
+		{
+			RuntimeLicKey = readStringPadding(stream, RuntimeLicKeyLengthAndCompression);
+		}
+		if (propMask.fControlSource && ControlSourceLengthAndCompression > 0)
+		{
+			ControlSource = readStringPadding(stream, ControlSourceLengthAndCompression);
+		}
+		if (propMask.fRowSource && RowSourceLengthAndCompression > 0)
+		{
+			RowSource = readStringPadding(stream, RowSourceLengthAndCompression);
+		}
+	}
+//------------------------------------------------------------------------------------------
+	FormSiteData::FormSiteData(CVbaFileStreamPtr stream) { load(stream); }
+	FormSiteData::FormSiteData(CVbaFileStreamPtr stream, bool _bClassTableEnable) { bClassTableEnable = _bClassTableEnable; load(stream); }
+	BaseRecordPtr FormSiteData::clone()
+	{
+		return BaseRecordPtr(new FormSiteData(*this));
+	}
+	void FormSiteData::load(CVbaFileStreamPtr stream)
+	{
+		if (bClassTableEnable)
+		{
+			_UINT16 CountOfSiteClassInfo = 0;
+			*stream >> CountOfSiteClassInfo;
+
+			for (_UINT16 i = 0; i < CountOfSiteClassInfo; ++i)
+			{
+				ClassTables.push_back(SiteClassInfoPtr(new SiteClassInfo(stream)));
+			}
+		}		
+		_UINT32 CountOfSites = 0, CountOfBytes = 0;
+		*stream >> CountOfSites >> CountOfBytes;		
+		
+		_UINT32 pos1 = stream->GetDataPos();
+
+		int countSites = 0;
+		for (_UINT16 i = 0; i < CountOfSites; ++i)
+		{
+			FormObjectDepthTypeCountPtr ptr = FormObjectDepthTypeCountPtr(new FormObjectDepthTypeCount(stream));
+			SiteDepthsAndTypes.push_back(ptr);
+
+			countSites += ptr->fCount ? ptr->TypeOrCount : 1;
+
+			if (countSites >= CountOfSites)
+				break;
+		}
+		_UINT32 pos2 = stream->GetDataPos();
+
+		int count_padding = 4 - ((pos2 - pos1) % 4);
+		if (count_padding > 0 && count_padding < 4)
+			stream->skipBytes(count_padding);
+
+		for (_UINT16 i = 0; i < CountOfSites; ++i)
+		{
+			Sites.push_back(OleSiteConcreteControlPtr(new OleSiteConcreteControl(stream)));
+		}
+	}
+//------------------------------------------------------------------------------------------
+	FormDesignExData::FormDesignExData(CVbaFileStreamPtr stream) { load(stream); }
+	BaseRecordPtr FormDesignExData::clone()
+	{
+		return BaseRecordPtr(new FormDesignExData(*this));
+	}
+	void FormDesignExData::load(CVbaFileStreamPtr stream)
+	{
+		unsigned char MinorVersion, MajorVersion;
+		_UINT16 cbDesignExtender;
+		_UINT32 flag;
+
+		*stream >> MinorVersion >> MajorVersion >> cbDesignExtender >> flag;
+		
+		DesignExtenderPropMask propMask(flag);
+	//DesignExtenderPropMask
+		if (propMask.fBitFlags)
+		{
+			*stream >> flag;
+			BitFlags = DX_MODE(flag);
+		}
+		if (propMask.fGridX)
+		{
+			*stream >> GridX;
+		}
+		if (propMask.fGridY)
+		{
+			*stream >> GridY;
+		}
+		if (propMask.fClickControlMode)
+		{
+			unsigned char flag2; 
+			*stream >> flag2;
+			ClickControlMode = (fmClickControlMode)flag2;
+		}
+		if (propMask.fDblClickControlMode)
+		{
+			unsigned char flag2;
+			*stream >> flag2;
+			DblClickControlMode = (fmClickControlMode)flag2;
+		}
+		stream->Align(4);
+	}
+
+}// namespace VBA
 

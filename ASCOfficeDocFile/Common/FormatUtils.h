@@ -192,21 +192,7 @@ namespace DocFileFormat
 			}
 			else
 			{
-				unsigned char b0 = b[start];
-				unsigned char b1 = b[start+1];
-				unsigned char b2 = b[start+2];
-				unsigned char b3 = b[start+3];
-
-				long intValue = ((b3 << 24) | (b2 << 16) | (b1 << 8) | b0);
-
-				//int b0 = (int)b[start];
-				//int b1 = (int)b[start+1] << 8;
-				//int b2 = (int)b[start+2] << 16;
-				//int b3 = (int)b[start+3] << 24;
-
-				//int intValue = ( b0 ) | ( b1 ) | ( b2 ) | ( b3 );
-
-				return intValue;
+				return ((_INT32*)(b + start))[0];
 			}
 		}
 
@@ -218,17 +204,31 @@ namespace DocFileFormat
 			}
 			else
 			{
-				unsigned int b0 = (unsigned int)b[start];
-				unsigned int b1 = (unsigned int)b[start+1] << 8;
-				unsigned int b2 = (unsigned int)b[start+2] << 16;
-				unsigned int b3 = (unsigned int)b[start+3] << 24;
-
-				unsigned int intValue = ( b0 ) | ( b1 ) | ( b2 ) | ( b3 );
-
-				return intValue;
+				return ((_UINT32*)(b + start))[0];
 			}
 		}
-
+		static inline _UINT64 BytesToInt64(const unsigned char *b, unsigned int start, unsigned int length)
+		{
+			if ((b == NULL) || ((start + 7) >= length))
+			{
+				return 0;
+			}
+			else
+			{
+				return ((_INT64*)(b + start))[0];
+			}
+		}
+		static inline _UINT64 BytesToUInt64(const unsigned char *b, unsigned int start, unsigned int length)
+		{
+			if ((b == NULL) || ((start + 7) >= length))
+			{
+				return 0;
+			}
+			else
+			{
+				return ((_UINT64*)(b + start))[0];
+			}
+		}
 		static inline short BytesToInt16( const unsigned char *b, unsigned int start, unsigned int length )
 		{
 			if ( ( b == NULL ) || ( ( start + 1 ) >= length ) )
@@ -237,12 +237,7 @@ namespace DocFileFormat
 			}
 			else
 			{
-				short b0 = (short)b[start];
-				short b1 = (short)b[start+1] << 8;
-
-				short shortValue = ( b0 ) | ( b1 );
-
-				return shortValue;
+				return ((_INT16*)(b + start))[0];
 			}
 		}
 
@@ -254,17 +249,7 @@ namespace DocFileFormat
 			}
 			else
 			{
-				unsigned char b0 = b[start];
-				unsigned char b1 = b[start+1];
-
-				unsigned short shortValue = ((b1 << 8) | b0);
-
-				//unsigned short b0 = (unsigned short)b[start];
-				//unsigned short b1 = (unsigned short)b[start+1] << 8;
-
-				//unsigned short shortValue = ( b0 ) | ( b1 );
-
-				return shortValue;
+				return ((_UINT16*)(b + start))[0];
 			}
 		}
 

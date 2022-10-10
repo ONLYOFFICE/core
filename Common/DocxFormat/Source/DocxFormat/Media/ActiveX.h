@@ -54,19 +54,26 @@ namespace OOX
 	public:
 		ActiveXObject() {}
 		static ActiveXObject* Create(const std::wstring &class_id);
+		static ActiveXObject* Create(_UINT16 type);
 		virtual void Parse(unsigned char* pData, DWORD size) = 0;
+		virtual std::wstring toXml();
 
 		void toFormControlPr(OOX::Spreadsheet::CFormControlPr* pFormControlPr); 
 		
-		std::wstring readString(MemoryStream *stream, size_t size, bool bCompressed);
+		std::wstring readString(MemoryStream *stream, size_t CountOfCharsWithCompressionFlag);
+		void readArrayString(MemoryStream *stream, std::vector<std::wstring> &Array, size_t size);		
 		void readTextProps(MemoryStream *stream);
+		_UINT32 readColumnInfo(MemoryStream *stream);
+
 		std::pair<boost::shared_array<unsigned char>, size_t> readStdPicture(MemoryStream *stream);
+		_GUID_ readGUID(MemoryStream *stream);
+		void readStdFont(MemoryStream *stream);
 
 		nullable<SimpleTypes::Spreadsheet::CObjectType<>> m_oObjectType;
-		
-		nullable_int	m_oForeColor;
-		nullable_int	m_oBackColor;
-		nullable_int	m_oBorderColor;
+
+		nullable_uint	m_oForeColor;
+		nullable_uint	m_oBackColor;
+		nullable_uint	m_oBorderColor;
 		nullable_int	m_oBorderStyle;
 		nullable_string	m_oCaption;
 		nullable_int	m_oMin;
@@ -79,10 +86,13 @@ namespace OOX
 		nullable_string	m_oValue;
 		nullable_bool	m_oPasswordEdit;
 		nullable<SimpleTypes::Spreadsheet::CSelType<>> m_oSelType;
+		nullable_int	m_oListRows;
+		nullable_int	m_oScrollBarsType;
 		nullable_bool	m_oLockText;
+		nullable_bool	m_oMultiLine;
 
-		nullable_int	m_oWidth;
-		nullable_int	m_oHeight;
+		nullable_uint	m_oWidth;
+		nullable_uint	m_oHeight;
 
 		nullable_string	m_oFontName;
 		nullable_uint	m_oFontHeight;
@@ -94,6 +104,8 @@ namespace OOX
 
 		nullable<std::pair<boost::shared_array<unsigned char>, size_t>> m_oPicture;
 		nullable<std::pair<boost::shared_array<unsigned char>, size_t>> m_oMouseIcon;
+
+		std::vector<_UINT32> m_arColumnInfo;
 	};
 
 	class ActiveXObjectScroll : public ActiveXObject
@@ -119,14 +131,19 @@ namespace OOX
 	class ActiveXObjectImage : public ActiveXObject
 	{
 	public:
-		ActiveXObjectImage() : bTile(false), nImageSize(0)
+		ActiveXObjectImage() : nImageSize(0)
 		{
+			m_oObjectType.Init();
+			m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectImage);
 		}
 		virtual void Parse(unsigned char* pData, DWORD size);
+		virtual std::wstring toXml();
 
 		size_t nImageSize;
 		boost::shared_array<unsigned char> pImageData;
-		bool bTile;
+		
+		nullable_bool m_oTile;
+		nullable_int m_oPictureSizeMode;
 	};
 	class ActiveXObjectLabel : public ActiveXObject
 	{
@@ -158,6 +175,41 @@ namespace OOX
 			m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectDialog);
 		}
 		virtual void Parse(unsigned char* pData, DWORD size);
+		
+// FormDataBlock
+		_CP_OPT(_UINT32) m_oNextAvailableID;
+		_CP_OPT(unsigned char) m_oMousePointer;
+		_CP_OPT(unsigned char) m_oScrollBars;
+		_CP_OPT(_UINT32) m_oGroupCnt;
+		_CP_OPT(unsigned char) m_oCycle;
+		_CP_OPT(unsigned char) m_oSpecialEffect;
+		_CP_OPT(_UINT32) m_oZoom;
+		_CP_OPT(unsigned char) m_oPictureAlignment;
+		_CP_OPT(unsigned char) m_oPictureSizeMode;
+		_CP_OPT(_UINT32) m_oShapeCookie;
+		_CP_OPT(_UINT32) m_oDrawBuffer;
+// FormExtraDataBlock
+		_CP_OPT(_UINT32) m_oDisplayedWidth;
+		_CP_OPT(_UINT32) m_oDisplayedHeight;
+		_CP_OPT(_UINT32) m_oLogicalWidth;
+		_CP_OPT(_UINT32) m_oLogicalHeight;
+		_CP_OPT(_UINT32) m_oScrollTop;
+		_CP_OPT(_UINT32) m_oScrollLeft;
+
+// FormStreamData
+		_CP_OPT(_GUID_) m_oMouseIconGUID;
+		_CP_OPT(_GUID_) m_oFontGUID;
+		_CP_OPT(_GUID_) m_oPictureGUID;
+
+	};
+	class ActiveXObjectFrame : public ActiveXObjectFormControl
+	{
+	public:
+		ActiveXObjectFrame()
+		{
+			m_oObjectType.Init();
+			m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectGBox);
+		}
 	};
 	class ActiveXObjectMorphData : public ActiveXObject
 	{
@@ -172,8 +224,32 @@ namespace OOX
 		}
 		virtual void Parse(unsigned char* pData, DWORD size);
 	};
-	//TabStrip
+	class ActiveXObjectTabStrip : public ActiveXObject
+	{
+	public:
+		ActiveXObjectTabStrip()
+		{
+			m_oObjectType.Init();
+			m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectTabStrip);
+		}
+		virtual void Parse(unsigned char* pData, DWORD size);
+		virtual std::wstring toXml();
 
+		std::vector<std::wstring> m_oItems;
+		std::vector<std::wstring> m_oTipStrings;
+		std::vector<std::wstring> m_oNames;
+		std::vector<std::wstring> m_oTags;
+		std::vector<std::wstring> m_oAccelerators;
+
+		nullable_uint m_oListIndex;
+		nullable_uint m_oTabOrientation;
+		nullable_uint m_oTabStyle;
+		nullable_uint m_oTabData;
+		nullable_uint m_oTabFixedWidth;
+		nullable_uint m_oTabFixedHeight;
+
+		std::vector<std::pair<bool, bool>> m_oTabStripTabFlags;
+	};
 //-------------------------------------------------------------------------------------------------
 	class COcxPr : public WritingElement
 	{

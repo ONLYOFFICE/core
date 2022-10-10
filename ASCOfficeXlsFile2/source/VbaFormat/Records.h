@@ -34,15 +34,163 @@
 #include "VbaRecordType.h"
 #include "VbaBinary.h"
 
+#include "../../../Common/DocxFormat/Source/DocxFormat/Media/ActiveX.h"
+
+#include <boost/shared_array.hpp>
 
 namespace VBA
 {
+	typedef boost::shared_ptr<OOX::ActiveXObject> ActiveXObjectPtr;
+
+	typedef _UINT32 OLE_COLOR; // todooo -> RgbColorOrPaletteEntry(3) + OleColorType(1)
+
+	struct _BooleanProperties
+	{
+		bool FORM_FLAG_ENABLED = false;
+		bool FORM_FLAG_DESINKPERSISTED = false;
+		bool FORM_FLAG_DONTSAVECLASSTABLE = false;
+	};
+	enum fmClickControlMode
+	{
+		fmClickControlModeInsertionPoint = 0,
+		fmClickControlModeSelectThenInsert = 1,
+		fmDblClickControlModeEditProperties = 2,
+		fmClickControlModeInherit = 0xFE,
+		fmClickControlModeDefault = 0xFF
+	};
+	struct DX_MODE
+	{
+		DX_MODE(_UINT32 flag);
+
+		bool fInheritDesign;
+		bool fDesign;
+		bool fInheritShowToolbox;
+		bool fShowToolbox;
+		bool fInheritShowGrid;
+		bool fShowGrid;
+		bool fInheritSnapToGrid;
+		bool fSnapToGrid;
+		bool fInheritGridX;
+		bool fInheritGridY;
+		bool fInheritClickControl;
+		bool fInheritDblClickControl;
+		bool fInheritShowInvisible;
+		bool fInheritShowTooltips;
+		bool fShowTooltips;
+		bool fInheritLayoutImmediate;
+		bool fLayoutImmediate;
+	};
+	struct SITE_FLAG
+	{
+		SITE_FLAG(_UINT32 flag);
+
+		bool fTabStop;
+		bool fVisible;
+		bool fDefault;
+		bool fCancel;
+		bool fStreamed;
+		bool fAutoSize;
+		bool fPreserveHeight;
+		bool fFitToParent;
+		bool fSelectChild;
+		bool fPromoteControls;
+	};
+	struct TextPropsPropMask
+	{
+		TextPropsPropMask(_UINT32 mask);
+
+		bool fFontName;
+		bool fFontEffects;
+		bool fFontHeight;
+		bool fFontCharSet;
+		bool fFontPitchAndFamily;
+		bool fParagraphAlign;
+		bool fFontWeight;
+	};
+	struct FormPropMask
+	{
+		FormPropMask(_UINT32 mask);
+
+		bool fBackColor;
+		bool fForeColor;
+		bool fNextAvailableID;
+		bool fBooleanProperties;
+		bool fBorderStyle;
+		bool fMousePointer;
+		bool fScrollBars;
+		bool fDisplayedSize;
+		bool fLogicalSize;
+		bool fScrollPosition;
+		bool fGroupCnt;
+		bool Reserved;
+		bool fMouseIcon;
+		bool fCycle;
+		bool fSpecialEffect;
+		bool fBorderColor;
+		bool fCaption;
+		bool fFont;
+		bool fPicture;
+		bool fZoom;
+		bool fPictureAlignment;
+		bool fPictureTiling;
+		bool fPictureSizeMode;
+		bool fShapeCookie;
+		bool fDrawBuffer;
+	};
+	struct ClassInfoPropMask
+	{
+		ClassInfoPropMask(_UINT32 mask);
+
+		bool fClsID;
+		bool fDispEvent;
+		bool fDefaultProg;;
+		bool fClassFlags;
+		bool fCountOfMethods;
+		bool fDispidBind;
+		bool fGetBindIndex;
+		bool fPutBindIndex;
+		bool fBindType;
+		bool fGetValueIndex;
+		bool fPutValueIndex;
+		bool fValueType;
+		bool fDispidRowset;
+		bool fSetRowset;
+	};
+	struct SitePropMask
+	{
+		SitePropMask(_UINT32 mask);
+
+		bool fName;
+		bool fTag;
+		bool fID;
+		bool fHelpContextID;
+		bool fBitFlags;
+		bool fObjectStreamSize;
+		bool fTabIndex;
+		bool fClsidCacheIndex;
+		bool fPosition;
+		bool fGroupID;
+		bool fControlTipText;
+		bool fRuntimeLicKey;
+		bool fControlSource;
+		bool fRowSource;
+	};
+	struct DesignExtenderPropMask
+	{
+		DesignExtenderPropMask(_UINT32 mask);
+
+		bool fBitFlags;
+		bool fGridX;
+		bool fGridY;
+		bool fClickControlMode;
+		bool fDblClickControlMode;
+	};
 	const std::wstring convert_string_icu(const char* buffer, const unsigned int& size, _UINT32 nCodePage);
 	const std::wstring  guid2bstr(const _GUID_ guid);
 
 	class BaseRecord;
 	typedef boost::shared_ptr<BaseRecord> BaseRecordPtr;
-	
+
 	class BaseRecord
 	{
 	public:
@@ -60,6 +208,45 @@ namespace VBA
 	virtual RecordType get_type() { return type; }
 
 //--------------------------------------------------------------------------------------------------
+	class StdFont : public BaseRecord
+	{
+		BASE_STRUCTURE_DEFINE_CLASS_NAME(StdFont)
+	public:
+		StdFont() {}
+		StdFont(CVbaFileStreamPtr stream);
+		~StdFont() {}
+
+		BaseRecordPtr clone();
+		virtual void load(CVbaFileStreamPtr stream);
+
+		_CP_OPT(_UINT32) FontHeight;
+		_CP_OPT(unsigned char) FontCharSet;
+		_CP_OPT(unsigned char) FontPitchAndFamily;
+		_CP_OPT(unsigned char) ParagraphAlign;
+		_CP_OPT(_UINT16) FontWeight;
+		std::wstring sFontName;
+
+		_CP_OPT(bool) bFontBold;
+		_CP_OPT(bool) bFontItalic;
+		_CP_OPT(bool) bFontUnderline;
+		_CP_OPT(bool) bFontStrikeout;
+		_CP_OPT(bool) bFontAutoColor;
+	};
+	typedef boost::shared_ptr<StdFont> StdFontPtr;
+	
+	class TextProps : public StdFont
+	{
+		BASE_STRUCTURE_DEFINE_CLASS_NAME(TextProps)
+	public:
+		TextProps() {}
+		TextProps(CVbaFileStreamPtr stream);
+		~TextProps() {}
+
+		BaseRecordPtr clone();
+		virtual void load(CVbaFileStreamPtr stream);
+	};
+	typedef boost::shared_ptr<TextProps> TextPropsPtr;
+
 	class AnsiString : public BaseRecord
 	{
 		BASE_STRUCTURE_DEFINE_CLASS_NAME(AnsiString)
@@ -607,5 +794,166 @@ namespace VBA
 		PROJECTCOOKIEPtr ProjectCookieRecord;
 	};
 	typedef boost::shared_ptr<PROJECTMODULES> PROJECTMODULESPtr;
+//------------------------------------------------------------------------------------------------
+	//class ProjectModule : public BaseRecord
+	//{
+	//	BASE_STRUCTURE_DEFINE_CLASS_NAME(ProjectModule)
+	//public:
+	//	ProjectModule(CVbaFileStreamPtr stream)
+	//	{
+	//		load(stream);
+	//	}
+	//	BaseRecordPtr clone();
+
+	//	virtual void load(CVbaFileStreamPtr stream);
+
+	//	REFERENCENAMEPtr NameRecord;
+	//	BaseRecordPtr ReferenceRecord;
+	//};
+//--------------------------------------------------------------------------------------------------------------
+	class FormControl : public BaseRecord
+	{
+		BASE_STRUCTURE_DEFINE_CLASS_NAME(FormControl)
+	public:
+		FormControl(CVbaFileStreamPtr stream)
+		{
+			load(stream);
+		}
+		BaseRecordPtr clone();
+
+		virtual void load(CVbaFileStreamPtr stream);
+//FormDataBlock
+		_CP_OPT(OLE_COLOR) BackColor;
+		_CP_OPT(OLE_COLOR) ForeColor;
+		_CP_OPT(_UINT32) NextAvailableID;
+		_CP_OPT(_BooleanProperties) BooleanProperties;
+		_CP_OPT(unsigned char) BorderStyle;
+		_CP_OPT(unsigned char) MousePointer;
+		_CP_OPT(unsigned char) ScrollBars;
+		_CP_OPT(_UINT32) GroupCnt;
+		_CP_OPT(unsigned char) Cycle;
+		_CP_OPT(unsigned char) SpecialEffect;
+		_CP_OPT(OLE_COLOR) BorderColor;
+		_CP_OPT(_UINT32) Zoom;
+		_CP_OPT(unsigned char) PictureAlignment;
+		_CP_OPT(unsigned char) PictureSizeMode;
+		_CP_OPT(_UINT32) ShapeCookie;
+		_CP_OPT(_UINT32) DrawBuffer;
+// FormExtraDataBlock
+		_CP_OPT(frmSize) DisplayedSize;
+		_CP_OPT(frmSize) LogicalSize;
+		_CP_OPT(fmPosition) ScrollPosition;
+
+		std::wstring Caption;
+// FormStreamData
+		_CP_OPT(_GUID_) MouseIconGUID;
+		_CP_OPT(_GUID_) FontGUID;
+		_CP_OPT(_GUID_) PictureGUID;
+
+		std::pair<boost::shared_array<unsigned char>, _UINT32> MouseIcon;
+		BaseRecordPtr Font;
+		std::pair<boost::shared_array<unsigned char>, _UINT32> Picture;
+	};
+	typedef boost::shared_ptr<FormControl> FormControlPtr;
+//--------------------------------------------------------------------------------------------------------------
+	class SiteClassInfo : public BaseRecord
+	{
+		BASE_STRUCTURE_DEFINE_CLASS_NAME(SiteClassInfo)
+	public:
+		SiteClassInfo(CVbaFileStreamPtr stream);
+		BaseRecordPtr clone();
+
+		virtual void load(CVbaFileStreamPtr stream);
+
+//ClassInfoDataBlock
+
+//ClassInfoExtraDataBlock
+		_CP_OPT(_GUID_) guidClsID;
+		_CP_OPT(_GUID_) guidDispEvent;
+		_CP_OPT(_GUID_) guidDefaultProg;
+	};
+	typedef boost::shared_ptr<SiteClassInfo> SiteClassInfoPtr;
+//--------------------------------------------------------------------------------------------------------------
+	class FormObjectDepthTypeCount : public BaseRecord
+	{
+		BASE_STRUCTURE_DEFINE_CLASS_NAME(FormObjectDepthTypeCount)
+	public:
+		FormObjectDepthTypeCount(CVbaFileStreamPtr stream);
+		BaseRecordPtr clone();
+
+		virtual void load(CVbaFileStreamPtr stream);
+
+		unsigned char Depth = 0;
+		unsigned char TypeOrCount = 0;
+		bool fCount = false;
+	};
+	typedef boost::shared_ptr<FormObjectDepthTypeCount> FormObjectDepthTypeCountPtr;
+//--------------------------------------------------------------------------------------------------------------
+	class OleSiteConcreteControl : public BaseRecord
+	{
+		BASE_STRUCTURE_DEFINE_CLASS_NAME(OleSiteConcreteControl)
+	public:
+		OleSiteConcreteControl(CVbaFileStreamPtr stream);
+		BaseRecordPtr clone();
+
+		virtual void load(CVbaFileStreamPtr stream);
+
+//SiteDataBlock
+		_CP_OPT(_INT32) ID;
+		_CP_OPT(_INT32) HelpContextID;
+		_CP_OPT(SITE_FLAG) BitFlags;
+		_CP_OPT(_UINT32) ObjectStreamSize;
+		_CP_OPT(_INT16) TabIndex;
+		_CP_OPT(_UINT16) ClsidCacheIndex;
+		_CP_OPT(_UINT16) GroupID;
+//SiteExtraDataBlock
+		std::wstring Name;
+		std::wstring Tag;
+		_CP_OPT(fmPosition) SitePosition;
+		std::wstring ControlTipText;
+		std::wstring RuntimeLicKey;
+		std::wstring ControlSource;
+		std::wstring RowSource;
+
+		ActiveXObjectPtr Object;
+	};
+	typedef boost::shared_ptr<OleSiteConcreteControl> OleSiteConcreteControlPtr;
+//--------------------------------------------------------------------------------------------------------------
+	class FormSiteData : public BaseRecord
+	{
+		BASE_STRUCTURE_DEFINE_CLASS_NAME(FormSiteData)
+	public:
+		FormSiteData(CVbaFileStreamPtr stream);
+		FormSiteData(CVbaFileStreamPtr stream, bool _bClassTableEnable);
+		BaseRecordPtr clone();
+
+		virtual void load(CVbaFileStreamPtr stream);
+
+		std::vector<SiteClassInfoPtr> ClassTables;
+		std::vector<FormObjectDepthTypeCountPtr> SiteDepthsAndTypes;
+		std::vector<OleSiteConcreteControlPtr> Sites;
+	private:
+		bool bClassTableEnable = true;
+	};
+	typedef boost::shared_ptr<FormSiteData> FormSiteDataPtr;	
+//--------------------------------------------------------------------------------------------------------------
+	class FormDesignExData : public BaseRecord
+	{
+		BASE_STRUCTURE_DEFINE_CLASS_NAME(FormDesignExData)
+	public:
+		FormDesignExData(CVbaFileStreamPtr stream);
+		BaseRecordPtr clone();
+
+		virtual void load(CVbaFileStreamPtr stream);
+
+		_CP_OPT(DX_MODE) BitFlags;
+		_CP_OPT(_UINT32) GridX;
+		_CP_OPT(_UINT32) GridY;
+
+		_CP_OPT(fmClickControlMode) ClickControlMode;
+		_CP_OPT(fmClickControlMode) DblClickControlMode;
+	};
+	typedef boost::shared_ptr<FormDesignExData> FormDesignExDataPtr;
+	
 } // namespace VBA
 

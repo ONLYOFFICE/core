@@ -70,4 +70,48 @@ namespace VBA
 	};
 	typedef boost::shared_ptr<ModuleStreamObject> ModuleStreamObjectPtr;
 
+	class ProjectStreamObject
+	{
+	public:
+		ProjectStreamObject(CVbaFileStreamPtr _reader) { reader = _reader; }
+		~ProjectStreamObject() {}
+
+		bool loadContent();
+
+		std::vector<std::wstring> DesignerModules;
+	private:
+		CVbaFileStreamPtr reader;
+	};
+	typedef boost::shared_ptr<ProjectStreamObject> ProjectStreamObjectPtr;
+
+	class VBFrameObject
+	{
+	public:
+		VBFrameObject(CVbaFileStreamPtr _reader) { reader = _reader; }
+		~VBFrameObject() {}
+
+		bool loadContent();
+
+		std::vector<std::pair<std::wstring, std::wstring>> Props;
+	private:
+		CVbaFileStreamPtr reader;
+	};
+	typedef boost::shared_ptr<VBFrameObject> VBFrameObjectPtr;
+
+	class FormControlStream
+	{
+	public:
+		FormControlStream(CVbaFileStreamPtr _reader) { reader = _reader; }
+		~FormControlStream() {}
+
+		bool loadContent();
+
+		FormControlPtr Control;
+		FormSiteDataPtr SiteData;
+		FormDesignExDataPtr DesignExData;
+	private:
+		CVbaFileStreamPtr reader;
+	};
+	typedef boost::shared_ptr<FormControlStream> FormControlStreamPtr;
+
 } // namespace VBA

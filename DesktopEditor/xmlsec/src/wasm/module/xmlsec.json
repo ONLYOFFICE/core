@@ -65,7 +65,7 @@
 	{
 		"name": "s",
 		"folder": "../../../../xmlsec/src/src/",
-		"files": ["XmlTransform.cpp", "XmlCertificate.cpp", "OOXMLSigner.cpp", "OOXMLVerifier.cpp", "XmlSigner_openssl.cpp"]
+		"files": ["XmlTransform.cpp", "CertificateCommon.cpp", "OOXMLSigner.cpp", "OOXMLVerifier.cpp"]
 	},
 	{
 		"name": "a",

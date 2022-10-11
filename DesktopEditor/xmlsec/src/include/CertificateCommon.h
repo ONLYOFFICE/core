@@ -35,6 +35,8 @@ namespace NSCertificate
     Q_DECL_EXPORT CCertificateInfo GetInfo(ICertificate* pCert);
 
     Q_DECL_EXPORT ICertificate* FromFiles(const std::wstring& keyPath, const std::string& keyPassword, const std::wstring& certPath, const std::string& certPassword);
+    Q_DECL_EXPORT ICertificate* FromFilesRaw(unsigned char* key, unsigned int keyLen, const std::string& keyPassword,
+                                    unsigned char* cert, unsigned int certLen, const std::string& certPassword);
 
     Q_DECL_EXPORT int GetOOXMLHashAlg(const std::string& sAlg);
     Q_DECL_EXPORT std::string GetDigestMethodA(const int& nAlg);

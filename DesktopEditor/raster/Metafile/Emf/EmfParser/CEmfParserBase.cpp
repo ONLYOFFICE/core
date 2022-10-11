@@ -782,9 +782,10 @@ namespace MetaFile
 		if (NULL != m_pParent)
 			return m_pParent->GetPixWidth(dScaleX);
 
-		double dScaleW = std::fabs((double)(m_oHeader.oBounds.lRight - m_oHeader.oBounds.lLeft) / (double)(m_oHeader.oFrame.lRight - m_oHeader.oFrame.lLeft));
+		if (MM_TEXT == m_pDC->GetMapMode())
+			return dScaleX * std::fabs((double)m_oHeader.oDevice.cx / (double)m_oHeader.oMillimeters.cx);
 
-		return dScaleX / dScaleW;
+		return dScaleX * std::fabs((double)(m_oHeader.oFrame.lRight - m_oHeader.oFrame.lLeft) / (double)(m_oHeader.oBounds.lRight - m_oHeader.oBounds.lLeft));
 	}
 
 	bool CEmfParserBase::IsViewportFlippedY()
@@ -1215,6 +1216,9 @@ namespace MetaFile
 	{
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_SETWINDOWEXTEX(oExtent);
+
+		if (MM_ISOTROPIC != m_pDC->GetMapMode() && MM_ANISOTROPIC != m_pDC->GetMapMode())
+			return;
 
 		m_pDC->SetWindowExtents(oExtent);
 		UpdateOutputDC();

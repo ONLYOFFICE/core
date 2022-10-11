@@ -467,7 +467,7 @@ namespace MetaFile
 				double dX = oTextPoint.x;
 				double dY = oTextPoint.y + dSkipY;
 
-				dSkipY += fH + dLogicalFontHeight;
+				dSkipY += dLogicalFontHeight * m_dScaleY * 1.5;
 
 				// Найдем начальную точку текста
 				unsigned int ulTextAlign = m_pFile->GetTextAlign() & TA_MASK;

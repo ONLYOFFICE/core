@@ -1435,7 +1435,7 @@ namespace MetaFile
 				if (0 == unWinMetafileSize)
 					return;
 
-				CWmfParser oWmfParser(this);
+				CWmfParser oWmfParser;
 
 				oWmfParser.SetFontManager(GetFontManager());
 				oWmfParser.SetStream(m_oStream.GetCurPtr(), unWinMetafileSize);

@@ -7,7 +7,6 @@
 
 namespace MetaFile
 {
-	CWmfParserBase::CWmfParserBase() : m_oPlayer(this), m_pInterpretator(NULL), m_bEof(false)
 	CWmfParserBase::CWmfParserBase(IMetaFileBase *pParent)
 		: m_oPlayer(this), m_pInterpretator(NULL), m_bEof(false), m_pParent(pParent)
 	{
@@ -173,7 +172,7 @@ namespace MetaFile
 		if (0 != m_oPlaceable.Inch && MM_TEXT != m_pDC->GetMapMode())
 			return dScaleX * (1440. / (((m_oPlaceable.Inch <= 1440) ? m_oPlaceable.Inch : 96) * m_pDC->GetPixelWidth()));
 
-		return dScaleX / m_pDC->GetPixelWidth();
+		return dScaleX * 10. / m_pDC->GetPixelWidth();
 	}
 
 	void CWmfParserBase::SetInterpretator(IOutputDevice *pOutput)
@@ -1537,6 +1536,9 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_META_SETVIEWPORTEXT(shX, shY);
 
+		if (MM_ISOTROPIC != m_pDC->GetMapMode() && MM_ANISOTROPIC != m_pDC->GetMapMode())
+			return;
+
 		m_pDC->SetViewportExt(shX, shY);
 		UpdateOutputDC();
 	}
@@ -1554,6 +1556,9 @@ namespace MetaFile
 	{
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_META_SETWINDOWEXT(shX, shY);
+
+		if (MM_ISOTROPIC != m_pDC->GetMapMode() && MM_ANISOTROPIC != m_pDC->GetMapMode())
+			return;
 
 		m_pDC->SetWindowExt(shX, shY);
 		UpdateOutputDC();

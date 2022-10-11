@@ -163,8 +163,8 @@ void Animation::FillAnim(
             }
 
         auto tavTime = animValue->m_oTimeAnimationValueAtom.m_nTime;
-        if (tavTime < 1000 && tavTime >= 0)
-                tav.tm = std::to_wstring((1000 - tavTime) * 100);
+        if (tavTime <= 1000 && tavTime >= 0)    // todo check
+                tav.tm = std::to_wstring((/*1000 - */tavTime) * 100);
 
         if (!animValue->m_VarFormula.m_Value.empty())
         {
@@ -425,6 +425,8 @@ void Animation::FillAudio(CRecordExtTimeNodeContainer *pETNC,
         {
             oAudio.cMediaNode.tgtEl.spTgt = new PPTX::Logic::SpTgt;
             oAudio.cMediaNode.tgtEl.spTgt->spid = std::to_wstring(pCVEC->m_oVisualShapeAtom.m_nObjectIdRef);
+//            oAudio.isNarration = true;
+//            oAudio.cMediaNode.showWhenStopped = false;
         } else
             return;
         FillCTn(pETNC, oAudio.cMediaNode.cTn);
@@ -781,6 +783,9 @@ void Animation::FillCond(
         cond.tgtEl->spTgt = new PPTX::Logic::SpTgt;
         cond.tgtEl->spTgt->spid = std::to_wstring(
                     oldCond->m_oVisualElement.m_oVisualShapeAtom.m_nObjectIdRef);
+    } else if (oldCond->m_oVisualElement.m_bVisualPageAtom)
+    {
+        cond.tgtEl = new PPTX::Logic::TgtEl;
     }
 }
 
@@ -874,12 +879,15 @@ void Animation::FillCTn(
         if (iter->m_fIterateDirectionPropertyUsed)
             oCTn.iterate->backwards = (bool)iter->m_nIterateDirection;
 
-        if (iter->m_fIterateIntervalTypePropertyUsed)
-            oCTn.iterate->tmPct = iter->m_nIterateInterval;
+        int intervalType = iter->m_fIterateIntervalTypePropertyUsed ?
+                    iter->m_nIterateIntervalType : 0;
+        uint iterateInterval = iter->m_fIterateIntervalPropertyUsed ?
+                    iter->m_nIterateInterval : 0;
 
-        if (iter->m_fIterateIntervalPropertyUsed)
-            oCTn.iterate->tmAbs = std::to_wstring(iter->m_nIterateIntervalType);
-
+        if (intervalType)
+            oCTn.iterate->tmPct = iterateInterval > 1000 ? 10000 : iterateInterval * 10;
+        else
+            oCTn.iterate->tmAbs = std::to_wstring(iterateInterval);
     }
 
 

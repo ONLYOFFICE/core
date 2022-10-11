@@ -1438,6 +1438,9 @@ void Animation::SplitAnim(std::list<std::list<SOldAnimation*> >& arrClickPar)
 
     for (auto& oldAnim : m_arrOldAnim)
     {
+        if (isSpidReal(oldAnim.shapeId) == false)
+            continue;
+
         if (arrClickPar.empty())
         {
             std::list<SOldAnimation*> clickPar;
@@ -1671,6 +1674,7 @@ void Animation::FillCTnAnimation  (PPTX::Logic::CTn &oCTN, SOldAnimation *pOldAn
     const UINT effect = pOldAnim->anim->m_AnimationAtom.m_AnimEffect;
     const UINT direct = pOldAnim->anim->m_AnimationAtom.m_AnimEffectDirection;
 
+    // Todo 4, 7. 0x11 - 0x1B
     switch (effect)
     {
     case 0x00:
@@ -1701,6 +1705,12 @@ void Animation::FillCTnAnimation  (PPTX::Logic::CTn &oCTN, SOldAnimation *pOldAn
     {
         oCTN.presetID = 9;
         ConvertDissolveIn(oCTN.childTnLst.get2(), pOldAnim);
+        break;
+    }
+    case 0x06:
+    {
+        oCTN.presetID = 10;
+        ConvertFade(oCTN.childTnLst.get2(), pOldAnim);
         break;
     }
     case 0x08:
@@ -1772,6 +1782,11 @@ void Animation::FillCTnAnimation  (PPTX::Logic::CTn &oCTN, SOldAnimation *pOldAn
         ConvertFlashOnce(oCTN.childTnLst.get2(), pOldAnim, presetSub);
         break;
     }
+    default:
+        oCTN.presetID = 1;
+        ConvertAppear(oCTN.childTnLst.get2(), pOldAnim);
+        std::wcout << "Error: Unknown old animation id: " << std::to_wstring(effect) << L"\n";
+
     }
 
     if (presetSub != -1)
@@ -1969,6 +1984,12 @@ void Animation::ConvertDissolveIn(PPTX::Logic::ChildTnLst& oParent, SOldAnimatio
 {
     PushSet(oParent, pOldAnim);
     PushAnimEffect(oParent, pOldAnim, L"dissolve", L"in");
+}
+
+void Animation::ConvertFade(PPTX::Logic::ChildTnLst &oParent, SOldAnimation *pOldAnim)
+{
+    PushSet(oParent, pOldAnim);
+    PushAnimEffect(oParent, pOldAnim, L"fade", L"in");
 }
 
 void Animation::ConvertFlashOnce(PPTX::Logic::ChildTnLst& oParent, SOldAnimation *pOldAnim, int& presetSub)
@@ -2390,14 +2411,19 @@ void Animation::PushSet(PPTX::Logic::ChildTnLst& oParent, SOldAnimation *pOldAni
 
 bool Animation::isSpidReal(const UINT spid)
 {
-    if (m_arrOldAnim.empty())
+    if (m_realShapesId.find(spid) == m_realShapesId.end())
+        return false;
+    else
         return true;
 
-    for (const auto& oldAnim : m_arrOldAnim)
-        if (oldAnim.shapeId == spid)
-            return true;
+//    if (m_arrOldAnim.empty())
+//        return true;
 
-    return false;
+//    for (const auto& oldAnim : m_arrOldAnim)
+//        if (oldAnim.shapeId == spid)
+//            return true;
+
+//    return false;
 }
 
 

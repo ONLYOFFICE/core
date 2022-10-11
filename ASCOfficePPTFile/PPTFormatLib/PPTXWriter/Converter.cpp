@@ -1537,12 +1537,16 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
     CGroupElement *pGroupElement = !pSlide->m_arElements.empty() ? dynamic_cast<CGroupElement *>(pSlide->m_arElements[0].get()) : NULL;
 
     size_t start_index = 0;
+    std::unordered_set<int> realShapesId;
 
     if (pGroupElement)
     {
         for (size_t i = 0; i < pGroupElement->m_pChildElements.size(); ++i)
         {
-            WriteElement(oWriter, oRels, pGroupElement->m_pChildElements[i]);
+            auto& element = pGroupElement->m_pChildElements[i];
+            WriteElement(oWriter, oRels, element);
+            if (element)
+                realShapesId.insert(element->m_lID);
         }
 
         start_index = 1;
@@ -1550,7 +1554,10 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
 
     for (size_t i = start_index; i < pSlide->m_arElements.size(); ++i)
     {
-        WriteElement(oWriter, oRels, pSlide->m_arElements[i]);
+        auto& element = pSlide->m_arElements[i];
+        WriteElement(oWriter, oRels, element);
+        if (element)
+            realShapesId.insert(element->m_lID);
     }
 
     oWriter.WriteString(std::wstring(L"</p:spTree></p:cSld>"));
@@ -1560,7 +1567,7 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
     WriteTransition(oWriter, pSlide->m_oSlideShow);
 
     // TODO write new method and class for timing
-    WriteTiming(oWriter, oRels, nIndexSlide);
+    WriteTiming(oWriter, oRels, realShapesId, nIndexSlide);
 
 
     oWriter.WriteString(std::wstring(L"</p:sld>"));
@@ -2029,7 +2036,7 @@ void CPPTXWriter::WriteLayoutAfterTheme(CThemePtr pTheme, const int nIndexTheme,
 }
 
 
-void PPT_FORMAT::CPPTXWriter::WriteTiming(CStringWriter& oWriter, CRelsGenerator &oRels, int nIndexSlide)
+void PPT_FORMAT::CPPTXWriter::WriteTiming(CStringWriter& oWriter, CRelsGenerator &oRels, const std::unordered_set<int>& realShapesId, int nIndexSlide)
 {
     PPTX::Logic::Timing oTiming;
 
@@ -2059,7 +2066,7 @@ void PPT_FORMAT::CPPTXWriter::WriteTiming(CStringWriter& oWriter, CRelsGenerator
     if (!pPP10SlideBinaryTag && arrOldAnim.empty())
         return;
 
-    Animation animation(pPP10SlideBinaryTag, arrOldAnim, &(m_pUserInfo->m_oExMedia), &oRels);
+    Animation animation(pPP10SlideBinaryTag, arrOldAnim, &(m_pUserInfo->m_oExMedia), &oRels, realShapesId);
 
     animation.Convert(oTiming);
     oWriter.WriteString(oTiming.toXML());

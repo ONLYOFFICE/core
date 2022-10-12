@@ -23,7 +23,7 @@ namespace MetaFile
 	class  CWmfParserBase : public IMetaFileBase
 	{
 	public:
-		CWmfParserBase(IMetaFileBase *pParent = NULL);
+		CWmfParserBase();
 		~CWmfParserBase();
 
 		virtual bool            ReadFromBuffer(unsigned char*, unsigned int)    = 0;
@@ -119,8 +119,6 @@ namespace MetaFile
 		CWmfEscapeBuffer	m_oEscapeBuffer;
 
 		bool           m_bEof;
-
-		IMetaFileBase *m_pParent;
 	private:
 		//                virtual bool ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight) = 0;
 

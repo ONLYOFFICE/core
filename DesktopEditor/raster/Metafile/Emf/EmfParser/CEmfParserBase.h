@@ -46,7 +46,7 @@ namespace MetaFile
 	class  CEmfParserBase : public virtual IMetaFileBase
 	{
 	public:
-		CEmfParserBase(IMetaFileBase *pParent = NULL);
+		CEmfParserBase();
 		~CEmfParserBase();
 
 		virtual bool            ReadFromBuffer(BYTE* pBuffer, unsigned int unSize, const bool& bIsExternal = true) = 0;
@@ -151,8 +151,6 @@ namespace MetaFile
 		CEmfInterpretatorBase   *m_pInterpretator;
 
 		bool              m_bEof;
-
-		IMetaFileBase *m_pParent;
 	private:
 		virtual bool ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight) = 0;
 

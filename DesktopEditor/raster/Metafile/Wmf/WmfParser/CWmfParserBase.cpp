@@ -7,8 +7,8 @@
 
 namespace MetaFile
 {
-	CWmfParserBase::CWmfParserBase(IMetaFileBase *pParent)
-		: m_oPlayer(this), m_pInterpretator(NULL), m_bEof(false), m_pParent(pParent)
+	CWmfParserBase::CWmfParserBase()
+		: m_oPlayer(this), m_pInterpretator(NULL), m_bEof(false)
 	{
 		m_pDC = m_oPlayer.GetDC();
 	}
@@ -166,13 +166,10 @@ namespace MetaFile
 
 	double CWmfParserBase::GetPixWidth(double dScaleX)
 	{
-		if (NULL != m_pParent)
-			return m_pParent->GetPixWidth(dScaleX);
-
 		if (0 != m_oPlaceable.Inch && MM_TEXT != m_pDC->GetMapMode())
 			return dScaleX * (1440. / (((m_oPlaceable.Inch <= 1440) ? m_oPlaceable.Inch : 96) * m_pDC->GetPixelWidth()));
 
-		return dScaleX * 10. / m_pDC->GetPixelWidth();
+		return dScaleX * 10. / m_pDC->GetPixelWidth() / ((0 != m_oPlaceable.Inch) ? (1440. / m_oPlaceable.Inch) : 1.);
 	}
 
 	void CWmfParserBase::SetInterpretator(IOutputDevice *pOutput)
@@ -1618,7 +1615,7 @@ namespace MetaFile
 
 				if (0 == unRemainingBytes)
 				{
-					CEmfParser oEmfParser(this);
+					CEmfParser oEmfParser;
 
 					oEmfParser.SetFontManager(GetFontManager());
 					oEmfParser.SetStream(m_oEscapeBuffer.GetBuffer(), m_oEscapeBuffer.GetSize());

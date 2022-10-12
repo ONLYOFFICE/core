@@ -620,8 +620,8 @@ namespace MetaFile
 		return m_pDC;
 	}
 
-	CEmfParserBase::CEmfParserBase(IMetaFileBase *pParent)
-		: m_oPlayer(this), m_pParent(pParent)
+	CEmfParserBase::CEmfParserBase()
+		: m_oPlayer(this)
 	{
 		m_pPath = NULL;
 		m_pDC   = m_oPlayer.GetDC();
@@ -779,9 +779,6 @@ namespace MetaFile
 
 	double CEmfParserBase::GetPixWidth(double dScaleX)
 	{
-		if (NULL != m_pParent)
-			return m_pParent->GetPixWidth(dScaleX);
-
 		if (MM_TEXT == m_pDC->GetMapMode())
 			return dScaleX * std::fabs((double)m_oHeader.oDevice.cx / (double)m_oHeader.oMillimeters.cx);
 
@@ -1237,6 +1234,9 @@ namespace MetaFile
 	{
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_SETVIEWPORTEXTEX(oExtent);
+
+		if (MM_ISOTROPIC != m_pDC->GetMapMode() && MM_ANISOTROPIC != m_pDC->GetMapMode())
+			return;
 
 		m_pDC->SetViewportExtents(oExtent);
 		UpdateOutputDC();

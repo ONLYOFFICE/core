@@ -1077,13 +1077,6 @@ namespace MetaFile
 
 			// TODO: dWidth зависит еще от флага PS_GEOMETRIC в стиле карандаша
 
-			double dWidth = pPen->GetWidth();
-
-			if (dWidth == 0 || (dWidth == 1 && PS_COSMETIC == ulPenType))
-				dWidth = m_pFile->GetPixWidth(m_dScaleX);
-			else
-				dWidth *= m_dScaleX;
-
 			BYTE nStartCapStyle = 0;
 			if (PS_STARTCAP_ROUND == ulPenStartCap)
 				nStartCapStyle = Aggplus::LineCapRound;
@@ -1110,6 +1103,17 @@ namespace MetaFile
 				nJoinStyle = Aggplus::LineJoinBevel;
 			else if (PS_JOIN_MITER == ulPenJoin)
 				nJoinStyle = Aggplus::LineJoinMiter;
+
+			double dWidth = pPen->GetWidth();
+
+			if (dWidth == 0 || (dWidth == 1 && PS_COSMETIC == ulPenType))
+			{
+				dWidth = m_pFile->GetPixWidth(m_dScaleX);
+				nStartCapStyle = nEndCapStyle = Aggplus::LineCapFlat;
+				nJoinStyle = Aggplus::LineJoinMiter;
+			}
+			else
+				dWidth *= m_dScaleX;
 
 			double dMiterLimit = (0 != pPen->GetMiterLimit()) ? pPen->GetMiterLimit() : m_pFile->GetMiterLimit() * m_dScaleX;
 

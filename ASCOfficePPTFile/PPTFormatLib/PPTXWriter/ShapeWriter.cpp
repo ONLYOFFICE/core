@@ -630,9 +630,9 @@ void PPT_FORMAT::CShapeWriter::WriteImageInfo()
 
         if ((int)pAudioElement->m_strAudioFileName.find(L".WAV") == -1 &&
                 (int)pAudioElement->m_strAudioFileName.find(L".wav") == -1)
-            m_oWriter.WriteString(L"<a:audioFile r:link=\"" + strRid + L"\"/>");
-        else
             m_oWriter.WriteString(L"<a:wavAudioFile r:embed=\"" + strRid + L"\"/>");
+        else
+            m_oWriter.WriteString(L"<a:audioFile r:link=\"" + strRid + L"\"/>"); // todo for anim connection
 
         sMediaFile = bExternal ? L"" : pAudioElement->m_strAudioFileName;
     }
@@ -1556,7 +1556,7 @@ void PPT_FORMAT::CShapeWriter::WriteHyperlink(const std::vector<CInteractiveInfo
                 && actions[i].m_lType == II_NoAction)
             continue;
 
-        if (actions[i].m_strHyperlink.empty())
+        if (actions[i].m_strHyperlink.empty() && actions[i].m_lType != LT_CustomShow)
             continue;
 
         PPTX::Logic::Hyperlink hlink;

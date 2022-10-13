@@ -482,7 +482,7 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertShadow(CShadow	& shadow)
     }
     else
     {
-//        needHiddenEffect = shadow.Visible;
+        //        needHiddenEffect = shadow.Visible;
         shadow_writer.WriteString(L"<a:outerShdw");
         shadow_writer.WriteString(strDist);
         shadow_writer.WriteString(strDir);
@@ -499,14 +499,14 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertShadow(CShadow	& shadow)
         shadow_writer.WriteString(L"</a:outerShdw>");
     }
     shadow_writer.WriteString(L"</a:effectLst>");
-//    if (needHiddenEffect)
-//    {
-//        std::wstring STRshadow;
-//        STRshadow = L"<a:extLst><a:ext uri=\"{AF507438-7753-43E0-B8FC-AC1667EBCBE1}\"><a14:hiddenEffects xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\">";
-//        STRshadow += shadow_writer.GetData();
-//        STRshadow += L"</a14:hiddenEffects></a:ext><a:ext uri=\"{53640926-AAD7-44D8-BBD7-CCE9431645EC}\"><a14:shadowObscured xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"1\"/></a:ext></a:extLst>";
-//        return STRshadow;
-//    }
+    //    if (needHiddenEffect)
+    //    {
+    //        std::wstring STRshadow;
+    //        STRshadow = L"<a:extLst><a:ext uri=\"{AF507438-7753-43E0-B8FC-AC1667EBCBE1}\"><a14:hiddenEffects xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\">";
+    //        STRshadow += shadow_writer.GetData();
+    //        STRshadow += L"</a14:hiddenEffects></a:ext><a:ext uri=\"{53640926-AAD7-44D8-BBD7-CCE9431645EC}\"><a14:shadowObscured xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"1\"/></a:ext></a:extLst>";
+    //        return STRshadow;
+    //    }
 
     return shadow_writer.GetData();
 }
@@ -628,10 +628,10 @@ void PPT_FORMAT::CShapeWriter::WriteImageInfo()
         bool bExternal = false;
         std::wstring strRid = m_pRels->WriteAudio(pAudioElement->m_strAudioFileName, bExternal);
 
-        if ((int)pAudioElement->m_strAudioFileName.find(L".WAV") == -1 &&
-                (int)pAudioElement->m_strAudioFileName.find(L".wav") == -1)
-            m_oWriter.WriteString(L"<a:wavAudioFile r:embed=\"" + strRid + L"\"/>");
-        else
+//        if ((int)pAudioElement->m_strAudioFileName.find(L".WAV") == -1 &&
+//                (int)pAudioElement->m_strAudioFileName.find(L".wav") == -1)
+//            m_oWriter.WriteString(L"<a:wavAudioFile r:embed=\"" + strRid + L"\"/>");
+//        else
             m_oWriter.WriteString(L"<a:audioFile r:link=\"" + strRid + L"\"/>"); // todo for anim connection
 
         sMediaFile = bExternal ? L"" : pAudioElement->m_strAudioFileName;

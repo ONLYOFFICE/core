@@ -637,7 +637,6 @@ void Animation::FillCBhvr(
     // accumulate   - MUST be 0
     // xfrmType     - MUST be 0
 
-
     if (pBhvr->m_haveStringList)
     {
         if (!pBhvr->m_pStringList->m_arrRgChildRec.empty())
@@ -679,6 +678,46 @@ void Animation::FillCBhvr(
             oBhvr.tgtEl.spTgt->txEl->charRg = false;
             oBhvr.tgtEl.spTgt->txEl->st     = pBhvr->m_oClientVisualElement.m_oVisualShapeAtom.m_nData1;
             oBhvr.tgtEl.spTgt->txEl->end    = pBhvr->m_oClientVisualElement.m_oVisualShapeAtom.m_nData2;
+        }
+    }
+
+
+    if (pBhvr->m_pPropertyList == nullptr)
+        return;
+
+    for (const auto prop : pBhvr->m_pPropertyList->m_arRecords)
+    {
+        if (prop == nullptr)
+            continue;
+
+        switch (prop->m_oHeader.RecInstance)
+        {
+        case TL_TBPID_RuntimeContext:
+            break;
+        case TL_TBPID_MotionPathEditRelative:
+            break;
+        case TL_TBPID_ColorColorModel:
+            break;
+        case TL_TBPID_ColorDirection:
+            break;
+        case TL_TBPID_Override:
+        {
+            auto override_ = new PPTX::Limit::TLOverride;
+            override_->set(L"childStyle");
+            oBhvr.override_= override_;
+            break;
+        }
+        case TL_TBPID_PathEditRotationAngle:
+            break;
+        case TL_TBPID_PathEditRotationX:
+            break;
+        case TL_TBPID_PathEditRotationY:
+            break;
+        case TL_TBPID_PointsTypes:
+            break;
+        case TL_TBPID_UnknownPropertyList:
+        default:
+            break;
         }
     }
 }

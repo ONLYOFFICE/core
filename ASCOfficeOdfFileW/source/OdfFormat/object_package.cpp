@@ -201,13 +201,13 @@ namespace odf_writer
 						if (sz < 1)
 							break;
 
-						content_utf8_ += GetUtf8StringFromUnicode(Content.c_str() + pos, sz);
+						content_utf8_ += NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(Content.c_str() + pos, sz);
 
 						pos += sz;
 					}
 				}
 				else 
-					content_utf8_ = GetUtf8StringFromUnicode(Content.c_str(), Content.length());
+					content_utf8_ = NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(Content.c_str(), Content.length());
 			}else
 				content_utf8_ = std::string( Content.begin(), Content.end());
 		}
@@ -226,13 +226,13 @@ namespace odf_writer
 						if (sz < 1)
 							break;
 
-						content_utf8_ += GetUtf8StringFromUnicode(Content + pos, sz);
+						content_utf8_ += NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(Content + pos, sz);
 
 						pos += sz;
 					}
 				}
 				else
-					content_utf8_ = GetUtf8StringFromUnicode(Content, Size);
+					content_utf8_ = NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(Content, Size);
 			}
 			else
 			{

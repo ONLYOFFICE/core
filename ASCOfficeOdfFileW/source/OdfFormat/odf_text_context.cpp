@@ -294,10 +294,10 @@ void odf_text_context::start_paragraph(office_element_ptr & elm, bool styled)
 		}
 	
 		text_p* p = dynamic_cast<text_p*>(elm.get());
-		if (p)	p->paragraph_.paragraph_attrs_.text_style_name_ = style_name;	
+		if (p)	p->paragraph_attrs_.text_style_name_ = style_name;	
 		
 		text_h* h = dynamic_cast<text_h*>(elm.get());
-		if (h)	h->paragraph_.paragraph_attrs_.text_style_name_ = style_name;	
+		if (h)	h->paragraph_attrs_.text_style_name_ = style_name;	
 
 		style *style_ = dynamic_cast<style*>(style_elm.get());
 		if (style_)
@@ -310,10 +310,10 @@ void odf_text_context::start_paragraph(office_element_ptr & elm, bool styled)
 	else if (false == parent_paragraph_style_.empty())
 	{
 		text_p* p = dynamic_cast<text_p*>(elm.get());
-		if (p)p->paragraph_.paragraph_attrs_.text_style_name_ = parent_paragraph_style_;	
+		if (p)p->paragraph_attrs_.text_style_name_ = parent_paragraph_style_;	
 		
 		text_h* h = dynamic_cast<text_h*>(elm.get());
-		if (h)p->paragraph_.paragraph_attrs_.text_style_name_ = parent_paragraph_style_;	
+		if (h)p->paragraph_attrs_.text_style_name_ = parent_paragraph_style_;	
 	}
 	if (paragraph_properties_ && need_break_)
 	{
@@ -643,12 +643,12 @@ void odf_text_context::add_text_style(office_element_ptr & style_elm, std::wstri
 	
 	if (text_p* p = dynamic_cast<text_p*>(current_level_.back().elm.get()))
 	{
-		p->paragraph_.paragraph_attrs_.text_style_name_ = style_name;	
+		p->paragraph_attrs_.text_style_name_ = style_name;	
 	}
 
 	if (text_h* h = dynamic_cast<text_h*>(current_level_.back().elm.get()))
 	{
-		h->paragraph_.paragraph_attrs_.text_style_name_ = style_name;	
+		h->paragraph_attrs_.text_style_name_ = style_name;	
 	}
 }
 
@@ -709,8 +709,8 @@ void odf_text_context::save_property_break()
 					current_level_[i].style_elm		= style_->get_office_element();
 					current_level_[i].style_name	= style_->get_name();
 					
-					if (p) p->paragraph_.paragraph_attrs_.text_style_name_ = current_level_[i].style_name;
-					if (h) h->paragraph_.paragraph_attrs_.text_style_name_ = current_level_[i].style_name;
+					if (p) p->paragraph_attrs_.text_style_name_ = current_level_[i].style_name;
+					if (h) h->paragraph_attrs_.text_style_name_ = current_level_[i].style_name;
 				}
 				break;
 			}

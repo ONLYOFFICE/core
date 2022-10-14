@@ -85,8 +85,10 @@ namespace MetaFile
 		void HANDLE_EMR_SETMAPMODE(const unsigned int& unMapMode) override {};
 		void HANDLE_EMR_SETWINDOWORGEX(const TEmfPointL& oOrigin) override {};
 		void HANDLE_EMR_SETWINDOWEXTEX(const TEmfSizeL& oExtent) override {};
+		void HANDLE_EMR_SCALEWINDOWEXTEX(int nXNum, int nXDenom, int nYNum, int nYDenom) override {};
 		void HANDLE_EMR_SETVIEWPORTORGEX(const TEmfPointL& oOrigin) override {};
 		void HANDLE_EMR_SETVIEWPORTEXTEX(const TEmfSizeL& oExtent) override {};
+		void HANDLE_EMR_SCALEVIEWPORTEXTEX(int nXNum, int nXDenom, int nYNum, int nYDenom) override {};
 		void HANDLE_EMR_SETSTRETCHBLTMODE(const unsigned int& unStretchMode) override {};
 		void HANDLE_EMR_SETICMMODE(const unsigned int& unICMMode) override {};
 		void HANDLE_EMR_CREATEMONOBRUSH(const unsigned int& unBrushIndex, const TEmfDibPatternBrush& oDibBrush, CDataStream &oDataStream) override {};

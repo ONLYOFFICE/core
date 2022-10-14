@@ -386,6 +386,12 @@ namespace MetaFile
 			pInterpretator->HANDLE_EMR_SETWINDOWEXTEX(oExtent);
 	}
 
+	void CEmfInterpretatorArray::HANDLE_EMR_SCALEWINDOWEXTEX(int nXNum, int nXDenom, int nYNum, int nYDenom)
+	{
+		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+			pInterpretator->HANDLE_EMR_SCALEWINDOWEXTEX(nXNum, nXDenom, nYNum, nYDenom);
+	}
+
 	void CEmfInterpretatorArray::HANDLE_EMR_SETVIEWPORTORGEX(const TEmfPointL &oOrigin)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
@@ -396,6 +402,12 @@ namespace MetaFile
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
 			pInterpretator->HANDLE_EMR_SETVIEWPORTEXTEX(oExtent);
+	}
+
+	void CEmfInterpretatorArray::HANDLE_EMR_SCALEVIEWPORTEXTEX(int nXNum, int nXDenom, int nYNum, int nYDenom)
+	{
+		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+			pInterpretator->HANDLE_EMR_SCALEVIEWPORTEXTEX(nXNum, nXDenom, nYNum, nYDenom);
 	}
 
 	void CEmfInterpretatorArray::HANDLE_EMR_SETSTRETCHBLTMODE(const unsigned int &unStretchMode)

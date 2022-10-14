@@ -175,8 +175,10 @@ namespace MetaFile
 			case EMR_SETMAPMODE:        Read_EMR_SETMAPMODE(); break;
 			case EMR_SETWINDOWORGEX:    Read_EMR_SETWINDOWORGEX(); break;
 			case EMR_SETWINDOWEXTEX:    Read_EMR_SETWINDOWEXTEX(); break;
+			case EMR_SCALEWINDOWEXTEX:  Read_EMR_SCALEWINDOWEXTEX(); break;
 			case EMR_SETVIEWPORTORGEX:  Read_EMR_SETVIEWPORTORGEX(); break;
 			case EMR_SETVIEWPORTEXTEX:  Read_EMR_SETVIEWPORTEXTEX(); break;
+			case EMR_SCALEVIEWPORTEXTEX:Read_EMR_SCALEVIEWPORTEXTEX(); break;
 			case EMR_SETBKCOLOR:        Read_EMR_SETBKCOLOR(); break;
 			case EMR_SETSTRETCHBLTMODE: Read_EMR_SETSTRETCHBLTMODE(); break;
 			case EMR_SETICMMODE:        Read_EMR_SETICMMODE(); break;
@@ -675,6 +677,19 @@ namespace MetaFile
 			HANDLE_EMR_SETWINDOWEXTEX(oExtent);
 	}
 
+	void CEmfParser::Read_EMR_SCALEWINDOWEXTEX()
+	{
+		int nXNum, nXDenom, nYNum, nYDenom;
+
+		m_oStream >> nXNum;
+		m_oStream >> nXDenom;
+		m_oStream >> nYNum;
+		m_oStream >> nYDenom;
+
+		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+			HANDLE_EMR_SCALEWINDOWEXTEX(nXNum, nXDenom, nYNum, nYDenom);
+	}
+
 	void CEmfParser::Read_EMR_SETVIEWPORTORGEX()
 	{
 		TEmfPointL oOrigin;
@@ -693,6 +708,19 @@ namespace MetaFile
 
 		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
 			HANDLE_EMR_SETVIEWPORTEXTEX(oExtent);
+	}
+
+	void CEmfParser::Read_EMR_SCALEVIEWPORTEXTEX()
+	{
+		int nXNum, nXDenom, nYNum, nYDenom;
+
+		m_oStream >> nXNum;
+		m_oStream >> nXDenom;
+		m_oStream >> nYNum;
+		m_oStream >> nYDenom;
+
+		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+			HANDLE_EMR_SCALEVIEWPORTEXTEX(nXNum, nXDenom, nYNum, nYDenom);
 	}
 
 	void CEmfParser::Read_EMR_SETSTRETCHBLTMODE()

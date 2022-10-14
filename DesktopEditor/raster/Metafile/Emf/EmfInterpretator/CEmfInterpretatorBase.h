@@ -48,8 +48,10 @@ namespace MetaFile
 		virtual void HANDLE_EMR_SETMAPMODE(const unsigned int&) = 0;
 		virtual void HANDLE_EMR_SETWINDOWORGEX(const TEmfPointL&) = 0;
 		virtual void HANDLE_EMR_SETWINDOWEXTEX(const TEmfSizeL&) = 0;
+		virtual void HANDLE_EMR_SCALEWINDOWEXTEX(int, int, int, int) = 0;
 		virtual void HANDLE_EMR_SETVIEWPORTORGEX(const TEmfPointL&) = 0;
 		virtual void HANDLE_EMR_SETVIEWPORTEXTEX(const TEmfSizeL&) = 0;
+		virtual void HANDLE_EMR_SCALEVIEWPORTEXTEX(int, int, int, int) = 0;
 		virtual void HANDLE_EMR_SETSTRETCHBLTMODE(const unsigned int&) = 0;
 		virtual void HANDLE_EMR_SETICMMODE(const unsigned int&) = 0;
 		virtual void HANDLE_EMR_CREATEMONOBRUSH(const unsigned int&, const TEmfDibPatternBrush&, CDataStream&) = 0;

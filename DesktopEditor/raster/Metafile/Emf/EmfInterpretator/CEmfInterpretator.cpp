@@ -729,6 +729,23 @@ namespace MetaFile
 		WriteSize(oExtent);
 	}
 
+	void CEmfInterpretator::HANDLE_EMR_SCALEWINDOWEXTEX(int nXNum, int nXDenom, int nYNum, int nYDenom)
+	{
+		int unExplicitRecordSize    = 24;
+		int unType                  = EMR_SCALEWINDOWEXTEX;
+
+		unFileSize += unExplicitRecordSize;
+		++unNumberRecords;
+
+		m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+		m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
+
+		m_pOutStream->WriteFile((BYTE*)&nXNum,                 sizeof (int));
+		m_pOutStream->WriteFile((BYTE*)&nXDenom,               sizeof (int));
+		m_pOutStream->WriteFile((BYTE*)&nYNum,                 sizeof (int));
+		m_pOutStream->WriteFile((BYTE*)&nYDenom,               sizeof (int));
+	}
+
 	void CEmfInterpretator::HANDLE_EMR_SETVIEWPORTORGEX(const TEmfPointL &oOrigin)
 	{
 		int unExplicitRecordSize    = 16;
@@ -755,6 +772,23 @@ namespace MetaFile
 		m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
 		WriteSize(oExtent);
+	}
+
+	void CEmfInterpretator::HANDLE_EMR_SCALEVIEWPORTEXTEX(int nXNum, int nXDenom, int nYNum, int nYDenom)
+	{
+		int unExplicitRecordSize    = 24;
+		int unType                  = EMR_SCALEVIEWPORTEXTEX;
+
+		unFileSize += unExplicitRecordSize;
+		++unNumberRecords;
+
+		m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+		m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
+
+		m_pOutStream->WriteFile((BYTE*)&nXNum,                 sizeof (int));
+		m_pOutStream->WriteFile((BYTE*)&nXDenom,               sizeof (int));
+		m_pOutStream->WriteFile((BYTE*)&nYNum,                 sizeof (int));
+		m_pOutStream->WriteFile((BYTE*)&nYDenom,               sizeof (int));
 	}
 
 	void CEmfInterpretator::HANDLE_EMR_SETSTRETCHBLTMODE(const unsigned int &unStretchMode)

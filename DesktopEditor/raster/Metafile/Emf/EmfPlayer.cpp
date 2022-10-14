@@ -614,6 +614,18 @@ namespace MetaFile
 		UpdateFinalTransform();
 	}
 	TEmfWindow*     CEmfDC::GetWindow()
+	void CEmfDC::ScaleWindow(double dXScale, double dYScale)
+	{
+		m_oWindow.ulW = (int)(m_oWindow.ulW * dXScale);
+		m_oWindow.ulH = (int)(m_oWindow.ulH * dYScale);
+
+		if (MM_ISOTROPIC == m_ulMapMode)
+			FixIsotropic();
+
+		UpdatePixelMetrics();
+		UpdateFinalTransform();
+	}
+
 	{
 		return &m_oWindow;
 	}
@@ -642,6 +654,18 @@ namespace MetaFile
 		UpdateFinalTransform();
 	}
 	TEmfWindow*     CEmfDC::GetViewport()
+	void CEmfDC::ScaleViewport(double dXScale, double dYScale)
+	{
+		m_oViewport.ulW = (int)(m_oViewport.ulW * dXScale);
+		m_oViewport.ulH = (int)(m_oViewport.ulH * dYScale);
+
+		if (MM_ISOTROPIC == m_ulMapMode)
+			FixIsotropic();
+
+		UpdatePixelMetrics();
+		UpdateFinalTransform();
+	}
+
 	{
 		return &m_oViewport;
 	}

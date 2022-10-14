@@ -190,8 +190,10 @@ namespace MetaFile
 		void HANDLE_EMR_SETMAPMODE(unsigned int& unMapMode);
 		void HANDLE_EMR_SETWINDOWORGEX(TEmfPointL& oOrigin);
 		void HANDLE_EMR_SETWINDOWEXTEX(TEmfSizeL& oExtent);
+		void HANDLE_EMR_SCALEWINDOWEXTEX(int nXNum, int nXDenom, int nYNum, int nYDenom);
 		void HANDLE_EMR_SETVIEWPORTORGEX(TEmfPointL& oOrigin);
 		void HANDLE_EMR_SETVIEWPORTEXTEX(TEmfSizeL& oExtent);
+		void HANDLE_EMR_SCALEVIEWPORTEXTEX(int nXNum, int nXDenom, int nYNum, int nYDenom);
 		void HANDLE_EMR_SETSTRETCHBLTMODE(unsigned int& unStretchMode);
 		void HANDLE_EMR_SETICMMODE(unsigned int& unICMMode);
 		void HANDLE_EMR_CREATEDIBPATTERNBRUSHPT(unsigned int& unBrushIndex, TEmfDibPatternBrush& oDibBrush);

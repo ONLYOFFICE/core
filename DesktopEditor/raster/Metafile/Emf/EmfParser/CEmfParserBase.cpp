@@ -1221,6 +1221,18 @@ namespace MetaFile
 		UpdateOutputDC();
 	}
 
+	void CEmfParserBase::HANDLE_EMR_SCALEWINDOWEXTEX(int nXNum, int nXDenom, int nYNum, int nYDenom)
+	{
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMR_SCALEWINDOWEXTEX(nXNum, nXDenom, nYNum, nYDenom);
+
+		if (MM_ISOTROPIC != m_pDC->GetMapMode() && MM_ANISOTROPIC != m_pDC->GetMapMode())
+			return;
+
+		m_pDC->ScaleWindow((double)nXNum / (double)nXDenom, (double)nYNum / (double)nYDenom);
+		UpdateOutputDC();
+	}
+
 	void CEmfParserBase::HANDLE_EMR_SETVIEWPORTORGEX(TEmfPointL &oOrigin)
 	{
 		if (NULL != m_pInterpretator)
@@ -1239,6 +1251,18 @@ namespace MetaFile
 			return;
 
 		m_pDC->SetViewportExtents(oExtent);
+		UpdateOutputDC();
+	}
+
+	void CEmfParserBase::HANDLE_EMR_SCALEVIEWPORTEXTEX(int nXNum, int nXDenom, int nYNum, int nYDenom)
+	{
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMR_SCALEVIEWPORTEXTEX(nXNum, nXDenom, nYNum, nYDenom);
+
+		if (MM_ISOTROPIC != m_pDC->GetMapMode() && MM_ANISOTROPIC != m_pDC->GetMapMode())
+			return;
+
+		m_pDC->ScaleViewport((double)nXNum / (double)nXDenom, (double)nYNum / (double)nYDenom);
 		UpdateOutputDC();
 	}
 

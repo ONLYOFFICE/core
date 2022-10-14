@@ -122,9 +122,11 @@ namespace MetaFile
 		double          GetPixelHeight();
 		void            SetWindowOrigin(TEmfPointL& oPoint);
 		void            SetWindowExtents(TEmfSizeL& oPoint);
+		void            ScaleWindow(double dXScale, double dYScale);
 		TEmfWindow*     GetWindow();
 		void            SetViewportOrigin(TEmfPointL& oPoint);
 		void            SetViewportExtents(TEmfSizeL& oPoint);
+		void            ScaleViewport(double dXScale, double dYScale);
 		TEmfWindow*     GetViewport();
 		void            SetRop2Mode(unsigned int& nMode);
 		unsigned int    GetRop2Mode();

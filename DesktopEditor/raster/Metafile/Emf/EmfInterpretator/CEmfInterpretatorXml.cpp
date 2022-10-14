@@ -334,6 +334,16 @@ namespace MetaFile
 		m_pOutputXml->WriteNodeEnd(L"EMR_SETWINDOWEXTEX");
 	}
 
+	void CEmfInterpretatorXml::HANDLE_EMR_SCALEWINDOWEXTEX(int nXNum, int nXDenom, int nYNum, int nYDenom)
+	{
+		m_pOutputXml->WriteNodeBegin(L"EMR_SCALEWINDOWEXTEX");
+		m_pOutputXml->WriteNode(L"xNum",    nXNum);
+		m_pOutputXml->WriteNode(L"nXDenom", nXDenom);
+		m_pOutputXml->WriteNode(L"nYNum",   nYNum);
+		m_pOutputXml->WriteNode(L"nYDenom", nYDenom);
+		m_pOutputXml->WriteNodeEnd(L"EMR_SCALEWINDOWEXTEX");
+	}
+
 	void CEmfInterpretatorXml::HANDLE_EMR_SETVIEWPORTORGEX(const TEmfPointL &oOrigin)
 	{
 		m_pOutputXml->WriteNodeBegin(L"EMR_SETVIEWPORTORGEX");
@@ -346,6 +356,16 @@ namespace MetaFile
 		m_pOutputXml->WriteNodeBegin(L"EMR_SETVIEWPORTEXTEX");
 		m_pOutputXml->WriteNode(L"Extent", oExtent);
 		m_pOutputXml->WriteNodeEnd(L"EMR_SETVIEWPORTEXTEX");
+	}
+
+	void CEmfInterpretatorXml::HANDLE_EMR_SCALEVIEWPORTEXTEX(int nXNum, int nXDenom, int nYNum, int nYDenom)
+	{
+		m_pOutputXml->WriteNodeBegin(L"EMR_SCALEVIEWPORTEXTEX");
+		m_pOutputXml->WriteNode(L"xNum",    nXNum);
+		m_pOutputXml->WriteNode(L"nXDenom", nXDenom);
+		m_pOutputXml->WriteNode(L"nYNum",   nYNum);
+		m_pOutputXml->WriteNode(L"nYDenom", nYDenom);
+		m_pOutputXml->WriteNodeEnd(L"EMR_SCALEVIEWPORTEXTEX");
 	}
 
 	void CEmfInterpretatorXml::HANDLE_EMR_SETSTRETCHBLTMODE(const unsigned int &unStretchMode)

@@ -199,12 +199,22 @@ namespace MetaFile
 
 	}
 
+	void CEmfInterpretatorSvg::HANDLE_EMR_SCALEWINDOWEXTEX(int nXNum, int nXDenom, int nYNum, int nYDenom)
+	{
+
+	}
+
 	void CEmfInterpretatorSvg::HANDLE_EMR_SETVIEWPORTORGEX(const TEmfPointL &oOrigin)
 	{
 
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_SETVIEWPORTEXTEX(const TEmfSizeL &oExtent)
+	{
+
+	}
+
+	void CEmfInterpretatorSvg::HANDLE_EMR_SCALEVIEWPORTEXTEX(int nXNum, int nXDenom, int nYNum, int nYDenom)
 	{
 
 	}

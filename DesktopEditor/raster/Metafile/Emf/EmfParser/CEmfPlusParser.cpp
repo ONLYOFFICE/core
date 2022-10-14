@@ -507,7 +507,35 @@ namespace MetaFile
 		}
 		case BrushTypeTextureFill:
 		{
-			//TODO: реализовать
+			// TODO: так как на данный момент нельзя регулировать повторение заливки, то будет отрисовывать изображение при самой заливки
+			pEmfPlusBrush->Style = BS_PATTERN;
+
+			unsigned int unBrushDataFlags, unSkip = 16;
+
+			m_oStream >> unBrushDataFlags;
+			m_oStream.Skip(4); // WrapMode
+
+			if (unBrushDataFlags & BrushDataTransform)
+			{
+				m_oStream.Skip(24); // TransformMatrix
+				unSkip += 24;
+			}
+
+			if (m_ulRecordSize <= 28)
+				break;
+
+			m_ulRecordSize -= unSkip;
+
+			CEmfPlusImage oImage;
+
+			ReadImage(oImage);
+
+			std::wstring wsImagePath;
+
+			if (SaveImage(oImage, wsImagePath))
+				pEmfPlusBrush->DibPatterPath = wsImagePath;
+
+			m_ulRecordSize += unSkip;
 			break;
 		}
 		case BrushTypePathGradient:
@@ -1262,6 +1290,36 @@ namespace MetaFile
 		oMatrix.M22 *= m_dUnitKoef;
 		oMatrix.Dx  *= m_dUnitKoef;
 		oMatrix.Dy  *= m_dUnitKoef;
+	}
+
+	bool CEmfPlusParser::SaveImage(const CEmfPlusImage &oEmfPlusImage, std::wstring &wsPathToImage)
+	{
+		if (ImageDataTypeBitmap != oEmfPlusImage.GetImageDataType())
+			return false;
+
+		BYTE* pBytes;
+		unsigned int unImageSize;
+
+		oEmfPlusImage.GetData(pBytes, unImageSize);
+
+		NSFile::CFileBinary oFile;
+
+		std::wstring wsTempPath = oFile.GetTempPath() + L"/Temp" + std::to_wstring(unImageSize) + L".tmp";
+
+		if (!oFile.CreateFileW(wsTempPath))
+			return false;
+
+		if (!oFile.WriteFile(pBytes, unImageSize))
+		{
+			oFile.CloseFile();
+			return false;
+		}
+
+		oFile.CloseFile();
+
+		wsPathToImage = wsTempPath;
+
+		return true;
 	}
 
 	BYTE* GetClipedImage(const BYTE* pBuffer, LONG lWidth, LONG lHeight, TRect& oNewRect)

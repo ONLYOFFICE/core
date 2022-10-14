@@ -2063,7 +2063,7 @@ void PPT_FORMAT::CPPTXWriter::WriteTiming(CStringWriter& oWriter, CRelsGenerator
         }
     }
 
-    if (!pPP10SlideBinaryTag && arrOldAnim.empty())
+    if (/*!pPP10SlideBinaryTag && */arrOldAnim.empty()) // todo check condition
         return;
 
     Animation animation(pPP10SlideBinaryTag, arrOldAnim, &(m_pUserInfo->m_oExMedia), &oRels, realShapesId);

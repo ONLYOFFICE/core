@@ -22,16 +22,16 @@ You need to create an xml configuration file. It must contain:
 	<cores> </cores>
 
 	# (non-required) input extensions of files
-	# if no value here, sets all input extensions
+	# if no this node, sets all input extensions
 	<input> </input>
 
 	# (non-required) output extensions of files, for example docx
-	# if no value here, sets all possible output extensions
+	# if no this node, sets all possible output extensions
 	<output> </output>
 
 	# input & output values example:
-	<input> docx txt pptx xlsx <input>
-	<output> txt doc pdf </output>
+	<input> docx txt pptx xlsx<input>
+	<output> txt doc pdf</output>
 
 
 	

@@ -38,8 +38,12 @@
 #include <string>
 #include <vector>
 #include <boost/shared_ptr.hpp>
+#include <boost/optional.hpp>
 
+#define _CP_OPT(V1)  boost::optional<V1>
 
+#ifndef _GUID_TYPEDEF_GUID_
+#define _GUID_TYPEDEF_GUID_
 typedef struct
 {
 	_UINT32 Data1;
@@ -47,6 +51,19 @@ typedef struct
 	_UINT16 Data3;
 	unsigned char  Data4[8];
 } _GUID_;
+#endif
+
+typedef struct 
+{
+	_UINT32 Width = 0;
+	_UINT32 Height = 0;
+} frmSize;
+
+typedef struct
+{
+	_UINT32 Top = 0;
+	_UINT32 Left = 0;
+} fmPosition;
 
 class CVbaFileStream
 {
@@ -64,7 +81,22 @@ public:
 	void read(void* buf, size_t size);
 
 //---------------------------------------------------------------------
-    void skipBytes(const size_t n)
+	void Align(size_t val)
+	{
+		size_t padding = val - (pos % val);
+		
+		if (padding > 0 && padding < 4)
+			pos += padding;
+	}
+	void Seek(const size_t _pos)
+	{
+		pos = _pos;
+	}
+	_UINT32 GetDataPos()
+	{
+		return pos;
+	}
+	void skipBytes(const size_t n)
 	{
 		pos += n;
 		if (pos > arrChunks.size())
@@ -77,6 +109,7 @@ public:
 			pos -= n;
 		}
 	}
+	unsigned char* getDataCurrent() { return arrChunks.data() + pos; }
 	unsigned char* getData() { return arrChunks.data(); }
 	size_t getDataSize() { return arrChunks.size(); }
 
@@ -106,13 +139,24 @@ public:
 	}
 
 	CVbaFileStream& operator >> (unsigned char& val) { loadAnyData(val);	return *this; }
-	CVbaFileStream& operator >> (int& val) { loadAnyData(val);	return *this; }
+	CVbaFileStream& operator >> (int& val) { loadAnyData(val);		return *this; }
 	CVbaFileStream& operator >> (double& val) { loadAnyData(val);	return *this; }
 	CVbaFileStream& operator >> (short& val) { loadAnyData(val);	return *this; }
-	CVbaFileStream& operator >> (char& val) { loadAnyData(val);	return *this; }
+	CVbaFileStream& operator >> (char& val) { loadAnyData(val);		return *this; }
 	CVbaFileStream& operator >> (_GUID_& val) { loadAnyData(val);	return *this; }
 	CVbaFileStream& operator >> (_UINT32& val) { loadAnyData(val);	return *this; }
 	CVbaFileStream& operator >> (_UINT16& val) { loadAnyData(val);	return *this; }
+
+	CVbaFileStream& operator >> (_CP_OPT(unsigned char)& val) { val = 0; loadAnyData(*val);	return *this; }
+	CVbaFileStream& operator >> (_CP_OPT(int)& val) { val = 0; loadAnyData(*val);		return *this; }
+	CVbaFileStream& operator >> (_CP_OPT(double)& val) { val = 0; loadAnyData(*val);	return *this; }
+	CVbaFileStream& operator >> (_CP_OPT(short)& val) { val = 0; loadAnyData(*val);		return *this; }
+	CVbaFileStream& operator >> (_CP_OPT(char)& val) { val = 0; loadAnyData(*val);		return *this; }
+	CVbaFileStream& operator >> (_CP_OPT(_GUID_)& val) { val = _GUID_(); loadAnyData(*val);	return *this; }
+	CVbaFileStream& operator >> (_CP_OPT(_UINT32)& val) { val = 0; loadAnyData(*val);	return *this; }
+	CVbaFileStream& operator >> (_CP_OPT(_UINT16)& val) { val = 0; loadAnyData(*val);	return *this; }
+	CVbaFileStream& operator >> (_CP_OPT(frmSize)& val) { val = frmSize(); loadAnyData(*val);	return *this; }
+	CVbaFileStream& operator >> (_CP_OPT(fmPosition)& val) { val = fmPosition(); loadAnyData(*val);	return *this; }
 
 	_UINT32 CodePage = 0;
 private:

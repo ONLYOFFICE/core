@@ -329,7 +329,10 @@ typedef xlscore::xml::writer::element<wchar_t> xml_element;
 #define CP_ATTR_NODE xlscore::xml::writer::element<wchar_t> & _xml_node_
 
 
-#define CP_XML_ATTR_OPT(NAME, VAL) if (VAL)CP_XML_ATTR(NAME, (*VAL))
+#define CP_XML_ATTR_OPT(NAME, VAL) if (VAL) CP_XML_ATTR(NAME, (*VAL))
+#define CP_XML_ATTR_STR(NAME, VAL) if (!VAL.empty()) CP_XML_ATTR((NAME), (VAL))
+#define CP_XML_ATTR_NULLABLE(NAME, VAL) if (VAL.IsInit()) CP_XML_ATTR(NAME, (*VAL))
+#define CP_XML_ATTR_NULLABLE2(NAME, VAL) if (VAL.IsInit()) CP_XML_ATTR(NAME, (VAL->ToString()))
 
 #define CP_XML_NODE_SIMPLE() std::wstring NS_NAME = std::wstring(ns) + std::wstring(L":") + std::wstring(name); CP_XML_NODE(NS_NAME)
 

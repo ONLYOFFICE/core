@@ -4657,7 +4657,10 @@ namespace SimpleTypes
 			objectScroll	= 7,
 			objectSpin		= 8,
 			objectEditBox	= 9,
-			objectDialog	= 10
+			objectDialog	= 10,
+			objectToggleButton = 11,
+			objectTabStrip = 12,
+			objectImage = 13
 		};
 		template<EObjectType eDefValue = objectButton>
 		class CObjectType : public CSimpleType<EObjectType, eDefValue>
@@ -4668,17 +4671,17 @@ namespace SimpleTypes
 
 			virtual EObjectType FromString(std::wstring &sValue)
 			{
-				if      ( L"Button" == sValue )	this->m_eValue = objectButton;
-				else if ( L"CheckBox" ==  sValue ) this->m_eValue = objectCheckBox;
-				else if ( L"Drop" == sValue ) this->m_eValue = objectDrop;
-				else if ( L"GBox" == sValue ) this->m_eValue = objectGBox;
-				else if ( L"Label" == sValue ) this->m_eValue = objectLabel;
-				else if ( L"List" == sValue ) this->m_eValue = objectList;
-				else if ( L"Radio" == sValue ) this->m_eValue = objectRadio;
-				else if ( L"Scroll" == sValue ) this->m_eValue = objectScroll;
-				else if ( L"Spin" == sValue ) this->m_eValue = objectSpin;
-				else if ( L"EditBox" == sValue ) this->m_eValue = objectEditBox;
-				else if ( L"Dialog" == sValue ) this->m_eValue = objectDialog;
+				if      ( L"Button" == sValue )		this->m_eValue = objectButton;
+				else if ( L"CheckBox" ==  sValue )	this->m_eValue = objectCheckBox;
+				else if ( L"Drop" == sValue )		this->m_eValue = objectDrop;
+				else if ( L"GBox" == sValue )		this->m_eValue = objectGBox;
+				else if ( L"Label" == sValue )		this->m_eValue = objectLabel;
+				else if ( L"List" == sValue )		this->m_eValue = objectList;
+				else if ( L"Radio" == sValue )		this->m_eValue = objectRadio;
+				else if ( L"Scroll" == sValue )		this->m_eValue = objectScroll;
+				else if ( L"Spin" == sValue )		this->m_eValue = objectSpin;
+				else if ( L"EditBox" == sValue )	this->m_eValue = objectEditBox;
+				else if ( L"Dialog" == sValue )		this->m_eValue = objectDialog;
 				else								this->m_eValue = eDefValue;
 				return this->m_eValue;
 			}
@@ -4698,6 +4701,8 @@ namespace SimpleTypes
 					case objectSpin:		return L"Spin";
 					case objectEditBox:		return L"EditBox";
 					case objectDialog:		return L"Dialog";
+					case objectToggleButton:return L"ToggleButton";
+					case objectTabStrip:	return L"TabStrip";
 					default :				return L"Button";
 				}
 			}

@@ -74,6 +74,14 @@ namespace VBA
 		rt_MODULETYPE,
 		rt_AnsiString,
 		rt_Utf16String,
+		rt_FormControl,
+		rt_StdFont,
+		rt_TextProps,
+		rt_FormSiteData,
+		rt_FormDesignExData,
+		rt_SiteClassInfo,
+		rt_OleSiteConcreteControl,
+		rt_FormObjectDepthTypeCount,
 
 		rt_Unknown = 0xffff
 	} RecordType;

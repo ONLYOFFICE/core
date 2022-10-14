@@ -31,7 +31,7 @@ namespace MetaFile
 		EmfxParser
 	};
 
-	typedef  enum
+	typedef enum
 	{
 		EMR_COMMENT_WINDOWS_METAFILE = 0x80000001,
 		EMR_COMMENT_BEGINGROUP       = 0x00000002,
@@ -57,37 +57,37 @@ namespace MetaFile
 
 		virtual EmfParserType   GetType()                       = 0;
 
-		void		PlayMetaFile()				override;
-		void		ClearFile()				override;
-		TRect*		GetDCBounds()				override;
-		double		GetPixelHeight()			override;
-		double		GetPixelWidth()				override;
-		int		GetTextColor()				override;
-		IFont*		GetFont()				override;
-		IBrush*		GetBrush()				override;
-		IPen*		GetPen()				override;
-		unsigned int	GetTextAlign()				override;
-		unsigned int	GetTextBgMode()				override;
-		int		GetTextBgColor()			override;
-		unsigned int	GetFillMode()				override;
-		TPointD		GetCurPos()				override;
-		TXForm*		GetInverseTransform()			override;
-		TXForm*		GetTransform(int = GM_ADVANCED)         override;
-		unsigned int	GetMiterLimit()                         override;
-		unsigned int	GetRop2Mode()				override;
-		IClip*		GetClip()				override;
-		int		GetCharSpace()				override;
-		bool		IsWindowFlippedY()			override;
-		bool		IsWindowFlippedX()			override;
-		unsigned int GetMapMode() override;
-		double      GetPixWidth(double dScaleX) override;
-		bool		IsViewportFlippedY();
-		bool		IsViewportFlippedX();
+		void            PlayMetaFile()                   override;
+		void            ClearFile()                      override;
+		TRect*          GetDCBounds()                    override;
+		double          GetPixelHeight()                 override;
+		double          GetPixelWidth()                  override;
+		int             GetTextColor()                   override;
+		IFont*          GetFont()                        override;
+		IBrush*         GetBrush()                       override;
+		IPen*           GetPen()                         override;
+		unsigned int    GetTextAlign()                   override;
+		unsigned int    GetTextBgMode()                  override;
+		int             GetTextBgColor()                 override;
+		unsigned int    GetFillMode()                    override;
+		TPointD         GetCurPos()                      override;
+		TXForm*         GetInverseTransform()            override;
+		TXForm*         GetTransform(int = GM_ADVANCED)  override;
+		unsigned int    GetMiterLimit()                  override;
+		unsigned int    GetRop2Mode()                    override;
+		IClip*          GetClip()                        override;
+		int             GetCharSpace()                   override;
+		bool            IsWindowFlippedY()               override;
+		bool            IsWindowFlippedX()               override;
+		unsigned int    GetMapMode()                     override;
+		double          GetPixWidth(double dScaleX)      override;
+		bool            IsViewportFlippedY();
+		bool            IsViewportFlippedX();
 
-		virtual void SetInterpretator(IOutputDevice* pOutput);
-		void SetInterpretator(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0);
-		void SetInterpretator(IOutputDevice* pOutput, const wchar_t *wsFilePath);
-		void SetInterpretator(InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0);
+		virtual void    SetInterpretator(IOutputDevice* pOutput);
+		void            SetInterpretator(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0);
+		void            SetInterpretator(IOutputDevice* pOutput, const wchar_t *wsFilePath);
+		void            SetInterpretator(InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0);
 
 		CEmfInterpretatorBase* GetInterpretator();
 

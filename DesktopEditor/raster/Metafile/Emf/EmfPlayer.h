@@ -90,7 +90,7 @@ namespace MetaFile
 
 		void            SetMapMode(unsigned int ulMapMode);
 		unsigned int    GetMapMode();
-		void		ResetTransform();
+		void            ResetTransform();
 		TEmfXForm*      GetTransform();
 		TEmfXForm*      GetInverseTransform();
 		TEmfXForm*      GetFinalTransform(int iGraphicsMode);
@@ -99,10 +99,10 @@ namespace MetaFile
 		TEmfColor&      GetTextColor();
 		void            SetBrush(IBrush* pBrush);
 		void            RemoveBrush(IBrush* pBrush);
-		IBrush*		GetBrush();
+		IBrush*         GetBrush();
 		void            SetFont(IFont* pFont);
 		void            RemoveFont(IFont* pFont);
-		IFont*		GetFont();
+		IFont*          GetFont();
 		void            SetTextAlign(unsigned int ulAlign);
 		unsigned int    GetTextAlign();
 		void            SetBgMode(unsigned int ulBgMode);
@@ -115,7 +115,7 @@ namespace MetaFile
 		unsigned int    GetFillMode();
 		void            SetPen(IPen* pPen);
 		void            RemovePen(IPen* pPen);
-		IPen*		GetPen();
+		IPen*           GetPen();
 		void            SetStretchMode(unsigned int& oMode);
 		unsigned int    GetStretchMode();
 		double          GetPixelWidth();
@@ -153,10 +153,10 @@ namespace MetaFile
 
 		CEmfPlayer*     m_pPlayer;
 		unsigned int    m_ulMapMode;
-		IBrush*		m_pBrush;
-		IPen*		m_pPen;
-		IFont*		m_pFont;
-		CEmfLogFont	m_oDefaultFont;
+		IBrush*         m_pBrush;
+		IPen*           m_pPen;
+		IFont*          m_pFont;
+		CEmfLogFont     m_oDefaultFont;
 		CEmfLogPalette* m_pPalette;
 		TEmfXForm       m_oTransform;
 		TEmfXForm       m_oInverseTransform;

@@ -201,15 +201,6 @@ namespace MetaFile
 			m_oStream >> m_oPlaceable.Reserved;
 			m_oStream >> m_oPlaceable.Checksum;
 
-			if (m_oPlaceable.Inch != 0)
-			{
-				m_pDC->SetViewportOrg(m_oPlaceable.BoundingBox.Left,  m_oPlaceable.BoundingBox.Top);
-				m_pDC->SetViewportExt((m_oPlaceable.BoundingBox.Right - m_oPlaceable.BoundingBox.Left), (m_oPlaceable.BoundingBox.Bottom - m_oPlaceable.BoundingBox.Top));
-
-				m_pDC->SetWindowOrg(m_oPlaceable.BoundingBox.Left,  m_oPlaceable.BoundingBox.Top);
-				m_pDC->SetWindowExt((m_oPlaceable.BoundingBox.Right - m_oPlaceable.BoundingBox.Left), (m_oPlaceable.BoundingBox.Bottom - m_oPlaceable.BoundingBox.Top));
-			}
-
 			SkipVoid();
 		}
 		else

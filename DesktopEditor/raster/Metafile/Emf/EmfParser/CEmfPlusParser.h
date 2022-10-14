@@ -53,19 +53,17 @@ namespace MetaFile
 		CEmfPlusPath*   ReadPath();
 		CEmfPlusPath*   GetPath(unsigned int unPathIndex);
 
-		CEmfPlusRegion* ReadRegion();
-		CEmfPlusRegionNode* ReadRegionNode(unsigned int& unIndex);
+		CEmfPlusRegion*          ReadRegion();
+		CEmfPlusRegionNode*      ReadRegionNode(unsigned int& unIndex);
 		CEmfPlusRegionNodePath*  ReadRegionNodePath(unsigned int& unIndex);
 		CEmfPlusRegionNodeRectF* ReadRegionNodeRectF(unsigned int& unIndex);
 		CEmfPlusRegionNodeChild* ReadRegionNodeChild(unsigned int& unIndex);
-		CEmfPlusRegion* GetRegion(unsigned int unRegionIndex);
+		CEmfPlusRegion*          GetRegion(unsigned int unRegionIndex);
 
-		CEmfPlusStringFormat* GetStringFormat(unsigned int unStringFormatIndex);
+		CEmfPlusStringFormat*    GetStringFormat(unsigned int unStringFormatIndex);
 
 		CEmfPlusImageAttributes* GetImageAttributes(unsigned int unImageAttributesIndex);
 
-		//                std::vector<TEmfPlusPointF> ReadPointsF(unsigned int unPointCount);
-		//                std::vector<TEmfPlusPoint> ReadPoints(unsigned int unPointCount);
 		template<typename PointType>
 		std::vector<PointType> ReadPoints(unsigned int unPointCount);
 

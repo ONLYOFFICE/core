@@ -9,7 +9,7 @@ namespace MetaFile
 	class CEmfParser : public CEmfParserBase
 	{
 	public:
-		CEmfParser(IMetaFileBase *pParent = NULL);
+		CEmfParser();
 		virtual ~CEmfParser();
 
 		bool            ReadFromBuffer(BYTE* pBuffer, unsigned int unSize, const bool& bIsExternal = true) override;

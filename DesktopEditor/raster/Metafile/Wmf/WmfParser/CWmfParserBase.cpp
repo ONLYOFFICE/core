@@ -673,9 +673,6 @@ namespace MetaFile
 
 	void CWmfParserBase::RegisterPoint(short shX, short shY)
 	{
-		if (m_bBanRegPoint)
-			return;
-
 		if (m_bFirstPoint)
 		{
 			m_oBoundingBox.nLeft   = shX;
@@ -742,18 +739,6 @@ namespace MetaFile
 
 	void CWmfParserBase::UpdateOutputDC()
 	{
-		TWmfWindow *pWindow = m_pDC->GetWindow();
-
-		if (!pWindow->bUnchangedOrg && !pWindow->bUnchangedExt)
-		{
-			m_oBoundingBox.nLeft   = pWindow->x;
-			m_oBoundingBox.nTop    = pWindow->y;
-			m_oBoundingBox.nRight  = pWindow->x + pWindow->w;
-			m_oBoundingBox.nBottom = pWindow->y + pWindow->h;
-
-			m_bBanRegPoint = true;
-		}
-
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->UpdateDC();
 	}
@@ -772,23 +757,29 @@ namespace MetaFile
 		if (0x0100 != m_oHeader.Version && 0x0300 != m_oHeader.Version)
 			return SetError();
 
-		// Если у нас не задан Output, значит мы считаем, что идет сканирование метафайла.
-		// Во время сканирования мы регистрируем все точки и вычисляем BoundingBox
-		if (m_oPlaceable.Inch == 0 && NULL != m_pInterpretator)
+		m_pDC->SetMapMode(MM_ANISOTROPIC);
+
+		if (NULL != m_pInterpretator)
 		{
 			m_oRect = GetBoundingBox();
-			m_pDC->SetViewportOff(m_oRect.nLeft, m_oRect.nTop);
-			m_pDC->SetViewportExt(m_oRect.nRight - m_oRect.nLeft, m_oRect.nBottom - m_oRect.nTop);
-			m_pDC->SetWindowOff(m_oRect.nLeft, m_oRect.nTop);
-			m_pDC->SetWindowExt(m_oRect.nRight - m_oRect.nLeft, m_oRect.nBottom - m_oRect.nTop);
 
-			UpdateOutputDC();
+			m_pDC->SetWindowOrg(m_oRect.nLeft, m_oRect.nTop);
+			m_pDC->SetWindowExt(m_oRect.nRight - m_oRect.nLeft, m_oRect.nBottom - m_oRect.nTop);
+			m_pDC->SetViewportOrg(m_oRect.nLeft, m_oRect.nTop);
+			m_pDC->SetViewportExt(m_oRect.nRight - m_oRect.nLeft, m_oRect.nBottom - m_oRect.nTop);
+
+			if (0 != m_oPlaceable.Inch)
+			{
+				double dScale = 1440. / m_oPlaceable.Inch;
+				m_pDC->SetWindowScale(dScale, dScale);
+			}
 		}
-		else
-		{
+
+		// Если у нас не задан Output, значит мы считаем, что идет сканирование метафайла.
+		// Во время сканирования мы регистрируем все точки и вычисляем BoundingBox
+		if (NULL == m_pInterpretator)
 			m_bFirstPoint = true;
-			m_bBanRegPoint = false;
-		}
+
 	}
 
 	void CWmfParserBase::HANDLE_META_BITBLT(const TWmfBitBlt &oWmfBitBlt, CDataStream &oDataStream)
@@ -1194,7 +1185,7 @@ namespace MetaFile
 		if (!pBrush)
 			return SetError();
 
-		if (BS_PATTERN  == pBrush->BrushStyle || BS_DIBPATTERNPT == pBrush->BrushStyle)
+		if (BS_PATTERN == pBrush->BrushStyle || BS_DIBPATTERNPT == pBrush->BrushStyle)
 		{
 			pBrush->BrushStyle = BS_SOLID;
 			pBrush->Color.Init();
@@ -1416,6 +1407,9 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_META_SCALEVIEWPORTEXT(yDenom, yNum, xDenom, xNum);
 
+		if (MM_ISOTROPIC != m_pDC->GetMapMode() && MM_ANISOTROPIC != m_pDC->GetMapMode())
+			return;
+
 		m_pDC->SetViewportScale((double)xNum / (double)xDenom, (double)yNum / (double)xDenom);
 		UpdateOutputDC();
 	}
@@ -1424,6 +1418,9 @@ namespace MetaFile
 	{
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_META_SCALEWINDOWEXT(yDenom, yNum, xDenom, xNum);
+
+		if (MM_ISOTROPIC != m_pDC->GetMapMode() && MM_ANISOTROPIC != m_pDC->GetMapMode())
+			return;
 
 		m_pDC->SetWindowScale((double)xNum / (double)xDenom, (double)yNum / (double)xDenom);
 		UpdateOutputDC();

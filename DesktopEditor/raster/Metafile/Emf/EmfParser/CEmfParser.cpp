@@ -13,9 +13,7 @@
 
 namespace MetaFile
 {
-	CEmfParser::CEmfParser(IMetaFileBase *pParent)
-		: m_pEmfPlusParser(NULL)
-	{}
+	CEmfParser::CEmfParser() : m_pEmfPlusParser(NULL){}
 
 	CEmfParser::~CEmfParser()
 	{

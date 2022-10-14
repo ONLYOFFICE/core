@@ -897,6 +897,9 @@ namespace MetaFile
 
 		m_oHeader.oFramePx = m_oHeader.oFrameToBounds;
 
+		m_pDC->SetWindowExtents(m_oHeader.oDevice);
+		m_pDC->SetViewportExtents(m_oHeader.oDevice);
+
 		if (NULL != m_pInterpretator)
 		{
 			m_pInterpretator->Begin();
@@ -1081,10 +1084,6 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_CREATEPEN(unPenIndex, unWidthX, pPen);
 
-		if (!unWidthX)
-		{//emf from Bonetti Martínez. cálculo estructural de pilotes y pilas.xlsx
-			unWidthX = 1 / m_pDC->GetPixelWidth();
-		}
 		pPen->Width = unWidthX;
 
 		m_oPlayer.RegisterObject(unPenIndex, (CEmfObjectBase*)pPen);

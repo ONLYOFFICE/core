@@ -30,13 +30,15 @@ public:
 
 	FormatsList();
 
-	bool isDocoment(int format);
+	bool isDocument(int format);
 	bool isPresentation(int format);
 	bool isSpreadsheet(int format);
 	bool isCrossplatform(int format);
 	bool isImage(int format);
 
 	void SetDefault();
+
+	std::vector<int> allFormats();
 };
 
 
@@ -75,6 +77,9 @@ public:
 private:
 	void setReportHeader();
 
+	// parse string like "docx txt" into vector of formats
+	std::vector<int> parseExtensionsString(std::wstring extensions);
+
 	// takes from config
 	std::wstring m_reportFile;
 	std::wstring m_inputDirectory;
@@ -86,6 +91,13 @@ private:
 	std::vector<std::wstring> m_arAdditionalFontsDirs;
 
 	NSFile::CFileBinary m_reportStream;
+
+	// takes from config or sets all
+	std::vector<int> m_inputFormats;
+	std::vector<int> m_outputFormats;
+
+	// list of formats
+	FormatsList m_formatsList;
 };
 
 // generates temp xml, convert, calls m_internal->writeReport

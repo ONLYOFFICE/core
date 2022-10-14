@@ -20,17 +20,33 @@ You need to create an xml configuration file. It must contain:
 
 	# num cores to use
 	<cores> </cores>
+
+	# (non-required) input extensions of files
+	# if no value here, sets all input extensions
+	<input> </input>
+
+	# (non-required) output extensions of files, for example docx
+	# if no value here, sets all possible output extensions
+	<output> </output>
+
+	# input & output values example:
+	<input> docx txt pptx xlsx <input>
+	<output> txt doc pdf </output>
+
+
 	
 
 You can use the following template:
 
 	<?xml version="1.0" encoding="utf-8"?>
 	<settings>
-	<reportPath> </reportPath>
-	<inputDirectory> </inputDirectory>
-	<outputDirectory> </outputDirectory>
-	<x2tPath> </x2tPath>
-	<cores> </cores>
+		<reportPath> </reportPath>
+		<inputDirectory> </inputDirectory>
+		<outputDirectory> </outputDirectory>
+		<x2tPath> </x2tPath>
+		<cores> </cores>
+		<input> </input>
+		<output> </output>
 	</settings>
 
 USAGE

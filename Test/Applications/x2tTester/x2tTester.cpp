@@ -9,7 +9,7 @@ FormatsList::FormatsList()
 {
 }
 
-bool FormatsList::isDocoment(int format)
+bool FormatsList::isDocument(int format)
 {
 	return std::find(documents.begin(), documents.end(), format) != documents.end();
 }
@@ -76,10 +76,33 @@ void FormatsList::SetDefault()
 	images.push_back(AVS_OFFICESTUDIO_FILE_IMAGE_PNG);
 }
 
+std::vector<int> FormatsList::allFormats()
+{
+	std::vector<int> all_formats;
+
+	for(auto val : documents)
+		all_formats.push_back(val);
+
+	for(auto val : presentations)
+		all_formats.push_back(val);
+
+	for(auto val : spreadsheets)
+		all_formats.push_back(val);
+
+	for(auto val : images)
+		all_formats.push_back(val);
+
+	for(auto val : crossplatform)
+		all_formats.push_back(val);
+
+	return all_formats;
+}
+
 
 Cx2tTester::Cx2tTester(const std::wstring& configPath)
 {
 	m_bIsUseSystemFonts = true;
+	m_formatsList.SetDefault();
 	setConfig(configPath);
 
 	if(NSFile::CFileBinary::Exists(m_reportFile))
@@ -90,7 +113,6 @@ Cx2tTester::Cx2tTester(const std::wstring& configPath)
 		std::wcerr << "Report file is not open!" << std::endl;
 		exit(-1);
 	}
-
 
 	m_coresCS.InitializeCriticalSection();
 	m_reportCS.InitializeCriticalSection();
@@ -110,6 +132,9 @@ Cx2tTester::~Cx2tTester()
 
 void Cx2tTester::setConfig(const std::wstring& configPath)
 {
+	bool default_input_formats = true;
+	bool default_output_formats = true;
+
 	XmlUtils::CXmlNode root;
 	XmlUtils::CXmlNodes nodes;
 	if(root.FromXmlFile(configPath) && root.GetChilds(nodes))
@@ -126,6 +151,20 @@ void Cx2tTester::setConfig(const std::wstring& configPath)
 			else if(name == L"outputDirectory") m_outputDirectory = node.GetText();
 			else if(name == L"x2tPath") m_x2tPath = node.GetText();
 			else if(name == L"cores") m_maxProc = std::stoi(node.GetText());
+			else if(name == L"input")
+			{
+				default_input_formats = false;
+				std::wstring extensions = node.GetText();
+				extensions += L' ';
+				m_inputFormats = parseExtensionsString(extensions);
+			}
+			else if(name == L"output")
+			{
+				default_output_formats = false;
+				std::wstring extensions = node.GetText();
+				extensions += L' ';
+				m_outputFormats = parseExtensionsString(extensions);
+			}
 			else if (name == L"fonts")
 			{
 				m_bIsUseSystemFonts = (1 == node.ReadValueInt(L"system", 1)) ? true : false;
@@ -140,6 +179,14 @@ void Cx2tTester::setConfig(const std::wstring& configPath)
 		}
 	}
 	// else err
+
+	if(default_input_formats)
+		m_inputFormats = m_formatsList.allFormats();
+
+	if(default_output_formats)
+		m_outputFormats = m_formatsList.allFormats();
+
+
 }
 void Cx2tTester::Start()
 {
@@ -166,8 +213,6 @@ void Cx2tTester::Start()
 	NSDirectory::CreateDirectory(m_outputDirectory);
 
 	std::vector<std::wstring> files = NSDirectory::GetFiles(m_inputDirectory, false);
-	FormatsList formats_list;
-	formats_list.SetDefault();
 
 	if(files.size() < m_maxProc)
 		m_maxProc = files.size();
@@ -185,23 +230,28 @@ void Cx2tTester::Start()
 		std::wstring input_ext = NSFile::GetFileExtention(input_file);
 		int input_format = COfficeFileFormatChecker::GetFormatByExtension(L'.' + input_ext);
 
-		// setup output_formats
-		std::vector<int> output_formats;
 
-		if(formats_list.isDocoment(input_format))
-			output_formats = formats_list.documents;
+		// if no format in input formats - skip
+		if(std::find(m_inputFormats.begin(), m_inputFormats.end(), input_format) == m_inputFormats.end())
+			continue;
 
-		if(formats_list.isPresentation(input_format))
-			output_formats = formats_list.presentations;
+		// setup output_formats for file
+		std::vector<int> output_file_formats;
 
-		if(formats_list.isSpreadsheet(input_format))
-			output_formats = formats_list.spreadsheets;
-
-		for(auto it : formats_list.crossplatform)
-			output_formats.push_back(it);
-
-		for(auto it : formats_list.images)
-			output_formats.push_back(it);
+		// documents -> documents, images, crossplatform
+		// presentations -> presentations, images, crossplatfrom
+		// spreadsheets -> spreadsheets, images, crossplatform
+		for(auto format : m_outputFormats)
+		{
+			if((m_formatsList.isDocument(format) && m_formatsList.isDocument(input_format))
+			|| (m_formatsList.isSpreadsheet(format) && m_formatsList.isSpreadsheet(input_format))
+			|| (m_formatsList.isPresentation(format) && m_formatsList.isPresentation(input_format))
+			|| m_formatsList.isImage(format)
+			|| m_formatsList.isCrossplatform(format))
+			{
+				output_file_formats.push_back(format);
+			}
+		}
 
 		// waiting...
 		while(isAllBusy())
@@ -213,7 +263,7 @@ void Cx2tTester::Start()
 		converter->SetInputFile(input_file);
 		converter->SetInputFormat(input_format);
 		converter->SetOutputFilesDirectory(output_files_directory);
-		converter->SetOutputFormats(output_formats);
+		converter->SetOutputFormats(output_file_formats);
 		converter->SetFontsDirectory(fonts_directory);
 		converter->SetX2tPath(m_x2tPath);
 
@@ -267,6 +317,36 @@ void Cx2tTester::setReportHeader()
 	m_reportStream.WriteStringUTF8(L"Input extension\t", true);
 	m_reportStream.WriteStringUTF8(L"Output extension\t", true);
 	m_reportStream.WriteStringUTF8(L"Exit code\n", true);
+}
+
+std::vector<int> Cx2tTester::parseExtensionsString(std::wstring extensions)
+{
+	std::vector<int> formats;
+	int pos = 0;
+	while ((pos = extensions.find(' ')) != std::wstring::npos)
+	{
+		std::wstring ext = extensions.substr(0, pos);
+
+		if(ext == L"documents")
+			for(auto val : m_formatsList.documents)
+				formats.push_back(val);
+
+		else if(ext == L"presentations")
+			for(auto val : m_formatsList.presentations)
+				formats.push_back(val);
+
+		else if(ext == L"spreadsheets")
+			for(auto val : m_formatsList.spreadsheets)
+				formats.push_back(val);
+
+		else
+		{
+			int format =  COfficeFileFormatChecker::GetFormatByExtension(L'.' + ext);
+			formats.push_back(format);
+		}
+		extensions.erase(0, pos + 1);
+	}
+	return formats;
 }
 
 

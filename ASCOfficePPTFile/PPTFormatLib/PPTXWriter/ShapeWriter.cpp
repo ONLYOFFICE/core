@@ -1283,7 +1283,6 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo(PPT_FORMAT::CTextCFRun* pLastCF)
             }
 
             m_oWriter.WriteString(std::wstring(L">"));
-            WriteHyperlink(pParagraph->m_arSpans[nSpan].m_arrInteractive);
 
             if (m_bWordArt)
             {//порядок важен - линия, заливка, тень !!!
@@ -1351,6 +1350,8 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo(PPT_FORMAT::CTextCFRun* pLastCF)
             }
 
             //            WriteHyperlink(nIndexPar);
+            WriteHyperlink(pParagraph->m_arSpans[nSpan].m_arrInteractive);
+
             if (pCF->FontShadow.get_value_or(false))
             {
                 m_oWriter.WriteString(L"<a:effectLst><a:outerShdw blurRad=\"38100\" dist=\"38100\" dir=\"2700000\" algn=\"tl\"><a:srgbClr val=\"000000\"><a:alpha val=\"43137\"/></a:srgbClr></a:outerShdw></a:effectLst>");

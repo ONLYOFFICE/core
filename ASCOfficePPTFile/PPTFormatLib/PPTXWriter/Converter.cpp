@@ -1650,7 +1650,10 @@ void PPT_FORMAT::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CSlideShow
         if      (transition.m_nEffectType == 0) pTrBase->name	= L"cut";
         else if (transition.m_nEffectType == 5) pTrBase->name	= L"dissolve";
         else if (transition.m_nEffectType == 6) pTrBase->name	= L"fade";
-        pTrBase->thruBlk = (bool)transition.m_nEffectDirection;
+
+        if (transition.m_nEffectDirection)
+            pTrBase->thruBlk = (bool)transition.m_nEffectDirection;
+
         Tr.base.base.reset(pTrBase);
     }break;
     case 4:

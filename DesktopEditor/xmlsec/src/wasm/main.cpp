@@ -1,7 +1,7 @@
 #include "../../../common/File.h"
 
-#include "../include/XmlCertificate.h"
-#include "../src/XmlSigner_openssl.h"
+#include "../include/Certificate.h"
+#include "../include/CertificateCommon.h"
 
 #include "../include/OOXMLSigner.h"
 #include "../include/OOXMLVerifier.h"
@@ -39,7 +39,7 @@ public:
 class CCertificate
 {
 public:
-    CCertificate_openssl* m_pCert;
+    ICertificate* m_pCert;
 
 private:
     unsigned char* m_key;
@@ -53,7 +53,7 @@ private:
 public:
     CCertificate()
     {
-        m_pCert = new CCertificate_openssl();
+        m_pCert = NULL;
     }
     ~CCertificate()
     {
@@ -104,7 +104,7 @@ public:
 
     void Load()
     {
-        m_pCert->FromFilesRaw(m_key, m_keyLen, m_keyPass, m_cert, m_certLen, m_certPass);
+        m_pCert = NSCertificate::FromFilesRaw(m_key, m_keyLen, m_keyPass, m_cert, m_certLen, m_certPass);
     }
 
     ICertificate* GetCertificate()

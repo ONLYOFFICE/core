@@ -201,13 +201,13 @@ namespace odf_writer
 						if (sz < 1)
 							break;
 
-						content_utf8_ += GetUtf8StringFromUnicode(Content.c_str() + pos, sz);
+						content_utf8_ += NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(Content.c_str() + pos, sz);
 
 						pos += sz;
 					}
 				}
 				else 
-					content_utf8_ = GetUtf8StringFromUnicode(Content.c_str(), Content.length());
+					content_utf8_ = NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(Content.c_str(), Content.length());
 			}else
 				content_utf8_ = std::string( Content.begin(), Content.end());
 		}
@@ -226,13 +226,13 @@ namespace odf_writer
 						if (sz < 1)
 							break;
 
-						content_utf8_ += GetUtf8StringFromUnicode(Content + pos, sz);
+						content_utf8_ += NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(Content + pos, sz);
 
 						pos += sz;
 					}
 				}
 				else
-					content_utf8_ = GetUtf8StringFromUnicode(Content, Size);
+					content_utf8_ = NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(Content, Size);
 			}
 			else
 			{
@@ -605,7 +605,7 @@ namespace odf_writer
 						CP_XML_ATTR(L"office:version", L"1.2");
 
 
-						if (content_)
+						if ((content_) && (content_->styles_.rdbuf()->in_avail() != 0))
 						{
 							content_->styles_.flush();
 							CP_XML_STREAM() << content_->styles_.rdbuf();
@@ -613,7 +613,7 @@ namespace odf_writer
 						}
 						CP_XML_NODE(L"office:body")
 						{
-							if (content_)
+							if ((content_) && (content_->content_.rdbuf()->in_avail() != 0))
 							{
 								content_->content_.flush();
 								CP_XML_STREAM() << content_->content_.rdbuf();
@@ -675,7 +675,7 @@ namespace odf_writer
 					CP_XML_ATTR(L"xmlns:css3t",			L"http://www.w3.org/TR/css3-text/" );
 					CP_XML_ATTR(L"office:version",		L"1.2");		
 					
-					if (content_)
+					if ((content_) && (content_->content().rdbuf()->in_avail() != 0))
 					{
 						content_->content().flush();
 						CP_XML_STREAM() << content_->content().rdbuf();
@@ -701,7 +701,7 @@ namespace odf_writer
 					CP_XML_ATTR(L"xmlns:xlink",		L"http://www.w3.org/1999/xlink" ); 
 					CP_XML_ATTR(L"xmlns:office",	L"urn:oasis:names:tc:opendocument:xmlns:office:1.0" );
 					
-					if (content_)
+					if ((content_) && (content_->content().rdbuf()->in_avail() != 0))
 					{
 						content_->content().flush();
 						CP_XML_STREAM() << content_->content().rdbuf();

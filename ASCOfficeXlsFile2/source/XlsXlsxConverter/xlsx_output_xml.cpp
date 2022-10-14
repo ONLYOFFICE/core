@@ -240,15 +240,15 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 
             CP_XML_NODE(L"sheetData")
             {
-				impl_->sheetData_.flush();
-                CP_XML_STREAM() << impl_->sheetData_.rdbuf();
-				impl_->sheetData_.clear();
+				if (impl_->sheetData_.rdbuf()->in_avail() != 0)
+				{
+					impl_->sheetData_.flush();
+					CP_XML_STREAM() << impl_->sheetData_.rdbuf();
+					impl_->sheetData_.clear();
+				}
             }
 
 			CP_XML_STREAM() << impl_->protection_.str();
-
-			//оказывается порядок нахождения элементов важен !!! (для office 2010)
-			//объединенные ячейки раньше чем гиперлинки !!!
 
 			CP_XML_STREAM() << impl_->sortAndFilters_.str();
            

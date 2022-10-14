@@ -36,7 +36,7 @@
 #include <string>
 #include <vector>
 
-#include "../../../core/DesktopEditor/graphics/pro/Fonts.h"
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
 
 #include "../../Common/kernel_config.h"
 

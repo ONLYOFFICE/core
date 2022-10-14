@@ -405,22 +405,6 @@ public:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(table_table_row);
-
-//-----------------------------------------------------------------------------------------------------
-class table_table_cell_content
-{
-public:
-	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name, odf_conversion_context * Context);
-    virtual void add_child_element( const office_element_ptr & child_element);
-
-    virtual void serialize(std::wostream & _Wostream);
-private:
-    // TODO table-cell-range-source
-    // TODO office-annotation
-    // TODO table-detective
-    office_element_ptr_array text_content_; // text-content
-};
-
 //-----------------------------------------------------------------------------------------------------
 class table_table_cell : public office_element_impl<table_table_cell>
 {
@@ -430,9 +414,7 @@ public:
 
     static const ElementType type = typeTableTableCell;
 
-    
-
-    table_table_cell() { }
+	table_table_cell() { }
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -441,10 +423,9 @@ public:
 
     table_table_cell_attlist		attlist_;
     table_table_cell_attlist_extra	attlist_extra_;
-    table_table_cell_content		content_;
 
+	office_element_ptr_array content_;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(table_table_cell);
 
 //-----------------------------------------------------------------------------------------------------
@@ -456,8 +437,6 @@ public:
 
     static const ElementType type = typeTableCoveredTableCell;
 
-    
-
     table_covered_table_cell() {empty_ = true; }
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -467,7 +446,7 @@ public:
 
 	bool empty_;
     table_table_cell_attlist attlist_;
-    table_table_cell_content content_;
+	office_element_ptr_array content_;
 
 };
 

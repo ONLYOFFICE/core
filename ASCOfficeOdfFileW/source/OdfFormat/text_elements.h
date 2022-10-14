@@ -59,29 +59,6 @@ public:
 	void serialize(CP_ATTR_NODE);   
 
 };
-
-class paragraph
-{
-public:
-    paragraph() {}
-
-public:
-
-    void add_text(const std::wstring & Text);
-   
-	void create_child_element(const std::wstring & Ns, const std::wstring & Name,odf_conversion_context * context);
-    void add_child_element( const office_element_ptr & child_element);
-
-	void serialize		(std::wostream & _Wostream);
-	void serialize_attr	(CP_ATTR_NODE);
-
-    paragraph_attrs paragraph_attrs_;
-
-    office_element_ptr_array paragraph_content_;
-   
-};
-
-
 //---------------------------------------------------------------------------------------------------
 class text_h : public office_element_impl<text_h>
 {
@@ -101,18 +78,15 @@ public:
 
     virtual void add_text(const std::wstring & Text);
 
-    // heading-attrs
     unsigned int text_outline_level_;
     bool text_restart_numbering_; // default false
     _CP_OPT(unsigned int) text_start_value_;
     bool text_is_list_header_; // default false
     _CP_OPT(std::wstring) text_number_;
     
-    paragraph paragraph_;
-
-
+	paragraph_attrs paragraph_attrs_;
+	office_element_ptr_array paragraph_content_;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_h);
 
 //---------------------------------------------------------------------------------------------------
@@ -122,8 +96,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeTextP;
-    
+    static const ElementType type = typeTextP;    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -131,13 +104,13 @@ public:
     virtual void serialize(std::wostream & _Wostream);
 
 	text_p(){};
-	paragraph paragraph_;
+	
+	paragraph_attrs paragraph_attrs_;
+	office_element_ptr_array paragraph_content_;
 
     virtual void add_text(const std::wstring & Text);
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_p);
-
 //---------------------------------------------------------------------------------------------------
 class text_list : public office_element_impl<text_list>
 {

@@ -3159,22 +3159,17 @@ namespace NExtractTools
 	   Oox2Odf::Converter converter(sXlsxDir, L"spreadsheet", params.getFontPath(), bTemplate);
      
 	   _UINT32 nRes = 0;
-       try
-       {
-			std::wstring password	= params.getSavePassword();
-			std::wstring documentID = params.getDocumentID();
-			
-			converter.convert();
-			converter.write(sTempUnpackedODS, sTemp, password, documentID);
 
-			COfficeUtils oCOfficeUtils(NULL);
-			nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedODS, sTo, false, password.empty() ? Z_DEFLATED : 0)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
-       }
-	   catch(...)
-       {
-           nRes = AVS_FILEUTILS_ERROR_CONVERT;
-       }
-       return nRes;
+		std::wstring password	= params.getSavePassword();
+		std::wstring documentID = params.getDocumentID();
+			
+		converter.convert();
+		converter.write(sTempUnpackedODS, sTemp, password, documentID);
+
+		COfficeUtils oCOfficeUtils(NULL);
+		nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedODS, sTo, false, password.empty() ? Z_DEFLATED : 0)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+
+		return nRes;
 	}
 
 	_UINT32 mscrypt2oot (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)

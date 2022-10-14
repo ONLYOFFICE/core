@@ -225,8 +225,11 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 
             CP_XML_NODE(L"sheetData")
             {
-				impl_->sheetData_.flush();
-                CP_XML_STREAM() << impl_->sheetData_.rdbuf();
+				if (impl_->sheetData_.rdbuf()->in_avail() != 0)
+				{
+					impl_->sheetData_.flush();
+					CP_XML_STREAM() << impl_->sheetData_.rdbuf();
+				}
             }
 			std::wstring protect = impl_->protection_.str();
 			if (false == protect.empty())

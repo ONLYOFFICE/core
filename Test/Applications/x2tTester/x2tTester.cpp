@@ -177,7 +177,7 @@ void Cx2tTester::setConfig(const std::wstring& configPath)
 			else if (name == L"fonts")
 			{
 				m_bIsUseSystemFonts = (1 == node.ReadValueInt(L"system", 1)) ? true : false;
-				XmlUtils::CXmlNodes oNodeFontDirs = node.ReadNodesNoNS(L"directories");
+				XmlUtils::CXmlNodes oNodeFontDirs = node.ReadNodesNoNS(L"directory");
 				for (int nIndex = 0, nCount = oNodeFontDirs.GetCount(); nIndex < nCount; ++nIndex)
 				{
 					XmlUtils::CXmlNode oNodeDir;

@@ -46,6 +46,10 @@ void FormatsList::SetDefault()
 	documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX);
 	documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM);
 	documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT_FLAT);
+	documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT);
+	documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_FLAT);
+	documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER);
+	documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_PACKAGE);
 	documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_OTT);
 	documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM);
 	documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF);
@@ -54,21 +58,26 @@ void FormatsList::SetDefault()
 	presentations.push_back(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT);
 	presentations.push_back(AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP);
 	presentations.push_back(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX);
+	presentations.push_back(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM);
 	presentations.push_back(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSM);
 	presentations.push_back(AVS_OFFICESTUDIO_FILE_PRESENTATION_POTX);
 	presentations.push_back(AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM);
 	presentations.push_back(AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP_FLAT);
 	presentations.push_back(AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP);
+	presentations.push_back(AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX_PACKAGE);
 
 	spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX);
 	spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS);
 	spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS);
 	spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV);
 	spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM);
+	spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX);
 	spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTM);
 	spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB);
 	spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS_FLAT);
 	spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_OTS);
+	spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX_FLAT);
+	spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX_PACKAGE);
 
 	crossplatform.push_back(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF);
 
@@ -219,6 +228,13 @@ void Cx2tTester::Start()
 
 	for(std::wstring& input_file : files)
 	{
+		std::wstring input_ext = NSFile::GetFileExtention(input_file);
+		int input_format = COfficeFileFormatChecker::GetFormatByExtension(L'.' + input_ext);
+
+		// if no format in input formats - skip
+		if(std::find(m_inputFormats.begin(), m_inputFormats.end(), input_format) == m_inputFormats.end())
+			continue;
+
 		// setup folder for output files
 		std::wstring output_files_directory = m_outputDirectory + L'/' + NSFile::GetFileName(input_file);
 
@@ -226,14 +242,6 @@ void Cx2tTester::Start()
 			NSDirectory::DeleteDirectory(output_files_directory);
 
 		NSDirectory::CreateDirectory(output_files_directory);
-
-		std::wstring input_ext = NSFile::GetFileExtention(input_file);
-		int input_format = COfficeFileFormatChecker::GetFormatByExtension(L'.' + input_ext);
-
-
-		// if no format in input formats - skip
-		if(std::find(m_inputFormats.begin(), m_inputFormats.end(), input_format) == m_inputFormats.end())
-			continue;
 
 		// setup output_formats for file
 		std::vector<int> output_file_formats;

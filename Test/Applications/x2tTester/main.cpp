@@ -19,10 +19,17 @@ int main(int argc, char** argv)
 
 	std::wstring config_path;
 
-	if(argc < 2) config_path = L"./config.xml";
-	else config_path = std::wstring(argv[1]);
-
-	SetConsoleOutputCP(CP_UTF8);
+	if(argc < 2)
+		config_path = L"./config.xml";
+	else
+	{
+#ifdef WIN32
+		config_path = std::wstring(argv[1]);
+#else
+		std::string config_pathA = std::string(argv[1]);
+		config_path = UTF8_TO_U(config_pathA);
+#endif
+	}
 
 	Cx2tTester tester(config_path);
 	tester.Start();

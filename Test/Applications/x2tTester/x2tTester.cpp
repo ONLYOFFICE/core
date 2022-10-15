@@ -263,7 +263,7 @@ void Cx2tTester::Start()
 
 		// waiting...
 		while(isAllBusy())
-			Sleep(100);
+			NSThreads::Sleep(100);
 
 		// setup & start new coverter
 		m_currentProc++;
@@ -281,7 +281,7 @@ void Cx2tTester::Start()
 
 	// waiting all procs end
 	while(!isAllFree())
-		Sleep(100);
+		NSThreads::Sleep(100);
 }
 
 void Cx2tTester::writeReport(const Report& report)

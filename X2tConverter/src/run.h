@@ -36,6 +36,12 @@
 #include "../../DesktopEditor/common/StringBuilder.h"
 #include "../../DesktopEditor/graphics/BaseThread.h"
 
+#ifdef _LINUX
+#include <unistd.h>
+#include <sys/wait.h>
+#include <stdio.h>
+#endif
+
 namespace NSX2T
 {
 	int Convert(const std::wstring& sConverterDirectory, const std::wstring sXmlPath)

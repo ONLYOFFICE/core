@@ -270,7 +270,7 @@ void Cx2tTester::setConfig(const std::wstring& configPath)
 			}
 			else if (name == L"fonts")
 			{
-				m_bIsUseSystemFonts = (1 == node.ReadValueInt(L"system", 1)) ? true : false;
+				m_bIsUseSystemFonts = (1 == node.ReadAttributeInt(L"system", 1)) ? true : false;
 				XmlUtils::CXmlNodes oNodeFontDirs = node.ReadNodesNoNS(L"directory");
 				for (int nIndex = 0, nCount = oNodeFontDirs.GetCount(); nIndex < nCount; ++nIndex)
 				{
@@ -303,7 +303,12 @@ void Cx2tTester::Start()
 	fonts_worker.m_bIsUseSystemFonts = m_bIsUseSystemFonts;
 
 	for (std::vector<std::wstring>::iterator i = m_arAdditionalFontsDirs.begin(); i != m_arAdditionalFontsDirs.end(); i++)
-		fonts_worker.m_arAdditionalFolders.push_back(*i);
+	{
+		std::wstring sFolder = *i;
+		if (0 == sFolder.find(L"."))
+			sFolder = NSFile::GetProcessDirectory() + L"/" + sFolder;
+		fonts_worker.m_arAdditionalFolders.push_back(sFolder);
+	}
 
 	fonts_worker.m_bIsNeedThumbnails = false;
 	NSFonts::IApplicationFonts* pFonts = fonts_worker.Check();
@@ -523,14 +528,17 @@ DWORD CConverter::ThreadProc()
 
 		builder.WriteString(L"<m_sFileTo>");
 		builder.WriteEncodeXmlString(output_file);
+
+		if (output_format & AVS_OFFICESTUDIO_FILE_IMAGE)
+			builder.WriteEncodeXmlString(L".zip");
+
 		builder.WriteString(L"</m_sFileTo>");
 
-		builder.WriteString(L"<m_nFormatFrom>");
-		builder.WriteString(std::to_wstring(m_inputFormat));
-		builder.WriteString(L"</m_nFormatFrom>");
-
 		builder.WriteString(L"<m_nFormatTo>");
-		builder.WriteString(std::to_wstring(output_format));
+		if (output_format & AVS_OFFICESTUDIO_FILE_IMAGE)
+			builder.WriteString(std::to_wstring(AVS_OFFICESTUDIO_FILE_IMAGE));
+		else
+			builder.WriteString(std::to_wstring(output_format));
 		builder.WriteString(L"</m_nFormatTo>");
 
 		builder.WriteString(L"<m_sThemeDir>./</m_sThemeDir>");
@@ -544,7 +552,16 @@ DWORD CConverter::ThreadProc()
 		builder.WriteEncodeXmlString(m_fontsDirectory);
 		builder.WriteString(L"</m_sFontDir>");
 
-		builder.WriteString(L"<m_oThumbnail><format>4</format><aspect>2</aspect><first>false</first><width>1000</width><height>1000</height></m_oThumbnail>");
+		if (output_format & AVS_OFFICESTUDIO_FILE_IMAGE)
+		{
+			builder.WriteString(L"<m_oThumbnail><format>");
+			if (AVS_OFFICESTUDIO_FILE_IMAGE_JPG == output_format)
+				builder.WriteString(L"3");
+			else
+				builder.WriteString(L"4");
+			builder.WriteString(L"</format><aspect>2</aspect><first>false</first><width>1000</width><height>1000</height></m_oThumbnail>");
+		}
+
 		builder.WriteString(L"<m_sJsonParams>{&quot;spreadsheetLayout&quot;:{&quot;gridLines&quot;:true,&quot;headings&quot;:true,&quot;fitToHeight&quot;:1,&quot;fitToWidth&quot;:1,&quot;orientation&quot;:&quot;landscape&quot;}}</m_sJsonParams>");
 
 		builder.WriteString(L"</Root>");
@@ -554,6 +571,15 @@ DWORD CConverter::ThreadProc()
 		NSFile::CFileBinary::SaveToFile(xml_params_file, xml_params, true);
 
 		int exit_code = NSX2T::Convert(NSFile::GetDirectoryName(m_x2tPath), xml_params_file);
+
+		if (!exit_code && output_format & AVS_OFFICESTUDIO_FILE_IMAGE)
+		{
+			NSDirectory::CreateDirectory(output_file);
+			COfficeUtils oUtils;
+			if (S_OK == oUtils.ExtractToDirectory(output_file + L".zip", output_file, NULL, 0))
+				NSFile::CFileBinary::Remove(output_file + L".zip");
+		}
+
 
 		// writing report
 		if(!m_bIsErrorsOnly || exit_code)

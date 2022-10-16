@@ -21,6 +21,17 @@ You need to create an xml configuration file. It must contain:
 	# num cores to use
 	<cores> </cores>
 
+	# reports only errors (0 or 1)
+	<errorsOnly> </errorsOnly>
+
+	# fonts settings
+	# if no node - using system fonts
+	# you can set "system" param to "0" or "1",
+	# if "1", set additional directory for fonts
+	<fonts system="">
+		<directory> </directory>
+	</fonts>
+
 	# (non-required) input extensions of files
 	# if no this node, sets all input extensions
 	<input> </input>
@@ -45,6 +56,10 @@ You can use the following template:
 		<outputDirectory> </outputDirectory>
 		<x2tPath> </x2tPath>
 		<cores> </cores>
+		<onlyErrors> </onlyErrors>
+		<fonts system="">
+			<directory> </directory>
+		</fonts>
 		<input> </input>
 		<output> </output>
 	</settings>

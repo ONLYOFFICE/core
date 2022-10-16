@@ -19,26 +19,37 @@
 
 #include "../../../OfficeUtils/src/OfficeUtils.h"
 
-struct FormatsList
+class FormatsList
 {
 public:
-	std::vector<int> documents;
-	std::vector<int> presentations;
-	std::vector<int> spreadsheets;
-	std::vector<int> crossplatform;
-	std::vector<int> images;
-
 	FormatsList();
 
-	bool isDocument(int format);
-	bool isPresentation(int format);
-	bool isSpreadsheet(int format);
-	bool isCrossplatform(int format);
-	bool isImage(int format);
+	std::vector<int> GetDocuments() const;
+	std::vector<int> GetPresentations() const;
+	std::vector<int> GetSpreadsheets() const;
+	std::vector<int> GetCrossplatform() const;
+	std::vector<int> GetImages() const;
 
+	bool isDocument(int format) const;
+	bool isPresentation(int format) const;
+	bool isSpreadsheet(int format) const;
+	bool isCrossplatform(int format) const;
+	bool isImage(int format) const;
+
+	// all formats
 	void SetDefault();
 
-	std::vector<int> allFormats();
+	// all writable formats
+	void SetOutput();
+
+	std::vector<int> allFormats() const;
+
+private:
+	std::vector<int> m_documents;
+	std::vector<int> m_presentations;
+	std::vector<int> m_spreadsheets;
+	std::vector<int> m_crossplatform;
+	std::vector<int> m_images;
 };
 
 
@@ -78,7 +89,7 @@ private:
 	void setReportHeader();
 
 	// parse string like "docx txt" into vector of formats
-	std::vector<int> parseExtensionsString(std::wstring extensions);
+	std::vector<int> parseExtensionsString(std::wstring extensions, const FormatsList& fl);
 
 	// takes from config
 	std::wstring m_reportFile;
@@ -97,7 +108,10 @@ private:
 	std::vector<int> m_outputFormats;
 
 	// list of formats
-	FormatsList m_formatsList;
+	FormatsList m_inputFormatsList;
+	FormatsList m_outputFormatsList;
+
+	bool m_bIsErrorsOnly;
 };
 
 // generates temp xml, convert, calls m_internal->writeReport
@@ -114,7 +128,9 @@ public:
 	void SetOutputFormats(const std::vector<int> outputFormats);
 
 	void SetFontsDirectory(const std::wstring& fontsDirectory);
-	void SetX2tPath (const std::wstring& x2tPath);
+	void SetX2tPath(const std::wstring& x2tPath);
+
+	void SetOnlyErrors(bool bIsErrorsOnly);
 
 	virtual DWORD ThreadProc();
 
@@ -131,6 +147,8 @@ private:
 	COfficeFileFormatChecker checker;
 
 	std::wstring m_x2tPath;
+
+	bool m_bIsErrorsOnly;
 };
 
 #endif // X2T_TESTER_H

@@ -29,12 +29,14 @@ public:
 	std::vector<int> GetSpreadsheets() const;
 	std::vector<int> GetCrossplatform() const;
 	std::vector<int> GetImages() const;
+	int GetPdf() const;
 
 	bool isDocument(int format) const;
 	bool isPresentation(int format) const;
 	bool isSpreadsheet(int format) const;
 	bool isCrossplatform(int format) const;
 	bool isImage(int format) const;
+	bool isPdf(int format) const;
 
 	// all formats
 	void SetDefault();
@@ -50,6 +52,7 @@ private:
 	std::vector<int> m_spreadsheets;
 	std::vector<int> m_crossplatform;
 	std::vector<int> m_images;
+	int m_pdf;
 };
 
 

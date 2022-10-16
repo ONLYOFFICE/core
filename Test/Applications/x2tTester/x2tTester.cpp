@@ -25,9 +25,13 @@ std::vector<int> FormatsList::GetCrossplatform() const
 {
 	return m_crossplatform;
 }
-std::vector<int>FormatsList:: GetImages() const
+std::vector<int> FormatsList::GetImages() const
 {
 	return m_images;
+}
+int FormatsList::GetPdf() const
+{
+	return m_pdf;
 }
 
 bool FormatsList::isDocument(int format) const
@@ -49,6 +53,10 @@ bool FormatsList::isCrossplatform(int format) const
 bool FormatsList::isImage(int format) const
 {
 	return std::find(m_images.begin(), m_images.end(), format) != m_images.end();
+}
+bool FormatsList::isPdf(int format) const
+{
+	return format == m_pdf;
 }
 
 void FormatsList::SetDefault()
@@ -100,10 +108,13 @@ void FormatsList::SetDefault()
 	m_spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX_FLAT);
 	m_spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX_PACKAGE);
 
-	m_crossplatform.push_back(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF);
+	m_crossplatform.push_back(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU);
+	m_crossplatform.push_back(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS);
 
 	m_images.push_back(AVS_OFFICESTUDIO_FILE_IMAGE_JPG);
 	m_images.push_back(AVS_OFFICESTUDIO_FILE_IMAGE_PNG);
+
+	m_pdf = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
 }
 
 void FormatsList::SetOutput()
@@ -155,10 +166,13 @@ void FormatsList::SetOutput()
 //	spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX_FLAT);
 //	spreadsheets.push_back(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX_PACKAGE);
 
-	m_crossplatform.push_back(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF);
+	m_crossplatform.push_back(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU);
+	m_crossplatform.push_back(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS);
 
 	m_images.push_back(AVS_OFFICESTUDIO_FILE_IMAGE_JPG);
 	m_images.push_back(AVS_OFFICESTUDIO_FILE_IMAGE_PNG);
+
+	m_pdf = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
 }
 std::vector<int> FormatsList::allFormats() const
 {
@@ -178,6 +192,8 @@ std::vector<int> FormatsList::allFormats() const
 
 	for(auto val : m_crossplatform)
 		all_formats.push_back(val);
+
+	all_formats.push_back(m_pdf);
 
 	return all_formats;
 }
@@ -324,22 +340,28 @@ void Cx2tTester::Start()
 		// setup output_formats for file
 		std::vector<int> output_file_formats;
 
-		// documents -> documents, images, crossplatform
-		// presentations -> presentations, images, crossplatfrom
-		// spreadsheets -> spreadsheets, images, crossplatform
 		for(auto format : m_outputFormats)
 		{
+			// documents -> documents
 			if((m_outputFormatsList.isDocument(format) && m_inputFormatsList.isDocument(input_format))
+			// spreadsheets -> spreadsheets
 			|| (m_outputFormatsList.isSpreadsheet(format) && m_inputFormatsList.isSpreadsheet(input_format))
+			//presentations -> presentations
 			|| (m_outputFormatsList.isPresentation(format) && m_inputFormatsList.isPresentation(input_format))
+			// crossplatform -> documents
+			|| (m_outputFormatsList.isDocument(format) && m_inputFormatsList.isCrossplatform(input_format))
+			// pdf -> documents
+			|| (m_outputFormatsList.isDocument(format) && m_inputFormatsList.isPdf(input_format))
+			// crossplatform -> pdf
+			|| (m_outputFormatsList.isPdf(format) && m_inputFormatsList.isCrossplatform(input_format))
+			// all formats -> images
 			|| m_outputFormatsList.isImage(format)
-			|| m_outputFormatsList.isCrossplatform(format))
+			// all formats -> pdf
+			|| m_outputFormatsList.isPdf(format))
 			{
 				output_file_formats.push_back(format);
 			}
 		}
-
-
 		// waiting...
 		do
 			NSThreads::Sleep(150);

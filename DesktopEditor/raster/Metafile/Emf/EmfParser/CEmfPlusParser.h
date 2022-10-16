@@ -84,6 +84,8 @@ namespace MetaFile
 
 		void UpdateMatrix(TEmfPlusXForm& oMatrix);
 
+		bool SaveImage(const CEmfPlusImage& oImage, std::wstring& wsPathToImage);
+
 		void Read_EMRPLUS_OFFSETCLIP();
 		void Read_EMRPLUS_RESETCLIP();
 		void Read_EMFPLUS_SETCLIPPATH(unsigned short unShFlags);

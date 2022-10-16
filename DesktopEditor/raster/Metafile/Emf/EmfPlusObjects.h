@@ -163,7 +163,12 @@ namespace MetaFile
 	{
 	    public:
 		CEmfPlusBrush() : CEmfPlusObject(), Style(BS_SOLID), Hatch(0), Angle(0) {};
-		virtual ~CEmfPlusBrush() {};
+		virtual ~CEmfPlusBrush()
+		{
+			if (!DibPatterPath.empty() && NSFile::CFileBinary::Exists(DibPatterPath))
+				NSFile::CFileBinary::Remove(DibPatterPath);
+
+		};
 		virtual EEmfObjectType GetType() override
 		{
 			return EMF_OBJECT_BRUSH;
@@ -211,7 +216,7 @@ namespace MetaFile
 
 		std::wstring GetDibPatterPath()
 		{
-			return std::wstring();
+			return DibPatterPath;
 		}
 
 		void GetBounds(double& left, double& top, double& width, double& height)
@@ -228,6 +233,7 @@ namespace MetaFile
 		unsigned int		Hatch;
 		TEmfPlusRectF		RectF;
 		unsigned int		Angle;
+		std::wstring        DibPatterPath;
 	};
 
 	class CEmfPlusPen: public CEmfPlusObject, public IPen

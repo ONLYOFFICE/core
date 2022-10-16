@@ -920,7 +920,7 @@ void Animation::FillCTn(
 
         int intervalType = iter->m_fIterateIntervalTypePropertyUsed ?
                     iter->m_nIterateIntervalType : 0;
-        uint iterateInterval = iter->m_fIterateIntervalPropertyUsed ?
+        unsigned int iterateInterval = iter->m_fIterateIntervalPropertyUsed ?
                     iter->m_nIterateInterval : 0;
 
         if (intervalType)

@@ -545,7 +545,7 @@ void CConverter::SetXmlErrorsDirectory(const std::wstring& errorsXmlDirectory)
 
 DWORD CConverter::ThreadProc()
 {
-	std::wstring xml_params_file = m_outputFilesDirectory + L"/params.xml";
+	std::wstring input_fielname = NSFile::GetFileName(m_inputFile);
 	std::vector<Cx2tTester::Report> reports;
 
 	// setup folder for output files
@@ -567,6 +567,7 @@ DWORD CConverter::ThreadProc()
 			continue;
 
 		std::wstring output_ext =  checker.GetExtensionByType(output_format);
+		std::wstring xml_params_file = m_outputFilesDirectory + L"/" + input_fielname + L"_" + output_ext + L".xml";
 
 		std::wstring output_file = m_outputFilesDirectory
 				+ L"/" + NSFile::GetFileName(m_inputFile) + output_ext;
@@ -631,6 +632,7 @@ DWORD CConverter::ThreadProc()
 
 		int exit_code = NSX2T::Convert(NSFile::GetDirectoryName(m_x2tPath), xml_params_file);
 
+
 		if (!exit_code && output_format & AVS_OFFICESTUDIO_FILE_IMAGE)
 		{
 			NSDirectory::CreateDirectory(output_file);
@@ -647,9 +649,7 @@ DWORD CConverter::ThreadProc()
 		// save param xml of error conversion
 		if(exit_code)
 		{
-			std::wstring err_xml_file = m_errorsXmlDirectory;
-			std::wstring input_fielname = NSFile::GetFileName(m_inputFile);
-			err_xml_file += L"/" + input_fielname + L"_" + output_ext + L".xml";
+			std::wstring err_xml_file = m_errorsXmlDirectory + L"/" + xml_params_file;
 			NSFile::CFileBinary::SaveToFile(err_xml_file, xml_params, true);
 		}
 
@@ -677,9 +677,9 @@ DWORD CConverter::ThreadProc()
 			std::cout << "BAD";
 
 		std::cout << std::endl;
+		NSFile::CFileBinary::Remove(xml_params_file);
 
 	}
-	NSFile::CFileBinary::Remove(xml_params_file);
 	m_internal->writeReports(reports);
 	m_internal->m_currentProc--;
 	return 0;
